@@ -47,11 +47,15 @@ import java.sql.SQLException;
 
 //import java.io.IOException;
 /**
+ * <p>SnmpIfAdmin class.</p>
+ *
  * @author micmas
- * 
+ *
  * Per modificare il modello associato al commento di questo tipo generato,
  * aprire Finestra&gt;Preferenze&gt;Java&gt;Generazione codice&gt;Codice e
  * commenti
+ * @version $Id: $
+ * @since 1.8.1
  */
 public class SnmpIfAdmin {
 
@@ -59,12 +63,16 @@ public class SnmpIfAdmin {
 
     int nodeid = -1;
 
+    /** Constant <code>NULL=0</code> */
     public static final int NULL = 0;
 
+    /** Constant <code>UP=1</code> */
     public static final int UP = 1;
 
+    /** Constant <code>DOWN=2</code> */
     public static final int DOWN = 2;
 
+    /** Constant <code>TESTING=3</code> */
     public static final int TESTING = 3;
 
     private static final String m_value[] = { "null", "up", "down", "testing" };
@@ -74,11 +82,11 @@ public class SnmpIfAdmin {
 
     /**
      * Construct a SnmpIfAdmin object from a SnmpPeer object
-     * 
-     * @param snmpPeer
-     * @param conn
-     * @throws SocketException
-     * @throws Exception
+     *
+     * @throws java.net.SocketException if any.
+     * @throws java.net.SocketException if any.
+     * @param nodeid a int.
+     * @param agent a {@link org.opennms.netmgt.snmp.SnmpAgentConfig} object.
      */
     public SnmpIfAdmin(int nodeid, SnmpAgentConfig agent) throws SocketException {
         m_agent = agent;
@@ -87,12 +95,13 @@ public class SnmpIfAdmin {
 
     /**
      * Construct a SnmpIfAdmin object from inetaddress object
-     * 
-     * @param inetAddress
-     * @param conn
-     * @param community
-     * @throws SocketException
-     * @throws Exception
+     *
+     * @param inetAddress a {@link java.net.InetAddress} object.
+     * @param community a {@link java.lang.String} object.
+     * @throws java.net.SocketException if any.
+     * @throws java.net.SocketException if any.
+     * @param nodeid a int.
+     * @throws java.lang.Exception if any.
      */
     public SnmpIfAdmin(int nodeid, InetAddress inetAddress, String community)
             throws SocketException, Exception {
@@ -105,26 +114,43 @@ public class SnmpIfAdmin {
      * <p>
      * Set admin interface status to "up".
      * </p>
-     * 
+     *
      * @param ifindex
      *            interface index to set
-     * 
      * @return The status of interface
      * @throws SnmpBadConversionException
      *             Throw if returned code is not an integer
+     * @throws java.sql.SQLException if any.
      */
     public boolean setIfAdminUp(int ifindex) throws SQLException {
         return setIfAdmin(ifindex, UP);
     }
 
+    /**
+     * <p>setIfAdminDown</p>
+     *
+     * @param ifindex a int.
+     * @return a boolean.
+     * @throws java.sql.SQLException if any.
+     */
     public boolean setIfAdminDown(int ifindex) throws SQLException {
         return setIfAdmin(ifindex, DOWN);
     }
 
+    /**
+     * <p>isIfAdminStatusUp</p>
+     *
+     * @return a boolean.
+     */
     public boolean isIfAdminStatusUp() {
         return (getIfAdminStatus(UP) == UP);
     }
 
+    /**
+     * <p>isIfAdminStatusDown</p>
+     *
+     * @return a boolean.
+     */
     public boolean isIfAdminStatusDown() {
         return (getIfAdminStatus(DOWN) == DOWN);
     }
@@ -133,10 +159,9 @@ public class SnmpIfAdmin {
      * <p>
      * Get desired admin interface status.
      * </p>
-     * 
+     *
      * @param ifindex
      *            interface index to get
-     * 
      * @return The status of interface
      * @throws SnmpBadConversionException
      *             Throw if returned code is not an integer
@@ -153,11 +178,9 @@ public class SnmpIfAdmin {
      * <p>
      * Get status in readable human format.
      * </p>
-     * 
-     * @param ifindex
-     *            interface index to get
-     * 
+     *
      * @return The status of interface in human format
+     * @param value a int.
      */
     public static String getReadableAdminStatus(int value) {
         return m_value[value];
@@ -189,15 +212,15 @@ public class SnmpIfAdmin {
      * <p>
      * Set admin interface status to value.
      * </p>
-     * 
+     *
      * @param ifindex
      *            interface index to set
      * @param value
      *            desired interface status value
-     * 
      * @return The status of interface after operation
      * @throws SnmpBadConversionException
      *             Throw if returned code is not an integer
+     * @throws java.sql.SQLException if any.
      */
     public boolean setIfAdmin(int ifindex, int value) throws SQLException {
 
@@ -218,6 +241,12 @@ public class SnmpIfAdmin {
         return false;
     }
 
+    /**
+     * <p>isValidState</p>
+     *
+     * @param status a int.
+     * @return a boolean.
+     */
     public static boolean isValidState(int status) {
         return (status == UP && status == DOWN);
     }

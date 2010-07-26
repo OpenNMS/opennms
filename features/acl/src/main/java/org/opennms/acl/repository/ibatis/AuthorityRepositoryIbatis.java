@@ -56,52 +56,72 @@ import com.ibatis.sqlmap.client.SqlMapClient;
 import com.ibatis.sqlmap.client.SqlMapExecutor;
 
 /**
+ * <p>AuthorityRepositoryIbatis class.</p>
+ *
  * @author Massimiliano Dess&igrave; (desmax74@yahoo.it)
  * @since jdk 1.5.0
+ * @version $Id: $
  */
 @Repository("authorityRepository")
 public class AuthorityRepositoryIbatis extends SqlMapClientTemplate implements AuthorityRepository {
 
+    /** {@inheritDoc} */
     @Autowired
     @Override
     public void setSqlMapClient(@Qualifier("sqlMapClient") SqlMapClient sqlMapClient) {
         super.setSqlMapClient(sqlMapClient);
     }
 
+    /** {@inheritDoc} */
     public Boolean removeGroupFromAuthorities(Integer id) {
         return update("updateAuthorityToGroupToHidden", id) > 0;
     }
 
+    /**
+     * <p>getAuthorities</p>
+     *
+     * @return a {@link java.util.List} object.
+     */
     @SuppressWarnings("unchecked")
     public List<AuthorityDTO> getAuthorities() {
         return queryForList("getAuthorities");
     }
 
+    /** {@inheritDoc} */
     @SuppressWarnings("unchecked")
     public List<AuthorityDTO> getUserAuthorities(String username) {
         return queryForList("getUserAuthorities", username);
     }
 
+    /** {@inheritDoc} */
     @SuppressWarnings("unchecked")
     public List<AuthorityDTO> getFreeAuthorities(String username) {
         return queryForList("getFreeAuthorities", username);
     }
 
+    /**
+     * <p>getFreeAuthoritiesForGroup</p>
+     *
+     * @return a {@link java.util.List} object.
+     */
     @SuppressWarnings("unchecked")
     public List<AuthorityDTO> getFreeAuthoritiesForGroup() {
         return queryForList("getFreeAuthoritiesForGroup");
     }
 
+    /** {@inheritDoc} */
     @SuppressWarnings("unchecked")
     public List<Integer> getIdItemsAuthority(Integer id) {
         return queryForList("getAuthorityItemsIds", id);
     }
 
+    /** {@inheritDoc} */
     @SuppressWarnings("unchecked")
     public List<AuthorityDTO> getGroupAuthorities(Integer id) {
         return queryForList("getGroupAuthorities", id);
     }
 
+    /** {@inheritDoc} */
     public Boolean saveAuthorities(final Integer groupId, final List<Integer> authorities) {
 
         return execute(new SqlMapClientCallback<Boolean>() {
@@ -160,14 +180,21 @@ public class AuthorityRepositoryIbatis extends SqlMapClientTemplate implements A
         });
     }
 
+    /**
+     * <p>getAuthoritiesNumber</p>
+     *
+     * @return a {@link java.lang.Integer} object.
+     */
     public Integer getAuthoritiesNumber() {
         return (Integer) queryForObject("getAuthoritiesNumber");
     }
 
+    /** {@inheritDoc} */
     public AuthorityDTO getAuthority(Integer id) {
         return (AuthorityDTO) queryForObject("getAuthority", id);
     }
 
+    /** {@inheritDoc} */
     @SuppressWarnings("unchecked")
     public List<AuthorityDTO> getAuthorities(Pager pager) {
         Map params = new HashMap();
@@ -176,14 +203,17 @@ public class AuthorityRepositoryIbatis extends SqlMapClientTemplate implements A
         return queryForList("getAllAuthorities", params);
     }
 
+    /** {@inheritDoc} */
     public Boolean removeAuthority(Integer id) {
         return delete("deleteAuthority", id) == 1 ? true : false;
     }
 
+    /** {@inheritDoc} */
     public Boolean deleteUserGroups(String username) {
         return delete("deleteUserGroups", username) > 0;
     }
 
+    /** {@inheritDoc} */
     public Boolean save(AuthorityDTO authority) {
         return authority.isNew() ? insert(authority) : update(authority);
     }

@@ -36,17 +36,39 @@
 package org.opennms.netmgt.vulnscand;
 
 /**
- * 
+ * <p>ScheduleTrigger interface.</p>
+ *
  * @author <a href="mailto:brozow@opennms.org">Mathew Brozowski</a>
+ * @version $Id: $
  */
 public interface ScheduleTrigger {
 
+	/**
+	 * <p>isScheduled</p>
+	 *
+	 * @return a boolean.
+	 */
 	public abstract boolean isScheduled();
 
+	/**
+	 * <p>setScheduled</p>
+	 *
+	 * @param newScheduled a boolean.
+	 */
 	public abstract void setScheduled(boolean newScheduled);
 
+	/**
+	 * <p>isTimeForRescan</p>
+	 *
+	 * @return a boolean.
+	 */
 	public abstract boolean isTimeForRescan();
 
+	/**
+	 * <p>getJob</p>
+	 *
+	 * @return a {@link java.lang.Object} object.
+	 */
 	public abstract Object getJob();
 
 }

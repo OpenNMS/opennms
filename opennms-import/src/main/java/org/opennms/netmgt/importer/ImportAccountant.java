@@ -42,34 +42,51 @@ import org.opennms.netmgt.importer.operations.ImportOperationsManager;
 import org.opennms.netmgt.importer.operations.SaveOrUpdateOperation;
 import org.opennms.netmgt.importer.specification.AbstractImportVisitor;
 
+/**
+ * <p>ImportAccountant class.</p>
+ *
+ * @author ranger
+ * @version $Id: $
+ */
 public class ImportAccountant extends AbstractImportVisitor {
 	private final ImportOperationsManager m_opsMgr;
     private SaveOrUpdateOperation m_currentOp;
         
+    /**
+     * <p>Constructor for ImportAccountant.</p>
+     *
+     * @param opsMgr a {@link org.opennms.netmgt.importer.operations.ImportOperationsManager} object.
+     */
     public ImportAccountant(ImportOperationsManager opsMgr) {
         m_opsMgr = opsMgr;
     }
     
+    /** {@inheritDoc} */
     public void visitNode(Node node) {
         m_currentOp = m_opsMgr.foundNode(node.getForeignId(), node.getNodeLabel(), node.getBuilding(), node.getCity());        
     }
+    /** {@inheritDoc} */
     public void completeNode(Node node) {
         m_currentOp = null;
     }
 
+    /** {@inheritDoc} */
     public void visitInterface(Interface iface) {
         m_currentOp.foundInterface(iface.getIpAddr(), iface.getDescr(), iface.getSnmpPrimary(), iface.getManaged(), iface.getStatus());
         
     }
     
+    /** {@inheritDoc} */
     public void visitMonitoredService(MonitoredService svc) {
         m_currentOp.foundMonitoredService(svc.getServiceName());
     }
 
+    /** {@inheritDoc} */
     public void visitCategory(Category category) {
         m_currentOp.foundCategory(category.getName());
     }
 
+    /** {@inheritDoc} */
     public void visitAsset(Asset asset) {
         m_currentOp.foundAsset(asset.getName(), asset.getValue());
     }

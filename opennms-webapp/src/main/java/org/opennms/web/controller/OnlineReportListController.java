@@ -45,11 +45,19 @@ import org.springframework.web.bind.ServletRequestUtils;
 import org.springframework.web.servlet.ModelAndView;
 import org.springframework.web.servlet.mvc.AbstractController;
 
+/**
+ * <p>OnlineReportListController class.</p>
+ *
+ * @author ranger
+ * @version $Id: $
+ * @since 1.8.1
+ */
 public class OnlineReportListController extends AbstractController {
 
     private DatabaseReportListService m_reportListService;
     private int m_pageSize;
     
+    /** {@inheritDoc} */
     @Override
     protected ModelAndView handleRequestInternal(HttpServletRequest request,
             HttpServletResponse response) throws Exception {
@@ -64,18 +72,38 @@ public class OnlineReportListController extends AbstractController {
         
     }
 
+    /**
+     * <p>getDatabaseReportListService</p>
+     *
+     * @return a {@link org.opennms.web.svclayer.DatabaseReportListService} object.
+     */
     public DatabaseReportListService getDatabaseReportListService() {
         return m_reportListService;
     }
 
+    /**
+     * <p>setDatabaseReportListService</p>
+     *
+     * @param listService a {@link org.opennms.web.svclayer.DatabaseReportListService} object.
+     */
     public void setDatabaseReportListService(DatabaseReportListService listService) {
         m_reportListService = listService;
     }
 
+    /**
+     * <p>getPageSize</p>
+     *
+     * @return a int.
+     */
     public int getPageSize() {
         return m_pageSize;
     }
 
+    /**
+     * <p>setPageSize</p>
+     *
+     * @param pageSize a int.
+     */
     public void setPageSize(int pageSize) {
         m_pageSize = pageSize;
     }

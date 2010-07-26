@@ -1,0 +1,9 @@
+{d "%w- %d %m-, %Y - %T"} - A "ipUnityPartitionHighUsage" event has occurred, from {t} device, named {m}.
+
+" the usage of a partition in the Media Server 
+			exceeds the threshold for usage."
+
+ipUnityTrapSeverity = {T ipUnityTrapSeverity 1}
+ipUnityTrapInfoString = {S 2}
+ipUnitySequenceNumber = {I 3}
+(event [{e}])

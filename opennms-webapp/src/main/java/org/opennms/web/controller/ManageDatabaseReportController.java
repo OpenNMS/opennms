@@ -49,23 +49,44 @@ import org.springframework.web.bind.ServletRequestUtils;
 import org.springframework.web.servlet.ModelAndView;
 import org.springframework.web.servlet.mvc.SimpleFormController;
 
+/**
+ * <p>ManageDatabaseReportController class.</p>
+ *
+ * @author ranger
+ * @version $Id: $
+ * @since 1.8.1
+ */
 public class ManageDatabaseReportController extends SimpleFormController {
 
     private int m_pageSize;
     private ReportStoreService m_reportStoreService;
     
+    /**
+     * <p>Constructor for ManageDatabaseReportController.</p>
+     */
     public ManageDatabaseReportController() {
         setFormView("report/database/manage");
     }
 
+    /**
+     * <p>setReportStoreService</p>
+     *
+     * @param reportStoreService a {@link org.opennms.reporting.core.svclayer.ReportStoreService} object.
+     */
     public void setReportStoreService(ReportStoreService reportStoreService) {
         m_reportStoreService = reportStoreService;
     }
     
+    /**
+     * <p>setPageSize</p>
+     *
+     * @param pageSize a int.
+     */
     public void setPageSize(int pageSize) {
         m_pageSize = pageSize;
     }
     
+    /** {@inheritDoc} */
     @Override
     protected Map<String, Object> referenceData(HttpServletRequest req) throws Exception {
         Map<String, Object> data = new HashMap<String, Object>();
@@ -81,6 +102,7 @@ public class ManageDatabaseReportController extends SimpleFormController {
 
     }
     
+    /** {@inheritDoc} */
     @Override
     protected ModelAndView onSubmit(Object command) throws Exception {
         ManageDatabaseReportCommand manageCommand = (ManageDatabaseReportCommand) command;

@@ -43,14 +43,30 @@ import org.springframework.dao.DataAccessResourceFailureException;
 
 /**
  * DAO for accessing the configuration for statsd.
- * 
+ *
  * @author <a href="mailto:dj@opennms.org">DJ Gregor</a>
  * @see ResourceReference
+ * @version $Id: $
  */
 public interface StatisticsDaemonConfigDao {
+    /**
+     * <p>getReports</p>
+     *
+     * @return a {@link java.util.List} object.
+     */
     public List<Report> getReports();
     
+    /**
+     * <p>getPackages</p>
+     *
+     * @return a {@link java.util.List} object.
+     */
     public List<StatsdPackage> getPackages();
     
+    /**
+     * <p>reloadConfiguration</p>
+     *
+     * @throws org.springframework.dao.DataAccessResourceFailureException if any.
+     */
     void reloadConfiguration() throws DataAccessResourceFailureException;
 }

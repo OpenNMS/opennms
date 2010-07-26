@@ -113,7 +113,7 @@
 
           <simpleType>
             <restriction base="string">
-              <pattern value="^RRA:(AVERAGE|MIN|MAX|LAST):.*$"/>
+              <pattern value="RRA:(AVERAGE|MIN|MAX|LAST):.*"/>
             </restriction>
           </simpleType>
         </element>
@@ -277,7 +277,7 @@
 
         <simpleType>
           <restriction base="string">
-            <pattern value="^(all|ignore|(\d+,)*\d+)$"/>
+            <pattern value="(all|ignore|(\d+,)*\d+)"/>
           </restriction>
         </simpleType>
       </attribute>
@@ -317,8 +317,8 @@
 
           <element maxOccurs="1" minOccurs="1" name="sysoidMask" type="string">
             <annotation>
-              <documentation>sysoid mask which can be used to match multiple
-              systems</documentation>
+              <documentation>Sysoid mask which can be used to match multiple
+              systems if their sysoid begins with the mask</documentation>
             </annotation>
           </element>
         </choice>
@@ -425,7 +425,7 @@
 
         <simpleType>
           <restriction base="string">
-            <pattern value="^([Cc](ounter|OUNTER)(32|64)?|[Gg](auge|AUGE)(32|64)?|[Tt](ime|IME)[Tt](icks|ICKS)|[Ii](nteger|NTEGER)(32|64)?|[Oo](ctet|CTET)[Ss](tring|TRING))|[Ss](tring|TRING)$"/>
+            <pattern value="([Cc](ounter|OUNTER)(32|64)?|[Gg](auge|AUGE)(32|64)?|[Tt](ime|IME)[Tt](icks|ICKS)|[Ii](nteger|NTEGER)(32|64)?|[Oo](ctet|CTET)[Ss](tring|TRING))|[Ss](tring|TRING)"/>
           </restriction>
         </simpleType>
       </attribute>

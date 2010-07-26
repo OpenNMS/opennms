@@ -38,25 +38,44 @@
 package org.opennms.netmgt.poller;
 
 /**
+ * <p>IfKey class.</p>
+ *
  * @author brozow
- * 
+ *
  * TODO To change the template for this generated type comment go to Window -
  * Preferences - Java - Code Style - Code Templates
+ * @version $Id: $
  */
 public class IfKey {
     private int m_nodeId;
 
     private String m_ipAddr;
 
+    /**
+     * <p>Constructor for IfKey.</p>
+     *
+     * @param nodeId a int.
+     * @param ipAddr a {@link java.lang.String} object.
+     */
     public IfKey(int nodeId, String ipAddr) {
         m_nodeId = nodeId;
         m_ipAddr = ipAddr;
     }
 
+    /**
+     * <p>getNodeId</p>
+     *
+     * @return a int.
+     */
     public int getNodeId() {
         return m_nodeId;
     }
 
+    /**
+     * <p>getIpAddr</p>
+     *
+     * @return a {@link java.lang.String} object.
+     */
     public String getIpAddr() {
         return m_ipAddr;
     }

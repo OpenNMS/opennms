@@ -77,9 +77,13 @@ import org.opennms.netmgt.config.poller.Service;
 /**
  * A servlet that handles managing or unmanaging interfaces and services on a
  * node
- * 
+ *
  * @author <A HREF="mailto:jacinta@opennms.org">Jacinta Remedios </A>
  * @author <A HREF="http://www.opennms.org/">OpenNMS </A>
+ * @author <A HREF="mailto:jacinta@opennms.org">Jacinta Remedios </A>
+ * @author <A HREF="http://www.opennms.org/">OpenNMS </A>
+ * @version $Id: $
+ * @since 1.8.1
  */
 public class PollerConfigServlet extends HttpServlet {
     private static final long serialVersionUID = 1L;
@@ -106,6 +110,11 @@ public class PollerConfigServlet extends HttpServlet {
 
     private CapsdConfig m_capsdFactory = null;
 
+    /**
+     * <p>init</p>
+     *
+     * @throws javax.servlet.ServletException if any.
+     */
     public void init() throws ServletException {
         getInitParameters();
 
@@ -163,6 +172,11 @@ public class PollerConfigServlet extends HttpServlet {
         //String[] protocols = BundleLists.parseBundleList(m_props.getProperty("services"));
     }
 
+    /**
+     * <p>reloadFiles</p>
+     *
+     * @throws javax.servlet.ServletException if any.
+     */
     public void reloadFiles() throws ServletException {
         ServletConfig config = getServletConfig();
         try {
@@ -180,6 +194,9 @@ public class PollerConfigServlet extends HttpServlet {
         }
     }
 
+    /**
+     * <p>initCapsdProtocols</p>
+     */
     public void initCapsdProtocols() {
         m_pluginColl = getCapsdProtocolPlugins();
         if (m_pluginColl != null) {
@@ -196,6 +213,9 @@ public class PollerConfigServlet extends HttpServlet {
         return (List<ProtocolPlugin>) m_capsdConfig.getProtocolPluginCollection();
     }
 
+    /**
+     * <p>initPollerServices</p>
+     */
     public void initPollerServices() {
         Collection<org.opennms.netmgt.config.poller.Package> packageColl = m_pollerConfig.getPackageCollection();
         if (packageColl != null) {
@@ -213,6 +233,7 @@ public class PollerConfigServlet extends HttpServlet {
         }
     }
 
+    /** {@inheritDoc} */
     public void doPost(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
         reloadFiles();
 
@@ -259,6 +280,11 @@ public class PollerConfigServlet extends HttpServlet {
         response.sendRedirect(redirectPage);
     }
 
+    /**
+     * <p>deleteCapsdInfo</p>
+     *
+     * @param name a {@link java.lang.String} object.
+     */
     public void deleteCapsdInfo(String name) {
         if (m_capsdProtocols.get(name) != null) {
             ProtocolPlugin tmpproto = m_capsdProtocols.get(name);
@@ -269,6 +295,11 @@ public class PollerConfigServlet extends HttpServlet {
         }
     }
 
+    /**
+     * <p>adjustNonChecked</p>
+     *
+     * @param checkedList a {@link java.util.List} object.
+     */
     public void adjustNonChecked(List<String> checkedList) {
         if (m_pkg != null) {
             Collection<Service> svcColl = m_pkg.getServiceCollection();
@@ -289,6 +320,12 @@ public class PollerConfigServlet extends HttpServlet {
         }
     }
 
+    /**
+     * <p>deleteThese</p>
+     *
+     * @param deleteServices a {@link java.util.List} object.
+     * @throws java.io.IOException if any.
+     */
     public void deleteThese(List<String> deleteServices) throws IOException {
         ListIterator<String> lstIter = deleteServices.listIterator();
         while (lstIter.hasNext()) {
@@ -323,6 +360,11 @@ public class PollerConfigServlet extends HttpServlet {
     }
 
 
+    /**
+     * <p>removeMonitor</p>
+     *
+     * @param service a {@link java.lang.String} object.
+     */
     public void removeMonitor(String service) {
         // Add the new monitor with the protocol.
         Collection<Monitor> monitorColl = m_pollerConfig.getMonitorCollection();
@@ -344,6 +386,12 @@ public class PollerConfigServlet extends HttpServlet {
         }
     }
 
+    /**
+     * <p>modifyPollerInfo</p>
+     *
+     * @param bPolled a {@link java.lang.String} object.
+     * @param protocol a {@link java.lang.String} object.
+     */
     public void modifyPollerInfo(String bPolled, String protocol) {
         if (m_pkg != null) {
             Collection<Service> svcColl = m_pkg.getServiceCollection();

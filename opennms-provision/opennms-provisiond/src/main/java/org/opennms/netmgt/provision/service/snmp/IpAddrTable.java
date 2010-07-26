@@ -58,14 +58,34 @@ import org.opennms.netmgt.snmp.SnmpObjId;
  * received/error occurs in the SnmpSession used to send requests /recieve
  * replies.
  * </P>
- * 
+ *
  * @author <A HREF="mailto:brozow@opennms.org">Matt Brozowski</A>
  * @author <A HREF="mailto:jamesz@opennms.org">James Zuo </A>
  * @author <A HREF="mailto:sowmya@opennms.org">Sowmya </A>
  * @author <A HREF="mailto:weave@oculan.com">Weave </A>
  * @author <A HREF="http://www.opennms.org/">OpenNMS </A>
- * 
+ * @author <A HREF="mailto:brozow@opennms.org">Matt Brozowski</A>
+ * @author <A HREF="mailto:jamesz@opennms.org">James Zuo </A>
+ * @author <A HREF="mailto:sowmya@opennms.org">Sowmya </A>
+ * @author <A HREF="mailto:weave@oculan.com">Weave </A>
+ * @author <A HREF="http://www.opennms.org/">OpenNMS </A>
+ * @author <A HREF="mailto:brozow@opennms.org">Matt Brozowski</A>
+ * @author <A HREF="mailto:jamesz@opennms.org">James Zuo </A>
+ * @author <A HREF="mailto:sowmya@opennms.org">Sowmya </A>
+ * @author <A HREF="mailto:weave@oculan.com">Weave </A>
+ * @author <A HREF="http://www.opennms.org/">OpenNMS </A>
+ * @author <A HREF="mailto:brozow@opennms.org">Matt Brozowski</A>
+ * @author <A HREF="mailto:jamesz@opennms.org">James Zuo </A>
+ * @author <A HREF="mailto:sowmya@opennms.org">Sowmya </A>
+ * @author <A HREF="mailto:weave@oculan.com">Weave </A>
+ * @author <A HREF="http://www.opennms.org/">OpenNMS </A>
+ * @author <A HREF="mailto:brozow@opennms.org">Matt Brozowski</A>
+ * @author <A HREF="mailto:jamesz@opennms.org">James Zuo </A>
+ * @author <A HREF="mailto:sowmya@opennms.org">Sowmya </A>
+ * @author <A HREF="mailto:weave@oculan.com">Weave </A>
+ * @author <A HREF="http://www.opennms.org/">OpenNMS </A>
  * @see <A HREF="http://www.ietf.org/rfc/rfc1213.txt">RFC1213 </A>
+ * @version $Id: $
  */
 public class IpAddrTable extends SnmpTable<IpAddrTableEntry> {
 
@@ -76,6 +96,7 @@ public class IpAddrTable extends SnmpTable<IpAddrTableEntry> {
      * there is an error in the collection the signaler object is <EM>notified
      * </EM> to inform other threads.
      * </P>
+     *
      * @param address TODO
      * @see IpAddrTableEntry
      */
@@ -83,14 +104,26 @@ public class IpAddrTable extends SnmpTable<IpAddrTableEntry> {
         super(address, "ipAddrTable", IpAddrTableEntry.ms_elemList);
     }
 
+    /**
+     * <p>Constructor for IpAddrTable.</p>
+     *
+     * @param address a {@link java.net.InetAddress} object.
+     * @param ipAddrs a {@link java.util.Set} object.
+     */
     public IpAddrTable(InetAddress address, Set<SnmpInstId> ipAddrs) {
         super(address, "ipAddrTable", IpAddrTableEntry.ms_elemList, ipAddrs);
     }
 
+    /** {@inheritDoc} */
     protected IpAddrTableEntry createTableEntry(SnmpObjId base, SnmpInstId inst, Object val) {
         return new IpAddrTableEntry();
     }
     
+    /**
+     * <p>getIfIndices</p>
+     *
+     * @return a {@link java.util.Set} object.
+     */
     public Set<Integer> getIfIndices() {
         Set<Integer> ifIndices = new TreeSet<Integer>();
         for(IpAddrTableEntry entry : getEntries()) {
@@ -102,31 +135,67 @@ public class IpAddrTable extends SnmpTable<IpAddrTableEntry> {
         return ifIndices;
     }
 
+    /**
+     * <p>getIfAddressAndMask</p>
+     *
+     * @param ifIndex a int.
+     * @return an array of {@link java.net.InetAddress} objects.
+     */
     public InetAddress[] getIfAddressAndMask(int ifIndex) {
         IpAddrTableEntry entry = getEntryByIfIndex(ifIndex);
         return entry == null ? null : new InetAddress[] { entry.getIpAdEntAddr(), entry.getIpAdEntNetMask() };
     }
     
+    /**
+     * <p>getIfAddress</p>
+     *
+     * @param ifIndex a int.
+     * @return a {@link java.net.InetAddress} object.
+     */
     public InetAddress getIfAddress(int ifIndex) {
         IpAddrTableEntry entry = getEntryByIfIndex(ifIndex);
         return entry == null ? null : entry.getIpAdEntAddr();
     }
     
+    /**
+     * <p>getNetMask</p>
+     *
+     * @param ifIndex a int.
+     * @return a {@link java.net.InetAddress} object.
+     */
     public InetAddress getNetMask(int ifIndex) {
         IpAddrTableEntry entry = getEntryByIfIndex(ifIndex);
         return entry == null ? null : entry.getIpAdEntNetMask();
         
     }
     
+    /**
+     * <p>getNetMask</p>
+     *
+     * @param address a {@link java.net.InetAddress} object.
+     * @return a {@link java.net.InetAddress} object.
+     */
     public InetAddress getNetMask(InetAddress address) {
         return getEntry(address) == null ? null : getEntry(address).getIpAdEntNetMask();
     }
     
+    /**
+     * <p>getIfIndex</p>
+     *
+     * @param address a {@link java.net.InetAddress} object.
+     * @return a {@link java.lang.Integer} object.
+     */
     public Integer getIfIndex(InetAddress address) {
         return getEntry(address) == null ? null : getEntry(address).getIpAdEntIfIndex();
     }
 
 
+    /**
+     * <p>getEntryByIfIndex</p>
+     *
+     * @param ifIndex a int.
+     * @return a {@link org.opennms.netmgt.provision.service.snmp.IpAddrTableEntry} object.
+     */
     public IpAddrTableEntry getEntryByIfIndex(int ifIndex) {
         if (getEntries() == null) {
             return null;
@@ -141,23 +210,41 @@ public class IpAddrTable extends SnmpTable<IpAddrTableEntry> {
         return null;
     }
      
+    /**
+     * <p>getEntry</p>
+     *
+     * @param address a {@link java.net.InetAddress} object.
+     * @return a {@link org.opennms.netmgt.provision.service.snmp.IpAddrTableEntry} object.
+     */
     public IpAddrTableEntry getEntry(InetAddress address) {
         return getEntry(new SnmpInstId(address.getHostAddress()));
     }
 
+    /**
+     * <p>log</p>
+     *
+     * @return a {@link org.opennms.core.utils.ThreadCategory} object.
+     */
     protected final ThreadCategory log() {
         return ThreadCategory.getInstance(IpAddrTable.class);
     }
 
+    /**
+     * <p>updateIpInterfaceData</p>
+     *
+     * @param node a {@link org.opennms.netmgt.model.OnmsNode} object.
+     */
     public void updateIpInterfaceData(OnmsNode node) {
         for(IpAddrTableEntry entry : getEntries()) {
             updateIpInterfaceData(node, entry.getIpAdEntAddr().getHostAddress());
         }
     }
 
-        /**
-     * @param node
-     * @param ipAddr
+    /**
+     * <p>updateIpInterfaceData</p>
+     *
+     * @param node a {@link org.opennms.netmgt.model.OnmsNode} object.
+     * @param ipAddr a {@link java.lang.String} object.
      */
     public void updateIpInterfaceData(OnmsNode node, String ipAddr) {
         OnmsIpInterface ipIf = node.getIpInterfaceByIpAddress(ipAddr);
@@ -196,7 +283,9 @@ public class IpAddrTable extends SnmpTable<IpAddrTableEntry> {
     }
 
     /**
-     * 
+     * <p>getIpAddresses</p>
+     *
+     * @return a {@link java.util.Set} object.
      */
     public Set<String> getIpAddresses() {
         Set<String> ipAddrs = new LinkedHashSet<String>();

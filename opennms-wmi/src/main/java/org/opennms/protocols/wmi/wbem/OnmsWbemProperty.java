@@ -39,18 +39,57 @@ import org.opennms.protocols.wmi.WmiClient;
 
 /**
  * TODO implement CIMTYPE, VALUE
+ *
+ * @author ranger
+ * @version $Id: $
  */
 public interface OnmsWbemProperty {
 
+    /**
+     * <p>getWmiName</p>
+     *
+     * @return a {@link java.lang.String} object.
+     * @throws org.opennms.protocols.wmi.WmiException if any.
+     */
     public String getWmiName() throws WmiException;
 
+    /**
+     * <p>getWmiOrigin</p>
+     *
+     * @return a {@link java.lang.String} object.
+     * @throws org.opennms.protocols.wmi.WmiException if any.
+     */
     public String getWmiOrigin() throws WmiException;
 
+    /**
+     * <p>getWmiIsArray</p>
+     *
+     * @return a {@link java.lang.Boolean} object.
+     * @throws org.opennms.protocols.wmi.WmiException if any.
+     */
     public Boolean getWmiIsArray() throws WmiException;
 
+    /**
+     * <p>getWmiIsLocal</p>
+     *
+     * @return a {@link java.lang.Boolean} object.
+     * @throws org.opennms.protocols.wmi.WmiException if any.
+     */
     public Boolean getWmiIsLocal() throws WmiException;
 
+    /**
+     * <p>getWmiValue</p>
+     *
+     * @return a {@link java.lang.Object} object.
+     * @throws org.opennms.protocols.wmi.WmiException if any.
+     */
     public Object getWmiValue() throws WmiException;
 
+    /**
+     * <p>getWmiCIMType</p>
+     *
+     * @return a {@link java.lang.Integer} object.
+     * @throws org.opennms.protocols.wmi.WmiException if any.
+     */
     public Integer getWmiCIMType() throws WmiException;
 }

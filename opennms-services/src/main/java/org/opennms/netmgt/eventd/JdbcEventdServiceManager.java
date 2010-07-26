@@ -51,6 +51,12 @@ import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.jdbc.core.RowCallbackHandler;
 import org.springframework.util.Assert;
 
+/**
+ * <p>JdbcEventdServiceManager class.</p>
+ *
+ * @author ranger
+ * @version $Id: $
+ */
 public class JdbcEventdServiceManager implements InitializingBean, EventdServiceManager {
     private DataSource m_dataSource;
 
@@ -59,12 +65,16 @@ public class JdbcEventdServiceManager implements InitializingBean, EventdService
      */
     private Map<String, Integer> m_serviceMap = new HashMap<String, Integer>();
 
+    /**
+     * <p>Constructor for JdbcEventdServiceManager.</p>
+     */
     public JdbcEventdServiceManager() {
     }
 
     /* (non-Javadoc)
      * @see org.opennms.netmgt.eventd.EventdServiceManager#getServiceId(java.lang.String)
      */
+    /** {@inheritDoc} */
     public synchronized int getServiceId(String serviceName) throws DataAccessException {
         Assert.notNull(serviceName, "The serviceName argument must not be null");
 
@@ -96,6 +106,9 @@ public class JdbcEventdServiceManager implements InitializingBean, EventdService
     /* (non-Javadoc)
      * @see org.opennms.netmgt.eventd.EventdServiceManager#dataSourceSync()
      */
+    /**
+     * <p>dataSourceSync</p>
+     */
     public synchronized void dataSourceSync() {
         m_serviceMap.clear();
         
@@ -110,14 +123,29 @@ public class JdbcEventdServiceManager implements InitializingBean, EventdService
         return ThreadCategory.getInstance(getClass());
     }
 
+    /**
+     * <p>afterPropertiesSet</p>
+     *
+     * @throws java.lang.Exception if any.
+     */
     public void afterPropertiesSet() throws Exception {
         Assert.state(m_dataSource != null, "property dataSource must be set");
     }
 
+    /**
+     * <p>getDataSource</p>
+     *
+     * @return a {@link javax.sql.DataSource} object.
+     */
     public DataSource getDataSource() {
         return m_dataSource;
     }
 
+    /**
+     * <p>setDataSource</p>
+     *
+     * @param dataSource a {@link javax.sql.DataSource} object.
+     */
     public void setDataSource(DataSource dataSource) {
         m_dataSource = dataSource;
     }

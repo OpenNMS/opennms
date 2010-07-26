@@ -35,17 +35,36 @@ package org.opennms.netmgt.collectd;
 import java.io.Serializable;
 import java.util.Comparator;
 
+/**
+ * <p>ByNameComparator class.</p>
+ *
+ * @author ranger
+ * @version $Id: $
+ */
 public final class ByNameComparator implements Comparator<AttributeDefinition>, Serializable {
     private static final long serialVersionUID = 1L;
 
+    /**
+     * <p>compare</p>
+     *
+     * @param type0 a {@link org.opennms.netmgt.collectd.AttributeDefinition} object.
+     * @param type1 a {@link org.opennms.netmgt.collectd.AttributeDefinition} object.
+     * @return a int.
+     */
     public int compare(final AttributeDefinition type0, final AttributeDefinition type1) {
         return type0.getName().compareTo(type1.getName());
     }
     
+    /** {@inheritDoc} */
     public boolean equals(final Object o) {
         return o instanceof ByNameComparator;
     }
     
+    /**
+     * <p>hashCode</p>
+     *
+     * @return a int.
+     */
     public int hashCode() {
         return 0;
     }

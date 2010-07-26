@@ -33,13 +33,15 @@ import org.openoss.opennms.spring.dao.OssDao;
 
 /**
  * This class provides a thread to decouple the OpenNMS event handling from updates to
- * the Node list and the Alarm List in the ossDao. If OpenNMS issues multiple events to the QoSD 
+ * the Node list and the Alarm List in the ossDao. If OpenNMS issues multiple events to the QoSD
  * event handler which cause it to want to update the alarm list or update the node list, this Thread latches
  * the event and will request the ossDao to update it's cache and send any new alarms.
  * If further events occur while the ossDao is updating, these will be latched until the
  * process completes. This prevents every new opennms alarm causing a call to the ossDao while it is running
  * which would otherwise back up a queue of requests against it's synchronized methods.
  *
+ * @author ranger
+ * @version $Id: $
  */
 public class OpenNMSEventHandlerThread extends Thread {
 
@@ -49,8 +51,9 @@ public class OpenNMSEventHandlerThread extends Thread {
 	private static OssDao ossDao;
 
 	/**
-	 * provides an interface to OpenNMS which provides a unified api 
-	 * @param ossDao the ossDao to set
+	 * provides an interface to OpenNMS which provides a unified api
+	 *
+	 * @param _ossDao the ossDao to set
 	 */
 	public void setOssDao(OssDao _ossDao) {
 		ossDao = _ossDao;
@@ -65,10 +68,12 @@ public class OpenNMSEventHandlerThread extends Thread {
 	//private static OpenNMSEventHandlerThread instance =null; // used to hold instance of this thread
 
 	/**
-	 * Run method loops until kill() called. 
+	 * Run method loops until kill() called.
 	 * It wakes up if sendAlarmList() is called and updates the alarmlist
 	 * It wakes up if updateNodeCache() is called and updates the node list
 	 * init() must be called before the run() method.
+	 *
+	 * @throws java.lang.IllegalStateException if any.
 	 */
 	public void run() throws IllegalStateException 	{
 		ThreadCategory log = getLog();	
@@ -143,9 +148,9 @@ public class OpenNMSEventHandlerThread extends Thread {
 	}
 
 	/**
-	 * If called, this method will request that the ossDao Alarm Cache is updated from the OpenNMS database 
+	 * If called, this method will request that the ossDao Alarm Cache is updated from the OpenNMS database
 	 * and sent to the QoSD for processing.
-	 * Note that multiple calls while the update process is running will be latched ( i.e. not queued) and result 
+	 * Note that multiple calls while the update process is running will be latched ( i.e. not queued) and result
 	 * another update when the previous one completes
 	 */
 	synchronized public void sendAlarmList(){
@@ -159,10 +164,10 @@ public class OpenNMSEventHandlerThread extends Thread {
 
 
 	/**
-	 * If called, this method will request that the ossDao Node Cache is updated from the OpenNMS database 
+	 * If called, this method will request that the ossDao Node Cache is updated from the OpenNMS database
 	 * and sent to the QoSD for processing.
-	 * Note that multiple calls while the update process is running will be latched ( i.e. not queued) and result 
-	 * in only one update when the previous one completes 
+	 * Note that multiple calls while the update process is running will be latched ( i.e. not queued) and result
+	 * in only one update when the previous one completes
 	 */
 	synchronized public void updateNodeCache(){
 		ThreadCategory log = getLog();	

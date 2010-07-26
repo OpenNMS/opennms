@@ -81,8 +81,12 @@ import org.opennms.netmgt.xml.event.Value;
 
 // This routine do the majority of the Syslogd's work
 // Improvements most likely are to be made.
+
+// This routine do the majority of the Syslogd's work
+// Improvements most likely are to be made.
 final class ConvertToEvent {
 
+    /** Constant <code>HIDDEN_MESSAGE="The message logged has been removed due"{trunked}</code> */
     protected static final String HIDDEN_MESSAGE = "The message logged has been removed due to configuration of Syslogd; it may contain sensitive data.";
 
     /**
@@ -159,9 +163,14 @@ final class ConvertToEvent {
 
         final ConvertToEvent e = new ConvertToEvent();
 
+        String deZeroedData = new String(data, 0, len, "US-ASCII");
+        if (deZeroedData.endsWith("\0")) {
+            deZeroedData = deZeroedData.substring(0, deZeroedData.length() - 1);
+        }
+        
         e.m_sender = addr;
         e.m_port = port;
-        e.m_eventXML = new String(data, 0, len, "US-ASCII");
+        e.m_eventXML = deZeroedData;
         e.m_ackEvents = new ArrayList<Event>(16);
         e.m_log = null;
 
@@ -195,7 +204,7 @@ final class ConvertToEvent {
         final Logmsg logmsg = new Logmsg();
         logmsg.setDest("logndisplay");
 
-        String message = new String(data, 0, len, "US-ASCII");
+        String message = deZeroedData;
 
         int lbIdx = message.indexOf('<');
         int rbIdx = message.indexOf('>');
@@ -356,10 +365,10 @@ final class ConvertToEvent {
                     }
                 	if (message.contains(uei.getMatch().getExpression())) {
                 	    if (discardUei.equals(uei.getUei())) {
-                	        if (traceEnabled) {
+                	        if (log.isDebugEnabled()) {
                 	            log.trace("Specified UEI '" + uei.getUei() + "' is same as discard-uei, discarding this message.");
-                	            throw new MessageDiscardedException();
                 	        }
+                	        throw new MessageDiscardedException();
                 	    }
                         //We can pass a new UEI on this
                 	    if (traceEnabled) {
@@ -381,7 +390,7 @@ final class ConvertToEvent {
                 		log.warn("Failed to compile regex pattern '"+uei.getMatch().getExpression()+"'", pse);
                 		msgMat = null;
                 	}
-                	if ((msgMat != null) && (msgMat.matches())) {
+                	if ((msgMat != null) && (msgMat.find())) {
                         if (discardUei.equals(uei.getUei())) {
                             if (log.isDebugEnabled()) {
                                 log.debug("Specified UEI '" + uei.getUei() + "' is same as discard-uei, discarding this message.");
@@ -453,7 +462,7 @@ final class ConvertToEvent {
                 		log.warn("Failed to compile regex pattern '"+hide.getMatch().getExpression()+"'", pse);
                 		msgMat = null;
                 	}
-                	if ((msgMat != null) && (msgMat.matches())) {
+                	if ((msgMat != null) && (msgMat.find())) {
                         // We should hide the message based on this match
                 		doHide = true;
                 	}
@@ -598,23 +607,28 @@ final class ConvertToEvent {
 
     /**
      * Get the acknowledged events
+     *
+     * @return a {@link java.util.List} object.
      */
     public List<Event> getAckedEvents() {
         return m_ackEvents;
     }
 
+    /**
+     * <p>getEvent</p>
+     *
+     * @return a {@link org.opennms.netmgt.xml.event.Event} object.
+     */
     public Event getEvent() {
         return m_event;
     }
 
     /**
+     * {@inheritDoc}
+     *
      * Returns true if the instance matches the object based upon the remote
      * agent's address &amp; port. If the passed instance is from the same
      * agent then it is considered equal.
-     *
-     * @param o instance of the class to compare.
-     * @return Returns true if the objects are logically equal, false
-     *         otherwise.
      */
     public boolean equals(final Object o) {
         if (o != null && o instanceof ConvertToEvent) {
@@ -635,6 +649,11 @@ final class ConvertToEvent {
         return (m_port ^ m_sender.hashCode());
     }
 
+    /**
+     * <p>toString</p>
+     *
+     * @return a {@link java.lang.String} object.
+     */
     public String toString() {
         return new ToStringBuilder(this)
             .append("Sender", m_sender)

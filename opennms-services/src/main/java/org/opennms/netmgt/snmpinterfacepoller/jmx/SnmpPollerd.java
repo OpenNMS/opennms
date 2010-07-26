@@ -36,17 +36,20 @@ package org.opennms.netmgt.snmpinterfacepoller.jmx;
 import org.opennms.netmgt.daemon.AbstractSpringContextJmxServiceDaemon;
 
 /**
- * 
- * @author <a href=mailto:antonio@opennms.org>Antonio Russo</a>
+ * <p>SnmpPollerd class.</p>
  *
+ * @author <a href=mailto:antonio@opennms.org>Antonio Russo</a>
+ * @version $Id: $
  */
 public class SnmpPollerd extends AbstractSpringContextJmxServiceDaemon<org.opennms.netmgt.snmpinterfacepoller.SnmpPoller> implements SnmpPollerdMBean {
 
+    /** {@inheritDoc} */
     @Override
     protected String getLoggingPrefix() {
         return "OpenNMS.SnmpPoller";
     }
 
+    /** {@inheritDoc} */
     @Override
     protected String getSpringContext() {
         return "snmpinterfacepollerdContext";

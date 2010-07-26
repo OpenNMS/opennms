@@ -38,6 +38,12 @@ import java.util.Set;
 
 import org.opennms.core.utils.ThreadCategory;
 
+/**
+ * <p>ThresholdGroup class.</p>
+ *
+ * @author ranger
+ * @version $Id: $
+ */
 public class ThresholdGroup {
 
 	private String m_name;
@@ -46,31 +52,66 @@ public class ThresholdGroup {
 	private ThresholdResourceType m_ifResourceType;
 	private Map<String,ThresholdResourceType> m_genericResourceTypeMap = new HashMap<String,ThresholdResourceType>();
 
+	/**
+	 * <p>getIfResourceType</p>
+	 *
+	 * @return a {@link org.opennms.netmgt.threshd.ThresholdResourceType} object.
+	 */
 	public ThresholdResourceType getIfResourceType() {
 		return m_ifResourceType;
 	}
 
+	/**
+	 * <p>setIfResourceType</p>
+	 *
+	 * @param ifResourceType a {@link org.opennms.netmgt.threshd.ThresholdResourceType} object.
+	 */
 	public void setIfResourceType(ThresholdResourceType ifResourceType) {
 		m_ifResourceType = ifResourceType;
 	}
 
+	/**
+	 * <p>setName</p>
+	 *
+	 * @param name a {@link java.lang.String} object.
+	 */
 	public void setName(String name) {
 		m_name = name;
 	}
 
+	/**
+	 * <p>Constructor for ThresholdGroup.</p>
+	 *
+	 * @param name a {@link java.lang.String} object.
+	 */
 	public ThresholdGroup(String name) {
 		m_name = name;
 	}
 
+	/**
+	 * <p>getName</p>
+	 *
+	 * @return a {@link java.lang.String} object.
+	 */
 	public String getName() {
 		return m_name;
 	}
 	
 	
+	/**
+	 * <p>setRrdRepository</p>
+	 *
+	 * @param rrdRepository a {@link java.io.File} object.
+	 */
 	public void setRrdRepository(File rrdRepository) {
 		m_rrdRepository = rrdRepository;
 	}
 
+	/**
+	 * <p>getRrdRepository</p>
+	 *
+	 * @return a {@link java.io.File} object.
+	 */
 	public File getRrdRepository() {
 		return m_rrdRepository;
 	}
@@ -79,11 +120,21 @@ public class ThresholdGroup {
 		return ThreadCategory.getInstance(getClass());
 	}
 
+	/**
+	 * <p>setNodeResourceType</p>
+	 *
+	 * @param nodeResourceType a {@link org.opennms.netmgt.threshd.ThresholdResourceType} object.
+	 */
 	public void setNodeResourceType(ThresholdResourceType nodeResourceType) {
 		m_nodeResourceType = nodeResourceType;
 		
 	}
 
+	/**
+	 * <p>getNodeResourceType</p>
+	 *
+	 * @return a {@link org.opennms.netmgt.threshd.ThresholdResourceType} object.
+	 */
 	public ThresholdResourceType getNodeResourceType() {
 		return m_nodeResourceType;
 	}
@@ -91,14 +142,29 @@ public class ThresholdGroup {
 	/*
 	 * There are many GenericResourceTypes, for this reason, this will be mapped using a Map indexed by GenericResourceType name.
 	 */
+	/**
+	 * <p>getGenericResourceTypeMap</p>
+	 *
+	 * @return a {@link java.util.Map} object.
+	 */
 	public Map<String,ThresholdResourceType> getGenericResourceTypeMap() {
 	    return m_genericResourceTypeMap;
 	}
 
+	/**
+	 * <p>setGenericResourceTypeMap</p>
+	 *
+	 * @param genericResourceTypeMap a {@link java.util.Map} object.
+	 */
 	public void setGenericResourceTypeMap(Map<String,ThresholdResourceType> genericResourceTypeMap) {
 	    m_genericResourceTypeMap = genericResourceTypeMap;
 	}
 	
+	/**
+	 * <p>toString</p>
+	 *
+	 * @return a {@link java.lang.String} object.
+	 */
 	public String toString() {
 	    StringBuilder buf = new StringBuilder();
 	    buf.append(getName() + "={node:{");
@@ -121,6 +187,9 @@ public class ThresholdGroup {
 	    return toString;
 	}
 	
+	/**
+	 * <p>delete</p>
+	 */
 	public void delete() {
 	    delete(getNodeResourceType());
 	    delete(getIfResourceType());

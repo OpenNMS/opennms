@@ -46,6 +46,12 @@ import java.net.InetAddress;
 
 import edu.bucknell.net.JDHCP.DHCPMessage;
 
+/**
+ * <p>Message class.</p>
+ *
+ * @author ranger
+ * @version $Id: $
+ */
 public final class Message implements Serializable {
     private static final long serialVersionUID = 1L;
 
@@ -59,15 +65,31 @@ public final class Message implements Serializable {
         m_target = null;
     }
 
+    /**
+     * <p>Constructor for Message.</p>
+     *
+     * @param target a {@link java.net.InetAddress} object.
+     * @param msg a {@link edu.bucknell.net.JDHCP.DHCPMessage} object.
+     */
     public Message(InetAddress target, DHCPMessage msg) {
         m_dhcpmsg = msg;
         m_target = target;
     }
 
+    /**
+     * <p>getAddress</p>
+     *
+     * @return a {@link java.net.InetAddress} object.
+     */
     public InetAddress getAddress() {
         return m_target;
     }
 
+    /**
+     * <p>getMessage</p>
+     *
+     * @return a {@link edu.bucknell.net.JDHCP.DHCPMessage} object.
+     */
     public DHCPMessage getMessage() {
         return m_dhcpmsg;
     }

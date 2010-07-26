@@ -1,5 +1,10 @@
+
 /**
- * 
+ * <p>LocationMonitorState class.</p>
+ *
+ * @author ranger
+ * @version $Id: $
+ * @since 1.8.1
  */
 package org.opennms.features.poller.remote.gwt.client;
 
@@ -14,7 +19,6 @@ import java.util.TreeSet;
 import org.opennms.features.poller.remote.gwt.client.utils.StringUtils;
 
 import com.google.gwt.user.client.rpc.IsSerializable;
-
 public class LocationMonitorState implements Serializable, IsSerializable {
 	private static final long serialVersionUID = 1L;
 	private Set<GWTLocationMonitor> m_monitorsStarted = new HashSet<GWTLocationMonitor>();
@@ -26,17 +30,36 @@ public class LocationMonitorState implements Serializable, IsSerializable {
 
 	private StatusDetails m_statusDetails;
 
+	/**
+	 * <p>Constructor for LocationMonitorState.</p>
+	 */
 	public LocationMonitorState() { }
 
+	/**
+	 * <p>Constructor for LocationMonitorState.</p>
+	 *
+	 * @param statuses a {@link java.util.Collection} object.
+	 */
 	public LocationMonitorState(Collection<GWTLocationSpecificStatus> statuses) {
 		initializeStatuses(statuses);
 	}
 
+	/**
+	 * <p>Constructor for LocationMonitorState.</p>
+	 *
+	 * @param monitors a {@link java.util.Collection} object.
+	 * @param statuses a {@link java.util.Collection} object.
+	 */
 	public LocationMonitorState(Collection<GWTLocationMonitor> monitors, Collection<GWTLocationSpecificStatus> statuses) {
 		initializeStatuses(statuses);
 		initializeMonitors(monitors);
 	}
 
+	/**
+	 * <p>getStatusDetails</p>
+	 *
+	 * @return a {@link org.opennms.features.poller.remote.gwt.client.StatusDetails} object.
+	 */
 	public StatusDetails getStatusDetails() {
 		if (m_statusDetails == null) {
 			m_statusDetails = getStatusDetailsUncached();
@@ -79,6 +102,11 @@ public class LocationMonitorState implements Serializable, IsSerializable {
 		}
 	}
 
+	/**
+	 * <p>allMonitorsStarted</p>
+	 *
+	 * @return a boolean.
+	 */
 	public boolean allMonitorsStarted() {
 		if (m_monitorsStarted.size() == 0) {
 			return false;
@@ -92,6 +120,11 @@ public class LocationMonitorState implements Serializable, IsSerializable {
 		return true;
 	}
 
+	/**
+	 * <p>atLeastOneMonitorStarted</p>
+	 *
+	 * @return a boolean.
+	 */
 	public boolean atLeastOneMonitorStarted() {
 		if (m_monitorsStarted.size() > 0) {
 			return true;
@@ -99,6 +132,11 @@ public class LocationMonitorState implements Serializable, IsSerializable {
 		return false;
 	}
 
+	/**
+	 * <p>allButOneMonitorsDisconnected</p>
+	 *
+	 * @return a boolean.
+	 */
 	public boolean allButOneMonitorsDisconnected() {
 		if (m_monitorsDisconnected.size() == 0) {
 			return false;
@@ -112,6 +150,11 @@ public class LocationMonitorState implements Serializable, IsSerializable {
 		return true;
 	}
 
+	/**
+	 * <p>allMonitorsDisconnected</p>
+	 *
+	 * @return a boolean.
+	 */
 	public boolean allMonitorsDisconnected() {
 		if (m_monitorsDisconnected.size() == 0) {
 			return false;
@@ -125,6 +168,11 @@ public class LocationMonitorState implements Serializable, IsSerializable {
 		return true;
 	}
 
+	/**
+	 * <p>noMonitorsStarted</p>
+	 *
+	 * @return a boolean.
+	 */
 	public boolean noMonitorsStarted() {
 		if (m_monitorsStarted.size() == 0) {
 			return true;
@@ -132,24 +180,38 @@ public class LocationMonitorState implements Serializable, IsSerializable {
 		return false;
 	}
 
+	/**
+	 * <p>getMonitorsStarted</p>
+	 *
+	 * @return a int.
+	 */
 	public int getMonitorsStarted() {
 		return m_monitorsStarted.size();
 	}
 
+	/**
+	 * <p>getMonitorsStopped</p>
+	 *
+	 * @return a int.
+	 */
 	public int getMonitorsStopped() {
 		return m_monitorsStopped.size();
 	}
 	
+	/**
+	 * <p>getMonitorsDisconnected</p>
+	 *
+	 * @return a int.
+	 */
 	public int getMonitorsDisconnected() {
 		return m_monitorsDisconnected.size();
 	}
 
-	private Collection<String> getServiceNames() {
-		final List<String> serviceNames = Collections.list(Collections.enumeration(m_serviceNames));
-		Collections.sort(serviceNames);
-		return serviceNames;
-	}
-
+	/**
+	 * <p>getServices</p>
+	 *
+	 * @return a {@link java.util.Collection} object.
+	 */
 	public Collection<GWTMonitoredService> getServices() {
 	    final Set<GWTMonitoredService> services = new TreeSet<GWTMonitoredService>();
 	    for (final GWTLocationSpecificStatus status : m_locationStatuses) {
@@ -158,6 +220,11 @@ public class LocationMonitorState implements Serializable, IsSerializable {
 	    return services;
 	}
 
+	/**
+	 * <p>getServicesDown</p>
+	 *
+	 * @return a {@link java.util.Collection} object.
+	 */
 	public Collection<String> getServicesDown() {
 		final Set<String> servicesDown = new HashSet<String>();
 		for (final GWTLocationSpecificStatus status : m_locationStatuses) {
@@ -170,6 +237,11 @@ public class LocationMonitorState implements Serializable, IsSerializable {
 		return servicesDown;
 	}
 
+	/**
+	 * <p>getMonitorsWithServicesDown</p>
+	 *
+	 * @return a {@link java.util.Collection} object.
+	 */
 	public Collection<GWTLocationMonitor> getMonitorsWithServicesDown() {
 		final Set<GWTLocationMonitor> monitors = new HashSet<GWTLocationMonitor>();
 		for (final GWTLocationSpecificStatus status : m_locationStatuses) {
@@ -181,16 +253,34 @@ public class LocationMonitorState implements Serializable, IsSerializable {
 		return monitors;
 	}
 
+	public boolean noMonitorsExist() {
+	    return (
+	        m_monitorsStopped.size() == 0 &&
+	        m_monitorsDisconnected.size() == 0 &&
+	        m_monitorsStarted.size() == 0
+	    );
+	}
+
 	private StatusDetails getStatusDetailsUncached() {
-		// blue/unknown: If no monitors are started for a location
-		if (noMonitorsStarted()) {
-			return StatusDetails.unknown("No monitors are started for this location.");
+        // white/uninitialized: If no monitors exist for a location
+	    if (noMonitorsExist()) {
+	        return StatusDetails.unknown("No monitors exist for this location.");
+	    }
+	    
+	    // white/uninitialized: if no monitors have reported in
+		if (m_locationStatuses == null || m_locationStatuses.size() == 0) {
+			return StatusDetails.unknown("No monitors have reported in for this location.");
 		}
 
-		// blue/unknown: If no monitors have reported for a location
-		if (m_locationStatuses == null || m_locationStatuses.size() == 0) {
-			return StatusDetails.unknown("No monitors have reported for this location.");
+		// orange/disconnected: all monitors are disconnected
+		if (allMonitorsDisconnected()) {
+		    return StatusDetails.disconnected("All monitors have disconnected.");
 		}
+
+        // grey/stopped: If no monitors are started for a location
+		if (noMonitorsStarted()) {
+            return StatusDetails.stopped("No monitors are started for this location.");
+        }
 
 		// yellow/marginal: If all but 1 non-stopped monitors are disconnected
 		if (allButOneMonitorsDisconnected()) {
@@ -243,6 +333,11 @@ public class LocationMonitorState implements Serializable, IsSerializable {
 		return StatusDetails.up();
 	}
 
+	/**
+	 * <p>toString</p>
+	 *
+	 * @return a {@link java.lang.String} object.
+	 */
 	public String toString() {
 		return "LocationMonitorState[started=" + m_monitorsStarted + ",stopped=" + m_monitorsStopped + ",disconnected=" + m_monitorsDisconnected + ",statuses="+m_locationStatuses+",services="+m_serviceNames+"]";
 	}

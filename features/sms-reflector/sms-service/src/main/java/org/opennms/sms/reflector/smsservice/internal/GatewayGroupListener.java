@@ -18,6 +18,12 @@ import org.smslib.Service.ServiceStatus;
 import org.springframework.beans.factory.InitializingBean;
 import org.springframework.util.Assert;
 
+/**
+ * <p>GatewayGroupListener class.</p>
+ *
+ * @author ranger
+ * @version $Id: $
+ */
 public class GatewayGroupListener implements InitializingBean {
 
     private static Logger log = LoggerFactory.getLogger(GatewayGroupListener.class); 
@@ -29,6 +35,12 @@ public class GatewayGroupListener implements InitializingBean {
     private List<IGatewayStatusNotification> m_gatewayStatusListeners;
     private List<IUSSDNotification> m_ussdListeners;
 
+    /**
+     * <p>onGatewayGroupRegistered</p>
+     *
+     * @param gatewayGroup a {@link org.opennms.sms.reflector.smsservice.GatewayGroup} object.
+     * @param properties a {@link java.util.Map} object.
+     */
     public void onGatewayGroupRegistered(GatewayGroup gatewayGroup, Map<String, Object> properties){
         AGateway[] gateways = gatewayGroup.getGateways();
 
@@ -65,6 +77,12 @@ public class GatewayGroupListener implements InitializingBean {
 
     }
 
+    /**
+     * <p>onGatewayGroupUnRegistered</p>
+     *
+     * @param gatewayGroup a {@link org.opennms.sms.reflector.smsservice.GatewayGroup} object.
+     * @param properties a {@link java.util.Map} object.
+     */
     public void onGatewayGroupUnRegistered(GatewayGroup gatewayGroup, Map<?,?> properties){
 
         SmsServiceImpl service = m_services.get(gatewayGroup);
@@ -87,47 +105,102 @@ public class GatewayGroupListener implements InitializingBean {
         return false;
     }
 
+    /**
+     * <p>setOutboundListeners</p>
+     *
+     * @param outboundListeners a {@link java.util.List} object.
+     */
     public void setOutboundListeners(List<IOutboundMessageNotification> outboundListeners) {
         m_outboundListeners = outboundListeners;
     }
 
+    /**
+     * <p>getOutboundListeners</p>
+     *
+     * @return a {@link java.util.List} object.
+     */
     public List<IOutboundMessageNotification> getOutboundListeners() {
         return m_outboundListeners;
     }
 
+    /**
+     * <p>setInboundListeners</p>
+     *
+     * @param inboundListeners a {@link java.util.List} object.
+     */
     public void setInboundListeners(List<OnmsInboundMessageNotification> inboundListeners) {
         m_inboundListeners = inboundListeners;
     }
 
+    /**
+     * <p>getInboundListeners</p>
+     *
+     * @return a {@link java.util.List} object.
+     */
     public List<OnmsInboundMessageNotification> getInboundListeners() {
         return m_inboundListeners;
     }
 
+    /**
+     * <p>setGatewayStatusListeners</p>
+     *
+     * @param gatewayStatusListeners a {@link java.util.List} object.
+     */
     public void setGatewayStatusListeners(List<IGatewayStatusNotification> gatewayStatusListeners) {
         m_gatewayStatusListeners = gatewayStatusListeners;
     }
 
+    /**
+     * <p>getGatewayStatusListeners</p>
+     *
+     * @return a {@link java.util.List} object.
+     */
     public List<IGatewayStatusNotification> getGatewayStatusListeners() {
         return m_gatewayStatusListeners;
     }
 
+    /**
+     * <p>afterPropertiesSet</p>
+     *
+     * @throws java.lang.Exception if any.
+     */
     public void afterPropertiesSet() throws Exception {
         Assert.notNull(m_smsServiceRegistrar, "the smsServiceRegistrar must not be null");
 
     }
 
+    /**
+     * <p>setSmsServiceRegistrar</p>
+     *
+     * @param smsServiceRegistrar a {@link org.opennms.sms.reflector.smsservice.internal.SmsServiceRegistrar} object.
+     */
     public void setSmsServiceRegistrar(SmsServiceRegistrar smsServiceRegistrar) {
         m_smsServiceRegistrar = smsServiceRegistrar;
     }
 
+    /**
+     * <p>getSmsServiceRegistrar</p>
+     *
+     * @return a {@link org.opennms.sms.reflector.smsservice.internal.SmsServiceRegistrar} object.
+     */
     public SmsServiceRegistrar getSmsServiceRegistrar() {
         return m_smsServiceRegistrar;
     }
     
+    /**
+     * <p>setUssdListeners</p>
+     *
+     * @param listeners a {@link java.util.List} object.
+     */
     public void setUssdListeners(List<IUSSDNotification> listeners) {
         m_ussdListeners = listeners;
     }
     
+    /**
+     * <p>getUssdListeners</p>
+     *
+     * @return a {@link java.util.List} object.
+     */
     public List<IUSSDNotification> getUssdListeners() {
         return m_ussdListeners;
     }

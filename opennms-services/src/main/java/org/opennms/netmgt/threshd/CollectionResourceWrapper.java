@@ -14,6 +14,12 @@ import org.opennms.netmgt.dao.support.ResourceTypeUtils;
 import org.opennms.netmgt.model.RrdRepository;
 import org.opennms.netmgt.poller.LatencyCollectionResource;
 
+/**
+ * <p>CollectionResourceWrapper class.</p>
+ *
+ * @author ranger
+ * @version $Id: $
+ */
 public class CollectionResourceWrapper {
     
     private int m_nodeId;
@@ -48,6 +54,17 @@ public class CollectionResourceWrapper {
      */
     private long m_interval;
         
+    /**
+     * <p>Constructor for CollectionResourceWrapper.</p>
+     *
+     * @param interval a long.
+     * @param nodeId a int.
+     * @param hostAddress a {@link java.lang.String} object.
+     * @param serviceName a {@link java.lang.String} object.
+     * @param repository a {@link org.opennms.netmgt.model.RrdRepository} object.
+     * @param resource a {@link org.opennms.netmgt.collectd.CollectionResource} object.
+     * @param attributes a {@link java.util.Map} object.
+     */
     public CollectionResourceWrapper(long interval, int nodeId, String hostAddress, String serviceName, RrdRepository repository, CollectionResource resource, Map<String, CollectionAttribute> attributes) {
         m_interval = interval;
         m_nodeId = nodeId;
@@ -87,54 +104,120 @@ public class CollectionResourceWrapper {
         }
     }    
     
+    /**
+     * <p>getNodeId</p>
+     *
+     * @return a int.
+     */
     public int getNodeId() {
         return m_nodeId;
     }
 
+    /**
+     * <p>getHostAddress</p>
+     *
+     * @return a {@link java.lang.String} object.
+     */
     public String getHostAddress() {
         return m_hostAddress;
     }
 
+    /**
+     * <p>getServiceName</p>
+     *
+     * @return a {@link java.lang.String} object.
+     */
     public String getServiceName() {
         return m_serviceName;
     }
 
+    /**
+     * <p>getRepository</p>
+     *
+     * @return a {@link org.opennms.netmgt.model.RrdRepository} object.
+     */
     public RrdRepository getRepository() {
         return m_repository;
     }
 
+    /**
+     * <p>getLabel</p>
+     *
+     * @return a {@link java.lang.String} object.
+     */
     public String getLabel() {
         return m_label;
     }
 
+    /**
+     * <p>setLabel</p>
+     *
+     * @param label a {@link java.lang.String} object.
+     */
     public void setLabel(String label) {
         m_label = label;
     }
 
+    /**
+     * <p>getInstance</p>
+     *
+     * @return a {@link java.lang.String} object.
+     */
     public String getInstance() {
         return m_resource != null ? m_resource.getInstance() : null;
     }
     
+    /**
+     * <p>getResourceTypeName</p>
+     *
+     * @return a {@link java.lang.String} object.
+     */
     public String getResourceTypeName() {
         return m_resource != null ? m_resource.getResourceTypeName() : null;
     }
     
+    /**
+     * <p>getIfLabel</p>
+     *
+     * @return a {@link java.lang.String} object.
+     */
     public String getIfLabel() {
         return m_iflabel;
     }
     
+    /**
+     * <p>getIfIndex</p>
+     *
+     * @return a {@link java.lang.String} object.
+     */
     public String getIfIndex() {
         return m_ifindex;
     }
     
+    /**
+     * <p>getIfInfoValue</p>
+     *
+     * @param attribute a {@link java.lang.String} object.
+     * @return a {@link java.lang.String} object.
+     */
     protected String getIfInfoValue(String attribute) {
         return m_ifInfo.get(attribute);
     }
     
+    /**
+     * <p>isAnInterfaceResource</p>
+     *
+     * @return a boolean.
+     */
     public boolean isAnInterfaceResource() {
         return getResourceTypeName() != null && getResourceTypeName().equals("if");
     }
 
+    /**
+     * <p>isValidInterfaceResource</p>
+     *
+     * @return a boolean.
+     */
     public boolean isValidInterfaceResource() {
         if (m_ifInfo == null) {
             return false;
@@ -153,6 +236,12 @@ public class CollectionResourceWrapper {
     /*
      * FIXME What happen with numeric fields from strings.properties ?
      */ 
+    /**
+     * <p>getAttributeValue</p>
+     *
+     * @param ds a {@link java.lang.String} object.
+     * @return a {@link java.lang.Double} object.
+     */
     public Double getAttributeValue(String ds) {
         if (m_attributes == null || m_attributes.get(ds) == null) {
             log().warn("getAttributeValue: can't find attribute called " + ds + " on " + m_resource);
@@ -208,6 +297,12 @@ public class CollectionResourceWrapper {
         return m_localCache.get(id) / m_interval;
     }
 
+    /**
+     * <p>getLabelValue</p>
+     *
+     * @param ds a {@link java.lang.String} object.
+     * @return a {@link java.lang.String} object.
+     */
     public String getLabelValue(String ds) {
         if (ds == null)
             return null;
@@ -234,6 +329,7 @@ public class CollectionResourceWrapper {
         return value;
     }
     
+    /** {@inheritDoc} */
     @Override
     public String toString() {
         return m_resource.toString();

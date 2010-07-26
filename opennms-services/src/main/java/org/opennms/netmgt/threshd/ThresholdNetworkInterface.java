@@ -38,7 +38,15 @@ import org.opennms.netmgt.poller.NetworkInterface;
  * Extension to the NetworkInterface class that includes the node ID.
  * This helps to minimize a database query to get information that is
  * already available in Threshd.
+ *
+ * @author ranger
+ * @version $Id: $
  */
 public interface ThresholdNetworkInterface extends NetworkInterface {
+    /**
+     * <p>getNodeId</p>
+     *
+     * @return a int.
+     */
     public int getNodeId();
 }

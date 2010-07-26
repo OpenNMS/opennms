@@ -39,10 +39,17 @@ import java.util.Map;
 import org.opennms.core.utils.ParameterMap;
 import org.opennms.core.utils.ThreadCategory;
 
+/**
+ * <p>Win32ServicePlugin class.</p>
+ *
+ * @author ranger
+ * @version $Id: $
+ */
 public class Win32ServicePlugin extends SnmpPlugin {
 	private static final String SV_SVC_OPERATING_STATE_OID = ".1.3.6.1.4.1.77.1.2.3.1.3";
 	private static final String DEFAULT_SERVICE_NAME = "Server";
 	
+	/** {@inheritDoc} */
 	public boolean isProtocolSupported(InetAddress address, Map<String, Object> qualifiers) {
 		String serviceName = ParameterMap.getKeyedString(qualifiers, "service-name", DEFAULT_SERVICE_NAME);
 		int snLength = serviceName.length();
@@ -62,6 +69,11 @@ public class Win32ServicePlugin extends SnmpPlugin {
 		return super.isProtocolSupported(address, qualifiers);
 	}
 	
+	/**
+	 * <p>log</p>
+	 *
+	 * @return a {@link org.opennms.core.utils.ThreadCategory} object.
+	 */
 	public static ThreadCategory log() {
 		return ThreadCategory.getInstance(Win32ServicePlugin.class);
 	}

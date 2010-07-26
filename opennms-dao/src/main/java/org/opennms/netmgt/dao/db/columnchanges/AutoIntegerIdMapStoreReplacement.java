@@ -1,5 +1,9 @@
+
 /**
- * 
+ * <p>AutoIntegerIdMapStoreReplacement class.</p>
+ *
+ * @author ranger
+ * @version $Id: $
  */
 package org.opennms.netmgt.dao.db.columnchanges;
 
@@ -12,18 +16,24 @@ import org.opennms.netmgt.dao.db.ColumnChange;
 import org.opennms.netmgt.dao.db.ColumnChangeReplacement;
 import org.springframework.util.Assert;
 import org.springframework.util.StringUtils;
-
 public class AutoIntegerIdMapStoreReplacement implements ColumnChangeReplacement {
     private int m_value;
     private final String[] m_indexColumns;
     private final Map<MultiColumnKey, Integer> m_idMap =
         new HashMap<MultiColumnKey, Integer>();
     
+    /**
+     * <p>Constructor for AutoIntegerIdMapStoreReplacement.</p>
+     *
+     * @param initialValue a int.
+     * @param indexColumns an array of {@link java.lang.String} objects.
+     */
     public AutoIntegerIdMapStoreReplacement(int initialValue, String[] indexColumns) {
         m_value = initialValue;
         m_indexColumns = indexColumns;
     }
     
+    /** {@inheritDoc} */
     public Integer getColumnReplacement(ResultSet rs, Map<String, ColumnChange> columnChanges) throws SQLException {
         MultiColumnKey key = getKeyForColumns(rs, columnChanges, m_indexColumns);
         Integer newInteger = m_value++;
@@ -31,10 +41,25 @@ public class AutoIntegerIdMapStoreReplacement implements ColumnChangeReplacement
         return newInteger;
     }
     
+    /**
+     * <p>addColumnIfColumnIsNew</p>
+     *
+     * @return a boolean.
+     */
     public boolean addColumnIfColumnIsNew() {
         return true;
     }
     
+    /**
+     * <p>getIntegerForColumns</p>
+     *
+     * @param rs a {@link java.sql.ResultSet} object.
+     * @param columnChanges a {@link java.util.Map} object.
+     * @param columns an array of {@link java.lang.String} objects.
+     * @param noMatchOkay a boolean.
+     * @return a {@link java.lang.Integer} object.
+     * @throws java.sql.SQLException if any.
+     */
     public Integer getIntegerForColumns(ResultSet rs, Map<String, ColumnChange> columnChanges, String[] columns, boolean noMatchOkay) throws SQLException {
         MultiColumnKey key = getKeyForColumns(rs, columnChanges, columns);
 
@@ -112,6 +137,9 @@ public class AutoIntegerIdMapStoreReplacement implements ColumnChangeReplacement
         }
     }
     
+    /**
+     * <p>close</p>
+     */
     public void close() {
     }
 }

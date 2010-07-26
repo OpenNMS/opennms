@@ -1,0 +1,6 @@
+{d "%w- %d %m-, %Y - %T"} - A "apSysMgmtMediaPortsClearTrap" event has occurred, from {t} device, named {m}.
+
+" The trap will be generated if the port allocation failure
+	        rate drops below the system's default acceptable threshold."
+
+(event [{e}])

@@ -40,16 +40,27 @@
 
 package org.opennms.netmgt.model;
 
+import java.util.LinkedHashSet;
+import java.util.Set;
+
+import javax.persistence.CascadeType;
 import javax.persistence.Column;
 import javax.persistence.Entity;
 import javax.persistence.GeneratedValue;
 import javax.persistence.Id;
+import javax.persistence.ManyToMany;
 import javax.persistence.SequenceGenerator;
 import javax.persistence.Table;
 
 import org.springframework.core.style.ToStringCreator;
 
 @Entity
+/**
+ * <p>OnmsApplication class.</p>
+ *
+ * @author ranger
+ * @version $Id: $
+ */
 @Table(name = "applications")
 public class OnmsApplication implements Comparable<OnmsApplication> {
 
@@ -57,8 +68,13 @@ public class OnmsApplication implements Comparable<OnmsApplication> {
 
     private String m_name;
 
-    //private Set<OnmsMonitoredService> m_memberServices;
-    
+    private Set<OnmsMonitoredService> m_monitoredServices = new LinkedHashSet<OnmsMonitoredService>();
+
+    /**
+     * <p>getId</p>
+     *
+     * @return a {@link java.lang.Integer} object.
+     */
     @Id
     @SequenceGenerator(name = "opennmsSequence", sequenceName = "opennmsNxtId")
     @GeneratedValue(generator = "opennmsSequence")
@@ -66,39 +82,79 @@ public class OnmsApplication implements Comparable<OnmsApplication> {
         return m_id;
     }
 
+    /**
+     * <p>setId</p>
+     *
+     * @param id a {@link java.lang.Integer} object.
+     */
     public void setId(Integer id) {
         m_id = id;
     }
 
+    /**
+     * <p>getName</p>
+     *
+     * @return a {@link java.lang.String} object.
+     */
     @Column(name = "name", length=32, nullable=false, unique=true)
     public String getName() {
         return m_name;
     }
 
+    /**
+     * <p>setName</p>
+     *
+     * @param name a {@link java.lang.String} object.
+     */
     public void setName(String name) {
         m_name = name;
     }
 
-    /*
-    @ManyToMany
-    @JoinTable(
-    		name="application_service_map",
-    		joinColumns={@JoinColumn(name="appId")},
-    		inverseJoinColumns={@JoinColumn(name="ifserviceId")}
+    /**
+     * <p>getMonitoredServices</p>
+     *
+     * @return a {@link java.util.Set} object.
+     * @since 1.8.1
+     */
+    @ManyToMany(
+                mappedBy="applications",
+                cascade={CascadeType.PERSIST, CascadeType.MERGE}
     )
-    public Set<OnmsMonitoredService> getMemberServices() {
-        return m_memberServices;
+    public Set<OnmsMonitoredService> getMonitoredServices() {
+        return m_monitoredServices;
     }
 
-    public void setMemberServices(Set<OnmsMonitoredService> memberServices) {
-        m_memberServices = memberServices;
+    /**
+     * <p>setMonitoredServices</p>
+     *
+     * @param services a {@link java.util.Set} object.
+     * @since 1.8.1
+     */
+    public void setMonitoredServices(Set<OnmsMonitoredService> services) {
+        m_monitoredServices = services;
     }
-    */
 
+    /**
+     * <p>addMonitoredService</p>
+     *
+     * @param service a {@link org.opennms.netmgt.model.OnmsMonitoredService} object.
+     * @since 1.8.1
+     */
+    public void addMonitoredService(OnmsMonitoredService service) {
+        getMonitoredServices().add(service);
+    }
+
+    /**
+     * <p>compareTo</p>
+     *
+     * @param o a {@link org.opennms.netmgt.model.OnmsApplication} object.
+     * @return a int.
+     */
     public int compareTo(OnmsApplication o) {
         return getName().compareToIgnoreCase(o.getName());
     }
     
+    /** {@inheritDoc} */
     @Override
     public String toString() {
         ToStringCreator creator = new ToStringCreator(this);
@@ -106,5 +162,23 @@ public class OnmsApplication implements Comparable<OnmsApplication> {
         creator.append("name", getName());
         return creator.toString();
     }
+
+    /** {@inheritDoc} */
+    @Override
+    public boolean equals(Object obj) {
+        if (obj instanceof OnmsApplication) {
+            OnmsApplication app = (OnmsApplication)obj;
+            return getName().equals(app.getName());
+        }
+        return false;
+    }
+
+    /** {@inheritDoc} */
+    @Override
+    public int hashCode() {
+        return getName().hashCode();
+    }
+    
+
 
 }

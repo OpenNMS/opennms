@@ -51,6 +51,7 @@ class NodeStatusView extends PageableTableView {
 		super(dashlet, 5, new String[] { "Node", "Current Outages", "24 Hour Availability" });
 	}
     
+    /** {@inheritDoc} */
     protected void setRow(FlexTable table, int row, int elementIndex) {
         NodeRtc rtc = m_rtcs[elementIndex];
         
@@ -69,10 +70,16 @@ class NodeStatusView extends PageableTableView {
         table.getRowFormatter().setStyleName(row, "CellStatus");
     }
     
+    /**
+     * <p>getElementCount</p>
+     *
+     * @return a int.
+     */
     public int getElementCount() {
         return (m_rtcs == null ? 0 : m_rtcs.length);
     }
 
+	/** {@inheritDoc} */
 	protected void formatCells(FlexTable table, int row) {
         // Don't call the super implementation... it will erase our NodeRtc-specific styling on columns 1 and 2
 
@@ -83,6 +90,11 @@ class NodeStatusView extends PageableTableView {
         table.getCellFormatter().addStyleName(row, 2, "divider");
 	}
 
+    /**
+     * <p>setNodeRtc</p>
+     *
+     * @param rtcs an array of {@link org.opennms.dashboard.client.NodeRtc} objects.
+     */
     public void setNodeRtc(NodeRtc[] rtcs) {
         m_rtcs = rtcs;
         refresh();

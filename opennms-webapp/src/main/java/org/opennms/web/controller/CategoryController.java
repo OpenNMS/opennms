@@ -48,10 +48,18 @@ import org.springframework.web.servlet.ModelAndView;
 import org.springframework.web.servlet.mvc.AbstractController;
 import org.springframework.web.servlet.view.RedirectView;
 
+/**
+ * <p>CategoryController class.</p>
+ *
+ * @author ranger
+ * @version $Id: $
+ * @since 1.8.1
+ */
 public class CategoryController extends AbstractController {
 
     private AdminCategoryService m_adminCategoryService;
 
+    /** {@inheritDoc} */
     @Override
     protected ModelAndView handleRequestInternal(HttpServletRequest request, HttpServletResponse response) throws Exception {
         String removeCategoryIdString = request.getParameter("removeCategoryId");
@@ -67,7 +75,10 @@ public class CategoryController extends AbstractController {
         }
         
         if (newCategoryName != null) {
-            m_adminCategoryService.addNewCategory(newCategoryName);
+            OnmsCategory cat = m_adminCategoryService.getCategoryWithName(newCategoryName);
+            if (cat == null) {
+                m_adminCategoryService.addNewCategory(newCategoryName);
+            }
             
             /*
              * We could be smart and take the user straight to the edit page
@@ -146,10 +157,20 @@ public class CategoryController extends AbstractController {
                                 sortedCategories);
     }
 
+    /**
+     * <p>getAdminCategoryService</p>
+     *
+     * @return a {@link org.opennms.web.svclayer.AdminCategoryService} object.
+     */
     public AdminCategoryService getAdminCategoryService() {
         return m_adminCategoryService;
     }
 
+    /**
+     * <p>setAdminCategoryService</p>
+     *
+     * @param adminCategoryService a {@link org.opennms.web.svclayer.AdminCategoryService} object.
+     */
     public void setAdminCategoryService(
             AdminCategoryService adminCategoryService) {
         m_adminCategoryService = adminCategoryService;

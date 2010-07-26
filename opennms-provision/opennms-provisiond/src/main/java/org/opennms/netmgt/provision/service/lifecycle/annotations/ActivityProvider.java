@@ -42,6 +42,7 @@ import org.springframework.stereotype.Component;
  * ActivityProvider
  *
  * @author brozow
+ * @version $Id: $
  */
 @Retention(RetentionPolicy.RUNTIME)
 @Target(ElementType.TYPE)

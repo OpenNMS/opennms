@@ -40,26 +40,48 @@ import org.opennms.netmgt.config.common.SendmailConfig;
 import org.opennms.netmgt.dao.JavaMailConfigurationDao;
 import org.springframework.dao.DataAccessResourceFailureException;
 
+/**
+ * <p>DefaultJavamailConfigurationDao class.</p>
+ *
+ * @author ranger
+ * @version $Id: $
+ */
 public class DefaultJavamailConfigurationDao extends AbstractCastorConfigDao<JavamailConfiguration, JavamailConfiguration> implements JavaMailConfigurationDao {
 
+    /**
+     * <p>Constructor for DefaultJavamailConfigurationDao.</p>
+     */
     public DefaultJavamailConfigurationDao() {
         super(JavamailConfiguration.class, "Javamail configuration");
     }
     
+    /**
+     * <p>Constructor for DefaultJavamailConfigurationDao.</p>
+     *
+     * @param entityClass a {@link java.lang.Class} object.
+     * @param description a {@link java.lang.String} object.
+     */
     public DefaultJavamailConfigurationDao(Class<JavamailConfiguration> entityClass, String description) {
         super(entityClass, description);
     }
 
+    /** {@inheritDoc} */
     @Override
     public JavamailConfiguration translateConfig(JavamailConfiguration castorConfig) {
         return castorConfig;
     }
     
+    /**
+     * <p>getDefaultReadmailConfig</p>
+     *
+     * @return a {@link org.opennms.netmgt.config.common.ReadmailConfig} object.
+     */
     public ReadmailConfig getDefaultReadmailConfig() {
         String name = getContainer().getObject().getDefaultReadConfigName();
         return getReadMailConfig(name);
     }
     
+    /** {@inheritDoc} */
     public ReadmailConfig getReadMailConfig(String name) {
         ReadmailConfig config = null;
         List<ReadmailConfig> configs = getReadmailConfigs();
@@ -72,15 +94,26 @@ public class DefaultJavamailConfigurationDao extends AbstractCastorConfigDao<Jav
         return config;
     }
 
+    /**
+     * <p>getReadmailConfigs</p>
+     *
+     * @return a {@link java.util.List} object.
+     */
     public List<ReadmailConfig> getReadmailConfigs() {
         return getContainer().getObject().getReadmailConfigCollection();
     }
 
+    /**
+     * <p>getDefaultSendmailConfig</p>
+     *
+     * @return a {@link org.opennms.netmgt.config.common.SendmailConfig} object.
+     */
     public SendmailConfig getDefaultSendmailConfig() {
         String name = getContainer().getObject().getDefaultSendConfigName();
         return getSendMailConfig(name);
     }
 
+    /** {@inheritDoc} */
     public SendmailConfig getSendMailConfig(String name) {
         SendmailConfig config = null;
         List<SendmailConfig> configs = getSendmailConfigs();
@@ -93,10 +126,16 @@ public class DefaultJavamailConfigurationDao extends AbstractCastorConfigDao<Jav
         return config;
     }
 
+    /**
+     * <p>getSendmailConfigs</p>
+     *
+     * @return a {@link java.util.List} object.
+     */
     public List<SendmailConfig> getSendmailConfigs() {
         return getContainer().getObject().getSendmailConfigCollection();
     }
 
+    /** {@inheritDoc} */
     public End2endMailConfig getEnd2EndConfig(String name) {
         End2endMailConfig config = null;
         List<End2endMailConfig> configs = getEnd2EndConfigs();
@@ -109,16 +148,31 @@ public class DefaultJavamailConfigurationDao extends AbstractCastorConfigDao<Jav
         return config;
     }
     
+    /**
+     * <p>getEnd2EndConfigs</p>
+     *
+     * @return a {@link java.util.List} object.
+     */
     public List<End2endMailConfig> getEnd2EndConfigs() {
         return getContainer().getObject().getEnd2endMailConfigCollection();
     }
     
+    /**
+     * <p>verifyMarshaledConfiguration</p>
+     *
+     * @throws java.lang.IllegalStateException if any.
+     */
     public void verifyMarshaledConfiguration() throws IllegalStateException {
         // TODO verify that the default config names match as specified in javamail configuration element
         // TODO verify that the config names match as specified in all the end2end configuration elements
         
     }
 
+    /**
+     * <p>reloadConfiguration</p>
+     *
+     * @throws org.springframework.dao.DataAccessResourceFailureException if any.
+     */
     public void reloadConfiguration() throws DataAccessResourceFailureException {
         getContainer().reload();
         this.verifyMarshaledConfiguration();

@@ -40,27 +40,47 @@ import java.sql.SQLException;
 import javax.sql.DataSource;
 
 /**
- * 
+ * <p>DataSourceDbConnectionFactory class.</p>
+ *
  * @author <a href="mailto:dj@opennms.org">DJ Gregor</a>
+ * @version $Id: $
  */
 public class DataSourceDbConnectionFactory implements DbConnectionFactory {
     private DataSource m_dataSource;
 
+    /**
+     * <p>Constructor for DataSourceDbConnectionFactory.</p>
+     *
+     * @param dataSource a {@link javax.sql.DataSource} object.
+     */
     public DataSourceDbConnectionFactory(DataSource dataSource) {
         m_dataSource = dataSource;
     }
     
+    /**
+     * <p>destroy</p>
+     *
+     * @throws java.sql.SQLException if any.
+     */
     public void destroy() throws SQLException {
     }
 
+    /**
+     * <p>getConnection</p>
+     *
+     * @return a {@link java.sql.Connection} object.
+     * @throws java.sql.SQLException if any.
+     */
     public Connection getConnection() throws SQLException {
         return m_dataSource.getConnection();
     }
 
+    /** {@inheritDoc} */
     public void init(String dbUrl, String dbDriver, String username, String password) throws ClassNotFoundException, SQLException {
         throw new UnsupportedOperationException("not implemented");
     }
 
+    /** {@inheritDoc} */
     public void releaseConnection(Connection connection) throws SQLException {
         connection.close();
     }

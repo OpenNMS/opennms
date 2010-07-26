@@ -36,12 +36,16 @@ package org.opennms.acl.model;
 
 /**
  * Bean class to manage the basic information like username, id and enabled of managed user in web layer and in resource layer
- * 
+ *
  * @author Massimiliano Dess&igrave; (desmax74@yahoo.it)
  * @since jdk 1.5.0
+ * @version $Id: $
  */
 public class UserDTOLight implements UserView {
 
+    /**
+     * <p>Constructor for UserDTOLight.</p>
+     */
     public UserDTOLight() {
         this.id = new Long(0);
         this.username = "";
@@ -49,6 +53,8 @@ public class UserDTOLight implements UserView {
     }
 
     /**
+     * <p>isNew</p>
+     *
      * @return if a user is new and if it's never store in the system
      */
     public boolean isNew() {
@@ -56,6 +62,8 @@ public class UserDTOLight implements UserView {
     }
 
     /**
+     * <p>Getter for the field <code>username</code>.</p>
+     *
      * @return unique username
      */
     public String getUsername() {
@@ -63,13 +71,17 @@ public class UserDTOLight implements UserView {
     }
 
     /**
-     * @param username
+     * <p>Setter for the field <code>username</code>.</p>
+     *
+     * @param username a {@link java.lang.String} object.
      */
     public void setUsername(String username) {
         this.username = username;
     }
 
     /**
+     * <p>Getter for the field <code>id</code>.</p>
+     *
      * @return unique identifier
      */
     public Long getId() {
@@ -77,13 +89,17 @@ public class UserDTOLight implements UserView {
     }
 
     /**
-     * @param id
+     * <p>Setter for the field <code>id</code>.</p>
+     *
+     * @param id a {@link java.lang.Long} object.
      */
     public void setId(Long id) {
         this.id = id;
     }
 
     /**
+     * <p>isEnabled</p>
+     *
      * @return if the user is enabled or not
      */
     public Boolean isEnabled() {
@@ -91,7 +107,9 @@ public class UserDTOLight implements UserView {
     }
 
     /**
-     * @param enabled
+     * <p>Setter for the field <code>enabled</code>.</p>
+     *
+     * @param enabled a boolean.
      */
     public void setEnabled(boolean enabled) {
         this.enabled = enabled;

@@ -35,16 +35,30 @@
 package org.opennms.acl.exception;
 
 /**
+ * <p>UserNotfoundException class.</p>
+ *
  * @author Massimiliano Dess&igrave; (desmax74@yahoo.it)
  * @since jdk 1.5.0
+ * @version $Id: $
  */
 @SuppressWarnings("serial")
 public class UserNotfoundException extends RuntimeException {
 
+    /**
+     * <p>Constructor for UserNotfoundException.</p>
+     *
+     * @param message a {@link java.lang.String} object.
+     */
     public UserNotfoundException(String message) {
         super(message);
     }
 
+    /**
+     * <p>Constructor for UserNotfoundException.</p>
+     *
+     * @param message a {@link java.lang.String} object.
+     * @param cause a {@link java.lang.Throwable} object.
+     */
     public UserNotfoundException(String message, Throwable cause) {
         super(message, cause);
     }

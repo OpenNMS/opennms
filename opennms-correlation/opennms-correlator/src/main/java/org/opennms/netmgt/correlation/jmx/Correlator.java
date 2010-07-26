@@ -37,10 +37,19 @@ import org.springframework.beans.factory.access.BeanFactoryReference;
 import org.springframework.context.access.DefaultLocatorFactory;
 
 
+/**
+ * <p>Correlator class.</p>
+ *
+ * @author ranger
+ * @version $Id: $
+ */
 public class Correlator implements CorrelatorMBean {
     
     org.opennms.netmgt.correlation.Correlator m_correlator;
 
+	/**
+	 * <p>init</p>
+	 */
 	public void init() {
 		BeanFactoryLocator bfl = DefaultLocatorFactory.getInstance();
         BeanFactoryReference bf = bfl.useBeanFactory("correlatorContext");
@@ -51,22 +60,43 @@ public class Correlator implements CorrelatorMBean {
 		return m_correlator;
 	}
 
+    /**
+     * <p>start</p>
+     */
     public void start() {
         getBean().start();
     }
 
+    /**
+     * <p>stop</p>
+     */
     public void stop() {
         getBean().stop();
     }
 
+    /**
+     * <p>getStatus</p>
+     *
+     * @return a int.
+     */
     public int getStatus() {
         return getBean().getStatus();
     }
 
+    /**
+     * <p>getStatusText</p>
+     *
+     * @return a {@link java.lang.String} object.
+     */
     public String getStatusText() {
         return org.opennms.core.fiber.Fiber.STATUS_NAMES[getStatus()];
     }
 
+    /**
+     * <p>status</p>
+     *
+     * @return a {@link java.lang.String} object.
+     */
     public String status() {
         return org.opennms.core.fiber.Fiber.STATUS_NAMES[getStatus()];
     }

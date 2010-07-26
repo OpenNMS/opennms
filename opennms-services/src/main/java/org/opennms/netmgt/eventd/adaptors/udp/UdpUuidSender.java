@@ -132,6 +132,9 @@ final class UdpUuidSender implements Runnable {
         return (m_context == null ? false : m_context.isAlive());
     }
 
+    /**
+     * <p>run</p>
+     */
     public void run() {
         // get the context
         m_context = Thread.currentThread();

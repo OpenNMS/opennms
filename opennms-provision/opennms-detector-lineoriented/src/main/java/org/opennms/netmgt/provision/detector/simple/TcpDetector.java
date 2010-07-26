@@ -44,6 +44,12 @@ import org.springframework.context.annotation.Scope;
 import org.springframework.stereotype.Component;
 
 @Component
+/**
+ * <p>TcpDetector class.</p>
+ *
+ * @author ranger
+ * @version $Id: $
+ */
 @Scope("prototype")
 public class TcpDetector extends AsyncLineOrientedDetector {
 
@@ -62,18 +68,27 @@ public class TcpDetector extends AsyncLineOrientedDetector {
     
     /**
      * Constructor for creating a non-default service based on this protocol
-     * 
-     * @param serviceName
-     * @param port
+     *
+     * @param serviceName a {@link java.lang.String} object.
+     * @param port a int.
      */
     public TcpDetector(String serviceName, int port) {
         super(serviceName, port);
     }
 
+    /**
+     * <p>onInit</p>
+     */
     public void onInit() {
         expectBanner(matches(getBanner()));
     }
     
+    /**
+     * <p>matches</p>
+     *
+     * @param regex a {@link java.lang.String} object.
+     * @return a {@link org.opennms.netmgt.provision.support.AsyncClientConversation.ResponseValidator} object.
+     */
     public ResponseValidator<LineOrientedResponse> matches(final String regex){
         return new ResponseValidator<LineOrientedResponse>() {
 
@@ -88,10 +103,20 @@ public class TcpDetector extends AsyncLineOrientedDetector {
         };
     }
 
+    /**
+     * <p>setBanner</p>
+     *
+     * @param banner a {@link java.lang.String} object.
+     */
     public void setBanner(String banner) {
         m_banner = banner;
     }
 
+    /**
+     * <p>getBanner</p>
+     *
+     * @return a {@link java.lang.String} object.
+     */
     public String getBanner() {
         return m_banner;
     }

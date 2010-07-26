@@ -33,11 +33,8 @@
     <intercept-url pattern="/gwt.js" access="ROLE_USER,ROLE_DASHBOARD" />
     <intercept-url pattern="/surveillanceservice.gwt" access="ROLE_USER,ROLE_DASHBOARD" />
     <intercept-url pattern="/graph/graph.png" access="ROLE_USER,ROLE_DASHBOARD" />
-    <intercept-url pattern="/org.opennms.dashboard.*.html" access="ROLE_USER,ROLE_DASHBOARD" />
-    <intercept-url pattern="/org.opennms.dashboard.*.nocache.js" access="ROLE_USER,ROLE_DASHBOARD" />
-    <intercept-url pattern="/*.cache.html*" access="ROLE_USER,ROLE_DASHBOARD" />
-    <intercept-url pattern="/*.cache.xml*" access="ROLE_USER,ROLE_DASHBOARD" />       
-    <intercept-url pattern="/*.cache.js*" access="ROLE_USER,ROLE_DASHBOARD" />
+    <intercept-url pattern="/dashboard/**" access="ROLE_USER,ROLE_DASHBOARD" />
+    <intercept-url pattern="/coreweb/**" access="ROLE_USER,ROLE_DASHBOARD" />
     
     <intercept-url pattern="/**" access="ROLE_USER" />
     

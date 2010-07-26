@@ -55,11 +55,25 @@ import org.opennms.web.Util;
 
 /**
  * A servlet that handles configuring SNMP
- * 
+ *
  * @author <a href="mailto:david@opennms.org">David Hustace</a>
  * @author <a href="mailto:tarus@opennms.org">Tarus Balog</a>
  * @author <A HREF="mailto:gturner@newedgenetworks.com">Gerald Turner </A>
  * @author <A HREF="http://www.opennms.org/">OpenNMS </A>
+ * @author <a href="mailto:david@opennms.org">David Hustace</a>
+ * @author <a href="mailto:tarus@opennms.org">Tarus Balog</a>
+ * @author <A HREF="mailto:gturner@newedgenetworks.com">Gerald Turner </A>
+ * @author <A HREF="http://www.opennms.org/">OpenNMS </A>
+ * @author <a href="mailto:david@opennms.org">David Hustace</a>
+ * @author <a href="mailto:tarus@opennms.org">Tarus Balog</a>
+ * @author <A HREF="mailto:gturner@newedgenetworks.com">Gerald Turner </A>
+ * @author <A HREF="http://www.opennms.org/">OpenNMS </A>
+ * @author <a href="mailto:david@opennms.org">David Hustace</a>
+ * @author <a href="mailto:tarus@opennms.org">Tarus Balog</a>
+ * @author <A HREF="mailto:gturner@newedgenetworks.com">Gerald Turner </A>
+ * @author <A HREF="http://www.opennms.org/">OpenNMS </A>
+ * @version $Id: $
+ * @since 1.8.1
  */
 public class SnmpConfigServlet extends HttpServlet {
 
@@ -71,6 +85,7 @@ public class SnmpConfigServlet extends HttpServlet {
     private final static Logger log =
         Logger.getLogger(SnmpConfigServlet.class);
 
+    /** {@inheritDoc} */
     public void doPost(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
         String firstIPAddress = request.getParameter("firstIPAddress");
         String lastIPAddress = request.getParameter("lastIPAddress");

@@ -1,0 +1,10 @@
+CERT NO PRIVATE KEY
+
+SYMPTOMS:
+
+"tls: Indicates that a certificate file specified in a TLS certificate configuration entry does not have a valid private key; this could be due to an incorrect passphrase"
+
+PROBABLE CAUSES:
+
+RECOMMENDED ACTIONS:
+

@@ -42,13 +42,16 @@ import org.opennms.netmgt.model.PollStatus;
 import org.opennms.netmgt.poller.MonitoredService;
 
 /**
- * 
+ * <p>Win32ServiceMonitor class.</p>
+ *
  * @author <a href="mailto:jeffg@opennms.org">Jeff Gehlbach</a>
+ * @version $Id: $
  */
 public class Win32ServiceMonitor extends SnmpMonitor {
 	private static final String SV_SVC_OPERATING_STATE_OID = ".1.3.6.1.4.1.77.1.2.3.1.3";
 	private static final String DEFAULT_SERVICE_NAME = "Server";
 	
+	/** {@inheritDoc} */
 	public PollStatus poll(MonitoredService svc, Map<String, Object> parameters) {
 		String serviceName = ParameterMap.getKeyedString(parameters, "service-name", DEFAULT_SERVICE_NAME);
 		int snLength = serviceName.length();

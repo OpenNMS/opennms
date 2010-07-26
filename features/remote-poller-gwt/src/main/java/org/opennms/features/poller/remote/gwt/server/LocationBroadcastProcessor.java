@@ -20,11 +20,19 @@ import org.opennms.netmgt.model.events.annotations.EventListener;
 import org.opennms.netmgt.xml.event.Event;
 import org.opennms.netmgt.xml.event.Parm;
 import org.opennms.netmgt.xml.event.Parms;
+import org.springframework.beans.factory.DisposableBean;
 import org.springframework.beans.factory.InitializingBean;
 import org.springframework.beans.factory.annotation.Autowired;
 
+/**
+ * <p>LocationBroadcastProcessor class.</p>
+ *
+ * @author ranger
+ * @version $Id: $
+ * @since 1.8.1
+ */
 @EventListener(name="LocationStatusService")
-public class LocationBroadcastProcessor implements InitializingBean {
+public class LocationBroadcastProcessor implements InitializingBean, DisposableBean {
     @Autowired
     private LocationDataService m_locationDataService;
 
@@ -47,12 +55,22 @@ public class LocationBroadcastProcessor implements InitializingBean {
 
     public LocationEventHandler m_eventHandler;
 
+    private TimerTask m_task;
+
+    /**
+     * <p>Constructor for LocationBroadcastProcessor.</p>
+     */
     public LocationBroadcastProcessor() {
         m_timer = new Timer();
     }
 
+    /**
+     * <p>afterPropertiesSet</p>
+     *
+     * @throws java.lang.Exception if any.
+     */
     public void afterPropertiesSet() throws Exception {
-        m_timer.schedule(new TimerTask() {
+        m_task = new TimerTask() {
             private Date m_lastRun = new Date();
 
             @Override
@@ -66,49 +84,105 @@ public class LocationBroadcastProcessor implements InitializingBean {
                 }
                 m_lastRun = now;
             }
-        }, UPDATE_PERIOD, UPDATE_PERIOD);
+        };
+        m_timer.schedule(m_task, UPDATE_PERIOD, UPDATE_PERIOD);
+    }
+    
+    /**
+     * <p>destroy</p>
+     */
+    public void destroy() {
+        if (m_task != null) {
+            m_task.cancel();
+        }
+        
     }
 
+    /**
+     * <p>locationMonitorStarted</p>
+     *
+     * @param event a {@link org.opennms.netmgt.xml.event.Event} object.
+     */
     @EventHandler(uei = EventConstants.LOCATION_MONITOR_STARTED_UEI)
     public void locationMonitorStarted(final Event event) {
         handleLocationEvent(event);
     }
 
+    /**
+     * <p>locationMonitorStopped</p>
+     *
+     * @param event a {@link org.opennms.netmgt.xml.event.Event} object.
+     */
     @EventHandler(uei = EventConstants.LOCATION_MONITOR_STOPPED_UEI)
     public void locationMonitorStopped(final Event event) {
         handleLocationEvent(event);
     }
 
+    /**
+     * <p>locationMonitorDisconnected</p>
+     *
+     * @param event a {@link org.opennms.netmgt.xml.event.Event} object.
+     */
     @EventHandler(uei = EventConstants.LOCATION_MONITOR_DISCONNECTED_UEI)
     public void locationMonitorDisconnected(final Event event) {
         handleLocationEvent(event);
     }
 
+    /**
+     * <p>locationMonitorReconnected</p>
+     *
+     * @param event a {@link org.opennms.netmgt.xml.event.Event} object.
+     */
     @EventHandler(uei = EventConstants.LOCATION_MONITOR_RECONNECTED_UEI)
     public void locationMonitorReconnected(final Event event) {
         handleLocationEvent(event);
     }
 
+    /**
+     * <p>locationMonitorRegistered</p>
+     *
+     * @param event a {@link org.opennms.netmgt.xml.event.Event} object.
+     */
     @EventHandler(uei = EventConstants.LOCATION_MONITOR_REGISTERED_UEI)
     public void locationMonitorRegistered(final Event event) {
         handleLocationEvent(event);
     }
 
+    /**
+     * <p>locationMonitorPaused</p>
+     *
+     * @param event a {@link org.opennms.netmgt.xml.event.Event} object.
+     */
     @EventHandler(uei = EventConstants.LOCATION_MONITOR_PAUSED_UEI)
     public void locationMonitorPaused(final Event event) {
         handleLocationEvent(event);
     }
 
+    /**
+     * <p>nodeLostService</p>
+     *
+     * @param event a {@link org.opennms.netmgt.xml.event.Event} object.
+     */
     @EventHandler(uei = EventConstants.REMOTE_NODE_LOST_SERVICE_UEI)
     public void nodeLostService(final Event event) {
         handleLocationEvent(event);
     }
 
+    /**
+     * <p>nodeRegainedService</p>
+     *
+     * @param event a {@link org.opennms.netmgt.xml.event.Event} object.
+     */
     @EventHandler(uei = EventConstants.REMOTE_NODE_REGAINED_SERVICE_UEI)
     public void nodeRegainedService(final Event event) {
         handleLocationEvent(event);
     }
 
+    /**
+     * <p>setEventHandler</p>
+     *
+     * @param handler a {@link org.opennms.features.poller.remote.gwt.server.LocationEventHandler} object.
+     */
     public void setEventHandler(final LocationEventHandler handler) {
         m_eventHandler = handler;
     }

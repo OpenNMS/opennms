@@ -64,10 +64,12 @@ import org.opennms.netmgt.snmp.SnmpWalker;
  * initially constructed no information is collected. The SNMP Session creating
  * and colletion occurs in the main run method of the instance. This allows the
  * collection to occur in a thread if necessary.
- * 
+ *
  * @author <a href="mailto:weave@oculan.com">Weave </a>
  * @author <a href="http://www.opennms.org">OpenNMS </a>
- * 
+ * @author <a href="mailto:weave@oculan.com">Weave </a>
+ * @author <a href="http://www.opennms.org">OpenNMS </a>
+ * @version $Id: $
  */
 public final class SnmpCollection implements ReadyRunnable {
 
@@ -225,12 +227,10 @@ public final class SnmpCollection implements ReadyRunnable {
 	 * Constructs a new snmp collector for a node using the passed interface as
 	 * the collection point. The collection does not occur until the
 	 * <code>run</code> method is invoked.
-	 * 
+	 *
 	 * @param config
 	 *            The SnmpPeer object to collect from.
-	 * 
 	 */
-
 	public SnmpCollection(SnmpAgentConfig config) {
 		m_agentConfig = config;
 		m_address = m_agentConfig.getAddress();
@@ -308,13 +308,13 @@ public final class SnmpCollection implements ReadyRunnable {
 
 	/**
 	 * Returns the VLAN name from vlanindex.
+	 *
+	 * @param m_vlan a int.
+	 * @return a {@link java.lang.String} object.
 	 */
-
 	public String getVlanName(int m_vlan) {
 		if (this.hasVlanTable()) {
-			java.util.Iterator<SnmpTableEntry> itr = this.getVlanTable().getEntries().iterator();
-			while (itr.hasNext()) {
-				SnmpTableEntry ent = itr.next();
+		    for (final SnmpTableEntry ent : this.getVlanTable().getEntries()) {
 				int vlanIndex = ent.getInt32(VlanCollectorEntry.VLAN_INDEX);
 				if (vlanIndex == m_vlan) {
 					return ent.getDisplayString(VlanCollectorEntry.VLAN_NAME);
@@ -326,13 +326,13 @@ public final class SnmpCollection implements ReadyRunnable {
 
 	/**
 	 * Returns the VLAN vlanindex from name.
+	 *
+	 * @param m_vlanname a {@link java.lang.String} object.
+	 * @return a int.
 	 */
-
 	public int getVlanIndex(String m_vlanname) {
 		if (this.hasVlanTable()) {
-			java.util.Iterator<SnmpTableEntry> itr = this.getVlanTable().getEntries().iterator();
-			while (itr.hasNext()) {
-				SnmpTableEntry ent = itr.next();
+		    for (final SnmpTableEntry ent : this.getVlanTable().getEntries()) {
 				String vlanName = ent
 						.getDisplayString(VlanCollectorEntry.VLAN_NAME);
 				if (vlanName.equals(m_vlanname)) {
@@ -356,14 +356,12 @@ public final class SnmpCollection implements ReadyRunnable {
 	 * failure of the collection should be tested via the <code>failed</code>
 	 * method.
 	 * </p>
-	 * 
+	 *
 	 * <p>
 	 * No synchronization is performed, so if this is used in a separate thread
 	 * context synchornization must be added.
 	 * </p>
-	 * 
 	 */
-
 	@SuppressWarnings("unchecked")
     public void run() {
 		
@@ -485,9 +483,7 @@ public final class SnmpCollection implements ReadyRunnable {
 					if (log().isDebugEnabled())
 						log().debug("SnmpCollection.run: start collection for " + getVlanTable().getEntries().size() + " VLAN entries ");
 
-					java.util.Iterator itr = m_vlanTable.getEntries().iterator();
-					while (itr.hasNext()) {
-						SnmpTableEntry ent = (SnmpTableEntry) itr.next();
+					for (final SnmpTableEntry ent : m_vlanTable.getEntries()) {
 		 				int vlanindex = ent.getInt32(VlanCollectorEntry.VLAN_INDEX);
 						if (vlanindex == -1) {
 							if (log().isDebugEnabled()) {
@@ -565,15 +561,27 @@ public final class SnmpCollection implements ReadyRunnable {
 
 	}
 
+	/**
+	 * <p>getScheduler</p>
+	 *
+	 * @return a {@link org.opennms.netmgt.linkd.scheduler.Scheduler} object.
+	 */
 	public Scheduler getScheduler() {
 		return m_scheduler;
 	}
 
+	/**
+	 * <p>setScheduler</p>
+	 *
+	 * @param scheduler a {@link org.opennms.netmgt.linkd.scheduler.Scheduler} object.
+	 */
 	public void setScheduler(Scheduler scheduler) {
 		m_scheduler = scheduler;
 	}
 
 	/**
+	 * <p>getInitialSleepTime</p>
+	 *
 	 * @return Returns the initial_sleep_time.
 	 */
 	public long getInitialSleepTime() {
@@ -581,6 +589,8 @@ public final class SnmpCollection implements ReadyRunnable {
 	}
 
 	/**
+	 * <p>setInitialSleepTime</p>
+	 *
 	 * @param initial_sleep_time
 	 *            The initial_sleep_timeto set.
 	 */
@@ -589,6 +599,8 @@ public final class SnmpCollection implements ReadyRunnable {
 	}
 
 	/**
+	 * <p>getPollInterval</p>
+	 *
 	 * @return Returns the initial_sleep_time.
 	 */
 	public long getPollInterval() {
@@ -596,15 +608,16 @@ public final class SnmpCollection implements ReadyRunnable {
 	}
 
 	/**
-	 * @param initial_sleep_time
-	 *            The initial_sleep_timeto set.
+	 * <p>setPollInterval</p>
+	 *
+	 * @param interval a long.
 	 */
 	public void setPollInterval(long interval) {
 		this.poll_interval = interval;
 	}
 
 	/**
-	 * 
+	 * <p>schedule</p>
 	 */
 	public void schedule() {
 		if (m_scheduler == null)
@@ -623,11 +636,18 @@ public final class SnmpCollection implements ReadyRunnable {
 		m_scheduler.schedule(poll_interval, this);
 	}
 
+	/**
+	 * <p>isReady</p>
+	 *
+	 * @return a boolean.
+	 */
 	public boolean isReady() {
 		return true;
 	}
 
 	/**
+	 * <p>isSuspended</p>
+	 *
 	 * @return Returns the suspendCollection.
 	 */
 	public boolean isSuspended() {
@@ -635,23 +655,22 @@ public final class SnmpCollection implements ReadyRunnable {
 	}
 
 	/**
-	 * @param suspendCollection
-	 *            The suspendCollection to set.
+	 * <p>suspend</p>
 	 */
-
 	public void suspend() {
 		this.suspendCollection = true;
 	}
 
 	/**
-	 * @param suspendCollection
-	 *            The suspendCollection to set.
+	 * <p>wakeUp</p>
 	 */
-
 	public void wakeUp() {
 		this.suspendCollection = false;
 	}
 
+	/**
+	 * <p>unschedule</p>
+	 */
 	public void unschedule() {
 		if (m_scheduler == null)
 			throw new IllegalStateException(
@@ -665,12 +684,19 @@ public final class SnmpCollection implements ReadyRunnable {
 	}
 
 	/**
+	 * <p>getVlanClass</p>
+	 *
 	 * @return Returns the m_vlanClass.
 	 */
 	public String getVlanClass() {
 		return m_vlanClass;
 	}
 
+	/**
+	 * <p>setVlanClass</p>
+	 *
+	 * @param className a {@link java.lang.String} object.
+	 */
 	public void setVlanClass(String className) {
 		if (className == null || className.equals(""))
 			return;
@@ -680,31 +706,50 @@ public final class SnmpCollection implements ReadyRunnable {
 
 	/**
 	 * Returns the target address that the collection occured for.
+	 *
+	 * @return a {@link java.net.InetAddress} object.
 	 */
-
 	public InetAddress getTarget() {
 		return m_address;
 	}
 
 	/**
+	 * <p>collectVlanTable</p>
+	 *
 	 * @return Returns the m_collectVlanTable.
 	 */
 	public boolean collectVlanTable() {
 		return m_collectVlanTable;
 	}
 	
+	/**
+	 * <p>getReadCommunity</p>
+	 *
+	 * @return a {@link java.lang.String} object.
+	 */
 	public String getReadCommunity() {
 		return m_agentConfig.getReadCommunity();
 	}
 	
+	/**
+	 * <p>getPeer</p>
+	 *
+	 * @return a {@link org.opennms.netmgt.snmp.SnmpAgentConfig} object.
+	 */
 	public SnmpAgentConfig getPeer() {
 		return m_agentConfig;
 	}
 
+	/**
+	 * <p>getPort</p>
+	 *
+	 * @return a int.
+	 */
 	public int getPort() {
 		return m_agentConfig.getPort();
 	}
 	
+	/** {@inheritDoc} */
 	public boolean equals(ReadyRunnable run) {
 		if (run instanceof SnmpCollection && this.getPackageName().equals(run.getPackageName())) {
 			SnmpCollection c = (SnmpCollection) run;
@@ -715,6 +760,11 @@ public final class SnmpCollection implements ReadyRunnable {
 		return false;
 	}
 	
+	/**
+	 * <p>getInfo</p>
+	 *
+	 * @return a {@link java.lang.String} object.
+	 */
 	public String getInfo() {
 		return "Ready Runnable(s) SnmpCollection "
 		+ " ip=" + getTarget()
@@ -732,74 +782,160 @@ public final class SnmpCollection implements ReadyRunnable {
 		
 	}
 
+	/**
+	 * <p>getCollectBridgeForwardingTable</p>
+	 *
+	 * @return a boolean.
+	 */
 	public boolean getCollectBridgeForwardingTable() {
 		return m_collectBridgeForwardingTable;
 	}
 
+	/**
+	 * <p>collectBridgeForwardingTable</p>
+	 *
+	 * @param bridgeForwardingTable a boolean.
+	 */
 	public void collectBridgeForwardingTable(boolean bridgeForwardingTable) {
 		m_collectBridgeForwardingTable = bridgeForwardingTable;
 	}
 
+	/**
+	 * <p>getCollectCdpTable</p>
+	 *
+	 * @return a boolean.
+	 */
 	public boolean getCollectCdpTable() {
 		return m_collectCdpTable;
 	}
 
+	/**
+	 * <p>collectCdpTable</p>
+	 *
+	 * @param cdpTable a boolean.
+	 */
 	public void collectCdpTable(boolean cdpTable) {
 		m_collectCdpTable = cdpTable;
 	}
 
+	/**
+	 * <p>getCollectIpRouteTable</p>
+	 *
+	 * @return a boolean.
+	 */
 	public boolean getCollectIpRouteTable() {
 		return m_collectIpRouteTable;
 	}
 
+	/**
+	 * <p>collectIpRouteTable</p>
+	 *
+	 * @param ipRouteTable a boolean.
+	 */
 	public void collectIpRouteTable(boolean ipRouteTable) {
 		m_collectIpRouteTable = ipRouteTable;
 	}
 
+	/**
+	 * <p>getCollectStpNode</p>
+	 *
+	 * @return a boolean.
+	 */
 	public boolean getCollectStpNode() {
 		return m_collectStpNode;
 	}
 
+	/**
+	 * <p>collectStpNode</p>
+	 *
+	 * @param stpNode a boolean.
+	 */
 	public void collectStpNode(boolean stpNode) {
 		m_collectStpNode = stpNode;
 	}
 
+	/**
+	 * <p>getCollectStpTable</p>
+	 *
+	 * @return a boolean.
+	 */
 	public boolean getCollectStpTable() {
 		return m_collectStpTable;
 	}
 
+	/**
+	 * <p>collectStpTable</p>
+	 *
+	 * @param stpTable a boolean.
+	 */
 	public void collectStpTable(boolean stpTable) {
 		m_collectStpTable = stpTable;
 	}
 
+	/**
+	 * <p>Getter for the field <code>packageName</code>.</p>
+	 *
+	 * @return a {@link java.lang.String} object.
+	 */
 	public String getPackageName() {
 		return packageName;
 	}
 
+	/** {@inheritDoc} */
 	public void setPackageName(String packageName) {
 		this.packageName = packageName;
 	}
 
+	/**
+	 * <p>getSaveStpNodeTable</p>
+	 *
+	 * @return a boolean.
+	 */
 	public boolean getSaveStpNodeTable() {
 		return m_saveStpNodeTable;
 	}
 
+	/**
+	 * <p>saveStpNodeTable</p>
+	 *
+	 * @param stpNodeTable a boolean.
+	 */
 	public void saveStpNodeTable(boolean stpNodeTable) {
 		m_saveStpNodeTable = stpNodeTable;
 	}
 
+	/**
+	 * <p>getSaveIpRouteTable</p>
+	 *
+	 * @return a boolean.
+	 */
 	public boolean getSaveIpRouteTable() {
 		return m_saveIpRouteTable;
 	}
 
+	/**
+	 * <p>SaveIpRouteTable</p>
+	 *
+	 * @param ipRouteTable a boolean.
+	 */
 	public void SaveIpRouteTable(boolean ipRouteTable) {
 		m_saveIpRouteTable = ipRouteTable;
 	}
 
+	/**
+	 * <p>getSaveStpInterfaceTable</p>
+	 *
+	 * @return a boolean.
+	 */
 	public boolean getSaveStpInterfaceTable() {
 		return m_saveStpInterfaceTable;
 	}
 
+	/**
+	 * <p>saveStpInterfaceTable</p>
+	 *
+	 * @param stpInterfaceTable a boolean.
+	 */
 	public void saveStpInterfaceTable(boolean stpInterfaceTable) {
 		m_saveStpInterfaceTable = stpInterfaceTable;
 	}

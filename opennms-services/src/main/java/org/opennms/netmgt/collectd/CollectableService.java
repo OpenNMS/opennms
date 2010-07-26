@@ -120,12 +120,14 @@ final class CollectableService implements ReadyRunnable {
     private final RrdRepository m_repository;
     /**
      * Constructs a new instance of a CollectableService object.
+     *
      * @param iface The interface on which to collect data
      * @param spec
      *            The package containing parms for this collectable service.
-     * @param address
-     *            InetAddress of the interface to collect from
-     * 
+     * @param ifaceDao a {@link org.opennms.netmgt.dao.IpInterfaceDao} object.
+     * @param scheduler a {@link org.opennms.netmgt.scheduler.Scheduler} object.
+     * @param schedulingCompletedFlag a {@link org.opennms.netmgt.collectd.Collectd.SchedulingCompletedFlag} object.
+     * @param transMgr a {@link org.springframework.transaction.PlatformTransactionManager} object.
      */
     protected CollectableService(OnmsIpInterface iface, IpInterfaceDao ifaceDao, CollectionSpecification spec, Scheduler scheduler, SchedulingCompletedFlag schedulingCompletedFlag, PlatformTransactionManager transMgr) {
         m_agent = DefaultCollectionAgent.create(iface.getId(), ifaceDao, transMgr);
@@ -152,16 +154,28 @@ final class CollectableService implements ReadyRunnable {
 
     }
     
+    /**
+     * <p>getAddress</p>
+     *
+     * @return a {@link java.lang.Object} object.
+     */
     public Object getAddress() {
     	return m_agent.getAddress();
     }
     
+    /**
+     * <p>getSpecification</p>
+     *
+     * @return a {@link org.opennms.netmgt.collectd.CollectionSpecification} object.
+     */
     public CollectionSpecification getSpecification() {
     	return m_spec;
     }
 
-	/**
+    /**
      * Returns node identifier
+     *
+     * @return a int.
      */
     public int getNodeId() {
         return m_nodeId;
@@ -169,6 +183,8 @@ final class CollectableService implements ReadyRunnable {
 
     /**
      * Returns the service name
+     *
+     * @return a {@link java.lang.String} object.
      */
     public String getServiceName() {
         return m_spec.getServiceName();
@@ -176,6 +192,8 @@ final class CollectableService implements ReadyRunnable {
 
     /**
      * Returns the package name
+     *
+     * @return a {@link java.lang.String} object.
      */
     public String getPackageName() {
         return m_spec.getPackageName();
@@ -183,20 +201,24 @@ final class CollectableService implements ReadyRunnable {
 
     /**
      * Returns updates object
+     *
+     * @return a {@link org.opennms.netmgt.collectd.CollectorUpdates} object.
      */
     public CollectorUpdates getCollectorUpdates() {
         return m_updates;
     }
 
 	/**
-	* Uses the existing package name to try and re-obtain the package from the collectd config factory.
-	* Should be called when the collect config has been reloaded.
-	 * @param collectorConfigDao 
-	*/
+	 * Uses the existing package name to try and re-obtain the package from the collectd config factory.
+	 * Should be called when the collect config has been reloaded.
+	 *
+	 * @param collectorConfigDao a {@link org.opennms.netmgt.dao.CollectorConfigDao} object.
+	 */
 	public void refreshPackage(CollectorConfigDao collectorConfigDao) {
 		m_spec.refresh(collectorConfigDao);
 	}
 
+    /** {@inheritDoc} */
     @Override
     public String toString() {
         return "CollectableService for service "+m_nodeId+':'+getAddress()+':'+getServiceName();
@@ -208,6 +230,8 @@ final class CollectableService implements ReadyRunnable {
      * pair. If it is time to run the collection again then a value of true is
      * returned. If the interface is not ready then a value of false is
      * returned.
+     *
+     * @return a boolean.
      */
     public boolean isReady() {
         boolean ready = false;
@@ -270,10 +294,9 @@ final class CollectableService implements ReadyRunnable {
      * execution. If the instance is ready for execution then it is started with
      * it's own thread context to execute the query. The last step in the method
      * before it exits is to reschedule the interface.
-     * 
      */
     public void run() {
-        // Process any oustanding updates.
+        // Process any outstanding updates.
         if (processUpdates() == ABORT_COLLECTION) {
             log().debug("run: Aborting because processUpdates returned ABORT_COLLECTION (probably marked for deletion) for "+this);
             return;
@@ -297,6 +320,9 @@ final class CollectableService implements ReadyRunnable {
                     log().error(e.getMessage(), e);
                 }
                 updateStatus(ServiceCollector.COLLECTION_FAILED, e);
+            } catch (Throwable e) {
+                log().error(e.getMessage(), e);
+                updateStatus(ServiceCollector.COLLECTION_FAILED, new CollectionException("Collection failed unexpectedly: " + e.getClass().getSimpleName() + ": " + e.getMessage(), e));
             }
         }
         
@@ -556,6 +582,9 @@ final class CollectableService implements ReadyRunnable {
         m_spec.initialize(m_agent);
     }
 
+    /**
+     * <p>reinitializeThresholding</p>
+     */
     public void reinitializeThresholding() {
         if(m_thresholdVisitor!=null) {
             log().debug("reinitializeThresholding on "+this);
@@ -563,6 +592,11 @@ final class CollectableService implements ReadyRunnable {
         }
     }
     
+    /**
+     * <p>getReadyRunnable</p>
+     *
+     * @return a {@link org.opennms.netmgt.scheduler.ReadyRunnable} object.
+     */
     public ReadyRunnable getReadyRunnable() {
 	return this;
     }

@@ -45,9 +45,10 @@ import org.opennms.netmgt.EventConstants;
 import org.opennms.netmgt.xml.event.Event;
 
 /**
- * Represents a PendingPollEvent 
+ * Represents a PendingPollEvent
  *
  * @author <a href="mailto:brozow@opennms.org">Mathew Brozowski</a>
+ * @version $Id: $
  */
 public class PendingPollEvent extends PollEvent {
     
@@ -55,11 +56,21 @@ public class PendingPollEvent extends PollEvent {
     private boolean m_pending = true;
     private List<Runnable> m_pendingOutages = new LinkedList<Runnable>();
 
+    /**
+     * <p>Constructor for PendingPollEvent.</p>
+     *
+     * @param event a {@link org.opennms.netmgt.xml.event.Event} object.
+     */
     public PendingPollEvent(Event event) {
         super(Scope.fromUei(event.getUei()));
         m_event = event;
     }
 
+    /**
+     * <p>getDate</p>
+     *
+     * @return a {@link java.util.Date} object.
+     */
     public Date getDate() {
         try {
             return EventConstants.parseToDate(m_event.getTime());
@@ -69,10 +80,20 @@ public class PendingPollEvent extends PollEvent {
         }
     }
     
+    /**
+     * <p>getEventId</p>
+     *
+     * @return a int.
+     */
     public int getEventId() {
         return m_event.getDbid();
     }
     
+    /**
+     * <p>addPending</p>
+     *
+     * @param r a {@link java.lang.Runnable} object.
+     */
     public void addPending(Runnable r) {
         if (m_pending)
             m_pendingOutages.add(r);
@@ -80,18 +101,36 @@ public class PendingPollEvent extends PollEvent {
             r.run();
     }
     
+    /**
+     * <p>getEvent</p>
+     *
+     * @return a {@link org.opennms.netmgt.xml.event.Event} object.
+     */
     public Event getEvent() {
         return m_event;
     }
     
+    /**
+     * <p>isPending</p>
+     *
+     * @return a boolean.
+     */
     public boolean isPending() {
         return m_pending;
     }
 
+    /**
+     * <p>complete</p>
+     *
+     * @param e a {@link org.opennms.netmgt.xml.event.Event} object.
+     */
     public void complete(Event e) {
         m_pending = false;
     }
     
+    /**
+     * <p>processPending</p>
+     */
     public void processPending() {
         for (Runnable r : m_pendingOutages) {
             r.run();
@@ -101,6 +140,11 @@ public class PendingPollEvent extends PollEvent {
     }
     
     //TODO: string builder or don't checking ;-)
+    /**
+     * <p>toString</p>
+     *
+     * @return a {@link java.lang.String} object.
+     */
     public String toString() {
         return m_event+", uei: "+m_event.getUei()+", id: "+m_event.getDbid()+", isPending: "+m_pending+", list size: "+m_pendingOutages.size();
     }

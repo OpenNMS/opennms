@@ -40,128 +40,171 @@ import java.text.ParseException;
 import java.util.Hashtable;
 
 /**
- * 
+ * <p>SyslogDefs class.</p>
+ *
  * @author <a href="mailto:joed@opennms.org">Johan Edstrom</a>
+ * @version $Id: $
  */
 public class SyslogDefs {
+    /** Constant <code>RCS_ID="$Id: SyslogDefs-OLD.java,v 1.1.1.1 1998"{trunked}</code> */
     public static final String RCS_ID = "$Id: SyslogDefs-OLD.java,v 1.1.1.1 1998/02/22 05:47:54 time Exp $";
 
+    /** Constant <code>RCS_REV="$Revision: 1.1.1.1 $"</code> */
     public static final String RCS_REV = "$Revision: 1.1.1.1 $";
 
+    /** Constant <code>RCS_NAME="$Name:  $"</code> */
     public static final String RCS_NAME = "$Name:  $";
 
     //
     // SyslogLvl
     //
+    /** Constant <code>LOG_EMERG=0</code> */
     public static final int LOG_EMERG = 0; /* system is unusable */
 
+    /** Constant <code>LOG_ALERT=1</code> */
     public static final int LOG_ALERT = 1; /*
                                              * action must be taken
                                              * immediately
                                              */
 
+    /** Constant <code>LOG_CRIT=2</code> */
     public static final int LOG_CRIT = 2; /* critical conditions */
 
+    /** Constant <code>LOG_ERR=3</code> */
     public static final int LOG_ERR = 3; /* error conditions */
 
+    /** Constant <code>LOG_WARNING=4</code> */
     public static final int LOG_WARNING = 4; /* warning conditions */
 
+    /** Constant <code>LOG_NOTICE=5</code> */
     public static final int LOG_NOTICE = 5; /*
                                              * normal but significant
                                              * condition
                                              */
 
+    /** Constant <code>LOG_INFO=6</code> */
     public static final int LOG_INFO = 6; /* informational */
 
+    /** Constant <code>LOG_DEBUG=7</code> */
     public static final int LOG_DEBUG = 7; /* debug-level messages */
 
+    /** Constant <code>LOG_ALL=8</code> */
     public static final int LOG_ALL = 8; /* '*' in config, all levels */
 
     //
     // SyslogFac
     //
+    /** Constant <code>LOG_KERN=0</code> */
     public static final int LOG_KERN = 0; /* kernel messages */
 
+    /** Constant <code>LOG_USER=1</code> */
     public static final int LOG_USER = 1; /* random user-level messages */
 
+    /** Constant <code>LOG_MAIL=2</code> */
     public static final int LOG_MAIL = 2; /* mail system */
 
+    /** Constant <code>LOG_DAEMON=3</code> */
     public static final int LOG_DAEMON = 3; /* system daemons */
 
+    /** Constant <code>LOG_AUTH=4</code> */
     public static final int LOG_AUTH = 4; /* security/authorization messages */
 
+    /** Constant <code>LOG_SYSLOG=5</code> */
     public static final int LOG_SYSLOG = 5; /*
                                              * messages generated internally
                                              * by syslogd
                                              */
 
+    /** Constant <code>LOG_LPR=6</code> */
     public static final int LOG_LPR = 6; /* line printer subsystem */
 
+    /** Constant <code>LOG_NEWS=7</code> */
     public static final int LOG_NEWS = 7; /* network news subsystem */
 
+    /** Constant <code>LOG_UUCP=8</code> */
     public static final int LOG_UUCP = 8; /* UUCP subsystem */
 
+    /** Constant <code>LOG_CRON=9</code> */
     public static final int LOG_CRON = 9; /* clock daemon */
 
     /* other codes through 15 reserved for system use */
 
+    /** Constant <code>LOG_LOCAL0=16</code> */
     public static final int LOG_LOCAL0 = 16; /* reserved for local use */
 
+    /** Constant <code>LOG_LOCAL1=17</code> */
     public static final int LOG_LOCAL1 = 17; /* reserved for local use */
 
+    /** Constant <code>LOG_LOCAL2=18</code> */
     public static final int LOG_LOCAL2 = 18; /* reserved for local use */
 
+    /** Constant <code>LOG_LOCAL3=19</code> */
     public static final int LOG_LOCAL3 = 19; /* reserved for local use */
 
+    /** Constant <code>LOG_LOCAL4=20</code> */
     public static final int LOG_LOCAL4 = 20; /* reserved for local use */
 
+    /** Constant <code>LOG_LOCAL5=21</code> */
     public static final int LOG_LOCAL5 = 21; /* reserved for local use */
 
+    /** Constant <code>LOG_LOCAL6=22</code> */
     public static final int LOG_LOCAL6 = 22; /* reserved for local use */
 
+    /** Constant <code>LOG_LOCAL7=23</code> */
     public static final int LOG_LOCAL7 = 23; /* reserved for local use */
 
+    /** Constant <code>LOG_NFACILITIES=24</code> */
     public static final int LOG_NFACILITIES = 24; /*
                                                      * current number of
                                                      * facilities
                                                      */
 
+    /** Constant <code>LOG_PRIMASK=0x07</code> */
     public static final int LOG_PRIMASK = 0x07; /*
                                                  * mask to extract priority
                                                  * part (internal)
                                                  */
 
+    /** Constant <code>LOG_FACMASK=0x03F8</code> */
     public static final int LOG_FACMASK = 0x03F8; /*
                                                      * mask to extract
                                                      * facility part
                                                      */
 
+    /** Constant <code>INTERNAL_NOPRI=0x10</code> */
     public static final int INTERNAL_NOPRI = 0x10; /*
                                                      * the "no priority"
                                                      * priority
                                                      */
 
+    /** Constant <code>LOG_PID=0x01</code> */
     public static final int LOG_PID = 0x01; /* log the pid with each message */
 
+    /** Constant <code>LOG_CONS=0x02</code> */
     public static final int LOG_CONS = 0x02; /*
                                                  * log on the console if
                                                  * errors in sending
                                                  */
 
+    /** Constant <code>LOG_ODELAY=0x04</code> */
     public static final int LOG_ODELAY = 0x04; /*
                                                  * delay open until first
                                                  * syslog() (default)
                                                  */
 
+    /** Constant <code>LOG_NDELAY=0x08</code> */
     public static final int LOG_NDELAY = 0x08; /* don't delay open */
 
+    /** Constant <code>LOG_NOWAIT=0x10</code> */
     public static final int LOG_NOWAIT = 0x10; /*
                                                  * don't wait for console
                                                  * forks: DEPRECATED
                                                  */
 
+    /** Constant <code>LOG_PERROR=0x20</code> */
     public static final int LOG_PERROR = 0x20; /* log to stderr as well */
 
+    /** Constant <code>DEFAULT_PORT=514</code> */
     public static final int DEFAULT_PORT = 514;
 
     static private Hashtable<String, Integer> facHash;
@@ -214,14 +257,33 @@ public class SyslogDefs {
         priHash.put("LOG_DEBUG", SyslogDefs.LOG_DEBUG);
     }
 
+    /**
+     * <p>extractFacility</p>
+     *
+     * @param code a int.
+     * @return a int.
+     */
     static public int extractFacility(int code) {
         return ((code & SyslogDefs.LOG_FACMASK) >> 3);
     }
 
+    /**
+     * <p>extractPriority</p>
+     *
+     * @param code a int.
+     * @return a int.
+     */
     static public int extractPriority(int code) {
         return (code & SyslogDefs.LOG_PRIMASK);
     }
 
+    /**
+     * <p>computeCode</p>
+     *
+     * @param facility a int.
+     * @param priority a int.
+     * @return a int.
+     */
     static public int computeCode(int facility, int priority) {
         return ((facility << 3) | priority);
     }
@@ -242,6 +304,12 @@ public class SyslogDefs {
      * event cannot be determined.
      */
 
+    /**
+     * <p>getPriorityName</p>
+     *
+     * @param level a int.
+     * @return a {@link java.lang.String} object.
+     */
     static public String getPriorityName(int level) {
         switch (level) {
             case SyslogDefs.LOG_EMERG:
@@ -276,6 +344,12 @@ public class SyslogDefs {
         return "unknown level='" + level + "'";
     }
 
+    /**
+     * <p>getFacilityName</p>
+     *
+     * @param facility a int.
+     * @return a {@link java.lang.String} object.
+     */
     static public String getFacilityName(int facility) {
         switch (facility) {
             case SyslogDefs.LOG_KERN:
@@ -320,6 +394,13 @@ public class SyslogDefs {
         return "unknown facility='" + facility + "'";
     }
 
+    /**
+     * <p>getPriority</p>
+     *
+     * @param priority a {@link java.lang.String} object.
+     * @return a {@link java.lang.String} object.
+     * @throws java.text.ParseException if any.
+     */
     static public String getPriority(String priority) throws ParseException {
         String priKey = priority.toUpperCase();
         String result = SyslogDefs.priHash.get(priKey).toString();
@@ -331,6 +412,13 @@ public class SyslogDefs {
         return result;
     }
 
+    /**
+     * <p>getFacility</p>
+     *
+     * @param facility a {@link java.lang.String} object.
+     * @return a int.
+     * @throws java.text.ParseException if any.
+     */
     static public int getFacility(String facility) throws ParseException {
         String facKey = facility.toUpperCase();
         Integer result = SyslogDefs.facHash.get(facKey);

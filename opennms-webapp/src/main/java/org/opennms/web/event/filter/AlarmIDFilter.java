@@ -33,26 +33,54 @@ package org.opennms.web.event.filter;
 import org.opennms.web.filter.EqualsFilter;
 import org.opennms.web.filter.SQLType;
 
-/** Encapsulates all node filtering functionality. */
+/**
+ * Encapsulates all node filtering functionality.
+ *
+ * @author ranger
+ * @version $Id: $
+ * @since 1.8.1
+ */
 public class AlarmIDFilter extends EqualsFilter<Integer> {
+    /** Constant <code>TYPE="alarm"</code> */
     public static final String TYPE = "alarm";
 
+    /**
+     * <p>Constructor for AlarmIDFilter.</p>
+     *
+     * @param alarmId a int.
+     */
     public AlarmIDFilter(int alarmId) {
         super(TYPE, SQLType.INT, "ALARMID", "alarm.id", alarmId);
     }
 
+    /**
+     * <p>getTextDescription</p>
+     *
+     * @return a {@link java.lang.String} object.
+     */
     public String getTextDescription() {
         return ("event reduced by alarmID: " + getValue());
     }
 
+    /**
+     * <p>toString</p>
+     *
+     * @return a {@link java.lang.String} object.
+     */
     public String toString() {
         return ("<WebEventRepository.AlarmIDFilter: " + this.getDescription() + ">");
     }
 
+    /**
+     * <p>getAlarmId</p>
+     *
+     * @return a int.
+     */
     public int getAlarmId() {
         return getValue();
     }
 
+    /** {@inheritDoc} */
     public boolean equals(Object obj) {
         return (this.toString().equals(obj.toString()));
     }

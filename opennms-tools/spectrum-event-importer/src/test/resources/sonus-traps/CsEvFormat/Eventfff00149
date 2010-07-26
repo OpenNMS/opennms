@@ -1,0 +1,14 @@
+{d "%w- %d %m-, %Y - %T"} - A "alertMinorNotification" event has occurred, from {t} device, named {m}.
+
+"The NMS-Agent sends an alertMinorNotification to the manager indicating that a an alert
+				of 'Minor' severity has been raised on a MO"
+
+sequenceNum = {I 1}
+alertcategory = {S 2}
+alertentity = {S 3}
+alertownerName = {S 4}
+alertDescription = {I 5}
+alertTimeStamp = {S 6}
+alertNotificationId = {I 7}
+alertExtraProperties = {S 8}
+(event [{e}])

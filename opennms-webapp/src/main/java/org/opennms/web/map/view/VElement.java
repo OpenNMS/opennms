@@ -45,10 +45,14 @@ import org.opennms.web.map.MapsException;
 import org.opennms.web.map.db.DbElement;
 
 /**
+ * <p>VElement class.</p>
+ *
  * @author micmas
  *
  * TODO To change the template for this generated type comment go to
  * Window - Preferences - Java - Code Style - Code Templates
+ * @version $Id: $
+ * @since 1.8.1
  */
 public class VElement extends DbElement {
 
@@ -66,28 +70,34 @@ public class VElement extends DbElement {
 	
 	
 
-    /**
-     * 
-     */
+	/**
+	 * <p>Constructor for VElement.</p>
+	 */
 	public VElement() {
         super();
     }
 
     /**
-     * @param e
+     * <p>Constructor for VElement.</p>
+     *
+     * @param e a {@link org.opennms.web.map.db.DbElement} object.
+     * @throws org.opennms.web.map.MapsException if any.
      */
     public VElement(DbElement e) throws MapsException {
         super(e);
     }
 
     /**
-     * @param mapId
-     * @param id
-     * @param type
-     * @param label
-     * @param iconName
-     * @param x
-     * @param y
+     * <p>Constructor for VElement.</p>
+     *
+     * @param mapId a int.
+     * @param id a int.
+     * @param type a {@link java.lang.String} object.
+     * @param label a {@link java.lang.String} object.
+     * @param iconName a {@link java.lang.String} object.
+     * @param x a int.
+     * @param y a int.
+     * @throws org.opennms.web.map.MapsException if any.
      */
     public VElement(int mapId, int id, String type, String iconName,String label,
             int x, int y) throws MapsException {
@@ -95,45 +105,97 @@ public class VElement extends DbElement {
         isChild = true;
     }    
 
+    /**
+     * <p>Constructor for VElement.</p>
+     *
+     * @param mapId a int.
+     * @param id a int.
+     * @param type a {@link java.lang.String} object.
+     * @param label a {@link java.lang.String} object.
+     * @param iconName a {@link java.lang.String} object.
+     * @throws org.opennms.web.map.MapsException if any.
+     */
     public VElement(int mapId, int id, String type, String label, String iconName) throws MapsException {
         super(mapId, id, type, label, iconName, 0, 0);
         isChild = true;
     }    
 
+	/**
+	 * <p>Getter for the field <code>status</code>.</p>
+	 *
+	 * @return a int.
+	 */
 	public int getStatus() {
 		return status;
 	}
 
+	/**
+	 * <p>Setter for the field <code>status</code>.</p>
+	 *
+	 * @param status a int.
+	 */
 	public void setStatus(int status) {
 		//if (status > LOWER_STATUS && status <= UPPER_STATUS) 
 			this.status = status;
 	}
 	
+	/**
+	 * <p>Getter for the field <code>severity</code>.</p>
+	 *
+	 * @return a int.
+	 */
 	public int getSeverity() {
 		return severity;
 	}
 	
+	/**
+	 * <p>Setter for the field <code>severity</code>.</p>
+	 *
+	 * @param severity a int.
+	 */
 	public void setSeverity(int severity) {
 		//if (severity > LOWER_SEVERITY && severity <= UPPER_SEVERITY) 
 			this.severity = severity;
 	}
 
+	/**
+	 * <p>Getter for the field <code>avail</code>.</p>
+	 *
+	 * @return a double.
+	 */
 	public double getAvail() {
 		return avail;
 	}
 	
+	/**
+	 * <p>Setter for the field <code>avail</code>.</p>
+	 *
+	 * @param rtc a double.
+	 */
 	public void setAvail(double rtc) {
 		this.avail = rtc;
 	}
 	
+    /**
+     * <p>isChild</p>
+     *
+     * @return a boolean.
+     */
     public boolean isChild() {
         return isChild;
     }
     
+    /** {@inheritDoc} */
     public boolean equals(Object other){
     	return equalsIgnorePosition((VElement)other);
     }
     
+    /**
+     * <p>equalsIgnorePosition</p>
+     *
+     * @param elem a {@link org.opennms.web.map.view.VElement} object.
+     * @return a boolean.
+     */
     public boolean equalsIgnorePosition(VElement elem) {
     	if (this.getMapId() == elem.getMapId() &&
     		this.getId() == elem.getId() && this.type.equals( elem.getType()) &&
@@ -142,6 +204,12 @@ public class VElement extends DbElement {
     	return false;
     }
 
+    /**
+     * <p>equalsIgnorePositionParentMap</p>
+     *
+     * @param elem a {@link org.opennms.web.map.view.VElement} object.
+     * @return a boolean.
+     */
     public boolean equalsIgnorePositionParentMap(VElement elem) {
     	if (this.getId() == elem.getId() && this.type.equals( elem.getType() ) &&
     		this.avail == elem.getAvail() && this.status == elem.getStatus() &&
@@ -149,26 +217,49 @@ public class VElement extends DbElement {
     	return false;
     }
     
+    /**
+     * <p>hasSameIdentifier</p>
+     *
+     * @param elem a {@link org.opennms.web.map.view.VElement} object.
+     * @return a boolean.
+     */
     public boolean hasSameIdentifier(VElement elem) {
     	if (this.getId() == elem.getId() && this.type.equals( elem.getType() )) return true;
         	return false;
     }
 
+    /** {@inheritDoc} */
     public void setMapId(int mapId) {
         super.setMapId(mapId);
         isChild = true;
     }
     
+    /**
+     * <p>getContainerMap</p>
+     *
+     * @return a int.
+     * @throws org.opennms.web.map.view.VElementNotChildException if any.
+     */
     final public int getContainerMap()throws VElementNotChildException{
     	if(isChild==true)
     		return getMapId();
     	throw new VElementNotChildException();
     }
     
+    /**
+     * <p>toString</p>
+     *
+     * @return a {@link java.lang.String} object.
+     */
     public String toString(){
     	return getId()+getType();
     }
     
+    /**
+     * <p>clone</p>
+     *
+     * @return a {@link org.opennms.web.map.view.VElement} object.
+     */
     public VElement clone() {
         return (VElement) super.clone();
     }

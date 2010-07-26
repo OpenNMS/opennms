@@ -17,8 +17,16 @@ import java.util.List;
  * Date: Oct 17, 2008
  * Time: 1:53:21 PM
  * To change this template use File | Settings | File Templates.
+ *
+ * @author ranger
+ * @version $Id: $
  */
 public class TestingNewStructure {
+    /**
+     * <p>main</p>
+     *
+     * @param args an array of {@link java.lang.String} objects.
+     */
     public static void main(String[] args) {
         try {
             // Connect to the WMI server.

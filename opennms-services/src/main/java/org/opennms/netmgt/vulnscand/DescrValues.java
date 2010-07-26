@@ -37,6 +37,9 @@ import org.opennms.netmgt.EventConstants;
 /**
  * Class that holds the return values when parsing a description field from
  * Nessus.
+ *
+ * @author ranger
+ * @version $Id: $
  */
 public class DescrValues {
     String descr;
@@ -45,17 +48,28 @@ public class DescrValues {
 
     int severity;
 
+    /**
+     * <p>Constructor for DescrValues.</p>
+     */
     public DescrValues() {
         descr = null;
         cveEntry = null;
         severity = -1;
     }
 
+    /**
+     * <p>useDefaults</p>
+     */
     public void useDefaults() {
         descr = "";
         severity = EventConstants.SEV_INDETERMINATE;
     }
 
+    /**
+     * <p>isValid</p>
+     *
+     * @return a boolean.
+     */
     public boolean isValid() {
         if ((descr != null) && (severity > 0))
             return true;
@@ -63,6 +77,11 @@ public class DescrValues {
             return false;
     }
 
+    /**
+     * <p>toString</p>
+     *
+     * @return a {@link java.lang.String} object.
+     */
     public String toString() {
         return ("descr: " + descr + "\ncveEntry: " + cveEntry + "\nseverity: " + severity + "\n");
     }

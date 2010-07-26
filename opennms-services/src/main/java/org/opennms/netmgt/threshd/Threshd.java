@@ -68,6 +68,12 @@ import org.opennms.netmgt.xml.event.Event;
 import org.opennms.netmgt.xml.event.Log;
 import org.springframework.dao.DataRetrievalFailureException;
 
+/**
+ * <p>Threshd class.</p>
+ *
+ * @author ranger
+ * @version $Id: $
+ */
 public final class Threshd extends AbstractServiceDaemon {
     /**
      * SQL used to retrieve all the interfaces which support a particular
@@ -132,6 +138,9 @@ public final class Threshd extends AbstractServiceDaemon {
         };
     }
 
+    /**
+     * <p>onInit</p>
+     */
     protected void onInit() {
 
         log().debug("start: Initializing thresholding daemon");
@@ -241,6 +250,9 @@ public final class Threshd extends AbstractServiceDaemon {
         }
     }
 
+    /**
+     * <p>reinitializeThresholders</p>
+     */
     public void reinitializeThresholders() {
         for(String key: m_svcThresholders.keySet()) {
             ServiceThresholder thresholder=m_svcThresholders.get(key);
@@ -252,6 +264,9 @@ public final class Threshd extends AbstractServiceDaemon {
         }
     }
     
+    /**
+     * <p>onStart</p>
+     */
     protected void onStart() {
 
         log().debug("start: Initializing thresholding daemon");
@@ -271,6 +286,9 @@ public final class Threshd extends AbstractServiceDaemon {
         log().debug("start: Threshd running");
 	}
 
+    /**
+     * <p>onStop</p>
+     */
     protected void onStop() {
 		m_scheduler.stop();
         m_receiver.close();
@@ -278,16 +296,24 @@ public final class Threshd extends AbstractServiceDaemon {
         m_scheduler = null;
 	}
 
+    /**
+     * <p>onPause</p>
+     */
     protected void onPause() {
 		m_scheduler.pause();
 	}
 
+    /**
+     * <p>onResume</p>
+     */
     protected void onResume() {
 		m_scheduler.resume();
 	}
 
     /**
      * Returns singleton instance of the thresholding daemon.
+     *
+     * @return a {@link org.opennms.netmgt.threshd.Threshd} object.
      */
     public static Threshd getInstance() {
         return m_singleton;
@@ -295,6 +321,8 @@ public final class Threshd extends AbstractServiceDaemon {
 
     /**
      * Returns reference to the scheduler
+     *
+     * @return a {@link org.opennms.netmgt.scheduler.LegacyScheduler} object.
      */
     public LegacyScheduler getScheduler() {
         return m_scheduler;
@@ -302,6 +330,8 @@ public final class Threshd extends AbstractServiceDaemon {
 
     /**
      * Returns reference to the event proxy
+     *
+     * @return a {@link org.opennms.netmgt.model.events.EventProxy} object.
      */
     public EventProxy getEventProxy() {
         return m_proxy;
@@ -309,10 +339,9 @@ public final class Threshd extends AbstractServiceDaemon {
 
     /**
      * Returns the loaded ServiceThresholder for the specified service name.
-     * 
+     *
      * @param svcName
      *            Service name to lookup.
-     * 
      * @return ServiceThresholder responsible for performing thresholding on the
      *         specified service.
      */
@@ -485,6 +514,8 @@ public final class Threshd extends AbstractServiceDaemon {
     }
 
     /**
+     * <p>isSchedulingCompleted</p>
+     *
      * @return Returns the schedulingCompleted.
      */
     public boolean isSchedulingCompleted() {
@@ -492,6 +523,8 @@ public final class Threshd extends AbstractServiceDaemon {
     }
 
     /**
+     * <p>setSchedulingCompleted</p>
+     *
      * @param schedulingCompleted
      *            The schedulingCompleted to set.
      */
@@ -499,6 +532,9 @@ public final class Threshd extends AbstractServiceDaemon {
         m_schedulingCompleted = schedulingCompleted;
     }
 
+    /**
+     * <p>refreshServicePackages</p>
+     */
     public void refreshServicePackages() {
 	Iterator serviceIterator=m_thresholdableServices.iterator();
 	while(serviceIterator.hasNext()) {
@@ -507,10 +543,21 @@ public final class Threshd extends AbstractServiceDaemon {
 	}
     }
 
+    /**
+     * <p>setThreshdConfig</p>
+     *
+     * @param threshdConfig a {@link org.opennms.netmgt.config.ThreshdConfigManager} object.
+     */
     public void setThreshdConfig(ThreshdConfigManager threshdConfig) {
         m_threshdConfig = threshdConfig;
     }
 
+    /**
+     * <p>getPackage</p>
+     *
+     * @param name a {@link java.lang.String} object.
+     * @return a {@link org.opennms.netmgt.config.threshd.Package} object.
+     */
     public Package getPackage(String name) {
         return m_threshdConfig.getPackage(name);
     }

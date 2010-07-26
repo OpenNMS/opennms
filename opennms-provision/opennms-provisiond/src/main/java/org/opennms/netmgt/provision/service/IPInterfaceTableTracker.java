@@ -47,14 +47,20 @@ import org.opennms.netmgt.snmp.TableTracker;
  * PhysInterfaceTableTracker
  *
  * @author brozow
+ * @version $Id: $
  */
 public class IPInterfaceTableTracker extends TableTracker {
     
+    /** Constant <code>IP_ADDR_TABLE_ENTRY</code> */
     public static final SnmpObjId IP_ADDR_TABLE_ENTRY = SnmpObjId.get(".1.3.6.1.2.1.4.20.1");
     
+    /** Constant <code>IP_ADDR_ENT_ADDR</code> */
     public static final SnmpObjId IP_ADDR_ENT_ADDR = SnmpObjId.get(IP_ADDR_TABLE_ENTRY, "1");
+    /** Constant <code>IP_ADDR_IF_INDEX</code> */
     public static final SnmpObjId IP_ADDR_IF_INDEX = SnmpObjId.get(IP_ADDR_TABLE_ENTRY, "2");
+    /** Constant <code>IP_ADDR_ENT_NETMASK</code> */
     public static final SnmpObjId IP_ADDR_ENT_NETMASK = SnmpObjId.get(IP_ADDR_TABLE_ENTRY, "3");
+    /** Constant <code>IP_ADDR_ENT_BCASTADDR</code> */
     public static final SnmpObjId IP_ADDR_ENT_BCASTADDR = SnmpObjId.get(IP_ADDR_TABLE_ENTRY, "4");
     
     
@@ -125,24 +131,39 @@ public class IPInterfaceTableTracker extends TableTracker {
 
     }
     
+    /**
+     * <p>Constructor for IPInterfaceTableTracker.</p>
+     */
     public IPInterfaceTableTracker() {
         super(s_tableColumns);
     }
 
+    /**
+     * <p>Constructor for IPInterfaceTableTracker.</p>
+     *
+     * @param rowProcessor a {@link org.opennms.netmgt.snmp.RowCallback} object.
+     */
     public IPInterfaceTableTracker(RowCallback rowProcessor) {
         super(rowProcessor, s_tableColumns);
     }
     
+    /** {@inheritDoc} */
     @Override
     public SnmpRowResult createRowResult(int columnCount, SnmpInstId instance) {
         return new IPInterfaceRow(columnCount, instance);
     }
 
+    /** {@inheritDoc} */
     @Override
     public void rowCompleted(SnmpRowResult row) {
         processIPInterfaceRow((IPInterfaceRow)row);
     }
 
+    /**
+     * <p>processIPInterfaceRow</p>
+     *
+     * @param row a {@link org.opennms.netmgt.provision.service.IPInterfaceTableTracker.IPInterfaceRow} object.
+     */
     public void processIPInterfaceRow(IPInterfaceRow row) {
         
     }

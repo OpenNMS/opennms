@@ -37,27 +37,53 @@ import org.opennms.protocols.rt.Response;
  * SmsResponse
  *
  * @author brozow
+ * @version $Id: $
  */
 public abstract class MobileMsgResponse implements Response {
 	private MobileMsgRequest m_request;
 	private long m_receiveTime;
 
+	/**
+	 * <p>Constructor for MobileMsgResponse.</p>
+	 *
+	 * @param receiveTime a long.
+	 */
 	public MobileMsgResponse(long receiveTime) {
 		m_receiveTime = receiveTime;
 	}
 
+	/**
+	 * <p>setRequest</p>
+	 *
+	 * @param req a {@link org.opennms.sms.reflector.smsservice.MobileMsgRequest} object.
+	 */
 	public void setRequest(MobileMsgRequest req) {
 		m_request = req;
 	}
 
+	/**
+	 * <p>getRequest</p>
+	 *
+	 * @return a {@link org.opennms.sms.reflector.smsservice.MobileMsgRequest} object.
+	 */
 	public MobileMsgRequest getRequest() {
 		return m_request;
 	}
 
+	/**
+	 * <p>getReceiveTime</p>
+	 *
+	 * @return a long.
+	 */
 	public long getReceiveTime() {
 		return m_receiveTime;
 	}
 	
+    /**
+     * <p>getText</p>
+     *
+     * @return a {@link java.lang.String} object.
+     */
     public abstract String getText();
 
 }

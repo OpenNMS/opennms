@@ -24,6 +24,12 @@ import org.opennms.rancid.RancidApiException;
 import org.opennms.rancid.RancidNode;
 import org.springframework.beans.factory.InitializingBean;
 
+/**
+ * <p>ConfigurationReportCalculator class.</p>
+ *
+ * @author ranger
+ * @version $Id: $
+ */
 public class ConfigurationReportCalculator implements InitializingBean {
 
     String m_baseDir;
@@ -32,10 +38,20 @@ public class ConfigurationReportCalculator implements InitializingBean {
     private String m_outputFileName;
 
     ConnectionProperties m_cp;
+    /**
+     * <p>getOutputFileName</p>
+     *
+     * @return a {@link java.lang.String} object.
+     */
     public String getOutputFileName() {
         return m_outputFileName;
     }
 
+    /**
+     * <p>setOutputFileName</p>
+     *
+     * @param outputFileName a {@link java.lang.String} object.
+     */
     public void setOutputFileName(String outputFileName) {
         m_outputFileName = outputFileName;
     }
@@ -48,42 +64,92 @@ public class ConfigurationReportCalculator implements InitializingBean {
     
     RwsRancidlistreport rlist;
     
+    /**
+     * <p>Getter for the field <code>theDate</code>.</p>
+     *
+     * @return a {@link java.lang.String} object.
+     */
     public String getTheDate() {
         return theDate;
     }
 
+    /**
+     * <p>Setter for the field <code>theDate</code>.</p>
+     *
+     * @param theDate a {@link java.lang.String} object.
+     */
     public void setTheDate(String theDate) {
         this.theDate = theDate;
     }
 
+    /**
+     * <p>Getter for the field <code>user</code>.</p>
+     *
+     * @return a {@link java.lang.String} object.
+     */
     public String getUser() {
         return user;
     }
 
+    /**
+     * <p>Setter for the field <code>user</code>.</p>
+     *
+     * @param user a {@link java.lang.String} object.
+     */
     public void setUser(String user) {
         this.user = user;
     }
 
+    /**
+     * <p>Getter for the field <code>reportRequestDate</code>.</p>
+     *
+     * @return a {@link java.util.Date} object.
+     */
     public Date getReportRequestDate() {
         return reportRequestDate;
     }
 
+    /**
+     * <p>Setter for the field <code>reportRequestDate</code>.</p>
+     *
+     * @param reportRequestDate a {@link java.util.Date} object.
+     */
     public void setReportRequestDate(Date reportRequestDate) {
         this.reportRequestDate = reportRequestDate;
     }
 
+    /**
+     * <p>getRwsConfig</p>
+     *
+     * @return a {@link org.opennms.netmgt.config.RWSConfig} object.
+     */
     public RWSConfig getRwsConfig() {
         return m_rwsConfig;
     }
 
+    /**
+     * <p>setRwsConfig</p>
+     *
+     * @param rwsConfig a {@link org.opennms.netmgt.config.RWSConfig} object.
+     */
     public void setRwsConfig(RWSConfig rwsConfig) {
         m_rwsConfig = rwsConfig;
     }
 
+    /**
+     * <p>getBaseDir</p>
+     *
+     * @return a {@link java.lang.String} object.
+     */
     public String getBaseDir() {
         return m_baseDir;
     }
 
+    /**
+     * <p>setBaseDir</p>
+     *
+     * @param baseDir a {@link java.lang.String} object.
+     */
     public void setBaseDir(String baseDir) {
         m_baseDir = baseDir;
     }
@@ -92,6 +158,11 @@ public class ConfigurationReportCalculator implements InitializingBean {
         return Logger.getLogger("Rancid");
     }
 
+    /**
+     * <p>afterPropertiesSet</p>
+     *
+     * @throws java.lang.Exception if any.
+     */
     public void afterPropertiesSet() throws Exception {
         RWSClientApi.init();
         m_cp = m_rwsConfig.getBase();
@@ -135,6 +206,9 @@ public class ConfigurationReportCalculator implements InitializingBean {
         return null;
     }
     
+    /**
+     * <p>calculate</p>
+     */
     public void calculate() {
 
         rlist = new RwsRancidlistreport();
@@ -242,6 +316,11 @@ public class ConfigurationReportCalculator implements InitializingBean {
         rlist.setGroupsWithNodesWithoutconfigurationAtReportDate(groupsWithNodesWithoutconfigurationAtReportDate);
     }
 
+    /**
+     * <p>writeXML</p>
+     *
+     * @throws org.opennms.report.configuration.ConfigurationCalculationException if any.
+     */
     public void writeXML() throws ConfigurationCalculationException {
         try {
             log().debug("Writing the XML");
@@ -262,6 +341,12 @@ public class ConfigurationReportCalculator implements InitializingBean {
     }
     
 
+    /**
+     * <p>marshal</p>
+     *
+     * @param outputFile a {@link java.io.File} object.
+     * @throws org.opennms.report.configuration.ConfigurationCalculationException if any.
+     */
     public void marshal(File outputFile)
     throws ConfigurationCalculationException {
         try {

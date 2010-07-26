@@ -44,8 +44,17 @@ import org.opennms.protocols.jmx.connectors.MX4JConnectionFactory;
 * @author <A HREF="mailto:mike@opennms.org">Mike Jamison </A>
 * @author <A HREF="http://www.opennms.org/">OpenNMS </A>
 */
+/**
+ * <p>MX4JCollector class.</p>
+ *
+ * @author ranger
+ * @version $Id: $
+ */
 public class MX4JCollector extends JMXCollector {
 
+  /**
+   * <p>Constructor for MX4JCollector.</p>
+   */
   public MX4JCollector() {
       super();
       setServiceName("mx4j");
@@ -56,6 +65,7 @@ public class MX4JCollector extends JMXCollector {
    * 
    * @see org.opennms.netmgt.collectd.JMXCollector#getMBeanServerConnection(java.util.Map, java.net.InetAddress)
    */
+  /** {@inheritDoc} */
   public ConnectionWrapper getMBeanServerConnection(Map<String, String> parameterMap, InetAddress address) {
       return MX4JConnectionFactory.getMBeanServerConnection(parameterMap, address);
   }

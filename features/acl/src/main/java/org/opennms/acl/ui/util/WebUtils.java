@@ -48,19 +48,43 @@ import org.opennms.acl.util.Constants;
 import org.springframework.web.bind.ServletRequestUtils;
 
 /**
+ * <p>WebUtils class.</p>
+ *
  * @author Massimiliano Dess&igrave; (desmax74@yahoo.it)
  * @since jdk 1.5.0
+ * @version $Id: $
  */
 public class WebUtils {
 
+    /**
+     * <p>getIntId</p>
+     *
+     * @param req a {@link javax.servlet.http.HttpServletRequest} object.
+     * @return a int.
+     */
     public static int getIntId(HttpServletRequest req) {
         return ServletRequestUtils.getIntParameter(req, Constants.ID, 0);
     }
 
+    /**
+     * <p>getIntParam</p>
+     *
+     * @param req a {@link javax.servlet.http.HttpServletRequest} object.
+     * @param name a {@link java.lang.String} object.
+     * @return a int.
+     */
     public static int getIntParam(HttpServletRequest req, String name) {
         return ServletRequestUtils.getIntParameter(req, name, 0);
     }
 
+    /**
+     * <p>addSessionAttribute</p>
+     *
+     * @param session a {@link javax.servlet.http.HttpSession} object.
+     * @param name a {@link java.lang.String} object.
+     * @param value a {@link java.lang.Object} object.
+     * @return a boolean.
+     */
     public static boolean addSessionAttribute(HttpSession session, String name, Object value) {
         if (value != null) {
             session.setAttribute(name, value);
@@ -70,26 +94,63 @@ public class WebUtils {
         }
     }
 
+    /**
+     * <p>getNumPage</p>
+     *
+     * @param req a {@link javax.servlet.http.HttpServletRequest} object.
+     * @return a int.
+     */
     public static int getNumPage(HttpServletRequest req) {
         return ServletRequestUtils.getIntParameter(req, Constants.UI_PAGE, 0);
     }
 
+    /**
+     * <p>getPager</p>
+     *
+     * @param req a {@link javax.servlet.http.HttpServletRequest} object.
+     * @return a {@link org.opennms.acl.model.Pager} object.
+     */
     public static Pager getPager(HttpServletRequest req) {
         return (Pager) req.getAttribute(Constants.PAGER);
     }
 
+    /**
+     * <p>getUser</p>
+     *
+     * @param req a {@link javax.servlet.http.HttpServletRequest} object.
+     * @return a {@link org.opennms.acl.domain.GenericUser} object.
+     */
     public static GenericUser getUser(HttpServletRequest req) {
         return (GenericUser) req.getAttribute(Constants.USER);
     }
 
+    /**
+     * <p>getAuthority</p>
+     *
+     * @param req a {@link javax.servlet.http.HttpServletRequest} object.
+     * @return a {@link org.opennms.acl.domain.Authority} object.
+     */
     public static Authority getAuthority(HttpServletRequest req) {
         return (Authority) req.getAttribute(Constants.AUTHORITY);
     }
 
+    /**
+     * <p>getGroup</p>
+     *
+     * @param req a {@link javax.servlet.http.HttpServletRequest} object.
+     * @return a {@link org.opennms.acl.domain.Group} object.
+     */
     public static Group getGroup(HttpServletRequest req) {
         return (Group) req.getAttribute(Constants.GROUP);
     }
 
+    /**
+     * <p>extractIdGrantedAuthorityFromString</p>
+     *
+     * @param line a {@link java.lang.String} object.
+     * @param separator a {@link java.lang.String} object.
+     * @return a {@link java.util.List} object.
+     */
     public static List<Integer> extractIdGrantedAuthorityFromString(String line, String separator) {
         String[] fields = line.split(separator);
         List<Integer> ids = new ArrayList<Integer>();
@@ -99,6 +160,14 @@ public class WebUtils {
         return ids;
     }
 
+    /**
+     * <p>getPager</p>
+     *
+     * @param req a {@link javax.servlet.http.HttpServletRequest} object.
+     * @param totalItemsNumber a {@link java.lang.Integer} object.
+     * @param numberItemsOnPage a {@link java.lang.Integer} object.
+     * @return a {@link org.opennms.acl.model.Pager} object.
+     */
     public static Pager getPager(HttpServletRequest req, Integer totalItemsNumber, Integer numberItemsOnPage) {
         int page = ServletRequestUtils.getIntParameter(req, Constants.PAGE_NUMBER, 0);
         int numeroPagineMax = getMaxPageNumber(totalItemsNumber, numberItemsOnPage);
@@ -108,6 +177,14 @@ public class WebUtils {
         return new Pager(page, numeroPagineMax, numberItemsOnPage);
     }
 
+    /**
+     * <p>getPager</p>
+     *
+     * @param page a int.
+     * @param totalItemsNumber a {@link java.lang.Integer} object.
+     * @param numberItemsOnPage a {@link java.lang.Integer} object.
+     * @return a {@link org.opennms.acl.model.Pager} object.
+     */
     public static Pager getPager(int page, Integer totalItemsNumber, Integer numberItemsOnPage) {
         int numeroPagineMax = getMaxPageNumber(totalItemsNumber, numberItemsOnPage);
         if (page > numeroPagineMax) {

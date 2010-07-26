@@ -43,9 +43,17 @@ import org.opennms.web.svclayer.RrdGraphService;
 import org.springframework.web.servlet.ModelAndView;
 import org.springframework.web.servlet.mvc.AbstractController;
 
+/**
+ * <p>RrdGraphController class.</p>
+ *
+ * @author ranger
+ * @version $Id: $
+ * @since 1.8.1
+ */
 public class RrdGraphController extends AbstractController {
     private RrdGraphService m_rrdGraphService;
 
+    /** {@inheritDoc} */
     @Override
     protected ModelAndView handleRequestInternal(HttpServletRequest request,
             HttpServletResponse response) throws Exception {
@@ -133,10 +141,20 @@ public class RrdGraphController extends AbstractController {
         return null;
     }
 
+    /**
+     * <p>getRrdGraphService</p>
+     *
+     * @return a {@link org.opennms.web.svclayer.RrdGraphService} object.
+     */
     public RrdGraphService getRrdGraphService() {
         return m_rrdGraphService;
     }
 
+    /**
+     * <p>setRrdGraphService</p>
+     *
+     * @param rrdGraphService a {@link org.opennms.web.svclayer.RrdGraphService} object.
+     */
     public void setRrdGraphService(RrdGraphService rrdGraphService) {
         m_rrdGraphService = rrdGraphService;
     }

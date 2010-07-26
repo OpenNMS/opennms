@@ -34,10 +34,13 @@ package org.opennms.netmgt.config;
 
 
 /**
+ * <p>DbConnectionFactory interface.</p>
+ *
  * @author brozow
  *
  * TODO To change the template for this generated type comment go to
  * Window - Preferences - Java - Code Style - Code Templates
+ * @version $Id: $
  */
 public interface DbConnectionFactory extends javax.sql.DataSource {
         

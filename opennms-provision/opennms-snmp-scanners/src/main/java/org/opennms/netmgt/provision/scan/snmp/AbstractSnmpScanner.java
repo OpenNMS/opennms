@@ -53,8 +53,10 @@ import org.opennms.netmgt.snmp.SnmpWalker;
 import org.springframework.util.Assert;
 
 /**
- * @author brozow
+ * <p>AbstractSnmpScanner class.</p>
  *
+ * @author brozow
+ * @version $Id: $
  */
 public class AbstractSnmpScanner implements Scanner {
     
@@ -62,21 +64,39 @@ public class AbstractSnmpScanner implements Scanner {
     private SnmpAgentConfigFactory m_snmpAgentConfigFactory = null;
     private List<SnmpExchange> m_exchangeCollection = null;
     
+    /**
+     * <p>Constructor for AbstractSnmpScanner.</p>
+     *
+     * @param name a {@link java.lang.String} object.
+     */
     protected AbstractSnmpScanner(String name) {
         m_name = name;
         m_exchangeCollection = new ArrayList<SnmpExchange>();
     }
     
+    /**
+     * <p>getName</p>
+     *
+     * @return a {@link java.lang.String} object.
+     */
     public String getName() {
         return m_name;
     }
     
+    /**
+     * <p>setSnmpAgentConfigFactory</p>
+     *
+     * @param snmpPeerFactory a {@link org.opennms.netmgt.dao.SnmpAgentConfigFactory} object.
+     */
     public void setSnmpAgentConfigFactory(SnmpAgentConfigFactory snmpPeerFactory) {
         m_snmpAgentConfigFactory = snmpPeerFactory;
     }
 
     /* (non-Javadoc)
      * @see org.opennms.netmgt.provision.Scanner#init()
+     */
+    /**
+     * <p>init</p>
      */
     public void init() {
         Assert.notNull(m_snmpAgentConfigFactory, "snmpAgentConfigFactory must be set");
@@ -86,12 +106,16 @@ public class AbstractSnmpScanner implements Scanner {
         
     }
 
+    /**
+     * <p>onInit</p>
+     */
     protected void onInit() {
     }
 
     /* (non-Javadoc)
      * @see org.opennms.netmgt.provision.Scanner#scan(org.opennms.netmgt.provision.ScanContext)
      */
+    /** {@inheritDoc} */
     public void scan(ScanContext context) throws InterruptedException {
         InetAddress agentAddress = context.getAgentAddress("SNMP");
         if (agentAddress == null) {
@@ -130,6 +154,13 @@ public class AbstractSnmpScanner implements Scanner {
         public void andStoreIn(Storer storer);
     }
     
+    /**
+     * <p>getSingleInstance</p>
+     *
+     * @param base a {@link java.lang.String} object.
+     * @param inst a {@link java.lang.String} object.
+     * @return a {@link org.opennms.netmgt.provision.scan.snmp.AbstractSnmpScanner.SnmpExchange} object.
+     */
     protected SnmpExchange getSingleInstance(final String base, final String inst) {
         SnmpExchange exchange = new SnmpExchange() {
             Storer m_storer;

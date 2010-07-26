@@ -24,10 +24,16 @@ import com.google.gwt.user.client.ui.Label;
 import com.google.gwt.user.client.ui.MultiWordSuggestOracle;
 import com.google.gwt.user.client.ui.Panel;
 import com.google.gwt.user.client.ui.SuggestBox;
-import com.google.gwt.user.client.ui.ToggleButton;
-import com.google.gwt.user.client.ui.Widget;
 import com.google.gwt.user.client.ui.SuggestOracle.Suggestion;
+import com.google.gwt.user.client.ui.Widget;
 
+/**
+ * <p>FilterPanel class.</p>
+ *
+ * @author ranger
+ * @version $Id: $
+ * @since 1.8.1
+ */
 public class FilterPanel extends Composite {
 
     interface Binder extends UiBinder<Widget, FilterPanel> { }
@@ -52,14 +58,6 @@ public class FilterPanel extends Composite {
     Label noApplicationsCaption;
     @UiField
     Panel applicationFilters;
-    @UiField
-    ToggleButton upButton;
-    @UiField
-    ToggleButton marginalButton;
-    @UiField
-    ToggleButton downButton;
-    @UiField
-    ToggleButton unknownButton;
 
     private final MultiWordSuggestOracle applicationNames = new MultiWordSuggestOracle();
     
@@ -132,16 +130,20 @@ public class FilterPanel extends Composite {
         }
     }
 
+    /**
+     * <p>Constructor for FilterPanel.</p>
+     */
     public FilterPanel() {
         super();
         applicationNameSuggestBox = new SuggestBox(applicationNames);
         initWidget(BINDER.createAndBindUi(this));
-        upButton.setDown(true);
-        marginalButton.setDown(true);
-        downButton.setDown(true);
-        unknownButton.setDown(true);
     }
 
+    /**
+     * <p>onApplicationSelect</p>
+     *
+     * @param event a {@link com.google.gwt.event.logical.shared.SelectionEvent} object.
+     */
     @UiHandler("applicationNameSuggestBox") 
     public void onApplicationSelect(final SelectionEvent<Suggestion> event) {
         Suggestion item = event.getSelectedItem();
@@ -149,32 +151,22 @@ public class FilterPanel extends Composite {
         m_eventBus.fireEvent(new ApplicationSelectedEvent(app.getName()));
     }
 
-    @UiHandler("upButton") 
-    public void onUpButtonClick(ClickEvent event) {
-        m_eventBus.fireEvent(new StatusSelectionChangedEvent(Status.UP, upButton.isDown()));
-    }
-
-    @UiHandler("marginalButton") 
-    public void onMarginalButtonClick(ClickEvent event) {
-        m_eventBus.fireEvent(new StatusSelectionChangedEvent(Status.MARGINAL, marginalButton.isDown()));
-    }
-
-    @UiHandler("downButton") 
-    public void onDownButtonClick(ClickEvent event) {
-        m_eventBus.fireEvent(new StatusSelectionChangedEvent(Status.DOWN, downButton.isDown()));
-    }
-
-    @UiHandler("unknownButton") 
-    public void onUnknownButtonClick(ClickEvent event) {
-        m_eventBus.fireEvent(new StatusSelectionChangedEvent(Status.UNKNOWN, unknownButton.isDown()));
-    }
-
+    /**
+     * <p>updateApplicationNames</p>
+     *
+     * @param names a {@link java.util.Collection} object.
+     */
     public void updateApplicationNames(Collection<String> names) {
         // Update the SuggestBox's Oracle
         applicationNames.clear();
         applicationNames.addAll(names);
     }
 
+    /**
+     * <p>updateSelectedApplications</p>
+     *
+     * @param apps a {@link java.util.Collection} object.
+     */
     public void updateSelectedApplications(Collection<ApplicationInfo> apps) {
         // Update the contents of the application filter list
         applicationFilters.clear();
@@ -187,15 +179,30 @@ public class FilterPanel extends Composite {
             noApplicationsCaption.setVisible(true);
         }
     }
-
+    
+    /**
+     * <p>showApplicationFilters</p>
+     *
+     * @param showMe a boolean.
+     */
     public void showApplicationFilters(boolean showMe) {
         applicationTray.setVisible(showMe);
     }
 
+    /**
+     * <p>setEventBus</p>
+     *
+     * @param eventBus a {@link com.google.gwt.event.shared.HandlerManager} object.
+     */
     public void setEventBus(final HandlerManager eventBus) {
         m_eventBus = eventBus;
     }
 
+    /**
+     * <p>setLocationManager</p>
+     *
+     * @param manager a {@link org.opennms.features.poller.remote.gwt.client.LocationManager} object.
+     */
     public void setLocationManager(final LocationManager manager) {
         m_locationManager = manager;
     }

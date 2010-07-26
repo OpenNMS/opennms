@@ -44,9 +44,22 @@ import javax.sql.DataSource;
 import org.opennms.core.utils.DBUtils;
 
 
+/**
+ * <p>Querier class.</p>
+ *
+ * @author ranger
+ * @version $Id: $
+ */
 public class Querier extends JDBCTemplate implements RowProcessor {
     private int m_count;
     private RowProcessor m_rowProcessor;
+    /**
+     * <p>Constructor for Querier.</p>
+     *
+     * @param db a {@link javax.sql.DataSource} object.
+     * @param sql a {@link java.lang.String} object.
+     * @param rowProcessor a {@link org.opennms.netmgt.utils.RowProcessor} object.
+     */
     public Querier(DataSource db, String sql, RowProcessor rowProcessor) {
         super(db, sql);
         if (rowProcessor == null)
@@ -56,14 +69,26 @@ public class Querier extends JDBCTemplate implements RowProcessor {
         m_count = 0;
     }
      
+    /**
+     * <p>Constructor for Querier.</p>
+     *
+     * @param db a {@link javax.sql.DataSource} object.
+     * @param sql a {@link java.lang.String} object.
+     */
     public Querier(DataSource db, String sql) {
         this(db, sql, null);
     }
      
+    /**
+     * <p>getCount</p>
+     *
+     * @return a int.
+     */
     public int getCount() {
         return m_count;
     }
      
+    /** {@inheritDoc} */
     protected void executeStmt(PreparedStatement stmt) throws SQLException {
         final DBUtils d = new DBUtils(getClass());
         try {
@@ -79,6 +104,7 @@ public class Querier extends JDBCTemplate implements RowProcessor {
         }
     }
 
+    /** {@inheritDoc} */
     public void processRow(ResultSet rs) throws SQLException {
     }
 

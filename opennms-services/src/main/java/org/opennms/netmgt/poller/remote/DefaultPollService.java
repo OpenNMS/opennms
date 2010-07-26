@@ -45,14 +45,17 @@ import org.opennms.netmgt.poller.ServiceMonitorLocator;
 import org.springframework.util.Assert;
 
 /**
- * 
+ * <p>DefaultPollService class.</p>
+ *
  * @author <a href="mailto:brozow@opennms.org">Mathew Brozowski</a>
+ * @version $Id: $
  */
 public class DefaultPollService implements PollService {
 	
     Collection<ServiceMonitorLocator> m_locators;
     Map<String, ServiceMonitor> m_monitors;
 	
+    /** {@inheritDoc} */
     public void setServiceMonitorLocators(Collection<ServiceMonitorLocator> locators) {
         m_locators = locators;
         
@@ -64,11 +67,13 @@ public class DefaultPollService implements PollService {
         m_monitors = monitors;
     }
     
+    /** {@inheritDoc} */
     public void initialize(PolledService polledService) {
         ServiceMonitor monitor = getServiceMonitor(polledService);
         monitor.initialize(polledService);
     }
 
+    /** {@inheritDoc} */
     public PollStatus poll(PolledService polledService) {
         ServiceMonitor monitor = getServiceMonitor(polledService);
         return monitor.poll(polledService, polledService.getMonitorConfiguration());
@@ -83,6 +88,7 @@ public class DefaultPollService implements PollService {
 
     // FIXME: this is never called but should be
     // also monitor.release() isn't called either
+    /** {@inheritDoc} */
     public void release(PolledService polledService) {
         ServiceMonitor monitor = getServiceMonitor(polledService);
         monitor.release(polledService);

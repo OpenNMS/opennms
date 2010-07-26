@@ -73,10 +73,12 @@ import org.opennms.protocols.dns.DNSAddressRequest;
  * the ServiceMonitor interface that allows it to be used along with other
  * plug-ins by the service poller framework.
  * </P>
- * 
+ *
  * @author <A HREF="mailto:tarus@opennms.org">Tarus Balog </A>
  * @author <A HREF="http://www.opennms.org/">OpenNMS </A>
- * 
+ * @author <A HREF="mailto:tarus@opennms.org">Tarus Balog </A>
+ * @author <A HREF="http://www.opennms.org/">OpenNMS </A>
+ * @version $Id: $
  */
 @Distributable
 final public class DnsMonitor extends IPv4Monitor {
@@ -104,10 +106,12 @@ final public class DnsMonitor extends IPv4Monitor {
     private static final int[] DEFAULT_FATAL_RESP_CODES = { 2 };
 
     /**
+     * {@inheritDoc}
+     *
      * <P>
      * Poll the specified address for DNS service availability.
      * </P>
-     * 
+     *
      * <P>
      * During the poll an DNS address request query packet is generated for
      * hostname 'localhost'. The query is sent via UDP socket to the interface
@@ -115,14 +119,6 @@ final public class DnsMonitor extends IPv4Monitor {
      * received, it is parsed and validated. If the DNS lookup was successful
      * the service status is set to SERVICE_AVAILABLE and the method returns.
      * </P>
-     * @param parameters
-     *            The package parameters (timeout, retry, etc...) to be used for
-     *            this poll.
-     * @param iface
-     *            The network interface to test the service on.
-     * @return The availibility of the interface and if a transition event
-     *         should be supressed.
-     * 
      */
     public PollStatus poll(MonitoredService svc, Map<String, Object> parameters) {
         NetworkInterface iface = svc.getNetInterface();
@@ -170,13 +166,13 @@ final public class DnsMonitor extends IPv4Monitor {
             request.setFatalResponseCodes(codeList);
         }
         
-        PollStatus serviceStatus = PollStatus.unavailable();
+        PollStatus serviceStatus = null;
         DatagramSocket socket = null;
         try {
             socket = new DatagramSocket();
             socket.setSoTimeout(timeoutTracker.getSoTimeout()); // will force the InterruptedIOException
 
-            for (timeoutTracker.reset(); timeoutTracker.shouldRetry() && !serviceStatus.isAvailable(); timeoutTracker.nextAttempt()) {
+            for (timeoutTracker.reset(); timeoutTracker.shouldRetry() && (serviceStatus == null || !serviceStatus.isAvailable()); timeoutTracker.nextAttempt()) {
                 try {
                     // Send DNS request
                     //
@@ -202,7 +198,8 @@ final public class DnsMonitor extends IPv4Monitor {
                     serviceStatus = logUp(Level.DEBUG, responseTime, "valid DNS request received, responseTime= " + responseTime + "ms");
 
                 } catch (InterruptedIOException ex) {
-                    // Ignore, no response received.
+                    // No response received, retry without marking the poll failed. If we get this condition over and over until 
+                    // the retries are exhausted, it will leave serviceStatus null and we'll get the log message at the bottom 
                 } catch (NoRouteToHostException e) {
                     serviceStatus = logDown(Level.DEBUG, "No route to host exception for address: " + ipv4Addr, e);
                 } catch (ConnectException e) {
@@ -218,6 +215,10 @@ final public class DnsMonitor extends IPv4Monitor {
                 socket.close();
         }
 
+        if (serviceStatus == null) {
+            serviceStatus = logDown(Level.DEBUG, "Never received valid DNS response for address: " + ipv4Addr);
+        }
+        
         // 
         //
         // return the status of the service

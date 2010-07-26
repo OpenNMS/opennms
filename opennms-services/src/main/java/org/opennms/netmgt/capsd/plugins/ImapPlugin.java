@@ -58,11 +58,17 @@ import org.opennms.netmgt.capsd.ConnectionConfig;
  * Plugin interface that allows it to be used along with other plugins by the
  * daemon.
  * </P>
- * 
+ *
  * @author <A HREF="mailto:sowmya@opennms.org">Sowmya Nataraj </A>
  * @author <a href="mailto:weave@oculan.com">Weave </a>
  * @author <A HREF="http://www.opennsm.org">OpenNMS </A>
- * 
+ * @author <A HREF="mailto:sowmya@opennms.org">Sowmya Nataraj </A>
+ * @author <a href="mailto:weave@oculan.com">Weave </a>
+ * @author <A HREF="http://www.opennsm.org">OpenNMS </A>
+ * @author <A HREF="mailto:sowmya@opennms.org">Sowmya Nataraj </A>
+ * @author <a href="mailto:weave@oculan.com">Weave </a>
+ * @author <A HREF="http://www.opennsm.org">OpenNMS </A>
+ * @version $Id: $
  */
 public final class ImapPlugin extends AbstractTcpPlugin {
 
@@ -109,21 +115,13 @@ public final class ImapPlugin extends AbstractTcpPlugin {
     private static final String PROTOCOL_NAME = "IMAP";
 
     /**
-     * @param protocol
-     * @param defaultPort
-     * @param defaultTimeout
-     * @param defaultRetry
+     * <p>Constructor for ImapPlugin.</p>
      */
     public ImapPlugin() {
         super(PROTOCOL_NAME, DEFAULT_PORT, DEFAULT_TIMEOUT, DEFAULT_RETRY);
     }
 
-    /**
-     * @param isAServer
-     * @param socket
-     * @return
-     * @throws IOException
-     */
+    /** {@inheritDoc} */
     protected boolean checkProtocol(Socket socket, ConnectionConfig config) throws IOException {
 
         boolean isAServer = false;

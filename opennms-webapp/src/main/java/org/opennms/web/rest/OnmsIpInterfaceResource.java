@@ -75,6 +75,13 @@ import com.sun.jersey.api.core.ResourceContext;
 import com.sun.jersey.spi.resource.PerRequest;
 
 @Component
+/**
+ * <p>OnmsIpInterfaceResource class.</p>
+ *
+ * @author ranger
+ * @version $Id: $
+ * @since 1.8.1
+ */
 @PerRequest
 @Scope("prototype")
 @Transactional
@@ -95,6 +102,12 @@ public class OnmsIpInterfaceResource extends OnmsRestService {
     @Context 
     UriInfo m_uriInfo;
 
+    /**
+     * <p>getIpInterfaces</p>
+     *
+     * @param nodeCriteria a {@link java.lang.String} object.
+     * @return a {@link org.opennms.netmgt.model.OnmsIpInterfaceList} object.
+     */
     @GET
     @Produces({MediaType.APPLICATION_XML, MediaType.APPLICATION_JSON})
     public OnmsIpInterfaceList getIpInterfaces(@PathParam("nodeCriteria") String nodeCriteria) {
@@ -125,6 +138,13 @@ public class OnmsIpInterfaceResource extends OnmsRestService {
         return interfaceList;
     }
 
+    /**
+     * <p>getIpInterface</p>
+     *
+     * @param nodeCriteria a {@link java.lang.String} object.
+     * @param ipAddress a {@link java.lang.String} object.
+     * @return a {@link org.opennms.netmgt.model.OnmsIpInterface} object.
+     */
     @GET
     @Produces({MediaType.APPLICATION_XML, MediaType.APPLICATION_JSON})
     @Path("{ipAddress}")
@@ -136,6 +156,13 @@ public class OnmsIpInterfaceResource extends OnmsRestService {
         return node.getIpInterfaceByIpAddress(ipAddress);
     }
 
+    /**
+     * <p>addIpInterface</p>
+     *
+     * @param nodeCriteria a {@link java.lang.String} object.
+     * @param ipInterface a {@link org.opennms.netmgt.model.OnmsIpInterface} object.
+     * @return a {@link javax.ws.rs.core.Response} object.
+     */
     @POST
     @Consumes(MediaType.APPLICATION_XML)
     public Response addIpInterface(@PathParam("nodeCriteria") String nodeCriteria, OnmsIpInterface ipInterface) {
@@ -163,6 +190,14 @@ public class OnmsIpInterfaceResource extends OnmsRestService {
         return Response.ok().build();
     }
     
+    /**
+     * <p>updateIpInterface</p>
+     *
+     * @param nodeCriteria a {@link java.lang.String} object.
+     * @param ipAddress a {@link java.lang.String} object.
+     * @param params a {@link org.opennms.web.rest.MultivaluedMapImpl} object.
+     * @return a {@link javax.ws.rs.core.Response} object.
+     */
     @PUT
     @Consumes(MediaType.APPLICATION_FORM_URLENCODED)
     @Path("{ipAddress}")
@@ -189,6 +224,13 @@ public class OnmsIpInterfaceResource extends OnmsRestService {
         return Response.ok().build();
     }
 
+    /**
+     * <p>deleteIpInterface</p>
+     *
+     * @param nodeCriteria a {@link java.lang.String} object.
+     * @param ipAddress a {@link java.lang.String} object.
+     * @return a {@link javax.ws.rs.core.Response} object.
+     */
     @DELETE
     @Path("{ipAddress}")
     public Response deleteIpInterface(@PathParam("nodeCriteria") String nodeCriteria, @PathParam("ipAddress") String ipAddress) {
@@ -217,6 +259,11 @@ public class OnmsIpInterfaceResource extends OnmsRestService {
         return Response.ok().build();
     }
     
+    /**
+     * <p>getServices</p>
+     *
+     * @return a {@link org.opennms.web.rest.OnmsMonitoredServiceResource} object.
+     */
     @Path("{ipAddress}/services")
     public OnmsMonitoredServiceResource getServices() {
         return m_context.getResource(OnmsMonitoredServiceResource.class);

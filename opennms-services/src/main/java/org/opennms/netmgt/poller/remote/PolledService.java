@@ -48,8 +48,10 @@ import org.opennms.netmgt.poller.MonitoredService;
 import org.opennms.netmgt.poller.NetworkInterface;
 
 /**
- * 
+ * <p>PolledService class.</p>
+ *
  * @author <a href="mailto:brozow@opennms.org">Mathew Brozowski</a>
+ * @version $Id: $
  */
 public class PolledService implements MonitoredService, Serializable, Comparable<PolledService> {
     
@@ -63,6 +65,13 @@ public class PolledService implements MonitoredService, Serializable, Comparable
     private String m_nodeLabel;
     private String m_svcName;
 	
+	/**
+	 * <p>Constructor for PolledService.</p>
+	 *
+	 * @param monitoredService a {@link org.opennms.netmgt.model.OnmsMonitoredService} object.
+	 * @param monitorConfiguration a {@link java.util.Map} object.
+	 * @param pollModel a {@link org.opennms.netmgt.poller.remote.OnmsPollModel} object.
+	 */
 	public PolledService(final OnmsMonitoredService monitoredService, final Map<String,Object> monitorConfiguration, final OnmsPollModel pollModel) {
         m_serviceId = monitoredService.getId();
         m_nodeId = monitoredService.getNodeId();
@@ -73,47 +82,94 @@ public class PolledService implements MonitoredService, Serializable, Comparable
 		m_pollModel = pollModel;
 	}
 	
+	/**
+	 * <p>getServiceId</p>
+	 *
+	 * @return a {@link java.lang.Integer} object.
+	 */
 	public Integer getServiceId() {
 		return m_serviceId;
 	}
 
+    /**
+     * <p>getAddress</p>
+     *
+     * @return a {@link java.net.InetAddress} object.
+     */
     public InetAddress getAddress() {
         return m_netInterface.getInetAddress();
     }
 
+    /**
+     * <p>getIpAddr</p>
+     *
+     * @return a {@link java.lang.String} object.
+     */
     public String getIpAddr() {
         return m_netInterface.getInetAddress().getHostAddress();
     }
 
+    /**
+     * <p>getNetInterface</p>
+     *
+     * @return a {@link org.opennms.netmgt.poller.NetworkInterface} object.
+     */
     public NetworkInterface getNetInterface() {
         return m_netInterface;
     }
 
+    /**
+     * <p>getNodeId</p>
+     *
+     * @return a int.
+     */
     public int getNodeId() {
         return m_nodeId;
     }
 
+    /**
+     * <p>getNodeLabel</p>
+     *
+     * @return a {@link java.lang.String} object.
+     */
     public String getNodeLabel() {
         return m_nodeLabel;
     }
 
+    /**
+     * <p>getSvcName</p>
+     *
+     * @return a {@link java.lang.String} object.
+     */
     public String getSvcName() {
         return m_svcName;
     }
 	
+	/**
+	 * <p>getMonitorConfiguration</p>
+	 *
+	 * @return a {@link java.util.Map} object.
+	 */
 	public Map<String,Object> getMonitorConfiguration() {
         return m_monitorConfiguration;
     }
     
+    /**
+     * <p>getPollModel</p>
+     *
+     * @return a {@link org.opennms.netmgt.poller.remote.OnmsPollModel} object.
+     */
     public OnmsPollModel getPollModel() {
         return m_pollModel;
     }
 
+    /** {@inheritDoc} */
     @Override
     public String toString() {
         return getNodeId()+":"+getIpAddr()+":"+getSvcName();
     }
 
+    /** {@inheritDoc} */
     @Override
     public int hashCode() {
         return new HashCodeBuilder(3, 57)
@@ -125,6 +181,7 @@ public class PolledService implements MonitoredService, Serializable, Comparable
         .toHashCode();
     }
 
+    /** {@inheritDoc} */
     @Override
     public boolean equals(final Object o) {
         if (o == null) return false;
@@ -139,6 +196,12 @@ public class PolledService implements MonitoredService, Serializable, Comparable
             .isEquals();
     }
 
+    /**
+     * <p>compareTo</p>
+     *
+     * @param that a {@link org.opennms.netmgt.poller.remote.PolledService} object.
+     * @return a int.
+     */
     public int compareTo(final PolledService that) {
         if (that == null) return -1;
         return new CompareToBuilder()

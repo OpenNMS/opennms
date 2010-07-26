@@ -43,10 +43,12 @@ package org.opennms.core.queue;
  * listeners that may block or preform other work while a queue is empty,
  * instead of using polling.
  * </p>
- * 
+ *
  * @author <a href="mailto:weave@oculan.com">Brian Weaver </a>
  * @author <a href="http://www.opennms.org">OpenNMS </a>
- * 
+ * @author <a href="mailto:weave@oculan.com">Brian Weaver </a>
+ * @author <a href="http://www.opennms.org">OpenNMS </a>
+ * @version $Id: $
  */
 public interface NotifiableInputFifoQueue extends FifoQueue {
     /**
@@ -54,7 +56,7 @@ public interface NotifiableInputFifoQueue extends FifoQueue {
      * exists then it is up to the implementor to determine behavior. When a new
      * element is added to the queue the listener will have its
      * {@link InputFifoQueueListener#onQueueInput callback}method invoked.
-     * 
+     *
      * @param listener
      *            The instance to be notified on queue additions.
      */
@@ -63,7 +65,7 @@ public interface NotifiableInputFifoQueue extends FifoQueue {
     /**
      * Removes an already registered listener. If the listener was not already
      * registered then no action is performed.
-     * 
+     *
      * @param listener
      *            The listener to remove from the queue.
      */

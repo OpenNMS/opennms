@@ -73,9 +73,12 @@ import org.opennms.reporting.datablock.Service;
  * Availability Last Months Total Availability Last Months Daily Service
  * Availability Month To Date Daily Availability Month To Date Total
  * Availability
- * 
+ *
  * @author <A HREF="mailto:jacinta@oculan.com">Jacinta Remedios </A>
  * @author <A HREF="http://www.oculan.com">Oculan </A>
+ * @author <A HREF="mailto:jacinta@oculan.com">Jacinta Remedios </A>
+ * @author <A HREF="http://www.oculan.com">Oculan </A>
+ * @version $Id: $
  */
 public class AvailCalculations extends Object {
     /**
@@ -141,7 +144,7 @@ public class AvailCalculations extends Object {
 
     /**
      * Constructor
-     * 
+     *
      * @param nodes
      *            List of nodes
      * @param endTime
@@ -157,6 +160,13 @@ public class AvailCalculations extends Object {
      *            Map of all offenders -- percent/(list of node) pairs
      * @param format
      *            Value can be "SVG / all"
+     * @param warning a double.
+     * @param normal a double.
+     * @param comments a {@link java.lang.String} object.
+     * @param name a {@link java.lang.String} object.
+     * @param monthFormat a {@link java.lang.String} object.
+     * @param catIndex a int.
+     * @param sectionIndex a int.
      */
     public AvailCalculations(List<Node> nodes, long endTime, long lastMonthEndTime, List<String> monitoredServices, Report report, TreeMap<Double, List<String>> offenders, double warning, double normal, String comments, String name, String format, String monthFormat, int catIndex, int sectionIndex) {
         m_sectionIndex = sectionIndex;
@@ -433,6 +443,11 @@ public class AvailCalculations extends Object {
             log.debug("Leaving AvailCalculations");
     }
 
+    /**
+     * <p>getSectionIndex</p>
+     *
+     * @return a int.
+     */
     public int getSectionIndex() {
         return m_sectionIndex;
     }

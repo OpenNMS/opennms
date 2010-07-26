@@ -44,9 +44,12 @@ package org.opennms.core.fiber;
  * core interface to provide methods for suspending and resuming the
  * <code>Fiber</code>.
  * </p>
- * 
+ *
  * @author <a href="mailto:weave@oculan.com">Brian Weaver </a>
  * @author <a href="http://www.opennms.org/">OpenNMS </a>
+ * @author <a href="mailto:weave@oculan.com">Brian Weaver </a>
+ * @author <a href="http://www.opennms.org/">OpenNMS </a>
+ * @version $Id: $
  */
 public interface PausableFiber extends Fiber {
     /**
@@ -75,7 +78,7 @@ public interface PausableFiber extends Fiber {
     /**
      * This method is used to suspend a currently running <code>Fiber<code>.
      * When invoked the <code>Fiber</code> will begin the transition to
-     * a <code>PAUSED</code> status after changing its internal state, if 
+     * a <code>PAUSED</code> status after changing its internal state, if
      * applicable.
      */
     public void pause();

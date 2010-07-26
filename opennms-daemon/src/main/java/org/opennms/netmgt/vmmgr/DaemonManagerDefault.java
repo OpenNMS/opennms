@@ -39,32 +39,57 @@ import java.util.Map;
 
 import org.opennms.netmgt.model.ServiceDaemon;
 
+/**
+ * <p>DaemonManagerDefault class.</p>
+ *
+ * @author ranger
+ * @version $Id: $
+ */
 public class DaemonManagerDefault implements DaemonManager {
 	
 	private List<ServiceDaemon> m_serviceDaemons;
 	
+	/**
+	 * <p>setServiceDaemons</p>
+	 *
+	 * @param serviceDaemons a {@link java.util.List} object.
+	 */
 	public void setServiceDaemons(List<ServiceDaemon> serviceDaemons) {
 		m_serviceDaemons = serviceDaemons;
 	}
 
+	/**
+	 * <p>pause</p>
+	 */
 	public void pause() {
         for(ServiceDaemon serviceDaemon : m_serviceDaemons) {
 			serviceDaemon.pause();
 		}
 	}
 
+	/**
+	 * <p>resume</p>
+	 */
 	public void resume() {
         for(ServiceDaemon serviceDaemon : m_serviceDaemons) {
 			serviceDaemon.resume();
 		}
 	}
 
+	/**
+	 * <p>start</p>
+	 */
 	public void start() {
         for(ServiceDaemon serviceDaemon : m_serviceDaemons) {
 			serviceDaemon.start();
 		}
 	}
 
+	/**
+	 * <p>status</p>
+	 *
+	 * @return a {@link java.util.Map} object.
+	 */
 	public Map<String, String> status() {
         Map<String, String> stati = new HashMap<String, String>();
         for(ServiceDaemon serviceDaemon : m_serviceDaemons) {
@@ -73,6 +98,9 @@ public class DaemonManagerDefault implements DaemonManager {
 		return stati;
 	}
 
+	/**
+	 * <p>stop</p>
+	 */
 	public void stop() {
         for(ServiceDaemon serviceDaemon : m_serviceDaemons) {
 			stopService(serviceDaemon);

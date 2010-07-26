@@ -19,6 +19,13 @@ case "$1" in
                 (grep -v ^JAVA_HOME /etc/default/opennms || : ; echo 'JAVA_HOME=/usr/lib/jvm/java-1.5.0-sun') > /etc/default/opennms.new
                 mv /etc/default/opennms.new /etc/default/opennms || :
         fi
+        echo ""
+        echo " *** Installation complete.  You must still run the installer at"
+        echo " *** \$OPENNMS_HOME/etc/install to be sure your database is up"
+        echo " *** to date before you start OpenNMS.  See the install guide at"
+        echo " *** http://www.opennms.org/wiki/Installation:Debian and the"
+        echo " *** release notes for details."
+        echo ""
     ;;
     abort-upgrade|abort-remove|abort-deconfigure)
 

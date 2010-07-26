@@ -5,9 +5,23 @@ import java.util.Set;
 
 
 
+/**
+ * <p>CompareToBuilder class.</p>
+ *
+ * @author ranger
+ * @version $Id: $
+ * @since 1.8.1
+ */
 public class CompareToBuilder {
 	private int comparison = 0;
 
+	/**
+	 * <p>append</p>
+	 *
+	 * @param a a {@link java.lang.Object} object.
+	 * @param b a {@link java.lang.Object} object.
+	 * @return a {@link org.opennms.features.poller.remote.gwt.client.utils.CompareToBuilder} object.
+	 */
 	@SuppressWarnings("unchecked")
 	public CompareToBuilder append(Object a, Object b) {
 		if (comparison != 0) return this;
@@ -32,6 +46,13 @@ public class CompareToBuilder {
 		return this;
 	}
 
+	/**
+	 * <p>append</p>
+	 *
+	 * @param a an array of {@link java.lang.Object} objects.
+	 * @param b an array of {@link java.lang.Object} objects.
+	 * @return a {@link org.opennms.features.poller.remote.gwt.client.utils.CompareToBuilder} object.
+	 */
 	public CompareToBuilder append(Object[] a, Object[] b) {
 		if (comparison != 0) return this;
 		if (a == b) return this;
@@ -51,6 +72,11 @@ public class CompareToBuilder {
 		return this;
 	}
 
+	/**
+	 * <p>toComparison</p>
+	 *
+	 * @return a int.
+	 */
 	public int toComparison() {
 		return comparison;
 	}

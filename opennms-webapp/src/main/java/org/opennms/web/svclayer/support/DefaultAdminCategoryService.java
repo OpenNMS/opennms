@@ -54,9 +54,14 @@ import org.opennms.web.svclayer.AdminCategoryService;
 import org.springframework.jdbc.datasource.lookup.DataSourceLookupFailureException;
 
 /**
- * 
+ * <p>DefaultAdminCategoryService class.</p>
+ *
  * @author <a href="mailto:dj@opennms.org">DJ Gregor</a>
  * @author <a href="mailto:jeffg@opennms.org">Jeff Gehlbach</a>
+ * @author <a href="mailto:dj@opennms.org">DJ Gregor</a>
+ * @author <a href="mailto:jeffg@opennms.org">Jeff Gehlbach</a>
+ * @version $Id: $
+ * @since 1.8.1
  */
 public class DefaultAdminCategoryService implements
         AdminCategoryService {
@@ -65,26 +70,52 @@ public class DefaultAdminCategoryService implements
     private NodeDao m_nodeDao;
     private EventProxy m_eventProxy;
     
+    /**
+     * <p>getCategoryDao</p>
+     *
+     * @return a {@link org.opennms.netmgt.dao.CategoryDao} object.
+     */
     public CategoryDao getCategoryDao() {
         return m_categoryDao;
     }
 
+    /**
+     * <p>setCategoryDao</p>
+     *
+     * @param dao a {@link org.opennms.netmgt.dao.CategoryDao} object.
+     */
     public void setCategoryDao(CategoryDao dao) {
         m_categoryDao = dao;
     }
 
+    /**
+     * <p>getNodeDao</p>
+     *
+     * @return a {@link org.opennms.netmgt.dao.NodeDao} object.
+     */
     public NodeDao getNodeDao() {
         return m_nodeDao;
     }
 
+    /**
+     * <p>setNodeDao</p>
+     *
+     * @param nodeDao a {@link org.opennms.netmgt.dao.NodeDao} object.
+     */
     public void setNodeDao(NodeDao nodeDao) {
         m_nodeDao = nodeDao;
     }
     
+    /**
+     * <p>setEventProxy</p>
+     *
+     * @param eventProxy a {@link org.opennms.netmgt.model.events.EventProxy} object.
+     */
     public void setEventProxy(EventProxy eventProxy) {
         m_eventProxy = eventProxy;
     }
 
+    /** {@inheritDoc} */
     public CategoryAndMemberNodes getCategory(String categoryIdString) {
         if (categoryIdString == null) {
             throw new IllegalArgumentException("categoryIdString must not be null");
@@ -121,6 +152,11 @@ public class DefaultAdminCategoryService implements
         return category;
     }
 
+    /**
+     * <p>findAllNodes</p>
+     *
+     * @return a {@link java.util.List} object.
+     */
     public List<OnmsNode> findAllNodes() {
         List<OnmsNode> list =
             new ArrayList<OnmsNode>(m_nodeDao.findAll());
@@ -129,6 +165,7 @@ public class DefaultAdminCategoryService implements
         return list;
     }
     
+    /** {@inheritDoc} */
     public EditModel findCategoryAndAllNodes(String categoryIdString) {
         CategoryAndMemberNodes cat = getCategory(categoryIdString); 
         List<OnmsNode> monitoredNodes = findAllNodes();
@@ -136,6 +173,14 @@ public class DefaultAdminCategoryService implements
                              cat.getMemberNodes());
     }
 
+    /**
+     * <p>performEdit</p>
+     *
+     * @param categoryIdString a {@link java.lang.String} object.
+     * @param editAction a {@link java.lang.String} object.
+     * @param toAdd an array of {@link java.lang.String} objects.
+     * @param toDelete an array of {@link java.lang.String} objects.
+     */
     public void performEdit(String categoryIdString, String editAction,
             String[] toAdd, String[] toDelete) {
         if (categoryIdString == null) {
@@ -216,13 +261,24 @@ public class DefaultAdminCategoryService implements
        }
     }
 
-    public OnmsCategory addNewCategory(String name) {
+    /** {@inheritDoc} */
+    public OnmsCategory addNewCategory(final String name) {
         OnmsCategory category = new OnmsCategory();
         category.setName(name);
         m_categoryDao.save(category);
         return category;
     }
 
+    /** {@inheritDoc} */
+    public OnmsCategory getCategoryWithName(final String name) {
+        return m_categoryDao.findByName(name);
+    }
+
+    /**
+     * <p>findAllCategories</p>
+     *
+     * @return a {@link java.util.List} object.
+     */
     public List<OnmsCategory> findAllCategories() {
         Collection<OnmsCategory> categories = m_categoryDao.findAll();
         List<OnmsCategory> sortedCategories =
@@ -236,6 +292,7 @@ public class DefaultAdminCategoryService implements
         return sortedCategories;
     }
 
+    /** {@inheritDoc} */
     public void removeCategory(String categoryIdString) {
         OnmsCategory category = findCategory(categoryIdString);
         CategoryAndMemberNodes cat = getCategory(categoryIdString);
@@ -245,6 +302,7 @@ public class DefaultAdminCategoryService implements
         m_categoryDao.delete(category);
     }
 
+    /** {@inheritDoc} */
     public List<OnmsCategory> findByNode(int nodeId) {
         OnmsNode node = m_nodeDao.get(nodeId);
         if (node == null) {
@@ -258,6 +316,7 @@ public class DefaultAdminCategoryService implements
         return categories;
     }
     
+    /** {@inheritDoc} */
     public NodeEditModel findNodeCategories(String nodeIdString) {
         if (nodeIdString == null) {
             throw new IllegalArgumentException("nodeIdString must not be null");
@@ -269,6 +328,14 @@ public class DefaultAdminCategoryService implements
         return new NodeEditModel(node, categories);
     }
     
+    /**
+     * <p>performNodeEdit</p>
+     *
+     * @param nodeIdString a {@link java.lang.String} object.
+     * @param editAction a {@link java.lang.String} object.
+     * @param toAdd an array of {@link java.lang.String} objects.
+     * @param toDelete an array of {@link java.lang.String} objects.
+     */
     public void performNodeEdit(String nodeIdString, String editAction,
             String[] toAdd, String[] toDelete) {
         if (nodeIdString == null) {

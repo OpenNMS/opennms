@@ -42,9 +42,13 @@ import org.opennms.netmgt.daemon.AbstractServiceDaemon;
 import org.opennms.netmgt.daemon.SpringServiceDaemon;
 
 /**
+ * <p>AsteriskGateway class.</p>
+ *
  * @author <A HREF="mailto:jeffg@opennms.org">Jeff Gehlbach</A>
  * @author <A HREF="http://www.opennms.org/">OpenNMS</A>
- *
+ * @author <A HREF="mailto:jeffg@opennms.org">Jeff Gehlbach</A>
+ * @author <A HREF="http://www.opennms.org/">OpenNMS</A>
+ * @version $Id: $
  */
 public class AsteriskGateway extends AbstractServiceDaemon implements SpringServiceDaemon {
 
@@ -52,10 +56,14 @@ public class AsteriskGateway extends AbstractServiceDaemon implements SpringServ
     private int m_port = 4573;
     private int m_maxPoolSize = 10;
     
+    /**
+     * <p>Constructor for AsteriskGateway.</p>
+     */
     protected AsteriskGateway() {
         super("OpenNMS.AsteriskGateway");
     }
 
+    /** {@inheritDoc} */
     @Override
     protected void onInit() {
         int port = Integer.getInteger("org.opennms.netmgt.asterisk.agi.listenPort", m_port);
@@ -72,11 +80,13 @@ public class AsteriskGateway extends AbstractServiceDaemon implements SpringServ
         m_agiServerThread.setDaemon(true);
     }
     
+    /** {@inheritDoc} */
     @Override
     protected void onStart() {
         m_agiServerThread.startup();
     }
     
+    /** {@inheritDoc} */
     @Override
     protected void onStop() {
         m_agiServerThread.shutdown();

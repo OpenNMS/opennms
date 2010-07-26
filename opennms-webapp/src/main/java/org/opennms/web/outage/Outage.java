@@ -38,8 +38,10 @@ import org.apache.commons.lang.builder.ToStringBuilder;
 
 /**
  * A JavaBean for holding information about a single outage.
- * 
+ *
  * @author <A HREF="mailto:larry@opennms.org">Lawrence Karnowski </A>
+ * @version $Id: $
+ * @since 1.8.1
  */
 public class Outage {
     protected int outageId;
@@ -74,13 +76,55 @@ public class Outage {
 
     protected String building;
 
+    /**
+     * <p>Constructor for Outage.</p>
+     */
     protected Outage() {
     }
 
+    /**
+     * <p>Constructor for Outage.</p>
+     *
+     * @param outageId a int.
+     * @param nodeId a int.
+     * @param nodeLabel a {@link java.lang.String} object.
+     * @param ipAddress a {@link java.lang.String} object.
+     * @param hostname a {@link java.lang.String} object.
+     * @param serviceId a int.
+     * @param serviceName a {@link java.lang.String} object.
+     * @param lostServiceTime a {@link java.util.Date} object.
+     * @param regainedServiceTime a {@link java.util.Date} object.
+     * @param lostServiceEventId a {@link java.lang.Integer} object.
+     * @param regainedServiceEventId a {@link java.lang.Integer} object.
+     * @param lostServiceNotificationId a {@link java.lang.Integer} object.
+     * @param lostServiceNotificationAcknowledgedBy a {@link java.lang.String} object.
+     * @param suppressTime a {@link java.util.Date} object.
+     * @param suppressedBy a {@link java.lang.String} object.
+     */
     protected Outage(int outageId, int nodeId, String nodeLabel, String ipAddress, String hostname, int serviceId, String serviceName, Date lostServiceTime, Date regainedServiceTime, Integer lostServiceEventId, Integer regainedServiceEventId, Integer lostServiceNotificationId, String lostServiceNotificationAcknowledgedBy, Date suppressTime, String suppressedBy) {
         this(outageId, nodeId, nodeLabel, ipAddress, hostname, serviceId, serviceName, lostServiceTime, regainedServiceTime, lostServiceEventId, regainedServiceEventId, lostServiceNotificationId, lostServiceNotificationAcknowledgedBy, suppressTime, suppressedBy, null);
     }
 
+    /**
+     * <p>Constructor for Outage.</p>
+     *
+     * @param outageId a int.
+     * @param nodeId a int.
+     * @param nodeLabel a {@link java.lang.String} object.
+     * @param ipAddress a {@link java.lang.String} object.
+     * @param hostname a {@link java.lang.String} object.
+     * @param serviceId a int.
+     * @param serviceName a {@link java.lang.String} object.
+     * @param lostServiceTime a {@link java.util.Date} object.
+     * @param regainedServiceTime a {@link java.util.Date} object.
+     * @param lostServiceEventId a {@link java.lang.Integer} object.
+     * @param regainedServiceEventId a {@link java.lang.Integer} object.
+     * @param lostServiceNotificationId a {@link java.lang.Integer} object.
+     * @param lostServiceNotificationAcknowledgedBy a {@link java.lang.String} object.
+     * @param suppressTime a {@link java.util.Date} object.
+     * @param suppressedBy a {@link java.lang.String} object.
+     * @param building a {@link java.lang.String} object.
+     */
     protected Outage(int outageId, int nodeId, String nodeLabel, String ipAddress, String hostname, int serviceId, String serviceName, Date lostServiceTime, Date regainedServiceTime, Integer lostServiceEventId, Integer regainedServiceEventId, Integer lostServiceNotificationId, String lostServiceNotificationAcknowledgedBy, Date suppressTime, String suppressedBy, String building) {
         this.outageId = outageId;
         this.nodeId = nodeId;
@@ -100,86 +144,165 @@ public class Outage {
         this.building = building;
     }
 
+    /**
+     * <p>getId</p>
+     *
+     * @return a int.
+     */
     public int getId() {
         return outageId;
     }
 
+    /**
+     * <p>Getter for the field <code>nodeId</code>.</p>
+     *
+     * @return a int.
+     */
     public int getNodeId() {
         return (nodeId);
     }
 
+    /**
+     * <p>Getter for the field <code>ipAddress</code>.</p>
+     *
+     * @return a {@link java.lang.String} object.
+     */
     public String getIpAddress() {
         return (ipAddress);
     }
 
-    /** can be null */
+    /**
+     * can be null
+     *
+     * @return a {@link java.lang.String} object.
+     */
     public String getHostname() {
         return (hostname);
     }
 
-    /** can be null */
+    /**
+     * can be null
+     *
+     * @return a {@link java.lang.String} object.
+     */
     public String getNodeLabel() {
         return (nodeLabel);
     }
 
+    /**
+     * <p>Getter for the field <code>serviceId</code>.</p>
+     *
+     * @return a int.
+     */
     public int getServiceId() {
         return (serviceId);
     }
 
-    /** can be null */
+    /**
+     * can be null
+     *
+     * @return a {@link java.lang.String} object.
+     */
     public String getServiceName() {
         return (serviceName);
     }
 
+    /**
+     * <p>Getter for the field <code>lostServiceTime</code>.</p>
+     *
+     * @return a {@link java.util.Date} object.
+     */
     public Date getLostServiceTime() {
         return (lostServiceTime);
     }
 
-    /** can be null */
+    /**
+     * can be null
+     *
+     * @return a {@link java.util.Date} object.
+     */
     public Date getRegainedServiceTime() {
         return regainedServiceTime;
     }
 
-    /** can be null */
+    /**
+     * can be null
+     *
+     * @return a {@link java.lang.Integer} object.
+     */
     public Integer getLostServiceEventId() {
         return lostServiceEventId;
     }
 
-    /** can be null */
+    /**
+     * can be null
+     *
+     * @return a {@link java.lang.Integer} object.
+     */
     public Integer getRegainedServiceEventId() {
         return regainedServiceEventId;
     }
 
-    /** can be null */
+    /**
+     * can be null
+     *
+     * @return a {@link java.lang.Integer} object.
+     */
     public Integer getLostServiceNotificationId() {
         return lostServiceNotificationId;
     }
 
-    /** can be null */
+    /**
+     * can be null
+     *
+     * @return a {@link java.lang.String} object.
+     */
     public String getLostServiceNotificationAcknowledgedBy() {
         return lostServiceNotificationAcknowledgedBy;
     }
 
+    /**
+     * <p>Getter for the field <code>suppressTime</code>.</p>
+     *
+     * @return a {@link java.util.Date} object.
+     */
     public Date getSuppressTime() {
         return suppressTime;
     }
     
+    /**
+     * <p>Getter for the field <code>suppressedBy</code>.</p>
+     *
+     * @return a {@link java.lang.String} object.
+     */
     public String getSuppressedBy() {
         return suppressedBy;
     }
 
-    /** can be null */
+    /**
+     * can be null
+     *
+     * @return a {@link java.lang.String} object.
+     */
     public String getBuilding() {
         return building;
     }
 
     /**
+     * <p>getTimeDown</p>
+     *
      * @deprecated Please use {@link #getLostServiceTime getLostServiceTime} instead.
+     * @return a {@link java.util.Date} object.
      */
     public Date getTimeDown() {
         return (this.getLostServiceTime());
     }
 
+    /**
+     * <p>toString</p>
+     *
+     * @return a {@link java.lang.String} object.
+     */
     public String toString() {
         return new ToStringBuilder(this)
             .append("ID", getId())

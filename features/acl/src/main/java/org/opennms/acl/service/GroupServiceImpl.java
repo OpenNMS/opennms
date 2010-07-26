@@ -43,56 +43,79 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 /**
+ * <p>GroupServiceImpl class.</p>
+ *
  * @author Massimiliano Dess&igrave; (desmax74@yahoo.it)
  * @since jdk 1.5.0
+ * @version $Id: $
  */
 @Service("groupService")
 public class GroupServiceImpl implements GroupService {
 
+    /** {@inheritDoc} */
     public List<GroupDTO> getUserGroupsWithAutorities(String username) {
         return repository.getUserGroupsWithAutorities(username);
     }
 
+    /** {@inheritDoc} */
     public Boolean deleteUserGroups(String username) {
         return repository.deleteUserGroups(username);
     }
 
+    /** {@inheritDoc} */
     public List<GroupDTO> getFreeGroups(String username) {
         return repository.getFreeGroups(username);
     }
 
+    /** {@inheritDoc} */
     public GroupDTO getGroup(Integer id) {
         return repository.getGroup(id);
     }
 
+    /**
+     * <p>getGroups</p>
+     *
+     * @return a {@link java.util.List} object.
+     */
     public List<GroupDTO> getGroups() {
         return repository.getGroups();
     }
 
+    /** {@inheritDoc} */
     public List<GroupDTO> getGroups(Pager pager) {
         return repository.getGroups(pager);
     }
 
+    /** {@inheritDoc} */
     public List<GroupDTO> getUserGroups(String username) {
         return repository.getUserGroups(username);
     }
 
+    /** {@inheritDoc} */
     public Boolean removeGroup(Integer id) {
         return repository.removeGroup(id);
     }
 
+    /** {@inheritDoc} */
     public Boolean save(GroupDTO group) {
         return repository.save(group);
     }
 
+    /** {@inheritDoc} */
     public Boolean saveGroups(String username, List<Integer> groups) {
         return repository.saveGroups(username, groups);
     }
 
+    /**
+     * <p>getTotalItemsNumber</p>
+     *
+     * @return a {@link java.lang.Integer} object.
+     */
     public Integer getTotalItemsNumber() {
         return repository.getGroupsNumber();
     }
 
+    /** {@inheritDoc} */
     public Boolean hasUsers(Integer id) {
         return repository.hasUsers(id);
     }

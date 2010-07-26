@@ -35,6 +35,13 @@ import org.opennms.web.filter.Filter;
 import org.opennms.web.notification.AcknowledgeType;
 import org.opennms.web.notification.SortStyle;
 
+/**
+ * <p>NotificationCriteria class.</p>
+ *
+ * @author ranger
+ * @version $Id: $
+ * @since 1.8.1
+ */
 public class NotificationCriteria {
     
     public static interface NotificationCriteriaVisitor<E extends Exception>{
@@ -57,10 +64,24 @@ public class NotificationCriteria {
     int m_limit = -1;
     int m_offset = -1;
     
+    /**
+     * <p>Constructor for NotificationCriteria.</p>
+     *
+     * @param filters a org$opennms$web$filter$Filter object.
+     */
     public NotificationCriteria(Filter...filters){
         this(filters, null, null, -1, -1);
     }
     
+    /**
+     * <p>Constructor for NotificationCriteria.</p>
+     *
+     * @param filters an array of org$opennms$web$filter$Filter objects.
+     * @param sortStyle a {@link org.opennms.web.notification.SortStyle} object.
+     * @param ackType a {@link org.opennms.web.notification.AcknowledgeType} object.
+     * @param limit a int.
+     * @param offset a int.
+     */
     public NotificationCriteria(Filter[] filters, SortStyle sortStyle, AcknowledgeType ackType, int limit, int offset){
         m_filters = filters;
         m_sortStyle = sortStyle;
@@ -69,10 +90,23 @@ public class NotificationCriteria {
         m_offset = offset;
     }
     
+    /**
+     * <p>Constructor for NotificationCriteria.</p>
+     *
+     * @param ackType a {@link org.opennms.web.notification.AcknowledgeType} object.
+     * @param filters an array of org$opennms$web$filter$Filter objects.
+     */
     public NotificationCriteria(AcknowledgeType ackType, Filter[] filters) {
         this(filters, null, ackType, -1, -1);
     }
 
+    /**
+     * <p>visit</p>
+     *
+     * @param visitor a {@link org.opennms.web.notification.filter.NotificationCriteria.NotificationCriteriaVisitor} object.
+     * @param <E> a E object.
+     * @throws E if any.
+     */
     public <E extends Exception> void visit(NotificationCriteriaVisitor<E> visitor) throws E{
         if(m_ackType != null){
             visitor.visitAckType(m_ackType);

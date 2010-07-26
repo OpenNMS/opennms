@@ -45,8 +45,10 @@ import org.opennms.netmgt.poller.NetworkInterface;
 import org.opennms.netmgt.xml.event.Event;
 
 /**
- * 
+ * <p>MockService class.</p>
+ *
  * @author <a href="mailto:brozow@opennms.org">Mathew Brozowski</a>
+ * @version $Id: $
  */
 public class MockService extends MockElement implements MonitoredService {
     
@@ -95,6 +97,13 @@ public class MockService extends MockElement implements MonitoredService {
 
     private NetworkInterface m_netAddr;
 
+   /**
+    * <p>Constructor for MockService.</p>
+    *
+    * @param iface a {@link org.opennms.netmgt.mock.MockInterface} object.
+    * @param svcName a {@link java.lang.String} object.
+    * @param serviceId a int.
+    */
    public MockService(MockInterface iface, String svcName, int serviceId) {
         super(iface);
         m_svcName = svcName;
@@ -105,27 +114,48 @@ public class MockService extends MockElement implements MonitoredService {
     }
    
    // test
+   /**
+    * <p>bringDown</p>
+    *
+    * @param reason a {@link java.lang.String} object.
+    */
    public void bringDown(String reason) {
        setServicePollStatus(PollStatus.down(reason));
    }
 
 
    // FIXME: model? make generic poll listener
+    /** {@inheritDoc} */
     public void addAnticipator(PollAnticipator trigger) {
         m_triggers.add(trigger);
     }
 
     // model
+    /**
+     * <p>getId</p>
+     *
+     * @return a int.
+     */
     public int getId() {
         return m_serviceId;
     }
 
     // model
+    /**
+     * <p>getInterface</p>
+     *
+     * @return a {@link org.opennms.netmgt.mock.MockInterface} object.
+     */
     public MockInterface getInterface() {
         return (MockInterface) getParent();
     }
 
     // model
+    /**
+     * <p>getIpAddr</p>
+     *
+     * @return a {@link java.lang.String} object.
+     */
     public String getIpAddr() {
         return getInterface().getIpAddr();
     }
@@ -136,49 +166,99 @@ public class MockService extends MockElement implements MonitoredService {
     }
 
     // model
+    /**
+     * <p>getSvcName</p>
+     *
+     * @return a {@link java.lang.String} object.
+     */
     public String getSvcName() {
         return m_svcName;
     }
 
     // model
+    /**
+     * <p>getNetwork</p>
+     *
+     * @return a {@link org.opennms.netmgt.mock.MockNetwork} object.
+     */
     public MockNetwork getNetwork() {
         return getInterface().getNetwork();
     }
 
     // model
+    /**
+     * <p>getNode</p>
+     *
+     * @return a {@link org.opennms.netmgt.mock.MockNode} object.
+     */
     public MockNode getNode() {
         return getInterface().getNode();
     }
 
     // model
+    /**
+     * <p>getNodeId</p>
+     *
+     * @return a int.
+     */
     public int getNodeId() {
         return getNode().getNodeId();
     }
 
     // model
+    /**
+     * <p>getNodeLabel</p>
+     *
+     * @return a {@link java.lang.String} object.
+     */
     public String getNodeLabel() {
         return getNode().getLabel();
     }
 
     // stats
+    /**
+     * <p>getPollCount</p>
+     *
+     * @return a int.
+     */
     public int getPollCount() {
         return m_pollCount;
     }
     
     // test
+    /**
+     * <p>getPollStatus</p>
+     *
+     * @return a {@link org.opennms.netmgt.model.PollStatus} object.
+     */
     public PollStatus getPollStatus() {
         return m_pollStatus;
     }
     
+    /**
+     * <p>getMgmtStatus</p>
+     *
+     * @return a {@link org.opennms.netmgt.mock.MockService.SvcMgmtStatus} object.
+     */
     public SvcMgmtStatus getMgmtStatus() {
         return m_mgmtStatus;
     }
     
+    /**
+     * <p>setMgmtStatus</p>
+     *
+     * @param mgmtStatus a {@link org.opennms.netmgt.mock.MockService.SvcMgmtStatus} object.
+     */
     public void setMgmtStatus(SvcMgmtStatus mgmtStatus) {
         m_mgmtStatus = mgmtStatus;
     }
 
     // test
+    /**
+     * <p>poll</p>
+     *
+     * @return a {@link org.opennms.netmgt.model.PollStatus} object.
+     */
     public PollStatus poll() {
         m_pollCount++;
         
@@ -191,66 +271,104 @@ public class MockService extends MockElement implements MonitoredService {
     }
 
     // FIXME: model? make generic poll listener
+    /** {@inheritDoc} */
     public void removeAnticipator(PollAnticipator trigger) {
         m_triggers.remove(trigger);
     }
 
     // stats
+    /**
+     * <p>resetPollCount</p>
+     */
     public void resetPollCount() {
         m_pollCount = 0;
     }
 
     //  test
+    /**
+     * <p>setPollStatus</p>
+     *
+     * @param status a {@link org.opennms.netmgt.model.PollStatus} object.
+     */
     public void setPollStatus(PollStatus status) {
         m_pollStatus = status;
     }
 
     // impl
+    /** {@inheritDoc} */
     public void visit(MockVisitor v) {
         super.visit(v);
         v.visitService(this);
     }
     
+    /**
+     * <p>toString</p>
+     *
+     * @return a {@link java.lang.String} object.
+     */
     public String toString() {
         return "Svc["+getNodeLabel()+"/"+getIpAddr()+"/"+getSvcName()+"]";
     }
 
     /**
-     * @return
+     * <p>createDownEvent</p>
+     *
+     * @return a {@link org.opennms.netmgt.xml.event.Event} object.
      */
     public Event createDownEvent() {
         return MockEventUtil.createNodeLostServiceEvent("Test", this, "Service Not Responding.");
     }
 
     /**
-     * @return
+     * <p>createUpEvent</p>
+     *
+     * @return a {@link org.opennms.netmgt.xml.event.Event} object.
      */
     public Event createUpEvent() {
         return MockEventUtil.createNodeRegainedServiceEvent("Test", this);
     }
 
     /**
-     * @return
+     * <p>createUnresponsiveEvent</p>
+     *
+     * @return a {@link org.opennms.netmgt.xml.event.Event} object.
      */
     public Event createUnresponsiveEvent() {
         return MockEventUtil.createServiceUnresponsiveEvent("Test", this, String.valueOf(PollStatus.SERVICE_UNAVAILABLE));
     }
 
     /**
-     * @return
+     * <p>createResponsiveEvent</p>
+     *
+     * @return a {@link org.opennms.netmgt.xml.event.Event} object.
      */
     public Event createResponsiveEvent() {
         return MockEventUtil.createServiceResponsiveEvent("Test", this);
     }
     
+    /**
+     * <p>createNewEvent</p>
+     *
+     * @return a {@link org.opennms.netmgt.xml.event.Event} object.
+     */
     public Event createNewEvent() {
         return MockEventUtil.createNodeGainedServiceEvent("Test", this);
     }
 
+    /**
+     * <p>createDeleteEvent</p>
+     *
+     * @return a {@link org.opennms.netmgt.xml.event.Event} object.
+     */
     public Event createDeleteEvent() {
         return MockEventUtil.createServiceDeletedEvent("Test", this);
     }
 
+    /**
+     * <p>getNetInterface</p>
+     *
+     * @return a {@link org.opennms.netmgt.poller.NetworkInterface} object.
+     */
     public NetworkInterface getNetInterface() {
         if (m_netAddr == null)
             m_netAddr = new IPv4NetworkInterface(getAddress());
@@ -258,10 +376,21 @@ public class MockService extends MockElement implements MonitoredService {
         return m_netAddr;
     }
 
+    /**
+     * <p>getAddress</p>
+     *
+     * @return a {@link java.net.InetAddress} object.
+     */
     public InetAddress getAddress() {
         return getInterface().getAddress();    
     }
 
+	/**
+	 * <p>createDemandPollEvent</p>
+	 *
+	 * @param demandPollId a int.
+	 * @return a {@link org.opennms.netmgt.xml.event.Event} object.
+	 */
 	public Event createDemandPollEvent(int demandPollId) {
 		return MockEventUtil.createDemandPollServiceEvent("Test", this, demandPollId);
 	}

@@ -40,6 +40,12 @@ import org.springframework.stereotype.Component;
 
 
 @Component
+/**
+ * <p>SmtpDetector class.</p>
+ *
+ * @author ranger
+ * @version $Id: $
+ */
 @Scope("prototype")
 public class SmtpDetector extends AsyncMultilineDetector {
     
@@ -55,14 +61,17 @@ public class SmtpDetector extends AsyncMultilineDetector {
     
     /**
      * Constructor for creating a non-default service based on this protocol
-     * 
-     * @param serviceName
-     * @param port
+     *
+     * @param serviceName a {@link java.lang.String} object.
+     * @param port a int.
      */
     public SmtpDetector(String serviceName, int port) {
         super(serviceName, port);
     }
     
+    /**
+     * <p>onInit</p>
+     */
     public void onInit() {
         setProtocolCodecFilter(new ProtocolCodecFilter(new MultilineOrientedCodecFactory( Charset.forName("UTF-8"), "-")));
         

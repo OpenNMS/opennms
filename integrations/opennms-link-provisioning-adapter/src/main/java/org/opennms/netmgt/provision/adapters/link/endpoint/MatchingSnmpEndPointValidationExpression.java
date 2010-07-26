@@ -1,5 +1,9 @@
+
 /**
- * 
+ * <p>MatchingSnmpEndPointValidationExpression class.</p>
+ *
+ * @author ranger
+ * @version $Id: $
  */
 package org.opennms.netmgt.provision.adapters.link.endpoint;
 
@@ -15,14 +19,24 @@ public class MatchingSnmpEndPointValidationExpression extends EndPointValidation
     @XmlAttribute(name="oid")
     private String m_oid = null;
 
+    /**
+     * <p>Constructor for MatchingSnmpEndPointValidationExpression.</p>
+     */
     public MatchingSnmpEndPointValidationExpression() {
     }
     
+    /**
+     * <p>Constructor for MatchingSnmpEndPointValidationExpression.</p>
+     *
+     * @param regex a {@link java.lang.String} object.
+     * @param oid a {@link java.lang.String} object.
+     */
     public MatchingSnmpEndPointValidationExpression(String regex, String oid) {
         setValue(regex);
         m_oid = oid;
     }
 
+    /** {@inheritDoc} */
     public void validate(EndPoint endPoint) throws EndPointStatusException {
         SnmpValue snmpValue = endPoint.get(m_oid);
         if(snmpValue == null) {
@@ -35,6 +49,11 @@ public class MatchingSnmpEndPointValidationExpression extends EndPointValidation
         throw new EndPointStatusException("unable to validate endpoint " + endPoint + ": " + m_value + " does not match value (" + value + ")");
     }
 
+    /**
+     * <p>toString</p>
+     *
+     * @return a {@link java.lang.String} object.
+     */
     public String toString() {
         return "match(" + m_value + ")";
     }

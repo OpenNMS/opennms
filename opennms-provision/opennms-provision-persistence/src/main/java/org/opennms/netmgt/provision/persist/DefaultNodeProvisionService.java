@@ -1,3 +1,39 @@
+/*
+ * This file is part of the OpenNMS(R) Application.
+ *
+ * OpenNMS(R) is Copyright (C) 2009-2010 The OpenNMS Group, Inc.  All rights reserved.
+ * OpenNMS(R) is a derivative work, containing both original code, included code and modified
+ * code that was published under the GNU General Public License. Copyrights for modified
+ * and included code are below.
+ *
+ * OpenNMS(R) is a registered trademark of The OpenNMS Group, Inc.
+ *
+ * Modifications:
+ * 
+ * Created: April 29, 2009
+ * 28 Jun 2010: Don't do the SNMP and asset stuff unless specified (bug 3443) - jeffg@opennms.org
+ *
+ * Copyright (C) 2009-2010 The OpenNMS Group, Inc.  All rights reserved.
+ *
+ * This program is free software; you can redistribute it and/or modify
+ * it under the terms of the GNU General Public License as published by
+ * the Free Software Foundation; either version 2 of the License, or
+ * (at your option) any later version.
+ *
+ * This program is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * GNU General Public License for more details.
+ *
+ * You should have received a copy of the GNU General Public License
+ * along with this program; if not, write to the Free Software
+ * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA.
+ *
+ * For more information contact:
+ *      OpenNMS Licensing       <license@opennms.org>
+ *      http://www.opennms.org/
+ *      http://www.opennms.com/
+ */
 package org.opennms.netmgt.provision.persist;
 
 import javax.servlet.http.HttpServletRequest;
@@ -24,6 +60,12 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.servlet.ModelAndView;
 
+/**
+ * <p>DefaultNodeProvisionService class.</p>
+ *
+ * @author ranger
+ * @version $Id: $
+ */
 public class DefaultNodeProvisionService implements NodeProvisionService {
 
     private EventForwarder m_eventForwarder;
@@ -36,6 +78,7 @@ public class DefaultNodeProvisionService implements NodeProvisionService {
 
     private ForeignSourceRepository m_foreignSourceRepository;
 
+    /** {@inheritDoc} */
     public ModelAndView getModelAndView(HttpServletRequest request) {
         ModelAndView modelAndView = new ModelAndView();
         modelAndView.addObject("foreignSources", m_foreignSourceRepository.getForeignSources());
@@ -46,6 +89,7 @@ public class DefaultNodeProvisionService implements NodeProvisionService {
         return modelAndView;
     }
     
+    /** {@inheritDoc} */
     @Transactional
     public boolean provisionNode(final String user, String foreignSource, String foreignId, String nodeLabel, String ipAddress,
             String[] categories, String snmpCommunity, String snmpVersion,
@@ -56,7 +100,7 @@ public class DefaultNodeProvisionService implements NodeProvisionService {
             log().debug(String.format("adding SNMP community %s (%s)", snmpCommunity, snmpVersion));
         }
         // Set the SNMP community name (if necessary)
-        if (snmpCommunity != null && snmpVersion != null) {
+        if (snmpCommunity != null && !snmpCommunity.equals("") && snmpVersion != null && !snmpVersion.equals("")) {
             try {
                 SnmpEventInfo info = new SnmpEventInfo();
                 info.setCommunityString(snmpCommunity);
@@ -86,23 +130,25 @@ public class DefaultNodeProvisionService implements NodeProvisionService {
         reqNode.putInterface(reqIface);
 
         for (String category : categories) {
-            reqNode.putCategory(new RequisitionCategory(category));
+            if (category != null && !category.equals("")) {
+                reqNode.putCategory(new RequisitionCategory(category));
+            }
         }
 
-        if (deviceUsername != null) {
+        if (deviceUsername != null && !deviceUsername.equals("")) {
             reqNode.putAsset(new RequisitionAsset("username", deviceUsername));
         }
-        if (devicePassword != null) {
+        if (devicePassword != null && !devicePassword.equals("")) {
             reqNode.putAsset(new RequisitionAsset("password", devicePassword));
         }
-        if (enablePassword != null) {
+        if (enablePassword != null && !enablePassword.equals("")) {
             reqNode.putAsset(new RequisitionAsset("enable", enablePassword));
         }
-        if (accessMethod != null) {
+        if (accessMethod != null && !accessMethod.equals("")) {
             reqNode.putAsset(new RequisitionAsset("connection", accessMethod));
         }
         if (autoEnable != null) {
-            reqNode.putAsset(new RequisitionAsset("autoenable", autoEnable));
+            reqNode.putAsset(new RequisitionAsset("autoenable", "A"));
         }
 
         // Now save it to the requisition
@@ -124,10 +170,21 @@ public class DefaultNodeProvisionService implements NodeProvisionService {
         return true;
     }
     
+    /**
+     * <p>setForeignSourceRepository</p>
+     *
+     * @param repository a {@link org.opennms.netmgt.provision.persist.ForeignSourceRepository} object.
+     */
     public void setForeignSourceRepository(ForeignSourceRepository repository) {
         m_foreignSourceRepository = repository;
     }
 
+    /**
+     * <p>setEventProxy</p>
+     *
+     * @param proxy a {@link org.opennms.netmgt.model.events.EventProxy} object.
+     * @throws java.lang.Exception if any.
+     */
     public void setEventProxy(final EventProxy proxy) throws Exception {
         EventForwarder proxyForwarder = new EventForwarder() {
             public void sendNow(Event event) {
@@ -150,6 +207,11 @@ public class DefaultNodeProvisionService implements NodeProvisionService {
         m_eventForwarder = new TransactionAwareEventForwarder(proxyForwarder);
     }
 
+    /**
+     * <p>log</p>
+     *
+     * @return a {@link org.opennms.core.utils.ThreadCategory} object.
+     */
     protected ThreadCategory log() {
         return ThreadCategory.getInstance(getClass());
     }

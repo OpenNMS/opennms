@@ -51,8 +51,10 @@ import java.util.Locale;
  * Filter Predicate implementation which enable date comparison.
  *
  * Based on example code from: @author Nathan MA
- * 
+ *
  * @author <a href="mailto:joed@opennms.org">Johan Edstrom</a>
+ * @version $Id: $
+ * @since 1.8.1
  */
 public class DateFilterPredicate implements Predicate
 {
@@ -87,6 +89,8 @@ public class DateFilterPredicate implements Predicate
     }
 
     /**
+     * {@inheritDoc}
+     *
      * Use the filter parameters to filter out the table.
      */
     public boolean evaluate(Object bean)

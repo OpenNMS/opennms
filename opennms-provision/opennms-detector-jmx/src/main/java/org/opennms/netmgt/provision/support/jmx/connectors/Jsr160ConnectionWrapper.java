@@ -42,23 +42,40 @@ import javax.management.remote.JMXConnector;
  * @author <A HREF="mailto:mike@opennms.org">Mike Jamison </A>
  * @author <A HREF="http://www.opennms.org/">OpenNMS </A>
  */
+/**
+ * <p>Jsr160ConnectionWrapper class.</p>
+ *
+ * @author ranger
+ * @version $Id: $
+ */
 public class Jsr160ConnectionWrapper implements ConnectionWrapper{
     
     private JMXConnector connector;
     private MBeanServerConnection connection;
 
+    /**
+     * <p>Constructor for Jsr160ConnectionWrapper.</p>
+     *
+     * @param connector a {@link javax.management.remote.JMXConnector} object.
+     * @param connection a {@link javax.management.MBeanServerConnection} object.
+     */
     public Jsr160ConnectionWrapper(JMXConnector connector, MBeanServerConnection connection) {
         this.connector  = connector;
         this.connection = connection;
     }
     
     /**
+     * <p>getMBeanServer</p>
+     *
      * @return Returns the connection.
      */
     public MBeanServerConnection getMBeanServer() {
         return connection;
     }
     
+    /**
+     * <p>close</p>
+     */
     public void close() {
         if (connector != null) {
             try {

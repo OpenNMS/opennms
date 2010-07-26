@@ -38,12 +38,25 @@ package org.opennms.netmgt.collectd;
 import org.opennms.netmgt.model.RrdRepository;
 
 
+/**
+ * <p>OneToOnePersister class.</p>
+ *
+ * @author ranger
+ * @version $Id: $
+ */
 public class OneToOnePersister extends BasePersister {
 
+    /**
+     * <p>Constructor for OneToOnePersister.</p>
+     *
+     * @param params a {@link org.opennms.netmgt.collectd.ServiceParameters} object.
+     * @param repository a {@link org.opennms.netmgt.model.RrdRepository} object.
+     */
     public OneToOnePersister(ServiceParameters params,  RrdRepository repository) {
         super(params, repository);
     }
 
+    /** {@inheritDoc} */
     public void visitAttribute(CollectionAttribute attribute) {
         pushShouldPersist(attribute);
         if (shouldPersist()) {
@@ -52,6 +65,7 @@ public class OneToOnePersister extends BasePersister {
         }
     }
 
+    /** {@inheritDoc} */
     public void completeAttribute(CollectionAttribute attribute) {
         if (shouldPersist()) {
         	commitBuilder();

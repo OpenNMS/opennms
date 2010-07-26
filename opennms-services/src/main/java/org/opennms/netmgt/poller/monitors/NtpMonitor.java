@@ -62,10 +62,12 @@ import org.opennms.protocols.ntp.NtpMessage;
  * the ServiceMonitor interface that allows it to be used along with other
  * plug-ins by the service poller framework.
  * </P>
- * 
+ *
  * @author <A HREF="mailto:tarus@opennms.org">Tarus Balog </A>
  * @author <A HREF="http://www.opennms.org/">OpenNMS </A>
- * 
+ * @author <A HREF="mailto:tarus@opennms.org">Tarus Balog </A>
+ * @author <A HREF="http://www.opennms.org/">OpenNMS </A>
+ * @version $Id: $
  */
 
 @Distributable
@@ -87,10 +89,12 @@ final public class NtpMonitor extends IPv4Monitor {
     private static final int DEFAULT_TIMEOUT = 5000;
 
     /**
+     * {@inheritDoc}
+     *
      * <P>
      * Poll the specified address for NTP service availability.
      * </P>
-     * 
+     *
      * <P>
      * During the poll an NTP request query packet is generated. The query is
      * sent via UDP socket to the interface at the specified port (by default
@@ -98,14 +102,6 @@ final public class NtpMonitor extends IPv4Monitor {
      * the NTP was successful the service status is set to SERVICE_AVAILABLE and
      * the method returns.
      * </P>
-     * @param parameters
-     *            The package parameters (timeout, retry, etc...) to be used for
-     *            this poll.
-     * @param iface
-     *            The network interface to test the service on.
-     * @return The availibility of the interface and if a transition event
-     *         should be supressed.
-     * 
      */
     public PollStatus poll(MonitoredService svc, Map<String, Object> parameters) {
         NetworkInterface iface = svc.getNetInterface();

@@ -39,11 +39,18 @@ import java.beans.PropertyChangeEvent;
 import java.util.EventListener;
 
 /**
- * 
+ * <p>ConfigurationChangedListener interface.</p>
+ *
  * @author <a href="mailto:brozow@opennms.org">Mathew Brozowski</a>
+ * @version $Id: $
  */
 public interface ConfigurationChangedListener extends EventListener {
 	
+	/**
+	 * <p>configurationChanged</p>
+	 *
+	 * @param e a {@link java.beans.PropertyChangeEvent} object.
+	 */
 	public void configurationChanged(PropertyChangeEvent e);
 
 }

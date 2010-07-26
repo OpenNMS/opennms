@@ -42,11 +42,20 @@ import java.util.regex.Pattern;
 
 import org.springframework.util.StringUtils;
 
+/**
+ * <p>Constraint class.</p>
+ *
+ * @author ranger
+ * @version $Id: $
+ */
 public class Constraint {
+    /** Constant <code>PRIMARY_KEY=1</code> */
     public static final int PRIMARY_KEY = 1;
 
+    /** Constant <code>FOREIGN_KEY=2</code> */
     public static final int FOREIGN_KEY = 2;
     
+    /** Constant <code>CHECK=3</code> */
     public static final int CHECK = 3;
 
     private String m_name;
@@ -67,6 +76,13 @@ public class Constraint {
     
     private String m_checkExpression;
 
+    /**
+     * <p>Constructor for Constraint.</p>
+     *
+     * @param table a {@link java.lang.String} object.
+     * @param constraint a {@link java.lang.String} object.
+     * @throws java.lang.Exception if any.
+     */
     public Constraint(String table, String constraint) throws Exception {
         this.parse(constraint);
         this.setTable(table);
@@ -83,6 +99,10 @@ public class Constraint {
     
     /**
      * Construct a primary key constraint from it's required elements
+     *
+     * @param table a {@link java.lang.String} object.
+     * @param name a {@link java.lang.String} object.
+     * @param columns a {@link java.util.List} object.
      */
     public Constraint(String table, String name, List<String> columns) {
         setTable(table);
@@ -93,6 +113,15 @@ public class Constraint {
     
     /**
      * Construct a foreign key constraint from it's required elements
+     *
+     * @param table a {@link java.lang.String} object.
+     * @param name a {@link java.lang.String} object.
+     * @param columns a {@link java.util.List} object.
+     * @param ftable a {@link java.lang.String} object.
+     * @param fcolumns a {@link java.util.List} object.
+     * @param fupdtype a {@link java.lang.String} object.
+     * @param fdeltype a {@link java.lang.String} object.
+     * @throws java.lang.Exception if any.
      */
     public Constraint(String table, String name, List<String> columns, String ftable, List<String> fcolumns, String fupdtype, String fdeltype) throws Exception {
         setTable(table);
@@ -107,6 +136,10 @@ public class Constraint {
     
     /**
      * Construct a check type constraint from it's required elements
+     *
+     * @param table a {@link java.lang.String} object.
+     * @param name a {@link java.lang.String} object.
+     * @param checkExpression a {@link java.lang.String} object.
      */
     public Constraint(String table, String name, String checkExpression) {
     	setTable(table);
@@ -115,50 +148,110 @@ public class Constraint {
     	setType(CHECK);
     }
 
+    /**
+     * <p>setForeignUpdType</p>
+     *
+     * @param fupdtype a {@link java.lang.String} object.
+     */
     public void setForeignUpdType(String fupdtype) {
         m_fupdtype = fupdtype;
     }
     
+    /**
+     * <p>getForeignUpdType</p>
+     *
+     * @return a {@link java.lang.String} object.
+     */
     public String getForeignUpdType() {
         return m_fupdtype;
     }
 
+    /**
+     * <p>getName</p>
+     *
+     * @return a {@link java.lang.String} object.
+     */
     public String getName() {
         return m_name;
     }
 
+    /**
+     * <p>setName</p>
+     *
+     * @param name a {@link java.lang.String} object.
+     */
     public void setName(String name) {
         m_name = name.toLowerCase();
     }
 
+    /**
+     * <p>getType</p>
+     *
+     * @return a int.
+     */
     public int getType() {
         return m_type;
     }
 
+    /**
+     * <p>setType</p>
+     *
+     * @param type a int.
+     */
     public void setType(int type) {
         m_type = type;
     }
     
+    /**
+     * <p>isPrimaryKeyConstraint</p>
+     *
+     * @return a boolean.
+     */
     public boolean isPrimaryKeyConstraint() {
     	return m_type == PRIMARY_KEY;
     }
     
+    /**
+     * <p>isForeignKeyConstraint</p>
+     *
+     * @return a boolean.
+     */
     public boolean isForeignKeyConstraint() {
     	return m_type == FOREIGN_KEY;
     }
     
+    /**
+     * <p>isCheckConstraint</p>
+     *
+     * @return a boolean.
+     */
     public boolean isCheckConstraint() {
     	return m_type == CHECK;
     }
     
+	/**
+	 * <p>getTable</p>
+	 *
+	 * @return a {@link java.lang.String} object.
+	 */
 	public String getTable() {
 		return m_table;
 	}
 
+	/**
+	 * <p>setTable</p>
+	 *
+	 * @param table a {@link java.lang.String} object.
+	 */
 	public void setTable(String table) {
 		m_table = table;
 	}
     
+    /**
+     * <p>setColumns</p>
+     *
+     * @param columns a {@link java.util.List} object.
+     */
     public void setColumns(List<String> columns) {
     	m_columns = new ArrayList<String>(columns.size());
     	for (String i : columns) {
@@ -166,34 +259,69 @@ public class Constraint {
     	}
     }
 
+    /**
+     * <p>getColumns</p>
+     *
+     * @return a {@link java.util.List} object.
+     */
     public List<String> getColumns() {
         return m_columns;
     }
 
+    /**
+     * <p>setColumn</p>
+     *
+     * @param column a {@link java.lang.String} object.
+     */
     public void setColumn(String column) {
     	List<String> columns = new ArrayList<String>(1);
         columns.add(column.toLowerCase());
         setColumns(columns);
     }
 
+    /**
+     * <p>getForeignTable</p>
+     *
+     * @return a {@link java.lang.String} object.
+     */
     public String getForeignTable() {
         return m_ftable;
     }
 
+    /**
+     * <p>setForeignTable</p>
+     *
+     * @param ftable a {@link java.lang.String} object.
+     */
     public void setForeignTable(String ftable) {
         m_ftable = ftable.toLowerCase();
     }
 
+    /**
+     * <p>getForeignColumns</p>
+     *
+     * @return a {@link java.util.List} object.
+     */
     public List<String> getForeignColumns() {
         return m_fcolumns;
     }
 
+    /**
+     * <p>setForeignColumn</p>
+     *
+     * @param fcolumn a {@link java.lang.String} object.
+     */
     public void setForeignColumn(String fcolumn) {
     	List<String> fcolumns = new ArrayList<String>(1);
     	fcolumns.add(fcolumn.toLowerCase());
         setForeignColumns(fcolumns);
     }
 
+    /**
+     * <p>setForeignColumns</p>
+     *
+     * @param fcolumns a {@link java.util.List} object.
+     */
     public void setForeignColumns(List<String> fcolumns) {
     	List<String> newFcolumns = new ArrayList<String>(fcolumns.size());
     	for (String fcolumn : fcolumns) {
@@ -202,10 +330,21 @@ public class Constraint {
         m_fcolumns = newFcolumns;
     }
 
+    /**
+     * <p>getForeignDelType</p>
+     *
+     * @return a {@link java.lang.String} object.
+     */
     public String getForeignDelType() {
         return m_fdeltype;
     }
 
+    /**
+     * <p>setForeignDelType</p>
+     *
+     * @param fdeltype a {@link java.lang.String} object.
+     * @throws java.lang.Exception if any.
+     */
     public void setForeignDelType(String fdeltype) throws Exception {
         if (fdeltype.equals("a") || fdeltype.equals("c") || fdeltype.equals("r") || fdeltype.equals("n") || fdeltype.equals("d")) {
             m_fdeltype = fdeltype;
@@ -214,14 +353,29 @@ public class Constraint {
         }
     }
 
+	/**
+	 * <p>getCheckExpression</p>
+	 *
+	 * @return a {@link java.lang.String} object.
+	 */
 	public String getCheckExpression() {
 		return m_checkExpression;
 	}
 
+	/**
+	 * <p>setCheckExpression</p>
+	 *
+	 * @param expression a {@link java.lang.String} object.
+	 */
 	public void setCheckExpression(String expression) {
 		m_checkExpression = expression;
 	}
 	
+    /**
+     * <p>toString</p>
+     *
+     * @return a {@link java.lang.String} object.
+     */
     public String toString() {
         StringBuffer b = new StringBuffer();
 
@@ -348,10 +502,18 @@ public class Constraint {
         }
     }
 
+    /** {@inheritDoc} */
     public boolean equals(Object other_o) {
         return equals(other_o, false);
     }
 
+    /**
+     * <p>equals</p>
+     *
+     * @param other_o a {@link java.lang.Object} object.
+     * @param ignoreFdelType a boolean.
+     * @return a boolean.
+     */
     public boolean equals(Object other_o, boolean ignoreFdelType) {
         Constraint other = (Constraint) other_o;
 
@@ -416,6 +578,11 @@ public class Constraint {
         return true;
     }
 
+    /**
+     * <p>hashCode</p>
+     *
+     * @return a int.
+     */
     public int hashCode() {
         return m_name.hashCode() + new Integer(m_type).hashCode() + m_columns.hashCode() + m_ftable.hashCode() + m_fcolumns.hashCode() + m_fdeltype.hashCode();
     }

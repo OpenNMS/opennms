@@ -31,8 +31,19 @@ package org.opennms.netmgt.config;
 
 import org.opennms.netmgt.snmp.SnmpAgentConfig;
 
+/**
+ * <p>StorageStrategyService interface.</p>
+ *
+ * @author ranger
+ * @version $Id: $
+ */
 public interface StorageStrategyService {
 
+    /**
+     * <p>getAgentConfig</p>
+     *
+     * @return a {@link org.opennms.netmgt.snmp.SnmpAgentConfig} object.
+     */
     public SnmpAgentConfig getAgentConfig();
 
     /*
@@ -40,6 +51,12 @@ public interface StorageStrategyService {
      * physical interface like frame relay resources. OpenNMS always track changes on ifTable so, make SNMP
      * queries on this table is redundant, and implementations of CollectionAgent know ifTable content always.
      * This method give interface information from a specific ifIndex.
+     */
+    /**
+     * <p>getSnmpInterfaceLabel</p>
+     *
+     * @param ifIndex a int.
+     * @return a {@link java.lang.String} object.
      */
     public String getSnmpInterfaceLabel(int ifIndex);
 }

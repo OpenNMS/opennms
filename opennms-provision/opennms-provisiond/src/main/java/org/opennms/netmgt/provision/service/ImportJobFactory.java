@@ -41,10 +41,17 @@ import org.quartz.SchedulerException;
 import org.quartz.spi.JobFactory;
 import org.quartz.spi.TriggerFiredBundle;
 
+/**
+ * <p>ImportJobFactory class.</p>
+ *
+ * @author ranger
+ * @version $Id: $
+ */
 public class ImportJobFactory implements JobFactory {
 
     private Provisioner m_provisioner;
 
+    /** {@inheritDoc} */
     public Job newJob(TriggerFiredBundle bundle) throws SchedulerException {
 
         JobDetail jobDetail = bundle.getJobDetail();
@@ -68,6 +75,11 @@ public class ImportJobFactory implements JobFactory {
         return (Class<ImportJob>)jobDetail.getJobClass();
     }
 
+    /**
+     * <p>setProvisioner</p>
+     *
+     * @param provisioner a {@link org.opennms.netmgt.provision.service.Provisioner} object.
+     */
     public void setProvisioner(Provisioner provisioner) {
         m_provisioner = provisioner;
     }

@@ -41,40 +41,55 @@ import org.opennms.netmgt.snmp.SnmpResult;
 import org.opennms.netmgt.snmp.SnmpUtils;
 
 /**
- *<P>The CiscoVlanTableEntry class is designed to hold all the information 
- * for one entry in the: 
+ *<P>The CiscoVlanTableEntry class is designed to hold all the information
+ * for one entry in the:
  * iso.org.dod.internet.private.enterprises.cisco.ciscoMgmt.
  * ciscoVtpMIB.vtpMIBObjects.vlanInfo.vtpVlanTable
- * 
+ *
  * <P>This object is used by the CiscoVlanTable  to hold infomation
  * single entries in the table. See the CiscoVlanPortTable documentation
  * form more information.</P>
  *
  * @author <A HREF="mailto:rssntn67@yahoo.it">Antonio</A>
  * @author <A HREF="http://www.opennms.org/">OpenNMS</A>
- *
- *
+ * @author <A HREF="mailto:rssntn67@yahoo.it">Antonio</A>
+ * @author <A HREF="http://www.opennms.org/">OpenNMS</A>
  * @see CiscoVlanTable
  * @see <A HREF="http://www.ietf.org/rfc/rfc1213.txt">RFC1213</A>
+ * @version $Id: $
  */
 public final class CiscoVlanTableEntry extends SnmpTableEntry
 implements VlanCollectorEntry {
 
 	// Lookup strings for specific table entries
 	//
+	/** Constant <code>VLAN_MTU="vtpVlanMtu"</code> */
 	public final static String VLAN_MTU = "vtpVlanMtu";
+	/** Constant <code>VLAN_D10S="vtpVlanDot10Said"</code> */
 	public final static String VLAN_D10S = "vtpVlanDot10Said";
+	/** Constant <code>VLAN_RINGN="vtpVlanRingNumber"</code> */
 	public final static String VLAN_RINGN = "vtpVlanRingNumber";
+	/** Constant <code>VLAN_BRIDGEN="vtpVlanBridgeNumber"</code> */
 	public final static String VLAN_BRIDGEN = "vtpVlanBridgeNumber";
+	/** Constant <code>VLAN_STPTYPE="vtpVlanStpType"</code> */
 	public final static String VLAN_STPTYPE = "vtpVlanStpType";
+	/** Constant <code>VLAN_PARV="vtpVlanParentVlan"</code> */
 	public final static String VLAN_PARV = "vtpVlanParentVlan";
+	/** Constant <code>VLAN_TRV1="vtpVlanTranslationalVlan1"</code> */
 	public final static String VLAN_TRV1 = "vtpVlanTranslationalVlan1";
+	/** Constant <code>VLAN_TRV2="vtpVlanTranslationalVlan2"</code> */
 	public final static String VLAN_TRV2 = "vtpVlanTranslationalVlan2";
+	/** Constant <code>VLAN_BRIDGETYPE="vtpVlanBridgeType"</code> */
 	public final static String VLAN_BRIDGETYPE = "vtpVlanBridgeType";
+	/** Constant <code>VLAN_AREHC="vtpVlanAreHopCount"</code> */
 	public final static String VLAN_AREHC = "vtpVlanAreHopCount";
+	/** Constant <code>VLAN_STEHC="vtpVlanSteHopCount"</code> */
 	public final static String VLAN_STEHC = "vtpVlanSteHopCount";
+	/** Constant <code>VLAN_ISCRFBACHUP="vtpVlanIsCRFBackup"</code> */
 	public final static String VLAN_ISCRFBACHUP = "vtpVlanIsCRFBackup";
+	/** Constant <code>VLAN_TYPEEXT="vtpVlanTypeExt"</code> */
 	public final static String VLAN_TYPEEXT = "vtpVlanTypeExt";
+	/** Constant <code>VLAN_IFINDEX="vtpVlanIfIndex"</code> */
 	public final static String VLAN_IFINDEX = "vtpVlanIfIndex";
 
 	private static String VLAN_INDEX_OID=".1.3.6.1.4.1.9.9.46.1.3.1.1.1";
@@ -160,10 +175,14 @@ implements VlanCollectorEntry {
 	 */
 	public static final String TABLE_OID = ".1.3.6.1.4.1.9.9.46.1.3.1.1"; // start of table (GETNEXT)
 
+	/**
+	 * <p>Constructor for CiscoVlanTableEntry.</p>
+	 */
 	public CiscoVlanTableEntry() {
 		super(ciscoVlan_elemList);
 	}
 	
+	/** {@inheritDoc} */
 	@Override
 	public void storeResult(SnmpResult res) {
 		if (!hasVlanIndex) {

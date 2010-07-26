@@ -58,6 +58,7 @@ import org.springframework.util.Assert;
  * SmsMessenger
  *
  * @author brozow
+ * @version $Id: $
  */
 public class SmsMessenger implements Messenger<MobileMsgRequest, MobileMsgResponse>, OnmsInboundMessageNotification, IUSSDNotification, InitializingBean {
     
@@ -67,14 +68,30 @@ public class SmsMessenger implements Messenger<MobileMsgRequest, MobileMsgRespon
     
     private Queue<MobileMsgResponse> m_replyQueue;
     
+    /**
+     * <p>setSmsService</p>
+     *
+     * @param smsService a {@link org.opennms.sms.reflector.smsservice.SmsService} object.
+     */
     public void setSmsService(SmsService smsService) {
         m_smsService = smsService;
     }
     
+    /**
+     * <p>afterPropertiesSet</p>
+     *
+     * @throws java.lang.Exception if any.
+     */
     public void afterPropertiesSet() throws Exception {
         Assert.notNull(m_smsService, "the smsService must not be null");
     }
     
+    /**
+     * <p>sendRequest</p>
+     *
+     * @param request a {@link org.opennms.sms.reflector.smsservice.MobileMsgRequest} object.
+     * @throws java.lang.Exception if any.
+     */
     public void sendRequest(MobileMsgRequest request) throws Exception {
     	request.setSendTimestamp(System.currentTimeMillis());
     	
@@ -99,11 +116,13 @@ public class SmsMessenger implements Messenger<MobileMsgRequest, MobileMsgRespon
 
     }
 
+    /** {@inheritDoc} */
     public void start(Queue<MobileMsgResponse> replyQueue) {
         debugf("SmsMessenger.start");
         m_replyQueue = replyQueue;
     }
 
+    /** {@inheritDoc} */
     public void process(AGateway gateway, MessageTypes msgType, InboundMessage msg) {
         long receiveTime = System.currentTimeMillis();
         
@@ -114,6 +133,7 @@ public class SmsMessenger implements Messenger<MobileMsgRequest, MobileMsgRespon
         }
     }
 
+    /** {@inheritDoc} */
     public void process(String gatewayId, USSDResponse ussdResponse) {
         long receiveTime = System.currentTimeMillis();
         

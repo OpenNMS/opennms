@@ -1,0 +1,8 @@
+{d "%w- %d %m-, %Y - %T"} - A "empMEGACO9xxReasonsAboveEvent" event has occurred, from {t} device, named {m}.
+
+"Event generated when one of the MEGACO 900s service
+            change reason values goes above the range specified for
+            that particular object"
+
+empMEGACO9xxStatEventInfo = {S 1}
+(event [{e}])

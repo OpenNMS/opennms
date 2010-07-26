@@ -48,12 +48,13 @@ import org.opennms.core.utils.ThreadCategory;
 
 /**
  * This is a class to store and execute a console command
- * 
+ *
  * @author <A HREF="mailto:jason@opennms.org">Jason Johns </A>
  * @author <A HREF="http://www.opennms.org/">OpenNMS </A>
- * 
+ * @author <A HREF="mailto:jason@opennms.org">Jason Johns </A>
+ * @author <A HREF="http://www.opennms.org/">OpenNMS </A>
  * @version 1.1.1.1
- * 
+ * @since 1.8.1
  */
 public class Command {
     /**
@@ -95,7 +96,7 @@ public class Command {
     /**
      * Creates a new Command objects with identical values to the current
      * Command object.
-     * 
+     *
      * @return a copy of this command
      */
     public Command copy() {
@@ -125,7 +126,7 @@ public class Command {
 
     /**
      * Sets the command name
-     * 
+     *
      * @param aName
      *            the name of the command
      */
@@ -135,7 +136,7 @@ public class Command {
 
     /**
      * Returns the command name
-     * 
+     *
      * @return the name of the command
      */
     public String getCommandName() {
@@ -144,7 +145,7 @@ public class Command {
 
     /**
      * Adds an identifier type for command
-     * 
+     *
      * @param aType
      *            the notification type
      */
@@ -154,8 +155,9 @@ public class Command {
 
     /**
      * Returns the notification type of the command
-     * 
+     *
      * @return true if contains the type
+     * @param aType a {@link java.lang.String} object.
      */
     public boolean isOfType(String aType) {
         return m_types.contains(aType);
@@ -163,7 +165,7 @@ public class Command {
 
     /**
      * Returns the first type in the list as a string
-     * 
+     *
      * @return the type
      */
     public String getType() {
@@ -172,7 +174,7 @@ public class Command {
 
     /**
      * Sets the comments for the command
-     * 
+     *
      * @param someComments
      *            the comments for the command
      */
@@ -182,7 +184,7 @@ public class Command {
 
     /**
      * Returns the comments for the command
-     * 
+     *
      * @return the comments for the command
      */
     public String getCommandComments() {
@@ -191,7 +193,7 @@ public class Command {
 
     /**
      * Adds a argument to the list of arguments
-     * 
+     *
      * @param anArgument
      *            the argument to be added.
      */
@@ -202,7 +204,7 @@ public class Command {
     /**
      * This method sets the boolean that indicates if this command requires an
      * input stream.
-     * 
+     *
      * @param aBool
      *            true if a stream should be used, false otherwise
      */
@@ -212,7 +214,7 @@ public class Command {
 
     /**
      * Returns the list of arguments
-     * 
+     *
      * @return the list of arguments
      */
     public List getArguments() {
@@ -222,7 +224,7 @@ public class Command {
     /**
      * This method sets an argument specified by the switch param to the given
      * value param
-     * 
+     *
      * @param aSwitch
      *            the argument to set
      * @param aValue
@@ -240,7 +242,7 @@ public class Command {
     /**
      * This method determines if this command has a given switch as a member of
      * its arguments
-     * 
+     *
      * @param aSwitch
      *            the switch to check for
      * @return true if the command has the switch, false otherwise
@@ -252,7 +254,7 @@ public class Command {
     /**
      * This method gets the list of switches that Notify knows about that will
      * map to a given console command.
-     * 
+     *
      * @return a list of parameter switches
      */
     public List<String> getArgumentSwitches() {
@@ -268,7 +270,7 @@ public class Command {
     /**
      * This method executes the command using a Process. The method will decide
      * if an input stream needs to be used.
-     * 
+     *
      * @return the return code of the command
      */
     public int execute() {
@@ -339,7 +341,7 @@ public class Command {
     /**
      * Returns a String representation of the command as it would look to
      * execute on the console.
-     * 
+     *
      * @return a string representation
      */
     public String toString() {
@@ -357,7 +359,7 @@ public class Command {
     /**
      * Convenience method for creating arrays of strings suitable for use as
      * command-line parameters when executing an external process.
-     * 
+     *
      * <p>
      * The default {@link java.lang.Runtime#exec(java.lang.String[])}method
      * will split a single string based on spaces, but it does not respect
@@ -367,18 +369,18 @@ public class Command {
      * then splits the resulting string by the remaining out-of-quote spaces. It
      * then goes through each substring and replaces the delimiters with spaces.
      * </p>
-     * 
+     *
      * <p>
      * <em>Caveat:</em> This method does not respect escaped quotes! It will
      * simply remove them and leave the stray escape characters.
      * </p>
-     * 
+     *
      * @param s
      *            the string to split
      * @param delim
      *            a char that does not already exist in <code>s</code>
      * @return An array of strings split by spaces outside of quotes.
-     * @throws IllegalArgumentException
+     * @throws java.lang.IllegalArgumentException
      *             If <code>s</code> is null or if <code>delim</code>
      *             already exists in <code>s</code>.
      */

@@ -36,9 +36,12 @@ package org.opennms.netmgt.rtc;
 
 /**
  * The RTCException class is thrown by the RTC.
- * 
+ *
  * @author <A HREF="mailto:sowmya@opennms.org">Sowmya Kumaraswamy </A>
  * @author <A HREF="http://www.opennms.org">OpenNMS.org </A>
+ * @author <A HREF="mailto:sowmya@opennms.org">Sowmya Kumaraswamy </A>
+ * @author <A HREF="http://www.opennms.org">OpenNMS.org </A>
+ * @version $Id: $
  */
 public final class RTCException extends Exception {
     private static final long serialVersionUID = 1L;
@@ -54,10 +57,9 @@ public final class RTCException extends Exception {
     /**
      * Constructs a new exception with the passed string as the message
      * encapsulated in the exception.
-     * 
+     *
      * @param s
      *            The exception's message.
-     * 
      */
     public RTCException(String s) {
         super(s);

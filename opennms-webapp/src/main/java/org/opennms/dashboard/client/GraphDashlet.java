@@ -41,9 +41,14 @@ import com.google.gwt.user.client.ui.ListBox;
 import com.google.gwt.user.client.ui.VerticalPanel;
 
 /**
- * 
+ * <p>GraphDashlet class.</p>
+ *
  * @author <a href="mailto:brozow@opennms.org">Mathew Brozowski</a>
  * @author <a href="mailto:dj@opennms.org">DJ Gregor</a>
+ * @author <a href="mailto:brozow@opennms.org">Mathew Brozowski</a>
+ * @author <a href="mailto:dj@opennms.org">DJ Gregor</a>
+ * @version $Id: $
+ * @since 1.8.1
  */
 public class GraphDashlet extends Dashlet {
     /**
@@ -62,6 +67,11 @@ public class GraphDashlet extends Dashlet {
     
     private DashletLoader m_loader = new DashletLoader();
     
+    /**
+     * <p>Constructor for GraphDashlet.</p>
+     *
+     * @param dashboard a {@link org.opennms.dashboard.client.Dashboard} object.
+     */
     public GraphDashlet(Dashboard dashboard) {
         super(dashboard, "Resource Graphs");
         setLoader(m_loader);
@@ -72,10 +82,16 @@ public class GraphDashlet extends Dashlet {
     
     
 
+    /**
+     * <p>setSurveillanceService</p>
+     *
+     * @param surveillanceService a {@link org.opennms.dashboard.client.SurveillanceServiceAsync} object.
+     */
     public void setSurveillanceService(SurveillanceServiceAsync surveillanceService) {
         m_surveillanceService = surveillanceService;
     }
     
+    /** {@inheritDoc} */
     public void setSurveillanceSet(SurveillanceSet set) {
         m_view.getTopLevelResourceLoader().load(set);
     }

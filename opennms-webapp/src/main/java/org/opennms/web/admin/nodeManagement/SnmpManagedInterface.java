@@ -48,10 +48,18 @@ import org.apache.commons.lang.builder.ToStringBuilder;
 /**
  * A servlet that stores interface information used in setting up SNMP Data
  * Collection
- * 
+ *
  * @author <a href="mailto:tarus@opennms.org">Tarus Balog</a>
  * @author <a href="mailto:ranger@opennms.org">Benjamin Reed</a>
  * @author <a href="http://www.opennms.org/">OpenNMS</a>
+ * @author <a href="mailto:tarus@opennms.org">Tarus Balog</a>
+ * @author <a href="mailto:ranger@opennms.org">Benjamin Reed</a>
+ * @author <a href="http://www.opennms.org/">OpenNMS</a>
+ * @author <a href="mailto:tarus@opennms.org">Tarus Balog</a>
+ * @author <a href="mailto:ranger@opennms.org">Benjamin Reed</a>
+ * @author <a href="http://www.opennms.org/">OpenNMS</a>
+ * @version $Id: $
+ * @since 1.8.1
  */
 public class SnmpManagedInterface implements Serializable, Comparable<SnmpManagedInterface> {
     private static final long serialVersionUID = 1L;
@@ -68,92 +76,203 @@ public class SnmpManagedInterface implements Serializable, Comparable<SnmpManage
     protected String m_ifAlias;
     protected String m_collectFlag;
 
+    /**
+     * <p>setSnmpInterfaceId</p>
+     *
+     * @param newId a int.
+     */
     public void setSnmpInterfaceId(int newId) {
         m_id = newId;
     }
+    /**
+     * <p>getSnmpInterfaceId</p>
+     *
+     * @return a int.
+     */
     public int getSnmpInterfaceId() {
         return m_id;
     }
+    /**
+     * <p>setAddress</p>
+     *
+     * @param newAddress a {@link java.lang.String} object.
+     */
     public void setAddress(String newAddress) {
         m_address = newAddress;
     }
 
+    /**
+     * <p>getAddress</p>
+     *
+     * @return a {@link java.lang.String} object.
+     */
     public String getAddress() {
         return m_address;
     }
 
+    /**
+     * <p>setNodeid</p>
+     *
+     * @param id a int.
+     */
     public void setNodeid(int id) {
         m_nodeId = id;
     }
 
+    /**
+     * <p>getNodeid</p>
+     *
+     * @return a int.
+     */
     public int getNodeid() {
         return m_nodeId;
     }
 
+    /**
+     * <p>setIfIndex</p>
+     *
+     * @param index a int.
+     */
     public void setIfIndex(int index) {
         m_ifIndex = index;
     }
 
+    /**
+     * <p>getIfIndex</p>
+     *
+     * @return a int.
+     */
     public int getIfIndex() {
         return m_ifIndex;
     }
 
+    /**
+     * <p>setIpHostname</p>
+     *
+     * @param newIpHostname a {@link java.lang.String} object.
+     */
     public void setIpHostname(String newIpHostname) {
         m_ipHostname = newIpHostname;
     }
 
+    /**
+     * <p>getIpHostname</p>
+     *
+     * @return a {@link java.lang.String} object.
+     */
     public String getIpHostname() {
         return m_ipHostname;
     }
 
+    /**
+     * <p>setStatus</p>
+     *
+     * @param newStatus a {@link java.lang.String} object.
+     */
     public void setStatus(String newStatus) {
         m_snmpStatus = newStatus;
     }
 
+    /**
+     * <p>getStatus</p>
+     *
+     * @return a {@link java.lang.String} object.
+     */
     public String getStatus() {
         return m_snmpStatus;
     }
 
+    /**
+     * <p>setIfDescr</p>
+     *
+     * @param newIfDescr a {@link java.lang.String} object.
+     */
     public void setIfDescr(String newIfDescr) {
         m_ifDescr = newIfDescr;
     }
 
+    /**
+     * <p>getIfDescr</p>
+     *
+     * @return a {@link java.lang.String} object.
+     */
     public String getIfDescr() {
         return m_ifDescr;
     }
 
+    /**
+     * <p>setIfType</p>
+     *
+     * @param newIfType a int.
+     */
     public void setIfType(int newIfType) {
         m_ifType = newIfType;
     }
 
+    /**
+     * <p>getIfType</p>
+     *
+     * @return a int.
+     */
     public int getIfType() {
         return m_ifType;
     }
 
+    /**
+     * <p>setIfName</p>
+     *
+     * @param newIfName a {@link java.lang.String} object.
+     */
     public void setIfName(String newIfName) {
         m_ifName = newIfName;
     }
 
+    /**
+     * <p>getIfName</p>
+     *
+     * @return a {@link java.lang.String} object.
+     */
     public String getIfName() {
         return m_ifName;
     }
 
+    /**
+     * <p>getIfAlias</p>
+     *
+     * @return a {@link java.lang.String} object.
+     */
     public String getIfAlias() {
         return m_ifAlias;
     }
 
+    /**
+     * <p>setIfAlias</p>
+     *
+     * @param newIfAlias a {@link java.lang.String} object.
+     */
     public void setIfAlias(String newIfAlias) {
         m_ifAlias = newIfAlias;
     }
 
+    /**
+     * <p>getCollectFlag</p>
+     *
+     * @return a {@link java.lang.String} object.
+     */
     public String getCollectFlag() {
         return m_collectFlag;
     }
     
+    /**
+     * <p>setCollectFlag</p>
+     *
+     * @param newCollectFlag a {@link java.lang.String} object.
+     */
     public void setCollectFlag(String newCollectFlag) {
         m_collectFlag = newCollectFlag;
     }
     
+    /** {@inheritDoc} */
     @Override
     public String toString() {
         return new ToStringBuilder(this)
@@ -170,6 +289,12 @@ public class SnmpManagedInterface implements Serializable, Comparable<SnmpManage
             .toString();
     }
 
+    /**
+     * <p>compareTo</p>
+     *
+     * @param obj a {@link org.opennms.web.admin.nodeManagement.SnmpManagedInterface} object.
+     * @return a int.
+     */
     public int compareTo(SnmpManagedInterface obj) {
         return new CompareToBuilder()
             .append(getSnmpInterfaceId(), obj.getSnmpInterfaceId())
@@ -185,6 +310,7 @@ public class SnmpManagedInterface implements Serializable, Comparable<SnmpManage
             .toComparison();
     }
     
+    /** {@inheritDoc} */
     @Override
     public boolean equals(Object obj) {
         if (obj instanceof SnmpManagedInterface) {
@@ -205,6 +331,7 @@ public class SnmpManagedInterface implements Serializable, Comparable<SnmpManage
         return false;
     }
 
+    /** {@inheritDoc} */
     @Override
     public int hashCode() {
         return new HashCodeBuilder(617, 2677)

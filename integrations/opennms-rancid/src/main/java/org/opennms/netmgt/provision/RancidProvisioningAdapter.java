@@ -73,10 +73,10 @@ import org.springframework.transaction.support.TransactionTemplate;
 import org.springframework.util.Assert;
 
 /**
- * A Rancid provisioning adapter for integration with OpenNMS Provisoning daemon API.
- * 
- * @author <a href="mailto:antonio@opennms.it">Antonio Russo</a>
+ * A Rancid provisioning adapter for integration with OpenNMS Provisioning daemon API.
  *
+ * @author <a href="mailto:antonio@opennms.it">Antonio Russo</a>
+ * @version $Id: $
  */
 
 @EventListener(name="RancidProvisioningAdapter")
@@ -93,9 +93,19 @@ public class RancidProvisioningAdapter extends SimpleQueuedProvisioningAdapter i
     
     private TransactionTemplate m_template;
     
+    /**
+     * <p>getTemplate</p>
+     *
+     * @return a {@link org.springframework.transaction.support.TransactionTemplate} object.
+     */
     public TransactionTemplate getTemplate() {
         return m_template;
     }
+    /**
+     * <p>setTemplate</p>
+     *
+     * @param template a {@link org.springframework.transaction.support.TransactionTemplate} object.
+     */
     public void setTemplate(TransactionTemplate template) {
         m_template = template;
     }
@@ -104,6 +114,7 @@ public class RancidProvisioningAdapter extends SimpleQueuedProvisioningAdapter i
     private static final String ADAPTER_NAME="RancidProvisioningAdapter";
     private static final String RANCID_COMMENT="node provisioned by opennms";
 
+    /** Constant <code>NAME="RancidProvisioningAdapter"</code> */
     public static final String NAME = "RancidProvisioningAdapter";
     private volatile static ConcurrentMap<Integer, RancidNode> m_onmsNodeRancidNodeMap;
     private volatile static ConcurrentMap<Integer, String> m_onmsNodeIpMap;
@@ -133,6 +144,11 @@ public class RancidProvisioningAdapter extends SimpleQueuedProvisioningAdapter i
         return new AdapterOperationSchedule();
     }
 
+    /**
+     * <p>afterPropertiesSet</p>
+     *
+     * @throws java.lang.Exception if any.
+     */
     public void afterPropertiesSet() throws Exception {
 
         RWSClientApi.init();
@@ -196,6 +212,14 @@ public class RancidProvisioningAdapter extends SimpleQueuedProvisioningAdapter i
         return m_rwsConfig.getNextStandBy();
     }
 
+    /**
+     * <p>doAdd</p>
+     *
+     * @param nodeId a int.
+     * @param cp a {@link org.opennms.rancid.ConnectionProperties} object.
+     * @param retry a boolean.
+     * @throws org.opennms.netmgt.provision.ProvisioningAdapterException if any.
+     */
     public void doAdd(int nodeId, ConnectionProperties cp, boolean retry) throws ProvisioningAdapterException {
         log().debug("doAdd: adding nodeid: " + nodeId);
 
@@ -241,6 +265,14 @@ public class RancidProvisioningAdapter extends SimpleQueuedProvisioningAdapter i
         }
     }
 
+    /**
+     * <p>doUpdate</p>
+     *
+     * @param nodeId a int.
+     * @param cp a {@link org.opennms.rancid.ConnectionProperties} object.
+     * @param retry a boolean.
+     * @throws org.opennms.netmgt.provision.ProvisioningAdapterException if any.
+     */
     public void doUpdate(int nodeId, ConnectionProperties cp, boolean retry) throws ProvisioningAdapterException {
         log().debug("doUpdate: updating nodeid: " + nodeId);
             
@@ -332,6 +364,14 @@ public class RancidProvisioningAdapter extends SimpleQueuedProvisioningAdapter i
         }
     }
     
+    /**
+     * <p>doDelete</p>
+     *
+     * @param nodeId a int.
+     * @param cp a {@link org.opennms.rancid.ConnectionProperties} object.
+     * @param retry a boolean.
+     * @throws org.opennms.netmgt.provision.ProvisioningAdapterException if any.
+     */
     public void doDelete(int nodeId,ConnectionProperties cp, boolean retry) throws ProvisioningAdapterException {
 
         log().debug("doDelete: deleting nodeid: " + nodeId);
@@ -365,6 +405,14 @@ public class RancidProvisioningAdapter extends SimpleQueuedProvisioningAdapter i
         }
     }
 
+    /**
+     * <p>doNodeConfigChanged</p>
+     *
+     * @param nodeId a int.
+     * @param cp a {@link org.opennms.rancid.ConnectionProperties} object.
+     * @param retry a boolean.
+     * @throws org.opennms.netmgt.provision.ProvisioningAdapterException if any.
+     */
     public void doNodeConfigChanged(int nodeId,ConnectionProperties cp, boolean retry) throws ProvisioningAdapterException {
         log().debug("doNodeConfigChanged: nodeid: " + nodeId);
             if (m_onmsNodeRancidNodeMap.containsKey(Integer.valueOf(nodeId))) {
@@ -403,17 +451,37 @@ public class RancidProvisioningAdapter extends SimpleQueuedProvisioningAdapter i
         return builder;
     }
 
+    /**
+     * <p>getNodeDao</p>
+     *
+     * @return a {@link org.opennms.netmgt.dao.NodeDao} object.
+     */
     public NodeDao getNodeDao() {
         return m_nodeDao;
     }
+    /**
+     * <p>setNodeDao</p>
+     *
+     * @param dao a {@link org.opennms.netmgt.dao.NodeDao} object.
+     */
     public void setNodeDao(NodeDao dao) {
         m_nodeDao = dao;
     }
     
+    /**
+     * <p>setEventForwarder</p>
+     *
+     * @param eventForwarder a {@link org.opennms.netmgt.model.events.EventForwarder} object.
+     */
     public void setEventForwarder(EventForwarder eventForwarder) {
         m_eventForwarder = eventForwarder;
     }
 
+    /**
+     * <p>getEventForwarder</p>
+     *
+     * @return a {@link org.opennms.netmgt.model.events.EventForwarder} object.
+     */
     public EventForwarder getEventForwarder() {
         return m_eventForwarder;
     }
@@ -422,22 +490,47 @@ public class RancidProvisioningAdapter extends SimpleQueuedProvisioningAdapter i
         return ThreadCategory.getInstance(RancidProvisioningAdapter.class);
     }
 
+    /**
+     * <p>getRwsConfig</p>
+     *
+     * @return a {@link org.opennms.netmgt.config.RWSConfig} object.
+     */
     public RWSConfig getRwsConfig() {
         return m_rwsConfig;
     }
 
+    /**
+     * <p>setRwsConfig</p>
+     *
+     * @param rwsConfig a {@link org.opennms.netmgt.config.RWSConfig} object.
+     */
     public void setRwsConfig(RWSConfig rwsConfig) {
         m_rwsConfig = rwsConfig;
     }
 
+    /**
+     * <p>getRancidAdapterConfig</p>
+     *
+     * @return a {@link org.opennms.netmgt.config.RancidAdapterConfig} object.
+     */
     public RancidAdapterConfig getRancidAdapterConfig() {
         return m_rancidAdapterConfig;
     }
 
+    /**
+     * <p>setRancidAdapterConfig</p>
+     *
+     * @param rancidAdapterConfig a {@link org.opennms.netmgt.config.RancidAdapterConfig} object.
+     */
     public void setRancidAdapterConfig(RancidAdapterConfig rancidAdapterConfig) {
         m_rancidAdapterConfig = rancidAdapterConfig;
     }
 
+    /**
+     * <p>getName</p>
+     *
+     * @return a {@link java.lang.String} object.
+     */
     public String getName() {
         return ADAPTER_NAME;
     }
@@ -544,6 +637,7 @@ public class RancidProvisioningAdapter extends SimpleQueuedProvisioningAdapter i
         return r_auth_node;
     }
 
+    /** {@inheritDoc} */
     @Override
     public boolean isNodeReady(final AdapterOperation op) {
         boolean ready = true;
@@ -555,6 +649,7 @@ public class RancidProvisioningAdapter extends SimpleQueuedProvisioningAdapter i
         return ready;
     }
 
+    /** {@inheritDoc} */
     @Override
     public void processPendingOperationForNode(final AdapterOperation op) throws ProvisioningAdapterException {
         log().debug("processPendingOperationForNode: " + op.getType() + " for node: " + op.getNodeId() );
@@ -589,6 +684,11 @@ public class RancidProvisioningAdapter extends SimpleQueuedProvisioningAdapter i
         }
     }
 
+    /**
+     * <p>handleReloadConfigEvent</p>
+     *
+     * @param event a {@link org.opennms.netmgt.xml.event.Event} object.
+     */
     @EventHandler(uei = EventConstants.RELOAD_DAEMON_CONFIG_UEI)
     public void handleReloadConfigEvent(Event event) {
         if (isReloadConfigEventTarget(event)) {
@@ -623,6 +723,11 @@ public class RancidProvisioningAdapter extends SimpleQueuedProvisioningAdapter i
         return isTarget;
     }
 
+    /**
+     * <p>handleRancidDownLoadFailure</p>
+     *
+     * @param e a {@link org.opennms.netmgt.xml.event.Event} object.
+     */
     @EventHandler(uei = EventConstants.RANCID_DOWNLOAD_FAILURE_UEI)
     public void handleRancidDownLoadFailure(Event e) {
         log().debug("handleRancidDownLoadFailure: get Event uei/id: " + e.getUei() + "/" + e.getDbid());
@@ -636,6 +741,11 @@ public class RancidProvisioningAdapter extends SimpleQueuedProvisioningAdapter i
         }
     }
 
+    /**
+     * <p>handleRancidDownLoadSuccess</p>
+     *
+     * @param e a {@link org.opennms.netmgt.xml.event.Event} object.
+     */
     @EventHandler(uei = EventConstants.RANCID_DOWNLOAD_SUCCESS_UEI)
     public void handleRancidDownLoadSuccess(Event e) {
         log().debug("handleRancidDownLoadSuccess: get Event uei/id: " + e.getUei() + "/" + e.getDbid());
@@ -649,6 +759,11 @@ public class RancidProvisioningAdapter extends SimpleQueuedProvisioningAdapter i
         }
     }
 
+    /**
+     * <p>handleRancidGroupProcessingCompleted</p>
+     *
+     * @param e a {@link org.opennms.netmgt.xml.event.Event} object.
+     */
     @EventHandler(uei = EventConstants.RANCID_GROUP_PROCESSING_COMPLETED_UEI)
     public void handleRancidGroupProcessingCompleted(Event e) {
         log().debug("handleRancidGroupProcessingCompleted: get Event uei/id: " + e.getUei() + "/" + e.getDbid());

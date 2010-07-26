@@ -55,9 +55,13 @@ import org.opennms.netmgt.config.DataSourceFactory;
 
 /**
  * A servlet that handles querying the database for node information
- * 
+ *
  * @author <A HREF="mailto:tarus@opennms.org">Tarus Balog </A>
  * @author <A HREF="http://www.opennms.org/">OpenNMS </A>
+ * @author <A HREF="mailto:tarus@opennms.org">Tarus Balog </A>
+ * @author <A HREF="http://www.opennms.org/">OpenNMS </A>
+ * @version $Id: $
+ * @since 1.8.1
  */
 public class DeleteGetNodesServlet extends HttpServlet {
     private static final long serialVersionUID = 1L;
@@ -66,6 +70,11 @@ public class DeleteGetNodesServlet extends HttpServlet {
     // "SELECT nodeid, nodelabel FROM node ORDER BY nodelabel, nodeid";
     "SELECT nodeid, nodelabel FROM node WHERE nodetype != 'D' ORDER BY nodelabel, nodeid";
 
+    /**
+     * <p>init</p>
+     *
+     * @throws javax.servlet.ServletException if any.
+     */
     public void init() throws ServletException {
         try {
             DataSourceFactory.init();
@@ -73,6 +82,7 @@ public class DeleteGetNodesServlet extends HttpServlet {
         }
     }
 
+    /** {@inheritDoc} */
     public void doPost(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
         HttpSession user = request.getSession(true);
 

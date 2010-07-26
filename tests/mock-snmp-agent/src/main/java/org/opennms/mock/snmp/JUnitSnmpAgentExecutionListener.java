@@ -34,8 +34,9 @@ import org.springframework.test.context.support.AbstractTestExecutionListener;
 /**
  * This {@link TestExecutionListener} looks for the {@link JUnitSnmpAgent} annotation
  * and uses attributes on it to launch a mock SNMP agent for use during unit testing.
- * 
+ *
  * @author brozow
+ * @version $Id: $
  */
 public class JUnitSnmpAgentExecutionListener extends
         AbstractTestExecutionListener {
@@ -48,6 +49,7 @@ public class JUnitSnmpAgentExecutionListener extends
      * org.springframework.test.context.support.AbstractTestExecutionListener
      * #beforeTestMethod(org.springframework.test.context.TestContext)
      */
+    /** {@inheritDoc} */
     @Override
     public void beforeTestMethod(TestContext testContext) throws Exception {
         JUnitSnmpAgent config = findAgentAnnotation(testContext);
@@ -56,14 +58,27 @@ public class JUnitSnmpAgentExecutionListener extends
         
         String host = config.host();
         if (host == null || "".equals(host)) {
+            /*
+             * NOTE: This call produces different results on different platforms so make
+             * sure your client code is aware of this. If you use the {@link ProxySnmpAgentConfigFactory}
+             * by including the <code>classpath:/META-INF/opennms/applicationContext-proxy-snmp.xml</code>
+             * Spring context, you probably won't need to deal with this. It will override the
+             * SnmpPeerFactory with the correct values.
+             * 
+             * Linux: 127.0.0.1
+             * Mac OS: primary external interface
+             */
             host = InetAddress.getLocalHost().getHostAddress();
+            //host = "127.0.0.1";
         }
+        
+        // NOTE: The default value for config.port is specified inside {@link JUnitSnmpAgent}
         
         ResourceLoader loader = new DefaultResourceLoader();
         Resource resource = loader.getResource(config.resource());
         MockSnmpAgent agent = MockSnmpAgent.createAgentAndRun( resource, host +"/"+ config.port());
         
-        System.err.println("Set up agent "+agent);
+        System.err.println("Set up agent " + agent + ", loaded content from " + config.resource());
         testContext.setAttribute(MOCK_SNMP_AGENT, agent);
         
         // FIXME: Is there a better way to inject the MockSnmpAgent into the test class?  Seems that spring doesn't have appropriate hooks
@@ -97,6 +112,7 @@ public class JUnitSnmpAgentExecutionListener extends
      * org.springframework.test.context.support.AbstractTestExecutionListener
      * #afterTestMethod(org.springframework.test.context.TestContext)
      */
+    /** {@inheritDoc} */
     @Override
     public void afterTestMethod(TestContext testContext) throws Exception {
         MockSnmpAgent agent = (MockSnmpAgent) testContext.getAttribute(MOCK_SNMP_AGENT);

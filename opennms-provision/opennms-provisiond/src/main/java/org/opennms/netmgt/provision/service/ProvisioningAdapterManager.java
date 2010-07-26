@@ -51,9 +51,9 @@ import org.springframework.util.Assert;
 
 /**
  * An adapter manager.  Makes writing tests much easier.
- * 
- * @author <a href="mailto:david@opennms.org">David Hustace</a>
  *
+ * @author <a href="mailto:david@opennms.org">David Hustace</a>
+ * @version $Id: $
  */
 @EventListener(name="ProvisioningAdapterManager:EventListener")
 public class ProvisioningAdapterManager implements InitializingBean {
@@ -65,19 +65,39 @@ public class ProvisioningAdapterManager implements InitializingBean {
     private volatile EventForwarder m_eventForwarder;
     
     
+    /**
+     * <p>afterPropertiesSet</p>
+     *
+     * @throws java.lang.Exception if any.
+     */
     public void afterPropertiesSet() throws Exception {
         Assert.notNull(m_pluginRegistry, "pluginRegistry must be set");
         m_adapters =  m_pluginRegistry.getAllPlugins(ProvisioningAdapter.class);
     }
 
+    /**
+     * <p>getPluginRegistry</p>
+     *
+     * @return a {@link org.opennms.netmgt.provision.service.PluginRegistry} object.
+     */
     public PluginRegistry getPluginRegistry() {
         return m_pluginRegistry;
     }
 
+    /**
+     * <p>setPluginRegistry</p>
+     *
+     * @param pluginRegistry a {@link org.opennms.netmgt.provision.service.PluginRegistry} object.
+     */
     public void setPluginRegistry(PluginRegistry pluginRegistry) {
         m_pluginRegistry = pluginRegistry;
     }
 
+    /**
+     * <p>handleNodeAddedEvent</p>
+     *
+     * @param e a {@link org.opennms.netmgt.xml.event.Event} object.
+     */
     @EventHandler(uei = EventConstants.NODE_ADDED_EVENT_UEI)
     public void handleNodeAddedEvent(Event e) {
         for (ProvisioningAdapter adapter : m_adapters) {
@@ -92,6 +112,11 @@ public class ProvisioningAdapterManager implements InitializingBean {
         }
     }
 
+    /**
+     * <p>handleNodeUpdatedEvent</p>
+     *
+     * @param e a {@link org.opennms.netmgt.xml.event.Event} object.
+     */
     @EventHandler(uei = EventConstants.NODE_UPDATED_EVENT_UEI)
     public void handleNodeUpdatedEvent(Event e) {
         for (ProvisioningAdapter adapter : m_adapters) {
@@ -106,6 +131,11 @@ public class ProvisioningAdapterManager implements InitializingBean {
         }
     }
     
+    /**
+     * <p>handleNodeDeletedEvent</p>
+     *
+     * @param e a {@link org.opennms.netmgt.xml.event.Event} object.
+     */
     @EventHandler(uei = EventConstants.NODE_DELETED_EVENT_UEI)
     public void handleNodeDeletedEvent(Event e) {
         for (ProvisioningAdapter adapter : m_adapters) {
@@ -120,6 +150,11 @@ public class ProvisioningAdapterManager implements InitializingBean {
         }
     }
     
+    /**
+     * <p>handleNodeChangedEvent</p>
+     *
+     * @param e a {@link org.opennms.netmgt.xml.event.Event} object.
+     */
     @EventHandler(uei = EventConstants.NODE_CONFIG_CHANGE_UEI)
     public void handleNodeChangedEvent(Event e) {
         for (ProvisioningAdapter adapter : m_adapters) {
@@ -142,14 +177,27 @@ public class ProvisioningAdapterManager implements InitializingBean {
         return ThreadCategory.getInstance(getClass());
     }
 
+    /**
+     * <p>setEventForwarder</p>
+     *
+     * @param eventForwarder a {@link org.opennms.netmgt.model.events.EventForwarder} object.
+     */
     public void setEventForwarder(EventForwarder eventForwarder) {
         m_eventForwarder = eventForwarder;
     }
 
+    /**
+     * <p>getEventForwarder</p>
+     *
+     * @return a {@link org.opennms.netmgt.model.events.EventForwarder} object.
+     */
     public EventForwarder getEventForwarder() {
         return m_eventForwarder;
     }
 
+    /**
+     * <p>initializeAdapters</p>
+     */
     public void initializeAdapters() {
         for (ProvisioningAdapter adapter : m_adapters) {
             adapter.init();

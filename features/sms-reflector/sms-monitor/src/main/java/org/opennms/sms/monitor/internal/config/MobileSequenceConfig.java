@@ -18,6 +18,12 @@ import org.opennms.sms.monitor.SequencerException;
 import org.opennms.sms.monitor.internal.MobileSequenceExecution;
 import org.springframework.util.Assert;
 
+/**
+ * <p>MobileSequenceConfig class.</p>
+ *
+ * @author ranger
+ * @version $Id: $
+ */
 @XmlRootElement(name="mobile-sequence")
 public class MobileSequenceConfig implements Serializable, Comparable<MobileSequenceConfig> {
     
@@ -28,10 +34,20 @@ public class MobileSequenceConfig implements Serializable, Comparable<MobileSequ
     private List<MobileSequenceTransaction> m_transactions;
 
 	
+	/**
+	 * <p>addSessionVariable</p>
+	 *
+	 * @param var a {@link org.opennms.sms.monitor.internal.config.SequenceSessionVariable} object.
+	 */
 	public void addSessionVariable(SequenceSessionVariable var) {
 		getSessionVariables().add(var);
 	}
 
+	/**
+	 * <p>getSessionVariables</p>
+	 *
+	 * @return a {@link java.util.List} object.
+	 */
 	@XmlElement(name="session-variable")
 	public List<SequenceSessionVariable> getSessionVariables() {
 		if (m_sessionVariables == null) {
@@ -44,14 +60,29 @@ public class MobileSequenceConfig implements Serializable, Comparable<MobileSequ
         return Collections.synchronizedList(new ArrayList<SequenceSessionVariable>());
     }
 
+	/**
+	 * <p>setSessionVariables</p>
+	 *
+	 * @param sessionVariables a {@link java.util.List} object.
+	 */
 	public void setSessionVariables(List<SequenceSessionVariable> sessionVariables) {
 		m_sessionVariables = sessionVariables;
 	}
 
+	/**
+	 * <p>addTransaction</p>
+	 *
+	 * @param transaction a {@link org.opennms.sms.monitor.internal.config.MobileSequenceTransaction} object.
+	 */
 	public void addTransaction(MobileSequenceTransaction transaction) {
 		getTransactions().add(transaction);
 	}
 
+	/**
+	 * <p>getTransactions</p>
+	 *
+	 * @return a {@link java.util.List} object.
+	 */
 	@XmlElement(name="transaction")
 	public List<MobileSequenceTransaction> getTransactions() {
         if (m_transactions == null) {
@@ -75,6 +106,11 @@ public class MobileSequenceConfig implements Serializable, Comparable<MobileSequ
 	    };
     }
 
+    /**
+     * <p>setTransactions</p>
+     *
+     * @param transactions a {@link java.util.List} object.
+     */
     public void setTransactions(List<MobileSequenceTransaction> transactions) {
         List<MobileSequenceTransaction> oldTransactions = getTransactions();
         if (oldTransactions != transactions) {
@@ -83,18 +119,32 @@ public class MobileSequenceConfig implements Serializable, Comparable<MobileSequ
         }
 	}
 
+	/**
+	 * <p>compareTo</p>
+	 *
+	 * @param o a {@link org.opennms.sms.monitor.internal.config.MobileSequenceConfig} object.
+	 * @return a int.
+	 */
 	public int compareTo(MobileSequenceConfig o) {
 		return new CompareToBuilder()
 			.append(this.getTransactions(), o.getTransactions())
 			.toComparison();
 	}
 	
+	/**
+	 * <p>toString</p>
+	 *
+	 * @return a {@link java.lang.String} object.
+	 */
 	public String toString() {
 		return new ToStringBuilder(this)
 			.append("transactions", getTransactions())
 			.toString();
 	}
 
+	/**
+	 * <p>computeDefaultGateways</p>
+	 */
 	public void computeDefaultGateways() {
 		String defaultGatewayId = "*";
 		for (final MobileSequenceTransaction t : getTransactions()) {
@@ -106,6 +156,13 @@ public class MobileSequenceConfig implements Serializable, Comparable<MobileSequ
 		}
 	}
 
+	/**
+	 * <p>createTransaction</p>
+	 *
+	 * @param request a {@link org.opennms.sms.monitor.internal.config.MobileSequenceRequest} object.
+	 * @param response a {@link org.opennms.sms.monitor.internal.config.MobileSequenceResponse} object.
+	 * @return a {@link org.opennms.sms.monitor.internal.config.MobileSequenceTransaction} object.
+	 */
 	public MobileSequenceTransaction createTransaction(MobileSequenceRequest request, MobileSequenceResponse response) {
 
         MobileSequenceTransaction t = new MobileSequenceTransaction();
@@ -117,6 +174,15 @@ public class MobileSequenceConfig implements Serializable, Comparable<MobileSequ
         return t;
     }
 
+	/**
+	 * <p>executeSequence</p>
+	 *
+	 * @param session a {@link org.opennms.sms.monitor.MobileSequenceSession} object.
+	 * @param coordinator a {@link org.opennms.core.tasks.DefaultTaskCoordinator} object.
+	 * @return a {@link java.util.Map} object.
+	 * @throws org.opennms.sms.monitor.SequencerException if any.
+	 * @throws java.lang.Throwable if any.
+	 */
 	public Map<String, Number> executeSequence(MobileSequenceSession session, DefaultTaskCoordinator coordinator) throws SequencerException, Throwable {
 	    
         MobileSequenceExecution execution = start(session, coordinator);
@@ -126,6 +192,14 @@ public class MobileSequenceConfig implements Serializable, Comparable<MobileSequ
 		return execution.getResponseTimes();
 	}
 
+    /**
+     * <p>start</p>
+     *
+     * @param session a {@link org.opennms.sms.monitor.MobileSequenceSession} object.
+     * @param coordinator a {@link org.opennms.core.tasks.DefaultTaskCoordinator} object.
+     * @return a {@link org.opennms.sms.monitor.internal.MobileSequenceExecution} object.
+     * @throws org.opennms.sms.monitor.SequencerException if any.
+     */
     public MobileSequenceExecution start(MobileSequenceSession session, DefaultTaskCoordinator coordinator) throws SequencerException {
         
         Assert.notNull(coordinator);
@@ -144,6 +218,15 @@ public class MobileSequenceConfig implements Serializable, Comparable<MobileSequ
         return new MobileSequenceExecution(this);
     }
 
+    /**
+     * <p>waitFor</p>
+     *
+     * @param session a {@link org.opennms.sms.monitor.MobileSequenceSession} object.
+     * @param execution a {@link org.opennms.sms.monitor.internal.MobileSequenceExecution} object.
+     * @throws java.lang.InterruptedException if any.
+     * @throws java.util.concurrent.ExecutionException if any.
+     * @throws java.lang.Throwable if any.
+     */
     public void waitFor(MobileSequenceSession session, MobileSequenceExecution execution) throws InterruptedException, ExecutionException, Throwable {
 
         execution.waitFor();
@@ -151,6 +234,11 @@ public class MobileSequenceConfig implements Serializable, Comparable<MobileSequ
         execution.updateResults(session);
     }
 
+    /**
+     * <p>hasTransactions</p>
+     *
+     * @return a boolean.
+     */
     public boolean hasTransactions() {
         return getTransactions() != null && getTransactions().size() != 0;
     }

@@ -42,7 +42,7 @@ import org.opennms.netmgt.snmp.SnmpUtils;
 
 /**
  *<P>The Dot1qStaticVlanTableEntry class is designed to hold all the MIB-II
- * information for one entry in the 
+ * information for one entry in the
  * .iso.org.dod.internet.mgmt.mib-2.
  * dot1dBridge.qBridgeMIB.qBridgeMIBObjects.dot1qVlan.dot1qVlanCurrentTable
  * <P>This object is used by the Dot1qStaticVlanTable to hold infomation
@@ -51,18 +51,22 @@ import org.opennms.netmgt.snmp.SnmpUtils;
  *
  * @author <A HREF="mailto:rssntn67@yahoo.it">Antonio</A>
  * @author <A HREF="http://www.opennms.org/">OpenNMS</A>
- *
- *
+ * @author <A HREF="mailto:rssntn67@yahoo.it">Antonio</A>
+ * @author <A HREF="http://www.opennms.org/">OpenNMS</A>
  * @see Dot1qStaticVlanTable
  * @see <A HREF="http://www.ietf.org/rfc/rfc1213.txt">RFC1213</A>
+ * @version $Id: $
  */
 public final class Dot1qStaticVlanTableEntry extends SnmpTableEntry
 implements VlanCollectorEntry {
 
 	// Lookup strings for specific table entries
 	//
+	/** Constant <code>VLAN_STATICEGRESSPORTS="dot1qVlanStaticEgressPorts"</code> */
 	public final static String VLAN_STATICEGRESSPORTS = "dot1qVlanStaticEgressPorts";
+	/** Constant <code>VLAN_FORBIDDENEGRESSPORTS="dot1qVlanStaticForbiddenEgressPorts"</code> */
 	public final static String VLAN_FORBIDDENEGRESSPORTS = "dot1qVlanStaticForbiddenEgressPorts";
+	/** Constant <code>VLAN_STATICUNTAGGEDPORTS="dot1qVlanStaticUntaggedPorts"</code> */
 	public final static String VLAN_STATICUNTAGGEDPORTS = "dot1qVlanStaticUntaggedPorts";
 
 	private static String VLAN_INDEX_OID=".1.3.6.1.2.1.17.7.1.4.3.1.0";
@@ -123,15 +127,14 @@ implements VlanCollectorEntry {
 	 * variable from the passed array of SNMP varbinds.</P>
 	 *
 	 * <P>If the information in the object should not be
-	 * modified then a <EM>final</EM> modifier can be 
+	 * modified then a <EM>final</EM> modifier can be
 	 * applied to the created object.</P>
-	 *
-	 * @param vars	The array of variable bindings.
 	 */
 	public Dot1qStaticVlanTableEntry() {
 		super(hpVlan_elemList);
 	}
 
+	/** {@inheritDoc} */
 	@Override
 	public void storeResult(SnmpResult res) {
 		if (!hasVlanIndex) {

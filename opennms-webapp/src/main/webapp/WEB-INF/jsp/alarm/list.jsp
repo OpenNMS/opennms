@@ -116,7 +116,7 @@
 
     String action = null;
 
-    if( !(req.isUserInRole( Authentication.READONLY_ROLE ))) {     
+    if( ( req.isUserInRole( Authentication.ADMIN_ROLE ) || !req.isUserInRole( Authentication.READONLY_ROLE ) ) ) {     
     	if ( parms.ackType != null ) {
     		action = parms.ackType.getShortName();
     	}
@@ -263,7 +263,7 @@
       <!-- end menu -->      
 
       <!-- hidden form for acknowledging the result set --> 
-      <% if( !(req.isUserInRole( Authentication.READONLY_ROLE ))) { %>
+      <% if( req.isUserInRole( Authentication.ADMIN_ROLE ) || !req.isUserInRole( Authentication.READONLY_ROLE ) ) { %>
           <form method="post" action="alarm/acknowledgeByFilter" name="acknowledge_by_filter_form">    
             <input type="hidden" name="redirectParms" value="<%=req.getQueryString()%>" />
             <input type="hidden" name="actionCode" value="<%=action%>" />
@@ -302,7 +302,7 @@
               </p>           
             <% } %>
 
-      <% if( !(req.isUserInRole( Authentication.READONLY_ROLE ))) { %>
+      <% if( req.isUserInRole( Authentication.ADMIN_ROLE ) || !req.isUserInRole( Authentication.READONLY_ROLE ) ) { %>
           <form action="alarm/acknowledge" method="post" name="alarm_action_form">
           <input type="hidden" name="redirectParms" value="<%=req.getQueryString()%>" />
           <input type="hidden" name="actionCode" value="<%=action%>" />
@@ -312,7 +312,7 @@
       <table>
 				<thead>
 					<tr>
-                                             <% if( !(req.isUserInRole( Authentication.READONLY_ROLE ))) { %>
+                                             <% if( req.isUserInRole( Authentication.ADMIN_ROLE ) || !req.isUserInRole( Authentication.READONLY_ROLE ) ) { %>
 						<% if ( parms.ackType == AcknowledgeType.UNACKNOWLEDGED ) { %>
 						<th width="1%">Ack</th>
 						<% } else { %>
@@ -358,7 +358,7 @@
       %> 
 
         <tr class="<%=alarms[i].getSeverity().getLabel()%>">
-          <% if( !(req.isUserInRole( Authentication.READONLY_ROLE ))) { %>
+          <% if( req.isUserInRole( Authentication.ADMIN_ROLE ) || !req.isUserInRole( Authentication.READONLY_ROLE ) ) { %>
               <td class="divider" valign="middle" rowspan="1">
                 <nobr>
                   <input type="checkbox" name="alarm" value="<%=alarms[i].getId()%>" /> 
@@ -477,7 +477,7 @@
       </table>
 			<hr />
 			 <p><%=alarms.length%> alarms &nbsp;
-      <% if( !(req.isUserInRole( Authentication.READONLY_ROLE ))) { %>
+      <% if( req.isUserInRole( Authentication.ADMIN_ROLE ) || !req.isUserInRole( Authentication.READONLY_ROLE ) ) { %>
           <input TYPE="reset" />
           <input TYPE="button" VALUE="Select All" onClick="checkAllCheckboxes()"/>
           <select name="alarmAction">

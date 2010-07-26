@@ -42,10 +42,16 @@ import org.opennms.protocols.wmi.WmiException;
 import java.util.List;
 import java.util.ArrayList;
 
+/**
+ * <p>OnmsWbemObject interface.</p>
+ *
+ * @author ranger
+ * @version $Id: $
+ */
 public interface OnmsWbemObject {
     /**
      * Execute a named method on this WMI object.
-     * 
+     *
      * @param methodName The name of the method to execute on the remote side.
      * @param params The list of parameters for this method.
      * @param namedValueSet A list of parameter values.
@@ -71,12 +77,31 @@ public interface OnmsWbemObject {
      * Gets a list of the available methods on this object.
      *
      * @return a list of available methods on this object.
+     * @throws org.opennms.protocols.wmi.WmiException if any.
      */
     public OnmsWbemMethodSet getWmiMethods() throws WmiException;
 
+     /**
+      * <p>getWmiPath</p>
+      *
+      * @return a {@link org.opennms.protocols.wmi.wbem.OnmsWbemObjectPath} object.
+      * @throws org.opennms.protocols.wmi.WmiException if any.
+      */
      public OnmsWbemObjectPath getWmiPath() throws WmiException;
 
+    /**
+     * <p>getWmiObjectText</p>
+     *
+     * @return a {@link java.lang.String} object.
+     * @throws org.opennms.protocols.wmi.WmiException if any.
+     */
     public String getWmiObjectText() throws WmiException;
 
+    /**
+     * <p>getWmiProperties</p>
+     *
+     * @return a {@link org.opennms.protocols.wmi.wbem.OnmsWbemPropertySet} object.
+     * @throws org.opennms.protocols.wmi.WmiException if any.
+     */
     public OnmsWbemPropertySet getWmiProperties() throws WmiException;
 }

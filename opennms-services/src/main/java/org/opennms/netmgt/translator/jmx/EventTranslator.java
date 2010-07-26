@@ -48,20 +48,41 @@ import org.opennms.netmgt.eventd.EventIpcManager;
 import org.opennms.netmgt.eventd.EventIpcManagerFactory;
 
 /**
- * 
+ * <p>EventTranslator class.</p>
+ *
  * @author <a href="mailto:brozow@opennms.org">Mathew Brozowski</a>
  * @author <a href="mailto:david@opennms.org">David Hustace</a>
  * @author <a href="mailto:dj@opennms.org">DJ Gregor</a>
  * @author <a href="mailto:mhuot@opennms.org">Mike Huot</a>
+ * @author <a href="mailto:brozow@opennms.org">Mathew Brozowski</a>
+ * @author <a href="mailto:david@opennms.org">David Hustace</a>
+ * @author <a href="mailto:dj@opennms.org">DJ Gregor</a>
+ * @author <a href="mailto:mhuot@opennms.org">Mike Huot</a>
+ * @author <a href="mailto:brozow@opennms.org">Mathew Brozowski</a>
+ * @author <a href="mailto:david@opennms.org">David Hustace</a>
+ * @author <a href="mailto:dj@opennms.org">DJ Gregor</a>
+ * @author <a href="mailto:mhuot@opennms.org">Mike Huot</a>
+ * @author <a href="mailto:brozow@opennms.org">Mathew Brozowski</a>
+ * @author <a href="mailto:david@opennms.org">David Hustace</a>
+ * @author <a href="mailto:dj@opennms.org">DJ Gregor</a>
+ * @author <a href="mailto:mhuot@opennms.org">Mike Huot</a>
+ * @version $Id: $
  */
 public class EventTranslator extends AbstractServiceDaemon implements EventTranslatorMBean {
 
+    /**
+     * <p>Constructor for EventTranslator.</p>
+     */
     public EventTranslator() {
         super(NAME);
     }
 
+    /** Constant <code>NAME="OpenNMS.EventTranslator"</code> */
     public final static String NAME = "OpenNMS.EventTranslator";
 
+    /**
+     * <p>onInit</p>
+     */
     protected void onInit() {
         ThreadCategory log = ThreadCategory.getInstance(this.getClass());
         try {
@@ -97,14 +118,25 @@ public class EventTranslator extends AbstractServiceDaemon implements EventTrans
         keeper.init();
     }
 
+    /**
+     * <p>onStart</p>
+     */
     protected void onStart() {
         getEventTranslator().start();
     }
 
+    /**
+     * <p>onStop</p>
+     */
     protected void onStop() {
         getEventTranslator().stop();
     }
 
+    /**
+     * <p>getStatus</p>
+     *
+     * @return a int.
+     */
     public int getStatus() {
         return getEventTranslator().getStatus();
     }

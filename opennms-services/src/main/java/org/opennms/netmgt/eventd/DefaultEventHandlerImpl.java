@@ -59,23 +59,30 @@ import org.springframework.util.Assert;
 /**
  * The EventHandler builds Runnables that essentially do all the work on an
  * incoming event.
- * 
+ *
  * Operations done on an incoming event are handled by the List of injected
  * EventProcessors, in the order in which they are given in the list.  If any
  * of them throw an exception, futher processing of that event Log is stopped.
- * 
+ *
  * @author <A HREF="mailto:sowmya@opennms.org">Sowmya Nataraj </A>
  * @author <A HREF="http://www.opennms.org">OpenNMS.org </A>
+ * @author <A HREF="mailto:sowmya@opennms.org">Sowmya Nataraj </A>
+ * @author <A HREF="http://www.opennms.org">OpenNMS.org </A>
+ * @version $Id: $
  */
 public final class DefaultEventHandlerImpl implements InitializingBean, EventHandler {
     private List<EventProcessor> m_eventProcessors;
 
+    /**
+     * <p>Constructor for DefaultEventHandlerImpl.</p>
+     */
     public DefaultEventHandlerImpl() {
     }
     
     /* (non-Javadoc)
      * @see org.opennms.netmgt.eventd.EventHandler#createRunnable(org.opennms.netmgt.xml.event.Log)
      */
+    /** {@inheritDoc} */
     public EventHandlerRunnable createRunnable(Log eventLog) {
         return new EventHandlerRunnable(eventLog);
     }
@@ -148,14 +155,29 @@ public final class DefaultEventHandlerImpl implements InitializingBean, EventHan
         return ThreadCategory.getInstance(getClass());
     }
 
+    /**
+     * <p>afterPropertiesSet</p>
+     *
+     * @throws java.lang.IllegalStateException if any.
+     */
     public void afterPropertiesSet() throws IllegalStateException {
         Assert.state(m_eventProcessors != null, "property eventPersisters must be set");
     }
 
+    /**
+     * <p>getEventProcessors</p>
+     *
+     * @return a {@link java.util.List} object.
+     */
     public List<EventProcessor> getEventProcessors() {
         return m_eventProcessors;
     }
 
+    /**
+     * <p>setEventProcessors</p>
+     *
+     * @param eventProcessors a {@link java.util.List} object.
+     */
     public void setEventProcessors(List<EventProcessor> eventProcessors) {
         m_eventProcessors = eventProcessors;
     }

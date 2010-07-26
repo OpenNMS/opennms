@@ -63,9 +63,13 @@ import org.springframework.web.servlet.view.RedirectView;
  * This servlet receives an HTTP POST with a list of events to acknowledge or
  * unacknowledge, and then it redirects the client to a URL for display. The
  * target URL is configurable in the servlet config (web.xml file).
- * 
+ *
  * @author <a href="mailto:ranger@opennms.org">Benjamin Reed</a>
  * @author <a href="http://www.opennms.org/">OpenNMS</a>
+ * @author <a href="mailto:ranger@opennms.org">Benjamin Reed</a>
+ * @author <a href="http://www.opennms.org/">OpenNMS</a>
+ * @version $Id: $
+ * @since 1.8.1
  */
 public class AcknowledgeEventController extends AbstractController implements InitializingBean {
     private static final long serialVersionUID = 2L;
@@ -74,20 +78,37 @@ public class AcknowledgeEventController extends AbstractController implements In
     
     private String m_redirectView;
     
+    /**
+     * <p>setRedirectView</p>
+     *
+     * @param redirectView a {@link java.lang.String} object.
+     */
     public void setRedirectView(String redirectView) {
         m_redirectView = redirectView;
     }
     
+    /**
+     * <p>setWebEventRepository</p>
+     *
+     * @param webEventRepository a {@link org.opennms.web.event.WebEventRepository} object.
+     */
     public void setWebEventRepository(WebEventRepository webEventRepository) {
         m_webEventRepository = webEventRepository;
     }
 
+    /**
+     * <p>afterPropertiesSet</p>
+     *
+     * @throws java.lang.Exception if any.
+     */
     public void afterPropertiesSet() throws Exception {
         Assert.notNull(m_redirectView, "redirectView must be set");
         Assert.notNull(m_webEventRepository, "webEventRepository must be set");
     }
 
     /**
+     * {@inheritDoc}
+     *
      * Acknowledge the events specified in the POST and then redirect the client
      * to an appropriate URL for display.
      */

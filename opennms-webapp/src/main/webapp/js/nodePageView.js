@@ -14,7 +14,7 @@ function initPageView(elementId, nodeId){
 			forceFit: true,
 			scrollOffset: 5,
 			getRowClass : function(record, rowIndex, p, store) {
-				return getIpStatusColor(record.data.isDown, record.data.isManaged);
+				return getIpStatusColor(record.data.monitoredServiceCount, record.data.isDown, record.data.isManaged);
 			}
 		},
 		nodeId: nodeId,
@@ -66,14 +66,16 @@ function initPageView(elementId, nodeId){
 		]
 	});
 	
-	function getIpStatusColor(isDown, isManaged) {
+	function getIpStatusColor(monitoredServiceCount, isDown, isManaged) {
 		var bgStyle;
 		if (isManaged == 'U' || isManaged == 'F' || isManaged == 'N') {
-			bgStyle = 'grid-status-blue';
+			bgStyle = 'grid-status-unknown';
+        }else if(monitoredServiceCount < 1) {
+            bgStyle = 'grid-status-indeterminate';
 		} else {
-			bgStyle = 'grid-status-green';
+			bgStyle = 'grid-status-up';
 			if (isDown == 'true') {
-				bgStyle = 'grid-status-red';
+				bgStyle = 'grid-status-down';
 			}
 		}
 
@@ -83,11 +85,11 @@ function initPageView(elementId, nodeId){
 	function getSnmpStatusColor(ifAdminStatus, ifOperStatus){
 		var bgStyle;
 		if(ifAdminStatus != 1){
-			bgStyle = 'grid-status-blue';
+			bgStyle = 'grid-status-unknown';
 		}else if(ifAdminStatus == 1 && ifOperStatus == 1){
-			bgStyle = 'grid-status-green';
+			bgStyle = 'grid-status-up';
 		}else if(ifAdminStatus == 1 && ifOperStatus != 1){
-			bgStyle = 'grid-status-red';
+			bgStyle = 'grid-status-down';
 		}
 		
 		return String.format('x-grid3-row {0}', bgStyle);

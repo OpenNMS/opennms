@@ -41,17 +41,22 @@ import org.springframework.validation.ValidationUtils;
 import org.springframework.validation.Validator;
 
 /**
+ * <p>AuthorityValidator class.</p>
+ *
  * @author Massimiliano Dess&igrave; (desmax74@yahoo.it)
  * @since jdk 1.5.0
+ * @version $Id: $
  */
 @Component("authorityValidator")
 public class AuthorityValidator implements Validator {
 
+    /** {@inheritDoc} */
     @SuppressWarnings("unchecked")
     public boolean supports(Class clazz) {
         return AuthorityDTO.class.isAssignableFrom(clazz);
     }
 
+    /** {@inheritDoc} */
     public void validate(Object command, Errors err) {
         // AuthorityDTO authority = (AuthorityDTO) command;
         ValidationUtils.rejectIfEmptyOrWhitespace(err, "name", "name.required.value", "name is required.");

@@ -71,7 +71,7 @@ import org.springframework.util.Assert;
  * event and loading info from the eventconf match to the event. This class is
  * also responsible for the event parm expansion
  * </P>
- * 
+ *
  * <P>
  * Notes on event parm expansion:
  * </P>
@@ -79,7 +79,7 @@ import org.springframework.util.Assert;
  * The list of elements that can have a %element% or %parms[*]% in their value
  * are : descr, logmsg, operinstr, autoaction, operaction(/menu), tticket
  * </P>
- * 
+ *
  * <P>
  * The list of elements that can occur as a %element% are : uei, source, nodeid,
  * time, host, interface, snmphost, service, snmp, id, idtext, version,
@@ -87,27 +87,34 @@ import org.springframework.util.Assert;
  * parm[values-all], parm[names-all], parm[all], parm[ <name>], parm[##], parm[#
  * <num>]
  * </P>
- * 
+ *
  * <pre>
- * 
- *  Expansions are made so that 
+ *
+ *  Expansions are made so that
  *  - %element% is replaced by the value of the element
  *    -i.e a 'xxx %uei%'  would expand to 'xxx &lt;eventuei&gt;'
  *  - %parm[values-all]% is replaced by a space-separated list of all parm values
  *    -i.e a 'xxx %parm[values-all]%'  would expand to 'xxx parmVal1 parmVal2 ..'
- *  - %parm[names-all]% is replaced by a space-separated list of all parm names 
+ *  - %parm[names-all]% is replaced by a space-separated list of all parm names
  *    -i.e a 'xxx %parm[names-all]%'  would expand to 'xxx parmName1 parmName2 ..'
  *  - %parm[all]% is replaced by a space-separated list of all parmName=&quot;parmValue&quot;
  *     -i.e a 'xxx %parm[all]%'  would expand to 'xxx parmName1=&quot;parmVal1&quot; parmName2=&quot;parmVal2&quot; ..'
  *  - %parm[&lt;name&gt;]% is replaced by the value of the parameter named 'name', if present
  *  - %parm[#&lt;num&gt;]% is replaced by the value of the parameter number 'num', if present
- *  - %parm[##]% is replaced by the number of parameters 
- *  
+ *  - %parm[##]% is replaced by the number of parameters
+ *
  * </pre>
- * 
+ *
  * @author <a href="mailto:weave@oculan.com">Brian Weaver </a>
  * @author <a href="mailto:sowmya@opennms.org">Sowmya Nataraj </a>
  * @author <a href="http://www.opennms.org/">OpenNMS </a>
+ * @author <a href="mailto:weave@oculan.com">Brian Weaver </a>
+ * @author <a href="mailto:sowmya@opennms.org">Sowmya Nataraj </a>
+ * @author <a href="http://www.opennms.org/">OpenNMS </a>
+ * @author <a href="mailto:weave@oculan.com">Brian Weaver </a>
+ * @author <a href="mailto:sowmya@opennms.org">Sowmya Nataraj </a>
+ * @author <a href="http://www.opennms.org/">OpenNMS </a>
+ * @version $Id: $
  */
 public final class EventExpander implements EventProcessor, InitializingBean {
     private EventConfDao m_eventConfDao;
@@ -138,10 +145,12 @@ public final class EventExpander implements EventProcessor, InitializingBean {
  * TODO: delete this code soon
     private final static String DEFAULT_TRAP_UEI = "uei.opennms.org/default/trap";
 */
-
     public EventExpander() {
     }
 
+    /**
+     * <p>afterPropertiesSet</p>
+     */
     public void afterPropertiesSet() {
         Assert.state(m_eventConfDao != null, "property eventConfDao must be set");
     }
@@ -566,15 +575,14 @@ public final class EventExpander implements EventProcessor, InitializingBean {
      * from the configuration manager is consulted to ensure that secure files
      * are cleared out if necessary.
      * </p>
-     * 
+     *
      * <p>
      * Any secure fields that exists in the incomming event are cleared during
      * expansion.
      * </p>
-     * 
+     *
      * @param e
      *            The event to expand if necesary.
-     * 
      */
     public synchronized void expandEvent(Event e) {
         org.opennms.netmgt.xml.eventconf.Event econf = lookup(e);
@@ -766,14 +774,25 @@ public final class EventExpander implements EventProcessor, InitializingBean {
     } // end expandEvent()
 
 
+    /** {@inheritDoc} */
     public void process(Header eventHeader, Event event) {
         expandEvent(event);
     }
 
+    /**
+     * <p>getEventConfDao</p>
+     *
+     * @return a {@link org.opennms.netmgt.config.EventConfDao} object.
+     */
     public EventConfDao getEventConfDao() {
         return m_eventConfDao;
     }
 
+    /**
+     * <p>setEventConfDao</p>
+     *
+     * @param eventConfDao a {@link org.opennms.netmgt.config.EventConfDao} object.
+     */
     public void setEventConfDao(EventConfDao eventConfDao) {
         m_eventConfDao = eventConfDao;
     }

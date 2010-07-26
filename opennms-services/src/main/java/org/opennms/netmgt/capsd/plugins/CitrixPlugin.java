@@ -59,11 +59,12 @@ import org.opennms.netmgt.capsd.ConnectionConfig;
  * Plugin interface that allows it to be used along with other plugins by the
  * daemon.
  * </P>
- * 
+ *
  * @author <A HREF="mailto:jason@opennms.org">Jason </A>
  * @author <A HREF="http://www.opennsm.org">OpenNMS </A>
- * 
- * 
+ * @author <A HREF="mailto:jason@opennms.org">Jason </A>
+ * @author <A HREF="http://www.opennsm.org">OpenNMS </A>
+ * @version $Id: $
  */
 public final class CitrixPlugin extends AbstractTcpPlugin {
 
@@ -93,17 +94,13 @@ public final class CitrixPlugin extends AbstractTcpPlugin {
     private static final String PROTOCOL_NAME = "Citrix";
 
     /**
+     * <p>Constructor for CitrixPlugin.</p>
      */
     public CitrixPlugin() {
         super(PROTOCOL_NAME, DEFAULT_PORT, DEFAULT_TIMEOUT, DEFAULT_RETRY);
     }
 
-    /**
-     * @param socket
-     * @param isAServer
-     * @return
-     * @throws IOException
-     */
+    /** {@inheritDoc} */
     protected boolean checkProtocol(Socket socket, ConnectionConfig config) throws IOException {
         boolean isAServer = false;
         // Allocate a line reader

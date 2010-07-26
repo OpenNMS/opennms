@@ -41,17 +41,22 @@ import org.springframework.validation.ValidationUtils;
 import org.springframework.validation.Validator;
 
 /**
+ * <p>GroupValidator class.</p>
+ *
  * @author Massimiliano Dess&igrave; (desmax74@yahoo.it)
  * @since jdk 1.5.0
+ * @version $Id: $
  */
 @Component("groupValidator")
 public class GroupValidator implements Validator {
 
+    /** {@inheritDoc} */
     @SuppressWarnings("unchecked")
     public boolean supports(Class clazz) {
         return GroupDTO.class.isAssignableFrom(clazz);
     }
 
+    /** {@inheritDoc} */
     public void validate(Object command, Errors err) {
         // GroupDTO group = (GroupDTO) command;
         ValidationUtils.rejectIfEmptyOrWhitespace(err, "name", "name.required.value", "name is required.");

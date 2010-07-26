@@ -34,11 +34,14 @@ package org.opennms.protocols.wmi;
 /**
  * This class contains the parameters used to perform and validate checks
  * against WMI agents.
- * 
+ *
  * @author <A HREF="mailto:matt.raykowski@gmail.com">Matt Raykowski</A>
+ * @version $Id: $
  */
 public class WmiParams {
+    /** Constant <code>WMI_OPERATION_INSTANCEOF="InstanceOf"</code> */
     public final static String WMI_OPERATION_INSTANCEOF = "InstanceOf";
+    /** Constant <code>WMI_OPERATION_WQL="Wql"</code> */
     public final static String WMI_OPERATION_WQL = "Wql";
 
     /**
@@ -56,11 +59,11 @@ public class WmiParams {
 
     private String m_WmiOperation = null;
 
-    /**
+	/**
 	 * Constructor, sets the critical threshold.
 	 *
-     * @param queryType
-     *            the type of query operation to perform.
+	 * @param queryType
+	 *            the type of query operation to perform.
 	 * @param compVal
 	 *            the value to be used for the comparison.
 	 * @param compOp
@@ -88,6 +91,8 @@ public class WmiParams {
 	}
 
 	/**
+	 * <p>getCompareValue</p>
+	 *
 	 * @return the m_CompareValue
 	 */
 	public Object getCompareValue() {
@@ -95,6 +100,8 @@ public class WmiParams {
 	}
 
 	/**
+	 * <p>setCompareValue</p>
+	 *
 	 * @param compareValue the m_CompareValue to set
 	 */
 	public void setCompareValue(Object compareValue) {
@@ -102,6 +109,8 @@ public class WmiParams {
 	}
 
 	/**
+	 * <p>getCompareOperation</p>
+	 *
 	 * @return the m_CompareOperation
 	 */
 	public String getCompareOperation() {
@@ -109,6 +118,8 @@ public class WmiParams {
 	}
 
 	/**
+	 * <p>setCompareOperation</p>
+	 *
 	 * @param compareOperation the m_CompareOperation to set
 	 */
 	public void setCompareOperation(String compareOperation) {
@@ -116,6 +127,8 @@ public class WmiParams {
 	}
 
 	/**
+	 * <p>getWmiClass</p>
+	 *
 	 * @return the m_WmiClass
 	 */
 	public String getWmiClass() {
@@ -123,6 +136,8 @@ public class WmiParams {
 	}
 
 	/**
+	 * <p>setWmiClass</p>
+	 *
 	 * @param wmiClass the m_WmiClass to set
 	 */
 	public void setWmiClass(String wmiClass) {
@@ -130,6 +145,8 @@ public class WmiParams {
 	}
 
 	/**
+	 * <p>getWmiObject</p>
+	 *
 	 * @return the m_WmiObject
 	 */
 	public String getWmiObject() {
@@ -137,24 +154,46 @@ public class WmiParams {
 	}
 
 	/**
+	 * <p>setWmiObject</p>
+	 *
 	 * @param wmiObject the m_WmiObject to set
 	 */
 	public void setWmiObject(String wmiObject) {
 		m_WmiObject = wmiObject;
 	}
 
+    /**
+     * <p>getWql</p>
+     *
+     * @return a {@link java.lang.String} object.
+     */
     public String getWql() {
         return m_WmWqlStr;
     }
 
+    /**
+     * <p>setWql</p>
+     *
+     * @param wmiWql a {@link java.lang.String} object.
+     */
     public void setWql(String wmiWql) {
         this.m_WmWqlStr = wmiWql;
     }
 
+    /**
+     * <p>getWmiOperation</p>
+     *
+     * @return a {@link java.lang.String} object.
+     */
     public String getWmiOperation() {
         return m_WmiOperation;
     }
 
+    /**
+     * <p>setWmiOperation</p>
+     *
+     * @param wmiOperation a {@link java.lang.String} object.
+     */
     public void setWmiOperation(String wmiOperation) {
         this.m_WmiOperation = wmiOperation;
     }

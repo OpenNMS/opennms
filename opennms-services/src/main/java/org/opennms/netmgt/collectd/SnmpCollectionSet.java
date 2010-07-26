@@ -50,6 +50,12 @@ import org.opennms.netmgt.snmp.SnmpResult;
 import org.opennms.netmgt.snmp.SnmpUtils;
 import org.opennms.netmgt.snmp.SnmpWalker;
 
+/**
+ * <p>SnmpCollectionSet class.</p>
+ *
+ * @author ranger
+ * @version $Id: $
+ */
 public class SnmpCollectionSet implements Collectable, CollectionSet {
 
     public static class RescanNeeded {
@@ -64,8 +70,8 @@ public class SnmpCollectionSet implements Collectable, CollectionSet {
 
     }
 
-    private CollectionAgent m_agent;
-    private OnmsSnmpCollection m_snmpCollection;
+    private final CollectionAgent m_agent;
+    private final OnmsSnmpCollection m_snmpCollection;
     private SnmpIfCollector m_ifCollector;
     private IfNumberTracker m_ifNumber;
     private SysUpTimeTracker m_sysUpTime;
@@ -73,6 +79,11 @@ public class SnmpCollectionSet implements Collectable, CollectionSet {
     private int m_status=ServiceCollector.COLLECTION_FAILED;
     private boolean m_ignorePersist;
 
+    /**
+     * <p>toString</p>
+     *
+     * @return a {@link java.lang.String} object.
+     */
     public String toString() {
     	StringBuffer buffer = new StringBuffer();
 
@@ -103,11 +114,22 @@ public class SnmpCollectionSet implements Collectable, CollectionSet {
     	return buffer.toString();
     }
 
+    /**
+     * <p>Constructor for SnmpCollectionSet.</p>
+     *
+     * @param agent a {@link org.opennms.netmgt.collectd.CollectionAgent} object.
+     * @param snmpCollection a {@link org.opennms.netmgt.collectd.OnmsSnmpCollection} object.
+     */
     public SnmpCollectionSet(CollectionAgent agent, OnmsSnmpCollection snmpCollection) {
         m_agent = agent;
         m_snmpCollection = snmpCollection;
     }
 
+    /**
+     * <p>getIfCollector</p>
+     *
+     * @return a {@link org.opennms.netmgt.collectd.SnmpIfCollector} object.
+     */
     public SnmpIfCollector getIfCollector() {
         if (m_ifCollector == null) {
             m_ifCollector = createIfCollector();
@@ -115,6 +137,11 @@ public class SnmpCollectionSet implements Collectable, CollectionSet {
         return m_ifCollector;
     }
 
+    /**
+     * <p>getIfNumber</p>
+     *
+     * @return a {@link org.opennms.netmgt.collectd.IfNumberTracker} object.
+     */
     public IfNumberTracker getIfNumber() {
         if (m_ifNumber == null) {
             m_ifNumber = createIfNumberTracker();
@@ -122,6 +149,11 @@ public class SnmpCollectionSet implements Collectable, CollectionSet {
         return m_ifNumber;
     }
 
+    /**
+     * <p>getSysUpTime</p>
+     *
+     * @return a {@link org.opennms.netmgt.collectd.SysUpTimeTracker} object.
+     */
     public SysUpTimeTracker getSysUpTime() {
         if (m_sysUpTime == null) {
             m_sysUpTime = createSysUpTimeTracker();
@@ -129,6 +161,11 @@ public class SnmpCollectionSet implements Collectable, CollectionSet {
         return m_sysUpTime;
     }
 
+    /**
+     * <p>getNodeCollector</p>
+     *
+     * @return a {@link org.opennms.netmgt.collectd.SnmpNodeCollector} object.
+     */
     public SnmpNodeCollector getNodeCollector() {
         if (m_nodeCollector == null) {
             m_nodeCollector = createNodeCollector();
@@ -169,6 +206,11 @@ public class SnmpCollectionSet implements Collectable, CollectionSet {
         return ifCollector;
     }
 
+    /**
+     * <p>getNodeInfo</p>
+     *
+     * @return a {@link org.opennms.netmgt.collectd.NodeInfo} object.
+     */
     public NodeInfo getNodeInfo() {
         return getNodeResourceType().getNodeInfo();
     }
@@ -185,6 +227,11 @@ public class SnmpCollectionSet implements Collectable, CollectionSet {
         return ! getGenericIndexResourceTypes().isEmpty();
     }
 
+    /**
+     * <p>getCollectionAgent</p>
+     *
+     * @return a {@link org.opennms.netmgt.collectd.CollectionAgent} object.
+     */
     public CollectionAgent getCollectionAgent() {
        return m_agent;
     }
@@ -207,6 +254,11 @@ public class SnmpCollectionSet implements Collectable, CollectionSet {
     	return attributes;
     }
 
+    /**
+     * <p>getGenericIndexAttributeTypes</p>
+     *
+     * @return a {@link java.util.Collection} object.
+     */
     protected Collection<SnmpAttributeType> getGenericIndexAttributeTypes() {
     	Collection<SnmpAttributeType> attributeTypes = new LinkedList<SnmpAttributeType>();
     	Collection<ResourceType> resourceTypes = getGenericIndexResourceTypes();
@@ -220,6 +272,11 @@ public class SnmpCollectionSet implements Collectable, CollectionSet {
         return m_snmpCollection.getGenericIndexResourceTypes(m_agent);
     }
 
+    /**
+     * <p>getCollectionTracker</p>
+     *
+     * @return a {@link org.opennms.netmgt.snmp.CollectionTracker} object.
+     */
     public CollectionTracker getCollectionTracker() {
         return new AggregateTracker(SnmpAttributeType.getCollectionTrackers(getAttributeTypes()));
     }
@@ -228,10 +285,16 @@ public class SnmpCollectionSet implements Collectable, CollectionSet {
         return m_snmpCollection.getAttributeTypes(m_agent);
     }
 
+    /**
+     * <p>getResources</p>
+     *
+     * @return a {@link java.util.Collection} object.
+     */
     public Collection<? extends CollectionResource> getResources() {
         return m_snmpCollection.getResources(m_agent);
     }
 
+    /** {@inheritDoc} */
     public void visit(CollectionSetVisitor visitor) {
         visitor.visitCollectionSet(this);
 
@@ -261,12 +324,17 @@ public class SnmpCollectionSet implements Collectable, CollectionSet {
         return new AggregateTracker(trackers);
     }
 
+    /**
+     * <p>createWalker</p>
+     *
+     * @return a {@link org.opennms.netmgt.snmp.SnmpWalker} object.
+     */
     protected SnmpWalker createWalker() {
         CollectionAgent agent = getCollectionAgent();
         return SnmpUtils.createWalker(getAgentConfig(), "SnmpCollectors for " + agent.getHostAddress(), getTracker());
     }
 
-    void logStartedWalker() {
+    private void logStartedWalker() {
         if (log().isDebugEnabled()) {
         	log().debug(
         			"collect: successfully instantiated "
@@ -275,7 +343,7 @@ public class SnmpCollectionSet implements Collectable, CollectionSet {
         }
     }
 
-    void logFinishedWalker() {
+    private void logFinishedWalker() {
         log().info(
         		"collect: node SNMP query for address "
         				+ getCollectionAgent().getHostAddress() + " complete.");
@@ -299,11 +367,8 @@ public class SnmpCollectionSet implements Collectable, CollectionSet {
         String message = "collection failed for "
             + getCollectionAgent().getHostAddress() 
             + " due to: " + walker.getErrorMessage();
-        if (walker.getErrorThrowable() != null) {
-            throw new CollectionWarning(message, walker.getErrorThrowable());
-        } else {
-            throw new CollectionWarning(message, null);
-        }
+        // Note: getErrorThrowable() return value can be null
+        throw new CollectionWarning(message, walker.getErrorThrowable());
     }
 
     void collect() throws CollectionException {
@@ -389,21 +454,30 @@ public class SnmpCollectionSet implements Collectable, CollectionSet {
     }
 
     private void logIfCounts() {
-        CollectionAgent agent = getCollectionAgent();
-        log().debug("collect: nodeId: " + agent.getNodeId()
-                + " interface: " + agent.getHostAddress()
-                + " ifCount: " + getIfNumber().getIntValue()
-                + " savedIfCount: " + agent.getSavedIfCount());
+        if (log().isDebugEnabled()) {
+            CollectionAgent agent = getCollectionAgent();
+            log().debug("collect: nodeId: " + agent.getNodeId()
+                    + " interface: " + agent.getHostAddress()
+                    + " ifCount: " + getIfNumber().getIntValue()
+                    + " savedIfCount: " + agent.getSavedIfCount());
+        }
     }
 
     private void logSysUpTime() {
-        CollectionAgent agent = getCollectionAgent();
-        log().debug("collect: nodeId: " + agent.getNodeId()
-                + " interface: " + agent.getHostAddress()
-                + " sysUpTime: " + getSysUpTime().getLongValue()
-                + " savedSysUpTime: " + agent.getSavedSysUpTime());
+        if (log().isDebugEnabled()) {
+            CollectionAgent agent = getCollectionAgent();
+            log().debug("collect: nodeId: " + agent.getNodeId()
+                    + " interface: " + agent.getHostAddress()
+                    + " sysUpTime: " + getSysUpTime().getLongValue()
+                    + " savedSysUpTime: " + agent.getSavedSysUpTime());
+        }
     }
 
+    /**
+     * <p>rescanNeeded</p>
+     *
+     * @return a boolean.
+     */
     public boolean rescanNeeded() {
 
         final RescanNeeded rescanNeeded = new RescanNeeded();
@@ -425,6 +499,11 @@ public class SnmpCollectionSet implements Collectable, CollectionSet {
         return rescanNeeded.rescanIsNeeded();
     }
 
+    /**
+     * <p>getAgentConfig</p>
+     *
+     * @return a {@link org.opennms.netmgt.snmp.SnmpAgentConfig} object.
+     */
     public SnmpAgentConfig getAgentConfig() {
         SnmpAgentConfig agentConfig = getCollectionAgent().getAgentConfig();
         agentConfig.setPort(m_snmpCollection.getSnmpPort(agentConfig.getPort()));
@@ -445,6 +524,12 @@ public class SnmpCollectionSet implements Collectable, CollectionSet {
         return agentConfig;
     }
 
+    /**
+     * <p>notifyIfNotFound</p>
+     *
+     * @param attrType a {@link org.opennms.netmgt.collectd.AttributeDefinition} object.
+     * @param res a {@link org.opennms.netmgt.snmp.SnmpResult} object.
+     */
     public void notifyIfNotFound(AttributeDefinition attrType, SnmpResult res) {
         // Don't bother sending a rescan event in this case since localhost is not going to be there anyway
         //triggerRescan();
@@ -477,10 +562,20 @@ public class SnmpCollectionSet implements Collectable, CollectionSet {
         return m_snmpCollection.getIfAliasResourceType(getCollectionAgent());
     }
 
+    /**
+     * <p>getStatus</p>
+     *
+     * @return a int.
+     */
     public int getStatus() {
         return m_status;
     }
 
+    /**
+     * <p>ignorePersist</p>
+     *
+     * @return a boolean.
+     */
     public boolean ignorePersist() {
         return m_ignorePersist;
     }

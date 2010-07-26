@@ -48,8 +48,10 @@ import org.exolab.castor.xml.ValidationException;
 import org.opennms.netmgt.ConfigFileConstants;
 
 /**
- * @author david
+ * <p>ChartConfigFactory class.</p>
  *
+ * @author david
+ * @version $Id: $
  */
 public class ChartConfigFactory extends ChartConfigManager {
     
@@ -58,6 +60,14 @@ public class ChartConfigFactory extends ChartConfigManager {
     private static File m_chartConfigFile;
     private static long m_lastModified;
     
+    /**
+     * <p>init</p>
+     *
+     * @throws org.exolab.castor.xml.MarshalException if any.
+     * @throws org.exolab.castor.xml.ValidationException if any.
+     * @throws java.io.FileNotFoundException if any.
+     * @throws java.io.IOException if any.
+     */
     public static synchronized void init() throws MarshalException, ValidationException, FileNotFoundException, IOException {
         if (!m_initialized) {
             m_instance = new ChartConfigFactory();
@@ -67,10 +77,12 @@ public class ChartConfigFactory extends ChartConfigManager {
     }
     
     /**
-     * @throws IOException
-     * @throws FileNotFoundException
-     * @throws MarshalException
-     * @throws ValidationException
+     * <p>reload</p>
+     *
+     * @throws java.io.IOException if any.
+     * @throws java.io.FileNotFoundException if any.
+     * @throws org.exolab.castor.xml.MarshalException if any.
+     * @throws org.exolab.castor.xml.ValidationException if any.
      */
     public static synchronized void reload() throws IOException, FileNotFoundException, MarshalException, ValidationException {
         m_chartConfigFile = ConfigFileConstants.getFile(ConfigFileConstants.CHART_CONFIG_FILE_NAME);
@@ -87,10 +99,7 @@ public class ChartConfigFactory extends ChartConfigManager {
         }
     }
 
-    /**
-     * @param xml
-     * @throws IOException
-     */
+    /** {@inheritDoc} */
     protected void saveXml(String xml) throws IOException {
         if (xml != null) {
             Writer fileWriter = new OutputStreamWriter(new FileOutputStream(m_chartConfigFile), "UTF-8");
@@ -101,7 +110,11 @@ public class ChartConfigFactory extends ChartConfigManager {
     }
 
     /**
-     * 
+     * <p>update</p>
+     *
+     * @throws java.io.IOException if any.
+     * @throws org.exolab.castor.xml.MarshalException if any.
+     * @throws org.exolab.castor.xml.ValidationException if any.
      */
     public void update() throws IOException, MarshalException, ValidationException {
         if (m_lastModified != m_chartConfigFile.lastModified()) {
@@ -109,6 +122,11 @@ public class ChartConfigFactory extends ChartConfigManager {
         }
     }
 
+    /**
+     * <p>getInstance</p>
+     *
+     * @return a {@link org.opennms.netmgt.config.ChartConfigFactory} object.
+     */
     public static ChartConfigFactory getInstance() {
         if (!m_initialized) {
             throw new IllegalStateException("Factory not initialized");
@@ -117,6 +135,11 @@ public class ChartConfigFactory extends ChartConfigManager {
         return m_instance;
     }
     
+    /**
+     * <p>setInstance</p>
+     *
+     * @param instance a {@link org.opennms.netmgt.config.ChartConfigFactory} object.
+     */
     public static void setInstance(ChartConfigFactory instance) {
         m_instance = instance;
         m_initialized = true;

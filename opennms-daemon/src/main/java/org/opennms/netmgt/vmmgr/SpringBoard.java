@@ -37,20 +37,35 @@ import java.util.List;
 
 import org.springframework.context.support.FileSystemXmlApplicationContext;
 
+/**
+ * <p>SpringBoard class.</p>
+ *
+ * @author ranger
+ * @version $Id: $
+ */
 public class SpringBoard implements SpringBoardMBean {
     
     private File contextDir;
     private FileSystemXmlApplicationContext m_context;
     
+    /**
+     * <p>Getter for the field <code>contextDir</code>.</p>
+     *
+     * @return a {@link java.lang.String} object.
+     */
     public String getContextDir() {
         return (contextDir == null ? null : contextDir.getAbsolutePath());
     }
 
+    /** {@inheritDoc} */
     public void setContextDir(String contextDir) {
         // TODO Auto-generated method stub
         
     }
 
+    /**
+     * <p>start</p>
+     */
     public void start() {
         String appContext = System.getProperty("opennms.appcontext", "opennms-appContext.xml");
         File contextFile = new File(contextDir, appContext);
@@ -58,10 +73,18 @@ public class SpringBoard implements SpringBoardMBean {
         m_context = new FileSystemXmlApplicationContext(contextFile.getPath());
     }
 
+    /**
+     * <p>status</p>
+     *
+     * @return a {@link java.util.List} object.
+     */
     public List<String> status() {
         return Collections.singletonList(m_context.toString());
     }
 
+    /**
+     * <p>stop</p>
+     */
     public void stop() {
         m_context.close();
     }

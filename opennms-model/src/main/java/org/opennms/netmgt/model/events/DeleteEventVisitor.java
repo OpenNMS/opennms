@@ -34,7 +34,10 @@
 //      http://www.opennms.com/
 //
 /**
- * 
+ * <p>DeleteEventVisitor class.</p>
+ *
+ * @author ranger
+ * @version $Id: $
  */
 package org.opennms.netmgt.model.events;
 
@@ -43,23 +46,30 @@ import org.opennms.netmgt.model.AbstractEntityVisitor;
 import org.opennms.netmgt.model.OnmsIpInterface;
 import org.opennms.netmgt.model.OnmsMonitoredService;
 import org.opennms.netmgt.model.OnmsNode;
-
 public final class DeleteEventVisitor extends AbstractEntityVisitor {
     private final EventForwarder m_eventForwarder;
     private static final String m_eventSource = "Provisiond";
 
+	/**
+	 * <p>Constructor for DeleteEventVisitor.</p>
+	 *
+	 * @param eventForwarder a {@link org.opennms.netmgt.model.events.EventForwarder} object.
+	 */
 	public DeleteEventVisitor(EventForwarder eventForwarder) {
 	    m_eventForwarder = eventForwarder;
 	}
 
+	/** {@inheritDoc} */
 	public void visitMonitoredServiceComplete(OnmsMonitoredService monSvc) {
 	    m_eventForwarder.sendNow(EventUtils.createServiceDeletedEvent(m_eventSource, monSvc.getNodeId(), monSvc.getIpAddress(), monSvc.getServiceType().getName()));
 	}
 
+	/** {@inheritDoc} */
 	public void visitIpInterfaceComplete(OnmsIpInterface iface) {
 	    m_eventForwarder.sendNow(EventUtils.createInterfaceDeletedEvent(m_eventSource, iface.getNode().getId(), iface.getIpAddress()));
 	}
 
+	/** {@inheritDoc} */
 	public void visitNodeComplete(OnmsNode node) {
 	    m_eventForwarder.sendNow(EventUtils.createNodeDeletedEvent(m_eventSource, node.getId(), node.getLabel(), node.getLabel()));
 	}

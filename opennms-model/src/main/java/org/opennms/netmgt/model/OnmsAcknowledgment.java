@@ -58,8 +58,10 @@ import org.opennms.netmgt.xml.event.Parm;
 @Table(name = "acks")
 
 /**
- * Persistable object used in acknowledgment activities  
+ * Persistable object used in acknowledgment activities
+ *
  * @author <a href="mailto:david@opennms.org">David Hustace</a>
+ * @version $Id: $
  */
 public class OnmsAcknowledgment {
 
@@ -72,6 +74,12 @@ public class OnmsAcknowledgment {
     private Integer m_refId;
     
     //main constructor
+    /**
+     * <p>Constructor for OnmsAcknowledgment.</p>
+     *
+     * @param time a {@link java.util.Date} object.
+     * @param user a {@link java.lang.String} object.
+     */
     public OnmsAcknowledgment(Date time, String user) {
         m_ackTime = (time == null) ? new Date() : time;
         m_ackUser = (user == null) ? "admin" : user;
@@ -79,18 +87,37 @@ public class OnmsAcknowledgment {
         m_ackAction = AckAction.ACKNOWLEDGE;  //probably should be the default, set as appropriate after instantiation
     }
     
+    /**
+     * <p>Constructor for OnmsAcknowledgment.</p>
+     */
     public OnmsAcknowledgment() {
         this(new Date(), "admin");
     }
     
+    /**
+     * <p>Constructor for OnmsAcknowledgment.</p>
+     *
+     * @param user a {@link java.lang.String} object.
+     */
     public OnmsAcknowledgment(String user) {
         this(new Date(), user);
     }
     
+    /**
+     * <p>Constructor for OnmsAcknowledgment.</p>
+     *
+     * @param time a {@link java.util.Date} object.
+     */
     public OnmsAcknowledgment(final Date time) {
         this(time, "admin");
     }
 
+    /**
+     * <p>Constructor for OnmsAcknowledgment.</p>
+     *
+     * @param e a {@link org.opennms.netmgt.xml.event.Event} object.
+     * @throws java.text.ParseException if any.
+     */
     public OnmsAcknowledgment(final Event e) throws ParseException {
         this(DateFormat.getDateInstance(DateFormat.FULL).parse(e.getTime()), "admin");
         Collection<Parm> parms = e.getParms().getParmCollection();
@@ -123,6 +150,11 @@ public class OnmsAcknowledgment {
         }
     }
 
+    /**
+     * <p>Constructor for OnmsAcknowledgment.</p>
+     *
+     * @param a a {@link org.opennms.netmgt.model.Acknowledgeable} object.
+     */
     public OnmsAcknowledgment(final Acknowledgeable a) {
         this(a, "admin", new Date());
         
@@ -137,10 +169,23 @@ public class OnmsAcknowledgment {
         
     }
     
+    /**
+     * <p>Constructor for OnmsAcknowledgment.</p>
+     *
+     * @param a a {@link org.opennms.netmgt.model.Acknowledgeable} object.
+     * @param user a {@link java.lang.String} object.
+     */
     public OnmsAcknowledgment(final Acknowledgeable a, String user) {
         this(a, user, new Date());
     }
     
+    /**
+     * <p>Constructor for OnmsAcknowledgment.</p>
+     *
+     * @param a a {@link org.opennms.netmgt.model.Acknowledgeable} object.
+     * @param user a {@link java.lang.String} object.
+     * @param ackTime a {@link java.util.Date} object.
+     */
     public OnmsAcknowledgment(final Acknowledgeable a, String user, Date ackTime) {
         this();
         if (a == null) {
@@ -154,6 +199,11 @@ public class OnmsAcknowledgment {
     }
     
     
+    /**
+     * <p>getId</p>
+     *
+     * @return a {@link java.lang.Integer} object.
+     */
     @Id
     @SequenceGenerator(name="opennmsSequence", sequenceName="opennmsNxtId")
     @GeneratedValue(generator="opennmsSequence")    
@@ -161,66 +211,132 @@ public class OnmsAcknowledgment {
         return m_id;
     }
     
+    /**
+     * <p>setId</p>
+     *
+     * @param id a {@link java.lang.Integer} object.
+     */
     public void setId(Integer id) {
         m_id = id;
     }
 
+    /**
+     * <p>getAckTime</p>
+     *
+     * @return a {@link java.util.Date} object.
+     */
     @Temporal(TemporalType.TIMESTAMP)
     @Column(name="ackTime", nullable=false)
     public Date getAckTime() {
         return m_ackTime;
     }
     
+    /**
+     * <p>setAckTime</p>
+     *
+     * @param time a {@link java.util.Date} object.
+     */
     public void setAckTime(Date time) {
         m_ackTime = time;
     }
 
     //TODO: make this right when Users are persisted to the DB
+    /**
+     * <p>getAckUser</p>
+     *
+     * @return a {@link java.lang.String} object.
+     */
     @Column(name="ackUser", length=64, nullable=false)
     public String getAckUser() {
         return m_ackUser;
     }
     
+    /**
+     * <p>setAckUser</p>
+     *
+     * @param user a {@link java.lang.String} object.
+     */
     public void setAckUser(String user) {
         m_ackUser = user;
     }
 
+    /**
+     * <p>getAckType</p>
+     *
+     * @return a {@link org.opennms.netmgt.model.AckType} object.
+     */
     @Column(name="ackType", nullable=false)
     public AckType getAckType() {
         return m_ackType;
     }
 
+    /**
+     * <p>setAckType</p>
+     *
+     * @param ackType a {@link org.opennms.netmgt.model.AckType} object.
+     */
     public void setAckType(AckType ackType) {
         m_ackType = ackType;
     }
 
+    /**
+     * <p>getRefId</p>
+     *
+     * @return a {@link java.lang.Integer} object.
+     */
     @Column(name="refId")
     public Integer getRefId() {
         return m_refId;
     }
 
+    /**
+     * <p>setRefId</p>
+     *
+     * @param refId a {@link java.lang.Integer} object.
+     */
     public void setRefId(Integer refId) {
         m_refId = refId;
     }
 
+    /**
+     * <p>getAckAction</p>
+     *
+     * @return a {@link org.opennms.netmgt.model.AckAction} object.
+     */
     @Column(name="ackAction", nullable=false)
     public AckAction getAckAction() {
         return m_ackAction;
     }
 
+    /**
+     * <p>setAckAction</p>
+     *
+     * @param ackAction a {@link org.opennms.netmgt.model.AckAction} object.
+     */
     public void setAckAction(AckAction ackAction) {
         m_ackAction = ackAction;
     }
     
+    /**
+     * <p>getLog</p>
+     *
+     * @return a {@link java.lang.String} object.
+     */
     @Column(name="log", nullable=true)
     public String getLog() {
         return m_log;
     }
     
+    /**
+     * <p>setLog</p>
+     *
+     * @param log a {@link java.lang.String} object.
+     */
     public void setLog(String log) {
         m_log = log;
     }
 
+    /** {@inheritDoc} */
     @Override
     public String toString() {
         StringBuilder bldr = new StringBuilder("Acknowledgment ID:");

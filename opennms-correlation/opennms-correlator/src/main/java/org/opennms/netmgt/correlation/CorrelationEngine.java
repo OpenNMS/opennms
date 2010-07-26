@@ -41,16 +41,32 @@ import java.util.List;
 import org.opennms.netmgt.xml.event.Event;
 
 /**
- * 
- * @author <a href="mailto:brozow@opennms.org">Mathew Brozowski</a>
+ * <p>CorrelationEngine interface.</p>
  *
+ * @author <a href="mailto:brozow@opennms.org">Mathew Brozowski</a>
+ * @version $Id: $
  */
 public interface CorrelationEngine {
     
+    /**
+     * <p>getName</p>
+     *
+     * @return a {@link java.lang.String} object.
+     */
     String getName();
 
+	/**
+	 * <p>getInterestingEvents</p>
+	 *
+	 * @return a {@link java.util.List} object.
+	 */
 	List<String> getInterestingEvents();
 
+	/**
+	 * <p>correlate</p>
+	 *
+	 * @param e a {@link org.opennms.netmgt.xml.event.Event} object.
+	 */
 	void correlate(Event e);
 
 }

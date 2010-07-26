@@ -1,7 +1,7 @@
 /*
  * This file is part of the OpenNMS(R) Application.
  *
- * OpenNMS(R) is Copyright (C) 2009 The OpenNMS Group, Inc.  All rights reserved.
+ * OpenNMS(R) is Copyright (C) 2009-2010 The OpenNMS Group, Inc.  All rights reserved.
  * OpenNMS(R) is a derivative work, containing both original code, included code and modified
  * code that was published under the GNU General Public License. Copyrights for modified
  * and included code are below.
@@ -9,8 +9,9 @@
  * OpenNMS(R) is a registered trademark of The OpenNMS Group, Inc.
  *
  * Modifications:
+ * 28 Jun 2010: Make categories optional (bug 3443) - jeffg@opennms.org
  * 
- * Copyright (C) 2009 The OpenNMS Group, Inc.  All rights reserved.
+ * Copyright (C) 2009-2010 The OpenNMS Group, Inc.  All rights reserved.
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -49,8 +50,10 @@ import org.springframework.web.servlet.view.RedirectView;
 
 /**
  * Node list controller.
- * 
+ *
  * @author <a href="mailto:ranger@opennms.org">Benjamin Reed</a>
+ * @version $Id: $
+ * @since 1.8.1
  */
 public class NodeProvisioningController extends AbstractController implements
         InitializingBean {
@@ -62,6 +65,8 @@ public class NodeProvisioningController extends AbstractController implements
     private String m_redirectView;
 
     /**
+     * {@inheritDoc}
+     *
      * Acknowledge the alarms specified in the POST and then redirect the
      * client to an appropriate URL for display.
      */
@@ -79,7 +84,7 @@ public class NodeProvisioningController extends AbstractController implements
             modelAndView.setViewName(m_successView);
             return modelAndView;
         } else {
-            String[] required = new String[] { "foreignSource", "nodeLabel", "ipAddress", "category" };
+            String[] required = new String[] { "foreignSource", "nodeLabel", "ipAddress" };
 
             for (String key : required) {
                 String[] value = request.getParameterValues(key);
@@ -119,18 +124,38 @@ public class NodeProvisioningController extends AbstractController implements
 
     }
 
+    /**
+     * <p>setRedirectView</p>
+     *
+     * @param redirectView a {@link java.lang.String} object.
+     */
     public void setRedirectView(String redirectView) {
         m_redirectView = redirectView;
     }
 
+    /**
+     * <p>setSuccessView</p>
+     *
+     * @param successView a {@link java.lang.String} object.
+     */
     public void setSuccessView(String successView) {
         m_successView = successView;
     }
 
+    /**
+     * <p>setNodeProvisionService</p>
+     *
+     * @param nodeProvisionService a {@link org.opennms.netmgt.provision.persist.NodeProvisionService} object.
+     */
     public void setNodeProvisionService(NodeProvisionService nodeProvisionService) {
         m_nodeProvisionService = nodeProvisionService;
     }
 
+    /**
+     * <p>afterPropertiesSet</p>
+     *
+     * @throws java.lang.Exception if any.
+     */
     public void afterPropertiesSet() throws Exception {
         Assert.notNull(m_redirectView, "redirectView must be set");
         Assert.notNull(m_successView, "successView must be set");

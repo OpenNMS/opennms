@@ -45,5 +45,6 @@ import java.lang.annotation.Target;
 @Target({ElementType.METHOD,ElementType.TYPE})
 public @interface JUnitTemporaryDatabase {
     boolean populate() default true;
+    String useExistingDatabase() default "";
     Class<? extends TemporaryDatabase> tempDbClass() default TemporaryDatabase.class;
 }

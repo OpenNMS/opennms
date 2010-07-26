@@ -8,6 +8,13 @@ import org.opennms.features.poller.remote.gwt.client.utils.HashCodeBuilder;
 
 import com.google.gwt.user.client.rpc.IsSerializable;
 
+/**
+ * <p>StatusDetails class.</p>
+ *
+ * @author ranger
+ * @version $Id: $
+ * @since 1.8.1
+ */
 public class StatusDetails implements Serializable, IsSerializable, Comparable<StatusDetails> {
     private static final long serialVersionUID = 1L;
 
@@ -15,29 +22,58 @@ public class StatusDetails implements Serializable, IsSerializable, Comparable<S
 
     private String m_reason;
 
+    /**
+     * <p>Constructor for StatusDetails.</p>
+     */
     public StatusDetails() {
     }
 
+    /**
+     * <p>Constructor for StatusDetails.</p>
+     *
+     * @param status a {@link org.opennms.features.poller.remote.gwt.client.Status} object.
+     * @param reason a {@link java.lang.String} object.
+     */
     public StatusDetails(final Status status, final String reason) {
         m_status = status;
         m_reason = reason;
     }
 
+    /**
+     * <p>getStatus</p>
+     *
+     * @return a {@link org.opennms.features.poller.remote.gwt.client.Status} object.
+     */
     public Status getStatus() {
         if (m_status == null) {
-            m_status = Status.UNINITIALIZED;
+            m_status = Status.UNKNOWN;
         }
         return m_status;
     }
 
+    /**
+     * <p>getReason</p>
+     *
+     * @return a {@link java.lang.String} object.
+     */
     public String getReason() {
         return m_reason;
     }
 
+    /**
+     * <p>toString</p>
+     *
+     * @return a {@link java.lang.String} object.
+     */
     public String toString() {
         return "StatusDetails[status=" + m_status + ",reason=" + m_reason + "]";
     }
 
+    /**
+     * <p>hashCode</p>
+     *
+     * @return a int.
+     */
     public int hashCode() {
         return new HashCodeBuilder()
             .append(this.getStatus())
@@ -45,6 +81,7 @@ public class StatusDetails implements Serializable, IsSerializable, Comparable<S
             .toHashcode();
     }
 
+    /** {@inheritDoc} */
     public boolean equals(final Object o) {
         if (!(o instanceof StatusDetails))
             return false;
@@ -52,6 +89,12 @@ public class StatusDetails implements Serializable, IsSerializable, Comparable<S
         return EqualsUtil.areEqual(this.getStatus(), that.getStatus());
     }
 
+    /**
+     * <p>compareTo</p>
+     *
+     * @param that a {@link org.opennms.features.poller.remote.gwt.client.StatusDetails} object.
+     * @return a int.
+     */
     public int compareTo(final StatusDetails that) {
         return new CompareToBuilder()
 //            .append(this.getStatus(), that.getStatus())
@@ -61,23 +104,69 @@ public class StatusDetails implements Serializable, IsSerializable, Comparable<S
             .toComparison();
     }
 
+    /**
+     * <p>up</p>
+     *
+     * @return a {@link org.opennms.features.poller.remote.gwt.client.StatusDetails} object.
+     */
     public static StatusDetails up() {
         return new StatusDetails(Status.UP, null);
     }
 
+    /**
+     * <p>marginal</p>
+     *
+     * @param reason a {@link java.lang.String} object.
+     * @return a {@link org.opennms.features.poller.remote.gwt.client.StatusDetails} object.
+     */
     public static StatusDetails marginal(final String reason) {
         return new StatusDetails(Status.MARGINAL, reason);
     }
 
+    /**
+     * <p>down</p>
+     *
+     * @param reason a {@link java.lang.String} object.
+     * @return a {@link org.opennms.features.poller.remote.gwt.client.StatusDetails} object.
+     */
     public static StatusDetails down(final String reason) {
         return new StatusDetails(Status.DOWN, reason);
     }
 
-    public static StatusDetails unknown(final String reason) {
-        return new StatusDetails(Status.UNKNOWN, reason);
+    /**
+     * <p>disconnected</p>
+     *
+     * @return a {@link org.opennms.features.poller.remote.gwt.client.StatusDetails} object.
+     */
+    public static StatusDetails disconnected(final String reason) {
+        return new StatusDetails(Status.DISCONNECTED, reason);
     }
 
-    public static StatusDetails uninitialized() {
-        return new StatusDetails(Status.UNINITIALIZED, null);
+    /**
+     * <p>stopped</p>
+     *
+     * @return a {@link org.opennms.features.poller.remote.gwt.client.StatusDetails} object.
+     */
+    public static StatusDetails stopped(final String reason) {
+        return new StatusDetails(Status.STOPPED, reason);
+    }
+
+    /**
+     * <p>unknown</p>
+     *
+     * @return a {@link org.opennms.features.poller.remote.gwt.client.StatusDetails} object.
+     */
+    public static StatusDetails unknown() {
+        return new StatusDetails(Status.UNKNOWN, null);
+    }
+
+    /**
+     * <p>unknown</p>
+     *
+     * @param reason a {@link java.lang.String} object.
+     * @return a {@link org.opennms.features.poller.remote.gwt.client.StatusDetails} object.
+     */
+    public static StatusDetails unknown(final String reason) {
+        return new StatusDetails(Status.UNKNOWN, reason);
     }
 }

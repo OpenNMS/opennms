@@ -57,10 +57,12 @@ import org.opennms.netmgt.xml.event.Value;
  * write simple scripts to generate traps based on events or to forward traps,
  * using scripting languages that are able to access Java classes (such as
  * BeanShell).
- * 
+ *
  * @author <a href="mailto:jim.doble@tavve.com">Jim Doble </a>
  * @author <a href="http://www.opennms.org/">OpenNMS.org </a>
- * 
+ * @author <a href="mailto:jim.doble@tavve.com">Jim Doble </a>
+ * @author <a href="http://www.opennms.org/">OpenNMS.org </a>
+ * @version $Id: $
  */
 public class SnmpTrapHelper {
 
@@ -171,13 +173,13 @@ public class SnmpTrapHelper {
          * Constructs a new SnmpVarBind with the specified name and value. The
          * value will be encoded as an SnmpOctetString. The value is assumed to
          * have been encoded with the specified encoding (i.e.
-         * XML_ENCODING_TEXT, or XML_ENCODING_BASE64).
+         * XML_ENCODING_TEXT, XML_ENCODING_BASE64, or XML_ENCODING_MAC_ADDRESS).
          * @param name
          *            The name (a.k.a. "id") of the variable binding to be
          *            created
          * @param encoding
          *            Describes the way in which the value content has been
-         *            encoded (i.e. XML_ENCODING_TEXT, or XML_ENCODING_BASE64)
+         *            encoded (i.e. XML_ENCODING_TEXT, XML_ENCODING_BASE64, or XML_ENCODING_MAC_ADDRESS)
          * @param value
          *            The variable binding value
          * 
@@ -194,6 +196,17 @@ public class SnmpTrapHelper {
                 contents = value.getBytes();
             } else if (EventConstants.XML_ENCODING_BASE64.equals(encoding)) {
                 contents = Base64.decodeBase64(value.toCharArray());
+            } else if (EventConstants.XML_ENCODING_MAC_ADDRESS.equals(encoding)) {
+                String[] digits = value.split(":");
+                if (digits.length != 6) {
+                    throw new SnmpTrapHelperException("Cannot decode MAC address: " + value);
+                }
+                contents = new byte[6];
+                // Decode each MAC address digit into a hexadecimal byte value
+                for (int i = 0; i < 6; i++) {
+                    // Prefix the value with "0x" so that Byte.decode() knows which base to use
+                    contents[i] = Byte.decode("0x" + digits[i]);
+                }
             } else {
                 throw new SnmpTrapHelperException("Encoding " + encoding + "is invalid for SnmpOctetString");
             }
@@ -567,7 +580,7 @@ public class SnmpTrapHelper {
     /**
      * Create an SNMP V1 trap with the specified enterprise IS, agent address,
      * generic ID, specific ID, and time stamp.
-     * 
+     *
      * @param entId
      *            The enterprise ID for the trap.
      * @param agentAddr
@@ -578,9 +591,8 @@ public class SnmpTrapHelper {
      *            The specific ID for the trap.
      * @param timeStamp
      *            The time stamp for the trap.
-     * 
      * @return The newly-created trap.
-     * @throws UnknownHostException 
+     * @throws java.net.UnknownHostException if any.
      */
     public SnmpV1TrapBuilder createV1Trap(String entId, String agentAddr, int generic, int specific, long timeStamp) throws UnknownHostException {
 
@@ -597,16 +609,16 @@ public class SnmpTrapHelper {
     /**
      * Create an SNMP V2 trap with the specified trap object ID, and sysUpTime
      * value.
-     * 
+     *
      * @param trapOid
      *            The trap object id.
      * @param sysUpTime
      *            The system up time.
-     * 
      * @return The newly-created trap.
      * @exception Throws
      *                SnmpTrapHelperException if the trap cannot be created for
      *                any reason.
+     * @throws org.opennms.netmgt.scriptd.helper.SnmpTrapHelperException if any.
      */
     public SnmpTrapBuilder createV2Trap(String trapOid, String sysUpTime) throws SnmpTrapHelperException {
 
@@ -619,9 +631,9 @@ public class SnmpTrapHelper {
     }
 
     /**
-     * Crate a new variable binding and add it to the specified SNMP V1 trap.
+     * Create a new variable binding and add it to the specified SNMP V1 trap.
      * The value encoding is assumed to be XML_ENCODING_TEXT.
-     * 
+     *
      * @param trap
      *            The trap to which the variable binding should be added.
      * @param name
@@ -630,18 +642,18 @@ public class SnmpTrapHelper {
      *            The type of variable binding to be created
      * @param value
      *            The variable binding value
-     * 
      * @exception Throws
      *                SnmpTrapHelperException if the variable binding cannot be
      *                added to the trap for any reason.
+     * @throws org.opennms.netmgt.scriptd.helper.SnmpTrapHelperException if any.
      */
     public void addVarBinding(SnmpTrapBuilder trap, String name, String type, String value) throws SnmpTrapHelperException {
         addVarBinding(trap, name, type, EventConstants.XML_ENCODING_TEXT, value);
     }
 
     /**
-     * Crate a new variable binding and add it to the specified SNMP V1 trap.
-     * 
+     * Create a new variable binding and add it to the specified SNMP V1 trap.
+     *
      * @param trap
      *            The trap to which the variable binding should be added.
      * @param name
@@ -653,10 +665,10 @@ public class SnmpTrapHelper {
      *            (i.e. XML_ENCODING_TEXT, or XML_ENCODING_BASE64)
      * @param value
      *            The variable binding value
-     * 
      * @exception Throws
      *                SnmpTrapHelperException if the variable binding cannot be
      *                added to the trap for any reason.
+     * @throws org.opennms.netmgt.scriptd.helper.SnmpTrapHelperException if any.
      */
     public void addVarBinding(SnmpTrapBuilder trap, String name, String type, String encoding, String value) throws SnmpTrapHelperException {
 
@@ -678,18 +690,17 @@ public class SnmpTrapHelper {
      * forward the trap to the specified address and port. It is assumed that
      * the specified event represents an SNMP V1 or V2 trap that was received by
      * OpenNMS (TrapD).
-     * 
+     *
      * @param event
      *            The event upon which the trap content should be based
      * @param destAddr
      *            The address to which the trap should be forwarded
      * @param destPort
      *            The port to which the trap should be forwarded
-     * @throws  
-     * 
      * @exception Throws
      *                SnmpTrapHelperException if the variable binding cannot be
      *                added to the trap for any reason.
+     * @throws org.opennms.netmgt.scriptd.helper.SnmpTrapHelperException if any.
      */
     public void forwardV1Trap(Event event, String destAddr, int destPort) throws SnmpTrapHelperException {
         // the event must correspond to an SNMP trap
@@ -822,17 +833,17 @@ public class SnmpTrapHelper {
      * forward the trap to the specified address and port. It is assumed that
      * the specified event represents an SNMP V1 or V2 trap that was received by
      * OpenNMS (TrapD).
-     * 
+     *
      * @param event
      *            The event upon which the trap content should be based
      * @param destAddr
      *            The address to which the trap should be forwarded
      * @param destPort
      *            The port to which the trap should be forwarded
-     * 
      * @exception Throws
      *                SnmpTrapHelperException if the variable binding cannot be
      *                added to the trap for any reason.
+     * @throws org.opennms.netmgt.scriptd.helper.SnmpTrapHelperException if any.
      */
     public void forwardV2Trap(Event event, String destAddr, int destPort) throws SnmpTrapHelperException {
 
@@ -952,19 +963,18 @@ public class SnmpTrapHelper {
      * the original trap (i.e. if the original trap was an SNMP V1 trap, an SNMP
      * V1 trap will be created; if the original trap was an SNMP V2 trap, an
      * SNMP V2 trap will be created).
-     * 
+     *
      * @param event
      *            The event upon which the trap content should be based
      * @param destAddr
      *            The address to which the trap should be forwarded
      * @param destPort
      *            The port to which the trap should be forwarded
-     * 
      * @exception Throws
      *                SnmpTrapHelperException if the variable binding cannot be
      *                added to the trap for any reason.
+     * @throws org.opennms.netmgt.scriptd.helper.SnmpTrapHelperException if any.
      */
-
     public void forwardTrap(Event event, String destAddr, int destPort) throws SnmpTrapHelperException {
 
         Snmp snmpInfo = event.getSnmp();
@@ -990,7 +1000,7 @@ public class SnmpTrapHelper {
      * specified address and port. The type of trap created depends on the value
      * of the "trapVersion" parameter. The "community" parameter determines the
      * SNMP community string of the resulting trap, defaulting to "public".
-     * 
+     *
      * @param event
      *            The event upon which the trap content should be based
      * @param destAddr
@@ -1001,15 +1011,17 @@ public class SnmpTrapHelper {
      *            The SNMP version ("v1" or "v2c") of the trap
      * @param community
      *            The SNMP community string for the trap (defaults to "public")
-     * @throws SnmpTrapHelperException 
-     * @throws UnknownHostException 
-     *
+     * @throws org.opennms.netmgt.scriptd.helper.SnmpTrapHelperException if any.
+     * @throws java.net.UnknownHostException if any.
+     * @exception Throws
+     *            SnmpTrapHelperException if the event is not of the appropriate type.
+     * @exception Throws
+     *            UnknownHostException if agent-addr resolution fails for the case of an SNMPv1 trap
      * @exception Throws
      *            SnmpTrapHelperException if the event is not of the appropriate type.
      * @exception Throws
      *            UnknownHostException if agent-addr resolution fails for the case of an SNMPv1 trap
      */
-    
     public void sendTL1AutonomousMsgTrap(Event event, String destAddr, int destPort, String trapVersion, String community) throws SnmpTrapHelperException, UnknownHostException {
         
         // Check first thing that the event is of the right type.

@@ -61,10 +61,18 @@ import org.opennms.web.filter.Filter;
 
 /**
  * Encapsulates all querying functionality for alarms.
- * 
+ *
  * @author <A HREF="mailto:tarus@opennms.org">Tarus Balog </A>
  * @author <A HREF="mailto:larry@opennms.org">Lawrence Karnowski </A>
  * @author <A HREF="http://www.opennms.org/">OpenNMS </A>
+ * @author <A HREF="mailto:tarus@opennms.org">Tarus Balog </A>
+ * @author <A HREF="mailto:larry@opennms.org">Lawrence Karnowski </A>
+ * @author <A HREF="http://www.opennms.org/">OpenNMS </A>
+ * @author <A HREF="mailto:tarus@opennms.org">Tarus Balog </A>
+ * @author <A HREF="mailto:larry@opennms.org">Lawrence Karnowski </A>
+ * @author <A HREF="http://www.opennms.org/">OpenNMS </A>
+ * @version $Id: $
+ * @since 1.8.1
  */
 public class AlarmFactory extends Object {
     
@@ -78,6 +86,9 @@ public class AlarmFactory extends Object {
 
     /**
      * Count all outstanding (unacknowledged) alarms.
+     *
+     * @return a int.
+     * @throws java.sql.SQLException if any.
      */
     public static int getAlarmCount() throws SQLException {
         return getAlarmCount(AcknowledgeType.UNACKNOWLEDGED, new Filter[0]);
@@ -85,6 +96,11 @@ public class AlarmFactory extends Object {
     
     /**
      * Count the number of alarms for a given acknowledgement type.
+     *
+     * @param ackType a {@link org.opennms.web.alarm.AcknowledgeType} object.
+     * @param filters an array of org$opennms$web$filter$Filter objects.
+     * @return a int.
+     * @throws java.sql.SQLException if any.
      */
     public static int getAlarmCount(AcknowledgeType ackType, Filter[] filters) throws SQLException {
         if (ackType == null || filters == null) {
@@ -130,10 +146,13 @@ public class AlarmFactory extends Object {
 
     /**
      * Count the number of alarms for a given acknowledgement type.
-     * 
+     *
      * @return An array of event counts. Each index of the array corresponds to
      *         the event severity for the counts (indeterminate is 1, critical
      *         is 7, etc).
+     * @param ackType a {@link org.opennms.web.alarm.AcknowledgeType} object.
+     * @param filters an array of org$opennms$web$filter$Filter objects.
+     * @throws java.sql.SQLException if any.
      */
     public static int[] getAlarmCountBySeverity(AcknowledgeType ackType, Filter[] filters) throws SQLException {
         if (ackType == null || filters == null) {
@@ -181,7 +200,13 @@ public class AlarmFactory extends Object {
         return alarmCounts;
     }
 
-    /** Return a specific alarm. */
+    /**
+     * Return a specific alarm.
+     *
+     * @param alarmId a int.
+     * @return a {@link org.opennms.web.alarm.Alarm} object.
+     * @throws java.sql.SQLException if any.
+     */
     public static Alarm getAlarms(int alarmId) throws SQLException {
         Alarm alarm = null;
 
@@ -208,17 +233,34 @@ public class AlarmFactory extends Object {
         return alarm;
     }
 
-    /** Return all unacknowledged alarms sorted by time. */
+    /**
+     * Return all unacknowledged alarms sorted by time.
+     *
+     * @return an array of {@link org.opennms.web.alarm.Alarm} objects.
+     * @throws java.sql.SQLException if any.
+     */
     public static Alarm[] getAlarms() throws SQLException {
         return (AlarmFactory.getAlarms(SortStyle.LASTEVENTTIME, AcknowledgeType.UNACKNOWLEDGED));
     }
 
-    /** Return all unacknowledged or acknowledged alarms sorted by time. */
+    /**
+     * Return all unacknowledged or acknowledged alarms sorted by time.
+     *
+     * @param ackType a {@link org.opennms.web.alarm.AcknowledgeType} object.
+     * @return an array of {@link org.opennms.web.alarm.Alarm} objects.
+     * @throws java.sql.SQLException if any.
+     */
     public static Alarm[] getAlarms(AcknowledgeType ackType) throws SQLException {
         return (AlarmFactory.getAlarms(SortStyle.LASTEVENTTIME, ackType));
     }
 
-    /** Return all unacknowledged alarms sorted by the given sort style. */
+    /**
+     * Return all unacknowledged alarms sorted by the given sort style.
+     *
+     * @param sortStyle a {@link org.opennms.web.alarm.SortStyle} object.
+     * @return an array of {@link org.opennms.web.alarm.Alarm} objects.
+     * @throws java.sql.SQLException if any.
+     */
     public static Alarm[] getAlarms(SortStyle sortStyle) throws SQLException {
         return (AlarmFactory.getAlarms(sortStyle, AcknowledgeType.UNACKNOWLEDGED));
     }
@@ -226,7 +268,11 @@ public class AlarmFactory extends Object {
     /**
      * Return all alarms (optionally only unacknowledged alarms) sorted by the
      * given sort style.
-     * 
+     *
+     * @param sortStyle a {@link org.opennms.web.alarm.SortStyle} object.
+     * @param includeAcknowledged a boolean.
+     * @return an array of {@link org.opennms.web.alarm.Alarm} objects.
+     * @throws java.sql.SQLException if any.
      */
     public static Alarm[] getAlarms(SortStyle sortStyle, boolean includeAcknowledged) throws SQLException {
         AcknowledgeType ackType = (includeAcknowledged) ? AcknowledgeType.BOTH : AcknowledgeType.UNACKNOWLEDGED;
@@ -236,6 +282,11 @@ public class AlarmFactory extends Object {
     /**
      * Return all alarms (optionally only unacknowledged alarms) sorted by the
      * given sort style.
+     *
+     * @param sortStyle a {@link org.opennms.web.alarm.SortStyle} object.
+     * @param ackType a {@link org.opennms.web.alarm.AcknowledgeType} object.
+     * @return an array of {@link org.opennms.web.alarm.Alarm} objects.
+     * @throws java.sql.SQLException if any.
      */
     public static Alarm[] getAlarms(SortStyle sortStyle, AcknowledgeType ackType) throws SQLException {
         return (AlarmFactory.getAlarms(sortStyle, ackType, new Filter[0]));
@@ -244,6 +295,12 @@ public class AlarmFactory extends Object {
     /**
      * Return all alarms (optionally only unacknowledged alarms) sorted by the
      * given sort style.
+     *
+     * @param sortStyle a {@link org.opennms.web.alarm.SortStyle} object.
+     * @param ackType a {@link org.opennms.web.alarm.AcknowledgeType} object.
+     * @param filters an array of org$opennms$web$filter$Filter objects.
+     * @return an array of {@link org.opennms.web.alarm.Alarm} objects.
+     * @throws java.sql.SQLException if any.
      */
     public static Alarm[] getAlarms(SortStyle sortStyle, AcknowledgeType ackType, Filter[] filters) throws SQLException {
         return (AlarmFactory.getAlarms(sortStyle, ackType, filters, -1, -1));
@@ -252,18 +309,23 @@ public class AlarmFactory extends Object {
     /**
      * Return all alarms (optionally only unacknowledged alarms) sorted by the
      * given sort style.
-     * 
+     *
      * <p>
-     * <strong>Note: </strong> This limit/offset code is <em>Postgres 
+     * <strong>Note: </strong> This limit/offset code is <em>Postgres
      * specific!</em>
      * Per <a href="mailto:shaneo@opennms.org">Shane </a>, this is okay for now
      * until we can come up with an Oracle alternative too.
      * </p>
-     * 
+     *
      * @param limit
      *            if -1 or zero, no limit or offset is used
      * @param offset
      *            if -1, no limit or offset if used
+     * @param sortStyle a {@link org.opennms.web.alarm.SortStyle} object.
+     * @param ackType a {@link org.opennms.web.alarm.AcknowledgeType} object.
+     * @param filters an array of org$opennms$web$filter$Filter objects.
+     * @return an array of {@link org.opennms.web.alarm.Alarm} objects.
+     * @throws java.sql.SQLException if any.
      */
     public static Alarm[] getAlarms(SortStyle sortStyle, AcknowledgeType ackType, Filter[] filters, int limit, int offset) throws SQLException {
         if (sortStyle == null || ackType == null || filters == null) {
@@ -324,7 +386,13 @@ public class AlarmFactory extends Object {
      * ****************************************************************************
      */
 
-    /** Return all unacknowledged alarms sorted by alarm ID for the given node. */
+    /**
+     * Return all unacknowledged alarms sorted by alarm ID for the given node.
+     *
+     * @param nodeId a int.
+     * @return an array of {@link org.opennms.web.alarm.Alarm} objects.
+     * @throws java.sql.SQLException if any.
+     */
     public static Alarm[] getAlarmsForNode(int nodeId) throws SQLException {
         return (getAlarmsForNode(nodeId, SortStyle.ID, AcknowledgeType.UNACKNOWLEDGED, -1, -1));
     }
@@ -332,6 +400,12 @@ public class AlarmFactory extends Object {
     /**
      * Return all alarms (optionally only unacknowledged alarms) sorted by the
      * given sort style for the given node.
+     *
+     * @param nodeId a int.
+     * @param sortStyle a {@link org.opennms.web.alarm.SortStyle} object.
+     * @param ackType a {@link org.opennms.web.alarm.AcknowledgeType} object.
+     * @return an array of {@link org.opennms.web.alarm.Alarm} objects.
+     * @throws java.sql.SQLException if any.
      */
     public static Alarm[] getAlarmsForNode(int nodeId, SortStyle sortStyle, AcknowledgeType ackType) throws SQLException {
         return (getAlarmsForNode(nodeId, sortStyle, ackType, -1, -1));
@@ -340,9 +414,15 @@ public class AlarmFactory extends Object {
     /**
      * Return some maximum number of alarms or less (optionally only
      * unacknowledged alarms) sorted by the given sort style for the given node.
-     * 
+     *
      * @param throttle
      *            a value less than one means no throttling
+     * @param nodeId a int.
+     * @param sortStyle a {@link org.opennms.web.alarm.SortStyle} object.
+     * @param ackType a {@link org.opennms.web.alarm.AcknowledgeType} object.
+     * @param offset a int.
+     * @return an array of {@link org.opennms.web.alarm.Alarm} objects.
+     * @throws java.sql.SQLException if any.
      */
     public static Alarm[] getAlarmsForNode(int nodeId, SortStyle sortStyle, AcknowledgeType ackType, int throttle, int offset) throws SQLException {
         if (sortStyle == null || ackType == null) {
@@ -356,6 +436,11 @@ public class AlarmFactory extends Object {
     /**
      * Return the number of alarms for this node and the given acknowledgement
      * type.
+     *
+     * @param nodeId a int.
+     * @param ackType a {@link org.opennms.web.alarm.AcknowledgeType} object.
+     * @return a int.
+     * @throws java.sql.SQLException if any.
      */
     public static int getAlarmCountForNode(int nodeId, AcknowledgeType ackType) throws SQLException {
         if (ackType == null) {
@@ -375,6 +460,11 @@ public class AlarmFactory extends Object {
     /**
      * Return all unacknowledged alarms sorted by event ID for the given
      * interface.
+     *
+     * @param nodeId a int.
+     * @param ipAddress a {@link java.lang.String} object.
+     * @return an array of {@link org.opennms.web.alarm.Alarm} objects.
+     * @throws java.sql.SQLException if any.
      */
     public static Alarm[] getAlarmsForInterface(int nodeId, String ipAddress) throws SQLException {
         return (getAlarmsForInterface(nodeId, ipAddress, SortStyle.ID, AcknowledgeType.UNACKNOWLEDGED, -1, -1));
@@ -384,11 +474,17 @@ public class AlarmFactory extends Object {
      * Return some maximum number of alarms or less (optionally only
      * unacknowledged alarms) sorted by the given sort style for the given node
      * and IP address.
-     * 
+     *
      * @param throttle
      *            a value less than one means no throttling
      * @param offset
      *            which row to start on in the result list
+     * @param nodeId a int.
+     * @param ipAddress a {@link java.lang.String} object.
+     * @param sortStyle a {@link org.opennms.web.alarm.SortStyle} object.
+     * @param ackType a {@link org.opennms.web.alarm.AcknowledgeType} object.
+     * @return an array of {@link org.opennms.web.alarm.Alarm} objects.
+     * @throws java.sql.SQLException if any.
      */
     public static Alarm[] getAlarmsForInterface(int nodeId, String ipAddress, SortStyle sortStyle, AcknowledgeType ackType, int throttle, int offset) throws SQLException {
         if (ipAddress == null || sortStyle == null || ackType == null) {
@@ -402,6 +498,10 @@ public class AlarmFactory extends Object {
     /**
      * Return all unacknowledged alarms sorted by time for that have the given
      * IP address, regardless of what node they belong to.
+     *
+     * @param ipAddress a {@link java.lang.String} object.
+     * @return an array of {@link org.opennms.web.alarm.Alarm} objects.
+     * @throws java.sql.SQLException if any.
      */
     public static Alarm[] getAlarmsForInterface(String ipAddress) throws SQLException {
         return (getAlarmsForInterface(ipAddress, SortStyle.ID, AcknowledgeType.UNACKNOWLEDGED, -1, -1));
@@ -410,9 +510,13 @@ public class AlarmFactory extends Object {
     /**
      * Return all alarms (optionally only unacknowledged alarms) sorted by time
      * that have the given IP address, regardless of what node they belong to.
-     * 
+     *
      * @deprecated Replaced by
      *             {@link " #getEventsForInterface(String,SortStyle,AcknowledgeType) getEventsForInterface( String, SortStyle, AcknowledgeType )"}
+     * @param ipAddress a {@link java.lang.String} object.
+     * @param includeAcknowledged a boolean.
+     * @return an array of {@link org.opennms.web.alarm.Alarm} objects.
+     * @throws java.sql.SQLException if any.
      */
     public static Alarm[] getAlarmsForInterface(String ipAddress, boolean includeAcknowledged) throws SQLException {
         AcknowledgeType ackType = (includeAcknowledged) ? AcknowledgeType.BOTH : AcknowledgeType.UNACKNOWLEDGED;
@@ -423,11 +527,16 @@ public class AlarmFactory extends Object {
      * Return some maximum number of alarms or less (optionally only
      * unacknowledged alarms) sorted by the given sort style for the given IP
      * address.
-     * 
+     *
      * @param throttle
      *            a value less than one means no throttling
      * @param offset
      *            which row to start on in the result list
+     * @param ipAddress a {@link java.lang.String} object.
+     * @param sortStyle a {@link org.opennms.web.alarm.SortStyle} object.
+     * @param ackType a {@link org.opennms.web.alarm.AcknowledgeType} object.
+     * @return an array of {@link org.opennms.web.alarm.Alarm} objects.
+     * @throws java.sql.SQLException if any.
      */
     public static Alarm[] getAlarmsForInterface(String ipAddress, SortStyle sortStyle, AcknowledgeType ackType, int throttle, int offset) throws SQLException {
         if (ipAddress == null || sortStyle == null || ackType == null) {
@@ -441,6 +550,12 @@ public class AlarmFactory extends Object {
     /**
      * Return the number of alarms for this node ID, IP address, and the given
      * acknowledgement type.
+     *
+     * @param nodeId a int.
+     * @param ipAddress a {@link java.lang.String} object.
+     * @param ackType a {@link org.opennms.web.alarm.AcknowledgeType} object.
+     * @return a int.
+     * @throws java.sql.SQLException if any.
      */
     public static int getAlarmCountForInterface(int nodeId, String ipAddress, AcknowledgeType ackType) throws SQLException {
         if (ipAddress == null || ackType == null) {
@@ -454,6 +569,11 @@ public class AlarmFactory extends Object {
     /**
      * Return the number of alarms for this IP address and the given
      * acknowledgement type.
+     *
+     * @param ipAddress a {@link java.lang.String} object.
+     * @param ackType a {@link org.opennms.web.alarm.AcknowledgeType} object.
+     * @return a int.
+     * @throws java.sql.SQLException if any.
      */
     public static int getAlarmCountForInterface(String ipAddress, AcknowledgeType ackType) throws SQLException {
         if (ipAddress == null || ackType == null) {
@@ -470,7 +590,15 @@ public class AlarmFactory extends Object {
      * ****************************************************************************
      */
 
-    /** Return all unacknowledged alarms sorted by time for the given service. */
+    /**
+     * Return all unacknowledged alarms sorted by time for the given service.
+     *
+     * @param nodeId a int.
+     * @param ipAddress a {@link java.lang.String} object.
+     * @param serviceId a int.
+     * @return an array of {@link org.opennms.web.alarm.Alarm} objects.
+     * @throws java.sql.SQLException if any.
+     */
     public static Alarm[] getAlarmsForService(int nodeId, String ipAddress, int serviceId) throws SQLException {
         return (getAlarmsForService(nodeId, ipAddress, serviceId, SortStyle.ID, AcknowledgeType.UNACKNOWLEDGED, -1, -1));
     }
@@ -479,11 +607,18 @@ public class AlarmFactory extends Object {
      * Return some maximum number of alarms or less (optionally only
      * unacknowledged alarms) sorted by the given sort style for the given node,
      * IP address, and service ID.
-     * 
+     *
      * @param throttle
      *            a value less than one means no throttling
      * @param offset
      *            which row to start on in the result list
+     * @param nodeId a int.
+     * @param ipAddress a {@link java.lang.String} object.
+     * @param serviceId a int.
+     * @param sortStyle a {@link org.opennms.web.alarm.SortStyle} object.
+     * @param ackType a {@link org.opennms.web.alarm.AcknowledgeType} object.
+     * @return an array of {@link org.opennms.web.alarm.Alarm} objects.
+     * @throws java.sql.SQLException if any.
      */
     public static Alarm[] getAlarmsForService(int nodeId, String ipAddress, int serviceId, SortStyle sortStyle, AcknowledgeType ackType, int throttle, int offset) throws SQLException {
         if (ipAddress == null || sortStyle == null || ackType == null) {
@@ -497,6 +632,10 @@ public class AlarmFactory extends Object {
     /**
      * Return all unacknowledged alarms sorted by time for the given service
      * type, regardless of what node or interface they belong to.
+     *
+     * @param serviceId a int.
+     * @return an array of {@link org.opennms.web.alarm.Alarm} objects.
+     * @throws java.sql.SQLException if any.
      */
     public static Alarm[] getAlarmsForService(int serviceId) throws SQLException {
         return (getAlarmsForService(serviceId, SortStyle.ID, AcknowledgeType.UNACKNOWLEDGED, -1, -1));
@@ -506,6 +645,11 @@ public class AlarmFactory extends Object {
      * Return all alarms (optionally only unacknowledged alarms) sorted by time
      * for the given service type, regardless of what node or interface they
      * belong to.
+     *
+     * @param serviceId a int.
+     * @param includeAcknowledged a boolean.
+     * @return an array of {@link org.opennms.web.alarm.Alarm} objects.
+     * @throws java.sql.SQLException if any.
      */
     public static Alarm[] getAlarmsForService(int serviceId, boolean includeAcknowledged) throws SQLException {
         AcknowledgeType ackType = (includeAcknowledged) ? AcknowledgeType.BOTH : AcknowledgeType.UNACKNOWLEDGED;
@@ -516,11 +660,16 @@ public class AlarmFactory extends Object {
      * Return some maximum number of alarms or less (optionally only
      * unacknowledged alarms) sorted by the given sort style for the given
      * service ID.
-     * 
+     *
      * @param throttle
      *            a value less than one means no throttling
      * @param offset
      *            which row to start on in the result list
+     * @param serviceId a int.
+     * @param sortStyle a {@link org.opennms.web.alarm.SortStyle} object.
+     * @param ackType a {@link org.opennms.web.alarm.AcknowledgeType} object.
+     * @return an array of {@link org.opennms.web.alarm.Alarm} objects.
+     * @throws java.sql.SQLException if any.
      */
     public static Alarm[] getAlarmsForService(int serviceId, SortStyle sortStyle, AcknowledgeType ackType, int throttle, int offset) throws SQLException {
         if (sortStyle == null || ackType == null) {
@@ -534,6 +683,13 @@ public class AlarmFactory extends Object {
     /**
      * Return the number of alarms for this node ID, IP address, service ID, and
      * the given acknowledgement type.
+     *
+     * @param nodeId a int.
+     * @param ipAddress a {@link java.lang.String} object.
+     * @param serviceId a int.
+     * @param ackType a {@link org.opennms.web.alarm.AcknowledgeType} object.
+     * @return a int.
+     * @throws java.sql.SQLException if any.
      */
     public static int getAlarmCountForService(int nodeId, String ipAddress, int serviceId, AcknowledgeType ackType) throws SQLException {
         if (ipAddress == null || ackType == null) {
@@ -547,6 +703,11 @@ public class AlarmFactory extends Object {
     /**
      * Return the number of alarms for this node ID, IP address, service ID, and
      * the given acknowledgement type.
+     *
+     * @param serviceId a int.
+     * @param ackType a {@link org.opennms.web.alarm.AcknowledgeType} object.
+     * @return a int.
+     * @throws java.sql.SQLException if any.
      */
     public static int getAlarmCountForService(int serviceId, AcknowledgeType ackType) throws SQLException {
         if (ackType == null) {
@@ -559,11 +720,24 @@ public class AlarmFactory extends Object {
 
     /**
      * Return all unacknowledged alarms sorted by time for the given severity.
+     *
+     * @param severity a int.
+     * @return an array of {@link org.opennms.web.alarm.Alarm} objects.
+     * @throws java.sql.SQLException if any.
      */
     public static Alarm[] getAlarmsForSeverity(int severity) throws SQLException {
         return (AlarmFactory.getAlarmsForSeverity(severity, SortStyle.ID, AcknowledgeType.UNACKNOWLEDGED));
     }
 
+    /**
+     * <p>getAlarmsForSeverity</p>
+     *
+     * @param severity a int.
+     * @param sortStyle a {@link org.opennms.web.alarm.SortStyle} object.
+     * @param ackType a {@link org.opennms.web.alarm.AcknowledgeType} object.
+     * @return an array of {@link org.opennms.web.alarm.Alarm} objects.
+     * @throws java.sql.SQLException if any.
+     */
     public static Alarm[] getAlarmsForSeverity(int severity, SortStyle sortStyle, AcknowledgeType ackType) throws SQLException {
         return (AlarmFactory.getAlarms(sortStyle, ackType, new Filter[] { new SeverityFilter(OnmsSeverity.get(severity)) }));
     }
@@ -571,6 +745,10 @@ public class AlarmFactory extends Object {
     /**
      * Return all unacknowledged alarms sorted by time for that have the given
      * distributed poller.
+     *
+     * @param poller a {@link java.lang.String} object.
+     * @return an array of {@link org.opennms.web.alarm.Alarm} objects.
+     * @throws java.sql.SQLException if any.
      */
     public static Alarm[] getAlarmsForPoller(String poller) throws SQLException {
         return (getAlarmsForPoller(poller, false));
@@ -579,6 +757,11 @@ public class AlarmFactory extends Object {
     /**
      * Return all alarms (optionally only unacknowledged alarms) sorted by time
      * that have the given distributed poller.
+     *
+     * @param poller a {@link java.lang.String} object.
+     * @param includeAcknowledged a boolean.
+     * @return an array of {@link org.opennms.web.alarm.Alarm} objects.
+     * @throws java.sql.SQLException if any.
      */
     public static Alarm[] getAlarmsForPoller(String poller, boolean includeAcknowledged) throws SQLException {
         if (poller == null) {
@@ -617,6 +800,10 @@ public class AlarmFactory extends Object {
     /**
      * Acknowledge a list of alarms with the given username and the current
      * time.
+     *
+     * @param alarms an array of {@link org.opennms.web.alarm.Alarm} objects.
+     * @param user a {@link java.lang.String} object.
+     * @throws java.sql.SQLException if any.
      */
     public static void acknowledge(Alarm[] alarms, String user) throws SQLException {
         acknowledge(alarms, user, new Date());
@@ -624,6 +811,11 @@ public class AlarmFactory extends Object {
 
     /**
      * Acknowledge a list of alarms with the given username and the given time.
+     *
+     * @param alarms an array of {@link org.opennms.web.alarm.Alarm} objects.
+     * @param user a {@link java.lang.String} object.
+     * @param time a java$util$Date object.
+     * @throws java.sql.SQLException if any.
      */
     public static void acknowledge(Alarm[] alarms, String user, Date time) throws SQLException {
         if (alarms == null) {
@@ -642,6 +834,10 @@ public class AlarmFactory extends Object {
     /**
      * Acknowledge a list of alarms with the given username and the current
      * time.
+     *
+     * @param alarmIds an array of int.
+     * @param user a {@link java.lang.String} object.
+     * @throws java.sql.SQLException if any.
      */
     public static void acknowledge(int[] alarmIds, String user) throws SQLException {
         acknowledge(alarmIds, user, new Date());
@@ -649,6 +845,11 @@ public class AlarmFactory extends Object {
 
     /**
      * Acknowledge a list of alarms with the given username and the given time.
+     *
+     * @param alarmIds an array of int.
+     * @param user a {@link java.lang.String} object.
+     * @param time a java$util$Date object.
+     * @throws java.sql.SQLException if any.
      */
     public static void acknowledge(int[] alarmIds, String user, Date time) throws SQLException {
         if (alarmIds == null || user == null || time == null) {
@@ -688,6 +889,10 @@ public class AlarmFactory extends Object {
     /**
      * Acknowledge with the given username and the current time all alarms that
      * match the given filter criteria.
+     *
+     * @param filters an array of org$opennms$web$filter$Filter objects.
+     * @param user a {@link java.lang.String} object.
+     * @throws java.sql.SQLException if any.
      */
     public static void acknowledge(Filter[] filters, String user) throws SQLException {
         acknowledge(filters, user, new Date());
@@ -696,6 +901,11 @@ public class AlarmFactory extends Object {
     /**
      * Acknowledge with the given username and the given time all alarms that
      * match the given filter criteria.
+     *
+     * @param filters an array of org$opennms$web$filter$Filter objects.
+     * @param user a {@link java.lang.String} object.
+     * @param time a java$util$Date object.
+     * @throws java.sql.SQLException if any.
      */
     public static void acknowledge(Filter[] filters, String user, Date time) throws SQLException {
         if (filters == null || user == null || time == null) {
@@ -734,6 +944,9 @@ public class AlarmFactory extends Object {
     /**
      * Acknowledge all unacknowledged alarms with the given username and the
      * given time.
+     *
+     * @param user a {@link java.lang.String} object.
+     * @throws java.sql.SQLException if any.
      */
     public static void acknowledgeAll(String user) throws SQLException {
         acknowledgeAll(user, new Date());
@@ -742,6 +955,10 @@ public class AlarmFactory extends Object {
     /**
      * Acknowledge all unacknowledged alarms with the given username and the
      * given time.
+     *
+     * @param user a {@link java.lang.String} object.
+     * @param time a java$util$Date object.
+     * @throws java.sql.SQLException if any.
      */
     public static void acknowledgeAll(String user, Date time) throws SQLException {
         if (user == null || time == null) {
@@ -767,6 +984,9 @@ public class AlarmFactory extends Object {
 
     /**
      * Unacknowledge a list of alarms.
+     *
+     * @param alarms an array of {@link org.opennms.web.alarm.Alarm} objects.
+     * @throws java.sql.SQLException if any.
      */
     public static void unacknowledge(Alarm[] alarms) throws SQLException {
         if (alarms == null) {
@@ -784,6 +1004,9 @@ public class AlarmFactory extends Object {
 
     /**
      * Unacknowledge a list of alarms.
+     *
+     * @param alarmIds an array of int.
+     * @throws java.sql.SQLException if any.
      */
     public static void unacknowledge(int[] alarmIds) throws SQLException {
         if (alarmIds == null) {
@@ -818,6 +1041,9 @@ public class AlarmFactory extends Object {
 
     /**
      * Unacknowledge alarms that match the given filter criteria.
+     *
+     * @param filters an array of org$opennms$web$filter$Filter objects.
+     * @throws java.sql.SQLException if any.
      */
     public static void unacknowledge(Filter[] filters) throws SQLException {
         if (filters == null) {
@@ -853,6 +1079,8 @@ public class AlarmFactory extends Object {
 
     /**
      * Unacknowledge all acknowledged alarms.
+     *
+     * @throws java.sql.SQLException if any.
      */
     public static void unacknowledgeAll() throws SQLException {
         final DBUtils d = new DBUtils(AlarmFactory.class);
@@ -874,6 +1102,10 @@ public class AlarmFactory extends Object {
      * Convenience method for translating a <code>java.sql.ResultSet</code>
      * containing event information into an array of <code>Alarm</code>
      * objects.
+     *
+     * @param rs a {@link java.sql.ResultSet} object.
+     * @return an array of {@link org.opennms.web.alarm.Alarm} objects.
+     * @throws java.sql.SQLException if any.
      */
     protected static Alarm[] rs2Alarms(ResultSet rs) throws SQLException {
         Vector<Alarm> vector = new Vector<Alarm>();
@@ -949,7 +1181,10 @@ public class AlarmFactory extends Object {
 
     /**
      * Escalate a list of alarms using the given username and the current time
-     * @throws SQLException 
+     *
+     * @throws java.sql.SQLException if any.
+     * @param alarmIds an array of int.
+     * @param user a {@link java.lang.String} object.
      */
     public static void escalateAlarms(int[] alarmIds, String user) throws SQLException {
     	escalateAlarms(alarmIds, user, new Date());
@@ -958,6 +1193,11 @@ public class AlarmFactory extends Object {
     /**
      * Escalate a list of alarms.  The username and time are currently discarded, but
      * are required for future use.
+     *
+     * @param alarmIds an array of int.
+     * @param user a {@link java.lang.String} object.
+     * @param time a java$util$Date object.
+     * @throws java.sql.SQLException if any.
      */
     public static void escalateAlarms(int[] alarmIds, String user, Date time) throws SQLException {
         if (alarmIds == null || user == null || time == null) {
@@ -1020,7 +1260,10 @@ public class AlarmFactory extends Object {
     
     /**
      * Clear a list of alarms, using the given username and the current time
-     * @throws SQLException 
+     *
+     * @throws java.sql.SQLException if any.
+     * @param alarmIds an array of int.
+     * @param user a {@link java.lang.String} object.
      */
     public static void clearAlarms(int[] alarmIds, String user) throws SQLException {
     	clearAlarms(alarmIds, user, new Date());
@@ -1029,6 +1272,11 @@ public class AlarmFactory extends Object {
     /**
      * Clear a list of alarms.  The username and time are currently discarded, but
      * are required for future use.
+     *
+     * @param alarmIds an array of int.
+     * @param user a {@link java.lang.String} object.
+     * @param time a java$util$Date object.
+     * @throws java.sql.SQLException if any.
      */
     public static void clearAlarms(int[] alarmIds, String user, Date time) throws SQLException {
         if (alarmIds == null || user == null || time == null) {

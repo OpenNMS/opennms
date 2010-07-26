@@ -8,8 +8,24 @@
     <jsp:param name="breadcrumb" value="Distributed Status" />
 </jsp:include>
 
-<jsp:include page="/includes/key.jsp" flush="false" />
+<jsp:include page="/includes/distStatusLegend.jsp" flush="false">
 
+   <jsp:param name="normalCaption" value="A Green status Cell (Application Up) indicates that *all* of the Application's services 
+   are available from at least 1 Started remote poller in that Location." />
+
+   <jsp:param name="indetermCaption" value="A Puke colored cell (Indeterminate (no current data)) indicates that there is no
+    current data which means there are no Started remote pollers.  If the percentage in this colored cell is > 0, then this means 
+    there has been data reported since midnight but there is just no current data being reported." />
+    
+   <jsp:param name="warnCaption" value="A Yellow status cell (Application Impaired) indicates that 1 or more of the Applications 
+   set of IP services are currently reported as unavailable from 1, but not all, of the remote pollers in that location." />
+   
+   <jsp:param name="criticalCaption" value="A Red status cell (Application Down) indicates that at least 1 of the Application's services
+    are currently unavailable from from *all* Started remote pollers in that location." />
+
+ </jsp:include>
+ 
+ 
 <h3><c:out value="${webTable.title}" /></h3>
 
 <table>

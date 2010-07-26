@@ -202,6 +202,17 @@
         </tr>
       <% } %>
     </table>
+ 
+     <% if( outageCount > 0 ) { %>
+       <% String baseUrl = OutageUtil.makeLink(request, parms); %>
+       <jsp:include page="/includes/resultsIndex.jsp" flush="false" >
+         <jsp:param name="count"    value="<%=outageCount%>" />
+         <jsp:param name="baseurl"  value="<%=baseUrl%>" />
+         <jsp:param name="limit"    value="<%=parms.limit%>" />
+         <jsp:param name="multiple" value="<%=parms.multiple%>" />
+       </jsp:include>
+     <% } %>           
+ 
 
 <jsp:include page="/includes/bookmark.jsp" flush="false" />
 <jsp:include page="/includes/footer.jsp" flush="false" />

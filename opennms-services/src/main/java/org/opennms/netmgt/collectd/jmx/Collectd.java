@@ -37,14 +37,22 @@ package org.opennms.netmgt.collectd.jmx;
 
 import org.opennms.netmgt.daemon.AbstractSpringContextJmxServiceDaemon;
 
+/**
+ * <p>Collectd class.</p>
+ *
+ * @author ranger
+ * @version $Id: $
+ */
 public class Collectd extends AbstractSpringContextJmxServiceDaemon<org.opennms.netmgt.collectd.Collectd> implements
         CollectdMBean {
 
+    /** {@inheritDoc} */
     @Override
     protected String getLoggingPrefix() {
         return "OpenNMS.Collectd";
     }
 
+    /** {@inheritDoc} */
     @Override
     protected String getSpringContext() {
         return "collectdContext";

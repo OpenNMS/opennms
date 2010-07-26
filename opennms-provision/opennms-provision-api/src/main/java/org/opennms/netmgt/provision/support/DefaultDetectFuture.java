@@ -40,29 +40,48 @@ import org.opennms.netmgt.provision.AsyncServiceDetector;
 import org.opennms.netmgt.provision.DetectFuture;
 
 /**
- * @author brozow
+ * <p>DefaultDetectFuture class.</p>
  *
+ * @author brozow
+ * @version $Id: $
  */
 public class DefaultDetectFuture extends DefaultIoFuture implements DetectFuture {
     
     private final AsyncServiceDetector m_detector;
 
     /**
-     * @param asyncBasicDetector
+     * <p>Constructor for DefaultDetectFuture.</p>
+     *
+     * @param detector a {@link org.opennms.netmgt.provision.AsyncServiceDetector} object.
      */
     public DefaultDetectFuture(AsyncServiceDetector detector) {
         super(null);
         m_detector = detector;
     }
 
+    /**
+     * <p>getServiceDetector</p>
+     *
+     * @return a {@link org.opennms.netmgt.provision.AsyncServiceDetector} object.
+     */
     public AsyncServiceDetector getServiceDetector() {
         return m_detector;
     }
 
+    /**
+     * <p>isServiceDetected</p>
+     *
+     * @return a boolean.
+     */
     public boolean isServiceDetected() {
         return Boolean.TRUE.equals(getValue());
     }
     
+    /**
+     * <p>getException</p>
+     *
+     * @return a {@link java.lang.Throwable} object.
+     */
     public Throwable getException() {
         Object val = getValue();
         if (val instanceof Throwable) {
@@ -71,15 +90,22 @@ public class DefaultDetectFuture extends DefaultIoFuture implements DetectFuture
         return null;
     }
 
+    /** {@inheritDoc} */
     public void setServiceDetected(boolean serviceDetected) {
         setValue(serviceDetected);
     }
 
+    /** {@inheritDoc} */
     public void setException(Throwable throwable) {
 //        System.err.println("setting exeception to " + throwable);
         setValue(throwable);
     }
 
+    /**
+     * <p>getObjectValue</p>
+     *
+     * @return a {@link java.lang.Object} object.
+     */
     public Object getObjectValue() {
         return super.getValue();
     }

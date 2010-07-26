@@ -1,0 +1,7 @@
+0x00000000 console
+0x00000001 ssh
+0x00000002 telnet
+0x00000003 web
+0x00000004 web-service
+0x00000005 desktop
+0x00000006 monitor

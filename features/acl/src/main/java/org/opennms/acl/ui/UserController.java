@@ -52,25 +52,47 @@ import org.springframework.web.servlet.ModelAndView;
 
 /**
  * User Controller
- * 
+ *
  * @author Massimiliano Dess&igrave; (desmax74@yahoo.it)
  * @since jdk 1.5.0
+ * @version $Id: $
  */
 @Controller
 public class UserController {
 
+    /**
+     * <p>authorities</p>
+     *
+     * @param req a {@link javax.servlet.http.HttpServletRequest} object.
+     * @return a {@link org.springframework.web.servlet.ModelAndView} object.
+     * @throws java.lang.Exception if any.
+     */
     @RequestMapping("/user.authorities.page")
     public ModelAndView authorities(HttpServletRequest req) throws Exception {
         GenericUser user = WebUtils.getUser(req);
         return new ModelAndView("user/authorities", Constants.UI_USER, user.getUserView());
     }
 
+    /**
+     * <p>list</p>
+     *
+     * @param req a {@link javax.servlet.http.HttpServletRequest} object.
+     * @return a {@link org.springframework.web.servlet.ModelAndView} object.
+     * @throws java.lang.Exception if any.
+     */
     @RequestMapping("/user.list.page")
     public ModelAndView list(HttpServletRequest req) throws Exception {
         Pager pager = WebUtils.getPager(req, userService.getTotalItemsNumber(), 15);
         return new ModelAndView("user/list", Constants.UI_USERS, userService.getEnabledUsers(pager));
     }
 
+    /**
+     * <p>detail</p>
+     *
+     * @param req a {@link javax.servlet.http.HttpServletRequest} object.
+     * @return a {@link org.springframework.web.servlet.ModelAndView} object.
+     * @throws java.lang.Exception if any.
+     */
     @RequestMapping("/user.detail.page")
     public ModelAndView detail(HttpServletRequest req) throws Exception {
         GenericUser user = WebUtils.getUser(req);
@@ -85,6 +107,14 @@ public class UserController {
         }
     }
 
+    /**
+     * <p>selection</p>
+     *
+     * @param ids a {@link java.lang.String} object.
+     * @param req a {@link javax.servlet.http.HttpServletRequest} object.
+     * @return a {@link org.springframework.web.servlet.ModelAndView} object.
+     * @throws java.lang.Exception if any.
+     */
     @RequestMapping("/user.selection.page")
     public ModelAndView selection(@RequestParam("includedHidden") String ids, HttpServletRequest req) throws Exception {
         GenericUser user = WebUtils.getUser(req);

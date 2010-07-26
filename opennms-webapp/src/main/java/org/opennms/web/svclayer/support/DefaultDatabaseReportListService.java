@@ -42,11 +42,23 @@ import org.opennms.netmgt.config.databaseReports.Report;
 import org.opennms.netmgt.dao.DatabaseReportConfigDao;
 import org.opennms.web.svclayer.DatabaseReportListService;
 
+/**
+ * <p>DefaultDatabaseReportListService class.</p>
+ *
+ * @author ranger
+ * @version $Id: $
+ * @since 1.8.1
+ */
 public class DefaultDatabaseReportListService implements
         DatabaseReportListService {
     
     DatabaseReportConfigDao m_dao;
 
+    /**
+     * <p>getAll</p>
+     *
+     * @return a {@link java.util.List} object.
+     */
     public List<DatabaseReportDescription> getAll() {
         
         List <DatabaseReportDescription> allReports = new ArrayList<DatabaseReportDescription>();
@@ -63,6 +75,11 @@ public class DefaultDatabaseReportListService implements
         
     }
 
+    /**
+     * <p>getAllOnline</p>
+     *
+     * @return a {@link java.util.List} object.
+     */
     public List<DatabaseReportDescription> getAllOnline() {
 
         List <DatabaseReportDescription> onlineReports = new ArrayList<DatabaseReportDescription>();
@@ -79,6 +96,7 @@ public class DefaultDatabaseReportListService implements
     }
    
 
+    /** {@inheritDoc} */
     public void setDatabaseReportConfigDao(DatabaseReportConfigDao dao) {
         
         m_dao = dao;

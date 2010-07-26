@@ -49,13 +49,13 @@
 * http://www.krupczak.org/
 */
 
-/** 
+/**
  *
-   OpenNMS Xmp collection/config factory for kicking off parsing of
-   the xmp-datacollection config file and returning an XmpCollection 
-   object.
-   @author Bobby Krupczak, rdk@krupczak.org
-   @version $Id: XmpCollectionFactory.java 38 2008-07-24 13:39:32Z rdk $
+ *   OpenNMS Xmp collection/config factory for kicking off parsing of
+ *   the xmp-datacollection config file and returning an XmpCollection
+ *   object.
+ *   @author Bobby Krupczak, rdk@krupczak.org
+ *   @version $Id: XmpCollectionFactory.java 38 2008-07-24 13:39:32Z rdk $
  */
 
 package org.opennms.netmgt.collectd;
@@ -76,7 +76,6 @@ import org.opennms.netmgt.ConfigFileConstants;
 import org.opennms.netmgt.config.xmpDataCollection.XmpCollection;
 import org.opennms.netmgt.config.xmpDataCollection.XmpDatacollectionConfig;
 import org.opennms.netmgt.model.RrdRepository;
-
 public class XmpCollectionFactory {
 
     /* class variables and methods *********************** */
@@ -87,6 +86,14 @@ public class XmpCollectionFactory {
     private static XmpDatacollectionConfig config;
 
     // initialize our class for the creation of instances
+    /**
+     * <p>init</p>
+     *
+     * @throws java.io.IOException if any.
+     * @throws java.io.FileNotFoundException if any.
+     * @throws org.exolab.castor.xml.MarshalException if any.
+     * @throws org.exolab.castor.xml.ValidationException if any.
+     */
     public static void init() throws IOException, FileNotFoundException, MarshalException, ValidationException 
     {
 
@@ -99,12 +106,25 @@ public class XmpCollectionFactory {
 
     }
 
+    /**
+     * <p>Getter for the field <code>instance</code>.</p>
+     *
+     * @return a {@link org.opennms.netmgt.collectd.XmpCollectionFactory} object.
+     */
     public static XmpCollectionFactory getInstance() { return instance; }
 
     /* instance variables ******************************** */
     private String rrdPath;
 
     /* constructors  ************************************* */
+    /**
+     * <p>Constructor for XmpCollectionFactory.</p>
+     *
+     * @param configFile a {@link java.lang.String} object.
+     * @throws org.exolab.castor.xml.MarshalException if any.
+     * @throws org.exolab.castor.xml.ValidationException if any.
+     * @throws java.io.IOException if any.
+     */
     public XmpCollectionFactory(String configFile) 
     throws MarshalException, ValidationException, IOException { 
 
@@ -131,6 +151,14 @@ public class XmpCollectionFactory {
         return; 
     }
 
+    /**
+     * <p>Constructor for XmpCollectionFactory.</p>
+     *
+     * @param rdr a {@link java.io.Reader} object.
+     * @throws org.exolab.castor.xml.MarshalException if any.
+     * @throws org.exolab.castor.xml.ValidationException if any.
+     * @throws java.io.IOException if any.
+     */
     public XmpCollectionFactory(Reader rdr)
     throws MarshalException, ValidationException, IOException { 
 
@@ -149,6 +177,11 @@ public class XmpCollectionFactory {
     /* public methods ************************************ */
 
     // get our rrdPath from our CollectionConfig object
+    /**
+     * <p>Getter for the field <code>rrdPath</code>.</p>
+     *
+     * @return a {@link java.lang.String} object.
+     */
     public String getRrdPath()
     {
         rrdPath = config.getRrdRepository();
@@ -161,8 +194,13 @@ public class XmpCollectionFactory {
         return rrdPath;
     }
 
-    /** given a collection name, fetch its RRD info from the config file via
-       the XmpDatacollectionConfig class and return an new repository **/
+    /**
+     * given a collection name, fetch its RRD info from the config file via
+     *       the XmpDatacollectionConfig class and return an new repository *
+     *
+     * @param collectionName a {@link java.lang.String} object.
+     * @return a {@link org.opennms.netmgt.model.RrdRepository} object.
+     */
     public RrdRepository getRrdRepository(String collectionName) 
     { 
         RrdRepository repo = new RrdRepository();
@@ -191,8 +229,13 @@ public class XmpCollectionFactory {
         return repo;
     }
 
-    /** given a collection name, fetch it from the config file via
-       the XmpDatacollectionConfig class **/
+    /**
+     * given a collection name, fetch it from the config file via
+     *       the XmpDatacollectionConfig class *
+     *
+     * @param collectionName a {@link java.lang.String} object.
+     * @return a {@link org.opennms.netmgt.config.xmpDataCollection.XmpCollection} object.
+     */
     public XmpCollection getXmpCollection(String collectionName) 
     {
         XmpCollection[] collections = config.getXmpCollection();

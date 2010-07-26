@@ -81,19 +81,26 @@ import org.opennms.netmgt.rrd.RrdUtils;
 import org.springframework.dao.PermissionDeniedDataAccessException;
 
 /**
+ * <p>Abstract PollerConfigManager class.</p>
+ *
  * @author <a href="mailto:brozow@openms.org">Mathew Brozowski</a>
  * @author <a href="mailto:david@opennms.org">David Hustace</a>
+ * @author <a href="mailto:brozow@openms.org">Mathew Brozowski</a>
+ * @author <a href="mailto:david@opennms.org">David Hustace</a>
+ * @version $Id: $
  */
 abstract public class PollerConfigManager implements PollerConfig {
 
     /**
+     * <p>Constructor for PollerConfigManager.</p>
+     *
      * @author <a href="mailto:david@opennms.org">David Hustace</a>
-     * @param reader
-     * @param localServer
-     * @param verifyServer
-     * @throws MarshalException
-     * @throws ValidationException
-     * @throws IOException
+     * @param reader a {@link java.io.Reader} object.
+     * @param localServer a {@link java.lang.String} object.
+     * @param verifyServer a boolean.
+     * @throws org.exolab.castor.xml.MarshalException if any.
+     * @throws org.exolab.castor.xml.ValidationException if any.
+     * @throws java.io.IOException if any.
      */
     @Deprecated
     public PollerConfigManager(Reader reader, String localServer, boolean verifyServer) throws MarshalException, ValidationException, IOException {
@@ -103,6 +110,15 @@ abstract public class PollerConfigManager implements PollerConfig {
         setUpInternalData();
     }
 
+    /**
+     * <p>Constructor for PollerConfigManager.</p>
+     *
+     * @param stream a {@link java.io.InputStream} object.
+     * @param localServer a {@link java.lang.String} object.
+     * @param verifyServer a boolean.
+     * @throws org.exolab.castor.xml.MarshalException if any.
+     * @throws org.exolab.castor.xml.ValidationException if any.
+     */
     public PollerConfigManager(InputStream stream, String localServer, boolean verifyServer) throws MarshalException, ValidationException {
         m_localServer = localServer;
         m_verifyServer = verifyServer;
@@ -110,22 +126,50 @@ abstract public class PollerConfigManager implements PollerConfig {
         setUpInternalData();
     }
 
+    /**
+     * <p>setConfig</p>
+     *
+     * @param conf a {@link org.opennms.netmgt.config.poller.PollerConfiguration} object.
+     */
     protected void setConfig(PollerConfiguration conf) {
         m_config = conf;
     }
 
+    /**
+     * <p>unmarshalConfig</p>
+     *
+     * @param is a {@link java.io.InputStream} object.
+     * @throws org.exolab.castor.xml.MarshalException if any.
+     * @throws org.exolab.castor.xml.ValidationException if any.
+     */
     protected void unmarshalConfig(InputStream is) throws MarshalException, ValidationException {
         m_config = CastorUtils.unmarshal(PollerConfiguration.class, is);
     }
 
+    /**
+     * <p>setUpInternalData</p>
+     */
     protected void setUpInternalData() {
         createUrlIpMap();
         createPackageIpListMap();
         createServiceMonitors();
     }
 
+    /**
+     * <p>update</p>
+     *
+     * @throws java.io.IOException if any.
+     * @throws org.exolab.castor.xml.MarshalException if any.
+     * @throws org.exolab.castor.xml.ValidationException if any.
+     */
     public abstract void update() throws IOException, MarshalException, ValidationException;
 
+    /**
+     * <p>saveXml</p>
+     *
+     * @param xml a {@link java.lang.String} object.
+     * @throws java.io.IOException if any.
+     */
     protected abstract void saveXml(String xml) throws IOException;
 
     /**
@@ -180,6 +224,10 @@ abstract public class PollerConfigManager implements PollerConfig {
 
     /**
      * Saves the current in-memory configuration to disk and reloads
+     *
+     * @throws org.exolab.castor.xml.MarshalException if any.
+     * @throws java.io.IOException if any.
+     * @throws org.exolab.castor.xml.ValidationException if any.
      */
     public synchronized void save() throws MarshalException, IOException, ValidationException {
     
@@ -195,11 +243,14 @@ abstract public class PollerConfigManager implements PollerConfig {
 
     /**
      * Return the poller configuration object.
+     *
+     * @return a {@link org.opennms.netmgt.config.poller.PollerConfiguration} object.
      */
     public synchronized PollerConfiguration getConfiguration() {
         return m_config;
     }
 
+    /** {@inheritDoc} */
     public synchronized Package getPackage(final String name) {
         
         for(Package pkg : packages()) {
@@ -211,6 +262,7 @@ abstract public class PollerConfigManager implements PollerConfig {
         return null;
     }
     
+    /** {@inheritDoc} */
     public ServiceSelector getServiceSelectorForPackage(Package pkg) {
         
         List<String> svcNames = new LinkedList<String>();
@@ -222,10 +274,12 @@ abstract public class PollerConfigManager implements PollerConfig {
         return new ServiceSelector(filter, svcNames);
     }
 
+    /** {@inheritDoc} */
     public synchronized void addPackage(Package pkg) {
         m_config.addPackage(pkg);
     }
     
+    /** {@inheritDoc} */
     public synchronized void addMonitor(String svcName, String className) {
         Monitor monitor = new Monitor();
         monitor.setService(svcName);
@@ -276,7 +330,7 @@ abstract public class PollerConfigManager implements PollerConfig {
     /**
      * This method returns the boolean flag xmlrpc to indicate if notification
      * to external xmlrpc server is needed.
-     * 
+     *
      * @return true if need to notify an external xmlrpc server
      */
     public synchronized boolean getXmlrpc() {
@@ -290,7 +344,7 @@ abstract public class PollerConfigManager implements PollerConfig {
     /**
      * This method returns the boolean flag pathOutageEnabled to indicate if
      * path outage processing on nodeDown events is enabled
-     * 
+     *
      * @return true if pathOutageEnabled
      */
     public synchronized boolean pathOutageEnabled() {
@@ -303,7 +357,7 @@ abstract public class PollerConfigManager implements PollerConfig {
 
     /**
      * This method returns the configured critical service name.
-     * 
+     *
      * @return the name of the configured critical service, or null if none is
      *         present
      */
@@ -314,15 +368,15 @@ abstract public class PollerConfigManager implements PollerConfig {
     /**
      * This method returns the configured value of the
      * 'pollAllIfNoCriticalServiceDefined' flag.
-     * 
+     *
      * A value of true causes the poller's node outage code to poll all the
      * services on an interface if a status change has occurred and there is no
      * critical service defined on the interface.
-     * 
+     *
      * A value of false causes the poller's node outage code to not poll all the
      * services on an interface in this situation.
      * </p>
-     * 
+     *
      * @return true or false based on configured value
      */
     public synchronized boolean pollAllIfNoCriticalServiceDefined() {
@@ -335,6 +389,8 @@ abstract public class PollerConfigManager implements PollerConfig {
 
     /**
      * Returns true if node outage processing is enabled.
+     *
+     * @return a boolean.
      */
     public synchronized boolean nodeOutageProcessingEnabled() {
         String status = m_config.getNodeOutage().getStatus();
@@ -350,6 +406,8 @@ abstract public class PollerConfigManager implements PollerConfig {
      * service monitor is able to connect to the designated port but times out
      * before receiving the expected response. If disabled, an outage will be
      * generated in this scenario.
+     *
+     * @return a boolean.
      */
     public synchronized boolean serviceUnresponsiveEnabled() {
         String enabled = m_config.getServiceUnresponsiveEnabled();
@@ -389,6 +447,7 @@ abstract public class PollerConfigManager implements PollerConfig {
         }
     }
 
+    /** {@inheritDoc} */
     public List<String> getIpList(Package pkg) {
         StringBuffer filterRules = new StringBuffer(pkg.getFilter().getContent());
         if (m_verifyServer) {
@@ -420,21 +479,15 @@ abstract public class PollerConfigManager implements PollerConfig {
     }
 
     /**
+     * {@inheritDoc}
+     *
      * This method is used to determine if the named interface is included in
      * the passed package definition. If the interface belongs to the package
      * then a value of true is returned. If the interface does not belong to the
      * package a false value is returned.
-     * 
+     *
      * <strong>Note: </strong>Evaluation of the interface against a package
      * filter will only work if the IP is already in the database.
-     * 
-     * @param iface
-     *            The interface to test against the package.
-     * @param pkg
-     *            The package to check for the inclusion of the interface.
-     * 
-     * @return True if the interface is included in the package, false
-     *         otherwise.
      */
     public synchronized boolean interfaceInPackage(String iface, Package pkg) {
         ThreadCategory log = log();
@@ -511,14 +564,11 @@ abstract public class PollerConfigManager implements PollerConfig {
     }
 
     /**
+     * {@inheritDoc}
+     *
      * Returns true if the service is part of the package and the status of the
      * service is set to "on". Returns false if the service is not in the
      * package or it is but the status of the service is set to "off".
-     * 
-     * @param svcName
-     *            The service name to lookup.
-     * @param pkg
-     *            The package to lookup up service.
      */
     public synchronized boolean serviceInPackageAndEnabled(String svcName, Package pkg) {
         if (pkg == null) {
@@ -543,11 +593,9 @@ abstract public class PollerConfigManager implements PollerConfig {
     }
 
     /**
+     * {@inheritDoc}
+     *
      * Return the Service object with the given name from the give Package.
-     * 
-     * @param svcName the service name to lookup
-     * @param pkg the packe to lookup the the service in
-     * @return the Service object from the package with the give name, null if its not in the pkg
      */
     public synchronized Service getServiceInPackage(String svcName, Package pkg) {
         
@@ -559,10 +607,9 @@ abstract public class PollerConfigManager implements PollerConfig {
     }
 
     /**
+     * {@inheritDoc}
+     *
      * Returns true if the service has a monitor configured, false otherwise.
-     * 
-     * @param svcName
-     *            The service name to lookup.
      */
     public synchronized boolean serviceMonitored(String svcName) {
         boolean result = false;
@@ -579,15 +626,12 @@ abstract public class PollerConfigManager implements PollerConfig {
     }
 
     /**
+     * {@inheritDoc}
+     *
      * Returns the first package that the ip belongs to, null if none.
-     * 
+     *
      * <strong>Note: </strong>Evaluation of the interface against a package
      * filter will only work if the IP is alrady in the database.
-     * 
-     * @param ipaddr
-     *            the interface to check
-     * 
-     * @return the first package that the ip belongs to, null if none
      */
     public synchronized Package getFirstPackageMatch(String ipaddr) {
         
@@ -601,6 +645,7 @@ abstract public class PollerConfigManager implements PollerConfig {
         return null;
     }
 
+    /** {@inheritDoc} */
     public Package getFirstLocalPackageMatch(String ipaddr) {
         for(Package pkg : packages()) {
             if (!pkg.getRemote() && interfaceInPackage(ipaddr, pkg)) {
@@ -611,15 +656,12 @@ abstract public class PollerConfigManager implements PollerConfig {
     }
 
     /**
+     * {@inheritDoc}
+     *
      * Returns a list of package names that the ip belongs to, null if none.
-     *                
+     *
      * <strong>Note: </strong>Evaluation of the interface against a package
      * filter will only work if the IP is alrady in the database.
-     *
-     * @param ipaddr
-     *            the interface to check
-     *
-     * @return a list of package names that the ip belongs to, null if none
      */
     public synchronized List<String> getAllPackageMatches(String ipaddr) {
     
@@ -638,15 +680,12 @@ abstract public class PollerConfigManager implements PollerConfig {
     }
 
     /**
+     * {@inheritDoc}
+     *
      * Returns true if the ip is part of atleast one package.
-     * 
+     *
      * <strong>Note: </strong>Evaluation of the interface against a package
      * filter will only work if the IP is alrady in the database.
-     * 
-     * @param ipaddr
-     *            the interface to check
-     * 
-     * @return true if the ip is part of atleast one package, false otherwise
      */
     public synchronized boolean isPolled(String ipaddr) {
         
@@ -660,6 +699,7 @@ abstract public class PollerConfigManager implements PollerConfig {
         return false;
     }
 
+    /** {@inheritDoc} */
     public boolean isPolledLocally(String ipaddr) {
         for(Package pkg : packages()) {
             if (!pkg.getRemote() && interfaceInPackage(ipaddr, pkg)) {
@@ -670,19 +710,13 @@ abstract public class PollerConfigManager implements PollerConfig {
     }
 
     /**
+     * {@inheritDoc}
+     *
      * Returns true if this package has the service enabled and if there is a
      * monitor for this service.
-     * 
+     *
      * <strong>Note: </strong>Evaluation of the interface against a package
      * filter will only work if the IP is alrady in the database.
-     * 
-     * @param svcName
-     *            the service to check
-     * @param pkg
-     *            the package to check
-     * 
-     * @return true if the ip is part of atleast one package and the service is
-     *         enabled in this package and monitored, false otherwise
      */
     public synchronized boolean isPolled(String svcName, Package pkg) {
         // Check if the service is enabled for this package and
@@ -699,15 +733,14 @@ abstract public class PollerConfigManager implements PollerConfig {
     /**
      * Returns true if the ip is part of atleast one package and if this package
      * has the service enabled and if there is a monitor for this service.
-     * 
+     *
      * <strong>Note: </strong>Evaluation of the interface against a package
      * filter will only work if the IP is alrady in the database.
-     * 
+     *
      * @param ipaddr
      *            the interface to check
      * @param svcName
      *            the service to check
-     * 
      * @return true if the ip is part of atleast one package and the service is
      *         enabled in this package and monitored, false otherwise
      */
@@ -726,6 +759,7 @@ abstract public class PollerConfigManager implements PollerConfig {
         return false;
     }
 
+    /** {@inheritDoc} */
     public boolean isPolledLocally(String ipaddr, String svcName) {
         if (!serviceMonitored(svcName)) {
             return false;
@@ -741,58 +775,95 @@ abstract public class PollerConfigManager implements PollerConfig {
     }
 
     /**
+     * {@inheritDoc}
+     *
      * Retrieves configured RRD step size.
-     * 
-     * @param pkg
-     *            Name of the data collection
-     * 
-     * @return RRD step size for the specified collection
      */
     public int getStep(Package pkg) {
         return pkg.getRrd().getStep();
     }
 
     /**
+     * {@inheritDoc}
+     *
      * Retrieves configured list of RoundRobin Archive statements.
-     * 
-     * @param pkg
-     *            Name of the data collection
-     * 
-     * @return list of RRA strings.
      */
     public List<String> getRRAList(Package pkg) {
         return pkg.getRrd().getRraCollection();
     
     }
 
+    /**
+     * <p>enumeratePackage</p>
+     *
+     * @return a {@link java.util.Enumeration} object.
+     */
     public Enumeration<Package> enumeratePackage() {
         return getConfiguration().enumeratePackage();
     }
     
+    /**
+     * <p>enumerateMonitor</p>
+     *
+     * @return a {@link java.util.Enumeration} object.
+     */
     public Enumeration<Monitor> enumerateMonitor() {
         return getConfiguration().enumerateMonitor();
     }
     
+    /**
+     * <p>services</p>
+     *
+     * @param pkg a {@link org.opennms.netmgt.config.poller.Package} object.
+     * @return a {@link java.lang.Iterable} object.
+     */
     public Iterable<Service> services(Package pkg) {
         return pkg.getServiceCollection();
     }
     
+    /**
+     * <p>includeURLs</p>
+     *
+     * @param pkg a {@link org.opennms.netmgt.config.poller.Package} object.
+     * @return a {@link java.lang.Iterable} object.
+     */
     public Iterable<String> includeURLs(Package pkg) {
         return pkg.getIncludeUrlCollection();
     }
     
+    /**
+     * <p>parameters</p>
+     *
+     * @param svc a {@link org.opennms.netmgt.config.poller.Service} object.
+     * @return a {@link java.lang.Iterable} object.
+     */
     public Iterable<Parameter> parameters(Service svc) {
         return svc.getParameterCollection();
     }
 
+    /**
+     * <p>packages</p>
+     *
+     * @return a {@link java.lang.Iterable} object.
+     */
     public Iterable<Package> packages() {
         return getConfiguration().getPackageCollection();
     }
 
+    /**
+     * <p>monitors</p>
+     *
+     * @return a {@link java.lang.Iterable} object.
+     */
     public Iterable<Monitor> monitors() {
         return getConfiguration().getMonitorCollection();
     }
 
+    /**
+     * <p>getThreads</p>
+     *
+     * @return a int.
+     */
     public int getThreads() {
         return getConfiguration().getThreads();
     }
@@ -825,14 +896,21 @@ abstract public class PollerConfigManager implements PollerConfig {
     
     }
 
+    /**
+     * <p>getServiceMonitors</p>
+     *
+     * @return a {@link java.util.Map} object.
+     */
     public synchronized Map<String, ServiceMonitor> getServiceMonitors() {
         return m_svcMonitors;
     }
 
+    /** {@inheritDoc} */
     public synchronized ServiceMonitor getServiceMonitor(String svcName) {
         return getServiceMonitors().get(svcName);
     }
     
+    /** {@inheritDoc} */
     public synchronized Collection<ServiceMonitorLocator> getServiceMonitorLocators(DistributionContext context) {
         List<ServiceMonitorLocator> locators = new ArrayList<ServiceMonitorLocator>();
         for(Monitor monitor : monitors()) {
@@ -881,10 +959,18 @@ abstract public class PollerConfigManager implements PollerConfig {
 
 
 
+    /**
+     * <p>getNextOutageIdSql</p>
+     *
+     * @return a {@link java.lang.String} object.
+     */
     public String getNextOutageIdSql() {
         return m_config.getNextOutageId();
     }
 
+	/**
+	 * <p>releaseAllServiceMonitors</p>
+	 */
 	public void releaseAllServiceMonitors() {
 		Iterator<ServiceMonitor> iter = getServiceMonitors().values().iterator();
 	    while (iter.hasNext()) {
@@ -893,6 +979,7 @@ abstract public class PollerConfigManager implements PollerConfig {
 	    }
 	}
 
+    /** {@inheritDoc} */
     public void saveResponseTimeData(String locationMonitor, OnmsMonitoredService monSvc, double responseTime, Package pkg) {
         
         String svcName = monSvc.getServiceName();

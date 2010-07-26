@@ -44,6 +44,10 @@ import java.net.UnknownHostException;
 
 import junit.framework.TestCase;
 
+import org.opennms.netmgt.snmp.SnmpAgentConfig;
+import org.opennms.netmgt.snmp.SnmpObjId;
+import org.opennms.netmgt.snmp.SnmpUtils;
+import org.opennms.netmgt.snmp.SnmpValue;
 import org.opennms.test.mock.MockLogAppender;
 import org.opennms.test.mock.MockUtil;
 import org.snmp4j.CommunityTarget;
@@ -53,10 +57,14 @@ import org.snmp4j.Snmp;
 import org.snmp4j.TransportMapping;
 import org.snmp4j.UserTarget;
 import org.snmp4j.event.ResponseEvent;
+import org.snmp4j.mp.MPv3;
 import org.snmp4j.mp.SnmpConstants;
 import org.snmp4j.security.AuthMD5;
 import org.snmp4j.security.PrivDES;
 import org.snmp4j.security.SecurityLevel;
+import org.snmp4j.security.SecurityModels;
+import org.snmp4j.security.SecurityProtocols;
+import org.snmp4j.security.USM;
 import org.snmp4j.security.UsmUser;
 import org.snmp4j.smi.Integer32;
 import org.snmp4j.smi.OID;
@@ -71,12 +79,18 @@ import org.springframework.core.io.ClassPathResource;
 public class MockSnmpAgentTest extends TestCase {
 
     private MockSnmpAgent m_agent;
+    private USM m_usm;
 
     @Override
     protected void setUp() throws Exception {
         super.setUp();
         MockUtil.println("------------ Begin Test "+getName()+" --------------------------");
         MockLogAppender.setupLogging();
+
+        // Create a global USM that all client calls will use
+        MPv3.setEnterpriseID(5813);
+        m_usm = new USM(SecurityProtocols.getInstance(), new OctetString(MPv3.createLocalEngineID()), 0);
+        SecurityModels.getInstance().addSecurityModel(m_usm);
 
         m_agent = MockSnmpAgent.createAgentAndRun(new ClassPathResource("loadSnmpDataTest.properties"), "127.0.0.1/1691");	// Homage to Empire
     }
@@ -136,6 +150,58 @@ public class MockSnmpAgentTest extends TestCase {
         m_agent.updateValuesFromResource(new ClassPathResource("differentSnmpData.properties"));
         
         assertResultFromGet("1.3.5.1.1.3.0", SMIConstants.SYNTAX_INTEGER, new Integer32(77));
+    }
+
+    public void testGetNextMultipleVarbinds() throws UnknownHostException {
+        SnmpAgentConfig agentConfig = getAgentConfig();
+        SnmpObjId[] oids = new SnmpObjId[] { SnmpObjId.get("1.3.5.1.1.3") };
+        SnmpValue[] vals = SnmpUtils.getNext(agentConfig, oids);
+        assertNotNull(vals);
+        assertEquals(1, vals.length);
+
+        m_agent.getUsm().setEngineBoots(15);
+
+        oids = new SnmpObjId[] { SnmpObjId.get("1.3.5.1.1.3") };
+        vals = SnmpUtils.getNext(agentConfig, oids);
+        assertNotNull(vals);
+        assertEquals(1, vals.length);
+
+        oids = new SnmpObjId[] { SnmpObjId.get("1.3.5.1.1.3") };
+        vals = SnmpUtils.getNext(agentConfig, oids);
+        assertNotNull(vals);
+        assertEquals(1, vals.length);
+
+        // This statement breaks the internal state of the SNMP4J agent
+        // m_agent.getUsm().setLocalEngine(m_agent.getUsm().getLocalEngineID(), 15, 200);
+        m_agent.getUsm().removeEngineTime(m_usm.getLocalEngineID());
+        m_usm.removeEngineTime(m_agent.getUsm().getLocalEngineID());
+
+        oids = new SnmpObjId[] { SnmpObjId.get("1.3.5.1.1.3") };
+        vals = SnmpUtils.getNext(agentConfig, oids);
+        assertNotNull(vals);
+        assertEquals(1, vals.length);
+    }
+
+    public void testUpdateFromFileWithUSMTimeReset() throws Exception {
+        assertResultFromGet("1.3.5.1.1.3.0", SMIConstants.SYNTAX_INTEGER, new Integer32(42));
+
+        m_agent.getUsm().setEngineBoots(15);
+
+        assertResultFromGet("1.3.5.1.1.3.0", SMIConstants.SYNTAX_INTEGER, new Integer32(42));
+        assertResultFromGet("1.3.5.1.1.3.0", SMIConstants.SYNTAX_INTEGER, new Integer32(42));
+
+        // This statement breaks the internal state of the SNMP4J agent
+        // m_agent.getUsm().setLocalEngine(m_agent.getUsm().getLocalEngineID(), 15, 200);
+        m_agent.getUsm().removeEngineTime(m_usm.getLocalEngineID());
+        m_usm.removeEngineTime(m_agent.getUsm().getLocalEngineID());
+
+        assertResultFromGet("1.3.5.1.1.3.0", SMIConstants.SYNTAX_INTEGER, new Integer32(42));
+        assertResultFromGet("1.3.5.1.1.3.0", SMIConstants.SYNTAX_INTEGER, new Integer32(42));
+
+        m_usm.removeEngineTime(m_agent.getUsm().getLocalEngineID());
+
+        assertResultFromGet("1.3.5.1.1.3.0", SMIConstants.SYNTAX_INTEGER, new Integer32(42));
+        assertResultFromGet("1.3.5.1.1.3.0", SMIConstants.SYNTAX_INTEGER, new Integer32(42));
     }
 
     private void assertResultFromGet(String oidStr, int expectedSyntax, Integer32 expected) throws Exception {
@@ -244,6 +310,8 @@ public class MockSnmpAgentTest extends TestCase {
         
         TransportMapping transport = null;
         try {
+            USM usm = new USM(SecurityProtocols.getInstance(), new OctetString(MPv3.createLocalEngineID()), 0);
+            SecurityModels.getInstance().addSecurityModel(usm);
             transport = new DefaultUdpTransportMapping();
             Snmp snmp = new Snmp(transport);
 
@@ -256,7 +324,7 @@ public class MockSnmpAgentTest extends TestCase {
             PDU response = e.getResponse();
             assertNotNull("request timed out", response);
             MockUtil.println("Response is: "+response);
-            assertTrue("unexpected report pdu", response.getType() != PDU.REPORT);
+            assertTrue("unexpected report pdu: " + ((VariableBinding)response.getVariableBindings().get(0)).getOid(), response.getType() != PDU.REPORT);
             
             VariableBinding vb = response.get(0);
             assertNotNull("variable binding should not be null", vb);
@@ -273,7 +341,11 @@ public class MockSnmpAgentTest extends TestCase {
         }
     }
 
-
-
-
+    private static SnmpAgentConfig getAgentConfig() throws UnknownHostException {
+        SnmpAgentConfig config = new SnmpAgentConfig();
+        config.setAddress(InetAddress.getByName("127.0.0.1"));
+        config.setPort(1691);
+        config.setVersion(SnmpAgentConfig.VERSION3);
+        return config;
+    }
 }

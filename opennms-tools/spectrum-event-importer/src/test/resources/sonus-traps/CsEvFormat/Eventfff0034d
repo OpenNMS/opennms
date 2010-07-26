@@ -1,0 +1,6 @@
+{d "%w- %d %m-, %Y - %T"} - A "synCookiesTrap" event has occurred, from {t} device, named {m}.
+
+"system: An increase in the TcpSynCookiesSent counter indicates a possible TCP SYN flood attack."
+
+synCookiesTrapLog = {S 1}
+(event [{e}])

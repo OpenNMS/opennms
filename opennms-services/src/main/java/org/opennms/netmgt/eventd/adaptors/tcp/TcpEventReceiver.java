@@ -61,15 +61,17 @@ import org.springframework.util.Assert;
  * This class is the access point for the agents to hook into the event queue.
  * This fiber sets up an server socket that accepts incomming connections on the
  * configured port (port 5817 by default).
- * 
+ *
  * When a connection is established a new thread is started to process the
  * socket connection. The event document is decoded and each of the events are
  * passed to the handlers. Based upon the action of the handlers an event recipt
  * is generated and sent to the remote client.
- * 
+ *
  * @author <a href="mailto:weave@oculan.com">Brian Weaver </a>
  * @author <a href="http;//www.opennms.org">OpenNMS </a>
- * 
+ * @author <a href="mailto:weave@oculan.com">Brian Weaver </a>
+ * @author <a href="http;//www.opennms.org">OpenNMS </a>
+ * @version $Id: $
  */
 public final class TcpEventReceiver implements EventReceiver, TcpEventReceiverMBean {
     /**
@@ -124,7 +126,8 @@ public final class TcpEventReceiver implements EventReceiver, TcpEventReceiverMB
     /**
      * Constructs a new TCP/IP event receiver on the default TCP/IP port. The
      * server socket allocation is delayed until the fiber is actually started.
-     * @throws UnknownHostException 
+     *
+     * @throws java.net.UnknownHostException if any.
      */
     public TcpEventReceiver() throws UnknownHostException {
         this(TcpServer.TCP_PORT, TcpServer.DEFAULT_IP_ADDRESS);
@@ -133,11 +136,11 @@ public final class TcpEventReceiver implements EventReceiver, TcpEventReceiverMB
     /**
      * Constructs a new TCP/IP event receiver on the passed port. The server
      * socket allocation is delayed until the fiber is actually started.
-     * 
+     *
      * @param port
      *            The binding port for the TCP/IP server socket.
      * @param ipAddress TODO
-     * @throws UnknownHostException 
+     * @throws java.net.UnknownHostException if any.
      */
     public TcpEventReceiver(int port, String ipAddress) throws UnknownHostException {
         m_eventHandlers = new ArrayList<EventHandler>(3);
@@ -155,7 +158,7 @@ public final class TcpEventReceiver implements EventReceiver, TcpEventReceiverMB
      * thread. If an error occurs allocating the server socket or the Fiber is
      * in an erronous state then a
      * {@link java.lang.RuntimeException runtime exception}is thrown.
-     * 
+     *
      * @throws java.lang.reflect.UndeclaredThrowableException
      *             Thrown if an error occurs allocating the server socket.
      * @throws java.lang.RuntimeException
@@ -221,6 +224,8 @@ public final class TcpEventReceiver implements EventReceiver, TcpEventReceiverMB
 
     /**
      * Returns the name of this Fiber.
+     *
+     * @return a {@link java.lang.String} object.
      */
     public String getName() {
         return "Event TCP Receiver[" + m_tcpPort + "]";
@@ -228,15 +233,27 @@ public final class TcpEventReceiver implements EventReceiver, TcpEventReceiverMB
 
     /**
      * Returns the status of this Fiber.
+     *
+     * @return a int.
      */
     public int getStatus() {
         return m_status;
     }
 
+    /**
+     * <p>getStatusText</p>
+     *
+     * @return a {@link java.lang.String} object.
+     */
     public String getStatusText() {
         return STATUS_NAMES[getStatus()];
     }
 
+    /**
+     * <p>status</p>
+     *
+     * @return a {@link java.lang.String} object.
+     */
     public String status() {
         return getStatusText();
     }
@@ -256,12 +273,10 @@ public final class TcpEventReceiver implements EventReceiver, TcpEventReceiverMB
     }
 
     /**
+     * {@inheritDoc}
+     *
      * Adds a new event handler to receiver. When new events are received the
      * decoded event is passed to the handler.
-     * 
-     * @param handler
-     *            A reference to an event handler
-     * 
      */
     public void addEventHandler(EventHandler handler) {
         synchronized (m_eventHandlers) {
@@ -272,13 +287,11 @@ public final class TcpEventReceiver implements EventReceiver, TcpEventReceiverMB
     }
 
     /**
+     * {@inheritDoc}
+     *
      * Removes an event handler from the list of handler called when an event is
      * received. The handler is removed based upon the method
      * <code>equals()</code> inherieted from the <code>Object</code> class.
-     * 
-     * @param handler
-     *            A reference to the event handler.
-     * 
      */
     public void removeEventHandler(EventHandler handler) {
         synchronized (m_eventHandlers) {
@@ -286,53 +299,81 @@ public final class TcpEventReceiver implements EventReceiver, TcpEventReceiverMB
         }
     }
 
+    /**
+     * <p>getEventHandlers</p>
+     *
+     * @return a {@link java.util.List} object.
+     */
     public List<EventHandler> getEventHandlers() {
         return m_eventHandlers;
     }
 
+    /**
+     * <p>setEventHandlers</p>
+     *
+     * @param eventHandlers a {@link java.util.List} object.
+     */
     public void setEventHandlers(List<EventHandler> eventHandlers) {
         m_eventHandlers = eventHandlers;
     }
 
+    /**
+     * <p>getIpAddress</p>
+     *
+     * @return a {@link java.lang.String} object.
+     */
     public String getIpAddress() {
         return m_ipAddress;
     }
 
+    /**
+     * <p>setIpAddress</p>
+     *
+     * @param ipAddress a {@link java.lang.String} object.
+     */
     public void setIpAddress(String ipAddress) {
         assertNotRunning();
         
         m_ipAddress = ipAddress;
     }
 
+    /**
+     * <p>getPort</p>
+     *
+     * @return a {@link java.lang.Integer} object.
+     */
     public Integer getPort() {
         return m_tcpPort;
     }
 
+    /** {@inheritDoc} */
     public void setPort(final Integer port) {
         assertNotRunning();
         
         m_tcpPort = port;
     }
 
+    /** {@inheritDoc} */
     public void addEventHandler(String name) throws MalformedObjectNameException, InstanceNotFoundException {
         addEventHandler(new EventHandlerMBeanProxy(new ObjectName(name)));
     }
 
+    /** {@inheritDoc} */
     public void removeEventHandler(String name) throws MalformedObjectNameException, InstanceNotFoundException {
         removeEventHandler(new EventHandlerMBeanProxy(new ObjectName(name)));
     }
 
+    /** {@inheritDoc} */
     public void setLogPrefix(String prefix) {
         m_logPrefix = prefix;
     }
 
     /**
+     * {@inheritDoc}
+     *
      * The number of event records a new connection is allowed to send before
      * the connection is terminated by the server. The connection is always
      * terminated after an event receipt is generated, if one is required.
-     * 
-     * @param number
-     *            The number of event records.
      */
     public void setEventsPerConnection(Integer number) {
         assertNotRunning();

@@ -37,11 +37,17 @@ import org.opennms.netmgt.provision.persist.requisition.RequisitionCategory;
  * OnmsCategoryRequisition
  *
  * @author brozow
+ * @version $Id: $
  */
 public class OnmsNodeCategoryRequisition {
 
     private RequisitionCategory m_category;
 
+    /**
+     * <p>Constructor for OnmsNodeCategoryRequisition.</p>
+     *
+     * @param category a {@link org.opennms.netmgt.provision.persist.requisition.RequisitionCategory} object.
+     */
     public OnmsNodeCategoryRequisition(RequisitionCategory category) {
         m_category = category;
     }
@@ -53,11 +59,21 @@ public class OnmsNodeCategoryRequisition {
         return m_category;
     }
 
+    /**
+     * <p>visit</p>
+     *
+     * @param visitor a {@link org.opennms.netmgt.provision.persist.RequisitionVisitor} object.
+     */
     public void visit(RequisitionVisitor visitor) {
         visitor.visitNodeCategory(this);
         visitor.completeNodeCategory(this);
     }
 
+    /**
+     * <p>getName</p>
+     *
+     * @return a {@link java.lang.String} object.
+     */
     public String getName() {
         return m_category.getName();
     }

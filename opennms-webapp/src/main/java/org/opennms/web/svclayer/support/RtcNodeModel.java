@@ -41,8 +41,11 @@ import java.util.List;
 import org.opennms.netmgt.model.OnmsNode;
 
 /**
- * 
+ * <p>RtcNodeModel class.</p>
+ *
  * @author <a href="mailto:dj@opennms.org">DJ Gregor</a>
+ * @version $Id: $
+ * @since 1.8.1
  */
 public class RtcNodeModel {
     private static final DecimalFormat AVAILABILITY_FORMAT = new DecimalFormat("0.000%");
@@ -53,10 +56,20 @@ public class RtcNodeModel {
         AVAILABILITY_FORMAT.setMultiplier(100);
     }
     
+    /**
+     * <p>addNode</p>
+     *
+     * @param node a {@link org.opennms.web.svclayer.support.RtcNodeModel.RtcNode} object.
+     */
     public void addNode(RtcNode node) {
         m_nodeList.add(node);
     }
     
+    /**
+     * <p>getNodeList</p>
+     *
+     * @return a {@link java.util.List} object.
+     */
     public List<RtcNode> getNodeList() {
         return m_nodeList;
     }

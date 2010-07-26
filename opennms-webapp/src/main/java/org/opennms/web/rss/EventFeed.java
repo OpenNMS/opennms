@@ -55,11 +55,19 @@ import com.sun.syndication.feed.synd.SyndFeedImpl;
 
 
 /**
- * 
+ * <p>EventFeed class.</p>
+ *
  * @author <a href="mailto:ranger@opennms.org">Benjamin Reed</a>
+ * @version $Id: $
+ * @since 1.8.1
  */
 public class EventFeed extends AbstractFeed {
 
+    /**
+     * <p>getFeed</p>
+     *
+     * @return a {@link com.sun.syndication.feed.synd.SyndFeed} object.
+     */
     public SyndFeed getFeed() {
         SyndFeed feed = new SyndFeedImpl();
 

@@ -20,36 +20,61 @@ import org.springframework.core.io.Resource;
 import org.springframework.dao.DataAccessResourceFailureException;
 import org.springframework.util.Assert;
 
+/**
+ * <p>DefaultLinkAdapterConfigurationDao class.</p>
+ *
+ * @author ranger
+ * @version $Id: $
+ */
 public class DefaultLinkAdapterConfigurationDao extends AbstractCastorConfigDao<LinkAdapterConfiguration, LinkAdapterConfiguration> implements LinkAdapterConfigurationDao {
     private JAXBContext m_context;
     private Marshaller m_marshaller;
     private Unmarshaller m_unmarshaller;
     
+    /**
+     * <p>Constructor for DefaultLinkAdapterConfigurationDao.</p>
+     */
     public DefaultLinkAdapterConfigurationDao() {
         super(LinkAdapterConfiguration.class, "Map Link Adapter Configuration");
     }
     
+    /**
+     * <p>Constructor for DefaultLinkAdapterConfigurationDao.</p>
+     *
+     * @param entityClass a {@link java.lang.Class} object.
+     * @param description a {@link java.lang.String} object.
+     */
     public DefaultLinkAdapterConfigurationDao(Class<LinkAdapterConfiguration> entityClass, String description) {
         super(entityClass, description);
     }
 
+    /** {@inheritDoc} */
     @Override
     public LinkAdapterConfiguration translateConfig(LinkAdapterConfiguration config) {
         return config;
     }
 
+    /**
+     * <p>getPatterns</p>
+     *
+     * @return a {@link java.util.Set} object.
+     */
     public Set<LinkPattern> getPatterns() {
         Assert.notNull(getContainer(), "LinkAdapterConfigDao has no container!");
         Assert.notNull(getContainer().getObject(), "LinkAdapterConfigDao has no configuration loaded!");
         return getContainer().getObject().getPatterns();
     }
 
+    /** {@inheritDoc} */
     public void setPatterns(Set<LinkPattern> patterns) {
         Assert.notNull(getContainer(), "LinkAdapterConfigDao has no container!");
         Assert.notNull(getContainer().getObject(), "LinkAdapterConfigDao has no configuration loaded!");
         getContainer().getObject().setPatterns(patterns);
     }
 
+    /**
+     * <p>saveCurrent</p>
+     */
     public synchronized void saveCurrent() {
         File file;
         try {
@@ -67,6 +92,7 @@ public class DefaultLinkAdapterConfigurationDao extends AbstractCastorConfigDao<
         }
     }
 
+    /** {@inheritDoc} */
     @Override
     protected LinkAdapterConfiguration loadConfig(Resource resource) {
         long startTime = System.currentTimeMillis();
@@ -89,6 +115,7 @@ public class DefaultLinkAdapterConfigurationDao extends AbstractCastorConfigDao<
         }
     }
 
+    /** {@inheritDoc} */
     @Override
     public void afterPropertiesSet() {
 

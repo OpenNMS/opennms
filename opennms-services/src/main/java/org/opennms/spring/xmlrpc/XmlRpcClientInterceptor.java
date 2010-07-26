@@ -50,8 +50,10 @@ import org.springframework.remoting.RemoteLookupFailureException;
 import org.springframework.remoting.support.UrlBasedRemoteAccessor;
 
 /**
- * 
+ * <p>XmlRpcClientInterceptor class.</p>
+ *
  * @author <a href="mailto:brozow@opennms.org">Mathew Brozowski</a>
+ * @version $Id: $
  */
 public class XmlRpcClientInterceptor extends UrlBasedRemoteAccessor implements MethodInterceptor {
 
@@ -59,14 +61,25 @@ public class XmlRpcClientInterceptor extends UrlBasedRemoteAccessor implements M
     String serviceName;
     boolean secure = false;
     
+    /**
+     * <p>Setter for the field <code>serviceName</code>.</p>
+     *
+     * @param serviceName a {@link java.lang.String} object.
+     */
     public void setServiceName(String serviceName) {
         this.serviceName = serviceName;
     }
     
+    /**
+     * <p>Getter for the field <code>serviceName</code>.</p>
+     *
+     * @return a {@link java.lang.String} object.
+     */
     public String getServiceName() {
         return this.serviceName;
     }
     
+    /** {@inheritDoc} */
     public Object invoke(MethodInvocation methodInvocation) throws Throwable {
         String methodName = methodInvocation.getMethod().getName();
         Object[] args = methodInvocation.getArguments();

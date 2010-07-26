@@ -52,6 +52,7 @@ import org.apache.commons.cli.CommandLineParser;
 import org.apache.commons.cli.Options;
 import org.apache.commons.cli.ParseException;
 import org.apache.commons.cli.PosixParser;
+import org.snmp4j.MessageDispatcherImpl;
 import org.snmp4j.TransportMapping;
 import org.snmp4j.agent.BaseAgent;
 import org.snmp4j.agent.CommandProcessor;
@@ -68,6 +69,8 @@ import org.snmp4j.agent.mo.snmp.TransportDomains;
 import org.snmp4j.agent.mo.snmp.VacmMIB;
 import org.snmp4j.log.Log4jLogFactory;
 import org.snmp4j.log.LogFactory;
+import org.snmp4j.mp.MPv1;
+import org.snmp4j.mp.MPv2c;
 import org.snmp4j.mp.MPv3;
 import org.snmp4j.mp.MessageProcessingModel;
 import org.snmp4j.security.AuthMD5;
@@ -75,6 +78,8 @@ import org.snmp4j.security.AuthSHA;
 import org.snmp4j.security.PrivDES;
 import org.snmp4j.security.SecurityLevel;
 import org.snmp4j.security.SecurityModel;
+import org.snmp4j.security.SecurityModels;
+import org.snmp4j.security.SecurityProtocols;
 import org.snmp4j.security.USM;
 import org.snmp4j.security.UsmUser;
 import org.snmp4j.smi.Counter32;
@@ -98,6 +103,12 @@ import org.springframework.core.io.UrlResource;
  * 
  * @author Jeff Gehlbach
  * @version 1.0
+ */
+/**
+ * <p>MockSnmpAgent class.</p>
+ *
+ * @author ranger
+ * @version $Id: $
  */
 public class MockSnmpAgent extends BaseAgent implements Runnable {
     private static final String PROPERTY_SLEEP_ON_CREATE = "mockSnmpAgent.sleepOnCreate";
@@ -129,6 +140,14 @@ public class MockSnmpAgent extends BaseAgent implements Runnable {
      * 		expects a Java properties file, which can conveniently be generated using the Net-SNMP
      * 		utility <code>snmpwalk</code> with the <code>-One</code> option set.
      */
+    /**
+     * <p>Constructor for MockSnmpAgent.</p>
+     *
+     * @param bootFile a {@link java.io.File} object.
+     * @param confFile a {@link java.io.File} object.
+     * @param moFile a {@link org.springframework.core.io.Resource} object.
+     * @param bindAddress a {@link java.lang.String} object.
+     */
     public MockSnmpAgent(File bootFile, File confFile, Resource moFile, String bindAddress) {
         super(bootFile, confFile, new CommandProcessor(new OctetString(MPv3.createLocalEngineID(new OctetString("MOCKAGENT")))));
         m_moLoader = new PropertiesBackedManagedObject();
@@ -137,6 +156,14 @@ public class MockSnmpAgent extends BaseAgent implements Runnable {
         agent.setWorkerPool(ThreadPool.create("RequestPool", 4));
     }
     
+    /**
+     * <p>createAgentAndRun</p>
+     *
+     * @param moFile a {@link org.springframework.core.io.Resource} object.
+     * @param bindAddress a {@link java.lang.String} object.
+     * @return a {@link org.opennms.mock.snmp.MockSnmpAgent} object.
+     * @throws java.lang.InterruptedException if any.
+     */
     public static MockSnmpAgent createAgentAndRun(Resource moFile, String bindAddress) throws InterruptedException {
         try {
             if (moFile.getInputStream() == null) {
@@ -173,6 +200,11 @@ public class MockSnmpAgent extends BaseAgent implements Runnable {
         return agent;
     }
     
+    /**
+     * <p>main</p>
+     *
+     * @param args an array of {@link java.lang.String} objects.
+     */
     public static void main(String[] args) {
         AgentConfigData agentConfig = parseCli(args);
         if (agentConfig == null) {
@@ -188,6 +220,12 @@ public class MockSnmpAgent extends BaseAgent implements Runnable {
        	}
     }
 
+    /**
+     * <p>parseCli</p>
+     *
+     * @param args an array of {@link java.lang.String} objects.
+     * @return a {@link org.opennms.mock.snmp.AgentConfigData} object.
+     */
     public static AgentConfigData parseCli(String[] args) {
         Options opts = new Options();
         opts.addOption("d", "dump-file", true, "Pathname or URL of file containing MIB dump");
@@ -236,6 +274,31 @@ public class MockSnmpAgent extends BaseAgent implements Runnable {
         System.exit(1);
     }
     
+    
+    
+    /** {@inheritDoc} */
+    @Override
+    protected void initMessageDispatcher() {
+        dispatcher = new MessageDispatcherImpl();
+        
+        usm = new USM(SecurityProtocols.getInstance(),
+                agent.getContextEngineID(),
+                updateEngineBoots());
+        
+        mpv3 = new MPv3(usm);
+        
+        SecurityProtocols.getInstance().addDefaultProtocols();
+        dispatcher.addMessageProcessingModel(new MPv1());
+        dispatcher.addMessageProcessingModel(new MPv2c());
+        dispatcher.addMessageProcessingModel(mpv3);
+        initSnmpSession();
+    }
+
+    /**
+     * <p>shutDownAndWait</p>
+     *
+     * @throws java.lang.InterruptedException if any.
+     */
     public void shutDownAndWait() throws InterruptedException {
         if (!isRunning()) {
             return;
@@ -258,6 +321,9 @@ public class MockSnmpAgent extends BaseAgent implements Runnable {
      * @version 1.0
      */
     // XXX fix catch blocks
+    /**
+     * <p>run</p>
+     */
     public void run() {
         try {
             init();
@@ -266,11 +332,13 @@ public class MockSnmpAgent extends BaseAgent implements Runnable {
             finishInit();
             super.run();
             m_running = true;
-        } catch (BindException be) {
-            be.printStackTrace();
+        } catch (BindException e) {
+            e.printStackTrace();
             System.err.println("You probably specified an invalid address or a port < 1024 and are not running as root");
-        } catch (IOException ie) {
-            ie.printStackTrace();
+        } catch (IOException e) {
+            e.printStackTrace();
+        } catch (Throwable e) {
+            e.printStackTrace();
         }
 
         while (m_running) {
@@ -295,19 +363,33 @@ public class MockSnmpAgent extends BaseAgent implements Runnable {
     /*
      * 
      */
+    /**
+     * <p>shutDown</p>
+     */
     public void shutDown() {
         m_running = false;
         m_stopped = false;
     }
 
+    /**
+     * <p>isRunning</p>
+     *
+     * @return a boolean.
+     */
     public boolean isRunning() {
         return m_running;
     }
 
+    /**
+     * <p>isStopped</p>
+     *
+     * @return a boolean.
+     */
     public boolean isStopped() {
         return m_stopped;
     }
 
+    /** {@inheritDoc} */
     @Override
     protected void addCommunities(SnmpCommunityMIB communityMIB) {
         Variable[] com2sec = new Variable[] {
@@ -325,6 +407,7 @@ public class MockSnmpAgent extends BaseAgent implements Runnable {
         communityMIB.getSnmpCommunityEntry().addRow(row);
     }
 
+    /** {@inheritDoc} */
     @Override
     protected void addViews(VacmMIB vacm) {
         vacm.addGroup(SecurityModel.SECURITY_MODEL_SNMPv1,
@@ -425,6 +508,7 @@ public class MockSnmpAgent extends BaseAgent implements Runnable {
 
     }
 
+    /** {@inheritDoc} */
     @Override
     protected void addNotificationTargets(SnmpTargetMIB targetMIB,
             SnmpNotificationMIB notificationMIB) {
@@ -449,6 +533,7 @@ public class MockSnmpAgent extends BaseAgent implements Runnable {
                                        StorageType.permanent);
     }
 
+    /** {@inheritDoc} */
     @Override
     protected void addUsmUser(USM usm) {
         UsmUser user = new UsmUser(new OctetString("SHADES"),
@@ -477,6 +562,8 @@ public class MockSnmpAgent extends BaseAgent implements Runnable {
         usm.addUser(user.getSecurityName(), usm.getLocalEngineID(), user);
     }
 
+    /** {@inheritDoc} */
+    @Override
     protected void initTransportMappings() throws IOException {
         transportMappings = new TransportMapping[1];
         transportMappings[0] =
@@ -486,6 +573,7 @@ public class MockSnmpAgent extends BaseAgent implements Runnable {
 
 
     // override the agent defaults since we are providing all the agent data
+    /** {@inheritDoc} */
     @Override
     protected void registerSnmpMIBs() {
         registerManagedObjects();
@@ -493,11 +581,13 @@ public class MockSnmpAgent extends BaseAgent implements Runnable {
 
 
 
+    /** {@inheritDoc} */
     @Override
     protected void unregisterSnmpMIBs() {
         unregisterManagedObjects();
     }
 
+    /** {@inheritDoc} */
     @Override
     protected void registerManagedObjects() {
         m_moList = createMockMOs();
@@ -512,6 +602,7 @@ public class MockSnmpAgent extends BaseAgent implements Runnable {
         }
     }
 
+    /** {@inheritDoc} */
     @Override
     protected void unregisterManagedObjects() {
         Iterator<ManagedObject> moListIter = m_moList.iterator();
@@ -520,6 +611,11 @@ public class MockSnmpAgent extends BaseAgent implements Runnable {
         }
     }
 
+    /**
+     * <p>createMockMOs</p>
+     *
+     * @return a {@link java.util.List} object.
+     */
     protected List<ManagedObject> createMockMOs() {
         return m_moLoader.loadMOs(m_moFile);
     }
@@ -533,6 +629,12 @@ public class MockSnmpAgent extends BaseAgent implements Runnable {
         return null;
     }
     
+    /**
+     * <p>updateValue</p>
+     *
+     * @param oid a {@link org.snmp4j.smi.OID} object.
+     * @param value a {@link org.snmp4j.smi.Variable} object.
+     */
     public void updateValue(OID oid, Variable value) {
         ManagedObject mo = findMOForOid(oid);
         assertNotNull("Unable to find oid in mib for mockAgent: "+oid, mo);
@@ -547,32 +649,72 @@ public class MockSnmpAgent extends BaseAgent implements Runnable {
         }
     }
 
+    /**
+     * <p>updateValue</p>
+     *
+     * @param oid a {@link java.lang.String} object.
+     * @param value a {@link org.snmp4j.smi.Variable} object.
+     */
     public void updateValue(String oid, Variable value) {
         updateValue(new OID(oid), value);
     }
     
+    /**
+     * <p>updateIntValue</p>
+     *
+     * @param oid a {@link java.lang.String} object.
+     * @param val a int.
+     */
     public void updateIntValue(String oid, int val) {
         updateValue(oid, new Integer32(val));
     }
     
+    /**
+     * <p>updateStringValue</p>
+     *
+     * @param oid a {@link java.lang.String} object.
+     * @param val a {@link java.lang.String} object.
+     */
     public void updateStringValue(String oid, String val) {
         updateValue(oid, new OctetString(val));
     }
     
+    /**
+     * <p>updateCounter32Value</p>
+     *
+     * @param oid a {@link java.lang.String} object.
+     * @param val a int.
+     */
     public void updateCounter32Value(String oid, int val) {
         updateValue(oid, new Counter32(val));
     }
     
+    /**
+     * <p>updateCounter64Value</p>
+     *
+     * @param oid a {@link java.lang.String} object.
+     * @param val a long.
+     */
     public void updateCounter64Value(String oid, long val) {
         updateValue(oid, new Counter64(val));
     }
     
+    /**
+     * <p>updateValuesFromResource</p>
+     *
+     * @param moFile a {@link org.springframework.core.io.Resource} object.
+     */
     public void updateValuesFromResource(Resource moFile) {
         unregisterManagedObjects();
         m_moFile = moFile;
         registerManagedObjects();
     }
     
+    /**
+     * <p>toString</p>
+     *
+     * @return a {@link java.lang.String} object.
+     */
     public String toString() {
         return "MockSnmpAgent["+m_address+"]";
     }

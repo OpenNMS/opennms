@@ -1,0 +1,10 @@
+{d "%w- %d %m-, %Y - %T"} - A "ipUnityConfigError" event has occurred, from {t} device, named {m}.
+
+"This is the initial threshold warning that the memory is getting consumed 
+                     at a large rate."
+
+ipUnityTrapSeverity = {T ipUnityTrapSeverity 1}
+ipUnityTrapInfoString = {S 2}
+ipUnitySequenceNumber = {I 3}
+ipUnityCardIndex = {I 4}
+(event [{e}])

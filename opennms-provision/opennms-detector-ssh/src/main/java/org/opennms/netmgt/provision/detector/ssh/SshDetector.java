@@ -41,6 +41,12 @@ import org.springframework.context.annotation.Scope;
 import org.springframework.stereotype.Component;
 
 @Component
+/**
+ * <p>SshDetector class.</p>
+ *
+ * @author ranger
+ * @version $Id: $
+ */
 @Scope("prototype")
 public class SshDetector extends BasicDetector<NullRequest, SshResponse>{
     
@@ -59,14 +65,15 @@ public class SshDetector extends BasicDetector<NullRequest, SshResponse>{
 
     /**
      * Constructor for creating a non-default service based on this protocol
-     * 
-     * @param serviceName
-     * @param port
+     *
+     * @param serviceName a {@link java.lang.String} object.
+     * @param port a int.
      */
     public SshDetector(String serviceName, int port) {
         super(serviceName, port);
     }
 
+    /** {@inheritDoc} */
     @Override
     protected Client<NullRequest, SshResponse> getClient() {
         SshClient client = new SshClient();
@@ -76,6 +83,7 @@ public class SshDetector extends BasicDetector<NullRequest, SshResponse>{
         return client;
     }
 
+    /** {@inheritDoc} */
     @Override
     protected void onInit() {
         expectBanner(sshIsAvailable());
@@ -95,26 +103,56 @@ public class SshDetector extends BasicDetector<NullRequest, SshResponse>{
         };
     }
 
+    /**
+     * <p>setBanner</p>
+     *
+     * @param banner a {@link java.lang.String} object.
+     */
     public void setBanner(String banner) {
         m_banner = banner;
     }
 
+    /**
+     * <p>getBanner</p>
+     *
+     * @return a {@link java.lang.String} object.
+     */
     public String getBanner() {
         return m_banner;
     }
 
+    /**
+     * <p>setMatch</p>
+     *
+     * @param match a {@link java.lang.String} object.
+     */
     public void setMatch(String match) {
         m_match = match;
     }
 
+    /**
+     * <p>getMatch</p>
+     *
+     * @return a {@link java.lang.String} object.
+     */
     public String getMatch() {
         return m_match;
     }
 
+    /**
+     * <p>setClientBanner</p>
+     *
+     * @param clientBanner a {@link java.lang.String} object.
+     */
     public void setClientBanner(String clientBanner) {
         m_clientBanner = clientBanner;
     }
 
+    /**
+     * <p>getClientBanner</p>
+     *
+     * @return a {@link java.lang.String} object.
+     */
     public String getClientBanner() {
         return m_clientBanner;
     }

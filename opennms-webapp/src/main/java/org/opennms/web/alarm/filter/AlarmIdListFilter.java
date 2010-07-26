@@ -35,7 +35,15 @@ import org.opennms.web.filter.InFilter;
 import org.opennms.web.filter.SQLType;
 
 
+/**
+ * <p>AlarmIdListFilter class.</p>
+ *
+ * @author ranger
+ * @version $Id: $
+ * @since 1.8.1
+ */
 public class AlarmIdListFilter extends InFilter<Integer> {
+    /** Constant <code>TYPE="alarmIdList"</code> */
     public static final String TYPE = "alarmIdList";
     
     private static Integer[] box(int[] values) {
@@ -49,10 +57,20 @@ public class AlarmIdListFilter extends InFilter<Integer> {
         return boxed;
     }
     
+    /**
+     * <p>Constructor for AlarmIdListFilter.</p>
+     *
+     * @param alarmIds an array of int.
+     */
     public AlarmIdListFilter(int[] alarmIds) {
         super(TYPE, SQLType.INT, "ALARMID", "id", box(alarmIds));
     }
 
+    /**
+     * <p>getTextDescription</p>
+     *
+     * @return a {@link java.lang.String} object.
+     */
     public String getTextDescription() {
         return String.format("alarmId in (%s)", getValueString());
     }

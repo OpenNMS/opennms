@@ -96,7 +96,6 @@ public class SerializationTest {
 	private LocationInfo getLocationInfo() {
 		LocationInfo location = new LocationInfo();
 		location.setName("Bob");
-		location.setPollingPackageName("Harry");
 		location.setArea("East Coast");
 		location.setGeolocation("RDU");
 		location.setCoordinates("0.0,0.0");
@@ -115,7 +114,7 @@ public class SerializationTest {
 
 		services.add(getMonitoredService());
 		locationNames.add(getMonitor().getDefinitionName());
-		final ApplicationInfo info = new ApplicationInfo(1, "TestApp1", services, locationNames, StatusDetails.uninitialized());
+		final ApplicationInfo info = new ApplicationInfo(1, "TestApp1", services, locationNames, StatusDetails.unknown());
 		return info;
 	}
 	private ApplicationState getApplicationState() {
@@ -127,7 +126,7 @@ public class SerializationTest {
 
 		services.add(getMonitoredService());
 		locationNames.add(getMonitor().getDefinitionName());
-		applications.add(new ApplicationInfo(1, "TestApp1", services, locationNames, StatusDetails.uninitialized()));
+		applications.add(new ApplicationInfo(1, "TestApp1", services, locationNames, StatusDetails.unknown()));
 		applicationStatuses.put("TestApp1", statuses);
 		statuses.add(getLocationSpecificStatus());
 		final Date to = new Date();

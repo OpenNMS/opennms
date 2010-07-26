@@ -17,6 +17,9 @@ import org.opennms.core.utils.ThreadCategory;
 
 /**
  * Public API representing an example OSGi service
+ *
+ * @author ranger
+ * @version $Id: $
  */
 public class MsgTrackerCommands implements CommandProvider
 {
@@ -72,11 +75,21 @@ public class MsgTrackerCommands implements CommandProvider
     }
     
     
+    /**
+     * <p>setMobileMsgTracker</p>
+     *
+     * @param tracker a {@link org.opennms.sms.reflector.smsservice.MobileMsgTracker} object.
+     */
     public void setMobileMsgTracker(MobileMsgTracker tracker) {
         m_tracker = tracker;
     }
     
     
+    /**
+     * <p>_trackSms</p>
+     *
+     * @param intp a {@link org.eclipse.osgi.framework.console.CommandInterpreter} object.
+     */
     public void _trackSms(CommandInterpreter intp) {
         
         try {
@@ -104,6 +117,11 @@ public class MsgTrackerCommands implements CommandProvider
         
     }
     
+    /**
+     * <p>_trackUssd</p>
+     *
+     * @param intp a {@link org.eclipse.osgi.framework.console.CommandInterpreter} object.
+     */
     public void _trackUssd(CommandInterpreter intp) {
         
         try {
@@ -131,6 +149,11 @@ public class MsgTrackerCommands implements CommandProvider
         }
     }
     
+    /**
+     * <p>getHelp</p>
+     *
+     * @return a {@link java.lang.String} object.
+     */
     public String getHelp() { 
         StringBuffer buffer = new StringBuffer(); 
         buffer.append("---Msg Tracker Commands---");
@@ -140,6 +163,12 @@ public class MsgTrackerCommands implements CommandProvider
         return buffer.toString(); 
     } 
     
+    /**
+     * <p>tracef</p>
+     *
+     * @param format a {@link java.lang.String} object.
+     * @param args a {@link java.lang.Object} object.
+     */
     public static void tracef(String format, Object... args) {
         ThreadCategory log = ThreadCategory.getInstance(MobileMsgResponseMatchers.class);
         

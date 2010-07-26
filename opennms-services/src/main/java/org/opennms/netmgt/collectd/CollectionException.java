@@ -36,6 +36,12 @@
 package org.opennms.netmgt.collectd;
 
 
+/**
+ * <p>CollectionException class.</p>
+ *
+ * @author ranger
+ * @version $Id: $
+ */
 public class CollectionException extends Exception {
 	/**
 	 * 
@@ -44,20 +50,23 @@ public class CollectionException extends Exception {
 
     private int m_errorCode = ServiceCollector.COLLECTION_FAILED;
 
-    public CollectionException() {
-        super();
-    }
-
+    /**
+     * <p>Constructor for CollectionException.</p>
+     *
+     * @param message a {@link java.lang.String} object.
+     */
     public CollectionException(String message) {
         super(message);
     }
 
+    /**
+     * <p>Constructor for CollectionException.</p>
+     *
+     * @param message a {@link java.lang.String} object.
+     * @param cause a {@link java.lang.Throwable} object.
+     */
     public CollectionException(String message, Throwable cause) {
         super(message, cause);
-    }
-
-    public CollectionException(Throwable cause) {
-        super(cause);
     }
 
     void setErrorCode(int errorCode) {

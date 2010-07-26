@@ -35,17 +35,18 @@ import junit.framework.AssertionFailedError;
 
 /**
  * Utilities to support assertions with JUnit.
- * 
+ *
  * @author dj@opennms.org
+ * @version $Id: $
  */
 public class AssertUtils {
     /**
      * A version of Assert.fail that can be passed a Throwable which is the
      * cause of this failure.
-     * 
+     *
      * @param message message String to be passed to Assert.fail after appending the throwable stack trace
-     * @param t cause of this failure 
-     * @throws AssertionFailedError
+     * @param t cause of this failure
+     * @throws junit.framework.AssertionFailedError if any.
      */
     public static void fail(String message, Throwable t) throws AssertionFailedError {
         AssertionFailedError e = new AssertionFailedError(message);

@@ -45,6 +45,12 @@ import org.opennms.protocols.jmx.connectors.ConnectionWrapper;
  * @author <A HREF="mailto:mike@opennms.org">Mike Jamison </A>
  * @author <A HREF="http://www.opennms.org/">OpenNMS </A>
  */
+/**
+ * <p>Abstract JMXPlugin class.</p>
+ *
+ * @author ranger
+ * @version $Id: $
+ */
 public abstract class JMXPlugin extends AbstractPlugin {
     
     private String protocolName = null;
@@ -53,15 +59,33 @@ public abstract class JMXPlugin extends AbstractPlugin {
      * 
      * @see org.opennms.netmgt.capsd.Plugin#getProtocolName()
      */
+    /**
+     * <p>Getter for the field <code>protocolName</code>.</p>
+     *
+     * @param parameterMap a {@link java.util.Map} object.
+     * @return a {@link java.lang.String} object.
+     */
     public abstract String getProtocolName(Map<String, Object> parameterMap);
     
     /*
      * The subclass is responsible for getting the connection.
      */
+    /**
+     * <p>getMBeanServerConnection</p>
+     *
+     * @param parameterMap a {@link java.util.Map} object.
+     * @param address a {@link java.net.InetAddress} object.
+     * @return a {@link org.opennms.protocols.jmx.connectors.ConnectionWrapper} object.
+     */
     public abstract ConnectionWrapper getMBeanServerConnection(Map<String, Object> parameterMap, InetAddress address);
     
     /*
      * @see org.opennms.netmgt.capsd.Plugin#getProtocolName()
+     */
+    /**
+     * <p>Getter for the field <code>protocolName</code>.</p>
+     *
+     * @return a {@link java.lang.String} object.
      */
     public String getProtocolName() {
         return protocolName.toUpperCase();
@@ -71,6 +95,7 @@ public abstract class JMXPlugin extends AbstractPlugin {
      * @see org.opennms.netmgt.capsd.Plugin#isProtocolSupported(java.net.InetAddress, java.util.Map)
      */
 
+    /** {@inheritDoc} */
     public boolean isProtocolSupported(InetAddress address, Map<String, Object> map) {
         
         if (protocolName == null) {

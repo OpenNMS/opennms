@@ -34,30 +34,59 @@ package org.opennms.web.controller.distributed;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
+import org.opennms.web.springframework.security.Authentication;
 import org.opennms.web.svclayer.DistributedPollerService;
 import org.opennms.web.svclayer.LocationMonitorListModel;
 import org.springframework.beans.factory.InitializingBean;
 import org.springframework.web.servlet.ModelAndView;
 import org.springframework.web.servlet.mvc.AbstractController;
 
+/**
+ * <p>LocationMonitorListController class.</p>
+ *
+ * @author ranger
+ * @version $Id: $
+ * @since 1.8.1
+ */
 public class LocationMonitorListController extends AbstractController implements InitializingBean {
     private DistributedPollerService m_distributedPollerService;
 
+    /** {@inheritDoc} */
     @Override
     protected ModelAndView handleRequestInternal(HttpServletRequest request, HttpServletResponse response) throws Exception {
         LocationMonitorListModel model = m_distributedPollerService.getLocationMonitorList();
-        return new ModelAndView("distributed/locationMonitorList", "model", model);
+        ModelAndView modelAndView = new ModelAndView("distributed/locationMonitorList", "model", model);
+        
+        if (request.isUserInRole(Authentication.ADMIN_ROLE)) {
+            modelAndView.addObject("isAdmin", "true");
+        }
+        
+        return modelAndView;
     }
 
+    /**
+     * <p>getDistributedPollerService</p>
+     *
+     * @return a {@link org.opennms.web.svclayer.DistributedPollerService} object.
+     */
     public DistributedPollerService getDistributedPollerService() {
         return m_distributedPollerService;
     }
 
-    public void setDistributedPollerService(
-            DistributedPollerService distributedPollerService) {
+    /**
+     * <p>setDistributedPollerService</p>
+     *
+     * @param distributedPollerService a {@link org.opennms.web.svclayer.DistributedPollerService} object.
+     */
+    public void setDistributedPollerService(DistributedPollerService distributedPollerService) {
         m_distributedPollerService = distributedPollerService;
     }
 
+    /**
+     * <p>afterPropertiesSet</p>
+     *
+     * @throws java.lang.Exception if any.
+     */
     public void afterPropertiesSet() throws Exception {
         if (m_distributedPollerService == null) {
             throw new IllegalStateException("distributedPollerService property has not been set");

@@ -34,26 +34,54 @@ package org.opennms.web.event.filter;
 
 import org.opennms.web.filter.NoSubstringFilter;
 
-/** Encapsulates filtering on partial unique event identifiers. */
+/**
+ * Encapsulates filtering on partial unique event identifiers.
+ *
+ * @author ranger
+ * @version $Id: $
+ * @since 1.8.1
+ */
 public class NegativePartialUEIFilter extends NoSubstringFilter {
+    /** Constant <code>TYPE="partialUeiNot"</code> */
     public static final String TYPE = "partialUeiNot";
 
+    /**
+     * <p>Constructor for NegativePartialUEIFilter.</p>
+     *
+     * @param uei a {@link java.lang.String} object.
+     */
     public NegativePartialUEIFilter(String uei) {
         super(TYPE, "EVENTUEI", "eventUei", uei);
     }
 
+    /**
+     * <p>getTextDescription</p>
+     *
+     * @return a {@link java.lang.String} object.
+     */
     public String getTextDescription() {
         return ("partial UEI not like " + getValue());
     }
 
+    /**
+     * <p>toString</p>
+     *
+     * @return a {@link java.lang.String} object.
+     */
     public String toString() {
         return ("<WebEventRepository.NegativePartialUEIFilter: " + this.getDescription() + ">");
     }
 
+    /**
+     * <p>getUEI</p>
+     *
+     * @return a {@link java.lang.String} object.
+     */
     public String getUEI() {
         return getValue();
     }
 
+    /** {@inheritDoc} */
     public boolean equals(Object obj) {
         return (this.toString().equals(obj.toString()));
     }

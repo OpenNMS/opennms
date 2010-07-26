@@ -40,57 +40,131 @@ import java.util.Date;
 
 
 /**
- * 
+ * <p>Abstract PollEvent class.</p>
+ *
  * @author <a href="mailto:brozow@opennms.org">Mathew Brozowski</a>
+ * @version $Id: $
  */
 abstract public class PollEvent {
     
     Scope m_scope;
     
+    /**
+     * <p>Constructor for PollEvent.</p>
+     *
+     * @param scope a {@link org.opennms.netmgt.poller.pollables.Scope} object.
+     */
     protected PollEvent(Scope scope) {
         m_scope = scope;
     }
     
+    /**
+     * <p>getScope</p>
+     *
+     * @return a {@link org.opennms.netmgt.poller.pollables.Scope} object.
+     */
     public Scope getScope() {
         return m_scope;
     }
 
+    /**
+     * <p>getEventId</p>
+     *
+     * @return a int.
+     */
     abstract public int getEventId();
 
+    /**
+     * <p>getDate</p>
+     *
+     * @return a {@link java.util.Date} object.
+     */
     abstract public Date getDate();
     
+    /**
+     * <p>isNodeDown</p>
+     *
+     * @return a boolean.
+     */
     public boolean isNodeDown() {
         return getScope().equals(Scope.NODE); 
     }
 
+    /**
+     * <p>isInterfaceDown</p>
+     *
+     * @return a boolean.
+     */
     public boolean isInterfaceDown() {
         return getScope().equals(Scope.INTERFACE);
     }
     
+    /**
+     * <p>isNodeLostService</p>
+     *
+     * @return a boolean.
+     */
     public boolean isNodeLostService() {
         return getScope().equals(Scope.SERVICE);
     }
     
+    /**
+     * <p>hasLargerScopeThan</p>
+     *
+     * @param e a {@link org.opennms.netmgt.poller.pollables.PollEvent} object.
+     * @return a boolean.
+     */
     public boolean hasLargerScopeThan(PollEvent e) {
         return Scope.isLargerThan(this.getScope(), e.getScope());
     }
     
+    /**
+     * <p>hasSmallerScopeThan</p>
+     *
+     * @param e a {@link org.opennms.netmgt.poller.pollables.PollEvent} object.
+     * @return a boolean.
+     */
     public boolean hasSmallerScopeThan(PollEvent e) {
         return Scope.isSmallerThan(this.getScope(), e.getScope());
     }
     
+    /**
+     * <p>hasScopeLargerThan</p>
+     *
+     * @param scope a {@link org.opennms.netmgt.poller.pollables.Scope} object.
+     * @return a boolean.
+     */
     public boolean hasScopeLargerThan(Scope scope) {
         return Scope.isLargerThan(this.getScope(), scope);
     }
     
+    /**
+     * <p>hasScopeSmallerThan</p>
+     *
+     * @param scope a {@link org.opennms.netmgt.poller.pollables.Scope} object.
+     * @return a boolean.
+     */
     public boolean hasScopeSmallerThan(Scope scope) {
         return Scope.isSmallerThan(this.getScope(), scope);
     }
     
+    /**
+     * <p>hasSameScope</p>
+     *
+     * @param e a {@link org.opennms.netmgt.poller.pollables.PollEvent} object.
+     * @return a boolean.
+     */
     public boolean hasSameScope(PollEvent e) {
         return this.getScope() == e.getScope();
     }
     
+    /**
+     * <p>withLargestScope</p>
+     *
+     * @param a a {@link org.opennms.netmgt.poller.pollables.PollEvent} object.
+     * @param b a {@link org.opennms.netmgt.poller.pollables.PollEvent} object.
+     * @return a {@link org.opennms.netmgt.poller.pollables.PollEvent} object.
+     */
     public static PollEvent withLargestScope(PollEvent a, PollEvent b) {
         if (a == null) return b;
         if (b == null) return a;

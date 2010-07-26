@@ -44,6 +44,12 @@ import org.opennms.netmgt.provision.server.exchange.Exchange;
 import org.opennms.netmgt.provision.server.exchange.RequestHandler;
 import org.opennms.netmgt.provision.server.exchange.SimpleConversationEndPoint;
 
+/**
+ * <p>SimpleServer class.</p>
+ *
+ * @author ranger
+ * @version $Id: $
+ */
 public class SimpleServer extends SimpleConversationEndPoint {
     
     public static class ServerErrorExchange implements Exchange{
@@ -75,34 +81,65 @@ public class SimpleServer extends SimpleConversationEndPoint {
     private String m_banner;
     protected volatile boolean m_stopped;
     
+    /**
+     * <p>setBanner</p>
+     *
+     * @param banner a {@link java.lang.String} object.
+     */
     public void setBanner(String banner){
         m_banner = banner;
     }
     
+    /**
+     * <p>getBanner</p>
+     *
+     * @return a {@link java.lang.String} object.
+     */
     public String getBanner() {
         return m_banner;
     }
     
     /**
-     * 
+     * <p>getInetAddress</p>
+     *
      * @return InetAddress returns the inetaddress from the serversocket.
      */
     public InetAddress getInetAddress(){
         return getServerSocket().getInetAddress();
     }
     
+    /**
+     * <p>getLocalPort</p>
+     *
+     * @return a int.
+     */
     public int getLocalPort() {
         return getServerSocket().getLocalPort();
     }
     
+    /**
+     * <p>setThreadSleepLength</p>
+     *
+     * @param timeout a int.
+     */
     public void setThreadSleepLength(int timeout) {
         m_threadSleepLength = timeout;
     }
     
+    /**
+     * <p>getThreadSleepLength</p>
+     *
+     * @return a int.
+     */
     public int getThreadSleepLength() {
         return m_threadSleepLength;
     }
     
+    /**
+     * <p>init</p>
+     *
+     * @throws java.lang.Exception if any.
+     */
     public void init() throws Exception {
         super.init();
         setServerSocket(new ServerSocket());
@@ -110,13 +147,26 @@ public class SimpleServer extends SimpleConversationEndPoint {
         onInit();
     }
 
+    /**
+     * <p>onInit</p>
+     */
     public void onInit() {} 
     
+    /**
+     * <p>startServer</p>
+     *
+     * @throws java.lang.Exception if any.
+     */
     public void startServer() throws Exception {
         setServerThread(new Thread(getRunnable(), this.getClass().getSimpleName()));
         getServerThread().start();
     }
     
+    /**
+     * <p>stopServer</p>
+     *
+     * @throws java.io.IOException if any.
+     */
     public void stopServer() throws IOException {
         m_stopped = true;
 //        getServerSocket().getSoTimeout();
@@ -130,10 +180,19 @@ public class SimpleServer extends SimpleConversationEndPoint {
         }
     }
     
+    /**
+     * <p>dispose</p>
+     */
     public void dispose(){
         
     }
     
+    /**
+     * <p>getRunnable</p>
+     *
+     * @return a {@link java.lang.Runnable} object.
+     * @throws java.lang.Exception if any.
+     */
     protected Runnable getRunnable() throws Exception {
         return new Runnable(){
             
@@ -172,26 +231,44 @@ public class SimpleServer extends SimpleConversationEndPoint {
         };
     }
     
+    /**
+     * <p>sendBanner</p>
+     *
+     * @param out a {@link java.io.OutputStream} object.
+     * @throws java.io.IOException if any.
+     */
     protected void sendBanner(OutputStream out) throws IOException {
         out.write(String.format("%s\r\n", getBanner()).getBytes());        
     }
     
     /**
-     * 
-     * @param in
-     * @param out
-     * @return
-     * @throws Exception 
+     * <p>attemptConversation</p>
+     *
+     * @param in a {@link java.io.BufferedReader} object.
+     * @param out a {@link java.io.OutputStream} object.
+     * @throws java.lang.Exception if any.
+     * @return a boolean.
      */
     protected boolean attemptConversation(BufferedReader in, OutputStream out) throws Exception{
         m_conversation.attemptServerConversation(in, out);      
         return true;
     }
     
+    /**
+     * <p>addErrorHandler</p>
+     *
+     * @param requestHandler a {@link org.opennms.netmgt.provision.server.exchange.RequestHandler} object.
+     */
     protected void addErrorHandler(RequestHandler requestHandler) {
         m_conversation.addErrorExchange(new ServerErrorExchange(requestHandler));
     }
     
+    /**
+     * <p>errorString</p>
+     *
+     * @param error a {@link java.lang.String} object.
+     * @return a {@link org.opennms.netmgt.provision.server.exchange.RequestHandler} object.
+     */
     protected RequestHandler errorString(final String error) {
         return new RequestHandler() {
 
@@ -203,6 +280,12 @@ public class SimpleServer extends SimpleConversationEndPoint {
         };
     }
     
+    /**
+     * <p>shutdownServer</p>
+     *
+     * @param response a {@link java.lang.String} object.
+     * @return a {@link org.opennms.netmgt.provision.server.exchange.RequestHandler} object.
+     */
     protected RequestHandler shutdownServer(final String response) {
         return new RequestHandler() {
             
@@ -214,26 +297,56 @@ public class SimpleServer extends SimpleConversationEndPoint {
         };
     }
     
+    /**
+     * <p>setServerSocket</p>
+     *
+     * @param serverSocket a {@link java.net.ServerSocket} object.
+     */
     public void setServerSocket(ServerSocket serverSocket) {
         m_serverSocket = serverSocket;
     }
     
+    /**
+     * <p>getServerSocket</p>
+     *
+     * @return a {@link java.net.ServerSocket} object.
+     */
     public ServerSocket getServerSocket() {
         return m_serverSocket;
     }
 
+    /**
+     * <p>setSocket</p>
+     *
+     * @param socket a {@link java.net.Socket} object.
+     */
     public void setSocket(Socket socket) {
         m_socket = socket;
     }
 
+    /**
+     * <p>getSocket</p>
+     *
+     * @return a {@link java.net.Socket} object.
+     */
     public Socket getSocket() {
         return m_socket;
     }
 
+    /**
+     * <p>setServerThread</p>
+     *
+     * @param serverThread a {@link java.lang.Thread} object.
+     */
     protected void setServerThread(Thread serverThread) {
         m_serverThread = serverThread;
     }
 
+    /**
+     * <p>getServerThread</p>
+     *
+     * @return a {@link java.lang.Thread} object.
+     */
     protected Thread getServerThread() {
         return m_serverThread;
     }

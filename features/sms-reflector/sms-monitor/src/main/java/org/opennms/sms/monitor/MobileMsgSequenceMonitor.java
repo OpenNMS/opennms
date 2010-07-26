@@ -20,10 +20,18 @@ import org.opennms.sms.phonebook.PhonebookException;
 import org.opennms.sms.reflector.smsservice.MobileMsgTracker;
 import org.springframework.util.StringUtils;
 
+/**
+ * <p>MobileMsgSequenceMonitor class.</p>
+ *
+ * @author ranger
+ * @version $Id: $
+ */
 @Distributable(DistributionContext.DAEMON)
 public class MobileMsgSequenceMonitor extends IPv4Monitor {
 
+    /** Constant <code>DEFAULT_CONTEXT_NAME="mobileMessagePollerContext"</code> */
     public static final String DEFAULT_CONTEXT_NAME = "mobileMessagePollerContext";
+    /** Constant <code>CONTEXT_KEY="mobileMessageContextName"</code> */
     public static final String CONTEXT_KEY = "mobileMessageContextName";
 
     private static Logger log = Logger.getLogger(MobileMsgSequenceMonitor.class);
@@ -32,6 +40,7 @@ public class MobileMsgSequenceMonitor extends IPv4Monitor {
 	private MobileMsgTracker m_tracker;
 	private DefaultTaskCoordinator m_coordinator;
 
+	/** {@inheritDoc} */
 	@Override
 	public void initialize(Map<String,Object> params) {
 		super.initialize(params);
@@ -43,6 +52,7 @@ public class MobileMsgSequenceMonitor extends IPv4Monitor {
 		m_coordinator = BeanUtils.getBean(contextName, "sequenceTaskCoordinator", DefaultTaskCoordinator.class);
 	}
 
+	/** {@inheritDoc} */
 	@Override
 	public PollStatus poll(MonitoredService svc, Map<String, Object> parameters) {
 

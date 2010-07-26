@@ -63,21 +63,30 @@ import org.springframework.util.StringUtils;
 
 /**
  * Sends an email message using the Java Mail API
- * 
+ *
  * @author <A HREF="mailto:david@opennms.org">David Hustace </A>
+ * @version $Id: $
  */
 public abstract class JavaMailer2 {
 
     private Session m_session = null;
     private Properties m_mailProps;
     
+    /**
+     * <p>Constructor for JavaMailer2.</p>
+     *
+     * @param javamailProps a {@link java.util.Properties} object.
+     * @throws org.opennms.javamail.JavaMailerException if any.
+     */
     public JavaMailer2(Properties javamailProps) throws JavaMailerException {
     }
 
     /**
      * Default constructor.  Default properties from javamailer-properties are set into session.  To change these
      * properties, retrieve the current properties from the session and override as needed.
-     * @throws IOException 
+     *
+     * @throws IOException if any.
+     * @throws org.opennms.javamail.JavaMailerException if any.
      */
     public JavaMailer2() throws JavaMailerException {
         this(new Properties());
@@ -86,7 +95,10 @@ public abstract class JavaMailer2 {
 
     /**
      * Helper method to create an Authenticator based on Password Authentication
-     * @return
+     *
+     * @param user a {@link java.lang.String} object.
+     * @param password a {@link java.lang.String} object.
+     * @return a {@link javax.mail.Authenticator} object.
      */
     public Authenticator createAuthenticator(final String user, final String password) {
         Authenticator auth;
@@ -138,12 +150,12 @@ public abstract class JavaMailer2 {
     /**
      * Create a file attachment as a MimeBodyPart, checking to see if the file
      * exists before we create the attachment.
-     * 
+     *
      * @param file file to attach
      * @return attachment body part
-     * @throws MessagingException if we can't set the data handler or
+     * @throws javax.mail.MessagingException if we can't set the data handler or
      *      the file name on the MimeBodyPart
-     * @throws JavaMailerException if the file does not exist or is not
+     * @throws org.opennms.javamail.JavaMailerException if the file does not exist or is not
      *      readable
      */
     public MimeBodyPart createFileAttachment(final File file) throws MessagingException, JavaMailerException {
@@ -164,6 +176,11 @@ public abstract class JavaMailer2 {
     }
 
 
+    /**
+     * <p>setDebug</p>
+     *
+     * @param debug a boolean.
+     */
     public void setDebug(boolean debug) {
         if (debug) {
             m_session.setDebugOut(new PrintStream(new LoggingByteArrayOutputStream(log()), true));
@@ -172,6 +189,8 @@ public abstract class JavaMailer2 {
     }
 
     /**
+     * <p>log</p>
+     *
      * @return log4j Category
      */
     protected static ThreadCategory log() {
@@ -284,6 +303,8 @@ public abstract class JavaMailer2 {
     }
 
     /**
+     * <p>getSession</p>
+     *
      * @return the session
      */
     public Session getSession() {
@@ -291,6 +312,8 @@ public abstract class JavaMailer2 {
     }
 
     /**
+     * <p>setSession</p>
+     *
      * @param session the session to set
      */
     public void setSession(Session session) {
@@ -299,7 +322,8 @@ public abstract class JavaMailer2 {
 
     /**
      * This returns the properties configured in the javamail-configuration.properties file.
-     * @return
+     *
+     * @return a {@link java.util.Properties} object.
      */
     public Properties getMailProps() {
         return m_mailProps;

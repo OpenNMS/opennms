@@ -13,15 +13,36 @@ table {
 /*Overriting style*/ /*Cutom Style begin*/
 	/*These are the styles for the event Severity levels on the eventGrid*/
 
+/*Depricated. Use grid-status-unknown instead*/
 .grid-status-blue{
 	background-color: #b5d5ff;
 }
 
+.grid-status-unknown{
+	background-color: #b5d5ff;
+}
+
+/*Depricated. Use grid-status-indeterminate instead*/
+.grid-status-999000{
+	background-color: #EBEBCD;
+}
+.grid-status-indeterminate{
+	background-color: #EBEBCD;
+}
+
+/*Depricated. Use grid-status-up instead*/
 .grid-status-green{
 	background-color: #d7e1cd;
 }
+.grid-status-up{
+	background-color: #d7e1cd;
+}
 
+/*Depricated. Use grid-status-down instead*/
 .grid-status-red{
+	background-color: #ffd7cd;
+}
+.grid-status-down{
 	background-color: #ffd7cd;
 }
 

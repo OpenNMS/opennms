@@ -53,10 +53,18 @@ import org.springframework.util.Assert;
 import org.springframework.web.servlet.ModelAndView;
 import org.springframework.web.servlet.mvc.AbstractController;
 
+/**
+ * <p>FormProcMainController class.</p>
+ *
+ * @author ranger
+ * @version $Id: $
+ * @since 1.8.1
+ */
 public class FormProcMainController extends AbstractController implements InitializingBean {
     
     private KSC_PerformanceReportFactory m_kscReportFactory;
 
+    /** {@inheritDoc} */
     @Override
     protected ModelAndView handleRequestInternal(HttpServletRequest request, HttpServletResponse response) throws Exception {
         String action = WebSecurityUtils.sanitizeString(request.getParameter("report_action"));
@@ -73,7 +81,7 @@ public class FormProcMainController extends AbstractController implements Initia
             modelAndView.addObject("type", "custom");
             return modelAndView;
           
-        } else if (!request.isUserInRole(Authentication.READONLY_ROLE) && (request.getRemoteUser() != null)) {
+        } else if (( request.isUserInRole( Authentication.ADMIN_ROLE ) || !request.isUserInRole(Authentication.READONLY_ROLE) ) && (request.getRemoteUser() != null)) {
             if (action.equals("Customize")) {
                 editor.loadWorkingReport(getKscReportFactory(), getReportIndex(request));
                 return new ModelAndView("redirect:/KSC/customReport.htm");
@@ -99,14 +107,29 @@ public class FormProcMainController extends AbstractController implements Initia
         return WebSecurityUtils.safeParseInt(report);
     }
 
+    /**
+     * <p>getKscReportFactory</p>
+     *
+     * @return a {@link org.opennms.netmgt.config.KSC_PerformanceReportFactory} object.
+     */
     public KSC_PerformanceReportFactory getKscReportFactory() {
         return m_kscReportFactory;
     }
 
+    /**
+     * <p>setKscReportFactory</p>
+     *
+     * @param kscReportFactory a {@link org.opennms.netmgt.config.KSC_PerformanceReportFactory} object.
+     */
     public void setKscReportFactory(KSC_PerformanceReportFactory kscReportFactory) {
         m_kscReportFactory = kscReportFactory;
     }
 
+    /**
+     * <p>afterPropertiesSet</p>
+     *
+     * @throws java.lang.Exception if any.
+     */
     public void afterPropertiesSet() throws Exception {
         Assert.state(m_kscReportFactory != null, "property kscReportFactory must be set");
     }

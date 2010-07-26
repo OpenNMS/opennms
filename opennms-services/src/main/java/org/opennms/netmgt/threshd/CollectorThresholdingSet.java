@@ -39,17 +39,34 @@ import org.opennms.netmgt.model.RrdRepository;
 import org.opennms.netmgt.xml.event.Event;
 
 /**
- * @author <a href="mailto:agalue@opennms.org">Alejandro Galue</a>
+ * <p>CollectorThresholdingSet class.</p>
  *
+ * @author <a href="mailto:agalue@opennms.org">Alejandro Galue</a>
+ * @version $Id: $
  */
 public class CollectorThresholdingSet extends ThresholdingSet {
     
+    /**
+     * <p>Constructor for CollectorThresholdingSet.</p>
+     *
+     * @param nodeId a int.
+     * @param hostAddress a {@link java.lang.String} object.
+     * @param serviceName a {@link java.lang.String} object.
+     * @param repository a {@link org.opennms.netmgt.model.RrdRepository} object.
+     * @param interval a long.
+     */
     public CollectorThresholdingSet(int nodeId, String hostAddress, String serviceName, RrdRepository repository, long interval) {
         super(nodeId, hostAddress, serviceName, repository, interval);
     }
     
     /*
      * Returns true if the specified attribute is involved in any of defined thresholds for node/address/service
+     */
+    /**
+     * <p>hasThresholds</p>
+     *
+     * @param attribute a {@link org.opennms.netmgt.collectd.CollectionAttribute} object.
+     * @return a boolean.
      */
     public boolean hasThresholds(CollectionAttribute attribute) {
         CollectionResource resource = attribute.getResource();
@@ -60,6 +77,7 @@ public class CollectorThresholdingSet extends ThresholdingSet {
      * Apply thresholds definitions for specified resource using attribuesMap as current values.
      * Return a list of events to be send if some thresholds must be triggered or be rearmed.
      */
+    /** {@inheritDoc} */
     public List<Event> applyThresholds(CollectionResource resource, Map<String, CollectionAttribute> attributesMap) {
         CollectionResourceWrapper resourceWrapper = new CollectionResourceWrapper(m_interval, m_nodeId, m_hostAddress, m_serviceName, m_repository, resource, attributesMap);
         return applyThresholds(resourceWrapper, attributesMap);
@@ -68,6 +86,7 @@ public class CollectorThresholdingSet extends ThresholdingSet {
     /*
      * Check Valid Interface Resource based on suggestions from Bug 2711
      */
+    /** {@inheritDoc} */
     @Override
     protected boolean passedThresholdFilters(CollectionResourceWrapper resource, ThresholdEntity thresholdEntity) {
         if (resource.isAnInterfaceResource() && !resource.isValidInterfaceResource()) {

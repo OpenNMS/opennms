@@ -37,24 +37,48 @@ import java.util.LinkedList;
 import java.util.Collection;
 import java.util.List;
 
+/**
+ * <p>OnmsMapList class.</p>
+ *
+ * @author ranger
+ * @version $Id: $
+ */
 @XmlRootElement(name = "maps")
 public class OnmsMapList extends LinkedList<OnmsMap> {
     private static final long serialVersionUID = -6071472722900233605L;
 
 
+    /**
+     * <p>Constructor for OnmsMapList.</p>
+     */
     public OnmsMapList() {
         super();
     }
 
+    /**
+     * <p>Constructor for OnmsMapList.</p>
+     *
+     * @param c a {@link java.util.Collection} object.
+     */
     public OnmsMapList(Collection<? extends OnmsMap> c) {
         super(c);
     }
 
+    /**
+     * <p>getMaps</p>
+     *
+     * @return a {@link java.util.List} object.
+     */
     @XmlElement(name = "map")
     public List<OnmsMap> getMaps() {
         return this;
     }
 
+    /**
+     * <p>setMaps</p>
+     *
+     * @param maps a {@link java.util.List} object.
+     */
     public void setMaps(List<OnmsMap> maps) {
         clear();
         addAll(maps);

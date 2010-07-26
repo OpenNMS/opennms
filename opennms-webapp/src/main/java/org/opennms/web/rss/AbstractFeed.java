@@ -45,8 +45,11 @@ import com.sun.syndication.feed.synd.SyndFeedImpl;
 import com.sun.syndication.io.SyndFeedOutput;
 
 /**
- * 
+ * <p>AbstractFeed class.</p>
+ *
  * @author <a href="mailto:ranger@opennms.org">Benjamin Reed</a>
+ * @version $Id: $
+ * @since 1.8.1
  */
 public class AbstractFeed implements Feed {
     protected int m_maxEntries = 20;
@@ -54,49 +57,91 @@ public class AbstractFeed implements Feed {
     protected String m_urlBase = "";
     protected ServletRequest m_servletRequest;
     
+    /**
+     * <p>Constructor for AbstractFeed.</p>
+     */
     public AbstractFeed() {
     }
     
+    /**
+     * <p>Constructor for AbstractFeed.</p>
+     *
+     * @param feedType a {@link java.lang.String} object.
+     */
     public AbstractFeed(String feedType) {
         setFeedType(feedType);
     }
 
+    /**
+     * <p>getUrlBase</p>
+     *
+     * @return a {@link java.lang.String} object.
+     */
     public String getUrlBase() {
         return m_urlBase;
     }
     
+    /** {@inheritDoc} */
     public void setUrlBase(String urlBase) {
         m_urlBase = urlBase;
     }
     
+    /**
+     * <p>getFeedType</p>
+     *
+     * @return a {@link java.lang.String} object.
+     */
     public String getFeedType() {
         return m_feedType;
     }
     
+    /** {@inheritDoc} */
     public void setFeedType(String feedType) {
         m_feedType = feedType;
     }
     
+    /**
+     * <p>getMaxEntries</p>
+     *
+     * @return a int.
+     */
     public int getMaxEntries() {
         return m_maxEntries;
     }
     
+    /** {@inheritDoc} */
     public void setMaxEntries(int maxEntries) {
         m_maxEntries = maxEntries;
     }
     
+    /**
+     * <p>getRequest</p>
+     *
+     * @return a {@link javax.servlet.ServletRequest} object.
+     */
     public ServletRequest getRequest() {
         return m_servletRequest;
     }
     
+    /** {@inheritDoc} */
     public void setRequest(ServletRequest request) {
         m_servletRequest = request;
     }
     
+    /**
+     * <p>getFeed</p>
+     *
+     * @return a {@link com.sun.syndication.feed.synd.SyndFeed} object.
+     */
     public SyndFeed getFeed() {
         return new SyndFeedImpl();
     }
 
+    /**
+     * <p>render</p>
+     *
+     * @return a {@link java.lang.String} object.
+     */
     public String render() {
         SyndFeed feed = this.getFeed();
         feed.setFeedType(this.getFeedType());
@@ -112,11 +157,22 @@ public class AbstractFeed implements Feed {
         }
     }
 
+    /**
+     * <p>sanitizeTitle</p>
+     *
+     * @param title a {@link java.lang.String} object.
+     * @return a {@link java.lang.String} object.
+     */
     protected String sanitizeTitle(String title) {
         title.replaceAll("<.*?>", "");
         return title;
     }
     
+    /**
+     * <p>log</p>
+     *
+     * @return a {@link org.opennms.core.utils.ThreadCategory} object.
+     */
     protected ThreadCategory log() {
         return ThreadCategory.getInstance();
     }

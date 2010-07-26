@@ -1,0 +1,11 @@
+{d "%w- %d %m-, %Y - %T"} - A "callConnected" event has occurred, from {t} device, named {m}.
+
+"csta: A CSTA call leg has been connected"
+
+callConnectedRequestId = {S 1}
+callConnectedHandle = {I 2}
+callConnectedSessionId = {L 3}
+callConnectedCallId = {S 4}
+callConnectedTo = {S 5}
+callConnectedFrom = {S 6}
+(event [{e}])

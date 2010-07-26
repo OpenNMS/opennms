@@ -36,23 +36,30 @@ package org.opennms.acl.model;
 
 /**
  * Read only interface to display the information of a user
- * 
+ *
  * @author Massimiliano Dess&igrave; (desmax74@yahoo.it)
  * @since jdk 1.5.0
+ * @version $Id: $
  */
 public interface UserView {
 
     /**
+     * <p>getUsername</p>
+     *
      * @return the unique username
      */
     public String getUsername();
 
     /**
+     * <p>getId</p>
+     *
      * @return the unique identifier
      */
     public Long getId();
 
     /**
+     * <p>isEnabled</p>
+     *
      * @return the state of the user
      */
     public Boolean isEnabled();

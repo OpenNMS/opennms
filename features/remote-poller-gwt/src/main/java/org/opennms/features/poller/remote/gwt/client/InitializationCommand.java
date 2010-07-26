@@ -1,5 +1,10 @@
+
 /**
- * 
+ * <p>InitializationCommand class.</p>
+ *
+ * @author ranger
+ * @version $Id: $
+ * @since 1.8.1
  */
 package org.opennms.features.poller.remote.gwt.client;
 
@@ -11,7 +16,6 @@ import java.util.Queue;
 import com.google.gwt.maps.utility.client.DefaultPackage;
 import com.google.gwt.maps.utility.client.GoogleMapsUtility;
 import com.google.gwt.user.client.IncrementalCommand;
-
 public class InitializationCommand implements IncrementalCommand {
 	
     
@@ -52,23 +56,45 @@ public class InitializationCommand implements IncrementalCommand {
     private Runnable m_finisher;
     
 
+    /**
+     * <p>Constructor for InitializationCommand.</p>
+     *
+     * @param abstractLocationManager a {@link org.opennms.features.poller.remote.gwt.client.DefaultLocationManager} object.
+     * @param finisher a {@link java.lang.Runnable} object.
+     * @param dataLoaders a {@link org.opennms.features.poller.remote.gwt.client.InitializationCommand.DataLoader} object.
+     */
     public InitializationCommand(DefaultLocationManager abstractLocationManager, Runnable finisher, DataLoader...dataLoaders) {
         m_abstractLocationManager = abstractLocationManager;
         m_finisher = finisher;
         initialize(dataLoaders);
     }
     
+    /**
+     * <p>initialize</p>
+     *
+     * @param dataLoaders a {@link org.opennms.features.poller.remote.gwt.client.InitializationCommand.DataLoader} object.
+     */
     protected void initialize(DataLoader...dataLoaders) {
         m_queue.addAll(Arrays.asList(dataLoaders));
     }
 
     
+    /**
+     * <p>getLocationManager</p>
+     *
+     * @return a {@link org.opennms.features.poller.remote.gwt.client.LocationManager} object.
+     */
     public LocationManager getLocationManager() {
         return m_abstractLocationManager;
     }
     
     
     
+	/**
+	 * <p>execute</p>
+	 *
+	 * @return a boolean.
+	 */
 	public boolean execute() {
 	    if(m_currentLoader == null || m_currentLoader.isLoaded()) {
 	        m_currentLoader = m_queue.poll();
@@ -87,9 +113,10 @@ public class InitializationCommand implements IncrementalCommand {
 	    
 	}
 	
-    /**
-	 * Override this 
-	 * @throws InitializationException
+	/**
+	 * Override this
+	 *
+	 * @throws org.opennms.features.poller.remote.gwt.client.InitializationException if any.
 	 */
 	protected void finished() throws InitializationException {
 		if(m_finisher != null) {
@@ -97,6 +124,11 @@ public class InitializationCommand implements IncrementalCommand {
 		}
 	}
 
+    /**
+     * <p>getRemoteService</p>
+     *
+     * @return a {@link org.opennms.features.poller.remote.gwt.client.LocationStatusServiceAsync} object.
+     */
     public LocationStatusServiceAsync getRemoteService() {
         return m_abstractLocationManager.getRemoteService();
     }

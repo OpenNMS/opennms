@@ -69,7 +69,6 @@ import org.apache.commons.httpclient.UsernamePasswordCredentials;
 import org.apache.commons.httpclient.auth.AuthScope;
 import org.apache.commons.httpclient.methods.GetMethod;
 import org.apache.commons.httpclient.params.HttpClientParams;
-import org.apache.log4j.Logger;
 import org.hibernate.criterion.Restrictions;
 import org.opennms.core.utils.ThreadCategory;
 import org.opennms.netmgt.config.ackd.Parameter;
@@ -82,10 +81,19 @@ import org.opennms.netmgt.model.OnmsCriteria;
 import org.opennms.netmgt.model.OnmsSeverity;
 import org.opennms.netmgt.model.acknowledgments.AckService;
 
+/**
+ * <p>HypericAckProcessor class.</p>
+ *
+ * @author ranger
+ * @version $Id: $
+ */
 public class HypericAckProcessor implements AckProcessor {
 
+    /** Constant <code>READER_NAME_HYPERIC="HypericReader"</code> */
     public static final String READER_NAME_HYPERIC = "HypericReader";
+    /** Constant <code>PARAMETER_PREFIX_HYPERIC_SOURCE="source:"</code> */
     public static final String PARAMETER_PREFIX_HYPERIC_SOURCE = "source:";
+    /** Constant <code>ALERTS_PER_HTTP_TRANSACTION=200</code> */
     public static final int ALERTS_PER_HTTP_TRANSACTION = 200;
     // public static final String PARAMETER_HYPERIC_HOSTS = "hyperic-hosts";
 
@@ -228,12 +236,20 @@ public class HypericAckProcessor implements AckProcessor {
     }
 
     /// TODO Verify that this works properly
+    /**
+     * <p>reloadConfigs</p>
+     */
     public void reloadConfigs() {
         log().debug("reloadConfigs: reloading configuration...");
         m_ackdDao.reloadConfiguration();
         log().debug("reloadConfigs: configuration reloaded");
     }
 
+    /**
+     * <p>fetchUnclearedHypericAlarms</p>
+     *
+     * @return a {@link java.util.List} object.
+     */
     public List<OnmsAlarm> fetchUnclearedHypericAlarms() {
         // Query for existing, unacknowledged alarms in OpenNMS that were generated based on Hyperic alerts
         OnmsCriteria criteria = new OnmsCriteria(OnmsAlarm.class, "alarm");
@@ -253,6 +269,12 @@ public class HypericAckProcessor implements AckProcessor {
         return m_alarmDao.findMatching(criteria);
     }
 
+    /**
+     * <p>getUrlForHypericSource</p>
+     *
+     * @param source a {@link java.lang.String} object.
+     * @return a {@link java.lang.String} object.
+     */
     public String getUrlForHypericSource(String source) {
         if (source == null) {
             throw new IllegalArgumentException("Cannot search for null Hyperic platform IDs inside the ackd configuration");
@@ -272,6 +294,9 @@ public class HypericAckProcessor implements AckProcessor {
         return null;
     }
 
+    /**
+     * <p>run</p>
+     */
     public void run() {
         List<OnmsAcknowledgment> acks = new ArrayList<OnmsAcknowledgment>();
 
@@ -365,6 +390,14 @@ public class HypericAckProcessor implements AckProcessor {
         }
     }
 
+    /**
+     * <p>findAlarmForHypericAlert</p>
+     *
+     * @param alarms a {@link java.util.List} object.
+     * @param platformId a {@link java.lang.String} object.
+     * @param alert a {@link org.opennms.netmgt.ackd.readers.HypericAckProcessor.HypericAlertStatus} object.
+     * @return a {@link org.opennms.netmgt.model.OnmsAlarm} object.
+     */
     public static OnmsAlarm findAlarmForHypericAlert(List<OnmsAlarm> alarms, String platformId, HypericAlertStatus alert) {
         String targetPlatformId = "alert.source=" + platformId + "(string,text)";
         String targetAlertId = "alert.id="+ String.valueOf(alert.getAlertId()) + "(string,text)";
@@ -384,23 +417,35 @@ public class HypericAckProcessor implements AckProcessor {
         return null;
     }
 
+    /**
+     * <p>getAlertSourceParmValue</p>
+     *
+     * @param alarm a {@link org.opennms.netmgt.model.OnmsAlarm} object.
+     * @return a {@link java.lang.String} object.
+     */
     public static String getAlertSourceParmValue(OnmsAlarm alarm) {
         return getParmValueByRegex(alarm, "alert.source=(.*)[(]string,text[)]");
     }
 
+    /**
+     * <p>getAlertIdParmValue</p>
+     *
+     * @param alarm a {@link org.opennms.netmgt.model.OnmsAlarm} object.
+     * @return a {@link java.lang.String} object.
+     */
     public static String getAlertIdParmValue(OnmsAlarm alarm) {
         return getParmValueByRegex(alarm, "alert.id=([0-9]*)[(]string,text[)]");
     }
 
     /**
      * <p>Some parameter values that you might be interested in inside this class:</p>
-     * 
+     *
      * <ul>
      * <li><code>alert.id</code>: ID of the alert in the remote Hyperic HQ system</li>
      * <li><code>alert.baseURL</code>: Base URL of the Hyperic HQ service that generated the alert</li>
      * <li><code>alert.source</code>: String key that identifies the Hyperic HQ service that generated the alert</li>
      * </ul>
-     * 
+     *
      * @param alarm The alarm to fetch parameters from
      * @param regex Java regex expression with a () group that will be returned
      * @return The matching group from the regex
@@ -418,6 +463,17 @@ public class HypericAckProcessor implements AckProcessor {
         return null;
     }
 
+    /**
+     * <p>fetchHypericAlerts</p>
+     *
+     * @param hypericUrl a {@link java.lang.String} object.
+     * @param alertIds a {@link java.util.List} object.
+     * @return a {@link java.util.List} object.
+     * @throws org.apache.commons.httpclient.HttpException if any.
+     * @throws java.io.IOException if any.
+     * @throws javax.xml.bind.JAXBException if any.
+     * @throws javax.xml.stream.XMLStreamException if any.
+     */
     public static List<HypericAlertStatus> fetchHypericAlerts(String hypericUrl, List<String> alertIds) throws HttpException, IOException, JAXBException, XMLStreamException {
         List<HypericAlertStatus> retval = new ArrayList<HypericAlertStatus>();
 
@@ -467,6 +523,14 @@ public class HypericAckProcessor implements AckProcessor {
         return retval;
     }
 
+    /**
+     * <p>parseHypericAlerts</p>
+     *
+     * @param reader a {@link java.io.Reader} object.
+     * @return a {@link java.util.List} object.
+     * @throws javax.xml.bind.JAXBException if any.
+     * @throws javax.xml.stream.XMLStreamException if any.
+     */
     public static List<HypericAlertStatus> parseHypericAlerts(Reader reader) throws JAXBException, XMLStreamException {
         List<HypericAlertStatus> retval = new ArrayList<HypericAlertStatus>();
 
@@ -520,17 +584,37 @@ public class HypericAckProcessor implements AckProcessor {
     }
 
 
+    /**
+     * <p>setAckdConfigDao</p>
+     *
+     * @param configDao a {@link org.opennms.netmgt.dao.AckdConfigurationDao} object.
+     */
     public synchronized void setAckdConfigDao(final AckdConfigurationDao configDao) {
         m_ackdDao = configDao;
     }
 
+    /**
+     * <p>setAckService</p>
+     *
+     * @param ackService a {@link org.opennms.netmgt.model.acknowledgments.AckService} object.
+     */
     public synchronized void setAckService(final AckService ackService) {
         m_ackService = ackService;
     }
 
+    /**
+     * <p>afterPropertiesSet</p>
+     *
+     * @throws java.lang.Exception if any.
+     */
     public void afterPropertiesSet() throws Exception {
     }
 
+    /**
+     * <p>setAlarmDao</p>
+     *
+     * @param dao a {@link org.opennms.netmgt.dao.AlarmDao} object.
+     */
     public synchronized void setAlarmDao(final AlarmDao dao) {
         m_alarmDao = dao;
     }

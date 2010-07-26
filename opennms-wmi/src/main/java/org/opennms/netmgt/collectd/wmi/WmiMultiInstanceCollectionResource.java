@@ -15,10 +15,23 @@ import org.opennms.core.utils.ThreadCategory;
 import java.util.List;
 import java.io.File;
 
+/**
+ * <p>WmiMultiInstanceCollectionResource class.</p>
+ *
+ * @author ranger
+ * @version $Id: $
+ */
 public class WmiMultiInstanceCollectionResource extends WmiCollectionResource {
     private String m_inst;
     private String m_name;
 
+    /**
+     * <p>Constructor for WmiMultiInstanceCollectionResource.</p>
+     *
+     * @param agent a {@link org.opennms.netmgt.collectd.CollectionAgent} object.
+     * @param instance a {@link java.lang.String} object.
+     * @param name a {@link java.lang.String} object.
+     */
     public WmiMultiInstanceCollectionResource(CollectionAgent agent, String instance, String name) {
         super(agent);
         m_inst = instance;
@@ -29,6 +42,7 @@ public class WmiMultiInstanceCollectionResource extends WmiCollectionResource {
         return ThreadCategory.getInstance(getClass());
     }
 
+    /** {@inheritDoc} */
     @Override
     public File getResourceDir(RrdRepository repository) {
         File rrdBaseDir = repository.getRrdBaseDir();
@@ -41,14 +55,25 @@ public class WmiMultiInstanceCollectionResource extends WmiCollectionResource {
         return instDir;
     }
 
+    /**
+     * <p>getResourceTypeName</p>
+     *
+     * @return a {@link java.lang.String} object.
+     */
     public String getResourceTypeName() {
         return m_name;
     }
 
+    /**
+     * <p>getInstance</p>
+     *
+     * @return a {@link java.lang.String} object.
+     */
     public String getInstance() {
         return m_inst;
     }
 
+    /** {@inheritDoc} */
     @Override
     public String toString() {
         return "Node[" + m_agent.getNodeId() + "]/type["+ m_name+"]/instance[" + m_inst +"]";

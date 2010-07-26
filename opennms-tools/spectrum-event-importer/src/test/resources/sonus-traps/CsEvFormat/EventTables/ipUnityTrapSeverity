@@ -1,0 +1,6 @@
+0x00000001 clear
+0x00000002 informational
+0x00000003 warning
+0x00000004 minor
+0x00000005 major
+0x00000006 critical

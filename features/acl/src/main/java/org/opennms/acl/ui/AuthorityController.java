@@ -51,13 +51,20 @@ import org.springframework.web.servlet.ModelAndView;
 
 /**
  * Authority Controller
- * 
+ *
  * @author Massimiliano Dess&igrave; (desmax74@yahoo.it)
  * @since jdk 1.5.0
+ * @version $Id: $
  */
 @Controller
 public class AuthorityController {
 
+    /**
+     * <p>list</p>
+     *
+     * @param req a {@link javax.servlet.http.HttpServletRequest} object.
+     * @return a {@link org.springframework.web.servlet.ModelAndView} object.
+     */
     @RequestMapping("/authority.list.page")
     public ModelAndView list(HttpServletRequest req) {
         Pager pager = WebUtils.getPager(req, authorityService.getTotalItemsNumber(), 15);
@@ -67,12 +74,24 @@ public class AuthorityController {
         return mav;
     }
 
+    /**
+     * <p>detail</p>
+     *
+     * @param req a {@link javax.servlet.http.HttpServletRequest} object.
+     * @return a {@link org.springframework.web.servlet.ModelAndView} object.
+     */
     @RequestMapping("/authority.detail.page")
     public ModelAndView detail(HttpServletRequest req) {
         Authority authority = WebUtils.getAuthority(req);
         return new ModelAndView("authority/detail", Constants.AUTHORITY, authority.getAuthorityView());
     }
 
+    /**
+     * <p>delete</p>
+     *
+     * @param req a {@link javax.servlet.http.HttpServletRequest} object.
+     * @return a {@link org.springframework.web.servlet.ModelAndView} object.
+     */
     @RequestMapping("/authority.delete.page")
     public ModelAndView delete(HttpServletRequest req) {
         Authority authority = WebUtils.getAuthority(req);
@@ -81,6 +100,12 @@ public class AuthorityController {
         return mav;
     }
 
+    /**
+     * <p>confirmDelete</p>
+     *
+     * @param req a {@link javax.servlet.http.HttpServletRequest} object.
+     * @return a {@link org.springframework.web.servlet.ModelAndView} object.
+     */
     @RequestMapping("/authority.confirm.page")
     public ModelAndView confirmDelete(HttpServletRequest req) {
         Authority authority = WebUtils.getAuthority(req);
@@ -90,6 +115,12 @@ public class AuthorityController {
         return mav;
     }
 
+    /**
+     * <p>items</p>
+     *
+     * @param req a {@link javax.servlet.http.HttpServletRequest} object.
+     * @return a {@link org.springframework.web.servlet.ModelAndView} object.
+     */
     @RequestMapping("/authority.items.page")
     public ModelAndView items(HttpServletRequest req) {
         Authority authority = WebUtils.getAuthority(req);
@@ -104,6 +135,13 @@ public class AuthorityController {
         }
     }
 
+    /**
+     * <p>selection</p>
+     *
+     * @param ids a {@link java.lang.String} object.
+     * @param req a {@link javax.servlet.http.HttpServletRequest} object.
+     * @return a {@link org.springframework.web.servlet.ModelAndView} object.
+     */
     @RequestMapping("/authority.selection.page")
     public ModelAndView selection(@RequestParam("includedHidden") String ids, HttpServletRequest req) {
         Authority authority = WebUtils.getAuthority(req);
@@ -114,6 +152,11 @@ public class AuthorityController {
         return new ModelAndView(new StringBuilder(Constants.REDIRECT_AUTHORITY_LIST).append("?").append(Constants.AUTHORITY_ID).append("=").append(authority.getId()).toString());
     }
 
+    /**
+     * <p>Constructor for AuthorityController.</p>
+     *
+     * @param authorityService a {@link org.opennms.acl.service.AuthorityService} object.
+     */
     @Autowired
     public AuthorityController(@Qualifier("authorityService") AuthorityService authorityService) {
         this.authorityService = authorityService;

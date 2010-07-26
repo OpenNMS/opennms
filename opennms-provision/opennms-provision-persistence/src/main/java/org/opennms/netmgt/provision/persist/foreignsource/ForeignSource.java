@@ -60,9 +60,13 @@ import org.opennms.core.utils.ThreadCategory;
 import org.opennms.netmgt.provision.persist.StringIntervalAdapter;
 
 /**
+ * <p>ForeignSource class.</p>
+ *
  * @author <a href="mailto:ranger@opennms.org">Benjamin Reed</a>
  * @author <a href="mailto:brozow@opennms.org">Matt Brozowski</a>
- *
+ * @author <a href="mailto:ranger@opennms.org">Benjamin Reed</a>
+ * @author <a href="mailto:brozow@opennms.org">Matt Brozowski</a>
+ * @version $Id: $
  */
 @XmlRootElement(name="foreign-source")
 public class ForeignSource implements Serializable, Comparable<ForeignSource> {
@@ -90,16 +94,26 @@ public class ForeignSource implements Serializable, Comparable<ForeignSource> {
 
     private boolean m_default;
 
+    /**
+     * <p>Constructor for ForeignSource.</p>
+     */
     public ForeignSource() {
         updateDateStamp();
     }
     
+    /**
+     * <p>Constructor for ForeignSource.</p>
+     *
+     * @param name a {@link java.lang.String} object.
+     */
     public ForeignSource(String name) {
         updateDateStamp();
         setName(name);
     }
     
     /**
+     * <p>getName</p>
+     *
      * @return the name
      */
     @XmlTransient
@@ -107,12 +121,16 @@ public class ForeignSource implements Serializable, Comparable<ForeignSource> {
         return m_name;
     }
     /**
+     * <p>setName</p>
+     *
      * @param name the name to set
      */
     public void setName(String name) {
         m_name = name;
     }
     /**
+     * <p>getScanInterval</p>
+     *
      * @return the scanInterval
      */
     @XmlTransient
@@ -120,12 +138,16 @@ public class ForeignSource implements Serializable, Comparable<ForeignSource> {
         return m_scanInterval;
     }
     /**
+     * <p>setScanInterval</p>
+     *
      * @param scanInterval the scanInterval to set
      */
     public void setScanInterval(Duration scanInterval) {
         m_scanInterval = scanInterval;
     }
     /**
+     * <p>getDateStamp</p>
+     *
      * @return the date stamp
      */
     @XmlTransient
@@ -133,6 +155,8 @@ public class ForeignSource implements Serializable, Comparable<ForeignSource> {
         return m_dateStamp;
     }
     /**
+     * <p>getDateStampAsDate</p>
+     *
      * @return the date stamp as a {@link java.util.Date}
      */
     @XmlTransient
@@ -140,6 +164,8 @@ public class ForeignSource implements Serializable, Comparable<ForeignSource> {
         return m_dateStamp.toGregorianCalendar().getTime();
     }
     /**
+     * <p>setDateStamp</p>
+     *
      * @param value the date stamp
      */
     public void setDateStamp(XMLGregorianCalendar value) {
@@ -156,6 +182,8 @@ public class ForeignSource implements Serializable, Comparable<ForeignSource> {
         }
     }
     /**
+     * <p>getDetectors</p>
+     *
      * @return the detectors
      */
     @XmlTransient
@@ -163,29 +191,57 @@ public class ForeignSource implements Serializable, Comparable<ForeignSource> {
         return m_detectors;
     }
     /**
+     * <p>setDetectors</p>
+     *
      * @param detectors the detectors to set
      */
     public void setDetectors(List<PluginConfig> detectors) {
         m_detectors = detectors;
     }
     
+    /**
+     * <p>getPolicies</p>
+     *
+     * @return a {@link java.util.List} object.
+     */
     @XmlTransient
     public List<PluginConfig> getPolicies() {
         return m_policies;
     }
     
+    /**
+     * <p>setPolicies</p>
+     *
+     * @param policies a {@link java.util.List} object.
+     */
     public void setPolicies(List<PluginConfig> policies) {
         m_policies = policies;
     }
     
+    /**
+     * <p>addDetector</p>
+     *
+     * @param detector a {@link org.opennms.netmgt.provision.persist.foreignsource.PluginConfig} object.
+     */
     public void addDetector(PluginConfig detector) {
         m_detectors.add(detector);
     }
 
+    /**
+     * <p>addPolicy</p>
+     *
+     * @param policy a {@link org.opennms.netmgt.provision.persist.foreignsource.PluginConfig} object.
+     */
     public void addPolicy(PluginConfig policy) {
         m_policies.add(policy);
     }
 
+    /**
+     * <p>getDetector</p>
+     *
+     * @param detector a {@link java.lang.String} object.
+     * @return a {@link org.opennms.netmgt.provision.persist.foreignsource.PluginConfig} object.
+     */
     public PluginConfig getDetector(String detector) {
         for (PluginConfig pc : m_detectors) {
             if (pc.getName().equals(detector)) {
@@ -196,10 +252,21 @@ public class ForeignSource implements Serializable, Comparable<ForeignSource> {
     }
 
     /* an unfortunate naming convention because of the way PropertyPath works */
+    /**
+     * <p>removeDetectors</p>
+     *
+     * @param detector a {@link org.opennms.netmgt.provision.persist.foreignsource.PluginConfig} object.
+     */
     public void removeDetectors(PluginConfig detector) {
         m_detectors.remove(detector);
     }
 
+    /**
+     * <p>getPolicy</p>
+     *
+     * @param policy a {@link java.lang.String} object.
+     * @return a {@link org.opennms.netmgt.provision.persist.foreignsource.PluginConfig} object.
+     */
     public PluginConfig getPolicy(String policy) {
         for (PluginConfig pc : m_policies) {
             if (pc.getName().equals(policy)) {
@@ -210,14 +277,29 @@ public class ForeignSource implements Serializable, Comparable<ForeignSource> {
     }
 
     /* an unfortunate naming convention because of the way PropertyPath works */
+    /**
+     * <p>removePolicies</p>
+     *
+     * @param policy a {@link org.opennms.netmgt.provision.persist.foreignsource.PluginConfig} object.
+     */
     public void removePolicies(PluginConfig policy) {
         m_policies.remove(policy);
     }
     
+    /**
+     * <p>isDefault</p>
+     *
+     * @return a boolean.
+     */
     public boolean isDefault() {
         return m_default;
     }
 
+    /**
+     * <p>setDefault</p>
+     *
+     * @param isDefault a boolean.
+     */
     @XmlTransient
     public void setDefault(boolean isDefault) {
         m_default = isDefault;
@@ -227,6 +309,7 @@ public class ForeignSource implements Serializable, Comparable<ForeignSource> {
         return ThreadCategory.getInstance(ForeignSource.class);
     }
 
+    /** {@inheritDoc} */
     @Override
     public String toString() {
         return new ToStringBuilder(this)
@@ -237,6 +320,12 @@ public class ForeignSource implements Serializable, Comparable<ForeignSource> {
             .toString();
     }
 
+    /**
+     * <p>compareTo</p>
+     *
+     * @param obj a {@link org.opennms.netmgt.provision.persist.foreignsource.ForeignSource} object.
+     * @return a int.
+     */
     public int compareTo(ForeignSource obj) {
         return new CompareToBuilder()
             .append(getName(), obj.getName())
@@ -246,6 +335,7 @@ public class ForeignSource implements Serializable, Comparable<ForeignSource> {
             .toComparison();
     }
     
+    /** {@inheritDoc} */
     @Override
     public boolean equals(Object obj) {
         if (obj instanceof ForeignSource) {
@@ -260,6 +350,7 @@ public class ForeignSource implements Serializable, Comparable<ForeignSource> {
         return false;
     }
 
+    /** {@inheritDoc} */
     @Override
     public int hashCode() {
         return new HashCodeBuilder(443, 1061)

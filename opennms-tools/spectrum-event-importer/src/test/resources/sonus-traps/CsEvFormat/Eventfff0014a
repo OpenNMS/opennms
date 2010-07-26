@@ -1,0 +1,14 @@
+{d "%w- %d %m-, %Y - %T"} - A "alertMajorNotification" event has occurred, from {t} device, named {m}.
+
+"The NMS-Agent sends an alertMajorNotification to the manager indicating that an
+				alert of 'Major' severity has been raised on a MO"
+
+sequenceNum = {I 1}
+alertcategory = {S 2}
+alertentity = {S 3}
+alertownerName = {S 4}
+alertDescription = {I 5}
+alertNotificationId = {I 6}
+alertTimeStamp = {S 7}
+alertExtraProperties = {S 8}
+(event [{e}])

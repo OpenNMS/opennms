@@ -11,6 +11,7 @@ import org.gwtopenmaps.openlayers.client.MapWidget;
 import org.gwtopenmaps.openlayers.client.Marker;
 import org.gwtopenmaps.openlayers.client.Pixel;
 import org.gwtopenmaps.openlayers.client.Size;
+import org.gwtopenmaps.openlayers.client.control.LayerSwitcher;
 import org.gwtopenmaps.openlayers.client.control.MousePosition;
 import org.gwtopenmaps.openlayers.client.control.PanZoomBar;
 import org.gwtopenmaps.openlayers.client.event.MapMoveListener;
@@ -19,6 +20,7 @@ import org.gwtopenmaps.openlayers.client.event.MarkerBrowserEventListener;
 import org.gwtopenmaps.openlayers.client.layer.Layer;
 import org.gwtopenmaps.openlayers.client.layer.Markers;
 import org.gwtopenmaps.openlayers.client.layer.WMS;
+import org.gwtopenmaps.openlayers.client.layer.WMSOptions;
 import org.gwtopenmaps.openlayers.client.layer.WMSParams;
 import org.gwtopenmaps.openlayers.client.popup.Popup;
 import org.opennms.features.poller.remote.gwt.client.events.GWTMarkerClickedEvent;
@@ -26,9 +28,14 @@ import org.opennms.features.poller.remote.gwt.client.events.MapPanelBoundsChange
 import org.opennms.features.poller.remote.gwt.client.utils.BoundsBuilder;
 
 import com.google.gwt.core.client.GWT;
+import com.google.gwt.event.dom.client.ClickEvent;
+import com.google.gwt.event.dom.client.ClickHandler;
+import com.google.gwt.event.dom.client.DoubleClickEvent;
+import com.google.gwt.event.dom.client.DoubleClickHandler;
 import com.google.gwt.event.logical.shared.ResizeEvent;
 import com.google.gwt.event.logical.shared.ResizeHandler;
 import com.google.gwt.event.shared.HandlerManager;
+import com.google.gwt.event.shared.HandlerRegistration;
 import com.google.gwt.uibinder.client.UiBinder;
 import com.google.gwt.uibinder.client.UiField;
 import com.google.gwt.user.client.Window;
@@ -39,6 +46,13 @@ import com.google.gwt.user.client.ui.SimplePanel;
 import com.google.gwt.user.client.ui.VerticalPanel;
 import com.google.gwt.user.client.ui.Widget;
 
+/**
+ * <p>OpenLayersMapPanel class.</p>
+ *
+ * @author ranger
+ * @version $Id: $
+ * @since 1.8.1
+ */
 public class OpenLayersMapPanel extends Composite implements MapPanel {
 
     private class DefaultMarkerClickHandler implements MarkerBrowserEventListener {
@@ -76,6 +90,11 @@ public class OpenLayersMapPanel extends Composite implements MapPanel {
     private Map<String, Marker> m_markers = new HashMap<String, Marker>();
     private HandlerManager m_eventBus;
     
+    /**
+     * <p>Constructor for OpenLayersMapPanel.</p>
+     *
+     * @param eventBus a {@link com.google.gwt.event.shared.HandlerManager} object.
+     */
     public OpenLayersMapPanel(final HandlerManager eventBus) {
         m_eventBus = eventBus;
         initWidget(uiBinder.createAndBindUi(this));
@@ -97,6 +116,7 @@ public class OpenLayersMapPanel extends Composite implements MapPanel {
     
     
 
+    /** {@inheritDoc} */
     @Override
     protected void onLoad() {
         super.onLoad();
@@ -105,7 +125,10 @@ public class OpenLayersMapPanel extends Composite implements MapPanel {
 
 
 
-    public void initializeMap() {
+    /**
+     * <p>initializeMap</p>
+     */
+    private void initializeMap() {
         final MapOptions mo = new MapOptions();
         mo.setProjection("EPSG:4326");
         m_mapWidget = new MapWidget("100%", "100%", mo);
@@ -116,17 +139,47 @@ public class OpenLayersMapPanel extends Composite implements MapPanel {
         m_map.addControl(new MousePosition());
         m_map.zoomTo(2);
 
-        final WMSParams layerParams = new WMSParams();
+        initializeImageError();
+
+        WMSParams layerParams = null;
+        WMSOptions layerOptions = null;
+
+        layerOptions = new WMSOptions();
+        layerOptions.setWrapDateLine(true);
+        layerParams = new WMSParams();
+        layerParams.setLayers(getLayerName());
+        Layer layer = new WMS("OpenStreetMaps", getLayerUrl(), layerParams, layerOptions);
+        layer.setIsBaseLayer(true);
+        layer.setIsVisible(true);
+        m_map.addLayer(layer);
+
+        layerOptions = new WMSOptions();
+        layerOptions.setWrapDateLine(true);
+        layerParams = new WMSParams();
         layerParams.setLayers("basic");
-        final Layer wms = new WMS("OpenLayers WMS", "http://labs.metacarta.com/wms/vmap0", layerParams);
-        wms.setIsBaseLayer(true);
-        m_map.addLayer(wms);
+        layer = new WMS("MetaCarta (Basic)", new String[] {"http://labs.metacarta.com/wms-c/Basic.py?", "http://t2.labs.metacarta.com/wms-c/Basic.py?", "http://t1.labs.metacarta.com/wms-c/Basic.py?" }, layerParams, layerOptions);
+        layer.setIsBaseLayer(true);
+        layer.setIsVisible(false);
+        m_map.addLayer(layer);
 
-        m_markersLayer = new Markers("default");
+        layerOptions = new WMSOptions();
+        layerOptions.setWrapDateLine(true);
+        layerParams = new WMSParams();
+        layerParams.setLayers("satellite");
+        layer = new WMS("MetaCarta (Satellite)", new String[] {"http://labs.metacarta.com/wms-c/Basic.py?", "http://t2.labs.metacarta.com/wms-c/Basic.py?", "http://t1.labs.metacarta.com/wms-c/Basic.py?" }, layerParams, layerOptions);
+        layer.setIsBaseLayer(true);
+        layer.setIsVisible(false);
+        m_map.addLayer(layer);
+
+        m_markersLayer = new Markers("Remote Pollers");
+        m_markersLayer.setIsVisible(true);
+        m_markersLayer.setIsBaseLayer(false);
         m_map.addLayer(m_markersLayer);
-        m_map.zoomToMaxExtent();
 
-//        getMapHolder().setSize("100%", "100%");
+        final LayerSwitcher switcher = new LayerSwitcher();
+        m_map.addControl(switcher);
+
+        m_map.zoomToMaxExtent();
 
         Window.addResizeHandler(new ResizeHandler() {
             public void onResize(ResizeEvent event) {
@@ -135,6 +188,14 @@ public class OpenLayersMapPanel extends Composite implements MapPanel {
         });
     }
 
+    private static native void initializeImageError() /*-{
+        $wnd.OpenLayers.Util.onImageLoadError = function() {
+            this.style.display = "";
+            this.src = "images/nodata.png";
+        };
+    }-*/;
+
+    /** {@inheritDoc} */
     public void showLocationDetails(String name, String htmlTitle, String htmlContent) {
     	final Marker marker = getMarker(name);
 
@@ -145,7 +206,7 @@ public class OpenLayersMapPanel extends Composite implements MapPanel {
             panel.add(new HTML(htmlContent));
             Popup p = new Popup(name, marker.getLonLat(), new Size(300, 300), panel.toString(), true);
             p.setAutoSize(true);
-            m_map.addPopup(p);
+            m_map.addPopupExclusive(p);
     	}
     }
 
@@ -163,6 +224,11 @@ public class OpenLayersMapPanel extends Composite implements MapPanel {
         return new Icon(marker.getImageURL(), new Size(32, 32), new Pixel(-16, -32));
     }
 
+    /**
+     * <p>getBounds</p>
+     *
+     * @return a {@link org.opennms.features.poller.remote.gwt.client.GWTBounds} object.
+     */
     public GWTBounds getBounds() {
         try {
             return toGWTBounds(m_map.getExtent());
@@ -171,6 +237,7 @@ public class OpenLayersMapPanel extends Composite implements MapPanel {
         }
     }
 
+    /** {@inheritDoc} */
     public void setBounds(final GWTBounds b) {
         m_map.zoomToExtent(toBounds(b));
     }
@@ -184,12 +251,15 @@ public class OpenLayersMapPanel extends Composite implements MapPanel {
             return new GWTBounds(-180, -90, 180, 90);
         }
         BoundsBuilder bldr = new BoundsBuilder();
-        bldr.extend(bounds.getLowerLeftX(), bounds.getLowerLeftY());
-        bldr.extend(bounds.getUpperRightX(), bounds.getUpperRightY());
+        bldr.extend(Math.max(-90, bounds.getLowerLeftY()), Math.max(-180, bounds.getLowerLeftX()));
+        bldr.extend(Math.min(90, bounds.getUpperRightY()), Math.min(180, bounds.getUpperRightX()));
         return bldr.getBounds();
     }
 
     private static Bounds toBounds(final GWTBounds bounds) {
+        if (bounds == null) {
+            return new Bounds(-180, -90, 180, 90);
+        }
         final GWTLatLng nec = bounds.getNorthEastCorner();
         final GWTLatLng swc = bounds.getSouthWestCorner();
         return new Bounds(swc.getLongitude(), swc.getLatitude(), nec.getLongitude(), nec.getLatitude());
@@ -199,31 +269,54 @@ public class OpenLayersMapPanel extends Composite implements MapPanel {
         m_map.updateSize();
     }
 
+    /** {@inheritDoc} */
     public void placeMarker(final GWTMarkerState marker) {
         Marker m = getMarker(marker.getName());
 
         if(m == null) {
         	m = createMarker(marker);
         	m_markers.put(marker.getName(), m);
-        	m_markersLayer.addMarker(m);
-        }else {
-            updateMarker(m, marker);
         }
-        
+        updateMarker(m, marker);
     }
 
     private void updateMarker(final Marker m, final GWTMarkerState marker) {
-        m.setImageUrl(marker.getImageURL());
-        // FIXME: can we do this?
-        // m.setVisible(marker.isVisible());
+        if (marker.isVisible()) {
+            m.setImageUrl(marker.getImageURL());
+            m_markersLayer.addMarker(m);
+        } else {
+            m_markersLayer.removeMarker(m);
+        }
     }
 
     private Marker getMarker(final String name) {
         return m_markers.get(name);
     }
 
+    private native String getLayerUrl() /*-{
+        return $wnd.openlayersUrl;
+    }-*/;
+
+    private native String getLayerName() /*-{
+        return $wnd.openlayersLayer;
+    }-*/;
+
+    /**
+     * <p>getWidget</p>
+     *
+     * @return a {@link com.google.gwt.user.client.ui.Widget} object.
+     */
     public Widget getWidget() {
         return this;
     }
 
+    /** {@inheritDoc} */
+    public HandlerRegistration addDoubleClickHandler(DoubleClickHandler handler) {
+        return addDomHandler(handler, DoubleClickEvent.getType());
+    }
+
+    /** {@inheritDoc} */
+    public HandlerRegistration addClickHandler(ClickHandler handler) {
+        return addDomHandler(handler, ClickEvent.getType());
+    }
 }

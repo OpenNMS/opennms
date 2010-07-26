@@ -48,30 +48,30 @@ import org.opennms.netmgt.config.discovery.DiscoveryConfiguration;
 
 /**
  * A servlet that handles updating the status of the notifications
- * 
+ *
  * @author <A HREF="mailto:jason@opennms.org">Jason Johns </A>
  * @author <A HREF="http://www.opennms.org/">OpenNMS </A>
+ * @author <A HREF="mailto:jason@opennms.org">Jason Johns </A>
+ * @author <A HREF="http://www.opennms.org/">OpenNMS </A>
+ * @version $Id: $
+ * @since 1.8.1
  */
 public class ModifyDiscoveryConfigurationServlet extends HttpServlet {
 
-    /**
+	/**
      * 
      */
-    private static final long serialVersionUID = -6445179110488848137L;
+    private static final long serialVersionUID = -3782436743630940629L;
 
-    protected static ThreadCategory log = ThreadCategory.getInstance("WEB");
+	/** Constant <code>log</code> */
+	protected static ThreadCategory log = ThreadCategory.getInstance("WEB");
 
+	/** {@inheritDoc} */
 	public void doPost(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
 
 	    log.info("Loading Discovery configuration.");
-	    DiscoveryConfiguration config=null;
-		try {
-             DiscoveryConfigFactory.reload();
-             config = DiscoveryConfigFactory.getInstance().getConfiguration();
-        } catch (Exception e) {
-            new ServletException("Could not load configuration: " + e.getMessage(), e);
-        }
-        HttpSession sess = request.getSession();
+	    DiscoveryConfiguration config=getDiscoveryConfig();
+	    HttpSession sess = request.getSession();
         //sess.removeAttribute("discoveryConfiguration");
         sess.setAttribute("discoveryConfiguration",config);
         response.sendRedirect("edit-config.jsp");
@@ -79,7 +79,24 @@ public class ModifyDiscoveryConfigurationServlet extends HttpServlet {
         //dispatcher.forward(request, response);
     }
 	
+	/** {@inheritDoc} */
 	public void doGet(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
 		doPost(request, response);
+	}
+	
+	/**
+	 * <p>getDiscoveryConfig</p>
+	 *
+	 * @return a {@link org.opennms.netmgt.config.discovery.DiscoveryConfiguration} object.
+	 */
+	public static DiscoveryConfiguration getDiscoveryConfig() {
+        DiscoveryConfiguration config = null;
+        try {
+             DiscoveryConfigFactory.reload();
+             config = DiscoveryConfigFactory.getInstance().getConfiguration();
+        } catch (final Exception e) {
+            new ServletException("Could not load configuration: " + e.getMessage(), e);
+        }
+        return config;
 	}
 }

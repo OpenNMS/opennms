@@ -1,0 +1,6 @@
+{d "%w- %d %m-, %Y - %T"} - A "sipParseErrorsTrap" event has occurred, from {t} device, named {m}.
+
+"system: The number of parse errors in received SIP messages has exceeded the configured threshold."
+
+sipParseErrorsTrapLog = {S 1}
+(event [{e}])

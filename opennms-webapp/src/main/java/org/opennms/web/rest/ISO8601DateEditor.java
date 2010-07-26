@@ -12,22 +12,29 @@ import org.joda.time.format.ISODateTimeFormat;
  * in query strings.
  * Also handles "epoch" style dates, if they exist.  Could be extended to guess the date format and do something
  * useful with it
- * @author miskellc
  *
+ * @author miskellc
+ * @version $Id: $
+ * @since 1.8.1
  */
 public class ISO8601DateEditor extends PropertyEditorSupport {
     static final DateTimeFormatter m_formatter = ISODateTimeFormat.dateTime().withZone(DateTimeZone.UTC);
     
+    /**
+     * <p>Constructor for ISO8601DateEditor.</p>
+     */
     public ISO8601DateEditor() {
         super();
         
     }
+	/** {@inheritDoc} */
 	@Override
 	public String getAsText() {
 		Date date=(Date)super.getValue();
 		return m_formatter.print(date.getTime());
 	}
 
+	/** {@inheritDoc} */
 	@Override
 	public void setAsText(String text) throws IllegalArgumentException {
 		Date date;
@@ -41,6 +48,8 @@ public class ISO8601DateEditor extends PropertyEditorSupport {
 	}
 
 	/**
+	 * {@inheritDoc}
+	 *
 	 * No, we don't do GUIs.  Sod off
 	 */
 	@Override

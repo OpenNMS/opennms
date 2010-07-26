@@ -49,10 +49,22 @@ import org.opennms.netmgt.xml.event.Event;
 import org.opennms.netmgt.xml.event.Parm;
 import org.springframework.util.Assert;
 
+/**
+ * <p>BroadcastEventProcessor class.</p>
+ *
+ * @author ranger
+ * @version $Id: $
+ */
 public class BroadcastEventProcessor implements EventListener {
     private final EventIpcManager m_eventIpcManager;
     private final EventConfDao m_eventConfDao;
     
+    /**
+     * <p>Constructor for BroadcastEventProcessor.</p>
+     *
+     * @param eventIpcManager a {@link org.opennms.netmgt.eventd.EventIpcManager} object.
+     * @param eventConfDao a {@link org.opennms.netmgt.config.EventConfDao} object.
+     */
     public BroadcastEventProcessor(EventIpcManager eventIpcManager, EventConfDao eventConfDao) {
         Assert.notNull(eventIpcManager, "argument eventIpcManager must not be null");
         Assert.notNull(eventConfDao, "argument eventConfDao must not be null");
@@ -76,7 +88,6 @@ public class BroadcastEventProcessor implements EventListener {
      * still active. This call may be invoked more than once safely and may be
      * invoked during object finalization.
      * </p>
-     * 
      */
     public synchronized void close() {
         m_eventIpcManager.removeEventListener(this);
@@ -86,24 +97,28 @@ public class BroadcastEventProcessor implements EventListener {
      * This method may be invoked by the garbage thresholding. Once invoked it
      * ensures that the <code>close</code> method is called <em>at least</em>
      * once during the cycle of this object.
-     * 
+     *
+     * @throws java.lang.Throwable if any.
      */
     protected void finalize() throws Throwable {
         close();
     }
 
+    /**
+     * <p>getName</p>
+     *
+     * @return a {@link java.lang.String} object.
+     */
     public String getName() {
         return "Eventd:BroadcastEventProcessor";
     }
 
     /**
+     * {@inheritDoc}
+     *
      * This method is invoked by the event manager when a new event is
      * available for processing.  Each message is examined for its Universal
      * Event Identifier and the appropriate action is taking based on each UEI.
-     * 
-     * @param event
-     *            The event message.
-     * 
      */
     public void onEvent(Event event) {
         
@@ -142,7 +157,7 @@ public class BroadcastEventProcessor implements EventListener {
                 }
             }
         
-        //Depreciating this one...
+        // Deprecating this one...
         } else if (EventConstants.EVENTSCONFIG_CHANGED_EVENT_UEI.equals(event.getUei())) {
             isTarget = true;
         }

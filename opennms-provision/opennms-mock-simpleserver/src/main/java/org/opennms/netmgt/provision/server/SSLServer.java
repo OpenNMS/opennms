@@ -13,13 +13,25 @@ import javax.net.ssl.KeyManagerFactory;
 import javax.net.ssl.SSLContext;
 import javax.net.ssl.SSLServerSocketFactory;
 
+/**
+ * <p>SSLServer class.</p>
+ *
+ * @author ranger
+ * @version $Id: $
+ */
 public class SSLServer extends SimpleServer{
     
+    /** Constant <code>DEFAULT_TESTING_PORT=7070</code> */
     public static final int DEFAULT_TESTING_PORT = 7070;
+    /** Constant <code>DEFAULT_PASSWORD="123456"</code> */
     public static final String DEFAULT_PASSWORD = "123456";
+    /** Constant <code>DEFAULT_PATH_TO_KEY_STORE="src/main/resources/org/opennms/netmgt/p"{trunked}</code> */
     public static final String DEFAULT_PATH_TO_KEY_STORE = "src/main/resources/org/opennms/netmgt/provision/server/mySrvKeystore";
+    /** Constant <code>DEFAULT_KEY_MANAGER_ALGORITHM="SunX509"</code> */
     public static final String DEFAULT_KEY_MANAGER_ALGORITHM = "SunX509";
+    /** Constant <code>DEFAULT_KEY_MANAGER_PROVIDER="SunJSSE"</code> */
     public static final String DEFAULT_KEY_MANAGER_PROVIDER = "SunJSSE";
+    /** Constant <code>DEFAULT_SSL_CONTEXT_PROTOCOL="SSL"</code> */
     public static final String DEFAULT_SSL_CONTEXT_PROTOCOL = "SSL";
     
     private int m_port = DEFAULT_TESTING_PORT;
@@ -29,6 +41,11 @@ public class SSLServer extends SimpleServer{
     private String m_keyManagerProvider = DEFAULT_KEY_MANAGER_PROVIDER;
     private String m_sslContextProtocol = DEFAULT_SSL_CONTEXT_PROTOCOL;    
     
+    /**
+     * <p>init</p>
+     *
+     * @throws java.lang.Exception if any.
+     */
     public void init() throws Exception {
         super.init();
         KeyManagerFactory kmf = KeyManagerFactory.getInstance(getKeyManagerAlgorithm(), getKeyManagerProvider());
@@ -55,6 +72,12 @@ public class SSLServer extends SimpleServer{
         onInit();
     }
     
+    /**
+     * <p>getRunnable</p>
+     *
+     * @return a {@link java.lang.Runnable} object.
+     * @throws java.lang.Exception if any.
+     */
     protected Runnable getRunnable() throws Exception {
         return new Runnable(){
             
@@ -87,50 +110,110 @@ public class SSLServer extends SimpleServer{
         };
     }
 
+    /**
+     * <p>setPort</p>
+     *
+     * @param port a int.
+     */
     public void setPort(int port) {
         m_port = port;
     }
 
+    /**
+     * <p>getPort</p>
+     *
+     * @return a int.
+     */
     public int getPort() {
         return m_port;
     }
 
+    /**
+     * <p>setPassword</p>
+     *
+     * @param password a {@link java.lang.String} object.
+     */
     public void setPassword(String password) {
         m_password = password;
     }
 
+    /**
+     * <p>getPassword</p>
+     *
+     * @return a {@link java.lang.String} object.
+     */
     public String getPassword() {
         return m_password;
     }
 
+    /**
+     * <p>setPathToKeyStore</p>
+     *
+     * @param pathToKeyStore a {@link java.lang.String} object.
+     */
     public void setPathToKeyStore(String pathToKeyStore) {
         m_pathToKeyStore = pathToKeyStore;
     }
 
+    /**
+     * <p>getPathToKeyStore</p>
+     *
+     * @return a {@link java.lang.String} object.
+     */
     public String getPathToKeyStore() {
         return m_pathToKeyStore;
     }
 
+    /**
+     * <p>setKeyManagerAlgorithm</p>
+     *
+     * @param keyManagerAlgorithm a {@link java.lang.String} object.
+     */
     public void setKeyManagerAlgorithm(String keyManagerAlgorithm) {
         m_keyManagerAlgorithm = keyManagerAlgorithm;
     }
 
+    /**
+     * <p>getKeyManagerAlgorithm</p>
+     *
+     * @return a {@link java.lang.String} object.
+     */
     public String getKeyManagerAlgorithm() {
         return m_keyManagerAlgorithm;
     }
 
+    /**
+     * <p>setKeyManagerProvider</p>
+     *
+     * @param keyManagerProvider a {@link java.lang.String} object.
+     */
     public void setKeyManagerProvider(String keyManagerProvider) {
         m_keyManagerProvider = keyManagerProvider;
     }
 
+    /**
+     * <p>getKeyManagerProvider</p>
+     *
+     * @return a {@link java.lang.String} object.
+     */
     public String getKeyManagerProvider() {
         return m_keyManagerProvider;
     }
 
+    /**
+     * <p>setSslContextProtocol</p>
+     *
+     * @param sslContextProtocol a {@link java.lang.String} object.
+     */
     public void setSslContextProtocol(String sslContextProtocol) {
         m_sslContextProtocol = sslContextProtocol;
     }
 
+    /**
+     * <p>getSslContextProtocol</p>
+     *
+     * @return a {@link java.lang.String} object.
+     */
     public String getSslContextProtocol() {
         return m_sslContextProtocol;
     }

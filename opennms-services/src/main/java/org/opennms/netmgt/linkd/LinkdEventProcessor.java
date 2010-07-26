@@ -130,6 +130,8 @@ final class LinkdEventProcessor implements EventListener, InitializingBean {
 
     /**
      * Return an id for this event listener
+     *
+     * @return a {@link java.lang.String} object.
      */
     public String getName() {
         return "Linkd:LinkdEventProcessor";
@@ -219,14 +221,12 @@ final class LinkdEventProcessor implements EventListener, InitializingBean {
 
 
     /**
+     * {@inheritDoc}
+     *
      * This method is invoked by the EventIpcManager when a new event is
      * available for processing. Currently only text based messages are
      * processed by this callback. Each message is examined for its Universal
      * Event Identifier and the appropriate action is taking based on each UEI.
-     * 
-     * @param event
-     *            The event.
-     * 
      */
     public void onEvent(Event event) {
         ThreadCategory log = ThreadCategory.getInstance(getClass());
@@ -275,15 +275,30 @@ final class LinkdEventProcessor implements EventListener, InitializingBean {
         }
     } // end onEvent()
 
+	/**
+	 * <p>afterPropertiesSet</p>
+	 *
+	 * @throws java.lang.Exception if any.
+	 */
 	public void afterPropertiesSet() throws Exception {
         Assert.state(m_eventMgr != null, "must set the eventMgr property");
         createMessageSelectorAndSubscribe();
 	}
     
+	/**
+	 * <p>getEventMgr</p>
+	 *
+	 * @return a {@link org.opennms.netmgt.eventd.EventIpcManager} object.
+	 */
 	public EventIpcManager getEventMgr() {
 		return m_eventMgr;
 	}
 
+	/**
+	 * <p>setEventMgr</p>
+	 *
+	 * @param mgr a {@link org.opennms.netmgt.eventd.EventIpcManager} object.
+	 */
 	public void setEventMgr(EventIpcManager mgr) {
 		m_eventMgr = mgr;
 	}

@@ -47,12 +47,16 @@ import org.springframework.beans.factory.InitializingBean;
 import org.springframework.util.Assert;
 
 /**
+ * <p>DatabaseReportPersister class.</p>
+ *
  * @author <a href="mailto:dj@opennms.org">DJ Gregor</a>
+ * @version $Id: $
  */
 public class DatabaseReportPersister implements ReportPersister, InitializingBean {
     private StatisticsReportDao m_statisticsReportDao;
     private ResourceReferenceDao m_resourceReferenceDao;
 
+    /** {@inheritDoc} */
     public void persist(ReportInstance report) {
         StatisticsReport dbReport = new StatisticsReport();
         dbReport.setName(report.getName());
@@ -89,23 +93,46 @@ public class DatabaseReportPersister implements ReportPersister, InitializingBea
         return resource;
     }
 
+    /**
+     * <p>afterPropertiesSet</p>
+     */
     public void afterPropertiesSet() {
         Assert.state(m_statisticsReportDao != null, "property statisticsReportDao must be set to a non-null value");
         Assert.state(m_resourceReferenceDao != null, "property resourceReferenceDao must be set to a non-null value");
     }
     
+    /**
+     * <p>getStatisticsReportDao</p>
+     *
+     * @return a {@link org.opennms.netmgt.dao.StatisticsReportDao} object.
+     */
     public StatisticsReportDao getStatisticsReportDao() {
         return m_statisticsReportDao;
     }
 
+    /**
+     * <p>setStatisticsReportDao</p>
+     *
+     * @param statisticsReportDao a {@link org.opennms.netmgt.dao.StatisticsReportDao} object.
+     */
     public void setStatisticsReportDao(StatisticsReportDao statisticsReportDao) {
         m_statisticsReportDao = statisticsReportDao;
     }
 
+    /**
+     * <p>getResourceReferenceDao</p>
+     *
+     * @return a {@link org.opennms.netmgt.dao.ResourceReferenceDao} object.
+     */
     public ResourceReferenceDao getResourceReferenceDao() {
         return m_resourceReferenceDao;
     }
 
+    /**
+     * <p>setResourceReferenceDao</p>
+     *
+     * @param resourceReferenceDao a {@link org.opennms.netmgt.dao.ResourceReferenceDao} object.
+     */
     public void setResourceReferenceDao(ResourceReferenceDao resourceReferenceDao) {
         m_resourceReferenceDao = resourceReferenceDao;
     }

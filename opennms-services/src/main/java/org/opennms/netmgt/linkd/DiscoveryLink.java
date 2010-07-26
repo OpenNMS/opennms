@@ -63,12 +63,13 @@ import org.opennms.netmgt.snmp.SnmpAgentConfig;
  * This class is designed to discover link among nodes using the collected and
  * the necessary SNMP information. When the class is initially constructed no
  * information is used.
- * 
+ *
  * @author <a href="mailto:antonio@opennms.it">Antonio Russo </a>
  * @author <a href="http://www.opennms.org">OpenNMS </a>
- *  
+ * @author <a href="mailto:antonio@opennms.it">Antonio Russo </a>
+ * @author <a href="http://www.opennms.org">OpenNMS </a>
+ * @version $Id: $
  */
-
 public final class DiscoveryLink implements ReadyRunnable {
 
 	private static final int SNMP_IF_TYPE_ETHERNET = 6;
@@ -164,9 +165,7 @@ public final class DiscoveryLink implements ReadyRunnable {
 	 * No synchronization is performed, so if this is used in a separate thread
 	 * context synchronization must be added.
 	 * </p>
-	 *  
 	 */
-
 	public void run() {
 
 		if (suspendCollection) {
@@ -435,7 +434,7 @@ public final class DiscoveryLink implements ReadyRunnable {
 						continue;
 					}
 
-					if (designatedRoot.equals("0000000000000000")) {
+					if (designatedRoot == null || designatedRoot.equals("0000000000000000")) {
 						log().warn("run: designated root is invalid. Skipping");
 						continue;
 					}
@@ -484,7 +483,7 @@ public final class DiscoveryLink implements ReadyRunnable {
 									+ " and with stp designated port "
 									+ stpPortDesignatedPort);
 
-						if (stpPortDesignatedBridge.equals("0000000000000000")
+						if (stpPortDesignatedBridge == null || stpPortDesignatedBridge.equals("0000000000000000")
 						        || stpPortDesignatedBridge.equals("")) {
 							log().warn("run: designated bridge is invalid "
 									+ stpPortDesignatedBridge);
@@ -499,7 +498,7 @@ public final class DiscoveryLink implements ReadyRunnable {
 							continue;
 						}
 
-						if (stpPortDesignatedPort.equals("0000")) {
+						if (stpPortDesignatedPort == null || stpPortDesignatedPort.equals("0000")) {
 							log().warn("run: designated port is invalid "
 									+ stpPortDesignatedPort);
 							continue;
@@ -725,7 +724,7 @@ public final class DiscoveryLink implements ReadyRunnable {
 										+ curBridgePort + " to bridge");
 
 							curNode.addBackBoneBridgePorts(curBridgePort);
-							bridgeNodes.put(new Integer(curNodeId), curNode);
+							bridgeNodes.put(curNodeId, curNode);
 
 							if (log().isDebugEnabled())
 								log().debug("run: backbone port found for node "
@@ -967,10 +966,7 @@ public final class DiscoveryLink implements ReadyRunnable {
 	 */
 
 	boolean isBridgeNode(int nodeid) {
-
-		Iterator<LinkableNode> ite = bridgeNodes.values().iterator();
-		while (ite.hasNext()) {
-			LinkableNode curNode = ite.next();
+	    for (final LinkableNode curNode : bridgeNodes.values()) {
 			if (nodeid == curNode.getNodeId())
 				return true;
 		}
@@ -984,10 +980,7 @@ public final class DiscoveryLink implements ReadyRunnable {
 	 */
 
 	boolean isRouterNode(int nodeid) {
-
-		Iterator<LinkableNode> ite = routerNodes.iterator();
-		while (ite.hasNext()) {
-			LinkableNode curNode = ite.next();
+	    for (final LinkableNode curNode : routerNodes) {
 			if (nodeid == curNode.getNodeId())
 				return true;
 		}
@@ -1018,10 +1011,7 @@ public final class DiscoveryLink implements ReadyRunnable {
 		if (macsOnBridge == null || macsOnBridge.isEmpty())
 			return true;
 
-		Iterator<String> macsonbridge_ite = macsOnBridge.iterator();
-
-		while (macsonbridge_ite.hasNext()) {
-			String macaddr = macsonbridge_ite.next();
+		for (final String macaddr : macsOnBridge) {
 			if (isMacIdentifierOfBridgeNode(macaddr)) return false;
 		}
 
@@ -1042,10 +1032,7 @@ public final class DiscoveryLink implements ReadyRunnable {
 		if (macsOnBridge2.isEmpty() || macsOnBridge1.isEmpty())
 			return false;
 
-		Iterator<String> macsonbridge1_ite = macsOnBridge1.iterator();
-
-		while (macsonbridge1_ite.hasNext()) {
-			String curMacOnBridge1 = macsonbridge1_ite.next();
+		for (final String curMacOnBridge1 : macsOnBridge1) {
 			// if mac address is bridge identifier of bridge 2 continue
 			
 			if (bridge2.isBridgeIdentifier(curMacOnBridge1)) {
@@ -1080,10 +1067,7 @@ public final class DiscoveryLink implements ReadyRunnable {
 		if (macsOnBridge2.isEmpty() || macsOnBridge1.isEmpty())
 			return null;
 
-		Iterator<String> macsonbridge1_ite = macsOnBridge1.iterator();
-
-		while (macsonbridge1_ite.hasNext()) {
-			String curMacOnBridge1 = macsonbridge1_ite.next();
+		for (final String curMacOnBridge1 : macsOnBridge1) {
 			if (bridge2.isBridgeIdentifier(curMacOnBridge1))
 				continue;
 			if (macsOnBridge2.contains(curMacOnBridge1))
@@ -1093,9 +1077,7 @@ public final class DiscoveryLink implements ReadyRunnable {
 	}
 
 	private boolean isMacIdentifierOfBridgeNode(String macAddress) {
-		Iterator<LinkableNode> ite = bridgeNodes.values().iterator();
-		while (ite.hasNext()) {
-			LinkableNode curNode = ite.next();
+	    for (final LinkableNode curNode : bridgeNodes.values()) {
 			if (curNode.isBridgeIdentifier(macAddress))
 				return true;
 		}
@@ -1108,26 +1090,18 @@ public final class DiscoveryLink implements ReadyRunnable {
 	 * @return Bridge Bridge Node if found else null
 	 */
 
-	private LinkableNode getNodeFromMacIdentifierOfBridgeNode(String macAddress) {
-		Iterator<LinkableNode> ite = bridgeNodes.values().iterator();
-		while (ite.hasNext()) {
-			LinkableNode curNode = ite.next();
-
+	private LinkableNode getNodeFromMacIdentifierOfBridgeNode(final String macAddress) {
+	    for (final LinkableNode curNode : bridgeNodes.values()) {
 			if (curNode.isBridgeIdentifier(macAddress))
 				return curNode;
 		}
 		return null;
 	}
 
-	private List<LinkableNode> getBridgesFromMacs(Set<String> macs) {
+	private List<LinkableNode> getBridgesFromMacs(final Set<String> macs) {
 		List<LinkableNode> bridges = new ArrayList<LinkableNode>();
-		Iterator<LinkableNode> ite = bridgeNodes.values().iterator();
-		while (ite.hasNext()) {
-			LinkableNode curNode = ite.next();
-
-			Iterator<String> sub_ite = curNode.getBridgeIdentifiers().iterator();
-			while (sub_ite.hasNext()) {
-				String curBridgeIdentifier = sub_ite.next();
+		for (final LinkableNode curNode : bridgeNodes.values()) {
+		    for (final String curBridgeIdentifier : curNode.getBridgeIdentifiers()) {
 				if (macs.contains((curBridgeIdentifier)))
 					bridges.add(curNode);
 			}
@@ -1135,24 +1109,18 @@ public final class DiscoveryLink implements ReadyRunnable {
 		return bridges;
 	}
 
-	private int getBridgePortOnEndBridge(LinkableNode startBridge,
-			LinkableNode endBridge) {
+	private int getBridgePortOnEndBridge(final LinkableNode startBridge, final LinkableNode endBridge) {
 
 		int port = -1;
-		Iterator<String> bridge_ident_ite = startBridge.getBridgeIdentifiers()
-				.iterator();
-		while (bridge_ident_ite.hasNext()) {
-			String curBridgeIdentifier = bridge_ident_ite.next();
+		for (final String curBridgeIdentifier : startBridge.getBridgeIdentifiers()) {
 			if (log().isDebugEnabled())
 				log()
 						.debug("getBridgePortOnEndBridge: parsing bridge identifier "
 								+ curBridgeIdentifier);
 			
 			if (endBridge.hasMacAddress(curBridgeIdentifier)) {
-				List<Integer> ports = endBridge.getBridgePortsFromMac(curBridgeIdentifier);
-				Iterator<Integer> ports_ite = ports.iterator();
-				while (ports_ite.hasNext()) {
-					port = ports_ite.next();
+			    for (final Integer p : endBridge.getBridgePortsFromMac(curBridgeIdentifier)) {
+			        port = p;
 					if (endBridge.isBackBoneBridgePort(port)) {
 						if (log().isDebugEnabled())
 							log()
@@ -1193,20 +1161,18 @@ public final class DiscoveryLink implements ReadyRunnable {
 	
 	/**
 	 * Return the Scheduler
-	 * 
-	 * @return
+	 *
+	 * @return a {@link org.opennms.netmgt.linkd.scheduler.Scheduler} object.
 	 */
-
 	public Scheduler getScheduler() {
 		return m_scheduler;
 	}
 
 	/**
 	 * Set the Scheduler
-	 * 
-	 * @param scheduler
+	 *
+	 * @param scheduler a {@link org.opennms.netmgt.linkd.scheduler.Scheduler} object.
 	 */
-
 	public void setScheduler(Scheduler scheduler) {
 		m_scheduler = scheduler;
 	}
@@ -1214,7 +1180,6 @@ public final class DiscoveryLink implements ReadyRunnable {
 	/**
 	 * This Method is called when DiscoveryLink is initialized
 	 */
-
 	public void schedule() {
 		if (m_scheduler == null)
 			throw new IllegalStateException(
@@ -1238,14 +1203,17 @@ public final class DiscoveryLink implements ReadyRunnable {
 	}
 
 	/**
+	 * <p>getInitialSleepTime</p>
+	 *
 	 * @return Returns the initial_sleep_time.
 	 */
-
 	public long getInitialSleepTime() {
 		return initial_sleep_time;
 	}
 
 	/**
+	 * <p>setInitialSleepTime</p>
+	 *
 	 * @param initial_sleep_time
 	 *            The initial_sleep_timeto set.
 	 */
@@ -1253,53 +1221,74 @@ public final class DiscoveryLink implements ReadyRunnable {
 		this.initial_sleep_time = initial_sleep_time;
 	}
 
+	/**
+	 * <p>isReady</p>
+	 *
+	 * @return a boolean.
+	 */
 	public boolean isReady() {
 		return true;
 	}
 
 	/**
+	 * <p>getDiscoveryInterval</p>
+	 *
 	 * @return Returns the discovery_link_interval.
 	 */
-
 	public long getDiscoveryInterval() {
 		return discovery_interval;
 	}
 
 	/**
+	 * <p>setSnmpPollInterval</p>
+	 *
 	 * @param interval
 	 *            The discovery_link_interval to set.
 	 */
-
 	public void setSnmpPollInterval(long interval) {
 		this.snmp_poll_interval = interval;
 	}
 
 	/**
+	 * <p>getSnmpPollInterval</p>
+	 *
 	 * @return Returns the discovery_link_interval.
 	 */
-
 	public long getSnmpPollInterval() {
 		return snmp_poll_interval;
 	}
 
 	/**
+	 * <p>setDiscoveryInterval</p>
+	 *
 	 * @param interval
 	 *            The discovery_link_interval to set.
 	 */
-
 	public void setDiscoveryInterval(long interval) {
 		this.discovery_interval = interval;
 	}
 
+	/**
+	 * <p>Getter for the field <code>links</code>.</p>
+	 *
+	 * @return an array of {@link org.opennms.netmgt.linkd.NodeToNodeLink} objects.
+	 */
 	public NodeToNodeLink[] getLinks() {
 		return links.toArray(new NodeToNodeLink[0]);
 	}
 
+	/**
+	 * <p>getMacLinks</p>
+	 *
+	 * @return an array of {@link org.opennms.netmgt.linkd.MacToNodeLink} objects.
+	 */
 	public MacToNodeLink[] getMacLinks() {
 		return maclinks.toArray(new MacToNodeLink[0]);
 	}
 
 	/**
+	 * <p>isSuspended</p>
+	 *
 	 * @return Returns the suspendCollection.
 	 */
 	public boolean isSuspended() {
@@ -1307,23 +1296,22 @@ public final class DiscoveryLink implements ReadyRunnable {
 	}
 
 	/**
-	 * @param suspendCollection
-	 *            The suspendCollection to set.
+	 * <p>suspend</p>
 	 */
-
 	public void suspend() {
 		this.suspendCollection = true;
 	}
 
 	/**
-	 * @param suspendCollection
-	 *            The suspendCollection to set.
+	 * <p>wakeUp</p>
 	 */
-
 	public void wakeUp() {
 		this.suspendCollection = false;
 	}
 
+	/**
+	 * <p>unschedule</p>
+	 */
 	public void unschedule() {
 		if (m_scheduler == null)
 			throw new IllegalStateException(
@@ -1393,7 +1381,7 @@ public final class DiscoveryLink implements ReadyRunnable {
 				node2, bridgeport2)) {
 
 			node1.addBackBoneBridgePorts(bridgeport1);
-			bridgeNodes.put(new Integer(node1.getNodeId()), node1);
+			bridgeNodes.put(node1.getNodeId(), node1);
 
 			node2.addBackBoneBridgePorts(bridgeport2);
 			bridgeNodes.put(node2.getNodeId(),node2);
@@ -1486,10 +1474,16 @@ public final class DiscoveryLink implements ReadyRunnable {
 		}
 	}
 	
+	/** {@inheritDoc} */
 	public boolean equals(ReadyRunnable r) {
 		return (r instanceof DiscoveryLink && this.getPackageName().equals(r.getPackageName()));
 	}
 	
+	/**
+	 * <p>getInfo</p>
+	 *
+	 * @return a {@link java.lang.String} object.
+	 */
 	public String getInfo() {
 		return " Ready Runnable Discovery Link discoveryUsingBridge/discoveryUsingCdp/discoveryUsingRoutes/package: "
 		+ discoveryUsingBridge() + "/"
@@ -1497,34 +1491,70 @@ public final class DiscoveryLink implements ReadyRunnable {
 		+ discoveryUsingRoutes() + "/"+ getPackageName();
 	}
 
+	/**
+	 * <p>discoveryUsingBridge</p>
+	 *
+	 * @return a boolean.
+	 */
 	public boolean discoveryUsingBridge() {
 		return discoveryUsingBridge;
 	}
 
+	/**
+	 * <p>Setter for the field <code>discoveryUsingBridge</code>.</p>
+	 *
+	 * @param discoveryUsingBridge a boolean.
+	 */
 	public void setDiscoveryUsingBridge(boolean discoveryUsingBridge) {
 		this.discoveryUsingBridge = discoveryUsingBridge;
 	}
 
+	/**
+	 * <p>discoveryUsingCdp</p>
+	 *
+	 * @return a boolean.
+	 */
 	public boolean discoveryUsingCdp() {
 		return discoveryUsingCdp;
 	}
 
+	/**
+	 * <p>Setter for the field <code>discoveryUsingCdp</code>.</p>
+	 *
+	 * @param discoveryUsingCdp a boolean.
+	 */
 	public void setDiscoveryUsingCdp(boolean discoveryUsingCdp) {
 		this.discoveryUsingCdp = discoveryUsingCdp;
 	}
 
+	/**
+	 * <p>discoveryUsingRoutes</p>
+	 *
+	 * @return a boolean.
+	 */
 	public boolean discoveryUsingRoutes() {
 		return discoveryUsingRoutes;
 	}
 
+	/**
+	 * <p>Setter for the field <code>discoveryUsingRoutes</code>.</p>
+	 *
+	 * @param discoveryUsingRoutes a boolean.
+	 */
 	public void setDiscoveryUsingRoutes(boolean discoveryUsingRoutes) {
 		this.discoveryUsingRoutes = discoveryUsingRoutes;
 	}
 
+	/**
+	 * <p>Getter for the field <code>packageName</code>.</p>
+	 *
+	 * @return a {@link java.lang.String} object.
+	 */
 	public String getPackageName() {
 		return packageName;
 	}
 
+	/** {@inheritDoc} */
 	public void setPackageName(String packageName) {
 		this.packageName = packageName;
 	}
@@ -1669,18 +1699,38 @@ public final class DiscoveryLink implements ReadyRunnable {
 		return macs;
 	}
 
+	/**
+	 * <p>isEnableDownloadDiscovery</p>
+	 *
+	 * @return a boolean.
+	 */
 	public boolean isEnableDownloadDiscovery() {
 		return enableDownloadDiscovery;
 	}
 
+	/**
+	 * <p>Setter for the field <code>enableDownloadDiscovery</code>.</p>
+	 *
+	 * @param enableDownloaddiscovery a boolean.
+	 */
 	public void setEnableDownloadDiscovery(boolean enableDownloaddiscovery) {
 		this.enableDownloadDiscovery = enableDownloaddiscovery;
 	}
 
+	/**
+	 * <p>isForceIpRouteDiscoveryOnEtherNet</p>
+	 *
+	 * @return a boolean.
+	 */
 	public boolean isForceIpRouteDiscoveryOnEtherNet() {
 		return forceIpRouteDiscoveryOnEtherNet;
 	}
 
+	/**
+	 * <p>Setter for the field <code>forceIpRouteDiscoveryOnEtherNet</code>.</p>
+	 *
+	 * @param forceIpRouteDiscoveryOnEtherNet a boolean.
+	 */
 	public void setForceIpRouteDiscoveryOnEtherNet(
 			boolean forceIpRouteDiscoveryOnEtherNet) {
 		this.forceIpRouteDiscoveryOnEtherNet = forceIpRouteDiscoveryOnEtherNet;

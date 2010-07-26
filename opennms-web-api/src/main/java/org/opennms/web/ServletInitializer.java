@@ -61,9 +61,12 @@ import org.opennms.netmgt.config.DataSourceFactory;
 /**
  * Encapsulates all initialization and configuration needed by the OpenNMS
  * servlets and JSPs.
- * 
+ *
  * @author <A HREF="mailto:larry@opennms.org">Lawrence Karnowski </A>
  * @author <A HREF="http://www.opennms.org/">OpenNMS </A>
+ * @author <A HREF="mailto:larry@opennms.org">Lawrence Karnowski </A>
+ * @author <A HREF="http://www.opennms.org/">OpenNMS </A>
+ * @version $Id: $
  */
 public class ServletInitializer extends Object {
     /**
@@ -94,17 +97,18 @@ public class ServletInitializer extends Object {
      * Initialize servlet and JSP configuration on the first invocation of this
      * method. All other invocations are ignored. This method is synchronized to
      * ensure only the first invocation performs the initialization.
-     * 
+     *
      * <p>
      * Call this method in the <code>init</code> method of your servlet or
      * JSP. It will read the servlet initialization parameters from the
      * <code>ServletConfig</code> and <code>ServletContext</code> and
      * OpenNMS configuration files.
      * </p>
-     * 
+     *
      * @param context
      *            the <code>ServletContext</code> instance in which your
      *            servlet is running
+     * @throws javax.servlet.ServletException if any.
      */
     public synchronized static void init(ServletContext context) throws ServletException {
         if (context == null) {
@@ -208,15 +212,16 @@ public class ServletInitializer extends Object {
      * Releases all shared resources on the first invocation of this method. All
      * other invocations are ignored. This method is synchronized to ensure only
      * the first invocation performs the destruction.
-     * 
+     *
      * <p>
      * Call this method in the <code>destroy</code> method of your servlet or
      * JSP.
      * </p>
-     * 
+     *
      * @param context
      *            the <code>ServletContext</code> instance in which your
      *            servlet is running
+     * @throws javax.servlet.ServletException if any.
      */
     public synchronized static void destroy(ServletContext context) throws ServletException {
         try {
@@ -232,8 +237,9 @@ public class ServletInitializer extends Object {
     /**
      * Return the absolute pathname of where OpenNMS's configuration can be
      * found.
-     * 
+     *
      * @deprecated Use {@link Vault#getHomeDir Vault.getHomeDir}instead.
+     * @return a {@link java.lang.String} object.
      */
     public static String getHomeDir() {
         return (Vault.getHomeDir());

@@ -45,20 +45,30 @@ import org.springframework.orm.hibernate3.HibernateCallback;
 import org.springframework.orm.hibernate3.HibernateTemplate;
 
 /**
- * @author brozow
+ * <p>HibernateFilterManager class.</p>
  *
+ * @author brozow
+ * @version $Id: $
  */
 public class HibernateFilterManager implements FilterManager {
     
     private HibernateTemplate m_template;
     
     
+    /**
+     * <p>setSessionFactory</p>
+     *
+     * @param sessionFactory a {@link org.hibernate.SessionFactory} object.
+     */
     public void setSessionFactory(SessionFactory sessionFactory) {
         m_template = new HibernateTemplate(sessionFactory);
     }
 
     /* (non-Javadoc)
      * @see org.opennms.netmgt.model.FilterManager#disableAuthorizationFilter()
+     */
+    /**
+     * <p>disableAuthorizationFilter</p>
      */
     public void disableAuthorizationFilter() {
         HibernateCallback<Object> cb = new HibernateCallback<Object>() {
@@ -75,6 +85,11 @@ public class HibernateFilterManager implements FilterManager {
 
     /* (non-Javadoc)
      * @see org.opennms.netmgt.model.FilterManager#enableAuthorizationFilter(java.lang.String[])
+     */
+    /**
+     * <p>enableAuthorizationFilter</p>
+     *
+     * @param authorizationGroups an array of {@link java.lang.String} objects.
      */
     public void enableAuthorizationFilter(final String[] authorizationGroups) {
         HibernateCallback<Object> cb = new HibernateCallback<Object>() {

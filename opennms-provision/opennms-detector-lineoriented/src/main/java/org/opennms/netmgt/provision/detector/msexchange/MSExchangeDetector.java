@@ -41,6 +41,12 @@ import org.springframework.context.annotation.Scope;
 import org.springframework.stereotype.Component;
 
 @Component
+/**
+ * <p>MSExchangeDetector class.</p>
+ *
+ * @author ranger
+ * @version $Id: $
+ */
 @Scope("prototype")
 public class MSExchangeDetector extends BasicDetector<LineOrientedRequest, MSExchangeResponse> {
     
@@ -53,12 +59,16 @@ public class MSExchangeDetector extends BasicDetector<LineOrientedRequest, MSExc
     private int m_pop3Port;
     private int m_imapPort;
     
+    /**
+     * <p>Constructor for MSExchangeDetector.</p>
+     */
     protected MSExchangeDetector() {
         super(SERVICE_NAME, 0);
         setPop3Port(DEFAULT_POP3_PORT);
         setImapPort(DEFAULT_IMAP_PORT);
     }
 
+    /** {@inheritDoc} */
     @Override
     protected Client<LineOrientedRequest, MSExchangeResponse> getClient() {
         MSExchangeDetectorClient client = new MSExchangeDetectorClient();
@@ -67,11 +77,18 @@ public class MSExchangeDetector extends BasicDetector<LineOrientedRequest, MSExc
         return client;
     }
 
+    /** {@inheritDoc} */
     @Override
     protected void onInit() {
         expectBanner(find(DEFAULT_BANNER));
     }
     
+    /**
+     * <p>find</p>
+     *
+     * @param regex a {@link java.lang.String} object.
+     * @return a {@link org.opennms.netmgt.provision.support.ClientConversation.ResponseValidator} object.
+     */
     public ResponseValidator<MSExchangeResponse> find(final String regex){
         return new ResponseValidator<MSExchangeResponse>() {
 
@@ -83,18 +100,38 @@ public class MSExchangeDetector extends BasicDetector<LineOrientedRequest, MSExc
         };
     }
 
+    /**
+     * <p>setPop3Port</p>
+     *
+     * @param pop3Port a int.
+     */
     public void setPop3Port(int pop3Port) {
         m_pop3Port = pop3Port;
     }
 
+    /**
+     * <p>getPop3Port</p>
+     *
+     * @return a int.
+     */
     public int getPop3Port() {
         return m_pop3Port;
     }
 
+    /**
+     * <p>setImapPort</p>
+     *
+     * @param imapPort a int.
+     */
     public void setImapPort(int imapPort) {
         m_imapPort = imapPort;
     }
 
+    /**
+     * <p>getImapPort</p>
+     *
+     * @return a int.
+     */
     public int getImapPort() {
         return m_imapPort;
     }

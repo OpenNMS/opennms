@@ -15,7 +15,7 @@
   </description>
   <properties>
     <opennmsJoesnmpVersion>2.0.1</opennmsJoesnmpVersion>
-    <opennmsSnmpApiVersion>2.0.1</opennmsSnmpApiVersion>
+    <opennmsSnmpApiVersion>2.0.4</opennmsSnmpApiVersion>
   </properties>
 
 
@@ -43,12 +43,7 @@
     <dependency>
       <groupId>org.snmp4j</groupId>
       <artifactId>snmp4j</artifactId>
-      <version>1.9.2a</version>
-    </dependency>
-    <dependency>
-      <groupId>org.snmp4j</groupId>
-      <artifactId>snmp4j-agent</artifactId>
-      <version>1.2d</version>
+      <version>1.11.1</version>
     </dependency>
   </dependencies>
   <repositories>
@@ -58,6 +53,13 @@
       <id>opennms-repo</id>
       <name>OpenNMS Repository</name>
       <url>http://repo.opennms.org/maven2</url>
+    </repository>
+    <repository>
+      <snapshots><enabled>false</enabled></snapshots>
+      <releases><enabled>true</enabled></releases>
+      <id>snmp4j-repo</id>
+      <name>SNMP4J Maven Repository</name>
+      <url>https://server.oosnmp.net/dist/release</url>
     </repository>
   </repositories>
 </project>

@@ -41,18 +41,24 @@ import org.opennms.netmgt.provision.support.Client;
 import org.opennms.netmgt.provision.support.ssh.SshMonitor;
 
 /**
- * @author thedesloge
+ * <p>SshClient class.</p>
  *
+ * @author thedesloge
+ * @version $Id: $
  */
 public class SshClient implements Client<NullRequest, SshResponse> {
     
     private boolean m_isAvailable = false;
     private Map<String, Object> m_parameters = new HashMap<String, Object>();
     
+    /**
+     * <p>close</p>
+     */
     public void close() {
         
     }
 
+    /** {@inheritDoc} */
     public void connect(InetAddress address, int port, int timeout) throws IOException, Exception {
         SshMonitor m = new SshMonitor();
         m_parameters.put("port", port);
@@ -60,24 +66,54 @@ public class SshClient implements Client<NullRequest, SshResponse> {
         m_isAvailable = m.poll(address, m_parameters).isAvailable();
     }
 
+    /**
+     * <p>receiveBanner</p>
+     *
+     * @return a {@link org.opennms.netmgt.provision.detector.ssh.response.SshResponse} object.
+     * @throws java.io.IOException if any.
+     * @throws java.lang.Exception if any.
+     */
     public SshResponse receiveBanner() throws IOException, Exception {
         SshResponse response = new SshResponse();
         response.receive(m_isAvailable);
         return response;
     }
 
+    /**
+     * <p>sendRequest</p>
+     *
+     * @param request a {@link org.opennms.netmgt.provision.detector.ssh.request.NullRequest} object.
+     * @return a {@link org.opennms.netmgt.provision.detector.ssh.response.SshResponse} object.
+     * @throws java.io.IOException if any.
+     * @throws java.lang.Exception if any.
+     */
     public SshResponse sendRequest(NullRequest request) throws IOException, Exception {
         return null;
     }
     
+    /**
+     * <p>setBanner</p>
+     *
+     * @param banner a {@link java.lang.String} object.
+     */
     public void setBanner(String banner) {
         m_parameters.put("banner", banner);
     }
     
+    /**
+     * <p>setMatch</p>
+     *
+     * @param match a {@link java.lang.String} object.
+     */
     public void setMatch(String match) {
         m_parameters.put("match", match);
     }
     
+    /**
+     * <p>setClientBanner</p>
+     *
+     * @param clientBanner a {@link java.lang.String} object.
+     */
     public void setClientBanner(String clientBanner) {
         m_parameters.put("client-banner", clientBanner);
     }

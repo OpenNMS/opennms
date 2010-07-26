@@ -42,6 +42,11 @@ import java.util.List;
 import java.util.Map;
 
 /**
+ * <p>View class.</p>
+ *
+ * @author ranger
+ * @version $Id: $
+ * @since 1.8.1
  */
 public class View implements Cloneable {
     /**
@@ -73,6 +78,7 @@ public class View implements Cloneable {
     private List<Category> m_categories;
 
     /**
+     * <p>Constructor for View.</p>
      */
     public View() {
         m_userMembers = new ArrayList<String>();
@@ -81,6 +87,9 @@ public class View implements Cloneable {
     }
 
     /**
+     * <p>clone</p>
+     *
+     * @return a {@link java.lang.Object} object.
      */
     public Object clone() {
         try {
@@ -112,18 +121,27 @@ public class View implements Cloneable {
     }
 
     /**
+     * <p>setViewName</p>
+     *
+     * @param aValue a {@link java.lang.String} object.
      */
     public void setViewName(String aValue) {
         m_viewName = aValue;
     }
 
     /**
+     * <p>setViewTitle</p>
+     *
+     * @param aValue a {@link java.lang.String} object.
      */
     public void setViewTitle(String aValue) {
         m_viewTitle = aValue;
     }
 
     /**
+     * <p>setViewComments</p>
+     *
+     * @param aValue a {@link java.lang.String} object.
      */
     public void setViewComments(String aValue) {
         m_viewComments = aValue;
@@ -131,7 +149,7 @@ public class View implements Cloneable {
 
     /**
      * This method sets the common rule for the view
-     * 
+     *
      * @param common
      *            the common rule.
      */
@@ -141,7 +159,7 @@ public class View implements Cloneable {
 
     /**
      * This method returns the common rule for the view
-     * 
+     *
      * @return the common rule.
      */
     public String getCommon() {
@@ -149,72 +167,106 @@ public class View implements Cloneable {
     }
 
     /**
+     * <p>addCategory</p>
+     *
+     * @param aCategory a {@link org.opennms.web.admin.views.parsers.Category} object.
      */
     public void addCategory(Category aCategory) {
         m_categories.add(aCategory);
     }
 
     /**
+     * <p>getViewName</p>
+     *
+     * @return a {@link java.lang.String} object.
      */
     public String getViewName() {
         return m_viewName;
     }
 
     /**
+     * <p>getViewTitle</p>
+     *
+     * @return a {@link java.lang.String} object.
      */
     public String getViewTitle() {
         return m_viewTitle;
     }
 
     /**
+     * <p>getViewComments</p>
+     *
+     * @return a {@link java.lang.String} object.
      */
     public String getViewComments() {
         return m_viewComments;
     }
 
     /**
+     * <p>getUserMembers</p>
+     *
+     * @return a {@link java.util.List} object.
      */
     public List<String> getUserMembers() {
         return m_userMembers;
     }
 
     /**
+     * <p>setUserMembers</p>
+     *
+     * @param users a {@link java.util.List} object.
      */
     public void setUserMembers(List<String> users) {
         m_userMembers = users;
     }
 
     /**
+     * <p>addUserMember</p>
+     *
+     * @param aMember a {@link java.lang.String} object.
      */
     public void addUserMember(String aMember) {
         m_userMembers.add(aMember);
     }
 
     /**
+     * <p>removeUserMember</p>
+     *
+     * @param aMember a {@link java.lang.String} object.
      */
     public void removeUserMember(String aMember) {
         m_userMembers.remove(aMember);
     }
 
     /**
+     * <p>clearUserMembers</p>
      */
     public void clearUserMembers() {
         m_userMembers.clear();
     }
 
     /**
+     * <p>getGroupMembers</p>
+     *
+     * @return a {@link java.util.List} object.
      */
     public List<String> getGroupMembers() {
         return m_groupMembers;
     }
 
     /**
+     * <p>setGroupMembers</p>
+     *
+     * @param groups a {@link java.util.List} object.
      */
     public void setGroupMembers(List<String> groups) {
         m_groupMembers = groups;
     }
 
     /**
+     * <p>getMembers</p>
+     *
+     * @return a {@link java.util.List} object.
      */
     public List<String> getMembers() {
         List<String> all = new ArrayList<String>();
@@ -226,42 +278,63 @@ public class View implements Cloneable {
     }
 
     /**
+     * <p>addGroupMember</p>
+     *
+     * @param aMember a {@link java.lang.String} object.
      */
     public void addGroupMember(String aMember) {
         m_groupMembers.add(aMember);
     }
 
     /**
+     * <p>removeGroupMember</p>
+     *
+     * @param aMember a {@link java.lang.String} object.
      */
     public void removeGroupMember(String aMember) {
         m_groupMembers.remove(aMember);
     }
 
     /**
+     * <p>clearGroupMembers</p>
      */
     public void clearGroupMembers() {
         m_groupMembers.clear();
     }
 
     /**
+     * <p>hasUserMember</p>
+     *
+     * @param name a {@link java.lang.String} object.
+     * @return a boolean.
      */
     public boolean hasUserMember(String name) {
         return m_userMembers.contains(name);
     }
 
     /**
+     * <p>hasGroupMember</p>
+     *
+     * @param name a {@link java.lang.String} object.
+     * @return a boolean.
      */
     public boolean hasGroupMember(String name) {
         return m_groupMembers.contains(name);
     }
 
     /**
+     * <p>getCategories</p>
+     *
+     * @return a {@link java.util.List} object.
      */
     public List<Category> getCategories() {
         return m_categories;
     }
 
     /**
+     * <p>getCategoriesMap</p>
+     *
+     * @return a {@link java.util.Map} object.
      */
     public Map<String, Category> getCategoriesMap() {
         Map<String, Category> categoriesMap = new HashMap<String, Category>();
@@ -274,12 +347,18 @@ public class View implements Cloneable {
     }
 
     /**
+     * <p>setCategories</p>
+     *
+     * @param categories a {@link java.util.List} object.
      */
     public void setCategories(List<Category> categories) {
         m_categories = categories;
     }
 
     /**
+     * <p>setCategories</p>
+     *
+     * @param categories a {@link java.util.Map} object.
      */
     public void setCategories(Map<String, Category> categories) {
         m_categories.clear();
@@ -290,6 +369,9 @@ public class View implements Cloneable {
     }
 
     /**
+     * <p>getCategoryCount</p>
+     *
+     * @return a int.
      */
     public int getCategoryCount() {
         return m_categories.size();

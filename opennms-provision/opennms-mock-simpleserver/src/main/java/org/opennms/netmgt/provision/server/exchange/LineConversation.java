@@ -34,8 +34,10 @@ import java.util.HashMap;
 import java.util.Map;
 
 /**
- * @author Donald Desloge
+ * <p>LineConversation class.</p>
  *
+ * @author Donald Desloge
+ * @version $Id: $
  */
 public class LineConversation {
     
@@ -44,41 +46,86 @@ public class LineConversation {
     private String m_closeRequest;
     private String m_closeResponse;
     
+    /**
+     * <p>setBanner</p>
+     *
+     * @param banner a {@link java.lang.String} object.
+     */
     public void setBanner(String banner) {
         m_banner = banner;
     }
     
+    /**
+     * <p>getBanner</p>
+     *
+     * @return a {@link java.lang.String} object.
+     */
     public String getBanner() {
         return m_banner;
     }
     
+    /**
+     * <p>setExpectedClose</p>
+     *
+     * @param closeRequest a {@link java.lang.String} object.
+     */
     public void setExpectedClose(String closeRequest) {
         m_closeRequest = closeRequest;
     }
     
+    /**
+     * <p>setExpectedClose</p>
+     *
+     * @param closeRequest a {@link java.lang.String} object.
+     * @param closeResponse a {@link java.lang.String} object.
+     */
     public void setExpectedClose(String closeRequest, String closeResponse) {
         m_closeRequest = closeRequest;
         m_closeResponse = closeResponse;
     }
     
+    /**
+     * <p>getExpectedClose</p>
+     *
+     * @return a {@link java.lang.String} object.
+     */
     public String getExpectedClose() {
         return m_closeRequest;
     }
     
+    /**
+     * <p>getExpectedCloseResponse</p>
+     *
+     * @return a {@link java.lang.String} object.
+     */
     public String getExpectedCloseResponse() {
         return m_closeResponse;
     }
     
+    /**
+     * <p>addRequestHandler</p>
+     *
+     * @param request a {@link java.lang.String} object.
+     * @param response a {@link java.lang.String} object.
+     */
     public void addRequestHandler(String request, String response){
         m_responseMap.put(request, response);
     }
     
+    /**
+     * <p>getResponse</p>
+     *
+     * @param request a {@link java.lang.String} object.
+     * @return a {@link java.lang.String} object.
+     */
     public String getResponse(String request) {
         return m_responseMap.get(request);
     }
 
     /**
-     * @return
+     * <p>hasBanner</p>
+     *
+     * @return a boolean.
      */
     public boolean hasBanner() {
         return m_banner != null;

@@ -38,6 +38,12 @@ import java.sql.Statement;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
+/**
+ * <p>Trigger class.</p>
+ *
+ * @author ranger
+ * @version $Id: $
+ */
 public class Trigger {
 
     private String m_name;
@@ -52,6 +58,14 @@ public class Trigger {
                         + "ON (\\S+) FOR EACH ROW\\s+"
                         + "EXECUTE PROCEDURE (\\S+)\\(\\));");
 
+    /**
+     * <p>Constructor for Trigger.</p>
+     *
+     * @param name a {@link java.lang.String} object.
+     * @param table a {@link java.lang.String} object.
+     * @param storedProcedure a {@link java.lang.String} object.
+     * @param sql a {@link java.lang.String} object.
+     */
     public Trigger(String name, String table, String storedProcedure, String sql) {
         m_name = name;
         m_table = table;
@@ -59,6 +73,12 @@ public class Trigger {
         m_sql = sql;
     }
     
+    /**
+     * <p>findTriggerInString</p>
+     *
+     * @param create a {@link java.lang.String} object.
+     * @return a {@link org.opennms.netmgt.dao.db.Trigger} object.
+     */
     public static Trigger findTriggerInString(String create) {
         Matcher m = m_pattern.matcher(create.toString());
         if (!m.find()) {
@@ -73,6 +93,13 @@ public class Trigger {
         return new Trigger(name, table, storedProcedure, sql);
     }
     
+    /**
+     * <p>isOnDatabase</p>
+     *
+     * @param connection a {@link java.sql.Connection} object.
+     * @return a boolean.
+     * @throws java.sql.SQLException if any.
+     */
     public boolean isOnDatabase(Connection connection) throws SQLException {
         boolean exists;
     
@@ -96,6 +123,12 @@ public class Trigger {
         return exists;
     }
 
+    /**
+     * <p>removeFromDatabase</p>
+     *
+     * @param connection a {@link java.sql.Connection} object.
+     * @throws java.sql.SQLException if any.
+     */
     public void removeFromDatabase(Connection connection) throws SQLException {
         Statement st = connection.createStatement();
         try {
@@ -105,6 +138,12 @@ public class Trigger {
         }
     }
     
+    /**
+     * <p>addToDatabase</p>
+     *
+     * @param connection a {@link java.sql.Connection} object.
+     * @throws java.sql.SQLException if any.
+     */
     public void addToDatabase(Connection connection) throws SQLException {
         Statement st = connection.createStatement();
         try {
@@ -115,18 +154,38 @@ public class Trigger {
     }
 
 
+    /**
+     * <p>getName</p>
+     *
+     * @return a {@link java.lang.String} object.
+     */
     public String getName() {
         return m_name;
     }
 
+    /**
+     * <p>getSql</p>
+     *
+     * @return a {@link java.lang.String} object.
+     */
     public String getSql() {
         return m_sql;
     }
 
+    /**
+     * <p>getStoredProcedure</p>
+     *
+     * @return a {@link java.lang.String} object.
+     */
     public String getStoredProcedure() {
         return m_storedProcedure;
     }
 
+    /**
+     * <p>getTable</p>
+     *
+     * @return a {@link java.lang.String} object.
+     */
     public String getTable() {
         return m_table;
     }

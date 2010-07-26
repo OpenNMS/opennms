@@ -44,18 +44,28 @@ import org.springframework.context.annotation.Scope;
 import org.springframework.stereotype.Component;
 
 @Component
+/**
+ * <p>DhcpDetector class.</p>
+ *
+ * @author ranger
+ * @version $Id: $
+ */
 @Scope("prototype")
 public class DhcpDetector extends BasicDetector<DhcpRequest, DhcpResponse> {
     
     private static final int DEFAULT_RETRY = 0;
     private static final int DEFAULT_TIMEOUT = 3000;
     
+    /**
+     * <p>Constructor for DhcpDetector.</p>
+     */
     public DhcpDetector() {
         super("DHCP", 0);
         setTimeout(DEFAULT_TIMEOUT);
         setRetries(DEFAULT_RETRY);
     }
 
+    /** {@inheritDoc} */
     @Override
     protected void onInit() {
         expectBanner(responseTimeGreaterThan(-1));
@@ -71,6 +81,7 @@ public class DhcpDetector extends BasicDetector<DhcpRequest, DhcpResponse> {
         };
     }
 
+    /** {@inheritDoc} */
     @Override
     protected Client<DhcpRequest, DhcpResponse> getClient() {
         DhcpClient client = new DhcpClient();

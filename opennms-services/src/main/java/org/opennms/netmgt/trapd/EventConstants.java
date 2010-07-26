@@ -42,39 +42,65 @@ import org.opennms.core.utils.Base64;
 import org.opennms.netmgt.snmp.SnmpObjId;
 import org.opennms.netmgt.snmp.SnmpValue;
 
+/**
+ * <p>EventConstants class.</p>
+ *
+ * @author ranger
+ * @version $Id: $
+ */
 public class EventConstants extends Object {
 
+    /** Constant <code>TYPE_STRING="string"</code> */
     public final static String TYPE_STRING = "string";
 
+    /** Constant <code>TYPE_INT="int"</code> */
     public final static String TYPE_INT = "int";
 
+    /** Constant <code>TYPE_SNMP_OCTET_STRING="OctetString"</code> */
     public final static String TYPE_SNMP_OCTET_STRING = "OctetString";
 
+    /** Constant <code>TYPE_SNMP_INT32="Int32"</code> */
     public final static String TYPE_SNMP_INT32 = "Int32";
 
+    /** Constant <code>TYPE_SNMP_NULL="Null"</code> */
     public final static String TYPE_SNMP_NULL = "Null";
 
+    /** Constant <code>TYPE_SNMP_OBJECT_IDENTIFIER="ObjectIdentifier"</code> */
     public final static String TYPE_SNMP_OBJECT_IDENTIFIER = "ObjectIdentifier";
 
+    /** Constant <code>TYPE_SNMP_IPADDRESS="IpAddress"</code> */
     public final static String TYPE_SNMP_IPADDRESS = "IpAddress";
 
+    /** Constant <code>TYPE_SNMP_TIMETICKS="TimeTicks"</code> */
     public final static String TYPE_SNMP_TIMETICKS = "TimeTicks";
 
+    /** Constant <code>TYPE_SNMP_COUNTER32="Counter32"</code> */
     public final static String TYPE_SNMP_COUNTER32 = "Counter32";
 
+    /** Constant <code>TYPE_SNMP_GAUGE32="Gauge32"</code> */
     public final static String TYPE_SNMP_GAUGE32 = "Gauge32";
 
+    /** Constant <code>TYPE_SNMP_OPAQUE="Opaque"</code> */
     public final static String TYPE_SNMP_OPAQUE = "Opaque";
 
+    /** Constant <code>TYPE_SNMP_SEQUENCE="Sequence"</code> */
     public final static String TYPE_SNMP_SEQUENCE = "Sequence";
 
+    /** Constant <code>TYPE_SNMP_COUNTER64="Counter64"</code> */
     public final static String TYPE_SNMP_COUNTER64 = "Counter64";
 
+    /** Constant <code>XML_ENCODING_TEXT="text"</code> */
     public final static String XML_ENCODING_TEXT = "text";
 
+    /** Constant <code>XML_ENCODING_BASE64="base64"</code> */
     public final static String XML_ENCODING_BASE64 = "base64";
-    
+
+    /** Constant <code>XML_ENCODING_MAC_ADDRESS="macAddress"</code> */
+    public static final String XML_ENCODING_MAC_ADDRESS = "macAddress";
+
+    /** Constant <code>OID_SNMP_IFINDEX</code> */
     public final static SnmpObjId OID_SNMP_IFINDEX = SnmpObjId.get(".1.3.6.1.2.1.2.2.1.1");
+
 
     /** Empty, private constructor so this object cannot be instantiated. */
     private EventConstants() {
@@ -83,7 +109,10 @@ public class EventConstants extends Object {
     /**
      * Converts the value of the instance to a string representation in the
      * correct encoding system.
-     * 
+     *
+     * @param encoding a {@link java.lang.String} object.
+     * @param value a {@link java.lang.Object} object.
+     * @return a {@link java.lang.String} object.
      */
     public static String toString(String encoding, Object value) {
         if (encoding == null || value == null) {
@@ -115,6 +144,17 @@ public class EventConstants extends Object {
             else if (value instanceof SnmpValue) {
                 SnmpValue snmpValue = (SnmpValue)value;
                 result = new String(Base64.encodeBase64(snmpValue.getBytes()));
+            }
+        } else if (XML_ENCODING_MAC_ADDRESS.equals(encoding)) {
+            if (value instanceof SnmpValue) {
+                SnmpValue snmpValue = (SnmpValue)value;
+                StringBuffer macAddress = new StringBuffer();
+                byte[] bytes = snmpValue.getBytes();
+                for (int i = 0; i < bytes.length; i++) {
+                    if (i > 0) macAddress.append(":");
+                    macAddress.append(String.format("%02X", bytes[i]));
+                }
+                result = macAddress.toString();
             }
         }
         

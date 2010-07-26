@@ -37,33 +37,59 @@ import org.opennms.netmgt.provision.support.Client;
 import org.opennms.netmgt.provision.support.ClientConversation.ResponseValidator;
 
 /**
- * @author Donald Desloge
+ * <p>Abstract MultilineOrientedDetector class.</p>
  *
+ * @author Donald Desloge
+ * @version $Id: $
  */
 public abstract class MultilineOrientedDetector extends BasicDetector<LineOrientedRequest, MultilineOrientedResponse> {
 
+    /**
+     * <p>Constructor for MultilineOrientedDetector.</p>
+     *
+     * @param serviceName a {@link java.lang.String} object.
+     * @param port a int.
+     */
     protected MultilineOrientedDetector(String serviceName, int port) {
         super(serviceName, port);
     }
     
     /**
-     * @param port
-     * @param timeout
-     * @param retries
+     * <p>Constructor for MultilineOrientedDetector.</p>
+     *
+     * @param port a int.
+     * @param timeout a int.
+     * @param retries a int.
+     * @param serviceName a {@link java.lang.String} object.
      */
     protected MultilineOrientedDetector(String serviceName, int port, int timeout, int retries) {
         super(serviceName, port, timeout, retries);
     }
     
+    /**
+     * <p>request</p>
+     *
+     * @param command a {@link java.lang.String} object.
+     * @return a {@link org.opennms.netmgt.provision.detector.simple.request.LineOrientedRequest} object.
+     */
     protected LineOrientedRequest request(String command) {
         return new LineOrientedRequest(command);
     }
     
+    /**
+     * <p>expectClose</p>
+     */
     protected void expectClose() {
         send(LineOrientedRequest.Null, equals(null));
         
     }
     
+    /**
+     * <p>equals</p>
+     *
+     * @param pattern a {@link java.lang.String} object.
+     * @return a {@link org.opennms.netmgt.provision.support.ClientConversation.ResponseValidator} object.
+     */
     public ResponseValidator<MultilineOrientedResponse> equals(final String pattern) {
         return new ResponseValidator<MultilineOrientedResponse>() {
             
@@ -74,6 +100,12 @@ public abstract class MultilineOrientedDetector extends BasicDetector<LineOrient
         };
     }
     
+    /**
+     * <p>startsWith</p>
+     *
+     * @param pattern a {@link java.lang.String} object.
+     * @return a {@link org.opennms.netmgt.provision.support.ClientConversation.ResponseValidator} object.
+     */
     public ResponseValidator<MultilineOrientedResponse> startsWith(final String pattern){
         return new ResponseValidator<MultilineOrientedResponse>(){
 
@@ -84,6 +116,7 @@ public abstract class MultilineOrientedDetector extends BasicDetector<LineOrient
         };
     }
 
+    /** {@inheritDoc} */
     @Override
     protected Client<LineOrientedRequest, MultilineOrientedResponse> getClient() {
         return new MultilineOrientedClient();

@@ -47,10 +47,18 @@ import org.opennms.web.WebSecurityUtils;
 import org.springframework.web.servlet.ModelAndView;
 import org.springframework.web.servlet.mvc.AbstractController;
 
+/**
+ * <p>DownloadReportController class.</p>
+ *
+ * @author ranger
+ * @version $Id: $
+ * @since 1.8.1
+ */
 public class DownloadReportController extends AbstractController {
 
     private ReportStoreService m_reportStoreService;
 
+    /** {@inheritDoc} */
     @Override
     protected ModelAndView handleRequestInternal(HttpServletRequest request,
             HttpServletResponse response) throws Exception {
@@ -90,6 +98,11 @@ public class DownloadReportController extends AbstractController {
         return null;
     }
     
+    /**
+     * <p>setReportStoreService</p>
+     *
+     * @param reportStoreService a {@link org.opennms.reporting.core.svclayer.ReportStoreService} object.
+     */
     public void setReportStoreService(ReportStoreService reportStoreService) {
         m_reportStoreService = reportStoreService;
     }

@@ -136,9 +136,11 @@ final class TcpServer implements Runnable {
     /**
      * Constructs a new instance of an server to handle incomming tcp
      * connections.
-     * 
+     *
      * @param parent
      *            The parent fiber
+     * @param handlers a {@link java.util.List} object.
+     * @throws java.io.IOException if any.
      */
     public TcpServer(Fiber parent, List<EventHandler> handlers) throws IOException {
         this(parent, handlers, TCP_PORT, InetAddress.getByName(DEFAULT_IP_ADDRESS));
@@ -147,12 +149,14 @@ final class TcpServer implements Runnable {
     /**
      * Constructs a new instance of an server to handle incomming tcp
      * connections.
-     * 
+     *
      * @param parent
      *            The parent fiber
      * @param port
      *            The port to listen on.
      * @param address TODO
+     * @param handlers a {@link java.util.List} object.
+     * @throws java.io.IOException if any.
      */
     public TcpServer(Fiber parent, List<EventHandler> handlers, int port, InetAddress address) throws IOException {
         m_parent = parent;
@@ -177,6 +181,8 @@ final class TcpServer implements Runnable {
     /**
      * This is called inform the current execution of this object is stopped.
      * Once called the object cannot be reused in another thread.
+     *
+     * @throws java.lang.InterruptedException if any.
      */
     public void stop() throws InterruptedException {
         log().debug("stop method invoked");
@@ -232,6 +238,8 @@ final class TcpServer implements Runnable {
 
     /**
      * Returns true if this runnable is executing.
+     *
+     * @return a boolean.
      */
     public boolean isAlive() {
         boolean rc = false;
@@ -388,10 +396,20 @@ final class TcpServer implements Runnable {
         log().debug("TCP Server Shutdown");
     }
 
+    /**
+     * <p>setLogPrefix</p>
+     *
+     * @param prefix a {@link java.lang.String} object.
+     */
     public void setLogPrefix(String prefix) {
         m_logPrefix = prefix;
     }
 
+    /**
+     * <p>setEventsPerConnection</p>
+     *
+     * @param number a int.
+     */
     public void setEventsPerConnection(int number) {
         m_recsPerConn = number;
     }

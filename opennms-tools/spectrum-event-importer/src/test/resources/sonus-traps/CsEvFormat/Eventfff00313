@@ -1,0 +1,18 @@
+{d "%w- %d %m-, %Y - %T"} - A "mmTrapSffC" event has occurred, from {t} device, named {m}.
+
+"Critical Alert: Single Fan failure."
+
+spTrapDateTime = {S 1}
+spTrapAppId = {S 2}
+spTrapSpTxtId = {S 3}
+spTrapSysUuid = {S 4}
+spTrapSysSern = {S 5}
+spTrapAppType = {I 6}
+spTrapPriority = {I 7}
+spTrapMsgText = {S 8}
+spTrapHostContact = {S 9}
+spTrapHostLocation = {S 10}
+spTrapBladeName = {S 11}
+spTrapBladeSern = {S 12}
+spTrapBladeUuid = {S 13}
+(event [{e}])

@@ -39,10 +39,11 @@ package org.opennms.netmgt.linkd;
 import java.net.InetAddress;
 
 /**
- * @author antonio
+ * <p>CdpInterface class.</p>
  *
+ * @author antonio
+ * @version $Id: $
  */
-
 public class CdpInterface {
 	
 	/**
@@ -62,48 +63,67 @@ public class CdpInterface {
 	}
 	
 	/**
+	 * <p>Getter for the field <code>cdpIfIndex</code>.</p>
+	 *
 	 * @return Returns the cdpIfIndex.
 	 */
 	public int getCdpIfIndex() {
 		return cdpIfIndex;
 	}
 	/**
+	 * <p>Getter for the field <code>cdpTargetIfIndex</code>.</p>
+	 *
 	 * @return Returns the cdpTargetDevicePort.
 	 */
 	public int getCdpTargetIfIndex() {
 		return cdpTargetIfIndex;
 	}
 	/**
-	 * @param cdpTargetDevicePort The cdpTargetDevicePort to set.
+	 * <p>Setter for the field <code>cdpTargetIfIndex</code>.</p>
+	 *
+	 * @param ifindex a int.
 	 */
 	public void setCdpTargetIfIndex(int ifindex) {
 		this.cdpTargetIfIndex = ifindex;
 	}
 	/**
+	 * <p>Getter for the field <code>cdpTargetIpAddr</code>.</p>
+	 *
 	 * @return Returns the cdpTargetIpAddr.
 	 */
 	public InetAddress getCdpTargetIpAddr() {
 		return cdpTargetIpAddr;
 	}
 	/**
+	 * <p>Setter for the field <code>cdpTargetIpAddr</code>.</p>
+	 *
 	 * @param cdpTargetIpAddr The cdpTargetIpAddr to set.
 	 */
 	public void setCdpTargetIpAddr(InetAddress cdpTargetIpAddr) {
 		this.cdpTargetIpAddr = cdpTargetIpAddr;
 	}
 	/**
+	 * <p>Getter for the field <code>cdpTargetNodeId</code>.</p>
+	 *
 	 * @return Returns the cdpTargetNodeId.
 	 */
 	public int getCdpTargetNodeId() {
 		return cdpTargetNodeId;
 	}
 	/**
+	 * <p>Setter for the field <code>cdpTargetNodeId</code>.</p>
+	 *
 	 * @param cdpTargetNodeId The cdpTargetNodeId to set.
 	 */
 	public void setCdpTargetNodeId(int cdpTargetNodeId) {
 		this.cdpTargetNodeId = cdpTargetNodeId;
 	}
 	
+	/**
+	 * <p>toString</p>
+	 *
+	 * @return a {@link java.lang.String} object.
+	 */
 	public String toString() {
 		return "ifindex:"+cdpIfIndex+"TargetIpAddress:"+cdpTargetIpAddr+"targetNodeid:"
 				+cdpTargetNodeId+"cdptargetIfIndex:"+cdpTargetIfIndex;

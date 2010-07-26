@@ -38,7 +38,23 @@ package org.openoss.opennms.spring.qosdrx.jmx;
 
 import org.opennms.netmgt.daemon.BaseOnmsMBean;
 
+/**
+ * <p>QoSDrxMBean interface.</p>
+ *
+ * @author ranger
+ * @version $Id: $
+ */
 public interface QoSDrxMBean extends BaseOnmsMBean {
+	/**
+	 * <p>getStats</p>
+	 *
+	 * @return a {@link java.lang.String} object.
+	 */
 	public String getStats();
+	/**
+	 * <p>getRuntimeStatistics</p>
+	 *
+	 * @return a {@link java.lang.String} object.
+	 */
 	public String getRuntimeStatistics();
 }

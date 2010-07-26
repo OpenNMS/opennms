@@ -54,14 +54,23 @@ import org.springframework.web.bind.support.SessionStatus;
 
 /**
  * Group Form Controller to insert or update a Group
- * 
+ *
  * @author Massimiliano Dess&igrave; (desmax74@yahoo.it)
  * @since jdk 1.5.0
+ * @version $Id: $
  */
 @Controller
 @RequestMapping("/group.edit.page")
 public class GroupFormController {
 
+    /**
+     * <p>processSubmit</p>
+     *
+     * @param group a {@link org.opennms.acl.model.GroupDTO} object.
+     * @param result a {@link org.springframework.validation.BindingResult} object.
+     * @param status a {@link org.springframework.web.bind.support.SessionStatus} object.
+     * @return a {@link java.lang.String} object.
+     */
     @RequestMapping(method = RequestMethod.POST)
     protected String processSubmit(@ModelAttribute("group") GroupDTO group, BindingResult result, SessionStatus status) {
         String mav = groupForm;
@@ -74,11 +83,24 @@ public class GroupFormController {
         return mav;
     }
 
+    /**
+     * <p>initBinder</p>
+     *
+     * @param binder a {@link org.springframework.web.bind.WebDataBinder} object.
+     * @throws java.lang.Exception if any.
+     */
     @InitBinder()
     public void initBinder(WebDataBinder binder) throws Exception {
         binder.registerCustomEditor(String.class, new StringTrimmerEditor(false));
     }
 
+    /**
+     * <p>setupForm</p>
+     *
+     * @param id a {@link java.lang.Integer} object.
+     * @param model a {@link org.springframework.ui.ModelMap} object.
+     * @return a {@link java.lang.String} object.
+     */
     @RequestMapping(method = RequestMethod.GET)
     public String setupForm(@RequestParam(required = false, value = "gid") Integer id, ModelMap model) {
         model.addAttribute(Constants.GROUP, id == null ? new GroupDTO() : groupService.getGroup(id));

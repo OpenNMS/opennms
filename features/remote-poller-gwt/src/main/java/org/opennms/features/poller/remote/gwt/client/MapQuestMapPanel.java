@@ -4,6 +4,7 @@ import java.util.HashMap;
 import java.util.Map;
 
 import org.opennms.features.poller.remote.gwt.client.events.GWTMarkerClickedEvent;
+import org.opennms.features.poller.remote.gwt.client.events.GWTMarkerInfoWindowRefreshEvent;
 import org.opennms.features.poller.remote.gwt.client.events.MapPanelBoundsChangedEvent;
 import org.opennms.features.poller.remote.gwt.client.utils.BoundsBuilder;
 
@@ -15,11 +16,17 @@ import com.google.gwt.dom.client.Style;
 import com.google.gwt.dom.client.Style.Overflow;
 import com.google.gwt.event.dom.client.ClickEvent;
 import com.google.gwt.event.dom.client.ClickHandler;
+import com.google.gwt.event.dom.client.DoubleClickEvent;
+import com.google.gwt.event.dom.client.DoubleClickHandler;
+import com.google.gwt.event.dom.client.HasClickHandlers;
+import com.google.gwt.event.dom.client.HasDoubleClickHandlers;
 import com.google.gwt.event.logical.shared.ResizeEvent;
 import com.google.gwt.event.logical.shared.ResizeHandler;
 import com.google.gwt.event.shared.HandlerManager;
+import com.google.gwt.event.shared.HandlerRegistration;
 import com.google.gwt.uibinder.client.UiBinder;
 import com.google.gwt.uibinder.client.UiField;
+import com.google.gwt.user.client.Timer;
 import com.google.gwt.user.client.Window;
 import com.google.gwt.user.client.ui.Composite;
 import com.google.gwt.user.client.ui.SimplePanel;
@@ -31,12 +38,23 @@ import com.googlecode.gwtmapquest.transaction.MQAPoi;
 import com.googlecode.gwtmapquest.transaction.MQAPoint;
 import com.googlecode.gwtmapquest.transaction.MQARectLL;
 import com.googlecode.gwtmapquest.transaction.MQATileMap;
+import com.googlecode.gwtmapquest.transaction.event.DblClickEvent;
+import com.googlecode.gwtmapquest.transaction.event.DblClickHandler;
 import com.googlecode.gwtmapquest.transaction.event.MoveEndEvent;
 import com.googlecode.gwtmapquest.transaction.event.MoveEndHandler;
 import com.googlecode.gwtmapquest.transaction.event.ZoomEndEvent;
 import com.googlecode.gwtmapquest.transaction.event.ZoomEndHandler;
 
-public class MapQuestMapPanel extends Composite implements MapPanel {
+/**
+ * <p>MapQuestMapPanel class.</p>
+ *
+ * @author ranger
+ * @version $Id: $
+ * @since 1.8.1
+ */
+public class MapQuestMapPanel extends Composite implements MapPanel, HasDoubleClickHandlers, HasClickHandlers {
+
+    public GWTLatLng m_currentInfoWindowLatLng = null;
 
     private class DefaultMarkerClickHandler implements ClickHandler {
 
@@ -47,6 +65,7 @@ public class MapQuestMapPanel extends Composite implements MapPanel {
         }
 
         public void onClick(final ClickEvent event) {
+            m_currentInfoWindowLatLng  = getMarkerState().getLatLng();
             m_eventBus.fireEvent(new GWTMarkerClickedEvent(getMarkerState()));
         }
 
@@ -59,6 +78,35 @@ public class MapQuestMapPanel extends Composite implements MapPanel {
         }
 
     }
+    
+    private class ClickCounter{
+        
+        private int m_incr = 0;
+        private MQALatLng m_latlng = null;
+        private Timer m_timer = new Timer() {
+
+            @Override
+            public void run() {
+                if(m_incr == 1) {
+                    m_map.panToLatLng(m_latlng);
+                }else if(m_incr == 3) {
+                    m_map.setCenter(m_latlng);
+                    m_map.zoomIn();
+                }
+                
+                m_incr = 0;
+            }
+            
+        };
+        
+        public void incrementCounter(MQALatLng latLng) {
+            m_incr++;
+            m_latlng = latLng;
+            m_timer.cancel();
+            m_timer.schedule(300);
+        }
+        
+    }
 
     private static MapQuestMapPanelUiBinder uiBinder = GWT.create(MapQuestMapPanelUiBinder.class);
 
@@ -70,40 +118,65 @@ public class MapQuestMapPanel extends Composite implements MapPanel {
     private Map<String, MQAPoi> m_markers = new HashMap<String, MQAPoi>();
 
     private HandlerManager m_eventBus;
+    
+    private ClickCounter m_clickCounter = new ClickCounter();
 
     interface MapQuestMapPanelUiBinder extends UiBinder<Widget, MapQuestMapPanel> {
     }
 
     public MapQuestMapPanel(final HandlerManager eventBus) {
         m_eventBus = eventBus;
+        
         initWidget(uiBinder.createAndBindUi(this));
-        m_map = MQATileMap.newInstance(getMapHolder().getElement());
 
         initializeMap();
-
-        m_map.addMoveEndHandler(new MoveEndHandler() {
-            public void onMoveEnd(final MoveEndEvent event) {
-                m_eventBus.fireEvent(new MapPanelBoundsChangedEvent(getBounds()));
-            }
-        });
-        m_map.addZoomEndHandler(new ZoomEndHandler() {
-            public void onZoomEnd(ZoomEndEvent event) {
-                m_eventBus.fireEvent(new MapPanelBoundsChangedEvent(getBounds()));
-            }
-        });
     }
 
+    /** {@inheritDoc} */
     @Override
     protected void onLoad() {
         super.onLoad();
         syncMapSizeWithParent();
     }
 
-    public void initializeMap() {
-        getMapHolder().setSize("100%", "100%");
+    /**
+     * <p>initializeMap</p>
+     */
+    private void initializeMap() {
+    	
+    	m_map = MQATileMap.newInstance(m_mapHolder.getElement()); //NOTE: do not switch this line and the next line. It will cause problems. 
+            	
+    	m_mapHolder.setSize("100%", "100%"); //See above note
+
         m_map.addControl(MQALargeZoomControl.newInstance());
         m_map.setZoomLevel(1);
         m_map.setCenter(MQALatLng.newInstance("0,0"));
+
+        m_map.addMoveEndHandler(new MoveEndHandler() {
+            public void onMoveEnd(final MoveEndEvent event) {
+                m_eventBus.fireEvent(new MapPanelBoundsChangedEvent(getBounds()));
+            }
+        });
+        
+        m_map.addClickHandler(new com.googlecode.gwtmapquest.transaction.event.ClickHandler() {
+            
+            public void onClicked(final com.googlecode.gwtmapquest.transaction.event.ClickEvent event) {
+                m_clickCounter.incrementCounter(event.getLL());
+            }
+        });
+        
+        m_map.addDblClickHandler(new DblClickHandler() {
+            
+            public void onDblClicked(DblClickEvent event) {
+                m_clickCounter.incrementCounter(event.getLL());
+            }
+        });
+        
+        m_map.addZoomEndHandler(new ZoomEndHandler() {
+            public void onZoomEnd(ZoomEndEvent event) {
+                m_eventBus.fireEvent(new MapPanelBoundsChangedEvent(getBounds()));
+            }
+        });
 
         Window.addResizeHandler(new ResizeHandler() {
             public void onResize(ResizeEvent event) {
@@ -112,16 +185,16 @@ public class MapQuestMapPanel extends Composite implements MapPanel {
         });
     }
 
+    /** {@inheritDoc} */
     public void showLocationDetails(final String name, final String htmlTitle, final String htmlContent) {
         final MQAPoi point = getMarker(name);
         if (point != null) {
-            final MQALatLng latLng = point.getLatLng();
-            m_map.setCenter(latLng);
-            m_map.getInfoWindow().hide();
-
             point.setInfoTitleHTML(htmlTitle);
             point.setInfoContentHTML(htmlContent);
-            point.showInfoWindow();
+            if(m_map.getInfoWindow().isHidden()) {
+                point.showInfoWindow();
+            }
+            
             final NodeList<Element> elements = Document.get().getElementsByTagName("div");
             for (int i = 0; i < elements.getLength(); i++) {
                 final Element e = elements.getItem(i);
@@ -136,12 +209,17 @@ public class MapQuestMapPanel extends Composite implements MapPanel {
 
     private MQAPoi createMarker(final GWTMarkerState marker) {
         final MQALatLng latLng = toMQALatLng(marker.getLatLng());
+        final MQAPoi point = (MQAPoi)MQAPoi.newInstance(latLng);
+        point.setVisible(marker.isVisible());
+
         final MQAIcon icon = createIcon(marker);
-        final MQAPoi point = MQAPoi.newInstance(latLng, icon);
+        point.setIcon(icon);
         point.setIconOffset(MQAPoint.newInstance(-16, -32));
+
         point.addClickHandler(new DefaultMarkerClickHandler(marker));
         point.setMaxZoomLevel(16);
         point.setMinZoomLevel(1);
+        point.setRolloverEnabled(true);
 
         return point;
     }
@@ -150,10 +228,16 @@ public class MapQuestMapPanel extends Composite implements MapPanel {
         return MQAIcon.newInstance(marker.getImageURL(), 32, 32);
     }
 
+    /**
+     * <p>getBounds</p>
+     *
+     * @return a {@link org.opennms.features.poller.remote.gwt.client.GWTBounds} object.
+     */
     public GWTBounds getBounds() {
         return toGWTBounds(m_map.getBounds());
     }
 
+    /** {@inheritDoc} */
     public void setBounds(final GWTBounds b) {
         m_map.zoomToRect(toMQARectLL(b));
     }
@@ -176,14 +260,11 @@ public class MapQuestMapPanel extends Composite implements MapPanel {
         return mqBounds;
     }
 
-    private SimplePanel getMapHolder() {
-        return m_mapHolder;
-    }
-
     private void syncMapSizeWithParent() {
         m_map.setSize();
     }
 
+    /** {@inheritDoc} */
     public void placeMarker(final GWTMarkerState marker) {
         MQAPoi m = getMarker(marker.getName());
 
@@ -193,6 +274,10 @@ public class MapQuestMapPanel extends Composite implements MapPanel {
             m_map.addShape(m);
         } else {
             updateMarker(m, marker);
+            GWTLatLng latLng = new GWTLatLng(m.getLatLng().getLatitude(), m.getLatLng().getLongitude());
+            if(latLng.equals(m_currentInfoWindowLatLng) && !m_map.getInfoWindow().isHidden()) {
+                m_eventBus.fireEvent(new GWTMarkerInfoWindowRefreshEvent(marker));
+            }
         }
 
     }
@@ -206,8 +291,22 @@ public class MapQuestMapPanel extends Composite implements MapPanel {
         return m_markers.get(name);
     }
 
+    /**
+     * <p>getWidget</p>
+     *
+     * @return a {@link com.google.gwt.user.client.ui.Widget} object.
+     */
     public Widget getWidget() {
         return this;
     }
 
+    /** {@inheritDoc} */
+    public HandlerRegistration addDoubleClickHandler(DoubleClickHandler handler) {
+        return addDomHandler(handler, DoubleClickEvent.getType());
+    }
+
+    /** {@inheritDoc} */
+    public HandlerRegistration addClickHandler(ClickHandler handler) {
+        return addDomHandler(handler, ClickEvent.getType());
+    }
 }

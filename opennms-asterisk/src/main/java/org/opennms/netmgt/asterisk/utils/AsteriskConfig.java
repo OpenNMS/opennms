@@ -48,15 +48,18 @@ import org.opennms.core.utils.ThreadCategory;
 
 /**
  * Provides access to the default Asterisk configuration data.
+ *
+ * @author ranger
+ * @version $Id: $
  */
 public class AsteriskConfig {
 
     
     /**
      * This loads the configuration file.
-     * 
+     *
      * @return a Properties object representing the configuration properties
-     * @throws IOException
+     * @throws java.io.IOException if any.
      */
     public static synchronized Properties getProperties() throws IOException {
         log().debug("Loading Asterisk configuration properties.");

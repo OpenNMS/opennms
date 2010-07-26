@@ -32,12 +32,29 @@
 package org.opennms.core.tasks;
 
 
+/**
+ * <p>BatchTask class.</p>
+ *
+ * @author ranger
+ * @version $Id: $
+ */
 public class BatchTask extends ContainerTask<BatchTask> {
     
+    /**
+     * <p>Constructor for BatchTask.</p>
+     *
+     * @param coordinator a {@link org.opennms.core.tasks.DefaultTaskCoordinator} object.
+     * @param parent a {@link org.opennms.core.tasks.ContainerTask} object.
+     */
     public BatchTask(DefaultTaskCoordinator coordinator, ContainerTask<?> parent) {
         super(coordinator, parent);
     }
     
+    /**
+     * <p>toString</p>
+     *
+     * @return a {@link java.lang.String} object.
+     */
     public String toString() {
         return "batch task";
     }

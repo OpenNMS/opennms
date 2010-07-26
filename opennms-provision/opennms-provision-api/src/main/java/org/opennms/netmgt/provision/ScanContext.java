@@ -31,22 +31,53 @@ package org.opennms.netmgt.provision;
 
 import java.net.InetAddress;
 
+/**
+ * <p>ScanContext interface.</p>
+ *
+ * @author ranger
+ * @version $Id: $
+ */
 public interface ScanContext {
 
     /**
      * Return the preferred address used to talk to the agent of type type provided
-     * 
+     *
      * e.g.  use getAgentAddress("SNMP") to find the InetAddress for the SNMP Agent for the node being scanned.
-     * 
+     *
      * @param agentType the type of agent to search for
      * @return the InetAddress for the agent or null if no such agent exists
      */
     public InetAddress getAgentAddress(String agentType);
     
+    /**
+     * <p>updateSysObjectId</p>
+     *
+     * @param sysObjectId a {@link java.lang.String} object.
+     */
     public void updateSysObjectId(String sysObjectId);
+    /**
+     * <p>updateSysName</p>
+     *
+     * @param sysName a {@link java.lang.String} object.
+     */
     public void updateSysName(String sysName);
+    /**
+     * <p>updateSysDescription</p>
+     *
+     * @param sysDescription a {@link java.lang.String} object.
+     */
     public void updateSysDescription(String sysDescription);
+    /**
+     * <p>updateSysLocation</p>
+     *
+     * @param sysLocation a {@link java.lang.String} object.
+     */
     public void updateSysLocation(String sysLocation);
+    /**
+     * <p>updateSysContact</p>
+     *
+     * @param sysContact a {@link java.lang.String} object.
+     */
     public void updateSysContact(String sysContact);
 
 }

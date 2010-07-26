@@ -7,14 +7,23 @@ import org.springframework.beans.factory.xml.ParserContext;
 import org.springframework.util.StringUtils;
 import org.w3c.dom.Element;
 
+/**
+ * <p>ReferenceBeanDefinitionParser class.</p>
+ *
+ * @author ranger
+ * @version $Id: $
+ */
 public class ReferenceBeanDefinitionParser extends AbstractSingleBeanDefinitionParser {
         
+    /** Constant <code>INTERFACE_ATTR="interface"</code> */
     public static final String INTERFACE_ATTR = "interface";
     
+    /** {@inheritDoc} */
     protected Class<?> getBeanClass(Element element) {
         return ReferenceFactoryBean.class;
     }
     
+    /** {@inheritDoc} */
     public void doParse(Element element, ParserContext context, BeanDefinitionBuilder bean){
         
         bean.addPropertyReference("serviceRegistry", Constants.SERVICE_REGISTRY_BEAN_NAME);

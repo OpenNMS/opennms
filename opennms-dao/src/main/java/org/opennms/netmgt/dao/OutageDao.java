@@ -32,20 +32,64 @@
 package org.opennms.netmgt.dao;
 
 import java.util.Collection;
+import java.util.List;
 
 import org.opennms.netmgt.model.OnmsOutage;
 import org.opennms.netmgt.model.ServiceSelector;
+import org.opennms.netmgt.model.outage.OutageSummary;
 
 
+/**
+ * <p>OutageDao interface.</p>
+ *
+ * @author ranger
+ * @version $Id: $
+ */
 public interface OutageDao extends OnmsDao<OnmsOutage, Integer> {
 
+    /**
+     * <p>currentOutageCount</p>
+     *
+     * @return a {@link java.lang.Integer} object.
+     */
     Integer currentOutageCount();
 
+    /**
+     * <p>currentOutages</p>
+     *
+     * @return a {@link java.util.Collection} object.
+     */
     Collection<OnmsOutage> currentOutages();
     
+    /**
+     * <p>matchingCurrentOutages</p>
+     *
+     * @param selector a {@link org.opennms.netmgt.model.ServiceSelector} object.
+     * @return a {@link java.util.Collection} object.
+     */
     Collection<OnmsOutage> matchingCurrentOutages(ServiceSelector selector);
     
+    /**
+     * <p>findAll</p>
+     *
+     * @param offset a {@link java.lang.Integer} object.
+     * @param limit a {@link java.lang.Integer} object.
+     * @return a {@link java.util.Collection} object.
+     */
     Collection<OnmsOutage> findAll(Integer offset, Integer limit);
 
+    /**
+     * Get the number of nodes with outages.
+     * @return the number of nodes with outages.
+     */
+    int countOutagesByNode();
+
+    /**
+     * Get the list of current outages, one per node.  If a node has more than one outage, the
+     * oldest outstanding outage is returned.
+     * @param rows The maximum number of outages to return.
+     * @return A list of outages.
+     */
+    List<OutageSummary> getNodeOutageSummaries(int rows);
 
 }

@@ -38,24 +38,56 @@ import org.springframework.beans.factory.DisposableBean;
 import org.springframework.beans.factory.FactoryBean;
 import org.springframework.beans.factory.InitializingBean;
 
+/**
+ * <p>DataSourceFactoryBean class.</p>
+ *
+ * @author ranger
+ * @version $Id: $
+ */
 public class DataSourceFactoryBean implements FactoryBean<DataSource>, InitializingBean, DisposableBean {
 
+    /**
+     * <p>getObject</p>
+     *
+     * @return a {@link javax.sql.DataSource} object.
+     * @throws java.lang.Exception if any.
+     */
     public DataSource getObject() throws Exception {
         return DataSourceFactory.getDataSource();
     }
 
+    /**
+     * <p>getObjectType</p>
+     *
+     * @return a {@link java.lang.Class} object.
+     */
     public Class<? extends DataSource> getObjectType() {
         return (DataSourceFactory.getDataSource() == null ? DataSource.class : DataSourceFactory.getDataSource().getClass());
     }
 
+    /**
+     * <p>isSingleton</p>
+     *
+     * @return a boolean.
+     */
     public boolean isSingleton() {
         return true;
     }
 
+    /**
+     * <p>afterPropertiesSet</p>
+     *
+     * @throws java.lang.Exception if any.
+     */
     public void afterPropertiesSet() throws Exception {
         DataSourceFactory.init();
     }
 
+    /**
+     * <p>destroy</p>
+     *
+     * @throws java.lang.Exception if any.
+     */
     public void destroy() throws Exception {
         log().info("Closing DataSourceFactory!!!");
         DataSourceFactory.close();

@@ -46,37 +46,47 @@ import org.opennms.netmgt.model.OnmsMonitoredService;
 import org.opennms.netmgt.model.ServiceSelector;
 import org.opennms.netmgt.model.OnmsIpInterface.PrimaryType;
 /**
- * @author david
+ * <p>MonitoredServiceDaoHibernate class.</p>
  *
+ * @author david
+ * @version $Id: $
  */
 public class MonitoredServiceDaoHibernate extends AbstractDaoHibernate<OnmsMonitoredService, Integer>  implements MonitoredServiceDao {
 
+    /**
+     * <p>Constructor for MonitoredServiceDaoHibernate.</p>
+     */
     public MonitoredServiceDaoHibernate() {
 		super(OnmsMonitoredService.class);
 	}
 
+	/** {@inheritDoc} */
 	public Collection<OnmsMonitoredService> findByType(String type) {
 		return find("from OnmsMonitoredService svc where svc.serviceType.name = ?", type);
 	}
 
+	/** {@inheritDoc} */
 	public OnmsMonitoredService get(Integer nodeId, String ipAddress, String svcName) {
 		return findUnique("from OnmsMonitoredService as svc " +
 				    "where svc.ipInterface.node.id = ? and svc.ipInterface.ipAddress = ? and svc.serviceType.name = ?",
 				   nodeId, ipAddress, svcName);
 	}
 	
+	/** {@inheritDoc} */
 	public OnmsMonitoredService getPrimaryService(Integer nodeId, String svcName) {
 	    return findUnique("from OnmsMonitoredService as svc " +
 	                      "where svc.ipInterface.node.id = ? and svc.ipInterface.isSnmpPrimary= ? and svc.serviceType.name = ?",
 	                     nodeId, PrimaryType.PRIMARY, svcName);
 	}
 
+	/** {@inheritDoc} */
 	public OnmsMonitoredService get(Integer nodeId, String ipAddr, Integer ifIndex, Integer serviceId) {
 		return findUnique("from OnmsMonitoredService as svc " +
 			    "where svc.ipInterface.node.id = ? and svc.ipInterface.ipAddress = ? and svc.ipInterface.snmpInterface.ifIndex = ? and svc.serviceType.id = ?",
 			   nodeId, ipAddr, ifIndex, serviceId);
 	}
 
+    /** {@inheritDoc} */
     public Collection<OnmsMonitoredService> findMatchingServices(ServiceSelector selector) {
         Set<String> matchingIps = new HashSet<String>(FilterDaoFactory.getInstance().getIPList(selector.getFilterRule()));
         Set<String> matchingSvcs = new HashSet<String>(selector.getServiceNames());
@@ -100,11 +110,14 @@ public class MonitoredServiceDaoHibernate extends AbstractDaoHibernate<OnmsMonit
         return find("select distinct svc from OnmsMonitoredService as svc where (svc.status is null or svc.status not in ('F','U','D'))");
     }
 
+    /** {@inheritDoc} */
     public Collection<OnmsMonitoredService> findByApplication(OnmsApplication application) {
-        return find("select distinct svc from OnmsMonitoredService as svc "
-                    + "join svc.applications a "
-                    + "where a.name = ?",
-                    application.getName());
+        return find("select distinct svc from OnmsMonitoredService as svc " +
+        		"left join fetch svc.serviceType " +
+        		"left join fetch svc.ipInterface " +
+        		"join svc.applications a " +
+        		"where a.name = ?",
+        		application.getName());
     }
 
 }

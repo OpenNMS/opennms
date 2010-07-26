@@ -28,6 +28,13 @@ import org.springframework.transaction.annotation.Transactional;
 import com.sun.jersey.spi.resource.PerRequest;
 
 @Component
+/**
+ * <p>AlarmRestService class.</p>
+ *
+ * @author ranger
+ * @version $Id: $
+ * @since 1.8.1
+ */
 @PerRequest
 @Scope("prototype")
 @Path("alarms")
@@ -41,15 +48,26 @@ public class AlarmRestService extends OnmsRestService {
     @Context
     SecurityContext m_securityContext;
     
+    /**
+     * <p>getAlarm</p>
+     *
+     * @param alarmId a {@link java.lang.String} object.
+     * @return a {@link org.opennms.netmgt.model.OnmsAlarm} object.
+     */
     @GET
     @Produces("text/xml")
     @Path("{alarmId}")
     @Transactional
-    public OnmsAlarm getNotification(@PathParam("alarmId") String alarmId) {
+    public OnmsAlarm getAlarm(@PathParam("alarmId") String alarmId) {
     	OnmsAlarm result= m_alarmDao.get(new Integer(alarmId));
     	return result;
     }
     
+    /**
+     * <p>getCount</p>
+     *
+     * @return a {@link java.lang.String} object.
+     */
     @GET
     @Produces("text/plain")
     @Path("count")
@@ -58,10 +76,15 @@ public class AlarmRestService extends OnmsRestService {
     	return Integer.toString(m_alarmDao.countAll());
     }
 
+    /**
+     * <p>getAlarms</p>
+     *
+     * @return a {@link org.opennms.netmgt.model.OnmsAlarmCollection} object.
+     */
     @GET
     @Produces("text/xml")
     @Transactional
-    public OnmsAlarmCollection getNotifications() {
+    public OnmsAlarmCollection getAlarms() {
     	MultivaluedMap<java.lang.String,java.lang.String> params=m_uriInfo.getQueryParameters();
 		OnmsCriteria criteria=new OnmsCriteria(OnmsAlarm.class);
 
@@ -73,6 +96,12 @@ public class AlarmRestService extends OnmsRestService {
         return new OnmsAlarmCollection(m_alarmDao.findMatching(getDistinctIdCriteria(OnmsAlarm.class, criteria)));
     }
     
+    /**
+     * <p>updateAlarm</p>
+     *
+     * @param alarmId a {@link java.lang.String} object.
+     * @param ack a {@link java.lang.Boolean} object.
+     */
     @PUT
 	@Path("{alarmId}")
 	@Consumes(MediaType.APPLICATION_FORM_URLENCODED)
@@ -88,6 +117,11 @@ public class AlarmRestService extends OnmsRestService {
 		processAlarmAck(alarm, ack);
 	}
 
+	/**
+	 * <p>updateAlarms</p>
+	 *
+	 * @param formProperties a {@link org.opennms.web.rest.MultivaluedMapImpl} object.
+	 */
 	@PUT
 	@Transactional
 	@Consumes(MediaType.APPLICATION_FORM_URLENCODED)

@@ -46,6 +46,12 @@ import org.opennms.netmgt.xml.event.Event;
 import org.opennms.netmgt.xml.event.Parms;
 import org.opennms.netmgt.xml.event.Snmp;
 
+/**
+ * <p>EventCreator class.</p>
+ *
+ * @author ranger
+ * @version $Id: $
+ */
 public class EventCreator implements TrapProcessor {
     
     private Event m_event;
@@ -68,14 +74,17 @@ public class EventCreator implements TrapProcessor {
         m_event.setParms(m_parms);
     }
     
+    /** {@inheritDoc} */
     public void setCommunity(String community) {
         m_snmpInfo.setCommunity(community);
     }
 
+    /** {@inheritDoc} */
     public void setTimeStamp(long timeStamp) {
         m_snmpInfo.setTimeStamp(timeStamp);
     }
 
+    /** {@inheritDoc} */
     public void setVersion(String version) {
         m_snmpInfo.setVersion(version);
     }
@@ -92,10 +101,12 @@ public class EventCreator implements TrapProcessor {
         m_snmpInfo.setId(enterpriseId);
     }
 
+    /** {@inheritDoc} */
     public void setAgentAddress(InetAddress agentAddress) {
         m_event.setHost(agentAddress.getHostAddress());
     }
 
+    /** {@inheritDoc} */
     public void processVarBind(SnmpObjId name, SnmpValue value) {
         m_parms.addParm(SyntaxToEvent.processSyntax(name.toString(), value));
         if (EventConstants.OID_SNMP_IFINDEX.isPrefixOf(name)) {
@@ -103,6 +114,7 @@ public class EventCreator implements TrapProcessor {
         }
     }
 
+    /** {@inheritDoc} */
     public void setTrapAddress(InetAddress trapAddress) {
         String trapInterface = trapAddress.getHostAddress();
         m_event.setSnmphost(trapInterface);
@@ -113,6 +125,7 @@ public class EventCreator implements TrapProcessor {
         }
     }
 
+    /** {@inheritDoc} */
     public void setTrapIdentity(TrapIdentity trapIdentity) {
         setGeneric(trapIdentity.getGeneric());
         setSpecific(trapIdentity.getSpecific());

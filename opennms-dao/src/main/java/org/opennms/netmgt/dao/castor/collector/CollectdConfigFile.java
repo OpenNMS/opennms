@@ -44,14 +44,30 @@ import org.opennms.netmgt.config.collectd.Collector;
 import org.opennms.netmgt.dao.castor.CastorUtils;
 import org.springframework.core.io.FileSystemResource;
 
+/**
+ * <p>CollectdConfigFile class.</p>
+ *
+ * @author ranger
+ * @version $Id: $
+ */
 public class CollectdConfigFile {
 	
 	File m_file;
 	
+	/**
+	 * <p>Constructor for CollectdConfigFile.</p>
+	 *
+	 * @param file a {@link java.io.File} object.
+	 */
 	public CollectdConfigFile(File file) {
 		m_file = file;
 	}
 	
+	/**
+	 * <p>visit</p>
+	 *
+	 * @param visitor a {@link org.opennms.netmgt.dao.castor.collector.CollectdConfigVisitor} object.
+	 */
 	public void visit(CollectdConfigVisitor visitor) {
         CollectdConfiguration collectdConfiguration = getCollectdConfiguration();
         visitor.visitCollectdConfiguration(collectdConfiguration);

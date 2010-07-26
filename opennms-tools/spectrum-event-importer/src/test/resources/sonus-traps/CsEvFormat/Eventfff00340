@@ -1,0 +1,7 @@
+{d "%w- %d %m-, %Y - %T"} - A "licenseExpiring" event has occurred, from {t} device, named {m}.
+
+"system: report the imminent expiration of a license"
+
+licenseExpiringName = {S 1}
+licenseExpiringExpires = {G 2}
+(event [{e}])

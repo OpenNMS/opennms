@@ -43,11 +43,17 @@ import java.net.UnknownHostException;
  * discovery process. Each instance encapsulates an internet address, timeout in
  * milliseconds, and a retry count.
  * </p>
- * 
+ *
  * @author <A HREF="mailto:sowmya@opennms.org">Sowmya </A>
  * @author <A HREF="mailto:weave@oculan.com">Brian Weaver </A>
  * @author <A HREF="http://www.opennms.org/">OpenNMS </A>
- * 
+ * @author <A HREF="mailto:sowmya@opennms.org">Sowmya </A>
+ * @author <A HREF="mailto:weave@oculan.com">Brian Weaver </A>
+ * @author <A HREF="http://www.opennms.org/">OpenNMS </A>
+ * @author <A HREF="mailto:sowmya@opennms.org">Sowmya </A>
+ * @author <A HREF="mailto:weave@oculan.com">Brian Weaver </A>
+ * @author <A HREF="http://www.opennms.org/">OpenNMS </A>
+ * @version $Id: $
  */
 public class IPPollAddress {
     /**
@@ -69,17 +75,17 @@ public class IPPollAddress {
      * <P>
      * Constructs an IPPollAddress object with the specified parameters.
      * </P>
-     * 
+     *
      * @param ipAddress
      *            The Dotted Decimal IPv4 Address.
      * @param timeout
      *            The timeout between retries in 1/1000th of a second.
      * @param retries
      *            The number of times to attempt to contact the address.
-     * 
      * @exception java.net.UnknownHostException
      *                Thrown by the InetAddress class if the hostname cannot be
      *                resolved.
+     * @throws java.net.UnknownHostException if any.
      */
     public IPPollAddress(String ipAddress, long timeout, int retries) throws UnknownHostException {
         // check if this is a valid IP address
@@ -113,7 +119,7 @@ public class IPPollAddress {
      * <P>
      * Returns the timeout in 1/1000th of a second increments.
      * </P>
-     * 
+     *
      * @return The timeout associated with the host in 1/1000th of a second.
      */
     public long getTimeout() {
@@ -124,7 +130,7 @@ public class IPPollAddress {
      * <P>
      * Returns the current number of retries set for this address.
      * </P>
-     * 
+     *
      * @return The retry count for the instance.
      */
     public int getRetries() {
@@ -133,7 +139,7 @@ public class IPPollAddress {
 
     /**
      * Returns the internet address encapsulated in the object.
-     * 
+     *
      * @return The encapsulated internet address.
      */
     public InetAddress getAddress() {
@@ -145,9 +151,10 @@ public class IPPollAddress {
      * Returns true if the passed object is equal to self. The objects must be
      * equal in address, timeout, and the number of retries.
      * </P>
-     * 
+     *
      * @return True if the objects are logically equal. False is returned
      *         otherwise.
+     * @param pollAddr a {@link org.opennms.netmgt.model.discovery.IPPollAddress} object.
      */
     public boolean equals(IPPollAddress pollAddr) {
         boolean bRet = false;

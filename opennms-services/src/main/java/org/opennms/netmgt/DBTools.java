@@ -43,7 +43,7 @@ import java.util.regex.PatternSyntaxException;
 /**
  * This class is intended to be group some utility classes related with RDBMS
  * and the capsd and monitoring plugins.
- * 
+ *
  * @author Jose Vicente Nunez Zuleta (josevnz@users.sourceforge.net) - RHCE,
  *         SJCD, SJCP
  * @version 0.1 - 07/22/2002
@@ -117,7 +117,7 @@ public class DBTools {
     /**
      * Returns a single instance of this class to the caller. We do not want
      * multplie copies of this class loaded, just one.
-     * 
+     *
      * @return DBTools A class instance
      */
     public synchronized static DBTools getInstance() {
@@ -130,7 +130,7 @@ public class DBTools {
 
     /**
      * Return how many instances of this objects are loaded now
-     * 
+     *
      * @return int Nnumber of instances on this JVM
      */
     public int getNumberOfInstances() {
@@ -141,17 +141,18 @@ public class DBTools {
      * Constructs a JDBC url given a set of fragments. The resulting Url will
      * have the form: <br>
      * <code>jdbc:<protocol:<b>hostname</b>:<b>4100</b></code>
-     * 
+     *
      * @param hostname_
      *            The hostname where the database server is
      * @param url_
      *            (for example jdbc:sybase:Tds:@{link #JDBC_HOST
      *            JDBC_HOST}:4100/tempdb). The JDBC_HOST is replaced by the real
      *            hostname
-     * @throws NullPointerException
+     * @throws java.lang.NullPointerException
      *             If one of the arguments is null
-     * @throws IllegalArgumentException
+     * @throws java.lang.IllegalArgumentException
      *             If the JDBC_HOST is not part of the JDBC url
+     * @return a {@link java.lang.String} object.
      */
     public static String constructUrl(String url_, String hostname_) throws IllegalArgumentException, NullPointerException {
         String url = null;

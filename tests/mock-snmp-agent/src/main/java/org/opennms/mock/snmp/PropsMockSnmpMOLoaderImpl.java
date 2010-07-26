@@ -55,8 +55,15 @@ import org.snmp4j.smi.TimeTicks;
 import org.snmp4j.smi.Variable;
 import org.springframework.core.io.Resource;
 
+/**
+ * <p>PropsMockSnmpMOLoaderImpl class.</p>
+ *
+ * @author ranger
+ * @version $Id: $
+ */
 public class PropsMockSnmpMOLoaderImpl implements MockSnmpMOLoader {
 
+	/** {@inheritDoc} */
 	public List<ManagedObject> loadMOs(Resource moFile) {
 	    ArrayList<ManagedObject> moList = new ArrayList<ManagedObject>();
 		
@@ -72,6 +79,12 @@ public class PropsMockSnmpMOLoaderImpl implements MockSnmpMOLoader {
 		return moList;
 	}
 
+    /**
+     * <p>loadProperties</p>
+     *
+     * @param propertiesFile a {@link org.springframework.core.io.Resource} object.
+     * @return a {@link java.util.Properties} object.
+     */
     public static  Properties loadProperties(Resource propertiesFile) {
         Properties moProps = new Properties();
 		InputStream inStream = null;
@@ -104,6 +117,13 @@ public class PropsMockSnmpMOLoaderImpl implements MockSnmpMOLoader {
         
     }
 	
+	/**
+	 * <p>getMOFromPropString</p>
+	 *
+	 * @param oidStr a {@link java.lang.String} object.
+	 * @param valStr a {@link java.lang.String} object.
+	 * @return a {@link org.snmp4j.agent.ManagedObject} object.
+	 */
 	protected static ManagedObject getMOFromPropString(String oidStr, String valStr) {
 	    OID moOID = new OID(oidStr);
 
@@ -114,6 +134,13 @@ public class PropsMockSnmpMOLoaderImpl implements MockSnmpMOLoader {
 	    return newMO;
 	}
 
+    /**
+     * <p>getVariableFromValueString</p>
+     *
+     * @param oidStr a {@link java.lang.String} object.
+     * @param valStr a {@link java.lang.String} object.
+     * @return a {@link org.snmp4j.smi.Variable} object.
+     */
     public static Variable getVariableFromValueString(String oidStr, String valStr) {
         Variable newVar;
 

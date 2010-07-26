@@ -65,6 +65,12 @@ import org.hibernate.annotations.Filter;
 import org.hibernate.annotations.MapKey;
 import org.springframework.core.style.ToStringCreator;
 
+/**
+ * <p>OnmsAlarm class.</p>
+ *
+ * @author ranger
+ * @version $Id: $
+ */
 @XmlRootElement(name="alarm")
 @Entity
 @Table(name="alarms")
@@ -72,8 +78,10 @@ import org.springframework.core.style.ToStringCreator;
 public class OnmsAlarm implements Acknowledgeable, Serializable {
     private static final long serialVersionUID = 7275548439687562161L;
     
+    /** Constant <code>PROBLEM_TYPE=1</code> */
     public static final int PROBLEM_TYPE = 1;
     
+    /** Constant <code>RESOLUTION_TYPE=2</code> */
     public static final int RESOLUTION_TYPE = 2;
 
     /** identifier field */
@@ -182,11 +190,23 @@ public class OnmsAlarm implements Acknowledgeable, Serializable {
     
 	private Map<String, String> m_details;
 
-    /** default constructor */
+    /**
+     * default constructor
+     */
     public OnmsAlarm() {
     }
 
-    /** minimal constructor */
+    /**
+     * minimal constructor
+     *
+     * @param alarmid a {@link java.lang.Integer} object.
+     * @param eventuei a {@link java.lang.String} object.
+     * @param distPoller a {@link org.opennms.netmgt.model.OnmsDistPoller} object.
+     * @param counter a {@link java.lang.Integer} object.
+     * @param severity a {@link java.lang.Integer} object.
+     * @param firsteventtime a {@link java.util.Date} object.
+     * @param event a {@link org.opennms.netmgt.model.OnmsEvent} object.
+     */
     public OnmsAlarm(Integer alarmid, String eventuei, OnmsDistPoller distPoller, Integer counter, Integer severity, Date firsteventtime, OnmsEvent event) {
         this.m_id = alarmid;
         this.m_uei = eventuei;
@@ -197,6 +217,11 @@ public class OnmsAlarm implements Acknowledgeable, Serializable {
         this.m_lastEvent = event;
     }
 
+    /**
+     * <p>getId</p>
+     *
+     * @return a {@link java.lang.Integer} object.
+     */
     @Id
     @SequenceGenerator(name="alarmSequence", sequenceName="alarmsNxtId")
     @GeneratedValue(generator="alarmSequence")    
@@ -206,20 +231,40 @@ public class OnmsAlarm implements Acknowledgeable, Serializable {
         return this.m_id;
     }
 
+    /**
+     * <p>setId</p>
+     *
+     * @param alarmid a {@link java.lang.Integer} object.
+     */
     public void setId(Integer alarmid) {
         this.m_id = alarmid;
     }
 
+    /**
+     * <p>getUei</p>
+     *
+     * @return a {@link java.lang.String} object.
+     */
     @Column(name="eventUEI", length=256, nullable=false)
     @XmlElement(name="uei")
     public String getUei() {
         return this.m_uei;
     }
 
+    /**
+     * <p>setUei</p>
+     *
+     * @param eventuei a {@link java.lang.String} object.
+     */
     public void setUei(String eventuei) {
         this.m_uei = eventuei;
     }
 
+	/**
+	 * <p>getDistPoller</p>
+	 *
+	 * @return a {@link org.opennms.netmgt.model.OnmsDistPoller} object.
+	 */
 	@XmlTransient
     @ManyToOne(fetch=FetchType.LAZY)
     @JoinColumn(name="dpName", nullable=false)
@@ -227,11 +272,21 @@ public class OnmsAlarm implements Acknowledgeable, Serializable {
         return this.m_distPoller;
     }
 
+    /**
+     * <p>setDistPoller</p>
+     *
+     * @param distPoller a {@link org.opennms.netmgt.model.OnmsDistPoller} object.
+     */
     public void setDistPoller(OnmsDistPoller distPoller) {
         this.m_distPoller = distPoller;
     }
 
     // TODO change this to an Entity and remove nodeid, ipaddr, serviceid
+	/**
+	 * <p>getNode</p>
+	 *
+	 * @return a {@link org.opennms.netmgt.model.OnmsNode} object.
+	 */
 	@XmlTransient
 	@ManyToOne(fetch=FetchType.LAZY)
     @JoinColumn(name="nodeId")
@@ -239,20 +294,40 @@ public class OnmsAlarm implements Acknowledgeable, Serializable {
         return this.m_node;
     }
 
+    /**
+     * <p>setNode</p>
+     *
+     * @param node a {@link org.opennms.netmgt.model.OnmsNode} object.
+     */
     public void setNode(OnmsNode node) {
         this.m_node = node;
     }
 
+    /**
+     * <p>getIpAddr</p>
+     *
+     * @return a {@link java.lang.String} object.
+     */
     @Column(name="ipaddr", length=16)
     @XmlElement(name="ipAddress")
     public String getIpAddr() {
         return this.m_ipAddr;
     }
 
+    /**
+     * <p>setIpAddr</p>
+     *
+     * @param ipaddr a {@link java.lang.String} object.
+     */
     public void setIpAddr(String ipaddr) {
         this.m_ipAddr = ipaddr;
     }
 
+    /**
+     * <p>getServiceType</p>
+     *
+     * @return a {@link org.opennms.netmgt.model.OnmsServiceType} object.
+     */
     @XmlTransient
     @ManyToOne
     @JoinColumn(name="serviceid")
@@ -260,140 +335,280 @@ public class OnmsAlarm implements Acknowledgeable, Serializable {
         return this.m_serviceType;
     }
 
+    /**
+     * <p>setServiceType</p>
+     *
+     * @param service a {@link org.opennms.netmgt.model.OnmsServiceType} object.
+     */
     public void setServiceType(OnmsServiceType service) {
         this.m_serviceType = service;
     }
 
+    /**
+     * <p>getReductionKey</p>
+     *
+     * @return a {@link java.lang.String} object.
+     */
     @Column(name="reductionKey", unique=true, length=256)
     @XmlElement(name="reductionKey")
     public String getReductionKey() {
         return this.m_reductionKey;
     }
 
+    /**
+     * <p>setReductionKey</p>
+     *
+     * @param reductionkey a {@link java.lang.String} object.
+     */
     public void setReductionKey(String reductionkey) {
         this.m_reductionKey = reductionkey;
     }
 
+    /**
+     * <p>getAlarmType</p>
+     *
+     * @return a {@link java.lang.Integer} object.
+     */
     @Column(name="alarmType")
     @XmlAttribute(name="type")
     public Integer getAlarmType() {
         return this.m_alarmType;
     }
 
+    /**
+     * <p>setAlarmType</p>
+     *
+     * @param alarmtype a {@link java.lang.Integer} object.
+     */
     public void setAlarmType(Integer alarmtype) {
         this.m_alarmType = alarmtype;
     }
 
+    /**
+     * <p>getCounter</p>
+     *
+     * @return a {@link java.lang.Integer} object.
+     */
     @XmlAttribute(name="count")
     @Column(name="counter", nullable=false)
     public Integer getCounter() {
         return this.m_counter;
     }
 
+    /**
+     * <p>setCounter</p>
+     *
+     * @param counter a {@link java.lang.Integer} object.
+     */
     public void setCounter(Integer counter) {
         this.m_counter = counter;
     }
 
+    /**
+     * <p>getSeverityLabel</p>
+     *
+     * @return a {@link java.lang.String} object.
+     */
     @Transient
     @XmlAttribute(name="severity")
     public String getSeverityLabel() {
         return this.m_severity.name();
     }
 
+    /**
+     * <p>setSeverityLabel</p>
+     *
+     * @param label a {@link java.lang.String} object.
+     */
     public void setSeverityLabel(String label) {
         m_severity = OnmsSeverity.get(label);
     }
     
+    /**
+     * <p>getSeverity</p>
+     *
+     * @return a {@link org.opennms.netmgt.model.OnmsSeverity} object.
+     */
     @Transient
     @XmlTransient
     public OnmsSeverity getSeverity() {
         return this.m_severity;
     }
 
+    /**
+     * <p>setSeverity</p>
+     *
+     * @param severity a {@link org.opennms.netmgt.model.OnmsSeverity} object.
+     */
     @Transient
     public void setSeverity(OnmsSeverity severity) {
         m_severity = severity;
     }
     
+    /**
+     * <p>getSeverityId</p>
+     *
+     * @return a {@link java.lang.Integer} object.
+     */
     @Column(name="severity", nullable=false)
     @XmlTransient
     public Integer getSeverityId() {
         return this.m_severity.getId();
     }
 
+    /**
+     * <p>setSeverityId</p>
+     *
+     * @param severity a {@link java.lang.Integer} object.
+     */
     public void setSeverityId(Integer severity) {
         this.m_severity = OnmsSeverity.get(severity);
     }
     
+    /**
+     * <p>getFirstEventTime</p>
+     *
+     * @return a {@link java.util.Date} object.
+     */
     @Temporal(TemporalType.TIMESTAMP)
     @Column(name="firstEventTime")
     public Date getFirstEventTime() {
         return this.m_firstEventTime;
     }
 
+    /**
+     * <p>setFirstEventTime</p>
+     *
+     * @param firsteventtime a {@link java.util.Date} object.
+     */
     public void setFirstEventTime(Date firsteventtime) {
         this.m_firstEventTime = firsteventtime;
     }
 
+    /**
+     * <p>getDescription</p>
+     *
+     * @return a {@link java.lang.String} object.
+     */
     @Column(name="description", length=4000)
     public String getDescription() {
         return this.m_description;
     }
 
+    /**
+     * <p>setDescription</p>
+     *
+     * @param description a {@link java.lang.String} object.
+     */
     public void setDescription(String description) {
         this.m_description = description;
     }
 
+    /**
+     * <p>getLogMsg</p>
+     *
+     * @return a {@link java.lang.String} object.
+     */
     @Column(name="logmsg", length=256)
     @XmlElement(name="logMessage")
     public String getLogMsg() {
         return this.m_logMsg;
     }
 
+    /**
+     * <p>setLogMsg</p>
+     *
+     * @param logmsg a {@link java.lang.String} object.
+     */
     public void setLogMsg(String logmsg) {
         this.m_logMsg = logmsg;
     }
 
+    /**
+     * <p>getOperInstruct</p>
+     *
+     * @return a {@link java.lang.String} object.
+     */
     @XmlElement(name="operatorInstructions")
     @Column(name="operinstruct", length=1024)
     public String getOperInstruct() {
         return this.m_operInstruct;
     }
 
+    /**
+     * <p>setOperInstruct</p>
+     *
+     * @param operinstruct a {@link java.lang.String} object.
+     */
     public void setOperInstruct(String operinstruct) {
         this.m_operInstruct = operinstruct;
     }
 
+    /**
+     * <p>getTTicketId</p>
+     *
+     * @return a {@link java.lang.String} object.
+     */
     @XmlElement(name="troubleTicket")
     @Column(name="tticketId", length=128)
     public String getTTicketId() {
         return this.m_tTicketId;
     }
 
+    /**
+     * <p>setTTicketId</p>
+     *
+     * @param tticketid a {@link java.lang.String} object.
+     */
     public void setTTicketId(String tticketid) {
         this.m_tTicketId = tticketid;
     }
 
+    /**
+     * <p>getTTicketState</p>
+     *
+     * @return a {@link org.opennms.netmgt.model.TroubleTicketState} object.
+     */
     @XmlElement(name="troubleTicketState")
     @Column(name="tticketState")
     public TroubleTicketState getTTicketState() {
         return this.m_tTicketState;
     }
 
+    /**
+     * <p>setTTicketState</p>
+     *
+     * @param tticketstate a {@link org.opennms.netmgt.model.TroubleTicketState} object.
+     */
     public void setTTicketState(TroubleTicketState tticketstate) {
         this.m_tTicketState = tticketstate;
     }
 
+    /**
+     * <p>getMouseOverText</p>
+     *
+     * @return a {@link java.lang.String} object.
+     */
     @XmlElement(name="mouseOverText")
     @Column(name="mouseOverText", length=64)
     public String getMouseOverText() {
         return this.m_mouseOverText;
     }
 
+    /**
+     * <p>setMouseOverText</p>
+     *
+     * @param mouseovertext a {@link java.lang.String} object.
+     */
     public void setMouseOverText(String mouseovertext) {
         this.m_mouseOverText = mouseovertext;
     }
 
+    /**
+     * <p>getSuppressedUntil</p>
+     *
+     * @return a {@link java.util.Date} object.
+     */
     @Temporal(TemporalType.TIMESTAMP)
     @XmlElement(name="suppressedUntil")
     @Column(name="suppressedUntil")
@@ -401,20 +616,40 @@ public class OnmsAlarm implements Acknowledgeable, Serializable {
         return this.m_suppressedUntil;
     }
 
+    /**
+     * <p>setSuppressedUntil</p>
+     *
+     * @param suppresseduntil a {@link java.util.Date} object.
+     */
     public void setSuppressedUntil(Date suppresseduntil) {
         this.m_suppressedUntil = suppresseduntil;
     }
 
+    /**
+     * <p>getSuppressedUser</p>
+     *
+     * @return a {@link java.lang.String} object.
+     */
     @XmlElement(name="suppressedBy")
     @Column(name="suppressedUser", length=256)
     public String getSuppressedUser() {
         return this.m_suppressedUser;
     }
 
+    /**
+     * <p>setSuppressedUser</p>
+     *
+     * @param suppresseduser a {@link java.lang.String} object.
+     */
     public void setSuppressedUser(String suppresseduser) {
         this.m_suppressedUser = suppresseduser;
     }
 
+    /**
+     * <p>getSuppressedTime</p>
+     *
+     * @return a {@link java.util.Date} object.
+     */
     @Temporal(TemporalType.TIMESTAMP)
     @Column(name="suppressedTime")
     @XmlElement(name="suppressedTime")
@@ -422,20 +657,40 @@ public class OnmsAlarm implements Acknowledgeable, Serializable {
         return this.m_suppressedTime;
     }
 
+    /**
+     * <p>setSuppressedTime</p>
+     *
+     * @param suppressedtime a {@link java.util.Date} object.
+     */
     public void setSuppressedTime(Date suppressedtime) {
         this.m_suppressedTime = suppressedtime;
     }
 
+    /**
+     * <p>getAlarmAckUser</p>
+     *
+     * @return a {@link java.lang.String} object.
+     */
     @Column(name="alarmAckUser", length=256)
     @XmlElement(name="ackUser")
     public String getAlarmAckUser() {
         return this.m_alarmAckUser;
     }
 
+    /**
+     * <p>setAlarmAckUser</p>
+     *
+     * @param alarmackuser a {@link java.lang.String} object.
+     */
     public void setAlarmAckUser(String alarmackuser) {
         this.m_alarmAckUser = alarmackuser;
     }
 
+    /**
+     * <p>getAlarmAckTime</p>
+     *
+     * @return a {@link java.util.Date} object.
+     */
     @Temporal(TemporalType.TIMESTAMP)
     @Column(name="alarmAckTime")
     @XmlElement(name="ackTime")
@@ -443,20 +698,40 @@ public class OnmsAlarm implements Acknowledgeable, Serializable {
         return this.m_alarmAckTime;
     }
 
+    /**
+     * <p>setAlarmAckTime</p>
+     *
+     * @param alarmacktime a {@link java.util.Date} object.
+     */
     public void setAlarmAckTime(Date alarmacktime) {
         this.m_alarmAckTime = alarmacktime;
     }
 
+    /**
+     * <p>getClearKey</p>
+     *
+     * @return a {@link java.lang.String} object.
+     */
     @XmlElement(name="clearKey")
     @Column(name="clearKey", length=256)
     public String getClearKey() {
         return this.m_clearKey;
     }
 
+    /**
+     * <p>setClearKey</p>
+     *
+     * @param clearKey a {@link java.lang.String} object.
+     */
     public void setClearKey(String clearKey) {
         this.m_clearKey = clearKey;
     }
 
+    /**
+     * <p>getLastEvent</p>
+     *
+     * @return a {@link org.opennms.netmgt.model.OnmsEvent} object.
+     */
     @ManyToOne(fetch=FetchType.LAZY, optional=true)
     @JoinColumn(name="lastEventId")
     @XmlElement(name="lastEvent")
@@ -464,27 +739,52 @@ public class OnmsAlarm implements Acknowledgeable, Serializable {
         return this.m_lastEvent;
     }
 
+    /**
+     * <p>setLastEvent</p>
+     *
+     * @param event a {@link org.opennms.netmgt.model.OnmsEvent} object.
+     */
     public void setLastEvent(OnmsEvent event) {
         this.m_lastEvent = event;
         if (event!=null) this.m_lastEventTime = event.getEventTime(); // alarm can be saved with no associated event
     }
 
+    /**
+     * <p>getEventParms</p>
+     *
+     * @return a {@link java.lang.String} object.
+     */
     @XmlElement(name="parms")
     @Column(name="eventParms", length=1024)
     public String getEventParms() {
         return this.m_eventParms;
     }
 
+    /**
+     * <p>setEventParms</p>
+     *
+     * @param eventparms a {@link java.lang.String} object.
+     */
     public void setEventParms(String eventparms) {
         this.m_eventParms = eventparms;
     }
 
+    /**
+     * <p>toString</p>
+     *
+     * @return a {@link java.lang.String} object.
+     */
     public String toString() {
         return new ToStringCreator(this)
             .append("alarmid", getId())
             .toString();
     }
 
+    /**
+     * <p>getLastEventTime</p>
+     *
+     * @return a {@link java.util.Date} object.
+     */
     @Temporal(TemporalType.TIMESTAMP)
     @Column(name="lastEventTime")
     @XmlElement(name="lastEventTime")
@@ -492,74 +792,154 @@ public class OnmsAlarm implements Acknowledgeable, Serializable {
         return m_lastEventTime;
     }
 
+    /**
+     * <p>setLastEventTime</p>
+     *
+     * @param lastEventTime a {@link java.util.Date} object.
+     */
     public void setLastEventTime(Date lastEventTime) {
         m_lastEventTime = lastEventTime;
     }
     
+    /**
+     * <p>getApplicationDN</p>
+     *
+     * @return a {@link java.lang.String} object.
+     */
     @XmlElement(name="applicationDN")
     @Column(name="applicationDN", length=512)
     public String getApplicationDN() {
         return m_applicationDN;
     }
 
+    /**
+     * <p>setApplicationDN</p>
+     *
+     * @param applicationDN a {@link java.lang.String} object.
+     */
     public void setApplicationDN(String applicationDN) {
         m_applicationDN = applicationDN;
     }
 
+    /**
+     * <p>getManagedObjectInstance</p>
+     *
+     * @return a {@link java.lang.String} object.
+     */
     @Column(name="managedObjectInstance", length=512)
     public String getManagedObjectInstance() {
         return m_managedObjectInstance;
     }
 
+    /**
+     * <p>setManagedObjectInstance</p>
+     *
+     * @param managedObjectInstance a {@link java.lang.String} object.
+     */
     public void setManagedObjectInstance(String managedObjectInstance) {
         m_managedObjectInstance = managedObjectInstance;
     }
 
+    /**
+     * <p>getManagedObjectType</p>
+     *
+     * @return a {@link java.lang.String} object.
+     */
     @Column(name="managedObjectType", length=512)
     public String getManagedObjectType() {
         return m_managedObjectType;
     }
 
+    /**
+     * <p>setManagedObjectType</p>
+     *
+     * @param managedObjectType a {@link java.lang.String} object.
+     */
     public void setManagedObjectType(String managedObjectType) {
         m_managedObjectType = managedObjectType;
     }
 
+    /**
+     * <p>getOssPrimaryKey</p>
+     *
+     * @return a {@link java.lang.String} object.
+     */
     @Column(name="ossPrimaryKey", length=512)
     public String getOssPrimaryKey() {
         return m_ossPrimaryKey;
     }
     
+    /**
+     * <p>setOssPrimaryKey</p>
+     *
+     * @param key a {@link java.lang.String} object.
+     */
     public void setOssPrimaryKey(String key) {
         m_ossPrimaryKey = key;
     }
     
+    /**
+     * <p>getX733AlarmType</p>
+     *
+     * @return a {@link java.lang.String} object.
+     */
     @Column(name="x733AlarmType", length=31)
     public String getX733AlarmType() {
         return m_x733AlarmType;
     }
     
+    /**
+     * <p>setX733AlarmType</p>
+     *
+     * @param alarmType a {@link java.lang.String} object.
+     */
     public void setX733AlarmType(String alarmType) {
         m_x733AlarmType = alarmType;
     }
     
+    /**
+     * <p>getX733ProbableCause</p>
+     *
+     * @return a int.
+     */
     @Column(name="x733ProbableCause", nullable=false)
     public int getX733ProbableCause() {
         return m_x733ProbableCause;
     }
     
+    /**
+     * <p>setX733ProbableCause</p>
+     *
+     * @param cause a int.
+     */
     public void setX733ProbableCause(int cause) {
         m_x733ProbableCause = cause;
     }
     
+    /**
+     * <p>getQosAlarmState</p>
+     *
+     * @return a {@link java.lang.String} object.
+     */
     @Column(name="qosAlarmState", length=31)
     public String getQosAlarmState() {
         return m_qosAlarmState;
         
     }
+    /**
+     * <p>setQosAlarmState</p>
+     *
+     * @param alarmState a {@link java.lang.String} object.
+     */
     public void setQosAlarmState(String alarmState) {
         m_qosAlarmState = alarmState;
     }
 
+    /**
+     * <p>getFirstAutomationTime</p>
+     *
+     * @return a {@link java.util.Date} object.
+     */
     @Temporal(TemporalType.TIMESTAMP)
     @Column(name="firstAutomationTime")
     @XmlElement(name="firstAutomationTime")
@@ -567,10 +947,20 @@ public class OnmsAlarm implements Acknowledgeable, Serializable {
         return m_firstAutomationTime;
     }
 
+    /**
+     * <p>setFirstAutomationTime</p>
+     *
+     * @param firstAutomationTime a {@link java.util.Date} object.
+     */
     public void setFirstAutomationTime(Date firstAutomationTime) {
         m_firstAutomationTime = firstAutomationTime;
     }
 
+    /**
+     * <p>getLastAutomationTime</p>
+     *
+     * @return a {@link java.util.Date} object.
+     */
     @Temporal(TemporalType.TIMESTAMP)
     @Column(name="lastAutomationTime")
     @XmlElement(name="lastAutomationTime")
@@ -578,10 +968,20 @@ public class OnmsAlarm implements Acknowledgeable, Serializable {
         return m_lastAutomationTime;
     }
 
+    /**
+     * <p>setLastAutomationTime</p>
+     *
+     * @param lastAutomationTime a {@link java.util.Date} object.
+     */
     public void setLastAutomationTime(Date lastAutomationTime) {
         m_lastAutomationTime = lastAutomationTime;
     }
     
+    /**
+     * <p>getDetails</p>
+     *
+     * @return a {@link java.util.Map} object.
+     */
     @XmlTransient
     @CollectionOfElements
     @JoinTable(name="alarm_details", joinColumns = @JoinColumn(name="alarmId"))
@@ -591,20 +991,36 @@ public class OnmsAlarm implements Acknowledgeable, Serializable {
         return m_details;
     }
     
+    /**
+     * <p>setDetails</p>
+     *
+     * @param alarmDetails a {@link java.util.Map} object.
+     */
     public void setDetails(Map<String, String> alarmDetails) {
         m_details = alarmDetails;
     }
 
+    /**
+     * <p>getIfIndex</p>
+     *
+     * @return a {@link java.lang.Integer} object.
+     */
     @Column(name="ifIndex")
     @XmlAttribute(name="ifIndex")
     public Integer getIfIndex() {
         return m_ifIndex;
     }
 
+    /**
+     * <p>setIfIndex</p>
+     *
+     * @param ifIndex a {@link java.lang.Integer} object.
+     */
     public void setIfIndex(Integer ifIndex) {
         m_ifIndex = ifIndex;
     }
 
+    /** {@inheritDoc} */
     public void acknowledge(String user) {
         if (m_alarmAckTime == null || m_alarmAckUser == null) {
             m_alarmAckTime = Calendar.getInstance().getTime();
@@ -612,36 +1028,59 @@ public class OnmsAlarm implements Acknowledgeable, Serializable {
         }
     }
     
+    /** {@inheritDoc} */
     public void unacknowledge(String ackUser) {
         m_alarmAckTime = null;
         m_alarmAckUser = null;
     }
     
+    /** {@inheritDoc} */
     public void clear(String ackUser) {
         m_severity = OnmsSeverity.CLEARED;
     }
     
+    /** {@inheritDoc} */
     public void escalate(String ackUser) {
         m_severity = OnmsSeverity.escalate(m_severity);
 //        m_alarmAckUser = ackUser;
 //        m_alarmAckTime = Calendar.getInstance().getTime();
     }
 
+    /**
+     * <p>getType</p>
+     *
+     * @return a {@link org.opennms.netmgt.model.AckType} object.
+     */
     @Transient
     public AckType getType() {
         return AckType.ALARM;
     }
     
+    /**
+     * <p>getAckId</p>
+     *
+     * @return a {@link java.lang.Integer} object.
+     */
     @Transient
     public Integer getAckId() {
         return m_id;
     }
     
+    /**
+     * <p>getAckUser</p>
+     *
+     * @return a {@link java.lang.String} object.
+     */
     @Transient
     public String getAckUser() {
         return m_alarmAckUser;
     }
     
+    /**
+     * <p>getAckTime</p>
+     *
+     * @return a {@link java.util.Date} object.
+     */
     @Transient
     public Date getAckTime() {
         return m_alarmAckTime;

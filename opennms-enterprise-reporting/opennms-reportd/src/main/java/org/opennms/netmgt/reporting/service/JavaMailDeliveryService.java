@@ -12,10 +12,17 @@ import org.opennms.netmgt.dao.JavaMailConfigurationDao;
 import org.springframework.mail.javamail.MimeMailMessage;
 import org.springframework.mail.javamail.MimeMessageHelper;
 
+/**
+ * <p>JavaMailDeliveryService class.</p>
+ *
+ * @author ranger
+ * @version $Id: $
+ */
 public class JavaMailDeliveryService implements ReportDeliveryService {
 
     JavaMailConfigurationDao m_JavamailConfigDao;
 
+    /** {@inheritDoc} */
     public void deliverReport(Report report, String fileName) {
         try {
 
@@ -45,11 +52,21 @@ public class JavaMailDeliveryService implements ReportDeliveryService {
     }
 
 
+    /**
+     * <p>getJavamailConfigDao</p>
+     *
+     * @return a {@link org.opennms.netmgt.dao.JavaMailConfigurationDao} object.
+     */
     public JavaMailConfigurationDao getJavamailConfigDao() {
         return m_JavamailConfigDao;
     }
 
     
+    /**
+     * <p>setJavamailConfigDao</p>
+     *
+     * @param javamailConfigDao a {@link org.opennms.netmgt.dao.JavaMailConfigurationDao} object.
+     */
     public void setJavamailConfigDao(JavaMailConfigurationDao javamailConfigDao) {
         m_JavamailConfigDao = javamailConfigDao;
     }

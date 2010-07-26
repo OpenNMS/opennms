@@ -71,7 +71,10 @@ import com.sun.jersey.spi.resource.PerRequest;
 
 /**
  * Basic Web Service using REST for OnmsNode entity
+ *
  * @author <a href="mailto:agalue@opennms.org">Alejandro Galue</a>
+ * @version $Id: $
+ * @since 1.8.1
  */
 @Component
 @PerRequest
@@ -94,6 +97,11 @@ public class NodeRestService extends OnmsRestService {
     @Context
     ResourceContext m_context;
 
+    /**
+     * <p>getNodes</p>
+     *
+     * @return a {@link org.opennms.netmgt.model.OnmsNodeList} object.
+     */
     @GET
     @Produces({MediaType.APPLICATION_XML, MediaType.APPLICATION_JSON})
     public OnmsNodeList getNodes() {
@@ -107,6 +115,12 @@ public class NodeRestService extends OnmsRestService {
         return nodeList;
     }
 
+    /**
+     * <p>getNode</p>
+     *
+     * @param nodeCriteria a {@link java.lang.String} object.
+     * @return a {@link org.opennms.netmgt.model.OnmsNode} object.
+     */
     @GET
     @Produces({MediaType.APPLICATION_XML, MediaType.APPLICATION_JSON})
     @Path("{nodeCriteria}")
@@ -114,6 +128,12 @@ public class NodeRestService extends OnmsRestService {
         return m_nodeDao.get(nodeCriteria);
     }
 
+    /**
+     * <p>addNode</p>
+     *
+     * @param node a {@link org.opennms.netmgt.model.OnmsNode} object.
+     * @return a {@link javax.ws.rs.core.Response} object.
+     */
     @POST
     @Consumes(MediaType.APPLICATION_XML)
     public Response addNode(OnmsNode node) {
@@ -127,6 +147,13 @@ public class NodeRestService extends OnmsRestService {
         return Response.ok(node).build();
     }
     
+    /**
+     * <p>updateNode</p>
+     *
+     * @param nodeCriteria a {@link java.lang.String} object.
+     * @param params a {@link org.opennms.web.rest.MultivaluedMapImpl} object.
+     * @return a {@link javax.ws.rs.core.Response} object.
+     */
     @PUT
     @Consumes(MediaType.APPLICATION_FORM_URLENCODED)
     @Path("{nodeCriteria}")
@@ -149,6 +176,12 @@ public class NodeRestService extends OnmsRestService {
         return Response.ok(node).build();
     }
     
+    /**
+     * <p>deleteNode</p>
+     *
+     * @param nodeCriteria a {@link java.lang.String} object.
+     * @return a {@link javax.ws.rs.core.Response} object.
+     */
     @DELETE
     @Path("{nodeCriteria}")
     public Response deleteNode(@PathParam("nodeCriteria") String nodeCriteria) {
@@ -166,21 +199,41 @@ public class NodeRestService extends OnmsRestService {
         return Response.ok().build();
     }
 
+    /**
+     * <p>getIpInterfaceResource</p>
+     *
+     * @return a {@link org.opennms.web.rest.OnmsIpInterfaceResource} object.
+     */
     @Path("{nodeCriteria}/ipinterfaces")
     public OnmsIpInterfaceResource getIpInterfaceResource() {
         return m_context.getResource(OnmsIpInterfaceResource.class);
     }
 
+    /**
+     * <p>getSnmpInterfaceResource</p>
+     *
+     * @return a {@link org.opennms.web.rest.OnmsSnmpInterfaceResource} object.
+     */
     @Path("{nodeCriteria}/snmpinterfaces")
     public OnmsSnmpInterfaceResource getSnmpInterfaceResource() {
         return m_context.getResource(OnmsSnmpInterfaceResource.class);
     }
 
+    /**
+     * <p>getCategoryResource</p>
+     *
+     * @return a {@link org.opennms.web.rest.OnmsCategoryResource} object.
+     */
     @Path("{nodeCriteria}/categories")
     public OnmsCategoryResource getCategoryResource() {
         return m_context.getResource(OnmsCategoryResource.class);
     }
 
+    /**
+     * <p>getAssetRecordResource</p>
+     *
+     * @return a {@link org.opennms.web.rest.AssetRecordResource} object.
+     */
     @Path("{nodeCriteria}/assetRecord")
     public AssetRecordResource getAssetRecordResource() {
         return m_context.getResource(AssetRecordResource.class);

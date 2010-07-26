@@ -58,7 +58,7 @@ import javax.sql.DataSource;
 /**
  * The Vault handles policies for allocating/deallocating scarce resources and
  * stores application configuration properties.
- * 
+ *
  * <p>
  * Since our code might be deployed in different environments, this class
  * provides a deployment-neutral way of retrieving scarce resources and
@@ -68,10 +68,17 @@ import javax.sql.DataSource;
  * database connections, socket connections, RMI connections, CORBA connections,
  * or open temporary files.
  * </p>
- * 
+ *
  * @author <A HREF="mailto:larry@opennms.org">Lawrence Karnowski </A>
  * @author <A HREF="mailto:weave@oculan.com">Brian Weaver </A>
  * @author <A HREF="http://www.opennms.org/">OpenNMS </A>
+ * @author <A HREF="mailto:larry@opennms.org">Lawrence Karnowski </A>
+ * @author <A HREF="mailto:weave@oculan.com">Brian Weaver </A>
+ * @author <A HREF="http://www.opennms.org/">OpenNMS </A>
+ * @author <A HREF="mailto:larry@opennms.org">Lawrence Karnowski </A>
+ * @author <A HREF="mailto:weave@oculan.com">Brian Weaver </A>
+ * @author <A HREF="http://www.opennms.org/">OpenNMS </A>
+ * @version $Id: $
  */
 public class Vault extends Object {
 
@@ -94,6 +101,11 @@ public class Vault extends Object {
     private Vault() {
     }
 
+    /**
+     * <p>setDataSource</p>
+     *
+     * @param dataSource a {@link javax.sql.DataSource} object.
+     */
     public static void setDataSource(DataSource dataSource) {
         if (dataSource == null) {
             throw new IllegalArgumentException("Cannot take null parameters.");
@@ -102,6 +114,11 @@ public class Vault extends Object {
         s_dataSource = dataSource;
     }
 
+    /**
+     * <p>getDataSource</p>
+     *
+     * @return a {@link javax.sql.DataSource} object.
+     */
     public static DataSource getDataSource() {
         if (s_dataSource == null) {
             throw new IllegalStateException("You must set a DataSource before requesting a data source.");
@@ -112,6 +129,9 @@ public class Vault extends Object {
     
     /**
      * Retrieve a database connection from the datasource.
+     *
+     * @return a {@link java.sql.Connection} object.
+     * @throws java.sql.SQLException if any.
      */
     public static Connection getDbConnection() throws SQLException {
         if (s_dataSource == null) {
@@ -123,10 +143,10 @@ public class Vault extends Object {
 
     /**
      * Release a database connection.
-     * 
+     *
      * @param connection
      *            the connection to release
-     * @throws SQLException
+     * @throws java.sql.SQLException
      *             If a SQL error occurs while calling connection.close() on the
      *             connection.
      */
@@ -136,6 +156,8 @@ public class Vault extends Object {
 
     /**
      * Set the application configuration properties.
+     *
+     * @param properties a {@link java.util.Properties} object.
      */
     public static void setProperties(Properties properties) {
         if (properties == null) {
@@ -158,6 +180,8 @@ public class Vault extends Object {
 
     /**
      * Return the entire set of application configuration properties.
+     *
+     * @return a {@link java.util.Properties} object.
      */
     public static Properties getProperties() {
         return properties;
@@ -165,6 +189,9 @@ public class Vault extends Object {
 
     /**
      * Return property from the configuration parameter list.
+     *
+     * @param key a {@link java.lang.String} object.
+     * @return a {@link java.lang.String} object.
      */
     public static String getProperty(String key) {
         return properties.getProperty(key);
@@ -173,6 +200,8 @@ public class Vault extends Object {
     /**
      * Set the directory so we will know where we can get the OpenNMS
      * configuration files.
+     *
+     * @param homeDir a {@link java.lang.String} object.
      */
     public static void setHomeDir(String homeDir) {
         if (homeDir == null) {
@@ -186,6 +215,8 @@ public class Vault extends Object {
 
     /**
      * Get the directory that holds the OpenNMS configuration files.
+     *
+     * @return a {@link java.lang.String} object.
      */
     public static String getHomeDir() {
         return homeDir;
@@ -200,7 +231,7 @@ public class Vault extends Object {
      * form of a list of file names, each separated by the system
      * {@link java.io.File#pathSeparatorCharpath separator} character.
      * </P>
-     * 
+     *
      * <P>
      * Once the list of files is recovered, each file is visited and loaded into
      * the system properties. If any file cannot be loaded due to an I/O error
@@ -208,10 +239,9 @@ public class Vault extends Object {
      * system properties. Also, this method will not overwrite an existing key
      * in the currently loaded properties.
      * </P>
-     * 
+     *
      * @param key
      *            The key name used to lookup the property path values.
-     * 
      * @return True if all properties loaded correctly, false if any property
      *         file failed to load.
      */

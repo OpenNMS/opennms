@@ -1,0 +1,7 @@
+{d "%w- %d %m-, %Y - %T"} - A "lBConfiguredAsBoth" event has occurred, from {t} device, named {m}.
+
+"lb: An interface has been configured as both a head-end and a backing, and therefore SIP load-balancing will not function"
+
+lBConfiguredAsBothInterfaceName = {S 1}
+lBConfiguredAsBothInterfaceAddress = {O 2}
+(event [{e}])

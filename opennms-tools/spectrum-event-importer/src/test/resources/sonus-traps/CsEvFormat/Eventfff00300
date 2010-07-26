@@ -1,0 +1,11 @@
+{d "%w- %d %m-, %Y - %T"} - A "ipUnitySpmG4ModuleUpgradeFailure" event has occurred, from {t} device, named {m}.
+
+" the upgrade of the SPMG4 image fails."
+
+ipUnityTrapSeverity = {T ipUnityTrapSeverity 1}
+ipUnityCardIndex = {I 2}
+ipUnityBankIndex = {I 3}
+ipUnityModuleIndex = {I 4}
+ipUnityTrapInfoString = {S 5}
+ipUnitySequenceNumber = {I 6}
+(event [{e}])

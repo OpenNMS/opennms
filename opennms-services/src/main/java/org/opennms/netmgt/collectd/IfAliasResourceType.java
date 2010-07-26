@@ -42,24 +42,40 @@ import java.util.Map;
 
 import org.opennms.netmgt.snmp.SnmpInstId;
 
+/**
+ * <p>IfAliasResourceType class.</p>
+ *
+ * @author ranger
+ * @version $Id: $
+ */
 public class IfAliasResourceType extends ResourceType {
 
     private IfResourceType m_ifResourceType;
     private Map<Integer, AliasedResource> m_aliasedIfs = new HashMap<Integer, AliasedResource>();
     private ServiceParameters m_params;
 
+    /**
+     * <p>Constructor for IfAliasResourceType.</p>
+     *
+     * @param agent a {@link org.opennms.netmgt.collectd.CollectionAgent} object.
+     * @param snmpCollection a {@link org.opennms.netmgt.collectd.OnmsSnmpCollection} object.
+     * @param params a {@link org.opennms.netmgt.collectd.ServiceParameters} object.
+     * @param ifResourceType a {@link org.opennms.netmgt.collectd.IfResourceType} object.
+     */
     public IfAliasResourceType(CollectionAgent agent, OnmsSnmpCollection snmpCollection, ServiceParameters params, IfResourceType ifResourceType) {
         super(agent, snmpCollection);
         m_ifResourceType = ifResourceType;
         m_params = params;
     }
 
+    /** {@inheritDoc} */
     public SnmpCollectionResource findResource(SnmpInstId inst) {
         // This is here for completeness but it should not get called here.
         // findAliasedResource should be called instead
         log().debug("findResource: Should not get called from IfAliasResourceType");
         return null;
     }
+    /** {@inheritDoc} */
     public SnmpCollectionResource findAliasedResource(SnmpInstId inst, String ifAlias) {
         Integer key = inst.toInt();
         AliasedResource resource = (AliasedResource) m_aliasedIfs.get(key);
@@ -79,15 +95,26 @@ public class IfAliasResourceType extends ResourceType {
         return resource;
     }
     
+    /** {@inheritDoc} */
     @Override
     public SnmpInstId[] getCollectionInstances() {
         return m_ifResourceType.getCollectionInstances();
     }
 
+    /**
+     * <p>loadAttributeTypes</p>
+     *
+     * @return a {@link java.util.Collection} object.
+     */
     public Collection<SnmpAttributeType> loadAttributeTypes() {
         return getCollection().getAliasAttributeTypes(getAgent());
    }
 
+    /**
+     * <p>getResources</p>
+     *
+     * @return a {@link java.util.Collection} object.
+     */
     public Collection<AliasedResource> getResources() {
         return m_aliasedIfs.values();
     }

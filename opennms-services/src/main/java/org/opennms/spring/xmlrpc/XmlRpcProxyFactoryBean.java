@@ -39,14 +39,21 @@ import org.springframework.beans.factory.FactoryBean;
 import org.springframework.beans.factory.InitializingBean;
 
 /**
- * 
+ * <p>XmlRpcProxyFactoryBean class.</p>
+ *
  * @author <a href="mailto:brozow@opennms.org">Mathew Brozowski</a>
  * @author <a href="mailto:david@opennms.org">David Hustace</a>
+ * @author <a href="mailto:brozow@opennms.org">Mathew Brozowski</a>
+ * @author <a href="mailto:david@opennms.org">David Hustace</a>
+ * @version $Id: $
  */
 public class XmlRpcProxyFactoryBean extends XmlRpcClientInterceptor implements FactoryBean, InitializingBean {
 
     private Object serviceProxy;
 
+    /**
+     * <p>afterPropertiesSet</p>
+     */
     public void afterPropertiesSet() {
         if (getServiceInterface() == null) {
             throw new IllegalArgumentException("serviceInterface is required");
@@ -54,15 +61,31 @@ public class XmlRpcProxyFactoryBean extends XmlRpcClientInterceptor implements F
         this.serviceProxy = ProxyFactory.getProxy(getServiceInterface(), this);
     }
 
+    /**
+     * <p>getObject</p>
+     *
+     * @return a {@link java.lang.Object} object.
+     * @throws java.lang.Exception if any.
+     */
     public Object getObject() throws Exception {
         return this.serviceProxy;
     }
     
 
+    /**
+     * <p>getObjectType</p>
+     *
+     * @return a {@link java.lang.Class} object.
+     */
     public Class getObjectType() {
         return (this.serviceProxy != null) ? this.serviceProxy.getClass() : getServiceInterface();
     }
 
+    /**
+     * <p>isSingleton</p>
+     *
+     * @return a boolean.
+     */
     public boolean isSingleton() {
         return true;
     }

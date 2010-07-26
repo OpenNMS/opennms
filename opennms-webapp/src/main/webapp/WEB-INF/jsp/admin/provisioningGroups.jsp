@@ -47,7 +47,7 @@
       </c:otherwise>
     </c:choose>
     <c:if test="${!empty groups[foreignSourceName]}">
-      <input type="button" value="Import" onclick="javascript:doAction('${foreignSourceName}', 'import')" />
+      <input type="button" value="Synchronize" onclick="javascript:doAction('${foreignSourceName}', 'import')" />
     </c:if>
   </span>
   <br />
@@ -56,7 +56,7 @@
   	<tr>
   	  <td>
   	  	Requisition (Provisioning Group):<br />
-  	  	<span style="font-size: smaller">Define node and interface data for import.</span>
+  	  	<span style="font-size: smaller">Define node and interface data for synchronization.</span>
   	  </td>
   	  <td>
   	  	<a href="javascript:editRequisition('${foreignSourceName}')">EDIT</a>
@@ -77,7 +77,7 @@
             <c:when test="${empty groups[foreignSourceName].dateStamp}">never</c:when>
             <c:otherwise>${groups[foreignSourceName].dateStamp}</c:otherwise>
           </c:choose><br />
-          last import requested:
+          last synchronization requested:
           <c:choose>
             <c:when test="${empty groups[foreignSourceName].lastImport}">never</c:when>
             <c:otherwise>${groups[foreignSourceName].lastImport}</c:otherwise>
@@ -88,7 +88,7 @@
   	<tr>
   	  <td>
   	    Foreign Source:<br />
-  	    <span style="font-size: smaller">Define scanning behavior for import.</span>
+  	    <span style="font-size: smaller">Define scanning behavior for synchronization.</span>
   	  </td>
   	  <td>
   	  	<a href="javascript:editForeignSource('${foreignSourceName}')">EDIT</a> |

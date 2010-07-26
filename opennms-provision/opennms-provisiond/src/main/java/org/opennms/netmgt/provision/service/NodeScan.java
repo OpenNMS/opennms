@@ -67,6 +67,12 @@ import org.opennms.netmgt.snmp.SnmpUtils;
 import org.opennms.netmgt.snmp.SnmpWalker;
 import org.springframework.util.Assert;
 
+/**
+ * <p>NodeScan class.</p>
+ *
+ * @author ranger
+ * @version $Id: $
+ */
 public class NodeScan implements RunInBatch {
 
     private Integer m_nodeId;
@@ -85,6 +91,17 @@ public class NodeScan implements RunInBatch {
     private OnmsNode m_node;
     private boolean m_agentFound = false;
 
+    /**
+     * <p>Constructor for NodeScan.</p>
+     *
+     * @param nodeId a {@link java.lang.Integer} object.
+     * @param foreignSource a {@link java.lang.String} object.
+     * @param foreignId a {@link java.lang.String} object.
+     * @param provisionService a {@link org.opennms.netmgt.provision.service.ProvisionService} object.
+     * @param eventForwarder a {@link org.opennms.netmgt.model.events.EventForwarder} object.
+     * @param agentConfigFactory a {@link org.opennms.netmgt.dao.SnmpAgentConfigFactory} object.
+     * @param taskCoordinator a {@link org.opennms.core.tasks.DefaultTaskCoordinator} object.
+     */
     public NodeScan(Integer nodeId, String foreignSource, String foreignId, ProvisionService provisionService, EventForwarder eventForwarder, SnmpAgentConfigFactory agentConfigFactory, DefaultTaskCoordinator taskCoordinator) {
         m_nodeId = nodeId;
         m_foreignSource = foreignSource;
@@ -96,18 +113,38 @@ public class NodeScan implements RunInBatch {
         m_taskCoordinator = taskCoordinator;
     }
     
+    /**
+     * <p>getForeignSource</p>
+     *
+     * @return a {@link java.lang.String} object.
+     */
     public String getForeignSource() {
         return m_foreignSource;
     }
     
+    /**
+     * <p>getForeignId</p>
+     *
+     * @return a {@link java.lang.String} object.
+     */
     public String getForeignId() {
         return m_foreignId;
     }
     
+    /**
+     * <p>getNodeId</p>
+     *
+     * @return a {@link java.lang.Integer} object.
+     */
     public Integer getNodeId() {
         return m_nodeId;
     }
     
+    /**
+     * <p>getNode</p>
+     *
+     * @return a {@link org.opennms.netmgt.model.OnmsNode} object.
+     */
     public OnmsNode getNode() {
         return m_node;
     }
@@ -126,6 +163,11 @@ public class NodeScan implements RunInBatch {
         return m_agentFound;
     }
 
+    /**
+     * <p>getScanStamp</p>
+     *
+     * @return a {@link java.util.Date} object.
+     */
     public Date getScanStamp() {
         return m_scanStamp;
     }
@@ -133,6 +175,8 @@ public class NodeScan implements RunInBatch {
 
 
     /**
+     * <p>getProvisionService</p>
+     *
      * @return the provisionService
      */
     public ProvisionService getProvisionService() {
@@ -140,20 +184,37 @@ public class NodeScan implements RunInBatch {
     }
 
     /**
+     * <p>getEventForwarder</p>
+     *
      * @return the eventForwarder
      */
     public EventForwarder getEventForwarder() {
         return m_eventForwarder;
     }
     
+    /**
+     * <p>getTaskCoordinator</p>
+     *
+     * @return a {@link org.opennms.core.tasks.DefaultTaskCoordinator} object.
+     */
     public DefaultTaskCoordinator getTaskCoordinator() {
         return m_taskCoordinator;
     }
 
+    /**
+     * <p>isAborted</p>
+     *
+     * @return a boolean.
+     */
     public boolean isAborted() {
         return m_aborted;
     }
     
+    /**
+     * <p>abort</p>
+     *
+     * @param reason a {@link java.lang.String} object.
+     */
     public void abort(String reason) {
         m_aborted = true;
         
@@ -175,6 +236,7 @@ public class NodeScan implements RunInBatch {
         return getTaskCoordinator().createBatch().add(NodeScan.this).get();
     }
     
+    /** {@inheritDoc} */
     public void run(BatchTask parent) {
         infof(this, "Scanning node (%s/%s)", m_foreignSource, m_foreignId);
 
@@ -228,6 +290,11 @@ public class NodeScan implements RunInBatch {
         return future;
     }
 
+    /**
+     * <p>loadNode</p>
+     *
+     * @param loadNode a {@link org.opennms.core.tasks.BatchTask} object.
+     */
     public void loadNode(BatchTask loadNode) {
         if (getForeignSource() != null) {
             m_node = m_provisionService.getRequisitionedNode(getForeignSource(), getForeignId());
@@ -244,6 +311,13 @@ public class NodeScan implements RunInBatch {
 
     }
 
+    /**
+     * <p>createAgentScan</p>
+     *
+     * @param agentAddress a {@link java.net.InetAddress} object.
+     * @param agentType a {@link java.lang.String} object.
+     * @return a {@link org.opennms.netmgt.provision.service.NodeScan.AgentScan} object.
+     */
     public AgentScan createAgentScan(InetAddress agentAddress, String agentType) {
         return new AgentScan(m_nodeId, m_node, agentAddress, agentType);
     }
@@ -600,6 +674,11 @@ public class NodeScan implements RunInBatch {
         
     }
     
+    /**
+     * <p>toString</p>
+     *
+     * @return a {@link java.lang.String} object.
+     */
     public String toString() {
         return new ToStringBuilder(this)
             .append("foreign source", m_foreignSource)
@@ -611,6 +690,11 @@ public class NodeScan implements RunInBatch {
     }
 
 
+    /**
+     * <p>detectAgents</p>
+     *
+     * @param currentPhase a {@link org.opennms.core.tasks.BatchTask} object.
+     */
     public void detectAgents(BatchTask currentPhase) {
         
         if (!isAborted()) {
@@ -624,6 +708,11 @@ public class NodeScan implements RunInBatch {
         }
     }
 
+    /**
+     * <p>handleAgentUndetected</p>
+     *
+     * @param currentPhase a {@link org.opennms.core.tasks.BatchTask} object.
+     */
     public void handleAgentUndetected(BatchTask currentPhase) {
         
         if (!isAgentFound()) {
@@ -638,6 +727,11 @@ public class NodeScan implements RunInBatch {
         setAgentFound(true);
     }
 
+    /**
+     * <p>scanCompleted</p>
+     *
+     * @param currentPhase a {@link org.opennms.core.tasks.BatchTask} object.
+     */
     public void scanCompleted(BatchTask currentPhase) {
         if (!isAborted()) {
             EventBuilder bldr = new EventBuilder(EventConstants.PROVISION_SCAN_COMPLETE_UEI, "Provisiond");

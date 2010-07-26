@@ -52,18 +52,31 @@ import org.opennms.netmgt.ConfigFileConstants;
 /**
  * This is the singleton class used to load the configuration for the OpenNMS
  * Thresholding Daemon from the threshd-configuration xml file.
- * 
+ *
  * A mapping of the configured URLs to the iplist they contain is built at
  * init() time so as to avoid numerous file reads.
- * 
+ *
  * <strong>Note: </strong>Users of this class should make sure the
  * <em>init()</em> is called before calling any other method to ensure the
  * config is loaded before accessing other convenience methods.
- * 
+ *
  * @author <a href="mailto:jamesz@opennms.com>James Zuo </a>
  * @author <a href="mailto:mike@opennms.org">Mike Davidson </a>
  * @author <a href="mailto:sowmya@opennms.org">Sowmya Nataraj </a>
  * @author <a href="http://www.opennms.org/">OpenNMS </a>
+ * @author <a href="mailto:jamesz@opennms.com>James Zuo </a>
+ * @author <a href="mailto:mike@opennms.org">Mike Davidson </a>
+ * @author <a href="mailto:sowmya@opennms.org">Sowmya Nataraj </a>
+ * @author <a href="http://www.opennms.org/">OpenNMS </a>
+ * @author <a href="mailto:jamesz@opennms.com>James Zuo </a>
+ * @author <a href="mailto:mike@opennms.org">Mike Davidson </a>
+ * @author <a href="mailto:sowmya@opennms.org">Sowmya Nataraj </a>
+ * @author <a href="http://www.opennms.org/">OpenNMS </a>
+ * @author <a href="mailto:jamesz@opennms.com>James Zuo </a>
+ * @author <a href="mailto:mike@opennms.org">Mike Davidson </a>
+ * @author <a href="mailto:sowmya@opennms.org">Sowmya Nataraj </a>
+ * @author <a href="http://www.opennms.org/">OpenNMS </a>
+ * @version $Id: $
  */
 public final class ThreshdConfigFactory extends ThreshdConfigManager {
     /**
@@ -78,13 +91,19 @@ public final class ThreshdConfigFactory extends ThreshdConfigManager {
 
     /**
      * Public constructor
-     * 
+     *
      * @exception java.io.IOException
      *                Thrown if the specified config file cannot be read
      * @exception org.exolab.castor.xml.MarshalException
      *                Thrown if the file does not conform to the schema.
      * @exception org.exolab.castor.xml.ValidationException
      *                Thrown if the contents do not match the required schema.
+     * @param rdr a {@link java.io.Reader} object.
+     * @param localServer a {@link java.lang.String} object.
+     * @param verifyServer a boolean.
+     * @throws java.io.IOException if any.
+     * @throws org.exolab.castor.xml.MarshalException if any.
+     * @throws org.exolab.castor.xml.ValidationException if any.
      */
     // Changed scope to public to simplify tests
     @Deprecated
@@ -93,6 +112,16 @@ public final class ThreshdConfigFactory extends ThreshdConfigManager {
 
     }
 
+    /**
+     * <p>Constructor for ThreshdConfigFactory.</p>
+     *
+     * @param stream a {@link java.io.InputStream} object.
+     * @param localServer a {@link java.lang.String} object.
+     * @param verifyServer a boolean.
+     * @throws java.io.IOException if any.
+     * @throws org.exolab.castor.xml.MarshalException if any.
+     * @throws org.exolab.castor.xml.ValidationException if any.
+     */
     public ThreshdConfigFactory(InputStream stream, String localServer, boolean verifyServer) throws IOException, MarshalException, ValidationException {
         super(stream, localServer, verifyServer);
 
@@ -101,13 +130,16 @@ public final class ThreshdConfigFactory extends ThreshdConfigManager {
     /**
      * Load the config from the default config file and create the singleton
      * instance of this factory.
-     * 
+     *
      * @exception java.io.IOException
      *                Thrown if the specified config file cannot be read
      * @exception org.exolab.castor.xml.MarshalException
      *                Thrown if the file does not conform to the schema.
      * @exception org.exolab.castor.xml.ValidationException
      *                Thrown if the contents do not match the required schema.
+     * @throws java.io.IOException if any.
+     * @throws org.exolab.castor.xml.MarshalException if any.
+     * @throws org.exolab.castor.xml.ValidationException if any.
      */
     public static synchronized void init() throws IOException, MarshalException, ValidationException {
         if (m_loaded) {
@@ -139,13 +171,16 @@ public final class ThreshdConfigFactory extends ThreshdConfigManager {
 
     /**
      * Reload the config from the default config file
-     * 
+     *
      * @exception java.io.IOException
      *                Thrown if the specified config file cannot be read/loaded
      * @exception org.exolab.castor.xml.MarshalException
      *                Thrown if the file does not conform to the schema.
      * @exception org.exolab.castor.xml.ValidationException
      *                Thrown if the contents do not match the required schema.
+     * @throws java.io.IOException if any.
+     * @throws org.exolab.castor.xml.MarshalException if any.
+     * @throws org.exolab.castor.xml.ValidationException if any.
      */
     public static synchronized void reload() throws IOException, MarshalException, ValidationException {
         m_singleton = null;
@@ -154,12 +189,20 @@ public final class ThreshdConfigFactory extends ThreshdConfigManager {
         init();
     }
 
+         /**
+          * <p>reloadXML</p>
+          *
+          * @throws java.io.IOException if any.
+          * @throws org.exolab.castor.xml.MarshalException if any.
+          * @throws org.exolab.castor.xml.ValidationException if any.
+          */
          public void reloadXML() throws IOException, MarshalException, ValidationException {
              /* FIXME: THIS IS WAY WRONG! Should only reload the xml not recreate the instance
               otherwise references to the old instance will still linger */
             reload();
         }
 
+        /** {@inheritDoc} */
         protected void saveXML(String xmlString) throws IOException {
             File cfgFile = ConfigFileConstants.getFile(ConfigFileConstants.THRESHD_CONFIG_FILE_NAME);
             Writer fileWriter = new OutputStreamWriter(new FileOutputStream(cfgFile), "UTF-8");
@@ -172,9 +215,8 @@ public final class ThreshdConfigFactory extends ThreshdConfigManager {
 
     /**
      * Return the singleton instance of this factory.
-     * 
+     *
      * @return The current factory instance.
-     * 
      * @throws java.lang.IllegalStateException
      *             Thrown if the factory has not yet been initialized.
      */
@@ -185,6 +227,11 @@ public final class ThreshdConfigFactory extends ThreshdConfigManager {
         return m_singleton;
     }
     
+    /**
+     * <p>setInstance</p>
+     *
+     * @param configFactory a {@link org.opennms.netmgt.config.ThreshdConfigFactory} object.
+     */
     public static void setInstance(ThreshdConfigFactory configFactory) {
     	m_loaded = true;
     	m_singleton = configFactory;

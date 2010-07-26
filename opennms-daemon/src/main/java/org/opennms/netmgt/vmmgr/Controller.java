@@ -81,10 +81,17 @@ import org.opennms.netmgt.config.service.Service;
  * stop control event, it will exit - does not check to see if the services
  * its started are all stopped
  * <p>
- * 
+ *
  * @author <a href="mailto:weave@oculan.com">Brian Weaver</a>
  * @author <a href="mailto:sowmya@opennms.org">Sowmya Nataraj</a>
  * @author <a href="http://www.opennms.org">OpenNMS.org</a>
+ * @author <a href="mailto:weave@oculan.com">Brian Weaver</a>
+ * @author <a href="mailto:sowmya@opennms.org">Sowmya Nataraj</a>
+ * @author <a href="http://www.opennms.org">OpenNMS.org</a>
+ * @author <a href="mailto:weave@oculan.com">Brian Weaver</a>
+ * @author <a href="mailto:sowmya@opennms.org">Sowmya Nataraj</a>
+ * @author <a href="http://www.opennms.org">OpenNMS.org</a>
+ * @version $Id: $
  */
 public class Controller {
     private static final String JMX_HTTP_ADAPTER_NAME = ":Name=HttpAdaptorMgmt";
@@ -112,10 +119,18 @@ public class Controller {
     private Authenticator m_authenticator;
     private int m_httpRequestReadTimeout = DEFAULT_HTTP_REQUEST_READ_TIMEOUT;
     
+    /**
+     * <p>Constructor for Controller.</p>
+     */
     public Controller() {
         
     }
 
+    /**
+     * <p>main</p>
+     *
+     * @param argv an array of {@link java.lang.String} objects.
+     */
     public static void main(String[] argv) {
         configureLog4j();
         
@@ -196,10 +211,20 @@ public class Controller {
         starter.startDaemon();
     }
 
+    /**
+     * <p>stop</p>
+     *
+     * @return a int.
+     */
     public int stop() {
         return invokeOperation("stop");
     }
     
+    /**
+     * <p>status</p>
+     *
+     * @return a int.
+     */
     public int status() {
         Authenticator.setDefault(getAuthenticator());
 
@@ -250,6 +275,11 @@ public class Controller {
         }
     }
 
+    /**
+     * <p>check</p>
+     *
+     * @return a int.
+     */
     public int check() {
         try {
             DatabaseChecker checker = new DatabaseChecker();
@@ -262,6 +292,11 @@ public class Controller {
         return 0;
     }
 
+    /**
+     * <p>exit</p>
+     *
+     * @return a int.
+     */
     public int exit() {
         return invokeOperation("doSystemExit");
     }
@@ -399,18 +434,38 @@ public class Controller {
         return null;
     }
 
+    /**
+     * <p>isVerbose</p>
+     *
+     * @return a boolean.
+     */
     public boolean isVerbose() {
         return m_verbose;
     }
 
+    /**
+     * <p>setVerbose</p>
+     *
+     * @param verbose a boolean.
+     */
     public void setVerbose(boolean verbose) {
         m_verbose = verbose;
     }
 
+    /**
+     * <p>getInvokeUrl</p>
+     *
+     * @return a {@link java.lang.String} object.
+     */
     public String getInvokeUrl() {
         return m_invokeUrl;
     }
 
+    /**
+     * <p>setInvokeUrl</p>
+     *
+     * @param invokerUrl a {@link java.lang.String} object.
+     */
     public void setInvokeUrl(String invokerUrl) {
         m_invokeUrl = invokerUrl;
     }
@@ -419,18 +474,38 @@ public class Controller {
         return ThreadCategory.getInstance(getClass());
     }
 
+    /**
+     * <p>getAuthenticator</p>
+     *
+     * @return a {@link java.net.Authenticator} object.
+     */
     public Authenticator getAuthenticator() {
         return m_authenticator;
     }
 
+    /**
+     * <p>setAuthenticator</p>
+     *
+     * @param authenticator a {@link java.net.Authenticator} object.
+     */
     public void setAuthenticator(Authenticator authenticator) {
         m_authenticator = authenticator;
     }
 
+    /**
+     * <p>getHttpRequestReadTimeout</p>
+     *
+     * @return a int.
+     */
     public int getHttpRequestReadTimeout() {
         return m_httpRequestReadTimeout;
     }
 
+    /**
+     * <p>setHttpRequestReadTimeout</p>
+     *
+     * @param httpRequestReadTimeout a int.
+     */
     public void setHttpRequestReadTimeout(int httpRequestReadTimeout) {
         m_httpRequestReadTimeout = httpRequestReadTimeout;
     }

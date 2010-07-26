@@ -1,0 +1,8 @@
+{d "%w- %d %m-, %Y - %T"} - A "apSysMgmtRedundancyTrap" event has occurred, from {t} device, named {m}.
+
+" The trap will be generated if a state change occurs on either
+		 the primary or secondary system in a redundant(HA) pair."
+
+apSysMgmtRedRole = {T apSysMgmtRedRole 1}
+apSysMgmtRedTransState = {T apSysMgmtRedTransState 2}
+(event [{e}])

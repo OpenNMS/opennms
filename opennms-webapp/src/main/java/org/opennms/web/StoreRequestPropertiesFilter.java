@@ -41,16 +41,25 @@ import javax.servlet.ServletRequest;
 import javax.servlet.ServletResponse;
 import javax.servlet.http.HttpServletRequest;
 
+/**
+ * <p>StoreRequestPropertiesFilter class.</p>
+ *
+ * @author ranger
+ * @version $Id: $
+ * @since 1.8.1
+ */
 public class StoreRequestPropertiesFilter implements Filter {
 
     private String m_servletPathAttribute;
     private String m_relativeServletPathAttribute;
 
+    /** {@inheritDoc} */
     public void init(FilterConfig config) throws ServletException {
         m_servletPathAttribute = config.getInitParameter("servletPathAttribute");
         m_relativeServletPathAttribute = config.getInitParameter("relativeServletPathAttribute");
     }
 
+    /** {@inheritDoc} */
     public void doFilter(ServletRequest request, ServletResponse response,
             FilterChain chain) throws IOException, ServletException {
         HttpServletRequest httpRequest = (HttpServletRequest) request;
@@ -71,6 +80,9 @@ public class StoreRequestPropertiesFilter implements Filter {
         chain.doFilter(request, response);
     }
 
+    /**
+     * <p>destroy</p>
+     */
     public void destroy() {
         // Nothing to destroy that a GC won't take care of. :-)
     }

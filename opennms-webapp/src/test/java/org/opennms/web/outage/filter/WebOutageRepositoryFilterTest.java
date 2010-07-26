@@ -108,7 +108,7 @@ public class WebOutageRepositoryFilterTest {
     }
     
     @Test
-    public void testAutowiRred(){
+    public void testAutoWirred(){
         assertNotNull(m_daoOutageRepo);
         assertNotNull(m_jdbcOutageRepo);
     }

@@ -88,6 +88,7 @@
 
     //useful constant strings
     String addPositiveFilterString = "[+]";    
+    String addNegativeFilterString = "[-]";    
 
 %>
 
@@ -231,7 +232,7 @@
         %>
         <tr class="<%=eventSeverity%>">
           <td class="divider noWrap" rowspan="2"><% if((parms.ackType == AcknowledgeType.UNACKNOWLEDGED ) && 
-		!(request.isUserInRole( Authentication.READONLY_ROLE ))) { %>
+		(request.isUserInRole( Authentication.ADMIN_ROLE ) || !request.isUserInRole( Authentication.READONLY_ROLE ))) { %>
             <input type="checkbox" name="notices" value="<%=notices[i].getId()%>" />
           <% } %> 
 						<a href="notification/detail.jsp?notice=<%=notices[i].getId()%>"><%=notices[i].getId()%></a></td>
@@ -262,6 +263,7 @@
               <a href="element/node.jsp?node=<%=notices[i].getNodeId()%>" title="<%=labels[1]%>"><%=labels[0]%></a>
               <% if( !parms.filters.contains(nodeFilter) ) { %>
                 <a href="<%=this.makeLink( parms, nodeFilter, true)%>" class="filterLink" title="Show only notices on this node"><%=addPositiveFilterString%></a>
+                <a href="<%=this.makeLink( parms, new NegativeNodeFilter(notices[i].getNodeId()), true)%>" class="filterLink" title="Do not show events for this node"><%=addNegativeFilterString%></a>
               <% } %>
             <% } %>
           </td>
@@ -299,7 +301,7 @@
       </table>
       <p><%=notices.length%> notices &nbsp;
 
-        <% if( parms.ackType == AcknowledgeType.UNACKNOWLEDGED &&  !(request.isUserInRole( Authentication.READONLY_ROLE ))) { %>
+        <% if( parms.ackType == AcknowledgeType.UNACKNOWLEDGED && (request.isUserInRole( Authentication.ADMIN_ROLE ) || !request.isUserInRole( Authentication.READONLY_ROLE ))) { %>
             <input TYPE="reset" />
             <input TYPE="button" VALUE="Select All" onClick="checkAllCheckboxes()"/>
             <input type="button" value="Acknowledge Notices" onClick="submitAcknowledge()"/>
@@ -309,7 +311,17 @@
 	<!--		<% if( noticeCount > 0 ) { %>
 			<p align="right"><a href="<%=this.makeLink(parms)%>&multiple=<%=parms.multiple+1%>">Next</a></p>
 			<% } %> -->
-		</form>
+		<jsp:include page="/includes/bookmark.jsp" flush="false" />
+        <% if( noticeCount > 0 ) { %>
+          <% String baseUrl = this.makeLink(parms); %>
+          <jsp:include page="/includes/resultsIndex.jsp" flush="false" >
+          <jsp:param name="count"    value="<%=noticeCount%>" />
+          <jsp:param name="baseurl"  value="<%=baseUrl%>"    />
+          <jsp:param name="limit"    value="<%=parms.limit%>"      />
+          <jsp:param name="multiple" value="<%=parms.multiple%>"   />
+          </jsp:include>
+         <% } %>
+ 
 <jsp:include page="/includes/footer.jsp" flush="false" />
 
 

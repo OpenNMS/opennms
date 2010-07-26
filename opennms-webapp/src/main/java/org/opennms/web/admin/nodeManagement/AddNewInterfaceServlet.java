@@ -61,9 +61,13 @@ import org.opennms.web.Util;
 
 /**
  * A servlet that handles adding a new interface
- * 
+ *
  * @author <A HREF="mailto:jamesz@opennms.com">James Zuo </A>
  * @author <A HREF="http://www.opennms.org/">OpenNMS </A>
+ * @author <A HREF="mailto:jamesz@opennms.com">James Zuo </A>
+ * @author <A HREF="http://www.opennms.org/">OpenNMS </A>
+ * @version $Id: $
+ * @since 1.8.1
  */
 public class AddNewInterfaceServlet extends HttpServlet {
     /**
@@ -78,6 +82,11 @@ public class AddNewInterfaceServlet extends HttpServlet {
      */
     final static String EVENT_SOURCE_VALUE = "Web UI";
 
+    /**
+     * <p>init</p>
+     *
+     * @throws javax.servlet.ServletException if any.
+     */
     public void init() throws ServletException {
         try {
             DataSourceFactory.init();
@@ -87,6 +96,7 @@ public class AddNewInterfaceServlet extends HttpServlet {
 
     }
 
+    /** {@inheritDoc} */
     public void doPost(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
         int nodeId = -1;
         String ipAddress = request.getParameter("ipAddress");

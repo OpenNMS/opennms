@@ -33,12 +33,22 @@ import org.opennms.netmgt.provision.ScanContext;
 import org.opennms.netmgt.snmp.SnmpResult;
 
 
+/**
+ * <p>SnmpNodeScanner class.</p>
+ *
+ * @author ranger
+ * @version $Id: $
+ */
 public class SnmpNodeScanner extends AbstractSnmpScanner {
     
+    /**
+     * <p>Constructor for SnmpNodeScanner.</p>
+     */
     public SnmpNodeScanner() {
         super("Node Scanner");
     }
 
+    /** {@inheritDoc} */
     @Override
     public void onInit() {
         getSingleInstance(".1.3.6.1.2.1.1.2", "0").andStoreIn(sysObjectId());
@@ -48,6 +58,11 @@ public class SnmpNodeScanner extends AbstractSnmpScanner {
         getSingleInstance(".1.3.6.1.2.1.1.4", "0").andStoreIn(sysContact());
     }
 
+    /**
+     * <p>sysObjectId</p>
+     *
+     * @return a Storer object.
+     */
     public Storer sysObjectId() {
         return new Storer() {
             public void storeResult(ScanContext scanContext, SnmpResult res) {
@@ -56,6 +71,11 @@ public class SnmpNodeScanner extends AbstractSnmpScanner {
         };
     }
 
+    /**
+     * <p>sysName</p>
+     *
+     * @return a Storer object.
+     */
     public Storer sysName() {
         return new Storer() {
             public void storeResult(ScanContext scanContext, SnmpResult res) {
@@ -64,6 +84,11 @@ public class SnmpNodeScanner extends AbstractSnmpScanner {
         };
     }
 
+    /**
+     * <p>sysDescription</p>
+     *
+     * @return a Storer object.
+     */
     public Storer sysDescription() {
         return new Storer() {
             public void storeResult(ScanContext scanContext, SnmpResult res) {
@@ -72,6 +97,11 @@ public class SnmpNodeScanner extends AbstractSnmpScanner {
         };
     }
 
+    /**
+     * <p>sysLocation</p>
+     *
+     * @return a Storer object.
+     */
     public Storer sysLocation() {
         return new Storer() {
             public void storeResult(ScanContext scanContext, SnmpResult res) {
@@ -80,6 +110,11 @@ public class SnmpNodeScanner extends AbstractSnmpScanner {
         };
     }
 
+    /**
+     * <p>sysContact</p>
+     *
+     * @return a Storer object.
+     */
     public Storer sysContact() {
         return new Storer() {
             public void storeResult(ScanContext scanContext, SnmpResult res) {

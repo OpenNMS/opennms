@@ -218,6 +218,11 @@ class SyslogReceiver implements Runnable {
 
     }
 
+    /**
+     * <p>setLogPrefix</p>
+     *
+     * @param prefix a {@link java.lang.String} object.
+     */
     protected void setLogPrefix(String prefix) {
         m_logPrefix = prefix;
     }

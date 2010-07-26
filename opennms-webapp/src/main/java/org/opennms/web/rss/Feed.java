@@ -37,23 +37,71 @@ package org.opennms.web.rss;
 import javax.servlet.ServletRequest;
 
 /**
- * 
+ * <p>Feed interface.</p>
+ *
  * @author <a href="mailto:ranger@opennms.org">Benjamin Reed</a>
+ * @version $Id: $
+ * @since 1.8.1
  */
 public interface Feed {
 
+    /**
+     * <p>getUrlBase</p>
+     *
+     * @return a {@link java.lang.String} object.
+     */
     public String getUrlBase();
+    /**
+     * <p>setUrlBase</p>
+     *
+     * @param base a {@link java.lang.String} object.
+     */
     public void setUrlBase(String base);
     
+    /**
+     * <p>getFeedType</p>
+     *
+     * @return a {@link java.lang.String} object.
+     */
     public String getFeedType();
+    /**
+     * <p>setFeedType</p>
+     *
+     * @param type a {@link java.lang.String} object.
+     */
     public void setFeedType(String type);
     
+    /**
+     * <p>getMaxEntries</p>
+     *
+     * @return a int.
+     */
     public int getMaxEntries();
+    /**
+     * <p>setMaxEntries</p>
+     *
+     * @param maxEntries a int.
+     */
     public void setMaxEntries(int maxEntries);
 
+    /**
+     * <p>getRequest</p>
+     *
+     * @return a {@link javax.servlet.ServletRequest} object.
+     */
     public ServletRequest getRequest();
+    /**
+     * <p>setRequest</p>
+     *
+     * @param request a {@link javax.servlet.ServletRequest} object.
+     */
     public void setRequest(ServletRequest request);
     
+    /**
+     * <p>render</p>
+     *
+     * @return a {@link java.lang.String} object.
+     */
     public String render();
     
 }

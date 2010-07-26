@@ -1,0 +1,12 @@
+{d "%w- %d %m-, %Y - %T"} - A "moAttrChangeNotification" event has occurred, from {t} device, named {m}.
+
+"The NMSAgent sends a moAttrChangeNotification to the manager 
+				 when any discoverd MO's one or more attributes are changed."
+
+sequenceNum = {I 1}
+moName = {S 2}
+moownerName = {S 3}
+moType = {S 4}
+moDataChangeTime = {I 5}
+moExtraProperties = {S 6}
+(event [{e}])

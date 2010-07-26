@@ -3,12 +3,7 @@
  */
 package org.opennms.features.poller.remote.gwt.server;
 
-import java.util.ArrayList;
-import java.util.Collection;
-
-import org.opennms.features.poller.remote.gwt.client.location.LocationInfo;
 import org.opennms.features.poller.remote.gwt.client.remoteevents.LocationUpdatedRemoteEvent;
-import org.opennms.features.poller.remote.gwt.client.remoteevents.LocationsUpdatedRemoteEvent;
 import org.opennms.netmgt.model.OnmsMonitoringLocationDefinition;
 
 import de.novanic.eventservice.client.event.Event;
@@ -17,56 +12,56 @@ import de.novanic.eventservice.service.EventExecutorService;
 class DefaultLocationDefHandler implements LocationDefHandler {
 	private LocationDataService m_locationDataService;
 	private EventExecutorService m_eventService;
-	private boolean m_includeStatus;
-	private Collection<LocationInfo> m_locations = new ArrayList<LocationInfo>();
-	static final int MAX_LOCATIONS_PER_EVENT = 50;
 
-	public DefaultLocationDefHandler(final LocationDataService locationDataService, final EventExecutorService eventService, boolean includeStatus) {
+
+	/**
+	 * <p>Constructor for DefaultLocationDefHandler.</p>
+	 *
+	 * @param locationDataService a {@link org.opennms.features.poller.remote.gwt.server.LocationDataService} object.
+	 * @param eventService a {@link de.novanic.eventservice.service.EventExecutorService} object.
+	 */
+	public DefaultLocationDefHandler(final LocationDataService locationDataService, final EventExecutorService eventService) {
 		m_locationDataService = locationDataService;
 		m_eventService = eventService;
-		m_includeStatus = includeStatus;
 	}
 	
+	/** {@inheritDoc} */
 	public void start(final int size) {
 	}
 
+	/**
+	 * <p>handle</p>
+	 *
+	 * @param def a {@link org.opennms.netmgt.model.OnmsMonitoringLocationDefinition} object.
+	 */
 	public void handle(final OnmsMonitoringLocationDefinition def) {
-		final LocationUpdatedRemoteEvent event = new LocationUpdatedRemoteEvent(m_locationDataService.getLocationInfo(def, m_includeStatus));
+		final LocationUpdatedRemoteEvent event = new LocationUpdatedRemoteEvent(m_locationDataService.getLocationInfo(def));
 		getEventService().addEventUserSpecific(event);
-		/* // not really the issue
-		try {
-			Thread.sleep(10);
-		} catch (InterruptedException e) {
-			Thread.currentThread().interrupt();
-		}
-		*/
-		/*
-		m_locations.add(m_locationDataService.getLocationInfo(def, m_includeStatus));
-		if (m_locations.size() >= MAX_LOCATIONS_PER_EVENT) {
-			sendLocations();
-		}
-		*/
 	}
 	
+	/**
+	 * <p>finish</p>
+	 */
 	public void finish() {
-		sendLocations();
 	}
 
+	/**
+	 * <p>sendEvent</p>
+	 *
+	 * @param event a {@link de.novanic.eventservice.client.event.Event} object.
+	 */
 	protected void sendEvent(final Event event) {
 		getEventService().addEventUserSpecific(event);
 	}
 
+	/**
+	 * <p>getEventService</p>
+	 *
+	 * @return a {@link de.novanic.eventservice.service.EventExecutorService} object.
+	 */
 	protected EventExecutorService getEventService() {
 		return m_eventService;
 	}
 
-	protected void sendLocations() {
-		if (m_locations.size() > 0) {
-			final LocationsUpdatedRemoteEvent event = new LocationsUpdatedRemoteEvent(m_locations);
-			m_locations = new ArrayList<LocationInfo>();
-			sendEvent(event);
-			getEventService().addEventUserSpecific(event);
-		}
-	}
 
 }

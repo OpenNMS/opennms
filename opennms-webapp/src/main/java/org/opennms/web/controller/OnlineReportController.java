@@ -55,20 +55,32 @@ import org.springframework.web.bind.ServletRequestDataBinder;
 import org.springframework.web.servlet.ModelAndView;
 import org.springframework.web.servlet.mvc.SimpleFormController;
 
+/**
+ * <p>OnlineReportController class.</p>
+ *
+ * @author ranger
+ * @version $Id: $
+ * @since 1.8.1
+ */
 public class OnlineReportController extends SimpleFormController {
     
     private ReportWrapperService m_reportWrapperService;
     private CategoryConfigService m_catConfigService;
     
+    /**
+     * <p>Constructor for OnlineReportController.</p>
+     */
     public OnlineReportController() {
         setFormView("report/database/onlineReport");
     }
     
+    /** {@inheritDoc} */
     @Override
     protected Object formBackingObject(HttpServletRequest req) throws Exception {
         return m_reportWrapperService.getParameters(req.getParameter("reportId"));
     }
 
+    /** {@inheritDoc} */
     @Override
     protected Map<String, Object> referenceData(HttpServletRequest req) throws Exception {
         String reportId = req.getParameter("reportId");
@@ -81,6 +93,7 @@ public class OnlineReportController extends SimpleFormController {
 
     }
     
+    /** {@inheritDoc} */
     @Override
     protected void initBinder(HttpServletRequest req,
             ServletRequestDataBinder binder) throws Exception {
@@ -92,6 +105,7 @@ public class OnlineReportController extends SimpleFormController {
                                                          true));
     }
     
+    /** {@inheritDoc} */
     @Override
     protected ModelAndView onSubmit(HttpServletRequest request, HttpServletResponse response, Object command, BindException errors) throws Exception {
         ReportParameters parameters = (ReportParameters) command;
@@ -107,10 +121,20 @@ public class OnlineReportController extends SimpleFormController {
         return null;
     }
     
+    /**
+     * <p>setReportWrapperService</p>
+     *
+     * @param reportWrapperService a {@link org.opennms.reporting.core.svclayer.ReportWrapperService} object.
+     */
     public void setReportWrapperService(ReportWrapperService reportWrapperService) {
         m_reportWrapperService = reportWrapperService;
     }
     
+    /**
+     * <p>setCategoryConfigService</p>
+     *
+     * @param catConfigService a {@link org.opennms.web.svclayer.CategoryConfigService} object.
+     */
     public void setCategoryConfigService(CategoryConfigService catConfigService) {
         m_catConfigService = catConfigService;
     }

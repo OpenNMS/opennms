@@ -37,10 +37,12 @@ package org.opennms.reporting.datablock;
 /**
  * This class holds the managed node/ip/service information for valid outage
  * nodes.
- * 
+ *
  * @author <A HREF="mailto:jacinta@oculan.com">Jacinta Remedios </A>
  * @author <A HREF="http://www.oculan.com">oculan.com </A>
- * 
+ * @author <A HREF="mailto:jacinta@oculan.com">Jacinta Remedios </A>
+ * @author <A HREF="http://www.oculan.com">oculan.com </A>
+ * @version $Id: $
  */
 public class IfService extends Object {
 
@@ -80,6 +82,12 @@ public class IfService extends Object {
 
     /**
      * Constructor that initialises the nodeid, ipaddr, service.
+     *
+     * @param node a int.
+     * @param ip a {@link java.lang.String} object.
+     * @param service a int.
+     * @param name a {@link java.lang.String} object.
+     * @param svcname a {@link java.lang.String} object.
      */
     public IfService(int node, String ip, int service, String name, String svcname) {
         nodeid = node;
@@ -91,7 +99,7 @@ public class IfService extends Object {
 
     /**
      * Sets the node id.
-     * 
+     *
      * @param id
      *            Node id to be set
      */
@@ -101,7 +109,8 @@ public class IfService extends Object {
 
     /**
      * Return node name
-     * 
+     *
+     * @return a {@link java.lang.String} object.
      */
     public String getNodeName() {
         return nodeName;
@@ -109,7 +118,7 @@ public class IfService extends Object {
 
     /**
      * Sets the Service name.
-     * 
+     *
      * @param name
      *            Service name
      */
@@ -119,7 +128,8 @@ public class IfService extends Object {
 
     /**
      * Return service name
-     * 
+     *
+     * @return a {@link java.lang.String} object.
      */
     public String getServiceName() {
         return serviceName;
@@ -127,7 +137,7 @@ public class IfService extends Object {
 
     /**
      * Sets the node name.
-     * 
+     *
      * @param name
      *            Node name to be set
      */
@@ -137,7 +147,7 @@ public class IfService extends Object {
 
     /**
      * Returns the Node id
-     * 
+     *
      * @return node id.
      */
     public int getNodeID() {
@@ -146,7 +156,7 @@ public class IfService extends Object {
 
     /**
      * Sets the ipaddr.
-     * 
+     *
      * @param ip
      *            ipaddress to be set
      */
@@ -156,7 +166,7 @@ public class IfService extends Object {
 
     /**
      * This method returns the ipaddress.
-     * 
+     *
      * @return Returns the ipaddress.
      */
     public String getIpaddr() {
@@ -165,7 +175,7 @@ public class IfService extends Object {
 
     /**
      * This method sets the service.
-     * 
+     *
      * @param service
      *            Service id to be set.
      */
@@ -175,6 +185,8 @@ public class IfService extends Object {
 
     /**
      * This returns the service id.
+     *
+     * @return a int.
      */
     public int getServiceId() {
         return serviceid;
@@ -182,6 +194,8 @@ public class IfService extends Object {
 
     /**
      * toString method
+     *
+     * @return a {@link java.lang.String} object.
      */
     public String toString() {
         return ("Node id " + nodeName + " Ipaddr " + ipaddr + " Service name " + serviceName);

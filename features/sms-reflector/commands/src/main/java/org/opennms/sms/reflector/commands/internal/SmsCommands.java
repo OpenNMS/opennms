@@ -38,6 +38,9 @@ import org.springframework.osgi.context.BundleContextAware;
 
 /**
  * Public API representing an example OSGi service
+ *
+ * @author ranger
+ * @version $Id: $
  */
 public class SmsCommands implements CommandProvider, BundleContextAware
 {
@@ -50,10 +53,18 @@ public class SmsCommands implements CommandProvider, BundleContextAware
     private ConfigurationAdmin m_configAdmin;
     private BundleContext m_context;
 
+    /**
+     * <p>Constructor for SmsCommands.</p>
+     *
+     * @param configAdmin a {@link org.osgi.service.cm.ConfigurationAdmin} object.
+     */
     public SmsCommands(ConfigurationAdmin configAdmin) {
         m_configAdmin = configAdmin;
     }
 
+    /**
+     * <p>stopService</p>
+     */
     public void stopService(){
         if (m_service != null){
             try {
@@ -65,6 +76,11 @@ public class SmsCommands implements CommandProvider, BundleContextAware
         }
     }
 
+    /**
+     * <p>smsSend</p>
+     *
+     * @param msg a {@link org.smslib.OutboundMessage} object.
+     */
     public void smsSend(OutboundMessage msg){
         try{
             m_service.sendMessage(msg);
@@ -73,6 +89,11 @@ public class SmsCommands implements CommandProvider, BundleContextAware
         }
     }
 
+    /**
+     * <p>checkMessages</p>
+     *
+     * @return a {@link java.util.List} object.
+     */
     public List<InboundMessage> checkMessages(){
         List<InboundMessage> msgList = new ArrayList<InboundMessage>();
         try{
@@ -85,6 +106,12 @@ public class SmsCommands implements CommandProvider, BundleContextAware
         return msgList;
     }
 
+    /**
+     * <p>_smsPing</p>
+     *
+     * @param intp a {@link org.eclipse.osgi.framework.console.CommandInterpreter} object.
+     * @return a {@link java.lang.Object} object.
+     */
     public Object _smsPing(CommandInterpreter intp) {
         try {
             Long latency = SmsPinger.ping(intp.nextArgument());
@@ -101,6 +128,12 @@ public class SmsCommands implements CommandProvider, BundleContextAware
         return null;
     }
 
+    /**
+     * <p>_smsSend</p>
+     *
+     * @param intp a {@link org.eclipse.osgi.framework.console.CommandInterpreter} object.
+     * @return a {@link java.lang.Object} object.
+     */
     public Object _smsSend(CommandInterpreter intp) {
         //String port = intp.nextArgument();
 
@@ -143,6 +176,11 @@ public class SmsCommands implements CommandProvider, BundleContextAware
         return null;
     }
     
+    /**
+     * <p>unused_ussdSend</p>
+     *
+     * @param intp a {@link org.eclipse.osgi.framework.console.CommandInterpreter} object.
+     */
     public void unused_ussdSend(CommandInterpreter intp) {
         String data = intp.nextArgument();
         String gwId = intp.nextArgument();
@@ -172,6 +210,12 @@ public class SmsCommands implements CommandProvider, BundleContextAware
         }
     }
 
+    /**
+     * <p>_checkMessages</p>
+     *
+     * @param intp a {@link org.eclipse.osgi.framework.console.CommandInterpreter} object.
+     * @return a {@link java.lang.Object} object.
+     */
     public Object _checkMessages(CommandInterpreter intp){
 
         List<InboundMessage> msgList;
@@ -194,6 +238,12 @@ public class SmsCommands implements CommandProvider, BundleContextAware
         return null;
     }
 
+    /**
+     * <p>_listPorts</p>
+     *
+     * @param intp a {@link org.eclipse.osgi.framework.console.CommandInterpreter} object.
+     * @return a {@link java.lang.Object} object.
+     */
     public Object _listPorts(CommandInterpreter intp) { 
         Enumeration<CommPortIdentifier> commPorts = CommPortIdentifier.getPortIdentifiers();
 
@@ -205,10 +255,21 @@ public class SmsCommands implements CommandProvider, BundleContextAware
         return null; 
     }
 
+    /**
+     * <p>listPorts</p>
+     *
+     * @return a {@link java.util.Enumeration} object.
+     */
     public Enumeration<CommPortIdentifier> listPorts(){
         return CommPortIdentifier.getPortIdentifiers();
     }
 
+    /**
+     * <p>_initializePort</p>
+     *
+     * @param intp a {@link org.eclipse.osgi.framework.console.CommandInterpreter} object.
+     * @return a {@link java.lang.Object} object.
+     */
     public Object _initializePort(CommandInterpreter intp){
         String port = intp.nextArgument();
 
@@ -246,6 +307,12 @@ public class SmsCommands implements CommandProvider, BundleContextAware
         return null;
     }
 
+    /**
+     * <p>_debug</p>
+     *
+     * @param intp a {@link org.eclipse.osgi.framework.console.CommandInterpreter} object.
+     * @return a {@link java.lang.Object} object.
+     */
     public Object _debug(CommandInterpreter intp) {
         intp.println( "m_configAdmin is " + m_configAdmin );
 
@@ -254,6 +321,12 @@ public class SmsCommands implements CommandProvider, BundleContextAware
         return null;
     }
 
+    /**
+     * <p>_showConfigs</p>
+     *
+     * @param intp a {@link org.eclipse.osgi.framework.console.CommandInterpreter} object.
+     * @return a {@link java.lang.Object} object.
+     */
     public Object _showConfigs(CommandInterpreter intp) {
         try {
             Configuration[] configs = m_configAdmin.listConfigurations(null);
@@ -273,6 +346,12 @@ public class SmsCommands implements CommandProvider, BundleContextAware
         return null;
     }
 
+    /**
+     * <p>_configureSmsService</p>
+     *
+     * @param intp a {@link org.eclipse.osgi.framework.console.CommandInterpreter} object.
+     * @return a {@link java.lang.Object} object.
+     */
     public Object _configureSmsService(CommandInterpreter intp) {
 
         try {
@@ -309,6 +388,12 @@ public class SmsCommands implements CommandProvider, BundleContextAware
         return null;
     }
 
+    /**
+     * <p>_paxLog</p>
+     *
+     * @param intp a {@link org.eclipse.osgi.framework.console.CommandInterpreter} object.
+     * @return a {@link java.lang.Object} object.
+     */
     @SuppressWarnings("unchecked")
     public Object _paxLog(CommandInterpreter intp) {
 
@@ -362,6 +447,11 @@ public class SmsCommands implements CommandProvider, BundleContextAware
         return null;
     }
 
+    /**
+     * <p>getHelp</p>
+     *
+     * @return a {@link java.lang.String} object.
+     */
     public String getHelp() { 
         StringBuffer buffer = new StringBuffer(); 
         buffer.append("---Sms Commands---");
@@ -433,10 +523,16 @@ public class SmsCommands implements CommandProvider, BundleContextAware
         }
     }
 
+    /** {@inheritDoc} */
     public void setBundleContext(BundleContext m_context) {
         this.m_context = m_context;
     }
 
+    /**
+     * <p>getBundleContext</p>
+     *
+     * @return a {@link org.osgi.framework.BundleContext} object.
+     */
     public BundleContext getBundleContext() {
         return m_context;
     }

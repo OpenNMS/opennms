@@ -35,21 +35,26 @@
  */
 
 /**
- * 
+ * <p>Linkd class.</p>
+ *
  * @author <a href="mailto:brozow@opennms.org">Mathew Brozowski</a>
  * @author <a href="mailto:antonio@opennms.it">Antonio Russo</a>
+ * @author <a href="mailto:brozow@opennms.org">Mathew Brozowski</a>
+ * @author <a href="mailto:antonio@opennms.it">Antonio Russo</a>
+ * @version $Id: $
  */
 package org.opennms.netmgt.linkd.jmx;
 
 import org.opennms.netmgt.daemon.AbstractSpringContextJmxServiceDaemon;
-
 public class Linkd extends AbstractSpringContextJmxServiceDaemon<org.opennms.netmgt.linkd.Linkd> implements LinkdMBean {
 
+    /** {@inheritDoc} */
     @Override
     protected String getLoggingPrefix() {
         return "OpenNMS.Linkd";
     }
 
+    /** {@inheritDoc} */
     @Override
     protected String getSpringContext() {
         return "linkdContext";

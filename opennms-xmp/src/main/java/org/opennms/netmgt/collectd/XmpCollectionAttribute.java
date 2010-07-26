@@ -49,20 +49,19 @@
 * http://www.krupczak.org/
 */
 
-/** 
-   XmpCollectionAttribute is an actual data point collected via XMP;
-   what this means in English is that we've finally arrived at an
-   actual Xmp variable -- something that has a MIB object name, type,
-   and value.
-   @author <a href="mailto:rdk@krupczak.org">Bobby Krupczak</a>
-   @version $Id: XmpCollectionAttribute.java 38 2008-07-24 13:39:32Z rdk $
- **/
+/**
+ *   XmpCollectionAttribute is an actual data point collected via XMP;
+ *   what this means in English is that we've finally arrived at an
+ *   actual Xmp variable -- something that has a MIB object name, type,
+ *   and value.
+ *   @author <a href="mailto:rdk@krupczak.org">Bobby Krupczak</a>
+ *   @version $Id: XmpCollectionAttribute.java 38 2008-07-24 13:39:32Z rdk $
+ */
 
 package org.opennms.netmgt.collectd;
 
 import org.krupczak.Xmp.Xmp;
 import org.krupczak.Xmp.XmpVar;
-
 public class XmpCollectionAttribute extends AbstractCollectionAttribute 
 implements CollectionAttribute 
 {
@@ -96,33 +95,74 @@ implements CollectionAttribute
 
     /* public methods ************************************ */
 
+    /**
+     * <p>getAttributeType</p>
+     *
+     * @return a {@link org.opennms.netmgt.collectd.CollectionAttributeType} object.
+     */
     public CollectionAttributeType getAttributeType() { return attribType; }
 
+    /**
+     * <p>setAttributeType</p>
+     *
+     * @param attribType a {@link org.opennms.netmgt.collectd.CollectionAttributeType} object.
+     */
     public void setAttributeType(CollectionAttributeType attribType)
     {
         this.attribType = attribType;
     }
 
+    /**
+     * <p>getName</p>
+     *
+     * @return a {@link java.lang.String} object.
+     */
     public String getName() 
     { 
         return new String(alias);
     }
 
+    /**
+     * <p>Getter for the field <code>resource</code>.</p>
+     *
+     * @return a {@link org.opennms.netmgt.collectd.CollectionResource} object.
+     */
     public CollectionResource getResource() { return resource; }
 
+    /**
+     * <p>getNumericValue</p>
+     *
+     * @return a {@link java.lang.String} object.
+     */
     public String getNumericValue() { return aVar.getValue(); }
 
+    /**
+     * <p>getType</p>
+     *
+     * @return a {@link java.lang.String} object.
+     */
     public String getType() { return Xmp.syntaxToString(aVar.xmpSyntax); }
 
+    /** {@inheritDoc} */
     public boolean shouldPersist(ServiceParameters params) { return true; }
 
     //public void visit(CollectionSetVisitor visitor) { super(visitor); }
 
+    /**
+     * <p>toString</p>
+     *
+     * @return a {@link java.lang.String} object.
+     */
     public String toString() 
     { 
         return "XmpCollectionAttribute "+alias+"="+aVar.getValue()+" attribType="+attribType; 
     }
 
+    /**
+     * <p>getStringValue</p>
+     *
+     * @return a {@link java.lang.String} object.
+     */
     public String getStringValue() { return aVar.getValue(); }
 
 }

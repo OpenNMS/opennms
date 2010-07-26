@@ -79,10 +79,10 @@ import org.springframework.jdbc.core.JdbcTemplate;
  * service SNMP is discovered, service SNMP is Lost and Regained Also this class
  * holds
  * </P>
- * 
+ *
  * @author antonio
+ * @version $Id: $
  */
-
 public class DbEventWriter implements QueryManager {
 
     JdbcTemplate jdbcTemplate;
@@ -168,6 +168,9 @@ public class DbEventWriter implements QueryManager {
 
     private static final String SQL_UPDATE_DATALINKINTERFACE_STATUS_INTFC = "UPDATE datalinkinterface set status = ? WHERE (nodeid = ? and ifindex = ?) OR (nodeparentid = ? AND parentifindex = ?)";
 
+    /**
+     * <p>Constructor for DbEventWriter.</p>
+     */
     public DbEventWriter() {
 
     }
@@ -180,10 +183,7 @@ public class DbEventWriter implements QueryManager {
         return jdbcTemplate.getDataSource().getConnection();
     }
 
-    /**
-     * @param discovery
-     * @throws SQLException
-     */
+    /** {@inheritDoc} */
     public void storeDiscoveryLink(DiscoveryLink discovery) throws SQLException {
 
         final DBUtils d = new DBUtils(getClass());
@@ -313,6 +313,7 @@ public class DbEventWriter implements QueryManager {
         }
     }
 
+    /** {@inheritDoc} */
     public LinkableNode storeSnmpCollection(LinkableNode node, SnmpCollection snmpcoll) throws SQLException {
 
         final DBUtils d = new DBUtils(getClass());
@@ -989,6 +990,7 @@ public class DbEventWriter implements QueryManager {
         }
     }
 
+    /** {@inheritDoc} */
     public void update(int nodeid, char status) throws SQLException {
 
         final DBUtils d = new DBUtils(getClass());
@@ -1327,6 +1329,7 @@ public class DbEventWriter implements QueryManager {
         Linkd.getInstance().sendNewSuspectEvent(ipaddress.getHostAddress(), ipowner.getHostAddress(), name);
     }
 
+    /** {@inheritDoc} */
     public LinkableNode getSnmpNode(int nodeid) throws SQLException {
 
         final DBUtils d = new DBUtils(getClass());
@@ -1360,6 +1363,12 @@ public class DbEventWriter implements QueryManager {
 
     }
 
+    /**
+     * <p>getSnmpNodeList</p>
+     *
+     * @return a {@link java.util.List} object.
+     * @throws java.sql.SQLException if any.
+     */
     public List<LinkableNode> getSnmpNodeList() throws SQLException {
 
         final DBUtils d = new DBUtils(getClass());
@@ -1396,6 +1405,11 @@ public class DbEventWriter implements QueryManager {
         }
     }
 
+    /**
+     * <p>updateDeletedNodes</p>
+     *
+     * @throws java.sql.SQLException if any.
+     */
     public void updateDeletedNodes() throws SQLException {
 
         final DBUtils d = new DBUtils(getClass());
@@ -1458,6 +1472,7 @@ public class DbEventWriter implements QueryManager {
 
     }
     
+    /** {@inheritDoc} */
     public void updateForInterface(int nodeId, String ipAddr, int ifIndex, char status) throws SQLException {
         final DBUtils d = new DBUtils(getClass());
         try {
@@ -1534,6 +1549,7 @@ public class DbEventWriter implements QueryManager {
         }
     }
     
+    /** {@inheritDoc} */
     public String getSnmpPrimaryIp(int nodeid) throws SQLException {
 
         final DBUtils d = new DBUtils(getClass());
@@ -1568,6 +1584,7 @@ public class DbEventWriter implements QueryManager {
 
     }
 
+    /** {@inheritDoc} */
     public void setJdbcTemplate(JdbcTemplate jdbcTemplate) {
         this.jdbcTemplate = jdbcTemplate;
     }

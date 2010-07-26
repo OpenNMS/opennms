@@ -73,6 +73,9 @@ import org.opennms.netmgt.dao.castor.CastorUtils;
  *
  * @author <a href="mailto:sowmya@opennms.org">Sowmya Nataraj </a>
  * @author <a href="http://www.opennms.org/">OpenNMS </a>
+ * @author <a href="mailto:sowmya@opennms.org">Sowmya Nataraj </a>
+ * @author <a href="http://www.opennms.org/">OpenNMS </a>
+ * @version $Id: $
  */
 public final class DatabaseSchemaConfigFactory {
     /**
@@ -128,12 +131,27 @@ public final class DatabaseSchemaConfigFactory {
         }
     }
 
+    /**
+     * <p>Constructor for DatabaseSchemaConfigFactory.</p>
+     *
+     * @param reader a {@link java.io.Reader} object.
+     * @throws java.io.IOException if any.
+     * @throws org.exolab.castor.xml.MarshalException if any.
+     * @throws org.exolab.castor.xml.ValidationException if any.
+     */
     @Deprecated
     public DatabaseSchemaConfigFactory(Reader reader) throws IOException, MarshalException, ValidationException {
         m_config = CastorUtils.unmarshal(DatabaseSchema.class, reader);
         finishConstruction();
     }
 
+    /**
+     * <p>Constructor for DatabaseSchemaConfigFactory.</p>
+     *
+     * @param is a {@link java.io.InputStream} object.
+     * @throws org.exolab.castor.xml.MarshalException if any.
+     * @throws org.exolab.castor.xml.ValidationException if any.
+     */
     public DatabaseSchemaConfigFactory(InputStream is) throws MarshalException, ValidationException {
         m_config = CastorUtils.unmarshal(DatabaseSchema.class, is);
         finishConstruction();
@@ -149,6 +167,9 @@ public final class DatabaseSchemaConfigFactory {
      *                Thrown if the file does not conform to the schema.
      * @exception org.exolab.castor.xml.ValidationException
      *                Thrown if the contents do not match the required schema.
+     * @throws java.io.IOException if any.
+     * @throws org.exolab.castor.xml.MarshalException if any.
+     * @throws org.exolab.castor.xml.ValidationException if any.
      */
     public static synchronized void init() throws IOException, MarshalException, ValidationException {
         if (m_loaded) {
@@ -173,6 +194,9 @@ public final class DatabaseSchemaConfigFactory {
      *                Thrown if the file does not conform to the schema.
      * @exception org.exolab.castor.xml.ValidationException
      *                Thrown if the contents do not match the required schema.
+     * @throws java.io.IOException if any.
+     * @throws org.exolab.castor.xml.MarshalException if any.
+     * @throws org.exolab.castor.xml.ValidationException if any.
      */
     public static synchronized void reload() throws IOException, MarshalException, ValidationException {
         m_singleton = null;
@@ -185,7 +209,6 @@ public final class DatabaseSchemaConfigFactory {
      * Return the singleton instance of this factory.
      *
      * @return The current factory instance.
-     *
      * @throws java.lang.IllegalStateException
      *             Thrown if the factory has not yet been initialized.
      */
@@ -196,6 +219,11 @@ public final class DatabaseSchemaConfigFactory {
         return m_singleton;
     }
 
+    /**
+     * <p>setInstance</p>
+     *
+     * @param instance a {@link org.opennms.netmgt.config.DatabaseSchemaConfigFactory} object.
+     */
     public static synchronized void setInstance(DatabaseSchemaConfigFactory instance) {
         m_singleton = instance;
         m_loaded = true;
@@ -289,11 +317,9 @@ public final class DatabaseSchemaConfigFactory {
     /**
      * Find the table which has a visible column named 'colName'
      *
-     * @param the
-     *            name of the column to search for
      * @return the table containing column 'colName', null if colName is not a
      *         valid column or if is not visible.
-     *
+     * @param colName a {@link java.lang.String} object.
      */
     public Table findTableByVisibleColumn(String colName) {
         Table table = null;

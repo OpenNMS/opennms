@@ -38,6 +38,12 @@ package org.opennms.api.reporting.parameter;
 import java.io.Serializable;
 import java.util.Date;
 
+/**
+ * <p>ReportDateParm class.</p>
+ *
+ * @author ranger
+ * @version $Id: $
+ */
 public class ReportDateParm extends ReportParm implements Serializable {
 
     private static final long serialVersionUID = -8528562178984136887L;
@@ -49,53 +55,116 @@ public class ReportDateParm extends ReportParm implements Serializable {
     private Integer m_hours;
     private Integer m_minutes;
     
+    /**
+     * <p>Constructor for ReportDateParm.</p>
+     */
     public ReportDateParm() {
         super();
     }
     
+    /**
+     * <p>getUseAbsoluteDate</p>
+     *
+     * @return a {@link java.lang.Boolean} object.
+     */
     public Boolean getUseAbsoluteDate() {
         return m_useAbsoluteDate;
     }
 
+    /**
+     * <p>setUseAbsoluteDate</p>
+     *
+     * @param useAbsoluteDate a {@link java.lang.Boolean} object.
+     */
     public void setUseAbsoluteDate(Boolean useAbsoluteDate) {
         m_useAbsoluteDate = useAbsoluteDate;
     }
 
+    /**
+     * <p>getInterval</p>
+     *
+     * @return a {@link java.lang.String} object.
+     */
     public String getInterval() {
         return m_interval;
     }
 
+    /**
+     * <p>setInterval</p>
+     *
+     * @param interval a {@link java.lang.String} object.
+     */
     public void setInterval(String interval) {
         m_interval = interval;
     }
 
+    /**
+     * <p>getCount</p>
+     *
+     * @return a {@link java.lang.Integer} object.
+     */
     public Integer getCount() {
         return m_count;
     }
 
+    /**
+     * <p>setCount</p>
+     *
+     * @param count a {@link java.lang.Integer} object.
+     */
     public void setCount(Integer count) {
         m_count = count;
     }
 
+    /**
+     * <p>getValue</p>
+     *
+     * @return a {@link java.util.Date} object.
+     */
     public Date getValue() {
         return m_date;
     }
+    /**
+     * <p>setValue</p>
+     *
+     * @param date a {@link java.util.Date} object.
+     */
     public void setValue(Date date) {
         m_date = date;
     }
 
+    /**
+     * <p>getHours</p>
+     *
+     * @return a {@link java.lang.Integer} object.
+     */
     public Integer getHours() {
         return m_hours;
     }
 
+    /**
+     * <p>setHours</p>
+     *
+     * @param hour a {@link java.lang.Integer} object.
+     */
     public void setHours(Integer hour) {
         m_hours = hour;
     }
 
+    /**
+     * <p>getMinutes</p>
+     *
+     * @return a {@link java.lang.Integer} object.
+     */
     public Integer getMinutes() {
         return m_minutes;
     }
 
+    /**
+     * <p>setMinutes</p>
+     *
+     * @param minute a {@link java.lang.Integer} object.
+     */
     public void setMinutes(Integer minute) {
         m_minutes = minute;
     } 

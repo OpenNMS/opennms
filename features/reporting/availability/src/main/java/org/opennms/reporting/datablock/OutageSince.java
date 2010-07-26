@@ -37,6 +37,9 @@ import java.util.Date;
 /**
  * <B>OutageSince </B> holds the temporary storage for data used during
  * availability report generation presented in the report.
+ *
+ * @author ranger
+ * @version $Id: $
  */
 public class OutageSince {
     /**
@@ -56,7 +59,7 @@ public class OutageSince {
 
     /**
      * Constructor
-     * 
+     *
      * @param nodename
      *            Node Name
      * @param outTime
@@ -72,6 +75,8 @@ public class OutageSince {
 
     /**
      * Returns Node name
+     *
+     * @return a {@link java.lang.String} object.
      */
     public String getNodeName() {
         return m_nodename;
@@ -79,6 +84,8 @@ public class OutageSince {
 
     /**
      * Returns Downtime
+     *
+     * @return a long.
      */
     public long getOutage() {
         return m_outage;
@@ -86,6 +93,8 @@ public class OutageSince {
 
     /**
      * Returns Down since
+     *
+     * @return a long.
      */
     public long getOutTime() {
         return m_outTime;
@@ -93,6 +102,8 @@ public class OutageSince {
 
     /**
      * Returns the string format of this object
+     *
+     * @return a {@link java.lang.String} object.
      */
     public String toString() {
         return " Node Name: " + m_nodename + " Out Time Since : " + new Date(m_outTime) + " Outage : " + m_outage;

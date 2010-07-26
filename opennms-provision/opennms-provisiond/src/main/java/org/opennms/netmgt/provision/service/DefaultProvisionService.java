@@ -91,6 +91,7 @@ import org.springframework.util.Assert;
  * DefaultProvisionService
  *
  * @author brozow
+ * @version $Id: $
  */
 @Service
 public class DefaultProvisionService implements ProvisionService {
@@ -148,10 +149,16 @@ public class DefaultProvisionService implements ProvisionService {
     private final ThreadLocal<HashMap<String, OnmsServiceType>> m_typeCache = new ThreadLocal<HashMap<String, OnmsServiceType>>();
     private final ThreadLocal<HashMap<String, OnmsCategory>> m_categoryCache = new ThreadLocal<HashMap<String, OnmsCategory>>();
     
+    /**
+     * <p>isDiscoveryEnabled</p>
+     *
+     * @return a boolean.
+     */
     public boolean isDiscoveryEnabled() {
         return System.getProperty("org.opennms.provisiond.enableDiscovery", "false").equalsIgnoreCase("true");
     }
 
+    /** {@inheritDoc} */
     @Transactional
     public void insertNode(OnmsNode node) {
         
@@ -166,6 +173,7 @@ public class DefaultProvisionService implements ProvisionService {
         
     }
     
+    /** {@inheritDoc} */
     @Transactional
     public void updateNode(OnmsNode node) {
         
@@ -180,6 +188,7 @@ public class DefaultProvisionService implements ProvisionService {
         
     }
 
+    /** {@inheritDoc} */
     @Transactional
     public void deleteNode(Integer nodeId) {
         
@@ -194,6 +203,7 @@ public class DefaultProvisionService implements ProvisionService {
     
     }
     
+    /** {@inheritDoc} */
     @Transactional
     public void deleteInterface(Integer nodeId, String ipAddr) {
         OnmsIpInterface iface = m_ipInterfaceDao.findByNodeIdAndIpAddress(nodeId, ipAddr);
@@ -205,6 +215,7 @@ public class DefaultProvisionService implements ProvisionService {
         
     }
     
+    /** {@inheritDoc} */
     @Transactional
     public void deleteService(Integer nodeId, String ipAddr, String service) {
         OnmsMonitoredService monSvc = m_monitoredServiceDao.get(nodeId, ipAddr, service);
@@ -223,8 +234,9 @@ public class DefaultProvisionService implements ProvisionService {
     
     
     
+    /** {@inheritDoc} */
     public OnmsIpInterface updateIpInterfaceAttributes(Integer nodeId, OnmsIpInterface scannedIface) {
-        if (scannedIface.getSnmpInterface() != null) {
+        if (scannedIface.getSnmpInterface() != null && scannedIface.getSnmpInterface().getIfIndex() != null) {
             scannedIface.setSnmpInterface(updateSnmpInterfaceAttributes(nodeId, scannedIface.getSnmpInterface()));
         }
         
@@ -260,6 +272,7 @@ public class DefaultProvisionService implements ProvisionService {
 
     }
 
+    /** {@inheritDoc} */
     public OnmsSnmpInterface updateSnmpInterfaceAttributes(Integer nodeId, OnmsSnmpInterface snmpInterface) {
         OnmsSnmpInterface dbSnmpIface = m_snmpInterfaceDao.findByNodeIdAndIfIndex(nodeId, snmpInterface.getIfIndex());
         if (dbSnmpIface != null) {
@@ -281,6 +294,7 @@ public class DefaultProvisionService implements ProvisionService {
         }
     }
 
+    /** {@inheritDoc} */
     public OnmsMonitoredService addMonitoredService(Integer ipInterfaceId, String svcName) {
         OnmsIpInterface iface = m_ipInterfaceDao.get(ipInterfaceId);
         assertNotNull(iface, "could not find interface with id %d", ipInterfaceId);
@@ -307,6 +321,7 @@ public class DefaultProvisionService implements ProvisionService {
         return svc;
     }
 
+    /** {@inheritDoc} */
     public OnmsMonitoredService addMonitoredService(Integer nodeId, String ipAddress, String svcName) {
         OnmsIpInterface iface = m_ipInterfaceDao.findByNodeIdAndIpAddress(nodeId, ipAddress);
         assertNotNull(iface, "could not find interface with nodeid %d and ipAddr %s", nodeId, ipAddress);
@@ -333,10 +348,14 @@ public class DefaultProvisionService implements ProvisionService {
         return svc;
     }
 
+    /**
+     * <p>clearCache</p>
+     */
     public void clearCache() {
         m_nodeDao.clear();
     }
     
+    /** {@inheritDoc} */
     @Transactional
     public OnmsDistPoller createDistPollerIfNecessary(String dpName, String dpAddr) {
         OnmsDistPoller distPoller = m_distPollerDao.get(dpName);
@@ -349,6 +368,7 @@ public class DefaultProvisionService implements ProvisionService {
     }
     
 
+    /** {@inheritDoc} */
     @Transactional
     public OnmsNode getRequisitionedNode(String foreignSource, String foreignId) throws ForeignSourceRepositoryException {
         OnmsNodeRequisition nodeReq = m_foreignSourceRepository.getNodeRequisition(foreignSource, foreignId);
@@ -373,6 +393,7 @@ public class DefaultProvisionService implements ProvisionService {
         return node;
     }
     
+    /** {@inheritDoc} */
     @Transactional
     public OnmsServiceType createServiceTypeIfNecessary(String serviceName) {
         preloadExistingTypes();
@@ -384,6 +405,7 @@ public class DefaultProvisionService implements ProvisionService {
         return type;
     }
     
+    /** {@inheritDoc} */
     @Transactional
     public OnmsCategory createCategoryIfNecessary(String name) {
         preloadExistingCategories();
@@ -396,11 +418,13 @@ public class DefaultProvisionService implements ProvisionService {
         return category;
     }
     
+    /** {@inheritDoc} */
     @Transactional(readOnly=true)
     public Map<String, Integer> getForeignIdToNodeIdMap(String foreignSource) {
         return m_nodeDao.getForeignIdToNodeIdMap(foreignSource);
     }
     
+    /** {@inheritDoc} */
     @Transactional
     public void setNodeParentAndDependencies(final String foreignSource, final String foreignId, final String parentForeignId, final String parentNodeLabel) {
 
@@ -529,11 +553,17 @@ public class DefaultProvisionService implements ProvisionService {
         m_nodeDao.update(node);
     }
     
+    /** {@inheritDoc} */
     public NodeScanSchedule getScheduleForNode(int nodeId, boolean force) {
         OnmsNode node = m_nodeDao.get(nodeId);
         return createScheduleForNode(node, force);
     }
     
+    /**
+     * <p>getScheduleForNodes</p>
+     *
+     * @return a {@link java.util.List} object.
+     */
     public List<NodeScanSchedule> getScheduleForNodes() {
         Assert.notNull(m_nodeDao, "Node DAO is null and is not supposed to be");
         List<OnmsNode> nodes = m_nodeDao.findAllProvisionedNodes();
@@ -581,10 +611,16 @@ public class DefaultProvisionService implements ProvisionService {
         }
     }
 
+    /** {@inheritDoc} */
     public void setForeignSourceRepository(ForeignSourceRepository foriengSourceRepository) {
         m_foreignSourceRepository = foriengSourceRepository;
     }
 
+    /**
+     * <p>getForeignSourceRepository</p>
+     *
+     * @return a {@link org.opennms.netmgt.provision.persist.ForeignSourceRepository} object.
+     */
     public ForeignSourceRepository getForeignSourceRepository() {
         return m_foreignSourceRepository;
     }
@@ -592,6 +628,7 @@ public class DefaultProvisionService implements ProvisionService {
     /* (non-Javadoc)
      * @see org.opennms.netmgt.provision.service.ProvisionService#loadRequisition(java.lang.String, org.springframework.core.io.Resource)
      */
+    /** {@inheritDoc} */
     public Requisition loadRequisition(Resource resource) {
         Requisition r = m_foreignSourceRepository.importResourceRequisition(resource);
         r.updateLastImported();
@@ -602,6 +639,7 @@ public class DefaultProvisionService implements ProvisionService {
     /* (non-Javadoc)
      * @see org.opennms.netmgt.provision.service.ProvisionService#updateNodeInfo(org.opennms.netmgt.model.OnmsNode)
      */
+    /** {@inheritDoc} */
     public OnmsNode updateNodeAttributes(OnmsNode node) {
         OnmsNode dbNode = getDbNode(node);
 
@@ -675,6 +713,7 @@ public class DefaultProvisionService implements ProvisionService {
         
     }
     
+    /** {@inheritDoc} */
     public List<ServiceDetector> getDetectorsForForeignSource(String foreignSourceName) {
         ForeignSource foreignSource = m_foreignSourceRepository.getForeignSource(foreignSourceName);
         assertNotNull(foreignSource, "Expected a foreignSource with name %s", foreignSourceName);
@@ -699,19 +738,30 @@ public class DefaultProvisionService implements ProvisionService {
         return detectors;
     }
 
+    /** {@inheritDoc} */
     public List<NodePolicy> getNodePoliciesForForeignSource(String foreignSourceName) {
         return getPluginsForForeignSource(NodePolicy.class, foreignSourceName);
     }
     
+    /** {@inheritDoc} */
     public List<IpInterfacePolicy> getIpInterfacePoliciesForForeignSource(String foreignSourceName) {
         return getPluginsForForeignSource(IpInterfacePolicy.class, foreignSourceName);
     }
     
+    /** {@inheritDoc} */
     public List<SnmpInterfacePolicy> getSnmpInterfacePoliciesForForeignSource(String foreignSourceName) {
         return getPluginsForForeignSource(SnmpInterfacePolicy.class, foreignSourceName);
     }
 
     
+    /**
+     * <p>getPluginsForForeignSource</p>
+     *
+     * @param pluginClass a {@link java.lang.Class} object.
+     * @param foreignSourceName a {@link java.lang.String} object.
+     * @param <T> a T object.
+     * @return a {@link java.util.List} object.
+     */
     public <T> List<T> getPluginsForForeignSource(Class<T> pluginClass, String foreignSourceName) {
         ForeignSource foreignSource = m_foreignSourceRepository.getForeignSource(foreignSourceName);
         assertNotNull(foreignSource, "Expected a foreignSource with name %s", foreignSourceName);
@@ -735,6 +785,7 @@ public class DefaultProvisionService implements ProvisionService {
         
     }
 
+    /** {@inheritDoc} */
     public void deleteObsoleteInterfaces(Integer nodeId, Date scanStamp) {
         List<OnmsIpInterface> obsoleteInterfaces = m_nodeDao.findObsoleteIpInterfaces(nodeId, scanStamp);
         
@@ -745,6 +796,7 @@ public class DefaultProvisionService implements ProvisionService {
         m_nodeDao.deleteObsoleteInterfaces(nodeId, scanStamp);
     }
 
+    /** {@inheritDoc} */
     public void updateNodeScanStamp(Integer nodeId, Date scanStamp) {
         m_nodeDao.updateNodeScanStamp(nodeId, scanStamp);
     }
@@ -769,6 +821,7 @@ public class DefaultProvisionService implements ProvisionService {
     }
 
     
+    /** {@inheritDoc} */
     @Transactional
     public OnmsIpInterface setIsPrimaryFlag(Integer nodeId, String ipAddress) {
         OnmsIpInterface svcIface = m_ipInterfaceDao.findByNodeIdAndIpAddress(nodeId, ipAddress);
@@ -789,6 +842,7 @@ public class DefaultProvisionService implements ProvisionService {
         return primaryIface;
     }
 
+    /** {@inheritDoc} */
     @Transactional
     public OnmsIpInterface getPrimaryInterfaceForNode(OnmsNode node) {
         OnmsNode dbNode = getDbNode(node);
@@ -805,6 +859,7 @@ public class DefaultProvisionService implements ProvisionService {
         }
     }
 
+    /** {@inheritDoc} */
     @Transactional
     public OnmsNode createUndiscoveredNode(String ipAddress) {
         if (m_nodeDao.findByForeignSourceAndIpAddress(FOREIGN_SOURCE_FOR_DISCOVERED_NODES, ipAddress).size() > 0) {
@@ -849,6 +904,7 @@ public class DefaultProvisionService implements ProvisionService {
         }
     }
 
+    /** {@inheritDoc} */
     @Transactional
     public OnmsNode getNode(Integer nodeId) {
         OnmsNode node = m_nodeDao.get(nodeId);

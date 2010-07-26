@@ -35,9 +35,22 @@ import org.opennms.web.filter.EqualsFilter;
 import org.opennms.web.filter.SQLType;
 
 
+/**
+ * <p>AlarmIdFilter class.</p>
+ *
+ * @author ranger
+ * @version $Id: $
+ * @since 1.8.1
+ */
 public class AlarmIdFilter extends EqualsFilter<Integer> {
+    /** Constant <code>TYPE="alarmId"</code> */
     public static final String TYPE = "alarmId";
     
+    /**
+     * <p>Constructor for AlarmIdFilter.</p>
+     *
+     * @param alarmId a int.
+     */
     public AlarmIdFilter(int alarmId) {
         super(TYPE, SQLType.INT, "ALARMID", "id", alarmId);
     }

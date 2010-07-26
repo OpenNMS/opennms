@@ -43,29 +43,54 @@ import org.opennms.netmgt.model.ServiceDaemon;
 import org.opennms.web.svclayer.daemonstatus.DaemonStatusService;
 
 /**
- * 
+ * <p>DefaultDaemonStatusService class.</p>
+ *
  * @author <a href="mailto:skareti@users.sourceforge.net">skareti</a>
+ * @version $Id: $
+ * @since 1.8.1
  */
 public class DefaultDaemonStatusService implements DaemonStatusService {
 	
 	private DaemonStatusDao daemonStatusDao; 
 
+	/**
+	 * <p>Setter for the field <code>daemonStatusDao</code>.</p>
+	 *
+	 * @param daemonStatusDao a {@link org.opennms.netmgt.dao.DaemonStatusDao} object.
+	 */
 	public void setDaemonStatusDao(DaemonStatusDao daemonStatusDao) {
 		this.daemonStatusDao = daemonStatusDao;
 	}
 	
+	/**
+	 * <p>getCurrentDaemonStatus</p>
+	 *
+	 * @return a {@link java.util.Map} object.
+	 */
 	public Map<String, ServiceInfo> getCurrentDaemonStatus() {
 		// TODO Auto-generated method stub
 		Map<String, ServiceInfo> info = daemonStatusDao.getCurrentDaemonStatus();
         return info;
 	}
 	
+	/**
+	 * <p>getCurrentDaemonStatusColl</p>
+	 *
+	 * @return a {@link java.util.Collection} object.
+	 */
 	public Collection<ServiceInfo> getCurrentDaemonStatusColl() {
 		// TODO Auto-generated method stub
 		return daemonStatusDao.getCurrentDaemonStatus().values();
         
 	}
 
+	/**
+	 * <p>performOperationOnDaemons</p>
+	 *
+	 * @param operation a {@link java.lang.String} object.
+	 * @param daemons an array of {@link java.lang.String} objects.
+	 * @return a {@link java.util.Map} object.
+	 */
 	public Map<String, ServiceInfo> performOperationOnDaemons(String operation, String[] daemons) {
 		// TODO Auto-generated method stub
 		for(int i = 0; i < daemons.length; i++){
@@ -84,6 +109,7 @@ public class DefaultDaemonStatusService implements DaemonStatusService {
 		return getCurrentDaemonStatus();
 	}
 
+	/** {@inheritDoc} */
 	public Map<String, ServiceInfo> restartDaemon(String service) {
 		ServiceDaemon serviceDaemon = daemonStatusDao.getServiceHandle(service);
 		serviceDaemon.stop();
@@ -91,12 +117,14 @@ public class DefaultDaemonStatusService implements DaemonStatusService {
 		return getCurrentDaemonStatus();
 	}
 
+	/** {@inheritDoc} */
 	public Map<String, ServiceInfo> startDaemon(String service) {
 		ServiceDaemon serviceDaemon = daemonStatusDao.getServiceHandle(service);
 		serviceDaemon.start();
 		return getCurrentDaemonStatus();
 	}
 
+	/** {@inheritDoc} */
 	public Map<String, ServiceInfo> stopDaemon(String service) {
 		// TODO Auto-generated method stub
 		return getCurrentDaemonStatus();

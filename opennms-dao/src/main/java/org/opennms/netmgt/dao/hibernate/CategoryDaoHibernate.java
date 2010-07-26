@@ -52,16 +52,27 @@ import org.opennms.netmgt.model.OnmsCriteria;
 import org.springframework.util.Assert;
 import org.springframework.util.StringUtils;
 
+/**
+ * <p>CategoryDaoHibernate class.</p>
+ *
+ * @author ranger
+ * @version $Id: $
+ */
 public class CategoryDaoHibernate extends AbstractCachingDaoHibernate<OnmsCategory, Integer, String> implements CategoryDao {
 
+    /**
+     * <p>Constructor for CategoryDaoHibernate.</p>
+     */
     public CategoryDaoHibernate() {
         super(OnmsCategory.class, false);
     }
     
+    /** {@inheritDoc} */
     public OnmsCategory findByName(String name) {
         return findByName(name, true);
     }
 
+    /** {@inheritDoc} */
     public OnmsCategory findByName(String name, boolean useCached) {
         if (useCached) {
             return findByCacheKey("from OnmsCategory as category where category.name = ?", name);
@@ -70,15 +81,27 @@ public class CategoryDaoHibernate extends AbstractCachingDaoHibernate<OnmsCatego
         }
     }
     
+    /** {@inheritDoc} */
     @Override
     protected String getKey(OnmsCategory category) {
         return category.getName();
     }
     
+    /**
+     * <p>getAllCategoryNames</p>
+     *
+     * @return a {@link java.util.List} object.
+     */
     public List<String> getAllCategoryNames() {
         return findObjects(String.class, "select category.name from OnmsCategory as category");
     }
 
+    /**
+     * <p>getCriterionForCategorySetsUnion</p>
+     *
+     * @param categories an array of {@link java.lang.String} objects.
+     * @return a {@link java.util.List} object.
+     */
     public List<Criterion> getCriterionForCategorySetsUnion(String[]... categories) {
         Assert.notNull(categories, "categories argument must not be null");
         Assert.isTrue(categories.length >= 1, "categories must have at least one set of categories");
@@ -118,6 +141,7 @@ public class CategoryDaoHibernate extends AbstractCachingDaoHibernate<OnmsCatego
     /* (non-Javadoc)
      * @see org.opennms.netmgt.dao.CategoryDao#getCategoriesWithAuthorizedGroup(java.lang.String)
      */
+    /** {@inheritDoc} */
     public List<OnmsCategory> getCategoriesWithAuthorizedGroup(String groupName) {
         OnmsCriteria crit = new OnmsCriteria(OnmsCategory.class);
         crit.add(Restrictions.sqlRestriction("{alias}.categoryId in (select cg.categoryId from category_group cg where cg.groupId = ?)", groupName, Hibernate.STRING));

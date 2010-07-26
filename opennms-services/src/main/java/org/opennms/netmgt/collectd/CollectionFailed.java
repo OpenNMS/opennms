@@ -35,6 +35,12 @@
 //
 package org.opennms.netmgt.collectd;
 
+/**
+ * <p>CollectionFailed class.</p>
+ *
+ * @author ranger
+ * @version $Id: $
+ */
 public class CollectionFailed extends CollectionException {
 
 	/**
@@ -42,23 +48,13 @@ public class CollectionFailed extends CollectionException {
 	 */
 	private static final long serialVersionUID = 3306639630332715369L;
 
-    public CollectionFailed() {
-        super();
-    }
-
+    /**
+     * <p>Constructor for CollectionFailed.</p>
+     *
+     * @param code a int.
+     */
     public CollectionFailed(int code) {
         super("Collection failed for an unknown reason (code " + code + ".  Please review previous logs for this thread for details.  You can also open up an enhancement bug report (include your logs) to request that failure messages are logged for this type of error.");
     }
 
-    public CollectionFailed(String message) {
-        super(message);
-    }
-
-    public CollectionFailed(String message, Throwable cause) {
-        super(message, cause);
-    }
-
-    public CollectionFailed(Throwable cause) {
-        super(cause);
-    }
 }

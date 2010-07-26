@@ -31,12 +31,23 @@
 //
 package org.opennms.netmgt.model;
 
+/**
+ * <p>PathOutage class.</p>
+ *
+ * @author ranger
+ * @version $Id: $
+ */
 public class PathOutage {
 	private int nodeId;
 	private String criticalPathIp;
 	private String criticalPathServiceName;
 	
 	//Operations
+	/**
+	 * <p>toString</p>
+	 *
+	 * @return a {@link java.lang.String} object.
+	 */
 	public String toString() {
 		StringBuffer result = new StringBuffer(50);
 		result.append("pathOutage { nodeID: ");
@@ -49,26 +60,56 @@ public class PathOutage {
 		return result.toString();
 	}
 
+	/**
+	 * <p>Getter for the field <code>criticalPathIp</code>.</p>
+	 *
+	 * @return a {@link java.lang.String} object.
+	 */
 	public String getCriticalPathIp() {
 		return criticalPathIp;
 	}
 
+	/**
+	 * <p>Setter for the field <code>criticalPathIp</code>.</p>
+	 *
+	 * @param criticalPathIp a {@link java.lang.String} object.
+	 */
 	public void setCriticalPathIp(String criticalPathIp) {
 		this.criticalPathIp = criticalPathIp;
 	}
 
+	/**
+	 * <p>Getter for the field <code>criticalPathServiceName</code>.</p>
+	 *
+	 * @return a {@link java.lang.String} object.
+	 */
 	public String getCriticalPathServiceName() {
 		return criticalPathServiceName;
 	}
 
+	/**
+	 * <p>Setter for the field <code>criticalPathServiceName</code>.</p>
+	 *
+	 * @param criticalPathServiceName a {@link java.lang.String} object.
+	 */
 	public void setCriticalPathServiceName(String criticalPathServiceName) {
 		this.criticalPathServiceName = criticalPathServiceName;
 	}
 
+	/**
+	 * <p>Getter for the field <code>nodeId</code>.</p>
+	 *
+	 * @return a int.
+	 */
 	public int getNodeId() {
 		return nodeId;
 	}
 
+	/**
+	 * <p>Setter for the field <code>nodeId</code>.</p>
+	 *
+	 * @param nodeId a int.
+	 */
 	public void setNodeId(int nodeId) {
 		this.nodeId = nodeId;
 	}

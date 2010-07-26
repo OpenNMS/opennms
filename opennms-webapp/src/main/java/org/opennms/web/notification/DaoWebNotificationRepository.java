@@ -49,6 +49,13 @@ import org.opennms.web.notification.filter.NotificationCriteria.NotificationCrit
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.transaction.annotation.Transactional;
 
+/**
+ * <p>DaoWebNotificationRepository class.</p>
+ *
+ * @author ranger
+ * @version $Id: $
+ * @since 1.8.1
+ */
 public class DaoWebNotificationRepository implements WebNotificationRepository {
     
     @Autowired
@@ -88,50 +95,44 @@ public class DaoWebNotificationRepository implements WebNotificationRepository {
 
             public void visitSortStyle(SortStyle sortStyle) throws RuntimeException {
                 switch(sortStyle){
-                    case USER:
-                        criteria.addOrder(Order.desc("user"));
-                        break;
                     case RESPONDER:
-                        criteria.addOrder(Order.desc("responder"));        
+                        criteria.addOrder(Order.desc("answeredBy"));        
                         break;
                     case PAGETIME:
-                        criteria.addOrder(Order.desc("pagetime"));
+                        criteria.addOrder(Order.desc("pageTime"));
                         break;
                     case RESPONDTIME:
                         criteria.addOrder(Order.desc("respondTime"));
                         break;
                     case NODE:
-                        criteria.addOrder(Order.desc("nodeId"));
+                        criteria.addOrder(Order.desc("node.label"));
                         break;
                     case INTERFACE:
-                        criteria.addOrder(Order.desc("interfaceId"));
+                        criteria.addOrder(Order.desc("ipAddress"));
                         break;
                     case SERVICE:
-                        criteria.addOrder(Order.desc("serviceId"));
+                        criteria.addOrder(Order.desc("serviceType.name"));
                         break;
                     case ID:
                         criteria.addOrder(Order.desc("notifyId"));
                         break;
-                    case REVERSE_USER:
-                        criteria.addOrder(Order.asc("user"));
-                        break;
                     case REVERSE_RESPONDER:
-                        criteria.addOrder(Order.asc("responder"));            
+                        criteria.addOrder(Order.asc("answeredBy"));            
                         break;
                     case REVERSE_PAGETIME:
-                        criteria.addOrder(Order.asc("pagetime"));
+                        criteria.addOrder(Order.asc("pageTime"));
                         break;
                     case REVERSE_RESPONDTIME:
-                        criteria.addOrder(Order.asc("respondTimer"));
+                        criteria.addOrder(Order.asc("respondTime"));
                         break;
                     case REVERSE_NODE:
-                        criteria.addOrder(Order.asc("nodeId"));
+                        criteria.addOrder(Order.asc("node.label"));
                         break;
                     case REVERSE_INTERFACE:
-                        criteria.addOrder(Order.asc("interfaceId"));
+                        criteria.addOrder(Order.asc("ipAddress"));
                         break;
                     case REVERSE_SERVICE:
-                        criteria.addOrder(Order.asc("serviceId"));
+                        criteria.addOrder(Order.asc("serviceType.name"));
                         break;
                     case REVERSE_ID:
                         criteria.addOrder(Order.asc("notifyId"));
@@ -167,6 +168,7 @@ public class DaoWebNotificationRepository implements WebNotificationRepository {
         }
     }
     
+    /** {@inheritDoc} */
     @Transactional
     public void acknowledgeMatchingNotification(String user, Date timestamp, NotificationCriteria criteria) {
         List<OnmsNotification> notifs = m_notificationDao.findMatching(getOnmsCriteria(criteria));
@@ -180,11 +182,13 @@ public class DaoWebNotificationRepository implements WebNotificationRepository {
         }
     }
     
+    /** {@inheritDoc} */
     @Transactional
     public int countMatchingNotifications(NotificationCriteria criteria) {
         return queryForInt(getOnmsCriteria(criteria));
     }
 
+    /** {@inheritDoc} */
     @Transactional
     public Notification[] getMatchingNotifications(NotificationCriteria criteria) {
         List<Notification> notifications = new ArrayList<Notification>();
@@ -197,6 +201,7 @@ public class DaoWebNotificationRepository implements WebNotificationRepository {
         return notifications.toArray(new Notification[0]);
     }
     
+    /** {@inheritDoc} */
     @Transactional
     public Notification getNotification(int noticeId) {
         return mapOnmsNotificationToNotification(m_notificationDao.get(noticeId));

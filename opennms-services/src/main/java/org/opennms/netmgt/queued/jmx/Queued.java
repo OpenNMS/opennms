@@ -42,16 +42,20 @@ import org.opennms.netmgt.daemon.AbstractSpringContextJmxServiceDaemon;
 import org.opennms.netmgt.rrd.QueuingRrdStrategy;
 
 /**
- * 
+ * <p>Queued class.</p>
+ *
  * @author <a href="mailto:brozow@opennms.org">Mathew Brozowski</a>
+ * @version $Id: $
  */
 public class Queued extends AbstractSpringContextJmxServiceDaemon<org.opennms.netmgt.queued.Queued> implements QueuedMBean {
 
+    /** {@inheritDoc} */
     @Override
     protected String getLoggingPrefix() {
         return "OpenNMS.Queued";
     }
 
+    /** {@inheritDoc} */
     @Override
     protected String getSpringContext() {
         return "queuedContext";
@@ -62,6 +66,11 @@ public class Queued extends AbstractSpringContextJmxServiceDaemon<org.opennms.ne
     }
 
 
+    /**
+     * <p>getStatsStatus</p>
+     *
+     * @return a boolean.
+     */
     public boolean getStatsStatus() {
         if (getDaemon().getRrdStrategy() instanceof QueuingRrdStrategy) {
             return true;
@@ -70,10 +79,20 @@ public class Queued extends AbstractSpringContextJmxServiceDaemon<org.opennms.ne
         }
     }
 
+    /**
+     * <p>getElapsedTime</p>
+     *
+     * @return a long.
+     */
     public long getElapsedTime() {
         return System.currentTimeMillis() - getStartTime();
     }
 
+    /**
+     * <p>getCreatesCompleted</p>
+     *
+     * @return a long.
+     */
     public long getCreatesCompleted() {
         if (getStatsStatus()) {
             return getRrdStrategy().getCreatesCompleted();
@@ -82,6 +101,11 @@ public class Queued extends AbstractSpringContextJmxServiceDaemon<org.opennms.ne
         }
     }
 
+    /**
+     * <p>getTotalOperationsPending</p>
+     *
+     * @return a long.
+     */
     public long getTotalOperationsPending() {
         if (getStatsStatus()) {
             return getRrdStrategy().getTotalOperationsPending();
@@ -90,6 +114,11 @@ public class Queued extends AbstractSpringContextJmxServiceDaemon<org.opennms.ne
         }
     }
 
+    /**
+     * <p>getErrors</p>
+     *
+     * @return a long.
+     */
     public long getErrors() {
         if (getStatsStatus()) {
             return getRrdStrategy().getErrors();
@@ -98,6 +127,11 @@ public class Queued extends AbstractSpringContextJmxServiceDaemon<org.opennms.ne
         }
     }
 
+    /**
+     * <p>getUpdatesCompleted</p>
+     *
+     * @return a long.
+     */
     public long getUpdatesCompleted() {
         if (getStatsStatus()) {
             return getRrdStrategy().getUpdatesCompleted();
@@ -106,6 +140,11 @@ public class Queued extends AbstractSpringContextJmxServiceDaemon<org.opennms.ne
         }
     }
 
+    /**
+     * <p>getPromotionCount</p>
+     *
+     * @return a long.
+     */
     public long getPromotionCount() {
         if (getStatsStatus()) {
             return getRrdStrategy().getPromotionCount();
@@ -114,6 +153,11 @@ public class Queued extends AbstractSpringContextJmxServiceDaemon<org.opennms.ne
         }
     }
 
+    /**
+     * <p>getDequeuedItems</p>
+     *
+     * @return a long.
+     */
     public long getDequeuedItems() {
         if (getStatsStatus()) {
             return getRrdStrategy().getDequeuedItems();
@@ -122,6 +166,11 @@ public class Queued extends AbstractSpringContextJmxServiceDaemon<org.opennms.ne
         }
     }
 
+    /**
+     * <p>getDequeuedOperations</p>
+     *
+     * @return a long.
+     */
     public long getDequeuedOperations() {
         if (getStatsStatus()) {
             return getRrdStrategy().getDequeuedOperations();
@@ -130,6 +179,11 @@ public class Queued extends AbstractSpringContextJmxServiceDaemon<org.opennms.ne
         }
     }
 
+    /**
+     * <p>getEnqueuedOperations</p>
+     *
+     * @return a long.
+     */
     public long getEnqueuedOperations() {
         if (getStatsStatus()) {
             return getRrdStrategy().getEnqueuedOperations();
@@ -138,6 +192,11 @@ public class Queued extends AbstractSpringContextJmxServiceDaemon<org.opennms.ne
         }
     }
 
+    /**
+     * <p>getSignificantOpsDequeued</p>
+     *
+     * @return a long.
+     */
     public long getSignificantOpsDequeued() {
         if (getStatsStatus()) {
             return getRrdStrategy().getSignificantOpsDequeued();
@@ -146,6 +205,11 @@ public class Queued extends AbstractSpringContextJmxServiceDaemon<org.opennms.ne
         }
     }
 
+    /**
+     * <p>getSignificantOpsEnqueued</p>
+     *
+     * @return a long.
+     */
     public long getSignificantOpsEnqueued() {
         if (getStatsStatus()) {
             return getRrdStrategy().getSignificantOpsEnqueued();
@@ -154,6 +218,11 @@ public class Queued extends AbstractSpringContextJmxServiceDaemon<org.opennms.ne
         }
     }
 
+    /**
+     * <p>getSignificantOpsCompleted</p>
+     *
+     * @return a long.
+     */
     public long getSignificantOpsCompleted() {
         if (getStatsStatus()) {
             return getRrdStrategy().getSignificantOpsCompleted();
@@ -162,6 +231,11 @@ public class Queued extends AbstractSpringContextJmxServiceDaemon<org.opennms.ne
         }
     }
 
+    /**
+     * <p>getStartTime</p>
+     *
+     * @return a long.
+     */
     public long getStartTime() {
         if (getStatsStatus()) {
             return getRrdStrategy().getStartTime();

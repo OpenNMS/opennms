@@ -70,11 +70,13 @@ import org.opennms.reporting.datablock.Node;
 /**
  * AvailabilityData collects all the outages for all node/ip/service
  * combination and stores it appropriately in the m_nodes structure.
- * 
+ *
  * @author <A HREF="mailto:jacinta@oculan.com">Jacinta Remedios </A>
  * @author <A HREF="http://www.oculan.com">Oculan </A>
+ * @author <A HREF="mailto:jacinta@oculan.com">Jacinta Remedios </A>
+ * @author <A HREF="http://www.oculan.com">Oculan </A>
+ * @version $Id: $
  */
-
 public class AvailabilityData {
     /**
      * The log4j category used to log debug messsages and statements.
@@ -124,6 +126,21 @@ public class AvailabilityData {
     
     // This version used when end date availalable as strings (from command line?)
     
+    /**
+     * <p>fillReport</p>
+     *
+     * @param categoryName a {@link java.lang.String} object.
+     * @param report a {@link org.opennms.reporting.availability.Report} object.
+     * @param format a {@link java.lang.String} object.
+     * @param monthFormat a {@link java.lang.String} object.
+     * @param startMonth a {@link java.lang.String} object.
+     * @param startDate a {@link java.lang.String} object.
+     * @param startYear a {@link java.lang.String} object.
+     * @throws java.io.IOException if any.
+     * @throws org.exolab.castor.xml.MarshalException if any.
+     * @throws org.exolab.castor.xml.ValidationException if any.
+     * @throws java.lang.Exception if any.
+     */
     public void fillReport(String categoryName, Report report,
             String format, String monthFormat,
             String startMonth, String startDate, String startYear)
@@ -143,6 +160,19 @@ public class AvailabilityData {
     
     // This version used when end date availalable as a java Date
 
+    /**
+     * <p>fillReport</p>
+     *
+     * @param categoryName a {@link java.lang.String} object.
+     * @param report a {@link org.opennms.reporting.availability.Report} object.
+     * @param format a {@link java.lang.String} object.
+     * @param monthFormat a {@link java.lang.String} object.
+     * @param periodEndDate a {@link java.util.Date} object.
+     * @throws java.io.IOException if any.
+     * @throws org.exolab.castor.xml.MarshalException if any.
+     * @throws org.exolab.castor.xml.ValidationException if any.
+     * @throws java.lang.Exception if any.
+     */
     public void fillReport(String categoryName, Report report,
             String format, String monthFormat, Date periodEndDate)
             throws IOException, MarshalException, ValidationException,
@@ -380,6 +410,8 @@ public class AvailabilityData {
     
     /**
      * Returns the nodes.
+     *
+     * @return a {@link java.util.List} object.
      */
     public List<Node> getNodes() {
         return m_nodes;
@@ -389,6 +421,8 @@ public class AvailabilityData {
     /**
      * Returns percent/node combinations for the last month. This is used to
      * get the last months top 20 offenders
+     *
+     * @return a {@link java.util.TreeMap} object.
      */
     public TreeMap<Double, List<String>> getPercentNode() {
         ThreadCategory log = ThreadCategory.getInstance(this.getClass());
@@ -431,6 +465,11 @@ public class AvailabilityData {
     }
 
 
+    /**
+     * <p>setAvailabilityDataService</p>
+     *
+     * @param availabilityDataService a {@link org.opennms.reporting.availability.svclayer.AvailabilityDataService} object.
+     */
     public void setAvailabilityDataService(
             AvailabilityDataService availabilityDataService) {
         ThreadCategory log = ThreadCategory.getInstance(this.getClass());

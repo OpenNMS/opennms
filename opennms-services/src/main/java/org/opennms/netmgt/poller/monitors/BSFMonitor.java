@@ -20,10 +20,17 @@ import org.opennms.netmgt.poller.MonitoredService;
 
 
 // this might actually be able to pushed out to the remote poller....  though prob not so easy out of the box
+/**
+ * <p>BSFMonitor class.</p>
+ *
+ * @author ranger
+ * @version $Id: $
+ */
 @Distributable(DistributionContext.DAEMON)
 
 public class BSFMonitor extends IPv4Monitor {
     
+    /** {@inheritDoc} */
     @SuppressWarnings("unchecked")
     
     public PollStatus poll(MonitoredService svc, Map<String,Object> map) {

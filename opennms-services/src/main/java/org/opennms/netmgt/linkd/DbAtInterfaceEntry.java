@@ -486,7 +486,7 @@ final class DbAtInterfaceEntry {
 	}
 
 	boolean updateAtPhysAddr(final String macaddr) {
-		if (!m_physaddr.equals(macaddr)) {
+		if (m_physaddr == null || !m_physaddr.equals(macaddr)) {
 			set_physaddr(macaddr);
 			return true;
 		} else
@@ -724,6 +724,11 @@ final class DbAtInterfaceEntry {
 		return entry;
 	}
 
+	/**
+	 * <p>toString</p>
+	 *
+	 * @return a {@link java.lang.String} object.
+	 */
 	public String toString() {
 		String sep = System.getProperty("line.separator");
 		StringBuffer buf = new StringBuffer();

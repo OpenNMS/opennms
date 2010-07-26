@@ -6,17 +6,35 @@ import org.opennms.core.utils.LogUtils;
 
 
 
+/**
+ * <p>HttpStatusResponse class.</p>
+ *
+ * @author ranger
+ * @version $Id: $
+ */
 public class HttpStatusResponse extends LineOrientedResponse {
     
     
     /**
-     * @param response
+     * <p>Constructor for HttpStatusResponse.</p>
+     *
+     * @param response a {@link java.lang.String} object.
      */
     public HttpStatusResponse(String response) {
         super(response);
         
     }
 
+    /**
+     * <p>validateResponse</p>
+     *
+     * @param pattern a {@link java.lang.String} object.
+     * @param url a {@link java.lang.String} object.
+     * @param isCheckCode a boolean.
+     * @param maxRetCode a int.
+     * @return a boolean.
+     * @throws java.lang.Exception if any.
+     */
     public boolean validateResponse(String pattern, String url, boolean isCheckCode, int maxRetCode) throws Exception {
         String codeStr = Integer.toString(maxRetCode);
         String[] codeArray = codeStr.split("");

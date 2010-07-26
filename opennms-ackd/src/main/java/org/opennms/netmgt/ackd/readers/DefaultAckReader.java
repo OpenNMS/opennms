@@ -38,7 +38,6 @@ package org.opennms.netmgt.ackd.readers;
 import java.util.concurrent.Future;
 import java.util.concurrent.ScheduledThreadPoolExecutor;
 
-import org.apache.log4j.Logger;
 import org.opennms.core.utils.ThreadCategory;
 import org.opennms.netmgt.ackd.AckReader;
 import org.opennms.netmgt.dao.AckdConfigurationDao;
@@ -49,7 +48,7 @@ import org.springframework.util.Assert;
 
 /**
  * Acknowledgment Reader implementation using Java Mail
- * 
+ *
  * DONE: Identify acknowledgments for sent notifications
  * DONE: Identify acknowledgments for alarm IDs (how the send knows the ID, good question)
  * DONE: Persist acknowledgments
@@ -70,10 +69,9 @@ import org.springframework.util.Assert;
  * DONE: Do some proper logging
  * DONE: Handle "enabled" flag of the readers in ackd-configuration
  * DONE: Move executor to Ackd daemon
- * 
- * 
+ *
  * @author <a href=mailto:david@opennms.org>David Hustace</a>
- * 
+ * @version $Id: $
  */
 public class DefaultAckReader implements AckReader, InitializingBean {
 
@@ -88,6 +86,11 @@ public class DefaultAckReader implements AckReader, InitializingBean {
     @Autowired
     private volatile AckdConfigurationDao m_ackdConfigDao;
 
+    /**
+     * <p>afterPropertiesSet</p>
+     *
+     * @throws java.lang.Exception if any.
+     */
     public void afterPropertiesSet() throws Exception {
         boolean state = (m_ackProcessor != null);
         Assert.state(state, "Dependency injection failed; one or more fields are null.");
@@ -100,6 +103,7 @@ public class DefaultAckReader implements AckReader, InitializingBean {
         this.start(executor, m_schedule, true);
     }
 
+    /** {@inheritDoc} */
     public synchronized void start(final ScheduledThreadPoolExecutor executor, final ReaderSchedule schedule, boolean reloadConfig) throws IllegalStateException {
         if (reloadConfig) {
             //FIXME:The reload of JavaMailConfiguration is made here because the DAO is there. Perhaps that should be changed.
@@ -124,6 +128,11 @@ public class DefaultAckReader implements AckReader, InitializingBean {
         }
     }
 
+    /**
+     * <p>pause</p>
+     *
+     * @throws java.lang.IllegalStateException if any.
+     */
     public synchronized void pause() throws IllegalStateException {
         if (AckReaderState.STARTED.equals(getState()) || AckReaderState.RESUMED.equals(getState())) {
             log().info("pause: lock acquired; pausing reader...");
@@ -143,6 +152,7 @@ public class DefaultAckReader implements AckReader, InitializingBean {
         }
     }
 
+    /** {@inheritDoc} */
     public synchronized void resume(final ScheduledThreadPoolExecutor executor) throws IllegalStateException {
         if (AckReaderState.PAUSED.equals(getState())) {
             setState(AckReaderState.RESUME_PENDING);
@@ -159,6 +169,11 @@ public class DefaultAckReader implements AckReader, InitializingBean {
         }
     }
 
+    /**
+     * <p>stop</p>
+     *
+     * @throws java.lang.IllegalStateException if any.
+     */
     public synchronized void stop() throws IllegalStateException {
         if (!AckReaderState.STOPPED.equals(getState())) {
             setState(AckReaderState.STOP_PENDING);
@@ -203,23 +218,40 @@ public class DefaultAckReader implements AckReader, InitializingBean {
         return ThreadCategory.getInstance(this.getClass());
     }
 
+    /** {@inheritDoc} */
     @Override
     public String toString() {
         return getClass().getCanonicalName();
     }
 
+    /** {@inheritDoc} */
     public void setAckProcessor(AckProcessor ackProcessor) {
         m_ackProcessor = ackProcessor;
     }
 
+    /**
+     * <p>getAckProcessor</p>
+     *
+     * @return a {@link org.opennms.netmgt.ackd.readers.AckProcessor} object.
+     */
     public AckProcessor getAckProcessor() {
         return m_ackProcessor;
     }
 
+    /**
+     * <p>setAckdConfigDao</p>
+     *
+     * @param ackdConfigDao a {@link org.opennms.netmgt.dao.AckdConfigurationDao} object.
+     */
     public void setAckdConfigDao(AckdConfigurationDao ackdConfigDao) {
         m_ackdConfigDao = ackdConfigDao;
     }
 
+    /**
+     * <p>getAckdConfigDao</p>
+     *
+     * @return a {@link org.opennms.netmgt.dao.AckdConfigurationDao} object.
+     */
     public AckdConfigurationDao getAckdConfigDao() {
         return m_ackdConfigDao;
     }
@@ -254,18 +286,34 @@ public class DefaultAckReader implements AckReader, InitializingBean {
         m_state = state;
     }
 
+    /**
+     * <p>getState</p>
+     *
+     * @return a AckReaderState object.
+     */
     public AckReaderState getState() {
         return m_state;
     }
 
+    /**
+     * <p>getFuture</p>
+     *
+     * @return a {@link java.util.concurrent.Future} object.
+     */
     public Future<?> getFuture() {
         return m_future;
     }
 
+    /**
+     * <p>getName</p>
+     *
+     * @return a {@link java.lang.String} object.
+     */
     public String getName() {
         return m_name;
     }
 
+    /** {@inheritDoc} */
     public synchronized void setName(String name) {
         m_name = name;
     }

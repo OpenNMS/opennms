@@ -51,6 +51,12 @@ import org.opennms.netmgt.linkd.QueryManager;
 import org.opennms.netmgt.xml.event.Event;
 import org.springframework.util.Assert;
 
+/**
+ * <p>Linkd class.</p>
+ *
+ * @author ranger
+ * @version $Id: $
+ */
 public class Linkd extends AbstractServiceDaemon {
 
 	/**
@@ -102,14 +108,25 @@ public class Linkd extends AbstractServiceDaemon {
 
 	private List<String> m_newSuspenctEventsIpAddr = null;
 	
+	/**
+	 * <p>Constructor for Linkd.</p>
+	 */
 	public Linkd() {
 		super(LOG4J_CATEGORY);
 	}
 
+	/**
+	 * <p>getInstance</p>
+	 *
+	 * @return a {@link org.opennms.netmgt.linkd.Linkd} object.
+	 */
 	public static Linkd getInstance() {
 		return m_singleton;
 	}
 
+	/**
+	 * <p>onInit</p>
+	 */
 	protected void onInit() {
 
         Assert.state(m_queryMgr != null, "must set the queryManager property");
@@ -143,11 +160,8 @@ public class Linkd extends AbstractServiceDaemon {
 
 	private void scheduleCollection() {
 	    synchronized (m_nodes) {
-	        Iterator<LinkableNode> ite = m_nodes.iterator();
-	        while (ite.hasNext()) {
-	            //Schedule snmp collection for node and also 
-	            //schedule discovery link on package where is not active 
-	            scheduleCollectionForNode(ite.next());
+	        for (final LinkableNode node : m_nodes) {
+	            scheduleCollectionForNode(node);
 	        }
         }
 	}
@@ -161,10 +175,7 @@ public class Linkd extends AbstractServiceDaemon {
 	 */
 	private void scheduleCollectionForNode(LinkableNode node) {
 
-		List<SnmpCollection> snmpcollOnNode = m_linkdConfig.getSnmpCollections(node.getSnmpPrimaryIpAddr(), node.getSysoid());
-		Iterator<SnmpCollection>  coll_ite = snmpcollOnNode.iterator();
-		while (coll_ite.hasNext()) {
-			SnmpCollection snmpcoll = coll_ite.next();
+		for (final SnmpCollection snmpcoll : m_linkdConfig.getSnmpCollections(node.getSnmpPrimaryIpAddr(), node.getSysoid())) {
 			if (m_activepackages.contains(snmpcoll.getPackageName())) {
 				if (log().isDebugEnabled())
 					log().debug("ScheduleCollectionForNode: package active: " +snmpcoll.getPackageName());
@@ -190,6 +201,9 @@ public class Linkd extends AbstractServiceDaemon {
 		}
 	}
 	
+	/**
+	 * <p>onStart</p>
+	 */
 	protected synchronized void onStart() {
 
 		// start the scheduler
@@ -203,6 +217,9 @@ public class Linkd extends AbstractServiceDaemon {
 
 	}
 
+	/**
+	 * <p>onStop</p>
+	 */
 	protected synchronized void onStop() {
 
 		// Stop the scheduler
@@ -214,26 +231,41 @@ public class Linkd extends AbstractServiceDaemon {
 
 	}
 
+	/**
+	 * <p>onPause</p>
+	 */
 	protected synchronized void onPause() {
 		m_scheduler.pause();
 	}
 
+	/**
+	 * <p>onResume</p>
+	 */
 	protected synchronized void onResume() {
 		m_scheduler.resume();
 	}
 
+	/**
+	 * <p>getLinkableNodes</p>
+	 *
+	 * @return a {@link java.util.Collection} object.
+	 */
 	public Collection<LinkableNode> getLinkableNodes() {
 		synchronized (m_nodes) {
 			return m_nodes;
 		}
 	}
 
+	/**
+	 * <p>getLinkableNodesOnPackage</p>
+	 *
+	 * @param pkg a {@link java.lang.String} object.
+	 * @return a {@link java.util.Collection} object.
+	 */
 	public Collection<LinkableNode> getLinkableNodesOnPackage(String pkg) {
 		Collection<LinkableNode> nodesOnPkg = new ArrayList<LinkableNode>();
 		synchronized (m_nodes) {
-			Iterator<LinkableNode> ite = m_nodes.iterator();
-			while (ite.hasNext()) {
-				LinkableNode node = ite.next();
+		    for (final LinkableNode node : m_nodes) {
 				if (isInterfaceInPackage(node.getSnmpPrimaryIpAddr(), pkg))
 					nodesOnPkg.add(node);
 			}
@@ -241,11 +273,25 @@ public class Linkd extends AbstractServiceDaemon {
 		}
 	}
 	
+	/**
+	 * <p>isInterfaceInPackage</p>
+	 *
+	 * @param ipaddr a {@link java.lang.String} object.
+	 * @param pkg a {@link java.lang.String} object.
+	 * @return a boolean.
+	 */
 	public boolean isInterfaceInPackage(String ipaddr, String pkg) {
 		if (m_linkdConfig.interfaceInPackage(ipaddr, m_linkdConfig.getPackage(pkg))) return true;
 		return false;
 	}
 
+	/**
+	 * <p>isInterfaceInPackageRange</p>
+	 *
+	 * @param ipaddr a {@link java.lang.String} object.
+	 * @param pkg a {@link java.lang.String} object.
+	 * @return a boolean.
+	 */
 	public boolean isInterfaceInPackageRange(String ipaddr, String pkg) {
 		if (m_linkdConfig.interfaceInPackageRange(ipaddr, m_linkdConfig.getPackage(pkg))) return true;
 		return false;
@@ -568,30 +614,65 @@ public class Linkd extends AbstractServiceDaemon {
 		return null;
 	}
 	
+    /**
+     * <p>setQueryManager</p>
+     *
+     * @param queryMgr a {@link org.opennms.netmgt.linkd.QueryManager} object.
+     */
     public void setQueryManager(QueryManager queryMgr) {
         m_queryMgr = queryMgr;
     }
 
+	/**
+	 * <p>getScheduler</p>
+	 *
+	 * @return a {@link org.opennms.netmgt.linkd.scheduler.Scheduler} object.
+	 */
 	public Scheduler getScheduler() {
 		return m_scheduler;
 	}
 
+	/**
+	 * <p>setScheduler</p>
+	 *
+	 * @param scheduler a {@link org.opennms.netmgt.linkd.scheduler.Scheduler} object.
+	 */
 	public void setScheduler(Scheduler scheduler) {
 		m_scheduler = scheduler;
 	}
 	
+	/**
+	 * <p>getLinkdConfig</p>
+	 *
+	 * @return a {@link org.opennms.netmgt.config.LinkdConfig} object.
+	 */
 	public LinkdConfig getLinkdConfig() {
 		return m_linkdConfig;
 	}
 
+	/**
+	 * <p>setLinkdConfig</p>
+	 *
+	 * @param config a {@link org.opennms.netmgt.config.LinkdConfig} object.
+	 */
 	public void setLinkdConfig(LinkdConfig config) {
 		m_linkdConfig = config;
 	}
 
+	/**
+	 * <p>getEventListener</p>
+	 *
+	 * @return a {@link org.opennms.netmgt.linkd.LinkdEventProcessor} object.
+	 */
 	public LinkdEventProcessor getEventListener() {
 		return m_eventListener;
 	}
 
+	/**
+	 * <p>setEventListener</p>
+	 *
+	 * @param eventListener a {@link org.opennms.netmgt.linkd.LinkdEventProcessor} object.
+	 */
 	public void setEventListener(LinkdEventProcessor eventListener) {
 		m_eventListener = eventListener;
 	}

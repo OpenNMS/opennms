@@ -48,8 +48,10 @@ import org.springframework.beans.factory.InitializingBean;
 import org.springframework.util.Assert;
 
 /**
- * 
+ * <p>Poller class.</p>
+ *
  * @author <a href="mailto:brozow@opennms.org">Mathew Brozowski</a>
+ * @version $Id: $
  */
 public class Poller implements InitializingBean, PollObserver, ConfigurationChangedListener, PropertyChangeListener {
 	
@@ -57,19 +59,39 @@ public class Poller implements InitializingBean, PollObserver, ConfigurationChan
 	private Scheduler m_scheduler;
 	private long m_initialSpreadTime = 300000L;
 	
+	/**
+	 * <p>setPollerFrontEnd</p>
+	 *
+	 * @param pollerFrontEnd a {@link org.opennms.netmgt.poller.remote.PollerFrontEnd} object.
+	 */
 	public void setPollerFrontEnd(PollerFrontEnd pollerFrontEnd) {
 		m_pollerFrontEnd = pollerFrontEnd;
 	}
 
+	/**
+	 * <p>setScheduler</p>
+	 *
+	 * @param scheduler a {@link org.quartz.Scheduler} object.
+	 */
 	public void setScheduler(Scheduler scheduler) {
 		m_scheduler = scheduler;
 	}
 	
+	/**
+	 * <p>setInitialSpreadTime</p>
+	 *
+	 * @param initialSpreadTime a long.
+	 */
 	public void setInitialSpreadTime(long initialSpreadTime) {
 		m_initialSpreadTime = initialSpreadTime;
 	}
 	
 
+	/**
+	 * <p>afterPropertiesSet</p>
+	 *
+	 * @throws java.lang.Exception if any.
+	 */
 	public void afterPropertiesSet() throws Exception {
 		assertNotNull(m_scheduler, "scheduler");
 		assertNotNull(m_pollerFrontEnd, "pollerFrontEnd");
@@ -150,15 +172,18 @@ public class Poller implements InitializingBean, PollObserver, ConfigurationChan
 		Assert.state(propertyValue != null, propertyName+" must be set for instances of "+Poller.class);
 	}
 
+	/** {@inheritDoc} */
 	public void pollCompleted(String pollId, PollStatus pollStatus) {
 		log().info("Complete Poll for "+pollId+" status = "+pollStatus);
 	}
 
+	/** {@inheritDoc} */
 	public void pollStarted(String pollId) {
 		log().info("Begin Poll for "+pollId);
 		
 	}
 
+    /** {@inheritDoc} */
     public void configurationChanged(PropertyChangeEvent e) {
         try {
             unschedulePolls();
@@ -169,6 +194,7 @@ public class Poller implements InitializingBean, PollObserver, ConfigurationChan
         }
     }
 
+    /** {@inheritDoc} */
     public void propertyChange(PropertyChangeEvent evt) {
         try {
             if (Boolean.TRUE.equals(evt.getNewValue())) {

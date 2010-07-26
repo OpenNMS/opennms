@@ -36,6 +36,12 @@ import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.Date;
 
+/**
+ * <p>WmiMgrOperation class.</p>
+ *
+ * @author ranger
+ * @version $Id: $
+ */
 public enum WmiMgrOperation {
 	EQ(0), NEQ(1), GT(2), LT(3);
 
@@ -45,10 +51,23 @@ public enum WmiMgrOperation {
 		m_OperationType = opType;
 	}
 
+	/**
+	 * <p>getOpNumber</p>
+	 *
+	 * @return a int.
+	 */
 	public int getOpNumber() {
 		return (m_OperationType);
 	}
 
+	/**
+	 * <p>compareString</p>
+	 *
+	 * @param comp1 a {@link java.lang.Object} object.
+	 * @param comp2 a {@link java.lang.String} object.
+	 * @return a boolean.
+	 * @throws org.opennms.protocols.wmi.WmiException if any.
+	 */
 	public boolean compareString(Object comp1, String comp2)
 			throws WmiException {
 		if (comp1 instanceof String) {

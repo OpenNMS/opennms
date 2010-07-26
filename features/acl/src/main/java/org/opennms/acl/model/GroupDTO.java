@@ -37,60 +37,128 @@ package org.opennms.acl.model;
 import java.util.List;
 
 /**
+ * <p>GroupDTO class.</p>
+ *
  * @author Massimiliano Dess&igrave; (desmax74@yahoo.it)
  * @since jdk 1.5.0
+ * @version $Id: $
  */
 public class GroupDTO implements GroupView {
 
+    /**
+     * <p>Getter for the field <code>name</code>.</p>
+     *
+     * @return a {@link java.lang.String} object.
+     */
     public String getName() {
         return name;
     }
 
+    /**
+     * <p>Setter for the field <code>name</code>.</p>
+     *
+     * @param name a {@link java.lang.String} object.
+     */
     public void setName(String name) {
         this.name = name;
     }
 
+    /**
+     * <p>Getter for the field <code>id</code>.</p>
+     *
+     * @return a {@link java.lang.Integer} object.
+     */
     public Integer getId() {
         return id;
     }
 
+    /**
+     * <p>Setter for the field <code>id</code>.</p>
+     *
+     * @param id a {@link java.lang.Integer} object.
+     */
     public void setId(Integer id) {
         this.id = id;
     }
 
+    /**
+     * <p>isNew</p>
+     *
+     * @return a boolean.
+     */
     public boolean isNew() {
         return id == 0;
     }
 
+    /**
+     * <p>hasAuthorities</p>
+     *
+     * @return a boolean.
+     */
     public boolean hasAuthorities() {
         return authorities != null && authorities.size() > 0;
     }
 
+    /**
+     * <p>hasGroups</p>
+     *
+     * @return a boolean.
+     */
     public boolean hasGroups() {
         return groups != null && groups.size() > 0;
     }
 
+    /**
+     * <p>Setter for the field <code>authorities</code>.</p>
+     *
+     * @param items a {@link java.util.List} object.
+     */
     @SuppressWarnings("unchecked")
     public void setAuthorities(List<?> items) {
         this.authorities = (List<AuthorityView>) items;
     }
 
+    /**
+     * <p>Getter for the field <code>authorities</code>.</p>
+     *
+     * @return a {@link java.util.List} object.
+     */
     public List<?> getAuthorities() {
         return authorities;
     }
 
+    /**
+     * <p>Getter for the field <code>emptyUsers</code>.</p>
+     *
+     * @return a {@link java.lang.Boolean} object.
+     */
     public Boolean getEmptyUsers() {
         return emptyUsers;
     }
 
+    /**
+     * <p>Setter for the field <code>emptyUsers</code>.</p>
+     *
+     * @param usersEmpty a {@link java.lang.Boolean} object.
+     */
     public void setEmptyUsers(Boolean usersEmpty) {
         this.emptyUsers = usersEmpty;
     }
 
+    /**
+     * <p>Getter for the field <code>groups</code>.</p>
+     *
+     * @return a {@link java.util.List} object.
+     */
     public List<GroupView> getGroups() {
         return groups;
     }
 
+    /**
+     * <p>Setter for the field <code>groups</code>.</p>
+     *
+     * @param groups a {@link java.util.List} object.
+     */
     public void setGroups(List<GroupView> groups) {
         this.groups = groups;
     }

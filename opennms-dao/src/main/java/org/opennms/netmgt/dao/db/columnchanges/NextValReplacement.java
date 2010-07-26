@@ -1,5 +1,9 @@
+
 /**
- * 
+ * <p>NextValReplacement class.</p>
+ *
+ * @author ranger
+ * @version $Id: $
  */
 package org.opennms.netmgt.dao.db.columnchanges;
 
@@ -13,13 +17,19 @@ import javax.sql.DataSource;
 
 import org.opennms.netmgt.dao.db.ColumnChange;
 import org.opennms.netmgt.dao.db.ColumnChangeReplacement;
-
 public class NextValReplacement implements ColumnChangeReplacement {
         private final String m_sequence;
         
         private final Connection m_connection;
         private final PreparedStatement m_statement;
         
+        /**
+         * <p>Constructor for NextValReplacement.</p>
+         *
+         * @param sequence a {@link java.lang.String} object.
+         * @param dataSource a {@link javax.sql.DataSource} object.
+         * @throws java.sql.SQLException if any.
+         */
         public NextValReplacement(String sequence, DataSource dataSource) throws SQLException {
             m_sequence = sequence;
 //            m_dataSource = dataSource;
@@ -56,6 +66,7 @@ public class NextValReplacement implements ColumnChangeReplacement {
         }
         */
 
+        /** {@inheritDoc} */
         public Integer getColumnReplacement(ResultSet rs, Map<String, ColumnChange> columnChanges) throws SQLException {
             ResultSet r = getStatement().executeQuery();
             
@@ -69,14 +80,29 @@ public class NextValReplacement implements ColumnChangeReplacement {
             return i;
         }
         
+        /**
+         * <p>addColumnIfColumnIsNew</p>
+         *
+         * @return a boolean.
+         */
         public boolean addColumnIfColumnIsNew() {
             return true;
         }
         
+        /**
+         * <p>close</p>
+         *
+         * @throws java.sql.SQLException if any.
+         */
         public void close() throws SQLException {
             finalize();
         }
         
+        /**
+         * <p>finalize</p>
+         *
+         * @throws java.sql.SQLException if any.
+         */
         protected void finalize() throws SQLException {
             if (m_statement != null) {
                 m_statement.close();

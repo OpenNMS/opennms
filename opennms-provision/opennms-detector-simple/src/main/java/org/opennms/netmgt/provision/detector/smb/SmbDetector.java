@@ -40,8 +40,10 @@ import org.springframework.context.annotation.Scope;
 import org.springframework.stereotype.Component;
 
 /**
- * @author Donald Desloge
+ * <p>SmbDetector class.</p>
  *
+ * @author Donald Desloge
+ * @version $Id: $
  */
 
 @Component
@@ -62,7 +64,8 @@ public class SmbDetector extends BasicDetector<LineOrientedRequest, NbtAddressRe
 
     /**
      * Constructor for instantiating a non-default service name of this protocol
-     * @param serviceName
+     *
+     * @param serviceName a {@link java.lang.String} object.
      */
     public SmbDetector(String serviceName) {
         super(serviceName, DEFAULT_PORT, DEFAULT_TIMEOUT, DEFAULT_RETRIES);
@@ -71,14 +74,16 @@ public class SmbDetector extends BasicDetector<LineOrientedRequest, NbtAddressRe
     
     /**
      * Constructor for overriding defaults
-     * @param serviceName
-     * @param timeout
-     * @param retries
+     *
+     * @param serviceName a {@link java.lang.String} object.
+     * @param timeout a int.
+     * @param retries a int.
      */
     public SmbDetector(String serviceName, int timeout, int retries) {
         super(serviceName, DEFAULT_PORT, timeout, retries);
     }
 
+    /** {@inheritDoc} */
     @Override
     protected void onInit() {
         expectBanner(validateAddressIsNotSame());
@@ -95,6 +100,7 @@ public class SmbDetector extends BasicDetector<LineOrientedRequest, NbtAddressRe
         };
     }
     
+    /** {@inheritDoc} */
     @Override
     protected Client<LineOrientedRequest, NbtAddressResponse> getClient() {
         return new SmbClient();

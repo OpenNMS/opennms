@@ -40,11 +40,19 @@ import java.net.InetAddress;
 import org.opennms.netmgt.snmp.SnmpAgentConfig;
 
 /**
- * @author brozow
+ * <p>SnmpAgentConfigFactory interface.</p>
  *
+ * @author brozow
+ * @version $Id: $
  */
 public interface SnmpAgentConfigFactory {
     
+    /**
+     * <p>getAgentConfig</p>
+     *
+     * @param address a {@link java.net.InetAddress} object.
+     * @return a {@link org.opennms.netmgt.snmp.SnmpAgentConfig} object.
+     */
     public SnmpAgentConfig getAgentConfig(InetAddress address);
 
 }

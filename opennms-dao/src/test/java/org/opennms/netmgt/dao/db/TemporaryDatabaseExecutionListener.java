@@ -53,6 +53,7 @@ public class TemporaryDatabaseExecutionListener extends AbstractTestExecutionLis
     private TemporaryDatabase m_database;
 
     public void afterTestMethod(TestContext testContext) throws Exception {
+        try {
         System.err.printf("TemporaryDatabaseExecutionListener.afterTestMethod(%s)\n", testContext);
         
         DataSource dataSource = DataSourceFactory.getInstance();
@@ -60,9 +61,10 @@ public class TemporaryDatabaseExecutionListener extends AbstractTestExecutionLis
         if (tempDb != null) {
             tempDb.drop();
         }
-        
+        } finally {
         testContext.markApplicationContextDirty();
         testContext.setAttribute(DependencyInjectionTestExecutionListener.REINJECT_DEPENDENCIES_ATTRIBUTE, Boolean.TRUE);
+        }
 
     }
     
@@ -103,18 +105,25 @@ public class TemporaryDatabaseExecutionListener extends AbstractTestExecutionLis
     public void prepareTestInstance(TestContext testContext) throws Exception {
         System.err.printf("TemporaryDatabaseExecutionListener.prepareTestInstance(%s)\n", testContext);
         JUnitTemporaryDatabase jtd = findAnnotation(testContext);
-        String dbName = getDatabaseName(testContext);
-        m_database = (jtd == null ? new TemporaryDatabase(dbName) : (jtd.tempDbClass()).getConstructor(String.class).newInstance(dbName));
-        m_database.setPopulateSchema(jtd == null? true : jtd.populate());
+        boolean useExisting = false;
+        if (jtd != null && jtd.useExistingDatabase() != null) {
+        	useExisting = !jtd.useExistingDatabase().equals("");
+        }
+
+        String dbName = useExisting ? jtd.useExistingDatabase() : getDatabaseName(testContext);
+        m_database = (jtd == null ? new TemporaryDatabase(dbName, useExisting) : (jtd.tempDbClass()).getConstructor(String.class, Boolean.TYPE).newInstance(dbName, useExisting));
+        m_database.setPopulateSchema(jtd == null? true : (jtd.populate() && !useExisting));
         try {
             m_database.create();
         } catch (Exception e) {
             System.err.printf("TemporaryDatabaseExecutionListener.prepareTestInstance: error while creating database: %s\n", e.getMessage());
         }
+        
 
         LazyConnectionDataSourceProxy proxy = new LazyConnectionDataSourceProxy(m_database);
         
         DataSourceFactory.setInstance(proxy);
+        System.err.printf("TemporaryDatabaseExecutionListener.prepareTestInstance(%s) prepared db %s\n", testContext, dbName);
     }
 
     private String getDatabaseName(TestContext testContext) {

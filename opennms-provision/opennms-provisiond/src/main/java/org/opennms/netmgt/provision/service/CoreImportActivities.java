@@ -54,12 +54,18 @@ import org.springframework.core.io.Resource;
  * CoreImportActivities
  *
  * @author brozow
+ * @version $Id: $
  */
 @ActivityProvider
 public class CoreImportActivities {
     
     ProvisionService m_provisionService;
     
+    /**
+     * <p>Constructor for CoreImportActivities.</p>
+     *
+     * @param provisionService a {@link org.opennms.netmgt.provision.service.ProvisionService} object.
+     */
     public CoreImportActivities(ProvisionService provisionService) {
         m_provisionService = provisionService;
     }
@@ -85,6 +91,14 @@ public class CoreImportActivities {
 
      */
 
+    /**
+     * <p>loadSpecFile</p>
+     *
+     * @param resource a {@link org.springframework.core.io.Resource} object.
+     * @return a {@link org.opennms.netmgt.provision.persist.requisition.Requisition} object.
+     * @throws org.opennms.netmgt.provision.service.ModelImportException if any.
+     * @throws java.io.IOException if any.
+     */
     @Activity( lifecycle = "import", phase = "validate", schedulingHint="import")
     public Requisition loadSpecFile(Resource resource) throws ModelImportException, IOException {
         info("Loading requisition from resource %s", resource);
@@ -94,6 +108,12 @@ public class CoreImportActivities {
         return specFile;
     }
     
+    /**
+     * <p>auditNodes</p>
+     *
+     * @param specFile a {@link org.opennms.netmgt.provision.persist.requisition.Requisition} object.
+     * @return a {@link org.opennms.netmgt.provision.service.operations.ImportOperationsManager} object.
+     */
     @Activity( lifecycle = "import", phase = "audit", schedulingHint="import" )
     public ImportOperationsManager auditNodes(Requisition specFile) {
         info("Auditing nodes for requisition %s", specFile);
@@ -113,6 +133,12 @@ public class CoreImportActivities {
         return opsMgr;
     }
     
+    /**
+     * <p>scanNodes</p>
+     *
+     * @param currentPhase a {@link org.opennms.netmgt.provision.service.lifecycle.Phase} object.
+     * @param opsMgr a {@link org.opennms.netmgt.provision.service.operations.ImportOperationsManager} object.
+     */
     @Activity( lifecycle = "import", phase = "scan", schedulingHint="import" )
     public void scanNodes(Phase currentPhase, ImportOperationsManager opsMgr) {
 
@@ -133,6 +159,11 @@ public class CoreImportActivities {
     }
     
     
+    /**
+     * <p>scanNode</p>
+     *
+     * @param operation a {@link org.opennms.netmgt.provision.service.operations.ImportOperation} object.
+     */
     @Activity( lifecycle = "nodeImport", phase = "scan", schedulingHint="import" )
     public void scanNode(ImportOperation operation) {
         info("Running scan phase of %s", operation);
@@ -141,6 +172,11 @@ public class CoreImportActivities {
         LogUtils.infof(this, "Finished Running scan phase of "+operation);
     }
     
+    /**
+     * <p>persistNode</p>
+     *
+     * @param operation a {@link org.opennms.netmgt.provision.service.operations.ImportOperation} object.
+     */
     @Activity( lifecycle = "nodeImport", phase = "persist" , schedulingHint = "import" )
     public void persistNode(ImportOperation operation) {
 
@@ -150,6 +186,12 @@ public class CoreImportActivities {
 
     }
     
+    /**
+     * <p>relateNodes</p>
+     *
+     * @param currentPhase a {@link org.opennms.core.tasks.BatchTask} object.
+     * @param requisition a {@link org.opennms.netmgt.provision.persist.requisition.Requisition} object.
+     */
     @Activity( lifecycle = "import", phase = "relate" , schedulingHint = "import" )
     public void relateNodes(final BatchTask currentPhase, final Requisition requisition) {
         
@@ -183,16 +225,33 @@ public class CoreImportActivities {
         }; 
     }
 
+    /**
+     * <p>info</p>
+     *
+     * @param format a {@link java.lang.String} object.
+     * @param args a {@link java.lang.Object} object.
+     */
     protected void info(String format, Object... args) {
         log().info(String.format(format, args));
     }
 
+    /**
+     * <p>debug</p>
+     *
+     * @param format a {@link java.lang.String} object.
+     * @param args a {@link java.lang.Object} object.
+     */
     protected void debug(String format, Object... args) {
         if (log().isDebugEnabled()) {
             log().debug(String.format(format, args));
         }
     }
 
+    /**
+     * <p>log</p>
+     *
+     * @return a {@link org.opennms.core.utils.ThreadCategory} object.
+     */
     protected ThreadCategory log() {
         return ThreadCategory.getInstance(getClass());
     }

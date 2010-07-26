@@ -55,6 +55,12 @@ import org.opennms.netmgt.snmp.SnmpInstId;
 import org.opennms.netmgt.snmp.SnmpUtils;
 import org.opennms.netmgt.snmp.SnmpWalker;
 
+/**
+ * <p>ScanManager class.</p>
+ *
+ * @author ranger
+ * @version $Id: $
+ */
 public class ScanManager {
     
     private final InetAddress m_address;
@@ -67,11 +73,18 @@ public class ScanManager {
         m_address = address;
     }
     
+    /**
+     * <p>getSystemGroup</p>
+     *
+     * @return a {@link org.opennms.netmgt.provision.service.snmp.SystemGroup} object.
+     */
     public SystemGroup getSystemGroup() {
         return m_systemGroup;
     }
 
     /**
+     * <p>getIfTable</p>
+     *
      * @return the ifTable
      */
     public IfTable getIfTable() {
@@ -79,6 +92,8 @@ public class ScanManager {
     }
 
     /**
+     * <p>getIpAddrTable</p>
+     *
      * @return the ipAddrTable
      */
     public IpAddrTable getIpAddrTable() {
@@ -86,6 +101,8 @@ public class ScanManager {
     }
 
     /**
+     * <p>getIfXTable</p>
+     *
      * @return the ifXTable
      */
     public IfXTable getIfXTable() {
@@ -97,6 +114,11 @@ public class ScanManager {
         return (addr == null ? null : addr.getHostAddress());
     }
 
+    /**
+     * <p>log</p>
+     *
+     * @return a {@link org.opennms.core.utils.ThreadCategory} object.
+     */
     public ThreadCategory log() {
         return ThreadCategory.getInstance(getClass());
     }
@@ -168,8 +190,9 @@ public class ScanManager {
     }
 
     /**
-     * @param ifSnmpCollector TODO
-     * @return
+     * <p>createCollectionTracker</p>
+     *
+     * @return a {@link org.opennms.netmgt.snmp.AggregateTracker} object.
      */
     public AggregateTracker createCollectionTracker() {
         return new AggregateTracker(new CollectionTracker[] { getSystemGroup(), getIfTable(), getIpAddrTable(), getIfXTable()});

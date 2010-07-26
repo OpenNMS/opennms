@@ -67,6 +67,16 @@ class DefaultLifeCycleInstance extends SequenceTask implements LifeCycleInstance
     final Object[] m_providers;
     final Map<String, Object> m_attributes = new HashMap<String, Object>();
     
+    /**
+     * <p>Constructor for DefaultLifeCycleInstance.</p>
+     *
+     * @param containingPhase a {@link org.opennms.core.tasks.BatchTask} object.
+     * @param repository a {@link org.opennms.netmgt.provision.service.lifecycle.LifeCycleRepository} object.
+     * @param coordinator a {@link org.opennms.core.tasks.DefaultTaskCoordinator} object.
+     * @param lifeCycleName a {@link java.lang.String} object.
+     * @param phaseNames an array of {@link java.lang.String} objects.
+     * @param providers an array of {@link java.lang.Object} objects.
+     */
     public DefaultLifeCycleInstance(BatchTask containingPhase, LifeCycleRepository repository,
             DefaultTaskCoordinator coordinator, String lifeCycleName, String[] phaseNames, Object[] providers) {
 
@@ -94,10 +104,24 @@ class DefaultLifeCycleInstance extends SequenceTask implements LifeCycleInstance
     }
 
 
+    /**
+     * <p>Constructor for DefaultLifeCycleInstance.</p>
+     *
+     * @param repository a {@link org.opennms.netmgt.provision.service.lifecycle.LifeCycleRepository} object.
+     * @param coordinator a {@link org.opennms.core.tasks.DefaultTaskCoordinator} object.
+     * @param lifeCycleName a {@link java.lang.String} object.
+     * @param phaseNames an array of {@link java.lang.String} objects.
+     * @param providers an array of {@link java.lang.Object} objects.
+     */
     public DefaultLifeCycleInstance(LifeCycleRepository repository, DefaultTaskCoordinator coordinator, String lifeCycleName, String[] phaseNames, Object[] providers) {
         this(null, repository, coordinator, lifeCycleName, phaseNames, providers);
     }
 
+    /**
+     * <p>getPhaseNames</p>
+     *
+     * @return a {@link java.util.List} object.
+     */
     public List<String> getPhaseNames() {
         List<String> phaseNames = new ArrayList<String>(m_phases.length);
         for(Phase phase : m_phases) {
@@ -106,14 +130,28 @@ class DefaultLifeCycleInstance extends SequenceTask implements LifeCycleInstance
         return phaseNames;
     }
 
+    /**
+     * <p>getName</p>
+     *
+     * @return a {@link java.lang.String} object.
+     */
     public String getName() {
         return m_name;
     }
 
+    /** {@inheritDoc} */
     public Object getAttribute(String key) {
         return m_attributes.get(key);
     }
     
+    /**
+     * <p>getAttribute</p>
+     *
+     * @param key a {@link java.lang.String} object.
+     * @param defaultValue a T object.
+     * @param <T> a T object.
+     * @return a T object.
+     */
     public <T> T getAttribute(String key, T defaultValue) {
         if (getAttribute(key) == null) {
             return defaultValue;
@@ -123,20 +161,30 @@ class DefaultLifeCycleInstance extends SequenceTask implements LifeCycleInstance
         
     }
     
+    /**
+     * <p>getClass</p>
+     *
+     * @param t a T object.
+     * @param <T> a T object.
+     * @return a {@link java.lang.Class} object.
+     */
     @SuppressWarnings("unchecked")
     public <T> Class<T> getClass(T t) {
         return (Class<T>) t.getClass();
     }
 
+    /** {@inheritDoc} */
     public <T> T getAttribute(String key, Class<T> type) {
         return type.cast(getAttribute(key));
     }
 
+    /** {@inheritDoc} */
     public LifeCycleInstance setAttribute(String key, Object value) {
         m_attributes.put(key, value);
         return this;
     }
     
+    /** {@inheritDoc} */
     public <T> T findAttributeByType(Class<T> clazz) {
         T result = null;
         for(Entry<String, Object> entry : m_attributes.entrySet()) {
@@ -152,10 +200,14 @@ class DefaultLifeCycleInstance extends SequenceTask implements LifeCycleInstance
     }
 
     
+    /** {@inheritDoc} */
     public LifeCycleInstance createNestedLifeCycle(BatchTask containingPhase, String lifeCycleName) {
         return m_repository.createNestedLifeCycleInstance(containingPhase, lifeCycleName, m_providers);
     }
 
+    /**
+     * <p>trigger</p>
+     */
     public void trigger() {
         if (m_containingPhase != null) {
             m_containingPhase.add(this);
@@ -164,6 +216,11 @@ class DefaultLifeCycleInstance extends SequenceTask implements LifeCycleInstance
         }
     }
 
+    /**
+     * <p>toString</p>
+     *
+     * @return a {@link java.lang.String} object.
+     */
     public String toString() {
         return new ToStringBuilder(this)
             .append("name", m_name)

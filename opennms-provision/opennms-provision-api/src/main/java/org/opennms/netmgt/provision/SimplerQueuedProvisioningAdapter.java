@@ -32,31 +32,71 @@ package org.opennms.netmgt.provision;
 import java.util.concurrent.TimeUnit;
 
 import org.opennms.core.utils.ThreadCategory;
+import org.springframework.transaction.TransactionStatus;
+import org.springframework.transaction.support.TransactionCallback;
+import org.springframework.transaction.support.TransactionTemplate;
 
 
 /**
  * SimplerQueuedProvisioningAdapter
  *
  * @author brozow
+ * @version $Id: $
  */
 public abstract class SimplerQueuedProvisioningAdapter extends SimpleQueuedProvisioningAdapter {
     
     private String m_name;
-    private long m_delay = 1;
-    private TimeUnit m_timeUnit = TimeUnit.SECONDS;
-    
+    protected long m_delay = 1;
+    protected TimeUnit m_timeUnit = TimeUnit.SECONDS;
+
+    protected TransactionTemplate m_template;
+
+    /**
+     * <p>getTemplate</p>
+     *
+     * @return a {@link org.springframework.transaction.support.TransactionTemplate} object.
+     */
+    public TransactionTemplate getTemplate() {
+        return m_template;
+    }
+
+    /**
+     * <p>setTemplate</p>
+     *
+     * @param template a {@link org.springframework.transaction.support.TransactionTemplate} object.
+     */
+    public void setTemplate(TransactionTemplate template) {
+        m_template = template;
+    }
+
+    /**
+     * <p>Constructor for SimplerQueuedProvisioningAdapter.</p>
+     *
+     * @param name a {@link java.lang.String} object.
+     */
     public SimplerQueuedProvisioningAdapter(String name) {
         m_name = name;
     }
     
+    /**
+     * <p>setTimeUnit</p>
+     *
+     * @param timeUnit a {@link java.util.concurrent.TimeUnit} object.
+     */
     public void setTimeUnit(TimeUnit timeUnit) {
         m_timeUnit = timeUnit;
     }
     
+    /**
+     * <p>setDelay</p>
+     *
+     * @param delay a long.
+     */
     public void setDelay(long delay) {
         m_delay = delay;
     }
     
+    /** {@inheritDoc} */
     @Override
     public String getName() {
         return m_name;
@@ -67,31 +107,61 @@ public abstract class SimplerQueuedProvisioningAdapter extends SimpleQueuedProvi
         return new AdapterOperationSchedule(m_delay, 0, 1, m_timeUnit);
     }
 
+    /** {@inheritDoc} */
     @Override
     public boolean isNodeReady(AdapterOperation op) {
         return true;
     }
 
+    /** {@inheritDoc} */
     @Override
-    public void processPendingOperationForNode(final AdapterOperation op) throws ProvisioningAdapterException {
-        log().info("processPendingOperationForNode: Handling Operation: "+op);
-        
+    public final void processPendingOperationForNode(final AdapterOperation op) throws ProvisioningAdapterException {
+        if (log().isDebugEnabled()) {
+            log().debug("processPendingOperationForNode: " + op.getType() + " for node: " + op.getNodeId() );
+        }
         switch (op.getType()) {
         case ADD:
-            doAddNode(op.getNodeId());
+            m_template.execute(new TransactionCallback<Object>() {
+                public Object doInTransaction(TransactionStatus arg0) {
+                    log().debug("processPendingOperationForNode: calling doAddNode() for node: " + op.getNodeId() );
+                    doAddNode(op.getNodeId());
+                    return null;
+                }
+            });
             break;
         case UPDATE:
-            doUpdateNode(op.getNodeId());
+            m_template.execute(new TransactionCallback<Object>() {
+                public Object doInTransaction(TransactionStatus arg0) {
+                    log().debug("processPendingOperationForNode: calling doUpdateNode() for node: " + op.getNodeId() );
+                    doUpdateNode(op.getNodeId());
+                    return null;
+                }
+            });
             break;
         case DELETE:
-            doDeleteNode(op.getNodeId());
+            m_template.execute(new TransactionCallback<Object>() {
+                public Object doInTransaction(TransactionStatus arg0) {
+                    log().debug("processPendingOperationForNode: calling doDeleteNode() for node: " + op.getNodeId() );
+                    doDeleteNode(op.getNodeId());
+                    return null;
+                }
+            });
             break;
         case CONFIG_CHANGE:
-            doNotifyConfigChange(op.getNodeId());
+            m_template.execute(new TransactionCallback<Object>() {
+                public Object doInTransaction(TransactionStatus arg0) {
+                    log().debug("processPendingOperationForNode: calling doNotifyConfigChange() for node: " + op.getNodeId() );
+                    doNotifyConfigChange(op.getNodeId());
+                    return null;
+                }
+            });
             break;
+        default:
+            log().warn("unknown operation: " + op.getType());
         }
     }
     
+    /** {@inheritDoc} */
     @Override
     public void init() {
         assertNotNull(m_timeUnit, "timeUnit must be set");
@@ -105,18 +175,36 @@ public abstract class SimplerQueuedProvisioningAdapter extends SimpleQueuedProvi
         if (!b) throw new IllegalStateException(m);
     }
 
+    /**
+     * <p>doAddNode</p>
+     *
+     * @param nodeid a int.
+     */
     public void doAddNode(int nodeid) {}
     
+    /**
+     * <p>doUpdateNode</p>
+     *
+     * @param nodeid a int.
+     */
     public void doUpdateNode(int nodeid) {}
     
+    /**
+     * <p>doDeleteNode</p>
+     *
+     * @param nodeid a int.
+     */
     public void doDeleteNode(int nodeid) {}
     
+    /**
+     * <p>doNotifyConfigChange</p>
+     *
+     * @param nodeid a int.
+     */
     public void doNotifyConfigChange(int nodeid) {}
     
     
     private static ThreadCategory log() {
         return ThreadCategory.getInstance(SimplerQueuedProvisioningAdapter.class);
     }
-
-
 }

@@ -47,20 +47,26 @@ import java.util.ListIterator;
 import java.util.Set;
 
 /**
- * 
+ * <p>SoftReferenceList class.</p>
+ *
  * @author <a href="mailto:brozow@opennms.org">Mathew Brozowski</a>
+ * @version $Id: $
  */
 public class SoftReferenceList<T> extends AbstractSequentialList<T> {
 	
 	private final List<SoftReference<T>> m_contents = new LinkedList<SoftReference<T>>();
 	private final ReferenceQueue<T> queue = new ReferenceQueue<T>();
 
+	/** {@inheritDoc} */
 	@Override
 	public ListIterator<T> listIterator(int index) {
 		processQueue();
 		return new SoftReferenceListIterator<T>(m_contents.listIterator(index), queue);
 	}
 	
+	/**
+	 * <p>removeCollected</p>
+	 */
 	public void removeCollected() {
 		processQueue();
 		for (Iterator<SoftReference<T>> iter = m_contents.iterator(); iter.hasNext();) {
@@ -80,6 +86,7 @@ public class SoftReferenceList<T> extends AbstractSequentialList<T> {
 		m_contents.removeAll(removed);
 	}
 
+	/** {@inheritDoc} */
 	@Override
 	public int size() {
 		processQueue();

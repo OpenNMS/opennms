@@ -50,13 +50,27 @@ import org.opennms.netmgt.dao.castor.CastorUtils;
 import org.opennms.rancid.ConnectionProperties;
 
 /**
+ * <p>Abstract RWSConfigManager class.</p>
+ *
  * @author <a href="mailto:antonio@opennms.it">Antonio Russo</a>
  * @author <a href="mailto:brozow@openms.org">Mathew Brozowski</a>
  * @author <a href="mailto:david@opennms.org">David Hustace</a>
+ * @author <a href="mailto:antonio@opennms.it">Antonio Russo</a>
+ * @author <a href="mailto:brozow@openms.org">Mathew Brozowski</a>
+ * @author <a href="mailto:david@opennms.org">David Hustace</a>
+ * @author <a href="mailto:antonio@opennms.it">Antonio Russo</a>
+ * @author <a href="mailto:brozow@openms.org">Mathew Brozowski</a>
+ * @author <a href="mailto:david@opennms.org">David Hustace</a>
+ * @version $Id: $
  */
 abstract public class RWSConfigManager implements RWSConfig {
     
     private int cursor = 0;
+    /**
+     * <p>getBase</p>
+     *
+     * @return a {@link org.opennms.rancid.ConnectionProperties} object.
+     */
     public ConnectionProperties getBase() {
         log().debug("Connections used : " +getBaseUrl().getServer_url()+getBaseUrl().getDirectory());
         log().debug("RWS timeout(sec): "+getBaseUrl().getTimeout());
@@ -68,6 +82,11 @@ abstract public class RWSConfigManager implements RWSConfig {
         return new ConnectionProperties(getBaseUrl().getUsername(),password,getBaseUrl().getServer_url(),getBaseUrl().getDirectory(),getBaseUrl().getTimeout());
     }
 
+    /**
+     * <p>getNextStandBy</p>
+     *
+     * @return a {@link org.opennms.rancid.ConnectionProperties} object.
+     */
     public ConnectionProperties getNextStandBy() {
         if (! hasStandbyUrl()) return null; 
         StandbyUrl standByUrl = getNextStandbyUrl();
@@ -81,18 +100,33 @@ abstract public class RWSConfigManager implements RWSConfig {
         return new ConnectionProperties(standByUrl.getUsername(),password,standByUrl.getServer_url(),standByUrl.getDirectory(),standByUrl.getTimeout());
     }
 
+    /**
+     * <p>getStandBy</p>
+     *
+     * @return an array of {@link org.opennms.rancid.ConnectionProperties} objects.
+     */
     public ConnectionProperties[] getStandBy() {
         // TODO Auto-generated method stub
         return null;
     }
 
     
+    /**
+     * <p>getBaseUrl</p>
+     *
+     * @return a {@link org.opennms.netmgt.config.rws.BaseUrl} object.
+     */
     public synchronized BaseUrl getBaseUrl() {
         
         BaseUrl url = m_config.getBaseUrl();
         return url;
     }
  
+    /**
+     * <p>getStanbyUrls</p>
+     *
+     * @return an array of {@link org.opennms.netmgt.config.rws.StandbyUrl} objects.
+     */
     public synchronized StandbyUrl[] getStanbyUrls() {
         
         return m_config.getStandbyUrl();
@@ -100,7 +134,9 @@ abstract public class RWSConfigManager implements RWSConfig {
     }
 
     /**
-     * 
+     * <p>getNextStandbyUrl</p>
+     *
+     * @return a {@link org.opennms.netmgt.config.rws.StandbyUrl} object.
      */
     public synchronized StandbyUrl getNextStandbyUrl() {
         StandbyUrl standbyUrl = null;
@@ -113,19 +149,43 @@ abstract public class RWSConfigManager implements RWSConfig {
         return standbyUrl;
     }
     
+    /**
+     * <p>hasStandbyUrl</p>
+     *
+     * @return a boolean.
+     */
     public synchronized boolean hasStandbyUrl() {
         return (m_config.getStandbyUrlCount() > 0);
     }
 
+    /**
+     * <p>Constructor for RWSConfigManager.</p>
+     *
+     * @param reader a {@link java.io.Reader} object.
+     * @throws org.exolab.castor.xml.MarshalException if any.
+     * @throws org.exolab.castor.xml.ValidationException if any.
+     * @throws java.io.IOException if any.
+     */
     @Deprecated
     public RWSConfigManager(Reader reader) throws MarshalException, ValidationException, IOException {
         reloadXML(reader);
     }
 
+    /**
+     * <p>Constructor for RWSConfigManager.</p>
+     *
+     * @param stream a {@link java.io.InputStream} object.
+     * @throws org.exolab.castor.xml.MarshalException if any.
+     * @throws org.exolab.castor.xml.ValidationException if any.
+     * @throws java.io.IOException if any.
+     */
     public RWSConfigManager(InputStream stream) throws MarshalException, ValidationException, IOException {
         reloadXML(stream);
     }
 
+    /**
+     * <p>Constructor for RWSConfigManager.</p>
+     */
     public RWSConfigManager() {
     }
     
@@ -138,11 +198,27 @@ abstract public class RWSConfigManager implements RWSConfig {
 //     */
     private RwsConfiguration m_config;
 
+    /**
+     * <p>reloadXML</p>
+     *
+     * @param reader a {@link java.io.Reader} object.
+     * @throws org.exolab.castor.xml.MarshalException if any.
+     * @throws org.exolab.castor.xml.ValidationException if any.
+     * @throws java.io.IOException if any.
+     */
     @Deprecated
     protected synchronized void reloadXML(Reader reader) throws MarshalException, ValidationException, IOException {
         m_config = CastorUtils.unmarshal(RwsConfiguration.class, reader);
     }
 
+    /**
+     * <p>reloadXML</p>
+     *
+     * @param stream a {@link java.io.InputStream} object.
+     * @throws org.exolab.castor.xml.MarshalException if any.
+     * @throws org.exolab.castor.xml.ValidationException if any.
+     * @throws java.io.IOException if any.
+     */
     protected synchronized void reloadXML(InputStream stream) throws MarshalException, ValidationException, IOException {
         m_config = CastorUtils.unmarshal(RwsConfiguration.class, stream);
     }
@@ -164,6 +240,8 @@ abstract public class RWSConfigManager implements RWSConfig {
 
     /**
      * Return the poller configuration object.
+     *
+     * @return a {@link org.opennms.netmgt.config.rws.RwsConfiguration} object.
      */
     public synchronized RwsConfiguration getConfiguration() {
         return m_config;
