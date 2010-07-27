@@ -31,25 +31,6 @@
       </plugin>
     </plugins>
   </build>
-  <repositories>
-<!--
-    <repository>
-      <id>opennms-repo</id>
-      <name>OpenNMS Rep</name>
-      <url>http://repo.opennms.org/maven2</url>
-    </repository>
--->
-  </repositories>
-  <pluginRepositories>
-<!--
-    <pluginRepository>
-      <releases />
-      <snapshots />
-      <id>codehaus-plugins</id>
-      <url>http://dist.codehaus.org/</url>
-    </pluginRepository>
--->
-  </pluginRepositories>
 
   <dependencies>
     <dependency>

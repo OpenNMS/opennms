@@ -54,8 +54,8 @@
 </div>
 </center>	
 
-<script language="JavaScript" type="text/javascript" src="extJS/adapter/jquery/jquery.js"></script>
-<script language="JavaScript" type="text/javascript" src="extJS/adapter/jquery/jquery.history.js"></script>
+<script language="JavaScript" type="text/javascript" src="js/jquery/jquery.js"></script>
+<script language="JavaScript" type="text/javascript" src="js/jquery/jquery.history.js"></script>
 
 <script type="text/javascript">
 

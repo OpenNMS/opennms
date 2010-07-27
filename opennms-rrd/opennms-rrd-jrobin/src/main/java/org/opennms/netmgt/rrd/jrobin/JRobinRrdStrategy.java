@@ -74,7 +74,13 @@ import org.opennms.netmgt.rrd.RrdUtils;
  * @version $Id: $
  */
 public class JRobinRrdStrategy implements RrdStrategy<RrdDef,RrdDb> {
-    //Ensure that we only initialize certain things *once* per Java VM, not once per instantiation of this class
+    private static final String BACKEND_FACTORY_PROPERTY = "org.jrobin.core.RrdBackendFactory";
+    private static final String DEFAULT_BACKEND_FACTORY = "FILE";
+
+    /*
+     * Ensure that we only initialize certain things *once* per
+     * Java VM, not once per instantiation of this class.
+     */
     private static boolean s_initialized = false;
 
     private Properties m_configurationProperties;
@@ -90,7 +96,7 @@ public class JRobinRrdStrategy implements RrdStrategy<RrdDef,RrdDb> {
 
     /** {@inheritDoc} */
     public void setConfigurationProperties(Properties configurationParameters) {
-        this.m_configurationProperties = configurationParameters;
+        m_configurationProperties = configurationParameters;
     }
 
     /**
@@ -180,15 +186,15 @@ public class JRobinRrdStrategy implements RrdStrategy<RrdDef,RrdDb> {
      * @throws java.lang.Exception if any.
      */
     public JRobinRrdStrategy() throws Exception {
-        if(!s_initialized) {
-            String factory = null;
+        if (!s_initialized) {
+            String factory;
             if (m_configurationProperties == null) {
-                factory = "FILE";
+                factory = DEFAULT_BACKEND_FACTORY;
             } else {
-                factory = (String)m_configurationProperties.get("org.jrobin.core.RrdBackendFactory");
+                factory = (String) m_configurationProperties.getProperty(BACKEND_FACTORY_PROPERTY, DEFAULT_BACKEND_FACTORY);
             }
             RrdDb.setDefaultFactory(factory);
-            s_initialized=true;
+            s_initialized = true;
         }
         String home = System.getProperty("opennms.home");
         System.setProperty("jrobin.fontdir", home + File.separator + "etc");

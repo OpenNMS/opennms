@@ -1,7 +1,0 @@
-git bisect start
-# bad: [02c3b68d798cc21773e8549625efee3304e83268] fix bounds calculation in openlayers
-git bisect bad 02c3b68d798cc21773e8549625efee3304e83268
-# good: [f417ed9a5cd6d0076c52e6f4e28fb2669f6f0db3] renamed file
-git bisect good f417ed9a5cd6d0076c52e6f4e28fb2669f6f0db3
-# good: [e6ca53928a8aa5bdcad595f1cfba5822215a3b1d] Bumped SNMP library version to 2.0.4 to get latest changes so that SNMPv3 sessions are renegotiated during each session.
-git bisect good e6ca53928a8aa5bdcad595f1cfba5822215a3b1d
