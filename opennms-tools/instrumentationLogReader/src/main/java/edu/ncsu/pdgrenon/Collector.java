@@ -2,10 +2,8 @@ package edu.ncsu.pdgrenon;
 
 import java.io.BufferedReader;
 import java.io.File;
-import java.io.FileNotFoundException;
 import java.io.FileReader;
 import java.io.IOException;
-import java.io.PrintStream;
 import java.io.PrintWriter;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
@@ -60,7 +58,9 @@ public class Collector {
 	public Set<String> getServices() {
 		Set<String> services = new HashSet<String>();
 		for(LogMessage logMessage : m_messages) {
-			services.add(logMessage.getServiceID());
+			if (logMessage.getServiceID() != null) {
+				services.add(logMessage.getServiceID());
+			}
 		}
 		return services;
 	}
