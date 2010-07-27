@@ -52,14 +52,14 @@
       <releases><enabled>true</enabled></releases>
       <id>opennms-repo</id>
       <name>OpenNMS Repository</name>
-      <url>http://repo.opennms.org/maven2</url>
+      <url>http://maven.opennms.org/content/groups/opennms.org-release</url>
     </repository>
     <repository>
       <snapshots><enabled>false</enabled></snapshots>
       <releases><enabled>true</enabled></releases>
       <id>snmp4j-repo</id>
       <name>SNMP4J Maven Repository</name>
-      <url>https://server.oosnmp.net/dist/release</url>
+      <url>http://maven.opennms.org/content/groups/oosnmp.net-release</url>
     </repository>
   </repositories>
 </project>

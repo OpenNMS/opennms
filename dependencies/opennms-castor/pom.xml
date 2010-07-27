@@ -51,9 +51,16 @@
     <pluginRepository>
       <snapshots><enabled>false</enabled></snapshots>
       <releases><enabled>true</enabled></releases>
+      <id>maven-repo</id>
+      <name>Maven Central</name>
+      <url>http://repo1.maven.org/maven2</url>
+    </pluginRepository>
+    <pluginRepository>
+      <snapshots><enabled>false</enabled></snapshots>
+      <releases><enabled>true</enabled></releases>
       <id>codehaus</id>
       <name>Maven/Codehaus Repository</name>
-      <url>http://repository.codehaus.org</url>
+      <url>http://maven.opennms.org/content/groups/codehaus.org-release</url>
     </pluginRepository>
   </pluginRepositories>
 </project>
