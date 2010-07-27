@@ -47,13 +47,8 @@ import java.net.InetAddress;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.List;
-<<<<<<< HEAD
 import java.util.Properties;
 
-=======
-
-import org.apache.log4j.Category;
->>>>>>> c5ec9e0... Revert "Fix version number"
 import org.opennms.core.utils.StringUtils;
 import org.opennms.core.utils.ThreadCategory;
 import org.opennms.netmgt.rrd.RrdDataSource;
@@ -74,17 +69,10 @@ import org.springframework.util.FileCopyUtils;
  * 
  * See the individual methods for more details
  */
-<<<<<<< HEAD
 public class RrdcachedRrdStrategy implements RrdStrategy<String,StringBuffer> {
 	
     private final static String IGNORABLE_LIBART_WARNING_STRING = "*** attempt to put segment in horiz list twice";
     private final static String IGNORABLE_LIBART_WARNING_REGEX = "\\*\\*\\* attempt to put segment in horiz list twice\r?\n?";
-=======
-public class RrdcachedRrdStrategy implements RrdStrategy {
-	
-	private final static String IGNORABLE_LIBART_WARNING_STRING = "*** attempt to put segment in horiz list twice";
-	private final static String IGNORABLE_LIBART_WARNING_REGEX = "\\*\\*\\* attempt to put segment in horiz list twice\r?\n?";
->>>>>>> c5ec9e0... Revert "Fix version number"
 
     private Rrdcached m_rrdcached = null;
 
@@ -92,7 +80,6 @@ public class RrdcachedRrdStrategy implements RrdStrategy {
 
     boolean graphicsInitialized = false;
 
-<<<<<<< HEAD
     private Properties m_configurationProperties;
 
     /**
@@ -109,19 +96,12 @@ public class RrdcachedRrdStrategy implements RrdStrategy {
         this.m_configurationProperties = configurationParameters;
     }
 
-
-=======
->>>>>>> c5ec9e0... Revert "Fix version number"
     /**
      * The 'closes' the rrd file. This is where the actual work of writing the
      * RRD files takes place. The passed in rrd is actually an rrd command
      * string containing updates. This method executes this command.
      */
-<<<<<<< HEAD
     public void closeFile(StringBuffer rrd) throws Exception {
-=======
-    public void closeFile(Object rrd) throws Exception {
->>>>>>> c5ec9e0... Revert "Fix version number"
         
     }
 
@@ -139,11 +119,7 @@ public class RrdcachedRrdStrategy implements RrdStrategy {
         }
     }
 
-<<<<<<< HEAD
     public String createDefinition(String creator, String directory, String rrdName, int step, List<RrdDataSource> dataSources, List<String> rraList) throws Exception {
-=======
-    public Object createDefinition(String creator, String directory, String rrdName, int step, List<RrdDataSource> dataSources, List<String> rraList) throws Exception {
->>>>>>> c5ec9e0... Revert "Fix version number"
         checkState("createDefinition");
 
         File f = new File(directory);
@@ -186,11 +162,7 @@ public class RrdcachedRrdStrategy implements RrdStrategy {
      * Creates a the rrd file from the rrdDefinition. Since this definition is
      * really just the create command string it just executes it.
      */
-<<<<<<< HEAD
     public void createFile(String rrdDef) throws Exception {
-=======
-    public void createFile(Object rrdDef) throws Exception {
->>>>>>> c5ec9e0... Revert "Fix version number"
         checkState("createFile");
         if (rrdDef == null) {
             return;
@@ -205,11 +177,7 @@ public class RrdcachedRrdStrategy implements RrdStrategy {
      * not provide files that may be open, this constructs the beginning portion
      * of the rrd command to update the file.
      */
-<<<<<<< HEAD
     public StringBuffer openFile(String fileName) throws Exception {
-=======
-    public Object openFile(String fileName) throws Exception {
->>>>>>> c5ec9e0... Revert "Fix version number"
         checkState("openFile");
 //        return new StringBuffer("update " + fileName);
         return new StringBuffer(fileName);
@@ -223,21 +191,12 @@ public class RrdcachedRrdStrategy implements RrdStrategy {
      * possibility of getting performance benefit by doing more than one write
      * per open. The updates are all performed at once in the closeFile method.
      */
-<<<<<<< HEAD
     public synchronized void updateFile(StringBuffer rrd, String owner, String data) throws Exception {
         checkState("updateFile");
 //        StringBuffer cmd = (StringBuffer) rrd;
 //        cmd.append(' ');
 //        cmd.append(data);
         m_rrdcached.execute("UPDATE " + rrd + " " + data);
-=======
-    public synchronized void updateFile(Object rrd, String owner, String data) throws Exception {
-        checkState("updateFile");
-        StringBuffer cmd = (StringBuffer) rrd;
-//        cmd.append(' ');
-//        cmd.append(data);
-        m_rrdcached.execute("UPDATE " + rrd.toString() + " " + data);
->>>>>>> c5ec9e0... Revert "Fix version number"
     }
 
     /*
@@ -488,11 +447,7 @@ public class RrdcachedRrdStrategy implements RrdStrategy {
         return "";
     }
     
-<<<<<<< HEAD
     public ThreadCategory log() {
-=======
-    public Category log() {
->>>>>>> c5ec9e0... Revert "Fix version number"
         return ThreadCategory.getInstance(getClass());
     }
 
