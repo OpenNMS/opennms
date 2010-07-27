@@ -2,10 +2,11 @@
 <jmx-datacollection-config rrdRepository="${install.share.dir}/rrd/snmp/">
     <jmx-collection name="jboss">
         <rrd step = "300">
-            <rra>RRA:AVERAGE:0.5:1:8928</rra>
-            <rra>RRA:AVERAGE:0.5:12:8784</rra>
-            <rra>RRA:MIN:0.5:12:8784</rra>
-            <rra>RRA:MAX:0.5:12:8784</rra>
+            <rra>RRA:AVERAGE:0.5:1:2016</rra>
+            <rra>RRA:AVERAGE:0.5:12:1488</rra>
+            <rra>RRA:AVERAGE:0.5:288:366</rra>
+            <rra>RRA:MAX:0.5:288:366</rra>
+            <rra>RRA:MIN:0.5:288:366</rra>
         </rrd>
       
         <mbeans>   
@@ -79,13 +80,28 @@
 
     <jmx-collection name="jsr160">
         <rrd step = "300">
-            <rra>RRA:AVERAGE:0.5:1:8928</rra>
-            <rra>RRA:AVERAGE:0.5:12:8784</rra>
-            <rra>RRA:MIN:0.5:12:8784</rra>
-            <rra>RRA:MAX:0.5:12:8784</rra>
+            <rra>RRA:AVERAGE:0.5:1:2016</rra>
+            <rra>RRA:AVERAGE:0.5:12:1488</rra>
+            <rra>RRA:AVERAGE:0.5:288:366</rra>
+            <rra>RRA:MAX:0.5:288:366</rra>
+            <rra>RRA:MIN:0.5:288:366</rra>
         </rrd>
       
         <mbeans>   
+          <mbean name="OpenNMS Queued" objectname="OpenNMS:Name=Queued">  
+              <attrib name="CreatesCompleted" alias="ONMSQueCreates" type="counter"/> 
+              <attrib name="DequeuedItems" alias="ONMSQueItemDeque" type="counter"/>  
+              <attrib name="DequeuedOperations" alias="ONMSQueDequeOps" type="counter"/> 
+              <attrib name="EnqueuedOperations" alias="ONMSQueEnqueOps" type="counter"/> 
+              <attrib name="Errors" alias="ONMSQueErrors" type="counter"/>  
+              <attrib name="PromotionCount" alias="ONMSQuePromo" type="counter"/> 
+              <attrib name="SignificantOpsCompleted" alias="ONMSQueSigOpsCompl" type="counter"/> 
+              <attrib name="SignificantOpsDequeued" alias="ONMSQueSigOpsDeque" type="counter"/> 
+              <attrib name="SignificantOpsEnqueued" alias="ONMSQueSigOpsEnque" type="counter"/>  
+              <attrib name="TotalOperationsPending" alias="ONMSQueOpsPend" type="gauge"/> 
+              <attrib name="UpdatesCompleted" alias="ONMSQueUpdates" type="counter"/> 
+          </mbean>  
+
           <mbean name="JVM Memory" objectname="java.lang:type=OperatingSystem">  
               <attrib name="FreePhysicalMemorySize"   alias="FreeMemory"       type="gauge"/> 
               <attrib name="TotalPhysicalMemorySize"  alias="TotalMemory"      type="gauge"/>  
