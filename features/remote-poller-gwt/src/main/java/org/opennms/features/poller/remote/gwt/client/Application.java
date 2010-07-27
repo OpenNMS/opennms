@@ -23,6 +23,7 @@ import com.google.gwt.user.client.ui.DockLayoutPanel;
 import com.google.gwt.user.client.ui.HorizontalPanel;
 import com.google.gwt.user.client.ui.Hyperlink;
 import com.google.gwt.user.client.ui.Label;
+import com.google.gwt.user.client.ui.RootPanel;
 import com.google.gwt.user.client.ui.SplitLayoutPanel;
 import com.google.gwt.user.client.ui.Widget;
 
@@ -110,7 +111,14 @@ public class Application implements EntryPoint, LocationsUpdatedEventHandler {
             }
         }
 
-        m_locationManager.initialize(this);
+        m_locationManager.initialize();
+        
+        splitPanel.setWidgetMinSize(locationPanel, 255);
+        mainPanel.setSize("100%", "100%");
+        RootPanel.get("remotePollerMap").add(mainPanel);
+        
+        updateTimestamp();
+        onLocationClick(null);
         
     }
 

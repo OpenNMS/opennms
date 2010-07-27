@@ -18,7 +18,7 @@ public interface LocationManager {
      * <p>initialize</p>
      * @param application 
      */
-    public abstract void initialize(Application application);
+    public abstract void initialize();
 	
 	/**
 	 * <p>addLocationManagerInitializationCompleteEventHandler</p>

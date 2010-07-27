@@ -42,7 +42,6 @@ import com.google.gwt.user.client.Window;
 import com.google.gwt.user.client.rpc.AsyncCallback;
 import com.google.gwt.user.client.ui.DialogBox;
 import com.google.gwt.user.client.ui.Label;
-import com.google.gwt.user.client.ui.RootPanel;
 import com.google.gwt.user.client.ui.SplitLayoutPanel;
 
 import de.novanic.eventservice.client.event.RemoteEventService;
@@ -124,19 +123,21 @@ public class DefaultLocationManager implements LocationManager, RemotePollerPres
         m_eventBus.addHandler(GWTMarkerInfoWindowRefreshEvent.TYPE, this);
     }
 
-    /**
-     * <p>initialize</p>
-     */
-    public void initialize(final Application application) {
+    public void initialize() {
         getPanel().add(m_mapPanel.getWidget());
-        application.updateTimestamp();
-        application.onLocationClick(null);
+        initializeEventService();
         
+        startStatusEvents();
+    }
+
+    private void initializeEventService() {
         LocationListener locationListener = new DefaultLocationListener(this);
         final RemoteEventService eventService = RemoteEventServiceFactory.getInstance().getRemoteEventService();
         eventService.addListener(MapRemoteEventHandler.LOCATION_EVENT_DOMAIN, locationListener);
         eventService.addListener(null, locationListener);
-        
+    }
+
+    private void startStatusEvents() {
         getRemoteService().start(new AsyncCallback<Void>() {
             public void onFailure(Throwable throwable) {
                 // Log.debug("unable to start location even service backend", throwable);
@@ -145,11 +146,7 @@ public class DefaultLocationManager implements LocationManager, RemotePollerPres
             }
         
             public void onSuccess(Void voidArg) {
-               application.splitPanel.setWidgetMinSize(application.locationPanel, 255);
-               application.mainPanel.setSize("100%", "100%");
-               RootPanel.get("remotePollerMap").add(application.mainPanel);
-               application.mainPanel.setSize("100%", application.getAppHeight().toString());
-               application.mainPanel.forceLayout();
+              
             }
         });
     }
