@@ -36,6 +36,8 @@ import java.util.Date;
 
 import org.junit.Test;
 
+import edu.ncsu.pdgrenon.BaseLogMessage;
+
 public class CollectorTest {
     
     @Test
@@ -53,7 +55,7 @@ public class CollectorTest {
     }
     
     Date timestamp(String dateString) {
-        return LogMessage.parseTimestamp(dateString);
+        return BaseLogMessage.parseTimestamp(dateString);
     }
 
 }

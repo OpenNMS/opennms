@@ -33,6 +33,8 @@ import java.util.Date;
 import java.util.LinkedList;
 import java.util.List;
 
+import edu.ncsu.pdgrenon.BaseLogMessage;
+
 /**
  * Collector
  *
@@ -40,14 +42,14 @@ import java.util.List;
  */
 public class Collector {
     
-    List<LogMessage> m_messages = new LinkedList<LogMessage>();
+    List<BaseLogMessage> m_messages = new LinkedList<BaseLogMessage>();
 
     public Date getStartTime() {
-        return m_messages.get(0).getTimestamp();
+        return m_messages.get(0).getDate();
     }
     
     public Date getEndTime() {
-        return m_messages.get(m_messages.size()-1).getTimestamp();
+        return m_messages.get(m_messages.size()-1).getDate();
     }
     
     public Duration getDuration() {
@@ -55,7 +57,7 @@ public class Collector {
     }
 
     public void addLog(String logString) {
-        LogMessage msg = LogMessage.create(logString);
+        BaseLogMessage msg = BaseLogMessage.create(logString);
         if (msg != null) {
             m_messages.add(msg);
         }
