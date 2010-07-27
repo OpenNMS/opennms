@@ -33,10 +33,10 @@ public class LogMessage {
 		return getMessage().contains("error");
 	}
 	boolean isCollectorBeginMessage() {
-		return getMessage().contains("collectData: begin:");
+		return getMessage().contains("collectData: begin:") || getMessage().contains("collector.initialize: begin");
 	}
 	boolean isCollectorEndMessage() {
-		return getMessage().contains("collectData: end:");
+		return getMessage().contains("collectData: end:") || getMessage().contains("collector.initialize: end");
 	}
 	
 	Date getDate() {

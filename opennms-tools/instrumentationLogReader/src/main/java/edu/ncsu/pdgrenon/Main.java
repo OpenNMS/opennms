@@ -1,15 +1,21 @@
 package edu.ncsu.pdgrenon;
 
+import java.io.IOException;
 import java.io.PrintWriter;
 
 public class Main {
 
 	/**
 	 * @param args
+	 * @throws IOException  	
 	 */
-	public static void main(String[] args) {
-	Collector c = new Collector();
-	c.printMessageTypeCounts(new PrintWriter(System.out,true));
+	public static void main(String[] args) throws IOException {
+		Collector c = new Collector();
+		for(int i=0 ; i < args.length ; i++){
+			c.readLogMessagesFromFile(args[i]);
+		}
+
+		c.printReport(new PrintWriter(System.out,true));
 
 	}
 
