@@ -42,6 +42,13 @@
 
   <repositories>
     <repository>
+      <snapshots><enabled>false</enabled></snapshots>
+      <releases><enabled>true</enabled></releases>
+      <id>maven-repo</id>
+      <name>Maven Central</name>
+      <url>http://repo1.maven.org/maven2</url>
+    </repository>
+    <repository>
       <snapshots>
         <enabled>false</enabled>
       </snapshots>
@@ -50,7 +57,7 @@
       </releases>
       <id>opennms-repo</id>
       <name>OpenNMS Repository</name>
-      <url>http://repo.opennms.org/maven2</url>
+      <url>http://maven.opennms.org/content/groups/opennms.org-release</url>
     </repository>
     <repository>
       <snapshots>
@@ -61,7 +68,7 @@
       </releases>
       <id>opennms-snapshots</id>
       <name>OpenNMS Repository</name>
-      <url>http://repo.opennms.org/snapshots</url>
+      <url>http://maven.opennms.org/content/groups/opennms.org-snapshot</url>
     </repository>
   </repositories>
 

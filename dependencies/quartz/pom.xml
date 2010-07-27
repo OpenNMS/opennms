@@ -26,7 +26,7 @@
       <snapshots><enabled>false</enabled></snapshots>
       <releases><enabled>true</enabled></releases>
       <id>JBOSS</id>
-      <url>http://repository.jboss.org/maven2</url>
+      <url>http://maven.opennms.org/content/groups/jboss.com-release</url>
     </repository>
   </repositories>
 </project>
