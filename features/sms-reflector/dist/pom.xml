@@ -105,20 +105,6 @@
     </dependency>
   </dependencies>
   
-  <repositories>
-<!--
-    <repository>
-      <id>OPS4J</id>
-      <url>http://repository.ops4j.org/maven2</url>
-    </repository>
-    <repository>
-      <id>com.springsource.repository.bundles.external</id>
-      <name>SpringSource Enterprise Bundle Repository (External Bundles)</name>
-      <url>http://repository.springsource.com/maven/bundles/external</url>
-    </repository>
--->
-  </repositories>
-
   <build>
     <plugins>
       <plugin>
