@@ -15,7 +15,9 @@ public class Main {
 			c.readLogMessagesFromFile(args[i]);
 		}
 
-		c.printReport(new PrintWriter(System.out,true));
+		PrintWriter out = new PrintWriter(System.out,true);
+		
+		c.printReport(out);
 
 	}
 
