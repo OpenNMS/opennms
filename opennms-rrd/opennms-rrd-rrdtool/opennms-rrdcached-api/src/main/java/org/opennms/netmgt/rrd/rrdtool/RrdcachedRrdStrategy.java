@@ -47,8 +47,8 @@ import java.net.InetAddress;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.List;
+import java.util.Properties;
 
-import org.apache.log4j.Category;
 import org.opennms.core.utils.StringUtils;
 import org.opennms.core.utils.ThreadCategory;
 import org.opennms.netmgt.rrd.RrdDataSource;
@@ -69,10 +69,10 @@ import org.springframework.util.FileCopyUtils;
  * 
  * See the individual methods for more details
  */
-public class RrdcachedRrdStrategy implements RrdStrategy {
+public class RrdcachedRrdStrategy implements RrdStrategy<String,StringBuffer> {
 	
-	private final static String IGNORABLE_LIBART_WARNING_STRING = "*** attempt to put segment in horiz list twice";
-	private final static String IGNORABLE_LIBART_WARNING_REGEX = "\\*\\*\\* attempt to put segment in horiz list twice\r?\n?";
+    private final static String IGNORABLE_LIBART_WARNING_STRING = "*** attempt to put segment in horiz list twice";
+    private final static String IGNORABLE_LIBART_WARNING_REGEX = "\\*\\*\\* attempt to put segment in horiz list twice\r?\n?";
 
     private Rrdcached m_rrdcached = null;
 
@@ -80,12 +80,29 @@ public class RrdcachedRrdStrategy implements RrdStrategy {
 
     boolean graphicsInitialized = false;
 
+    private Properties m_configurationProperties;
+
+    /**
+     * <p>getConfigurationProperties</p>
+     *
+     * @return a {@link java.util.Properties} object.
+     */
+    public Properties getConfigurationProperties() {
+        return m_configurationProperties;
+    }
+
+    /** {@inheritDoc} */
+    public void setConfigurationProperties(Properties configurationParameters) {
+        this.m_configurationProperties = configurationParameters;
+    }
+
+
     /**
      * The 'closes' the rrd file. This is where the actual work of writing the
      * RRD files takes place. The passed in rrd is actually an rrd command
      * string containing updates. This method executes this command.
      */
-    public void closeFile(Object rrd) throws Exception {
+    public void closeFile(StringBuffer rrd) throws Exception {
         
     }
 
@@ -103,7 +120,7 @@ public class RrdcachedRrdStrategy implements RrdStrategy {
         }
     }
 
-    public Object createDefinition(String creator, String directory, String rrdName, int step, List<RrdDataSource> dataSources, List<String> rraList) throws Exception {
+    public String createDefinition(String creator, String directory, String rrdName, int step, List<RrdDataSource> dataSources, List<String> rraList) throws Exception {
         checkState("createDefinition");
 
         File f = new File(directory);
@@ -146,7 +163,7 @@ public class RrdcachedRrdStrategy implements RrdStrategy {
      * Creates a the rrd file from the rrdDefinition. Since this definition is
      * really just the create command string it just executes it.
      */
-    public void createFile(Object rrdDef) throws Exception {
+    public void createFile(String rrdDef) throws Exception {
         checkState("createFile");
         if (rrdDef == null) {
             return;
@@ -161,7 +178,7 @@ public class RrdcachedRrdStrategy implements RrdStrategy {
      * not provide files that may be open, this constructs the beginning portion
      * of the rrd command to update the file.
      */
-    public Object openFile(String fileName) throws Exception {
+    public StringBuffer openFile(String fileName) throws Exception {
         checkState("openFile");
 //        return new StringBuffer("update " + fileName);
         return new StringBuffer(fileName);
@@ -175,12 +192,12 @@ public class RrdcachedRrdStrategy implements RrdStrategy {
      * possibility of getting performance benefit by doing more than one write
      * per open. The updates are all performed at once in the closeFile method.
      */
-    public synchronized void updateFile(Object rrd, String owner, String data) throws Exception {
+    public synchronized void updateFile(StringBuffer rrd, String owner, String data) throws Exception {
         checkState("updateFile");
-        StringBuffer cmd = (StringBuffer) rrd;
+//        StringBuffer cmd = (StringBuffer) rrd;
 //        cmd.append(' ');
 //        cmd.append(data);
-        m_rrdcached.execute("UPDATE " + rrd.toString() + " " + data);
+        m_rrdcached.execute("UPDATE " + rrd + " " + data);
     }
 
     /*
@@ -431,7 +448,7 @@ public class RrdcachedRrdStrategy implements RrdStrategy {
         return "";
     }
     
-    public Category log() {
+    public ThreadCategory log() {
         return ThreadCategory.getInstance(getClass());
     }
 
