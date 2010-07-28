@@ -1,9 +1,5 @@
 package edu.ncsu.pdgrenon;
 
-import java.util.concurrent.TimeUnit;
-
-import com.brozowski.instrumentation.Duration;
-
 
 public class ServiceCollector {
 	
@@ -60,7 +56,7 @@ public class ServiceCollector {
 		return m_collectionCount;
 	}
 	
-	int getErrorCollectionCount() {
+	public int getErrorCollectionCount() {
 	    return m_errorCount;
 	}
 
@@ -72,49 +68,49 @@ public class ServiceCollector {
 		return new Duration(getTotalCollectionTime());
 	}
 	
-	long getErrorCollectionTime() {
+	public long getErrorCollectionTime() {
 	    return m_errorTime;
 	}
 	
-	long getSuccessfulCollectionTime() {
+	public long getSuccessfulCollectionTime() {
 	    return m_totalTime - m_errorTime;
 	}
 	
-	int getSuccessfulCollectionCount() {
+	public int getSuccessfulCollectionCount() {
 	    return m_collectionCount - m_errorCount;
 	}
 	
-	double successPercentage() {
+	public double getSuccessPercentage() {
         return getSuccessfulCollectionCount()*100.0/getCollectionCount();
 	}
 	
-	double errorPercentage() {
+	public double getErrorPercentage() {
         return getErrorCollectionCount()*100.0/getCollectionCount();
 	}
 
-	long getAverageCollectionTime() {
+	public long getAverageCollectionTime() {
 		int count = getCollectionCount();
 		if (count == 0) return 0;
-		return totalCollectionTime()/count;
+		return getTotalCollectionTime()/count;
 	}
 	
 	public Duration getAverageCollectionDuration() {
 		return new Duration(getAverageCollectionTime());
 	}
 
-	long averageErrorCollectionTime() {
+	public long getAverageErrorCollectionTime() {
 	    int count = getErrorCollectionCount();
 	    if (count == 0) return 0;
 	    return getErrorCollectionTime()/count;
 	}
 	
-	long averageSuccessfulCollectionTime() {
+	public long getAverageSuccessfulCollectionTime() {
 	    int count = getSuccessfulCollectionCount();
 	    if (count == 0) return 0;
 	    return getSuccessfulCollectionTime()/count;
 	}
 	
-	long averageTimeBetweenCollections() {
+	public long getAverageTimeBetweenCollections() {
 	    if (m_betweenCount == 0) return 0;
 	    return m_totalBetweenTime/m_betweenCount;
 	}

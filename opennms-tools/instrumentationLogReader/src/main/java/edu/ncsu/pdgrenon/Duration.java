@@ -27,7 +27,7 @@
  *     http://www.opennms.org/
  *     http://www.opennms.com/
  */
-package com.brozowski.instrumentation;
+package edu.ncsu.pdgrenon;
 
 import java.util.Date;
 import java.util.concurrent.TimeUnit;

@@ -15,9 +15,6 @@ import java.util.HashMap;
 import java.util.HashSet;
 import java.util.Map;
 import java.util.Set;
-import java.util.SortedSet;
-import java.util.TreeSet;
-
 
 public class Collector {
 
@@ -90,7 +87,7 @@ public class Collector {
 	public int getThreadCount() {
 		return m_threads.size();
 	}
-	public int collectionsPerService(String serviceID) {
+	public int getCollectionsPerService(String serviceID) {
 		return getServiceCollector(serviceID).getCollectionCount();
 	}
 	
@@ -170,9 +167,9 @@ public class Collector {
 	private void printServiceStats(ServiceCollector serviceCollector, PrintWriter out) {
 		out.printf(SERVICE_DATA_FORMAT, serviceCollector.getServiceID(), 
 			   Collector.formatDuration(serviceCollector.getAverageCollectionTime()), serviceCollector.getCollectionCount(), 
-			   Collector.formatDuration(serviceCollector.averageSuccessfulCollectionTime()), serviceCollector.successPercentage(), 
-			   Collector.formatDuration(serviceCollector.averageErrorCollectionTime()), serviceCollector.errorPercentage(),
-			   Collector.formatDuration(serviceCollector.averageTimeBetweenCollections()),
+			   Collector.formatDuration(serviceCollector.getAverageSuccessfulCollectionTime()), serviceCollector.getSuccessPercentage(), 
+			   Collector.formatDuration(serviceCollector.getAverageErrorCollectionTime()), serviceCollector.getErrorPercentage(),
+			   Collector.formatDuration(serviceCollector.getAverageTimeBetweenCollections()),
 			   Collector.formatDuration(serviceCollector.getTotalCollectionTime()));
 	}
 //	Service               Avg Collect Time  Avg Persist Time  Avg Time between Collects # Collections Total Collection Time Total Persist Time
