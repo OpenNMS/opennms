@@ -648,7 +648,7 @@ public class DBManager extends Manager {
     /** {@inheritDoc} */
     public DbElement newElement(int id, int mapId, String type)
             throws MapsException {
-        DbElement e = new DbElement(mapId, id, type, null, null, 0, 0);
+        DbElement e = new DbElement(mapId, id, type, null, null, null, 0, 0);
         e = completeElement(e);
         log.debug("Creating new VElement mapId:" + mapId + " id:" + id
                 + " type:" + type + " label:" + e.getLabel() + " iconname:"

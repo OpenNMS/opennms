@@ -94,14 +94,15 @@ public class VElement extends DbElement {
      * @param id a int.
      * @param type a {@link java.lang.String} object.
      * @param label a {@link java.lang.String} object.
+     * @param sysoid a {@link java.lang.String} object.
      * @param iconName a {@link java.lang.String} object.
      * @param x a int.
      * @param y a int.
      * @throws org.opennms.web.map.MapsException if any.
      */
-    public VElement(int mapId, int id, String type, String iconName,String label,
+    public VElement(int mapId, int id, String type, String sysoid, String iconName,String label,
             int x, int y) throws MapsException {
-        super(mapId, id, type, label, iconName, x, y);
+        super(mapId, id, type, label, sysoid, iconName, x, y);
         isChild = true;
     }    
 
@@ -112,11 +113,12 @@ public class VElement extends DbElement {
      * @param id a int.
      * @param type a {@link java.lang.String} object.
      * @param label a {@link java.lang.String} object.
+     * @param sysoid a {@link java.lang.String} object.
      * @param iconName a {@link java.lang.String} object.
      * @throws org.opennms.web.map.MapsException if any.
      */
-    public VElement(int mapId, int id, String type, String label, String iconName) throws MapsException {
-        super(mapId, id, type, label, iconName, 0, 0);
+    public VElement(int mapId, int id, String type, String label, String sysoid, String iconName) throws MapsException {
+        super(mapId, id, type, label, sysoid, iconName, 0, 0);
         isChild = true;
     }    
 

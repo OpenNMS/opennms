@@ -869,6 +869,7 @@ public class QueuingRrdStrategy implements RrdStrategy<QueuingRrdStrategy.Operat
     /** {@inheritDoc} */
     public synchronized void promoteEnqueuedFiles(Collection<String> rrdFiles) {
         filesWithSignificantWork.addAll(0, rrdFiles);
+        m_delegate.promoteEnqueuedFiles(rrdFiles);
     }
 
     /**
