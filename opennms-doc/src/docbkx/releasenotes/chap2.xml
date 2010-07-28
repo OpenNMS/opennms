@@ -148,6 +148,11 @@
 					<ulink url="http://bugzilla.opennms.org/show_bug.cgi?id=3953">#3953</ulink>)</para>
 				</listitem>
 
+				<listitem>
+					<para>Syslogd had a number of line-matching bugs that have been fixed. (Bug
+					<ulink url="http://bugzilla.opennms.org/show_bug.cgi?id=3958">#3958</ulink>)</para>
+				</listitem>
+
 			</itemizedlist>
 
 		</section>

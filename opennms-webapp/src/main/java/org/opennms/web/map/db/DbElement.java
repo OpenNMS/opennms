@@ -104,7 +104,7 @@ public class DbElement implements Cloneable {
      * @throws org.opennms.web.map.MapsException if any.
      */
     public DbElement(DbElement e) throws MapsException {
-        this(e.mapId, e.id, e.type, e.label, e.icon, e.x, e.y);
+        this(e.mapId, e.id, e.type, e.label, e.sysoid, e.icon, e.x, e.y);
     }
 
     /**
@@ -114,17 +114,19 @@ public class DbElement implements Cloneable {
      * @param id a int.
      * @param type a {@link java.lang.String} object.
      * @param label a {@link java.lang.String} object.
+     * @param sysoid a {@link java.lang.String} object.
      * @param iconName a {@link java.lang.String} object.
      * @param x a int.
      * @param y a int.
      * @throws org.opennms.web.map.MapsException if any.
      */
     public DbElement(int mapId, int id, String type, String label,
-            String iconName, int x, int y)throws MapsException {
+            String sysoid, String iconName, int x, int y)throws MapsException {
         this.mapId = mapId;
         this.id = id;
         this.setType(type);
         this.label = label;
+        this.sysoid = sysoid;
         setIcon(iconName);
         this.x = x;
         this.y = y;

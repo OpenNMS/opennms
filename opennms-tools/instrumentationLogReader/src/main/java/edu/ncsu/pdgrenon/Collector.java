@@ -75,8 +75,8 @@ public class Collector {
 		Comparator<ServiceCollector> c = new Comparator<ServiceCollector>() {
 
 			public int compare(ServiceCollector o1, ServiceCollector o2) {
-				Long a = Long.valueOf(o1.averageCollectionTime());
-				Long b = Long.valueOf(o2.averageCollectionTime());
+				Long a = Long.valueOf(o1.getAverageCollectionTime());
+				Long b = Long.valueOf(o2.getAverageCollectionTime());
 				return b.compareTo(a);
 			}
 		};
@@ -94,12 +94,12 @@ public class Collector {
 		return getServiceCollector(serviceID).getCollectionCount();
 	}
 	
-	public long averageCollectionTimePerService(String serviceID) {
-		return getServiceCollector(serviceID).averageCollectionTime();
+	public long getAverageCollectionTimePerService(String serviceID) {
+		return getServiceCollector(serviceID).getAverageCollectionTime();
 	}
 
-	public long totalCollectionTimePerService(String serviceID) {
-		return getServiceCollector(serviceID).totalCollectionTime();
+	public long getTotalCollectionTimePerService(String serviceID) {
+		return getServiceCollector(serviceID).getTotalCollectionTime();
 	}
 	private ServiceCollector getServiceCollector(String serviceID) {
 		ServiceCollector serviceCollector = m_serviceCollectors.get(serviceID);
@@ -169,11 +169,11 @@ public class Collector {
 	}
 	private void printServiceStats(ServiceCollector serviceCollector, PrintWriter out) {
 		out.printf(SERVICE_DATA_FORMAT, serviceCollector.getServiceID(), 
-                Collector.formatDuration(serviceCollector.averageCollectionTime()), serviceCollector.getCollectionCount(), 
-                Collector.formatDuration(serviceCollector.averageSuccessfulCollectionTime()), serviceCollector.successPercentage(), 
-                Collector.formatDuration(serviceCollector.averageErrorCollectionTime()), serviceCollector.errorPercentage(),
-                Collector.formatDuration(serviceCollector.averageTimeBetweenCollections()),
-		        Collector.formatDuration(serviceCollector.totalCollectionTime()));
+			   Collector.formatDuration(serviceCollector.getAverageCollectionTime()), serviceCollector.getCollectionCount(), 
+			   Collector.formatDuration(serviceCollector.averageSuccessfulCollectionTime()), serviceCollector.successPercentage(), 
+			   Collector.formatDuration(serviceCollector.averageErrorCollectionTime()), serviceCollector.errorPercentage(),
+			   Collector.formatDuration(serviceCollector.averageTimeBetweenCollections()),
+			   Collector.formatDuration(serviceCollector.getTotalCollectionTime()));
 	}
 //	Service               Avg Collect Time  Avg Persist Time  Avg Time between Collects # Collections Total Collection Time Total Persist Time
 //	19/172.10.1.21/SNMP       13.458s             .002s              5m27s                    3                 45.98s           .010s

@@ -1047,7 +1047,7 @@ able to load ukernel. In these cases, fru is replaced.&lt;/p&gt;&lt;table&gt;
 			jnxFruSlot=%parm[#7]%&lt;/p&gt;
 		</logmsg>
 	<severity>Minor</severity>
-    <alarm-data reduction-key="%uei%:%dpname%:%nodeid%:%parm[#1]%:%parm[#2]%:%parm[#3]%:%parm[#4]%" alarm-type="3" auto-clean="true" />
+    <alarm-data reduction-key="%uei%:%dpname%:%nodeid%:%parm[#1]%:%parm[#2]%:%parm[#3]%:%parm[#4]%" alarm-type="1" auto-clean="true" />
 </event>
 <event>
 	<mask>
@@ -1330,6 +1330,250 @@ check state in the chassis.&lt;/p&gt;&lt;table&gt;
 	<mask>
 		<maskelement>
 			<mename>id</mename>
+			<mevalue>.1.3.6.1.4.1.2636.4.1</mevalue>
+		</maskelement>
+		<maskelement>
+			<mename>generic</mename>
+			<mevalue>1</mevalue>
+		</maskelement>
+		<maskelement>
+			<mename>specific</mename>
+			<mevalue>13</mevalue>
+		</maskelement>
+	</mask>
+	<uei>uei.opennms.org/vendor/Juniper/traps/jnxFEBSwitchover</uei>
+	<event-label>JUNIPER-MIB defined trap event: jnxFEBSwitchover</event-label>
+	<descr>
+&lt;p&gt;A jnxFEBSwitchover trap signifies that the SNMP
+entity, acting in an agent role, has detected that
+the specified FEB (Forwarding Engine Board) has
+switched over.&lt;/p&gt;&lt;table&gt;
+	&lt;tr&gt;&lt;td&gt;&lt;b&gt;
+
+	jnxFruContentsIndex&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
+	%parm[#1]%;&lt;/td&gt;&lt;td&gt;&lt;p&gt;&lt;/p&gt;&lt;/td&gt;&lt;/tr&gt;
+	&lt;tr&gt;&lt;td&gt;&lt;b&gt;
+
+	jnxFruL1Index&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
+	%parm[#2]%;&lt;/td&gt;&lt;td&gt;&lt;p&gt;&lt;/p&gt;&lt;/td&gt;&lt;/tr&gt;
+	&lt;tr&gt;&lt;td&gt;&lt;b&gt;
+
+	jnxFruL2Index&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
+	%parm[#3]%;&lt;/td&gt;&lt;td&gt;&lt;p&gt;&lt;/p&gt;&lt;/td&gt;&lt;/tr&gt;
+	&lt;tr&gt;&lt;td&gt;&lt;b&gt;
+
+	jnxFruL3Index&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
+	%parm[#4]%;&lt;/td&gt;&lt;td&gt;&lt;p&gt;&lt;/p&gt;&lt;/td&gt;&lt;/tr&gt;
+	&lt;tr&gt;&lt;td&gt;&lt;b&gt;
+
+	jnxFruName&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
+	%parm[#5]%;&lt;/td&gt;&lt;td&gt;&lt;p&gt;&lt;/p&gt;&lt;/td&gt;&lt;/tr&gt;
+	&lt;tr&gt;&lt;td&gt;&lt;b&gt;
+
+	jnxFruType&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
+	%parm[#6]%;&lt;/td&gt;&lt;td&gt;&lt;p&gt;
+		other(1)
+		clockGenerator(2)
+		flexiblePicConcentrator(3)
+		switchingAndForwardingModule(4)
+		controlBoard(5)
+		routingEngine(6)
+		powerEntryModule(7)
+		frontPanelModule(8)
+		switchInterfaceBoard(9)
+		processorMezzanineBoardForSIB(10)
+		portInterfaceCard(11)
+		craftInterfacePanel(12)
+		fan(13)
+		lineCardChassis(14)
+		forwardingEngineBoard(15)
+		protectedSystemDomain(16)
+	&lt;/p&gt;&lt;/td&gt;&lt;/tr&gt;
+	&lt;tr&gt;&lt;td&gt;&lt;b&gt;
+
+	jnxFruSlot&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
+	%parm[#7]%;&lt;/td&gt;&lt;td&gt;&lt;p&gt;&lt;/p&gt;&lt;/td&gt;&lt;/tr&gt;&lt;/table&gt;
+	</descr>
+		<logmsg dest='logndisplay'>&lt;p&gt;
+			jnxFEBSwitchover trap received 
+			jnxFruContentsIndex=%parm[#1]% 
+			jnxFruL1Index=%parm[#2]% 
+			jnxFruL2Index=%parm[#3]% 
+			jnxFruL3Index=%parm[#4]% 
+			jnxFruName=%parm[#5]% 
+			jnxFruType=%parm[#6]% 
+			jnxFruSlot=%parm[#7]%&lt;/p&gt;
+		</logmsg>
+	<severity>Warning</severity>
+	<alarm-data reduction-key="%uei%:%dpname%:%nodeid%:%parm[#1]%:%parm[#2]%:%parm[#3]%:%parm[#4]%" alarm-type="3" auto-clean="true"/>
+</event>
+<event>
+	<mask>
+		<maskelement>
+			<mename>id</mename>
+			<mevalue>.1.3.6.1.4.1.2636.4.1</mevalue>
+		</maskelement>
+		<maskelement>
+			<mename>generic</mename>
+			<mevalue>1</mevalue>
+		</maskelement>
+		<maskelement>
+			<mename>specific</mename>
+			<mevalue>14</mevalue>
+		</maskelement>
+	</mask>
+	<uei>uei.opennms.org/vendor/Juniper/traps/jnxHardDiskFailed</uei>
+	<event-label>JUNIPER-MIB defined trap event: jnxHardDiskFailed</event-label>
+	<descr>
+&lt;p&gt;A jnxHardDiskFailed trap signifies that the SNMP
+entity, acting in an agent role, has detected that
+the Disk in the specified Routing Engine has
+encountered some operational errors and gone into
+failed state in the chassis.&lt;/p&gt;&lt;table&gt;
+	&lt;tr&gt;&lt;td&gt;&lt;b&gt;
+
+	jnxFruContentsIndex&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
+	%parm[#1]%;&lt;/td&gt;&lt;td&gt;&lt;p&gt;&lt;/p&gt;&lt;/td&gt;&lt;/tr&gt;
+	&lt;tr&gt;&lt;td&gt;&lt;b&gt;
+
+	jnxFruL1Index&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
+	%parm[#2]%;&lt;/td&gt;&lt;td&gt;&lt;p&gt;&lt;/p&gt;&lt;/td&gt;&lt;/tr&gt;
+	&lt;tr&gt;&lt;td&gt;&lt;b&gt;
+
+	jnxFruL2Index&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
+	%parm[#3]%;&lt;/td&gt;&lt;td&gt;&lt;p&gt;&lt;/p&gt;&lt;/td&gt;&lt;/tr&gt;
+	&lt;tr&gt;&lt;td&gt;&lt;b&gt;
+
+	jnxFruL3Index&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
+	%parm[#4]%;&lt;/td&gt;&lt;td&gt;&lt;p&gt;&lt;/p&gt;&lt;/td&gt;&lt;/tr&gt;
+	&lt;tr&gt;&lt;td&gt;&lt;b&gt;
+
+	jnxFruName&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
+	%parm[#5]%;&lt;/td&gt;&lt;td&gt;&lt;p&gt;&lt;/p&gt;&lt;/td&gt;&lt;/tr&gt;
+	&lt;tr&gt;&lt;td&gt;&lt;b&gt;
+
+	jnxFruType&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
+	%parm[#6]%;&lt;/td&gt;&lt;td&gt;&lt;p&gt;
+		other(1)
+		clockGenerator(2)
+		flexiblePicConcentrator(3)
+		switchingAndForwardingModule(4)
+		controlBoard(5)
+		routingEngine(6)
+		powerEntryModule(7)
+		frontPanelModule(8)
+		switchInterfaceBoard(9)
+		processorMezzanineBoardForSIB(10)
+		portInterfaceCard(11)
+		craftInterfacePanel(12)
+		fan(13)
+		lineCardChassis(14)
+		forwardingEngineBoard(15)
+		protectedSystemDomain(16)
+	&lt;/p&gt;&lt;/td&gt;&lt;/tr&gt;
+	&lt;tr&gt;&lt;td&gt;&lt;b&gt;
+
+	jnxFruSlot&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
+	%parm[#7]%;&lt;/td&gt;&lt;td&gt;&lt;p&gt;&lt;/p&gt;&lt;/td&gt;&lt;/tr&gt;&lt;/table&gt;
+	</descr>
+		<logmsg dest='logndisplay'>&lt;p&gt;
+			jnxHardDiskFailed trap received 
+			jnxFruContentsIndex=%parm[#1]% 
+			jnxFruL1Index=%parm[#2]% 
+			jnxFruL2Index=%parm[#3]% 
+			jnxFruL3Index=%parm[#4]% 
+			jnxFruName=%parm[#5]% 
+			jnxFruType=%parm[#6]% 
+			jnxFruSlot=%parm[#7]%&lt;/p&gt;
+		</logmsg>
+	<severity>Major</severity>
+	<alarm-data reduction-key="%uei%:%dpname%:%nodeid%:%parm[#1]%:%parm[#2]%:%parm[#3]%:%parm[#4]%" alarm-type="3" auto-clean="true"/>
+</event>
+<event>
+	<mask>
+		<maskelement>
+			<mename>id</mename>
+			<mevalue>.1.3.6.1.4.1.2636.4.1</mevalue>
+		</maskelement>
+		<maskelement>
+			<mename>generic</mename>
+			<mevalue>1</mevalue>
+		</maskelement>
+		<maskelement>
+			<mename>specific</mename>
+			<mevalue>15</mevalue>
+		</maskelement>
+	</mask>
+	<uei>uei.opennms.org/vendor/Juniper/traps/jnxHardDiskMissing</uei>
+	<event-label>JUNIPER-MIB defined trap event: jnxHardDiskMissing</event-label>
+	<descr>
+&lt;p&gt;A DiskMissing trap signifies that the SNMP
+entity, acting in an agent role, has detected that
+hard disk in the specified outing Engine is missing
+from boot device list.&lt;/p&gt;&lt;table&gt;
+	&lt;tr&gt;&lt;td&gt;&lt;b&gt;
+
+	jnxFruContentsIndex&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
+	%parm[#1]%;&lt;/td&gt;&lt;td&gt;&lt;p&gt;&lt;/p&gt;&lt;/td&gt;&lt;/tr&gt;
+	&lt;tr&gt;&lt;td&gt;&lt;b&gt;
+
+	jnxFruL1Index&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
+	%parm[#2]%;&lt;/td&gt;&lt;td&gt;&lt;p&gt;&lt;/p&gt;&lt;/td&gt;&lt;/tr&gt;
+	&lt;tr&gt;&lt;td&gt;&lt;b&gt;
+
+	jnxFruL2Index&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
+	%parm[#3]%;&lt;/td&gt;&lt;td&gt;&lt;p&gt;&lt;/p&gt;&lt;/td&gt;&lt;/tr&gt;
+	&lt;tr&gt;&lt;td&gt;&lt;b&gt;
+
+	jnxFruL3Index&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
+	%parm[#4]%;&lt;/td&gt;&lt;td&gt;&lt;p&gt;&lt;/p&gt;&lt;/td&gt;&lt;/tr&gt;
+	&lt;tr&gt;&lt;td&gt;&lt;b&gt;
+
+	jnxFruName&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
+	%parm[#5]%;&lt;/td&gt;&lt;td&gt;&lt;p&gt;&lt;/p&gt;&lt;/td&gt;&lt;/tr&gt;
+	&lt;tr&gt;&lt;td&gt;&lt;b&gt;
+
+	jnxFruType&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
+	%parm[#6]%;&lt;/td&gt;&lt;td&gt;&lt;p&gt;
+		other(1)
+		clockGenerator(2)
+		flexiblePicConcentrator(3)
+		switchingAndForwardingModule(4)
+		controlBoard(5)
+		routingEngine(6)
+		powerEntryModule(7)
+		frontPanelModule(8)
+		switchInterfaceBoard(9)
+		processorMezzanineBoardForSIB(10)
+		portInterfaceCard(11)
+		craftInterfacePanel(12)
+		fan(13)
+		lineCardChassis(14)
+		forwardingEngineBoard(15)
+		protectedSystemDomain(16)
+	&lt;/p&gt;&lt;/td&gt;&lt;/tr&gt;
+	&lt;tr&gt;&lt;td&gt;&lt;b&gt;
+
+	jnxFruSlot&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
+	%parm[#7]%;&lt;/td&gt;&lt;td&gt;&lt;p&gt;&lt;/p&gt;&lt;/td&gt;&lt;/tr&gt;&lt;/table&gt;
+	</descr>
+		<logmsg dest='logndisplay'>&lt;p&gt;
+			jnxHardDiskMissing trap received 
+			jnxFruContentsIndex=%parm[#1]% 
+			jnxFruL1Index=%parm[#2]% 
+			jnxFruL2Index=%parm[#3]% 
+			jnxFruL3Index=%parm[#4]% 
+			jnxFruName=%parm[#5]% 
+			jnxFruType=%parm[#6]% 
+			jnxFruSlot=%parm[#7]%&lt;/p&gt;
+		</logmsg>
+	<severity>Minor</severity>
+	<alarm-data reduction-key="%uei%:%dpname%:%nodeid%:%parm[#1]%:%parm[#2]%:%parm[#3]%:%parm[#4]%" alarm-type="3" auto-clean="true"/>
+</event>
+<event>
+	<mask>
+		<maskelement>
+			<mename>id</mename>
 			<mevalue>.1.3.6.1.4.1.2636.4.2</mevalue>
 		</maskelement>
 		<maskelement>
@@ -1520,6 +1764,88 @@ condition.&lt;/p&gt;&lt;table&gt;
 		</logmsg>
 	<severity>Normal</severity>
     <alarm-data reduction-key="%uei%:%dpname%:%nodeid%:%parm[#1]%:%parm[#2]%:%parm[#3]%:%parm[#4]%" alarm-type="2" auto-clean="true" clear-key="uei.opennms.org/vendor/Juniper/traps/jnxOverTemperature:%dpname%:%nodeid%:%parm[#1]%:%parm[#2]%:%parm[#3]%:%parm[#4]%"/>
+</event>
+<event>
+	<mask>
+		<maskelement>
+			<mename>id</mename>
+			<mevalue>.1.3.6.1.4.1.2636.4.2</mevalue>
+		</maskelement>
+		<maskelement>
+			<mename>generic</mename>
+			<mevalue>2</mevalue>
+		</maskelement>
+		<maskelement>
+			<mename>specific</mename>
+			<mevalue>4</mevalue>
+		</maskelement>
+	</mask>
+	<uei>uei.opennms.org/vendor/Juniper/traps/jnxFruOK</uei>
+	<event-label>JUNIPER-MIB defined trap event: jnxFruOK</event-label>
+	<descr>
+&lt;p&gt;A jnxFruOK trap signifies that the SNMP
+entity, acting in an agent role, has detected that
+the specified FRU (Field Replaceable Unit) has
+recovered from previous operational errors and it
+is in ok state in the chassis.&lt;/p&gt;&lt;table&gt;
+	&lt;tr&gt;&lt;td&gt;&lt;b&gt;
+
+	jnxFruContentsIndex&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
+	%parm[#1]%;&lt;/td&gt;&lt;td&gt;&lt;p&gt;&lt;/p&gt;&lt;/td&gt;&lt;/tr&gt;
+	&lt;tr&gt;&lt;td&gt;&lt;b&gt;
+
+	jnxFruL1Index&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
+	%parm[#2]%;&lt;/td&gt;&lt;td&gt;&lt;p&gt;&lt;/p&gt;&lt;/td&gt;&lt;/tr&gt;
+	&lt;tr&gt;&lt;td&gt;&lt;b&gt;
+
+	jnxFruL2Index&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
+	%parm[#3]%;&lt;/td&gt;&lt;td&gt;&lt;p&gt;&lt;/p&gt;&lt;/td&gt;&lt;/tr&gt;
+	&lt;tr&gt;&lt;td&gt;&lt;b&gt;
+
+	jnxFruL3Index&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
+	%parm[#4]%;&lt;/td&gt;&lt;td&gt;&lt;p&gt;&lt;/p&gt;&lt;/td&gt;&lt;/tr&gt;
+	&lt;tr&gt;&lt;td&gt;&lt;b&gt;
+
+	jnxFruName&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
+	%parm[#5]%;&lt;/td&gt;&lt;td&gt;&lt;p&gt;&lt;/p&gt;&lt;/td&gt;&lt;/tr&gt;
+	&lt;tr&gt;&lt;td&gt;&lt;b&gt;
+
+	jnxFruType&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
+	%parm[#6]%;&lt;/td&gt;&lt;td&gt;&lt;p&gt;
+		other(1)
+		clockGenerator(2)
+		flexiblePicConcentrator(3)
+		switchingAndForwardingModule(4)
+		controlBoard(5)
+		routingEngine(6)
+		powerEntryModule(7)
+		frontPanelModule(8)
+		switchInterfaceBoard(9)
+		processorMezzanineBoardForSIB(10)
+		portInterfaceCard(11)
+		craftInterfacePanel(12)
+		fan(13)
+		lineCardChassis(14)
+		forwardingEngineBoard(15)
+		protectedSystemDomain(16)
+	&lt;/p&gt;&lt;/td&gt;&lt;/tr&gt;
+	&lt;tr&gt;&lt;td&gt;&lt;b&gt;
+
+	jnxFruSlot&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
+	%parm[#7]%;&lt;/td&gt;&lt;td&gt;&lt;p&gt;&lt;/p&gt;&lt;/td&gt;&lt;/tr&gt;&lt;/table&gt;
+	</descr>
+		<logmsg dest='logndisplay'>&lt;p&gt;
+			jnxFruOK trap received 
+			jnxFruContentsIndex=%parm[#1]% 
+			jnxFruL1Index=%parm[#2]% 
+			jnxFruL2Index=%parm[#3]% 
+			jnxFruL3Index=%parm[#4]% 
+			jnxFruName=%parm[#5]% 
+			jnxFruType=%parm[#6]% 
+			jnxFruSlot=%parm[#7]%&lt;/p&gt;
+		</logmsg>
+	<severity>Normal</severity>
+    <alarm-data reduction-key="%uei%:%dpname%:%nodeid%:%parm[#1]%:%parm[#2]%:%parm[#3]%:%parm[#4]%" alarm-type="2" auto-clean="true" clear-key="uei.opennms.org/vendor/Juniper/traps/jnxFruFailed:%dpname%:%nodeid%:%parm[#1]%:%parm[#2]%:%parm[#3]%:%parm[#4]%" />
 </event>
 <!-- End of auto generated data from MIB: JUNIPER-MIB -->
 <!-- Start of auto generated data from MIB: JUNIPER-LDP-MIB -->
@@ -1724,6 +2050,192 @@ the last neighbor when jnxLdpSesDownReason is allAdjacenciesDown (3).&lt;/p&gt;&
 	<mask>
 		<maskelement>
 			<mename>id</mename>
+			<mevalue>.1.3.6.1.4.1.2636.3.2.0</mevalue>
+		</maskelement>
+		<maskelement>
+			<mename>generic</mename>
+			<mevalue>6</mevalue>
+		</maskelement>
+		<maskelement>
+			<mename>specific</mename>
+			<mevalue>1</mevalue>
+		</maskelement>
+	</mask>
+	<uei>uei.opennms.org/vendor/Juniper/traps/mplsLspInfoUp</uei>
+	<event-label>MPLS-MIB defined trap event: mplsLspInfoUp</event-label>
+	<descr>
+&lt;p&gt;An mplsLspInfoUp trap signifies that the 
+specified LSP is up. The current active
+path for the LSP is mplsPathInfoName.&lt;/p&gt;&lt;table&gt;
+	&lt;tr&gt;&lt;td&gt;&lt;b&gt;
+
+	mplsLspInfoName&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
+	%parm[#1]%;&lt;/td&gt;&lt;td&gt;&lt;p&gt;&lt;/p&gt;&lt;/td&gt;&lt;/tr&gt;
+	&lt;tr&gt;&lt;td&gt;&lt;b&gt;
+
+	mplsPathInfoName&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
+	%parm[#2]%;&lt;/td&gt;&lt;td&gt;&lt;p&gt;&lt;/p&gt;&lt;/td&gt;&lt;/tr&gt;&lt;/table&gt;
+	</descr>
+		<logmsg dest='logndisplay'>&lt;p&gt;
+			mplsLspInfoUp trap received 
+			mplsLspInfoName=%parm[#1]% 
+			mplsPathInfoName=%parm[#2]%&lt;/p&gt;
+		</logmsg>
+	<severity>Normal</severity>
+</event>
+<event>
+	<mask>
+		<maskelement>
+			<mename>id</mename>
+			<mevalue>.1.3.6.1.4.1.2636.3.2.0</mevalue>
+		</maskelement>
+		<maskelement>
+			<mename>generic</mename>
+			<mevalue>6</mevalue>
+		</maskelement>
+		<maskelement>
+			<mename>specific</mename>
+			<mevalue>2</mevalue>
+		</maskelement>
+	</mask>
+	<uei>uei.opennms.org/vendor/Juniper/traps/mplsLspInfoDown</uei>
+	<event-label>MPLS-MIB defined trap event: mplsLspInfoDown</event-label>
+	<descr>
+&lt;p&gt;An mplsLspInfoDown trap signifies that the 
+specified LSP is down, because the current
+active path mplsPathInfoName went down.&lt;/p&gt;&lt;table&gt;
+	&lt;tr&gt;&lt;td&gt;&lt;b&gt;
+
+	mplsLspInfoName&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
+	%parm[#1]%;&lt;/td&gt;&lt;td&gt;&lt;p&gt;&lt;/p&gt;&lt;/td&gt;&lt;/tr&gt;
+	&lt;tr&gt;&lt;td&gt;&lt;b&gt;
+
+	mplsPathInfoName&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
+	%parm[#2]%;&lt;/td&gt;&lt;td&gt;&lt;p&gt;&lt;/p&gt;&lt;/td&gt;&lt;/tr&gt;&lt;/table&gt;
+	</descr>
+		<logmsg dest='logndisplay'>&lt;p&gt;
+			mplsLspInfoDown trap received 
+			mplsLspInfoName=%parm[#1]% 
+			mplsPathInfoName=%parm[#2]%&lt;/p&gt;
+		</logmsg>
+	<severity>Minor</severity>
+</event>
+<event>
+	<mask>
+		<maskelement>
+			<mename>id</mename>
+			<mevalue>.1.3.6.1.4.1.2636.3.2.0</mevalue>
+		</maskelement>
+		<maskelement>
+			<mename>generic</mename>
+			<mevalue>6</mevalue>
+		</maskelement>
+		<maskelement>
+			<mename>specific</mename>
+			<mevalue>3</mevalue>
+		</maskelement>
+	</mask>
+	<uei>uei.opennms.org/vendor/Juniper/traps/mplsLspInfoChange</uei>
+	<event-label>MPLS-MIB defined trap event: mplsLspInfoChange</event-label>
+	<descr>
+&lt;p&gt;An mplsLspInfoChange trap signifies that the
+the specified LSP has switched traffic to 
+	the new active path 'toLspPath'. The LSP maintains
+	up state before and after the switch over&lt;/p&gt;&lt;table&gt;
+	&lt;tr&gt;&lt;td&gt;&lt;b&gt;
+
+	mplsLspInfoName&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
+	%parm[#1]%;&lt;/td&gt;&lt;td&gt;&lt;p&gt;&lt;/p&gt;&lt;/td&gt;&lt;/tr&gt;
+	&lt;tr&gt;&lt;td&gt;&lt;b&gt;
+
+	mplsPathInfoName&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
+	%parm[#2]%;&lt;/td&gt;&lt;td&gt;&lt;p&gt;&lt;/p&gt;&lt;/td&gt;&lt;/tr&gt;&lt;/table&gt;
+	</descr>
+		<logmsg dest='logndisplay'>&lt;p&gt;
+			mplsLspInfoChange trap received 
+			mplsLspInfoName=%parm[#1]% 
+			mplsPathInfoName=%parm[#2]%&lt;/p&gt;
+		</logmsg>
+	<severity>Warning</severity>
+</event>
+<event>
+	<mask>
+		<maskelement>
+			<mename>id</mename>
+			<mevalue>.1.3.6.1.4.1.2636.3.2.0</mevalue>
+		</maskelement>
+		<maskelement>
+			<mename>generic</mename>
+			<mevalue>6</mevalue>
+		</maskelement>
+		<maskelement>
+			<mename>specific</mename>
+			<mevalue>4</mevalue>
+		</maskelement>
+	</mask>
+	<uei>uei.opennms.org/vendor/Juniper/traps/mplsLspInfoPathDown</uei>
+	<event-label>MPLS-MIB defined trap event: mplsLspInfoPathDown</event-label>
+	<descr>
+&lt;p&gt;An mplsLspInfoPathDown trap signifies that the 
+specified path mplsPathName for the specified
+LSP mplsLspInfoName went down&lt;/p&gt;&lt;table&gt;
+	&lt;tr&gt;&lt;td&gt;&lt;b&gt;
+
+	mplsLspInfoName&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
+	%parm[#1]%;&lt;/td&gt;&lt;td&gt;&lt;p&gt;&lt;/p&gt;&lt;/td&gt;&lt;/tr&gt;
+	&lt;tr&gt;&lt;td&gt;&lt;b&gt;
+
+	mplsPathInfoName&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
+	%parm[#2]%;&lt;/td&gt;&lt;td&gt;&lt;p&gt;&lt;/p&gt;&lt;/td&gt;&lt;/tr&gt;&lt;/table&gt;
+	</descr>
+		<logmsg dest='logndisplay'>&lt;p&gt;
+			mplsLspInfoPathDown trap received 
+			mplsLspInfoName=%parm[#1]% 
+			mplsPathInfoName=%parm[#2]%&lt;/p&gt;
+		</logmsg>
+	<severity>Minor</severity>
+</event>
+<event>
+	<mask>
+		<maskelement>
+			<mename>id</mename>
+			<mevalue>.1.3.6.1.4.1.2636.3.2.0</mevalue>
+		</maskelement>
+		<maskelement>
+			<mename>generic</mename>
+			<mevalue>6</mevalue>
+		</maskelement>
+		<maskelement>
+			<mename>specific</mename>
+			<mevalue>5</mevalue>
+		</maskelement>
+	</mask>
+	<uei>uei.opennms.org/vendor/Juniper/traps/mplsLspInfoPathUp</uei>
+	<event-label>MPLS-MIB defined trap event: mplsLspInfoPathUp</event-label>
+	<descr>
+&lt;p&gt;An mplsLspInfoPathUp trap signifies that the 
+specified path mplsPathName for the specified
+LSP mplsLspInfoName came up&lt;/p&gt;&lt;table&gt;
+	&lt;tr&gt;&lt;td&gt;&lt;b&gt;
+
+	mplsLspInfoName&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
+	%parm[#1]%;&lt;/td&gt;&lt;td&gt;&lt;p&gt;&lt;/p&gt;&lt;/td&gt;&lt;/tr&gt;
+	&lt;tr&gt;&lt;td&gt;&lt;b&gt;
+
+	mplsPathInfoName&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
+	%parm[#2]%;&lt;/td&gt;&lt;td&gt;&lt;p&gt;&lt;/p&gt;&lt;/td&gt;&lt;/tr&gt;&lt;/table&gt;
+	</descr>
+		<logmsg dest='logndisplay'>&lt;p&gt;
+			mplsLspInfoPathUp trap received 
+			mplsLspInfoName=%parm[#1]% 
+			mplsPathInfoName=%parm[#2]%&lt;/p&gt;
+		</logmsg>
+	<severity>Normal</severity>
+</event>
+<event>
+	<mask>
+		<maskelement>
+			<mename>id</mename>
 			<mevalue>.1.3.6.1.4.1.2636.3.2.4</mevalue>
 		</maskelement>
 		<maskelement>
@@ -1907,6 +2419,190 @@ LSP mplsLspName came up&lt;/p&gt;&lt;table&gt;
 	<severity>Normal</severity>
 </event>
 <!-- End of auto generated data from MIB: MPLS-MIB -->
+<!-- Start of auto generated data from MIB: JUNIPER-MPLS-LDP-MIB -->
+<event>
+	<mask>
+		<maskelement>
+			<mename>id</mename>
+			<mevalue>.1.3.6.1.4.1.2636.3.36.2</mevalue>
+		</maskelement>
+		<maskelement>
+			<mename>generic</mename>
+			<mevalue>6</mevalue>
+		</maskelement>
+		<maskelement>
+			<mename>specific</mename>
+			<mevalue>1</mevalue>
+		</maskelement>
+	</mask>
+	<uei>uei.opennms.org/vendor/Juniper/traps/jnxMplsLdpInitSesThresholdExceeded</uei>
+	<event-label>JUNIPER-MPLS-LDP-MIB defined trap event: jnxMplsLdpInitSesThresholdExceeded</event-label>
+	<descr>
+&lt;p&gt;This notification is generated when the value of
+the 'jnxMplsLdpEntityInitSesThreshold' object
+is not zero, and the number of Session
+Initialization messages exceeds the value
+of the 'jnxMplsLdpEntityInitSesThreshold' object.&lt;/p&gt;&lt;table&gt;
+	&lt;tr&gt;&lt;td&gt;&lt;b&gt;
+
+	jnxMplsLdpEntityInitSesThreshold&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
+	%parm[#1]%;&lt;/td&gt;&lt;td&gt;&lt;p&gt;&lt;/p&gt;&lt;/td&gt;&lt;/tr&gt;&lt;/table&gt;
+	</descr>
+		<logmsg dest='logndisplay'>&lt;p&gt;
+			jnxMplsLdpInitSesThresholdExceeded trap received 
+			jnxMplsLdpEntityInitSesThreshold=%parm[#1]%&lt;/p&gt;
+		</logmsg>
+	<severity>Warning</severity>
+</event>
+<event>
+	<mask>
+		<maskelement>
+			<mename>id</mename>
+			<mevalue>.1.3.6.1.4.1.2636.3.36.2</mevalue>
+		</maskelement>
+		<maskelement>
+			<mename>generic</mename>
+			<mevalue>6</mevalue>
+		</maskelement>
+		<maskelement>
+			<mename>specific</mename>
+			<mevalue>2</mevalue>
+		</maskelement>
+	</mask>
+	<uei>uei.opennms.org/vendor/Juniper/traps/jnxMplsLdpPathVectorLimitMismatch</uei>
+	<event-label>JUNIPER-MPLS-LDP-MIB defined trap event: jnxMplsLdpPathVectorLimitMismatch</event-label>
+	<descr>
+&lt;p&gt;If this notification is enabled to generated,
+
+then this notification is sent when the
+'jnxMplsLdpEntityPathVectorLimit' does NOT match
+the value of the 'jnxMplsLdpPeerPathVectorLimit' for
+a specific Entity.&lt;/p&gt;&lt;table&gt;
+	&lt;tr&gt;&lt;td&gt;&lt;b&gt;
+
+	jnxMplsLdpEntityPathVectorLimit&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
+	%parm[#1]%;&lt;/td&gt;&lt;td&gt;&lt;p&gt;&lt;/p&gt;&lt;/td&gt;&lt;/tr&gt;
+	&lt;tr&gt;&lt;td&gt;&lt;b&gt;
+
+	jnxMplsLdpPeerPathVectorLimit&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
+	%parm[#2]%;&lt;/td&gt;&lt;td&gt;&lt;p&gt;&lt;/p&gt;&lt;/td&gt;&lt;/tr&gt;&lt;/table&gt;
+	</descr>
+		<logmsg dest='logndisplay'>&lt;p&gt;
+			jnxMplsLdpPathVectorLimitMismatch trap received 
+			jnxMplsLdpEntityPathVectorLimit=%parm[#1]% 
+			jnxMplsLdpPeerPathVectorLimit=%parm[#2]%&lt;/p&gt;
+		</logmsg>
+	<severity>Minor</severity>
+</event>
+<event>
+	<mask>
+		<maskelement>
+			<mename>id</mename>
+			<mevalue>.1.3.6.1.4.1.2636.3.36.2</mevalue>
+		</maskelement>
+		<maskelement>
+			<mename>generic</mename>
+			<mevalue>6</mevalue>
+		</maskelement>
+		<maskelement>
+			<mename>specific</mename>
+			<mevalue>3</mevalue>
+		</maskelement>
+	</mask>
+	<uei>uei.opennms.org/vendor/Juniper/traps/jnxMplsLdpSessionUp</uei>
+	<event-label>JUNIPER-MPLS-LDP-MIB defined trap event: jnxMplsLdpSessionUp</event-label>
+	<descr>
+&lt;p&gt;If this notification is enabled to generated,
+then this notification is sent when the
+value of 'jnxMplsLdpSesState' enters
+the 'operational(5)' state.&lt;/p&gt;&lt;table&gt;
+	&lt;tr&gt;&lt;td&gt;&lt;b&gt;
+
+	jnxMplsLdpSesState&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
+	%parm[#1]%;&lt;/td&gt;&lt;td&gt;&lt;p&gt;
+		nonexistent(1)
+		initialized(2)
+		openrec(3)
+		opensent(4)
+		operational(5)
+	&lt;/p&gt;&lt;/td&gt;&lt;/tr&gt;
+	&lt;tr&gt;&lt;td&gt;&lt;b&gt;
+
+	jnxMplsLdpSesDiscontinuityTime&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
+	%parm[#2]%;&lt;/td&gt;&lt;td&gt;&lt;p&gt;&lt;/p&gt;&lt;/td&gt;&lt;/tr&gt;
+	&lt;tr&gt;&lt;td&gt;&lt;b&gt;
+
+	jnxMplsLdpSesStatsUnkMesTypeErrors&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
+	%parm[#3]%;&lt;/td&gt;&lt;td&gt;&lt;p&gt;&lt;/p&gt;&lt;/td&gt;&lt;/tr&gt;
+	&lt;tr&gt;&lt;td&gt;&lt;b&gt;
+
+	jnxMplsLdpSesStatsUnkTlvErrors&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
+	%parm[#4]%;&lt;/td&gt;&lt;td&gt;&lt;p&gt;&lt;/p&gt;&lt;/td&gt;&lt;/tr&gt;&lt;/table&gt;
+	</descr>
+		<logmsg dest='logndisplay'>&lt;p&gt;
+			jnxMplsLdpSessionUp trap received 
+			jnxMplsLdpSesState=%parm[#1]% 
+			jnxMplsLdpSesDiscontinuityTime=%parm[#2]% 
+			jnxMplsLdpSesStatsUnkMesTypeErrors=%parm[#3]% 
+			jnxMplsLdpSesStatsUnkTlvErrors=%parm[#4]%&lt;/p&gt;
+		</logmsg>
+	<severity>Normal</severity>
+</event>
+<event>
+	<mask>
+		<maskelement>
+			<mename>id</mename>
+			<mevalue>.1.3.6.1.4.1.2636.3.36.2</mevalue>
+		</maskelement>
+		<maskelement>
+			<mename>generic</mename>
+			<mevalue>6</mevalue>
+		</maskelement>
+		<maskelement>
+			<mename>specific</mename>
+			<mevalue>4</mevalue>
+		</maskelement>
+	</mask>
+	<uei>uei.opennms.org/vendor/Juniper/traps/jnxMplsLdpSessionDown</uei>
+	<event-label>JUNIPER-MPLS-LDP-MIB defined trap event: jnxMplsLdpSessionDown</event-label>
+	<descr>
+&lt;p&gt;If this notification is enabled to generated,
+then this notification is sent when the
+the value of 'jnxMplsLdpSesState' leaves
+the 'operational(5)' state.&lt;/p&gt;&lt;table&gt;
+	&lt;tr&gt;&lt;td&gt;&lt;b&gt;
+
+	jnxMplsLdpSesState&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
+	%parm[#1]%;&lt;/td&gt;&lt;td&gt;&lt;p&gt;
+		nonexistent(1)
+		initialized(2)
+		openrec(3)
+		opensent(4)
+		operational(5)
+	&lt;/p&gt;&lt;/td&gt;&lt;/tr&gt;
+	&lt;tr&gt;&lt;td&gt;&lt;b&gt;
+
+	jnxMplsLdpSesDiscontinuityTime&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
+	%parm[#2]%;&lt;/td&gt;&lt;td&gt;&lt;p&gt;&lt;/p&gt;&lt;/td&gt;&lt;/tr&gt;
+	&lt;tr&gt;&lt;td&gt;&lt;b&gt;
+
+	jnxMplsLdpSesStatsUnkMesTypeErrors&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
+	%parm[#3]%;&lt;/td&gt;&lt;td&gt;&lt;p&gt;&lt;/p&gt;&lt;/td&gt;&lt;/tr&gt;
+	&lt;tr&gt;&lt;td&gt;&lt;b&gt;
+
+	jnxMplsLdpSesStatsUnkTlvErrors&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
+	%parm[#4]%;&lt;/td&gt;&lt;td&gt;&lt;p&gt;&lt;/p&gt;&lt;/td&gt;&lt;/tr&gt;&lt;/table&gt;
+	</descr>
+		<logmsg dest='logndisplay'>&lt;p&gt;
+			jnxMplsLdpSessionDown trap received 
+			jnxMplsLdpSesState=%parm[#1]% 
+			jnxMplsLdpSesDiscontinuityTime=%parm[#2]% 
+			jnxMplsLdpSesStatsUnkMesTypeErrors=%parm[#3]% 
+			jnxMplsLdpSesStatsUnkTlvErrors=%parm[#4]%&lt;/p&gt;
+		</logmsg>
+	<severity>Warning</severity>
+</event>
+<!-- End of auto generated data from MIB: JUNIPER-MPLS-LDP-MIB -->
 <!-- Start of auto generated data from MIB: JUNIPER-PING-MIB -->
 <event>
 	<mask>
@@ -4423,4 +5119,1294 @@ threshold for CPU utilization (85%).&lt;/p&gt;&lt;table&gt;
 	<severity>Normal</severity>
 </event>
 <!-- End of auto generated data from MIB: JUNIPER-SP-MIB -->
+<!-- Start of auto generated data from MIB: OSPFV3-MIB-JUNIPER -->
+<event>
+	<mask>
+		<maskelement>
+			<mename>id</mename>
+			<mevalue>.1.3.6.1.4.1.2636.5.4.1</mevalue>
+		</maskelement>
+		<maskelement>
+			<mename>generic</mename>
+			<mevalue>6</mevalue>
+		</maskelement>
+		<maskelement>
+			<mename>specific</mename>
+			<mevalue>1</mevalue>
+		</maskelement>
+	</mask>
+	<uei>uei.opennms.org/vendor/Juniper/traps/jnxOspfv3VirtIfStateChange</uei>
+	<event-label>OSPFV3-MIB-JUNIPER defined trap event: jnxOspfv3VirtIfStateChange</event-label>
+	<descr>
+&lt;p&gt;An ospfv3VirtIfStateChange notification signifies that there 
+has been a change in the state of an OSPFv3 virtual 
+interface. 
+
+This notification should be generated when the interface 
+state regresses (e.g., goes from Point-to-Point to Down) 
+or progresses to a terminal state (i.e., Point-to-Point).&lt;/p&gt;&lt;table&gt;
+	&lt;tr&gt;&lt;td&gt;&lt;b&gt;
+
+	jnxOspfv3RouterId&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
+	%parm[#1]%;&lt;/td&gt;&lt;td&gt;&lt;p&gt;&lt;/p&gt;&lt;/td&gt;&lt;/tr&gt;
+	&lt;tr&gt;&lt;td&gt;&lt;b&gt;
+
+	jnxOspfv3VirtIfState&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
+	%parm[#2]%;&lt;/td&gt;&lt;td&gt;&lt;p&gt;
+		down(1)
+		pointToPoint(4)
+	&lt;/p&gt;&lt;/td&gt;&lt;/tr&gt;&lt;/table&gt;
+	</descr>
+		<logmsg dest='logndisplay'>&lt;p&gt;
+			jnxOspfv3VirtIfStateChange trap received 
+			jnxOspfv3RouterId=%parm[#1]% 
+			jnxOspfv3VirtIfState=%parm[#2]%&lt;/p&gt;
+		</logmsg>
+	<severity>Warning</severity>
+</event>
+<event>
+	<mask>
+		<maskelement>
+			<mename>id</mename>
+			<mevalue>.1.3.6.1.4.1.2636.5.4.1</mevalue>
+		</maskelement>
+		<maskelement>
+			<mename>generic</mename>
+			<mevalue>6</mevalue>
+		</maskelement>
+		<maskelement>
+			<mename>specific</mename>
+			<mevalue>2</mevalue>
+		</maskelement>
+	</mask>
+	<uei>uei.opennms.org/vendor/Juniper/traps/jnxOspfv3NbrStateChange</uei>
+	<event-label>OSPFV3-MIB-JUNIPER defined trap event: jnxOspfv3NbrStateChange</event-label>
+	<descr>
+&lt;p&gt;An ospfv3NbrStateChange notification signifies that 
+there has been a change in the state of a 
+non-virtual OSPFv3 neighbor. This notification should be 
+generated when the neighbor state regresses 
+(e.g., goes from Attempt or Full to 1-Way or 
+Down) or progresses to a terminal state (e.g., 
+2-Way or Full). When an neighbor transitions 
+from or to Full on non-broadcast multi-access 
+and broadcast networks, the notification should be 
+generated by the designated router. A designated 
+router transitioning to Down will be noted by 
+ospfIfStateChange.&lt;/p&gt;&lt;table&gt;
+	&lt;tr&gt;&lt;td&gt;&lt;b&gt;
+
+	jnxOspfv3RouterId&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
+	%parm[#1]%;&lt;/td&gt;&lt;td&gt;&lt;p&gt;&lt;/p&gt;&lt;/td&gt;&lt;/tr&gt;
+	&lt;tr&gt;&lt;td&gt;&lt;b&gt;
+
+	jnxOspfv3NbrState&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
+	%parm[#2]%;&lt;/td&gt;&lt;td&gt;&lt;p&gt;
+		down(1)
+		attempt(2)
+		init(3)
+		twoWay(4)
+		exchangeStart(5)
+		exchange(6)
+		loading(7)
+		full(8)
+	&lt;/p&gt;&lt;/td&gt;&lt;/tr&gt;&lt;/table&gt;
+	</descr>
+		<logmsg dest='logndisplay'>&lt;p&gt;
+			jnxOspfv3NbrStateChange trap received 
+			jnxOspfv3RouterId=%parm[#1]% 
+			jnxOspfv3NbrState=%parm[#2]%&lt;/p&gt;
+		</logmsg>
+	<severity>Warning</severity>
+</event>
+<event>
+	<mask>
+		<maskelement>
+			<mename>id</mename>
+			<mevalue>.1.3.6.1.4.1.2636.5.4.1</mevalue>
+		</maskelement>
+		<maskelement>
+			<mename>generic</mename>
+			<mevalue>6</mevalue>
+		</maskelement>
+		<maskelement>
+			<mename>specific</mename>
+			<mevalue>3</mevalue>
+		</maskelement>
+	</mask>
+	<uei>uei.opennms.org/vendor/Juniper/traps/jnxOspfv3VirtNbrStateChange</uei>
+	<event-label>OSPFV3-MIB-JUNIPER defined trap event: jnxOspfv3VirtNbrStateChange</event-label>
+	<descr>
+&lt;p&gt;An ospfv3VirtNbrStateChange notification signifies 
+that there has been a change in the state of an OSPFv3 
+virtual neighbor. This notification should be generated 
+when the neighbor state regresses (e.g., goes 
+from Attempt or Full to 1-Way or Down) or 
+progresses to a terminal state (e.g., Full).&lt;/p&gt;&lt;table&gt;
+	&lt;tr&gt;&lt;td&gt;&lt;b&gt;
+
+	jnxOspfv3RouterId&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
+	%parm[#1]%;&lt;/td&gt;&lt;td&gt;&lt;p&gt;&lt;/p&gt;&lt;/td&gt;&lt;/tr&gt;
+	&lt;tr&gt;&lt;td&gt;&lt;b&gt;
+
+	jnxOspfv3VirtNbrState&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
+	%parm[#2]%;&lt;/td&gt;&lt;td&gt;&lt;p&gt;
+		down(1)
+		attempt(2)
+		init(3)
+		twoWay(4)
+		exchangeStart(5)
+		exchange(6)
+		loading(7)
+		full(8)
+	&lt;/p&gt;&lt;/td&gt;&lt;/tr&gt;&lt;/table&gt;
+	</descr>
+		<logmsg dest='logndisplay'>&lt;p&gt;
+			jnxOspfv3VirtNbrStateChange trap received 
+			jnxOspfv3RouterId=%parm[#1]% 
+			jnxOspfv3VirtNbrState=%parm[#2]%&lt;/p&gt;
+		</logmsg>
+	<severity>Warning</severity>
+</event>
+<event>
+	<mask>
+		<maskelement>
+			<mename>id</mename>
+			<mevalue>.1.3.6.1.4.1.2636.5.4.1</mevalue>
+		</maskelement>
+		<maskelement>
+			<mename>generic</mename>
+			<mevalue>6</mevalue>
+		</maskelement>
+		<maskelement>
+			<mename>specific</mename>
+			<mevalue>4</mevalue>
+		</maskelement>
+	</mask>
+	<uei>uei.opennms.org/vendor/Juniper/traps/jnxOspfv3IfConfigError</uei>
+	<event-label>OSPFV3-MIB-JUNIPER defined trap event: jnxOspfv3IfConfigError</event-label>
+	<descr>
+&lt;p&gt;An ospfv3IfConfigError notification signifies that a 
+packet has been received on a non-virtual 
+interface from a router whose configuration 
+parameters conflict with this router's 
+configuration parameters. Note that the event 
+optionMismatch should cause a notification only if it 
+prevents an adjacency from forming.&lt;/p&gt;&lt;table&gt;
+	&lt;tr&gt;&lt;td&gt;&lt;b&gt;
+
+	jnxOspfv3RouterId&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
+	%parm[#1]%;&lt;/td&gt;&lt;td&gt;&lt;p&gt;&lt;/p&gt;&lt;/td&gt;&lt;/tr&gt;
+	&lt;tr&gt;&lt;td&gt;&lt;b&gt;
+
+	jnxOspfv3IfState&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
+	%parm[#2]%;&lt;/td&gt;&lt;td&gt;&lt;p&gt;
+		down(1)
+		loopback(2)
+		waiting(3)
+		pointToPoint(4)
+		designatedRouter(5)
+		backupDesignatedRouter(6)
+		otherDesignatedRouter(7)
+	&lt;/p&gt;&lt;/td&gt;&lt;/tr&gt;
+	&lt;tr&gt;&lt;td&gt;&lt;b&gt;
+
+	jnxOspfv3PacketSrc&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
+	%parm[#3]%;&lt;/td&gt;&lt;td&gt;&lt;p&gt;&lt;/p&gt;&lt;/td&gt;&lt;/tr&gt;
+	&lt;tr&gt;&lt;td&gt;&lt;b&gt;
+
+	jnxOspfv3ConfigErrorType&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
+	%parm[#4]%;&lt;/td&gt;&lt;td&gt;&lt;p&gt;
+		badVersion(1)
+		areaMismatch(2)
+		unknownNbmaNbr(3)
+		unknownVirtualNbr(4)
+		helloIntervalMismatch(5)
+		deadIntervalMismatch(6)
+		optionMismatch(7)
+		mtuMismatch(8)
+		duplicateRouterId(9)
+		noError(10)
+	&lt;/p&gt;&lt;/td&gt;&lt;/tr&gt;
+	&lt;tr&gt;&lt;td&gt;&lt;b&gt;
+
+	jnxOspfv3PacketType&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
+	%parm[#5]%;&lt;/td&gt;&lt;td&gt;&lt;p&gt;
+		hello(1)
+		dbDescript(2)
+		lsReq(3)
+		lsUpdate(4)
+		lsAck(5)
+		nullPacket(6)
+	&lt;/p&gt;&lt;/td&gt;&lt;/tr&gt;&lt;/table&gt;
+	</descr>
+		<logmsg dest='logndisplay'>&lt;p&gt;
+			jnxOspfv3IfConfigError trap received 
+			jnxOspfv3RouterId=%parm[#1]% 
+			jnxOspfv3IfState=%parm[#2]% 
+			jnxOspfv3PacketSrc=%parm[#3]% 
+			jnxOspfv3ConfigErrorType=%parm[#4]% 
+			jnxOspfv3PacketType=%parm[#5]%&lt;/p&gt;
+		</logmsg>
+	<severity>Warning</severity>
+</event>
+<event>
+	<mask>
+		<maskelement>
+			<mename>id</mename>
+			<mevalue>.1.3.6.1.4.1.2636.5.4.1</mevalue>
+		</maskelement>
+		<maskelement>
+			<mename>generic</mename>
+			<mevalue>6</mevalue>
+		</maskelement>
+		<maskelement>
+			<mename>specific</mename>
+			<mevalue>5</mevalue>
+		</maskelement>
+	</mask>
+	<uei>uei.opennms.org/vendor/Juniper/traps/jnxOspfv3VirtIfConfigError</uei>
+	<event-label>OSPFV3-MIB-JUNIPER defined trap event: jnxOspfv3VirtIfConfigError</event-label>
+	<descr>
+&lt;p&gt;An ospfv3VirtIfConfigError notification signifies that a 
+packet has been received on a virtual interface 
+from a router whose configuration parameters 
+conflict with this router's configuration 
+parameters. Note that the event optionMismatch 
+should cause a notification only if it prevents an 
+adjacency from forming.&lt;/p&gt;&lt;table&gt;
+	&lt;tr&gt;&lt;td&gt;&lt;b&gt;
+
+	jnxOspfv3RouterId&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
+	%parm[#1]%;&lt;/td&gt;&lt;td&gt;&lt;p&gt;&lt;/p&gt;&lt;/td&gt;&lt;/tr&gt;
+	&lt;tr&gt;&lt;td&gt;&lt;b&gt;
+
+	jnxOspfv3VirtIfState&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
+	%parm[#2]%;&lt;/td&gt;&lt;td&gt;&lt;p&gt;
+		down(1)
+		pointToPoint(4)
+	&lt;/p&gt;&lt;/td&gt;&lt;/tr&gt;
+	&lt;tr&gt;&lt;td&gt;&lt;b&gt;
+
+	jnxOspfv3ConfigErrorType&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
+	%parm[#3]%;&lt;/td&gt;&lt;td&gt;&lt;p&gt;
+		badVersion(1)
+		areaMismatch(2)
+		unknownNbmaNbr(3)
+		unknownVirtualNbr(4)
+		helloIntervalMismatch(5)
+		deadIntervalMismatch(6)
+		optionMismatch(7)
+		mtuMismatch(8)
+		duplicateRouterId(9)
+		noError(10)
+	&lt;/p&gt;&lt;/td&gt;&lt;/tr&gt;
+	&lt;tr&gt;&lt;td&gt;&lt;b&gt;
+
+	jnxOspfv3PacketType&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
+	%parm[#4]%;&lt;/td&gt;&lt;td&gt;&lt;p&gt;
+		hello(1)
+		dbDescript(2)
+		lsReq(3)
+		lsUpdate(4)
+		lsAck(5)
+		nullPacket(6)
+	&lt;/p&gt;&lt;/td&gt;&lt;/tr&gt;&lt;/table&gt;
+	</descr>
+		<logmsg dest='logndisplay'>&lt;p&gt;
+			jnxOspfv3VirtIfConfigError trap received 
+			jnxOspfv3RouterId=%parm[#1]% 
+			jnxOspfv3VirtIfState=%parm[#2]% 
+			jnxOspfv3ConfigErrorType=%parm[#3]% 
+			jnxOspfv3PacketType=%parm[#4]%&lt;/p&gt;
+		</logmsg>
+	<severity>Warning</severity>
+</event>
+<event>
+	<mask>
+		<maskelement>
+			<mename>id</mename>
+			<mevalue>.1.3.6.1.4.1.2636.5.4.1</mevalue>
+		</maskelement>
+		<maskelement>
+			<mename>generic</mename>
+			<mevalue>6</mevalue>
+		</maskelement>
+		<maskelement>
+			<mename>specific</mename>
+			<mevalue>6</mevalue>
+		</maskelement>
+	</mask>
+	<uei>uei.opennms.org/vendor/Juniper/traps/jnxOspfv3IfRxBadPacket</uei>
+	<event-label>OSPFV3-MIB-JUNIPER defined trap event: jnxOspfv3IfRxBadPacket</event-label>
+	<descr>
+&lt;p&gt;An ospfv3IfRxBadPacket notification signifies that an 
+ospfv3 packet that cannot be parsed has been received on a 
+non-virtual interface.&lt;/p&gt;&lt;table&gt;
+	&lt;tr&gt;&lt;td&gt;&lt;b&gt;
+
+	jnxOspfv3RouterId&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
+	%parm[#1]%;&lt;/td&gt;&lt;td&gt;&lt;p&gt;&lt;/p&gt;&lt;/td&gt;&lt;/tr&gt;
+	&lt;tr&gt;&lt;td&gt;&lt;b&gt;
+
+	jnxOspfv3IfState&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
+	%parm[#2]%;&lt;/td&gt;&lt;td&gt;&lt;p&gt;
+		down(1)
+		loopback(2)
+		waiting(3)
+		pointToPoint(4)
+		designatedRouter(5)
+		backupDesignatedRouter(6)
+		otherDesignatedRouter(7)
+	&lt;/p&gt;&lt;/td&gt;&lt;/tr&gt;
+	&lt;tr&gt;&lt;td&gt;&lt;b&gt;
+
+	jnxOspfv3PacketSrc&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
+	%parm[#3]%;&lt;/td&gt;&lt;td&gt;&lt;p&gt;&lt;/p&gt;&lt;/td&gt;&lt;/tr&gt;
+	&lt;tr&gt;&lt;td&gt;&lt;b&gt;
+
+	jnxOspfv3PacketType&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
+	%parm[#4]%;&lt;/td&gt;&lt;td&gt;&lt;p&gt;
+		hello(1)
+		dbDescript(2)
+		lsReq(3)
+		lsUpdate(4)
+		lsAck(5)
+		nullPacket(6)
+	&lt;/p&gt;&lt;/td&gt;&lt;/tr&gt;&lt;/table&gt;
+	</descr>
+		<logmsg dest='logndisplay'>&lt;p&gt;
+			jnxOspfv3IfRxBadPacket trap received 
+			jnxOspfv3RouterId=%parm[#1]% 
+			jnxOspfv3IfState=%parm[#2]% 
+			jnxOspfv3PacketSrc=%parm[#3]% 
+			jnxOspfv3PacketType=%parm[#4]%&lt;/p&gt;
+		</logmsg>
+	<severity>Warning</severity>
+</event>
+<event>
+	<mask>
+		<maskelement>
+			<mename>id</mename>
+			<mevalue>.1.3.6.1.4.1.2636.5.4.1</mevalue>
+		</maskelement>
+		<maskelement>
+			<mename>generic</mename>
+			<mevalue>6</mevalue>
+		</maskelement>
+		<maskelement>
+			<mename>specific</mename>
+			<mevalue>7</mevalue>
+		</maskelement>
+	</mask>
+	<uei>uei.opennms.org/vendor/Juniper/traps/jnxOspfv3VirtIfRxBadPacket</uei>
+	<event-label>OSPFV3-MIB-JUNIPER defined trap event: jnxOspfv3VirtIfRxBadPacket</event-label>
+	<descr>
+&lt;p&gt;An ospfv3VirtIfRxBadPacket notification signifies 
+that an OSPFv3 packet that cannot be parsed has been received 
+on a virtual interface.&lt;/p&gt;&lt;table&gt;
+	&lt;tr&gt;&lt;td&gt;&lt;b&gt;
+
+	jnxOspfv3RouterId&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
+	%parm[#1]%;&lt;/td&gt;&lt;td&gt;&lt;p&gt;&lt;/p&gt;&lt;/td&gt;&lt;/tr&gt;
+	&lt;tr&gt;&lt;td&gt;&lt;b&gt;
+
+	jnxOspfv3VirtIfState&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
+	%parm[#2]%;&lt;/td&gt;&lt;td&gt;&lt;p&gt;
+		down(1)
+		pointToPoint(4)
+	&lt;/p&gt;&lt;/td&gt;&lt;/tr&gt;
+	&lt;tr&gt;&lt;td&gt;&lt;b&gt;
+
+	jnxOspfv3PacketType&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
+	%parm[#3]%;&lt;/td&gt;&lt;td&gt;&lt;p&gt;
+		hello(1)
+		dbDescript(2)
+		lsReq(3)
+		lsUpdate(4)
+		lsAck(5)
+		nullPacket(6)
+	&lt;/p&gt;&lt;/td&gt;&lt;/tr&gt;&lt;/table&gt;
+	</descr>
+		<logmsg dest='logndisplay'>&lt;p&gt;
+			jnxOspfv3VirtIfRxBadPacket trap received 
+			jnxOspfv3RouterId=%parm[#1]% 
+			jnxOspfv3VirtIfState=%parm[#2]% 
+			jnxOspfv3PacketType=%parm[#3]%&lt;/p&gt;
+		</logmsg>
+	<severity>Warning</severity>
+</event>
+<event>
+	<mask>
+		<maskelement>
+			<mename>id</mename>
+			<mevalue>.1.3.6.1.4.1.2636.5.4.1</mevalue>
+		</maskelement>
+		<maskelement>
+			<mename>generic</mename>
+			<mevalue>6</mevalue>
+		</maskelement>
+		<maskelement>
+			<mename>specific</mename>
+			<mevalue>8</mevalue>
+		</maskelement>
+	</mask>
+	<uei>uei.opennms.org/vendor/Juniper/traps/jnxOspfv3LsdbOverflow</uei>
+	<event-label>OSPFV3-MIB-JUNIPER defined trap event: jnxOspfv3LsdbOverflow</event-label>
+	<descr>
+&lt;p&gt;An ospfv3LsdbOverflow notification signifies that the 
+number of LSAs in the router's link-state 
+database has exceeded ospfv3ExtAreaLsdbLimit.&lt;/p&gt;&lt;table&gt;
+	&lt;tr&gt;&lt;td&gt;&lt;b&gt;
+
+	jnxOspfv3RouterId&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
+	%parm[#1]%;&lt;/td&gt;&lt;td&gt;&lt;p&gt;&lt;/p&gt;&lt;/td&gt;&lt;/tr&gt;
+	&lt;tr&gt;&lt;td&gt;&lt;b&gt;
+
+	jnxOspfv3ExtAreaLsdbLimit&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
+	%parm[#2]%;&lt;/td&gt;&lt;td&gt;&lt;p&gt;&lt;/p&gt;&lt;/td&gt;&lt;/tr&gt;&lt;/table&gt;
+	</descr>
+		<logmsg dest='logndisplay'>&lt;p&gt;
+			jnxOspfv3LsdbOverflow trap received 
+			jnxOspfv3RouterId=%parm[#1]% 
+			jnxOspfv3ExtAreaLsdbLimit=%parm[#2]%&lt;/p&gt;
+		</logmsg>
+	<severity>Minor</severity>
+</event>
+<event>
+	<mask>
+		<maskelement>
+			<mename>id</mename>
+			<mevalue>.1.3.6.1.4.1.2636.5.4.1</mevalue>
+		</maskelement>
+		<maskelement>
+			<mename>generic</mename>
+			<mevalue>6</mevalue>
+		</maskelement>
+		<maskelement>
+			<mename>specific</mename>
+			<mevalue>9</mevalue>
+		</maskelement>
+	</mask>
+	<uei>uei.opennms.org/vendor/Juniper/traps/jnxOspfv3LsdbApproachingOverflow</uei>
+	<event-label>OSPFV3-MIB-JUNIPER defined trap event: jnxOspfv3LsdbApproachingOverflow</event-label>
+	<descr>
+&lt;p&gt;An ospfv3LsdbApproachingOverflow notification signifies 
+that the number of LSAs in the router's 
+link-state database has exceeded ninety percent of 
+ospfv3ExtAreaLsdbLimit.&lt;/p&gt;&lt;table&gt;
+	&lt;tr&gt;&lt;td&gt;&lt;b&gt;
+
+	jnxOspfv3RouterId&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
+	%parm[#1]%;&lt;/td&gt;&lt;td&gt;&lt;p&gt;&lt;/p&gt;&lt;/td&gt;&lt;/tr&gt;
+	&lt;tr&gt;&lt;td&gt;&lt;b&gt;
+
+	jnxOspfv3ExtAreaLsdbLimit&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
+	%parm[#2]%;&lt;/td&gt;&lt;td&gt;&lt;p&gt;&lt;/p&gt;&lt;/td&gt;&lt;/tr&gt;&lt;/table&gt;
+	</descr>
+		<logmsg dest='logndisplay'>&lt;p&gt;
+			jnxOspfv3LsdbApproachingOverflow trap received 
+			jnxOspfv3RouterId=%parm[#1]% 
+			jnxOspfv3ExtAreaLsdbLimit=%parm[#2]%&lt;/p&gt;
+		</logmsg>
+	<severity>Minor</severity>
+</event>
+<event>
+	<mask>
+		<maskelement>
+			<mename>id</mename>
+			<mevalue>.1.3.6.1.4.1.2636.5.4.1</mevalue>
+		</maskelement>
+		<maskelement>
+			<mename>generic</mename>
+			<mevalue>6</mevalue>
+		</maskelement>
+		<maskelement>
+			<mename>specific</mename>
+			<mevalue>10</mevalue>
+		</maskelement>
+	</mask>
+	<uei>uei.opennms.org/vendor/Juniper/traps/jnxOspfv3IfStateChange</uei>
+	<event-label>OSPFV3-MIB-JUNIPER defined trap event: jnxOspfv3IfStateChange</event-label>
+	<descr>
+&lt;p&gt;An ospfv3IfStateChange notification signifies that there 
+has been a change in the state of a non-virtual 
+OSPFv3 interface. This notification should be generated 
+when the interface state regresses (e.g., goes 
+from Dr to Down) or progresses to a terminal 
+state (i.e., Point-to-Point, DR Other, Dr, or 
+Backup).&lt;/p&gt;&lt;table&gt;
+	&lt;tr&gt;&lt;td&gt;&lt;b&gt;
+
+	jnxOspfv3RouterId&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
+	%parm[#1]%;&lt;/td&gt;&lt;td&gt;&lt;p&gt;&lt;/p&gt;&lt;/td&gt;&lt;/tr&gt;
+	&lt;tr&gt;&lt;td&gt;&lt;b&gt;
+
+	jnxOspfv3IfState&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
+	%parm[#2]%;&lt;/td&gt;&lt;td&gt;&lt;p&gt;
+		down(1)
+		loopback(2)
+		waiting(3)
+		pointToPoint(4)
+		designatedRouter(5)
+		backupDesignatedRouter(6)
+		otherDesignatedRouter(7)
+	&lt;/p&gt;&lt;/td&gt;&lt;/tr&gt;&lt;/table&gt;
+	</descr>
+		<logmsg dest='logndisplay'>&lt;p&gt;
+			jnxOspfv3IfStateChange trap received 
+			jnxOspfv3RouterId=%parm[#1]% 
+			jnxOspfv3IfState=%parm[#2]%&lt;/p&gt;
+		</logmsg>
+	<severity>Warning</severity>
+</event>
+<event>
+	<mask>
+		<maskelement>
+			<mename>id</mename>
+			<mevalue>.1.3.6.1.4.1.2636.5.4.1</mevalue>
+		</maskelement>
+		<maskelement>
+			<mename>generic</mename>
+			<mevalue>6</mevalue>
+		</maskelement>
+		<maskelement>
+			<mename>specific</mename>
+			<mevalue>11</mevalue>
+		</maskelement>
+	</mask>
+	<uei>uei.opennms.org/vendor/Juniper/traps/jnxOspfv3NssaTranslatorStatusChange</uei>
+	<event-label>OSPFV3-MIB-JUNIPER defined trap event: jnxOspfv3NssaTranslatorStatusChange</event-label>
+	<descr>
+&lt;p&gt;An ospfv3NssaTranslatorStatusChange notification 
+indicates that there has been a change in the router's 
+ability to translate OSPFv3 NSSA LSAs into OSPFv3 External 
+LSAs. This notification should be generated when the 
+Translator Status transitions from or to any defined 
+status on a per area basis.&lt;/p&gt;&lt;table&gt;
+	&lt;tr&gt;&lt;td&gt;&lt;b&gt;
+
+	jnxOspfv3RouterId&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
+	%parm[#1]%;&lt;/td&gt;&lt;td&gt;&lt;p&gt;&lt;/p&gt;&lt;/td&gt;&lt;/tr&gt;
+	&lt;tr&gt;&lt;td&gt;&lt;b&gt;
+
+	jnxOspfv3AreaNssaTranslatorState&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
+	%parm[#2]%;&lt;/td&gt;&lt;td&gt;&lt;p&gt;
+		enabled(1)
+		elected(2)
+		disabled(3)
+	&lt;/p&gt;&lt;/td&gt;&lt;/tr&gt;&lt;/table&gt;
+	</descr>
+		<logmsg dest='logndisplay'>&lt;p&gt;
+			jnxOspfv3NssaTranslatorStatusChange trap received 
+			jnxOspfv3RouterId=%parm[#1]% 
+			jnxOspfv3AreaNssaTranslatorState=%parm[#2]%&lt;/p&gt;
+		</logmsg>
+	<severity>Warning</severity>
+</event>
+<event>
+	<mask>
+		<maskelement>
+			<mename>id</mename>
+			<mevalue>.1.3.6.1.4.1.2636.5.4.1</mevalue>
+		</maskelement>
+		<maskelement>
+			<mename>generic</mename>
+			<mevalue>6</mevalue>
+		</maskelement>
+		<maskelement>
+			<mename>specific</mename>
+			<mevalue>12</mevalue>
+		</maskelement>
+	</mask>
+	<uei>uei.opennms.org/vendor/Juniper/traps/jnxOspfv3RestartStatusChange</uei>
+	<event-label>OSPFV3-MIB-JUNIPER defined trap event: jnxOspfv3RestartStatusChange</event-label>
+	<descr>
+&lt;p&gt;An ospfv3RestartStatusChange notification signifies that 
+there has been a change in the graceful restart 
+state for the router. This notification should be 
+generated when the router restart status 
+changes.&lt;/p&gt;&lt;table&gt;
+	&lt;tr&gt;&lt;td&gt;&lt;b&gt;
+
+	jnxOspfv3RouterId&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
+	%parm[#1]%;&lt;/td&gt;&lt;td&gt;&lt;p&gt;&lt;/p&gt;&lt;/td&gt;&lt;/tr&gt;
+	&lt;tr&gt;&lt;td&gt;&lt;b&gt;
+
+	jnxOspfv3RestartStatus&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
+	%parm[#2]%;&lt;/td&gt;&lt;td&gt;&lt;p&gt;
+		notRestarting(1)
+		plannedRestart(2)
+		unplannedRestart(3)
+	&lt;/p&gt;&lt;/td&gt;&lt;/tr&gt;
+	&lt;tr&gt;&lt;td&gt;&lt;b&gt;
+
+	jnxOspfv3RestartInterval&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
+	%parm[#3]%;&lt;/td&gt;&lt;td&gt;&lt;p&gt;&lt;/p&gt;&lt;/td&gt;&lt;/tr&gt;
+	&lt;tr&gt;&lt;td&gt;&lt;b&gt;
+
+	jnxOspfv3RestartExitRc&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
+	%parm[#4]%;&lt;/td&gt;&lt;td&gt;&lt;p&gt;
+		none(1)
+		inProgress(2)
+		completed(3)
+		timedOut(4)
+		topologyChanged(5)
+	&lt;/p&gt;&lt;/td&gt;&lt;/tr&gt;&lt;/table&gt;
+	</descr>
+		<logmsg dest='logndisplay'>&lt;p&gt;
+			jnxOspfv3RestartStatusChange trap received 
+			jnxOspfv3RouterId=%parm[#1]% 
+			jnxOspfv3RestartStatus=%parm[#2]% 
+			jnxOspfv3RestartInterval=%parm[#3]% 
+			jnxOspfv3RestartExitRc=%parm[#4]%&lt;/p&gt;
+		</logmsg>
+	<severity>Warning</severity>
+</event>
+<event>
+	<mask>
+		<maskelement>
+			<mename>id</mename>
+			<mevalue>.1.3.6.1.4.1.2636.5.4.1</mevalue>
+		</maskelement>
+		<maskelement>
+			<mename>generic</mename>
+			<mevalue>6</mevalue>
+		</maskelement>
+		<maskelement>
+			<mename>specific</mename>
+			<mevalue>13</mevalue>
+		</maskelement>
+	</mask>
+	<uei>uei.opennms.org/vendor/Juniper/traps/jnxOspfv3NbrRestartHelperStatusChange</uei>
+	<event-label>OSPFV3-MIB-JUNIPER defined trap event: jnxOspfv3NbrRestartHelperStatusChange</event-label>
+	<descr>
+&lt;p&gt;An ospfv3NbrRestartHelperStatusChange notification 
+signifies that there has been a change in the 
+graceful restart helper state for the neighbor. 
+This notification should be generated when the 
+neighbor restart helper status transitions for a neighbor.&lt;/p&gt;&lt;table&gt;
+	&lt;tr&gt;&lt;td&gt;&lt;b&gt;
+
+	jnxOspfv3RouterId&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
+	%parm[#1]%;&lt;/td&gt;&lt;td&gt;&lt;p&gt;&lt;/p&gt;&lt;/td&gt;&lt;/tr&gt;
+	&lt;tr&gt;&lt;td&gt;&lt;b&gt;
+
+	jnxOspfv3NbrRestartHelperStatus&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
+	%parm[#2]%;&lt;/td&gt;&lt;td&gt;&lt;p&gt;
+		notHelping(1)
+		helping(2)
+	&lt;/p&gt;&lt;/td&gt;&lt;/tr&gt;
+	&lt;tr&gt;&lt;td&gt;&lt;b&gt;
+
+	jnxOspfv3NbrRestartHelperAge&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
+	%parm[#3]%;&lt;/td&gt;&lt;td&gt;&lt;p&gt;&lt;/p&gt;&lt;/td&gt;&lt;/tr&gt;
+	&lt;tr&gt;&lt;td&gt;&lt;b&gt;
+
+	jnxOspfv3NbrRestartHelperExitRc&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
+	%parm[#4]%;&lt;/td&gt;&lt;td&gt;&lt;p&gt;
+		none(1)
+		inProgress(2)
+		completed(3)
+		timedOut(4)
+		topologyChanged(5)
+	&lt;/p&gt;&lt;/td&gt;&lt;/tr&gt;&lt;/table&gt;
+	</descr>
+		<logmsg dest='logndisplay'>&lt;p&gt;
+			jnxOspfv3NbrRestartHelperStatusChange trap received 
+			jnxOspfv3RouterId=%parm[#1]% 
+			jnxOspfv3NbrRestartHelperStatus=%parm[#2]% 
+			jnxOspfv3NbrRestartHelperAge=%parm[#3]% 
+			jnxOspfv3NbrRestartHelperExitRc=%parm[#4]%&lt;/p&gt;
+		</logmsg>
+	<severity>Minor</severity>
+</event>
+<event>
+	<mask>
+		<maskelement>
+			<mename>id</mename>
+			<mevalue>.1.3.6.1.4.1.2636.5.4.1</mevalue>
+		</maskelement>
+		<maskelement>
+			<mename>generic</mename>
+			<mevalue>6</mevalue>
+		</maskelement>
+		<maskelement>
+			<mename>specific</mename>
+			<mevalue>14</mevalue>
+		</maskelement>
+	</mask>
+	<uei>uei.opennms.org/vendor/Juniper/traps/jnxOspfv3VirtNbrRestartHelperStatusChange</uei>
+	<event-label>OSPFV3-MIB-JUNIPER defined trap event: jnxOspfv3VirtNbrRestartHelperStatusChange</event-label>
+	<descr>
+&lt;p&gt;An ospfv3VirtNbrRestartHelperStatusChange 
+notification signifies that there has been a 
+change in the graceful restart helper state for 
+the virtual neighbor. This notification should be 
+generated when the virtual neighbor restart helper status 
+transitions for a virtual neighbor.&lt;/p&gt;&lt;table&gt;
+	&lt;tr&gt;&lt;td&gt;&lt;b&gt;
+
+	jnxOspfv3RouterId&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
+	%parm[#1]%;&lt;/td&gt;&lt;td&gt;&lt;p&gt;&lt;/p&gt;&lt;/td&gt;&lt;/tr&gt;
+	&lt;tr&gt;&lt;td&gt;&lt;b&gt;
+
+	jnxOspfv3VirtNbrRestartHelperStatus&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
+	%parm[#2]%;&lt;/td&gt;&lt;td&gt;&lt;p&gt;
+		notHelping(1)
+		helping(2)
+	&lt;/p&gt;&lt;/td&gt;&lt;/tr&gt;
+	&lt;tr&gt;&lt;td&gt;&lt;b&gt;
+
+	jnxOspfv3VirtNbrRestartHelperAge&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
+	%parm[#3]%;&lt;/td&gt;&lt;td&gt;&lt;p&gt;&lt;/p&gt;&lt;/td&gt;&lt;/tr&gt;
+	&lt;tr&gt;&lt;td&gt;&lt;b&gt;
+
+	jnxOspfv3VirtNbrRestartHelperExitRc&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
+	%parm[#4]%;&lt;/td&gt;&lt;td&gt;&lt;p&gt;
+		none(1)
+		inProgress(2)
+		completed(3)
+		timedOut(4)
+		topologyChanged(5)
+	&lt;/p&gt;&lt;/td&gt;&lt;/tr&gt;&lt;/table&gt;
+	</descr>
+		<logmsg dest='logndisplay'>&lt;p&gt;
+			jnxOspfv3VirtNbrRestartHelperStatusChange trap received 
+			jnxOspfv3RouterId=%parm[#1]% 
+			jnxOspfv3VirtNbrRestartHelperStatus=%parm[#2]% 
+			jnxOspfv3VirtNbrRestartHelperAge=%parm[#3]% 
+			jnxOspfv3VirtNbrRestartHelperExitRc=%parm[#4]%&lt;/p&gt;
+		</logmsg>
+	<severity>Warning</severity>
+</event>
+<!-- End of auto generated data from MIB: OSPFV3-MIB-JUNIPER -->
+<!-- Start of auto generated data from MIB: JUNIPER-SYSLOG-MIB -->
+<event>
+	<mask>
+		<maskelement>
+			<mename>id</mename>
+			<mevalue>.1.3.6.1.4.1.2636.4.12</mevalue>
+		</maskelement>
+		<maskelement>
+			<mename>generic</mename>
+			<mevalue>6</mevalue>
+		</maskelement>
+		<maskelement>
+			<mename>specific</mename>
+			<mevalue>1</mevalue>
+		</maskelement>
+ 		<varbind>
+    			<vbnumber>3</vbnumber>
+    			<vbvalue>1</vbvalue>
+  		</varbind>
+	</mask>
+	<uei>uei.opennms.org/vendor/traps/Juniper/jnxSyslogTrapEmergency</uei>
+	<event-label>JUNIPER-SYSLOG-MIB defined trap event: jnxSyslogTrap</event-label>
+	<descr>
+&lt;p&gt;Notification of a emergency generated syslog message. Apart from
+the jnxSyslogTrap objects, this notification can include 
+ one or more attribute-value pairs. The attribute-value 
+ pairs shall be identified by objects jnxSyslogAvAttribute 
+ and jnxSyslogAvValue.&lt;/p&gt;&lt;table&gt;
+	&lt;tr&gt;&lt;td&gt;&lt;b&gt;
+
+	jnxSyslogEventName&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
+	%parm[#1]%;&lt;/td&gt;&lt;td&gt;&lt;p&gt;&lt;/p&gt;&lt;/td&gt;&lt;/tr&gt;
+	&lt;tr&gt;&lt;td&gt;&lt;b&gt;
+
+	jnxSyslogTimestamp&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
+	%parm[#2]%;&lt;/td&gt;&lt;td&gt;&lt;p&gt;&lt;/p&gt;&lt;/td&gt;&lt;/tr&gt;
+	&lt;tr&gt;&lt;td&gt;&lt;b&gt;
+
+	jnxSyslogSeverity&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
+	%parm[#3]%;&lt;/td&gt;&lt;td&gt;&lt;p&gt;
+		emergency(1)
+		alert(2)
+		critical(3)
+		error(4)
+		warning(5)
+		notice(6)
+		info(7)
+		debug(8)
+	&lt;/p&gt;&lt;/td&gt;&lt;/tr&gt;
+	&lt;tr&gt;&lt;td&gt;&lt;b&gt;
+
+	jnxSyslogFacility&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
+	%parm[#4]%;&lt;/td&gt;&lt;td&gt;&lt;p&gt;
+		kernel(1)
+		user(2)
+		mail(3)
+		daemon(4)
+		auth(5)
+		syslog(6)
+		lpr(7)
+		news(8)
+		uucp(9)
+		cron(10)
+		authPriv(11)
+		ftp(12)
+		ntp(13)
+		security(14)
+		console(15)
+		local0(17)
+		dfc(18)
+		local2(19)
+		firewall(20)
+		pfe(21)
+		conflict(22)
+		change(23)
+		interact(24)
+	&lt;/p&gt;&lt;/td&gt;&lt;/tr&gt;
+	&lt;tr&gt;&lt;td&gt;&lt;b&gt;
+
+	jnxSyslogProcessId&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
+	%parm[#5]%;&lt;/td&gt;&lt;td&gt;&lt;p&gt;&lt;/p&gt;&lt;/td&gt;&lt;/tr&gt;
+	&lt;tr&gt;&lt;td&gt;&lt;b&gt;
+
+	jnxSyslogProcessName&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
+	%parm[#6]%;&lt;/td&gt;&lt;td&gt;&lt;p&gt;&lt;/p&gt;&lt;/td&gt;&lt;/tr&gt;
+	&lt;tr&gt;&lt;td&gt;&lt;b&gt;
+
+	jnxSyslogHostName&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
+	%parm[#7]%;&lt;/td&gt;&lt;td&gt;&lt;p&gt;&lt;/p&gt;&lt;/td&gt;&lt;/tr&gt;
+	&lt;tr&gt;&lt;td&gt;&lt;b&gt;
+
+	jnxSyslogMessage&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
+	%parm[#8]%;&lt;/td&gt;&lt;td&gt;&lt;p&gt;&lt;/p&gt;&lt;/td&gt;&lt;/tr&gt;&lt;/table&gt;
+	</descr>
+		<logmsg dest='logndisplay'>&lt;p&gt;
+			jnxSyslogTrap emergency trap received 
+			jnxSyslogEventName=%parm[#1]% 
+			jnxSyslogTimestamp=%parm[#2]% 
+			jnxSyslogSeverity=%parm[#3]% 
+			jnxSyslogFacility=%parm[#4]% 
+			jnxSyslogProcessId=%parm[#5]% 
+			jnxSyslogProcessName=%parm[#6]% 
+			jnxSyslogHostName=%parm[#7]% 
+			jnxSyslogMessage=%parm[#8]%&lt;/p&gt;
+		</logmsg>
+	<severity>Critical</severity>
+</event>
+<event>
+	<mask>
+		<maskelement>
+			<mename>id</mename>
+			<mevalue>.1.3.6.1.4.1.2636.4.12</mevalue>
+		</maskelement>
+		<maskelement>
+			<mename>generic</mename>
+			<mevalue>6</mevalue>
+		</maskelement>
+		<maskelement>
+			<mename>specific</mename>
+			<mevalue>1</mevalue>
+		</maskelement>
+ 		<varbind>
+    			<vbnumber>3</vbnumber>
+    			<vbvalue>2</vbvalue>
+  		</varbind>
+	</mask>
+	<uei>uei.opennms.org/vendor/traps/Juniper/jnxSyslogTrapAlert</uei>
+	<event-label>JUNIPER-SYSLOG-MIB defined trap event: jnxSyslogTrap</event-label>
+	<descr>
+&lt;p&gt;Notification of a alert generated syslog message. Apart from
+the jnxSyslogTrap objects, this notification can include 
+ one or more attribute-value pairs. The attribute-value 
+ pairs shall be identified by objects jnxSyslogAvAttribute 
+ and jnxSyslogAvValue.&lt;/p&gt;&lt;table&gt;
+	&lt;tr&gt;&lt;td&gt;&lt;b&gt;
+
+	jnxSyslogEventName&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
+	%parm[#1]%;&lt;/td&gt;&lt;td&gt;&lt;p&gt;&lt;/p&gt;&lt;/td&gt;&lt;/tr&gt;
+	&lt;tr&gt;&lt;td&gt;&lt;b&gt;
+
+	jnxSyslogTimestamp&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
+	%parm[#2]%;&lt;/td&gt;&lt;td&gt;&lt;p&gt;&lt;/p&gt;&lt;/td&gt;&lt;/tr&gt;
+	&lt;tr&gt;&lt;td&gt;&lt;b&gt;
+
+	jnxSyslogSeverity&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
+	%parm[#3]%;&lt;/td&gt;&lt;td&gt;&lt;p&gt;
+		emergency(1)
+		alert(2)
+		critical(3)
+		error(4)
+		warning(5)
+		notice(6)
+		info(7)
+		debug(8)
+	&lt;/p&gt;&lt;/td&gt;&lt;/tr&gt;
+	&lt;tr&gt;&lt;td&gt;&lt;b&gt;
+
+	jnxSyslogFacility&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
+	%parm[#4]%;&lt;/td&gt;&lt;td&gt;&lt;p&gt;
+		kernel(1)
+		user(2)
+		mail(3)
+		daemon(4)
+		auth(5)
+		syslog(6)
+		lpr(7)
+		news(8)
+		uucp(9)
+		cron(10)
+		authPriv(11)
+		ftp(12)
+		ntp(13)
+		security(14)
+		console(15)
+		local0(17)
+		dfc(18)
+		local2(19)
+		firewall(20)
+		pfe(21)
+		conflict(22)
+		change(23)
+		interact(24)
+	&lt;/p&gt;&lt;/td&gt;&lt;/tr&gt;
+	&lt;tr&gt;&lt;td&gt;&lt;b&gt;
+
+	jnxSyslogProcessId&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
+	%parm[#5]%;&lt;/td&gt;&lt;td&gt;&lt;p&gt;&lt;/p&gt;&lt;/td&gt;&lt;/tr&gt;
+	&lt;tr&gt;&lt;td&gt;&lt;b&gt;
+
+	jnxSyslogProcessName&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
+	%parm[#6]%;&lt;/td&gt;&lt;td&gt;&lt;p&gt;&lt;/p&gt;&lt;/td&gt;&lt;/tr&gt;
+	&lt;tr&gt;&lt;td&gt;&lt;b&gt;
+
+	jnxSyslogHostName&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
+	%parm[#7]%;&lt;/td&gt;&lt;td&gt;&lt;p&gt;&lt;/p&gt;&lt;/td&gt;&lt;/tr&gt;
+	&lt;tr&gt;&lt;td&gt;&lt;b&gt;
+
+	jnxSyslogMessage&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
+	%parm[#8]%;&lt;/td&gt;&lt;td&gt;&lt;p&gt;&lt;/p&gt;&lt;/td&gt;&lt;/tr&gt;&lt;/table&gt;
+	</descr>
+		<logmsg dest='logndisplay'>&lt;p&gt;
+			jnxSyslogTrap alert trap received 
+			jnxSyslogEventName=%parm[#1]% 
+			jnxSyslogTimestamp=%parm[#2]% 
+			jnxSyslogSeverity=%parm[#3]% 
+			jnxSyslogFacility=%parm[#4]% 
+			jnxSyslogProcessId=%parm[#5]% 
+			jnxSyslogProcessName=%parm[#6]% 
+			jnxSyslogHostName=%parm[#7]% 
+			jnxSyslogMessage=%parm[#8]%&lt;/p&gt;
+		</logmsg>
+	<severity>Major</severity>
+</event>
+<event>
+	<mask>
+		<maskelement>
+			<mename>id</mename>
+			<mevalue>.1.3.6.1.4.1.2636.4.12</mevalue>
+		</maskelement>
+		<maskelement>
+			<mename>generic</mename>
+			<mevalue>6</mevalue>
+		</maskelement>
+		<maskelement>
+			<mename>specific</mename>
+			<mevalue>1</mevalue>
+		</maskelement>
+ 		<varbind>
+    			<vbnumber>3</vbnumber>
+    			<vbvalue>3</vbvalue>
+  		</varbind>
+	</mask>
+	<uei>uei.opennms.org/vendor/traps/Juniper/jnxSyslogTrapCritical</uei>
+	<event-label>JUNIPER-SYSLOG-MIB defined trap event: jnxSyslogTrap</event-label>
+	<descr>
+&lt;p&gt;Notification of a critical generated syslog message. Apart from
+the jnxSyslogTrap objects, this notification can include 
+ one or more attribute-value pairs. The attribute-value 
+ pairs shall be identified by objects jnxSyslogAvAttribute 
+ and jnxSyslogAvValue.&lt;/p&gt;&lt;table&gt;
+	&lt;tr&gt;&lt;td&gt;&lt;b&gt;
+
+	jnxSyslogEventName&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
+	%parm[#1]%;&lt;/td&gt;&lt;td&gt;&lt;p&gt;&lt;/p&gt;&lt;/td&gt;&lt;/tr&gt;
+	&lt;tr&gt;&lt;td&gt;&lt;b&gt;
+
+	jnxSyslogTimestamp&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
+	%parm[#2]%;&lt;/td&gt;&lt;td&gt;&lt;p&gt;&lt;/p&gt;&lt;/td&gt;&lt;/tr&gt;
+	&lt;tr&gt;&lt;td&gt;&lt;b&gt;
+
+	jnxSyslogSeverity&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
+	%parm[#3]%;&lt;/td&gt;&lt;td&gt;&lt;p&gt;
+		emergency(1)
+		alert(2)
+		critical(3)
+		error(4)
+		warning(5)
+		notice(6)
+		info(7)
+		debug(8)
+	&lt;/p&gt;&lt;/td&gt;&lt;/tr&gt;
+	&lt;tr&gt;&lt;td&gt;&lt;b&gt;
+
+	jnxSyslogFacility&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
+	%parm[#4]%;&lt;/td&gt;&lt;td&gt;&lt;p&gt;
+		kernel(1)
+		user(2)
+		mail(3)
+		daemon(4)
+		auth(5)
+		syslog(6)
+		lpr(7)
+		news(8)
+		uucp(9)
+		cron(10)
+		authPriv(11)
+		ftp(12)
+		ntp(13)
+		security(14)
+		console(15)
+		local0(17)
+		dfc(18)
+		local2(19)
+		firewall(20)
+		pfe(21)
+		conflict(22)
+		change(23)
+		interact(24)
+	&lt;/p&gt;&lt;/td&gt;&lt;/tr&gt;
+	&lt;tr&gt;&lt;td&gt;&lt;b&gt;
+
+	jnxSyslogProcessId&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
+	%parm[#5]%;&lt;/td&gt;&lt;td&gt;&lt;p&gt;&lt;/p&gt;&lt;/td&gt;&lt;/tr&gt;
+	&lt;tr&gt;&lt;td&gt;&lt;b&gt;
+
+	jnxSyslogProcessName&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
+	%parm[#6]%;&lt;/td&gt;&lt;td&gt;&lt;p&gt;&lt;/p&gt;&lt;/td&gt;&lt;/tr&gt;
+	&lt;tr&gt;&lt;td&gt;&lt;b&gt;
+
+	jnxSyslogHostName&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
+	%parm[#7]%;&lt;/td&gt;&lt;td&gt;&lt;p&gt;&lt;/p&gt;&lt;/td&gt;&lt;/tr&gt;
+	&lt;tr&gt;&lt;td&gt;&lt;b&gt;
+
+	jnxSyslogMessage&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
+	%parm[#8]%;&lt;/td&gt;&lt;td&gt;&lt;p&gt;&lt;/p&gt;&lt;/td&gt;&lt;/tr&gt;&lt;/table&gt;
+	</descr>
+		<logmsg dest='logndisplay'>&lt;p&gt;
+			jnxSyslogTrap critical trap received 
+			jnxSyslogEventName=%parm[#1]% 
+			jnxSyslogTimestamp=%parm[#2]% 
+			jnxSyslogSeverity=%parm[#3]% 
+			jnxSyslogFacility=%parm[#4]% 
+			jnxSyslogProcessId=%parm[#5]% 
+			jnxSyslogProcessName=%parm[#6]% 
+			jnxSyslogHostName=%parm[#7]% 
+			jnxSyslogMessage=%parm[#8]%&lt;/p&gt;
+		</logmsg>
+	<severity>Major</severity>
+</event>
+<event>
+	<mask>
+		<maskelement>
+			<mename>id</mename>
+			<mevalue>.1.3.6.1.4.1.2636.4.12</mevalue>
+		</maskelement>
+		<maskelement>
+			<mename>generic</mename>
+			<mevalue>6</mevalue>
+		</maskelement>
+		<maskelement>
+			<mename>specific</mename>
+			<mevalue>1</mevalue>
+		</maskelement>
+ 		<varbind>
+    			<vbnumber>3</vbnumber>
+    			<vbvalue>4</vbvalue>
+  		</varbind>
+	</mask>
+	<uei>uei.opennms.org/vendor/traps/Juniper/jnxSyslogTrapError</uei>
+	<event-label>JUNIPER-SYSLOG-MIB defined trap event: jnxSyslogTrap</event-label>
+	<descr>
+&lt;p&gt;Notification of a error generated syslog message. Apart from
+the jnxSyslogTrap objects, this notification can include 
+ one or more attribute-value pairs. The attribute-value 
+ pairs shall be identified by objects jnxSyslogAvAttribute 
+ and jnxSyslogAvValue.&lt;/p&gt;&lt;table&gt;
+	&lt;tr&gt;&lt;td&gt;&lt;b&gt;
+
+	jnxSyslogEventName&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
+	%parm[#1]%;&lt;/td&gt;&lt;td&gt;&lt;p&gt;&lt;/p&gt;&lt;/td&gt;&lt;/tr&gt;
+	&lt;tr&gt;&lt;td&gt;&lt;b&gt;
+
+	jnxSyslogTimestamp&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
+	%parm[#2]%;&lt;/td&gt;&lt;td&gt;&lt;p&gt;&lt;/p&gt;&lt;/td&gt;&lt;/tr&gt;
+	&lt;tr&gt;&lt;td&gt;&lt;b&gt;
+
+	jnxSyslogSeverity&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
+	%parm[#3]%;&lt;/td&gt;&lt;td&gt;&lt;p&gt;
+		emergency(1)
+		alert(2)
+		critical(3)
+		error(4)
+		warning(5)
+		notice(6)
+		info(7)
+		debug(8)
+	&lt;/p&gt;&lt;/td&gt;&lt;/tr&gt;
+	&lt;tr&gt;&lt;td&gt;&lt;b&gt;
+
+	jnxSyslogFacility&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
+	%parm[#4]%;&lt;/td&gt;&lt;td&gt;&lt;p&gt;
+		kernel(1)
+		user(2)
+		mail(3)
+		daemon(4)
+		auth(5)
+		syslog(6)
+		lpr(7)
+		news(8)
+		uucp(9)
+		cron(10)
+		authPriv(11)
+		ftp(12)
+		ntp(13)
+		security(14)
+		console(15)
+		local0(17)
+		dfc(18)
+		local2(19)
+		firewall(20)
+		pfe(21)
+		conflict(22)
+		change(23)
+		interact(24)
+	&lt;/p&gt;&lt;/td&gt;&lt;/tr&gt;
+	&lt;tr&gt;&lt;td&gt;&lt;b&gt;
+
+	jnxSyslogProcessId&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
+	%parm[#5]%;&lt;/td&gt;&lt;td&gt;&lt;p&gt;&lt;/p&gt;&lt;/td&gt;&lt;/tr&gt;
+	&lt;tr&gt;&lt;td&gt;&lt;b&gt;
+
+	jnxSyslogProcessName&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
+	%parm[#6]%;&lt;/td&gt;&lt;td&gt;&lt;p&gt;&lt;/p&gt;&lt;/td&gt;&lt;/tr&gt;
+	&lt;tr&gt;&lt;td&gt;&lt;b&gt;
+
+	jnxSyslogHostName&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
+	%parm[#7]%;&lt;/td&gt;&lt;td&gt;&lt;p&gt;&lt;/p&gt;&lt;/td&gt;&lt;/tr&gt;
+	&lt;tr&gt;&lt;td&gt;&lt;b&gt;
+
+	jnxSyslogMessage&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
+	%parm[#8]%;&lt;/td&gt;&lt;td&gt;&lt;p&gt;&lt;/p&gt;&lt;/td&gt;&lt;/tr&gt;&lt;/table&gt;
+	</descr>
+		<logmsg dest='logndisplay'>&lt;p&gt;
+			jnxSyslogTrap error trap received 
+			jnxSyslogEventName=%parm[#1]% 
+			jnxSyslogTimestamp=%parm[#2]% 
+			jnxSyslogSeverity=%parm[#3]% 
+			jnxSyslogFacility=%parm[#4]% 
+			jnxSyslogProcessId=%parm[#5]% 
+			jnxSyslogProcessName=%parm[#6]% 
+			jnxSyslogHostName=%parm[#7]% 
+			jnxSyslogMessage=%parm[#8]%&lt;/p&gt;
+		</logmsg>
+	<severity>Minor</severity>
+</event>
+<event>
+	<mask>
+		<maskelement>
+			<mename>id</mename>
+			<mevalue>.1.3.6.1.4.1.2636.4.12</mevalue>
+		</maskelement>
+		<maskelement>
+			<mename>generic</mename>
+			<mevalue>6</mevalue>
+		</maskelement>
+		<maskelement>
+			<mename>specific</mename>
+			<mevalue>1</mevalue>
+		</maskelement>
+	</mask>
+	<uei>uei.opennms.org/vendor/traps/Juniper/jnxSyslogTrap</uei>
+	<event-label>JUNIPER-SYSLOG-MIB defined trap event: jnxSyslogTrap</event-label>
+	<descr>
+&lt;p&gt;Notification of a generated syslog message. Apart from
+the jnxSyslogTrap objects, this notification can include 
+ one or more attribute-value pairs. The attribute-value 
+ pairs shall be identified by objects jnxSyslogAvAttribute 
+ and jnxSyslogAvValue.&lt;/p&gt;&lt;table&gt;
+	&lt;tr&gt;&lt;td&gt;&lt;b&gt;
+
+	jnxSyslogEventName&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
+	%parm[#1]%;&lt;/td&gt;&lt;td&gt;&lt;p&gt;&lt;/p&gt;&lt;/td&gt;&lt;/tr&gt;
+	&lt;tr&gt;&lt;td&gt;&lt;b&gt;
+
+	jnxSyslogTimestamp&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
+	%parm[#2]%;&lt;/td&gt;&lt;td&gt;&lt;p&gt;&lt;/p&gt;&lt;/td&gt;&lt;/tr&gt;
+	&lt;tr&gt;&lt;td&gt;&lt;b&gt;
+
+	jnxSyslogSeverity&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
+	%parm[#3]%;&lt;/td&gt;&lt;td&gt;&lt;p&gt;
+		emergency(1)
+		alert(2)
+		critical(3)
+		error(4)
+		warning(5)
+		notice(6)
+		info(7)
+		debug(8)
+	&lt;/p&gt;&lt;/td&gt;&lt;/tr&gt;
+	&lt;tr&gt;&lt;td&gt;&lt;b&gt;
+
+	jnxSyslogFacility&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
+	%parm[#4]%;&lt;/td&gt;&lt;td&gt;&lt;p&gt;
+		kernel(1)
+		user(2)
+		mail(3)
+		daemon(4)
+		auth(5)
+		syslog(6)
+		lpr(7)
+		news(8)
+		uucp(9)
+		cron(10)
+		authPriv(11)
+		ftp(12)
+		ntp(13)
+		security(14)
+		console(15)
+		local0(17)
+		dfc(18)
+		local2(19)
+		firewall(20)
+		pfe(21)
+		conflict(22)
+		change(23)
+		interact(24)
+	&lt;/p&gt;&lt;/td&gt;&lt;/tr&gt;
+	&lt;tr&gt;&lt;td&gt;&lt;b&gt;
+
+	jnxSyslogProcessId&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
+	%parm[#5]%;&lt;/td&gt;&lt;td&gt;&lt;p&gt;&lt;/p&gt;&lt;/td&gt;&lt;/tr&gt;
+	&lt;tr&gt;&lt;td&gt;&lt;b&gt;
+
+	jnxSyslogProcessName&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
+	%parm[#6]%;&lt;/td&gt;&lt;td&gt;&lt;p&gt;&lt;/p&gt;&lt;/td&gt;&lt;/tr&gt;
+	&lt;tr&gt;&lt;td&gt;&lt;b&gt;
+
+	jnxSyslogHostName&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
+	%parm[#7]%;&lt;/td&gt;&lt;td&gt;&lt;p&gt;&lt;/p&gt;&lt;/td&gt;&lt;/tr&gt;
+	&lt;tr&gt;&lt;td&gt;&lt;b&gt;
+
+	jnxSyslogMessage&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
+	%parm[#8]%;&lt;/td&gt;&lt;td&gt;&lt;p&gt;&lt;/p&gt;&lt;/td&gt;&lt;/tr&gt;&lt;/table&gt;
+	</descr>
+		<logmsg dest='logndisplay'>&lt;p&gt;
+			jnxSyslogTrap trap received 
+			jnxSyslogEventName=%parm[#1]% 
+			jnxSyslogTimestamp=%parm[#2]% 
+			jnxSyslogSeverity=%parm[#3]% 
+			jnxSyslogFacility=%parm[#4]% 
+			jnxSyslogProcessId=%parm[#5]% 
+			jnxSyslogProcessName=%parm[#6]% 
+			jnxSyslogHostName=%parm[#7]% 
+			jnxSyslogMessage=%parm[#8]%&lt;/p&gt;
+		</logmsg>
+	<severity>Warning</severity>
+</event>
+<!-- End of auto generated data from MIB: JUNIPER-SYSLOG-MIB -->
 </events>

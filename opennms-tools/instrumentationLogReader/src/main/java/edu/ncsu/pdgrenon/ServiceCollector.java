@@ -1,5 +1,9 @@
 package edu.ncsu.pdgrenon;
 
+import java.util.concurrent.TimeUnit;
+
+import com.brozowski.instrumentation.Duration;
+
 
 public class ServiceCollector {
 	
@@ -52,7 +56,7 @@ public class ServiceCollector {
 		}
 	}
 
-	int getCollectionCount() {
+	public int getCollectionCount() {
 		return m_collectionCount;
 	}
 	
@@ -60,8 +64,12 @@ public class ServiceCollector {
 	    return m_errorCount;
 	}
 
-	long totalCollectionTime() {
+	public long getTotalCollectionTime() {
 		return m_totalTime;
+	}
+
+	public Duration getTotalCollectionDuration() {
+		return new Duration(getTotalCollectionTime());
 	}
 	
 	long getErrorCollectionTime() {
@@ -84,12 +92,16 @@ public class ServiceCollector {
         return getErrorCollectionCount()*100.0/getCollectionCount();
 	}
 
-	long averageCollectionTime() {
+	long getAverageCollectionTime() {
 		int count = getCollectionCount();
 		if (count == 0) return 0;
 		return totalCollectionTime()/count;
 	}
 	
+	public Duration getAverageCollectionDuration() {
+		return new Duration(getAverageCollectionTime());
+	}
+
 	long averageErrorCollectionTime() {
 	    int count = getErrorCollectionCount();
 	    if (count == 0) return 0;
