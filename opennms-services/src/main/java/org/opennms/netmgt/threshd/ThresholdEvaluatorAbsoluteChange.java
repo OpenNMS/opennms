@@ -102,25 +102,27 @@ public class ThresholdEvaluatorAbsoluteChange implements ThresholdEvaluator {
         }
 
         public Status evaluate(double dsValue) {
-        	if(!Double.isNaN(getLastSample())) {
-	            double threshold = getLastSample()+getChange();
-	
-	            if (getChange() < 0.0) {
-	            	//Negative change; care if the value is *below* the threshold
-	                if (dsValue <= threshold) {
-	                    setPreviousTriggeringSample(getLastSample());
-	                    setLastSample(dsValue);
-	                    return Status.TRIGGERED;
-	                }
-	            } else {
-	            	//Positive change; care if the current value is *above* the threshold
-	                if (dsValue >= threshold) {
-	                    setPreviousTriggeringSample(getLastSample());
-	                    setLastSample(dsValue);
-	                    return Status.TRIGGERED;
-	                }
-	            }
-        	}
+            if(!Double.isNaN(getLastSample())) {
+                double threshold = getLastSample()+getChange();
+
+                if (getChange() < 0.0) {
+                    //Negative change; care if the value is *below* the threshold
+                    if (dsValue <= threshold) {
+                        setPreviousTriggeringSample(getLastSample());
+                        setLastSample(dsValue);
+                        log().debug("evaluate: absolute negative change threshold triggered");
+                        return Status.TRIGGERED;
+                    }
+                } else {
+                    //Positive change; care if the current value is *above* the threshold
+                    if (dsValue >= threshold) {
+                        setPreviousTriggeringSample(getLastSample());
+                        setLastSample(dsValue);
+                        log().debug("evaluate: absolute positive change threshold triggered");
+                        return Status.TRIGGERED;
+                    }
+                }
+            }
             setLastSample(dsValue);
             return Status.NO_CHANGE;
         }
@@ -149,6 +151,7 @@ public class ThresholdEvaluatorAbsoluteChange implements ThresholdEvaluator {
             Map<String,String> params = new HashMap<String,String>();
             params.put("previousValue", formatValue(getPreviousTriggeringSample()));
             params.put("changeThreshold", Double.toString(getThresholdConfig().getValue()));
+            params.put("trigger", Integer.toString(getThresholdConfig().getTrigger()));
             return createBasicEvent(uei, date, dsValue, resource, params);
         }
 
