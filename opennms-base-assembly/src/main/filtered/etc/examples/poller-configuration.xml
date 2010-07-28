@@ -14,9 +14,10 @@
     <include-url>file:${install.etc.dir}/include</include-url>
     <rrd step="300">
       <rra>RRA:AVERAGE:0.5:1:2016</rra>
-      <rra>RRA:AVERAGE:0.5:12:4464</rra>
-      <rra>RRA:MIN:0.5:12:4464</rra>
-      <rra>RRA:MAX:0.5:12:4464</rra>
+      <rra>RRA:AVERAGE:0.5:12:1488</rra>
+      <rra>RRA:AVERAGE:0.5:288:366</rra>
+      <rra>RRA:MAX:0.5:288:366</rra>
+      <rra>RRA:MIN:0.5:288:366</rra>
     </rrd>
     <service name="ICMP" interval="300000" user-defined="false" status="on">
       <parameter key="retry" value="2" />
@@ -418,11 +419,12 @@
   <package name="passive-service-example1">
     <filter>IPADDR != '0.0.0.0'</filter>
     <include-range begin="1.1.1.1" end="254.254.254.254" />
-    <rrd step = "300">
-    <rra>RRA:AVERAGE:0.5:1:2016</rra>
-    <rra>RRA:AVERAGE:0.5:12:4464</rra>
-    <rra>RRA:MIN:0.5:12:4464</rra>
-    <rra>RRA:MAX:0.5:12:4464</rra>
+    <rrd step="300">
+      <rra>RRA:AVERAGE:0.5:1:2016</rra>
+      <rra>RRA:AVERAGE:0.5:12:1488</rra>
+      <rra>RRA:AVERAGE:0.5:288:366</rra>
+      <rra>RRA:MAX:0.5:288:366</rra>
+      <rra>RRA:MIN:0.5:288:366</rra>
     </rrd>
     <service name="NON-IP" interval="30000" user-defined="false" status="on" />
     <downtime interval="15000" begin="0" end="300000" />		<!-- 15s, 0, 5m -->
@@ -433,11 +435,12 @@
   <package name="raleigh" remote="true">
     <filter>IPADDR != '0.0.0.0'</filter>
     <include-range begin="1.1.1.1" end="254.254.254.254" />
-    <rrd step = "300">
+    <rrd step="300">
       <rra>RRA:AVERAGE:0.5:1:2016</rra>
-      <rra>RRA:AVERAGE:0.5:12:4464</rra>
-      <rra>RRA:MIN:0.5:12:4464</rra>
-      <rra>RRA:MAX:0.5:12:4464</rra>
+      <rra>RRA:AVERAGE:0.5:12:1488</rra>
+      <rra>RRA:AVERAGE:0.5:288:366</rra>
+      <rra>RRA:MAX:0.5:288:366</rra>
+      <rra>RRA:MIN:0.5:288:366</rra>
     </rrd>
     <service name="HTTP" interval="30000" user-defined="false" status="on">
       <parameter key="retry" value="1" />
@@ -458,11 +461,12 @@
   <package name="GoogleMailTest">
     <filter>IPADDR != '0.0.0.0'</filter>
     <specific>66.249.83.107</specific>
-    <rrd step = "300">
+    <rrd step="300">
       <rra>RRA:AVERAGE:0.5:1:2016</rra>
-      <rra>RRA:AVERAGE:0.5:12:4464</rra>
-      <rra>RRA:MIN:0.5:12:4464</rra>
-      <rra>RRA:MAX:0.5:12:4464</rra>
+      <rra>RRA:AVERAGE:0.5:12:1488</rra>
+      <rra>RRA:AVERAGE:0.5:288:366</rra>
+      <rra>RRA:MAX:0.5:288:366</rra>
+      <rra>RRA:MIN:0.5:288:366</rra>
     </rrd>
     <service name="MAIL" interval="30000" user-defined="false" status="on">
     <parameter key="mail-transport-test">
@@ -514,9 +518,10 @@
     <include-range begin="1.1.1.1" end="254.254.254.254" />
     <rrd step = "300">
       <rra>RRA:AVERAGE:0.5:1:2016</rra>
-      <rra>RRA:AVERAGE:0.5:12:4464</rra>
-      <rra>RRA:MIN:0.5:12:4464</rra>
-      <rra>RRA:MAX:0.5:12:4464</rra>
+      <rra>RRA:AVERAGE:0.5:12:1488</rra>
+      <rra>RRA:AVERAGE:0.5:288:366</rra>
+      <rra>RRA:MAX:0.5:288:366</rra>
+      <rra>RRA:MIN:0.5:288:366</rra>
     </rrd>
     <service name="MAIL" interval="30000" user-defined="false" status="on">
     <parameter key="mail-transport-test">
@@ -571,9 +576,10 @@
     <include-url>file:${install.etc.dir}/include</include-url>
     <rrd step = "300">
       <rra>RRA:AVERAGE:0.5:1:2016</rra>
-      <rra>RRA:AVERAGE:0.5:12:4464</rra>
-      <rra>RRA:MIN:0.5:12:4464</rra>
-      <rra>RRA:MAX:0.5:12:4464</rra>
+      <rra>RRA:AVERAGE:0.5:12:1488</rra>
+      <rra>RRA:AVERAGE:0.5:288:366</rra>
+      <rra>RRA:MAX:0.5:288:366</rra>
+      <rra>RRA:MIN:0.5:288:366</rra>
     </rrd>
     <service name="MSExchangeSA" interval="3000000"
       user-defined="false" status="on">
