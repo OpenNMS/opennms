@@ -48,6 +48,10 @@
       <version>4.7</version>
       <scope>test</scope>
     </dependency>
+    <dependency>
+    	<groupId>org.opennms.dependencies</groupId>
+    	<artifactId>gwt-dependencies</artifactId>
+    </dependency>
   </dependencies>
 
   <build>
