@@ -21,7 +21,8 @@ import java.util.TreeSet;
 
 public class Collector {
 
-	public static final String SERVICE_FORMAT_STRING = "%-28s%20s%15s%25s\n";
+    public static final String SERVICE_TITLE_FORMAT = "%-40s%20s%15s%25s%15s%25s%15s%20s%25s\n";
+    public static final String SERVICE_DATA_FORMAT = "%-40s%20s%15s%25s%15.1f%25s%15.1f%20s%25s\n";
 
 	private Set<String> m_threads = new HashSet<String>();
 	
@@ -167,12 +168,17 @@ public class Collector {
 		
 	}
 	private void printServiceStats(ServiceCollector serviceCollector, PrintWriter out) {
-		out.printf(SERVICE_FORMAT_STRING, serviceCollector.getServiceID(), Collector.formatDuration(serviceCollector.getAverageCollectionTime()), serviceCollector.getCollectionCount(), Collector.formatDuration(serviceCollector.getTotalCollectionTime()));
+		out.printf(SERVICE_DATA_FORMAT, serviceCollector.getServiceID(), 
+			   Collector.formatDuration(serviceCollector.getAverageCollectionTime()), serviceCollector.getCollectionCount(), 
+			   Collector.formatDuration(serviceCollector.averageSuccessfulCollectionTime()), serviceCollector.successPercentage(), 
+			   Collector.formatDuration(serviceCollector.averageErrorCollectionTime()), serviceCollector.errorPercentage(),
+			   Collector.formatDuration(serviceCollector.averageTimeBetweenCollections()),
+			   Collector.formatDuration(serviceCollector.getTotalCollectionTime()));
 	}
 //	Service               Avg Collect Time  Avg Persist Time  Avg Time between Collects # Collections Total Collection Time Total Persist Time
 //	19/172.10.1.21/SNMP       13.458s             .002s              5m27s                    3                 45.98s           .010s
 	public void printServiceHeader(PrintWriter out) {
-		out.printf(SERVICE_FORMAT_STRING, "Service", "Avg Collect Time", "# Collections", "Total Collection Time");
+		out.printf(SERVICE_TITLE_FORMAT, "Service", "Avg Collect Time", "# Collections",  "Avg Success Time", "% Success", "Avg Error Time", "% Errors", "Avg Time Between", "Total Collection Time");
 		
 	}
 	public void printReport(PrintWriter out) {
