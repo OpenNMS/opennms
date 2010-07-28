@@ -1,0 +1,9 @@
+<?xml version="1.0" encoding="UTF-8" standalone="yes"?>
+<model-import last-import="2010-04-26T15:40:32.272+01:00" foreign-source="imported:BTForeignSource1" date-stamp="2010-04-26T15:40:32.095+01:00" xmlns="http://xmlns.opennms.org/xsd/config/model-import">
+    <node node-label="ec2-204-236-212-140.compute-1.amazonaws.com" foreign-id="ec2-204-236-212-140.compute-1.amazonaws.com" building="">
+        <interface snmp-primary="" ip-addr="204.236.212.140" descr=""/>
+    </node>
+    <node node-label="i-bdfe83d6" foreign-id="i-bdfe83d6">
+        <interface ip-addr="184.73.92.108"/>
+    </node>
+</model-import>
