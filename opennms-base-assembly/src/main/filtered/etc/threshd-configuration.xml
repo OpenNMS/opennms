@@ -38,5 +38,24 @@
 			<parameter key="thresholding-group" value="netsnmp"/>
 		</service>
 	</package>
+
+	<package name="netsnmp-memory-linux">
+		<filter>IPADDR != '0.0.0.0' &amp; nodeSysOID == '.1.3.6.1.4.1.8072.3.2.10'</filter> 
+		<include-range begin="1.1.1.1" end="254.254.254.254"/>
+		
+		<service name="SNMP" interval="300000" user-defined="false" status="on">
+			<parameter key="thresholding-group" value="netsnmp-memory-linux"/>
+		</service>
+	</package>
+
+	<package name="netsnmp-memory-nonlinux">
+		<filter>IPADDR != '0.0.0.0' &amp; (nodeSysOID LIKE '.1.3.6.1.4.1.2021.%' | nodeSysOID LIKE '.1.3.6.1.4.1.8072.%') &amp; nodeSysOID != '.1.3.6.1.4.1.8072.3.2.10'</filter> 
+		<include-range begin="1.1.1.1" end="254.254.254.254"/>
+		
+		<service name="SNMP" interval="300000" user-defined="false" status="on">
+			<parameter key="thresholding-group" value="netsnmp-memory-nonlinux"/>
+		</service>
+	</package>
+
 </threshd-configuration>
 

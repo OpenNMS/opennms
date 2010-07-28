@@ -884,6 +884,11 @@ public abstract class JMXCollector implements ServiceCollector {
         public String getType() {
             return m_attribType.getType();
         }
+
+        public String toString() {
+             return "alias " + m_alias + ", value " + m_value + ", resource "
+                 + m_resource + ", attributeType " + m_attribType;
+        }
         
     }
  
