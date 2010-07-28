@@ -4,7 +4,6 @@ import static org.junit.Assert.*;
 
 import java.io.BufferedReader;
 import java.io.File;
-import java.io.FileNotFoundException;
 import java.io.FileReader;
 import java.io.IOException;
 import java.io.PrintWriter;
@@ -82,6 +81,7 @@ public class CollectorTest {
 		c.addLog("2010-06-01 08:39:46,650 DEBUG [CollectdScheduler-50 Pool-fiber3] Collectd: collector.collect: collectData: begin: 58/172.20.1.201/SNMP");
 		assertEquals(5, c.getThreadCount());
 	}
+
 	@Test 
 	public void testCollectionsPerService() {
 		Collector c = new Collector();
@@ -139,26 +139,25 @@ public class CollectorTest {
 		assertEquals(0,c.totalCollectionTimePerService("86/172.20.1.25/WMI"));
 		assertEquals(0,c.totalCollectionTimePerService("58/172.20.1.201/SNMP"));
 	}
+	
 	@Test
-	public void testSortAndPrintServiceCount() {
+	public void testTotalCollectionTime() {
 		Collector c = new Collector();
-		c.addLog("2010-05-26 12:12:40,883 DEBUG [CollectdScheduler-50 Pool-fiber11] Collectd: collector.collect: collectData: begin: 24/216.216.217.254/SNMP");
-		c.addLog("2010-05-26 12:12:48,027 DEBUG [CollectdScheduler-50 Pool-fiber11] Collectd: collector.collect: collectData: end: 24/216.216.217.254/SNMP");
-		c.addLog("2010-06-01 09:36:28,950 DEBUG [CollectdScheduler-50 Pool-fiber1] Collectd: collector.collect: persistDataQueueing: begin: 19/209.61.128.9/SNMP");
-		c.addLog("2010-06-01 09:36:28,995 DEBUG [CollectdScheduler-50 Pool-fiber1] Collectd: collector.collect: persistDataQueueing: end: 19/209.61.128.9/SNMP");
-		c.addLog("2010-06-01 09:33:31,964 DEBUG [CollectdScheduler-50 Pool-fiber0] Collectd: collector.collect: collectData: begin: 60/172.20.1.202/SNMP");
-		c.addLog("2010-06-01 09:33:32,477 DEBUG [CollectdScheduler-50 Pool-fiber0] Collectd: collector.collect: collectData: end: 60/172.20.1.202/SNMP");
-		c.addLog("2010-06-01 08:45:12,104 DEBUG [CollectdScheduler-50 Pool-fiber2] Collectd: collector.collect: persistDataQueueing: begin: 86/172.20.1.25/WMI");
-		c.addLog("2010-06-01 08:45:12,104 DEBUG [CollectdScheduler-50 Pool-fiber2] Collectd: collector.collect: persistDataQueueing: end: 86/172.20.1.25/WMI");
-		c.addLog("2010-06-01 08:39:46,648 DEBUG [CollectdScheduler-50 Pool-fiber3] Collectd: collector.collect: begin:58/172.20.1.201/SNMP");
-		c.addLog("2010-06-01 08:39:46,650 DEBUG [CollectdScheduler-50 Pool-fiber3] Collectd: collector.collect: collectData: begin: 58/172.20.1.201/SNMP");
-		StringWriter out = new StringWriter();
-		c.printMessageTypeCounts(new PrintWriter(out, true));
-		String actualOutput = out.toString(); 
-		String expectedOutput = String.format("Beginning collecting messages during collection: %d Ending collecting messages during collection:  %d" +
-				" Persisting messages during collection: %d Error messages during collection: %d failures: %d\n" ,4,2,4,0,0);
-		assertEquals(expectedOutput,actualOutput);
+		c.addLog("2010-03-13 02:20:30,525 DEBUG [CollectdScheduler-400 Pool-fiber51] Collectd: collector.collect: collectData: begin: 32028/209.219.9.78/SNMP");
+		c.addLog("2010-03-13 02:21:09,976 DEBUG [CollectdScheduler-400 Pool-fiber51] Collectd: collector.collect: collectData: end: 32028/209.219.9.78/SNMP");
+		c.addLog("2010-03-13 02:32:42,641 DEBUG [CollectdScheduler-400 Pool-fiber25] Collectd: collector.collect: collectData: begin: 32028/209.219.9.78/SNMP");
+		c.addLog("2010-03-13 02:33:01,973 DEBUG [CollectdScheduler-400 Pool-fiber25] Collectd: collector.collect: collectData: end: 32028/209.219.9.78/SNMP");
+		c.addLog("2010-03-13 02:43:27,749 DEBUG [CollectdScheduler-400 Pool-fiber112] Collectd: collector.collect: collectData: begin: 32028/209.219.9.78/SNMP");
+		c.addLog("2010-03-13 02:43:31,517 DEBUG [CollectdScheduler-400 Pool-fiber112] Collectd: collector.collect: collectData: end: 32028/209.219.9.78/SNMP");
+		c.addLog("2010-03-13 02:54:13,334 DEBUG [CollectdScheduler-400 Pool-fiber166] Collectd: collector.collect: collectData: begin: 32028/209.219.9.78/SNMP");
+		c.addLog("2010-03-13 02:54:35,223 DEBUG [CollectdScheduler-400 Pool-fiber166] Collectd: collector.collect: collectData: end: 32028/209.219.9.78/SNMP");
+		c.addLog("2010-03-13 03:05:47,554 DEBUG [CollectdScheduler-400 Pool-fiber307] Collectd: collector.collect: collectData: begin: 32028/209.219.9.78/SNMP");
+		c.addLog("2010-03-13 03:06:28,926 DEBUG [CollectdScheduler-400 Pool-fiber307] Collectd: collector.collect: collectData: end: 32028/209.219.9.78/SNMP");
+		c.addLog("2010-03-13 03:18:27,559 DEBUG [CollectdScheduler-400 Pool-fiber264] Collectd: collector.collect: collectData: begin: 32028/209.219.9.78/SNMP");
+		c.addLog("2010-03-13 03:19:06,934 DEBUG [CollectdScheduler-400 Pool-fiber264] Collectd: collector.collect: collectData: end: 32028/209.219.9.78/SNMP");
+		assertEquals(39451+19332+3768+21889+41372+39375,c.totalCollectionTimePerService("32028/209.219.9.78/SNMP"));
 	}
+
 	@Test 
 	public void testReadLogMessagesFromFile () throws IOException {
 		Collector c = new Collector();
@@ -194,7 +193,7 @@ public class CollectorTest {
 				 1,
 				"7.144s");
 		StringWriter out = new StringWriter();
-		c.printServiceStats("24/216.216.217.254/SNMP" , new PrintWriter(out, true));
+		c.printServiceStats("24/216.216.217.254/SNMP", new PrintWriter(out, true));
 		String actualOutput = out.toString();
 		assertEquals(expectedOutput,actualOutput);
 	}
@@ -232,7 +231,7 @@ public class CollectorTest {
 		c.readLogMessagesFromFile("TestLogFile.log");
 		StringWriter out = new StringWriter ();
 		c.printReport(new PrintWriter(out,true));
-		String expectedOutput = fromFile("TestLogFile-unsorted.txt");
+		String expectedOutput = fromFile("TestLogFile.out");
 		String actualOutput = out.toString();
 		assertEquals(expectedOutput,actualOutput);
 	}

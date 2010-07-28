@@ -67,7 +67,6 @@
 <%
     String nodeIdString = request.getParameter( "node" );
 
-    Connection myConn = Vault.getDbConnection();
     
     if( nodeIdString == null ) {
         throw new MissingParameterException( "node" );
@@ -75,8 +74,8 @@
 
     int nodeId = WebSecurityUtils.safeParseInt( nodeIdString );
 
-    NodeLabel currentLabel = NodeLabel.retrieveLabel( nodeId, myConn );
-    NodeLabel autoLabel = NodeLabel.computeLabel( nodeId, myConn );
+    NodeLabel currentLabel = NodeLabel.retrieveLabel( nodeId );
+    NodeLabel autoLabel = NodeLabel.computeLabel( nodeId );
 
     if( currentLabel == null || autoLabel == null ) {
         // XXX handle this WAY better, very awful

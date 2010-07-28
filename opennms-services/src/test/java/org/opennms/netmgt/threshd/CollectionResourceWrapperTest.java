@@ -255,7 +255,7 @@ public class CollectionResourceWrapperTest {
 
         // Validations
         Assert.assertEquals(node.getId().intValue(), wrapper.getNodeId());
-        Assert.assertEquals(ipAddress, wrapper.getHostAddress());
+        Assert.assertEquals("127.0.0.1", wrapper.getHostAddress()); // Should be the address of the SNMP Agent (Bug 3808)
         Assert.assertEquals("eth0", wrapper.getIfLabel());
         Assert.assertEquals("if", wrapper.getResourceTypeName());
         Assert.assertEquals("SNMP", wrapper.getServiceName());
