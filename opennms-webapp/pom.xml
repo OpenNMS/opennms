@@ -311,6 +311,10 @@
       <artifactId>snmp-dependencies</artifactId>
     </dependency>
     <dependency>
+      <groupId>org.opennms.dependencies</groupId>
+      <artifactId>javamail-dependencies</artifactId>
+    </dependency>
+    <dependency>
       <groupId>org.opennms</groupId>
       <artifactId>opennms-test</artifactId>
     </dependency>
@@ -333,10 +337,6 @@
     <dependency>
       <groupId>org.opennms.features.reporting</groupId>
       <artifactId>org.opennms.features.reporting.jasper-reports</artifactId>
-    </dependency>
-    <dependency>
-      <groupId>alt.dev.jmta</groupId>
-      <artifactId>jmta</artifactId>
     </dependency>
     <dependency>
       <groupId>org.apache.xmlgraphics</groupId>
