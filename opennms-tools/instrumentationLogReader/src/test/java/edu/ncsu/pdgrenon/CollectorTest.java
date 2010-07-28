@@ -187,7 +187,7 @@ public class CollectorTest {
 	public void testPrintServiceStats () throws IOException {
 		Collector c = new Collector ();
 		c.readLogMessagesFromFile("TestLogFile.log");
-		String expectedOutput = String.format(Collector.SERVICE_FORMAT_STRING, 
+		String expectedOutput = String.format(Collector.SERVICE_TITLE_FORMAT, 
 				"24/216.216.217.254/SNMP",
 				"7.144s",
 				 1,
@@ -204,7 +204,7 @@ public class CollectorTest {
 		Collector c = new Collector (); 
 		StringWriter out = new StringWriter();
 		c.printServiceHeader(new PrintWriter(out, true));
-		String expectedOutput = String.format(Collector.SERVICE_FORMAT_STRING, "Service", "Avg Collect Time", "# Collections", "Total Collection Time");
+		String expectedOutput = String.format(Collector.SERVICE_TITLE_FORMAT, "Service", "Avg Collect Time", "# Collections", "Total Collection Time");
 		String actualOutput = out.toString();
 		assertEquals(expectedOutput,actualOutput);
 	}
