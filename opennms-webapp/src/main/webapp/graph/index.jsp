@@ -205,7 +205,7 @@
 
 			                                                                 		]};
 		Ext.onReady(function(){
-			customResourceViewInit("custom-resources", customResources, "graph/chooseresource.htm?reports=all&parentResourceId={id}");
+			customResourceViewInit("custom-resources", customResources, "graph/chooseresource.htm?endUrl=graph%2Fadhoc2.jsp&parentResourceId={id}");
 		})
 	</script>
 	<div id="custom-resources"></div>

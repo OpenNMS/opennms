@@ -9,7 +9,6 @@
   <artifactId>spectrum-event-importer</artifactId>
   <packaging>jar</packaging>
   <name>spectrum-event-importer</name>
-  <version>1.8.2-SNAPSHOT</version>
   <url>http://maven.apache.org</url>
   <dependencies>
     <dependency>
