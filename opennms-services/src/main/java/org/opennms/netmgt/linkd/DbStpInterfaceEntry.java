@@ -45,7 +45,7 @@ import java.text.ParseException;
 import java.util.Date;
 
 import org.opennms.core.utils.DBUtils;
-import org.opennms.core.utils.ThreadCategory;
+import org.opennms.core.utils.LogUtils;
 import org.opennms.netmgt.EventConstants;
 import org.opennms.netmgt.config.DataSourceFactory;
 
@@ -226,8 +226,6 @@ public class DbStpInterfaceEntry {
 		if (m_fromDb)
 			throw new IllegalStateException("The record already exists in the database");
 
-		ThreadCategory log = ThreadCategory.getInstance(getClass());
-
 		// first extract the next node identifier
 		//
 		StringBuffer names = new StringBuffer(
@@ -281,8 +279,7 @@ public class DbStpInterfaceEntry {
 
 		names.append(") VALUES (").append(values).append(')');
 
-		if (log.isDebugEnabled())
-			log.debug("StpInterfaceEntry.insert: SQL insert statment = " + names.toString());
+		LogUtils.debugf(this, "StpInterfaceEntry.insert: SQL insert statment = %s", names.toString());
 
 
 		DBUtils d = new DBUtils(getClass());
@@ -327,8 +324,7 @@ public class DbStpInterfaceEntry {
             // Run the insert
             //
             int rc = stmt.executeUpdate();
-            if (log.isDebugEnabled())
-            	log.debug("StpInterfaceEntry.insert: row " + rc);
+            LogUtils.debugf(this, "StpInterfaceEntry.insert: row %d", rc);
 		} finally {
 		    d.cleanUp();
         }
@@ -353,8 +349,6 @@ public class DbStpInterfaceEntry {
 		if (!m_fromDb)
 			throw new IllegalStateException(
 					"The record does not exists in the database");
-
-		ThreadCategory log = ThreadCategory.getInstance(getClass());
 
 		// first extract the next node identifier
 		//
@@ -410,8 +404,7 @@ public class DbStpInterfaceEntry {
 
 		sqlText.append(" WHERE nodeid = ? AND bridgeport = ? AND stpvlan = ? ");
 
-		if (log.isDebugEnabled())
-			log.debug("StpInterfaceEntry.update: SQL statement " + sqlText.toString());
+		LogUtils.debugf(this, "StpInterfaceEntry.update: SQL statement %s", sqlText.toString());
 
 		DBUtils d = new DBUtils(getClass());
 
@@ -456,8 +449,7 @@ public class DbStpInterfaceEntry {
             // Run the insert
             //
             int rc = stmt.executeUpdate();
-            if (log.isDebugEnabled())
-            	log.debug("StpInterfaceEntry.update: row " + rc);
+            LogUtils.debugf(this, "StpInterfaceEntry.update: row %d", rc);
             stmt.close();
 		} finally {
 		    d.cleanUp();
@@ -484,8 +476,6 @@ public class DbStpInterfaceEntry {
 		if (!m_fromDb)
 			throw new IllegalStateException("The record does not exists in the database");
 
-		ThreadCategory log = ThreadCategory.getInstance(getClass());
-
 		// create the Prepared statment and then
 		// start setting the result values
 		//
@@ -503,8 +493,7 @@ public class DbStpInterfaceEntry {
             ResultSet rset = stmt.executeQuery();
             d.watch(rset);
             if (!rset.next()) {
-            	if (log.isDebugEnabled())
-            		log.debug("StpInterfaceEntry.load: no result found");
+                LogUtils.debugf(this, "StpInterfaceEntry.load: no result found");
             	return false;
             }
 
@@ -556,8 +545,7 @@ public class DbStpInterfaceEntry {
 		// clear the mask and mark as backed
 		// by the database
 		//
-		if (log.isDebugEnabled())
-			log.debug("StpInterfaceEntry.load: result found");
+		LogUtils.debugf(this, "StpInterfaceEntry.load: result found");
 		m_changed = 0;
 		return true;
 	}
@@ -935,8 +923,7 @@ public class DbStpInterfaceEntry {
 					if (db != null)
 						db.close();
 				} catch (SQLException e) {
-					ThreadCategory.getInstance(getClass()).warn(
-							"Exception closing JDBC connection", e);
+				    LogUtils.warnf(this, e, "Exception closing JDBC connection");
 				}
 			}
 		}
@@ -987,8 +974,7 @@ public class DbStpInterfaceEntry {
 				if (db != null)
 					db.close();
 			} catch (SQLException e) {
-				ThreadCategory.getInstance(DbStpNodeEntry.class).warn(
-						"Exception closing JDBC connection", e);
+                LogUtils.warnf(DbStpInterfaceEntry.class, e, "Exception closing JDBC connection");
 			}
 		}
 	}

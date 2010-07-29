@@ -45,7 +45,7 @@ import java.text.ParseException;
 import java.util.Date;
 
 import org.opennms.core.utils.DBUtils;
-import org.opennms.core.utils.ThreadCategory;
+import org.opennms.core.utils.LogUtils;
 import org.opennms.netmgt.EventConstants;
 import org.opennms.netmgt.config.DataSourceFactory;
 
@@ -246,8 +246,6 @@ public class DbStpNodeEntry
 				throw new IllegalStateException(
 						"The record already exists in the database");
 
-			ThreadCategory log = ThreadCategory.getInstance(getClass());
-
 			// first extract the next node identifier
 			//
 			StringBuffer names = new StringBuffer(
@@ -311,8 +309,7 @@ public class DbStpNodeEntry
 
 			names.append(") VALUES (").append(values).append(')');
 
-			if (log.isDebugEnabled())
-			log.debug("DbStpNodeEntry.insert: SQL insert statment = " + names.toString());
+			LogUtils.debugf(this, "DbStpNodeEntry.insert: SQL insert statment = %s", names.toString());
 
 			final DBUtils d = new DBUtils(getClass());
 			
@@ -361,8 +358,7 @@ public class DbStpNodeEntry
                 // Run the insert
                 //
                 int rc = stmt.executeUpdate();
-                if (log.isDebugEnabled())
-                	log.debug("StpNodeEntry.insert: row " + rc);
+                LogUtils.debugf(this, "StpNodeEntry.insert: row %d", rc);
 			} finally {
 			    d.cleanUp();
             }
@@ -386,8 +382,6 @@ public class DbStpNodeEntry
 			if (!m_fromDb)
 				throw new IllegalStateException(
 						"The record does not exists in the database");
-
-			ThreadCategory log = ThreadCategory.getInstance(getClass());
 
 			// first extract the next node identifier
 			//
@@ -453,8 +447,7 @@ public class DbStpNodeEntry
 
 			sqlText.append(" WHERE nodeid = ? AND basevlan = ? ");
 
-			if (log.isDebugEnabled())
-				log.debug("DbStpNodeEntry.update: SQL insert statment = " + sqlText.toString());
+			LogUtils.debugf(this, "DbStpNodeEntry.update: SQL insert statment = %s", sqlText.toString());
 
 			final DBUtils d = new DBUtils(getClass());
 			try {
@@ -503,8 +496,7 @@ public class DbStpNodeEntry
                 // Run the insert
                 //
                 int rc = stmt.executeUpdate();
-                if (log.isDebugEnabled())
-                	log.debug("StpNodeEntry.update: row " + rc);
+                LogUtils.debugf(this, "StpNodeEntry.update: row %d", rc);
                 stmt.close();
 			} finally {
 			    d.cleanUp();
@@ -530,8 +522,6 @@ public class DbStpNodeEntry
 			if (!m_fromDb)
 				throw new IllegalStateException("The record does not exists in the database");
 
-			ThreadCategory log = ThreadCategory.getInstance(getClass());
-
 			final DBUtils d = new DBUtils(getClass());
 			try {
                 PreparedStatement stmt = null;
@@ -545,8 +535,7 @@ public class DbStpNodeEntry
                 ResultSet rset = stmt.executeQuery();
                 d.watch(rset);
                 if (!rset.next()) {
-                	if (log.isDebugEnabled())
-                		log.debug("StpNodeEntry.load: no result found");
+                    LogUtils.debugf(this, "StpNodeEntry.load: no result found");
                 	return false;
                 }
 
@@ -611,8 +600,7 @@ public class DbStpNodeEntry
 			// clear the mask and mark as backed
 			// by the database
 			//
-			if (log.isDebugEnabled())
-				log.debug("StpNodeEntry.load: result found");
+			LogUtils.debugf(this, "StpNodeEntry.load: result found");
 			m_changed = 0;
 			return true;
 		}
@@ -1034,8 +1022,7 @@ public class DbStpNodeEntry
 						if (db != null)
 							db.close();
 					} catch (SQLException e) {
-						ThreadCategory.getInstance(getClass()).warn(
-								"Exception closing JDBC connection", e);
+					    LogUtils.warnf(this, e, "Exception closing JDBC connection");
 					}
 				}
 			}
@@ -1080,8 +1067,7 @@ public class DbStpNodeEntry
 					if (db != null)
 						db.close();
 				} catch (SQLException e) {
-					ThreadCategory.getInstance(DbStpNodeEntry.class).warn(
-							"Exception closing JDBC connection", e);
+                    LogUtils.warnf(DbStpNodeEntry.class, e, "Exception closing JDBC connection");
 				}
 			}
 		}

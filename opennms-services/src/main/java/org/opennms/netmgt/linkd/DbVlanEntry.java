@@ -45,7 +45,7 @@ import java.text.ParseException;
 import java.util.Date;
 
 import org.opennms.core.utils.DBUtils;
-import org.opennms.core.utils.ThreadCategory;
+import org.opennms.core.utils.LogUtils;
 import org.opennms.netmgt.EventConstants;
 import org.opennms.netmgt.config.DataSourceFactory;
 
@@ -184,8 +184,6 @@ public class DbVlanEntry
 				throw new IllegalStateException(
 						"The record already exists in the database");
 
-			ThreadCategory log = ThreadCategory.getInstance(getClass());
-
 			// first extract the next node identifier
 			//
 			StringBuffer names = new StringBuffer(
@@ -219,8 +217,7 @@ public class DbVlanEntry
 
 			names.append(") VALUES (").append(values).append(')');
 
-			if (log.isDebugEnabled())
-			log.debug("DbVlanEntry.insert: SQL insert statment = " + names.toString());
+			LogUtils.debugf(this, "DbVlanEntry.insert: SQL insert statment = %s", names.toString());
 
 			final DBUtils d = new DBUtils(getClass());
 			
@@ -251,8 +248,7 @@ public class DbVlanEntry
                 // Run the insert
                 //
                 int rc = stmt.executeUpdate();
-                if (log.isDebugEnabled())
-                	log.debug("DbVlanEntry.insert: row " + rc);
+                LogUtils.debugf(this, "DbVlanEntry.insert: row %d", rc);
 			} finally {
 			    d.cleanUp();
             }
@@ -276,8 +272,6 @@ public class DbVlanEntry
 			if (!m_fromDb)
 				throw new IllegalStateException(
 						"The record does not exists in the database");
-
-			ThreadCategory log = ThreadCategory.getInstance(getClass());
 
 			// first extract the next node identifier
 			//
@@ -313,8 +307,7 @@ public class DbVlanEntry
 
 			sqlText.append(" WHERE nodeid = ? AND vlanid = ? ");
 
-			if (log.isDebugEnabled())
-				log.debug("DbVlanEntry.update: SQL insert statment = " + sqlText.toString());
+			LogUtils.debugf(this, "DbVlanEntry.update: SQL insert statment = %s", sqlText.toString());
 
 			final DBUtils d = new DBUtils(getClass());
 			try {
@@ -345,8 +338,7 @@ public class DbVlanEntry
                 // Run the insert
                 //
                 int rc = stmt.executeUpdate();
-                if (log.isDebugEnabled())
-                	log.debug("DbVlanEntry.update: row " + rc);
+                LogUtils.debugf(this, "DbVlanEntry.update: row %d", rc);
                 stmt.close();
 			} finally {
 			    d.cleanUp();
@@ -373,8 +365,6 @@ public class DbVlanEntry
 				throw new IllegalStateException(
 						"The record does not exists in the database");
 
-			ThreadCategory log = ThreadCategory.getInstance(getClass());
-
 			final DBUtils d = new DBUtils(getClass());
             PreparedStatement stmt = null;
 			
@@ -389,8 +379,7 @@ public class DbVlanEntry
                 ResultSet rset = stmt.executeQuery();
                 d.watch(rset);
                 if (!rset.next()) {
-                	if (log.isDebugEnabled())
-                		log.debug("DbVlanEntry.load: no result found");
+                    LogUtils.debugf(this, "DbVlanEntry.load: no result found");
                 	return false;
                 }
 
@@ -431,8 +420,7 @@ public class DbVlanEntry
 			// clear the mask and mark as backed
 			// by the database
 			//
-			if (log.isDebugEnabled())
-				log.debug("DbVlanEntry.load: result found");
+			LogUtils.debugf(this, "DbVlanEntry.load: result found");
 			m_changed = 0;
 			return true;
 		}
@@ -669,8 +657,7 @@ public class DbVlanEntry
 						if (db != null)
 							db.close();
 					} catch (SQLException e) {
-						ThreadCategory.getInstance(getClass()).warn(
-								"Exception closing JDBC connection", e);
+					    LogUtils.warnf(this, e, "Exception closing JDBC connection");
 					}
 				}
 			}
@@ -715,8 +702,7 @@ public class DbVlanEntry
 					if (db != null)
 						db.close();
 				} catch (SQLException e) {
-					ThreadCategory.getInstance(DbVlanEntry.class).warn(
-							"Exception closing JDBC connection", e);
+				    LogUtils.warnf(DbVlanEntry.class, e, "Exception closing JDBC connection");
 				}
 			}
 		}

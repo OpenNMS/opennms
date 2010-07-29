@@ -38,7 +38,7 @@
 package org.opennms.netmgt.linkd.snmp;
 
 
-import org.opennms.core.utils.ThreadCategory;
+import org.opennms.core.utils.LogUtils;
 import org.opennms.netmgt.snmp.SnmpAgentConfig;
 import org.opennms.netmgt.snmp.SnmpObjId;
 import org.opennms.netmgt.snmp.SnmpUtils;
@@ -50,12 +50,6 @@ import org.opennms.netmgt.snmp.SnmpValue;
  * initially constructed no information is collected. The SNMP Session creating
  * and colletion occurs in the main run method of the instance. This allows the
  * collection to occur in a thread if necessary.
- *
- * @author <a href="mailto:weave@oculan.com">Weave </a>
- * @author <a href="http://www.opennms.org">OpenNMS </a>
- * @author <a href="mailto:weave@oculan.com">Weave </a>
- * @author <a href="http://www.opennms.org">OpenNMS </a>
- * @version $Id: $
  */
 public final class FdbTableGet {
 
@@ -92,13 +86,11 @@ public final class FdbTableGet {
 	 */
 	public int getBridgePort() {
 		
-		ThreadCategory log = ThreadCategory.getInstance(getClass());
 		SnmpValue val = SnmpUtils.get(m_agentConfig, getOid(FDB_PORT_OID));
 		if (val == null) return -1;
 		if (val.isNull() || val.isError()) return -1;
 		if (val.isNumeric()) return val.toInt();
-		if (log.isDebugEnabled())
-			log.debug("getBridgePort: mac/bridgeport: " + m_mac +"/" + val.toDisplayString());
+		LogUtils.debugf(this, "getBridgePort: mac/bridgeport: %s/%s", m_mac, val.toDisplayString());
 
 		return -1;
 	}
@@ -110,13 +102,11 @@ public final class FdbTableGet {
 	 */
 	public int getQBridgePort() {
 		
-		ThreadCategory log = ThreadCategory.getInstance(getClass());
 		SnmpValue val = SnmpUtils.get(m_agentConfig, getOid(QFDB_PORT_OID));
 		if (val == null) return -1;
 		if (val.isNull() || val.isError()) return -1;
 		if (val.isNumeric()) return val.toInt();
-		if (log.isDebugEnabled())
-			log.debug("getQBridgePort: mac/bridgeport: " + m_mac +"/" + val.toDisplayString());
+		LogUtils.debugf(this, "getQBridgePort: mac/bridgeport: %s/%s", m_mac, val.toDisplayString());
 
 		return -1;
 	}
@@ -127,13 +117,11 @@ public final class FdbTableGet {
 	 * @return a int.
 	 */
 	public int getBridgePortStatus() {
-		ThreadCategory log = ThreadCategory.getInstance(getClass());
 		SnmpValue val = SnmpUtils.get(m_agentConfig, getOid(FDB_STATUS_OID));
 		if (val == null) return -1;
 		if (val.isNull() || val.isError()) return -1;
 		if (val.isNumeric()) return val.toInt();
-		if (log.isDebugEnabled())
-			log.debug("getBridgePortStatus: mac/bridgeport: " + m_mac +"/" + val.toDisplayString());
+		LogUtils.debugf(this, "getBridgePortStatus: mac/bridgeport: %s/%s", m_mac, val.toDisplayString());
 		return -1;
 		
 	}
@@ -144,13 +132,11 @@ public final class FdbTableGet {
 	 * @return a int.
 	 */
 	public int getQBridgePortStatus() {
-		ThreadCategory log = ThreadCategory.getInstance(getClass());
 		SnmpValue val = SnmpUtils.get(m_agentConfig, getOid(QFDB_STATUS_OID));
 		if (val == null) return -1;
 		if (val.isNull() || val.isError()) return -1;
 		if (val.isNumeric()) return val.toInt();
-		if (log.isDebugEnabled())
-			log.debug("getQBridgePortStatus: mac/bridgeport: " + m_mac +"/" + val.toDisplayString());
+		LogUtils.debugf(this, "getQBridgePortStatus: mac/bridgeport: %s/%s", m_mac, val.toDisplayString());
 		return -1;
 		
 	}

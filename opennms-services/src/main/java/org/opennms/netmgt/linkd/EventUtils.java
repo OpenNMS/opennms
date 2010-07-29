@@ -43,7 +43,7 @@ package org.opennms.netmgt.linkd;
 import java.util.Enumeration;
 import java.util.List;
 
-import org.opennms.core.utils.ThreadCategory;
+import org.opennms.core.utils.LogUtils;
 import org.opennms.netmgt.EventConstants;
 import org.opennms.netmgt.capsd.InsufficientInformationException;
 import org.opennms.netmgt.eventd.EventIpcManagerFactory;
@@ -354,15 +354,12 @@ public class EventUtils {
      */
     public static void sendEvent(Event newEvent, String callerUei, long txNo, boolean isXmlRpcEnabled) {
         // Send event to Eventd
-        ThreadCategory log = ThreadCategory.getInstance(EventUtils.class);
         try {
             EventIpcManagerFactory.getIpcManager().sendNow(newEvent);
 
-            if (log.isDebugEnabled()) {
-                log.debug("sendEvent: successfully sent event " + newEvent);
-            }
+            LogUtils.debugf(EventUtils.class, "sendEvent: successfully sent event %s", newEvent);
         } catch (Throwable t) {
-            log.warn("run: unexpected throwable exception caught during send to middleware", t);
+            LogUtils.warnf(EventUtils.class, t, "run: unexpected throwable exception caught during send to middleware");
             if (isXmlRpcEnabled) {
                 int status = EventConstants.XMLRPC_NOTIFY_FAILURE;
                 XmlrpcUtil.createAndSendXmlrpcNotificationEvent(txNo, callerUei, "caught unexpected throwable exception.", status, "OpenNMS.Capsd");

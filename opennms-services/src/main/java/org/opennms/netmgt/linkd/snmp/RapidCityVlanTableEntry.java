@@ -47,9 +47,6 @@ import org.opennms.netmgt.capsd.snmp.SnmpTableEntry;
  * form more information.</P>
  *
  * @author <A HREF="mailto:rssntn67@yahoo.it">Antonio</A>
- * @author <A HREF="http://www.opennms.org/">OpenNMS</A>
- * @author <A HREF="mailto:rssntn67@yahoo.it">Antonio</A>
- * @author <A HREF="http://www.opennms.org/">OpenNMS</A>
  * @see IntelVlanTable
  * @see <A HREF="http://www.ietf.org/rfc/rfc1213.txt">RFC1213</A>
  * @version $Id: $

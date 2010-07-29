@@ -39,8 +39,13 @@ package org.opennms.netmgt.linkd;
 
 import java.net.InetAddress;
 
-import org.opennms.core.utils.ThreadCategory;
-import org.opennms.netmgt.linkd.snmp.*;
+import org.opennms.core.utils.LogUtils;
+import org.opennms.netmgt.linkd.snmp.Dot1dBaseGroup;
+import org.opennms.netmgt.linkd.snmp.Dot1dBasePortTable;
+import org.opennms.netmgt.linkd.snmp.Dot1dStpGroup;
+import org.opennms.netmgt.linkd.snmp.Dot1dStpPortTable;
+import org.opennms.netmgt.linkd.snmp.Dot1dTpFdbTable;
+import org.opennms.netmgt.linkd.snmp.QBridgeDot1dTpFdbTable;
 import org.opennms.netmgt.scheduler.ReadyRunnable;
 import org.opennms.netmgt.snmp.CollectionTracker;
 import org.opennms.netmgt.snmp.SnmpAgentConfig;
@@ -274,8 +279,6 @@ final class SnmpVlanCollection implements ReadyRunnable {
 	 * </p>
 	 */
 	public void run() {
-		ThreadCategory log = ThreadCategory.getInstance(getClass());
-		
 			m_dot1dbase = new Dot1dBaseGroup(m_address);
 			m_dot1dbaseTable = new Dot1dBasePortTable(m_address);
 			m_dot1dstp = new Dot1dStpGroup(m_address);
@@ -313,8 +316,7 @@ final class SnmpVlanCollection implements ReadyRunnable {
 		        	SnmpUtils.createWalker(m_agentConfig, "dot1dBaseTable/dot1dStpTable ", 
 		        			new CollectionTracker[] { m_dot1dbaseTable, m_dot1dstptable});
 			} else {
-				if (log.isInfoEnabled())
-					log.info("run: no info to collect return");
+			    LogUtils.infof(this, "run: no info to collect return");
 				return;
 			}
 
@@ -330,7 +332,7 @@ final class SnmpVlanCollection implements ReadyRunnable {
 				m_dot1dstptable = null;
 				m_dot1dtpFdbtable = null;
 
-	            log.warn("SnmpVlanCollection.run: collection interrupted, exiting", e);
+				LogUtils.warnf(this, e, "SnmpVlanCollection.run: collection interrupted, exiting");
 	            return;
 	        }
 	        
@@ -339,34 +341,21 @@ final class SnmpVlanCollection implements ReadyRunnable {
 			// Log any failures
 			//
 			if (!this.hasDot1dBase())
-				log
-						.info("run: failed to collect Dot1dBase for "
-								+ m_address.getHostAddress() + " Community: " + m_agentConfig.getReadCommunity());
+			    LogUtils.infof(this, "run: failed to collect Dot1dBase for %s Community: %s", m_address.getHostAddress(), m_agentConfig.getReadCommunity());
 			if (!this.hasDot1dBasePortTable())
-				log
-						.info("run: failed to collect Dot1dBasePortTable for "
-								+ m_address.getHostAddress() + " Community: " + m_agentConfig.getReadCommunity());
+                LogUtils.infof(this, "run: failed to collect Dot1dBasePortTable for %s Community: %s", m_address.getHostAddress(), m_agentConfig.getReadCommunity());
 			if (!this.hasDot1dStp())
-				log
-						.info("run: failed to collect Dot1dStp for "
-								+ m_address.getHostAddress() + " Community: " + m_agentConfig.getReadCommunity());
+                LogUtils.infof(this, "run: failed to collect Dot1dStp for %s Community: %s", m_address.getHostAddress(), m_agentConfig.getReadCommunity());
 			if (!this.hasDot1dStpPortTable())
-				log
-						.info("run: failed to collect Dot1dStpPortTable for "
-								+ m_address.getHostAddress() + " Community: " + m_agentConfig.getReadCommunity());
+                LogUtils.infof(this, "run: failed to collect Dot1dStpPortTable for %s Community: %s", m_address.getHostAddress(), m_agentConfig.getReadCommunity());
 			if (!this.hasDot1dTpFdbTable())
-				log
-						.info("run: failed to collect Dot1dTpFdbTable for "
-								+ m_address.getHostAddress() + " Community: " + m_agentConfig.getReadCommunity());
+                LogUtils.infof(this, "run: failed to collect Dot1dTpFdbTable for %s Community: %s", m_address.getHostAddress(), m_agentConfig.getReadCommunity());
 			
 			//if not found macaddresses forwarding table find it in Qbridge
 			//ExtremeNetwork works.....
 			
 			if (m_dot1dtpFdbtable.getEntries().isEmpty() && collectBridgeForwardingTable) {
-				
-				log
-				.info("run: Trying to collect QbridgeDot1dTpFdbTable for "
-						+ m_address.getHostAddress() + " Community: " + m_agentConfig.getReadCommunity());
+			    LogUtils.infof(this, "run: Trying to collect QbridgeDot1dTpFdbTable for %s Community: %s", m_address.getHostAddress(), m_agentConfig.getReadCommunity());
 				m_qdot1dtpFdbtable = new QBridgeDot1dTpFdbTable(m_address);
 		        walker = 
 		        	SnmpUtils.createWalker(m_agentConfig, "qBridgedot1dTpFdbTable ", 
@@ -378,16 +367,13 @@ final class SnmpVlanCollection implements ReadyRunnable {
 		            walker.waitFor();
 		        } catch (InterruptedException e) {
 					m_qdot1dtpFdbtable = null;
-
-		            log.warn("SnmpVlanCollection.run: collection interrupted", e);
+					LogUtils.warnf(this, e, "SnmpVlanCollection.run: collection interrupted");
 		            
 		        }
 			}
-			if (!this.hasQBridgeDot1dTpFdbTable())
-				log
-						.info("run: failed to collect QBridgeDot1dTpFdbTable for "
-								+ m_address.getHostAddress() + " Community: " + m_agentConfig.getReadCommunity());
-
+			if (!this.hasQBridgeDot1dTpFdbTable()) {
+			    LogUtils.infof(this, "run: failed to collect QBridgeDot1dTpFdbTable for %s Community: %s", m_address.getHostAddress(), m_agentConfig.getReadCommunity());
+			}
 	}
 
 	/**
