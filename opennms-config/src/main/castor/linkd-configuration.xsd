@@ -24,6 +24,15 @@
 
 		<complexType>
 			<sequence>
+                <element ref="this:iproutes" minOccurs="0" maxOccurs="1">
+                        <annotation>
+                                <documentation>
+                                        A section to get specific Vendors ipRoute
+                                        informations that are used to get ipRoute tables on nodes.
+                                </documentation>
+                        </annotation>
+                </element>
+
 				<element ref="this:vlans" minOccurs="1" maxOccurs="1">
 					<annotation>
 						<documentation>
@@ -185,6 +194,23 @@
 
 		</complexType>
 	</element>
+
+    <element name="iproutes">
+            <complexType>
+                    <sequence>
+                            <!---  -->
+                            <element ref="this:vendor" minOccurs="1"
+                                    maxOccurs="unbounded">
+                                    <annotation>
+                                            <documentation>
+                                                    Identifies the classes to get ipRouute from
+                                                    specific vendor devices sysoids.
+                                            </documentation>
+                                    </annotation>
+                            </element>
+                    </sequence>
+            </complexType>
+    </element>
 
 	<element name="vlans">
 		<complexType>
