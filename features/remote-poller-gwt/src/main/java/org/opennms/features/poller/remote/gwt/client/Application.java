@@ -6,7 +6,6 @@ import org.opennms.features.poller.remote.gwt.client.FilterPanel.StatusSelection
 import org.opennms.features.poller.remote.gwt.client.events.LocationsUpdatedEvent;
 import org.opennms.features.poller.remote.gwt.client.events.LocationsUpdatedEventHandler;
 
-import com.google.gwt.core.client.EntryPoint;
 import com.google.gwt.core.client.GWT;
 import com.google.gwt.event.dom.client.ClickEvent;
 import com.google.gwt.event.logical.shared.ResizeEvent;
@@ -34,7 +33,7 @@ import com.google.gwt.user.client.ui.Widget;
  * @version $Id: $
  * @since 1.8.1
  */
-public class Application implements EntryPoint, LocationsUpdatedEventHandler {
+public class Application implements LocationsUpdatedEventHandler {
     interface Binder extends UiBinder<DockLayoutPanel, Application> {
     }
 
@@ -80,8 +79,9 @@ public class Application implements EntryPoint, LocationsUpdatedEventHandler {
 
     /**
      * This is the entry point method.
+     * @param view TODO
      */
-    public void onModuleLoad() {
+    public void initialize(ApplicationView view) {
         // Log.setUncaughtExceptionHandler();
 
         BINDER.createAndBindUi(this);
