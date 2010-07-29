@@ -1,3 +1,6 @@
+#set( $symbol_pound = '#' )
+#set( $symbol_dollar = '$' )
+#set( $symbol_escape = '\' )
 <!DOCTYPE module PUBLIC "//gwt-module/" "http://google-web-toolkit.googlecode.com/svn/tags/1.6.2/distro-source/core/src/gwt-module.dtd">
 <module>
 
@@ -8,7 +11,7 @@
       <inherits name='com.google.gwt.user.theme.standard.Standard'/>
 
       <!-- Specify the app entry point class.                         -->
-      <entry-point class='org.opennms.web.gwt.client.Application'/>
+      <entry-point class='${package}.client.Application'/>
 
       <!-- Specify the application specific style sheet.              -->
       <stylesheet src='Application.css' />

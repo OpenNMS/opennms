@@ -1,4 +1,7 @@
-package org.opennms.web.gwt.client;
+#set( $symbol_pound = '#' )
+#set( $symbol_dollar = '$' )
+#set( $symbol_escape = '\' )
+package ${package}.client;
 
 import junit.framework.Assert;
 
@@ -10,7 +13,7 @@ public class GwtTestSample
 
    public String getModuleName()
    {
-      return "org.opennms.web.gwt.Application";
+      return "${package}.Application";
    }
 
    public void testSomething()

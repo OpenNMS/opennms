@@ -1,0 +1,18 @@
+<?xml version="1.0" encoding="UTF-8"?><archetype>
+  <id>org.opennms.features.archetype</id>
+  <sources>
+    <source>src/main/java/Application.gwt.xml</source>
+    <source>src/main/java/client/Application.java</source>
+  </sources>
+  <testSources>
+    <source>src/test/java/client/GwtTestSample.java</source>
+  </testSources>
+  <resources>
+    <resource>src/main/resources/public/Application.css</resource>
+    <resource>src/main/resources/public/Application.html</resource>
+    <resource>src/main/webapp/index.html</resource>
+    <resource>src/main/webapp/WEB-INF/web.xml</resource>
+    <resource>war/WEB-INF/appengine-web.xml</resource>
+    <resource>war/WEB-INF/web.xml</resource>
+  </resources>
+</archetype>
