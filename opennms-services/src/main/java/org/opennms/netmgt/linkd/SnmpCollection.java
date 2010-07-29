@@ -377,27 +377,21 @@ public final class SnmpCollection implements ReadyRunnable {
                 try {
                         ipRouteGetter = Class.forName(m_ipRouteClass);
                 } catch (ClassNotFoundException e) {
-                        log().error("SnmpCollection.run: " + m_ipRouteClass + " class not found " + e);
+                        LogUtils.errorf(this, e, "SnmpCollection.run: " + m_ipRouteClass + " class not found ");
                 }
 
                 Class<?>[] classes = { InetAddress.class };
                 Constructor<?> constr = null;
                 try {
                         constr = ipRouteGetter.getConstructor(classes);
-                } catch (NoSuchMethodException e) {
-                        log().error("SnmpCollection.run: " + m_ipRouteClass + " class has not such method " + e);
-                } catch (SecurityException s) {
-                        log().error("SnmpCollection.run: " + m_ipRouteClass + " class security violation " + s);
+                } catch (Exception e) {
+                        LogUtils.errorf(this, e, "SnmpCollection.run: " + m_ipRouteClass + " unable to get constructor.");
                 }
                 Object[] argum = { m_address };
                 try {
                         m_ipRoute = (SnmpTable) constr.newInstance(argum);
-                } catch (InvocationTargetException t) {
-                        log().error("SnmpCollection.run: " + m_ipRouteClass + " class Invocation Exception " + t);
-                } catch (InstantiationException i) {
-                        log().error("SnmpCollection.run: " + m_ipRouteClass + " class Instantiation Exception " + i);
-                } catch (IllegalAccessException s) {
-                        log().error("SnmpCollection.run: " + m_ipRouteClass + " class Illegal Access Exception " + s);
+                } catch (Exception e) {
+                        LogUtils.errorf(this, e, "SnmpCollection.run: " + m_ipRouteClass + " unable to invoke class.");
                 }
             }
 			    			
