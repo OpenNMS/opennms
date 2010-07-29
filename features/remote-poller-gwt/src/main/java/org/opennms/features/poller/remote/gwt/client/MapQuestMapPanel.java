@@ -316,7 +316,6 @@ public class MapQuestMapPanel extends Composite implements MapPanel, HasDoubleCl
         
     }
 
-    @Override
     public void onResize() {
         syncMapSizeWithParent();
     }
