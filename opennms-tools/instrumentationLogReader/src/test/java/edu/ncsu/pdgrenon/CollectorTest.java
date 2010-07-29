@@ -12,7 +12,6 @@ import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.Date;
 
-import org.junit.Ignore;
 import org.junit.Test;
 
 
@@ -95,11 +94,11 @@ public class CollectorTest {
 		c.addLog("2010-06-01 08:45:12,104 DEBUG [CollectdScheduler-50 Pool-fiber2] Collectd: collector.collect: persistDataQueueing: end: 86/172.20.1.25/WMI");
 		c.addLog("2010-06-01 08:39:46,648 DEBUG [CollectdScheduler-50 Pool-fiber3] Collectd: collector.collect: begin:58/172.20.1.201/SNMP");
 		c.addLog("2010-06-01 08:39:46,650 DEBUG [CollectdScheduler-50 Pool-fiber3] Collectd: collector.collect: collectData: begin: 58/172.20.1.201/SNMP");
-		assertEquals(1,c.collectionsPerService("24/216.216.217.254/SNMP"));
-		assertEquals(0,c.collectionsPerService("19/209.61.128.9/SNMP"));
-		assertEquals(1,c.collectionsPerService("60/172.20.1.202/SNMP"));
-		assertEquals(0,c.collectionsPerService("86/172.20.1.25/WMI"));
-		assertEquals(0,c.collectionsPerService("58/172.20.1.201/SNMP"));
+		assertEquals(1,c.getCollectionsPerService("24/216.216.217.254/SNMP"));
+		assertEquals(0,c.getCollectionsPerService("19/209.61.128.9/SNMP"));
+		assertEquals(1,c.getCollectionsPerService("60/172.20.1.202/SNMP"));
+		assertEquals(0,c.getCollectionsPerService("86/172.20.1.25/WMI"));
+		assertEquals(0,c.getCollectionsPerService("58/172.20.1.201/SNMP"));
 	}
 	@Test
 	public void testAverageCollectionTimePerService() {
@@ -114,11 +113,11 @@ public class CollectorTest {
 		c.addLog("2010-06-01 08:45:12,104 DEBUG [CollectdScheduler-50 Pool-fiber2] Collectd: collector.collect: persistDataQueueing: end: 86/172.20.1.25/WMI");
 		c.addLog("2010-06-01 08:39:46,648 DEBUG [CollectdScheduler-50 Pool-fiber3] Collectd: collector.collect: begin:58/172.20.1.201/SNMP");
 		c.addLog("2010-06-01 08:39:46,650 DEBUG [CollectdScheduler-50 Pool-fiber3] Collectd: collector.collect: collectData: begin: 58/172.20.1.201/SNMP");
-		assertEquals(7144,c.averageCollectionTimePerService("24/216.216.217.254/SNMP"));
-		assertEquals(0,c.averageCollectionTimePerService("19/209.61.128.9/SNMP"));
-		assertEquals(513,c.averageCollectionTimePerService("60/172.20.1.202/SNMP"));
-		assertEquals(0,c.averageCollectionTimePerService("86/172.20.1.25/WMI"));
-		assertEquals(0,c.averageCollectionTimePerService("58/172.20.1.201/SNMP"));
+		assertEquals(7144,c.getAverageCollectionTimePerService("24/216.216.217.254/SNMP"));
+		assertEquals(0,c.getAverageCollectionTimePerService("19/209.61.128.9/SNMP"));
+		assertEquals(513,c.getAverageCollectionTimePerService("60/172.20.1.202/SNMP"));
+		assertEquals(0,c.getAverageCollectionTimePerService("86/172.20.1.25/WMI"));
+		assertEquals(0,c.getAverageCollectionTimePerService("58/172.20.1.201/SNMP"));
 	}
 	@Test
 	public void testTotalCollectionTimePerService() {
@@ -133,11 +132,11 @@ public class CollectorTest {
 		c.addLog("2010-06-01 08:45:12,104 DEBUG [CollectdScheduler-50 Pool-fiber2] Collectd: collector.collect: persistDataQueueing: end: 86/172.20.1.25/WMI");
 		c.addLog("2010-06-01 08:39:46,648 DEBUG [CollectdScheduler-50 Pool-fiber3] Collectd: collector.collect: begin:58/172.20.1.201/SNMP");
 		c.addLog("2010-06-01 08:39:46,650 DEBUG [CollectdScheduler-50 Pool-fiber3] Collectd: collector.collect: collectData: begin: 58/172.20.1.201/SNMP");
-		assertEquals(7144,c.totalCollectionTimePerService("24/216.216.217.254/SNMP"));
-		assertEquals(0,c.totalCollectionTimePerService("19/209.61.128.9/SNMP"));
-		assertEquals(513,c.totalCollectionTimePerService("60/172.20.1.202/SNMP"));
-		assertEquals(0,c.totalCollectionTimePerService("86/172.20.1.25/WMI"));
-		assertEquals(0,c.totalCollectionTimePerService("58/172.20.1.201/SNMP"));
+		assertEquals(7144,c.getAverageCollectionTimePerService("24/216.216.217.254/SNMP"));
+		assertEquals(0,c.getAverageCollectionTimePerService("19/209.61.128.9/SNMP"));
+		assertEquals(513,c.getAverageCollectionTimePerService("60/172.20.1.202/SNMP"));
+		assertEquals(0,c.getAverageCollectionTimePerService("86/172.20.1.25/WMI"));
+		assertEquals(0,c.getAverageCollectionTimePerService("58/172.20.1.201/SNMP"));
 	}
 	
 	@Test
@@ -155,18 +154,18 @@ public class CollectorTest {
 		c.addLog("2010-03-13 03:06:28,926 DEBUG [CollectdScheduler-400 Pool-fiber307] Collectd: collector.collect: collectData: end: 32028/209.219.9.78/SNMP");
 		c.addLog("2010-03-13 03:18:27,559 DEBUG [CollectdScheduler-400 Pool-fiber264] Collectd: collector.collect: collectData: begin: 32028/209.219.9.78/SNMP");
 		c.addLog("2010-03-13 03:19:06,934 DEBUG [CollectdScheduler-400 Pool-fiber264] Collectd: collector.collect: collectData: end: 32028/209.219.9.78/SNMP");
-		assertEquals(39451+19332+3768+21889+41372+39375,c.totalCollectionTimePerService("32028/209.219.9.78/SNMP"));
+		assertEquals(39451+19332+3768+21889+41372+39375,c.getTotalCollectionTimePerService("32028/209.219.9.78/SNMP"));
 	}
 
 	@Test 
 	public void testReadLogMessagesFromFile () throws IOException {
 		Collector c = new Collector();
 		c.readLogMessagesFromFile("TestLogFile.log");
-		assertEquals(7144,c.totalCollectionTimePerService("24/216.216.217.254/SNMP"));
-		assertEquals(0,c.totalCollectionTimePerService("19/209.61.128.9/SNMP"));
-		assertEquals(513,c.totalCollectionTimePerService("60/172.20.1.202/SNMP"));
-		assertEquals(0,c.totalCollectionTimePerService("86/172.20.1.25/WMI"));
-		assertEquals(0,c.totalCollectionTimePerService("58/172.20.1.201/SNMP"));
+		assertEquals(7144,c.getAverageCollectionTimePerService("24/216.216.217.254/SNMP"));
+		assertEquals(0,c.getAverageCollectionTimePerService("19/209.61.128.9/SNMP"));
+		assertEquals(513,c.getAverageCollectionTimePerService("60/172.20.1.202/SNMP"));
+		assertEquals(0,c.getAverageCollectionTimePerService("86/172.20.1.25/WMI"));
+		assertEquals(0,c.getAverageCollectionTimePerService("58/172.20.1.201/SNMP"));
 	}
 	@Test
 	public void testPrintGlobalStats () throws IOException {
@@ -187,27 +186,23 @@ public class CollectorTest {
 	public void testPrintServiceStats () throws IOException {
 		Collector c = new Collector ();
 		c.readLogMessagesFromFile("TestLogFile.log");
-		String expectedOutput = String.format(Collector.SERVICE_FORMAT_STRING, 
+		String expectedOutput = String.format(Collector.SERVICE_DATA_FORMAT, 
 				"24/216.216.217.254/SNMP",
 				"7.144s",
 				 1,
-				"7.144s");
+				"7.144s",
+                100.0,
+                "0s",
+                0.0,
+                "0s",
+                "7.144s"
+				);
 		StringWriter out = new StringWriter();
 		c.printServiceStats("24/216.216.217.254/SNMP", new PrintWriter(out, true));
 		String actualOutput = out.toString();
 		assertEquals(expectedOutput,actualOutput);
 	}
-//	Service               Avg Collect Time  Avg Persist Time  Avg Time between Collects # Collections Total Collection Time Total Persist Time
-//	19/172.10.1.21/SNMP       13.458s             .002s              5m27s                    3                 45.98s           .010s
-	@Test
-	public void testPrintServiceHeader() {
-		Collector c = new Collector (); 
-		StringWriter out = new StringWriter();
-		c.printServiceHeader(new PrintWriter(out, true));
-		String expectedOutput = String.format(Collector.SERVICE_FORMAT_STRING, "Service", "Avg Collect Time", "# Collections", "Total Collection Time");
-		String actualOutput = out.toString();
-		assertEquals(expectedOutput,actualOutput);
-	}
+
 	@Test
 	public void testFormatDuration () {
 		assertEquals("0s",Collector.formatDuration(0));

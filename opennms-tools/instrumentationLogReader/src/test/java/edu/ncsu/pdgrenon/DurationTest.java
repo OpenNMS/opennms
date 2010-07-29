@@ -27,7 +27,7 @@
  *     http://www.opennms.org/
  *     http://www.opennms.com/
  */
-package com.brozowski.instrumentation;
+package edu.ncsu.pdgrenon;
 
 import static org.hamcrest.CoreMatchers.*;
 import static org.junit.Assert.*;
@@ -38,7 +38,6 @@ import java.util.concurrent.TimeUnit;
 
 import org.hamcrest.Description;
 import org.hamcrest.Matcher;
-import org.junit.Ignore;
 import org.junit.Test;
 import org.junit.experimental.theories.DataPoints;
 import org.junit.experimental.theories.Theories;
@@ -47,6 +46,7 @@ import org.junit.internal.matchers.TypeSafeMatcher;
 import org.junit.runner.RunWith;
 
 import edu.ncsu.pdgrenon.BaseLogMessage;
+import edu.ncsu.pdgrenon.Duration;
 
 /**
  * Duration
@@ -67,18 +67,18 @@ public class DurationTest {
         timestamp("2010-05-26 12:12:40,001"),
         // duplicate on purpuse
         timestamp("2010-05-26 12:12:40,001"),
-//        timestamp("2010-05-26 12:12:40,010"),
-//        timestamp("2010-05-26 12:12:40,100"),
-//        timestamp("2010-05-26 12:12:41,000"),
-//        timestamp("2010-05-26 12:12:50,000"),
-//        timestamp("2010-05-26 12:13:40,000"),
-//        timestamp("2010-05-26 12:22:40,000"),
-//        timestamp("2010-05-26 13:12:40,000"),
-//        timestamp("2010-05-26 22:12:40,000"),
-//        timestamp("2010-05-27 12:12:40,000"),
-//        timestamp("2010-06-26 12:12:40,000"),
-//        timestamp("2011-05-26 12:12:40,000"),
-//        timestamp("2020-05-26 12:12:40,000"),
+        timestamp("2010-05-26 12:12:40,010"),
+        timestamp("2010-05-26 12:12:40,100"),
+        timestamp("2010-05-26 12:12:41,000"),
+        timestamp("2010-05-26 12:12:50,000"),
+        timestamp("2010-05-26 12:13:40,000"),
+        timestamp("2010-05-26 12:22:40,000"),
+        timestamp("2010-05-26 13:12:40,000"),
+        timestamp("2010-05-26 22:12:40,000"),
+        timestamp("2010-05-27 12:12:40,000"),
+        timestamp("2010-06-26 12:12:40,000"),
+        timestamp("2011-05-26 12:12:40,000"),
+        timestamp("2020-05-26 12:12:40,000"),
         timestamp("2110-05-26 12:12:40,000"),
         timestamp("3010-05-26 12:12:40,000"),
     };

@@ -126,8 +126,8 @@
             <td><input type="submit" name="submitAction" value="${updateButtonTitle}" onClick="document.frm.filterSelected.value='${i.count}'"/></td>          
           </c:when>
           <c:otherwise>
-            <td class="standard">${filter.field}</td>
-            <td class="standard">${filter.content}</td>
+            <td class="standard"><input type="text" disabled="true" size="60" value="${filter.field}"/></td>
+            <td class="standard"><input type="text" disabled="true" size="60" value="${filter.content}"/></td>
             <td><input type="submit" name="submitAction" value="${editButtonTitle}" onClick="document.frm.filterSelected.value='${i.count}'"/>
                 <input type="submit" name="submitAction" value="${deleteButtonTitle}" onClick="document.frm.filterSelected.value='${i.count}'"/>
                 <input type="submit" name="submitAction" value="${moveUpButtonTitle}" onClick="document.frm.filterSelected.value='${i.count}'"/>
