@@ -946,6 +946,7 @@ public abstract class NotificationManager {
         Notification notice = getNotification(oldName);
 	if (notice != null) {
        	notice.setWriteable(newNotice.getWriteable());
+       	notice.setName(newNotice.getName());
 	        notice.setDescription(newNotice.getDescription());
 	        notice.setUei(newNotice.getUei());
 	        notice.setRule(newNotice.getRule());
