@@ -594,7 +594,7 @@ public class DbEventWriter implements QueryManager {
                     String vlanName = ent.getDisplayString(VlanCollectorEntry.VLAN_NAME);
                     if (vlanName == null) {
                         LogUtils.warnf(this, "store: Null vlan name. forcing to default...");
-                        vlanName = "default";
+                        vlanName = "default-" + vlanindex;
                     }
     
                     Integer vlantype = ent.getInt32(VlanCollectorEntry.VLAN_TYPE);
@@ -622,6 +622,8 @@ public class DbEventWriter implements QueryManager {
                     vlanEntry.updateStatus(DbAtInterfaceEntry.STATUS_ACTIVE);
                     vlanEntry.set_lastpolltime(now);
     
+                    LogUtils.debugf(this, "vlanEntry = %s", vlanEntry);
+
                     // store object in database
                     vlanEntry.store(dbConn);
                     Vlan vlan = new Vlan(vlanindex, vlanName, vlanstatus, vlantype);
