@@ -65,6 +65,7 @@ import org.opennms.netmgt.linkd.snmp.Dot1dStpGroup;
 import org.opennms.netmgt.linkd.snmp.Dot1dStpPortTableEntry;
 import org.opennms.netmgt.linkd.snmp.Dot1dTpFdbTableEntry;
 import org.opennms.netmgt.linkd.snmp.IpNetToMediaTableEntry;
+import org.opennms.netmgt.linkd.snmp.IpRouteCollectorEntry;
 import org.opennms.netmgt.linkd.snmp.IpRouteTableEntry;
 import org.opennms.netmgt.linkd.snmp.QBridgeDot1dTpFdbTableEntry;
 import org.opennms.netmgt.linkd.snmp.VlanCollectorEntry;
@@ -448,31 +449,31 @@ public class DbEventWriter implements QueryManager {
             if (snmpcoll.hasRouteTable()) {
                 java.util.List<RouterInterface> routeInterfaces = new java.util.ArrayList<RouterInterface>();
     
-                Iterator<IpRouteTableEntry> ite3 = snmpcoll.getIpRouteTable().getEntries().iterator();
+                Iterator<SnmpTableEntry> ite3 = snmpcoll.getIpRouteTable().getEntries().iterator();
                 LogUtils.debugf(this, "store: saving ipRouteTable to iprouteinterface table in DB");
                 while (ite3.hasNext()) {
-                    IpRouteTableEntry ent = ite3.next();
+                    SnmpTableEntry ent = ite3.next();
     
-                    int ifindex = ent.getIpRouteIfIndex();
+                    Integer ifindex = ent.getInt32(IpRouteCollectorEntry.IP_ROUTE_IFINDEX);
     
                     if (ifindex < 0) {
                         LogUtils.warnf(this, "store: Not valid ifindex" + ifindex + " Skipping...");
                         continue;
                     }
     
-                    InetAddress nexthop = ent.getIpRouteNextHop();
+                    InetAddress nexthop = ent.getIPAddress(IpRouteCollectorEntry.IP_ROUTE_NXTHOP);
     
                     if (nexthop == null) {
                         LogUtils.warnf(this, "storeSnmpCollection: next hop null found skipping.");
                         continue;
                     }
     
-                    InetAddress routedest = ent.getIpRouteDest();
+                    InetAddress routedest =  ent.getIPAddress(IpRouteCollectorEntry.IP_ROUTE_DEST);
                     if (routedest == null) {
                         LogUtils.warnf(this, "storeSnmpCollection: route dest null found skipping.");
                         continue;
                     }
-                    InetAddress routemask = ent.getIpRouteMask();
+                    InetAddress routemask = ent.getIPAddress(IpRouteCollectorEntry.IP_ROUTE_MASK);
     
                     if (routemask == null) {
                         LogUtils.warnf(this, "storeSnmpCollection: route dest null found skipping.");
@@ -482,7 +483,7 @@ public class DbEventWriter implements QueryManager {
                     LogUtils.debugf(this, "storeSnmpCollection: parsing routedest/routemask/nexthop: " + routedest + "/" + routemask + "/" + nexthop + " ifindex "
                                     + (ifindex < 1 ? "less than 1" : ifindex));
     
-                    int routemetric1 = ent.getIpRouteMetric1();
+                    int routemetric1 = ent.getInt32(IpRouteCollectorEntry.IP_ROUTE_METRIC1);
     
                     /**
                      * FIXME: send routedest 0.0.0.0 to discoverylink remeber that
@@ -537,13 +538,13 @@ public class DbEventWriter implements QueryManager {
                         }
                     }
     
-                    int routemetric2 = ent.getIpRouteMetric2();
-                    int routemetric3 = ent.getIpRouteMetric3();
-                    int routemetric4 = ent.getIpRouteMetric4();
-                    int routemetric5 = ent.getIpRouteMetric5();
-                    int routetype = ent.getIpRouteType();
-                    int routeproto = ent.getIpRouteProto();
-    
+                    int routemetric2 = ent.getInt32(IpRouteCollectorEntry.IP_ROUTE_METRIC2);
+                    int routemetric3 = ent.getInt32(IpRouteCollectorEntry.IP_ROUTE_METRIC3);
+                    int routemetric4 = ent.getInt32(IpRouteCollectorEntry.IP_ROUTE_METRIC4);
+                    int routemetric5 = ent.getInt32(IpRouteCollectorEntry.IP_ROUTE_METRIC5);
+                    int routetype = ent.getInt32(IpRouteCollectorEntry.IP_ROUTE_TYPE);
+                    int routeproto = ent.getInt32(IpRouteCollectorEntry.IP_ROUTE_PROTO);    
+
                     // always save info to DB
                     if (snmpcoll.getSaveIpRouteTable()) {
                         DbIpRouteInterfaceEntry iprouteInterfaceEntry = DbIpRouteInterfaceEntry.get(dbConn, node.getNodeId(), routedest.getHostAddress());

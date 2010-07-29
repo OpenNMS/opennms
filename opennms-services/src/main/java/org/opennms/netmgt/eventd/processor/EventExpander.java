@@ -516,7 +516,7 @@ public final class EventExpander implements EventProcessor, InitializingBean {
 
         // description
         if (event.getDescr() != null) {
-            strRet = EventUtil.expandParms(event.getDescr(), event);
+            strRet = EventUtil.expandParms(event.getDescr(), event,decode);
             if (strRet != null) {
                 event.setDescr(strRet);
                 strRet = null;

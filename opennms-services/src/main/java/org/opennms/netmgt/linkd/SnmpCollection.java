@@ -104,7 +104,12 @@ public final class SnmpCollection implements ReadyRunnable {
 	 */
 	private String m_vlanClass = null;
 
-	/**
+    /** 
+     * The Class used to collect the ipRoute IDs
+     */
+    private String m_ipRouteClass = null;
+	
+    /**
 	 * A boolean used to decide if you can collect Vlan Table and Bridge Data
 	 */
 	private boolean m_collectVlanTable = false;
@@ -158,7 +163,7 @@ public final class SnmpCollection implements ReadyRunnable {
 	/**
 	 * The ipRoute table information
 	 */
-	public IpRouteTable m_ipRoute;
+	public SnmpTable<SnmpTableEntry> m_ipRoute;
 
 	/**
 	 * The CdpCache table information
@@ -266,7 +271,7 @@ public final class SnmpCollection implements ReadyRunnable {
 	/**
 	 * Returns the collected ip route table.
 	 */
-	IpRouteTable getIpRouteTable() {
+	SnmpTable<SnmpTableEntry> getIpRouteTable() {
 		return m_ipRoute;
 	}
 
@@ -361,14 +366,35 @@ public final class SnmpCollection implements ReadyRunnable {
 
 			m_ipNetToMedia = new IpNetToMediaTable(m_address);
 
-			m_ipRoute = new IpRouteTable(m_address);
-
 			m_CdpCache = new CdpCacheTable(m_address);
 
 			LogUtils.debugf(this, "run: collecting : %s", m_agentConfig);
 
 			SnmpWalker walker = null;
 
+            if (m_collectIpRouteTable) {
+                Class<?> ipRouteGetter = null;
+                try {
+                        ipRouteGetter = Class.forName(m_ipRouteClass);
+                } catch (ClassNotFoundException e) {
+                        LogUtils.errorf(this, e, "SnmpCollection.run: " + m_ipRouteClass + " class not found ");
+                }
+
+                Class<?>[] classes = { InetAddress.class };
+                Constructor<?> constr = null;
+                try {
+                        constr = ipRouteGetter.getConstructor(classes);
+                } catch (Exception e) {
+                        LogUtils.errorf(this, e, "SnmpCollection.run: " + m_ipRouteClass + " unable to get constructor.");
+                }
+                Object[] argum = { m_address };
+                try {
+                        m_ipRoute = (SnmpTable) constr.newInstance(argum);
+                } catch (Exception e) {
+                        LogUtils.errorf(this, e, "SnmpCollection.run: " + m_ipRouteClass + " unable to invoke class.");
+                }
+            }
+			    			
 			if (m_collectVlanTable) {
 				Class<?> vlanGetter = null;
 				try {
@@ -650,6 +676,17 @@ public final class SnmpCollection implements ReadyRunnable {
 					+ initial_sleep_time);
 		}
 	}
+
+    public String getIpRouteClass() {
+               return m_ipRouteClass;
+    }
+	    
+    public void setIpRouteClass(String className) {
+           if (className == null || className.equals(""))
+                   return;
+           m_ipRouteClass = className;
+           m_collectIpRouteTable = true;
+    }
 
 	/**
 	 * <p>getVlanClass</p>

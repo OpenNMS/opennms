@@ -15,13 +15,11 @@ import java.util.HashMap;
 import java.util.HashSet;
 import java.util.Map;
 import java.util.Set;
-import java.util.SortedSet;
-import java.util.TreeSet;
-
 
 public class Collector {
 
-	public static final String SERVICE_FORMAT_STRING = "%-28s%20s%15s%25s\n";
+    public static final String SERVICE_TITLE_FORMAT = "%-40s%20s%15s%25s%15s%25s%15s%20s%25s\n";
+    public static final String SERVICE_DATA_FORMAT = "%-40s%20s%15s%25s%15.1f%25s%15.1f%20s%25s\n";
 
 	private Set<String> m_threads = new HashSet<String>();
 	
@@ -74,8 +72,8 @@ public class Collector {
 		Comparator<ServiceCollector> c = new Comparator<ServiceCollector>() {
 
 			public int compare(ServiceCollector o1, ServiceCollector o2) {
-				Long a = Long.valueOf(o1.averageCollectionTime());
-				Long b = Long.valueOf(o2.averageCollectionTime());
+				Long a = Long.valueOf(o1.getAverageCollectionTime());
+				Long b = Long.valueOf(o2.getAverageCollectionTime());
 				return b.compareTo(a);
 			}
 		};
@@ -89,16 +87,16 @@ public class Collector {
 	public int getThreadCount() {
 		return m_threads.size();
 	}
-	public int collectionsPerService(String serviceID) {
+	public int getCollectionsPerService(String serviceID) {
 		return getServiceCollector(serviceID).getCollectionCount();
 	}
 	
-	public long averageCollectionTimePerService(String serviceID) {
-		return getServiceCollector(serviceID).averageCollectionTime();
+	public long getAverageCollectionTimePerService(String serviceID) {
+		return getServiceCollector(serviceID).getAverageCollectionTime();
 	}
 
-	public long totalCollectionTimePerService(String serviceID) {
-		return getServiceCollector(serviceID).totalCollectionTime();
+	public long getTotalCollectionTimePerService(String serviceID) {
+		return getServiceCollector(serviceID).getTotalCollectionTime();
 	}
 	private ServiceCollector getServiceCollector(String serviceID) {
 		ServiceCollector serviceCollector = m_serviceCollectors.get(serviceID);
@@ -167,12 +165,17 @@ public class Collector {
 		
 	}
 	private void printServiceStats(ServiceCollector serviceCollector, PrintWriter out) {
-		out.printf(SERVICE_FORMAT_STRING, serviceCollector.getServiceID(), Collector.formatDuration(serviceCollector.averageCollectionTime()), serviceCollector.getCollectionCount(), Collector.formatDuration(serviceCollector.totalCollectionTime()));
+		out.printf(SERVICE_DATA_FORMAT, serviceCollector.getServiceID(), 
+			   Collector.formatDuration(serviceCollector.getAverageCollectionTime()), serviceCollector.getCollectionCount(), 
+			   Collector.formatDuration(serviceCollector.getAverageSuccessfulCollectionTime()), serviceCollector.getSuccessPercentage(), 
+			   Collector.formatDuration(serviceCollector.getAverageErrorCollectionTime()), serviceCollector.getErrorPercentage(),
+			   Collector.formatDuration(serviceCollector.getAverageTimeBetweenCollections()),
+			   Collector.formatDuration(serviceCollector.getTotalCollectionTime()));
 	}
 //	Service               Avg Collect Time  Avg Persist Time  Avg Time between Collects # Collections Total Collection Time Total Persist Time
 //	19/172.10.1.21/SNMP       13.458s             .002s              5m27s                    3                 45.98s           .010s
 	public void printServiceHeader(PrintWriter out) {
-		out.printf(SERVICE_FORMAT_STRING, "Service", "Avg Collect Time", "# Collections", "Total Collection Time");
+		out.printf(SERVICE_TITLE_FORMAT, "Service", "Avg Collect Time", "# Collections",  "Avg Success Time", "% Success", "Avg Error Time", "% Errors", "Avg Time Between", "Total Collection Time");
 		
 	}
 	public void printReport(PrintWriter out) {
