@@ -44,6 +44,7 @@ import java.sql.Timestamp;
 import java.text.ParseException;
 import java.util.Date;
 
+import org.apache.commons.lang.builder.ToStringBuilder;
 import org.opennms.core.utils.DBUtils;
 import org.opennms.core.utils.LogUtils;
 import org.opennms.netmgt.EventConstants;
@@ -190,30 +191,20 @@ public class DbVlanEntry
 					"INSERT INTO vlan (nodeid,vlanid");
 			StringBuffer values = new StringBuffer("?,?");
 
-			if ((m_changed & CHANGED_VLANNAME) == CHANGED_VLANNAME) {
-				values.append(",?");
-				names.append(",vlanname");
-			}
+			values.append(",?");
+			names.append(",vlanname");
 
-			if ((m_changed & CHANGED_VLANTYPE) == CHANGED_VLANTYPE) {
-				values.append(",?");
-				names.append(",vlantype");
-			}
-			
-			if ((m_changed & CHANGED_VLANSTATUS) == CHANGED_VLANSTATUS) {
-				values.append(",?");
-				names.append(",vlanstatus");
-			}
+			values.append(",?");
+			names.append(",vlantype");
+		
+			values.append(",?");
+			names.append(",vlanstatus");
 
-			if ((m_changed & CHANGED_STATUS) == CHANGED_STATUS) {
-				values.append(",?");
-				names.append(",status");
-			}
+			values.append(",?");
+			names.append(",status");
 
-			if ((m_changed & CHANGED_POLLTIME) == CHANGED_POLLTIME) {
-				values.append(",?");
-				names.append(",lastpolltime");
-			}
+			values.append(",?");
+			names.append(",lastpolltime");
 
 			names.append(") VALUES (").append(values).append(')');
 
@@ -228,22 +219,11 @@ public class DbVlanEntry
                 int ndx = 1;
                 stmt.setInt(ndx++, m_nodeId);
                 stmt.setInt(ndx++, m_vlanId);
-
-                if ((m_changed & CHANGED_VLANNAME) == CHANGED_VLANNAME)
-                	stmt.setString(ndx++, m_vlanname);
-
-                if ((m_changed & CHANGED_VLANTYPE) == CHANGED_VLANTYPE)
-                	stmt.setInt(ndx++, m_vlantype);
-
-                if ((m_changed & CHANGED_VLANSTATUS) == CHANGED_VLANSTATUS)
-                	stmt.setInt(ndx++, m_vlanstatus);
-                
-                if ((m_changed & CHANGED_STATUS) == CHANGED_STATUS)
-                	stmt.setString(ndx++, new String(new char[] { m_status }));
-
-                if ((m_changed & CHANGED_POLLTIME) == CHANGED_POLLTIME) {
-                	stmt.setTimestamp(ndx++, m_lastPollTime);
-                }
+            	stmt.setString(ndx++, m_vlanname);
+            	stmt.setInt(ndx++, m_vlantype);
+            	stmt.setInt(ndx++, m_vlanstatus);
+            	stmt.setString(ndx++, new String(new char[] { m_status }));
+            	stmt.setTimestamp(ndx++, m_lastPollTime);
 
                 // Run the insert
                 //
@@ -487,11 +467,9 @@ public class DbVlanEntry
 		}
 
 		boolean updateVlanName(final String vlanname) {
-			if (m_vlanname == null || !m_vlanname.equals(vlanname)) {
-				setVlanName(vlanname);
-				return true;
-			} else
-				return false;
+		    final boolean retval = (m_vlanname == vlanname);
+		    m_vlanname = vlanname;
+		    return retval;
 		}
 
 		/**
@@ -733,19 +711,16 @@ public class DbVlanEntry
 		 * @return a {@link java.lang.String} object.
 		 */
 		public String toString() {
-			String sep = System.getProperty("line.separator");
-			StringBuffer buf = new StringBuffer();
-
-			buf.append("from db = ").append(m_fromDb).append(sep);
-			buf.append("node id = ").append(m_nodeId).append(sep);
-			buf.append("vlan index = ").append(m_vlanId).append(sep);
-			buf.append("vlan name = ").append(m_vlanname).append(sep);
-			buf.append("vlan type id = ").append(m_vlantype).append(sep);
-			buf.append("vlan status id = ").append(m_vlanstatus).append(sep);
-			buf.append("status = ").append(m_status).append(sep);
-			buf.append("last poll time = ").append(m_lastPollTime).append(sep);
-			return buf.toString();
-
+		    return new ToStringBuilder(this)
+		        .append("db", m_fromDb)
+		        .append("nodeId", m_nodeId)
+		        .append("vlanId", m_vlanId)
+		        .append("vlanName", m_vlanname)
+		        .append("vlanType", m_vlantype)
+		        .append("vlanStatus", m_vlanstatus)
+		        .append("status", m_status)
+		        .append("lastPollTime", m_lastPollTime)
+		        .toString();
 		}
 
 }

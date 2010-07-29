@@ -44,6 +44,7 @@ import java.sql.Timestamp;
 import java.text.ParseException;
 import java.util.Date;
 
+import org.apache.commons.lang.builder.ToStringBuilder;
 import org.opennms.core.utils.DBUtils;
 import org.opennms.core.utils.LogUtils;
 import org.opennms.netmgt.EventConstants;
@@ -228,54 +229,35 @@ public class DbStpInterfaceEntry {
 
 		// first extract the next node identifier
 		//
-		StringBuffer names = new StringBuffer(
-				"INSERT INTO StpInterface (nodeid,bridgeport,stpvlan");
+		StringBuffer names = new StringBuffer("INSERT INTO StpInterface (nodeid,bridgeport,stpvlan");
 		StringBuffer values = new StringBuffer("?,?,?");
 
-		if ((m_changed & CHANGED_IFINDEX) == CHANGED_IFINDEX) {
-			values.append(",?");
-			names.append(",ifindex");
-		}
+		values.append(",?");
+		names.append(",ifindex");
 
-		if ((m_changed & CHANGED_STP_PORT_STATE) == CHANGED_STP_PORT_STATE) {
-			values.append(",?");
-			names.append(",stpportstate");
-		}
+		values.append(",?");
+		names.append(",stpportstate");
 
-		if ((m_changed & CHANGED_STP_PORT_PATH_COST) == CHANGED_STP_PORT_PATH_COST) {
-			values.append(",?");
-			names.append(",stpportpathcost");
-		}
+		values.append(",?");
+		names.append(",stpportpathcost");
 
-		if ((m_changed & CHANGED_STP_PORT_DES_ROOT) == CHANGED_STP_PORT_DES_ROOT) {
-			values.append(",?");
-			names.append(",stpportdesignatedroot");
-		}
+		values.append(",?");
+		names.append(",stpportdesignatedroot");
 
-		if ((m_changed & CHANGED_STP_PORT_DES_COST) == CHANGED_STP_PORT_DES_COST) {
-			values.append(",?");
-			names.append(",stpportdesignatedcost");
-		}
+		values.append(",?");
+		names.append(",stpportdesignatedcost");
 
-		if ((m_changed & CHANGED_STP_PORT_DES_BRIDGE) == CHANGED_STP_PORT_DES_BRIDGE) {
-			values.append(",?");
-			names.append(",stpportdesignatedbridge");
-		}
+		values.append(",?");
+		names.append(",stpportdesignatedbridge");
 
-		if ((m_changed & CHANGED_STP_PORT_DES_PORT) == CHANGED_STP_PORT_DES_PORT) {
-			values.append(",?");
-			names.append(",stpportdesignatedport");
-		}
+		values.append(",?");
+		names.append(",stpportdesignatedport");
 
-		if ((m_changed & CHANGED_STATUS) == CHANGED_STATUS) {
-			values.append(",?");
-			names.append(",status");
-		}
+		values.append(",?");
+		names.append(",status");
 
-		if ((m_changed & CHANGED_POLLTIME) == CHANGED_POLLTIME) {
-			values.append(",?");
-			names.append(",lastpolltime");
-		}
+		values.append(",?");
+		names.append(",lastpolltime");
 
 		names.append(") VALUES (").append(values).append(')');
 
@@ -292,34 +274,15 @@ public class DbStpInterfaceEntry {
             stmt.setInt(ndx++, m_nodeId);
             stmt.setInt(ndx++, m_bridgeport);
             stmt.setInt(ndx++, m_stpportvlan);
-
-            if ((m_changed & CHANGED_IFINDEX) == CHANGED_IFINDEX)
-            	stmt.setInt(ndx++, m_ifindex);
-
-            if ((m_changed & CHANGED_STP_PORT_STATE) == CHANGED_STP_PORT_STATE)
-            	stmt.setInt(ndx++, m_stpportstate);
-
-            if ((m_changed & CHANGED_STP_PORT_PATH_COST) == CHANGED_STP_PORT_PATH_COST)
-            	stmt.setInt(ndx++, m_stpportpathcost);
-
-            if ((m_changed & CHANGED_STP_PORT_DES_ROOT) == CHANGED_STP_PORT_DES_ROOT)
-            	stmt.setString(ndx++, m_stpportdesignatedroot);
-
-            if ((m_changed & CHANGED_STP_PORT_DES_COST) == CHANGED_STP_PORT_DES_COST)
-            	stmt.setInt(ndx++, m_stpportdesignatedcost);
-
-            if ((m_changed & CHANGED_STP_PORT_DES_BRIDGE) == CHANGED_STP_PORT_DES_BRIDGE)
-            	stmt.setString(ndx++, m_stpportdesignatedbridge);
-
-            if ((m_changed & CHANGED_STP_PORT_DES_PORT) == CHANGED_STP_PORT_DES_PORT)
-            	stmt.setString(ndx++, m_stpportdesignatedport);
-
-            if ((m_changed & CHANGED_STATUS) == CHANGED_STATUS)
-            	stmt.setString(ndx++, new String(new char[] { m_status }));
-
-            if ((m_changed & CHANGED_POLLTIME) == CHANGED_POLLTIME) {
-            	stmt.setTimestamp(ndx++, m_lastPollTime);
-            }
+        	stmt.setInt(ndx++, m_ifindex);
+        	stmt.setInt(ndx++, m_stpportstate);
+        	stmt.setInt(ndx++, m_stpportpathcost);
+        	stmt.setString(ndx++, m_stpportdesignatedroot);
+        	stmt.setInt(ndx++, m_stpportdesignatedcost);
+        	stmt.setString(ndx++, m_stpportdesignatedbridge);
+        	stmt.setString(ndx++, m_stpportdesignatedport);
+        	stmt.setString(ndx++, new String(new char[] { m_status }));
+        	stmt.setTimestamp(ndx++, m_lastPollTime);
 
             // Run the insert
             //
@@ -1011,28 +974,21 @@ public class DbStpInterfaceEntry {
 	 * @return a {@link java.lang.String} object.
 	 */
 	public String toString() {
-		String sep = System.getProperty("line.separator");
-		StringBuffer buf = new StringBuffer();
-
-		buf.append("from db = ").append(m_fromDb).append(sep);
-		buf.append("node id = ").append(m_nodeId).append(sep);
-		buf.append("bridge port= ").append(m_bridgeport).append(sep);
-		buf.append("ifindex = ").append(m_ifindex).append(sep);
-		buf.append("stp vlan index = ").append(m_stpportvlan).append(sep);
-		buf.append("stp port state= ").append(m_stpportstate).append(sep);
-		buf.append("stp port path cost = ").append(m_stpportpathcost).append(
-				sep);
-		buf.append("stp port designatd root = ")
-				.append(m_stpportdesignatedroot).append(sep);
-		buf.append("stp port designated cost = ").append(
-				m_stpportdesignatedcost).append(sep);
-		buf.append("stp port designated bridge  = ").append(
-				m_stpportdesignatedbridge).append(sep);
-		buf.append("stp port designated port = ").append(
-				m_stpportdesignatedport).append(sep);
-		buf.append("status = ").append(m_status).append(sep);
-		buf.append("last poll time = ").append(m_lastPollTime).append(sep);
-		return buf.toString();
+        return new ToStringBuilder(this)
+        .append("db", m_fromDb)
+        .append("nodeId", m_nodeId)
+        .append("bridgePort", m_bridgeport)
+        .append("ifIndex", m_ifindex)
+        .append("stpVlanId", m_stpportvlan)
+        .append("stpPortState", m_stpportstate)
+        .append("stpPortPathCost", m_stpportpathcost)
+        .append("stpPortDesignatedRoot", m_stpportdesignatedroot)
+        .append("stpPortDesignatedCost", m_stpportdesignatedcost)
+        .append("stpPortDesignatedBridge", m_stpportdesignatedbridge)
+        .append("stpPortDesignatedPort", m_stpportdesignatedport)
+        .append("status", m_status)
+        .append("lastPollTime", m_lastPollTime)
+        .toString();
 	}
 
 }

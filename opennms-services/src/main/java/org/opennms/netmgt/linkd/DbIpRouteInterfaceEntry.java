@@ -44,6 +44,7 @@ import java.sql.Timestamp;
 import java.text.ParseException;
 import java.util.Date;
 
+import org.apache.commons.lang.builder.ToStringBuilder;
 import org.opennms.core.utils.DBUtils;
 import org.opennms.core.utils.LogUtils;
 import org.opennms.netmgt.EventConstants;
@@ -226,69 +227,44 @@ final class DbIpRouteInterfaceEntry {
 
 		// first extract the next node identifier
 		//
-		StringBuffer names = new StringBuffer(
-				"INSERT INTO IpRouteInterface (nodeid,routeDest");
+		StringBuffer names = new StringBuffer("INSERT INTO IpRouteInterface (nodeid,routeDest");
 		StringBuffer values = new StringBuffer("?,?");
 
-		if ((m_changed & CHANGED_MASK) == CHANGED_MASK) {
-			values.append(",?");
-			names.append(",routeMask");
-		}
+		values.append(",?");
+		names.append(",routeMask");
 
-		if ((m_changed & CHANGED_NXT_HOP) == CHANGED_NXT_HOP) {
-			values.append(",?");
-			names.append(",routeNextHop");
-		}
+		values.append(",?");
+		names.append(",routeNextHop");
 
-		if ((m_changed & CHANGED_IFINDEX) == CHANGED_IFINDEX) {
-			values.append(",?");
-			names.append(",routeifindex");
-		}
+		values.append(",?");
+		names.append(",routeifindex");
 
-		if ((m_changed & CHANGED_METRIC1) == CHANGED_METRIC1) {
-			values.append(",?");
-			names.append(",routemetric1");
-		}
+		values.append(",?");
+		names.append(",routemetric1");
 
-		if ((m_changed & CHANGED_METRIC2) == CHANGED_METRIC2) {
-			values.append(",?");
-			names.append(",routemetric2");
-		}
+		values.append(",?");
+		names.append(",routemetric2");
 
-		if ((m_changed & CHANGED_METRIC3) == CHANGED_METRIC3) {
-			values.append(",?");
-			names.append(",routemetric3");
-		}
+		values.append(",?");
+		names.append(",routemetric3");
 
-		if ((m_changed & CHANGED_METRIC4) == CHANGED_METRIC4) {
-			values.append(",?");
-			names.append(",routemetric4");
-		}
+		values.append(",?");
+		names.append(",routemetric4");
 
-		if ((m_changed & CHANGED_METRIC5) == CHANGED_METRIC5) {
-			values.append(",?");
-			names.append(",routemetric5");
-		}
+		values.append(",?");
+		names.append(",routemetric5");
 
-		if ((m_changed & CHANGED_TYPE) == CHANGED_TYPE) {
-			values.append(",?");
-			names.append(",routetype");
-		}
+		values.append(",?");
+		names.append(",routetype");
 
-		if ((m_changed & CHANGED_PROTO) == CHANGED_PROTO) {
-			values.append(",?");
-			names.append(",routeproto");
-		}
+		values.append(",?");
+		names.append(",routeproto");
 
-		if ((m_changed & CHANGED_STATUS) == CHANGED_STATUS) {
-			values.append(",?");
-			names.append(",status");
-		}
+		values.append(",?");
+		names.append(",status");
 
-		if ((m_changed & CHANGED_POLLTIME) == CHANGED_POLLTIME) {
-			values.append(",?");
-			names.append(",lastpolltime");
-		}
+		values.append(",?");
+		names.append(",lastpolltime");
 
 		names.append(") VALUES (").append(values).append(')');
 
@@ -305,44 +281,18 @@ final class DbIpRouteInterfaceEntry {
             int ndx = 1;
             stmt.setInt(ndx++, m_nodeId);
             stmt.setString(ndx++, m_routedest);
-
-            
-            if ((m_changed & CHANGED_MASK) == CHANGED_MASK)
-            	stmt.setString(ndx++, m_routemask);
-
-            if ((m_changed & CHANGED_NXT_HOP) == CHANGED_NXT_HOP)
-            	stmt.setString(ndx++, m_routenexthop);
-
-            if ((m_changed & CHANGED_IFINDEX) == CHANGED_IFINDEX)
-            	stmt.setInt(ndx++, m_routeifindex);
-
-            if ((m_changed & CHANGED_METRIC1) == CHANGED_METRIC1)
-            	stmt.setInt(ndx++, m_routemetric1);
-
-            if ((m_changed & CHANGED_METRIC2) == CHANGED_METRIC2)
-            	stmt.setInt(ndx++, m_routemetric2);
-
-            if ((m_changed & CHANGED_METRIC3) == CHANGED_METRIC3)
-            	stmt.setInt(ndx++, m_routemetric3);
-
-            if ((m_changed & CHANGED_METRIC4) == CHANGED_METRIC4)
-            	stmt.setInt(ndx++, m_routemetric4);
-
-            if ((m_changed & CHANGED_METRIC5) == CHANGED_METRIC5)
-            	stmt.setInt(ndx++, m_routemetric5);
-
-            if ((m_changed & CHANGED_TYPE) == CHANGED_TYPE)
-            	stmt.setInt(ndx++, m_routetype);
-
-            if ((m_changed & CHANGED_PROTO) == CHANGED_PROTO)
-            	stmt.setInt(ndx++, m_routeproto);
-
-            if ((m_changed & CHANGED_STATUS) == CHANGED_STATUS)
-            	stmt.setString(ndx++, new String(new char[] { m_status }));
-
-            if ((m_changed & CHANGED_POLLTIME) == CHANGED_POLLTIME) {
-            	stmt.setTimestamp(ndx++, m_lastPollTime);
-            }
+        	stmt.setString(ndx++, m_routemask);
+        	stmt.setString(ndx++, m_routenexthop);
+        	stmt.setInt(ndx++, m_routeifindex);
+        	stmt.setInt(ndx++, m_routemetric1);
+        	stmt.setInt(ndx++, m_routemetric2);
+        	stmt.setInt(ndx++, m_routemetric3);
+        	stmt.setInt(ndx++, m_routemetric4);
+        	stmt.setInt(ndx++, m_routemetric5);
+        	stmt.setInt(ndx++, m_routetype);
+        	stmt.setInt(ndx++, m_routeproto);
+        	stmt.setString(ndx++, new String(new char[] { m_status }));
+        	stmt.setTimestamp(ndx++, m_lastPollTime);
             
             // Run the insert
             //
@@ -1125,26 +1075,23 @@ final class DbIpRouteInterfaceEntry {
 	 * @return a {@link java.lang.String} object.
 	 */
 	public String toString() {
-		String sep = System.getProperty("line.separator");
-		StringBuffer buf = new StringBuffer();
-
-		buf.append("from db = ").append(m_fromDb).append(sep);
-		buf.append("node id = ").append(m_nodeId).append(sep);
-		buf.append("route destination = ").append(m_routedest).append(sep);
-		buf.append("route mask = ").append(m_routemask).append(sep);
-		buf.append("route next hop = ").append(m_routenexthop).append(sep);
-		buf.append("ifindex = ").append(m_routeifindex).append(sep);
-		buf.append("route metric1= ").append(m_routemetric1).append(sep);
-		buf.append("route metric2 = ").append(m_routemetric2).append(sep);
-		buf.append("route metric3 = ").append(m_routemetric3).append(sep);
-		buf.append("route metric4 = ").append(m_routemetric4).append(sep);
-		buf.append("route metric5 = ").append(m_routemetric5).append(sep);
-		buf.append("route type = ").append(m_routetype).append(sep);
-		buf.append("route proto = ").append(m_routeproto).append(sep);
-		buf.append("status = ").append(m_status).append(sep);
-		buf.append("last poll time = ").append(m_lastPollTime).append(sep);
-		return buf.toString();
-
+        return new ToStringBuilder(this)
+        .append("db", m_fromDb)
+        .append("nodeId", m_nodeId)
+        .append("routeDestination", m_routedest)
+        .append("routeMask", m_routemask)
+        .append("routeNextHop", m_routenexthop)
+        .append("ifIndex", m_routeifindex)
+        .append("routeMetric1", m_routemetric1)
+        .append("routeMetric2", m_routemetric2)
+        .append("routeMetric3", m_routemetric3)
+        .append("routeMetric4", m_routemetric4)
+        .append("routeMetric5", m_routemetric5)
+        .append("routeType", m_routetype)
+        .append("routeProtocol", m_routeproto)
+        .append("status", m_status)
+        .append("lastPollTime", m_lastPollTime)
+        .toString();
 	}
 
 }
