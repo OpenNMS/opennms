@@ -1390,7 +1390,7 @@ public final class DiscoveryLink implements ReadyRunnable {
 				useVlan = Linkd.getInstance().getLinkdConfig().getPackage(getPackageName()).getEnableVlanDiscovery();
 			
 			if (useVlan && Linkd.getInstance().getLinkdConfig().hasClassName(curNode.getSysoid())) {
-				className = Linkd.getInstance().getLinkdConfig().getClassName(curNode.getSysoid());
+				className = Linkd.getInstance().getLinkdConfig().getVlanClassName(curNode.getSysoid());
 			}
 			
 

@@ -2,7 +2,14 @@
 <linkd-configuration threads="5" initial_sleep_time="3600000"
                      snmp_poll_interval="18000000" discovery_link_interval="300000">
     
-    
+
+    <iproutes>
+        <vendor vendor_name="cisco" sysoidRootMask=".1.3.6.1.4.1.9"
+                class-name="org.opennms.netmgt.linkd.snmp.IpCidrRouteTable">
+       		<specific>1.658</specific>
+       </vendor>
+    </iproutes>    
+
     <!--
     
     Here is a list of sys oids and corresponding classes to get 

@@ -91,14 +91,20 @@ abstract public class LinkdConfigManager implements LinkdConfig {
     private static Map<org.opennms.netmgt.config.linkd.Package, List<String>> m_pkgIpMap;
 
 	/**
-	 * The HashMap that associates the OIDS masks to class name
+	 * The HashMap that associates the OIDS masks to class name for Vlans
 	 */
-	private static HashMap<String,String> m_oidMask2className;
+	private static HashMap<String,String> m_oidMask2VlanclassName;
 
+	/**
+	 * The HashMap that associates the OIDS masks to class name for IpRoutes
+	 */
+	 private static HashMap<String,String> m_oidMask2IpRouteclassName;
+	 
 	/**
 	 * <p>Constructor for LinkdConfigManager.</p>
 	 *
 	 * @author <a href="mailto:david@opennms.org">David Hustace</a>
+     * @author <a href="mailto:antonio@opennms.org">Antonio Russo</a>
 	 * @param reader a {@link java.io.Reader} object.
 	 * @throws org.exolab.castor.xml.MarshalException if any.
 	 * @throws org.exolab.castor.xml.ValidationException if any.
@@ -416,10 +422,26 @@ abstract public class LinkdConfigManager implements LinkdConfig {
 		return vlandiscovery;
 	}
 
-	private void getClassNames() throws IOException, MarshalException,
+    private void getIpRouteClassNames() throws IOException, MarshalException,
+                    ValidationException {
+
+        m_oidMask2IpRouteclassName = new HashMap<String,String>();
+
+        Vendor[] vendors = m_config.getIproutes().getVendor();
+        for (int i = 0; i < vendors.length; i++) {
+                SnmpObjectId oidMask = new SnmpObjectId(vendors[i].getSysoidRootMask());
+                String curClassName = vendors[i].getClassName();
+                m_oidMask2IpRouteclassName.put(oidMask.toString(), curClassName);
+                if (log().isDebugEnabled())
+                       log().debug("getIpRouteClassNames:  adding class " + curClassName
+                              + " for oid " + oidMask.toString());
+        }
+    }
+
+	private void getVlanClassNames() throws IOException, MarshalException,
 			ValidationException {
 
-		m_oidMask2className = new HashMap<String,String>();
+		m_oidMask2VlanclassName = new HashMap<String,String>();
 
 		List<String> excludedOids = new ArrayList<String>();
 
@@ -433,7 +455,7 @@ abstract public class LinkdConfigManager implements LinkdConfig {
 			for (int js = 0; js < specifics.length; js++) {
 				SnmpObjectId oidMask = new SnmpObjectId(specifics[js]);
 				oidMask.prepend(curRootSysOid);
-				m_oidMask2className.put(oidMask.toString(), curClassName);
+				m_oidMask2VlanclassName.put(oidMask.toString(), curClassName);
 				if (log().isDebugEnabled())
 					log().debug("getClassNames:  adding class " + curClassName
 							+ " for oid " + oidMask.toString());
@@ -482,7 +504,7 @@ abstract public class LinkdConfigManager implements LinkdConfig {
 							SnmpObjectId oidMask = new SnmpObjectId(
 									snmpBeginOid);
 							oidMask.prepend(curRootSysOid);
-							m_oidMask2className.put(oidMask.toString(),
+							m_oidMask2VlanclassName.put(oidMask.toString(),
 									curClassName);
 							if (log().isDebugEnabled())
 								log().debug("getClassNames:  adding class "
@@ -500,14 +522,27 @@ abstract public class LinkdConfigManager implements LinkdConfig {
 		}
 	}
 
-	
+    /** {@inheritDoc} */
+    public String getIpRouteClassName(String sysoid) {
+
+            String defaultIpRouteClassName = "org.opennms.netmgt.linkd.snmp.IpRouteTable";
+
+            for (String oidMask : m_oidMask2IpRouteclassName.keySet()) {
+                    if (sysoid.startsWith(oidMask)) {
+                            return m_oidMask2IpRouteclassName.get(oidMask);
+                    }
+            }
+
+           return defaultIpRouteClassName;
+    }
+
 	/** {@inheritDoc} */
-	public String getClassName(String sysoid) {
+	public String getVlanClassName(String sysoid) {
 
 		String defaultClassName = null;
-		for (String oidMask : m_oidMask2className.keySet()) {
+		for (String oidMask : m_oidMask2VlanclassName.keySet()) {
 			if (sysoid.startsWith(oidMask)) {
-				return m_oidMask2className.get(oidMask);
+				return m_oidMask2VlanclassName.get(oidMask);
 			}
 		}
 
@@ -515,10 +550,22 @@ abstract public class LinkdConfigManager implements LinkdConfig {
 
 	}
 
+    /** {@inheritDoc} */
+    public boolean hasIpRouteClassName(String sysoid) {
+
+            for (String oidMask : m_oidMask2IpRouteclassName.keySet()) {
+                        if (sysoid.startsWith(oidMask)) {
+                                return true;
+                        }
+                }
+
+                return false;
+    }
+    
 	/** {@inheritDoc} */
 	public boolean hasClassName(String sysoid) {
 
-	    for (String oidMask : m_oidMask2className.keySet()) {
+	    for (String oidMask : m_oidMask2VlanclassName.keySet()) {
 			if (sysoid.startsWith(oidMask)) {
 				return true;
 			}
@@ -690,8 +737,8 @@ abstract public class LinkdConfigManager implements LinkdConfig {
         m_config = CastorUtils.unmarshal(LinkdConfiguration.class, reader);
         createUrlIpMap();
         createPackageIpListMap();
-        getClassNames();
-        
+        getVlanClassNames();
+        getIpRouteClassNames();
     }
 
     /**
@@ -706,8 +753,8 @@ abstract public class LinkdConfigManager implements LinkdConfig {
         m_config = CastorUtils.unmarshal(LinkdConfiguration.class, stream);
         createUrlIpMap();
         createPackageIpListMap();
-        getClassNames();
-        
+        getVlanClassNames();
+        getIpRouteClassNames();        
     }
     /**
      * Saves the current in-memory configuration to disk and reloads
@@ -777,14 +824,29 @@ abstract public class LinkdConfigManager implements LinkdConfig {
    		if (pkg.hasSnmp_poll_interval()) coll.setPollInterval(pkg.getSnmp_poll_interval());
    		else coll.setPollInterval(getSnmpPollInterval());
 
+   		
+       if (hasIpRouteClassName(sysoid)) {
+                coll.setIpRouteClass(getIpRouteClassName(sysoid));
+                if (log().isDebugEnabled())
+                        log().debug(
+                                     "populateSnmpCollection: found class to get ipRoute: "
+                                                                               + coll.getIpRouteClass());
+       } else {
+                coll.setIpRouteClass("org.opennms.netmgt.linkd.snmp.IpRouteTable");
+                if (log().isDebugEnabled())
+                        log().debug(
+                                     "populateSnmpCollection: Using default class to get ipRoute: "
+                                                                                + coll.getIpRouteClass());
+       }
+   		
    		if ( pkg.hasEnableVlanDiscovery() && pkg.getEnableVlanDiscovery() && hasClassName(sysoid)) {
-			coll.setVlanClass(getClassName(sysoid));
+			coll.setVlanClass(getVlanClassName(sysoid));
 			if (log().isDebugEnabled())
 				log().debug(
 							"populateSnmpCollection: found class to get Vlans: "
 									+ coll.getVlanClass());
 		} else if (!pkg.hasEnableVlanDiscovery() && enableVlanDiscovery() && hasClassName(sysoid)) {
-   				coll.setVlanClass(getClassName(sysoid));
+   				coll.setVlanClass(getVlanClassName(sysoid));
 				if (log().isDebugEnabled())
 					log().debug(
 							"populateSnmpCollection: found class to get Vlans: "
