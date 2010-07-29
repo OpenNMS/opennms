@@ -44,15 +44,12 @@ package org.opennms.netmgt.linkd;
 import java.util.ArrayList;
 import java.util.List;
 
-
-import org.opennms.core.utils.ThreadCategory;
-
+import org.opennms.core.utils.LogUtils;
 import org.opennms.netmgt.EventConstants;
+import org.opennms.netmgt.capsd.InsufficientInformationException;
 import org.opennms.netmgt.eventd.EventIpcManager;
 import org.opennms.netmgt.model.events.EventListener;
 import org.opennms.netmgt.xml.event.Event;
-
-import org.opennms.netmgt.capsd.InsufficientInformationException;
 import org.springframework.beans.factory.InitializingBean;
 import org.springframework.util.Assert;
 
@@ -229,8 +226,6 @@ final class LinkdEventProcessor implements EventListener, InitializingBean {
      * Event Identifier and the appropriate action is taking based on each UEI.
      */
     public void onEvent(Event event) {
-        ThreadCategory log = ThreadCategory.getInstance(getClass());
-
         try {
         	int eventid = event.getDbid();
             String eventUei = event.getUei();
@@ -238,40 +233,28 @@ final class LinkdEventProcessor implements EventListener, InitializingBean {
                 return;
             }
 
-            if (log.isInfoEnabled()) {
-                log.info("onEvent: Received event " + eventid + " UEI "+ eventUei);
-            }
+            LogUtils.infof(this, "onEvent: Received event %s UEI %s", eventid, eventUei);
 
             if (eventUei.equals(EventConstants.NODE_DELETED_EVENT_UEI)) {
-            	if (log.isInfoEnabled()) {
-                    log.info("onEvent: calling handleNodeDeleted for event " + eventid);
-                }
+                LogUtils.infof(this, "onEvent: calling handleNodeDeleted for event %s", eventid);
                 handleNodeDeleted(event);
             } else if (eventUei.equals(EventConstants.INTERFACE_DELETED_EVENT_UEI)) {
-                if (log.isInfoEnabled()) {
-                    log.info("onEvent: calling handleInterfaceDeleted for event " + eventid);
-                }
+                LogUtils.infof(this, "onEvent: calling handleInterfaceDeleted for event %s", eventid);
                 handleInterfaceDeleted(event);
             } else if (event.getUei().equals(EventConstants.NODE_LOST_SERVICE_EVENT_UEI)&& event.getService().equals("SNMP")) {
-                if (log.isInfoEnabled()) {
-                    log.info("onEvent: calling handleNodeLostService for event " + eventid);
-                }
+                LogUtils.infof(this, "onEvent: calling handleNodeLostService for event %s", eventid);
                 handleNodeLostService(event);
             } else if (event.getUei().equals(EventConstants.NODE_REGAINED_SERVICE_EVENT_UEI)&& event.getService().equals("SNMP")) {
-            	if (log.isInfoEnabled()) {
-                    log.info("onEvent: calling handleRegainedService for event " + eventid);
-                }
+                LogUtils.infof(this, "onEvent: calling handleRegainedService for event %s", eventid);
             	handleRegainedService(event);
             } else if (eventUei.equals(EventConstants.NODE_GAINED_SERVICE_EVENT_UEI) && event.getService().equals("SNMP")) {
-                if (log.isInfoEnabled()) {
-                    log.info("onEvent: calling handleNodeGainedService for event " + eventid);
-                }
+                LogUtils.infof(this, "onEvent: calling handleNodeGainedService for event %s", eventid);
                 handleNodeGainedService(event);
             } 
         } catch (InsufficientInformationException ex) {
-            log.info("onEvent: insufficient information in event, discarding it: " + ex.getMessage());
+            LogUtils.infof(this, ex, "onEvent: insufficient information in event, discarding it.");
         } catch (Throwable t) {
-            log.error("onEvent: operation failed for event: " + event.getUei() + ", exception: " + t.getMessage(),t);
+            LogUtils.warnf(this, t, "onEvent: operation failed for event: %s, discarding it.", event.getUei());
         }
     } // end onEvent()
 

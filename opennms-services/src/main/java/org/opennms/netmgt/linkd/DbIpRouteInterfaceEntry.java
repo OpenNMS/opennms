@@ -45,7 +45,7 @@ import java.text.ParseException;
 import java.util.Date;
 
 import org.opennms.core.utils.DBUtils;
-import org.opennms.core.utils.ThreadCategory;
+import org.opennms.core.utils.LogUtils;
 import org.opennms.netmgt.EventConstants;
 import org.opennms.netmgt.config.DataSourceFactory;
 
@@ -224,8 +224,6 @@ final class DbIpRouteInterfaceEntry {
 			throw new IllegalStateException(
 					"The record already exists in the database");
 
-		ThreadCategory log = ThreadCategory.getInstance(getClass());
-
 		// first extract the next node identifier
 		//
 		StringBuffer names = new StringBuffer(
@@ -294,8 +292,7 @@ final class DbIpRouteInterfaceEntry {
 
 		names.append(") VALUES (").append(values).append(')');
 
-		if (log.isDebugEnabled())
-			log.debug("IpRouteInterfaceEntry.insert: SQL insert statment = " + names.toString());
+		LogUtils.debugf(this, "IpRouteInterfaceEntry.insert: SQL insert statment = %s", names.toString());
 
 		// create the Prepared statment and then
 		// start setting the result values
@@ -350,8 +347,7 @@ final class DbIpRouteInterfaceEntry {
             // Run the insert
             //
             int rc = stmt.executeUpdate();
-            if (log.isDebugEnabled())
-            	log.debug("IpRouteInterfaceEntry.insert: row " + rc);
+            LogUtils.debugf(this, "IpRouteInterfaceEntry.insert: row %d", rc);
 		} finally {
 		    d.cleanUp();
         }
@@ -375,8 +371,6 @@ final class DbIpRouteInterfaceEntry {
 		if (!m_fromDb)
 			throw new IllegalStateException(
 					"The record does not exists in the database");
-
-		ThreadCategory log = ThreadCategory.getInstance(getClass());
 
 		// first extract the next node identifier
 		//
@@ -446,8 +440,7 @@ final class DbIpRouteInterfaceEntry {
 
 		sqlText.append(" WHERE nodeid = ? AND routeDest = ? ");
 
-		if (log.isDebugEnabled())
-			log.debug("IpRouteInterfaceEntry.update: SQL insert statment = " + sqlText.toString());
+		LogUtils.debugf(this, "IpRouteInterfaceEntry.update: SQL insert statment = %s", sqlText.toString());
 		
 		// create the Prepared statment and then
 		// start setting the result values
@@ -503,8 +496,7 @@ final class DbIpRouteInterfaceEntry {
             // Run the insert
             //
             int rc = stmt.executeUpdate();
-            if (log.isDebugEnabled())
-            	log.debug("IpRouteInterfaceEntry.update: row " + rc);
+            LogUtils.debugf(this, "IpRouteInterfaceEntry.update: row %d", rc);
 		} finally {
 		    d.cleanUp();
         }
@@ -529,8 +521,6 @@ final class DbIpRouteInterfaceEntry {
 		if (!m_fromDb)
 			throw new IllegalStateException("The record does not exists in the database");
 
-		ThreadCategory log = ThreadCategory.getInstance(getClass());
-
 		// create the Prepared statment and then
 		// start setting the result values
 		//
@@ -549,8 +539,7 @@ final class DbIpRouteInterfaceEntry {
             rset = stmt.executeQuery();
             d.watch(rset);
             if (!rset.next()) {
-            	if (log.isDebugEnabled())
-            		log.debug("IpRouteInterfaceEntry.load: no result found");
+                LogUtils.debugf(this, "IpRouteInterfaceEntry.load: no result found");
             	return false;
             }
 
@@ -620,8 +609,7 @@ final class DbIpRouteInterfaceEntry {
 		// clear the mask and mark as backed
 		// by the database
 		//
-		if (log.isDebugEnabled())
-			log.debug("IpRouteInterfaceEntry.load: result found");
+        LogUtils.debugf(this, "IpRouteInterfaceEntry.load: result found");
 		m_changed = 0;
 		return true;
 	}
@@ -1059,8 +1047,7 @@ final class DbIpRouteInterfaceEntry {
 					if (db != null)
 						db.close();
 				} catch (SQLException e) {
-					ThreadCategory.getInstance(getClass()).warn(
-							"Exception closing JDBC connection", e);
+				    LogUtils.warnf(this, e, "Exception closing JDBC connection");
 				}
 			}
 		}
@@ -1106,8 +1093,7 @@ final class DbIpRouteInterfaceEntry {
 				if (db != null)
 					db.close();
 			} catch (SQLException e) {
-				ThreadCategory.getInstance(DbIpRouteInterfaceEntry.class).warn(
-						"Exception closing JDBC connection", e);
+                LogUtils.warnf(DbIpRouteInterfaceEntry.class, e, "Exception closing JDBC connection");
 			}
 		}
 	}

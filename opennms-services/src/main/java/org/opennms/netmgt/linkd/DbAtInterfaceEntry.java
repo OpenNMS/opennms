@@ -45,7 +45,7 @@ import java.text.ParseException;
 import java.util.Date;
 
 import org.opennms.core.utils.DBUtils;
-import org.opennms.core.utils.ThreadCategory;
+import org.opennms.core.utils.LogUtils;
 import org.opennms.netmgt.EventConstants;
 import org.opennms.netmgt.config.DataSourceFactory;
 
@@ -168,8 +168,6 @@ final class DbAtInterfaceEntry {
 			throw new IllegalStateException(
 					"The record already exists in the database");
 
-		ThreadCategory log = ThreadCategory.getInstance(getClass());
-
 		// first extract the next node identifier
 		//
 		StringBuffer names = new StringBuffer(
@@ -203,8 +201,7 @@ final class DbAtInterfaceEntry {
 
 		names.append(") VALUES (").append(values).append(')');
 		
-		if (log.isDebugEnabled())
-			log.debug("AtInterfaceEntry.insert: SQL insert statment = " + names.toString());
+		LogUtils.debugf(this, "AtInterfaceEntry.insert: SQL insert statment = " + names.toString());
 
 		// create the Prepared statment and then
 		// start setting the result values
@@ -240,8 +237,7 @@ final class DbAtInterfaceEntry {
             //
             int rc = stmt.executeUpdate();
             
-            if (log.isDebugEnabled())
-            	log.debug("AtInterfaceEntry.insert: row " + rc);
+            LogUtils.debugf(this, "AtInterfaceEntry.insert: row " + rc);
         } finally {
             d.cleanUp();
         }
@@ -265,8 +261,6 @@ final class DbAtInterfaceEntry {
 		if (!m_fromDb)
 			throw new IllegalStateException(
 					"The record does not exists in the database");
-
-		ThreadCategory log = ThreadCategory.getInstance(getClass());
 
 		// first extract the next node identifier
 		//
@@ -301,8 +295,7 @@ final class DbAtInterfaceEntry {
 
 		sqlText.append(" WHERE nodeid = ? AND ipaddr = ? ");
 
-		if (log.isDebugEnabled())
-			log.debug("AtInterfaceEntry.update: SQL insert statment = " + sqlText.toString());
+		LogUtils.debugf(this, "AtInterfaceEntry.update: SQL insert statment = " + sqlText.toString());
 
 		PreparedStatement stmt;
         final DBUtils d = new DBUtils(getClass());
@@ -334,8 +327,7 @@ final class DbAtInterfaceEntry {
             // Run the insert
             //
             int rc = stmt.executeUpdate();
-            if (log.isDebugEnabled())
-            	log.debug("AtInterfaceEntry.update: row " + rc);
+            LogUtils.debugf(this, "AtInterfaceEntry.update: row " + rc);
         } finally {
             d.cleanUp();
         }
@@ -361,8 +353,6 @@ final class DbAtInterfaceEntry {
 			throw new IllegalStateException(
 					"The record does not exists in the database");
 
-		ThreadCategory log = ThreadCategory.getInstance(getClass());
-
 		// create the Prepared statment and then
 		// start setting the result values
 		//
@@ -380,8 +370,7 @@ final class DbAtInterfaceEntry {
             rset = stmt.executeQuery();
             d.watch(rset);
             if (!rset.next()) {
-            	if (log.isDebugEnabled())
-            		log.debug("AtInterfaceEntry.load: no result found");
+                LogUtils.debugf(this, "AtInterfaceEntry.load: no result found");
             	return false;
             }
 
@@ -424,8 +413,7 @@ final class DbAtInterfaceEntry {
 		// by the database
 		//
 		m_changed = 0;
-		if (log.isDebugEnabled())
-			log.debug("AtInterfaceEntry.load: result found");
+		LogUtils.debugf(this, "AtInterfaceEntry.load: result found");
 		return true;
 	}
 
@@ -652,8 +640,7 @@ final class DbAtInterfaceEntry {
 					if (db != null)
 						db.close();
 				} catch (SQLException e) {
-					ThreadCategory.getInstance(getClass()).warn(
-							"Exception closing JDBC connection", e);
+				    LogUtils.warnf(this, e, "Exception closing JDBC connection");
 				}
 			}
 		}
@@ -698,8 +685,7 @@ final class DbAtInterfaceEntry {
 				if (db != null)
 					db.close();
 			} catch (SQLException e) {
-				ThreadCategory.getInstance(DbAtInterfaceEntry.class).warn(
-						"Exception closing JDBC connection", e);
+                LogUtils.warnf(DbAtInterfaceEntry.class, e, "Exception closing JDBC connection");
 			}
 		}
 	}
