@@ -2,15 +2,47 @@ package org.opennms.features.poller.remote.gwt.client;
 
 import com.google.gwt.core.client.EntryPoint;
 import com.google.gwt.event.shared.HandlerManager;
+import com.google.gwt.user.client.Window;
 
 public class Main implements EntryPoint {
     
     
-    public void onModuleLoad() {
-        HandlerManager eventBus = new HandlerManager(null);
-        Application application = new Application(eventBus);
-        application.initialize(new ApplicationView(application, eventBus));
+    private HandlerManager m_eventBus;
 
+    public void onModuleLoad() {
+        m_eventBus = new HandlerManager(null);
+        Application application = new Application(getEventBus());
+        MapPanel createMapPanel = createMap(application);
+        application.initialize(new ApplicationView(application, getEventBus()), createMapPanel);
+
+    }
+
+    private MapPanel createMap(Application application) {
+        MapPanel mapPanel;
+        if (getMapType().equals("Mapquest")) {
+            mapPanel = new MapQuestMapPanel(getEventBus());
+        } else if (getMapType().equals("GoogleMaps")) {
+            mapPanel = new GoogleMapsPanel(getEventBus());
+        } else if (getMapType().equals("OpenLayers")) {
+            mapPanel = new OpenLayersMapPanel(getEventBus());
+        } else {
+            Window.alert("unknown map implementation: " + getMapType());
+            throw new RuntimeException("unknown map implementation: " + getMapType());
+        }
+        return mapPanel;
+    }
+
+    /**
+     * <p>getMapImplementationType</p>
+     *
+     * @return a {@link java.lang.String} object.
+     */
+    public native String getMapType() /*-{
+        return $wnd.mapImplementation;
+    }-*/;
+
+    public HandlerManager getEventBus() {
+        return m_eventBus;
     }
 
 }

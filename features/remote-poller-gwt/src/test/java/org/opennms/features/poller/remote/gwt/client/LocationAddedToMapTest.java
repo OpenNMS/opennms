@@ -13,7 +13,8 @@ public class LocationAddedToMapTest {
         
         HandlerManager eventBus = new HandlerManager(null);
         Application application = new Application(eventBus);
-        application.initialize(new ApplicationView(application, eventBus));
+        MapPanel createMapPanel = new MapQuestMapPanel(eventBus);
+        application.initialize(new ApplicationView(application, eventBus), createMapPanel);
         
     }
 }

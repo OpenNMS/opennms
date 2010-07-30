@@ -38,11 +38,7 @@ public class Application implements LocationsUpdatedEventHandler {
         m_eventBus = eventBus;
     }
 
-    /**
-     * This is the entry point method.
-     * @param view TODO
-     */
-    public void initialize(ApplicationView view) {
+    public void initialize(ApplicationView view, MapPanel createMapPanel) {
         // Log.setUncaughtExceptionHandler();
         m_view = view;
         
@@ -59,7 +55,8 @@ public class Application implements LocationsUpdatedEventHandler {
         // Register for all relevant events thrown by the UI components
         getEventBus().addHandler(LocationsUpdatedEvent.TYPE, this);
 
-        final DefaultLocationManager dlm = new DefaultLocationManager(getEventBus(), m_view.getSplitPanel(), m_view.getLocationPanel(), createMapPanel());
+        
+        final DefaultLocationManager dlm = new DefaultLocationManager(getEventBus(), m_view.getSplitPanel(), m_view.getLocationPanel(), createMapPanel);
         m_locationManager = dlm;
 
         m_view.getLocationPanel().setEventBus(getEventBus());
@@ -80,7 +77,6 @@ public class Application implements LocationsUpdatedEventHandler {
         
         m_view.updateTimestamp();
         m_view.onLocationClick(null);
-        
     }
 
     Integer getAppHeight() {
@@ -96,30 +92,6 @@ public class Application implements LocationsUpdatedEventHandler {
     public void onLocationViewSelected() {
         m_locationManager.locationClicked();
     }
-
-    private MapPanel createMapPanel() {
-        MapPanel mapPanel;
-        if (getMapImplementationType().equals("Mapquest")) {
-            mapPanel = new MapQuestMapPanel(getEventBus());
-        } else if (getMapImplementationType().equals("GoogleMaps")) {
-            mapPanel = new GoogleMapsPanel(getEventBus());
-        } else if (getMapImplementationType().equals("OpenLayers")) {
-            mapPanel = new OpenLayersMapPanel(getEventBus());
-        } else {
-            Window.alert("unknown map implementation: " + getMapImplementationType());
-            throw new RuntimeException("unknown map implementation: " + getMapImplementationType());
-        }
-        return mapPanel;
-    }
-
-    /**
-     * <p>getMapImplementationType</p>
-     *
-     * @return a {@link java.lang.String} object.
-     */
-    public native String getMapImplementationType() /*-{
-        return $wnd.mapImplementation;
-    }-*/;
 
     /** {@inheritDoc} */
     public void onLocationsUpdated(LocationsUpdatedEvent e) {
