@@ -2,6 +2,7 @@
 <schema targetNamespace="http://xmlns.opennms.org/xsd/config/datacollection"
         xmlns="http://www.w3.org/2001/XMLSchema"
         xmlns:typ="http://xmlns.opennms.org/xsd/types"
+        xmlns:dctyp="http://xmlns.opennms.org/xsd/config/datacollection-types"
         xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
         xmlns:ns2="http://www.w3.org/1999/xhtml"
         xmlns:ns="http://www.w3.org/2001/XMLSchema"
@@ -13,7 +14,8 @@
   </annotation>
 
   <import namespace="http://xmlns.opennms.org/xsd/types" schemaLocation="types.xsd"/>
-          
+  <import namespace="http://xmlns.opennms.org/xsd/config/datacollection-types" schemaLocation="datacollection-types.xsd"/>
+
   <element name="datacollection-config">
     <annotation>
       <documentation>Top-level element for the datacollection-config.xml
@@ -52,19 +54,26 @@
           </annotation>
         </element>
 
-        <element maxOccurs="unbounded" minOccurs="0" ref="dc:resourceType">
+        <element maxOccurs="unbounded" minOccurs="1" ref="include-collection">
+          <annotation>
+            <documentation>Include Collection by specifying
+            System Definition Name or Data Collection Group Name.</documentation>
+          </annotation>
+        </element>
+
+        <element maxOccurs="unbounded" minOccurs="0" ref="dctyp:resourceType">
           <annotation>
             <documentation>Custom resource types</documentation>
           </annotation>
         </element>
 
-        <element maxOccurs="1" minOccurs="1" ref="dc:groups">
+        <element maxOccurs="1" minOccurs="0" ref="dc:groups">
           <annotation>
             <documentation>MIB object groups</documentation>
           </annotation>
         </element>
 
-        <element maxOccurs="1" minOccurs="1" ref="dc:systems">
+        <element maxOccurs="1" minOccurs="0" ref="dc:systems">
           <annotation>
             <documentation>sysOid-based sytems</documentation>
           </annotation>
@@ -99,117 +108,19 @@
     </complexType>
   </element>
 
-  <!-- <element name="rrd">
-    <annotation>
-      <documentation>RRD parms</documentation>
-    </annotation>
-
+  <element name="include-collection">
     <complexType>
-      <sequence>
-        <element maxOccurs="unbounded" minOccurs="1" name="rra">
-          <annotation>
-            <documentation>Round Robin Archive definitions</documentation>
-          </annotation>
-
-          <simpleType>
-            <restriction base="string">
-              <pattern value="RRA:(AVERAGE|MIN|MAX|LAST):.*"/>
-            </restriction>
-          </simpleType>
-        </element>
-      </sequence>
-
-      <attribute name="step" type="int" use="required">
+      <attribute name="systemDef" type="string" use="optional">
         <annotation>
-          <documentation>step size for the RRD</documentation>
-        </annotation>
-      </attribute>
-    </complexType>
-  </element> -->
-
-  <element name="resourceType">
-    <annotation>
-      <documentation>a custom resource type</documentation>
-    </annotation>
-
-
-    <complexType>
-      <sequence>
-        <element maxOccurs="1" minOccurs="1" name="persistenceSelectorStrategy">
-          <annotation>
-            <documentation>Selects a PersistenceSelectorStrategy that decides which data is persisted and which is not.</documentation>
-          </annotation>
-          <complexType>
-            <sequence>
-              <element maxOccurs="unbounded" minOccurs="0" ref="dc:parameter">
-                <annotation>
-                  <documentation>list of parameters to pass to the strategy
-                  for strategy-specific configuration information</documentation>
-                </annotation>
-              </element>
-            </sequence>
-
-            <attribute name="class" type="string" use="required">
-	          <annotation>
-	            <documentation>Java class name of the class that implements the PersistenceSelectorStrategy.</documentation>
-	          </annotation>
-	        </attribute>
-	      </complexType>
-        </element>
-
-        <element maxOccurs="1" minOccurs="1" name="storageStrategy">
-          <annotation>
-            <documentation>Selects a StorageStrategy that decides where data is stored.</documentation>
-          </annotation>
-          <complexType>
-            <sequence>
-              <element maxOccurs="unbounded" minOccurs="0" ref="dc:parameter">
-                <annotation>
-                  <documentation>list of parameters to pass to the strategy
-                  for strategy-specific configuration information</documentation>
-                </annotation>
-              </element>
-            </sequence>
-          
-            <attribute name="class" type="string" use="required">
-	          <annotation>
-	            <documentation>Java class name of the class that implements the StorageStrategy.</documentation>
-	          </annotation>
-	        </attribute>
-	      </complexType>
-        </element>
-      </sequence>
-
-      <attribute name="name" type="string" use="required">
-        <annotation>
-          <documentation>resource type name</documentation>
+          <documentation>System Definition Name</documentation>
         </annotation>
       </attribute>
 
-      <attribute name="label" type="string" use="required">
+      <attribute name="dataCollectionGroup" type="string" use="optional">
         <annotation>
-          <documentation>resource type label (this is what users see in the webUI)</documentation>
+          <documentation>Data Collection Group Name</documentation>
         </annotation>
       </attribute>
-
-      <attribute name="resourceLabel" type="string" use="optional">
-        <annotation>
-          <documentation>resource label expression (this is what users see in the webUI for each resource of this type)</documentation>
-        </annotation>
-      </attribute>
-
-    </complexType>
-  </element>
-  
-  <element name="parameter">
-    <annotation>
-      <documentation>Parameters to be used for configuration this strategy.</documentation>
-    </annotation>
-
-    <complexType>
-      <attribute name="key" type="string" use="required"/>
-
-      <attribute name="value" type="string" use="required"/>
     </complexType>
   </element>
 
@@ -220,67 +131,12 @@
 
     <complexType>
       <sequence>
-        <element maxOccurs="unbounded" minOccurs="1" ref="dc:group">
+        <element maxOccurs="unbounded" minOccurs="1" ref="dctyp:group">
           <annotation>
             <documentation>a MIB object group</documentation>
           </annotation>
         </element>
       </sequence>
-    </complexType>
-  </element>
-
-  <element name="group">
-    <annotation>
-      <documentation>a MIB object group</documentation>
-    </annotation>
-
-    <complexType>
-      <sequence>
-        <element maxOccurs="unbounded" minOccurs="0" ref="dc:mibObj">
-          <annotation>
-            <documentation>a MIB object</documentation>
-          </annotation>
-        </element>
-
-        <element maxOccurs="unbounded" minOccurs="0" name="includeGroup"
-                 type="string">
-          <annotation>
-            <documentation>sub group</documentation>
-          </annotation>
-        </element>
-      </sequence>
-
-      <attribute name="name" type="string" use="required">
-        <annotation>
-          <documentation>group name</documentation>
-        </annotation>
-      </attribute>
-
-      <attribute name="ifType" use="required">
-        <annotation>
-          <documentation>Interface type. Indicates the interface types from
-          which the groups MIB objects are to be collected. Supports
-          individual ifType values or comma-separated list of ifType values in
-          addition to "all" and "ignore" key words. For example: "6" indicates
-          that OIDs from this MIB group are to be collected only for ethernet
-          interfaces (ifType = 6) "6,22" indicates that OIDs from this MIB
-          group are to be collected only for ethernet and serial interfaces
-          "all" indicates that the OIDs from this MIB group are to be
-          collected for all interfaces regardless of ifType "ignore" indicates
-          that OIDs from this MIB group are node-level objects. Sample ifType
-          descriptions/values: (Refer to
-          http://www.iana.org/assignments/ianaiftype-mib for a comprehensive
-          list.); ethernetCsmacd 6; iso8825TokenRing 9; fddi 15; sdlc 17;
-          basicISDN 20; primaryISDN 21; propPointToPointSerial 22; ppp 23; atm
-          37; sonet 39; opticalChannel 195</documentation>
-        </annotation>
-
-        <simpleType>
-          <restriction base="string">
-            <pattern value="(all|ignore|(\d+,)*\d+)"/>
-          </restriction>
-        </simpleType>
-      </attribute>
     </complexType>
   </element>
 
@@ -291,7 +147,7 @@
 
     <complexType>
       <sequence>
-        <element maxOccurs="unbounded" minOccurs="1" ref="dc:systemDef">
+        <element maxOccurs="unbounded" minOccurs="1" ref="dctyp:systemDef">
           <annotation>
             <documentation>list of system definitions</documentation>
           </annotation>
@@ -300,151 +156,4 @@
     </complexType>
   </element>
 
-  <element name="systemDef">
-    <annotation>
-      <documentation>system definition</documentation>
-    </annotation>
-
-    <complexType>
-      <sequence>
-        <choice>
-          <element maxOccurs="1" minOccurs="1" name="sysoid" type="string">
-            <annotation>
-              <documentation>system object identifier (sysoid) which uniquely
-              identifies the system.</documentation>
-            </annotation>
-          </element>
-
-          <element maxOccurs="1" minOccurs="1" name="sysoidMask" type="string">
-            <annotation>
-              <documentation>Sysoid mask which can be used to match multiple
-              systems if their sysoid begins with the mask</documentation>
-            </annotation>
-          </element>
-        </choice>
-
-        <element maxOccurs="1" minOccurs="0" ref="dc:ipList">
-          <annotation>
-            <documentation>list of IP address or IP address mask values to
-            which this system definition applies.</documentation>
-          </annotation>
-        </element>
-
-        <element maxOccurs="1" minOccurs="1" ref="dc:collect">
-          <annotation>
-            <documentation>container for list of MIB groups to be collected
-            for the system</documentation>
-          </annotation>
-        </element>
-      </sequence>
-
-      <attribute name="name" type="string" use="required"/>
-    </complexType>
-  </element>
-
-  <element name="ipList">
-    <annotation>
-      <documentation>list of IP address or IP address mask values to which
-      this system definition applies.</documentation>
-    </annotation>
-
-    <complexType>
-      <sequence>
-        <element maxOccurs="unbounded" minOccurs="0" name="ipAddr"
-                 type="string">
-          <annotation>
-            <documentation>List of IP addresses</documentation>
-          </annotation>
-        </element>
-
-        <element maxOccurs="unbounded" minOccurs="0" name="ipAddrMask"
-                 type="string">
-          <annotation>
-            <documentation>List of IP address masks</documentation>
-          </annotation>
-        </element>
-      </sequence>
-    </complexType>
-  </element>
-
-  <element name="collect">
-    <annotation>
-      <documentation>container for list of MIB groups to be collected for the
-      system</documentation>
-    </annotation>
-
-    <complexType>
-      <sequence>
-        <element maxOccurs="unbounded" minOccurs="0" name="includeGroup"
-                 type="string"/>
-      </sequence>
-    </complexType>
-  </element>
-
-  <element name="mibObj">
-    <annotation>
-      <documentation>a MIB object</documentation>
-    </annotation>
-
-    <complexType>
-      <attribute name="oid" type="string" use="required">
-        <annotation>
-          <documentation>object identifier</documentation>
-        </annotation>
-      </attribute>
-
-      <attribute name="instance" type="string" use="required">
-        <annotation>
-          <documentation>instance identifier. Only valid instance identifier
-          values are a positive integer value or the keyword "ifIndex" which
-          indicates that the ifIndex of the interface is to be substituted for
-          the instance value for each interface the oid is retrieved
-          for.</documentation>
-        </annotation>
-      </attribute>
-
-      <attribute name="alias" type="string" use="required">
-        <annotation>
-          <documentation>a human readable name for the object (such as
-          "ifOctetsIn"). NOTE: This value is used as the RRD file name and
-          data source name. RRD only supports data source names up to 19 chars
-          in length. If the SNMP data collector encounters an alias which
-          exceeds 19 characters it will be truncated.</documentation>
-        </annotation>
-      </attribute>
-
-      <attribute name="type" use="required">
-        <annotation>
-          <documentation>SNMP data type SNMP supported types: counter, gauge,
-          timeticks, integer, octetstring, string. The SNMP type is mapped to
-          one of two RRD supported data types COUNTER or GAUGE, or the
-          string.properties file. The mapping is as follows: SNMP counter
-          -&gt; RRD COUNTER; SNMP gauge, timeticks, integer, octetstring -&gt;
-          RRD GAUGE; SNMP string -&gt; String properties file</documentation>
-        </annotation>
-
-        <simpleType>
-          <restriction base="string">
-            <pattern value="([Cc](ounter|OUNTER)(32|64)?|[Gg](auge|AUGE)(32|64)?|[Tt](ime|IME)[Tt](icks|ICKS)|[Ii](nteger|NTEGER)(32|64)?|[Oo](ctet|CTET)[Ss](tring|TRING))|[Ss](tring|TRING)"/>
-          </restriction>
-        </simpleType>
-      </attribute>
-
-      <attribute name="maxval" type="string" use="optional">
-        <annotation>
-          <documentation>Maximum Value. In order to correctly manage counter
-          wraps, it is possible to add a maximum value for a collection. For
-          example, a 32-bit counter would have a max value of
-          4294967295.</documentation>
-        </annotation>
-      </attribute>
-
-      <attribute name="minval" type="string" use="optional">
-        <annotation>
-          <documentation>Minimum Value. For completeness, adding the ability
-          to use a minimum value.</documentation>
-        </annotation>
-      </attribute>
-    </complexType>
-  </element>
 </schema>
