@@ -434,7 +434,6 @@ function handleLoadingMap(data) {
 		enableMenu();
 		return;
 	}
-
 	hideNodesIds = "";
 	hasHideNodes = false;
 	hideMapsIds = "";
@@ -513,6 +512,12 @@ function handleLoadingMap(data) {
 	
 	savedMapString=getMapString();
 	saveMapInHistory();
+
+	if (updateUrl && currentMapId != NEW_MAP) {
+		top.$j.history.load(currentMapId);
+	} else {
+		updateUrl=true;
+	}
 	
 	reloadGrid();
 	map.setBGvalue(currentMapBackGround);
@@ -537,7 +542,6 @@ function handleLoadingMap(data) {
 }
 
 function saveMap() {
-	saving=true;
 	var data="Nodes";
 	var firstItem=true;
 	for (elemToRender in map.mapElements){
@@ -594,7 +598,12 @@ function handleSaveResponse(data) {
 	
 	savedMapString = getMapString();			
 	saveMapInHistory();
-	top.$j.history.load(currentMapId);
+
+	if (updateUrl) {
+		top.$j.history.load(currentMapId);
+	} else {
+		updateUrl=true;
+	}
 	
 	writeMapInfo();
 	showHistory();
