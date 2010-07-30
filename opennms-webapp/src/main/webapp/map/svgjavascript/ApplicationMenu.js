@@ -223,7 +223,7 @@ function newMapSetUp() {
 	resetFlags();
 	disableMenu();
 	mapTabSetUp(NEW_MAP_NAME);
-
+	useMenu=true;
 	newMap();
 }
 
@@ -299,6 +299,7 @@ function searchMapSetUp()
 		clearTopInfo();
 		clearDownInfo();
 		mapTabSetUp(SEARCH_MAP_NAME);
+		useMenu=true;
 		searchMap(elems);
 
 	} else {
@@ -387,7 +388,7 @@ function openMapSetUp(mapId,setuptab) {
 	var mapToOpen;
 	if(mapId != undefined && (mapId > 0 || mapId == SEARCH_MAP )){
 		mapToOpen = mapId;
-		if(setuptab != undefined && setuptab ) {
+		if(setuptab ) {
 			mapTabSetUp(mapidSortAss[mapToOpen]);
 		}
 	}else if(selectedMapInList != undefined && mapSortAss[selectedMapInList].id > 0){
@@ -401,7 +402,8 @@ function openMapSetUp(mapId,setuptab) {
 	windowsClean();
 	clearTopInfo();
 	clearDownInfo();
-	top.$j.history.load(mapToOpen);
+	useMenu=true;
+	openMap(mapToOpen);
 }
 
 // Close Map
@@ -495,6 +497,7 @@ function saveMapSetUp() {
 		disableMenu();
 		writeDownInfo("Saving map '" +currentMapName+"'");
 		resetFlags();
+		useMenu=true;
 		saveMap();
 	}
 	
