@@ -73,7 +73,7 @@ public class Mib2Events {
         "comes with ABSOLUTELY NO WARRANTY; for details, see the LICENSE.txt\n" +
         "file.\n" +
         "\n" +
-        "Syntax: java -jar mib2events.jar [--ueibase <base UEI>] [--compat] \\\n" +
+        "Syntax: java -jar lib/mib2events.jar [--ueibase <base UEI>] [--compat] \\\n" +
         "        --mib <file or URL>\n" +
         "\n" +
         "    --mib      The pathname or URL of a MIB to load\n" +
@@ -87,7 +87,7 @@ public class Mib2Events {
         "Create events from the OSPF-TRAP-MIB, putting the events' UEI into an\n" +
         "IETF namespace:\n" +
         "\n" +
-        "java -jar mib2events.jar --mib OSPF-TRAP-MIB.my --ueibase uei.opennms.org/vendors/ietf/\n";
+        "java -jar lib/mib2events.jar --mib OSPF-TRAP-MIB.my --ueibase uei.opennms.org/vendors/ietf/\n";
 
     private String m_mibLocation;
     private String m_ueiBase = null;

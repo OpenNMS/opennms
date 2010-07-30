@@ -1,36 +1,29 @@
 <assembly>
   <id>dist</id>
   <formats>
-    <format>tar.gz</format>
+    <format>zip</format>
   </formats>
-  <includeBaseDirectory>false</includeBaseDirectory>
-  <moduleSets>
-    <moduleSet>
+  <fileSets>
+    <fileSet>
       <includes>
-        <include>org.opennms:opennms-webapp</include>
+        <include>README*</include>
+        <include>LICENSE*</include>
       </includes>
-      <binaries>
-        <outputDirectory>webapps/opennms</outputDirectory>
-        <unpack>true</unpack>
-      </binaries>
-    </moduleSet>
-    <moduleSet>
-      <includes>
-        <include>org.opennms:opennms-doc</include>
-      </includes>
-      <binaries>
-        <outputDirectory>/</outputDirectory>
-        <unpack>true</unpack>
-      </binaries>      
-    </moduleSet>
-    <moduleSet>
-      <includes>
-        <include>org.opennms:opennms-base-assembly</include>
-      </includes>
-      <binaries>
-        <outputDirectory>/</outputDirectory>
-        <unpack>true</unpack>
-      </binaries>      
-    </moduleSet>
-  </moduleSets>
+    </fileSet>
+  </fileSets>
+  <dependencySets>
+    <dependencySet>
+       <outputFileNameMapping>mib2events.jar</outputFileNameMapping>
+       <outputDirectory>lib</outputDirectory>
+       <includes>
+         <include>org.opennms.netmgt.mib2events:mib2events</include>
+       </includes>
+    </dependencySet>
+    <dependencySet>
+      <outputDirectory>lib</outputDirectory>
+      <excludes>
+        <exclude>org.opennms.netmgt.mib2events:mib2events</exclude>
+      </excludes>
+    </dependencySet>
+  </dependencySets>
 </assembly>
