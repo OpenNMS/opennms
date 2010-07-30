@@ -105,7 +105,7 @@ public class DefaultLocationManager implements LocationManager, RemotePollerPres
      * @param panel a {@link com.google.gwt.user.client.ui.SplitLayoutPanel} object.
      * @param locationPanel a {@link org.opennms.features.poller.remote.gwt.client.LocationPanel} object.
      */
-    public DefaultLocationManager(final HandlerManager eventBus, ApplicationView view, MapPanel mapPanel) {
+    public DefaultLocationManager(final HandlerManager eventBus, DefaultApplicationView view, MapPanel mapPanel) {
         m_eventBus = eventBus;
         m_panel = view.getSplitPanel();
         m_locationPanel = view.getLocationPanel();

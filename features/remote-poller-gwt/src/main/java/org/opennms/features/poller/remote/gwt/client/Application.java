@@ -5,7 +5,6 @@ import org.opennms.features.poller.remote.gwt.client.events.LocationsUpdatedEven
 import org.opennms.features.poller.remote.gwt.client.events.LocationsUpdatedEventHandler;
 
 import com.google.gwt.event.shared.HandlerManager;
-import com.google.gwt.i18n.client.DateTimeFormat;
 
 /**
  * Entry point classes define <code>onModuleLoad()</code>.
@@ -15,16 +14,11 @@ import com.google.gwt.i18n.client.DateTimeFormat;
  * @since 1.8.1
  */
 public class Application implements LocationsUpdatedEventHandler {
-    
-
-    static final DateTimeFormat UPDATE_TIMESTAMP_FORMAT = DateTimeFormat.getMediumDateTimeFormat();
-
-    
 
     private LocationManager m_locationManager;
     private final HandlerManager m_eventBus;
 
-    ApplicationView m_view;
+    DefaultApplicationView m_view;
 
     
 
@@ -32,7 +26,7 @@ public class Application implements LocationsUpdatedEventHandler {
         m_eventBus = eventBus;
     }
 
-    public void initialize(ApplicationView view, MapPanel createMapPanel) {
+    public void initialize(DefaultApplicationView view, MapPanel createMapPanel) {
         // Register for all relevant events thrown by the UI components
         getEventBus().addHandler(LocationsUpdatedEvent.TYPE, this);
         

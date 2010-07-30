@@ -11,6 +11,7 @@ import com.google.gwt.event.dom.client.ClickEvent;
 import com.google.gwt.event.logical.shared.ResizeEvent;
 import com.google.gwt.event.logical.shared.ResizeHandler;
 import com.google.gwt.event.shared.HandlerManager;
+import com.google.gwt.i18n.client.DateTimeFormat;
 import com.google.gwt.resources.client.CssResource;
 import com.google.gwt.uibinder.client.UiBinder;
 import com.google.gwt.uibinder.client.UiField;
@@ -25,9 +26,9 @@ import com.google.gwt.user.client.ui.RootPanel;
 import com.google.gwt.user.client.ui.SplitLayoutPanel;
 import com.google.gwt.user.client.ui.Widget;
 
-public class ApplicationView {
+public class DefaultApplicationView {
     
-    interface Binder extends UiBinder<DockLayoutPanel, ApplicationView> {}
+    interface Binder extends UiBinder<DockLayoutPanel, DefaultApplicationView> {}
     
     private static final Binder BINDER = GWT.create(Binder.class);
     
@@ -70,9 +71,12 @@ public class ApplicationView {
 
 
     private Application m_presenter;
+
+
+    static final DateTimeFormat UPDATE_TIMESTAMP_FORMAT = DateTimeFormat.getMediumDateTimeFormat();
     
     
-    public ApplicationView(Application presenter, HandlerManager eventBus) {
+    public DefaultApplicationView(Application presenter, HandlerManager eventBus) {
         m_presenter = presenter;
         m_eventBus = eventBus;
         BINDER.createAndBindUi(this);
@@ -217,7 +221,7 @@ public class ApplicationView {
      * <p>updateTimestamp</p>
      */
     public void updateTimestamp() {
-        getUpdateTimestamp().setText("Last update: " + Application.UPDATE_TIMESTAMP_FORMAT.format(new Date()));
+        getUpdateTimestamp().setText("Last update: " + UPDATE_TIMESTAMP_FORMAT.format(new Date()));
     }
 
     Integer getAppHeight() {

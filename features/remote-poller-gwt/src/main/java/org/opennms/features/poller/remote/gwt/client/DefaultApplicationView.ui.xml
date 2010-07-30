@@ -38,7 +38,7 @@
 			filter:literal("alpha(opacity=30)");
 		}
 	</ui:style>
-	<ui:style field="linkStyles" type="org.opennms.features.poller.remote.gwt.client.ApplicationView.LinkStyles">
+	<ui:style field="linkStyles" type="org.opennms.features.poller.remote.gwt.client.DefaultApplicationView.LinkStyles">
 		.activeLink {
 			font-weight: bold;
 			text-decoration: none;

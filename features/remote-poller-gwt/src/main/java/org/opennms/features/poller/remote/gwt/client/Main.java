@@ -13,7 +13,7 @@ public class Main implements EntryPoint {
         m_eventBus = new HandlerManager(null);
         Application application = new Application(getEventBus());
         MapPanel createMapPanel = createMap(application);
-        application.initialize(new ApplicationView(application, getEventBus()), createMapPanel);
+        application.initialize(new DefaultApplicationView(application, getEventBus()), createMapPanel);
 
     }
 

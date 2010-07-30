@@ -14,7 +14,7 @@ public class LocationAddedToMapTest {
         HandlerManager eventBus = new HandlerManager(null);
         Application application = new Application(eventBus);
         MapPanel createMapPanel = new MapQuestMapPanel(eventBus);
-        application.initialize(new ApplicationView(application, eventBus), createMapPanel);
+        application.initialize(new DefaultApplicationView(application, eventBus), createMapPanel);
         
     }
 }
