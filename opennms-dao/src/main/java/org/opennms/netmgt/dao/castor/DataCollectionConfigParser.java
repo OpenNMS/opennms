@@ -218,12 +218,13 @@ public class DataCollectionConfigParser {
     private void parseExternalResources() {
         externalGroups = new HashMap<String, DatacollectionGroup>();
         File folder = new File(configDirectory);
-        if (!folder.exists()) {
-            throw new DataAccessResourceFailureException("Directory " + folder + " does not exist");
+        if (!folder.exists() || !folder.isDirectory()) {
+            log().info("parseExternalResources: directory " + folder + " does not exist or is not a folder.");
+            return;
         }
         File[] listOfFiles = folder.listFiles();
         for (File file : listOfFiles) {
-            if (file.isFile()) {
+            if (file.isFile() && file.getName().toLowerCase().endsWith(".xml")) {
                 InputStream in;
                 DatacollectionGroup group;
                 try {
