@@ -69,14 +69,14 @@ public class DataCollectionConfigParserTest {
         // Validate Parser
         DatacollectionGroup globalContainer = parser.getGlobalContainer();
         Assert.assertEquals(14, globalContainer.getResourceTypeCount());
-        Assert.assertEquals(69, globalContainer.getSystemDefCount());
-        Assert.assertEquals(44, globalContainer.getGroupCount());
+        Assert.assertEquals(68, globalContainer.getSystemDefCount());
+        Assert.assertEquals(39, globalContainer.getGroupCount());
 
         // Validate SNMP Collection
         SnmpCollection collection = config.getSnmpCollection(0);
         Assert.assertEquals(5, collection.getResourceTypeCount()); 
         Assert.assertEquals(2, collection.getSystems().getSystemDefCount());
-        Assert.assertEquals(18, collection.getGroups().getGroupCount());
+        Assert.assertEquals(17, collection.getGroups().getGroupCount());
     }
 
 }

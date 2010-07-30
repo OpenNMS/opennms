@@ -44,6 +44,7 @@ import java.util.regex.Pattern;
 
 import org.apache.commons.lang.StringUtils;
 import org.opennms.core.utils.ThreadCategory;
+import org.opennms.netmgt.ConfigFileConstants;
 import org.opennms.netmgt.config.DataCollectionConfig;
 import org.opennms.netmgt.config.MibObject;
 import org.opennms.netmgt.config.datacollection.DatacollectionConfig;
@@ -69,6 +70,8 @@ public class DefaultDataCollectionConfigDao extends
 AbstractCastorConfigDao<DatacollectionConfig, DatacollectionConfig> implements DataCollectionConfig {
 
     private static final Pattern s_digitsPattern = Pattern.compile("\\d+"); 
+    
+    private String configDirectory;
 
     public DefaultDataCollectionConfigDao() {
         super(DatacollectionConfig.class, "data-collection configuration");
@@ -76,7 +79,26 @@ AbstractCastorConfigDao<DatacollectionConfig, DatacollectionConfig> implements D
 
     @Override
     public DatacollectionConfig translateConfig(DatacollectionConfig castorConfig) {
+        DataCollectionConfigParser parser = new DataCollectionConfigParser(getConfigDirectory());
+        parser.parse(castorConfig);
         return castorConfig;
+    }
+    
+    public void setConfigDirectory(String configDirectory) {
+        this.configDirectory = configDirectory;
+    }
+    
+    public String getConfigDirectory() {
+        if (configDirectory == null) {
+            StringBuffer sb = new StringBuffer(ConfigFileConstants.getHome());
+            sb.append(File.separator);
+            sb.append("etc");
+            sb.append(File.separator);
+            sb.append("datacollection");
+            sb.append(File.separator);
+            configDirectory = sb.toString();
+        }
+        return configDirectory;
     }
 
     public String getSnmpStorageFlag(String collectionName) {
