@@ -38,9 +38,6 @@ package org.opennms.netmgt.collectd;
 
 import java.io.IOException;
 import java.io.InputStream;
-import java.io.InputStreamReader;
-import java.io.Reader;
-import java.io.UnsupportedEncodingException;
 
 import junit.framework.TestCase;
 
@@ -53,70 +50,77 @@ import org.opennms.netmgt.config.DatabaseSchemaConfigFactory;
 import org.opennms.netmgt.config.JMXDataCollectionConfigFactory;
 import org.opennms.netmgt.config.SnmpPeerFactory;
 import org.opennms.netmgt.dao.CollectorConfigDao;
+import org.opennms.netmgt.dao.castor.DefaultDataCollectionConfigDao;
 import org.opennms.netmgt.dao.support.RrdTestUtils;
 import org.opennms.netmgt.mock.MockDatabase;
+import org.opennms.test.ConfigurationTestUtils;
 import org.opennms.test.mock.MockLogAppender;
 import org.opennms.test.mock.MockUtil;
+import org.springframework.core.io.InputStreamResource;
 
 public class CollectorConfigDaoImplTest extends TestCase {
     @Override
-	protected void setUp() throws Exception {
-		super.setUp();
+    protected void setUp() throws Exception {
+        super.setUp();
         MockUtil.println("------------ Begin Test "+getName()+" --------------------------");
-		MockLogAppender.setupLogging();
-		
+        MockLogAppender.setupLogging();
+
         MockDatabase m_db = new MockDatabase();
-//        m_db.populate(m_network);
-        
+        //        m_db.populate(m_network);
+
         DataSourceFactory.setInstance(m_db);
 
-	}
+    }
 
     @Override
-	public void runTest() throws Throwable {
-		super.runTest();
-		MockLogAppender.assertNoWarningsOrGreater();
-	}
-	
-	@Override
-	protected void tearDown() throws Exception {
+    public void runTest() throws Throwable {
+        super.runTest();
+        MockLogAppender.assertNoWarningsOrGreater();
+    }
+
+    @Override
+    protected void tearDown() throws Exception {
         MockUtil.println("------------ End Test "+getName()+" --------------------------");
         super.tearDown();
-	}
-	
+    }
+
     private InputStream getInputStreamForFile(String fileName) {
         return getClass().getResourceAsStream(fileName);
     }
-	
-	public void testInstantiate() throws MarshalException, ValidationException, IOException, Exception {
-		initialize();
-	}
-	
-	private CollectorConfigDao initialize() throws IOException, MarshalException, ValidationException, Exception {
+
+    public void testInstantiate() throws MarshalException, ValidationException, IOException, Exception {
+        initialize();
+    }
+
+    private CollectorConfigDao initialize() throws IOException, MarshalException, ValidationException, Exception {
+        System.setProperty("opennms.home", ConfigurationTestUtils.getDaemonEtcDirectory().getParentFile().getAbsolutePath());
         RrdTestUtils.initialize();
 
         InputStream stream = null;
 
-		stream = getInputStreamForFile("/org/opennms/netmgt/config/test-database-schema.xml");
-		DatabaseSchemaConfigFactory.setInstance(new DatabaseSchemaConfigFactory(stream));
-		stream.close();
-		
-		stream = getInputStreamForFile("/org/opennms/netmgt/config/jmx-datacollection-testdata.xml");
-		JMXDataCollectionConfigFactory.setInstance(new JMXDataCollectionConfigFactory(stream));
-		stream.close();
+        stream = getInputStreamForFile("/org/opennms/netmgt/config/test-database-schema.xml");
+        DatabaseSchemaConfigFactory.setInstance(new DatabaseSchemaConfigFactory(stream));
+        stream.close();
 
-		stream = getInputStreamForFile("/org/opennms/netmgt/config/snmp-config.xml");
-		SnmpPeerFactory.setInstance(new SnmpPeerFactory(stream));
-		stream.close();
+        stream = getInputStreamForFile("/org/opennms/netmgt/config/jmx-datacollection-testdata.xml");
+        JMXDataCollectionConfigFactory.setInstance(new JMXDataCollectionConfigFactory(stream));
+        stream.close();
 
-		stream = getInputStreamForFile("/org/opennms/netmgt/config/datacollection-config.xml");
-		DataCollectionConfigFactory.setInstance(new DataCollectionConfigFactory(stream));
-		stream.close();
+        stream = getInputStreamForFile("/org/opennms/netmgt/config/snmp-config.xml");
+        SnmpPeerFactory.setInstance(new SnmpPeerFactory(stream));
+        stream.close();
 
-		stream = getInputStreamForFile("/org/opennms/netmgt/config/collectd-testdata.xml");
-		CollectdConfigFactory.setInstance(new CollectdConfigFactory(stream, "localhost", false));
-		stream.close();
+        stream = getInputStreamForFile("/org/opennms/netmgt/config/datacollection-config.xml");
+        DefaultDataCollectionConfigDao dataCollectionDao = new DefaultDataCollectionConfigDao();
+        dataCollectionDao.setConfigResource(new InputStreamResource(stream));
+        dataCollectionDao.afterPropertiesSet();
+        DataCollectionConfigFactory.setInstance(dataCollectionDao);
+        stream.close();
 
-		return new CollectorConfigDaoImpl();
-	}
+        stream = getInputStreamForFile("/org/opennms/netmgt/config/collectd-testdata.xml");
+        CollectdConfigFactory.setInstance(new CollectdConfigFactory(stream, "localhost", false));
+        stream.close();
+
+        return new CollectorConfigDaoImpl();
+    }
 }
