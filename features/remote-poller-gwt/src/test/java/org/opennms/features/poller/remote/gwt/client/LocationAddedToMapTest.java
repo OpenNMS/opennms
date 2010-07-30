@@ -2,14 +2,18 @@ package org.opennms.features.poller.remote.gwt.client;
 
 import org.junit.Test;
 
+import com.google.gwt.event.shared.HandlerManager;
+
 
 public class LocationAddedToMapTest {
     
     
     @Test
     public void testAddLocation() {
-        Application m_application = new Application();
-        m_application.initialize(new ApplicationView());
+        
+        HandlerManager eventBus = new HandlerManager(null);
+        Application application = new Application(eventBus);
+        application.initialize(new ApplicationView(eventBus));
         
         
         
