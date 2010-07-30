@@ -60,11 +60,7 @@ public class Application implements LocationsUpdatedEventHandler {
         m_view.getLocationPanel().setEventBus(getEventBus());
         Set<Status> statuses = m_view.getSelectedStatuses();
         
-        for (Status s : statuses) {
-            dlm.onStatusSelectionChanged(s, true);
-        }
-
-        m_locationManager.initialize();
+        m_locationManager.initialize(statuses);
         
         m_view.getSplitPanel().setWidgetMinSize(m_view.getLocationPanel(), 255);
         m_view.getMainPanel().setSize("100%", "100%");

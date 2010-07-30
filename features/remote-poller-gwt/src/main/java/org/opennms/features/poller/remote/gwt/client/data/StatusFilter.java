@@ -25,4 +25,10 @@ public class StatusFilter implements LocationFilter {
     public boolean removeStatus(Status status) {
         return getSelectedStatuses().remove(status);
     }
+
+    public void setStatuses(Set<Status> statuses) {
+        m_selectedStatuses.clear();
+        m_selectedStatuses.addAll(statuses);
+        
+    }
 }
