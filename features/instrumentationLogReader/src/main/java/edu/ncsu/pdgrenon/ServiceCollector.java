@@ -71,9 +71,15 @@ public class ServiceCollector {
 	public long getErrorCollectionTime() {
 	    return m_errorTime;
 	}
+	public Duration getErrorCollectionDuration() {
+		return new Duration(getErrorCollectionTime());
+	}
 	
 	public long getSuccessfulCollectionTime() {
 	    return m_totalTime - m_errorTime;
+	}
+	public Duration getSuccessfulCollectionDuration() {
+		return new Duration(getSuccessfulCollectionTime());
 	}
 	
 	public int getSuccessfulCollectionCount() {
@@ -103,16 +109,25 @@ public class ServiceCollector {
 	    if (count == 0) return 0;
 	    return getErrorCollectionTime()/count;
 	}
+	public Duration getAverageErrorCollectionDuration() {
+		return new Duration(getAverageErrorCollectionTime());
+	}
 	
 	public long getAverageSuccessfulCollectionTime() {
 	    int count = getSuccessfulCollectionCount();
 	    if (count == 0) return 0;
 	    return getSuccessfulCollectionTime()/count;
 	}
+	public Duration getAverageSuccessfulCollectionDuration() {
+		return new Duration(getAverageSuccessfulCollectionTime());
+	}
 	
 	public long getAverageTimeBetweenCollections() {
 	    if (m_betweenCount == 0) return 0;
 	    return m_totalBetweenTime/m_betweenCount;
+	}
+	public Duration getAverageDurationBetweenCollections() {
+		return new Duration(getAverageTimeBetweenCollections());
 	}
 
 	@Override
