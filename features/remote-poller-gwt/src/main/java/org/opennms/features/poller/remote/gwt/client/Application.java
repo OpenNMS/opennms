@@ -1,6 +1,8 @@
 package org.opennms.features.poller.remote.gwt.client;
 
 
+import java.util.Set;
+
 import org.opennms.features.poller.remote.gwt.client.events.LocationsUpdatedEvent;
 import org.opennms.features.poller.remote.gwt.client.events.LocationsUpdatedEventHandler;
 
@@ -9,9 +11,7 @@ import com.google.gwt.event.logical.shared.ResizeHandler;
 import com.google.gwt.event.shared.HandlerManager;
 import com.google.gwt.i18n.client.DateTimeFormat;
 import com.google.gwt.user.client.Window;
-import com.google.gwt.user.client.ui.CheckBox;
 import com.google.gwt.user.client.ui.RootPanel;
-import com.google.gwt.user.client.ui.Widget;
 
 /**
  * Entry point classes define <code>onModuleLoad()</code>.
@@ -39,34 +39,29 @@ public class Application implements LocationsUpdatedEventHandler {
     }
 
     public void initialize(ApplicationView view, MapPanel createMapPanel) {
+        // Register for all relevant events thrown by the UI components
+        getEventBus().addHandler(LocationsUpdatedEvent.TYPE, this);
+        
         // Log.setUncaughtExceptionHandler();
         m_view = view;
         
-
         Window.setTitle("OpenNMS - Remote Monitor");
         Window.enableScrolling(false);
         Window.setMargin("0px");
         Window.addResizeHandler(new ResizeHandler() {
 			public void onResize(final ResizeEvent event) {
-				m_view.getMainPanel().setHeight(getAppHeight().toString());
+				m_view.getMainPanel().setHeight(m_view.getAppHeight().toString());
 			}
         });
-
-        // Register for all relevant events thrown by the UI components
-        getEventBus().addHandler(LocationsUpdatedEvent.TYPE, this);
-
         
         final DefaultLocationManager dlm = new DefaultLocationManager(getEventBus(), m_view.getSplitPanel(), m_view.getLocationPanel(), createMapPanel);
         m_locationManager = dlm;
 
         m_view.getLocationPanel().setEventBus(getEventBus());
-
-        for (final Widget w : m_view.getStatusesPanel()) {
-            if (w instanceof CheckBox) {
-                final CheckBox cb = (CheckBox)w;
-                final Status s = Status.valueOf(cb.getFormValue());
-                dlm.onStatusSelectionChanged(s, cb.getValue());
-            }
+        Set<Status> statuses = m_view.getSelectedStatuses();
+        
+        for (Status s : statuses) {
+            dlm.onStatusSelectionChanged(s, true);
         }
 
         m_locationManager.initialize();
@@ -77,12 +72,6 @@ public class Application implements LocationsUpdatedEventHandler {
         
         m_view.updateTimestamp();
         m_view.onLocationClick(null);
-    }
-
-    Integer getAppHeight() {
-    	final com.google.gwt.user.client.Element e = m_view.getMainPanel().getElement();
-		int extraHeight = e.getAbsoluteTop();
-		return Window.getClientHeight() - extraHeight;
     }
 
     public void onApplicationViewSelected() {
