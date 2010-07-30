@@ -492,6 +492,11 @@ public final class ConfigFileConstants {
      * The config file for microblog notifications and acks
      */
     public static final int MICROBLOG_CONFIG_FILE_NAME;
+    
+    /**
+     * The config file for the JDBC Data Collector.
+     */
+    public static final int JDBC_COLLECTION_CONFIG_FILE_NAME;
 
     //
     // Initialize the class data. This section is used to initialize the
@@ -624,10 +629,12 @@ public final class ConfigFileConstants {
         
         SNMP_ASSET_ADAPTER_CONFIG_FILE_NAME = 79;
         
+        JDBC_COLLECTION_CONFIG_FILE_NAME = 80;
+        
         
         // Allocate and build the mapping of identifiers to names
         //
-        FILE_ID_TO_NAME = new String[80];
+        FILE_ID_TO_NAME = new String[81];
 
         FILE_ID_TO_NAME[DB_CONFIG_FILE_NAME] = "opennms-database.xml";
         FILE_ID_TO_NAME[JMS_CONFIG_FILE_NAME] = "opennms-jms.xml";
@@ -724,6 +731,7 @@ public final class ConfigFileConstants {
         FILE_ID_TO_NAME[MAPS_ADAPTER_CONFIG_FILE_NAME] = "mapsadapter-configuration.xml";
         FILE_ID_TO_NAME[MICROBLOG_CONFIG_FILE_NAME] = "microblog-configuration.xml";
         FILE_ID_TO_NAME[SNMP_ASSET_ADAPTER_CONFIG_FILE_NAME] = "snmp-asset-adapter-configuration.xml";
+        FILE_ID_TO_NAME[JDBC_COLLECTION_CONFIG_FILE_NAME] = "jdbc-datacollection-config.xml";
     }
 
     /**
