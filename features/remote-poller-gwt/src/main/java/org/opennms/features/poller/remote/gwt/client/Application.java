@@ -39,9 +39,7 @@ public class Application implements LocationsUpdatedEventHandler {
         // Log.setUncaughtExceptionHandler();
         m_view = view;
         
-        m_locationManager = new DefaultLocationManager(getEventBus(), m_view.getSplitPanel(), m_view.getLocationPanel(), createMapPanel);
-
-        m_locationManager.initialize(m_view.getSelectedStatuses());
+        m_locationManager = new DefaultLocationManager(getEventBus(), m_view, createMapPanel);
         
         m_view.initialize();
     }

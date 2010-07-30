@@ -100,14 +100,15 @@ public class DefaultLocationManager implements LocationManager, RemotePollerPres
      * <p>Constructor for DefaultLocationManager.</p>
      *
      * @param eventBus a {@link com.google.gwt.event.shared.HandlerManager} object.
+     * @param view 
+     * @param mapPanel a {@link org.opennms.features.poller.remote.gwt.client.MapPanel} object.
      * @param panel a {@link com.google.gwt.user.client.ui.SplitLayoutPanel} object.
      * @param locationPanel a {@link org.opennms.features.poller.remote.gwt.client.LocationPanel} object.
-     * @param mapPanel a {@link org.opennms.features.poller.remote.gwt.client.MapPanel} object.
      */
-    public DefaultLocationManager(final HandlerManager eventBus, final SplitLayoutPanel panel, final LocationPanel locationPanel, MapPanel mapPanel) {
+    public DefaultLocationManager(final HandlerManager eventBus, ApplicationView view, MapPanel mapPanel) {
         m_eventBus = eventBus;
-        m_panel = panel;
-        m_locationPanel = locationPanel;
+        m_panel = view.getSplitPanel();
+        m_locationPanel = view.getLocationPanel();
         m_mapPanel = mapPanel;
 
         // Register for all relevant events thrown by the UI components
@@ -121,6 +122,8 @@ public class DefaultLocationManager implements LocationManager, RemotePollerPres
         m_eventBus.addHandler(ApplicationSelectedEvent.TYPE, this);
         m_eventBus.addHandler(GWTMarkerClickedEvent.TYPE, this);
         m_eventBus.addHandler(GWTMarkerInfoWindowRefreshEvent.TYPE, this);
+        
+        initialize(view.getSelectedStatuses());
     }
 
     public void initialize(Set<Status> statuses) {
