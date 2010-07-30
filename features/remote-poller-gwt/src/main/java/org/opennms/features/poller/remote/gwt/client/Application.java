@@ -1,6 +1,5 @@
 package org.opennms.features.poller.remote.gwt.client;
 
-import java.util.Date;
 
 import org.opennms.features.poller.remote.gwt.client.events.LocationsUpdatedEvent;
 import org.opennms.features.poller.remote.gwt.client.events.LocationsUpdatedEventHandler;
@@ -24,7 +23,7 @@ import com.google.gwt.user.client.ui.Widget;
 public class Application implements LocationsUpdatedEventHandler {
     
 
-    private static final DateTimeFormat UPDATE_TIMESTAMP_FORMAT = DateTimeFormat.getMediumDateTimeFormat();
+    static final DateTimeFormat UPDATE_TIMESTAMP_FORMAT = DateTimeFormat.getMediumDateTimeFormat();
 
     
 
@@ -79,7 +78,7 @@ public class Application implements LocationsUpdatedEventHandler {
         m_view.getMainPanel().setSize("100%", "100%");
         RootPanel.get("remotePollerMap").add(m_view.getMainPanel());
         
-        updateTimestamp();
+        m_view.updateTimestamp();
         m_view.onLocationClick(null);
         
     }
@@ -124,16 +123,9 @@ public class Application implements LocationsUpdatedEventHandler {
 
     /** {@inheritDoc} */
     public void onLocationsUpdated(LocationsUpdatedEvent e) {
-        updateTimestamp();
+        m_view.updateTimestamp();
     }
     
-    /**
-     * <p>updateTimestamp</p>
-     */
-    public void updateTimestamp() {
-        m_view.getUpdateTimestamp().setText("Last update: " + UPDATE_TIMESTAMP_FORMAT.format(new Date()));
-    }
-
     private HandlerManager getEventBus() {
         return m_eventBus;
     }

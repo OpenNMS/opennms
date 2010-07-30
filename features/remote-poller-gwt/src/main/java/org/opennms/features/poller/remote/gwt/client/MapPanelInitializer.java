@@ -20,7 +20,7 @@ final class MapPanelInitializer implements
     }
 
     public void onInitializationComplete(LocationManagerInitializationCompleteEvent event) {
-        getApplication().updateTimestamp();
+        getApplication().m_view.updateTimestamp();
         getApplication().m_view.getSplitPanel().setWidgetMinSize(getApplication().m_view.getLocationPanel(), 255);
         getApplication().m_view.getMainPanel().setSize("100%", "100%");
         RootPanel.get("remotePollerMap").add(getApplication().m_view.getMainPanel());

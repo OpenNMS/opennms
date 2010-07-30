@@ -1,5 +1,7 @@
 package org.opennms.features.poller.remote.gwt.client;
 
+import java.util.Date;
+
 import org.opennms.features.poller.remote.gwt.client.FilterPanel.StatusSelectionChangedEvent;
 
 import com.google.gwt.core.client.GWT;
@@ -10,14 +12,13 @@ import com.google.gwt.uibinder.client.UiBinder;
 import com.google.gwt.uibinder.client.UiField;
 import com.google.gwt.uibinder.client.UiHandler;
 import com.google.gwt.user.client.ui.CheckBox;
-import com.google.gwt.user.client.ui.Composite;
 import com.google.gwt.user.client.ui.DockLayoutPanel;
 import com.google.gwt.user.client.ui.HorizontalPanel;
 import com.google.gwt.user.client.ui.Hyperlink;
 import com.google.gwt.user.client.ui.Label;
 import com.google.gwt.user.client.ui.SplitLayoutPanel;
 
-public class ApplicationView extends Composite {
+public class ApplicationView {
     
     interface Binder extends UiBinder<DockLayoutPanel, ApplicationView> {}
     
@@ -59,11 +60,15 @@ public class ApplicationView extends Composite {
     protected CheckBox statusUnknown;
     
     private final HandlerManager m_eventBus;
+
+
+    private Application m_presenter;
     
     
-    public ApplicationView(HandlerManager eventBus) {
+    public ApplicationView(Application presenter, HandlerManager eventBus) {
+        m_presenter = presenter;
         m_eventBus = eventBus;
-        initWidget(BINDER.createAndBindUi(this));
+        BINDER.createAndBindUi(this);
     }
     
     @UiHandler("statusDown")
@@ -157,7 +162,7 @@ public class ApplicationView extends Composite {
     }
     
     Application getPresenter() {
-        return null;
+        return m_presenter;
     }
 
     /**
@@ -196,5 +201,12 @@ public class ApplicationView extends Composite {
             getLocationPanel().showApplicationFilters(false);
             getLocationPanel().resizeDockPanel();
         }
+    }
+
+    /**
+     * <p>updateTimestamp</p>
+     */
+    public void updateTimestamp() {
+        getUpdateTimestamp().setText("Last update: " + Application.UPDATE_TIMESTAMP_FORMAT.format(new Date()));
     }
 }

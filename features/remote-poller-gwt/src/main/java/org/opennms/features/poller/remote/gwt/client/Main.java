@@ -9,7 +9,7 @@ public class Main implements EntryPoint {
     public void onModuleLoad() {
         HandlerManager eventBus = new HandlerManager(null);
         Application application = new Application(eventBus);
-        application.initialize(new ApplicationView(eventBus));
+        application.initialize(new ApplicationView(application, eventBus));
 
     }
 
