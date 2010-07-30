@@ -8,6 +8,8 @@ import org.opennms.features.poller.remote.gwt.client.FilterPanel.StatusSelection
 
 import com.google.gwt.core.client.GWT;
 import com.google.gwt.event.dom.client.ClickEvent;
+import com.google.gwt.event.logical.shared.ResizeEvent;
+import com.google.gwt.event.logical.shared.ResizeHandler;
 import com.google.gwt.event.shared.HandlerManager;
 import com.google.gwt.resources.client.CssResource;
 import com.google.gwt.uibinder.client.UiBinder;
@@ -19,6 +21,7 @@ import com.google.gwt.user.client.ui.DockLayoutPanel;
 import com.google.gwt.user.client.ui.HorizontalPanel;
 import com.google.gwt.user.client.ui.Hyperlink;
 import com.google.gwt.user.client.ui.Label;
+import com.google.gwt.user.client.ui.RootPanel;
 import com.google.gwt.user.client.ui.SplitLayoutPanel;
 import com.google.gwt.user.client.ui.Widget;
 
@@ -73,6 +76,9 @@ public class ApplicationView {
         m_presenter = presenter;
         m_eventBus = eventBus;
         BINDER.createAndBindUi(this);
+        
+        locationPanel.setEventBus(eventBus);
+        setupWindow();
     }
     
     @UiHandler("statusDown")
@@ -232,5 +238,25 @@ public class ApplicationView {
             }
         }
         return statuses;
+    }
+
+    void setupWindow() {
+        Window.setTitle("OpenNMS - Remote Monitor");
+        Window.enableScrolling(false);
+        Window.setMargin("0px");
+        Window.addResizeHandler(new ResizeHandler() {
+    		public void onResize(final ResizeEvent event) {
+    			getMainPanel().setHeight(getAppHeight().toString());
+    		}
+        });
+    }
+
+    void initialize() {
+        getSplitPanel().setWidgetMinSize(getLocationPanel(), 255);
+        getMainPanel().setSize("100%", "100%");
+        RootPanel.get("remotePollerMap").add(getMainPanel());
+        
+        updateTimestamp();
+        onLocationClick(null);
     }
 }

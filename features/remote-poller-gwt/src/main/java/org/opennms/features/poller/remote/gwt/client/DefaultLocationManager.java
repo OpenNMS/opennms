@@ -126,10 +126,6 @@ public class DefaultLocationManager implements LocationManager, RemotePollerPres
     public void initialize(Set<Status> statuses) {
         m_statusFilter.setStatuses(statuses);
         
-        //updateAllMarkerStates();
-        
-        //m_locationPanel.updateLocationList(getLocationsForLocationPanel());
-        
         getPanel().add(m_mapPanel.getWidget());
         initializeEventService();
         

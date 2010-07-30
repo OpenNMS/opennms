@@ -1,17 +1,11 @@
 package org.opennms.features.poller.remote.gwt.client;
 
 
-import java.util.Set;
-
 import org.opennms.features.poller.remote.gwt.client.events.LocationsUpdatedEvent;
 import org.opennms.features.poller.remote.gwt.client.events.LocationsUpdatedEventHandler;
 
-import com.google.gwt.event.logical.shared.ResizeEvent;
-import com.google.gwt.event.logical.shared.ResizeHandler;
 import com.google.gwt.event.shared.HandlerManager;
 import com.google.gwt.i18n.client.DateTimeFormat;
-import com.google.gwt.user.client.Window;
-import com.google.gwt.user.client.ui.RootPanel;
 
 /**
  * Entry point classes define <code>onModuleLoad()</code>.
@@ -45,29 +39,11 @@ public class Application implements LocationsUpdatedEventHandler {
         // Log.setUncaughtExceptionHandler();
         m_view = view;
         
-        Window.setTitle("OpenNMS - Remote Monitor");
-        Window.enableScrolling(false);
-        Window.setMargin("0px");
-        Window.addResizeHandler(new ResizeHandler() {
-			public void onResize(final ResizeEvent event) {
-				m_view.getMainPanel().setHeight(m_view.getAppHeight().toString());
-			}
-        });
-        
-        final DefaultLocationManager dlm = new DefaultLocationManager(getEventBus(), m_view.getSplitPanel(), m_view.getLocationPanel(), createMapPanel);
-        m_locationManager = dlm;
+        m_locationManager = new DefaultLocationManager(getEventBus(), m_view.getSplitPanel(), m_view.getLocationPanel(), createMapPanel);
 
-        m_view.getLocationPanel().setEventBus(getEventBus());
-        Set<Status> statuses = m_view.getSelectedStatuses();
+        m_locationManager.initialize(m_view.getSelectedStatuses());
         
-        m_locationManager.initialize(statuses);
-        
-        m_view.getSplitPanel().setWidgetMinSize(m_view.getLocationPanel(), 255);
-        m_view.getMainPanel().setSize("100%", "100%");
-        RootPanel.get("remotePollerMap").add(m_view.getMainPanel());
-        
-        m_view.updateTimestamp();
-        m_view.onLocationClick(null);
+        m_view.initialize();
     }
 
     public void onApplicationViewSelected() {
