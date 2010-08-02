@@ -4,6 +4,8 @@ import org.junit.Test;
 
 import com.google.gwt.event.shared.HandlerManager;
 
+import de.novanic.eventservice.client.event.RemoteEventService;
+
 
 public class LocationAddedToMapTest {
     
@@ -13,8 +15,24 @@ public class LocationAddedToMapTest {
         
         HandlerManager eventBus = new HandlerManager(null);
         Application application = new Application(eventBus);
-        MapPanel createMapPanel = new MapQuestMapPanel(eventBus);
-        application.initialize(new DefaultApplicationView(application, eventBus), createMapPanel);
+        MapPanel mapPanel = createMockMapPanel();
+        application.initialize(createMockApplicationView(eventBus, application, mapPanel), createMockRemoteService(), createMockRemoteEventService());
         
+    }
+
+    private DefaultApplicationView createMockApplicationView( HandlerManager eventBus, Application application, MapPanel mapPanel) {
+        return new DefaultApplicationView(application, eventBus, mapPanel);
+    }
+
+    private MapPanel createMockMapPanel() {
+        return null;
+    }
+
+    private RemoteEventService createMockRemoteEventService() {
+        return null;
+    }
+
+    private LocationStatusServiceAsync createMockRemoteService() {
+        return null;
     }
 }

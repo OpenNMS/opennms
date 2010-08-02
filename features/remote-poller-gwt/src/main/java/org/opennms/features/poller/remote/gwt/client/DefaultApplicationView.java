@@ -1,10 +1,14 @@
 package org.opennms.features.poller.remote.gwt.client;
 
+import java.util.ArrayList;
 import java.util.Date;
 import java.util.HashSet;
+import java.util.List;
 import java.util.Set;
+import java.util.TreeSet;
 
 import org.opennms.features.poller.remote.gwt.client.FilterPanel.StatusSelectionChangedEvent;
+import org.opennms.features.poller.remote.gwt.client.location.LocationInfo;
 
 import com.google.gwt.core.client.GWT;
 import com.google.gwt.event.dom.client.ClickEvent;
@@ -67,6 +71,8 @@ public class DefaultApplicationView {
     @UiField
     protected CheckBox statusUnknown;
     
+    private final MapPanel m_mapPanel;
+    
     private final HandlerManager m_eventBus;
 
 
@@ -76,9 +82,10 @@ public class DefaultApplicationView {
     static final DateTimeFormat UPDATE_TIMESTAMP_FORMAT = DateTimeFormat.getMediumDateTimeFormat();
     
     
-    public DefaultApplicationView(Application presenter, HandlerManager eventBus) {
+    public DefaultApplicationView(Application presenter, HandlerManager eventBus, MapPanel mapPanel) {
         m_presenter = presenter;
         m_eventBus = eventBus;
+        m_mapPanel = mapPanel;
         BINDER.createAndBindUi(this);
         
         locationPanel.setEventBus(eventBus);
@@ -244,7 +251,7 @@ public class DefaultApplicationView {
         return statuses;
     }
 
-    void setupWindow() {
+    private void setupWindow() {
         Window.setTitle("OpenNMS - Remote Monitor");
         Window.enableScrolling(false);
         Window.setMargin("0px");
@@ -255,12 +262,65 @@ public class DefaultApplicationView {
         });
     }
 
-    void initialize() {
+    public void initialize() {
+        addMapWidget(getMapPanel().getWidget());
         getSplitPanel().setWidgetMinSize(getLocationPanel(), 255);
         getMainPanel().setSize("100%", "100%");
         RootPanel.get("remotePollerMap").add(getMainPanel());
         
         updateTimestamp();
         onLocationClick(null);
+    }
+
+    public void addMapWidget(Widget widget) {
+        getSplitPanel().add(widget);
+    }
+
+    void updateSelectedApplications(Set<ApplicationInfo> applications) {
+        getLocationPanel().updateSelectedApplications(applications);
+    }
+
+    void updateLocationList( ArrayList<LocationInfo> locationsForLocationPanel) {
+        getLocationPanel().updateLocationList(locationsForLocationPanel);
+    }
+
+    public void setSelectedTag(String selectedTag, List<String> allTags) {
+        getLocationPanel().clearTagPanel();
+        getLocationPanel().addAllTags(allTags);
+        getLocationPanel().selectTag(selectedTag);
+    }
+
+    void updateApplicationList(ArrayList<ApplicationInfo> applications) {
+        getLocationPanel().updateApplicationList(applications);
+    }
+
+    void updateApplicationNames(TreeSet<String> allApplicationNames) {
+        getLocationPanel().updateApplicationNames(allApplicationNames);
+    }
+
+    public MapPanel getMapPanel() {
+        return m_mapPanel;
+    }
+
+    void fitMapToLocations(GWTBounds locationBounds) {
+        if (getMapPanel() instanceof SmartMapFit) {
+            ((SmartMapFit)getMapPanel()).fitToBounds();
+        } else {
+            //TODO: Zoom in to visible locations on startup
+            
+            getMapPanel().setBounds(locationBounds);
+        }
+    }
+
+    GWTBounds getMapBounds() {
+        return getMapPanel().getBounds();
+    }
+
+    void showLocationDetails(final String locationName, String htmlTitle, String htmlContent) {
+        getMapPanel().showLocationDetails(locationName, htmlTitle, htmlContent);
+    }
+
+    void placeMarker(final GWTMarkerState markerState) {
+        getMapPanel().placeMarker(markerState);
     }
 }

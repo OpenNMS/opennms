@@ -1,8 +1,12 @@
 package org.opennms.features.poller.remote.gwt.client;
 
 import com.google.gwt.core.client.EntryPoint;
+import com.google.gwt.core.client.GWT;
 import com.google.gwt.event.shared.HandlerManager;
 import com.google.gwt.user.client.Window;
+
+import de.novanic.eventservice.client.event.RemoteEventService;
+import de.novanic.eventservice.client.event.RemoteEventServiceFactory;
 
 public class Main implements EntryPoint {
     
@@ -12,8 +16,11 @@ public class Main implements EntryPoint {
     public void onModuleLoad() {
         m_eventBus = new HandlerManager(null);
         Application application = new Application(getEventBus());
-        MapPanel createMapPanel = createMap(application);
-        application.initialize(new DefaultApplicationView(application, getEventBus()), createMapPanel);
+        MapPanel mapPanel = createMap(application);
+        
+        LocationStatusServiceAsync remoteService = GWT.create(LocationStatusService.class);
+        RemoteEventService remoteEventService = RemoteEventServiceFactory.getInstance().getRemoteEventService();
+        application.initialize(new DefaultApplicationView(application, getEventBus(), mapPanel), remoteService, remoteEventService);
 
     }
 
