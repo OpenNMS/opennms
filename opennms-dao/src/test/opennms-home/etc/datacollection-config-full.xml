@@ -2763,7 +2763,7 @@
         <sysoidMask>.1.3.6.1.4.1.3076.</sysoidMask>
         <collect>
           <includeGroup>cisco-cike</includeGroup>
-          <!--  <includeGroup>altiga-hardware</includeGroup> NOT DEFINED -->
+          <includeGroup>altiga</includeGroup>
         </collect>
       </systemDef>
 

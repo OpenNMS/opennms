@@ -2763,7 +2763,7 @@
         <sysoidMask>.1.3.6.1.4.1.3076.</sysoidMask>
         <collect>
           <includeGroup>cisco-cike</includeGroup>
-          <!--  <includeGroup>altiga-hardware</includeGroup> NOT DEFINED -->
+          <includeGroup>altiga</includeGroup>
         </collect>
       </systemDef>
 
@@ -3472,7 +3472,7 @@
         <sysoidMask>.1.3.6.1.4.1.1347.</sysoidMask>
         <collect>
           <includeGroup>printer-usage</includeGroup>
-          <!-- <includeGroup>printer-mib</includeGroup> NOT DEFINED. Did you mean printer-mib-supplies? -->
+          <includeGroup>printer-mib-supplies</includeGroup>
         </collect>
       </systemDef>
 
