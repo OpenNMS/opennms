@@ -20,7 +20,7 @@ public class Application implements LocationsUpdatedEventHandler {
     private LocationManager m_locationManager;
     private final HandlerManager m_eventBus;
 
-    DefaultApplicationView m_view;
+    ApplicationView m_view;
 
     
 
@@ -28,7 +28,7 @@ public class Application implements LocationsUpdatedEventHandler {
         m_eventBus = eventBus;
     }
 
-    public void initialize(DefaultApplicationView view, LocationStatusServiceAsync remoteService, RemoteEventService remoteEventService) {
+    public void initialize(ApplicationView view, LocationStatusServiceAsync remoteService, RemoteEventService remoteEventService) {
         // Register for all relevant events thrown by the UI components
         getEventBus().addHandler(LocationsUpdatedEvent.TYPE, this);
         

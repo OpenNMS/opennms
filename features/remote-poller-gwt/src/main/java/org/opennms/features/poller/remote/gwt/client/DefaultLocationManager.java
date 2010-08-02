@@ -85,7 +85,7 @@ public class DefaultLocationManager implements LocationManager, RemotePollerPres
 
     private boolean m_updated = false;
 
-    private DefaultApplicationView m_view;
+    private ApplicationView m_view;
     
     /**
      * <p>Constructor for DefaultLocationManager.</p>
@@ -96,7 +96,7 @@ public class DefaultLocationManager implements LocationManager, RemotePollerPres
      * @param panel a {@link com.google.gwt.user.client.ui.SplitLayoutPanel} object.
      * @param locationPanel a {@link org.opennms.features.poller.remote.gwt.client.LocationPanel} object.
      */
-    public DefaultLocationManager(final HandlerManager eventBus, DefaultApplicationView view, LocationStatusServiceAsync remoteService, RemoteEventService remoteEventService) {
+    public DefaultLocationManager(final HandlerManager eventBus, ApplicationView view, LocationStatusServiceAsync remoteService, RemoteEventService remoteEventService) {
         m_eventBus = eventBus;
         m_view = view;
         m_remoteService = remoteService;

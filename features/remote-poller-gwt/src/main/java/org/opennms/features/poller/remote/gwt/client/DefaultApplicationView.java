@@ -30,7 +30,7 @@ import com.google.gwt.user.client.ui.RootPanel;
 import com.google.gwt.user.client.ui.SplitLayoutPanel;
 import com.google.gwt.user.client.ui.Widget;
 
-public class DefaultApplicationView {
+public class DefaultApplicationView implements ApplicationView {
     
     interface Binder extends UiBinder<DockLayoutPanel, DefaultApplicationView> {}
     
@@ -122,67 +122,67 @@ public class DefaultApplicationView {
         getEventBus().fireEvent(new StatusSelectionChangedEvent(Status.UNKNOWN, getStatusUnknown().getValue()));
     }
 
-    public HandlerManager getEventBus() {
+    private HandlerManager getEventBus() {
         return m_eventBus;
     }
     
-    public DockLayoutPanel getMainPanel() {
+    private DockLayoutPanel getMainPanel() {
         return mainPanel;
     }
 
-    public SplitLayoutPanel getSplitPanel() {
+    private SplitLayoutPanel getSplitPanel() {
         return splitPanel;
     }
 
-    public HorizontalPanel getStatusesPanel() {
+    private HorizontalPanel getStatusesPanel() {
         return statusesPanel;
     }
 
-    public CheckBox getStatusDown() {
+    private CheckBox getStatusDown() {
         return statusDown;
     }
 
-    public CheckBox getStatusDisconnected() {
+    private CheckBox getStatusDisconnected() {
         return statusDisconnected;
     }
 
-    public CheckBox getStatusMarginal() {
+    private CheckBox getStatusMarginal() {
         return statusMarginal;
     }
 
-    public CheckBox getStatusUp() {
+    private CheckBox getStatusUp() {
         return statusUp;
     }
 
-    public CheckBox getStatusStopped() {
+    private CheckBox getStatusStopped() {
         return statusStopped;
     }
 
-    public CheckBox getStatusUnknown() {
+    private CheckBox getStatusUnknown() {
         return statusUnknown;
     }
     
-    public LocationPanel getLocationPanel() {
+    private LocationPanel getLocationPanel() {
         return locationPanel;
     }
     
-    public Hyperlink getLocationLink() {
+    private Hyperlink getLocationLink() {
         return locationLink;
     }
 
-    public Hyperlink getApplicationLink() {
+    private Hyperlink getApplicationLink() {
         return applicationLink;
     }
 
-    public LinkStyles getLinkStyles() {
+    private LinkStyles getLinkStyles() {
         return linkStyles;
     }
 
-    public Label getUpdateTimestamp() {
+    private Label getUpdateTimestamp() {
         return updateTimestamp;
     }
     
-    Application getPresenter() {
+    private Application getPresenter() {
         return m_presenter;
     }
 
@@ -224,20 +224,23 @@ public class DefaultApplicationView {
         }
     }
 
-    /**
-     * <p>updateTimestamp</p>
+    /* (non-Javadoc)
+     * @see org.opennms.features.poller.remote.gwt.client.ApplicationView#updateTimestamp()
      */
     public void updateTimestamp() {
         getUpdateTimestamp().setText("Last update: " + UPDATE_TIMESTAMP_FORMAT.format(new Date()));
     }
 
-    Integer getAppHeight() {
+    private Integer getAppHeight() {
     	final com.google.gwt.user.client.Element e = getMainPanel().getElement();
     	int extraHeight = e.getAbsoluteTop();
     	return Window.getClientHeight() - extraHeight;
     }
 
-    Set<Status> getSelectedStatuses() {
+    /* (non-Javadoc)
+     * @see org.opennms.features.poller.remote.gwt.client.ApplicationView#getSelectedStatuses()
+     */
+    public Set<Status> getSelectedStatuses() {
         
         Set<Status> statuses = new HashSet<Status>();
         for (final Widget w : getStatusesPanel()) {
@@ -262,8 +265,11 @@ public class DefaultApplicationView {
         });
     }
 
+    /* (non-Javadoc)
+     * @see org.opennms.features.poller.remote.gwt.client.ApplicationView#initialize()
+     */
     public void initialize() {
-        addMapWidget(getMapPanel().getWidget());
+        getSplitPanel().add(getMapPanel().getWidget());
         getSplitPanel().setWidgetMinSize(getLocationPanel(), 255);
         getMainPanel().setSize("100%", "100%");
         RootPanel.get("remotePollerMap").add(getMainPanel());
@@ -272,37 +278,51 @@ public class DefaultApplicationView {
         onLocationClick(null);
     }
 
-    public void addMapWidget(Widget widget) {
-        getSplitPanel().add(widget);
-    }
-
-    void updateSelectedApplications(Set<ApplicationInfo> applications) {
+    /* (non-Javadoc)
+     * @see org.opennms.features.poller.remote.gwt.client.ApplicationView#updateSelectedApplications(java.util.Set)
+     */
+    public void updateSelectedApplications(Set<ApplicationInfo> applications) {
         getLocationPanel().updateSelectedApplications(applications);
     }
 
-    void updateLocationList( ArrayList<LocationInfo> locationsForLocationPanel) {
+    /* (non-Javadoc)
+     * @see org.opennms.features.poller.remote.gwt.client.ApplicationView#updateLocationList(java.util.ArrayList)
+     */
+    public void updateLocationList( ArrayList<LocationInfo> locationsForLocationPanel) {
         getLocationPanel().updateLocationList(locationsForLocationPanel);
     }
 
+    /* (non-Javadoc)
+     * @see org.opennms.features.poller.remote.gwt.client.ApplicationView#setSelectedTag(java.lang.String, java.util.List)
+     */
     public void setSelectedTag(String selectedTag, List<String> allTags) {
         getLocationPanel().clearTagPanel();
         getLocationPanel().addAllTags(allTags);
         getLocationPanel().selectTag(selectedTag);
     }
 
-    void updateApplicationList(ArrayList<ApplicationInfo> applications) {
+    /* (non-Javadoc)
+     * @see org.opennms.features.poller.remote.gwt.client.ApplicationView#updateApplicationList(java.util.ArrayList)
+     */
+    public void updateApplicationList(ArrayList<ApplicationInfo> applications) {
         getLocationPanel().updateApplicationList(applications);
     }
 
-    void updateApplicationNames(TreeSet<String> allApplicationNames) {
+    /* (non-Javadoc)
+     * @see org.opennms.features.poller.remote.gwt.client.ApplicationView#updateApplicationNames(java.util.TreeSet)
+     */
+    public void updateApplicationNames(TreeSet<String> allApplicationNames) {
         getLocationPanel().updateApplicationNames(allApplicationNames);
     }
 
-    public MapPanel getMapPanel() {
+    private MapPanel getMapPanel() {
         return m_mapPanel;
     }
 
-    void fitMapToLocations(GWTBounds locationBounds) {
+    /* (non-Javadoc)
+     * @see org.opennms.features.poller.remote.gwt.client.ApplicationView#fitMapToLocations(org.opennms.features.poller.remote.gwt.client.GWTBounds)
+     */
+    public void fitMapToLocations(GWTBounds locationBounds) {
         if (getMapPanel() instanceof SmartMapFit) {
             ((SmartMapFit)getMapPanel()).fitToBounds();
         } else {
@@ -312,15 +332,24 @@ public class DefaultApplicationView {
         }
     }
 
-    GWTBounds getMapBounds() {
+    /* (non-Javadoc)
+     * @see org.opennms.features.poller.remote.gwt.client.ApplicationView#getMapBounds()
+     */
+    public GWTBounds getMapBounds() {
         return getMapPanel().getBounds();
     }
 
-    void showLocationDetails(final String locationName, String htmlTitle, String htmlContent) {
+    /* (non-Javadoc)
+     * @see org.opennms.features.poller.remote.gwt.client.ApplicationView#showLocationDetails(java.lang.String, java.lang.String, java.lang.String)
+     */
+    public void showLocationDetails(final String locationName, String htmlTitle, String htmlContent) {
         getMapPanel().showLocationDetails(locationName, htmlTitle, htmlContent);
     }
 
-    void placeMarker(final GWTMarkerState markerState) {
+    /* (non-Javadoc)
+     * @see org.opennms.features.poller.remote.gwt.client.ApplicationView#placeMarker(org.opennms.features.poller.remote.gwt.client.GWTMarkerState)
+     */
+    public void placeMarker(final GWTMarkerState markerState) {
         getMapPanel().placeMarker(markerState);
     }
 }
