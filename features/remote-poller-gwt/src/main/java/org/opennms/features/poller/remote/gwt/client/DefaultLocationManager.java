@@ -4,7 +4,9 @@ import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.Comparator;
+import java.util.LinkedList;
 import java.util.List;
+import java.util.Queue;
 import java.util.Set;
 
 import org.opennms.features.poller.remote.gwt.client.FilterPanel.Filters;
@@ -37,6 +39,7 @@ import org.opennms.features.poller.remote.gwt.client.remoteevents.UpdateComplete
 
 import com.google.gwt.event.shared.HandlerManager;
 import com.google.gwt.http.client.URL;
+import com.google.gwt.user.client.IncrementalCommand;
 import com.google.gwt.user.client.Window;
 import com.google.gwt.user.client.rpc.AsyncCallback;
 import com.google.gwt.user.client.ui.DialogBox;
@@ -66,6 +69,50 @@ import de.novanic.eventservice.client.event.RemoteEventService;
  */
 public class DefaultLocationManager implements LocationManager, RemotePollerPresenter {
 
+    public class ApplicationUpdater implements IncrementalCommand {
+        
+        private ApplicationInfo m_applicationInfo;
+
+        public ApplicationUpdater(ApplicationInfo applicationInfo) {
+            m_applicationInfo = applicationInfo;
+        }
+
+        public void schedule(CommandExecutor executor) {
+            executor.schedule(this);
+        }
+        
+        public boolean execute() {
+            
+            throw new UnsupportedOperationException("execute is not implemented");
+        }
+
+    }
+
+    public class LocationUpdater implements IncrementalCommand{
+
+        private Queue<LocationInfo> m_locations;
+
+        public LocationUpdater(Collection<LocationInfo> locations) {
+            m_locations = new LinkedList<LocationInfo>(locations);
+        }
+        
+        public void schedule(CommandExecutor executor) {
+            executor.schedule(this);
+        }
+
+        public boolean execute() {
+            if(m_locations.isEmpty()) {
+                return false;
+            }else {
+                LocationInfo location = m_locations.remove();
+                updateLocation(location);
+                return !m_locations.isEmpty();
+            }
+            
+        }
+
+    }
+
     private final DataManager m_dataManager = new DataManager();
     
     private final ApplicationFilter m_applicationFilter = new ApplicationFilter();
@@ -85,8 +132,10 @@ public class DefaultLocationManager implements LocationManager, RemotePollerPres
 
     private boolean m_updated = false;
 
-    private ApplicationView m_view;
-    
+    private final ApplicationView m_view;
+
+    private final CommandExecutor m_executor;
+
     /**
      * <p>Constructor for DefaultLocationManager.</p>
      *
@@ -96,11 +145,12 @@ public class DefaultLocationManager implements LocationManager, RemotePollerPres
      * @param panel a {@link com.google.gwt.user.client.ui.SplitLayoutPanel} object.
      * @param locationPanel a {@link org.opennms.features.poller.remote.gwt.client.LocationPanel} object.
      */
-    public DefaultLocationManager(final HandlerManager eventBus, ApplicationView view, LocationStatusServiceAsync remoteService, RemoteEventService remoteEventService) {
+    public DefaultLocationManager(final HandlerManager eventBus, ApplicationView view, LocationStatusServiceAsync remoteService, RemoteEventService remoteEventService, CommandExecutor commandExecutor) {
         m_eventBus = eventBus;
         m_view = view;
         m_remoteService = remoteService;
         m_remoteEventService = remoteEventService;
+        m_executor = commandExecutor;
 
         // Register for all relevant events thrown by the UI components
         m_eventBus.addHandler(LocationPanelSelectEvent.TYPE, this);
@@ -308,11 +358,8 @@ public class DefaultLocationManager implements LocationManager, RemotePollerPres
             placeMarker(info);
         
             if (m_updated) {
-                updateAllMarkerStates();
-                
                 // Update the icon/caption in the LHN
                 m_view.updateLocationList(getLocationsForLocationPanel());
-            
                 m_eventBus.fireEvent(new LocationsUpdatedEvent());
             }
             
@@ -335,6 +382,8 @@ public class DefaultLocationManager implements LocationManager, RemotePollerPres
      * {@link org.opennms.features.poller.remote.gwt.client.remoteevents.ApplicationUpdatedRemoteEvent} events.
      */
     public void updateApplication(final ApplicationInfo applicationInfo) {
+//        ApplicationUpdater appUpdater = new ApplicationUpdater(applicationInfo);
+//        appUpdater.schedule(m_applicationExecutor);
         if (applicationInfo == null)
             return;
 
@@ -570,22 +619,8 @@ public class DefaultLocationManager implements LocationManager, RemotePollerPres
     }
 
     public void updateLocations(Collection<LocationInfo> locations) {
-        m_dataManager.updateLocations(locations);
-        
-        for(LocationInfo location : locations) {
-            placeMarker(location);
-        }
-        
-        
-        if (m_updated) {
-            
-            // Update the icon/caption in the LHN
-            m_view.updateApplicationNames(m_dataManager.getAllApplicationNames());
-            updateAllMarkerStates();
-            m_view.updateLocationList(getLocationsForLocationPanel());
-            m_eventBus.fireEvent(new LocationsUpdatedEvent());
-        }
-       
+        LocationUpdater locUpdater = new LocationUpdater(locations);
+        locUpdater.schedule(m_executor);
     }
 
     private RemoteEventService getRemoteEventService() {

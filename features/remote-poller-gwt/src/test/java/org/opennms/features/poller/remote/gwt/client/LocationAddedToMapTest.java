@@ -6,6 +6,7 @@ import static org.junit.Assert.assertNotNull;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.HashSet;
+import java.util.Iterator;
 import java.util.List;
 import java.util.Random;
 import java.util.Set;
@@ -21,6 +22,7 @@ import org.opennms.features.poller.remote.gwt.client.remoteevents.UpdateComplete
 import org.opennms.features.poller.remote.gwt.client.utils.BoundsBuilder;
 
 import com.google.gwt.event.shared.HandlerManager;
+import com.google.gwt.user.client.IncrementalCommand;
 
 import de.novanic.eventservice.client.event.RemoteEventService;
 
@@ -108,11 +110,37 @@ public class LocationAddedToMapTest {
         }
     }
     
+    private class TestCommandExecutor implements CommandExecutor{
+        
+        private List<IncrementalCommand> m_commands = new ArrayList<IncrementalCommand>();
+        public void schedule(IncrementalCommand command) {
+            m_commands.add(command);
+        }
+        
+        public void run() {
+            while(true) {
+                Iterator<IncrementalCommand> iterator = m_commands.iterator();
+                if(!iterator.hasNext()) {
+                    return;
+                }
+                
+                while(iterator.hasNext()) {
+                    IncrementalCommand command = iterator.next();
+                    if(!command.execute()) {
+                        iterator.remove();
+                    }
+                }
+            }
+        }
+        
+    }
+    
     RemoteEventService m_remoteEventService;
     LocationStatusServiceAsync m_locationStatusService;
     private TestApplicationView m_testApplicationView;
     private TestServer m_testServer;
     private Random m_random;
+    private TestCommandExecutor m_testExecutor = new TestCommandExecutor();
     
     @Before
     public void setUp() {
@@ -125,12 +153,12 @@ public class LocationAddedToMapTest {
     @Test
     public void testAddLocation() {
         int numLocations = 3000;
-        int numApps = 100;
+        int numApps = 12;
         
         HandlerManager eventBus = new HandlerManager(null);
         Application application = new Application(eventBus);
         m_testApplicationView = createMockApplicationView(eventBus, application);
-        application.initialize(m_testApplicationView, m_locationStatusService, m_remoteEventService);
+        application.initialize(m_testApplicationView, m_locationStatusService, m_remoteEventService, m_testExecutor);
         
         Set<LocationInfo> locations = new HashSet<LocationInfo>();
         GWTBounds bounds = createLocations(numLocations, locations);
@@ -148,17 +176,21 @@ public class LocationAddedToMapTest {
         
         m_testServer.sendUserSpecificEvent(new UpdateCompleteRemoteEvent());
         
+        m_testExecutor.run();
+        
         assertNotNull(m_testApplicationView.getMapBounds());
         
         assertEquals(bounds, m_testApplicationView.getMapBounds());
-        assertEquals(numLocations, m_testApplicationView.getMarkerCount());
+        assertEquals(numLocations * 2, m_testApplicationView.getMarkerCount());
         m_testApplicationView.resetMarkerCount();
         
         m_testServer.sendDomainEvent(new LocationsUpdatedRemoteEvent(locations));
         
-//        for(ApplicationInfo app : apps) {
-//            m_testServer.sendDomainEvent(new ApplicationUpdatedRemoteEvent(app));
-//        }
+        for(ApplicationInfo app : apps) {
+            m_testServer.sendDomainEvent(new ApplicationUpdatedRemoteEvent(app));
+        }
+        
+        m_testExecutor.run();
         
         assertEquals(numLocations, m_testApplicationView.getMarkerCount());
     }

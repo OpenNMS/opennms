@@ -3,6 +3,8 @@ package org.opennms.features.poller.remote.gwt.client;
 import com.google.gwt.core.client.EntryPoint;
 import com.google.gwt.core.client.GWT;
 import com.google.gwt.event.shared.HandlerManager;
+import com.google.gwt.user.client.DeferredCommand;
+import com.google.gwt.user.client.IncrementalCommand;
 import com.google.gwt.user.client.Window;
 
 import de.novanic.eventservice.client.event.RemoteEventService;
@@ -10,6 +12,13 @@ import de.novanic.eventservice.client.event.RemoteEventServiceFactory;
 
 public class Main implements EntryPoint {
     
+    private class DeferredCommandExecutor implements CommandExecutor{
+
+        public void schedule(IncrementalCommand command) {
+            DeferredCommand.addCommand(command);
+        }
+        
+    }
     
     private HandlerManager m_eventBus;
 
@@ -20,7 +29,7 @@ public class Main implements EntryPoint {
         
         LocationStatusServiceAsync remoteService = GWT.create(LocationStatusService.class);
         RemoteEventService remoteEventService = RemoteEventServiceFactory.getInstance().getRemoteEventService();
-        application.initialize(new DefaultApplicationView(application, getEventBus(), mapPanel), remoteService, remoteEventService);
+        application.initialize(new DefaultApplicationView(application, getEventBus(), mapPanel), remoteService, remoteEventService, new DeferredCommandExecutor());
 
     }
 

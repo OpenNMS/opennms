@@ -28,14 +28,14 @@ public class Application implements LocationsUpdatedEventHandler {
         m_eventBus = eventBus;
     }
 
-    public void initialize(ApplicationView view, LocationStatusServiceAsync remoteService, RemoteEventService remoteEventService) {
+    public void initialize(ApplicationView view, LocationStatusServiceAsync remoteService, RemoteEventService remoteEventService, CommandExecutor executor) {
         // Register for all relevant events thrown by the UI components
         getEventBus().addHandler(LocationsUpdatedEvent.TYPE, this);
         
         // Log.setUncaughtExceptionHandler();
         m_view = view;
         
-        m_locationManager = new DefaultLocationManager(getEventBus(), m_view, remoteService, remoteEventService);
+        m_locationManager = new DefaultLocationManager(getEventBus(), m_view, remoteService, remoteEventService, executor);
         
         m_view.initialize();
     }
