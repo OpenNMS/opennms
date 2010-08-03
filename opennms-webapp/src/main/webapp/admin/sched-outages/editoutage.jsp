@@ -24,6 +24,32 @@
 		matchAnyInterface.setAddress("match-any");
 	}
 
+	private static void addNode(Outage theOutage, int newNodeId) {
+		try {
+			org.opennms.netmgt.config.poller.Node newNode = new org.opennms.netmgt.config.poller.Node();
+			newNode.setId(newNodeId);
+			if (!theOutage.getNodeCollection().contains(newNode)) {
+				theOutage.addNode(newNode);
+				theOutage.removeInterface(matchAnyInterface); //Just arbitrarily try and remove it.  If it's not there, this will do nothing
+			}
+		} catch (NumberFormatException e) {
+			//Just ignore it - we can't add the node, why should we care?
+		} catch (IndexOutOfBoundsException ioob) {
+			// same here
+		}
+	}
+	
+	private static void addInterface(Outage theOutage, org.opennms.netmgt.config.poller.Interface newInterface) {
+		if (!theOutage.getInterfaceCollection().contains(newInterface)) {
+			theOutage.addInterface(newInterface);
+			try {
+				theOutage.removeInterface(matchAnyInterface); //Just arbitrarily try and remove it.  If it's not there, this will do nothing
+			} catch (IndexOutOfBoundsException ioob) {
+				// ok if it fails
+			}
+		}
+	}
+
 	private static String getNumberSelectField(String name, int start, int end, int selected, int padding) {
 		NumberFormat nf = NumberFormat.getInstance();
 		nf.setMinimumIntegerDigits(padding);
@@ -147,10 +173,29 @@
 		request.getSession().setAttribute("opennms.editoutage.origname", nameParam);
 	} else if ("true".equals(request.getParameter("addNew"))) {
 		theOutage = new Outage();
+		String nodes[] = request.getParameterValues("nodeID");
+		String interfaces[] = request.getParameterValues("ipAddr");
+
+
 		//Nuke whitespace - it messes with all sorts of things
 		theOutage.setName(request.getParameter("newName").trim());
+		
 		request.getSession().setAttribute("opennms.editoutage", theOutage);
 		request.getSession().removeAttribute("opennms.editoutage.origname");
+		if (nodes != null) {
+			for(int i = 0 ; i < nodes.length; i++ ) {
+				int node = WebSecurityUtils.safeParseInt(nodes[i]);
+				addNode(theOutage, node);
+                	}
+		}
+		if (interfaces != null) {
+			for(int i = 0 ; i < interfaces.length; i++ ) {
+				org.opennms.netmgt.config.poller.Interface newInterface = new org.opennms.netmgt.config.poller.Interface();
+				// hope this has builtin safeParseStuff
+				newInterface.setAddress(interfaces[i]);
+				addInterface(theOutage, newInterface);
+			}
+		}
 	} else {
 		//Neither starting the edit, nor adding a new outage.  
 		theOutage = (Outage) request.getSession().getAttribute("opennms.editoutage");
@@ -349,30 +394,12 @@ Could not find an outage to edit because no outage name parameter was specified 
 			// dispatcher.forward(request, response);
 			return;
 		} else if (request.getParameter("addNodeButton") != null) {
-			try {
-				int newNodeId = WebSecurityUtils.safeParseInt(request.getParameter("newNode"));
-				org.opennms.netmgt.config.poller.Node newNode = new org.opennms.netmgt.config.poller.Node();
-				newNode.setId(newNodeId);
-				if (!theOutage.getNodeCollection().contains(newNode)) {
-					theOutage.addNode(newNode);
-					theOutage.removeInterface(matchAnyInterface); //Just arbitrarily try and remove it.  If it's not there, this will do nothing
-				}
-			} catch (NumberFormatException e) {
-				//Just ignore it - we can't add the node, why should we care?
-			} catch (IndexOutOfBoundsException ioob) {
-				// same here
-			}
+			int newNodeId = WebSecurityUtils.safeParseInt(request.getParameter("newNode"));
+			addNode(theOutage, newNodeId);
 		} else if (request.getParameter("addInterfaceButton") != null) {
 			org.opennms.netmgt.config.poller.Interface newInterface = new org.opennms.netmgt.config.poller.Interface();
 			newInterface.setAddress(request.getParameter("newInterface"));
-			if (!theOutage.getInterfaceCollection().contains(newInterface)) {
-				theOutage.addInterface(newInterface);
-				try {
-					theOutage.removeInterface(matchAnyInterface); //Just arbitrarily try and remove it.  If it's not there, this will do nothing
-				} catch (IndexOutOfBoundsException ioob) {
-					// ok if it fails
-				}
-			}
+			addInterface(theOutage, newInterface);
 		} else if (request.getParameter("matchAny") != null) {
 			//To turn on matchAny, all normal nodes and interfaces are removed
 			theOutage.removeAllInterface();

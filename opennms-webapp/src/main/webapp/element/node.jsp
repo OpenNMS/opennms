@@ -317,6 +317,15 @@
           <a href="${updateSnmpLink}">Update SNMP</a>
         </li>
       </c:if>
+      
+      <c:url var="createOutage" value="admin/sched-outages/editoutage.jsp">
+	<c:param name="newName" value="${model.label}"/>
+	<c:param name="addNew" value="true"/>
+	<c:param name="nodeID" value="${model.id}"/>
+      </c:url>
+      <li class="o-menuitem">
+        <a href="${createOutage}">Schedule Outage</a>
+      </li>
     </c:if>
   </ul>
 </div>
