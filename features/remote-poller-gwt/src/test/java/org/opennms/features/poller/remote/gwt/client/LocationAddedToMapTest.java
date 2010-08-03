@@ -37,6 +37,7 @@ public class LocationAddedToMapTest {
         private Application m_application;
         private HandlerManager m_eventBus;
         private int m_marker = 0;
+        private String m_statusMessage;
         
         public TestApplicationView(Application application, HandlerManager eventBus) {
             m_application = application;
@@ -110,6 +111,14 @@ public class LocationAddedToMapTest {
         public void resetMarkerCount() {
             m_marker = 0;
         }
+
+        public void setStatusMessage(String statusMessage) {
+            m_statusMessage = statusMessage;
+        }
+
+        public String getStatusMessage() {
+            return m_statusMessage;
+        }
     }
     
     private class TestCommandExecutor implements CommandExecutor{
@@ -120,26 +129,33 @@ public class LocationAddedToMapTest {
         }
         
         public void run() {
-            while(true) {
-                Iterator<Object> iterator = m_commands.iterator();
-                if(!iterator.hasNext()) {
-                    return;
-                }
-                
-                while(iterator.hasNext()) {
-                    Object o = iterator.next();
-                    if(o instanceof Command) {
-                        ((Command) o).execute();
-                        iterator.remove();
-                    }else {
-                        IncrementalCommand command = (IncrementalCommand) o;
-                        if(!command.execute()) {
-                            iterator.remove();
-                        }
-                    }
-                    
-                }
+            boolean finished = false;
+            while(!finished) {
+                finished = runOnePass();
             }
+        }
+
+        private boolean runOnePass() {
+            Iterator<Object> iterator = m_commands.iterator();
+            if(!iterator.hasNext()) {
+                return true;
+            }
+
+            while(iterator.hasNext()) {
+                Object o = iterator.next();
+                if(o instanceof Command) {
+                    ((Command) o).execute();
+                    iterator.remove();
+                }else {
+                    IncrementalCommand command = (IncrementalCommand) o;
+                    if(!command.execute()) {
+                        iterator.remove();
+                    }
+                }
+
+            }
+
+            return false;
         }
 
         public void schedule(Command command) {
@@ -161,17 +177,13 @@ public class LocationAddedToMapTest {
         m_remoteEventService = m_testServer;
         m_locationStatusService = m_testServer;
         m_random = new Random(System.currentTimeMillis());
+        initialize();
     }
 
     @Test
     public void testAddLocation() {
         int numLocations = 3000;
         int numApps = 12;
-        
-        HandlerManager eventBus = new HandlerManager(null);
-        Application application = new Application(eventBus);
-        m_testApplicationView = createMockApplicationView(eventBus, application);
-        application.initialize(m_testApplicationView, m_locationStatusService, m_remoteEventService, m_testExecutor);
         
         Set<LocationInfo> locations = new HashSet<LocationInfo>();
         GWTBounds bounds = createLocations(numLocations, locations);
@@ -208,6 +220,27 @@ public class LocationAddedToMapTest {
         assertEquals(0, m_testApplicationView.getMarkerCount());
     }
     
+    @Test
+    public void testStatusMessage() {
+        int numLocations = 10;
+        Set<LocationInfo> locations = new HashSet<LocationInfo>();
+        GWTBounds bounds = createLocations(numLocations , locations);
+        
+        m_testServer.sendDomainEvent(new LocationsUpdatedRemoteEvent(locations));
+        
+        int updated = 0;
+        while(!m_testExecutor.runOnePass()) {
+            updated++;
+            assertEquals("Updated " + updated + " of 10", m_testApplicationView.getStatusMessage());
+        }
+    }
+    
+    private void initialize() {
+        HandlerManager eventBus = new HandlerManager(null);
+        Application application = new Application(eventBus);
+        m_testApplicationView = createMockApplicationView(eventBus, application);
+        application.initialize(m_testApplicationView, m_locationStatusService, m_remoteEventService, m_testExecutor);
+    }
 
     private Set<ApplicationInfo> createApps(int numApps, Set<LocationInfo> locations) {
         Set<String> locNames = new HashSet<String>();

@@ -352,4 +352,8 @@ public class DefaultApplicationView implements ApplicationView {
     public void placeMarker(final GWTMarkerState markerState) {
         getMapPanel().placeMarker(markerState);
     }
+
+    public void setStatusMessage(String statusMessage) {
+        //getUpdateTimestamp().setText(statusMessage);
+    }
 }

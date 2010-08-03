@@ -91,9 +91,12 @@ public class DefaultLocationManager implements LocationManager, RemotePollerPres
     public class LocationUpdater implements IncrementalCommand{
 
         private Queue<LocationInfo> m_locations;
+        private int m_count = 0;
+        private int m_updated = 0;
 
         public LocationUpdater(Collection<LocationInfo> locations) {
             m_locations = new LinkedList<LocationInfo>(locations);
+            m_count = m_locations.size();
         }
         
         public void schedule(CommandExecutor executor) {
@@ -106,6 +109,8 @@ public class DefaultLocationManager implements LocationManager, RemotePollerPres
             }else {
                 LocationInfo location = m_locations.remove();
                 updateLocation(location);
+                m_updated++;
+                m_view.setStatusMessage("Updated " + m_updated + " of " + m_count);
                 return !m_locations.isEmpty();
             }
             
@@ -135,6 +140,8 @@ public class DefaultLocationManager implements LocationManager, RemotePollerPres
     private final ApplicationView m_view;
 
     private final CommandExecutor m_executor;
+
+    private final AndFilter m_selectedVisibleFilter = new AndFilter(m_selectedFilter, m_statusFilter);
 
     /**
      * <p>Constructor for DefaultLocationManager.</p>
@@ -261,11 +268,10 @@ public class DefaultLocationManager implements LocationManager, RemotePollerPres
      * @return a {@link java.util.ArrayList} object.
      */
     public ArrayList<LocationInfo> getLocationsForLocationPanel() {
-        AndFilter selectedVisibleFilter = new AndFilter(m_selectedFilter, m_statusFilter);
         
         // Use an ArrayList so that it has good random-access efficiency
         // since the pageable lists use get() to fetch based on index.
-        final List<LocationInfo> visibleLocations = m_dataManager.getMatchingLocations(selectedVisibleFilter);
+        final List<LocationInfo> visibleLocations = m_dataManager.getMatchingLocations(m_selectedVisibleFilter);
         
         GWTBounds mapBounds = m_view.getMapBounds();
         final ArrayList<LocationInfo> inBounds = new ArrayList<LocationInfo>();
@@ -349,17 +355,22 @@ public class DefaultLocationManager implements LocationManager, RemotePollerPres
      * Invoked by the {@link LocationUpdatedRemoteEvent} and
      * {@link LocationsUpdatedRemoteEvent} events.
      */
-    public void updateLocation(final LocationInfo info) {
-        if (info != null) {
+    public void updateLocation(final LocationInfo newLocation) {
+        if (newLocation != null) {
+            LocationInfo oldLocation = m_dataManager.getLocation(newLocation.getName());
+
             // Update the location information in the model
-            m_dataManager.updateLocation(info);
+            m_dataManager.updateLocation(newLocation);
             
             m_view.updateApplicationNames(m_dataManager.getAllApplicationNames());
-            placeMarker(info);
-        
+            placeMarker(newLocation);
+            
             if (m_updated) {
                 // Update the icon/caption in the LHN
-                m_view.updateLocationList(getLocationsForLocationPanel());
+                if(oldLocation == null || (m_selectedVisibleFilter.matches(newLocation) != m_selectedVisibleFilter.matches(oldLocation)) || (oldLocation.getStatus() != newLocation.getStatus())) {
+                    m_view.updateLocationList(getLocationsForLocationPanel());
+                }
+                
                 m_eventBus.fireEvent(new LocationsUpdatedEvent());
             }
             

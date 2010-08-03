@@ -13,6 +13,8 @@ public interface ApplicationView {
      * <p>updateTimestamp</p>
      */
     public abstract void updateTimestamp();
+    
+    public abstract void setStatusMessage(String statusMessage);
 
     public abstract Set<Status> getSelectedStatuses();
 
