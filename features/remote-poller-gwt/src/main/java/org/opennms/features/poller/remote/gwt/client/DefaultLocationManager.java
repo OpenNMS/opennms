@@ -39,6 +39,7 @@ import org.opennms.features.poller.remote.gwt.client.remoteevents.UpdateComplete
 
 import com.google.gwt.event.shared.HandlerManager;
 import com.google.gwt.http.client.URL;
+import com.google.gwt.user.client.Command;
 import com.google.gwt.user.client.IncrementalCommand;
 import com.google.gwt.user.client.Window;
 import com.google.gwt.user.client.rpc.AsyncCallback;
@@ -69,7 +70,7 @@ import de.novanic.eventservice.client.event.RemoteEventService;
  */
 public class DefaultLocationManager implements LocationManager, RemotePollerPresenter {
 
-    public class ApplicationUpdater implements IncrementalCommand {
+    public class ApplicationUpdater implements Command {
         
         private ApplicationInfo m_applicationInfo;
 
@@ -81,9 +82,8 @@ public class DefaultLocationManager implements LocationManager, RemotePollerPres
             executor.schedule(this);
         }
         
-        public boolean execute() {
-            
-            throw new UnsupportedOperationException("execute is not implemented");
+        public void execute() {
+            doApplicationUpdate(m_applicationInfo);
         }
 
     }
@@ -382,8 +382,11 @@ public class DefaultLocationManager implements LocationManager, RemotePollerPres
      * {@link org.opennms.features.poller.remote.gwt.client.remoteevents.ApplicationUpdatedRemoteEvent} events.
      */
     public void updateApplication(final ApplicationInfo applicationInfo) {
-//        ApplicationUpdater appUpdater = new ApplicationUpdater(applicationInfo);
-//        appUpdater.schedule(m_applicationExecutor);
+        ApplicationUpdater appUpdater = new ApplicationUpdater(applicationInfo);
+        appUpdater.schedule(m_executor);
+    }
+
+    private void doApplicationUpdate(final ApplicationInfo applicationInfo) {
         if (applicationInfo == null)
             return;
 

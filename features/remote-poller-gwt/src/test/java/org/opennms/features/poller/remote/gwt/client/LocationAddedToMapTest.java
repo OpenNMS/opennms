@@ -7,6 +7,7 @@ import java.util.ArrayList;
 import java.util.Collections;
 import java.util.HashSet;
 import java.util.Iterator;
+import java.util.LinkedList;
 import java.util.List;
 import java.util.Random;
 import java.util.Set;
@@ -22,6 +23,7 @@ import org.opennms.features.poller.remote.gwt.client.remoteevents.UpdateComplete
 import org.opennms.features.poller.remote.gwt.client.utils.BoundsBuilder;
 
 import com.google.gwt.event.shared.HandlerManager;
+import com.google.gwt.user.client.Command;
 import com.google.gwt.user.client.IncrementalCommand;
 
 import de.novanic.eventservice.client.event.RemoteEventService;
@@ -112,25 +114,36 @@ public class LocationAddedToMapTest {
     
     private class TestCommandExecutor implements CommandExecutor{
         
-        private List<IncrementalCommand> m_commands = new ArrayList<IncrementalCommand>();
+        private List<Object> m_commands = new LinkedList<Object>();
         public void schedule(IncrementalCommand command) {
             m_commands.add(command);
         }
         
         public void run() {
             while(true) {
-                Iterator<IncrementalCommand> iterator = m_commands.iterator();
+                Iterator<Object> iterator = m_commands.iterator();
                 if(!iterator.hasNext()) {
                     return;
                 }
                 
                 while(iterator.hasNext()) {
-                    IncrementalCommand command = iterator.next();
-                    if(!command.execute()) {
+                    Object o = iterator.next();
+                    if(o instanceof Command) {
+                        ((Command) o).execute();
                         iterator.remove();
+                    }else {
+                        IncrementalCommand command = (IncrementalCommand) o;
+                        if(!command.execute()) {
+                            iterator.remove();
+                        }
                     }
+                    
                 }
             }
+        }
+
+        public void schedule(Command command) {
+            m_commands.add(command);
         }
         
     }
@@ -181,7 +194,7 @@ public class LocationAddedToMapTest {
         assertNotNull(m_testApplicationView.getMapBounds());
         
         assertEquals(bounds, m_testApplicationView.getMapBounds());
-        assertEquals(numLocations * 2, m_testApplicationView.getMarkerCount());
+        assertEquals(numLocations, m_testApplicationView.getMarkerCount());
         m_testApplicationView.resetMarkerCount();
         
         m_testServer.sendDomainEvent(new LocationsUpdatedRemoteEvent(locations));
@@ -192,8 +205,9 @@ public class LocationAddedToMapTest {
         
         m_testExecutor.run();
         
-        assertEquals(numLocations, m_testApplicationView.getMarkerCount());
+        assertEquals(0, m_testApplicationView.getMarkerCount());
     }
+    
 
     private Set<ApplicationInfo> createApps(int numApps, Set<LocationInfo> locations) {
         Set<String> locNames = new HashSet<String>();

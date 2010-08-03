@@ -187,10 +187,10 @@ public class GWTMarkerState implements IsSerializable, Serializable {
     }
 
     public void place(ApplicationView view) {
-        //if(m_dirty) {
+        if(m_dirty) {
             view.placeMarker(this);
-          //  m_dirty = false;
-        //}
+            m_dirty = false;
+        }
     }
     
     private boolean isEquals(Object a, Object b) {
