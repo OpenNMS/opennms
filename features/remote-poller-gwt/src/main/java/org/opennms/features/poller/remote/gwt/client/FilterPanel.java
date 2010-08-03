@@ -40,8 +40,6 @@ public class FilterPanel extends Composite {
     private static final Binder BINDER = GWT.create(Binder.class);
 
     private transient HandlerManager m_eventBus;
-    private transient LocationManager m_locationManager;
-
     interface FilterStyles extends CssResource {
         String panelCaption();
         String panelEntry();
@@ -147,8 +145,7 @@ public class FilterPanel extends Composite {
     @UiHandler("applicationNameSuggestBox") 
     public void onApplicationSelect(final SelectionEvent<Suggestion> event) {
         Suggestion item = event.getSelectedItem();
-        ApplicationInfo app = m_locationManager.getApplicationInfo(item.getReplacementString());
-        m_eventBus.fireEvent(new ApplicationSelectedEvent(app.getName()));
+        m_eventBus.fireEvent(new ApplicationSelectedEvent(item.getReplacementString()));
     }
 
     /**
@@ -198,12 +195,4 @@ public class FilterPanel extends Composite {
         m_eventBus = eventBus;
     }
 
-    /**
-     * <p>setLocationManager</p>
-     *
-     * @param manager a {@link org.opennms.features.poller.remote.gwt.client.LocationManager} object.
-     */
-    public void setLocationManager(final LocationManager manager) {
-        m_locationManager = manager;
-    }
 }

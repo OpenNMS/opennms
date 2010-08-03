@@ -6,10 +6,10 @@ import java.util.Set;
 
 import org.opennms.core.utils.LogUtils;
 import org.opennms.features.poller.remote.gwt.client.ApplicationInfo;
-import org.opennms.features.poller.remote.gwt.client.RemotePollerPresenter;
 import org.opennms.features.poller.remote.gwt.client.remoteevents.ApplicationRemovedRemoteEvent;
 import org.opennms.features.poller.remote.gwt.client.remoteevents.ApplicationUpdatedRemoteEvent;
 import org.opennms.features.poller.remote.gwt.client.remoteevents.MapRemoteEvent;
+import org.opennms.features.poller.remote.gwt.client.remoteevents.MapRemoteEventHandler;
 import org.opennms.netmgt.model.OnmsApplication;
 
 import de.novanic.eventservice.service.EventExecutorService;
@@ -105,7 +105,7 @@ public class DefaultApplicationHandler implements ApplicationHandler {
      */
     protected void sendEvent(final MapRemoteEvent event) {
         LogUtils.debugf(this, "sending event: %s", event);
-        getEventService().addEvent(RemotePollerPresenter.LOCATION_EVENT_DOMAIN, event);
+        getEventService().addEvent(MapRemoteEventHandler.LOCATION_EVENT_DOMAIN, event);
     }
 
     /**
