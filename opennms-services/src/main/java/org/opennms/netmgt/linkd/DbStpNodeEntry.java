@@ -44,8 +44,9 @@ import java.sql.Timestamp;
 import java.text.ParseException;
 import java.util.Date;
 
+import org.apache.commons.lang.builder.ToStringBuilder;
 import org.opennms.core.utils.DBUtils;
-import org.opennms.core.utils.ThreadCategory;
+import org.opennms.core.utils.LogUtils;
 import org.opennms.netmgt.EventConstants;
 import org.opennms.netmgt.config.DataSourceFactory;
 
@@ -246,73 +247,47 @@ public class DbStpNodeEntry
 				throw new IllegalStateException(
 						"The record already exists in the database");
 
-			ThreadCategory log = ThreadCategory.getInstance(getClass());
-
 			// first extract the next node identifier
 			//
-			StringBuffer names = new StringBuffer(
-					"INSERT INTO StpNode (nodeid,basevlan");
+			StringBuffer names = new StringBuffer("INSERT INTO StpNode (nodeid,basevlan");
 			StringBuffer values = new StringBuffer("?,?");
 
-			if ((m_changed & CHANGED_BRIDGEADDR) == CHANGED_BRIDGEADDR) {
-				values.append(",?");
-				names.append(",baseBridgeAddress");
-			}
+			values.append(",?");
+			names.append(",baseBridgeAddress");
 
-			if ((m_changed & CHANGED_NUMPORTS) == CHANGED_NUMPORTS) {
-				values.append(",?");
-				names.append(",baseNumPorts");
-			}
+			values.append(",?");
+			names.append(",baseNumPorts");
 
-			if ((m_changed & CHANGED_BASETYPE) == CHANGED_BASETYPE) {
-				values.append(",?");
-				names.append(",basetype");
-			}
-			
-			if ((m_changed & CHANGED_STPPROTSPEC) == CHANGED_STPPROTSPEC) {
-				values.append(",?");
-				names.append(",stpProtocolSpecification");
-			}
+			values.append(",?");
+			names.append(",basetype");
+		
+			values.append(",?");
+			names.append(",stpProtocolSpecification");
 
-			if ((m_changed & CHANGED_STPPRIORITY) == CHANGED_STPPRIORITY) {
-				values.append(",?");
-				names.append(",stpPriority");
-			}
+			values.append(",?");
+			names.append(",stpPriority");
 
-			if ((m_changed & CHANGED_STPDESROOT) == CHANGED_STPDESROOT) {
-				values.append(",?");
-				names.append(",stpdesignatedroot");
-			}
+			values.append(",?");
+			names.append(",stpdesignatedroot");
 
-			if ((m_changed & CHANGED_STPROOTCOST) == CHANGED_STPROOTCOST) {
-				values.append(",?");
-				names.append(",stprootcost");
-			}
+			values.append(",?");
+			names.append(",stprootcost");
 
-			if ((m_changed & CHANGED_STPROOTPORT) == CHANGED_STPROOTPORT) {
-				values.append(",?");
-				names.append(",stprootport");
-			}
+			values.append(",?");
+			names.append(",stprootport");
 
-			if ((m_changed & CHANGED_VLANNAME) == CHANGED_VLANNAME) {
-				values.append(",?");
-				names.append(",basevlanname");
-			}
+			values.append(",?");
+			names.append(",basevlanname");
 
-			if ((m_changed & CHANGED_STATUS) == CHANGED_STATUS) {
-				values.append(",?");
-				names.append(",status");
-			}
+			values.append(",?");
+			names.append(",status");
 
-			if ((m_changed & CHANGED_POLLTIME) == CHANGED_POLLTIME) {
-				values.append(",?");
-				names.append(",lastpolltime");
-			}
+			values.append(",?");
+			names.append(",lastpolltime");
 
 			names.append(") VALUES (").append(values).append(')');
 
-			if (log.isDebugEnabled())
-			log.debug("DbStpNodeEntry.insert: SQL insert statment = " + names.toString());
+			LogUtils.debugf(this, "DbStpNodeEntry.insert: SQL insert statment = %s", names.toString());
 
 			final DBUtils d = new DBUtils(getClass());
 			
@@ -323,46 +298,22 @@ public class DbStpNodeEntry
                 int ndx = 1;
                 stmt.setInt(ndx++, m_nodeId);
                 stmt.setInt(ndx++, m_basevlan);
-
-                if ((m_changed & CHANGED_BRIDGEADDR) == CHANGED_BRIDGEADDR)
-                	stmt.setString(ndx++, m_basebridgeaddress);
-
-                if ((m_changed & CHANGED_NUMPORTS) == CHANGED_NUMPORTS)
-                	stmt.setInt(ndx++, m_basenumports);
-
-                if ((m_changed & CHANGED_BASETYPE) == CHANGED_BASETYPE)
-                	stmt.setInt(ndx++, m_basetype);
-                
-                if ((m_changed & CHANGED_STPPROTSPEC) == CHANGED_STPPROTSPEC) 
-                	stmt.setInt(ndx++, m_stpprotocolspecification);
-
-                if ((m_changed & CHANGED_STPPRIORITY) == CHANGED_STPPRIORITY) 
-                	stmt.setInt(ndx++, m_stppriority);
-
-                if ((m_changed & CHANGED_STPDESROOT) == CHANGED_STPDESROOT)
-                	stmt.setString(ndx++, m_stpdesignatedroot);
-
-                if ((m_changed & CHANGED_STPROOTCOST) == CHANGED_STPROOTCOST)
-                	stmt.setInt(ndx++, m_stprootcost);
-
-                if ((m_changed & CHANGED_STPROOTPORT) == CHANGED_STPROOTPORT) 
-                	stmt.setInt(ndx++, m_stprootport);
-                
-                if ((m_changed & CHANGED_VLANNAME) == CHANGED_VLANNAME) 
-                	stmt.setString(ndx++, m_basevlanname);
-
-                if ((m_changed & CHANGED_STATUS) == CHANGED_STATUS)
-                	stmt.setString(ndx++, new String(new char[] { m_status }));
-
-                if ((m_changed & CHANGED_POLLTIME) == CHANGED_POLLTIME) {
-                	stmt.setTimestamp(ndx++, m_lastPollTime);
-                }
+            	stmt.setString(ndx++, m_basebridgeaddress);
+            	stmt.setInt(ndx++, m_basenumports);
+            	stmt.setInt(ndx++, m_basetype);
+            	stmt.setInt(ndx++, m_stpprotocolspecification);
+            	stmt.setInt(ndx++, m_stppriority);
+            	stmt.setString(ndx++, m_stpdesignatedroot);
+            	stmt.setInt(ndx++, m_stprootcost);
+            	stmt.setInt(ndx++, m_stprootport);
+            	stmt.setString(ndx++, m_basevlanname);
+            	stmt.setString(ndx++, new String(new char[] { m_status }));
+            	stmt.setTimestamp(ndx++, m_lastPollTime);
 
                 // Run the insert
                 //
                 int rc = stmt.executeUpdate();
-                if (log.isDebugEnabled())
-                	log.debug("StpNodeEntry.insert: row " + rc);
+                LogUtils.debugf(this, "StpNodeEntry.insert: row %d", rc);
 			} finally {
 			    d.cleanUp();
             }
@@ -386,8 +337,6 @@ public class DbStpNodeEntry
 			if (!m_fromDb)
 				throw new IllegalStateException(
 						"The record does not exists in the database");
-
-			ThreadCategory log = ThreadCategory.getInstance(getClass());
 
 			// first extract the next node identifier
 			//
@@ -453,8 +402,7 @@ public class DbStpNodeEntry
 
 			sqlText.append(" WHERE nodeid = ? AND basevlan = ? ");
 
-			if (log.isDebugEnabled())
-				log.debug("DbStpNodeEntry.update: SQL insert statment = " + sqlText.toString());
+			LogUtils.debugf(this, "DbStpNodeEntry.update: SQL insert statment = %s", sqlText.toString());
 
 			final DBUtils d = new DBUtils(getClass());
 			try {
@@ -503,8 +451,7 @@ public class DbStpNodeEntry
                 // Run the insert
                 //
                 int rc = stmt.executeUpdate();
-                if (log.isDebugEnabled())
-                	log.debug("StpNodeEntry.update: row " + rc);
+                LogUtils.debugf(this, "StpNodeEntry.update: row %d", rc);
                 stmt.close();
 			} finally {
 			    d.cleanUp();
@@ -530,8 +477,6 @@ public class DbStpNodeEntry
 			if (!m_fromDb)
 				throw new IllegalStateException("The record does not exists in the database");
 
-			ThreadCategory log = ThreadCategory.getInstance(getClass());
-
 			final DBUtils d = new DBUtils(getClass());
 			try {
                 PreparedStatement stmt = null;
@@ -545,8 +490,7 @@ public class DbStpNodeEntry
                 ResultSet rset = stmt.executeQuery();
                 d.watch(rset);
                 if (!rset.next()) {
-                	if (log.isDebugEnabled())
-                		log.debug("StpNodeEntry.load: no result found");
+                    LogUtils.debugf(this, "StpNodeEntry.load: no result found");
                 	return false;
                 }
 
@@ -611,8 +555,7 @@ public class DbStpNodeEntry
 			// clear the mask and mark as backed
 			// by the database
 			//
-			if (log.isDebugEnabled())
-				log.debug("StpNodeEntry.load: result found");
+			LogUtils.debugf(this, "StpNodeEntry.load: result found");
 			m_changed = 0;
 			return true;
 		}
@@ -1034,8 +977,7 @@ public class DbStpNodeEntry
 						if (db != null)
 							db.close();
 					} catch (SQLException e) {
-						ThreadCategory.getInstance(getClass()).warn(
-								"Exception closing JDBC connection", e);
+					    LogUtils.warnf(this, e, "Exception closing JDBC connection");
 					}
 				}
 			}
@@ -1080,8 +1022,7 @@ public class DbStpNodeEntry
 					if (db != null)
 						db.close();
 				} catch (SQLException e) {
-					ThreadCategory.getInstance(DbStpNodeEntry.class).warn(
-							"Exception closing JDBC connection", e);
+                    LogUtils.warnf(DbStpNodeEntry.class, e, "Exception closing JDBC connection");
 				}
 			}
 		}
@@ -1112,25 +1053,22 @@ public class DbStpNodeEntry
 		 * @return a {@link java.lang.String} object.
 		 */
 		public String toString() {
-			String sep = System.getProperty("line.separator");
-			StringBuffer buf = new StringBuffer();
-
-			buf.append("from db = ").append(m_fromDb).append(sep);
-			buf.append("node id = ").append(m_nodeId).append(sep);
-			buf.append("base vlan index = ").append(m_basevlan).append(sep);
-			buf.append("base bridge address = ").append(m_basebridgeaddress).append(sep);
-			buf.append("base number of ports = ").append(m_basenumports).append(sep);
-			buf.append("base bridge type id = ").append(m_basetype).append(sep);
-			buf.append("stp protocol specification id = ").append(m_stpprotocolspecification).append(sep);
-			buf.append("stp bridge priority = ").append(m_stppriority).append(sep);
-			buf.append("stp designated root = ").append(m_stpdesignatedroot).append(sep);
-			buf.append("stp root cost = ").append(m_stprootcost).append(sep);
-			buf.append("stp root port = ").append(m_stprootport).append(sep);
-			buf.append("base vlan name = ").append(m_basevlanname).append(sep);
-			buf.append("status = ").append(m_status).append(sep);
-			buf.append("last poll time = ").append(m_lastPollTime).append(sep);
-			return buf.toString();
-
+			return new ToStringBuilder(this)
+			    .append("db", m_fromDb)
+			    .append("nodeId", m_nodeId)
+			    .append("baseVlanId", m_basevlan)
+                .append("baseVlanName", m_basevlanname)
+			    .append("baseBridgeAddress", m_basebridgeaddress)
+			    .append("baseNumPorts", m_basenumports)
+			    .append("baseBridgeType", m_basetype)
+			    .append("stpProtocolId", m_stpprotocolspecification)
+			    .append("stpBridgePriority", m_stppriority)
+			    .append("stpDesignatedRoot", m_stpdesignatedroot)
+			    .append("stpRootCost", m_stprootcost)
+			    .append("stpRootPort", m_stprootport)
+			    .append("status", m_status)
+			    .append("lastPollTime", m_lastPollTime)
+			    .toString();
 		}
 
 }

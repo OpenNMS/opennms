@@ -250,6 +250,11 @@
     </dependency>
     <dependency>
       <groupId>org.opennms.features</groupId>
+      <artifactId>org.opennms.features.instrumentationLogReader</artifactId>
+      <version>1.0-SNAPSHOT</version>
+    </dependency>	
+    <dependency>
+      <groupId>org.opennms.features</groupId>
       <artifactId>org.opennms.features.springframework-security</artifactId>
     </dependency>
     <dependency>

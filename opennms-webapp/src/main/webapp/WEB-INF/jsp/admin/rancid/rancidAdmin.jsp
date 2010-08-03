@@ -315,7 +315,7 @@
       <h3>Descriptions</h3>
       <div class="boxWrapper">
       <p> 
-          Set to <em>true</em> the opennms.rancidIntegrationUseOnlyRancidAdaper property in <em>opennms.properties</em> 
+          Set to <em>true</em> the opennms.rancidIntegrationUseOnlyRancidAdapter property in <em>opennms.properties</em> 
           if you want use only the RancidAdapter to provision nodes to Rancid.
       </p>
       <p>Detailed Documentation on all options can be found on <a title="The OpenNMS Project wiki" href="http://www.opennms.org" target="new">the OpenNMS wiki</a>.
@@ -324,13 +324,13 @@
       
         <p><b>Rancid Info</b>: Switch the Rancid status from <em>up</em> to <em>down</em> or from <em>down</em> to <em>up</em>
         	for selected group.
-        	You are able to create, delete and modify the node data in rancid.db by default unless the opennms.rancidIntegrationUseOnlyRancidAdaper 
+        	You are able to create, delete and modify the node data in rancid.db by default unless the opennms.rancidIntegrationUseOnlyRancidAdapter 
           property is set to <em>true</em> in opennms.properties.
         </p>
         
        <p><b>Clogin Info</b>:  Modify the data according to the authentication information.
         	Click <b>doOk</b> to commit changes to Rancid. 
-            Also you are able to overwrite the clogin data in .cloginrc by default unless the opennms.rancidIntegrationUseOnlyRancidAdaper 
+            Also you are able to overwrite the clogin data in .cloginrc by default unless the opennms.rancidIntegrationUseOnlyRancidAdapter 
             property is set to <em>true</em> in opennms.properties.
         	In the case the node was provisioned the <b>Clogin</b> box shows the Foreign Source
             under which the node was provisioned.
