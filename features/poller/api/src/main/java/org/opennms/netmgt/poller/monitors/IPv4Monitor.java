@@ -61,13 +61,6 @@ import org.springframework.util.ClassUtils;
  * @author <A HREF="mike@opennms.org">Mike</A>
  * @author <A HREF="weave@oculan.com">Weave</A>
  * @author <A HREF="http://www.opennms.org/">OpenNMS</A>
- * @author <A HREF="mike@opennms.org">Mike</A>
- * @author <A HREF="weave@oculan.com">Weave</A>
- * @author <A HREF="http://www.opennms.org/">OpenNMS</A>
- * @author <A HREF="mike@opennms.org">Mike</A>
- * @author <A HREF="weave@oculan.com">Weave</A>
- * @author <A HREF="http://www.opennms.org/">OpenNMS</A>
- * @version $Id: $
  */
 abstract public class IPv4Monitor implements ServiceMonitor {
     /**

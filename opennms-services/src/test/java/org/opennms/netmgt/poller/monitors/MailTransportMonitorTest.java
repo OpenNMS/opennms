@@ -208,10 +208,10 @@ public class MailTransportMonitorTest extends TestCase {
     }
         
     protected MonitoredService getMailService(String hostname) throws Exception {
-        return getMailService(hostname, InetAddress.getByName(hostname).getHostAddress());
+        return getMailService(hostname, InetAddress.getByName(hostname));
     }
     
-    protected MonitoredService getMailService(String hostname, String ip) throws Exception {
+    protected MonitoredService getMailService(String hostname, InetAddress ip) throws Exception {
         MonitoredService svc = new MockMonitoredService(1, hostname, ip, "MAIL");
         m_monitor.initialize(svc);
         return svc;
