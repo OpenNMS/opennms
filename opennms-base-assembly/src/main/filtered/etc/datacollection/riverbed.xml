@@ -1,0 +1,70 @@
+<?xml version="1.0"?>
+<datacollection-group name="Riverbed">
+
+    <!-- Riverbed Steelhead MIB Instances -->
+    <resourceType name="rbshCpuIndivIndex" label="Riverbed Steelhead CPU" resourceLabel="CPU ${rbshCpuIndivId}">
+      <persistenceSelectorStrategy class="org.opennms.netmgt.collectd.PersistAllSelectorStrategy"/>
+      <storageStrategy class="org.opennms.netmgt.dao.support.IndexStorageStrategy"/>
+    </resourceType>
+
+    <resourceType name="rbshBwPort" label="Riverbed Per-Port Bandwidth" resourceLabel="Port ${rbshBwPortNumber}">
+      <persistenceSelectorStrategy class="org.opennms.netmgt.collectd.PersistAllSelectorStrategy"/>
+      <storageStrategy class="org.opennms.netmgt.dao.support.IndexStorageStrategy"/>
+    </resourceType>
+
+      <!-- Riverbed Steelhead MIBs -->
+      <group name="riverbed-steelhead-scalars" ifType="ignore">
+        <mibObj oid=".1.3.6.1.4.1.17163.1.1.1.1"     instance="0" alias="rbshSystemModel"     type="string" />
+        <mibObj oid=".1.3.6.1.4.1.17163.1.1.1.2"     instance="0" alias="rbshSystemSN"        type="string" />
+        <mibObj oid=".1.3.6.1.4.1.17163.1.1.1.3"     instance="0" alias="rbshSystemVersion"   type="string" />
+        <mibObj oid=".1.3.6.1.4.1.17163.1.1.2.4"     instance="0" alias="rbshServiceUptime"   type="TimeTicks" />
+        <mibObj oid=".1.3.6.1.4.1.17163.1.1.2.9"     instance="0" alias="rbshSystemTempr"     type="Gauge32" />
+        <mibObj oid=".1.3.6.1.4.1.17163.1.1.5.1.1"   instance="0" alias="rbshCpuLoad1"        type="Gauge32" />
+        <mibObj oid=".1.3.6.1.4.1.17163.1.1.5.1.2"   instance="0" alias="rbshCpuLoad5"        type="Gauge32" />
+        <mibObj oid=".1.3.6.1.4.1.17163.1.1.5.1.3"   instance="0" alias="rbshCpuLoad15"       type="Gauge32" />
+        <mibObj oid=".1.3.6.1.4.1.17163.1.1.5.1.4"   instance="0" alias="rbshCpuUtil1"        type="Gauge32" />
+        <mibObj oid=".1.3.6.1.4.1.17163.1.1.5.2.1"   instance="0" alias="rbshOptimizedConns"  type="Gauge32" />
+        <mibObj oid=".1.3.6.1.4.1.17163.1.1.5.2.2"   instance="0" alias="rbshPassthruConns"   type="Gauge32" />
+        <mibObj oid=".1.3.6.1.4.1.17163.1.1.5.2.3"   instance="0" alias="rbshHalfOpenConns"   type="Gauge32" />
+        <mibObj oid=".1.3.6.1.4.1.17163.1.1.5.2.4"   instance="0" alias="rbshHalfClsdConns"   type="Gauge32" />
+        <mibObj oid=".1.3.6.1.4.1.17163.1.1.5.2.5"   instance="0" alias="rbshEstabConns"      type="Gauge32" />
+        <mibObj oid=".1.3.6.1.4.1.17163.1.1.5.2.6"   instance="0" alias="rbshActiveConns"     type="Gauge32" />
+        <mibObj oid=".1.3.6.1.4.1.17163.1.1.5.2.7"   instance="0" alias="rbshTotalConns"      type="Gauge32" />
+        <mibObj oid=".1.3.6.1.4.1.17163.1.1.5.3.1.1" instance="0" alias="rbshBwAggInLan"      type="Counter32" />
+        <mibObj oid=".1.3.6.1.4.1.17163.1.1.5.3.1.2" instance="0" alias="rbshBwAggInWan"      type="Counter32" />
+        <mibObj oid=".1.3.6.1.4.1.17163.1.1.5.3.1.3" instance="0" alias="rbshBwAggOutLan"     type="Counter32" />
+        <mibObj oid=".1.3.6.1.4.1.17163.1.1.5.3.1.4" instance="0" alias="rbshBwAggOutWan"     type="Counter32" />
+        <mibObj oid=".1.3.6.1.4.1.17163.1.1.5.3.3.1" instance="0" alias="rbshBwPassThruIn"    type="Counter64" />
+        <mibObj oid=".1.3.6.1.4.1.17163.1.1.5.3.3.2" instance="0" alias="rbshBwPassThruOut"   type="Counter64" />
+        <mibObj oid=".1.3.6.1.4.1.17163.1.1.5.3.3.3" instance="0" alias="rbshBwPassThruTotal" type="Counter64" />
+        <mibObj oid=".1.3.6.1.4.1.17163.1.1.5.4.1"   instance="0" alias="rbshDsHitsTotal"     type="Counter64" />
+        <mibObj oid=".1.3.6.1.4.1.17163.1.1.5.4.2"   instance="0" alias="rbshDsMissTotal"     type="Counter64" />
+        <mibObj oid=".1.3.6.1.4.1.17163.1.1.5.4.3"   instance="0" alias="rbshDsCostPerSeg"    type="Gauge32" />
+      </group>
+
+      <group name="riverbed-steelhead-cpu-stats" ifType="all">
+        <mibObj oid=".1.3.6.1.4.1.17163.1.1.5.1.5.1.2" instance="rbshCpuIndivIndex" alias="rbshCpuIndivId"     type="string" />
+        <mibObj oid=".1.3.6.1.4.1.17163.1.1.5.1.5.1.3" instance="rbshCpuIndivIndex" alias="rbshCpuIndivIdle"   type="Counter32" />
+        <mibObj oid=".1.3.6.1.4.1.17163.1.1.5.1.5.1.4" instance="rbshCpuIndivIndex" alias="rbshCpuIndivSystem" type="Counter32" />
+        <mibObj oid=".1.3.6.1.4.1.17163.1.1.5.1.5.1.5" instance="rbshCpuIndivIndex" alias="rbshCpuIndivUser"   type="Counter32" />
+      </group>
+
+      <group name="riverbed-steelhead-port-bandwidth" ifType="all">
+        <mibObj oid=".1.3.6.1.4.1.17163.1.1.5.3.2.1.1.1" instance="rbshBwPort" alias="rbshBwPortNumber" type="string" />
+        <mibObj oid=".1.3.6.1.4.1.17163.1.1.5.3.2.1.1.2" instance="rbshBwPort" alias="rbshBwPortInLan"  type="Counter32" />
+        <mibObj oid=".1.3.6.1.4.1.17163.1.1.5.3.2.1.1.3" instance="rbshBwPort" alias="rbshBwPortInWan"  type="Counter32" />
+        <mibObj oid=".1.3.6.1.4.1.17163.1.1.5.3.2.1.1.4" instance="rbshBwPort" alias="rbshBwPortOutLan" type="Counter32" />
+        <mibObj oid=".1.3.6.1.4.1.17163.1.1.5.3.2.1.1.5" instance="rbshBwPort" alias="rbshBwPortOutWan" type="Counter32" />
+      </group>
+
+      <systemDef name="Riverbed Steelhead WAN Accelerators">
+        <sysoid>.1.3.6.1.4.1.17163.1.1</sysoid>
+        <collect>
+          <includeGroup>mib2-X-interfaces</includeGroup>
+          <includeGroup>riverbed-steelhead-scalars</includeGroup>
+          <includeGroup>riverbed-steelhead-cpu-stats</includeGroup>
+          <includeGroup>riverbed-steelhead-port-bandwidth</includeGroup>
+        </collect>
+      </systemDef>
+
+</datacollection-group>
