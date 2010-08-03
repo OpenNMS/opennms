@@ -39,7 +39,6 @@ import java.lang.reflect.UndeclaredThrowableException;
 import java.sql.SQLException;
 import java.util.*;
 
-import org.opennms.core.utils.ThreadCategory;
 import org.opennms.netmgt.config.*;
 
 import org.opennms.netmgt.daemon.AbstractServiceDaemon;

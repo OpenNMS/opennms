@@ -70,7 +70,7 @@ public class IfIndexNullTest {
     private MockEventIpcManager m_eventSubscriber;
     
     @Test
-    @JUnitSnmpAgent(host="127.0.0.1", port=9161, resource="classpath:snmpTestData-null.properties")
+    @JUnitSnmpAgent(resource="classpath:snmpTestData-null.properties")
     public void testNullIfIndex() throws Exception {
         final CountDownLatch eventRecieved = anticipateEvents(EventConstants.PROVISION_SCAN_COMPLETE_UEI, EventConstants.PROVISION_SCAN_ABORTED_UEI );
         

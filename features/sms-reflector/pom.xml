@@ -107,23 +107,22 @@
   <repositories>
     <repository>
       <id>ops4j.releases</id>
-      <url>http://repository.ops4j.org/maven2</url>
+      <url>http://maven.opennms.org/content/groups/ops4j.org-release</url>
       <snapshots>
         <enabled>false</enabled>
       </snapshots>
     </repository>
     <repository>
-      <id>com.springsource.repository.bundles.external</id>
-      <name>SpringSource Enterprise Bundle Repository - External Bundle Releases</name>
-      <url>http://repository.springsource.com/maven/bundles/external</url>
-      <snapshots>
-        <enabled>false</enabled>
-      </snapshots>
+      <snapshots><enabled>false</enabled></snapshots>
+      <releases><enabled>true</enabled></releases>
+      <id>maven-repo</id>
+      <name>Maven Central</name>
+      <url>http://repo1.maven.org/maven2</url>
     </repository>
     <repository>
-      <id>com.springsource.repository.bundles.release</id>
-      <name>SpringSource Enterprise Bundle Repository - SpringSource Bundle Releases</name>
-      <url>http://repository.springsource.com/maven/bundles/release</url>
+      <id>com.springsource.repository.bundles</id>
+      <name>SpringSource Enterprise Bundle Repository</name>
+      <url>http://maven.opennms.org/content/groups/springsource.com-release</url>
       <snapshots>
         <enabled>false</enabled>
       </snapshots>

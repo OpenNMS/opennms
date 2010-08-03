@@ -14,12 +14,12 @@
         <repository>
             <id>su-mvn</id>
             <name>SU Maven2</name>
-            <url>http://maven.it.su.se/it.su.se/maven2</url>
+            <url>http://maven.opennms.org/content/groups/su.se-release2</url>
         </repository>
         <repository>
             <id>su-maven</id>
             <name>SU Maven</name>
-            <url>http://maven.it.su.se/it.su.se/maven</url>
+            <url>http://maven.opennms.org/content/groups/su.se-release1</url>
             <layout>legacy</layout>
         </repository>
     </repositories>

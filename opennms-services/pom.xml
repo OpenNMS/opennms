@@ -92,6 +92,11 @@
     </dependency>
     <dependency>
       <groupId>org.opennms.dependencies</groupId>
+      <artifactId>javamail-dependencies</artifactId>
+      <scope>test</scope>
+    </dependency>
+    <dependency>
+      <groupId>org.opennms.dependencies</groupId>
       <artifactId>spring-dependencies</artifactId>
     </dependency>
     <dependency>
@@ -281,11 +286,6 @@
       <scope>test</scope>
     </dependency>
     <dependency>
-      <groupId>alt.dev.jmta</groupId>
-      <artifactId>jmta</artifactId>
-      <scope>test</scope>
-    </dependency>
-    <dependency>
       <groupId>org.opennms</groupId>
       <artifactId>opennms-rrd-jrobin</artifactId>
       <scope>test</scope>
@@ -328,9 +328,16 @@
     <repository>
       <snapshots><enabled>false</enabled></snapshots>
       <releases><enabled>true</enabled></releases>
+      <id>maven-repo</id>
+      <name>Maven Central</name>
+      <url>http://repo1.maven.org/maven2</url>
+    </repository>
+    <repository>
+      <snapshots><enabled>false</enabled></snapshots>
+      <releases><enabled>true</enabled></releases>
       <id>opennms-repo</id>
       <name>OpenNMS Repository</name>
-      <url>http://repo.opennms.org/maven2</url>
+      <url>http://maven.opennms.org/content/groups/opennms.org-release</url>
     </repository>
   </repositories>
 </project>

@@ -443,30 +443,8 @@
       <releases />
       <id>sourceforge</id>
       <name>Sourceforge OSSbeans Release Repository</name>
-      <url>http://openoss.sourceforge.net/m2repo</url>
+      <url>http://maven.opennms.org/content/groups/openoss.sourceforge.net-release</url>
     </repository>
-    
-    <!--
-        <repository>
-          <snapshots />
-          <id>sourceforge-snapshots</id>
-          <name>Sourceforge Release Repository</name>
-          <url>http://openoss.sourceforge.net/m2repo-snapshots</url>
-        </repository>
-        -->
-    
   </repositories>
   
-  <!-- 
-       <pluginRepositories>
-         <pluginRepository>
-           <releases />
-           <snapshots />
-           <id>codehaus-snapshots</id>
-           <name>Maven/Codehaus Snapshot Repository</name>
-           <url>http://snapshots.repository.codehaus.org</url>
-         </pluginRepository>
-       </pluginRepositories>
-       
-       -->
 </project>

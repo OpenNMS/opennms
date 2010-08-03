@@ -1,8 +1,8 @@
 package org.opennms.netmgt.provision.service;
 
 import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertTrue;
 
-import java.io.File;
 import java.net.InetAddress;
 import java.net.UnknownHostException;
 import java.util.Arrays;
@@ -25,6 +25,7 @@ import org.opennms.netmgt.dao.NodeDao;
 import org.opennms.netmgt.dao.db.JUnitTemporaryDatabase;
 import org.opennms.netmgt.dao.db.OpenNMSConfigurationExecutionListener;
 import org.opennms.netmgt.dao.db.TemporaryDatabaseExecutionListener;
+import org.opennms.netmgt.dao.support.ProxySnmpAgentConfigFactory;
 import org.opennms.netmgt.mock.MockEventIpcManager;
 import org.opennms.netmgt.model.OnmsNode;
 import org.opennms.netmgt.model.events.EventListener;
@@ -43,9 +44,25 @@ import org.springframework.test.context.support.DirtiesContextTestExecutionListe
 import org.springframework.test.context.transaction.TransactionalTestExecutionListener;
 
 @RunWith(SpringJUnit4ClassRunner.class)
-@TestExecutionListeners( { OpenNMSConfigurationExecutionListener.class, TemporaryDatabaseExecutionListener.class, JUnitSnmpAgentExecutionListener.class, DependencyInjectionTestExecutionListener.class, DirtiesContextTestExecutionListener.class, TransactionalTestExecutionListener.class })
-@ContextConfiguration(locations = { "classpath:/META-INF/opennms/applicationContext-dao.xml", "classpath:/META-INF/opennms/applicationContext-daemon.xml", "classpath:/META-INF/opennms/applicationContext-proxy-snmp.xml", "classpath:/META-INF/opennms/mockEventIpcManager.xml", "classpath:/META-INF/opennms/applicationContext-setupIpLike-enabled.xml",
-        "classpath:/META-INF/opennms/applicationContext-provisiond.xml", "classpath*:/META-INF/opennms/component-dao.xml", "classpath*:/META-INF/opennms/detectors.xml", "classpath:/importerServiceTest.xml" })
+@TestExecutionListeners( { 
+    OpenNMSConfigurationExecutionListener.class, 
+    TemporaryDatabaseExecutionListener.class, 
+    JUnitSnmpAgentExecutionListener.class, 
+    DependencyInjectionTestExecutionListener.class, 
+    DirtiesContextTestExecutionListener.class, 
+    TransactionalTestExecutionListener.class 
+})
+@ContextConfiguration(locations = { 
+        "classpath:/META-INF/opennms/applicationContext-dao.xml", 
+        "classpath:/META-INF/opennms/applicationContext-daemon.xml", 
+        "classpath:/META-INF/opennms/applicationContext-proxy-snmp.xml", 
+        "classpath:/META-INF/opennms/mockEventIpcManager.xml", 
+        "classpath:/META-INF/opennms/applicationContext-setupIpLike-enabled.xml",
+        "classpath:/META-INF/opennms/applicationContext-provisiond.xml", 
+        "classpath*:/META-INF/opennms/component-dao.xml", 
+        "classpath*:/META-INF/opennms/detectors.xml", 
+        "classpath:/importerServiceTest.xml" 
+})
 @JUnitTemporaryDatabase()
 public class DragonWaveNodeSwitchingTest implements MockSnmpAgentAware {
 
@@ -61,23 +78,26 @@ public class DragonWaveNodeSwitchingTest implements MockSnmpAgentAware {
     @Autowired
     private MockEventIpcManager m_eventSubscriber;
 
+    @Autowired
+    private SnmpPeerFactory m_snmpPeerFactory;
+
     private MockSnmpAgent m_snmpAgent;
 
     @BeforeClass
     public static void setUpSnmpConfig() {
-        SnmpPeerFactory.setFile(new File("src/test/proxy-snmp-config.xml"));
-
         Properties props = new Properties();
         props.setProperty("log4j.logger.org.hibernate", "INFO");
         props.setProperty("log4j.logger.org.springframework", "INFO");
         props.setProperty("log4j.logger.org.hibernate.SQL", "DEBUG");
-
         MockLogAppender.setupLogging(props);
-
     }
 
     @Before
     public void setUp() throws Exception {
+        // Override the SnmpPeerFactory with an instance that directs all requests to
+        // the temporary JUnit SNMP agent
+        SnmpPeerFactory.setInstance(m_snmpPeerFactory);
+        assertTrue(m_snmpPeerFactory instanceof ProxySnmpAgentConfigFactory);
         m_provisioner.start();
     }
 
@@ -88,7 +108,7 @@ public class DragonWaveNodeSwitchingTest implements MockSnmpAgentAware {
     }
 
     @Test
-    @JUnitSnmpAgent(host = "127.0.0.1", port = 9161, resource = "classpath:/dw/walks/node1-walk.properties")
+    @JUnitSnmpAgent(resource = "classpath:/dw/walks/node1-walk.properties")
     public void testInitialSetup() throws Exception {
         
         final CountDownLatch eventRecieved = anticipateEvents(EventConstants.PROVISION_SCAN_COMPLETE_UEI, EventConstants.PROVISION_SCAN_ABORTED_UEI );
@@ -139,11 +159,11 @@ public class DragonWaveNodeSwitchingTest implements MockSnmpAgentAware {
     }
 
     private SnmpValue getSnmpValue(String host, String oid) throws UnknownHostException {
-        return SnmpUtils.get(SnmpPeerFactory.getInstance().getAgentConfig(InetAddress.getByName(host)), SnmpObjId.get(oid));
+        return SnmpUtils.get(m_snmpPeerFactory.getAgentConfig(InetAddress.getByName(host)), SnmpObjId.get(oid));
     }
 
     @Test
-    @JUnitSnmpAgent(host = "127.0.0.1", port = 9161, resource = "classpath:/dw/walks/node3-walk.properties")
+    @JUnitSnmpAgent(resource = "classpath:/dw/walks/node3-walk.properties")
     public void testASetup() throws Exception {
 
         importResource("classpath:/dw/import/dw_test_import.xml");
