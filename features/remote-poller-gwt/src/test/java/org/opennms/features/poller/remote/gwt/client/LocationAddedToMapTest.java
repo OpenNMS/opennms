@@ -14,6 +14,7 @@ import java.util.TreeSet;
 import org.junit.Before;
 import org.junit.Test;
 import org.opennms.features.poller.remote.gwt.client.location.LocationInfo;
+import org.opennms.features.poller.remote.gwt.client.remoteevents.ApplicationUpdatedRemoteEvent;
 import org.opennms.features.poller.remote.gwt.client.remoteevents.LocationUpdatedRemoteEvent;
 import org.opennms.features.poller.remote.gwt.client.remoteevents.LocationsUpdatedRemoteEvent;
 import org.opennms.features.poller.remote.gwt.client.remoteevents.UpdateCompleteRemoteEvent;
@@ -95,7 +96,7 @@ public class LocationAddedToMapTest {
 
         public void placeMarker(GWTMarkerState markerState) {
             m_marker++;
-            try { Thread.sleep(1); } catch (Exception e) {}
+            //try { Thread.sleep(1); } catch (Exception e) {}
         }
         
         public int getMarkerCount() {
@@ -124,6 +125,7 @@ public class LocationAddedToMapTest {
     @Test
     public void testAddLocation() {
         int numLocations = 3000;
+        int numApps = 100;
         
         HandlerManager eventBus = new HandlerManager(null);
         Application application = new Application(eventBus);
@@ -136,18 +138,43 @@ public class LocationAddedToMapTest {
         for( LocationInfo locationInfo : locations) {
             m_testServer.sendUserSpecificEvent(new LocationUpdatedRemoteEvent(locationInfo));
         }
-        m_testServer.sendUserSpecificEvent(new UpdateCompleteRemoteEvent());
         
+        //create apps and update by sending event
+        Set<ApplicationInfo> apps = createApps(numApps, locations);
+        
+        for(ApplicationInfo app : apps) {
+            m_testServer.sendUserSpecificEvent(new ApplicationUpdatedRemoteEvent(app));
+        }
+        
+        m_testServer.sendUserSpecificEvent(new UpdateCompleteRemoteEvent());
         
         assertNotNull(m_testApplicationView.getMapBounds());
         
         assertEquals(bounds, m_testApplicationView.getMapBounds());
-        assertEquals(numLocations * 2, m_testApplicationView.getMarkerCount());
+        assertEquals(numLocations, m_testApplicationView.getMarkerCount());
         m_testApplicationView.resetMarkerCount();
         
         m_testServer.sendDomainEvent(new LocationsUpdatedRemoteEvent(locations));
         
+//        for(ApplicationInfo app : apps) {
+//            m_testServer.sendDomainEvent(new ApplicationUpdatedRemoteEvent(app));
+//        }
+        
         assertEquals(numLocations, m_testApplicationView.getMarkerCount());
+    }
+
+    private Set<ApplicationInfo> createApps(int numApps, Set<LocationInfo> locations) {
+        Set<String> locNames = new HashSet<String>();
+        for(LocationInfo location : locations) {
+            locNames.add(location.getName());
+        }
+        
+        Set<ApplicationInfo> apps = new HashSet<ApplicationInfo>();
+        for(int i = 1; i <= numApps; i++) {
+            
+            apps.add(new ApplicationInfo(i, "app" + i, Collections.<GWTMonitoredService>emptySet(), locNames, new StatusDetails(Status.UP, "All things good here")));
+        }
+        return apps;
     }
 
     private GWTBounds createLocations(int num, Set<LocationInfo> locations) {

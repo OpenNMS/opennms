@@ -242,22 +242,8 @@ public class DefaultLocationManager implements LocationManager, RemotePollerPres
 
     private void updateAllMarkerStates() {
         for (final LocationInfo location : m_dataManager.getLocations()) {
-            final GWTMarkerState markerState = location.getMarkerState();
-            
-            markerState.setVisible(m_statusFilter.matches(location));
-            
-            markerState.setSelected(m_selectedFilter.matches(location));
-            m_view.placeMarker(markerState);
+            placeMarker(location);
         }
-    }
-
-    private GWTMarkerState updateMarkerState(final LocationInfo location) {
-        final GWTMarkerState markerState = location.getMarkerState();
-
-        markerState.setVisible(m_statusFilter.matches(location));
-
-        markerState.setSelected(m_selectedFilter.matches(location));
-        return markerState;
     }
 
     /**
@@ -319,9 +305,7 @@ public class DefaultLocationManager implements LocationManager, RemotePollerPres
             m_dataManager.updateLocation(info);
             
             m_view.updateApplicationNames(m_dataManager.getAllApplicationNames());
-            GWTMarkerState state = updateMarkerState(info);
-             
-            m_view.placeMarker(state);
+            placeMarker(info);
         
             if (m_updated) {
                 updateAllMarkerStates();
@@ -333,6 +317,15 @@ public class DefaultLocationManager implements LocationManager, RemotePollerPres
             }
             
         }
+    }
+
+    private void placeMarker(final LocationInfo info) {
+        final GWTMarkerState markerState = info.getMarkerState();
+        
+        markerState.setVisible(m_statusFilter.matches(info));
+        
+        markerState.setSelected(m_selectedFilter.matches(info));
+        markerState.place(m_view);
     }
 
     /**
@@ -580,8 +573,7 @@ public class DefaultLocationManager implements LocationManager, RemotePollerPres
         m_dataManager.updateLocations(locations);
         
         for(LocationInfo location : locations) {
-            GWTMarkerState state = updateMarkerState(location);
-            m_view.placeMarker(state);
+            placeMarker(location);
         }
         
         
