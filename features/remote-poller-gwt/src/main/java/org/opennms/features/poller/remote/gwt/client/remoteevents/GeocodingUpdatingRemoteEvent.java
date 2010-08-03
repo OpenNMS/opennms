@@ -1,6 +1,5 @@
 package org.opennms.features.poller.remote.gwt.client.remoteevents;
 
-import org.opennms.features.poller.remote.gwt.client.RemotePollerPresenter;
 
 /**
  * <p>GeocodingUpdatingRemoteEvent class.</p>
@@ -31,7 +30,7 @@ public class GeocodingUpdatingRemoteEvent implements MapRemoteEvent {
 	}
 
 	/** {@inheritDoc} */
-	public void dispatch(final RemotePollerPresenter presenter) {
+	public void dispatch(final MapRemoteEventHandler presenter) {
 //		Window.alert("updating geocoding: " + m_count + "/" + m_size);
 	}
 

@@ -22,6 +22,6 @@
   <stylesheet src='Application.css' />
 
   <!-- Specify the app entry point class. -->
-  <entry-point class='org.opennms.features.poller.remote.gwt.client.Application'/>
+  <entry-point class='org.opennms.features.poller.remote.gwt.client.Main'/>
 
 </module>
