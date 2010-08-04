@@ -17,9 +17,8 @@
         java.text.SimpleDateFormat
         "
 %>
-
 <%!//A singleton instance of a "Match-any" interface, which can be used for generic tests/removals etc.
-	private static org.opennms.netmgt.config.poller.Interface	matchAnyInterface;
+	private static org.opennms.netmgt.config.poller.Interface matchAnyInterface;
 	{
 		matchAnyInterface = new org.opennms.netmgt.config.poller.Interface();
 		matchAnyInterface.setAddress("match-any");
@@ -103,9 +102,12 @@
 		}
 	}
 	
-	%><%
+%>
+<%
 	NotifdConfigFactory.init(); //Must do this early on - if it fails, then just throw the exception to the web gui
-	HashMap<String, String> shortDayNames = new HashMap<String, String>();
+
+	// @i18n
+	final HashMap<String, String> shortDayNames = new HashMap<String, String>();
 	shortDayNames.put("sunday", "Sunday");
 	shortDayNames.put("monday", "Monday");
 	shortDayNames.put("tuesday", "Tuesday");
@@ -146,20 +148,20 @@
 	shortDayNames.put("31", "31st");
 
 	GregorianCalendar today = new GregorianCalendar();
-	int date = today.get(Calendar.DATE);
-	int month = today.get(Calendar.MONTH) + 1;
-	int year = today.get(Calendar.YEAR);
+	final int date = today.get(Calendar.DATE);
+	final int month = today.get(Calendar.MONTH) + 1;
+	final int year = today.get(Calendar.YEAR);
 
 	PollOutagesConfigFactory.init(); //Only init - do *not* reload
 	PollOutagesConfigFactory pollFactory = PollOutagesConfigFactory.getInstance();
 	Outage theOutage;
-	String nameParam = request.getParameter("name");
-	
+
 	if ("Cancel".equals(request.getParameter("cancelButton"))) {
 		response.sendRedirect("index.jsp");
 		return;
 	}
 
+	String nameParam = request.getParameter("name");
 	if (nameParam != null) {
 		//first time in - name is passed as a param.  Find the outage, copy it, and shove it in the session
 		//Also keep a copy of the name, for later saving (replacing the original with the edited copy)
@@ -202,8 +204,9 @@
 %>
 <html>
 <body>
-No outage name parameter, nor outage stored in the session. Cannot edit!
-<BR />
+<p>
+Could not find an outage to edit because no outage name parameter was specified nor is any outage stored in the session. Cannot edit!
+</p>
 </body>
 </html>
 <%
@@ -211,9 +214,9 @@ No outage name parameter, nor outage stored in the session. Cannot edit!
 
 		}
 	}
-	//Load the initial set of enabled outages from the external configuration
+	//Load the initial set of enabled outages from the external configurations
 	// This will be overridden by a formSubmission to use the form values, but is necessary for the initial load of the page
-	//It is more efficient to piggy back on this initial setup setp (creating the hashmaps) than doing it separately
+	//It is more efficient to piggy back on this initial setup (creating the hashmaps) than doing it separately
 	Set<String> enabledOutages = new HashSet<String>();
 
 	// ******* Notification outages config *********
@@ -464,41 +467,44 @@ No outage name parameter, nor outage stored in the session. Cannot edit!
 			}
 		} else {
 			//Look for deleteNode or deleteInterface or deleteTime prefix
-			Enumeration<String> paramEnum = request.getParameterNames();
-			boolean found = false;
-			while (paramEnum.hasMoreElements() && !found) {
-				String paramName = paramEnum.nextElement();
+			List<String> paramList = Collections.list(request.getParameterNames());
+			for (String paramName : paramList) {
 				if (paramName.startsWith("deleteNode")) {
-					found = true;
 					String indexStr = paramName.substring("deleteNode".length(), paramName.indexOf("."));
 					try {
 						int index = WebSecurityUtils.safeParseInt(indexStr);
 						theOutage.removeNodeAt(index);
 					} catch (NumberFormatException e) {
 						//Ignore - nothing we can do
+						continue;
 					} catch (IndexOutOfBoundsException ioob) {
 						//Ignore - it's already removed
+						continue;
 					}
+					break;
 				} else if (paramName.startsWith("deleteInterface")) {
-					found = true;
 					String indexStr = paramName.substring("deleteInterface".length(), paramName.indexOf("."));
 					try {
 						int index = WebSecurityUtils.safeParseInt(indexStr);
 						theOutage.removeInterfaceAt(index);
 					} catch (NumberFormatException e) {
 						//Ignore - nothing we can do
+						continue;
 					} catch (IndexOutOfBoundsException ioob) {
 						//Ignore - it's already removed
+						continue;
 					}
+					break;
 				} else if (paramName.startsWith("deleteTime")) {
-					found = true;
 					String indexStr = paramName.substring("deleteTime".length(), paramName.indexOf("."));
 					try {
 						int index = WebSecurityUtils.safeParseInt(indexStr);
 						theOutage.removeTime(theOutage.getTime(index));
 					} catch (NumberFormatException e) {
 						//Ignore - nothing we can do
+						continue;
 					}
+					break;
 				}
 			}
 		}
@@ -520,9 +526,26 @@ No outage name parameter, nor outage stored in the session. Cannot edit!
 	<jsp:param name="breadcrumb" value="Edit" />
 </jsp:include>
 
-<style>
+<style type="text/css">
 TD {
 	font-size: 0.8em;
+}
+
+UL
+{
+	margin-top: 0px;
+}
+
+P
+{
+	font-size: 0.8em;
+	margin: 0px;
+}
+
+LABEL 
+{
+	font-weight: bold;
+	font-size: small;
 }
 </style>
 
@@ -577,12 +600,9 @@ function updateOutageTypeDisplay(selectElement) {
 
 <input type="hidden" name="formSubmission" value="<%=true%>" />
 
-<h1>Editing Outage: <%= theOutage.getName() %></h1>
+<h2>Editing Outage: <%= theOutage.getName() %></h2>
 
-<table class="normal" border="0">
-	<tr>
-		<td valign="top">Nodes and Interfaces:</td>
-		<td valign="top">
+		<label>Nodes and Interfaces:</label>
 			<table class="normal" border="0">
 				<tr>
 					<th valign="top">Nodes</th>
@@ -616,7 +636,7 @@ function updateOutageTypeDisplay(selectElement) {
 										out.println("Node " + nodeId + " Is Null<br/>");
 									}
 								} else {
-									out.println("Node Id " + nodeId + " Not Found<br/>");
+									out.println("Node ID " + nodeId + " Not Found<br/>");
 								}
 							}
 						}
@@ -697,21 +717,17 @@ function updateOutageTypeDisplay(selectElement) {
 				</tr>
 				<tr>
 					<td valign="top">
-						<% if (!hasMatchAny) { %><input type="submit" name="matchAny" value="All nodes/interfaces" /><% } %>
+						<% if (!hasMatchAny) { %><input type="submit" name="matchAny" value="All nodes and interfaces" /><% } %>
 					</td>
 				</tr>
 				<% if (!hasMatchAny && theOutage.getInterfaceCount() == 0 && theOutage.getNodeCount() == 0) { %>
 					<tr>
-						<td><span style="color: #ff0000">You must have at least one node or interface defined.</span></td>
+						<td><span style="color: #ff0000">You must select at least one node or interface for this scheduled outage.</span></td>
 					</tr>
 				<% } %>
 			</table>
-		</td>
-	</tr>
-	<tr>
-		<td valign="top">Outage Type:</td>
-		<td valign="top">
-			<table>
+		<label>Outage Type:</label>
+			<table class="normal">
 				<tr>
 					<td>
 						<% if (theOutage.getType() != null) { %>
@@ -720,22 +736,18 @@ function updateOutageTypeDisplay(selectElement) {
 						<span style="<%= theOutage.getType() == null? "" : "display: none" %>">
 							<select id="outageTypeSelector" name="outageType" onChange="updateOutageTypeDisplay(this);">
 								<% String outageType = theOutage.getType(); if (outageType == null) { outageType = ""; } %>
-								<option value="specific" <%= outageType.equalsIgnoreCase("specific")? "selected":"" %>>Specific</option>
-								<option value="daily"    <%= outageType.equalsIgnoreCase("daily")?    "selected":"" %>>Daily</option>
-								<option value="weekly"   <%= outageType.equalsIgnoreCase("weekly")?   "selected":"" %>>Weekly</option>
-								<option value="monthly"  <%= outageType.equalsIgnoreCase("monthly")?  "selected":"" %>>Monthly</option>
+								<option value="specific" <%= outageType.equalsIgnoreCase("specific")? "selected=\"selected\"":"" %>>Specific</option>
+								<option value="daily"    <%= outageType.equalsIgnoreCase("daily")?    "selected=\"selected\"":"" %>>Daily</option>
+								<option value="weekly"   <%= outageType.equalsIgnoreCase("weekly")?   "selected=\"selected\"":"" %>>Weekly</option>
+								<option value="monthly"  <%= outageType.equalsIgnoreCase("monthly")?  "selected=\"selected\"":"" %>>Monthly</option>
 							</select>
 							<input type="submit" value="Set" name="setOutageType" />
 						</span>
 					</td>
 				</tr>
 			</table>
-		</td>
-	</tr>
-	<tr>
-		<td valign="top">Time:</td>
-		<td>
-			<table>
+		<label>Time:</label>
+			<table class="normal">
 				<%
 					Time[] outageTimes = theOutage.getTime();
 					for (int i = 0; i < outageTimes.length; i++) {
@@ -846,57 +858,45 @@ function updateOutageTypeDisplay(selectElement) {
 					</tr>
 				<% } %>
 			</table>
-		</td>
-	</tr>
-	<tr>
-		<td valign="top">Applies To:</td>
-		<td style="font-size: 100%" valign="top">
+		<label>Applies To:</label>
 			<ul class="treeview">
 				<li>
-					<p>Notifications</p>
+					<p>Notifications:</p>
 					<ul>
-						<li> <label><input type="checkbox" <%=(enabledOutages.contains("notifications"))?"checked":""%> name="notifications" /> All Notifications</label> </li>
+						<li><input type="checkbox" <%=(enabledOutages.contains("notifications"))?"checked=\"checked\"":""%> name="notifications" id="notifications"/> <label for="notifications">All Notifications</label> </li>
 					</ul>
 				</li>
 				<li>
-					<p>Status Polling</p>
+					<p>Status Polling:</p>
 					<ul>
-						<%
-							for (org.opennms.netmgt.config.poller.Package thisKey : pollingOutages.keySet()) {
+						<% for (org.opennms.netmgt.config.poller.Package thisKey : pollingOutages.keySet()) {
 								String name = "polling-" + thisKey.getName();
-						%>
-						<li> <label><input type="checkbox" name="<%=name%>" <%=enabledOutages.contains(name)?"checked":""%> /> <%= thisKey.getName() %></label> </li>
+								%>
+								<li><input type="checkbox" name="<%=name%>" <%=enabledOutages.contains(name)?"checked=\"checked\"":""%> id="<%=name%>"/> <label for="<%=name%>"><%= thisKey.getName() %></label> </li>
 						<% } %>
 					</ul>
 				</li>
 				<li>
-					<p>Threshold Checking</p>
+					<p>Threshold Checking:</p>
 					<ul>
-						<%
-							for (org.opennms.netmgt.config.threshd.Package thisKey : thresholdOutages.keySet()) {
+						<% for (org.opennms.netmgt.config.threshd.Package thisKey : thresholdOutages.keySet()) {
 								String name = "threshold-" + thisKey.getName();
-						%>
-						<li> <label><input type="checkbox" name="<%=name%>" <%=enabledOutages.contains(name)?"checked":""%> /> <%= thisKey.getName() %></label> </li>
+								%>
+								<li><input type="checkbox" name="<%=name%>" <%=enabledOutages.contains(name)?"checked=\"checked\"":""%> id="<%=name%>"/> <label for="<%=name%>"><%= thisKey.getName() %></label> </li>
 						<% } %>
 					</ul>
 				</li>
 				<li>
-					<p>Data Collection</p>
+					<p>Data Collection:</p>
 					<ul>
-						<%
-							for (org.opennms.netmgt.config.collectd.Package thisKey : collectionOutages.keySet()) {
+						<% for (org.opennms.netmgt.config.collectd.Package thisKey : collectionOutages.keySet()) {
 								String name = "collect-" + thisKey.getName();
-						%>
-						<li> <label><input type="checkbox" name="<%=name%>" <%=enabledOutages.contains(name)?"checked":""%> /> <%= thisKey.getName() %></label> </li>
+								%>
+								<li><input type="checkbox" name="<%=name%>" <%=enabledOutages.contains(name)?"checked":""%> id="<%=name%>"/> <label for="<%=name%>"><%= thisKey.getName() %></label> </li>
 						<% } %>
 					</ul>
 				</li>
 			</ul>
-		</td>
-	</tr>
-	<tr>
-		<td></td>
-		<td>
 			<%
 				if (theOutage != null
 						&& theOutage.getTimeCount() > 0
@@ -905,10 +905,6 @@ function updateOutageTypeDisplay(selectElement) {
 						) {
 			%><input type="submit" value="Save" name="saveButton" /><% } %>
 			<input type="submit" value="Cancel" name="cancelButton" />
-		</td>
-	</tr>
-</table>
-
 </form>
 
 <script type="text/javascript">
