@@ -259,7 +259,7 @@ public class JdbcCollector implements ServiceCollector {
                             
                             for(JdbcColumn curColumn : query.getJdbcColumns()) {
                                 String columnName = null;
-                                if(curColumn.getDataSourceName() != null && !curColumn.getDataSourceName().isEmpty()) {
+                                if(curColumn.getDataSourceName() != null && curColumn.getDataSourceName().length() != 0) {
                                     columnName = curColumn.getDataSourceName();
                                 } else {
                                     columnName = curColumn.getColumnName();
