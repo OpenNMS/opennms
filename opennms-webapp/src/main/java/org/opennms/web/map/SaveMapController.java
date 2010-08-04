@@ -95,6 +95,7 @@ public class SaveMapController implements Controller {
 		BufferedWriter bw = new BufferedWriter(new OutputStreamWriter(response
 				.getOutputStream(), "UTF-8"));
 			
+		int mapId = WebSecurityUtils.safeParseInt(request.getParameter("MapId"));
 		String mapName = request.getParameter("MapName");
 		String mapBackground = request.getParameter("MapBackground");
 		int mapWidth = WebSecurityUtils.safeParseInt(request.getParameter("MapWidth"));
@@ -108,6 +109,8 @@ public class SaveMapController implements Controller {
 
 		try {
 			VMap map = manager.openMap();
+			if (mapId != MapsConstants.NEW_MAP && map.isNew())
+				map = manager.openMap(mapId, request.getRemoteUser(), false);
 
 			log.debug("Instantiating new elems ArrayList");
 			elems = new ArrayList<VElement>();
@@ -183,7 +186,7 @@ public class SaveMapController implements Controller {
                 log.debug("Map is Automated Map, saving as Static");
                 map.setType(MapsConstants.AUTOMATIC_SAVED_MAP);
 			}
-			int mapId = manager.save(map);
+			mapId = manager.save(map);
 
 	        log.info(map.getName() + " Map saved. " + "With map id: " + mapId);
 

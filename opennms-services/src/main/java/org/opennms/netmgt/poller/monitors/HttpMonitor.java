@@ -82,19 +82,6 @@ import org.opennms.netmgt.poller.NetworkInterfaceNotSupportedException;
  * @author <A HREF="mailto:tarus@opennms.org">Tarus Balog </A>
  * @author <A HREF="mailto:mike@opennms.org">Mike </A>
  * @author <a href="mailto:david@opennms.org">David Hustace</a>
- * @author <A HREF="http://www.opennms.org/">OpenNMS </A>
- * @author <A HREF="mailto:tarus@opennms.org">Tarus Balog </A>
- * @author <A HREF="mailto:mike@opennms.org">Mike </A>
- * @author <a href="mailto:david@opennms.org">David Hustace</a>
- * @author <A HREF="http://www.opennms.org/">OpenNMS </A>
- * @author <A HREF="mailto:tarus@opennms.org">Tarus Balog </A>
- * @author <A HREF="mailto:mike@opennms.org">Mike </A>
- * @author <a href="mailto:david@opennms.org">David Hustace</a>
- * @author <A HREF="http://www.opennms.org/">OpenNMS </A>
- * @author <A HREF="mailto:tarus@opennms.org">Tarus Balog </A>
- * @author <A HREF="mailto:mike@opennms.org">Mike </A>
- * @author <a href="mailto:david@opennms.org">David Hustace</a>
- * @version $Id: $
  */
 @Distributable
 public class HttpMonitor extends IPv4Monitor {
@@ -119,7 +106,19 @@ public class HttpMonitor extends IPv4Monitor {
      * monitored interface.
      */
     private static final int DEFAULT_TIMEOUT = 3000; // 3 second timeout on read()
-    
+
+    public static final String PARAMETER_VERBOSE = "verbose";
+    public static final String PARAMETER_USER_AGENT = "user-agent";
+    public static final String PARAMETER_BASIC_AUTHENTICATION = "basic-authentication";
+    public static final String PARAMETER_USER = "user";
+    public static final String PARAMETER_PASSWORD = "password";
+    public static final String PARAMETER_RESOLVE_IP = "resolve-ip";
+    public static final String PARAMETER_HOST_NAME = "host-name";
+    public static final String PARAMETER_RESPONSE_TEXT = "response-text";
+    public static final String PARAMETER_RESPONSE = "response";
+    public static final String PARAMETER_URL = "url";
+    public static final String PARAMETER_PORT = "port";
+
     /**
      * {@inheritDoc}
      *
@@ -197,7 +196,6 @@ public class HttpMonitor extends IPv4Monitor {
                     log().warn("Connection exception for " + (iface.getAddress()) + ":" + determinePorts(httpClient.getParameters())[portIndex], e);
                     httpClient.setReason("HTTP connection exception on port: "+determinePorts(httpClient.getParameters())[portIndex]+": "+e.getMessage());
                 } catch (IOException e) {
-                    e.fillInStackTrace();
                     log().warn("IOException while polling address " + (iface.getAddress()), e);
                     httpClient.setReason("IOException while polling address: "+(iface.getAddress())+": "+e.getMessage());
                 } finally {
@@ -229,12 +227,12 @@ public class HttpMonitor extends IPv4Monitor {
     }
 
     private boolean determineVerbosity(final Map<String, Object> parameters) {
-        final String verbose = ParameterMap.getKeyedString(parameters, "verbose", null);
+        final String verbose = ParameterMap.getKeyedString(parameters, PARAMETER_VERBOSE, null);
         return (verbose != null && verbose.equalsIgnoreCase("true")) ? true : false;
     }
 
     private String determineUserAgent(final Map<String, Object> parameters) {
-        String agent = ParameterMap.getKeyedString(parameters, "user-agent", null);
+        String agent = ParameterMap.getKeyedString(parameters, PARAMETER_USER_AGENT, null);
         if (isBlank(agent)) {
             return "OpenNMS HttpMonitor";
         }
@@ -242,18 +240,18 @@ public class HttpMonitor extends IPv4Monitor {
     }
 
     String determineBasicAuthentication(final Map<String, Object> parameters) {
-        String credentials = ParameterMap.getKeyedString(parameters, "basic-authentication", null);
+        String credentials = ParameterMap.getKeyedString(parameters, PARAMETER_BASIC_AUTHENTICATION, null);
 
         if (isNotBlank(credentials)) {
             credentials = new String(Base64.encodeBase64(credentials.getBytes()));
         } else {
             
-            String user = ParameterMap.getKeyedString(parameters, "user", null);
+            String user = ParameterMap.getKeyedString(parameters, PARAMETER_USER, null);
             
             if (isBlank(user)) {
                 credentials = null;
             } else {
-                String passwd = ParameterMap.getKeyedString(parameters, "password", "");
+                String passwd = ParameterMap.getKeyedString(parameters, PARAMETER_PASSWORD, "");
                 credentials = new String(Base64.encodeBase64((user+":"+passwd).getBytes()));
             }
         }
@@ -266,8 +264,8 @@ public class HttpMonitor extends IPv4Monitor {
     }
     
     private String determineVirtualHost(NetworkInterface iface, final Map<String, Object> parameters) {
-        boolean res = ParameterMap.getKeyedBoolean(parameters, "resolve-ip", false);
-        String virtualHost = ParameterMap.getKeyedString(parameters, "host-name", null);
+        boolean res = ParameterMap.getKeyedBoolean(parameters, PARAMETER_RESOLVE_IP, false);
+        String virtualHost = ParameterMap.getKeyedString(parameters, PARAMETER_HOST_NAME, null);
 
         
         if (isBlank(virtualHost)) {
@@ -282,15 +280,15 @@ public class HttpMonitor extends IPv4Monitor {
 
 
     private String determineResponseText(final Map<String, Object> parameters) {
-        return ParameterMap.getKeyedString(parameters, "response-text", null);
+        return ParameterMap.getKeyedString(parameters, PARAMETER_RESPONSE_TEXT, null);
     }
 
     private String determineResponse(final Map<String, Object> parameters) {
-        return ParameterMap.getKeyedString(parameters, "response", determineDefaultResponseRange(determineUrl(parameters)));
+        return ParameterMap.getKeyedString(parameters, PARAMETER_RESPONSE, determineDefaultResponseRange(determineUrl(parameters)));
     }
 
     private String determineUrl(final Map<String, Object> parameters) {
-        return ParameterMap.getKeyedString(parameters, "url", DEFAULT_URL);
+        return ParameterMap.getKeyedString(parameters, PARAMETER_URL, DEFAULT_URL);
     }
 
     /**
@@ -300,7 +298,7 @@ public class HttpMonitor extends IPv4Monitor {
      * @return an array of int.
      */
     protected int[] determinePorts(final Map<String, Object> parameters) {
-        return ParameterMap.getKeyedIntegerArray(parameters, "port", DEFAULT_PORTS);
+        return ParameterMap.getKeyedIntegerArray(parameters, PARAMETER_PORT, DEFAULT_PORTS);
     }
 
     private String determineDefaultResponseRange(String url) {

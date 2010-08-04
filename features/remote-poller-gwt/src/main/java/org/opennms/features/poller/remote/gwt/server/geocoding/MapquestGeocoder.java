@@ -1,14 +1,16 @@
 package org.opennms.features.poller.remote.gwt.server.geocoding;
 
+import java.io.InputStream;
 import java.io.UnsupportedEncodingException;
 import java.net.URLEncoder;
 import java.util.List;
 
 import net.simon04.jelementtree.ElementTree;
 
-import org.apache.commons.httpclient.HttpClient;
-import org.apache.commons.httpclient.HttpMethod;
-import org.apache.commons.httpclient.methods.GetMethod;
+import org.apache.http.client.HttpClient;
+import org.apache.http.client.methods.HttpGet;
+import org.apache.http.client.methods.HttpUriRequest;
+import org.apache.http.impl.client.DefaultHttpClient;
 import org.opennms.core.utils.LogUtils;
 import org.opennms.features.poller.remote.gwt.client.GWTLatLng;
 
@@ -35,7 +37,7 @@ public class MapquestGeocoder implements Geocoder {
 	}
 
 	private static final String GEOCODE_URL = "http://www.mapquestapi.com/geocoding/v1/address?callback=renderGeocode&outFormat=xml";
-	private static final HttpClient m_httpClient = new HttpClient();
+	private static final HttpClient m_httpClient = new DefaultHttpClient();
 	private String m_apiKey;
 	private Quality m_minimumQuality;
 	private String m_referer;
@@ -65,13 +67,13 @@ public class MapquestGeocoder implements Geocoder {
 
 	/** {@inheritDoc} */
 	public GWTLatLng geocode(final String geolocation) throws GeocoderException {
-		final HttpMethod method = new GetMethod(getUrl(geolocation));
-		method.addRequestHeader("User-Agent", "OpenNMS-MapQuestGeocoder/1.0");
-		method.addRequestHeader("Referer", m_referer);
+		final HttpUriRequest method = new HttpGet(getUrl(geolocation));
+		method.addHeader("User-Agent", "OpenNMS-MapQuestGeocoder/1.0");
+		method.addHeader("Referer", m_referer);
 
 		try {
-			m_httpClient.executeMethod(method);
-			final ElementTree tree = ElementTree.fromStream(method.getResponseBodyAsStream());
+			InputStream responseStream = m_httpClient.execute(method).getEntity().getContent();
+			final ElementTree tree = ElementTree.fromStream(responseStream);
 			if (tree == null) {
 				throw new GeocoderException("an error occurred connecting to the MapQuest geocoding service (no XML tree was found)");
 			}

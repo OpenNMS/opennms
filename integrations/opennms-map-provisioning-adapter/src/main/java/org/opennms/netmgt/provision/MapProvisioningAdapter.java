@@ -44,6 +44,8 @@ import java.util.Set;
 import java.util.TreeSet;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.ConcurrentMap;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 
 import org.opennms.core.utils.LogUtils;
 import org.opennms.core.utils.ThreadCategory;
@@ -815,9 +817,26 @@ SUBMAP:                     for (Csubmap csubmap : submaps.get(mapName)) {
     }
     
     private String getLabel(String FQDN) {
-        if (FQDN.indexOf(".")>0)
-       return FQDN.substring(0, FQDN.indexOf(".")); 
+    	if (FQDN.indexOf(".")>0 && !validate(FQDN))
+            return FQDN.substring(0, FQDN.indexOf(".")); 			
         return FQDN;
+    }
+    
+    private static final String IPADDRESS_PATTERN = 
+		"^([01]?\\d\\d?|2[0-4]\\d|25[0-5])\\." +
+		"([01]?\\d\\d?|2[0-4]\\d|25[0-5])\\." +
+		"([01]?\\d\\d?|2[0-4]\\d|25[0-5])\\." +
+		"([01]?\\d\\d?|2[0-4]\\d|25[0-5])$"; 
+ 
+   /**
+    * Validate ip address with regular expression
+    * @param ip ip address for validation
+    * @return true valid ip address, false invalid ip address
+    */
+    private boolean validate(final String ip){		  
+  	  Pattern pattern = Pattern.compile(IPADDRESS_PATTERN);
+	  Matcher matcher = pattern.matcher(ip);
+	  return matcher.matches();	    	    
     }
 
 }

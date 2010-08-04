@@ -1,7 +1,6 @@
 package org.opennms.features.poller.remote.gwt.client.remoteevents;
 
 import org.opennms.features.poller.remote.gwt.client.ApplicationInfo;
-import org.opennms.features.poller.remote.gwt.client.RemotePollerPresenter;
 
 /**
  * <p>ApplicationUpdatedRemoteEvent class.</p>
@@ -29,7 +28,7 @@ public class ApplicationUpdatedRemoteEvent implements MapRemoteEvent {
 	}
 
 	/** {@inheritDoc} */
-	public void dispatch(final RemotePollerPresenter presenter) {
+	public void dispatch(final MapRemoteEventHandler presenter) {
 		presenter.updateApplication(m_applicationInfo);
 	}
 	

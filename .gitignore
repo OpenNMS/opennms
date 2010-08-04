@@ -7,4 +7,5 @@ target
 .project
 .settings
 .springBeans
+.DS_Store
 build.properties

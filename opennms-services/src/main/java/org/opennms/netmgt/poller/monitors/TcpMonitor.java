@@ -72,17 +72,10 @@ import org.opennms.netmgt.poller.NetworkInterfaceNotSupportedException;
  * implements the ServiceMonitor interface that allows it to be used along with
  * other plug-ins by the service poller framework.
  *
- * @author <A HREF="mailto:tarus@opennms.org">Tarus Balog </A>
- * @author <A HREF="mike@opennms.org">Mike </A>
- * @author <A HREF="http://www.opennms.org/">OpenNMS </A>
- * @author <A HREF="mailto:tarus@opennms.org">Tarus Balog </A>
- * @author <A HREF="mike@opennms.org">Mike </A>
- * @author <A HREF="http://www.opennms.org/">OpenNMS </A>
  * @author Weave
  * @author <A HREF="mailto:tarus@opennms.org">Tarus Balog </A>
  * @author <A HREF="mike@opennms.org">Mike </A>
  * @author <A HREF="http://www.opennms.org/">OpenNMS </A>
- * @version $Id: $
  */
 
 @Distributable
@@ -104,6 +97,9 @@ final public class TcpMonitor extends IPv4Monitor {
      */
     private static final int DEFAULT_TIMEOUT = 3000; // 3 second timeout on
                                                         // read()
+
+    public static final String PARAMETER_BANNER = "banner";
+    public static final String PARAMETER_PORT = "port";
 
     /**
      * {@inheritDoc}
@@ -133,14 +129,14 @@ final public class TcpMonitor extends IPv4Monitor {
 
         // Port
         //
-        int port = ParameterMap.getKeyedInteger(parameters, "port", DEFAULT_PORT);
+        int port = ParameterMap.getKeyedInteger(parameters, PARAMETER_PORT, DEFAULT_PORT);
         if (port == DEFAULT_PORT) {
             throw new RuntimeException("TcpMonitor: required parameter 'port' is not present in supplied properties.");
         }
 
         // BannerMatch
         //
-        String strBannerMatch = (String) parameters.get("banner");
+        String strBannerMatch = ParameterMap.getKeyedString(parameters, PARAMETER_BANNER, null);
 
         // Get the address instance.
         //

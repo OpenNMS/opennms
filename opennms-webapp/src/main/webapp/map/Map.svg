@@ -41,7 +41,8 @@
 <script type="text/ecmascript"><![CDATA[
 
 var startingup=true;
-var saving = false;
+var useMenu = false;
+var updateUrl = true;
 
 top.resizeSVG = resizeSVG;
 
@@ -75,21 +76,24 @@ function manageNewMapNotSavedOnResizing() {
 
 }
 
-function historyCallBack(hash) {
+function historyCallBack(mapId) {
 	if (startingup) {
-		if(hash) {
-	    	setTimeout('openBookMarkedMap('+hash+');',1000);
+		if(mapId) {
+			setTimeout('openBookMarkedMap('+mapId+');',1000);
 		} else {
-			loadDefaultMap();		
+			setTimeout('loadDefaultMap();',1000);		
 		}
 		startingup=false;
 		return;
 	}
-	if(hash) {
-		if (saving)
-			saving=false;
-		else
-			openBookMarkedMap(hash);
+	
+	if (useMenu) {
+		useMenu=false;
+		return
+	}
+	
+	if(mapId) {
+		openBookMarkedMap(mapId)
 	} else {
 		close();
 	}
@@ -97,8 +101,13 @@ function historyCallBack(hash) {
 }
 
 function openBookMarkedMap(mapId) {
-	mapTabSetUp(mapidSortAss[mapId]);
-	openMap(mapId);
+	windowsClean();
+	clearTopInfo();
+	clearDownInfo();
+	useMenu=false;
+	updateUrl=false;
+	mapTabSetUp(mapidSortAss[mapId]);	
+	openMap(mapId,true);
 }
 
 function startUp() {

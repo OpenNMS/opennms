@@ -55,6 +55,7 @@ public class BSFMonitor extends IPv4Monitor {
                     String code = IOUtils.getStringFromReader(new InputStreamReader(new FileInputStream(file), "UTF-8"));
                     String status = null;
                     
+                    // Declare some beans that can be used inside the script
                     bsfManager.declareBean("map", map, Map.class);
                     bsfManager.declareBean("ip_addr",svc.getIpAddr(),String.class);
                     bsfManager.declareBean("node_id",svc.getNodeId(),int.class );

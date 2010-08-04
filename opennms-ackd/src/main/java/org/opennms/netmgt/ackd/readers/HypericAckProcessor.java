@@ -36,10 +36,11 @@
 package org.opennms.netmgt.ackd.readers;
 
 import java.io.IOException;
-import java.io.InputStream;
-import java.io.InputStreamReader;
 import java.io.LineNumberReader;
 import java.io.Reader;
+import java.io.StringReader;
+import java.net.URI;
+import java.net.URISyntaxException;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
@@ -61,14 +62,25 @@ import javax.xml.stream.XMLStreamException;
 import javax.xml.stream.events.StartElement;
 import javax.xml.stream.events.XMLEvent;
 
-import org.apache.commons.httpclient.HostConfiguration;
-import org.apache.commons.httpclient.HttpClient;
-import org.apache.commons.httpclient.HttpException;
-import org.apache.commons.httpclient.URI;
-import org.apache.commons.httpclient.UsernamePasswordCredentials;
-import org.apache.commons.httpclient.auth.AuthScope;
-import org.apache.commons.httpclient.methods.GetMethod;
-import org.apache.commons.httpclient.params.HttpClientParams;
+import org.apache.http.HttpHost;
+import org.apache.http.HttpRequest;
+import org.apache.http.HttpRequestInterceptor;
+import org.apache.http.HttpResponse;
+import org.apache.http.auth.AuthScope;
+import org.apache.http.auth.AuthState;
+import org.apache.http.auth.Credentials;
+import org.apache.http.auth.UsernamePasswordCredentials;
+import org.apache.http.client.CredentialsProvider;
+import org.apache.http.client.methods.HttpGet;
+import org.apache.http.client.methods.HttpUriRequest;
+import org.apache.http.client.protocol.ClientContext;
+import org.apache.http.impl.auth.BasicScheme;
+import org.apache.http.impl.client.DefaultHttpClient;
+import org.apache.http.params.CoreConnectionPNames;
+import org.apache.http.params.CoreProtocolPNames;
+import org.apache.http.protocol.ExecutionContext;
+import org.apache.http.protocol.HttpContext;
+import org.apache.http.util.EntityUtils;
 import org.hibernate.criterion.Restrictions;
 import org.opennms.core.utils.ThreadCategory;
 import org.opennms.netmgt.config.ackd.Parameter;
@@ -474,7 +486,7 @@ public class HypericAckProcessor implements AckProcessor {
      * @throws javax.xml.bind.JAXBException if any.
      * @throws javax.xml.stream.XMLStreamException if any.
      */
-    public static List<HypericAlertStatus> fetchHypericAlerts(String hypericUrl, List<String> alertIds) throws HttpException, IOException, JAXBException, XMLStreamException {
+    public static List<HypericAlertStatus> fetchHypericAlerts(String hypericUrl, List<String> alertIds) throws IOException, JAXBException, XMLStreamException {
         List<HypericAlertStatus> retval = new ArrayList<HypericAlertStatus>();
 
         if (alertIds.size() < 1) {
@@ -491,33 +503,67 @@ public class HypericAckProcessor implements AckProcessor {
                 alertIdString.append("id=").append(alertIds.get(i));
             }
 
-            HttpClient httpClient = new HttpClient();
-            HostConfiguration hostConfig = new HostConfiguration();
+            // Create an HTTP client
+            DefaultHttpClient httpClient = new DefaultHttpClient();
+            httpClient.getParams().setIntParameter(CoreConnectionPNames.CONNECTION_TIMEOUT, 3000);
+            httpClient.getParams().setIntParameter(CoreConnectionPNames.SO_TIMEOUT, 3000);
+            HttpUriRequest httpMethod = new HttpGet(hypericUrl + alertIdString.toString());
 
-            URI uri = new URI(hypericUrl, true);
+            // Set a custom user-agent so that it's easy to tcpdump these requests
+            httpMethod.getParams().setParameter(CoreProtocolPNames.USER_AGENT, "OpenNMS-Ackd.HypericAckProcessor");
 
-            GetMethod httpMethod = new GetMethod(uri.getURI() + alertIdString.toString());
-
-            httpClient.getParams().setParameter(HttpClientParams.SO_TIMEOUT, 3000);
-            httpClient.getParams().setParameter(HttpClientParams.USER_AGENT, "OpenNMS Ackd.HypericAckProcessor");
-            // hostConfig.getParams().setParameter(HttpClientParams.VIRTUAL_HOST, "localhost");
-
-            String userinfo = uri.getUserinfo();
+            // Parse the URI from the config so that we can deduce the username/password information
+            String userinfo = null;
+            try {
+                URI hypericUri = new URI(hypericUrl);
+                userinfo = hypericUri.getUserInfo();
+                // httpMethod.getParams().setParameter(ClientPNames.VIRTUAL_HOST, new HttpHost("localhost", hypericUri.getPort()));
+            } catch (URISyntaxException e) {
+                log().warn("Could not parse URI to get username/password stanza: " + hypericUrl, e);
+            }
             if (userinfo != null && !"".equals(userinfo)) {
-                httpClient.getParams().setAuthenticationPreemptive(true);
-                httpClient.getState().setCredentials(AuthScope.ANY, new UsernamePasswordCredentials(userinfo));
+                // Add the credentials to the HttpClient instance
+                httpClient.getCredentialsProvider().setCredentials(AuthScope.ANY, new UsernamePasswordCredentials(userinfo));
+
+                /**
+                 * Add an HttpRequestInterceptor that will perform preemptive auth
+                 * @see http://hc.apache.org/httpcomponents-client-4.0.1/tutorial/html/authentication.html
+                 */
+                HttpRequestInterceptor preemptiveAuth = new HttpRequestInterceptor() {
+
+                    public void process(final HttpRequest request, final HttpContext context) throws IOException {
+
+                        AuthState authState = (AuthState)context.getAttribute(ClientContext.TARGET_AUTH_STATE);
+                        CredentialsProvider credsProvider = (CredentialsProvider)context.getAttribute(ClientContext.CREDS_PROVIDER);
+                        HttpHost targetHost = (HttpHost)context.getAttribute(ExecutionContext.HTTP_TARGET_HOST);
+
+                        // If not auth scheme has been initialized yet
+                        if (authState.getAuthScheme() == null) {
+                            AuthScope authScope = new AuthScope(targetHost.getHostName(), targetHost.getPort());
+                            // Obtain credentials matching the target host
+                            Credentials creds = credsProvider.getCredentials(authScope);
+                            // If found, generate BasicScheme preemptively
+                            if (creds != null) {
+                                authState.setAuthScheme(new BasicScheme());
+                                authState.setCredentials(creds);
+                            }
+                        }
+                    }
+
+                };
+                httpClient.addRequestInterceptor(preemptiveAuth, 0);
             }
 
             try {
-                httpClient.executeMethod(hostConfig, httpMethod);
+                HttpResponse response = httpClient.execute(httpMethod);
 
-                //Integer statusCode = httpMethod.getStatusCode();
-                //String statusText = httpMethod.getStatusText();
-                InputStream responseText = httpMethod.getResponseBodyAsStream();
+                // int statusCode = response.getStatusLine().getStatusCode();
+                // String statusText = response.getStatusLine().getReasonPhrase();
 
-                retval = parseHypericAlerts(new InputStreamReader(responseText, httpMethod.getResponseCharSet()));
+                retval = parseHypericAlerts(new StringReader(EntityUtils.toString(response.getEntity())));
             } finally{
-                httpMethod.releaseConnection();
+                // Do we need to do any cleanup?
+                // httpMethod.releaseConnection();
             }
         }
         return retval;
@@ -578,7 +624,7 @@ public class HypericAckProcessor implements AckProcessor {
 
             // Throw an exception and include the erroneous HTTP response in the exception text
             throw new JAXBException("Found wrong root element in Hyperic XML document, expected: \"" + rootElementName + "\", found \"" + startElement.getName().getLocalPart() + "\"\n" + 
-                    errorContent.toString());
+                                    errorContent.toString());
         }
         return retval;
     }

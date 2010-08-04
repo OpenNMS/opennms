@@ -18,8 +18,9 @@ public class GWTMarkerState implements IsSerializable, Serializable {
 	private Status m_status;
     private String m_name;
     private GWTLatLng m_latLng;
-    private Boolean m_selected = true;
-	private Boolean m_visible = true;
+    private boolean m_selected = true;
+	private boolean m_visible = true;
+	private boolean m_dirty = true;
 
 	/**
 	 * <p>Constructor for GWTMarkerState.</p>
@@ -49,6 +50,9 @@ public class GWTMarkerState implements IsSerializable, Serializable {
     }
 
     private void setName(String name) {
+        if(!isEquals(m_name, name)) {
+            m_dirty = true;
+        }
         m_name = name;
     }
 
@@ -62,6 +66,9 @@ public class GWTMarkerState implements IsSerializable, Serializable {
     }
 
     private void setLatLng(GWTLatLng latLng) {
+        if(!isEquals(m_latLng, latLng)) {
+            m_dirty = true;
+        }
         m_latLng = latLng;
     }
 
@@ -80,6 +87,9 @@ public class GWTMarkerState implements IsSerializable, Serializable {
 	 * @param status a {@link org.opennms.features.poller.remote.gwt.client.Status} object.
 	 */
 	public void setStatus(Status status) {
+	    if(!isEquals(m_status , status)) {
+	        m_dirty = true;
+	    }
         m_status = status;
     }
 
@@ -98,6 +108,9 @@ public class GWTMarkerState implements IsSerializable, Serializable {
 	 * @param visible a boolean.
 	 */
 	public void setVisible(final boolean visible) {
+	    if(m_visible != visible) {
+	        m_dirty = true;
+	    }
 		m_visible  = visible;
 	}
 
@@ -116,6 +129,9 @@ public class GWTMarkerState implements IsSerializable, Serializable {
 	 * @param selected a boolean.
 	 */
 	public void setSelected(final boolean selected) {
+	    if(m_selected != selected ) {
+	        m_dirty = true;
+	    }
 		m_selected = selected;
 	}
 
@@ -168,5 +184,16 @@ public class GWTMarkerState implements IsSerializable, Serializable {
             return this.getName() == that.getName();
         }
         return false;
+    }
+
+    public void place(ApplicationView view) {
+        if(m_dirty) {
+            view.placeMarker(this);
+            m_dirty = false;
+        }
+    }
+    
+    private boolean isEquals(Object a, Object b) {
+        return a == null ? b == null : a.equals(b);
     }
 }

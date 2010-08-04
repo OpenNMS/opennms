@@ -44,31 +44,41 @@ import java.util.Date;
 import java.util.HashMap;
 import java.util.Set;
 
-import junit.framework.TestCase;
-
+import org.junit.Test;
 import org.opennms.netmgt.model.OnmsIpInterface;
 import org.opennms.netmgt.model.OnmsMonitoredService;
 import org.opennms.netmgt.model.OnmsNode;
 import org.opennms.netmgt.model.OnmsServiceType;
 import org.quartz.Scheduler;
 
-public class PollerTest extends TestCase {
-    
+public class PollerTest {
+
+    @Test
     public void testSchedule() throws Exception {
-        testSchedule(false);
+        testSchedule(false, getMonitoredService());
     }
-    
+
+    @Test
     public void testReschedule() throws Exception {
-        testSchedule(true);
+        testSchedule(true, getMonitoredService());
     }
-	
-	public void testSchedule(boolean reschedule) throws Exception {
+
+    @Test
+    public void testIPv6Schedule() throws Exception {
+        testSchedule(false, getIPv6MonitoredService());
+    }
+
+    @Test
+    public void testIPv6Reschedule() throws Exception {
+        testSchedule(true, getIPv6MonitoredService());
+    }
+
+	public void testSchedule(boolean reschedule, OnmsMonitoredService svc) throws Exception {
 		
 		Scheduler scheduler = createMock(Scheduler.class);
 		PollService pollService = createNiceMock(PollService.class);
 		PollerFrontEnd pollerFrontEnd = createMock(PollerFrontEnd.class);
 		
-		OnmsMonitoredService svc = getMonitoredService();
         svc.setId(7);
 		
 		PollConfiguration pollConfig = new PollConfiguration(svc, new HashMap<String,Object>(), 300000);
@@ -109,5 +119,12 @@ public class PollerTest extends TestCase {
 		return svc;
 	}
 
-
+    private OnmsMonitoredService getIPv6MonitoredService() {
+        OnmsNode node = new OnmsNode();
+        node.setId(1);
+        OnmsIpInterface iface = new OnmsIpInterface("::1", node);
+        OnmsServiceType svcType = new OnmsServiceType("HTTP");
+        OnmsMonitoredService svc = new OnmsMonitoredService(iface, svcType);
+        return svc;
+    }
 }

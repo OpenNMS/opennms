@@ -79,13 +79,13 @@ public class FtpMonitorTest extends TestCase {
 
     // Let's not depend on external systems if we don't have to
     public void SKIPtestMonitorOnOpennmsOrgFtpSuccess() throws Exception {
-        PollStatus status = m_monitor.poll(new MockMonitoredService(1, "Node One", InetAddress.getByName("ftp.opennms.org").getHostAddress(), "FTP"), new HashMap<String,Object>());
+        PollStatus status = m_monitor.poll(new MockMonitoredService(1, "Node One", InetAddress.getByName("ftp.opennms.org"), "FTP"), new HashMap<String,Object>());
         assertTrue("status should be available (Up), but is: " + status, status.isAvailable());
     }
 
     // Let's not depend on external systems if we don't have to
     public void SKIPtestMonitorFailureOnRandomFtp() throws Exception {
-        PollStatus status = m_monitor.poll(new MockMonitoredService(1, "Node One", "1.1.1.1", "FTP"), new HashMap<String,Object>());
+        PollStatus status = m_monitor.poll(new MockMonitoredService(1, "Node One", InetAddress.getByName("1.1.1.1"), "FTP"), new HashMap<String,Object>());
         assertTrue("status should be unavailable (Down), but is: " + status, status.isUnavailable());
     }
 
@@ -163,7 +163,7 @@ public class FtpMonitorTest extends TestCase {
         m.put("port", m_serverSocket.getLocalPort());
         m.put("retries", 0);
         m.put("timeout", TIMEOUT);
-        PollStatus status = m_monitor.poll(new MockMonitoredService(1, "Node One", m_serverSocket.getInetAddress().getHostAddress(), "FTP"), m);
+        PollStatus status = m_monitor.poll(new MockMonitoredService(1, "Node One", m_serverSocket.getInetAddress(), "FTP"), m);
         return status;
     }
 }

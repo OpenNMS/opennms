@@ -22,7 +22,7 @@ public class PropertyPhonebook implements Phonebook {
 
     /**
      * Initialize the phone book.  Defaults to assuming "smsPhonebook.properties" will
-     * exist in the classpath, and contain address -> phone number mappings.
+     * exist in the classpath, and contain IP address -> phone number mappings.
      *
      * @throws PhonebookException if any.
      */
@@ -32,10 +32,9 @@ public class PropertyPhonebook implements Phonebook {
 
     /**
      * Initialize the phone book with the given property filename.  The filename must
-     * exist either as a path (a @{link File} object) or a resource in the class path.
+     * exist either as a path (a @{link File} object) or a resource in the classpath.
      *
      * @param filename the name of the phone book file
-     * @throws PhonebookException if any.
      */
     public PropertyPhonebook(String filename) {
         m_propertyFile = filename;

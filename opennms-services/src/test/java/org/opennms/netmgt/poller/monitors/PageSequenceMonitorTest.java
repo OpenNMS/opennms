@@ -39,6 +39,7 @@
 package org.opennms.netmgt.poller.monitors;
 
 import static org.junit.Assert.assertTrue;
+import static org.junit.Assert.fail;
 
 import java.net.InetAddress;
 import java.util.Collections;
@@ -95,11 +96,11 @@ public class PageSequenceMonitorTest {
 	}
     
     protected MonitoredService getHttpService(String hostname) throws Exception {
-    	return getHttpService(hostname, InetAddress.getByName(hostname).getHostAddress());
+    	return getHttpService(hostname, InetAddress.getByName(hostname));
     }
     
-    protected MonitoredService getHttpService(String hostname, String ip) throws Exception {
-    	MonitoredService svc = new MockMonitoredService(1, hostname, ip, "HTTP");
+    protected MonitoredService getHttpService(String hostname, InetAddress inetAddress) throws Exception {
+    	MonitoredService svc = new MockMonitoredService(1, hostname, inetAddress, "HTTP");
     	m_monitor.initialize(svc);
     	return svc;
     }
@@ -122,7 +123,7 @@ public class PageSequenceMonitorTest {
         setPageSequenceParam(null);
         m_params.put("timeout", "500");
         m_params.put("retries", "0");
-		PollStatus notLikely = m_monitor.poll(getHttpService("bogus", "1.1.1.1"), m_params);
+		PollStatus notLikely = m_monitor.poll(getHttpService("bogus", InetAddress.getByName("1.1.1.1")), m_params);
 		assertTrue("should not be available", notLikely.isUnavailable());
     }
 
@@ -146,14 +147,61 @@ public class PageSequenceMonitorTest {
 		m_params.put("page-sequence", "" +
 				"<?xml version=\"1.0\"?>" +
 				"<page-sequence>\n" + 
-				"  <page scheme=\"https\" path=\"/ws/eBayISAPI.dll?RegisterEnterInfo\" port=\"443\" user-agent=\"Mozilla/4.0 (compatible; MSIE 5.5; Windows NT 5.0)\" successMatch=\"Hi! Ready to register with eBay?\" virtual-host=\"support.opennms.com\"/>\n" + 
+				"  <page scheme=\"https\" host=\"scgi.ebay.com\" path=\"/ws/eBayISAPI.dll?RegisterEnterInfo\" port=\"443\" user-agent=\"Mozilla/4.0 (compatible; MSIE 5.5; Windows NT 5.0)\" successMatch=\"http://include.ebaystatic.com/\"/>\n" + 
 				"</page-sequence>\n");
 		
 		
-        PollStatus googleStatus = m_monitor.poll(getHttpService("scgi.ebay.com"), m_params);
-        assertTrue("Expected available but was "+googleStatus+": reason = "+googleStatus.getReason(), googleStatus.isAvailable());
-        
+        try {
+            PollStatus googleStatus = m_monitor.poll(getHttpService("scgi.ebay.com"), m_params);
+            assertTrue("Expected available but was "+googleStatus+": reason = "+googleStatus.getReason(), googleStatus.isAvailable());
+        } finally {
+            // Print some debug output if necessary
+        }
+    }
 
+    @Test
+    public void testHttpsWithHostValidation() throws Exception {
+        m_params.put("page-sequence", "" +
+                "<?xml version=\"1.0\"?>" +
+                "<page-sequence>\n" + 
+                "  <page scheme=\"https\" path=\"/ws/eBayISAPI.dll?RegisterEnterInfo\" port=\"443\" user-agent=\"Mozilla/4.0 (compatible; MSIE 5.5; Windows NT 5.0)\" successMatch=\"http://include.ebaystatic.com/\" virtual-host=\"scgi.ebay.com\" disable-host-verification=\"false\"/>\n" + 
+                "</page-sequence>\n");
+        
+        try {
+            m_monitor.poll(getHttpService("scgi.ebay.com"), m_params);
+            fail("Expected SSL host mismatch error");
+        } catch (Throwable e) {
+            assertTrue("Wrong exception caught: " + e.getClass().getName(), e instanceof AssertionError);
+        }
+    }
+
+    @Test
+    public void testHttpsWithoutHostValidation() throws Exception {
+        m_params.put("page-sequence", "" +
+                "<?xml version=\"1.0\"?>" +
+                "<page-sequence>\n" + 
+                "  <page scheme=\"https\" path=\"/ws/eBayISAPI.dll?RegisterEnterInfo\" port=\"443\" user-agent=\"Mozilla/4.0 (compatible; MSIE 5.5; Windows NT 5.0)\" successMatch=\"http://include.ebaystatic.com/\" virtual-host=\"scgi.ebay.com\"/>\n" + 
+                "</page-sequence>\n");
+        
+        try {
+            PollStatus googleStatus = m_monitor.poll(getHttpService("scgi.ebay.com"), m_params);
+            assertTrue("Expected available but was "+googleStatus+": reason = "+googleStatus.getReason(), googleStatus.isAvailable());
+        } finally {
+            // Print some debug output if necessary
+        }
+
+        m_params.put("page-sequence", "" +
+                     "<?xml version=\"1.0\"?>" +
+                     "<page-sequence>\n" + 
+                     "  <page scheme=\"https\" path=\"/ws/eBayISAPI.dll?RegisterEnterInfo\" port=\"443\" user-agent=\"Mozilla/4.0 (compatible; MSIE 5.5; Windows NT 5.0)\" successMatch=\"http://include.ebaystatic.com/\" virtual-host=\"scgi.ebay.com\" disable-host-verification=\"true\"/>\n" + 
+                     "</page-sequence>\n");
+
+        try {
+            PollStatus googleStatus = m_monitor.poll(getHttpService("scgi.ebay.com"), m_params);
+            assertTrue("Expected available but was "+googleStatus+": reason = "+googleStatus.getReason(), googleStatus.isAvailable());
+        } finally {
+            // Print some debug output if necessary
+        }
     }
 
     @Test
@@ -247,7 +295,9 @@ public class PageSequenceMonitorTest {
                      "    <parameter key=\"j_username\" value=\"${ltr1}${ltr2}${ltr3}${ltr4}\"/>\n" + 
                      "    <parameter key=\"j_password\" value=\"${ltr1}${ltr2}${ltr3}${ltr4}\"/>\n" + 
                      "  </page>\n" + 
-                     "  <page virtual-host=\"localhost\" path=\"/opennms/spring_security_login?login_error\"  port=\"10342\" method=\"POST\" failureMatch=\"(?s)Log out\" failureMessage=\"Login should have Failed but did not\" successMatch=\"(?s)Your login attempt was not successful.*\" />\n" +
+                     "  <page virtual-host=\"localhost\" path=\"/opennms/spring_security_login\"  port=\"10342\" failureMatch=\"(?s)Log out\" failureMessage=\"Login should have Failed but did not\" successMatch=\"(?s)Your login attempt was not successful.*\">\n" +
+                     "    <parameter key=\"login_error\" value=\"\"/>\n" + 
+                     "  </page>\n" + 
                      "  <page path=\"/opennms/\" port=\"10342\" virtual-host=\"localhost\" successMatch=\"(?s)&lt;hea(.)&gt;&lt;titl(.)&gt;.*&lt;/for(.)&gt;&lt;/b(.)dy&gt;\">\n" +
                      "    <session-variable name=\"ltr1\" match-group=\"1\" />\n" +
                      "    <session-variable name=\"ltr2\" match-group=\"2\" />\n" +
@@ -261,10 +311,13 @@ public class PageSequenceMonitorTest {
                      "  <page virtual-host=\"localhost\" path=\"/opennms/events.html\" port=\"10342\" successMatch=\"Event Queries\" />\n" + 
                      "  <page virtual-host=\"localhost\" path=\"/opennms/j_spring_security_logout\" port=\"10342\" successMatch=\"Login with Username and Password\" />\n" + 
                      "</page-sequence>\n");
-             
+
+        try {
              PollStatus status = m_monitor.poll(getHttpService("localhost"), m_params);
              assertTrue("Expected available but was "+status+": reason = "+status.getReason(), status.isAvailable());
-             
+        } finally {
+            // Print some debug output if necessary
+        }
     }
     
     @Test
@@ -279,22 +332,26 @@ public class PageSequenceMonitorTest {
                 "    <session-variable name=\"ltr3\" match-group=\"3\" />\n" +
                 "    <session-variable name=\"ltr4\" match-group=\"4\" />\n" +
                 "  </page>\n" +
-                "  <page virtual-host=\"localhost\" path=\"/opennms/j_spring_security_check\" port=\"10342\" method=\"POST\" failureMatch=\"(?s)Your login attempt was not successful.*Reason: ([^&lt;]*)\" failureMessage=\"Login in Failed: ${1}\" successMatch=\"Log out\">\n" +
+                "  <page virtual-host=\"localhost\" path=\"/opennms/j_spring_security_check\" port=\"10342\" method=\"POST\" failureMatch=\"(?s)Your login attempt was not successful.*Reason: ([^&lt;]*)\" failureMessage=\"Login in Failed: ${1}\">\n" +
                 "    <parameter key=\"j_username\" value=\"${ltr1}${ltr2}${ltr3}${ltr4}\"/>\n" + 
                 "    <parameter key=\"j_password\" value=\"${ltr1}${ltr2}${ltr3}${ltr4}\"/>\n" + 
                 "  </page>\n" + 
+                "  <page virtual-host=\"localhost\" path=\"/opennms/\" port=\"10342\" successMatch=\"Log out\"/>\n" + 
                 "  <page virtual-host=\"localhost\" path=\"/opennms/events.html\" port=\"10342\" successMatch=\"Event Queries\" />\n" + 
                 "  <page virtual-host=\"localhost\" path=\"/opennms/j_spring_security_logout\" port=\"10342\" successMatch=\"Login with Username and Password\" />\n" + 
                 "</page-sequence>\n");
-        
+
         Map<String,Object> params = new HashMap<String,Object>();
         for (Entry<String,Object> entry : m_params.entrySet()) {
             params.put(entry.getKey(), entry.getValue());
         }
-        params.put("redirect-post", "true");
-        PollStatus status = m_monitor.poll(getHttpService("localhost"), params);
-        assertTrue("Expected available but was "+status+": reason = "+status.getReason(), status.isAvailable());
-        
+
+        try {
+            PollStatus status = m_monitor.poll(getHttpService("localhost"), params);
+            assertTrue("Expected available but was "+status+": reason = "+status.getReason(), status.isAvailable());
+        } finally {
+            // Print some debug output if necessary
+        }
     }
 
     @Test

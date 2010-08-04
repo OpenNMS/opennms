@@ -44,6 +44,7 @@
 %>
 
 <%@page import="edu.ncsu.pdgrenon.Collector"%>
+<%@page import="java.io.*"%>
 <%@ taglib uri="http://java.sun.com/jsp/jstl/core" prefix="c"%>
 <%@ taglib uri="http://java.sun.com/jsp/jstl/fmt" prefix="fmt"%>
 <%@ taglib uri="http://java.sun.com/jsp/jstl/functions" prefix="fn"%>
@@ -60,7 +61,21 @@
 String opennmsHome = System.getProperty("opennms.home");
 
 Collector c = new Collector();
-c.readLogMessagesFromFile(opennmsHome + "/logs/daemon/instrumentation.log");
+
+String baseFileName = opennmsHome + "/logs/daemon/instrumentation.log";
+
+for(int i = 5; i > 0; i--) {
+	String fileName = baseFileName + "." + i;
+	File file = new File(fileName);
+	if (file.exists()) {
+		c.readLogMessagesFromFile(fileName);
+	}
+}
+File file = new File(baseFileName);
+
+if(file.exists()) {
+	c.readLogMessagesFromFile(baseFileName);
+}
 
 pageContext.setAttribute("collector",c);
 
@@ -74,7 +89,7 @@ StartTime: ${collector.startTime}
 EndTime: ${collector.endTime}
 </p>
 <p>
-Duration: ${collector.duration}
+Duration: ${collector.formattedDuration}
 </p>
 <p>
 Total Services ${collector.serviceCount}
@@ -88,15 +103,34 @@ Threads Used: ${collector.threadCount}
 <tr>
 <th>Service</th>
 <th>Collections</th>
+<th>Average Time Between Collections</th>
 <th>Average Collection Time</th>
 <th>Total Collection Time</th>
+<th>Successful Collections</th>
+<th>Average Successful Collection Time</th>
+<th>Total Successful Collection Time</th>
+<th>Success Percentage</th>
+<th>Unsuccessful Collections</th>
+<th>Average Unsuccessful Collection Time</th>
+<th>Total Unsuccessful Collection Time</th>
+<th>Failed Percentage</th>
 </tr>
 <c:forEach  var="svcCollector" items="${collector.serviceCollectors}">
 <tr>
 <td>${svcCollector.serviceID}</td>
 <td>${svcCollector.collectionCount}</td>
+<td>${svcCollector.averageDurationBetweenCollections}</td>
 <td>${svcCollector.averageCollectionDuration}</td>
 <td>${svcCollector.totalCollectionDuration}</td>
+<td>${svcCollector.successfulCollectionCount}</td>
+<td>${svcCollector.averageSuccessfulCollectionDuration}</td>
+<td>${svcCollector.successfulCollectionDuration}</td>
+<td>${svcCollector.successPercentage}</td>
+<td>${svcCollector.errorCollectionCount}</td>
+<td>${svcCollector.averageErrorCollectionDuration}</td>
+<td>${svcCollector.errorCollectionDuration}</td>
+<td>${svcCollector.errorPercentage}</td>
+
 </tr>
 
 </c:forEach>
