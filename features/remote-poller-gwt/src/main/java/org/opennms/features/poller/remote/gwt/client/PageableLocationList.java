@@ -7,10 +7,10 @@ import org.opennms.features.poller.remote.gwt.client.location.LocationInfo;
 
 import com.google.gwt.event.dom.client.ClickEvent;
 import com.google.gwt.user.client.DOM;
+import com.google.gwt.user.client.ui.HTMLTable.Cell;
 import com.google.gwt.user.client.ui.Image;
 import com.google.gwt.user.client.ui.Label;
 import com.google.gwt.user.client.ui.Widget;
-import com.google.gwt.user.client.ui.HTMLTable.Cell;
 
 
 /**
@@ -87,7 +87,7 @@ public class PageableLocationList extends PageableList {
      */
     public void updateList(final ArrayList<? extends LocationInfo> locations) {
         setLocations(locations);
-        showFirstPage();
+        setCurrentPageIndex(getCurrentPageIndex());
         //refresh();
     }
 
