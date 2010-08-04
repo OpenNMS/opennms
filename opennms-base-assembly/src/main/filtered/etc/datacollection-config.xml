@@ -1,5 +1,5 @@
 <?xml version="1.0"?>
-<datacollection-config rrdRepository="/tmp/rrd/snmp/">
+<datacollection-config rrdRepository="${install.share.dir}/rrd/snmp/">
   <snmp-collection name="default" snmpStorageFlag="select">
     <rrd step="300">
       <rra>RRA:AVERAGE:0.5:1:2016</rra>
