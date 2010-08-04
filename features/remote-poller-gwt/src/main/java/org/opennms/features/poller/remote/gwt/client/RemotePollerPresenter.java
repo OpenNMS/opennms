@@ -1,5 +1,6 @@
 package org.opennms.features.poller.remote.gwt.client;
 
+
 import org.opennms.features.poller.remote.gwt.client.FilterPanel.FiltersChangedEventHandler;
 import org.opennms.features.poller.remote.gwt.client.FilterPanel.StatusSelectionChangedEventHandler;
 import org.opennms.features.poller.remote.gwt.client.TagPanel.TagClearedEventHandler;
@@ -10,10 +11,8 @@ import org.opennms.features.poller.remote.gwt.client.events.GWTMarkerClickedEven
 import org.opennms.features.poller.remote.gwt.client.events.GWTMarkerInfoWindowRefreshHandler;
 import org.opennms.features.poller.remote.gwt.client.events.LocationPanelSelectEventHandler;
 import org.opennms.features.poller.remote.gwt.client.events.MapPanelBoundsChangedEventHandler;
-import org.opennms.features.poller.remote.gwt.client.location.LocationInfo;
+import org.opennms.features.poller.remote.gwt.client.remoteevents.MapRemoteEventHandler;
 
-import de.novanic.eventservice.client.event.domain.Domain;
-import de.novanic.eventservice.client.event.domain.DomainFactory;
 
 
 /**
@@ -33,46 +32,8 @@ public interface RemotePollerPresenter extends MapPanelBoundsChangedEventHandler
 		GWTMarkerClickedEventHandler,
 		GWTMarkerInfoWindowRefreshHandler,
 		ApplicationDeselectedEventHandler,
-		ApplicationSelectedEventHandler
+		ApplicationSelectedEventHandler, MapRemoteEventHandler
 {
-    /** Constant <code>LOCATION_EVENT_DOMAIN</code> */
-    public static final Domain LOCATION_EVENT_DOMAIN = DomainFactory.getDomain("location_event");
-
-    /**
-     * <p>fitMapToLocations</p>
-     */
-    public void fitMapToLocations();
-
-    /**
-     * <p>reportError</p>
-     *
-     * @param string a {@link java.lang.String} object.
-     * @param error a {@link java.lang.Throwable} object.
-     */
-    public void reportError(final String string, final Throwable error);
-
-    /**
-     * This action is used to respond to server-side events when a location is updated.
-     *
-     * @param locationInfo a {@link org.opennms.features.poller.remote.gwt.client.location.LocationInfo} object.
-     */
-    public void updateLocation(final LocationInfo locationInfo);
-    /**
-     * <p>removeApplication</p>
-     *
-     * @param applicationName a {@link java.lang.String} object.
-     */
-    public void removeApplication(final String applicationName);
-
-    /**
-     * <p>updateApplication</p>
-     *
-     * @param applicationInfo a {@link org.opennms.features.poller.remote.gwt.client.ApplicationInfo} object.
-     */
-    public void updateApplication(final ApplicationInfo applicationInfo);
-
-    /**
-     * This action is used to respond to server-side events sent when all initial location updates are complete.
-     */
-    public void updateComplete();
+    
+    
 }
