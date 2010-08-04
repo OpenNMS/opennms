@@ -22,6 +22,7 @@ import com.google.gwt.event.dom.client.HasClickHandlers;
 import com.google.gwt.event.dom.client.HasDoubleClickHandlers;
 import com.google.gwt.event.logical.shared.ResizeEvent;
 import com.google.gwt.event.logical.shared.ResizeHandler;
+import com.google.gwt.event.shared.GwtEvent;
 import com.google.gwt.event.shared.HandlerManager;
 import com.google.gwt.event.shared.HandlerRegistration;
 import com.google.gwt.uibinder.client.UiBinder;
@@ -29,6 +30,7 @@ import com.google.gwt.uibinder.client.UiField;
 import com.google.gwt.user.client.Timer;
 import com.google.gwt.user.client.Window;
 import com.google.gwt.user.client.ui.Composite;
+import com.google.gwt.user.client.ui.RequiresResize;
 import com.google.gwt.user.client.ui.SimplePanel;
 import com.google.gwt.user.client.ui.Widget;
 import com.googlecode.gwtmapquest.transaction.MQAIcon;
@@ -52,7 +54,7 @@ import com.googlecode.gwtmapquest.transaction.event.ZoomEndHandler;
  * @version $Id: $
  * @since 1.8.1
  */
-public class MapQuestMapPanel extends Composite implements MapPanel, HasDoubleClickHandlers, HasClickHandlers {
+public class MapQuestMapPanel extends Composite implements MapPanel, HasDoubleClickHandlers, HasClickHandlers, RequiresResize {
 
     public GWTLatLng m_currentInfoWindowLatLng = null;
 
@@ -144,9 +146,7 @@ public class MapQuestMapPanel extends Composite implements MapPanel, HasDoubleCl
      */
     private void initializeMap() {
     	
-    	m_map = MQATileMap.newInstance(m_mapHolder.getElement()); //NOTE: do not switch this line and the next line. It will cause problems. 
-            	
-    	m_mapHolder.setSize("100%", "100%"); //See above note
+    	m_map = MQATileMap.newInstance(m_mapHolder.getElement());
 
         m_map.addControl(MQALargeZoomControl.newInstance());
         m_map.setZoomLevel(1);
@@ -308,5 +308,15 @@ public class MapQuestMapPanel extends Composite implements MapPanel, HasDoubleCl
     /** {@inheritDoc} */
     public HandlerRegistration addClickHandler(ClickHandler handler) {
         return addDomHandler(handler, ClickEvent.getType());
+    }
+
+    @Override
+    public void fireEvent(GwtEvent<?> event) {
+        // TODO Auto-generated method stub
+        
+    }
+
+    public void onResize() {
+        syncMapSizeWithParent();
     }
 }
