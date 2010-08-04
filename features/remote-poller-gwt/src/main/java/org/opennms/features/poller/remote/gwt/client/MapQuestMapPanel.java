@@ -191,9 +191,7 @@ public class MapQuestMapPanel extends Composite implements MapPanel, HasDoubleCl
         if (point != null) {
             point.setInfoTitleHTML(htmlTitle);
             point.setInfoContentHTML(htmlContent);
-            if(m_map.getInfoWindow().isHidden()) {
-                point.showInfoWindow();
-            }
+            point.showInfoWindow();
             
             final NodeList<Element> elements = Document.get().getElementsByTagName("div");
             for (int i = 0; i < elements.getLength(); i++) {
