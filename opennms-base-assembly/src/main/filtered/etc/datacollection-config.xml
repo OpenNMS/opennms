@@ -21,10 +21,10 @@
     <include-collection dataCollectionGroup="Colubris"/>
     <include-collection dataCollectionGroup="Concord"/>
     <include-collection dataCollectionGroup="Equallogic"/>
-    <include-collection dataCollectionGroup="Extreme"/>
+    <include-collection dataCollectionGroup="Extreme Networks"/>
     <include-collection dataCollectionGroup="F5"/>
     <include-collection dataCollectionGroup="Fortinet"/>
-    <include-collection dataCollectionGroup="Foundry"/>
+    <include-collection dataCollectionGroup="Foundry Networks"/>
     <include-collection dataCollectionGroup="HP"/>
     <include-collection dataCollectionGroup="IBM"/>
     <include-collection dataCollectionGroup="IP Unity"/>
@@ -41,7 +41,7 @@
     <include-collection dataCollectionGroup="Netscaler"/>
     <include-collection dataCollectionGroup="Net-SNMP"/>
     <include-collection dataCollectionGroup="Nortel"/>
-    <include-collection dataCollectionGroup="Novel"/>
+    <include-collection dataCollectionGroup="Novell"/>
     <include-collection dataCollectionGroup="Powerware"/>
     <include-collection dataCollectionGroup="Riverbed"/>
     <include-collection dataCollectionGroup="Savin or Ricoh Printers"/>

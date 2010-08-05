@@ -33,6 +33,7 @@ package org.opennms.netmgt.dao.castor;
 
 import java.io.File;
 import java.io.FileInputStream;
+import java.io.FilenameFilter;
 import java.io.IOException;
 import java.io.InputStream;
 import java.util.Collection;
@@ -222,25 +223,29 @@ public class DataCollectionConfigParser {
             log().info("parseExternalResources: directory " + folder + " does not exist or is not a folder.");
             return;
         }
-        File[] listOfFiles = folder.listFiles();
+        
+        File[] listOfFiles = folder.listFiles(new FilenameFilter() {
+            public boolean accept(File file, String name) {
+                return name.endsWith(".xml");
+            }
+        });
+
         for (File file : listOfFiles) {
-            if (file.isFile() && file.getName().toLowerCase().endsWith(".xml")) {
-                InputStream in;
-                try {
-                    in = new FileInputStream(file);
-                } catch (IOException e) {
-                    throw new DataAccessResourceFailureException("Could not get an input stream for resource '" + file + "'; nested exception: " + e, e);
-                }
-                try {
-                    log().info("parseExternalResources: parsing " + file);
-                    DatacollectionGroup group = CastorUtils.unmarshalWithTranslatedExceptions(DatacollectionGroup.class, in);
-                    group.validate();
-                    externalGroups.put(group.getName(), group);
-                } catch (Exception e) {
-                    log().warn("parseExternalResources: can't parse file " + file + ", because: " + e.getMessage());
-                } finally {
-                    IOUtils.closeQuietly(in);
-                }
+            InputStream in;
+            try {
+                in = new FileInputStream(file);
+            } catch (IOException e) {
+                throw new DataAccessResourceFailureException("Could not get an input stream for resource '" + file + "'; nested exception: " + e, e);
+            }
+            try {
+                log().info("parseExternalResources: parsing " + file);
+                DatacollectionGroup group = CastorUtils.unmarshalWithTranslatedExceptions(DatacollectionGroup.class, in);
+                group.validate();
+                externalGroups.put(group.getName(), group);
+            } catch (Exception e) {
+                log().warn("parseExternalResources: can't parse file " + file + ", because: " + e.getMessage());
+            } finally {
+                IOUtils.closeQuietly(in);
             }
         }
     }

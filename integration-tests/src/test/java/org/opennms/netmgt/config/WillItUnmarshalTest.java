@@ -77,6 +77,7 @@ import org.opennms.netmgt.config.collectd.JmxDatacollectionConfig;
 import org.opennms.netmgt.config.common.JavamailConfiguration;
 import org.opennms.netmgt.config.databaseReports.DatabaseReports;
 import org.opennms.netmgt.config.datacollection.DatacollectionConfig;
+import org.opennms.netmgt.config.datacollection.DatacollectionGroup;
 import org.opennms.netmgt.config.destinationPaths.DestinationPaths;
 import org.opennms.netmgt.config.dhcpd.DhcpdConfiguration;
 import org.opennms.netmgt.config.discovery.DiscoveryConfiguration;
@@ -269,6 +270,10 @@ public class WillItUnmarshalTest {
     @Test
     public void testDataCollectionConfiguration() throws Exception {
         unmarshal("datacollection-config.xml", DatacollectionConfig.class);
+    }
+    @Test
+    public void testExampleOldDataCollectionConfiguration() throws Exception {
+        unmarshalExample("old-datacollection-config.xml", DatacollectionConfig.class);
     }
     @Test
     public void testDestinationPaths() throws Exception {
@@ -686,7 +691,32 @@ public class WillItUnmarshalTest {
             }
         }
     }
-    
+
+    @Test
+    public void testAllIncludedDatacollectionGroups() throws Exception {
+        File dataCollectionConfFile = ConfigurationTestUtils.getFileForConfigFile("datacollection-config.xml");
+        File groupDirFile = new File(dataCollectionConfFile.getParentFile(), "datacollection");
+        assertTrue("events directory exists at " + groupDirFile.getAbsolutePath(), groupDirFile.exists());
+        assertTrue("events directory is a directory at " + groupDirFile.getAbsolutePath(), groupDirFile.isDirectory());
+
+        File[] includedGroupFiles = groupDirFile.listFiles(new FilenameFilter() {
+            public boolean accept(File file, String name) {
+                return name.endsWith(".xml");
+            } });
+
+        for (File includedGroupFile : includedGroupFiles) {
+            try {
+                // Be conservative about what we ship, so don't be lenient
+                LocalConfiguration.getInstance().getProperties().remove(CASTOR_LENIENT_SEQUENCE_ORDERING_PROPERTY);
+                Resource resource = new FileSystemResource(includedGroupFile);
+                System.out.println("Unmarshalling: " + resource.getURI());
+                CastorUtils.unmarshal(DatacollectionGroup.class, resource);
+            } catch (Throwable t) {
+                throw new RuntimeException("Failed to unmarshal " + includedGroupFile + ": " + t, t);
+            }
+        }
+    }
+
     @SuppressWarnings("unused")
     private static <T>T unmarshalJaxb(String configFile, Class<T> clazz) throws JAXBException {
         return unmarshalJaxb(ConfigurationTestUtils.getFileForConfigFile(configFile), clazz, m_filesTested, configFile);

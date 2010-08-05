@@ -35,12 +35,16 @@ import java.io.File;
 import java.io.FileInputStream;
 import java.io.InputStream;
 
+import org.apache.commons.io.IOUtils;
 import org.junit.Assert;
+import org.junit.Before;
 import org.junit.Test;
+
 import org.opennms.netmgt.config.datacollection.DatacollectionConfig;
 import org.opennms.netmgt.config.datacollection.DatacollectionGroup;
 import org.opennms.netmgt.config.datacollection.SnmpCollection;
 import org.opennms.test.ConfigurationTestUtils;
+
 import org.springframework.core.io.InputStreamResource;
 
 /**
@@ -49,23 +53,38 @@ import org.springframework.core.io.InputStreamResource;
  * @author <a href="mail:agalue@opennms.org">Alejandro Galue</a>
  */
 public class DataCollectionConfigParserTest {
-    
+
+    private DefaultDataCollectionConfigDao dao;
+
+    private String datacollectionDirectory;
+
+    @Before
+    public void setUp() {
+        InputStream in = null;
+        try {
+            dao = new DefaultDataCollectionConfigDao();
+            File configFile = ConfigurationTestUtils.getFileForConfigFile("datacollection-config.xml");
+            File configFolder = new File(configFile.getParentFile(), "datacollection");
+            Assert.assertTrue(configFolder.isDirectory());
+            datacollectionDirectory = configFolder.getAbsolutePath();
+            in = new FileInputStream(configFile);
+            dao.setConfigResource(new InputStreamResource(in));
+            dao.afterPropertiesSet();
+        } catch (Exception e) {
+            e.printStackTrace();
+        } finally {
+            IOUtils.closeQuietly(in);
+        }
+    }
+
     @Test
     public void testLoad() throws Exception {
-        DefaultDataCollectionConfigDao dao = new DefaultDataCollectionConfigDao();
-        File etcFolder = ConfigurationTestUtils.getDaemonEtcDirectory();
-        File configFile = new File(etcFolder, "datacollection-config.xml");
-        File configFolder = new File(etcFolder, "datacollection");
-        InputStream in = new FileInputStream(configFile);
-        dao.setConfigResource(new InputStreamResource(in));
-        dao.afterPropertiesSet();
-
         // Get Current Configuration
         DatacollectionConfig config = dao.getContainer().getObject();
         Assert.assertNotNull(config);
 
         // Execute Parser
-        DataCollectionConfigParser parser = new DataCollectionConfigParser(configFolder.getAbsolutePath());
+        DataCollectionConfigParser parser = new DataCollectionConfigParser(datacollectionDirectory);
         parser.parse(config);
 
         // Validate Parser
