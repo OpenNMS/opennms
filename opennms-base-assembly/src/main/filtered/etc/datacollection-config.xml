@@ -49,6 +49,8 @@
     <include-collection dataCollectionGroup="SofaWare"/>
     <include-collection dataCollectionGroup="SUN Microsystems"/>
     <include-collection dataCollectionGroup="Trango"/>
+    <include-collection dataCollectionGroup="WMI"/>
+    <include-collection dataCollectionGroup="XMP"/>
   </snmp-collection>
 
 </datacollection-config>
