@@ -124,14 +124,11 @@ public class Mib2Events {
             convertor.getMib().getLog().printTo(System.err);
         }
 
-        PrintStream out = System.out;
-        out.println("<!-- Start of auto generated data from MIB: " + convertor.getMib().getName() + " -->");
         try {
-            convertor.printEvents(out);
+            convertor.printEvents(System.out);
         } catch (Exception e) {
             printErrorAndDie(convertor.getMibLocation(), e);
         }
-        out.println("<!-- End of auto generated data from MIB: " + convertor.getMib().getName() + " -->");
     }
 
     public String getMibLocation() {
@@ -175,22 +172,23 @@ public class Mib2Events {
 
             if (!m_compat) {
                 StringWriter writer = new StringWriter();
-
                 events.marshal(writer);
 
+                out.println("<!-- Start of mib2events auto-generated data for MIB: " + mib.getName() + " -->");
                 stripXmlNameSpace(writer.toString(), out);
+                out.println("<!-- End of mib2events auto-generated data for MIB: " + mib.getName() + " -->");
             } else {
                 for (Event event : events.getEventCollection()) {
                     StringWriter writer = new StringWriter();
-
                     event.marshal(writer);
 
                     ByteArrayOutputStream formattedXml = new ByteArrayOutputStream();
-
                     stripXmlNameSpace(writer.toString(), formattedXml);
-
                     String noXmlProcessingInstruction = formattedXml.toString().replaceAll("(?m)<\\?xml version=\"1.0\" encoding=\"UTF-8\"\\?>\n", "");
+                    
+                    out.println("<!-- Start of auto generated data from MIB: " + mib.getName() + " -->");
                     out.print(noXmlProcessingInstruction.replaceAll("dest=\"logndisplay\"", "dest='logndisplay'"));
+                    out.println("<!-- End of auto generated data from MIB: " + mib.getName() + " -->");
                 }
             }
         }
