@@ -84,6 +84,7 @@ import org.opennms.netmgt.config.eventd.EventdConfiguration;
 import org.opennms.netmgt.config.filter.DatabaseSchema;
 import org.opennms.netmgt.config.groups.Groupinfo;
 import org.opennms.netmgt.config.httpdatacollection.HttpDatacollectionConfig;
+import org.opennms.netmgt.config.jdbc.JdbcDataCollectionConfig;
 import org.opennms.netmgt.config.kscReports.ReportsList;
 import org.opennms.netmgt.config.linkd.LinkdConfiguration;
 import org.opennms.netmgt.config.mailtransporttest.MailTransportTest;
@@ -586,15 +587,21 @@ public class WillItUnmarshalTest {
     public void testXmpConfig() throws Exception {
         unmarshal("xmp-config.xml", XmpConfig.class);
     }
-    @Test public void testXmpDatacollectionConfig() throws Exception {
+    @Test
+    public void testXmpDatacollectionConfig() throws Exception {
         unmarshal("xmp-datacollection-config.xml", XmpDatacollectionConfig.class);
     }
-    @Test public void testMicroblogConfiguration() throws Exception {
+    @Test
+    public void testMicroblogConfiguration() throws Exception {
         unmarshal("microblog-configuration.xml", MicroblogConfiguration.class);
     }
-    
-    @Test public void testSnmpAssetAdapterConfiguration() throws Exception {
+    @Test
+    public void testSnmpAssetAdapterConfiguration() throws Exception {
         unmarshal("snmp-asset-adapter-configuration.xml", SnmpAssetAdapterConfiguration.class);
+    }
+    @Test
+    public void testJdbcDataCollectionConfiguration() throws Exception {
+        unmarshalJaxb("jdbc-datacollection-config.xml", JdbcDataCollectionConfig.class);
     }
     
     @Test
