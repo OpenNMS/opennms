@@ -10,7 +10,7 @@
   
   </ui:style>
   
-  <g:FlowPanel styleName="{style.topLevelContainer}">
+  <g:FlowPanel styleName="{style.topLevelContainer}" ui:field="locationPanel">
     <g:FlowPanel>
         <g:HTMLPanel ui:field="filterOptionsPanel">
         <me:FilterPanel ui:field="filterPanel"/>
