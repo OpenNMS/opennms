@@ -43,6 +43,7 @@
 	session="true"
 %>
 
+
 <%@page import="edu.ncsu.pdgrenon.Collector"%>
 <%@page import="java.io.*"%>
 <%@ taglib uri="http://java.sun.com/jsp/jstl/core" prefix="c"%>
@@ -80,6 +81,7 @@ if(file.exists()) {
 pageContext.setAttribute("collector",c);
 
 %>
+<c_rt:set var="nan" value="<%=java.lang.Double.NaN%>"/>
 
 <br/>
 <p>
@@ -98,6 +100,9 @@ Total Services ${collector.serviceCount}
 Threads Used: ${collector.threadCount}
 </p>
 
+<script type="text/javascript">
+alert("${nan}");
+</script>
 
 <table>
 <tr>
@@ -125,16 +130,36 @@ Threads Used: ${collector.threadCount}
 <td>${svcCollector.successfulCollectionCount}</td>
 <td>${svcCollector.averageSuccessfulCollectionDuration}</td>
 <td>${svcCollector.successfulCollectionDuration}</td>
-<td>${svcCollector.successPercentage}</td>
+<c:choose>
+	<c:when test="${svcCollector.successPercentage > 50}" >
+		<td style="background: green">${svcCollector.successPercentage}</td>
+	</c:when>
+	<c:when test="${svcCollector.successPercentage == -1}" >
+		<td style="background: yellow">No Collections</td>
+	</c:when>
+	<c:otherwise>
+		<td>${svcCollector.successPercentage}</td>
+	</c:otherwise>
+</c:choose>
+<c:choose>	
+	<c:when test="${svcCollector.errorPercentage > 50}">
+		<td style="background: red">${svcCollector.errorPercentage}</td>
+	</c:when>
+	<c:when test="${svcCollector.errorPercentage == -1}">
+		<td style="background: yellow">No Collections</td>
+	</c:when>
+	<c:otherwise>
+		<td>${svcCollector.errorPercentage}</td>
+	</c:otherwise>
+</c:choose>
 <td>${svcCollector.errorCollectionCount}</td>
 <td>${svcCollector.averageErrorCollectionDuration}</td>
 <td>${svcCollector.errorCollectionDuration}</td>
-<td>${svcCollector.errorPercentage}</td>
 
 </tr>
 
 </c:forEach>
 </table>
-    
+
 	<hr />
 <jsp:include page="/includes/footer.jsp" flush="false"/>
