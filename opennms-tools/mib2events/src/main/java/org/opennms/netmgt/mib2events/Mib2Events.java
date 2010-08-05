@@ -44,6 +44,7 @@ import org.apache.commons.cli.CommandLineParser;
 import org.apache.commons.cli.GnuParser;
 import org.apache.commons.cli.Options;
 import org.apache.commons.cli.ParseException;
+import org.apache.commons.cli.UnrecognizedOptionException;
 import org.apache.log4j.BasicConfigurator;
 import org.apache.log4j.Level;
 import org.apache.log4j.Logger;
@@ -65,29 +66,33 @@ import org.xml.sax.SAXException;
 public class Mib2Events {
     private static final String DEFAULT_UEIBASE = "uei.opennms.org/mib2events/";
     private static final String MIB2OPENNMS_UEIBASE = "uei.opennms.org/mib2opennms/";
+    
+    private static final String ME = "mib2events";
+    
+	private static final String INVOCATION = "java -jar lib/mib2events.jar";
+    
+    private static final String OPTION_HELP =
+        "  -u, --ueibase=UEIBASE  The base UEI for resulting event definitions\n" +
+        "                         (default: " + DEFAULT_UEIBASE + ").\n" +
+        "  -c, --compat           Turn on compatability mode to create output similar\n" +
+        "                         to that of mib2opennms (including some known bugs).\n" +
+        "  -h, --help             Print this usage and exit.\n";
 
-    /** Command-line help. */
+    private static final String USAGE =
+        "usage: " + INVOCATION + " [options] <MIB file or URL>\n" +
+        OPTION_HELP;
+        
     private static final String COMMAND_HELP =
-        "Reads a MIB definition, creating from its traps (if any) a set of\n" +
-        "event definitions suitable for loading into OpenNMS. This program\n" +
-        "comes with ABSOLUTELY NO WARRANTY; for details, see the LICENSE.txt\n" +
-        "file.\n" +
+        "Reads a MIB definition, creating from its traps and notifications a set\n" +
+        "of event definitions suitable for loading into OpenNMS.  This program\n" +
+        "comes with ABSOLUTELY NO WARRANTY; for details, see the LICENSE file.\n" +
         "\n" +
-        "Syntax: java -jar lib/mib2events.jar [--ueibase <base UEI>] [--compat] \\\n" +
-        "        --mib <file or URL>\n" +
+        USAGE +
         "\n" +
-        "    --mib      The pathname or URL of a MIB to load\n" +
-        "    --ueibase  The base UEI for resulting event definitions\n" +
-        "               (default: uei.opennms.org/mib2events/)\n" +
-        "    --compat   Turn on compatability mode to create output similar to\n" +
-        "               that of mib2opennms\n" +
+        "Example: create events from the OSPF-TRAP-MIB with an IETF UEI namespace:\n" +
         "\n" +
-        "EXAMPLES\n" +
-        "\n" +
-        "Create events from the OSPF-TRAP-MIB, putting the events' UEI into an\n" +
-        "IETF namespace:\n" +
-        "\n" +
-        "java -jar lib/mib2events.jar --mib OSPF-TRAP-MIB.my --ueibase uei.opennms.org/vendors/ietf/\n";
+        INVOCATION + " --ueibase uei.opennms.org/vendors/ietf/ \\\n" +
+        "        OSPF-TRAP-MIB.my\n";
 
     private String m_mibLocation;
     private String m_ueiBase = null;
@@ -97,7 +102,7 @@ public class Mib2Events {
     private boolean m_compat = false;
     private static final Pattern TRAP_OID_PATTERN = Pattern.compile("(.*)\\.(\\d+)$");
 
-    public static void main(String[] args) throws FileNotFoundException {
+    public static void main(String[] args) {
         BasicConfigurator.configure();
         Logger.getRootLogger().setLevel(Level.WARN);
 
@@ -107,10 +112,9 @@ public class Mib2Events {
         try {
             convertor.convert();
         } catch (FileNotFoundException e) {
-            printError(convertor.getMibLocation(), e);
-            System.exit(1);
+            printErrorAndDie(convertor.getMibLocation(), e);
         } catch (IOException e) {
-            printError(convertor.getMibLocation(), e);
+            printErrorAndDie(convertor.getMibLocation(), e);
         } catch (MibLoaderException e) {
             e.getLog().printTo(System.err);
             System.exit(1);
@@ -125,8 +129,7 @@ public class Mib2Events {
         try {
             convertor.printEvents(out);
         } catch (Exception e) {
-            printError(convertor.getMibLocation(), e);
-            System.exit(1);
+            printErrorAndDie(convertor.getMibLocation(), e);
         }
         out.println("<!-- End of auto generated data from MIB: " + convertor.getMib().getName() + " -->");
     }
@@ -167,8 +170,7 @@ public class Mib2Events {
             Events events = convertMibToEvents(mib, getEffectiveUeiBase());
 
             if (events.getEventCount() < 1) {
-                System.err.println("No trap or notification definitions found in this MIB (" + mib.getName() + "), exiting");
-                System.exit(0);
+                printErrorAndDie("No trap or notification definitions found in this MIB (" + mib.getName() + "), exiting.");
             }
 
             if (!m_compat) {
@@ -217,60 +219,66 @@ public class Mib2Events {
 
     public void parseCli(String[] argv) {
         Options opts = new Options();
-        opts.addOption("m", "mib", true, "Pathname or URL of MIB file to scan for traps");
         opts.addOption("b", "ueibase", true, "Base UEI for resulting events");
-        opts.addOption("c", "compat", false, "Turn on compatability mode to create output as similar to mib2opennms as possible");
+        opts.addOption("c", "compat", false, "Turn on compatability mode to create output as similar to mib2opennms as possible (including some bugs)");
+        opts.addOption("h", "help", false, "Get help information");
 
         CommandLineParser parser = new GnuParser();
+        CommandLine cmd = null;
         try {
-            CommandLine cmd = parser.parse(opts, argv);
-            if (cmd.hasOption('m')) {
-                m_mibLocation = cmd.getOptionValue('m');
-            } else {
-                printHelp("You must specify a MIB file pathname or URL");
-                System.exit(1);
-            }
-            if (cmd.hasOption("b")) {
-                m_ueiBase = cmd.getOptionValue('b');
-            }
-            if (cmd.hasOption("c")) {
-                m_compat  = true;
-            }
-        } catch (ParseException e) {
-            printHelp("Failed to parse command line options");
-            System.exit(1);
+            cmd = parser.parse(opts, argv);
+        } catch (UnrecognizedOptionException e) {
+        	printErrorUsageAndDie(e.getMessage());
+	    } catch (ParseException e) {
+	    	printErrorUsageAndDie("unknown command line parsing exception: " + e);
+	    }
+
+        if (cmd.hasOption('h')) {
+            System.out.print(COMMAND_HELP);
+            System.exit(0);
         }
+        
+        if (cmd.hasOption("b")) {
+            m_ueiBase = cmd.getOptionValue('b');
+        }
+        
+        if (cmd.hasOption("c")) {
+            m_compat  = true;
+        }
+        
+        if (cmd.getArgs().length == 0) {
+        	printErrorUsageAndDie("no MIB provided.");
+        }
+        
+        if (cmd.getArgs().length > 1) {
+        	printErrorUsageAndDie("multiple MIBs provided--only one is allowed.");
+        }
+
+        m_mibLocation = cmd.getArgs()[0];
     }
 
-    public static void printHelp(String msg) {
-        System.out.println("Error: " + msg + "\n\n");
-        System.out.println(COMMAND_HELP);
-    }
+	private void printErrorUsageAndDie(String message) {
+		System.err.println(ME + ": " + message);
+		System.err.print(USAGE);
+		System.exit(1);
+	}
 
-    public static void printError(String msg) {
+    private static void printErrorAndDie(String msg) {
         System.err.print("Error: ");
         System.err.println(msg);
+        System.exit(1);
     }
 
-    public static void printError(String file, FileNotFoundException e) {
-        StringBuffer buf = new StringBuffer();
-        buf.append("Could not open file:\n\t");
-        buf.append(file);
-        printError(buf.toString());
+    private static void printErrorAndDie(String file, FileNotFoundException e) {
+        printErrorAndDie("Could not open file '" + file + "': " + e.getMessage());
     }
 
-    public static void printError(String url, IOException e) {
-        StringBuffer buf = new StringBuffer();
-        buf.append("Could not open URL:\n\t");
-        buf.append(url);
-        printError(buf.toString());
+    private static void printErrorAndDie(String url, IOException e) {
+        printErrorAndDie("Could not open URL '" + url + "': " + e.getMessage());
     }
     
-    public static void printError(String msg, Exception e) {
-        StringBuffer buf = new StringBuffer();
-        buf.append("Error: ");
-        buf.append(msg);
-        printError(buf.toString());
+    private static void printErrorAndDie(String msg, Exception e) {
+        printErrorAndDie("Error: " + msg + ": " + e);
     }
 
     public static String getTrapEnterprise(MibValueSymbol trapValueSymbol) {
@@ -296,7 +304,7 @@ public class Mib2Events {
             SnmpTrapType v1trap = (SnmpTrapType) trapValueSymbol.getType();
             return "." + v1trap.getEnterprise().toString() + "." + trapValueSymbol.getValue().toString();
         } else {
-            throw new IllegalStateException("Trying to get trap information from an object that's not a trap and not a notification");
+            throw new IllegalStateException("Trying to get trap information from an object that is not a trap and not a notification");
         }
     }
 
@@ -325,7 +333,7 @@ public class Mib2Events {
             SnmpTrapType v1trap = (SnmpTrapType) trapValueSymbol.getType();
             return getV1TrapVariables(v1trap);
         } else {
-            throw new IllegalStateException("trap type is not an SNMP v1 Trap or v2 Notification");      
+            throw new IllegalStateException("trap type is not an SNMP v1 trap or v2 notification");      
         }
     }
 
