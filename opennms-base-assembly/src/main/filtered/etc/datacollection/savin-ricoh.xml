@@ -1,0 +1,14 @@
+<?xml version="1.0"?>
+<datacollection-group name="Savin or Ricoh Printers">
+
+      <systemDef name="Savin or Ricoh Printers">
+        <sysoidMask>.1.3.6.1.4.1.367.</sysoidMask>
+        <collect>
+          <includeGroup>mib2-host-resources-system</includeGroup>
+          <includeGroup>mib2-host-resources-memory</includeGroup>
+          <includeGroup>mib2-host-resources-storage</includeGroup>
+          <includeGroup>printer-usage</includeGroup>
+        </collect>
+      </systemDef>
+
+</datacollection-group>

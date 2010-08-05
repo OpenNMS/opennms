@@ -1,0 +1,32 @@
+<?xml version="1.0"?>
+<datacollection-group name="SofaWare">
+
+      <group name="sofaware-scalars" ifType="ignore">
+        <mibObj oid=".1.3.6.1.4.1.6983.1.2.1.1" instance="0" alias="swStorageConfigTot"   type="Gauge32" />
+        <mibObj oid=".1.3.6.1.4.1.6983.1.2.1.2" instance="0" alias="swStorageConfigFree"  type="Gauge32" />
+        <mibObj oid=".1.3.6.1.4.1.6983.1.2.2.1" instance="0" alias="swStorageFirmTotal"   type="Gauge32" />
+        <mibObj oid=".1.3.6.1.4.1.6983.1.2.2.2" instance="0" alias="swStorageFirmFree"    type="Gauge32" />
+        <mibObj oid=".1.3.6.1.4.1.6983.1.2.3.1" instance="0" alias="swStorageCFTotal"     type="Gauge32" />
+        <mibObj oid=".1.3.6.1.4.1.6983.1.2.3.2" instance="0" alias="swStorageCFFree"      type="Gauge32" />
+        <mibObj oid=".1.3.6.1.4.1.6983.1.3.4"   instance="0" alias="swLicenseUsedNodes"   type="Gauge32" />
+        <mibObj oid=".1.3.6.1.4.1.6983.1.5.1.1" instance="0" alias="swMemRamFree"         type="Gauge32" />
+        <mibObj oid=".1.3.6.1.4.1.6983.1.5.1.2" instance="0" alias="swMemRamTotal"        type="Gauge32" />
+        <mibObj oid=".1.3.6.1.4.1.6983.1.5.2.1" instance="0" alias="swMemDfaFree"         type="Gauge32" />
+        <mibObj oid=".1.3.6.1.4.1.6983.1.5.2.2" instance="0" alias="swMemDfaTotal"        type="Gauge32" />
+        <mibObj oid=".1.3.6.1.4.1.6983.1.5.3"   instance="0" alias="swUserMemFree"        type="Gauge32" />
+        <mibObj oid=".1.3.6.1.4.1.6983.1.5.4"   instance="0" alias="swKernelMemFree"      type="Gauge32" />
+        <mibObj oid=".1.3.6.1.4.1.6983.1.5.5"   instance="0" alias="swFwMEMFree"          type="Gauge32" />
+      </group>
+
+      <systemDef name="SofaWare Embedded Firewalls">
+        <sysoidMask>.1.3.6.1.4.1.6983.1.10.</sysoidMask>
+        <collect>
+	  <includeGroup>ucd-loadavg</includeGroup>
+	  <includeGroup>ucd-sysstat</includeGroup>
+	  <includeGroup>ucd-sysstat-raw</includeGroup>
+	  <includeGroup>ucd-sysstat-raw-more</includeGroup>
+	  <includeGroup>sofaware-scalars</includeGroup>
+        </collect>
+      </systemDef>
+
+</datacollection-group>

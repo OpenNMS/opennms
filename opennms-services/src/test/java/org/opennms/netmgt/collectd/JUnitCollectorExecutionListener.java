@@ -7,10 +7,12 @@ import java.lang.reflect.Method;
 import org.opennms.netmgt.config.DataCollectionConfigFactory;
 import org.opennms.netmgt.config.DatabaseSchemaConfigFactory;
 import org.opennms.netmgt.config.HttpCollectionConfigFactory;
+import org.opennms.netmgt.dao.castor.DefaultDataCollectionConfigDao;
 import org.opennms.netmgt.dao.support.RrdTestUtils;
 import org.opennms.netmgt.rrd.RrdUtils;
 import org.opennms.test.ConfigurationTestUtils;
 import org.opennms.test.FileAnticipator;
+import org.springframework.core.io.InputStreamResource;
 import org.springframework.test.context.TestContext;
 import org.springframework.test.context.TestExecutionListener;
 import org.springframework.test.context.support.AbstractTestExecutionListener;
@@ -65,9 +67,10 @@ public class JUnitCollectorExecutionListener extends AbstractTestExecutionListen
             HttpCollectionConfigFactory.setInstance(factory);
             HttpCollectionConfigFactory.init();
         } else if (config.datacollectionType().equalsIgnoreCase("snmp")) {
-            DataCollectionConfigFactory factory = new DataCollectionConfigFactory(is);
-            DataCollectionConfigFactory.setInstance(factory);
-            DataCollectionConfigFactory.init();
+            DefaultDataCollectionConfigDao dataCollectionDao = new DefaultDataCollectionConfigDao();
+            dataCollectionDao.setConfigResource(new InputStreamResource(is));
+            dataCollectionDao.afterPropertiesSet();
+            DataCollectionConfigFactory.setInstance(dataCollectionDao);
         } else {
             throw new UnsupportedOperationException("data collection type '" + config.datacollectionType() + "' not supported");
         }

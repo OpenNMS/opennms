@@ -1,0 +1,17 @@
+<?xml version="1.0"?>
+<datacollection-group name="Extreme Networks">
+
+      <!-- Extreme Systems MIBs -->
+      <group name="extreme-sys" ifType="ignore">
+        <mibObj oid=".1.3.6.1.4.1.1916.1.1.1.8" instance="0" alias="xtrmCurrentTemp" type="integer" />
+      </group>
+
+      <systemDef name="Extreme Networks">
+        <sysoidMask>.1.3.6.1.4.1.1916.2.</sysoidMask>
+        <collect>
+          <includeGroup>extreme-sys</includeGroup>
+          <includeGroup>mib2-X-interfaces</includeGroup>
+        </collect>
+      </systemDef>
+      
+</datacollection-group>

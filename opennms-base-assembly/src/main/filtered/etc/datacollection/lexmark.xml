@@ -1,0 +1,12 @@
+<?xml version="1.0"?>
+<datacollection-group name="Lexmark">
+
+      <systemDef name="Lexmark / Dell Printers">
+        <sysoidMask>.1.3.6.1.4.1.641.</sysoidMask>
+        <collect>
+          <includeGroup>printer-usage</includeGroup>
+          <includeGroup>printer-mib-supplies</includeGroup>
+        </collect>
+      </systemDef>
+
+</datacollection-group>

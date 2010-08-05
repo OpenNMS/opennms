@@ -1,0 +1,94 @@
+<?xml version="1.0"?>
+<datacollection-group name="Alvarion">
+
+      <!-- Alvarion mibs -->
+      <!-- Please see the Alvarion section in the OpenNMS contrib directory to enable these OIDs -->
+      <group name="alvarion-bad-all-frames" ifType="ignore">
+       <mibObj oid=".1.3.6.1.4.1.12394.1.1.11.2.3.7" instance="0" alias="baVLRecvdBadFrames" type="counter"/>
+       <mibObj oid=".1.3.6.1.4.1.12394.1.1.11.2.3.2" instance="0" alias="baVLTotRxFrmsFrWi"  type="counter"/>
+      </group>
+
+      <group name="alvarion-snr-lqi" ifType="ignore">
+       <mibObj oid=".1.3.6.1.4.1.12394.1.1.11.1"   instance="0" alias="baVLAvgReceiveSNR" type="integer"/>
+       <mibObj oid=".1.3.6.1.4.1.12394.1.1.11.6.2" instance="0" alias="baVLReadUpLinkQu"  type="integer"/>
+      </group>
+
+      <systemDef name="Alvarion BreezeAccess base">
+        <sysoidMask>.1.3.6.1.4.1.12394.4.1.</sysoidMask>
+        <collect>
+          <includeGroup>alvarion-bad-all-frames</includeGroup>
+          <!--  <includeGroup>alvarion-interfacesRB</includeGroup> NOT DEFINED -->
+        </collect>
+      </systemDef>
+      
+      <systemDef name="Alvarion BreezeAccess SU">
+        <sysoid>.1.3.6.1.4.1.12394.4.1.2</sysoid>
+        <collect>
+          <includeGroup>alvarion-snr-lqi</includeGroup>
+        </collect>
+      </systemDef>
+
+      <systemDef name="Alvarion BreezeAccess SU6-1D">
+        <sysoid>.1.3.6.1.4.1.12394.4.1.11</sysoid>
+        <collect>
+          <includeGroup>alvarion-snr-lqi</includeGroup>
+        </collect>
+      </systemDef>
+
+      <systemDef name="Alvarion BreezeAccess SU6-BD">
+        <sysoid>.1.3.6.1.4.1.12394.4.1.12</sysoid>
+        <collect>
+          <includeGroup>alvarion-snr-lqi</includeGroup>
+        </collect>
+      </systemDef>
+
+      <systemDef name="Alvarion BreezeAccess SU24-BD">
+        <sysoid>.1.3.6.1.4.1.12394.4.1.13</sysoid>
+        <collect>
+          <includeGroup>alvarion-snr-lqi</includeGroup>
+        </collect>
+      </systemDef>
+
+      <systemDef name="Alvarion BreezeAccess SU-BD">
+        <sysoid>.1.3.6.1.4.1.12394.4.1.14</sysoid>
+        <collect>
+          <includeGroup>alvarion-snr-lqi</includeGroup>
+        </collect>
+      </systemDef>
+
+      <systemDef name="Alvarion BreezeAccess SU54-BD">
+        <sysoid>.1.3.6.1.4.1.12394.4.1.15</sysoid>
+        <collect>
+          <includeGroup>alvarion-snr-lqi</includeGroup>
+        </collect>
+      </systemDef>
+
+      <systemDef name="Alvarion BreezeAccess SU3-1D">
+        <sysoid>.1.3.6.1.4.1.12394.4.1.16</sysoid>
+        <collect>
+          <includeGroup>alvarion-snr-lqi</includeGroup>
+        </collect>
+      </systemDef>
+
+      <systemDef name="Alvarion BreezeAccess SU3-4D">
+        <sysoid>.1.3.6.1.4.1.12394.4.1.17</sysoid>
+        <collect>
+          <includeGroup>alvarion-snr-lqi</includeGroup>
+        </collect>
+      </systemDef>
+
+      <systemDef name="Alvarion BreezeAccess RB-B14">
+        <sysoid>.1.3.6.1.4.1.12394.4.1.31</sysoid>
+        <collect>
+          <includeGroup>alvarion-snr-lqi</includeGroup>
+        </collect>
+      </systemDef>
+
+      <systemDef name="Alvarion BreezeAccess RB-B28">
+        <sysoid>.1.3.6.1.4.1.12394.4.1.32</sysoid>
+        <collect>
+          <includeGroup>alvarion-snr-lqi</includeGroup>
+        </collect>
+      </systemDef>
+
+</datacollection-group>
