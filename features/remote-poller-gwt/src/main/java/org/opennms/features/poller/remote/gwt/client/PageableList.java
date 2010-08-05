@@ -12,11 +12,11 @@ import com.google.gwt.uibinder.client.UiHandler;
 import com.google.gwt.user.client.Timer;
 import com.google.gwt.user.client.ui.Composite;
 import com.google.gwt.user.client.ui.FlexTable;
+import com.google.gwt.user.client.ui.HTMLTable.Cell;
 import com.google.gwt.user.client.ui.Hyperlink;
 import com.google.gwt.user.client.ui.Label;
 import com.google.gwt.user.client.ui.Panel;
 import com.google.gwt.user.client.ui.Widget;
-import com.google.gwt.user.client.ui.HTMLTable.Cell;
 
 /**
  * The Basic building blocks for a simple Pageable List
@@ -113,6 +113,11 @@ public abstract class PageableList extends Composite {
             rowCount++;
         }
         
+        calculateAndSetTotalPages(size);
+        updatePageStatsDisplay(startIndex + 1, showableLocations, getListSize());
+    }
+
+    protected void calculateAndSetTotalPages(final int size) {
         if(size > getTotalListItemsPerPage()) {
             int totalPages = (int) Math.ceil(size / getTotalListItemsPerPage());
             if(totalPages == 0) {
@@ -120,8 +125,9 @@ public abstract class PageableList extends Composite {
             }
             setTotalPages( totalPages );
             
+        }else {
+            setTotalPages(0);
         }
-        updatePageStatsDisplay(startIndex + 1, showableLocations, getListSize());
     }
 
     /**
@@ -189,11 +195,14 @@ public abstract class PageableList extends Composite {
         addHandler(handler, LocationPanelSelectEvent.TYPE);
     }
     
-    private void setCurrentPageIndex(final int currentPageIndex) {
+    protected void setCurrentPageIndex(final int currentPageIndex) {
+        calculateAndSetTotalPages(getListSize());
         if (currentPageIndex == 0) {
             m_currentPageIndex = currentPageIndex;
         } else if(currentPageIndex > 0 && currentPageIndex <= getTotalPages()) {
             m_currentPageIndex = currentPageIndex;
+        }else if(currentPageIndex > getTotalPages()) {
+            m_currentPageIndex = getTotalPages();
         }
         updateListDisplay(m_currentPageIndex);
     }

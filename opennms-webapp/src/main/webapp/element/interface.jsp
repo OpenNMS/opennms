@@ -254,6 +254,12 @@ function doDelete() {
          <a href="admin/updateSnmp.jsp?node=<%=nodeId%>&ipaddr=<%=ipAddr%>">Update SNMP</a>
 	 </li>
          <% } %>
+        <% if (request.isUserInRole( Authentication.ADMIN_ROLE )) { %>
+	  <li>
+            <a href="admin/sched-outages/editoutage.jsp?newName=<%=ipAddr%>&addNew=true&ipAddr=<%=ipAddr%>">Schedule Outage</a>      
+          </li>
+         <% } %>
+     
       </ul>
       </div>
 

@@ -2,7 +2,6 @@ package org.opennms.features.poller.remote.gwt.client.remoteevents;
 
 import java.io.Serializable;
 
-import org.opennms.features.poller.remote.gwt.client.RemotePollerPresenter;
 
 import com.google.gwt.user.client.rpc.IsSerializable;
 
@@ -21,5 +20,5 @@ public interface MapRemoteEvent extends Event, Serializable, IsSerializable {
 	 *
 	 * @param locationManager a {@link org.opennms.features.poller.remote.gwt.client.RemotePollerPresenter} object.
 	 */
-	public void dispatch(final RemotePollerPresenter locationManager);
+	public void dispatch(final MapRemoteEventHandler locationManager);
 }

@@ -60,6 +60,9 @@ public class Collector {
 	public long getDuration() {
 		return this.getEndTime().getTime()-this.getStartTime().getTime();
 	}
+	public String getFormattedDuration() {
+		return formatDuration(getDuration());
+	}
 	public int getServiceCount() {
 		return getServices().size();
 	}

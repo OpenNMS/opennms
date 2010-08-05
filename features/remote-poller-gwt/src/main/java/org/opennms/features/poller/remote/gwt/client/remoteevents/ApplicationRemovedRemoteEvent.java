@@ -1,6 +1,5 @@
 package org.opennms.features.poller.remote.gwt.client.remoteevents;
 
-import org.opennms.features.poller.remote.gwt.client.RemotePollerPresenter;
 
 /**
  * <p>ApplicationRemovedRemoteEvent class.</p>
@@ -28,7 +27,7 @@ public class ApplicationRemovedRemoteEvent implements MapRemoteEvent {
     }
 
     /** {@inheritDoc} */
-    public void dispatch(final RemotePollerPresenter locationManager) {
+    public void dispatch(final MapRemoteEventHandler locationManager) {
         locationManager.removeApplication(m_applicationName);
     }
 
