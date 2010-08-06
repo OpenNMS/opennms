@@ -499,6 +499,20 @@ Could not find an outage to edit because no outage name parameter was specified 
 	<jsp:param name="breadcrumb" value="Edit" />
 </jsp:include>
 
+<link type="text/css" href="js/jquery/themes/base/jquery.ui.all.css" rel="stylesheet" />
+<script type="text/javascript" src="js/jquery/jquery.js"></script>
+<script type="text/javascript" src="js/jquery/ui/jquery.ui.core.js"></script>
+<script type="text/javascript" src="js/jquery/ui/jquery.ui.widget.js"></script>
+<script type="text/javascript" src="js/jquery/ui/jquery.ui.button.js"></script>
+<script type="text/javascript" src="js/jquery/ui/jquery.ui.position.js"></script>
+<script type="text/javascript" src="js/jquery/ui/jquery.ui.autocomplete.js"></script>
+<style type="text/css">
+	/* TODO shouldn't be necessary */
+	.ui-button { margin-left: -1px; }
+	.ui-button-icon-only .ui-button-text { padding: 0em; } 
+	.ui-autocomplete-input { margin: 0; padding: 0.12em 0 0.12em 0.20em; }
+</style>
+
 <style type="text/css">
 TD {
 	font-size: 0.8em;
@@ -558,6 +572,88 @@ function updateOutageTypeDisplay(selectElement) {
 		document.getElementById(disabledIds[value]).style.display="none";
 	}
 }
+
+	// Invoke a jQuery function
+	(function($) {
+		// Create the 'combobox' widget which can widgetize a <select> tag
+		$.widget("ui.combobox", {
+			_create: function() {
+				var self = this;
+				// Hide the existing tag
+				var select = this.element.hide();
+				// Add an autocomplete text field
+				var input = $("<input name=\"newInterface\">")
+					.insertAfter(select)
+					.autocomplete({
+						source: function(request, response) {
+							// Case-insensitive regex
+							var matcher = new RegExp(request.term, "i");
+							response(select.children("option").map(function() {
+								var text = $(this).text();
+								if (this.value && (!request.term || matcher.test(text)))
+									return {
+										id: this.value,
+										label: text.replace(new RegExp("(?![^&;]+;)(?!<[^<>]*)(" + $.ui.autocomplete.escapeRegex(request.term) + ")(?![^<>]*>)(?![^&;]+;)", "gi"), "<strong>$1</strong>"),
+										value: text
+									};
+							}));
+						},
+						delay: 0,
+						change: function(event, ui) {
+							if (!ui.item) {
+								// remove invalid value, as it didn't match anything
+								$(this).val("");
+								return false;
+							}
+							select.val(ui.item.id);
+							self._trigger("selected", event, {
+								item: select.find("[value='" + ui.item.id + "']")
+							});
+							
+						},
+						blur: function(event, ui) {
+							if (this("widget").is(":visible")) {
+								this("close");
+								return;
+							}
+						},
+						minLength: 0
+					})
+					.addClass("ui-widget ui-widget-content ui-corner-left");
+
+				// Add a dropdown arrow button that will expand the entire list
+				$("<button type=\"button\">&nbsp;</button>")
+					.attr("tabIndex", -1)
+					.attr("title", "Show All Items")
+					.insertAfter(input)
+					.button({
+						icons: {
+							primary: "ui-icon-triangle-1-s"
+						},
+						text: false
+					})
+					.removeClass("ui-corner-all")
+					.addClass("ui-corner-right ui-button-icon")
+					.click(function() {
+						// close if already visible
+						if (input.autocomplete("widget").is(":visible")) {
+							input.autocomplete("close");
+							return;
+						}
+						// pass empty string as value to search for, displaying all results
+						input.autocomplete("search", "");
+						input.focus();
+					});
+			}
+		});
+
+	})(jQuery);
+
+	// Apply the combobox widget to the #newInterfaceSelect element
+	$(function() {
+		$("#newInterfaceSelect").combobox();
+	});
+
 </script>
 
 <%
@@ -613,7 +709,7 @@ function updateOutageTypeDisplay(selectElement) {
 								}
 							}
 						}
-						out.println("<select name=\"newNode\">");
+						out.println("<select id=\"newNode\" name=\"newNode\">");
 						if (nodeMap.size() > 0) {
 						    for ( org.opennms.web.element.Node node : allNodes ) {
 						        if ( nodeMap.containsKey(node.getNodeId()) ) {
@@ -628,11 +724,13 @@ function updateOutageTypeDisplay(selectElement) {
 					<td valign="top">
 						<%
 						{
-						List<org.opennms.web.element.Interface> allInterfaces = Arrays.asList(NetworkElementFactory.getAllInterfaces(false));
+						List<org.opennms.web.element.Interface> allInterfaces = Arrays.asList(NetworkElementFactory.getAllManagedIpInterfaces(false));
 						TreeMap<String,org.opennms.web.element.Interface> interfaceMap = new TreeMap<String,org.opennms.web.element.Interface>();
 						for ( org.opennms.web.element.Interface element : allInterfaces ) {
 							String addr = element.getIpAddress();
-							if (addr != null && addr.length() != 0 && !addr.equals("0.0.0.0") && element.isManagedChar() != 'D') {
+							// Most of these criteria are handled by the NetworkElementFactory.getAllManagedIpInterfaces() filtering
+							//if (addr != null && addr.length() != 0 && !addr.equals("0.0.0.0") && element.isManagedChar() != 'D') {
+							if (addr != null && addr.length() != 0) {
 								interfaceMap.put(addr, element);
 							}
 						}
@@ -670,7 +768,8 @@ function updateOutageTypeDisplay(selectElement) {
 							}
 						}
 
-						out.println("<select name=\"newInterface\">");
+						out.println("<div class=\"ui-widget\">");
+						out.println("<select id=\"newInterfaceSelect\" name=\"newInterfaceSelect\" style=\"display:none\">");
 						if (interfaceMap.size() > 0) {
 							for ( String address : interfaceMap.keySet() ) {
 								org.opennms.web.element.Interface iface = interfaceMap.get(address);
@@ -684,6 +783,7 @@ function updateOutageTypeDisplay(selectElement) {
 							}
 						}
 						out.println("</select><input type=\"submit\" value=\"Add\" name=\"addInterfaceButton\" />");
+						out.println("</div>");
 						}
 						%>
 					</td>
@@ -865,7 +965,7 @@ function updateOutageTypeDisplay(selectElement) {
 						<% for (org.opennms.netmgt.config.collectd.Package thisKey : collectionOutages.keySet()) {
 								String name = "collect-" + thisKey.getName();
 								%>
-								<li><input type="checkbox" name="<%=name%>" <%=enabledOutages.contains(name)?"checked":""%> id="<%=name%>"/> <label for="<%=name%>"><%= thisKey.getName() %></label> </li>
+								<li><input type="checkbox" name="<%=name%>" <%=enabledOutages.contains(name)?"checked=\"checked\"":""%> id="<%=name%>"/> <label for="<%=name%>"><%= thisKey.getName() %></label> </li>
 						<% } %>
 					</ul>
 				</li>
