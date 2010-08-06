@@ -90,6 +90,7 @@ public class DefaultApplicationView implements ApplicationView {
         
         locationPanel.setEventBus(eventBus);
         setupWindow();
+        
     }
     
     @UiHandler("statusDown")
