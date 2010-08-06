@@ -131,6 +131,15 @@ public class LocationPanel extends Composite implements LocationPanelSelectEvent
      * @param appList a {@link java.util.ArrayList} object.
      */
     public void updateApplicationList(final ArrayList<ApplicationInfo> appList) {
+        Collections.sort(appList, new Comparator<ApplicationInfo>() {
+
+            @Override
+            public int compare(ApplicationInfo o1, ApplicationInfo o2) {
+                return -1 * o1.compareTo(o2);
+            }
+            
+        });
+        
         applicationList.updateList(appList);
     }
 
