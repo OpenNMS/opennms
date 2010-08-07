@@ -40,7 +40,7 @@ package org.opennms.netmgt.linkd.snmp;
 
 import java.net.InetAddress;
 
-import org.opennms.core.utils.ThreadCategory;
+import org.opennms.core.utils.LogUtils;
 import org.opennms.netmgt.capsd.snmp.NamedSnmpVar;
 import org.opennms.netmgt.capsd.snmp.SnmpStore;
 import org.opennms.netmgt.snmp.AggregateTracker;
@@ -53,21 +53,6 @@ import org.opennms.netmgt.snmp.SnmpResult;
  * replies.</P>
  *
  * @author <A HREF="mailto:rssntn67@opennms.org">Antonio Russo</A>
- * @author <A HREF="mailto:sowmya@opennms.org">Sowmya</A>
- * @author <A HREF="mailto:weave@oculan.com">Weave</A>
- * @author <A HREF="http://www.opennms.org/">OpenNMS</A>
- * @author <A HREF="mailto:rssntn67@opennms.org">Antonio Russo</A>
- * @author <A HREF="mailto:sowmya@opennms.org">Sowmya</A>
- * @author <A HREF="mailto:weave@oculan.com">Weave</A>
- * @author <A HREF="http://www.opennms.org/">OpenNMS</A>
- * @author <A HREF="mailto:rssntn67@opennms.org">Antonio Russo</A>
- * @author <A HREF="mailto:sowmya@opennms.org">Sowmya</A>
- * @author <A HREF="mailto:weave@oculan.com">Weave</A>
- * @author <A HREF="http://www.opennms.org/">OpenNMS</A>
- * @author <A HREF="mailto:rssntn67@opennms.org">Antonio Russo</A>
- * @author <A HREF="mailto:sowmya@opennms.org">Sowmya</A>
- * @author <A HREF="mailto:weave@oculan.com">Weave</A>
- * @author <A HREF="http://www.opennms.org/">OpenNMS</A>
  * @see <A HREF="http://www.ietf.org/rfc/rfc1213.txt">RFC1213</A>
  * @version $Id: $
  */
@@ -168,19 +153,15 @@ public final class Dot1dBaseGroup extends AggregateTracker
     }
 
     /** {@inheritDoc} */
-    protected void reportGenErr(String msg) {
-        log().warn("Error retrieving systemGroup from "+m_address+". "+msg);
+    protected void reportGenErr(final String msg) {
+        LogUtils.warnf(this, "Error retrieving systemGroup from %s: %s", m_address, msg);
     }
 
     /** {@inheritDoc} */
-    protected void reportNoSuchNameErr(String msg) {
-        log().info("Error retrieving systemGroup from "+m_address+". "+msg);
+    protected void reportNoSuchNameErr(final String msg) {
+        LogUtils.infof(this, "Error retrieving systemGroup from %s: %s", m_address, msg);
     }
 
-    private final ThreadCategory log() {
-        return ThreadCategory.getInstance(getClass());
-    }
-    
     /**
      * <p>getBridgeAddress</p>
      *

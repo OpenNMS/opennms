@@ -37,7 +37,6 @@ package org.opennms.netmgt.linkd.snmp;
 import java.net.InetAddress;
 
 import org.opennms.netmgt.capsd.snmp.NamedSnmpVar;
-import org.opennms.netmgt.capsd.snmp.SnmpTableEntry;
 
 /**
  *<P>The IpRouteTableEntry class is designed to hold all the MIB-II
@@ -63,63 +62,12 @@ import org.opennms.netmgt.capsd.snmp.SnmpTableEntry;
  * form more information.</P>
  *
  * @author <A HREF="mailto:rssntn67@yahoo.it">Antonio</A>
- * @author <A HREF="mailto:sowmya@opennms.org">Sowmya</A>
- * @author <A HREF="mailto:weave@oculan.com">Weave</A>
- * @author <A>Jon Whetzel</A>
- * @author <A HREF="http://www.opennms.org/">OpenNMS</A>
- * @author <A HREF="mailto:rssntn67@yahoo.it">Antonio</A>
- * @author <A HREF="mailto:sowmya@opennms.org">Sowmya</A>
- * @author <A HREF="mailto:weave@oculan.com">Weave</A>
- * @author <A>Jon Whetzel</A>
- * @author <A HREF="http://www.opennms.org/">OpenNMS</A>
- * @author <A HREF="mailto:rssntn67@yahoo.it">Antonio</A>
- * @author <A HREF="mailto:sowmya@opennms.org">Sowmya</A>
- * @author <A HREF="mailto:weave@oculan.com">Weave</A>
- * @author <A>Jon Whetzel</A>
- * @author <A HREF="http://www.opennms.org/">OpenNMS</A>
- * @author <A>Jon Whetzel</A>
- * @author <A HREF="mailto:rssntn67@yahoo.it">Antonio</A>
- * @author <A HREF="mailto:sowmya@opennms.org">Sowmya</A>
- * @author <A HREF="mailto:weave@oculan.com">Weave</A>
- * @author <A>Jon Whetzel</A>
- * @author <A HREF="http://www.opennms.org/">OpenNMS</A>
  * @see IpRouteTable
  * @see <A HREF="http://www.ietf.org/rfc/rfc1213.txt">RFC1213</A>
  * @version $Id: $
  */
-public final class IpRouteTableEntry extends SnmpTableEntry
-{
-	// Lookup strings for specific table entries
-	//
-	/** Constant <code>IP_ROUTE_DEST="ipRouteDest"</code> */
-	public final static	String	IP_ROUTE_DEST		= "ipRouteDest";
-	/** Constant <code>IP_ROUTE_IFINDEX="ipRouteIfIndex"</code> */
-	public final static	String	IP_ROUTE_IFINDEX	= "ipRouteIfIndex";
-	/** Constant <code>IP_ROUTE_METRIC1="ipRouteMetric1"</code> */
-	public final static	String	IP_ROUTE_METRIC1	= "ipRouteMetric1";
-	/** Constant <code>IP_ROUTE_METRIC2="ipRouteMetric2"</code> */
-	public final static	String	IP_ROUTE_METRIC2	= "ipRouteMetric2";
-	/** Constant <code>IP_ROUTE_METRIC3="ipRouteMetric3"</code> */
-	public final static	String	IP_ROUTE_METRIC3	= "ipRouteMetric3";
-	/** Constant <code>IP_ROUTE_METRIC4="ipRouteMetric4"</code> */
-	public final static	String	IP_ROUTE_METRIC4	= "ipRouteMetric4";
-	/** Constant <code>IP_ROUTE_NXTHOP="ipRouteNextHop"</code> */
-	public final static	String	IP_ROUTE_NXTHOP 	= "ipRouteNextHop";
-	/** Constant <code>IP_ROUTE_TYPE="ipRouteType"</code> */
-	public final static	String	IP_ROUTE_TYPE   	= "ipRouteType";
-	/** Constant <code>IP_ROUTE_PROTO="ipRouteProto"</code> */
-	public final static	String	IP_ROUTE_PROTO  	= "ipRouteProto";
-	/** Constant <code>IP_ROUTE_AGE="ipRouteAge"</code> */
-	public final static	String	IP_ROUTE_AGE    	= "ipRouteAge";
-	/** Constant <code>IP_ROUTE_MASK="ipRouteMask"</code> */
-	public final static	String	IP_ROUTE_MASK   	= "ipRouteMask";
-	/** Constant <code>IP_ROUTE_METRIC5="ipRouteMetric5"</code> */
-	public final static	String	IP_ROUTE_METRIC5	= "ipRouteMetric5";
-	/** Constant <code>IP_ROUTE_INFO="ipRouteInfo"</code> */
-	public final static	String	IP_ROUTE_INFO   	= "ipRouteInfo";
-	
-	
-	
+public final class IpRouteTableEntry extends IpRouteCollectorEntry
+{	
 	
 	/**
 	 * <P>The keys that will be supported by default from the 

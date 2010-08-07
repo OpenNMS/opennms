@@ -39,6 +39,7 @@ import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertTrue;
 
+import java.net.InetAddress;
 import java.net.UnknownHostException;
 import java.util.Map;
 
@@ -253,7 +254,7 @@ public class PassiveStatusKeeperTest {
         
         assertTrue(ps.isDown());
         
-        MockMonitoredService svc = new MockMonitoredService(1, "Router", "192.168.1.1", "ICMP" );
+        MockMonitoredService svc = new MockMonitoredService(1, "Router", InetAddress.getByName("192.168.1.1"), "ICMP" );
         
         ServiceMonitor m = new PassiveServiceMonitor();
         m.initialize((Map<String,Object>)null);

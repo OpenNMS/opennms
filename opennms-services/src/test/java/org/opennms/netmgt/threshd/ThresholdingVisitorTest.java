@@ -32,7 +32,6 @@ package org.opennms.netmgt.threshd;
 
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNotNull;
-import static org.junit.Assert.assertNull;
 import static org.junit.Assert.assertTrue;
 import static org.junit.Assert.fail;
 
@@ -294,8 +293,8 @@ public class ThresholdingVisitorTest {
         Integer ifIndex = 1;
         Long ifSpeed = 10000000l;
         String ifName = "wlan0";
-        addHighThresholdEvent(1, 90, 50, 120, "Unknown", ifIndex.toString(), "ifOutOctets", ifName, ifIndex.toString());
-        addHighThresholdEvent(1, 90, 50, 120, "Unknown", ifIndex.toString(), "ifInOctets", ifName, ifIndex.toString());
+        addHighThresholdEvent(1, 90, 50, 120, ifName, ifIndex.toString(), "ifOutOctets", ifName, ifIndex.toString());
+        addHighThresholdEvent(1, 90, 50, 120, ifName, ifIndex.toString(), "ifInOctets", ifName, ifIndex.toString());
         runInterfaceResource(createVisitor(), "127.0.0.1", ifName, ifSpeed, ifIndex, 10000, 46000); // real value = (46000 - 10000)/300 = 120
         verifyEvents(0);
     }
@@ -312,8 +311,8 @@ public class ThresholdingVisitorTest {
         Integer ifIndex = 1;
         Long ifSpeed = 10000000l;
         String ifName = "sis0";
-        addHighThresholdEvent(1, 90, 50, 120, "Unknown", ifIndex.toString(), "ifOutOctets", ifName, ifIndex.toString());
-        addHighThresholdEvent(1, 90, 50, 120, "Unknown", ifIndex.toString(), "ifInOctets", ifName, ifIndex.toString());
+        addHighThresholdEvent(1, 90, 50, 120, ifName, ifIndex.toString(), "ifOutOctets", ifName, ifIndex.toString());
+        addHighThresholdEvent(1, 90, 50, 120, ifName, ifIndex.toString(), "ifInOctets", ifName, ifIndex.toString());
 
         File resourceDir = new File(getRepository().getRrdBaseDir(), "1/" + ifName);
         resourceDir.deleteOnExit();
@@ -535,7 +534,7 @@ public class ThresholdingVisitorTest {
         String lowExpression = "(100-((hrStorageAllocUnits*hrStorageUsed)/(hrStorageAllocUnits*hrStorageSize))*100)";
         addHighThresholdEvent(1, 30, 25, 50, "/opt", "1", highExpression, null, null);
         addHighRearmEvent(1, 30, 25, Double.NaN, "/opt", "1", highExpression, null, null);
-        addEvent(lowThresholdUei, "127.0.0.1", "SNMP", 1, 10, 20, 5, "/opt", "1", lowExpression, null, null);
+        addEvent(lowThresholdUei, "127.0.0.1", "SNMP", 1, 10.0, 20.0, 5.0, "/opt", "1", lowExpression, null, null);
 
         // Step 1: Trigger threshold
         runFileSystemDataTest(visitor, 1, "/opt", 500, 1000);
@@ -606,14 +605,7 @@ public class ThresholdingVisitorTest {
      */
     @Test
     public void testBug2711_noIpAddress() throws Exception {
-        Integer ifIndex = 2;
-        Long ifSpeed = 10000000l;
-        String ifName = "wlan0";
-        initFactories("/threshd-configuration.xml","/test-thresholds-2.xml");
-        addEvent("uei.opennms.org/threshold/highThresholdExceeded", "0.0.0.0", "SNMP", 1, 90, 50, 120, "Unknown", ifIndex.toString(), "ifOutOctets", ifName, ifIndex.toString());
-        addEvent("uei.opennms.org/threshold/highThresholdExceeded", "0.0.0.0", "SNMP", 1, 90, 50, 120, "Unknown", ifIndex.toString(), "ifInOctets", ifName, ifIndex.toString());
-        runInterfaceResource(createVisitor(), "0.0.0.0", ifName, ifSpeed, ifIndex, 10000, 46000); // real value = (46000 - 10000)/300 = 120
-        verifyEvents(0);
+        runTestForBug2711(2, 0);
     }
 
     /*
@@ -625,14 +617,7 @@ public class ThresholdingVisitorTest {
      */
     @Test
     public void testBug2711_noIP_badIfIndex() throws Exception {
-        Integer ifIndex = -100;
-        Long ifSpeed = 10000000l;
-        String ifName = "wlan0";
-        initFactories("/threshd-configuration.xml","/test-thresholds-2.xml");
-        addEvent("uei.opennms.org/threshold/highThresholdExceeded", "0.0.0.0", "SNMP", 1, 90, 50, 120, "Unknown", ifIndex.toString(), "ifOutOctets", ifName, ifIndex.toString());
-        addEvent("uei.opennms.org/threshold/highThresholdExceeded", "0.0.0.0", "SNMP", 1, 90, 50, 120, "Unknown", ifIndex.toString(), "ifInOctets", ifName, ifIndex.toString());
-        runInterfaceResource(createVisitor(), "0.0.0.0", ifName, ifSpeed, ifIndex, 10000, 46000); // real value = (46000 - 10000)/300 = 120
-        verifyEvents(2);
+        runTestForBug2711(-100, 2);
     }
 
     /*
@@ -703,12 +688,12 @@ public class ThresholdingVisitorTest {
         String expression = "hrStorageSize-hrStorageUsed";
 
         // Trigger Low Threshold
-        addEvent("uei.opennms.org/threshold/lowThresholdExceeded", "127.0.0.1", "SNMP", 1, 10, 15, 5, "/opt", "1", expression, null, null);
+        addEvent("uei.opennms.org/threshold/lowThresholdExceeded", "127.0.0.1", "SNMP", 1, 10.0, 15.0, 5.0, "/opt", "1", expression, null, null);
         runFileSystemDataTest(visitor, 1, "/opt", 95, 100);
         verifyEvents(0);
 
         // Rearm Low Threshold and Trigger High Threshold
-        addEvent("uei.opennms.org/threshold/lowThresholdRearmed", "127.0.0.1", "SNMP", 1, 10, 15, 60, "/opt", "1", expression, null, null);
+        addEvent("uei.opennms.org/threshold/lowThresholdRearmed", "127.0.0.1", "SNMP", 1, 10.0, 15.0, 60.0, "/opt", "1", expression, null, null);
         addHighThresholdEvent(1, 50, 45, 60, "/opt", "1", expression, null, null);
         runFileSystemDataTest(visitor, 1, "/opt", 40, 100);
         verifyEvents(0);
@@ -837,6 +822,36 @@ public class ThresholdingVisitorTest {
         assertEquals("expecting " + expectedCalls + " events", expectedCalls, count);
     }
 
+    /*
+     * This test uses this files from src/test/resources:
+     * - thresd-configuration-bug3748.xml
+     * - test-thresholds-bug3748.xml
+     * 
+     * This test has been created to validate absolute thresholds.
+     */
+    @Test
+    public void testBug3748() throws Exception {
+        initFactories("/threshd-configuration-bug3748.xml","/test-thresholds-bug3748.xml");
+        // Absolute threshold evaluator doesn't show threshold and rearm levels on the event.
+        addEvent("uei.opennms.org/threshold/absoluteChangeExceeded", "127.0.0.1", "SNMP", 1, null, null, 6.0, "Unknown", null, "freeMem", null, null);
+        ThresholdingVisitor visitor = createVisitor();
+        runGaugeDataTest(visitor, 2); // Set initial value
+        runGaugeDataTest(visitor, 6); // Increment the value above configured threshold level: 6 - lastValue > 3, where lastValue=2
+        verifyEvents(0);
+    }
+    
+    // Execute an interface test where the physical interface doesn't have any IPAddress (i.e. ipAddr='0.0.0.0')
+    // The event will always be associated to Agent Interface (see Bug 3808)
+    private void runTestForBug2711(Integer ifIndex, Integer remainingEvents) throws Exception {
+        Long ifSpeed = 10000000l;
+        String ifName = "wlan0";
+        initFactories("/threshd-configuration.xml","/test-thresholds-2.xml");
+        addEvent("uei.opennms.org/threshold/highThresholdExceeded", "127.0.0.1", "SNMP", 1, 90.0, 50.0, 120.0, ifName, ifIndex.toString(), "ifOutOctets", ifName, ifIndex.toString());
+        addEvent("uei.opennms.org/threshold/highThresholdExceeded", "127.0.0.1", "SNMP", 1, 90.0, 50.0, 120.0, ifName, ifIndex.toString(), "ifInOctets", ifName, ifIndex.toString());
+        runInterfaceResource(createVisitor(), "0.0.0.0", ifName, ifSpeed, ifIndex, 10000, 46000); // real value = (46000 - 10000)/300 = 120
+        verifyEvents(remainingEvents);
+    }
+
     private void runTestForBug3554() throws Exception {
         MockLogAppender.resetEvents();
         System.err.println("----------------------------------------------------------------------------------- begin test");
@@ -937,7 +952,7 @@ public class ThresholdingVisitorTest {
             assertEquals("Interface (nodeId/ipAddr=1/127.0.0.1) has no ifName and no ifDescr...setting to label to 'no_ifLabel'.", e.getMessage());
         assertTrue(triggerEvents.size() == 1);
 
-        addEvent("uei.opennms.org/threshold/highThresholdExceeded", "127.0.0.1", "HTTP", 5, 100, 50, 200, "Unknown", "127.0.0.1[http]", "http", "no_ifLabel", null);
+        addEvent("uei.opennms.org/threshold/highThresholdExceeded", "127.0.0.1", "HTTP", 5, 100.0, 50.0, 200.0, "no_ifLabel", "127.0.0.1[http]", "http", "no_ifLabel", null);
         ThresholdingEventProxy proxy = new ThresholdingEventProxy();
         proxy.add(triggerEvents);
         proxy.sendAllEvents();
@@ -953,7 +968,8 @@ public class ThresholdingVisitorTest {
     public void testBug3575() throws Exception {
         initFactories("/threshd-configuration-bug3575.xml","/test-thresholds-bug3575.xml");
         String ipAddress = "127.0.0.1";
-        setupSnmpInterfaceDatabase(ipAddress, "eth0");
+        String ifName = "eth0";
+        setupSnmpInterfaceDatabase(ipAddress, ifName);
         LatencyThresholdingSet thresholdingSet = new LatencyThresholdingSet(1, ipAddress, "StrafePing", getRepository(), 0);
         assertTrue(thresholdingSet.hasThresholds());
         Map<String, Double> attributes = new HashMap<String, Double>();
@@ -965,7 +981,7 @@ public class ThresholdingVisitorTest {
         assertTrue(thresholdingSet.hasThresholds(attributes));
         List<Event> triggerEvents = thresholdingSet.applyThresholds("StrafePing", attributes);
         assertTrue(triggerEvents.size() == 1);
-        addEvent("uei.opennms.org/threshold/highThresholdExceeded", "127.0.0.1", "StrafePing", 1, 50, 25, 60, "Unknown", "127.0.0.1[StrafePing]", "loss", "eth0", null);
+        addEvent("uei.opennms.org/threshold/highThresholdExceeded", "127.0.0.1", "StrafePing", 1, 50.0, 25.0, 60.0, ifName, "127.0.0.1[StrafePing]", "loss", "eth0", null);
         ThresholdingEventProxy proxy = new ThresholdingEventProxy();
         proxy.add(triggerEvents);
         proxy.sendAllEvents();
@@ -1003,7 +1019,7 @@ public class ThresholdingVisitorTest {
         Integer ifIndex = 1;
         Long ifSpeed = 100000000l; // 100Mbps - Correct Speed!
         String ifName = "wlan0";
-        addHighThresholdEvent(1, 90, 50, 120, "Unknown", ifIndex.toString(), "ifInOctets", ifName, ifIndex.toString());
+        addHighThresholdEvent(1, 90, 50, 120, ifName, ifIndex.toString(), "ifInOctets", ifName, ifIndex.toString());
         runInterfaceResource(createVisitor(), "127.0.0.1", ifName, ifSpeed, ifIndex, 10000, 46000); // real value = (46000 - 10000)/300 = 120
         verifyEvents(0);
     }
@@ -1026,8 +1042,8 @@ public class ThresholdingVisitorTest {
         String ifAliasComment = "#";
 
         String label = domain + "/" + ifAlias;
-        addHighThresholdEvent(1, 90, 50, 120, "Unknown", null, "ifOutOctets", label, ifIndex.toString());
-        addHighThresholdEvent(1, 90, 50, 120, "Unknown", null, "ifInOctets", label, ifIndex.toString());
+        addHighThresholdEvent(1, 90, 50, 120, label, null, "ifOutOctets", label, ifIndex.toString());
+        addHighThresholdEvent(1, 90, 50, 120, label, null, "ifInOctets", label, ifIndex.toString());
 
         ThresholdingVisitor visitor = createVisitor();
         SnmpIfData ifData = createSnmpIfData("127.0.0.1", ifName, ifSpeed, ifIndex);
@@ -1096,8 +1112,8 @@ public class ThresholdingVisitorTest {
         }
 
         // Validate Events
-        addEvent("uei.opennms.org/threshold/highThresholdExceeded", "127.0.0.1", "HTTP", 5, 100, 50, 200, "Unknown", "127.0.0.1[http]", "http", ifName, ifIndex.toString());
-        addEvent("uei.opennms.org/threshold/highThresholdRearmed", "127.0.0.1", "HTTP", 5, 100, 50, 40, "Unknown", "127.0.0.1[http]", "http", ifName, ifIndex.toString());
+        addEvent("uei.opennms.org/threshold/highThresholdExceeded", "127.0.0.1", "HTTP", 5, 100.0, 50.0, 200.0, ifName, "127.0.0.1[http]", "http", ifName, ifIndex.toString());
+        addEvent("uei.opennms.org/threshold/highThresholdRearmed", "127.0.0.1", "HTTP", 5, 100.0, 50.0, 40.0, ifName, "127.0.0.1[http]", "http", ifName, ifIndex.toString());
         ThresholdingEventProxy proxy = new ThresholdingEventProxy();
         proxy.add(triggerEvents);
         proxy.add(rearmEvents);
@@ -1247,7 +1263,7 @@ public class ThresholdingVisitorTest {
         String ifName = "wlan0";
 
         initFactories("/threshd-configuration.xml","/test-thresholds-bug3194.xml");
-        addHighThresholdEvent(1, 100, 90, expectedValue, "Unknown", "1", "ifOutOctets", ifName, ifIndex.toString());
+        addHighThresholdEvent(1, 100, 90, expectedValue, ifName, "1", "ifOutOctets", ifName, ifIndex.toString());
         ThresholdingVisitor visitor = createVisitor();
         
         // Creating Interface Resource Type
@@ -1345,7 +1361,7 @@ public class ThresholdingVisitorTest {
         addEvent("uei.opennms.org/threshold/highThresholdRearmed", "127.0.0.1", "SNMP", trigger, threshold, rearm, value, label, instance, ds, ifLabel, ifIndex);
     }
 
-    private void addEvent(String uei, String ipaddr, String service, int trigger, double threshold, double rearm, double value, String label, String instance, String ds, String ifLabel, String ifIndex) {
+    private void addEvent(String uei, String ipaddr, String service, Integer trigger, Double threshold, Double rearm, Double value, String label, String instance, String ds, String ifLabel, String ifIndex) {
         Event e = new Event();
         e.setUei(uei);
         e.setNodeid(1);
@@ -1385,14 +1401,16 @@ public class ThresholdingVisitorTest {
         p.setValue(v);
         parms.addParm(p);
         
-        p = new Parm();
-        p.setParmName("value");
-        v = new Value();
-        String pattern = System.getProperty("org.opennms.threshd.value.decimalformat", "###.##"); // See Bug 3427
-        DecimalFormat valueFormatter = new DecimalFormat(pattern);
-        v.setContent(valueFormatter.format(value));
-        p.setValue(v);
-        parms.addParm(p);
+        if (value != null) {
+            p = new Parm();
+            p.setParmName("value");
+            v = new Value();
+            String pattern = System.getProperty("org.opennms.threshd.value.decimalformat", "###.##"); // See Bug 3427
+            DecimalFormat valueFormatter = new DecimalFormat(pattern);
+            v.setContent(valueFormatter.format(value));
+            p.setValue(v);
+            parms.addParm(p);
+        }
 
         p = new Parm();
         p.setParmName("instance");
@@ -1408,25 +1426,29 @@ public class ThresholdingVisitorTest {
         p.setValue(v);
         parms.addParm(p);
 
-        p = new Parm();
-        p.setParmName("threshold");
-        v = new Value();
-        v.setContent(Double.toString(threshold));
-        p.setValue(v);
-        parms.addParm(p);
-        
-        p = new Parm();
-        p.setParmName("rearm");
-        v = new Value();
-        v.setContent(Double.toString(rearm));
-        p.setValue(v);
-        parms.addParm(p);
+        if (threshold != null) {
+            p = new Parm();
+            p.setParmName("threshold");
+            v = new Value();
+            v.setContent(Double.toString(threshold));
+            p.setValue(v);
+            parms.addParm(p);
+        }
+
+        if (rearm != null) {
+            p = new Parm();
+            p.setParmName("rearm");
+            v = new Value();
+            v.setContent(Double.toString(rearm));
+            p.setValue(v);
+            parms.addParm(p);
+        }
 
         e.setParms(parms);
         m_anticipator.anticipateEvent(e, true);
         m_anticipatedEvents.add(e);
     }
-    
+
     private void verifyEvents(int remainEvents) {
         if (remainEvents == 0) {
             List<Event> receivedList = m_anticipator.getAnticipatedEventsRecieved();

@@ -981,6 +981,11 @@
       </dependency>
       <dependency>
         <groupId>org.opennms.dependencies</groupId>
+        <artifactId>javamail-dependencies</artifactId>
+        <version>${project.version}</version>
+      </dependency>
+      <dependency>
+        <groupId>org.opennms.dependencies</groupId>
         <artifactId>jcifs-dependencies</artifactId>
         <version>${project.version}</version>
       </dependency>
@@ -1374,11 +1379,6 @@
       <!--  external dependencies -->
       <!--  PLEASE KEEP THESE IN ALPHABETICAL ORDER -->
       <dependency>
-        <groupId>alt.dev.jmta</groupId>
-        <artifactId>jmta</artifactId>
-        <version>1.0</version>
-      </dependency>
-      <dependency>
         <groupId>asm</groupId>
         <artifactId>asm</artifactId>
         <version>3.1</version>
@@ -1520,9 +1520,14 @@
         <version>1.8</version>
       </dependency>
       <dependency>
-        <groupId>commons-httpclient</groupId>
-        <artifactId>commons-httpclient</artifactId>
-        <version>3.0.1</version>
+        <groupId>org.apache.httpcomponents</groupId>
+        <artifactId>httpcore</artifactId>
+        <version>4.0.1</version>
+      </dependency>
+      <dependency>
+        <groupId>org.apache.httpcomponents</groupId>
+        <artifactId>httpclient</artifactId>
+        <version>4.0.1</version>
       </dependency>
       <dependency>
         <groupId>commons-io</groupId>

@@ -290,12 +290,12 @@ public interface LinkdConfig {
     void createPackageIpListMap();
     
     /**
-     * <p>getClassName</p>
+     * <p>getVlanClassName</p>
      *
      * @param sysoid a {@link java.lang.String} object.
      * @return a {@link java.lang.String} object.
      */
-    String getClassName(String sysoid);
+    String getVlanClassName(String sysoid);
     
 	/**
 	 * <p>hasClassName</p>

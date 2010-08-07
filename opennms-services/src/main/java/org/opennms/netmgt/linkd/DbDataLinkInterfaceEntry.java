@@ -45,7 +45,7 @@ import java.text.ParseException;
 import java.util.Date;
 
 import org.opennms.core.utils.DBUtils;
-import org.opennms.core.utils.ThreadCategory;
+import org.opennms.core.utils.LogUtils;
 import org.opennms.netmgt.EventConstants;
 import org.opennms.netmgt.config.DataSourceFactory;
 
@@ -302,8 +302,6 @@ final class DbDataLinkInterfaceEntry
 				throw new IllegalStateException(
 						"The record does not exists in the database");
 
-			ThreadCategory log = ThreadCategory.getInstance(getClass());
-
 			PreparedStatement stmt = null;
             ResultSet rset;
             final DBUtils d = new DBUtils(getClass());
@@ -316,8 +314,7 @@ final class DbDataLinkInterfaceEntry
                 rset = stmt.executeQuery();
                 d.watch(rset);
                 if (!rset.next()) {
-                	if (log.isDebugEnabled())
-                		log.debug("DataLinkInterfaceEntry.load: no result found");
+                    LogUtils.debugf(this, "DataLinkInterfaceEntry.load: no result found");
                 	return false;
                 }
 
@@ -353,8 +350,7 @@ final class DbDataLinkInterfaceEntry
 			// clear the mask and mark as backed
 			// by the database
 			//
-			if (log.isDebugEnabled())
-				log.debug("DataInterfaceEntry.load: result found");
+            LogUtils.debugf(this, "DataInterfaceEntry.load: result found");
 			m_changed = 0;
 			return true;
 		}
@@ -579,8 +575,7 @@ final class DbDataLinkInterfaceEntry
 						if (db != null)
 							db.close();
 					} catch (SQLException e) {
-						ThreadCategory.getInstance(getClass()).warn(
-								"Exception closing JDBC connection", e);
+						LogUtils.warnf(this, e, "Exception closing JDBC connection");
 					}
 				}
 			}
@@ -625,8 +620,7 @@ final class DbDataLinkInterfaceEntry
 					if (db != null)
 						db.close();
 				} catch (SQLException e) {
-					ThreadCategory.getInstance(DbAtInterfaceEntry.class).warn(
-							"Exception closing JDBC connection", e);
+                    LogUtils.warnf(DbDataLinkInterfaceEntry.class, e, "Exception closing JDBC connection");
 				}
 			}
 		}
@@ -671,8 +665,7 @@ final class DbDataLinkInterfaceEntry
 					if (db != null)
 						db.close();
 				} catch (SQLException e) {
-					ThreadCategory.getInstance(DbAtInterfaceEntry.class).warn(
-							"Exception closing JDBC connection", e);
+                    LogUtils.warnf(DbDataLinkInterfaceEntry.class, e, "Exception closing JDBC connection");
 				}
 			}
 		}

@@ -1,0 +1,7 @@
+<?xml version="1.0"?>
+<thresholding-config>
+	<group name="absolute-test" rrdRepository="${install.share.dir}/rrd/response/">
+	   <threshold type="absoluteChange" ds-type="node" value="3.0"
+            rearm="1.0" trigger="1" filterOperator="or" ds-name="freeMem"/>
+	</group>
+</thresholding-config>

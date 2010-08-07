@@ -380,12 +380,3 @@ function mapTabRename(oldMapName,newMapName) {
 	mapTabGroup.activateTabByTitle(newMapName);
 
 }
-
-function getLabel(labelText) {
-		var ndxOf = labelText.indexOf('.');
-		if (ndxOf > 0)
-			return labelText.substr(0,ndxOf);
-		else
-			return labelText;
-
-}

@@ -38,6 +38,8 @@ import java.util.List;
 import java.util.Set;
 import java.util.TreeMap;
 import java.util.Vector;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 
 
 import org.opennms.core.resource.Vault;
@@ -648,7 +650,7 @@ public class DBManager extends Manager {
     /** {@inheritDoc} */
     public DbElement newElement(int id, int mapId, String type)
             throws MapsException {
-        DbElement e = new DbElement(mapId, id, type, null, null, 0, 0);
+        DbElement e = new DbElement(mapId, id, type, null, null, null, 0, 0);
         e = completeElement(e);
         log.debug("Creating new VElement mapId:" + mapId + " id:" + id
                 + " type:" + type + " label:" + e.getLabel() + " iconname:"
@@ -2053,9 +2055,26 @@ public class DBManager extends Manager {
     }
 
     private String getLabel(String FQDN) {
-        if (FQDN.indexOf(".")>0)
-       return FQDN.substring(0, FQDN.indexOf(".")); 
+    	if (FQDN.indexOf(".")>0 && !validate(FQDN))
+            return FQDN.substring(0, FQDN.indexOf(".")); 			
         return FQDN;
+    }
+    
+    private static final String IPADDRESS_PATTERN = 
+		"^([01]?\\d\\d?|2[0-4]\\d|25[0-5])\\." +
+		"([01]?\\d\\d?|2[0-4]\\d|25[0-5])\\." +
+		"([01]?\\d\\d?|2[0-4]\\d|25[0-5])\\." +
+		"([01]?\\d\\d?|2[0-4]\\d|25[0-5])$"; 
+ 
+   /**
+    * Validate ip address with regular expression
+    * @param ip ip address for validation
+    * @return true valid ip address, false invalid ip address
+    */
+    private boolean validate(final String ip){		  
+  	  Pattern pattern = Pattern.compile(IPADDRESS_PATTERN);
+	  Matcher matcher = pattern.matcher(ip);
+	  return matcher.matches();	    	    
     }
 
 }

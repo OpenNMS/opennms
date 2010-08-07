@@ -7,6 +7,7 @@ import junit.framework.TestCase;
 
 import org.opennms.api.integration.ticketing.PluginException;
 import org.opennms.api.integration.ticketing.Ticket;
+import org.opennms.test.mock.MockLogAppender;
 
 public class RtTicketerPluginTest extends TestCase {
     
@@ -55,6 +56,7 @@ public class RtTicketerPluginTest extends TestCase {
 
 	 @Override
 	 protected void setUp() throws Exception {
+	        MockLogAppender.setupLogging();
 
 	        System.setProperty("opennms.home", "src" + File.separatorChar + "test" + File.separatorChar + "opennms-home");
 

@@ -1,6 +1,6 @@
 package org.opennms.features.poller.remote.gwt.server;
 
-import org.opennms.features.poller.remote.gwt.client.RemotePollerPresenter;
+import org.opennms.features.poller.remote.gwt.client.remoteevents.MapRemoteEventHandler;
 
 import de.novanic.eventservice.client.event.Event;
 import de.novanic.eventservice.service.EventExecutorService;
@@ -27,6 +27,6 @@ public class UpdatedLocationDefHandler extends DefaultLocationDefHandler {
 	/** {@inheritDoc} */
 	@Override
 	protected void sendEvent(final Event event) {
-		getEventService().addEvent(RemotePollerPresenter.LOCATION_EVENT_DOMAIN, event);
+		getEventService().addEvent(MapRemoteEventHandler.LOCATION_EVENT_DOMAIN, event);
 	}
 }

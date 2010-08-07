@@ -94,9 +94,6 @@ public class CollectionResourceWrapper {
                 }
             }
             if (m_ifInfo != null) {
-                String ipaddr = m_ifInfo.get("ipaddr");
-                if (ipaddr != null) // Use default if ifInfo can't provide the address
-                    m_hostAddress = m_ifInfo.get("ipaddr"); // See Bug 2711
                 m_ifindex = m_ifInfo.get("snmpifindex");
             } else {
                 log().info("Can't find ifInfo for " + resource);

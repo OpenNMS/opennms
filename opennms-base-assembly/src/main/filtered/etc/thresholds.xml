@@ -39,10 +39,19 @@
         		<threshold type="relativeChange" ds-name="ns-dskPercent" ds-type="dskIndex" ds-label="ns-dskPath" value="0.5" rearm="0.0" trigger="2"/>
         		<threshold type="relativeChange" ds-name="ns-dskPercentNode" ds-type="dskIndex" ds-label="ns-dskPath" value="0.5" rearm="0.0" trigger="2"/>
         		<expression type="high" expression="loadavg5 / 100.0" ds-type="node" ds-label="" value="10.0" rearm="7.5" trigger="2"/>
-        		<expression type="low" expression="memAvailReal / memTotalReal * 100.0" ds-type="node" ds-label="" value="5.0" rearm="10.0" trigger="2"/>
         		<expression type="low" expression="memAvailSwap / memTotalSwap * 100.0" ds-type="node" ds-label="" value="10.0" rearm="15.0" trigger="2"/> 
         </group>
         
+        <group name="netsnmp-memory-linux"
+        		rrdRepository = "${install.share.dir}/rrd/snmp/">
+        		<expression type="low" expression="(memAvailReal + memCached) / memTotalReal * 100.0" ds-type="node" ds-label="" value="5.0" rearm="10.0" trigger="2"/>
+        </group>
+
+        <group name="netsnmp-memory-nonlinux"
+        		rrdRepository = "${install.share.dir}/rrd/snmp/">
+        		<expression type="low" expression="memAvailReal / memTotalReal * 100.0" ds-type="node" ds-label="" value="5.0" rearm="10.0" trigger="2"/>
+        </group>
+ 
 		<group name="coffee"
 				rrdRepository = "${install.share.dir}/rrd/snmp/">
 				<expression type="low" expression ="coffeePotLevel / coffeePotCapacity * 100.0" ds-type="node" ds-label="" value="25.0" rearm="100.0" trigger="1"/>

@@ -12,6 +12,8 @@
   <modules>
     <module>acl</module>
     <module>http-remoting</module>
+    <module>jdbc-collector</module>
+    <module>instrumentationLogReader</module>
     <module>poller</module>
     <module>provisioning</module>
     <module>ticketing</module>

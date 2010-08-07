@@ -37,15 +37,6 @@ package org.opennms.netmgt.linkd.scheduler;
  * provides a method to determine if the runnable is ready to start.
  *
  * @author <a href="mailto:antonio@opennms.org">Antonio Russo</a>
- * @author <a href="mailto:weave@oculan.com">Brian Weaver </a>
- * @author <a href="http://www.opennms.org">OpenNMS.org </a>
- * @author <a href="mailto:antonio@opennms.org">Antonio Russo</a>
- * @author <a href="mailto:weave@oculan.com">Brian Weaver </a>
- * @author <a href="http://www.opennms.org">OpenNMS.org </a>
- * @author <a href="mailto:antonio@opennms.org">Antonio Russo</a>
- * @author <a href="mailto:weave@oculan.com">Brian Weaver </a>
- * @author <a href="http://www.opennms.org">OpenNMS.org </a>
- * @version $Id: $
  */
 public interface ReadyRunnable extends Runnable {
     /**

@@ -20,7 +20,9 @@ import org.opennms.netmgt.xml.event.Value;
  * @version $Id: $
  */
 public abstract class AbstractThresholdEvaluatorState implements ThresholdEvaluatorState {
-    
+
+    private static final String UNKNOWN = "Unknown";
+
     /**
      * <p>createBasicEvent</p>
      *
@@ -36,24 +38,33 @@ public abstract class AbstractThresholdEvaluatorState implements ThresholdEvalua
             resource = new CollectionResourceWrapper(0, 0, null, null, null, null, null);
         }
         String dsLabelValue = resource.getLabelValue(resource.getLabel());
-        if (dsLabelValue == null) dsLabelValue = "Unknown";
+        if (dsLabelValue == null) dsLabelValue = UNKNOWN;
 
         // create the event to be sent
         Event event = new Event();
         event.setUei(uei);
         event.setNodeid(resource.getNodeId());
         event.setService(resource.getServiceName());
-        
+
         // As a suggestion from Bug2711. Host Address will contain Interface IP Address for Interface Resource
         event.setInterface(resource.getHostAddress());            
 
         Parms eventParms = new Parms();
-        addEventParm(eventParms, "label", dsLabelValue);
-        
+
         if (resource.isAnInterfaceResource()) {
+            // Update threshold label if it is unknown. This is useful because usually reduction-key is associated to label parameter
+            if (UNKNOWN.equals(dsLabelValue))
+                dsLabelValue = resource.getIfLabel();
+            // Set interface specific parameters
             addEventParm(eventParms, "ifLabel", resource.getIfLabel());
             addEventParm(eventParms, "ifIndex", resource.getIfIndex());
+            String ipaddr = resource.getIfInfoValue("ipaddr");
+            if (ipaddr != null && !"0.0.0.0".equals(ipaddr))
+                addEventParm(eventParms, "ifIpAddress", ipaddr);
         }
+
+        // Set resource label
+        addEventParm(eventParms, "label", dsLabelValue);
 
         // set the source of the event to the datasource name
         event.setSource("OpenNMS.Threshd." + getThresholdConfig().getDatasourceExpression());

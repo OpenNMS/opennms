@@ -248,9 +248,9 @@ public abstract class BaseThresholdDefConfigWrapper {
      */
     public boolean identical(BaseThresholdDefConfigWrapper o) {
         return equals(o)
-        && (getDsLabel() == o.getDsLabel() || getDsLabel().equals(o.getDsLabel()))
-        && (getTriggeredUEI() == o.getTriggeredUEI() || getTriggeredUEI().equals(o.getTriggeredUEI()))
-        && (getRearmedUEI() ==  o.getRearmedUEI() || getRearmedUEI().equals(o.getRearmedUEI()))
+        && (getDsLabel() == o.getDsLabel() || (getDsLabel() != null && getDsLabel().equals(o.getDsLabel())))
+        && (getTriggeredUEI() == o.getTriggeredUEI() || (getTriggeredUEI() != null && getTriggeredUEI().equals(o.getTriggeredUEI())))
+        && (getRearmedUEI() ==  o.getRearmedUEI() || (getRearmedUEI() != null && getRearmedUEI().equals(o.getRearmedUEI())))
         && getValue() == o.getValue()
         && getRearm() == o.getRearm()
         && getTrigger() == o.getTrigger();

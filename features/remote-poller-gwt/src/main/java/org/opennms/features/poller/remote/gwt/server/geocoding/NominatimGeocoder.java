@@ -1,5 +1,6 @@
 package org.opennms.features.poller.remote.gwt.server.geocoding;
 
+import java.io.InputStream;
 import java.io.UnsupportedEncodingException;
 import java.net.URLEncoder;
 import java.util.Date;
@@ -7,9 +8,10 @@ import java.util.List;
 
 import net.simon04.jelementtree.ElementTree;
 
-import org.apache.commons.httpclient.HttpClient;
-import org.apache.commons.httpclient.HttpMethod;
-import org.apache.commons.httpclient.methods.GetMethod;
+import org.apache.http.client.HttpClient;
+import org.apache.http.client.methods.HttpGet;
+import org.apache.http.client.methods.HttpUriRequest;
+import org.apache.http.impl.client.DefaultHttpClient;
 import org.opennms.core.utils.LogUtils;
 import org.opennms.features.poller.remote.gwt.client.GWTLatLng;
 
@@ -22,7 +24,7 @@ import org.opennms.features.poller.remote.gwt.client.GWTLatLng;
  */
 public class NominatimGeocoder implements Geocoder {
 	private static final String GEOCODE_URL = "http://nominatim.openstreetmap.org/search?format=xml";
-	private static final HttpClient m_httpClient = new HttpClient();
+	private static final HttpClient m_httpClient = new DefaultHttpClient();
 	private String m_emailAddress;
 	private String m_referer = null;
 	private static final int m_rateLimit = 1000;  // wait 1000 ms
@@ -67,15 +69,15 @@ public class NominatimGeocoder implements Geocoder {
 			}
 		}
 
-		final HttpMethod method = new GetMethod(getUrl(geolocation));
-		method.addRequestHeader("User-Agent", "OpenNMS-MapquestGeocoder/1.0");
+		final HttpUriRequest method = new HttpGet(getUrl(geolocation));
+		method.addHeader("User-Agent", "OpenNMS-MapquestGeocoder/1.0");
 		if (m_referer != null) {
-			method.addRequestHeader("Referer", m_referer);
+			method.addHeader("Referer", m_referer);
 		}
 
 		try {
-			m_httpClient.executeMethod(method);
-			final ElementTree tree = ElementTree.fromStream(method.getResponseBodyAsStream());
+			InputStream responseStream = m_httpClient.execute(method).getEntity().getContent();
+			final ElementTree tree = ElementTree.fromStream(responseStream);
 			if (tree == null) {
 				throw new GeocoderException("an error occurred connecting to the Nominatim geocoding service (no XML tree was found)");
 			}

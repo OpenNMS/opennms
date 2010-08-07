@@ -177,9 +177,9 @@ public class InventoryService implements InitializingBean {
         // TODO find a method to get root service for URL
         nodeModel.put("url", m_cp.getUrl()+m_cp.getDirectory());
 
-        String rancidIntegrationUseOnlyRancidAdaperProperty = Vault.getProperty("opennms.rancidIntegrationUseOnlyRancidAdaper"); 
-        log().debug("getRancidNodeBase opennms.rancidIntegrationUseOnlyRancidAdaper: " + rancidIntegrationUseOnlyRancidAdaperProperty);
-        if (rancidIntegrationUseOnlyRancidAdaperProperty != null &&  "true".equalsIgnoreCase(rancidIntegrationUseOnlyRancidAdaperProperty.trim())) {
+        String rancidIntegrationUseOnlyRancidAdapterProperty = Vault.getProperty("opennms.rancidIntegrationUseOnlyRancidAdapter"); 
+        log().debug("getRancidNodeBase opennms.rancidIntegrationUseOnlyRancidAdapter: " + rancidIntegrationUseOnlyRancidAdapterProperty);
+        if (rancidIntegrationUseOnlyRancidAdapterProperty != null &&  "true".equalsIgnoreCase(rancidIntegrationUseOnlyRancidAdapterProperty.trim())) {
             log().debug("getRancidNodeBase permitModifyClogin: false");
             nodeModel.put("permitModifyClogin",false);
         } else {

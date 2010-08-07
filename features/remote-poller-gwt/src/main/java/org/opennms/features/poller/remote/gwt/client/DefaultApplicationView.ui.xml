@@ -1,0 +1,101 @@
+<!DOCTYPE ui:UiBinder SYSTEM "http://dl.google.com/gwt/DTD/xhtml.ent">
+<ui:UiBinder xmlns:ui='urn:ui:com.google.gwt.uibinder'
+	xmlns:g='urn:import:com.google.gwt.user.client.ui'
+	xmlns:me='urn:import:org.opennms.features.poller.remote.gwt.client'
+	xmlns:maps='urn:import:com.google.gwt.maps.client'
+>
+	<ui:style>
+		.padding {
+			width: 5px;
+		}
+		.updateTimestamp {
+			opacity: 0.3;
+			filter:literal("alpha(opacity=30)");
+			text-align: right;
+		}
+		.statuses {
+			margin-left: 20px;
+			margin-right: auto;
+			padding-left: 10px;
+			padding-right: 10px;
+		}
+		.statusCheckBox {
+			padding-left: 8px;
+			padding-right: 8px;
+		}
+		.linkBar {
+			background: #D5DDF3;
+		}
+		.label {
+			padding: 5px;
+		}
+		.fullWidth {
+			width:100%;
+		}
+		.linkBarDivider {
+			padding: 5px;
+			opacity: 0.3;
+			filter:literal("alpha(opacity=30)");
+		}
+	</ui:style>
+	<ui:style field="linkStyles" type="org.opennms.features.poller.remote.gwt.client.DefaultApplicationView.LinkStyles">
+		.activeLink {
+			font-weight: bold;
+			text-decoration: none;
+			color: black;
+		}
+		/* You must override this also; GWT has a global 'A' style */
+		.activeLink A {
+			font-weight: bold;
+			text-decoration: none;
+			color: black;
+		}
+	</ui:style>
+	<g:DockLayoutPanel ui:field="mainPanel">
+		<g:north size="25" addStyleNames="{style.linkBar}">
+			<!-- Wrapper bar to push the length to 100% -->
+			<g:HorizontalPanel addStyleNames='{style.fullWidth} {style.linkBar}'>
+				<g:HorizontalPanel>
+					<g:Hyperlink addStyleNames="{style.label}" ui:field='locationLink' text="Locations" />
+					<g:Label addStyleNames="{style.linkBarDivider}">|</g:Label>
+					<g:Hyperlink addStyleNames="{style.label}" ui:field='applicationLink' text="Applications" />
+				</g:HorizontalPanel>
+				<g:HorizontalPanel ui:field="statusesPanel" addStyleNames="{style.label} {style.statuses}">
+					<g:CheckBox addStyleNames="{style.statusCheckBox}" ui:field="statusDown" formValue="DOWN" checked="true" title="Down">
+						<img src="images/selected-DOWN.png" width="16" height="16" alt="Down" title="Down" />
+					</g:CheckBox>
+					<g:CheckBox addStyleNames="{style.statusCheckBox}" ui:field="statusDisconnected" formValue="DISCONNECTED" checked="true" title="Disconnected">
+						<img src="images/selected-DISCONNECTED.png" width="16" height="16" alt="Disconnected" title="Disconnected" />
+					</g:CheckBox>
+					<g:CheckBox addStyleNames="{style.statusCheckBox}" ui:field="statusMarginal" formValue="MARGINAL" checked="true" title="Marginal">
+						<img src="images/selected-MARGINAL.png" width="16" height="16" alt="Marginal" title="Marginal" />
+					</g:CheckBox>
+					<g:CheckBox addStyleNames="{style.statusCheckBox}" ui:field="statusUp" formValue="UP" checked="true" title="Up">
+						<img src="images/selected-UP.png" width="16" height="16" alt="Up" title="Up" />
+					</g:CheckBox>
+					<g:CheckBox addStyleNames="{style.statusCheckBox}" ui:field="statusStopped" formValue="STOPPED" checked="true" title="Stopped">
+						<img src="images/selected-STOPPED.png" width="16" height="16" alt="Stopped" title="Stopped" />
+					</g:CheckBox>
+					<g:CheckBox addStyleNames="{style.statusCheckBox}" ui:field="statusUnknown" formValue="UNKNOWN" checked="false" title="Unknown">
+						<img src="images/selected-UNKNOWN.png" width="16" height="16" alt="Unknown" title="Unknown" />
+					</g:CheckBox>
+				</g:HorizontalPanel>
+				<g:Label ui:field='updateTimestamp' addStyleNames="{style.label} {style.fullWidth} {style.updateTimestamp}"><!-- Last update: 6/26/2010 10:45 AM EDT --></g:Label>
+				<!-- The layout doesn't seem to look right without this extra Label -->
+				<g:Label>&nbsp;</g:Label>
+			</g:HorizontalPanel>
+		</g:north>
+		<g:center>
+			<g:SplitLayoutPanel ui:field='splitPanel'>
+				<g:west size="250">
+					<me:LocationPanel ui:field='locationPanel' />
+				</g:west>
+				<!-- 
+				<g:center>
+					<maps:MapWidget ui:field='mapWidget' />
+				</g:center>
+				-->
+			</g:SplitLayoutPanel>
+		</g:center>
+	</g:DockLayoutPanel>
+</ui:UiBinder>

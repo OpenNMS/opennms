@@ -45,12 +45,12 @@ public class MockMonitoredService implements MonitoredService {
     String m_svcName;
     private InetAddress m_inetAddr;
 
-    public MockMonitoredService(int nodeId, String nodeLabel, String ipAddr, String svcName) throws UnknownHostException {
+    public MockMonitoredService(int nodeId, String nodeLabel, InetAddress inetAddress, String svcName) throws UnknownHostException {
         m_nodeId = nodeId;
         m_nodeLabel = nodeLabel;
-        m_ipAddr = ipAddr;
+        m_inetAddr = inetAddress;
         m_svcName = svcName;
-        m_inetAddr = InetAddress.getByName(ipAddr);
+        m_ipAddr = m_inetAddr.getHostAddress();
     }
 
     public String getSvcName() {

@@ -372,10 +372,10 @@
 
 
 
-    <!-- this is a runtime depdency we need at install time -->
+    <!-- this is a runtime dependency we need at install time -->
     <dependency>
-      <groupId>alt.dev.jmta</groupId>
-      <artifactId>jmta</artifactId>
+      <groupId>org.opennms.dependencies</groupId>
+      <artifactId>javamail-dependencies</artifactId>
       <scope>runtime</scope>
     </dependency>
     <!-- We depend on our JDBC database driver here instead of in the above
