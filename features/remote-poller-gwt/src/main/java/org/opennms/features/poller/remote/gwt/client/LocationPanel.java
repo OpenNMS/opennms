@@ -138,7 +138,6 @@ public class LocationPanel extends Composite implements LocationPanelSelectEvent
     public void updateApplicationList(final ArrayList<ApplicationInfo> appList) {
         Collections.sort(appList, new Comparator<ApplicationInfo>() {
 
-            @Override
             public int compare(ApplicationInfo o1, ApplicationInfo o2) {
                 return -1 * o1.compareTo(o2);
             }
@@ -236,17 +235,14 @@ public class LocationPanel extends Composite implements LocationPanelSelectEvent
         }
     }
 
-    @Override
     public void onResize(ResizeEvent event) {
         resizeDockPanel();
     }
 
-    @Override
     protected void initWidget(Widget widget) {
         super.initWidget(widget);
     }
 
-    @Override
     protected void onAttach() {
         super.onAttach();
     }
