@@ -48,6 +48,7 @@ import org.opennms.core.concurrent.RunnableConsumerThreadPool;
 import org.opennms.mock.snmp.MockSnmpAgent;
 import org.opennms.netmgt.config.CapsdConfigFactory;
 import org.opennms.netmgt.config.CollectdConfigFactory;
+import org.opennms.netmgt.config.DataCollectionConfigFactory;
 import org.opennms.netmgt.config.DatabaseSchemaConfigFactory;
 import org.opennms.netmgt.config.DefaultCapsdConfigManager;
 import org.opennms.netmgt.config.OpennmsServerConfigFactory;
@@ -89,6 +90,10 @@ public class CapsdTest extends OpenNMSTestCase {
         PollerConfigFactory.setInstance(new PollerConfigFactory(System.currentTimeMillis(), configStream, onmsSvrConfig.getServerName(), onmsSvrConfig.verifyServer()));
         configStream.close();
         RrdTestUtils.initialize();
+
+        configStream = ConfigurationTestUtils.getInputStreamForResource(this, "/org/opennms/netmgt/capsd/datacollection-config.xml");
+        DataCollectionConfigFactory.setInstance(new DataCollectionConfigFactory(configStream));
+        configStream.close();
 
         configStream = ConfigurationTestUtils.getInputStreamForResource(this, "/org/opennms/netmgt/capsd/collectd-configuration.xml");
         CollectdConfigFactory.setInstance(new CollectdConfigFactory(configStream, onmsSvrConfig.getServerName(), onmsSvrConfig.verifyServer()));
