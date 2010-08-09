@@ -529,22 +529,24 @@ public class DefaultLocationManager implements LocationManager, RemotePollerPres
 
     /** {@inheritDoc} */
     public void onApplicationSelected(final ApplicationSelectedEvent event) {
+        
+        
+        final String applicationName = event.getApplicationname();
+        final ApplicationInfo app = m_dataManager.getApplicationInfo(applicationName);
+        //App maybe null if the user types an invalid name
+        if(app == null) {
+            return;
+        }
+
+        // Add the application to the selected application list
+        m_applicationFilter.addApplication(app);
+
+        updateAllMarkerStates();
+
+        m_view.updateSelectedApplications(m_applicationFilter.getApplications());
+        
         //This has been commented out because of a scalability problem. We have yet
         // to review if we can make this query faster.
-        
-//        final String applicationName = event.getApplicationname();
-//        final ApplicationInfo app = m_dataManager.getApplicationInfo(applicationName);
-//        //App maybe null if the user types an invalid name
-//        if(app == null) {
-//            return;
-//        }
-//
-//        // Add the application to the selected application list
-//        m_applicationFilter.addApplication(app);
-//
-//        updateAllMarkerStates();
-//
-//        m_view.updateSelectedApplications(m_applicationFilter.getApplications());
 //        m_remoteService.getApplicationDetails(applicationName, new AsyncCallback<ApplicationDetails>() {
 //
 //            public void onFailure(final Throwable t) {
