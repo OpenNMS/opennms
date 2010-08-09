@@ -82,7 +82,6 @@ public final class DataCollectionConfigFactory {
      * 
      * @exception java.io.IOException
      *                Thrown if the specified config file cannot be read
-     * @throws java.io.IOException if any.
      */
     public static synchronized void init() throws IOException {
         if (m_singleton == null) {
@@ -102,7 +101,6 @@ public final class DataCollectionConfigFactory {
      * 
      * @exception java.io.IOException
      *                Thrown if the specified config file cannot be read
-     * @throws java.io.IOException if any.
      */
     public static synchronized void reload() throws IOException {
         m_singleton = null;
