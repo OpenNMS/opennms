@@ -74,7 +74,7 @@ AbstractCastorConfigDao<DatacollectionConfig, DatacollectionConfig> implements D
     private String configDirectory;
 
     public DefaultDataCollectionConfigDao() {
-        super(DatacollectionConfig.class, "data-collection");
+        super(DatacollectionConfig.class, "data-collection configuration");
     }
 
     @Override

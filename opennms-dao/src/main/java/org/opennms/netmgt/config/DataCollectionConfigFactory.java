@@ -50,11 +50,9 @@ import org.opennms.netmgt.dao.castor.DefaultDataCollectionConfigDao;
 import org.springframework.core.io.InputStreamResource;
 
 /**
- * <p>This class is the main repository for SNMP data collection configuration
+ * This class is the main repository for SNMP data collection configuration
  * information used by the SNMP service monitor. When this class is loaded it
- * reads the SNMP data collection configuration into memory.</p>
- * <p>The implementation of DataCollectionConfig interface has been moved to
- * DefaultDataCollectionConfigDao.</p>
+ * reads the SNMP data collection configuration into memory.
  *
  * @author <a href="mailto:weave@oculan.com">Weave </a>
  * @author <a href="http://www.opennms.org/">OpenNMS </a>
@@ -120,21 +118,6 @@ public final class DataCollectionConfigFactory {
         if (m_singleton == null)
             throw new IllegalStateException("The factory has not been initialized");
         return m_singleton;
-    }
-    
-    public static void main(String[] args) {
-        try {
-            DataCollectionConfigFactory.init();
-            DataCollectionConfig config = DataCollectionConfigFactory.getInstance();
-            if (config == null) {
-                System.err.println("ERROR: can't get a reference to DataCollectionConfig object");
-            } else {
-                config.getConfiguredResourceTypes();
-                System.out.println("OK: no errors found");
-            }
-        } catch (Exception e) {
-            System.err.println("ERROR: " + e.getMessage());
-        }
     }
 
 }

@@ -1,17 +1,23 @@
 <?xml version="1.0"?>
 <datacollection-group name="Cisco">
 
+    <resourceType name="rttMonCtrlAdminIndex" label="RTTMON Stats (Cisco RTTMON MIB)"
+                  resourceLabel="${rttMonCtrlAdminTag} (index ${index})">
+      <persistenceSelectorStrategy class="org.opennms.netmgt.collectd.PersistAllSelectorStrategy"/>
+      <storageStrategy class="org.opennms.netmgt.dao.support.IndexStorageStrategy"/>
+    </resourceType>
+
     <resourceType name="cbgpPeerAddrFamilyPrefixEntry" label="Cisco BGP Peer / Address Family"
                   resourceLabel="Peer ${subIndex(0,4)}">
       <persistenceSelectorStrategy class="org.opennms.netmgt.collectd.PersistAllSelectorStrategy"/>
       <storageStrategy class="org.opennms.netmgt.dao.support.IndexStorageStrategy"/>
     </resourceType>
 
-   <resourceType name="ciscoApCntIndex" label="Cisco Content Switch Content Entries (apCntTable)"
-                 resourceLabel="Owner: ${string(subIndex(0, n))} / Content: ${string(subIndex(n, n))}">
+    <resourceType name="ciscoApCntIndex" label="Cisco Content Switch Content Entries (apCntTable)"
+                  resourceLabel="Owner: ${string(subIndex(0, n))} / Content: ${string(subIndex(n, n))}">
       <persistenceSelectorStrategy class="org.opennms.netmgt.collectd.PersistAllSelectorStrategy"/>
       <storageStrategy class="org.opennms.netmgt.dao.support.IndexStorageStrategy"/>
-   </resourceType>
+    </resourceType>
 
     <resourceType name="ciscoEnvMonTemperatureStatusIndex" label="Cisco Temperature"
                   resourceLabel="${cvmTempStatusDescr} (index ${index})">
@@ -43,12 +49,6 @@
       <storageStrategy class="org.opennms.netmgt.dao.support.IndexStorageStrategy"/>
     </resourceType>
 
-    <resourceType name="rttMonCtrlAdminIndex" label="RTTMON Stats (Cisco RTTMON MIB)"
-                  resourceLabel="${rttMonCtrlAdminTag} (index ${index})">
-      <persistenceSelectorStrategy class="org.opennms.netmgt.collectd.PersistAllSelectorStrategy"/>
-      <storageStrategy class="org.opennms.netmgt.dao.support.IndexStorageStrategy"/>
-    </resourceType>
-
       <group name="cisco-frame-relay" ifType="all">
         <mibObj oid=".1.3.6.1.4.1.9.9.49.1.2.2.1.1" instance="frCircuitIfIndex" alias="frIfName"     type="string" />
         <mibObj oid=".1.3.6.1.4.1.9.9.49.1.2.2.1.2" instance="frCircuitIfIndex" alias="frIfType"     type="string" />
@@ -58,8 +58,6 @@
         <mibObj oid=".1.3.6.1.4.1.9.9.49.1.2.1.1.3" instance="frCircuitIfIndex" alias="frDropPktsOuts" type="counter" />
       </group>
 
-      <!-- Cisco MIBs -->
-
       <group name = "adsl-line" ifType = "94">
         <mibObj oid=".1.3.6.1.2.1.10.94.1.1.3.1.5" instance="ifIndex" alias="AturCurAtn"  type="Gauge32" />
         <mibObj oid=".1.3.6.1.2.1.10.94.1.1.2.1.5" instance="ifIndex" alias="AtucCurAtn"  type="Gauge32" />
@@ -67,25 +65,6 @@
         <mibObj oid=".1.3.6.1.2.1.10.94.1.1.2.1.7" instance="ifIndex" alias="AtucCurOPwr" type="Gauge32" />
         <mibObj oid=".1.3.6.1.2.1.10.94.1.1.3.1.4" instance="ifIndex" alias="AturCurSnr"  type="Gauge32" />
         <mibObj oid=".1.3.6.1.2.1.10.94.1.1.2.1.4" instance="ifIndex" alias="AtucCurSnr"  type="Gauge32" />
-      </group>
-
-      <group name="altiga" ifType="ignore">
-        <mibObj oid=".1.3.6.1.4.1.3076.2.1.2.25.1.2"  instance="0" alias="altigaCpuUtil"      type="gauge" />
-        <mibObj oid=".1.3.6.1.4.1.3076.2.1.2.25.1.3"  instance="0" alias="altigaActSess"      type="gauge" />
-        <mibObj oid=".1.3.6.1.4.1.3076.2.1.2.25.1.4"  instance="0" alias="altigaThroughput"   type="gauge" />
-        <mibObj oid=".1.3.6.1.4.1.3076.2.1.2.22.1.1"  instance="0" alias="alHWCpuVoltage"     type="gauge" />
-        <mibObj oid=".1.3.6.1.4.1.3076.2.1.2.22.1.5"  instance="0" alias="alHWPs1Voltage3v"   type="gauge" />
-        <mibObj oid=".1.3.6.1.4.1.3076.2.1.2.22.1.9"  instance="0" alias="alHWPs1Voltage5v"   type="gauge" />
-        <mibObj oid=".1.3.6.1.4.1.3076.2.1.2.22.1.13" instance="0" alias="alHWPs2Voltage3v"   type="gauge" />
-        <mibObj oid=".1.3.6.1.4.1.3076.2.1.2.22.1.17" instance="0" alias="alHWPs2Voltage5v"   type="gauge" />
-        <mibObj oid=".1.3.6.1.4.1.3076.2.1.2.22.1.21" instance="0" alias="alHWBoardVoltage3v" type="gauge" />
-        <mibObj oid=".1.3.6.1.4.1.3076.2.1.2.22.1.25" instance="0" alias="alHWBoardVoltage5v" type="gauge" />
-        <mibObj oid=".1.3.6.1.4.1.3076.2.1.2.22.1.29" instance="0" alias="alHWCpuTemp"        type="Integer32" />
-        <mibObj oid=".1.3.6.1.4.1.3076.2.1.2.22.1.33" instance="0" alias="alHWCageTemp"       type="Integer32" />
-        <mibObj oid=".1.3.6.1.4.1.3076.2.1.2.22.1.37" instance="0" alias="alHWFan1Rpm"        type="gauge" />
-        <mibObj oid=".1.3.6.1.4.1.3076.2.1.2.22.1.41" instance="0" alias="alHWFan2Rpm"        type="gauge" />
-        <mibObj oid=".1.3.6.1.4.1.3076.2.1.2.22.1.45" instance="0" alias="alHWFan3Rpm"        type="gauge" />
-        <mibObj oid=".1.3.6.1.4.1.3076.2.1.2.22.1.61" instance="0" alias="alHWCpuVoltageNom"  type="gauge" />
       </group>
 
       <group  name="cisco-ap-dot11-stats" ifType="71">
@@ -131,7 +110,6 @@
         <mibObj oid=".1.3.6.1.4.1.9.9.171.1.2.1.25" instance="0" alias="cikeHashValidFails"  type="Counter32" />
         <mibObj oid=".1.3.6.1.4.1.9.9.171.1.2.1.26" instance="0" alias="cikeNoSaFails"       type="Counter32" />
       </group>
-
       <group name="cisco-cipsec" ifType="ignore">
         <mibObj oid=".1.3.6.1.4.1.9.9.171.1.3.1.1"  instance="0" alias="cipActiveTunnels"    type="Gauge32" />
         <mibObj oid=".1.3.6.1.4.1.9.9.171.1.3.1.2"  instance="0" alias="cipPreviousTunnels"  type="Counter32" />
@@ -164,7 +142,6 @@
         <mibObj oid=".1.3.6.1.4.1.9.9.171.1.3.1.29" instance="0" alias="cipNoSaFails"        type="Counter32" />
         <mibObj oid=".1.3.6.1.4.1.9.9.171.1.3.1.30" instance="0" alias="cipSysCapFails"      type="Counter32" />
       </group>
-
       <group name="cisco-ccm" ifType="ignore">
         <mibObj oid=".1.3.6.1.4.1.9.9.156.1.5.1"  instance="0" alias="ccmActivePhones"     type="gauge32" />
         <mibObj oid=".1.3.6.1.4.1.9.9.156.1.5.2"  instance="0" alias="ccmInActivePhones"   type="gauge32" />
@@ -186,7 +163,6 @@
         <mibObj oid=".1.3.6.1.4.1.9.9.156.1.5.18" instance="0" alias="ccmUnregVMailDev"    type="gauge32" />
         <mibObj oid=".1.3.6.1.4.1.9.9.156.1.5.19" instance="0" alias="ccmRejVMailDev"      type="gauge32" />
       </group>
-
       <group name="cisco-css" ifType="all">
         <mibObj oid=".1.3.6.1.4.1.9.9.368.1.16.4.1.2"  instance="ciscoApCntIndex" alias="ciscoApCntName" type="string" />
         <mibObj oid=".1.3.6.1.4.1.9.9.368.1.16.4.1.18" instance="ciscoApCntIndex" alias="ciscoApCntHits" type="counter32" />
@@ -196,26 +172,22 @@
         <mibObj oid=".1.3.6.1.4.1.9.9.368.1.16.4.1.26" instance="ciscoApCntIndex" alias="ciscoApCntFrames" type="counter32" />
         <mibObj oid=".1.3.6.1.4.1.9.9.368.1.16.4.1.60" instance="ciscoApCntIndex" alias="ciscoApCntSorry" type="counter32" />
       </group>
-
       <group  name="cisco-docs-ext-ifmacchan" ifType="127">
         <mibObj oid=".1.3.6.1.4.1.9.9.116.1.3.3.1.4" instance="ifIndex" alias="MacCmTotal"  type="Integer32" />
         <mibObj oid=".1.3.6.1.4.1.9.9.116.1.3.3.1.5" instance="ifIndex" alias="MacCmActive" type="Integer32" />
         <mibObj oid=".1.3.6.1.4.1.9.9.116.1.3.3.1.6" instance="ifIndex" alias="MacCmReg"    type="Integer32" />
       </group>
-
       <group  name="cisco-docs-ext-ifupchannel" ifType="129">
         <mibObj oid=".1.3.6.1.4.1.9.9.116.1.4.1.1.3" instance="ifIndex" alias="CmTotal"         type="Integer32" />
         <mibObj oid=".1.3.6.1.4.1.9.9.116.1.4.1.1.4" instance="ifIndex" alias="CmActive"        type="Integer32" />
         <mibObj oid=".1.3.6.1.4.1.9.9.116.1.4.1.1.5" instance="ifIndex" alias="CmRegistered"    type="Integer32" />
         <mibObj oid=".1.3.6.1.2.1.10.127.1.1.4.1.5"  instance="ifIndex" alias="intCabUpSNR"    type="Integer32" />
       </group>
-
       <group name="cisco-memory" ifType="ignore">
         <mibObj oid=".1.3.6.1.4.1.9.9.48.1.1.1.5" instance="1" alias="ciscoMemoryPoolUsed" type="gauge" />
         <mibObj oid=".1.3.6.1.4.1.9.9.48.1.1.1.6" instance="1" alias="ciscoMemoryPoolFree" type="gauge" />
         <mibObj oid=".1.3.6.1.4.1.9.9.48.1.1.1.7" instance="1" alias="ciscoMemoryPoolMax"  type="gauge" />
       </group>
-
       <group name="cisco-memory-pool" ifType="all">
         <mibObj oid=".1.3.6.1.4.1.9.9.48.1.1.1.2" instance="ciscoMemoryPoolType" alias="cscoMemoryPoolName" type="string"/>
         <mibObj oid=".1.3.6.1.4.1.9.9.48.1.1.1.5" instance="ciscoMemoryPoolType" alias="cscoMemoryPoolUsed" type="gauge"/>
@@ -225,7 +197,6 @@
         <mibObj oid=".1.3.6.1.4.1.9.9.48.1.2.1.2" instance="ciscoMemoryPoolType" alias="cscoMemPoolUtl5Min"  type="gauge" />
         <mibObj oid=".1.3.6.1.4.1.9.9.48.1.2.1.3" instance="ciscoMemoryPoolType" alias="cscoMemPoolUtl10Min"  type="gauge" />
       </group>
-
       <group name="cisco-pix" ifType="ignore">
         <mibObj oid=".1.3.6.1.4.1.9.9.147.1.2.2.1.1.4.4"    instance="3" alias="cfwBuff4BBmax"      type="gauge" />
         <mibObj oid=".1.3.6.1.4.1.9.9.147.1.2.2.1.1.4.4"    instance="5" alias="cfwBuff4BBcurr"     type="gauge" />
@@ -244,7 +215,6 @@
         <mibObj oid=".1.3.6.1.4.1.9.9.109.1.1.1.1.5"        instance="1" alias="cpmCPUTotal5min"    type="integer"/>
         <mibObj oid=".1.3.6.1.4.1.9.9.109.1.1.1.1.8"        instance="1" alias="cpmCPUTotal5minRev" type="integer"/>
       </group>
-
       <group name="cisco-router" ifType="ignore">
         <mibObj oid=".1.3.6.1.4.1.9.2.1.58"          instance="0" alias="avgBusy5"        type="integer" />
         <mibObj oid=".1.3.6.1.4.1.9.2.1.8"           instance="0" alias="freeMem"         type="gauge" />
@@ -252,28 +222,23 @@
         <mibObj oid=".1.3.6.1.4.1.9.2.1.47"          instance="0" alias="bufferNoMem"     type="counter" />
         <mibObj oid=".1.3.6.1.4.1.9.9.109.1.1.1.1.5" instance="1" alias="cpmCPUTotal5min" type="integer" />
       </group>
-
       <group name="cisco-temperature" ifType="all">
         <mibObj oid=".1.3.6.1.4.1.9.9.13.1.3.1.2" instance="ciscoEnvMonTemperatureStatusIndex" alias="cvmTempStatusDescr" type="string" />
         <mibObj oid=".1.3.6.1.4.1.9.9.13.1.3.1.3" instance="ciscoEnvMonTemperatureStatusIndex" alias="cvmTempStatusValue" type="gauge" />
       </group>
-
       <group name="cisco-voltage" ifType="all">
         <mibObj oid=".1.3.6.1.4.1.9.9.13.1.2.1.2" instance="ciscoEnvMonVoltageStatusIndex" alias="cvmVoltStatusDescr" type="string" />
         <mibObj oid=".1.3.6.1.4.1.9.9.13.1.2.1.3" instance="ciscoEnvMonVoltageStatusIndex" alias="cvmVoltStatusValue" type="gauge" />
       </group>
-
       <group name="cisco-router-interface" ifType="all">
         <mibObj oid=".1.3.6.1.4.1.9.2.2.1.1.7"  instance="ifIndex" alias="locIfInPktsSec"     type="integer" />
         <mibObj oid=".1.3.6.1.4.1.9.2.2.1.1.9"  instance="ifIndex" alias="locIfOutPktsSec"    type="integer" />
         <mibObj oid=".1.3.6.1.4.1.9.2.2.1.1.26" instance="ifIndex" alias="locIfInQueueDrops"  type="counter" />
         <mibObj oid=".1.3.6.1.4.1.9.2.2.1.1.27" instance="ifIndex" alias="locIfOutQueueDrops" type="counter" />
       </group>
-
       <group  name = "cisco-aironet-stats" ifType = "ignore">
         <mibObj oid=".1.3.6.1.4.1.522.3.12.1.8" instance="0" alias="aironetClientAssoc" type="integer"/>
       </group>
-
       <group name="cisco-rttmon-latest-jitter-stats" ifType="all">
         <mibObj oid=".1.3.6.1.4.1.9.9.42.1.2.1.1.3"  instance="rttMonCtrlAdminIndex" alias="rttMonCtrlAdminTag" type="string" />
         <mibObj oid=".1.3.6.1.4.1.9.9.42.1.2.2.1.18" instance="rttMonCtrlAdminIndex" alias="echoNumPackets"     type="gauge" />
@@ -326,7 +291,6 @@
         <mibObj oid=".1.3.6.1.4.1.9.9.42.1.5.2.1.49" instance="rttMonCtrlAdminIndex" alias="jitterOWAvgSD"      type="gauge" />
         <mibObj oid=".1.3.6.1.4.1.9.9.42.1.5.2.1.50" instance="rttMonCtrlAdminIndex" alias="jitterOWAvgDS"      type="gauge" />
       </group>
-
       <group name="cisco-rttmon-latest-rtp-stats" ifType="all">
         <mibObj oid=".1.3.6.1.4.1.9.9.42.1.5.3.1.1"  instance="rttMonCtrlAdminIndex" alias="rtpOperRTT"     type="gauge" />
         <mibObj oid=".1.3.6.1.4.1.9.9.42.1.5.3.1.2"  instance="rttMonCtrlAdminIndex" alias="rtpIAJitterDS"  type="gauge" />
@@ -354,11 +318,9 @@
       </group>
 
       <!-- Stats from the CISCO-IPMROUTE-MIB -->
-
       <group name="cisco-ipmroute-scalars" ifType="ignore">
         <mibObj oid=".1.3.6.1.4.1.9.10.2.1.1.1" instance="0" alias="ciscoIpMRouteEnt" type="gauge" />
       </group>
-
       <group name="cisco-ipmroute-interfaces" ifType="all">
         <mibObj oid=".1.3.6.1.4.1.9.10.2.1.1.5.1.1" instance="ifIndex" alias="csIpMRIfInMCOcts" type="counter" />
         <mibObj oid=".1.3.6.1.4.1.9.10.2.1.1.5.1.2" instance="ifIndex" alias="csIpMRIfOutMCOcts" type="counter" />
@@ -369,17 +331,11 @@
       </group>
 
       <!-- Stats from the CISCO-MVPN-MIB -->
-
       <group name="cisco-mvpn-scalars" ifType="ignore">
         <mibObj oid=".1.3.6.1.4.1.9.10.113.1.1.1" instance="0" alias="ciscoMvpnMvrfNum" type="gauge" />
       </group>
 
-      <group name="cisco-mvpn-vrfs" ifType="all">
-        <mibObj oid=".1.3.6.1.4.1.9.10.113.1.2.1.1.3" instance="mplsL3VpnVrf" alias="cscoMvpnGenAssocIfs" type="gauge" />
-      </group>
-
       <!-- Stats from the CISCO-PIM-MIB -->
-
       <group name="cisco-pim-scalars" ifType="ignore">
         <mibObj oid=".1.3.6.1.4.1.9.9.184.1.1.1" instance="0" alias="cpimInvRegMsgsRcvd" type="counter" />
         <mibObj oid=".1.3.6.1.4.1.9.9.184.1.1.2" instance="0" alias="cpimInvPrnMsgsRcvd" type="counter" />
@@ -417,7 +373,6 @@
       </group>
 
       <!-- Stats from the CISCO-EHANCED-SLB-MIB-->
-
       <group name="cisco-enhanced-slb-farm-rserver-stats" ifType="all">
         <mibObj oid=".1.3.6.1.4.1.9.9.470.1.1.3.1.2"  instance="cesServerFarmRserverEntry" alias="cSlbFarmRsAdminWt" type="gauge" />
         <mibObj oid=".1.3.6.1.4.1.9.9.470.1.1.3.1.3"  instance="cesServerFarmRserverEntry" alias="cSlbFarmRsOperWt" type="gauge" />
@@ -448,14 +403,6 @@
         <mibObj oid=".1.3.6.1.4.1.9.9.383.1.4.13" instance="0" alias="cidsHlthIpDualIp" type="Gauge32" />
         <mibObj oid=".1.3.6.1.4.1.9.9.383.1.4.14" instance="0" alias="cidsHlthMemCritical" type="Gauge32" />
       </group>
-
-      <systemDef name="Cisco Altiga">
-        <sysoidMask>.1.3.6.1.4.1.3076.</sysoidMask>
-        <collect>
-          <includeGroup>cisco-cike</includeGroup>
-          <includeGroup>altiga</includeGroup>
-        </collect>
-      </systemDef>
 
       <systemDef name = "Cisco Aironet">
         <sysoid>.1.3.6.1.4.1.9.1.380</sysoid>
@@ -839,130 +786,130 @@
       <systemDef name="Cisco ASA5510">
         <sysoid>.1.3.6.1.4.1.9.1.669</sysoid>
         <collect>
-          <includeGroup>cisco-pix</includeGroup>
-          <includeGroup>cisco-cike</includeGroup>
-          <includeGroup>cisco-cipsec</includeGroup>
-          <includeGroup>cisco-memory</includeGroup>
+	      <includeGroup>cisco-pix</includeGroup>
+	      <includeGroup>cisco-cike</includeGroup>
+	      <includeGroup>cisco-cipsec</includeGroup>
+	      <includeGroup>cisco-memory</includeGroup>
         </collect>
       </systemDef>
 
       <systemDef name="Cisco ASA5520">
         <sysoid>.1.3.6.1.4.1.9.1.670</sysoid>
         <collect>
-          <includeGroup>cisco-pix</includeGroup>
-          <includeGroup>cisco-cike</includeGroup>
-          <includeGroup>cisco-cipsec</includeGroup>
-          <includeGroup>cisco-memory</includeGroup>
+	      <includeGroup>cisco-pix</includeGroup>
+	      <includeGroup>cisco-cike</includeGroup>
+	      <includeGroup>cisco-cipsec</includeGroup>
+	      <includeGroup>cisco-memory</includeGroup>
         </collect>
       </systemDef>
 
       <systemDef name="Cisco ASA5520sc">
         <sysoid>.1.3.6.1.4.1.9.1.671</sysoid>
         <collect>
-          <includeGroup>cisco-pix</includeGroup>
-          <includeGroup>cisco-cike</includeGroup>
-          <includeGroup>cisco-cipsec</includeGroup>
-          <includeGroup>cisco-memory</includeGroup>
+	      <includeGroup>cisco-pix</includeGroup>
+	      <includeGroup>cisco-cike</includeGroup>
+	      <includeGroup>cisco-cipsec</includeGroup>
+	      <includeGroup>cisco-memory</includeGroup>
         </collect>
       </systemDef>
 
       <systemDef name="Cisco ASA5540">
         <sysoid>.1.3.6.1.4.1.9.1.672</sysoid>
         <collect>
-          <includeGroup>cisco-pix</includeGroup>
-          <includeGroup>cisco-cike</includeGroup>
-          <includeGroup>cisco-cipsec</includeGroup>
-          <includeGroup>cisco-memory</includeGroup>
+	      <includeGroup>cisco-pix</includeGroup>
+	      <includeGroup>cisco-cike</includeGroup>
+	      <includeGroup>cisco-cipsec</includeGroup>
+	      <includeGroup>cisco-memory</includeGroup>
         </collect>
       </systemDef>
 
       <systemDef name="Cisco ASA5540sc">
         <sysoid>.1.3.6.1.4.1.9.1.673</sysoid>
         <collect>
-          <includeGroup>cisco-pix</includeGroup>
-          <includeGroup>cisco-cike</includeGroup>
-          <includeGroup>cisco-cipsec</includeGroup>
-          <includeGroup>cisco-memory</includeGroup>
+	      <includeGroup>cisco-pix</includeGroup>
+	      <includeGroup>cisco-cike</includeGroup>
+	      <includeGroup>cisco-cipsec</includeGroup>
+	      <includeGroup>cisco-memory</includeGroup>
         </collect>
       </systemDef>
 
       <systemDef name="Cisco ASA5505">
         <sysoid>.1.3.6.1.4.1.9.1.745</sysoid>
         <collect>
-          <includeGroup>cisco-pix</includeGroup>
-          <includeGroup>cisco-cike</includeGroup>
-          <includeGroup>cisco-cipsec</includeGroup>
-          <includeGroup>cisco-memory</includeGroup>
+	      <includeGroup>cisco-pix</includeGroup>
+	      <includeGroup>cisco-cike</includeGroup>
+	      <includeGroup>cisco-cipsec</includeGroup>
+	      <includeGroup>cisco-memory</includeGroup>
         </collect>
       </systemDef>
 
       <systemDef name="Cisco ASA5550">
         <sysoid>.1.3.6.1.4.1.9.1.753</sysoid>
         <collect>
-          <includeGroup>cisco-pix</includeGroup>
-          <includeGroup>cisco-cike</includeGroup>
-          <includeGroup>cisco-cipsec</includeGroup>
-          <includeGroup>cisco-memory</includeGroup>
+	      <includeGroup>cisco-pix</includeGroup>
+	      <includeGroup>cisco-cike</includeGroup>
+	      <includeGroup>cisco-cipsec</includeGroup>
+	      <includeGroup>cisco-memory</includeGroup>
         </collect>
       </systemDef>
 
       <systemDef name="Cisco ASA5550sc">
         <sysoid>.1.3.6.1.4.1.9.1.763</sysoid>
         <collect>
-          <includeGroup>cisco-pix</includeGroup>
-          <includeGroup>cisco-cike</includeGroup>
-          <includeGroup>cisco-cipsec</includeGroup>
-          <includeGroup>cisco-memory</includeGroup>
+	      <includeGroup>cisco-pix</includeGroup>
+	      <includeGroup>cisco-cike</includeGroup>
+	      <includeGroup>cisco-cipsec</includeGroup>
+	      <includeGroup>cisco-memory</includeGroup>
         </collect>
       </systemDef>
 
       <systemDef name="Cisco ASA5520sy">
         <sysoid>.1.3.6.1.4.1.9.1.764</sysoid>
         <collect>
-          <includeGroup>cisco-pix</includeGroup>
-          <includeGroup>cisco-cike</includeGroup>
-          <includeGroup>cisco-cipsec</includeGroup>
-          <includeGroup>cisco-memory</includeGroup>
+	      <includeGroup>cisco-pix</includeGroup>
+	      <includeGroup>cisco-cike</includeGroup>
+	      <includeGroup>cisco-cipsec</includeGroup>
+	      <includeGroup>cisco-memory</includeGroup>
         </collect>
       </systemDef>
 
       <systemDef name="Cisco ASA5540sy">
         <sysoid>.1.3.6.1.4.1.9.1.765</sysoid>
         <collect>
-          <includeGroup>cisco-pix</includeGroup>
-          <includeGroup>cisco-cike</includeGroup>
-          <includeGroup>cisco-cipsec</includeGroup>
-          <includeGroup>cisco-memory</includeGroup>
+	      <includeGroup>cisco-pix</includeGroup>
+	      <includeGroup>cisco-cike</includeGroup>
+	      <includeGroup>cisco-cipsec</includeGroup>
+	      <includeGroup>cisco-memory</includeGroup>
         </collect>
       </systemDef>
 
       <systemDef name="Cisco ASA5550sy">
         <sysoid>.1.3.6.1.4.1.9.1.766</sysoid>
         <collect>
-          <includeGroup>cisco-pix</includeGroup>
-          <includeGroup>cisco-cike</includeGroup>
-          <includeGroup>cisco-cipsec</includeGroup>
-          <includeGroup>cisco-memory</includeGroup>
+	      <includeGroup>cisco-pix</includeGroup>
+	      <includeGroup>cisco-cike</includeGroup>
+	      <includeGroup>cisco-cipsec</includeGroup>
+	      <includeGroup>cisco-memory</includeGroup>
         </collect>
       </systemDef>
 
       <systemDef name="Cisco ASA5510sc">
         <sysoid>.1.3.6.1.4.1.9.1.773</sysoid>
         <collect>
-          <includeGroup>cisco-pix</includeGroup>
-          <includeGroup>cisco-cike</includeGroup>
-          <includeGroup>cisco-cipsec</includeGroup>
-          <includeGroup>cisco-memory</includeGroup>
+	      <includeGroup>cisco-pix</includeGroup>
+	      <includeGroup>cisco-cike</includeGroup>
+	      <includeGroup>cisco-cipsec</includeGroup>
+	      <includeGroup>cisco-memory</includeGroup>
         </collect>
       </systemDef>
 
       <systemDef name="Cisco ASA5510sy">
         <sysoid>.1.3.6.1.4.1.9.1.774</sysoid>
         <collect>
-          <includeGroup>cisco-pix</includeGroup>
-          <includeGroup>cisco-cike</includeGroup>
-          <includeGroup>cisco-cipsec</includeGroup>
-          <includeGroup>cisco-memory</includeGroup>
+	      <includeGroup>cisco-pix</includeGroup>
+	      <includeGroup>cisco-cike</includeGroup>
+	      <includeGroup>cisco-cipsec</includeGroup>
+	      <includeGroup>cisco-memory</includeGroup>
         </collect>
       </systemDef>
 
@@ -980,7 +927,6 @@
           <includeGroup>rfc1315-frame-relay</includeGroup>
           <includeGroup>cisco-frame-relay</includeGroup>
           <includeGroup>mib2-X-interfaces</includeGroup>
-          <includeGroup>ietf-bgp4-peer-stats</includeGroup>
           <includeGroup>cisco-bgp-peer-addr-family-prefix-stats</includeGroup>
           <includeGroup>cisco-docs-ext-ifupchannel</includeGroup>
           <includeGroup>cisco-docs-ext-ifmacchan</includeGroup>

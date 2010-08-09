@@ -42,7 +42,6 @@ import org.junit.Test;
 import org.opennms.netmgt.config.MibObject;
 import org.opennms.netmgt.config.datacollection.ResourceType;
 import org.opennms.netmgt.model.RrdRepository;
-import org.opennms.test.ConfigurationTestUtils;
 import org.springframework.core.io.InputStreamResource;
 
 /**
@@ -55,8 +54,8 @@ public class DefaultDataCollectionConfigDaoTest {
     @Test
     public void testConfiguration() throws Exception {
         DefaultDataCollectionConfigDao dao = new DefaultDataCollectionConfigDao();
-        File etcFolder = ConfigurationTestUtils.getDaemonEtcDirectory();
-        File configFile = new File(etcFolder, "datacollection-config.xml");
+        File etcFolder = new File("src/test/opennms-home/etc/");
+        File configFile = new File(etcFolder, "datacollection-config-full.xml");
         File configFolder = new File(etcFolder, "datacollection");
         dao.setConfigDirectory(configFolder.getAbsolutePath());
         dao.setConfigResource(new InputStreamResource(new FileInputStream(configFile)));
@@ -73,7 +72,7 @@ public class DefaultDataCollectionConfigDaoTest {
         // Test Resource Types
         Map<String,ResourceType> resourceTypes = dao.getConfiguredResourceTypes();
         Assert.assertNotNull(resourceTypes);
-        Assert.assertEquals(53, resourceTypes.size()); // Original=69, New=53 => Unused=16
+        Assert.assertEquals(69, resourceTypes.size());
         
         // Test Repository
         RrdRepository repository = dao.getRrdRepository("default");

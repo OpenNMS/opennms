@@ -226,6 +226,7 @@ public class DataCollectionConfigParser {
         for (File file : listOfFiles) {
             if (file.isFile() && file.getName().toLowerCase().endsWith(".xml")) {
                 InputStream in;
+                DatacollectionGroup group;
                 try {
                     in = new FileInputStream(file);
                 } catch (IOException e) {
@@ -233,11 +234,8 @@ public class DataCollectionConfigParser {
                 }
                 try {
                     log().info("parseExternalResources: parsing " + file);
-                    DatacollectionGroup group = CastorUtils.unmarshalWithTranslatedExceptions(DatacollectionGroup.class, in);
-                    group.validate();
+                    group = CastorUtils.unmarshalWithTranslatedExceptions(DatacollectionGroup.class, in);
                     externalGroups.put(group.getName(), group);
-                } catch (Exception e) {
-                    log().warn("parseExternalResources: can't parse file " + file + ", because: " + e.getMessage());
                 } finally {
                     IOUtils.closeQuietly(in);
                 }
@@ -419,6 +417,7 @@ public class DataCollectionConfigParser {
         DatacollectionGroup group = externalGroups.get(dataCollectionGroupName);
         if (group != null) {
             log().debug("mergeGroup: adding all definitions from group " + group.getName() + " to snmp-collection " + collection.getName());
+            System.err.println(group.getSystemDefCount());
             for (SystemDef systemDef : group.getSystemDefCollection()) {
                 mergeSystemDef(collection, systemDef.getName());
             }

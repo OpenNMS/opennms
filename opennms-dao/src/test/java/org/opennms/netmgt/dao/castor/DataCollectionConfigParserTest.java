@@ -40,7 +40,6 @@ import org.junit.Test;
 import org.opennms.netmgt.config.datacollection.DatacollectionConfig;
 import org.opennms.netmgt.config.datacollection.DatacollectionGroup;
 import org.opennms.netmgt.config.datacollection.SnmpCollection;
-import org.opennms.test.ConfigurationTestUtils;
 import org.springframework.core.io.InputStreamResource;
 
 /**
@@ -53,10 +52,9 @@ public class DataCollectionConfigParserTest {
     @Test
     public void testLoad() throws Exception {
         DefaultDataCollectionConfigDao dao = new DefaultDataCollectionConfigDao();
-        File etcFolder = ConfigurationTestUtils.getDaemonEtcDirectory();
-        File configFile = new File(etcFolder, "datacollection-config.xml");
-        File configFolder = new File(etcFolder, "datacollection");
-        InputStream in = new FileInputStream(configFile);
+        File file = new File("src/test/opennms-home/etc/datacollection-config.xml");
+        System.err.println(file.getAbsolutePath());
+        InputStream in = new FileInputStream("src/test/opennms-home/etc/datacollection-config.xml");
         dao.setConfigResource(new InputStreamResource(in));
         dao.afterPropertiesSet();
 
@@ -65,20 +63,20 @@ public class DataCollectionConfigParserTest {
         Assert.assertNotNull(config);
 
         // Execute Parser
-        DataCollectionConfigParser parser = new DataCollectionConfigParser(configFolder.getAbsolutePath());
+        DataCollectionConfigParser parser = new DataCollectionConfigParser("src/test/opennms-home/etc/datacollection/");
         parser.parse(config);
 
         // Validate Parser
         DatacollectionGroup globalContainer = parser.getGlobalContainer();
-        Assert.assertEquals(77, globalContainer.getResourceTypeCount());
-        Assert.assertEquals(126, globalContainer.getSystemDefCount());
-        Assert.assertEquals(183, globalContainer.getGroupCount());
+        Assert.assertEquals(14, globalContainer.getResourceTypeCount());
+        Assert.assertEquals(68, globalContainer.getSystemDefCount());
+        Assert.assertEquals(39, globalContainer.getGroupCount());
 
         // Validate SNMP Collection
         SnmpCollection collection = config.getSnmpCollection(0);
-        Assert.assertEquals(53, collection.getResourceTypeCount()); 
-        Assert.assertEquals(122, collection.getSystems().getSystemDefCount());
-        Assert.assertEquals(139, collection.getGroups().getGroupCount());
+        Assert.assertEquals(5, collection.getResourceTypeCount()); 
+        Assert.assertEquals(2, collection.getSystems().getSystemDefCount());
+        Assert.assertEquals(17, collection.getGroups().getGroupCount());
     }
 
 }
