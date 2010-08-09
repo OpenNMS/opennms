@@ -4,6 +4,152 @@
 
 	<subtitle>Changes in This OpenNMS</subtitle>
 
+	<section id="opennms-1.8.2">
+		<title>Changes in OpenNMS 1.8.2</title>
+
+		<section id="opennms-1.8.2-features">
+			<title>New Features and Enhancements</title>
+
+			<itemizedlist>
+
+				<listitem>
+					<para>It is now possible to schedule an outage for a node or interface directly
+					from their respective UIs.  (Bug
+					<ulink url="http://bugzilla.opennms.org/show_bug.cgi?id=1225">#1225</ulink>)</para>
+				</listitem>
+
+				<listitem>
+					<para>Linkd is now able to walk IpCidrRouteTable and InetCidrRouteTable as well as
+					IpRouteTable for determining node links. (Bug
+					<ulink url="http://bugzilla.opennms.org/show_bug.cgi?id=3773">#3773</ulink>)</para>
+				</listitem>
+
+				<listitem>
+					<para>You can now configure the number of outages to show on the front page of the
+					web UI.  (Bug
+					<ulink url="http://bugzilla.opennms.org/show_bug.cgi?id=3982">#3982</ulink>)</para>
+				</listitem>
+
+				<listitem>
+					<para>A standalone tool for importing Spectrum traps is available in the
+					opennms-tools directory of the OpenNMS source.  (Bug
+					<ulink url="http://bugzilla.opennms.org/show_bug.cgi?id=4025">#4025</ulink>)</para>
+				</listitem>
+
+				<listitem>
+					<para>A standalone tool for parsing collection logs and providing stats on
+					average collection time is available in the opennms-tools directory of the OpenNMS
+					source.  (Bug
+					<ulink url="http://bugzilla.opennms.org/show_bug.cgi?id=4033">#4033</ulink>)</para>
+				</listitem>
+
+				<listitem>
+					<para>It is now possible to pause and resume all remote pollers in the distributed
+					poller status UI.  (Bug
+					<ulink url="http://bugzilla.opennms.org/show_bug.cgi?id=4026">#4026</ulink>)</para>
+				</listitem>
+
+				<listitem>
+					<para>You can now populate asset data based on information retrieved from SNMP
+					when provisioning a node.  (Bug
+					<ulink url="http://bugzilla.opennms.org/show_bug.cgi?id=4028">#4028</ulink>)</para>
+				</listitem>
+
+				<listitem>
+					<para>New events and configurations for Junos devices were added.  (Bug
+					<ulink url="http://bugzilla.opennms.org/show_bug.cgi?id=4029">#4029</ulink>)</para>
+				</listitem>
+
+				<listitem>
+					<para>Queued now gathers RRD queue statistics by default.  (Bug
+					<ulink url="http://bugzilla.opennms.org/show_bug.cgi?id=4030">#4030</ulink>)</para>
+				</listitem>
+
+			</itemizedlist>
+
+		</section>
+
+		<section id="opennms-1.8.2-bugs">
+			<title>Bug Fixes</title>
+
+			<itemizedlist>
+
+				<listitem>
+					<para>The thresholding for low memory now takes cached memory into account on Linux.  (Bug
+					<ulink url="http://bugzilla.opennms.org/show_bug.cgi?id=2910">#2910</ulink>)</para>
+				</listitem>
+
+				<listitem>
+					<para>Editing a notification's name in the GUI now works again.  (Bug
+					<ulink url="http://bugzilla.opennms.org/show_bug.cgi?id=3570">#3570</ulink>)</para>
+				</listitem>
+
+				<listitem>
+					<para>The custom resource performance report link now gives you a custom resource
+					performance report, instead of a standard one.  ;)  (Bug
+					<ulink url="http://bugzilla.opennms.org/show_bug.cgi?id=3573">#3573</ulink>)</para>
+				</listitem>
+
+				<listitem>
+					<para>A resource filter with a negative look behind now renders properly in the UI. (Bug
+					<ulink url="http://bugzilla.opennms.org/show_bug.cgi?id=3726">#3726</ulink>)</para>
+				</listitem>
+
+				<listitem>
+					<para>Browser history buttons now work properly in maps again.  (Bug
+					<ulink url="http://bugzilla.opennms.org/show_bug.cgi?id=3734">#3734</ulink>)</para>
+				</listitem>
+
+				<listitem>
+					<para>A bug in linkd that would prevent many nodes to fail to have proper links was
+					fixed.  (Bug
+					<ulink url="http://bugzilla.opennms.org/show_bug.cgi?id=3989">#3989</ulink>)</para>
+				</listitem>
+
+				<listitem>
+					<para>A regression from 1.6 where the "nodes with outages" box on the front page would
+					show inconsistent results was fixed.  (Bug
+					<ulink url="http://bugzilla.opennms.org/show_bug.cgi?id=3981">#3981</ulink>)</para>
+				</listitem>
+
+				<listitem>
+					<para>A bug was fixed in the code for editing node labels where it would previously cause
+					a database handle leak (and eventually, errors accessing the database) in OpenNMS.  (Bug
+					<ulink url="http://bugzilla.opennms.org/show_bug.cgi?id=3991">#3991</ulink>)</para>
+				</listitem>
+
+				<listitem>
+					<para>If you had a "." in a node label, maps would not populate their name properly.  (Bug
+					<ulink url="http://bugzilla.opennms.org/show_bug.cgi?id=3995">#3995</ulink>)</para>
+				</listitem>
+
+				<listitem>
+					<para>A bug where saving maps could cause duplicates to be created was fixed.  (Bug
+					<ulink url="http://bugzilla.opennms.org/show_bug.cgi?id=3997">#3997</ulink>)</para>
+				</listitem>
+
+				<listitem>
+					<para>A typo in the RANCID property used in opennms.properties was fixed.  Please
+					double-check your configuration after upgrading.  (Bug
+					<ulink url="http://bugzilla.opennms.org/show_bug.cgi?id=4004">#4004</ulink>)</para>
+				</listitem>
+
+				<listitem>
+					<para>In some cases, code that handles new nodes could generate an inconsistent
+					NodeGainedService event.  (Bug
+					<ulink url="http://bugzilla.opennms.org/show_bug.cgi?id=4022">#4022</ulink>)</para>
+				</listitem>
+
+				<listitem>
+					<para>The distributed poller status legend needed clarification.  (Bug
+					<ulink url="http://bugzilla.opennms.org/show_bug.cgi?id=4027">#4027</ulink>)</para>
+				</listitem>
+
+			</itemizedlist>
+
+		</section>
+	</section>
+
 	<section id="opennms-1.8.1">
 		<title>Changes in OpenNMS 1.8.1</title>
 
