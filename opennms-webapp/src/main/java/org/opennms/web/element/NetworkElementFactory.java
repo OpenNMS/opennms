@@ -904,9 +904,6 @@ public class NetworkElementFactory {
      * Returns all interfaces, but only includes snmp data if includeSNMP is true
      * This may be useful for pages that don't need snmp data and don't want to execute
      * a sub-query per interface!
-     */
-    /**
-     * <p>getAllInterfaces</p>
      *
      * @param includeSNMP a boolean.
      * @return an array of {@link org.opennms.web.element.Interface} objects.
@@ -921,6 +918,36 @@ public class NetworkElementFactory {
             Statement stmt = conn.createStatement();
             d.watch(stmt);
             ResultSet rs = stmt.executeQuery("SELECT * FROM IPINTERFACE ORDER BY IPHOSTNAME, NODEID, IPADDR");
+            d.watch(rs);
+            
+            intfs = rs2Interfaces(rs);
+
+            if(includeSNMP) {
+                augmentInterfacesWithSnmpData(intfs, conn);
+            }            
+        } finally {
+            d.cleanUp();
+        }
+
+        return intfs;
+    }
+
+    /**
+     * <p>getAllManagedIpInterfaces</p>
+     *
+     * @param includeSNMP a boolean.
+     * @return an array of {@link org.opennms.web.element.Interface} objects.
+     * @throws java.sql.SQLException if any.
+     */
+    public static Interface[] getAllManagedIpInterfaces(boolean includeSNMP) throws SQLException {
+        Interface[] intfs = null;
+        final DBUtils d = new DBUtils(NetworkElementFactory.class);
+        try {
+            Connection conn = Vault.getDbConnection();
+            d.watch(conn);
+            Statement stmt = conn.createStatement();
+            d.watch(stmt);
+            ResultSet rs = stmt.executeQuery("SELECT * FROM IPINTERFACE WHERE IPINTERFACE.ISMANAGED != 'D' AND IPINTERFACE.IPADDR != '0.0.0.0' AND IPINTERFACE.IPADDR IS NOT NULL ORDER BY IPHOSTNAME, NODEID, IPADDR");
             d.watch(rs);
             
             intfs = rs2Interfaces(rs);

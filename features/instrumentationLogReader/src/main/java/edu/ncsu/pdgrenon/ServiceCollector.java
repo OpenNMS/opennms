@@ -87,11 +87,19 @@ public class ServiceCollector {
 	}
 	
 	public double getSuccessPercentage() {
-        return getSuccessfulCollectionCount()*100.0/getCollectionCount();
+		if(getCollectionCount() == 0) {
+			return -1;
+		} else {
+		    return getSuccessfulCollectionCount()*100.0/getCollectionCount();	
+		}
 	}
 	
 	public double getErrorPercentage() {
-        return getErrorCollectionCount()*100.0/getCollectionCount();
+		if(getCollectionCount() == 0) {
+			return -1;
+		} else {
+			return getErrorCollectionCount()*100.0/getCollectionCount();
+		}
 	}
 
 	public long getAverageCollectionTime() {

@@ -17,12 +17,37 @@
         java.text.SimpleDateFormat
         "
 %>
-
 <%!//A singleton instance of a "Match-any" interface, which can be used for generic tests/removals etc.
-	private static org.opennms.netmgt.config.poller.Interface	matchAnyInterface;
+	private static org.opennms.netmgt.config.poller.Interface matchAnyInterface;
 	{
 		matchAnyInterface = new org.opennms.netmgt.config.poller.Interface();
 		matchAnyInterface.setAddress("match-any");
+	}
+
+	private static void addNode(Outage theOutage, int newNodeId) {
+		try {
+			org.opennms.netmgt.config.poller.Node newNode = new org.opennms.netmgt.config.poller.Node();
+			newNode.setId(newNodeId);
+			if (!theOutage.getNodeCollection().contains(newNode)) {
+				theOutage.addNode(newNode);
+				theOutage.removeInterface(matchAnyInterface); //Just arbitrarily try and remove it.  If it's not there, this will do nothing
+			}
+		} catch (NumberFormatException e) {
+			//Just ignore it - we can't add the node, why should we care?
+		} catch (IndexOutOfBoundsException ioob) {
+			// same here
+		}
+	}
+	
+	private static void addInterface(Outage theOutage, org.opennms.netmgt.config.poller.Interface newInterface) {
+		if (!theOutage.getInterfaceCollection().contains(newInterface)) {
+			theOutage.addInterface(newInterface);
+			try {
+				theOutage.removeInterface(matchAnyInterface); //Just arbitrarily try and remove it.  If it's not there, this will do nothing
+			} catch (IndexOutOfBoundsException ioob) {
+				// ok if it fails
+			}
+		}
 	}
 
 	private static String getNumberSelectField(String name, int start, int end, int selected, int padding) {
@@ -77,9 +102,12 @@
 		}
 	}
 	
-	%><%
+%>
+<%
 	NotifdConfigFactory.init(); //Must do this early on - if it fails, then just throw the exception to the web gui
-	HashMap<String, String> shortDayNames = new HashMap<String, String>();
+
+	// @i18n
+	final HashMap<String, String> shortDayNames = new HashMap<String, String>();
 	shortDayNames.put("sunday", "Sunday");
 	shortDayNames.put("monday", "Monday");
 	shortDayNames.put("tuesday", "Tuesday");
@@ -120,20 +148,20 @@
 	shortDayNames.put("31", "31st");
 
 	GregorianCalendar today = new GregorianCalendar();
-	int date = today.get(Calendar.DATE);
-	int month = today.get(Calendar.MONTH) + 1;
-	int year = today.get(Calendar.YEAR);
+	final int date = today.get(Calendar.DATE);
+	final int month = today.get(Calendar.MONTH) + 1;
+	final int year = today.get(Calendar.YEAR);
 
 	PollOutagesConfigFactory.init(); //Only init - do *not* reload
 	PollOutagesConfigFactory pollFactory = PollOutagesConfigFactory.getInstance();
 	Outage theOutage;
-	String nameParam = request.getParameter("name");
-	
+
 	if ("Cancel".equals(request.getParameter("cancelButton"))) {
 		response.sendRedirect("index.jsp");
 		return;
 	}
 
+	String nameParam = request.getParameter("name");
 	if (nameParam != null) {
 		//first time in - name is passed as a param.  Find the outage, copy it, and shove it in the session
 		//Also keep a copy of the name, for later saving (replacing the original with the edited copy)
@@ -145,10 +173,29 @@
 		request.getSession().setAttribute("opennms.editoutage.origname", nameParam);
 	} else if ("true".equals(request.getParameter("addNew"))) {
 		theOutage = new Outage();
+		String nodes[] = request.getParameterValues("nodeID");
+		String interfaces[] = request.getParameterValues("ipAddr");
+
+
 		//Nuke whitespace - it messes with all sorts of things
 		theOutage.setName(request.getParameter("newName").trim());
+		
 		request.getSession().setAttribute("opennms.editoutage", theOutage);
 		request.getSession().removeAttribute("opennms.editoutage.origname");
+		if (nodes != null) {
+			for(int i = 0 ; i < nodes.length; i++ ) {
+				int node = WebSecurityUtils.safeParseInt(nodes[i]);
+				addNode(theOutage, node);
+                	}
+		}
+		if (interfaces != null) {
+			for(int i = 0 ; i < interfaces.length; i++ ) {
+				org.opennms.netmgt.config.poller.Interface newInterface = new org.opennms.netmgt.config.poller.Interface();
+				// hope this has builtin safeParseStuff
+				newInterface.setAddress(interfaces[i]);
+				addInterface(theOutage, newInterface);
+			}
+		}
 	} else {
 		//Neither starting the edit, nor adding a new outage.  
 		theOutage = (Outage) request.getSession().getAttribute("opennms.editoutage");
@@ -157,8 +204,9 @@
 %>
 <html>
 <body>
-No outage name parameter, nor outage stored in the session. Cannot edit!
-<BR />
+<p>
+Could not find an outage to edit because no outage name parameter was specified nor is any outage stored in the session. Cannot edit!
+</p>
 </body>
 </html>
 <%
@@ -166,9 +214,9 @@ No outage name parameter, nor outage stored in the session. Cannot edit!
 
 		}
 	}
-	//Load the initial set of enabled outages from the external configuration
+	//Load the initial set of enabled outages from the external configurations
 	// This will be overridden by a formSubmission to use the form values, but is necessary for the initial load of the page
-	//It is more efficient to piggy back on this initial setup setp (creating the hashmaps) than doing it separately
+	//It is more efficient to piggy back on this initial setup (creating the hashmaps) than doing it separately
 	Set<String> enabledOutages = new HashSet<String>();
 
 	// ******* Notification outages config *********
@@ -346,30 +394,12 @@ No outage name parameter, nor outage stored in the session. Cannot edit!
 			// dispatcher.forward(request, response);
 			return;
 		} else if (request.getParameter("addNodeButton") != null) {
-			try {
-				int newNodeId = WebSecurityUtils.safeParseInt(request.getParameter("newNode"));
-				org.opennms.netmgt.config.poller.Node newNode = new org.opennms.netmgt.config.poller.Node();
-				newNode.setId(newNodeId);
-				if (!theOutage.getNodeCollection().contains(newNode)) {
-					theOutage.addNode(newNode);
-					theOutage.removeInterface(matchAnyInterface); //Just arbitrarily try and remove it.  If it's not there, this will do nothing
-				}
-			} catch (NumberFormatException e) {
-				//Just ignore it - we can't add the node, why should we care?
-			} catch (IndexOutOfBoundsException ioob) {
-				// same here
-			}
+			int newNodeId = WebSecurityUtils.safeParseInt(request.getParameter("newNode"));
+			addNode(theOutage, newNodeId);
 		} else if (request.getParameter("addInterfaceButton") != null) {
 			org.opennms.netmgt.config.poller.Interface newInterface = new org.opennms.netmgt.config.poller.Interface();
 			newInterface.setAddress(request.getParameter("newInterface"));
-			if (!theOutage.getInterfaceCollection().contains(newInterface)) {
-				theOutage.addInterface(newInterface);
-				try {
-					theOutage.removeInterface(matchAnyInterface); //Just arbitrarily try and remove it.  If it's not there, this will do nothing
-				} catch (IndexOutOfBoundsException ioob) {
-					// ok if it fails
-				}
-			}
+			addInterface(theOutage, newInterface);
 		} else if (request.getParameter("matchAny") != null) {
 			//To turn on matchAny, all normal nodes and interfaces are removed
 			theOutage.removeAllInterface();
@@ -437,41 +467,44 @@ No outage name parameter, nor outage stored in the session. Cannot edit!
 			}
 		} else {
 			//Look for deleteNode or deleteInterface or deleteTime prefix
-			Enumeration<String> paramEnum = request.getParameterNames();
-			boolean found = false;
-			while (paramEnum.hasMoreElements() && !found) {
-				String paramName = paramEnum.nextElement();
+			List<String> paramList = Collections.list(request.getParameterNames());
+			for (String paramName : paramList) {
 				if (paramName.startsWith("deleteNode")) {
-					found = true;
 					String indexStr = paramName.substring("deleteNode".length(), paramName.indexOf("."));
 					try {
 						int index = WebSecurityUtils.safeParseInt(indexStr);
 						theOutage.removeNodeAt(index);
 					} catch (NumberFormatException e) {
 						//Ignore - nothing we can do
+						continue;
 					} catch (IndexOutOfBoundsException ioob) {
 						//Ignore - it's already removed
+						continue;
 					}
+					break;
 				} else if (paramName.startsWith("deleteInterface")) {
-					found = true;
 					String indexStr = paramName.substring("deleteInterface".length(), paramName.indexOf("."));
 					try {
 						int index = WebSecurityUtils.safeParseInt(indexStr);
 						theOutage.removeInterfaceAt(index);
 					} catch (NumberFormatException e) {
 						//Ignore - nothing we can do
+						continue;
 					} catch (IndexOutOfBoundsException ioob) {
 						//Ignore - it's already removed
+						continue;
 					}
+					break;
 				} else if (paramName.startsWith("deleteTime")) {
-					found = true;
 					String indexStr = paramName.substring("deleteTime".length(), paramName.indexOf("."));
 					try {
 						int index = WebSecurityUtils.safeParseInt(indexStr);
 						theOutage.removeTime(theOutage.getTime(index));
 					} catch (NumberFormatException e) {
 						//Ignore - nothing we can do
+						continue;
 					}
+					break;
 				}
 			}
 		}
@@ -493,9 +526,40 @@ No outage name parameter, nor outage stored in the session. Cannot edit!
 	<jsp:param name="breadcrumb" value="Edit" />
 </jsp:include>
 
-<style>
+<link type="text/css" href="js/jquery/themes/base/jquery.ui.all.css" rel="stylesheet" />
+<script type="text/javascript" src="js/jquery/jquery.js"></script>
+<script type="text/javascript" src="js/jquery/ui/jquery.ui.core.js"></script>
+<script type="text/javascript" src="js/jquery/ui/jquery.ui.widget.js"></script>
+<script type="text/javascript" src="js/jquery/ui/jquery.ui.button.js"></script>
+<script type="text/javascript" src="js/jquery/ui/jquery.ui.position.js"></script>
+<script type="text/javascript" src="js/jquery/ui/jquery.ui.autocomplete.js"></script>
+<style type="text/css">
+	/* TODO shouldn't be necessary */
+	.ui-button { margin-left: -1px; }
+	.ui-button-icon-only .ui-button-text { padding: 0em; } 
+	.ui-autocomplete-input { margin: 0; padding: 0.12em 0 0.12em 0.20em; }
+</style>
+
+<style type="text/css">
 TD {
 	font-size: 0.8em;
+}
+
+UL
+{
+	margin-top: 0px;
+}
+
+P
+{
+	font-size: 0.8em;
+	margin: 0px;
+}
+
+LABEL 
+{
+	font-weight: bold;
+	font-size: small;
 }
 </style>
 
@@ -535,6 +599,90 @@ function updateOutageTypeDisplay(selectElement) {
 		document.getElementById(disabledIds[value]).style.display="none";
 	}
 }
+
+	// Invoke a jQuery function
+	(function($) {
+		// Create the 'combobox' widget which can widgetize a <select> tag
+		$.widget("ui.combobox", {
+			_create: function() {
+				var self = this;
+				// Hide the existing tag
+				var select = this.element.hide();
+				// Add an autocomplete text field
+				var input = $("<input name=\"newInterface\">")
+					.insertAfter(select)
+					.autocomplete({
+						source: "admin/sched-outages/jsonIpInterfaces.jsp"
+							/*
+							function(request, response) {
+							// Case-insensitive regex
+							var matcher = new RegExp(request.term, "i");
+							response(select.children("option").map(function() {
+								var text = $(this).text();
+								if (this.value && (!request.term || matcher.test(text)))
+									return {
+										id: this.value,
+										label: text.replace(new RegExp("(?![^&;]+;)(?!<[^<>]*)(" + $.ui.autocomplete.escapeRegex(request.term) + ")(?![^<>]*>)(?![^&;]+;)", "gi"), "<strong>$1</strong>"),
+										value: text
+									};
+							}));
+						}*/,
+						delay: 1000,
+						change: function(event, ui) {
+							if (!ui.item) {
+								// remove invalid value, as it didn't match anything
+								$(this).val("");
+								return false;
+							}
+							select.val(ui.item.id);
+							self._trigger("selected", event, {
+								item: select.find("[value='" + ui.item.id + "']")
+							});
+							
+						},
+						blur: function(event, ui) {
+							if (this("widget").is(":visible")) {
+								this("close");
+								return;
+							}
+						},
+						minLength: 0
+					})
+					.addClass("ui-widget ui-widget-content ui-corner-left");
+
+				// Add a dropdown arrow button that will expand the entire list
+				$("<button type=\"button\">&nbsp;</button>")
+					.attr("tabIndex", -1)
+					.attr("title", "Show All Items")
+					.insertAfter(input)
+					.button({
+						icons: {
+							primary: "ui-icon-triangle-1-s"
+						},
+						text: false
+					})
+					.removeClass("ui-corner-all")
+					.addClass("ui-corner-right ui-button-icon")
+					.click(function() {
+						// close if already visible
+						if (input.autocomplete("widget").is(":visible")) {
+							input.autocomplete("close");
+							return;
+						}
+						// pass empty string as value to search for, displaying all results
+						input.autocomplete("search", "");
+						input.focus();
+					});
+			}
+		});
+
+	})(jQuery);
+
+	// Apply the combobox widget to the #newInterfaceSelect element
+	$(function() {
+		$("#newInterfaceSelect").combobox();
+	});
+
 </script>
 
 <%
@@ -550,12 +698,9 @@ function updateOutageTypeDisplay(selectElement) {
 
 <input type="hidden" name="formSubmission" value="<%=true%>" />
 
-<h1>Editing Outage: <%= theOutage.getName() %></h1>
+<h2>Editing Outage: <%= theOutage.getName() %></h2>
 
-<table class="normal" border="0">
-	<tr>
-		<td valign="top">Nodes and Interfaces:</td>
-		<td valign="top">
+		<label>Nodes and Interfaces:</label>
 			<table class="normal" border="0">
 				<tr>
 					<th valign="top">Nodes</th>
@@ -589,11 +734,11 @@ function updateOutageTypeDisplay(selectElement) {
 										out.println("Node " + nodeId + " Is Null<br/>");
 									}
 								} else {
-									out.println("Node Id " + nodeId + " Not Found<br/>");
+									out.println("Node ID " + nodeId + " Not Found<br/>");
 								}
 							}
 						}
-						out.println("<select name=\"newNode\">");
+						out.println("<select id=\"newNode\" name=\"newNode\">");
 						if (nodeMap.size() > 0) {
 						    for ( org.opennms.web.element.Node node : allNodes ) {
 						        if ( nodeMap.containsKey(node.getNodeId()) ) {
@@ -608,11 +753,13 @@ function updateOutageTypeDisplay(selectElement) {
 					<td valign="top">
 						<%
 						{
-						List<org.opennms.web.element.Interface> allInterfaces = Arrays.asList(NetworkElementFactory.getAllInterfaces(false));
+						List<org.opennms.web.element.Interface> allInterfaces = Arrays.asList(NetworkElementFactory.getAllManagedIpInterfaces(false));
 						TreeMap<String,org.opennms.web.element.Interface> interfaceMap = new TreeMap<String,org.opennms.web.element.Interface>();
 						for ( org.opennms.web.element.Interface element : allInterfaces ) {
 							String addr = element.getIpAddress();
-							if (addr != null && addr.length() != 0 && !addr.equals("0.0.0.0") && element.isManagedChar() != 'D') {
+							// Most of these criteria are handled by the NetworkElementFactory.getAllManagedIpInterfaces() filtering
+							//if (addr != null && addr.length() != 0 && !addr.equals("0.0.0.0") && element.isManagedChar() != 'D') {
+							if (addr != null && addr.length() != 0) {
 								interfaceMap.put(addr, element);
 							}
 						}
@@ -649,42 +796,27 @@ function updateOutageTypeDisplay(selectElement) {
 								}
 							}
 						}
-
-						out.println("<select name=\"newInterface\">");
-						if (interfaceMap.size() > 0) {
-							for ( String address : interfaceMap.keySet() ) {
-								org.opennms.web.element.Interface iface = interfaceMap.get(address);
-								if (iface != null && interfaceMap.containsValue(iface)) {
-									if (address.equals(iface.getHostname())) {
-										out.println("<option value=\"" + iface.getIpAddress() + "\">" + iface.getIpAddress() + "</option>");
-									} else {
-										out.println("<option value=\"" + iface.getIpAddress() + "\">" + iface.getIpAddress() + " " + iface.getHostname() + "</option>");
-									}
-								}
-							}
-						}
-						out.println("</select><input type=\"submit\" value=\"Add\" name=\"addInterfaceButton\" />");
 						}
 						%>
+						<div class="ui-widget">
+							<select id="newInterfaceSelect" name="newInterfaceSelect" style="display: none"></select>
+							<input type="submit" value="Add" name="addInterfaceButton"/>
+						</div>
 					</td>
 				</tr>
 				<tr>
 					<td valign="top">
-						<% if (!hasMatchAny) { %><input type="submit" name="matchAny" value="All nodes/interfaces" /><% } %>
+						<% if (!hasMatchAny) { %><input type="submit" name="matchAny" value="All nodes and interfaces" /><% } %>
 					</td>
 				</tr>
 				<% if (!hasMatchAny && theOutage.getInterfaceCount() == 0 && theOutage.getNodeCount() == 0) { %>
 					<tr>
-						<td><span style="color: #ff0000">You must have at least one node or interface defined.</span></td>
+						<td><span style="color: #ff0000">You must select at least one node or interface for this scheduled outage.</span></td>
 					</tr>
 				<% } %>
 			</table>
-		</td>
-	</tr>
-	<tr>
-		<td valign="top">Outage Type:</td>
-		<td valign="top">
-			<table>
+		<label>Outage Type:</label>
+			<table class="normal">
 				<tr>
 					<td>
 						<% if (theOutage.getType() != null) { %>
@@ -693,22 +825,18 @@ function updateOutageTypeDisplay(selectElement) {
 						<span style="<%= theOutage.getType() == null? "" : "display: none" %>">
 							<select id="outageTypeSelector" name="outageType" onChange="updateOutageTypeDisplay(this);">
 								<% String outageType = theOutage.getType(); if (outageType == null) { outageType = ""; } %>
-								<option value="specific" <%= outageType.equalsIgnoreCase("specific")? "selected":"" %>>Specific</option>
-								<option value="daily"    <%= outageType.equalsIgnoreCase("daily")?    "selected":"" %>>Daily</option>
-								<option value="weekly"   <%= outageType.equalsIgnoreCase("weekly")?   "selected":"" %>>Weekly</option>
-								<option value="monthly"  <%= outageType.equalsIgnoreCase("monthly")?  "selected":"" %>>Monthly</option>
+								<option value="specific" <%= outageType.equalsIgnoreCase("specific")? "selected=\"selected\"":"" %>>Specific</option>
+								<option value="daily"    <%= outageType.equalsIgnoreCase("daily")?    "selected=\"selected\"":"" %>>Daily</option>
+								<option value="weekly"   <%= outageType.equalsIgnoreCase("weekly")?   "selected=\"selected\"":"" %>>Weekly</option>
+								<option value="monthly"  <%= outageType.equalsIgnoreCase("monthly")?  "selected=\"selected\"":"" %>>Monthly</option>
 							</select>
 							<input type="submit" value="Set" name="setOutageType" />
 						</span>
 					</td>
 				</tr>
 			</table>
-		</td>
-	</tr>
-	<tr>
-		<td valign="top">Time:</td>
-		<td>
-			<table>
+		<label>Time:</label>
+			<table class="normal">
 				<%
 					Time[] outageTimes = theOutage.getTime();
 					for (int i = 0; i < outageTimes.length; i++) {
@@ -819,57 +947,45 @@ function updateOutageTypeDisplay(selectElement) {
 					</tr>
 				<% } %>
 			</table>
-		</td>
-	</tr>
-	<tr>
-		<td valign="top">Applies To:</td>
-		<td style="font-size: 100%" valign="top">
+		<label>Applies To:</label>
 			<ul class="treeview">
 				<li>
-					<p>Notifications</p>
+					<p>Notifications:</p>
 					<ul>
-						<li> <label><input type="checkbox" <%=(enabledOutages.contains("notifications"))?"checked":""%> name="notifications" /> All Notifications</label> </li>
+						<li><input type="checkbox" <%=(enabledOutages.contains("notifications"))?"checked=\"checked\"":""%> name="notifications" id="notifications"/> <label for="notifications">All Notifications</label> </li>
 					</ul>
 				</li>
 				<li>
-					<p>Status Polling</p>
+					<p>Status Polling:</p>
 					<ul>
-						<%
-							for (org.opennms.netmgt.config.poller.Package thisKey : pollingOutages.keySet()) {
+						<% for (org.opennms.netmgt.config.poller.Package thisKey : pollingOutages.keySet()) {
 								String name = "polling-" + thisKey.getName();
-						%>
-						<li> <label><input type="checkbox" name="<%=name%>" <%=enabledOutages.contains(name)?"checked":""%> /> <%= thisKey.getName() %></label> </li>
+								%>
+								<li><input type="checkbox" name="<%=name%>" <%=enabledOutages.contains(name)?"checked=\"checked\"":""%> id="<%=name%>"/> <label for="<%=name%>"><%= thisKey.getName() %></label> </li>
 						<% } %>
 					</ul>
 				</li>
 				<li>
-					<p>Threshold Checking</p>
+					<p>Threshold Checking:</p>
 					<ul>
-						<%
-							for (org.opennms.netmgt.config.threshd.Package thisKey : thresholdOutages.keySet()) {
+						<% for (org.opennms.netmgt.config.threshd.Package thisKey : thresholdOutages.keySet()) {
 								String name = "threshold-" + thisKey.getName();
-						%>
-						<li> <label><input type="checkbox" name="<%=name%>" <%=enabledOutages.contains(name)?"checked":""%> /> <%= thisKey.getName() %></label> </li>
+								%>
+								<li><input type="checkbox" name="<%=name%>" <%=enabledOutages.contains(name)?"checked=\"checked\"":""%> id="<%=name%>"/> <label for="<%=name%>"><%= thisKey.getName() %></label> </li>
 						<% } %>
 					</ul>
 				</li>
 				<li>
-					<p>Data Collection</p>
+					<p>Data Collection:</p>
 					<ul>
-						<%
-							for (org.opennms.netmgt.config.collectd.Package thisKey : collectionOutages.keySet()) {
+						<% for (org.opennms.netmgt.config.collectd.Package thisKey : collectionOutages.keySet()) {
 								String name = "collect-" + thisKey.getName();
-						%>
-						<li> <label><input type="checkbox" name="<%=name%>" <%=enabledOutages.contains(name)?"checked":""%> /> <%= thisKey.getName() %></label> </li>
+								%>
+								<li><input type="checkbox" name="<%=name%>" <%=enabledOutages.contains(name)?"checked=\"checked\"":""%> id="<%=name%>"/> <label for="<%=name%>"><%= thisKey.getName() %></label> </li>
 						<% } %>
 					</ul>
 				</li>
 			</ul>
-		</td>
-	</tr>
-	<tr>
-		<td></td>
-		<td>
 			<%
 				if (theOutage != null
 						&& theOutage.getTimeCount() > 0
@@ -878,10 +994,6 @@ function updateOutageTypeDisplay(selectElement) {
 						) {
 			%><input type="submit" value="Save" name="saveButton" /><% } %>
 			<input type="submit" value="Cancel" name="cancelButton" />
-		</td>
-	</tr>
-</table>
-
 </form>
 
 <script type="text/javascript">

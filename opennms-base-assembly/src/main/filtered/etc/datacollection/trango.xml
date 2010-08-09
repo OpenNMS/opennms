@@ -1,0 +1,16 @@
+<?xml version="1.0"?>
+<datacollection-group name="Trango">
+
+      <!-- Trango MIBs -->
+      <group  name="trangolink45-rssi" ifType="ignore">
+        <mibObj oid=".1.3.6.1.4.1.5454.1.40.2.12" instance="0" alias="trangoRssi" type="integer" />
+      </group>
+      
+      <systemDef name = "TrangoLink-45">
+        <sysoid>.1.3.6.1.4.1.5454.1.40</sysoid>
+        <collect>
+          <includeGroup>trangolink45-rssi</includeGroup>
+        </collect>
+      </systemDef>
+
+</datacollection-group>
