@@ -34,12 +34,14 @@ package org.opennms.netmgt.config;
 import static org.junit.Assert.assertEquals;
 
 import java.io.IOException;
-import java.io.StringReader;
 
 import org.exolab.castor.xml.MarshalException;
 import org.exolab.castor.xml.ValidationException;
 import org.junit.Test;
+import org.opennms.netmgt.dao.castor.DefaultDataCollectionConfigDao;
 import org.opennms.test.ThrowableAnticipator;
+import org.springframework.core.io.ByteArrayResource;
+import org.springframework.dao.DataAccessResourceFailureException;
 
 public class DataCollectionConfigFactoryTest {
 
@@ -105,30 +107,37 @@ public class DataCollectionConfigFactoryTest {
 
     @Test
     public void testSetInstance() throws MarshalException, ValidationException, IOException {
-        DataCollectionConfigFactory.setInstance(new DataCollectionConfigFactory(new StringReader(m_xml)));
-        DataCollectionConfigFactory.init();
+        initDataCollectionFactory(m_xml);
         assertEquals("/wonka/rrd/snmp", DataCollectionConfigFactory.getInstance().getRrdPath());
     }
     
     @Test
     public void testValidResourceType() throws MarshalException, ValidationException, IOException {
     	String modifiedXml = m_xml.replaceFirst("ifIndex", "brocadeIndex").replaceFirst("<groups", m_brocadeXmlFragment + "<groups");
-    	
-    	DataCollectionConfigFactory.setInstance(new DataCollectionConfigFactory(new StringReader(modifiedXml)));
+        initDataCollectionFactory(modifiedXml);
     }
     
     @Test
     public void testInvalidResourceType() throws MarshalException, ValidationException, IOException {
-    	String modifiedXml = m_xml.replaceFirst("ifIndex", "brocadeIndex");
-    	ThrowableAnticipator ta = new ThrowableAnticipator();
-    	ta.anticipate(new IllegalArgumentException("instance 'brocadeIndex' invalid in mibObj definition for OID '.1.3.6.1.2.1.2.2.1.10' in collection 'default' for group 'mib2-interfaces'.  Allowable instance values: any positive number, 'ifIndex', or any of the configured resourceTypes: (none)"));
-    	
-    	try {
-    		DataCollectionConfigFactory.setInstance(new DataCollectionConfigFactory(new StringReader(modifiedXml)));
-    	} catch (Throwable t) {
-    		ta.throwableReceived(t);
-    	}
+        String modifiedXml = m_xml.replaceFirst("ifIndex", "brocadeIndex");
+        ThrowableAnticipator ta = new ThrowableAnticipator();
+        ta.anticipate(new DataAccessResourceFailureException("Instance 'brocadeIndex' invalid in mibObj definition for OID '.1.3.6.1.2.1.2.2.1.10' for group 'mib2-interfaces'. Allowable instance values: any positive number, 'ifIndex', or any of the custom resourceTypes."));
+//      ta.anticipate(new IllegalArgumentException("instance 'brocadeIndex' invalid in mibObj definition for OID '.1.3.6.1.2.1.2.2.1.10' in collection 'default' for group 'mib2-interfaces'.  Allowable instance values: any positive number, 'ifIndex', or any of the configured resourceTypes: (none)"));
+
+        try {
+            initDataCollectionFactory(modifiedXml);
+            DataCollectionConfigFactory.getInstance().getConfiguredResourceTypes();
+        } catch (Throwable t) {
+            ta.throwableReceived(t);
+        }
         ta.verifyAnticipated();
+    }
+    
+    private void initDataCollectionFactory(String xmlConfig) {
+        DefaultDataCollectionConfigDao dataCollectionDao = new DefaultDataCollectionConfigDao();
+        dataCollectionDao.setConfigResource(new ByteArrayResource(xmlConfig.getBytes()));
+        dataCollectionDao.afterPropertiesSet();
+        DataCollectionConfigFactory.setInstance(dataCollectionDao);
     }
 
 }
