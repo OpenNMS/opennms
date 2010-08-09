@@ -9,7 +9,7 @@
       <rra>RRA:MIN:0.5:288:366</rra>
     </rrd>
 
-    <include-collection dataCollectionGroup="Common Library"/>
+    <include-collection dataCollectionGroup="Common"/>
     <include-collection systemDef="Cisco Routers"/>
   </snmp-collection>
 </datacollection-config>
