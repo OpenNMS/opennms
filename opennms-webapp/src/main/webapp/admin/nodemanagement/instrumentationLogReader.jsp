@@ -79,6 +79,7 @@ if(file.exists()) {
 }
 
 pageContext.setAttribute("collector",c);
+pageContext.setAttribute("OpennmsHome",opennmsHome);
 
 %>
 <c_rt:set var="nan" value="<%=java.lang.Double.NaN%>"/>
@@ -100,10 +101,6 @@ Total Services ${collector.serviceCount}
 Threads Used: ${collector.threadCount}
 </p>
 
-<script type="text/javascript">
-alert("${nan}");
-</script>
-
 <table>
 <tr>
 <th>Service</th>
@@ -122,7 +119,7 @@ alert("${nan}");
 </tr>
 <c:forEach  var="svcCollector" items="${collector.serviceCollectors}">
 <tr>
-<td>${svcCollector.serviceID}</td>
+<td><a href="element/node.jsp?node=${svcCollector.parsedServiceID}">${svcCollector.serviceID}</a></td>
 <td>${svcCollector.collectionCount}</td>
 <td>${svcCollector.averageDurationBetweenCollections}</td>
 <td>${svcCollector.averageCollectionDuration}</td>
