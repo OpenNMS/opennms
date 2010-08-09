@@ -1,5 +1,8 @@
 package edu.ncsu.pdgrenon;
 
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
+
 
 public class ServiceCollector {
 	
@@ -22,7 +25,9 @@ public class ServiceCollector {
 		return m_serviceID;
 	}
 
-
+	public final String m_regex = "(\\d+)/(\\d+.\\d+.\\d+.\\d+)/(\\w+)"; 
+	public final Pattern m_pattern = Pattern.compile(m_regex);	
+	
 	public void addMessage(LogMessage msg) {
 		if (msg.isCollectorBeginMessage()) {
 			m_lastBegin = msg.getDate().getTime();
@@ -49,6 +54,15 @@ public class ServiceCollector {
 			    m_errorCount++;
 			}
 			m_lastErrorBegin = 0;
+		}
+	}
+	
+	public String getParsedServiceID() {
+		Matcher m = m_pattern.matcher(getServiceID());
+		if(m.matches()) {
+			return new String(m.group(1));
+		}else{
+			return "Wrong ID";
 		}
 	}
 
