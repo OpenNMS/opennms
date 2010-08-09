@@ -4,6 +4,21 @@
 
 	<subtitle>About This Release</subtitle>
 
+	<section id="introduction-1.8.2">
+		<title>Release 1.8.2</title>
+
+		<para>
+			Release 1.8.2 is the third in the 1.8 series of production-ready OpenNMS releases.
+		</para>
+		<para>
+			Since 1.8.1, <ulink url="http://bugzilla.opennms.org/buglist.cgi?target_milestone=1.8.2">a number of bug fixes and
+			features</ulink> were added.
+		</para>
+		<para>
+			The codename for 1.8.2 is <emphasis>Spotted Sandpiper</emphasis>
+		</para>
+	</section>
+
 	<section id="introduction-1.8.1">
 		<title>Release 1.8.1</title>
 
