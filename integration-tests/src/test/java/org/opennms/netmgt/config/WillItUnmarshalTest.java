@@ -724,7 +724,6 @@ public class WillItUnmarshalTest {
         }
     }
 
-    @SuppressWarnings("unused")
     private static <T>T unmarshalJaxb(String configFile, Class<T> clazz) throws JAXBException {
         return unmarshalJaxb(ConfigurationTestUtils.getFileForConfigFile(configFile), clazz, m_filesTested, configFile);
     }
