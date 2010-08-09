@@ -273,7 +273,7 @@ public class DefaultApplicationView implements ApplicationView {
         getSplitPanel().add(getMapPanel().getWidget());
         getSplitPanel().setWidgetMinSize(getLocationPanel(), 255);
         getMainPanel().setSize("100%", "100%");
-        RootPanel.get("remotePollerMap").add(getMainPanel());
+        RootPanel.get("map").add(getMainPanel());
         
         updateTimestamp();
         onLocationClick(null);
