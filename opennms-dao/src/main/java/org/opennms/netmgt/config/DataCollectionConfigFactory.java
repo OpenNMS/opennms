@@ -41,13 +41,11 @@
 package org.opennms.netmgt.config;
 
 import java.io.File;
-import java.io.FileInputStream;
 import java.io.IOException;
 
-import org.apache.commons.io.IOUtils;
 import org.opennms.netmgt.ConfigFileConstants;
 import org.opennms.netmgt.dao.castor.DefaultDataCollectionConfigDao;
-import org.springframework.core.io.InputStreamResource;
+import org.springframework.core.io.FileSystemResource;
 
 /**
  * <p>This class is the main repository for SNMP data collection configuration
@@ -88,14 +86,12 @@ public final class DataCollectionConfigFactory {
      */
     public static synchronized void init() throws IOException {
         if (m_singleton == null) {
-            File cfgFile = ConfigFileConstants.getFile(ConfigFileConstants.DATA_COLLECTION_CONF_FILE_NAME);            
-            FileInputStream stream = new FileInputStream(cfgFile);
+            File cfgFile = ConfigFileConstants.getFile(ConfigFileConstants.DATA_COLLECTION_CONF_FILE_NAME);
             DefaultDataCollectionConfigDao dataCollectionDao = new DefaultDataCollectionConfigDao();
-            dataCollectionDao.setConfigResource(new InputStreamResource(stream));
+            dataCollectionDao.setConfigResource(new FileSystemResource(cfgFile));
             dataCollectionDao.afterPropertiesSet();
             DataCollectionConfigFactory.setInstance(dataCollectionDao);
             m_singleton = dataCollectionDao;
-            IOUtils.closeQuietly(stream);
         }
     }
 
