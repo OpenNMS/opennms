@@ -38,8 +38,10 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.util.Collection;
 import java.util.HashMap;
+import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
+import java.util.Set;
 
 import org.apache.commons.io.IOUtils;
 
@@ -108,7 +110,7 @@ public class DataCollectionConfigParser {
                 for (IncludeCollection include : collection.getIncludeCollection()) {
                     if (include.getDataCollectionGroup() != null) {
                         // Include All system definitions from a specific datacollection group
-                        mergeDatacollectionGroup(collection, include.getDataCollectionGroup());
+                        mergeGroup(collection, include.getDataCollectionGroup());
                     } else {
                         if (include.getSystemDef() == null) {
                             throw new DataAccessResourceFailureException("You must specify at least the data collection group name or system definition name for the include-collection attribute");
@@ -326,11 +328,6 @@ public class DataCollectionConfigParser {
         }
     }
 
-    /**
-     * This will validate that all object references exist and are valid.
-     * <p>First, it validates that all group referenced by all configured systemDefs exist. It will throw an exception if not.</p>
-     * <p>Then, it validates that all resource types referenced by all configured MIB objects (from each group) exist. It will throw an exception if not.</p>
-     */
     private void validateGlobalContainer() {
         for (SystemDef systemDef : globalContainer.getSystemDefCollection()) {
             for (String groupName : systemDef.getCollect().getIncludeGroupCollection()) {
@@ -381,13 +378,7 @@ public class DataCollectionConfigParser {
         }
         return null;
     }
-
-    /**
-     * Merge a specific system definition into a SNMP collection.
-     * 
-     * @param collection the target SNMP collection object.
-     * @param systemDefName the system definition name.
-     */
+    
     private void mergeSystemDef(SnmpCollection collection, String systemDefName) {
         log().debug("mergeSystemDef: merging system defintion " + systemDefName + " into snmp-collection " + collection.getName());
         // Find System Definition
@@ -396,7 +387,8 @@ public class DataCollectionConfigParser {
             log().error("Can't find system definition " + systemDefName);
             return;
         }
-        // Add System Definition to target SNMP collection
+        Set<String> resourceTypes = new HashSet<String>();
+        // Add System Definition to target snmp collection
         if (systemDef != null && !contains(collection.getSystems().getSystemDefCollection(), systemDef)) {
             log().debug("mergeSystemDef: adding system definition " + systemDef.getName() + " to snmp-collection " + collection.getName());
             collection.getSystems().addSystemDef(systemDef);
@@ -406,25 +398,29 @@ public class DataCollectionConfigParser {
                 if (group != null && !contains(collection.getGroups().getGroupCollection(), group)) {
                     log().debug("mergeSystemDef: adding mib object group " + group.getName() + " to snmp-collection " + collection.getName());
                     collection.getGroups().addGroup(group);
+                    // Extract Resource Types
+                    for (MibObj mo : group.getMibObjCollection()) {
+                        if (!mo.getInstance().matches("^\\d+"))
+                            resourceTypes.add(mo.getInstance());
+                    }
                 } else {
                     log().warn("Group " + groupName + " does not exist on global container, or snmp collection " + collection.getName() + " already has it.");
                 }
             }
         }
-        
-        // Add all Resource Types from cache. That because a resourceType is a shared object across all datacollection configuration.
-        for (ResourceType rt : globalContainer.getResourceTypeCollection()) {
-            collection.addResourceType(rt);
+        // Add Resource Types
+        for (String resourceTypeName : resourceTypes) {
+            ResourceType rt = getResourceType(resourceTypeName);
+            if (rt != null) {
+                log().debug("mergeSystemDef: adding resource type " + rt.getName() + " to snmp-collection " + collection.getName());
+                collection.addResourceType(rt);
+            } else {
+                log().warn("Resource Type " + resourceTypeName + " does not exist on global container");
+            }
         }
     }
 
-    /**
-     * Merge all system definitions defined on a specific data collection group, into a SNMP collection.
-     * 
-     * @param collection the target SNMP collection object.
-     * @param dataCollectionGroupName the data collection group name.
-     */
-    private void mergeDatacollectionGroup(SnmpCollection collection, String dataCollectionGroupName) {
+    private void mergeGroup(SnmpCollection collection, String dataCollectionGroupName) {
         DatacollectionGroup group = externalGroups.get(dataCollectionGroupName);
         if (group != null) {
             log().debug("mergeGroup: adding all definitions from group " + group.getName() + " to snmp-collection " + collection.getName());

@@ -63,28 +63,29 @@ public class DefaultDataCollectionConfigDaoTest {
     public void testConfiguration() throws Exception {
         // Get the DAO with the new datacollection-config.xml
         DefaultDataCollectionConfigDao dao = instantiateDao("datacollection-config.xml", true);
-        executeTests(dao);
 
-        // Get the DAO with the old datacollection-config.xml
-        DefaultDataCollectionConfigDao oldDao = instantiateDao("examples/old-datacollection-config.xml", false);
-        executeTests(oldDao);
-
-        compareContent(oldDao.getContainer().getObject(), dao.getContainer().getObject());
-    }
-
-    private void executeTests(DefaultDataCollectionConfigDao dao) {
         // Expected Values
-        int netsnmpObjectsCount = 70;
-        int ciscoObjectsCount = 44;
+        int mibObjectsCount = 70;
         int resourceTypesCount = 69;
+        int resourceTypesUnused = 15;
         int systemDefCount = 125;
 
         // Execute Tests
         executeRepositoryTest(dao);
-        executeMibObjectsTest(dao, ".1.3.6.1.4.1.8072.3.2.255", netsnmpObjectsCount);
-        executeMibObjectsTest(dao, ".1.3.6.1.4.1.9.1.222", ciscoObjectsCount);
-        executeResourceTypesTest(dao, resourceTypesCount);
+        executeMibObjectsTest(dao, mibObjectsCount);
+        executeResourceTypesTest(dao, resourceTypesCount - resourceTypesUnused); // there are some unused resourceTypes
         executeSystemDefCount(dao, systemDefCount);
+
+        // Get the DAO with the old datacollection-config.xml
+        DefaultDataCollectionConfigDao oldDao = instantiateDao("examples/old-datacollection-config.xml", false);
+
+        // Execute Tests
+        executeRepositoryTest(oldDao);
+        executeMibObjectsTest(oldDao, mibObjectsCount);
+        executeResourceTypesTest(oldDao, resourceTypesCount);
+        executeSystemDefCount(oldDao, systemDefCount);
+
+        compareContent(oldDao.getContainer().getObject(), dao.getContainer().getObject());
     }
 
     private void executeRepositoryTest(DefaultDataCollectionConfigDao dao) {
@@ -129,13 +130,10 @@ public class DefaultDataCollectionConfigDaoTest {
         Map<String,ResourceType> resourceTypesMap = dao.getConfiguredResourceTypes();
         Assert.assertNotNull(resourceTypesMap);
         Assert.assertEquals(expectedCount, resourceTypesMap.size());
-        Assert.assertTrue(resourceTypesMap.containsKey("frCircuitIfIndex")); // Used resource type
-        Assert.assertTrue(resourceTypesMap.containsKey("wmiTcpipNetworkInterface")); // Unused resource type
-        Assert.assertTrue(resourceTypesMap.containsKey("xmpFilesys")); // Unused resource type
     }
 
-    private void executeMibObjectsTest(DefaultDataCollectionConfigDao dao, String systemOid, int expectedCount) {
-        List<MibObject> mibObjects = dao.getMibObjectList("default", systemOid, "127.0.0.1", -1);
+    private void executeMibObjectsTest(DefaultDataCollectionConfigDao dao, int expectedCount) {
+        List<MibObject> mibObjects = dao.getMibObjectList("default", ".1.3.6.1.4.1.8072.3.2.255", "127.0.0.1", -1);
         Assert.assertNotNull(mibObjects);
         Assert.assertEquals(expectedCount, mibObjects.size());
     }
