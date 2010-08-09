@@ -235,7 +235,6 @@ public class LocationPanel extends Composite implements LocationPanelSelectEvent
         }
     }
 
-
     @Override
     public void onResize(ResizeEvent event) {
         resizeDockPanel();
