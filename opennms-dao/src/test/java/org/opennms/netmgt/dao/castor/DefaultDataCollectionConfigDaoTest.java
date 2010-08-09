@@ -38,9 +38,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.Set;
 
-import org.junit.After;
 import org.junit.Assert;
-import org.junit.Before;
 import org.junit.Test;
 
 import org.opennms.netmgt.config.MibObject;
@@ -52,7 +50,6 @@ import org.opennms.netmgt.config.datacollection.SnmpCollection;
 import org.opennms.netmgt.config.datacollection.SystemDef;
 import org.opennms.netmgt.model.RrdRepository;
 import org.opennms.test.ConfigurationTestUtils;
-import org.opennms.test.mock.MockLogAppender;
 import org.springframework.core.io.InputStreamResource;
 
 /**
@@ -61,35 +58,18 @@ import org.springframework.core.io.InputStreamResource;
  * @author <a href="mail:agalue@opennms.org">Alejandro Galue</a>
  */
 public class DefaultDataCollectionConfigDaoTest {
-    
-    @Before
-    public void setUp() {
-        MockLogAppender.setupLogging();
-        System.setProperty("opennms.home", "src/test/opennms-home");
-    }
-    
-    @After
-    public void tearDown() {
-        MockLogAppender.assertNoWarningsOrGreater();
-    }
 
     @Test
-    public void testNewStyle() throws Exception {
+    public void testConfiguration() throws Exception {
+        // Get the DAO with the new datacollection-config.xml
         DefaultDataCollectionConfigDao dao = instantiateDao("datacollection-config.xml", true);
         executeTests(dao);
-    }
 
-    @Test
-    public void testOldStyle() throws Exception {
+        // Get the DAO with the old datacollection-config.xml
         DefaultDataCollectionConfigDao oldDao = instantiateDao("examples/old-datacollection-config.xml", false);
         executeTests(oldDao);
-    }
-    
-    @Test
-    public void testCompareOldAndNewStyles() throws Exception {
-        DefaultDataCollectionConfigDao newDao = instantiateDao("datacollection-config.xml", true);
-        DefaultDataCollectionConfigDao oldDao = instantiateDao("examples/old-datacollection-config.xml", false);
-        compareContent(oldDao.getContainer().getObject(), newDao.getContainer().getObject());
+
+        compareContent(oldDao.getContainer().getObject(), dao.getContainer().getObject());
     }
 
     private void executeTests(DefaultDataCollectionConfigDao dao) {

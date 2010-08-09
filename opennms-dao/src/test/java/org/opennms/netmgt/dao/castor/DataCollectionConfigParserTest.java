@@ -32,8 +32,10 @@
 package org.opennms.netmgt.dao.castor;
 
 import java.io.File;
+import java.io.FileInputStream;
+import java.io.InputStream;
 
-import org.junit.After;
+import org.apache.commons.io.IOUtils;
 import org.junit.Assert;
 import org.junit.Before;
 import org.junit.Test;
@@ -42,10 +44,8 @@ import org.opennms.netmgt.config.datacollection.DatacollectionConfig;
 import org.opennms.netmgt.config.datacollection.DatacollectionGroup;
 import org.opennms.netmgt.config.datacollection.SnmpCollection;
 import org.opennms.test.ConfigurationTestUtils;
-import org.opennms.test.mock.MockLogAppender;
 
-import org.springframework.core.io.FileSystemResource;
-import org.springframework.core.io.Resource;
+import org.springframework.core.io.InputStreamResource;
 
 /**
  * DataCollectionConfigParserTest
@@ -54,89 +54,50 @@ import org.springframework.core.io.Resource;
  */
 public class DataCollectionConfigParserTest {
 
-    private static final int resourceTypesCount = 69;
-    private static final int systemDefCount = 125;
-    private static final int groupsCount = 183;
-    
+    private DefaultDataCollectionConfigDao dao;
+
+    private String datacollectionDirectory;
+
     @Before
     public void setUp() {
-        MockLogAppender.setupLogging();
-    }
-    
-    @After
-    public void tearDown() {
-        MockLogAppender.assertNoWarningsOrGreater();
+        InputStream in = null;
+        try {
+            dao = new DefaultDataCollectionConfigDao();
+            File configFile = ConfigurationTestUtils.getFileForConfigFile("datacollection-config.xml");
+            File configFolder = new File(configFile.getParentFile(), "datacollection");
+            Assert.assertTrue(configFolder.isDirectory());
+            datacollectionDirectory = configFolder.getAbsolutePath();
+            in = new FileInputStream(configFile);
+            dao.setConfigResource(new InputStreamResource(in));
+            dao.afterPropertiesSet();
+        } catch (Exception e) {
+            e.printStackTrace();
+        } finally {
+            IOUtils.closeQuietly(in);
+        }
     }
 
     @Test
-    public void testLoadWithEmptyConfig() throws Exception {
-        // Configure XML repository
-        File configFile = ConfigurationTestUtils.getFileForConfigFile("datacollection-config.xml");
-        File configFolder = new File(configFile.getParentFile(), "datacollection");
-        System.err.println(configFolder.getAbsolutePath());
-        Assert.assertTrue(configFolder.isDirectory());
+    public void testLoad() throws Exception {
+        // Get Current Configuration
+        DatacollectionConfig config = dao.getContainer().getObject();
+        Assert.assertNotNull(config);
 
-        // Create DatacollectionConfig
-        DatacollectionConfig config = new DatacollectionConfig();
-        SnmpCollection collection = new SnmpCollection();
-        collection.setName("default");
-        config.addSnmpCollection(collection);
-
-        // Validate default datacollection content
-        Assert.assertEquals(0, collection.getIncludeCollectionCount());
-        Assert.assertEquals(0, collection.getResourceTypeCount()); 
-        Assert.assertNull(collection.getSystems());
-        Assert.assertNull(collection.getGroups());
-
-        // Create Parser
-        DataCollectionConfigParser parser = new DataCollectionConfigParser(configFolder.getAbsolutePath());
+        // Execute Parser
+        DataCollectionConfigParser parser = new DataCollectionConfigParser(datacollectionDirectory);
         parser.parse(config);
 
         // Validate Parser
         DatacollectionGroup globalContainer = parser.getGlobalContainer();
-        Assert.assertEquals(resourceTypesCount, globalContainer.getResourceTypeCount());
-        Assert.assertEquals(systemDefCount, globalContainer.getSystemDefCount());
-        Assert.assertEquals(groupsCount, globalContainer.getGroupCount());
+        Assert.assertEquals(77, globalContainer.getResourceTypeCount());
+        Assert.assertEquals(126, globalContainer.getSystemDefCount());
+        Assert.assertEquals(183, globalContainer.getGroupCount());
 
         // Validate SNMP Collection
-        Assert.assertEquals(0, collection.getResourceTypeCount()); 
-        Assert.assertEquals(0, collection.getSystems().getSystemDefCount());
-        Assert.assertEquals(0, collection.getGroups().getGroupCount());
-    }
-
-    @Test
-    public void testLoadWithOnlyExternalReferences() throws Exception {
-        // Configure XML repository
-        File configFile = ConfigurationTestUtils.getFileForConfigFile("datacollection-config.xml");
-        File configFolder = new File(configFile.getParentFile(), "datacollection");
-        System.err.println(configFolder.getAbsolutePath());
-        Assert.assertTrue(configFolder.isDirectory());
-
-        // Create DatacollectionConfig
-        Resource resource = new FileSystemResource(configFile);
-        DatacollectionConfig config = CastorUtils.unmarshal(DatacollectionConfig.class, resource);
-
-        // Validate default datacollection content
         SnmpCollection collection = config.getSnmpCollection(0);
-        Assert.assertEquals(42, collection.getIncludeCollectionCount());
-        Assert.assertEquals(0, collection.getResourceTypeCount()); 
-        Assert.assertNull(collection.getSystems());
-        Assert.assertNull(collection.getGroups());
-
-        // Create Parser
-        DataCollectionConfigParser parser = new DataCollectionConfigParser(configFolder.getAbsolutePath());
-        parser.parse(config);
-
-        // Validate Parser
-        DatacollectionGroup globalContainer = parser.getGlobalContainer();
-        Assert.assertEquals(resourceTypesCount, globalContainer.getResourceTypeCount());
-        Assert.assertEquals(systemDefCount, globalContainer.getSystemDefCount());
-        Assert.assertEquals(groupsCount, globalContainer.getGroupCount());
-
-        // Validate SNMP Collection
-        Assert.assertEquals(resourceTypesCount, collection.getResourceTypeCount()); 
-        Assert.assertEquals(systemDefCount, collection.getSystems().getSystemDefCount());
-        Assert.assertEquals(144, collection.getGroups().getGroupCount()); // Unused groups will be discarted
+        Assert.assertEquals(53, collection.getResourceTypeCount()); 
+        Assert.assertEquals(122, collection.getSystems().getSystemDefCount());
+        Assert.assertEquals(139, collection.getGroups().getGroupCount());
     }
 
 }

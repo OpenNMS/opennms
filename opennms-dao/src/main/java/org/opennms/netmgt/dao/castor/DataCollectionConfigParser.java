@@ -72,6 +72,8 @@ public class DataCollectionConfigParser {
     
     public DataCollectionConfigParser(String configDirectory) {
         this.configDirectory = configDirectory;
+        this.globalContainer = new DatacollectionGroup();
+        this.globalContainer.setName("__global__");
     }
     
     protected DatacollectionGroup getGlobalContainer() {
@@ -79,53 +81,6 @@ public class DataCollectionConfigParser {
     }
     
     public void parse(DatacollectionConfig config) {
-        initializeGlobalContainer(config);
-        // Populate the DatacollectionConfig object with external data, only if it has reference to external content.
-        for (SnmpCollection collection : config.getSnmpCollectionCollection()) {
-            if (collection.getIncludeCollectionCount() > 0) {
-                checkCollection(collection);
-                // Add all Resource Types from cache. That because a resourceType is a shared object across all datacollection configuration.
-                for (ResourceType rt : globalContainer.getResourceTypeCollection()) {
-                    if (!contains(collection.getResourceTypeCollection(), rt))
-                        collection.addResourceType(rt);
-                }
-                // Add systemDefs and dependencies
-                for (IncludeCollection include : collection.getIncludeCollection()) {
-                    if (include.getDataCollectionGroup() != null) {
-                        // Include All system definitions from a specific datacollection group
-                        addDatacollectionGroup(collection, include.getDataCollectionGroup());
-                    } else {
-                        if (include.getSystemDef() == null) {
-                            throwException("You must specify at least the data collection group name or system definition name for the include-collection attribute", null);
-                        } else {
-                            // Include One system definition
-                            addSystemDef(collection, include.getSystemDef());
-                        }
-                    }
-                }
-            } else {
-                log().info("parse: snmp collection " + collection.getName() + " doesn't have any external reference.");
-            }
-        }
-    }
-
-    private void checkCollection(SnmpCollection collection) {
-        if (collection.getSystems() == null)
-            collection.setSystems(new Systems());
-        if (collection.getGroups() == null)
-            collection.setGroups(new Groups());
-    }
-
-    private void initializeGlobalContainer(DatacollectionConfig config) {
-        if (globalContainer != null) {
-            log().info("initializeGlobalContainer: global container is already populated");
-            return;
-        }
-        
-        // Create global container object
-        globalContainer = new DatacollectionGroup();
-        globalContainer.setName("__global__");
-
         // Parse External Configuration Files
         parseExternalResources();
         
@@ -141,6 +96,32 @@ public class DataCollectionConfigParser {
         
         // Validate Global Container
         validateGlobalContainer();
+        
+        // Build content for all SNMP Collections
+        for (SnmpCollection collection : config.getSnmpCollectionCollection()) {
+            if (collection.getIncludeCollectionCount() > 0) {
+                // Prepare SNMP Collection
+                if (collection.getSystems() == null)
+                    collection.setSystems(new Systems());
+                if (collection.getGroups() == null)
+                    collection.setGroups(new Groups());
+                for (IncludeCollection include : collection.getIncludeCollection()) {
+                    if (include.getDataCollectionGroup() != null) {
+                        // Include All system definitions from a specific datacollection group
+                        mergeDatacollectionGroup(collection, include.getDataCollectionGroup());
+                    } else {
+                        if (include.getSystemDef() == null) {
+                            throw new DataAccessResourceFailureException("You must specify at least the data collection group name or system definition name for the include-collection attribute");
+                        } else {
+                            // Include One system definition
+                            mergeSystemDef(collection, include.getSystemDef());
+                        }
+                    }
+                }
+            } else {
+                log().info("parse: snmp collection " + collection.getName() + " doesn't have any external reference.");
+            }
+        }
     }
 
     /**
@@ -207,18 +188,15 @@ public class DataCollectionConfigParser {
 
     /**
      * Verify if the systemDefs list contains a specific system definition.
-     * <p>One system definition will be considered the same as another one, if they have the same name and contain the same groups.</p>
-     * 
+     * <p>One system definition will be considered the same as another one, if they have the same name and contain the same groups.
      * @param globalContainer
      * @param systemDef
      * 
      * @return true, if the list contains the system definition
      */
-    // TODO Include sysoid and sysoidMask on validation process
     private boolean contains(List<SystemDef> systemDefs, SystemDef systemDef) {
         for (SystemDef sd : systemDefs) {
-            if (systemDef.getName().equals(sd.getName())
-                    && systemDef.getCollect().getIncludeGroupCount() == sd.getCollect().getIncludeGroupCount()) {
+            if (systemDef.getName().equals(sd.getName()) && systemDef.getCollect().getIncludeGroupCount() == sd.getCollect().getIncludeGroupCount()) {
                 int count = 0;
                 for (String group : sd.getCollect().getIncludeGroupCollection()) {
                     if (systemDef.getCollect().getIncludeGroupCollection().contains(group))
@@ -237,91 +215,37 @@ public class DataCollectionConfigParser {
      * @return a list of datacollection group
      */
     private void parseExternalResources() {
-        // Ensure that this is called only once.
-        if (externalGroups != null && externalGroups.size() > 0) {
-            log().info("parseExternalResources: external data collection groups are already parsed");
-            return;
-        }
-        
-        // Create external groups map
         externalGroups = new HashMap<String, DatacollectionGroup>();
-        
-        // Check configuration files repository
         File folder = new File(configDirectory);
         if (!folder.exists() || !folder.isDirectory()) {
             log().info("parseExternalResources: directory " + folder + " does not exist or is not a folder.");
             return;
         }
         
-        // Get external configuration files
         File[] listOfFiles = folder.listFiles(new FilenameFilter() {
             public boolean accept(File file, String name) {
                 return name.endsWith(".xml");
             }
         });
-        
-        // Parse configuration files (populate external groups map)
+
         for (File file : listOfFiles) {
-            InputStream in = null;
+            InputStream in;
             try {
                 in = new FileInputStream(file);
             } catch (IOException e) {
-                throwException("Could not get an input stream for resource '" + file + "'; nested exception: " + e.getMessage(), e);
+                throw new DataAccessResourceFailureException("Could not get an input stream for resource '" + file + "'; nested exception: " + e, e);
             }
             try {
-                log().debug("parseExternalResources: parsing " + file);
+                log().info("parseExternalResources: parsing " + file);
                 DatacollectionGroup group = CastorUtils.unmarshalWithTranslatedExceptions(DatacollectionGroup.class, in);
                 group.validate();
                 externalGroups.put(group.getName(), group);
             } catch (Exception e) {
-                throwException("Can't parse XML file " + file + "; nested exception: " + e.getMessage(), e);
+                log().warn("parseExternalResources: can't parse file " + file + ", because: " + e.getMessage());
             } finally {
                 IOUtils.closeQuietly(in);
             }
         }
-    }
-
-    /**
-     * Merge sourceGroup into global container.
-     *
-     * @param sourceType collection|group
-     * @param sourceName dataSourceGroup.name|snmpCollection.name
-     * @param resourceTypes a list of resource type objects
-     * @param groups a list of group objects
-     * @param systemDefs a list of system definition objects
-     */
-    // TODO Maybe we should set to WARN when we found a duplicated item.
-    private void merge(String sourceType, String sourceName, List<ResourceType> resourceTypes, List<Group> groups, List<SystemDef> systemDefs) {
-        // Add Resource Types
-        for (ResourceType rt : resourceTypes) {
-            if (!contains(globalContainer.getResourceTypeCollection(), rt)) {
-                log().debug("merge(" + sourceType + "): adding resource type " + rt.getName() + " from " + sourceName + " into global container.");
-                globalContainer.addResourceType(rt);
-            } else {
-                log().info("merge(" + sourceType + "): resource type " + rt.getName() + " already exist on global container.");
-            }
-        }
-        
-        // Add Groups
-        for (Group g : groups) {
-            if (!contains(globalContainer.getGroupCollection(), g)) {
-                log().debug("merge(" + sourceType + "): adding mib object group " + g.getName() + " from " + sourceName + " into global container.");
-                globalContainer.addGroup(g);
-            } else {
-                // It is normal that the same group could be referenced by many systemDefs, so this message should not be a warning.
-                log().info("merge(" + sourceType + "): mib object group " + g.getName() + " already exist on global container.");
-            }
-        }
-        
-        // Add System Definitions
-        for (SystemDef sd : systemDefs) {
-            if (!contains(globalContainer.getSystemDefCollection(), sd)) {
-                log().debug("merge(" + sourceType + "): adding system definition " + sd.getName() + " from " + sourceName + " into global container.");
-                globalContainer.addSystemDef(sd);
-            } else {
-                log().info("merge(" + sourceType + "): system definition " + sd.getName() + " already exist on global container.");
-            }
-        }        
     }
 
     /**
@@ -330,7 +254,35 @@ public class DataCollectionConfigParser {
      * @param sourceGroup
      */
     private void merge(DatacollectionGroup sourceGroup) {
-        merge("group", sourceGroup.getName(), sourceGroup.getResourceTypeCollection(),  sourceGroup.getGroupCollection(), sourceGroup.getSystemDefCollection());
+        // Add Resource Types
+        for (ResourceType rt : sourceGroup.getResourceTypeCollection()) {
+            if (!contains(globalContainer.getResourceTypeCollection(), rt)) {
+                log().debug("merge: adding resource type " + rt.getName() + " from " + sourceGroup.getName() + " into global container.");
+                globalContainer.addResourceType(rt);
+            } else {
+                log().warn("merge: resource type " + rt.getName() + " already exist on global container.");
+            }
+        }
+        
+        // Add Groups
+        for (Group g : sourceGroup.getGroupCollection()) {
+            if (!contains(globalContainer.getGroupCollection(), g)) {
+                log().debug("merge: adding mib object group " + g.getName() + " from " + sourceGroup.getName() + " into global container.");
+                globalContainer.addGroup(g);
+            } else {
+                log().warn("merge: mib object group " + g.getName() + " already exist on global container.");
+            }
+        }
+        
+        // Add System Definitions
+        for (SystemDef sd : sourceGroup.getSystemDefCollection()) {
+            if (!contains(globalContainer.getSystemDefCollection(), sd)) {
+                log().debug("merge: adding system definition " + sd.getName() + " from " + sourceGroup.getName() + " into global container.");
+                globalContainer.addSystemDef(sd);
+            } else {
+                log().warn("merge: system definition " + sd.getName() + " already exist on global container.");
+            }
+        }        
     }
 
     /**
@@ -339,8 +291,39 @@ public class DataCollectionConfigParser {
      * @param the SNMP collection
      */
     private void merge(SnmpCollection collection) {
-        checkCollection(collection);
-        merge("collection", collection.getName(), collection.getResourceTypeCollection(), collection.getGroups().getGroupCollection(), collection.getSystems().getSystemDefCollection());
+        // Add Resource Types
+        for (ResourceType rt : collection.getResourceTypeCollection()) {
+            if (!contains(globalContainer.getResourceTypeCollection(), rt)) {
+                log().debug("merge: adding resource type " + rt.getName() + " from snmp-collection " + collection.getName() + " into global container.");
+                globalContainer.addResourceType(rt);
+            } else {
+                log().warn("merge: resource type " + rt.getName() + " already exist on global container.");                
+            }
+        }
+        
+        // Add Groups
+        if (collection.getGroups() != null) {
+            for (Group g : collection.getGroups().getGroupCollection()) {
+                if (!contains(globalContainer.getGroupCollection(), g)) {
+                    log().debug("merge: adding mib object group " + g.getName() + " from snmp-collection " + collection.getName() + " into global container.");
+                    globalContainer.addGroup(g);
+                } else {
+                    log().warn("merge: mib object group " + g.getName() + " already exist on global container.");
+                }
+            }
+        }
+        
+        // Add System Definitions
+        if (collection.getSystems() != null) {
+            for (SystemDef sd : collection.getSystems().getSystemDefCollection()) {
+                if (!contains(globalContainer.getSystemDefCollection(), sd)) {
+                    log().debug("merge: adding system definition '" + sd.getName() + "' from snmp-collection '" + collection.getName() + "' into global container.");
+                    globalContainer.addSystemDef(sd);
+                } else {
+                    log().warn("merge: system definition '" + sd.getName() + "' already exist on global container.");
+                }
+            }
+        }
     }
 
     /**
@@ -352,7 +335,9 @@ public class DataCollectionConfigParser {
         for (SystemDef systemDef : globalContainer.getSystemDefCollection()) {
             for (String groupName : systemDef.getCollect().getIncludeGroupCollection()) {
                 if (getMibObjectGroup(groupName) == null) {
-                    throwException("Group '" + groupName + "' defined on systemDef '" + systemDef.getName() + "' does not exist.", null);
+                    String msg = "Group '" + groupName + "' defined on systemDef '" + systemDef.getName() + "' does not exist.";
+                    log().error(msg);
+                    throw new DataAccessResourceFailureException(msg);
                 }
             }
         }
@@ -361,7 +346,9 @@ public class DataCollectionConfigParser {
                 if (!mibObj.getInstance().equals("ifIndex") && !mibObj.getInstance().matches("^\\d+")) {
                     ResourceType rt = getResourceType(mibObj.getInstance());
                     if (rt == null) {
-                        throwException("Instance '" + mibObj.getInstance() + "' invalid in mibObj definition for OID '" + mibObj.getOid() + "' for group '" + group.getName() + "'. Allowable instance values: any positive number, 'ifIndex', or any of the custom resourceTypes.", null);
+                        String msg = "Instance '" + mibObj.getInstance() + "' invalid in mibObj definition for OID '" + mibObj.getOid() + "' for group '" + group.getName() + "'. Allowable instance values: any positive number, 'ifIndex', or any of the custom resourceTypes.";
+                        log().error(msg);
+                        throw new DataAccessResourceFailureException(msg);                        
                     }
                 }
             }
@@ -396,68 +383,59 @@ public class DataCollectionConfigParser {
     }
 
     /**
-     * Add a specific system definition into a SNMP collection.
+     * Merge a specific system definition into a SNMP collection.
      * 
      * @param collection the target SNMP collection object.
      * @param systemDefName the system definition name.
      */
-    private void addSystemDef(SnmpCollection collection, String systemDefName) {
-        log().debug("addSystemDef: merging system defintion " + systemDefName + " into snmp-collection " + collection.getName());
+    private void mergeSystemDef(SnmpCollection collection, String systemDefName) {
+        log().debug("mergeSystemDef: merging system defintion " + systemDefName + " into snmp-collection " + collection.getName());
         // Find System Definition
         SystemDef systemDef = getSystemDef(systemDefName);
         if (systemDef == null) {
-            throwException("Can't find system definition " + systemDefName, null);
+            log().error("Can't find system definition " + systemDefName);
+            return;
         }
         // Add System Definition to target SNMP collection
-        if (contains(collection.getSystems().getSystemDefCollection(), systemDef)) {
-            log().warn("addSystemDef: system definition " + systemDefName + " already exist on snmp collection " + collection.getName());
-        } else {
-            log().debug("addSystemDef: adding system definition " + systemDef.getName() + " to snmp-collection " + collection.getName());
+        if (systemDef != null && !contains(collection.getSystems().getSystemDefCollection(), systemDef)) {
+            log().debug("mergeSystemDef: adding system definition " + systemDef.getName() + " to snmp-collection " + collection.getName());
             collection.getSystems().addSystemDef(systemDef);
             // Add Groups
             for (String groupName : systemDef.getCollect().getIncludeGroupCollection()) {
                 Group group = getMibObjectGroup(groupName);
-                if (group == null) {
-                    log().warn("addSystemDef: group " + groupName + " does not exist on global container");
+                if (group != null && !contains(collection.getGroups().getGroupCollection(), group)) {
+                    log().debug("mergeSystemDef: adding mib object group " + group.getName() + " to snmp-collection " + collection.getName());
+                    collection.getGroups().addGroup(group);
                 } else {
-                    if (contains(collection.getGroups().getGroupCollection(), group)) {
-                        log().debug("addSystemDef: group " + groupName + " already exist on snmp collection " + collection.getName());
-                    } else {
-                        log().debug("addSystemDef: adding mib object group " + group.getName() + " to snmp-collection " + collection.getName());
-                        collection.getGroups().addGroup(group);
-                    }
+                    log().warn("Group " + groupName + " does not exist on global container, or snmp collection " + collection.getName() + " already has it.");
                 }
             }
+        }
+        
+        // Add all Resource Types from cache. That because a resourceType is a shared object across all datacollection configuration.
+        for (ResourceType rt : globalContainer.getResourceTypeCollection()) {
+            collection.addResourceType(rt);
         }
     }
 
     /**
-     * Add all system definitions defined on a specific data collection group, into a SNMP collection.
+     * Merge all system definitions defined on a specific data collection group, into a SNMP collection.
      * 
      * @param collection the target SNMP collection object.
      * @param dataCollectionGroupName the data collection group name.
      */
-    private void addDatacollectionGroup(SnmpCollection collection, String dataCollectionGroupName) {
+    private void mergeDatacollectionGroup(SnmpCollection collection, String dataCollectionGroupName) {
         DatacollectionGroup group = externalGroups.get(dataCollectionGroupName);
-        if (group == null) {
-            throwException("Group " + dataCollectionGroupName + " does not exist.", null);
-        }
-        log().debug("addDatacollectionGroup: adding all definitions from group " + group.getName() + " to snmp-collection " + collection.getName());
-        for (SystemDef systemDef : group.getSystemDefCollection()) {
-            addSystemDef(collection, systemDef.getName());
+        if (group != null) {
+            log().debug("mergeGroup: adding all definitions from group " + group.getName() + " to snmp-collection " + collection.getName());
+            for (SystemDef systemDef : group.getSystemDefCollection()) {
+                mergeSystemDef(collection, systemDef.getName());
+            }
+        } else {
+            log().error("Group " + dataCollectionGroupName + " does not exist.");
         }
     }
 
-    private void throwException(String msg, Exception e) {
-        if (e == null) {
-            log().error(msg);
-            throw new DataAccessResourceFailureException(msg);
-        } else {
-            log().error(msg, e);
-            throw new DataAccessResourceFailureException(msg, e);            
-        }
-    }
-    
     private ThreadCategory log() {
         return ThreadCategory.getInstance(getClass());
     }
