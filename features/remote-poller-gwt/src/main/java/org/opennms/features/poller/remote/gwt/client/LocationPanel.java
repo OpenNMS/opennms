@@ -235,16 +235,10 @@ public class LocationPanel extends Composite implements LocationPanelSelectEvent
         }
     }
 
+    @Override
     public void onResize(ResizeEvent event) {
         resizeDockPanel();
     }
 
-    protected void initWidget(Widget widget) {
-        super.initWidget(widget);
-    }
-
-    protected void onAttach() {
-        super.onAttach();
-    }
 
 }
