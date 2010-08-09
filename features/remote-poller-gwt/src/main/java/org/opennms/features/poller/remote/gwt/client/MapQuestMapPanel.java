@@ -27,6 +27,7 @@ import com.google.gwt.event.shared.HandlerManager;
 import com.google.gwt.event.shared.HandlerRegistration;
 import com.google.gwt.uibinder.client.UiBinder;
 import com.google.gwt.uibinder.client.UiField;
+import com.google.gwt.user.client.DOM;
 import com.google.gwt.user.client.Timer;
 import com.google.gwt.user.client.Window;
 import com.google.gwt.user.client.ui.Composite;
@@ -44,6 +45,8 @@ import com.googlecode.gwtmapquest.transaction.event.DblClickEvent;
 import com.googlecode.gwtmapquest.transaction.event.DblClickHandler;
 import com.googlecode.gwtmapquest.transaction.event.MoveEndEvent;
 import com.googlecode.gwtmapquest.transaction.event.MoveEndHandler;
+import com.googlecode.gwtmapquest.transaction.event.ShapeAddedEvent;
+import com.googlecode.gwtmapquest.transaction.event.ShapeAddedHandler;
 import com.googlecode.gwtmapquest.transaction.event.ZoomEndEvent;
 import com.googlecode.gwtmapquest.transaction.event.ZoomEndHandler;
 
@@ -176,6 +179,17 @@ public class MapQuestMapPanel extends Composite implements MapPanel, HasDoubleCl
             public void onZoomEnd(ZoomEndEvent event) {
                 m_eventBus.fireEvent(new MapPanelBoundsChangedEvent(getBounds()));
             }
+        });
+        
+        m_map.addShapeAddedHandler(new ShapeAddedHandler() {
+
+            @Override
+            public void onShapeAdded(ShapeAddedEvent event) {
+                Element mqPoiDiv = DOM.getElementById("mqpoidiv");
+                Element markerElement = Element.as(mqPoiDiv.getLastChild());
+                updatePOILayer(markerElement);
+            }
+            
         });
 
         Window.addResizeHandler(new ResizeHandler() {
@@ -316,5 +330,26 @@ public class MapQuestMapPanel extends Composite implements MapPanel, HasDoubleCl
 
     public void onResize() {
         syncMapSizeWithParent();
+    }
+
+    private void updatePOILayer(Element markerElement) {
+        String markerImageSrc = Element.as(markerElement.getFirstChild()).getAttribute("src");
+        String currentStyles = markerElement.getAttribute("style");
+        
+        if(markerImageSrc.equals("images/selected-DOWN.png") || markerImageSrc.equals("images/deselected-DOWN.png")) {
+            markerElement.setAttribute("style", currentStyles.replace("z-index: 90", "z-index: 140"));
+        }else if(markerImageSrc.equals("images/selected-DISCONNECTED.png") || markerImageSrc.equals("images/deselected-DISCONNECTED.png")) {
+            markerElement.setAttribute("style", currentStyles.replace("z-index: 90", "z-index: 130"));
+        }else if(markerImageSrc.equals("images/selected-MARGINAL.png") || markerImageSrc.equals("images/deselected-MARGINAL.png")) {
+            markerElement.setAttribute("style", currentStyles.replace("z-index: 90", "z-index: 120"));
+        }else if(markerImageSrc.equals("images/selected-UP.png") || markerImageSrc.equals("images/deselected-UP.png")) {
+            markerElement.setAttribute("style", currentStyles.replace("z-index: 90", "z-index: 110"));
+        }else if(markerImageSrc.equals("images/selected-STOPPED.png") || markerImageSrc.equals("images/deselected-STOPPED.png")) {
+            markerElement.setAttribute("style", currentStyles.replace("z-index: 90", "z-index: 100"));
+        }else if(markerImageSrc.equals("images/selected-UNKNOWN.png") || markerImageSrc.equals("images/deselected-UNKNOWN.png")) {
+            markerElement.setAttribute("style", currentStyles.replace("z-index: 90", "z-index: 90"));
+        }
+        
+        
     }
 }
