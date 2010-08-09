@@ -54,7 +54,7 @@
           </annotation>
         </element>
 
-        <element maxOccurs="unbounded" minOccurs="0" ref="include-collection">
+        <element maxOccurs="unbounded" minOccurs="1" ref="include-collection">
           <annotation>
             <documentation>Include Collection by specifying
             System Definition Name or Data Collection Group Name.</documentation>

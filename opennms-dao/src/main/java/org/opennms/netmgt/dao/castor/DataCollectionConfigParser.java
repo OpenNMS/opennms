@@ -81,7 +81,7 @@ public class DataCollectionConfigParser {
         return globalContainer;
     }
     
-    public void parse(DatacollectionConfig config) {
+    public void parse(DatacollectionConfig config) throws Exception {
         // Parse External Configuration Files
         parseExternalResources();
         
@@ -214,8 +214,10 @@ public class DataCollectionConfigParser {
      * Read all XML files from datacollection directory and parse them to create a list of DatacollectionGroup objects.
      * 
      * @return a list of datacollection group
+     * 
+     * @throws Exception
      */
-    private void parseExternalResources() {
+    private void parseExternalResources() throws Exception {
         externalGroups = new HashMap<String, DatacollectionGroup>();
         File folder = new File(configDirectory);
         if (!folder.exists()) {
@@ -321,60 +323,19 @@ public class DataCollectionConfigParser {
     }
 
     private void validateGlobalContainer() {
-        for (SystemDef systemDef : globalContainer.getSystemDefCollection()) {
-            for (String groupName : systemDef.getCollect().getIncludeGroupCollection()) {
-                if (getMibObjectGroup(groupName) == null) {
-                    String msg = "Group " + groupName + " is not defined.";
-                    log().error(msg);
-                    throw new DataAccessResourceFailureException(msg);
-                }
-            }
-        }
-        for (Group group : globalContainer.getGroupCollection()) {
-            for (MibObj mibObj : group.getMibObjCollection()) {
-                if (!mibObj.getInstance().equals("ifIndex") && !mibObj.getInstance().matches("^\\d+")) {
-                    ResourceType rt = getResourceType(mibObj.getInstance());
-                    if (rt == null) {
-                        String msg = "Resource type " + mibObj.getInstance() + " is not defined.";
-                        log().error(msg);
-                        throw new DataAccessResourceFailureException(msg);                        
-                    }
-                }
-            }
-        }
+        // TODO Auto-generated method stub
     }
 
-    private SystemDef getSystemDef(String systemDefName) {
-        for (SystemDef sd : globalContainer.getSystemDefCollection()) {
-            if (sd.getName().equals(systemDefName)) {
-                return sd;
-            }
-        }
-        return null;
-    }
-    
-    private Group getMibObjectGroup(String groupName) {
-        for (Group g : globalContainer.getGroupCollection()) {
-            if (g.getName().equals(groupName)) {
-                return g;
-            }
-        }
-        return null;
-    }
-    
-    private ResourceType getResourceType(String resourceTypeName) {
-        for (ResourceType rt : globalContainer.getResourceTypeCollection()) {
-            if (rt.getName().equals(resourceTypeName)) {
-                return rt;
-            }
-        }
-        return null;
-    }
-    
     private void mergeSystemDef(SnmpCollection collection, String systemDefName) {
         log().debug("mergeSystemDef: merging system defintion " + systemDefName + " into snmp-collection " + collection.getName());
         // Find System Definition
-        SystemDef systemDef = getSystemDef(systemDefName);
+        SystemDef systemDef = null;
+        for (SystemDef sd : globalContainer.getSystemDefCollection()) {
+            if (sd.getName().equals(systemDefName)) {
+                systemDef = sd;
+                continue;
+            }
+        }
         if (systemDef == null) {
             log().error("Can't find system definition " + systemDefName);
             return;
@@ -386,7 +347,13 @@ public class DataCollectionConfigParser {
             collection.getSystems().addSystemDef(systemDef);
             // Add Groups
             for (String groupName : systemDef.getCollect().getIncludeGroupCollection()) {
-                Group group = getMibObjectGroup(groupName);
+                Group group = null;
+                for (Group g : globalContainer.getGroupCollection()) {
+                    if (g.getName().equals(groupName)) {
+                        group = g;
+                        continue;
+                    }
+                }
                 if (group != null && !contains(collection.getGroups().getGroupCollection(), group)) {
                     log().debug("mergeSystemDef: adding mib object group " + group.getName() + " to snmp-collection " + collection.getName());
                     collection.getGroups().addGroup(group);
@@ -402,12 +369,12 @@ public class DataCollectionConfigParser {
         }
         // Add Resource Types
         for (String resourceTypeName : resourceTypes) {
-            ResourceType rt = getResourceType(resourceTypeName);
-            if (rt != null) {
-                log().debug("mergeSystemDef: adding resource type " + rt.getName() + " to snmp-collection " + collection.getName());
-                collection.addResourceType(rt);
-            } else {
-                log().warn("Resource Type " + resourceTypeName + " does not exist on global container");
+            for (ResourceType rt : globalContainer.getResourceTypeCollection()) {
+                if (rt.getName().equals(resourceTypeName) && !contains(collection.getResourceTypeCollection(), rt)) {
+                    log().debug("mergeSystemDef: adding resource type " + rt.getName() + " to snmp-collection " + collection.getName());
+                    collection.addResourceType(rt);
+                    continue;
+                }
             }
         }
     }
