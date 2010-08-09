@@ -33,21 +33,14 @@ package org.opennms.netmgt.dao.castor;
 
 import java.io.File;
 import java.io.FileInputStream;
-import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
-import java.util.Set;
 
 import org.junit.Assert;
 import org.junit.Test;
 
 import org.opennms.netmgt.config.MibObject;
-import org.opennms.netmgt.config.datacollection.DatacollectionConfig;
-import org.opennms.netmgt.config.datacollection.Group;
-import org.opennms.netmgt.config.datacollection.MibObj;
 import org.opennms.netmgt.config.datacollection.ResourceType;
-import org.opennms.netmgt.config.datacollection.SnmpCollection;
-import org.opennms.netmgt.config.datacollection.SystemDef;
 import org.opennms.netmgt.model.RrdRepository;
 import org.opennms.test.ConfigurationTestUtils;
 import org.springframework.core.io.InputStreamResource;
@@ -58,136 +51,41 @@ import org.springframework.core.io.InputStreamResource;
  * @author <a href="mail:agalue@opennms.org">Alejandro Galue</a>
  */
 public class DefaultDataCollectionConfigDaoTest {
-
+    
     @Test
     public void testConfiguration() throws Exception {
-        // Get the DAO with the new datacollection-config.xml
-        DefaultDataCollectionConfigDao dao = instantiateDao("datacollection-config.xml", true);
-
-        // Expected Values
-        int mibObjectsCount = 70;
-        int resourceTypesCount = 69;
-        int resourceTypesUnused = 15;
-        int systemDefCount = 125;
-
-        // Execute Tests
-        executeRepositoryTest(dao);
-        executeMibObjectsTest(dao, mibObjectsCount);
-        executeResourceTypesTest(dao, resourceTypesCount - resourceTypesUnused); // there are some unused resourceTypes
-        executeSystemDefCount(dao, systemDefCount);
-
-        // Get the DAO with the old datacollection-config.xml
-        DefaultDataCollectionConfigDao oldDao = instantiateDao("examples/old-datacollection-config.xml", false);
-
-        // Execute Tests
-        executeRepositoryTest(oldDao);
-        executeMibObjectsTest(oldDao, mibObjectsCount);
-        executeResourceTypesTest(oldDao, resourceTypesCount);
-        executeSystemDefCount(oldDao, systemDefCount);
-
-        compareContent(oldDao.getContainer().getObject(), dao.getContainer().getObject());
-    }
-
-    private void executeRepositoryTest(DefaultDataCollectionConfigDao dao) {
+        DefaultDataCollectionConfigDao dao = new DefaultDataCollectionConfigDao();
+        File etcFolder = ConfigurationTestUtils.getDaemonEtcDirectory();
+        File configFile = new File(etcFolder, "datacollection-config.xml");
+        File configFolder = new File(etcFolder, "datacollection");
+        dao.setConfigDirectory(configFolder.getAbsolutePath());
+        dao.setConfigResource(new InputStreamResource(new FileInputStream(configFile)));
+        dao.afterPropertiesSet();
+        
+        // Test Storage Flag
         Assert.assertEquals("select", dao.getSnmpStorageFlag("default"));
+        
+        // Test MIB Objects
+        List<MibObject> mibObjects = dao.getMibObjectList("default", ".1.3.6.1.4.1.8072.3.2.255", "127.0.0.1", -1);
+        Assert.assertNotNull(mibObjects);
+        Assert.assertEquals(70, mibObjects.size());
 
+        // Test Resource Types
+        Map<String,ResourceType> resourceTypes = dao.getConfiguredResourceTypes();
+        Assert.assertNotNull(resourceTypes);
+        Assert.assertEquals(53, resourceTypes.size()); // Original=69, New=53 => Unused=16
+        
         // Test Repository
         RrdRepository repository = dao.getRrdRepository("default");
         Assert.assertNotNull(repository);
         Assert.assertEquals(300, repository.getStep());
-
+        
         // Test Step
         Assert.assertEquals(repository.getStep(), dao.getStep("default"));
 
         // Test RRA List
         List<String> rras = dao.getRRAList("default");
         Assert.assertEquals(repository.getRraList().size(), rras.size());
-    }
-
-    private DefaultDataCollectionConfigDao instantiateDao(String fileName, boolean setConfigDirectory) throws Exception {
-        DefaultDataCollectionConfigDao dao = new DefaultDataCollectionConfigDao();
-        File configFile = ConfigurationTestUtils.getFileForConfigFile(fileName);
-        if (setConfigDirectory) {
-            File configFolder = new File(configFile.getParentFile(), "datacollection");
-            Assert.assertTrue(configFolder.isDirectory());
-            dao.setConfigDirectory(configFolder.getAbsolutePath());
-        }
-        dao.setConfigResource(new InputStreamResource(new FileInputStream(configFile)));
-        dao.afterPropertiesSet();
-        return dao;
-    }
-
-    private void executeSystemDefCount(DefaultDataCollectionConfigDao dao, int expectedCount) {
-        DatacollectionConfig config = dao.getContainer().getObject();
-        int systemDefCount = 0;
-        for (SnmpCollection collection : config.getSnmpCollectionCollection()) {
-            systemDefCount += collection.getSystems().getSystemDefCount();
-        }
-        Assert.assertEquals(expectedCount, systemDefCount);
-    }
-
-    private void executeResourceTypesTest(DefaultDataCollectionConfigDao dao, int expectedCount) {
-        Map<String,ResourceType> resourceTypesMap = dao.getConfiguredResourceTypes();
-        Assert.assertNotNull(resourceTypesMap);
-        Assert.assertEquals(expectedCount, resourceTypesMap.size());
-    }
-
-    private void executeMibObjectsTest(DefaultDataCollectionConfigDao dao, int expectedCount) {
-        List<MibObject> mibObjects = dao.getMibObjectList("default", ".1.3.6.1.4.1.8072.3.2.255", "127.0.0.1", -1);
-        Assert.assertNotNull(mibObjects);
-        Assert.assertEquals(expectedCount, mibObjects.size());
-    }
-
-    private void compareContent(DatacollectionConfig refObj, DatacollectionConfig newObj) {
-        Set<String> resourceTypes = new HashSet<String>();
-        Set<String> systemDefs = new HashSet<String>();
-        Set<String> groups = new HashSet<String>();
-
-        for (SnmpCollection collection : refObj.getSnmpCollectionCollection()) {
-            for (SystemDef sd : collection.getSystems().getSystemDefCollection()) {
-                systemDefs.add(sd.getName());
-                for (String group : sd.getCollect().getIncludeGroupCollection()) {
-                    groups.add(group);
-                }
-            }
-            for (Group g : collection.getGroups().getGroupCollection()) {
-                if (groups.contains(g.getName())) {
-                    for (MibObj mo : g.getMibObjCollection()) {
-                        String i = mo.getInstance();
-                        if (!i.matches("\\d+") && !i.equals("ifIndex"))
-                            resourceTypes.add(mo.getInstance());
-                    }
-                }
-            }
-        }
-
-        for (SnmpCollection collection : newObj.getSnmpCollectionCollection()) {
-            for (Group g : collection.getGroups().getGroupCollection()) {
-                for (MibObj mo : g.getMibObjCollection()) {
-                    String i = mo.getInstance();
-                    if (!i.matches("\\d+") && !i.equals("ifIndex"))
-                        resourceTypes.remove(mo.getInstance());
-                }
-            }
-            for (SystemDef sd : collection.getSystems().getSystemDefCollection()) {
-                systemDefs.remove(sd.getName());
-                for (String group : sd.getCollect().getIncludeGroupCollection()) {
-                    groups.remove(group);
-                }
-            }
-        }
-
-        if (systemDefs.size() > 0) {
-            Assert.fail("There are un-configured system definitions on the new datacollection: " + systemDefs);
-        }
-
-        if (groups.size() > 0) {
-            Assert.fail("There are un-configured groups on the new datacollection: " + groups);
-        }
-
-        if (resourceTypes.size() > 0) {
-            Assert.fail("There are un-configured resourceTypes on the new datacollection: " + resourceTypes);
-        }
     }
 
 }
