@@ -585,7 +585,9 @@ function updateOutageTypeDisplay(selectElement) {
 				var input = $("<input name=\"newInterface\">")
 					.insertAfter(select)
 					.autocomplete({
-						source: function(request, response) {
+						source: "admin/sched-outages/jsonIpInterfaces.jsp"
+							/*
+							function(request, response) {
 							// Case-insensitive regex
 							var matcher = new RegExp(request.term, "i");
 							response(select.children("option").map(function() {
@@ -597,8 +599,8 @@ function updateOutageTypeDisplay(selectElement) {
 										value: text
 									};
 							}));
-						},
-						delay: 0,
+						}*/,
+						delay: 1000,
 						change: function(event, ui) {
 							if (!ui.item) {
 								// remove invalid value, as it didn't match anything
@@ -767,25 +769,12 @@ function updateOutageTypeDisplay(selectElement) {
 								}
 							}
 						}
-
-						out.println("<div class=\"ui-widget\">");
-						out.println("<select id=\"newInterfaceSelect\" name=\"newInterfaceSelect\" style=\"display:none\">");
-						if (interfaceMap.size() > 0) {
-							for ( String address : interfaceMap.keySet() ) {
-								org.opennms.web.element.Interface iface = interfaceMap.get(address);
-								if (iface != null && interfaceMap.containsValue(iface)) {
-									if (address.equals(iface.getHostname())) {
-										out.println("<option value=\"" + iface.getIpAddress() + "\">" + iface.getIpAddress() + "</option>");
-									} else {
-										out.println("<option value=\"" + iface.getIpAddress() + "\">" + iface.getIpAddress() + " " + iface.getHostname() + "</option>");
-									}
-								}
-							}
-						}
-						out.println("</select><input type=\"submit\" value=\"Add\" name=\"addInterfaceButton\" />");
-						out.println("</div>");
 						}
 						%>
+						<div class="ui-widget">
+							<select id="newInterfaceSelect" name="newInterfaceSelect" style="display: none"></select>
+							<input type="submit" value="Add" name="addInterfaceButton"/>
+						</div>
 					</td>
 				</tr>
 				<tr>
