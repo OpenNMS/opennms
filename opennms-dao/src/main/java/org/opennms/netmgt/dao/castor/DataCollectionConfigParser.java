@@ -312,10 +312,10 @@ public class DataCollectionConfigParser {
         if (collection.getSystems() != null) {
             for (SystemDef sd : collection.getSystems().getSystemDefCollection()) {
                 if (!contains(globalContainer.getSystemDefCollection(), sd)) {
-                    log().debug("merge: adding system definition '" + sd.getName() + "' from snmp-collection '" + collection.getName() + "' into global container.");
+                    log().debug("merge: adding system definition " + sd.getName() + " from snmp-collection " + collection.getName() + " into global container.");
                     globalContainer.addSystemDef(sd);
                 } else {
-                    log().warn("merge: system definition '" + sd.getName() + "' already exist on global container.");
+                    log().warn("merge: system definition " + sd.getName() + " already exist on global container.");
                 }
             }
         }
@@ -325,7 +325,7 @@ public class DataCollectionConfigParser {
         for (SystemDef systemDef : globalContainer.getSystemDefCollection()) {
             for (String groupName : systemDef.getCollect().getIncludeGroupCollection()) {
                 if (getMibObjectGroup(groupName) == null) {
-                    String msg = "Group '" + groupName + "' defined on systemDef '" + systemDef.getName() + "' does not exist.";
+                    String msg = "Group " + groupName + " is not defined.";
                     log().error(msg);
                     throw new DataAccessResourceFailureException(msg);
                 }
@@ -336,7 +336,7 @@ public class DataCollectionConfigParser {
                 if (!mibObj.getInstance().equals("ifIndex") && !mibObj.getInstance().matches("^\\d+")) {
                     ResourceType rt = getResourceType(mibObj.getInstance());
                     if (rt == null) {
-                        String msg = "Instance '" + mibObj.getInstance() + "' invalid in mibObj definition for OID '" + mibObj.getOid() + "' for group '" + group.getName() + "'. Allowable instance values: any positive number, 'ifIndex', or any of the custom resourceTypes.";
+                        String msg = "Resource type " + mibObj.getInstance() + " is not defined.";
                         log().error(msg);
                         throw new DataAccessResourceFailureException(msg);                        
                     }
