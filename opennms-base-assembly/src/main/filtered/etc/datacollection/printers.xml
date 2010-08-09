@@ -1,0 +1,21 @@
+<?xml version="1.0"?>
+<datacollection-group name="Printers">
+
+    <!-- PRINTER-MIB Resource Types -->
+    <resourceType name="prtMarkerSuppliesIndex" label="Printer Marker Supply" resourceLabel="${prtMarkerSuppliesDescription}">
+      <persistenceSelectorStrategy class="org.opennms.netmgt.collectd.PersistAllSelectorStrategy"/>
+      <storageStrategy class="org.opennms.netmgt.dao.support.IndexStorageStrategy"/>
+    </resourceType>
+
+      <group name="printer-usage" ifType="ignore">
+        <mibObj oid=".1.3.6.1.2.1.43.10.2.1.4.1" instance="1" alias="lifeCount"    type="Gauge" />
+        <mibObj oid=".1.3.6.1.2.1.43.10.2.1.5.1" instance="1" alias="powerOnCount" type="Gauge" />
+      </group>
+
+      <group name="printer-mib-supplies" ifType="all">
+        <mibObj oid=".1.3.6.1.2.1.43.11.1.1.6" instance="prtMarkerSuppliesIndex" alias="prtMarkerSuppliesDescription" type="string" />
+        <mibObj oid=".1.3.6.1.2.1.43.11.1.1.8" instance="prtMarkerSuppliesIndex" alias="prtMSMaxCapacity"             type="integer" />
+        <mibObj oid=".1.3.6.1.2.1.43.11.1.1.9" instance="prtMarkerSuppliesIndex" alias="prtMSLevel"                   type="integer" />
+      </group>
+
+</datacollection-group>

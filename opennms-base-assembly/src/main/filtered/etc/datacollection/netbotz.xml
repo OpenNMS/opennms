@@ -1,0 +1,23 @@
+<?xml version="1.0"?>
+<datacollection-group name="Netbotz">
+
+      <!-- Netbotz MIBs -->
+      <group name="netbotz" ifType="ignore">
+        <mibObj oid=".1.3.6.1.4.1.5528.30.10.1"  instance="0" alias="netBotz-temp"      type="INTEGER" />
+        <mibObj oid=".1.3.6.1.4.1.5528.30.10.2"  instance="0" alias="netBotz-humidity"  type="INTEGER" />
+        <mibObj oid=".1.3.6.1.4.1.5528.30.10.3"  instance="0" alias="netBotz-airflow"   type="INTEGER" />
+        <mibObj oid=".1.3.6.1.4.1.5528.30.10.6"  instance="0" alias="netBotz-temp-min"  type="INTEGER" />
+        <mibObj oid=".1.3.6.1.4.1.5528.30.10.7"  instance="0" alias="netBotz-temp-max"  type="INTEGER" />
+        <mibObj oid=".1.3.6.1.4.1.5528.30.10.8"  instance="0" alias="netBotz-humid-min" type="INTEGER" />
+        <mibObj oid=".1.3.6.1.4.1.5528.30.10.9"  instance="0" alias="netBotz-humid-max" type="INTEGER" />
+        <mibObj oid=".1.3.6.1.4.1.5528.30.10.10" instance="0" alias="netBotz-air-min"   type="INTEGER" />
+      </group>
+
+      <systemDef name="Netbotz">
+        <sysoidMask>.1.3.6.1.4.1.5528.</sysoidMask>
+        <collect>
+          <includeGroup>netbotz</includeGroup>
+        </collect>
+      </systemDef>
+
+</datacollection-group>

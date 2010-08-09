@@ -15,11 +15,14 @@ import org.opennms.features.poller.remote.gwt.client.events.LocationPanelSelectE
 import org.opennms.features.poller.remote.gwt.client.location.LocationInfo;
 
 import com.google.gwt.core.client.GWT;
+import com.google.gwt.event.logical.shared.ResizeEvent;
+import com.google.gwt.event.logical.shared.ResizeHandler;
 import com.google.gwt.event.shared.HandlerManager;
 import com.google.gwt.event.shared.HandlerRegistration;
 import com.google.gwt.uibinder.client.UiBinder;
 import com.google.gwt.uibinder.client.UiField;
 import com.google.gwt.user.client.Element;
+import com.google.gwt.user.client.Window;
 import com.google.gwt.user.client.ui.Composite;
 import com.google.gwt.user.client.ui.FlowPanel;
 import com.google.gwt.user.client.ui.HTMLPanel;
@@ -33,7 +36,7 @@ import com.google.gwt.user.client.ui.Widget;
  * @version $Id: $
  * @since 1.8.1
  */
-public class LocationPanel extends Composite implements LocationPanelSelectEventHandler, TagResizeEventHandler, RequiresResize {
+public class LocationPanel extends Composite implements LocationPanelSelectEventHandler, TagResizeEventHandler, RequiresResize, ResizeHandler {
     
 	interface Binder extends UiBinder<Widget, LocationPanel> { }
 
@@ -41,6 +44,7 @@ public class LocationPanel extends Composite implements LocationPanelSelectEvent
 	private transient HandlerManager m_eventBus;
 	private transient List<HandlerRegistration> eventRegistrations = new ArrayList<HandlerRegistration>();
 	
+	@UiField FlowPanel locationPanel;
 	@UiField PageableLocationList locationList;
 	@UiField PageableApplicationList applicationList;
 	@UiField FilterPanel filterPanel;
@@ -59,6 +63,7 @@ public class LocationPanel extends Composite implements LocationPanelSelectEvent
 		// Blank out the selected applications list
 		this.updateSelectedApplications(new TreeSet<ApplicationInfo>());
 		
+		Window.addResizeHandler(this);
 	}
 
     /**
@@ -131,6 +136,14 @@ public class LocationPanel extends Composite implements LocationPanelSelectEvent
      * @param appList a {@link java.util.ArrayList} object.
      */
     public void updateApplicationList(final ArrayList<ApplicationInfo> appList) {
+        Collections.sort(appList, new Comparator<ApplicationInfo>() {
+
+            public int compare(ApplicationInfo o1, ApplicationInfo o2) {
+                return -1 * o1.compareTo(o2);
+            }
+            
+        });
+        
         applicationList.updateList(appList);
     }
 
@@ -147,6 +160,7 @@ public class LocationPanel extends Composite implements LocationPanelSelectEvent
             
         });
         locationList.updateList(visibleLocations);
+        resizeDockPanel();
     }
 
     /**
@@ -188,12 +202,19 @@ public class LocationPanel extends Composite implements LocationPanelSelectEvent
      * <p>resizeDockPanel</p>
      */
     public void resizeDockPanel() {
-
         int verticalSpacer = 3;
+        int topMargin = 97;
         int newSize = tagPanel.getOffsetHeight() + filterPanel.getOffsetHeight() + verticalSpacer;
-        
+        int height = Window.getClientHeight();
+        int adjustedHeight = height - (newSize + topMargin);
+
         Element element = listsPanel.getElement();
-        element.setAttribute("style", "position: absolute; top: " + newSize + "px; left: 0px; right: 0px; bottom: 0px;");
+        
+        if(adjustedHeight > 0) {
+            element.setAttribute("style", "position: absolute; height:" + adjustedHeight + "px; top: " + newSize + "px; left: 0px; right: 0px; bottom: 0px;");
+        }else {
+            element.setAttribute("style", "position: absolute; top: " + newSize + "px; left: 0px; right: 0px; bottom: 0px;");
+        }
     }
 
     /**
@@ -212,6 +233,12 @@ public class LocationPanel extends Composite implements LocationPanelSelectEvent
         }else if(locationList.isVisible()) {
             locationList.refreshLocationListResize();
         }
+    }
+
+
+    @Override
+    public void onResize(ResizeEvent event) {
+        resizeDockPanel();
     }
 
 }

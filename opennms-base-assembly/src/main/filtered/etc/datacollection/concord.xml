@@ -1,0 +1,59 @@
+<?xml version="1.0"?>
+<datacollection-group name="Concord">
+
+    <resourceType name="pgmonIndex" label="SystemEDGE Process Group Monitor"
+                  resourceLabel="${pgmonDescr} (index ${index})">
+      <persistenceSelectorStrategy class="org.opennms.netmgt.collectd.PersistAllSelectorStrategy"/>
+      <storageStrategy class="org.opennms.netmgt.dao.support.IndexStorageStrategy"/>
+    </resourceType>
+
+      <!-- Concord Communications MIBs -->
+      <group name="netHealth-loadavg" ifType="ignore">
+        <mibObj oid=".1.3.6.1.4.1.546.1.1.7.8.26" instance="0" alias="nhLoadavg1"  type="integer" />
+        <mibObj oid=".1.3.6.1.4.1.546.1.1.7.8.27" instance="0" alias="nhLoadavg5"  type="integer" />
+        <mibObj oid=".1.3.6.1.4.1.546.1.1.7.8.28" instance="0" alias="nhLoadavg15" type="integer" />
+      </group>
+
+      <group name="netHealth-memory" ifType="ignore">
+        <mibObj oid=".1.3.6.1.4.1.546.1.1.7.8.32" instance="0" alias="nhMemAvailSwap" type="integer" />
+        <mibObj oid=".1.3.6.1.4.1.546.1.1.7.8.31" instance="0" alias="nhMemAvailReal" type="integer" />
+        <mibObj oid=".1.3.6.1.4.1.546.1.1.7.8.32" instance="0" alias="nhMemTotalFree" type="integer" />
+      </group>
+
+      <group name="netHealth-sysstat" ifType="ignore">
+        <mibObj oid=".1.3.6.1.4.1.546.1.1.7.8.18" instance="0" alias="nhSwapIn"          type="integer" />
+        <mibObj oid=".1.3.6.1.4.1.546.1.1.7.8.19" instance="0" alias="nhSwapOut"         type="integer" />
+        <mibObj oid=".1.3.6.1.4.1.546.1.1.7.8.17" instance="0" alias="nhSysInterrupts"   type="integer" />
+        <mibObj oid=".1.3.6.1.4.1.546.1.1.7.8.16" instance="0" alias="nhSysContext"      type="integer" />
+        <mibObj oid=".1.3.6.1.4.1.546.13.3"       instance="0" alias="nhCpuRawUser"      type="counter" />
+        <mibObj oid=".1.3.6.1.4.1.546.13.4"       instance="0" alias="nhCpuRawSystem"    type="counter" />
+        <mibObj oid=".1.3.6.1.4.1.546.13.4"       instance="0" alias="nhCpuRawKernel"    type="counter" />
+        <mibObj oid=".1.3.6.1.4.1.546.13.7"       instance="0" alias="nhCpuTotalIdlePct" type="gauge" />
+        <mibObj oid=".1.3.6.1.4.1.546.13.8"       instance="0" alias="nhCpuTotalUserPct" type="gauge" />
+        <mibObj oid=".1.3.6.1.4.1.546.13.9"       instance="0" alias="nhCpuTotalSysPct"  type="gauge" />
+        <mibObj oid=".1.3.6.1.4.1.546.13.10"      instance="0" alias="nhCpuTotalWaitPct" type="gauge" />
+      </group>
+
+      <group name="netHealth-pgmon" ifType="all">
+        <mibObj oid=".1.3.6.1.4.1.546.15.10.1.2"  instance="pgmonIndex" alias="pgmonDescr"       type="string" />
+        <mibObj oid=".1.3.6.1.4.1.546.15.10.1.6"  instance="pgmonIndex" alias="pgmonNumProcs"    type="gauge" />
+        <mibObj oid=".1.3.6.1.4.1.546.15.10.1.14" instance="pgmonIndex" alias="pgmonRSS"         type="gauge" />
+        <mibObj oid=".1.3.6.1.4.1.546.15.10.1.15" instance="pgmonIndex" alias="pgmonSize"        type="gauge" />
+        <mibObj oid=".1.3.6.1.4.1.546.15.10.1.16" instance="pgmonIndex" alias="pgmonThreadCount" type="gauge" />
+        <mibObj oid=".1.3.6.1.4.1.546.15.10.1.17" instance="pgmonIndex" alias="pgmonMEM"         type="gauge" />
+        <mibObj oid=".1.3.6.1.4.1.546.15.10.1.24" instance="pgmonIndex" alias="pgmonMajorPgFlts" type="counter" />
+      </group>
+
+      <systemDef name="Concord Net Health">
+        <sysoidMask>.1.3.6.1.4.1.546.</sysoidMask>
+        <collect>
+          <includeGroup>mib2-host-resources-system</includeGroup>
+          <includeGroup>mib2-host-resources-memory</includeGroup>
+          <includeGroup>netHealth-loadavg</includeGroup>
+          <includeGroup>netHealth-memory</includeGroup>
+          <includeGroup>netHealth-sysstat</includeGroup>
+          <includeGroup>netHealth-pgmon</includeGroup>
+        </collect>
+      </systemDef>
+
+</datacollection-group>

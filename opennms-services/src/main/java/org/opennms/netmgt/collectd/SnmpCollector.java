@@ -223,7 +223,7 @@ public class SnmpCollector implements ServiceCollector {
      */
     public void initialize(Map<String, String> parameters) {
         initSnmpPeerFactory();
-        initDataCollectionConfig();
+        //initDataCollectionConfig();
         initDatabaseConnectionFactory();
         
         // Get path to RRD repository
@@ -281,20 +281,16 @@ public class SnmpCollector implements ServiceCollector {
         }
     }
 
+    /*
     private void initDataCollectionConfig() {
         try {
             DataCollectionConfigFactory.init();
-        } catch (MarshalException e) {
-            log().fatal("initDataCollectionConfig: Failed to load data collection configuration: " + e, e);
-            throw new UndeclaredThrowableException(e);
-        } catch (ValidationException e) {
-            log().fatal("initDataCollectionConfig: Failed to load data collection configuration: " + e, e);
-            throw new UndeclaredThrowableException(e);
-        } catch (IOException e) {
+        } catch (Exception e) {
             log().fatal("initDataCollectionConfig: Failed to load data collection configuration: " + e, e);
             throw new UndeclaredThrowableException(e);
         }
     }
+    */
 
     private void initSnmpPeerFactory() {
         try {

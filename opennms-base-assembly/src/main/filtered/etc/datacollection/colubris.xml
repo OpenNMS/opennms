@@ -1,0 +1,17 @@
+<?xml version="1.0"?>
+<datacollection-group name="Colubris">
+
+      <!-- Colubris MIBs -->
+      <group name="colubris-access-mib" ifType="ignore">
+        <mibObj oid=".1.3.6.1.4.1.8744.5.1.1.3.2" instance="0" alias="colPubAccUsrCnt"    type="Gauge32" />
+        <mibObj oid=".1.3.6.1.4.1.8744.5.1.1.3.3" instance="0" alias="colPubAccUsrThresh" type="Integer" />
+      </group>
+
+      <systemDef name="Colubris-CN3000">
+        <sysoidMask>.1.3.6.1.4.1.8744.</sysoidMask>
+        <collect>
+          <includeGroup>colubris-access-mib</includeGroup>
+        </collect>
+      </systemDef>
+
+</datacollection-group>
