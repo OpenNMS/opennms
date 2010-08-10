@@ -66,7 +66,11 @@ function customResourceViewInit(elementId, dataArray, destURL){
 	
 	function viewChildResource(){
 		if(resourcesGrid.getSelectionModel().getSelected() != undefined){
-			window.location = "KSC/customGraphChooseResource.htm?selectedResourceId=&resourceId=" + resourcesGrid.getSelectionModel().getSelected().data.id;
+			if (Ext.isIE) {
+				window.location = "customGraphChooseResource.htm?selectedResourceId=&resourceId=" + resourcesGrid.getSelectionModel().getSelected().data.id;
+			} else {
+				window.location = "KSC/customGraphChooseResource.htm?selectedResourceId=&resourceId=" + resourcesGrid.getSelectionModel().getSelected().data.id;
+			}
 		}else{
 			alert("Please Select a Resource");
 		}
@@ -74,7 +78,11 @@ function customResourceViewInit(elementId, dataArray, destURL){
 	
 	function chooseChildResource(){
 		if(resourcesGrid.getSelectionModel().getSelected() != undefined){
-			window.location = "KSC/customGraphEditDetails.htm?resourceId=" + resourcesGrid.getSelectionModel().getSelected().data.id;
+			if (Ext.isIE) {
+				window.location = "customGraphEditDetails.htm?resourceId=" + resourcesGrid.getSelectionModel().getSelected().data.id;
+			} else {
+				window.location = "KSC/customGraphEditDetails.htm?resourceId=" + resourcesGrid.getSelectionModel().getSelected().data.id;
+			}
 		}else{
 			alert("Please Select a Resource");
 		}
