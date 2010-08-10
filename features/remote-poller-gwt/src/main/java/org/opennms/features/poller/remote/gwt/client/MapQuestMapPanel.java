@@ -183,7 +183,6 @@ public class MapQuestMapPanel extends Composite implements MapPanel, HasDoubleCl
         
         m_map.addShapeAddedHandler(new ShapeAddedHandler() {
 
-            @Override
             public void onShapeAdded(ShapeAddedEvent event) {
                 Element mqPoiDiv = DOM.getElementById("mqpoidiv");
                 Element markerElement = Element.as(mqPoiDiv.getLastChild());
