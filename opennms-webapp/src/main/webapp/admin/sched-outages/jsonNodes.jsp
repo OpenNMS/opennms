@@ -26,9 +26,9 @@
  */
 public static class AutocompleteRecord {
 	private String m_label;
-	private String m_value;
+	private int m_value;
 
-	public AutocompleteRecord(String label, String value) {
+	public AutocompleteRecord(String label, int value) {
 		m_label = label;
 		m_value = value;
 	}
@@ -37,56 +37,28 @@ public static class AutocompleteRecord {
 		return m_label;
 	}
 
-	public String getValue() {
+	public int getValue() {
 		return m_value;
 	}
 }
 %>
 <%
-List<org.opennms.web.element.Interface> items = Arrays.asList(NetworkElementFactory.getAllManagedIpInterfaces(false));
+List<org.opennms.web.element.Node> items = Arrays.asList(NetworkElementFactory.getAllNodes());
 %>
-
-<%-- Use this segment to test large numbers of JSON objects
-<%!
-private static class MyInterface extends org.opennms.web.element.Interface {
-	public String ipAddress;
-	public String name;
-	public String getIpAddress() { return ipAddress; }
-	public String getName() { return name; }
-}
-%>
-<%
-List<org.opennms.web.element.Interface> items = new ArrayList<org.opennms.web.element.Interface>();
-for (int i = 0; i < 50000; i++) {
-	MyInterface item = new MyInterface();
-	item.name = ("really_super_long_hostname_that_is_longer_than_normal_" + i);
-	item.ipAddress = ("192.168." + Integer.valueOf(i / 256) + "." + (i % 256));
-	items.add(item);
-}
-%>
---%>
-
 [
 <% 
 boolean printedFirst = false;
 int recordCounter = 1;
 final int recordLimit = 200;
-for (org.opennms.web.element.Interface item : items) {
+for (org.opennms.web.element.Node item : items) {
 	String autocomplete = request.getParameter("term");
-	// Check to see if the interface matches the search term
+	// Check to see if the item matches the search term
 	if (
 		autocomplete == null || 
 		"".equals(autocomplete) || 
-		item.getName().contains(autocomplete) || 
-		item.getIpAddress().contains(autocomplete)
+		item.getLabel().contains(autocomplete)
 	) {
-		String hostnameClause = (
-			item.getName() == null || 
-			"".equals(item.getName())) || 
-			item.getName().equals(item.getIpAddress()
-		) ? "" : " (" + item.getName() + ")";
-
-		String label = item.getIpAddress() + hostnameClause;
+		String label = item.getLabel() + " (Node ID " + item.getNodeId() + ")";
 		if (autocomplete != null && !"".equals(autocomplete)) {
 			label = label.replace(autocomplete, "<strong>" + autocomplete + "</strong>");
 		}
@@ -94,7 +66,7 @@ for (org.opennms.web.element.Interface item : items) {
 		if (printedFirst) {
 			out.println(",");
 		}
-		out.println(JSONSerializer.toJSON(new AutocompleteRecord(label, item.getIpAddress())));
+		out.println(JSONSerializer.toJSON(new AutocompleteRecord(label, item.getNodeId())));
 		printedFirst = true;
 		// Don't print more than a certain number of records to limit the
 		// performance impact in the web browser

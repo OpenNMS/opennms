@@ -186,7 +186,7 @@
 			for(int i = 0 ; i < nodes.length; i++ ) {
 				int node = WebSecurityUtils.safeParseInt(nodes[i]);
 				addNode(theOutage, node);
-                	}
+			}
 		}
 		if (interfaces != null) {
 			for(int i = 0 ; i < interfaces.length; i++ ) {
@@ -609,24 +609,10 @@ function updateOutageTypeDisplay(selectElement) {
 				// Hide the existing tag
 				var select = this.element.hide();
 				// Add an autocomplete text field
-				var input = $("<input name=\"newInterface\">")
+				var input = $("<input name=\"" + self.options.name + "\">")
 					.insertAfter(select)
 					.autocomplete({
-						source: "admin/sched-outages/jsonIpInterfaces.jsp"
-							/*
-							function(request, response) {
-							// Case-insensitive regex
-							var matcher = new RegExp(request.term, "i");
-							response(select.children("option").map(function() {
-								var text = $(this).text();
-								if (this.value && (!request.term || matcher.test(text)))
-									return {
-										id: this.value,
-										label: text.replace(new RegExp("(?![^&;]+;)(?!<[^<>]*)(" + $.ui.autocomplete.escapeRegex(request.term) + ")(?![^<>]*>)(?![^&;]+;)", "gi"), "<strong>$1</strong>"),
-										value: text
-									};
-							}));
-						}*/,
+						source: self.options.jsonUrl,
 						delay: 1000,
 						change: function(event, ui) {
 							if (!ui.item) {
@@ -678,9 +664,10 @@ function updateOutageTypeDisplay(selectElement) {
 
 	})(jQuery);
 
-	// Apply the combobox widget to the #newInterfaceSelect element
+	// Apply the combobox widget to the #newNodeSelect and #newInterfaceSelect elements
 	$(function() {
-		$("#newInterfaceSelect").combobox();
+		$("#newNodeSelect").combobox({name:"newNode", jsonUrl: "admin/sched-outages/jsonNodes.jsp"});
+		$("#newInterfaceSelect").combobox({name: "newInterface", jsonUrl: "admin/sched-outages/jsonIpInterfaces.jsp"});
 	});
 
 </script>
@@ -709,14 +696,6 @@ function updateOutageTypeDisplay(selectElement) {
 				<tr>
 					<td valign="top">
 						<% {
-						List<org.opennms.web.element.Node> allNodes = Arrays.asList(NetworkElementFactory.getAllNodes());
-						Collections.sort(allNodes);
-						
-						TreeMap<Integer,org.opennms.web.element.Node> nodeMap = new TreeMap<Integer,org.opennms.web.element.Node>();
-						for ( org.opennms.web.element.Node element : allNodes ) {
-							nodeMap.put(element.getNodeId(), element);
-						}
-
 						if (hasMatchAny) {
 							out.println("&lt;All Nodes&gt;<br/>");
 						} else {
@@ -725,46 +704,24 @@ function updateOutageTypeDisplay(selectElement) {
 								org.opennms.netmgt.config.poller.Node node = outageNodes[i];
 								int nodeId = node.getId();
 								out.println("<input type=\"image\" src=\"images/redcross.gif\" name=\"deleteNode" + i + "\" />");
-								if (node != null && nodeMap.containsKey(nodeId)) {
-									org.opennms.web.element.Node thisNode = nodeMap.get(nodeId);
-									nodeMap.remove(nodeId);
-									if (thisNode != null) {
-										out.println(thisNode.getLabel() + "<br/>");
-									} else {
-										out.println("Node " + nodeId + " Is Null<br/>");
-									}
+								org.opennms.web.element.Node thisNode = NetworkElementFactory.getNode(nodeId);
+								if (thisNode != null) {
+									out.println(thisNode.getLabel());
 								} else {
-									out.println("Node ID " + nodeId + " Not Found<br/>");
+									out.println("Node " + nodeId + " is null");
 								}
+								out.println("<br/>");
 							}
 						}
-						out.println("<select id=\"newNode\" name=\"newNode\">");
-						if (nodeMap.size() > 0) {
-						    for ( org.opennms.web.element.Node node : allNodes ) {
-						        if ( nodeMap.containsKey(node.getNodeId()) ) {
-									out.println("<option value=\"" + node.getNodeId() + "\">" + node.getLabel() + "</option>");
-						        }
-						    }
-						}
-						out.println("</select><input type=\"submit\" value=\"Add\" name=\"addNodeButton\" />");
-						}
-						%>
+						} %>
+						<div class="ui-widget">
+							<select id="newNodeSelect" name="newNodeSelect" style="display: none"></select>
+							<input type="submit" value="Add" name="addNodeButton"/>
+						</div>
 					</td>
 					<td valign="top">
 						<%
 						{
-						List<org.opennms.web.element.Interface> allInterfaces = Arrays.asList(NetworkElementFactory.getAllManagedIpInterfaces(false));
-						TreeMap<String,org.opennms.web.element.Interface> interfaceMap = new TreeMap<String,org.opennms.web.element.Interface>();
-						for ( org.opennms.web.element.Interface element : allInterfaces ) {
-							String addr = element.getIpAddress();
-							// Most of these criteria are handled by the NetworkElementFactory.getAllManagedIpInterfaces() filtering
-							//if (addr != null && addr.length() != 0 && !addr.equals("0.0.0.0") && element.isManagedChar() != 'D') {
-							if (addr != null && addr.length() != 0) {
-								interfaceMap.put(addr, element);
-							}
-						}
-						allInterfaces = null;
-
 						if (hasMatchAny) {
 							out.println("&lt;All Interfaces&gt;<br/>");
 						} else {
@@ -772,27 +729,20 @@ function updateOutageTypeDisplay(selectElement) {
 							for (int i = 0; i < outageInterfaces.length; i++) {
 								org.opennms.netmgt.config.poller.Interface iface = outageInterfaces[i];
 								String addr = iface.getAddress();
-								if (iface != null && interfaceMap.containsKey(addr)) {
-									org.opennms.web.element.Interface[] interfaces = NetworkElementFactory.getInterfacesWithIpAddress(addr);
-									for ( org.opennms.web.element.Interface thisInterface : interfaces ) {
-										String thisAddr = thisInterface.getIpAddress();
-										String thisName = thisInterface.getHostname();
-										interfaceMap.remove(thisAddr);
-										out.println("<input type=\"image\" src=\"images/redcross.gif\" name=\"deleteInterface" + i + "\" />");
-										if(thisName != null && !thisName.equals(thisAddr)) {
-											out.println(thisAddr + " " + thisName);
-										} else {
-											out.println(thisAddr);
-										}
-										if (thisInterface.isManaged()) {
-											out.println("<br/>");
-										} else {
-											out.println(" (unmanaged)<br/>");
-										}
-									}
-								} else {
+								org.opennms.web.element.Interface[] interfaces = NetworkElementFactory.getInterfacesWithIpAddress(addr);
+								for ( org.opennms.web.element.Interface thisInterface : interfaces ) {
+									String thisAddr = thisInterface.getIpAddress();
+									String thisName = thisInterface.getHostname();
 									out.println("<input type=\"image\" src=\"images/redcross.gif\" name=\"deleteInterface" + i + "\" />");
-									out.println(addr + " Not Found<br/>");
+									if(thisName == null || thisName.equals(thisAddr)) {
+										out.println(thisAddr);
+									} else {
+										out.println(thisAddr + " (" + thisName + ")");
+									}
+									if (!thisInterface.isManaged()) {
+										out.println(" (Unmanaged)");
+									}
+									out.println("<br/>");
 								}
 							}
 						}
