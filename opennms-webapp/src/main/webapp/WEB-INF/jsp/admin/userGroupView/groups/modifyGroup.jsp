@@ -194,7 +194,7 @@
         m2.selectedIndex = j;       // make new location selected
     }
 
-    function move(incr)
+    function moveCat(incr)
     {
         var i = m4.selectedIndex;   // current selection
         if( i < 0 ) return;
