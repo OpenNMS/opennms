@@ -15,6 +15,7 @@ import org.opennms.features.poller.remote.gwt.client.events.LocationPanelSelectE
 import org.opennms.features.poller.remote.gwt.client.location.LocationInfo;
 
 import com.google.gwt.core.client.GWT;
+import com.google.gwt.dom.client.Style.Unit;
 import com.google.gwt.event.logical.shared.ResizeEvent;
 import com.google.gwt.event.logical.shared.ResizeHandler;
 import com.google.gwt.event.shared.HandlerManager;
@@ -64,6 +65,9 @@ public class LocationPanel extends Composite implements LocationPanelSelectEvent
 		this.updateSelectedApplications(new TreeSet<ApplicationInfo>());
 		
 		Window.addResizeHandler(this);
+		listsPanel.getElement().setId("listsPanel");
+		locationList.getElement().setId("locationList");
+		applicationList.getElement().setId("applicationList");
 	}
 
     /**
@@ -203,18 +207,21 @@ public class LocationPanel extends Composite implements LocationPanelSelectEvent
      */
     public void resizeDockPanel() {
         int verticalSpacer = 3;
-        int topMargin = 97;
-        int newSize = tagPanel.getOffsetHeight() + filterPanel.getOffsetHeight() + verticalSpacer;
-        int height = Window.getClientHeight();
-        int adjustedHeight = height - (newSize + topMargin);
-
         Element element = listsPanel.getElement();
         
-        if(adjustedHeight > 0) {
-            element.setAttribute("style", "position: absolute; height:" + adjustedHeight + "px; top: " + newSize + "px; left: 0px; right: 0px; bottom: 0px;");
+        if(getUserAgent().contains("msie")) {
+            int newHeight = 100;
+            
+            if(locationPanel.getOffsetHeight() > 1) {
+                newHeight = locationPanel.getOffsetHeight() - (tagPanel.getOffsetHeight() + filterPanel.getOffsetHeight() + verticalSpacer);
+            }
+            
+            element.getStyle().setHeight(newHeight, Unit.PX);
         }else {
-            element.setAttribute("style", "position: absolute; top: " + newSize + "px; left: 0px; right: 0px; bottom: 0px;");
+            int newTop = tagPanel.getOffsetHeight() + filterPanel.getOffsetHeight() + verticalSpacer;
+            element.getStyle().setTop(newTop, Unit.PX);
         }
+        
     }
 
     /**
@@ -238,5 +245,9 @@ public class LocationPanel extends Composite implements LocationPanelSelectEvent
     public void onResize(ResizeEvent event) {
         resizeDockPanel();
     }
+    
+    public static native String getUserAgent() /*-{
+        return navigator.userAgent.toLowerCase();
+    }-*/;
 
 }

@@ -7,6 +7,17 @@
     .topLevelContainer{
         position: relative;
     }
+    
+    .listsPanel{
+    	position: absolute; 
+    	left: 0px;
+    	right: 0px;
+    	bottom: 0px;
+    }
+    
+    .lists{
+        /*position: absolute;*/
+    }
   
   </ui:style>
   
@@ -19,9 +30,9 @@
         <hr/>
         </g:HTMLPanel>
     </g:FlowPanel>
-    <g:FlowPanel ui:field="listsPanel" >
-      <me:PageableApplicationList ui:field="applicationList"/>
-      <me:PageableLocationList ui:field="locationList"/>
+    <g:FlowPanel ui:field="listsPanel"  styleName="{style.listsPanel}">
+      <me:PageableApplicationList ui:field="applicationList" styleName="{style.lists}"/>
+      <me:PageableLocationList ui:field="locationList" styleName="{style.lists}"/>
     </g:FlowPanel>
   </g:FlowPanel>
   
