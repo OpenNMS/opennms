@@ -38,6 +38,7 @@ public class Application implements LocationsUpdatedEventHandler {
         m_locationManager = new DefaultLocationManager(getEventBus(), m_view, remoteService, remoteEventService, executor);
         
         m_view.initialize();
+        
     }
 
     public void onApplicationViewSelected() {

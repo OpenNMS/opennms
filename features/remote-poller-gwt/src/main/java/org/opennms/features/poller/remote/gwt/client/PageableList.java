@@ -58,6 +58,8 @@ public abstract class PageableList extends Composite {
      */
     public PageableList() {
         initWidget(uiBinder.createAndBindUi(this));
+        
+        pagingControls.getElement().setId("pagingControls");
     }
 
     /** {@inheritDoc} */

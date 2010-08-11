@@ -30,7 +30,7 @@ import com.google.gwt.user.client.ui.RootPanel;
 import com.google.gwt.user.client.ui.SplitLayoutPanel;
 import com.google.gwt.user.client.ui.Widget;
 
-public class DefaultApplicationView implements ApplicationView {
+public class DefaultApplicationView implements ApplicationView, ResizeHandler {
     
     interface Binder extends UiBinder<DockLayoutPanel, DefaultApplicationView> {}
     
@@ -259,11 +259,7 @@ public class DefaultApplicationView implements ApplicationView {
         Window.setTitle("OpenNMS - Remote Monitor");
         Window.enableScrolling(false);
         Window.setMargin("0px");
-        Window.addResizeHandler(new ResizeHandler() {
-    		public void onResize(final ResizeEvent event) {
-    			getMainPanel().setHeight(getAppHeight().toString());
-    		}
-        });
+        Window.addResizeHandler(this);
     }
 
     /* (non-Javadoc)
@@ -277,6 +273,8 @@ public class DefaultApplicationView implements ApplicationView {
         
         updateTimestamp();
         onLocationClick(null);
+        
+        onResize(null);
     }
 
     /* (non-Javadoc)
@@ -356,5 +354,10 @@ public class DefaultApplicationView implements ApplicationView {
 
     public void setStatusMessage(String statusMessage) {
         //getUpdateTimestamp().setText(statusMessage);
+    }
+
+    @Override
+    public void onResize(ResizeEvent event) {
+        getMainPanel().setHeight(getAppHeight().toString());
     }
 }
