@@ -37,10 +37,13 @@
 package org.opennms.netmgt.config;
 
 import java.io.Reader;
+import java.util.regex.Pattern;
 
 import junit.framework.TestCase;
 
 import org.exolab.castor.xml.ValidationException;
+import org.opennms.netmgt.config.capsd.Property;
+import org.opennms.netmgt.config.capsd.ProtocolPlugin;
 import org.opennms.test.ConfigurationTestUtils;
 import org.opennms.test.ThrowableAnticipator;
 
@@ -88,4 +91,22 @@ public class CapsdConfigManagerTest extends TestCase {
 //        assertNotNull("plugin for zero", plugin.getPlugin());
     }
     
+    public final void testHttpRegex() throws Exception {
+        CapsdConfigManager config = new DefaultCapsdConfigManager(Thread.currentThread().getContextClassLoader().getResourceAsStream("testHttpRegex.xml"));
+        ProtocolPlugin http = config.getProtocolPlugin("HTTP");
+        Property regexProperty = null;
+        for (Property prop : http.getPropertyCollection()) {
+            if ("response-text".equals(prop.getKey())) {
+                regexProperty = prop;
+                break;
+            }
+        }
+        assertEquals("HTTP regex does not match expected value", "~\\{.nodes.: \\[\\{.nodeid.:.*", regexProperty.getValue());
+
+        // This code approximates how this parameter is used inside
+        // {@link HttpPlugin#checkResponseBody(ConnectionConfig config, String response)
+        Pattern bodyPat = Pattern.compile(regexProperty.getValue().substring(1), Pattern.DOTALL);
+        assertTrue(bodyPat.matcher("{\"nodes\": [{\"nodeid\": \"19\", \"nodelabel\": \"\"},{\"nodeid\": \"21\", \"nodelabel\": \"\"}]}").matches());
+        assertFalse(bodyPat.matcher("{\"nodes\": [ ]}").matches());
+    }
 }
