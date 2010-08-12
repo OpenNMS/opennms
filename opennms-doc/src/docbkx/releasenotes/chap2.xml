@@ -40,7 +40,7 @@
 
 		<section id="opennms-1.8.3-bugs">
 			<title>Bug Fixes</title>
-					<para>Performance in the otuage editor has been improved.  (Bug
+					<para>Performance in the outage editor has been improved.  (Bug
 					<ulink url="http://bugzilla.opennms.org/show_bug.cgi?id=1225">#1225</ulink>)</para>
 				</listitem>
 
