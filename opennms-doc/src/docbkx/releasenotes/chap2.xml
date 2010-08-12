@@ -4,6 +4,39 @@
 
 	<subtitle>Changes in This OpenNMS</subtitle>
 
+	<section id="opennms-1.8.3">
+		<title>Changes in OpenNMS 1.8.3</title>
+
+		<section id="opennms-1.8.3-bugs">
+			<title>Bug Fixes</title>
+
+			<itemizedlist>
+
+				<listitem>
+					<para>Performance in the otuage editor has been improved.  (Bug
+					<ulink url="http://bugzilla.opennms.org/show_bug.cgi?id=1225">#1225</ulink>)</para>
+				</listitem>
+
+				<listitem>
+					<para>The "move up" and "move down" buttons in group modification were broken.  (Bug
+					<ulink url="http://bugzilla.opennms.org/show_bug.cgi?id=4034">#4034</ulink>)</para>
+				</listitem>
+
+				<listitem>
+					<para>Remote pollers cause excessive event logging.  (Bug
+					<ulink url="http://bugzilla.opennms.org/show_bug.cgi?id=4045">#4045</ulink>)</para>
+				</listitem>
+
+				<listitem>
+					<para>OpenNMS logging was still set to DEBUG, even though we're in a stable cycle.  (Bug
+					<ulink url="http://bugzilla.opennms.org/show_bug.cgi?id=4047">#4047</ulink>)</para>
+				</listitem>
+
+			</itemizedlist>
+
+		</section>
+	</section>
+
 	<section id="opennms-1.8.2">
 		<title>Changes in OpenNMS 1.8.2</title>
 
