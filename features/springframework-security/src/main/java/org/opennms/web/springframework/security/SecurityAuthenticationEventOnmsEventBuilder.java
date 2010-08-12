@@ -77,7 +77,9 @@ public class SecurityAuthenticationEventOnmsEventBuilder implements ApplicationL
             AuthenticationSuccessEvent authEvent = (AuthenticationSuccessEvent) event;
 
             EventBuilder builder = createEvent(SUCCESS_UEI, authEvent);
-            sendEvent(builder.getEvent());
+            if ("false".equalsIgnoreCase(System.getProperty("org.opennms.security.disableLoginSuccessEvent"))) {
+                sendEvent(builder.getEvent());
+            }
         }
         
         if (event instanceof AbstractAuthenticationFailureEvent) {
