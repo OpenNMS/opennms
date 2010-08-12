@@ -1,5 +1,8 @@
 #!/bin/sh - 
 
+# Ensure that UTF-8 encoding is being used
+LC_ALL=en_US.UTF-8 export LC_ALL
+
 show_help () {
     cat <<END
 Usage: $0 [category name] [format] [month format] [start month] [start date] [start year]
