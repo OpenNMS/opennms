@@ -356,7 +356,6 @@ public class DefaultApplicationView implements ApplicationView, ResizeHandler {
         //getUpdateTimestamp().setText(statusMessage);
     }
 
-    @Override
     public void onResize(ResizeEvent event) {
         getMainPanel().setHeight(getAppHeight().toString());
     }
