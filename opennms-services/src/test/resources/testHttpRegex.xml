@@ -1,0 +1,15 @@
+<?xml version="1.0"?>
+<!-- 24 hours -->
+<capsd-configuration 
+	rescan-frequency="86400000" 
+	initial-sleep-time="30000" 
+	max-suspect-thread-pool-size="6"
+        max-rescan-thread-pool-size="3"> 
+
+    <protocol-plugin protocol="HTTP" class-name="org.opennms.netmgt.capsd.plugins.HttpPlugin" scan="on">
+        <property key="port" value="80" />
+        <property key="timeout" value="3000" />
+        <property key="retry" value="1" />
+        <property key="response-text" value="~\{.nodes.: \[\{.nodeid.:.*" />
+    </protocol-plugin>
+</capsd-configuration>
