@@ -132,38 +132,38 @@ Threads Used: ${collector.threadCount}
 <c:forEach  var="svcCollector" items="${collector.serviceCollectors}">
 <tr>
 <td><a href="element/node.jsp?node=${svcCollector.parsedServiceID}">${svcCollector.serviceID}</a></td>
-<td>${svcCollector.collectionCount}</td>
-<td>${svcCollector.averageDurationBetweenCollections}</td>
-<td>${svcCollector.averageCollectionDuration}</td>
-<td>${svcCollector.totalCollectionDuration}</td>
-<td>${svcCollector.successfulCollectionCount}</td>
-<td>${svcCollector.averageSuccessfulCollectionDuration}</td>
-<td>${svcCollector.successfulCollectionDuration}</td>
+<td align="right">${svcCollector.collectionCount}</td>
+<td align="right">${svcCollector.averageDurationBetweenCollections}</td>
+<td align="right">${svcCollector.averageCollectionDuration}</td>
+<td align="right">${svcCollector.totalCollectionDuration}</td>
+<td align="right">${svcCollector.successfulCollectionCount}</td>
+<td align="right">${svcCollector.averageSuccessfulCollectionDuration}</td>
+<td align="right">${svcCollector.successfulCollectionDuration}</td>
 <c:choose>
 	<c:when test="${svcCollector.successPercentage > 50}" >
-		<td style="background: green"><fmt:formatNumber type="number" maxFractionDigits="1" minFractionDigits="1" value="${svcCollector.successPercentage}" /></td>
+		<td align="right" style="background: green"><fmt:formatNumber type="number" maxFractionDigits="1" minFractionDigits="1" value="${svcCollector.successPercentage}" /></td>
 	</c:when>
 	<c:when test="${svcCollector.successPercentage == -1}" >
-		<td style="background: yellow">No Collections</td>
+		<td align="right" style="background: yellow">No Collections</td>
 	</c:when>
 	<c:otherwise>
-		<td><fmt:formatNumber type="number" maxFractionDigits="1" minFractionDigits="1" value="${svcCollector.successPercentage}" /></td>
+		<td align="right"><fmt:formatNumber type="number" maxFractionDigits="1" minFractionDigits="1" value="${svcCollector.successPercentage}" /></td>
 	</c:otherwise>
 </c:choose>
 <c:choose>	
 	<c:when test="${svcCollector.errorPercentage > 50}">
-		<td style="background: red"><fmt:formatNumber type="number" minFractionDigits="1" maxFractionDigits="1" value="${svcCollector.errorPercentage}" /></td>
+		<td align="right" style="background: red"><fmt:formatNumber type="number" minFractionDigits="1" maxFractionDigits="1" value="${svcCollector.errorPercentage}" /></td>
 	</c:when>
 	<c:when test="${svcCollector.errorPercentage == -1}">
-		<td style="background: yellow">No Collections</td>
+		<td align="right" style="background: yellow">No Collections</td>
 	</c:when>
 	<c:otherwise>
-		<td><fmt:formatNumber type="number" maxFractionDigits="1" minFractionDigits="1" value="${svcCollector.errorPercentage}" /></td>
+		<td align="right"><fmt:formatNumber type="number" maxFractionDigits="1" minFractionDigits="1" value="${svcCollector.errorPercentage}" /></td>
 	</c:otherwise>
 </c:choose>
-<td>${svcCollector.errorCollectionCount}</td>
-<td>${svcCollector.averageErrorCollectionDuration}</td>
-<td>${svcCollector.errorCollectionDuration}</td>
+<td align="right">${svcCollector.errorCollectionCount}</td>
+<td align="right">${svcCollector.averageErrorCollectionDuration}</td>
+<td align="right">${svcCollector.errorCollectionDuration}</td>
 
 </tr>
 
