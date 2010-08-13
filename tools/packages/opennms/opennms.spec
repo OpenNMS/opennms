@@ -576,7 +576,7 @@ done
 
 echo ""
 echo " *** Installation complete.  You must still run the installer at"
-echo " *** \$OPENNMS_HOME/etc/install to be sure your database is up"
+echo " *** \$OPENNMS_HOME/bin/install to be sure your database is up"
 echo " *** to date before you start OpenNMS.  See the install guide at"
 echo " *** http://www.opennms.org/wiki/Installation:RPM and the"
 echo " *** release notes for details."

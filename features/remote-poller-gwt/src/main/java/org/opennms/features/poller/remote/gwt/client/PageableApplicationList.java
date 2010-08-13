@@ -80,7 +80,7 @@ public class PageableApplicationList extends PageableList implements Application
 
         private String getApplicationStatusHTML(final ApplicationInfo applicationInfo) {
             if (m_selected != null && checkIfApplicationIsSelected(applicationInfo.getName())) {
-                return getSelectedApplicationDetailsAsString(applicationInfo.getName());
+                return getSelectedApplicationDetailsAsString(applicationInfo.getName()) != null ? getSelectedApplicationDetailsAsString(applicationInfo.getName()) : applicationInfo.getStatusDetails().getReason();
             } else {
                 return applicationInfo.getStatusDetails().getReason();
             }
@@ -111,7 +111,11 @@ public class PageableApplicationList extends PageableList implements Application
      */
     public String getSelectedApplicationDetailsAsString(String name) {
         ApplicationDetails appDetails = m_selectedAppDetails.get(name);
-        return appDetails.getDetailsAsString();
+        if(appDetails != null) {
+            return appDetails.getDetailsAsString();
+        }else {
+            return null;
+        }
     }
     
     /**
