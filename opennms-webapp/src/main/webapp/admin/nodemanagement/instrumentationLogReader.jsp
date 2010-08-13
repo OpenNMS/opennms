@@ -74,15 +74,23 @@ for(int i = 5; i > 0; i--) {
 }
 File file = new File(baseFileName);
 
-if(file.exists()) {
+if(file.exists() && file.length() != 0) {
 	c.readLogMessagesFromFile(baseFileName);
 }
-
+pageContext.setAttribute("fileLength",file.length());
 pageContext.setAttribute("collector",c);
 pageContext.setAttribute("OpennmsHome",opennmsHome);
 
 %>
 <c_rt:set var="nan" value="<%=java.lang.Double.NaN%>"/>
+
+<c:choose>
+	<c:when test="${fileLength == 0}">
+		<script language="JavaScript">
+			alert ("Instrumentation.log either does not exist or is empty. Check to see if you have it set to DEBUG in log4j.properties")
+		</script>
+	</c:when>
+</c:choose>
 
 <br/>
 <p>
