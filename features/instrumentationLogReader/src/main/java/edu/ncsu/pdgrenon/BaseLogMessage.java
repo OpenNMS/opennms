@@ -52,17 +52,17 @@ public class BaseLogMessage implements LogMessage {
     }
     
     private static final DateFormat s_format = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss,S");
-    private static final String s_regexp = "(\\d{4}-\\d{2}-\\d{2} \\d{2}:\\d{2}:\\d{2},\\d{3}) DEBUG \\[([^\\]]+)] Collectd: collector.collect: (collectData: begin|collectData: end|error|persistDataQueueing: begin|persistDataQueueing: end): (\\d+/\\d{1,3}\\.\\d{1,3}\\.\\d{1,3}\\.\\d{1,3}/[\\w-]+).*";
+    private static final String s_regexp = "(\\d{4}-\\d{2}-\\d{2} \\d{2}:\\d{2}:\\d{2},\\d{3}) DEBUG \\[([^\\]]+)] Collectd: collector.collect: (begin|end|error|persistDataQueueing: begin|persistDataQueueing: end): ?(\\d+/\\d{1,3}\\.\\d{1,3}\\.\\d{1,3}\\.\\d{1,3}/[\\w-]+).*";
     private static final Pattern s_pattern = Pattern.compile(s_regexp);
 
     private static MsgType toMsgType(String msgIndicator) {
         if ("error".equals(msgIndicator)) {
             return MsgType.ERROR;
         }
-        if ("collectData: begin".equals(msgIndicator)) {
+        if ("begin".equals(msgIndicator)) {
             return MsgType.BEGIN_COLLECTION;
         }
-        if ("collectData: end".equals(msgIndicator)) {
+        if ("end".equals(msgIndicator)) {
             return MsgType.END_COLLECTION;
         }
         if ("persistDataQueueing: begin".equals(msgIndicator)) {
