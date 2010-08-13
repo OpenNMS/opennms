@@ -336,17 +336,17 @@ public class MapQuestMapPanel extends Composite implements MapPanel, HasDoubleCl
         String currentStyles = markerElement.getAttribute("style");
         
         if(markerImageSrc.equals("images/selected-DOWN.png") || markerImageSrc.equals("images/deselected-DOWN.png")) {
-            markerElement.setAttribute("style", currentStyles.replace("z-index: 90", "z-index: 140"));
-        }else if(markerImageSrc.equals("images/selected-DISCONNECTED.png") || markerImageSrc.equals("images/deselected-DISCONNECTED.png")) {
-            markerElement.setAttribute("style", currentStyles.replace("z-index: 90", "z-index: 130"));
-        }else if(markerImageSrc.equals("images/selected-MARGINAL.png") || markerImageSrc.equals("images/deselected-MARGINAL.png")) {
-            markerElement.setAttribute("style", currentStyles.replace("z-index: 90", "z-index: 120"));
-        }else if(markerImageSrc.equals("images/selected-UP.png") || markerImageSrc.equals("images/deselected-UP.png")) {
-            markerElement.setAttribute("style", currentStyles.replace("z-index: 90", "z-index: 110"));
-        }else if(markerImageSrc.equals("images/selected-STOPPED.png") || markerImageSrc.equals("images/deselected-STOPPED.png")) {
-            markerElement.setAttribute("style", currentStyles.replace("z-index: 90", "z-index: 100"));
-        }else if(markerImageSrc.equals("images/selected-UNKNOWN.png") || markerImageSrc.equals("images/deselected-UNKNOWN.png")) {
             markerElement.setAttribute("style", currentStyles.replace("z-index: 90", "z-index: 90"));
+        }else if(markerImageSrc.equals("images/selected-DISCONNECTED.png") || markerImageSrc.equals("images/deselected-DISCONNECTED.png")) {
+            markerElement.setAttribute("style", currentStyles.replace("z-index: 90", "z-index: 80"));
+        }else if(markerImageSrc.equals("images/selected-MARGINAL.png") || markerImageSrc.equals("images/deselected-MARGINAL.png")) {
+            markerElement.setAttribute("style", currentStyles.replace("z-index: 90", "z-index: 70"));
+        }else if(markerImageSrc.equals("images/selected-UP.png") || markerImageSrc.equals("images/deselected-UP.png")) {
+            markerElement.setAttribute("style", currentStyles.replace("z-index: 90", "z-index: 60"));
+        }else if(markerImageSrc.equals("images/selected-STOPPED.png") || markerImageSrc.equals("images/deselected-STOPPED.png")) {
+            markerElement.setAttribute("style", currentStyles.replace("z-index: 90", "z-index: 50"));
+        }else if(markerImageSrc.equals("images/selected-UNKNOWN.png") || markerImageSrc.equals("images/deselected-UNKNOWN.png")) {
+            markerElement.setAttribute("style", currentStyles.replace("z-index: 90", "z-index: 40"));
         }
         
         
