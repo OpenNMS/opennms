@@ -71,7 +71,7 @@ public class BaseLogMessageTest {
                     "CollectdScheduler-50 Pool-fiber4",
                     MsgType.BEGIN_COLLECTION,
                     "7/172.20.1.12/SNMP",
-                    "2010-05-26 12:12:40,785 DEBUG [CollectdScheduler-50 Pool-fiber4] Collectd: collector.collect: collectData: begin: 7/172.20.1.12/SNMP"
+                    "2010-05-26 12:12:40,785 DEBUG [CollectdScheduler-50 Pool-fiber4] Collectd: collector.collect: begin:7/172.20.1.12/SNMP"
                 }, 
                 { 
                     true,
@@ -79,7 +79,7 @@ public class BaseLogMessageTest {
                     "CollectdScheduler-50 Pool-fiber12",
                     MsgType.END_COLLECTION,
                     "83/172.20.1.15/SNMP",
-                    "2010-05-26 12:12:47,672 DEBUG [CollectdScheduler-50 Pool-fiber12] Collectd: collector.collect: collectData: end: 83/172.20.1.15/SNMP"
+                    "2010-05-26 12:12:47,672 DEBUG [CollectdScheduler-50 Pool-fiber12] Collectd: collector.collect: end:83/172.20.1.15/SNMP"
                 }, 
                 { 
                     true,
