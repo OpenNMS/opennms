@@ -21,6 +21,7 @@ import org.opennms.features.poller.remote.gwt.client.data.LocationFilter;
 import org.opennms.features.poller.remote.gwt.client.data.StatusFilter;
 import org.opennms.features.poller.remote.gwt.client.data.TagFilter;
 import org.opennms.features.poller.remote.gwt.client.events.ApplicationDeselectedEvent;
+import org.opennms.features.poller.remote.gwt.client.events.ApplicationDetailsRetrievedEvent;
 import org.opennms.features.poller.remote.gwt.client.events.ApplicationSelectedEvent;
 import org.opennms.features.poller.remote.gwt.client.events.GWTMarkerClickedEvent;
 import org.opennms.features.poller.remote.gwt.client.events.GWTMarkerInfoWindowRefreshEvent;
@@ -545,18 +546,16 @@ public class DefaultLocationManager implements LocationManager, RemotePollerPres
 
         m_view.updateSelectedApplications(m_applicationFilter.getApplications());
         
-        //This has been commented out because of a scalability problem. We have yet
-        // to review if we can make this query faster.
-//        m_remoteService.getApplicationDetails(applicationName, new AsyncCallback<ApplicationDetails>() {
-//
-//            public void onFailure(final Throwable t) {
-//                // TODO: Do something on failure.
-//            }
-//
-//            public void onSuccess(final ApplicationDetails applicationDetails) {
-//                m_eventBus.fireEvent(new ApplicationDetailsRetrievedEvent(applicationDetails));
-//            }
-//        });
+        m_remoteService.getApplicationDetails(applicationName, new AsyncCallback<ApplicationDetails>() {
+
+            public void onFailure(final Throwable t) {
+                // TODO: Do something on failure.
+            }
+
+            public void onSuccess(final ApplicationDetails applicationDetails) {
+                m_eventBus.fireEvent(new ApplicationDetailsRetrievedEvent(applicationDetails));
+            }
+        });
     }
 
     /** {@inheritDoc} */
