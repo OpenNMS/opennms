@@ -43,12 +43,13 @@
 	session="true"
 %>
 
-
 <%@page import="edu.ncsu.pdgrenon.Collector"%>
 <%@page import="java.io.*"%>
 <%@ taglib uri="http://java.sun.com/jsp/jstl/core" prefix="c"%>
 <%@ taglib uri="http://java.sun.com/jsp/jstl/fmt" prefix="fmt"%>
 <%@ taglib uri="http://java.sun.com/jsp/jstl/functions" prefix="fn"%>
+
+
 
 <jsp:include page="/includes/header.jsp" flush="false" >
   <jsp:param name="title" value="Instrumentation Log Reader" />
@@ -74,9 +75,12 @@ for(int i = 5; i > 0; i--) {
 }
 File file = new File(baseFileName);
 
+
+
 if(file.exists() && file.length() != 0) {
 	c.readLogMessagesFromFile(baseFileName);
 }
+
 pageContext.setAttribute("fileLength",file.length());
 pageContext.setAttribute("collector",c);
 pageContext.setAttribute("OpennmsHome",opennmsHome);
@@ -137,24 +141,24 @@ Threads Used: ${collector.threadCount}
 <td>${svcCollector.successfulCollectionDuration}</td>
 <c:choose>
 	<c:when test="${svcCollector.successPercentage > 50}" >
-		<td style="background: green">${svcCollector.successPercentage}</td>
+		<td style="background: green"><fmt:formatNumber type="number" maxFractionDigits="1" minFractionDigits="1" value="${svcCollector.successPercentage}" /></td>
 	</c:when>
 	<c:when test="${svcCollector.successPercentage == -1}" >
 		<td style="background: yellow">No Collections</td>
 	</c:when>
 	<c:otherwise>
-		<td>${svcCollector.successPercentage}</td>
+		<td><fmt:formatNumber type="number" maxFractionDigits="1" minFractionDigits="1" value="${svcCollector.successPercentage}" /></td>
 	</c:otherwise>
 </c:choose>
 <c:choose>	
 	<c:when test="${svcCollector.errorPercentage > 50}">
-		<td style="background: red">${svcCollector.errorPercentage}</td>
+		<td style="background: red"><fmt:formatNumber type="number" minFractionDigits="1" maxFractionDigits="1" value="${svcCollector.errorPercentage}" /></td>
 	</c:when>
 	<c:when test="${svcCollector.errorPercentage == -1}">
 		<td style="background: yellow">No Collections</td>
 	</c:when>
 	<c:otherwise>
-		<td>${svcCollector.errorPercentage}</td>
+		<td><fmt:formatNumber type="number" maxFractionDigits="1" minFractionDigits="1" value="${svcCollector.errorPercentage}" /></td>
 	</c:otherwise>
 </c:choose>
 <td>${svcCollector.errorCollectionCount}</td>
