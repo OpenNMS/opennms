@@ -212,4 +212,9 @@ public class PolledService implements MonitoredService, Serializable, Comparable
             .append(this.getServiceId(), that.getServiceId())
             .toComparison();
     }
+
+	public String getSvcUrl() {
+		// TODO Auto-generated method stub
+		return null;
+	}
 }

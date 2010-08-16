@@ -72,7 +72,7 @@ import org.opennms.netmgt.poller.NetworkInterfaceNotSupportedException;
  */
 
 @Distributable
-final public class RadiusAuthMonitor extends IPv4Monitor {
+final public class RadiusAuthMonitor extends IPMonitor {
     /**
      * Number of miliseconds to wait before timing out a radius AUTH request
      */

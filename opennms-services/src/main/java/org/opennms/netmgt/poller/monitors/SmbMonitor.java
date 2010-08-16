@@ -73,7 +73,7 @@ import org.opennms.netmgt.poller.NetworkInterfaceNotSupportedException;
 
 // I this thise needs a jcifs.properties file so we can't distribute it now
 @Distributable(DistributionContext.DAEMON)
-final public class SmbMonitor extends IPv4Monitor {
+final public class SmbMonitor extends IPMonitor {
     /**
      * Default retries.
      */

@@ -86,7 +86,7 @@ import org.opennms.netmgt.poller.NetworkInterfaceNotSupportedException;
  */
 
 @Distributable
-final public class SmtpMonitor extends IPv4Monitor {
+final public class SmtpMonitor extends IPMonitor {
 
     /**
      * Default SMTP port.

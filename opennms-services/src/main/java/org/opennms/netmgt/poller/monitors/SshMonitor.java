@@ -63,7 +63,7 @@ import org.opennms.netmgt.protocols.ssh.Ssh;
  */
 
 @Distributable
-final public class SshMonitor extends IPv4Monitor {
+final public class SshMonitor extends IPMonitor {
 
     private static final int DEFAULT_RETRY = 0;
     /** Constant <code>DEFAULT_TIMEOUT=3000</code> */

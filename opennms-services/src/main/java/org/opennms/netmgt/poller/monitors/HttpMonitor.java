@@ -97,7 +97,7 @@ import org.opennms.netmgt.poller.NetworkInterfaceNotSupportedException;
  * @version $Id: $
  */
 @Distributable
-public class HttpMonitor extends IPv4Monitor {
+public class HttpMonitor extends IPMonitor {
 
     /**
      * Default HTTP ports.

@@ -24,7 +24,7 @@ import org.opennms.core.utils.ParameterMap;
  * @author ranger
  * @version $Id: $
  */
-public class WebMonitor extends IPv4Monitor {
+public class WebMonitor extends IPMonitor {
 
     static Integer DEFAULT_TIMEOUT = 3000;
     static Integer DEFAULT_PORT = 80;

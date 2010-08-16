@@ -71,7 +71,7 @@ import org.opennms.protocols.ntp.NtpMessage;
  */
 
 @Distributable
-final public class NtpMonitor extends IPv4Monitor {
+final public class NtpMonitor extends IPMonitor {
     /**
      * Default NTP port.
      */

@@ -78,7 +78,7 @@ import com.novell.ldap.LDAPSocketFactory;
  */
 
 @Distributable
-final public class LdapMonitor extends IPv4Monitor {
+final public class LdapMonitor extends IPMonitor {
 
     /**
      * Default retries.

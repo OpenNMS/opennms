@@ -77,7 +77,7 @@ import org.opennms.netmgt.poller.NetworkInterfaceNotSupportedException;
 
 // this is marked not distributable because it relies on a shared library
 @Distributable(DistributionContext.DAEMON)
-final public class StrafePingMonitor extends IPv4Monitor {
+final public class StrafePingMonitor extends IPMonitor {
     private static final int DEFAULT_MULTI_PING_COUNT = 20;
     private static final long DEFAULT_PING_INTERVAL = 50;
     private static final int DEFAULT_FAILURE_PING_COUNT = 20;

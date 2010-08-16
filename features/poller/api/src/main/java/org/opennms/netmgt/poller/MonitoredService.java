@@ -41,34 +41,39 @@ import java.net.InetAddress;
  * @version $Id: $
  */
 public interface MonitoredService {
+	
+	/**
+	 * Returns a URL representation of the service to monitor and its parameters
+	 */
+	public String getSvcUrl();
 
     /**
      * Returns the svcName associated with this monitored service
      *
      * @return the svcName
      */
-    public abstract String getSvcName();
+    public String getSvcName();
 
     /**
      * Returns the ipAddr string associated with this monitored service
      *
      * @return the ipAddr string
      */
-    public abstract String getIpAddr();
+    public String getIpAddr();
 
     /**
      * Returns the nodeId of the node that this service is associated with
      *
      * @return the nodeid
      */
-    public abstract int getNodeId();
+    public int getNodeId();
 
     /**
      * Returns the label of the node that this service is associated with
      *
      * @return the nodelabel
      */
-    public abstract String getNodeLabel();
+    public String getNodeLabel();
 
     /**
      * Returns the Netinterface object for this service.  This netinterface object is
@@ -76,13 +81,13 @@ public interface MonitoredService {
      *
      * @return the Netinterface
      */
-    public abstract NetworkInterface getNetInterface();
+    public NetworkInterface getNetInterface();
 
     /**
      * Returns the InetAddress associated with the service
      *
      * @return the InetAddress
      */
-    public abstract InetAddress getAddress();
+    public InetAddress getAddress();
 
 }

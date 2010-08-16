@@ -73,7 +73,7 @@ import org.opennms.netmgt.poller.NetworkInterfaceNotSupportedException;
  * @version $Id: $
  */
 @Distributable(DistributionContext.DAEMON)
-final public class DhcpMonitor extends IPv4Monitor {
+final public class DhcpMonitor extends IPMonitor {
     /**
      * Default retries.
      */

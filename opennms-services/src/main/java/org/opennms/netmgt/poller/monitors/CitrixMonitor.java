@@ -81,7 +81,7 @@ import org.opennms.netmgt.poller.MonitoredService;
  * @version $Id: $
  */
 @Distributable
-final public class CitrixMonitor extends IPv4Monitor {
+final public class CitrixMonitor extends IPMonitor {
 
     /**
      * Default FTP port.

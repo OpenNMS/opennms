@@ -84,7 +84,7 @@ import org.opennms.netmgt.utils.ExecRunner;
 
 // this is marked not distributable because it relieds on the dhcpd deamon of opennms
 @Distributable(DistributionContext.DAEMON)
-final public class GpMonitor extends IPv4Monitor {
+final public class GpMonitor extends IPMonitor {
     /**
      * Default retries.
      */

@@ -75,7 +75,7 @@ import org.opennms.netmgt.poller.NetworkInterfaceNotSupportedException;
  */
 
 @Distributable
-final public class TrivialTimeMonitor extends IPv4Monitor {
+final public class TrivialTimeMonitor extends IPMonitor {
     
     /**
      * Default layer-4 protocol to use

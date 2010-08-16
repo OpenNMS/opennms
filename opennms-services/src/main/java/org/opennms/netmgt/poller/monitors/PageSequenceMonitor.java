@@ -95,7 +95,7 @@ import org.opennms.netmgt.poller.MonitoredService;
  * @version $Id: $
  */
 @Distributable
-public class PageSequenceMonitor extends IPv4Monitor {
+public class PageSequenceMonitor extends IPMonitor {
     public static class PageSequenceMonitorException extends RuntimeException {
         private static final long serialVersionUID = 1346757238604080088L;
 

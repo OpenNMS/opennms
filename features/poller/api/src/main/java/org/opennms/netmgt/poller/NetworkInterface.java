@@ -68,6 +68,8 @@ public interface NetworkInterface {
      * </P>
      */
     public static final int TYPE_IPV4 = 1; // InetAddress object returned
+    
+    public static final int TYPE_IPV6 = 2;
 
     /**
      * <P>

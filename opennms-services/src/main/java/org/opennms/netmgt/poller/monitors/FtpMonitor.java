@@ -82,7 +82,7 @@ import org.opennms.netmgt.poller.NetworkInterfaceNotSupportedException;
  * @version $Id: $
  */
 @Distributable
-final public class FtpMonitor extends IPv4Monitor {
+final public class FtpMonitor extends IPMonitor {
 
     /**
      * Default FTP port.

@@ -75,7 +75,7 @@ import org.opennms.netmgt.poller.NetworkInterfaceNotSupportedException;
 
 // this is marked not distributable because it relies on a shared library
 @Distributable(DistributionContext.DAEMON)
-final public class IcmpMonitor extends IPv4Monitor {
+final public class IcmpMonitor extends IPMonitor {
     /**
      * Constructs a new monitor.
      *
