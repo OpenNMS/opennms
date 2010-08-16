@@ -41,8 +41,9 @@
     <property name="locationDataService" ref="locationDataService" />
   </bean>
 
+<!-- Don't need this anymore since we update the locations and applications on a schedule 
   <bean id="locationBroadcastProcessor" class="org.opennms.features.poller.remote.gwt.server.LocationBroadcastProcessor" />
-
+ -->
   <!--
   <bean name="locationEventListenerAdapter" class="org.opennms.netmgt.model.events.AnnotationBasedEventListenerAdapter">
     <property name="annotatedListener" ref="locationBroadcastProcessor" />

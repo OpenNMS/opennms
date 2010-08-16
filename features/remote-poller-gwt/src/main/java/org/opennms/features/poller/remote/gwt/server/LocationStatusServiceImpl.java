@@ -48,14 +48,15 @@ public class LocationStatusServiceImpl extends RemoteEventServiceServlet impleme
             m_locationDataManager = m_context.getBean(LocationDataManager.class);
         }
 
-        if (m_locationBroadcastProcessor == null) {
-            m_locationBroadcastProcessor = m_context.getBean(LocationBroadcastProcessor.class);
-            m_locationBroadcastProcessor.setEventHandler(new LocationEventHandler() {
-                public void sendEvent(final MapRemoteEvent event) {
-                    addEvent(MapRemoteEventHandler.LOCATION_EVENT_DOMAIN, event);
-                }
-            });
-        }
+        // Don't do event handling since we update location and app status on a schedule
+//        if (m_locationBroadcastProcessor == null) {
+//            m_locationBroadcastProcessor = m_context.getBean(LocationBroadcastProcessor.class);
+//            m_locationBroadcastProcessor.setEventHandler(new LocationEventHandler() {
+//                public void sendEvent(final MapRemoteEvent event) {
+//                    addEvent(MapRemoteEventHandler.LOCATION_EVENT_DOMAIN, event);
+//                }
+//            });
+//        }
     }
 
     /**

@@ -85,7 +85,7 @@ public class LocationBroadcastProcessor implements InitializingBean, DisposableB
                 m_lastRun = now;
             }
         };
-        m_timer.schedule(m_task, UPDATE_PERIOD, UPDATE_PERIOD);
+        //m_timer.schedule(m_task, UPDATE_PERIOD, UPDATE_PERIOD);
     }
     
     /**
