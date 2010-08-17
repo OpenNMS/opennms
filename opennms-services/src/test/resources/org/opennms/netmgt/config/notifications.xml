@@ -1,0 +1,37 @@
+<?xml version="1.0"?>
+<notifications xmlns="http://xmlns.opennms.org/xsd/notifications">
+    <header>
+        <rev>1.2</rev>
+        <created>Wednesday, February 6, 2002 10:10:00 AM EST</created>
+        <mstation>localhost</mstation>
+    </header>
+    <notification name="crazyTestNotification" status="on">
+        <uei>uei.opennms.org/nodes/crazyTestNotification</uei>
+        <rule>IPADDR != '0.0.0.0'</rule>
+        <destinationPath>Email-Admin</destinationPath>
+        <text-message>The %service% service poll on interface
+%interfaceresolve% (%interface%) &#xd;
+on node %nodelabel% failed at %time%. &#xd;
+&#xd;
++------------+&#xd;
+| Extra Info |&#xd;
++------------+&#xd;
+Notification Time: %time%&#xd;
+Notification URL:
+http://1.1.1.1:8980/opennms/notification/detail.jsp?
+notice=%noticeid%&#xd;
+Event URL: http://1.1.1.1:8980/opennms/event/detail.jsp?
+id=%eventid%&#xd;
+Node Detail URL:
+http://1.1.1.1:8980/opennms/element/node.jsp?node=%nodeid%&#xd;
+All Alarms URL:
+http://1.1.1.1:8980/opennms/alarm/list.htm?filter=node=%nodeid%&#xd;
+All Outages URL:
+http://1.1.1.1:8980/opennms/outage/list.htm?filter=node=%nodeid%&#xd;
+Possible Services Affected: %service%</text-message>
+        <subject>Notice #%noticeid%: %service% down on 
+%interfaceresolve%
+(%interface%) on node %nodelabel%.</subject>
+        <numeric-message>111-%noticeid%</numeric-message>
+    </notification>
+</notifications>

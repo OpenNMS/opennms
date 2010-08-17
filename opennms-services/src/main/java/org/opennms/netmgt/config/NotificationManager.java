@@ -158,7 +158,7 @@ public abstract class NotificationManager {
      */
     @Deprecated
     public synchronized void parseXML(final Reader reader) throws MarshalException, ValidationException {
-        m_notifications = CastorUtils.unmarshal(Notifications.class, reader);
+        m_notifications = CastorUtils.unmarshal(Notifications.class, reader, true);
         oldHeader = m_notifications.getHeader();
     }
 
@@ -170,7 +170,7 @@ public abstract class NotificationManager {
      * @throws org.exolab.castor.xml.ValidationException if any.
      */
     public synchronized void parseXML(final InputStream stream) throws MarshalException, ValidationException {
-        m_notifications = CastorUtils.unmarshal(Notifications.class, stream);
+        m_notifications = CastorUtils.unmarshal(Notifications.class, stream, true);
         oldHeader = m_notifications.getHeader();
     }
 

@@ -137,7 +137,7 @@ public class NotificationsTestCase {
     
     }
 
-    private MockDatabase createDatabase(MockNetwork network) throws Exception {
+    protected MockDatabase createDatabase(MockNetwork network) throws Exception {
         MockDatabase db = new MockDatabase();
         DataSourceFactory.setInstance(db);
         db.populate(network);
@@ -148,7 +148,7 @@ public class NotificationsTestCase {
      * TODO Use {@link MockNetwork#createStandardNetwork()} instead?
      * @return
      */
-    private MockNetwork createMockNetwork() {
+    protected MockNetwork createMockNetwork() {
         MockNetwork network = new MockNetwork();
         network.setCriticalService("ICMP");
         network.addNode(1, "Router");
