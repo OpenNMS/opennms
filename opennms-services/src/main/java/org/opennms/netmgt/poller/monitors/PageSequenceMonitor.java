@@ -47,6 +47,12 @@ import java.io.StringReader;
 import java.io.UnsupportedEncodingException;
 import java.net.URI;
 import java.net.URISyntaxException;
+import java.security.NoSuchAlgorithmException;
+import java.security.KeyManagementException;
+import java.security.Provider;
+import java.security.SecureRandom;
+import java.security.cert.CertificateException;
+import java.security.cert.X509Certificate;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.LinkedHashMap;
@@ -55,6 +61,16 @@ import java.util.Map;
 import java.util.Properties;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
+
+import javax.net.ssl.HostnameVerifier;
+import javax.net.ssl.KeyManager;
+import javax.net.ssl.SSLContext;
+import javax.net.ssl.SSLContextSpi;
+import javax.net.ssl.SSLEngine;
+import javax.net.ssl.SSLServerSocketFactory;
+import javax.net.ssl.SSLSessionContext;
+import javax.net.ssl.TrustManager;
+import javax.net.ssl.X509TrustManager;
 
 import org.apache.http.Header;
 import org.apache.http.HttpHost;
@@ -69,6 +85,9 @@ import org.apache.http.client.methods.HttpUriRequest;
 import org.apache.http.client.params.ClientPNames;
 import org.apache.http.client.params.CookiePolicy;
 import org.apache.http.client.utils.URLEncodedUtils;
+import org.apache.http.conn.scheme.Scheme;
+import org.apache.http.conn.scheme.SchemeRegistry;
+import org.apache.http.conn.ssl.X509HostnameVerifier;
 import org.apache.http.conn.ssl.SSLSocketFactory;
 import org.apache.http.impl.client.DefaultHttpClient;
 import org.apache.http.impl.client.DefaultHttpRequestRetryHandler;
@@ -103,6 +122,12 @@ import org.opennms.netmgt.poller.MonitoredService;
  */
 @Distributable
 public class PageSequenceMonitor extends IPv4Monitor {
+    // Make sure that the {@link EmptyKeyRelaxedTrustSSLContext} algorithm
+    // is available to JSSE
+    static {
+        java.security.Security.addProvider(new EmptyKeyRelaxedTrustProvider());
+    }
+
     public static class PageSequenceMonitorException extends RuntimeException {
         private static final long serialVersionUID = 1346757238604080088L;
 
@@ -116,6 +141,91 @@ public class PageSequenceMonitor extends IPv4Monitor {
 
         public PageSequenceMonitorException(String message, Throwable cause) {
             super(message, cause);
+        }
+    }
+
+    private static final class EmptyKeyRelaxedTrustProvider extends Provider {
+        protected EmptyKeyRelaxedTrustProvider() {
+            super(EmptyKeyRelaxedTrustSSLContext.ALGORITHM + "Provider", 1.0, null);
+            put(
+                "SSLContext." + EmptyKeyRelaxedTrustSSLContext.ALGORITHM,
+                EmptyKeyRelaxedTrustSSLContext.class.getName()
+            );
+        }
+    }
+
+    public static final class EmptyKeyRelaxedTrustSSLContext extends SSLContextSpi {
+        public static final String ALGORITHM = "EmptyKeyRelaxedTrust";
+
+        private final SSLContext m_delegate;
+
+        public EmptyKeyRelaxedTrustSSLContext() {
+            SSLContext customContext = null;
+
+            try {
+                // Use a blank list of key managers so no SSL keys will be available
+                KeyManager[] keyManager = null;
+                TrustManager[] trustManagers = { new X509TrustManager() {
+
+                    public void checkClientTrusted(X509Certificate[] chain,
+                            String authType) throws CertificateException {
+                        // Perform no checks
+                    }
+
+                    public void checkServerTrusted(X509Certificate[] chain,
+                            String authType) throws CertificateException {
+                        // Perform no checks
+                    }
+
+                    public X509Certificate[] getAcceptedIssuers() {
+                        return null;
+                    }}
+                };
+                customContext = SSLContext.getInstance("SSL");
+                customContext.init(keyManager, trustManagers, new java.security.SecureRandom());
+            } catch (NoSuchAlgorithmException e) {
+                // Should never happen
+                ThreadCategory.getInstance(this.getClass()).error("Could not find SSL algorithm in JVM", e);
+            } catch (KeyManagementException e) {
+                // Should never happen
+                ThreadCategory.getInstance(this.getClass()).error("Could not find SSL algorithm in JVM", e);
+            }
+            m_delegate = customContext;
+        }
+
+        @Override
+        protected SSLEngine engineCreateSSLEngine() {
+            return m_delegate.createSSLEngine();
+        }
+
+        @Override
+        protected SSLEngine engineCreateSSLEngine(String arg0, int arg1) {
+            return m_delegate.createSSLEngine(arg0, arg1);
+        }
+
+        @Override
+        protected SSLSessionContext engineGetClientSessionContext() {
+            return m_delegate.getClientSessionContext();
+        }
+
+        @Override
+        protected SSLSessionContext engineGetServerSessionContext() {
+            return m_delegate.getServerSessionContext();
+        }
+
+        @Override
+        protected SSLServerSocketFactory engineGetServerSocketFactory() {
+            return m_delegate.getServerSocketFactory();
+        }
+
+        @Override
+        protected javax.net.ssl.SSLSocketFactory engineGetSocketFactory() {
+            return m_delegate.getSocketFactory();
+        }
+
+        @Override
+        protected void engineInit(KeyManager[] km, TrustManager[] tm, SecureRandom arg2) throws KeyManagementException {
+            // Don't do anything, we've already initialized everything in the constructor
         }
     }
 
@@ -330,14 +440,20 @@ public class PageSequenceMonitor extends IPv4Monitor {
                     method.getParams().setParameter(CoreProtocolPNames.USER_AGENT, "OpenNMS PageSequenceMonitor (Service name: " + svc.getSvcName() + ")");
                 }
 
-                String disableVerification = m_page.getDisableHostVerification();
-                if (Boolean.parseBoolean(disableVerification)) {
+                if ("https".equals(uri.getScheme())) {
+                    SchemeRegistry registry = client.getConnectionManager().getSchemeRegistry();
+                    Scheme https = registry.getScheme("https");
+                    // Override the trust validation with a lenient implementation
+                    SSLSocketFactory factory = new SSLSocketFactory(SSLContext.getInstance(EmptyKeyRelaxedTrustSSLContext.ALGORITHM));
+
                     // @see http://hc.apache.org/httpcomponents-client-4.0.1/tutorial/html/connmgmt.html
-                    ((SSLSocketFactory)client.getConnectionManager().getSchemeRegistry().getScheme("https").getSocketFactory()).setHostnameVerifier(SSLSocketFactory.ALLOW_ALL_HOSTNAME_VERIFIER);
-                } else {
-                    if (!"https".equals(uri.getScheme())) {
-                        log().warn("disable-host-verification is enabled on a non-SSL URI (which has no effect): " + uri.toString());
+                    if (Boolean.parseBoolean(m_page.getDisableHostVerification())) {
+                        factory.setHostnameVerifier(SSLSocketFactory.ALLOW_ALL_HOSTNAME_VERIFIER);
                     }
+
+                    Scheme lenient = new Scheme(https.getName(), factory, https.getDefaultPort());
+                    // This will replace the existing "https" schema
+                    registry.register(lenient);
                 }
 
                 if (m_parms.size() > 0) {
@@ -401,6 +517,9 @@ public class PageSequenceMonitor extends IPv4Monitor {
                     updateSequenceProperties(sequenceProperties, matcher);
                 }
 
+            } catch (NoSuchAlgorithmException e) {
+                // Should never happen
+                throw new PageSequenceMonitorException("Could not find appropriate SSL context provider: " + e.getMessage(), e);
             } catch (URISyntaxException e) {
                 throw new IllegalArgumentException("unable to construct URL for page: " + e, e);
             } catch (IOException e) {
@@ -664,7 +783,7 @@ public class PageSequenceMonitor extends IPv4Monitor {
             serviceStatus.setProperties(responseTimes);
             return serviceStatus;
         } catch (IllegalArgumentException e) {
-            log().error("Invalid parameters to monitor: " + e, e);
+            log().error("Invalid parameters to monitor: " + e.getMessage(), e);
             serviceStatus = PollStatus.unavailable("Invalid parameter to monitor: " + e.getMessage() + ".  See log for details.");
             serviceStatus.setProperties(responseTimes);
             return serviceStatus;
