@@ -71,6 +71,10 @@ public class SMSPingMonitorTest {
 			public String getSvcName() {
 				return "SMS";
 			}
+
+			public String getSvcUrl() {
+				return null;
+			}
 		};
 	}
 

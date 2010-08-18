@@ -395,4 +395,7 @@ public class MockService extends MockElement implements MonitoredService {
 		return MockEventUtil.createDemandPollServiceEvent("Test", this, demandPollId);
 	}
 
+    public String getSvcUrl() {
+        return null;
+    }
 }

@@ -54,6 +54,10 @@ public class MobileMsgSequenceMonitorTest {
 			public String getSvcName() {
 				return "SMS";
 			}
+
+			public String getSvcUrl() {
+				return null;
+			}
 		};
 		
 		m_monitor = createAndInitializeMonitor();
