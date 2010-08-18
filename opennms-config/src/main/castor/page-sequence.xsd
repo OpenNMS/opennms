@@ -47,10 +47,10 @@
       <attribute name="scheme" type="string" use="optional" default="http" />
       <attribute name="user-info" type="string" use="optional" />
       <attribute name="host" type="string" use="optional" default="${ipaddr}" />
-      <attribute name="disable-host-verification" type="string" use="optional" default="true">
+      <attribute name="disable-ssl-verification" type="string" use="optional" default="true">
         <annotation>
           <documentation>
-            This element is used to enable or disable SSL host verification. Default: true (host verification is disabled)
+            This element is used to enable or disable SSL host and certificate verification. Default: true (verification is disabled)
           </documentation>
         </annotation>
       </attribute>

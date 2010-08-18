@@ -47,8 +47,8 @@ import java.io.StringReader;
 import java.io.UnsupportedEncodingException;
 import java.net.URI;
 import java.net.URISyntaxException;
-import java.security.NoSuchAlgorithmException;
 import java.security.KeyManagementException;
+import java.security.NoSuchAlgorithmException;
 import java.security.Provider;
 import java.security.SecureRandom;
 import java.security.cert.CertificateException;
@@ -62,7 +62,6 @@ import java.util.Properties;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
-import javax.net.ssl.HostnameVerifier;
 import javax.net.ssl.KeyManager;
 import javax.net.ssl.SSLContext;
 import javax.net.ssl.SSLContextSpi;
@@ -87,7 +86,6 @@ import org.apache.http.client.params.CookiePolicy;
 import org.apache.http.client.utils.URLEncodedUtils;
 import org.apache.http.conn.scheme.Scheme;
 import org.apache.http.conn.scheme.SchemeRegistry;
-import org.apache.http.conn.ssl.X509HostnameVerifier;
 import org.apache.http.conn.ssl.SSLSocketFactory;
 import org.apache.http.impl.client.DefaultHttpClient;
 import org.apache.http.impl.client.DefaultHttpRequestRetryHandler;
@@ -441,19 +439,19 @@ public class PageSequenceMonitor extends IPv4Monitor {
                 }
 
                 if ("https".equals(uri.getScheme())) {
-                    SchemeRegistry registry = client.getConnectionManager().getSchemeRegistry();
-                    Scheme https = registry.getScheme("https");
-                    // Override the trust validation with a lenient implementation
-                    SSLSocketFactory factory = new SSLSocketFactory(SSLContext.getInstance(EmptyKeyRelaxedTrustSSLContext.ALGORITHM));
+                    if (Boolean.parseBoolean(m_page.getDisableSslVerification())) {
+                        SchemeRegistry registry = client.getConnectionManager().getSchemeRegistry();
+                        Scheme https = registry.getScheme("https");
+                        // Override the trust validation with a lenient implementation
+                        SSLSocketFactory factory = new SSLSocketFactory(SSLContext.getInstance(EmptyKeyRelaxedTrustSSLContext.ALGORITHM));
 
-                    // @see http://hc.apache.org/httpcomponents-client-4.0.1/tutorial/html/connmgmt.html
-                    if (Boolean.parseBoolean(m_page.getDisableHostVerification())) {
+                        // @see http://hc.apache.org/httpcomponents-client-4.0.1/tutorial/html/connmgmt.html
                         factory.setHostnameVerifier(SSLSocketFactory.ALLOW_ALL_HOSTNAME_VERIFIER);
-                    }
 
-                    Scheme lenient = new Scheme(https.getName(), factory, https.getDefaultPort());
-                    // This will replace the existing "https" schema
-                    registry.register(lenient);
+                        Scheme lenient = new Scheme(https.getName(), factory, https.getDefaultPort());
+                        // This will replace the existing "https" schema
+                        registry.register(lenient);
+                    }
                 }
 
                 if (m_parms.size() > 0) {
