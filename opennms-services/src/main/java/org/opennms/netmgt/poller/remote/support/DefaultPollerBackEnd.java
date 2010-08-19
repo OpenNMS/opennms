@@ -115,6 +115,7 @@ public class DefaultPollerBackEnd implements PollerBackEnd, SpringServiceDaemon 
     private int m_disconnectedTimeout;
 
     private Date m_configurationTimestamp = null;
+    private long m_minimumConfigurationReloadInterval;
 
     /**
      * <p>afterPropertiesSet</p>
@@ -128,6 +129,8 @@ public class DefaultPollerBackEnd implements PollerBackEnd, SpringServiceDaemon 
         Assert.notNull(m_timeKeeper, "The timeKeeper must be set");
         Assert.notNull(m_eventIpcManager, "The eventIpcManager must be set");
         Assert.state(m_disconnectedTimeout > 0, "the disconnectedTimeout property must be set");
+        
+        m_minimumConfigurationReloadInterval = Long.getLong("opennms.pollerBackend.minimumConfigurationReloadInterval", 300000L).longValue();
 
         m_configurationTimestamp = m_timeKeeper.getCurrentDate();
     }
@@ -175,11 +178,24 @@ public class DefaultPollerBackEnd implements PollerBackEnd, SpringServiceDaemon 
     }
 
     private MonitorStatus checkForGlobalConfigChange(final Date currentConfigurationVersion) {
-        if (m_configurationTimestamp.after(currentConfigurationVersion)) {
+        if (configurationUpdateNeeded(currentConfigurationVersion)) {
             return MonitorStatus.CONFIG_CHANGED;
         } else {
             return MonitorStatus.STARTED;
         }
+    }
+
+    private boolean configurationUpdateNeeded(final Date currentConfigurationVersion) {
+        if (configIntervalExceedsMinimalInterval(currentConfigurationVersion)) {
+            return m_configurationTimestamp.after(currentConfigurationVersion);
+        } else {
+            return false;
+        }
+    }
+
+    private boolean configIntervalExceedsMinimalInterval(
+            final Date currentConfigurationVersion) {
+        return m_minimumConfigurationReloadInterval > 0 && m_timeKeeper.getCurrentTime() - currentConfigurationVersion.getTime() > m_minimumConfigurationReloadInterval;
     }
 
     /**
