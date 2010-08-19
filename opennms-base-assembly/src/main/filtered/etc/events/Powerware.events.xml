@@ -153,6 +153,7 @@ for necessary action cannot be guaranteed.&lt;/p&gt;&lt;table&gt;
 			mtrapargsString=%parm[#1]%&lt;/p&gt;
 		</logmsg>
 	<severity>Warning</severity>
+	<alarm-data reduction-key="%uei%:%dpname%:%nodeid%:%interface%" alarm-type="1" auto-clean="false"/>
 </event>
 <event>
 	<mask>
@@ -274,7 +275,8 @@ to 'sleep' and immediately cut power to the load.&lt;/p&gt;&lt;table&gt;
 			powerRestored trap received 
 			mtrapargsString=%parm[#1]%&lt;/p&gt;
 		</logmsg>
-	<severity>Cleared</severity>
+	<severity>Normal</severity>
+	<alarm-data reduction-key="%uei%:%dpname%:%nodeid%:%interface%" alarm-type="2" clear-key="uei.opennms.org/vendor/powerware/traps/upsOnBattery:%dpname%:%nodeid%:%interface%" auto-clean="false"/>
 </event>
 <event>
 	<mask>
