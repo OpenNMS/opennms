@@ -35,6 +35,7 @@
  */
 package org.opennms.netmgt.poller.remote.support;
 
+import java.io.Serializable;
 import java.util.Date;
 
 import org.opennms.netmgt.poller.remote.PolledService;
@@ -44,7 +45,9 @@ import org.opennms.netmgt.poller.remote.PollerConfiguration;
  * 
  * @author <a href="mailto:brozow@opennms.org">Mathew Brozowski</a>
  */
-class EmptyPollerConfiguration implements PollerConfiguration {
+class EmptyPollerConfiguration implements PollerConfiguration, Serializable {
+    
+    private static final long serialVersionUID = 1L;
 
     /**
      * <p>getConfigurationTimestamp</p>
