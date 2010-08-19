@@ -222,6 +222,7 @@ public class MapQuestMapPanel extends Composite implements MapPanel, HasDoubleCl
         final MQALatLng latLng = toMQALatLng(marker.getLatLng());
         final MQAPoi point = (MQAPoi)MQAPoi.newInstance(latLng);
         point.setVisible(marker.isVisible());
+        point.setInfoTitleHTML(marker.getName());
 
         final MQAIcon icon = createIcon(marker);
         point.setIcon(icon);
