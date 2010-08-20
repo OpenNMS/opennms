@@ -44,6 +44,8 @@ import java.util.Enumeration;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.concurrent.ConcurrentHashMap;
+import java.util.concurrent.atomic.AtomicReference;
 
 import org.opennms.core.utils.LogUtils;
 import org.opennms.core.utils.TimeKeeper;
@@ -114,8 +116,10 @@ public class DefaultPollerBackEnd implements PollerBackEnd, SpringServiceDaemon 
     private TimeKeeper m_timeKeeper;
     private int m_disconnectedTimeout;
 
-    private Date m_configurationTimestamp = null;
     private long m_minimumConfigurationReloadInterval;
+    
+    AtomicReference<Date> m_configurationTimestamp = new AtomicReference<Date>();
+    AtomicReference<ConcurrentHashMap<String, SimplePollerConfiguration>> m_configCache = new AtomicReference<ConcurrentHashMap<String,SimplePollerConfiguration>>();
 
     /**
      * <p>afterPropertiesSet</p>
@@ -131,8 +135,8 @@ public class DefaultPollerBackEnd implements PollerBackEnd, SpringServiceDaemon 
         Assert.state(m_disconnectedTimeout > 0, "the disconnectedTimeout property must be set");
         
         m_minimumConfigurationReloadInterval = Long.getLong("opennms.pollerBackend.minimumConfigurationReloadInterval", 300000L).longValue();
-
-        m_configurationTimestamp = m_timeKeeper.getCurrentDate();
+        
+        configurationUpdated();
     }
     
     /**
@@ -178,31 +182,31 @@ public class DefaultPollerBackEnd implements PollerBackEnd, SpringServiceDaemon 
     }
 
     private MonitorStatus checkForGlobalConfigChange(final Date currentConfigurationVersion) {
-        if (configurationUpdateNeeded(currentConfigurationVersion)) {
+        if (configurationUpdateIsNeeded(currentConfigurationVersion)) {
             return MonitorStatus.CONFIG_CHANGED;
         } else {
             return MonitorStatus.STARTED;
         }
     }
 
-    private boolean configurationUpdateNeeded(final Date currentConfigurationVersion) {
+    private boolean configurationUpdateIsNeeded(final Date currentConfigurationVersion) {
         if (configIntervalExceedsMinimalInterval(currentConfigurationVersion)) {
-            return m_configurationTimestamp.after(currentConfigurationVersion);
+            return m_configurationTimestamp.get().after(currentConfigurationVersion);
         } else {
             return false;
         }
     }
 
-    private boolean configIntervalExceedsMinimalInterval(
-            final Date currentConfigurationVersion) {
-        return m_minimumConfigurationReloadInterval > 0 && m_timeKeeper.getCurrentTime() - currentConfigurationVersion.getTime() > m_minimumConfigurationReloadInterval;
+    private boolean configIntervalExceedsMinimalInterval(final Date currentConfigurationVersion) {
+        return m_minimumConfigurationReloadInterval > 0 && (m_timeKeeper.getCurrentTime() - currentConfigurationVersion.getTime()) > m_minimumConfigurationReloadInterval;
     }
 
     /**
      * <p>configurationUpdated</p>
      */
     public void configurationUpdated() {
-        m_configurationTimestamp = m_timeKeeper.getCurrentDate();
+        m_configurationTimestamp.set(m_timeKeeper.getCurrentDate());
+        m_configCache.set(new ConcurrentHashMap<String, SimplePollerConfiguration>());
     }
 
     private EventBuilder createEventBuilder(final OnmsLocationMonitor mon, final String uei) {
@@ -217,7 +221,7 @@ public class DefaultPollerBackEnd implements PollerBackEnd, SpringServiceDaemon 
     }
 
     private Date getConfigurationTimestamp() {
-        return m_configurationTimestamp;
+        return m_configurationTimestamp.get();
     }
 
     /**
@@ -262,41 +266,68 @@ public class DefaultPollerBackEnd implements PollerBackEnd, SpringServiceDaemon 
 			    // the monitor has been deleted we'll pick this in up on the next config check
 			    return new EmptyPollerConfiguration();
 			}
-
-			final Package pkg = getPollingPackageForMonitor(mon);
-			final ServiceSelector selector = m_pollerConfig.getServiceSelectorForPackage(pkg);
-			final Collection<OnmsMonitoredService> services = m_monSvcDao.findMatchingServices(selector);
-			final List<PolledService> configs = new ArrayList<PolledService>(services.size());
-
-			LogUtils.debugf(this, "found %d services", services.size());
-
-			for (final OnmsMonitoredService monSvc : services) {
-			    final Service serviceConfig = m_pollerConfig.getServiceInPackage(monSvc.getServiceName(), pkg);
-			    final long interval = serviceConfig.getInterval();
-			    final Map<String, Object> parameters = getParameterMap(serviceConfig);
-			    configs.add(new PolledService(monSvc, parameters, new OnmsPollModel(interval)));
-			}
-
-			Collections.sort(configs);
-			return new SimplePollerConfiguration(getConfigurationTimestamp(), configs.toArray(new PolledService[configs.size()]));
+			
+            String pollingPackageName = getPackageName(mon);
+            
+            ConcurrentHashMap<String, SimplePollerConfiguration> cache = m_configCache.get();
+            SimplePollerConfiguration pollerConfiguration = cache.get(pollingPackageName);
+            if (pollerConfiguration == null) {
+                pollerConfiguration = createPollerConfiguration(mon, pollingPackageName);
+                cache.putIfAbsent(pollingPackageName, pollerConfiguration);
+            }
+            
+            return pollerConfiguration;
 		} catch (final Exception e) {
 			LogUtils.warnf(this, e, "An error occurred retrieving the poller configuration for location monitor ID %d", locationMonitorId);
 			return new EmptyPollerConfiguration();
 		}
     }
 
+    private SimplePollerConfiguration createPollerConfiguration(
+            final OnmsLocationMonitor mon, String pollingPackageName) {
+        final Package pkg = getPollingPackage(pollingPackageName, mon.getDefinitionName());
+        
+        final ServiceSelector selector = m_pollerConfig.getServiceSelectorForPackage(pkg);
+        final Collection<OnmsMonitoredService> services = m_monSvcDao.findMatchingServices(selector);
+        final List<PolledService> configs = new ArrayList<PolledService>(services.size());
+
+        LogUtils.debugf(this, "found %d services", services.size());
+
+        for (final OnmsMonitoredService monSvc : services) {
+            final Service serviceConfig = m_pollerConfig.getServiceInPackage(monSvc.getServiceName(), pkg);
+            final long interval = serviceConfig.getInterval();
+            final Map<String, Object> parameters = getParameterMap(serviceConfig);
+            configs.add(new PolledService(monSvc, parameters, new OnmsPollModel(interval)));
+        }
+
+        Collections.sort(configs);
+        SimplePollerConfiguration pollerConfiguration = new SimplePollerConfiguration(getConfigurationTimestamp(), configs.toArray(new PolledService[configs.size()]));
+        return pollerConfiguration;
+    }
+
     private Package getPollingPackageForMonitor(final OnmsLocationMonitor mon) {
+        String pollingPackageName = getPackageName(mon);
+
+        String definitionName = mon.getDefinitionName();
+        return getPollingPackage(pollingPackageName, definitionName);
+    }
+
+    private Package getPollingPackage(String pollingPackageName,
+            String definitionName) {
+        final Package pkg = m_pollerConfig.getPackage(pollingPackageName);
+        if (pkg == null) {
+            throw new IllegalStateException("Package "+pollingPackageName+" does not exist as defined for monitoring location "+definitionName);
+        }
+        return pkg;
+    }
+
+    private String getPackageName(final OnmsLocationMonitor mon) {
         final OnmsMonitoringLocationDefinition def = m_locMonDao.findMonitoringLocationDefinition(mon.getDefinitionName());
         if (def == null) {
             throw new IllegalStateException("Location definition '" + mon.getDefinitionName() + "' could not be found for location monitor ID " + mon.getId());
         }
         String pollingPackageName = def.getPollingPackageName();
-
-        final Package pkg = m_pollerConfig.getPackage(pollingPackageName);
-        if (pkg == null) {
-            throw new IllegalStateException("Package "+pollingPackageName+" does not exist as defined for monitoring location "+mon.getDefinitionName());
-        }
-        return pkg;
+        return pollingPackageName;
     }
 
     /** {@inheritDoc} */
