@@ -71,34 +71,41 @@ AbstractCastorConfigDao<DatacollectionConfig, DatacollectionConfig> implements D
 
     private static final Pattern s_digitsPattern = Pattern.compile("\\d+"); 
     
-    private String configDirectory;
-
+    private String m_configDirectory;
+    private DataCollectionConfigParser m_parser;
+    
     public DefaultDataCollectionConfigDao() {
         super(DatacollectionConfig.class, "data-collection");
     }
 
     @Override
     public DatacollectionConfig translateConfig(DatacollectionConfig castorConfig) {
-        DataCollectionConfigParser parser = new DataCollectionConfigParser(getConfigDirectory());
-        parser.parse(castorConfig);
+        getParser().parse(castorConfig);
         return castorConfig;
     }
-    
-    public void setConfigDirectory(String configDirectory) {
-        this.configDirectory = configDirectory;
+
+    public DataCollectionConfigParser getParser() {
+        if (m_parser == null) {
+            m_parser = new DataCollectionConfigParser(getConfigDirectory());
+        }
+        return m_parser;
     }
-    
+
+    public void setConfigDirectory(String configDirectory) {
+        this.m_configDirectory = configDirectory;
+    }
+
     public String getConfigDirectory() {
-        if (configDirectory == null) {
+        if (m_configDirectory == null) {
             StringBuffer sb = new StringBuffer(ConfigFileConstants.getHome());
             sb.append(File.separator);
             sb.append("etc");
             sb.append(File.separator);
             sb.append("datacollection");
             sb.append(File.separator);
-            configDirectory = sb.toString();
+            m_configDirectory = sb.toString();
         }
-        return configDirectory;
+        return m_configDirectory;
     }
 
     public String getSnmpStorageFlag(String collectionName) {

@@ -32,6 +32,7 @@
 package org.opennms.netmgt.dao.castor;
 
 import java.io.File;
+import java.util.Map;
 
 import org.junit.After;
 import org.junit.Assert;
@@ -93,15 +94,12 @@ public class DataCollectionConfigParserTest {
         parser.parse(config);
 
         // Validate Parser
-        DatacollectionGroup globalContainer = parser.getGlobalContainer();
-        Assert.assertEquals(resourceTypesCount, globalContainer.getResourceTypeCount());
-        Assert.assertEquals(systemDefCount, globalContainer.getSystemDefCount());
-        Assert.assertEquals(groupsCount, globalContainer.getGroupCount());
+        validateParser(parser);
 
         // Validate SNMP Collection
         Assert.assertEquals(0, collection.getResourceTypeCount()); 
-        Assert.assertEquals(0, collection.getSystems().getSystemDefCount());
-        Assert.assertEquals(0, collection.getGroups().getGroupCount());
+        Assert.assertNull(collection.getSystems());
+        Assert.assertNull(collection.getGroups());
     }
 
     @Test
@@ -128,15 +126,31 @@ public class DataCollectionConfigParserTest {
         parser.parse(config);
 
         // Validate Parser
-        DatacollectionGroup globalContainer = parser.getGlobalContainer();
-        Assert.assertEquals(resourceTypesCount, globalContainer.getResourceTypeCount());
-        Assert.assertEquals(systemDefCount, globalContainer.getSystemDefCount());
-        Assert.assertEquals(groupsCount, globalContainer.getGroupCount());
+        validateParser(parser);
 
         // Validate SNMP Collection
         Assert.assertEquals(resourceTypesCount, collection.getResourceTypeCount()); 
         Assert.assertEquals(systemDefCount, collection.getSystems().getSystemDefCount());
         Assert.assertEquals(144, collection.getGroups().getGroupCount()); // Unused groups will be discarted
+    }
+
+    private void validateParser(DataCollectionConfigParser parser) {
+        Map<String,DatacollectionGroup> groupMap = parser.getExternalGroupMap();
+        int currentResourceTypes = 0;
+        int currentSystemDefs = 0;
+        int currentMibGroups = 0;
+        for (DatacollectionGroup group : groupMap.values()) {
+            currentResourceTypes += group.getResourceTypeCount();
+        }
+        for (DatacollectionGroup group : groupMap.values()) {
+            currentSystemDefs += group.getSystemDefCount();
+        }
+        for (DatacollectionGroup group : groupMap.values()) {
+            currentMibGroups += group.getGroupCount();
+        }
+        Assert.assertEquals(resourceTypesCount, currentResourceTypes);
+        Assert.assertEquals(systemDefCount, currentSystemDefs);
+        Assert.assertEquals(groupsCount, currentMibGroups);
     }
 
 }
