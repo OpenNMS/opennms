@@ -133,6 +133,14 @@ public abstract class SnmpAttributeType implements AttributeDefinition,Collectio
     public String getInstance() {
         return m_mibObj.getInstance();
     }
+    
+    public String getMaxval() {
+        return m_mibObj.getMaxval();
+    }
+    
+    public String getMinval() {
+        return m_mibObj.getMinval();
+    }
 
     /* (non-Javadoc)
      * @see org.opennms.netmgt.collectd.AttributeDefinition#getType()

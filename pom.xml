@@ -1452,11 +1452,6 @@
         <version>1.5.0</version>
       </dependency>
       <dependency>
-        <groupId>org.extremecomponents</groupId>
-        <artifactId>extremecomponents</artifactId>
-        <version>1.0.1</version>
-      </dependency>
-      <dependency>
         <groupId>org.gwtwidgets</groupId>
         <artifactId>gwt-widgets</artifactId>
         <version>0.1.3</version>
