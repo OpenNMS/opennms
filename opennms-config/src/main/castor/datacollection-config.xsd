@@ -110,6 +110,14 @@
 
   <element name="include-collection">
     <complexType>
+      <sequence>
+        <element maxOccurs="unbounded" minOccurs="0" type="string" name="exclude-filter">
+          <annotation>
+            <documentation>Exclude filter uses regular expression syntax to avoid certain system definitions</documentation>
+          </annotation>
+        </element>
+      </sequence>
+
       <attribute name="systemDef" type="string" use="optional">
         <annotation>
           <documentation>System Definition Name</documentation>

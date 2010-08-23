@@ -72,7 +72,6 @@ AbstractCastorConfigDao<DatacollectionConfig, DatacollectionConfig> implements D
     private static final Pattern s_digitsPattern = Pattern.compile("\\d+"); 
     
     private String m_configDirectory;
-    private DataCollectionConfigParser m_parser;
     
     public DefaultDataCollectionConfigDao() {
         super(DatacollectionConfig.class, "data-collection");
@@ -80,15 +79,12 @@ AbstractCastorConfigDao<DatacollectionConfig, DatacollectionConfig> implements D
 
     @Override
     public DatacollectionConfig translateConfig(DatacollectionConfig castorConfig) {
-        getParser().parse(castorConfig);
-        return castorConfig;
-    }
-
-    public DataCollectionConfigParser getParser() {
-        if (m_parser == null) {
-            m_parser = new DataCollectionConfigParser(getConfigDirectory());
+        // FIXME: Create an empty group with only resourceTypes or add resourceTypes to ALL collections ?
+        DataCollectionConfigParser parser = new DataCollectionConfigParser(getConfigDirectory());
+        for (SnmpCollection collection : castorConfig.getSnmpCollectionCollection()) {
+            parser.parseCollection(collection);
         }
-        return m_parser;
+        return castorConfig;
     }
 
     public void setConfigDirectory(String configDirectory) {

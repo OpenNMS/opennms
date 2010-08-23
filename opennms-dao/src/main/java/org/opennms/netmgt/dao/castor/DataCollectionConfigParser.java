@@ -42,11 +42,13 @@ import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
+import java.util.regex.PatternSyntaxException;
 
 import org.apache.commons.io.IOUtils;
 
 import org.opennms.core.utils.ThreadCategory;
-import org.opennms.netmgt.config.datacollection.DatacollectionConfig;
 import org.opennms.netmgt.config.datacollection.DatacollectionGroup;
 import org.opennms.netmgt.config.datacollection.Group;
 import org.opennms.netmgt.config.datacollection.Groups;
@@ -78,40 +80,45 @@ public class DataCollectionConfigParser {
         return externalGroupsMap;
     }
     
-    public void parse(DatacollectionConfig config) {
+    /**
+     * Update/Validate SNMP collection
+     * 
+     * @param collection
+     */
+    public void parseCollection(SnmpCollection collection) {
         parseExternalResources();
-        
-        // FIXME: Create an empty group with only resourceTypes or add resourceTypes to ALL collections ?
-        
-        // Populate the DatacollectionConfig object with external data, only if it has reference to external content.
-        for (SnmpCollection collection : config.getSnmpCollectionCollection()) {
-            if (collection.getIncludeCollectionCount() > 0) {
-                checkCollection(collection);
-                // Add all Resource Types from cache. That because a resourceType is a shared object across all datacollection configuration.
-                for (ResourceType rt : getAllResourceTypes()) {
-                    if (!contains(collection.getResourceTypeCollection(), rt))
-                        collection.addResourceType(rt);
-                }
-                // Add systemDefs and dependencies
-                for (IncludeCollection include : collection.getIncludeCollection()) {
-                    if (include.getDataCollectionGroup() != null) {
-                        // Include All system definitions from a specific datacollection group
-                        addDatacollectionGroup(collection, include.getDataCollectionGroup());
+
+        if (collection.getIncludeCollectionCount() > 0) {
+            checkCollection(collection);
+            // Add all Resource Types from cache. That because a resourceType is a shared object across all datacollection configuration.
+            for (ResourceType rt : getAllResourceTypes()) {
+                if (!contains(collection.getResourceTypeCollection(), rt))
+                    collection.addResourceType(rt);
+            }
+            // Add systemDefs and dependencies
+            for (IncludeCollection include : collection.getIncludeCollection()) {
+                if (include.getDataCollectionGroup() != null) {
+                    // Include All system definitions from a specific datacollection group
+                    addDatacollectionGroup(collection, include.getDataCollectionGroup(), include.getExcludeFilterCollection());
+                } else {
+                    if (include.getSystemDef() == null) {
+                        throwException("You must specify at least the data collection group name or system definition name for the include-collection attribute", null);
                     } else {
-                        if (include.getSystemDef() == null) {
-                            throwException("You must specify at least the data collection group name or system definition name for the include-collection attribute", null);
-                        } else {
-                            // Include One system definition
-                            addSystemDef(collection, include.getSystemDef());
-                        }
+                        // Include One system definition
+                        addSystemDef(collection, include.getSystemDef());
                     }
                 }
-            } else {
-                log().info("parse: snmp collection " + collection.getName() + " doesn't have any external reference.");
             }
+        } else {
+            log().info("parse: snmp collection " + collection.getName() + " doesn't have any external reference.");
         }
     }
     
+    /**
+     * Verify the sub-groups of SNMP collection.
+     * 
+     * @param collection
+     */
     private void checkCollection(SnmpCollection collection) {
         if (collection.getSystems() == null)
             collection.setSystems(new Systems());
@@ -162,13 +169,13 @@ public class DataCollectionConfigParser {
     }
     
     /**
-     * Verify if the mib group contains a specific mib object.
-     * <p>One mib object will be considered the same as another one, if they have the same alias, instance, oid and type.</p>
+     * Verify if the MIB group contains a specific MIB object.
+     * <p>One MIB object will be considered the same as another one, if they have the same alias, instance, oid and type.</p>
      * 
      * @param group
      * @param mibObj
      * 
-     * @return true, if the mib group contains the mib object
+     * @return true, if the MIB group contains the MIB object
      */
     private boolean contains(Group group, MibObj mibObj) {
         for (MibObj mo : group.getMibObjCollection()) {
@@ -209,8 +216,6 @@ public class DataCollectionConfigParser {
 
     /**
      * Read all XML files from datacollection directory and parse them to create a list of DatacollectionGroup objects.
-     * 
-     * @return a list of datacollection group
      */
     private void parseExternalResources() {
         // Ensure that this is called only once.
@@ -331,16 +336,38 @@ public class DataCollectionConfigParser {
      * 
      * @param collection the target SNMP collection object.
      * @param dataCollectionGroupName the data collection group name.
+     * @param excludeList the list of regular expression to exclude certain system definitions.
      */
-    private void addDatacollectionGroup(SnmpCollection collection, String dataCollectionGroupName) {
+    private void addDatacollectionGroup(SnmpCollection collection, String dataCollectionGroupName, List<String> excludeList) {
         DatacollectionGroup group = externalGroupsMap.get(dataCollectionGroupName);
         if (group == null) {
             throwException("Group " + dataCollectionGroupName + " does not exist.", null);
         }
         log().debug("addDatacollectionGroup: adding all definitions from group " + group.getName() + " to snmp-collection " + collection.getName());
         for (SystemDef systemDef : group.getSystemDefCollection()) {
-            addSystemDef(collection, systemDef.getName());
+            String sysDef = systemDef.getName();
+            if (shouldAdd(sysDef, excludeList)) {
+                addSystemDef(collection, sysDef);
+            }
         }
+    }
+
+    private boolean shouldAdd(String sysDef, List<String> excludeList) {
+        if (excludeList != null) {
+            for (String re : excludeList) {
+                try {
+                    final Pattern p = Pattern.compile(re);
+                    final Matcher m = p.matcher(sysDef);
+                    if (m.matches()) {
+                        log().info("addDatacollectionGroup: system definition " + sysDef + " is blacklisted by filter " + re);
+                        return false;
+                    }
+                } catch (PatternSyntaxException e) {
+                    log().warn("the regular expression " + re + " is invalid: " + e.getMessage(), e);
+                }
+            }
+        }
+        return true;
     }
 
     private void throwException(String msg, Exception e) {

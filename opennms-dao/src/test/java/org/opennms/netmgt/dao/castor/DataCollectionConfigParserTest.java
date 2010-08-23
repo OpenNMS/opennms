@@ -58,12 +58,12 @@ public class DataCollectionConfigParserTest {
     private static final int resourceTypesCount = 69;
     private static final int systemDefCount = 125;
     private static final int groupsCount = 183;
-    
+
     @Before
     public void setUp() {
         MockLogAppender.setupLogging();
     }
-    
+
     @After
     public void tearDown() {
         MockLogAppender.assertNoWarningsOrGreater();
@@ -71,17 +71,9 @@ public class DataCollectionConfigParserTest {
 
     @Test
     public void testLoadWithEmptyConfig() throws Exception {
-        // Configure XML repository
-        File configFile = ConfigurationTestUtils.getFileForConfigFile("datacollection-config.xml");
-        File configFolder = new File(configFile.getParentFile(), "datacollection");
-        System.err.println(configFolder.getAbsolutePath());
-        Assert.assertTrue(configFolder.isDirectory());
-
-        // Create DatacollectionConfig
-        DatacollectionConfig config = new DatacollectionConfig();
+        // Create a SNMP collection
         SnmpCollection collection = new SnmpCollection();
         collection.setName("default");
-        config.addSnmpCollection(collection);
 
         // Validate default datacollection content
         Assert.assertEquals(0, collection.getIncludeCollectionCount());
@@ -89,12 +81,8 @@ public class DataCollectionConfigParserTest {
         Assert.assertNull(collection.getSystems());
         Assert.assertNull(collection.getGroups());
 
-        // Create Parser
-        DataCollectionConfigParser parser = new DataCollectionConfigParser(configFolder.getAbsolutePath());
-        parser.parse(config);
-
-        // Validate Parser
-        validateParser(parser);
+        // Execute Parser
+        executeParser(collection);
 
         // Validate SNMP Collection
         Assert.assertEquals(0, collection.getResourceTypeCount()); 
@@ -104,14 +92,8 @@ public class DataCollectionConfigParserTest {
 
     @Test
     public void testLoadWithOnlyExternalReferences() throws Exception {
-        // Configure XML repository
-        File configFile = ConfigurationTestUtils.getFileForConfigFile("datacollection-config.xml");
-        File configFolder = new File(configFile.getParentFile(), "datacollection");
-        System.err.println(configFolder.getAbsolutePath());
-        Assert.assertTrue(configFolder.isDirectory());
-
         // Create DatacollectionConfig
-        Resource resource = new FileSystemResource(configFile);
+        Resource resource = new FileSystemResource("src/test/resources/datacollection/datacollection-config-onlyimports.xml");
         DatacollectionConfig config = CastorUtils.unmarshal(DatacollectionConfig.class, resource);
 
         // Validate default datacollection content
@@ -121,17 +103,94 @@ public class DataCollectionConfigParserTest {
         Assert.assertNull(collection.getSystems());
         Assert.assertNull(collection.getGroups());
 
-        // Create Parser
-        DataCollectionConfigParser parser = new DataCollectionConfigParser(configFolder.getAbsolutePath());
-        parser.parse(config);
-
-        // Validate Parser
-        validateParser(parser);
+        // Execute Parser
+        executeParser(collection);
 
         // Validate SNMP Collection
         Assert.assertEquals(resourceTypesCount, collection.getResourceTypeCount()); 
         Assert.assertEquals(systemDefCount, collection.getSystems().getSystemDefCount());
-        Assert.assertEquals(144, collection.getGroups().getGroupCount()); // Unused groups will be discarted
+        Assert.assertEquals(144, collection.getGroups().getGroupCount()); // Unused groups will be ignored
+    }
+
+    @Test
+    public void testLoadHybridConfiguration() throws Exception {
+        // Create DatacollectionConfig
+        Resource resource = new FileSystemResource("src/test/resources/datacollection/datacollection-config-hybrid.xml");
+        DatacollectionConfig config = CastorUtils.unmarshal(DatacollectionConfig.class, resource);
+
+        // Validate default datacollection content
+        SnmpCollection collection = config.getSnmpCollection(0);
+        Assert.assertEquals(12, collection.getIncludeCollectionCount());
+        Assert.assertEquals(0, collection.getResourceTypeCount()); 
+        Assert.assertEquals(1, collection.getSystems().getSystemDefCount());
+        Assert.assertEquals(1, collection.getGroups().getGroupCount());
+
+        // Execute Parser
+        executeParser(collection);
+
+        // Validate SNMP Collection
+        Assert.assertEquals(resourceTypesCount, collection.getResourceTypeCount()); 
+        Assert.assertEquals(15, collection.getSystems().getSystemDefCount());
+        Assert.assertEquals(61, collection.getGroups().getGroupCount());
+    }
+
+    @Test
+    public void testLoadSimple() throws Exception {
+        // Create DatacollectionConfig
+        Resource resource = new FileSystemResource("src/test/resources/datacollection/datacollection-config-simple.xml");
+        DatacollectionConfig config = CastorUtils.unmarshal(DatacollectionConfig.class, resource);
+
+        // Validate default datacollection content
+        SnmpCollection collection = config.getSnmpCollection(0);
+        Assert.assertEquals(1, collection.getIncludeCollectionCount());
+        Assert.assertEquals(0, collection.getResourceTypeCount()); 
+        Assert.assertNull(collection.getSystems());
+        Assert.assertNull(collection.getGroups());
+
+        // Execute Parser
+        executeParser(collection);
+
+        // Validate SNMP Collection
+        Assert.assertEquals(resourceTypesCount, collection.getResourceTypeCount()); 
+        Assert.assertEquals(68, collection.getSystems().getSystemDefCount());
+        Assert.assertEquals(26, collection.getGroups().getGroupCount());
+    }
+
+    @Test
+    public void testLoadSimpleWithExclusions() throws Exception {
+        // Create DatacollectionConfig
+        Resource resource = new FileSystemResource("src/test/resources/datacollection/datacollection-config-excludes.xml");
+        DatacollectionConfig config = CastorUtils.unmarshal(DatacollectionConfig.class, resource);
+
+        // Validate default datacollection content
+        SnmpCollection collection = config.getSnmpCollection(0);
+        Assert.assertEquals(1, collection.getIncludeCollectionCount());
+        Assert.assertEquals(0, collection.getResourceTypeCount()); 
+        Assert.assertNull(collection.getSystems());
+        Assert.assertNull(collection.getGroups());
+
+        // Execute Parser
+        executeParser(collection);
+
+        // Validate SNMP Collection
+        Assert.assertEquals(resourceTypesCount, collection.getResourceTypeCount()); 
+        Assert.assertEquals(38, collection.getSystems().getSystemDefCount()); // 30 systemDef to exclude
+        Assert.assertEquals(25, collection.getGroups().getGroupCount()); //  1 group to exclude (used only on Cisco PIX or Cisco AS)
+    }
+
+    private File getDatacollectionDirectory() {
+        File configFile = ConfigurationTestUtils.getFileForConfigFile("datacollection-config.xml");
+        File configFolder = new File(configFile.getParentFile(), "datacollection");
+        System.err.println(configFolder.getAbsolutePath());
+        Assert.assertTrue(configFolder.isDirectory());
+        return configFolder;
+    }
+
+    private void executeParser(SnmpCollection collection) {
+        File configFolder = getDatacollectionDirectory();
+        DataCollectionConfigParser parser = new DataCollectionConfigParser(configFolder.getAbsolutePath());
+        parser.parseCollection(collection);
+        validateParser(parser);
     }
 
     private void validateParser(DataCollectionConfigParser parser) {
