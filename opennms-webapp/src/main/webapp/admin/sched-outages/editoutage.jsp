@@ -11,6 +11,7 @@
         org.opennms.netmgt.xml.event.Event,
         org.opennms.netmgt.utils.*,
         org.opennms.web.Util,
+        org.exolab.castor.xml.ValidationException,
         java.net.*,
         java.io.*,
         java.text.NumberFormat,
@@ -24,11 +25,12 @@
 		matchAnyInterface.setAddress("match-any");
 	}
 
-	private static void addNode(Outage theOutage, int newNodeId) {
+	private static void addNode(Outage theOutage, int newNodeId) throws ValidationException {
 		try {
 			org.opennms.netmgt.config.poller.Node newNode = new org.opennms.netmgt.config.poller.Node();
 			newNode.setId(newNodeId);
 			if (!theOutage.getNodeCollection().contains(newNode)) {
+				newNode.validate();
 				theOutage.addNode(newNode);
 				theOutage.removeInterface(matchAnyInterface); //Just arbitrarily try and remove it.  If it's not there, this will do nothing
 			}
@@ -39,8 +41,9 @@
 		}
 	}
 	
-	private static void addInterface(Outage theOutage, org.opennms.netmgt.config.poller.Interface newInterface) {
+	private static void addInterface(Outage theOutage, org.opennms.netmgt.config.poller.Interface newInterface) throws ValidationException {
 		if (!theOutage.getInterfaceCollection().contains(newInterface)) {
+			newInterface.validate();
 			theOutage.addInterface(newInterface);
 			try {
 				theOutage.removeInterface(matchAnyInterface); //Just arbitrarily try and remove it.  If it's not there, this will do nothing
@@ -394,12 +397,22 @@ Could not find an outage to edit because no outage name parameter was specified 
 			// dispatcher.forward(request, response);
 			return;
 		} else if (request.getParameter("addNodeButton") != null) {
-			int newNodeId = WebSecurityUtils.safeParseInt(request.getParameter("newNode"));
-			addNode(theOutage, newNodeId);
+			String newNode = request.getParameter("newNode");
+			if (newNode == null || "".equals(newNode.trim())) {
+				// No node was specified
+			} else {
+				int newNodeId = WebSecurityUtils.safeParseInt(newNode);
+				addNode(theOutage, newNodeId);
+			}
 		} else if (request.getParameter("addInterfaceButton") != null) {
-			org.opennms.netmgt.config.poller.Interface newInterface = new org.opennms.netmgt.config.poller.Interface();
-			newInterface.setAddress(request.getParameter("newInterface"));
-			addInterface(theOutage, newInterface);
+			String newIface = request.getParameter("newInterface");
+			if (newIface == null || "".equals(newIface.trim())) {
+				// No interface was specified
+			} else {
+				org.opennms.netmgt.config.poller.Interface newInterface = new org.opennms.netmgt.config.poller.Interface();
+				newInterface.setAddress(newIface);
+				addInterface(theOutage, newInterface);
+			}
 		} else if (request.getParameter("matchAny") != null) {
 			//To turn on matchAny, all normal nodes and interfaces are removed
 			theOutage.removeAllInterface();
