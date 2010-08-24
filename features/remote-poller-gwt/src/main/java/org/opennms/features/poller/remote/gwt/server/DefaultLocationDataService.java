@@ -907,7 +907,7 @@ public class DefaultLocationDataService implements LocationDataService, Initiali
         return locations;
     }
 
-    private Map<String, StatusDetails> getStatusDetailsForAllLocations() {
+    public Map<String, StatusDetails> getStatusDetailsForAllLocations() {
         final Collection<OnmsMonitoringLocationDefinition> definitions = getLocationMonitorDao().findAllMonitoringLocationDefinitions();
         
         AllMonitorStatusTracker tracker = new AllMonitorStatusTracker();
