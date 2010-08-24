@@ -1,0 +1,1228 @@
+<?xml version="1.0"?>
+<syslogd-configuration>
+    <configuration
+            syslog-port="10514"
+            new-suspect-on-message="false"
+            forwarding-regexp="^.*\s(19|20)\d\d([-/.])(0[1-9]|1[012])\2(0[1-9]|[12][0-9]|3[01])(\s+)(\S+)(\s)(\S.+)"
+            matching-group-host="6"
+            matching-group-message="8"
+            discard-uei="DISCARD-MATCHING-MESSAGES"
+            />
+
+    <ueiList>
+<!-- LOAD TEST STUFF START -->
+        <ueiMatch>
+            <match type="regex" expression=".*foo0: .*load test (\S+) on ((pts\/\d+)|(tty\d+)).*"/>
+            <uei>uei.example.org/syslog/loadTest/foo0</uei>
+        </ueiMatch>
+        <ueiMatch>
+            <match type="regex" expression=".*foo1: .*load test (\S+) on ((pts\/\d+)|(tty\d+)).*"/>
+            <uei>uei.example.org/syslog/loadTest/foo1</uei>
+        </ueiMatch>
+        <ueiMatch>
+            <match type="regex" expression=".*foo2: .*load test (\S+) on ((pts\/\d+)|(tty\d+)).*"/>
+            <uei>uei.example.org/syslog/loadTest/foo2</uei>
+        </ueiMatch>
+        <ueiMatch>
+            <match type="regex" expression=".*foo3: .*load test (\S+) on ((pts\/\d+)|(tty\d+)).*"/>
+            <uei>uei.example.org/syslog/loadTest/foo3</uei>
+        </ueiMatch>
+        <ueiMatch>
+            <match type="regex" expression=".*foo4: .*load test (\S+) on ((pts\/\d+)|(tty\d+)).*"/>
+            <uei>uei.example.org/syslog/loadTest/foo4</uei>
+        </ueiMatch>
+        <ueiMatch>
+            <match type="regex" expression=".*foo5: .*load test (\S+) on ((pts\/\d+)|(tty\d+)).*"/>
+            <uei>uei.example.org/syslog/loadTest/foo5</uei>
+        </ueiMatch>
+        <ueiMatch>
+            <match type="regex" expression=".*foo6: .*load test (\S+) on ((pts\/\d+)|(tty\d+)).*"/>
+            <uei>uei.example.org/syslog/loadTest/foo6</uei>
+        </ueiMatch>
+        <ueiMatch>
+            <match type="regex" expression=".*foo7: .*load test (\S+) on ((pts\/\d+)|(tty\d+)).*"/>
+            <uei>uei.example.org/syslog/loadTest/foo7</uei>
+        </ueiMatch>
+        <ueiMatch>
+            <match type="regex" expression=".*foo8: .*load test (\S+) on ((pts\/\d+)|(tty\d+)).*"/>
+            <uei>uei.example.org/syslog/loadTest/foo8</uei>
+        </ueiMatch>
+        <ueiMatch>
+            <match type="regex" expression=".*foo9: .*load test (\S+) on ((pts\/\d+)|(tty\d+)).*"/>
+            <uei>uei.example.org/syslog/loadTest/foo9</uei>
+        </ueiMatch>
+        <ueiMatch>
+            <match type="regex" expression=".*foo10: .*load test (\S+) on ((pts\/\d+)|(tty\d+)).*"/>
+            <uei>uei.example.org/syslog/loadTest/foo10</uei>
+        </ueiMatch>
+        <ueiMatch>
+            <match type="regex" expression=".*foo11: .*load test (\S+) on ((pts\/\d+)|(tty\d+)).*"/>
+            <uei>uei.example.org/syslog/loadTest/foo11</uei>
+        </ueiMatch>
+        <ueiMatch>
+            <match type="regex" expression=".*foo12: .*load test (\S+) on ((pts\/\d+)|(tty\d+)).*"/>
+            <uei>uei.example.org/syslog/loadTest/foo12</uei>
+        </ueiMatch>
+        <ueiMatch>
+            <match type="regex" expression=".*foo13: .*load test (\S+) on ((pts\/\d+)|(tty\d+)).*"/>
+            <uei>uei.example.org/syslog/loadTest/foo13</uei>
+        </ueiMatch>
+        <ueiMatch>
+            <match type="regex" expression=".*foo14: .*load test (\S+) on ((pts\/\d+)|(tty\d+)).*"/>
+            <uei>uei.example.org/syslog/loadTest/foo14</uei>
+        </ueiMatch>
+        <ueiMatch>
+            <match type="regex" expression=".*foo15: .*load test (\S+) on ((pts\/\d+)|(tty\d+)).*"/>
+            <uei>uei.example.org/syslog/loadTest/foo15</uei>
+        </ueiMatch>
+        <ueiMatch>
+            <match type="regex" expression=".*foo16: .*load test (\S+) on ((pts\/\d+)|(tty\d+)).*"/>
+            <uei>uei.example.org/syslog/loadTest/foo16</uei>
+        </ueiMatch>
+        <ueiMatch>
+            <match type="regex" expression=".*foo17: .*load test (\S+) on ((pts\/\d+)|(tty\d+)).*"/>
+            <uei>uei.example.org/syslog/loadTest/foo17</uei>
+        </ueiMatch>
+        <ueiMatch>
+            <match type="regex" expression=".*foo18: .*load test (\S+) on ((pts\/\d+)|(tty\d+)).*"/>
+            <uei>uei.example.org/syslog/loadTest/foo18</uei>
+        </ueiMatch>
+        <ueiMatch>
+            <match type="regex" expression=".*foo19: .*load test (\S+) on ((pts\/\d+)|(tty\d+)).*"/>
+            <uei>uei.example.org/syslog/loadTest/foo19</uei>
+        </ueiMatch>
+        <ueiMatch>
+            <match type="regex" expression=".*foo20: .*load test (\S+) on ((pts\/\d+)|(tty\d+)).*"/>
+            <uei>uei.example.org/syslog/loadTest/foo20</uei>
+        </ueiMatch>
+        <ueiMatch>
+            <match type="regex" expression=".*foo21: .*load test (\S+) on ((pts\/\d+)|(tty\d+)).*"/>
+            <uei>uei.example.org/syslog/loadTest/foo21</uei>
+        </ueiMatch>
+        <ueiMatch>
+            <match type="regex" expression=".*foo22: .*load test (\S+) on ((pts\/\d+)|(tty\d+)).*"/>
+            <uei>uei.example.org/syslog/loadTest/foo22</uei>
+        </ueiMatch>
+        <ueiMatch>
+            <match type="regex" expression=".*foo23: .*load test (\S+) on ((pts\/\d+)|(tty\d+)).*"/>
+            <uei>uei.example.org/syslog/loadTest/foo23</uei>
+        </ueiMatch>
+        <ueiMatch>
+            <match type="regex" expression=".*foo24: .*load test (\S+) on ((pts\/\d+)|(tty\d+)).*"/>
+            <uei>uei.example.org/syslog/loadTest/foo24</uei>
+        </ueiMatch>
+        <ueiMatch>
+            <match type="regex" expression=".*foo25: .*load test (\S+) on ((pts\/\d+)|(tty\d+)).*"/>
+            <uei>uei.example.org/syslog/loadTest/foo25</uei>
+        </ueiMatch>
+        <ueiMatch>
+            <match type="regex" expression=".*foo26: .*load test (\S+) on ((pts\/\d+)|(tty\d+)).*"/>
+            <uei>uei.example.org/syslog/loadTest/foo26</uei>
+        </ueiMatch>
+        <ueiMatch>
+            <match type="regex" expression=".*foo27: .*load test (\S+) on ((pts\/\d+)|(tty\d+)).*"/>
+            <uei>uei.example.org/syslog/loadTest/foo27</uei>
+        </ueiMatch>
+        <ueiMatch>
+            <match type="regex" expression=".*foo28: .*load test (\S+) on ((pts\/\d+)|(tty\d+)).*"/>
+            <uei>uei.example.org/syslog/loadTest/foo28</uei>
+        </ueiMatch>
+        <ueiMatch>
+            <match type="regex" expression=".*foo29: .*load test (\S+) on ((pts\/\d+)|(tty\d+)).*"/>
+            <uei>uei.example.org/syslog/loadTest/foo29</uei>
+        </ueiMatch>
+        <ueiMatch>
+            <match type="regex" expression=".*foo30: .*load test (\S+) on ((pts\/\d+)|(tty\d+)).*"/>
+            <uei>uei.example.org/syslog/loadTest/foo30</uei>
+        </ueiMatch>
+        <ueiMatch>
+            <match type="regex" expression=".*foo31: .*load test (\S+) on ((pts\/\d+)|(tty\d+)).*"/>
+            <uei>uei.example.org/syslog/loadTest/foo31</uei>
+        </ueiMatch>
+        <ueiMatch>
+            <match type="regex" expression=".*foo32: .*load test (\S+) on ((pts\/\d+)|(tty\d+)).*"/>
+            <uei>uei.example.org/syslog/loadTest/foo32</uei>
+        </ueiMatch>
+        <ueiMatch>
+            <match type="regex" expression=".*foo33: .*load test (\S+) on ((pts\/\d+)|(tty\d+)).*"/>
+            <uei>uei.example.org/syslog/loadTest/foo33</uei>
+        </ueiMatch>
+        <ueiMatch>
+            <match type="regex" expression=".*foo34: .*load test (\S+) on ((pts\/\d+)|(tty\d+)).*"/>
+            <uei>uei.example.org/syslog/loadTest/foo34</uei>
+        </ueiMatch>
+        <ueiMatch>
+            <match type="regex" expression=".*foo35: .*load test (\S+) on ((pts\/\d+)|(tty\d+)).*"/>
+            <uei>uei.example.org/syslog/loadTest/foo35</uei>
+        </ueiMatch>
+        <ueiMatch>
+            <match type="regex" expression=".*foo36: .*load test (\S+) on ((pts\/\d+)|(tty\d+)).*"/>
+            <uei>uei.example.org/syslog/loadTest/foo36</uei>
+        </ueiMatch>
+        <ueiMatch>
+            <match type="regex" expression=".*foo37: .*load test (\S+) on ((pts\/\d+)|(tty\d+)).*"/>
+            <uei>uei.example.org/syslog/loadTest/foo37</uei>
+        </ueiMatch>
+        <ueiMatch>
+            <match type="regex" expression=".*foo38: .*load test (\S+) on ((pts\/\d+)|(tty\d+)).*"/>
+            <uei>uei.example.org/syslog/loadTest/foo38</uei>
+        </ueiMatch>
+        <ueiMatch>
+            <match type="regex" expression=".*foo39: .*load test (\S+) on ((pts\/\d+)|(tty\d+)).*"/>
+            <uei>uei.example.org/syslog/loadTest/foo39</uei>
+        </ueiMatch>
+        <ueiMatch>
+            <match type="regex" expression=".*foo40: .*load test (\S+) on ((pts\/\d+)|(tty\d+)).*"/>
+            <uei>uei.example.org/syslog/loadTest/foo40</uei>
+        </ueiMatch>
+        <ueiMatch>
+            <match type="regex" expression=".*foo41: .*load test (\S+) on ((pts\/\d+)|(tty\d+)).*"/>
+            <uei>uei.example.org/syslog/loadTest/foo41</uei>
+        </ueiMatch>
+        <ueiMatch>
+            <match type="regex" expression=".*foo42: .*load test (\S+) on ((pts\/\d+)|(tty\d+)).*"/>
+            <uei>uei.example.org/syslog/loadTest/foo42</uei>
+        </ueiMatch>
+        <ueiMatch>
+            <match type="regex" expression=".*foo43: .*load test (\S+) on ((pts\/\d+)|(tty\d+)).*"/>
+            <uei>uei.example.org/syslog/loadTest/foo43</uei>
+        </ueiMatch>
+        <ueiMatch>
+            <match type="regex" expression=".*foo44: .*load test (\S+) on ((pts\/\d+)|(tty\d+)).*"/>
+            <uei>uei.example.org/syslog/loadTest/foo44</uei>
+        </ueiMatch>
+        <ueiMatch>
+            <match type="regex" expression=".*foo45: .*load test (\S+) on ((pts\/\d+)|(tty\d+)).*"/>
+            <uei>uei.example.org/syslog/loadTest/foo45</uei>
+        </ueiMatch>
+        <ueiMatch>
+            <match type="regex" expression=".*foo46: .*load test (\S+) on ((pts\/\d+)|(tty\d+)).*"/>
+            <uei>uei.example.org/syslog/loadTest/foo46</uei>
+        </ueiMatch>
+        <ueiMatch>
+            <match type="regex" expression=".*foo47: .*load test (\S+) on ((pts\/\d+)|(tty\d+)).*"/>
+            <uei>uei.example.org/syslog/loadTest/foo47</uei>
+        </ueiMatch>
+        <ueiMatch>
+            <match type="regex" expression=".*foo48: .*load test (\S+) on ((pts\/\d+)|(tty\d+)).*"/>
+            <uei>uei.example.org/syslog/loadTest/foo48</uei>
+        </ueiMatch>
+        <ueiMatch>
+            <match type="regex" expression=".*foo49: .*load test (\S+) on ((pts\/\d+)|(tty\d+)).*"/>
+            <uei>uei.example.org/syslog/loadTest/foo49</uei>
+        </ueiMatch>
+        <ueiMatch>
+            <match type="regex" expression=".*foo50: .*load test (\S+) on ((pts\/\d+)|(tty\d+)).*"/>
+            <uei>uei.example.org/syslog/loadTest/foo50</uei>
+        </ueiMatch>
+        <ueiMatch>
+            <match type="regex" expression=".*foo51: .*load test (\S+) on ((pts\/\d+)|(tty\d+)).*"/>
+            <uei>uei.example.org/syslog/loadTest/foo51</uei>
+        </ueiMatch>
+        <ueiMatch>
+            <match type="regex" expression=".*foo52: .*load test (\S+) on ((pts\/\d+)|(tty\d+)).*"/>
+            <uei>uei.example.org/syslog/loadTest/foo52</uei>
+        </ueiMatch>
+        <ueiMatch>
+            <match type="regex" expression=".*foo53: .*load test (\S+) on ((pts\/\d+)|(tty\d+)).*"/>
+            <uei>uei.example.org/syslog/loadTest/foo53</uei>
+        </ueiMatch>
+        <ueiMatch>
+            <match type="regex" expression=".*foo54: .*load test (\S+) on ((pts\/\d+)|(tty\d+)).*"/>
+            <uei>uei.example.org/syslog/loadTest/foo54</uei>
+        </ueiMatch>
+        <ueiMatch>
+            <match type="regex" expression=".*foo55: .*load test (\S+) on ((pts\/\d+)|(tty\d+)).*"/>
+            <uei>uei.example.org/syslog/loadTest/foo55</uei>
+        </ueiMatch>
+        <ueiMatch>
+            <match type="regex" expression=".*foo56: .*load test (\S+) on ((pts\/\d+)|(tty\d+)).*"/>
+            <uei>uei.example.org/syslog/loadTest/foo56</uei>
+        </ueiMatch>
+        <ueiMatch>
+            <match type="regex" expression=".*foo57: .*load test (\S+) on ((pts\/\d+)|(tty\d+)).*"/>
+            <uei>uei.example.org/syslog/loadTest/foo57</uei>
+        </ueiMatch>
+        <ueiMatch>
+            <match type="regex" expression=".*foo58: .*load test (\S+) on ((pts\/\d+)|(tty\d+)).*"/>
+            <uei>uei.example.org/syslog/loadTest/foo58</uei>
+        </ueiMatch>
+        <ueiMatch>
+            <match type="regex" expression=".*foo59: .*load test (\S+) on ((pts\/\d+)|(tty\d+)).*"/>
+            <uei>uei.example.org/syslog/loadTest/foo59</uei>
+        </ueiMatch>
+        <ueiMatch>
+            <match type="regex" expression=".*foo60: .*load test (\S+) on ((pts\/\d+)|(tty\d+)).*"/>
+            <uei>uei.example.org/syslog/loadTest/foo60</uei>
+        </ueiMatch>
+        <ueiMatch>
+            <match type="regex" expression=".*foo61: .*load test (\S+) on ((pts\/\d+)|(tty\d+)).*"/>
+            <uei>uei.example.org/syslog/loadTest/foo61</uei>
+        </ueiMatch>
+        <ueiMatch>
+            <match type="regex" expression=".*foo62: .*load test (\S+) on ((pts\/\d+)|(tty\d+)).*"/>
+            <uei>uei.example.org/syslog/loadTest/foo62</uei>
+        </ueiMatch>
+        <ueiMatch>
+            <match type="regex" expression=".*foo63: .*load test (\S+) on ((pts\/\d+)|(tty\d+)).*"/>
+            <uei>uei.example.org/syslog/loadTest/foo63</uei>
+        </ueiMatch>
+        <ueiMatch>
+            <match type="regex" expression=".*foo64: .*load test (\S+) on ((pts\/\d+)|(tty\d+)).*"/>
+            <uei>uei.example.org/syslog/loadTest/foo64</uei>
+        </ueiMatch>
+        <ueiMatch>
+            <match type="regex" expression=".*foo65: .*load test (\S+) on ((pts\/\d+)|(tty\d+)).*"/>
+            <uei>uei.example.org/syslog/loadTest/foo65</uei>
+        </ueiMatch>
+        <ueiMatch>
+            <match type="regex" expression=".*foo66: .*load test (\S+) on ((pts\/\d+)|(tty\d+)).*"/>
+            <uei>uei.example.org/syslog/loadTest/foo66</uei>
+        </ueiMatch>
+        <ueiMatch>
+            <match type="regex" expression=".*foo67: .*load test (\S+) on ((pts\/\d+)|(tty\d+)).*"/>
+            <uei>uei.example.org/syslog/loadTest/foo67</uei>
+        </ueiMatch>
+        <ueiMatch>
+            <match type="regex" expression=".*foo68: .*load test (\S+) on ((pts\/\d+)|(tty\d+)).*"/>
+            <uei>uei.example.org/syslog/loadTest/foo68</uei>
+        </ueiMatch>
+        <ueiMatch>
+            <match type="regex" expression=".*foo69: .*load test (\S+) on ((pts\/\d+)|(tty\d+)).*"/>
+            <uei>uei.example.org/syslog/loadTest/foo69</uei>
+        </ueiMatch>
+        <ueiMatch>
+            <match type="regex" expression=".*foo70: .*load test (\S+) on ((pts\/\d+)|(tty\d+)).*"/>
+            <uei>uei.example.org/syslog/loadTest/foo70</uei>
+        </ueiMatch>
+        <ueiMatch>
+            <match type="regex" expression=".*foo71: .*load test (\S+) on ((pts\/\d+)|(tty\d+)).*"/>
+            <uei>uei.example.org/syslog/loadTest/foo71</uei>
+        </ueiMatch>
+        <ueiMatch>
+            <match type="regex" expression=".*foo72: .*load test (\S+) on ((pts\/\d+)|(tty\d+)).*"/>
+            <uei>uei.example.org/syslog/loadTest/foo72</uei>
+        </ueiMatch>
+        <ueiMatch>
+            <match type="regex" expression=".*foo73: .*load test (\S+) on ((pts\/\d+)|(tty\d+)).*"/>
+            <uei>uei.example.org/syslog/loadTest/foo73</uei>
+        </ueiMatch>
+        <ueiMatch>
+            <match type="regex" expression=".*foo74: .*load test (\S+) on ((pts\/\d+)|(tty\d+)).*"/>
+            <uei>uei.example.org/syslog/loadTest/foo74</uei>
+        </ueiMatch>
+        <ueiMatch>
+            <match type="regex" expression=".*foo75: .*load test (\S+) on ((pts\/\d+)|(tty\d+)).*"/>
+            <uei>uei.example.org/syslog/loadTest/foo75</uei>
+        </ueiMatch>
+        <ueiMatch>
+            <match type="regex" expression=".*foo76: .*load test (\S+) on ((pts\/\d+)|(tty\d+)).*"/>
+            <uei>uei.example.org/syslog/loadTest/foo76</uei>
+        </ueiMatch>
+        <ueiMatch>
+            <match type="regex" expression=".*foo77: .*load test (\S+) on ((pts\/\d+)|(tty\d+)).*"/>
+            <uei>uei.example.org/syslog/loadTest/foo77</uei>
+        </ueiMatch>
+        <ueiMatch>
+            <match type="regex" expression=".*foo78: .*load test (\S+) on ((pts\/\d+)|(tty\d+)).*"/>
+            <uei>uei.example.org/syslog/loadTest/foo78</uei>
+        </ueiMatch>
+        <ueiMatch>
+            <match type="regex" expression=".*foo79: .*load test (\S+) on ((pts\/\d+)|(tty\d+)).*"/>
+            <uei>uei.example.org/syslog/loadTest/foo79</uei>
+        </ueiMatch>
+        <ueiMatch>
+            <match type="regex" expression=".*foo80: .*load test (\S+) on ((pts\/\d+)|(tty\d+)).*"/>
+            <uei>uei.example.org/syslog/loadTest/foo80</uei>
+        </ueiMatch>
+        <ueiMatch>
+            <match type="regex" expression=".*foo81: .*load test (\S+) on ((pts\/\d+)|(tty\d+)).*"/>
+            <uei>uei.example.org/syslog/loadTest/foo81</uei>
+        </ueiMatch>
+        <ueiMatch>
+            <match type="regex" expression=".*foo82: .*load test (\S+) on ((pts\/\d+)|(tty\d+)).*"/>
+            <uei>uei.example.org/syslog/loadTest/foo82</uei>
+        </ueiMatch>
+        <ueiMatch>
+            <match type="regex" expression=".*foo83: .*load test (\S+) on ((pts\/\d+)|(tty\d+)).*"/>
+            <uei>uei.example.org/syslog/loadTest/foo83</uei>
+        </ueiMatch>
+        <ueiMatch>
+            <match type="regex" expression=".*foo84: .*load test (\S+) on ((pts\/\d+)|(tty\d+)).*"/>
+            <uei>uei.example.org/syslog/loadTest/foo84</uei>
+        </ueiMatch>
+        <ueiMatch>
+            <match type="regex" expression=".*foo85: .*load test (\S+) on ((pts\/\d+)|(tty\d+)).*"/>
+            <uei>uei.example.org/syslog/loadTest/foo85</uei>
+        </ueiMatch>
+        <ueiMatch>
+            <match type="regex" expression=".*foo86: .*load test (\S+) on ((pts\/\d+)|(tty\d+)).*"/>
+            <uei>uei.example.org/syslog/loadTest/foo86</uei>
+        </ueiMatch>
+        <ueiMatch>
+            <match type="regex" expression=".*foo87: .*load test (\S+) on ((pts\/\d+)|(tty\d+)).*"/>
+            <uei>uei.example.org/syslog/loadTest/foo87</uei>
+        </ueiMatch>
+        <ueiMatch>
+            <match type="regex" expression=".*foo88: .*load test (\S+) on ((pts\/\d+)|(tty\d+)).*"/>
+            <uei>uei.example.org/syslog/loadTest/foo88</uei>
+        </ueiMatch>
+        <ueiMatch>
+            <match type="regex" expression=".*foo89: .*load test (\S+) on ((pts\/\d+)|(tty\d+)).*"/>
+            <uei>uei.example.org/syslog/loadTest/foo89</uei>
+        </ueiMatch>
+        <ueiMatch>
+            <match type="regex" expression=".*foo90: .*load test (\S+) on ((pts\/\d+)|(tty\d+)).*"/>
+            <uei>uei.example.org/syslog/loadTest/foo90</uei>
+        </ueiMatch>
+        <ueiMatch>
+            <match type="regex" expression=".*foo91: .*load test (\S+) on ((pts\/\d+)|(tty\d+)).*"/>
+            <uei>uei.example.org/syslog/loadTest/foo91</uei>
+        </ueiMatch>
+        <ueiMatch>
+            <match type="regex" expression=".*foo92: .*load test (\S+) on ((pts\/\d+)|(tty\d+)).*"/>
+            <uei>uei.example.org/syslog/loadTest/foo92</uei>
+        </ueiMatch>
+        <ueiMatch>
+            <match type="regex" expression=".*foo93: .*load test (\S+) on ((pts\/\d+)|(tty\d+)).*"/>
+            <uei>uei.example.org/syslog/loadTest/foo93</uei>
+        </ueiMatch>
+        <ueiMatch>
+            <match type="regex" expression=".*foo94: .*load test (\S+) on ((pts\/\d+)|(tty\d+)).*"/>
+            <uei>uei.example.org/syslog/loadTest/foo94</uei>
+        </ueiMatch>
+        <ueiMatch>
+            <match type="regex" expression=".*foo95: .*load test (\S+) on ((pts\/\d+)|(tty\d+)).*"/>
+            <uei>uei.example.org/syslog/loadTest/foo95</uei>
+        </ueiMatch>
+        <ueiMatch>
+            <match type="regex" expression=".*foo96: .*load test (\S+) on ((pts\/\d+)|(tty\d+)).*"/>
+            <uei>uei.example.org/syslog/loadTest/foo96</uei>
+        </ueiMatch>
+        <ueiMatch>
+            <match type="regex" expression=".*foo97: .*load test (\S+) on ((pts\/\d+)|(tty\d+)).*"/>
+            <uei>uei.example.org/syslog/loadTest/foo97</uei>
+        </ueiMatch>
+        <ueiMatch>
+            <match type="regex" expression=".*foo98: .*load test (\S+) on ((pts\/\d+)|(tty\d+)).*"/>
+            <uei>uei.example.org/syslog/loadTest/foo98</uei>
+        </ueiMatch>
+        <ueiMatch>
+            <match type="regex" expression=".*foo99: .*load test (\S+) on ((pts\/\d+)|(tty\d+)).*"/>
+            <uei>uei.example.org/syslog/loadTest/foo99</uei>
+        </ueiMatch>
+        <ueiMatch>
+            <match type="regex" expression=".*foo100: .*load test (\S+) on ((pts\/\d+)|(tty\d+)).*"/>
+            <uei>uei.example.org/syslog/loadTest/foo100</uei>
+        </ueiMatch>
+        <ueiMatch>
+            <match type="regex" expression=".*foo101: .*load test (\S+) on ((pts\/\d+)|(tty\d+)).*"/>
+            <uei>uei.example.org/syslog/loadTest/foo101</uei>
+        </ueiMatch>
+        <ueiMatch>
+            <match type="regex" expression=".*foo102: .*load test (\S+) on ((pts\/\d+)|(tty\d+)).*"/>
+            <uei>uei.example.org/syslog/loadTest/foo102</uei>
+        </ueiMatch>
+        <ueiMatch>
+            <match type="regex" expression=".*foo103: .*load test (\S+) on ((pts\/\d+)|(tty\d+)).*"/>
+            <uei>uei.example.org/syslog/loadTest/foo103</uei>
+        </ueiMatch>
+        <ueiMatch>
+            <match type="regex" expression=".*foo104: .*load test (\S+) on ((pts\/\d+)|(tty\d+)).*"/>
+            <uei>uei.example.org/syslog/loadTest/foo104</uei>
+        </ueiMatch>
+        <ueiMatch>
+            <match type="regex" expression=".*foo105: .*load test (\S+) on ((pts\/\d+)|(tty\d+)).*"/>
+            <uei>uei.example.org/syslog/loadTest/foo105</uei>
+        </ueiMatch>
+        <ueiMatch>
+            <match type="regex" expression=".*foo106: .*load test (\S+) on ((pts\/\d+)|(tty\d+)).*"/>
+            <uei>uei.example.org/syslog/loadTest/foo106</uei>
+        </ueiMatch>
+        <ueiMatch>
+            <match type="regex" expression=".*foo107: .*load test (\S+) on ((pts\/\d+)|(tty\d+)).*"/>
+            <uei>uei.example.org/syslog/loadTest/foo107</uei>
+        </ueiMatch>
+        <ueiMatch>
+            <match type="regex" expression=".*foo108: .*load test (\S+) on ((pts\/\d+)|(tty\d+)).*"/>
+            <uei>uei.example.org/syslog/loadTest/foo108</uei>
+        </ueiMatch>
+        <ueiMatch>
+            <match type="regex" expression=".*foo109: .*load test (\S+) on ((pts\/\d+)|(tty\d+)).*"/>
+            <uei>uei.example.org/syslog/loadTest/foo109</uei>
+        </ueiMatch>
+        <ueiMatch>
+            <match type="regex" expression=".*foo110: .*load test (\S+) on ((pts\/\d+)|(tty\d+)).*"/>
+            <uei>uei.example.org/syslog/loadTest/foo110</uei>
+        </ueiMatch>
+        <ueiMatch>
+            <match type="regex" expression=".*foo111: .*load test (\S+) on ((pts\/\d+)|(tty\d+)).*"/>
+            <uei>uei.example.org/syslog/loadTest/foo111</uei>
+        </ueiMatch>
+        <ueiMatch>
+            <match type="regex" expression=".*foo112: .*load test (\S+) on ((pts\/\d+)|(tty\d+)).*"/>
+            <uei>uei.example.org/syslog/loadTest/foo112</uei>
+        </ueiMatch>
+        <ueiMatch>
+            <match type="regex" expression=".*foo113: .*load test (\S+) on ((pts\/\d+)|(tty\d+)).*"/>
+            <uei>uei.example.org/syslog/loadTest/foo113</uei>
+        </ueiMatch>
+        <ueiMatch>
+            <match type="regex" expression=".*foo114: .*load test (\S+) on ((pts\/\d+)|(tty\d+)).*"/>
+            <uei>uei.example.org/syslog/loadTest/foo114</uei>
+        </ueiMatch>
+        <ueiMatch>
+            <match type="regex" expression=".*foo115: .*load test (\S+) on ((pts\/\d+)|(tty\d+)).*"/>
+            <uei>uei.example.org/syslog/loadTest/foo115</uei>
+        </ueiMatch>
+        <ueiMatch>
+            <match type="regex" expression=".*foo116: .*load test (\S+) on ((pts\/\d+)|(tty\d+)).*"/>
+            <uei>uei.example.org/syslog/loadTest/foo116</uei>
+        </ueiMatch>
+        <ueiMatch>
+            <match type="regex" expression=".*foo117: .*load test (\S+) on ((pts\/\d+)|(tty\d+)).*"/>
+            <uei>uei.example.org/syslog/loadTest/foo117</uei>
+        </ueiMatch>
+        <ueiMatch>
+            <match type="regex" expression=".*foo118: .*load test (\S+) on ((pts\/\d+)|(tty\d+)).*"/>
+            <uei>uei.example.org/syslog/loadTest/foo118</uei>
+        </ueiMatch>
+        <ueiMatch>
+            <match type="regex" expression=".*foo119: .*load test (\S+) on ((pts\/\d+)|(tty\d+)).*"/>
+            <uei>uei.example.org/syslog/loadTest/foo119</uei>
+        </ueiMatch>
+        <ueiMatch>
+            <match type="regex" expression=".*foo120: .*load test (\S+) on ((pts\/\d+)|(tty\d+)).*"/>
+            <uei>uei.example.org/syslog/loadTest/foo120</uei>
+        </ueiMatch>
+        <ueiMatch>
+            <match type="regex" expression=".*foo121: .*load test (\S+) on ((pts\/\d+)|(tty\d+)).*"/>
+            <uei>uei.example.org/syslog/loadTest/foo121</uei>
+        </ueiMatch>
+        <ueiMatch>
+            <match type="regex" expression=".*foo122: .*load test (\S+) on ((pts\/\d+)|(tty\d+)).*"/>
+            <uei>uei.example.org/syslog/loadTest/foo122</uei>
+        </ueiMatch>
+        <ueiMatch>
+            <match type="regex" expression=".*foo123: .*load test (\S+) on ((pts\/\d+)|(tty\d+)).*"/>
+            <uei>uei.example.org/syslog/loadTest/foo123</uei>
+        </ueiMatch>
+        <ueiMatch>
+            <match type="regex" expression=".*foo124: .*load test (\S+) on ((pts\/\d+)|(tty\d+)).*"/>
+            <uei>uei.example.org/syslog/loadTest/foo124</uei>
+        </ueiMatch>
+        <ueiMatch>
+            <match type="regex" expression=".*foo125: .*load test (\S+) on ((pts\/\d+)|(tty\d+)).*"/>
+            <uei>uei.example.org/syslog/loadTest/foo125</uei>
+        </ueiMatch>
+        <ueiMatch>
+            <match type="regex" expression=".*foo126: .*load test (\S+) on ((pts\/\d+)|(tty\d+)).*"/>
+            <uei>uei.example.org/syslog/loadTest/foo126</uei>
+        </ueiMatch>
+        <ueiMatch>
+            <match type="regex" expression=".*foo127: .*load test (\S+) on ((pts\/\d+)|(tty\d+)).*"/>
+            <uei>uei.example.org/syslog/loadTest/foo127</uei>
+        </ueiMatch>
+        <ueiMatch>
+            <match type="regex" expression=".*foo128: .*load test (\S+) on ((pts\/\d+)|(tty\d+)).*"/>
+            <uei>uei.example.org/syslog/loadTest/foo128</uei>
+        </ueiMatch>
+        <ueiMatch>
+            <match type="regex" expression=".*foo129: .*load test (\S+) on ((pts\/\d+)|(tty\d+)).*"/>
+            <uei>uei.example.org/syslog/loadTest/foo129</uei>
+        </ueiMatch>
+        <ueiMatch>
+            <match type="regex" expression=".*foo130: .*load test (\S+) on ((pts\/\d+)|(tty\d+)).*"/>
+            <uei>uei.example.org/syslog/loadTest/foo130</uei>
+        </ueiMatch>
+        <ueiMatch>
+            <match type="regex" expression=".*foo131: .*load test (\S+) on ((pts\/\d+)|(tty\d+)).*"/>
+            <uei>uei.example.org/syslog/loadTest/foo131</uei>
+        </ueiMatch>
+        <ueiMatch>
+            <match type="regex" expression=".*foo132: .*load test (\S+) on ((pts\/\d+)|(tty\d+)).*"/>
+            <uei>uei.example.org/syslog/loadTest/foo132</uei>
+        </ueiMatch>
+        <ueiMatch>
+            <match type="regex" expression=".*foo133: .*load test (\S+) on ((pts\/\d+)|(tty\d+)).*"/>
+            <uei>uei.example.org/syslog/loadTest/foo133</uei>
+        </ueiMatch>
+        <ueiMatch>
+            <match type="regex" expression=".*foo134: .*load test (\S+) on ((pts\/\d+)|(tty\d+)).*"/>
+            <uei>uei.example.org/syslog/loadTest/foo134</uei>
+        </ueiMatch>
+        <ueiMatch>
+            <match type="regex" expression=".*foo135: .*load test (\S+) on ((pts\/\d+)|(tty\d+)).*"/>
+            <uei>uei.example.org/syslog/loadTest/foo135</uei>
+        </ueiMatch>
+        <ueiMatch>
+            <match type="regex" expression=".*foo136: .*load test (\S+) on ((pts\/\d+)|(tty\d+)).*"/>
+            <uei>uei.example.org/syslog/loadTest/foo136</uei>
+        </ueiMatch>
+        <ueiMatch>
+            <match type="regex" expression=".*foo137: .*load test (\S+) on ((pts\/\d+)|(tty\d+)).*"/>
+            <uei>uei.example.org/syslog/loadTest/foo137</uei>
+        </ueiMatch>
+        <ueiMatch>
+            <match type="regex" expression=".*foo138: .*load test (\S+) on ((pts\/\d+)|(tty\d+)).*"/>
+            <uei>uei.example.org/syslog/loadTest/foo138</uei>
+        </ueiMatch>
+        <ueiMatch>
+            <match type="regex" expression=".*foo139: .*load test (\S+) on ((pts\/\d+)|(tty\d+)).*"/>
+            <uei>uei.example.org/syslog/loadTest/foo139</uei>
+        </ueiMatch>
+        <ueiMatch>
+            <match type="regex" expression=".*foo140: .*load test (\S+) on ((pts\/\d+)|(tty\d+)).*"/>
+            <uei>uei.example.org/syslog/loadTest/foo140</uei>
+        </ueiMatch>
+        <ueiMatch>
+            <match type="regex" expression=".*foo141: .*load test (\S+) on ((pts\/\d+)|(tty\d+)).*"/>
+            <uei>uei.example.org/syslog/loadTest/foo141</uei>
+        </ueiMatch>
+        <ueiMatch>
+            <match type="regex" expression=".*foo142: .*load test (\S+) on ((pts\/\d+)|(tty\d+)).*"/>
+            <uei>uei.example.org/syslog/loadTest/foo142</uei>
+        </ueiMatch>
+        <ueiMatch>
+            <match type="regex" expression=".*foo143: .*load test (\S+) on ((pts\/\d+)|(tty\d+)).*"/>
+            <uei>uei.example.org/syslog/loadTest/foo143</uei>
+        </ueiMatch>
+        <ueiMatch>
+            <match type="regex" expression=".*foo144: .*load test (\S+) on ((pts\/\d+)|(tty\d+)).*"/>
+            <uei>uei.example.org/syslog/loadTest/foo144</uei>
+        </ueiMatch>
+        <ueiMatch>
+            <match type="regex" expression=".*foo145: .*load test (\S+) on ((pts\/\d+)|(tty\d+)).*"/>
+            <uei>uei.example.org/syslog/loadTest/foo145</uei>
+        </ueiMatch>
+        <ueiMatch>
+            <match type="regex" expression=".*foo146: .*load test (\S+) on ((pts\/\d+)|(tty\d+)).*"/>
+            <uei>uei.example.org/syslog/loadTest/foo146</uei>
+        </ueiMatch>
+        <ueiMatch>
+            <match type="regex" expression=".*foo147: .*load test (\S+) on ((pts\/\d+)|(tty\d+)).*"/>
+            <uei>uei.example.org/syslog/loadTest/foo147</uei>
+        </ueiMatch>
+        <ueiMatch>
+            <match type="regex" expression=".*foo148: .*load test (\S+) on ((pts\/\d+)|(tty\d+)).*"/>
+            <uei>uei.example.org/syslog/loadTest/foo148</uei>
+        </ueiMatch>
+        <ueiMatch>
+            <match type="regex" expression=".*foo149: .*load test (\S+) on ((pts\/\d+)|(tty\d+)).*"/>
+            <uei>uei.example.org/syslog/loadTest/foo149</uei>
+        </ueiMatch>
+        <ueiMatch>
+            <match type="regex" expression=".*foo150: .*load test (\S+) on ((pts\/\d+)|(tty\d+)).*"/>
+            <uei>uei.example.org/syslog/loadTest/foo150</uei>
+        </ueiMatch>
+        <ueiMatch>
+            <match type="regex" expression=".*foo151: .*load test (\S+) on ((pts\/\d+)|(tty\d+)).*"/>
+            <uei>uei.example.org/syslog/loadTest/foo151</uei>
+        </ueiMatch>
+        <ueiMatch>
+            <match type="regex" expression=".*foo152: .*load test (\S+) on ((pts\/\d+)|(tty\d+)).*"/>
+            <uei>uei.example.org/syslog/loadTest/foo152</uei>
+        </ueiMatch>
+        <ueiMatch>
+            <match type="regex" expression=".*foo153: .*load test (\S+) on ((pts\/\d+)|(tty\d+)).*"/>
+            <uei>uei.example.org/syslog/loadTest/foo153</uei>
+        </ueiMatch>
+        <ueiMatch>
+            <match type="regex" expression=".*foo154: .*load test (\S+) on ((pts\/\d+)|(tty\d+)).*"/>
+            <uei>uei.example.org/syslog/loadTest/foo154</uei>
+        </ueiMatch>
+        <ueiMatch>
+            <match type="regex" expression=".*foo155: .*load test (\S+) on ((pts\/\d+)|(tty\d+)).*"/>
+            <uei>uei.example.org/syslog/loadTest/foo155</uei>
+        </ueiMatch>
+        <ueiMatch>
+            <match type="regex" expression=".*foo156: .*load test (\S+) on ((pts\/\d+)|(tty\d+)).*"/>
+            <uei>uei.example.org/syslog/loadTest/foo156</uei>
+        </ueiMatch>
+        <ueiMatch>
+            <match type="regex" expression=".*foo157: .*load test (\S+) on ((pts\/\d+)|(tty\d+)).*"/>
+            <uei>uei.example.org/syslog/loadTest/foo157</uei>
+        </ueiMatch>
+        <ueiMatch>
+            <match type="regex" expression=".*foo158: .*load test (\S+) on ((pts\/\d+)|(tty\d+)).*"/>
+            <uei>uei.example.org/syslog/loadTest/foo158</uei>
+        </ueiMatch>
+        <ueiMatch>
+            <match type="regex" expression=".*foo159: .*load test (\S+) on ((pts\/\d+)|(tty\d+)).*"/>
+            <uei>uei.example.org/syslog/loadTest/foo159</uei>
+        </ueiMatch>
+        <ueiMatch>
+            <match type="regex" expression=".*foo160: .*load test (\S+) on ((pts\/\d+)|(tty\d+)).*"/>
+            <uei>uei.example.org/syslog/loadTest/foo160</uei>
+        </ueiMatch>
+        <ueiMatch>
+            <match type="regex" expression=".*foo161: .*load test (\S+) on ((pts\/\d+)|(tty\d+)).*"/>
+            <uei>uei.example.org/syslog/loadTest/foo161</uei>
+        </ueiMatch>
+        <ueiMatch>
+            <match type="regex" expression=".*foo162: .*load test (\S+) on ((pts\/\d+)|(tty\d+)).*"/>
+            <uei>uei.example.org/syslog/loadTest/foo162</uei>
+        </ueiMatch>
+        <ueiMatch>
+            <match type="regex" expression=".*foo163: .*load test (\S+) on ((pts\/\d+)|(tty\d+)).*"/>
+            <uei>uei.example.org/syslog/loadTest/foo163</uei>
+        </ueiMatch>
+        <ueiMatch>
+            <match type="regex" expression=".*foo164: .*load test (\S+) on ((pts\/\d+)|(tty\d+)).*"/>
+            <uei>uei.example.org/syslog/loadTest/foo164</uei>
+        </ueiMatch>
+        <ueiMatch>
+            <match type="regex" expression=".*foo165: .*load test (\S+) on ((pts\/\d+)|(tty\d+)).*"/>
+            <uei>uei.example.org/syslog/loadTest/foo165</uei>
+        </ueiMatch>
+        <ueiMatch>
+            <match type="regex" expression=".*foo166: .*load test (\S+) on ((pts\/\d+)|(tty\d+)).*"/>
+            <uei>uei.example.org/syslog/loadTest/foo166</uei>
+        </ueiMatch>
+        <ueiMatch>
+            <match type="regex" expression=".*foo167: .*load test (\S+) on ((pts\/\d+)|(tty\d+)).*"/>
+            <uei>uei.example.org/syslog/loadTest/foo167</uei>
+        </ueiMatch>
+        <ueiMatch>
+            <match type="regex" expression=".*foo168: .*load test (\S+) on ((pts\/\d+)|(tty\d+)).*"/>
+            <uei>uei.example.org/syslog/loadTest/foo168</uei>
+        </ueiMatch>
+        <ueiMatch>
+            <match type="regex" expression=".*foo169: .*load test (\S+) on ((pts\/\d+)|(tty\d+)).*"/>
+            <uei>uei.example.org/syslog/loadTest/foo169</uei>
+        </ueiMatch>
+        <ueiMatch>
+            <match type="regex" expression=".*foo170: .*load test (\S+) on ((pts\/\d+)|(tty\d+)).*"/>
+            <uei>uei.example.org/syslog/loadTest/foo170</uei>
+        </ueiMatch>
+        <ueiMatch>
+            <match type="regex" expression=".*foo171: .*load test (\S+) on ((pts\/\d+)|(tty\d+)).*"/>
+            <uei>uei.example.org/syslog/loadTest/foo171</uei>
+        </ueiMatch>
+        <ueiMatch>
+            <match type="regex" expression=".*foo172: .*load test (\S+) on ((pts\/\d+)|(tty\d+)).*"/>
+            <uei>uei.example.org/syslog/loadTest/foo172</uei>
+        </ueiMatch>
+        <ueiMatch>
+            <match type="regex" expression=".*foo173: .*load test (\S+) on ((pts\/\d+)|(tty\d+)).*"/>
+            <uei>uei.example.org/syslog/loadTest/foo173</uei>
+        </ueiMatch>
+        <ueiMatch>
+            <match type="regex" expression=".*foo174: .*load test (\S+) on ((pts\/\d+)|(tty\d+)).*"/>
+            <uei>uei.example.org/syslog/loadTest/foo174</uei>
+        </ueiMatch>
+        <ueiMatch>
+            <match type="regex" expression=".*foo175: .*load test (\S+) on ((pts\/\d+)|(tty\d+)).*"/>
+            <uei>uei.example.org/syslog/loadTest/foo175</uei>
+        </ueiMatch>
+        <ueiMatch>
+            <match type="regex" expression=".*foo176: .*load test (\S+) on ((pts\/\d+)|(tty\d+)).*"/>
+            <uei>uei.example.org/syslog/loadTest/foo176</uei>
+        </ueiMatch>
+        <ueiMatch>
+            <match type="regex" expression=".*foo177: .*load test (\S+) on ((pts\/\d+)|(tty\d+)).*"/>
+            <uei>uei.example.org/syslog/loadTest/foo177</uei>
+        </ueiMatch>
+        <ueiMatch>
+            <match type="regex" expression=".*foo178: .*load test (\S+) on ((pts\/\d+)|(tty\d+)).*"/>
+            <uei>uei.example.org/syslog/loadTest/foo178</uei>
+        </ueiMatch>
+        <ueiMatch>
+            <match type="regex" expression=".*foo179: .*load test (\S+) on ((pts\/\d+)|(tty\d+)).*"/>
+            <uei>uei.example.org/syslog/loadTest/foo179</uei>
+        </ueiMatch>
+        <ueiMatch>
+            <match type="regex" expression=".*foo180: .*load test (\S+) on ((pts\/\d+)|(tty\d+)).*"/>
+            <uei>uei.example.org/syslog/loadTest/foo180</uei>
+        </ueiMatch>
+        <ueiMatch>
+            <match type="regex" expression=".*foo181: .*load test (\S+) on ((pts\/\d+)|(tty\d+)).*"/>
+            <uei>uei.example.org/syslog/loadTest/foo181</uei>
+        </ueiMatch>
+        <ueiMatch>
+            <match type="regex" expression=".*foo182: .*load test (\S+) on ((pts\/\d+)|(tty\d+)).*"/>
+            <uei>uei.example.org/syslog/loadTest/foo182</uei>
+        </ueiMatch>
+        <ueiMatch>
+            <match type="regex" expression=".*foo183: .*load test (\S+) on ((pts\/\d+)|(tty\d+)).*"/>
+            <uei>uei.example.org/syslog/loadTest/foo183</uei>
+        </ueiMatch>
+        <ueiMatch>
+            <match type="regex" expression=".*foo184: .*load test (\S+) on ((pts\/\d+)|(tty\d+)).*"/>
+            <uei>uei.example.org/syslog/loadTest/foo184</uei>
+        </ueiMatch>
+        <ueiMatch>
+            <match type="regex" expression=".*foo185: .*load test (\S+) on ((pts\/\d+)|(tty\d+)).*"/>
+            <uei>uei.example.org/syslog/loadTest/foo185</uei>
+        </ueiMatch>
+        <ueiMatch>
+            <match type="regex" expression=".*foo186: .*load test (\S+) on ((pts\/\d+)|(tty\d+)).*"/>
+            <uei>uei.example.org/syslog/loadTest/foo186</uei>
+        </ueiMatch>
+        <ueiMatch>
+            <match type="regex" expression=".*foo187: .*load test (\S+) on ((pts\/\d+)|(tty\d+)).*"/>
+            <uei>uei.example.org/syslog/loadTest/foo187</uei>
+        </ueiMatch>
+        <ueiMatch>
+            <match type="regex" expression=".*foo188: .*load test (\S+) on ((pts\/\d+)|(tty\d+)).*"/>
+            <uei>uei.example.org/syslog/loadTest/foo188</uei>
+        </ueiMatch>
+        <ueiMatch>
+            <match type="regex" expression=".*foo189: .*load test (\S+) on ((pts\/\d+)|(tty\d+)).*"/>
+            <uei>uei.example.org/syslog/loadTest/foo189</uei>
+        </ueiMatch>
+        <ueiMatch>
+            <match type="regex" expression=".*foo190: .*load test (\S+) on ((pts\/\d+)|(tty\d+)).*"/>
+            <uei>uei.example.org/syslog/loadTest/foo190</uei>
+        </ueiMatch>
+        <ueiMatch>
+            <match type="regex" expression=".*foo191: .*load test (\S+) on ((pts\/\d+)|(tty\d+)).*"/>
+            <uei>uei.example.org/syslog/loadTest/foo191</uei>
+        </ueiMatch>
+        <ueiMatch>
+            <match type="regex" expression=".*foo192: .*load test (\S+) on ((pts\/\d+)|(tty\d+)).*"/>
+            <uei>uei.example.org/syslog/loadTest/foo192</uei>
+        </ueiMatch>
+        <ueiMatch>
+            <match type="regex" expression=".*foo193: .*load test (\S+) on ((pts\/\d+)|(tty\d+)).*"/>
+            <uei>uei.example.org/syslog/loadTest/foo193</uei>
+        </ueiMatch>
+        <ueiMatch>
+            <match type="regex" expression=".*foo194: .*load test (\S+) on ((pts\/\d+)|(tty\d+)).*"/>
+            <uei>uei.example.org/syslog/loadTest/foo194</uei>
+        </ueiMatch>
+        <ueiMatch>
+            <match type="regex" expression=".*foo195: .*load test (\S+) on ((pts\/\d+)|(tty\d+)).*"/>
+            <uei>uei.example.org/syslog/loadTest/foo195</uei>
+        </ueiMatch>
+        <ueiMatch>
+            <match type="regex" expression=".*foo196: .*load test (\S+) on ((pts\/\d+)|(tty\d+)).*"/>
+            <uei>uei.example.org/syslog/loadTest/foo196</uei>
+        </ueiMatch>
+        <ueiMatch>
+            <match type="regex" expression=".*foo197: .*load test (\S+) on ((pts\/\d+)|(tty\d+)).*"/>
+            <uei>uei.example.org/syslog/loadTest/foo197</uei>
+        </ueiMatch>
+        <ueiMatch>
+            <match type="regex" expression=".*foo198: .*load test (\S+) on ((pts\/\d+)|(tty\d+)).*"/>
+            <uei>uei.example.org/syslog/loadTest/foo198</uei>
+        </ueiMatch>
+        <ueiMatch>
+            <match type="regex" expression=".*foo199: .*load test (\S+) on ((pts\/\d+)|(tty\d+)).*"/>
+            <uei>uei.example.org/syslog/loadTest/foo199</uei>
+        </ueiMatch>
+        <ueiMatch>
+            <match type="regex" expression=".*foo200: .*load test (\S+) on ((pts\/\d+)|(tty\d+)).*"/>
+            <uei>uei.example.org/syslog/loadTest/foo200</uei>
+        </ueiMatch>
+        <ueiMatch>
+            <match type="regex" expression=".*foo201: .*load test (\S+) on ((pts\/\d+)|(tty\d+)).*"/>
+            <uei>uei.example.org/syslog/loadTest/foo201</uei>
+        </ueiMatch>
+        <ueiMatch>
+            <match type="regex" expression=".*foo202: .*load test (\S+) on ((pts\/\d+)|(tty\d+)).*"/>
+            <uei>uei.example.org/syslog/loadTest/foo202</uei>
+        </ueiMatch>
+        <ueiMatch>
+            <match type="regex" expression=".*foo203: .*load test (\S+) on ((pts\/\d+)|(tty\d+)).*"/>
+            <uei>uei.example.org/syslog/loadTest/foo203</uei>
+        </ueiMatch>
+        <ueiMatch>
+            <match type="regex" expression=".*foo204: .*load test (\S+) on ((pts\/\d+)|(tty\d+)).*"/>
+            <uei>uei.example.org/syslog/loadTest/foo204</uei>
+        </ueiMatch>
+        <ueiMatch>
+            <match type="regex" expression=".*foo205: .*load test (\S+) on ((pts\/\d+)|(tty\d+)).*"/>
+            <uei>uei.example.org/syslog/loadTest/foo205</uei>
+        </ueiMatch>
+        <ueiMatch>
+            <match type="regex" expression=".*foo206: .*load test (\S+) on ((pts\/\d+)|(tty\d+)).*"/>
+            <uei>uei.example.org/syslog/loadTest/foo206</uei>
+        </ueiMatch>
+        <ueiMatch>
+            <match type="regex" expression=".*foo207: .*load test (\S+) on ((pts\/\d+)|(tty\d+)).*"/>
+            <uei>uei.example.org/syslog/loadTest/foo207</uei>
+        </ueiMatch>
+        <ueiMatch>
+            <match type="regex" expression=".*foo208: .*load test (\S+) on ((pts\/\d+)|(tty\d+)).*"/>
+            <uei>uei.example.org/syslog/loadTest/foo208</uei>
+        </ueiMatch>
+        <ueiMatch>
+            <match type="regex" expression=".*foo209: .*load test (\S+) on ((pts\/\d+)|(tty\d+)).*"/>
+            <uei>uei.example.org/syslog/loadTest/foo209</uei>
+        </ueiMatch>
+        <ueiMatch>
+            <match type="regex" expression=".*foo210: .*load test (\S+) on ((pts\/\d+)|(tty\d+)).*"/>
+            <uei>uei.example.org/syslog/loadTest/foo210</uei>
+        </ueiMatch>
+        <ueiMatch>
+            <match type="regex" expression=".*foo211: .*load test (\S+) on ((pts\/\d+)|(tty\d+)).*"/>
+            <uei>uei.example.org/syslog/loadTest/foo211</uei>
+        </ueiMatch>
+        <ueiMatch>
+            <match type="regex" expression=".*foo212: .*load test (\S+) on ((pts\/\d+)|(tty\d+)).*"/>
+            <uei>uei.example.org/syslog/loadTest/foo212</uei>
+        </ueiMatch>
+        <ueiMatch>
+            <match type="regex" expression=".*foo213: .*load test (\S+) on ((pts\/\d+)|(tty\d+)).*"/>
+            <uei>uei.example.org/syslog/loadTest/foo213</uei>
+        </ueiMatch>
+        <ueiMatch>
+            <match type="regex" expression=".*foo214: .*load test (\S+) on ((pts\/\d+)|(tty\d+)).*"/>
+            <uei>uei.example.org/syslog/loadTest/foo214</uei>
+        </ueiMatch>
+        <ueiMatch>
+            <match type="regex" expression=".*foo215: .*load test (\S+) on ((pts\/\d+)|(tty\d+)).*"/>
+            <uei>uei.example.org/syslog/loadTest/foo215</uei>
+        </ueiMatch>
+        <ueiMatch>
+            <match type="regex" expression=".*foo216: .*load test (\S+) on ((pts\/\d+)|(tty\d+)).*"/>
+            <uei>uei.example.org/syslog/loadTest/foo216</uei>
+        </ueiMatch>
+        <ueiMatch>
+            <match type="regex" expression=".*foo217: .*load test (\S+) on ((pts\/\d+)|(tty\d+)).*"/>
+            <uei>uei.example.org/syslog/loadTest/foo217</uei>
+        </ueiMatch>
+        <ueiMatch>
+            <match type="regex" expression=".*foo218: .*load test (\S+) on ((pts\/\d+)|(tty\d+)).*"/>
+            <uei>uei.example.org/syslog/loadTest/foo218</uei>
+        </ueiMatch>
+        <ueiMatch>
+            <match type="regex" expression=".*foo219: .*load test (\S+) on ((pts\/\d+)|(tty\d+)).*"/>
+            <uei>uei.example.org/syslog/loadTest/foo219</uei>
+        </ueiMatch>
+        <ueiMatch>
+            <match type="regex" expression=".*foo220: .*load test (\S+) on ((pts\/\d+)|(tty\d+)).*"/>
+            <uei>uei.example.org/syslog/loadTest/foo220</uei>
+        </ueiMatch>
+        <ueiMatch>
+            <match type="regex" expression=".*foo221: .*load test (\S+) on ((pts\/\d+)|(tty\d+)).*"/>
+            <uei>uei.example.org/syslog/loadTest/foo221</uei>
+        </ueiMatch>
+        <ueiMatch>
+            <match type="regex" expression=".*foo222: .*load test (\S+) on ((pts\/\d+)|(tty\d+)).*"/>
+            <uei>uei.example.org/syslog/loadTest/foo222</uei>
+        </ueiMatch>
+        <ueiMatch>
+            <match type="regex" expression=".*foo223: .*load test (\S+) on ((pts\/\d+)|(tty\d+)).*"/>
+            <uei>uei.example.org/syslog/loadTest/foo223</uei>
+        </ueiMatch>
+        <ueiMatch>
+            <match type="regex" expression=".*foo224: .*load test (\S+) on ((pts\/\d+)|(tty\d+)).*"/>
+            <uei>uei.example.org/syslog/loadTest/foo224</uei>
+        </ueiMatch>
+        <ueiMatch>
+            <match type="regex" expression=".*foo225: .*load test (\S+) on ((pts\/\d+)|(tty\d+)).*"/>
+            <uei>uei.example.org/syslog/loadTest/foo225</uei>
+        </ueiMatch>
+        <ueiMatch>
+            <match type="regex" expression=".*foo226: .*load test (\S+) on ((pts\/\d+)|(tty\d+)).*"/>
+            <uei>uei.example.org/syslog/loadTest/foo226</uei>
+        </ueiMatch>
+        <ueiMatch>
+            <match type="regex" expression=".*foo227: .*load test (\S+) on ((pts\/\d+)|(tty\d+)).*"/>
+            <uei>uei.example.org/syslog/loadTest/foo227</uei>
+        </ueiMatch>
+        <ueiMatch>
+            <match type="regex" expression=".*foo228: .*load test (\S+) on ((pts\/\d+)|(tty\d+)).*"/>
+            <uei>uei.example.org/syslog/loadTest/foo228</uei>
+        </ueiMatch>
+        <ueiMatch>
+            <match type="regex" expression=".*foo229: .*load test (\S+) on ((pts\/\d+)|(tty\d+)).*"/>
+            <uei>uei.example.org/syslog/loadTest/foo229</uei>
+        </ueiMatch>
+        <ueiMatch>
+            <match type="regex" expression=".*foo230: .*load test (\S+) on ((pts\/\d+)|(tty\d+)).*"/>
+            <uei>uei.example.org/syslog/loadTest/foo230</uei>
+        </ueiMatch>
+        <ueiMatch>
+            <match type="regex" expression=".*foo231: .*load test (\S+) on ((pts\/\d+)|(tty\d+)).*"/>
+            <uei>uei.example.org/syslog/loadTest/foo231</uei>
+        </ueiMatch>
+        <ueiMatch>
+            <match type="regex" expression=".*foo232: .*load test (\S+) on ((pts\/\d+)|(tty\d+)).*"/>
+            <uei>uei.example.org/syslog/loadTest/foo232</uei>
+        </ueiMatch>
+        <ueiMatch>
+            <match type="regex" expression=".*foo233: .*load test (\S+) on ((pts\/\d+)|(tty\d+)).*"/>
+            <uei>uei.example.org/syslog/loadTest/foo233</uei>
+        </ueiMatch>
+        <ueiMatch>
+            <match type="regex" expression=".*foo234: .*load test (\S+) on ((pts\/\d+)|(tty\d+)).*"/>
+            <uei>uei.example.org/syslog/loadTest/foo234</uei>
+        </ueiMatch>
+        <ueiMatch>
+            <match type="regex" expression=".*foo235: .*load test (\S+) on ((pts\/\d+)|(tty\d+)).*"/>
+            <uei>uei.example.org/syslog/loadTest/foo235</uei>
+        </ueiMatch>
+        <ueiMatch>
+            <match type="regex" expression=".*foo236: .*load test (\S+) on ((pts\/\d+)|(tty\d+)).*"/>
+            <uei>uei.example.org/syslog/loadTest/foo236</uei>
+        </ueiMatch>
+        <ueiMatch>
+            <match type="regex" expression=".*foo237: .*load test (\S+) on ((pts\/\d+)|(tty\d+)).*"/>
+            <uei>uei.example.org/syslog/loadTest/foo237</uei>
+        </ueiMatch>
+        <ueiMatch>
+            <match type="regex" expression=".*foo238: .*load test (\S+) on ((pts\/\d+)|(tty\d+)).*"/>
+            <uei>uei.example.org/syslog/loadTest/foo238</uei>
+        </ueiMatch>
+        <ueiMatch>
+            <match type="regex" expression=".*foo239: .*load test (\S+) on ((pts\/\d+)|(tty\d+)).*"/>
+            <uei>uei.example.org/syslog/loadTest/foo239</uei>
+        </ueiMatch>
+        <ueiMatch>
+            <match type="regex" expression=".*foo240: .*load test (\S+) on ((pts\/\d+)|(tty\d+)).*"/>
+            <uei>uei.example.org/syslog/loadTest/foo240</uei>
+        </ueiMatch>
+        <ueiMatch>
+            <match type="regex" expression=".*foo241: .*load test (\S+) on ((pts\/\d+)|(tty\d+)).*"/>
+            <uei>uei.example.org/syslog/loadTest/foo241</uei>
+        </ueiMatch>
+        <ueiMatch>
+            <match type="regex" expression=".*foo242: .*load test (\S+) on ((pts\/\d+)|(tty\d+)).*"/>
+            <uei>uei.example.org/syslog/loadTest/foo242</uei>
+        </ueiMatch>
+        <ueiMatch>
+            <match type="regex" expression=".*foo243: .*load test (\S+) on ((pts\/\d+)|(tty\d+)).*"/>
+            <uei>uei.example.org/syslog/loadTest/foo243</uei>
+        </ueiMatch>
+        <ueiMatch>
+            <match type="regex" expression=".*foo244: .*load test (\S+) on ((pts\/\d+)|(tty\d+)).*"/>
+            <uei>uei.example.org/syslog/loadTest/foo244</uei>
+        </ueiMatch>
+        <ueiMatch>
+            <match type="regex" expression=".*foo245: .*load test (\S+) on ((pts\/\d+)|(tty\d+)).*"/>
+            <uei>uei.example.org/syslog/loadTest/foo245</uei>
+        </ueiMatch>
+        <ueiMatch>
+            <match type="regex" expression=".*foo246: .*load test (\S+) on ((pts\/\d+)|(tty\d+)).*"/>
+            <uei>uei.example.org/syslog/loadTest/foo246</uei>
+        </ueiMatch>
+        <ueiMatch>
+            <match type="regex" expression=".*foo247: .*load test (\S+) on ((pts\/\d+)|(tty\d+)).*"/>
+            <uei>uei.example.org/syslog/loadTest/foo247</uei>
+        </ueiMatch>
+        <ueiMatch>
+            <match type="regex" expression=".*foo248: .*load test (\S+) on ((pts\/\d+)|(tty\d+)).*"/>
+            <uei>uei.example.org/syslog/loadTest/foo248</uei>
+        </ueiMatch>
+        <ueiMatch>
+            <match type="regex" expression=".*foo249: .*load test (\S+) on ((pts\/\d+)|(tty\d+)).*"/>
+            <uei>uei.example.org/syslog/loadTest/foo249</uei>
+        </ueiMatch>
+        <ueiMatch>
+            <match type="regex" expression=".*foo250: .*load test (\S+) on ((pts\/\d+)|(tty\d+)).*"/>
+            <uei>uei.example.org/syslog/loadTest/foo250</uei>
+        </ueiMatch>
+        <ueiMatch>
+            <match type="regex" expression=".*foo251: .*load test (\S+) on ((pts\/\d+)|(tty\d+)).*"/>
+            <uei>uei.example.org/syslog/loadTest/foo251</uei>
+        </ueiMatch>
+        <ueiMatch>
+            <match type="regex" expression=".*foo252: .*load test (\S+) on ((pts\/\d+)|(tty\d+)).*"/>
+            <uei>uei.example.org/syslog/loadTest/foo252</uei>
+        </ueiMatch>
+        <ueiMatch>
+            <match type="regex" expression=".*foo253: .*load test (\S+) on ((pts\/\d+)|(tty\d+)).*"/>
+            <uei>uei.example.org/syslog/loadTest/foo253</uei>
+        </ueiMatch>
+        <ueiMatch>
+            <match type="regex" expression=".*foo254: .*load test (\S+) on ((pts\/\d+)|(tty\d+)).*"/>
+            <uei>uei.example.org/syslog/loadTest/foo254</uei>
+        </ueiMatch>
+        <ueiMatch>
+            <match type="regex" expression=".*foo255: .*load test (\S+) on ((pts\/\d+)|(tty\d+)).*"/>
+            <uei>uei.example.org/syslog/loadTest/foo255</uei>
+        </ueiMatch>
+        <ueiMatch>
+            <match type="regex" expression=".*foo256: .*load test (\S+) on ((pts\/\d+)|(tty\d+)).*"/>
+            <uei>uei.example.org/syslog/loadTest/foo256</uei>
+        </ueiMatch>
+        <ueiMatch>
+            <match type="regex" expression=".*foo257: .*load test (\S+) on ((pts\/\d+)|(tty\d+)).*"/>
+            <uei>uei.example.org/syslog/loadTest/foo257</uei>
+        </ueiMatch>
+        <ueiMatch>
+            <match type="regex" expression=".*foo258: .*load test (\S+) on ((pts\/\d+)|(tty\d+)).*"/>
+            <uei>uei.example.org/syslog/loadTest/foo258</uei>
+        </ueiMatch>
+        <ueiMatch>
+            <match type="regex" expression=".*foo259: .*load test (\S+) on ((pts\/\d+)|(tty\d+)).*"/>
+            <uei>uei.example.org/syslog/loadTest/foo259</uei>
+        </ueiMatch>
+        <ueiMatch>
+            <match type="regex" expression=".*foo260: .*load test (\S+) on ((pts\/\d+)|(tty\d+)).*"/>
+            <uei>uei.example.org/syslog/loadTest/foo260</uei>
+        </ueiMatch>
+        <ueiMatch>
+            <match type="regex" expression=".*foo261: .*load test (\S+) on ((pts\/\d+)|(tty\d+)).*"/>
+            <uei>uei.example.org/syslog/loadTest/foo261</uei>
+        </ueiMatch>
+        <ueiMatch>
+            <match type="regex" expression=".*foo262: .*load test (\S+) on ((pts\/\d+)|(tty\d+)).*"/>
+            <uei>uei.example.org/syslog/loadTest/foo262</uei>
+        </ueiMatch>
+        <ueiMatch>
+            <match type="regex" expression=".*foo263: .*load test (\S+) on ((pts\/\d+)|(tty\d+)).*"/>
+            <uei>uei.example.org/syslog/loadTest/foo263</uei>
+        </ueiMatch>
+        <ueiMatch>
+            <match type="regex" expression=".*foo264: .*load test (\S+) on ((pts\/\d+)|(tty\d+)).*"/>
+            <uei>uei.example.org/syslog/loadTest/foo264</uei>
+        </ueiMatch>
+        <ueiMatch>
+            <match type="regex" expression=".*foo265: .*load test (\S+) on ((pts\/\d+)|(tty\d+)).*"/>
+            <uei>uei.example.org/syslog/loadTest/foo265</uei>
+        </ueiMatch>
+        <ueiMatch>
+            <match type="regex" expression=".*foo266: .*load test (\S+) on ((pts\/\d+)|(tty\d+)).*"/>
+            <uei>uei.example.org/syslog/loadTest/foo266</uei>
+        </ueiMatch>
+        <ueiMatch>
+            <match type="regex" expression=".*foo267: .*load test (\S+) on ((pts\/\d+)|(tty\d+)).*"/>
+            <uei>uei.example.org/syslog/loadTest/foo267</uei>
+        </ueiMatch>
+        <ueiMatch>
+            <match type="regex" expression=".*foo268: .*load test (\S+) on ((pts\/\d+)|(tty\d+)).*"/>
+            <uei>uei.example.org/syslog/loadTest/foo268</uei>
+        </ueiMatch>
+        <ueiMatch>
+            <match type="regex" expression=".*foo269: .*load test (\S+) on ((pts\/\d+)|(tty\d+)).*"/>
+            <uei>uei.example.org/syslog/loadTest/foo269</uei>
+        </ueiMatch>
+        <ueiMatch>
+            <match type="regex" expression=".*foo270: .*load test (\S+) on ((pts\/\d+)|(tty\d+)).*"/>
+            <uei>uei.example.org/syslog/loadTest/foo270</uei>
+        </ueiMatch>
+        <ueiMatch>
+            <match type="regex" expression=".*foo271: .*load test (\S+) on ((pts\/\d+)|(tty\d+)).*"/>
+            <uei>uei.example.org/syslog/loadTest/foo271</uei>
+        </ueiMatch>
+        <ueiMatch>
+            <match type="regex" expression=".*foo272: .*load test (\S+) on ((pts\/\d+)|(tty\d+)).*"/>
+            <uei>uei.example.org/syslog/loadTest/foo272</uei>
+        </ueiMatch>
+        <ueiMatch>
+            <match type="regex" expression=".*foo273: .*load test (\S+) on ((pts\/\d+)|(tty\d+)).*"/>
+            <uei>uei.example.org/syslog/loadTest/foo273</uei>
+        </ueiMatch>
+        <ueiMatch>
+            <match type="regex" expression=".*foo274: .*load test (\S+) on ((pts\/\d+)|(tty\d+)).*"/>
+            <uei>uei.example.org/syslog/loadTest/foo274</uei>
+        </ueiMatch>
+        <ueiMatch>
+            <match type="regex" expression=".*foo275: .*load test (\S+) on ((pts\/\d+)|(tty\d+)).*"/>
+            <uei>uei.example.org/syslog/loadTest/foo275</uei>
+        </ueiMatch>
+        <ueiMatch>
+            <match type="regex" expression=".*foo276: .*load test (\S+) on ((pts\/\d+)|(tty\d+)).*"/>
+            <uei>uei.example.org/syslog/loadTest/foo276</uei>
+        </ueiMatch>
+        <ueiMatch>
+            <match type="regex" expression=".*foo277: .*load test (\S+) on ((pts\/\d+)|(tty\d+)).*"/>
+            <uei>uei.example.org/syslog/loadTest/foo277</uei>
+        </ueiMatch>
+        <ueiMatch>
+            <match type="regex" expression=".*foo278: .*load test (\S+) on ((pts\/\d+)|(tty\d+)).*"/>
+            <uei>uei.example.org/syslog/loadTest/foo278</uei>
+        </ueiMatch>
+        <ueiMatch>
+            <match type="regex" expression=".*foo279: .*load test (\S+) on ((pts\/\d+)|(tty\d+)).*"/>
+            <uei>uei.example.org/syslog/loadTest/foo279</uei>
+        </ueiMatch>
+        <ueiMatch>
+            <match type="regex" expression=".*foo280: .*load test (\S+) on ((pts\/\d+)|(tty\d+)).*"/>
+            <uei>uei.example.org/syslog/loadTest/foo280</uei>
+        </ueiMatch>
+        <ueiMatch>
+            <match type="regex" expression=".*foo281: .*load test (\S+) on ((pts\/\d+)|(tty\d+)).*"/>
+            <uei>uei.example.org/syslog/loadTest/foo281</uei>
+        </ueiMatch>
+        <ueiMatch>
+            <match type="regex" expression=".*foo282: .*load test (\S+) on ((pts\/\d+)|(tty\d+)).*"/>
+            <uei>uei.example.org/syslog/loadTest/foo282</uei>
+        </ueiMatch>
+        <ueiMatch>
+            <match type="regex" expression=".*foo283: .*load test (\S+) on ((pts\/\d+)|(tty\d+)).*"/>
+            <uei>uei.example.org/syslog/loadTest/foo283</uei>
+        </ueiMatch>
+        <ueiMatch>
+            <match type="regex" expression=".*foo284: .*load test (\S+) on ((pts\/\d+)|(tty\d+)).*"/>
+            <uei>uei.example.org/syslog/loadTest/foo284</uei>
+        </ueiMatch>
+        <ueiMatch>
+            <match type="regex" expression=".*foo285: .*load test (\S+) on ((pts\/\d+)|(tty\d+)).*"/>
+            <uei>uei.example.org/syslog/loadTest/foo285</uei>
+        </ueiMatch>
+        <ueiMatch>
+            <match type="regex" expression=".*foo286: .*load test (\S+) on ((pts\/\d+)|(tty\d+)).*"/>
+            <uei>uei.example.org/syslog/loadTest/foo286</uei>
+        </ueiMatch>
+        <ueiMatch>
+            <match type="regex" expression=".*foo287: .*load test (\S+) on ((pts\/\d+)|(tty\d+)).*"/>
+            <uei>uei.example.org/syslog/loadTest/foo287</uei>
+        </ueiMatch>
+        <ueiMatch>
+            <match type="regex" expression=".*foo288: .*load test (\S+) on ((pts\/\d+)|(tty\d+)).*"/>
+            <uei>uei.example.org/syslog/loadTest/foo288</uei>
+        </ueiMatch>
+        <ueiMatch>
+            <match type="regex" expression=".*foo289: .*load test (\S+) on ((pts\/\d+)|(tty\d+)).*"/>
+            <uei>uei.example.org/syslog/loadTest/foo289</uei>
+        </ueiMatch>
+        <ueiMatch>
+            <match type="regex" expression=".*foo290: .*load test (\S+) on ((pts\/\d+)|(tty\d+)).*"/>
+            <uei>uei.example.org/syslog/loadTest/foo290</uei>
+        </ueiMatch>
+        <ueiMatch>
+            <match type="regex" expression=".*foo291: .*load test (\S+) on ((pts\/\d+)|(tty\d+)).*"/>
+            <uei>uei.example.org/syslog/loadTest/foo291</uei>
+        </ueiMatch>
+        <ueiMatch>
+            <match type="regex" expression=".*foo292: .*load test (\S+) on ((pts\/\d+)|(tty\d+)).*"/>
+            <uei>uei.example.org/syslog/loadTest/foo292</uei>
+        </ueiMatch>
+        <ueiMatch>
+            <match type="regex" expression=".*foo293: .*load test (\S+) on ((pts\/\d+)|(tty\d+)).*"/>
+            <uei>uei.example.org/syslog/loadTest/foo293</uei>
+        </ueiMatch>
+        <ueiMatch>
+            <match type="regex" expression=".*foo294: .*load test (\S+) on ((pts\/\d+)|(tty\d+)).*"/>
+            <uei>uei.example.org/syslog/loadTest/foo294</uei>
+        </ueiMatch>
+        <ueiMatch>
+            <match type="regex" expression=".*foo295: .*load test (\S+) on ((pts\/\d+)|(tty\d+)).*"/>
+            <uei>uei.example.org/syslog/loadTest/foo295</uei>
+        </ueiMatch>
+        <ueiMatch>
+            <match type="regex" expression=".*foo296: .*load test (\S+) on ((pts\/\d+)|(tty\d+)).*"/>
+            <uei>uei.example.org/syslog/loadTest/foo296</uei>
+        </ueiMatch>
+        <ueiMatch>
+            <match type="regex" expression=".*foo297: .*load test (\S+) on ((pts\/\d+)|(tty\d+)).*"/>
+            <uei>uei.example.org/syslog/loadTest/foo297</uei>
+        </ueiMatch>
+        <ueiMatch>
+            <match type="regex" expression=".*foo298: .*load test (\S+) on ((pts\/\d+)|(tty\d+)).*"/>
+            <uei>uei.example.org/syslog/loadTest/foo298</uei>
+        </ueiMatch>
+        <ueiMatch>
+            <match type="regex" expression=".*foo299: .*load test (\S+) on ((pts\/\d+)|(tty\d+)).*"/>
+            <uei>uei.example.org/syslog/loadTest/foo299</uei>
+        </ueiMatch>
+<!-- LOAD TEST STUFF END -->
+
+    </ueiList>
+
+    <hideMessage>
+        <hideMatch>
+            <match type="substr" expression="TESTHIDING"/>
+        </hideMatch>
+        <hideMatch>
+            <match type="regex" expression="[Dd]ouble[Ss]ecret"/>
+        </hideMatch>
+    </hideMessage>
+
+
+</syslogd-configuration>
