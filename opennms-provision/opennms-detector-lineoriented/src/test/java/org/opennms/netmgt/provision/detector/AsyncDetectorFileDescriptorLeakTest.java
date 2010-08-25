@@ -40,6 +40,7 @@ public class AsyncDetectorFileDescriptorLeakTest implements ApplicationContextAw
         m_detector.set(getDetector(TcpDetector.class));
         m_detector.get().setServiceName("TCP");
         m_detector.get().setTimeout(1000);
+        m_detector.get().setBanner(".*");
         m_detector.get().init();
     }
     
