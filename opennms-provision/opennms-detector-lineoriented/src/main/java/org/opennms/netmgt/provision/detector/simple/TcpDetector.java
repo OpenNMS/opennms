@@ -37,7 +37,9 @@ package org.opennms.netmgt.provision.detector.simple;
 import java.nio.charset.Charset;
 
 import org.apache.mina.filter.codec.ProtocolCodecFilter;
+import org.opennms.netmgt.provision.detector.simple.request.LineOrientedRequest;
 import org.opennms.netmgt.provision.detector.simple.response.LineOrientedResponse;
+import org.opennms.netmgt.provision.support.AsyncClientConversation.AsyncExchange;
 import org.opennms.netmgt.provision.support.AsyncClientConversation.ResponseValidator;
 import org.opennms.netmgt.provision.support.codec.TcpCodecFactory;
 import org.springframework.context.annotation.Scope;
@@ -80,9 +82,27 @@ public class TcpDetector extends AsyncLineOrientedDetector {
      * <p>onInit</p>
      */
     public void onInit() {
-        expectBanner(matches(getBanner()));
+        if(getBanner() != null) {
+            expectBanner(matches(getBanner()));
+        }else {
+            getConversation().addExchange(testBannerlessConnection());
+        }
+            
     }
     
+    private AsyncExchange<LineOrientedRequest, LineOrientedResponse> testBannerlessConnection() {
+        
+        return new AsyncExchange<LineOrientedRequest, LineOrientedResponse>(){
+
+            public boolean validateResponse(LineOrientedResponse response) {
+                return response.equals("TCP Failed to send Banner");
+            }
+
+            public LineOrientedRequest getRequest() {
+                return null;
+            }};
+    }
+
     /**
      * <p>matches</p>
      *
@@ -93,10 +113,6 @@ public class TcpDetector extends AsyncLineOrientedDetector {
         return new ResponseValidator<LineOrientedResponse>() {
 
             public boolean validate(LineOrientedResponse response) {
-                
-                if(regex == null){
-                    return true;
-                }
                 
                 return response.matches(regex);
             }

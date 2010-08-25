@@ -46,6 +46,7 @@ public class BaseDetectorHandler<Request, Response> extends IoHandlerAdapter {
     
     private DetectFuture m_future;
     private AsyncClientConversation<Request, Response> m_conversation;
+    private String m_idleState = null;
     
 
     /**
@@ -75,7 +76,7 @@ public class BaseDetectorHandler<Request, Response> extends IoHandlerAdapter {
 
     /** {@inheritDoc} */
     public void sessionOpened(IoSession session) throws Exception {
-        if(!m_conversation.hasBanner()) {
+        if(!m_conversation.hasBanner() && m_conversation.getRequest() != null) {
             Object request = m_conversation.getRequest();
             session.write(request);
        }
@@ -90,8 +91,10 @@ public class BaseDetectorHandler<Request, Response> extends IoHandlerAdapter {
 
     /** {@inheritDoc} */
     public void sessionIdle(IoSession session, IdleStatus status) throws Exception {
-        getFuture().setServiceDetected(false);
-        session.close(false);
+        if(m_conversation.hasBanner() && status == IdleStatus.READER_IDLE) {
+            getFuture().setServiceDetected(false);
+            session.close(true);
+        }
     }
 
     /** {@inheritDoc} */

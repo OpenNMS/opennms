@@ -150,5 +150,13 @@ public class TcpLineDecoder extends CumulativeProtocolDecoder {
     public Charset getCharset() {
         return m_charset;
     }
+    
+    @Override
+    public void finishDecode(IoSession session, ProtocolDecoderOutput out) {
+        if(session.getReadMessages() == 0) {
+            out.write(new LineOrientedResponse("TCP Failed to send Banner"));
+        }
+        
+    }
 
 }
