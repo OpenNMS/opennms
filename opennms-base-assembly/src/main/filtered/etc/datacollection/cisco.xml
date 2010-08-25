@@ -485,6 +485,13 @@
         </collect>
       </systemDef>
 
+      <systemDef name = "Cisco C1250">
+        <sysoid>.1.3.6.1.4.1.9.1.758</sysoid>
+        <collect>
+          <includeGroup>cisco-ap-dot11-stats</includeGroup>
+        </collect>
+      </systemDef>
+
       <systemDef name="Cisco PIX1"><!-- PIX 515 -->
         <sysoid>.1.3.6.1.4.1.9.1.390</sysoid>
         <collect>
