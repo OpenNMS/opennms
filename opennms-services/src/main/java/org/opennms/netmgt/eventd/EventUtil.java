@@ -573,9 +573,13 @@ public final class EventUtil {
      */
     private static String getAllParmValues(Event event) {
         String retParmVal = null;
-        if (event.getParms() != null && event.getParms().getParmCount() <= 0)
+        if (event.getParms() == null) {
+            ThreadCategory.getInstance(EventUtil.class).warn("Event received with null parms: " + event.getUei(), new Exception("Stack trace for event with null parms"));
+            retParmVal = null;
+        }
+        else if (event.getParms().getParmCount() < 1) {
         	retParmVal = null;
-
+        }
         else {
         	StringBuffer ret = new StringBuffer();
 

@@ -309,7 +309,7 @@ public final class BroadcastEventProcessor implements EventListener {
                             if (curAck.getNotify() && notifsOn) {
                                 sendResolvedNotifications(notifIDs, event, curAck.getAcknowledge(), curAck.getMatch(), curAck.getResolutionPrefix(), getNotifdConfigManager().getConfiguration().isNumericSkipResolutionPrefix());
                             }
-                        } catch (Exception e) {
+                        } catch (Throwable e) {
                             log().error("Failed to send resolution notifications.", e);
                         }
                     } catch (SQLException e) {
@@ -318,7 +318,7 @@ public final class BroadcastEventProcessor implements EventListener {
                 }
 
             }
-        } catch (Exception e) {
+        } catch (Throwable e) {
             log().error("Unable to auto acknowledge notice due to exception.", e);
         }
     }
@@ -451,7 +451,7 @@ public final class BroadcastEventProcessor implements EventListener {
                     log().debug("notify status for service " + service + " on interface/node " + ipAddr + "/" + nodeID + " is " + notify + ", not continuing...");
                 }
             }
-        } catch (Exception e) {
+        } catch (Throwable e) {
             continueNotice = true;
             log().error("Not able to get notify status for service " + service + " on interface/node " + ipAddr + "/" + nodeID + ". Continuing notice... " + e.getMessage());
         }
@@ -477,7 +477,7 @@ public final class BroadcastEventProcessor implements EventListener {
                 }
             }
             return false;
-        } catch (Exception e) {
+        } catch (Throwable e) {
             log().error("Unable to find if an auto acknowledge exists for event " + eventUei + " due to exception.", e);
             return false;
         }
@@ -491,7 +491,7 @@ public final class BroadcastEventProcessor implements EventListener {
 
         try {
             mapsToNotice = getNotificationManager().hasUei(event.getUei());
-        } catch (Exception e) {
+        } catch (Throwable e) {
             log().error("Couldn't map uei " + event.getUei() + " to a notification entry, not scheduling notice.", e);
             return;
         }
@@ -504,7 +504,7 @@ public final class BroadcastEventProcessor implements EventListener {
 
                 try {
                     notifications = getNotificationManager().getNotifForEvent(event);
-                } catch (Exception e) {
+                } catch (Throwable e) {
                     log().error("Couldn't get notification mapping for event " + event.getUei() + ", not scheduling notice.", e);
                     return;
                 }
@@ -517,7 +517,7 @@ public final class BroadcastEventProcessor implements EventListener {
 
                         try {
                             noticeId = getNotificationManager().getNoticeId();
-                        } catch (Exception e) {
+                        } catch (Throwable e) {
                             log().error("Failed to get a unique id # for notification, exiting this notification", e);
                             continue;
                         }
@@ -546,7 +546,7 @@ public final class BroadcastEventProcessor implements EventListener {
                                 // return;
                                 continue;
                             }
-                        } catch (Exception e) {
+                        } catch (Throwable e) {
                             log().error("Could not get destination path for " + notification.getDestinationPath() + ", please check the destinationPath.xml for errors.", e);
                             return;
                         }
@@ -562,7 +562,7 @@ public final class BroadcastEventProcessor implements EventListener {
                                 sendNotifEvent(EventConstants.NOTIFICATION_WITHOUT_USERS, "The path " + notification.getDestinationPath() + " assigned to notification " + notification.getName() + " has no targets or escalations specified.", "The message of the notification is as follows: " + paramMap.get(NotificationManager.PARAM_TEXT_MSG));
                                 return;
                             }
-                        } catch (Exception e) {
+                        } catch (Throwable e) {
                             log().error("Failed to get count of users in destination path " + notification.getDestinationPath() + ", exiting notification.", e);
                             return;
                         }
@@ -605,7 +605,7 @@ public final class BroadcastEventProcessor implements EventListener {
                                 processTargets(targets, targetSiblings, noticeQueue, startTime, paramMap, noticeId);
                                 processEscalations(escalations, targetSiblings, noticeQueue, startTime, paramMap, noticeId);
                             }
-                        } catch (Exception e) {
+                        } catch (Throwable e) {
                             log().error("notice not scheduled due to error: ", e);
                         }
 
@@ -1024,7 +1024,7 @@ public final class BroadcastEventProcessor implements EventListener {
                     }
                 }
             }
-        } catch (Exception e) {
+        } catch (Throwable e) {
             log().error("Error determining current outages", e);
         }
 
