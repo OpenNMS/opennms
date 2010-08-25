@@ -53,7 +53,6 @@ import org.opennms.netmgt.config.datacollection.DatacollectionGroup;
 import org.opennms.netmgt.config.datacollection.Group;
 import org.opennms.netmgt.config.datacollection.Groups;
 import org.opennms.netmgt.config.datacollection.IncludeCollection;
-import org.opennms.netmgt.config.datacollection.MibObj;
 import org.opennms.netmgt.config.datacollection.ResourceType;
 import org.opennms.netmgt.config.datacollection.SnmpCollection;
 import org.opennms.netmgt.config.datacollection.SystemDef;
@@ -66,6 +65,9 @@ import org.springframework.dao.DataAccessResourceFailureException;
  * 
  * @author <a href="mail:agalue@opennms.org">Alejandro Galue</a>
  */
+// FIXME How to deal with duplications outside snmp-collection boundaries? That make sense?; for example: check externalGroupsMap?
+// FIXME What are the real ways to validate if two elements are the same? Just the element name? additional parameters?
+// FIXME How to apply rules about duplicates? Just warn?, Override?, Override with priorities? Silent ignore?
 public class DataCollectionConfigParser {
     
     private String configDirectory;
@@ -74,6 +76,7 @@ public class DataCollectionConfigParser {
     
     public DataCollectionConfigParser(String configDirectory) {
         this.configDirectory = configDirectory;
+        this.externalGroupsMap = new HashMap<String, DatacollectionGroup>();
     }
     
     protected Map<String,DatacollectionGroup> getExternalGroupMap() {
@@ -81,20 +84,14 @@ public class DataCollectionConfigParser {
     }
     
     /**
-     * Update/Validate SNMP collection
+     * Update/Validate SNMP collection.
      * 
      * @param collection
      */
     public void parseCollection(SnmpCollection collection) {
-        parseExternalResources();
-
         if (collection.getIncludeCollectionCount() > 0) {
+            parseExternalResources();
             checkCollection(collection);
-            // Add all Resource Types from cache. That because a resourceType is a shared object across all datacollection configuration.
-            for (ResourceType rt : getAllResourceTypes()) {
-                if (!contains(collection.getResourceTypeCollection(), rt))
-                    collection.addResourceType(rt);
-            }
             // Add systemDefs and dependencies
             for (IncludeCollection include : collection.getIncludeCollection()) {
                 if (include.getDataCollectionGroup() != null) {
@@ -115,6 +112,23 @@ public class DataCollectionConfigParser {
     }
     
     /**
+     * Get all configured resource types.
+     * 
+     * @return the resource type list
+     */
+    public Set<ResourceType> getAllResourceTypes() {
+        parseExternalResources();
+        Set<ResourceType> resourceTypes = new HashSet<ResourceType>();
+        for (DatacollectionGroup group : externalGroupsMap.values()) {
+            for (ResourceType rt : group.getResourceTypeCollection()) {
+                if (!contains(resourceTypes, rt))
+                    resourceTypes.add(rt);
+            }
+        }
+        return resourceTypes;
+    }
+
+    /**
      * Verify the sub-groups of SNMP collection.
      * 
      * @param collection
@@ -128,7 +142,7 @@ public class DataCollectionConfigParser {
 
     /**
      * Verify if the resourceTypes list contains a specific resourceType.
-     * <p>One resource type will be considered the same as another one, if they have the same name and refers to the same storage strategy.</p>
+     * <p>One resource type will be considered the same as another one, if they have the same name.</p>
      * 
      * @param globalContainer
      * @param resourceType
@@ -137,9 +151,7 @@ public class DataCollectionConfigParser {
      */
     private boolean contains(Collection<ResourceType> resourceTypes, ResourceType resourceType) {
         for (ResourceType rt : resourceTypes) {
-            if (resourceType.getName().equals(rt.getName())
-                    && resourceType.getStorageStrategy().getClass().equals(rt.getStorageStrategy().getClazz())
-                    && resourceType.getPersistenceSelectorStrategy().getClazz().equals(rt.getPersistenceSelectorStrategy().getClazz()))
+            if (resourceType.getName().equals(rt.getName()))
                 return true;
         }
         return false;
@@ -147,7 +159,7 @@ public class DataCollectionConfigParser {
     
     /**
      * Verify if the groups list contains a specific group.
-     * <p>One group will be considered the same as another one, if they have the same name and contain the same mib objects.</p>
+     * <p>One group will be considered the same as another one, if they have the same name.</p>
      * 
      * @param globalContainer
      * @param group
@@ -155,42 +167,15 @@ public class DataCollectionConfigParser {
      */
     private boolean contains(Collection<Group> groups, Group group) {
         for (Group g : groups) {
-            if (group.getName().equals(g.getName()) && group.getMibObjCount() == g.getMibObjCount()) {
-                int count = 0;
-                for (MibObj mo : g.getMibObjCollection()) {
-                    if (contains(group, mo))
-                        count++;
-                }
-                if (count == g.getMibObjCount())
-                    return true;
-            }
+            if (group.getName().equals(g.getName()))
+                return true;
         }
         return false;
     }
     
     /**
-     * Verify if the MIB group contains a specific MIB object.
-     * <p>One MIB object will be considered the same as another one, if they have the same alias, instance, oid and type.</p>
-     * 
-     * @param group
-     * @param mibObj
-     * 
-     * @return true, if the MIB group contains the MIB object
-     */
-    private boolean contains(Group group, MibObj mibObj) {
-        for (MibObj mo : group.getMibObjCollection()) {
-            if (mo.getAlias().equals(mibObj.getAlias())
-                    && mo.getInstance().equals(mibObj.getInstance())
-                    && mo.getOid().equals(mibObj.getOid())
-                    && mo.getType().equals(mibObj.getType()))
-                return true;
-        }
-        return false;
-    }
-
-    /**
      * Verify if the systemDefs list contains a specific system definition.
-     * <p>One system definition will be considered the same as another one, if they have the same name and contain the same groups.</p>
+     * <p>One system definition will be considered the same as another one, if they have the same name.</p>
      * 
      * @param globalContainer
      * @param systemDef
@@ -200,16 +185,8 @@ public class DataCollectionConfigParser {
     // TODO Include sysoid and sysoidMask on validation process
     private boolean contains(List<SystemDef> systemDefs, SystemDef systemDef) {
         for (SystemDef sd : systemDefs) {
-            if (systemDef.getName().equals(sd.getName())
-                    && systemDef.getCollect().getIncludeGroupCount() == sd.getCollect().getIncludeGroupCount()) {
-                int count = 0;
-                for (String group : sd.getCollect().getIncludeGroupCollection()) {
-                    if (systemDef.getCollect().getIncludeGroupCollection().contains(group))
-                        count++;
-                }
-                if (count == sd.getCollect().getIncludeGroupCount())
-                    return true;
-            }
+            if (systemDef.getName().equals(sd.getName()))
+                return true;
         }
         return false;
     }
@@ -223,9 +200,6 @@ public class DataCollectionConfigParser {
             log().info("parseExternalResources: external data collection groups are already parsed");
             return;
         }
-        
-        // Create external groups map
-        externalGroupsMap = new HashMap<String, DatacollectionGroup>();
         
         // Check configuration files repository
         File folder = new File(configDirectory);
@@ -262,17 +236,12 @@ public class DataCollectionConfigParser {
         }
     }
 
-    private Set<ResourceType> getAllResourceTypes() {
-        Set<ResourceType> resourceTypes = new HashSet<ResourceType>();
-        for (DatacollectionGroup group : externalGroupsMap.values()) {
-            for (ResourceType rt : group.getResourceTypeCollection()) {
-                if (!contains(resourceTypes, rt))
-                    resourceTypes.add(rt);
-            }
-        }
-        return resourceTypes;
-    }
-
+    /**
+     * Get a system definition from datacollection-group map.
+     * 
+     * @param systemDefName the systemDef object name.
+     * @return the systemDef object.
+     */
     private SystemDef getSystemDef(String systemDefName) {
         for (DatacollectionGroup group : externalGroupsMap.values()) {
             for (SystemDef sd : group.getSystemDefCollection()) {
@@ -284,6 +253,12 @@ public class DataCollectionConfigParser {
         return null;
     }
 
+    /**
+     * Get a MIB object group from datacollection-group map.
+     * 
+     * @param groupName the group name
+     * @return the group object
+     */
     private Group getMibObjectGroup(String groupName) {
         for (DatacollectionGroup group : externalGroupsMap.values()) {
             for (Group g : group.getGroupCollection()) {

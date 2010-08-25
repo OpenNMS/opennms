@@ -55,6 +55,7 @@ import org.opennms.netmgt.config.datacollection.ResourceType;
 import org.opennms.netmgt.config.datacollection.SnmpCollection;
 import org.opennms.netmgt.config.datacollection.SystemDef;
 import org.opennms.netmgt.config.datacollection.SystemDefChoice;
+import org.opennms.netmgt.config.datacollection.Systems;
 import org.opennms.netmgt.model.RrdRepository;
 
 /**
@@ -79,11 +80,20 @@ AbstractCastorConfigDao<DatacollectionConfig, DatacollectionConfig> implements D
 
     @Override
     public DatacollectionConfig translateConfig(DatacollectionConfig castorConfig) {
-        // FIXME: Create an empty group with only resourceTypes or add resourceTypes to ALL collections ?
         DataCollectionConfigParser parser = new DataCollectionConfigParser(getConfigDirectory());
+        // Updating Configured Collections
         for (SnmpCollection collection : castorConfig.getSnmpCollectionCollection()) {
             parser.parseCollection(collection);
         }
+        // Create a special collection to hold all resource types, because they should be defined only once.
+        SnmpCollection resourceTypeCollection = new SnmpCollection();
+        resourceTypeCollection.setName("__resource_type_collection");
+        for (ResourceType rt : parser.getAllResourceTypes()) {
+            resourceTypeCollection.addResourceType(rt);
+        }
+        resourceTypeCollection.setGroups(new Groups());
+        resourceTypeCollection.setSystems(new Systems());
+        castorConfig.getSnmpCollectionCollection().add(0, resourceTypeCollection);
         return castorConfig;
     }
 
