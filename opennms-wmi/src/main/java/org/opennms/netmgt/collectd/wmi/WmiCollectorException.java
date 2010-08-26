@@ -53,7 +53,7 @@ public class WmiCollectorException extends RuntimeException {
          * @param message a {@link java.lang.String} object.
          * @param cause a {@link java.lang.Throwable} object.
          */
-        public WmiCollectorException(String message, Throwable cause) {
+        public WmiCollectorException(final String message, final Throwable cause) {
             super(message, cause);
         }
 }

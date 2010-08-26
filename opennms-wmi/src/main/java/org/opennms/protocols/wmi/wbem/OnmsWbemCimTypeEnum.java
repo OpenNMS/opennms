@@ -31,9 +31,9 @@
 //
 package org.opennms.protocols.wmi.wbem;
 
-import java.util.Map;
-import java.util.HashMap;
 import java.util.EnumSet;
+import java.util.HashMap;
+import java.util.Map;
 
 /**
  * Created by IntelliJ IDEA.
@@ -69,11 +69,11 @@ public enum OnmsWbemCimTypeEnum {
     private String cimName;
 
     static {
-        for (OnmsWbemCimTypeEnum s : EnumSet.allOf(OnmsWbemCimTypeEnum.class))
+        for (final OnmsWbemCimTypeEnum s : EnumSet.allOf(OnmsWbemCimTypeEnum.class))
             lookup.put(s.getCimValue(), s);
     }
 
-    OnmsWbemCimTypeEnum(int cimValue, String cimName) {
+    OnmsWbemCimTypeEnum(final int cimValue, final String cimName) {
         this.cimValue = cimValue;
         this.cimName = cimName;
     }
@@ -97,7 +97,7 @@ public enum OnmsWbemCimTypeEnum {
      * @param cimValue a int.
      * @return a {@link org.opennms.protocols.wmi.wbem.OnmsWbemCimTypeEnum} object.
      */
-    public static OnmsWbemCimTypeEnum get(int cimValue) {
+    public static OnmsWbemCimTypeEnum get(final int cimValue) {
           return lookup.get(cimValue);
      }
 }

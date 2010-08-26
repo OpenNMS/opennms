@@ -31,9 +31,8 @@
 //
 package org.opennms.protocols.wmi.wbem.jinterop;
 
-import org.jinterop.dcom.impls.automation.IJIDispatch;
-import org.jinterop.dcom.core.JIVariant;
 import org.jinterop.dcom.common.JIException;
+import org.jinterop.dcom.impls.automation.IJIDispatch;
 import org.opennms.protocols.wmi.WmiException;
 import org.opennms.protocols.wmi.wbem.OnmsWbemMethod;
 
@@ -63,10 +62,8 @@ public class OnmsWbemMethodImpl implements OnmsWbemMethod {
      */
     public String getWmiName()throws WmiException {
         try {
-            JIVariant variant = wbemMethodDispatch.get("Name");
-
-            return variant.getObjectAsString2();
-        } catch (JIException e) {
+            return wbemMethodDispatch.get("Name").getObjectAsString2();
+        } catch (final JIException e) {
             throw new WmiException("Unable to retrieve WbemMethod Name attribute: " + e.getMessage(), e);
         }
     }
@@ -77,12 +74,10 @@ public class OnmsWbemMethodImpl implements OnmsWbemMethod {
      * @return a {@link java.lang.String} object.
      * @throws org.opennms.protocols.wmi.WmiException if any.
      */
-    public String getWmiOrigin()throws WmiException {
+    public String getWmiOrigin() throws WmiException {
         try {
-            JIVariant variant = wbemMethodDispatch.get("Origin");
-
-            return variant.getObjectAsString2();
-        } catch (JIException e) {
+            return wbemMethodDispatch.get("Origin").getObjectAsString2();
+        } catch (final JIException e) {
             throw new WmiException("Unable to retrieve WbemMethod Origin attribute: " + e.getMessage(), e);
         }
     }

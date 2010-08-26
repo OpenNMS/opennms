@@ -57,7 +57,7 @@ public class WmiCollectionAttribute extends AbstractCollectionAttribute implemen
          * @param alias a {@link java.lang.String} object.
          * @param value a {@link java.lang.String} object.
          */
-        public WmiCollectionAttribute(WmiCollectionResource resource, CollectionAttributeType attribType, String alias, String value) {
+        public WmiCollectionAttribute(final WmiCollectionResource resource, final CollectionAttributeType attribType, final String alias, final String value) {
             m_resource=resource;
             m_attribType=attribType;
             m_alias = alias;
@@ -110,7 +110,7 @@ public class WmiCollectionAttribute extends AbstractCollectionAttribute implemen
         }
 
         /** {@inheritDoc} */
-        public boolean shouldPersist(ServiceParameters params) {
+        public boolean shouldPersist(final ServiceParameters params) {
             return true;
         }
 

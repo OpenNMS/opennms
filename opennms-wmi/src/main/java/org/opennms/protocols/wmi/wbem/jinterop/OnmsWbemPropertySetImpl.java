@@ -56,7 +56,7 @@ public class OnmsWbemPropertySetImpl implements OnmsWbemPropertySet {
      *
      * @param wbemPropertySetDispatch a {@link org.jinterop.dcom.impls.automation.IJIDispatch} object.
      */
-    public OnmsWbemPropertySetImpl(IJIDispatch wbemPropertySetDispatch) {
+    public OnmsWbemPropertySetImpl(final IJIDispatch wbemPropertySetDispatch) {
         this.wbemPropertySetDispatch = wbemPropertySetDispatch;
     }
 
@@ -68,66 +68,60 @@ public class OnmsWbemPropertySetImpl implements OnmsWbemPropertySet {
      */
     public Integer count() throws WmiException {
         try {
-            JIVariant Count = wbemPropertySetDispatch.get("Count");
+            final JIVariant Count = wbemPropertySetDispatch.get("Count");
             return Count.getObjectAsInt();
-        } catch (JIException e) {
+        } catch (final JIException e) {
             throw new WmiException("Retrieving Count failed: " + e.getMessage(), e);
         }
     }
 
     /** {@inheritDoc} */
-    public OnmsWbemProperty get(Integer idx) throws WmiException {
+    public OnmsWbemProperty get(final Integer idx) throws WmiException {
         try {
-            IJIComObject enumComObject = wbemPropertySetDispatch.get("_NewEnum").getObjectAsComObject();
-            IJIEnumVariant enumVariant =
-                    (IJIEnumVariant) JIObjectFactory.narrowObject(
-                            enumComObject.queryInterface(IJIEnumVariant.IID));
+            final IJIComObject enumComObject = wbemPropertySetDispatch.get("_NewEnum").getObjectAsComObject();
+            final IJIEnumVariant enumVariant = (IJIEnumVariant) JIObjectFactory.narrowObject(enumComObject.queryInterface(IJIEnumVariant.IID));
             OnmsWbemProperty wbemObj;
             IJIDispatch wbemProperty_dispatch = null;
             for (int i = 0; i < (idx+1); i++) {
-                Object[] values = enumVariant.next(1);
-                JIArray array = (JIArray)values[0];
-                Object[] arrayObj = (Object[])array.getArrayInstance();
-                for(int j = 0; j < arrayObj.length; j++)
-                {
+                final Object[] values = enumVariant.next(1);
+                final JIArray array = (JIArray)values[0];
+                final Object[] arrayObj = (Object[])array.getArrayInstance();
+                for(int j = 0; j < arrayObj.length; j++) {
                     wbemProperty_dispatch = (IJIDispatch)JIObjectFactory.narrowObject(((JIVariant)arrayObj[j]).getObjectAsComObject());
                 }
             }
 
             wbemObj = new OnmsWbemPropertyImpl(wbemProperty_dispatch);
             return wbemObj;
-        } catch(JIException e) {
+        } catch(final JIException e) {
             throw new WmiException("Failed to enumerate WbemProperty variant: " + e.getMessage(), e);
         }
     }
 
     /** {@inheritDoc} */
-    public OnmsWbemProperty getByName(String name) throws WmiException {
+    public OnmsWbemProperty getByName(final String name) throws WmiException {
         try {
-            IJIComObject enumComObject = wbemPropertySetDispatch.get("_NewEnum").getObjectAsComObject();
-            IJIEnumVariant enumVariant =
-                    (IJIEnumVariant) JIObjectFactory.narrowObject(
-                            enumComObject.queryInterface(IJIEnumVariant.IID));
+            final IJIComObject enumComObject = wbemPropertySetDispatch.get("_NewEnum").getObjectAsComObject();
+            final IJIEnumVariant enumVariant = (IJIEnumVariant) JIObjectFactory.narrowObject(enumComObject.queryInterface(IJIEnumVariant.IID));
 
-            OnmsWbemProperty wbemObj = null;
             IJIDispatch wbemProperty_dispatch = null;
             for (int i = 0; i < count(); i++) {
-                Object[] values = enumVariant.next(1);
-                JIArray array = (JIArray)values[0];
-                Object[] arrayObj = (Object[])array.getArrayInstance();
-                for(int j = 0; j < arrayObj.length; j++)
-                {
+                final Object[] values = enumVariant.next(1);
+                final JIArray array = (JIArray)values[0];
+                final Object[] arrayObj = (Object[])array.getArrayInstance();
+                for(int j = 0; j < arrayObj.length; j++) {
                     wbemProperty_dispatch = (IJIDispatch)JIObjectFactory.narrowObject(((JIVariant)arrayObj[j]).getObjectAsComObject());
 
                     // Check the name
-                    JIVariant variant = wbemProperty_dispatch.get("Name");
-                    if(variant.getObjectAsString2().equalsIgnoreCase(name))
+                    final JIVariant variant = wbemProperty_dispatch.get("Name");
+                    if(variant.getObjectAsString2().equalsIgnoreCase(name)) {
                         return new OnmsWbemPropertyImpl(wbemProperty_dispatch);
+                    }
                 }
             }
 
             throw new WmiException("Property Name '" + name + "' not found.");
-        } catch(JIException e) {
+        } catch(final JIException e) {
             throw new WmiException("Failed to enumerate WbemProperty variant: " + e.getMessage(), e);
         }
     }

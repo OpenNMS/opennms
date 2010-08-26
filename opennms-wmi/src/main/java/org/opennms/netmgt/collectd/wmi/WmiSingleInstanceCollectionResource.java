@@ -1,18 +1,6 @@
 package org.opennms.netmgt.collectd.wmi;
 
-import org.opennms.netmgt.model.OnmsResourceType;
-import org.opennms.netmgt.model.OnmsResource;
-import org.opennms.netmgt.dao.ResourceDao;
-import org.opennms.netmgt.dao.support.DefaultResourceDao;
-import org.opennms.netmgt.collectd.AbstractCollectionResource;
 import org.opennms.netmgt.collectd.CollectionAgent;
-import org.opennms.netmgt.collectd.ServiceParameters;
-import org.opennms.netmgt.collectd.CollectionAttributeType;
-import org.springframework.orm.ObjectRetrievalFailureException;
-
-import java.util.List;
-import java.util.Collections;
-import java.io.File;
 
 /**
  * <p>WmiSingleInstanceCollectionResource class.</p>
@@ -27,7 +15,7 @@ public class WmiSingleInstanceCollectionResource extends WmiCollectionResource {
      *
      * @param agent a {@link org.opennms.netmgt.collectd.CollectionAgent} object.
      */
-    public WmiSingleInstanceCollectionResource(CollectionAgent agent) {
+    public WmiSingleInstanceCollectionResource(final CollectionAgent agent) {
         super(agent);
     }
 

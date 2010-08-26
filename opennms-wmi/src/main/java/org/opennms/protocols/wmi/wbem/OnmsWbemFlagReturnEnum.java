@@ -31,9 +31,9 @@
 //
 package org.opennms.protocols.wmi.wbem;
 
-import java.util.Map;
-import java.util.HashMap;
 import java.util.EnumSet;
+import java.util.HashMap;
+import java.util.Map;
 
 /**
  * Created by IntelliJ IDEA.
@@ -60,11 +60,11 @@ public enum OnmsWbemFlagReturnEnum {
     private String returnFlagName;
 
     static {
-        for (OnmsWbemFlagReturnEnum s : EnumSet.allOf(OnmsWbemFlagReturnEnum.class))
+        for (final OnmsWbemFlagReturnEnum s : EnumSet.allOf(OnmsWbemFlagReturnEnum.class))
             lookup.put(s.getReturnFlagValue(), s);
     }
 
-    OnmsWbemFlagReturnEnum(int returnFlagValue, String returnFlagName) {
+    OnmsWbemFlagReturnEnum(final int returnFlagValue, final String returnFlagName) {
         this.returnFlagValue = returnFlagValue;
         this.returnFlagName = returnFlagName;
     }
@@ -88,8 +88,8 @@ public enum OnmsWbemFlagReturnEnum {
      * @param returnFlagValue a int.
      * @return a {@link org.opennms.protocols.wmi.wbem.OnmsWbemFlagReturnEnum} object.
      */
-    public static OnmsWbemFlagReturnEnum get(int returnFlagValue) {
-          return lookup.get(returnFlagValue);
-     }
+    public static OnmsWbemFlagReturnEnum get(final int returnFlagValue) {
+        return lookup.get(returnFlagValue);
+    }
 }
 
