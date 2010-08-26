@@ -82,6 +82,7 @@ public class EventconfFactorySaveTest extends TestCase {
         File eventConf = createTempCopy(m_fa, origEtc, tempEtc, "eventconf.xml");
         createTempCopy(m_fa, origEvents, tempEvents, "Standard.events.xml");
         createTempCopy(m_fa, origEvents, tempEvents, "Syslog.test.events.xml");
+        createTempCopy(m_fa, origEvents, tempEvents, "Syslog.LoadTest.events.xml");
         
         m_eventConfDao = new DefaultEventConfDao();
         m_eventConfDao.setConfigResource(new FileSystemResource(eventConf));
