@@ -339,7 +339,12 @@
       <artifactId>opennms-xmp</artifactId>
       <scope>compile</scope>
     </dependency>
-
+    <dependency>
+      <groupId>org.opennms.features</groupId>
+      <artifactId>org.opennms.features.jdbc-collector</artifactId>
+      <scope>compile</scope>
+    </dependency>
+ 
     <!-- dependencies for SMS monitors -->
     <dependency>
       <groupId>org.opennms.features.sms-reflector</groupId>
