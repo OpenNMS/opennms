@@ -31,18 +31,17 @@
 //
 package org.opennms.protocols.wmi.wbem.jinterop;
 
-import org.jinterop.dcom.impls.automation.IJIDispatch;
-import org.jinterop.dcom.impls.JIObjectFactory;
-import org.jinterop.dcom.core.IJIComObject;
-import org.jinterop.dcom.core.JIVariant;
+import java.util.List;
+
 import org.jinterop.dcom.common.JIException;
+import org.jinterop.dcom.core.IJIComObject;
+import org.jinterop.dcom.impls.JIObjectFactory;
+import org.jinterop.dcom.impls.automation.IJIDispatch;
+import org.opennms.protocols.wmi.WmiException;
 import org.opennms.protocols.wmi.wbem.OnmsWbemMethodSet;
+import org.opennms.protocols.wmi.wbem.OnmsWbemObject;
 import org.opennms.protocols.wmi.wbem.OnmsWbemObjectPath;
 import org.opennms.protocols.wmi.wbem.OnmsWbemPropertySet;
-import org.opennms.protocols.wmi.wbem.OnmsWbemObject;
-import org.opennms.protocols.wmi.WmiException;
-
-import java.util.List;
 
 /**
  * <p>OnmsWbemObjectImpl class.</p>
@@ -58,11 +57,12 @@ public class OnmsWbemObjectImpl implements OnmsWbemObject {
      *
      * @param wbemObjectDispatch a {@link org.jinterop.dcom.impls.automation.IJIDispatch} object.
      */
-    public OnmsWbemObjectImpl(IJIDispatch wbemObjectDispatch) {
+    public OnmsWbemObjectImpl(final IJIDispatch wbemObjectDispatch) {
         this.wbemObjectDispatch = wbemObjectDispatch;
     }
 
     /** {@inheritDoc} */
+    @SuppressWarnings("unchecked")
     public OnmsWbemObjectImpl wmiExecMethod(String methodName, List params, List namedValueSet) {
         return null; // TODO IMPLEMENT THIS METHOD
     }
@@ -94,11 +94,11 @@ public class OnmsWbemObjectImpl implements OnmsWbemObject {
     public OnmsWbemMethodSet getWmiMethods() throws WmiException {
         try {
             // Get the WbemMethodSet dispatcher.
-            IJIComObject methodComObject = wbemObjectDispatch.get("Methods_").getObjectAsComObject();
-            IJIDispatch methodsSet_dispatch = (IJIDispatch) JIObjectFactory.narrowObject(methodComObject);
+            final IJIComObject methodComObject = wbemObjectDispatch.get("Methods_").getObjectAsComObject();
+            final IJIDispatch methodsSet_dispatch = (IJIDispatch) JIObjectFactory.narrowObject(methodComObject);
 
             return new OnmsWbemMethodSetImpl(methodsSet_dispatch);
-        } catch (JIException e) {
+        } catch (final JIException e) {
             throw new WmiException("Failed to retrieve list of methods: " + e.getMessage(), e);
         }
     }
@@ -112,11 +112,11 @@ public class OnmsWbemObjectImpl implements OnmsWbemObject {
     public OnmsWbemObjectPath getWmiPath() throws WmiException {
         try {
             // Get the WbemMethodSet dispatcher.
-            IJIComObject pathComObject = wbemObjectDispatch.get("Path_").getObjectAsComObject();
-            IJIDispatch path_dispatch = (IJIDispatch) JIObjectFactory.narrowObject(pathComObject);
+            final IJIComObject pathComObject = wbemObjectDispatch.get("Path_").getObjectAsComObject();
+            final IJIDispatch path_dispatch = (IJIDispatch) JIObjectFactory.narrowObject(pathComObject);
 
             return new OnmsWbemObjectPathImpl(path_dispatch);
-        } catch (JIException e) {
+        } catch (final JIException e) {
             throw new WmiException("Failed to retrieve object path: " + e.getMessage(), e);
         }
     }
@@ -129,10 +129,8 @@ public class OnmsWbemObjectImpl implements OnmsWbemObject {
      */
     public String getWmiObjectText() throws WmiException {
         try {
-            JIVariant variant = (wbemObjectDispatch.callMethodA("GetObjectText_", new Object[]{1}))[0];
-
-            return variant.getObjectAsString2();
-        } catch (JIException e) {
+            return (wbemObjectDispatch.callMethodA("GetObjectText_", new Object[]{1}))[0].getObjectAsString2();
+        } catch (final JIException e) {
             throw new WmiException("Unable to retrieve WbemObjectPath GetObjectText_ attribute: " + e.getMessage(), e);
         }
     }
@@ -146,11 +144,11 @@ public class OnmsWbemObjectImpl implements OnmsWbemObject {
     public OnmsWbemPropertySet getWmiProperties() throws WmiException {
         try {
             // Get the WbemMethodSet dispatcher.
-            IJIComObject propsSetComObject = wbemObjectDispatch.get("Properties_").getObjectAsComObject();
-            IJIDispatch propSet_dispatch = (IJIDispatch) JIObjectFactory.narrowObject(propsSetComObject);
+            final IJIComObject propsSetComObject = wbemObjectDispatch.get("Properties_").getObjectAsComObject();
+            final IJIDispatch propSet_dispatch = (IJIDispatch) JIObjectFactory.narrowObject(propsSetComObject);
 
             return new OnmsWbemPropertySetImpl(propSet_dispatch);
-        } catch (JIException e) {
+        } catch (final JIException e) {
             throw new WmiException("Failed to retrieve object property set: " + e.getMessage(), e);
         }
     }

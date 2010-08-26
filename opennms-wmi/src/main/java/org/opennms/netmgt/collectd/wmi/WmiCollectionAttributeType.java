@@ -53,9 +53,9 @@ public class WmiCollectionAttributeType implements CollectionAttributeType {
          * @param attribute a {@link org.opennms.netmgt.config.wmi.Attrib} object.
          * @param groupType a {@link org.opennms.netmgt.collectd.AttributeGroupType} object.
          */
-        public WmiCollectionAttributeType(Attrib attribute, AttributeGroupType groupType) {
-            m_groupType=groupType;
-            m_attribute=attribute;
+        public WmiCollectionAttributeType(final Attrib attribute, final AttributeGroupType groupType) {
+            m_groupType = groupType;
+            m_attribute = attribute;
         }
 
         /**
@@ -68,8 +68,8 @@ public class WmiCollectionAttributeType implements CollectionAttributeType {
         }
 
         /** {@inheritDoc} */
-        public void storeAttribute(CollectionAttribute attribute, Persister persister) {
-            if (m_attribute.getType().equalsIgnoreCase("string")) {
+        public void storeAttribute(final CollectionAttribute attribute, final Persister persister) {
+            if ("string".equalsIgnoreCase(m_attribute.getType())) {
                 persister.persistStringAttribute(attribute);
             } else {
                 persister.persistNumericAttribute(attribute);

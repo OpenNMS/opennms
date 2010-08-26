@@ -43,11 +43,14 @@ import java.util.Date;
  * @version $Id: $
  */
 public enum WmiMgrOperation {
-	EQ(0), NEQ(1), GT(2), LT(3);
+	EQ(0),
+	NEQ(1),
+	GT(2),
+	LT(3);
 
 	private int m_OperationType;
 
-	WmiMgrOperation(int opType) {
+	WmiMgrOperation(final int opType) {
 		m_OperationType = opType;
 	}
 
@@ -68,14 +71,14 @@ public enum WmiMgrOperation {
 	 * @return a boolean.
 	 * @throws org.opennms.protocols.wmi.WmiException if any.
 	 */
-	public boolean compareString(Object comp1, String comp2)
+	public boolean compareString(final Object comp1, final String comp2)
 			throws WmiException {
 		if (comp1 instanceof String) {
 
 			try {
-				DateFormat fmt2 = new SimpleDateFormat("MM/dd/yyyy HH:mm:ss");
-				Date date1 = WmiClient.convertWmiDate((String) comp1);
-				Date date2 = fmt2.parse(comp2);
+			    final DateFormat fmt2 = new SimpleDateFormat("MM/dd/yyyy HH:mm:ss");
+				final Date date1 = WmiClient.convertWmiDate((String) comp1);
+				final Date date2 = fmt2.parse(comp2);
 
 				return compareToDate(date1, date2);
 			} catch (ParseException e) {
@@ -83,29 +86,28 @@ public enum WmiMgrOperation {
 			}
 			return compareToString((String) comp1, comp2);
 		} else if (comp1 instanceof Integer) {
-			Integer compInt1 = (Integer) comp1;
-			Integer compInt2 = Integer.parseInt(comp2);
+		    final Integer compInt1 = (Integer) comp1;
+			final Integer compInt2 = Integer.parseInt(comp2);
 
 			return compareToInteger(compInt1, compInt2);
 		} else if (comp1 instanceof Boolean) {
-			Boolean bool1 = (Boolean) comp1;
-			Boolean bool2 = Boolean.parseBoolean(comp2);
+		    final Boolean bool1 = (Boolean) comp1;
+			final Boolean bool2 = Boolean.parseBoolean(comp2);
 
 			return compareToBoolean(bool1, bool2);
 		} else if (comp1 instanceof Float) {
-			Float fl1 = (Float) comp1;
-			Float fl2 = Float.parseFloat(comp2);
+		    final Float fl1 = (Float) comp1;
+			final Float fl2 = Float.parseFloat(comp2);
 
 			return compareToFloat(fl1, fl2);
 		} else if (comp1 instanceof Date) {
-			DateFormat fmt = new SimpleDateFormat("MM/dd/yyyy HH:mm:ss");
-			Date date1 = (Date) comp1;
+		    final DateFormat fmt = new SimpleDateFormat("MM/dd/yyyy HH:mm:ss");
+			final Date date1 = (Date) comp1;
 			Date date2;
 			try {
 				date2 = fmt.parse(comp2);
 			} catch (ParseException e) {
-				throw new WmiException("Parsing date '" + comp2 + "' failed: "
-						+ e.getMessage(), e);
+				throw new WmiException("Parsing date '" + comp2 + "' failed: " + e.getMessage(), e);
 			}
 
 			return compareToDate(date1, date2);
@@ -118,7 +120,7 @@ public enum WmiMgrOperation {
 		return false;
 	}
 
-	private boolean compareToString(String comp1, String comp2) {
+	private boolean compareToString(final String comp1, final String comp2) {
 		switch (this) {
 		case EQ:
 			return (comp2.equals(comp1));
@@ -135,7 +137,7 @@ public enum WmiMgrOperation {
 		return false;
 	}
 
-	private boolean compareToInteger(Integer comp1, Integer comp2) {
+	private boolean compareToInteger(final Integer comp1, final Integer comp2) {
 		switch (this) {
 		case EQ:
 			if (comp2.compareTo(comp1) == 0) {
@@ -168,7 +170,7 @@ public enum WmiMgrOperation {
 		return false;
 	}
 
-	private boolean compareToBoolean(Boolean bool1, Boolean bool2) {
+	private boolean compareToBoolean(final Boolean bool1, final Boolean bool2) {
 		switch (this) {
 		case EQ:
 			return bool1.equals(bool2);
@@ -182,7 +184,7 @@ public enum WmiMgrOperation {
 		return false;
 	}
 
-	private boolean compareToFloat(Float comp1, Float comp2) {
+	private boolean compareToFloat(final Float comp1, final Float comp2) {
 		switch (this) {
 		case EQ:
 			if (comp2.compareTo(comp1) == 0) {
@@ -215,7 +217,7 @@ public enum WmiMgrOperation {
 		return false;
 	}
 
-	private boolean compareToDate(Date date1, Date date2) {
+	private boolean compareToDate(final Date date1, final Date date2) {
 		switch (this) {
 		case EQ:
 			if (date1.equals(date2)) {

@@ -55,7 +55,7 @@ public class WmiCollectionSet implements CollectionSet {
      *
      * @param agent a {@link org.opennms.netmgt.collectd.CollectionAgent} object.
      */
-    public WmiCollectionSet(CollectionAgent agent) {
+    public WmiCollectionSet(final CollectionAgent agent) {
         m_status = ServiceCollector.COLLECTION_FAILED;
         m_collectionResources = new ArrayList<WmiCollectionResource>();
     }
@@ -74,16 +74,17 @@ public class WmiCollectionSet implements CollectionSet {
      *
      * @param status a int.
      */
-    public void setStatus(int status) {
+    public void setStatus(final int status) {
         m_status = status;
     }
 
     /** {@inheritDoc} */
-    public void visit(CollectionSetVisitor visitor) {
+    public void visit(final CollectionSetVisitor visitor) {
         visitor.visitCollectionSet(this);
 
-        for(CollectionResource resource : getResources())
+        for(final CollectionResource resource : getResources()) {
                 resource.visit(visitor);
+        }
 
         visitor.completeCollectionSet(this);
     }

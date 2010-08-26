@@ -31,15 +31,9 @@
 //
 package org.opennms.protocols.wmi;
 
-import java.net.UnknownHostException;
 import java.util.ArrayList;
 
-import org.jinterop.dcom.common.JIException;
 import org.opennms.protocols.wmi.wbem.OnmsWbemObjectSet;
-import org.opennms.protocols.wmi.wbem.OnmsWbemObject;
-import org.opennms.protocols.wmi.wbem.OnmsWbemProperty;
-import org.opennms.protocols.wmi.wbem.OnmsWbemPropertySet;
-import org.opennms.core.utils.ThreadCategory;
 
 /**
  * <P>
@@ -89,18 +83,14 @@ public class WmiManager {
 
 	private int m_Timeout = DEFAULT_SOCKET_TIMEOUT;
 
-    private ThreadCategory log() {
-        return ThreadCategory.getInstance(getClass());
-    }
-
-	/**
+    /**
 	 * This method is used for setting the password used to perform service
 	 * checks.
 	 *
 	 * @param pass
 	 *            the password to use when performing service checks.
 	 */
-	public void setPassword(String pass) {
+	public void setPassword(final String pass) {
 		m_Password = pass;
 	}
 
@@ -113,7 +103,7 @@ public class WmiManager {
 	 *            the host name to connect to.
 	 * @see init
 	 */
-	public void setHostName(String host) {
+	public void setHostName(final String host) {
 		m_HostName = host;
 	}
 
@@ -134,7 +124,7 @@ public class WmiManager {
 	 * @param timeout
 	 *            the TCP socket timeout.
 	 */
-	public void setTimeout(int timeout) {
+	public void setTimeout(final int timeout) {
 		m_Timeout = timeout;
 	}
 
@@ -158,7 +148,7 @@ public class WmiManager {
 	 * @param pass
 	 *            sets the password to connect with.
 	 */
-	public WmiManager(String host, String user, String pass) {
+	public WmiManager(final String host, final String user, final String pass) {
 		m_HostName = host;
 		m_Username = user;
 		m_Password = pass;
@@ -178,12 +168,12 @@ public class WmiManager {
 	 * @param domain
 	 *            sets the domain to connect to.
 	 */
-	public WmiManager(String host, String user, String pass, String domain) {
+	public WmiManager(final String host, final String user, final String pass, final String domain) {
 		m_HostName = host;
 		m_Username = user;
 		m_Password = pass;
 		m_MatchType = "all";
-		if (domain.equals("")) {
+		if ("".equals(domain)) {
 			m_Domain = host;
 		} else {
 			m_Domain = domain;
@@ -204,8 +194,7 @@ public class WmiManager {
 	 * @param matchType
 	 *            the type of matching to be used for multiple results: all, none, some, one.
 	 */
-	public WmiManager(String host, String user, String pass, String domain,
-			String matchType) {
+	public WmiManager(final String host, final String user, final String pass, final String domain, final String matchType) {
 		m_HostName = host;
 		m_Username = user;
 		m_Password = pass;
@@ -214,7 +203,7 @@ public class WmiManager {
 		} else {
 			m_MatchType = "all";
 		}
-		if (domain == null || domain.equals("")) {
+		if (domain == null || "".equals(domain)) {
 			m_Domain = host;
 		} else {
 			m_Domain = domain;
@@ -224,7 +213,8 @@ public class WmiManager {
 	/**
 	 * Constructor. Made private to prevent construction without parameters.
 	 */
-	private WmiManager() {
+	@SuppressWarnings("unused")
+    private WmiManager() {
 		// nothing to do, don't allow it.
 	}
 
@@ -234,9 +224,8 @@ public class WmiManager {
 	 * @param matchType a {@link java.lang.String} object.
 	 * @return a boolean.
 	 */
-	public static boolean isValidMatchType(String matchType) {
-		if (matchType.equals("all") || matchType.equals("none")
-				|| matchType.equals("some") || matchType.equals("one")) {
+	public static boolean isValidMatchType(final String matchType) {
+		if (matchType.equals("all") || matchType.equals("none") || matchType.equals("some") || matchType.equals("one")) {
 			return true;
 		}
 
@@ -249,9 +238,9 @@ public class WmiManager {
 	 * @param opType a {@link java.lang.String} object.
 	 * @return a boolean.
 	 */
-	public static boolean isValidOpType(String opType) {
+	public static boolean isValidOpType(final String opType) {
 		try {
-			WmiMgrOperation op = WmiMgrOperation.valueOf(opType);
+		    WmiMgrOperation.valueOf(opType);
 			return true;
 		} catch(IllegalArgumentException e) {
 			return false;
@@ -278,7 +267,7 @@ public class WmiManager {
 	 * @param client allows a IWmiClient to be pre-instantiated. Used for mock testing.
 	 * @throws org.opennms.protocols.wmi.WmiException is thrown if there are any problems connecting.
 	 */
-	public void init(IWmiClient client) throws WmiException {
+	public void init(final IWmiClient client) throws WmiException {
 		m_WmiClient = client;
 		m_WmiClient.connect(m_Domain, m_Username, m_Password);
 	}
@@ -303,7 +292,7 @@ public class WmiManager {
 	 * @return a {@link org.opennms.protocols.wmi.WmiResult} object.
 	 * @throws org.opennms.protocols.wmi.WmiException if any.
 	 */
-	public WmiResult performOp(WmiParams params) throws WmiException {
+	public WmiResult performOp(final WmiParams params) throws WmiException {
         // If we defined a WQL query string, exec the query.
         if( params.getWmiOperation().equals(WmiParams.WMI_OPERATION_WQL)) {
             return performExecQuery(params);
@@ -320,16 +309,15 @@ public class WmiManager {
      * @return a {@link org.opennms.protocols.wmi.WmiResult} object.
      * @throws org.opennms.protocols.wmi.WmiException if any.
      */
-    public WmiResult performExecQuery(WmiParams params) throws WmiException {
-        ArrayList<Object> wmiObjects = new ArrayList<Object>();
-
-		OnmsWbemObjectSet wos = m_WmiClient.performExecQuery(params.getWql());
+    public WmiResult performExecQuery(final WmiParams params) throws WmiException {
+        final ArrayList<Object> wmiObjects = new ArrayList<Object>();
+        final OnmsWbemObjectSet wos = m_WmiClient.performExecQuery(params.getWql());
         
         for(int i=0; i<wos.count(); i++) {
             wmiObjects.add(wos.get(i).getWmiProperties().getByName(params.getWmiObject()).getWmiValue());
         }
 
-        WmiResult result = new WmiResult(wmiObjects);
+        final WmiResult result = new WmiResult(wmiObjects);
 
 		if (params.getCompareOperation().equals("NOOP")) {
 			result.setResultCode(WmiResult.RES_STATE_OK);
@@ -352,16 +340,15 @@ public class WmiManager {
      * @return a {@link org.opennms.protocols.wmi.WmiResult} object.
      * @throws org.opennms.protocols.wmi.WmiException if any.
      */
-    public WmiResult performInstanceOf(WmiParams params) throws WmiException {
-        ArrayList<Object> wmiObjects = new ArrayList<Object>();
-
-		OnmsWbemObjectSet wos = m_WmiClient.performInstanceOf(params.getWmiClass());
+    public WmiResult performInstanceOf(final WmiParams params) throws WmiException {
+        final ArrayList<Object> wmiObjects = new ArrayList<Object>();
+		final OnmsWbemObjectSet wos = m_WmiClient.performInstanceOf(params.getWmiClass());
 
         for(int i=0; i<wos.count(); i++) {
             wmiObjects.add(wos.get(i).getWmiProperties().getByName(params.getWmiObject()).getWmiValue());
         }
 
-        WmiResult result = new WmiResult(wmiObjects);
+        final WmiResult result = new WmiResult(wmiObjects);
 
 		if (params.getCompareOperation().equals("NOOP")) {
 			result.setResultCode(WmiResult.RES_STATE_OK);
@@ -377,15 +364,14 @@ public class WmiManager {
 		return result;
 	}
 
-	private void performResultCheck(WmiResult wmiResult, WmiParams params) throws WmiException {
-		ArrayList<Object> wmiObjects = wmiResult.getResponse();
+	private void performResultCheck(final WmiResult wmiResult, final WmiParams params) throws WmiException {
+	    final ArrayList<Object> wmiObjects = wmiResult.getResponse();
 
 		int matches = 0;
-		int total = wmiObjects.size();
+		final int total = wmiObjects.size();
 		for (int i = 0; i < total; i++) {
-			Object wmiObj = wmiObjects.get(i);
-
-			WmiMgrOperation op = WmiMgrOperation.valueOf(params.getCompareOperation());
+		    final Object wmiObj = wmiObjects.get(i);
+		    final WmiMgrOperation op = WmiMgrOperation.valueOf(params.getCompareOperation());
 			
 			if(op.compareString(wmiObj, (String)params.getCompareValue())) {
 				matches++;
@@ -431,7 +417,7 @@ public class WmiManager {
 	 *
 	 * @param matchType the m_MatchType to set
 	 */
-	public void setMatchType(String matchType) {
+	public void setMatchType(final String matchType) {
 		m_MatchType = matchType;
 	}
 }

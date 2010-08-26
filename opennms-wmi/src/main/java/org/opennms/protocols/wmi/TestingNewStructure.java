@@ -2,14 +2,7 @@ package org.opennms.protocols.wmi;
 
 import org.opennms.protocols.wmi.wbem.OnmsWbemObject;
 import org.opennms.protocols.wmi.wbem.OnmsWbemObjectSet;
-import org.opennms.protocols.wmi.wbem.OnmsWbemMethodSet;
-import org.opennms.protocols.wmi.wbem.OnmsWbemObjectPath;
-import org.opennms.protocols.wmi.wbem.OnmsWbemMethod;
 import org.opennms.protocols.wmi.wbem.OnmsWbemPropertySet;
-import org.opennms.protocols.wmi.wbem.OnmsWbemProperty;
-import org.opennms.protocols.wmi.wbem.OnmsWbemCimTypeEnum;
-
-import java.util.List;
 
 /**
  * Created by IntelliJ IDEA.
@@ -27,20 +20,20 @@ public class TestingNewStructure {
      *
      * @param args an array of {@link java.lang.String} objects.
      */
-    public static void main(String[] args) {
+    public static void main(final String[] args) {
         try {
             // Connect to the WMI server.
-            WmiClient wmiClient = new WmiClient("localhost");
+            final WmiClient wmiClient = new WmiClient("localhost");
             wmiClient.connect("CHILDRENSNT", "CE136452", "aj7162007");
 
-            OnmsWbemObjectSet wos = wmiClient.performExecQuery("Select * From Win32_NTLogEvent");
+            final OnmsWbemObjectSet wos = wmiClient.performExecQuery("Select * From Win32_NTLogEvent");
             System.out.println("The number of objects retrieved: " + wos.count());
             for(int i=0; i<wos.count(); i++) {
-                OnmsWbemObject obj = wos.get(i);
+                final OnmsWbemObject obj = wos.get(i);
                 if(obj == null)
                     System.out.println("Received null object.");
                 //System.out.println("+++++ Testing Object PropertySet +++++");
-                OnmsWbemPropertySet propSet = obj.getWmiProperties();
+                final OnmsWbemPropertySet propSet = obj.getWmiProperties();
                 //System.out.println("Object has " + propSet.count() + " properties available.");
                 System.out.println("The service ("+propSet.getByName("EventIdentifier").getWmiValue()+") is: " + propSet.getByName("Message").getWmiValue());
                 //for(int b=0; b<propSet.count(); b++) {
@@ -107,7 +100,7 @@ public class TestingNewStructure {
             
             // Disconenct from the WMI server.
             wmiClient.disconnect();
-        } catch (WmiException e) {
+        } catch (final WmiException e) {
             System.out.println("Caught exception: " + e.getMessage() + "\n");
             e.printStackTrace();
         }

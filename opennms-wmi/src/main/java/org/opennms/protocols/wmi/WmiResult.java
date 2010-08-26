@@ -33,7 +33,6 @@ package org.opennms.protocols.wmi;
 
 import java.util.ArrayList;
 import java.util.HashMap;
-import java.util.Iterator;
 import java.util.Map;
 
 /**
@@ -80,9 +79,9 @@ public class WmiResult {
 	 * vice versa.
 	 */
 	static {
-		StateStrings.put(new String("OK"), new Short(RES_STATE_OK));
-		StateStrings.put("CRITICAL", new Short(RES_STATE_CRIT));
-		StateStrings.put("UNKNOWN", new Short(RES_STATE_UNKNOWN));
+		StateStrings.put("OK", RES_STATE_OK);
+		StateStrings.put("CRITICAL", RES_STATE_CRIT);
+		StateStrings.put("UNKNOWN", RES_STATE_UNKNOWN);
 
 	}
 
@@ -94,15 +93,13 @@ public class WmiResult {
 	 * @return the string name of the result code passed, default "UNKNOWN" if
 	 *         no correspond code found.
 	 */
-	public static String convertStateToString(short type) {
-		Iterator<Map.Entry<String, Short>> iter = StateStrings.entrySet()
-				.iterator();
-		while (iter.hasNext()) {
-			Map.Entry<String, Short> e = (Map.Entry<String, Short>) iter.next();
-			short val = ((Short) e.getValue()).shortValue();
-			if (val == type)
-				return (String) e.getKey();
-		}
+	public static String convertStateToString(final short type) {
+	    for (Map.Entry<String,Short> entry : StateStrings.entrySet()) {
+	        final short val = entry.getValue();
+	        if (val == type) {
+	            return entry.getKey();
+	        }
+	    }
 		return "UNKNOWN";
 	}
 
@@ -113,8 +110,8 @@ public class WmiResult {
 	 *            the string name of the result code.
 	 * @return the short ID for the result code.
 	 */
-	public static short convertStringToType(String type) {
-		return ((Short) StateStrings.get(type)).shortValue();
+	public static short convertStringToType(final String type) {
+		return StateStrings.get(type).shortValue();
 	}
 
 	/**
@@ -123,7 +120,7 @@ public class WmiResult {
 	 * @param response
 	 *            the response value from the server.
 	 */
-	WmiResult(ArrayList<Object> response) {
+	WmiResult(final ArrayList<Object> response) {
 		m_Response = response;
 	}
 
@@ -150,7 +147,7 @@ public class WmiResult {
 	 *
 	 * @param res the result code.
 	 */
-	public void setResultCode(short res) {
+	public void setResultCode(final short res) {
 		m_ResultCode = res;
 	}
 

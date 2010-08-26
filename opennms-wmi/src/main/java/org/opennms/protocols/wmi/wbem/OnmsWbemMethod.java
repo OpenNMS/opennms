@@ -31,9 +31,6 @@
 //
 package org.opennms.protocols.wmi.wbem;
 
-import org.jinterop.dcom.impls.automation.IJIDispatch;
-import org.jinterop.dcom.core.JIVariant;
-import org.jinterop.dcom.common.JIException;
 import org.opennms.protocols.wmi.WmiException;
 
 /**

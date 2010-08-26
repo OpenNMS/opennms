@@ -73,8 +73,7 @@ public class WmiParams {
 	 * @param wmiObj2
 	 *            the WMI object within to be queried.
 	 */
-	public WmiParams(String queryType, Object compVal, String compOp, String wmiObj1,
-			String wmiObj2) {
+	public WmiParams(final String queryType, final Object compVal, final String compOp, final String wmiObj1, final String wmiObj2) {
 		m_CompareValue = compVal;
 		m_CompareOperation = compOp;
         if(queryType.equals(WMI_OPERATION_INSTANCEOF)) {
@@ -86,6 +85,7 @@ public class WmiParams {
         m_WmiOperation = queryType;
     }
 
+    @SuppressWarnings("unused")
     private WmiParams() {
 		// do nothing, disallow this default ctor. All params are required.
 	}
@@ -104,7 +104,7 @@ public class WmiParams {
 	 *
 	 * @param compareValue the m_CompareValue to set
 	 */
-	public void setCompareValue(Object compareValue) {
+	public void setCompareValue(final Object compareValue) {
 		m_CompareValue = compareValue;
 	}
 
@@ -122,7 +122,7 @@ public class WmiParams {
 	 *
 	 * @param compareOperation the m_CompareOperation to set
 	 */
-	public void setCompareOperation(String compareOperation) {
+	public void setCompareOperation(final String compareOperation) {
 		m_CompareOperation = compareOperation;
 	}
 
@@ -140,7 +140,7 @@ public class WmiParams {
 	 *
 	 * @param wmiClass the m_WmiClass to set
 	 */
-	public void setWmiClass(String wmiClass) {
+	public void setWmiClass(final String wmiClass) {
 		m_WmiClass = wmiClass;
 	}
 
@@ -158,7 +158,7 @@ public class WmiParams {
 	 *
 	 * @param wmiObject the m_WmiObject to set
 	 */
-	public void setWmiObject(String wmiObject) {
+	public void setWmiObject(final String wmiObject) {
 		m_WmiObject = wmiObject;
 	}
 
@@ -176,7 +176,7 @@ public class WmiParams {
      *
      * @param wmiWql a {@link java.lang.String} object.
      */
-    public void setWql(String wmiWql) {
+    public void setWql(final String wmiWql) {
         this.m_WmWqlStr = wmiWql;
     }
 
@@ -194,7 +194,7 @@ public class WmiParams {
      *
      * @param wmiOperation a {@link java.lang.String} object.
      */
-    public void setWmiOperation(String wmiOperation) {
+    public void setWmiOperation(final String wmiOperation) {
         this.m_WmiOperation = wmiOperation;
     }
 }

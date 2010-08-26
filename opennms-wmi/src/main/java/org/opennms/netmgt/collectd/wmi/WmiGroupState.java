@@ -48,7 +48,7 @@ public class WmiGroupState {
      *
      * @param isAvailable a boolean.
      */
-    public WmiGroupState(boolean isAvailable) {
+    public WmiGroupState(final boolean isAvailable) {
         this(isAvailable, new Date());
     }
 
@@ -58,7 +58,7 @@ public class WmiGroupState {
      * @param isAvailable a boolean.
      * @param lastChecked a {@link java.util.Date} object.
      */
-    public WmiGroupState(boolean isAvailable, Date lastChecked) {
+    public WmiGroupState(final boolean isAvailable, final Date lastChecked) {
         this.available = isAvailable;
         this.lastChecked = lastChecked;
     }
@@ -77,7 +77,7 @@ public class WmiGroupState {
      *
      * @param available a boolean.
      */
-    public void setAvailable(boolean available) {
+    public void setAvailable(final boolean available) {
         this.available = available;
     }
 
@@ -95,7 +95,7 @@ public class WmiGroupState {
      *
      * @param lastChecked a {@link java.util.Date} object.
      */
-    public void setLastChecked(Date lastChecked) {
+    public void setLastChecked(final Date lastChecked) {
         this.lastChecked = lastChecked;
     }
 }

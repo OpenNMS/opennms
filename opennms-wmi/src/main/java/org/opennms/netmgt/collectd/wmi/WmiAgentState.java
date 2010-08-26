@@ -31,18 +31,18 @@
 //
 package org.opennms.netmgt.collectd.wmi;
 
-import org.opennms.protocols.wmi.WmiManager;
-import org.opennms.protocols.wmi.WmiAgentConfig;
-import org.opennms.protocols.wmi.IWmiClient;
-import org.opennms.protocols.wmi.WmiClient;
-import org.opennms.protocols.wmi.WmiException;
-import org.opennms.netmgt.config.WmiPeerFactory;
-import org.opennms.core.utils.ThreadCategory;
-
+import java.net.InetAddress;
+import java.util.Date;
 import java.util.HashMap;
 import java.util.Map;
-import java.util.Date;
-import java.net.InetAddress;
+
+import org.opennms.core.utils.LogUtils;
+import org.opennms.netmgt.config.WmiPeerFactory;
+import org.opennms.protocols.wmi.IWmiClient;
+import org.opennms.protocols.wmi.WmiAgentConfig;
+import org.opennms.protocols.wmi.WmiClient;
+import org.opennms.protocols.wmi.WmiException;
+import org.opennms.protocols.wmi.WmiManager;
 
 /**
  * <P>
@@ -74,16 +74,16 @@ public class WmiAgentState {
      * @param address a {@link java.net.InetAddress} object.
      * @param parameters a {@link java.util.Map} object.
      */
-    public WmiAgentState(InetAddress address, Map parameters) {
+    @SuppressWarnings("unchecked")
+    public WmiAgentState(final InetAddress address, final Map parameters) {
         m_address = address.getHostAddress();
         m_agentConfig = WmiPeerFactory.getInstance().getAgentConfig(address);
-        m_manager = new WmiManager(m_address, m_agentConfig.getUsername(),
-						m_agentConfig.getPassword(), m_agentConfig.getDomain());
+        m_manager = new WmiManager(m_address, m_agentConfig.getUsername(), m_agentConfig.getPassword(), m_agentConfig.getDomain());
 
         try {
             m_wmiClient = new WmiClient(m_address);
-        } catch(WmiException e) {
-            log().error("Failed to create WMI client: " + e.getMessage(), e);
+        } catch(final WmiException e) {
+            LogUtils.errorf(this, e, "Failed to create WMI client.");
         }
     }
 
@@ -93,8 +93,8 @@ public class WmiAgentState {
     public void connect() {
         try {
             m_wmiClient.connect(m_agentConfig.getDomain(), m_agentConfig.getUsername(), m_agentConfig.getPassword());
-        } catch(WmiException e) {
-            log().error("Failed to connect to host: "+ e.getMessage(), e);
+        } catch(final WmiException e) {
+            LogUtils.errorf(this, e, "Failed to connect to host.");
         }
     }
 
@@ -122,11 +122,10 @@ public class WmiAgentState {
      * @param groupName a {@link java.lang.String} object.
      * @return a boolean.
      */
-    public boolean groupIsAvailable(String groupName) {
-        WmiGroupState groupState = m_groupStates.get(groupName);
+    public boolean groupIsAvailable(final String groupName) {
+        final WmiGroupState groupState = m_groupStates.get(groupName);
         if (groupState == null) {
-            return false; // If the group availability hasn't been set
-            // yet, it's not available.
+            return false; // If the group availability hasn't been set yet, it's not available.
         }
         return groupState.isAvailable();
     }
@@ -137,7 +136,7 @@ public class WmiAgentState {
      * @param groupName a {@link java.lang.String} object.
      * @param available a boolean.
      */
-    public void setGroupIsAvailable(String groupName, boolean available) {
+    public void setGroupIsAvailable(final String groupName, final boolean available) {
         WmiGroupState groupState = m_groupStates.get(groupName);
         if (groupState == null) {
             groupState = new WmiGroupState(available);
@@ -153,16 +152,16 @@ public class WmiAgentState {
      * @param recheckInterval a int.
      * @return a boolean.
      */
-    public boolean shouldCheckAvailability(String groupName, int recheckInterval) {
-        WmiGroupState groupState = m_groupStates.get(groupName);
+    public boolean shouldCheckAvailability(final String groupName, final int recheckInterval) {
+        final WmiGroupState groupState = m_groupStates.get(groupName);
         if (groupState == null) {
             // If the group hasn't got a status yet, then it should be
             // checked regardless (and setGroupIsAvailable will
             // be called soon to create the status object)
             return true;
         }
-        Date lastchecked = groupState.getLastChecked();
-        Date now = new Date();
+        final Date lastchecked = groupState.getLastChecked();
+        final Date now = new Date();
         return (now.getTime() - lastchecked.getTime() > recheckInterval);
     }
 
@@ -171,11 +170,11 @@ public class WmiAgentState {
      *
      * @param groupName a {@link java.lang.String} object.
      */
-    public void didCheckGroupAvailability(String groupName) {
-        WmiGroupState groupState = m_groupStates.get(groupName);
+    public void didCheckGroupAvailability(final String groupName) {
+        final WmiGroupState groupState = m_groupStates.get(groupName);
         if (groupState == null) {
             // Probably an error - log it as a warning, and give up
-            log().warn("didCheckGroupAvailability called on a group without state - this is odd");
+            LogUtils.warnf(this, "didCheckGroupAvailability called on a group without state - this is odd.");
             return;
         }
         groupState.setLastChecked(new Date());
@@ -195,11 +194,7 @@ public class WmiAgentState {
      *
      * @param wmiClient a {@link org.opennms.protocols.wmi.IWmiClient} object.
      */
-    public void setWmiClient(IWmiClient wmiClient) {
+    public void setWmiClient(final IWmiClient wmiClient) {
         this.m_wmiClient = wmiClient;
     }
-
-    private ThreadCategory log() {
-		return ThreadCategory.getInstance(getClass());
-	}
 }
