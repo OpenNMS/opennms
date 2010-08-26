@@ -843,6 +843,11 @@ public class EventConstants {
      * The SNMP community string when sent as an event parm.
      */
     public final static String PARM_COMMUNITY_STRING = "communityString";
+    
+    /**
+     * The SNMP write community string when sent as an event parm.
+     */
+    public final static String PARM_WRITE_COMMUNITY_STRING = "writeCommunityString";
 
     /**
      * Service monitor qualifier when sent as an event parm
@@ -939,6 +944,15 @@ public class EventConstants {
     public static final String PARM_RETRY_COUNT = "retryCount";
     /** Constant <code>PARM_PORT="port"</code> */
     public static final String PARM_PORT = "port";
+    /** Constant <code>PARM_PROXY_HOST</code> */
+    public static final String PARM_PROXY_HOST = "proxyHost";
+    /** Constant <code>PARM_MAX_VARS_PER_PDU</code> */
+    public static final String PARM_MAX_VARS_PER_PDU = "maxVarsPerPdu";
+    /** Constant <code>PARM_MAX_REPETITIONS</code> */
+    public static final String PARM_MAX_REPETITIONS = "maxRepetitions";
+    /** Constant <code>PARM_MAX_REQUEST_SIZE</code> */
+    public static final String PARM_MAX_REQUEST_SIZE = "maxRequestSize";
+    
 
     /** Constant <code>PARM_LOCATION_MONITOR_ID="locationMonitorId"</code> */
     public final static String PARM_LOCATION_MONITOR_ID = "locationMonitorId";
