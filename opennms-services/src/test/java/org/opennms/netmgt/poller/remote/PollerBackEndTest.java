@@ -285,8 +285,15 @@ public class PollerBackEndTest extends TestCase {
         });
     }
 
-    private void expectLocationMonitorStatusChanged(final MonitorStatus expectedStatus) {
+    private void expectLocationMonitorStatusChanged(final MonitorStatus oldStatus, final MonitorStatus expectedStatus) {
         final Date now = new Date();
+        if (oldStatus != null) {
+            switch (oldStatus) {
+            case DISCONNECTED:
+            case STARTED:
+                expect(m_timeKeeper.getCurrentTime()).andReturn(now.getTime());
+            }
+        }
         expect(m_timeKeeper.getCurrentDate()).andReturn(now);
         expect(m_locMonDao.get(m_locationMonitor.getId())).andReturn(m_locationMonitor);
         m_locMonDao.update(m_locationMonitor);
@@ -326,7 +333,8 @@ public class PollerBackEndTest extends TestCase {
         m_backEnd.setEventIpcManager(m_eventIpcManager);
         m_backEnd.setDisconnectedTimeout(DISCONNECTED_TIMEOUT);
 
-        m_startTime = new Date(System.currentTimeMillis() - 1000);
+        
+        m_startTime = new Date(System.currentTimeMillis() - 600000);
         expect(m_timeKeeper.getCurrentDate()).andReturn(m_startTime);
         replay(m_timeKeeper);
         m_backEnd.afterPropertiesSet();
@@ -510,7 +518,7 @@ public class PollerBackEndTest extends TestCase {
 
         anticipateMonitorStoppedEvent();
 
-        expectLocationMonitorStatusChanged(MonitorStatus.STOPPED);
+        expectLocationMonitorStatusChanged(null, MonitorStatus.STOPPED);
 
         replayMocks();
 
@@ -800,7 +808,7 @@ public class PollerBackEndTest extends TestCase {
 
     private void verifyPollerCheckingIn(MonitorStatus oldStatus, MonitorStatus newStatus, MonitorStatus result, Event e) {
         m_locationMonitor.setStatus(oldStatus);
-        expectLocationMonitorStatusChanged(newStatus);
+        expectLocationMonitorStatusChanged(oldStatus, newStatus);
 
         if (e != null) {
             anticipateEvent(e);
