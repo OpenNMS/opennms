@@ -1,0 +1,26 @@
+<?xml version="1.0"?>
+<datacollection-config rrdRepository="%rrdRepository%">
+  <snmp-collection name="default" snmpStorageFlag="select">
+    <rrd step="1">
+      <rra>RRA:AVERAGE:0.5:1:8928</rra>
+    </rrd>
+    <groups>
+      <!-- data from standard (mib-2) sources -->
+      <group name="mib2-interfaces" ifType="144">
+        <mibObj oid=".1.3.6.1.2.1.2.2.1.10" instance="ifIndex" alias="ifInOctets" type="gauge" maxval="7654320"/>
+      </group>
+      <group name="mib2-tcp" ifType="ignore">
+        <mibObj oid=".1.3.6.1.2.1.6.9" instance="0" alias="tcpCurrEstab" type="Gauge32" />
+      </group>
+    </groups>
+    <systems>
+      <systemDef name="Enterprise">
+        <sysoidMask>.1.3.6.1.4.1.</sysoidMask>
+        <collect>
+          <includeGroup>mib2-interfaces</includeGroup>
+          <includeGroup>mib2-tcp</includeGroup>
+        </collect>
+      </systemDef>
+    </systems>
+  </snmp-collection>
+</datacollection-config>
