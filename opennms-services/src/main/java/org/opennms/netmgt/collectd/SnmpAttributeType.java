@@ -166,6 +166,15 @@ public abstract class SnmpAttributeType implements AttributeDefinition,Collectio
     public String getGroupName() {
         return m_groupType.getName();
     }
+    
+    
+    public String getMaxval() {
+        return m_mibObj.getMaxval();
+    }
+    
+    public String getMinval() {
+        return m_mibObj.getMinval();
+    }
 
     /**
      * <p>getAlias</p>
