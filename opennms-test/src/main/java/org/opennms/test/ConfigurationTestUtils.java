@@ -51,6 +51,7 @@ import java.io.ByteArrayInputStream;
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.FileNotFoundException;
+import java.io.FileWriter;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
@@ -105,6 +106,20 @@ public class ConfigurationTestUtils extends Assert {
             return new FileSystemResource(getFileForResource(obj, resource));
         } catch (Throwable t) {
             return new InputStreamResource(getInputStreamForResource(obj, resource));
+        }
+    }
+    
+    public static Resource getSpringResourceForResourceWithReplacements(final Object obj, final String resource, final String[] ... replacements) throws IOException {
+        try {
+        	String config = getConfigForResourceWithReplacements(obj, resource, replacements);
+        	File tmp = File.createTempFile("testConfigFile", ".xml");
+        	tmp.deleteOnExit();
+        	FileWriter fw = new FileWriter(tmp);
+        	fw.write(config);
+        	fw.close();
+            return new FileSystemResource(tmp);
+        } catch (final Throwable t) {
+            return new InputStreamResource(getInputStreamForResourceWithReplacements(obj, resource, replacements));
         }
     }
     
