@@ -1,0 +1,44 @@
+<?xml version="1.0"?>
+<datacollection-group name="Liebert">
+
+    <!-- Liebert Resource Types -->
+    <resourceType name="lgpEnvTemperatureIdDegF" label="Liebert Temp Index Fahrenheit">
+      <persistenceSelectorStrategy class="org.opennms.netmgt.collectd.PersistAllSelectorStrategy"/>
+      <storageStrategy class="org.opennms.netmgt.dao.support.IndexStorageStrategy"/>
+    </resourceType>
+
+    <resourceType name="lgpPwrMeasurementPtIndex" label="Liebert Power Measurement Index">
+      <persistenceSelectorStrategy class="org.opennms.netmgt.collectd.PersistAllSelectorStrategy"/>
+      <storageStrategy class="org.opennms.netmgt.dao.support.IndexStorageStrategy"/>
+    </resourceType>
+
+      <!-- Liebert mibs -->
+      <group name="liebert-basics" ifType="ignore">
+        <mibObj oid=".1.3.6.1.4.1.476.1.42.3.5.8.1"  instance="0" alias="lgpPwrBrownOutCnt"  type="integer" />
+        <mibObj oid=".1.3.6.1.4.1.476.1.42.3.5.8.2"  instance="0" alias="lgpPwrBlackOutCnt"  type="integer" />
+        <mibObj oid=".1.3.6.1.4.1.476.1.42.3.5.1.18" instance="0" alias="lgpPwrBattTimeRem"  type="integer" />
+        <mibObj oid=".1.3.6.1.4.1.476.1.42.3.5.1.19" instance="0" alias="lgpPwrBattCapacity" type="integer" />
+      </group>
+
+      <group name="liebert-temp" ifType="all">
+        <mibObj oid=".1.3.6.1.4.1.476.1.42.3.4.1.2.3.1.3" instance="lgpEnvTemperatureIdDegF" alias="lgpEnvTempDegF" type="Integer32" />
+      </group>
+
+      <group name="liebert-power" ifType="all">
+        <mibObj oid=".1.3.6.1.4.1.476.1.42.3.5.2.3.1.6"  instance="lgpPwrMeasurementPtIndex" alias="lgpPwrCurrent"  type="Integer32" />
+        <mibObj oid=".1.3.6.1.4.1.476.1.42.3.5.2.3.1.16" instance="lgpPwrMeasurementPtIndex" alias="lgpPwrMaxVolts" type="Integer32" />
+        <mibObj oid=".1.3.6.1.4.1.476.1.42.3.5.2.3.1.17" instance="lgpPwrMeasurementPtIndex" alias="lgpPwrMinVolts" type="Integer32" />
+        <mibObj oid=".1.3.6.1.4.1.476.1.42.3.5.2.3.1.20" instance="lgpPwrMeasurementPtIndex" alias="lgpPwrVolts"    type="Integer32" />
+      </group>  
+
+      <systemDef name="Liebert UPS">
+        <sysoidMask>.1.3.6.1.4.1.476.</sysoidMask>
+        <collect>
+          <includeGroup>mib2-ups-rfc1628</includeGroup>
+          <includeGroup>liebert-basics</includeGroup>
+          <includeGroup>liebert-temp</includeGroup>
+          <includeGroup>liebert-power</includeGroup>
+        </collect>
+      </systemDef>
+
+</datacollection-group>

@@ -1,0 +1,87 @@
+<?xml version="1.0"?>
+<datacollection-group name="IETF">
+
+    <resourceType name="msdpPeerEntry" label="MSDP Peer"
+        resourceLabel="Remote ${msdpPeerRemoteAddr}:${msdpPeerRemotePort} (Local ${msdpPeerLocalAddr}:${msdpPeerLocalPort})">
+      <persistenceSelectorStrategy class="org.opennms.netmgt.collectd.PersistAllSelectorStrategy"/>
+      <storageStrategy class="org.opennms.netmgt.dao.support.IndexStorageStrategy"/>
+    </resourceType>
+
+    <resourceType name="mplsL3VpnVrf" label="MPLS L3VPN VRF"
+        resourceLabel="${mL3VVrfName} - ${mL3VVrfDescr}">
+      <persistenceSelectorStrategy class="org.opennms.netmgt.collectd.PersistAllSelectorStrategy"/>
+      <storageStrategy class="org.opennms.netmgt.dao.support.IndexStorageStrategy"/>
+    </resourceType>
+
+      <!-- Stats from the IETF IGMP-STD-MIB -->
+
+      <group name="ietf-igmp-interfaces" ifType="all">
+        <mibObj oid=".1.3.6.1.2.1.85.1.1.1.10" instance="ifIndex" alias="igmpIfWrongVerQrys" type="counter" />
+        <mibObj oid=".1.3.6.1.2.1.85.1.1.1.11" instance="ifIndex" alias="igmpIfJoins" type="counter" />
+        <mibObj oid=".1.3.6.1.2.1.85.1.1.1.13" instance="ifIndex" alias="igmpIfGroups" type="gauge" />
+      </group>
+
+      <!-- Stats from the IETF IPMROUTE-STD-MIB -->
+
+      <group name="ietf-ipmroute-scalars" ifType="ignore">
+        <mibObj oid=".1.3.6.1.2.1.83.1.1.7" instance="0" alias="ifMRouteEntryCount" type="gauge" />
+      </group>
+
+      <group name="ietf-ipmroute-interfaces" ifType="all">
+        <mibObj oid=".1.3.6.1.2.1.83.1.1.4.1.5" instance="ifIndex" alias="ifInMcastOctets" type="counter" />
+        <mibObj oid=".1.3.6.1.2.1.83.1.1.4.1.6" instance="ifIndex" alias="ifOutMcastOctets" type="counter" />
+      </group>
+
+      <group name="ietf-ipmroute-interfaces-hc" ifType="all">
+        <mibObj oid=".1.3.6.1.2.1.83.1.1.4.1.7" instance="ifIndex" alias="ifHCInMcastOctets" type="counter" />
+        <mibObj oid=".1.3.6.1.2.1.83.1.1.4.1.8" instance="ifIndex" alias="ifHCOutMcastOctets" type="counter" />
+      </group>
+
+      <!-- Stats from the IETF MSDP-MIB -->
+
+      <group name="ietf-msdp-scalars" ifType="ignore">
+        <mibObj oid=".1.3.6.1.3.92.1.1.3" instance="0" alias="msdpSACacheEntries" type="gauge" />
+      </group>
+
+      <group name="ietf-msdp-peers" ifType="all">
+        <mibObj oid=".1.3.6.1.3.92.1.1.5.1.1" instance="msdpPeerEntry" alias="msdpPeerRemoteAddr" type="string" />
+        <mibObj oid=".1.3.6.1.3.92.1.1.5.1.4" instance="msdpPeerEntry" alias="msdpPeerRPFFailures" type="counter" />
+        <mibObj oid=".1.3.6.1.3.92.1.1.5.1.5" instance="msdpPeerEntry" alias="msdpPeerInSAs" type="counter" />
+        <mibObj oid=".1.3.6.1.3.92.1.1.5.1.6" instance="msdpPeerEntry" alias="msdpPeerOutSAs" type="counter" />
+        <mibObj oid=".1.3.6.1.3.92.1.1.5.1.7" instance="msdpPeerEntry" alias="msdpPeerInSAReqs" type="counter" />
+        <mibObj oid=".1.3.6.1.3.92.1.1.5.1.8" instance="msdpPeerEntry" alias="msdpPeerOutSAReqs" type="counter" />
+        <mibObj oid=".1.3.6.1.3.92.1.1.5.1.9" instance="msdpPeerEntry" alias="msdpPeerInSARsps" type="counter" />
+        <mibObj oid=".1.3.6.1.3.92.1.1.5.1.10" instance="msdpPeerEntry" alias="msdpPeerOutSARsps" type="counter" />
+        <mibObj oid=".1.3.6.1.3.92.1.1.5.1.11" instance="msdpPeerEntry" alias="msdpPeerInCtrlMsgs" type="counter" />
+        <mibObj oid=".1.3.6.1.3.92.1.1.5.1.12" instance="msdpPeerEntry" alias="msdpPeerOutCtrlMsgs" type="counter" />
+        <mibObj oid=".1.3.6.1.3.92.1.1.5.1.13" instance="msdpPeerEntry" alias="msdpPeerInDataPkts" type="counter" />
+        <mibObj oid=".1.3.6.1.3.92.1.1.5.1.14" instance="msdpPeerEntry" alias="msdpPeerOutDataPkts" type="counter" />
+        <mibObj oid=".1.3.6.1.3.92.1.1.5.1.15" instance="msdpPeerEntry" alias="msdpPeerEstabTrans" type="counter" />
+        <mibObj oid=".1.3.6.1.3.92.1.1.5.1.18" instance="msdpPeerEntry" alias="msdpPeerLocalAddr" type="string" />
+        <mibObj oid=".1.3.6.1.3.92.1.1.5.1.26" instance="msdpPeerEntry" alias="msdpPeerRemotePort" type="string" />
+        <mibObj oid=".1.3.6.1.3.92.1.1.5.1.27" instance="msdpPeerEntry" alias="msdpPeerLocalPort" type="string" />
+        <mibObj oid=".1.3.6.1.3.92.1.1.5.1.30" instance="msdpPeerEntry" alias="msdpPeerConnAttmpts" type="gauge" />
+        <mibObj oid=".1.3.6.1.3.92.1.1.5.1.31" instance="msdpPeerEntry" alias="msdpPeerInNotifs" type="counter" />
+        <mibObj oid=".1.3.6.1.3.92.1.1.5.1.32" instance="msdpPeerEntry" alias="msdpPeerOutNotifs" type="counter" />
+      </group>
+
+      <!-- Stats from the IETF MPLS-L3VPN-STD-MIB -->
+
+      <group name="ietf-mpls-l3vpn-scalars" ifType="ignore">
+        <mibObj oid=".1.3.6.1.2.1.10.166.11.1.1.1" instance="0" alias="mL3VConfiguredVrfs" type="gauge" />
+        <mibObj oid=".1.3.6.1.2.1.10.166.11.1.1.2" instance="0" alias="mL3VActiveVrfs" type="gauge" />
+        <mibObj oid=".1.3.6.1.2.1.10.166.11.1.1.3" instance="0" alias="mL3VConnectedIfs" type="gauge" />
+      </group>
+
+      <group name="ietf-mpls-l3vpn-vrfs" ifType="all">
+        <mibObj oid=".1.3.6.1.2.1.10.166.11.1.2.2.1.1" instance="mplsL3VpnVrf" alias="mL3VVrfName" type="string" />
+        <mibObj oid=".1.3.6.1.2.1.10.166.11.1.2.2.1.3" instance="mplsL3VpnVrf" alias="mL3VVrfDescr" type="string" />
+        <mibObj oid=".1.3.6.1.2.1.10.166.11.1.2.2.1.7" instance="mplsL3VpnVrf" alias="mL3VVrfActiveIfs" type="gauge" />
+        <mibObj oid=".1.3.6.1.2.1.10.166.11.1.2.2.1.8" instance="mplsL3VpnVrf" alias="mL3VVrfAssocIfs" type="gauge" />
+        <mibObj oid=".1.3.6.1.2.1.10.166.11.1.3.1.1.1" instance="mplsL3VpnVrf" alias="mL3VVrfPerfRtsAdded" type="counter" />
+        <mibObj oid=".1.3.6.1.2.1.10.166.11.1.3.1.1.2" instance="mplsL3VpnVrf" alias="mL3VVrfPerfRtsDeled" type="counter" />
+        <mibObj oid=".1.3.6.1.2.1.10.166.11.1.3.1.1.3" instance="mplsL3VpnVrf" alias="mL3VVrfPerfCurRts" type="gauge" />
+        <mibObj oid=".1.3.6.1.2.1.10.166.11.1.3.1.1.4" instance="mplsL3VpnVrf" alias="mL3VVrfPerfRtsDrpd" type="counter" />
+      </group>
+
+</datacollection-group>

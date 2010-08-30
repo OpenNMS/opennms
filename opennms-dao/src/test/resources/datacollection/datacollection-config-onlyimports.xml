@@ -1,0 +1,56 @@
+<?xml version="1.0"?>
+<datacollection-config rrdRepository="${install.share.dir}/rrd/snmp/">
+  <snmp-collection name="default" snmpStorageFlag="select">
+    <rrd step="300">
+      <rra>RRA:AVERAGE:0.5:1:2016</rra>
+      <rra>RRA:AVERAGE:0.5:12:1488</rra>
+      <rra>RRA:AVERAGE:0.5:288:366</rra>
+      <rra>RRA:MAX:0.5:288:366</rra>
+      <rra>RRA:MIN:0.5:288:366</rra>
+    </rrd>
+
+    <include-collection dataCollectionGroup="MIB2"/>
+    <include-collection dataCollectionGroup="3Com"/>
+    <include-collection dataCollectionGroup="Alvarion"/>
+    <include-collection dataCollectionGroup="APC"/>
+    <include-collection dataCollectionGroup="Ascend"/>
+    <include-collection dataCollectionGroup="Asterisk"/>
+    <include-collection dataCollectionGroup="Brocade"/>
+    <include-collection dataCollectionGroup="Checkpoint"/>
+    <include-collection dataCollectionGroup="Cisco"/>
+    <include-collection dataCollectionGroup="Colubris"/>
+    <include-collection dataCollectionGroup="Concord"/>
+    <include-collection dataCollectionGroup="Equallogic"/>
+    <include-collection dataCollectionGroup="Extreme Networks"/>
+    <include-collection dataCollectionGroup="F5"/>
+    <include-collection dataCollectionGroup="Fortinet"/>
+    <include-collection dataCollectionGroup="Foundry Networks"/>
+    <include-collection dataCollectionGroup="HP"/>
+    <include-collection dataCollectionGroup="IBM"/>
+    <include-collection dataCollectionGroup="IP Unity"/>
+    <include-collection dataCollectionGroup="Juniper"/>
+    <include-collection dataCollectionGroup="Kyocera"/>
+    <include-collection dataCollectionGroup="Lexmark"/>
+    <include-collection dataCollectionGroup="Liebert"/>
+    <include-collection dataCollectionGroup="MGE"/>
+    <include-collection dataCollectionGroup="Microsoft"/>
+    <include-collection dataCollectionGroup="Mikrotik"/>
+    <include-collection dataCollectionGroup="Network Appliance"/>
+    <include-collection dataCollectionGroup="Netbotz"/>
+    <include-collection dataCollectionGroup="NetEnforcer"/>
+    <include-collection dataCollectionGroup="Netscaler"/>
+    <include-collection dataCollectionGroup="Net-SNMP"/>
+    <include-collection dataCollectionGroup="Nortel"/>
+    <include-collection dataCollectionGroup="Novell"/>
+    <include-collection dataCollectionGroup="Powerware"/>
+    <include-collection dataCollectionGroup="Riverbed"/>
+    <include-collection dataCollectionGroup="Savin or Ricoh Printers"/>
+    <include-collection dataCollectionGroup="ServerTech"/>
+    <include-collection dataCollectionGroup="SofaWare"/>
+    <include-collection dataCollectionGroup="SUN Microsystems"/>
+    <include-collection dataCollectionGroup="Trango"/>
+    <include-collection dataCollectionGroup="WMI"/>
+    <include-collection dataCollectionGroup="XMP"/>
+  </snmp-collection>
+
+</datacollection-config>

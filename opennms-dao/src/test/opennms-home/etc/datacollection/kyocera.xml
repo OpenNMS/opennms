@@ -1,0 +1,12 @@
+<?xml version="1.0"?>
+<datacollection-group name="Kyocera">
+
+      <systemDef name="Kyocera Mita Network Printer">
+        <sysoidMask>.1.3.6.1.4.1.1347.</sysoidMask>
+        <collect>
+          <includeGroup>printer-usage</includeGroup>
+          <includeGroup>printer-mib-supplies</includeGroup>
+        </collect>
+      </systemDef>
+
+</datacollection-group>

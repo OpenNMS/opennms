@@ -1,0 +1,31 @@
+<?xml version="1.0"?>
+<datacollection-group name="Equallogic">
+
+    <!-- Equallogic Instances -->
+    <resourceType name="EqVol" label="Equallogic Volume ID" resourceLabel="${EqVolName}">
+       <persistenceSelectorStrategy class="org.opennms.netmgt.collectd.PersistAllSelectorStrategy"/>
+       <storageStrategy class="org.opennms.netmgt.dao.support.IndexStorageStrategy"/>
+    </resourceType>
+
+      <!-- "Equallogic"-->
+      <group name="equallogic-volumes" ifType="all">
+        <mibObj oid=".1.3.6.1.4.1.12740.5.1.7.1.1.14" instance="EqVol" alias="EqVolName"     type="string" />
+        <mibObj oid=".1.3.6.1.4.1.12740.5.1.7.34.1.3" instance="EqVol" alias="EqVolTx"       type="counter" />
+        <mibObj oid=".1.3.6.1.4.1.12740.5.1.7.34.1.4" instance="EqVol" alias="EqVolRx"       type="counter" />
+        <mibObj oid=".1.3.6.1.4.1.12740.5.1.7.34.1.6" instance="EqVol" alias="EqVolReLat"    type="counter" />
+        <mibObj oid=".1.3.6.1.4.1.12740.5.1.7.34.1.7" instance="EqVol" alias="EqVolWrLat"    type="counter" />
+        <mibObj oid=".1.3.6.1.4.1.12740.5.1.7.34.1.8" instance="EqVol" alias="EqVolReOp"     type="counter" />
+        <mibObj oid=".1.3.6.1.4.1.12740.5.1.7.34.1.9" instance="EqVol" alias="EqVolWrOp"     type="counter" />
+        <mibObj oid=".1.3.6.1.4.1.12740.5.1.7.1.1.8"  instance="EqVol" alias="EqVolSize"     type="integer" />
+        <mibObj oid=".1.3.6.1.4.1.12740.5.1.7.1.1.27" instance="EqVol" alias="EqVolThnResPc" type="integer" />
+        <mibObj oid=".1.3.6.1.4.1.12740.5.1.7.7.1.13" instance="EqVol" alias="EqVolAlloc"    type="integer" />
+      </group>
+
+      <systemDef name="Equallogic SANs">
+        <sysoidMask>.1.3.6.1.4.1.12740.</sysoidMask>
+        <collect>
+         <includeGroup>equallogic-volumes</includeGroup>
+        </collect>
+      </systemDef>
+
+</datacollection-group>

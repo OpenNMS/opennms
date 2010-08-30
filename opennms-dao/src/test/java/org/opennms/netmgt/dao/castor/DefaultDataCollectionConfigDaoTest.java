@@ -66,6 +66,7 @@ public class DefaultDataCollectionConfigDaoTest {
     public void setUp() {
         MockLogAppender.setupLogging();
         System.setProperty("opennms.home", "src/test/opennms-home");
+        ConfigurationTestUtils.setRelativeHomeDirectory("src/test/opennms-home");
     }
     
     @After
@@ -97,7 +98,7 @@ public class DefaultDataCollectionConfigDaoTest {
         int netsnmpObjectsCount = 70;
         int ciscoObjectsCount = 44;
         int resourceTypesCount = 69;
-        int systemDefCount = 125;
+        int systemDefCount = 126;
 
         // Execute Tests
         executeRepositoryTest(dao);
@@ -125,7 +126,7 @@ public class DefaultDataCollectionConfigDaoTest {
 
     private DefaultDataCollectionConfigDao instantiateDao(String fileName, boolean setConfigDirectory) throws Exception {
         DefaultDataCollectionConfigDao dao = new DefaultDataCollectionConfigDao();
-        File configFile = ConfigurationTestUtils.getFileForConfigFile(fileName);
+        File configFile = new File("src/test/opennms-home/etc", fileName);
         if (setConfigDirectory) {
             File configFolder = new File(configFile.getParentFile(), "datacollection");
             Assert.assertTrue(configFolder.isDirectory());
