@@ -66,6 +66,7 @@ public class DefaultDataCollectionConfigDaoTest {
     public void setUp() {
         MockLogAppender.setupLogging();
         System.setProperty("opennms.home", "src/test/opennms-home");
+        ConfigurationTestUtils.setRelativeHomeDirectory("src/test/opennms-home");
     }
     
     @After
@@ -73,28 +74,24 @@ public class DefaultDataCollectionConfigDaoTest {
         MockLogAppender.assertNoWarningsOrGreater();
     }
 
-/*
     @Test
     public void testNewStyle() throws Exception {
         DefaultDataCollectionConfigDao dao = instantiateDao("datacollection-config.xml", true);
         executeTests(dao);
     }
-*/
 
     @Test
     public void testOldStyle() throws Exception {
-        DefaultDataCollectionConfigDao oldDao = instantiateDao("datacollection-config.xml", false);
+        DefaultDataCollectionConfigDao oldDao = instantiateDao("examples/old-datacollection-config.xml", false);
         executeTests(oldDao);
     }
     
-/*
     @Test
     public void testCompareOldAndNewStyles() throws Exception {
         DefaultDataCollectionConfigDao newDao = instantiateDao("datacollection-config.xml", true);
         DefaultDataCollectionConfigDao oldDao = instantiateDao("examples/old-datacollection-config.xml", false);
         compareContent(oldDao.getContainer().getObject(), newDao.getContainer().getObject());
     }
-*/
 
     private void executeTests(DefaultDataCollectionConfigDao dao) {
         // Expected Values
@@ -129,10 +126,10 @@ public class DefaultDataCollectionConfigDaoTest {
 
     private DefaultDataCollectionConfigDao instantiateDao(String fileName, boolean setConfigDirectory) throws Exception {
         DefaultDataCollectionConfigDao dao = new DefaultDataCollectionConfigDao();
-        File configFile = ConfigurationTestUtils.getFileForConfigFile(fileName);
+        File configFile = new File("src/test/opennms-home/etc", fileName);
         if (setConfigDirectory) {
             File configFolder = new File(configFile.getParentFile(), "datacollection");
-            // Assert.assertTrue(configFolder.isDirectory());
+            Assert.assertTrue(configFolder.isDirectory());
             dao.setConfigDirectory(configFolder.getAbsolutePath());
         }
         dao.setConfigResource(new InputStreamResource(new FileInputStream(configFile)));

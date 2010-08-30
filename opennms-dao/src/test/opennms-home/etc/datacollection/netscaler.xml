@@ -1,0 +1,18 @@
+<?xml version="1.0"?>
+<datacollection-group name="Netscaler">
+
+      <!-- Netscaler MIBs -->
+      <group name="NetScaler-General" ifType="ignore">
+        <mibObj oid=".1.3.6.1.4.1.5951.4.1.1.41.1" instance="0" alias="NSresCpuUsage" type="Gauge32" />
+        <mibObj oid=".1.3.6.1.4.1.5951.4.1.1.41.2" instance="0" alias="NSresMemUsage" type="Gauge32" />
+        <mibObj oid=".1.3.6.1.4.1.5951.4.1.1.41.4" instance="0" alias="NSmemSizeMB"   type="Integer32" />
+      </group>
+
+      <systemDef name="Netscaler">
+        <sysoidMask>.1.3.6.1.4.1.5951.1.</sysoidMask>
+        <collect>
+          <includeGroup>NetScaler-General</includeGroup>
+        </collect>
+      </systemDef>
+
+</datacollection-group>

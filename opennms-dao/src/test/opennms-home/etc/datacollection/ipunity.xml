@@ -1,0 +1,312 @@
+<?xml version="1.0"?>
+<datacollection-group name="IP Unity">
+
+    <resourceType name="applIndex" label="Network Services Application"
+                  resourceLabel="${applDescription} (index ${index})">
+      <persistenceSelectorStrategy class="org.opennms.netmgt.collectd.PersistAllSelectorStrategy"/>
+      <storageStrategy class="org.opennms.netmgt.dao.support.IndexStorageStrategy"/>
+    </resourceType>
+
+    <resourceType name="asAppIndex" label="IP Unity Applications"
+                  resourceLabel="${asAppName} (index ${index})">
+       <persistenceSelectorStrategy class="org.opennms.netmgt.collectd.PersistAllSelectorStrategy"/>
+       <storageStrategy class="org.opennms.netmgt.dao.support.IndexStorageStrategy"/>
+    </resourceType>
+
+    <resourceType name="ipuMGCPMsgStatsEntry" label="IP Unity MGCP Message Stats"
+                  resourceLabel="MGC.MsgType: ${index} (1=crcx 2=mdcx 3=dlcx 4=rqnt 5=ntfy 6=auep 7=aucx 8=rsip 9=epcf 10=other)">
+      <persistenceSelectorStrategy class="org.opennms.netmgt.collectd.PersistAllSelectorStrategy"/>
+      <storageStrategy class="org.opennms.netmgt.dao.support.IndexStorageStrategy"/>
+    </resourceType>
+
+    <resourceType name="umOrgIndex" label="Unified Messaging Organization"
+                  resourceLabel="${umOrgName}">
+       <persistenceSelectorStrategy class="org.opennms.netmgt.collectd.PersistAllSelectorStrategy"/>
+       <storageStrategy class="org.opennms.netmgt.dao.support.IndexStorageStrategy"/>
+    </resourceType>
+
+      <group name="ipunity-as-call-scalars" ifType="ignore" >
+         <mibObj oid=".1.3.6.1.4.1.5134.2.1.2.1" instance="0" alias="ipuCallsWithNoApp" type="counter" />
+      </group>
+
+      <group name="ipunity-as-call-summary-stats" ifType="all">
+         <mibObj oid=".1.3.6.1.4.1.5134.2.1.3.1.1.2"  instance="asAppIndex" alias="asAppName"           type="string" />
+         <mibObj oid=".1.3.6.1.4.1.5134.2.1.3.1.1.5"  instance="asAppIndex" alias="asInCallsInPgr"      type="gauge" />
+         <mibObj oid=".1.3.6.1.4.1.5134.2.1.3.1.1.19" instance="asAppIndex" alias="asOutCallsInPgr"     type="gauge" />
+         <mibObj oid=".1.3.6.1.4.1.5134.2.1.3.1.1.6"  instance="asAppIndex" alias="asInCallsCompleted"  type="counter" />
+         <mibObj oid=".1.3.6.1.4.1.5134.2.1.3.1.1.20" instance="asAppIndex" alias="asOutCallsCompleted" type="counter" />
+         <mibObj oid=".1.3.6.1.4.1.5134.2.1.3.1.1.33" instance="asAppIndex" alias="asHungCallsDropped"  type="counter" />
+      </group>
+
+      <group name="ipunity-as-incall-stats" ifType="all">
+         <mibObj oid=".1.3.6.1.4.1.5134.2.1.3.1.1.7"  instance="asAppIndex" alias="asInCallsFwRejected" type="counter" />
+         <mibObj oid=".1.3.6.1.4.1.5134.2.1.3.1.1.8"  instance="asAppIndex" alias="asInCallsAppReject"  type="counter" />
+         <mibObj oid=".1.3.6.1.4.1.5134.2.1.3.1.1.9"  instance="asAppIndex" alias="asInCallSetupAttmpt" type="counter" />
+         <mibObj oid=".1.3.6.1.4.1.5134.2.1.3.1.1.10" instance="asAppIndex" alias="asInCallSetupSucc"   type="counter" />
+         <mibObj oid=".1.3.6.1.4.1.5134.2.1.3.1.1.11" instance="asAppIndex" alias="asInCallMsFailures"  type="counter" />
+         <mibObj oid=".1.3.6.1.4.1.5134.2.1.3.1.1.12" instance="asAppIndex" alias="asInCallCaFailures"  type="counter" />
+         <mibObj oid=".1.3.6.1.4.1.5134.2.1.3.1.1.13" instance="asAppIndex" alias="asInCallTrdnMsAtmpt" type="counter" />
+         <mibObj oid=".1.3.6.1.4.1.5134.2.1.3.1.1.14" instance="asAppIndex" alias="asInCallTrdnCaAtmpt" type="counter" />
+         <mibObj oid=".1.3.6.1.4.1.5134.2.1.3.1.1.15" instance="asAppIndex" alias="asInCallTrdnApAtmpt" type="counter" />
+         <mibObj oid=".1.3.6.1.4.1.5134.2.1.3.1.1.16" instance="asAppIndex" alias="asInCallTrdnFwAtmpt" type="counter" />
+         <mibObj oid=".1.3.6.1.4.1.5134.2.1.3.1.1.17" instance="asAppIndex" alias="asInCallTrdnMsFail"  type="counter" />
+         <mibObj oid=".1.3.6.1.4.1.5134.2.1.3.1.1.18" instance="asAppIndex" alias="asInCallTrdnCaFail"  type="counter" />
+         <mibObj oid=".1.3.6.1.4.1.5134.2.1.3.1.1.39" instance="asAppIndex" alias="asInCallsRedir"      type="counter" />
+         <mibObj oid=".1.3.6.1.4.1.5134.2.1.3.1.1.40" instance="asAppIndex" alias="asInCallsNotResp"    type="counter" />
+         <mibObj oid=".1.3.6.1.4.1.5134.2.1.3.1.1.41" instance="asAppIndex" alias="asInCallsTrdnSsTmr"  type="counter" />
+      </group>
+
+      <group name="ipunity-as-outcall-stats" ifType="all">
+         <mibObj oid=".1.3.6.1.4.1.5134.2.1.3.1.1.21" instance="asAppIndex" alias="asOutCallsFwCancld"  type="counter" />
+         <mibObj oid=".1.3.6.1.4.1.5134.2.1.3.1.1.22" instance="asAppIndex" alias="asOutCallsAppCancld" type="counter" />
+         <mibObj oid=".1.3.6.1.4.1.5134.2.1.3.1.1.23" instance="asAppIndex" alias="asOutCallSetupAtmpt" type="counter" />
+         <mibObj oid=".1.3.6.1.4.1.5134.2.1.3.1.1.24" instance="asAppIndex" alias="asOutCallSetupSucc"  type="counter" />
+         <mibObj oid=".1.3.6.1.4.1.5134.2.1.3.1.1.25" instance="asAppIndex" alias="asOutCallSetupMsFl"  type="counter" />
+         <mibObj oid=".1.3.6.1.4.1.5134.2.1.3.1.1.26" instance="asAppIndex" alias="asOutCallSetupCaFl"  type="counter" />
+         <mibObj oid=".1.3.6.1.4.1.5134.2.1.3.1.1.27" instance="asAppIndex" alias="asOutCallTrdnMsAtmp" type="counter" />
+         <mibObj oid=".1.3.6.1.4.1.5134.2.1.3.1.1.28" instance="asAppIndex" alias="asOutCallTrdnCaAtmp" type="counter" />
+         <mibObj oid=".1.3.6.1.4.1.5134.2.1.3.1.1.29" instance="asAppIndex" alias="asOutCallTrdnApAtmp" type="counter" />
+         <mibObj oid=".1.3.6.1.4.1.5134.2.1.3.1.1.30" instance="asAppIndex" alias="asOutCallTrdnFwAtmp" type="counter" />
+         <mibObj oid=".1.3.6.1.4.1.5134.2.1.3.1.1.31" instance="asAppIndex" alias="asOutCallTrdnMsFail" type="counter" />
+         <mibObj oid=".1.3.6.1.4.1.5134.2.1.3.1.1.32" instance="asAppIndex" alias="asOutCallTrdnCaFail" type="counter" />
+         <mibObj oid=".1.3.6.1.4.1.5134.2.1.3.1.1.42" instance="asAppIndex" alias="asOutCallsTrdnSsTmr" type="counter" />
+      </group>
+
+      <group name="ipunity-as-call-transfer-stats" ifType="all">
+         <mibObj oid=".1.3.6.1.4.1.5134.2.1.3.1.1.35" instance="asAppIndex" alias="asCallXfersAtmp"    type="counter" />
+         <mibObj oid=".1.3.6.1.4.1.5134.2.1.3.1.1.36" instance="asAppIndex" alias="asCallXfersSucc"    type="counter" />
+         <mibObj oid=".1.3.6.1.4.1.5134.2.1.3.1.1.37" instance="asAppIndex" alias="asCallXfersFailApp" type="counter" />
+         <mibObj oid=".1.3.6.1.4.1.5134.2.1.3.1.1.38" instance="asAppIndex" alias="asCallXfersFailCa"  type="counter" />
+      </group>
+
+      <group name="ipunity-as-cluster-call-summary-stats" ifType="all">
+         <mibObj oid=".1.3.6.1.4.1.5134.2.1.3.2.1.1"  instance="asAppIndex" alias="asClsInCallsInPgr"   type="gauge" />
+         <mibObj oid=".1.3.6.1.4.1.5134.2.1.3.2.1.15" instance="asAppIndex" alias="asClsOutCallsInPgr"  type="gauge" />
+         <mibObj oid=".1.3.6.1.4.1.5134.2.1.3.2.1.2"  instance="asAppIndex" alias="asClsInCallsCmpltd"  type="counter" />
+         <mibObj oid=".1.3.6.1.4.1.5134.2.1.3.2.1.16" instance="asAppIndex" alias="asClsOutCallsCmpltd" type="counter" />
+         <mibObj oid=".1.3.6.1.4.1.5134.2.1.3.2.1.29" instance="asAppIndex" alias="asClsHungCallsDrop"  type="counter" />
+      </group>
+
+      <group name="ipunity-as-cluster-incall-stats" ifType="all">
+         <mibObj oid=".1.3.6.1.4.1.5134.2.1.3.2.1.3"  instance="asAppIndex" alias="asClsInCallsRejFw"   type="counter" />
+         <mibObj oid=".1.3.6.1.4.1.5134.2.1.3.2.1.4"  instance="asAppIndex" alias="asClsInCallsRejApp"  type="counter" />
+         <mibObj oid=".1.3.6.1.4.1.5134.2.1.3.2.1.5"  instance="asAppIndex" alias="asClsInCallStupAtmp" type="counter" />
+         <mibObj oid=".1.3.6.1.4.1.5134.2.1.3.2.1.6"  instance="asAppIndex" alias="asClsInCallStupSucc" type="counter" />
+         <mibObj oid=".1.3.6.1.4.1.5134.2.1.3.2.1.7"  instance="asAppIndex" alias="asClsInCallSuMsFail" type="counter" />
+         <mibObj oid=".1.3.6.1.4.1.5134.2.1.3.2.1.8"  instance="asAppIndex" alias="asClsInCallSuCaFail" type="counter" />
+         <mibObj oid=".1.3.6.1.4.1.5134.2.1.3.2.1.9"  instance="asAppIndex" alias="asClsInCallTdMsAtmp" type="counter" />
+         <mibObj oid=".1.3.6.1.4.1.5134.2.1.3.2.1.10" instance="asAppIndex" alias="asClsInCallTdCaAtmp" type="counter" />
+         <mibObj oid=".1.3.6.1.4.1.5134.2.1.3.2.1.11" instance="asAppIndex" alias="asClsInCallTdApAtmp" type="counter" />
+         <mibObj oid=".1.3.6.1.4.1.5134.2.1.3.2.1.12" instance="asAppIndex" alias="asClsInCallTdFwAtmp" type="counter" />
+         <mibObj oid=".1.3.6.1.4.1.5134.2.1.3.2.1.13" instance="asAppIndex" alias="asClsInCallTdMsFail" type="counter" />
+         <mibObj oid=".1.3.6.1.4.1.5134.2.1.3.2.1.14" instance="asAppIndex" alias="asClsInCallTdCaFail" type="counter" />
+      </group>
+
+      <group name="ipunity-as-cluster-outcall-stats" ifType="all">
+         <mibObj oid=".1.3.6.1.4.1.5134.2.1.3.2.1.17" instance="asAppIndex" alias="asClsOutCallsFwCncl" type="counter" />
+         <mibObj oid=".1.3.6.1.4.1.5134.2.1.3.2.1.18" instance="asAppIndex" alias="asClsOutCallsApCncl" type="counter" />
+         <mibObj oid=".1.3.6.1.4.1.5134.2.1.3.2.1.19" instance="asAppIndex" alias="asClsOutCallSuAtmp"  type="counter" />
+         <mibObj oid=".1.3.6.1.4.1.5134.2.1.3.2.1.20" instance="asAppIndex" alias="asClsOutCallSuSucc"  type="counter" />
+         <mibObj oid=".1.3.6.1.4.1.5134.2.1.3.2.1.21" instance="asAppIndex" alias="asClsOutCallSuMsFl"  type="counter" />
+         <mibObj oid=".1.3.6.1.4.1.5134.2.1.3.2.1.22" instance="asAppIndex" alias="asClsOutCallSuCaFl"  type="counter" />
+         <mibObj oid=".1.3.6.1.4.1.5134.2.1.3.2.1.23" instance="asAppIndex" alias="asClsOutCallTdMsAtp" type="counter" />
+         <mibObj oid=".1.3.6.1.4.1.5134.2.1.3.2.1.24" instance="asAppIndex" alias="asClsOutCallTdCaAtp" type="counter" />
+         <mibObj oid=".1.3.6.1.4.1.5134.2.1.3.2.1.25" instance="asAppIndex" alias="asClsOutCallTdApAtp" type="counter" />
+         <mibObj oid=".1.3.6.1.4.1.5134.2.1.3.2.1.26" instance="asAppIndex" alias="asClsOutCallTdFwAtp" type="counter" />
+         <mibObj oid=".1.3.6.1.4.1.5134.2.1.3.2.1.27" instance="asAppIndex" alias="asClsOutCallTdMsFl"  type="counter" />
+         <mibObj oid=".1.3.6.1.4.1.5134.2.1.3.2.1.28" instance="asAppIndex" alias="asClsOutCallTdCaFl"  type="counter" />
+      </group>
+
+      <group name="ipunity-as-cluster-call-transfer-stats" ifType="all">
+         <mibObj oid=".1.3.6.1.4.1.5134.2.1.3.2.1.31" instance="asAppIndex" alias="asClsCallXferAtmp"   type="counter" />
+         <mibObj oid=".1.3.6.1.4.1.5134.2.1.3.2.1.32" instance="asAppIndex" alias="asClsCallXferSucc"   type="counter" />
+         <mibObj oid=".1.3.6.1.4.1.5134.2.1.3.2.1.33" instance="asAppIndex" alias="asClsCallXferFailAp" type="counter" />
+         <mibObj oid=".1.3.6.1.4.1.5134.2.1.3.2.1.34" instance="asAppIndex" alias="asClsCallXferFailCa" type="counter" />
+      </group>
+
+      <group name="ipunity-sip-summary-stats" ifType="all">
+        <mibObj oid=".1.3.6.1.4.1.5134.2.1.4.1.1.1" instance="applIndex" alias="ipuSIPSumInReqs"     type="counter" />
+        <mibObj oid=".1.3.6.1.4.1.5134.2.1.4.1.1.2" instance="applIndex" alias="ipuSIPSumOutReqs"    type="counter" />
+        <mibObj oid=".1.3.6.1.4.1.5134.2.1.4.1.1.3" instance="applIndex" alias="ipuSIPSumInResps"    type="counter" />
+        <mibObj oid=".1.3.6.1.4.1.5134.2.1.4.1.1.4" instance="applIndex" alias="ipuSIPSumOutResps"   type="counter" />
+        <mibObj oid=".1.3.6.1.4.1.5134.2.1.4.1.1.5" instance="applIndex" alias="ipuSIPSumTotXaction" type="counter" />
+      </group>
+
+      <group name="ipunity-sip-method-stats" ifType="all">
+        <mibObj oid=".1.3.6.1.4.1.5134.2.1.4.2.1.1"  instance="applIndex" alias="ipuSIPInviteIn"    type="counter" />
+        <mibObj oid=".1.3.6.1.4.1.5134.2.1.4.2.1.2"  instance="applIndex" alias="ipuSIPInviteOut"   type="counter" />
+        <mibObj oid=".1.3.6.1.4.1.5134.2.1.4.2.1.3"  instance="applIndex" alias="ipuSIPAckIn"       type="counter" />
+        <mibObj oid=".1.3.6.1.4.1.5134.2.1.4.2.1.4"  instance="applIndex" alias="ipuSIPAckOut"      type="counter" />
+        <mibObj oid=".1.3.6.1.4.1.5134.2.1.4.2.1.5"  instance="applIndex" alias="ipuSIPByeIn"       type="counter" />
+        <mibObj oid=".1.3.6.1.4.1.5134.2.1.4.2.1.6"  instance="applIndex" alias="ipuSIPByeOut"      type="counter" />
+        <mibObj oid=".1.3.6.1.4.1.5134.2.1.4.2.1.7"  instance="applIndex" alias="ipuSIPCancelIn"    type="counter" />
+        <mibObj oid=".1.3.6.1.4.1.5134.2.1.4.2.1.8"  instance="applIndex" alias="ipuSIPCancelOut"   type="counter" />
+        <mibObj oid=".1.3.6.1.4.1.5134.2.1.4.2.1.9"  instance="applIndex" alias="ipuSIPOptionsIn"   type="counter" />
+        <mibObj oid=".1.3.6.1.4.1.5134.2.1.4.2.1.10" instance="applIndex" alias="ipuSIPOptionsOut"  type="counter" />
+        <mibObj oid=".1.3.6.1.4.1.5134.2.1.4.2.1.11" instance="applIndex" alias="ipuSIPRegisterIn"  type="counter" />
+        <mibObj oid=".1.3.6.1.4.1.5134.2.1.4.2.1.12" instance="applIndex" alias="ipuSIPRegisterOut" type="counter" />
+        <mibObj oid=".1.3.6.1.4.1.5134.2.1.4.2.1.13" instance="applIndex" alias="ipuSIPInfoIn"      type="counter" />
+        <mibObj oid=".1.3.6.1.4.1.5134.2.1.4.2.1.14" instance="applIndex" alias="ipuSIPInfoOut"     type="counter" />
+      </group>
+
+      <group name="ipunity-sip-status-code-stats" ifType="all">
+        <mibObj oid=".1.3.6.1.4.1.5134.2.1.4.3.1.1"  instance="applIndex" alias="ipuSIPInfoClsIn"     type="counter" />
+        <mibObj oid=".1.3.6.1.4.1.5134.2.1.4.3.1.2"  instance="applIndex" alias="ipuSIPInfoClsOut"    type="counter" />
+        <mibObj oid=".1.3.6.1.4.1.5134.2.1.4.3.1.3"  instance="applIndex" alias="ipuSIPSuccClsIn"     type="counter" />
+        <mibObj oid=".1.3.6.1.4.1.5134.2.1.4.3.1.4"  instance="applIndex" alias="ipuSIPSuccClsOut"    type="counter" />
+        <mibObj oid=".1.3.6.1.4.1.5134.2.1.4.3.1.5"  instance="applIndex" alias="ipuSIPRedirClsIn"    type="counter" />
+        <mibObj oid=".1.3.6.1.4.1.5134.2.1.4.3.1.6"  instance="applIndex" alias="ipuSIPRedirClsOut"   type="counter" />
+        <mibObj oid=".1.3.6.1.4.1.5134.2.1.4.3.1.7"  instance="applIndex" alias="ipuSIPReqFailClsIn"  type="counter" />
+        <mibObj oid=".1.3.6.1.4.1.5134.2.1.4.3.1.8"  instance="applIndex" alias="ipuSIPReqFailClsOut" type="counter" />
+        <mibObj oid=".1.3.6.1.4.1.5134.2.1.4.3.1.9"  instance="applIndex" alias="ipuSIPSrvFailClsIn"  type="counter" />
+        <mibObj oid=".1.3.6.1.4.1.5134.2.1.4.3.1.10" instance="applIndex" alias="ipuSIPSrvFailClsOut" type="counter" />
+        <mibObj oid=".1.3.6.1.4.1.5134.2.1.4.3.1.11" instance="applIndex" alias="ipuSIPGblFailClsIn"  type="counter" />
+        <mibObj oid=".1.3.6.1.4.1.5134.2.1.4.3.1.12" instance="applIndex" alias="ipuSIPGblFailClsOut" type="counter" />
+      </group>
+
+      <group name="ipunity-sip-method-dup-stats" ifType="all">
+        <mibObj oid=".1.3.6.1.4.1.5134.2.1.4.4.1.1"  instance="applIndex" alias="ipuSIPDupInviteIn"   type="counter" />
+        <mibObj oid=".1.3.6.1.4.1.5134.2.1.4.4.1.2"  instance="applIndex" alias="ipuSIPDupInviteOut"  type="counter" />
+        <mibObj oid=".1.3.6.1.4.1.5134.2.1.4.4.1.3"  instance="applIndex" alias="ipuSIPDupAckIn"      type="counter" />
+        <mibObj oid=".1.3.6.1.4.1.5134.2.1.4.4.1.4"  instance="applIndex" alias="ipuSIPDupAckOut"     type="counter" />
+        <mibObj oid=".1.3.6.1.4.1.5134.2.1.4.4.1.5"  instance="applIndex" alias="ipuSIPDupByeIn"      type="counter" />
+        <mibObj oid=".1.3.6.1.4.1.5134.2.1.4.4.1.6"  instance="applIndex" alias="ipuSIPDupByeOut"     type="counter" />
+        <mibObj oid=".1.3.6.1.4.1.5134.2.1.4.4.1.7"  instance="applIndex" alias="ipuSIPDupCancelIn"   type="counter" />
+        <mibObj oid=".1.3.6.1.4.1.5134.2.1.4.4.1.8"  instance="applIndex" alias="ipuSIPDupCancelOut"  type="counter" />
+        <mibObj oid=".1.3.6.1.4.1.5134.2.1.4.4.1.9"  instance="applIndex" alias="ipuSIPDupOptionsIn"  type="counter" />
+        <mibObj oid=".1.3.6.1.4.1.5134.2.1.4.4.1.10" instance="applIndex" alias="ipuSIPDupOptionsOut" type="counter" />
+        <mibObj oid=".1.3.6.1.4.1.5134.2.1.4.4.1.11" instance="applIndex" alias="ipuSIPDupRegIn"      type="counter" />
+        <mibObj oid=".1.3.6.1.4.1.5134.2.1.4.4.1.12" instance="applIndex" alias="ipuSIPDupRegOut"     type="counter" />
+        <mibObj oid=".1.3.6.1.4.1.5134.2.1.4.4.1.13" instance="applIndex" alias="ipuSIPDupInfoIn"     type="counter" />
+        <mibObj oid=".1.3.6.1.4.1.5134.2.1.4.4.1.14" instance="applIndex" alias="ipuSIPDupInfoOut"    type="counter" />
+      </group>
+
+      <group name="ipunity-sip-status-code-dup-stats" ifType="all">
+        <mibObj oid=".1.3.6.1.4.1.5134.2.1.4.5.1.1"  instance="applIndex" alias="ipuSIPDupInfoClsIn"  type="counter" />
+        <mibObj oid=".1.3.6.1.4.1.5134.2.1.4.5.1.2"  instance="applIndex" alias="ipuSIPDupInfoClsOut" type="counter" />
+        <mibObj oid=".1.3.6.1.4.1.5134.2.1.4.5.1.3"  instance="applIndex" alias="ipuSIPDupSuccClsIn"  type="counter" />
+        <mibObj oid=".1.3.6.1.4.1.5134.2.1.4.5.1.4"  instance="applIndex" alias="ipuSIPDupSuccClsOut" type="counter" />
+        <mibObj oid=".1.3.6.1.4.1.5134.2.1.4.5.1.5"  instance="applIndex" alias="ipuSIPDupRdirClsIn"  type="counter" />
+        <mibObj oid=".1.3.6.1.4.1.5134.2.1.4.5.1.6"  instance="applIndex" alias="ipuSIPDupRdirClsOut" type="counter" />
+        <mibObj oid=".1.3.6.1.4.1.5134.2.1.4.5.1.7"  instance="applIndex" alias="ipuSIPDupRqFlClsIn"  type="counter" />
+        <mibObj oid=".1.3.6.1.4.1.5134.2.1.4.5.1.8"  instance="applIndex" alias="ipuSIPDupRqFlClsOut" type="counter" />
+        <mibObj oid=".1.3.6.1.4.1.5134.2.1.4.5.1.9"  instance="applIndex" alias="ipuSIPDupSvFlClsIn"  type="counter" />
+        <mibObj oid=".1.3.6.1.4.1.5134.2.1.4.5.1.10" instance="applIndex" alias="ipuSIPDupSvFlClsOut" type="counter" />
+        <mibObj oid=".1.3.6.1.4.1.5134.2.1.4.5.1.11" instance="applIndex" alias="ipuSIPDupGbFlClsIn"  type="counter" />
+        <mibObj oid=".1.3.6.1.4.1.5134.2.1.4.5.1.12" instance="applIndex" alias="ipuSIPDupGbFlClsOut" type="counter" />
+      </group>
+
+      <group name="ipunity-mgcp-scalars" ifType="ignore">
+        <mibObj oid=".1.3.6.1.4.1.5134.2.1.5.1" instance="0" alias="ipuMGCPInBadVer"    type="counter" />
+        <mibObj oid=".1.3.6.1.4.1.5134.2.1.5.2" instance="0" alias="ipuMGCPUnrecogPkts" type="counter" />
+      </group>
+
+      <group name="ipunity-mgcp-msg-stats" ifType="all">
+        <mibObj oid=".1.3.6.1.4.1.5134.2.1.6.1.1.1"  instance="ipuMGCPMsgStatsEntry" alias="ipuMGCPMGCAddr"      type="string" />
+        <mibObj oid=".1.3.6.1.4.1.5134.2.1.6.1.1.2"  instance="ipuMGCPMsgStatsEntry" alias="ipuMGCPMsgType"      type="string" />
+        <mibObj oid=".1.3.6.1.4.1.5134.2.1.6.1.1.3"  instance="ipuMGCPMsgStatsEntry" alias="ipuMGCPSuccCmdsTx"   type="counter" />
+        <mibObj oid=".1.3.6.1.4.1.5134.2.1.6.1.1.4"  instance="ipuMGCPMsgStatsEntry" alias="ipuMGCPSuccCmdsRx"   type="counter" />
+        <mibObj oid=".1.3.6.1.4.1.5134.2.1.6.1.1.5"  instance="ipuMGCPMsgStatsEntry" alias="ipuMGCPRetxCmdsTx"   type="counter" />
+        <mibObj oid=".1.3.6.1.4.1.5134.2.1.6.1.1.6"  instance="ipuMGCPMsgStatsEntry" alias="ipuMGCPRetxCmdsRx"   type="counter" />
+        <mibObj oid=".1.3.6.1.4.1.5134.2.1.6.1.1.7"  instance="ipuMGCPMsgStatsEntry" alias="ipuMGCPBadFmtCmdsRx" type="counter" />
+        <mibObj oid=".1.3.6.1.4.1.5134.2.1.6.1.1.8"  instance="ipuMGCPMsgStatsEntry" alias="ipuMGCPFailedCmdsTx" type="counter" />
+        <mibObj oid=".1.3.6.1.4.1.5134.2.1.6.1.1.9"  instance="ipuMGCPMsgStatsEntry" alias="ipuMGCPSuccRespTx"   type="counter" />
+        <mibObj oid=".1.3.6.1.4.1.5134.2.1.6.1.1.10" instance="ipuMGCPMsgStatsEntry" alias="ipuMGCPSuccRespRx"   type="counter" />
+        <mibObj oid=".1.3.6.1.4.1.5134.2.1.6.1.1.11" instance="ipuMGCPMsgStatsEntry" alias="ipuMGCPRetxRespTx"   type="counter" />
+        <mibObj oid=".1.3.6.1.4.1.5134.2.1.6.1.1.12" instance="ipuMGCPMsgStatsEntry" alias="ipuMGCPRetxRespRx"   type="counter" />
+        <mibObj oid=".1.3.6.1.4.1.5134.2.1.6.1.1.13" instance="ipuMGCPMsgStatsEntry" alias="ipuMGCPBadFmtRespRx" type="counter" />
+      </group>
+
+      <group name="ipunity-frame-config" ifType="ignore">
+         <mibObj oid=".1.3.6.1.4.1.5134.2.1.7.2" instance="0" alias="fcOverloadThresh1" type="gauge" />
+         <mibObj oid=".1.3.6.1.4.1.5134.2.1.7.3" instance="0" alias="fcOverloadThresh2" type="gauge" />
+         <mibObj oid=".1.3.6.1.4.1.5134.2.1.7.4" instance="0" alias="fcOverloadThresh3" type="gauge" />
+         <mibObj oid=".1.3.6.1.4.1.5134.2.1.7.5" instance="0" alias="fcCurrentLoad"     type="gauge" />
+      </group>
+
+      <group name="ipunity-um-scalars" ifType="ignore">
+        <mibObj oid=".1.3.6.1.4.1.5134.2.2.1.2"  instance="0" alias="umAnsModeCallsInPgr" type="gauge" />
+        <mibObj oid=".1.3.6.1.4.1.5134.2.2.1.3"  instance="0" alias="umUIModeCallsInPgr"  type="gauge" />
+        <mibObj oid=".1.3.6.1.4.1.5134.2.2.1.11" instance="0" alias="umOutCallsInPgr"     type="gauge" />
+        <mibObj oid=".1.3.6.1.4.1.5134.2.2.1.13" instance="0" alias="umAACallsInPgr"      type="gauge" />
+        <mibObj oid=".1.3.6.1.4.1.5134.2.2.1.15" instance="0" alias="umMsgStoreDiskUsage" type="gauge" />
+        <mibObj oid=".1.3.6.1.4.1.5134.2.2.1.16" instance="0" alias="umMsgStoreSize"      type="gauge" />
+        <mibObj oid=".1.3.6.1.4.1.5134.2.2.1.4"  instance="0" alias="umMaxCallsSupported" type="integer" />
+        <mibObj oid=".1.3.6.1.4.1.5134.2.2.1.5"  instance="0" alias="umAnsModeCallsCompl" type="counter" />
+        <mibObj oid=".1.3.6.1.4.1.5134.2.2.1.6"  instance="0" alias="umUIModeCallsCompl"  type="counter" />
+        <mibObj oid=".1.3.6.1.4.1.5134.2.2.1.7"  instance="0" alias="umVoiceMailsSent"    type="counter" />
+        <mibObj oid=".1.3.6.1.4.1.5134.2.2.1.8"  instance="0" alias="umEMailsSent"        type="counter" />
+        <mibObj oid=".1.3.6.1.4.1.5134.2.2.1.9"  instance="0" alias="umFaxSent"           type="counter" />
+        <mibObj oid=".1.3.6.1.4.1.5134.2.2.1.10" instance="0" alias="umSentMsgTotalSize"  type="counter" />
+        <mibObj oid=".1.3.6.1.4.1.5134.2.2.1.12" instance="0" alias="umOutCallsCompleted" type="counter" />
+        <mibObj oid=".1.3.6.1.4.1.5134.2.2.1.14" instance="0" alias="umAACallsCompleted"  type="counter" />
+      </group>
+
+      <group name="ipunity-um-org-stats" ifType="all">
+        <mibObj oid=".1.3.6.1.4.1.5134.2.2.2.1.1.2" instance="umOrgIndex" alias="umOrgName"          type="string" />
+        <mibObj oid=".1.3.6.1.4.1.5134.2.2.2.1.1.3" instance="umOrgIndex" alias="umOrgMsgsDiskUsage" type="gauge" />
+        <mibObj oid=".1.3.6.1.4.1.5134.2.2.2.1.1.4" instance="umOrgIndex" alias="umOrgMsgsSize"      type="gauge" />
+      </group>
+
+      <group name="ipunity-um-paging" ifType="ignore">
+        <mibObj oid=".1.3.6.1.4.1.5134.2.2.3.2" instance="0" alias="umPagesSent"    type="counter" />
+        <mibObj oid=".1.3.6.1.4.1.5134.2.2.3.3" instance="0" alias="umPagesPending" type="gauge" />
+      </group>
+
+      <group name="ipunity-um-msgwait" ifType="ignore">
+        <mibObj oid=".1.3.6.1.4.1.5134.2.2.4.2" instance="0" alias="umMWNOutCallsSucc" type="counter" />
+        <mibObj oid=".1.3.6.1.4.1.5134.2.2.4.3" instance="0" alias="umMWNOutCallsFail" type="counter" />
+        <mibObj oid=".1.3.6.1.4.1.5134.2.2.4.6" instance="0" alias="umMWIEventsSent"   type="counter" />
+        <mibObj oid=".1.3.6.1.4.1.5134.2.2.4.7" instance="0" alias="umMWIEventsFailed" type="counter" />
+        <mibObj oid=".1.3.6.1.4.1.5134.2.2.4.4" instance="0" alias="umMWNOutCallsPend" type="gauge" />
+        <mibObj oid=".1.3.6.1.4.1.5134.2.2.4.8" instance="0" alias="umMWIEventsPend"   type="gauge" />
+      </group>
+
+      <group name="ipunity-um-notification" ifType="ignore">
+        <mibObj oid=".1.3.6.1.4.1.5134.2.2.5.2" instance="0" alias="umNotifRxNumConns" type="gauge" />
+      </group>
+
+      <group name="ipunity-conference-scalars" ifType="ignore">
+        <mibObj oid=".1.3.6.1.4.1.5134.2.3.1.3"  instance="0" alias="confRecInProgress"   type="gauge" />
+        <mibObj oid=".1.3.6.1.4.1.5134.2.3.1.8"  instance="0" alias="confRecStorageUsage" type="gauge" />
+        <mibObj oid=".1.3.6.1.4.1.5134.2.3.1.9"  instance="0" alias="confRecStorageAvail" type="gauge" />
+        <mibObj oid=".1.3.6.1.4.1.5134.2.3.1.10" instance="0" alias="confRecSlideUsage"   type="gauge" />
+        <mibObj oid=".1.3.6.1.4.1.5134.2.3.1.11" instance="0" alias="confRecStorageAvail" type="gauge" />
+        <mibObj oid=".1.3.6.1.4.1.5134.2.3.1.12" instance="0" alias="confInProgress"      type="gauge" />
+        <mibObj oid=".1.3.6.1.4.1.5134.2.3.1.13" instance="0" alias="confReservedInUse"   type="gauge" />
+        <mibObj oid=".1.3.6.1.4.1.5134.2.3.1.14" instance="0" alias="confReservedAvail"   type="gauge" />
+        <mibObj oid=".1.3.6.1.4.1.5134.2.3.1.15" instance="0" alias="confAdhocInUse"      type="gauge" />
+        <mibObj oid=".1.3.6.1.4.1.5134.2.3.1.16" instance="0" alias="confActiveParticip"  type="gauge" />
+        <mibObj oid=".1.3.6.1.4.1.5134.2.3.1.17" instance="0" alias="confAPLegsAvail"     type="gauge" />
+        <mibObj oid=".1.3.6.1.4.1.5134.2.3.1.18" instance="0" alias="confPasvParticip"    type="gauge" />
+        <mibObj oid=".1.3.6.1.4.1.5134.2.3.1.19" instance="0" alias="confPPLegsAvail"     type="gauge" />
+        <mibObj oid=".1.3.6.1.4.1.5134.2.3.1.20" instance="0" alias="confAdhocParticip"   type="gauge" />
+        <mibObj oid=".1.3.6.1.4.1.5134.2.3.1.1"  instance="0" alias="confOutCallsSucc"    type="counter" />
+        <mibObj oid=".1.3.6.1.4.1.5134.2.3.1.2"  instance="0" alias="confOutCallsFail"    type="counter" />
+        <mibObj oid=".1.3.6.1.4.1.5134.2.3.1.4"  instance="0" alias="confRecSucceeded"    type="counter" />
+        <mibObj oid=".1.3.6.1.4.1.5134.2.3.1.5"  instance="0" alias="confRecFailed"       type="counter" />
+        <mibObj oid=".1.3.6.1.4.1.5134.2.3.1.6"  instance="0" alias="confTUILoginsSucc"   type="counter" />
+        <mibObj oid=".1.3.6.1.4.1.5134.2.3.1.7"  instance="0" alias="confTUILoginsFail"   type="counter" />
+      </group>
+
+      <group name="network-services-appl" ifType="all">
+        <mibObj oid=".1.3.6.1.2.1.27.1.1.2"  instance="applIndex" alias="applName"        type="string" />
+        <mibObj oid=".1.3.6.1.2.1.27.1.1.16" instance="applIndex" alias="applDescription" type="string" />
+      </group>
+
+      <systemDef name="IP Unity">
+        <sysoid>.1.3.6.1.4.1.5134.2</sysoid>
+        <collect>
+          <includeGroup>ipunity-as-call-summary-stats</includeGroup>
+          <includeGroup>ipunity-as-cluster-call-summary-stats</includeGroup>
+          <includeGroup>network-services-appl</includeGroup>  <!-- applIndex and applDescription used for IP Unity SIP tables -->
+          <includeGroup>ipunity-sip-summary-stats</includeGroup>
+          <includeGroup>ipunity-mgcp-scalars</includeGroup>
+          <includeGroup>ipunity-frame-config</includeGroup>
+          <includeGroup>ipunity-um-scalars</includeGroup>
+          <includeGroup>ipunity-um-org-stats</includeGroup>
+          <includeGroup>ipunity-conference-scalars</includeGroup>
+        </collect>
+       </systemDef>
+
+</datacollection-group>

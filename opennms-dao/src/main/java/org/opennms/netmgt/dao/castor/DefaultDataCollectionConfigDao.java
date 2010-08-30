@@ -55,6 +55,7 @@ import org.opennms.netmgt.config.datacollection.ResourceType;
 import org.opennms.netmgt.config.datacollection.SnmpCollection;
 import org.opennms.netmgt.config.datacollection.SystemDef;
 import org.opennms.netmgt.config.datacollection.SystemDefChoice;
+import org.opennms.netmgt.config.datacollection.Systems;
 import org.opennms.netmgt.model.RrdRepository;
 
 /**
@@ -71,8 +72,8 @@ AbstractCastorConfigDao<DatacollectionConfig, DatacollectionConfig> implements D
 
     private static final Pattern s_digitsPattern = Pattern.compile("\\d+"); 
     
-    private String configDirectory;
-
+    private String m_configDirectory;
+    
     public DefaultDataCollectionConfigDao() {
         super(DatacollectionConfig.class, "data-collection");
     }
@@ -80,25 +81,37 @@ AbstractCastorConfigDao<DatacollectionConfig, DatacollectionConfig> implements D
     @Override
     public DatacollectionConfig translateConfig(DatacollectionConfig castorConfig) {
         DataCollectionConfigParser parser = new DataCollectionConfigParser(getConfigDirectory());
-        parser.parse(castorConfig);
+        // Updating Configured Collections
+        for (SnmpCollection collection : castorConfig.getSnmpCollectionCollection()) {
+            parser.parseCollection(collection);
+        }
+        // Create a special collection to hold all resource types, because they should be defined only once.
+        SnmpCollection resourceTypeCollection = new SnmpCollection();
+        resourceTypeCollection.setName("__resource_type_collection");
+        for (ResourceType rt : parser.getAllResourceTypes()) {
+            resourceTypeCollection.addResourceType(rt);
+        }
+        resourceTypeCollection.setGroups(new Groups());
+        resourceTypeCollection.setSystems(new Systems());
+        castorConfig.getSnmpCollectionCollection().add(0, resourceTypeCollection);
         return castorConfig;
     }
-    
+
     public void setConfigDirectory(String configDirectory) {
-        this.configDirectory = configDirectory;
+        this.m_configDirectory = configDirectory;
     }
-    
+
     public String getConfigDirectory() {
-        if (configDirectory == null) {
+        if (m_configDirectory == null) {
             StringBuffer sb = new StringBuffer(ConfigFileConstants.getHome());
             sb.append(File.separator);
             sb.append("etc");
             sb.append(File.separator);
             sb.append("datacollection");
             sb.append(File.separator);
-            configDirectory = sb.toString();
+            m_configDirectory = sb.toString();
         }
-        return configDirectory;
+        return m_configDirectory;
     }
 
     public String getSnmpStorageFlag(String collectionName) {
