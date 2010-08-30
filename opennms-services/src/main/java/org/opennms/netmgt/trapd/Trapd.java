@@ -65,17 +65,17 @@ import org.springframework.util.Assert;
  * <p>
  * The Trapd listens for SNMP traps on the standard port(162). Creates a
  * SnmpTrapSession and implements the SnmpTrapHandler to get callbacks when
- * traps are received
+ * traps are received.
  * </p>
  *
  * <p>
- * The received traps are converted into XML and sent to eventd
+ * The received traps are converted into XML and sent to eventd.
  * </p>
  *
  * <p>
  * <strong>Note: </strong>Trapd is a PausableFiber so as to receive control
  * events. However, a 'pause' on Trapd has no impact on the receiving and
- * processing of traps
+ * processing of traps.
  * </p>
  *
  * @author <A HREF="mailto:weave@oculan.com">Brian Weaver </A>
@@ -84,37 +84,6 @@ import org.springframework.util.Assert;
  * @author <A HREF="mailto:mike@opennms.org">Mike Davidson </A>
  * @author <A HREF="mailto:tarus@opennms.org">Tarus Balog </A>
  * @author <A HREF="http://www.opennms.org">OpenNMS.org </A>
- * @author <A HREF="mailto:weave@oculan.com">Brian Weaver </A>
- * @author <A HREF="mailto:sowmya@opennms.org">Sowmya Nataraj </A>
- * @author <A HREF="mailto:larry@opennms.org">Lawrence Karnowski </A>
- * @author <A HREF="mailto:mike@opennms.org">Mike Davidson </A>
- * @author <A HREF="mailto:tarus@opennms.org">Tarus Balog </A>
- * @author <A HREF="http://www.opennms.org">OpenNMS.org </A>
- * @author <A HREF="mailto:weave@oculan.com">Brian Weaver </A>
- * @author <A HREF="mailto:sowmya@opennms.org">Sowmya Nataraj </A>
- * @author <A HREF="mailto:larry@opennms.org">Lawrence Karnowski </A>
- * @author <A HREF="mailto:mike@opennms.org">Mike Davidson </A>
- * @author <A HREF="mailto:tarus@opennms.org">Tarus Balog </A>
- * @author <A HREF="http://www.opennms.org">OpenNMS.org </A>
- * @author <A HREF="mailto:weave@oculan.com">Brian Weaver </A>
- * @author <A HREF="mailto:sowmya@opennms.org">Sowmya Nataraj </A>
- * @author <A HREF="mailto:larry@opennms.org">Lawrence Karnowski </A>
- * @author <A HREF="mailto:mike@opennms.org">Mike Davidson </A>
- * @author <A HREF="mailto:tarus@opennms.org">Tarus Balog </A>
- * @author <A HREF="http://www.opennms.org">OpenNMS.org </A>
- * @author <A HREF="mailto:weave@oculan.com">Brian Weaver </A>
- * @author <A HREF="mailto:sowmya@opennms.org">Sowmya Nataraj </A>
- * @author <A HREF="mailto:larry@opennms.org">Lawrence Karnowski </A>
- * @author <A HREF="mailto:mike@opennms.org">Mike Davidson </A>
- * @author <A HREF="mailto:tarus@opennms.org">Tarus Balog </A>
- * @author <A HREF="http://www.opennms.org">OpenNMS.org </A>
- * @author <A HREF="mailto:weave@oculan.com">Brian Weaver </A>
- * @author <A HREF="mailto:sowmya@opennms.org">Sowmya Nataraj </A>
- * @author <A HREF="mailto:larry@opennms.org">Lawrence Karnowski </A>
- * @author <A HREF="mailto:mike@opennms.org">Mike Davidson </A>
- * @author <A HREF="mailto:tarus@opennms.org">Tarus Balog </A>
- * @author <A HREF="http://www.opennms.org">OpenNMS.org </A>
- * @version $Id: $
  */
 public class Trapd extends AbstractServiceDaemon implements PausableFiber, TrapProcessorFactory,
                                     TrapNotificationListener,
@@ -135,7 +104,7 @@ public class Trapd extends AbstractServiceDaemon implements PausableFiber, TrapP
     private TrapQueueProcessor m_processor;
 
     /**
-     * The class instance used to recieve new events from for the system.
+     * The class instance used to receive new events from for the system.
      */
     private BroadcastEventProcessor m_eventReader;
 
@@ -154,7 +123,7 @@ public class Trapd extends AbstractServiceDaemon implements PausableFiber, TrapP
      * Constructs a new Trapd object that receives and forwards trap messages
      * via JSDT. The session is initialized with the default client name of <EM>
      * OpenNMS.trapd</EM>. The trap session is started on the default port, as
-     * defined by the SNMP libarary.
+     * defined by the SNMP library.
      * </P>
      *
      * @see org.opennms.protocols.snmp.SnmpTrapSession
@@ -181,10 +150,9 @@ public class Trapd extends AbstractServiceDaemon implements PausableFiber, TrapP
         try {
             m_backlogQ.add(o);
         } catch (InterruptedException e) {
-            log().warn("snmpReceivedTrap: Error adding trap to queue, it was "
-                     + "interrupted", e);
+            log().warn("addTrap: Error adding trap to queue, it was interrupted", e);
         } catch (FifoQueueException e) {
-            log().warn("snmpReceivedTrap: Error adding trap to queue", e);
+            log().warn("addTrap: Error adding trap to queue", e);
         }
     }
 
@@ -201,7 +169,7 @@ public class Trapd extends AbstractServiceDaemon implements PausableFiber, TrapP
         try {
             m_trapdIpMgr.dataSourceSync();
         } catch (SQLException e) {
-            log().error("Failed to load known IP address list: " + e, e);
+            log().error("init: Failed to load known IP address list: " + e, e);
             throw new UndeclaredThrowableException(e);
         }
 
@@ -209,21 +177,21 @@ public class Trapd extends AbstractServiceDaemon implements PausableFiber, TrapP
             SnmpUtils.registerForTraps(this, this, getSnmpTrapPort());
             m_registeredForTraps = true;
 
-            log().debug("start: Creating the trap session");
+            log().debug("init: Creating the trap session");
         } catch (IOException e) {
             if (e instanceof java.net.BindException) {
-                managerLog().error("Failed to listen on SNMP trap port, perhaps something else is already listening?", e);
-                log().error("Failed to listen on SNMP trap port, perhaps something else is already listening?", e);
+                managerLog().error("init: Failed to listen on SNMP trap port, perhaps something else is already listening?", e);
+                log().error("init: Failed to listen on SNMP trap port, perhaps something else is already listening?", e);
             } else {
-                log().error("Failed to initialize SNMP trap socket", e);
+                log().error("init: Failed to initialize SNMP trap socket", e);
             }
             throw new UndeclaredThrowableException(e);
         }
 
         try {
             m_eventReader.open();
-        } catch (Exception e) {
-            log().error("Failed to open event reader: " + e, e);
+        } catch (Throwable e) {
+            log().error("init: Failed to open event reader: " + e, e);
             throw new UndeclaredThrowableException(e);
         }
     }
@@ -263,15 +231,15 @@ public class Trapd extends AbstractServiceDaemon implements PausableFiber, TrapP
 
         m_status = PAUSE_PENDING;
 
-        log().debug("Calling pause on processor");
+        log().debug("pause: Calling pause on processor");
 
         m_processor.pause();
 
-        log().debug("Processor paused");
+        log().debug("pause: Processor paused");
 
         m_status = PAUSED;
 
-        log().debug("Trapd paused");
+        log().debug("pause: Trapd paused");
     }
 
     /**
@@ -284,15 +252,15 @@ public class Trapd extends AbstractServiceDaemon implements PausableFiber, TrapP
 
         m_status = RESUME_PENDING;
 
-        log().debug("Calling resume on processor");
+        log().debug("resume: Calling resume on processor");
 
         m_processor.resume();
 
-        log().debug("Processor resumed");
+        log().debug("resume: Processor resumed");
 
         m_status = RUNNING;
 
-        log().debug("Trapd resumed");
+        log().debug("resume: Trapd resumed");
     }
 
     /**
@@ -303,7 +271,7 @@ public class Trapd extends AbstractServiceDaemon implements PausableFiber, TrapP
         m_status = STOP_PENDING;
 
         // shutdown and wait on the background processing thread to exit.
-        log().debug("exit: closing communication paths.");
+        log().debug("stop: closing communication paths.");
 
         try {
             if (m_registeredForTraps) {
