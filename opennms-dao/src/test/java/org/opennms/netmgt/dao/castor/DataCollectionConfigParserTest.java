@@ -179,7 +179,7 @@ public class DataCollectionConfigParserTest {
     }
 
     private File getDatacollectionDirectory() {
-        File configFile = ConfigurationTestUtils.getFileForConfigFile("datacollection-config.xml");
+        File configFile = new File("src/test/opennms-home/etc", "datacollection-config.xml");
         File configFolder = new File(configFile.getParentFile(), "datacollection");
         System.err.println(configFolder.getAbsolutePath());
         Assert.assertTrue(configFolder.isDirectory());
