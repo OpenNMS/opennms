@@ -75,14 +75,14 @@ public class LocationMonitorStateTest {
 			GWTLocationSpecificStatus status = new GWTLocationSpecificStatus();
 			status.setId(++count);
 			status.setLocationMonitor(monitor);
-			status.setMonitoredService(getService("HTTP"));
+			status.setMonitoredService(getService(++count, "HTTP"));
 			status.setPollResult(GWTPollResult.available(100));
 			statuses.add(status);
 			
 			status = new GWTLocationSpecificStatus();
 			status.setId(++count);
 			status.setLocationMonitor(monitor);
-			status.setMonitoredService(getService("FTP"));
+			status.setMonitoredService(getService(++count, "FTP"));
 			status.setPollResult(GWTPollResult.available(150));
 			statuses.add(status);
 		}
@@ -105,7 +105,7 @@ public class LocationMonitorStateTest {
 		GWTLocationSpecificStatus status = new GWTLocationSpecificStatus();
 		status.setId(++count);
 		status.setLocationMonitor(monitor);
-		status.setMonitoredService(getService("HTTP"));
+		status.setMonitoredService(getService(++count, "HTTP"));
 		status.setPollResult(GWTPollResult.available(100));
 		statuses.add(status);
 		
@@ -117,6 +117,9 @@ public class LocationMonitorStateTest {
 	public void testMarkerStatusSomeReportDownStatus() {
 		Collection<GWTLocationMonitor> monitors = new ArrayList<GWTLocationMonitor>();
 		Collection<GWTLocationSpecificStatus> statuses = new ArrayList<GWTLocationSpecificStatus>();
+		
+		int httpServiceId = ++count;
+		int ftpServiceId = ++count;
 
 		GWTLocationMonitor monitor = getMonitor("STARTED");
 		monitors.add(monitor);
@@ -124,14 +127,14 @@ public class LocationMonitorStateTest {
 		GWTLocationSpecificStatus status = new GWTLocationSpecificStatus();
 		status.setId(++count);
 		status.setLocationMonitor(monitor);
-		status.setMonitoredService(getService("HTTP"));
+		status.setMonitoredService(getService(httpServiceId, "HTTP"));
 		status.setPollResult(GWTPollResult.available(100));
 		statuses.add(status);
 
 		status = new GWTLocationSpecificStatus();
 		status.setId(++count);
 		status.setLocationMonitor(monitor);
-		status.setMonitoredService(getService("FTP"));
+		status.setMonitoredService(getService(ftpServiceId, "FTP"));
 		status.setPollResult(GWTPollResult.down("failure to yield to oncoming traffic"));
 		statuses.add(status);
 
@@ -141,14 +144,14 @@ public class LocationMonitorStateTest {
 		status = new GWTLocationSpecificStatus();
 		status.setId(++count);
 		status.setLocationMonitor(monitor);
-		status.setMonitoredService(getService("HTTP"));
+		status.setMonitoredService(getService(httpServiceId, "HTTP"));
 		status.setPollResult(GWTPollResult.down("trouble in paradise"));
 		statuses.add(status);
 
 		status = new GWTLocationSpecificStatus();
 		status.setId(++count);
 		status.setLocationMonitor(monitor);
-		status.setMonitoredService(getService("FTP"));
+		status.setMonitoredService(getService(ftpServiceId, "FTP"));
 		status.setPollResult(GWTPollResult.available(150));
 		statuses.add(status);
 
@@ -167,14 +170,14 @@ public class LocationMonitorStateTest {
 			GWTLocationSpecificStatus status = new GWTLocationSpecificStatus();
 			status.setId(++count);
 			status.setLocationMonitor(monitor);
-			status.setMonitoredService(getService("HTTP"));
+			status.setMonitoredService(getService(++count, "HTTP"));
 			status.setPollResult(GWTPollResult.available(100));
 			statuses.add(status);
 			
 			status = new GWTLocationSpecificStatus();
 			status.setId(++count);
 			status.setLocationMonitor(monitor);
-			status.setMonitoredService(getService("FTP"));
+			status.setMonitoredService(getService(++count, "FTP"));
 			status.setPollResult(GWTPollResult.down("totally busted!"));
 			statuses.add(status);
 		}
@@ -194,7 +197,7 @@ public class LocationMonitorStateTest {
 			GWTLocationSpecificStatus status = new GWTLocationSpecificStatus();
 			status.setId(++count);
 			status.setLocationMonitor(monitor);
-			status.setMonitoredService(getService("HTTP"));
+			status.setMonitoredService(getService(++count, "HTTP"));
 			status.setPollResult(GWTPollResult.down("completely wacked"));
 			statuses.add(status);
 		}
@@ -214,14 +217,14 @@ public class LocationMonitorStateTest {
 			GWTLocationSpecificStatus status = new GWTLocationSpecificStatus();
 			status.setId(++count);
 			status.setLocationMonitor(monitor);
-			status.setMonitoredService(getService("HTTP"));
+			status.setMonitoredService(getService(++count, "HTTP"));
 			status.setPollResult(GWTPollResult.down("exploded"));
 			statuses.add(status);
 			
 			status = new GWTLocationSpecificStatus();
 			status.setId(++count);
 			status.setLocationMonitor(monitor);
-			status.setMonitoredService(getService("FTP"));
+			status.setMonitoredService(getService(++count, "FTP"));
 			status.setPollResult(GWTPollResult.down("casters up"));
 			statuses.add(status);
 		}
@@ -272,10 +275,10 @@ public class LocationMonitorStateTest {
 		return monitor;
 	}
 
-	private GWTMonitoredService getService(String serviceName) {
-		GWTMonitoredService service = new GWTMonitoredService();
-		service.setId(++count);
+	private GWTMonitoredService getService(int id, String serviceName) {
+        GWTMonitoredService service = new GWTMonitoredService();
+        service.setId(id);
 		service.setServiceName(serviceName);
 		return service;
-	}
+    }
 }

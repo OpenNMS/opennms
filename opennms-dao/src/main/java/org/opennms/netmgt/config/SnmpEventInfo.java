@@ -64,11 +64,6 @@ public class SnmpEventInfo {
     private String m_firstIPAddress = null;
     private String m_lastIPAddress = null;
     private String m_communityString = null;
-    private String m_writeCommunityString = null;
-    private String m_proxyHost = null;
-    private int m_maxVarsPerPdu = 0;
-    private int m_maxRepetitions = 0;
-    private int m_maxRequestSize = 0;
     private int m_timeout = 0;
     private int m_retryCount = 0;
     private String m_version = null;
@@ -118,8 +113,6 @@ public class SnmpEventInfo {
                     setLastIPAddress(parmContent);
                 } else if (parmName.equals(EventConstants.PARM_COMMUNITY_STRING)) {
                     setCommunityString(parmContent);
-                } else if (parmName.equals(EventConstants.PARM_WRITE_COMMUNITY_STRING)) {
-                    setWriteCommunityString(parmContent);
                 } else if (parmName.equals(EventConstants.PARM_RETRY_COUNT)) {
                     setRetryCount(computeIntValue(parmContent));
                 } else if (parmName.equals(EventConstants.PARM_TIMEOUT)) {
@@ -128,14 +121,6 @@ public class SnmpEventInfo {
                     setVersion(parmContent);
                 } else if (parmName.equals(EventConstants.PARM_PORT)) {
                     setPort(computeIntValue(parmContent));
-                } else if (parmName.equals(EventConstants.PARM_PROXY_HOST)) {
-                    setProxyHost(parmContent);
-                } else if (parmName.equals(EventConstants.PARM_MAX_VARS_PER_PDU)) {
-                    setMaxVarsPerPdu(computeIntValue(parmContent));
-                } else if (parmName.equals(EventConstants.PARM_MAX_REPETITIONS)) {
-                    setMaxRepetitions(computeIntValue(parmContent));
-                } else if (parmName.equals(EventConstants.PARM_MAX_REQUEST_SIZE)) {
-                    setMaxRequestSize(computeIntValue(parmContent));
                 }
             } catch (UnknownHostException e) {
                 log().error("SnmpEventInfo constructor: ", e);
@@ -167,22 +152,6 @@ public class SnmpEventInfo {
      */
     public void setCommunityString(String communityString) {
         m_communityString = communityString;
-    }
-    /**
-     * <p>getWriteCommunityString</p>
-     *
-     * @return a {@link java.lang.String} object.
-     */
-    public String getWriteCommunityString() {
-        return m_writeCommunityString;
-    }
-    /**
-     * <p>setCommunityString</p>
-     *
-     * @param communityString a {@link java.lang.String} object.
-     */
-    public void setWriteCommunityString(String communityString) {
-        m_writeCommunityString = communityString;
     }
     /**
      * <p>getFirstIPAddress</p>
@@ -348,71 +317,6 @@ public class SnmpEventInfo {
     public void setPort(int port) {
         m_port  = port;
     }
-    /**
-     * <p>getProxyHost</p>
-     *
-     * @return a {@link java.lang.String} object.
-     */
-    public String getProxyHost() {
-        return m_proxyHost;
-    }
-    /**
-     * <p>setProxyHost</p>
-     *
-     * @param proxyHost a {@link java.lang.String} object.
-     */
-    public void setProxyHost(String proxyHost) {
-        m_proxyHost = proxyHost;
-    }
-    /**
-     * <p>getMaxVarsPerPdu</p>
-     *
-     * @return a int.
-     */
-    public int getMaxVarsPerPdu() {
-        return m_maxVarsPerPdu;
-    }
-    /**
-     * <p>setMaxVarsPerPdu</p>
-     *
-     * @param maxVarsPerPdu a int.
-     */
-    public void setMaxVarsPerPdu(int maxVarsPerPdu) {
-        m_maxVarsPerPdu = maxVarsPerPdu;
-    }
-    /**
-     * <p>getMaxRepetitions</p>
-     *
-     * @return a int.
-     */
-    public int getMaxRepetitions() {
-        return m_maxRepetitions;
-    }
-    /**
-     * <p>setMaxRepetitions</p>
-     *
-     * @param maxRepetitions a int.
-     */
-    public void setMaxRepetitions(int maxRepetitions) {
-        m_maxRepetitions = maxRepetitions;
-    }
-    /**
-     * <p>getMaxRequestSize</p>
-     *
-     * @return a int.
-     */
-    public int getMaxRequestSize() {
-        return m_maxRequestSize;
-    }
-    /**
-     * <p>setMaxRequestSize</p>
-     *
-     * @param maxRequestSize a int.
-     */
-    public void setMaxRequestSize(int maxRequestSize) {
-        m_maxRequestSize = maxRequestSize;
-    }
-
     
     /**
      * Creates an SNMP config definition representing the data in this class.
@@ -423,19 +327,12 @@ public class SnmpEventInfo {
     public Definition createDef() {
         Definition definition = new Definition();
         if (getCommunityString() != null) definition.setReadCommunity(getCommunityString());
-        if (getWriteCommunityString() != null) definition.setWriteCommunity(getWriteCommunityString());
         if (getVersion() != null && ("v1".equals(getVersion()) ||"v2c".equals(getVersion()))) {
             definition.setVersion(getVersion());
         }
         if (getRetryCount() != 0) definition.setRetry(getRetryCount());
         if (getTimeout() != 0) definition.setTimeout(getTimeout());
         if (getPort() != 0) definition.setPort(getPort());
-        if (getProxyHost() != null && (! "".equals(getProxyHost()))) {
-            definition.setProxyHost(getProxyHost());
-        }
-        if (getMaxVarsPerPdu() != 0) definition.setMaxVarsPerPdu(getMaxVarsPerPdu());
-        if (getMaxRepetitions() != 0) definition.setMaxRepetitions(getMaxRepetitions());
-        if (getMaxRequestSize() != 0) definition.setMaxRequestSize(getMaxRequestSize());
         
         if (isSpecific()) {
             definition.addSpecific(getFirstIPAddress());

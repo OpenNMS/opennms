@@ -1,0 +1,44 @@
+<?xml version="1.0"?>
+<datacollection-group name="SUN Microsystems">
+
+      <!-- Sun MIBs -->
+      <group name="sun" ifType="ignore">
+        <mibObj oid=".1.3.6.1.4.1.42.2.12.2.2.11.1.1.1" instance="0" alias="sunAvailableSwap"   type="integer" />
+        <mibObj oid=".1.3.6.1.4.1.42.2.12.2.2.11.1.1.2" instance="0" alias="sunReservedSwap"    type="integer" />
+        <mibObj oid=".1.3.6.1.4.1.42.2.12.2.2.11.1.1.3" instance="0" alias="sunAllocatedSwap"   type="integer" />
+        <mibObj oid=".1.3.6.1.4.1.42.2.12.2.2.11.1.1.4" instance="0" alias="sunUsedSwap"        type="integer" />
+        <mibObj oid=".1.3.6.1.4.1.42.2.12.2.2.11.4.1.1" instance="0" alias="sunProcsInRunQueue" type="integer" />
+        <mibObj oid=".1.3.6.1.4.1.42.2.12.2.2.11.4.1.2" instance="0" alias="sunProcsBlocked"    type="integer" />
+        <mibObj oid=".1.3.6.1.4.1.42.2.12.2.2.11.4.1.3" instance="0" alias="sunProcsInSwap"     type="integer" />
+      </group>
+
+      <group name="sunHostPerf" ifType="ignore">
+        <mibObj oid=".1.3.6.1.4.1.42.3.13.1"  instance="0" alias="rsUserProcessTime"   type="counter" />
+        <mibObj oid=".1.3.6.1.4.1.42.3.13.2"  instance="0" alias="rsNiceModeTime"      type="counter" />
+        <mibObj oid=".1.3.6.1.4.1.42.3.13.3"  instance="0" alias="rsSystemProcessTime" type="counter" />
+        <mibObj oid=".1.3.6.1.4.1.42.3.13.4"  instance="0" alias="rsIdleModeTime"      type="counter" />
+        <mibObj oid=".1.3.6.1.4.1.42.3.13.5"  instance="0" alias="rsDiskXfer1"         type="counter" />
+        <mibObj oid=".1.3.6.1.4.1.42.3.13.6"  instance="0" alias="rsDiskXfer2"         type="counter" />
+        <mibObj oid=".1.3.6.1.4.1.42.3.13.7"  instance="0" alias="rsDiskXfer3"         type="counter" />
+        <mibObj oid=".1.3.6.1.4.1.42.3.13.8"  instance="0" alias="rsDiskXfer4"         type="counter" />
+        <mibObj oid=".1.3.6.1.4.1.42.3.13.9"  instance="0" alias="rsVPagesIn"          type="counter" />
+        <mibObj oid=".1.3.6.1.4.1.42.3.13.10" instance="0" alias="rsVPagesOut"         type="counter" />
+        <mibObj oid=".1.3.6.1.4.1.42.3.13.11" instance="0" alias="rsVSwapIn"           type="counter" />
+        <mibObj oid=".1.3.6.1.4.1.42.3.13.12" instance="0" alias="rsVSwapOut"          type="counter" />
+        <mibObj oid=".1.3.6.1.4.1.42.3.13.13" instance="0" alias="rsVIntr"             type="counter" />
+        <mibObj oid=".1.3.6.1.4.1.42.3.13.14" instance="0" alias="rsIfInPackets"       type="counter" />
+        <mibObj oid=".1.3.6.1.4.1.42.3.13.15" instance="0" alias="rsIfOutPackets"      type="counter" />
+        <mibObj oid=".1.3.6.1.4.1.42.3.13.16" instance="0" alias="rsIfInErrors"        type="counter" />
+        <mibObj oid=".1.3.6.1.4.1.42.3.13.17" instance="0" alias="rsIfOutErrors"       type="counter" />
+        <mibObj oid=".1.3.6.1.4.1.42.3.13.18" instance="0" alias="rsIfCollisions"      type="counter" />
+      </group>
+
+      <systemDef name="Sun">
+        <sysoidMask>.1.3.6.1.4.1.42.2.</sysoidMask>
+        <collect>
+          <includeGroup>sun</includeGroup>
+          <includeGroup>sunHostPerf</includeGroup>
+        </collect>
+      </systemDef>
+
+</datacollection-group>

@@ -1,0 +1,85 @@
+<?xml version="1.0"?>
+<datacollection-group name="Network Appliance">
+
+    <resourceType name="naDfIndex" label="Disk Space (Network Appliance MIB)"
+                  resourceLabel="${naDfFileSys} (index ${index})">
+      <persistenceSelectorStrategy class="org.opennms.netmgt.collectd.PersistAllSelectorStrategy"/>
+      <storageStrategy class="org.opennms.netmgt.dao.support.IndexStorageStrategy"/>
+    </resourceType>
+
+      <!-- Netapp MIBS -->
+      <group name="netapp-cpu" ifType="ignore">
+        <mibObj oid=".1.3.6.1.4.1.789.1.2.1.3" instance="0" alias="cpuBusyTimePct" type="INTEGER" />
+        <mibObj oid=".1.3.6.1.4.1.789.1.2.1.5" instance="0" alias="cpuIdleTimePct" type="INTEGER" />
+      </group>
+
+      <group name="netapp-filesys" ifType="ignore">
+        <mibObj oid=".1.3.6.1.4.1.789.1.5.1"   instance="0" alias="fsMaxfilesAvail"    type="INTEGER" />
+        <mibObj oid=".1.3.6.1.4.1.789.1.5.2"   instance="0" alias="fsMaxfilesUsed"     type="INTEGER" />
+        <mibObj oid=".1.3.6.1.4.1.789.1.5.3"   instance="0" alias="fsMaxfilesPossible" type="INTEGER" />
+        <mibObj oid=".1.3.6.1.4.1.789.1.5.7.3" instance="0" alias="fsMaxUsedBytesPct"  type="INTEGER" />
+        <mibObj oid=".1.3.6.1.4.1.789.1.5.7.4" instance="0" alias="fsMaxUsedInodesPct" type="INTEGER" />
+      </group>
+
+      <group name="netapp-dfEntry" ifType="all">
+        <mibObj oid=".1.3.6.1.4.1.789.1.5.4.1.2"  instance="naDfIndex" alias="naDfFileSys"      type="string" />
+        <mibObj oid=".1.3.6.1.4.1.789.1.5.4.1.6"  instance="naDfIndex" alias="naDfPctKB"        type="integer" />
+        <mibObj oid=".1.3.6.1.4.1.789.1.5.4.1.7"  instance="naDfIndex" alias="naDfInodeUsed"    type="integer" />
+        <mibObj oid=".1.3.6.1.4.1.789.1.5.4.1.8"  instance="naDfIndex" alias="naDfInodeFree"    type="integer" />
+        <mibObj oid=".1.3.6.1.4.1.789.1.5.4.1.9"  instance="naDfIndex" alias="naDfInodePct"     type="integer" />
+        <mibObj oid=".1.3.6.1.4.1.789.1.5.4.1.11" instance="naDfIndex" alias="naDfMaxFileAvail" type="integer" />
+        <mibObj oid=".1.3.6.1.4.1.789.1.5.4.1.12" instance="naDfIndex" alias="naDfMaxFileUsed"  type="integer" />
+        <mibObj oid=".1.3.6.1.4.1.789.1.5.4.1.17" instance="naDfIndex" alias="naDfLowUsedKB"    type="integer" />
+        <mibObj oid=".1.3.6.1.4.1.789.1.5.4.1.19" instance="naDfIndex" alias="naDfLowFreeKB"    type="integer" />
+      </group>
+
+      <group name="netapp-filer" ifType="ignore"> 
+        <mibObj oid=".1.3.6.1.4.1.789.1.2.2.6"       instance="0" alias="naMiscLowNfsOps"  type="Counter" />
+        <mibObj oid=".1.3.6.1.4.1.789.1.2.2.8"       instance="0" alias="naMiscLowCifsOps" type="Counter" />
+        <mibObj oid=".1.3.6.1.4.1.789.1.7.3.1.1.5"   instance="0" alias="naCifsReads"      type="Counter" />
+        <mibObj oid=".1.3.6.1.4.1.789.1.7.3.1.1.6"   instance="0" alias="naCifsWrites"     type="Counter" />
+        <mibObj oid=".1.3.6.1.4.1.789.1.3.1.2.3.1.7" instance="0" alias="naV2cReads"       type="Counter" />
+        <mibObj oid=".1.3.6.1.4.1.789.1.3.1.2.3.1.8" instance="0" alias="naV2cWrcaches"    type="Counter" />
+        <mibObj oid=".1.3.6.1.4.1.789.1.3.1.2.3.1.9" instance="0" alias="naV2cWrites"      type="Counter" />
+        <mibObj oid=".1.3.6.1.4.1.789.1.3.1.2.4.1.7" instance="0" alias="naV3cReads"       type="Counter" />
+        <mibObj oid=".1.3.6.1.4.1.789.1.3.1.2.4.1.8" instance="0" alias="naV3cWrites"      type="Counter" />
+      </group>
+
+      <group name="netapp-misc" ifType="ignore">
+        <mibObj oid=".1.3.6.1.4.1.789.1.2.2.16"      instance="0" alias="naMiscLowDiskReadBytes"  type="Counter" />
+        <mibObj oid=".1.3.6.1.4.1.789.1.2.2.18"      instance="0" alias="naMiscLowDiskWriteBytes"  type="Counter" />
+      </group>
+
+      <group name="netapp-sis" ifType="all">
+        <mibObj oid=".1.3.6.1.4.1.789.1.5.4.1.28" instance="naDfIndex" alias="naSisPercent"    type="integer" />
+      </group>
+
+      <systemDef name="Network Appliance">
+        <sysoidMask>.1.3.6.1.4.1.789.</sysoidMask>
+        <collect>
+          <includeGroup>netapp-cpu</includeGroup>
+          <includeGroup>netapp-filesys</includeGroup>
+        </collect>
+      </systemDef>
+
+      <systemDef name="Network Appliance Filer">
+        <sysoid>.1.3.6.1.4.1.789.2.1</sysoid>
+        <collect>
+          <includeGroup>netapp-dfEntry</includeGroup>
+          <includeGroup>netapp-filer</includeGroup>
+          <includeGroup>netapp-misc</includeGroup>
+          <includeGroup>netapp-sis</includeGroup>
+        </collect>
+      </systemDef>
+
+      <systemDef name="Network Appliance Clustered Filer">
+        <sysoid>.1.3.6.1.4.1.789.2.3</sysoid>
+        <collect>
+          <includeGroup>netapp-dfEntry</includeGroup>
+          <includeGroup>netapp-filer</includeGroup>
+          <includeGroup>netapp-misc</includeGroup>
+          <includeGroup>netapp-sis</includeGroup>
+        </collect>
+      </systemDef>
+
+</datacollection-group>

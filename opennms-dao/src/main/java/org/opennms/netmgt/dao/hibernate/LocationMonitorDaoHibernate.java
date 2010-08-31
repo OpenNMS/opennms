@@ -294,7 +294,7 @@ public class LocationMonitorDaoHibernate extends AbstractDaoHibernate<OnmsLocati
      *
      * @return a {@link org.opennms.netmgt.config.monitoringLocations.MonitoringLocationsConfiguration} object.
      */
-    public MonitoringLocationsConfiguration getMonitoringLocationsConfiguration() {
+    private MonitoringLocationsConfiguration getMonitoringLocationsConfiguration() {
         return m_monitoringLocationsConfiguration;
     }
 
@@ -303,7 +303,7 @@ public class LocationMonitorDaoHibernate extends AbstractDaoHibernate<OnmsLocati
      *
      * @param monitoringLocationsConfiguration a {@link org.opennms.netmgt.config.monitoringLocations.MonitoringLocationsConfiguration} object.
      */
-    public void setMonitoringLocationsConfiguration(final MonitoringLocationsConfiguration monitoringLocationsConfiguration) {
+    private void setMonitoringLocationsConfiguration(final MonitoringLocationsConfiguration monitoringLocationsConfiguration) {
         m_monitoringLocationsConfiguration = monitoringLocationsConfiguration;
     }
     

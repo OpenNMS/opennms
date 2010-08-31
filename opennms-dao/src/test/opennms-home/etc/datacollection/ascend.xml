@@ -1,0 +1,19 @@
+<?xml version="1.0"?>
+<datacollection-group name="Ascend">
+
+      <!-- Ascend mibs -->
+      <group name="ascend-call" ifType="ignore">
+        <mibObj oid=".1.3.6.1.4.1.529.11.4" instance="0" alias="callCurrentAlogOut" type="INTEGER" />
+        <mibObj oid=".1.3.6.1.4.1.529.11.5" instance="0" alias="callCurrentAlogIn"  type="INTEGER" />
+        <mibObj oid=".1.3.6.1.4.1.529.11.6" instance="0" alias="callCurrentDigOut"  type="INTEGER" />
+        <mibObj oid=".1.3.6.1.4.1.529.11.7" instance="0" alias="callCurrentDigIn"   type="INTEGER" />
+      </group>
+
+      <systemDef name="Ascend">
+        <sysoidMask>.1.3.6.1.4.1.529.</sysoidMask>
+        <collect>
+          <includeGroup>ascend-call</includeGroup>
+        </collect>
+      </systemDef>
+
+</datacollection-group>
