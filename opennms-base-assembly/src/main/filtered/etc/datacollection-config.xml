@@ -24,6 +24,7 @@
     <include-collection dataCollectionGroup="Extreme Networks"/>
     <include-collection dataCollectionGroup="F5"/>
     <include-collection dataCollectionGroup="Fortinet"/>
+    <include-collection dataCollectionGroup="Force10"/>
     <include-collection dataCollectionGroup="Foundry Networks"/>
     <include-collection dataCollectionGroup="HP"/>
     <include-collection dataCollectionGroup="IBM"/>
