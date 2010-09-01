@@ -60,13 +60,13 @@
                     </documentation>
                 </annotation>
             </attribute>
-            <attribute name="forwarding-regexp" type="string" use="required">
+            <attribute name="forwarding-regexp" type="string" use="optional">
                 <annotation>
                     <documentation>The regular expression used to separate message and host.
                     </documentation>
                 </annotation>
             </attribute>
-            <attribute name="matching-group-host" use="required">
+            <attribute name="matching-group-host" use="optional">
                 <annotation>
                     <documentation>The matching group for the host</documentation>
                 </annotation>
@@ -77,7 +77,7 @@
                  </restriction>
                 </simpleType>
             </attribute>
-            <attribute name="matching-group-message" use="required">
+            <attribute name="matching-group-message" use="optional">
                 <annotation>
                     <documentation>The matching group for the message</documentation>
                 </annotation>
@@ -86,7 +86,21 @@
                   <restriction base="int">
                     <minInclusive value="1"/>
                   </restriction>
-                </simpleType>      
+                </simpleType>
+            </attribute>
+            <attribute name="parser" type="string" use="optional" default="org.opennms.netmgt.syslogd.CustomSyslogParser">
+                <annotation>
+                    <documentation>
+                    	A string which defines the class to use when parsing syslog messages.
+                    	The default is the "CustomSyslogParser", which honors the forwarding-regexp,
+                    	matching-group-host, and matching-group-message attributes, and can parse
+                    	most BSD-style Syslog messages, including Syslog-NG's default format.
+                    	Other options include "org.opennms.netmgt.syslogd.SyslogNGParser" which is a
+                    	slightly more strict version of the CustomSyslogParser, and
+                    	"org.opennms.netmgt.syslogd.Rfc5424SyslogParser" which can handle the recent
+                    	(2009) RFC for syslog messages.
+                    </documentation>
+                </annotation>
             </attribute>
             <attribute name="discard-uei" type="string" use="optional" default="DISCARD-MATCHING-MESSAGES">
                 <annotation>

@@ -42,13 +42,13 @@
 
 package org.opennms.netmgt.syslogd;
 
-import org.opennms.netmgt.config.DataSourceFactory;
-
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.sql.Statement;
-import java.util.HashMap;
 import java.util.Map;
+import java.util.concurrent.ConcurrentHashMap;
+
+import org.opennms.netmgt.config.DataSourceFactory;
 
 /**
  * This class represents a singular instance that is used to map trap IP
@@ -69,7 +69,7 @@ final class SyslogdIPMgr {
     /**
      * A Map of IP addresses and node IDs
      */
-    private static Map<String,Long> m_knownips = new HashMap<String,Long>();
+    private static Map<String,Long> m_knownips = new ConcurrentHashMap<String,Long>();
 
     /**
      * Default construct for the instance. This constructor always throws an
@@ -110,6 +110,7 @@ final class SyslogdIPMgr {
      */
     static synchronized void dataSourceSync() throws SQLException {
         java.sql.Connection c = null;
+        Statement s = null;
         try {
             // Get database connection
             c = DataSourceFactory.getInstance().getConnection();
@@ -118,25 +119,29 @@ final class SyslogdIPMgr {
             //
             // c.setReadOnly(true);
 
-            Statement s = c.createStatement();
-            ResultSet rs = s.executeQuery(IP_LOAD_SQL);
+            s = c.createStatement();
+            final ResultSet rs = s.executeQuery(IP_LOAD_SQL);
 
             if (rs != null) {
                 m_knownips.clear();
                 while (rs.next()) {
-                    String ipstr = rs.getString(1);
-                    long ipnodeid = rs.getLong(2);
-                    m_knownips.put(ipstr, ipnodeid);
+                    m_knownips.put(rs.getString(1), rs.getLong(2));
                 }
                 rs.close();
             }
 
-            s.close();
         } finally {
-            try {
-                if (c != null)
+            if (s != null) {
+                try {
+                    s.close();
+                } catch (final SQLException sqlE) {
+                }
+            }
+            if (c != null) {
+                try {
                     c.close();
-            } catch (SQLException sqlE) {
+                } catch (final SQLException sqlE) {
+                }
             }
         }
     }
@@ -147,10 +152,11 @@ final class SyslogdIPMgr {
      * @param addr The IP Address to query.
      * @return The node ID of the IP Address if known.
      */
-    static synchronized long getNodeId(String addr) {
-        if (addr == null)
+    static synchronized long getNodeId(final String addr) {
+        if (addr == null) {
             return -1;
-        return longValue((Long) m_knownips.get(addr));
+        }
+        return longValue(m_knownips.get(addr));
     }
 
     /**
@@ -160,11 +166,11 @@ final class SyslogdIPMgr {
      * @param nodeid The Node ID to add.
      * @return The nodeid if it existed in the map.
      */
-    static synchronized long setNodeId(String addr, long nodeid) {
+    static long setNodeId(final String addr, final long nodeid) {
         if (addr == null || nodeid == -1)
             return -1;
 
-        return longValue((Long) m_knownips.put(addr, nodeid));
+        return longValue(m_knownips.put(addr, nodeid));
     }
 
     /**
@@ -173,13 +179,13 @@ final class SyslogdIPMgr {
      * @param addr The address to remove from the node ID map.
      * @return The nodeid that was in the map.
      */
-    static long removeNodeId(String addr) {
+    static long removeNodeId(final String addr) {
         if (addr == null)
             return -1;
-        return longValue((Long) m_knownips.remove(addr));
+        return longValue(m_knownips.remove(addr));
     }
 
-    private static long longValue(Long result) {
+    private static long longValue(final Long result) {
         return (result == null ? -1 : result);
     }
 

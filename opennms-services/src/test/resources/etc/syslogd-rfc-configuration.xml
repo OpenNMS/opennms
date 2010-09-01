@@ -1,0 +1,15 @@
+<?xml version="1.0"?>
+<syslogd-configuration>
+    <configuration
+            syslog-port="10514"
+            new-suspect-on-message="false"
+            discard-uei="DISCARD-MATCHING-MESSAGES"
+            parser="org.opennms.netmgt.syslogd.Rfc5424SyslogParser"
+            />
+
+    <ueiList>
+<!-- LOAD TEST STUFF START -->
+<ueiMatch><match type="regex" expression=".*foo0: .*load test (\S+) on ((pts\/\d+)|(tty\d+)).*"/><uei>uei.example.org/syslog/loadTest/foo0</uei></ueiMatch>
+<!-- LOAD TEST STUFF END -->
+    </ueiList>
+</syslogd-configuration>

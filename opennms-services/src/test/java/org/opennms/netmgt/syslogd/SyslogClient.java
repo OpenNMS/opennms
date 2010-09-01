@@ -45,6 +45,8 @@ import java.net.InetAddress;
 import java.net.SocketException;
 import java.net.UnknownHostException;
 
+import org.opennms.core.utils.LogUtils;
+
 public class SyslogClient {
 
     // Priorities.
@@ -87,13 +89,12 @@ public class SyslogClient {
     public static final int LOG_NDELAY = 0x08; // don't delay open
     public static final int LOG_NOWAIT = 0x10; // don't wait for console forks
 
-    private static final int PORT = 10514;
+    public static final int PORT = 10514;
 
     private String ident;
     private int facility;
 
     private InetAddress address;
-    private DatagramPacket packet;
     private DatagramSocket socket;
 
     /// Creating a Syslog instance is equivalent of the Unix openlog() call.
@@ -109,11 +110,13 @@ public class SyslogClient {
         try {
             address = InetAddress.getLocalHost();
         } catch (UnknownHostException e) {
+            LogUtils.warnf(this, e, "Unable to get local host.");
         }
         
         try {
             socket = new DatagramSocket();
         } catch (SocketException e) {
+            LogUtils.warnf(this, e, "Unable to create datagram socket.");
         }
     }
 
@@ -122,54 +125,31 @@ public class SyslogClient {
     // class provides constants for these fields. The msg is what is
     // actually logged.
     // @exception SyslogException if there was a problem
-    @SuppressWarnings("deprecation")
     public void syslog(int priority, String msg) {
-        int pricode;
-        int length;
-        int idx;
-        byte[] data;
-        String strObj;
-
-        pricode = MakePriorityCode(facility, priority);
-        Integer priObj = new Integer(pricode);
-
-        length = 4 + ident.length() + msg.length() + 1;
-        length += (pricode > 99) ? 3 : ((pricode > 9) ? 2 : 1);
-
-        data = new byte[length];
-
-        idx = 0;
-        data[idx++] = (byte) '<';
-
-        strObj = Integer.toString(priObj.intValue());
-        strObj.getBytes(0, strObj.length(), data, idx);
-        idx += strObj.length();
-
-        data[idx++] = (byte) '>';
-
-        ident.getBytes(0, ident.length(), data, idx);
-        idx += ident.length();
-
-        data[idx++] = (byte) ':';
-        data[idx++] = (byte) ' ';
-
-        msg.getBytes(0, msg.length(), data, idx);
-        idx += msg.length();
-
-        data[idx] = 0;
-
-        packet = new DatagramPacket(data, length, address, PORT);
-
+        final DatagramPacket packet = getPacket(priority, msg);
         try {
             socket.send(packet);
         }
         catch (IOException e) {
-
+            LogUtils.warnf(this, e, "Exception sending data.");
         }
     }
 
     private int MakePriorityCode(int facility, int priority) {
         return ((facility & LOG_FACMASK) | priority);
+    }
+
+    public DatagramPacket getPacket(final int priority, final String msg) {
+        int pricode = MakePriorityCode(facility, priority);
+        Integer priObj = new Integer(pricode);
+
+        StringBuffer sb = new StringBuffer();
+
+        sb.append("<").append(Integer.toString(priObj.intValue())).append(">");
+        sb.append(ident).append(": ").append(msg).append("\0");
+
+        final byte[] bytes = sb.toString().getBytes();
+        return new DatagramPacket(bytes, bytes.length, address, PORT);
     }
 
 }

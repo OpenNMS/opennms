@@ -86,6 +86,13 @@ public interface SyslogdConfig {
     public abstract int getMatchingGroupMessage();
 
     /**
+     * <p>getParser</p>
+     *
+     * @return the parser class to use when parsing syslog messages, as a string.
+     */
+    public abstract String getParser();
+
+    /**
      * <p>getUeiList</p>
      *
      * @return a {@link org.opennms.netmgt.config.syslogd.UeiList} object.

@@ -61,10 +61,13 @@ public final class Parameter {
         StringBuffer parmbuf = new StringBuffer();
 
         for (Parm parm : parms.getParmCollection()) {
-            if (!first)
-                parmbuf.append(Constants.MULTIPLE_VAL_DELIM);
-            parmbuf.append(format(parm));
-            first = false;
+            if (parm.getParmName() != null && parm.getValue() != null && parm.getValue().getContent() != null) {
+                if (!first) {
+                    parmbuf.append(Constants.MULTIPLE_VAL_DELIM);
+                }
+                parmbuf.append(format(parm));
+                first = false;
+            }
         }
 
         return parmbuf.toString();

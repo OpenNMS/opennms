@@ -42,6 +42,7 @@ package org.opennms.netmgt.syslogd;
 import java.io.InputStream;
 import java.lang.reflect.UndeclaredThrowableException;
 import java.net.BindException;
+import java.net.DatagramPacket;
 import java.net.UnknownHostException;
 import java.util.HashMap;
 import java.util.List;
@@ -49,12 +50,9 @@ import java.util.Map;
 
 import org.apache.commons.io.IOUtils;
 import org.apache.log4j.Level;
-import org.apache.log4j.spi.LoggingEvent;
-import org.junit.Ignore;
 import org.opennms.netmgt.config.DataSourceFactory;
+import org.opennms.netmgt.config.SyslogdConfig;
 import org.opennms.netmgt.config.SyslogdConfigFactory;
-import org.opennms.netmgt.daemon.AbstractServiceDaemon;
-import org.opennms.netmgt.eventd.EventIpcManagerFactory;
 import org.opennms.netmgt.mock.EventAnticipator;
 import org.opennms.netmgt.mock.MockDatabase;
 import org.opennms.netmgt.mock.MockNetwork;
@@ -141,14 +139,13 @@ public class SyslogdTest extends OpenNMSTestCase {
         getEventIpcManager().addEventListener(ea);
         ea.anticipateEvent(expectedEvent);
         
-        SyslogClient sc = null;
-        sc = new SyslogClient(null, 10, SyslogClient.LOG_DEBUG);
-        sc.syslog(SyslogClient.LOG_DEBUG, testPDU);
-        
-        assertEquals(0, ea.waitForAnticipated(2000).size());
-        Thread.sleep(2000);
-        assertEquals(0, ea.unanticipatedEvents().size());
-        
+        SyslogClient sc = new SyslogClient(null, 10, SyslogClient.LOG_DEBUG);
+        DatagramPacket pkt = sc.getPacket(SyslogClient.LOG_DEBUG, testPDU);
+        SyslogdConfig config = SyslogdConfigFactory.getInstance();
+        Thread worker = new Thread(new SyslogConnection(pkt, config.getForwardingRegexp(), config.getMatchingGroupHost(), config.getMatchingGroupMessage(), config.getUeiList(), config.getHideMessages(), config.getDiscardUei()), SyslogConnection.class.getSimpleName());
+        worker.run();
+
+        ea.verifyAnticipated(1000,0,0,0,0);
         Event receivedEvent = ea.getAnticipatedEventsRecieved().get(0);
         assertEquals("Log messages do not match", expectedLogMsg, receivedEvent.getLogmsg().getContent());
         
@@ -162,7 +159,7 @@ public class SyslogdTest extends OpenNMSTestCase {
         for (Parm actualParm : receivedEvents.get(0).getParms().getParmCollection()) {
             actualParms.put(actualParm.getParmName(), actualParm.getValue().getContent());
         }
-        
+
         for (String expectedKey : expectedParams.keySet()) {
             String expectedValue = expectedParams.get(expectedKey);
             assertTrue("Actual event does not have a parameter called " + expectedKey, actualParms.containsKey(expectedKey));
@@ -230,9 +227,9 @@ public class SyslogdTest extends OpenNMSTestCase {
         doMessageTest("2007-01-01 localhost A CRISCO message",
                       myLocalHost(), "uei.opennms.org/tests/syslogd/substrUeiRewriteTest",
                       "A CRISCO message");
-
     }
     public void testRegexUEIRewrite() throws Exception {
+//        MockLogAppender.setupLogging(true, "TRACE");
         doMessageTest("2007-01-01 localhost foo: 100 out of 666 tests failed for bar",
                       myLocalHost(), "uei.opennms.org/tests/syslogd/regexUeiRewriteTest",
                       "100 out of 666 tests failed for bar");

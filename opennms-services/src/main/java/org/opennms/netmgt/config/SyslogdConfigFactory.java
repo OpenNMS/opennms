@@ -253,6 +253,15 @@ public final class SyslogdConfigFactory implements SyslogdConfig {
     }
 
     /**
+     * <p>getParser</p>
+     *
+     * @return the parser class to use when parsing syslog messages, as a string.
+     */
+    public synchronized String getParser() {
+        return m_config.getConfiguration().getParser();
+    }
+
+    /**
      * <p>getUeiList</p>
      *
      * @return a {@link org.opennms.netmgt.config.syslogd.UeiList} object.
