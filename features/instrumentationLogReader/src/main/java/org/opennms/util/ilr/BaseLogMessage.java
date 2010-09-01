@@ -27,7 +27,7 @@
  *     http://www.opennms.org/
  *     http://www.opennms.com/
  */
-package edu.ncsu.pdgrenon;
+package org.opennms.util.ilr;
 
 import java.text.DateFormat;
 import java.text.ParseException;

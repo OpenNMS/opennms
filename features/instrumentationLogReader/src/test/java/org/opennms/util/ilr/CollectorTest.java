@@ -1,4 +1,4 @@
-package edu.ncsu.pdgrenon;
+package org.opennms.util.ilr;
 
 import static org.junit.Assert.*;
 
@@ -14,6 +14,7 @@ import java.util.Date;
 
 import org.junit.Ignore;
 import org.junit.Test;
+import org.opennms.util.ilr.Collector;
 
 
 public class CollectorTest {
