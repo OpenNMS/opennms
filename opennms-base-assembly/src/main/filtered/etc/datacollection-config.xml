@@ -454,6 +454,11 @@
       <storageStrategy class="org.opennms.netmgt.dao.support.IndexStorageStrategy"/>
     </resourceType>
 
+    <resourceType name="force10StackUnit" label="Force10 Stack Unit" resourceLabel="Unit ${index}: ${f10UnitDescr}">
+      <persistenceSelectorStrategy class="org.opennms.netmgt.collectd.PersistAllSelectorStrategy"/>
+      <storageStrategy class="org.opennms.netmgt.dao.support.IndexStorageStrategy"/>
+    </resourceType>
+
     <groups>
       <group name="cisco-frame-relay" ifType="all">
         <mibObj oid=".1.3.6.1.4.1.9.9.49.1.2.2.1.1" instance="frCircuitIfIndex" alias="frIfName"     type="string" />
@@ -2620,6 +2625,14 @@
         <mibObj oid=".1.3.6.1.4.1.1718.3.2.5.1.13" instance="stSentry3EnvMon" alias="envMonTempScale"    type="gauge" />
       </group>
 
+      <group name="force10-stack-unit-stats" ifType="all">
+        <mibObj oid=".1.3.6.1.4.1.6027.3.10.1.2.9.1.3"  instance="force10StackUnit" alias="force10CpuUsage" type="gauge" />
+        <mibObj oid=".1.3.6.1.4.1.6027.3.10.1.2.9.1.5"  instance="force10StackUnit" alias="force10MemUsage" type="gauge" />
+        <mibObj oid=".1.3.6.1.4.1.6027.3.10.1.2.2.1.9"  instance="force10StackUnit" alias="f10UnitDescr"    type="string" />
+        <mibObj oid=".1.3.6.1.4.1.6027.3.10.1.2.2.1.14" instance="force10StackUnit" alias="force10UnitTemp" type="gauge" />
+      </group>
+
+
     </groups>
 
     <systems>
@@ -3369,6 +3382,14 @@
           <includeGroup>bigip-if-stat</includeGroup>
           <includeGroup>bigip-sys-stat</includeGroup>
           <includeGroup>mib2-X-interfaces</includeGroup>
+        </collect>
+      </systemDef>
+
+      <systemDef name="Force10 10Gbe switches">
+        <sysoidMask>.1.3.6.1.4.1.6027.</sysoidMask>
+        <collect>
+          <includeGroup>mib2-X-interfaces</includeGroup>
+          <includeGroup>force10-stack-unit-stats</includeGroup>
         </collect>
       </systemDef>
 
