@@ -1,4 +1,4 @@
-package edu.ncsu.pdgrenon;
+package org.opennms.util.ilr;
 
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;

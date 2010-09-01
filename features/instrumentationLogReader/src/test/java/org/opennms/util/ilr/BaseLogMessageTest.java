@@ -27,7 +27,7 @@
  *     http://www.opennms.org/
  *     http://www.opennms.com/
  */
-package edu.ncsu.pdgrenon;
+package org.opennms.util.ilr;
 
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNull;
@@ -45,9 +45,9 @@ import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.junit.runners.Parameterized;
 import org.junit.runners.Parameterized.Parameters;
+import org.opennms.util.ilr.BaseLogMessage;
+import org.opennms.util.ilr.BaseLogMessage.MsgType;
 
-import edu.ncsu.pdgrenon.BaseLogMessage;
-import edu.ncsu.pdgrenon.BaseLogMessage.MsgType;
 
 
 /**

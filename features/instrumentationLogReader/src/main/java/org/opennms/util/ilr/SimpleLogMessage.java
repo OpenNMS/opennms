@@ -1,4 +1,4 @@
-package edu.ncsu.pdgrenon;
+package org.opennms.util.ilr;
 
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
@@ -17,13 +17,13 @@ public class SimpleLogMessage implements LogMessage {
 		m_logMessage = logMessage;
 	}
 	/* (non-Javadoc)
-	 * @see edu.ncsu.pdgrenon.LogMessage#getMessage()
+	 * @see org.opennms.util.ilr.LogMessage#getMessage()
 	 */
 	public String getMessage () {
 		return m_logMessage;
 	}
 	/* (non-Javadoc)
-	 * @see edu.ncsu.pdgrenon.LogMessage#isEndMessage()
+	 * @see org.opennms.util.ilr.LogMessage#isEndMessage()
 	 */
 	public boolean isEndMessage() {
 		return getMessage().contains("end");
@@ -33,38 +33,38 @@ public class SimpleLogMessage implements LogMessage {
 		return m_logMessage;
 	}
 	/* (non-Javadoc)
-	 * @see edu.ncsu.pdgrenon.LogMessage#isPersistMessage()
+	 * @see org.opennms.util.ilr.LogMessage#isPersistMessage()
 	 */
 	public boolean isPersistMessage() {
 		return getMessage().contains("persist");
 	}
 	/* (non-Javadoc)
-	 * @see edu.ncsu.pdgrenon.LogMessage#isBeginMessage()
+	 * @see org.opennms.util.ilr.LogMessage#isBeginMessage()
 	 */
 	public boolean isBeginMessage() {
 		return getMessage().contains("begin");
 	}
 	/* (non-Javadoc)
-	 * @see edu.ncsu.pdgrenon.LogMessage#isErrorMessage()
+	 * @see org.opennms.util.ilr.LogMessage#isErrorMessage()
 	 */
 	public boolean isErrorMessage() {
 		return getMessage().contains("error");
 	}
 	/* (non-Javadoc)
-	 * @see edu.ncsu.pdgrenon.LogMessage#isCollectorBeginMessage()
+	 * @see org.opennms.util.ilr.LogMessage#isCollectorBeginMessage()
 	 */
 	public boolean isCollectorBeginMessage() {
 		return getMessage().contains("collectData: begin:") || getMessage().contains("collector.initialize: begin");
 	}
 	/* (non-Javadoc)
-	 * @see edu.ncsu.pdgrenon.LogMessage#isCollectorEndMessage()
+	 * @see org.opennms.util.ilr.LogMessage#isCollectorEndMessage()
 	 */
 	public boolean isCollectorEndMessage() {
 		return getMessage().contains("collectData: end:") || getMessage().contains("collector.initialize: end");
 	}
 	
 	/* (non-Javadoc)
-	 * @see edu.ncsu.pdgrenon.LogMessage#getDate()
+	 * @see org.opennms.util.ilr.LogMessage#getDate()
 	 */
 	public Date getDate() {
 		String regex =  "\\d+-\\d+-\\d+\\s*\\d+:\\d+:\\d+,\\d+";
@@ -82,7 +82,7 @@ public class SimpleLogMessage implements LogMessage {
 		}
 	}
 	/* (non-Javadoc)
-	 * @see edu.ncsu.pdgrenon.LogMessage#getServiceID()
+	 * @see org.opennms.util.ilr.LogMessage#getServiceID()
 	 */
 	public String getServiceID() {
 		String regex = "\\d+/\\d+\\.\\d+\\.\\d+\\.\\d+/[\\w-]+";
@@ -94,7 +94,7 @@ public class SimpleLogMessage implements LogMessage {
 		return null;
 	}
 	/* (non-Javadoc)
-	 * @see edu.ncsu.pdgrenon.LogMessage#getThread()
+	 * @see org.opennms.util.ilr.LogMessage#getThread()
 	 */
 	public String getThread() {
 		String regex = "\\[\\w+-\\d+\\s\\w+-\\w+\\d+\\]";

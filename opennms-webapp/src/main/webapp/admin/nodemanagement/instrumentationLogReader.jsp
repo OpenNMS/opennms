@@ -43,7 +43,7 @@
 	session="true"
 %>
 
-<%@page import="edu.ncsu.pdgrenon.Collector"%>
+<%@page import="org.opennms.util.ilr.Collector"%>
 <%@page import="java.io.*"%>
 <%@ taglib uri="http://java.sun.com/jsp/jstl/core" prefix="c"%>
 <%@ taglib uri="http://java.sun.com/jsp/jstl/fmt" prefix="fmt"%>

@@ -27,7 +27,7 @@
  *     http://www.opennms.org/
  *     http://www.opennms.com/
  */
-package edu.ncsu.pdgrenon;
+package org.opennms.util.ilr;
 
 import java.util.Date;
 import java.util.concurrent.TimeUnit;
