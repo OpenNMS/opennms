@@ -27,7 +27,7 @@
  *     http://www.opennms.org/
  *     http://www.opennms.com/
  */
-package edu.ncsu.pdgrenon;
+package org.opennms.util.ilr;
 
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNull;
@@ -45,9 +45,9 @@ import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.junit.runners.Parameterized;
 import org.junit.runners.Parameterized.Parameters;
+import org.opennms.util.ilr.BaseLogMessage;
+import org.opennms.util.ilr.BaseLogMessage.MsgType;
 
-import edu.ncsu.pdgrenon.BaseLogMessage;
-import edu.ncsu.pdgrenon.BaseLogMessage.MsgType;
 
 
 /**
@@ -71,7 +71,7 @@ public class BaseLogMessageTest {
                     "CollectdScheduler-50 Pool-fiber4",
                     MsgType.BEGIN_COLLECTION,
                     "7/172.20.1.12/SNMP",
-                    "2010-05-26 12:12:40,785 DEBUG [CollectdScheduler-50 Pool-fiber4] Collectd: collector.collect: collectData: begin: 7/172.20.1.12/SNMP"
+                    "2010-05-26 12:12:40,785 DEBUG [CollectdScheduler-50 Pool-fiber4] Collectd: collector.collect: begin:7/172.20.1.12/SNMP"
                 }, 
                 { 
                     true,
@@ -79,7 +79,7 @@ public class BaseLogMessageTest {
                     "CollectdScheduler-50 Pool-fiber12",
                     MsgType.END_COLLECTION,
                     "83/172.20.1.15/SNMP",
-                    "2010-05-26 12:12:47,672 DEBUG [CollectdScheduler-50 Pool-fiber12] Collectd: collector.collect: collectData: end: 83/172.20.1.15/SNMP"
+                    "2010-05-26 12:12:47,672 DEBUG [CollectdScheduler-50 Pool-fiber12] Collectd: collector.collect: end:83/172.20.1.15/SNMP"
                 }, 
                 { 
                     true,

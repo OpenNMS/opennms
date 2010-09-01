@@ -1,4 +1,4 @@
-package edu.ncsu.pdgrenon;
+package org.opennms.util.ilr;
 
 import java.io.BufferedReader;
 import java.io.File;
@@ -59,6 +59,9 @@ public class Collector {
 	}
 	public long getDuration() {
 		return this.getEndTime().getTime()-this.getStartTime().getTime();
+	}
+	public String getFormattedDuration() {
+		return formatDuration(getDuration());
 	}
 	public int getServiceCount() {
 		return getServices().size();

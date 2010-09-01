@@ -27,7 +27,7 @@
  *     http://www.opennms.org/
  *     http://www.opennms.com/
  */
-package edu.ncsu.pdgrenon;
+package org.opennms.util.ilr;
 
 import static org.hamcrest.CoreMatchers.*;
 import static org.junit.Assert.*;
@@ -44,9 +44,9 @@ import org.junit.experimental.theories.Theories;
 import org.junit.experimental.theories.Theory;
 import org.junit.internal.matchers.TypeSafeMatcher;
 import org.junit.runner.RunWith;
+import org.opennms.util.ilr.BaseLogMessage;
+import org.opennms.util.ilr.Duration;
 
-import edu.ncsu.pdgrenon.BaseLogMessage;
-import edu.ncsu.pdgrenon.Duration;
 
 /**
  * Duration

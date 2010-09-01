@@ -1,8 +1,10 @@
-package edu.ncsu.pdgrenon;
+package org.opennms.util.ilr;
 
 import static org.junit.Assert.*;
 
 import org.junit.Test;
+import org.opennms.util.ilr.LogMessage;
+import org.opennms.util.ilr.SimpleLogMessage;
 
 
 public class SimpleLogMessageTest {

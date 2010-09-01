@@ -1,4 +1,7 @@
-package edu.ncsu.pdgrenon;
+package org.opennms.util.ilr;
+
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 
 
 public class ServiceCollector {
@@ -22,7 +25,9 @@ public class ServiceCollector {
 		return m_serviceID;
 	}
 
-
+	public final String m_regex = "(\\d+)/(\\d+.\\d+.\\d+.\\d+)/(\\w+)"; 
+	public final Pattern m_pattern = Pattern.compile(m_regex);	
+	
 	public void addMessage(LogMessage msg) {
 		if (msg.isCollectorBeginMessage()) {
 			m_lastBegin = msg.getDate().getTime();
@@ -51,6 +56,15 @@ public class ServiceCollector {
 			m_lastErrorBegin = 0;
 		}
 	}
+	
+	public String getParsedServiceID() {
+		Matcher m = m_pattern.matcher(getServiceID());
+		if(m.matches()) {
+			return new String(m.group(1));
+		}else{
+			return "Wrong ID";
+		}
+	}
 
 	public int getCollectionCount() {
 		return m_collectionCount;
@@ -71,9 +85,15 @@ public class ServiceCollector {
 	public long getErrorCollectionTime() {
 	    return m_errorTime;
 	}
+	public Duration getErrorCollectionDuration() {
+		return new Duration(getErrorCollectionTime());
+	}
 	
 	public long getSuccessfulCollectionTime() {
 	    return m_totalTime - m_errorTime;
+	}
+	public Duration getSuccessfulCollectionDuration() {
+		return new Duration(getSuccessfulCollectionTime());
 	}
 	
 	public int getSuccessfulCollectionCount() {
@@ -81,11 +101,19 @@ public class ServiceCollector {
 	}
 	
 	public double getSuccessPercentage() {
-        return getSuccessfulCollectionCount()*100.0/getCollectionCount();
+		if(getCollectionCount() == 0) {
+			return -1;
+		} else {
+		    return getSuccessfulCollectionCount()*100.0/getCollectionCount();	
+		}
 	}
 	
 	public double getErrorPercentage() {
-        return getErrorCollectionCount()*100.0/getCollectionCount();
+		if(getCollectionCount() == 0) {
+			return -1;
+		} else {
+			return getErrorCollectionCount()*100.0/getCollectionCount();
+		}
 	}
 
 	public long getAverageCollectionTime() {
@@ -103,16 +131,25 @@ public class ServiceCollector {
 	    if (count == 0) return 0;
 	    return getErrorCollectionTime()/count;
 	}
+	public Duration getAverageErrorCollectionDuration() {
+		return new Duration(getAverageErrorCollectionTime());
+	}
 	
 	public long getAverageSuccessfulCollectionTime() {
 	    int count = getSuccessfulCollectionCount();
 	    if (count == 0) return 0;
 	    return getSuccessfulCollectionTime()/count;
 	}
+	public Duration getAverageSuccessfulCollectionDuration() {
+		return new Duration(getAverageSuccessfulCollectionTime());
+	}
 	
 	public long getAverageTimeBetweenCollections() {
 	    if (m_betweenCount == 0) return 0;
 	    return m_totalBetweenTime/m_betweenCount;
+	}
+	public Duration getAverageDurationBetweenCollections() {
+		return new Duration(getAverageTimeBetweenCollections());
 	}
 
 	@Override
