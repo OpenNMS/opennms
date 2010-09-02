@@ -1,0 +1,11 @@
+<?xml version="1.0"?>
+<datacollection-group name="Makelsan">
+
+      <systemDef name="Makelsan UPS">
+        <sysoidMask>.1.3.6.1.4.1.332.</sysoidMask>
+        <collect>
+          <includeGroup>mib2-ups-rfc1628</includeGroup>
+        </collect>
+      </systemDef>
+
+</datacollection-group>

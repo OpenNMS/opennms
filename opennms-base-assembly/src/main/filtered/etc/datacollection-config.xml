@@ -33,6 +33,7 @@
     <include-collection dataCollectionGroup="Kyocera"/>
     <include-collection dataCollectionGroup="Lexmark"/>
     <include-collection dataCollectionGroup="Liebert"/>
+    <include-collection dataCollectionGroup="Makelsan"/>
     <include-collection dataCollectionGroup="MGE"/>
     <include-collection dataCollectionGroup="Microsoft"/>
     <include-collection dataCollectionGroup="Mikrotik"/>
