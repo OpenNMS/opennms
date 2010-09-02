@@ -10,13 +10,6 @@
 //
 // OpenNMS(R) is a registered trademark of The OpenNMS Group, Inc.
 //
-// Modifications:
-//
-// 2003 Feb 07: Fixed URLEncoder issues.
-// 2003 Feb 04: Added a check to prevent null entries in queries. Bug #536.
-// 
-// Original code base Copyright (C) 1999-2001 Oculan Corp.  All rights reserved.
-//
 // This program is free software; you can redistribute it and/or modify
 // it under the terms of the GNU General Public License as published by
 // the Free Software Foundation; either version 2 of the License, or
@@ -117,54 +110,51 @@ Threads Used: ${collector.threadCount}
 <tr>
 <th>Service</th>
 <th>Collections</th>
-<th>Average Time Between Collections</th>
 <th>Average Collection Time</th>
-<th>Total Collection Time</th>
+<th>Average Time Between Collections</th>
 <th>Successful Collections</th>
-<th>Average Successful Collection Time</th>
-<th>Total Successful Collection Time</th>
 <th>Success Percentage</th>
+<th>Average Successful Collection Time</th>
 <th>Unsuccessful Collections</th>
+<th>Unsuccessful Percentage</th>
 <th>Average Unsuccessful Collection Time</th>
-<th>Total Unsuccessful Collection Time</th>
-<th>Failed Percentage</th>
 </tr>
 <c:forEach  var="svcCollector" items="${collector.serviceCollectors}">
-<tr>
+<c:choose>
+    <c:when test="${svcCollector.successPercentage > 50}" >
+        <tr class="Normal">
+    </c:when>
+    <c:when test="${svcCollector.successPercentage == -1}" >
+        <tr class="Warning">
+    </c:when>
+    <c:otherwise>
+        <tr class="Critical">
+    </c:otherwise>
+</c:choose>
 <td><a href="element/node.jsp?node=${svcCollector.parsedServiceID}">${svcCollector.serviceID}</a></td>
 <td align="right">${svcCollector.collectionCount}</td>
-<td align="right">${svcCollector.averageDurationBetweenCollections}</td>
 <td align="right">${svcCollector.averageCollectionDuration}</td>
-<td align="right">${svcCollector.totalCollectionDuration}</td>
+<td align="right">${svcCollector.averageDurationBetweenCollections}</td>
 <td align="right">${svcCollector.successfulCollectionCount}</td>
-<td align="right">${svcCollector.averageSuccessfulCollectionDuration}</td>
-<td align="right">${svcCollector.successfulCollectionDuration}</td>
 <c:choose>
-	<c:when test="${svcCollector.successPercentage > 50}" >
-		<td align="right" style="background: green"><fmt:formatNumber type="number" maxFractionDigits="1" minFractionDigits="1" value="${svcCollector.successPercentage}" /></td>
-	</c:when>
-	<c:when test="${svcCollector.successPercentage == -1}" >
-		<td align="right" style="background: yellow">No Collections</td>
-	</c:when>
-	<c:otherwise>
-		<td align="right"><fmt:formatNumber type="number" maxFractionDigits="1" minFractionDigits="1" value="${svcCollector.successPercentage}" /></td>
-	</c:otherwise>
+    <c:when test="${svcCollector.successPercentage == -1}" >
+        <td align="right">No Collections</td>
+    </c:when>
+    <c:otherwise>
+        <td align="right"><fmt:formatNumber type="number" maxFractionDigits="1" minFractionDigits="1" value="${svcCollector.successPercentage}" /></td>
+    </c:otherwise>
 </c:choose>
+<td align="right">${svcCollector.averageSuccessfulCollectionDuration}</td>
+<td align="right">${svcCollector.errorCollectionCount}</td>
 <c:choose>	
-	<c:when test="${svcCollector.errorPercentage > 50}">
-		<td align="right" style="background: red"><fmt:formatNumber type="number" minFractionDigits="1" maxFractionDigits="1" value="${svcCollector.errorPercentage}" /></td>
-	</c:when>
 	<c:when test="${svcCollector.errorPercentage == -1}">
-		<td align="right" style="background: yellow">No Collections</td>
+		<td align="right">No Collections</td>
 	</c:when>
 	<c:otherwise>
 		<td align="right"><fmt:formatNumber type="number" maxFractionDigits="1" minFractionDigits="1" value="${svcCollector.errorPercentage}" /></td>
 	</c:otherwise>
 </c:choose>
-<td align="right">${svcCollector.errorCollectionCount}</td>
 <td align="right">${svcCollector.averageErrorCollectionDuration}</td>
-<td align="right">${svcCollector.errorCollectionDuration}</td>
-
 </tr>
 
 </c:forEach>
