@@ -3,11 +3,37 @@
     <configuration
             syslog-port="10514"
             new-suspect-on-message="false"
+            parser="org.opennms.netmgt.syslogd.CustomSyslogParser"
             forwarding-regexp="^.*\s(19|20)\d\d([-/.])(0[1-9]|1[012])\2(0[1-9]|[12][0-9]|3[01])(\s+)(\S+)(\s)(\S.+)"
             matching-group-host="6"
             matching-group-message="8"
             discard-uei="DISCARD-MATCHING-MESSAGES"
             />
+
+    <!--
+        NOTE: This uses the CustomSyslogParser and forwarding-regexp for backwards compatibility.  If your
+        syslog sources will always use a particular format, it's better to use one of the more specific parsers
+        in the "parser" attribute, above.
+
+        Available parsers:
+
+        * org.opennms.netmgt.syslogd.CustomSyslogParser: A backwards-compatible parser that has the same behavior
+          as OpenNMS 1.8 (and previous).  It has relaxed standards and can usually pull data out of most BSD-
+          or Syslog-NG-style traps.
+        * org.opennms.netmgt.syslogd.SyslogNGParser: A stricter variant of the CustomSyslogParser which parses
+          Syslog-NG's default format.  It ignores forwarding-regexp, matching-group-host, and matching-group-message
+          and instead relies on a well-known properly-formatted syslog message.
+        * org.opennms.netmgt.syslogd.Rfc5424SyslogParser: A parser that handles the new Syslog standard (as
+          defined in RFC5424).  It has strict parsing that should match the grammar specified in the RFC, although
+          it currently discards structured data.  Like the SyslogNGParser, it ignores forwarding-regexp,
+          matching-group-host, and matching-group-message in favor of stricter parsing of the known grammer.
+
+        *** PERFORMANCE NOTES ***
+
+        For the most deterministic performance of OpenNMS when matching syslog messages, you should *always*
+        anchor your regular expression matches with ^ and $, like in the examples below.  Failure to do so can
+        cause extreme slowdowns, especially with large amounts of <ueiMatch> tags.
+    -->
 
     <!-- Use the following to convert UEI ad-hoc -->
     <ueiList>
@@ -16,7 +42,7 @@
             <uei>CISCO</uei>
         </ueiMatch>
         <ueiMatch>
-            <match type="regex" expression=".*fancyd: .*failed for user (\S+) on ((pts\/\d+)|(tty\d+)).*"/>
+            <match type="regex" expression="^.*fancyd: .*failed for user (\S+) on ((pts\/\d+)|(tty\d+)).*$"/>
             <uei>uei.example.org/syslog/fancyd/userFailure</uei>
             <!-- In the event definition for the above UEI, you can refer to the
                  parenthesized match groups above:
@@ -29,7 +55,7 @@
             -->
         </ueiMatch>
         <ueiMatch>
-            <match type="regex" expression=".*shmancyd: .*failed for user (\S+) on ((pts\/\d+)|(tty\d+)).*" default-parameter-mapping="false"/>
+            <match type="regex" expression="^.*shmancyd: .*failed for user (\S+) on ((pts\/\d+)|(tty\d+)).*$" default-parameter-mapping="false"/>
             <uei>uei.example.org/syslog/shmancyd/userFailure</uei>
         	<parameter-assignment matching-group="1" parameter-name="userName" />
         	<parameter-assignment matching-group="2" parameter-name="terminalName" />
@@ -59,7 +85,7 @@
             <match type="substr" expression="SECRET"/>
         </hideMatch>
         <hideMatch>
-            <match type="regex" expression=".*(double|triple)secret.*"/>
+            <match type="regex" expression="^.*(double|triple)secret.*$"/>
         </hideMatch>
     </hideMessage>
 
