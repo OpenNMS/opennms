@@ -231,7 +231,7 @@
       <!-- hidden form for acknowledging the result set --> 
       <% if( !(req.isUserInRole( Authentication.READONLY_ROLE ))) { %>
           <form method="POST" name="acknowledge_by_filter_form">    
-            <input type="hidden" name="redirectParms" value="<%=req.getQueryString()%>" />
+            <input type="hidden" name="redirectParms" value="<%=org.opennms.web.Util.htmlify(req.getQueryString())%>" />
             <input type="hidden" name="action" value="" />
             <%=org.opennms.web.Util.makeHiddenTags(req)%>
           </form>      
@@ -270,7 +270,7 @@
 
       <% if( !(req.isUserInRole( Authentication.READONLY_ROLE ))) { %>
           <form action="alarm/acknowledge" method="POST" name="alarm_action_form">
-          <input type="hidden" name="redirectParms" value="<%=req.getQueryString()%>" />
+          <input type="hidden" name="redirectParms" value="<%=org.opennms.web.Util.htmlify(req.getQueryString())%>" />
           <input type="hidden" name="action" value="<%=action%>" />
           <%=org.opennms.web.Util.makeHiddenTags(req)%>
       <% } %>

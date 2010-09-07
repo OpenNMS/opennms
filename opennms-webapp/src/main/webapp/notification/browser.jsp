@@ -218,7 +218,7 @@
 <% } %>
 	<jsp:include page="/includes/key.jsp" flush="false" />
         <form action="notification/acknowledge" method="post" name="acknowledge_form">
-          <input type="hidden" name="redirectParms" value="<%=request.getQueryString()%>" />
+          <input type="hidden" name="redirectParms" value="<%=org.opennms.web.Util.htmlify(request.getQueryString())%>" />
           <%=org.opennms.web.Util.makeHiddenTags(request)%>        
 	<!--			<% if( parms.ackType == NoticeFactory.AcknowledgeType.UNACKNOWLEDGED &&  !(request.isUserInRole( Authentication.READONLY_ROLE ))) { %>
           <p><input TYPE="reset" />
