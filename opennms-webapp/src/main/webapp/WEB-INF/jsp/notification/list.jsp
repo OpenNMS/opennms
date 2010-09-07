@@ -209,7 +209,7 @@
 	<jsp:include page="/includes/key.jsp" flush="false" />
         <form action="notification/acknowledge" method="post" name="acknowledge_form">
           <input type="hidden" name="curUser" value="<%=request.getRemoteUser()%>">
-          <input type="hidden" name="redirectParms" value="<%=request.getQueryString()%>" />
+          <input type="hidden" name="redirectParms" value="<%=org.opennms.web.Util.htmlify(request.getQueryString())%>" />
           <%=org.opennms.web.Util.makeHiddenTags(request)%>        
       <table>
 			<thead>
