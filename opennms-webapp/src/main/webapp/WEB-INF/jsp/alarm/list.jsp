@@ -265,7 +265,7 @@
       <!-- hidden form for acknowledging the result set --> 
       <% if( req.isUserInRole( Authentication.ADMIN_ROLE ) || !req.isUserInRole( Authentication.READONLY_ROLE ) ) { %>
           <form method="post" action="alarm/acknowledgeByFilter" name="acknowledge_by_filter_form">    
-            <input type="hidden" name="redirectParms" value="<%=req.getQueryString()%>" />
+            <input type="hidden" name="redirectParms" value="<%=Util.htmlify(req.getQueryString())%>" />
             <input type="hidden" name="actionCode" value="<%=action%>" />
             <%=Util.makeHiddenTags(req)%>
           </form>      
@@ -304,7 +304,7 @@
 
       <% if( req.isUserInRole( Authentication.ADMIN_ROLE ) || !req.isUserInRole( Authentication.READONLY_ROLE ) ) { %>
           <form action="alarm/acknowledge" method="post" name="alarm_action_form">
-          <input type="hidden" name="redirectParms" value="<%=req.getQueryString()%>" />
+          <input type="hidden" name="redirectParms" value="<%=Util.htmlify(req.getQueryString())%>" />
           <input type="hidden" name="actionCode" value="<%=action%>" />
           <%=Util.makeHiddenTags(req)%>
       <% } %>
