@@ -422,7 +422,7 @@ public class Provisioner implements SpringServiceDaemon {
      */
     public ThreadCategory log() {
     	return ThreadCategory.getInstance(getClass());
-    }
+	}
 
     /**
      * <p>setEventForwarder</p>

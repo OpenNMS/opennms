@@ -54,7 +54,6 @@
     <dependency>
     	<groupId>org.opennms</groupId>
     	<artifactId>opennms-provision-api</artifactId>
-    	<version>1.8.4-SNAPSHOT</version>
     	<type>jar</type>
     	<scope>compile</scope>
     </dependency>

@@ -51,6 +51,7 @@ import org.exolab.castor.xml.ValidationException;
 import org.jfree.chart.ChartFactory;
 import org.jfree.chart.ChartUtilities;
 import org.jfree.chart.JFreeChart;
+import org.jfree.chart.StandardChartTheme;
 import org.jfree.chart.axis.ExtendedCategoryAxis;
 import org.jfree.chart.axis.ValueAxis;
 import org.jfree.chart.labels.CategoryItemLabelGenerator;
@@ -65,7 +66,10 @@ import org.opennms.core.utils.ThreadCategory;
 import org.opennms.netmgt.config.ChartConfigFactory;
 import org.opennms.netmgt.config.DataSourceFactory;
 import org.opennms.netmgt.config.charts.BarChart;
+import org.opennms.netmgt.config.charts.Blue;
+import org.opennms.netmgt.config.charts.Green;
 import org.opennms.netmgt.config.charts.ImageSize;
+import org.opennms.netmgt.config.charts.Red;
 import org.opennms.netmgt.config.charts.Rgb;
 import org.opennms.netmgt.config.charts.SeriesDef;
 import org.opennms.netmgt.config.charts.SubTitle;
@@ -345,8 +349,16 @@ public class ChartUtils {
      * @throws java.sql.SQLException if any.
      */
     public static void getBarChartPNG(String chartName, OutputStream out) throws MarshalException, ValidationException, IOException, SQLException {
+        ChartFactory.setChartTheme(StandardChartTheme.createLegacyTheme());
         BarChart chartConfig = getBarChartConfigByName(chartName);
         JFreeChart chart = getBarChart(chartName);
+        if(chartConfig.getChartBackgroundColor() != null) {
+            setChartBackgroundColor(chartConfig, chart);
+        }
+        
+        if(chartConfig.getPlotBackgroundColor() !=  null) {
+            setPlotBackgroundColor(chartConfig, chart);
+        }
         ImageSize imageSize = chartConfig.getImageSize();
         int hzPixels;
         int vtPixels;
@@ -361,6 +373,23 @@ public class ChartUtils {
         
         ChartUtilities.writeChartAsPNG(out, chart, hzPixels, vtPixels, false, 6);
         
+    }
+
+    private static void setPlotBackgroundColor(BarChart chartConfig,
+            JFreeChart chart) {
+        Red red = chartConfig.getPlotBackgroundColor().getRgb().getRed();
+        Blue blue = chartConfig.getPlotBackgroundColor().getRgb().getBlue();
+        Green green = chartConfig.getPlotBackgroundColor().getRgb().getGreen();
+        
+        chart.getPlot().setBackgroundPaint(new Color(red.getRgbColor(), green.getRgbColor(), blue.getRgbColor()));
+    }
+
+    private static void setChartBackgroundColor(BarChart chartConfig,
+            JFreeChart chart) {
+        Red red = chartConfig.getChartBackgroundColor().getRgb().getRed();
+        Blue blue = chartConfig.getChartBackgroundColor().getRgb().getBlue();
+        Green green = chartConfig.getChartBackgroundColor().getRgb().getGreen();
+        chart.setBackgroundPaint(new Color(red.getRgbColor(), green.getRgbColor(), blue.getRgbColor()));
     }
     
     /**

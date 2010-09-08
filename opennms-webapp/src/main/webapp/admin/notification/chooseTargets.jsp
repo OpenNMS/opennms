@@ -232,7 +232,7 @@ action="admin/notification/destinationWizard" >
             <%
             } else {
             %>
-                    <option VALUE=<%=key%>><%=key%></option>
+                    <option VALUE="<%=key%>"><%=key%></option>
             <%
                         }
                         }

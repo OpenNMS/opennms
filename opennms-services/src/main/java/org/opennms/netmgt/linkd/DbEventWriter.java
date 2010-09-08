@@ -483,7 +483,7 @@ public class DbEventWriter implements QueryManager {
                     LogUtils.debugf(this, "storeSnmpCollection: parsing routedest/routemask/nexthop: " + routedest + "/" + routemask + "/" + nexthop + " ifindex "
                                     + (ifindex < 1 ? "less than 1" : ifindex));
     
-                    int routemetric1 = ent.getInt32(IpRouteCollectorEntry.IP_ROUTE_METRIC1);
+                    int routemetric1 =  ent.getInt32(IpRouteCollectorEntry.IP_ROUTE_METRIC1);
     
                     /**
                      * FIXME: send routedest 0.0.0.0 to discoverylink remeber that
