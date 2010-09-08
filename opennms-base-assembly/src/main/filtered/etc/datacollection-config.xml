@@ -3030,6 +3030,13 @@
         </collect>
       </systemDef>
 
+      <systemDef name="Cisco Firewall Service Module">
+        <sysoid>.1.3.6.1.4.1.9.1.674</sysoid>
+        <collect>
+          <includeGroup>cisco-pix</includeGroup>
+        </collect>
+      </systemDef>
+
       <systemDef name="Cisco IDS 4220">
         <sysoid>.1.3.6.1.4.1.9.1.741</sysoid>
         <collect>
