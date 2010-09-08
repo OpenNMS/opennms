@@ -193,7 +193,7 @@ public class EventconfFactoryTest {
     public void testGetEventUEIS() {
         List<String> ueis=EventconfFactory.getInstance().getEventUEIs();
         //This test assumes the test eventconf files only have X events in them.  Adjust as you modify eventconf.xml and sub files
-        assertEquals("Count must be correct", 306, ueis.size());
+        assertEquals("Count must be correct", 10006, ueis.size());
         assertTrue("Must contain known UEI", ueis.contains(knownUEI1));
         assertTrue("Must contain known UEI", ueis.contains(knownSubfileUEI1));
     }
@@ -202,7 +202,7 @@ public class EventconfFactoryTest {
     public void testGetLabels() {
         Map<String,String> labels=EventconfFactory.getInstance().getEventLabels();
         //This test assumes the test eventconf files only have X events in them.  Adjust as you modify eventconf.xml and sub files
-        assertEquals("Count must be correct", 306, labels.size());
+        assertEquals("Count must be correct", 10006, labels.size());
         assertTrue("Must contain known UEI", labels.containsKey(knownUEI1));
         assertEquals("Must have known Label", labels.get(knownUEI1), knownLabel1);
         assertTrue("Must contain known UEI", labels.containsKey(knownSubfileUEI1));
