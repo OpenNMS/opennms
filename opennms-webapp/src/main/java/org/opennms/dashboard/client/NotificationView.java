@@ -70,7 +70,7 @@ class NotificationView extends PageableTableView {
             table.setHTML(row, 0, "<a href=\"element/node.jsp?node=" + notif.getNodeId() + "\">" + notif.getNodeLabel() + "</a>");
 		}
         table.setText(row, 1, notif.getServiceName());
-        table.setText(row, 2, notif.getTextMessage());
+        table.setHTML(row, 2, notif.getTextMessage());
         table.setText(row, 3, ""+notif.getSentTime());
         table.setText(row, 4, notif.getResponder());
         table.setText(row, 5, (notif.getRespondTime() != null) ? notif.getRespondTime().toString() : "");
