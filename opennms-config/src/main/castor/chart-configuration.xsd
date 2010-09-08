@@ -80,6 +80,8 @@ TODO: XYDataSets
     				<element ref="this:sub-title" minOccurs="0" maxOccurs="unbounded" />
     				<element ref="this:grid-lines" minOccurs="0" maxOccurs="1" />
     				<element ref="this:series-def" minOccurs="0" maxOccurs="unbounded" />
+                    <element ref="this:plot-background-color" minOccurs="0" maxOccurs="1" />
+                    <element ref="this:chart-background-color" minOccurs="0" maxOccurs="1" />
     			</sequence>
     			<attribute name="name" type="string" use="required" />
     			<attribute name="domain-axis-label" type="string" use="required" />
@@ -130,6 +132,22 @@ TODO: XYDataSets
     			<attribute name="db-name" type="string" use="required" />
     			<attribute name="sql" type="string" use="required" />
     		</complexType>
+    </element>
+    
+    <element name="plot-background-color">
+        <complexType>
+            <sequence>
+                <element ref="this:rgb" minOccurs="0" maxOccurs="1" />
+            </sequence>
+        </complexType>
+    </element>
+    
+    <element name="chart-background-color">
+        <complexType>
+            <sequence>
+                <element ref="this:rgb" />
+            </sequence>
+        </complexType>
     </element>
     
     <element name="grid-lines">
