@@ -381,7 +381,7 @@ public class ChartUtils {
         Blue blue = chartConfig.getPlotBackgroundColor().getRgb().getBlue();
         Green green = chartConfig.getPlotBackgroundColor().getRgb().getGreen();
         
-        chart.getPlot().setBackgroundPaint(new Color(red.getRgbColor(), blue.getRgbColor(), green.getRgbColor()));
+        chart.getPlot().setBackgroundPaint(new Color(red.getRgbColor(), green.getRgbColor(), blue.getRgbColor()));
     }
 
     private static void setChartBackgroundColor(BarChart chartConfig,
@@ -389,7 +389,7 @@ public class ChartUtils {
         Red red = chartConfig.getChartBackgroundColor().getRgb().getRed();
         Blue blue = chartConfig.getChartBackgroundColor().getRgb().getBlue();
         Green green = chartConfig.getChartBackgroundColor().getRgb().getGreen();
-        chart.setBackgroundPaint(new Color(red.getRgbColor(), blue.getRgbColor(), green.getRgbColor()));
+        chart.setBackgroundPaint(new Color(red.getRgbColor(), green.getRgbColor(), blue.getRgbColor()));
     }
     
     /**
