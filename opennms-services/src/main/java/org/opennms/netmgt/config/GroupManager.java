@@ -466,7 +466,7 @@ public abstract class GroupManager {
     public synchronized void renameGroup(String oldName, String newName) throws Exception {
     	if (oldName != null && !oldName.equals("")) {
     		if (m_groups.containsKey(oldName)) {
-    			Group grp = m_groups.get(oldName);
+    			Group grp = m_groups.remove(oldName);
     			grp.setName(newName);
     			m_groups.put(newName, grp);
     		} else {
