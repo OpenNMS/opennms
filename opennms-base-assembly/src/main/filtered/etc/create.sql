@@ -2212,6 +2212,7 @@ CREATE TABLE qrtz_triggers
     CALENDAR_NAME VARCHAR(80),
     MISFIRE_INSTR SMALLINT,
     JOB_DATA BYTEA,
+    PRIORITY INTEGER,
 
     constraint pk_qrtz_triggers PRIMARY KEY (TRIGGER_NAME,TRIGGER_GROUP),
     constraint fk_qrtz_triggers FOREIGN KEY (JOB_NAME,JOB_GROUP)
@@ -2295,6 +2296,7 @@ CREATE TABLE qrtz_fired_triggers
     JOB_GROUP VARCHAR(80),
     IS_STATEFUL BOOL,
     REQUESTS_RECOVERY BOOL,
+    PRIORITY INTEGER,
     constraint pk_qrtz_fired_triggers PRIMARY KEY (ENTRY_ID)
 );
 
