@@ -6,6 +6,35 @@
 
 	<!-- Start 1.9 -->
 
+	<section id="opennms-1.9.1">
+		<title>Changes in OpenNMS 1.9.1</title>
+
+		<section id="opennms-1.9.1-features">
+			<title>New Features and Enhancements</title>
+
+			<itemizedlist>
+
+				<listitem>
+					<para>Some of the groundwork for IPv6 support has been started.</para>
+				</listitem>
+
+				<listitem>
+					<para>Syslogd has been refactored and has a number of new features and parsing options. (Bug
+					<ulink url="http://bugzilla.opennms.org/show_bug.cgi?id=4112">#4112</ulink>)</para>
+				</listitem>
+
+				<listitem>
+					<para>You can now specify whether to be strict or loose when verifying HTTPS connections
+					in the PageSequenceMonitor. (Bug
+					<ulink url="http://bugzilla.opennms.org/show_bug.cgi?id=4113">#4113</ulink>)</para>
+				</listitem>
+
+			</itemizedlist>
+
+		</section>
+
+	</section>
+
 	<section id="opennms-1.9.0">
 		<title>Changes in OpenNMS 1.9.0</title>
 
