@@ -205,7 +205,12 @@
 
 			                                                                 		]};
 		Ext.onReady(function(){
-			customResourceViewInit("custom-resources", customResources, "graph/chooseresource.htm?endUrl=graph%2Fadhoc2.jsp&parentResourceId={id}");
+			// IE likes page-relative links, everything else does base-HREF-relative links
+			var urlTemplate = "graph/chooseresource.htm?endUrl=graph%2Fadhoc2.jsp&parentResourceId={id}";
+			if(Ext.isIE){
+				urlTemplate = "chooseresource.htm?endUrl=graph%2Fadhoc2.jsp&parentResourceId={id}";
+			}
+			customResourceViewInit("custom-resources", customResources, urlTemplate);
 		})
 	</script>
 	<div id="custom-resources"></div>
