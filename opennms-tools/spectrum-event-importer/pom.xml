@@ -2,7 +2,7 @@
   <parent>
     <artifactId>opennms-tools</artifactId>
     <groupId>org.opennms</groupId>
-    <version>1.8.4</version>
+    <version>1.8.5-SNAPSHOT</version>
   </parent>
   <modelVersion>4.0.0</modelVersion>
   <groupId>org.opennms.netmgt.mib2events</groupId>
@@ -25,7 +25,7 @@
       <groupId>org.opennms</groupId>
       <artifactId>opennms-config</artifactId>
       <scope>compile</scope>
-      <version>1.8.4</version>
+      <version>1.8.5-SNAPSHOT</version>
     </dependency>
     <dependency>
       <groupId>org.opennms.dependencies</groupId>
