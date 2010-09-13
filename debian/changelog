@@ -1,3 +1,9 @@
+opennms (1.8.4-2) unstable; urgency=high
+
+  * Re-release with proper jar versions.
+
+ -- Benjamin Reed <ranger@opennms.org>  Mon, 13 Sep 2010 14:59:00 -0500
+
 opennms (1.8.4-1) unstable; urgency=high
 
   * New upstream release.  Includes a fix to file handle leaks when monitoring
