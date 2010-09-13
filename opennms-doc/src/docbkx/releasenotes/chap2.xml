@@ -6,6 +6,140 @@
 
 	<!-- Start 1.8 -->
 
+	<section id="opennms-1.8.4">
+		<title>Changes in OpenNMS 1.8.4</title>
+
+		<section id="opennms-1.8.4-features">
+			<title>New Features and Enhancements</title>
+
+			<itemizedlist>
+
+				<listitem>
+					<para>The ifIndex parm is now provided in events received as traps. (Bug
+					<ulink url="http://bugzilla.opennms.org/show_bug.cgi?id=1145">#1145</ulink>)</para>
+				</listitem>
+
+				<listitem>
+					<para>The Cisco firewall service module is now detected for data collection. (Bug
+					<ulink url="http://bugzilla.opennms.org/show_bug.cgi?id=3120">#3120</ulink>)</para>
+				</listitem>
+
+				<listitem>
+					<para>APC upsOnBattery and powerRestored events now have alarm-data annotations so
+					they can be auto-cleared. (Bug
+					<ulink url="http://bugzilla.opennms.org/show_bug.cgi?id=4054">#4054</ulink>)</para>
+				</listitem>
+
+				<listitem>
+					<para>Notification text now preserves multi-line text formatting. (Bug
+					<ulink url="http://bugzilla.opennms.org/show_bug.cgi?id=4056">#4056</ulink>)</para>
+				</listitem>
+
+				<listitem>
+					<para>Data collection support for the Cisco C1250 was added. (Bug
+					<ulink url="http://bugzilla.opennms.org/show_bug.cgi?id=4071">#4071</ulink>)</para>
+				</listitem>
+
+				<listitem>
+					<para>Support for a number of new Cisco devices was added to Linkd. (Bug
+					<ulink url="http://bugzilla.opennms.org/show_bug.cgi?id=4082">#4082</ulink>)</para>
+				</listitem>
+
+				<listitem>
+					<para>Data collection and graph definitions were added for Force10 stack units. (Bug
+					<ulink url="http://bugzilla.opennms.org/show_bug.cgi?id=4088">#4088</ulink>)</para>
+				</listitem>
+
+				<listitem>
+					<para>Data collection definitions for Makelsan UPSes were added. (Bug
+					<ulink url="http://bugzilla.opennms.org/show_bug.cgi?id=4090">#4090</ulink>)</para>
+				</listitem>
+
+				<listitem>
+					<para>A shell script for calling the WMI validation/checker utility has been added. (Bug
+					<ulink url="http://bugzilla.opennms.org/show_bug.cgi?id=4101">#4101</ulink>)</para>
+				</listitem>
+
+				<listitem>
+					<para>foreignSource and foreignId can now be used when filtering nodes. (Bug
+					<ulink url="http://bugzilla.opennms.org/show_bug.cgi?id=4102">#4102</ulink>)</para>
+				</listitem>
+
+				<listitem>
+					<para>datacollection-config.xml can now <ulink
+					url="http://www.opennms.org/wiki/Data_Collection_Configuration_How-To#Modular_Configuration">modularly
+					include configuration from multiple files</ulink>, like eventconf.xml. (Bug
+					<ulink url="http://bugzilla.opennms.org/show_bug.cgi?id=4109">#4109</ulink>)</para>
+				</listitem>
+
+			</itemizedlist>
+
+		</section>
+
+		<section id="opennms-1.8.4-bugs">
+			<title>Bug Fixes</title>
+
+			<itemizedlist>
+
+				<listitem>
+					<para>A typo in the example snmp-config.xml was fixed.  (Bug
+					<ulink url="http://bugzilla.opennms.org/show_bug.cgi?id=2909">#2909</ulink>)</para>
+				</listitem>
+
+				<listitem>
+					<para>Paths are now substituted in files in etc/examples. (Bug
+					<ulink url="http://bugzilla.opennms.org/show_bug.cgi?id=3140">#3140</ulink>)</para>
+				</listitem>
+
+				<listitem>
+					<para>Colors were off in JFreeChart bar graphs in some instances. (Bug
+					<ulink url="http://bugzilla.opennms.org/show_bug.cgi?id=3976">#3976</ulink>)</para>
+				</listitem>
+
+				<listitem>
+					<para>Early morning reports could crash when fonts weren't installed. (Bug
+					<ulink url="http://bugzilla.opennms.org/show_bug.cgi?id=4059">#4059</ulink>)</para>
+				</listitem>
+
+				<listitem>
+					<para>Group names with spaces in them now work as expected.  Unless you expected
+					them to fail, in which case, expect the unexpected. (Bug
+					<ulink url="http://bugzilla.opennms.org/show_bug.cgi?id=4095">#4095</ulink>)</para>
+				</listitem>
+
+				<listitem>
+					<para>Renaming a group no longer creates duplicate groups in the XML. (Bug
+					<ulink url="http://bugzilla.opennms.org/show_bug.cgi?id=4096">#4096</ulink>)</para>
+				</listitem>
+
+				<listitem>
+					<para>Remote poller map markers are now ordered by severity, so low-severity
+					markers aren't covered up by high-severity markers. (Bug
+					<ulink url="http://bugzilla.opennms.org/show_bug.cgi?id=4105">#4105</ulink>)</para>
+				</listitem>
+
+				<listitem>
+					<para>The TcpDetector now properly detects and open port even if it doesn't
+					send a banner. (Bug
+					<ulink url="http://bugzilla.opennms.org/show_bug.cgi?id=4107">#4107</ulink>)</para>
+				</listitem>
+
+				<listitem>
+					<para>A number of WMI issues were fixed, including one that could cause file
+					descriptor leaks. (Bug
+					<ulink url="http://bugzilla.opennms.org/show_bug.cgi?id=4108">#4108</ulink>)</para>
+				</listitem>
+
+				<listitem>
+					<para>A cross-site scripting vulnerability in the web UI was fixed. (Bug
+					<ulink url="http://bugzilla.opennms.org/show_bug.cgi?id=4110">#4110</ulink>)</para>
+				</listitem>
+
+			</itemizedlist>
+
+		</section>
+	</section>
+
 	<section id="opennms-1.8.3">
 		<title>Changes in OpenNMS 1.8.3</title>
 
