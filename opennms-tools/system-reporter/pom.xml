@@ -3,11 +3,11 @@
   <parent>
     <artifactId>opennms-tools</artifactId>
     <groupId>org.opennms</groupId>
-    <version>1.8.4-SNAPSHOT</version>
+    <version>1.8.4</version>
   </parent>
   <groupId>org.opennms</groupId>
   <artifactId>system-reporter</artifactId>
-  <version>1.8.4-SNAPSHOT</version>
+  <version>1.8.4</version>
   <packaging>groovy-jar</packaging>
   <build>
     <plugins>
