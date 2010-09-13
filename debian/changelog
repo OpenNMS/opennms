@@ -1,3 +1,11 @@
+opennms (1.8.4-1) unstable; urgency=high
+
+  * New upstream release.  Includes a fix to file handle leaks when monitoring
+    WMI, as well as a fix for a cross-site scripting vulnerability in the
+    web UI.
+
+ -- Benjamin Reed <ranger@opennms.org>  Thu, 13 Sep 2010 13:20:00 -0500
+
 opennms (1.8.3-1) unstable; urgency=high
 
   * New upstream release.  Includes a critical fix to snmp-graph.properties.
