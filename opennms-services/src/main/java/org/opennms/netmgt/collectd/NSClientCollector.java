@@ -38,8 +38,6 @@ import org.opennms.netmgt.poller.nsclient.NsclientCheckParams;
 import org.opennms.netmgt.poller.nsclient.NsclientException;
 import org.opennms.netmgt.poller.nsclient.NsclientManager;
 import org.opennms.netmgt.poller.nsclient.NsclientPacket;
-import org.opennms.netmgt.rrd.RrdException;
-import org.opennms.netmgt.rrd.RrdUtils;
 
 /**
  * <p>NSClientCollector class.</p>
@@ -200,7 +198,7 @@ public class NSClientCollector implements ServiceCollector {
     
     /** {@inheritDoc} */
     public CollectionSet collect(CollectionAgent agent, EventProxy eproxy, Map<String, String> parameters) {
-        
+        int status = ServiceCollector.COLLECTION_FAILED;
         String collectionName=parameters.get("collection");
         if(collectionName==null) {
             //Look for the old configuration style:
@@ -231,7 +229,8 @@ public class NSClientCollector implements ServiceCollector {
                     agentState.setGroupIsAvailable(wpm.getName(), isAvailable);
                     log().debug("Group "+wpm.getName()+" is "+(isAvailable?"":"not")+"available ");
                 } catch (NsclientException e) {
-                    throw new NSClientCollectorException("Error checking group (" + wpm.getName() + ") availability", e);
+                    log().error("Error checking group (" + wpm.getName() + ") availability", e);
+                    agentState.setGroupIsAvailable(wpm.getName(), false);
                 } finally {
                     if (manager != null) {
                         manager.close();
@@ -262,6 +261,7 @@ public class NSClientCollector implements ServiceCollector {
                             } else {
                                 NSClientCollectionAttributeType attribType=new NSClientCollectionAttributeType(attrib, attribGroupType);
                                 collectionResource.setAttributeValue(attribType, result.getResponse());
+                                status = ServiceCollector.COLLECTION_SUCCEEDED;
                             }
                         }
                     }
@@ -269,20 +269,12 @@ public class NSClientCollector implements ServiceCollector {
                                         // been done (optimizing as much as
                                         // possible with NSClient)
                 } catch (NsclientException e) {
-                    throw new NSClientCollectorException("Error collecting data", e);
+                    log().error("Error collecting data", e);
                 }
             }
         }
-        collectionSet.setStatus(ServiceCollector.COLLECTION_SUCCEEDED);
+        collectionSet.setStatus(status);
         return collectionSet;
-    }
-
-    public class NSClientCollectorException extends RuntimeException {
-        public static final long serialVersionUID = 1L;
-
-        NSClientCollectorException(String message, Throwable cause) {
-            super(message, cause);
-        }
     }
 
     /** {@inheritDoc} */
