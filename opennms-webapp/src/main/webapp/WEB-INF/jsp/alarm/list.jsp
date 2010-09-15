@@ -315,8 +315,10 @@
                                              <% if( req.isUserInRole( Authentication.ADMIN_ROLE ) || !req.isUserInRole( Authentication.READONLY_ROLE ) ) { %>
 						<% if ( parms.ackType == AcknowledgeType.UNACKNOWLEDGED ) { %>
 						<th width="1%">Ack</th>
-						<% } else { %>
+						<% } else if ( parms.ackType == AcknowledgeType.ACKNOWLEDGED ) { %>
 						<th width="1%">UnAck</th>
+						<% } else if ( parms.ackType == AcknowledgeType.BOTH ) { %>
+						<th width="1%">Ack?</th>
 						<% } %>
                     <% } else { %>
                         <th width="1%">&nbsp;</th>
@@ -358,7 +360,12 @@
       %> 
 
         <tr class="<%=alarms[i].getSeverity().getLabel()%>">
-          <% if( req.isUserInRole( Authentication.ADMIN_ROLE ) || !req.isUserInRole( Authentication.READONLY_ROLE ) ) { %>
+          <% if( parms.ackType == AcknowledgeType.BOTH ) { %>
+              <td class="divider" valign="middle" rowspan="1">
+                <nobr>
+                  <input type="checkbox" name="alarm" disabled="true" <%=alarms[i].isAcknowledged() ? "checked='true'" : ""%> /> 
+                </nobr>
+          <% } else if( req.isUserInRole( Authentication.ADMIN_ROLE ) || !req.isUserInRole( Authentication.READONLY_ROLE ) ) { %>
               <td class="divider" valign="middle" rowspan="1">
                 <nobr>
                   <input type="checkbox" name="alarm" value="<%=alarms[i].getId()%>" /> 
