@@ -1,0 +1,250 @@
+package org.opennms.systemreport;
+
+import java.io.File;
+import java.io.FileNotFoundException;
+import java.io.FileOutputStream;
+import java.io.OutputStream;
+import java.util.ArrayList;
+import java.util.Collection;
+import java.util.Collections;
+import java.util.HashMap;
+import java.util.LinkedHashSet;
+import java.util.List;
+import java.util.Map;
+import java.util.Properties;
+import java.util.Set;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
+
+import org.apache.commons.cli.CommandLine;
+import org.apache.commons.cli.CommandLineParser;
+import org.apache.commons.cli.HelpFormatter;
+import org.apache.commons.cli.Options;
+import org.apache.commons.cli.ParseException;
+import org.apache.commons.cli.PosixParser;
+import org.apache.commons.io.IOUtils;
+import org.apache.log4j.PropertyConfigurator;
+import org.opennms.core.soa.ServiceRegistry;
+import org.opennms.core.utils.LogUtils;
+import org.springframework.context.support.ClassPathXmlApplicationContext;
+
+public class SystemReport {
+    final static Pattern m_pattern = Pattern.compile("^-D(.*?)=(.*)$");
+
+    /**
+     * @param args
+     */
+    public static void main(String[] args) {
+        final String tempdir = System.getProperty("java.io.tmpdir");
+
+        // pull out -D defines first
+        for (final String arg : args) {
+            if (arg.startsWith("-D") && arg.contains("=")) {
+                final Matcher m = m_pattern.matcher(arg);
+                if (m.matches()) {
+                    System.setProperty(m.group(1), m.group(2));
+                }
+            }
+        }
+        if (System.getProperty("opennms.home") == null) {
+            System.setProperty("opennms.home", tempdir);
+        }
+        if (System.getProperty("rrd.base.dir") == null) {
+            System.setProperty("rrd.base.dir", tempdir);
+        }
+        if (System.getProperty("rrd.binary") == null) {
+            System.setProperty("rrd.binary", "/usr/bin/rrdtool");
+        }
+
+        setupLogging("WARN");
+
+        final CommandLineParser parser = new PosixParser();
+
+        final Options options = new Options();
+        options.addOption("h", "help",           false, "this help");
+        options.addOption("D", "define",         true,  "define a java property");
+        options.addOption("p", "list-plugins",   false, "list the available system report plugins");
+        options.addOption("u", "use-plugins",    true,  "select the plugins to output");
+        options.addOption("l", "list-formats",   false, "list the available output formats");
+        options.addOption("f", "format",         true,  "the format to output");
+        options.addOption("o", "output",         true,  "the file to write output to");
+        options.addOption("x", "log-level",      true,  "the log level to log at (default: INFO)");
+        
+        try {
+            final CommandLine line = parser.parse(options, args, false);
+            final Set<String> plugins = new LinkedHashSet<String>();
+            
+            final SystemReport report = new SystemReport();
+
+            // help
+            if (line.hasOption("h")) {
+                final HelpFormatter formatter = new HelpFormatter();
+                formatter.printHelp("system-report.sh [options]", options);
+                System.exit(0);
+            }
+
+            if (line.hasOption("x")) {
+                setupLogging(line.getOptionValue("x"));
+            }
+
+            // format and output file
+            if (line.hasOption("f")) {
+                report.setFormat(line.getOptionValue("f"));
+            }
+            if (line.hasOption("o")) {
+                report.setOutput(line.getOptionValue("o"));
+            }
+            if (line.hasOption("u")) {
+                final String value = line.getOptionValue("u");
+                if (value != null) {
+                    for (final String s : value.split(",+")) {
+                        plugins.add(s);
+                    }
+                }
+            }
+
+            // final command
+            if (line.hasOption("p")) {
+                report.listPlugins();
+            } else if (line.hasOption("l")) {
+                report.listFormats();
+            } else {
+                report.writePluginData(plugins);
+            }
+        } catch (final ParseException e) {
+            LogUtils.errorf(SystemReport.class, e, "Unable to parse arguments.");
+            System.exit(1);
+        }
+    }
+
+    private ServiceRegistry m_serviceRegistry;
+    private String m_output = "-";
+    private String m_format = "text";
+
+    private void setOutput(final String file) {
+        m_output = file;
+    }
+
+    private void setFormat(final String format) {
+        m_format = format;
+    }
+
+    private void writePluginData(final Collection<String> plugins) {
+        initializeSpring();
+
+        SystemReportFormatter formatter = null;
+        for (final SystemReportFormatter f : getFormatters()) {
+            if (m_format.equals(f.getName())) {
+                formatter = f;
+                break;
+            }
+        }
+        if (formatter == null) {
+            LogUtils.errorf(this, "Unknown format '%s'!", m_format);
+            System.exit(1);
+        }
+
+        formatter.setOutput(m_output);
+
+        OutputStream stream = null;
+        if (formatter.needsOutputStream()) {
+            if (m_output.equals("-")) {
+                stream = System.out;
+            } else {
+                try {
+                    final File f = new File(m_output);
+                    f.delete();
+                    stream = new FileOutputStream(f, false);
+                } catch (final FileNotFoundException e) {
+                    LogUtils.errorf(SystemReport.class, e, "Unable to write to '%s'", m_output);
+                    System.exit(1);
+                }
+            }
+
+            if (m_output.equals("-") && !formatter.canStdout()) {
+                LogUtils.errorf(this, "%s formatter does not support writing to STDOUT!", formatter.getName());
+                System.exit(1);
+            }
+
+            formatter.setOutputStream(stream);
+        }
+
+        final int pluginSize = plugins.size();
+        final Map<String,SystemReportPlugin> pluginMap = new HashMap<String,SystemReportPlugin>();
+        for (final SystemReportPlugin plugin : getPlugins()) {
+            final String name = plugin.getName();
+            if (pluginSize == 0) plugins.add(name);
+            pluginMap.put(name, plugin);
+        }
+
+        try {
+            formatter.begin();
+            if (stream != null) stream.flush();
+            for (final String pluginName : plugins) {
+                if (!pluginMap.containsKey(pluginName)) {
+                    LogUtils.warnf(this, "No plugin named '%s' found, skipping.", pluginName);
+                } else {
+                    formatter.write(pluginMap.get(pluginName));
+                    if (stream != null) stream.flush();
+                }
+            }
+            formatter.end();
+            if (stream != null) stream.flush();
+        } catch (final Exception e) {
+            LogUtils.errorf(this, e, "An error occurred writing plugin data to output.");
+            System.exit(1);
+        }
+
+        IOUtils.closeQuietly(stream);
+    }
+
+    private void listPlugins() {
+        for (final SystemReportPlugin plugin : getPlugins()) {
+            System.err.println(plugin.getName() + ": " + plugin.getDescription());
+        }
+    }
+
+    private void listFormats() {
+        for (final SystemReportFormatter formatter : getFormatters()) {
+            System.err.println(formatter.getName() + ": " + formatter.getDescription());
+        }
+    }
+
+    private List<SystemReportPlugin> getPlugins() {
+        initializeSpring();
+        final List<SystemReportPlugin> plugins = new ArrayList<SystemReportPlugin>(m_serviceRegistry.findProviders(SystemReportPlugin.class));
+        Collections.sort(plugins);
+        return plugins;
+    }
+
+    private List<SystemReportFormatter> getFormatters() {
+        initializeSpring();
+        final List<SystemReportFormatter> formatters = new ArrayList<SystemReportFormatter>(m_serviceRegistry.findProviders(SystemReportFormatter.class));
+        Collections.sort(formatters);
+        return formatters;
+    }
+
+    private void initializeSpring() {
+        if (m_serviceRegistry == null) {
+            List<String> configs = new ArrayList<String>();
+            configs.add("classpath:/META-INF/opennms/applicationContext-soa.xml");
+            configs.add("classpath:/META-INF/opennms/applicationContext-dao.xml");
+            configs.add("classpath*:/META-INF/opennms/component-dao.xml");
+            configs.add("classpath:/META-INF/opennms/applicationContext-systemProperties.xml");
+            configs.add("classpath:/META-INF/opennms/applicationContext-systemReport.xml");
+            final ClassPathXmlApplicationContext context = new ClassPathXmlApplicationContext(configs.toArray(new String[0]));
+            m_serviceRegistry = (ServiceRegistry) context.getBean("serviceRegistry");
+        }
+    }
+
+    private static void setupLogging(final String level) {
+        final Properties logConfig = new Properties();
+        logConfig.setProperty("log4j.reset", "true");
+        logConfig.setProperty("log4j.rootCategory", "WARN, CONSOLE");
+        logConfig.setProperty("log4j.appender.CONSOLE", "org.apache.log4j.ConsoleAppender");
+        logConfig.setProperty("log4j.appender.CONSOLE.layout", "org.apache.log4j.PatternLayout");
+        logConfig.setProperty("log4j.appender.CONSOLE.layout.ConversionPattern", "%d %-5p [%t] %c: %m%n");
+        logConfig.setProperty("log4j.logger.org.opennms.systemreport", level);
+        PropertyConfigurator.configure(logConfig);
+    }
+}

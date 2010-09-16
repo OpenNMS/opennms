@@ -22,6 +22,8 @@
     <module>reporting</module>
     <module>springframework-security</module>
     <module>webapp-full</module>
+    <module>system-report</module>
+    <module>system-report-onejar</module>
   </modules>
 
   <profiles>
