@@ -344,6 +344,11 @@
       <artifactId>org.opennms.features.jdbc-collector</artifactId>
       <scope>compile</scope>
     </dependency>
+    <dependency>
+      <groupId>org.opennms.features</groupId>
+      <artifactId>org.opennms.features.system-report</artifactId>
+      <scope>compile</scope>
+    </dependency>
  
     <!-- dependencies for SMS monitors -->
     <dependency>
