@@ -43,6 +43,7 @@ package org.opennms.netmgt.poller;
 
 import java.sql.SQLException;
 import java.util.Date;
+import java.util.LinkedList;
 import java.util.List;
 
 import javax.sql.DataSource;
@@ -180,4 +181,7 @@ public interface QueryManager {
      * @return an array of {@link java.lang.String} objects.
      */
     public String[] getCriticalPath(int nodeId);
+    
+    public List<String[]> getNodeServices(int nodeId);
+    
 }
