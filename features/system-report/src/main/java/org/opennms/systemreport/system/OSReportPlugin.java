@@ -3,8 +3,10 @@ package org.opennms.systemreport.system;
 import java.io.File;
 import java.lang.management.ManagementFactory;
 import java.lang.management.OperatingSystemMXBean;
+import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.LinkedHashMap;
+import java.util.List;
 import java.util.Map;
 import java.util.TreeMap;
 
@@ -52,15 +54,7 @@ public class OSReportPlugin extends AbstractSystemReportPlugin {
         map.put("Version", getResourceFromProperty("os.version"));
         map.put("Distribution", map.get("Name"));
 
-        OperatingSystemMXBean osBean = (OperatingSystemMXBean)getBean(
-            ManagementFactory.OPERATING_SYSTEM_MXBEAN_NAME,
-            Arrays.asList(
-                new Class<?>[] {
-                    com.sun.management.OperatingSystemMXBean.class,
-                    java.lang.management.OperatingSystemMXBean.class
-                }
-            )
-        );
+        OperatingSystemMXBean osBean = getBean(ManagementFactory.OPERATING_SYSTEM_MXBEAN_NAME, OperatingSystemMXBean.class);
         if (osBean == null) {
             LogUtils.infof(this, "falling back to local VM OperatingSystemMXBean");
             osBean = ManagementFactory.getOperatingSystemMXBean();
