@@ -49,17 +49,6 @@ import org.opennms.netmgt.snmp.SnmpObjId;
  *
  * Should the instance also be part of a table, then the column number of the
  * instance is also stored in the object.
- *
- * @author <A HREF="mailto:weave@oculan.com">Brian Weaver </A>
- * @author <A HREF="mailto:mike@opennms.org">Mike Davidson </A>
- * @author <A HREF="http://www.opennms.org/">OpenNMS </A>
- * @author <A HREF="mailto:weave@oculan.com">Brian Weaver </A>
- * @author <A HREF="mailto:mike@opennms.org">Mike Davidson </A>
- * @author <A HREF="http://www.opennms.org/">OpenNMS </A>
- * @author <A HREF="mailto:weave@oculan.com">Brian Weaver </A>
- * @author <A HREF="mailto:mike@opennms.org">Mike Davidson </A>
- * @author <A HREF="http://www.opennms.org/">OpenNMS </A>
- * @version $Id: $
  */
 public final class NamedSnmpVar implements Collectable {
     /**
@@ -154,7 +143,7 @@ public final class NamedSnmpVar implements Collectable {
      * @param oid
      *            The object identifier for the instance.
      */
-    public NamedSnmpVar(String type, String alias, String oid) {
+    public NamedSnmpVar(final String type, final String alias, final String oid) {
         m_type = type;
         m_typeClass = null;
         m_name = alias;
@@ -178,7 +167,7 @@ public final class NamedSnmpVar implements Collectable {
      * @param column
      *            The column entry for its table.
      */
-    public NamedSnmpVar(String type, String alias, String oid, int column) {
+    public NamedSnmpVar(final String type, final String alias, final String oid, final int column) {
         m_type = type;
         m_typeClass = null;
         m_name = alias;
@@ -274,7 +263,10 @@ public final class NamedSnmpVar implements Collectable {
      * @param columns an array of {@link org.opennms.netmgt.capsd.snmp.NamedSnmpVar} objects.
      * @return an array of {@link org.opennms.netmgt.snmp.CollectionTracker} objects.
      */
-    public static CollectionTracker[] getTrackersFor(NamedSnmpVar[] columns) {
+    public static CollectionTracker[] getTrackersFor(final NamedSnmpVar[] columns) {
+        if (columns == null) {
+            return new CollectionTracker[0];
+        }
         CollectionTracker[] trackers = new CollectionTracker[columns.length];
         for(int i = 0; i < columns.length; i++)
             trackers[i] = columns[i].getCollectionTracker();
