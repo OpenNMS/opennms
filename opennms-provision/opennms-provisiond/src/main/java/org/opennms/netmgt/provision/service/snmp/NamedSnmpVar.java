@@ -54,17 +54,6 @@ import org.opennms.netmgt.snmp.SnmpObjId;
  *
  * Should the instance also be part of a table, then the column number of the
  * instance is also stored in the object.
- *
- * @author <A HREF="mailto:weave@oculan.com">Brian Weaver </A>
- * @author <A HREF="mailto:mike@opennms.org">Mike Davidson </A>
- * @author <A HREF="http://www.opennms.org/">OpenNMS </A>
- * @author <A HREF="mailto:weave@oculan.com">Brian Weaver </A>
- * @author <A HREF="mailto:mike@opennms.org">Mike Davidson </A>
- * @author <A HREF="http://www.opennms.org/">OpenNMS </A>
- * @author <A HREF="mailto:weave@oculan.com">Brian Weaver </A>
- * @author <A HREF="mailto:mike@opennms.org">Mike Davidson </A>
- * @author <A HREF="http://www.opennms.org/">OpenNMS </A>
- * @version $Id: $
  */
 public final class NamedSnmpVar {
     /**
@@ -159,7 +148,7 @@ public final class NamedSnmpVar {
      * @param oid
      *            The object identifier for the instance.
      */
-    public NamedSnmpVar(String type, String alias, String oid) {
+    public NamedSnmpVar(final String type, final String alias, final String oid) {
         m_type = type;
         m_typeClass = null;
         m_name = alias;
@@ -183,7 +172,7 @@ public final class NamedSnmpVar {
      * @param column
      *            The column entry for its table.
      */
-    public NamedSnmpVar(String type, String alias, String oid, int column) {
+    public NamedSnmpVar(final String type, final String alias, final String oid, final int column) {
         m_type = type;
         m_typeClass = null;
         m_name = alias;
@@ -259,13 +248,13 @@ public final class NamedSnmpVar {
      * @param instances a {@link java.util.Set} object.
      * @return a {@link org.opennms.netmgt.snmp.CollectionTracker} object.
      */
-    public CollectionTracker getCollectionTracker(Set<SnmpInstId> instances) {
+    public CollectionTracker getCollectionTracker(final Set<SnmpInstId> instances) {
         if ( instances == null ) {
             return m_isTabular ? new ColumnTracker(getSnmpObjId()) : 
                              new SingleInstanceTracker(getSnmpObjId(), SnmpInstId.INST_ZERO);
         } else {
             Collection<Collectable> trackers = new ArrayList<Collectable>();
-            for(SnmpInstId inst : instances) {
+            for(final SnmpInstId inst : instances) {
                 trackers.add(new SingleInstanceTracker(getSnmpObjId(), inst));
             }
             return new AggregateTracker(trackers);
@@ -289,7 +278,10 @@ public final class NamedSnmpVar {
      * @param instances a {@link java.util.Set} object.
      * @return an array of {@link org.opennms.netmgt.snmp.CollectionTracker} objects.
      */
-    public static CollectionTracker[] getTrackersFor(NamedSnmpVar[] columns, Set<SnmpInstId> instances) {
+    public static CollectionTracker[] getTrackersFor(final NamedSnmpVar[] columns, final Set<SnmpInstId> instances) {
+        if (columns == null) {
+            return new CollectionTracker[0];
+        }
         CollectionTracker[] trackers = new CollectionTracker[columns.length];
         for(int i = 0; i < columns.length; i++)
             trackers[i] = columns[i].getCollectionTracker(instances);
@@ -303,7 +295,7 @@ public final class NamedSnmpVar {
      * @param ms_elemList an array of {@link org.opennms.netmgt.provision.service.snmp.NamedSnmpVar} objects.
      * @return an array of {@link org.opennms.netmgt.snmp.CollectionTracker} objects.
      */
-    public static CollectionTracker[] getTrackersFor(NamedSnmpVar[] ms_elemList) {
+    public static CollectionTracker[] getTrackersFor(final NamedSnmpVar[] ms_elemList) {
         return getTrackersFor(ms_elemList, null);
     }
 
