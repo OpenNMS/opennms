@@ -101,6 +101,6 @@ public class JavaReportPluginTest {
         if (r instanceof ByteArrayResource) {
             return new String(((ByteArrayResource) r).getByteArray());
         }
-        return null;
+        return "Not a string resource.";
     }
 }

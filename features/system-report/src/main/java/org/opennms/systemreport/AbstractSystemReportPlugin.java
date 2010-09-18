@@ -27,6 +27,7 @@ import java.util.Set;
 import java.util.TreeMap;
 
 import javax.management.MBeanServerConnection;
+import javax.management.ObjectName;
 import javax.management.remote.JMXConnector;
 import javax.management.remote.JMXConnectorFactory;
 import javax.management.remote.JMXServiceURL;
@@ -42,11 +43,8 @@ import org.opennms.systemreport.system.PsParser;
 import org.springframework.core.io.ByteArrayResource;
 import org.springframework.core.io.Resource;
 
-import com.sun.tools.attach.VirtualMachine;
-
 public abstract class AbstractSystemReportPlugin implements SystemReportPlugin {
     protected static final long MAX_PROCESS_WAIT = 10000; // milliseconds
-    private static final String CONNECTOR_ADDRESS = "com.sun.management.jmxremote.localConnectorAddress";
     private MBeanServerConnection m_connection = null;
 
     public int getPriority() {
@@ -353,11 +351,10 @@ public abstract class AbstractSystemReportPlugin implements SystemReportPlugin {
 
     private MBeanServerConnection getConnection() {
         try {
-            final Set<Integer> processes = getOpenNMSProcesses();
-            JMXServiceURL url = new JMXServiceURL("service:jmx:rmi:///jndi/rmi://:1099/jmxrmi");
-            if (processes.size() > 0) {
-                url = getURLForPid(processes.iterator().next());
-            }
+            JMXServiceURL url = new JMXServiceURL("service:jmx:rmi:///jndi/rmi://localhost:1099/jmxrmi");
+//            if (processes.size() > 0) {
+//                url = getURLForPid(processes.iterator().next());
+//            }
             JMXConnector jmxc = JMXConnectorFactory.connect(url, null);
             return jmxc.getMBeanServerConnection();
         } catch (final Exception e) {
@@ -366,6 +363,7 @@ public abstract class AbstractSystemReportPlugin implements SystemReportPlugin {
         return null;
     }
 
+    /*
     protected JMXServiceURL getURLForPid(Integer pid) throws Exception {
         
         // attach to the target application
@@ -385,6 +383,7 @@ public abstract class AbstractSystemReportPlugin implements SystemReportPlugin {
         }
         return new JMXServiceURL(connectorAddress);
     }
+    */
 
     protected void addGetters(final Object o, final Map<String,Resource> map) {
         if (o != null) {
@@ -404,16 +403,34 @@ public abstract class AbstractSystemReportPlugin implements SystemReportPlugin {
         }
     }
 
-    protected Object getBean(final String mxBeanName, final List<Class<?>> classes) {
-        if (m_connection == null) {
-            m_connection = getConnection();
+    protected <T> List<T> getBeans(final String mxBeanName, final Class<T> clazz) {
+        initializeConnection();
+        List<T> beans = new ArrayList<T>();
+        try {
+            ObjectName o = new ObjectName(mxBeanName + ",*");
+            for (final ObjectName name : m_connection.queryNames(o, null)) {
+                beans.add(getBean(name.getCanonicalName(), clazz));
+            }
+        } catch (final Exception e) {
+            LogUtils.warnf(this, e, "Unable to get beans of type '%s'", mxBeanName);
         }
+        return beans;
+    }
+
+    protected <T> T getBean(final String mxBeanName, final Class<T> clazz) {
+        final List<Class<T>> classes = new ArrayList<Class<T>>();
+        classes.add(clazz);
+        return getBean(mxBeanName, classes);
+    }
+
+    protected <T> T getBean(final String mxBeanName, final List<? extends Class<T>> classes) {
+        initializeConnection();
         if (m_connection == null || mxBeanName == null || classes == null || classes.size() == 0) {
             return null;
         }
     
-        Object bean = null;
-        for (final Class<?> c : classes) {
+        T bean = null;
+        for (final Class<T> c : classes) {
             try {
                 bean = ManagementFactory.newPlatformMXBeanProxy(m_connection, mxBeanName, c);
                 break;
@@ -422,5 +439,11 @@ public abstract class AbstractSystemReportPlugin implements SystemReportPlugin {
             }
         }
         return bean;
+    }
+
+    private void initializeConnection() {
+        if (m_connection == null) {
+            m_connection = getConnection();
+        }
     }
 }
