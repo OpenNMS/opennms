@@ -38,7 +38,6 @@ package org.opennms.netmgt.provision.adapters.link;
 import static org.opennms.core.utils.LogUtils.debugf;
 
 import org.opennms.core.utils.LogUtils;
-import org.opennms.core.utils.ThreadCategory;
 import org.opennms.netmgt.EventConstants;
 import org.opennms.netmgt.model.events.EventUtils;
 import org.opennms.netmgt.model.events.annotations.EventHandler;
@@ -83,42 +82,41 @@ public class LinkProvisioningAdapter extends SimplerQueuedProvisioningAdapter {
     }
 
     /** {@inheritDoc} */
-    public void doAddNode(int endPointId) {
-        String endPoint1 = m_nodeLinkService.getNodeLabel(endPointId);
-        String endPoint2 = m_linkMatchResolver.getAssociatedEndPoint(endPoint1);
+    public void doAddNode(final int endPointId) {
+        final String endPoint1 = m_nodeLinkService.getNodeLabel(endPointId);
+        final String endPoint2 = m_linkMatchResolver.getAssociatedEndPoint(endPoint1);
         
-        String nodeLabel = max(endPoint1, endPoint2);
-        String parentNodeLabel = min(endPoint1, endPoint2);
+        final String nodeLabel = max(endPoint1, endPoint2);
+        final String parentNodeLabel = min(endPoint1, endPoint2);
         
-        Integer nodeId = m_nodeLinkService.getNodeId(nodeLabel);
-        Integer parentNodeId = m_nodeLinkService.getNodeId(parentNodeLabel);
+        final Integer nodeId = m_nodeLinkService.getNodeId(nodeLabel);
+        final Integer parentNodeId = m_nodeLinkService.getNodeId(parentNodeLabel);
         
-        log().info(String.format("running doAddNode on node %s nodeId: %d", nodeLabel, nodeId));
+        LogUtils.infof(this, "running doAddNode on node %s nodeId: %d", nodeLabel, nodeId);
         
         if(nodeId != null && parentNodeId != null){
-            log().info(String.format("Found link between parentNode %s and node %s", parentNodeLabel, nodeLabel));
+            LogUtils.infof(this, "Found link between parentNode %s and node %s", parentNodeLabel, nodeLabel);
             m_nodeLinkService.createLink(parentNodeId, nodeId);
         }
         
     }
     
     /** {@inheritDoc} */
-    public void doUpdateNode(int nodeid) {
+    public void doUpdateNode(final int nodeid) {
         createLinkForNodeIfNecessary(nodeid);
     }
     
-    private void createLinkForNodeIfNecessary(int nodeid) {
+    private void createLinkForNodeIfNecessary(final int nodeid) {
         doAddNode(nodeid);
     }
 
     /** {@inheritDoc} */
-    public void doDeleteNode(int nodeid) {
+    public void doDeleteNode(final int nodeid) {
         //This is handle using cascading deletes from the node table to the datalink table
     }
     
     /** {@inheritDoc} */
-    public void doNotifyConfigChange(int nodeid) {
-        
+    public void doNotifyConfigChange(final int nodeid) {
     }
     
     /**
@@ -127,28 +125,28 @@ public class LinkProvisioningAdapter extends SimplerQueuedProvisioningAdapter {
      * @param event a {@link org.opennms.netmgt.xml.event.Event} object.
      */
     @EventHandler(uei=EventConstants.DATA_LINK_FAILED_EVENT_UEI)
-    public void dataLinkFailed(Event event){
+    public void dataLinkFailed(final Event event) {
         try{
             updateLinkStatus("dataLinkFailed", event, "B");
-        }catch(Throwable t){
+        }catch(final Throwable t){
             debugf(this, t, "Caught an exception in dataLinkFailed");
         }finally{
             debugf(this, "Bailing out of dataLinkFailed handler");
         }
     }
 
-    private void updateLinkStatus(String method, Event event, String newStatus) {
+    private void updateLinkStatus(final String method, final Event event, final String newStatus) {
         LogUtils.infof(this, "%s: received event %s", method, event.getUei());
-        String endPoint1 = EventUtils.getParm(event, EventConstants.PARM_ENDPOINT1);
-        String endPoint2 = EventUtils.getParm(event, EventConstants.PARM_ENDPOINT2);
+        final String endPoint1 = EventUtils.getParm(event, EventConstants.PARM_ENDPOINT1);
+        final String endPoint2 = EventUtils.getParm(event, EventConstants.PARM_ENDPOINT2);
         
         Assert.notNull(endPoint1, "Param endPoint1 cannot be null");
         Assert.notNull(endPoint2, "Param endPoint2 cannot be null");
         
-        String nodeLabel = max(endPoint1, endPoint2);
-        String parentNodeLabel = min(endPoint1, endPoint2);
-        Integer nodeId = m_nodeLinkService.getNodeId(nodeLabel);
-        Integer parentNodeId = m_nodeLinkService.getNodeId(parentNodeLabel);
+        final String nodeLabel = max(endPoint1, endPoint2);
+        final String parentNodeLabel = min(endPoint1, endPoint2);
+        final Integer nodeId = m_nodeLinkService.getNodeId(nodeLabel);
+        final Integer parentNodeId = m_nodeLinkService.getNodeId(parentNodeLabel);
         
         if(nodeId != null && parentNodeId != null) {
             LogUtils.infof(this, "%s: updated link nodeLabel: %s, nodeId: %d, parentLabel: %s, parentId: %d ", method, nodeLabel, nodeId, parentNodeLabel, parentNodeId);
@@ -164,10 +162,10 @@ public class LinkProvisioningAdapter extends SimplerQueuedProvisioningAdapter {
      * @param event a {@link org.opennms.netmgt.xml.event.Event} object.
      */
     @EventHandler(uei=EventConstants.DATA_LINK_RESTORED_EVENT_UEI)
-    public void dataLinkRestored(Event event){
+    public void dataLinkRestored(final Event event){
         try{
             updateLinkStatus("dataLinkRestored", event, "G");
-        }catch(Throwable t){
+        }catch(final Throwable t){
             debugf(this, t, "Caught a throwable in dataLinkRestored");
         }finally{
             debugf(this, "Bailing out of dataLinkRestored handler");
@@ -180,10 +178,10 @@ public class LinkProvisioningAdapter extends SimplerQueuedProvisioningAdapter {
      * @param e a {@link org.opennms.netmgt.xml.event.Event} object.
      */
     @EventHandler(uei=EventConstants.DATA_LINK_UNMANAGED_EVENT_UEI)
-    public void dataLinkUnmanaged(Event e) {
+    public void dataLinkUnmanaged(final Event e) {
         try{
             updateLinkStatus("dataLinkUnmanaged", e, "U");
-        }catch(Throwable t){
+        }catch(final Throwable t){
             debugf(this, t, "Caught a throwable in dataLinkUnmanaged");
         }finally{
             debugf(this, "Bailing out of dataLinkUnmanaged handler");
@@ -197,8 +195,8 @@ public class LinkProvisioningAdapter extends SimplerQueuedProvisioningAdapter {
      * @param string2 a {@link java.lang.String} object.
      * @return a {@link java.lang.String} object.
      */
-    public static String max(String string1, String string2) {
-        if(string1.compareTo(string2) < 0) {
+    public static String max(final String string1, final String string2) {
+        if(string1 == null || string1.compareTo(string2) < 0) {
             return string2;
         }else {
             return string1;
@@ -212,24 +210,20 @@ public class LinkProvisioningAdapter extends SimplerQueuedProvisioningAdapter {
      * @param string2 a {@link java.lang.String} object.
      * @return a {@link java.lang.String} object.
      */
-    public static String min(String string1, String string2) {
-        if(string1.compareTo(string2) < 0) {
+    public static String min(final String string1, final String string2) {
+        if(string1 == null || string1.compareTo(string2) < 0) {
             return string1;
         }else {
             return string2;
         }
     }
     
-    private static ThreadCategory log() {
-        return ThreadCategory.getInstance(LinkProvisioningAdapter.class);
-    }
-
     /**
      * <p>setLinkMatchResolver</p>
      *
      * @param linkMatchResolver a {@link org.opennms.netmgt.provision.adapters.link.LinkMatchResolver} object.
      */
-    public void setLinkMatchResolver(LinkMatchResolver linkMatchResolver) {
+    public void setLinkMatchResolver(final LinkMatchResolver linkMatchResolver) {
         m_linkMatchResolver = linkMatchResolver;
     }
 
@@ -247,7 +241,7 @@ public class LinkProvisioningAdapter extends SimplerQueuedProvisioningAdapter {
      *
      * @param nodeLinkService a {@link org.opennms.netmgt.provision.adapters.link.NodeLinkService} object.
      */
-    public void setNodeLinkService(NodeLinkService nodeLinkService) {
+    public void setNodeLinkService(final NodeLinkService nodeLinkService) {
         m_nodeLinkService = nodeLinkService;
     }
     
