@@ -65,7 +65,7 @@ public class OSReportPlugin extends AbstractSystemReportPlugin {
 
         File lsb = new File("/bin/lsb_release");
         File solaris = new File("/var/sadm/softinfo/INST_RELEASE");
-        if (lsb.exists() && lsb.canExecute()) {
+        if (lsb.exists()) {
             final String text = slurpCommand(new String[] { "/bin/lsb_release", "-a" });
             final Map<String,String> distMap = splitMultilineString(": +", text);
             for (final Map.Entry<String,String> entry : distMap.entrySet()) {
@@ -82,7 +82,7 @@ public class OSReportPlugin extends AbstractSystemReportPlugin {
                 map.put("Distribution", map.remove("Distribution Os"));
             }
             File isainfo = new File("/usr/bin/isainfo");
-            if (isainfo.exists() && isainfo.canExecute()) {
+            if (isainfo.exists()) {
                 final String arch = slurpCommand(new String[] { "/usr/bin/isainfo", "-n" });
                 if (arch != null) {
                     map.put("Instruction Set", getResource(arch));
