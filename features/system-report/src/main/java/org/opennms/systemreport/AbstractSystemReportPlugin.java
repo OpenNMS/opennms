@@ -144,7 +144,7 @@ public abstract class AbstractSystemReportPlugin implements SystemReportPlugin {
 
     protected Resource getResource(final String text) {
         if (text == null) return new ByteArrayResource(new byte[0]);
-        return new ByteArrayResource(text.getBytes(Charset.defaultCharset()));
+        return new ByteArrayResource(text.getBytes());
     }
     
     protected String findBinary(final String name) {
@@ -162,11 +162,11 @@ public abstract class AbstractSystemReportPlugin implements SystemReportPlugin {
 
         for (final String dir : pathEntries) {
             File file = new File(dir, name);
-            if (file.exists() && file.canExecute()) {
+            if (file.exists()) {
                 return file.getPath();
             }
             file = new File(dir, name + ".exe");
-            if (file.exists() && file.canExecute()) {
+            if (file.exists()) {
                 return file.getPath();
             }
         }
@@ -408,7 +408,7 @@ public abstract class AbstractSystemReportPlugin implements SystemReportPlugin {
         List<T> beans = new ArrayList<T>();
         try {
             ObjectName o = new ObjectName(mxBeanName + ",*");
-            for (final ObjectName name : m_connection.queryNames(o, null)) {
+            for (final ObjectName name : (Set<ObjectName>)m_connection.queryNames(o, null)) {
                 beans.add(getBean(name.getCanonicalName(), clazz));
             }
         } catch (final Exception e) {
