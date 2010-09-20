@@ -8,6 +8,7 @@
   </parent>
   <groupId>org.opennms.features</groupId>
   <artifactId>org.opennms.features.system-report</artifactId>
+  <name>OpenNMS System Report</name>
   <packaging>jar</packaging>
   <build>
     <resources>
