@@ -55,6 +55,8 @@ import java.util.StringTokenizer;
 
 import javax.sql.DataSource;
 
+import org.opennms.netmgt.config.DataSourceFactory;
+
 /**
  * The Vault handles policies for allocating/deallocating scarce resources and
  * stores application configuration properties.
@@ -121,7 +123,11 @@ public class Vault extends Object {
      */
     public static DataSource getDataSource() {
         if (s_dataSource == null) {
-            throw new IllegalStateException("You must set a DataSource before requesting a data source.");
+            // A solution to Bug 4117 requires that "Vault" tries to get a DataSource instance by itself in order to use "IfLabel"
+            s_dataSource = DataSourceFactory.getInstance();
+        }
+        if (s_dataSource == null) {
+            throw new IllegalStateException("You must set a DataSource before requesting a data source or a database connection.");
         }
         
         return s_dataSource;
@@ -134,11 +140,7 @@ public class Vault extends Object {
      * @throws java.sql.SQLException if any.
      */
     public static Connection getDbConnection() throws SQLException {
-        if (s_dataSource == null) {
-            throw new IllegalStateException("You must set a DataSource before requesting a database connection.");
-        }
-
-        return s_dataSource.getConnection();
+        return getDataSource().getConnection();
     }
 
     /**
