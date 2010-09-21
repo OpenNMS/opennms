@@ -20,10 +20,5 @@
       <groupId>org.opennms.dependencies</groupId>
       <artifactId>jaxb-dependencies</artifactId>
     </dependency>
-    <dependency>
-      <groupId>org.opennms</groupId>
-      <artifactId>opennms-dao</artifactId>
-      <scope>compile</scope>
-    </dependency>
   </dependencies>
 </project>
