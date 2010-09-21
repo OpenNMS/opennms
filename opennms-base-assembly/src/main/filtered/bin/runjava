@@ -129,9 +129,14 @@ javaCheck() {
                 fi
         fi
         
-        tell "$JP is not a Sun JVM and only Sun JVMs are supported."
-        tell "You can use the '-f' option to ignore this check, but you will be on your own for support."
-        return 1
+        if [ $run -eq 0 ] && [ $force -eq 0 ]; then
+            tell "$JP is not a Sun JVM and only Sun JVMs are supported."
+            tell "You can use the '-f' option to ignore this check, but you will be on your own for support."
+            return 1
+        else
+            warn "$JP is not a supported JVM.  Using it anyways."
+            return 0
+        fi
     else
         tell "$JP is not Java 1.5 or newer."
         return 1
