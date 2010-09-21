@@ -109,32 +109,37 @@ printHelp() {
 # javaFind() functions.
 #
 javaCheck() {
-	if [ -z "$OPENJDK_MINIMUM_BUILD" ]; then
-		OPENJDK_MINIMUM_BUILD=14
-	fi
+        if [ -z "$OPENJDK_MINIMUM_BUILD" ]; then
+                OPENJDK_MINIMUM_BUILD=14
+        fi
 
     ret="`$JP -version 2>&1 | grep ' version "' | sed 's/^.* version \"//;s/\".*$//'`"
     if echo "$ret" | egrep '^1\.[5-9]\.' > /dev/null; then
-	# Check for Sun Java
-	if $JP -version 2>&1 | egrep '^(Diablo )?Java\(TM\)' > /dev/null; then
-	    return 0
-	fi
-	if $JP -version 2>&1 | egrep 'OpenJDK .* VM' >/dev/null; then
-		build="`$JP -version 2>&1 | egrep '^OpenJDK .* VM' | sed -e 's,^.*build ,,' -e 's,\..*$,,'`"
-		if [ $build -ge $OPENJDK_MINIMUM_BUILD ]; then
-			return 0
-		else
-			tell "OpenNMS is only known to work with OpenJDK build $OPENJDK_MINIMUM_BUILD and later."
-			return 1
-		fi
-	fi
-	
-	tell "$JP is not a Sun JVM and only Sun JVMs are supported."
-	tell "You can use the '-f' option to ignore this check, but you will be on your own for support."
-	return 1
+        # Check for Sun Java
+        if $JP -version 2>&1 | egrep '^(Diablo )?Java\(TM\)' > /dev/null; then
+            return 0
+        fi
+        if $JP -version 2>&1 | egrep 'OpenJDK .* VM' >/dev/null; then
+                build="`$JP -version 2>&1 | egrep '^OpenJDK .* VM' | sed -e 's,^.*build ,,' -e 's,\..*$,,'`"
+                if [ $build -ge $OPENJDK_MINIMUM_BUILD ]; then
+                        return 0
+                else
+                        tell "OpenNMS is only known to work with OpenJDK build $OPENJDK_MINIMUM_BUILD and later."
+                        return 1
+                fi
+        fi
+        
+        if [ $run -eq 0 ] && [ $force -eq 0 ]; then
+            tell "$JP is not a Sun JVM and only Sun JVMs are supported."
+            tell "You can use the '-f' option to ignore this check, but you will be on your own for support."
+            return 1
+        else
+            warn "$JP is not a supported JVM.  Using it anyways."
+            return 0
+        fi
     else
-	tell "$JP is not Java 1.5 or newer."
-	return 1
+        tell "$JP is not Java 1.5 or newer."
+        return 1
     fi
 }
 
@@ -149,23 +154,23 @@ javaCheck() {
 # foolproof but should get us close.
 #
 javaPaths() {
-	for searchdir in $searchdirs; do
-		if [ ! -d "$searchdir" ]; then
-			continue;
-		fi
+        for searchdir in $searchdirs; do
+                if [ ! -d "$searchdir" ]; then
+                        continue;
+                fi
 
-		# We search "j2*" for the Sun-supplied Java packages ("j2sdk"),
-		# "java" for the Java installation shipped with SuSE, and "Home"
-		# to catch /Library/Java/Home on Mac OS X.
-		jdirs="`find \"$searchdir\" -maxdepth 2 \\( -name \"j2*\" -o -name \"jdk*\" -o -name \"java\" -o -name \"Home\" \\) -print`"
-		for jdir in $searchdir/java/default $searchdir/java/latest $jdirs; do
-			if [ -x $jdir/bin/java ]; then
-				JP=$jdir/bin/java
-				javaCheck && return 0
-			fi
-		done
-	done
-	return 1
+                # We search "j2*" for the Sun-supplied Java packages ("j2sdk"),
+                # "java" for the Java installation shipped with SuSE, and "Home"
+                # to catch /Library/Java/Home on Mac OS X.
+                jdirs="`find \"$searchdir\" -maxdepth 2 \\( -name \"j2*\" -o -name \"jdk*\" -o -name \"java\" -o -name \"Home\" \\) -print`"
+                for jdir in $searchdir/java/default $searchdir/java/latest $jdirs; do
+                        if [ -x $jdir/bin/java ]; then
+                                JP=$jdir/bin/java
+                                javaCheck && return 0
+                        fi
+                done
+        done
+        return 1
 }
 
 #
@@ -175,27 +180,27 @@ javaPaths() {
 checkJavaHome() {
     tell "Checking for an appropriate JRE in JAVA_HOME..."
     if [ x"$JAVA_HOME" = x"" ]; then
-	tell "skipping... JAVA_HOME not set"
-	return 1
+        tell "skipping... JAVA_HOME not set"
+        return 1
     fi
 
     if [ ! -d "$JAVA_HOME" ]; then
-	tell "skipping... JAVA_HOME (\"$JAVA_HOME\") is not a directory"
-	return 1
+        tell "skipping... JAVA_HOME (\"$JAVA_HOME\") is not a directory"
+        return 1
     fi
     
     if [ ! -x "$JAVA_HOME/bin/java" ]; then
-	tell "skipping... \"$JAVA_HOME/bin/java\" does not exist or is not executable"
-	return 1
+        tell "skipping... \"$JAVA_HOME/bin/java\" does not exist or is not executable"
+        return 1
     fi
 
     JP=$JAVA_HOME/bin/java
     if javaCheck; then
-	tell "found: \"$JAVA_HOME/bin/java\" is an appropriate JRE"
-	return 0
+        tell "found: \"$JAVA_HOME/bin/java\" is an appropriate JRE"
+        return 0
     else
-	tell "\"$JAVA_HOME/bin/java\" is not an appropriate JRE"
-	return 1
+        tell "\"$JAVA_HOME/bin/java\" is not an appropriate JRE"
+        return 1
     fi
 }
 
@@ -206,17 +211,17 @@ checkJavaHome() {
 checkPath() {
     JP="`which java`"
     if [ $? -eq 1 ]; then
-	tell "did not find a JRE in user's path"
-	return 1
+        tell "did not find a JRE in user's path"
+        return 1
     fi
 
     tell "Checking JRE in user's path: \"$JP\"..."
     if javaCheck; then
-	tell "found an appropriate JRE in user's path: \"$JP\""
-	return 0
+        tell "found an appropriate JRE in user's path: \"$JP\""
+        return 0
     else
-	tell "did not find an appropriate JRE in user's path: \"$JP\""
-	return 1
+        tell "did not find an appropriate JRE in user's path: \"$JP\""
+        return 1
     fi
 }
 
@@ -227,11 +232,11 @@ checkPath() {
 findJava() {
     tell "searching for a good JRE..."
     if javaPaths; then
-	tell "found a good JRE in \"$JP\""
-	return 0
+        tell "found a good JRE in \"$JP\""
+        return 0
     else
-	tell "did not find an appropriate JRE while searching for one"
-	return 1
+        tell "did not find an appropriate JRE while searching for one"
+        return 1
     fi
 }
 
@@ -266,30 +271,30 @@ checkConfiguredJava() {
     mantra="run \"$opennms_home/bin/runjava -s\" to setup java.conf"
 
     if [ ! -f $java_conf ]; then
-	warn "error: $java_conf file not found"
-	warn "$mantra"
+        warn "error: $java_conf file not found"
+        warn "$mantra"
 
-	return 1
+        return 1
     fi
 
     JP="`cat $java_conf`"
 
     if [ ! -x $JP ]; then
-	warn "error: configured Java runtime environment not found"
-	warn "\"$JP\" does not exist or is not executable"
-	warn "$mantra"
+        warn "error: configured Java runtime environment not found"
+        warn "\"$JP\" does not exist or is not executable"
+        warn "$mantra"
 
-	return 1
+        return 1
     fi
 
     javaCheck
 
     if [ $? -ne 0 ]; then
-	warn "error: bad version or vendor for configured Java runtime environment"
-	warn "\"$JP -version\" does not report that is version 1.5+ and a compatible JDK."
-	warn "$mantra"
+        warn "error: bad version or vendor for configured Java runtime environment"
+        warn "\"$JP -version\" does not report that is version 1.5+ and a compatible JDK."
+        warn "$mantra"
 
-	return 1
+        return 1
     fi
 
     return 0
@@ -303,18 +308,18 @@ checkConfiguredJava() {
 runJava() {
     checkConfiguredJava
     if [ $? -ne 0 ]; then
-	if [ $force -gt 0 ]; then
-	    warn "Ignoring Java warning due to '-f' option being used"
-	else
-	    return 1
-	fi
+        if [ $force -gt 0 ]; then
+            warn "Ignoring Java warning due to '-f' option being used"
+        else
+            return 1
+        fi
     fi
 
     if [ $dryrun -eq 0 ]; then
-	add_ld_path
-	exec "$JP" "$@"
+        add_ld_path
+        exec "$JP" "$@"
     else
-	tell "Dry run mode is set.  Would have executed: $JP $*"
+        tell "Dry run mode is set.  Would have executed: $JP $*"
     fi
 }
 
@@ -324,51 +329,51 @@ runJava() {
 #
 add_ld_path () {
     case "`uname`" in
-	Darwin)
-	    if echo "$DYLD_LIBRARY_PATH" | \
-		grep -v "$opennms_home/lib" >/dev/null; then
-		DYLD_LIBRARY_PATH="$DYLD_LIBRARY_PATH:$opennms_home/lib:$opennms_home/lib/mac"
-		export DYLD_LIBRARY_PATH
-	    fi
-	    return
-	    ;;
+        Darwin)
+            if echo "$DYLD_LIBRARY_PATH" | \
+                grep -v "$opennms_home/lib" >/dev/null; then
+                DYLD_LIBRARY_PATH="$DYLD_LIBRARY_PATH:$opennms_home/lib:$opennms_home/lib/mac"
+                export DYLD_LIBRARY_PATH
+            fi
+            return
+            ;;
 
-	Linux)
-	    if echo "$LD_LIBRARY_PATH" | \
-		grep -v "$opennms_home/lib" >/dev/null; then
-		LD_LIBRARY_PATH="$LD_LIBRARY_PATH:$opennms_home/lib"
-		export LD_LIBRARY_PATH
-	    fi
+        Linux)
+            if echo "$LD_LIBRARY_PATH" | \
+                grep -v "$opennms_home/lib" >/dev/null; then
+                LD_LIBRARY_PATH="$LD_LIBRARY_PATH:$opennms_home/lib"
+                export LD_LIBRARY_PATH
+            fi
 
             case "`uname -p`" in
-		x86_64)
-		    if echo "$LD_LIBRARY_PATH" | \
-			grep -v "$opennms_home/lib/linux64" >/dev/null; then
-			LD_LIBRARY_PATH="$LD_LIBRARY_PATH:$opennms_home/lib/linux64"
-			export LD_LIBRARY_PATH
-		    fi
-		    ;;
+                x86_64)
+                    if echo "$LD_LIBRARY_PATH" | \
+                        grep -v "$opennms_home/lib/linux64" >/dev/null; then
+                        LD_LIBRARY_PATH="$LD_LIBRARY_PATH:$opennms_home/lib/linux64"
+                        export LD_LIBRARY_PATH
+                    fi
+                    ;;
 
-		    *)
-		    if echo "$LD_LIBRARY_PATH" | \
-			grep -v "$opennms_home/lib/linux32" >/dev/null; then
-			LD_LIBRARY_PATH="$LD_LIBRARY_PATH:$opennms_home/lib/linux32"
-			export LD_LIBRARY_PATH
-		    fi
-		    ;;
-	    esac
+                    *)
+                    if echo "$LD_LIBRARY_PATH" | \
+                        grep -v "$opennms_home/lib/linux32" >/dev/null; then
+                        LD_LIBRARY_PATH="$LD_LIBRARY_PATH:$opennms_home/lib/linux32"
+                        export LD_LIBRARY_PATH
+                    fi
+                    ;;
+            esac
 
-	    return
-	    ;;
+            return
+            ;;
 
-	*)
-	    if echo "$LD_LIBRARY_PATH" | \
-		grep -v "$opennms_home/lib" >/dev/null; then
-		LD_LIBRARY_PATH="$LD_LIBRARY_PATH:$opennms_home/lib"
-		export LD_LIBRARY_PATH
-	    fi
-	    return
-	    ;;
+        *)
+            if echo "$LD_LIBRARY_PATH" | \
+                grep -v "$opennms_home/lib" >/dev/null; then
+                LD_LIBRARY_PATH="$LD_LIBRARY_PATH:$opennms_home/lib"
+                export LD_LIBRARY_PATH
+            fi
+            return
+            ;;
     esac
     
     return 1
@@ -382,10 +387,10 @@ add_ld_path () {
 #
 setupJava() {
     if javaFind; then
-	saveJava
-	return $?
+        saveJava
+        return $?
     else
-	return 1
+        return 1
     fi
 }
 
@@ -397,18 +402,18 @@ setupJava() {
 setJava() {
     tell "checking specified JRE: \"$JP\"..."
     if [ ! -x "$JP" ]; then
-	die "specified JRE \"$JP\" does not exist or is not executable"
+        die "specified JRE \"$JP\" does not exist or is not executable"
     fi
     javaCheck
     if [ $? -ne 0 ]; then
-	if [ $force -gt 0 ]; then
-	    warn "JRE is not an appropriate version and/or vendor"
-	    warn "Ignoring Java warning due to '-f' option being used"
-	else
-	    die "specified JRE \"$JP\" is not an appropriate JRE"
-	fi
+        if [ $force -gt 0 ]; then
+            warn "JRE is not an appropriate version and/or vendor"
+            warn "Ignoring Java warning due to '-f' option being used"
+        else
+            die "specified JRE \"$JP\" is not an appropriate JRE"
+        fi
     else
-	tell "specified JRE is good."
+        tell "specified JRE is good."
     fi
 
     saveJava
@@ -417,15 +422,15 @@ setJava() {
 
 saveJava() {
     if [ $dryrun -eq 0 ]; then
-	echo "$JP" > $java_conf
-	if [ $? -ne 0 ]; then
-	    warn "error saving JRE to configuration file"
-	    warn "configuration file: $java_conf"
-	    die "exiting..."
-	fi
-	tell "value of \"$JP\" stored in configuration file"
+        echo "$JP" > $java_conf
+        if [ $? -ne 0 ]; then
+            warn "error saving JRE to configuration file"
+            warn "configuration file: $java_conf"
+            die "exiting..."
+        fi
+        tell "value of \"$JP\" stored in configuration file"
     else
-	tell "value of \"$JP\" would have been stored if not in dryrun mode"
+        tell "value of \"$JP\" would have been stored if not in dryrun mode"
     fi
 
     return 0
@@ -445,45 +450,45 @@ parseArgsAndDoStuff() {
     do
       case $c in
           c)
-    	  check=1
-    	  exclusive=`expr $exclusive + 1`
-    	  ;;
+              check=1
+              exclusive=`expr $exclusive + 1`
+              ;;
     
           f)
-	  force=1
+              force=1
           ;;
     
           h)
-    	  printHelp
-    	  exit 0
-    	  ;;
+              printHelp
+              exit 0
+              ;;
     
           n)
-    	  dryrun=1
-    	  ;;
+              dryrun=1
+              ;;
     
           q)
-    	  quiet=1
-    	  ;;
+              quiet=1
+              ;;
     
           r)
-    	  run=1
-    	  exclusive=`expr $exclusive + 1`
-    	  ;;
+              run=1
+              exclusive=`expr $exclusive + 1`
+              ;;
     
           s)
-    	  search=1
-    	  exclusive=`expr $exclusive + 1`
-    	  ;;
+              search=1
+              exclusive=`expr $exclusive + 1`
+              ;;
 
-	  S)
-    	  location="$OPTARG"
-    	  exclusive=`expr $exclusive + 1`
-    	  ;;
+          S)
+              location="$OPTARG"
+              exclusive=`expr $exclusive + 1`
+              ;;
     
           \?)
               die "Invalid option.  Use \"-h\" for help."
-    	  ;;
+              ;;
       esac
     done
     shift `expr $OPTIND - 1`

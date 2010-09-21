@@ -84,6 +84,16 @@
       <parameter key="rrd-base-name" value="http-8000" />
       <parameter key="ds-name" value="http-8000" />
     </service>
+    <service name="HTTP-HostExample" interval="300000" user-defined="false" status="on">
+      <parameter key="retry" value="1" />
+      <parameter key="timeout" value="3000" />
+      <parameter key="port" value="80" />
+      <parameter key="url" value="/wiki/Main_Page" />
+      <parameter key="host-name" value="www.opennms.org" />
+      <parameter key="rrd-repository" value="${install.share.dir}/rrd/response" />
+      <parameter key="rrd-base-name" value="http-hostexample" />
+      <parameter key="ds-name" value="http-hostexample" />
+    </service>
     <service name="HTTPS" interval="300000" user-defined="false" status="on">
       <parameter key="retry" value="1" />
       <parameter key="timeout" value="5000" />
@@ -678,6 +688,7 @@
   <monitor service="HTTP" class-name="org.opennms.netmgt.poller.monitors.HttpMonitor" />
   <monitor service="HTTP-8080" class-name="org.opennms.netmgt.poller.monitors.HttpMonitor" />
   <monitor service="HTTP-8000" class-name="org.opennms.netmgt.poller.monitors.HttpMonitor" />
+  <monitor service="HTTP-HostExample" class-name="org.opennms.netmgt.poller.monitors.HttpMonitor" />
   <monitor service="HTTPS" class-name="org.opennms.netmgt.poller.monitors.HttpsMonitor" />
   <monitor service="HypericAgent" class-name="org.opennms.netmgt.poller.monitors.TcpMonitor" />
   <monitor service="HypericHQ" class-name="org.opennms.netmgt.poller.monitors.PageSequenceMonitor" />
