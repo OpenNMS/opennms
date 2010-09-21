@@ -68,7 +68,7 @@ import org.xml.sax.InputSource;
  */
 public class CastorUtils {
     private static final CastorExceptionTranslator CASTOR_EXCEPTION_TRANSLATOR = new CastorExceptionTranslator();
-    private static final boolean PRESERVE_WHITESPACE = false;
+    public static final boolean PRESERVE_WHITESPACE = false;
 
     /** Private constructor since this class only has static methods (so far). */
     private CastorUtils() {
