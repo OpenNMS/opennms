@@ -33,7 +33,7 @@ public class SystemReport extends Bootstrap {
 
     public static void main(String[] args) throws Exception {
         loadDefaultProperties();
-        executeClass("org.opennms.systemreport.SystemReport", "report", args);
+        executeClass("org.opennms.systemreport.SystemReport", "report", args, true);
     }
 
     /**
