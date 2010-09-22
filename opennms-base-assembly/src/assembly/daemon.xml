@@ -162,6 +162,13 @@
        </includes>
     </dependencySet>
     <dependencySet>
+       <outputFileNameMapping>opennms_system_report.jar</outputFileNameMapping>
+       <outputDirectory>lib</outputDirectory>
+       <includes>
+         <include>org.opennms.features:org.opennms.features.system-report</include>
+       </includes>
+    </dependencySet>
+    <dependencySet>
        <outputFileNameMapping>libjicmp.${extension}</outputFileNameMapping>
        <outputDirectory>lib</outputDirectory>
        <!-- all the platforms need to be listed until the IncludesArtifactFiler supports wildcards -->
