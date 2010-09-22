@@ -184,7 +184,11 @@ public class SystemReport extends Bootstrap {
                 if (!pluginMap.containsKey(pluginName)) {
                     LogUtils.warnf(this, "No plugin named '%s' found, skipping.", pluginName);
                 } else {
-                    formatter.write(pluginMap.get(pluginName));
+                    try {
+                        formatter.write(pluginMap.get(pluginName));
+                    } catch (final Exception e) {
+                        LogUtils.errorf(this, e, "An error occurred calling plugin '%s'", pluginName);
+                    }
                     if (stream != null) stream.flush();
                 }
             }

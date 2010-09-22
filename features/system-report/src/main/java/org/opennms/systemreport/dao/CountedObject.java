@@ -1,4 +1,4 @@
-package org.opennms.netmgt.model;
+package org.opennms.systemreport.dao;
 
 import org.apache.commons.lang.builder.CompareToBuilder;
 import org.apache.commons.lang.builder.ToStringBuilder;
