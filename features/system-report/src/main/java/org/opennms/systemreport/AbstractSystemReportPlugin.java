@@ -350,40 +350,23 @@ public abstract class AbstractSystemReportPlugin implements SystemReportPlugin {
     }
 
     private MBeanServerConnection getConnection() {
-        try {
-            JMXServiceURL url = new JMXServiceURL("service:jmx:rmi:///jndi/rmi://localhost:1099/jmxrmi");
-//            if (processes.size() > 0) {
-//                url = getURLForPid(processes.iterator().next());
-//            }
-            JMXConnector jmxc = JMXConnectorFactory.connect(url, null);
-            return jmxc.getMBeanServerConnection();
-        } catch (final Exception e) {
-            LogUtils.infof(this, e, "Unable to get JMX connection to OpenNMS.");
+        final List<Integer> ports = new ArrayList<Integer>();
+        Integer p = Integer.getInteger("com.sun.management.jmxremote.port");
+        if (p != null) ports.add(p);
+        ports.add(18980);
+        ports.add(1099);
+        for (final Integer port : ports) {
+            LogUtils.tracef(this, "Trying JMX at localhost:%d/jmxrmi", port);
+            try {
+                JMXServiceURL url = new JMXServiceURL(String.format("service:jmx:rmi:///jndi/rmi://localhost:%d/jmxrmi", port));
+                JMXConnector jmxc = JMXConnectorFactory.connect(url, null);
+                return jmxc.getMBeanServerConnection();
+            } catch (final Exception e) {
+                LogUtils.debugf(this, e, "Unable to get JMX connection to OpenNMS on port %d.", port);
+            }
         }
         return null;
     }
-
-    /*
-    protected JMXServiceURL getURLForPid(Integer pid) throws Exception {
-        
-        // attach to the target application
-        final VirtualMachine vm = VirtualMachine.attach(pid.toString());
-        
-        // get the connector address
-        String connectorAddress = vm.getAgentProperties().getProperty(CONNECTOR_ADDRESS);
-        
-        // no connector address, so we start the JMX agent
-        if (connectorAddress == null) {
-            String agent = vm.getSystemProperties().getProperty("java.home") + File.separator + "lib" + File.separator + "management-agent.jar";
-            vm.loadAgent(agent);
-            
-            // agent is started, get the connector address
-            connectorAddress = vm.getAgentProperties().getProperty(CONNECTOR_ADDRESS);
-            assert connectorAddress != null;
-        }
-        return new JMXServiceURL(connectorAddress);
-    }
-    */
 
     protected void addGetters(final Object o, final Map<String,Resource> map) {
         if (o != null) {
@@ -396,7 +379,7 @@ public abstract class AbstractSystemReportPlugin implements SystemReportPlugin {
                     } catch (Exception e) {
                         value = e;
                     }
-                    final String key = method.getName().replaceFirst("^get", "").replaceAll("([A-Z])", " $1").replaceFirst("^ ", "");
+                    final String key = method.getName().replaceFirst("^get", "").replaceAll("([A-Z])", " $1").replaceFirst("^ ", "").replaceAll("\\bVm\\b", "VM");
                     map.put(key, getResource(value.toString()));
                 }
             }
@@ -406,6 +389,7 @@ public abstract class AbstractSystemReportPlugin implements SystemReportPlugin {
     protected <T> List<T> getBeans(final String mxBeanName, final Class<T> clazz) {
         initializeConnection();
         List<T> beans = new ArrayList<T>();
+        if (m_connection == null)  return beans;
         try {
             ObjectName o = new ObjectName(mxBeanName + ",*");
             for (final ObjectName name : (Set<ObjectName>)m_connection.queryNames(o, null)) {

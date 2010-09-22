@@ -58,10 +58,10 @@ import java.util.StringTokenizer;
  */
 public class Bootstrap {
 	
-    static final String BOOT_PROPERTIES_NAME = "bootstrap.properties";
-    static final String RRD_PROPERTIES_NAME = "rrd-configuration.properties";
-    static final String LIBRARY_PROPERTIES_NAME = "libraries.properties";
-    static final String OPENNMS_HOME_PROPERTY = "opennms.home";
+    protected static final String BOOT_PROPERTIES_NAME = "bootstrap.properties";
+    protected static final String RRD_PROPERTIES_NAME = "rrd-configuration.properties";
+    protected static final String LIBRARY_PROPERTIES_NAME = "libraries.properties";
+    protected static final String OPENNMS_HOME_PROPERTY = "opennms.home";
     
     /**
      * Matches any file that is a directory.
@@ -154,7 +154,7 @@ public class Bootstrap {
     public static void loadClasses(File dir, boolean recursive,
             LinkedList<URL> urls) throws MalformedURLException {
         // Add the directory
-        urls.add(dir.toURL());
+        urls.add(dir.toURI().toURL());
 
         if (recursive) {
             // Descend into sub-directories
@@ -170,7 +170,7 @@ public class Bootstrap {
         File[] children = dir.listFiles(m_jarFilter);
         if (children != null) {
             for (File childFile : children) {
-                urls.add(childFile.toURL());
+                urls.add(childFile.toURI().toURL());
             }
         }
     }
@@ -213,7 +213,7 @@ public class Bootstrap {
      * @param is
      *            InputStream of the properties file to load.
      */
-    static void loadProperties(InputStream is) throws IOException {
+    protected static void loadProperties(InputStream is) throws IOException {
         Properties p = new Properties();
         p.load(is);
 
@@ -229,7 +229,7 @@ public class Bootstrap {
     /**
      * Copy properties from a property file to the system properties.
      */
-    static boolean loadProperties(File f) throws IOException {
+    protected static boolean loadProperties(File f) throws IOException {
     	if (!f.exists()) {
     		return false;
     	}
@@ -253,8 +253,7 @@ public class Bootstrap {
      * @return whether the property file was able to be loaded into the System properties
      * @throws IOException
      */
-
-    private static boolean loadDefaultProperties(File opennmsHome) throws IOException {
+    protected static boolean loadDefaultProperties(File opennmsHome) throws IOException {
 		boolean propertiesLoaded = true;
 		File etc = new File(opennmsHome, "etc");
 		File bootstrapFile = new File(etc, BOOT_PROPERTIES_NAME);
@@ -306,43 +305,16 @@ public class Bootstrap {
      * @throws java.lang.Exception if any.
      */
     public static void main(String[] args) throws Exception {
-        
-        boolean propertiesLoaded = false;
-        String opennmsHome = System.getProperty(OPENNMS_HOME_PROPERTY);
-        if (opennmsHome != null) {
-            propertiesLoaded = loadDefaultProperties(new File(opennmsHome));
-        }
-        
-        /*
-         * containing this code. We no longer need this file in the JAR,
-         * though, since we can determine everything we need at runtime.
-         */
-        /*
-         * if (!propertiesLoaded) { ClassLoader l =
-         * Thread.currentThread().getContextClassLoader(); is =
-         * l.getResourceAsStream(bootPropertiesName); if (is == null) {
-         * loadProperties(is); propertiesLoaded = true; } }
-         */
-
-        if (!propertiesLoaded) {
-            File parent = findOpenNMSHome();
-            if (parent == null) {
-                System.err.println("Could not determine OpenNMS home "
-                        + "directory.  Use \"-Dopennms.home=...\" "
-                        + "option to Java to specify a specific "
-                        + "OpenNMS home directory.  " + "E.g.: "
-                        + "\"java -Dopennms.home=... -jar ...\".");
-                System.exit(1);
-            }
-            propertiesLoaded = loadDefaultProperties(parent);
-            System.setProperty(OPENNMS_HOME_PROPERTY, parent.getPath());
-        }
+        loadDefaultProperties();
         
         final String classToExec = System.getProperty("opennms.manager.class", "org.opennms.netmgt.vmmgr.Controller");
         final String classToExecMethod = "main";
         final String[] classToExecArgs = args;
 
+        executeClass(classToExec, classToExecMethod, classToExecArgs);
+    }
 
+    protected static void executeClass(final String classToExec, final String classToExecMethod, final String[] classToExecArgs) throws MalformedURLException, ClassNotFoundException, NoSuchMethodException {
         String dir = System.getProperty("opennms.classpath");
         if (dir == null) {
             dir = System.getProperty(OPENNMS_HOME_PROPERTY) + File.separator
@@ -390,6 +362,32 @@ public class Bootstrap {
             Thread bootstrapper = new Thread(execer, "Main");
             bootstrapper.setContextClassLoader(cl);
             bootstrapper.start();
+        }
+    }
+
+    protected static void loadDefaultProperties() throws Exception {
+        boolean propertiesLoaded = false;
+        String opennmsHome = System.getProperty(OPENNMS_HOME_PROPERTY);
+        if (opennmsHome != null) {
+            propertiesLoaded = loadDefaultProperties(new File(opennmsHome));
+        }
+        
+        if (!propertiesLoaded) {
+            File parent = findOpenNMSHome();
+            if (parent == null) {
+                System.err.println("Could not determine OpenNMS home "
+                        + "directory.  Use \"-Dopennms.home=...\" "
+                        + "option to Java to specify a specific "
+                        + "OpenNMS home directory.  " + "E.g.: "
+                        + "\"java -Dopennms.home=... -jar ...\".");
+                System.exit(1);
+            }
+            propertiesLoaded = loadDefaultProperties(parent);
+            System.setProperty(OPENNMS_HOME_PROPERTY, parent.getPath());
+        }
+        
+        if (!propertiesLoaded) {
+            throw new RuntimeException("Unable to load default properties from $OPENNMS_HOME!");
         }
     }
 
