@@ -7,6 +7,11 @@
 		http://xmlns.opennms.org/xsd/spring/onms-osgi http://xmlns.opennms.org/xsd/spring/onms-osgi/onms-osgi.xsd
         ">
 
+	<!-- DAOs -->
+	<bean id="eventCountDao" class="org.opennms.systemreport.dao.EventCountDaoHibernate">
+		<property name="sessionFactory" ref="sessionFactory" />
+	</bean>
+
     <!-- SYSTEM REPORT PLUGINS -->
 
 	<!-- basic Java information -->

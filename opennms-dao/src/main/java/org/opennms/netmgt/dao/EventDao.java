@@ -29,10 +29,7 @@
 //
 package org.opennms.netmgt.dao;
 
-import java.util.Set;
-
 import org.opennms.netmgt.model.OnmsEvent;
-import org.opennms.netmgt.model.CountedObject;
 
 /**
  * <p>EventDao interface.</p>
@@ -50,6 +47,4 @@ public interface EventDao extends OnmsDao<OnmsEvent, Integer> {
      * @return a int.
      */
     int deletePreviousEventsForAlarm(final Integer id, final OnmsEvent e);
-	
-    Set<CountedObject<String>> getUeiCounts(final Integer limit);
 }
