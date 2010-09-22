@@ -230,7 +230,6 @@ public class SystemReport extends Bootstrap {
             configs.add("classpath:/META-INF/opennms/applicationContext-soa.xml");
             configs.add("classpath:/META-INF/opennms/applicationContext-dao.xml");
             configs.add("classpath*:/META-INF/opennms/component-dao.xml");
-            configs.add("classpath:/META-INF/opennms/applicationContext-systemProperties.xml");
             configs.add("classpath:/META-INF/opennms/applicationContext-systemReport.xml");
             final ClassPathXmlApplicationContext context = new ClassPathXmlApplicationContext(configs.toArray(new String[0]));
             m_serviceRegistry = (ServiceRegistry) context.getBean("serviceRegistry");

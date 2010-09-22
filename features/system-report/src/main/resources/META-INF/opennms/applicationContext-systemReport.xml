@@ -41,6 +41,10 @@
 	<bean name="logReportPlugin" class="org.opennms.systemreport.opennms.LogReportPlugin" />
 	<onmsgi:service id="logReportPluginService" ref="logReportPlugin" interface="org.opennms.systemreport.SystemReportPlugin" />
 
+	<!-- Top Events -->
+	<bean name="topEventReportPlugin" class="org.opennms.systemreport.opennms.TopEventReportPlugin" />
+	<onmsgi:service id="topEventReportPluginService" ref="topEventReportPlugin" interface="org.opennms.systemreport.SystemReportPlugin" />
+
 	<onmsgi:list id="systemReportPluginList" interface="org.opennms.systemreport.SystemReportPlugin" />
 
     <!-- SYSTEM REPORT FORMATTERS -->
