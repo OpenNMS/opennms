@@ -75,14 +75,14 @@ public class BasicScheduleUtils {
             log.debug("isTimeInOutage: checking for time '" + cal.getTime() + "' in schedule '" + sched.getName() + "'");
         if (sched == null)
             return false;
-        long curCalTime = cal.getTime().getTime();
+        long curCalTime = cal.getTimeInMillis();
+        Calendar outCalBegin = new GregorianCalendar();
+        Calendar outCalEnd = new GregorianCalendar();
+        
         // check if day is part of outage
         boolean inOutage = false;
         Enumeration<Time> e = sched.enumerateTime();
         while (e.hasMoreElements() && !inOutage) {
-            Calendar outCalBegin = new GregorianCalendar();
-            Calendar outCalEnd = new GregorianCalendar();
-            
             outCalBegin.setTimeInMillis(curCalTime);
             outCalEnd.setTimeInMillis(curCalTime);
     
@@ -118,26 +118,36 @@ public class BasicScheduleUtils {
             // if time of day was specified and did not match, continue
             if (oTimeDay != null && !inOutage)
                 continue;
-    
-            // set time in out calendars
-            setOutCalTime(outCalBegin, begins);
+
+            /**
+             *  set time in out calendars, starting with the end time.
+             *  
+             * By starting with the end time, we can optimize out the case where
+             * the end time is prior to our current time, meaning we don't need
+             * to convert the time from a string to an object.
+             * 
+             */
             setOutCalTime(outCalEnd, ends);
-    
-            // check if calendar passed is in the out cal range
+            long outCalEndTime = (outCalEnd.getTimeInMillis() / 1000 + 1) * 1000;
+
             if (log.isDebugEnabled())
-                log.debug("isTimeInOutage: checking begin/end time...\n current: " + cal.getTime() + "\n begin: " + outCalBegin.getTime() + "\n end: " + outCalEnd.getTime());
-    
-            // round these to the surrounding seconds since we can only specify
-            // this to seconds
-            // accuracy in the config file
-            long outCalBeginTime = outCalBegin.getTime().getTime() / 1000 * 1000;
-            long outCalEndTime = (outCalEnd.getTime().getTime() / 1000 + 1) * 1000;
-    
-            if (curCalTime >= outCalBeginTime && curCalTime < outCalEndTime)
-                inOutage = true;
-            else
-                inOutage = false;
-    
+                log.debug("isTimeInOutage: comparing current time to end time: \n current: " + cal.getTime() + "\n end: " + outCalEnd.getTime());
+
+            if (curCalTime < outCalEndTime) {
+                // Our end time is before our current time, check the beginning.
+
+                setOutCalTime(outCalBegin, begins);
+                long outCalBeginTime = outCalBegin.getTimeInMillis() / 1000 * 1000;
+
+                if (log.isDebugEnabled())
+                    log.debug("isTimeInOutage: comparing current time to begin time: \n current: " + cal.getTime() + "\n begin: " + outCalBegin.getTime());
+
+                if (curCalTime < outCalBeginTime) {
+                    inOutage = false;
+                } else {
+                    inOutage = true;
+                }
+            }
         }
         return inOutage;
     }
