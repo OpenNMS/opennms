@@ -8,8 +8,10 @@
         ">
 
   <!-- override the DAO propertyPlaceholderConfigurer to avoid model-importer.properties errors -->
+  <!-- 
   <bean id="propertyPlaceholderConfigurer" class="org.springframework.beans.factory.config.PropertyPlaceholderConfigurer">
     <property name="systemPropertiesModeName" value="SYSTEM_PROPERTIES_MODE_OVERRIDE" />
   </bean>
+  -->
 
 </beans>
