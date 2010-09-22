@@ -90,14 +90,20 @@ public class Bootstrap {
      * @param recursive
      *            Whether to recurse into subdirectories of the directories in
      *            dirStr
+     * @param append TODO
      * @returns A new ClassLoader containing the found JARs
      * @return a {@link java.lang.ClassLoader} object.
      * @throws java.net.MalformedURLException if any.
      */
-    public static ClassLoader loadClasses(String dirStr, boolean recursive)
-            throws MalformedURLException {
+    public static ClassLoader loadClasses(String dirStr, boolean recursive, boolean append) throws MalformedURLException {
         LinkedList<URL> urls = new LinkedList<URL>();
 
+        if (append) {
+            ClassLoader classLoader = Thread.currentThread().getContextClassLoader();
+            for (final URL u : ((URLClassLoader) classLoader).getURLs()) {
+                urls.add(u);
+            }
+        }
         StringTokenizer toke = new StringTokenizer(dirStr, File.pathSeparator);
         while (toke.hasMoreTokens()) {
             String token = toke.nextToken();
@@ -151,8 +157,7 @@ public class Bootstrap {
      *            LinkedList to append found JARs onto
      * @throws java.net.MalformedURLException if any.
      */
-    public static void loadClasses(File dir, boolean recursive,
-            LinkedList<URL> urls) throws MalformedURLException {
+    public static void loadClasses(File dir, boolean recursive, LinkedList<URL> urls) throws MalformedURLException {
         // Add the directory
         urls.add(dir.toURI().toURL());
 
@@ -281,7 +286,7 @@ public class Bootstrap {
      * OpenNMS home directory if the bootstrap.properties file has not yet
      * been loaded. Sets the opennms.home system property to the path returned
      * from findOpenNMSHome.</li>
-     * <li>Calls {@link #loadClasses(String, boolean) loadClasses} to create
+     * <li>Calls {@link #loadClasses(String, boolean, boolean) loadClasses} to create
      * a new ClassLoader. ${opennms.home}/etc and ${opennms.home/lib} are
      * passed to loadClasses.</li>
      * <li>Determines the proper default value for configuration options when
@@ -311,10 +316,10 @@ public class Bootstrap {
         final String classToExecMethod = "main";
         final String[] classToExecArgs = args;
 
-        executeClass(classToExec, classToExecMethod, classToExecArgs);
+        executeClass(classToExec, classToExecMethod, classToExecArgs, false);
     }
 
-    protected static void executeClass(final String classToExec, final String classToExecMethod, final String[] classToExecArgs) throws MalformedURLException, ClassNotFoundException, NoSuchMethodException {
+    protected static void executeClass(final String classToExec, final String classToExecMethod, final String[] classToExecArgs, boolean appendClasspath) throws MalformedURLException, ClassNotFoundException, NoSuchMethodException {
         String dir = System.getProperty("opennms.classpath");
         if (dir == null) {
             dir = System.getProperty(OPENNMS_HOME_PROPERTY) + File.separator
@@ -333,7 +338,7 @@ public class Bootstrap {
         	dir += File.pathSeparator + System.getProperty("org.opennms.rrd.interfaceJar");
         }
         
-        final ClassLoader cl = Bootstrap.loadClasses(dir, false);
+        final ClassLoader cl = Bootstrap.loadClasses(dir, false, false);
 
         if (classToExec != null) {
             final String className = classToExec;
