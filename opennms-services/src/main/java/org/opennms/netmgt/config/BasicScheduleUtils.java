@@ -40,7 +40,7 @@ import java.util.GregorianCalendar;
 import java.util.HashMap;
 import java.util.Map;
 
-import org.opennms.core.utils.ThreadCategory;
+import org.opennms.core.utils.LogUtils;
 import org.opennms.netmgt.config.common.BasicSchedule;
 import org.opennms.netmgt.config.common.Time;
 
@@ -68,13 +68,11 @@ public class BasicScheduleUtils {
      * @param sched a {@link org.opennms.netmgt.config.common.BasicSchedule} object.
      * @return a boolean.
      */
-    public static boolean isTimeInSchedule(Calendar cal, BasicSchedule sched) {
-        ThreadCategory log = ThreadCategory.getInstance(BasicScheduleUtils.class);
-        
-        if (log.isDebugEnabled())
-            log.debug("isTimeInOutage: checking for time '" + cal.getTime() + "' in schedule '" + sched.getName() + "'");
-        if (sched == null)
-            return false;
+    public static boolean isTimeInSchedule(final Calendar cal, final BasicSchedule sched) {
+        LogUtils.debugf(BasicScheduleUtils.class, "isTimeInOutage: checking for time '%s' in schedule '%s'", cal.getTime(), sched.getName());
+
+        if (cal == null || sched == null) return false;
+
         long curCalTime = cal.getTime().getTime();
         // check if day is part of outage
         boolean inOutage = false;
@@ -124,8 +122,7 @@ public class BasicScheduleUtils {
             setOutCalTime(outCalEnd, ends);
     
             // check if calendar passed is in the out cal range
-            if (log.isDebugEnabled())
-                log.debug("isTimeInOutage: checking begin/end time...\n current: " + cal.getTime() + "\n begin: " + outCalBegin.getTime() + "\n end: " + outCalEnd.getTime());
+            LogUtils.debugf(BasicScheduleUtils.class, "isTimeInOutage: checking begin/end time...\n current: %s\n begin: %s\n end: %s", cal.getTime(), outCalBegin.getTime(), outCalEnd.getTime());
     
             // round these to the surrounding seconds since we can only specify
             // this to seconds
@@ -151,7 +148,7 @@ public class BasicScheduleUtils {
      * @param timeStr
      *            the time string
      */
-    public static void setOutCalTime(Calendar outCal, String timeStr) {
+    public static void setOutCalTime(final Calendar outCal, final String timeStr) {
         if (timeStr.length() == BasicScheduleUtils.FORMAT1.length()) {
             SimpleDateFormat format = new SimpleDateFormat(BasicScheduleUtils.FORMAT1);
     
@@ -217,7 +214,7 @@ public class BasicScheduleUtils {
      * @param out a {@link org.opennms.netmgt.config.common.BasicSchedule} object.
      * @return a {@link java.util.Calendar} object.
      */
-    public static Calendar getEndOfSchedule(BasicSchedule out) {
+    public static Calendar getEndOfSchedule(final BasicSchedule out) {
         long curCalTime = System.currentTimeMillis();
         Calendar cal = new GregorianCalendar();
         cal.setTimeInMillis(curCalTime);
@@ -296,8 +293,8 @@ public class BasicScheduleUtils {
      * @param sched a {@link org.opennms.netmgt.config.common.BasicSchedule} object.
      * @return a boolean.
      */
-    public static boolean isTimeInSchedule(Date time, BasicSchedule sched) {
-        Calendar cal = Calendar.getInstance();
+    public static boolean isTimeInSchedule(final Date time, final BasicSchedule sched) {
+        final Calendar cal = Calendar.getInstance();
         cal.setTime(time);
         return isTimeInSchedule(cal, sched);
     }
@@ -308,7 +305,7 @@ public class BasicScheduleUtils {
      * @param time a {@link org.opennms.netmgt.config.common.Time} object.
      * @return a boolean.
      */
-    public static boolean isDaily(Time time) {
+    public static boolean isDaily(final Time time) {
     	return time.getDay() == null && !isSpecific(time);
     }
     
@@ -318,7 +315,7 @@ public class BasicScheduleUtils {
      * @param time a {@link org.opennms.netmgt.config.common.Time} object.
      * @return a boolean.
      */
-    public static boolean isWeekly(Time time) {
+    public static boolean isWeekly(final Time time) {
         return time.getDay() != null && getDayOfWeekIndex(time.getDay()) != null;
     }
     
@@ -328,7 +325,7 @@ public class BasicScheduleUtils {
      * @param time a {@link org.opennms.netmgt.config.common.Time} object.
      * @return a boolean.
      */
-    public static boolean isMonthly(Time time) {
+    public static boolean isMonthly(final Time time) {
         return time.getDay() != null && getDayOfWeekIndex(time.getDay()) == null; 
     }
     
@@ -338,7 +335,7 @@ public class BasicScheduleUtils {
      * @param time a {@link org.opennms.netmgt.config.common.Time} object.
      * @return a boolean.
      */
-    public static boolean isSpecific(Time time) {
+    public static boolean isSpecific(final Time time) {
         if (time.getDay() == null) {
             if (time.getBegins().matches("^\\d\\d\\d\\d-\\d\\d-\\d\\d .*$")) {
                 return true;
@@ -355,8 +352,8 @@ public class BasicScheduleUtils {
      * @param specificString a {@link java.lang.String} object.
      * @return a {@link java.util.Date} object.
      */
-    public static Date getSpecificTime(String specificString) {
-        Calendar cal = Calendar.getInstance();
+    public static Date getSpecificTime(final String specificString) {
+        final Calendar cal = Calendar.getInstance();
         setOutCalTime(cal, specificString);
         return cal.getTime();
     }
@@ -369,8 +366,8 @@ public class BasicScheduleUtils {
      * @param timeString a {@link java.lang.String} object.
      * @return a {@link java.util.Date} object.
      */
-    public static Date getMonthlyTime(Date referenceTime, String day, String timeString) {
-        Calendar ref = Calendar.getInstance();
+    public static Date getMonthlyTime(final Date referenceTime, final String day, final String timeString) {
+        final Calendar ref = Calendar.getInstance();
         ref.setTime(referenceTime);
         ref.set(Calendar.DAY_OF_MONTH, Integer.parseInt(day));
         setOutCalTime(ref, timeString);
@@ -385,8 +382,8 @@ public class BasicScheduleUtils {
      * @param timeString a {@link java.lang.String} object.
      * @return a {@link java.util.Date} object.
      */
-    public static Date getWeeklyTime(Date referenceTime, String day, String timeString) {
-        Calendar ref = Calendar.getInstance();
+    public static Date getWeeklyTime(final Date referenceTime, final String day, final String timeString) {
+        final Calendar ref = Calendar.getInstance();
         ref.setTime(referenceTime);
         ref.set(Calendar.DAY_OF_WEEK, getDayOfWeekIndex(day).intValue());
         setOutCalTime(ref, timeString);
@@ -400,8 +397,8 @@ public class BasicScheduleUtils {
      * @param timeString a {@link java.lang.String} object.
      * @return a {@link java.util.Date} object.
      */
-    public static Date getDailyTime(Date referenceTime, String timeString) {
-    	Calendar ref = Calendar.getInstance();
+    public static Date getDailyTime(final Date referenceTime, final String timeString) {
+        final Calendar ref = Calendar.getInstance();
     	ref.setTime(referenceTime);
     	setOutCalTime(ref, timeString);
     	return ref.getTime();
@@ -415,7 +412,7 @@ public class BasicScheduleUtils {
      * @param owner a {@link org.opennms.netmgt.config.Owner} object.
      * @return a {@link org.opennms.netmgt.config.OwnedInterval} object.
      */
-    public static OwnedInterval getInterval(Date ref, Time time, Owner owner) {
+    public static OwnedInterval getInterval(final Date ref, final Time time, final Owner owner) {
         if (isWeekly(time)) {
             return new OwnedInterval(owner, getWeeklyTime(ref, time.getDay(), time.getBegins()), getWeeklyTime(ref, time.getDay(), time.getEnds()));
         } else if (isMonthly(time)) {
@@ -433,8 +430,8 @@ public class BasicScheduleUtils {
      * @param date a {@link java.util.Date} object.
      * @return a {@link java.util.Date} object.
      */
-    public static Date nextDay(Date date) {
-    	Calendar cal = Calendar.getInstance();
+    public static Date nextDay(final Date date) {
+        final Calendar cal = Calendar.getInstance();
     	cal.setTime(date);
     	cal.add(Calendar.DAY_OF_MONTH, 1);
     	return cal.getTime();
@@ -446,7 +443,7 @@ public class BasicScheduleUtils {
      * @param date a {@link java.util.Date} object.
      * @return a {@link java.util.Date} object.
      */
-    public static Date nextWeek(Date date) {
+    public static Date nextWeek(final Date date) {
         Calendar cal = Calendar.getInstance();
         cal.setTime(date);
         cal.add(Calendar.DAY_OF_YEAR, 7);
@@ -459,7 +456,7 @@ public class BasicScheduleUtils {
      * @param date a {@link java.util.Date} object.
      * @return a {@link java.util.Date} object.
      */
-    public static Date nextMonth(Date date) {
+    public static Date nextMonth(final Date date) {
         Calendar cal = Calendar.getInstance();
         cal.setTime(date);
         cal.add(Calendar.MONTH, 1);
@@ -475,24 +472,24 @@ public class BasicScheduleUtils {
      * @param owner a {@link org.opennms.netmgt.config.Owner} object.
      * @return a {@link org.opennms.netmgt.config.OwnedIntervalSequence} object.
      */
-    public static OwnedIntervalSequence getIntervals(Date start, Date end, Time time, Owner owner) {
-        OwnedIntervalSequence seq = new OwnedIntervalSequence();
+    public static OwnedIntervalSequence getIntervals(final Date start, final Date end, final Time time, final Owner owner) {
+        final OwnedIntervalSequence seq = new OwnedIntervalSequence();
         
         // return an empty list for entries that have a zero length interval specified
         if (time.getBegins().equals(time.getEnds())) return seq;
         
         if (isWeekly(time)) {
-            Date done = nextWeek(end);
+            final Date done = nextWeek(end);
             for(Date ref = start; done.after(ref); ref = nextWeek(ref)) {
                 seq.addInterval(getInterval(ref, time, owner));
             }
         } else if (isMonthly(time)) {
-            Date done = nextMonth(end);
+            final Date done = nextMonth(end);
             for(Date ref = start; done.after(ref); ref = nextMonth(ref)) {
                 seq.addInterval(getInterval(ref, time, owner));
             }
         } else if (isDaily(time)) {
-        	Date done = nextDay(end);
+            final Date done = nextDay(end);
         	for(Date ref = start; done.after(ref); ref = nextDay(ref)) {
         		seq.addInterval(getInterval(ref, time, owner));
         	}
@@ -511,7 +508,7 @@ public class BasicScheduleUtils {
      * @param owner a {@link org.opennms.netmgt.config.Owner} object.
      * @return a {@link org.opennms.netmgt.config.OwnedIntervalSequence} object.
      */
-    public static OwnedIntervalSequence getIntervals(TimeInterval interval, Time time, Owner owner) {
+    public static OwnedIntervalSequence getIntervals(final TimeInterval interval, final Time time, final Owner owner) {
         return getIntervals(interval.getStart(), interval.getEnd(), time, owner);
     }
     
@@ -524,11 +521,11 @@ public class BasicScheduleUtils {
      * @param owner a {@link org.opennms.netmgt.config.Owner} object.
      * @return a {@link org.opennms.netmgt.config.OwnedIntervalSequence} object.
      */
-    public static OwnedIntervalSequence getIntervalsCovering(Date start, Date end, BasicSchedule sched, Owner owner) {
-        OwnedIntervalSequence seq = new OwnedIntervalSequence();
+    public static OwnedIntervalSequence getIntervalsCovering(final Date start, final Date end, final BasicSchedule sched, final Owner owner) {
+        final OwnedIntervalSequence seq = new OwnedIntervalSequence();
         for (int i = 0; i < sched.getTimeCount(); i++) {
-            Time time = (Time) sched.getTime(i);
-            Owner thisOwner = owner.addTimeIndex(i);
+            final Time time = sched.getTime(i);
+            final Owner thisOwner = owner.addTimeIndex(i);
             seq.addAll(getIntervals(start, end, time, thisOwner));
         }
         return seq;
@@ -542,7 +539,7 @@ public class BasicScheduleUtils {
      * @param owner a {@link org.opennms.netmgt.config.Owner} object.
      * @return a {@link org.opennms.netmgt.config.OwnedIntervalSequence} object.
      */
-    public static OwnedIntervalSequence getIntervalsCovering(TimeInterval interval, BasicSchedule sched, Owner owner) {
+    public static OwnedIntervalSequence getIntervalsCovering(final TimeInterval interval, final BasicSchedule sched, final Owner owner) {
         return getIntervalsCovering(interval.getStart(), interval.getEnd(), sched, owner);
     }
 
