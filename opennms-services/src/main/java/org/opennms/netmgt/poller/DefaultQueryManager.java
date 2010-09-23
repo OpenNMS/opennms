@@ -42,6 +42,8 @@ import java.sql.Timestamp;
 import java.text.ParseException;
 import java.util.ArrayList;
 import java.util.Date;
+import java.util.LinkedHashMap;
+import java.util.LinkedList;
 import java.util.List;
 
 import javax.sql.DataSource;
@@ -90,6 +92,9 @@ public class DefaultQueryManager implements QueryManager {
      */
     final static String SQL_FETCH_IFSERVICES_TO_POLL = "SELECT if.serviceid FROM ifservices if, service s WHERE if.serviceid = s.serviceid AND if.status = 'A' AND if.ipaddr = ?";
 
+    final static String SQL_FETCH_INTERFACES_AND_SERVICES_ON_NODE ="SELECT ipaddr,servicename FROM ifservices,service WHERE nodeid= ? AND ifservices.serviceid=service.serviceid";
+    
+    
     private DataSource m_dataSource;
 
     /** {@inheritDoc} */
@@ -540,4 +545,28 @@ public class DefaultQueryManager implements QueryManager {
         return cpath;
     }
 
+    public List<String[]> getNodeServices(int nodeId){
+        final LinkedList<String[]> servicemap = new LinkedList<String[]>();
+        Querier querier = new Querier(getDataSource(),SQL_FETCH_INTERFACES_AND_SERVICES_ON_NODE) {
+            
+            @Override
+            public void processRow(ResultSet rs) throws SQLException {
+               
+                String row[] = new String[2];
+                row[0] = rs.getString(1);
+                row[1] = rs.getString(2);
+                
+                servicemap.add(row);
+                
+            }
+            
+        };
+        
+        querier.execute(Integer.valueOf(nodeId));
+        
+        return servicemap;
+        
+    }
+    
+    
 }

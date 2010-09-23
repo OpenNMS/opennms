@@ -11,6 +11,7 @@
 
     <include-collection dataCollectionGroup="MIB2"/>
     <include-collection dataCollectionGroup="3Com"/>
+    <include-collection dataCollectionGroup="AKCP sensorProbe"/>
     <include-collection dataCollectionGroup="Alvarion"/>
     <include-collection dataCollectionGroup="APC"/>
     <include-collection dataCollectionGroup="Ascend"/>

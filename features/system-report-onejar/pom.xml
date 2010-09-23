@@ -1,0 +1,47 @@
+<?xml version="1.0"?>
+<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd">
+  <parent>
+    <groupId>org.opennms</groupId>
+    <artifactId>org.opennms.features</artifactId>
+    <version>1.9.2-SNAPSHOT</version>
+  </parent>
+  <modelVersion>4.0.0</modelVersion>
+  <groupId>org.opennms.features</groupId>
+  <artifactId>org.opennms.features.system-report-onejar</artifactId>
+  <packaging>jar</packaging>
+  <name>OpenNMS System Report (One Jar)</name>
+  <build>
+    <plugins>
+      <plugin>
+        <groupId>org.dstovall</groupId>
+         <artifactId>onejar-maven-plugin</artifactId>
+         <version>1.4.3</version>
+         <executions>
+            <execution>
+              <configuration>
+                 <mainClass>org.opennms.systemreport.SystemReport</mainClass>
+                 <onejarVersion>0.96</onejarVersion>
+                 <attachToBuild>true</attachToBuild>
+              </configuration>
+              <phase>package</phase>
+              <goals>
+                 <goal>one-jar</goal>
+              </goals>
+            </execution>
+         </executions>
+      </plugin>
+    </plugins>
+  </build>
+  <dependencies>
+    <dependency>
+      <groupId>org.opennms.features</groupId>
+      <artifactId>org.opennms.features.system-report</artifactId>
+    </dependency>
+  </dependencies>
+  <pluginRepositories>
+    <pluginRepository>
+      <id>onejar-maven-plugin.googlecode.com</id>
+      <url>http://maven.opennms.org/content/groups/onejar.googlecode.com-release</url>
+    </pluginRepository>
+  </pluginRepositories>
+</project>

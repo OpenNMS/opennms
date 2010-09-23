@@ -69,27 +69,29 @@
   2) parms: an org.opennms.web.notification.NoticeQueryParms object that holds all the 
      parameters used to make this query
 --%>
-<%!
-%>
-
 <%
     //required attributes
     Notification[] notices = (Notification[])request.getAttribute( "notices" );
-	Integer noticeCount = (Integer)request.getAttribute( "noticeCount" );
+    int noticeCount = request.getAttribute("noticeCount") == null ? -1 : (Integer)request.getAttribute("noticeCount");
     NoticeQueryParms parms = (NoticeQueryParms)request.getAttribute( "parms" );
+
     Map<Integer,String[]> nodeLabels = (Map<Integer,String[]>)request.getAttribute( "nodeLabels" );
     Map<Integer,Event> events = (Map<Integer,Event>)request.getAttribute( "events" );
 
-    if( notices == null || noticeCount == null || parms == null || nodeLabels == null ) {
+    if( notices == null || parms == null || nodeLabels == null ) {
         throw new ServletException( "Missing a required attribute." );
     }
 
-    String action = parms.ackType.getShortName();
+    // Make 'action' the opposite of the current acknowledgement state
+    String action = AcknowledgeType.ACKNOWLEDGED.getShortName();
+    if (parms.ackType != null && parms.ackType == AcknowledgeType.ACKNOWLEDGED) {
+        action = AcknowledgeType.UNACKNOWLEDGED.getShortName();
+    }
 
-    //useful constant strings
-    String addPositiveFilterString = "[+]";    
-    String addNegativeFilterString = "[-]";    
-
+    pageContext.setAttribute("addPositiveFilter", "[+]");
+    pageContext.setAttribute("addNegativeFilter", "[-]");
+    pageContext.setAttribute("addBeforeFilter", "[&gt;]");
+    pageContext.setAttribute("addAfterFilter", "[&lt;]");
 %>
 
 <jsp:include page="/includes/header.jsp" flush="false" >
@@ -210,7 +212,7 @@
         <form action="notification/acknowledge" method="post" name="acknowledge_form">
           <input type="hidden" name="curUser" value="<%=request.getRemoteUser()%>">
           <input type="hidden" name="redirectParms" value="<%=org.opennms.web.Util.htmlify(request.getQueryString())%>" />
-          <%=org.opennms.web.Util.makeHiddenTags(request)%>        
+          <%=org.opennms.web.Util.makeHiddenTags(request)%>
       <table>
 			<thead>
 			  <tr>
@@ -247,7 +249,7 @@
             <% if(notices[i].getResponder()!=null) {%>
               <%=notices[i].getResponder()%>
               <% if( !parms.filters.contains( responderFilter )) { %>
-                <a href="<%=this.makeLink( parms, responderFilter, true)%>" class="filterLink" title="Show only notices with this responder"><%=addPositiveFilterString%></a>
+                <a href="<%=this.makeLink( parms, responderFilter, true)%>" class="filterLink" title="Show only notices with this responder">${addPositiveFilter}</a>
               <% } %>
             <% } %>
           </td>
@@ -262,8 +264,8 @@
               <% String[] labels = nodeLabels.get(notices[i].getNodeId()); %>
               <a href="element/node.jsp?node=<%=notices[i].getNodeId()%>" title="<%=labels[1]%>"><%=labels[0]%></a>
               <% if( !parms.filters.contains(nodeFilter) ) { %>
-                <a href="<%=this.makeLink( parms, nodeFilter, true)%>" class="filterLink" title="Show only notices on this node"><%=addPositiveFilterString%></a>
-                <a href="<%=this.makeLink( parms, new NegativeNodeFilter(notices[i].getNodeId()), true)%>" class="filterLink" title="Do not show events for this node"><%=addNegativeFilterString%></a>
+                <a href="<%=this.makeLink( parms, nodeFilter, true)%>" class="filterLink" title="Show only notices on this node">${addPositiveFilter}</a>
+                <a href="<%=this.makeLink( parms, new NegativeNodeFilter(notices[i].getNodeId()), true)%>" class="filterLink" title="Do not show events for this node">${addNegativeFilter}</a>
               <% } %>
             <% } %>
           </td>
@@ -276,7 +278,7 @@
                  <%=notices[i].getInterfaceId()%>
               <% } %>
               <% if( !parms.filters.contains(intfFilter) ) { %>
-                <a href="<%=this.makeLink( parms, intfFilter, true)%>" class="filterLink" title="Show only notices on this IP address"><%=addPositiveFilterString%></a>
+                <a href="<%=this.makeLink( parms, intfFilter, true)%>" class="filterLink" title="Show only notices on this IP address">${addPositiveFilter}</a>
               <% } %>
             <% } %>
           </td>
@@ -289,7 +291,7 @@
                 <%=notices[i].getServiceName()%>
               <% } %>
               <% if( !parms.filters.contains( serviceFilter )) { %>
-                <a href="<%=this.makeLink( parms, serviceFilter, true)%>" class="filterLink" title="Show only notices with this service type"><%=addPositiveFilterString%></a>
+                <a href="<%=this.makeLink( parms, serviceFilter, true)%>" class="filterLink" title="Show only notices with this service type">${addPositiveFilter}</a>
               <% } %>
             <% } %>
           </td>
@@ -308,6 +310,7 @@
         <% } %>
         
 	</p>
+        </form>
 	<!--		<% if( noticeCount > 0 ) { %>
 			<p align="right"><a href="<%=this.makeLink(parms)%>&multiple=<%=parms.multiple+1%>">Next</a></p>
 			<% } %> -->

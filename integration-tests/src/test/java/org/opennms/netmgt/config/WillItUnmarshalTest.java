@@ -102,9 +102,9 @@ import org.opennms.netmgt.config.poller.Outages;
 import org.opennms.netmgt.config.poller.PollerConfiguration;
 import org.opennms.netmgt.config.provisiond.ProvisiondConfiguration;
 import org.opennms.netmgt.config.rancid.adapter.RancidConfiguration;
+import org.opennms.netmgt.config.reportd.ReportdConfiguration;
 import org.opennms.netmgt.config.reporting.jasperReports.JasperReports;
 import org.opennms.netmgt.config.reporting.opennms.OpennmsReports;
-import org.opennms.netmgt.config.reportd.ReportdConfiguration;
 import org.opennms.netmgt.config.rtc.RTCConfiguration;
 import org.opennms.netmgt.config.rws.RwsConfiguration;
 import org.opennms.netmgt.config.scriptd.ScriptdConfiguration;
@@ -176,7 +176,7 @@ public class WillItUnmarshalTest {
 
         Resource resource = ConfigurationTestUtils.getSpringResourceForResource(this, "eventconf-good-ordering.xml");
         System.out.println("Unmarshalling: " + resource.getURI());
-        CastorUtils.unmarshal(Events.class, resource);
+        CastorUtils.unmarshal(Events.class, resource, CastorUtils.PRESERVE_WHITESPACE);
     }
 
     /**
@@ -189,7 +189,7 @@ public class WillItUnmarshalTest {
 
         Resource resource = ConfigurationTestUtils.getSpringResourceForResource(this, "eventconf-bad-ordering.xml");
         System.out.println("Unmarshalling: " + resource.getURI());
-        CastorUtils.unmarshal(Events.class, resource);
+        CastorUtils.unmarshal(Events.class, resource, CastorUtils.PRESERVE_WHITESPACE);
     }
 
     /**
@@ -200,7 +200,7 @@ public class WillItUnmarshalTest {
     public void testLenientOrderingAsDefault() throws Exception {
         Resource resource = ConfigurationTestUtils.getSpringResourceForResource(this, "eventconf-bad-ordering.xml");
         System.out.println("Unmarshalling: " + resource.getURI());
-        CastorUtils.unmarshal(Events.class, resource);
+        CastorUtils.unmarshal(Events.class, resource, CastorUtils.PRESERVE_WHITESPACE);
     }
     
     /**
@@ -692,7 +692,7 @@ public class WillItUnmarshalTest {
                 LocalConfiguration.getInstance().getProperties().remove(CASTOR_LENIENT_SEQUENCE_ORDERING_PROPERTY);
                 Resource resource = new FileSystemResource(includedEventFile);
                 System.out.println("Unmarshalling: " + resource.getURI());
-                CastorUtils.unmarshal(Events.class, resource);
+                CastorUtils.unmarshal(Events.class, resource, CastorUtils.PRESERVE_WHITESPACE);
             } catch (Throwable t) {
                 throw new RuntimeException("Failed to unmarshal " + includedEventFile + ": " + t, t);
             }
@@ -759,7 +759,7 @@ public class WillItUnmarshalTest {
         
         Resource resource = new FileSystemResource(file);
         System.out.println("Unmarshalling: " + resource.getURI());
-        T config = CastorUtils.unmarshal(clazz, resource);
+        T config = CastorUtils.unmarshal(clazz, resource, CastorUtils.PRESERVE_WHITESPACE);
         
         assertNotNull("unmarshalled object should not be null after unmarshalling from " + file.getAbsolutePath(), config);
         testedSet.add(fileName);
@@ -770,7 +770,7 @@ public class WillItUnmarshalTest {
     private void unmarshalAndAnticipateException(String file, String exceptionText) throws ValidationException, IOException, AssertionFailedError {
         boolean gotException = false;
         try {
-            CastorUtils.unmarshal(Events.class, ConfigurationTestUtils.getSpringResourceForResource(this, file));
+            CastorUtils.unmarshal(Events.class, ConfigurationTestUtils.getSpringResourceForResource(this, file), CastorUtils.PRESERVE_WHITESPACE);
         } catch (MarshalException e) {
             if (e.getMessage().contains(exceptionText)) {
                 gotException = true;

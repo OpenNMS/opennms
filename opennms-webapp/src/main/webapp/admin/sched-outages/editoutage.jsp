@@ -275,50 +275,50 @@ Could not find an outage to edit because no outage name parameter was specified 
 		//It can be tidied up later -- of course, it's been what, almost 3 years?  "later" means 2.0 + rewrite  ;)
 		//First, process any changes to the editable inputs
 
-		//Process the notifications status.  NB: we keep an in-memory copy initially, and only save when the save button is clicked
-		if ("on".equals(request.getParameter("notifications"))) {
-			//Want to turn it on.
-			enabledOutages.add("notifications");
-		} else {
-			//Want to turn off (missing, or set to something other than "on")
-			enabledOutages.remove("notifications");
-		}
-
-		for (org.opennms.netmgt.config.poller.Package thisKey : pollingOutages.keySet()) {
-			String name = "polling-" + thisKey.getName();
-			System.out.println("Checking " + name);
-			if ("on".equals(request.getParameter(name))) {
-				System.out.println(" is on - adding to enabledOutages");
-				enabledOutages.add(name);
-			} else {
-				enabledOutages.remove(name);
-			}
-		}
-
-		for (org.opennms.netmgt.config.threshd.Package thisKey : thresholdOutages.keySet()) {
-			String name = "threshold-" + thisKey.getName();
-			System.out.println("Checking " + name);
-			if ("on".equals(request.getParameter(name))) {
-				enabledOutages.add(name);
-			} else {
-				enabledOutages.remove(name);
-			}
-		}
-
-		for (org.opennms.netmgt.config.collectd.Package thisKey : collectionOutages.keySet()) {
-			String name = "collect-" + thisKey.getName();
-			System.out.println("Checking " + name);
-			if ("on".equals(request.getParameter(name))) {
-				enabledOutages.add(name);
-			} else {
-				enabledOutages.remove(name);
-			}
-		}
-
 		//Now handle any buttons that were clicked.  There should be only one
 		//If there is more than one, we use the first and ignore the rest.
 		if (request.getParameter("saveButton") != null) {
 			//Save was clicked - save 
+
+			//Process the notifications status.  NB: we keep an in-memory copy initially, and only save when the save button is clicked
+			if ("on".equals(request.getParameter("notifications"))) {
+				//Want to turn it on.
+				enabledOutages.add("notifications");
+			} else {
+				//Want to turn off (missing, or set to something other than "on")
+				enabledOutages.remove("notifications");
+			}
+
+			for (org.opennms.netmgt.config.poller.Package thisKey : pollingOutages.keySet()) {
+				String name = "polling-" + thisKey.getName();
+				System.out.println("Checking " + name);
+				if ("on".equals(request.getParameter(name))) {
+					System.out.println(" is on - adding to enabledOutages");
+					enabledOutages.add(name);
+				} else {
+					enabledOutages.remove(name);
+				}
+			}
+
+			for (org.opennms.netmgt.config.threshd.Package thisKey : thresholdOutages.keySet()) {
+				String name = "threshold-" + thisKey.getName();
+				System.out.println("Checking " + name);
+				if ("on".equals(request.getParameter(name))) {
+					enabledOutages.add(name);
+				} else {
+					enabledOutages.remove(name);
+				}
+			}
+
+			for (org.opennms.netmgt.config.collectd.Package thisKey : collectionOutages.keySet()) {
+				String name = "collect-" + thisKey.getName();
+				System.out.println("Checking " + name);
+				if ("on".equals(request.getParameter(name))) {
+					enabledOutages.add(name);
+				} else {
+					enabledOutages.remove(name);
+				}
+			}
 
 			//Check if the outage is a new one, or an edited old one
 			String origname = (String) request.getSession().getAttribute("opennms.editoutage.origname");
@@ -606,7 +606,7 @@ function updateOutageTypeDisplay(selectElement) {
 	}
 
 	for (value in enabledIds) {
-		document.getElementById(enabledIds[value]).style.display="";
+		document.getElementById(enabledIds[value]).style.display="inline";
 	}
 	for (value in disabledIds) {
 		document.getElementById(disabledIds[value]).style.display="none";
@@ -694,9 +694,6 @@ function updateOutageTypeDisplay(selectElement) {
 <%
 	}
 %>
-<form id="editForm" action="admin/sched-outages/editoutage.jsp" method="post">
-
-<input type="hidden" name="formSubmission" value="<%=true%>" />
 
 <h2>Editing Outage: <%= theOutage.getName() %></h2>
 
@@ -708,76 +705,124 @@ function updateOutageTypeDisplay(selectElement) {
 				</tr>
 				<tr>
 					<td valign="top">
+						<form id="addNode" action="admin/sched-outages/editoutage.jsp" method="post">
+							<input type="hidden" name="formSubmission" value="true" />
+							<p style="font-weight: bold; margin-bottom: 2px;">Search (max 200 results):</p>
+							<div class="ui-widget">
+								<select id="newNodeSelect" name="newNodeSelect" style="display: none"></select>
+								<input type="submit" value="Add" name="addNodeButton"/>
+							</div>
+						</form>
+						<p style="font-weight: bold; margin: 10px 0px 2px 0px;">Current selection:</p>
 						<% {
 						if (hasMatchAny) {
-							out.println("&lt;All Nodes&gt;<br/>");
-						} else {
+							%>
+							<p><i>All nodes</i></p>
+							<%
+						} else { 
 							org.opennms.netmgt.config.poller.Node[] outageNodes = theOutage.getNode();
-							for (int i = 0; i < outageNodes.length; i++) {
-								org.opennms.netmgt.config.poller.Node node = outageNodes[i];
-								int nodeId = node.getId();
-								out.println("<input type=\"image\" src=\"images/redcross.gif\" name=\"deleteNode" + i + "\" />");
-								org.opennms.web.element.Node thisNode = NetworkElementFactory.getNode(nodeId);
-								if (thisNode != null) {
-									out.println(thisNode.getLabel());
-								} else {
-									out.println("Node " + nodeId + " is null");
-								}
-								out.println("<br/>");
-							}
-						}
-						} %>
-						<div class="ui-widget">
-							<select id="newNodeSelect" name="newNodeSelect" style="display: none"></select>
-							<input type="submit" value="Add" name="addNodeButton"/>
-						</div>
-					</td>
-					<td valign="top">
-						<%
-						{
-						if (hasMatchAny) {
-							out.println("&lt;All Interfaces&gt;<br/>");
-						} else {
-							org.opennms.netmgt.config.poller.Interface[] outageInterfaces = theOutage.getInterface();
-							for (int i = 0; i < outageInterfaces.length; i++) {
-								org.opennms.netmgt.config.poller.Interface iface = outageInterfaces[i];
-								String addr = iface.getAddress();
-								org.opennms.web.element.Interface[] interfaces = NetworkElementFactory.getInterfacesWithIpAddress(addr);
-								for ( org.opennms.web.element.Interface thisInterface : interfaces ) {
-									String thisAddr = thisInterface.getIpAddress();
-									String thisName = thisInterface.getHostname();
-									out.println("<input type=\"image\" src=\"images/redcross.gif\" name=\"deleteInterface" + i + "\" />");
-									if(thisName == null || thisName.equals(thisAddr)) {
-										out.println(thisAddr);
+							if (outageNodes.length > 0) {
+								%>
+								<form id="deleteNodes" action="admin/sched-outages/editoutage.jsp" method="post">
+								<input type="hidden" name="formSubmission" value="true" />
+								<%
+								for (int i = 0; i < outageNodes.length; i++) {
+									org.opennms.netmgt.config.poller.Node node = outageNodes[i];
+									int nodeId = node.getId();
+									out.println("<input type=\"image\" src=\"images/redcross.gif\" name=\"deleteNode" + i + "\" />");
+									org.opennms.web.element.Node thisNode = NetworkElementFactory.getNode(nodeId);
+									if (thisNode != null) {
+										out.println(thisNode.getLabel());
 									} else {
-										out.println(thisAddr + " (" + thisName + ")");
-									}
-									if (!thisInterface.isManaged()) {
-										out.println(" (Unmanaged)");
+										out.println("Node " + nodeId + " is null");
 									}
 									out.println("<br/>");
 								}
-							}
+								%>
+								</form>
+								<%
+							} else { %>
+								<p><i>No specific nodes selected</i></p>
+							<% }
+						}
+						} %>
+					</td>
+					<td valign="top">
+						<form id="addInterface" action="admin/sched-outages/editoutage.jsp" method="post">
+							<input type="hidden" name="formSubmission" value="true" />
+							<p style="font-weight: bold; margin-bottom: 2px;">Search (max 200 results):</p>
+							<div class="ui-widget">
+								<select id="newInterfaceSelect" name="newInterfaceSelect" style="display: none"></select>
+								<input type="submit" value="Add" name="addInterfaceButton"/>
+							</div>
+						</form>
+						<p style="font-weight: bold; margin: 10px 0px 2px 0px;">Current selection:</p>
+						<%
+						{
+						if (hasMatchAny) {
+							%>
+							<p><i>All interfaces</i></p>
+							<%
+						} else {
+							org.opennms.netmgt.config.poller.Interface[] outageInterfaces = theOutage.getInterface();
+							if (outageInterfaces.length > 0) {
+								%>
+								<form id="deleteInterfaces" action="admin/sched-outages/editoutage.jsp" method="post">
+								<input type="hidden" name="formSubmission" value="true" />
+								<%
+								for (int i = 0; i < outageInterfaces.length; i++) {
+									org.opennms.netmgt.config.poller.Interface iface = outageInterfaces[i];
+									String addr = iface.getAddress();
+									org.opennms.web.element.Interface[] interfaces = NetworkElementFactory.getInterfacesWithIpAddress(addr);
+									for ( org.opennms.web.element.Interface thisInterface : interfaces ) {
+										String thisAddr = thisInterface.getIpAddress();
+										String thisName = thisInterface.getHostname();
+										out.println("<input type=\"image\" src=\"images/redcross.gif\" name=\"deleteInterface" + i + "\" />");
+										if(thisName == null || thisName.equals(thisAddr)) {
+											out.println(thisAddr);
+										} else {
+											out.println(thisAddr + " (" + thisName + ")");
+										}
+										if (!thisInterface.isManaged()) {
+											out.println(" (Unmanaged)");
+										}
+										out.println("<br/>");
+									}
+								}
+								%>
+								</form>
+								<%
+							} else { %>
+								<p><i>No specific interfaces selected</i></p>
+							<% }
 						}
 						}
 						%>
-						<div class="ui-widget">
-							<select id="newInterfaceSelect" name="newInterfaceSelect" style="display: none"></select>
-							<input type="submit" value="Add" name="addInterfaceButton"/>
-						</div>
 					</td>
 				</tr>
+				<% if (!hasMatchAny) { %>
 				<tr>
 					<td valign="top">
-						<% if (!hasMatchAny) { %><input type="submit" name="matchAny" value="All nodes and interfaces" /><% } %>
+						<script type="text/javascript">
+							function verifyAddAll() {
+								return confirm("Are you sure you want to add all nodes and interfaces? This will erase the current lists of specific nodes and interfaces.");
+							}
+						</script>
+						<form onsubmit="return verifyAddAll();" id="matchAnyForm" action="admin/sched-outages/editoutage.jsp" method="post">
+							<input type="hidden" name="formSubmission" value="true" />
+							<input type="submit" name="matchAny" value="Select all nodes and interfaces" />
+						</form>
 					</td>
 				</tr>
+				<% } %>
 				<% if (!hasMatchAny && theOutage.getInterfaceCount() == 0 && theOutage.getNodeCount() == 0) { %>
 					<tr>
-						<td><span style="color: #ff0000">You must select at least one node or interface for this scheduled outage.</span></td>
+						<td colspan="2"><span style="color: #ff0000">You must select at least one node or interface for this scheduled outage.</span></td>
 					</tr>
 				<% } %>
 			</table>
+		<form id="editOutage" action="admin/sched-outages/editoutage.jsp" method="post">
+		<input type="hidden" name="formSubmission" value="true" />
 		<label>Outage Type:</label>
 			<table class="normal">
 				<tr>

@@ -22,7 +22,7 @@ public @interface JUnitHttpServer {
     int port() default 9162;
 
     /** the list of virtual hosts to respond to, defaults to "localhost" **/
-    String[] vhosts() default { "localhost", "127.0.0.1" };
+    String[] vhosts() default { "localhost", "127.0.0.1", "::1" };
 
     /** whether or not to use HTTPS (defaults to HTTP) **/
     boolean https() default false;

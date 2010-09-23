@@ -38,6 +38,8 @@ import org.springframework.beans.factory.DisposableBean;
 import org.springframework.beans.factory.FactoryBean;
 import org.springframework.beans.factory.InitializingBean;
 
+import org.opennms.core.resource.Vault;
+
 /**
  * <p>DataSourceFactoryBean class.</p>
  *
@@ -81,6 +83,7 @@ public class DataSourceFactoryBean implements FactoryBean<DataSource>, Initializ
      */
     public void afterPropertiesSet() throws Exception {
         DataSourceFactory.init();
+        Vault.setDataSource(DataSourceFactory.getInstance()); // Fix for Bug 4117
     }
 
     /**

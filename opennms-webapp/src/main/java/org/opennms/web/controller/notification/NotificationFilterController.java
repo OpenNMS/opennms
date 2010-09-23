@@ -128,6 +128,15 @@ public class NotificationFilterController extends AbstractController implements 
             }
         }
 
+        // Check for a username filter (used on notifications/index.jsp)
+        String username = request.getParameter("user");
+        if (username != null) {
+            Filter filter = NoticeUtil.getFilter("user=" + username);
+            if (filter != null) {
+                filterList.add(filter);
+            }
+        }
+
         // handle the optional limit parameter
         String limitString = request.getParameter("limit");
         int limit = "long".equals(display) ? m_defaultLongLimit : m_defaultShortLimit;

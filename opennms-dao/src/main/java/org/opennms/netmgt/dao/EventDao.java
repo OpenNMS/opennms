@@ -46,6 +46,5 @@ public interface EventDao extends OnmsDao<OnmsEvent, Integer> {
      * @param e a {@link org.opennms.netmgt.model.OnmsEvent} object.
      * @return a int.
      */
-    int deletePreviousEventsForAlarm(Integer id, OnmsEvent e);
-	
+    int deletePreviousEventsForAlarm(final Integer id, final OnmsEvent e);
 }

@@ -104,33 +104,19 @@
 
     //required attributes
     Alarm[] alarms = (Alarm[])req.getAttribute( "alarms" );
+    int alarmCount = req.getAttribute("alarmCount") == null ? -1 : (Integer)req.getAttribute("alarmCount");
     AlarmQueryParms parms = (AlarmQueryParms)req.getAttribute( "parms" );
-    int alarmCount = (Integer) req.getAttribute("alarmCount");
 
     if( alarms == null || parms == null ) {
-	throw new ServletException( "Missing either the alarms or parms request attribute." );
+        throw new ServletException( "Missing either the alarms or parms request attribute." );
     }
-    
-    pageContext.setAttribute("alarms",alarms);
-    pageContext.setAttribute("parms", parms);
 
-    String action = null;
+    // Make 'action' the opposite of the current acknowledgement state
+    String action = AcknowledgeType.ACKNOWLEDGED.getShortName();
+    if (parms.ackType != null && parms.ackType == AcknowledgeType.ACKNOWLEDGED) {
+        action = AcknowledgeType.UNACKNOWLEDGED.getShortName();
+    }
 
-    if( ( req.isUserInRole( Authentication.ADMIN_ROLE ) || !req.isUserInRole( Authentication.READONLY_ROLE ) ) ) {     
-    	if ( parms.ackType != null ) {
-    		action = parms.ackType.getShortName();
-    	}
-    } 
-    
-    pageContext.setAttribute("action", action);
-    pageContext.setAttribute("alarmCount", new Integer(alarmCount));
- 
-    //useful constant strings
-    //String addPositiveFilterString = "[+]";
-    //String addNegativeFilterString = "[-]";
-    //String addBeforeDateFilterString = "[&gt;]";
-    //String addAfterDateFilterString  = "[&lt;]"; 
-    
     pageContext.setAttribute("addPositiveFilter", "[+]");
     pageContext.setAttribute("addNegativeFilter", "[-]");
     pageContext.setAttribute("addBeforeFilter", "[&gt;]");
@@ -251,26 +237,27 @@
         </c:otherwise>
       </c:choose>
       <li><a href="javascript: void window.open('<%=Util.calculateUrlBase(req)%>/alarm/severity.jsp','', 'fullscreen=no,toolbar=no,status=no,menubar=no,scrollbars=no,resizable=yes,directories=no,location=no,width=525,height=158')" title="Open a window explaining the alarm severities">Severity Legend</a></li>
-      <li>
-      <% if( parms.ackType == AcknowledgeType.UNACKNOWLEDGED ) { %> 
-        <a href="javascript: void document.acknowledge_by_filter_form.submit()" onclick="return confirm('Are you sure you want to acknowledge all alarms in the current search including those not shown on your screen?  (<%=alarmCount%> total alarms)')" title="Acknowledge all alarms that match the current search constraints, even those not shown on the screen">Acknowledge entire search</a>
-      <% } else { %>
-        <a href="javascript: void document.acknowledge_by_filter_form.submit()" onclick="return confirm('Are you sure you want to unacknowledge all alarms in the current search including those not shown on your screen)?  (<%=alarmCount%> total alarms)')" title="Unacknowledge all alarms that match the current search constraints, even those not shown on the screen">Unacknowledge entire search</a>               
+      
+      <% if( req.isUserInRole( Authentication.ADMIN_ROLE ) || !req.isUserInRole( Authentication.READONLY_ROLE ) ) { %>
+        <% if ( alarmCount > 0 ) { %>
+          <li>
+            <!-- hidden form for acknowledging the result set -->
+            <form style="display:inline" method="post" action="alarm/acknowledgeByFilter" name="acknowledge_by_filter_form">
+              <input type="hidden" name="redirectParms" value="<%=Util.htmlify(req.getQueryString())%>" />
+              <input type="hidden" name="actionCode" value="<%=action%>" />
+              <%=Util.makeHiddenTags(req)%>
+            </form>
+            <% if( parms.ackType == AcknowledgeType.UNACKNOWLEDGED ) { %> 
+              <a href="javascript:void()" onclick="if (confirm('Are you sure you want to acknowledge all alarms in the current search including those not shown on your screen?  (<%=alarmCount%> total alarms)')) { document.acknowledge_by_filter_form.submit(); }" title="Acknowledge all alarms that match the current search constraints, even those not shown on the screen">Acknowledge entire search</a>
+            <% } else { %>
+              <a href="javascript:void()" onclick="if (confirm('Are you sure you want to unacknowledge all alarms in the current search including those not shown on your screen)?  (<%=alarmCount%> total alarms)')) { document.acknowledge_by_filter_form.submit(); }" title="Unacknowledge all alarms that match the current search constraints, even those not shown on the screen">Unacknowledge entire search</a>
+            <% } %>
+          </li>
+        <% } %>
       <% } %>
-      </li>
       </ul>
       </div>
-      <!-- end menu -->      
-
-      <!-- hidden form for acknowledging the result set --> 
-      <% if( req.isUserInRole( Authentication.ADMIN_ROLE ) || !req.isUserInRole( Authentication.READONLY_ROLE ) ) { %>
-          <form method="post" action="alarm/acknowledgeByFilter" name="acknowledge_by_filter_form">    
-            <input type="hidden" name="redirectParms" value="<%=Util.htmlify(req.getQueryString())%>" />
-            <input type="hidden" name="actionCode" value="<%=action%>" />
-            <%=Util.makeHiddenTags(req)%>
-          </form>      
-      <% } %>
-
+      <!-- end menu -->
 
 
             <jsp:include page="/includes/alarm-querypanel.jsp" flush="false" />
@@ -315,8 +302,10 @@
                                              <% if( req.isUserInRole( Authentication.ADMIN_ROLE ) || !req.isUserInRole( Authentication.READONLY_ROLE ) ) { %>
 						<% if ( parms.ackType == AcknowledgeType.UNACKNOWLEDGED ) { %>
 						<th width="1%">Ack</th>
-						<% } else { %>
+						<% } else if ( parms.ackType == AcknowledgeType.ACKNOWLEDGED ) { %>
 						<th width="1%">UnAck</th>
+						<% } else if ( parms.ackType == AcknowledgeType.BOTH ) { %>
+						<th width="1%">Ack?</th>
 						<% } %>
                     <% } else { %>
                         <th width="1%">&nbsp;</th>
@@ -358,7 +347,12 @@
       %> 
 
         <tr class="<%=alarms[i].getSeverity().getLabel()%>">
-          <% if( req.isUserInRole( Authentication.ADMIN_ROLE ) || !req.isUserInRole( Authentication.READONLY_ROLE ) ) { %>
+          <% if( parms.ackType == AcknowledgeType.BOTH ) { %>
+              <td class="divider" valign="middle" rowspan="1">
+                <nobr>
+                  <input type="checkbox" name="alarm" disabled="true" <%=alarms[i].isAcknowledged() ? "checked='true'" : ""%> /> 
+                </nobr>
+          <% } else if( req.isUserInRole( Authentication.ADMIN_ROLE ) || !req.isUserInRole( Authentication.READONLY_ROLE ) ) { %>
               <td class="divider" valign="middle" rowspan="1">
                 <nobr>
                   <input type="checkbox" name="alarm" value="<%=alarms[i].getId()%>" /> 
