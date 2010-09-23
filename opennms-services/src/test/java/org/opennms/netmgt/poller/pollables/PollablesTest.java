@@ -108,6 +108,7 @@ public class PollablesTest {
     private MockNode mNode3;
     private MockInterface mDot4;
     private MockService mDot4Smtp;
+    @SuppressWarnings("unused")
     private MockService mDot4Http;
     private PollableNode pNode1;
     private PollableInterface pDot1;

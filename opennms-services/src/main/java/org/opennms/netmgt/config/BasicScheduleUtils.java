@@ -73,40 +73,42 @@ public class BasicScheduleUtils {
 
         if (cal == null || sched == null) return false;
 
-        long curCalTime = cal.getTime().getTime();
+        Calendar outCalBegin = new GregorianCalendar();
+        Calendar outCalEnd = new GregorianCalendar();
+        
+        long curCalTime = cal.getTimeInMillis();
         // check if day is part of outage
         boolean inOutage = false;
         Enumeration<Time> e = sched.enumerateTime();
         while (e.hasMoreElements() && !inOutage) {
-            Calendar outCalBegin = new GregorianCalendar();
-            Calendar outCalEnd = new GregorianCalendar();
-            
             outCalBegin.setTimeInMillis(curCalTime);
             outCalEnd.setTimeInMillis(curCalTime);
     
-            Time oTime = (Time) e.nextElement();
+            final Time oTime = (Time) e.nextElement();
     
-            String oTimeDay = oTime.getDay();
-            String begins = oTime.getBegins();
-            String ends = oTime.getEnds();
+            final String oTimeDay = oTime.getDay();
+            final String begins = oTime.getBegins();
+            final String ends = oTime.getEnds();
     
             if (oTimeDay != null) {
                 // see if outage time was specified as sunday/monday..
-                Integer dayInMap = getDayOfWeekIndex(oTimeDay);
+                final Integer dayInMap = getDayOfWeekIndex(oTimeDay);
                 if (dayInMap != null) {
                     // check if value specified matches current date
-                    if (cal.get(Calendar.DAY_OF_WEEK) == dayInMap.intValue())
+                    if (cal.get(Calendar.DAY_OF_WEEK) == dayInMap.intValue()) {
                         inOutage = true;
+                    }
     
                     outCalBegin.set(Calendar.DAY_OF_WEEK, dayInMap.intValue());
                     outCalEnd.set(Calendar.DAY_OF_WEEK, dayInMap.intValue());
                 }
                 // else see if outage time was specified as day of month
                 else {
-                    int intOTimeDay = (new Integer(oTimeDay)).intValue();
+                    int intOTimeDay = Integer.valueOf(oTimeDay);
     
-                    if (cal.get(Calendar.DAY_OF_MONTH) == intOTimeDay)
+                    if (cal.get(Calendar.DAY_OF_MONTH) == intOTimeDay) {
                         inOutage = true;
+                    }
     
                     outCalBegin.set(Calendar.DAY_OF_MONTH, intOTimeDay);
                     outCalEnd.set(Calendar.DAY_OF_MONTH, intOTimeDay);
@@ -114,8 +116,7 @@ public class BasicScheduleUtils {
             }
     
             // if time of day was specified and did not match, continue
-            if (oTimeDay != null && !inOutage)
-                continue;
+            if (oTimeDay != null && !inOutage) continue;
     
             // set time in out calendars
             setOutCalTime(outCalBegin, begins);
@@ -127,14 +128,15 @@ public class BasicScheduleUtils {
             // round these to the surrounding seconds since we can only specify
             // this to seconds
             // accuracy in the config file
-            long outCalBeginTime = outCalBegin.getTime().getTime() / 1000 * 1000;
-            long outCalEndTime = (outCalEnd.getTime().getTime() / 1000 + 1) * 1000;
+            final long outCalBeginTime = outCalBegin.getTimeInMillis() / 1000 * 1000;
+            final long outCalEndTime = (outCalEnd.getTimeInMillis() / 1000 + 1) * 1000;
     
-            if (curCalTime >= outCalBeginTime && curCalTime < outCalEndTime)
+            if (curCalTime >= outCalBeginTime && curCalTime < outCalEndTime) {
                 inOutage = true;
-            else
+            }
+            else {
                 inOutage = false;
-    
+            }
         }
         return inOutage;
     }

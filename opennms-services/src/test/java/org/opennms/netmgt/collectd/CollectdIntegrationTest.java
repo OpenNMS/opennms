@@ -110,7 +110,7 @@ public class CollectdIntegrationTest extends TestCase {
         FilterDaoFactory.setInstance(m_filterDao);
         
         Resource resource = new ClassPathResource("etc/poll-outages.xml"); 
-        PollOutagesConfigFactory.setInstance(new PollOutagesConfigFactory(resource.getInputStream()));
+        PollOutagesConfigFactory.setInstance(new PollOutagesConfigFactory(resource));
 
         File homeDir = resource.getFile().getParentFile().getParentFile();
         System.setProperty("opennms.home", homeDir.getAbsolutePath());
