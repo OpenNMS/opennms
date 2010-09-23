@@ -111,15 +111,16 @@ LABEL
     }
     if (errorMsg != ""){
         alert (errorMsg);
-        document.setCriticalPath.action="admin/nodemanagement/setPathOutage.jsp?node=<%=nodeId%>&task=Enter a valid IP";
+        document.setCriticalPath.action="admin/nodemanagement/setPathOutage.jsp?node=<%=nodeId%>&task=Enter a valid IP address";
+        return false;
     } else {
         document.setCriticalPath.action="admin/setCriticalPath?task=Submit";
+        return true;
     }
-    document.setCriticalPath.submit();
   }
 
 
-  function Delete()
+  function delete()
   {
       if (confirm("Are you sure you want to proceed? This action will delete any existing critical path for this node."))
       {
@@ -158,7 +159,7 @@ LABEL
 
 <br/> 
   
-<form method="post" name="setCriticalPath" action="admin/setCriticalPath">
+<form method="post" name="setCriticalPath" action="admin/setCriticalPath" onsubmit="return verifyIpAddress();">
 
 <input name="node" value=<%=nodeId%> type="hidden"/>
 
@@ -176,9 +177,9 @@ LABEL
 </p>
 
 <p>
-<input type="submit" name="task" value="Submit" onClick="verifyIpAddress()"/>
+<input type="submit" name="task" value="Submit"/>
 &nbsp;
-<input type="submit" name="task" value="Cancel" onClick="cancel()"/>
+<input type="button" name="task" value="Cancel" onClick="cancel()"/>
 </p>
 
 <br/>
@@ -186,7 +187,7 @@ LABEL
 <h2>Delete critical path for this node</h2>
 <br/>
 <p>
-<input type="submit" name="task" value="Delete" onClick="Delete()"/>
+<input type="button" name="task" value="Delete" onClick="delete()"/>
 </p>
 
 </form>

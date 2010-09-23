@@ -87,10 +87,11 @@
                 
                 if (errorMsg != ""){
                         alert (errorMsg);
+						return false;
                 }
                 else{
                         document.newIpForm.action="admin/addNewInterface";
-                        document.newIpForm.submit();
+                        return true;
                 }
         }
     
@@ -102,7 +103,7 @@
 </script>
 
 <div class="TwoColLAdmin">
-<form method="post" name="newIpForm">
+<form method="post" name="newIpForm" onsubmit="return verifyIpAddress();">
   <h3>Enter IP address</h3>
   <div class="boxWrapper">
     <c:if test="${param.action == 'redo'}">
@@ -120,8 +121,8 @@
     </p>
 
     <p>
-      <input type="submit" value="Add" onClick="verifyIpAddress()">
-      <input type="button" value="Cancel" onClick="cancel()">
+      <input type="submit" value="Add">
+      <input type="button" value="Cancel" onclick="cancel()">
     </p>
 
   </div>

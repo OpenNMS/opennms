@@ -63,6 +63,7 @@
   <script type="text/javascript" src="js/opennms/ux/PageableGrid.js" ></script>
   <script type="text/javascript" src="js/opennms/ux/LocalPageableProxy.js" ></script>
   <script type="text/javascript" src="js/CustomGraphResourceView.js" ></script>
+  <%--
   <script type="text/javascript" >
   
       function validateResource()
@@ -111,6 +112,7 @@
           }
       }
   </script>
+  --%>
 
 <h2>
   <c:choose>

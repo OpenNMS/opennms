@@ -64,19 +64,20 @@
     if (id.toLowerCase()=="admin")
     {
         alert("The user ID '" + document.newUserForm.userID.value + "' cannot be used. It may be confused with the administration user ID 'admin'.");
-        return;
+        return false;
     }
     
     if (document.newUserForm.pass1.value == document.newUserForm.pass2.value) 
     {
       document.newUserForm.action="admin/userGroupView/users/addNewUser";
-      document.newUserForm.submit();
+      return true;
     } 
     else
     {
       alert("The two password fields do not match!");
       document.newUserForm.pass1.value = "";
       document.newUserForm.pass2.value = "";
+      return false;
     }
   }    
   function cancelUser()
@@ -89,31 +90,31 @@
 
 <%if ("redo".equals(request.getParameter("action"))) { %>
   <h3>The user <%=request.getParameter("userID")%> already exists.
-    Please type in a different user id.</h3>
+    Please type in a different user ID.</h3>
 <%} else { %>
-  <h3>Please enter a user id and password below.</h3>
+  <h3>Please enter a user ID and password below</h3>
 <%}%>
 
-<form id="newUserForm" method="post" name="newUserForm">
+<form id="newUserForm" method="post" name="newUserForm" onsubmit="return validateFormInput();">
   <table>
     <tr>
       <td width="10%"><label id="userIDLabel" for="userID">User ID:</label></td>
-      <td width="100%"><input id="userID" type="text" name="userID"></td>
+      <td width="100%"><input id="userID" type="text" name="userID"/></td>
     </tr>
 
     <tr>
       <td width="10%"><label id="pass1Label" for="password1">Password:</label></td>
-      <td width="100%"><input id="pass1" type="password" name="pass1"></td>
+      <td width="100%"><input id="pass1" type="password" name="pass1"/></td>
     </tr>
 
     <tr>
       <td width="10%"><label id="pass2Label" for="password2">Confirm Password:</label></td>
-      <td width="100%"><input id="pass2" type="password" name="pass2"></td>
+      <td width="100%"><input id="pass2" type="password" name="pass2"/></td>
     </tr>
 
     <tr>
-      <td><input id="doOK" type="submit" value="OK" onClick="validateFormInput()"></td>
-      <td><input id="doCancel" type="button" value="Cancel" onClick="cancelUser()"></td>
+      <td><input id="doOK" type="submit" value="OK"/></td>
+      <td><input id="doCancel" type="button" value="Cancel" onclick="cancelUser()"/></td>
     </tr>
 </table>
 </form>

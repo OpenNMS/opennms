@@ -72,25 +72,6 @@
 
 <!-- A script for validating Node ID Selection Form before submittal -->
 <script type="text/javascript" >
-  function validateNode()
-  {
-      var isChecked = false
-      for( i = 0; i < document.choose_node.report.length; i++ )
-      {
-         //make sure something is checked before proceeding
-         if (document.choose_node.report[i].selected)
-         {
-            isChecked=true;
-         }
-      }
-
-      if (!isChecked)
-      {
-          alert("Please check the node that you would like to report on.");
-      }
-      return isChecked;
-  }
-
   function validateDomain()
   {
       var isChecked = false
@@ -109,76 +90,6 @@
       }
       return isChecked;
   }
-
-  function submitNodeForm()
-  {
-      if (validateNode())
-      {
-          document.choose_node.submit();
-      }
-  }
-
-  function submitDomainForm()
-  {
-      if (validateDomain())
-      {
-          document.choose_domain.submit();
-      }
-  }
-</script>
-
-
-<%-- A script for validating Custom Report Form before submittal --%>
-<script type="text/javascript" >
-  function validateReport()
-  {
-      var isChecked = false
-      for( i = 0; i < document.choose_report.report.length; i++ )
-      {
-         //make sure something is checked before proceeding
-         if (document.choose_report.report[i].selected)
-         {
-            isChecked=true;
-         }
-      }
-
-      if (!isChecked)
-      {
-          alert("No reports selected.  Please click on a report title to make a report selection.");
-      }
-      return isChecked;
-  }
-
-  function submitReportForm()
-  {
-      // Create New Action (Don't need to validate select list if adding new report) 
-      if (document.choose_report.report_action[2].checked == true) {
-          document.choose_report.submit();
-      }
-      else {
-          if (validateReport()) {
-              // Delete Action
-              if (document.choose_report.report_action[4].checked == true) {
-                  var fer_sure=confirm("Are you sure you wish to delete this report?")
-                  if (fer_sure==true) {
-                      document.choose_report.submit();
-                  }
-              }
-              else {
-                  // View, Customize, or CreateFrom Action 
-                  document.choose_report.submit();
-              }
-          }
-      }
-  }
-
-  function submitReadOnlyView()
-  {
-      if (validateReport()) {
-          document.choose_report.submit();
-      }
-  }
-  
 </script>
 
 <div class="TwoColLeft">
@@ -291,7 +202,7 @@
             });
           </script>
           <div id="domain-reports"></div>
-          <form method="get" name="choose_domain" action="KSC/customView.htm" >
+          <form method="get" name="choose_domain" action="KSC/customView.htm" onsubmit="return validateDomain();">
             <input type="hidden" name="type" value="domain">
 
                   <select style="width: 100%;" name="domain" size="10">
@@ -314,7 +225,7 @@
                     </c:forEach>
                   </select>
 
-                  <input type="button" value="Submit" onclick="submitDomainForm()" alt="Initiates Generation of Domain Report"/>
+                  <input type="submit" value="Submit" alt="Initiates Generation of Domain Report"/>
           </form>
         </c:otherwise>
       </c:choose>

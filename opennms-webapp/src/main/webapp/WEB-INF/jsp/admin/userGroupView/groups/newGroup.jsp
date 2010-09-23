@@ -59,12 +59,12 @@
     if (id.toLowerCase()=="admin")
     {
         alert("The group ID '" + document.newGroupForm.groupName.value + "' cannot be used. It may be confused with the administration group ID 'Admin'.");
-        return;
+        return false;
     }
     
     document.newGroupForm.action="admin/userGroupView/groups/modifyGroup";
     document.newGroupForm.operation.value="addGroup";
-    document.newGroupForm.submit();
+    return true;
   }    
   function cancelGroup()
   {
@@ -82,21 +82,21 @@
   <h3>Please enter a group ID below.</h3>
 <%}%>
 
-<form id="newGroupForm" method="post" name="newGroupForm">
+<form id="newGroupForm" method="post" name="newGroupForm" onsubmit="return validateFormInput();">
   <input type="hidden" name="operation" />
   <table>
     <tr>
       <td width="10%"><label id="groupNameLabel" for="groupName">Group Name:</label></td>
-      <td width="100%"><input id="groupName" type="text" name="groupName"></td>
+      <td width="100%"><input id="groupName" type="text" name="groupName"/></td>
     </tr>
     <tr>
       <td width="10%"><label id="groupCommentLabel" for="groupComment">Comment:</label></td>
-      <td width="100%"><input id="groupComment" type="text" name="groupComment"></td>
+      <td width="100%"><input id="groupComment" type="text" name="groupComment"/></td>
     </tr>
 
     <tr>
-      <td><input id="doOK" type="submit" value="OK" onClick="validateFormInput()"></td>
-      <td><input id="doCancel" type="button" value="Cancel" onClick="cancelGroup()"></td>
+      <td><input id="doOK" type="submit" value="OK"/></td>
+      <td><input id="doCancel" type="button" value="Cancel" onclick="cancelGroup()"/></td>
     </tr>
 </table>
 </form>
