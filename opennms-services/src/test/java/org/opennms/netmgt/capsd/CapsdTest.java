@@ -41,8 +41,6 @@
 package org.opennms.netmgt.capsd;
 
 import java.io.InputStream;
-import java.net.InetAddress;
-import java.net.UnknownHostException;
 
 import org.opennms.core.concurrent.RunnableConsumerThreadPool;
 import org.opennms.mock.snmp.MockSnmpAgent;
@@ -184,17 +182,6 @@ public class CapsdTest extends OpenNMSTestCase {
         super.tearDown();
     }
 
-    protected String myLocalHost() {
-      try {
-          return InetAddress.getLocalHost().getHostAddress();
-      } catch (UnknownHostException e) {
-          e.printStackTrace();
-          fail("Exception getting localhost");
-      }
-      
-      return null;
-    }
-    
     public final void testRescan() throws Exception {
         
         assertEquals("Initally only 1 interface", 1, m_db.countRows("select * from ipinterface where nodeid = ?", FOREIGN_NODEID));
@@ -204,7 +191,7 @@ public class CapsdTest extends OpenNMSTestCase {
         
         m_capsd.rescanInterfaceParent(77);
         
-        Thread.sleep(10000);
+        Thread.sleep(30000);
         
         m_capsd.stop();
         
