@@ -87,28 +87,28 @@ function addExcludeRange(){
 
 
 function deleteSpecific(i){
-      if(confirm("Are you sure to delete the 'Specific'?")){
+      if(confirm("Are you sure you want to delete the 'Specific'?")){
 	document.modifyDiscoveryConfig.action=document.modifyDiscoveryConfig.action+"?action=<%=ActionDiscoveryServlet.removeSpecificAction%>&index="+i;
 	document.modifyDiscoveryConfig.submit();
 	}
 }
 
 function deleteIR(i){
-      if(confirm("Are you sure to delete the 'Include Range'?")){
+      if(confirm("Are you sure you want to delete the 'Include Range'?")){
 	document.modifyDiscoveryConfig.action=document.modifyDiscoveryConfig.action+"?action=<%=ActionDiscoveryServlet.removeIncludeRangeAction%>&index="+i;
 	document.modifyDiscoveryConfig.submit();
 	}
 }
 
 function deleteIncludeUrl(i){
-    if(confirm("Are you sure to delete the 'Include URL'?")){
+    if(confirm("Are you sure you want to delete the 'Include URL'?")){
 	document.modifyDiscoveryConfig.action=document.modifyDiscoveryConfig.action+"?action=<%=ActionDiscoveryServlet.removeIncludeUrlAction%>&index="+i;
 	document.modifyDiscoveryConfig.submit();
 	}
 }
 
 function deleteER(i){
-      if(confirm("Are you sure to delete the 'Exclude Range'?")){
+      if(confirm("Are you sure you want to delete the 'Exclude Range'?")){
 	document.modifyDiscoveryConfig.action=document.modifyDiscoveryConfig.action+"?action=<%=ActionDiscoveryServlet.removeExcludeRangeAction%>&index="+i;
 	document.modifyDiscoveryConfig.submit();
 	}
@@ -116,7 +116,7 @@ function deleteER(i){
 
 function restartDiscovery(){
 	document.modifyDiscoveryConfig.action=document.modifyDiscoveryConfig.action+"?action=<%=ActionDiscoveryServlet.saveAndRestartAction%>";
-	document.modifyDiscoveryConfig.submit();
+	return true;
 }
 
 
@@ -131,7 +131,7 @@ DiscoveryConfiguration currConfig  = (DiscoveryConfiguration) sess.getAttribute(
 
 <br/>
 
-<FORM method="post" id="modifyDiscoveryConfig" name="modifyDiscoveryConfig" action="<%=org.opennms.web.Util.calculateUrlBase( request )%>admin/discovery/actionDiscovery">
+<form method="post" id="modifyDiscoveryConfig" name="modifyDiscoveryConfig" action="<%=org.opennms.web.Util.calculateUrlBase( request )%>admin/discovery/actionDiscovery" onsubmit="return restartDiscovery();">
 <input type="hidden" id="specificipaddress" name="specificipaddress" value=""/>
 <input type="hidden" id="specifictimeout" name="specifictimeout" value=""/>
 <input type="hidden" id="specificretries" name="specificretries" value=""/>
@@ -153,7 +153,7 @@ DiscoveryConfiguration currConfig  = (DiscoveryConfiguration) sess.getAttribute(
 <input type="hidden" id="erend" name="erend" value=""/>
 
 
-      <input type="submit" value="Save and Restart Discovery" onclick="restartDiscovery();">
+      <input type="submit" value="Save and Restart Discovery"/>
 
 <h3>General settings</h3>
 			    
@@ -298,7 +298,7 @@ DiscoveryConfiguration currConfig  = (DiscoveryConfiguration) sess.getAttribute(
 		    	  <td width="1%" class="standard" valign="top">		    
 				    <input type="button" value="Add New" onclick="addIncludeRange();"/>
 			  </td>
-			  <td>				    
+			  <td>
 				    <%if(currConfig.getIncludeRangeCount()>0){
 					    IncludeRange[] irange = currConfig.getIncludeRange();
 				    %>
@@ -330,7 +330,7 @@ DiscoveryConfiguration currConfig  = (DiscoveryConfiguration) sess.getAttribute(
 						  <td class="standard" align="center"><%=(irange[i].getTimeout()!=0)?""+irange[i].getTimeout():""+currConfig.getTimeout() %></td>
 						  <td class="standard" align="center"><%=(irange[i].getRetries()!=0)?""+irange[i].getRetries():""+currConfig.getRetries() %></td>
 						  <td class="standard" width="1%" align="center"><input type="button" value="Delete" onclick="deleteIR(<%=i%>);"/></td> 						  
-						</tr>		      	
+						</tr>
 					      <%} // end for%>
 
 					     </table>
@@ -344,7 +344,7 @@ DiscoveryConfiguration currConfig  = (DiscoveryConfiguration) sess.getAttribute(
 		<h3>Exclude Ranges</h3>
 		    <table class="standard">
 		    	<tr>
-		    	  <td width="1%" class="standard" valign="top">		    
+		    	  <td width="1%" class="standard" valign="top">
 				    <input type="button" value="Add New" onclick="addExcludeRange();"/>
 			  </td>
 			  <td>		    
@@ -379,9 +379,9 @@ DiscoveryConfiguration currConfig  = (DiscoveryConfiguration) sess.getAttribute(
 			    }%>
 			  </td>
 		  	</tr>
-		    </table>     
+		    </table>
 			
-			<input type="button" value="Save and Restart Discovery" onclick="restartDiscovery();">
-</FORM>
+			<input type="submit" value="Save and Restart Discovery"/>
+</form>
 
 <jsp:include page="/includes/footer.jsp" flush="false" />

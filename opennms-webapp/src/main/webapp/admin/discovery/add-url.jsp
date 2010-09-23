@@ -53,7 +53,7 @@ DiscoveryConfiguration currConfig  = (DiscoveryConfiguration) sess.getAttribute(
 <html>
 <head>
   <title>Add Include URL | Admin | OpenNMS Web Console</title>
-  <base HREF="<%=org.opennms.web.Util.calculateUrlBase( request )%>" />
+  <base href="<%=org.opennms.web.Util.calculateUrlBase( request )%>" />
   <link rel="stylesheet" type="text/css" href="css/styles.css" />
 </head>
 
@@ -97,7 +97,7 @@ function addIncludeUrl() {
  </tr>
 </table>
 
-<input type="submit" name="addIncludeUrl" id="addIncludeUrl" value="Add" onclick="addIncludeUrl();" />
+<input type="button" name="addIncludeUrl" id="addIncludeUrl" value="Add" onclick="addIncludeUrl();" />
 <input type="button" name="cancel" id="cancel" value="Cancel" onclick="window.close();opener.document.focus();" />
 
   <hr />

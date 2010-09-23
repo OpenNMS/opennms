@@ -243,7 +243,9 @@
             selectAllSelected();
             selectAllSelectedCategories();
             document.modifyGroup.operation.value="save";
-            document.modifyGroup.submit();
+            return true;
+        } else {
+            return false;
         }
     }
     
@@ -308,7 +310,7 @@
 </script>
 <h3>Modifying Group: <%=group.getName()%></h3>
 
-<form method="post" name="modifyGroup">
+<form method="post" name="modifyGroup" onsubmit="return saveGroup();">
   <input type="hidden" name="groupName" value="<%=group.getName()%>"/>
   <input type="hidden" name="operation"/>
       <table width="100%" border="0" cellspacing="0" cellpadding="2" >
@@ -359,19 +361,19 @@
                   Available Users <br/>
                   <%=createSelectList("availableUsers", availableUsers)%><br/>
                   <p align="center">
-                  <input type="button" name="availableAll" onClick="selectAllAvailable()" value="Select All"><br/>
-                  <input type="button" onClick="addUsers()" value="&nbsp;&#155;&#155;&nbsp;"></p>
+                  <input type="button" name="availableAll" onClick="selectAllAvailable()" value="Select All"/><br/>
+                  <input type="button" onClick="addUsers()" value="&nbsp;&#155;&#155;&nbsp;"/></p>
                 </td>
                 <td align="center">
                   Currently in Group <br/>
                   <%=createSelectList("selectedUsers", selectedUsers)%><br/>
                   <p align="center">
-                  <input type="button" name="selectedAll" onClick="selectAllSelected()" value="Select All"><br/>
-                  <input type="button" onClick="removeUsers()" value="&nbsp;&#139;&#139;&nbsp;" ></p>
+                  <input type="button" name="selectedAll" onClick="selectAllSelected()" value="Select All"/><br/>
+                  <input type="button" onClick="removeUsers()" value="&nbsp;&#139;&#139;&nbsp;"/></p>
                 </td>
                 <td>
-                  <input type="button" value="  Move Up   " onclick="move(-1)"> <br/>
-                  <input type="button" value="Move Down" onclick="move(1)">
+                  <input type="button" value="  Move Up   " onclick="move(-1)"/> <br/>
+                  <input type="button" value="Move Down" onclick="move(1)"/>
                 </td>
               </tr>
             </table>
@@ -393,19 +395,19 @@
 	                  <%=createSelectList("availableCategories", categoryListNotInGroup)%><br/>
 	                  <p align="center">
 	                  
-	                  <input type="button" name="availableAll" onClick="selectAllAvailableCategories()" value="Select All"><br/>
-	                  <input type="button" onClick="addCategories()" value="&nbsp;&#155;&#155;&nbsp;"></p>
+	                  <input type="button" name="availableAll" onClick="selectAllAvailableCategories()" value="Select All"/><br/>
+	                  <input type="button" onClick="addCategories()" value="&nbsp;&#155;&#155;&nbsp;"/></p>
 	                </td>
 	                <td align="center">
 	                  Currently in Group <br/>
 	                  <%=createSelectList("selectedCategories", categoryListInGroup)%><br/>
 	                  <p align="center">
-	                  <input type="button" name="selectedAll" onClick="selectAllSelectedCategories()" value="Select All"><br/>
-	                  <input type="button" onClick="removeCategories()" value="&nbsp;&#139;&#139;&nbsp;" ></p>
+	                  <input type="button" name="selectedAll" onClick="selectAllSelectedCategories()" value="Select All"/><br/>
+	                  <input type="button" onClick="removeCategories()" value="&nbsp;&#139;&#139;&nbsp;"/></p>
 	                </td>
 	                <td>
-	                  <input type="button" value="  Move Up   " onclick="moveCat(-1)"> <br/>
-	                  <input type="button" value="Move Down" onclick="moveCat(1)">
+	                  <input type="button" value="  Move Up   " onclick="moveCat(-1)"/> <br/>
+	                  <input type="button" value="Move Down" onclick="moveCat(1)"/>
 	                </td>
 	              </tr>
 	            </table>
@@ -437,7 +439,7 @@
                     <tr>
                       <td width="1%"><%=(i+1)%></td>
                       <td width="1%">
-                        <input type="checkbox" name="deleteDuty<%=i%>">
+                        <input type="checkbox" name="deleteDuty<%=i%>"/>
                       </td>
                       <% ChoiceFormat days = new ChoiceFormat("0#Mo|1#Tu|2#We|3#Th|4#Fr|5#Sa|6#Su");
                          for (int j = 0; j < 7; j++)
@@ -445,21 +447,21 @@
                             Boolean curDay = (Boolean)curSched.get(j);
                       %>
                       <td width="5%">
-                        <input type="checkbox" name="duty<%=i+days.format(j)%>" <%= (curDay.booleanValue() ? "checked" : "")%>>
+                        <input type="checkbox" name="duty<%=i+days.format(j)%>" <%= (curDay.booleanValue() ? "checked" : "")%>/>
                       </td>
                       <% } %>
                       <td width="5%">
-                        <input type="text" size="4" name="duty<%=i%>Begin" value="<%=curSched.get(7)%>">
+                        <input type="text" size="4" name="duty<%=i%>Begin" value="<%=curSched.get(7)%>"/>
                       </td>
                       <td width="5%">
-                        <input type="text" size="4" name="duty<%=i%>End" value="<%=curSched.get(8)%>">
+                        <input type="text" size="4" name="duty<%=i%>End" value="<%=curSched.get(8)%>"/>
                       </td>
                     </tr>
                     <% i++; } %>
       </table>
 
-  <p><input type="button" name="addSchedule" value="Add This Many Schedules" onclick="addGroupDutySchedules()">
-     <input type="hidden" name="dutySchedules" value="<%=group.getDutySchedules().size()%>">
+  <p><input type="button" name="addSchedule" value="Add This Many Schedules" onclick="addGroupDutySchedules()"/>
+     <input type="hidden" name="dutySchedules" value="<%=group.getDutySchedules().size()%>"/>
     <select name="numSchedules" value="3" size="1">
       <option value="1">1</option>
       <option value="2">2</option>
@@ -471,7 +473,7 @@
     </select>
   </p>
 
-  <p><input type="button" name="addSchedule" value="Remove Checked Schedules" onclick="removeGroupDutySchedules()"></p>
+  <p><input type="button" name="addSchedule" value="Remove Checked Schedules" onclick="removeGroupDutySchedules()"/></p>
 
 
 <!-- finish and discard buttons -->
@@ -482,8 +484,8 @@
         <table>
           <tr>
             <td>
-              <input type="submit" name="finish" value="Finish" onclick="saveGroup()">
-              <input type="button" name="cancel" value="Cancel" onclick="cancelGroup()">
+              <input type="submit" name="finish" value="Finish"/>
+              <input type="button" name="cancel" value="Cancel" onclick="cancelGroup()"/>
             </td>
           </tr>
         </table>
@@ -509,7 +511,7 @@
 
 <%!
     private String createSelectList(String name, String[] categories) {
-        StringBuffer buffer = new StringBuffer("<select  WIDTH=\"200\" STYLE=\"width: 200px\" multiple name=\""+name+"\" size=\"10\">");
+        StringBuffer buffer = new StringBuffer("<select width=\"200\" style=\"width: 200px\" multiple=\"multiple\" name=\""+name+"\" size=\"10\">");
         for(String category : categories){
             buffer.append("<option>" + category + "</option>");
         }

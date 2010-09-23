@@ -299,7 +299,7 @@
         <table>
           <tr>
             <td>
-              <input type="submit" name="finish" value="Finish" onclick="saveView()">
+              <input type="button" name="finish" value="Finish" onclick="saveView()">
               <input type="button" name="cancel" value="Cancel" onclick="cancelView()">
             </td>
           </tr>

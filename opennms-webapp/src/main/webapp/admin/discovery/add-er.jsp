@@ -55,7 +55,7 @@
 
 <head>
   <title>Add Exclude Range | Admin | OpenNMS Web Console</title>
-  <base HREF="<%=org.opennms.web.Util.calculateUrlBase( request )%>" />
+  <base href="<%=org.opennms.web.Util.calculateUrlBase( request )%>" />
   <link rel="stylesheet" type="text/css" href="css/styles.css" />
 
 </head>
@@ -167,7 +167,7 @@ function addExcludeRange(){
 </table>
 
 
-<input type="submit" name="addExcludeRange" id="addExcludeRange" value="Add" onclick="addExcludeRange();" />
+<input type="button" name="addExcludeRange" id="addExcludeRange" value="Add" onclick="addExcludeRange();" />
 <input type="button" name="cancel" id="cancel" value="Cancel" onclick="window.close();opener.document.focus();" />
 
 <hr/>

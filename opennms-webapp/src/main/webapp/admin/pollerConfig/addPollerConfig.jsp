@@ -194,56 +194,59 @@
 
   function saveFile()
   {
-      var port1 = document.poller.port1.value
+      var port1 = document.poller.port1.value;
 
       if(port1 != '' && document.poller.name1.value == '')
       {
-	alert ('Name field cannot be empty')
-	return;
+        alert('Name field cannot be empty');
+        return false;
       }
 
       var newport = true;
       if(isNaN(port1))
       {
-	colonIndex = port1.indexOf(':');
-	if(colonIndex == -1)
-	{
-		alert("Please check the value of port again and retry later")
-		return
-	}
-        while(colonIndex != -1)
-        {
-		var len = port1.length;
-		var firsthalf = port1.substring(0, colonIndex);
-		if(isNaN(firsthalf))
-		{
-			newport = false;
-			alert("Please check the value of port again and retry later")
-			return;
-		}
-		else
-		{
-			if(colonIndex+1 < len)
-			{
-				port1 = port1.substring(colonIndex+1, len);
-			}
-		}
-		colonIndex = port1.indexOf(':');
-		if(colonIndex == -1){
-			if(isNaN(port1))
-			{
-				alert("Please check the value of port again and retry later")
-	                        return;
-			}
-		}
-         }
+          colonIndex = port1.indexOf(':');
+          if(colonIndex == -1)
+          {
+              alert("Please check the value of port again and retry later");
+              return false;
+          }
+
+          while(colonIndex != -1)
+          {
+              var len = port1.length;
+              var firsthalf = port1.substring(0, colonIndex);
+              if(isNaN(firsthalf))
+              {
+                  newport = false;
+                  alert("Please check the value of port again and retry later");
+                  return false;
+              }
+              else
+              {
+                  if(colonIndex+1 < len)
+                  {
+                      port1 = port1.substring(colonIndex+1, len);
+                  }
+              }
+              colonIndex = port1.indexOf(':');
+              if(colonIndex == -1){
+                  if(isNaN(port1))
+                  {
+                      alert("Please check the value of port again and retry later");
+                      return false;
+                  }
+              }
+          }
       }
-         if(newport)
-         {
-              document.poller.action="admin/pollerConfig/addPollerConfig";
-              document.poller.submit();
-         }
+
+      if(newport)
+      {
+          document.poller.action="admin/pollerConfig/addPollerConfig";
+          return true;
+      }
   }
+
   function cancel()
   {
       document.poller.action="admin/pollerConfig/index.jsp";
@@ -256,7 +259,7 @@
 <div id="contentleft">
   <h3>Add New Custom Poller</h3>
 
-  <form method="post" name="poller" action="admin/pollerConfig/addPollerConfig">
+  <form method="post" name="poller" action="admin/pollerConfig/addPollerConfig" onsubmit="return saveFile();">
     <% int rowCounter = 0; %>
     <table class="standard">
       <tr>
@@ -283,7 +286,7 @@
 
     <br/>
 
-    <input type="submit" value="Add" onClick="saveFile()" />
+    <input type="submit" value="Add"/>
     &nbsp;&nbsp;
     <input type="button" value="Cancel" onClick="cancel()" />
   </form>

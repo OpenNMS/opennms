@@ -85,8 +85,7 @@
  
     function cancelReport()
     {
-        var fer_sure = confirm("Do you really want to cancel configuration changes?");
-        if (fer_sure==true) {
+        if (confirm("Do you really want to cancel configuration changes?")) {
             setLocation("index.jsp");
         }
     }
@@ -272,7 +271,7 @@
         </table> 
 
         <p>
-                <input type="submit" value="Save" onclick="saveReport()" alt="Save the Report to File"/>
+                <input type="button" value="Save" onclick="saveReport()" alt="Save the Report to File"/>
                 <input type="button" value="Cancel" onclick="cancelReport()" alt="Cancel the report configuration"/>
         </p>
 

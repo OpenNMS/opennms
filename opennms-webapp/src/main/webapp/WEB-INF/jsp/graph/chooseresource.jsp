@@ -139,11 +139,12 @@
           return false;
       }
   
-      function submitForm(selectNode, formNode, itemName) {
+      function submitForm(selectNode, itemName) {
           if (isSomethingSelected(selectNode)) {
-              formNode.submit();
+              return true;
           } else {
-              alert("Please select at least one " + itemName);
+              alert("Please select at least one " + itemName + ".");
+              return false;
           }
       }
       
@@ -207,7 +208,7 @@
         Please choose one or more resources that you wish to query.
       </p>
 
-      <form method="get" name="report" action="${model.endUrl}">
+      <form method="get" name="report" action="${model.endUrl}" onsubmit="return submitForm(document.report.resourceId, 'resource');">
         <%=Util.makeHiddenTags(request, new String[] { "parentResourceId", "parentResourceType", "parentResource", "endUrl" })%>
   
         <c:set var="num" value="0"/>
@@ -237,7 +238,7 @@
       
         <br/>
         <br/>
-        <input type="submit" value="Submit" onclick="submitForm(document.report.resourceId, document.report, 'resource')" />
+        <input type="submit" value="Submit" />
         <input type="button" value="Select All" onclick="selectAll('resourceId', true)" />
         <input type="button" value="Unselect All" onclick="selectAll('resourceId', false)" />
       </form>
