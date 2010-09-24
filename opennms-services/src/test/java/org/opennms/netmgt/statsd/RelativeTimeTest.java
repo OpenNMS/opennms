@@ -35,20 +35,22 @@
  */
 package org.opennms.netmgt.statsd;
 
+import java.text.SimpleDateFormat;
 import java.util.Calendar;
 import java.util.Date;
 import java.util.GregorianCalendar;
 import java.util.TimeZone;
 
-import org.opennms.core.utils.TimeKeeper;
-import org.opennms.netmgt.statsd.RelativeTime;
-
 import junit.framework.TestCase;
+
+import org.opennms.core.utils.TimeKeeper;
 
 /**
  * @author <a href="mailto:dj@opennms.org">DJ Gregor</a>
  */
 public class RelativeTimeTest extends TestCase {
+    private SimpleDateFormat m_dateFormat = new SimpleDateFormat("EEE, dd MMM yyyy HH:mm:ss Z");
+    
     public void testYesterdayBeginningDST() {
         final TimeZone usEastern = TimeZone.getTimeZone("US/Eastern");
             
@@ -70,8 +72,8 @@ public class RelativeTimeTest extends TestCase {
         Date start = yesterday.getStart();
         Date end = yesterday.getEnd();
 
-        assertEquals("start date", "Sun Apr 02 00:00:00 EST 2006", start.toString());
-        assertEquals("end date", "Mon Apr 03 00:00:00 EDT 2006", end.toString());
+        assertEquals("start date", "Sun, 02 Apr 2006 00:00:00 -0500", m_dateFormat.format(start));
+        assertEquals("end date", "Mon, 03 Apr 2006 00:00:00 -0400", m_dateFormat.format(end));
         assertEquals("end date - start date", 82800000, end.getTime() - start.getTime());
     }
     
@@ -96,8 +98,8 @@ public class RelativeTimeTest extends TestCase {
         Date start = yesterday.getStart();
         Date end = yesterday.getEnd();
 
-        assertEquals("start date", "Sun Oct 29 00:00:00 EDT 2006", start.toString());
-        assertEquals("end date", "Mon Oct 30 00:00:00 EST 2006", end.toString());
+        assertEquals("start date", "Sun, 29 Oct 2006 00:00:00 -0400", m_dateFormat.format(start));
+        assertEquals("end date", "Mon, 30 Oct 2006 00:00:00 -0500", m_dateFormat.format(end));
         assertEquals("end date - start date", 90000000, end.getTime() - start.getTime());
     }
 }
