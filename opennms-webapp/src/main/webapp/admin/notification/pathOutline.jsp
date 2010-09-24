@@ -123,19 +123,22 @@
         if (trimmed=="")
         {
             alert("Please give this path a name.");
+            return false;
         }
         else if (trimmed.indexOf(" ") != -1)
         {
             alert("Please do not use spaces in path names.");
+            return false;
         }
         else if (document.outline.escalate0.options.length==0)
         {
             alert("Please give this path some initial targets.");
+            return false;
         }
         else
         {
             document.outline.userAction.value="finish";
-            document.outline.submit();
+            return true;
         }
     }
     
@@ -163,7 +166,7 @@
   all editing is complete click the <i>Finish</i> button. No changes will
   be permanent until the <i>Finish</i> button has been clicked.</h3>
 
-<form method="post" name="outline" action="admin/notification/destinationWizard">
+<form method="post" name="outline" action="admin/notification/destinationWizard" onsubmit="return finish();">
   <input type="hidden" name="sourcePage" value="pathOutline.jsp"/>
   <input type="hidden" name="index"/>
   <input type="hidden" name="userAction"/>
@@ -209,7 +212,7 @@
                 &nbsp;
                 <br/>
                 <%if (i > 0) { %>
-                  <input type="button" value="Remove" onclick="javascript:remove(<%=i-1%>)"/>
+                  <input type="button" value="Remove" onclick="remove(<%=i-1%>)"/>
                 <% } else { %>
                   &nbsp;
                 <% } %>
@@ -220,14 +223,14 @@
     </tr>
     <tr>
       <td>
-        <input type="button" value="Add Escalation" onclick="javascript:add(<%=i%>)"/>
+        <input type="button" value="Add Escalation" onclick="add(<%=i%>)"/>
       </td>
     </tr>
     <% } %>
     <tr>
       <td>
-        <input type="submit" value="Finish" onclick="javascript:finish()"/>
-        <input type="button" value="Cancel" onclick="javascript:cancel()"/>
+        <input type="submit" value="Finish"/>
+        <input type="button" value="Cancel" onclick="cancel()"/>
       </td>
     </tr>
   </table>
@@ -238,17 +241,17 @@
 <%!
     public String buildDelaySelect(String[] intervals, String name, String currValue)
     {
-          StringBuffer buffer = new StringBuffer("<select NAME=\"" + name  + "\">");
+          StringBuffer buffer = new StringBuffer("<select name=\"" + name  + "\">");
                     
           for (int i = 0; i < intervals.length; i++)
           {
              if (intervals[i].equals(currValue))
              {
-                 buffer.append("<option selected VALUE=\"" + intervals[i] + "\">").append(intervals[i]).append("</option>");
+                 buffer.append("<option selected=\"selected\" value=\"" + intervals[i] + "\">").append(intervals[i]).append("</option>");
              }
              else
              {
-                  buffer.append("<option VALUE=\"" + intervals[i] + "\">").append(intervals[i]).append("</option>");
+                  buffer.append("<option value=\"" + intervals[i] + "\">").append(intervals[i]).append("</option>");
              }
           }
           buffer.append("</select>");
@@ -258,7 +261,7 @@
     
     public String buildTargetList(int index, Path path, String name)
     {
-        StringBuffer buffer = new StringBuffer("<select  WIDTH=\"200\" STYLE=\"width: 200px\" name=\""+name+"\" size=\"4\">");
+        StringBuffer buffer = new StringBuffer("<select width=\"200\" style=\"width: 200px\" name=\""+name+"\" size=\"4\">");
         Target[] targetList = new Target[0];
         
         if (index == 0)

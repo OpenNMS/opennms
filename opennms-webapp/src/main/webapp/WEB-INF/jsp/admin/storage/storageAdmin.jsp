@@ -138,17 +138,19 @@
    //-------------------------------------------------------------------------------
 
 
-   function createBucket() {
-	  document.createBucketForm.action="admin/storage/storageCreateBucket.htm?node=${model.db_id}";
-	  document.createBucketForm.submit();	
-   }
+	function createBucket() {
+		document.createBucketForm.action="admin/storage/storageCreateBucket.htm?node=${model.db_id}";
+		return true;
+	}
 
-   function deleteBucket() {
-  	  if(confirm('Do you really want to delete all image files?')==true) {
-	  	document.deleteBucketForm.action="admin/storage/storageDeleteBucket.htm?node=${model.db_id}";
-	  	document.deleteBucketForm.submit();	
-      }
-   }
+	function deleteBucket() {
+		if(confirm('Do you really want to delete all image files?')==true) {
+			document.deleteBucketForm.action="admin/storage/storageDeleteBucket.htm?node=${model.db_id}";
+			return true;
+		} else {
+			return false;
+		}
+	}
       
 </script>
 
@@ -209,24 +211,23 @@
 	</tr>
 	<c:if test="${model.bucketlistsize == 0 }">
 	<tr>
-	<th >
-	<form id="deleteBucketForm" method="post" name="deleteBucketForm">	
-	<input name="delStatus" id="doDelete" type="submit" value="Delete" onClick="deleteBucket()">
-	<INPUT TYPE="hidden" NAME="bucket" VALUE="${model.id}">
-		</form>
+		<th>
+			<form id="deleteBucketForm" method="post" name="deleteBucketForm" onsubmit="return deleteBucket();">
+				<input name="delStatus" id="doDelete" type="submit" value="Delete"/>
+				<input type="hidden" name="bucket" value="${model.id}"/>
+			</form>
 		</th>
 	</tr>
 	</c:if>
 	</c:when>
 	<c:otherwise>
 	<tr>
-	<th >
-	<form id="createBucketForm" method="post" name="createBucketForm">	
-	<input name="createStatus" id="doCreate" type="submit" value="Create" onClick="createBucket()">
-	<INPUT TYPE="hidden" NAME="bucket" VALUE="${model.id}">
-		</form>
+		<th>
+			<form id="createBucketForm" method="post" name="createBucketForm" onsubmit="return createBucket();">
+				<input name="createStatus" id="doCreate" type="submit" value="Create"/>
+				<input type="hidden" name="bucket" value="${model.id}"/>
+			</form>
 		</th>
-	
 	</tr>
 	
 	</c:otherwise>
@@ -240,19 +241,17 @@
       <div class="boxWrapper">
       <p>Detailed Documentation on all options can be found on <a title="The OpenNMS Project wiki" href="http://www.opennms.org" target="new">the OpenNMS wiki</a>.
       </p>
-        <p><b>(Delete) Bucket Item</b>: delete the specified image file from <em>bucket</em></p>
+        <p><b>(Delete) Bucket Item</b>: Delete the specified image file from <em>bucket</em>.</p>
       
-       <p><b>Upload Bucket</b>:  add a file to <b>bucket</b>. 
+       <p><b>Upload Bucket</b>:  Add a file to <em>bucket</em>.
         </p>
         
-       <p><b>Create Bucket</b>:  Create a <b>bucket</b> for storing image files. 
+       <p><b>Create Bucket</b>:  Create a <em>bucket</em> for storing image files.
         </p>
 
-       <p><b>Delete Bucket</b>:  delete <b>bucket</b> with all image files. 
+       <p><b>Delete Bucket</b>:  Delete <em>bucket</em> with all image files.
         </p>
-                
-
- 
+  
       </div>
   </div>
   <hr />

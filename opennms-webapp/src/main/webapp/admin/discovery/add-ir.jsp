@@ -59,7 +59,7 @@ DiscoveryConfiguration currConfig  = (DiscoveryConfiguration) sess.getAttribute(
 <html>
 <head>
   <title>Add Include Range | Admin | OpenNMS Web Console</title>
-  <base HREF="<%=org.opennms.web.Util.calculateUrlBase( request )%>" />
+  <base href="<%=org.opennms.web.Util.calculateUrlBase( request )%>" />
   <link rel="stylesheet" type="text/css" href="css/styles.css" />
 
 </head>
@@ -137,7 +137,7 @@ function addIncludeRange(){
 </table>
 	
 
-<input type="submit" name="addIncludeRange" id="addIncludeRange" value="Add" onclick="addIncludeRange();" />
+<input type="button" name="addIncludeRange" id="addIncludeRange" value="Add" onclick="addIncludeRange();" />
 <input type="button" name="cancel" id="cancel" value="Cancel" onclick="window.close();opener.document.focus();" />
 <hr />
 

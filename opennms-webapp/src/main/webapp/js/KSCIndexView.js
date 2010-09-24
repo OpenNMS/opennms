@@ -97,7 +97,7 @@ function nodeSNMPReportsInitView(elementId, snmpNodeData, urlTemplate){
 			var url = urlTpl.apply(snmpNodeGrid.getSelectionModel().getSelected().data);
 			window.location = url;
 		}else{
-			alert('Please Select a Node to Continue');
+			alert('Please select the node that you would like to report on.');
 		}
 	}
 }
