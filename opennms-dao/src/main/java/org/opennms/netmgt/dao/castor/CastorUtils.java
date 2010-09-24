@@ -48,6 +48,7 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStreamWriter;
 import java.io.Reader;
+import java.io.StringReader;
 import java.io.StringWriter;
 import java.io.Writer;
 
@@ -472,5 +473,14 @@ public class CastorUtils {
         fileWriter.write(stringWriter.toString());
         fileWriter.flush();
         fileWriter.close();
+    }
+
+    // FIXME This is a funky way to duplicate an object - dj@opennms.org
+    @SuppressWarnings("unchecked")
+    public static <T> T duplicateObject(T object, Class<T> clazz) throws MarshalException, ValidationException {
+        StringWriter stringWriter = new StringWriter();
+        Marshaller.marshal(object, stringWriter);
+        StringReader stringReader = new StringReader(stringWriter.toString());
+        return (T) Unmarshaller.unmarshal(clazz, stringReader);
     }
 }

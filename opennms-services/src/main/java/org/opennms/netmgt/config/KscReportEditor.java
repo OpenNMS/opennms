@@ -50,6 +50,7 @@ import org.exolab.castor.xml.Unmarshaller;
 import org.exolab.castor.xml.ValidationException;
 import org.opennms.netmgt.config.kscReports.Graph;
 import org.opennms.netmgt.config.kscReports.Report;
+import org.opennms.netmgt.dao.castor.CastorUtils;
 
 /**
  * <p>KscReportEditor class.</p>
@@ -143,7 +144,7 @@ public class KscReportEditor implements Serializable {
             m_workingGraphIndex = -1;
         } else {
             // Create a new and unique instance of the graph for screwing around with
-            m_workingGraph = duplicateCastorObject(m_workingReport.getGraph(m_workingGraphIndex), Graph.class);
+            m_workingGraph = CastorUtils.duplicateObject(m_workingReport.getGraph(m_workingGraphIndex), Graph.class);
         }
     }
 
@@ -189,7 +190,7 @@ public class KscReportEditor implements Serializable {
      * @throws org.exolab.castor.xml.ValidationException if any.
      */
     public void loadWorkingReport(Report report) throws MarshalException, ValidationException {
-        setWorkingReport(duplicateCastorObject(report, Report.class));
+        setWorkingReport(CastorUtils.duplicateObject(report, Report.class));
         getWorkingReport().deleteId();
     }
 
@@ -207,7 +208,7 @@ public class KscReportEditor implements Serializable {
             throw new IllegalArgumentException("Could not find report with ID " + index);
         }
 
-        setWorkingReport(duplicateCastorObject(report, Report.class));
+        setWorkingReport(CastorUtils.duplicateObject(report, Report.class));
     }
     
     /**
@@ -255,15 +256,6 @@ public class KscReportEditor implements Serializable {
         loadNewWorkingReport();
     }
 
-    // FIXME This is a funky way to duplicate an object; if we want to keep it this way, at least move it to CastorUtils - dj@opennms.org
-    @SuppressWarnings("unchecked")
-    private <T> T duplicateCastorObject(T object, Class<T> clazz) throws MarshalException, ValidationException {
-        StringWriter stringWriter = new StringWriter();
-        Marshaller.marshal(object, stringWriter);
-        StringReader stringReader = new StringReader(stringWriter.toString());
-        return (T) Unmarshaller.unmarshal(clazz, stringReader);
-    }
-    
     /**
      * <p>getFromSession</p>
      *
