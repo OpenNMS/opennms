@@ -35,11 +35,14 @@
  */
 package org.opennms.netmgt.statsd;
 
-import java.text.SimpleDateFormat;
+import java.text.DateFormat;
 import java.util.Calendar;
 import java.util.Date;
 import java.util.GregorianCalendar;
+import java.util.Locale;
 import java.util.TimeZone;
+
+import javax.mail.internet.MailDateFormat;
 
 import junit.framework.TestCase;
 
@@ -49,16 +52,16 @@ import org.opennms.core.utils.TimeKeeper;
  * @author <a href="mailto:dj@opennms.org">DJ Gregor</a>
  */
 public class RelativeTimeTest extends TestCase {
-    private SimpleDateFormat m_dateFormat = new SimpleDateFormat("EEE, dd MMM yyyy HH:mm:ss Z");
+//    private DateFormat m_dateFormat = new SimpleDateFormat("EEE, dd MMM yyyy HH:mm:ss Z");
+    private DateFormat m_dateFormat = new MailDateFormat();
+    private TimeZone m_timeZone = TimeZone.getTimeZone("GMT-05:00");
     
     public void testYesterdayBeginningDST() {
-        final TimeZone usEastern = TimeZone.getTimeZone("US/Eastern");
-            
         RelativeTime yesterday = RelativeTime.YESTERDAY;
         yesterday.setTimeKeeper(new TimeKeeper() {
 
             public Date getCurrentDate() {
-                Calendar cal = new GregorianCalendar(usEastern);
+                Calendar cal = new GregorianCalendar(m_timeZone, Locale.ENGLISH);
                 cal.set(2006, Calendar.APRIL, 3, 10, 0, 0);
                 return cal.getTime();
             }
@@ -72,19 +75,34 @@ public class RelativeTimeTest extends TestCase {
         Date start = yesterday.getStart();
         Date end = yesterday.getEnd();
 
-        assertEquals("start date", "Sun, 02 Apr 2006 00:00:00 -0500", m_dateFormat.format(start));
-        assertEquals("end date", "Mon, 03 Apr 2006 00:00:00 -0400", m_dateFormat.format(end));
+        Calendar c = new GregorianCalendar(m_timeZone, Locale.ENGLISH);
+        c.setTime(start);
+
+        assertEquals(-18000000, c.get(Calendar.ZONE_OFFSET));
+        assertEquals(2006, c.get(Calendar.YEAR));
+        assertEquals(0, c.get(Calendar.HOUR_OF_DAY));
+        assertEquals(Calendar.SUNDAY, c.get(Calendar.DAY_OF_WEEK));
+        assertEquals(2, c.get(Calendar.DAY_OF_MONTH));
+
+        c.setTime(end);
+
+        assertEquals(-18000000, c.get(Calendar.ZONE_OFFSET));
+        assertEquals(2006, c.get(Calendar.YEAR));
+        assertEquals(23, c.get(Calendar.HOUR_OF_DAY));
+        assertEquals(Calendar.SUNDAY, c.get(Calendar.DAY_OF_WEEK));
+        assertEquals(2, c.get(Calendar.DAY_OF_MONTH));
+
+        assertEquals("start date", "Sun, 2 Apr 2006 00:00:00 -0500 (EST)", m_dateFormat.format(start));
+        assertEquals("end date", "Mon, 3 Apr 2006 00:00:00 -0400 (EDT)", m_dateFormat.format(end));
         assertEquals("end date - start date", 82800000, end.getTime() - start.getTime());
     }
     
     public void testYesterdayEndingDST() {
-        final TimeZone usEastern = TimeZone.getTimeZone("US/Eastern");
-
         RelativeTime yesterday = RelativeTime.YESTERDAY;
         yesterday.setTimeKeeper(new TimeKeeper() {
 
             public Date getCurrentDate() {
-                Calendar cal = new GregorianCalendar(usEastern);
+                Calendar cal = new GregorianCalendar(m_timeZone, Locale.ENGLISH);
                 cal.set(2006, Calendar.OCTOBER, 30, 10, 0, 0);
                 return cal.getTime();
             }
@@ -98,8 +116,25 @@ public class RelativeTimeTest extends TestCase {
         Date start = yesterday.getStart();
         Date end = yesterday.getEnd();
 
-        assertEquals("start date", "Sun, 29 Oct 2006 00:00:00 -0400", m_dateFormat.format(start));
-        assertEquals("end date", "Mon, 30 Oct 2006 00:00:00 -0500", m_dateFormat.format(end));
+        Calendar c = new GregorianCalendar(m_timeZone, Locale.ENGLISH);
+        c.setTime(start);
+
+        assertEquals(-18000000, c.get(Calendar.ZONE_OFFSET));
+        assertEquals(2006, c.get(Calendar.YEAR));
+        assertEquals(23, c.get(Calendar.HOUR_OF_DAY));
+        assertEquals(Calendar.SATURDAY, c.get(Calendar.DAY_OF_WEEK));
+        assertEquals(28, c.get(Calendar.DAY_OF_MONTH));
+
+        c.setTime(end);
+
+        assertEquals(-18000000, c.get(Calendar.ZONE_OFFSET));
+        assertEquals(2006, c.get(Calendar.YEAR));
+        assertEquals(0, c.get(Calendar.HOUR_OF_DAY));
+        assertEquals(Calendar.MONDAY, c.get(Calendar.DAY_OF_WEEK));
+        assertEquals(30, c.get(Calendar.DAY_OF_MONTH));
+
+        assertEquals("start date", "Sun, 29 Oct 2006 00:00:00 -0400 (EDT)", m_dateFormat.format(start));
+        assertEquals("end date", "Mon, 30 Oct 2006 00:00:00 -0500 (EST)", m_dateFormat.format(end));
         assertEquals("end date - start date", 90000000, end.getTime() - start.getTime());
     }
 }
