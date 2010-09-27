@@ -56,7 +56,7 @@ public class BasicScheduleUtilsTest extends IntervalTestCase {
             "           <schedule name=\"simple\" type=\"specific\">" +
             "               <time begins=\"20-Aug-2005 13:00:00\" ends=\"20-Aug-2005 14:00:00\"/>\n" + 
             "           </schedule>";
-        Schedule simpleSchedule = CastorUtils.unmarshal(Schedule.class, new ByteArrayInputStream(schedSpec.getBytes()));
+        Schedule simpleSchedule = CastorUtils.unmarshal(Schedule.class, new ByteArrayInputStream(schedSpec.getBytes()), CastorUtils.PRESERVE_WHITESPACE);
         
         Owner owner = new Owner("unnamed", "simple", 0);
         OwnedIntervalSequence intervals = BasicScheduleUtils.getIntervalsCovering(aug(18), simpleSchedule, owner);
@@ -70,7 +70,7 @@ public class BasicScheduleUtilsTest extends IntervalTestCase {
             "           <schedule name=\"simple\" type=\"specific\">" +
             "               <time begins=\"18-Aug-2005 13:00:00\" ends=\"18-Aug-2005 14:00:00\"/>\n" + 
             "           </schedule>";
-        Schedule simpleSchedule = CastorUtils.unmarshal(Schedule.class, new ByteArrayInputStream(schedSpec.getBytes()));
+        Schedule simpleSchedule = CastorUtils.unmarshal(Schedule.class, new ByteArrayInputStream(schedSpec.getBytes()), CastorUtils.PRESERVE_WHITESPACE);
         
         Owner owner = new Owner("unnamed", "simple", 0);
         OwnedIntervalSequence intervals = BasicScheduleUtils.getIntervalsCovering(aug(18), simpleSchedule, owner);
@@ -85,7 +85,7 @@ public class BasicScheduleUtilsTest extends IntervalTestCase {
             "               <time begins=\"18-Aug-2005 13:00:00\" ends=\"18-Aug-2005 14:00:00\"/>\n" + 
             "               <time begins=\"18-Aug-2005 16:00:00\" ends=\"18-Aug-2005 17:00:00\"/>\n" + 
             "           </schedule>";
-        Schedule simpleSchedule = CastorUtils.unmarshal(Schedule.class, new ByteArrayInputStream(schedSpec.getBytes()));
+        Schedule simpleSchedule = CastorUtils.unmarshal(Schedule.class, new ByteArrayInputStream(schedSpec.getBytes()), CastorUtils.PRESERVE_WHITESPACE);
         
         Owner owner = new Owner("unnamed", "double", 0);
         TimeIntervalSequence intervals = BasicScheduleUtils.getIntervalsCovering(aug(18), simpleSchedule, owner);
@@ -103,7 +103,7 @@ public class BasicScheduleUtilsTest extends IntervalTestCase {
             "               <time day=\"19\" begins=\"09:00:00\" ends=\"10:00:00\"/>\n" + 
             "               <time begins=\"18-Aug-2005 16:00:00\" ends=\"18-Aug-2005 17:00:00\"/>\n" + 
             "           </schedule>";
-        Schedule simpleSchedule = CastorUtils.unmarshal(Schedule.class, new ByteArrayInputStream(schedSpec.getBytes()));
+        Schedule simpleSchedule = CastorUtils.unmarshal(Schedule.class, new ByteArrayInputStream(schedSpec.getBytes()), CastorUtils.PRESERVE_WHITESPACE);
         
         Owner owner = new Owner("unnamed", "complex", 0);
        TimeIntervalSequence intervals = BasicScheduleUtils.getIntervalsCovering(aug(18), simpleSchedule, owner);
@@ -124,7 +124,7 @@ public class BasicScheduleUtilsTest extends IntervalTestCase {
             "           <schedule name=\"simple\" type=\"specific\">" +
             "               <time begins=\"18-Aug-2005 13:00:00\" ends=\"18-Aug-2005 14:00:00\"/>\n" + 
             "           </schedule>";
-        Schedule simpleSchedule = CastorUtils.unmarshal(Schedule.class, new ByteArrayInputStream(schedSpec.getBytes()));
+        Schedule simpleSchedule = CastorUtils.unmarshal(Schedule.class, new ByteArrayInputStream(schedSpec.getBytes()), CastorUtils.PRESERVE_WHITESPACE);
         
         Owner owner = new Owner("unnamed", "simple", 0, 0);
         TimeInterval interval = BasicScheduleUtils.getInterval(new Date(), simpleSchedule.getTime(0), owner);
@@ -138,7 +138,7 @@ public class BasicScheduleUtilsTest extends IntervalTestCase {
             "           <schedule name=\"simple\" type=\"specific\">" +
             "               <time day=\"18\" begins=\"13:00:00\" ends=\"14:00:00\"/>\n" + 
             "           </schedule>";
-        Schedule simpleSchedule = CastorUtils.unmarshal(Schedule.class, new ByteArrayInputStream(schedSpec.getBytes()));
+        Schedule simpleSchedule = CastorUtils.unmarshal(Schedule.class, new ByteArrayInputStream(schedSpec.getBytes()), CastorUtils.PRESERVE_WHITESPACE);
         
         Owner owner = new Owner("unnamed", "simple", 0, 0);
         TimeInterval interval = BasicScheduleUtils.getInterval(aug(18).getStart(), simpleSchedule.getTime(0), owner);
@@ -152,7 +152,7 @@ public class BasicScheduleUtilsTest extends IntervalTestCase {
             "           <schedule name=\"simple\" type=\"specific\">" +
             "               <time day=\"thursday\" begins=\"13:00:00\" ends=\"14:00:00\"/>\n" + 
             "           </schedule>";
-        Schedule simpleSchedule = CastorUtils.unmarshal(Schedule.class, new ByteArrayInputStream(schedSpec.getBytes()));
+        Schedule simpleSchedule = CastorUtils.unmarshal(Schedule.class, new ByteArrayInputStream(schedSpec.getBytes()), CastorUtils.PRESERVE_WHITESPACE);
         
         Owner owner = new Owner("unnamed", "simple", 0, 0);
         TimeInterval interval = BasicScheduleUtils.getInterval(aug(18).getStart(), simpleSchedule.getTime(0), owner);
@@ -166,7 +166,7 @@ public class BasicScheduleUtilsTest extends IntervalTestCase {
             "           <schedule name=\"simple\" type=\"weekly\">" +
             "               <time day=\"thursday\" begins=\"11:00:00\" ends=\"14:00:00\"/>\n" + 
             "           </schedule>";
-        Schedule simpleSchedule = CastorUtils.unmarshal(Schedule.class, new ByteArrayInputStream(schedSpec.getBytes()));
+        Schedule simpleSchedule = CastorUtils.unmarshal(Schedule.class, new ByteArrayInputStream(schedSpec.getBytes()), CastorUtils.PRESERVE_WHITESPACE);
         
         Owner owner = new Owner("unnamed", "simple", 0, 0);
         TimeIntervalSequence intervals = BasicScheduleUtils.getIntervals(aug(4, 13, 25, 12), simpleSchedule.getTime(0), owner);
@@ -187,7 +187,7 @@ public class BasicScheduleUtilsTest extends IntervalTestCase {
             "           <schedule name=\"simple\" type=\"monthly\">" +
             "               <time day=\"7\" begins=\"11:00:00\" ends=\"14:00:00\"/>\n" + 
             "           </schedule>";
-        Schedule simpleSchedule = CastorUtils.unmarshal(Schedule.class, new ByteArrayInputStream(schedSpec.getBytes()));
+        Schedule simpleSchedule = CastorUtils.unmarshal(Schedule.class, new ByteArrayInputStream(schedSpec.getBytes()), CastorUtils.PRESERVE_WHITESPACE);
         
         Owner owner = new Owner("unnamed", "simple", 0, 0);
         TimeIntervalSequence intervals = BasicScheduleUtils.getIntervals(interval(6 /* june */, 7, 13, 11 /* nov */, 7, 12), simpleSchedule.getTime(0), owner);
@@ -210,7 +210,7 @@ public class BasicScheduleUtilsTest extends IntervalTestCase {
             "           <schedule name=\"simple\" type=\"daily\">" +
             "               <time begins=\"11:00:00\" ends=\"14:00:00\"/>\n" + 
             "           </schedule>";
-        Schedule simpleSchedule = CastorUtils.unmarshal(Schedule.class, new ByteArrayInputStream(schedSpec.getBytes()));
+        Schedule simpleSchedule = CastorUtils.unmarshal(Schedule.class, new ByteArrayInputStream(schedSpec.getBytes()), CastorUtils.PRESERVE_WHITESPACE);
         
         Owner owner = new Owner("unnamed", "simple", 0, 0);
         TimeIntervalSequence intervals = BasicScheduleUtils.getIntervals(interval(6, 1, 0, 7, 1, 0), simpleSchedule.getTime(0), owner);

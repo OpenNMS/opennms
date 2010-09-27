@@ -43,6 +43,7 @@ import java.io.IOException;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Collection;
+import java.util.Collections;
 import java.util.Date;
 import java.util.Enumeration;
 import java.util.List;
@@ -60,7 +61,6 @@ import org.opennms.netmgt.config.poller.Downtime;
 import org.opennms.netmgt.config.poller.Interface;
 import org.opennms.netmgt.config.poller.Node;
 import org.opennms.netmgt.config.poller.Outage;
-import org.opennms.netmgt.config.poller.Outages;
 import org.opennms.netmgt.config.poller.Package;
 import org.opennms.netmgt.config.poller.Parameter;
 import org.opennms.netmgt.config.poller.PollerConfiguration;
@@ -70,6 +70,7 @@ import org.opennms.netmgt.model.ServiceSelector;
 import org.opennms.netmgt.poller.DistributionContext;
 import org.opennms.netmgt.poller.ServiceMonitor;
 import org.opennms.netmgt.poller.ServiceMonitorLocator;
+import org.springframework.core.io.ByteArrayResource;
 
 public class MockPollerConfig extends PollOutagesConfigManager implements PollerConfig {
 
@@ -97,9 +98,10 @@ public class MockPollerConfig extends PollOutagesConfigManager implements Poller
 
     private MockNetwork m_network;
 
-    public MockPollerConfig(MockNetwork network) {
+    public MockPollerConfig(final MockNetwork network) {
         m_network = network;
-        setConfig(new Outages());
+        setConfigResource(new ByteArrayResource("<outages></outages>".getBytes()));
+        afterPropertiesSet();
     }
 
     public void addDowntime(long interval, long begin, long end, boolean delete) {
@@ -312,31 +314,29 @@ public class MockPollerConfig extends PollOutagesConfigManager implements Poller
      * @param svcName
      * @return
      */
-    public boolean hasServiceMonitor(String svcName) {
+    public boolean hasServiceMonitor(final String svcName) {
         return getServiceMonitor(svcName) != null;
     }
 
-    public boolean interfaceInPackage(String iface, Package pkg) {
-        Enumeration<String> en = pkg.enumerateSpecific();
-        while (en.hasMoreElements()) {
-            String ipAddr = en.nextElement();
+    public boolean interfaceInPackage(final String iface, final Package pkg) {
+        for (final String ipAddr : pkg.getSpecificCollection()) {
             if (ipAddr.equals(iface))
                 return true;
         }
         return false;
     }
 
-    public boolean isPolled(String ipaddr) {
+    public boolean isPolled(final String ipaddr) {
         // TODO Auto-generated method stub
         return false;
     }
 
-    public boolean isPolled(String svcName, Package pkg) {
+    public boolean isPolled(final String svcName, final Package pkg) {
         // TODO Auto-generated method stub
         return false;
     }
 
-    public boolean isPolled(String ipaddr, String svcName) {
+    public boolean isPolled(final String ipaddr, final String svcName) {
         // TODO Auto-generated method stub
         return false;
     }
@@ -350,7 +350,7 @@ public class MockPollerConfig extends PollOutagesConfigManager implements Poller
         return m_pollAll ;
     }
 
-    public void setPollAllIfNoCriticalServiceDefined(boolean pollAll) {
+    public void setPollAllIfNoCriticalServiceDefined(final boolean pollAll) {
         m_pollAll = pollAll;
     }
 
@@ -359,17 +359,15 @@ public class MockPollerConfig extends PollOutagesConfigManager implements Poller
 
     }
 
-    public boolean serviceInPackageAndEnabled(String svcName, Package pkg) {
-        Enumeration<Service> en = pkg.enumerateService();
-        while(en.hasMoreElements()) {
-            Service svc = en.nextElement();
+    public boolean serviceInPackageAndEnabled(final String svcName, final Package pkg) {
+        for (final Service svc : pkg.getServiceCollection()) {
             if (svc.getName().equals(svcName))
                 return true;
         }
         return false;
     }
 
-    public boolean serviceMonitored(String svcName) {
+    public boolean serviceMonitored(final String svcName) {
         // TODO Auto-generated method stub
         return false;
     }
@@ -378,62 +376,62 @@ public class MockPollerConfig extends PollOutagesConfigManager implements Poller
         return m_serviceUnresponsiveEnabled;
     }
 
-    public void setNextOutageIdSql(String nextOutageIdSql) {
+    public void setNextOutageIdSql(final String nextOutageIdSql) {
         m_nextOutageIdSql = nextOutageIdSql;
     }
 
-    public void setServiceUnresponsiveEnabled(boolean serviceUnresponsiveEnabled) {
+    public void setServiceUnresponsiveEnabled(final boolean serviceUnresponsiveEnabled) {
         m_serviceUnresponsiveEnabled = serviceUnresponsiveEnabled;
     }
 
-    public void setCriticalService(String criticalSvcName) {
+    public void setCriticalService(final String criticalSvcName) {
         m_criticalSvcName = criticalSvcName;
     }
 
-    public void setInterfaceMatch(String matchRegexp) {
+    public void setInterfaceMatch(final String matchRegexp) {
         m_currentPkg.addIncludeUrl(matchRegexp);
     }
 
 
-    public void setNodeOutageProcessingEnabled(boolean outageProcessingEnabled) {
+    public void setNodeOutageProcessingEnabled(final boolean outageProcessingEnabled) {
         m_outageProcessingEnabled = outageProcessingEnabled;
     }
 
-    public void setPollInterval(String svcName, long interval) {
+    public void setPollInterval(final String svcName, final long interval) {
         setPollInterval(m_currentPkg, svcName, interval);
     }
 
-    public void setPollInterval(Package pkg, String svcName, long interval) {
-        Service svc = findService(pkg, svcName);
+    public void setPollInterval(final Package pkg, final String svcName, final long interval) {
+        final Service svc = findService(pkg, svcName);
         if (svc == null)
             throw new IllegalArgumentException("No service named: "+svcName+" in package "+pkg);
 
         svc.setInterval(interval);
     }
 
-    public void setPollerThreads(int threads) {
+    public void setPollerThreads(final int threads) {
         m_threads = threads;
     }
 
-    public void setDefaultPollInterval(long defaultPollInterval) {
+    public void setDefaultPollInterval(final long defaultPollInterval) {
         m_defaultPollInterval = defaultPollInterval;
     }
 
     public void populatePackage(final MockNetwork network) {
-        MockVisitor populator = new MockVisitorAdapter() {
-            public void visitService(MockService svc) {
+        final MockVisitor populator = new MockVisitorAdapter() {
+            public void visitService(final MockService svc) {
                 addService(svc);
             }
         };
         network.visit(populator);
     }
 
-    protected void saveXML(String xmlString) throws IOException, MarshalException, ValidationException {
+    protected void saveXML(final String xmlString) throws IOException, MarshalException, ValidationException {
         // TODO Auto-generated method stub
 
     }
 
-    public Service getServiceInPackage(String svcName, Package pkg) {
+    public Service getServiceInPackage(final String svcName, final Package pkg) {
         return findService(pkg, svcName);
     }
 
@@ -445,14 +443,14 @@ public class MockPollerConfig extends PollOutagesConfigManager implements Poller
 
     }
 
-    public void addParameter(String key, String value) {
-        Parameter param = new Parameter();
+    public void addParameter(final String key, final String value) {
+        final Parameter param = new Parameter();
         param.setKey(key);
         param.setValue(value);
         m_currentSvc.addParameter(param);
     }
 
-    public void addPackage(Package pkg) {
+    public void addPackage(final Package pkg) {
         m_pkgs.add(pkg);
     }
 
@@ -461,48 +459,43 @@ public class MockPollerConfig extends PollOutagesConfigManager implements Poller
         return null;
     }
 
-    public List<String> getAllPackageMatches(String ipAddr) {
+    public List<String> getAllPackageMatches(final String ipAddr) {
         return new ArrayList<String>(0);
     }
 
     public boolean pathOutageEnabled() {
-        // TODO Auto-generated method stub
         return false;
     }
 
     public void releaseAllServiceMonitors() {
-        // TODO Auto-generated method stub
-
     }
 
-    public List<String> getIpList(Package pkg) {
-        // TODO Auto-generated method stub
-        return new ArrayList<String>(0);
+    public List<String> getIpList(final Package pkg) {
+        return Collections.emptyList();
     }
 
-    public ServiceSelector getServiceSelectorForPackage(Package pkg) {
-        // TODO Auto-generated method stub
+    public ServiceSelector getServiceSelectorForPackage(final Package pkg) {
         return null;
     }
 
-    public void saveResponseTimeData(String locationMonitor, OnmsMonitoredService monSvc, double responseTime, Package pkg) {
-        throw new UnsupportedOperationException("not yet implelmented");
+    public void saveResponseTimeData(final String locationMonitor, final OnmsMonitoredService monSvc, final double responseTime, final Package pkg) {
+        throw new UnsupportedOperationException("not yet implemented");
 
     }
 
-    public Collection<ServiceMonitorLocator> getServiceMonitorLocators(DistributionContext context) {
-        throw new UnsupportedOperationException("not yet implelmented");
+    public Collection<ServiceMonitorLocator> getServiceMonitorLocators(final DistributionContext context) {
+        throw new UnsupportedOperationException("not yet implemented");
     }
 
-    public Package getFirstLocalPackageMatch(String ipaddr) {
+    public Package getFirstLocalPackageMatch(final String ipaddr) {
         throw new UnsupportedOperationException("MockPollerConfig.getFirstLocalPackageMatch is not yet implemented");
     }
 
-    public boolean isPolledLocally(String ipaddr) {
+    public boolean isPolledLocally(final String ipaddr) {
         throw new UnsupportedOperationException("MockPollerConfig.isPolledLocally is not yet implemented");
     }
 
-    public boolean isPolledLocally(String ipaddr, String svcName) {
+    public boolean isPolledLocally(final String ipaddr, final String svcName) {
         throw new UnsupportedOperationException("MockPollerConfig.isPolledLocally is not yet implemented");
     }
 
