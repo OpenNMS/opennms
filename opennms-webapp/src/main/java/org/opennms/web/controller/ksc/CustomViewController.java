@@ -280,18 +280,17 @@ public class CustomViewController extends AbstractController implements Initiali
     }
     
     private void removeBrokenGraphsFromReport(Report report) {
-        List<Graph> badGraphs = new ArrayList<Graph>();
-        for (Graph graph : report.getGraphCollection()) {
+        for (Iterator<Graph> itr = report.getGraphCollection().iterator(); itr.hasNext();) {
+            Graph graph = itr.next();
             try {
                 getKscReportService().getResourceFromGraph(graph);
             } catch (ObjectRetrievalFailureException orfe) {
-                badGraphs.add(graph);
+                log().error("Removing graph '" + graph.getTitle() + "' in KSC report '" + report.getTitle() + "' because the resource it refers to could not be found. Perhaps resource '"+ graph.getResourceId() + "' (or its ancestor) referenced by this graph no longer exists?");
+                itr.remove();
+            } catch (Throwable e) {
+                log().error("Unexpected error while scanning through graphs in report: " + e.getMessage(), e);
+                itr.remove();
             }
-        }
-        
-        for (Graph badGraph : badGraphs) {
-            log().error("Removing graph '" + badGraph.getTitle() + "' in KSC report '" + report.getTitle() + "' because the resource it refers to could not be found. Perhaps resource '"+ badGraph.getResourceId() + "' (or its ancestor) referenced by this graph no longer exists?");
-            report.removeGraph(badGraph);
         }
     }
 
@@ -313,8 +312,8 @@ public class CustomViewController extends AbstractController implements Initiali
         
     }
 
-    private ThreadCategory log() {
-        return ThreadCategory.getInstance(getClass());
+    private static ThreadCategory log() {
+        return ThreadCategory.getInstance(CustomViewController.class);
     }
 
     /**

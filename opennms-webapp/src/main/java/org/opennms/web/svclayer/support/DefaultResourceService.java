@@ -66,10 +66,6 @@ import org.springframework.util.Assert;
  *
  * @author <a href="mailto:dj@opennms.org">DJ Gregor</a>
  * @author <a href="mailto:brozow@opennms.org">Mathew Brozowski</a>
- * @author <a href="mailto:dj@opennms.org">DJ Gregor</a>
- * @author <a href="mailto:brozow@opennms.org">Mathew Brozowski</a>
- * @version $Id: $
- * @since 1.8.1
  */
 public class DefaultResourceService implements ResourceService, InitializingBean {
     private ResourceDao m_resourceDao;
@@ -215,7 +211,7 @@ public class DefaultResourceService implements ResourceService, InitializingBean
         return matchingChildResources;
     }
     
-    private OnmsResource checkLabelForQuotes(OnmsResource childResource) {
+    private static OnmsResource checkLabelForQuotes(OnmsResource childResource) {
         
         String lbl  = Util.convertToJsSafeString(childResource.getLabel());
         
@@ -272,8 +268,8 @@ public class DefaultResourceService implements ResourceService, InitializingBean
         promoteGraphAttributesForResource(loadResourceById(resourceId));
     }
     
-    private ThreadCategory log() {
-        return ThreadCategory.getInstance(getClass());
+    private static ThreadCategory log() {
+        return ThreadCategory.getInstance(DefaultResourceService.class);
     }
 
     /**

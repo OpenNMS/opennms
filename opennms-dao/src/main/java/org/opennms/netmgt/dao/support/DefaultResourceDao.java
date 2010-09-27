@@ -625,7 +625,7 @@ public class DefaultResourceDao implements ResourceDao, InitializingBean {
         return nodes;
     }
 
-    private Set<String> findChildrenMatchingFilter(File directory, FileFilter filter) {
+    private static Set<String> findChildrenMatchingFilter(File directory, FileFilter filter) {
         Set<String> children = new HashSet<String>();
         
         File[] nodeDirs = directory.listFiles(filter);
@@ -649,7 +649,7 @@ public class DefaultResourceDao implements ResourceDao, InitializingBean {
      * 
      * XXX should include the location monitor in the returned data
      */
-    private Set<String> findChildrenChildrenMatchingFilter(File directory, FileFilter filter) {
+    private static Set<String> findChildrenChildrenMatchingFilter(File directory, FileFilter filter) {
         Set<String> children = new HashSet<String>();
         
         File[] locationMonitorDirs = directory.listFiles();
@@ -744,7 +744,7 @@ public class DefaultResourceDao implements ResourceDao, InitializingBean {
         resources.addAll(findDomainResources());
         return resources;
     }
-    private ThreadCategory log() {
-        return ThreadCategory.getInstance();
+    private static ThreadCategory log() {
+        return ThreadCategory.getInstance(DefaultResourceDao.class);
     }
 }
