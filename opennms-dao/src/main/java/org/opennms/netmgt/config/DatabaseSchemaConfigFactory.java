@@ -62,6 +62,7 @@ import org.opennms.netmgt.config.filter.DatabaseSchema;
 import org.opennms.netmgt.config.filter.Join;
 import org.opennms.netmgt.config.filter.Table;
 import org.opennms.netmgt.dao.castor.CastorUtils;
+import org.springframework.core.io.Resource;
 
 /**
  * This is the singleton class used to load the configuration for the OpenNMS
@@ -122,7 +123,7 @@ public final class DatabaseSchemaConfigFactory {
         InputStream cfgStream = null;
         try {
             cfgStream = new FileInputStream(configFile);
-            m_config = CastorUtils.unmarshal(DatabaseSchema.class, cfgStream);
+            m_config = CastorUtils.unmarshal(DatabaseSchema.class, cfgStream, CastorUtils.PRESERVE_WHITESPACE);
             finishConstruction();
         } finally {
             if (cfgStream != null) {
@@ -141,7 +142,7 @@ public final class DatabaseSchemaConfigFactory {
      */
     @Deprecated
     public DatabaseSchemaConfigFactory(Reader reader) throws IOException, MarshalException, ValidationException {
-        m_config = CastorUtils.unmarshal(DatabaseSchema.class, reader);
+        m_config = CastorUtils.unmarshal(DatabaseSchema.class, reader, CastorUtils.PRESERVE_WHITESPACE);
         finishConstruction();
     }
 
@@ -153,7 +154,12 @@ public final class DatabaseSchemaConfigFactory {
      * @throws org.exolab.castor.xml.ValidationException if any.
      */
     public DatabaseSchemaConfigFactory(InputStream is) throws MarshalException, ValidationException {
-        m_config = CastorUtils.unmarshal(DatabaseSchema.class, is);
+        m_config = CastorUtils.unmarshal(DatabaseSchema.class, is, CastorUtils.PRESERVE_WHITESPACE);
+        finishConstruction();
+    }
+
+    public DatabaseSchemaConfigFactory(final Resource rs) throws MarshalException, ValidationException, IOException {
+        m_config = CastorUtils.unmarshal(DatabaseSchema.class, rs.getInputStream(), CastorUtils.PRESERVE_WHITESPACE);
         finishConstruction();
     }
 

@@ -53,6 +53,7 @@ import org.opennms.core.utils.ThreadCategory;
 import org.opennms.netmgt.ConfigFileConstants;
 import org.opennms.netmgt.config.collectd.CollectdConfiguration;
 import org.opennms.netmgt.dao.castor.CastorUtils;
+import org.springframework.core.io.Resource;
 import org.springframework.util.Assert;
 
 /**
@@ -125,7 +126,7 @@ public class CollectdConfigFactory {
         InputStream stream = null;
         try {
             stream = new FileInputStream(configFile);
-            CollectdConfiguration config = CastorUtils.unmarshal(CollectdConfiguration.class, stream);
+            CollectdConfiguration config = CastorUtils.unmarshal(CollectdConfiguration.class, stream, CastorUtils.PRESERVE_WHITESPACE);
             m_collectdConfig = new CollectdConfig(config, localServer, verifyServer);
         } finally {
             if (stream != null) {
@@ -165,8 +166,13 @@ public class CollectdConfigFactory {
      * @throws org.exolab.castor.xml.MarshalException if any.
      * @throws org.exolab.castor.xml.ValidationException if any.
      */
-    public CollectdConfigFactory(InputStream stream, String localServer, boolean verifyServer) throws MarshalException, ValidationException {
-        CollectdConfiguration config = CastorUtils.unmarshal(CollectdConfiguration.class, stream);
+    public CollectdConfigFactory(final InputStream stream, final String localServer, final boolean verifyServer) throws MarshalException, ValidationException {
+        CollectdConfiguration config = CastorUtils.unmarshal(CollectdConfiguration.class, stream, CastorUtils.PRESERVE_WHITESPACE);
+        m_collectdConfig = new CollectdConfig(config, localServer, verifyServer);
+    }
+
+    public CollectdConfigFactory(final Resource resource, final String localServer, final boolean verifyServer) throws MarshalException, ValidationException, IOException {
+        CollectdConfiguration config = CastorUtils.unmarshal(CollectdConfiguration.class, resource.getInputStream(), CastorUtils.PRESERVE_WHITESPACE);
         m_collectdConfig = new CollectdConfig(config, localServer, verifyServer);
     }
 

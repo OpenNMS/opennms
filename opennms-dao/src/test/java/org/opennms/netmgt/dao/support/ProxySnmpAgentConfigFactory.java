@@ -51,7 +51,7 @@ import org.opennms.test.ConfigurationTestUtils;
 public class ProxySnmpAgentConfigFactory extends SnmpPeerFactory {
 
     public ProxySnmpAgentConfigFactory() throws MarshalException, ValidationException, FileNotFoundException, IOException {
-        super(ConfigurationTestUtils.getReaderForConfigFile("snmp-config.xml"));
+        super(ConfigurationTestUtils.getInputStreamForConfigFile("snmp-config.xml"));
     }
 
     public SnmpAgentConfig getAgentConfig(InetAddress address) {

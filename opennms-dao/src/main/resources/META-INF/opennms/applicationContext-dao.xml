@@ -314,6 +314,11 @@
   
   <bean id="init-snmpPeerFactory" class="org.springframework.beans.factory.config.MethodInvokingFactoryBean">
     <property name="staticMethod"><value>org.opennms.netmgt.config.SnmpPeerFactory.init</value></property>
+    <property name="arguments">
+      <list>
+        <ref bean="categoryDao" />
+      </list>
+    </property>
   </bean>
 
   <bean id="snmpPeerFactory" class="org.springframework.beans.factory.config.MethodInvokingFactoryBean" depends-on="init-snmpPeerFactory">

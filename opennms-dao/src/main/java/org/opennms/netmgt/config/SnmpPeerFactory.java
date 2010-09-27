@@ -56,11 +56,12 @@ import org.exolab.castor.xml.Marshaller;
 import org.exolab.castor.xml.ValidationException;
 import org.opennms.core.utils.IPLike;
 import org.opennms.core.utils.InetAddressUtils;
-import org.opennms.core.utils.ThreadCategory;
+import org.opennms.core.utils.LogUtils;
 import org.opennms.netmgt.ConfigFileConstants;
 import org.opennms.netmgt.config.common.Range;
 import org.opennms.netmgt.config.snmp.Definition;
 import org.opennms.netmgt.config.snmp.SnmpConfig;
+import org.opennms.netmgt.dao.CategoryDao;
 import org.opennms.netmgt.dao.SnmpAgentConfigFactory;
 import org.opennms.netmgt.dao.castor.CastorUtils;
 import org.opennms.netmgt.snmp.SnmpAgentConfig;
@@ -104,6 +105,8 @@ public class SnmpPeerFactory extends PeerFactory implements SnmpAgentConfigFacto
      */
     private static boolean m_loaded = false;
 
+    private static CategoryDao m_categoryDao;
+
     private static final int VERSION_UNSPECIFIED = -1;
 
     /**
@@ -125,8 +128,8 @@ public class SnmpPeerFactory extends PeerFactory implements SnmpAgentConfigFacto
      *
      * @param resource a {@link org.springframework.core.io.Resource} object.
      */
-    public SnmpPeerFactory(Resource resource) {
-        m_config = CastorUtils.unmarshalWithTranslatedExceptions(SnmpConfig.class, resource);
+    public SnmpPeerFactory(final Resource resource) {
+        m_config = CastorUtils.unmarshalWithTranslatedExceptions(SnmpConfig.class, resource, CastorUtils.PRESERVE_WHITESPACE);
     }
     
     /**
@@ -138,8 +141,8 @@ public class SnmpPeerFactory extends PeerFactory implements SnmpAgentConfigFacto
      * @throws org.exolab.castor.xml.ValidationException if any.
      */
     @Deprecated
-    public SnmpPeerFactory(Reader rdr) throws IOException, MarshalException, ValidationException {
-        m_config = CastorUtils.unmarshalWithTranslatedExceptions(SnmpConfig.class, rdr);
+    public SnmpPeerFactory(final Reader rdr) throws IOException, MarshalException, ValidationException {
+        m_config = CastorUtils.unmarshalWithTranslatedExceptions(SnmpConfig.class, rdr, CastorUtils.PRESERVE_WHITESPACE);
     }
     
     /**
@@ -147,8 +150,8 @@ public class SnmpPeerFactory extends PeerFactory implements SnmpAgentConfigFacto
      *
      * @param stream a {@link java.io.InputStream} object.
      */
-    public SnmpPeerFactory(InputStream stream) {
-        m_config = CastorUtils.unmarshalWithTranslatedExceptions(SnmpConfig.class, stream);
+    public SnmpPeerFactory(final InputStream stream) {
+        m_config = CastorUtils.unmarshalWithTranslatedExceptions(SnmpConfig.class, stream, CastorUtils.PRESERVE_WHITESPACE);
     }
 
     /**
@@ -166,6 +169,10 @@ public class SnmpPeerFactory extends PeerFactory implements SnmpAgentConfigFacto
      * @throws org.exolab.castor.xml.ValidationException if any.
      */
     public static synchronized void init() throws IOException, MarshalException, ValidationException {
+        init(null);
+    }
+
+    public static void init(final CategoryDao categoryDao) throws IOException, MarshalException, ValidationException {
         if (m_loaded) {
             // init already called - return
             // to reload, reload() will need to be called
@@ -174,15 +181,13 @@ public class SnmpPeerFactory extends PeerFactory implements SnmpAgentConfigFacto
 
         File cfgFile = getFile();
 
-        log().debug("init: config file path: " + cfgFile.getPath());
+        LogUtils.debugf(SnmpPeerFactory.class, "init: config file path: %s", cfgFile.getPath());
 
         m_singleton = new SnmpPeerFactory(cfgFile);
+        m_categoryDao = categoryDao;
+        LogUtils.infof(SnmpPeerFactory.class, "category DAO = %s", m_categoryDao);
 
         m_loaded = true;
-    }
-
-    private static ThreadCategory log() {
-        return ThreadCategory.getInstance(SnmpPeerFactory.class);
     }
 
     /**
@@ -289,38 +294,26 @@ public class SnmpPeerFactory extends PeerFactory implements SnmpAgentConfigFacto
      * the currently loaded snmp-config.xml.
      */
     @SuppressWarnings("unused")
-    private void define(InetAddress ip, String community) throws UnknownHostException {
-        ThreadCategory log = log();
-
+    private void define(final InetAddress ip, final String community) throws UnknownHostException {
         // Convert IP to long so that it easily compared in range elements
-        int address = new IPv4Address(ip).getAddress();
+        final int address = new IPv4Address(ip).getAddress();
 
-        // Copy the current definitions so that elements can be added and
-        // removed
-        ArrayList<Definition> definitions =
-            new ArrayList<Definition>(m_config.getDefinitionCollection());
+        // Copy the current definitions so that elements can be added and removed
+        final ArrayList<Definition> definitions = new ArrayList<Definition>(m_config.getDefinitionCollection());
 
         // First step: Find the first definition matching the read-community or
         // create a new definition, then add the specific IP
         Definition definition = null;
-        for (Definition currentDefinition : definitions) {
-        if ((currentDefinition.getReadCommunity() != null
-             && currentDefinition.getReadCommunity().equals(community))
-            || (currentDefinition.getReadCommunity() == null
-                && m_config.getReadCommunity() != null
-                && m_config.getReadCommunity().equals(community))) {
-            if (log.isDebugEnabled()) {
-                log.debug("define: Found existing definition "
-                          + "with read-community " + community);
-            }
+        for (final Definition currentDefinition : definitions) {
+        if ((currentDefinition.getReadCommunity() != null && currentDefinition.getReadCommunity().equals(community))
+            || (currentDefinition.getReadCommunity() == null && m_config.getReadCommunity() != null && m_config.getReadCommunity().equals(community))) {
+            LogUtils.debugf(this, "define: Found existing definition with read-community %s", community);
             definition = currentDefinition;
             break;
         }
       }
         if (definition == null) {
-            if (log.isDebugEnabled()) {
-                log.debug("define: Creating new definition");
-            }
+            LogUtils.debugf(this, "define: Creating new definition");
 
             definition = new Definition();
             definition.setReadCommunity(community);
@@ -331,134 +324,128 @@ public class SnmpPeerFactory extends PeerFactory implements SnmpAgentConfigFacto
         // Second step: Find and remove any existing specific and range
         // elements with matching IP among all definitions except for the
         // definition identified in the first step
-        for (Definition currentDefinition : definitions) {
-        // Ignore this definition if it was the one identified by the first
-        // step
-        if (currentDefinition == definition) {
-            continue;
+        for (final Definition currentDefinition : definitions) {
+            // Ignore this definition if it was the one identified by the first step
+            if (currentDefinition == definition) continue;
+    
+            // Remove any specific elements that match IP
+            while (currentDefinition.removeSpecific(ip.getHostAddress())) {
+                LogUtils.debugf(this, "define: Removed an existing specific element with IP %s", ip);
+            }
+    
+            // Split and replace any range elements that contain IP
+            final ArrayList<Range> ranges = new ArrayList<Range>(currentDefinition.getRangeCollection());
+            final Range[] rangesArray = currentDefinition.getRange();
+            for (final Range range : rangesArray) {
+                final int begin = new IPv4Address(range.getBegin()).getAddress();
+                final int end = new IPv4Address(range.getEnd()).getAddress();
+                if (address >= begin && address <= end) {
+                    LogUtils.debugf(this, "define: Splitting range element with begin %s and end %s", range.getBegin(), range.getEnd());
+        
+                    if (begin == end) {
+                        ranges.remove(range);
+                        continue;
+                    }
+        
+                    if (address == begin) {
+                        range.setBegin(IPv4Address.addressToString(address + 1));
+                        continue;
+                    }
+        
+                    if (address == end) {
+                        range.setEnd(IPv4Address.addressToString(address - 1));
+                        continue;
+                    }
+        
+                    final Range head = new Range();
+                    head.setBegin(range.getBegin());
+                    head.setEnd(IPv4Address.addressToString(address - 1));
+        
+                    final Range tail = new Range();
+                    tail.setBegin(IPv4Address.addressToString(address + 1));
+                    tail.setEnd(range.getEnd());
+        
+                    ranges.remove(range);
+                    ranges.add(head);
+                    ranges.add(tail);
+                }
+            }
+            currentDefinition.setRange(ranges);
         }
-
-        // Remove any specific elements that match IP
-        while (currentDefinition.removeSpecific(ip.getHostAddress())) {
-            if (log.isDebugEnabled()) {
-                log.debug("define: Removed an existing specific "
-                          + "element with IP " + ip);
-            }
-        }
-
-        // Split and replace any range elements that contain IP
-        ArrayList<Range> ranges =
-            new ArrayList<Range>(currentDefinition.getRangeCollection());
-        Range[] rangesArray = currentDefinition.getRange();
-        for (Range range : rangesArray) {
-        int begin = new IPv4Address(range.getBegin()).getAddress();
-        int end = new IPv4Address(range.getEnd()).getAddress();
-        if (address >= begin && address <= end) {
-            if (log.isDebugEnabled()) {
-                log.debug("define: Splitting range element "
-                          + "with begin " + range.getBegin() + " and "
-                          + "end " + range.getEnd());
-            }
-
-            if (begin == end) {
-                ranges.remove(range);
-                continue;
-            }
-
-            if (address == begin) {
-                range.setBegin(IPv4Address.addressToString(address + 1));
-                continue;
-            }
-
-            if (address == end) {
-                range.setEnd(IPv4Address.addressToString(address - 1));
-                continue;
-            }
-
-            Range head = new Range();
-            head.setBegin(range.getBegin());
-            head.setEnd(IPv4Address.addressToString(address - 1));
-
-            Range tail = new Range();
-            tail.setBegin(IPv4Address.addressToString(address + 1));
-            tail.setEnd(range.getEnd());
-
-            ranges.remove(range);
-            ranges.add(head);
-            ranges.add(tail);
-        }
-       }
-        currentDefinition.setRange(ranges);
-      }
 
         // Store the altered list of definitions
         m_config.setDefinition(definitions);
     }
     
     /** {@inheritDoc} */
-    public synchronized SnmpAgentConfig getAgentConfig(InetAddress agentAddress) {
+    public synchronized SnmpAgentConfig getAgentConfig(final InetAddress agentAddress) {
         return getAgentConfig(agentAddress, VERSION_UNSPECIFIED);
     }
     
-    private synchronized SnmpAgentConfig getAgentConfig(InetAddress agentInetAddress, int requestedSnmpVersion) {
+    private synchronized SnmpAgentConfig getAgentConfig(final InetAddress agentInetAddress, final int requestedSnmpVersion) {
 
         if (m_config == null) {
-            SnmpAgentConfig agentConfig = new SnmpAgentConfig(agentInetAddress);
+            final SnmpAgentConfig agentConfig = new SnmpAgentConfig(agentInetAddress);
             if (requestedSnmpVersion == VERSION_UNSPECIFIED) {
                 agentConfig.setVersion(SnmpAgentConfig.DEFAULT_VERSION);
             } else {
                 agentConfig.setVersion(requestedSnmpVersion);
             }
-            
             return agentConfig;
         }
         
-        SnmpAgentConfig agentConfig = new SnmpAgentConfig(agentInetAddress);
+        final SnmpAgentConfig agentConfig = new SnmpAgentConfig(agentInetAddress);
         
-        //Now set the defaults from the m_config
-        setSnmpAgentConfig(agentConfig, new Definition(), requestedSnmpVersion);
+        // Now set the defaults from the m_config
+        initializeSnmpAgentConfig(agentConfig, new Definition(), requestedSnmpVersion);
 
         // Attempt to locate the node
-        //
-        DEFLOOP: for (Definition def: m_config.getDefinitionCollection()) {
+        DEFLOOP: for (final Definition def: m_config.getDefinitionCollection()) {
             // check the specifics first
             //
-            for (String saddr : def.getSpecificCollection()) {
+            for (final String saddr : def.getSpecificCollection()) {
                 try {
-                    InetAddress addr = InetAddress.getByName(saddr);
+                    final InetAddress addr = InetAddress.getByName(saddr);
                     if (addr.equals(agentConfig.getAddress())) {
-                        setSnmpAgentConfig(agentConfig, def, requestedSnmpVersion);
+                        initializeSnmpAgentConfig(agentConfig, def, requestedSnmpVersion);
                         break DEFLOOP;
                     }
-                } catch (UnknownHostException e) {
-                    log().warn("SnmpPeerFactory: could not convert host " + saddr + " to InetAddress", e);
+                } catch (final UnknownHostException e) {
+                    LogUtils.warnf(this, e, "SnmpPeerFactory: could not convert host %s to InetAddress", saddr);
                 }
             }
 
             // check the ranges
             //
-            long lhost = InetAddressUtils.toIpAddrLong(agentConfig.getAddress());
-            for (Range rng : def.getRangeCollection()) {
+            final long lhost = InetAddressUtils.toIpAddrLong(agentConfig.getAddress());
+            for (final Range rng : def.getRangeCollection()) {
                 try {
-                    InetAddress begin = InetAddress.getByName(rng.getBegin());
-                    InetAddress end = InetAddress.getByName(rng.getEnd());
+                    final InetAddress begin = InetAddress.getByName(rng.getBegin());
+                    final InetAddress end = InetAddress.getByName(rng.getEnd());
 
-                    long start = InetAddressUtils.toIpAddrLong(begin);
-                    long stop = InetAddressUtils.toIpAddrLong(end);
+                    final long start = InetAddressUtils.toIpAddrLong(begin);
+                    final long stop = InetAddressUtils.toIpAddrLong(end);
 
                     if (start <= lhost && lhost <= stop) {
-                        setSnmpAgentConfig(agentConfig, def, requestedSnmpVersion);
+                        initializeSnmpAgentConfig(agentConfig, def, requestedSnmpVersion);
                         break DEFLOOP;
                     }
-                } catch (UnknownHostException e) {
-                    log().warn("SnmpPeerFactory: could not convert host(s) " + rng.getBegin() + " - " + rng.getEnd() + " to InetAddress", e);
+                } catch (final UnknownHostException e) {
+                    LogUtils.warnf(this, e, "SnmpPeerFactory: could not convert host(s) %s - %s to InetAddrss", rng.getBegin(), rng.getEnd());
                 }
             }
-            
+
             // check the matching ip expressions
-            for (String ipMatch : def.getIpMatchCollection()) {
-                if (IPLike.matches(agentInetAddress.getHostAddress(), ipMatch)) {
-                    setSnmpAgentConfig(agentConfig, def, requestedSnmpVersion);
+            for (final String ipMatch : def.getIpMatchCollection()) {
+                if (ipMatch.startsWith("~")) {
+                    if (agentInetAddress.getHostAddress().matches(ipMatch.substring(1))) {
+                        initializeSnmpAgentConfig(agentConfig, def, requestedSnmpVersion);
+                        break DEFLOOP;
+                    }
+                } else if (ipMatch.startsWith("catinc")) {
+                    
+                } else if (IPLike.matches(agentInetAddress.getHostAddress(), ipMatch)) {
+                    initializeSnmpAgentConfig(agentConfig, def, requestedSnmpVersion);
                     break DEFLOOP;
                 }
             }
@@ -466,19 +453,16 @@ public class SnmpPeerFactory extends PeerFactory implements SnmpAgentConfigFacto
         } // end DEFLOOP
 
         if (agentConfig == null) {
-            Definition def = new Definition();
-            setSnmpAgentConfig(agentConfig, def, requestedSnmpVersion);
+            initializeSnmpAgentConfig(agentConfig, new Definition(), requestedSnmpVersion);
         }
 
         return agentConfig;
 
     }
 
-    private void setSnmpAgentConfig(SnmpAgentConfig agentConfig, Definition def, int requestedSnmpVersion) {
-        
-        int version = determineVersion(def, requestedSnmpVersion);
-        
-        setCommonAttributes(agentConfig, def, version);
+    private void initializeSnmpAgentConfig(final SnmpAgentConfig agentConfig, final Definition def, final int requestedSnmpVersion) {
+        setCommonAttributes(agentConfig, def, determineVersion(def, requestedSnmpVersion));
+
         agentConfig.setSecurityLevel(determineSecurityLevel(def));
         agentConfig.setSecurityName(determineSecurityName(def));
         agentConfig.setAuthProtocol(determineAuthProtocol(def));
@@ -496,7 +480,7 @@ public class SnmpPeerFactory extends PeerFactory implements SnmpAgentConfigFacto
      * @param def
      * @param version
      */
-    private void setCommonAttributes(SnmpAgentConfig agentConfig, Definition def, int version) {
+    private void setCommonAttributes(final SnmpAgentConfig agentConfig, final Definition def, final int version) {
         agentConfig.setVersion(version);
         agentConfig.setPort(determinePort(def));
         agentConfig.setRetries(determineRetries(def));
@@ -512,30 +496,27 @@ public class SnmpPeerFactory extends PeerFactory implements SnmpAgentConfigFacto
         }
     }
 
-    private int determineMaxRepetitions(Definition def) {
+    private int determineMaxRepetitions(final Definition def) {
         return (!def.hasMaxRepetitions() ? 
                 (!m_config.hasMaxRepetitions() ?
                   SnmpAgentConfig.DEFAULT_MAX_REPETITIONS : m_config.getMaxRepetitions()) : def.getMaxRepetitions());
     }
 
-	private InetAddress determineProxyHost(Definition def) {
+	private InetAddress determineProxyHost(final Definition def) {
         InetAddress inetAddr = null;
-        String address = def.getProxyHost() == null ? 
-                (m_config.getProxyHost() == null ? null : m_config.getProxyHost()) : def.getProxyHost();
+        final String address = def.getProxyHost() == null ? (m_config.getProxyHost() == null ? null : m_config.getProxyHost()) : def.getProxyHost();
         if (address != null) {
             try {
                 inetAddr =  InetAddress.getByName(address);
-            } catch (UnknownHostException e) {
-                log().error("determineProxyHost: Problem converting proxy host string to InetAddress", e);
+            } catch (final UnknownHostException e) {
+                LogUtils.errorf(this, e, "determineProxyHost: Problem converting proxy host string to InetAddress");
             }
         }
         return inetAddr;
     }
 
-    private int determineMaxVarsPerPdu(Definition def) {
-        return (!def.hasMaxVarsPerPdu() ? 
-                (!m_config.hasMaxVarsPerPdu() ?
-                  SnmpAgentConfig.DEFAULT_MAX_VARS_PER_PDU : m_config.getMaxVarsPerPdu()) : def.getMaxVarsPerPdu());
+    private int determineMaxVarsPerPdu(final Definition def) {
+        return (!def.hasMaxVarsPerPdu() ? (!m_config.hasMaxVarsPerPdu() ? SnmpAgentConfig.DEFAULT_MAX_VARS_PER_PDU : m_config.getMaxVarsPerPdu()) : def.getMaxVarsPerPdu());
     }
     /**
      * Helper method to search the snmp-config for the appropriate read
@@ -543,7 +524,7 @@ public class SnmpPeerFactory extends PeerFactory implements SnmpAgentConfigFacto
      * @param def
      * @return
      */
-    private String determineReadCommunity(Definition def) {
+    private String determineReadCommunity(final Definition def) {
         return (def.getReadCommunity() == null ? (m_config.getReadCommunity() == null ? SnmpAgentConfig.DEFAULT_READ_COMMUNITY :m_config.getReadCommunity()) : def.getReadCommunity());
     }
 
@@ -553,7 +534,7 @@ public class SnmpPeerFactory extends PeerFactory implements SnmpAgentConfigFacto
      * @param def
      * @return
      */
-    private String determineWriteCommunity(Definition def) {
+    private String determineWriteCommunity(final Definition def) {
         return (def.getWriteCommunity() == null ? (m_config.getWriteCommunity() == null ? SnmpAgentConfig.DEFAULT_WRITE_COMMUNITY :m_config.getWriteCommunity()) : def.getWriteCommunity());
     }
 
@@ -563,7 +544,7 @@ public class SnmpPeerFactory extends PeerFactory implements SnmpAgentConfigFacto
      * @param def
      * @return
      */
-    private int determineMaxRequestSize(Definition def) {
+    private int determineMaxRequestSize(final Definition def) {
         return (!def.hasMaxRequestSize() ? (!m_config.hasMaxRequestSize() ? SnmpAgentConfig.DEFAULT_MAX_REQUEST_SIZE : m_config.getMaxRequestSize()) : def.getMaxRequestSize());
     }
 
@@ -574,7 +555,7 @@ public class SnmpPeerFactory extends PeerFactory implements SnmpAgentConfigFacto
      * @param def
      * @return
      */
-    private String determineSecurityName(Definition def) {
+    private String determineSecurityName(final Definition def) {
         String securityName = (def.getSecurityName() == null ? m_config.getSecurityName() : def.getSecurityName() );
         if (securityName == null) {
             securityName = SnmpAgentConfig.DEFAULT_SECURITY_NAME;
@@ -589,7 +570,7 @@ public class SnmpPeerFactory extends PeerFactory implements SnmpAgentConfigFacto
      * @param def
      * @return
      */
-    private String determineAuthProtocol(Definition def) {
+    private String determineAuthProtocol(final Definition def) {
         String authProtocol = (def.getAuthProtocol() == null ? m_config.getAuthProtocol() : def.getAuthProtocol());
         if (authProtocol == null) {
             authProtocol = SnmpAgentConfig.DEFAULT_AUTH_PROTOCOL;
@@ -604,7 +585,7 @@ public class SnmpPeerFactory extends PeerFactory implements SnmpAgentConfigFacto
      * @param def
      * @return
      */
-    private String determineAuthPassPhrase(Definition def) {
+    private String determineAuthPassPhrase(final Definition def) {
         String authPassPhrase = (def.getAuthPassphrase() == null ? m_config.getAuthPassphrase() : def.getAuthPassphrase());
         if (authPassPhrase == null) {
             authPassPhrase = SnmpAgentConfig.DEFAULT_AUTH_PASS_PHRASE;
@@ -619,7 +600,7 @@ public class SnmpPeerFactory extends PeerFactory implements SnmpAgentConfigFacto
      * @param def
      * @return
      */
-    private String determinePrivPassPhrase(Definition def) {
+    private String determinePrivPassPhrase(final Definition def) {
         String privPassPhrase = (def.getPrivacyPassphrase() == null ? m_config.getPrivacyPassphrase() : def.getPrivacyPassphrase());
         if (privPassPhrase == null) {
             privPassPhrase = SnmpAgentConfig.DEFAULT_PRIV_PASS_PHRASE;
@@ -634,7 +615,7 @@ public class SnmpPeerFactory extends PeerFactory implements SnmpAgentConfigFacto
      * @param def
      * @return
      */
-    private String determinePrivProtocol(Definition def) {
+    private String determinePrivProtocol(final Definition def) {
         String authPrivProtocol = (def.getPrivacyProtocol() == null ? m_config.getPrivacyProtocol() : def.getPrivacyProtocol());
         if (authPrivProtocol == null) {
             authPrivProtocol = SnmpAgentConfig.DEFAULT_PRIV_PROTOCOL;
@@ -652,7 +633,7 @@ public class SnmpPeerFactory extends PeerFactory implements SnmpAgentConfigFacto
      * @param def
      * @return
      */
-    private int determineSecurityLevel(Definition def) {
+    private int determineSecurityLevel(final Definition def) {
         
         // use the def security level first
         if (def.hasSecurityLevel()) {
@@ -667,8 +648,8 @@ public class SnmpPeerFactory extends PeerFactory implements SnmpAgentConfigFacto
         // if no security level configuration exists use
         int securityLevel = SnmpAgentConfig.NOAUTH_NOPRIV;
 
-        String authPassPhrase = (def.getAuthPassphrase() == null ? m_config.getAuthPassphrase() : def.getAuthPassphrase());
-        String privPassPhrase = (def.getPrivacyPassphrase() == null ? m_config.getPrivacyPassphrase() : def.getPrivacyPassphrase());
+        final String authPassPhrase = (def.getAuthPassphrase() == null ? m_config.getAuthPassphrase() : def.getAuthPassphrase());
+        final String privPassPhrase = (def.getPrivacyPassphrase() == null ? m_config.getPrivacyPassphrase() : def.getPrivacyPassphrase());
         
         if (authPassPhrase == null) {
             securityLevel = SnmpAgentConfig.NOAUTH_NOPRIV;
@@ -688,9 +669,8 @@ public class SnmpPeerFactory extends PeerFactory implements SnmpAgentConfigFacto
      * @param def
      * @return
      */
-    private int determinePort(Definition def) {
-        int port = 161;
-        return (def.getPort() == 0 ? (m_config.getPort() == 0 ? port : m_config.getPort()) : def.getPort());
+    private int determinePort(final Definition def) {
+        return (def.getPort() == 0 ? (m_config.getPort() == 0 ? 161 : m_config.getPort()) : def.getPort());
     }
 
     /**
@@ -698,14 +678,12 @@ public class SnmpPeerFactory extends PeerFactory implements SnmpAgentConfigFacto
      * @param def
      * @return
      */
-    private long determineTimeout(Definition def) {
-        long timeout = SnmpAgentConfig.DEFAULT_TIMEOUT;
-        return (def.getTimeout() == 0 ? (m_config.getTimeout() == 0 ? timeout : m_config.getTimeout()) : def.getTimeout());
+    private long determineTimeout(final Definition def) {
+        return (def.getTimeout() == 0 ? (m_config.getTimeout() == 0 ? (long) SnmpAgentConfig.DEFAULT_TIMEOUT : m_config.getTimeout()) : def.getTimeout());
     }
 
-    private int determineRetries(Definition def) {        
-        int retries = SnmpAgentConfig.DEFAULT_RETRIES;
-        return (def.getRetry() == 0 ? (m_config.getRetry() == 0 ? retries : m_config.getRetry()) : def.getRetry());
+    private int determineRetries(final Definition def) {        
+        return (def.getRetry() == 0 ? (m_config.getRetry() == 0 ? SnmpAgentConfig.DEFAULT_RETRIES : m_config.getRetry()) : def.getRetry());
     }
 
     /**
@@ -720,7 +698,7 @@ public class SnmpPeerFactory extends PeerFactory implements SnmpAgentConfigFacto
      * @param requestedSnmpVersion
      * @return
      */
-    private int determineVersion(Definition def, int requestedSnmpVersion) {
+    private int determineVersion(final Definition def, final int requestedSnmpVersion) {
         
         int version = SnmpAgentConfig.VERSION1;
         
@@ -759,11 +737,6 @@ public class SnmpPeerFactory extends PeerFactory implements SnmpAgentConfigFacto
         return m_config;
     }
 
-    @SuppressWarnings("unused")
-    private static synchronized void setSnmpConfig(SnmpConfig m_config) {
-        SnmpPeerFactory.m_config = m_config;
-    }
-
     /**
      * Enhancement: Allows specific or ranges to be merged into snmp configuration
      * with many other attributes.  Uses new classes the wrap Castor generated code to
@@ -775,8 +748,8 @@ public class SnmpPeerFactory extends PeerFactory implements SnmpAgentConfigFacto
      *
      * @param info a {@link org.opennms.netmgt.config.SnmpEventInfo} object.
      */
-    public synchronized void define(SnmpEventInfo info) {
-        SnmpConfigManager mgr = new SnmpConfigManager(getSnmpConfig());
+    public synchronized void define(final SnmpEventInfo info) {
+        final SnmpConfigManager mgr = new SnmpConfigManager(getSnmpConfig());
         mgr.mergeIntoConfig(info.createDef());
     }
 
@@ -794,17 +767,17 @@ public class SnmpPeerFactory extends PeerFactory implements SnmpAgentConfigFacto
             writer = new StringWriter();
             Marshaller.marshal(m_config, writer);
             marshalledConfig = writer.toString();
-        } catch (MarshalException e) {
-            log().error("marshallConfig: Error marshalling configuration", e);
-        } catch (ValidationException e) {
-            log().error("marshallConfig: Error validating configuration", e);
+        } catch (final MarshalException e) {
+            LogUtils.errorf(SnmpPeerFactory.class, e, "marshallConfig: Error marshalling configuration");
+        } catch (final ValidationException e) {
+            LogUtils.errorf(SnmpPeerFactory.class, e, "marshallConfig: Error validating configuration");
         } finally {
             try {
                 if (writer != null) {
                     writer.close();
                 }
-            } catch (IOException e) {
-                log().error("marshallConfig: I/O Error closing string writer!", e);
+            } catch (final IOException e) {
+                LogUtils.errorf(SnmpPeerFactory.class, e, "marshallConfig: I/O Error closing string writer!");
             }
         }
         return marshalledConfig;

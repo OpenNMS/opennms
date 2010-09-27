@@ -37,8 +37,6 @@
 package org.opennms.netmgt.capsd.plugins;
 
 import java.io.IOException;
-import java.io.Reader;
-import java.io.StringReader;
 import java.net.InetAddress;
 import java.net.UnknownHostException;
 import java.util.HashMap;
@@ -52,6 +50,8 @@ import org.opennms.netmgt.config.SnmpPeerFactory;
 import org.opennms.netmgt.mock.OpenNMSTestCase;
 import org.opennms.netmgt.snmp.SnmpAgentConfig;
 import org.opennms.netmgt.snmp.SnmpTestSuiteUtils;
+import org.springframework.core.io.ByteArrayResource;
+import org.springframework.core.io.Resource;
 
 public class SnmpPluginTest extends OpenNMSTestCase {
 
@@ -130,7 +130,7 @@ public class SnmpPluginTest extends OpenNMSTestCase {
     
     public final void testIsV3ProtocolSupported() throws ValidationException, IOException, IOException, MarshalException {
         setVersion(SnmpAgentConfig.VERSION3);
-        Reader rdr = new StringReader(getSnmpConfig());
+        final Resource rdr = new ByteArrayResource(getSnmpConfig().getBytes());
         SnmpPeerFactory.setInstance(new SnmpPeerFactory(rdr));
 
         if (m_runAssertions) {
@@ -140,7 +140,7 @@ public class SnmpPluginTest extends OpenNMSTestCase {
 
     public final void testIsV3ForcedToV1Supported() throws ValidationException, IOException, IOException, MarshalException {
         setVersion(SnmpAgentConfig.VERSION3);
-        Reader rdr = new StringReader(getSnmpConfig());
+        final Resource rdr = new ByteArrayResource(getSnmpConfig().getBytes());
         SnmpPeerFactory.setInstance(new SnmpPeerFactory(rdr));
         
         Map<String, Object> qualifiers = new HashMap<String, Object>();

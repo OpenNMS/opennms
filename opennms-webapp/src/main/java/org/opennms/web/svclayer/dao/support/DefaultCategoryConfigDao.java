@@ -38,7 +38,6 @@ import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Collection;
-import java.util.Iterator;
 import java.util.List;
 
 import org.exolab.castor.xml.MarshalException;
@@ -81,7 +80,7 @@ public class DefaultCategoryConfigDao implements CategoryConfigDao {
 	}
 
 	/** {@inheritDoc} */
-	public Category getCategoryByLabel(String label) {
+	public Category getCategoryByLabel(final String label) {
 		return CategoryFactory.getInstance().getCategory(label);
 	}
 	
@@ -94,17 +93,12 @@ public class DefaultCategoryConfigDao implements CategoryConfigDao {
 		
 		List<Category> catList = new ArrayList<Category>();
 		Catinfo catInfo = CategoryFactory.getInstance().getConfig();
-		List catGroupList = catInfo.getCategorygroupCollection();
+		List<Categorygroup> catGroupList = catInfo.getCategorygroupCollection();
 		if (catGroupList != null) {
-			Iterator catIter = catGroupList.iterator();
-			while(catIter.hasNext()){
-				Categorygroup cg = (Categorygroup)catIter.next();
-				Categories cats = cg.getCategories();
-				Category[] categories = cats.getCategory();
-				int i = 0;
-				for (i = 0; i < categories.length; i++) {
-					catList.add(categories[i]);					
-				}
+		    for (final Categorygroup cg : catGroupList) {
+		        final Categories cats = cg.getCategories();
+		        if (cats == null) continue;
+		        catList.addAll(cats.getCategoryCollection());
 			}
 		}
 		return catList;				

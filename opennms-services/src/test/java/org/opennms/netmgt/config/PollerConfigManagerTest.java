@@ -70,6 +70,7 @@ import org.opennms.netmgt.rrd.RrdUtils;
 import org.opennms.test.ConfigurationTestUtils;
 import org.opennms.test.mock.EasyMockUtils;
 import org.opennms.test.mock.MockLogAppender;
+import org.springframework.core.io.Resource;
 
 public class PollerConfigManagerTest extends TestCase {
     private EasyMockUtils m_mocks = new EasyMockUtils();
@@ -89,7 +90,7 @@ public class PollerConfigManagerTest extends TestCase {
         RrdTestUtils.initializeNullStrategy();
         RrdUtils.setStrategy(m_rrdStrategy);
         
-        SnmpPeerFactory.setInstance(new SnmpPeerFactory(ConfigurationTestUtils.getReaderForConfigFile("snmp-config.xml")));
+        SnmpPeerFactory.setInstance(new SnmpPeerFactory(ConfigurationTestUtils.getInputStreamForConfigFile("snmp-config.xml")));
     }
 
     @Override

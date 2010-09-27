@@ -37,8 +37,6 @@
 package org.opennms.netmgt.config;
 
 import java.io.IOException;
-import java.io.Reader;
-import java.io.StringReader;
 import java.net.InetAddress;
 
 import junit.framework.TestCase;
@@ -48,6 +46,8 @@ import org.exolab.castor.xml.ValidationException;
 import org.opennms.core.utils.InetAddressUtils;
 import org.opennms.netmgt.config.snmp.SnmpConfig;
 import org.opennms.test.ConfigurationTestUtils;
+import org.springframework.core.io.ByteArrayResource;
+import org.springframework.core.io.Resource;
 
 /**
  * JUnit tests for the configureSNMP event handling and optimization of
@@ -64,7 +64,7 @@ public class SnmpEventInfoTest extends TestCase {
     protected void setUp() throws Exception {
         super.setUp();
         
-        Reader rdr = ConfigurationTestUtils.getReaderForResource(this, "snmp-config-snmpEventInfoTest.xml");
+        Resource rdr = ConfigurationTestUtils.getSpringResourceForResource(this, "snmp-config-snmpEventInfoTest.xml");
         SnmpPeerFactory.setInstance(new SnmpPeerFactory(rdr));
     }
     
@@ -88,7 +88,7 @@ public class SnmpEventInfoTest extends TestCase {
         "</snmp-config>\n" + 
         "";
 
-        Reader rdr = new StringReader(snmpConfigXml);
+        Resource rdr = new ByteArrayResource(snmpConfigXml.getBytes());
         SnmpPeerFactory.setInstance(new SnmpPeerFactory(rdr));
         SnmpEventInfo info = new SnmpEventInfo();
         info.setCommunityString("abc");
@@ -135,7 +135,7 @@ public class SnmpEventInfoTest extends TestCase {
         "</snmp-config>\n" + 
         "";
 
-        Reader rdr = new StringReader(snmpConfigXml);
+        Resource rdr = new ByteArrayResource(snmpConfigXml.getBytes());
         SnmpPeerFactory.setInstance(new SnmpPeerFactory(rdr));
         SnmpConfigManager mgr = new SnmpConfigManager(SnmpPeerFactory.getSnmpConfig());
         
@@ -186,7 +186,7 @@ public class SnmpEventInfoTest extends TestCase {
         "</snmp-config>\n" + 
         "";
 
-        Reader rdr = new StringReader(snmpConfigXml);
+        Resource rdr = new ByteArrayResource(snmpConfigXml.getBytes());
         SnmpPeerFactory.setInstance(new SnmpPeerFactory(rdr));
         SnmpConfigManager mgr = new SnmpConfigManager(SnmpPeerFactory.getSnmpConfig());
 
@@ -233,7 +233,7 @@ public class SnmpEventInfoTest extends TestCase {
         "</snmp-config>\n" + 
         "";
 
-        Reader rdr = new StringReader(snmpConfigXml);
+        Resource rdr = new ByteArrayResource(snmpConfigXml.getBytes());
         SnmpPeerFactory.setInstance(new SnmpPeerFactory(rdr));
         SnmpConfigManager mgr = new SnmpConfigManager(SnmpPeerFactory.getSnmpConfig());
 
@@ -290,7 +290,7 @@ public class SnmpEventInfoTest extends TestCase {
         "</snmp-config>\n" + 
         "";
 
-        Reader rdr = new StringReader(snmpConfigXml);
+        Resource rdr = new ByteArrayResource(snmpConfigXml.getBytes());
         SnmpPeerFactory.setInstance(new SnmpPeerFactory(rdr));
         SnmpConfigManager mgr = new SnmpConfigManager(SnmpPeerFactory.getSnmpConfig());
 
@@ -333,7 +333,7 @@ public class SnmpEventInfoTest extends TestCase {
         "</snmp-config>\n" + 
         "";
 
-        Reader rdr = new StringReader(snmpConfigXml);
+        Resource rdr = new ByteArrayResource(snmpConfigXml.getBytes());
         SnmpPeerFactory.setInstance(new SnmpPeerFactory(rdr));
         SnmpConfigManager mgr = new SnmpConfigManager(SnmpPeerFactory.getSnmpConfig());
 
@@ -378,7 +378,7 @@ public class SnmpEventInfoTest extends TestCase {
         "</snmp-config>\n" + 
         "";
         
-        Reader rdr = new StringReader(snmpConfigXml);
+        Resource rdr = new ByteArrayResource(snmpConfigXml.getBytes());
         SnmpPeerFactory.setInstance(new SnmpPeerFactory(rdr));
         SnmpConfigManager mgr = new SnmpConfigManager(SnmpPeerFactory.getSnmpConfig());
 
@@ -414,7 +414,7 @@ public class SnmpEventInfoTest extends TestCase {
         "</snmp-config>\n" + 
         "";
         
-        Reader rdr = new StringReader(snmpConfigXml);
+        Resource rdr = new ByteArrayResource(snmpConfigXml.getBytes());
         SnmpPeerFactory.setInstance(new SnmpPeerFactory(rdr));
         SnmpConfigManager mgr = new SnmpConfigManager(SnmpPeerFactory.getSnmpConfig());
 
@@ -462,7 +462,7 @@ public class SnmpEventInfoTest extends TestCase {
         "</snmp-config>\n" + 
         "";
 
-        Reader rdr = new StringReader(snmpConfigXml);
+        Resource rdr = new ByteArrayResource(snmpConfigXml.getBytes());
         SnmpPeerFactory.setInstance(new SnmpPeerFactory(rdr));
         SnmpConfigManager mgr = new SnmpConfigManager(SnmpPeerFactory.getSnmpConfig());
 
@@ -514,7 +514,7 @@ public class SnmpEventInfoTest extends TestCase {
         "</snmp-config>\n" + 
         "";
 
-        Reader rdr = new StringReader(snmpConfigXml);
+        Resource rdr = new ByteArrayResource(snmpConfigXml.getBytes());
         SnmpPeerFactory.setInstance(new SnmpPeerFactory(rdr));
         SnmpConfigManager mgr = new SnmpConfigManager(SnmpPeerFactory.getSnmpConfig());
 
@@ -561,7 +561,7 @@ public class SnmpEventInfoTest extends TestCase {
         "</snmp-config>\n" + 
         "";
 
-        Reader rdr = new StringReader(snmpConfigXml);
+        Resource rdr = new ByteArrayResource(snmpConfigXml.getBytes());
         SnmpPeerFactory.setInstance(new SnmpPeerFactory(rdr));
         SnmpConfigManager mgr = new SnmpConfigManager(SnmpPeerFactory.getSnmpConfig());
 
@@ -604,7 +604,7 @@ public class SnmpEventInfoTest extends TestCase {
         "</snmp-config>\n" + 
         "";
 
-        Reader rdr = new StringReader(snmpConfigXml);
+        Resource rdr = new ByteArrayResource(snmpConfigXml.getBytes());
         SnmpPeerFactory.setInstance(new SnmpPeerFactory(rdr));
         SnmpConfigManager mgr = new SnmpConfigManager(SnmpPeerFactory.getSnmpConfig());
         

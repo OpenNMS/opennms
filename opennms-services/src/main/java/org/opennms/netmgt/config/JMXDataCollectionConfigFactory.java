@@ -62,6 +62,7 @@ import org.opennms.netmgt.config.collectd.Mbean;
 import org.opennms.netmgt.config.collectd.Mbeans;
 import org.opennms.netmgt.dao.castor.CastorUtils;
 import org.opennms.netmgt.model.RrdRepository;
+import org.springframework.core.io.Resource;
 
 /**
  * This class is the main respository for JMX data collection configuration
@@ -146,18 +147,19 @@ public final class JMXDataCollectionConfigFactory {
      * @throws org.exolab.castor.xml.MarshalException if any.
      * @throws org.exolab.castor.xml.ValidationException if any.
      */
+    @Deprecated
     public JMXDataCollectionConfigFactory(Reader rdr) throws MarshalException, ValidationException {
-    	initialize(rdr);
-    }
-
-    private void initialize(InputStream stream) throws MarshalException, ValidationException {
-        m_config = CastorUtils.unmarshal(JmxDatacollectionConfig.class, stream);
+    	m_config = CastorUtils.unmarshal(JmxDatacollectionConfig.class, rdr, CastorUtils.PRESERVE_WHITESPACE);
         buildCollectionMap();
     }
 
-    @Deprecated
-    private void initialize(Reader rdr) throws MarshalException, ValidationException {
-        m_config = CastorUtils.unmarshal(JmxDatacollectionConfig.class, rdr);
+    public JMXDataCollectionConfigFactory(final Resource resource) throws MarshalException, ValidationException, IOException {
+        m_config = CastorUtils.unmarshal(JmxDatacollectionConfig.class, resource.getInputStream(), CastorUtils.PRESERVE_WHITESPACE);
+        buildCollectionMap();
+    }
+
+    private void initialize(InputStream stream) throws MarshalException, ValidationException {
+        m_config = CastorUtils.unmarshal(JmxDatacollectionConfig.class, stream, CastorUtils.PRESERVE_WHITESPACE);
         buildCollectionMap();
     }
 
