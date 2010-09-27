@@ -187,7 +187,7 @@ public class Discovery extends AbstractServiceDaemon {
     }
 
     private void doPings() {
-        debugf("starting ping sweep");
+        infof("starting ping sweep");
         
         try {
             initializeConfiguration();
@@ -207,11 +207,12 @@ public class Discovery extends AbstractServiceDaemon {
             try {
                 Thread.sleep(getDiscoveryFactory().getIntraPacketDelay());
             } catch (InterruptedException e) {
+                infof("interrupting discovery sweep");
                 break;
             }
         }
 
-        debugf("finished discovery sweep");
+        infof("finished discovery sweep");
         m_xstatus = PING_IDLE;
     }
 
