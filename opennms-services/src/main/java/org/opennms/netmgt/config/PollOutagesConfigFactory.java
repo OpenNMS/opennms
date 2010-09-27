@@ -144,7 +144,7 @@ public final class PollOutagesConfigFactory extends PollOutagesConfigManager {
      * @throws org.exolab.castor.xml.ValidationException
      *             if any.
      */
-    public static synchronized void reload() throws IOException, MarshalException, ValidationException {
+    public static void reload() throws IOException, MarshalException, ValidationException {
         init();
         getInstance().update();
     }
@@ -212,12 +212,18 @@ public final class PollOutagesConfigFactory extends PollOutagesConfigManager {
 
     /** {@inheritDoc} */
     protected synchronized void saveXML(final String xmlString) throws IOException, MarshalException, ValidationException {
-        File cfgFile = ConfigFileConstants.getFile(ConfigFileConstants.POLL_OUTAGES_CONFIG_FILE_NAME);
+        getWriteLock().lock();
 
-        Writer fileWriter = new OutputStreamWriter(new FileOutputStream(cfgFile), "UTF-8");
-        fileWriter.write(xmlString);
-        fileWriter.flush();
-        fileWriter.close();
+        try {
+            File cfgFile = ConfigFileConstants.getFile(ConfigFileConstants.POLL_OUTAGES_CONFIG_FILE_NAME);
+    
+            Writer fileWriter = new OutputStreamWriter(new FileOutputStream(cfgFile), "UTF-8");
+            fileWriter.write(xmlString);
+            fileWriter.flush();
+            fileWriter.close();
+        } finally {
+            getWriteLock().unlock();
+        }
     }
 
     /**
