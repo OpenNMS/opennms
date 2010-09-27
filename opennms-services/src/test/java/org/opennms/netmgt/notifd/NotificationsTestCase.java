@@ -65,6 +65,7 @@ import org.opennms.netmgt.notifd.mock.MockNotificationStrategy;
 import org.opennms.netmgt.notifd.mock.MockUserManager;
 import org.opennms.netmgt.notifd.mock.NotificationAnticipator;
 import org.opennms.test.ConfigurationTestUtils;
+import org.opennms.test.DaoTestConfigBean;
 import org.opennms.test.mock.MockLogAppender;
 import org.opennms.test.mock.MockUtil;
 
@@ -85,6 +86,10 @@ public class NotificationsTestCase {
 
     protected void setUp() throws Exception {
         MockUtil.println("################# Running Test ################");
+
+        DaoTestConfigBean bean = new DaoTestConfigBean();
+        bean.afterPropertiesSet();
+
         MockLogAppender.setupLogging();
         
         m_network = createMockNetwork();

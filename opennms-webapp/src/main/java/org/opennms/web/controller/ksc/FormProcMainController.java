@@ -99,7 +99,7 @@ public class FormProcMainController extends AbstractController implements Initia
         throw new ServletException ("Invalid Parameter contents for report_action: " + action);
     }
 
-    private int getReportIndex(HttpServletRequest request) {
+    private static int getReportIndex(HttpServletRequest request) {
         String report = WebSecurityUtils.sanitizeString(request.getParameter("report"));
         if (report == null) {
             throw new MissingParameterException("report");

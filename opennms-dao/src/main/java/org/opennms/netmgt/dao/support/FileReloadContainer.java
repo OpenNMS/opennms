@@ -43,7 +43,7 @@ package org.opennms.netmgt.dao.support;
 import java.io.File;
 import java.io.IOException;
 
-import org.opennms.core.utils.ThreadCategory;
+import org.opennms.core.utils.LogUtils;
 import org.springframework.core.io.Resource;
 import org.springframework.dao.DataAccessResourceFailureException;
 import org.springframework.util.Assert;
@@ -132,12 +132,11 @@ public class FileReloadContainer<T> {
      * @param resource a {@link org.springframework.core.io.Resource} object.
      * @param <T> a T object.
      */
-    public FileReloadContainer(T object, Resource resource,
-                               FileReloadCallback<T> callback) {
+    public FileReloadContainer(final T object, final Resource resource, final FileReloadCallback<T> callback) {
         Assert.notNull(object, "argument object cannot be null");
         Assert.notNull(resource, "argument file cannot be null");
         Assert.notNull(callback, "argument callback cannot be null");
-        
+
         m_object = object;
         m_resource = resource;
         m_callback = callback;
@@ -145,9 +144,9 @@ public class FileReloadContainer<T> {
         try {
             m_file = resource.getFile();
             m_lastModified = m_file.lastModified();
-        } catch (IOException e) {
+        } catch (final IOException e) {
             // Do nothing... we'll fall back to using the InputStream
-            log().info("Resource '" + resource + "' does not seem to have an underlying File object; assuming this is not an auto-reloadable file resource");
+            LogUtils.infof(this, e, "Resource '%s' does not seem to have an underlying File object; assuming this is not an auto-reloadable file resource", resource);
         }
         
         m_lastReloadCheck = System.currentTimeMillis();
@@ -160,9 +159,8 @@ public class FileReloadContainer<T> {
      * @param object object to be stored in this container
      * @throws java.lang.IllegalArgumentException if object is null
      */
-    public FileReloadContainer(T object) {
+    public FileReloadContainer(final T object) {
         Assert.notNull(object, "argument object cannot be null");
-        
         m_object = object;
     }
     
@@ -181,8 +179,7 @@ public class FileReloadContainer<T> {
     }
     
     private synchronized void checkForUpdates() throws DataAccessResourceFailureException {
-        if (m_file == null || m_reloadCheckInterval < 0
-                || System.currentTimeMillis() < (m_lastReloadCheck + m_reloadCheckInterval)) {
+        if (m_file == null || m_reloadCheckInterval < 0 || System.currentTimeMillis() < (m_lastReloadCheck + m_reloadCheckInterval)) {
             return;
         }
         
@@ -207,23 +204,17 @@ public class FileReloadContainer<T> {
          */
         m_lastModified = m_file.lastModified();
             
-        T object;
+        final T object;
         try {
             object = m_callback.reload(m_object, m_resource);
         } catch (Throwable t) {
-            String message = 
-                "Failed reloading data for object '" + m_object + "' "
-                + "from file '" + m_file.getAbsolutePath() + "'.  "
-                + "Unexpected Throwable received while "
-                + "issuing reload: " + t.getMessage();
-            log().error(message, t);
+            final String message = String.format("Failed reloading data for object '%s' from file '%s'. Unexpected Throwable received while issuing reload.", m_object, m_file.getAbsolutePath());
+            LogUtils.errorf(this, t, message);
             throw new DataAccessResourceFailureException(message, t);
         }
         
         if (object == null) {
-            log().info("Not updating object for file '"
-                       + m_file.getAbsolutePath()
-                       + "' due to reload callback returning null");
+            LogUtils.infof(this, "Not updating object for file '%s' due to reload callback returning null.", m_file.getAbsolutePath());
         } else {
             m_object = object;
         }
@@ -257,11 +248,7 @@ public class FileReloadContainer<T> {
      * indicates that automatic reload checks are not performed and the
      * file will only be reloaded if {@link #reload()} is explicitly called.
      */
-    public void setReloadCheckInterval(long reloadCheckInterval) {
+    public void setReloadCheckInterval(final long reloadCheckInterval) {
         m_reloadCheckInterval = reloadCheckInterval;
-    }
-    
-    private ThreadCategory log() {
-        return ThreadCategory.getInstance();
     }
 }
