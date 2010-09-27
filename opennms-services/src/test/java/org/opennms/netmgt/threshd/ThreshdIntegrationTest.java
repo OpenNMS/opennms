@@ -38,6 +38,7 @@
 //
 package org.opennms.netmgt.threshd;
 
+import org.apache.log4j.Level;
 import org.opennms.netmgt.config.DatabaseSchemaConfigFactory;
 import org.opennms.netmgt.config.PollOutagesConfigFactory;
 import org.opennms.netmgt.config.ThreshdConfigManager;
@@ -55,7 +56,7 @@ public class ThreshdIntegrationTest extends ThresholderTestCase {
     @Override
     protected void setUp() throws Exception {
         super.setUp();
-        
+
         MockLogAppender.setupLogging();
 
         setupDatabase();
@@ -78,12 +79,12 @@ public class ThreshdIntegrationTest extends ThresholderTestCase {
         setupThresholdConfig(dirName, fileName, nodeId, ipAddress, serviceName, groupName);
 
         Resource resource = new ClassPathResource("etc/poll-outages.xml");
-        PollOutagesConfigFactory.setInstance(new PollOutagesConfigFactory(resource.getInputStream()));
+        PollOutagesConfigFactory.setInstance(new PollOutagesConfigFactory(resource));
     }
 
     @Override
     protected void tearDown() throws Exception {
-        MockLogAppender.assertNoWarningsOrGreater();
+        MockLogAppender.assertNotGreaterOrEqual(Level.ERROR);
         MockUtil.println("------------ End Test "+getName()+" --------------------------");
     }
 

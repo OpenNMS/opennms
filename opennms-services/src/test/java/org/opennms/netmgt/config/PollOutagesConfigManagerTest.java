@@ -36,7 +36,6 @@
 package org.opennms.netmgt.config;
 
 import java.io.IOException;
-import java.io.StringReader;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.Date;
@@ -45,9 +44,8 @@ import junit.framework.TestCase;
 
 import org.exolab.castor.xml.MarshalException;
 import org.exolab.castor.xml.ValidationException;
-import org.opennms.netmgt.config.poller.Outages;
-import org.opennms.netmgt.dao.castor.CastorUtils;
 import org.opennms.test.mock.MockLogAppender;
+import org.springframework.core.io.ByteArrayResource;
 
 public class PollOutagesConfigManagerTest extends TestCase {
 
@@ -92,21 +90,12 @@ public class PollOutagesConfigManagerTest extends TestCase {
                 "   </outage>\n" + 
                 "</outages>\n";
         
-        StringReader rdr = new StringReader(xml);
-        
         m_manager = new PollOutagesConfigManager() {
-
-            protected void saveXML(String xmlString) throws IOException, MarshalException, ValidationException {}
             public void update() throws IOException, MarshalException, ValidationException {}
-
-            
         };
-        
-        m_manager.setConfig(CastorUtils.unmarshal(Outages.class, rdr));
 
-            
-        
-        
+        m_manager.setConfigResource(new ByteArrayResource(xml.getBytes()));
+        m_manager.afterPropertiesSet();
     }
 
     protected void tearDown() throws Exception {
