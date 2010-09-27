@@ -58,21 +58,8 @@ import org.springframework.core.io.FileSystemResource;
  * @author <a href="mailto:weave@oculan.com">Weave </a>
  * @author <a href="mailto:gturner@newedgenetworks.com">Gerald Turner </a>
  * @author <a href="http://www.opennms.org/">OpenNMS </a>
- * @author <a href="mailto:david@opennms.org">David Hustace </a>
- * @author <a href="mailto:weave@oculan.com">Weave </a>
- * @author <a href="mailto:gturner@newedgenetworks.com">Gerald Turner </a>
- * @author <a href="http://www.opennms.org/">OpenNMS </a>
- * @author <a href="mailto:david@opennms.org">David Hustace </a>
- * @author <a href="mailto:weave@oculan.com">Weave </a>
- * @author <a href="mailto:gturner@newedgenetworks.com">Gerald Turner </a>
- * @author <a href="http://www.opennms.org/">OpenNMS </a>
- * @author <a href="mailto:david@opennms.org">David Hustace </a>
- * @author <a href="mailto:weave@oculan.com">Weave </a>
- * @author <a href="mailto:gturner@newedgenetworks.com">Gerald Turner </a>
- * @author <a href="http://www.opennms.org/">OpenNMS </a>
- * @version $Id: $
  */
-public final class NSClientPeerFactory extends PeerFactory {
+public final class NSClientPeerFactory {
     /**
      * The singleton instance of this factory
      */
@@ -99,7 +86,7 @@ public final class NSClientPeerFactory extends PeerFactory {
      *                Thrown if the contents do not match the required schema.
      */
     private NSClientPeerFactory(String configFile) throws IOException, MarshalException, ValidationException {
-        m_config = CastorUtils.unmarshal(NsclientConfig.class, new FileSystemResource(configFile));
+        m_config = CastorUtils.unmarshal(NsclientConfig.class, new FileSystemResource(configFile), CastorUtils.PRESERVE_WHITESPACE);
     }
     
     /**
@@ -111,7 +98,7 @@ public final class NSClientPeerFactory extends PeerFactory {
      * @throws org.exolab.castor.xml.ValidationException if any.
      */
     public NSClientPeerFactory(InputStream stream) throws IOException, MarshalException, ValidationException {
-        m_config = CastorUtils.unmarshal(NsclientConfig.class, stream);
+        m_config = CastorUtils.unmarshal(NsclientConfig.class, stream, CastorUtils.PRESERVE_WHITESPACE);
     }
     
     /**
@@ -124,7 +111,7 @@ public final class NSClientPeerFactory extends PeerFactory {
      */
     @Deprecated
     public NSClientPeerFactory(Reader rdr) throws IOException, MarshalException, ValidationException {
-        m_config = CastorUtils.unmarshal(NsclientConfig.class, rdr);
+        m_config = CastorUtils.unmarshal(NsclientConfig.class, rdr, CastorUtils.PRESERVE_WHITESPACE);
     }
     
     /**

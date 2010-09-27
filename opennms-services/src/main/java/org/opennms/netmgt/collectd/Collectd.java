@@ -796,19 +796,15 @@ public class Collectd extends AbstractServiceDaemon implements
         try {
             info = new SnmpEventInfo(event);
             
-            if (info == null) {
-                log().error("configureSNMPHandler: event contained invalid parameters.  "+event);
-                return;
-            }
-
             if (StringUtils.isBlank(info.getFirstIPAddress())) {				
                 log().error("configureSNMPHandler: event contained invalid firstIpAddress.  "+event);
                 return;
             }
             
             log().debug("configureSNMPHandler: processing configure SNMP event: "+info);
-            SnmpPeerFactory.getInstance().define(info);
-            SnmpPeerFactory.saveCurrent();
+            final SnmpPeerFactory peerFactory = SnmpPeerFactory.getInstance();
+            peerFactory.define(info);
+            peerFactory.saveCurrent();
             log().debug("configureSNMPHandler: process complete. "+info);
             
         } catch (Exception e) {

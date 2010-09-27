@@ -311,20 +311,26 @@
   <bean id="dataLinkInterfaceDao" class="org.opennms.netmgt.dao.hibernate.DataLinkInterfaceDaoHibernate">
     <property name="sessionFactory" ref="sessionFactory" />
   </bean>
+
+  <bean id="snmpConfigResourceLocation" class="java.lang.String">
+    <constructor-arg value="file:${opennms.home}/etc/snmp-config.xml" />
+  </bean>  
   
-  <bean id="init-snmpPeerFactory" class="org.springframework.beans.factory.config.MethodInvokingFactoryBean">
-    <property name="staticMethod"><value>org.opennms.netmgt.config.SnmpPeerFactory.init</value></property>
+  <bean id="snmpPeerFactory" class="org.opennms.netmgt.config.SnmpPeerFactory">
+    <property name="configResource" ref="snmpConfigResourceLocation" />
+    <property name="categoryDao" ref="categoryDao" />
+  </bean>
+  
+  <!-- for backwards-compatibility -->
+  <bean id="snmpPeerFactory-init" class="org.springframework.beans.factory.config.MethodInvokingFactoryBean" depends-on="snmpPeerFactory">
+    <property name="staticMethod"><value>org.opennms.netmgt.config.SnmpPeerFactory.setInstance</value></property>
     <property name="arguments">
       <list>
-        <ref bean="categoryDao" />
+        <ref bean="snmpPeerFactory" />
       </list>
     </property>
   </bean>
 
-  <bean id="snmpPeerFactory" class="org.springframework.beans.factory.config.MethodInvokingFactoryBean" depends-on="init-snmpPeerFactory">
-    <property name="staticMethod"><value>org.opennms.netmgt.config.SnmpPeerFactory.getInstance</value></property>
-  </bean>
-  
   <bean id="simpleJdbcTemplate" class="org.springframework.jdbc.core.simple.SimpleJdbcTemplate">
     <constructor-arg ref="jdbcTemplate" />
   </bean>

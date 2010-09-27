@@ -42,6 +42,7 @@ import org.opennms.mock.snmp.JUnitSnmpAgentExecutionListener;
 import org.opennms.netmgt.config.SnmpPeerFactory;
 import org.opennms.netmgt.snmp.SnmpAgentConfig;
 import org.opennms.test.ConfigurationTestUtils;
+import org.springframework.core.io.InputStreamResource;
 
 /**
  * ProxySnmpAgentConfigFactory
@@ -51,7 +52,7 @@ import org.opennms.test.ConfigurationTestUtils;
 public class ProxySnmpAgentConfigFactory extends SnmpPeerFactory {
 
     public ProxySnmpAgentConfigFactory() throws MarshalException, ValidationException, FileNotFoundException, IOException {
-        super(ConfigurationTestUtils.getInputStreamForConfigFile("snmp-config.xml"));
+        super(new InputStreamResource(ConfigurationTestUtils.getInputStreamForConfigFile("snmp-config.xml")));
     }
 
     public SnmpAgentConfig getAgentConfig(InetAddress address) {

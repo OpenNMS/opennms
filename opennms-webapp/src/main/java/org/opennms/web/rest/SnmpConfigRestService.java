@@ -39,6 +39,7 @@ package org.opennms.web.rest;
 
 import java.net.InetAddress;
 import java.net.UnknownHostException;
+import java.util.concurrent.locks.Lock;
 
 import javax.ws.rs.Consumes;
 import javax.ws.rs.GET;
@@ -138,9 +139,14 @@ public class SnmpConfigRestService extends OnmsRestService {
     public Response setSnmpInfo(@PathParam("ipAddr") String ipAddr, SnmpInfo snmpInfo) {
         try {
             SnmpEventInfo eventInfo = snmpInfo.createEventInfo(ipAddr);
-            m_snmpPeerFactory.define(eventInfo);
-            //TODO: this shouldn't be a static call
-            SnmpPeerFactory.saveCurrent();
+            final Lock writeLock = m_snmpPeerFactory.getWriteLock();
+            writeLock.lock();
+            try {
+                m_snmpPeerFactory.define(eventInfo);
+                m_snmpPeerFactory.saveCurrent();
+            } finally {
+                writeLock.unlock();
+            }
             return Response.ok().build();
         } catch (Exception e) {
             return Response.serverError().build();
@@ -164,8 +170,14 @@ public class SnmpConfigRestService extends OnmsRestService {
             SnmpInfo info = new SnmpInfo();
             setProperties(params, info);
             SnmpEventInfo eventInfo = info.createEventInfo(ipAddress);
-            m_snmpPeerFactory.define(eventInfo);
-            SnmpPeerFactory.saveCurrent();
+            final Lock writeLock = m_snmpPeerFactory.getWriteLock();
+            writeLock.lock();
+            try {
+                m_snmpPeerFactory.define(eventInfo);
+                m_snmpPeerFactory.saveCurrent();
+            } finally {
+                writeLock.unlock();
+            }
             return Response.ok().build();
         } catch (Exception e) {
             return Response.serverError().build();

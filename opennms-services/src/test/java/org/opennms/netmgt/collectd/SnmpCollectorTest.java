@@ -40,9 +40,7 @@ package org.opennms.netmgt.collectd;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNotNull;
 
-import java.io.ByteArrayInputStream;
 import java.io.File;
-import java.io.StringReader;
 import java.net.InetAddress;
 import java.util.Collection;
 import java.util.Collections;
@@ -64,9 +62,9 @@ import org.opennms.netmgt.dao.db.OpenNMSConfigurationExecutionListener;
 import org.opennms.netmgt.dao.db.TemporaryDatabaseExecutionListener;
 import org.opennms.netmgt.mock.MockEventIpcManager;
 import org.opennms.netmgt.model.NetworkBuilder;
+import org.opennms.netmgt.model.NetworkBuilder.InterfaceBuilder;
 import org.opennms.netmgt.model.OnmsIpInterface;
 import org.opennms.netmgt.model.OnmsNode;
-import org.opennms.netmgt.model.NetworkBuilder.InterfaceBuilder;
 import org.opennms.netmgt.rrd.RrdDataSource;
 import org.opennms.netmgt.rrd.RrdStrategy;
 import org.opennms.netmgt.rrd.RrdUtils;
@@ -74,6 +72,7 @@ import org.opennms.netmgt.rrd.RrdUtils.StrategyName;
 import org.opennms.test.mock.MockLogAppender;
 import org.opennms.test.mock.MockUtil;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.core.io.ByteArrayResource;
 import org.springframework.test.context.ContextConfiguration;
 import org.springframework.test.context.TestContext;
 import org.springframework.test.context.TestExecutionListeners;
@@ -171,7 +170,7 @@ public class SnmpCollectorTest implements MockSnmpAgentAware {
         assertEquals(1, ifaces.size());
         iface = ifaces.iterator().next();
 
-        SnmpPeerFactory.setInstance(new SnmpPeerFactory(new ByteArrayInputStream(
+        SnmpPeerFactory.setInstance(new SnmpPeerFactory(new ByteArrayResource(
                 ("<?xml version=\"1.0\" encoding=\"UTF-8\"?>\n"
                 + "<snmp-config port=\"9161\" retry=\"1\" timeout=\"1000\" read-community=\"public\" version=\"v2c\">\n"
                 + "</snmp-config>").getBytes("UTF-8") )));

@@ -232,8 +232,7 @@ public abstract class AbstractSpringJerseyRestTestCase {
         return retVal;
     }
 
-    @SuppressWarnings("unchecked")
-    protected String sendRequest(String requestType, String url, Map parameters, int expectedStatus) throws Exception {
+    protected String sendRequest(String requestType, String url, @SuppressWarnings("rawtypes") Map parameters, int expectedStatus) throws Exception {
         MockHttpServletRequest request = createRequest(requestType, url);
         request.setParameters(parameters);
         return sendRequest(request, expectedStatus);
@@ -280,13 +279,14 @@ public abstract class AbstractSpringJerseyRestTestCase {
         marshaller.marshal(object, out);
         byte[] content = out.toByteArray();
         
+        System.err.printf("xml: %s", out.toString("UTF-8"));
 
         MockHttpServletRequest request = createRequest(PUT, url);
         request.setContentType(MediaType.APPLICATION_XML);
         request.setContent(content);
         MockHttpServletResponse response = createResponse();        
         dispatch(request, response);
-        assertEquals(expectedStatus, response.getStatus());
+        assertEquals("response = '" + response.getContentAsString() + "'", expectedStatus, response.getStatus());
         
     }
 

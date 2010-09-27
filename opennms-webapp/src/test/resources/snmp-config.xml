@@ -1,0 +1,5 @@
+<?xml version="1.0"?>
+<snmp-config port="9161" retry="1" timeout="2000"
+read-community="myPublic"
+version="v1"
+max-vars-per-pdu="100" />

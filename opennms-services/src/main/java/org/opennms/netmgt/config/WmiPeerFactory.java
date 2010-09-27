@@ -100,7 +100,7 @@ import org.springframework.core.io.FileSystemResource;
  * @author <a href="http://www.opennms.org/">OpenNMS </a>
  * @version $Id: $
  */
-public class WmiPeerFactory extends PeerFactory {
+public class WmiPeerFactory {
     /**
      * The singleton instance of this factory
      */
@@ -129,7 +129,7 @@ public class WmiPeerFactory extends PeerFactory {
      * @param configFile the path to the config file to load in.
      */
     private WmiPeerFactory(String configFile) throws IOException, MarshalException, ValidationException {
-        m_config = CastorUtils.unmarshal(WmiConfig.class, new FileSystemResource(configFile));
+        m_config = CastorUtils.unmarshal(WmiConfig.class, new FileSystemResource(configFile), CastorUtils.PRESERVE_WHITESPACE);
     }
 
     /**
@@ -140,7 +140,7 @@ public class WmiPeerFactory extends PeerFactory {
      * @throws org.exolab.castor.xml.ValidationException if any.
      */
     public WmiPeerFactory(InputStream stream) throws MarshalException, ValidationException {
-        m_config = CastorUtils.unmarshal(WmiConfig.class, stream);
+        m_config = CastorUtils.unmarshal(WmiConfig.class, stream, CastorUtils.PRESERVE_WHITESPACE);
     }
     
     /**
@@ -153,7 +153,7 @@ public class WmiPeerFactory extends PeerFactory {
      */
     @Deprecated
     public WmiPeerFactory(Reader rdr) throws IOException, MarshalException, ValidationException {
-        m_config = CastorUtils.unmarshal(WmiConfig.class, rdr);
+        m_config = CastorUtils.unmarshal(WmiConfig.class, rdr, CastorUtils.PRESERVE_WHITESPACE);
     }
     
     /**

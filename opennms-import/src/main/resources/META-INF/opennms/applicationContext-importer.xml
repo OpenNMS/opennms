@@ -25,8 +25,23 @@
     <constructor-arg><value>${importer.importSchedule}</value></constructor-arg>
   </bean>
   
-  <bean id="snmpPeerFactory-init" class="org.springframework.beans.factory.config.MethodInvokingFactoryBean">
-    <property name="staticMethod"><value>org.opennms.netmgt.config.SnmpPeerFactory.init</value></property>
+  <bean id="snmpConfigResourceLocation" class="java.lang.String">
+    <constructor-arg value="file:${opennms.home}/etc/snmp-config.xml" />
+  </bean>  
+  
+  <bean id="snmpPeerFactory" class="org.opennms.netmgt.config.SnmpPeerFactory">
+    <property name="configResource" ref="snmpConfigResourceLocation" />
+    <property name="categoryDao" ref="categoryDao" />
+  </bean>
+  
+  <!-- for backwards-compatibility -->
+  <bean id="snmpPeerFactory-init" class="org.springframework.beans.factory.config.MethodInvokingFactoryBean" depends-on="snmpPeerFactory">
+    <property name="staticMethod"><value>org.opennms.netmgt.config.SnmpPeerFactory.setInstance</value></property>
+    <property name="arguments">
+      <list>
+        <ref bean="snmpPeerFactory" />
+      </list>
+    </property>
   </bean>
 
   <bean id="daemon" class="org.opennms.netmgt.importer.ImporterService" depends-on="snmpPeerFactory-init">

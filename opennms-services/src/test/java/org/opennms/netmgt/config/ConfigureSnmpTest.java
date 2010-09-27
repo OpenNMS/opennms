@@ -220,7 +220,7 @@ public class ConfigureSnmpTest extends TestCase {
         assertEquals("10.1.1.7", SnmpPeerFactory.getSnmpConfig().getDefinition(3).getSpecific(0));
         assertEquals("10.1.1.10", SnmpPeerFactory.getSnmpConfig().getDefinition(3).getRange(0).getBegin());
 
-        String marshalledConfig = SnmpPeerFactory.marshallConfig();
+        String marshalledConfig = SnmpPeerFactory.getInstance().marshallConfig();
         assertNotNull(marshalledConfig);
         
     }

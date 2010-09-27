@@ -82,7 +82,7 @@ import org.opennms.protocols.ip.IPv4Address;
  * @author <a href="http://www.opennms.org/">OpenNMS </a>
  * @version $Id: $
  */
-public class AmiPeerFactory extends PeerFactory {
+public class AmiPeerFactory {
     /**
      * The singleton instance of this factory
      */

@@ -43,6 +43,8 @@
 package org.opennms.netmgt.dao.castor;
 
 
+import java.io.IOException;
+
 import org.opennms.core.utils.ThreadCategory;
 import org.opennms.netmgt.dao.support.FileReloadCallback;
 import org.opennms.netmgt.dao.support.FileReloadContainer;
@@ -109,7 +111,11 @@ public abstract class AbstractCastorConfigDao<K, V> implements InitializingBean 
         long startTime = System.currentTimeMillis();
         
         if (log().isDebugEnabled()) {
-            log().debug("Loading " + m_description + " configuration from " + resource);
+            try {
+                log().debug("Loading " + m_description + " configuration from " + resource + " (" + (resource.getFile().exists() ? "exists" : "does not exist") + ")");
+            } catch (final IOException e) {
+                log().debug("Loading " + m_description + " configuration from " + resource);
+            }
         }
 
         V config = translateConfig(CastorUtils.unmarshalWithTranslatedExceptions(m_castorClass, resource, CastorUtils.PRESERVE_WHITESPACE));
