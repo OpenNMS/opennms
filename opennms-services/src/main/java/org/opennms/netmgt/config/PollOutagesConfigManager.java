@@ -99,7 +99,12 @@ abstract public class PollOutagesConfigManager extends AbstractCastorConfigDao<O
      * @return Returns the config.
      */
     protected Outages getConfig() {
-        return getContainer().getObject();
+        getReadLock().lock();
+        try {
+            return getContainer().getObject();
+        } finally {
+            getReadLock().unlock();
+        }
     }
 
     /**
@@ -108,11 +113,11 @@ abstract public class PollOutagesConfigManager extends AbstractCastorConfigDao<O
      * @return the outages configured
      */
     public Outage[] getOutages() {
-        m_readLock.lock();
+        getReadLock().lock();
         try {
             return getConfig().getOutage();
         } finally {
-            m_readLock.unlock();
+            getReadLock().unlock();
         }
     }
 
@@ -124,7 +129,7 @@ abstract public class PollOutagesConfigManager extends AbstractCastorConfigDao<O
      * @return the specified outage, null if not found
      */
     public Outage getOutage(final String name) {
-        m_readLock.lock();
+        getReadLock().lock();
         try {
             for (final Outage out : getConfig().getOutageCollection()) {
                 if (out.getName().equals(name)) {
@@ -132,7 +137,7 @@ abstract public class PollOutagesConfigManager extends AbstractCastorConfigDao<O
                 }
             }
         } finally {
-            m_readLock.unlock();
+            getReadLock().unlock();
         }
         return null;
     }
