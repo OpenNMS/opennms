@@ -122,8 +122,7 @@ public final class PollOutagesConfigFactory extends PollOutagesConfigManager {
             return;
         }
 
-        File cfgFile = ConfigFileConstants.getFile(ConfigFileConstants.POLL_OUTAGES_CONFIG_FILE_NAME);
-        m_singleton = new PollOutagesConfigFactory(new FileSystemResource(cfgFile));
+        m_singleton = new PollOutagesConfigFactory(new FileSystemResource(ConfigFileConstants.getFile(ConfigFileConstants.POLL_OUTAGES_CONFIG_FILE_NAME)));
         m_loaded = true;
     }
 
@@ -203,15 +202,15 @@ public final class PollOutagesConfigFactory extends PollOutagesConfigManager {
             if (xmlString != null) {
                 saveXML(xmlString);
             }
-
-            update();
         } finally {
             getWriteLock().unlock();
         }
+
+        update();
     }
 
     /** {@inheritDoc} */
-    protected synchronized void saveXML(final String xmlString) throws IOException, MarshalException, ValidationException {
+    protected void saveXML(final String xmlString) throws IOException, MarshalException, ValidationException {
         getWriteLock().lock();
 
         try {
@@ -239,6 +238,11 @@ public final class PollOutagesConfigFactory extends PollOutagesConfigManager {
      *             if any.
      */
     public void update() throws IOException, MarshalException, ValidationException {
-        getContainer().reload();
+        getReadLock().lock();
+        try {
+            getContainer().reload();
+        } finally {
+            getReadLock().unlock();
+        }
     }
 }
