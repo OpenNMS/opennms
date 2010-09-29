@@ -52,7 +52,7 @@ import org.opennms.core.tasks.DefaultTaskCoordinator;
 import org.opennms.core.tasks.NeedsContainer;
 import org.opennms.core.tasks.RunInBatch;
 import org.opennms.core.tasks.Task;
-import org.opennms.core.utils.ThreadCategory;
+import org.opennms.core.utils.LogUtils;
 import org.opennms.netmgt.EventConstants;
 import org.opennms.netmgt.dao.SnmpAgentConfigFactory;
 import org.opennms.netmgt.model.OnmsIpInterface;
@@ -326,10 +326,6 @@ public class NodeScan implements RunInBatch {
         return new NoAgentScan(m_nodeId, m_node);
     }
  
-    private ThreadCategory log() {
-        return ThreadCategory.getInstance(NodeScan.class);
-    }
-
     /**
      * AgentScan
      *
@@ -411,7 +407,7 @@ public class NodeScan implements RunInBatch {
                 final IPInterfaceTableTracker ipIfTracker = new IPInterfaceTableTracker() {
                     @Override
                     public void processIPInterfaceRow(IPInterfaceRow row) {
-                        System.out.println("Processing row with ipAddr "+row.getIpAddress());
+                    	LogUtils.debugf(this, "Processing row with ipAddr %s", row.getIpAddress());
                         if (!row.getIpAddress().startsWith("127.0.0")) {
 
                             // mark any provisioned interface as scanned
@@ -484,7 +480,7 @@ public class NodeScan implements RunInBatch {
             final PhysInterfaceTableTracker physIfTracker = new PhysInterfaceTableTracker() {
                 @Override
                 public void processPhysicalInterfaceRow(PhysicalInterfaceRow row) {
-                    System.out.println("Processing row for ifIndex "+row.getIfIndex());
+                	LogUtils.debugf(this, "Processing row for ifIndex %s", row.getIfIndex());
                     OnmsSnmpInterface snmpIface = row.createInterfaceFromRow();
                     snmpIface.setLastCapsdPoll(getScanStamp());
                     
@@ -700,10 +696,10 @@ public class NodeScan implements RunInBatch {
         if (!isAborted()) {
             OnmsIpInterface primaryIface = m_provisionService.getPrimaryInterfaceForNode(getNode());
             if (primaryIface != null && primaryIface.getMonitoredServiceByServiceType("SNMP") != null) {
-                System.err.println("SNMPSNMPSNMP Found primary interface and SNMP service!!");
+                LogUtils.debugf(this, "SNMPSNMPSNMP Found primary interface and SNMP service!!");
                 onAgentFound(currentPhase, primaryIface);
             } else {
-                System.err.println("SNMPSNMPSNMP Failed to find primary interface and SNMP service!!");
+                LogUtils.debugf(this, "SNMPSNMPSNMP Failed to find primary interface and SNMP service!!");
             }
         }
     }
