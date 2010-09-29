@@ -47,6 +47,7 @@ import javax.servlet.http.HttpSession;
 
 import org.exolab.castor.xml.MarshalException;
 import org.exolab.castor.xml.ValidationException;
+import org.opennms.core.utils.LogUtils;
 import org.opennms.netmgt.config.UserManager;
 import org.opennms.netmgt.config.users.DutySchedule;
 import org.opennms.netmgt.dao.CategoryDao;
@@ -91,7 +92,7 @@ public class GroupController extends AbstractController {
         }
         
         
-        System.err.println(String.format("!!!! Calling operation %s in GroupController", operation));
+        LogUtils.debugf(this, "!!!! Calling operation %s in GroupController", operation);
         
         if ("create".equalsIgnoreCase(operation)){
             return createGroup(request, response);

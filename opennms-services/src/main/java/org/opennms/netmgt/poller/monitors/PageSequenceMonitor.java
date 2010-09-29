@@ -73,6 +73,7 @@ import org.apache.commons.httpclient.params.HttpMethodParams;
 import org.apache.commons.io.IOUtils;
 import org.exolab.castor.xml.MarshalException;
 import org.exolab.castor.xml.ValidationException;
+import org.opennms.core.utils.LogUtils;
 import org.opennms.core.utils.MatchTable;
 import org.opennms.core.utils.ParameterMap;
 import org.opennms.core.utils.PropertiesUtils;
@@ -232,13 +233,13 @@ public class PageSequenceMonitor extends IPv4Monitor {
         }
 
         public void setFollowRedirects(final boolean follow) {
-            System.err.println("PageSequenceHttpPostMethod: setFollowRedirects: " + follow);
+        	LogUtils.debugf(this, "PageSequenceHttpPostMethod: setFollowRedirects: %s", Boolean.valueOf(follow));
             m_followRedirects = follow;
         }
 
         @Override
         public boolean getFollowRedirects() {
-            System.err.println("PageSequenceHttpPostMethod: getFollowRedirects: " + m_followRedirects);
+        	LogUtils.debugf(this, "PageSequenceHttpPostMethod: getFollowRedirects: %s" + Boolean.valueOf(m_followRedirects));
             return m_followRedirects;
         }
     }
