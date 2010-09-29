@@ -123,6 +123,7 @@ public final class PollOutagesConfigFactory extends PollOutagesConfigManager {
         }
 
         m_singleton = new PollOutagesConfigFactory(new FileSystemResource(ConfigFileConstants.getFile(ConfigFileConstants.POLL_OUTAGES_CONFIG_FILE_NAME)));
+        m_singleton.afterPropertiesSet();
         m_loaded = true;
     }
 
