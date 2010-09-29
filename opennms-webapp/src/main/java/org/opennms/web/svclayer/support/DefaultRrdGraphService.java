@@ -105,7 +105,7 @@ public class DefaultRrdGraphService implements RrdGraphService, InitializingBean
         
         AdhocGraphType t = m_graphDao.findAdhocByName("performance");
 
-        OnmsResource r = m_resourceDao.loadResourceById(resourceId);
+        OnmsResource r = m_resourceDao.getResourceById(resourceId);
         
         String command = createAdHocCommand(t,
                                   r,
@@ -170,7 +170,7 @@ public class DefaultRrdGraphService implements RrdGraphService, InitializingBean
                                                + "\" is not valid");
         }
         
-        OnmsResource r = m_resourceDao.loadResourceById(resourceId);
+        OnmsResource r = m_resourceDao.getResourceById(resourceId);
 
         PrefabGraph prefabGraph = m_graphDao.getPrefabGraph(report);
         

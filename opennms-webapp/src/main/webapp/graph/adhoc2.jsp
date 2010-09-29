@@ -94,7 +94,7 @@
         pageContext.setAttribute("tooManyResourceIds", "true");
     } else {
         String resourceId = req.getParameter("resourceId");
-        OnmsResource resource = m_resourceService.loadResourceById(resourceId);
+        OnmsResource resource = m_resourceService.getResourceById(resourceId);
         m_resourceService.promoteGraphAttributesForResource(resource);
         pageContext.setAttribute("resource", resource);
         pageContext.setAttribute("colors", s_colors);

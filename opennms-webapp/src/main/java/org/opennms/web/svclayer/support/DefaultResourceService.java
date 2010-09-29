@@ -166,7 +166,7 @@ public class DefaultResourceService implements ResourceService, InitializingBean
 
     /** {@inheritDoc} */
     public List<OnmsResource> findNodeChildResources(int nodeId) {
-        OnmsResource resource = m_resourceDao.loadResourceById(OnmsResource.createResourceId("node", Integer.toString(nodeId)));
+        OnmsResource resource = m_resourceDao.getResourceById(OnmsResource.createResourceId("node", Integer.toString(nodeId)));
         List<OnmsResource> resources = resource.getChildResources();
         resources.size(); // Get the size to force the list to be loaded
         return resources;
@@ -174,7 +174,7 @@ public class DefaultResourceService implements ResourceService, InitializingBean
 
     /** {@inheritDoc} */
     public List<OnmsResource> findDomainChildResources(String domain) {
-        OnmsResource resource = m_resourceDao.loadResourceById(OnmsResource.createResourceId("domain", domain));
+        OnmsResource resource = m_resourceDao.getResourceById(OnmsResource.createResourceId("domain", domain));
         List<OnmsResource> resources = resource.getChildResources();
         resources.size(); // Get the size to force the list to be loaded
         return resources;
@@ -228,11 +228,6 @@ public class DefaultResourceService implements ResourceService, InitializingBean
     }
 
     /** {@inheritDoc} */
-    public OnmsResource loadResourceById(String id) {
-        return m_resourceDao.loadResourceById(id);
-    }
-    
-    /** {@inheritDoc} */
     public List<OnmsResource> getResourceListById(String resourceId) {
         return m_resourceDao.getResourceListById(resourceId);
     }
@@ -265,7 +260,7 @@ public class DefaultResourceService implements ResourceService, InitializingBean
      * @param resourceId a {@link java.lang.String} object.
      */
     public void promoteGraphAttributesForResource(String resourceId) {
-        promoteGraphAttributesForResource(loadResourceById(resourceId));
+        promoteGraphAttributesForResource(getResourceById(resourceId));
     }
     
     private static ThreadCategory log() {

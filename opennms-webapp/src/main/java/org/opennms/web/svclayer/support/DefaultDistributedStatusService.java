@@ -85,14 +85,6 @@ import org.springframework.validation.Errors;
  * @author <a href="mailto:dj@opennms.org">DJ Gregor</a>
  * @author <a href="mailto:brozow@opennms.org">Mathew Brozowski</a>
  * @author <a href="mailto:jeffg@opennms.org">Jeff Gehlbach</a>
- * @author <a href="mailto:dj@opennms.org">DJ Gregor</a>
- * @author <a href="mailto:brozow@opennms.org">Mathew Brozowski</a>
- * @author <a href="mailto:jeffg@opennms.org">Jeff Gehlbach</a>
- * @author <a href="mailto:dj@opennms.org">DJ Gregor</a>
- * @author <a href="mailto:brozow@opennms.org">Mathew Brozowski</a>
- * @author <a href="mailto:jeffg@opennms.org">Jeff Gehlbach</a>
- * @version $Id: $
- * @since 1.8.1
  */
 public class DefaultDistributedStatusService implements DistributedStatusService, InitializingBean {
     private MonitoredServiceDao m_monitoredServiceDao;
@@ -246,7 +238,10 @@ public class DefaultDistributedStatusService implements DistributedStatusService
         
         return table;
     }
-    
+
+    /**
+     * TODO: Use the enum for these string values
+     */
     private String getStyleForPollResult(PollStatus status) {
         if (status.isAvailable()) {
             return "Normal";
@@ -294,9 +289,9 @@ public class DefaultDistributedStatusService implements DistributedStatusService
      *
      * @param command a {@link org.opennms.web.command.DistributedStatusDetailsCommand} object.
      * @param errors a {@link org.springframework.validation.Errors} object.
-     * @return a {@link java.util.List} object.
+     * @return a {@link java.util.List} object or null if no location monitors are registered for the specified location and application tuple
      */
-    protected List<OnmsLocationSpecificStatus> findLocationSpecificStatus(DistributedStatusDetailsCommand command, Errors errors) {
+    protected List<OnmsLocationSpecificStatus> findLocationSpecificStatus(DistributedStatusDetailsCommand command, Errors errors) throws IllegalArgumentException {
         String locationName = command.getLocation();
         String applicationName = command.getApplication();
 

@@ -87,18 +87,11 @@ public interface ResourceDao {
     public OnmsResource getResourceById(String id);
 
     /**
-     * <p>loadResourceById</p>
-     *
-     * @param id a {@link java.lang.String} object.
-     * @return a {@link org.opennms.netmgt.model.OnmsResource} object.
-     */
-    public OnmsResource loadResourceById(String id);
-    
-    /**
      * <p>getResourceListById</p>
      *
+     * Fetch a specific list of resources by string ID.
      * @param id a {@link java.lang.String} object.
-     * @return a {@link java.util.List} object.
+     * @return Resources or null if resources cannot be found.
      */
     public List<OnmsResource> getResourceListById(String id);
     
