@@ -2080,6 +2080,7 @@
   <event-file>events/Cisco2.events.xml</event-file>
   <event-file>events/Cisco.events.xml</event-file>
   <event-file>events/Colubris.events.xml</event-file>
+  <event-file>events/Concord.events.xml</event-file>
   <event-file>events/Covergence.events.xml</event-file>
   <event-file>events/CPQHPIM.events.xml</event-file>
   <event-file>events/Clarent.events.xml</event-file>
