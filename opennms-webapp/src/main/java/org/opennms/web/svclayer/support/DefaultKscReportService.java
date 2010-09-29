@@ -73,14 +73,14 @@ public class DefaultKscReportService implements KscReportService, InitializingBe
     /** {@inheritDoc} */
     public Report buildDomainReport(String domain) {
         String resourceId = OnmsResource.createResourceId("domain", domain);
-        OnmsResource node = getResourceService().loadResourceById(resourceId);
+        OnmsResource node = getResourceService().getResourceById(resourceId);
         return buildResourceReport(getResourceService(), node, "Domain Report for Domain " + domain);
     }
 
     /** {@inheritDoc} */
     public Report buildNodeReport(int node_id) {
         String resourceId = OnmsResource.createResourceId("node", Integer.toString(node_id));
-        OnmsResource node = getResourceService().loadResourceById(resourceId);
+        OnmsResource node = getResourceService().getResourceById(resourceId);
         return buildResourceReport(getResourceService(), node, "Node Report for Node Number " + node_id);
     }
     
@@ -147,7 +147,7 @@ public class DefaultKscReportService implements KscReportService, InitializingBe
 
     /** {@inheritDoc} */
     public OnmsResource getResourceFromGraph(Graph graph) {
-        return getResourceService().loadResourceById(getResourceIdForGraph(graph));
+        return getResourceService().getResourceById(getResourceIdForGraph(graph));
     }
     
     /** {@inheritDoc} */
@@ -160,6 +160,10 @@ public class DefaultKscReportService implements KscReportService, InitializingBe
             
             if (resourceId != null) {
                 String[] resourceParts = DefaultGraphResultsService.parseResourceId(resourceId);
+                if (resourceParts == null) {
+                    log().warn("getResourcesFromGraphs: unparsable resourceId, skipping: " + resourceId);
+                    continue;
+                }
                 
                 String parent = resourceParts[0];
                 String childType = resourceParts[1];
@@ -167,13 +171,18 @@ public class DefaultKscReportService implements KscReportService, InitializingBe
                 
                 List<OnmsResource> resourcesForParent = resourcesMap.get(parent);
                 if (resourcesForParent == null) {
-                    resourcesForParent = getResourceService().getResourceListById(resourceId);
-                    if (resourcesForParent == null) {
-                        log().warn("getResourcesFromGraphs: no resources found for parent " + parent);
+                    try {
+                        resourcesForParent = getResourceService().getResourceListById(resourceId);
+                        if (resourcesForParent == null) {
+                            log().warn("getResourcesFromGraphs: no resources found for parent " + parent);
+                            continue;
+                        } else {
+                            resourcesMap.put(parent, resourcesForParent);
+                            log().debug("getResourcesFromGraphs: add resourceList to map for " + parent);
+                        }
+                    } catch (Throwable e) {
+                        log().warn("getResourcesFromGraphs: unexpected exception thrown while fetching resource list for \"" + parent + "\", skipping resource", e);
                         continue;
-                    } else {
-                        resourcesMap.put(parent, resourcesForParent);
-                        log().debug("getResourcesFromGraphs: add resourceList to map for " + parent);
                     }
                 }
                 

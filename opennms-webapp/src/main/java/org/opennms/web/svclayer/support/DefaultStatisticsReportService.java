@@ -91,7 +91,7 @@ public class DefaultStatisticsReportService implements StatisticsReportService, 
             Datum d = new Datum();
             d.setValue(datum.getValue());
             try {
-                d.setResource(m_resourceDao.loadResourceById(datum.getResourceId()));
+                d.setResource(m_resourceDao.getResourceById(datum.getResourceId()));
             } catch (ObjectRetrievalFailureException e) {
                 d.setResourceThrowable(e);
             }

@@ -90,7 +90,7 @@ public class CustomGraphChooseResourceController extends AbstractController impl
             }
         }
         
-        OnmsResource resource = getResourceService().loadResourceById(resourceId);
+        OnmsResource resource = getResourceService().getResourceById(resourceId);
         modelAndView.addObject("parentResource", resource);
         
         modelAndView.addObject("parentResourcePrefabGraphs", m_resourceService.findPrefabGraphsForResource(resource));

@@ -132,8 +132,12 @@ public class DefaultGraphResultsService implements GraphResultsService, Initiali
             OnmsResource resource = null;
             if (!resourcesMap.containsKey(parent)) {
                 List<OnmsResource> resourceList = m_resourceDao.getResourceListById(resourceId);
-                resourcesMap.put(parent, resourceList);
-                log().debug("findResults: add resourceList to map for " + parent);
+                if (resourceList == null) {
+                    log().warn("findResults: zero child resources found for " + parent);
+                } else {
+                    resourcesMap.put(parent, resourceList);
+                    log().debug("findResults: add resourceList to map for " + parent);
+                }
             }
             for (OnmsResource r : resourcesMap.get(parent)) {
                 if (childType.equals(r.getResourceType().getName())
@@ -156,8 +160,8 @@ public class DefaultGraphResultsService implements GraphResultsService, Initiali
     /**
      * <p>parseResourceId</p>
      *
-     * @param resourceId a {@link java.lang.String} object.
-     * @return an array of {@link java.lang.String} objects.
+     * @param resourceId a {@link java.lang.String} resource ID
+     * @return an array of {@link java.lang.String} objects or null if the string is unparsable.
      */
     public static String[] parseResourceId(String resourceId) {
         try {
@@ -166,7 +170,7 @@ public class DefaultGraphResultsService implements GraphResultsService, Initiali
             String childType = child.substring(0, child.indexOf("["));
             String childName = child.substring(child.indexOf("[") + 1, child.indexOf("]"));
             return new String[] { parent, childType, childName };
-        } catch (StringIndexOutOfBoundsException e) {
+        } catch (Throwable e) {
             log().warn("Illegally formatted resourceId found in DefaultGraphResultsService: " + resourceId, e);
             return null;
         }
@@ -183,7 +187,7 @@ public class DefaultGraphResultsService implements GraphResultsService, Initiali
      */
     public GraphResultSet createGraphResultSet(String resourceId, OnmsResource resource, String[] reports, GraphResults graphResults) {
         if (resource == null) {
-            resource = m_resourceDao.loadResourceById(resourceId);
+            resource = m_resourceDao.getResourceById(resourceId);
         }
          GraphResultSet rs = graphResults.new GraphResultSet();
         rs.setResource(resource);

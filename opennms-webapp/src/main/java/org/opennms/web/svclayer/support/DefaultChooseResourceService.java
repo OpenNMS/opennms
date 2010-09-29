@@ -73,7 +73,7 @@ public class DefaultChooseResourceService implements ChooseResourceService, Init
         ChooseResourceModel model = new ChooseResourceModel();
         model.setEndUrl(endUrl);
         
-        OnmsResource resource = m_resourceDao.loadResourceById(resourceId);
+        OnmsResource resource = m_resourceDao.getResourceById(resourceId);
 
         model.setResource(resource);
         Map<OnmsResourceType, List<OnmsResource>> resourceTypeMap = new LinkedHashMap<OnmsResourceType, List<OnmsResource>>();

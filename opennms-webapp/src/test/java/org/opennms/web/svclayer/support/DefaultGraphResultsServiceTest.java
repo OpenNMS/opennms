@@ -58,4 +58,13 @@ public class DefaultGraphResultsServiceTest {
         assertEquals("responseTime", values[1]);
         assertEquals("127.0.0.1", values[2]);
     }
+
+    /**
+     * Ensure that invalid resource IDs return a null string array.
+     */
+    @Test
+    public void testUnparsableeResourceId() {
+        String[] values = DefaultGraphResultsService.parseResourceId("node[1.responseTime[127.0.0.1]");
+        assertNull(values);
+    }
 }
