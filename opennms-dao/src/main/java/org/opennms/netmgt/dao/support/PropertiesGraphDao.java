@@ -156,7 +156,7 @@ public class PropertiesGraphDao implements GraphDao, InitializingBean {
         m_types.put(t.getName(), new FileReloadContainer<PrefabGraphType>(t));
     }
     
-    private PrefabGraphType createPrefabGraphType(String type, InputStream in) throws IOException {
+    private static PrefabGraphType createPrefabGraphType(String type, InputStream in) throws IOException {
         Properties properties = new Properties();
         properties.load(in);
 
@@ -212,7 +212,7 @@ public class PropertiesGraphDao implements GraphDao, InitializingBean {
      * @return a {@link org.opennms.netmgt.model.AdhocGraphType} object.
      * @throws java.io.IOException if any.
      */
-    public AdhocGraphType createAdhocGraphType(String type, InputStream in) throws IOException {
+    private static AdhocGraphType createAdhocGraphType(String type, InputStream in) throws IOException {
         Properties properties = new Properties();
         properties.load(in);
         
@@ -229,7 +229,7 @@ public class PropertiesGraphDao implements GraphDao, InitializingBean {
         return t;
     }
 
-    private Map<String, PrefabGraph> getPrefabGraphDefinitions(Properties properties) {
+    private static Map<String, PrefabGraph> getPrefabGraphDefinitions(Properties properties) {
         Assert.notNull(properties, "properties argument cannot be null");
 
         String listString = getProperty(properties, DEFAULT_GRAPH_LIST_KEY);
@@ -360,8 +360,8 @@ public class PropertiesGraphDao implements GraphDao, InitializingBean {
     }
 
     
-    private ThreadCategory log() {
-        return ThreadCategory.getInstance();
+    private static ThreadCategory log() {
+        return ThreadCategory.getInstance(PropertiesGraphDao.class);
     }
     
     private class PrefabGraphTypeCallback implements FileReloadCallback<PrefabGraphType> {
@@ -370,7 +370,7 @@ public class PropertiesGraphDao implements GraphDao, InitializingBean {
             try {
                 in = resource.getInputStream();
                 return createPrefabGraphType(object.getName(), in);
-            } catch (Exception e) {
+            } catch (Throwable e) {
                 log().error("Could not reload configuration '"
                             + resource + "'; nested exception: " + e,
                             e);
@@ -409,6 +409,10 @@ public class PropertiesGraphDao implements GraphDao, InitializingBean {
     
     /** {@inheritDoc} */
     public PrefabGraph[] getPrefabGraphsForResource(OnmsResource resource) {
+        if (resource == null) {
+            log().warn("returning empty graph list for resource because it is null");
+            return new PrefabGraph[0];
+        }
         Set<OnmsAttribute> attributes = resource.getAttributes();
         // Check if there are no attributes
         if (attributes.size() == 0) {
@@ -480,7 +484,7 @@ public class PropertiesGraphDao implements GraphDao, InitializingBean {
     }
 
 
-    private boolean verifyAttributesExist(PrefabGraph query, String type, List<String> requiredList, Set<String> availableRrdAttributes) {
+    private static boolean verifyAttributesExist(PrefabGraph query, String type, List<String> requiredList, Set<String> availableRrdAttributes) {
         if (availableRrdAttributes.containsAll(requiredList)) {
             return true;
         } else {
@@ -498,7 +502,7 @@ public class PropertiesGraphDao implements GraphDao, InitializingBean {
             try {
                 in = resource.getInputStream();
                 return createAdhocGraphType(object.getName(), in);
-            } catch (Exception e) {
+            } catch (Throwable e) {
                 log().error("Could not reload configuration from '"
                             + resource + "'; nested exception: " + e,
                             e);

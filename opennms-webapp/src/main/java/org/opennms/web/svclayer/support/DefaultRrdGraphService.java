@@ -106,6 +106,7 @@ public class DefaultRrdGraphService implements RrdGraphService, InitializingBean
         AdhocGraphType t = m_graphDao.findAdhocByName("performance");
 
         OnmsResource r = m_resourceDao.getResourceById(resourceId);
+        Assert.notNull(r, "resource \"" + resourceId + "\" could not be located");
         
         String command = createAdHocCommand(t,
                                   r,
@@ -171,6 +172,7 @@ public class DefaultRrdGraphService implements RrdGraphService, InitializingBean
         }
         
         OnmsResource r = m_resourceDao.getResourceById(resourceId);
+        Assert.notNull(r, "resource could not be located");
 
         PrefabGraph prefabGraph = m_graphDao.getPrefabGraph(report);
         

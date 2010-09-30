@@ -322,13 +322,13 @@ public class DefaultResourceDao implements ResourceDao, InitializingBean {
      * @throws IllegalArgumentException When the resource ID string does not match the expected regex pattern
      * @throws ObjectRetrievalFailureException If any exceptions are thrown while searching for the resource
      */
-    public OnmsResource getResourceById(String id) throws IllegalArgumentException, ObjectRetrievalFailureException {
+    public OnmsResource getResourceById(String id) {
         OnmsResource resource = null;
 
         Pattern p = Pattern.compile("([^\\[]+)\\[([^\\]]*)\\](?:\\.|$)");
         Matcher m = p.matcher(id);
         StringBuffer sb = new StringBuffer();
-        
+
         while (m.find()) {
             String resourceTypeName = DefaultResourceDao.decode(m.group(1));
             String resourceName = DefaultResourceDao.decode(m.group(2));
@@ -340,22 +340,23 @@ public class DefaultResourceDao implements ResourceDao, InitializingBean {
                     resource = getChildResource(resource, resourceTypeName, resourceName);
                 }
             } catch (Throwable e) {
-                throw new ObjectRetrievalFailureException(OnmsResource.class, id, "Could not get resource for resource ID '" + id + "'", e);
+                log().warn("Could not get resource for resource ID \"" + id + "\"", e);
+                return null;
             }
-            
+
             m.appendReplacement(sb, "");
         }
-        
+
         m.appendTail(sb);
-        
+
         if (sb.length() > 0) {
-            throw new IllegalArgumentException("resource ID '" + id
-                                               + "' does not match pattern '"
+            log().warn("resource ID '" + id + "' does not match pattern '"
                                                + p.toString() + "' at '"
                                                + sb + "'");
+            return null;
+        } else {
+            return resource;
         }
-        
-        return resource;
     }
 
     /**

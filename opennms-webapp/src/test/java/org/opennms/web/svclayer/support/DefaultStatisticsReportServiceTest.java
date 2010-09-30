@@ -115,12 +115,13 @@ public class DefaultStatisticsReportServiceTest extends TestCase {
 
         StatisticsReportCommand command = new StatisticsReportCommand();
         command.setId(report.getId());
+        
         BindException errors = new BindException(command, "");
         
         expect(m_statisticsReportDao.load(report.getId())).andReturn(report);
         m_statisticsReportDao.initialize(report);
         m_statisticsReportDao.initialize(report.getData());
-        expect(m_resourceDao.getResourceById(resourceRef.getResourceId())).andThrow(new ObjectRetrievalFailureException(OnmsResource.class, "interfaceSnmp/en0", "Could not find child resource 'en0' with resource type 'interfaceSnmp' on resource 'en0'", null));
+        expect(m_resourceDao.getResourceById(resourceRef.getResourceId())).andReturn(null);
         
         m_mocks.replayAll();
         StatisticsReportModel model = m_service.getReport(command, errors);
@@ -133,6 +134,5 @@ public class DefaultStatisticsReportServiceTest extends TestCase {
         Datum d = data.first();
         assertNotNull("first datum should not be null", d);
         assertNull("first datum resource should be null", d.getResource());
-        assertNotNull("first datum resourceThrowable should not be null", d.getResourceThrowable());
     }
 }

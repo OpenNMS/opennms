@@ -36,7 +36,8 @@
 package org.opennms.web.command;
 
 /**
- * Command object for listing a specific statistics report.
+ * Command object for listing a specific statistics report. This object deserializes query params
+ * for a specific report, identified by integer ID.
  *
  * @author <a href="mailto:dj@opennms.org">DJ Gregor</a>
  * @version $Id: $

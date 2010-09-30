@@ -74,20 +74,16 @@ public class CustomGraphChooseResourceController extends AbstractController impl
         
         String selectedResourceId = request.getParameter("selectedResourceId");
         if (selectedResourceId != null) {
-            try {
-                OnmsResource selectedResource = m_resourceService.getResourceById(selectedResourceId);
+            OnmsResource selectedResource = m_resourceService.getResourceById(selectedResourceId);
 
-                Map<String, OnmsResource> selectedResourceAndParents = new HashMap<String, OnmsResource>();
-                OnmsResource r = selectedResource;
-                while (r != null) {
-                    selectedResourceAndParents.put(r.getId(), r);
-                    r = r.getParent();
-                }
-                
-                modelAndView.addObject("selectedResourceAndParents", selectedResourceAndParents);
-            } catch (DataAccessException e) {
-                // Don't do anything
+            Map<String, OnmsResource> selectedResourceAndParents = new HashMap<String, OnmsResource>();
+            OnmsResource r = selectedResource;
+            while (r != null) {
+                selectedResourceAndParents.put(r.getId(), r);
+                r = r.getParent();
             }
+            
+            modelAndView.addObject("selectedResourceAndParents", selectedResourceAndParents);
         }
         
         OnmsResource resource = getResourceService().getResourceById(resourceId);
