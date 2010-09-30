@@ -609,7 +609,6 @@ sends detailed information about an alarm.&lt;/p&gt;&lt;table&gt;
 	nhElementIPv6=%parm[#27]%&lt;/p&gt;
 	</logmsg>
     <severity>Warning</severity>
-    <alarm-data reduction-key="%uei%:%nodeid%:%dpname%:%parm[#2]%:%parm[#22]%" alarm-type="1" auto-clean="false" />
     <varbindsdecode>
       <parmid>parm[#13]</parmid>
       <decode varbinddecodedstring="normal" varbindvalue="1"/>
@@ -618,6 +617,7 @@ sends detailed information about an alarm.&lt;/p&gt;&lt;table&gt;
       <decode varbinddecodedstring="major" varbindvalue="4"/>
       <decode varbinddecodedstring="critical" varbindvalue="5"/>
     </varbindsdecode>
+    <alarm-data reduction-key="%uei%:%nodeid%:%dpname%:%parm[#2]%:%parm[#22]%" alarm-type="1" auto-clean="false" />
   </event>
   <event>
     <mask>
@@ -905,7 +905,6 @@ the corresponding alarm no longer exist.&lt;/p&gt;&lt;table&gt;
 	nhElementIPv6=%parm[#27]%&lt;/p&gt;
 	</logmsg>
     <severity>Normal</severity>
-    <alarm-data reduction-key="%uei%:%nodeid%:%dpname%:%parm[#2]%:%parm[#24]%" clear-key="uei.opennms.org/vendor/Concord/traps/nhLiveAlarm:%nodeid%:%dpname%:%parm[#2]%:%parm[#24]%" alarm-type="2" auto-clean="false" />
     <varbindsdecode>
       <parmid>parm[#13]</parmid>
       <decode varbinddecodedstring="normal" varbindvalue="1"/>
@@ -914,6 +913,7 @@ the corresponding alarm no longer exist.&lt;/p&gt;&lt;table&gt;
       <decode varbinddecodedstring="major" varbindvalue="4"/>
       <decode varbinddecodedstring="critical" varbindvalue="5"/>
     </varbindsdecode>
+    <alarm-data reduction-key="%uei%:%nodeid%:%dpname%:%parm[#2]%:%parm[#24]%" clear-key="uei.opennms.org/vendor/Concord/traps/nhLiveAlarm:%nodeid%:%dpname%:%parm[#2]%:%parm[#24]%" alarm-type="2" auto-clean="false" />
   </event>
   <event>
     <mask>
