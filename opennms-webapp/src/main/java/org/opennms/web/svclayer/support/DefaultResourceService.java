@@ -41,6 +41,7 @@
 package org.opennms.web.svclayer.support;
 
 import java.io.File;
+import java.util.ArrayList;
 import java.util.LinkedHashMap;
 import java.util.LinkedList;
 import java.util.List;
@@ -166,17 +167,23 @@ public class DefaultResourceService implements ResourceService, InitializingBean
 
     /** {@inheritDoc} */
     public List<OnmsResource> findNodeChildResources(int nodeId) {
+        List<OnmsResource> resources = new ArrayList<OnmsResource>();
         OnmsResource resource = m_resourceDao.getResourceById(OnmsResource.createResourceId("node", Integer.toString(nodeId)));
-        List<OnmsResource> resources = resource.getChildResources();
-        resources.size(); // Get the size to force the list to be loaded
+        if (resource != null) {
+            resources = resource.getChildResources();
+            resources.size(); // Get the size to force the list to be loaded
+        }
         return resources;
     }
 
     /** {@inheritDoc} */
     public List<OnmsResource> findDomainChildResources(String domain) {
+        List<OnmsResource> resources = new ArrayList<OnmsResource>();
         OnmsResource resource = m_resourceDao.getResourceById(OnmsResource.createResourceId("domain", domain));
-        List<OnmsResource> resources = resource.getChildResources();
-        resources.size(); // Get the size to force the list to be loaded
+        if (resource != null) {
+            resources = resource.getChildResources();
+            resources.size(); // Get the size to force the list to be loaded
+        }
         return resources;
     }
     
@@ -190,21 +197,23 @@ public class DefaultResourceService implements ResourceService, InitializingBean
     public List<OnmsResource> findChildResources(OnmsResource resource, String... resourceTypeMatches) {
         List<OnmsResource> matchingChildResources = new LinkedList<OnmsResource>();
         
-        for (OnmsResource childResource : resource.getChildResources()) {
-            boolean addGraph = false;
-            if (resourceTypeMatches.length > 0) {
-                for (String resourceTypeMatch : resourceTypeMatches) {
-                    if (resourceTypeMatch.equals(childResource.getResourceType().getName())) {
-                        addGraph = true;
-                        break;
+        if (resource != null) {
+            for (OnmsResource childResource : resource.getChildResources()) {
+                boolean addGraph = false;
+                if (resourceTypeMatches.length > 0) {
+                    for (String resourceTypeMatch : resourceTypeMatches) {
+                        if (resourceTypeMatch.equals(childResource.getResourceType().getName())) {
+                            addGraph = true;
+                            break;
+                        }
                     }
+                } else {
+                    addGraph = true;
                 }
-            } else {
-                addGraph = true;
-            }
-        
-            if (addGraph) {
-                matchingChildResources.add(checkLabelForQuotes(childResource));
+            
+                if (addGraph) {
+                    matchingChildResources.add(checkLabelForQuotes(childResource));
+                }
             }
         }
 

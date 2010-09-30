@@ -313,17 +313,10 @@ public class DefaultResourceDaoTest extends TestCase {
         
         expect(m_nodeDao.get(1)).andReturn(null);
 
-        ThrowableAnticipator ta = new ThrowableAnticipator();
-        ta.anticipate(new ObjectRetrievalFailureException("Could not get resource for resource ID '" + resourceId + "'; nested exception is " + ObjectRetrievalFailureException.class.getName() + ": Top-level resource of resource type node could not be found: 1", null));
-
         m_easyMockUtils.replayAll();
-        try {
-            m_resourceDao.getResourceById(resourceId);
-        } catch (Throwable t) {
-            ta.throwableReceived(t);
-        }
+        m_resourceDao.getResourceById(resourceId);
+
         m_easyMockUtils.verifyAll();
-        ta.verifyAnticipated();
     }
 
     public void testFindNodeResourcesWithResponseTime() throws Exception {
