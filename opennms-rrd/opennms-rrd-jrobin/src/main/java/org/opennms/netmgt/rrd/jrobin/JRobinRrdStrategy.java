@@ -45,16 +45,22 @@ import java.awt.Color;
 import java.io.File;
 import java.io.IOException;
 import java.io.InputStream;
+import java.util.ArrayList;
 import java.util.Collection;
+import java.util.HashMap;
 import java.util.LinkedList;
 import java.util.List;
+import java.util.Map;
 import java.util.Properties;
+import java.util.Map.Entry;
 
 import org.jrobin.core.FetchData;
 import org.jrobin.core.RrdDb;
 import org.jrobin.core.RrdDef;
 import org.jrobin.core.RrdException;
 import org.jrobin.core.Sample;
+import org.jrobin.data.DataProcessor;
+import org.jrobin.data.Plottable;
 import org.jrobin.graph.RrdGraph;
 import org.jrobin.graph.RrdGraphDef;
 import org.opennms.core.utils.StringUtils;
@@ -78,6 +84,34 @@ public class JRobinRrdStrategy implements RrdStrategy<RrdDef,RrdDb> {
     private static boolean s_initialized = false;
 
     private Properties m_configurationProperties;
+    
+    /**
+     * An extremely simple Plottable for holding static datasources that
+     * can't be represented with an SDEF -- currently used only for PERCENT
+     * pseudo-VDEFs
+     * 
+     * @author jeffg
+     *
+     */
+    class ConstantStaticDef extends Plottable {
+        private double m_startTime = Double.NEGATIVE_INFINITY;
+        private double m_endTime = Double.POSITIVE_INFINITY;
+        private double m_value = Double.NaN;
+        
+        ConstantStaticDef(long startTime, long endTime, double value) {
+            m_startTime = startTime;
+            m_endTime = endTime;
+            m_value = value;
+        }
+        
+        public double getValue(long timestamp) {
+            if (m_startTime <= timestamp && m_endTime >= timestamp) {
+                return m_value;
+            } else {
+                return Double.NaN;
+            }
+        }
+    }
 
     /**
      * <p>getConfigurationProperties</p>
@@ -365,6 +399,9 @@ public class JRobinRrdStrategy implements RrdStrategy<RrdDef,RrdDb> {
         double lowerLimit = Double.NaN;
         double upperLimit = Double.NaN;
         boolean rigid = false;
+        Map<String,List<String>> defs = new HashMap<String,List<String>>();
+        Map<String,List<String>> cdefs = new HashMap<String,List<String>>();
+        
         for (int i = 0; i < commandArray.length; i++) {
             String arg = commandArray[i];
             if (arg.startsWith("--start=")) {
@@ -519,12 +556,24 @@ public class JRobinRrdStrategy implements RrdStrategy<RrdDef,RrdDb> {
                 String[] ds = def[0].split("=");
                 File dsFile = new File(workDir, ds[1]);
                 graphDef.datasource(ds[0], dsFile.getAbsolutePath(), def[1], def[2]);
+                List<String> defBits = new ArrayList<String>();
+                defBits.add(dsFile.getAbsolutePath());
+                defBits.add(def[1]);
+                defBits.add(def[2]);
+                defs.put(ds[0], defBits);
             
             } else if (arg.startsWith("CDEF:")) {
                 String definition = arg.substring("CDEF:".length());
                 String[] cdef = tokenize(definition, "=", true);
                 graphDef.datasource(cdef[0], cdef[1]);
-            
+                List<String> cdefBits = new ArrayList<String>();
+                cdefBits.add(cdef[1]);
+                defs.put(cdef[0], cdefBits);
+            } else if (arg.startsWith("VDEF:")) {
+                String definition = arg.substring("VDEF:".length());
+                String[] vdef = tokenize(definition, "=", true);
+                String[] expressionTokens = tokenize(vdef[1], ",", false);
+                addVdefDs(graphDef, vdef[0], expressionTokens, start, end, defs);
             } else if (arg.startsWith("LINE1:")) {
                 String definition = arg.substring("LINE1:".length());
                 String[] line1 = tokenize(definition, ":", true);
@@ -867,6 +916,33 @@ public class JRobinRrdStrategy implements RrdStrategy<RrdDef,RrdDb> {
     	} else {
     		return new char[] { '\\', encountered };
     	}
+    }
+    
+    protected void addVdefDs(RrdGraphDef graphDef, String sourceName, String[] rhs, double start, double end, Map<String,List<String>> defs) throws RrdException {
+        if (rhs.length == 2) {
+            graphDef.datasource(sourceName, rhs[0], rhs[1]);
+        } else if (rhs.length == 3 && "PERCENT".equals(rhs[2])) {
+            // Is there a better way to do this than with a separate DataProcessor?
+            double pctRank = Double.valueOf(rhs[1]);
+            DataProcessor dataProcessor = new DataProcessor((int)start, (int)end);
+            for (String dsName : defs.keySet()) {
+                List<String> thisDef = defs.get(dsName);
+                if (thisDef.size() == 3) {
+                    dataProcessor.addDatasource(dsName, thisDef.get(0), thisDef.get(1), thisDef.get(2));
+                } else if (thisDef.size() == 2) {
+                    dataProcessor.addDatasource(dsName, thisDef.get(0));
+                }
+            }
+            try {
+                dataProcessor.processData();
+            } catch (IOException e) {
+                throw new RrdException("Caught IOException: " + e.getMessage());
+            }
+            
+            double result = dataProcessor.getPercentile(rhs[0], pctRank);
+            ConstantStaticDef csDef = new ConstantStaticDef((long)start, (long)end, result);
+            graphDef.datasource(sourceName, csDef);
+        } 
     }
 
 }
