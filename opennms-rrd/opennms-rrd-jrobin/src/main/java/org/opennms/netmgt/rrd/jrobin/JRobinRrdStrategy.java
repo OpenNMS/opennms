@@ -935,7 +935,7 @@ public class JRobinRrdStrategy implements RrdStrategy<RrdDef,RrdDb> {
                 List<String> thisDef = defs.get(dsName);
                 if (thisDef.size() == 3) {
                     dataProcessor.addDatasource(dsName, thisDef.get(0), thisDef.get(1), thisDef.get(2));
-                } else if (thisDef.size() == 2) {
+                } else if (thisDef.size() == 1) {
                     dataProcessor.addDatasource(dsName, thisDef.get(0));
                 }
             }
