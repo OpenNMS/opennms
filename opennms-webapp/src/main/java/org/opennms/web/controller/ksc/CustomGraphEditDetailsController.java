@@ -64,6 +64,11 @@ import org.springframework.web.servlet.mvc.AbstractController;
  */
 public class CustomGraphEditDetailsController extends AbstractController implements InitializingBean {
     
+    public enum Parameters {
+        resourceId,
+        graphtype
+    }
+    
     private KSC_PerformanceReportFactory m_kscReportFactory;
     private KscReportService m_kscReportService;
     private ResourceService m_resourceService;
@@ -71,13 +76,13 @@ public class CustomGraphEditDetailsController extends AbstractController impleme
     /** {@inheritDoc} */
     @Override
     protected ModelAndView handleRequestInternal(HttpServletRequest request, HttpServletResponse response) throws Exception {
-        String resourceId = request.getParameter("resourceId");
+        String resourceId = request.getParameter(Parameters.resourceId.toString());
         if (resourceId == null) {
-            throw new MissingParameterException("resourceId");
+            throw new MissingParameterException(Parameters.resourceId.toString());
         }
         
         //optional parameter graphtype
-        String prefabReportName = request.getParameter("graphtype");
+        String prefabReportName = request.getParameter(Parameters.graphtype.toString());
         
         KscReportEditor editor = KscReportEditor.getFromSession(request.getSession(), true);
         

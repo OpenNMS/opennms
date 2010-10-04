@@ -47,7 +47,6 @@ import javax.servlet.http.HttpServletResponse;
 import org.opennms.netmgt.model.OnmsResource;
 import org.opennms.web.svclayer.ResourceService;
 import org.springframework.beans.factory.InitializingBean;
-import org.springframework.dao.DataAccessException;
 import org.springframework.util.Assert;
 import org.springframework.web.servlet.ModelAndView;
 import org.springframework.web.servlet.mvc.AbstractController;
@@ -60,7 +59,11 @@ import org.springframework.web.servlet.mvc.AbstractController;
  * @since 1.8.1
  */
 public class CustomGraphChooseParentResourceController extends AbstractController implements InitializingBean {
-    
+
+    public enum Parameters {
+        selectedResourceId
+    }
+
     private ResourceService m_resourceService;
 
     /** {@inheritDoc} */
@@ -77,7 +80,7 @@ public class CustomGraphChooseParentResourceController extends AbstractControlle
         
         ModelAndView modelAndView = new ModelAndView("KSC/customGraphChooseResource");
 
-        String selectedResourceId = request.getParameter("selectedResourceId");
+        String selectedResourceId = request.getParameter(Parameters.selectedResourceId.toString());
         if (selectedResourceId != null) {
             OnmsResource selectedResource = m_resourceService.getResourceById(selectedResourceId);
 

@@ -39,14 +39,10 @@
 package org.opennms.netmgt.config;
 
 import java.io.Serializable;
-import java.io.StringReader;
-import java.io.StringWriter;
 
 import javax.servlet.http.HttpSession;
 
 import org.exolab.castor.xml.MarshalException;
-import org.exolab.castor.xml.Marshaller;
-import org.exolab.castor.xml.Unmarshaller;
 import org.exolab.castor.xml.ValidationException;
 import org.opennms.netmgt.config.kscReports.Graph;
 import org.opennms.netmgt.config.kscReports.Report;
@@ -59,7 +55,6 @@ import org.opennms.netmgt.dao.castor.CastorUtils;
  * @version $Id: $
  */
 public class KscReportEditor implements Serializable {
-    private static final long serialVersionUID = 1L;
 
     /**
      * This is a working report that may be used to hold a report & its index
@@ -70,7 +65,7 @@ public class KscReportEditor implements Serializable {
     private int m_workingGraphIndex = -1;
 
     /**
-     * This is a working graph that may be used to hold a report graph & its index temporarily while moving between jsp's
+     * This is a working graph that may be used to hold a report graph & its index temporarily while moving between JSPs
      */
     private Graph m_workingGraph = null;
 
@@ -90,10 +85,6 @@ public class KscReportEditor implements Serializable {
      */
     public Report getWorkingReport() {
         return m_workingReport;
-    }
-
-    private void setWorkingReport(Report report) {
-        m_workingReport = report;
     }
 
     /**
@@ -119,7 +110,7 @@ public class KscReportEditor implements Serializable {
      *
      * @return a {@link org.opennms.netmgt.config.kscReports.Graph} object.
      */
-    public static Graph getNewGraph() {
+    private static Graph getNewGraph() {
         Graph new_graph = new Graph();
         new_graph.setTitle("");
         //new_graph.setGraphtype("mib2.bits");
@@ -190,8 +181,8 @@ public class KscReportEditor implements Serializable {
      * @throws org.exolab.castor.xml.ValidationException if any.
      */
     public void loadWorkingReport(Report report) throws MarshalException, ValidationException {
-        setWorkingReport(CastorUtils.duplicateObject(report, Report.class));
-        getWorkingReport().deleteId();
+        m_workingReport = CastorUtils.duplicateObject(report, Report.class);
+        m_workingReport.deleteId();
     }
 
     /**
@@ -208,7 +199,7 @@ public class KscReportEditor implements Serializable {
             throw new IllegalArgumentException("Could not find report with ID " + index);
         }
 
-        setWorkingReport(CastorUtils.duplicateObject(report, Report.class));
+        m_workingReport = CastorUtils.duplicateObject(report, Report.class);
     }
     
     /**
@@ -224,15 +215,15 @@ public class KscReportEditor implements Serializable {
     public void loadWorkingReportDuplicate(KSC_PerformanceReportFactory factory, int index) throws MarshalException, ValidationException {
         loadWorkingReport(factory, index);
 
-        getWorkingReport().deleteId();
+        m_workingReport.deleteId();
     }
     
     /**
      * Loads a newly created report into the working report object.
      */
     public void loadNewWorkingReport() {
-        setWorkingReport(getNewReport());
-        getWorkingReport().deleteId();
+        m_workingReport = getNewReport();
+        m_workingReport.deleteId();
     }
 
     /**
@@ -275,5 +266,12 @@ public class KscReportEditor implements Serializable {
         }
         
         return (KscReportEditor) session.getAttribute(attributeName);
+    }
+
+    /**
+     */
+    public static void unloadFromSession(HttpSession session) {
+        String attributeName = KscReportEditor.class.getName();
+        session.removeAttribute(attributeName);
     }
 }

@@ -38,7 +38,9 @@
 <%@page language="java"
   contentType="text/html"
   session="true"
-%>
+  import="
+    org.opennms.web.controller.ksc.FormProcReportController
+"%>
 
 <%@ taglib uri="http://java.sun.com/jsp/jstl/core" prefix="c" %>
 <%@ taglib uri="http://java.sun.com/jsp/jstl/functions" prefix="fn" %>
@@ -96,12 +98,12 @@
 <h3>Customized Report Configuration</h3>
 <div class="boxWrapper">
     <form name="customize_form" method="get" action="KSC/formProcReport.htm">
-        <input type=hidden name="action" value="none">
-        <input type=hidden name="graph_index" value="-1">
+        <input type="hidden" name="<%=FormProcReportController.Parameters.action%>" value="none"/>
+        <input type="hidden" name="<%=FormProcReportController.Parameters.graph_index%>" value="-1"/>
 
         <p>
           Title: 
-          <input type="text" name="report_title" value="${title}" size="80" maxlength="80"/>
+          <input type="text" name="<%=FormProcReportController.Parameters.report_title%>" value="${title}" size="80" maxlength="80"/>
         </p>
 
             <table class="normal" width="100%" border="2">
@@ -110,9 +112,9 @@
                   <c:set var="resultSet" value="${resultSets[graphNum]}"/>
                     <tr>
                         <td>
-                            <input type="button" value="Modify" onclick="modifyGraph(${graphNum})">
+                            <input type="button" value="Modify" onclick="modifyGraph(${graphNum})"/>
                             <br/>
-                            <input type="button" value="Delete" onclick="deleteGraph(${graphNum})">
+                            <input type="button" value="Delete" onclick="deleteGraph(${graphNum})"/>
                         </td>
                         <td align="right">
                             ${resultSet.title}
@@ -164,7 +166,7 @@
             </table>  
 
         <p>
-            <input type="button" value="Add New Graph" onclick="addNewGraph()" alt="Add a new graph to the Report"/>
+            <input type="button" value="Add New Graph" onclick="addNewGraph()" alt="Add a new graph to the report"/>
         </p>
 
         <table class="normal">
@@ -179,7 +181,7 @@
                          <c:set var="checked" value=""/>
                        </c:otherwise>
                      </c:choose>
-                     <input type="checkbox" name="show_timespan" ${checked} />
+                     <input type="checkbox" name="<%=FormProcReportController.Parameters.show_timespan%>" ${checked} />
                  </td>
                  <td class="normal">
                      Show Timespan Button (allows global manipulation of report timespan)
@@ -196,7 +198,7 @@
                          <c:set var="checked" value=""/>
                        </c:otherwise>
                      </c:choose>
-                     <input type="checkbox" name="show_graphtype" ${checked} />
+                     <input type="checkbox" name="<%=FormProcReportController.Parameters.show_graphtype%>" ${checked} />
                  </td>
                  <td class="normal">
                      Show Graphtype Button (allows global manipulation of report prefabricated graph type)
@@ -204,7 +206,7 @@
              </tr>
              <tr>
                  <td class="normal">
-                        <select name="graphs_per_line">
+                        <select name="<%=FormProcReportController.Parameters.graphs_per_line%>">
                            <c:choose>
                              <c:when test="${graphsPerLine == 0}">
                                 <option selected value="0">default</option>

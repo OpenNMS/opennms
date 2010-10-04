@@ -60,6 +60,14 @@ import org.springframework.web.servlet.mvc.AbstractController;
  * @since 1.8.1
  */
 public class FormProcGraphController extends AbstractController implements InitializingBean {
+    public enum Parameters {
+        action,
+        timespan,
+        graphtype,
+        title,
+        graphindex
+    }
+
     private KSC_PerformanceReportFactory m_kscReportFactory;
     private KscReportService m_kscReportService;
 
@@ -72,11 +80,11 @@ public class FormProcGraphController extends AbstractController implements Initi
         Graph graph = editor.getWorkingGraph();
 
         // Get Form Variables
-        String action = WebSecurityUtils.sanitizeString(request.getParameter("action"));
-        String timespan = WebSecurityUtils.sanitizeString(request.getParameter("timespan"));
-        String graphtype = WebSecurityUtils.sanitizeString(request.getParameter("graphtype"));
-        String title = WebSecurityUtils.sanitizeString(request.getParameter("title"));
-        String g_index = WebSecurityUtils.sanitizeString(request.getParameter("graphindex"));
+        String action = WebSecurityUtils.sanitizeString(request.getParameter(Parameters.action.toString()));
+        String timespan = WebSecurityUtils.sanitizeString(request.getParameter(Parameters.timespan.toString()));
+        String graphtype = WebSecurityUtils.sanitizeString(request.getParameter(Parameters.graphtype.toString()));
+        String title = WebSecurityUtils.sanitizeString(request.getParameter(Parameters.title.toString()));
+        String g_index = WebSecurityUtils.sanitizeString(request.getParameter(Parameters.graphindex.toString()));
         int graph_index = WebSecurityUtils.safeParseInt(g_index);
         graph_index--; 
      

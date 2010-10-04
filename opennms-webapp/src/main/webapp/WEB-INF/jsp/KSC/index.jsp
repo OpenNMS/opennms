@@ -42,7 +42,8 @@
   contentType="text/html"
   session="true"
   import="
-  org.opennms.web.XssRequestWrapper
+  org.opennms.web.XssRequestWrapper,
+  org.opennms.web.controller.ksc.CustomViewController
   "
 %>
 
@@ -203,9 +204,9 @@
           </script>
           <div id="domain-reports"></div>
           <form method="get" name="choose_domain" action="KSC/customView.htm" onsubmit="return validateDomain();">
-            <input type="hidden" name="type" value="domain">
+            <input type="hidden" name="<%=CustomViewController.Parameters.type%>" value="domain">
 
-                  <select style="width: 100%;" name="domain" size="10">
+                  <select style="width: 100%;" name="<%=CustomViewController.Parameters.domain%>" size="10">
                     <c:forEach var="resource" items="${domainResources}">
 
 

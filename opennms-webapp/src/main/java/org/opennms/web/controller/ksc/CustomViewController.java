@@ -85,7 +85,15 @@ import org.springframework.web.servlet.mvc.AbstractController;
  * @since 1.8.1
  */
 public class CustomViewController extends AbstractController implements InitializingBean {
-    
+
+    public enum Parameters {
+        report,
+        domain,
+        type,
+        timespan,
+        graphtype
+    }
+
     private KSC_PerformanceReportFactory m_kscReportFactory;
     private KscReportService m_kscReportService;
     private ResourceService m_resourceService;
@@ -100,13 +108,13 @@ public class CustomViewController extends AbstractController implements Initiali
         String[] requiredParameters = new String[] { "report or domain", "type" };
       
         // Get Form Variable
-        String reportType = WebSecurityUtils.sanitizeString(request.getParameter("type"));
+        String reportType = WebSecurityUtils.sanitizeString(request.getParameter(Parameters.type.toString()));
         if (reportType == null) {
-            throw new MissingParameterException("type", requiredParameters);
+            throw new MissingParameterException(Parameters.type.toString(), requiredParameters);
         }
       
-        String reportIdString = WebSecurityUtils.sanitizeString(request.getParameter("report"));
-        String domain = WebSecurityUtils.sanitizeString(request.getParameter("domain"));
+        String reportIdString = WebSecurityUtils.sanitizeString(request.getParameter(Parameters.report.toString()));
+        String domain = WebSecurityUtils.sanitizeString(request.getParameter(Parameters.domain.toString()));
         int reportId = 0;
         if (reportIdString != null) {
             reportId = WebSecurityUtils.safeParseInt(reportIdString);
@@ -114,12 +122,12 @@ public class CustomViewController extends AbstractController implements Initiali
             throw new MissingParameterException("report or domain", requiredParameters);
         }
       
-        String overrideTimespan = WebSecurityUtils.sanitizeString(request.getParameter("timespan"));
+        String overrideTimespan = WebSecurityUtils.sanitizeString(request.getParameter(Parameters.timespan.toString()));
         if ("null".equals(overrideTimespan) || "none".equals(overrideTimespan)) {
             overrideTimespan = null;
         }
 
-        String overrideGraphType = WebSecurityUtils.sanitizeString(request.getParameter("graphtype"));
+        String overrideGraphType = WebSecurityUtils.sanitizeString(request.getParameter(Parameters.graphtype.toString()));
         if ("null".equals(overrideGraphType) || "none".equals(overrideGraphType)) {
             overrideGraphType = null;
         }

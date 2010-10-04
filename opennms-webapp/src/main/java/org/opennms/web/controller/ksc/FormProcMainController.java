@@ -44,10 +44,9 @@ import javax.servlet.http.HttpServletResponse;
 
 import org.opennms.netmgt.config.KSC_PerformanceReportFactory;
 import org.opennms.netmgt.config.KscReportEditor;
-import org.opennms.web.springframework.security.Authentication;
 import org.opennms.web.MissingParameterException;
 import org.opennms.web.WebSecurityUtils;
-import org.opennms.web.XssRequestWrapper;
+import org.opennms.web.springframework.security.Authentication;
 import org.springframework.beans.factory.InitializingBean;
 import org.springframework.util.Assert;
 import org.springframework.web.servlet.ModelAndView;
@@ -73,8 +72,6 @@ public class FormProcMainController extends AbstractController implements Initia
             throw new MissingParameterException("report_action");
         }
 
-        KscReportEditor editor = KscReportEditor.getFromSession(request.getSession(), false);
-
         if (action.equals("View")) {
             ModelAndView modelAndView = new ModelAndView("redirect:/KSC/customView.htm");
             modelAndView.addObject("report", getReportIndex(request));
@@ -82,6 +79,9 @@ public class FormProcMainController extends AbstractController implements Initia
             return modelAndView;
           
         } else if (( request.isUserInRole( Authentication.ADMIN_ROLE ) || !request.isUserInRole(Authentication.READONLY_ROLE) ) && (request.getRemoteUser() != null)) {
+            // Fetch the KscReportEditor or create one if there isn't one already
+            KscReportEditor editor = KscReportEditor.getFromSession(request.getSession(), false);
+
             if (action.equals("Customize")) {
                 editor.loadWorkingReport(getKscReportFactory(), getReportIndex(request));
                 return new ModelAndView("redirect:/KSC/customReport.htm");

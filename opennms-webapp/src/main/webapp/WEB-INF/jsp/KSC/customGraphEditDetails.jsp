@@ -36,7 +36,10 @@
 
 --%>
 
-<%@ page language="java" contentType="text/html" session="true" %>
+<%@ page language="java" contentType="text/html" session="true" import="
+	org.opennms.web.controller.ksc.FormProcGraphController,
+	org.opennms.web.controller.ksc.CustomGraphEditDetailsController
+"%>
 
 <%@ taglib uri="http://java.sun.com/jsp/jstl/core" prefix="c" %>
 <%@ taglib uri="http://java.sun.com/jsp/jstl/functions" prefix="fn" %>
@@ -155,7 +158,7 @@
       <div class="boxWrapper">
 
       <form name="customize_graph" method="get" action="KSC/formProcGraph.htm" >
-        <input type="hidden" name="action" value="none" />
+        <input type="hidden" name="<%=FormProcGraphController.Parameters.action%>" value="none" />
 
                     <table class="normal">
                         <tr>
@@ -163,7 +166,7 @@
                             Title
                           </td>
                           <td class="normal">
-                            <input type="text" name="title" value="${resultSet.title}" size="40" maxlength="40"/>
+                            <input type="text" name="<%=FormProcGraphController.Parameters.title%>" value="${resultSet.title}" size="40" maxlength="40"/>
                           </td>
                         </tr>
                         <tr>
@@ -171,7 +174,7 @@
                               Timespan
                             </td>
                             <td class="normal">
-                                <select name="timespan">
+                                <select name="<%=FormProcGraphController.Parameters.timespan%>">
                                   <c:forEach var="option" items="${timeSpans}">
                                     <c:choose>
                                       <c:when test="${timeSpan == option.key}">
@@ -193,7 +196,7 @@
                                 Prefabricated Report
                             </td>
                             <td class="normal">
-                                <select name="graphtype">
+                                <select name="<%=FormProcGraphController.Parameters.graphtype%>">
                                   <c:forEach var="prefabGraph" items="${prefabGraphs}">
                                     <c:choose>
                                       <c:when test="${resultSet.prefabGraph.name == prefabGraph.name}">
@@ -216,7 +219,7 @@
                                 Graph Index  
                             </td>
                             <td class="normal">
-                                <select name="graphindex">
+                                <select name="<%=FormProcGraphController.Parameters.graphindex%>">
                                   <c:forEach var="index" begin="1" end="${maxGraphIndex}">
                                     <c:choose>
                                       <c:when test="${index == (graphIndex + 1)}">

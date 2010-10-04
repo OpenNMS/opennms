@@ -61,7 +61,16 @@ import org.springframework.web.servlet.mvc.AbstractController;
  * @since 1.8.1
  */
 public class FormProcViewController extends AbstractController implements InitializingBean {
-    
+
+    public enum Parameters {
+        action,
+        domain,
+        timespan,
+        type,
+        report,
+        graphtype
+    }
+
     private KSC_PerformanceReportFactory m_kscReportFactory;
     private KscReportService m_kscReportService;
 
@@ -72,38 +81,39 @@ public class FormProcViewController extends AbstractController implements Initia
         int report_index = -1; 
         String override_timespan = null;
         String override_graphtype = null;
-        String report_action = WebSecurityUtils.sanitizeString(request.getParameter("action"));
-        String domain = WebSecurityUtils.sanitizeString(request.getParameter("domain"));
+        String report_action = WebSecurityUtils.sanitizeString(request.getParameter(Parameters.action.toString()));
+        String domain = WebSecurityUtils.sanitizeString(request.getParameter(Parameters.domain.toString()));
         if (report_action == null) {
             throw new MissingParameterException ("action", new String[] {"action", "report", "type"});
         }
-        String report_type = WebSecurityUtils.sanitizeString(request.getParameter("type"));
+        String report_type = WebSecurityUtils.sanitizeString(request.getParameter(Parameters.type.toString()));
         if (report_type == null) {
             throw new MissingParameterException ("type", new String[] {"action", "report", "type"});
         }
 
         if (report_action.equals("Customize") || report_action.equals("Update")) {
-            String r_index = WebSecurityUtils.sanitizeString(request.getParameter("report"));
+            String r_index = WebSecurityUtils.sanitizeString(request.getParameter(Parameters.report.toString()));
             if (r_index != null && !r_index.equals("null")) {
                report_index = WebSecurityUtils.safeParseInt(r_index); 
             } else if (domain == null) {
                 throw new MissingParameterException("report or domain", new String[] {"report or domain" , "type"});
             }
-            override_timespan = WebSecurityUtils.sanitizeString(request.getParameter("timespan"));
+            override_timespan = WebSecurityUtils.sanitizeString(request.getParameter(Parameters.timespan.toString()));
             if ((override_timespan == null) || override_timespan.equals("null")) {
                 override_timespan = "none";
             }
-            override_graphtype = WebSecurityUtils.sanitizeString(request.getParameter("graphtype"));
+            override_graphtype = WebSecurityUtils.sanitizeString(request.getParameter(Parameters.graphtype.toString()));
             if (override_graphtype == null || override_graphtype.equals("null")) {
                 override_graphtype = "none";
             }
             if (report_action.equals("Customize")) {
+             // Fetch the KscReportEditor or create one if there isn't one already
                 KscReportEditor editor = KscReportEditor.getFromSession(request.getSession(), false);
                 
                 if (report_type.equals("node")) {
                     editor.loadWorkingReport(m_kscReportService.buildNodeReport(report_index)); 
                 } else if (report_type.equals("domain")) {
-                    editor.loadWorkingReport(m_kscReportService.buildDomainReport(domain)); 
+                    editor.loadWorkingReport(m_kscReportService.buildDomainReport(domain));
                 } else { 
                     editor.loadWorkingReport(getKscReportFactory(), report_index);
                 }
