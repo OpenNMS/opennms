@@ -37,6 +37,9 @@
 //
 package org.opennms.web.controller.ksc;
 
+import java.util.HashMap;
+import java.util.Map;
+
 import javax.servlet.ServletException;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
@@ -145,7 +148,12 @@ public class FormProcReportController extends AbstractController implements Init
         } else if (action.equals("ModGraph")) {
             Graph graph = editor.getWorkingGraph();
             OnmsResource resource = getKscReportService().getResourceFromGraph(graph);
-            return new ModelAndView("redirect:/KSC/customGraphEditDetails.htm", "resourceId", resource.getId());
+            String graphType = graph.getGraphtype();
+            
+            Map<String,String> modelData = new HashMap<String,String>();
+            modelData.put(CustomGraphEditDetailsController.Parameters.resourceId.toString(), resource.getId());
+            modelData.put(CustomGraphEditDetailsController.Parameters.graphtype.toString(), graphType);
+            return new ModelAndView("redirect:/KSC/customGraphEditDetails.htm", modelData);
         } else {
             throw new IllegalArgumentException("parameter action of '" + action + "' is not supported.  Must be one of: Save, Cancel, Update, AddGraph, or DelGraph");
         }
