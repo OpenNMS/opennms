@@ -199,7 +199,7 @@ function chooseResourceViewInit(elementId, dataArray, destURL){
 		if(selection != undefined){
 			removeRecordsFromGraphGrid(selection);
 		}else{
-			alert("please select a resource to remove");
+			alert("Please select a resource to remove.");
 		}
 	}
 	
@@ -218,7 +218,7 @@ function chooseResourceViewInit(elementId, dataArray, destURL){
 		if(getResourceIds() != "fail"){
 			window.location = destURL + "?reports=all&" + getResourceIds();
 		}else{
-			alert("You need to select a resource to graph");
+			alert("You need to select a resource to graph.");
 		}
 	}
 	

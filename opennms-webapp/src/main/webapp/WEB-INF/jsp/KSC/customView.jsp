@@ -42,7 +42,9 @@
 <%@page language="java"
     contentType="text/html"
     session="true"
-%>
+    import="
+    org.opennms.web.controller.ksc.FormProcViewController
+"%>
 
 <%@ taglib uri="http://java.sun.com/jsp/jstl/core" prefix="c" %>
 <%@ taglib uri="http://java.sun.com/jsp/jstl/functions" prefix="fn" %>
@@ -92,13 +94,13 @@
     <h3>Custom View: ${title}</h3>
     <div class="boxWrapper">
     <form name="view_form" method="get" action="KSC/formProcView.htm">
-      <input type="hidden" name="type" value="${reportType}" >
-      <input type="hidden" name="action" value="none">
+      <input type="hidden" name="<%=FormProcViewController.Parameters.type%>" value="${reportType}" >
+      <input type="hidden" name="<%=FormProcViewController.Parameters.action%>" value="none">
       <c:if test="${!empty report}">
-        <input type="hidden" name="report" value="${report}">
+        <input type="hidden" name="<%=FormProcViewController.Parameters.report%>" value="${report}">
       </c:if>
       <c:if test="${!empty domain}">
-        <input type="hidden" name="domain" value="${domain}">
+        <input type="hidden" name="<%=FormProcViewController.Parameters.domain%>" value="${domain}">
       </c:if>
 
             <table class="normal" align="center">
