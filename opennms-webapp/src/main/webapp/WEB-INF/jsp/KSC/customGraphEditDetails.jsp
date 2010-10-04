@@ -178,14 +178,14 @@
                                   <c:forEach var="option" items="${timeSpans}">
                                     <c:choose>
                                       <c:when test="${timeSpan == option.key}">
-                                        <c:set var="selected" value="selected"/>
+                                        <c:set var="timespanSelected">selected="selected"</c:set>
                                       </c:when>
                                       
                                       <c:otherwise>
-                                        <c:set var="selected" value=""/>
+                                        <c:set var="timespanSelected" value=""/>
                                       </c:otherwise>
                                     </c:choose>
-                                    <option value="${option.key}" ${selected}>${option.value}</option>
+                                    <option value="${option.key}" ${timespanSelected}>${option.value}</option>
                                   </c:forEach>
                                 </select>  
                                 (This selects the relative start and stop times for the report) 
@@ -200,14 +200,14 @@
                                   <c:forEach var="prefabGraph" items="${prefabGraphs}">
                                     <c:choose>
                                       <c:when test="${resultSet.prefabGraph.name == prefabGraph.name}">
-                                        <c:set var="selected" value="selected"/>
+                                        <c:set var="prefabSelected">selected="selected"</c:set>
                                       </c:when>
                                       
                                       <c:otherwise>
-                                        <c:set var="selected" value=""/>
+                                        <c:set var="prefabSelected" value=""/>
                                       </c:otherwise>
                                     </c:choose>
-                                    <option value="${prefabGraph.name}" ${selected}>${prefabGraph.name}</option>
+                                    <option value="${prefabGraph.name}" ${prefabSelected}>${prefabGraph.name}</option>
                                   </c:forEach>
                                 </select>  
                                 (This selects the prefabricated graph report to use) 
@@ -215,7 +215,7 @@
                         </tr>
                         <tr>
                             <td class="normal">
-                                <!-- Select Graph Index -->  
+                                <!-- Select Graph Index -->
                                 Graph Index  
                             </td>
                             <td class="normal">
@@ -223,14 +223,14 @@
                                   <c:forEach var="index" begin="1" end="${maxGraphIndex}">
                                     <c:choose>
                                       <c:when test="${index == (graphIndex + 1)}">
-                                        <c:set var="selected" value="selected"/>
+                                        <c:set var="indexSelected">selected="selected"</c:set>
                                       </c:when>
                                       
                                       <c:otherwise>
-                                        <c:set var="selected" value=""/>
+                                        <c:set var="indexSelected" value=""/>
                                       </c:otherwise>
                                     </c:choose>
-                                    <option value="${index}" ${selected}>${index}</option>
+                                    <option value="${index}" ${indexSelected}>${index}</option>
                                   </c:forEach>
                                 </select>  
                                 (This selects the desired position in the report for the graph to be inserted) 
