@@ -202,7 +202,7 @@
                       <c:forEach var="option" items="${timeSpans}">
                         <c:choose>
                           <c:when test="${timeSpan == option.key}">
-                            <c:set var="selected" value="selected"/>
+                            <c:set var="selected">selected="selected"</c:set>
                           </c:when>
                           
                           <c:otherwise>
@@ -229,7 +229,7 @@
                       <c:forEach var="option" items="${graphTypes}">
                         <c:choose>
                           <c:when test="${graphType == option.key}">
-                            <c:set var="selected" value="selected"/>
+                            <c:set var="selected">selected="selected"</c:set>
                           </c:when>
                           
                           <c:otherwise>

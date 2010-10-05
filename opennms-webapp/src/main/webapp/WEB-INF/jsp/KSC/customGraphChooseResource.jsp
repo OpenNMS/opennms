@@ -210,7 +210,7 @@
             <c:forEach var="resource" items="${resources}">
               <c:set var="selected" value=""/>
               <c:if test="${!empty selectedResourceAndParents[resource.id]}">
-                <c:set var="selected" value="selected"/>
+                <c:set var="selected">selected="selected"</c:set>
               </c:if>
               <option value="${resource.id}" ${selected}>${resource.resourceType.label}: ${resource.label}</option>
             </c:forEach>
