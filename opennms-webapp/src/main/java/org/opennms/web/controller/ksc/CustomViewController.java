@@ -50,6 +50,7 @@ import java.util.HashSet;
 import java.util.Iterator;
 import java.util.LinkedHashMap;
 import java.util.List;
+import java.util.Map;
 import java.util.Set;
 import java.util.TreeSet;
 import java.util.concurrent.Executor;
@@ -140,16 +141,15 @@ public class CustomViewController extends AbstractController implements Initiali
             report = getKscReportService().buildDomainReport(domain);
         } else if ("custom".equals(reportType)) {
             report = m_kscReportFactory.getReportByIndex(reportId);
+            if (report == null) {
+                throw new ServletException("Report could not be found in config file for index '" + reportId + "'");
+            }
         } else {
             throw new IllegalArgumentException("value to 'type' parameter of '" + reportType + "' is not supported.  Must be one of: node, domain, or custom");
         }
       
-        if (report == null) {
-            throw new ServletException("Report does not exist");
-        }
-      
         // Get the list of available prefabricated graph options 
-        HashMap<String, OnmsResource> resourceMap = new HashMap<String, OnmsResource>();
+        Map<String, OnmsResource> resourceMap = new HashMap<String, OnmsResource>();
         Set<PrefabGraph> prefabGraphs = new TreeSet<PrefabGraph>();
         removeBrokenGraphsFromReport(report);
         List<Graph> graphCollection = report.getGraphCollection();
