@@ -238,7 +238,7 @@ public class KSC_PerformanceReportFactory {
     }
     
     private Map<Integer, Report> createReportList() {
-        LinkedHashMap<Integer, Report> reports = new LinkedHashMap<Integer, Report>(m_config.getReportCount());
+        Map<Integer, Report> reports = new LinkedHashMap<Integer, Report>(m_config.getReportCount());
 
         for (Report report : m_config.getReportCollection()) {
             if (reports.containsKey(report.getId())) {
