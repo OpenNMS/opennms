@@ -88,7 +88,7 @@
         <c:forEach var="month" items="${results.monthMap}">
           <c:choose>
             <c:when test="${month.key == results.startCalendar.month}">
-              <c:set var="selected" value="selected"/>
+              <c:set var="selected">selected="selected"</c:set>
             </c:when>
             <c:otherwise>
               <c:set var="selected" value=""/>
@@ -105,7 +105,7 @@
         <c:forEach var="hour" items="${results.hourMap}">
           <c:choose>
             <c:when test="${hour.key == results.startCalendar.hourOfDay}">
-              <c:set var="selected" value="selected"/>
+              <c:set var="selected">selected="selected"</c:set>
             </c:when>
             <c:otherwise>
               <c:set var="selected" value=""/>
@@ -123,7 +123,7 @@
         <c:forEach var="month" items="${results.monthMap}">
           <c:choose>
             <c:when test="${month.key == results.endCalendar.month}">
-              <c:set var="selected" value="selected"/>
+              <c:set var="selected">selected="selected"</c:set>
             </c:when>
             <c:otherwise>
               <c:set var="selected" value=""/>
@@ -140,7 +140,7 @@
         <c:forEach var="hour" items="${results.hourMap}">
           <c:choose>
             <c:when test="${hour.key == results.endCalendar.hourOfDay}">
-              <c:set var="selected" value="selected"/>
+              <c:set var="selected">selected="selected"</c:set>
             </c:when>
             <c:otherwise>
               <c:set var="selected" value=""/>

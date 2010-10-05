@@ -181,7 +181,7 @@
                 <c:forEach var="attribute" items="${resource.attributes}">
                   <c:choose>
                     <c:when test="${! anythingSelected}">
-                      <c:set var="selected" value="selected"/>
+                      <c:set var="selected">selected="selected"</c:set>
                       <c:set var="anythingSelected" value="true"/>
                     </c:when>
                     <c:otherwise>
@@ -209,7 +209,7 @@
                       <c:forEach var="color" items="${colors}">
                         <c:choose>
                           <c:when test="${(dsIndex % fn:length(colors)) == color.key}">
-                            <c:set var="selected" value="selected"/>
+                            <c:set var="selected">selected="selected"</c:set>
                           </c:when>
                           <c:otherwise>
                             <c:set var="selected" value=""/>
