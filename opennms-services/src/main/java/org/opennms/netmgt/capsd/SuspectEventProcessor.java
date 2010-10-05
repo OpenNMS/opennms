@@ -75,7 +75,7 @@ import java.util.Map;
 import java.util.Set;
 
 import org.opennms.core.utils.DBUtils;
-import org.opennms.core.utils.IPSorter;
+import org.opennms.core.utils.InetAddressUtils;
 import org.opennms.core.utils.ThreadCategory;
 import org.opennms.netmgt.ConfigFileConstants;
 import org.opennms.netmgt.EventConstants;
@@ -1146,8 +1146,8 @@ final class SuspectEventProcessor implements Runnable {
             }
         }
 
-        long current = IPSorter.convertToLong(currentIf.getAddress());
-        long primary = IPSorter.convertToLong(oldPrimary.getAddress());
+        long current = InetAddressUtils.toIpAddrLong(currentIf.getAddress());
+        long primary = InetAddressUtils.toIpAddrLong(oldPrimary.getAddress());
 
         // Smallest address wins
         if (current < primary) {

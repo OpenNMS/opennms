@@ -42,7 +42,7 @@ import java.util.Iterator;
 import java.util.LinkedList;
 import java.util.List;
 
-import org.opennms.core.utils.IPSorter;
+import org.opennms.core.utils.InetAddressUtils;
 import org.opennms.core.utils.ThreadCategory;
 import org.opennms.netmgt.config.collectd.ExcludeRange;
 import org.opennms.netmgt.config.collectd.IncludeRange;
@@ -121,7 +121,7 @@ public class CollectdPackage {
 		boolean has_specific = false;
 		Enumeration<String> espec = pkg.enumerateSpecific();
 		while (!has_specific && espec.hasMoreElements()) {
-			long speca = IPSorter.convertToLong(espec.nextElement());
+			long speca = InetAddressUtils.toIpAddrLong(espec.nextElement());
 			if (speca == addr)
 				has_specific = true;
 		}
@@ -141,9 +141,9 @@ public class CollectdPackage {
 		Enumeration<IncludeRange> eincs = pkg.enumerateIncludeRange();
 		while (!has_range_include && eincs.hasMoreElements()) {
 			IncludeRange rng = eincs.nextElement();
-			long start = IPSorter.convertToLong(rng.getBegin());
+			long start = InetAddressUtils.toIpAddrLong(rng.getBegin());
 			if (addr > start) {
-				long end = IPSorter.convertToLong(rng.getEnd());
+				long end = InetAddressUtils.toIpAddrLong(rng.getEnd());
 				if (addr <= end) {
 					has_range_include = true;
 				}
@@ -169,9 +169,9 @@ public class CollectdPackage {
 		Enumeration<ExcludeRange> eex = pkg.enumerateExcludeRange();
 		while (!has_range_exclude && !has_specific && eex.hasMoreElements()) {
 			ExcludeRange rng = eex.nextElement();
-			long start = IPSorter.convertToLong(rng.getBegin());
+			long start = InetAddressUtils.toIpAddrLong(rng.getBegin());
 			if (addr > start) {
-				long end = IPSorter.convertToLong(rng.getEnd());
+				long end = InetAddressUtils.toIpAddrLong(rng.getEnd());
 				if (addr <= end) {
 					has_range_exclude = true;
 				}
@@ -264,7 +264,7 @@ public class CollectdPackage {
 		// that it is in the include range and is not excluded
 		//
 	
-		long addr = IPSorter.convertToLong(iface);
+		long addr = InetAddressUtils.toIpAddrLong(iface);
 	
 		boolean has_range_include = hasIncludeRange(addr);
 		boolean has_specific = hasSpecific(addr);

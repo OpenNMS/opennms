@@ -50,7 +50,7 @@ import java.util.Map;
 import org.exolab.castor.xml.MarshalException;
 import org.exolab.castor.xml.Marshaller;
 import org.exolab.castor.xml.ValidationException;
-import org.opennms.core.utils.IPSorter;
+import org.opennms.core.utils.InetAddressUtils;
 import org.opennms.core.utils.IpListFromUrl;
 import org.opennms.core.utils.LogUtils;
 import org.opennms.netmgt.config.linkd.ExcludeRange;
@@ -498,7 +498,7 @@ abstract public class LinkdConfigManager implements LinkdConfig {
         boolean has_range_include = false;
         boolean has_range_exclude = false;
  
-        long addr = IPSorter.convertToLong(iface);
+        long addr = InetAddressUtils.toIpAddrLong(iface);
 
         // if there are NO include ranges then treat act as if the user include
         // the range 0.0.0.0 - 255.255.255.255
@@ -506,7 +506,7 @@ abstract public class LinkdConfigManager implements LinkdConfig {
 
         // Specific wins; if we find one, return immediately.
         for (final String spec : pkg.getSpecificCollection()) {
-            final long speca = IPSorter.convertToLong(spec);
+            final long speca = InetAddressUtils.toIpAddrLong(spec);
             if (speca == addr) {
                 has_specific = true;
                 break;
@@ -522,9 +522,9 @@ abstract public class LinkdConfigManager implements LinkdConfig {
 
         if (!has_range_include) {
             for (final IncludeRange rng : pkg.getIncludeRangeCollection()) {
-                final long start = IPSorter.convertToLong(rng.getBegin());
+                final long start = InetAddressUtils.toIpAddrLong(rng.getBegin());
                 if (addr > start) {
-                    final long end = IPSorter.convertToLong(rng.getEnd());
+                    final long end = InetAddressUtils.toIpAddrLong(rng.getEnd());
                     if (addr <= end) {
                         has_range_include = true;
                         break;
@@ -537,9 +537,9 @@ abstract public class LinkdConfigManager implements LinkdConfig {
         }
 
         for (final ExcludeRange rng : pkg.getExcludeRangeCollection()) {
-            long start = IPSorter.convertToLong(rng.getBegin());
+            long start = InetAddressUtils.toIpAddrLong(rng.getBegin());
             if (addr > start) {
-                long end = IPSorter.convertToLong(rng.getEnd());
+                long end = InetAddressUtils.toIpAddrLong(rng.getEnd());
                 if (addr <= end) {
                     has_range_exclude = true;
                     break;
