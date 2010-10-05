@@ -47,7 +47,7 @@ import java.util.Map;
 
 import org.exolab.castor.xml.MarshalException;
 import org.exolab.castor.xml.ValidationException;
-import org.opennms.core.utils.IPSorter;
+import org.opennms.core.utils.InetAddressUtils;
 import org.opennms.core.utils.IpListFromUrl;
 import org.opennms.core.utils.ThreadCategory;
 import org.opennms.netmgt.config.map.adapter.Celement;
@@ -369,14 +369,14 @@ abstract public class MapsAdapterConfigManager implements MapsAdapterConfig {
         // the range 0.0.0.0 - 255.255.255.255
         has_range_include = pkg.getIncludeRangeCount() == 0 && pkg.getSpecificCount() == 0;
         
-        long addr = IPSorter.convertToLong(iface);
+        long addr = InetAddressUtils.toIpAddrLong(iface);
         
         Enumeration<IncludeRange> eincs = pkg.enumerateIncludeRange();
         while (!has_range_include && eincs.hasMoreElements()) {
             IncludeRange rng = eincs.nextElement();
-            long start = IPSorter.convertToLong(rng.getBegin());
+            long start = InetAddressUtils.toIpAddrLong(rng.getBegin());
             if (addr > start) {
-                long end = IPSorter.convertToLong(rng.getEnd());
+                long end = InetAddressUtils.toIpAddrLong(rng.getEnd());
                 if (addr <= end) {
                     has_range_include = true;
                 }
@@ -387,7 +387,7 @@ abstract public class MapsAdapterConfigManager implements MapsAdapterConfig {
     
         Enumeration<String> espec = pkg.enumerateSpecific();
         while (!has_specific && espec.hasMoreElements()) {
-            long speca = IPSorter.convertToLong(espec.nextElement());
+            long speca = InetAddressUtils.toIpAddrLong(espec.nextElement());
             if (speca == addr)
                 has_specific = true;
         }
@@ -400,9 +400,9 @@ abstract public class MapsAdapterConfigManager implements MapsAdapterConfig {
         Enumeration<ExcludeRange> eex = pkg.enumerateExcludeRange();
         while (!has_range_exclude && !has_specific && eex.hasMoreElements()) {
             ExcludeRange rng = eex.nextElement();
-            long start = IPSorter.convertToLong(rng.getBegin());
+            long start = InetAddressUtils.toIpAddrLong(rng.getBegin());
             if (addr > start) {
-                long end = IPSorter.convertToLong(rng.getEnd());
+                long end = InetAddressUtils.toIpAddrLong(rng.getEnd());
                 if (addr <= end) {
                     has_range_exclude = true;
                 }

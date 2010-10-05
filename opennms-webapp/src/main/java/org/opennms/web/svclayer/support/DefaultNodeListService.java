@@ -52,7 +52,7 @@ import org.hibernate.criterion.MatchMode;
 import org.hibernate.criterion.Order;
 import org.hibernate.criterion.Restrictions;
 import org.hibernate.type.StringType;
-import org.opennms.core.utils.IPSorter;
+import org.opennms.core.utils.InetAddressUtils;
 import org.opennms.netmgt.config.siteStatusViews.Category;
 import org.opennms.netmgt.config.siteStatusViews.RowDef;
 import org.opennms.netmgt.config.siteStatusViews.Rows;
@@ -478,9 +478,9 @@ public class DefaultNodeListService implements NodeListService, InitializingBean
 
             // Sort by IP first if the IPs are non-0.0.0.0
             if (!"0.0.0.0".equals(o1.getIpAddress()) && !"0.0.0.0".equals(o2.getIpAddress())) {
-                if (IPSorter.convertToLong(o1.getIpAddress()) > IPSorter.convertToLong(o2.getIpAddress())) {
+                if (InetAddressUtils.toIpAddrLong(o1.getIpAddress()) > InetAddressUtils.toIpAddrLong(o2.getIpAddress())) {
                     return 1;
-                } else if (IPSorter.convertToLong(o1.getIpAddress()) < IPSorter.convertToLong(o2.getIpAddress())) {
+                } else if (InetAddressUtils.toIpAddrLong(o1.getIpAddress()) < InetAddressUtils.toIpAddrLong(o2.getIpAddress())) {
                     return -1;
                 } else {
                     return 0;
@@ -585,9 +585,9 @@ public class DefaultNodeListService implements NodeListService, InitializingBean
 
             // Sort by IP first if the IPs are non-0.0.0.0
             if (!"0.0.0.0".equals(o1.getIpAddress()) && !"0.0.0.0".equals(o2.getIpAddress())) {
-                if (IPSorter.convertToLong(o1.getIpAddress()) > IPSorter.convertToLong(o2.getIpAddress())) {
+                if (InetAddressUtils.toIpAddrLong(o1.getIpAddress()) > InetAddressUtils.toIpAddrLong(o2.getIpAddress())) {
                     return 1;
-                } else if (IPSorter.convertToLong(o1.getIpAddress()) < IPSorter.convertToLong(o2.getIpAddress())) {
+                } else if (InetAddressUtils.toIpAddrLong(o1.getIpAddress()) < InetAddressUtils.toIpAddrLong(o2.getIpAddress())) {
                     return -1;
                 } else {
                     return 0;

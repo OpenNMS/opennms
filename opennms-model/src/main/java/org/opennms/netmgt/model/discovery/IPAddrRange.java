@@ -40,7 +40,8 @@ import java.util.Enumeration;
 import java.util.Iterator;
 import java.util.NoSuchElementException;
 
-import org.opennms.core.utils.IPSorter;
+import org.opennms.core.utils.InetAddressUtils;
+import org.opennms.core.utils.ThreadCategory;
 
 /**
  * <P>
@@ -53,24 +54,17 @@ import org.opennms.core.utils.IPSorter;
  * @author <A HREF="mailto:sowmya@opennms.org">Sowmya </A>
  * @author <A HREF="mailto:weave@oculan.com">Brian Weaver </A>
  * @author <A HREF="http://www.opennms.org/">OpenNMS </A>
- * @author <A HREF="mailto:sowmya@opennms.org">Sowmya </A>
- * @author <A HREF="mailto:weave@oculan.com">Brian Weaver </A>
- * @author <A HREF="http://www.opennms.org/">OpenNMS </A>
- * @author <A HREF="mailto:sowmya@opennms.org">Sowmya </A>
- * @author <A HREF="mailto:weave@oculan.com">Brian Weaver </A>
- * @author <A HREF="http://www.opennms.org/">OpenNMS </A>
- * @version $Id: $
  */
 public final class IPAddrRange implements Iterable<InetAddress> {
     /**
      * The starting address for the object.
      */
-    private long m_begin;
+    private final long m_begin;
 
     /**
      * The ending address for the object.
      */
-    private long m_end;
+    private final long m_end;
 
     /**
      * <P>
@@ -229,14 +223,7 @@ public final class IPAddrRange implements Iterable<InetAddress> {
      * 
      */
     IPAddrRange(String fromIP, String toIP) throws java.net.UnknownHostException {
-        m_begin = IPSorter.convertToLong(InetAddress.getByName(fromIP).getAddress());
-        m_end = IPSorter.convertToLong(InetAddress.getByName(toIP).getAddress());
-
-        if (m_begin > m_end) {
-            long a = m_end;
-            m_end = m_begin;
-            m_begin = a;
-        }
+        this(InetAddress.getByName(fromIP), InetAddress.getByName(toIP));
     }
 
     /**
@@ -261,8 +248,17 @@ public final class IPAddrRange implements Iterable<InetAddress> {
      * 
      */
     IPAddrRange(InetAddress start, InetAddress end) {
-        m_begin = IPSorter.convertToLong(start.getAddress());
-        m_end = IPSorter.convertToLong(end.getAddress());
+        long from = InetAddressUtils.toIpAddrLong(start.getAddress());
+        long to = InetAddressUtils.toIpAddrLong(end.getAddress());
+
+        if (from > to) {
+            ThreadCategory.getInstance(this.getClass()).warn("The beginning of the address range is greater than the end of the address range (" +  start.getHostAddress() + " - " + end.getHostAddress() + "), swapping values to create a valid IP address range");
+            m_end = from;
+            m_begin = to;
+        } else {
+            m_begin = from;
+            m_end = to;
+        }
     }
 
     /**
@@ -329,7 +325,7 @@ public final class IPAddrRange implements Iterable<InetAddress> {
      *         range. 'false' otherwise.
      */
     boolean contains(InetAddress ipAddr) {
-        return contains(IPSorter.convertToLong(ipAddr.getAddress()));
+        return contains(InetAddressUtils.toIpAddrLong(ipAddr.getAddress()));
     }
 
     /**
@@ -343,7 +339,7 @@ public final class IPAddrRange implements Iterable<InetAddress> {
      *         range. 'false' otherwise.
      */
     boolean contains(String ipAddr) throws java.net.UnknownHostException {
-        return contains(convertToLong(InetAddress.getByName(ipAddr).getAddress()));
+        return contains(InetAddressUtils.toIpAddrLong(InetAddress.getByName(ipAddr).getAddress()));
     }
 
     /**
@@ -425,55 +421,5 @@ public final class IPAddrRange implements Iterable<InetAddress> {
         buf.append((int) (address & 0xff));
 
         return buf.toString();
-    }
-
-    /**
-     * <P>
-     * Converts an 8-bit byte to a 64-bit long integer. If the quantity is a
-     * sign extended negative number then the value of 256 is added to wrap the
-     * conversion into the range of [0..255].
-     * </P>
-     * 
-     * @param b
-     *            The byte to convert
-     * 
-     * @return The converted 64-bit unsigned value.
-     * 
-     * @deprecated Use org.opennms.netmgt.utils.IPSorter.byteToLong() instead.
-     */
-    static long byteToLong(byte b) {
-        long r = (long) b;
-        if (r < 0)
-            r += 256;
-        return r;
-    }
-
-    /**
-     * <P>
-     * The convertToLong method takes an array of bytes and shifts them into a
-     * long value. The bytes at the front of the array are shifted into the MSB
-     * of the long as each new byte is added to the LSB of the long. if the
-     * array is of sufficent size the first bytes of the array may be shifted
-     * out of the returned long.
-     * </P>
-     *
-     * @param addr
-     *            The array to convert to a long.
-     * @return The created long value.
-     * @exception IllegalArgumentException
-     *                Thrown if the addr parameter is null.
-     * @deprecated Use org.opennms.netmgt.utils.IPSorter.convertToLong()
-     *             instead.
-     */
-    public static long convertToLong(byte[] addr) {
-        if (addr == null)
-            throw new IllegalArgumentException("The passed array must not be null");
-
-        long address = 0;
-        for (int i = 0; i < addr.length; i++) {
-            address <<= 8;
-            address |= byteToLong(addr[i]);
-        }
-        return address;
     }
 }

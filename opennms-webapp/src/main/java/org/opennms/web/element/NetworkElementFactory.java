@@ -60,7 +60,7 @@ import java.util.TreeSet;
 
 import org.opennms.core.resource.Vault;
 import org.opennms.core.utils.DBUtils;
-import org.opennms.core.utils.IPSorter;
+import org.opennms.core.utils.InetAddressUtils;
 import org.opennms.netmgt.EventConstants;
 import org.opennms.netmgt.dao.CategoryDao;
 import org.opennms.netmgt.dao.NodeDao;
@@ -3184,9 +3184,9 @@ public class NetworkElementFactory {
 
             // Sort by IP first if the IPs are non-0.0.0.0
             if (!"0.0.0.0".equals(o1.getIpAddress()) && !"0.0.0.0".equals(o2.getIpAddress())) {
-                if (IPSorter.convertToLong(o1.getIpAddress()) > IPSorter.convertToLong(o2.getIpAddress())) {
+                if (InetAddressUtils.toIpAddrLong(o1.getIpAddress()) > InetAddressUtils.toIpAddrLong(o2.getIpAddress())) {
                     return 1;
-                } else if (IPSorter.convertToLong(o1.getIpAddress()) < IPSorter.convertToLong(o2.getIpAddress())) {
+                } else if (InetAddressUtils.toIpAddrLong(o1.getIpAddress()) < InetAddressUtils.toIpAddrLong(o2.getIpAddress())) {
                     return -1;
                 } else {
                     return 0;

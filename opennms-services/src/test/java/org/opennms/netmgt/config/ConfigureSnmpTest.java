@@ -70,7 +70,6 @@ public class ConfigureSnmpTest extends TestCase {
 
     //start back porting configure snmp enhancements from stable
     /**
-     * Test method for {@link org.opennms.netmgt.config.SnmpPeerFactory#toLong(java.net.InetAddress)}.
      * Tests creating a string representation of an IP address that is converted to an InetAddress and then
      * a long and back to an IP address.
      * 
