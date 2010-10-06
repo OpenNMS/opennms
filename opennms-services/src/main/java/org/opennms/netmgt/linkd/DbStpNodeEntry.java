@@ -62,43 +62,43 @@ public class DbStpNodeEntry
 	 * The character returned if the entry is active
 	 */
 
-	static final char STATUS_ACTIVE = 'A';
+	public static final char STATUS_ACTIVE = 'A';
 
 	/**
 	 * The character returned if the entry is not active
 	 * means last polled
 	 */
 
-	static final char STATUS_NOT_POLLED = 'N';
+	public static final char STATUS_NOT_POLLED = 'N';
 
 	/**
 	 * It stats that node is deleted
 	 * The character returned if the node is deleted
 	 */
-	static final char STATUS_DELETE = 'D';
+	public static final char STATUS_DELETED = 'D';
 
 	/**
 	 * The character returned if the entry type is unset/unknown.
 	 */
 
-	static final char STATUS_UNKNOWN = 'K';
+	public static final char STATUS_UNKNOWN = 'K';
 
 	/**
 	 * the bridge type
 	 */
 
-	static final int BASE_TYPE_UNKNOWN = 1;
-	static final int BASE_TYPE_TRASPARENT_ONLY = 2;
-	static final int BASE_TYPE_SOURCEROUTE_ONLY = 3;
-	static final int BASE_TYPE_SRT = 4;
+	public static final int BASE_TYPE_UNKNOWN = 1;
+	public static final int BASE_TYPE_TRANSPARENT_ONLY = 2;
+	public static final int BASE_TYPE_SOURCEROUTE_ONLY = 3;
+	public static final int BASE_TYPE_SRT = 4;
 
 	/**
 	 * the STP Protocol Specification
 	 */
 
-	static final int STP_UNKNOWN = 1;
-	static final int STP_DECLB100 = 2;
-	static final int STP_IEEE8011D = 3;
+	public static final int STP_UNKNOWN = 1;
+	public static final int STP_DECLB100 = 2;
+	public static final int STP_IEEE8011D = 3;
 
 	/**
 	 * The node identifier
@@ -475,7 +475,7 @@ public class DbStpNodeEntry
 		 */
 		private boolean load(Connection c) throws SQLException {
 			if (!m_fromDb)
-				throw new IllegalStateException("The record does not exists in the database");
+				throw new IllegalStateException("The STP node record does not exist in the database");
 
 			final DBUtils d = new DBUtils(getClass());
 			try {
@@ -514,11 +514,11 @@ public class DbStpNodeEntry
                 //
                 m_basetype = rset.getInt(ndx++);
                 if (rset.wasNull())
-                	m_basetype = -1;
+                	m_basetype = BASE_TYPE_UNKNOWN;
 
                 m_stpprotocolspecification = rset.getInt(ndx++);
                 if (rset.wasNull())
-                	m_stpprotocolspecification = -1;
+                	m_stpprotocolspecification = STP_UNKNOWN;
                 
                 m_stppriority = rset.getInt(ndx++);
                 if (rset.wasNull())
@@ -560,22 +560,13 @@ public class DbStpNodeEntry
 			return true;
 		}
 
-		/**
-		 * Default constructor. 
-		 *
-		 */
-		DbStpNodeEntry() {
-			throw new UnsupportedOperationException(
-					"Default constructor not supported!");
-		}
-
-        DbStpNodeEntry(int nodeId,int basevlan, boolean exists)
+        DbStpNodeEntry(int nodeId, int basevlan, boolean exists)
         {
                 m_nodeId = nodeId;
                 m_fromDb = exists;
                 m_basenumports = -1;
-				m_basetype = -1;
-				m_stpprotocolspecification = -1;
+				m_basetype = BASE_TYPE_UNKNOWN;
+				m_stpprotocolspecification = STP_UNKNOWN;
 				m_stppriority = -1;
 				m_stprootcost = -1;
 				m_stprootport = -1;
@@ -615,12 +606,12 @@ public class DbStpNodeEntry
 			return m_basevlanname;
 		}
 
-		void set_basevlanname(String basevlanname) {
+		protected void set_basevlanname(String basevlanname) {
 			m_basevlanname = basevlanname;
 			m_changed |= CHANGED_VLANNAME;
 		}
 
-		boolean hasBaseVlanNameChanged() {
+		protected boolean hasBaseVlanNameChanged() {
 			if ((m_changed & CHANGED_VLANNAME) == CHANGED_VLANNAME)
 				return true;
 			else
@@ -644,12 +635,12 @@ public class DbStpNodeEntry
 			return m_basebridgeaddress;
 		}
 
-		void set_basebridgeaddress(String basebridgeaddress) {
+		protected void set_basebridgeaddress(String basebridgeaddress) {
 			m_basebridgeaddress = basebridgeaddress;
 			m_changed |= CHANGED_BRIDGEADDR;
 		}
 
-		boolean hasBaseBridgeAddressChanged() {
+		protected boolean hasBaseBridgeAddressChanged() {
 			if ((m_changed & CHANGED_BRIDGEADDR) == CHANGED_BRIDGEADDR)
 				return true;
 			else
@@ -673,12 +664,12 @@ public class DbStpNodeEntry
 			return m_basenumports;
 		}
 
-		void set_basenumports(int basenumports) {
+		protected void set_basenumports(int basenumports) {
 			m_basenumports = basenumports;
 			m_changed |= CHANGED_NUMPORTS;
 		}
 
-		boolean hasBaseNumPortsChanged() {
+		protected boolean hasBaseNumPortsChanged() {
 			if ((m_changed & CHANGED_NUMPORTS) == CHANGED_NUMPORTS)
 				return true;
 			else
@@ -702,15 +693,15 @@ public class DbStpNodeEntry
 			return m_basetype;
 		}
 
-		void set_basetype(int basetype) {
-			if (basetype == BASE_TYPE_SRT || basetype == BASE_TYPE_TRASPARENT_ONLY || basetype == BASE_TYPE_SOURCEROUTE_ONLY)
+		protected void set_basetype(int basetype) {
+			if (basetype == BASE_TYPE_SRT || basetype == BASE_TYPE_TRANSPARENT_ONLY || basetype == BASE_TYPE_SOURCEROUTE_ONLY)
 			m_basetype = basetype;
 			else 
 				m_basetype = BASE_TYPE_UNKNOWN;
 			m_changed |= CHANGED_BASETYPE;
 		}
 
-		boolean hasBaseTypeChanged() {
+		protected boolean hasBaseTypeChanged() {
 			if ((m_changed & CHANGED_BASETYPE) == CHANGED_BASETYPE)
 				return true;
 			else
@@ -734,12 +725,12 @@ public class DbStpNodeEntry
 			return m_stpdesignatedroot;
 		}
 
-		void set_stpdesignatedroot(String stpdesignatedroot) {
+		protected void set_stpdesignatedroot(String stpdesignatedroot) {
 			m_stpdesignatedroot = stpdesignatedroot;
 			m_changed |= CHANGED_STPDESROOT;
 		}
 
-		boolean hasStpDesignatedRootChanged() {
+		protected boolean hasStpDesignatedRootChanged() {
 			if ((m_changed & CHANGED_STPDESROOT) == CHANGED_STPDESROOT)
 				return true;
 			else
@@ -763,12 +754,12 @@ public class DbStpNodeEntry
 			return m_stppriority;
 		}
 
-		void set_stppriority(int stppriority) {
+		protected void set_stppriority(int stppriority) {
 			m_stppriority = stppriority;
 			m_changed |= CHANGED_STPPRIORITY;
 		}
 
-		boolean hasStpPriorityChanged() {
+		protected boolean hasStpPriorityChanged() {
 			if ((m_changed & CHANGED_STPPRIORITY) == CHANGED_STPPRIORITY)
 				return true;
 			else
@@ -792,7 +783,7 @@ public class DbStpNodeEntry
 			return m_stpprotocolspecification;
 		}
 
-		void set_stpprotocolspecification(int stpprotocolspecification) {
+		protected void set_stpprotocolspecification(int stpprotocolspecification) {
 			if (stpprotocolspecification == STP_DECLB100|| stpprotocolspecification == STP_IEEE8011D)
 			m_stpprotocolspecification = stpprotocolspecification;
 			else 
@@ -800,7 +791,7 @@ public class DbStpNodeEntry
 			m_changed |= CHANGED_STPPROTSPEC;
 		}
 
-		boolean hasStpProtocolSpecificationChanged() {
+		protected boolean hasStpProtocolSpecificationChanged() {
 			if ((m_changed & CHANGED_STPPROTSPEC) == CHANGED_STPPROTSPEC)
 				return true;
 			else
@@ -824,12 +815,12 @@ public class DbStpNodeEntry
 			return m_stprootcost;
 		}
 
-		void set_stprootcost(int stprootcost) {
+		protected void set_stprootcost(int stprootcost) {
 			m_stprootcost = stprootcost;
 			m_changed |= CHANGED_STPROOTCOST;
 		}
 
-		boolean hasStpRootCostChanged() {
+		protected boolean hasStpRootCostChanged() {
 			if ((m_changed & CHANGED_STPROOTCOST) == CHANGED_STPROOTCOST)
 				return true;
 			else
@@ -853,12 +844,12 @@ public class DbStpNodeEntry
 			return m_stprootport;
 		}
 		
-		void set_stprootport(int stprootport) {
+		protected void set_stprootport(int stprootport) {
 			m_stprootport = stprootport;
 			m_changed |= CHANGED_STPROOTPORT;
 		}
 
-		boolean hasStpRootPortChanged() {
+		protected boolean hasStpRootPortChanged() {
 			if ((m_changed & CHANGED_STPROOTPORT) == CHANGED_STPROOTPORT)
 				return true;
 			else
@@ -880,14 +871,14 @@ public class DbStpNodeEntry
 			return m_status;
 		}
 
-		void set_status(char status) {
+		protected void set_status(char status) {
 			if (status == STATUS_ACTIVE || status == STATUS_NOT_POLLED
-					|| status == STATUS_DELETE)
+					|| status == STATUS_DELETED)
 				m_status = status;
 			m_changed |= CHANGED_STATUS;
 		}
 
-		boolean hasStatusChanged() {
+		protected boolean hasStatusChanged() {
 			if ((m_changed & CHANGED_STATUS) == CHANGED_STATUS)
 				return true;
 			else
@@ -926,7 +917,7 @@ public class DbStpNodeEntry
 		 * @param time	The last poll time.
 		 *
 		 */
-		void set_lastpolltime(String time) throws ParseException {
+		protected void set_lastpolltime(String time) throws ParseException {
 			if (time == null) {
 				m_lastPollTime = null;
 			} else {
@@ -942,7 +933,7 @@ public class DbStpNodeEntry
 		 * @param time	The last poll time.
 		 *
 		 */
-		void set_lastpolltime(Date time) {
+		protected void set_lastpolltime(Date time) {
 			m_lastPollTime = new Timestamp(time.getTime());
 			m_changed |= CHANGED_POLLTIME;
 		}
@@ -953,7 +944,7 @@ public class DbStpNodeEntry
 		 * @param time	The last poll time.
 		 *
 		 */
-		void set_lastpolltime(Timestamp time) {
+		protected void set_lastpolltime(Timestamp time) {
 			m_lastPollTime = time;
 			m_changed |= CHANGED_POLLTIME;
 		}

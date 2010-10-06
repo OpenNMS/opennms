@@ -662,7 +662,7 @@ public class DbEventWriter implements QueryManager {
     
                     String baseBridgeAddress = dod1db.getBridgeAddress();
                     if (baseBridgeAddress == null || baseBridgeAddress == "000000000000") {
-                        LogUtils.warnf(this, "store: invalid base bridge address " + baseBridgeAddress);
+                        LogUtils.warnf(this, "store: invalid base bridge address: %s", baseBridgeAddress);
                     } else {
                         node.addBridgeIdentifier(baseBridgeAddress, vlanindex);
                         int basenumports = dod1db.getNumberOfPorts();
