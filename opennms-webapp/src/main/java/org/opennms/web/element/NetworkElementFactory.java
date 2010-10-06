@@ -64,6 +64,7 @@ import org.opennms.core.utils.InetAddressUtils;
 import org.opennms.netmgt.EventConstants;
 import org.opennms.netmgt.dao.CategoryDao;
 import org.opennms.netmgt.dao.NodeDao;
+import org.opennms.netmgt.linkd.DbStpNodeEntry;
 import org.opennms.netmgt.model.OnmsCategory;
 import org.opennms.netmgt.model.OnmsNode;
 import org.opennms.web.Util;
@@ -2738,8 +2739,10 @@ public class NetworkElementFactory {
             }
 
             element = new Integer(rs.getInt("basetype"));
-            if (element != null) {
+            if (element != null && ((Integer)element).intValue() > 0) {
                 stpNode.m_basetype = ((Integer) element).intValue();
+            } else {
+                stpNode.m_basetype = DbStpNodeEntry.BASE_TYPE_UNKNOWN;
             }
 
             element = new Integer(rs.getInt("basevlan"));
@@ -2758,9 +2761,10 @@ public class NetworkElementFactory {
             }
 
             element = new Integer(rs.getInt("stpprotocolspecification"));
-            if (element != null) {
-                stpNode.m_stpprotocolspecification = ((Integer) element)
-                        .intValue();
+            if (element != null && ((Integer)element).intValue() > 0) {
+                stpNode.m_stpprotocolspecification = ((Integer) element).intValue();
+            } else {
+                stpNode.m_stpprotocolspecification = DbStpNodeEntry.STP_UNKNOWN;
             }
 
             element = new Integer(rs.getInt("stprootcost"));

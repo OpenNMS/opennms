@@ -43,6 +43,7 @@ import java.net.InetAddress;
 import org.opennms.core.utils.LogUtils;
 import org.opennms.netmgt.capsd.snmp.NamedSnmpVar;
 import org.opennms.netmgt.capsd.snmp.SnmpStore;
+import org.opennms.netmgt.linkd.DbStpNodeEntry;
 import org.opennms.netmgt.snmp.AggregateTracker;
 import org.opennms.netmgt.snmp.SnmpResult;
 import org.opennms.netmgt.snmp.SnmpValue;
@@ -50,7 +51,7 @@ import org.opennms.netmgt.snmp.SnmpValue;
 /**
  * <P>SystemGroup holds the system group properties
  * It implements the SnmpHandler to receive notifications when a reply is
- * received/error occurs in the SnmpSession used to send requests /recieve
+ * received/error occurs in the SnmpSession used to send requests/receive
  * replies.</P>
  *
  * @author <A HREF="mailto:rssntn67@yahoo.it">Antonio Russo</A>
@@ -337,7 +338,7 @@ public final class Dot1dStpGroup extends AggregateTracker {
     public int getStpProtocolSpecification(){
     	Integer stpProtocolSpecification = m_store.getInt32(STP_PROTOCOL_SPEC);
     	if (stpProtocolSpecification == null) {
-            return -1;
+            return DbStpNodeEntry.STP_UNKNOWN;
         }
     	return stpProtocolSpecification;
     }

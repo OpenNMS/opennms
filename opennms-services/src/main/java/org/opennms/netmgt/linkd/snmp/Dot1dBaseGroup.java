@@ -43,6 +43,7 @@ import java.net.InetAddress;
 import org.opennms.core.utils.LogUtils;
 import org.opennms.netmgt.capsd.snmp.NamedSnmpVar;
 import org.opennms.netmgt.capsd.snmp.SnmpStore;
+import org.opennms.netmgt.linkd.DbStpNodeEntry;
 import org.opennms.netmgt.snmp.AggregateTracker;
 import org.opennms.netmgt.snmp.SnmpResult;
 
@@ -113,7 +114,7 @@ public final class Dot1dBaseGroup extends AggregateTracker
 		 *  entries in the port table for the given type.</P>
 		 *  values:
 		 *  1 = unknown
-		 *  2 = trasparent-only
+		 *  2 = transparent-only
 		 *  3 = sourceroute-only
 		 *  4 = srt
 		 */
@@ -123,7 +124,7 @@ public final class Dot1dBaseGroup extends AggregateTracker
 	/**
 	 * <P>The SYSTEM_OID is the object identifier that represents the
 	 * root of the system information in the MIB forest. Each of the
-	 * system elements can be retreived by adding their specific index
+	 * system elements can be retrieved by adding their specific index
 	 * to the string, and an additional Zero(0) to signify the single 
 	 * instance item.</P>
 	 */
@@ -192,7 +193,7 @@ public final class Dot1dBaseGroup extends AggregateTracker
     public int getBridgeType() {
     	Integer type = m_store.getInt32(BASE_NUM_TYPE);
     	if (type == null) {
-            return -1;
+            return DbStpNodeEntry.BASE_TYPE_UNKNOWN;
         }
     	return type;
     }
