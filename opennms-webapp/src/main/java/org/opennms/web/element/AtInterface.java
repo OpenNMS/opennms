@@ -34,12 +34,15 @@
  */
 package org.opennms.web.element;
 
+import java.util.HashMap;
+import java.util.Map;
+
+import org.opennms.netmgt.linkd.DbAtInterfaceEntry;
+
 /**
  * <p>AtInterface class.</p>
  *
  * @author <a href="mailto:antonio@opennms.it">Antonio Russo</a>
- * @version $Id: $
- * @since 1.8.1
  */
 public class AtInterface
 {
@@ -50,6 +53,16 @@ public class AtInterface
         String  m_physaddr;
         String  m_lastPollTime;
         char    m_status;
+
+        private static final Map<Character, String> statusMap = new HashMap<Character, String>();
+
+        static {
+            statusMap.put( DbAtInterfaceEntry.STATUS_ACTIVE, "Active" );
+            statusMap.put( DbAtInterfaceEntry.STATUS_UNKNOWN, "Unknown" );
+            statusMap.put( DbAtInterfaceEntry.STATUS_DELETED, "Deleted" );
+            statusMap.put( DbAtInterfaceEntry.STATUS_NOT_POLLED, "Not Active" );
+        }
+
         /* package-protected so only the NetworkElementFactory can instantiate */
         AtInterface()
         {

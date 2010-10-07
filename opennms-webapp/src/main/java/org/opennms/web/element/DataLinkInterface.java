@@ -34,12 +34,15 @@
  */
 package org.opennms.web.element;
 
+import java.util.HashMap;
+import java.util.Map;
+
+import org.opennms.netmgt.linkd.DbDataLinkInterfaceEntry;
+
 /**
  * <p>DataLinkInterface class.</p>
  *
  * @author <a href="mailto:antonio@opennms.it">Antonio Russo</a>
- * @version $Id: $
- * @since 1.8.1
  */
 public class DataLinkInterface
 {
@@ -51,6 +54,16 @@ public class DataLinkInterface
 		String  m_parentipaddress;
 		String  m_lastPollTime;
         char    m_status;
+
+        private static final Map<Character, String> statusMap = new HashMap<Character, String>();
+
+        static {
+            statusMap.put( DbDataLinkInterfaceEntry.STATUS_ACTIVE, "Active" );
+            statusMap.put( DbDataLinkInterfaceEntry.STATUS_UNKNOWN, "Unknown" );
+            statusMap.put( DbDataLinkInterfaceEntry.STATUS_DELETED, "Deleted" );
+            statusMap.put( DbDataLinkInterfaceEntry.STATUS_NOT_POLLED, "Not Active" );
+        }
+
         /* package-protected so only the NetworkElementFactory can instantiate */
         DataLinkInterface()
         {
@@ -164,6 +177,12 @@ public class DataLinkInterface
 			return m_status;
 		}
 		
+        /**
+         */
+        public String getStatusString() {
+            return statusMap.get( new Character(m_status) );
+        }
+        
 		/**
 		 * <p>invertNodewithParent</p>
 		 */

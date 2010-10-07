@@ -64,7 +64,11 @@ import org.opennms.core.utils.InetAddressUtils;
 import org.opennms.netmgt.EventConstants;
 import org.opennms.netmgt.dao.CategoryDao;
 import org.opennms.netmgt.dao.NodeDao;
+import org.opennms.netmgt.linkd.DbAtInterfaceEntry;
+import org.opennms.netmgt.linkd.DbDataLinkInterfaceEntry;
+import org.opennms.netmgt.linkd.DbStpInterfaceEntry;
 import org.opennms.netmgt.linkd.DbStpNodeEntry;
+import org.opennms.netmgt.linkd.DbVlanEntry;
 import org.opennms.netmgt.model.OnmsCategory;
 import org.opennms.netmgt.model.OnmsNode;
 import org.opennms.web.Util;
@@ -2509,6 +2513,8 @@ public class NetworkElementFactory {
             element = rs.getString("status");
             if (element != null) {
                 atIf.m_status = ((String) element).charAt(0);
+            } else {
+                atIf.m_status = DbAtInterfaceEntry.STATUS_UNKNOWN;
             }
 
             atIfs.add(atIf);
@@ -2663,8 +2669,10 @@ public class NetworkElementFactory {
             }
 
             element = new Integer(rs.getInt("stpportstate"));
-            if (element != null) {
+            if (element != null && ((Integer)element).intValue() > 0) {
                 stpIf.m_stpportstate = ((Integer) element).intValue();
+            } else {
+                stpIf.m_stpportstate = DbStpInterfaceEntry.STP_PORT_DISABLED;
             }
 
             element = new Integer(rs.getInt("stpvlan"));
@@ -2675,6 +2683,8 @@ public class NetworkElementFactory {
             element = rs.getString("status");
             if (element != null) {
                 stpIf.m_status = ((String) element).charAt(0);
+            } else {
+                stpIf.m_status = DbStpInterfaceEntry.STATUS_UNKNOWN;
             }
 
             element = new Integer(rs.getInt("dbridge"));
@@ -2780,6 +2790,8 @@ public class NetworkElementFactory {
             element = rs.getString("status");
             if (element != null) {
                 stpNode.m_status = ((String) element).charAt(0);
+            } else {
+                stpNode.m_status = DbStpNodeEntry.STATUS_UNKNOWN;
             }
 
             element = new Integer(rs.getInt("stpdesignatedrootnodeid"));
@@ -2841,6 +2853,8 @@ public class NetworkElementFactory {
             element = rs.getString("status");
             if (element != null) {
                 vlanEntry.m_status = ((String) element).charAt(0);
+            } else {
+                vlanEntry.m_status = DbVlanEntry.STATUS_UNKNOWN;
             }
 
             vlan.add(vlanEntry);
@@ -2896,6 +2910,8 @@ public class NetworkElementFactory {
             element = rs.getString("status");
             if (element != null) {
                 dataLinkIf.m_status = ((String) element).charAt(0);
+            } else {
+                dataLinkIf.m_status = DbDataLinkInterfaceEntry.STATUS_UNKNOWN;
             }
 
             dataLinkIf.m_parentipaddress = getIpAddress(dataLinkIf.get_nodeparentid(), dataLinkIf
