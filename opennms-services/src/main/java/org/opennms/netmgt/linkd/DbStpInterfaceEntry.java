@@ -61,47 +61,41 @@ public class DbStpInterfaceEntry {
 	/**
 	 * The character returned if the entry is active
 	 */
-
-	static final char STATUS_ACTIVE = 'A';
+	public static final char STATUS_ACTIVE = 'A';
 
 	/**
 	 * The character returned if the entry is not active means last polled
 	 */
-
-	static final char STATUS_NOT_POLLED = 'N';
-
-	/**
-	 * It stats that node is deleted The character returned if the node is
-	 * deleted
-	 */
-	static final char STATUS_DELETE = 'D';
+	public static final char STATUS_NOT_POLLED = 'N';
 
 	/**
-	 * The character returned if the entry type is unset/unknown.
+	 * The character returned if the node is deleted
 	 */
-
-	static final char STATUS_UNKNOWN = 'K';
+	public static final char STATUS_DELETED = 'D';
 
 	/**
-	 * the STP Bridge Port State
+	 * The character returned if the entry type is unset or unknown.
 	 */
+	public static final char STATUS_UNKNOWN = 'K';
 
-	static final int STP_PORT_DISABLED = 1;
+	/**
+	 * the STP Bridge Port States
+	 */
+	public static final int STP_PORT_DISABLED = 1;
 
-	static final int STP_PORT_BLOCKING = 2;
+	public static final int STP_PORT_BLOCKING = 2;
 
-	static final int STP_PORT_LISTENING = 3;
+	public static final int STP_PORT_LISTENING = 3;
 
-	static final int STP_PORT_LEARNING = 4;
+	public static final int STP_PORT_LEARNING = 4;
 
-	static final int STP_PORT_FORWARDING = 5;
+	public static final int STP_PORT_FORWARDING = 5;
 
-	static final int STP_PORT_BROKEN = 6;
+	public static final int STP_PORT_BROKEN = 6;
 
 	/**
 	 * The node identifier
 	 */
-
 	int m_nodeId;
 
 	/**
@@ -112,29 +106,25 @@ public class DbStpInterfaceEntry {
 	/**
 	 * interface ifindex corresponding to bridge port number
 	 */
-
 	int m_ifindex;
 
 	/**
-	 * integer that reflect thestp staus of the bridge port '1' disabled '2'
+	 * Integer that reflects the STP status of the bridge port '1' disabled '2'
 	 * blocking '3' listening '4' learning '5' forwarding '6' broken
 	 */
-
 	int m_stpportstate;
 
 	/**
 	 * The contribution of this port to the path cost of paths towards the
 	 * spanning tree root which include this port.
 	 */
-
 	int m_stpportpathcost;
 
 	/**
-	 * the unique Bridge Identifier of the Bridge recorded as the Root in the
+	 * The unique Bridge Identifier of the Bridge recorded as the Root in the
 	 * Configuration BPDUs transmitted by the Designated Bridge for the segment
 	 * to which the port is attached.
 	 */
-
 	String m_stpportdesignatedroot;
 
 	/**
@@ -142,39 +132,33 @@ public class DbStpInterfaceEntry {
 	 * port. This value is compared to the Root Path Cost field in received
 	 * bridge PDUs.
 	 */
-
 	int m_stpportdesignatedcost;
 
 	/**
 	 * The Bridge Identifier of the bridge which this port considers to be the
 	 * Designated Bridge for this port's segment.
 	 */
-
 	String m_stpportdesignatedbridge;
 
 	/**
 	 * The Port Identifier of the port on the Designated Bridge for this port's
 	 * segment.
 	 */
-
 	String m_stpportdesignatedport;
 
 	/**
 	 * Unique integer identifier VLAN for which this info is valid
 	 */
-
 	int m_stpportvlan;
 
 	/**
 	 * The Status of this information
 	 */
-
 	char m_status = STATUS_UNKNOWN;
 
 	/**
 	 * The Time when this information was learned
 	 */
-
 	Timestamp m_lastPollTime;
 
 	/**
@@ -225,7 +209,7 @@ public class DbStpInterfaceEntry {
 	 */
 	private void insert(Connection c) throws SQLException {
 		if (m_fromDb)
-			throw new IllegalStateException("The record already exists in the database");
+			throw new IllegalStateException("The STP interface record already exists in the database");
 
 		// first extract the next node identifier
 		//
@@ -472,7 +456,7 @@ public class DbStpInterfaceEntry {
 
             m_stpportstate = rset.getInt(ndx++);
             if (rset.wasNull())
-            	m_stpportstate = -1;
+            	m_stpportstate = STP_PORT_DISABLED;
 
             m_stpportpathcost = rset.getInt(ndx++);
             if (rset.wasNull())
@@ -513,22 +497,12 @@ public class DbStpInterfaceEntry {
 		return true;
 	}
 
-	/**
-	 * Default constructor.
-	 *  
-	 */
-
-	DbStpInterfaceEntry() {
-		throw new UnsupportedOperationException(
-				"Default constructor not supported!");
-	}
-
 	DbStpInterfaceEntry(int nodeId, int bridgeport, int stpvlan, boolean exists) {
 		m_nodeId = nodeId;
 		m_fromDb = exists;
 		m_bridgeport = bridgeport;
 		m_ifindex = -1;
-		m_stpportstate = -1;
+		m_stpportstate = STP_PORT_DISABLED;
 		m_stpportpathcost = -1;
 		m_stpportdesignatedcost = -1;
 		m_stpportvlan = stpvlan;
@@ -546,7 +520,7 @@ public class DbStpInterfaceEntry {
 	 *
 	 * @return a int.
 	 */
-	public int get_nodeId() {
+	protected int get_nodeId() {
 		return m_nodeId;
 	}
 
@@ -555,7 +529,7 @@ public class DbStpInterfaceEntry {
 	 *
 	 * @return a int.
 	 */
-	public int get_bridgeport() {
+	protected int get_bridgeport() {
 		return m_bridgeport;
 	}
 
@@ -564,7 +538,7 @@ public class DbStpInterfaceEntry {
 	 *
 	 * @return a int.
 	 */
-	public int get_stpvlan() {
+	protected int get_stpvlan() {
 		return m_stpportvlan;
 	}
 
@@ -573,16 +547,16 @@ public class DbStpInterfaceEntry {
 	 *
 	 * @return a int.
 	 */
-	public int get_ifindex() {
+	protected int get_ifindex() {
 		return m_ifindex;
 	}
 
-	void set_ifindex(int index) {
+	protected void set_ifindex(int index) {
 		m_ifindex = index;
 		m_changed |= CHANGED_IFINDEX;
 	}
 
-	boolean hasIfIndexChanged() {
+	protected boolean hasIfIndexChanged() {
 		if ((m_changed & CHANGED_IFINDEX) == CHANGED_IFINDEX)
 			return true;
 		else
@@ -602,11 +576,11 @@ public class DbStpInterfaceEntry {
 	 *
 	 * @return a int.
 	 */
-	public int get_stpportstate() {
+	protected int get_stpportstate() {
 		return m_stpportstate;
 	}
 
-	void set_stpportstate(int stpportstate) {
+	protected void set_stpportstate(int stpportstate) {
 		if (stpportstate == STP_PORT_BLOCKING
 				|| stpportstate == STP_PORT_BROKEN
 				|| stpportstate == STP_PORT_DISABLED
@@ -619,7 +593,7 @@ public class DbStpInterfaceEntry {
 		m_changed |= CHANGED_STP_PORT_STATE;
 	}
 
-	boolean hasStpPortStateChanged() {
+	protected boolean hasStpPortStateChanged() {
 		if ((m_changed & CHANGED_STP_PORT_STATE) == CHANGED_STP_PORT_STATE)
 			return true;
 		else
@@ -639,16 +613,16 @@ public class DbStpInterfaceEntry {
 	 *
 	 * @return a int.
 	 */
-	public int get_stpportpathcost() {
+	protected int get_stpportpathcost() {
 		return m_stpportpathcost;
 	}
 
-	void set_stpportpathcost(int stpportpathcost) {
+	protected void set_stpportpathcost(int stpportpathcost) {
 		m_stpportpathcost = stpportpathcost;
 		m_changed |= CHANGED_STP_PORT_PATH_COST;
 	}
 
-	boolean hasStpPortPathCostChanged() {
+	protected boolean hasStpPortPathCostChanged() {
 		if ((m_changed & CHANGED_STP_PORT_PATH_COST) == CHANGED_STP_PORT_PATH_COST)
 			return true;
 		else
@@ -668,16 +642,16 @@ public class DbStpInterfaceEntry {
 	 *
 	 * @return a {@link java.lang.String} object.
 	 */
-	public String get_stpportdesignatedroot() {
+	protected String get_stpportdesignatedroot() {
 		return m_stpportdesignatedroot;
 	}
 
-	void set_stpportdesignatedroot(String stpportdesignatedroot) {
+	protected void set_stpportdesignatedroot(String stpportdesignatedroot) {
 		m_stpportdesignatedroot = stpportdesignatedroot;
 		m_changed |= CHANGED_STP_PORT_DES_ROOT;
 	}
 
-	boolean hasStpPortDesignatedRootChanged() {
+	protected boolean hasStpPortDesignatedRootChanged() {
 		if ((m_changed & CHANGED_STP_PORT_DES_ROOT) == CHANGED_STP_PORT_DES_ROOT)
 			return true;
 		else
@@ -697,16 +671,16 @@ public class DbStpInterfaceEntry {
 	 *
 	 * @return a int.
 	 */
-	public int get_stpportdesignatedcost() {
+	protected int get_stpportdesignatedcost() {
 		return m_stpportdesignatedcost;
 	}
 
-	void set_stpportdesignatedcost(int stpportdesignatedcost) {
+	protected void set_stpportdesignatedcost(int stpportdesignatedcost) {
 		m_stpportdesignatedcost = stpportdesignatedcost;
 		m_changed |= CHANGED_STP_PORT_DES_COST;
 	}
 
-	boolean hasStpPortDesgnatedCostChanged() {
+	protected boolean hasStpPortDesgnatedCostChanged() {
 		if ((m_changed & CHANGED_STP_PORT_DES_COST) == CHANGED_STP_PORT_DES_COST)
 			return true;
 		else
@@ -726,16 +700,16 @@ public class DbStpInterfaceEntry {
 	 *
 	 * @return a {@link java.lang.String} object.
 	 */
-	public String get_stpportdesignatedbridge() {
+	protected String get_stpportdesignatedbridge() {
 		return m_stpportdesignatedbridge;
 	}
 
-	void set_stpportdesignatedbridge(String stpportdesignatedbridge) {
+	protected void set_stpportdesignatedbridge(String stpportdesignatedbridge) {
 		m_stpportdesignatedbridge = stpportdesignatedbridge;
 		m_changed |= CHANGED_STP_PORT_DES_BRIDGE;
 	}
 
-	boolean hasStpPortDesignatedBridgeChanged() {
+	protected boolean hasStpPortDesignatedBridgeChanged() {
 		if ((m_changed & CHANGED_STP_PORT_DES_BRIDGE) == CHANGED_STP_PORT_DES_BRIDGE)
 			return true;
 		else
@@ -755,16 +729,16 @@ public class DbStpInterfaceEntry {
 	 *
 	 * @return a {@link java.lang.String} object.
 	 */
-	public String get_stpdesignatedport() {
+	protected String get_stpdesignatedport() {
 		return m_stpportdesignatedport;
 	}
 
-	void set_stpportdesignatedport(String stpportdesignatedport) {
+	protected void set_stpportdesignatedport(String stpportdesignatedport) {
 		m_stpportdesignatedport = stpportdesignatedport;
 		m_changed |= CHANGED_STP_PORT_DES_PORT;
 	}
 
-	boolean hasStpPortDesignatedPortChanged() {
+	protected boolean hasStpPortDesignatedPortChanged() {
 		if ((m_changed & CHANGED_STP_PORT_DES_PORT) == CHANGED_STP_PORT_DES_PORT)
 			return true;
 		else
@@ -782,18 +756,18 @@ public class DbStpInterfaceEntry {
 	/**
 	 * @return
 	 */
-	char get_status() {
+	protected char get_status() {
 		return m_status;
 	}
 
-	void set_status(char status) {
+	protected void set_status(char status) {
 		if (status == STATUS_ACTIVE || status == STATUS_NOT_POLLED
-				|| status == STATUS_DELETE)
+				|| status == STATUS_DELETED)
 			m_status = status;
 		m_changed |= CHANGED_STATUS;
 	}
 
-	boolean hasStatusChanged() {
+	protected boolean hasStatusChanged() {
 		if ((m_changed & CHANGED_STATUS) == CHANGED_STATUS)
 			return true;
 		else
@@ -811,7 +785,7 @@ public class DbStpInterfaceEntry {
 	/**
 	 * @return
 	 */
-	Timestamp get_lastpolltime() {
+	protected Timestamp get_lastpolltime() {
 		return m_lastPollTime;
 	}
 
@@ -833,7 +807,7 @@ public class DbStpInterfaceEntry {
 	 *            The last poll time.
 	 *  
 	 */
-	void set_lastpolltime(String time) throws ParseException {
+	protected void set_lastpolltime(String time) throws ParseException {
 		if (time == null) {
 			m_lastPollTime = null;
 		} else {
@@ -850,7 +824,7 @@ public class DbStpInterfaceEntry {
 	 *            The last poll time.
 	 *  
 	 */
-	void set_lastpolltime(Date time) {
+	protected void set_lastpolltime(Date time) {
 		m_lastPollTime = new Timestamp(time.getTime());
 		m_changed |= CHANGED_POLLTIME;
 	}
@@ -862,7 +836,7 @@ public class DbStpInterfaceEntry {
 	 *            The last poll time.
 	 *  
 	 */
-	void set_lastpolltime(Timestamp time) {
+	protected void set_lastpolltime(Timestamp time) {
 		m_lastPollTime = time;
 		m_changed |= CHANGED_POLLTIME;
 	}

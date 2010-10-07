@@ -54,31 +54,28 @@ import org.opennms.netmgt.config.DataSourceFactory;
  * @author <a href="mailto:antonio@opennms.it">Antonio Russo</a>
  * @author <a href="mailto:david@opennms.org">David Hustace</a>
  */
-final class DbAtInterfaceEntry {
+public final class DbAtInterfaceEntry {
 	/**
 	 * The character returned if the entry is active
 	 */
-
-	static final char STATUS_ACTIVE = 'A';
+	public static final char STATUS_ACTIVE = 'A';
 
 	/**
 	 * The character returned if the entry is not active
 	 * means last polled
 	 */
-
-	static final char STATUS_NOT_POLLED = 'N';
+	public static final char STATUS_NOT_POLLED = 'N';
 
 	/**
 	 * It stats that node is deleted
 	 * The character returned if the node is deleted
 	 */
-	static final char STATUS_DELETE = 'D';
+	public static final char STATUS_DELETED = 'D';
 
 	/**
 	 * The character returned if the entry type is unset/unknown.
 	 */
-
-	static final char STATUS_UNKNOWN = 'K';
+	public static final char STATUS_UNKNOWN = 'K';
 
 	/**
 	 * The node identifier
@@ -88,41 +85,35 @@ final class DbAtInterfaceEntry {
 	/**
 	 * The ip address 
 	 */
-
 	String m_ipaddr;
 
 	/**
 	 * The mac address  
 	 */
-
 	String m_physaddr;
 
 	/**
 	 * The nodeid identifier of the node 
 	 * from whom this information was learned
 	 */
-
 	int m_sourcenodeid;
 
 	/**
 	 * The ifindex on source node 
 	 * from whom this information was learned
 	 */
-
 	int m_ifindex;
 
 	/**
 	 * The Status of
 	 * this information
 	 */
-
 	char m_status = STATUS_UNKNOWN;
 
 	/**
 	 * The Time when
 	 * this information was learned
 	 */
-
 	Timestamp m_lastPollTime;
 
 	/**
@@ -442,14 +433,14 @@ final class DbAtInterfaceEntry {
 	/**
 	 * @return
 	 */
-	int get_nodeId() {
+	protected int get_nodeId() {
 		return m_nodeId;
 	}
 
 	/**
 	 * @return
 	 */
-	String get_ipaddr() {
+	protected String get_ipaddr() {
 		return m_ipaddr;
 	}
 
@@ -457,16 +448,16 @@ final class DbAtInterfaceEntry {
 	 * @return
 	 */
 
-	String get_physaddr() {
+	protected String get_physaddr() {
 		return m_physaddr;
 	}
 
-	void set_physaddr(String macaddr) {
+	protected void set_physaddr(String macaddr) {
 		m_physaddr = macaddr;
 		m_changed |= CHANGED_PHYSADDR;
 	}
 
-	boolean hasAtPhysAddrChanged() {
+	protected boolean hasAtPhysAddrChanged() {
 		if ((m_changed & CHANGED_PHYSADDR) == CHANGED_PHYSADDR)
 			return true;
 		else
@@ -485,16 +476,16 @@ final class DbAtInterfaceEntry {
 	 * @return
 	 */
 
-	int get_sourcenodeid() {
+	protected int get_sourcenodeid() {
 		return m_sourcenodeid;
 	}
 
-	void set_sourcenodeid(int sourcenode) {
+	protected void set_sourcenodeid(int sourcenode) {
 		m_sourcenodeid = sourcenode;
 		m_changed |= CHANGED_SOURCE;
 	}
 
-	boolean hasSourceNodeIdChanged() {
+	protected boolean hasSourceNodeIdChanged() {
 		if ((m_changed & CHANGED_SOURCE) == CHANGED_SOURCE)
 			return true;
 		else
@@ -512,16 +503,16 @@ final class DbAtInterfaceEntry {
 	/**
 	 * @return
 	 */
-	int get_ifindex() {
+	protected int get_ifindex() {
 		return m_ifindex;
 	}
 
-	void set_ifindex(int ifindex) {
+	protected void set_ifindex(int ifindex) {
 		m_ifindex = ifindex;
 		m_changed |= CHANGED_IFINDEX;
 	}
 
-	boolean hasIfIndexChanged() {
+	protected boolean hasIfIndexChanged() {
 		if ((m_changed & CHANGED_IFINDEX) == CHANGED_IFINDEX)
 			return true;
 		else
@@ -539,18 +530,18 @@ final class DbAtInterfaceEntry {
 	/**
 	 * @return
 	 */
-	char get_status() {
+	protected char get_status() {
 		return m_status;
 	}
 
-	void set_status(char status) {
+	protected void set_status(char status) {
 		if (status == STATUS_ACTIVE || status == STATUS_NOT_POLLED
-				|| status == STATUS_DELETE)
+				|| status == STATUS_DELETED)
 			m_status = status;
 		m_changed |= CHANGED_STATUS;
 	}
 
-	boolean hasStatusChanged() {
+	protected boolean hasStatusChanged() {
 		if ((m_changed & CHANGED_STATUS) == CHANGED_STATUS)
 			return true;
 		else
@@ -568,7 +559,7 @@ final class DbAtInterfaceEntry {
 	/**
 	 * @return
 	 */
-	Timestamp get_lastpolltime() {
+	protected Timestamp get_lastpolltime() {
 		return m_lastPollTime;
 	}
 
@@ -589,7 +580,7 @@ final class DbAtInterfaceEntry {
 	 * @param time	The last poll time.
 	 *
 	 */
-	void set_lastpolltime(String time) throws ParseException {
+	protected void set_lastpolltime(String time) throws ParseException {
 		if (time == null) {
 			m_lastPollTime = null;
 		} else {
@@ -605,7 +596,7 @@ final class DbAtInterfaceEntry {
 	 * @param time	The last poll time.
 	 *
 	 */
-	void set_lastpolltime(Date time) {
+	protected void set_lastpolltime(Date time) {
 		m_lastPollTime = new Timestamp(time.getTime());
 		m_changed |= CHANGED_POLLTIME;
 	}
@@ -616,7 +607,7 @@ final class DbAtInterfaceEntry {
 	 * @param time	The last poll time.
 	 *
 	 */
-	void set_lastpolltime(Timestamp time) {
+	protected void set_lastpolltime(Timestamp time) {
 		m_lastPollTime = time;
 		m_changed |= CHANGED_POLLTIME;
 	}

@@ -305,7 +305,7 @@ public class StpNode
 	     * @return a {@link java.lang.String} object.
 	     */
 	    public String getStatusString() {
-	        return( (String)statusMap.get( new Character(m_status) ));
+	        return statusMap.get( new Character(m_status) );
 	    }
 
 	    /**

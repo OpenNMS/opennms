@@ -62,26 +62,26 @@ public class DbVlanEntry
 	 * The character returned if the entry is active
 	 */
 
-	static final char STATUS_ACTIVE = 'A';
+    public static final char STATUS_ACTIVE = 'A';
 
 	/**
 	 * The character returned if the entry is not active
 	 * means last polled
 	 */
 
-	static final char STATUS_NOT_POLLED = 'N';
+    public static final char STATUS_NOT_POLLED = 'N';
 
 	/**
 	 * It stats that node is deleted
 	 * The character returned if the node is deleted
 	 */
-	static final char STATUS_DELETE = 'D';
+    public static final char STATUS_DELETE = 'D';
 
 	/**
 	 * The character returned if the entry type is unset/unknown.
 	 */
 
-	static final char STATUS_UNKNOWN = 'K';
+    public static final char STATUS_UNKNOWN = 'K';
 
 	/**
 	 * the bridge type
@@ -432,7 +432,7 @@ public class DbVlanEntry
 		 *
 		 * @return a int.
 		 */
-		public int get_nodeId() {
+        protected int get_nodeId() {
 			return m_nodeId;
 		}
 
@@ -441,7 +441,7 @@ public class DbVlanEntry
 		 *
 		 * @return a int.
 		 */
-		public int getVlanId() {
+        protected int getVlanId() {
 			return m_vlanId;
 		}
 
@@ -450,16 +450,16 @@ public class DbVlanEntry
 		 *
 		 * @return a {@link java.lang.String} object.
 		 */
-		public String getVlanName() {
+        protected String getVlanName() {
 			return m_vlanname;
 		}
 
-		void setVlanName(String vlanname) {
+		protected void setVlanName(String vlanname) {
 			m_vlanname = vlanname;
 			m_changed |= CHANGED_VLANNAME;
 		}
 
-		boolean hasBaseVlanNameChanged() {
+		protected boolean hasBaseVlanNameChanged() {
 			if ((m_changed & CHANGED_VLANNAME) == CHANGED_VLANNAME)
 				return true;
 			else
@@ -477,16 +477,16 @@ public class DbVlanEntry
 		 *
 		 * @return a int.
 		 */
-		public int getVlanType() {
+		protected int getVlanType() {
 			return m_vlantype;
 		}
 
-		void setVlanType(int vlantype) {
+		protected void setVlanType(int vlantype) {
 			m_vlantype = vlantype;
 			m_changed |= CHANGED_VLANTYPE;
 		}
 
-		boolean hasBaseTypeChanged() {
+		protected boolean hasBaseTypeChanged() {
 			if ((m_changed & CHANGED_VLANTYPE) == CHANGED_VLANTYPE)
 				return true;
 			else
@@ -506,16 +506,16 @@ public class DbVlanEntry
 		 *
 		 * @return a int.
 		 */
-		public int getVlanStatus() {
+		protected int getVlanStatus() {
 			return m_vlanstatus;
 		}
 
-		void setVlanStatus(int vlanstatus) {
+		protected void setVlanStatus(int vlanstatus) {
 			m_vlanstatus = vlanstatus;
 			m_changed |= CHANGED_VLANSTATUS;
 		}
 
-		boolean hasBaseStatusChanged() {
+		protected boolean hasBaseStatusChanged() {
 			if ((m_changed & CHANGED_VLANSTATUS) == CHANGED_VLANSTATUS)
 				return true;
 			else
@@ -534,18 +534,18 @@ public class DbVlanEntry
 		/**
 		 * @return
 		 */
-		char get_status() {
+		protected char get_status() {
 			return m_status;
 		}
 
-		void set_status(char status) {
+		protected void set_status(char status) {
 			if (status == STATUS_ACTIVE || status == STATUS_NOT_POLLED
 					|| status == STATUS_DELETE)
 				m_status = status;
 			m_changed |= CHANGED_STATUS;
 		}
 
-		boolean hasStatusChanged() {
+		protected boolean hasStatusChanged() {
 			if ((m_changed & CHANGED_STATUS) == CHANGED_STATUS)
 				return true;
 			else
@@ -563,7 +563,7 @@ public class DbVlanEntry
 		/**
 		 * @return
 		 */
-		Timestamp get_lastpolltime() {
+		protected Timestamp get_lastpolltime() {
 			return m_lastPollTime;
 		}
 
@@ -584,7 +584,7 @@ public class DbVlanEntry
 		 * @param time	The last poll time.
 		 *
 		 */
-		void set_lastpolltime(String time) throws ParseException {
+		protected void set_lastpolltime(String time) throws ParseException {
 			if (time == null) {
 				m_lastPollTime = null;
 			} else {
@@ -600,7 +600,7 @@ public class DbVlanEntry
 		 * @param time	The last poll time.
 		 *
 		 */
-		void set_lastpolltime(Date time) {
+		protected void set_lastpolltime(Date time) {
 			m_lastPollTime = new Timestamp(time.getTime());
 			m_changed |= CHANGED_POLLTIME;
 		}
@@ -611,7 +611,7 @@ public class DbVlanEntry
 		 * @param time	The last poll time.
 		 *
 		 */
-		void set_lastpolltime(Timestamp time) {
+		protected void set_lastpolltime(Timestamp time) {
 			m_lastPollTime = time;
 			m_changed |= CHANGED_POLLTIME;
 		}

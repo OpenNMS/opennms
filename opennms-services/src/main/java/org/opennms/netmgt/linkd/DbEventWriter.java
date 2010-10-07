@@ -219,8 +219,8 @@ public class DbEventWriter implements QueryManager {
     
                 if (dbentry != null) {
                     if (dbentry.get_nodeparentid() == nodeid && dbentry.get_parentifindex() == ifindex
-                            && dbentry.get_status() != DbDataLinkInterfaceEntry.STATUS_DELETE) {
-                        dbentry.updateStatus(DbDataLinkInterfaceEntry.STATUS_DELETE);
+                            && dbentry.get_status() != DbDataLinkInterfaceEntry.STATUS_DELETED) {
+                        dbentry.updateStatus(DbDataLinkInterfaceEntry.STATUS_DELETED);
                         dbentry.store(dbConn);
                     }
                 }
