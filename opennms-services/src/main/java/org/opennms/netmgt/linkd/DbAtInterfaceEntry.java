@@ -157,7 +157,7 @@ public final class DbAtInterfaceEntry {
 	private void insert(Connection c) throws SQLException {
 		if (m_fromDb)
 			throw new IllegalStateException(
-					"The record already exists in the database");
+					"The ARP interface record already exists in the database");
 
 		// first extract the next node identifier
 		//

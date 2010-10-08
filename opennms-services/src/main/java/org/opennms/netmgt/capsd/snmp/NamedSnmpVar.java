@@ -55,7 +55,7 @@ public final class NamedSnmpVar implements Collectable {
      * String which contains the Class name of the expected SNMP data type for
      * the object.
      */
-    private String m_type;
+    private final String m_type;
 
     /**
      * The class object for the class name stored in the m_type string.
@@ -65,23 +65,23 @@ public final class NamedSnmpVar implements Collectable {
     /**
      * The alias name for the object identifier.
      */
-    private String m_name;
+    private final String m_name;
 
     /**
      * The actual object identifer string for the object.
      */
-    private String m_oid;
+    private final String m_oid;
 
     /**
      * If set then the object identifier is an entry some SNMP table.
      */
-    private boolean m_isTabular;
+    private final boolean m_isTabular;
 
     /**
      * If the instance is part of a table then this is the column number for the
      * element.
      */
-    private int m_column;
+    private final int m_column;
 
     //
     // Class strings for valid SNMP data types

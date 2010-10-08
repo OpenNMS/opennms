@@ -54,42 +54,42 @@ import org.opennms.netmgt.config.DataSourceFactory;
  * 
  * @author <a href="mailto:antonio@opennms.it">Antonio Russo</a>
  */
-final class DbIpRouteInterfaceEntry {
+public final class DbIpRouteInterfaceEntry {
 	/**
 	 * The character returned if the entry is active
 	 */
 
-	static final char STATUS_ACTIVE = 'A';
+	public static final char STATUS_ACTIVE = 'A';
 
 	/**
 	 * The character returned if the entry is not active
 	 * means last polled
 	 */
 
-	static final char STATUS_NOT_POLLED = 'N';
+	public static final char STATUS_NOT_POLLED = 'N';
 
 	/**
 	 * It stats that node is deleted
 	 * The character returned if the node is deleted
 	 */
-	static final char STATUS_DELETE = 'D';
+	public static final char STATUS_DELETED = 'D';
 
 	/**
 	 * The character returned if the entry type is unset/unknown.
 	 */
 
-	static final char STATUS_UNKNOWN = 'K';
+	public static final char STATUS_UNKNOWN = 'K';
 
 	/** 
 	 * Integer representing route type
 	 */
-	static final int ROUTE_TYPE_OTHER = 1;
+	public static final int ROUTE_TYPE_OTHER = 1;
 
-	static final int ROUTE_TYPE_INVALID = 2;
+	public static final int ROUTE_TYPE_INVALID = 2;
 
-	static final int ROUTE_TYPE_DIRECT = 3;
+	public static final int ROUTE_TYPE_DIRECT = 3;
 
-	static final int ROUTE_TYPE_INDIRECT = 4;
+	public static final int ROUTE_TYPE_INDIRECT = 4;
 
 	/**
 	 * The node identifier
@@ -223,7 +223,7 @@ final class DbIpRouteInterfaceEntry {
 	private void insert(Connection c) throws SQLException {
 		if (m_fromDb)
 			throw new IllegalStateException(
-					"The record already exists in the database");
+					"The IP route interface record already exists in the database");
 
 		// first extract the next node identifier
 		//
@@ -537,7 +537,7 @@ final class DbIpRouteInterfaceEntry {
             
             m_routetype = rset.getInt(ndx++);
             if (rset.wasNull())
-            	m_routetype = -1;
+            	m_routetype = ROUTE_TYPE_OTHER;
             
             m_routeproto = rset.getInt(ndx++);
             if (rset.wasNull())
@@ -577,7 +577,7 @@ final class DbIpRouteInterfaceEntry {
 		m_routemetric3 = -1;
 		m_routemetric4 = -1;
 		m_routemetric5 = -1;
-		m_routetype = -1;
+		m_routetype = ROUTE_TYPE_OTHER;
 		m_routeproto = -1;
 		m_routenexthop = null;
 		m_routedest = routedest;
@@ -591,30 +591,30 @@ final class DbIpRouteInterfaceEntry {
 	/**
 	 * @return
 	 */
-	int get_nodeId() {
+	protected int get_nodeId() {
 		return m_nodeId;
 	}
 
 	/**
 	 * @return
 	 */
-	String get_routedest() {
+	protected String get_routedest() {
 		return m_routedest;
 	}
 
 	/**
 	 * @return
 	 */
-	String get_routemask() {
+	protected String get_routemask() {
 		return m_routemask;
 	}
 
-	void set_routemask(String routemask) {
+	protected void set_routemask(String routemask) {
 		m_routemask = routemask;
 		m_changed |= CHANGED_MASK;
 	}
 
-	boolean hasRouteMaskChanged() {
+	protected boolean hasRouteMaskChanged() {
 		if ((m_changed & CHANGED_MASK) == CHANGED_MASK)
 			return true;
 		else
@@ -634,16 +634,16 @@ final class DbIpRouteInterfaceEntry {
 	 *
 	 * @return a {@link java.lang.String} object.
 	 */
-	public String get_routenexthop() {
+	protected String get_routenexthop() {
 		return m_routenexthop;
 	}
 
-	void set_routenexthop(String routenexthop) {
+	protected void set_routenexthop(String routenexthop) {
 		m_routenexthop = routenexthop;
 		m_changed |= CHANGED_NXT_HOP;
 	}
 
-	boolean hasRouteNextHopChanged() {
+	protected boolean hasRouteNextHopChanged() {
 		if ((m_changed & CHANGED_NXT_HOP) == CHANGED_NXT_HOP)
 			return true;
 		else
@@ -663,16 +663,16 @@ final class DbIpRouteInterfaceEntry {
 	 *
 	 * @return a int.
 	 */
-	public int get_ifindex() {
+	protected int get_ifindex() {
 		return m_routeifindex;
 	}
 
-	void set_ifindex(int ifindex) {
+	protected void set_ifindex(int ifindex) {
 		m_routeifindex = ifindex;
 		m_changed |= CHANGED_IFINDEX;
 	}
 
-	boolean hasIfIndexChanged() {
+	protected boolean hasIfIndexChanged() {
 		if ((m_changed & CHANGED_IFINDEX) == CHANGED_IFINDEX)
 			return true;
 		else
@@ -692,16 +692,16 @@ final class DbIpRouteInterfaceEntry {
 	 *
 	 * @return a int.
 	 */
-	public int get_routemetric1() {
+	protected int get_routemetric1() {
 		return m_routemetric1;
 	}
 
-	void set_routemetric1(int routemetric) {
+	protected void set_routemetric1(int routemetric) {
 		m_routemetric1 = routemetric;
 		m_changed |= CHANGED_METRIC1;
 	}
 
-	boolean hasRouteMetric1Changed() {
+	protected boolean hasRouteMetric1Changed() {
 		if ((m_changed & CHANGED_METRIC1) == CHANGED_METRIC1)
 			return true;
 		else
@@ -721,16 +721,16 @@ final class DbIpRouteInterfaceEntry {
 	 *
 	 * @return a int.
 	 */
-	public int get_routemetric2() {
+	protected int get_routemetric2() {
 		return m_routemetric2;
 	}
 
-	void set_routemetric2(int routemetric) {
+	protected void set_routemetric2(int routemetric) {
 		m_routemetric2 = routemetric;
 		m_changed |= CHANGED_METRIC2;
 	}
 
-	boolean hasRouteMetric2Changed() {
+	protected boolean hasRouteMetric2Changed() {
 		if ((m_changed & CHANGED_METRIC2) == CHANGED_METRIC2)
 			return true;
 		else
@@ -750,16 +750,16 @@ final class DbIpRouteInterfaceEntry {
 	 *
 	 * @return a int.
 	 */
-	public int get_routemetric3() {
+	protected int get_routemetric3() {
 		return m_routemetric3;
 	}
 
-	void set_routemetric3(int routemetric) {
+	protected void set_routemetric3(int routemetric) {
 		m_routemetric3 = routemetric;
 		m_changed |= CHANGED_METRIC3;
 	}
 
-	boolean hasRouteMetric3Changed() {
+	protected boolean hasRouteMetric3Changed() {
 		if ((m_changed & CHANGED_METRIC3) == CHANGED_METRIC3)
 			return true;
 		else
@@ -779,16 +779,16 @@ final class DbIpRouteInterfaceEntry {
 	 *
 	 * @return a int.
 	 */
-	public int get_routemetric4() {
+	protected int get_routemetric4() {
 		return m_routemetric4;
 	}
 
-	void set_routemetric4(int routemetric) {
+	protected void set_routemetric4(int routemetric) {
 		m_routemetric4 = routemetric;
 		m_changed |= CHANGED_METRIC4;
 	}
 
-	boolean hasRouteMetric4Changed() {
+	protected boolean hasRouteMetric4Changed() {
 		if ((m_changed & CHANGED_METRIC4) == CHANGED_METRIC4)
 			return true;
 		else
@@ -808,16 +808,16 @@ final class DbIpRouteInterfaceEntry {
 	 *
 	 * @return a int.
 	 */
-	public int get_routemetric5() {
+	protected int get_routemetric5() {
 		return m_routemetric5;
 	}
 
-	void set_routemetric5(int routemetric) {
+	protected void set_routemetric5(int routemetric) {
 		m_routemetric5 = routemetric;
 		m_changed |= CHANGED_METRIC5;
 	}
 
-	boolean hasRouteMetric5Changed() {
+	protected boolean hasRouteMetric5Changed() {
 		if ((m_changed & CHANGED_METRIC5) == CHANGED_METRIC5)
 			return true;
 		else
@@ -837,11 +837,11 @@ final class DbIpRouteInterfaceEntry {
 	 *
 	 * @return a int.
 	 */
-	public int get_routetype() {
+	protected int get_routetype() {
 		return m_routetype;
 	}
 
-	void set_routetype(int routetype) {
+	protected void set_routetype(int routetype) {
 		if (routetype == ROUTE_TYPE_OTHER || routetype == ROUTE_TYPE_INVALID
 				|| routetype == ROUTE_TYPE_DIRECT
 				|| routetype == ROUTE_TYPE_INDIRECT)
@@ -849,7 +849,7 @@ final class DbIpRouteInterfaceEntry {
 		m_changed |= CHANGED_TYPE;
 	}
 
-	boolean hasRouteTypeChanged() {
+	protected boolean hasRouteTypeChanged() {
 		if ((m_changed & CHANGED_TYPE) == CHANGED_TYPE)
 			return true;
 		else
@@ -869,16 +869,16 @@ final class DbIpRouteInterfaceEntry {
 	 *
 	 * @return a int.
 	 */
-	public int get_routeproto() {
+	protected int get_routeproto() {
 		return m_routeproto;
 	}
 
-	void set_routeproto(int routeproto) {
+	protected void set_routeproto(int routeproto) {
 		m_routeproto = routeproto;
 		m_changed |= CHANGED_PROTO;
 	}
 
-	boolean hasRouteProtoChanged() {
+	protected boolean hasRouteProtoChanged() {
 		if ((m_changed & CHANGED_PROTO) == CHANGED_PROTO)
 			return true;
 		else
@@ -896,18 +896,18 @@ final class DbIpRouteInterfaceEntry {
 	/**
 	 * @return
 	 */
-	char get_status() {
+	protected char get_status() {
 		return m_status;
 	}
 
-	void set_status(char status) {
+	protected void set_status(char status) {
 		if (status == STATUS_ACTIVE || status == STATUS_NOT_POLLED
-				|| status == STATUS_DELETE)
+				|| status == STATUS_DELETED)
 			m_status = status;
 		m_changed |= CHANGED_STATUS;
 	}
 
-	boolean hasStatusChanged() {
+	protected boolean hasStatusChanged() {
 		if ((m_changed & CHANGED_STATUS) == CHANGED_STATUS)
 			return true;
 		else
@@ -925,7 +925,7 @@ final class DbIpRouteInterfaceEntry {
 	/**
 	 * @return
 	 */
-	Timestamp get_lastpolltime() {
+	protected Timestamp get_lastpolltime() {
 		return m_lastPollTime;
 	}
 
@@ -946,7 +946,7 @@ final class DbIpRouteInterfaceEntry {
 	 * @param time	The last poll time.
 	 *
 	 */
-	void set_lastpolltime(String time) throws ParseException {
+	protected void set_lastpolltime(String time) throws ParseException {
 		if (time == null) {
 			m_lastPollTime = null;
 		} else {
@@ -962,7 +962,7 @@ final class DbIpRouteInterfaceEntry {
 	 * @param time	The last poll time.
 	 *
 	 */
-	void set_lastpolltime(Date time) {
+	protected void set_lastpolltime(Date time) {
 		m_lastPollTime = new Timestamp(time.getTime());
 		m_changed |= CHANGED_POLLTIME;
 	}
@@ -973,7 +973,7 @@ final class DbIpRouteInterfaceEntry {
 	 * @param time	The last poll time.
 	 *
 	 */
-	void set_lastpolltime(Timestamp time) {
+	protected void set_lastpolltime(Timestamp time) {
 		m_lastPollTime = time;
 		m_changed |= CHANGED_POLLTIME;
 	}
