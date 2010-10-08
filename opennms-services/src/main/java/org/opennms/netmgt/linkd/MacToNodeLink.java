@@ -44,15 +44,9 @@ package org.opennms.netmgt.linkd;
  */
 public class MacToNodeLink {
 
-	String macAddress;
+	private final String macAddress;
 	int nodeparentid;
 	int parentifindex;
-
-
-	@SuppressWarnings("unused")
-    private MacToNodeLink() {
-		throw new UnsupportedOperationException("default constructor not supported");
-	}
 
 	/**
 	 * <p>Constructor for MacToNodeLink.</p>

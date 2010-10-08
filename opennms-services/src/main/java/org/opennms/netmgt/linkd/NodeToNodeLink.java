@@ -49,16 +49,11 @@ import org.apache.commons.lang.builder.HashCodeBuilder;
 public class NodeToNodeLink implements Serializable {
     private static final long serialVersionUID = 1L;
 
-    int m_nodeId;
-	int m_ifIndex;
+    final int m_nodeId;
+    final int m_ifIndex;
 	int m_nodeParentId;
 	int m_parentIfIndex;
 
-
-	@SuppressWarnings("unused")
-    private NodeToNodeLink() {
-		throw new UnsupportedOperationException("default constructor not supported");
-	}
 
 	/**
 	 * <p>Constructor for NodeToNodeLink.</p>

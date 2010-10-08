@@ -385,14 +385,14 @@ public final class SnmpCollection implements ReadyRunnable {
                 Constructor<?> constr = null;
                 try {
                         constr = ipRouteGetter.getConstructor(classes);
-                } catch (Exception e) {
+                } catch (Throwable e) {
                         LogUtils.errorf(this, e, "SnmpCollection.run: " + m_ipRouteClass + " unable to get constructor.");
                         collectIpRouteTable = false;
                 }
                 Object[] argum = { m_address };
                 try {
                         m_ipRoute = (SnmpTable<SnmpTableEntry>) constr.newInstance(argum);
-                } catch (Exception e) {
+                } catch (Throwable e) {
                         LogUtils.errorf(this, e, "SnmpCollection.run: " + m_ipRouteClass + " unable to invoke class.");
                         collectIpRouteTable = false;
                 }
@@ -422,7 +422,7 @@ public final class SnmpCollection implements ReadyRunnable {
 				Object[] argum = { m_address };
 				try {
 					m_vlanTable = (SnmpTable<SnmpTableEntry>) constr.newInstance(argum);
-				} catch (Exception e) {
+				} catch (Throwable e) {
 				    LogUtils.warnf(this, e, "SnmpCollection.run: unable to instantiate class %s", m_vlanClass);
                     collectVlanTable = false;
 				}

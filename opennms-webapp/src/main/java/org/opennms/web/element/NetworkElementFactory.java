@@ -66,6 +66,7 @@ import org.opennms.netmgt.dao.CategoryDao;
 import org.opennms.netmgt.dao.NodeDao;
 import org.opennms.netmgt.linkd.DbAtInterfaceEntry;
 import org.opennms.netmgt.linkd.DbDataLinkInterfaceEntry;
+import org.opennms.netmgt.linkd.DbIpRouteInterfaceEntry;
 import org.opennms.netmgt.linkd.DbStpInterfaceEntry;
 import org.opennms.netmgt.linkd.DbStpNodeEntry;
 import org.opennms.netmgt.linkd.DbVlanEntry;
@@ -2591,8 +2592,10 @@ public class NetworkElementFactory {
             }
 
             element = new Integer(rs.getInt("routetype"));
-            if (element != null) {
+            if (element != null && ((Integer)element).intValue() > 0) {
                 ipRtIf.m_routetype = ((Integer) element).intValue();
+            } else {
+                ipRtIf.m_routetype = DbIpRouteInterfaceEntry.ROUTE_TYPE_OTHER;
             }
 
             element = new Integer(rs.getInt("routeproto"));
@@ -2603,6 +2606,8 @@ public class NetworkElementFactory {
             element = rs.getString("status");
             if (element != null) {
                 ipRtIf.m_status = ((String) element).charAt(0);
+            } else {
+                ipRtIf.m_status = DbIpRouteInterfaceEntry.STATUS_UNKNOWN;
             }
 
             ipRtIfs.add(ipRtIf);
