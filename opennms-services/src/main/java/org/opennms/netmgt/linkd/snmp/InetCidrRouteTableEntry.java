@@ -5,27 +5,29 @@ import java.net.InetAddress;
 import org.opennms.netmgt.capsd.snmp.NamedSnmpVar;
 
 /**
- *<P>The InetCidrRouteTableEntry class is designed to hold all the MIB-II
+ *<p>The {@link InetCidrRouteTableEntry} class is designed to hold all the MIB-II
  * information for one entry in the ipRouteTable. The table effectively
  * contains a list of these entries, each entry having information
- * about ip route. The entry contains:
- * ipRouteDest,
- * ipRouteIfIndex,
- * ipRouteMetric1,
- * ipRouteMetric2,
- * ipRouteMetric3,
- * ipRouteMetric4,
- * ipRouteNextHop,
- * ipRouteType,
- * ipRouteProto,
- * ipRouteAge,
- * ipRouteMask,
- * ipRouteMetric5,
- * ipRouteInfo.</P>
+ * about IP route. The entry contains:</p>
+ * <ul>
+ * <li>ipRouteDest</li>
+ * <li>ipRouteIfIndex</li>
+ * <li>ipRouteMetric1</li>
+ * <li>ipRouteMetric2</li>
+ * <li>ipRouteMetric3</li>
+ * <li>ipRouteMetric4</li>
+ * <li>ipRouteNextHop</li>
+ * <li>ipRouteType</li>
+ * <li>ipRouteProto</li>
+ * <li>ipRouteAge</li>
+ * <li>ipRouteMask</li>
+ * <li>ipRouteMetric5</li>
+ * <li><s>ipRouteInfo</s> (not available in the inetCidr table)</li>
+ * </ul>
  *
- * <P>This object is used by the InetCidrRouteTable to hold infomation
- * single entries in the table. See the InetCidrRouteTable documentation
- * form more information.</P>
+ * <p>This object is used by the {@link InetCidrRouteTable} to hold information
+ * single entries in the table. See the {@link InetCidrRouteTable} documentation
+ * form more information.</p>
  *
  * @author <A HREF="mailto:rssntn67@yahoo.it">Antonio</A>
  * @author <A HREF="mailto:sowmya@opennms.org">Sowmya</A>
@@ -59,7 +61,7 @@ public final class InetCidrRouteTableEntry extends IpRouteCollectorEntry
     */
    static
    {
-       ms_elemList = new NamedSnmpVar[13];
+       ms_elemList = new NamedSnmpVar[12];
        int ndx = 0;
        
    /** The destination IP address of this route. An
@@ -70,7 +72,7 @@ public final class InetCidrRouteTableEntry extends IpRouteCollectorEntry
     * access mechanisms defined by the network
     * management protocol in use.
     */
-       ms_elemList[ndx] = new NamedSnmpVar(NamedSnmpVar.SNMPIPADDRESS,   IP_ROUTE_DEST,      ".1.3.6.1.2.1.4.24.7.1.2",  1);
+       ms_elemList[ndx++] = new NamedSnmpVar(NamedSnmpVar.SNMPIPADDRESS,   IP_ROUTE_DEST,      ".1.3.6.1.2.1.4.24.7.1.2",  1);
    
    /**
     * The index value which uniquely identifies the
@@ -80,7 +82,7 @@ public final class InetCidrRouteTableEntry extends IpRouteCollectorEntry
     * interface as identified by the same value of
     * ifIndex.
     */
-       ms_elemList[ndx] = new NamedSnmpVar(NamedSnmpVar.SNMPINT32,       IP_ROUTE_IFINDEX,   ".1.3.6.1.2.1.4.24.7.1.7",  2);
+       ms_elemList[ndx++] = new NamedSnmpVar(NamedSnmpVar.SNMPINT32,       IP_ROUTE_IFINDEX,   ".1.3.6.1.2.1.4.24.7.1.7",  2);
        
    /**
     * The primary routing metric for this route. The
@@ -89,7 +91,7 @@ public final class InetCidrRouteTableEntry extends IpRouteCollectorEntry
     * ipRouteProto value. If this metric is not used,
     * its value should be set to -1.
     */
-       ms_elemList[ndx] = new NamedSnmpVar(NamedSnmpVar.SNMPINT32,       IP_ROUTE_METRIC1,   ".1.3.6.1.2.1.4.24.7.1.12",  3);
+       ms_elemList[ndx++] = new NamedSnmpVar(NamedSnmpVar.SNMPINT32,       IP_ROUTE_METRIC1,   ".1.3.6.1.2.1.4.24.7.1.12",  3);
 
    /**
     * An alternate routing metric for this route. The
@@ -98,7 +100,7 @@ public final class InetCidrRouteTableEntry extends IpRouteCollectorEntry
     * ipRouteProto value. If this metric is not used,
     * its value should be set to -1.
     */
-       ms_elemList[ndx] = new NamedSnmpVar(NamedSnmpVar.SNMPINT32,       IP_ROUTE_METRIC2,   ".1.3.6.1.2.1.4.24.7.1.13",  4);
+       ms_elemList[ndx++] = new NamedSnmpVar(NamedSnmpVar.SNMPINT32,       IP_ROUTE_METRIC2,   ".1.3.6.1.2.1.4.24.7.1.13",  4);
 
        /**
         * An alternate routing metric for this route. The
@@ -108,7 +110,7 @@ public final class InetCidrRouteTableEntry extends IpRouteCollectorEntry
         * its value should be set to -1.
         */
 
-       ms_elemList[ndx] = new NamedSnmpVar(NamedSnmpVar.SNMPINT32,       IP_ROUTE_METRIC3,   ".1.3.6.1.2.1.4.24.7.1.14",  5);
+       ms_elemList[ndx++] = new NamedSnmpVar(NamedSnmpVar.SNMPINT32,       IP_ROUTE_METRIC3,   ".1.3.6.1.2.1.4.24.7.1.14",  5);
 
        /**
         * An alternate routing metric for this route. The
@@ -117,7 +119,7 @@ public final class InetCidrRouteTableEntry extends IpRouteCollectorEntry
         * ipRouteProto value. If this metric is not used,
         * its value should be set to -1.
         */
-       ms_elemList[ndx] = new NamedSnmpVar(NamedSnmpVar.SNMPINT32,       IP_ROUTE_METRIC4,   ".1.3.6.1.2.1.4.24.7.1.15",  6);
+       ms_elemList[ndx++] = new NamedSnmpVar(NamedSnmpVar.SNMPINT32,       IP_ROUTE_METRIC4,   ".1.3.6.1.2.1.4.24.7.1.15",  6);
 
        /**
         * The IP address of the next hop of this route.
@@ -126,7 +128,7 @@ public final class InetCidrRouteTableEntry extends IpRouteCollectorEntry
         * of this field is the agent's IP address on that
         * interface.)
         */
-       ms_elemList[ndx] = new NamedSnmpVar(NamedSnmpVar.SNMPIPADDRESS,   IP_ROUTE_NXTHOP,    ".1.3.6.1.2.1.4.24.7.1.6",  7);
+       ms_elemList[ndx++] = new NamedSnmpVar(NamedSnmpVar.SNMPIPADDRESS,   IP_ROUTE_NXTHOP,    ".1.3.6.1.2.1.4.24.7.1.6",  7);
        
        /**
         * The type of route. Note that the values
@@ -147,7 +149,7 @@ public final class InetCidrRouteTableEntry extends IpRouteCollectorEntry
         * Proper interpretation of such entries requires
         * examination of the relevant ipRouteType object.
         */
-       ms_elemList[ndx] = new NamedSnmpVar(NamedSnmpVar.SNMPINT32,       IP_ROUTE_TYPE,      ".1.3.6.1.2.1.4.24.7.1.8",  8);
+       ms_elemList[ndx++] = new NamedSnmpVar(NamedSnmpVar.SNMPINT32,       IP_ROUTE_TYPE,      ".1.3.6.1.2.1.4.24.7.1.8",  8);
 
        /**
         * The routing mechanism via which this route was
@@ -155,7 +157,7 @@ public final class InetCidrRouteTableEntry extends IpRouteCollectorEntry
         * protocols is not intended to imply that hosts
         * should support those protocols.
         */
-       ms_elemList[ndx] = new NamedSnmpVar(NamedSnmpVar.SNMPINT32,       IP_ROUTE_PROTO,     ".1.3.6.1.2.1.4.24.7.1.9",  9);
+       ms_elemList[ndx++] = new NamedSnmpVar(NamedSnmpVar.SNMPINT32,       IP_ROUTE_PROTO,     ".1.3.6.1.2.1.4.24.7.1.9",  9);
        
        /**
         * The number of seconds since this route was last
@@ -164,7 +166,7 @@ public final class InetCidrRouteTableEntry extends IpRouteCollectorEntry
         * except through knowledge of the routing protocol
         * by which the route was learned.
         */
-       ms_elemList[ndx] = new NamedSnmpVar(NamedSnmpVar.SNMPINT32,       IP_ROUTE_AGE,       ".1.3.6.1.2.1.4.24.7.1.10",  10);
+       ms_elemList[ndx++] = new NamedSnmpVar(NamedSnmpVar.SNMPINT32,       IP_ROUTE_AGE,       ".1.3.6.1.2.1.4.24.7.1.10",  10);
        
        /**
         * Indicate the mask to be logical-ANDed with the
@@ -188,7 +190,7 @@ public final class InetCidrRouteTableEntry extends IpRouteCollectorEntry
 // AlanE : There is no ROUTE_MASK in ipV6 (inetCidr) instead we should use Prefix length
 // I've changed the getRouteMask function to convert the /prefix into a netmask
 //
-       ms_elemList[ndx] = new NamedSnmpVar(NamedSnmpVar.SNMPINT32,   IP_ROUTE_PFX_LEN,   ".1.3.6.1.2.1.4.24.7.1.3",  11);
+       ms_elemList[ndx++] = new NamedSnmpVar(NamedSnmpVar.SNMPINT32,   IP_ROUTE_PFX_LEN,   ".1.3.6.1.2.1.4.24.7.1.3",  11);
 
        /**
         * An alternate routing metric for this route. The
@@ -197,7 +199,7 @@ public final class InetCidrRouteTableEntry extends IpRouteCollectorEntry
         * ipRouteProto value. If this metric is not used,
         * its value should be set to -1.
         */
-       ms_elemList[ndx] = new NamedSnmpVar(NamedSnmpVar.SNMPINT32,       IP_ROUTE_METRIC5,   ".1.3.6.1.2.1.4.24.7.1.16",  12);
+       ms_elemList[ndx++] = new NamedSnmpVar(NamedSnmpVar.SNMPINT32,       IP_ROUTE_METRIC5,   ".1.3.6.1.2.1.4.24.7.1.16",  12);
 
        /**
         * A reference to MIB definitions specific to the
@@ -215,7 +217,7 @@ public final class InetCidrRouteTableEntry extends IpRouteCollectorEntry
 // Just comment out for now
 //
 
-//     ms_elemList[ndx] = new NamedSnmpVar(NamedSnmpVar.SNMPOBJECTID,        IP_ROUTE_INFO,      ".1.3.6.1.2.1.4.24.7.1.9",  13);
+//     ms_elemList[ndx++] = new NamedSnmpVar(NamedSnmpVar.SNMPOBJECTID,        IP_ROUTE_INFO,      ".1.3.6.1.2.1.4.24.7.1.9",  13);
    }
    
 
