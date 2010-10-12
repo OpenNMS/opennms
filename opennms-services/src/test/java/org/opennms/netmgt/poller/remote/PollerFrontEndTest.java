@@ -394,6 +394,8 @@ public class PollerFrontEndTest extends TestCase {
 
         m_frontEnd = new DefaultPollerFrontEnd();
         
+        m_frontEnd.setTimeAdjustment(new DefaultTimeAdjustment());
+        
 //        ServerUnreachableAdaptor adaptor = new ServerUnreachableAdaptor();
 //        adaptor.setRemoteBackEnd(m_backEnd);
 //        m_frontEnd.setPollerBackEnd(adaptor);

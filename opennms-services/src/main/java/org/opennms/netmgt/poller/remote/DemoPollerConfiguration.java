@@ -57,6 +57,7 @@ public class DemoPollerConfiguration implements PollerConfiguration {
     
     Date m_timestamp;
     PolledService[] m_polledServices;
+    private long m_serverTime = 0;
     
     DemoPollerConfiguration(Date timestamp) {
         m_timestamp = timestamp;
@@ -123,6 +124,20 @@ public class DemoPollerConfiguration implements PollerConfiguration {
      */
     public PolledService getFirstService() {
         return m_polledServices[0];
+    }
+
+    /**
+     * @param serverTime the serverTime to set
+     */
+    public void setServerTime(long serverTime) {
+        m_serverTime = serverTime;
+    }
+
+    /**
+     * @return the serverTime
+     */
+    public long getServerTime() {
+        return m_serverTime;
     }
 
   

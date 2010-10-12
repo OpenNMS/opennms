@@ -1,18 +1,12 @@
 /*
  * This file is part of the OpenNMS(R) Application.
  *
- * OpenNMS(R) is Copyright (C) 2006-2007 The OpenNMS Group, Inc.  All rights reserved.
+ * OpenNMS(R) is Copyright (C) 2010 The OpenNMS Group, Inc.  All rights reserved.
  * OpenNMS(R) is a derivative work, containing both original code, included code and modified
  * code that was published under the GNU General Public License. Copyrights for modified
  * and included code are below.
  *
  * OpenNMS(R) is a registered trademark of The OpenNMS Group, Inc.
- *
- * Modifications:
- * 
- * Created: August 16, 2006
- *
- * Copyright (C) 2006-2007 The OpenNMS Group, Inc.  All rights reserved.
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -29,40 +23,35 @@
  * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA.
  *
  * For more information contact:
- *      OpenNMS Licensing       <license@opennms.org>
- *      http://www.opennms.org/
- *      http://www.opennms.com/
+ * OpenNMS Licensing       <license@opennms.org>
+ *     http://www.opennms.org/
+ *     http://www.opennms.com/
  */
 package org.opennms.netmgt.poller.remote;
 
 import java.util.Date;
 
 /**
- * <p>PollerConfiguration interface.</p>
+ * DefaultTimeAdjustment
  *
- * @author <a href="mailto:brozow@opennms.org">Mathew Brozowski</a>
- * @version $Id: $
+ * @author brozow
  */
-public interface PollerConfiguration {
+public class DefaultTimeAdjustment implements TimeAdjustment {
     
-    /**
-     * This is the time on the server just before it is sent to the configuration 
-     * to the client in millis since the epoch UTC. 
-     * (Same as returned by System.currentTimeMillis())
-     */
-    long getServerTime();
-    
-    /**
-     * <p>getConfigurationTimestamp</p>
-     *
-     * @return a {@link java.util.Date} object.
-     */
-    Date getConfigurationTimestamp();
-	
-    /**
-     * <p>getPolledServices</p>
-     *
-     * @return an array of {@link org.opennms.netmgt.poller.remote.PolledService} objects.
-     */
-    PolledService[] getPolledServices();
+    private long m_offset = 0;
+
+    public void setMasterTime(long timeInMillis) {
+        if (timeInMillis > 0) {
+            m_offset = System.currentTimeMillis() - timeInMillis;
+        }
+    }
+
+    public long adjustTimeToMasterTime(long localTime) {
+        return localTime - m_offset;
+    }
+
+    public Date adjustDateToMasterDate(Date localDate) {
+        return new Date(adjustTimeToMasterTime(localDate.getTime()));
+    }
+
 }
