@@ -75,7 +75,7 @@ public class DbVlanEntry
 	 * It stats that node is deleted
 	 * The character returned if the node is deleted
 	 */
-    public static final char STATUS_DELETE = 'D';
+    public static final char STATUS_DELETED = 'D';
 
 	/**
 	 * The character returned if the entry type is unset/unknown.
@@ -83,14 +83,23 @@ public class DbVlanEntry
 
     public static final char STATUS_UNKNOWN = 'K';
 
-	/**
-	 * the bridge type
-	 */
+    public static final int VLAN_TYPE_UNKNOWN = 0;
+    public static final int VLAN_TYPE_ETHERNET = 1;
+    public static final int VLAN_TYPE_FDDI = 2;
+    public static final int VLAN_TYPE_TOKEN_RING = 3;
+    public static final int VLAN_TYPE_FDDINET = 4;
+    public static final int VLAN_TYPE_TRNET = 5;
+    public static final int VLAN_TYPE_DEPRECATED = 6;
+
+    public static final int VLAN_STATUS_UNKNOWN = 0;
+    public static final int VLAN_STATUS_OPERATIONAL = 1;
+    public static final int VLAN_STATUS_SUSPENDED = 2;
+    public static final int VLAN_STATUS_MTU_TOO_BIG_FOR_DEVICE = 3;
+    public static final int VLAN_STATUS_MTU_TOO_BIG_FOR_TRUNK = 4;
 
 	/**
 	 * The node identifier
 	 */
-
     int     m_nodeId;
 
     /**
@@ -99,9 +108,8 @@ public class DbVlanEntry
     int     m_vlanId;
 
     /**
-     * the name the vlan
+     * The name of the VLAN
      */
-    
     String m_vlanname;
     
     /**
@@ -114,7 +122,7 @@ public class DbVlanEntry
      * '6' Deprecated
      * 
      */
-    int     m_vlantype;
+    int     m_vlantype = VLAN_TYPE_UNKNOWN;
 
     /**
      * 
@@ -125,20 +133,18 @@ public class DbVlanEntry
      * '4' mtuTooBigForTrunk
      * 
      */
-    int     m_vlanstatus;
+    int     m_vlanstatus = VLAN_STATUS_UNKNOWN;
 
 		/**
 		 * The Status of
 		 * this information
 		 */
-
 		char m_status = STATUS_UNKNOWN;
 
 		/**
 		 * The Time when
 		 * this information was learned
 		 */
-
 		Timestamp m_lastPollTime;
 
 		/**
@@ -375,7 +381,7 @@ public class DbVlanEntry
                 //
                 m_vlantype = rset.getInt(ndx++);
                 if (rset.wasNull())
-                	m_vlantype = -1;
+                	m_vlantype = VLAN_TYPE_UNKNOWN;
 
                 // get the vlan status
                 //
@@ -403,15 +409,6 @@ public class DbVlanEntry
 			LogUtils.debugf(this, "DbVlanEntry.load: result found");
 			m_changed = 0;
 			return true;
-		}
-
-		/**
-		 * Default constructor. 
-		 *
-		 */
-		DbVlanEntry() {
-			throw new UnsupportedOperationException(
-					"Default constructor not supported!");
 		}
 
         DbVlanEntry(int nodeId,int vlanid, boolean exists)
@@ -543,7 +540,7 @@ public class DbVlanEntry
 
 		protected void set_status(char status) {
 			if (status == STATUS_ACTIVE || status == STATUS_NOT_POLLED
-					|| status == STATUS_DELETE)
+					|| status == STATUS_DELETED)
 				m_status = status;
 			m_changed |= CHANGED_STATUS;
 		}

@@ -46,14 +46,14 @@ import org.opennms.netmgt.linkd.DbDataLinkInterfaceEntry;
  */
 public class DataLinkInterface
 {
-        int     m_nodeId;
-        int     m_nodeparentid;
-		int     m_ifindex;
-		int     m_parentifindex;
-    	String  m_ipaddress;
-		String  m_parentipaddress;
-		String  m_lastPollTime;
-        char    m_status;
+        private int     m_nodeId;
+        private int     m_nodeparentid;
+        private int     m_ifindex;
+        private int     m_parentifindex;
+        private String  m_ipaddress;
+        private String  m_parentipaddress;
+        private final String  m_lastPollTime;
+        private final char    m_status;
 
         private static final Map<Character, String> statusMap = new HashMap<Character, String>();
 
@@ -62,11 +62,6 @@ public class DataLinkInterface
             statusMap.put( DbDataLinkInterfaceEntry.STATUS_UNKNOWN, "Unknown" );
             statusMap.put( DbDataLinkInterfaceEntry.STATUS_DELETED, "Deleted" );
             statusMap.put( DbDataLinkInterfaceEntry.STATUS_NOT_POLLED, "Not Active" );
-        }
-
-        /* package-protected so only the NetworkElementFactory can instantiate */
-        DataLinkInterface()
-        {
         }
 
         /* package-protected so only the NetworkElementFactory can instantiate */

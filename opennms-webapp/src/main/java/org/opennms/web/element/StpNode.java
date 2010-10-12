@@ -37,6 +37,7 @@ package org.opennms.web.element;
 import java.util.HashMap;
 import java.util.Map;
 
+import org.apache.poi.hssf.util.HSSFColor.BRIGHT_GREEN;
 import org.opennms.netmgt.linkd.DbStpNodeEntry;
 
 
@@ -189,7 +190,11 @@ public class StpNode
 		 * @return a {@link java.lang.String} object.
 		 */
 		public String getBaseType() {
-			return BRIDGE_BASE_TYPE[m_basetype];
+		    try {
+		        return BRIDGE_BASE_TYPE[m_basetype];
+		    } catch (ArrayIndexOutOfBoundsException e) {
+		        return BRIDGE_BASE_TYPE[DbStpNodeEntry.BASE_TYPE_UNKNOWN];
+		    }
 		}
 		/**
 		 * <p>get_basevlan</p>
@@ -260,7 +265,11 @@ public class StpNode
 		 * @return a {@link java.lang.String} object.
 		 */
 		public String getStpProtocolSpecification() {
-			return STP_PROTO_TYPE[m_stpprotocolspecification];
+            try {
+                return STP_PROTO_TYPE[m_stpprotocolspecification];
+            } catch (ArrayIndexOutOfBoundsException e) {
+                return STP_PROTO_TYPE[DbStpNodeEntry.STP_UNKNOWN];
+            }
 		}
 
 		/**
