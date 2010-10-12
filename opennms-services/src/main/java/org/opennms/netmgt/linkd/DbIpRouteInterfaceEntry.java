@@ -564,10 +564,6 @@ public final class DbIpRouteInterfaceEntry {
 		return true;
 	}
 
-	DbIpRouteInterfaceEntry() {
-		throw new UnsupportedOperationException("Default constructor not supported!");
-	}
-
 	DbIpRouteInterfaceEntry(int nodeId, String routedest, boolean exists) {
 		m_nodeId = nodeId;
 		m_fromDb = exists;

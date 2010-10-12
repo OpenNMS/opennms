@@ -66,7 +66,6 @@ import org.opennms.netmgt.linkd.snmp.Dot1dStpPortTableEntry;
 import org.opennms.netmgt.linkd.snmp.Dot1dTpFdbTableEntry;
 import org.opennms.netmgt.linkd.snmp.IpNetToMediaTableEntry;
 import org.opennms.netmgt.linkd.snmp.IpRouteCollectorEntry;
-import org.opennms.netmgt.linkd.snmp.IpRouteTableEntry;
 import org.opennms.netmgt.linkd.snmp.QBridgeDot1dTpFdbTableEntry;
 import org.opennms.netmgt.linkd.snmp.VlanCollectorEntry;
 import org.springframework.jdbc.core.JdbcTemplate;
@@ -456,8 +455,8 @@ public class DbEventWriter implements QueryManager {
     
                     Integer ifindex = ent.getInt32(IpRouteCollectorEntry.IP_ROUTE_IFINDEX);
     
-                    if (ifindex < 0) {
-                        LogUtils.warnf(this, "store: Not valid ifindex" + ifindex + " Skipping...");
+                    if (ifindex == null || ifindex < 0) {
+                        LogUtils.warnf(this, "store: Not valid ifindex " + ifindex + ", skipping...");
                         continue;
                     }
     
@@ -483,11 +482,11 @@ public class DbEventWriter implements QueryManager {
                     LogUtils.debugf(this, "storeSnmpCollection: parsing routedest/routemask/nexthop: " + routedest + "/" + routemask + "/" + nexthop + " ifindex "
                                     + (ifindex < 1 ? "less than 1" : ifindex));
     
-                    int routemetric1 =  ent.getInt32(IpRouteCollectorEntry.IP_ROUTE_METRIC1);
+                    Integer routemetric1 =  ent.getInt32(IpRouteCollectorEntry.IP_ROUTE_METRIC1);
     
                     /**
-                     * FIXME: send routedest 0.0.0.0 to discoverylink remeber that
-                     * now nexthop 0.0.0.0 is not parsed, anyway we should analize
+                     * FIXME: send routedest 0.0.0.0 to discoverylink remember that
+                     * now nexthop 0.0.0.0 is not parsed, anyway we should analyze
                      * this case in link discovery so here is the place where you
                      * can have this info saved for now is discarded. See
                      * DiscoveryLink for more details......
@@ -522,7 +521,7 @@ public class DbEventWriter implements QueryManager {
                             LogUtils.infof(this, "storeSnmpCollection: next hop broadcast address found. Skipping saving to discoverylink.");
                         } else if (nexthop.isMulticastAddress()) {
                             LogUtils.infof(this, "storeSnmpCollection: next hop multicast address found. Skipping saving to discoverylink.");
-                        } else if (routemetric1 < 0) {
+                        } else if (routemetric1 == null || routemetric1 < 0) {
                             LogUtils.infof(this, "storeSnmpCollection: route metric is invalid. Skipping saving to discoverylink.");
                         } else {
                             LogUtils.debugf(this, "store: interface has snmpiftype " + snmpiftype + " . Adding to DiscoverLink ");
@@ -538,15 +537,15 @@ public class DbEventWriter implements QueryManager {
                         }
                     }
     
-                    int routemetric2 = ent.getInt32(IpRouteCollectorEntry.IP_ROUTE_METRIC2);
-                    int routemetric3 = ent.getInt32(IpRouteCollectorEntry.IP_ROUTE_METRIC3);
-                    int routemetric4 = ent.getInt32(IpRouteCollectorEntry.IP_ROUTE_METRIC4);
-                    int routemetric5 = ent.getInt32(IpRouteCollectorEntry.IP_ROUTE_METRIC5);
-                    int routetype = ent.getInt32(IpRouteCollectorEntry.IP_ROUTE_TYPE);
-                    int routeproto = ent.getInt32(IpRouteCollectorEntry.IP_ROUTE_PROTO);    
-
                     // always save info to DB
                     if (snmpcoll.getSaveIpRouteTable()) {
+                        Integer routemetric2 = ent.getInt32(IpRouteCollectorEntry.IP_ROUTE_METRIC2);
+                        Integer routemetric3 = ent.getInt32(IpRouteCollectorEntry.IP_ROUTE_METRIC3);
+                        Integer routemetric4 = ent.getInt32(IpRouteCollectorEntry.IP_ROUTE_METRIC4);
+                        Integer routemetric5 = ent.getInt32(IpRouteCollectorEntry.IP_ROUTE_METRIC5);
+                        Integer routetype = ent.getInt32(IpRouteCollectorEntry.IP_ROUTE_TYPE);
+                        Integer routeproto = ent.getInt32(IpRouteCollectorEntry.IP_ROUTE_PROTO);
+
                         DbIpRouteInterfaceEntry iprouteInterfaceEntry = DbIpRouteInterfaceEntry.get(dbConn, node.getNodeId(), routedest.getHostAddress());
                         if (iprouteInterfaceEntry == null) {
                             // Create a new entry
@@ -557,14 +556,14 @@ public class DbEventWriter implements QueryManager {
                         iprouteInterfaceEntry.updateRouteNextHop(nexthop.getHostAddress());
                         iprouteInterfaceEntry.updateIfIndex(ifindex);
     
-                        // okay to autobox these since were checking for null
-                        iprouteInterfaceEntry.updateRouteMetric1(routemetric1);
-                        iprouteInterfaceEntry.updateRouteMetric2(routemetric2);
-                        iprouteInterfaceEntry.updateRouteMetric3(routemetric3);
-                        iprouteInterfaceEntry.updateRouteMetric4(routemetric4);
-                        iprouteInterfaceEntry.updateRouteMetric5(routemetric5);
-                        iprouteInterfaceEntry.updateRouteType(routetype);
-                        iprouteInterfaceEntry.updateRouteProto(routeproto);
+                        // okay to autobox these since we're checking for null
+                        if (routemetric1 != null) iprouteInterfaceEntry.updateRouteMetric1(routemetric1);
+                        if (routemetric2 != null) iprouteInterfaceEntry.updateRouteMetric2(routemetric2);
+                        if (routemetric3 != null) iprouteInterfaceEntry.updateRouteMetric3(routemetric3);
+                        if (routemetric4 != null) iprouteInterfaceEntry.updateRouteMetric4(routemetric4);
+                        if (routemetric5 != null) iprouteInterfaceEntry.updateRouteMetric5(routemetric5);
+                        if (routetype != null) iprouteInterfaceEntry.updateRouteType(routetype);
+                        if (routeproto != null) iprouteInterfaceEntry.updateRouteProto(routeproto);
                         iprouteInterfaceEntry.updateStatus(DbAtInterfaceEntry.STATUS_ACTIVE);
                         iprouteInterfaceEntry.set_lastpolltime(now);
     
@@ -609,7 +608,7 @@ public class DbEventWriter implements QueryManager {
                     }
     
                     vlanEntry.updateVlanName(vlanName);
-                    // okay to autobox these since were checking for null
+                    // okay to autobox these since we're checking for null
                     if (vlantype != null) {
                         vlanEntry.updateVlanType(vlantype);
                     } else {
@@ -919,6 +918,9 @@ public class DbEventWriter implements QueryManager {
             update(dbConn, now, node.getNodeId());
     
             return node;
+        } catch (Throwable e) {
+            LogUtils.errorf(this, e, "Unexpected exception while storing SNMP collections: %s", e.getMessage());
+            return null;
         } finally {
             d.cleanUp();
         }
