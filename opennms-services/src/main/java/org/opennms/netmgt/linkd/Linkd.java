@@ -469,10 +469,11 @@ public class Linkd extends AbstractServiceDaemon {
 		    LogUtils.errorf(this, e, "Failed to save on db snmpcollection/package: %s/%s", snmpcoll.getPackageName(), snmpcoll.getInfo());
 			return;
 		}
-		synchronized (m_nodes) {
-	        m_nodes.add(node);
-        }
-
+		if (node != null) {
+    		synchronized (m_nodes) {
+    	        m_nodes.add(node);
+            }
+		}
 	}
 	
 	/**
