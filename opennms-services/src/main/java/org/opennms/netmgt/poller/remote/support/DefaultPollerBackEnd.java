@@ -90,14 +90,23 @@ public class DefaultPollerBackEnd implements PollerBackEnd, SpringServiceDaemon 
 
     private static class SimplePollerConfiguration implements PollerConfiguration, Serializable {
 
-        private static final long serialVersionUID = 1L;
+        private static final long serialVersionUID = 2L;
 
         private Date m_timestamp;
         private PolledService[] m_polledServices;
+        private long m_serverTime = 0;
 
         SimplePollerConfiguration(final Date timestamp, final PolledService[] polledSvcs) {
             m_timestamp = timestamp;
             m_polledServices = polledSvcs;
+            m_serverTime = System.currentTimeMillis();
+        }
+
+        /**
+         * This construct uses the existing data but updates the server timestamp
+         */
+        public SimplePollerConfiguration(SimplePollerConfiguration pollerConfiguration) {
+            this(pollerConfiguration.getConfigurationTimestamp(), pollerConfiguration.getPolledServices());
         }
 
         public Date getConfigurationTimestamp() {
@@ -106,6 +115,14 @@ public class DefaultPollerBackEnd implements PollerBackEnd, SpringServiceDaemon 
 
         public PolledService[] getPolledServices() {
             return m_polledServices;
+        }
+
+        public long getServerTime() {
+            return m_serverTime;
+        }
+        
+        public void setServerTime(long serverTime) {
+            m_serverTime = serverTime;
         }
 
     }
@@ -276,7 +293,8 @@ public class DefaultPollerBackEnd implements PollerBackEnd, SpringServiceDaemon 
                 cache.putIfAbsent(pollingPackageName, pollerConfiguration);
             }
             
-            return pollerConfiguration;
+            // construct a copy so the serverTime gets updated (and avoid threading issues)
+            return new SimplePollerConfiguration(pollerConfiguration);
 		} catch (final Exception e) {
 			LogUtils.warnf(this, e, "An error occurred retrieving the poller configuration for location monitor ID %d", locationMonitorId);
 			return new EmptyPollerConfiguration();
