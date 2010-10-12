@@ -67,11 +67,17 @@ public class CategoryController extends AbstractController {
         String categoryIdString = request.getParameter("categoryid");
         String editString = request.getParameter("edit");
         String nodeIdString = request.getParameter("node");
-        
+
+        RedirectView redirect = new RedirectView("/admin/categories.htm", true);
+        String referer = request.getHeader("Referer");
+        if (referer != null && referer.length() > 0) {
+            redirect = new RedirectView(referer, false);
+        }
+
         if (removeCategoryIdString != null) {
             m_adminCategoryService.removeCategory(removeCategoryIdString);
             
-            return new ModelAndView(new RedirectView("/admin/categories.htm", true));
+            return new ModelAndView(redirect);
         }
         
         if (newCategoryName != null) {
@@ -87,7 +93,7 @@ public class CategoryController extends AbstractController {
              * category and they need to edit category member nodes
              * from the node pages.  So, we don't do it.
              */
-            return new ModelAndView(new RedirectView("/admin/categories.htm", true));
+            return new ModelAndView(redirect);
         }
         
         if (categoryIdString != null && editString != null) {
@@ -96,30 +102,21 @@ public class CategoryController extends AbstractController {
                 String[] toAdd = request.getParameterValues("toAdd");
                 String[] toDelete = request.getParameterValues("toDelete");
 
-                m_adminCategoryService.performEdit(categoryIdString,
-                                                      editAction,
-                                                      toAdd,
-                                                      toDelete);
+                m_adminCategoryService.performEdit(categoryIdString, editAction, toAdd, toDelete);
 
-                ModelAndView modelAndView = 
-                    new ModelAndView(new RedirectView("/admin/categories.htm", true));
+                ModelAndView modelAndView = new ModelAndView(redirect);
                 modelAndView.addObject("categoryid", categoryIdString);
                 modelAndView.addObject("edit", null);
                 return modelAndView;
             }
 
-            EditModel model =
-                m_adminCategoryService.findCategoryAndAllNodes(categoryIdString);
+            EditModel model = m_adminCategoryService.findCategoryAndAllNodes(categoryIdString);
 
-            return new ModelAndView("/admin/editCategory",
-                                    "model",
-                                    model);
+            return new ModelAndView("/admin/editCategory", "model", model);
         }
         
         if (categoryIdString != null) {
-            return new ModelAndView("/admin/showCategory",
-                                    "model",
-                                    m_adminCategoryService.getCategory(categoryIdString));
+            return new ModelAndView("/admin/showCategory", "model", m_adminCategoryService.getCategory(categoryIdString));
         }
         
         if (nodeIdString != null && editString != null) {
@@ -128,33 +125,23 @@ public class CategoryController extends AbstractController {
                 String[] toAdd = request.getParameterValues("toAdd");
                 String[] toDelete = request.getParameterValues("toDelete");
 
-                m_adminCategoryService.performNodeEdit(nodeIdString,
-                                                       editAction,
-                                                       toAdd,
-                                                       toDelete);
+                m_adminCategoryService.performNodeEdit(nodeIdString, editAction, toAdd, toDelete);
 
-                ModelAndView modelAndView = 
-                    new ModelAndView(new RedirectView("/admin/categories.htm", true));
+                ModelAndView modelAndView = new ModelAndView(redirect);
                 modelAndView.addObject("node", nodeIdString);
                 modelAndView.addObject("edit", null);
                 return modelAndView;
             }
 
-            NodeEditModel model =
-                m_adminCategoryService.findNodeCategories(nodeIdString);
+            NodeEditModel model = m_adminCategoryService.findNodeCategories(nodeIdString);
 
-            return new ModelAndView("/admin/editNodeCategories",
-                                    "model",
-                                    model);
+            return new ModelAndView("/admin/editNodeCategories", "model", model);
         }
 
 
-        List<OnmsCategory> sortedCategories
-            = m_adminCategoryService.findAllCategories();
-        
-        return new ModelAndView("/admin/categories",
-                                "categories",
-                                sortedCategories);
+        List<OnmsCategory> sortedCategories = m_adminCategoryService.findAllCategories();
+
+        return new ModelAndView("/admin/categories", "categories", sortedCategories);
     }
 
     /**
@@ -171,8 +158,7 @@ public class CategoryController extends AbstractController {
      *
      * @param adminCategoryService a {@link org.opennms.web.svclayer.AdminCategoryService} object.
      */
-    public void setAdminCategoryService(
-            AdminCategoryService adminCategoryService) {
+    public void setAdminCategoryService(AdminCategoryService adminCategoryService) {
         m_adminCategoryService = adminCategoryService;
     }
 
