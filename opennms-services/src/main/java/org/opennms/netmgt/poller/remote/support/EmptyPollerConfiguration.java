@@ -66,5 +66,9 @@ class EmptyPollerConfiguration implements PollerConfiguration, Serializable {
     public PolledService[] getPolledServices() {
         return new PolledService[0];
     }
+
+    public long getServerTime() {
+        return 0;
+    }
     
 }
