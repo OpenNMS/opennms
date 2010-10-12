@@ -64,8 +64,6 @@ import org.opennms.core.utils.InetAddressUtils;
 import org.opennms.netmgt.EventConstants;
 import org.opennms.netmgt.dao.CategoryDao;
 import org.opennms.netmgt.dao.NodeDao;
-import org.opennms.netmgt.linkd.DbAtInterfaceEntry;
-import org.opennms.netmgt.linkd.DbDataLinkInterfaceEntry;
 import org.opennms.netmgt.linkd.DbIpRouteInterfaceEntry;
 import org.opennms.netmgt.linkd.DbStpInterfaceEntry;
 import org.opennms.netmgt.linkd.DbStpNodeEntry;
@@ -2484,41 +2482,36 @@ public class NetworkElementFactory {
         List<AtInterface> atIfs = new ArrayList<AtInterface>();
 
         while (rs.next()) {
-            AtInterface atIf = new AtInterface();
-
+            // Non-null field
             Object element = new Integer(rs.getInt("nodeId"));
-            atIf.m_nodeId = ((Integer) element).intValue();
+            int nodeId = ((Integer) element).intValue();
 
+            // Non-null field
             element = rs.getString("ipaddr");
-            atIf.m_ipaddr = (String) element;
+            String ipaddr = (String) element;
 
+            // Non-null field
             element = rs.getString("atphysaddr");
-            atIf.m_physaddr = (String) element;
+            String physaddr = (String) element;
 
+            // Non-null field
             element = rs.getTimestamp("lastpolltime");
-            if (element != null) {
-                atIf.m_lastPollTime = EventConstants.formatToString(new Date(
-                        ((Timestamp) element).getTime()));
-            }
+            String lastPollTime = EventConstants.formatToString(new Date(
+                    ((Timestamp) element).getTime()));
 
+            // Non-null field
             element = new Integer(rs.getInt("sourcenodeID"));
-            if (element != null) {
-                atIf.m_sourcenodeid = ((Integer) element).intValue();
-            }
+            int sourcenodeid = ((Integer) element).intValue();
 
+            // Non-null field
             element = new Integer(rs.getInt("ifindex"));
-            if (element != null) {
-                atIf.m_ifindex = ((Integer) element).intValue();
-            }
+            int ifindex = ((Integer) element).intValue();
 
+            // Non-null field
             element = rs.getString("status");
-            if (element != null) {
-                atIf.m_status = ((String) element).charAt(0);
-            } else {
-                atIf.m_status = DbAtInterfaceEntry.STATUS_UNKNOWN;
-            }
+            char status = ((String) element).charAt(0);
 
-            atIfs.add(atIf);
+            atIfs.add(new AtInterface(nodeId, sourcenodeid, ifindex, ipaddr, physaddr, lastPollTime, status));
         }
 
         return atIfs.toArray(new AtInterface[atIfs.size()]);
@@ -2826,43 +2819,41 @@ public class NetworkElementFactory {
         List<Vlan> vlan = new ArrayList<Vlan>();
 
         while (rs.next()) {
-            Vlan vlanEntry = new Vlan();
 
+            // Non-null field
             Object element = new Integer(rs.getInt("nodeId"));
-            vlanEntry.m_nodeId = ((Integer) element).intValue();
+            int nodeId = ((Integer) element).intValue();
 
+            // Non-null field
             element = rs.getInt("vlanId");
-            if (element != null) {
-                vlanEntry.m_vlanId = ((Integer) element).intValue();
-            }
+            int vlanid = ((Integer) element).intValue();
 
+            // Non-null field
             element = rs.getString("vlanname");
-            vlanEntry.m_vlanname = (String) element;
+            String vlanname = (String) element;
 
+            // Non-null field
             element = rs.getTimestamp("lastpolltime");
-            if (element != null) {
-                vlanEntry.m_lastPollTime = EventConstants.formatToString(new Date(
+            String lastpolltime = EventConstants.formatToString(new Date(
                         ((Timestamp) element).getTime()));
-            }
 
             element = new Integer(rs.getInt("vlantype"));
+            int vlantype = DbVlanEntry.VLAN_TYPE_UNKNOWN;
             if (element != null) {
-                vlanEntry.m_vlantype = ((Integer) element).intValue();
+                vlantype = ((Integer) element).intValue();
             }
 
             element = new Integer(rs.getInt("vlanstatus"));
+            int vlanstatus = DbVlanEntry.VLAN_STATUS_UNKNOWN;
             if (element != null) {
-            	vlanEntry.m_vlanstatus= ((Integer) element).intValue();
+                vlanstatus= ((Integer) element).intValue();
             }
 
+            // Non-null field
             element = rs.getString("status");
-            if (element != null) {
-                vlanEntry.m_status = ((String) element).charAt(0);
-            } else {
-                vlanEntry.m_status = DbVlanEntry.STATUS_UNKNOWN;
-            }
+            char status = ((String) element).charAt(0);
 
-            vlan.add(vlanEntry);
+            vlan.add(new Vlan(nodeId, vlanid, vlanname, vlantype, vlanstatus, lastpolltime, status));
         }
 
         return vlan.toArray(new Vlan[vlan.size()]);
@@ -2886,50 +2877,41 @@ public class NetworkElementFactory {
         List<DataLinkInterface> dataLinkIfs = new ArrayList<DataLinkInterface>();
 
         while (rs.next()) {
-            DataLinkInterface dataLinkIf = new DataLinkInterface();
-
+            // Non-null field
             Object element = new Integer(rs.getInt("nodeId"));
-            dataLinkIf.m_nodeId = ((Integer) element).intValue();
+            int nodeId = ((Integer) element).intValue();
 
+            // Non-null field
             element = new Integer(rs.getInt("ifindex"));
-            if (element != null) {
-                dataLinkIf.m_ifindex = ((Integer) element).intValue();
-            }
+            int ifindex = ((Integer) element).intValue();
 
+            // Non-null field
             element = rs.getTimestamp("lastpolltime");
-            if (element != null) {
-                dataLinkIf.m_lastPollTime = EventConstants.formatToString(new Date(
+            String lastPollTime = EventConstants.formatToString(new Date(
                         ((Timestamp) element).getTime()));
-            }
 
+            // Non-null field
             element = new Integer(rs.getInt("nodeparentid"));
-            if (element != null) {
-                dataLinkIf.m_nodeparentid = ((Integer) element).intValue();
-            }
+            int nodeparentid = ((Integer) element).intValue();
 
+            // Non-null field
             element = new Integer(rs.getInt("parentifindex"));
-            if (element != null) {
-                dataLinkIf.m_parentifindex = ((Integer) element).intValue();
-            }
+            int parentifindex = ((Integer) element).intValue();
 
+            // Non-null field
             element = rs.getString("status");
-            if (element != null) {
-                dataLinkIf.m_status = ((String) element).charAt(0);
+            char status = ((String) element).charAt(0);
+
+            String parentipaddress = getIpAddress(nodeparentid, parentifindex);
+
+            String ipaddress = "";
+            if (ifindex == -1 ) {
+                ipaddress = getIpAddress(nodeId);
             } else {
-                dataLinkIf.m_status = DbDataLinkInterfaceEntry.STATUS_UNKNOWN;
+                ipaddress = getIpAddress(nodeId, ifindex);
             }
 
-            dataLinkIf.m_parentipaddress = getIpAddress(dataLinkIf.get_nodeparentid(), dataLinkIf
-                    .get_parentifindex());
-
-            if (dataLinkIf.get_ifindex() == -1 ) {
-                dataLinkIf.m_ipaddress = getIpAddress(dataLinkIf.get_nodeId());
-            } else {
-                dataLinkIf.m_ipaddress = getIpAddress(dataLinkIf.get_nodeId(), dataLinkIf
-                        .get_ifindex());
-            }
-
-            dataLinkIfs.add(dataLinkIf);
+            dataLinkIfs.add(new DataLinkInterface(nodeId, nodeparentid, ifindex, parentifindex, ipaddress, parentipaddress, lastPollTime, status));
         }
 
         return dataLinkIfs.toArray(new DataLinkInterface[dataLinkIfs.size()]);

@@ -46,13 +46,13 @@ import org.opennms.netmgt.linkd.DbAtInterfaceEntry;
  */
 public class AtInterface
 {
-        int     m_nodeId;
-        int     m_sourcenodeid;
-		int     m_ifindex;
-        String  m_ipaddr;
-        String  m_physaddr;
-        String  m_lastPollTime;
-        char    m_status;
+        private final int     m_nodeId;
+        private final int     m_sourcenodeid;
+        private final int     m_ifindex;
+        private final String  m_ipaddr;
+        private final String  m_physaddr;
+        private final String  m_lastPollTime;
+        private final char    m_status;
 
         private static final Map<Character, String> statusMap = new HashMap<Character, String>();
 
@@ -61,11 +61,6 @@ public class AtInterface
             statusMap.put( DbAtInterfaceEntry.STATUS_UNKNOWN, "Unknown" );
             statusMap.put( DbAtInterfaceEntry.STATUS_DELETED, "Deleted" );
             statusMap.put( DbAtInterfaceEntry.STATUS_NOT_POLLED, "Not Active" );
-        }
-
-        /* package-protected so only the NetworkElementFactory can instantiate */
-        AtInterface()
-        {
         }
 
         /* package-protected so only the NetworkElementFactory can instantiate */

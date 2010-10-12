@@ -251,8 +251,11 @@ public class StpInterface
 		 * @return a {@link java.lang.String} object.
 		 */
 		public String getStpPortState() {
-			return STP_PORT_STATUS[m_stpportstate];
-			
+		    try {
+		        return STP_PORT_STATUS[m_stpportstate];
+		    } catch (ArrayIndexOutOfBoundsException e) {
+		        return STP_PORT_STATUS[DbStpInterfaceEntry.STP_PORT_DISABLED];
+		    }
 		}
 			
 		/**

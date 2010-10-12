@@ -121,7 +121,7 @@ public final class DbIpRouteInterfaceEntry {
 	 * The route type
 	 */
 
-	int m_routetype;
+	int m_routetype = ROUTE_TYPE_OTHER;
 
 	/**
 	 * The routing mechanism via which this route was learned
