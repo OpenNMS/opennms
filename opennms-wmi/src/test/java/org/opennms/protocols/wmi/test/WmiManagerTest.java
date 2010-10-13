@@ -52,9 +52,8 @@ import junit.framework.TestCase;
 import java.util.List;
 
 /**
- * @author <A HREF="mailto:matt.raykowski@gmail.com">Matt Raykowski </A>
- * @author <A HREF="http://www.opennsm.org">OpenNMS </A>
- * 
+ * @author <a href="mailto:matt.raykowski@gmail.com">Matt Raykowski</a>
+ * @author <a href="http://www.opennms.org">OpenNMS</a>
  */
 public class WmiManagerTest extends TestCase {
 	private IWmiClient m_WmiMock;

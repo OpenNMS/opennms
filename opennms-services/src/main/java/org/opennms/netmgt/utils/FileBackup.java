@@ -39,11 +39,8 @@ import java.io.IOException;
 /**
  * This class is used to make a quick backup of a file
  *
- * @author <A HREF="mailto:jason@opennms.org">Jason </A>
- * @author <A HREF="http://www.opennsm.org">OpenNMS </A>
- * @author <A HREF="mailto:jason@opennms.org">Jason </A>
- * @author <A HREF="http://www.opennsm.org">OpenNMS </A>
- * @version $Id: $
+ * @author <a href="mailto:jason@opennms.org">Jason</a>
+ * @author <a href="http://www.opennms.org">OpenNMS</a>
  */
 public class FileBackup {
     /**

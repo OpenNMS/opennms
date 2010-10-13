@@ -50,11 +50,8 @@ import org.opennms.netmgt.poller.nsclient.NsclientCheckParams;
  * command can be successfully executed against the service.
  * </P>
  *
- * @author <A HREF="mailto:matt.raykowski@gmail.com">Matt Raykowski </A>
- * @author <A HREF="http://www.opennsm.org">OpenNMS </A>
- * @author <A HREF="mailto:matt.raykowski@gmail.com">Matt Raykowski </A>
- * @author <A HREF="http://www.opennsm.org">OpenNMS </A>
- * @version $Id: $
+ * @author <a href="mailto:matt.raykowski@gmail.com">Matt Raykowski</a>
+ * @author <a href="http://www.opennms.org">OpenNMS</a>
  */
 public class NsclientPlugin extends AbstractPlugin {
 

@@ -59,16 +59,9 @@ import org.opennms.netmgt.capsd.ConnectionConfig;
  * daemon.
  * </P>
  *
- * @author <A HREF="mailto:sowmya@opennms.org">Sowmya Nataraj </A>
- * @author <a href="mailto:weave@oculan.com">Weave </a>
- * @author <A HREF="http://www.opennsm.org">OpenNMS </A>
- * @author <A HREF="mailto:sowmya@opennms.org">Sowmya Nataraj </A>
- * @author <a href="mailto:weave@oculan.com">Weave </a>
- * @author <A HREF="http://www.opennsm.org">OpenNMS </A>
- * @author <A HREF="mailto:sowmya@opennms.org">Sowmya Nataraj </A>
- * @author <a href="mailto:weave@oculan.com">Weave </a>
- * @author <A HREF="http://www.opennsm.org">OpenNMS </A>
- * @version $Id: $
+ * @author <a href="mailto:sowmya@opennms.org">Sowmya Nataraj</A>
+ * @author <a href="mailto:weave@oculan.com">Weave</a>
+ * @author <a href="http://www.opennms.org">OpenNMS</A>
  */
 public final class ImapPlugin extends AbstractTcpPlugin {
 

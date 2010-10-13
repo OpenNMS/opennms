@@ -10,7 +10,7 @@
  *
  * Modifications:
  *
- * 2008 Feb 15: Pass the newly required description argument to AbstractCastorConfigDao's constructor. - dj@opennsm.org
+ * 2008 Feb 15: Pass the newly required description argument to AbstractCastorConfigDao's constructor. - dj@opennms.org
  * 2007 Apr 10: Created this file based upon some of the tests in
  *              DefaultSurveillanceViewConfigDao that are common to
  *              AbstractCastorConfigDao. - dj@opennms.org

@@ -60,23 +60,10 @@ import org.opennms.netmgt.utils.ExecRunner;
  * Additional options or arguments can be specified in the capsd configuration.
  * </P>
  *
- * @author <A HREF="mailto:mike@opennms.org">Mike </A>
- * @author <A HREF="mailto:weave@oculan.com">Weaver </A>
- * @author <A HREF="http://www.opennsm.org">OpenNMS </A>
- * @author <A HREF="mailto:ayres@net.orst.edu">Bill Ayres </A>
- * @author <A HREF="mailto:mike@opennms.org">Mike </A>
- * @author <A HREF="mailto:weave@oculan.com">Weaver </A>
- * @author <A HREF="http://www.opennsm.org">OpenNMS </A>
- * @author <A HREF="mailto:ayres@net.orst.edu">Bill Ayres </A>
- * @author <A HREF="mailto:mike@opennms.org">Mike </A>
- * @author <A HREF="mailto:weave@oculan.com">Weaver </A>
- * @author <A HREF="http://www.opennsm.org">OpenNMS </A>
- * @author <A HREF="mailto:ayres@net.orst.edu">Bill Ayres </A>
- * @author <A HREF="mailto:mike@opennms.org">Mike </A>
- * @author <A HREF="mailto:weave@oculan.com">Weaver </A>
- * @author <A HREF="http://www.opennsm.org">OpenNMS </A>
- * @author <A HREF="mailto:ayres@net.orst.edu">Bill Ayres </A>
- * @version $Id: $
+ * @author <a href="mailto:mike@opennms.org">Mike</a>
+ * @author <a href="mailto:weave@oculan.com">Weaver</a>
+ * @author <a href="http://www.opennms.org">OpenNMS</a>
+ * @author <a href="mailto:ayres@net.orst.edu">Bill Ayres</a>
  */
 public final class GpPlugin extends AbstractPlugin {
     /**

@@ -70,16 +70,9 @@ import org.opennms.netmgt.capsd.AbstractPlugin;
  * daemon.
  * </P>
  *
- * @author <A HREF="mailto:sowmya@opennms.org">Sowmya </A>
- * @author <A HREF="mailto:weave@oculan.com">Weave </A>
- * @author <A HREF="http://www.opennsm.org">OpenNMS </A>
- * @author <A HREF="mailto:sowmya@opennms.org">Sowmya </A>
- * @author <A HREF="mailto:weave@oculan.com">Weave </A>
- * @author <A HREF="http://www.opennsm.org">OpenNMS </A>
- * @author <A HREF="mailto:sowmya@opennms.org">Sowmya </A>
- * @author <A HREF="mailto:weave@oculan.com">Weave </A>
- * @author <A HREF="http://www.opennsm.org">OpenNMS </A>
- * @version $Id: $
+ * @author <a href="mailto:sowmya@opennms.org">Sowmya</a>
+ * @author <a href="mailto:weave@oculan.com">Weave</a>
+ * @author <a href="http://www.opennms.org">OpenNMS</a>
  */
 public final class SmtpPlugin extends AbstractPlugin {
 
