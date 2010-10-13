@@ -46,6 +46,8 @@ import java.sql.Timestamp;
 import java.util.Date;
 import java.util.Vector;
 
+import javax.servlet.ServletContext;
+
 import org.opennms.core.resource.Vault;
 import org.opennms.core.utils.ThreadCategory;
 import org.opennms.web.element.NetworkElementFactory;
@@ -122,7 +124,7 @@ public class NoticeFactory {
      * @return a {@link org.opennms.web.notification.Notification} object.
      * @throws java.sql.SQLException if any.
      */
-    public static Notification getNotice(int noticeId) throws SQLException {
+    public static Notification getNotice(int noticeId, ServletContext servletContext) throws SQLException {
         Notification notice = null;
         Connection conn = Vault.getDbConnection();
 
@@ -131,7 +133,7 @@ public class NoticeFactory {
             stmt.setInt(1, noticeId);
             ResultSet rs = stmt.executeQuery();
 
-            Notification[] notices = rs2Notices(rs);
+            Notification[] notices = rs2Notices(rs, servletContext);
 
             // what do I do if this actually returns more than one service?
             if (notices.length > 0) {
@@ -196,8 +198,8 @@ public class NoticeFactory {
      * @return an array of {@link org.opennms.web.notification.Notification} objects.
      * @throws java.sql.SQLException if any.
      */
-    public static Notification[] getNotices() throws SQLException {
-        return (NoticeFactory.getNotices(SortStyle.ID, AcknowledgeType.UNACKNOWLEDGED));
+    public static Notification[] getNotices(ServletContext servletContext) throws SQLException {
+        return (NoticeFactory.getNotices(SortStyle.ID, AcknowledgeType.UNACKNOWLEDGED, servletContext));
     }
 
     /**
@@ -207,8 +209,8 @@ public class NoticeFactory {
      * @return an array of {@link org.opennms.web.notification.Notification} objects.
      * @throws java.sql.SQLException if any.
      */
-    public static Notification[] getNotices(AcknowledgeType ackType) throws SQLException {
-        return (NoticeFactory.getNotices(SortStyle.ID, ackType));
+    public static Notification[] getNotices(AcknowledgeType ackType, ServletContext servletContext) throws SQLException {
+        return (NoticeFactory.getNotices(SortStyle.ID, ackType, servletContext));
     }
 
     /**
@@ -218,8 +220,8 @@ public class NoticeFactory {
      * @return an array of {@link org.opennms.web.notification.Notification} objects.
      * @throws java.sql.SQLException if any.
      */
-    public static Notification[] getNotices(SortStyle sortStyle) throws SQLException {
-        return (NoticeFactory.getNotices(sortStyle, AcknowledgeType.UNACKNOWLEDGED));
+    public static Notification[] getNotices(SortStyle sortStyle, ServletContext servletContext) throws SQLException {
+        return (NoticeFactory.getNotices(sortStyle, AcknowledgeType.UNACKNOWLEDGED, servletContext));
     }
 
     /**
@@ -233,9 +235,9 @@ public class NoticeFactory {
      * @return an array of {@link org.opennms.web.notification.Notification} objects.
      * @throws java.sql.SQLException if any.
      */
-    public static Notification[] getNotices(SortStyle sortStyle, boolean includeAcknowledged) throws SQLException {
+    public static Notification[] getNotices(SortStyle sortStyle, boolean includeAcknowledged, ServletContext servletContext) throws SQLException {
         AcknowledgeType ackType = (includeAcknowledged) ? AcknowledgeType.BOTH : AcknowledgeType.UNACKNOWLEDGED;
-        return (NoticeFactory.getNotices(sortStyle, ackType));
+        return (NoticeFactory.getNotices(sortStyle, ackType, servletContext));
     }
 
     /**
@@ -247,8 +249,8 @@ public class NoticeFactory {
      * @return an array of {@link org.opennms.web.notification.Notification} objects.
      * @throws java.sql.SQLException if any.
      */
-    public static Notification[] getNotices(SortStyle sortStyle, AcknowledgeType ackType) throws SQLException {
-        return (NoticeFactory.getNotices(sortStyle, ackType, new org.opennms.web.filter.Filter[0]));
+    public static Notification[] getNotices(SortStyle sortStyle, AcknowledgeType ackType, ServletContext servletContext) throws SQLException {
+        return (NoticeFactory.getNotices(sortStyle, ackType, new org.opennms.web.filter.Filter[0], servletContext));
     }
 
     /**
@@ -261,8 +263,8 @@ public class NoticeFactory {
      * @return an array of {@link org.opennms.web.notification.Notification} objects.
      * @throws java.sql.SQLException if any.
      */
-    public static Notification[] getNotices(SortStyle sortStyle, AcknowledgeType ackType, org.opennms.web.filter.Filter[] filters) throws SQLException {
-        return (NoticeFactory.getNotices(sortStyle, ackType, filters, -1, -1));
+    public static Notification[] getNotices(SortStyle sortStyle, AcknowledgeType ackType, org.opennms.web.filter.Filter[] filters, ServletContext servletContext) throws SQLException {
+        return (NoticeFactory.getNotices(sortStyle, ackType, filters, -1, -1, servletContext));
     }
 
     /**
@@ -286,7 +288,7 @@ public class NoticeFactory {
      * @return an array of {@link org.opennms.web.notification.Notification} objects.
      * @throws java.sql.SQLException if any.
      */
-    public static Notification[] getNotices(SortStyle sortStyle, AcknowledgeType ackType, org.opennms.web.filter.Filter[] filters, int limit, int offset) throws SQLException {
+    public static Notification[] getNotices(SortStyle sortStyle, AcknowledgeType ackType, org.opennms.web.filter.Filter[] filters, int limit, int offset, ServletContext servletContext) throws SQLException {
         if (sortStyle == null || ackType == null || filters == null) {
             throw new IllegalArgumentException("Cannot take null parameters.");
         }
@@ -331,7 +333,7 @@ public class NoticeFactory {
             ResultSet rs = stmt.executeQuery();
             
 //            PreparedStatement ps = conn.prepareStatement(select.toString());
-            notices = rs2Notices(rs);
+            notices = rs2Notices(rs, servletContext);
 
             rs.close();
             stmt.close();
@@ -349,8 +351,8 @@ public class NoticeFactory {
      * @return an array of {@link org.opennms.web.notification.Notification} objects.
      * @throws java.sql.SQLException if any.
      */
-    public static Notification[] getNoticesForNode(int nodeId) throws SQLException {
-        return (getNoticesForNode(nodeId, SortStyle.ID, AcknowledgeType.UNACKNOWLEDGED));
+    public static Notification[] getNoticesForNode(int nodeId, ServletContext servletContext) throws SQLException {
+        return (getNoticesForNode(nodeId, SortStyle.ID, AcknowledgeType.UNACKNOWLEDGED, servletContext));
     }
 
     /**
@@ -364,9 +366,9 @@ public class NoticeFactory {
      * @return an array of {@link org.opennms.web.notification.Notification} objects.
      * @throws java.sql.SQLException if any.
      */
-    public static Notification[] getNoticesForNode(int nodeId, boolean includeAcknowledged) throws SQLException {
+    public static Notification[] getNoticesForNode(int nodeId, boolean includeAcknowledged, ServletContext servletContext) throws SQLException {
         AcknowledgeType ackType = (includeAcknowledged) ? AcknowledgeType.BOTH : AcknowledgeType.UNACKNOWLEDGED;
-        return (getNoticesForNode(nodeId, SortStyle.ID, ackType));
+        return (getNoticesForNode(nodeId, SortStyle.ID, ackType, servletContext));
     }
 
     /**
@@ -379,13 +381,13 @@ public class NoticeFactory {
      * @return an array of {@link org.opennms.web.notification.Notification} objects.
      * @throws java.sql.SQLException if any.
      */
-    public static Notification[] getNoticesForNode(int nodeId, SortStyle sortStyle, AcknowledgeType ackType) throws SQLException {
+    public static Notification[] getNoticesForNode(int nodeId, SortStyle sortStyle, AcknowledgeType ackType, ServletContext servletContext) throws SQLException {
         if (sortStyle == null || ackType == null) {
             throw new IllegalArgumentException("Cannot take null parameters.");
         }
 
         org.opennms.web.filter.Filter[] filters = new org.opennms.web.filter.Filter[] { new NodeFilter(nodeId) };
-        return (NoticeFactory.getNotices(sortStyle, ackType, filters));
+        return (NoticeFactory.getNotices(sortStyle, ackType, filters, servletContext));
     }
 
     /**
@@ -396,8 +398,8 @@ public class NoticeFactory {
      * @return an array of {@link org.opennms.web.notification.Notification} objects.
      * @throws java.sql.SQLException if any.
      */
-    public static Notification[] getNoticesForInterface(int nodeId, String ipAddress) throws SQLException {
-        return (getNoticesForInterface(nodeId, ipAddress, false));
+    public static Notification[] getNoticesForInterface(int nodeId, String ipAddress, ServletContext servletContext) throws SQLException {
+        return (getNoticesForInterface(nodeId, ipAddress, false, servletContext));
     }
 
     /**
@@ -410,7 +412,7 @@ public class NoticeFactory {
      * @return an array of {@link org.opennms.web.notification.Notification} objects.
      * @throws java.sql.SQLException if any.
      */
-    public static Notification[] getNoticesForInterface(int nodeId, String ipAddress, boolean includeAcknowledged) throws SQLException {
+    public static Notification[] getNoticesForInterface(int nodeId, String ipAddress, boolean includeAcknowledged, ServletContext servletContext) throws SQLException {
         if (ipAddress == null) {
             throw new IllegalArgumentException("Cannot take null parameters.");
         }
@@ -432,7 +434,7 @@ public class NoticeFactory {
             stmt.setString(2, ipAddress);
             ResultSet rs = stmt.executeQuery();
 
-            notices = rs2Notices(rs);
+            notices = rs2Notices(rs, servletContext);
 
             rs.close();
             stmt.close();
@@ -451,8 +453,8 @@ public class NoticeFactory {
      * @return an array of {@link org.opennms.web.notification.Notification} objects.
      * @throws java.sql.SQLException if any.
      */
-    public static Notification[] getNoticesForInterface(String ipAddress) throws SQLException {
-        return (getNoticesForInterface(ipAddress, false));
+    public static Notification[] getNoticesForInterface(String ipAddress, ServletContext servletContext) throws SQLException {
+        return (getNoticesForInterface(ipAddress, false, servletContext));
     }
 
     /**
@@ -464,7 +466,7 @@ public class NoticeFactory {
      * @return an array of {@link org.opennms.web.notification.Notification} objects.
      * @throws java.sql.SQLException if any.
      */
-    public static Notification[] getNoticesForInterface(String ipAddress, boolean includeAcknowledged) throws SQLException {
+    public static Notification[] getNoticesForInterface(String ipAddress, boolean includeAcknowledged, ServletContext servletContext) throws SQLException {
         if (ipAddress == null) {
             throw new IllegalArgumentException("Cannot take null parameters.");
         }
@@ -485,7 +487,7 @@ public class NoticeFactory {
             stmt.setString(1, ipAddress);
             ResultSet rs = stmt.executeQuery();
 
-            notices = rs2Notices(rs);
+            notices = rs2Notices(rs, servletContext);
 
             rs.close();
             stmt.close();
@@ -505,8 +507,8 @@ public class NoticeFactory {
      * @return an array of {@link org.opennms.web.notification.Notification} objects.
      * @throws java.sql.SQLException if any.
      */
-    public static Notification[] getNoticesForService(int nodeId, String ipAddress, int serviceId) throws SQLException {
-        return (getNoticesForService(nodeId, ipAddress, serviceId, false));
+    public static Notification[] getNoticesForService(int nodeId, String ipAddress, int serviceId, ServletContext servletContext) throws SQLException {
+        return (getNoticesForService(nodeId, ipAddress, serviceId, false, servletContext));
     }
 
     /**
@@ -520,7 +522,7 @@ public class NoticeFactory {
      * @return an array of {@link org.opennms.web.notification.Notification} objects.
      * @throws java.sql.SQLException if any.
      */
-    public static Notification[] getNoticesForService(int nodeId, String ipAddress, int serviceId, boolean includeAcknowledged) throws SQLException {
+    public static Notification[] getNoticesForService(int nodeId, String ipAddress, int serviceId, boolean includeAcknowledged, ServletContext servletContext) throws SQLException {
         if (ipAddress == null) {
             throw new IllegalArgumentException("Cannot take null parameters.");
         }
@@ -543,7 +545,7 @@ public class NoticeFactory {
             stmt.setInt(3, serviceId);
             ResultSet rs = stmt.executeQuery();
 
-            notices = rs2Notices(rs);
+            notices = rs2Notices(rs, servletContext);
 
             rs.close();
             stmt.close();
@@ -562,8 +564,8 @@ public class NoticeFactory {
      * @return an array of {@link org.opennms.web.notification.Notification} objects.
      * @throws java.sql.SQLException if any.
      */
-    public static Notification[] getNoticesForService(int serviceId) throws SQLException {
-        return (getNoticesForService(serviceId, false));
+    public static Notification[] getNoticesForService(int serviceId, ServletContext servletContext) throws SQLException {
+        return (getNoticesForService(serviceId, false, servletContext));
     }
 
     /**
@@ -576,7 +578,7 @@ public class NoticeFactory {
      * @return an array of {@link org.opennms.web.notification.Notification} objects.
      * @throws java.sql.SQLException if any.
      */
-    public static Notification[] getNoticesForService(int serviceId, boolean includeAcknowledged) throws SQLException {
+    public static Notification[] getNoticesForService(int serviceId, boolean includeAcknowledged, ServletContext servletContext) throws SQLException {
         Notification[] notices = null;
         Connection conn = Vault.getDbConnection();
 
@@ -593,7 +595,7 @@ public class NoticeFactory {
             stmt.setInt(1, serviceId);
             ResultSet rs = stmt.executeQuery();
 
-            notices = rs2Notices(rs);
+            notices = rs2Notices(rs, servletContext);
 
             rs.close();
             stmt.close();
@@ -700,7 +702,7 @@ public class NoticeFactory {
      * @throws java.sql.SQLException if any.
      */
     // FIXME: Don't use the single variable "element" for different objects. - dj@opennms.org
-    protected static Notification[] rs2Notices(ResultSet rs) throws SQLException {
+    protected static Notification[] rs2Notices(ResultSet rs, ServletContext servletContext) throws SQLException {
         Notification[] notices = null;
         Vector<Notification> vector = new Vector<Notification>();
 
@@ -741,7 +743,7 @@ public class NoticeFactory {
             element = new Integer(rs.getInt("serviceid"));
             if (element != null) {
                 notice.m_serviceId = ((Integer) element).intValue();
-                element = NetworkElementFactory.getServiceNameFromId(notice.m_serviceId);
+                element = NetworkElementFactory.getInstance(servletContext).getServiceNameFromId(notice.m_serviceId);
                 notice.m_serviceName = (String) element;
             }
 

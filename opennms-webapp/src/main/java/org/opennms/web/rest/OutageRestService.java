@@ -37,6 +37,7 @@ package org.opennms.web.rest;
 
 import java.util.Date;
 
+import javax.servlet.ServletContext;
 import javax.ws.rs.GET;
 import javax.ws.rs.Path;
 import javax.ws.rs.PathParam;
@@ -89,6 +90,9 @@ public class OutageRestService extends OnmsRestService {
 
     @Context
     SecurityContext m_securityContext;
+    
+    @Context
+    ServletContext m_servletContext;
     
     /**
      * <p>getOutage</p>
@@ -160,7 +164,7 @@ public class OutageRestService extends OnmsRestService {
         criteria.createAlias("monitoredService.ipInterface.node", "node");
         criteria.createAlias("monitoredService.serviceType", "serviceType");
 
-        NodeFilter node = new NodeFilter(nodeId);
+        NodeFilter node = new NodeFilter(nodeId, m_servletContext);
         criteria.add(node.getCriterion());
 
         Date d = new Date(System.currentTimeMillis() - (60 * 60 * 24 * 7));

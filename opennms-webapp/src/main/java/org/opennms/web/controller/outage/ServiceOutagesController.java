@@ -36,7 +36,7 @@ public class ServiceOutagesController extends AbstractController implements Init
     /** {@inheritDoc} */
     @Override
     protected ModelAndView handleRequestInternal(HttpServletRequest request, HttpServletResponse response) throws Exception {
-        Service service = ElementUtil.getServiceByParams(request);
+        Service service = ElementUtil.getServiceByParams(request, getServletContext());
 
         Outage[] outages = new Outage[0];
 
@@ -44,7 +44,7 @@ public class ServiceOutagesController extends AbstractController implements Init
             List<Filter> filters = new ArrayList<Filter>();
 
             filters.add(new InterfaceFilter(service.getIpAddress()));
-            filters.add(new NodeFilter(service.getNodeId()));
+            filters.add(new NodeFilter(service.getNodeId(), getServletContext()));
             filters.add(new ServiceFilter(service.getServiceId()));
             filters.add(new RecentOutagesFilter());
 

@@ -49,7 +49,7 @@
     
     //gets active route entry on node
     
-   	IpRouteInterface[] iproutes = NetworkElementFactory.getIpRoute(nodeId);
+   	IpRouteInterface[] iproutes = NetworkElementFactory.getInstance(getServletContext()).getIpRoute(nodeId);
 
 %>
 
@@ -84,7 +84,7 @@
 			 <% 
 				Node[] nodes = null;
 			 	if (!iproutes[t].get_routenexthop().equals("0.0.0.0"))
-					nodes = NetworkElementFactory.getNodesWithIpLike(iproutes[t].get_routenexthop()); 	
+					nodes = NetworkElementFactory.getInstance(getServletContext()).getNodesWithIpLike(iproutes[t].get_routenexthop()); 	
 			 	if (nodes != null && nodes.length>0) {
 			 %>			 
 		    <td align="left" ><a href="element/node.jsp?node=<%=nodes[0].getNodeId()%>"><%=iproutes[t].get_routenexthop()%></a></td>

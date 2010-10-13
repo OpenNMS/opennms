@@ -264,8 +264,9 @@
               <% String[] labels = nodeLabels.get(notices[i].getNodeId()); %>
               <a href="element/node.jsp?node=<%=notices[i].getNodeId()%>" title="<%=labels[1]%>"><%=labels[0]%></a>
               <% if( !parms.filters.contains(nodeFilter) ) { %>
+
                 <a href="<%=this.makeLink( parms, nodeFilter, true)%>" class="filterLink" title="Show only notices on this node">${addPositiveFilter}</a>
-                <a href="<%=this.makeLink( parms, new NegativeNodeFilter(notices[i].getNodeId()), true)%>" class="filterLink" title="Do not show events for this node">${addNegativeFilter}</a>
+                <a href="<%=this.makeLink( parms, new NegativeNodeFilter(notices[i].getNodeId(), getServletContext()), true)%>" class="filterLink" title="Do not show events for this node">${addNegativeFilter}</a>
               <% } %>
             <% } %>
           </td>

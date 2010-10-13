@@ -42,6 +42,8 @@ package org.opennms.web.event;
 import java.util.Calendar;
 import java.util.StringTokenizer;
 
+import javax.servlet.ServletContext;
+
 import org.opennms.web.WebSecurityUtils;
 import org.opennms.web.event.filter.AcknowledgedByFilter;
 import org.opennms.web.event.filter.AfterDateFilter;
@@ -82,7 +84,7 @@ public abstract class EventUtil {
      * @param filterString a {@link java.lang.String} object.
      * @return a org$opennms$web$filter$Filter object.
      */
-    public static Filter getFilter(String filterString) {
+    public static Filter getFilter(String filterString, ServletContext servletContext) {
         if (filterString == null) {
             throw new IllegalArgumentException("Cannot take null parameters.");
         }
@@ -96,7 +98,7 @@ public abstract class EventUtil {
         if (type.equals(SeverityFilter.TYPE)) {
             filter = new SeverityFilter(WebSecurityUtils.safeParseInt(value));
         } else if (type.equals(NodeFilter.TYPE)) {
-            filter = new NodeFilter(WebSecurityUtils.safeParseInt(value));
+            filter = new NodeFilter(WebSecurityUtils.safeParseInt(value), servletContext);
         } else if (type.equals(NodeNameLikeFilter.TYPE)) {
             filter = new NodeNameLikeFilter(value);
         } else if (type.equals(InterfaceFilter.TYPE)) {
@@ -114,7 +116,7 @@ public abstract class EventUtil {
         } else if (type.equals(NegativeSeverityFilter.TYPE)) {
             filter = new NegativeSeverityFilter(WebSecurityUtils.safeParseInt(value));
         } else if (type.equals(NegativeNodeFilter.TYPE)) {
-            filter = new NegativeNodeFilter(WebSecurityUtils.safeParseInt(value));
+            filter = new NegativeNodeFilter(WebSecurityUtils.safeParseInt(value), servletContext);
         } else if (type.equals(NegativeInterfaceFilter.TYPE)) {
             filter = new NegativeInterfaceFilter(value);
         } else if (type.equals(NegativeServiceFilter.TYPE)) {

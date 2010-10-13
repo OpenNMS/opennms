@@ -69,9 +69,9 @@
     }
 
     int nodeId = WebSecurityUtils.safeParseInt( nodeIdString );
-    String nodeLabel = NetworkElementFactory.getNodeLabel( nodeId );
+    String nodeLabel = NetworkElementFactory.getInstance(getServletContext()).getNodeLabel( nodeId );
     Asset asset = this.model.getAsset( nodeId );
-    Node node_db = NetworkElementFactory.getNode( nodeId );
+    Node node_db = NetworkElementFactory.getInstance(getServletContext()).getNode( nodeId );
     boolean isNew = false;
 
     if( asset == null ) {

@@ -67,7 +67,7 @@
     }
         
     //get the database node info
-    Node node_db = NetworkElementFactory.getNode(nodeId);
+    Node node_db = NetworkElementFactory.getInstance(getServletContext()).getNode(nodeId);
     if (node_db == null) {
         // XXX handle this WAY better, very awful
         throw new ServletException("No such node in database");

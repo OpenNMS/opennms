@@ -64,7 +64,7 @@
 	if (nodeIdString != null) {
 		try {
 			int nodeId = WebSecurityUtils.safeParseInt(nodeIdString);
-			node = NetworkElementFactory.getNode(nodeId);
+			node = NetworkElementFactory.getInstance(getServletContext()).getNode(nodeId);
 		} catch (NumberFormatException e) {
 			// ignore this, we just won't put a link if it fails
 		}

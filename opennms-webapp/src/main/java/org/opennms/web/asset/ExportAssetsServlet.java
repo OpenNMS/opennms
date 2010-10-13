@@ -148,15 +148,7 @@ public class ExportAssetsServlet extends HttpServlet {
             Asset asset = assets[i];
             ArrayList<String> entries = new ArrayList<String>();
 
-            try {
-                entries.add(NetworkElementFactory.getNodeLabel(asset.getNodeId()));
-            } catch (SQLException e) {
-                // just log the error, the node label is only a human aid,
-                // anyway,
-                // so don't hold up the export
-                this.log("Database error while looking up node label for node " + asset.getNodeId(), e);
-            }
-
+            entries.add(NetworkElementFactory.getInstance(getServletContext()).getNodeLabel(asset.getNodeId()));
             entries.add(Integer.toString(asset.getNodeId()));
             entries.add(asset.getCategory());
             entries.add(asset.getManufacturer());

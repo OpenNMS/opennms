@@ -55,10 +55,10 @@
     String requestIntf = request.getParameter("intf");
     String requestIfindex = request.getParameter("ifindex");
     if(requestNode != null && requestIfindex != null && requestIntf == null) {
-        intf = ElementUtil.getSnmpInterfaceByParams(request);
+        intf = ElementUtil.getSnmpInterfaceByParams(request, getServletContext());
         stpifs = NetworkElementFactory.getStpInterface(intf.getNodeId(), intf.getSnmpIfIndex());
     } else {
-        intf = ElementUtil.getInterfaceByParams(request);
+        intf = ElementUtil.getInterfaceByParams(request, getServletContext());
         stpifs = NetworkElementFactory.getStpInterface(intf.getNodeId(), intf.getIfIndex());
     }
 
@@ -90,7 +90,7 @@
 	<tr>
         <td>Stp Root</td>
 	<% if (stpifs[i].get_stprootnodeid() != 0) { 
-	Node node = NetworkElementFactory.getNode(stpifs[i].get_stprootnodeid());
+	Node node = NetworkElementFactory.getInstance(getServletContext()).getNode(stpifs[i].get_stprootnodeid());
 	%>
 	<td><a href="element/node.jsp?node=<%=stpifs[i].get_stprootnodeid()%>"><%=node.getLabel()%></a><br/>(<strong><%=stpifs[i].get_stpdesignatedroot()%></strong>)</td>
 	<% } else { %>
@@ -100,7 +100,7 @@
 	<tr>
         <td>Designated Bridge</td>
 	<% if (stpifs[i].get_stpbridgenodeid() != 0) { 
-	Node node = NetworkElementFactory.getNode(stpifs[i].get_stpbridgenodeid());
+	Node node = NetworkElementFactory.getInstance(getServletContext()).getNode(stpifs[i].get_stpbridgenodeid());
 	%>
 	<td><a href="element/node.jsp?node=<%=stpifs[i].get_stpbridgenodeid()%>"><%=node.getLabel()%></a><br/>(<strong><%=stpifs[i].get_stpdesignatedbridge()%></strong>)</td>
 	<% } else {%>

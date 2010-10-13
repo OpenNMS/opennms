@@ -143,7 +143,7 @@
 		<%
 			org.opennms.netmgt.config.poller.Node[] nodeList = pollFactory.getNodeIds(outageName);
 				for (int j = 0; j < nodeList.length; j++) {
-					org.opennms.web.element.Node elementNode = NetworkElementFactory.getNode(nodeList[j].getId());
+					org.opennms.web.element.Node elementNode = NetworkElementFactory.getInstance(getServletContext()).getNode(nodeList[j].getId());
 		%> <%=elementNode == null || elementNode.getNodeType()=='D' ? "Node: Node Id " + nodeList[j].getId() + " Not Found" : "Node: " + elementNode.getLabel()%><br/>
 		<%
 			}
@@ -155,7 +155,7 @@
 						display = new StringBuffer("All nodes/interfaces");
 					} else {
 						display = new StringBuffer();
-						org.opennms.web.element.Interface[] interfaces = NetworkElementFactory.getInterfacesWithIpAddress(rawAddress);
+						org.opennms.web.element.Interface[] interfaces = NetworkElementFactory.getInstance(getServletContext()).getInterfacesWithIpAddress(rawAddress);
 						if (interfaces.length == 0) {
 							display.append("Intfc: " + rawAddress + " Not Found<br/>");
 						}

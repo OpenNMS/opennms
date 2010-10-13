@@ -44,6 +44,7 @@ import java.sql.SQLException;
 import java.util.HashMap;
 import java.util.Map;
 
+import javax.servlet.ServletContext;
 import javax.servlet.ServletException;
 import javax.servlet.http.HttpServletRequest;
 
@@ -330,9 +331,9 @@ public class ElementUtil extends Object {
      * @throws javax.servlet.ServletException if any.
      * @throws java.sql.SQLException if any.
      */
-    public static Node getNodeByParams(HttpServletRequest request)
+    public static Node getNodeByParams(HttpServletRequest request, ServletContext servletContext)
             throws ServletException, SQLException {
-        return getNodeByParams(request, "node");
+        return getNodeByParams(request, "node", servletContext);
     }
     
     /**
@@ -345,7 +346,7 @@ public class ElementUtil extends Object {
      * @throws java.sql.SQLException if any.
      */
     public static Node getNodeByParams(HttpServletRequest request,
-            String nodeIdParam) throws ServletException, SQLException {
+            String nodeIdParam, ServletContext servletContext) throws ServletException, SQLException {
         if (request.getParameter(nodeIdParam) == null) {
             throw new MissingParameterException(nodeIdParam, new String[] { "node" });
         }
@@ -362,7 +363,7 @@ public class ElementUtil extends Object {
                     "node", "element/node.jsp", "node", "element/nodeList.htm");
         }
 
-        Node node = NetworkElementFactory.getNode(nodeId);
+        Node node = NetworkElementFactory.getInstance(servletContext).getNode(nodeId);
 
         if (node == null) {
             throw new ElementNotFoundException("No such node in database", "node", "element/node.jsp", "node", "element/nodeList.htm");
@@ -380,9 +381,9 @@ public class ElementUtil extends Object {
      * @throws javax.servlet.ServletException if any.
      * @throws java.sql.SQLException if any.
      */
-    public static Interface getInterfaceByParams(HttpServletRequest request)
+    public static Interface getInterfaceByParams(HttpServletRequest request, ServletContext servletContext)
             throws ServletException, SQLException {
-        return getInterfaceByParams(request, "ipinterfaceid", "node", "intf", "ifindex");
+        return getInterfaceByParams(request, "ipinterfaceid", "node", "intf", "ifindex", servletContext);
     }
     
     /**
@@ -401,7 +402,8 @@ public class ElementUtil extends Object {
                                                  String ipInterfaceIdParam,
                                                  String nodeIdParam,
                                                  String ipAddrParam,
-                                                 String ifIndexParam)
+                                                 String ifIndexParam,
+                                                 ServletContext servletContext)
             throws ServletException, SQLException {
         Interface intf;
         
@@ -418,7 +420,7 @@ public class ElementUtil extends Object {
                         ifServiceIdString, "service");
             }
 
-                intf = NetworkElementFactory.getInterface(ipInterfaceId);
+                intf = NetworkElementFactory.getInstance(servletContext).getInterface(ipInterfaceId);
         } else {
             String nodeIdString = request.getParameter(nodeIdParam);
             String ipAddr = request.getParameter(ipAddrParam);
@@ -461,10 +463,9 @@ public class ElementUtil extends Object {
             }
 
             if (ifIndex != -1) {
-                intf = NetworkElementFactory.getInterface(nodeId, ipAddr,
-                                                          ifIndex);
+                intf = NetworkElementFactory.getInstance(servletContext).getInterface(nodeId, ipAddr, ifIndex);
             } else {
-                intf = NetworkElementFactory.getInterface(nodeId, ipAddr);
+                intf = NetworkElementFactory.getInstance(servletContext).getInterface(nodeId, ipAddr);
             }
         }
 
@@ -484,9 +485,9 @@ public class ElementUtil extends Object {
      * @param request a {@link javax.servlet.http.HttpServletRequest} object.
      * @throws java.sql.SQLException if any.
      */
-    public static Interface getSnmpInterfaceByParams(HttpServletRequest request)
+    public static Interface getSnmpInterfaceByParams(HttpServletRequest request, ServletContext servletContext)
             throws ServletException, SQLException {
-        return getSnmpInterfaceByParams(request, "node", "ifindex");
+        return getSnmpInterfaceByParams(request, "node", "ifindex", servletContext);
     }
 
     /**
@@ -502,7 +503,7 @@ public class ElementUtil extends Object {
      */
     public static Interface getSnmpInterfaceByParams(HttpServletRequest request,
                                                      String nodeIdParam,
-                                                     String ifIndexParam)
+                                                     String ifIndexParam, ServletContext servletContext)
             throws ServletException, SQLException {
         Interface intf;
 
@@ -543,7 +544,7 @@ public class ElementUtil extends Object {
                     ifIndexString, "interface");
         }
 
-        intf = NetworkElementFactory.getSnmpInterface(nodeId, ifIndex);
+        intf = NetworkElementFactory.getInstance(servletContext).getSnmpInterface(nodeId, ifIndex);
 
         if (intf == null) {
             throw new ElementNotFoundException("No such snmp interface in database for nodeId "
@@ -562,10 +563,10 @@ public class ElementUtil extends Object {
      * @throws javax.servlet.ServletException if any.
      * @throws java.sql.SQLException if any.
      */
-    public static Service getServiceByParams(HttpServletRequest request)
+    public static Service getServiceByParams(HttpServletRequest request, ServletContext servletContext)
             throws ServletException, SQLException {
         return getServiceByParams(request, "ifserviceid", "node", "intf",
-                                  "service");
+                                  "service", servletContext);
     }
     
     /**
@@ -584,7 +585,8 @@ public class ElementUtil extends Object {
                                              String ifServiceIdParam,
                                              String nodeIdParam,
                                              String ipAddrParam,
-                                             String serviceIdParam)
+                                             String serviceIdParam,
+                                             ServletContext servletContext)
             throws ServletException, SQLException {
         Service service;
         
@@ -601,7 +603,7 @@ public class ElementUtil extends Object {
                         ifServiceIdString, "service");
             }
 
-                service = NetworkElementFactory.getService(ifServiceId);
+                service = NetworkElementFactory.getInstance(servletContext).getService(ifServiceId);
         } else {
             String nodeIdString = request.getParameter(nodeIdParam);
             String ipAddr = request.getParameter(ipAddrParam);
@@ -647,8 +649,7 @@ public class ElementUtil extends Object {
                         serviceIdString, "service");
             }
 
-                service = NetworkElementFactory.getService(nodeId, ipAddr,
-                                                           serviceId);
+                service = NetworkElementFactory.getInstance(servletContext).getService(nodeId, ipAddr, serviceId);
         }
 
         if (service == null) {
@@ -669,7 +670,7 @@ public class ElementUtil extends Object {
      * @return an array of {@link org.opennms.web.element.Service} objects.
      * @throws java.sql.SQLException if any.
      */
-    public static Service[] getServicesOnNodeByParams(HttpServletRequest request, int serviceId) throws SQLException {
+    public static Service[] getServicesOnNodeByParams(HttpServletRequest request, int serviceId, ServletContext servletContext) throws SQLException {
     	Service[] services;
     	int nodeId;
     	
@@ -679,7 +680,7 @@ public class ElementUtil extends Object {
     		throw new ElementIdNotFoundException("Wrong type for parameter \"node\" (should be integer)",
     					request.getParameter("node"), "node", "element/node.jsp", "node", "element/nodeList.jsp");
     	}
-    	services = NetworkElementFactory.getServicesOnNode(nodeId, serviceId);
+    	services = NetworkElementFactory.getInstance(servletContext).getServicesOnNode(nodeId, serviceId);
     	return services;
     }
     

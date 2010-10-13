@@ -338,14 +338,14 @@
           </td>
           <td class="divider">
 	    <% if(events[i].getNodeId() != 0 && events[i].getNodeLabel()!= null ) { %>
-              <% Filter nodeFilter = new NodeFilter(events[i].getNodeId()); %>             
+              <% Filter nodeFilter = new NodeFilter(events[i].getNodeId(), getServletContext()); %>             
               <% String[] labels = this.getNodeLabels( events[i].getNodeLabel() ); %>
               <a href="element/node.jsp?node=<%=events[i].getNodeId()%>" title="<%=labels[1]%>"><%=labels[0]%></a>
                     
               <% if( !parms.filters.contains(nodeFilter) ) { %>
                 <nobr>
                   <a href="<%=this.makeLink( parms, nodeFilter, true)%>" class="filterLink" title="Show only events on this node">${addPositiveFilter}</a>
-                  <a href="<%=this.makeLink( parms, new NegativeNodeFilter(events[i].getNodeId()), true)%>" class="filterLink" title="Do not show events for this node">${addNegativeFilter}</a>
+                  <a href="<%=this.makeLink( parms, new NegativeNodeFilter(events[i].getNodeId(), getServletContext()), true)%>" class="filterLink" title="Do not show events for this node">${addNegativeFilter}</a>
                 </nobr>
               <% } %>
             <% } else { %>

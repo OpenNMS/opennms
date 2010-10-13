@@ -35,7 +35,7 @@ public class InterfaceOutagesController extends AbstractController implements In
     /** {@inheritDoc} */
     @Override
     protected ModelAndView handleRequestInternal(HttpServletRequest request, HttpServletResponse response) throws Exception {
-        Interface iface = ElementUtil.getInterfaceByParams(request);
+        Interface iface = ElementUtil.getInterfaceByParams(request, getServletContext());
 
         Outage[] outages = new Outage[0];
 
@@ -43,7 +43,7 @@ public class InterfaceOutagesController extends AbstractController implements In
             List<Filter> filters = new ArrayList<Filter>();
 
             filters.add(new InterfaceFilter(iface.getIpAddress()));
-            filters.add(new NodeFilter(iface.getNodeId()));
+            filters.add(new NodeFilter(iface.getNodeId(), getServletContext()));
             filters.add(new RecentOutagesFilter());
 
             OutageCriteria criteria = new OutageCriteria(filters.toArray(new Filter[0]));

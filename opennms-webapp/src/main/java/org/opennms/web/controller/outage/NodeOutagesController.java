@@ -35,14 +35,14 @@ public class NodeOutagesController extends AbstractController implements Initial
     /** {@inheritDoc} */
     @Override
     protected ModelAndView handleRequestInternal(HttpServletRequest request, HttpServletResponse response) throws Exception {
-        Node node = ElementUtil.getNodeByParams(request);
+        Node node = ElementUtil.getNodeByParams(request, getServletContext());
 
         Outage[] outages = new Outage[0];
 
         if (node.getNodeId() > 0) {
             List<Filter> filters = new ArrayList<Filter>();
 
-            filters.add(new NodeFilter(node.getNodeId()));
+            filters.add(new NodeFilter(node.getNodeId(), getServletContext()));
             filters.add(new RecentOutagesFilter());
 
             OutageCriteria criteria = new OutageCriteria(filters.toArray(new Filter[0]), SortStyle.ID, null, -1, -1);

@@ -131,7 +131,7 @@ public class AlarmFilterController extends AbstractController implements Initial
         List<Filter> filterList = new ArrayList<Filter>();
         if (filterStrings != null) {
             for (int i = 0; i < filterStrings.length; i++) {
-                Filter filter = AlarmUtil.getFilter(filterStrings[i]);
+                Filter filter = AlarmUtil.getFilter(filterStrings[i], getServletContext());
                 if (filter != null) {
                     filterList.add(filter);
                 }

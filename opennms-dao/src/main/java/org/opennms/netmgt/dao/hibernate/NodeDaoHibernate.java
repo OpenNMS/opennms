@@ -166,6 +166,7 @@ public class NodeDaoHibernate extends AbstractDaoHibernate<OnmsNode, Integer>
                 + "join n.categories c " 
                 + "left join fetch n.assetRecord "
                 + "left join fetch n.ipInterfaces as iface "
+                + "left join fetch n.snmpInterfaces as snmpIface"
                 + "left join fetch iface.monitoredServices as monSvc "
                 + "left join fetch monSvc.serviceType "
                 + "left join fetch monSvc.currentOutages "

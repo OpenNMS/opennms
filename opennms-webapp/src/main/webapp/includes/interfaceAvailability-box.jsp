@@ -82,7 +82,7 @@
 %>
 
 <%
-    Interface intf = ElementUtil.getInterfaceByParams(request);
+    Interface intf = ElementUtil.getInterfaceByParams(request, getServletContext());
     int nodeId = intf.getNodeId();
     String ipAddr = intf.getIpAddress();
 
@@ -169,7 +169,7 @@ if (overallRtcValue < 0) {
             throw new IllegalArgumentException( "Cannot take null parameters." );
         }
         
-        Service[] svcs = NetworkElementFactory.getServicesOnInterface(intf.getNodeId(), intf.getIpAddress());
+        Service[] svcs = NetworkElementFactory.getInstance(getServletContext()).getServicesOnInterface(intf.getNodeId(), intf.getIpAddress());
         
         if( svcs != null ) {
             Arrays.sort(svcs, this.serviceComparator); 

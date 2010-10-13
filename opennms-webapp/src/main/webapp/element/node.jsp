@@ -82,25 +82,25 @@
 
     public void init() throws ServletException {
         try {
-            m_telnetServiceId = NetworkElementFactory.getServiceIdFromName("Telnet");
+            m_telnetServiceId = NetworkElementFactory.getInstance(getServletContext()).getServiceIdFromName("Telnet");
         } catch (Exception e) {
             throw new ServletException("Could not determine the Telnet service ID", e);
         }        
 
         try {
-            m_httpServiceId = NetworkElementFactory.getServiceIdFromName("HTTP");
+            m_httpServiceId = NetworkElementFactory.getInstance(getServletContext()).getServiceIdFromName("HTTP");
         } catch (Exception e) {
             throw new ServletException("Could not determine the HTTP service ID", e);
         }
 
         try {
-            m_dellServiceId = NetworkElementFactory.getServiceIdFromName("Dell-OpenManage");
+            m_dellServiceId = NetworkElementFactory.getInstance(getServletContext()).getServiceIdFromName("Dell-OpenManage");
         } catch (Exception e) {
             throw new ServletException("Could not determine the Dell-OpenManage service ID", e);
         }
 
         try {
-            m_snmpServiceId = NetworkElementFactory.getServiceIdFromName("SNMP");
+            m_snmpServiceId = NetworkElementFactory.getInstance(getServletContext()).getServiceIdFromName("SNMP");
         } catch (Exception e) {
             throw new ServletException("Could not determine the SNMP service ID", e);
         }
@@ -118,8 +118,8 @@
         }
     }
     
-    public static String findServiceAddress(int nodeId, int serviceId) throws SQLException, UnknownHostException {
-        Service[] services = NetworkElementFactory.getServicesOnNode(nodeId, serviceId);
+    public static String findServiceAddress(int nodeId, int serviceId, ServletContext servletContext) throws SQLException, UnknownHostException {
+        Service[] services = NetworkElementFactory.getInstance(servletContext).getServicesOnNode(nodeId, serviceId);
         if (services == null || services.length == 0) {
             return null;
         }
@@ -138,8 +138,8 @@
         }
     }
     
-    public static Collection<Map<String, String>> createLinkForService(int nodeId, int serviceId, String linkText, String linkPrefix, String linkSuffix) throws SQLException, UnknownHostException {
-        String ip = findServiceAddress(nodeId, serviceId);
+    public static Collection<Map<String, String>> createLinkForService(int nodeId, int serviceId, String linkText, String linkPrefix, String linkSuffix, ServletContext servletContext) throws SQLException, UnknownHostException {
+        String ip = findServiceAddress(nodeId, serviceId, servletContext);
         if (ip == null) {
             Map<String, String> empty = new HashMap<String, String>(0);
             return Collections.singleton(empty);
@@ -153,7 +153,7 @@
 %>
 
 <%
-    Node node_db = ElementUtil.getNodeByParams(request);
+    Node node_db = ElementUtil.getNodeByParams(request, getServletContext());
     int nodeId = node_db.getNodeId();
     
     Map<String, Object> nodeModel = new TreeMap<String, Object>();
@@ -162,9 +162,9 @@
     nodeModel.put("foreignSource", node_db.getForeignSource());
 
     List<Map<String, String>> links = new ArrayList<Map<String, String>>();
-    links.addAll(createLinkForService(nodeId, m_telnetServiceId, "Telnet", "telnet://", ""));
-    links.addAll(createLinkForService(nodeId, m_httpServiceId, "HTTP", "http://", "/"));
-    links.addAll(createLinkForService(nodeId, m_dellServiceId, "OpenManage", "https://", ":1311"));
+    links.addAll(createLinkForService(nodeId, m_telnetServiceId, "Telnet", "telnet://", "", getServletContext()));
+    links.addAll(createLinkForService(nodeId, m_httpServiceId, "HTTP", "http://", "/", getServletContext()));
+    links.addAll(createLinkForService(nodeId, m_dellServiceId, "OpenManage", "https://", ":1311", getServletContext()));
     nodeModel.put("links", links);
 
     Asset asset = m_model.getAsset(nodeId);
@@ -180,7 +180,7 @@
     nodeModel.put("admin", request.isUserInRole(Authentication.ADMIN_ROLE));
     
     // get the child interfaces
-    Interface[] intfs = NetworkElementFactory.getActiveInterfacesOnNode(nodeId);
+    Interface[] intfs = NetworkElementFactory.getInstance(getServletContext()).getActiveInterfacesOnNode(nodeId);
     if (intfs != null) { 
         nodeModel.put("intfs", intfs);
     } else {
@@ -188,9 +188,9 @@
     }
 
     // see if any interfaces have ifAliases
-    nodeModel.put("hasIfAliases", NetworkElementFactory.nodeHasIfAliases(nodeId));
+    nodeModel.put("hasIfAliases", NetworkElementFactory.getInstance(getServletContext()).nodeHasIfAliases(nodeId));
     
-    Service[] snmpServices = NetworkElementFactory.getServicesOnNode(nodeId, m_snmpServiceId);
+    Service[] snmpServices = NetworkElementFactory.getInstance(getServletContext()).getServicesOnNode(nodeId, m_snmpServiceId);
     if (snmpServices != null && snmpServices.length > 0) {
         for (Interface intf : intfs) {
             if ("P".equals(intf.getIsSnmpPrimary())) {

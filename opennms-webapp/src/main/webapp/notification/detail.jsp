@@ -110,8 +110,8 @@
   <tr class="<%=eventSeverity%>">
     <td width="15%">Node</td>
     <td width="17%">
-      <%if (NetworkElementFactory.getNodeLabel(notice.getNodeId())!=null) { %>
-        <a href="element/node.jsp?node=<%=notice.getNodeId()%>"><%=NetworkElementFactory.getNodeLabel(notice.getNodeId())%></a>
+      <%if (NetworkElementFactory.getInstance(getServletContext()).getNodeLabel(notice.getNodeId())!=null) { %>
+        <a href="element/node.jsp?node=<%=notice.getNodeId()%>"><%=NetworkElementFactory.getInstance(getServletContext()).getNodeLabel(notice.getNodeId())%></a>
       <% } else { %>
         &nbsp;
       <% } %>
@@ -120,7 +120,7 @@
     <td width="15%">Interface</td>
 
     <td width="17%">
-      <%if (NetworkElementFactory.getNodeLabel(notice.getNodeId())!=null && notice.getIpAddress()!=null) { %>
+      <%if (NetworkElementFactory.getInstance(getServletContext()).getNodeLabel(notice.getNodeId())!=null && notice.getIpAddress()!=null) { %>
         <a href="element/interface.jsp?node=<%=notice.getNodeId()%>&intf=<%=notice.getIpAddress()%>"><%=notice.getIpAddress()%></a>
       <% } else if (notice.getIpAddress()!=null) { %>
         <%=notice.getIpAddress()%>
@@ -132,7 +132,7 @@
     <td width="15%">Service</td>
 
     <td width="17%">
-      <%if (NetworkElementFactory.getNodeLabel(notice.getNodeId())!=null && notice.getIpAddress()!=null && notice.getServiceName()!=null) { %>
+      <%if (NetworkElementFactory.getInstance(getServletContext()).getNodeLabel(notice.getNodeId())!=null && notice.getIpAddress()!=null && notice.getServiceName()!=null) { %>
         <a href="element/service.jsp?node=<%=notice.getNodeId()%>&intf=<%=notice.getIpAddress()%>&service=<%=notice.getServiceId()%>"><%=notice.getServiceName()%></a>
       <% } else if (notice.getServiceName()!=null) { %>
         <%=notice.getServiceName()%>
@@ -142,10 +142,10 @@
     </td>
   </tr>
 
-  <%if (NetworkElementFactory.getNodeLabel(notice.getNodeId())!=null) { %>
+  <%if (NetworkElementFactory.getInstance(getServletContext()).getNodeLabel(notice.getNodeId())!=null) { %>
     <tr class="<%=eventSeverity%>">
       <td colspan="6">
-        <a href="outage/list.htm?filter=node%3D<%=notice.getNodeId()%>">See outages for <%=NetworkElementFactory.getNodeLabel(notice.getNodeId())%></a>
+        <a href="outage/list.htm?filter=node%3D<%=notice.getNodeId()%>">See outages for <%=NetworkElementFactory.getInstance(getServletContext()).getNodeLabel(notice.getNodeId())%></a>
       </td>
     </tr>
   <% } %>

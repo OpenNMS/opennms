@@ -50,7 +50,7 @@
 %>
 
 <%
-    Service service = ElementUtil.getServiceByParams(request);
+    Service service = ElementUtil.getServiceByParams(request, getServletContext());
 	
 	int nodeId = service.getNodeId();
 	String ipAddr = service.getIpAddress();
@@ -115,7 +115,7 @@ function doDelete() {
             <table>
               <tr>
                 <th>Node</th> 
-                <td><a href="element/node.jsp?node=<%=service.getNodeId()%>"><%=NetworkElementFactory.getNodeLabel(service.getNodeId())%></a></td>
+                <td><a href="element/node.jsp?node=<%=service.getNodeId()%>"><%=NetworkElementFactory.getInstance(getServletContext()).getNodeLabel(service.getNodeId())%></a></td>
               </tr>
               <tr>
                 <th>Interface</th> 

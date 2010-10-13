@@ -48,6 +48,8 @@ import java.sql.Timestamp;
 import java.util.Date;
 import java.util.Vector;
 
+import javax.servlet.ServletContext;
+
 import org.opennms.core.resource.Vault;
 import org.opennms.core.utils.DBUtils;
 import org.opennms.core.utils.ThreadCategory;
@@ -393,8 +395,8 @@ public class AlarmFactory extends Object {
      * @return an array of {@link org.opennms.web.alarm.Alarm} objects.
      * @throws java.sql.SQLException if any.
      */
-    public static Alarm[] getAlarmsForNode(int nodeId) throws SQLException {
-        return (getAlarmsForNode(nodeId, SortStyle.ID, AcknowledgeType.UNACKNOWLEDGED, -1, -1));
+    public static Alarm[] getAlarmsForNode(int nodeId, ServletContext servletContext) throws SQLException {
+        return (getAlarmsForNode(nodeId, SortStyle.ID, AcknowledgeType.UNACKNOWLEDGED, -1, -1, servletContext));
     }
 
     /**
@@ -407,8 +409,8 @@ public class AlarmFactory extends Object {
      * @return an array of {@link org.opennms.web.alarm.Alarm} objects.
      * @throws java.sql.SQLException if any.
      */
-    public static Alarm[] getAlarmsForNode(int nodeId, SortStyle sortStyle, AcknowledgeType ackType) throws SQLException {
-        return (getAlarmsForNode(nodeId, sortStyle, ackType, -1, -1));
+    public static Alarm[] getAlarmsForNode(int nodeId, SortStyle sortStyle, AcknowledgeType ackType, ServletContext servletContext) throws SQLException {
+        return (getAlarmsForNode(nodeId, sortStyle, ackType, -1, -1, servletContext));
     }
 
     /**
@@ -424,12 +426,12 @@ public class AlarmFactory extends Object {
      * @return an array of {@link org.opennms.web.alarm.Alarm} objects.
      * @throws java.sql.SQLException if any.
      */
-    public static Alarm[] getAlarmsForNode(int nodeId, SortStyle sortStyle, AcknowledgeType ackType, int throttle, int offset) throws SQLException {
+    public static Alarm[] getAlarmsForNode(int nodeId, SortStyle sortStyle, AcknowledgeType ackType, int throttle, int offset, ServletContext servletContext) throws SQLException {
         if (sortStyle == null || ackType == null) {
             throw new IllegalArgumentException("Cannot take null parameters.");
         }
 
-        Filter[] filters = new Filter[] { new NodeFilter(nodeId) };
+        Filter[] filters = new Filter[] { new NodeFilter(nodeId, servletContext) };
         return (AlarmFactory.getAlarms(sortStyle, ackType, filters, throttle, offset));
     }
 
@@ -442,12 +444,12 @@ public class AlarmFactory extends Object {
      * @return a int.
      * @throws java.sql.SQLException if any.
      */
-    public static int getAlarmCountForNode(int nodeId, AcknowledgeType ackType) throws SQLException {
+    public static int getAlarmCountForNode(int nodeId, AcknowledgeType ackType, ServletContext servletContext) throws SQLException {
         if (ackType == null) {
             throw new IllegalArgumentException("Cannot take null parameters.");
         }
 
-        Filter[] filters = new Filter[] { new NodeFilter(nodeId) };
+        Filter[] filters = new Filter[] { new NodeFilter(nodeId, servletContext) };
         return (getAlarmCount(ackType, filters));
     }
 
@@ -466,8 +468,8 @@ public class AlarmFactory extends Object {
      * @return an array of {@link org.opennms.web.alarm.Alarm} objects.
      * @throws java.sql.SQLException if any.
      */
-    public static Alarm[] getAlarmsForInterface(int nodeId, String ipAddress) throws SQLException {
-        return (getAlarmsForInterface(nodeId, ipAddress, SortStyle.ID, AcknowledgeType.UNACKNOWLEDGED, -1, -1));
+    public static Alarm[] getAlarmsForInterface(int nodeId, String ipAddress, ServletContext servletContext) throws SQLException {
+        return (getAlarmsForInterface(nodeId, ipAddress, SortStyle.ID, AcknowledgeType.UNACKNOWLEDGED, -1, -1, servletContext));
     }
 
     /**
@@ -486,12 +488,12 @@ public class AlarmFactory extends Object {
      * @return an array of {@link org.opennms.web.alarm.Alarm} objects.
      * @throws java.sql.SQLException if any.
      */
-    public static Alarm[] getAlarmsForInterface(int nodeId, String ipAddress, SortStyle sortStyle, AcknowledgeType ackType, int throttle, int offset) throws SQLException {
+    public static Alarm[] getAlarmsForInterface(int nodeId, String ipAddress, SortStyle sortStyle, AcknowledgeType ackType, int throttle, int offset, ServletContext servletContext) throws SQLException {
         if (ipAddress == null || sortStyle == null || ackType == null) {
             throw new IllegalArgumentException("Cannot take null parameters.");
         }
 
-        Filter[] filters = new Filter[] { new NodeFilter(nodeId), new InterfaceFilter(ipAddress) };
+        Filter[] filters = new Filter[] { new NodeFilter(nodeId, servletContext), new InterfaceFilter(ipAddress) };
         return (AlarmFactory.getAlarms(sortStyle, ackType, filters, throttle, offset));
     }
 
@@ -557,12 +559,12 @@ public class AlarmFactory extends Object {
      * @return a int.
      * @throws java.sql.SQLException if any.
      */
-    public static int getAlarmCountForInterface(int nodeId, String ipAddress, AcknowledgeType ackType) throws SQLException {
+    public static int getAlarmCountForInterface(int nodeId, String ipAddress, AcknowledgeType ackType, ServletContext servletContext) throws SQLException {
         if (ipAddress == null || ackType == null) {
             throw new IllegalArgumentException("Cannot take null parameters.");
         }
 
-        Filter[] filters = new Filter[] { new NodeFilter(nodeId), new InterfaceFilter(ipAddress) };
+        Filter[] filters = new Filter[] { new NodeFilter(nodeId, servletContext), new InterfaceFilter(ipAddress) };
         return (getAlarmCount(ackType, filters));
     }
 
@@ -599,8 +601,8 @@ public class AlarmFactory extends Object {
      * @return an array of {@link org.opennms.web.alarm.Alarm} objects.
      * @throws java.sql.SQLException if any.
      */
-    public static Alarm[] getAlarmsForService(int nodeId, String ipAddress, int serviceId) throws SQLException {
-        return (getAlarmsForService(nodeId, ipAddress, serviceId, SortStyle.ID, AcknowledgeType.UNACKNOWLEDGED, -1, -1));
+    public static Alarm[] getAlarmsForService(int nodeId, String ipAddress, int serviceId, ServletContext servletContext) throws SQLException {
+        return (getAlarmsForService(nodeId, ipAddress, serviceId, SortStyle.ID, AcknowledgeType.UNACKNOWLEDGED, -1, -1, servletContext));
     }
 
     /**
@@ -620,12 +622,12 @@ public class AlarmFactory extends Object {
      * @return an array of {@link org.opennms.web.alarm.Alarm} objects.
      * @throws java.sql.SQLException if any.
      */
-    public static Alarm[] getAlarmsForService(int nodeId, String ipAddress, int serviceId, SortStyle sortStyle, AcknowledgeType ackType, int throttle, int offset) throws SQLException {
+    public static Alarm[] getAlarmsForService(int nodeId, String ipAddress, int serviceId, SortStyle sortStyle, AcknowledgeType ackType, int throttle, int offset, ServletContext servletContext) throws SQLException {
         if (ipAddress == null || sortStyle == null || ackType == null) {
             throw new IllegalArgumentException("Cannot take null parameters.");
         }
 
-        Filter[] filters = new Filter[] { new NodeFilter(nodeId), new InterfaceFilter(ipAddress), new ServiceFilter(serviceId) };
+        Filter[] filters = new Filter[] { new NodeFilter(nodeId, servletContext), new InterfaceFilter(ipAddress), new ServiceFilter(serviceId) };
         return (AlarmFactory.getAlarms(sortStyle, ackType, filters, throttle, offset));
     }
 
@@ -691,12 +693,12 @@ public class AlarmFactory extends Object {
      * @return a int.
      * @throws java.sql.SQLException if any.
      */
-    public static int getAlarmCountForService(int nodeId, String ipAddress, int serviceId, AcknowledgeType ackType) throws SQLException {
+    public static int getAlarmCountForService(int nodeId, String ipAddress, int serviceId, AcknowledgeType ackType, ServletContext servletContext) throws SQLException {
         if (ipAddress == null || ackType == null) {
             throw new IllegalArgumentException("Cannot take null parameters.");
         }
 
-        Filter[] filters = new Filter[] { new NodeFilter(nodeId), new InterfaceFilter(ipAddress), new ServiceFilter(serviceId) };
+        Filter[] filters = new Filter[] { new NodeFilter(nodeId, servletContext), new InterfaceFilter(ipAddress), new ServiceFilter(serviceId) };
         return (getAlarmCount(ackType, filters));
     }
 

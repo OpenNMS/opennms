@@ -392,14 +392,14 @@
           </td>
           <td class="divider">
 	    <% if(alarms[i].getNodeId() != 0 && alarms[i].getNodeLabel()!= null ) { %>
-              <% Filter nodeFilter = new NodeFilter(alarms[i].getNodeId()); %>             
+              <% Filter nodeFilter = new NodeFilter(alarms[i].getNodeId(), getServletContext()); %>             
               <% String[] labels = this.getNodeLabels( alarms[i].getNodeLabel() ); %>
               <a href="element/node.jsp?node=<%=alarms[i].getNodeId()%>" title="<%=labels[1]%>"><%=labels[0]%></a>
                     
               <% if( !parms.filters.contains(nodeFilter) ) { %>
                 <nobr>
                   <a href="<%=this.makeLink( parms, nodeFilter, true)%>" class="filterLink" title="Show only alarms on this node">${addPositiveFilter}</a>
-                  <a href="<%=this.makeLink( parms, new NegativeNodeFilter(alarms[i].getNodeId()), true)%>" class="filterLink" title="Do not show alarms for this node">${addNegativeFilter}</a>
+                  <a href="<%=this.makeLink( parms, new NegativeNodeFilter(alarms[i].getNodeId(), getServletContext()), true)%>" class="filterLink" title="Do not show alarms for this node">${addNegativeFilter}</a>
                 </nobr>
               <% } %>
             <% } else { %>

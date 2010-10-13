@@ -32,7 +32,7 @@
 
 package org.opennms.web.alarm.filter;
 
-import java.sql.SQLException;
+import javax.servlet.ServletContext;
 
 import org.opennms.web.element.NetworkElementFactory;
 import org.opennms.web.filter.EqualsFilter;
@@ -48,14 +48,16 @@ import org.opennms.web.filter.SQLType;
 public class NodeFilter extends EqualsFilter<Integer> {
     /** Constant <code>TYPE="node"</code> */
     public static final String TYPE = "node";
+    private ServletContext m_servletContext;
 
     /**
      * <p>Constructor for NodeFilter.</p>
      *
      * @param nodeId a int.
      */
-    public NodeFilter(int nodeId) {
+    public NodeFilter(int nodeId, ServletContext servletContext) {
         super(TYPE, SQLType.INT, "NODEID", "node.id", nodeId);
+        m_servletContext = servletContext;
     }
 
     /**
@@ -64,12 +66,12 @@ public class NodeFilter extends EqualsFilter<Integer> {
      * @return a {@link java.lang.String} object.
      */
     public String getTextDescription() {
-        String nodeName = Integer.toString(getValue());
-        try {
-            nodeName = NetworkElementFactory.getNodeLabel(getValue());
-        } catch (SQLException e) {
+        String nodeName = NetworkElementFactory.getInstance(m_servletContext).getNodeLabel(getValue());
+        
+        if(nodeName == null) {
+            nodeName = Integer.toString(getValue());
         }
-
+            
         return (TYPE + "=" + nodeName);
     }
 

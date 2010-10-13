@@ -69,7 +69,7 @@
     }%>
 
 <%
-    Interface intf_db = ElementUtil.getSnmpInterfaceByParams(request);
+    Interface intf_db = ElementUtil.getSnmpInterfaceByParams(request, getServletContext());
     int nodeId = intf_db.getNodeId();
     String ipAddr = intf_db.getIpAddress();
 	int ifIndex = -1;    
@@ -182,7 +182,7 @@ function doDelete() {
 	    <table>
               <tr>
                 <th>Node</th>
-                <td><a href="element/node.jsp?node=<%=intf_db.getNodeId()%>"><%=NetworkElementFactory.getNodeLabel(intf_db.getNodeId())%></a></td>
+                <td><a href="element/node.jsp?node=<%=intf_db.getNodeId()%>"><%=NetworkElementFactory.getInstance(getServletContext()).getNodeLabel(intf_db.getNodeId())%></a></td>
               </tr>
               <tr>
                 <th>Interface Index</th>
@@ -225,8 +225,8 @@ function doDelete() {
               <% if(request.isUserInRole( Authentication.ADMIN_ROLE )) { %>
                 <tr>
 	                <th>Snmp Polling Package</th>
-    	            <td><%= (snmpPollerCfgFactory.getPackageName(NetworkElementFactory.getIpPrimaryAddress(nodeId)) == null) ? "&nbsp;" : 
-        	        snmpPollerCfgFactory.getPackageName(NetworkElementFactory.getIpPrimaryAddress(nodeId))%></td>
+    	            <td><%= (snmpPollerCfgFactory.getPackageName(NetworkElementFactory.getInstance(getServletContext()).getIpPrimaryAddress(nodeId)) == null) ? "&nbsp;" : 
+        	        snmpPollerCfgFactory.getPackageName(NetworkElementFactory.getInstance(getServletContext()).getIpPrimaryAddress(nodeId))%></td>
                 </tr>
 	           <% } %>
                 <tr> 
