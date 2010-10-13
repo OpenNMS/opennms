@@ -162,7 +162,7 @@
         if (lineItems.intValue() > 0)
         {
                 ManagedInterface firstInterface = (ManagedInterface)interfaces.get(0);
-                nodeLabel = NetworkElementFactory.getNodeLabel(firstInterface.getNodeid());
+                nodeLabel = NetworkElementFactory.getInstance(getServletContext()).getNodeLabel(firstInterface.getNodeid());
     
                 if ( interfaces.size() == 1)
                 { 

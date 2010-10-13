@@ -35,7 +35,6 @@
 package org.opennms.web.admin.nodeManagement;
 
 import java.io.IOException;
-import java.sql.SQLException;
 
 import javax.servlet.RequestDispatcher;
 import javax.servlet.ServletException;
@@ -75,7 +74,6 @@ public class DeleteServiceServlet extends HttpServlet {
      */
     /** {@inheritDoc} */
     public void doPost(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
-        try {
 
             checkParameters(request);
 
@@ -83,7 +81,7 @@ public class DeleteServiceServlet extends HttpServlet {
             String ipAddr = request.getParameter("intf");
             int serviceId = WebSecurityUtils.safeParseInt(request.getParameter("service"));
 
-            Service service_db = NetworkElementFactory.getService(nodeId, ipAddr, serviceId);
+            Service service_db = NetworkElementFactory.getInstance(getServletContext()).getService(nodeId, ipAddr, serviceId);
 
             if (service_db == null) {
                 // handle this WAY better, very awful
@@ -96,9 +94,6 @@ public class DeleteServiceServlet extends HttpServlet {
             // forward the request for proper display
             RequestDispatcher dispatcher = this.getServletContext().getRequestDispatcher("/admin/serviceDeleted.jsp");
             dispatcher.forward(request, response);
-        } catch (SQLException e) {
-            throw new ServletException("Error communicating with database", e);
-        }
 
     }
 

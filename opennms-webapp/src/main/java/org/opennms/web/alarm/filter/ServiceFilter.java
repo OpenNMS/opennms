@@ -32,7 +32,7 @@
 
 package org.opennms.web.alarm.filter;
 
-import java.sql.SQLException;
+import javax.servlet.ServletContext;
 
 import org.opennms.web.element.NetworkElementFactory;
 import org.opennms.web.filter.EqualsFilter;
@@ -63,12 +63,9 @@ public class ServiceFilter extends EqualsFilter<Integer> {
      *
      * @return a {@link java.lang.String} object.
      */
-    public String getTextDescription() {
+    public String getTextDescription(ServletContext servletContext) {
         String serviceName = Integer.toString(getServiceId());
-        try {
-            serviceName = NetworkElementFactory.getServiceNameFromId(getServiceId());
-        } catch (SQLException e) {
-        }
+            serviceName = NetworkElementFactory.getInstance(servletContext).getServiceNameFromId(getServiceId());
 
         return (TYPE + "=" + serviceName);
     }

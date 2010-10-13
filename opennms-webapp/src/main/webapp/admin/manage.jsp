@@ -262,7 +262,7 @@
           {
                 
                 ManagedInterface curInterface = (ManagedInterface)nodes.get(i);
-                String nodelabel = NetworkElementFactory.getNodeLabel(curInterface.getNodeid());
+                String nodelabel = NetworkElementFactory.getInstance(getServletContext()).getNodeLabel(curInterface.getNodeid());
 		String intKey = curInterface.getNodeid() + "-" + curInterface.getAddress();
                 StringBuffer serviceArray = new StringBuffer("[");
                 String prepend = "";

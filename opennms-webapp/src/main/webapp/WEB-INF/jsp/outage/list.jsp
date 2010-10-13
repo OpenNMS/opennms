@@ -139,10 +139,10 @@
               <% String longLabel  = outages[i].getNodeLabel(); %>
               <% String shortLabel = ElementUtil.truncateLabel(longLabel, 32); %>
               <a href="element/node.jsp?node=<%=outages[i].getNodeId()%>" title="<%=longLabel%>"><%=shortLabel%></a>
-              <% Filter nodeFilter = new NodeFilter(outages[i].getNodeId()); %>
+              <% Filter nodeFilter = new NodeFilter(outages[i].getNodeId(), getServletContext()); %>
               <% if( !parms.filters.contains(nodeFilter) ) { %>
                   <a href="<%=OutageUtil.makeLink( request, parms, nodeFilter, true)%>" title="Show only outages on this node"><%=ZOOM_IN_ICON%></a>
-                  <a href="<%=OutageUtil.makeLink( request, parms, new NegativeNodeFilter(outages[i].getNodeId()), true)%>" title="Do not show outages for this node"><%=DISCARD_ICON%></a>              
+                  <a href="<%=OutageUtil.makeLink( request, parms, new NegativeNodeFilter(outages[i].getNodeId(), getServletContext()), true)%>" title="Do not show outages for this node"><%=DISCARD_ICON%></a>              
               <% } %>                          
             <% } %>
           </td>

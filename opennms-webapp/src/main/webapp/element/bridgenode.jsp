@@ -73,14 +73,14 @@
         statusMap.put( new Character('D'), "Deleted" );
 
         try {
-            this.telnetServiceId = NetworkElementFactory.getServiceIdFromName("Telnet");
+            this.telnetServiceId = NetworkElementFactory.getInstance(getServletContext()).getServiceIdFromName("Telnet");
         }
         catch( Exception e ) {
             throw new ServletException( "Could not determine the Telnet service ID", e );
         }
         
         try {
-            this.httpServiceId = NetworkElementFactory.getServiceIdFromName("HTTP");
+            this.httpServiceId = NetworkElementFactory.getInstance(getServletContext()).getServiceIdFromName("HTTP");
         }
         catch( Exception e ) {
             throw new ServletException( "Could not determine the HTTP service ID", e );
@@ -105,7 +105,7 @@
     int nodeId = WebSecurityUtils.safeParseInt( nodeIdString );
 
     //get the database node info
-    Node node_db = NetworkElementFactory.getNode( nodeId );
+    Node node_db = NetworkElementFactory.getInstance(getServletContext()).getNode( nodeId );
     if( node_db == null ) {
         //handle this WAY better, very awful
         throw new ServletException( "No such node in database" );
@@ -113,7 +113,7 @@
 
     //find the telnet interfaces, if any
     String telnetIp = null;
-    Service[] telnetServices = NetworkElementFactory.getServicesOnNode(nodeId, this.telnetServiceId);
+    Service[] telnetServices = NetworkElementFactory.getInstance(getServletContext()).getServicesOnNode(nodeId, this.telnetServiceId);
     
     if (telnetServices != null && telnetServices.length > 0) {
         ArrayList<InetAddress> ips = new ArrayList<InetAddress>();
@@ -130,7 +130,7 @@
 
     //find the HTTP interfaces, if any
     String httpIp = null;
-    Service[] httpServices = NetworkElementFactory.getServicesOnNode(nodeId, this.httpServiceId);
+    Service[] httpServices = NetworkElementFactory.getInstance(getServletContext()).getServicesOnNode(nodeId, this.httpServiceId);
 
     if (httpServices != null && httpServices.length > 0) {
         ArrayList<InetAddress> ips = new ArrayList<InetAddress>();

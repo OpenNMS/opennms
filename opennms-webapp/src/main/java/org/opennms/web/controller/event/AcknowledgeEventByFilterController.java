@@ -115,7 +115,7 @@ public class AcknowledgeEventByFilterController extends AbstractController imple
         // handle the filter parameters
         ArrayList<Filter> filterArray = new ArrayList<Filter>();
         for (String filterString : filterStrings) {
-            Filter filter = EventUtil.getFilter(filterString);
+            Filter filter = EventUtil.getFilter(filterString, getServletContext());
             if (filter != null) {
                 filterArray.add(filter);
             }

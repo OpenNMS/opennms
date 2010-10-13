@@ -38,6 +38,8 @@ package org.opennms.web.rss;
 import java.sql.SQLException;
 import java.util.ArrayList;
 
+import javax.servlet.ServletContext;
+
 import org.opennms.netmgt.model.OnmsSeverity;
 import org.opennms.web.WebSecurityUtils;
 import org.opennms.web.event.AcknowledgeType;
@@ -68,7 +70,7 @@ public class EventFeed extends AbstractFeed {
      *
      * @return a {@link com.sun.syndication.feed.synd.SyndFeed} object.
      */
-    public SyndFeed getFeed() {
+    public SyndFeed getFeed(ServletContext servletContext) {
         SyndFeed feed = new SyndFeedImpl();
 
         feed.setTitle("Events");
@@ -83,7 +85,7 @@ public class EventFeed extends AbstractFeed {
             ArrayList<Filter> filters = new ArrayList<Filter>();
             if (this.getRequest().getParameter("node") != null) {
                 Integer nodeId = WebSecurityUtils.safeParseInt(this.getRequest().getParameter("node"));
-                filters.add(new NodeFilter(nodeId));
+                filters.add(new NodeFilter(nodeId, servletContext));
             }
             if (this.getRequest().getParameter("severity") != null) {
                 String parameter = this.getRequest().getParameter("severity");

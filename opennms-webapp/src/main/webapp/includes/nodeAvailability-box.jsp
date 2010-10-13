@@ -71,7 +71,7 @@
     public Service[] getServices(Interface intf) throws java.sql.SQLException {
         Assert.notNull(intf, "intf argument cannot be null");
         
-        Service[] svcs = NetworkElementFactory.getServicesOnInterface(intf.getNodeId(), intf.getIpAddress());
+        Service[] svcs = NetworkElementFactory.getInstance(getServletContext()).getServicesOnInterface(intf.getNodeId(), intf.getIpAddress());
         
         if (svcs != null) {
             Arrays.sort(svcs, m_serviceComparator); 
@@ -103,14 +103,14 @@
     int nodeId = WebSecurityUtils.safeParseInt(nodeIdString);
 
     //get the database node info
-    Node node_db = NetworkElementFactory.getNode(nodeId);
+    Node node_db = NetworkElementFactory.getInstance(getServletContext()).getNode(nodeId);
     if (node_db == null) {
         //handle this WAY better, very awful
         throw new ServletException("No such node in database");
     }
 
     //get the child interfaces
-    Interface[] intfs = NetworkElementFactory.getActiveInterfacesOnNode( nodeId );
+    Interface[] intfs = NetworkElementFactory.getInstance(getServletContext()).getActiveInterfacesOnNode( nodeId );
     if (intfs == null) { 
         intfs = new Interface[0]; 
     }
@@ -144,7 +144,7 @@
   </tr>
 
 <%  if (overallRtcValue >= 0) { %>
-       <% Interface[] availIntfs = NetworkElementFactory.getActiveInterfacesOnNode(nodeId); %>
+       <% Interface[] availIntfs = NetworkElementFactory.getInstance(getServletContext()).getActiveInterfacesOnNode(nodeId); %>
            
         <% for( int i=0; i < availIntfs.length; i++ ) { %>
           <% Interface intf = availIntfs[i]; %>

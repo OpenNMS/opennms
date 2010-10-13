@@ -39,6 +39,8 @@ package org.opennms.web.notification;
 
 import java.util.StringTokenizer;
 
+import javax.servlet.ServletContext;
+
 import org.opennms.web.WebSecurityUtils;
 import org.opennms.web.filter.Filter;
 import org.opennms.web.notification.filter.AcknowledgedByFilter;
@@ -65,7 +67,7 @@ public abstract class NoticeUtil extends Object {
      * @param filterString a {@link java.lang.String} object.
      * @return a org$opennms$web$filter$Filter object.
      */
-    public static org.opennms.web.filter.Filter getFilter(String filterString) {
+    public static org.opennms.web.filter.Filter getFilter(String filterString, ServletContext servletContext) {
         Filter filter = null;
 
         StringTokenizer tokens = new StringTokenizer(filterString, "=");
@@ -79,7 +81,7 @@ public abstract class NoticeUtil extends Object {
         } else if (type.equals(NodeFilter.TYPE)) {
             filter = new NodeFilter(WebSecurityUtils.safeParseInt(value));
         } else if(type.equals(NegativeNodeFilter.TYPE)) {
-        	filter = new NegativeNodeFilter(WebSecurityUtils.safeParseInt(value));
+        	filter = new NegativeNodeFilter(WebSecurityUtils.safeParseInt(value), servletContext);
         } else if (type.equals(NotificationIdFilter.TYPE)) {
             filter = new NotificationIdFilter(WebSecurityUtils.safeParseInt(value));
         } else if (type.equals(ResponderFilter.TYPE)) {

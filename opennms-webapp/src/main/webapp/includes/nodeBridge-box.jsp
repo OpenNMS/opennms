@@ -93,7 +93,7 @@
                 <td><%=stpnodes[i].get_basenumports()%></td>
                 <td><%=stpnodes[i].getStatusString()%></td>
 				<% if (stpnodes[i].get_stprootnodeid() != 0) { 
-					   	Node node = NetworkElementFactory.getNode(stpnodes[i].get_stprootnodeid());
+					   	Node node = NetworkElementFactory.getInstance(getServletContext()).getNode(stpnodes[i].get_stprootnodeid());
 				%>
                 <td><a href="element/node.jsp?node=<%=stpnodes[i].get_stprootnodeid()%>"><%=node.getLabel()%></a><br/>(<strong><%=stpnodes[i].get_stpdesignatedroot()%></strong>)</td>
 				<% } else { %>

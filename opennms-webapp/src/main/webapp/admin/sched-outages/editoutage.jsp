@@ -729,6 +729,7 @@ function updateOutageTypeDisplay(selectElement) {
 							<%
 						} else { 
 							org.opennms.netmgt.config.poller.Node[] outageNodes = theOutage.getNode();
+
 							if (outageNodes.length > 0) {
 								%>
 								<form id="deleteNodes" action="admin/sched-outages/editoutage.jsp" method="post">
@@ -738,7 +739,7 @@ function updateOutageTypeDisplay(selectElement) {
 									org.opennms.netmgt.config.poller.Node node = outageNodes[i];
 									int nodeId = node.getId();
 									out.println("<input type=\"image\" src=\"images/redcross.gif\" name=\"deleteNode" + i + "\" />");
-									org.opennms.web.element.Node thisNode = NetworkElementFactory.getNode(nodeId);
+									org.opennms.web.element.Node thisNode = NetworkElementFactory.getInstance(getServletContext()).getNode(nodeId);
 									if (thisNode != null) {
 										out.println(thisNode.getLabel());
 									} else {
@@ -781,7 +782,7 @@ function updateOutageTypeDisplay(selectElement) {
 								for (int i = 0; i < outageInterfaces.length; i++) {
 									org.opennms.netmgt.config.poller.Interface iface = outageInterfaces[i];
 									String addr = iface.getAddress();
-									org.opennms.web.element.Interface[] interfaces = NetworkElementFactory.getInterfacesWithIpAddress(addr);
+									org.opennms.web.element.Interface[] interfaces = NetworkElementFactory.getInstance(getServletContext()).getInterfacesWithIpAddress(addr);
 									for ( org.opennms.web.element.Interface thisInterface : interfaces ) {
 										String thisAddr = thisInterface.getIpAddress();
 										String thisName = thisInterface.getHostname();

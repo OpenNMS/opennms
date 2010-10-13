@@ -78,7 +78,7 @@
         throw new ServletException( "Wrong data type, should be integer", e );
     }
 
-    Service service_db = NetworkElementFactory.getService( nodeId, ipAddr, serviceId );
+    Service service_db = NetworkElementFactory.getInstance(getServletContext()).getService( nodeId, ipAddr, serviceId );
 
     if( service_db == null ) {
         //handle this WAY better, very awful

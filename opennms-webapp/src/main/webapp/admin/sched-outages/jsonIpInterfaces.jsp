@@ -43,7 +43,7 @@ public static class AutocompleteRecord {
 }
 %>
 <%
-List<org.opennms.web.element.Interface> items = Arrays.asList(NetworkElementFactory.getAllManagedIpInterfaces(false));
+List<org.opennms.web.element.Interface> items = Arrays.asList(NetworkElementFactory.getInstance(getServletContext()).getAllManagedIpInterfaces(false));
 %>
 
 <%-- Use this segment to test large numbers of JSON objects

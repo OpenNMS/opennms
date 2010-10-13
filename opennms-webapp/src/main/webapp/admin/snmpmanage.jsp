@@ -157,7 +157,7 @@
           {
                 
                 SnmpManagedNode curNode = (SnmpManagedNode)nodes.get(i);
-                String nodelabel = NetworkElementFactory.getNodeLabel(curNode.getNodeID());
+                String nodelabel = NetworkElementFactory.getInstance(getServletContext()).getNodeLabel(curNode.getNodeID());
 		int nodeid = curNode.getNodeID();
                  
           row.append("<tr>\n");
