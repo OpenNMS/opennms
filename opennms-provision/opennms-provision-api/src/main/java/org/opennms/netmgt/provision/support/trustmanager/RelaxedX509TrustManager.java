@@ -43,11 +43,8 @@ import javax.net.ssl.X509TrustManager;
  * used to validate certificates from an HTTPS server. With this class all
  * certificates will be approved
  *
- * @author <A HREF="mailto:jason@opennms.org">Jason </A>
- * @author <A HREF="http://www.opennsm.org">OpenNMS </A>
- * @author <A HREF="mailto:jason@opennms.org">Jason </A>
- * @author <A HREF="http://www.opennsm.org">OpenNMS </A>
- * @version $Id: $
+ * @author <a href="mailto:jason@opennms.org">Jason</a>
+ * @author <a href="http://www.opennms.org">OpenNMS</a>
  */
 public class RelaxedX509TrustManager implements X509TrustManager {
     /** {@inheritDoc} */

@@ -70,16 +70,9 @@ import com.novell.ldap.LDAPSocketFactory;
  * daemon.
  * </P>
  *
- * @author <A HREF="mailto:jason@opennms.org">Jason Johns </A>
- * @author <A HREF="mailto:weave@oculan.com">Brian Weaver </A>
- * @author <A HREF="http://www.opennsm.org">OpenNMS </A>
- * @author <A HREF="mailto:jason@opennms.org">Jason Johns </A>
- * @author <A HREF="mailto:weave@oculan.com">Brian Weaver </A>
- * @author <A HREF="http://www.opennsm.org">OpenNMS </A>
- * @author <A HREF="mailto:jason@opennms.org">Jason Johns </A>
- * @author <A HREF="mailto:weave@oculan.com">Brian Weaver </A>
- * @author <A HREF="http://www.opennsm.org">OpenNMS </A>
- * @version 1.1.1.1
+ * @author <a href="mailto:jason@opennms.org">Jason Johns</a>
+ * @author <a href="mailto:weave@oculan.com">Brian Weaver</a>
+ * @author <a href="http://www.opennms.org">OpenNMS</a>
  */
 public final class LdapPlugin extends AbstractPlugin {
 
