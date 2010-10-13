@@ -6,6 +6,162 @@
 
 	<!-- Start 1.8 -->
 
+	<section id="opennms-1.8.5">
+		<title>Changes in OpenNMS 1.8.5</title>
+
+		<section id="opennms-1.8.5-features">
+			<title>New Features and Enhancements</title>
+
+			<itemizedlist>
+
+				<listitem>
+					<para>Forms involving adding/removing surveillance categories now
+					redirects back to the referring page when submitted. (Bug
+					<ulink url="http://bugzilla.opennms.org/show_bug.cgi?id=3028">#3028</ulink>)</para>
+				</listitem>
+
+				<listitem>
+					<para>Data collection and resource graph definitions for AKCP sensorProbes was added. (Bug
+					<ulink url="http://bugzilla.opennms.org/show_bug.cgi?id=4118">#4118</ulink>)</para>
+				</listitem>
+
+				<listitem>
+					<para>The DNS service monitor now gives useful logging when set to INFO. (Bug
+					<ulink url="http://bugzilla.opennms.org/show_bug.cgi?id=4142">#4142</ulink>)</para>
+				</listitem>
+
+				<listitem>
+					<para>Events for Concord eHealth Health Report / LiveExceptions traps were added. (Bug
+					<ulink url="http://bugzilla.opennms.org/show_bug.cgi?id=4145">#4145</ulink>)</para>
+				</listitem>
+
+				<listitem>
+					<para>The Manage/Unmanage Interfaces form now validates IP addresses. (Bug
+					<ulink url="http://bugzilla.opennms.org/show_bug.cgi?id=4146">#4146</ulink>)</para>
+				</listitem>
+
+				<listitem>
+					<para>A tool for creating a detailed report of OpenNMS and system statistics was created.
+					For details, see the <ulink url="http://www.opennms.org/wiki/System_Dump_Specification">feature
+					specification here</ulink>. (Bug
+					<ulink url="http://bugzilla.opennms.org/show_bug.cgi?id=4167">#4167</ulink>)</para>
+				</listitem>
+
+				<listitem>
+					<para>If the JDK has been forced with "runjava -f," the install and opennms scripts now
+					warn, rather than error, if the JDK is invalid at runtime. (Bug
+					<ulink url="http://bugzilla.opennms.org/show_bug.cgi?id=4168">#4168</ulink>)</para>
+				</listitem>
+
+				<listitem>
+					<para>An example of how to monitor a specific virtual host has been added to the HttpMonitor
+					examples. (Bug
+					<ulink url="http://bugzilla.opennms.org/show_bug.cgi?id=4169">#4169</ulink>)</para>
+				</listitem>
+
+				<listitem>
+					<para>The remote poller is now capable of reporting correct timestamps even if the host
+					that it is running on is invalid.  Note, this <bold>requires</bold> that you update remote
+					pollers to the new version, the protocol between the remote poller and OpenNMS server
+					has changed. (Bug
+					<ulink url="http://bugzilla.opennms.org/show_bug.cgi?id=4172">#4172</ulink>)</para>
+				</listitem>
+
+			</itemizedlist>
+
+		</section>
+
+		<section id="opennms-1.8.5-bugs">
+			<title>Bug Fixes</title>
+
+			<itemizedlist>
+
+				<listitem>
+					<para>Some issues with field validation in the outage editor have been fixed. (Bug
+					<ulink url="http://bugzilla.opennms.org/show_bug.cgi?id=1225">#1225</ulink>)</para>
+				</listitem>
+
+				<listitem>
+					<para>While customizing an new/existing report from the KSC Reports page, it would lose
+					the prefabricated report selection. (Bug
+					<ulink url="http://bugzilla.opennms.org/show_bug.cgi?id=2230">#2230</ulink>)</para>
+				</listitem>
+
+				<listitem>
+					<para>While modifying the first graph in a custom report, an exception was thrown. (Bug
+					<ulink url="http://bugzilla.opennms.org/show_bug.cgi?id=2823">#2823</ulink>)</para>
+				</listitem>
+
+				<listitem>
+					<para>Form submission bugs in the KSC reports, Add Interface, and a number of other
+					places have been resolved.  This mostly affects IE and some mobile browsers. (Bugs
+					<ulink url="http://bugzilla.opennms.org/show_bug.cgi?id=1675">#1675</ulink>,
+					<ulink url="http://bugzilla.opennms.org/show_bug.cgi?id=3015">#3015</ulink>,
+					<ulink url="http://bugzilla.opennms.org/show_bug.cgi?id=3606">#3606</ulink>, and
+					<ulink url="http://bugzilla.opennms.org/show_bug.cgi?id=3729">#3729</ulink>)
+					</para>
+				</listitem>
+
+				<listitem>
+					<para>A number of exceptions have been cleaned up. (Bugs
+					<ulink url="http://bugzilla.opennms.org/show_bug.cgi?id=3319">#3319</ulink>,
+					<ulink url="http://bugzilla.opennms.org/show_bug.cgi?id=3450">#3450</ulink>)</para>
+				</listitem>
+
+				<listitem>
+					<para>A thread-contention bug that could cause it to take a long time for
+					scheduled outages and potentially other code to lag was fixed. (Bug
+					<ulink url="http://bugzilla.opennms.org/show_bug.cgi?id=3790">#3790</ulink>)</para>
+				</listitem>
+
+				<listitem>
+					<para>A bug in "Check Notices" for a user was fixed. (Bug
+					<ulink url="http://bugzilla.opennms.org/show_bug.cgi?id=3903">#3903</ulink>)</para>
+				</listitem>
+
+				<listitem>
+					<para>A large number of outstanding issues with Linkd have been resolved. (Bugs
+					<ulink url="http://bugzilla.opennms.org/show_bug.cgi?id=3989">#3989</ulink>,
+					<ulink url="http://bugzilla.opennms.org/show_bug.cgi?id=4051">#4051</ulink>,
+					<ulink url="http://bugzilla.opennms.org/show_bug.cgi?id=4055">#4055</ulink>,
+					<ulink url="http://bugzilla.opennms.org/show_bug.cgi?id=4133">#4133</ulink>,
+					<ulink url="http://bugzilla.opennms.org/show_bug.cgi?id=4149">#4149</ulink>, and
+					<ulink url="http://bugzilla.opennms.org/show_bug.cgi?id=4165">#4165</ulink>)
+					</para>
+				</listitem>
+
+				<listitem>
+					<para>The event configuration for the acknowledgement had incorrect formatting. (Bug
+					<ulink url="http://bugzilla.opennms.org/show_bug.cgi?id=4114">#4114</ulink>)</para>
+				</listitem>
+
+				<listitem>
+					<para>Latency thresholding is working properly again. (Bug
+					<ulink url="http://bugzilla.opennms.org/show_bug.cgi?id=4117">#4117</ulink>)</para>
+				</listitem>
+
+				<listitem>
+					<para>Modern versions of OpenJDK are properly detected by the install and
+					runtime scripts again. (Bug
+					<ulink url="http://bugzilla.opennms.org/show_bug.cgi?id=4129">#4129</ulink>)</para>
+				</listitem>
+
+				<listitem>
+					<para>The Net-SNMP diskHighLow specification (for Net-SNMP 5.5+) was broken. (Bug
+					<ulink url="http://bugzilla.opennms.org/show_bug.cgi?id=4131">#4131</ulink>)</para>
+				</listitem>
+
+				<listitem>
+					<para>A bug in the runPageSequenceMonitor groovy script was resolved. (Bug
+					<ulink url="http://bugzilla.opennms.org/show_bug.cgi?id=4170">#4170</ulink>)</para>
+				</listitem>
+
+			</itemizedlist>
+
+		</section>
+
+	</section>
+
 	<section id="opennms-1.8.4">
 		<title>Changes in OpenNMS 1.8.4</title>
 
