@@ -612,14 +612,14 @@ public class DbEventWriter implements QueryManager {
                     if (vlantype != null) {
                         vlanEntry.updateVlanType(vlantype);
                     } else {
-                        vlantype = -1;
+                        vlantype = DbVlanEntry.VLAN_TYPE_UNKNOWN;
                     }
                     if (vlanstatus != null) {
                         vlanEntry.updateVlanStatus(vlanstatus);
                     } else {
-                        vlanstatus = -1;
+                        vlanstatus = DbVlanEntry.VLAN_STATUS_UNKNOWN;
                     }
-                    vlanEntry.updateStatus(DbAtInterfaceEntry.STATUS_ACTIVE);
+                    vlanEntry.updateStatus(DbVlanEntry.STATUS_ACTIVE);
                     vlanEntry.set_lastpolltime(now);
     
                     LogUtils.debugf(this, "vlanEntry = %s", vlanEntry);
