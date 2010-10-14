@@ -34,64 +34,107 @@
  */
 package org.opennms.web.element;
 
+import static org.junit.Assert.assertEquals;
+
 import java.sql.SQLException;
 
+import javax.sql.DataSource;
+
+import org.junit.Before;
+import org.junit.Test;
+import org.junit.runner.RunWith;
 import org.opennms.core.resource.Vault;
-import org.opennms.netmgt.dao.db.PopulatedTemporaryDatabaseTestCase;
+import org.opennms.netmgt.dao.DatabasePopulator;
+import org.opennms.netmgt.dao.db.JUnitTemporaryDatabase;
+import org.opennms.netmgt.dao.db.OpenNMSConfigurationExecutionListener;
+import org.opennms.netmgt.dao.db.TemporaryDatabaseExecutionListener;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.context.ApplicationContext;
+import org.springframework.jdbc.core.simple.SimpleJdbcTemplate;
+import org.springframework.test.context.ContextConfiguration;
+import org.springframework.test.context.TestExecutionListeners;
+import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
+import org.springframework.test.context.support.DependencyInjectionTestExecutionListener;
+import org.springframework.test.context.support.DirtiesContextTestExecutionListener;
+import org.springframework.test.context.transaction.TransactionalTestExecutionListener;
 
 /**
  * 
  * @author <a href="mailto:dj@opennms.org">DJ Gregor</a>
  */
-public class NetworkElementFactoryTest extends PopulatedTemporaryDatabaseTestCase {
-    @Override
-    protected void setUp() throws Exception {
-        setSetupIpLike(true);
-        
-        super.setUp();
-        
-        Vault.setDataSource(getDataSource());
+@RunWith(SpringJUnit4ClassRunner.class)
+@ContextConfiguration(locations= {"classpath:/META-INF/opennms/applicationContext-dao.xml",
+                                  "classpath*:/META-INF/opennms/component-dao.xml",
+                                  "classpath:/META-INF/opennms/applicationContext-dao.xml",
+                                  "classpath:/NetworkElementFactoryContext.xml"})
+@TestExecutionListeners({
+    OpenNMSConfigurationExecutionListener.class,
+    TemporaryDatabaseExecutionListener.class,
+    DependencyInjectionTestExecutionListener.class,
+    DirtiesContextTestExecutionListener.class,
+    TransactionalTestExecutionListener.class
+})
+@JUnitTemporaryDatabase()
+public class NetworkElementFactoryTest  {
+    
+    @Autowired
+    DatabasePopulator m_dbPopulator;
+    
+    @Autowired
+    ApplicationContext m_appContext;
+    
+    @Autowired
+    DataSource m_dataSource;
+
+    @Autowired
+    SimpleJdbcTemplate m_jdbcTemplate;
+    
+    @Before
+    public void setUp() {
+        Vault.setDataSource(m_dataSource);
+        m_dbPopulator.populateDatabase();
     }
     
+    @Test
     public void testGetNodeLabel() throws SQLException {
-        jdbcTemplate.update("INSERT INTO node (nodeId, nodeCreateTime, nodeType, nodeLabel) VALUES (1, now(), 'A', 'nodeLabel')");
+        String nodeLabel = NetworkElementFactory.getInstance(m_appContext).getNodeLabel(1);
         
-        //String nodeLabel = NetworkElementFactory.getNodeLabel(1);
-        
-        //assertEquals(nodeLabel, "nodeLabel");
-        assertTrue(false);
+        assertEquals(nodeLabel, "node1");
     }
     
+    @Test
     public void testGetIpPrimaryAddress() throws SQLException {
-        jdbcTemplate.update("INSERT INTO node (nodeId, nodeCreateTime, nodeType, nodeLabel) VALUES (1, now(), 'A', 'nodeLabel')");
-        jdbcTemplate.update("INSERT INTO ipinterface (nodeid, ipaddr, iplastcapsdpoll, issnmpprimary) VALUES (1, '172.168.1.1', now(), 'P')");
+        m_jdbcTemplate.update("INSERT INTO node (nodeId, nodeCreateTime, nodeType, nodeLabel) VALUES (12, now(), 'A', 'nodeLabel')");
+        m_jdbcTemplate.update("INSERT INTO ipinterface (nodeid, ipaddr, iplastcapsdpoll, issnmpprimary) VALUES (12, '172.168.1.1', now(), 'P')");
         
-        String ipAddr = "172.168.1.0";//NetworkElementFactory.getIpPrimaryAddress(1);
+        String ipAddr = NetworkElementFactory.getInstance(m_appContext).getIpPrimaryAddress(12);
         
         assertEquals(ipAddr, "172.168.1.1");
     }
     
-//    public void testGetNodesWithIpLikeOneInterface() throws Exception {
-//        jdbcTemplate.update("INSERT INTO node (nodeId, nodeCreateTime, nodeType) VALUES (1, now(), 'A')");
-//        jdbcTemplate.update("INSERT INTO ipInterface (nodeId, ipAddr, isManaged) VALUES (1, '1.1.1.1', 'M')");
-//        
-//        assertEquals("node count in DB", 1, jdbcTemplate.queryForInt("SELECT count(*) FROM node"));
-//        assertEquals("ipInterface count in DB", 1, jdbcTemplate.queryForInt("SELECT count(*) FROM ipInterface"));
-//        
-//        Node[] nodes = NetworkElementFactory.getInstance(null).getNodesWithIpLike("*.*.*.*");
-//        assertEquals("node count", 1, nodes.length);
-//    }
+    @Test
+    public void testGetNodesWithIpLikeOneInterface() throws Exception {
+        m_jdbcTemplate.update("INSERT INTO node (nodeId, nodeCreateTime, nodeType) VALUES (12, now(), 'A')");
+        m_jdbcTemplate.update("INSERT INTO ipInterface (nodeId, ipAddr, isManaged) VALUES (12, '1.1.1.1', 'M')");
+        
+        assertEquals("node count in DB", 7, m_jdbcTemplate.queryForInt("SELECT count(*) FROM node"));
+        assertEquals("ipInterface count in DB", 19, m_jdbcTemplate.queryForInt("SELECT count(*) FROM ipInterface"));
+        
+        Node[] nodes = NetworkElementFactory.getInstance(m_appContext).getNodesWithIpLike("*.*.*.*");
+        assertEquals("node count", 1, nodes.length);
+    }
     
     // bug introduced in revision 2932
+    @Test
     public void testGetNodesWithIpLikeTwoInterfaces() throws Exception {
-//        jdbcTemplate.update("INSERT INTO node (nodeId, nodeCreateTime, nodeType) VALUES (1, now(), 'A')");
-//        jdbcTemplate.update("INSERT INTO ipInterface (nodeId, ipAddr, isManaged) VALUES (1, '1.1.1.1', 'M')");
-//        jdbcTemplate.update("INSERT INTO ipInterface (nodeId, ipAddr, isManaged) VALUES (1, '1.1.1.2', 'M')");
-//        
-//        assertEquals("node count in DB", 1, jdbcTemplate.queryForInt("SELECT count(*) FROM node"));
-//        assertEquals("ipInterface count in DB", 2, jdbcTemplate.queryForInt("SELECT count(*) FROM ipInterface"));
-//
-//        Node[] nodes = NetworkElementFactory.getNodesWithIpLike("*.*.*.*");
-//        assertEquals("node count", 1, nodes.length);
+        m_jdbcTemplate.update("INSERT INTO node (nodeId, nodeCreateTime, nodeType) VALUES (12, now(), 'A')");
+        m_jdbcTemplate.update("INSERT INTO ipInterface (nodeId, ipAddr, isManaged) VALUES (12, '1.1.1.1', 'M')");
+        m_jdbcTemplate.update("INSERT INTO ipInterface (nodeId, ipAddr, isManaged) VALUES (12, '1.1.1.2', 'M')");
+        
+        assertEquals("node count in DB", 7, m_jdbcTemplate.queryForInt("SELECT count(*) FROM node"));
+        assertEquals("ipInterface count in DB", 20, m_jdbcTemplate.queryForInt("SELECT count(*) FROM ipInterface"));
+
+        Node[] nodes = NetworkElementFactory.getInstance(m_appContext).getNodesWithIpLike("*.*.*.*");
+        assertEquals("node count", 1, nodes.length);
     }
 }
