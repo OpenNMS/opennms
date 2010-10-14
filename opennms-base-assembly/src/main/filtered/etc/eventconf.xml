@@ -2085,6 +2085,7 @@
   <event-file>events/CPQHPIM.events.xml</event-file>
   <event-file>events/Clarent.events.xml</event-file>
   <event-file>events/Clarinet.events.xml</event-file>
+  <event-file>events/Compuware.events.xml</event-file>
   <event-file>events/Cricket.events.xml</event-file>
   <event-file>events/CRITAPP.events.xml</event-file>
   <event-file>events/Crossbeam.events.xml</event-file>
