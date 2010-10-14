@@ -5,3 +5,4 @@ bin
 tomcat
 www-test
 war
+.springBeans
