@@ -38,7 +38,6 @@ import java.net.InetAddress;
 import java.net.ServerSocket;
 import java.net.Socket;
 
-import org.apache.log4j.Logger;
 import org.opennms.core.utils.ThreadCategory;
 import org.opennms.netmgt.provision.server.exchange.Exchange;
 import org.opennms.netmgt.provision.server.exchange.RequestHandler;

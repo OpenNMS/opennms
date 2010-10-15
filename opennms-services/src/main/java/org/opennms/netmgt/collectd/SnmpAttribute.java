@@ -36,7 +36,6 @@
 
 package org.opennms.netmgt.collectd;
 
-import org.apache.log4j.Level;
 import org.opennms.core.utils.ThreadCategory;
 import org.opennms.netmgt.snmp.SnmpValue;
 

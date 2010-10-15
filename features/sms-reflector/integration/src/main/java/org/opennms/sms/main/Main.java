@@ -32,7 +32,6 @@
 package org.opennms.sms.main;
 
 import org.opennms.sms.ping.SmsPinger;
-import org.springframework.context.ApplicationContext;
 import org.springframework.context.support.ClassPathXmlApplicationContext;
 
 /**

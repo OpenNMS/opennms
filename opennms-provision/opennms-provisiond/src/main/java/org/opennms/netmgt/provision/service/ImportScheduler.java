@@ -41,7 +41,6 @@ import java.text.ParseException;
 import java.util.Arrays;
 import java.util.Iterator;
 
-import org.apache.log4j.Logger;
 import org.opennms.core.utils.ThreadCategory;
 import org.opennms.netmgt.config.provisiond.RequisitionDef;
 import org.opennms.netmgt.dao.ProvisiondConfigurationDao;

@@ -37,8 +37,6 @@
 
 package org.opennms.netmgt.threshd;
 
-import java.util.ArrayList;
-import java.util.Collection;
 import java.util.Date;
 
 import org.opennms.netmgt.EventConstants;
@@ -46,7 +44,6 @@ import org.opennms.netmgt.config.threshd.Threshold;
 import org.opennms.netmgt.threshd.ThresholdEvaluatorRelativeChange.ThresholdEvaluatorStateRelativeChange;
 import org.opennms.netmgt.threshd.ThresholdEvaluatorState.Status;
 import org.opennms.netmgt.xml.event.Event;
-import org.opennms.netmgt.xml.event.Parm;
 import org.opennms.test.ThrowableAnticipator;
 
 public class ThresholdEvaluatorRelativeChangeTest extends AbstractThresholdEvaluatorTest {

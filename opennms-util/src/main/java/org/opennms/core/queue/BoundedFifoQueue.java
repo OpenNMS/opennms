@@ -57,7 +57,7 @@ package org.opennms.core.queue;
  * @author <a href="http://www.opennms.org/">OpenNMS </a>
  * @version $Id: $
  */
-public interface BoundedFifoQueue extends FifoQueue {
+public interface BoundedFifoQueue<T> extends FifoQueue<T> {
     /**
      * Returns the maximum number of elements that can be contained in the FIFO
      * queue.

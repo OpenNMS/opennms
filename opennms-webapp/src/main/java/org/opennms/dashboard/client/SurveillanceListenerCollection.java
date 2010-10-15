@@ -48,7 +48,7 @@ import java.util.Vector;
  * @version $Id: $
  * @since 1.8.1
  */
-public class SurveillanceListenerCollection extends Vector {
+public class SurveillanceListenerCollection extends Vector<SurveillanceListener> {
     private static final long serialVersionUID = 1L;
 
     /**
@@ -57,8 +57,8 @@ public class SurveillanceListenerCollection extends Vector {
      * @param viewer a {@link org.opennms.dashboard.client.Dashlet} object.
      */
     public void fireAllClicked(Dashlet viewer) {
-        for (Iterator it = iterator(); it.hasNext();) {
-            SurveillanceListener listener = (SurveillanceListener) it.next();
+        for (Iterator<SurveillanceListener> it = iterator(); it.hasNext();) {
+            SurveillanceListener listener = it.next();
             listener.onAllClicked(viewer);
           }
     }
@@ -70,8 +70,8 @@ public class SurveillanceListenerCollection extends Vector {
      * @param group a {@link org.opennms.dashboard.client.SurveillanceGroup} object.
      */
     public void fireSurveillanceGroupClicked(Dashlet viewer, SurveillanceGroup group) {
-        for (Iterator it = iterator(); it.hasNext();) {
-            SurveillanceListener listener = (SurveillanceListener) it.next();
+        for (Iterator<SurveillanceListener> it = iterator(); it.hasNext();) {
+            SurveillanceListener listener = it.next();
             listener.onSurveillanceGroupClicked(viewer, group);
           }
     }
@@ -83,8 +83,8 @@ public class SurveillanceListenerCollection extends Vector {
      * @param intersection a {@link org.opennms.dashboard.client.SurveillanceIntersection} object.
      */
     public void fireIntersectionClicked(Dashlet viewer, SurveillanceIntersection intersection) {
-        for (Iterator it = iterator(); it.hasNext();) {
-            SurveillanceListener listener = (SurveillanceListener) it.next();
+        for (Iterator<SurveillanceListener> it = iterator(); it.hasNext();) {
+            SurveillanceListener listener = it.next();
             listener.onIntersectionClicked(viewer, intersection);
           }
     }

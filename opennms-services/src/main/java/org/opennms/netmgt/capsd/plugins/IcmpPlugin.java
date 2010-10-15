@@ -34,7 +34,6 @@
 
 package org.opennms.netmgt.capsd.plugins;
 
-import java.io.IOException;
 import java.net.InetAddress;
 import java.util.Map;
 

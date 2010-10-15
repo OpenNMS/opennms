@@ -59,7 +59,6 @@ import javax.xml.bind.Marshaller;
 
 import org.apache.commons.io.IOExceptionWithCause;
 import org.apache.commons.lang.StringUtils;
-import org.apache.log4j.Logger;
 import org.opennms.core.utils.ThreadCategory;
 import org.opennms.netmgt.provision.persist.ProvisionPrefixContextResolver;
 import org.opennms.netmgt.provision.persist.requisition.Requisition;

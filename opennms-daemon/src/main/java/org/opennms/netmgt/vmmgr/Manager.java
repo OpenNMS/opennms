@@ -56,7 +56,6 @@ import javax.management.MBeanServerFactory;
 import org.apache.log4j.Logger;
 import org.opennms.core.utils.ThreadCategory;
 import org.opennms.netmgt.config.service.types.InvokeAtType;
-import org.opennms.netmgt.rrd.RrdUtils;
 import org.opennms.protocols.icmp.IcmpSocket;
 
 /**

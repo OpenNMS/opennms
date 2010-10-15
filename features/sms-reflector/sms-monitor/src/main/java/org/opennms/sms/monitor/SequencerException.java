@@ -7,9 +7,12 @@ package org.opennms.sms.monitor;
  * @version $Id: $
  */
 public class SequencerException extends Exception {
-	private static final long serialVersionUID = 1L;
-
 	/**
+     * 
+     */
+    private static final long serialVersionUID = 2803800748419364461L;
+
+    /**
 	 * <p>Constructor for SequencerException.</p>
 	 */
 	public SequencerException() {

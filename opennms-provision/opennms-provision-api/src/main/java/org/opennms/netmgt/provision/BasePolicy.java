@@ -3,7 +3,6 @@ package org.opennms.netmgt.provision;
 import java.util.LinkedHashMap;
 import java.util.Map.Entry;
 
-import org.apache.log4j.Logger;
 import org.opennms.core.utils.ThreadCategory;
 import org.opennms.netmgt.provision.annotations.Require;
 import org.springframework.beans.BeanWrapper;

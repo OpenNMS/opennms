@@ -89,22 +89,6 @@ public final class QuantumSemaphore extends Object {
 
     /**
      * <P>
-     * The default constructor for the object <EM>always</EM> throws an
-     * UnsupportedOperationException. This is done since the maximum value and
-     * time quantium must be set in the constructor. Use of the default
-     * constructor would create an object that is non-functional, thus it's
-     * creation is denied.
-     * </P>
-     * 
-     * @exception java.lang.UnsupportedOperationException
-     *                Always Thrown.
-     */
-    private QuantumSemaphore() throws UnsupportedOperationException {
-        throw new UnsupportedOperationException("default constructor not allowed!");
-    }
-
-    /**
-     * <P>
      * Returns the number of milliseconds since the last reset of the object.
      * </P>
      */

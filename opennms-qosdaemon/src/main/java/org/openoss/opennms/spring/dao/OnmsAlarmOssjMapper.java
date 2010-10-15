@@ -42,7 +42,6 @@ import javax.oss.fm.monitor.AlarmKey;
 import javax.oss.fm.monitor.AlarmType;
 import javax.oss.fm.monitor.AlarmValue;
 
-import org.apache.log4j.Logger;
 import org.opennms.core.utils.ThreadCategory;
 import org.opennms.netmgt.dao.AssetRecordDao;
 import org.opennms.netmgt.dao.DistPollerDao;
@@ -52,7 +51,6 @@ import org.opennms.netmgt.model.OnmsAssetRecord;
 import org.opennms.netmgt.model.OnmsNode;
 import org.opennms.netmgt.model.OnmsServiceType;
 import org.opennms.netmgt.model.OnmsSeverity;
-import org.openoss.opennms.spring.qosdrx.QoSDrx;
 import org.openoss.ossj.jvt.fm.monitor.OOSSProbableCause;
 
 

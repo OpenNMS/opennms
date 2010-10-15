@@ -37,7 +37,6 @@ package org.opennms.web.element;
 import java.util.HashMap;
 import java.util.Map;
 
-import org.apache.poi.hssf.util.HSSFColor.BRIGHT_GREEN;
 import org.opennms.netmgt.linkd.DbStpNodeEntry;
 
 

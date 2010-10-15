@@ -38,7 +38,6 @@ package org.opennms.netmgt.provision.detector.datagram;
 import java.io.IOException;
 import java.net.DatagramPacket;
 
-import org.apache.log4j.Logger;
 import org.opennms.core.utils.ThreadCategory;
 import org.opennms.netmgt.provision.detector.datagram.client.DatagramClient;
 import org.opennms.netmgt.provision.support.BasicDetector;

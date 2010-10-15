@@ -41,7 +41,7 @@ package org.opennms.netmgt.vulnscand;
  * @author <a href="mailto:brozow@opennms.org">Mathew Brozowski</a>
  * @version $Id: $
  */
-public interface ScheduleTrigger {
+public interface ScheduleTrigger<T> {
 
 	/**
 	 * <p>isScheduled</p>
@@ -69,6 +69,6 @@ public interface ScheduleTrigger {
 	 *
 	 * @return a {@link java.lang.Object} object.
 	 */
-	public abstract Object getJob();
+	public abstract T getJob();
 
 }

@@ -212,7 +212,7 @@ public class DbEventWriter implements QueryManager {
     
                 dbentry.store(dbConn);
     
-                // now parsing simmetrical and setting to D if necessary
+                // now parsing symmetrical and setting to D if necessary
     
                 dbentry = DbDataLinkInterfaceEntry.get(dbConn, nodeparentid, parentifindex);
     
@@ -354,7 +354,7 @@ public class DbEventWriter implements QueryManager {
                     }
                     // set the mac address
                     at.setMacAddress(physAddr);
-                    // add At Inteface to list of valid interfaces
+                    // add AtInterface to list of valid interfaces
                     atInterfaces.add(at);
     
                     // Save in DB

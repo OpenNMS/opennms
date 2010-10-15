@@ -38,7 +38,7 @@ package org.opennms.netmgt.vulnscand;
 
 import org.apache.regexp.RE;
 import org.opennms.core.utils.ThreadCategory;
-import org.opennms.netmgt.EventConstants;
+import org.opennms.netmgt.model.OnmsSeverity;
 
 /**
  * <p>NessusParser class.</p>
@@ -259,31 +259,31 @@ public class NessusParser {
             }
 	    
 	    if (informational.match(risk)) {
-                retval.severity = EventConstants.SEV_NORMAL;
+                retval.severity = OnmsSeverity.NORMAL.getId();
             }
             if (normal.match(risk)) {
-                retval.severity = EventConstants.SEV_NORMAL;
+                retval.severity = OnmsSeverity.NORMAL.getId();
             }
             if (normal2.match(risk)) {
-                retval.severity = EventConstants.SEV_NORMAL;
+                retval.severity = OnmsSeverity.NORMAL.getId();
             }
             if (warning.match(risk)) {
-                retval.severity = EventConstants.SEV_WARNING;
+                retval.severity = OnmsSeverity.WARNING.getId();
             }
             if (minor.match(risk)) {
-                retval.severity = EventConstants.SEV_MINOR;
+                retval.severity = OnmsSeverity.MINOR.getId();
             }
             if (major.match(risk)) {
-                retval.severity = EventConstants.SEV_MAJOR;
+                retval.severity = OnmsSeverity.MAJOR.getId();
             }
             if (critical.match(risk)) {
-                retval.severity = EventConstants.SEV_CRITICAL;
+                retval.severity = OnmsSeverity.CRITICAL.getId();
             }
 
             // If we could not locate a severity in the string...
             if (retval.severity == 0) {
                 // Set it to be indeterminate
-                retval.severity = EventConstants.SEV_INDETERMINATE;
+                retval.severity = OnmsSeverity.INDETERMINATE.getId();
             }
 
             // Clear the severity line so that
@@ -292,7 +292,7 @@ public class NessusParser {
             descr = riskFactor.subst(descr, "");
         } else {
             risk = null;
-            retval.severity = EventConstants.SEV_INDETERMINATE;
+            retval.severity = OnmsSeverity.INDETERMINATE.getId();
         }
 
         // Get the CVE string

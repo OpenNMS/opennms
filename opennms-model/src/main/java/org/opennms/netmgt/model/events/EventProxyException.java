@@ -42,8 +42,12 @@ package org.opennms.netmgt.model.events;
  * @version $Id: $
  */
 public class EventProxyException extends Exception {
-    private static final long serialVersionUID = 1L;
     
+    /**
+     * 
+     */
+    private static final long serialVersionUID = -5163171630068781718L;
+
     /**
      * <p>Constructor for EventProxyException.</p>
      */

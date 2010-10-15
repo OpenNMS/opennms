@@ -47,7 +47,6 @@ import java.util.Date;
 import java.util.LinkedList;
 import java.util.List;
 
-import org.opennms.netmgt.rrd.RrdConfig;
 import org.opennms.netmgt.rrd.RrdDataSource;
 import org.opennms.netmgt.rrd.RrdStrategy;
 import org.opennms.netmgt.rrd.RrdUtils;

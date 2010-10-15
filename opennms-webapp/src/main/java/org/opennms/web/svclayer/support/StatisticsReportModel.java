@@ -49,7 +49,6 @@ import java.util.TreeSet;
 import org.opennms.netmgt.model.OnmsResource;
 import org.opennms.netmgt.model.StatisticsReport;
 import org.opennms.web.controller.statisticsReports.PrettyOnmsResource;
-import org.springframework.orm.ObjectRetrievalFailureException;
 import org.springframework.util.Assert;
 import org.springframework.validation.BindException;
 
