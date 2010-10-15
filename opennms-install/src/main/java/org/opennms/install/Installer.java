@@ -252,39 +252,6 @@ public class Installer {
             m_installerDb.checkUnicode();
         }
         
-        // We can now use the opennms database
-
-        // OLDINSTALL
-        // if (m_fix_constraint) {
-        //     m_installerDb.fixConstraint(m_fix_constraint_name, m_fix_constraint_remove_rows);
-        // }
-
-        // if (m_update_database) {
-        //     m_installerDb.checkOldTables();
-        //     if (!m_skip_constraints) {
-        //         m_installerDb.checkConstraints();
-        //         m_installerDb.checkIndexUniqueness();
-        //     }
-        //     m_installerDb.createSequences();
-
-        //     // should we be using createFunctions and createLanguages instead?
-        //     m_installerDb.updatePlPgsql();
-
-        //     // should we be using createFunctions instead?
-        //     m_installerDb.addStoredProcedures();
-
-        //     m_installerDb.addColumnReplacements();
-        //     m_installerDb.createTables();
-        //     m_installerDb.closeColumnReplacements();
-
-        //     m_installerDb.fixData();
-        // }
-
-        // if (m_do_inserts) {
-        //     m_installerDb.insertData();
-        //     handleConfigurationChanges();
-        // }
-
         handleConfigurationChanges();
 
         if (m_update_database) {
@@ -430,7 +397,6 @@ public class Installer {
         m_install_servletdir = fetchProperty("install.servlet.dir");
         m_import_dir = fetchProperty("importer.requisition.dir");
 
-        String soext = fetchProperty("build.soext");
         String pg_lib_dir = m_properties.getProperty("install.postgresql.dir");
 
         if (pg_lib_dir != null) {
@@ -476,7 +442,7 @@ public class Installer {
 
         options.addOption("Z", "remove-database", false,
                           "remove the OpenNMS database");
-        
+
         options.addOption("u", "username", true,
                           "username of the database account (default: 'opennms')");
         options.addOption("p", "password", true,
@@ -491,7 +457,7 @@ public class Installer {
                           "name of the PostgreSQL database (default: opennms)");
 
         options.addOption("c", "clean-database", false,
-                          "clean existing database before creating");
+                          "this option does nothing");
         options.addOption("i", "insert-data", false,
                           "insert (or upgrade) default data including database and XML configuration");
         options.addOption("s", "stored-procedure", false,
@@ -552,6 +518,11 @@ public class Installer {
         options.addOption("P", "database-name", true,
                           "replaced by opennms-datasources.xml");
 
+        if (m_commandLine.hasOption("c")) {
+            usage(options, m_commandLine, "The 'c' option was deprecated in 1.6, and disabled in 1.8.  You should backup and then drop the database before running install to reset your data.", null);
+            System.exit(1);
+        }
+
         if (m_commandLine.hasOption("u")
                 || m_commandLine.hasOption("p")
                 || m_commandLine.hasOption("a")
@@ -561,12 +532,11 @@ public class Installer {
             usage(
                   options,
                   m_commandLine,
-                  "The 'u', 'p', 'a', 'A', 'D', and 'P' options have all been superceded.\nPlease edit $OPENNMS_HOME/etc/opennms-datasources.xml instead.",
-                  null);
+                  "The 'u', 'p', 'a', 'A', 'D', and 'P' options have all been superceded.\nPlease edit $OPENNMS_HOME/etc/opennms-datasources.xml instead.", null);
             System.exit(1);
         }
 
-        m_force = m_commandLine.hasOption("c");
+//        m_force = m_commandLine.hasOption("c");
         m_fix_constraint = m_commandLine.hasOption("C");
         m_fix_constraint_name = m_commandLine.getOptionValue("C");
         m_update_database = m_commandLine.hasOption("d");
