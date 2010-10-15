@@ -10,7 +10,11 @@ import java.sql.SQLException;
  * @since 1.8.1
  */
 public class DatabaseConnectionException extends SQLException {
-    private static final long serialVersionUID = 1L;
+
+    /**
+     * 
+     */
+    private static final long serialVersionUID = -6548231456647908279L;
 
     /**
      * <p>Constructor for DatabaseConnectionException.</p>

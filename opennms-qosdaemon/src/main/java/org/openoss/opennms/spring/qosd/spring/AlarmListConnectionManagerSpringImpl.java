@@ -31,7 +31,6 @@ import java.util.Properties;
 import javax.oss.fm.monitor.AlarmKey;
 import javax.oss.fm.monitor.AlarmValue;
 
-import org.apache.log4j.Logger;
 import org.opennms.core.utils.ThreadCategory;
 import org.openoss.opennms.spring.qosd.AlarmListConnectionManager;
 import org.openoss.opennms.spring.qosd.PropertiesLoader;

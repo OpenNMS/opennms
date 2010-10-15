@@ -39,9 +39,6 @@ import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
 
-import org.opennms.netmgt.config.attrsummary.Attribute;
-import org.opennms.netmgt.config.attrsummary.Resource;
-import org.opennms.netmgt.config.attrsummary.Summary;
 import org.opennms.netmgt.dao.FilterDao;
 import org.opennms.netmgt.dao.ResourceDao;
 import org.opennms.netmgt.dao.RrdDao;

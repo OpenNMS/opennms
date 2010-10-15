@@ -17,14 +17,7 @@
 
 package org.opennms.netmgt.xmlrpcd;
 
-import java.lang.reflect.Constructor;
-import java.lang.reflect.InvocationTargetException;
-import java.net.MalformedURLException;
 import java.net.URL;
-import java.util.Hashtable;
-import java.util.Properties;
-
-import org.apache.xmlrpc.util.HttpUtil;
 import org.apache.xmlrpc.XmlRpcTransport;
 import org.apache.xmlrpc.XmlRpcClientException;
 import org.apache.xmlrpc.DefaultXmlRpcTransport;

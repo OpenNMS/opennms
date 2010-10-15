@@ -22,7 +22,6 @@ import org.jrobin.core.FetchData;
 import org.jrobin.core.Robin;
 import org.jrobin.core.RrdDb;
 import org.jrobin.core.RrdException;
-import org.jrobin.core.Sample;
 
 /**
  * @author Jeff Gehlbach <jeffg@opennms.org>

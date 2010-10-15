@@ -41,7 +41,6 @@ import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
 import org.exolab.castor.xml.Marshaller;
-import org.opennms.netmgt.config.attrsummary.Summary;
 import org.opennms.web.svclayer.RrdSummaryService;
 import org.opennms.web.svclayer.SummarySpecification;
 import org.springframework.beans.factory.InitializingBean;

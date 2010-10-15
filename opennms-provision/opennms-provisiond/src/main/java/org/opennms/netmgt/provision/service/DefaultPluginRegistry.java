@@ -37,7 +37,6 @@ import java.util.HashMap;
 import java.util.Map;
 import java.util.Set;
 
-import org.apache.log4j.Logger;
 import org.opennms.core.utils.ThreadCategory;
 import org.opennms.netmgt.dao.ExtensionManager;
 import org.opennms.netmgt.provision.AsyncServiceDetector;

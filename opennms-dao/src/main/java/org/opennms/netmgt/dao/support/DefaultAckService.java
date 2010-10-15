@@ -39,7 +39,6 @@ import java.util.Collection;
 import java.util.Iterator;
 import java.util.List;
 
-import org.apache.log4j.Logger;
 import org.opennms.core.utils.ThreadCategory;
 import org.opennms.netmgt.dao.AcknowledgmentDao;
 import org.opennms.netmgt.model.Acknowledgeable;

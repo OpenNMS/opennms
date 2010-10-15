@@ -41,7 +41,6 @@ import java.net.InetAddress;
 
 import org.exolab.castor.xml.MarshalException;
 import org.exolab.castor.xml.ValidationException;
-import org.opennms.core.utils.ThreadCategory;
 import org.opennms.netmgt.config.xmpConfig.XmpConfig;
 
 /**

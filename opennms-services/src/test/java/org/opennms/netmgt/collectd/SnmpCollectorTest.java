@@ -42,7 +42,6 @@ import static org.junit.Assert.assertNotNull;
 
 import java.io.ByteArrayInputStream;
 import java.io.File;
-import java.io.StringReader;
 import java.net.InetAddress;
 import java.util.Collection;
 import java.util.Collections;

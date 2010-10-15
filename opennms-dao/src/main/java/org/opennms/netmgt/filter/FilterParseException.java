@@ -51,8 +51,11 @@ import java.io.PrintWriter;
  * @version $Id: $
  */
 public class FilterParseException extends RuntimeException {
-    private static final long serialVersionUID = 1L;
     
+    /**
+     * 
+     */
+    private static final long serialVersionUID = -1504582717903933407L;
     /**
      * The encapsulated throwable if any
      */

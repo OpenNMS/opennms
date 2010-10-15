@@ -58,12 +58,6 @@ import org.opennms.netmgt.config.CatFactory;
 import org.opennms.netmgt.config.CategoryFactory;
 import org.opennms.netmgt.config.categories.Categorygroup;
 import org.opennms.netmgt.config.categories.Catinfo;
-import org.opennms.reporting.availability.CatSections;
-import org.opennms.reporting.availability.Categories;
-import org.opennms.reporting.availability.Category;
-import org.opennms.reporting.availability.Created;
-import org.opennms.reporting.availability.Report;
-import org.opennms.reporting.availability.Section;
 import org.opennms.reporting.availability.svclayer.AvailabilityDataService;
 import org.opennms.reporting.datablock.Node;
 

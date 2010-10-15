@@ -7,7 +7,6 @@
  */
 package org.opennms.sms.reflector.commands.internal;
 
-import org.apache.log4j.Logger;
 import org.opennms.core.utils.ThreadCategory;
 import org.smslib.IUSSDNotification;
 import org.smslib.USSDResponse;

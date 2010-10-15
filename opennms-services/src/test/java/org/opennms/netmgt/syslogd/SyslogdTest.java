@@ -49,12 +49,8 @@ import java.util.Map;
 
 import org.apache.commons.io.IOUtils;
 import org.apache.log4j.Level;
-import org.apache.log4j.spi.LoggingEvent;
-import org.junit.Ignore;
 import org.opennms.netmgt.config.DataSourceFactory;
 import org.opennms.netmgt.config.SyslogdConfigFactory;
-import org.opennms.netmgt.daemon.AbstractServiceDaemon;
-import org.opennms.netmgt.eventd.EventIpcManagerFactory;
 import org.opennms.netmgt.mock.EventAnticipator;
 import org.opennms.netmgt.mock.MockDatabase;
 import org.opennms.netmgt.mock.MockNetwork;

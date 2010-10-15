@@ -48,16 +48,6 @@ import java.util.Set;
 import java.util.TreeMap;
 
 import org.opennms.core.utils.ThreadCategory;
-import org.opennms.reporting.availability.CatSections;
-import org.opennms.reporting.availability.Categories;
-import org.opennms.reporting.availability.Category;
-import org.opennms.reporting.availability.ClassicTable;
-import org.opennms.reporting.availability.Col;
-import org.opennms.reporting.availability.Report;
-import org.opennms.reporting.availability.Row;
-import org.opennms.reporting.availability.Rows;
-import org.opennms.reporting.availability.Section;
-import org.opennms.reporting.availability.Value;
 import org.opennms.reporting.datablock.IfService;
 import org.opennms.reporting.datablock.Interface;
 import org.opennms.reporting.datablock.Node;

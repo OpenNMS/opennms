@@ -42,7 +42,7 @@ import org.opennms.netmgt.config.VulnscandConfigFactory;
  * This class encapsulates the information about an interface necessary to
  * schedule it for scans.
  */
-final class NessusScanConfiguration implements ScheduleTrigger {
+final class NessusScanConfiguration implements ScheduleTrigger<Runnable> {
     /**
      * Nessus username
      */
@@ -195,7 +195,7 @@ final class NessusScanConfiguration implements ScheduleTrigger {
 	 *
 	 * @return a {@link java.lang.Object} object.
 	 */
-	public Object getJob() {
+	public Runnable getJob() {
 		return new NessusScan(this);
 	}
 

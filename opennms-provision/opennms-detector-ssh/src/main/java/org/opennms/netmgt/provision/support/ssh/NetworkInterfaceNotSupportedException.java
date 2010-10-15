@@ -42,12 +42,13 @@ package org.opennms.netmgt.provision.support.ssh;
  *
  * @author <A HREF="mailto:weave@oculan.com">Weave </A>
  * @author <A HREF="http://www.opennms.org/">OpenNMS </A>
- * @author <A HREF="mailto:weave@oculan.com">Weave </A>
- * @author <A HREF="http://www.opennms.org/">OpenNMS </A>
- * @version $Id: $
  */
 public class NetworkInterfaceNotSupportedException extends UnsupportedOperationException {
-    private static final long serialVersionUID = 1L;
+
+    /**
+     * 
+     */
+    private static final long serialVersionUID = -7902007898753705566L;
 
     /**
      * Constructs a new exception instance.

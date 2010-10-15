@@ -41,7 +41,6 @@ package org.opennms.mock.snmp;
 import java.io.File;
 import java.io.IOException;
 import java.net.BindException;
-import java.net.InetAddress;
 import java.net.MalformedURLException;
 import java.net.UnknownHostException;
 import java.util.Iterator;
@@ -78,7 +77,6 @@ import org.snmp4j.security.AuthSHA;
 import org.snmp4j.security.PrivDES;
 import org.snmp4j.security.SecurityLevel;
 import org.snmp4j.security.SecurityModel;
-import org.snmp4j.security.SecurityModels;
 import org.snmp4j.security.SecurityProtocols;
 import org.snmp4j.security.USM;
 import org.snmp4j.security.UsmUser;
@@ -91,9 +89,7 @@ import org.snmp4j.smi.UdpAddress;
 import org.snmp4j.smi.Variable;
 import org.snmp4j.transport.DefaultUdpTransportMapping;
 import org.snmp4j.util.ThreadPool;
-import org.springframework.core.io.FileSystemResource;
 import org.springframework.core.io.Resource;
-import org.springframework.core.io.UrlResource;
 
 /*
  * The <code>MockSnmpAgent</code> class extends the SNMP4J BaseAgent

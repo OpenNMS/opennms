@@ -52,8 +52,6 @@ import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
 import java.util.Properties;
-import java.util.Map.Entry;
-
 import org.jrobin.core.FetchData;
 import org.jrobin.core.RrdDb;
 import org.jrobin.core.RrdDef;
@@ -65,7 +63,6 @@ import org.jrobin.graph.RrdGraph;
 import org.jrobin.graph.RrdGraphDef;
 import org.opennms.core.utils.StringUtils;
 import org.opennms.core.utils.ThreadCategory;
-import org.opennms.netmgt.rrd.RrdConfig;
 import org.opennms.netmgt.rrd.RrdDataSource;
 import org.opennms.netmgt.rrd.RrdGraphDetails;
 import org.opennms.netmgt.rrd.RrdStrategy;

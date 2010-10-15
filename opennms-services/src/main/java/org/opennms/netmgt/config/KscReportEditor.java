@@ -57,6 +57,11 @@ import org.opennms.netmgt.dao.castor.CastorUtils;
 public class KscReportEditor implements Serializable {
 
     /**
+     * 
+     */
+    private static final long serialVersionUID = 8825116321880022485L;
+
+    /**
      * This is a working report that may be used to hold a report & its index
      * temporarily while moving between jsp's
      */

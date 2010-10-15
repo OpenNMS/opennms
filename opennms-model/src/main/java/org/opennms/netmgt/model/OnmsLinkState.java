@@ -30,13 +30,16 @@ import org.apache.commons.lang.builder.ToStringBuilder;
 @Table(name = "linkstate")
 public class OnmsLinkState implements Serializable, Comparable<OnmsLinkState> {
     
+    /**
+     * 
+     */
+    private static final long serialVersionUID = -5586375063168201398L;
+
     public interface LinkStateTransition {
         public void onLinkUp();
         public void onLinkDown();
         public void onLinkUnknown();
     }
-
-    private static final long serialVersionUID = 1L;
 
     public static enum LinkState {
         LINK_UP {

@@ -39,7 +39,11 @@ package org.opennms.netmgt.dao;
 
 import org.springframework.dao.DataAccessResourceFailureException;
 public class JAXBDataAccessFailureException extends DataAccessResourceFailureException {
-    private static final long serialVersionUID = 1L;
+
+    /**
+     * 
+     */
+    private static final long serialVersionUID = 8182669018299441638L;
 
     /**
      * <p>Constructor for JAXBDataAccessFailureException.</p>

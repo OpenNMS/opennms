@@ -24,8 +24,6 @@
 //
 package org.opennms.core.utils;
 
-import java.util.Arrays;
-
 import junit.framework.TestCase;
 
 /**
