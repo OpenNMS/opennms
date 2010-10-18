@@ -34,6 +34,7 @@
  */
 package org.opennms.web.svclayer;
 
+import org.opennms.netmgt.config.attrsummary.Summary;
 import org.springframework.transaction.annotation.Transactional;
 
 /**
