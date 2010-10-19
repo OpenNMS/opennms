@@ -1,5 +1,6 @@
 package org.opennms.netmgt.jasper.jrobin;
 
+import java.util.Date;
 import java.util.Map;
 
 import net.sf.jasperreports.engine.JRDataSource;
@@ -32,7 +33,13 @@ public class JRobinQueryExecutor extends JRAbstractQueryExecuter {
 
     @Override
     protected String getParameterReplacement(String parameterName) {
-        return String.valueOf(getParameterValue(parameterName));
+        Object parameterVal = getParameterValue(parameterName);
+        if(parameterVal instanceof Date) {
+            Date date = (Date) parameterVal;
+            return String.valueOf(date.getTime()/1000);
+        }
+
+        return String.valueOf(parameterVal);
     }
 
 

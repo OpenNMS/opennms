@@ -7,8 +7,10 @@
 	<style name="Sans_Bold" fontName="DejaVu Sans" fontSize="12" isBold="true" isItalic="false" isUnderline="false" isStrikeThrough="false"/>
 	<style name="Sans_Italic" fontName="DejaVu Sans" fontSize="12" isBold="false" isItalic="true" isUnderline="false" isStrikeThrough="false"/>
 	<parameter name="rrdDir" class="java.lang.String"/>
+	<parameter name="startDate" class="java.util.Date"/>
+	<parameter name="endDate" class="java.util.Date"/>
 	<queryString language="jrobin">
-		<![CDATA[--start 1287005100 --end 1287018990
+		<![CDATA[--start $P{startDate} --end $P{endDate}
 		DEF:xx=$P{rrdDir}/http-8980.jrb:http-8980:AVERAGE
 		DEF:zz=$P{rrdDir}/ssh.jrb:ssh:AVERAGE 
 		XPORT:xx:HttpLatency

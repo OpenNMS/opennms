@@ -1,6 +1,7 @@
 package org.opennms.netmgt.jasper.jrobin;
 
 import java.io.File;
+import java.util.Date;
 import java.util.HashMap;
 import java.util.Map;
 
@@ -47,11 +48,12 @@ public class JRobinQueryExecuterTest {
     /**
      *
      */
-    public void fill() throws JRException
-    {
+    public void fill() throws JRException{
         long start = System.currentTimeMillis();
         Map params = new HashMap();
         params.put("rrdDir", "src/test/resources");
+        params.put("startDate", new Date("Wed Oct 13 17:25:00 EDT 2010"));
+        params.put("endDate", new Date("Wed Oct 13 21:16:30 EDT 2010"));
         m_jasperPrint = JasperFillManager.fillReport(m_jasperReport, params);
         System.err.println("Filling time : " + (System.currentTimeMillis() - start));
     }
