@@ -31,10 +31,10 @@ class RrdXportCmd extends RrdToolCmd implements RrdGraphConstants {
         step = Math.max(step, minStep);
         dproc.setStep(step);
         String[] words = getRemainingWords();
-        if (words.length < 2) {
+        if (words.length < 1) {
             throw new RrdException("Incomplete XPORT command");
         }
-        for (int i = 1; i < words.length; i++) {
+        for (int i = 0; i < words.length; i++) {
             if (words[i].startsWith("DEF:")) {
                 parseDef(words[i]);
             }
