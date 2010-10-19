@@ -19,13 +19,15 @@ public class JRobinQueryExecutor extends JRAbstractQueryExecuter {
     }
 
     public void close() {
-        // TODO Auto-generated method stub
         
     }
 
     public JRDataSource createDatasource() throws JRException {
-        // TODO Auto-generated method stub
-        return new JRobinDataSource(getQueryString());
+        try {
+            return new RrdXportCmd().executeCommand(getQueryString());
+        } catch (Exception e) {
+            throw new JRException("Error creating JRobinDataSource", e);
+        }
     }
 
     @Override

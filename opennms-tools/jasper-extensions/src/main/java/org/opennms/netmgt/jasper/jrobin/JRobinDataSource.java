@@ -1,49 +1,46 @@
 package org.opennms.netmgt.jasper.jrobin;
 
 import java.util.Date;
+import java.util.List;
 
 import net.sf.jasperreports.engine.JRDataSource;
 import net.sf.jasperreports.engine.JRException;
 import net.sf.jasperreports.engine.JRField;
 
+import org.opennms.netmgt.jasper.jrobin.RrdXportCmd.XPort;
+
 public class JRobinDataSource implements JRDataSource {
 
-    private static long INCREMENT = 300L * 1000L;
-    
-    private int m_rows;
-    private String[] m_fields;
-    private int m_currentRow = 0;
-    private long m_end;
+    private int m_currentRow = -1;
+    private long[] m_timestamps;
+    private List<XPort> m_xports;
 
-    public JRobinDataSource(String queryString) {
-        String[] stringArray = queryString.split(":");
-        m_rows = Integer.parseInt(stringArray[0]);
-        m_fields = new String[stringArray.length -1];
-        System.arraycopy(stringArray, 1, m_fields, 0, m_fields.length);
-        m_end = ((System.currentTimeMillis() / INCREMENT) * INCREMENT);
+    public JRobinDataSource(long[] timestamps, List<XPort> xports) {
+        m_timestamps = timestamps;
+        m_xports = xports;
     }
 
     public Object getFieldValue(JRField field) throws JRException {
         if ("Timestamp".equals(field.getName())) {
-            long millis = m_end - (m_rows - m_currentRow)*INCREMENT;
-            return new Date(millis);
+            return new Date(m_timestamps[m_currentRow] * 1000L);
         }
-        Integer index = getColumnIndex(field.getName());
-        return index == null ? null : Double.valueOf(m_currentRow * index);
+        XPort xport = findXPortForField(field.getDescription());
+        return xport == null ? null : Double.valueOf(xport.values[m_currentRow]);
     }
 
-    private Integer getColumnIndex(String fieldName) {
-        for(int i =0; i < m_fields.length; i++) {
-            if(m_fields[i].equals(fieldName)) {
-                return (i + 1);
+    private XPort findXPortForField(String description) {
+        for(XPort xport : m_xports) {
+            if(xport.legend.equals(description)) {
+                return xport;
             }
         }
         return null;
     }
+
     
     public boolean next() throws JRException {
         m_currentRow++;
-        return m_currentRow <= m_rows;
+        return m_currentRow < m_timestamps.length;
     }
 
 }
