@@ -12,7 +12,7 @@
 	<queryString language="jrobin">
 		<![CDATA[--start $P{startDate} --end $P{endDate}
 		DEF:xx=$P{rrdDir}/http-8980.jrb:http-8980:AVERAGE
-		DEF:zz=$P{rrdDir}/ssh.jrb:ssh:AVERAGE 
+		DEF:zz=$P{rrdDir}/ssh.jrb:ssh:AVERAGE
 		XPORT:xx:HttpLatency
 		XPORT:zz:SshLatency]]>
 	</queryString>
