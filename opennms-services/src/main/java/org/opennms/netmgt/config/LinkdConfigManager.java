@@ -39,11 +39,9 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.io.Reader;
 import java.io.StringWriter;
-import java.net.InetAddress;
 import java.util.ArrayList;
 import java.util.Enumeration;
 import java.util.HashMap;
-import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 
@@ -63,8 +61,6 @@ import org.opennms.netmgt.config.linkd.Vendor;
 import org.opennms.netmgt.config.linkd.Vlans;
 import org.opennms.netmgt.dao.castor.CastorUtils;
 import org.opennms.netmgt.filter.FilterDaoFactory;
-import org.opennms.netmgt.linkd.DiscoveryLink;
-import org.opennms.netmgt.linkd.SnmpCollection;
 import org.opennms.protocols.snmp.SnmpObjectId;
 
 /**
@@ -408,6 +404,11 @@ abstract public class LinkdConfigManager implements LinkdConfig {
         return DEFAULT_IP_ROUTE_CLASS_NAME;
     }
 
+    /** {@inheritDoc} */
+    public String getDefaultIpRouteClassName() {
+        return DEFAULT_IP_ROUTE_CLASS_NAME;
+    }
+
 	/** {@inheritDoc} */
 	public String getVlanClassName(final String sysoid) {
 		for (final String oidMask : m_oidMask2VlanclassName.keySet()) {
@@ -641,88 +642,6 @@ abstract public class LinkdConfigManager implements LinkdConfig {
         update();
     }
 
-    /** {@inheritDoc} */
-    public List<SnmpCollection> getSnmpCollections(final String ipaddr, final String sysoid) {
-    	List<SnmpCollection> snmpcolls = new ArrayList<SnmpCollection>();
-
-    	Iterator<String> ite = getAllPackageMatches(ipaddr).iterator();
-    	
-    	while (ite.hasNext()) {
-			final String pkgName = ite.next();
-            snmpcolls.add(getSnmpCollection(ipaddr, sysoid, pkgName));
-    	}
-
-    	return snmpcolls;
-    }
-
-    /** {@inheritDoc} */
-    public SnmpCollection getSnmpCollection(final String ipaddr, final String sysoid, final String pkgName) {
-        final Package pkg = getPackage(pkgName);
-        if (pkg != null) {
-            final SnmpCollection collection = createCollection(ipaddr);
-            populateSnmpCollection(collection, pkg, sysoid);
-            return collection;
-        }
-        return null;
-    }
-
-    private SnmpCollection createCollection(final String ipaddr) {
-		SnmpCollection coll = null;
-    	try {
-			coll = new SnmpCollection(SnmpPeerFactory.getInstance().getAgentConfig(InetAddress.getByName(ipaddr)));
-    	} catch (final Throwable t) {
-		    LogUtils.errorf(this, t, "getSnmpCollection: Failed to load snmpcollection parameter from snmp configuration file");
-		}
-
-		return coll;
-    }
-
-    private void populateSnmpCollection(final SnmpCollection coll, final Package pkg, final String sysoid) {
-        coll.setPackageName(pkg.getName());
-   		coll.setInitialSleepTime(getInitialSleepTime());
-   		coll.setPollInterval(pkg.hasSnmp_poll_interval()? pkg.getSnmp_poll_interval() : getSnmpPollInterval());
-        
-   		if (hasIpRouteClassName(sysoid)) {
-   		    coll.setIpRouteClass(getIpRouteClassName(sysoid));
-   		    LogUtils.debugf(this, "populateSnmpCollection: found class to get ipRoute: %s", coll.getIpRouteClass());
-   		} else {
-   		    coll.setIpRouteClass(DEFAULT_IP_ROUTE_CLASS_NAME);
-   		    LogUtils.debugf(this, "populateSnmpCollection: Using default class to get ipRoute: %s", coll.getIpRouteClass());
-   		}
-   		
-   		if (pkg.hasEnableVlanDiscovery() && pkg.getEnableVlanDiscovery() && hasClassName(sysoid)) {
-   		    coll.setVlanClass(getVlanClassName(sysoid));
-			LogUtils.debugf(this, "populateSnmpCollection: found class to get Vlans: %s", coll.getVlanClass());
-		} else if (!pkg.hasEnableVlanDiscovery() && enableVlanDiscovery() && hasClassName(sysoid)) {
-		    coll.setVlanClass(getVlanClassName(sysoid));
-		    LogUtils.debugf(this, "populateSnmpCollection: found class to get Vlans: %s", coll.getVlanClass());
-		} else {
-		    LogUtils.debugf(this, "populateSnmpCollection: no class found to get Vlans or VlanDiscoveryDisabled for Package: %s", pkg.getName());
-		}
-
-        coll.collectCdpTable(pkg.hasUseCdpDiscovery()? pkg.getUseCdpDiscovery() : useCdpDiscovery());
-
-        final boolean useIpRouteDiscovery = (pkg.hasUseIpRouteDiscovery()? pkg.getUseIpRouteDiscovery() : useIpRouteDiscovery());
-		final boolean saveRouteTable = (pkg.hasSaveRouteTable()? pkg.getSaveRouteTable() : saveRouteTable());
-
-		coll.SaveIpRouteTable(saveRouteTable);
-		coll.collectIpRouteTable(useIpRouteDiscovery || saveRouteTable);
-
-		final boolean useBridgeDiscovery = (pkg.hasUseBridgeDiscovery()? pkg.getUseBridgeDiscovery() : useBridgeDiscovery());
-		coll.collectBridgeForwardingTable(useBridgeDiscovery);
-
-		final boolean saveStpNodeTable = (pkg.hasSaveStpNodeTable()? pkg.getSaveStpNodeTable() : saveStpNodeTable());
-
-		coll.saveStpNodeTable(saveStpNodeTable);
-		coll.collectStpNode(useBridgeDiscovery || saveStpNodeTable);
-
-		final boolean saveStpInterfaceTable = (pkg.hasSaveStpInterfaceTable()? pkg.getSaveStpInterfaceTable() : saveStpInterfaceTable());
-		
-		coll.saveStpInterfaceTable(saveStpInterfaceTable);
-		coll.collectStpTable(useBridgeDiscovery || saveStpInterfaceTable);
-    }
-    
-    
     /**
      * {@inheritDoc}
      *
@@ -771,28 +690,7 @@ abstract public class LinkdConfigManager implements LinkdConfig {
         return getConfiguration().enumeratePackage();
     }
     
-    /** {@inheritDoc} */
-    public DiscoveryLink getDiscoveryLink(final String pkgName) {
-        final Package pkg = getPackage(pkgName);
-
-        if (pkg == null) return null;
-
-        final DiscoveryLink discoveryLink = new DiscoveryLink();
-        discoveryLink.setPackageName(pkg.getName());
-        discoveryLink.setInitialSleepTime(getInitialSleepTime());
-
-		discoveryLink.setSnmpPollInterval(pkg.hasSnmp_poll_interval()? pkg.getSnmp_poll_interval() : getSnmpPollInterval());
-		discoveryLink.setDiscoveryInterval(pkg.hasDiscovery_link_interval()? pkg.getDiscovery_link_interval() : getDiscoveryLinkInterval());
-		discoveryLink.setDiscoveryUsingBridge(pkg.hasUseBridgeDiscovery()? pkg.getUseBridgeDiscovery() : useBridgeDiscovery());
-		discoveryLink.setDiscoveryUsingCdp(pkg.hasUseCdpDiscovery()? pkg.getUseCdpDiscovery() : useCdpDiscovery());
-		discoveryLink.setDiscoveryUsingRoutes(pkg.hasUseIpRouteDiscovery()? pkg.getUseIpRouteDiscovery() : useIpRouteDiscovery());
-		discoveryLink.setEnableDownloadDiscovery(pkg.hasEnableDiscoveryDownload()? pkg.getEnableDiscoveryDownload() : enableDiscoveryDownload());
-		discoveryLink.setForceIpRouteDiscoveryOnEtherNet(pkg.hasForceIpRouteDiscoveryOnEthernet()? pkg.getForceIpRouteDiscoveryOnEthernet() : forceIpRouteDiscoveryOnEthernet());
-
-		return discoveryLink;
-    }
-
-	private boolean forceIpRouteDiscoveryOnEthernet() {
+	public boolean forceIpRouteDiscoveryOnEthernet() {
 		if (m_config.hasForceIpRouteDiscoveryOnEthernet()) return m_config.getForceIpRouteDiscoveryOnEthernet();
 		return false;
 	}

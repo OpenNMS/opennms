@@ -138,6 +138,19 @@ public final class DiscoveryLink implements ReadyRunnable {
 
 	private long initial_sleep_time = 600000;
 
+    private Linkd m_linkd;
+
+    /**
+     * @param linkd the linkd to set
+     */
+    public void setLinkd(Linkd linkd) {
+        this.m_linkd = linkd;
+    }
+
+    public Linkd getLinkd() {
+        return m_linkd;
+    }
+
 	/**
 	 * Constructs a new DiscoveryLink object . The discovery does not occur
 	 * until the <code>run</code> method is invoked.
@@ -160,7 +173,7 @@ public final class DiscoveryLink implements ReadyRunnable {
 		if (suspendCollection) {
 		    LogUtils.warnf(this, "DiscoveryLink.run: Suspended!");
 		} else {
-			Collection<LinkableNode> all_snmplinknodes = Linkd.getInstance().getLinkableNodesOnPackage(getPackageName());
+			Collection<LinkableNode> all_snmplinknodes = m_linkd.getLinkableNodesOnPackage(getPackageName());
 
 			LogUtils.debugf(this, "run: LinkableNodes/package found: %d/%s", all_snmplinknodes.size(), getPackageName());
 			LogUtils.debugf(this, "run: discoveryUsingBridge/discoveryUsingCdp/discoveryUsingRoutes: %b/%b/%b", discoveryUsingBridge, discoveryUsingCdp, discoveryUsingRoutes);
@@ -203,7 +216,7 @@ public final class DiscoveryLink implements ReadyRunnable {
 					String ipaddr = at.getIpAddress();
 					String macAddress = at.getMacAddress();
 					LogUtils.debugf(this, "Parsing at Interface nodeid/ipaddr/macaddr: %d/%s/%s", nodeid, ipaddr, macAddress);
-					if (!Linkd.getInstance().isInterfaceInPackage(at.getIpAddress(), getPackageName())) {
+					if (!m_linkd.isInterfaceInPackage(at.getIpAddress(), getPackageName())) {
                         LogUtils.infof(this, "run: at interface: %s does not belong to package: %s! Not adding to discoverable atinterface.", ipaddr, getPackageName());
 						macsExcluded.add(macAddress);
 						continue;
@@ -268,7 +281,7 @@ public final class DiscoveryLink implements ReadyRunnable {
 
 					InetAddress targetIpAddr = cdpIface.getCdpTargetIpAddr();
 					
-					if (!Linkd.getInstance().isInterfaceInPackage(targetIpAddr.getHostAddress(), getPackageName())) 
+					if (!m_linkd.isInterfaceInPackage(targetIpAddr.getHostAddress(), getPackageName())) 
 					{
 					    LogUtils.warnf(this, "run: ip address %s Not in package: %s.  Skipping.", targetIpAddr.getHostAddress(), getPackageName());
 					    continue;
@@ -694,7 +707,7 @@ public final class DiscoveryLink implements ReadyRunnable {
 						continue;
 					}
 
-					if (!Linkd.getInstance().isInterfaceInPackage(nexthop.getHostAddress(), getPackageName())) {
+					if (!m_linkd.isInterfaceInPackage(nexthop.getHostAddress(), getPackageName())) {
 					    LogUtils.infof(this, "run: nexthop address is not in package "
 											+ nexthop.getHostAddress() + "/"+getPackageName() 
 											+ " . Skipping ");
@@ -754,7 +767,7 @@ public final class DiscoveryLink implements ReadyRunnable {
 			macToAtinterface.clear();
 			atNodes.clear();
 
-			Linkd.getInstance().updateDiscoveryLinkCollection(this);
+			m_linkd.updateDiscoveryLinkCollection(this);
 
 			links.clear();
 			maclinks.clear();
@@ -1385,12 +1398,12 @@ public final class DiscoveryLink implements ReadyRunnable {
 
 			String className = null;
 			
-			boolean useVlan = Linkd.getInstance().getLinkdConfig().enableVlanDiscovery();
-			if (Linkd.getInstance().getLinkdConfig().getPackage(getPackageName()).hasEnableVlanDiscovery()) 
-				useVlan = Linkd.getInstance().getLinkdConfig().getPackage(getPackageName()).getEnableVlanDiscovery();
+			boolean useVlan = m_linkd.getLinkdConfig().enableVlanDiscovery();
+			if (m_linkd.getLinkdConfig().getPackage(getPackageName()).hasEnableVlanDiscovery()) 
+				useVlan = m_linkd.getLinkdConfig().getPackage(getPackageName()).getEnableVlanDiscovery();
 			
-			if (useVlan && Linkd.getInstance().getLinkdConfig().hasClassName(curNode.getSysoid())) {
-				className = Linkd.getInstance().getLinkdConfig().getVlanClassName(curNode.getSysoid());
+			if (useVlan && m_linkd.getLinkdConfig().hasClassName(curNode.getSysoid())) {
+				className = m_linkd.getLinkdConfig().getVlanClassName(curNode.getSysoid());
 			}
 			
 
