@@ -66,9 +66,6 @@ import org.springframework.util.Assert;
  *
  * @author <A HREF="mailto:sowmya@opennms.org">Sowmya Nataraj </A>
  * @author <A HREF="http://www.opennms.org">OpenNMS.org </A>
- * @author <A HREF="mailto:sowmya@opennms.org">Sowmya Nataraj </A>
- * @author <A HREF="http://www.opennms.org">OpenNMS.org </A>
- * @version $Id: $
  */
 public final class DefaultEventHandlerImpl implements InitializingBean, EventHandler {
     private List<EventProcessor> m_eventProcessors;
