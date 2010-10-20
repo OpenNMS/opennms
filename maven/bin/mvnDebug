@@ -37,14 +37,6 @@ MAVEN_DEBUG_OPTS="-Xdebug -Xnoagent -Djava.compiler=NONE -Xrunjdwp:transport=dt_
 
 echo Preparing to Execute Maven in Debug Mode
 
-QUOTED_ARGS=""
-while [ "$1" != "" ] ; do
-
-  QUOTED_ARGS="$QUOTED_ARGS \"$1\""
-  shift
-
-done
-
 if [ -f /etc/mavenrc ] ; then
   . /etc/mavenrc
 fi
@@ -132,7 +124,7 @@ if [ -z "$JAVACMD" ] ; then
       JAVACMD="$JAVA_HOME/bin/java"
     fi
   else
-    JAVACMD=java
+    JAVACMD="`which java`"
   fi
 fi
 
@@ -146,7 +138,7 @@ if [ -z "$JAVA_HOME" ] ; then
   echo "Warning: JAVA_HOME environment variable is not set."
 fi
 
-CLASSWORLDS_LAUNCHER=org.codehaus.classworlds.Launcher
+CLASSWORLDS_LAUNCHER=org.codehaus.plexus.classworlds.launcher.Launcher
 
 # For Cygwin, switch paths to Windows format before running java
 if $cygwin; then
@@ -161,9 +153,7 @@ fi
 exec "$JAVACMD" \
   $MAVEN_OPTS \
   $MAVEN_DEBUG_OPTS \
-  -classpath "${M2_HOME}"/boot/classworlds-*.jar \
+  -classpath "${M2_HOME}"/boot/plexus-classworlds-*.jar \
   "-Dclassworlds.conf=${M2_HOME}/bin/m2.conf" \
   "-Dmaven.home=${M2_HOME}"  \
-  ${CLASSWORLDS_LAUNCHER} $QUOTED_ARGS
-
-
+  ${CLASSWORLDS_LAUNCHER} "$@"
