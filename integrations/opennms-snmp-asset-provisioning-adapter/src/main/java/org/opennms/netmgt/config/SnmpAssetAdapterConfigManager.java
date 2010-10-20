@@ -43,10 +43,13 @@ import java.io.InputStream;
 import java.net.InetAddress;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.concurrent.locks.Lock;
+import java.util.concurrent.locks.ReadWriteLock;
+import java.util.concurrent.locks.ReentrantReadWriteLock;
 
 import org.exolab.castor.xml.MarshalException;
 import org.exolab.castor.xml.ValidationException;
-import org.opennms.core.utils.ThreadCategory;
+import org.opennms.core.utils.LogUtils;
 import org.opennms.netmgt.ConfigFileConstants;
 import org.opennms.netmgt.config.snmpAsset.adapter.AssetField;
 import org.opennms.netmgt.config.snmpAsset.adapter.SnmpAssetAdapterConfiguration;
@@ -61,8 +64,22 @@ import org.opennms.netmgt.dao.castor.CastorUtils;
  * @version $Id: $
  */
 public class SnmpAssetAdapterConfigManager implements SnmpAssetAdapterConfig {
-
+    private final ReadWriteLock m_globalLock = new ReentrantReadWriteLock();
+    private final Lock m_readLock = m_globalLock.readLock();
+    private final Lock m_writeLock = m_globalLock.writeLock();
+    
 	private long m_lastModified;
+
+    /**
+     * The config class loaded from the config file
+     */
+    private SnmpAssetAdapterConfiguration m_config;
+
+    /**
+     * <p>Constructor for RancidAdapterConfigManager.</p>
+     */
+    public SnmpAssetAdapterConfigManager() {
+    }
 
 	/**
 	 * <p>Constructor for RancidAdapterConfigManager.</p>
@@ -75,20 +92,17 @@ public class SnmpAssetAdapterConfigManager implements SnmpAssetAdapterConfig {
 	 * @throws java.io.IOException if any.
 	 * @param serverName a {@link java.lang.String} object.
 	 */
-	public SnmpAssetAdapterConfigManager(long lastModified, InputStream reader) throws MarshalException, ValidationException, IOException {
+	public SnmpAssetAdapterConfigManager(final long lastModified, final InputStream reader) throws MarshalException, ValidationException, IOException {
 		reloadXML(lastModified, reader);
 	}
 
-	/**
-	 * The config class loaded from the config file
-	 */
-	private SnmpAssetAdapterConfiguration m_config;
-
-	/**
-	 * <p>Constructor for RancidAdapterConfigManager.</p>
-	 */
-	public SnmpAssetAdapterConfigManager() {
-	}
+    public Lock getReadLock() {
+        return m_readLock;
+    }
+    
+    public Lock getWriteLock() {
+        return m_writeLock;
+    }
 
 	/**
 	 * Synchronized so that we update the timestamp of the file and the contents
@@ -99,9 +113,14 @@ public class SnmpAssetAdapterConfigManager implements SnmpAssetAdapterConfig {
 	 * @throws org.exolab.castor.xml.ValidationException if any.
 	 * @throws java.io.IOException if any.
 	 */
-	protected synchronized void reloadXML(long lastModified, InputStream reader) throws MarshalException, ValidationException, IOException {
-		m_config = CastorUtils.unmarshal(SnmpAssetAdapterConfiguration.class, reader);
-		m_lastModified = lastModified;
+	protected void reloadXML(final long lastModified, final InputStream reader) throws MarshalException, ValidationException, IOException {
+	    getWriteLock().lock();
+	    try {
+    		m_config = CastorUtils.unmarshal(SnmpAssetAdapterConfiguration.class, reader, CastorUtils.PRESERVE_WHITESPACE);
+    		m_lastModified = lastModified;
+	    } finally {
+	        getWriteLock().unlock();
+	    }
 	}
 
 	/**
@@ -112,13 +131,18 @@ public class SnmpAssetAdapterConfigManager implements SnmpAssetAdapterConfig {
 	 * @throws org.exolab.castor.xml.ValidationException if any.
 	 */
 	public void update() throws IOException, MarshalException, ValidationException {
-		File cfgFile = ConfigFileConstants.getFile(ConfigFileConstants.SNMP_ASSET_ADAPTER_CONFIG_FILE_NAME);
-		long lastModified = cfgFile.lastModified();
-		if (lastModified > m_lastModified) {
-			log().debug("init: config file path: " + cfgFile.getPath());
-			reloadXML(lastModified, new FileInputStream(cfgFile));
-			log().debug("init: finished loading config file: " + cfgFile.getPath());
-		}
+	    getWriteLock().lock();
+	    try {
+    	    final File cfgFile = ConfigFileConstants.getFile(ConfigFileConstants.SNMP_ASSET_ADAPTER_CONFIG_FILE_NAME);
+    		final long lastModified = cfgFile.lastModified();
+    		if (lastModified > m_lastModified) {
+    		    LogUtils.debugf(this, "init: config file path: %s", cfgFile.getPath());
+    			reloadXML(lastModified, new FileInputStream(cfgFile));
+    			LogUtils.debugf(this, "init: finished loading config file: %s", cfgFile.getPath());
+    		}
+	    } finally {
+	        getWriteLock().unlock();
+	    }
 	}
 
 	/**
@@ -127,11 +151,12 @@ public class SnmpAssetAdapterConfigManager implements SnmpAssetAdapterConfig {
 	 * @return a {@link org.opennms.netmgt.config.snmpAsset.adapter.SnmpAssetAdapterConfiguration} object.
 	 */
 	protected SnmpAssetAdapterConfiguration getConfiguration() {
-		return m_config;
-	}
-
-	protected static ThreadCategory log() {
-		return ThreadCategory.getInstance(SnmpAssetAdapterConfigManager.class);
+	    getReadLock().lock();
+	    try {
+	        return m_config;
+	    } finally {
+	        getReadLock().unlock();
+	    }
 	}
 
 	/**
@@ -141,35 +166,39 @@ public class SnmpAssetAdapterConfigManager implements SnmpAssetAdapterConfig {
 	 * 
 	 * TODO: Support matching based on IP address
 	 */
-	public AssetField[] getAssetFieldsForAddress(InetAddress address, String sysoid) {
-		if (sysoid == null) {
-			// If the sysoid is null, we won't be able to fetch any SNMP attributes;
-			// return an empty list.
-			log().debug("getAssetFieldsForAddress: SNMP sysoid was null for address " + address.getHostAddress() + ", returning empty list");
-			return new AssetField[0];
-		}
-
-		List<AssetField> retval = new ArrayList<AssetField>();
-		for (org.opennms.netmgt.config.snmpAsset.adapter.Package pkg : m_config.getPackageCollection()) {
-			String pkgSysoid = pkg.getPackageChoice().getSysoid();
-			String pkgSysoidMask = pkg.getPackageChoice().getSysoidMask();
-			if (pkgSysoid != null) {
-				if (pkgSysoid.equals(sysoid)) {
-					retval.addAll(pkg.getAssetFieldCollection());
-				}
-			} else if (pkgSysoidMask != null) {
-				if (sysoid.startsWith(pkgSysoidMask)) {
-					retval.addAll(pkg.getAssetFieldCollection());
-				}
-			} else {
-				log().warn("getAssetFieldsForAddress: Unexpected condition: both sysoid and sysoidMask are null on package " + pkg.getName());
-			}
-		}
-		if (log().isDebugEnabled()) {
-			if (retval.size() == 0) {
-				log().debug("getAssetFieldsForAddress: Zero AssetField matches returned for " + address.getHostAddress() + " with sysoid: " + sysoid);
-			}
-		}
-		return retval.toArray(new AssetField[0]);
+	public AssetField[] getAssetFieldsForAddress(final InetAddress address, final String sysoid) {
+	    getReadLock().lock();
+	    
+	    try {
+    		if (sysoid == null) {
+    			// If the sysoid is null, we won't be able to fetch any SNMP attributes;
+    			// return an empty list.
+    		    LogUtils.debugf(this, "getAssetFieldsForAddress: SNMP sysoid was null for address %s, returning empty list", address.getHostAddress());
+    			return new AssetField[0];
+    		}
+    
+    		final List<AssetField> retval = new ArrayList<AssetField>();
+    		for (final org.opennms.netmgt.config.snmpAsset.adapter.Package pkg : m_config.getPackageCollection()) {
+    		    final String pkgSysoid = pkg.getPackageChoice().getSysoid();
+    			final String pkgSysoidMask = pkg.getPackageChoice().getSysoidMask();
+    			if (pkgSysoid != null) {
+    				if (pkgSysoid.equals(sysoid)) {
+    					retval.addAll(pkg.getAssetFieldCollection());
+    				}
+    			} else if (pkgSysoidMask != null) {
+    				if (sysoid.startsWith(pkgSysoidMask)) {
+    					retval.addAll(pkg.getAssetFieldCollection());
+    				}
+    			} else {
+    			    LogUtils.warnf(this, "getAssetFieldsForAddress: Unexpected condition: both sysoid and sysoidMask are null on package %s", pkg.getName());
+    			}
+    		}
+    		if (retval.size() == 0) {
+    			LogUtils.debugf(this, "getAssetFieldsForAddress: Zero AssetField matches returned for %s with sysoid: %s", address.getHostAddress(), sysoid);
+    		}
+    		return retval.toArray(new AssetField[0]);
+	    } finally {
+	        getReadLock().unlock();
+	    }
 	}
 }

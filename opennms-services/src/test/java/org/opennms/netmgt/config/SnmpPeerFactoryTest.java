@@ -33,8 +33,6 @@
 
 package org.opennms.netmgt.config;
 
-import java.io.Reader;
-import java.io.StringReader;
 import java.net.InetAddress;
 import java.net.UnknownHostException;
 
@@ -42,6 +40,7 @@ import junit.framework.TestCase;
 
 import org.opennms.netmgt.snmp.SnmpAgentConfig;
 import org.opennms.test.mock.MockLogAppender;
+import org.springframework.core.io.ByteArrayResource;
 
 public class SnmpPeerFactoryTest extends TestCase {
 
@@ -49,8 +48,7 @@ public class SnmpPeerFactoryTest extends TestCase {
 
 	protected void setUp() throws Exception {
         setVersion(SnmpAgentConfig.VERSION2C);
-        Reader rdr = new StringReader(getSnmpConfig());
-        SnmpPeerFactory.setInstance(new SnmpPeerFactory(rdr));
+        SnmpPeerFactory.setInstance(new SnmpPeerFactory(new ByteArrayResource(getSnmpConfig().getBytes())));
         MockLogAppender.setupLogging(false);
     }
     

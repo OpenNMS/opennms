@@ -39,18 +39,22 @@ package org.opennms.netmgt.mock;
 
 import java.io.ByteArrayInputStream;
 import java.io.IOException;
-import java.util.Enumeration;
+import java.util.concurrent.locks.Lock;
+import java.util.concurrent.locks.ReadWriteLock;
+import java.util.concurrent.locks.ReentrantReadWriteLock;
 
 import org.exolab.castor.xml.MarshalException;
 import org.exolab.castor.xml.ValidationException;
 import org.opennms.netmgt.config.CatFactory;
-import org.opennms.netmgt.config.categories.Categories;
 import org.opennms.netmgt.config.categories.Category;
 import org.opennms.netmgt.config.categories.Categorygroup;
 import org.opennms.netmgt.config.categories.Catinfo;
 import org.opennms.netmgt.dao.castor.CastorUtils;
 
 public class MockCategoryFactory implements CatFactory {
+    private final ReadWriteLock m_globalLock = new ReentrantReadWriteLock();
+    private final Lock m_readLock = m_globalLock.readLock();
+    private final Lock m_writeLock = m_globalLock.writeLock();
 	
 	private Catinfo m_config;
 	
@@ -95,7 +99,15 @@ public class MockCategoryFactory implements CatFactory {
     }
 	
 	public MockCategoryFactory(String config) throws MarshalException, ValidationException, IOException {
-        m_config = CastorUtils.unmarshal(Catinfo.class, new ByteArrayInputStream(config.getBytes()));
+        m_config = CastorUtils.unmarshal(Catinfo.class, new ByteArrayInputStream(config.getBytes()), CastorUtils.PRESERVE_WHITESPACE);
+    }
+
+    public Lock getReadLock() {
+        return m_readLock;
+    }
+    
+    public Lock getWriteLock() {
+        return m_writeLock;
     }
 
 	 /**
@@ -107,17 +119,9 @@ public class MockCategoryFactory implements CatFactory {
         return m_config;
     }
 	
-	   public synchronized Category getCategory(String name) {
-	        Enumeration<Categorygroup> enumCG = m_config.enumerateCategorygroup();
-	        while (enumCG.hasMoreElements()) {
-	            Categorygroup cg = enumCG.nextElement();
-
-	            // go through the categories
-	            Categories cats = cg.getCategories();
-
-	            Enumeration<Category> enumCat = cats.enumerateCategory();
-	            while (enumCat.hasMoreElements()) {
-	                Category cat = enumCat.nextElement();
+	   public synchronized Category getCategory(final String name) {
+	       for (final Categorygroup cg : m_config.getCategorygroupCollection()) {
+	           for (final Category cat : cg.getCategories().getCategoryCollection()) {
 	                if (cat.getLabel().equals(name)) {
 	                    return cat;
 	                }
@@ -127,20 +131,11 @@ public class MockCategoryFactory implements CatFactory {
 	        return null;
 	    }
 	   
-	   public synchronized String getEffectiveRule(String catlabel) {
-	        Enumeration<Categorygroup> enumCG = m_config.enumerateCategorygroup();
-	        while (enumCG.hasMoreElements()) {
-	            Categorygroup cg = enumCG.nextElement();
-
-	            // go through the categories
-	            Categories cats = cg.getCategories();
-
-	            Enumeration<Category> enumCat = cats.enumerateCategory();
-	            while (enumCat.hasMoreElements()) {
-	                Category cat = enumCat.nextElement();
+	   public synchronized String getEffectiveRule(final String catlabel) {
+	       for (final Categorygroup cg : m_config.getCategorygroupCollection()) {
+	           for (final Category cat : cg.getCategories().getCategoryCollection()) {
 	                if (cat.getLabel().equals(catlabel)) {
-	                    String catRule = "(" + cg.getCommon().getRule() + ") & (" + cat.getRule() + ")";
-	                    return catRule;
+	                    return "(" + cg.getCommon().getRule() + ") & (" + cat.getRule() + ")";
 	                }
 	            }
 	        }

@@ -52,13 +52,16 @@ import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
 import java.util.TreeMap;
+import java.util.concurrent.locks.Lock;
+import java.util.concurrent.locks.ReadWriteLock;
+import java.util.concurrent.locks.ReentrantReadWriteLock;
 
 import org.exolab.castor.xml.MarshalException;
 import org.exolab.castor.xml.Marshaller;
 import org.exolab.castor.xml.ValidationException;
 import org.opennms.core.utils.InetAddressUtils;
 import org.opennms.core.utils.IpListFromUrl;
-import org.opennms.core.utils.ThreadCategory;
+import org.opennms.core.utils.LogUtils;
 import org.opennms.netmgt.config.poller.ExcludeRange;
 import org.opennms.netmgt.config.poller.IncludeRange;
 import org.opennms.netmgt.config.poller.Monitor;
@@ -85,12 +88,12 @@ import org.springframework.dao.PermissionDeniedDataAccessException;
  *
  * @author <a href="mailto:brozow@openms.org">Mathew Brozowski</a>
  * @author <a href="mailto:david@opennms.org">David Hustace</a>
- * @author <a href="mailto:brozow@openms.org">Mathew Brozowski</a>
- * @author <a href="mailto:david@opennms.org">David Hustace</a>
- * @version $Id: $
  */
 abstract public class PollerConfigManager implements PollerConfig {
-
+    private final ReadWriteLock m_globalLock = new ReentrantReadWriteLock();
+    private final Lock m_readLock = m_globalLock.readLock();
+    private final Lock m_writeLock = m_globalLock.writeLock();
+    
     /**
      * <p>Constructor for PollerConfigManager.</p>
      *
@@ -103,10 +106,10 @@ abstract public class PollerConfigManager implements PollerConfig {
      * @throws java.io.IOException if any.
      */
     @Deprecated
-    public PollerConfigManager(Reader reader, String localServer, boolean verifyServer) throws MarshalException, ValidationException, IOException {
+    public PollerConfigManager(final Reader reader, final String localServer, final boolean verifyServer) throws MarshalException, ValidationException, IOException {
         m_localServer = localServer;
         m_verifyServer = verifyServer;
-        m_config = CastorUtils.unmarshal(PollerConfiguration.class, reader);
+        m_config = CastorUtils.unmarshal(PollerConfiguration.class, reader, CastorUtils.PRESERVE_WHITESPACE);
         setUpInternalData();
     }
 
@@ -119,31 +122,19 @@ abstract public class PollerConfigManager implements PollerConfig {
      * @throws org.exolab.castor.xml.MarshalException if any.
      * @throws org.exolab.castor.xml.ValidationException if any.
      */
-    public PollerConfigManager(InputStream stream, String localServer, boolean verifyServer) throws MarshalException, ValidationException {
+    public PollerConfigManager(final InputStream stream, final String localServer, final boolean verifyServer) throws MarshalException, ValidationException {
         m_localServer = localServer;
         m_verifyServer = verifyServer;
-        unmarshalConfig(stream);
+        m_config = CastorUtils.unmarshal(PollerConfiguration.class, stream, CastorUtils.PRESERVE_WHITESPACE);
         setUpInternalData();
     }
 
-    /**
-     * <p>setConfig</p>
-     *
-     * @param conf a {@link org.opennms.netmgt.config.poller.PollerConfiguration} object.
-     */
-    protected void setConfig(PollerConfiguration conf) {
-        m_config = conf;
+    public Lock getReadLock() {
+        return m_readLock;
     }
-
-    /**
-     * <p>unmarshalConfig</p>
-     *
-     * @param is a {@link java.io.InputStream} object.
-     * @throws org.exolab.castor.xml.MarshalException if any.
-     * @throws org.exolab.castor.xml.ValidationException if any.
-     */
-    protected void unmarshalConfig(InputStream is) throws MarshalException, ValidationException {
-        m_config = CastorUtils.unmarshal(PollerConfiguration.class, is);
+    
+    public Lock getWriteLock() {
+        return m_writeLock;
     }
 
     /**
@@ -152,7 +143,7 @@ abstract public class PollerConfigManager implements PollerConfig {
     protected void setUpInternalData() {
         createUrlIpMap();
         createPackageIpListMap();
-        createServiceMonitors();
+        initializeServiceMonitors();
     }
 
     /**
@@ -192,7 +183,7 @@ abstract public class PollerConfigManager implements PollerConfig {
      */
     private Map<String, ServiceMonitor> m_svcMonitors = Collections.synchronizedMap(new TreeMap<String, ServiceMonitor>());
     /**
-     * A boolean flag to indicate If a filter rule agaist the local OpenNMS
+     * A boolean flag to indicate If a filter rule against the local OpenNMS
      * server has to be used.
      */
     private static boolean m_verifyServer;
@@ -209,16 +200,13 @@ abstract public class PollerConfigManager implements PollerConfig {
     private void createUrlIpMap() {
         m_urlIPMap = new HashMap<String, List<String>>();
     
-        for(Package pkg : packages()) {
-    
-            for(String url : includeURLs(pkg)) {
-    
-                List<String> iplist = IpListFromUrl.parse(url);
+        for(final Package pkg : packages()) {
+            for(final String url : includeURLs(pkg)) {
+                final List<String> iplist = IpListFromUrl.parse(url);
                 if (iplist.size() > 0) {
                     m_urlIPMap.put(url, iplist);
                 }
             }
-
         }
     }
 
@@ -229,16 +217,20 @@ abstract public class PollerConfigManager implements PollerConfig {
      * @throws java.io.IOException if any.
      * @throws org.exolab.castor.xml.ValidationException if any.
      */
-    public synchronized void save() throws MarshalException, IOException, ValidationException {
-    
-        // marshal to a string first, then write the string to the file. This
-        // way the original config
-        // isn't lost if the XML from the marshal is hosed.
-        StringWriter stringWriter = new StringWriter();
-        Marshaller.marshal(m_config, stringWriter);
-        saveXml(stringWriter.toString());
-    
-        update();
+    public void save() throws MarshalException, IOException, ValidationException {
+        getWriteLock().lock();
+        try {
+            // marshal to a string first, then write the string to the file. This
+            // way the original config
+            // isn't lost if the XML from the marshal is hosed.
+            final StringWriter stringWriter = new StringWriter();
+            Marshaller.marshal(m_config, stringWriter);
+            saveXml(stringWriter.toString());
+        
+            update();
+        } finally {
+            getWriteLock().unlock();
+        }
     }
 
     /**
@@ -246,45 +238,67 @@ abstract public class PollerConfigManager implements PollerConfig {
      *
      * @return a {@link org.opennms.netmgt.config.poller.PollerConfiguration} object.
      */
-    public synchronized PollerConfiguration getConfiguration() {
-        return m_config;
+    public PollerConfiguration getConfiguration() {
+        getReadLock().lock();
+        try {
+            return m_config;
+        } finally {
+            getReadLock().unlock();
+        }
     }
 
     /** {@inheritDoc} */
-    public synchronized Package getPackage(final String name) {
-        
-        for(Package pkg : packages()) {
-
-            if (pkg.getName().equals(name)) {
-                return pkg;
+    public Package getPackage(final String name) {
+        getReadLock().lock();
+        try {
+            for(final Package pkg : packages()) {
+                if (pkg.getName().equals(name)) {
+                    return pkg;
+                }
             }
+        } finally {
+            getReadLock().unlock();
         }
         return null;
     }
     
     /** {@inheritDoc} */
-    public ServiceSelector getServiceSelectorForPackage(Package pkg) {
-        
-        List<String> svcNames = new LinkedList<String>();
-        for(Service svc : services(pkg)) {
-            svcNames.add(svc.getName());
+    public ServiceSelector getServiceSelectorForPackage(final Package pkg) {
+        getReadLock().lock();
+        try {
+            final List<String> svcNames = new LinkedList<String>();
+            for(Service svc : services(pkg)) {
+                svcNames.add(svc.getName());
+            }
+            
+            final String filter = pkg.getFilter().getContent();
+            return new ServiceSelector(filter, svcNames);
+        } finally {
+            getReadLock().unlock();
         }
-        
-        String filter = pkg.getFilter().getContent();
-        return new ServiceSelector(filter, svcNames);
     }
 
     /** {@inheritDoc} */
-    public synchronized void addPackage(Package pkg) {
-        m_config.addPackage(pkg);
+    public void addPackage(final Package pkg) {
+        getWriteLock().lock();
+        try {
+            m_config.addPackage(pkg);
+        } finally {
+            getWriteLock().unlock();
+        }
     }
     
     /** {@inheritDoc} */
-    public synchronized void addMonitor(String svcName, String className) {
-        Monitor monitor = new Monitor();
-        monitor.setService(svcName);
-        monitor.setClassName(className);
-        m_config.addMonitor(monitor);
+    public void addMonitor(final String svcName, final String className) {
+        getWriteLock().lock();
+        try {
+            final Monitor monitor = new Monitor();
+            monitor.setService(svcName);
+            monitor.setClassName(className);
+            m_config.addMonitor(monitor);
+        } finally {
+            getWriteLock().unlock();
+        }
     }
 
     /**
@@ -315,11 +329,11 @@ abstract public class PollerConfigManager implements PollerConfig {
      * 
      * @return True if the interface is included in the url, false otherwise.
      */
-    private boolean interfaceInUrl(String addr, String url) {
+    private boolean interfaceInUrl(final String addr, final String url) {
         boolean bRet = false;
     
         // get list of IPs in this URL
-        List<String> iplist = m_urlIPMap.get(url);
+        final List<String> iplist = m_urlIPMap.get(url);
         if (iplist != null && iplist.size() > 0) {
             bRet = iplist.contains(addr);
         }
@@ -333,12 +347,13 @@ abstract public class PollerConfigManager implements PollerConfig {
      *
      * @return true if need to notify an external xmlrpc server
      */
-    public synchronized boolean getXmlrpc() {
-        String flag = m_config.getXmlrpc();
-        if (flag.equals("true"))
-            return true;
-        else
-            return false;
+    public boolean shouldNotifyXmlrpc() {
+        getReadLock().lock();
+        try {
+            return Boolean.valueOf(m_config.getXmlrpc());
+        } finally {
+            getReadLock().unlock();
+        }
     }
 
     /**
@@ -347,12 +362,13 @@ abstract public class PollerConfigManager implements PollerConfig {
      *
      * @return true if pathOutageEnabled
      */
-    public synchronized boolean pathOutageEnabled() {
-        String flag = m_config.getPathOutageEnabled();
-        if (flag.equals("true"))
-            return true;
-        else
-            return false;
+    public boolean isPathOutageEnabled() {
+        getReadLock().lock();
+        try {
+            return Boolean.valueOf(m_config.getPathOutageEnabled());
+        } finally {
+            getReadLock().unlock();
+        }
     }
 
     /**
@@ -361,8 +377,13 @@ abstract public class PollerConfigManager implements PollerConfig {
      * @return the name of the configured critical service, or null if none is
      *         present
      */
-    public synchronized String getCriticalService() {
-        return m_config.getNodeOutage().getCriticalService().getName();
+    public String getCriticalService() {
+        getReadLock().lock();
+        try {
+            return m_config.getNodeOutage().getCriticalService().getName();
+        } finally {
+            getReadLock().unlock();
+        }
     }
 
     /**
@@ -379,12 +400,13 @@ abstract public class PollerConfigManager implements PollerConfig {
      *
      * @return true or false based on configured value
      */
-    public synchronized boolean pollAllIfNoCriticalServiceDefined() {
-        String flag = m_config.getNodeOutage().getPollAllIfNoCriticalServiceDefined();
-        if (flag.equals("true"))
-            return true;
-        else
-            return false;
+    public boolean shouldPollAllIfNoCriticalServiceDefined() {
+        getReadLock().lock();
+        try {
+            return Boolean.valueOf(m_config.getNodeOutage().getPollAllIfNoCriticalServiceDefined());
+        } finally {
+            getReadLock().unlock();
+        }
     }
 
     /**
@@ -392,12 +414,13 @@ abstract public class PollerConfigManager implements PollerConfig {
      *
      * @return a boolean.
      */
-    public synchronized boolean nodeOutageProcessingEnabled() {
-        String status = m_config.getNodeOutage().getStatus();
-        if (status.equals("on"))
-            return true;
-        else
-            return false;
+    public boolean isNodeOutageProcessingEnabled() {
+        getReadLock().lock();
+        try {
+            return m_config.getNodeOutage().getStatus().equals("on");
+        } finally {
+            getReadLock().unlock();
+        }
     }
 
     /**
@@ -409,12 +432,13 @@ abstract public class PollerConfigManager implements PollerConfig {
      *
      * @return a boolean.
      */
-    public synchronized boolean serviceUnresponsiveEnabled() {
-        String enabled = m_config.getServiceUnresponsiveEnabled();
-        if (enabled.equals("true"))
-            return true;
-        else
-            return false;
+    public boolean isServiceUnresponsiveEnabled() {
+        getReadLock().lock();
+        try {
+            return Boolean.valueOf(m_config.getServiceUnresponsiveEnabled());
+        } finally {
+            getReadLock().unlock();
+        }
     }
 
     /**
@@ -423,48 +447,50 @@ abstract public class PollerConfigManager implements PollerConfig {
      * from the database.
      */
     private void createPackageIpListMap() {
-        m_pkgIpMap = new HashMap<Package, List<String>>();
+        getWriteLock().lock();
         
-        for(Package pkg : packages()) {
-    
-            // Get a list of ipaddress per package agaist the filter rules from
-            // database and populate the package, IP list map.
-            //
-            try {
-                List<String> ipList = getIpList(pkg);
-                if (log().isDebugEnabled())
-                    log().debug("createPackageIpMap: package " + pkg.getName() + ": ipList size =  " + ipList.size());
-    
-                if (ipList.size() > 0) {
-                    if (log().isDebugEnabled())
-                        log().debug("createPackageIpMap: package " + pkg.getName() + ". IpList size is " + ipList.size());
-                    m_pkgIpMap.put(pkg, ipList);
+        try {
+            m_pkgIpMap = new HashMap<Package, List<String>>();
+            
+            for(final Package pkg : packages()) {
+        
+                // Get a list of ipaddress per package against the filter rules from
+                // database and populate the package, IP list map.
+                //
+                try {
+                    List<String> ipList = getIpList(pkg);
+                    LogUtils.debugf(this, "createPackageIpMap: package %s: ipList size = %d", pkg.getName(), ipList.size());
+        
+                    if (ipList.size() > 0) {
+                        m_pkgIpMap.put(pkg, ipList);
+                    }
+                } catch (final Throwable t) {
+                    LogUtils.errorf(this, t, "createPackageIpMap: failed to map package: %s to an IP list", pkg.getName());
                 }
-            } catch (Throwable t) {
-                log().error("createPackageIpMap: failed to map package: " + pkg.getName() + " to an IP List: " + t, t);
+    
             }
-
+        } finally {
+            getWriteLock().unlock();
         }
     }
 
     /** {@inheritDoc} */
-    public List<String> getIpList(Package pkg) {
-        StringBuffer filterRules = new StringBuffer(pkg.getFilter().getContent());
-        if (m_verifyServer) {
-            filterRules.append(" & (serverName == ");
-            filterRules.append('\"');
-            filterRules.append(m_localServer);
-            filterRules.append('\"');
-            filterRules.append(")");
+    public List<String> getIpList(final Package pkg) {
+        getReadLock().lock();
+        try {
+            final StringBuffer filterRules = new StringBuffer(pkg.getFilter().getContent());
+            if (m_verifyServer) {
+                filterRules.append(" & (serverName == ");
+                filterRules.append('\"');
+                filterRules.append(m_localServer);
+                filterRules.append('\"');
+                filterRules.append(")");
+            }
+            LogUtils.debugf(this, "createPackageIpMap: package is %s. filter rules are %s", pkg.getName(), filterRules.toString());
+            return FilterDaoFactory.getInstance().getIPList(filterRules.toString());
+        } finally {
+            getReadLock().unlock();
         }
-        if (log().isDebugEnabled())
-            log().debug("createPackageIpMap: package is " + pkg.getName() + ". filer rules are  " + filterRules.toString());
-        List<String> ipList = FilterDaoFactory.getInstance().getIPList(filterRules.toString());
-        return ipList;
-    }
-
-    private ThreadCategory log() {
-        return ThreadCategory.getInstance(this.getClass());
     }
 
     /**
@@ -474,7 +500,7 @@ abstract public class PollerConfigManager implements PollerConfig {
      * newly added one, the package iplist should be rebuilt so that poller
      * could know which package this ip/service pair is in.
      */
-    public synchronized void rebuildPackageIpListMap() {
+    public void rebuildPackageIpListMap() {
         createPackageIpListMap();
     }
 
@@ -489,22 +515,18 @@ abstract public class PollerConfigManager implements PollerConfig {
      * <strong>Note: </strong>Evaluation of the interface against a package
      * filter will only work if the IP is already in the database.
      */
-    public synchronized boolean interfaceInPackage(String iface, Package pkg) {
-        ThreadCategory log = log();
-    
+    public boolean isInterfaceInPackage(final String iface, final Package pkg) {
         boolean filterPassed = false;
     
         // get list of IPs in this package
-        List<String> ipList = m_pkgIpMap.get(pkg);
+        final List<String> ipList = m_pkgIpMap.get(pkg);
         if (ipList != null && ipList.size() > 0) {
             filterPassed = ipList.contains(iface);
         }
+
+        LogUtils.debugf(this, "interfaceInPackage: Interface %s passed filter for package %s?: %s", iface, pkg.getName(), Boolean.valueOf(filterPassed));
     
-        if (log.isDebugEnabled())
-            log.debug("interfaceInPackage: Interface " + iface + " passed filter for package " + pkg.getName() + "?: " + filterPassed);
-    
-        if (!filterPassed)
-            return false;
+        if (!filterPassed) return false;
     
         //
         // Ensure that the interface is in the specific list or
@@ -518,14 +540,12 @@ abstract public class PollerConfigManager implements PollerConfig {
         // the range 0.0.0.0 - 255.255.255.255
         has_range_include = pkg.getIncludeRangeCount() == 0 && pkg.getSpecificCount() == 0;
         
-        long addr = InetAddressUtils.toIpAddrLong(iface);
-        
-        Enumeration<IncludeRange> eincs = pkg.enumerateIncludeRange();
-        while (!has_range_include && eincs.hasMoreElements()) {
-            IncludeRange rng = eincs.nextElement();
-            long start = InetAddressUtils.toIpAddrLong(rng.getBegin());
+        final long addr = InetAddressUtils.toIpAddrLong(iface);
+
+        for (final IncludeRange rng : pkg.getIncludeRangeCollection()) {
+            final long start = InetAddressUtils.toIpAddrLong(rng.getBegin());
             if (addr > start) {
-                long end = InetAddressUtils.toIpAddrLong(rng.getEnd());
+                final long end = InetAddressUtils.toIpAddrLong(rng.getEnd());
                 if (addr <= end) {
                     has_range_include = true;
                 }
@@ -533,25 +553,26 @@ abstract public class PollerConfigManager implements PollerConfig {
                 has_range_include = true;
             }
         }
-    
-        Enumeration<String> espec = pkg.enumerateSpecific();
-        while (!has_specific && espec.hasMoreElements()) {
-            long speca = InetAddressUtils.toIpAddrLong(espec.nextElement());
-            if (speca == addr)
+
+        for (final String spec : pkg.getSpecificCollection()) {
+            long speca = InetAddressUtils.toIpAddrLong(spec);
+            if (speca == addr) {
                 has_specific = true;
+                break;
+            }
         }
     
-        Enumeration<String> eurl = pkg.enumerateIncludeUrl();
-        while (!has_specific && eurl.hasMoreElements()) {
-            has_specific = interfaceInUrl(iface, eurl.nextElement());
+        for (final String includeUrl : pkg.getIncludeUrlCollection()) {
+            if (interfaceInUrl(iface, includeUrl)) {
+                has_specific = true;
+                break;
+            }
         }
-    
-        Enumeration<ExcludeRange> eex = pkg.enumerateExcludeRange();
-        while (!has_range_exclude && !has_specific && eex.hasMoreElements()) {
-            ExcludeRange rng = eex.nextElement();
-            long start = InetAddressUtils.toIpAddrLong(rng.getBegin());
+
+        for (final ExcludeRange rng : pkg.getExcludeRangeCollection()) {
+            final long start = InetAddressUtils.toIpAddrLong(rng.getBegin());
             if (addr > start) {
-                long end = InetAddressUtils.toIpAddrLong(rng.getEnd());
+                final long end = InetAddressUtils.toIpAddrLong(rng.getEnd());
                 if (addr <= end) {
                     has_range_exclude = true;
                 }
@@ -570,24 +591,28 @@ abstract public class PollerConfigManager implements PollerConfig {
      * service is set to "on". Returns false if the service is not in the
      * package or it is but the status of the service is set to "off".
      */
-    public synchronized boolean serviceInPackageAndEnabled(String svcName, Package pkg) {
-        if (pkg == null) {
-            log().warn("serviceInPackageAndEnabled:  pkg argument is NULL!!");
-            return false;
-        } else {
-            if (log().isDebugEnabled())
-                log().debug("serviceInPackageAndEnabled: svcName=" + svcName + " pkg=" + pkg.getName());
-        }
-    
-        for(Service svc : services(pkg)) {
-            if (svc.getName().equalsIgnoreCase(svcName)) {
-                // Ok its in the package. Now check the
-                // status of the service
-                String status = svc.getStatus();
-                if (status == null || status.equals("on")) {
-                    return true;
+    public boolean isServiceInPackageAndEnabled(final String svcName, final Package pkg) {
+        getReadLock().lock();
+        try {
+            if (pkg == null) {
+                LogUtils.warnf(this, "serviceInPackageAndEnabled:  pkg argument is NULL!!");
+                return false;
+            } else {
+                LogUtils.debugf(this, "serviceInPackageAndEnabled: svcName=%s pkg=%s", svcName, pkg.getName());
+            }
+        
+            for(final Service svc : services(pkg)) {
+                if (svc.getName().equalsIgnoreCase(svcName)) {
+                    // Ok its in the package. Now check the
+                    // status of the service
+                    final String status = svc.getStatus();
+                    if (status == null || status.equals("on")) {
+                        return true;
+                    }
                 }
             }
+        } finally {
+            getReadLock().unlock();
         }
         return false;
     }
@@ -597,11 +622,14 @@ abstract public class PollerConfigManager implements PollerConfig {
      *
      * Return the Service object with the given name from the give Package.
      */
-    public synchronized Service getServiceInPackage(String svcName, Package pkg) {
-        
-        for(Service svc : services(pkg)) {
-            if (svcName.equals(svc.getName()))
-                return svc;
+    public Service getServiceInPackage(final String svcName, final Package pkg) {
+        getReadLock().lock();
+        try {
+            for(final Service svc : services(pkg)) {
+                if (svcName.equals(svc.getName())) return svc;
+            }
+        } finally {
+            getReadLock().unlock();
         }
         return null;
     }
@@ -611,18 +639,18 @@ abstract public class PollerConfigManager implements PollerConfig {
      *
      * Returns true if the service has a monitor configured, false otherwise.
      */
-    public synchronized boolean serviceMonitored(String svcName) {
-        boolean result = false;
-    
-        for(Monitor monitor : monitors()) {
-
-            if (monitor.getService().equals(svcName)) {
-                result = true;
-                break;
+    public boolean isServiceMonitored(final String svcName) {
+        getReadLock().lock();
+        try {
+            for (final Monitor monitor : monitors()) {
+                if (monitor.getService().equals(svcName)) {
+                    return true;
+                }
             }
+        } finally {
+            getReadLock().unlock();
         }
-    
-        return result;
+        return false;
     }
 
     /**
@@ -633,24 +661,31 @@ abstract public class PollerConfigManager implements PollerConfig {
      * <strong>Note: </strong>Evaluation of the interface against a package
      * filter will only work if the IP is alrady in the database.
      */
-    public synchronized Package getFirstPackageMatch(String ipaddr) {
-        
-        for(Package pkg : packages()) {
-    
-            if (interfaceInPackage(ipaddr, pkg)) {
-                return pkg;
+    public Package getFirstPackageMatch(final String ipaddr) {
+        getReadLock().lock();
+        try {
+            for(final Package pkg : packages()) {
+                if (isInterfaceInPackage(ipaddr, pkg)) {
+                    return pkg;
+                }
             }
+        } finally {
+            getReadLock().unlock();
         }
-    
         return null;
     }
 
     /** {@inheritDoc} */
-    public Package getFirstLocalPackageMatch(String ipaddr) {
-        for(Package pkg : packages()) {
-            if (!pkg.getRemote() && interfaceInPackage(ipaddr, pkg)) {
-                return pkg;
+    public Package getFirstLocalPackageMatch(final String ipaddr) {
+        getReadLock().lock();
+        try {
+            for(final Package pkg : packages()) {
+                if (!pkg.getRemote() && isInterfaceInPackage(ipaddr, pkg)) {
+                    return pkg;
+                }
             }
+        } finally {
+            getReadLock().unlock();
         }
         return null;
     }
@@ -663,19 +698,20 @@ abstract public class PollerConfigManager implements PollerConfig {
      * <strong>Note: </strong>Evaluation of the interface against a package
      * filter will only work if the IP is alrady in the database.
      */
-    public synchronized List<String> getAllPackageMatches(String ipaddr) {
-    
+    public List<String> getAllPackageMatches(final String ipaddr) {
         List<String> matchingPkgs = new ArrayList<String>();
 
-        for(Package pkg : packages()) {
-
-            boolean inPkg = interfaceInPackage(ipaddr, pkg);
-            if (inPkg) {
-                matchingPkgs.add(pkg.getName());
-            }
-
-        }
+        getReadLock().lock();
+        try {
+            for (final Package pkg : packages()) {
+                if (isInterfaceInPackage(ipaddr, pkg)) {
+                    matchingPkgs.add(pkg.getName());
+                }
     
+            }
+        } finally {
+            getReadLock().unlock();
+        }
         return matchingPkgs;
     }
 
@@ -687,24 +723,29 @@ abstract public class PollerConfigManager implements PollerConfig {
      * <strong>Note: </strong>Evaluation of the interface against a package
      * filter will only work if the IP is alrady in the database.
      */
-    public synchronized boolean isPolled(String ipaddr) {
-        
-        for(Package pkg : packages()) {
-            
-            boolean inPkg = interfaceInPackage(ipaddr, pkg);
-            if (inPkg)
-                return true;
+    public boolean isPolled(final String ipaddr) {
+        getReadLock().lock();
+        try {
+            for(final Package pkg : packages()) {
+                if (isInterfaceInPackage(ipaddr, pkg)) return true;
+            }
+        } finally {
+            getReadLock().unlock();
         }
-    
         return false;
     }
 
     /** {@inheritDoc} */
-    public boolean isPolledLocally(String ipaddr) {
-        for(Package pkg : packages()) {
-            if (!pkg.getRemote() && interfaceInPackage(ipaddr, pkg)) {
-                return true;
+    public boolean isPolledLocally(final String ipaddr) {
+        getReadLock().lock();
+        try {
+            for(final Package pkg : packages()) {
+                if (!pkg.getRemote() && isInterfaceInPackage(ipaddr, pkg)) {
+                    return true;
+                }
             }
+        } finally {
+            getReadLock().unlock();
         }
         return false;
     }
@@ -718,15 +759,10 @@ abstract public class PollerConfigManager implements PollerConfig {
      * <strong>Note: </strong>Evaluation of the interface against a package
      * filter will only work if the IP is alrady in the database.
      */
-    public synchronized boolean isPolled(String svcName, Package pkg) {
-        // Check if the service is enabled for this package and
-        // if there is a monitor for that service
-        //
-        boolean svcInPkg = serviceInPackageAndEnabled(svcName, pkg);
-        if (svcInPkg) {
-            return serviceMonitored(svcName);
+    public boolean isPolled(final String svcName, final Package pkg) {
+        if (isServiceInPackageAndEnabled(svcName, pkg)) {
+            return isServiceMonitored(svcName);
         }
-    
         return false;
     }
 
@@ -744,33 +780,40 @@ abstract public class PollerConfigManager implements PollerConfig {
      * @return true if the ip is part of atleast one package and the service is
      *         enabled in this package and monitored, false otherwise
      */
-    public synchronized boolean isPolled(String ipaddr, String svcName) {
-        // First make sure there is a service monitor for this service!
-        if (!serviceMonitored(svcName)) {
-            return false;
-        }
-    
-        for(Package pkg : packages()) {
-            if (serviceInPackageAndEnabled(svcName, pkg) && interfaceInPackage(ipaddr, pkg)) {
-                return true;
+    public boolean isPolled(final String ipaddr, final String svcName) {
+        getReadLock().lock();
+        
+        try {
+            // First make sure there is a service monitor for this service!
+            if (!isServiceMonitored(svcName)) {
+                return false;
             }
+            for(final Package pkg : packages()) {
+                if (isServiceInPackageAndEnabled(svcName, pkg) && isInterfaceInPackage(ipaddr, pkg)) {
+                    return true;
+                }
+            }
+        } finally {
+            getReadLock().unlock();
         }
-    
         return false;
     }
 
     /** {@inheritDoc} */
-    public boolean isPolledLocally(String ipaddr, String svcName) {
-        if (!serviceMonitored(svcName)) {
-            return false;
-        }
-        
-        for(Package pkg : packages()) {
-            if (serviceInPackageAndEnabled(svcName, pkg) && interfaceInPackage(ipaddr, pkg)) {
-                return true;
+    public boolean isPolledLocally(final String ipaddr, final String svcName) {
+        getReadLock().lock();
+        try {
+            if (!isServiceMonitored(svcName)) {
+                return false;
             }
+            for(final Package pkg : packages()) {
+                if (isServiceInPackageAndEnabled(svcName, pkg) && isInterfaceInPackage(ipaddr, pkg)) {
+                    return true;
+                }
+            }
+        } finally {
+            getReadLock().unlock();
         }
-        
         return false;
     }
 
@@ -779,8 +822,13 @@ abstract public class PollerConfigManager implements PollerConfig {
      *
      * Retrieves configured RRD step size.
      */
-    public int getStep(Package pkg) {
-        return pkg.getRrd().getStep();
+    public int getStep(final Package pkg) {
+        getReadLock().lock();
+        try {
+            return pkg.getRrd().getStep();
+        } finally {
+            getReadLock().unlock();
+        }
     }
 
     /**
@@ -788,9 +836,13 @@ abstract public class PollerConfigManager implements PollerConfig {
      *
      * Retrieves configured list of RoundRobin Archive statements.
      */
-    public List<String> getRRAList(Package pkg) {
-        return pkg.getRrd().getRraCollection();
-    
+    public List<String> getRRAList(final Package pkg) {
+        getReadLock().lock();
+        try {
+            return pkg.getRrd().getRraCollection();
+        } finally {
+            getReadLock().unlock();
+        }
     }
 
     /**
@@ -799,7 +851,12 @@ abstract public class PollerConfigManager implements PollerConfig {
      * @return a {@link java.util.Enumeration} object.
      */
     public Enumeration<Package> enumeratePackage() {
-        return getConfiguration().enumeratePackage();
+        getReadLock().lock();
+        try {
+            return getConfiguration().enumeratePackage();
+        } finally {
+            getReadLock().unlock();
+        }
     }
     
     /**
@@ -808,7 +865,12 @@ abstract public class PollerConfigManager implements PollerConfig {
      * @return a {@link java.util.Enumeration} object.
      */
     public Enumeration<Monitor> enumerateMonitor() {
-        return getConfiguration().enumerateMonitor();
+        getReadLock().lock();
+        try {
+            return getConfiguration().enumerateMonitor();
+        } finally {
+            getReadLock().unlock();
+        }
     }
     
     /**
@@ -817,8 +879,13 @@ abstract public class PollerConfigManager implements PollerConfig {
      * @param pkg a {@link org.opennms.netmgt.config.poller.Package} object.
      * @return a {@link java.lang.Iterable} object.
      */
-    public Iterable<Service> services(Package pkg) {
-        return pkg.getServiceCollection();
+    public Iterable<Service> services(final Package pkg) {
+        getReadLock().lock();
+        try {
+            return pkg.getServiceCollection();
+        } finally {
+            getReadLock().unlock();
+        }
     }
     
     /**
@@ -827,8 +894,13 @@ abstract public class PollerConfigManager implements PollerConfig {
      * @param pkg a {@link org.opennms.netmgt.config.poller.Package} object.
      * @return a {@link java.lang.Iterable} object.
      */
-    public Iterable<String> includeURLs(Package pkg) {
-        return pkg.getIncludeUrlCollection();
+    public Iterable<String> includeURLs(final Package pkg) {
+        getReadLock().lock();
+        try {
+            return pkg.getIncludeUrlCollection();
+        } finally {
+            getReadLock().unlock();
+        }
     }
     
     /**
@@ -837,8 +909,13 @@ abstract public class PollerConfigManager implements PollerConfig {
      * @param svc a {@link org.opennms.netmgt.config.poller.Service} object.
      * @return a {@link java.lang.Iterable} object.
      */
-    public Iterable<Parameter> parameters(Service svc) {
-        return svc.getParameterCollection();
+    public Iterable<Parameter> parameters(final Service svc) {
+        getReadLock().lock();
+        try {
+            return svc.getParameterCollection();
+        } finally {
+            getReadLock().unlock();
+        }
     }
 
     /**
@@ -847,7 +924,12 @@ abstract public class PollerConfigManager implements PollerConfig {
      * @return a {@link java.lang.Iterable} object.
      */
     public Iterable<Package> packages() {
-        return getConfiguration().getPackageCollection();
+        getReadLock().lock();
+        try {
+            return getConfiguration().getPackageCollection();
+        } finally {
+            getReadLock().unlock();
+        }
     }
 
     /**
@@ -856,7 +938,12 @@ abstract public class PollerConfigManager implements PollerConfig {
      * @return a {@link java.lang.Iterable} object.
      */
     public Iterable<Monitor> monitors() {
-        return getConfiguration().getMonitorCollection();
+        getReadLock().lock();
+        try {
+            return getConfiguration().getMonitorCollection();
+        } finally {
+            getReadLock().unlock();
+        }
     }
 
     /**
@@ -865,35 +952,34 @@ abstract public class PollerConfigManager implements PollerConfig {
      * @return a int.
      */
     public int getThreads() {
-        return getConfiguration().getThreads();
+        getReadLock().lock();
+        try {
+            return getConfiguration().getThreads();
+        } finally {
+            getReadLock().unlock();
+        }
     }
 
     /**
      * @param poller
      * @return
      */
-    private synchronized void createServiceMonitors() {
-        ThreadCategory log = ThreadCategory.getInstance(getClass());
-    
+    private void initializeServiceMonitors() {
         // Load up an instance of each monitor from the config
         // so that the event processor will have them for
         // new incomming events to create pollable service objects.
         //
-        log.debug("start: Loading monitors");
+        LogUtils.debugf(this, "start: Loading monitors");
 
+        final Collection<ServiceMonitorLocator> locators = getServiceMonitorLocators(DistributionContext.DAEMON);
         
-        Collection<ServiceMonitorLocator> locators = getServiceMonitorLocators(DistributionContext.DAEMON);
-        
-        for (ServiceMonitorLocator locator : locators) {
+        for (final ServiceMonitorLocator locator : locators) {
             try {
                 m_svcMonitors.put(locator.getServiceName(), locator.getServiceMonitor());
             } catch (Throwable t) {
-                if (log.isEnabledFor(ThreadCategory.Level.WARN)) {
-                    log.warn("start: Failed to create monitor " + locator.getServiceLocatorKey() + " for service " + locator.getServiceName(), t);
-                }
+                LogUtils.warnf(this, t, "start: Failed to create monitor %s for service %s", locator.getServiceLocatorKey(), locator.getServiceName());
             }
         }
-    
     }
 
     /**
@@ -901,56 +987,71 @@ abstract public class PollerConfigManager implements PollerConfig {
      *
      * @return a {@link java.util.Map} object.
      */
-    public synchronized Map<String, ServiceMonitor> getServiceMonitors() {
-        return m_svcMonitors;
+    public Map<String, ServiceMonitor> getServiceMonitors() {
+        getReadLock().lock();
+        try {
+            return m_svcMonitors;
+        } finally {
+            getReadLock().unlock();
+        }
     }
 
     /** {@inheritDoc} */
-    public synchronized ServiceMonitor getServiceMonitor(String svcName) {
-        return getServiceMonitors().get(svcName);
+    public ServiceMonitor getServiceMonitor(final String svcName) {
+        getReadLock().lock();
+        try {
+            return getServiceMonitors().get(svcName);
+        } finally {
+            getReadLock().unlock();
+        }
     }
     
     /** {@inheritDoc} */
-    public synchronized Collection<ServiceMonitorLocator> getServiceMonitorLocators(DistributionContext context) {
+    public Collection<ServiceMonitorLocator> getServiceMonitorLocators(final DistributionContext context) {
         List<ServiceMonitorLocator> locators = new ArrayList<ServiceMonitorLocator>();
-        for(Monitor monitor : monitors()) {
-            try {
-                Class<? extends ServiceMonitor> mc = findServiceMonitorClass(monitor);
-                if (isDistributableToContext(mc, context)) {
-                    ServiceMonitorLocator locator = new DefaultServiceMonitorLocator(monitor.getService(), mc);
-                    locators.add(locator);
+
+        getReadLock().lock();
+        try {
+            for(final Monitor monitor : monitors()) {
+                try {
+                    final Class<? extends ServiceMonitor> mc = findServiceMonitorClass(monitor);
+                    if (isDistributableToContext(mc, context)) {
+                        final ServiceMonitorLocator locator = new DefaultServiceMonitorLocator(monitor.getService(), mc);
+                        locators.add(locator);
+                    }
+                } catch (final ClassNotFoundException e) {
+                    LogUtils.warnf(this, e, "Unable to location monitor for service: %s class-name: %s", monitor.getService(), monitor.getClassName());
+                } catch (CastorObjectRetrievalFailureException e) {
+                    LogUtils.warnf(this, e, e.getMessage(), e.getRootCause());
                 }
-            } catch (ClassNotFoundException e) {
-                log().warn("Unable to location monitor for service: "+monitor.getService()+" class-name: "+monitor.getClassName(), e);
-            } catch (CastorObjectRetrievalFailureException e) {
-                log().warn(e.getMessage(), e.getRootCause());
             }
-            
+        } finally {
+            getReadLock().unlock();
         }
-        
+
         return locators;
         
     }
 
-    private boolean isDistributableToContext(Class<? extends ServiceMonitor> mc, DistributionContext context) {
-        List<DistributionContext> supportedContexts = getSupportedDistributionContexts(mc);
+    private boolean isDistributableToContext(final Class<? extends ServiceMonitor> mc, final DistributionContext context) {
+        final List<DistributionContext> supportedContexts = getSupportedDistributionContexts(mc);
         if (supportedContexts.contains(context) || supportedContexts.contains(DistributionContext.ALL)) {
             return true;
         }
         return false;
     }
 
-    private List<DistributionContext> getSupportedDistributionContexts(Class<? extends ServiceMonitor> mc) {
-        Distributable distributable = mc.getAnnotation(Distributable.class);
-        List<DistributionContext> declaredContexts = 
+    private List<DistributionContext> getSupportedDistributionContexts(final Class<? extends ServiceMonitor> mc) {
+        final Distributable distributable = mc.getAnnotation(Distributable.class);
+        final List<DistributionContext> declaredContexts = 
             distributable == null 
                 ? Collections.singletonList(DistributionContext.DAEMON) 
                 : Arrays.asList(distributable.value());
        return declaredContexts;
     }
 
-    private Class<? extends ServiceMonitor> findServiceMonitorClass(Monitor monitor) throws ClassNotFoundException {
-        Class<? extends ServiceMonitor> mc = Class.forName(monitor.getClassName()).asSubclass(ServiceMonitor.class);
+    private Class<? extends ServiceMonitor> findServiceMonitorClass(final Monitor monitor) throws ClassNotFoundException {
+        final Class<? extends ServiceMonitor> mc = Class.forName(monitor.getClassName()).asSubclass(ServiceMonitor.class);
         if (!ServiceMonitor.class.isAssignableFrom(mc)) {
             throw new CastorDataAccessFailureException("The monitor for service: "+monitor.getService()+" class-name: "+monitor.getClassName()+" must implement ServiceMonitor");
         }
@@ -965,56 +1066,67 @@ abstract public class PollerConfigManager implements PollerConfig {
      * @return a {@link java.lang.String} object.
      */
     public String getNextOutageIdSql() {
-        return m_config.getNextOutageId();
+        getReadLock().lock();
+        try {
+            return m_config.getNextOutageId();
+        } finally {
+            getReadLock().unlock();
+        }
     }
 
 	/**
 	 * <p>releaseAllServiceMonitors</p>
 	 */
 	public void releaseAllServiceMonitors() {
-		Iterator<ServiceMonitor> iter = getServiceMonitors().values().iterator();
-	    while (iter.hasNext()) {
-	        ServiceMonitor sm = iter.next();
-	        sm.release();
+	    getWriteLock().lock();
+	    try {
+    		Iterator<ServiceMonitor> iter = getServiceMonitors().values().iterator();
+    	    while (iter.hasNext()) {
+    	        ServiceMonitor sm = iter.next();
+    	        sm.release();
+    	    }
+	    } finally {
+	        getWriteLock().unlock();
 	    }
 	}
 
     /** {@inheritDoc} */
-    public void saveResponseTimeData(String locationMonitor, OnmsMonitoredService monSvc, double responseTime, Package pkg) {
-        
-        String svcName = monSvc.getServiceName();
-        
-        Service svc = getServiceInPackage(svcName, pkg);
-        
-        String dsName = getServiceParameter(svc, "ds-name");
-        if (dsName == null) {
-            return;
-        }
-        
-        String rrdRepository = getServiceParameter(svc, "rrd-repository");
-        if (rrdRepository == null) {
-            return;
-        }
-        
-        String rrdDir = rrdRepository+File.separatorChar+"distributed"+File.separatorChar+locationMonitor+File.separator+monSvc.getIpAddress();
-
+    public void saveResponseTimeData(final String locationMonitor, final OnmsMonitoredService monSvc, final double responseTime, final Package pkg) {
+        getWriteLock().lock();
         try {
-            File rrdFile = new File(rrdDir, dsName);
-            if (!rrdFile.exists()) {
-                RrdUtils.createRRD(locationMonitor, rrdDir, dsName, getStep(pkg), "GAUGE", 600, "U", "U", getRRAList(pkg));
+            final String svcName = monSvc.getServiceName();
+            final Service svc = getServiceInPackage(svcName, pkg);
+            
+            final String dsName = getServiceParameter(svc, "ds-name");
+            if (dsName == null) {
+                return;
             }
-            RrdUtils.updateRRD(locationMonitor, rrdDir, dsName, System.currentTimeMillis(), String.valueOf(responseTime));
-        } catch (RrdException e) {
-            throw new PermissionDeniedDataAccessException("Unable to store rrdData from "+locationMonitor+" for service "+monSvc, e);
+            
+            final String rrdRepository = getServiceParameter(svc, "rrd-repository");
+            if (rrdRepository == null) {
+                return;
+            }
+            
+            final String rrdDir = rrdRepository+File.separatorChar+"distributed"+File.separatorChar+locationMonitor+File.separator+monSvc.getIpAddress();
+    
+            try {
+                final File rrdFile = new File(rrdDir, dsName);
+                if (!rrdFile.exists()) {
+                    RrdUtils.createRRD(locationMonitor, rrdDir, dsName, getStep(pkg), "GAUGE", 600, "U", "U", getRRAList(pkg));
+                }
+                RrdUtils.updateRRD(locationMonitor, rrdDir, dsName, System.currentTimeMillis(), String.valueOf(responseTime));
+            } catch (final RrdException e) {
+                throw new PermissionDeniedDataAccessException("Unable to store rrdData from "+locationMonitor+" for service "+monSvc, e);
+            }
+        } finally {
+            getWriteLock().unlock();
         }
-        
     }
     
     
 
-    private String getServiceParameter(Service svc, String key) {
-        
-        for(Parameter parm : parameters(svc)) {
+    private String getServiceParameter(final Service svc, final String key) {
+        for(final Parameter parm : parameters(svc)) {
 
             if (key.equals(parm.getKey())) {
             	if (parm.getValue() != null) {

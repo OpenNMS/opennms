@@ -10,7 +10,7 @@ import java.io.Writer;
 
 import org.exolab.castor.xml.MarshalException;
 import org.exolab.castor.xml.ValidationException;
-import org.opennms.core.utils.ThreadCategory;
+import org.opennms.core.utils.LogUtils;
 import org.opennms.netmgt.ConfigFileConstants;
 
 /**
@@ -85,7 +85,7 @@ public class MapsAdapterConfigFactory extends MapsAdapterConfigManager {
 
         File cfgFile = ConfigFileConstants.getFile(ConfigFileConstants.MAPS_ADAPTER_CONFIG_FILE_NAME);
 
-        logStatic().debug("init: config file path: " + cfgFile.getPath());
+        LogUtils.debugf(MapsAdapterConfigFactory.class, "init: config file path: %s", cfgFile.getPath());
 
         InputStream reader = new FileInputStream(cfgFile);
         MapsAdapterConfigFactory config = new MapsAdapterConfigFactory(cfgFile.lastModified(), reader,onmsSvrConfig.getServerName(),onmsSvrConfig.verifyServer());
@@ -94,10 +94,6 @@ public class MapsAdapterConfigFactory extends MapsAdapterConfigManager {
 
     }
     
-    private static ThreadCategory logStatic() {
-        return ThreadCategory.getInstance(MapsAdapterConfigFactory.class);
-    }
-
     /**
      * Reload the config from the default config file
      *
@@ -117,25 +113,6 @@ public class MapsAdapterConfigFactory extends MapsAdapterConfigManager {
     }
         
     /**
-     * <p>saveXml</p>
-     *
-     * @param xml a {@link java.lang.String} object.
-     * @throws java.io.IOException if any.
-     */
-    protected synchronized void saveXml(String xml) throws IOException {
-        if (xml != null) {
-            long timestamp = System.currentTimeMillis();
-            File cfgFile = ConfigFileConstants.getFile(ConfigFileConstants.MAPS_ADAPTER_CONFIG_FILE_NAME);
-            logStatic().debug("saveXml: saving config file at "+timestamp+": " + cfgFile.getPath());
-            Writer fileWriter = new OutputStreamWriter(new FileOutputStream(cfgFile), "UTF-8");
-            fileWriter.write(xml);
-            fileWriter.flush();
-            fileWriter.close();
-            logStatic().debug("saveXml: finished saving config file: " + cfgFile.getPath());
-        }
-    }
-
-    /**
      * Return the singleton instance of this factory.
      *
      * @return The current factory instance.
@@ -149,9 +126,33 @@ public class MapsAdapterConfigFactory extends MapsAdapterConfigManager {
         return m_singleton;
     }
     
-    private static void setInstance(MapsAdapterConfigFactory instance) {
+    private static void setInstance(final MapsAdapterConfigFactory instance) {
         m_singleton = instance;
         m_loaded = true;
+    }
+
+    /**
+     * <p>saveXml</p>
+     *
+     * @param xml a {@link java.lang.String} object.
+     * @throws java.io.IOException if any.
+     */
+    protected void saveXml(final String xml) throws IOException {
+        if (xml != null) {
+            getWriteLock().lock();
+            try {
+                final long timestamp = System.currentTimeMillis();
+                final File cfgFile = ConfigFileConstants.getFile(ConfigFileConstants.MAPS_ADAPTER_CONFIG_FILE_NAME);
+                LogUtils.debugf(this, "saveXml: saving config file at %d: %s", timestamp, cfgFile.getPath());
+                final Writer fileWriter = new OutputStreamWriter(new FileOutputStream(cfgFile), "UTF-8");
+                fileWriter.write(xml);
+                fileWriter.flush();
+                fileWriter.close();
+                LogUtils.debugf(this, "saveXml: finished saving config file: %s", cfgFile.getPath());
+            } finally {
+                getWriteLock().unlock();
+            }
+        }
     }
 
     /**
@@ -161,14 +162,18 @@ public class MapsAdapterConfigFactory extends MapsAdapterConfigManager {
      * @throws org.exolab.castor.xml.MarshalException if any.
      * @throws org.exolab.castor.xml.ValidationException if any.
      */
-    public synchronized void update() throws IOException, MarshalException, ValidationException {
-
-        File cfgFile = ConfigFileConstants.getFile(ConfigFileConstants.MAPS_ADAPTER_CONFIG_FILE_NAME);
-        if (cfgFile.lastModified() > m_currentVersion) {
-            m_currentVersion = cfgFile.lastModified();
-            logStatic().debug("init: config file path: " + cfgFile.getPath());
-            reloadXML(new FileInputStream(cfgFile));
-            logStatic().debug("init: finished loading config file: " + cfgFile.getPath());
+    public void update() throws IOException, MarshalException, ValidationException {
+        getWriteLock().lock();
+        try {
+            final File cfgFile = ConfigFileConstants.getFile(ConfigFileConstants.MAPS_ADAPTER_CONFIG_FILE_NAME);
+            if (cfgFile.lastModified() > m_currentVersion) {
+                m_currentVersion = cfgFile.lastModified();
+                LogUtils.debugf(this, "init: config file path: %s", cfgFile.getPath());
+                reloadXML(new FileInputStream(cfgFile));
+                LogUtils.debugf(this, "init: finished loading config file: %s", cfgFile.getPath());
+            }
+        } finally {
+            getWriteLock().unlock();
         }
     }
 

@@ -209,48 +209,49 @@ public class AvailabilityData {
         if (log.isDebugEnabled()) {
             log.debug("CATEGORY " + categoryName);
         }
-        if (categoryName.equals("") || categoryName.equals("all")) {
-            int catCount = 0;
-            if (log.isDebugEnabled()) {
-                log.debug("catCount " + catCount);
-            }
-            
-            for(Categorygroup cg : config.getCategorygroupCollection()) {
-            
-                // go through the categories
-                org.opennms.netmgt.config.categories.Categories cats = cg.getCategories();
-            
-                for(org.opennms.netmgt.config.categories.Category cat : cats.getCategoryCollection()) {
-
-                    if (log.isDebugEnabled()) {
-                        log.debug("CATEGORY " + cat.getLabel());
-                    }
-                    catCount++;
-                    populateDataStructures(cat, report, format, monthFormat, catCount);
+        
+        m_catFactory.getReadLock().lock();
+        try {
+            if (categoryName.equals("") || categoryName.equals("all")) {
+                int catCount = 0;
+                if (log.isDebugEnabled()) {
+                    log.debug("catCount " + catCount);
                 }
+                
+                for(final Categorygroup cg : config.getCategorygroupCollection()) {
+                
+                    for(org.opennms.netmgt.config.categories.Category cat : cg.getCategories().getCategoryCollection()) {
+    
+                        if (log.isDebugEnabled()) {
+                            log.debug("CATEGORY " + cat.getLabel());
+                        }
+                        catCount++;
+                        populateDataStructures(cat, report, format, monthFormat, catCount);
+                    }
+                }
+                if (log.isDebugEnabled()) {
+                    log.debug("catCount " + catCount);
+                }
+            } else {
+                org.opennms.netmgt.config.categories.Category cat = (org.opennms.netmgt.config.categories.Category) m_catFactory.getCategory(categoryName);
+                if (log.isDebugEnabled()) {
+                    log.debug("CATEGORY - now populating data structures "
+                            + cat.getLabel());
+                }
+                populateDataStructures(cat, report, format, monthFormat, 1);
             }
-            if (log.isDebugEnabled()) {
-                log.debug("catCount " + catCount);
+    
+            final SimpleDateFormat simplePeriod = new SimpleDateFormat("MMMMMMMMMMM dd, yyyy");
+            final String reportPeriod = simplePeriod.format(new java.util.Date(m_startTime)) + " - " + simplePeriod.format(new java.util.Date(m_endTime));
+            Created created = report.getCreated();
+            if (created == null) {
+                created = new Created();
             }
-        } else {
-            org.opennms.netmgt.config.categories.Category cat = (org.opennms.netmgt.config.categories.Category) m_catFactory.getCategory(categoryName);
-            if (log.isDebugEnabled()) {
-                log.debug("CATEGORY - now populating data structures "
-                        + cat.getLabel());
-            }
-            populateDataStructures(cat, report, format, monthFormat, 1);
+            created.setPeriod(reportPeriod);
+            report.setCreated(created);
+        } finally {
+            m_catFactory.getReadLock().unlock();
         }
-
-        SimpleDateFormat simplePeriod = new SimpleDateFormat("MMMMMMMMMMM dd, yyyy");
-        String reportPeriod = simplePeriod.format(new java.util.Date(
-                                                                     m_startTime))
-                + " - " + simplePeriod.format(new java.util.Date(m_endTime));
-        Created created = report.getCreated();
-        if (created == null) {
-            created = new Created();
-        }
-        created.setPeriod(reportPeriod);
-        report.setCreated(created);
 
         if (log.isDebugEnabled()) {
             log.debug("After availCalculations");

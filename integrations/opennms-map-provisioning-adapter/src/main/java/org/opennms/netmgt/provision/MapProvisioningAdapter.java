@@ -645,155 +645,162 @@ public class MapProvisioningAdapter extends SimpleQueuedProvisioningAdapter impl
                     synchronized (m_lock) {
                         log().debug("syncMaps: lock acquired.  syncing maps...");
 
-                        List<Cmap> cmaps = m_mapsAdapterConfig.getAllMaps();
-                        m_mapNameMapSizeListMap = new ConcurrentHashMap<String, Integer>(cmaps.size());
-                        Map<String,OnmsMap> mapNames= new ConcurrentHashMap<String,OnmsMap>(cmaps.size());
-                        for (Cmap cmap: cmaps) {
-                            OnmsMap onmsMap = new OnmsMap();
-                            onmsMap.setName(cmap.getMapName());
-                            onmsMap.setType(OnmsMap.AUTOMATICALLY_GENERATED_MAP);
-                            mapNames.put(cmap.getMapName(),onmsMap);
-                        }
-
-                        Date now = new Date();
-                        log().debug("syncMaps: sync automated and static maps in database with configuration");
+                        m_mapsAdapterConfig.getReadLock().lock();
                         
-                        log().debug("syncMaps: deleting elements from automated existing map: ");
-                        m_onmsMapElementDao.deleteElementsByMapType(OnmsMap.AUTOMATICALLY_GENERATED_MAP);
-                        m_onmsMapElementDao.deleteElementsByType(OnmsMapElement.MAP_HIDE_TYPE);
-                        m_onmsMapElementDao.deleteElementsByType(OnmsMapElement.NODE_HIDE_TYPE);                        
-                        
-                        for (OnmsMap onmsMap : m_onmsMapDao.findAutoAndSaveMaps()) {  
-                            if ( mapNames.containsKey(onmsMap.getName()) || onmsMap.getType().equals(OnmsMap.AUTOMATIC_SAVED_MAP)) {
-                                //Move a map from Static to User if its no longer in the mapsadapter-configuration.xml 
-                                if(onmsMap.getType().equals(OnmsMap.AUTOMATIC_SAVED_MAP) && !mapNames.containsKey(onmsMap.getName())) {
-                                    onmsMap.setType(OnmsMap.USER_GENERATED_MAP);
-                                }
-                                log().debug("syncMaps: fetching map from db: " +onmsMap.getName() + " type: " + onmsMap.getType());
-                                mapNames.put(onmsMap.getName(), onmsMap);
-                            } else {
-                                log().debug("syncMaps: deleting old automated map: " + onmsMap.getName());
-                                log().debug("syncMaps: removing as map Element from all maps.");
-                                m_onmsMapElementDao.deleteElementsByElementIdAndType(onmsMap.getId(), OnmsMapElement.MAP_TYPE);
-                                log().debug("syncMaps: removing from map table.");
-                                m_onmsMapDao.delete(onmsMap);
+                        try {
+                            final List<Cmap> cmaps = m_mapsAdapterConfig.getAllMaps();
+                            m_mapNameMapSizeListMap = new ConcurrentHashMap<String, Integer>(cmaps.size());
+                            final Map<String,OnmsMap> mapNames= new ConcurrentHashMap<String,OnmsMap>(cmaps.size());
+                            for (Cmap cmap: cmaps) {
+                                final OnmsMap onmsMap = new OnmsMap();
+                                onmsMap.setName(cmap.getMapName());
+                                onmsMap.setType(OnmsMap.AUTOMATICALLY_GENERATED_MAP);
+                                mapNames.put(cmap.getMapName(),onmsMap);
                             }
-                        }
-                        
-                        for (Cmap cmap: cmaps) {
-                            OnmsMap onmsMap = mapNames.get(cmap.getMapName());
-
-                            if (onmsMap.getType().equals(OnmsMap.AUTOMATICALLY_GENERATED_MAP)) {
-                                log().debug("syncMaps: sync automated map: " + onmsMap.getName());
     
-                                onmsMap.setOwner(cmap.getMapOwner());
-                                onmsMap.setUserLastModifies(cmap.getMapOwner());
-                                onmsMap.setMapGroup(cmap.getMapGroup());
-                                onmsMap.setAccessMode(cmap.getMapAccess());
-                                onmsMap.setBackground(cmap.getMapBG());
-                                onmsMap.setHeight(cmap.getMapHeight());
-                                onmsMap.setWidth(cmap.getMapWidth());
-                                onmsMap.setLastModifiedTime(now);
-    
-                                m_onmsMapDao.saveOrUpdate(onmsMap);
-                                m_mapNameMapSizeListMap.put(cmap.getMapName(),0);
-                            } else {
-                                log().debug("syncMaps: skipping not automated map: " + onmsMap.getName());
-                                log().debug("syncMaps: map type: " + onmsMap.getType());
-                            }
-                        }
-                        // adding nodes to auto maps
-                        for(OnmsNode node: m_onmsNodeDao.findAllProvisionedNodes()) {
-                            log().debug("syncMaps: try to sync automated maps for node element: '" + node.getLabel() +"'");
-                            Map<String, Celement> mapNameCelements = m_mapsAdapterConfig.getElementByAddress(getSuitableIp(node));
-                            for (String mapName: mapNameCelements.keySet()) {
-                                Celement celement = mapNameCelements.get(mapName);
-                                OnmsMap onmsMap = mapNames.get(mapName);
-                                if (onmsMap.getType().equals(OnmsMap.AUTOMATICALLY_GENERATED_MAP)) {
-                                    log().debug("syncMaps: adding node: " + node.getLabel() + " to map: " + mapName);
-                                    int elementsize = m_mapNameMapSizeListMap.get(mapName);
-                                    log().debug("syncMaps: mapElement is new: found last mapElement at position #" + elementsize + " on map: " + mapName);                    
-                                    XY xy=getXY(onmsMap, elementsize);
-                                    log().debug("syncMaps: mapElement is new: saved last mapElement at X position: " +  xy.getX());
-                                    log().debug("syncMaps: mapElement is new: saved last mapElement at Y position: " +  xy.getY());
-                                    m_onmsMapElementDao.save(
-                                       new OnmsMapElement(onmsMap,node.getId(),OnmsMapElement.NODE_TYPE,getLabel(node.getLabel()),celement.getIcon(),xy.getX(),xy.getY())
-                                    );
-                                    m_mapNameMapSizeListMap.replace(mapName, ++elementsize);
-                                } else  if (m_onmsMapElementDao.findElement(node.getId(), OnmsMapElement.NODE_TYPE, onmsMap) == null &&
-                                            m_onmsMapElementDao.findElement(node.getId(), OnmsMapElement.NODE_HIDE_TYPE, onmsMap) == null) {
-                                    m_onmsMapElementDao.save(
-                                       new OnmsMapElement(onmsMap,node.getId(),OnmsMapElement.NODE_HIDE_TYPE,getLabel(node.getLabel()),celement.getIcon(),0,0)
-                                    );   
-                                }
-                            }
-                        }
-
-                        Map<String,List<Csubmap>> submaps = m_mapsAdapterConfig.getsubMaps();
-                        
-                        for (String mapName : submaps.keySet()) {
-                            OnmsMap onmsMap = mapNames.get(mapName);
-                            log().debug("syncMaps: found container map: " + mapName + " type: " + onmsMap.getType());
-                            Collection<OnmsMapElement> elements = new ArrayList<OnmsMapElement>();
-                            boolean auto;
-                            if (onmsMap.getType().equals(OnmsMap.AUTOMATICALLY_GENERATED_MAP)) {
-                                auto = true;
-                            } else if (onmsMap.getType().equals(OnmsMap.AUTOMATIC_SAVED_MAP)) {
-                                elements = m_onmsMapElementDao.findElementsByMapIdAndType(onmsMap.getId(), OnmsMapElement.MAP_TYPE);
-                                auto = false;
-                            } else {
-                                log().debug("syncMaps: cannot add submaps to map: " + mapName);
-                                continue;
-                            }
-SUBMAP:                     for (Csubmap csubmap : submaps.get(mapName)) {
-                                OnmsMap onmsSubMap = mapNames.get(csubmap.getName());
-                                log().debug("syncMaps: add submap: " + csubmap.getName());
-                                if ( (!csubmap.getAddwithoutelements()) &&
-                                    m_mapNameMapSizeListMap.get(csubmap.getName())==0)
-                                    continue;
-                                log().debug("syncMaps: add submap: " + csubmap.getName() + "to map: " + mapName);
-                                if (auto) {
-                                    XY xy = new XY();
-                                    if (csubmap.hasX() && csubmap.hasY()) {
-                                        xy.setX(csubmap.getX());
-                                        xy.setY(csubmap.getY());
-                                    } else {
-                                        int elementsize = m_mapNameMapSizeListMap.get(mapName);
-                                        xy=getXY(onmsMap, elementsize);
-                                        m_mapNameMapSizeListMap.replace(mapName, ++elementsize);
-                                    }                                    
-                                    m_onmsMapElementDao.save(new OnmsMapElement(onmsMap,onmsSubMap.getId(),OnmsMapElement.MAP_TYPE,csubmap.getLabel(),csubmap.getIcon(),xy.getX(),xy.getY()));                                    
-                                } else {
-                                    for (OnmsMapElement element: elements) {
-                                        if (element.getElementId() == onmsSubMap.getId()) continue SUBMAP;
+                            final Date now = new Date();
+                            log().debug("syncMaps: sync automated and static maps in database with configuration");
+                            
+                            log().debug("syncMaps: deleting elements from automated existing map: ");
+                            m_onmsMapElementDao.deleteElementsByMapType(OnmsMap.AUTOMATICALLY_GENERATED_MAP);
+                            m_onmsMapElementDao.deleteElementsByType(OnmsMapElement.MAP_HIDE_TYPE);
+                            m_onmsMapElementDao.deleteElementsByType(OnmsMapElement.NODE_HIDE_TYPE);                        
+                            
+                            for (final OnmsMap onmsMap : m_onmsMapDao.findAutoAndSaveMaps()) {  
+                                if ( mapNames.containsKey(onmsMap.getName()) || onmsMap.getType().equals(OnmsMap.AUTOMATIC_SAVED_MAP)) {
+                                    //Move a map from Static to User if its no longer in the mapsadapter-configuration.xml 
+                                    if(onmsMap.getType().equals(OnmsMap.AUTOMATIC_SAVED_MAP) && !mapNames.containsKey(onmsMap.getName())) {
+                                        onmsMap.setType(OnmsMap.USER_GENERATED_MAP);
                                     }
-                                    m_onmsMapElementDao.save(new OnmsMapElement(onmsMap,onmsSubMap.getId(),OnmsMapElement.MAP_HIDE_TYPE,csubmap.getLabel(),csubmap.getIcon(),0,0));                                                                        
+                                    log().debug("syncMaps: fetching map from db: " +onmsMap.getName() + " type: " + onmsMap.getType());
+                                    mapNames.put(onmsMap.getName(), onmsMap);
+                                } else {
+                                    log().debug("syncMaps: deleting old automated map: " + onmsMap.getName());
+                                    log().debug("syncMaps: removing as map Element from all maps.");
+                                    m_onmsMapElementDao.deleteElementsByElementIdAndType(onmsMap.getId(), OnmsMapElement.MAP_TYPE);
+                                    log().debug("syncMaps: removing from map table.");
+                                    m_onmsMapDao.delete(onmsMap);
+                                }
+                            }
+                            
+                            for (final Cmap cmap: cmaps) {
+                                final OnmsMap onmsMap = mapNames.get(cmap.getMapName());
+    
+                                if (onmsMap.getType().equals(OnmsMap.AUTOMATICALLY_GENERATED_MAP)) {
+                                    log().debug("syncMaps: sync automated map: " + onmsMap.getName());
+        
+                                    onmsMap.setOwner(cmap.getMapOwner());
+                                    onmsMap.setUserLastModifies(cmap.getMapOwner());
+                                    onmsMap.setMapGroup(cmap.getMapGroup());
+                                    onmsMap.setAccessMode(cmap.getMapAccess());
+                                    onmsMap.setBackground(cmap.getMapBG());
+                                    onmsMap.setHeight(cmap.getMapHeight());
+                                    onmsMap.setWidth(cmap.getMapWidth());
+                                    onmsMap.setLastModifiedTime(now);
+        
+                                    m_onmsMapDao.saveOrUpdate(onmsMap);
+                                    m_mapNameMapSizeListMap.put(cmap.getMapName(),0);
+                                } else {
+                                    log().debug("syncMaps: skipping not automated map: " + onmsMap.getName());
+                                    log().debug("syncMaps: map type: " + onmsMap.getType());
+                                }
+                            }
+                            // adding nodes to auto maps
+                            for(final OnmsNode node: m_onmsNodeDao.findAllProvisionedNodes()) {
+                                log().debug("syncMaps: try to sync automated maps for node element: '" + node.getLabel() +"'");
+                                final Map<String, Celement> mapNameCelements = m_mapsAdapterConfig.getElementByAddress(getSuitableIp(node));
+                                for (final String mapName: mapNameCelements.keySet()) {
+                                    final Celement celement = mapNameCelements.get(mapName);
+                                    final OnmsMap onmsMap = mapNames.get(mapName);
+                                    if (onmsMap.getType().equals(OnmsMap.AUTOMATICALLY_GENERATED_MAP)) {
+                                        log().debug("syncMaps: adding node: " + node.getLabel() + " to map: " + mapName);
+                                        int elementsize = m_mapNameMapSizeListMap.get(mapName);
+                                        log().debug("syncMaps: mapElement is new: found last mapElement at position #" + elementsize + " on map: " + mapName);                    
+                                        XY xy=getXY(onmsMap, elementsize);
+                                        log().debug("syncMaps: mapElement is new: saved last mapElement at X position: " +  xy.getX());
+                                        log().debug("syncMaps: mapElement is new: saved last mapElement at Y position: " +  xy.getY());
+                                        m_onmsMapElementDao.save(
+                                           new OnmsMapElement(onmsMap,node.getId(),OnmsMapElement.NODE_TYPE,getLabel(node.getLabel()),celement.getIcon(),xy.getX(),xy.getY())
+                                        );
+                                        m_mapNameMapSizeListMap.replace(mapName, ++elementsize);
+                                    } else  if (m_onmsMapElementDao.findElement(node.getId(), OnmsMapElement.NODE_TYPE, onmsMap) == null &&
+                                                m_onmsMapElementDao.findElement(node.getId(), OnmsMapElement.NODE_HIDE_TYPE, onmsMap) == null) {
+                                        m_onmsMapElementDao.save(
+                                           new OnmsMapElement(onmsMap,node.getId(),OnmsMapElement.NODE_HIDE_TYPE,getLabel(node.getLabel()),celement.getIcon(),0,0)
+                                        );   
+                                    }
+                                }
+                            }
+    
+                            final Map<String,List<Csubmap>> submaps = m_mapsAdapterConfig.getsubMaps();
+                            
+                            for (final String mapName : submaps.keySet()) {
+                                final OnmsMap onmsMap = mapNames.get(mapName);
+                                log().debug("syncMaps: found container map: " + mapName + " type: " + onmsMap.getType());
+                                Collection<OnmsMapElement> elements = new ArrayList<OnmsMapElement>();
+                                boolean auto;
+                                if (onmsMap.getType().equals(OnmsMap.AUTOMATICALLY_GENERATED_MAP)) {
+                                    auto = true;
+                                } else if (onmsMap.getType().equals(OnmsMap.AUTOMATIC_SAVED_MAP)) {
+                                    elements = m_onmsMapElementDao.findElementsByMapIdAndType(onmsMap.getId(), OnmsMapElement.MAP_TYPE);
+                                    auto = false;
+                                } else {
+                                    log().debug("syncMaps: cannot add submaps to map: " + mapName);
+                                    continue;
+                                }
+                                SUBMAP: for (final Csubmap csubmap : submaps.get(mapName)) {
+                                    final OnmsMap onmsSubMap = mapNames.get(csubmap.getName());
+                                    log().debug("syncMaps: add submap: " + csubmap.getName());
+                                    if ( (!csubmap.getAddwithoutelements()) &&
+                                        m_mapNameMapSizeListMap.get(csubmap.getName())==0) {
+                                        continue;
+                                    }
+                                    log().debug("syncMaps: add submap: " + csubmap.getName() + "to map: " + mapName);
+                                    if (auto) {
+                                        XY xy = new XY();
+                                        if (csubmap.hasX() && csubmap.hasY()) {
+                                            xy.setX(csubmap.getX());
+                                            xy.setY(csubmap.getY());
+                                        } else {
+                                            int elementsize = m_mapNameMapSizeListMap.get(mapName);
+                                            xy=getXY(onmsMap, elementsize);
+                                            m_mapNameMapSizeListMap.replace(mapName, ++elementsize);
+                                        }                                    
+                                        m_onmsMapElementDao.save(new OnmsMapElement(onmsMap,onmsSubMap.getId(),OnmsMapElement.MAP_TYPE,csubmap.getLabel(),csubmap.getIcon(),xy.getX(),xy.getY()));                                    
+                                    } else {
+                                        for (final OnmsMapElement element: elements) {
+                                            if (element.getElementId() == onmsSubMap.getId()) continue SUBMAP;
+                                        }
+                                        m_onmsMapElementDao.save(new OnmsMapElement(onmsMap,onmsSubMap.getId(),OnmsMapElement.MAP_HIDE_TYPE,csubmap.getLabel(),csubmap.getIcon(),0,0));                                                                        
+                                    }
+                                    
                                 }
                                 
                             }
-                            
+                            log().debug("syncMaps: maps synchronized.  releasing lock...");
+                        } finally {
+                            m_mapsAdapterConfig.getReadLock().unlock();
                         }
-                        log().debug("syncMaps: maps synchronized.  releasing lock...");
                     }
                     log().info("syncMaps: lock released.");
                     return null;
                 }
 
             });
-        } catch (Exception e) {
+        } catch (final Exception e) {
             log().error("syncMaps: Caught exception synchronizing maps: "+e, e);
             throw new ProvisioningAdapterException("syncMaps exception",e);
         }
     }    
 
-    private void sendAndThrow(Exception e) {
-        Event event = buildEvent(EventConstants.PROVISIONING_ADAPTER_FAILED).addParam("reason", MESSAGE_PREFIX+e.getLocalizedMessage()).getEvent();
+    private void sendAndThrow(final Exception e) {
+        final Event event = buildEvent(EventConstants.PROVISIONING_ADAPTER_FAILED).addParam("reason", MESSAGE_PREFIX+e.getLocalizedMessage()).getEvent();
         m_eventForwarder.sendNow(event);
         log().error(e.getMessage());
         throw new ProvisioningAdapterException(MESSAGE_PREFIX, e);
     }
 
-    private EventBuilder buildEvent(String uei) {
+    private EventBuilder buildEvent(final String uei) {
         return new EventBuilder(uei, "Provisioner", new Date());
     }
     
@@ -803,12 +810,12 @@ SUBMAP:                     for (Csubmap csubmap : submaps.get(mapName)) {
      * @param node a {@link org.opennms.netmgt.model.OnmsNode} object.
      * @return a {@link java.lang.String} object.
      */
-    public String getSuitableIp(OnmsNode node){
-        OnmsIpInterface primaryInterface = node.getPrimaryInterface();
+    public String getSuitableIp(final OnmsNode node){
+        final OnmsIpInterface primaryInterface = node.getPrimaryInterface();
         
         if (primaryInterface == null) {
-            Set<OnmsIpInterface> ipInterfaces = node.getIpInterfaces();
-            for (OnmsIpInterface onmsIpInterface : ipInterfaces) {
+            final Set<OnmsIpInterface> ipInterfaces = node.getIpInterfaces();
+            for (final OnmsIpInterface onmsIpInterface : ipInterfaces) {
                     return onmsIpInterface.getIpAddress();
             }
             return "0.0.0.0";
@@ -816,7 +823,7 @@ SUBMAP:                     for (Csubmap csubmap : submaps.get(mapName)) {
         return primaryInterface.getIpAddress();
     }
     
-    private String getLabel(String FQDN) {
+    private String getLabel(final String FQDN) {
     	if (FQDN.indexOf(".")>0 && !validate(FQDN))
             return FQDN.substring(0, FQDN.indexOf(".")); 			
         return FQDN;
@@ -828,15 +835,16 @@ SUBMAP:                     for (Csubmap csubmap : submaps.get(mapName)) {
 		"([01]?\\d\\d?|2[0-4]\\d|25[0-5])\\." +
 		"([01]?\\d\\d?|2[0-4]\\d|25[0-5])$"; 
  
+    private static final Pattern m_pattern = Pattern.compile(IPADDRESS_PATTERN);
+
    /**
     * Validate ip address with regular expression
     * @param ip ip address for validation
     * @return true valid ip address, false invalid ip address
     */
-    private boolean validate(final String ip){		  
-  	  Pattern pattern = Pattern.compile(IPADDRESS_PATTERN);
-	  Matcher matcher = pattern.matcher(ip);
-	  return matcher.matches();	    	    
+    private boolean validate(final String ip) {	  
+        final Matcher matcher = m_pattern.matcher(ip);
+        return matcher.matches();
     }
 
 }

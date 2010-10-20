@@ -40,6 +40,7 @@ import java.net.InetAddress;
 import java.util.LinkedHashSet;
 import java.util.Set;
 
+import org.opennms.core.utils.LogUtils;
 import org.opennms.netmgt.config.SnmpPeerFactory;
 import org.opennms.netmgt.dao.IpInterfaceDao;
 import org.opennms.netmgt.model.OnmsIpInterface.PrimaryType;
@@ -68,7 +69,7 @@ public class DefaultCollectionAgent extends IPv4NetworkInterface implements Coll
      * @param transMgr a {@link org.springframework.transaction.PlatformTransactionManager} object.
      * @return a {@link org.opennms.netmgt.collectd.CollectionAgent} object.
      */
-    public static CollectionAgent create(Integer ifaceId, final IpInterfaceDao ifaceDao, final PlatformTransactionManager transMgr) {
+    public static CollectionAgent create(final Integer ifaceId, final IpInterfaceDao ifaceDao, final PlatformTransactionManager transMgr) {
         return new DefaultCollectionAgent(DefaultCollectionAgentService.create(ifaceId, ifaceDao, transMgr));
     }
 
@@ -86,7 +87,7 @@ public class DefaultCollectionAgent extends IPv4NetworkInterface implements Coll
     private CollectionAgentService m_agentService;
     private Set<SnmpIfData> m_snmpIfData;
 
-    private DefaultCollectionAgent(CollectionAgentService agentService) {
+    private DefaultCollectionAgent(final CollectionAgentService agentService) {
         super(null);
         m_agentService = agentService;
         
@@ -126,7 +127,7 @@ public class DefaultCollectionAgent extends IPv4NetworkInterface implements Coll
      * @see org.opennms.netmgt.collectd.CollectionAgent#setSavedIfCount(int)
      */
     /** {@inheritDoc} */
-    public void setSavedIfCount(int ifCount) {
+    public void setSavedIfCount(final int ifCount) {
         m_ifCount = ifCount;
     }
 
@@ -189,17 +190,13 @@ public class DefaultCollectionAgent extends IPv4NetworkInterface implements Coll
     }
 
     private void logCompletion() {
-
-        if (log().isDebugEnabled()) {
-            log().debug(
-                        "initialize: initialization completed: nodeid = " + getNodeId()
-                        + ", address = " + getHostAddress()
-                        + ", primaryIfIndex = " + getIfIndex()
-                        + ", isSnmpPrimary = " + getIsSnmpPrimary()
-                        + ", sysoid = " + getSysObjectId()
-            );
-        }
-
+        LogUtils.debugf(this, "initialize: initialization completed: nodeid = %s, address = %s, primaryIfIndex = %s, isSnmpPrimary = %s, sysoid = %s",
+                        getNodeId(),
+                        getHostAddress(),
+                        getIfIndex(),
+                        getIsSnmpPrimary(),
+                        getSysObjectId()
+        );
     }
 
     private void validateSysObjId() {
@@ -211,15 +208,13 @@ public class DefaultCollectionAgent extends IPv4NetworkInterface implements Coll
     }
 
     private void logCollectionParms() {
-        if (log().isDebugEnabled()) {
-            log().debug(
-                        "initialize: db retrieval info: nodeid = " + getNodeId()
-                        + ", address = " + getHostAddress()
-                        + ", primaryIfIndex = " + getIfIndex()
-                        + ", isSnmpPrimary = " + getIsSnmpPrimary()
-                        + ", sysoid = " + getSysObjectId()
-            );
-        }
+        LogUtils.debugf(this, "initialize: db retrieval info: nodeid = %s, address = %s, primaryIfIndex = %s, isSnmpPrimary = %s, sysoid = %s",
+                        getNodeId(),
+                        getHostAddress(),
+                        getIfIndex(),
+                        getIsSnmpPrimary(),
+                        getSysObjectId()
+        );
     }
 
     private void validateIsSnmpPrimary() {
@@ -236,13 +231,7 @@ public class DefaultCollectionAgent extends IPv4NetworkInterface implements Coll
             // allow this for nodes without ipAddrTables
             // throw new RuntimeException("Unable to retrieve ifIndex for
             // interface " + ipAddr.getHostAddress());
-            if (log().isDebugEnabled()) {
-                log().debug(
-                            "initialize: db retrieval info: node " + getNodeId()
-                            + " does not have a legitimate "
-                            + "primaryIfIndex.  Assume node does not "
-                            + "supply ipAddrTable and continue...");
-            }
+            LogUtils.debugf(this, "initialize: db retrieval info: node %s does not have a legitimate primaryIfIndex.  Assume node does not supply ipAddrTable and continue...", getNodeId());
         }
     }
 
@@ -296,22 +285,20 @@ public class DefaultCollectionAgent extends IPv4NetworkInterface implements Coll
      * @see org.opennms.netmgt.collectd.CollectionAgent#getSnmpInterfaceInfo(org.opennms.netmgt.collectd.IfResourceType)
      */
     /** {@inheritDoc} */
-    public Set<IfInfo> getSnmpInterfaceInfo(IfResourceType type) {
-        Set<SnmpIfData> snmpIfData = getSnmpInterfaceData();
+    public Set<IfInfo> getSnmpInterfaceInfo(final IfResourceType type) {
+        final Set<SnmpIfData> snmpIfData = getSnmpInterfaceData();
+        final Set<IfInfo> ifInfos = new LinkedHashSet<IfInfo>(snmpIfData.size());
         
-        Set<IfInfo> ifInfos = new LinkedHashSet<IfInfo>(snmpIfData.size());
-        
-        for (SnmpIfData ifData : snmpIfData) {
-            IfInfo ifInfo = new IfInfo(type, this, ifData);
-            ifInfos.add(ifInfo);
+        for (final SnmpIfData ifData : snmpIfData) {
+            ifInfos.add(new IfInfo(type, this, ifData));
         }
         
         return ifInfos;
     }
 
     /** {@inheritDoc} */
-    public String getSnmpInterfaceLabel(int ifIndex) {
-        for (SnmpIfData ifData : getSnmpInterfaceData()) {
+    public String getSnmpInterfaceLabel(final int ifIndex) {
+        for (final SnmpIfData ifData : getSnmpInterfaceData()) {
             if (ifData.getIfIndex() == ifIndex)
                 return ifData.getLabelForRRD();
         }
@@ -328,7 +315,7 @@ public class DefaultCollectionAgent extends IPv4NetworkInterface implements Coll
     }
 
     /** {@inheritDoc} */
-    public void setSavedSysUpTime(long sysUpTime) {
+    public void setSavedSysUpTime(final long sysUpTime) {
         m_sysUpTime = sysUpTime;
     }
     

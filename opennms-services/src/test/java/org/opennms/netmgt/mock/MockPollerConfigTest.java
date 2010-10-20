@@ -81,7 +81,7 @@ public class MockPollerConfigTest extends TestCase {
         m_pollerConfig.setCriticalService("YAHOO");
         
         // test the nodeOutageProcessing setting works
-        assertTrue(m_pollerConfig.nodeOutageProcessingEnabled());
+        assertTrue(m_pollerConfig.isNodeOutageProcessingEnabled());
 
         // test to ensure that the poller has packages
         Enumeration<Package> pkgs = m_pollerConfig.enumeratePackage();
@@ -96,8 +96,8 @@ public class MockPollerConfigTest extends TestCase {
         assertTrue(pkgCount > 0);
 
         // ensure a sample interface is in the package
-        assertTrue(m_pollerConfig.interfaceInPackage("192.168.1.1", pkg));
-        assertFalse(m_pollerConfig.interfaceInPackage("192.168.1.7", pkg));
+        assertTrue(m_pollerConfig.isInterfaceInPackage("192.168.1.1", pkg));
+        assertFalse(m_pollerConfig.isInterfaceInPackage("192.168.1.7", pkg));
 
         Enumeration<Service> svcs = pkg.enumerateService();
         assertNotNull(svcs);

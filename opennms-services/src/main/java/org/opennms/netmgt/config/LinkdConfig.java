@@ -39,11 +39,12 @@ package org.opennms.netmgt.config;
 import java.io.IOException;
 import java.util.Enumeration;
 import java.util.List;
+import java.util.concurrent.locks.Lock;
 
 import org.exolab.castor.xml.MarshalException;
 import org.exolab.castor.xml.ValidationException;
-import org.opennms.netmgt.config.linkd.Package;
 import org.opennms.netmgt.config.linkd.LinkdConfiguration;
+import org.opennms.netmgt.config.linkd.Package;
 import org.opennms.netmgt.linkd.DiscoveryLink;
 import org.opennms.netmgt.linkd.SnmpCollection;
 
@@ -83,7 +84,7 @@ public interface LinkdConfig {
      * @return True if the interface is included in the package, false
      *         otherwise.
      */
-    boolean interfaceInPackage(String iface, org.opennms.netmgt.config.linkd.Package pkg);
+    boolean isInterfaceInPackage(String iface, org.opennms.netmgt.config.linkd.Package pkg);
 
     /**
      * This method is used to determine if the named interface is included in
@@ -101,7 +102,7 @@ public interface LinkdConfig {
      * @return True if the interface is included in the package, false
      *         otherwise.
      */
-    boolean interfaceInPackageRange(String iface, org.opennms.netmgt.config.linkd.Package pkg);
+    boolean isInterfaceInPackageRange(String iface, org.opennms.netmgt.config.linkd.Package pkg);
 
     /**
      * Returns the first package that the ip belongs to, null if none.
@@ -126,6 +127,10 @@ public interface LinkdConfig {
      */
     List<String> getAllPackageMatches(String ipAddr);
     
+    boolean isAutoDiscoveryEnabled();
+
+    boolean isVlanDiscoveryEnabled();
+
     /**
      * <p>enumeratePackage</p>
      *
@@ -141,97 +146,6 @@ public interface LinkdConfig {
      */
     Package getPackage(String pkgName);
     
-    /**
-     * <p>getThreads</p>
-     *
-     * @return a int.
-     */
-    int getThreads();
-    
-    /**
-     * <p>enableDiscoveryDownload</p>
-     *
-     * @return a boolean.
-     */
-    boolean enableDiscoveryDownload();
-    
-    /**
-     * <p>useIpRouteDiscovery</p>
-     *
-     * @return a boolean.
-     */
-    boolean useIpRouteDiscovery();
-    
-    /**
-     * <p>saveRouteTable</p>
-     *
-     * @return a boolean.
-     */
-    boolean saveRouteTable();
-    
-	/**
-	 * <p>useCdpDiscovery</p>
-	 *
-	 * @return a boolean.
-	 */
-	boolean useCdpDiscovery();
-
-	/**
-	 * <p>useBridgeDiscovery</p>
-	 *
-	 * @return a boolean.
-	 */
-	boolean useBridgeDiscovery();
-	
-	/**
-	 * <p>saveStpNodeTable</p>
-	 *
-	 * @return a boolean.
-	 */
-	boolean saveStpNodeTable();
-	
-	/**
-	 * <p>saveStpInterfaceTable</p>
-	 *
-	 * @return a boolean.
-	 */
-	boolean saveStpInterfaceTable();
-	
-	/**
-	 * <p>getInitialSleepTime</p>
-	 *
-	 * @return a long.
-	 */
-	long getInitialSleepTime();
-	
-	/**
-	 * <p>getSnmpPollInterval</p>
-	 *
-	 * @return a long.
-	 */
-	long getSnmpPollInterval();
-	
-	/**
-	 * <p>getDiscoveryLinkInterval</p>
-	 *
-	 * @return a long.
-	 */
-	long getDiscoveryLinkInterval();
-	
-	/**
-	 * <p>autoDiscovery</p>
-	 *
-	 * @return a boolean.
-	 */
-	boolean autoDiscovery();
-	
-	/**
-	 * <p>enableVlanDiscovery</p>
-	 *
-	 * @return a boolean.
-	 */
-	boolean enableVlanDiscovery();
-		
 	/**
 	 * <p>update</p>
 	 *
@@ -287,7 +201,7 @@ public interface LinkdConfig {
     /**
      * <p>createPackageIpListMap</p>
      */
-    void createPackageIpListMap();
+    void updatePackageIpListMap();
     
     /**
      * <p>getVlanClassName</p>
@@ -305,4 +219,7 @@ public interface LinkdConfig {
 	 */
 	boolean hasClassName(String sysoid);
     
+	Lock getReadLock();
+
+    Lock getWriteLock();
 }

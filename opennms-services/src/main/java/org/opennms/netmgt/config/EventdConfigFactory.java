@@ -56,9 +56,6 @@ import org.opennms.netmgt.ConfigFileConstants;
  *   to a base class moving away from singleton.
  * @author <a href="mailto:sowmya@opennms.org">Sowmya Nataraj </a>
  * @author <a href="http://www.opennms.org/">OpenNMS </a>
- * @author <a href="mailto:sowmya@opennms.org">Sowmya Nataraj </a>
- * @author <a href="http://www.opennms.org/">OpenNMS </a>
- * @version $Id: $
  */
 public final class EventdConfigFactory extends EventdConfigManager {
     /**

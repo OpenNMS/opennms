@@ -50,7 +50,6 @@ import org.springframework.util.Assert;
  * Represents a PollOutagesConfigManager
  *
  * @author brozow
- * @version $Id: $
  */
 abstract public class PollOutagesConfigManager extends AbstractCastorConfigDao<Outages, Outages> implements PollOutagesConfig {
     private final ReadWriteLock m_globalLock = new ReentrantReadWriteLock();

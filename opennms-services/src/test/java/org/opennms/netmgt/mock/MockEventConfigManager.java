@@ -47,7 +47,7 @@ import org.opennms.netmgt.config.EventdConfigManager;
 public class MockEventConfigManager extends EventdConfigManager {
 
     @SuppressWarnings("deprecation")
-    public MockEventConfigManager(Reader rdr) throws MarshalException, ValidationException, IOException {
+    public MockEventConfigManager(final Reader rdr) throws MarshalException, ValidationException, IOException {
         super(rdr);
     }
 }

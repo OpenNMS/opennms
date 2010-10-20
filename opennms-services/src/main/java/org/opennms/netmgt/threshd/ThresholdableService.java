@@ -40,12 +40,10 @@ package org.opennms.netmgt.threshd;
 import java.net.InetAddress;
 import java.net.UnknownHostException;
 import java.util.Collections;
-import java.util.Enumeration;
-import java.util.Iterator;
 import java.util.Map;
 import java.util.TreeMap;
 
-import org.opennms.core.utils.ThreadCategory;
+import org.opennms.core.utils.LogUtils;
 import org.opennms.netmgt.EventConstants;
 import org.opennms.netmgt.config.PollOutagesConfigFactory;
 import org.opennms.netmgt.config.threshd.Package;
@@ -53,8 +51,8 @@ import org.opennms.netmgt.config.threshd.Parameter;
 import org.opennms.netmgt.config.threshd.Service;
 import org.opennms.netmgt.model.events.EventProxy;
 import org.opennms.netmgt.poller.IPv4NetworkInterface;
-import org.opennms.netmgt.scheduler.ReadyRunnable;
 import org.opennms.netmgt.scheduler.LegacyScheduler;
+import org.opennms.netmgt.scheduler.ReadyRunnable;
 import org.opennms.netmgt.xml.event.Event;
 
 /**
@@ -172,9 +170,7 @@ final class ThresholdableService extends IPv4NetworkInterface implements Thresho
         // find the service matching the name
         //
         Service svc = null;
-        Enumeration esvc = m_package.enumerateService();
-        while (esvc.hasMoreElements()) {
-            Service s = (Service) esvc.nextElement();
+        for (final Service s : m_package.getServiceCollection()) {
             if (s.getName().equalsIgnoreCase(svcName)) {
                 svc = s;
                 break;
@@ -193,9 +189,7 @@ final class ThresholdableService extends IPv4NetworkInterface implements Thresho
         synchronized (SVC_PROP_MAP) {
             if (!SVC_PROP_MAP.containsKey(m_svcPropKey)) {
                 Map<String,String> m = Collections.synchronizedMap(new TreeMap<String,String>());
-                Enumeration<Parameter> ep = m_service.enumerateParameter();
-                while (ep.hasMoreElements()) {
-                    Parameter p = ep.nextElement();
+                for (final Parameter p : m_service.getParameterCollection()) {
                     m.put(p.getKey(), p.getValue());
                 }
 
@@ -304,8 +298,7 @@ final class ThresholdableService extends IPv4NetworkInterface implements Thresho
      * uei Universal event identifier of event to generate.
      */
     private void sendEvent(String uei) {
-        ThreadCategory log = log();
-        Event event = new Event();
+        final Event event = new Event();
         event.setUei(uei);
         event.setNodeid((long) m_nodeId);
         event.setInterface(m_address.getHostAddress());
@@ -313,7 +306,7 @@ final class ThresholdableService extends IPv4NetworkInterface implements Thresho
         event.setSource("OpenNMS.Threshd");
         try {
             event.setHost(InetAddress.getLocalHost().getHostAddress());
-        } catch (UnknownHostException ex) {
+        } catch (final UnknownHostException ex) {
             event.setHost("unresolved.host");
         }
 
@@ -323,12 +316,11 @@ final class ThresholdableService extends IPv4NetworkInterface implements Thresho
         //
         try {
             m_proxy.send(event);
-        } catch (Exception ex) {
-            log.error("Failed to send the event " + uei + " for interface " + m_address.getHostAddress(), ex);
+        } catch (final Exception ex) {
+            LogUtils.errorf(this, ex, "Failed to send the event %s for interface %s", uei, m_address.getHostAddress());
         }
 
-        if (log.isDebugEnabled())
-            log.debug("sendEvent: Sent event " + uei + " for " + m_nodeId + "/" + m_address.getHostAddress() + "/" + m_service.getName());
+        LogUtils.debugf(this, "sendEvent: Sent event %s for %s/%s/%s", uei, m_nodeId, m_address.getHostAddress(), m_service.getName());
     }
 
     /**
@@ -339,10 +331,7 @@ final class ThresholdableService extends IPv4NetworkInterface implements Thresho
      * before it exits is to reschedule the interface.
      */
     public void run() {
-        ThreadCategory log = log();
-
         // Process any oustanding updates.
-        //
         if (processUpdates() == ABORT_THRESHOLD_CHECK)
             return;
 
@@ -351,7 +340,6 @@ final class ThresholdableService extends IPv4NetworkInterface implements Thresho
 
         // Check scheduled outages to see if any apply indicating
         // that threshold checking should be skipped
-        //
         if (scheduledOutage()) {
             // Outage applied...reschedule the service and return
             m_scheduler.schedule(this, m_service.getInterval());
@@ -359,30 +347,25 @@ final class ThresholdableService extends IPv4NetworkInterface implements Thresho
         }
 
         // Perform threshold checking
-        //
-        if (log.isDebugEnabled())
-            log.debug("run: starting new threshold check for " + m_address.getHostAddress());
+        LogUtils.debugf(this, "run: starting new threshold check for %s", m_address.getHostAddress());
 
         int status = ServiceThresholder.THRESHOLDING_FAILED;
-        Map propertiesMap = SVC_PROP_MAP.get(m_svcPropKey);
+        final Map propertiesMap = SVC_PROP_MAP.get(m_svcPropKey);
         try {
             status = m_thresholder.check(this, m_proxy, propertiesMap);
-        } catch (Throwable t) {
-            log.error("run: An undeclared throwable was caught during SNMP thresholding for interface " + m_address.getHostAddress(), t);
+        } catch (final Throwable t) {
+            LogUtils.errorf(this, t, "run: An undeclared throwable was caught during SNMP thresholding for interface %s", m_address.getHostAddress());
         }
 
         // Update last threshold check time
         m_lastThresholdCheckTime = System.currentTimeMillis();
 
         // Any change in status?
-        //
         if (status != m_status) {
             // Generate transition events
-            if (log.isDebugEnabled())
-                log.debug("run: change in thresholding status, generating event.");
+            LogUtils.debugf(this, "run: change in thresholding status, generating event.");
 
             // Send the appropriate event
-            //
             switch (status) {
             case ServiceThresholder.THRESHOLDING_SUCCEEDED:
                 sendEvent(EventConstants.THRESHOLDING_SUCCEEDED_EVENT_UEI);
@@ -432,17 +415,12 @@ final class ThresholdableService extends IPv4NetworkInterface implements Thresho
         // interface then break and return true. Otherwise process the
         // next outage.
         // 
-        Iterator iter = m_package.getOutageCalendarCollection().iterator();
-        while (iter.hasNext()) {
-            String outageName = (String) iter.next();
-
+        for (final String outageName : m_package.getOutageCalendarCollection()) {
             // Does the outage apply to the current time?
             if (outageFactory.isCurTimeInOutage(outageName)) {
                 // Does the outage apply to this interface?
-		if ((outageFactory.isNodeIdInOutage((long)m_nodeId, outageName)) ||
-			(outageFactory.isInterfaceInOutage(m_address.getHostAddress(), outageName))) {
-                    if (log().isDebugEnabled())
-                        log().debug("scheduledOutage: configured outage '" + outageName + "' applies, interface " + m_address.getHostAddress() + " will not be thresholded for " + m_service);
+                if ((outageFactory.isNodeIdInOutage((long) m_nodeId, outageName)) || (outageFactory.isInterfaceInOutage(m_address.getHostAddress(), outageName))) {
+                    LogUtils.debugf(this, "scheduledOutage: configured outage '%s' applies, interface %s will not be thresholded for %s", outageName, m_address.getHostAddress(), m_service);
                     outageFound = true;
                     break;
                 }
@@ -459,8 +437,6 @@ final class ThresholdableService extends IPv4NetworkInterface implements Thresho
      *         (for example due to deletion flag being set), false otherwise.
      */
     private boolean processUpdates() {
-        ThreadCategory log = log();
-
         // All update processing takes place within synchronized block
         // to ensure that no updates are missed.
         //
@@ -474,8 +450,7 @@ final class ThresholdableService extends IPv4NetworkInterface implements Thresho
                 // Deletion flag is set, simply return without polling
                 // or rescheduling this collector.
                 //
-                if (log.isDebugEnabled())
-                    log.debug("Collector for  " + m_address.getHostAddress() + " is marked for deletion...skipping thresholding, will not reschedule.");
+                LogUtils.debugf(this, "Collector for  %s is marked for deletion...skipping thresholding, will not reschedule.", m_address.getHostAddress());
 
                 return ABORT_THRESHOLD_CHECK;
             }
@@ -486,33 +461,30 @@ final class ThresholdableService extends IPv4NetworkInterface implements Thresho
                 // Reinitialization flag is set, call initialize() to
                 // reinit the collector for this interface
                 //
-                if (log.isDebugEnabled())
-                    log.debug("ReinitializationFlag set for " + m_address.getHostAddress());
+                LogUtils.debugf(this, "ReinitializationFlag set for %s", m_address.getHostAddress());
 
                 try {
                     m_thresholder.release(this);
                     m_thresholder.initialize(this, this.getPropertyMap());
-                    if (log.isDebugEnabled())
-                        log.debug("Completed reinitializing SNMP collector for " + m_address.getHostAddress());
-                } catch (RuntimeException rE) {
-                    log.warn("Unable to reschedule " + m_address.getHostAddress() + " for " + m_service.getName() + " thresholding, reason: " + rE.getMessage());
-                } catch (Throwable t) {
-                    log.error("Uncaught exception, failed to reschedule interface " + m_address.getHostAddress() + " for " + m_service.getName() + " thresholding", t);
+                    LogUtils.debugf(this, "Completed reinitializing SNMP collector for %s", m_address.getHostAddress());
+                } catch (final RuntimeException e) {
+                    LogUtils.warnf(this, e, "Unable to reschedule %s for %s thresholding.", m_address.getHostAddress(), m_service.getName());
+                } catch (final Throwable t) {
+                    LogUtils.errorf(this, t, "Uncaught exception, failed to reschedule interface %s for %s thresholding.", m_address.getHostAddress(), m_service.getName());
                 }
             }
 
             // Update: reparenting flag
             //
             if (m_updates.isReparentingFlagSet()) {
-                if (log.isDebugEnabled())
-                    log.debug("ReparentingFlag set for " + m_address.getHostAddress());
+                LogUtils.debugf(this, "ReparentingFlag set for %s", m_address.getHostAddress());
 
                 // Convert new nodeId to integer value
                 int newNodeId = -1;
                 try {
                     newNodeId = Integer.parseInt(m_updates.getReparentNewNodeId());
-                } catch (NumberFormatException nfE) {
-                    log.warn("Unable to convert new nodeId value to an int while processing reparenting update: " + m_updates.getReparentNewNodeId());
+                } catch (final NumberFormatException nfE) {
+                    LogUtils.warnf(this, nfE, "Unable to convert new nodeId value to an int while processing reparenting update: %s", m_updates.getReparentNewNodeId());
                 }
 
                 // Set this collector's nodeId to the value of the interface's
@@ -524,16 +496,14 @@ final class ThresholdableService extends IPv4NetworkInterface implements Thresho
                 // to the interface's parent node among other things.
                 //
                 try {
-                    if (log.isDebugEnabled())
-                        log.debug("Reinitializing SNMP thresholder for " + m_address.getHostAddress());
+                    LogUtils.debugf(this, "Reinitializing SNMP thresholder for %s", m_address.getHostAddress());
                     m_thresholder.release(this);
                     m_thresholder.initialize(this, this.getPropertyMap());
-                    if (log.isDebugEnabled())
-                        log.debug("Completed reinitializing SNMP thresholder for " + m_address.getHostAddress());
-                } catch (RuntimeException rE) {
-                    log.warn("Unable to initialize " + m_address.getHostAddress() + " for " + m_service.getName() + " thresholding, reason: " + rE.getMessage());
-                } catch (Throwable t) {
-                    log.error("Uncaught exception, failed to initialize interface " + m_address.getHostAddress() + " for " + m_service.getName() + " thresholding", t);
+                    LogUtils.debugf(this, "Completed reinitializing SNMP thresholder for %s", m_address.getHostAddress());
+                } catch (final RuntimeException rE) {
+                    LogUtils.warnf(this, rE, "Unable to initialize %s for %s thresholding.", m_address.getHostAddress(), m_service.getName());
+                } catch (final Throwable t) {
+                    LogUtils.errorf(this, t, "Uncaught exception, failed to initialize interface %s for %s thresholding.", m_address.getHostAddress(), m_service.getName());
                 }
             }
 

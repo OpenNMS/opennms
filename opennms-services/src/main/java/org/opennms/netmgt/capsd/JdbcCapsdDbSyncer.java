@@ -736,97 +736,103 @@ public class JdbcCapsdDbSyncer implements InitializingBean, CapsdDbSyncer {
                      * for each service, try to get the first package here and
                      * for that for service evaluation
                      */
-                    org.opennms.netmgt.config.poller.Package ipPkg = getPollerConfig().getFirstPackageMatch(ipaddress);
-                    boolean ipToBePolled = false;
-                    if (ipPkg != null) {
-                        ipToBePolled = true;
-                    }
-    
-                    if (log().isDebugEnabled()) {
-                        log().debug("syncManagementState: " + ipaddress + " to be polled based on poller config?: " + ipToBePolled);
-                    }
-    
-                    if ((ifEntry.getManagementState() == DbIpInterfaceEntry.STATE_MANAGED && ipToBePolled) || (ifEntry.getManagementState() == DbIpInterfaceEntry.STATE_NOT_POLLED && !ipToBePolled)) {
-                        // current status is right
+                    final PollerConfig pollerConfig = getPollerConfig();
+                    pollerConfig.getReadLock().lock();
+                    try {
+                        org.opennms.netmgt.config.poller.Package ipPkg = pollerConfig.getFirstPackageMatch(ipaddress);
+                        boolean ipToBePolled = false;
+                        if (ipPkg != null) {
+                            ipToBePolled = true;
+                        }
+        
                         if (log().isDebugEnabled()) {
-                            log().debug("syncManagementState: " + ipaddress + " - no change in status");
+                            log().debug("syncManagementState: " + ipaddress + " to be polled based on poller config?: " + ipToBePolled);
                         }
-                    } else {
-                        if (ipToBePolled) {
-                            ifUpdateStmt.setString(1, new String(new char[] { DbIpInterfaceEntry.STATE_MANAGED }));
-                        } else {
-                            ifUpdateStmt.setString(1, new String(new char[] { DbIpInterfaceEntry.STATE_NOT_POLLED }));
-                        }
-    
-                        ifUpdateStmt.setInt(2, ifEntry.getNodeId());
-                        ifUpdateStmt.setString(3, ipaddress);
-                        ifUpdateStmt.executeUpdate();
-    
-                        if (log().isDebugEnabled()) {
-                            log().debug("syncManagementState: update completed for node/interface: " + ifEntry.getNodeId() + "/" + ipaddress);
-                        }
-                    }
-    
-                    // get services for this nodeid/ip and update
-                    svcRetStmt.setInt(1, ifEntry.getNodeId());
-                    svcRetStmt.setString(2, ipaddress);
-    
-                    ResultSet svcRS = svcRetStmt.executeQuery();
-                    d.watch(svcRS);
-                    while (svcRS.next()) {
-                        int svcId = svcRS.getInt(1);
-    
-                        char svcStatus = DbIfServiceEntry.STATUS_UNKNOWN;
-                        String str = svcRS.getString(2);
-                        if (str != null) {
-                            svcStatus = str.charAt(0);
-                        }
-    
-                        String svcName = getServiceName(svcId);
-                        /*
-                         * try the first package that had the ip first, if
-                         * service is not enabled, try all packages
-                         */
-                        char oldStatus = svcStatus;
-                        char newStatus = 'U';
-                        boolean svcToBePolledLocally = isServicePolledLocally(ipaddress, svcName, ipPkg);
-                        boolean svcToBePolledRemotely = isServicePolled(ipaddress, svcName, ipPkg);
-                        
-                        if (log().isDebugEnabled()) {
-                            log().debug("syncManagementState: " + ipaddress + "/" + svcName + " to be polled based on poller config?: " + svcToBePolledLocally);
-                        }
-    
-                        if ((svcStatus == DbIfServiceEntry.STATUS_ACTIVE && svcToBePolledLocally) || (svcStatus == DbIfServiceEntry.STATUS_NOT_POLLED && !ipToBePolled)) {
+        
+                        if ((ifEntry.getManagementState() == DbIpInterfaceEntry.STATE_MANAGED && ipToBePolled) || (ifEntry.getManagementState() == DbIpInterfaceEntry.STATE_NOT_POLLED && !ipToBePolled)) {
                             // current status is right
                             if (log().isDebugEnabled()) {
-                                log().debug("syncManagementState: " + ifEntry.getNodeId() + "/" + ipaddress + "/" + svcName + " status = " + svcStatus + " - no change in status");
+                                log().debug("syncManagementState: " + ipaddress + " - no change in status");
                             }
                         } else {
-                            // Update the 'ifServices' table
-                            if (svcStatus == DbIfServiceEntry.STATUS_SUSPEND && svcToBePolledLocally) {
-                                svcUpdateStmt.setString(1, new String(new char[] { DbIfServiceEntry.STATUS_FORCED }));
-                                newStatus = 'F';
-                            } else if (svcToBePolledLocally) {
-                                svcUpdateStmt.setString(1, new String(new char[] { DbIfServiceEntry.STATUS_ACTIVE }));
-                                newStatus = 'A';
-                            } else if (svcToBePolledRemotely) {
-                                svcUpdateStmt.setString(1, new String(new char[] { DbIfServiceEntry.STATUS_REMOTE }));
-                                newStatus = 'X';
+                            if (ipToBePolled) {
+                                ifUpdateStmt.setString(1, new String(new char[] { DbIpInterfaceEntry.STATE_MANAGED }));
                             } else {
-                                svcUpdateStmt.setString(1, new String(new char[] { DbIfServiceEntry.STATUS_NOT_POLLED }));
-                                newStatus = 'N';
+                                ifUpdateStmt.setString(1, new String(new char[] { DbIpInterfaceEntry.STATE_NOT_POLLED }));
                             }
-                            svcUpdateStmt.setInt(2, ifEntry.getNodeId());
-                            svcUpdateStmt.setString(3, ipaddress);
-                            svcUpdateStmt.setInt(4, svcId);
-                            svcUpdateStmt.executeUpdate();
-    
+        
+                            ifUpdateStmt.setInt(2, ifEntry.getNodeId());
+                            ifUpdateStmt.setString(3, ipaddress);
+                            ifUpdateStmt.executeUpdate();
+        
                             if (log().isDebugEnabled()) {
-                                log().debug("syncManagementState: update completed for node/interface/svc: " + ifEntry.getNodeId() + "/" + ipaddress + "/" + svcName + " status changed from " + oldStatus + " to " + newStatus);
+                                log().debug("syncManagementState: update completed for node/interface: " + ifEntry.getNodeId() + "/" + ipaddress);
                             }
                         }
-    
-                    } // end ifservices result
+        
+                        // get services for this nodeid/ip and update
+                        svcRetStmt.setInt(1, ifEntry.getNodeId());
+                        svcRetStmt.setString(2, ipaddress);
+        
+                        ResultSet svcRS = svcRetStmt.executeQuery();
+                        d.watch(svcRS);
+                        while (svcRS.next()) {
+                            int svcId = svcRS.getInt(1);
+        
+                            char svcStatus = DbIfServiceEntry.STATUS_UNKNOWN;
+                            String str = svcRS.getString(2);
+                            if (str != null) {
+                                svcStatus = str.charAt(0);
+                            }
+        
+                            String svcName = getServiceName(svcId);
+                            /*
+                             * try the first package that had the ip first, if
+                             * service is not enabled, try all packages
+                             */
+                            char oldStatus = svcStatus;
+                            char newStatus = 'U';
+                            boolean svcToBePolledLocally = isServicePolledLocally(ipaddress, svcName, ipPkg);
+                            boolean svcToBePolledRemotely = isServicePolled(ipaddress, svcName, ipPkg);
+                            
+                            if (log().isDebugEnabled()) {
+                                log().debug("syncManagementState: " + ipaddress + "/" + svcName + " to be polled based on poller config?: " + svcToBePolledLocally);
+                            }
+        
+                            if ((svcStatus == DbIfServiceEntry.STATUS_ACTIVE && svcToBePolledLocally) || (svcStatus == DbIfServiceEntry.STATUS_NOT_POLLED && !ipToBePolled)) {
+                                // current status is right
+                                if (log().isDebugEnabled()) {
+                                    log().debug("syncManagementState: " + ifEntry.getNodeId() + "/" + ipaddress + "/" + svcName + " status = " + svcStatus + " - no change in status");
+                                }
+                            } else {
+                                // Update the 'ifServices' table
+                                if (svcStatus == DbIfServiceEntry.STATUS_SUSPEND && svcToBePolledLocally) {
+                                    svcUpdateStmt.setString(1, new String(new char[] { DbIfServiceEntry.STATUS_FORCED }));
+                                    newStatus = 'F';
+                                } else if (svcToBePolledLocally) {
+                                    svcUpdateStmt.setString(1, new String(new char[] { DbIfServiceEntry.STATUS_ACTIVE }));
+                                    newStatus = 'A';
+                                } else if (svcToBePolledRemotely) {
+                                    svcUpdateStmt.setString(1, new String(new char[] { DbIfServiceEntry.STATUS_REMOTE }));
+                                    newStatus = 'X';
+                                } else {
+                                    svcUpdateStmt.setString(1, new String(new char[] { DbIfServiceEntry.STATUS_NOT_POLLED }));
+                                    newStatus = 'N';
+                                }
+                                svcUpdateStmt.setInt(2, ifEntry.getNodeId());
+                                svcUpdateStmt.setString(3, ipaddress);
+                                svcUpdateStmt.setInt(4, svcId);
+                                svcUpdateStmt.executeUpdate();
+        
+                                if (log().isDebugEnabled()) {
+                                    log().debug("syncManagementState: update completed for node/interface/svc: " + ifEntry.getNodeId() + "/" + ipaddress + "/" + svcName + " status changed from " + oldStatus + " to " + newStatus);
+                                }
+                            }
+        
+                        } // end ifservices result
+                    } finally {
+                        pollerConfig.getReadLock().unlock();
+                    }
                 } // interface managed
             } // end while
         } finally {
@@ -834,22 +840,32 @@ public class JdbcCapsdDbSyncer implements InitializingBean, CapsdDbSyncer {
         }
     }
     
-    private boolean isServicePolled(String ifAddr, String svcName, org.opennms.netmgt.config.poller.Package ipPkg) {
+    private boolean isServicePolled(final String ifAddr, final String svcName, final org.opennms.netmgt.config.poller.Package ipPkg) {
         boolean svcToBePolled = false;
-        if (ipPkg != null) {
-            svcToBePolled = getPollerConfig().isPolled(svcName, ipPkg);
-            if (!svcToBePolled)
-                svcToBePolled = getPollerConfig().isPolled(ifAddr, svcName);
-        }
+            if (ipPkg != null) {
+                final PollerConfig pollerConfig = getPollerConfig();
+                pollerConfig.getReadLock().lock();
+                try {
+                    svcToBePolled = pollerConfig.isPolled(svcName, ipPkg);
+                    if (!svcToBePolled) svcToBePolled = pollerConfig.isPolled(ifAddr, svcName);
+                } finally {
+                    pollerConfig.getReadLock().unlock();
+                }
+            }
         return svcToBePolled;
     }
 
-    private boolean isServicePolledLocally(String ifAddr, String svcName, org.opennms.netmgt.config.poller.Package ipPkg) {
+    private boolean isServicePolledLocally(final String ifAddr, final String svcName, final org.opennms.netmgt.config.poller.Package ipPkg) {
         boolean svcToBePolled = false;
         if (ipPkg != null && !ipPkg.getRemote()) {
-            svcToBePolled = getPollerConfig().isPolled(svcName, ipPkg);
-            if (!svcToBePolled)
-                svcToBePolled = getPollerConfig().isPolledLocally(ifAddr, svcName);
+            final PollerConfig pollerConfig = getPollerConfig();
+            pollerConfig.getReadLock().lock();
+            try {
+                svcToBePolled = pollerConfig.isPolled(svcName, ipPkg);
+                if (!svcToBePolled) svcToBePolled = pollerConfig.isPolledLocally(ifAddr, svcName);
+            } finally {
+                pollerConfig.getReadLock().unlock();
+            }
         }
         return svcToBePolled;
     }

@@ -131,7 +131,7 @@ public class SnmpAssetProvisioningAdapter extends SimplerQueuedProvisioningAdapt
 	 * @throws org.opennms.netmgt.provision.ProvisioningAdapterException if any.
 	 */
 	@Override
-	public void doAddNode(int nodeId) throws ProvisioningAdapterException {
+	public void doAddNode(final int nodeId) throws ProvisioningAdapterException {
 		log().debug("doAdd: adding nodeid: " + nodeId);
 
 		final OnmsNode node = m_nodeDao.get(nodeId);
@@ -146,43 +146,47 @@ public class SnmpAssetProvisioningAdapter extends SimplerQueuedProvisioningAdapt
 		SnmpAgentConfig agentConfig = null;
 		agentConfig = m_snmpConfigDao.getAgentConfig(ipaddress);
 
-		OnmsAssetRecord asset = node.getAssetRecord();
-		AssetField[] fields = m_config.getAssetFieldsForAddress(ipaddress, node.getSysObjectId());
-		for (AssetField field : fields) {
-			try {
-				String value = fetchSnmpAssetString(agentConfig, field.getMibObjs(), field.getFormatString());
-				if (log().isDebugEnabled()) {
-					log().debug("doAdd: Setting asset field \"" + field.getName() + "\" to value: " + value);
-				}
-				// Use Spring bean-accessor classes to set the field value
-				BeanWrapper wrapper = PropertyAccessorFactory.forBeanPropertyAccess(asset);
-				try {
-					wrapper.setPropertyValue(field.getName(), value);
-				} catch (BeansException e) {
-					log().warn("doAdd: Could not set property \"" + field.getName() + "\" on asset object: " + e.getMessage(), e);
-				}
-			} catch (MissingFormatArgumentException e) {
-				// This exception is thrown if the SNMP operation fails or an incorrect number of
-				// parameters is returned by the agent or because of a misconfiguration.
-				log().warn("doAdd: Could not set value for asset field \"" + field.getName() + "\": " + e.getMessage(), e);
-			}
+		final OnmsAssetRecord asset = node.getAssetRecord();
+		m_config.getReadLock().lock();
+		try {
+		    for (final AssetField field : m_config.getAssetFieldsForAddress(ipaddress, node.getSysObjectId())) {
+    			try {
+    			    final String value = fetchSnmpAssetString(agentConfig, field.getMibObjs(), field.getFormatString());
+    				if (log().isDebugEnabled()) {
+    					log().debug("doAdd: Setting asset field \"" + field.getName() + "\" to value: " + value);
+    				}
+    				// Use Spring bean-accessor classes to set the field value
+    				final BeanWrapper wrapper = PropertyAccessorFactory.forBeanPropertyAccess(asset);
+    				try {
+    					wrapper.setPropertyValue(field.getName(), value);
+    				} catch (final BeansException e) {
+    					log().warn("doAdd: Could not set property \"" + field.getName() + "\" on asset object: " + e.getMessage(), e);
+    				}
+    			} catch (final MissingFormatArgumentException e) {
+    				// This exception is thrown if the SNMP operation fails or an incorrect number of
+    				// parameters is returned by the agent or because of a misconfiguration.
+    				log().warn("doAdd: Could not set value for asset field \"" + field.getName() + "\": " + e.getMessage(), e);
+    			}
+    		}
+		} finally {
+		    m_config.getReadLock().unlock();
 		}
-		node.setAssetRecord(asset);
-		m_nodeDao.saveOrUpdate(node);
+        node.setAssetRecord(asset);
+        m_nodeDao.saveOrUpdate(node);
 	}
 
-	private static String fetchSnmpAssetString(SnmpAgentConfig agentConfig, MibObjs mibObjs, String formatString) throws MissingFormatArgumentException {
+	private static String fetchSnmpAssetString(final SnmpAgentConfig agentConfig, final MibObjs mibObjs, final String formatString) throws MissingFormatArgumentException {
 
-		List<String> aliases = new ArrayList<String>();
-		List<SnmpObjId> objs = new ArrayList<SnmpObjId>();
-		for (MibObj mibobj : mibObjs.getMibObj()) {
+	    final List<String> aliases = new ArrayList<String>();
+		final List<SnmpObjId> objs = new ArrayList<SnmpObjId>();
+		for (final MibObj mibobj : mibObjs.getMibObj()) {
 			aliases.add(mibobj.getAlias());
 			objs.add(SnmpObjId.get(mibobj.getOid()));
 		}
 		// Fetch the values from the SNMP agent
-		SnmpValue[] values = SnmpUtils.get(agentConfig, objs.toArray(new SnmpObjId[0]));
+		final SnmpValue[] values = SnmpUtils.get(agentConfig, objs.toArray(new SnmpObjId[0]));
 		if (values.length == aliases.size()) {
-			Properties substitutions = new Properties();
+			final Properties substitutions = new Properties();
 			boolean foundAValue = false;
 			for (int i = 0; i < values.length; i++) {
 				// If the value is a NO_SUCH_OBJECT or NO_SUCH_INSTANCE error, then skip it
@@ -204,8 +208,7 @@ public class SnmpAssetProvisioningAdapter extends SimplerQueuedProvisioningAdapt
 			}
 
 			if (objs.size() != substitutions.size()) {
-				String props = formatPropertiesAsString(substitutions);
-				log().warn("fetchSnmpAssetString: Unexpected number of properties returned from SNMP GET:\n" + props);
+			    log().warn("fetchSnmpAssetString: Unexpected number of properties returned from SNMP GET:\n" + formatPropertiesAsString(substitutions));
 			}
 
 			return PropertiesUtils.substitute(formatString, substitutions);
@@ -215,9 +218,9 @@ public class SnmpAssetProvisioningAdapter extends SimplerQueuedProvisioningAdapt
 		}
 	}
 
-	protected static String formatPropertiesAsString(Properties props) {
-		StringBuffer propertyValues = new StringBuffer();
-		for (Map.Entry<Object, Object> entry : props.entrySet()) {
+	protected static String formatPropertiesAsString(final Properties props) {
+	    final StringBuffer propertyValues = new StringBuffer();
+		for (final Map.Entry<Object, Object> entry : props.entrySet()) {
 			propertyValues.append("  ");
 			propertyValues.append(entry.getKey().toString());
 			propertyValues.append(" => ");
@@ -235,40 +238,44 @@ public class SnmpAssetProvisioningAdapter extends SimplerQueuedProvisioningAdapt
 	 * @throws org.opennms.netmgt.provision.ProvisioningAdapterException if any.
 	 */
 	@Override
-	public void doUpdateNode(int nodeId) throws ProvisioningAdapterException {
-		log().debug("doUpdate: updating nodeid: " + nodeId);
+	public void doUpdateNode(final int nodeId) throws ProvisioningAdapterException {
+	    log().debug("doUpdate: updating nodeid: " + nodeId);
 
 		final OnmsNode node = m_nodeDao.get(nodeId);
 		Assert.notNull(node, "doUpdate: failed to return node for given nodeId:"+nodeId);
 
-		InetAddress ipaddress = m_template.execute(new TransactionCallback<InetAddress>() {
-			public InetAddress doInTransaction(TransactionStatus arg0) {
+		final InetAddress ipaddress = m_template.execute(new TransactionCallback<InetAddress>() {
+			public InetAddress doInTransaction(final TransactionStatus arg0) {
 				return getIpForNode(node);
 			}
 		});
 
-		SnmpAgentConfig agentConfig = m_snmpConfigDao.getAgentConfig(ipaddress);
+		final SnmpAgentConfig agentConfig = m_snmpConfigDao.getAgentConfig(ipaddress);
 
-		OnmsAssetRecord asset = node.getAssetRecord();
-		AssetField[] fields = m_config.getAssetFieldsForAddress(ipaddress, node.getSysObjectId());
-		for (AssetField field : fields) {
-			try {
-				String value = fetchSnmpAssetString(agentConfig, field.getMibObjs(), field.getFormatString());
-				if (log().isDebugEnabled()) {
-					log().debug("doUpdate: Setting asset field \"" + field.getName() + "\" to value: " + value);
-				}
-				// Use Spring bean-accessor classes to set the field value
-				BeanWrapper wrapper = PropertyAccessorFactory.forBeanPropertyAccess(asset);
-				try {
-					wrapper.setPropertyValue(field.getName(), value);
-				} catch (BeansException e) {
-					log().warn("doUpdate: Could not set property \"" + field.getName() + "\" on asset object: " + e.getMessage(), e);
-				}
-			} catch (MissingFormatArgumentException e) {
-				// This exception is thrown if the SNMP operation fails or an incorrect number of
-				// parameters is returned by the agent or because of a misconfiguration.
-				log().warn("doUpdate: Could not set value for asset field \"" + field.getName() + "\": " + e.getMessage(), e);
-			}
+		final OnmsAssetRecord asset = node.getAssetRecord();
+		m_config.getReadLock().lock();
+		try {
+    		for (AssetField field : m_config.getAssetFieldsForAddress(ipaddress, node.getSysObjectId())) {
+    			try {
+    				String value = fetchSnmpAssetString(agentConfig, field.getMibObjs(), field.getFormatString());
+    				if (log().isDebugEnabled()) {
+    					log().debug("doUpdate: Setting asset field \"" + field.getName() + "\" to value: " + value);
+    				}
+    				// Use Spring bean-accessor classes to set the field value
+    				BeanWrapper wrapper = PropertyAccessorFactory.forBeanPropertyAccess(asset);
+    				try {
+    					wrapper.setPropertyValue(field.getName(), value);
+    				} catch (BeansException e) {
+    					log().warn("doUpdate: Could not set property \"" + field.getName() + "\" on asset object: " + e.getMessage(), e);
+    				}
+    			} catch (MissingFormatArgumentException e) {
+    				// This exception is thrown if the SNMP operation fails or an incorrect number of
+    				// parameters is returned by the agent or because of a misconfiguration.
+    				log().warn("doUpdate: Could not set value for asset field \"" + field.getName() + "\": " + e.getMessage(), e);
+    			}
+    		}
+		} finally {
+		    m_config.getReadLock().unlock();
 		}
 		node.setAssetRecord(asset);
 		m_nodeDao.saveOrUpdate(node);
@@ -282,7 +289,7 @@ public class SnmpAssetProvisioningAdapter extends SimplerQueuedProvisioningAdapt
 	 * @throws org.opennms.netmgt.provision.ProvisioningAdapterException if any.
 	 */
 	@Override
-	public void doNotifyConfigChange(int nodeId) throws ProvisioningAdapterException {
+	public void doNotifyConfigChange(final int nodeId) throws ProvisioningAdapterException {
 		log().debug("doNodeConfigChanged: nodeid: " + nodeId);
 	}
 
@@ -299,7 +306,7 @@ public class SnmpAssetProvisioningAdapter extends SimplerQueuedProvisioningAdapt
 	 *
 	 * @param dao a {@link org.opennms.netmgt.dao.NodeDao} object.
 	 */
-	public void setNodeDao(NodeDao dao) {
+	public void setNodeDao(final NodeDao dao) {
 		m_nodeDao = dao;
 	}
 
@@ -317,7 +324,7 @@ public class SnmpAssetProvisioningAdapter extends SimplerQueuedProvisioningAdapt
 	 *
 	 * @param eventForwarder a {@link org.opennms.netmgt.model.events.EventForwarder} object.
 	 */
-	public void setEventForwarder(EventForwarder eventForwarder) {
+	public void setEventForwarder(final EventForwarder eventForwarder) {
 		m_eventForwarder = eventForwarder;
 	}
 
@@ -331,7 +338,7 @@ public class SnmpAssetProvisioningAdapter extends SimplerQueuedProvisioningAdapt
 	/**
 	 * @param snmpConfigDao the snmpConfigDao to set
 	 */
-	public void setSnmpPeerFactory(SnmpAgentConfigFactory snmpConfigDao) {
+	public void setSnmpPeerFactory(final SnmpAgentConfigFactory snmpConfigDao) {
 		this.m_snmpConfigDao = snmpConfigDao;
 	}
 
@@ -345,7 +352,7 @@ public class SnmpAssetProvisioningAdapter extends SimplerQueuedProvisioningAdapt
 	/**
 	 * @param mConfig the m_config to set
 	 */
-	public void setSnmpAssetAdapterConfig(SnmpAssetAdapterConfig mConfig) {
+	public void setSnmpAssetAdapterConfig(final SnmpAssetAdapterConfig mConfig) {
 		m_config = mConfig;
 	}
 
@@ -362,20 +369,20 @@ public class SnmpAssetProvisioningAdapter extends SimplerQueuedProvisioningAdapt
 		return NAME;
 	}
 
-	private InetAddress getIpForNode(OnmsNode node) {
-		log().debug("getIpForNode: node: " + node.getNodeId() + " Foreign Source: " + node.getForeignSource());
-		OnmsIpInterface primaryInterface = node.getPrimaryInterface();
+	private InetAddress getIpForNode(final OnmsNode node) {
+		LogUtils.debugf(this, "getIpForNode: node: %s Foreign Source: %s", node.getNodeId(), node.getForeignSource());
+		final OnmsIpInterface primaryInterface = node.getPrimaryInterface();
 		InetAddress ipaddr = null;
 		try { 
 			ipaddr = InetAddress.getLocalHost();
-		} catch (UnknownHostException e) {
+		} catch (final UnknownHostException e) {
 			// Can this even happen?
 			log().error("Could not fetch localhost address", e);
 		}
 		if (primaryInterface == null) {
 			log().debug("getIpForNode: found null Snmp Primary Interface, getting interfaces");
-			Set<OnmsIpInterface> ipInterfaces = node.getIpInterfaces();
-			for (OnmsIpInterface onmsIpInterface : ipInterfaces) {
+			final Set<OnmsIpInterface> ipInterfaces = node.getIpInterfaces();
+			for (final OnmsIpInterface onmsIpInterface : ipInterfaces) {
 				log().debug("getIpForNode: trying Interface with id: " + onmsIpInterface.getId());
 				if (onmsIpInterface.getIpAddress() != null) 
 					ipaddr = onmsIpInterface.getInetAddress();
@@ -399,7 +406,7 @@ public class SnmpAssetProvisioningAdapter extends SimplerQueuedProvisioningAdapt
 	 * @param event a {@link org.opennms.netmgt.xml.event.Event} object.
 	 */
 	@EventHandler(uei = EventConstants.RELOAD_DAEMON_CONFIG_UEI)
-	public void handleReloadConfigEvent(Event event) {
+	public void handleReloadConfigEvent(final Event event) {
 		if (isReloadConfigEventTarget(event)) {
 			LogUtils.debugf(this, "Reloading the snmp asset adapter configuration");
 			try {
@@ -410,12 +417,10 @@ public class SnmpAssetProvisioningAdapter extends SimplerQueuedProvisioningAdapt
 		}
 	}
 
-	private boolean isReloadConfigEventTarget(Event event) {
+	private boolean isReloadConfigEventTarget(final Event event) {
 		boolean isTarget = false;
 
-		List<Parm> parmCollection = event.getParms().getParmCollection();
-
-		for (Parm parm : parmCollection) {
+		for (final Parm parm : event.getParms().getParmCollection()) {
 			if (EventConstants.PARM_DAEMON_NAME.equals(parm.getParmName()) && ("Provisiond." + NAME).equalsIgnoreCase(parm.getValue().getContent())) {
 				isTarget = true;
 				break;

@@ -54,9 +54,6 @@ import org.springframework.core.io.FileSystemResource;
  *
  * @author <a href="mailto:sowmya@opennms.org">Sowmya Nataraj </a>
  * @author <a href="http://www.opennms.org/">OpenNMS </a>
- * @author <a href="mailto:sowmya@opennms.org">Sowmya Nataraj </a>
- * @author <a href="http://www.opennms.org/">OpenNMS </a>
- * @version $Id: $
  */
 public final class ActiondConfigFactory {
     /**
@@ -84,8 +81,8 @@ public final class ActiondConfigFactory {
      * @exception org.exolab.castor.xml.ValidationException
      *                Thrown if the contents do not match the required schema.
      */
-    private ActiondConfigFactory(String configFile) throws IOException, MarshalException, ValidationException {
-        m_config = CastorUtils.unmarshal(ActiondConfiguration.class, new FileSystemResource(configFile));
+    private ActiondConfigFactory(final String configFile) throws IOException, MarshalException, ValidationException {
+        m_config = CastorUtils.unmarshal(ActiondConfiguration.class, new FileSystemResource(configFile), CastorUtils.PRESERVE_WHITESPACE);
     }
 
     /**
@@ -109,7 +106,7 @@ public final class ActiondConfigFactory {
             return;
         }
 
-        File cfgFile = ConfigFileConstants.getFile(ConfigFileConstants.ACTIOND_CONFIG_FILE_NAME);
+        final File cfgFile = ConfigFileConstants.getFile(ConfigFileConstants.ACTIOND_CONFIG_FILE_NAME);
         m_singleton = new ActiondConfigFactory(cfgFile.getPath());
 
         m_loaded = true;

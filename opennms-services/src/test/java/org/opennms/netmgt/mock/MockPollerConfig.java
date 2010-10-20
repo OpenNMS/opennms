@@ -306,7 +306,7 @@ public class MockPollerConfig extends PollOutagesConfigManager implements Poller
         return m_threads;
     }
 
-    public boolean getXmlrpc() {
+    public boolean shouldNotifyXmlrpc() {
         return false;
     }
 
@@ -318,7 +318,7 @@ public class MockPollerConfig extends PollOutagesConfigManager implements Poller
         return getServiceMonitor(svcName) != null;
     }
 
-    public boolean interfaceInPackage(final String iface, final Package pkg) {
+    public boolean isInterfaceInPackage(final String iface, final Package pkg) {
         for (final String ipAddr : pkg.getSpecificCollection()) {
             if (ipAddr.equals(iface))
                 return true;
@@ -341,11 +341,11 @@ public class MockPollerConfig extends PollOutagesConfigManager implements Poller
         return false;
     }
 
-    public boolean nodeOutageProcessingEnabled() {
+    public boolean isNodeOutageProcessingEnabled() {
         return m_outageProcessingEnabled;
     }
 
-    public boolean pollAllIfNoCriticalServiceDefined() {
+    public boolean shouldPollAllIfNoCriticalServiceDefined() {
         // TODO Auto-generated method stub
         return m_pollAll ;
     }
@@ -359,7 +359,7 @@ public class MockPollerConfig extends PollOutagesConfigManager implements Poller
 
     }
 
-    public boolean serviceInPackageAndEnabled(final String svcName, final Package pkg) {
+    public boolean isServiceInPackageAndEnabled(final String svcName, final Package pkg) {
         for (final Service svc : pkg.getServiceCollection()) {
             if (svc.getName().equals(svcName))
                 return true;
@@ -367,12 +367,12 @@ public class MockPollerConfig extends PollOutagesConfigManager implements Poller
         return false;
     }
 
-    public boolean serviceMonitored(final String svcName) {
+    public boolean isServiceMonitored(final String svcName) {
         // TODO Auto-generated method stub
         return false;
     }
 
-    public boolean serviceUnresponsiveEnabled() {
+    public boolean isServiceUnresponsiveEnabled() {
         return m_serviceUnresponsiveEnabled;
     }
 
@@ -463,7 +463,7 @@ public class MockPollerConfig extends PollOutagesConfigManager implements Poller
         return new ArrayList<String>(0);
     }
 
-    public boolean pathOutageEnabled() {
+    public boolean isPathOutageEnabled() {
         return false;
     }
 

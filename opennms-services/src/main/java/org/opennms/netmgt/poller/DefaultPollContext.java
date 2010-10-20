@@ -182,7 +182,7 @@ public class DefaultPollContext implements PollContext, EventListener {
      * @return a boolean.
      */
     public boolean isNodeProcessingEnabled() {
-        return getPollerConfig().nodeOutageProcessingEnabled();
+        return getPollerConfig().isNodeOutageProcessingEnabled();
     }
 
     /* (non-Javadoc)
@@ -194,7 +194,7 @@ public class DefaultPollContext implements PollContext, EventListener {
      * @return a boolean.
      */
     public boolean isPollingAllIfCritServiceUndefined() {
-        return getPollerConfig().pollAllIfNoCriticalServiceDefined();
+        return getPollerConfig().shouldPollAllIfNoCriticalServiceDefined();
     }
 
     /* (non-Javadoc)
@@ -240,7 +240,7 @@ public class DefaultPollContext implements PollContext, EventListener {
         bldr.setHost(this.getLocalHostName());
         
         if (uei.equals(EventConstants.NODE_DOWN_EVENT_UEI)
-                && this.getPollerConfig().pathOutageEnabled()) {
+                && this.getPollerConfig().isPathOutageEnabled()) {
             String[] criticalPath = this.getQueryManager().getCriticalPath(nodeId);
             
             if (criticalPath[0] != null && !criticalPath[0].equals("")) {
@@ -336,7 +336,7 @@ public class DefaultPollContext implements PollContext, EventListener {
      * @return a boolean.
      */
     public boolean isServiceUnresponsiveEnabled() {
-        return getPollerConfig().serviceUnresponsiveEnabled();
+        return getPollerConfig().isServiceUnresponsiveEnabled();
     }
 
     /* (non-Javadoc)

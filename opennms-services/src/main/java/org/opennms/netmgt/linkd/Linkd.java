@@ -273,7 +273,7 @@ public class Linkd extends AbstractServiceDaemon {
 	 * @return a boolean.
 	 */
 	public boolean isInterfaceInPackage(String ipaddr, String pkg) {
-		if (m_linkdConfig.interfaceInPackage(ipaddr, m_linkdConfig.getPackage(pkg))) return true;
+		if (m_linkdConfig.isInterfaceInPackage(ipaddr, m_linkdConfig.getPackage(pkg))) return true;
 		return false;
 	}
 
@@ -285,7 +285,7 @@ public class Linkd extends AbstractServiceDaemon {
 	 * @return a boolean.
 	 */
 	public boolean isInterfaceInPackageRange(String ipaddr, String pkg) {
-		if (m_linkdConfig.interfaceInPackageRange(ipaddr, m_linkdConfig.getPackage(pkg))) return true;
+		if (m_linkdConfig.isInterfaceInPackageRange(ipaddr, m_linkdConfig.getPackage(pkg))) return true;
 		return false;
 	}
 
@@ -293,7 +293,7 @@ public class Linkd extends AbstractServiceDaemon {
 
 		LinkableNode node = null;
 		// database changed need reload packageiplist
-		m_linkdConfig.createPackageIpListMap();
+		m_linkdConfig.updatePackageIpListMap();
 		
 
 		// First of all get Linkable Node
@@ -377,7 +377,7 @@ public class Linkd extends AbstractServiceDaemon {
 		}
 
 		// database changed need reload packageiplist
-		m_linkdConfig.createPackageIpListMap();
+		m_linkdConfig.updatePackageIpListMap();
 
 	}
 	
@@ -402,7 +402,7 @@ public class Linkd extends AbstractServiceDaemon {
 		} 
 
 		// database changed need reload packageiplist
-		m_linkdConfig.createPackageIpListMap();
+		m_linkdConfig.updatePackageIpListMap();
 
 	}
 
@@ -520,7 +520,7 @@ public class Linkd extends AbstractServiceDaemon {
 
 		boolean autodiscovery = false;
 		if (pkg.hasAutoDiscovery()) autodiscovery = pkg.getAutoDiscovery(); 
-		else autodiscovery = m_linkdConfig.autoDiscovery();
+		else autodiscovery = m_linkdConfig.isAutoDiscoveryEnabled();
 		
 		if ( autodiscovery ) {
 				
@@ -625,7 +625,7 @@ public class Linkd extends AbstractServiceDaemon {
 	 *
 	 * @param config a {@link org.opennms.netmgt.config.LinkdConfig} object.
 	 */
-	public void setLinkdConfig(LinkdConfig config) {
+	public void setLinkdConfig(final LinkdConfig config) {
 		m_linkdConfig = config;
 	}
 

@@ -402,7 +402,7 @@ public class MockNetworkTest extends TestCase {
         PollerConfig pollerConfig = m_pollerConfig;
 
         // test the nodeOutageProcessing setting works
-        assertTrue(pollerConfig.nodeOutageProcessingEnabled());
+        assertTrue(pollerConfig.isNodeOutageProcessingEnabled());
 
         // test to ensure that the poller has packages
         Enumeration<Package> pkgs = pollerConfig.enumeratePackage();
@@ -417,7 +417,7 @@ public class MockNetworkTest extends TestCase {
         assertTrue(pkgCount > 0);
 
         // ensure a sample interface is in the package
-        assertTrue(pollerConfig.interfaceInPackage("192.168.1.1", pkg));
+        assertTrue(pollerConfig.isInterfaceInPackage("192.168.1.1", pkg));
 
         Enumeration<Service> svcs = pkg.enumerateService();
         assertNotNull(svcs);

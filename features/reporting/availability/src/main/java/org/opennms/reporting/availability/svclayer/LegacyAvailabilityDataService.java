@@ -123,119 +123,125 @@ public class LegacyAvailabilityDataService implements
             log.fatal("Initializing CategoryFactory", e);
             throw new AvailabilityDataServiceException("faild to init catFactory");
         }
-        m_commonRule = m_catFactory.getEffectiveRule(categoryName);
         
-        List<String> nodeIPs = FilterDaoFactory.getInstance().getIPList(m_commonRule);
-
-        if (log.isDebugEnabled()) {
-            log.debug("Number of IPs satisfying rule: " + nodeIPs.size());
-        }
+        m_catFactory.getReadLock().lock();
         
-
-        List<String> monitoredServices = new ArrayList<String>(category.getServiceCollection());
-        
-        log.debug("categories in monitoredServices = " + monitoredServices.toString());
-        
-        initialiseConnection();
-        // Prepare the statement to get service entries for each IP
         try {
-            // Prepared statement to get node info for an IP
-            ipInfoGetStmt = m_availConn.prepareStatement(AvailabilityConstants.DB_GET_INFO_FOR_IP);
-            // Prepared statedment to get services info for an IP address
-            servicesGetStmt = m_availConn.prepareStatement(AvailabilityConstants.DB_GET_SVC_ENTRIES);
-            // Prepared statement to get outages entries
-            outagesGetStmt = m_availConn.prepareStatement(AvailabilityConstants.DB_GET_OUTAGE_ENTRIES);
-        } catch (SQLException e) {
-            log.fatal("failed to setup prepared statement", e);
-            throw new AvailabilityDataServiceException("failed to setup prepared statement");
-        }
-        
-        /*
-         * For each of these IP addresses, get the details from the
-         * ifServices and services tables.
-         */
-        Iterator<String> ipIter = nodeIPs.iterator();
-        String ip = null;
-        ResultSet ipRS = null;
-        try {
-            // Prepared statement to get node info for an IP
-            ipInfoGetStmt = m_availConn.prepareStatement(AvailabilityConstants.DB_GET_INFO_FOR_IP);
-            while (ipIter.hasNext()) {
-                ip = (String) ipIter.next();
-                log.debug("ecexuting " + AvailabilityConstants.DB_GET_INFO_FOR_IP + " for " + ip);
+            m_commonRule = m_catFactory.getEffectiveRule(categoryName);
+            
+            List<String> nodeIPs = FilterDaoFactory.getInstance().getIPList(m_commonRule);
     
-                // get node info for this ip
-                ipInfoGetStmt.setString(1, ip);
-    
-                ipRS = ipInfoGetStmt.executeQuery();
-                
-                // now handle all the results from this
-                while (ipRS.next()) {
-
-                    int nodeid = ipRS.getInt(1);
-                    String nodeName = ipRS.getString(2);
-
-                    // get the services for this IP address
-                    ResultSet svcRS = null;
-                    servicesGetStmt.setLong(1, nodeid);
-                    servicesGetStmt.setString(2, ip);
-                    servicesGetStmt.setString(3, ip);
-                    servicesGetStmt.setLong(4, nodeid);
-                    svcRS = servicesGetStmt.executeQuery();
-                    // create node objects for this nodeID/IP/service
-                    while (svcRS.next()) {
-                        // read data from the resultSet
-                        int svcid = svcRS.getInt(1);
-                        String svcname = svcRS.getString(2);
-
-                        /*
-                         * If the list is empty, we assume all services are
-                         * monitored. If it has any, we use it as a filter
-                         */
-                        if (monitoredServices.isEmpty() || monitoredServices.contains(svcname)) {
-
-                            OutageSvcTimesList outageSvcTimesList = new OutageSvcTimesList();
-                            getOutagesNodeIpSvc(nodeid, nodeName, ip, svcid,
-                                                svcname, outageSvcTimesList,
-                                                outagesGetStmt,
-                                                startTime, endTime);
-
-                           
-                        }
-                    }
-
-                }
-               
+            if (log.isDebugEnabled()) {
+                log.debug("Number of IPs satisfying rule: " + nodeIPs.size());
             }
-        } catch (SQLException e) {
-            log.fatal("failed to execute prepared statement", e);
-            throw new AvailabilityDataServiceException("failed to execute prepared statement");
-        } finally {
+            
+    
+            List<String> monitoredServices = new ArrayList<String>(category.getServiceCollection());
+            
+            log.debug("categories in monitoredServices = " + monitoredServices.toString());
+            
+            initialiseConnection();
+            // Prepare the statement to get service entries for each IP
             try {
-                if (ipRS != null) {
-                    ipRS.close();
-                }
-                if (servicesGetStmt != null) {
-                    servicesGetStmt.close();
-                }
-
-                if (ipInfoGetStmt != null) {
-                    ipInfoGetStmt.close();
-                }
-
-                if (outagesGetStmt != null) {
-                    outagesGetStmt.close();
-                }
-
-                if (m_availConn != null) {
-                    closeConnection();
+                // Prepared statement to get node info for an IP
+                ipInfoGetStmt = m_availConn.prepareStatement(AvailabilityConstants.DB_GET_INFO_FOR_IP);
+                // Prepared statedment to get services info for an IP address
+                servicesGetStmt = m_availConn.prepareStatement(AvailabilityConstants.DB_GET_SVC_ENTRIES);
+                // Prepared statement to get outages entries
+                outagesGetStmt = m_availConn.prepareStatement(AvailabilityConstants.DB_GET_OUTAGE_ENTRIES);
+            } catch (SQLException e) {
+                log.fatal("failed to setup prepared statement", e);
+                throw new AvailabilityDataServiceException("failed to setup prepared statement");
+            }
+            
+            /*
+             * For each of these IP addresses, get the details from the
+             * ifServices and services tables.
+             */
+            Iterator<String> ipIter = nodeIPs.iterator();
+            String ip = null;
+            ResultSet ipRS = null;
+            try {
+                // Prepared statement to get node info for an IP
+                ipInfoGetStmt = m_availConn.prepareStatement(AvailabilityConstants.DB_GET_INFO_FOR_IP);
+                while (ipIter.hasNext()) {
+                    ip = (String) ipIter.next();
+                    log.debug("ecexuting " + AvailabilityConstants.DB_GET_INFO_FOR_IP + " for " + ip);
+        
+                    // get node info for this ip
+                    ipInfoGetStmt.setString(1, ip);
+        
+                    ipRS = ipInfoGetStmt.executeQuery();
+                    
+                    // now handle all the results from this
+                    while (ipRS.next()) {
+    
+                        int nodeid = ipRS.getInt(1);
+                        String nodeName = ipRS.getString(2);
+    
+                        // get the services for this IP address
+                        ResultSet svcRS = null;
+                        servicesGetStmt.setLong(1, nodeid);
+                        servicesGetStmt.setString(2, ip);
+                        servicesGetStmt.setString(3, ip);
+                        servicesGetStmt.setLong(4, nodeid);
+                        svcRS = servicesGetStmt.executeQuery();
+                        // create node objects for this nodeID/IP/service
+                        while (svcRS.next()) {
+                            // read data from the resultSet
+                            int svcid = svcRS.getInt(1);
+                            String svcname = svcRS.getString(2);
+    
+                            /*
+                             * If the list is empty, we assume all services are
+                             * monitored. If it has any, we use it as a filter
+                             */
+                            if (monitoredServices.isEmpty() || monitoredServices.contains(svcname)) {
+    
+                                OutageSvcTimesList outageSvcTimesList = new OutageSvcTimesList();
+                                getOutagesNodeIpSvc(nodeid, nodeName, ip, svcid,
+                                                    svcname, outageSvcTimesList,
+                                                    outagesGetStmt,
+                                                    startTime, endTime);
+    
+                               
+                            }
+                        }
+    
+                    }
+                   
                 }
             } catch (SQLException e) {
-                log.fatal("failed to close ipInfo prepared statement", e);
-                throw new AvailabilityDataServiceException("failed to close ipInfo prepared statement");
-            } 
+                log.fatal("failed to execute prepared statement", e);
+                throw new AvailabilityDataServiceException("failed to execute prepared statement");
+            } finally {
+                try {
+                    if (ipRS != null) {
+                        ipRS.close();
+                    }
+                    if (servicesGetStmt != null) {
+                        servicesGetStmt.close();
+                    }
+    
+                    if (ipInfoGetStmt != null) {
+                        ipInfoGetStmt.close();
+                    }
+    
+                    if (outagesGetStmt != null) {
+                        outagesGetStmt.close();
+                    }
+    
+                    if (m_availConn != null) {
+                        closeConnection();
+                    }
+                } catch (SQLException e) {
+                    log.fatal("failed to close ipInfo prepared statement", e);
+                    throw new AvailabilityDataServiceException("failed to close ipInfo prepared statement");
+                } 
+            }
+        } finally {
+            m_catFactory.getReadLock().unlock();
         }
-
         
         return m_nodes;
     }

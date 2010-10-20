@@ -43,6 +43,9 @@ package org.opennms.netmgt.config;
 import java.io.File;
 import java.io.IOException;
 import java.util.Enumeration;
+import java.util.concurrent.locks.Lock;
+import java.util.concurrent.locks.ReadWriteLock;
+import java.util.concurrent.locks.ReentrantReadWriteLock;
 
 import org.exolab.castor.xml.MarshalException;
 import org.exolab.castor.xml.ValidationException;
@@ -66,11 +69,12 @@ import org.springframework.core.io.Resource;
  *
  * @author <a href="mailto:sowmya@opennms.org">Sowmya Nataraj </a>
  * @author <a href="http://www.opennms.org/">OpenNMS </a>
- * @author <a href="mailto:sowmya@opennms.org">Sowmya Nataraj </a>
- * @author <a href="http://www.opennms.org/">OpenNMS </a>
- * @version $Id: $
  */
-public final class CategoryFactory implements CatFactory{
+public final class CategoryFactory implements CatFactory {
+    private final ReadWriteLock m_globalLock = new ReentrantReadWriteLock();
+    private final Lock m_readLock = m_globalLock.readLock();
+    private final Lock m_writeLock = m_globalLock.writeLock();
+    
     /**
      * The singleton instance of this factory
      */
@@ -97,7 +101,7 @@ public final class CategoryFactory implements CatFactory{
      *                Thrown if the contents do not match the required schema.
      * 
      */
-    private CategoryFactory(String configFile) throws IOException, MarshalException, ValidationException {
+    private CategoryFactory(final String configFile) throws IOException, MarshalException, ValidationException {
         this(new FileSystemResource(configFile));
     }
     
@@ -109,10 +113,18 @@ public final class CategoryFactory implements CatFactory{
      * @throws org.exolab.castor.xml.MarshalException if any.
      * @throws org.exolab.castor.xml.ValidationException if any.
      */
-    public CategoryFactory(Resource resource) throws IOException, MarshalException, ValidationException {
-        m_config = CastorUtils.unmarshal(Catinfo.class, resource);
+    public CategoryFactory(final Resource resource) throws IOException, MarshalException, ValidationException {
+        m_config = CastorUtils.unmarshal(Catinfo.class, resource, CastorUtils.PRESERVE_WHITESPACE);
     }
     
+    public Lock getReadLock() {
+        return m_readLock;
+    }
+    
+    public Lock getWriteLock() {
+        return m_writeLock;
+    }
+
     /**
      * Load the config from the default config file and create the singleton
      * instance of this factory.
@@ -134,7 +146,7 @@ public final class CategoryFactory implements CatFactory{
             return;
         }
 
-        File cfgFile = ConfigFileConstants.getFile(ConfigFileConstants.CATEGORIES_CONF_FILE_NAME);
+        final File cfgFile = ConfigFileConstants.getFile(ConfigFileConstants.CATEGORIES_CONF_FILE_NAME);
         setInstance(new CategoryFactory(cfgFile.getPath()));
     }
 
@@ -177,9 +189,9 @@ public final class CategoryFactory implements CatFactory{
 	 *
 	 * @param singleton a {@link org.opennms.netmgt.config.CatFactory} object.
 	 */
-	public static void setInstance(CatFactory singleton) {
-		m_singleton=singleton;
-		m_loaded=true;
+	public static void setInstance(final CatFactory singleton) {
+		m_singleton = singleton;
+		m_loaded = true;
 	}
 	
     /**
@@ -187,8 +199,13 @@ public final class CategoryFactory implements CatFactory{
      *
      * @return the categories configuration
      */
-    public synchronized Catinfo getConfig() {
-        return m_config;
+    public Catinfo getConfig() {
+        getReadLock().lock();
+        try {
+            return m_config;
+        } finally {
+            getReadLock().unlock();
+        }
     }
 
     /**
@@ -197,8 +214,13 @@ public final class CategoryFactory implements CatFactory{
      * @param group
      *            category group to be added
      */
-    public synchronized void addCategoryGroup(Categorygroup group) {
-        m_config.addCategorygroup(group);
+    public void addCategoryGroup(final Categorygroup group) {
+        getWriteLock().lock();
+        try {
+            m_config.addCategorygroup(group);
+        } finally {
+            getWriteLock().unlock();
+        }
     }
 
     /**
@@ -208,22 +230,23 @@ public final class CategoryFactory implements CatFactory{
      *            category group to be replaced
      * @return true if categorygroup is successfully replaced
      */
-    public synchronized boolean replaceCategoryGroup(Categorygroup group) {
-        boolean replaced = false;
-
-        String groupname = group.getName();
-
-        int numCgs = m_config.getCategorygroupCount();
-        for (int i = 0; i < numCgs; i++) {
-            Categorygroup oldCg = m_config.getCategorygroup(i);
-            if (oldCg.getName().equals(groupname)) {
-                m_config.setCategorygroup(i, group);
-                replaced = true;
-                break;
+    public boolean replaceCategoryGroup(final Categorygroup group) {
+        getWriteLock().lock();
+        
+        try {
+            final String groupname = group.getName();
+    
+            for (int i = 0; i < m_config.getCategorygroupCount(); i++) {
+                final Categorygroup oldCg = m_config.getCategorygroup(i);
+                if (oldCg.getName().equals(groupname)) {
+                    m_config.setCategorygroup(i, group);
+                    return true;
+                }
             }
+        } finally {
+            getWriteLock().unlock();
         }
-
-        return replaced;
+        return false;
     }
 
     /**
@@ -233,8 +256,13 @@ public final class CategoryFactory implements CatFactory{
      *            category group to be removed
      * @return true if categorygroup is successfully deleted
      */
-    public synchronized boolean deleteCategoryGroup(Categorygroup group) {
-        return m_config.removeCategorygroup(group);
+    public boolean deleteCategoryGroup(final Categorygroup group) {
+        getWriteLock().lock();
+        try {
+            return m_config.removeCategorygroup(group);
+        } finally {
+            getWriteLock().unlock();
+        }
     }
 
     /**
@@ -244,21 +272,25 @@ public final class CategoryFactory implements CatFactory{
      *            category group to be removed
      * @return true if categorygroup is successfully deleted
      */
-    public synchronized boolean deleteCategoryGroup(String groupname) {
-        boolean deleted = false;
-
-        Enumeration<Categorygroup> enumCG = m_config.enumerateCategorygroup();
-        while (enumCG.hasMoreElements()) {
-            Categorygroup cg = enumCG.nextElement();
-            if (cg.getName().equals(groupname)) {
-                deleted = m_config.removeCategorygroup(cg);
-
-                // make sure you break from the enumeration
-                break;
+    public boolean deleteCategoryGroup(final String groupname) {
+        getWriteLock().lock();
+        
+        try {
+            boolean deleted = false;
+    
+            final Enumeration<Categorygroup> enumCG = m_config.enumerateCategorygroup();
+            while (enumCG.hasMoreElements()) {
+                final Categorygroup cg = enumCG.nextElement();
+                if (cg.getName().equals(groupname)) {
+                    deleted = m_config.removeCategorygroup(cg);
+                    break;
+                }
             }
+    
+            return deleted;
+        } finally {
+            getWriteLock().unlock();
         }
-
-        return deleted;
     }
 
     /**
@@ -271,23 +303,23 @@ public final class CategoryFactory implements CatFactory{
      * @return true if category is successfully added to the specified category
      *         group
      */
-    public synchronized boolean addCategory(String groupname, Category cat) {
-        boolean added = false;
-
-        Enumeration<Categorygroup> enumCG = m_config.enumerateCategorygroup();
-        while (enumCG.hasMoreElements()) {
-            Categorygroup cg = enumCG.nextElement();
-            if (cg.getName().equals(groupname)) {
-                // get categories and add
-                Categories cats = cg.getCategories();
-                cats.addCategory(cat);
-
-                added = true;
-                break;
+    public boolean addCategory(final String groupname, final Category cat) {
+        getWriteLock().lock();
+        try {
+            Enumeration<Categorygroup> enumCG = m_config.enumerateCategorygroup();
+            while (enumCG.hasMoreElements()) {
+                Categorygroup cg = enumCG.nextElement();
+                if (cg.getName().equals(groupname)) {
+                    // get categories and add
+                    Categories cats = cg.getCategories();
+                    cats.addCategory(cat);
+                    return true;
+                }
             }
+        } finally {
+            getWriteLock().unlock();
         }
-
-        return added;
+        return false;
     }
 
     /**
@@ -300,32 +332,32 @@ public final class CategoryFactory implements CatFactory{
      * @return true if category is successfully replaced in the specified
      *         category group
      */
-    public synchronized boolean replaceCategory(String groupname, Category cat) {
-        boolean replaced = false;
+    public boolean replaceCategory(final String groupname, final Category cat) {
+        getWriteLock().lock();
+        try {
+            final Enumeration<Categorygroup> enumCG = m_config.enumerateCategorygroup();
+            while (enumCG.hasMoreElements()) {
+                final Categorygroup cg = enumCG.nextElement();
+                if (cg.getName().equals(groupname)) {
+                    final String catlabel = cat.getLabel();
 
-        Enumeration<Categorygroup> enumCG = m_config.enumerateCategorygroup();
-        while (enumCG.hasMoreElements()) {
-            Categorygroup cg = enumCG.nextElement();
-            if (cg.getName().equals(groupname)) {
-                String catlabel = cat.getLabel();
+                    // get categories and replace
+                    final Categories cats = cg.getCategories();
 
-                // get categories and replace
-                Categories cats = cg.getCategories();
-
-                int numCats = cats.getCategoryCount();
-                for (int i = 0; i < numCats; i++) {
-                    Category oldCat = cats.getCategory(i);
-                    if (oldCat.getLabel().equals(catlabel)) {
-                        cats.setCategory(i, cat);
-                        replaced = true;
-                        break;
+                    for (int i = 0; i < cats.getCategoryCount(); i++) {
+                        final Category oldCat = cats.getCategory(i);
+                        if (oldCat.getLabel().equals(catlabel)) {
+                            cats.setCategory(i, cat);
+                            return true;
+                        }
                     }
+    
                 }
-
             }
+        } finally {
+            getWriteLock().unlock();
         }
-
-        return replaced;
+        return false;
     }
 
     /**
@@ -338,23 +370,23 @@ public final class CategoryFactory implements CatFactory{
      * @return true if category is successfully deleted from the specified
      *         category group
      */
-    public synchronized boolean deleteCategory(String groupname, Category cat) {
-        boolean deleted = false;
-
-        Enumeration<Categorygroup> enumCG = m_config.enumerateCategorygroup();
-        while (enumCG.hasMoreElements()) {
-            Categorygroup cg = enumCG.nextElement();
-            if (cg.getName().equals(groupname)) {
-                // get categories and delete
-                Categories cats = cg.getCategories();
-                cats.removeCategory(cat);
-
-                deleted = true;
-                break;
+    public boolean deleteCategory(final String groupname, final Category cat) {
+        getWriteLock().lock();
+        try {
+            final Enumeration<Categorygroup> enumCG = m_config.enumerateCategorygroup();
+            while (enumCG.hasMoreElements()) {
+                final Categorygroup cg = enumCG.nextElement();
+                if (cg.getName().equals(groupname)) {
+                    // get categories and delete
+                    final Categories cats = cg.getCategories();
+                    cats.removeCategory(cat);
+                    return true;
+                }
             }
+        } finally {
+            getWriteLock().unlock();
         }
-
-        return deleted;
+        return false;
     }
 
     /**
@@ -367,32 +399,31 @@ public final class CategoryFactory implements CatFactory{
      * @return true if category is successfully deleted from the specified
      *         category group
      */
-    public synchronized boolean deleteCategory(String groupname, String catlabel) {
-        boolean deleted = false;
-
-        Enumeration<Categorygroup> enumCG = m_config.enumerateCategorygroup();
-        while (enumCG.hasMoreElements()) {
-            Categorygroup cg = enumCG.nextElement();
-            if (cg.getName().equals(groupname)) {
-                // get categories and delete
-                Categories cats = cg.getCategories();
-
-                Enumeration<Category> enumCat = cats.enumerateCategory();
-                while (enumCat.hasMoreElements()) {
-                    Category cat = enumCat.nextElement();
-                    if (cat.getLabel().equals(catlabel)) {
-                        cats.removeCategory(cat);
-
-                        // make sure you break from the enumeration
-                        deleted = true;
-                        break;
+    public boolean deleteCategory(final String groupname, final String catlabel) {
+        getWriteLock().lock();
+        try {
+            final Enumeration<Categorygroup> enumCG = m_config.enumerateCategorygroup();
+            while (enumCG.hasMoreElements()) {
+                final Categorygroup cg = enumCG.nextElement();
+                if (cg.getName().equals(groupname)) {
+                    // get categories and delete
+                    final Categories cats = cg.getCategories();
+    
+                    final Enumeration<Category> enumCat = cats.enumerateCategory();
+                    while (enumCat.hasMoreElements()) {
+                        final Category cat = enumCat.nextElement();
+                        if (cat.getLabel().equals(catlabel)) {
+                            cats.removeCategory(cat);
+                            return true;
+                        }
                     }
+    
                 }
-
             }
+        } finally {
+            getWriteLock().unlock();
         }
-
-        return deleted;
+        return false;
     }
 
     /**
@@ -400,23 +431,20 @@ public final class CategoryFactory implements CatFactory{
      *
      * Return the category specified by name.
      */
-    public synchronized Category getCategory(String name) {
-        Enumeration<Categorygroup> enumCG = m_config.enumerateCategorygroup();
-        while (enumCG.hasMoreElements()) {
-            Categorygroup cg = enumCG.nextElement();
-
-            // go through the categories
-            Categories cats = cg.getCategories();
-
-            Enumeration<Category> enumCat = cats.enumerateCategory();
-            while (enumCat.hasMoreElements()) {
-                Category cat = enumCat.nextElement();
-                if (cat.getLabel().equals(name)) {
-                    return cat;
+    public Category getCategory(final String name) {
+        getReadLock().lock();
+        try {
+            for (final Categorygroup cg: m_config.getCategorygroupCollection()) {
+                for (final Category cat : cg.getCategories().getCategoryCollection()) {
+                    if (cat.getLabel().equals(name)) {
+                        return cat;
+                    }
                 }
             }
+        } finally {
+            getReadLock().unlock();
         }
-
+        
         return null;
     }
 
@@ -425,24 +453,9 @@ public final class CategoryFactory implements CatFactory{
      *
      * Return the normal value for the specified category.
      */
-    public synchronized double getNormal(String catlabel) {
-        Enumeration<Categorygroup> enumCG = m_config.enumerateCategorygroup();
-        while (enumCG.hasMoreElements()) {
-            Categorygroup cg = enumCG.nextElement();
-
-            // go through the categories
-            Categories cats = cg.getCategories();
-
-            Enumeration<Category> enumCat = cats.enumerateCategory();
-            while (enumCat.hasMoreElements()) {
-                Category cat = enumCat.nextElement();
-                if (cat.getLabel().equals(catlabel)) {
-                    return cat.getNormal();
-                }
-            }
-        }
-
-        return -1.0;
+    public double getNormal(final String catlabel) {
+        final Category cat = getCategory(catlabel);
+        return (cat == null? -1.0 : cat.getNormal());
     }
 
     /**
@@ -450,24 +463,9 @@ public final class CategoryFactory implements CatFactory{
      *
      * Return the warning value for the specified category.
      */
-    public synchronized double getWarning(String catlabel) {
-        Enumeration<Categorygroup> enumCG = m_config.enumerateCategorygroup();
-        while (enumCG.hasMoreElements()) {
-            Categorygroup cg = enumCG.nextElement();
-
-            // go through the categories
-            Categories cats = cg.getCategories();
-
-            Enumeration<Category> enumCat = cats.enumerateCategory();
-            while (enumCat.hasMoreElements()) {
-                Category cat = enumCat.nextElement();
-                if (cat.getLabel().equals(catlabel)) {
-                    return cat.getWarning();
-                }
-            }
-        }
-
-        return -1.0;
+    public double getWarning(final String catlabel) {
+        final Category cat = getCategory(catlabel);
+        return (cat == null? -1.0 : cat.getWarning());
     }
 
     /**
@@ -478,24 +476,9 @@ public final class CategoryFactory implements CatFactory{
      * @return the services list for the specified category, null if category is
      *         not found
      */
-    public synchronized String[] getServices(String catlabel) {
-        Enumeration<Categorygroup> enumCG = m_config.enumerateCategorygroup();
-        while (enumCG.hasMoreElements()) {
-            Categorygroup cg = enumCG.nextElement();
-
-            // go through the categories
-            Categories cats = cg.getCategories();
-
-            Enumeration<Category> enumCat = cats.enumerateCategory();
-            while (enumCat.hasMoreElements()) {
-                Category cat = enumCat.nextElement();
-                if (cat.getLabel().equals(catlabel)) {
-                    return cat.getService();
-                }
-            }
-        }
-
-        return null;
+    public String[] getServices(final String catlabel) {
+        final Category cat = getCategory(catlabel);
+        return (cat == null? null : cat.getService());
     }
 
     /**
@@ -506,24 +489,9 @@ public final class CategoryFactory implements CatFactory{
      * @return the rule for the specified category, null if the category is not
      *         found
      */
-    public synchronized String getRule(String catlabel) {
-        Enumeration<Categorygroup> enumCG = m_config.enumerateCategorygroup();
-        while (enumCG.hasMoreElements()) {
-            Categorygroup cg = enumCG.nextElement();
-
-            // go through the categories
-            Categories cats = cg.getCategories();
-
-            Enumeration<Category> enumCat = cats.enumerateCategory();
-            while (enumCat.hasMoreElements()) {
-                Category cat = enumCat.nextElement();
-                if (cat.getLabel().equals(catlabel)) {
-                    return cat.getRule();
-                }
-            }
-        }
-
-        return null;
+    public String getRule(final String catlabel) {
+        final Category cat = getCategory(catlabel);
+        return (cat == null? null : cat.getRule());
     }
 
     /**
@@ -532,24 +500,20 @@ public final class CategoryFactory implements CatFactory{
      * Return the effective rule for the specified category. The category rule
      * ANDed with the rule of the category group that the category belongs to.
      */
-    public synchronized String getEffectiveRule(String catlabel) {
-        Enumeration<Categorygroup> enumCG = m_config.enumerateCategorygroup();
-        while (enumCG.hasMoreElements()) {
-            Categorygroup cg = enumCG.nextElement();
-
-            // go through the categories
-            Categories cats = cg.getCategories();
-
-            Enumeration<Category> enumCat = cats.enumerateCategory();
-            while (enumCat.hasMoreElements()) {
-                Category cat = enumCat.nextElement();
-                if (cat.getLabel().equals(catlabel)) {
-                    String catRule = "(" + cg.getCommon().getRule() + ") & (" + cat.getRule() + ")";
-                    return catRule;
+    public String getEffectiveRule(final String catlabel) {
+        getReadLock().lock();
+        try {
+            for (final Categorygroup cg : m_config.getCategorygroupCollection()) {
+                for (final Category cat : cg.getCategories().getCategoryCollection()) {
+                    if (cat.getLabel().equals(catlabel)) {
+                        String catRule = "(" + cg.getCommon().getRule() + ") & (" + cat.getRule() + ")";
+                        return catRule;
+                    }
                 }
             }
+        } finally {
+            getReadLock().unlock();
         }
-
         return null;
     }
 

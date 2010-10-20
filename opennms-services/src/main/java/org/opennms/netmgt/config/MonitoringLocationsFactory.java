@@ -44,11 +44,14 @@ import java.io.InputStream;
 import java.io.Reader;
 import java.util.HashMap;
 import java.util.Map;
+import java.util.concurrent.locks.Lock;
+import java.util.concurrent.locks.ReadWriteLock;
+import java.util.concurrent.locks.ReentrantReadWriteLock;
 
 import org.apache.commons.io.IOUtils;
 import org.exolab.castor.xml.MarshalException;
 import org.exolab.castor.xml.ValidationException;
-import org.opennms.core.utils.ThreadCategory;
+import org.opennms.core.utils.LogUtils;
 import org.opennms.netmgt.ConfigFileConstants;
 import org.opennms.netmgt.config.monitoringLocations.LocationDef;
 import org.opennms.netmgt.config.monitoringLocations.MonitoringLocationsConfiguration;
@@ -58,24 +61,23 @@ import org.opennms.netmgt.dao.castor.CastorUtils;
  * <p>MonitoringLocationsFactory class.</p>
  *
  * @author <a href="mailto:david@opennms.org">David Hustace</a>
- * @version $Id: $
  */
 public class MonitoringLocationsFactory {
+    private final ReadWriteLock m_globalLock = new ReentrantReadWriteLock();
+    private final Lock m_readLock = m_globalLock.readLock();
+    private final Lock m_writeLock = m_globalLock.writeLock();
+    
     /** The singleton instance. */
     private static MonitoringLocationsFactory m_instance;
 
     private static boolean m_loadedFromFile = false;
 
-    /** Boolean indicating if the init() method has been called. */
-    protected boolean initialized = false;
-
     /** Timestamp of the config file, used to know when to reload from disk. */
-    protected static long m_lastModified;
+    private static long m_lastModified;
 
-    /** Constant <code>m_defsMap</code> */
-    protected static Map<String,LocationDef> m_defsMap;
+    private Map<String,LocationDef> m_defsMap;
 
-    private static MonitoringLocationsConfiguration m_config;
+    private MonitoringLocationsConfiguration m_config;
 
     /**
      * <p>Constructor for MonitoringLocationsFactory.</p>
@@ -85,15 +87,13 @@ public class MonitoringLocationsFactory {
      * @throws org.exolab.castor.xml.ValidationException if any.
      * @throws java.io.IOException if any.
      */
-    public MonitoringLocationsFactory(String configFile) throws MarshalException, ValidationException, IOException {
+    public MonitoringLocationsFactory(final String configFile) throws MarshalException, ValidationException, IOException {
         InputStream stream = null;
         try {
             stream = new FileInputStream(configFile);
             initialize(stream);
         } finally {
-            if (stream != null) {
-                IOUtils.closeQuietly(stream);
-            }
+            IOUtils.closeQuietly(stream);
         }
     }
 
@@ -104,7 +104,7 @@ public class MonitoringLocationsFactory {
      * @throws org.exolab.castor.xml.MarshalException if any.
      * @throws org.exolab.castor.xml.ValidationException if any.
      */
-    public MonitoringLocationsFactory(InputStream stream) throws MarshalException, ValidationException {
+    public MonitoringLocationsFactory(final InputStream stream) throws MarshalException, ValidationException {
         initialize(stream);
     }
 
@@ -116,26 +116,34 @@ public class MonitoringLocationsFactory {
      * @throws org.exolab.castor.xml.ValidationException if any.
      */
     @Deprecated
-    public MonitoringLocationsFactory(Reader rdr) throws MarshalException, ValidationException {
+    public MonitoringLocationsFactory(final Reader rdr) throws MarshalException, ValidationException {
         initialize(rdr);
     }
 
-    private void initialize(InputStream stream) throws MarshalException, ValidationException {
-        log().debug("initialize: initializing monitoring locations factory.");
-        m_config = CastorUtils.unmarshal(MonitoringLocationsConfiguration.class, stream);
+    public Lock getReadLock() {
+        return m_readLock;
+    }
+    
+    public Lock getWriteLock() {
+        return m_writeLock;
+    }
+
+    private void initialize(final InputStream stream) throws MarshalException, ValidationException {
+        LogUtils.debugf(this, "initialize: initializing monitoring locations factory.");
+        m_config = CastorUtils.unmarshal(MonitoringLocationsConfiguration.class, stream, CastorUtils.PRESERVE_WHITESPACE);
         initializeDefsMap();
     }
 
     @Deprecated
-    private void initialize(Reader rdr) throws MarshalException, ValidationException {
-        log().debug("initialize: initializing monitoring locations factory.");
-        m_config = CastorUtils.unmarshal(MonitoringLocationsConfiguration.class, rdr);
+    private void initialize(final Reader rdr) throws MarshalException, ValidationException {
+        LogUtils.debugf(this, "initialize: initializing monitoring locations factory.");
+        m_config = CastorUtils.unmarshal(MonitoringLocationsConfiguration.class, rdr, CastorUtils.PRESERVE_WHITESPACE);
         initializeDefsMap();
     }
 
     private void initializeDefsMap() {
         m_defsMap = new HashMap<String, LocationDef>();
-        for (LocationDef def : m_config.getLocations().getLocationDefCollection()) {
+        for (final LocationDef def : m_config.getLocations().getLocationDefCollection()) {
             m_defsMap.put(def.getLocationName(), def);
         }
     }
@@ -150,7 +158,7 @@ public class MonitoringLocationsFactory {
      */
     public static synchronized void init() throws IOException, FileNotFoundException, MarshalException, ValidationException {
         if (m_instance == null) {
-            File cfgFile = ConfigFileConstants.getFile(ConfigFileConstants.MONITORING_LOCATIONS_FILE_NAME);
+            final File cfgFile = ConfigFileConstants.getFile(ConfigFileConstants.MONITORING_LOCATIONS_FILE_NAME);
             m_instance = new MonitoringLocationsFactory(cfgFile.getPath());
             m_lastModified = cfgFile.lastModified();
             m_loadedFromFile = true;
@@ -178,7 +186,7 @@ public class MonitoringLocationsFactory {
      *
      * @param instance a {@link org.opennms.netmgt.config.MonitoringLocationsFactory} object.
      */
-    public static synchronized void setInstance(MonitoringLocationsFactory instance) {
+    public static synchronized void setInstance(final MonitoringLocationsFactory instance) {
         m_instance = instance;
         m_loadedFromFile = false;
     }
@@ -191,7 +199,7 @@ public class MonitoringLocationsFactory {
      * @throws org.exolab.castor.xml.MarshalException if any.
      * @throws org.exolab.castor.xml.ValidationException if any.
      */
-    public synchronized void reload() throws IOException, FileNotFoundException, MarshalException, ValidationException {
+    public static synchronized void reload() throws IOException, FileNotFoundException, MarshalException, ValidationException {
         m_instance = null;
         init();
     }
@@ -205,14 +213,18 @@ public class MonitoringLocationsFactory {
      * @throws org.exolab.castor.xml.MarshalException if any.
      * @throws org.exolab.castor.xml.ValidationException if any.
      */
-    public LocationDef getDef(String defName) throws IOException, MarshalException, ValidationException {
+    public LocationDef getDef(final String defName) throws IOException, MarshalException, ValidationException {
         if (defName == null) {
             throw new IllegalArgumentException("Cannot take null parameters.");
         }
 
         this.updateFromFile();
-        LocationDef def = (LocationDef) m_defsMap.get(defName);
-        return def;
+        getReadLock().lock();
+        try {
+            return m_defsMap.get(defName);
+        } finally {
+            getReadLock().unlock();
+        }
     }
 
     /**
@@ -224,51 +236,16 @@ public class MonitoringLocationsFactory {
      * @throws org.exolab.castor.xml.ValidationException if any.
      */
     protected void updateFromFile() throws IOException, MarshalException, ValidationException {
-        if (m_loadedFromFile) {
-            File monitoringLocationsFile = ConfigFileConstants.getFile(ConfigFileConstants.MONITORING_LOCATIONS_FILE_NAME);
-            if (m_lastModified != monitoringLocationsFile.lastModified()) {
-                this.reload();
+        getWriteLock().lock();
+        try {
+            if (m_loadedFromFile) {
+                File monitoringLocationsFile = ConfigFileConstants.getFile(ConfigFileConstants.MONITORING_LOCATIONS_FILE_NAME);
+                if (m_lastModified != monitoringLocationsFile.lastModified()) {
+                    MonitoringLocationsFactory.reload();
+                }
             }
+        } finally {
+            getWriteLock().unlock();
         }
-    }
-
-    /**
-     * <p>getConfig</p>
-     *
-     * @return a {@link org.opennms.netmgt.config.monitoringLocations.MonitoringLocationsConfiguration} object.
-     */
-    public synchronized static MonitoringLocationsConfiguration getConfig() {
-        return m_config;
-    }
-
-    /**
-     * <p>setConfig</p>
-     *
-     * @param m_config a {@link org.opennms.netmgt.config.monitoringLocations.MonitoringLocationsConfiguration} object.
-     */
-    public synchronized static void setConfig(MonitoringLocationsConfiguration m_config) {
-        MonitoringLocationsFactory.m_config = m_config;
-    }
-
-    /**
-     * <p>getDefsMap</p>
-     *
-     * @return a {@link java.util.Map} object.
-     */
-    public synchronized static Map<String, LocationDef> getDefsMap() {
-        return m_defsMap;
-    }
-
-    /**
-     * <p>setDefsMap</p>
-     *
-     * @param map a {@link java.util.Map} object.
-     */
-    public synchronized static void setDefsMap(Map<String, LocationDef> map) {
-        m_defsMap = map;
-    }
-    
-    private ThreadCategory log() {
-        return ThreadCategory.getInstance();
     }
 }

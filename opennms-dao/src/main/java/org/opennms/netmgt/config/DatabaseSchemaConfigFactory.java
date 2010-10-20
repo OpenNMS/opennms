@@ -46,12 +46,14 @@ import java.io.InputStream;
 import java.io.Reader;
 import java.util.ArrayList;
 import java.util.Collections;
-import java.util.Enumeration;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
+import java.util.concurrent.locks.Lock;
+import java.util.concurrent.locks.ReadWriteLock;
+import java.util.concurrent.locks.ReentrantReadWriteLock;
 
 import org.apache.commons.io.IOUtils;
 import org.exolab.castor.xml.MarshalException;
@@ -73,11 +75,12 @@ import org.opennms.netmgt.dao.castor.CastorUtils;
  *
  * @author <a href="mailto:sowmya@opennms.org">Sowmya Nataraj </a>
  * @author <a href="http://www.opennms.org/">OpenNMS </a>
- * @author <a href="mailto:sowmya@opennms.org">Sowmya Nataraj </a>
- * @author <a href="http://www.opennms.org/">OpenNMS </a>
- * @version $Id: $
  */
 public final class DatabaseSchemaConfigFactory {
+    private final ReadWriteLock m_globalLock = new ReentrantReadWriteLock();
+    private final Lock m_readLock = m_globalLock.readLock();
+    private final Lock m_writeLock = m_globalLock.writeLock();
+    
     /**
      * The singleton instance of this factory
      */
@@ -118,16 +121,14 @@ public final class DatabaseSchemaConfigFactory {
      * @exception org.exolab.castor.xml.ValidationException
      *                Thrown if the contents do not match the required schema.
      */
-    private DatabaseSchemaConfigFactory(String configFile) throws IOException, MarshalException, ValidationException {
+    private DatabaseSchemaConfigFactory(final String configFile) throws IOException, MarshalException, ValidationException {
         InputStream cfgStream = null;
         try {
             cfgStream = new FileInputStream(configFile);
-            m_config = CastorUtils.unmarshal(DatabaseSchema.class, cfgStream);
+            m_config = CastorUtils.unmarshal(DatabaseSchema.class, cfgStream, CastorUtils.PRESERVE_WHITESPACE);
             finishConstruction();
         } finally {
-            if (cfgStream != null) {
-                IOUtils.closeQuietly(cfgStream);
-            }
+            IOUtils.closeQuietly(cfgStream);
         }
     }
 
@@ -140,8 +141,8 @@ public final class DatabaseSchemaConfigFactory {
      * @throws org.exolab.castor.xml.ValidationException if any.
      */
     @Deprecated
-    public DatabaseSchemaConfigFactory(Reader reader) throws IOException, MarshalException, ValidationException {
-        m_config = CastorUtils.unmarshal(DatabaseSchema.class, reader);
+    public DatabaseSchemaConfigFactory(final Reader reader) throws IOException, MarshalException, ValidationException {
+        m_config = CastorUtils.unmarshal(DatabaseSchema.class, reader, CastorUtils.PRESERVE_WHITESPACE);
         finishConstruction();
     }
 
@@ -152,9 +153,17 @@ public final class DatabaseSchemaConfigFactory {
      * @throws org.exolab.castor.xml.MarshalException if any.
      * @throws org.exolab.castor.xml.ValidationException if any.
      */
-    public DatabaseSchemaConfigFactory(InputStream is) throws MarshalException, ValidationException {
-        m_config = CastorUtils.unmarshal(DatabaseSchema.class, is);
+    public DatabaseSchemaConfigFactory(final InputStream is) throws MarshalException, ValidationException {
+        m_config = CastorUtils.unmarshal(DatabaseSchema.class, is, CastorUtils.PRESERVE_WHITESPACE);
         finishConstruction();
+    }
+
+    public Lock getReadLock() {
+        return m_readLock;
+    }
+    
+    public Lock getWriteLock() {
+        return m_writeLock;
     }
 
     /**
@@ -178,10 +187,8 @@ public final class DatabaseSchemaConfigFactory {
             return;
         }
 
-        File cfgFile = ConfigFileConstants.getFile(ConfigFileConstants.DB_SCHEMA_FILE_NAME);
-
+        final File cfgFile = ConfigFileConstants.getFile(ConfigFileConstants.DB_SCHEMA_FILE_NAME);
         m_singleton = new DatabaseSchemaConfigFactory(cfgFile.getPath());
-
         m_loaded = true;
     }
 
@@ -224,7 +231,7 @@ public final class DatabaseSchemaConfigFactory {
      *
      * @param instance a {@link org.opennms.netmgt.config.DatabaseSchemaConfigFactory} object.
      */
-    public static synchronized void setInstance(DatabaseSchemaConfigFactory instance) {
+    public static synchronized void setInstance(final DatabaseSchemaConfigFactory instance) {
         m_singleton = instance;
         m_loaded = true;
     }
@@ -234,8 +241,13 @@ public final class DatabaseSchemaConfigFactory {
      *
      * @return the database schema
      */
-    public synchronized DatabaseSchema getDatabaseSchema() {
-        return m_config;
+    public DatabaseSchema getDatabaseSchema() {
+        getReadLock().lock();
+        try {
+            return m_config;
+        } finally {
+            getReadLock().unlock();
+        }
     }
 
     /**
@@ -246,16 +258,19 @@ public final class DatabaseSchemaConfigFactory {
      * @return The name of the driver table
      */
     public Table getPrimaryTable() {
-        Enumeration<Table> e = getDatabaseSchema().enumerateTable();
-        while (e.hasMoreElements()) {
-            Table t = e.nextElement();
-            if (t.getVisible() == null || t.getVisible().equalsIgnoreCase("true")) {
-                if (t.getKey() != null && t.getKey().equals("primary")) {
-                    return t;
+        getReadLock().lock();
+        try {
+            for (final Table t : getDatabaseSchema().getTableCollection()) {
+                if (t.getVisible() == null || t.getVisible().equalsIgnoreCase("true")) {
+                    if (t.getKey() != null && t.getKey().equals("primary")) {
+                        return t;
+                    }
                 }
             }
+            return null;
+        } finally {
+            getReadLock().unlock();
         }
-        return null;
     }
 
     /**
@@ -263,22 +278,16 @@ public final class DatabaseSchemaConfigFactory {
      */
     private void finishConstruction() {
         Set<String> joinableSet = new HashSet<String>();
-        Map<String, Join> primaryJoins = new HashMap<String, Join>();
+        final Map<String, Join> primaryJoins = new HashMap<String, Join>();
         joinableSet.add(getPrimaryTable().getName());
         // loop until we stop adding entries to the set
         int joinableCount = 0;
         while (joinableCount < joinableSet.size()) {
             joinableCount = joinableSet.size();
-            Set<String> newSet = new HashSet<String>(joinableSet);
-            Enumeration<Table> e = getDatabaseSchema().enumerateTable();
-            // for each table not already in the set
-            while (e.hasMoreElements()) {
-                Table t = e.nextElement();
+            final Set<String> newSet = new HashSet<String>(joinableSet);
+            for (final Table t : getDatabaseSchema().getTableCollection()) {
                 if (!joinableSet.contains(t.getName()) && (t.getVisible() == null || t.getVisible().equalsIgnoreCase("true"))) {
-                    Enumeration<Join> ejoin = t.enumerateJoin();
-                    // for each join does it join a table in the set?
-                    while (ejoin.hasMoreElements()) {
-                        Join j = ejoin.nextElement();
+                    for (final Join j : t.getJoinCollection()) {
                         if (joinableSet.contains(j.getTable())) {
                             newSet.add(t.getName());
                             primaryJoins.put(t.getName(), j);
@@ -288,8 +297,6 @@ public final class DatabaseSchemaConfigFactory {
             }
             joinableSet = newSet;
         }
-        // FIXME: m_joinable is never read
-        //m_joinable = Collections.synchronizedSet(joinableSet);
         m_primaryJoins = Collections.synchronizedMap(primaryJoins);
     }
 
@@ -300,18 +307,20 @@ public final class DatabaseSchemaConfigFactory {
      *            the name of the table to find
      * @return the table if it is found, null otherwise.
      */
-    public Table getTableByName(String name) {
-        Enumeration<Table> e = getDatabaseSchema().enumerateTable();
-        while (e.hasMoreElements()) {
-            Table t = e.nextElement();
-            if (t.getVisible() == null || t.getVisible().equalsIgnoreCase("true")) {
-                if (t.getName() != null && t.getName().equals(name)) {
-                    return t;
+    public Table getTableByName(final String name) {
+        getReadLock().lock();
+        try {
+            for (final Table t : getDatabaseSchema().getTableCollection()) {
+                if (t.getVisible() == null || t.getVisible().equalsIgnoreCase("true")) {
+                    if (t.getName() != null && t.getName().equals(name)) {
+                        return t;
+                    }
                 }
             }
+            return null;
+        } finally {
+            getReadLock().unlock();
         }
-        return null;
-
     }
 
     /**
@@ -321,25 +330,24 @@ public final class DatabaseSchemaConfigFactory {
      *         valid column or if is not visible.
      * @param colName a {@link java.lang.String} object.
      */
-    public Table findTableByVisibleColumn(String colName) {
+    public Table findTableByVisibleColumn(final String colName) {
         Table table = null;
-
-        Enumeration<Table> etbl = getDatabaseSchema().enumerateTable();
-        OUTER: while (etbl.hasMoreElements()) {
-            Table t = etbl.nextElement();
-            Enumeration<Column> ecol = t.enumerateColumn();
-            while (ecol.hasMoreElements()) {
-                Column col = ecol.nextElement();
-                if (col.getVisible() == null || col.getVisible().equalsIgnoreCase("true")) {
-                    if (col.getName().equalsIgnoreCase(colName)) {
-                        table = t;
-                        break OUTER;
+        getReadLock().lock();
+        try {
+            OUTER: for (final Table t : getDatabaseSchema().getTableCollection()) {
+                for (final Column col : t.getColumnCollection()) {
+                    if (col.getVisible() == null || col.getVisible().equalsIgnoreCase("true")) {
+                        if (col.getName().equalsIgnoreCase(colName)) {
+                            table = t;
+                            break OUTER;
+                        }
                     }
                 }
             }
+            return table;
+        } finally {
+            getReadLock().unlock();
         }
-
-        return table;
     }
 
     /**
@@ -348,7 +356,12 @@ public final class DatabaseSchemaConfigFactory {
      * @return the number of tables in the schema
      */
     public int getTableCount() {
-        return getDatabaseSchema().getTableCount();
+        getReadLock().lock();
+        try {
+            return getDatabaseSchema().getTableCount();
+        } finally {
+            getReadLock().unlock();
+        }
     }
 
     /**
@@ -361,24 +374,29 @@ public final class DatabaseSchemaConfigFactory {
      *         to each of the given tables, or a zero-length array if no join
      *         exists or only the primary table was specified
      */
-    public List<String> getJoinTables(List<Table> tables) {
-        List<String> joinedTables = new ArrayList<String>();
+    public List<String> getJoinTables(final List<Table> tables) {
+        final List<String> joinedTables = new ArrayList<String>();
 
-        for (int i = 0; i < tables.size(); i++) {
-            int insertPosition = joinedTables.size();
-            String currentTable = tables.get(i).getName();
-            while (currentTable != null && !joinedTables.contains(currentTable)) {
-                joinedTables.add(insertPosition, currentTable);
-                Join next = m_primaryJoins.get(currentTable);
-                if (next != null) {
-                    currentTable = next.getTable();
-                } else {
-                    currentTable = null;
+        getReadLock().lock();
+        try {
+            for (int i = 0; i < tables.size(); i++) {
+                final int insertPosition = joinedTables.size();
+                String currentTable = tables.get(i).getName();
+                while (currentTable != null && !joinedTables.contains(currentTable)) {
+                    joinedTables.add(insertPosition, currentTable);
+                    final Join next = m_primaryJoins.get(currentTable);
+                    if (next != null) {
+                        currentTable = next.getTable();
+                    } else {
+                        currentTable = null;
+                    }
                 }
             }
+    
+            return joinedTables;
+        } finally {
+            getReadLock().unlock();
         }
-
-        return joinedTables;
     }
 
     /**
@@ -388,23 +406,27 @@ public final class DatabaseSchemaConfigFactory {
      *            list of Tables to join
      * @return an SQL FROM clause or "" if no expression is found
      */
-    public String constructJoinExprForTables(List<Table> tables) {
+    public String constructJoinExprForTables(final List<Table> tables) {
         StringBuffer joinExpr = new StringBuffer();
 
-        List<String> joinTables = getJoinTables(tables);
-        joinExpr.append(joinTables.get(0));
-        for (int i = 1; i < joinTables.size(); i++) {
-            Join currentJoin = m_primaryJoins.get(joinTables.get(i));
-            if (currentJoin.getType() != null && !currentJoin.getType().equalsIgnoreCase("inner")) {
-              joinExpr.append(" " + currentJoin.getType().toUpperCase());
+        getReadLock().lock();
+        try {
+            final List<String> joinTables = getJoinTables(tables);
+            joinExpr.append(joinTables.get(0));
+            for (int i = 1; i < joinTables.size(); i++) {
+                final Join currentJoin = m_primaryJoins.get(joinTables.get(i));
+                if (currentJoin.getType() != null && !currentJoin.getType().equalsIgnoreCase("inner")) {
+                  joinExpr.append(" " + currentJoin.getType().toUpperCase());
+                }
+                joinExpr.append(" JOIN " + joinTables.get(i) + " ON (");
+                joinExpr.append(currentJoin.getTable() + "." + currentJoin.getTableColumn() + " = ");
+                joinExpr.append(joinTables.get(i) + "." + currentJoin.getColumn() + ")");
             }
-            joinExpr.append(" JOIN " + joinTables.get(i) + " ON (");
-            joinExpr.append(currentJoin.getTable() + "." + currentJoin.getTableColumn() + " = ");
-            joinExpr.append(joinTables.get(i) + "." + currentJoin.getColumn() + ")");
+    
+            if (joinExpr.length() > 0) return "FROM " + joinExpr.toString();
+            return "";
+        } finally {
+            getReadLock().unlock();
         }
-
-        if (joinExpr.length() > 0)
-            return "FROM " + joinExpr.toString();
-        return "";
     }
 }

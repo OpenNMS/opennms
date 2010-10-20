@@ -207,8 +207,8 @@ public class PollerConfigFactoryTest extends TestCase {
         TestPollerConfigManager newFactory = new TestPollerConfigManager(factory.getXml(), "localhost", false);
         Package p = newFactory.getPackage("TestPkg");
         assertNotNull(p);
-        assertTrue(newFactory.interfaceInPackage("192.169.1.5", p));
-        assertFalse(newFactory.interfaceInPackage("192.168.1.5", p));
+        assertTrue(newFactory.isInterfaceInPackage("192.169.1.5", p));
+        assertFalse(newFactory.isInterfaceInPackage("192.168.1.5", p));
         
     }
     
@@ -217,7 +217,7 @@ public class PollerConfigFactoryTest extends TestCase {
         Package pkg = factory.getPackage("default");
         assertNotNull("Unable to find pkg default", pkg);
         
-        assertTrue("Expected 192.168.1.1 to be in the package", factory.interfaceInPackage("192.168.1.1", pkg));
+        assertTrue("Expected 192.168.1.1 to be in the package", factory.isInterfaceInPackage("192.168.1.1", pkg));
         
         
         
@@ -259,9 +259,9 @@ public class PollerConfigFactoryTest extends TestCase {
         Package p = newFactory.getPackage("TestPkg");
         assertNotNull(p);
         System.out.println(factory.getXml());
-        assertTrue("Expect 123.12.123.121 to be part of the package", newFactory.interfaceInPackage("123.12.123.121", p));
-        assertTrue("Expect 123.12.123.122 to be part of the package", newFactory.interfaceInPackage("123.12.123.122", p));
-        assertFalse("Expected 192.168.1.1 to be excluded from the package", newFactory.interfaceInPackage("192.168.1.1", p));
+        assertTrue("Expect 123.12.123.121 to be part of the package", newFactory.isInterfaceInPackage("123.12.123.121", p));
+        assertTrue("Expect 123.12.123.122 to be part of the package", newFactory.isInterfaceInPackage("123.12.123.122", p));
+        assertFalse("Expected 192.168.1.1 to be excluded from the package", newFactory.isInterfaceInPackage("192.168.1.1", p));
         
     }
 

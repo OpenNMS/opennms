@@ -52,6 +52,7 @@ import java.util.List;
 import java.util.Set;
 import java.util.Timer;
 import java.util.TimerTask;
+import java.util.concurrent.locks.Lock;
 
 import org.exolab.castor.xml.MarshalException;
 import org.exolab.castor.xml.ValidationException;
@@ -189,18 +190,23 @@ public class Discovery extends AbstractServiceDaemon {
 
         m_xstatus = PING_RUNNING;
 
-        for (IPPollAddress pollAddress : getDiscoveryFactory().getConfiguredAddresses()) {
-            if (m_xstatus == PING_FINISHING || m_timer == null) {
-                m_xstatus = PING_IDLE;
-                return;
+        getDiscoveryFactory().getReadLock().lock();
+        try {
+            for (IPPollAddress pollAddress : getDiscoveryFactory().getConfiguredAddresses()) {
+                if (m_xstatus == PING_FINISHING || m_timer == null) {
+                    m_xstatus = PING_IDLE;
+                    return;
+                }
+                ping(pollAddress);
+                try {
+                    Thread.sleep(getDiscoveryFactory().getIntraPacketDelay());
+                } catch (InterruptedException e) {
+                    infof("interrupting discovery sweep");
+                    break;
+                }
             }
-            ping(pollAddress);
-            try {
-                Thread.sleep(getDiscoveryFactory().getIntraPacketDelay());
-            } catch (InterruptedException e) {
-                infof("interrupting discovery sweep");
-                break;
-            }
+        } finally {
+            getDiscoveryFactory().getReadLock().unlock();
         }
 
         infof("finished discovery sweep");
@@ -245,8 +251,13 @@ public class Discovery extends AbstractServiceDaemon {
             }
 
         };
-        m_timer.scheduleAtFixedRate(task, getDiscoveryFactory().getInitialSleepTime(), getDiscoveryFactory().getRestartSleepTime());
-
+        final Lock readLock = getDiscoveryFactory().getReadLock();
+        readLock.lock();
+        try {
+            m_timer.scheduleAtFixedRate(task, getDiscoveryFactory().getInitialSleepTime(), getDiscoveryFactory().getRestartSleepTime());
+        } finally {
+            readLock.unlock();
+        }
     }
 
     private void stopTimer() {

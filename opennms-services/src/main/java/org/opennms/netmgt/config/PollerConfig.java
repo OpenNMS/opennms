@@ -41,6 +41,7 @@ import java.util.Collection;
 import java.util.Enumeration;
 import java.util.List;
 import java.util.Map;
+import java.util.concurrent.locks.Lock;
 
 import org.exolab.castor.xml.MarshalException;
 import org.exolab.castor.xml.ValidationException;
@@ -70,7 +71,7 @@ public interface PollerConfig {
      *
      * @return true if need to notify an external xmlrpc server
      */
-    public abstract boolean getXmlrpc();
+    public abstract boolean shouldNotifyXmlrpc();
 
     /**
      * This method returns the configured critical service name.
@@ -94,14 +95,14 @@ public interface PollerConfig {
      *
      * @return true or false based on configured value
      */
-    public abstract boolean pollAllIfNoCriticalServiceDefined();
+    public abstract boolean shouldPollAllIfNoCriticalServiceDefined();
 
     /**
      * Returns true if node outage processing is enabled.
      *
      * @return a boolean.
      */
-    public abstract boolean nodeOutageProcessingEnabled();
+    public abstract boolean isNodeOutageProcessingEnabled();
 
     /**
      * Returns true if serviceUnresponsive behavior is enabled. If enabled a
@@ -112,7 +113,7 @@ public interface PollerConfig {
      *
      * @return a boolean.
      */
-    public abstract boolean serviceUnresponsiveEnabled();
+    public abstract boolean isServiceUnresponsiveEnabled();
 
     /**
      * Returns true if the path outage feature is enabled. If enabled, the code
@@ -124,7 +125,7 @@ public interface PollerConfig {
      *
      * @return a boolean.
      */
-    public abstract boolean pathOutageEnabled();
+    public abstract boolean isPathOutageEnabled();
 
     /**
      * This method is used to rebuild the package against ip list mapping when
@@ -158,7 +159,7 @@ public interface PollerConfig {
      * @return True if the interface is included in the package, false
      *         otherwise.
      */
-    public abstract boolean interfaceInPackage(String iface, Package pkg);
+    public abstract boolean isInterfaceInPackage(String iface, Package pkg);
 
     /**
      * Returns true if the service is part of the package and the status of the
@@ -171,7 +172,7 @@ public interface PollerConfig {
      *            The package to lookup up service.
      * @return a boolean.
      */
-    public abstract boolean serviceInPackageAndEnabled(String svcName, Package pkg);
+    public abstract boolean isServiceInPackageAndEnabled(String svcName, Package pkg);
 
     /**
      * Return the Service object with the given name from the give Package.
@@ -189,7 +190,7 @@ public interface PollerConfig {
      *            The service name to lookup.
      * @return a boolean.
      */
-    public abstract boolean serviceMonitored(String svcName);
+    public abstract boolean isServiceMonitored(String svcName);
 
     /**
      * Returns the first package that the ip belongs to, null if none.
@@ -431,5 +432,9 @@ public interface PollerConfig {
      * @return a {@link java.util.Collection} object.
      */
     public abstract Collection<ServiceMonitorLocator> getServiceMonitorLocators(DistributionContext context);
+
+    public abstract Lock getReadLock();
+
+    public abstract Lock getWriteLock();
 
 }

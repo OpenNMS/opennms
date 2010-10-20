@@ -47,10 +47,8 @@ import org.opennms.netmgt.dao.castor.CastorUtils;
  * <p>OpennmsServerConfigManager class.</p>
  *
  * @author ranger
- * @version $Id: $
  */
 public class OpennmsServerConfigManager {
-
     /**
      * The config class loaded from the config file
      */
@@ -64,8 +62,8 @@ public class OpennmsServerConfigManager {
      * @throws org.exolab.castor.xml.ValidationException if any.
      */
     @Deprecated
-    protected OpennmsServerConfigManager(Reader rdr) throws MarshalException, ValidationException {
-        m_config = CastorUtils.unmarshal(LocalServer.class, rdr);
+    protected OpennmsServerConfigManager(final Reader rdr) throws MarshalException, ValidationException {
+        m_config = CastorUtils.unmarshal(LocalServer.class, rdr, CastorUtils.PRESERVE_WHITESPACE);
     }
     
     /**
@@ -75,8 +73,8 @@ public class OpennmsServerConfigManager {
      * @throws org.exolab.castor.xml.MarshalException if any.
      * @throws org.exolab.castor.xml.ValidationException if any.
      */
-    protected OpennmsServerConfigManager(InputStream is) throws MarshalException, ValidationException {
-        m_config = CastorUtils.unmarshal(LocalServer.class, is);
+    protected OpennmsServerConfigManager(final InputStream is) throws MarshalException, ValidationException {
+        m_config = CastorUtils.unmarshal(LocalServer.class, is, CastorUtils.PRESERVE_WHITESPACE);
     }
 
     /**
@@ -84,7 +82,7 @@ public class OpennmsServerConfigManager {
      *
      * @return the name of the local opennms server
      */
-    public synchronized String getServerName() {
+    public String getServerName() {
         return m_config.getServerName();
     }
 
@@ -93,7 +91,7 @@ public class OpennmsServerConfigManager {
      *
      * @return the default critical path IP
      */
-    public synchronized String getDefaultCriticalPathIp() {
+    public String getDefaultCriticalPathIp() {
         return m_config.getDefaultCriticalPathIp();
     }
 
@@ -102,7 +100,7 @@ public class OpennmsServerConfigManager {
      *
      * @return the default critical path service
      */
-    public synchronized String getDefaultCriticalPathService() {
+    public String getDefaultCriticalPathService() {
         return m_config.getDefaultCriticalPathService();
     }
 
@@ -111,7 +109,7 @@ public class OpennmsServerConfigManager {
      *
      * @return the default critical path timeout
      */
-    public synchronized int getDefaultCriticalPathTimeout() {
+    public int getDefaultCriticalPathTimeout() {
         return m_config.getDefaultCriticalPathTimeout();
     }
 
@@ -120,7 +118,7 @@ public class OpennmsServerConfigManager {
      *
      * @return the default critical path retries
      */
-    public synchronized int getDefaultCriticalPathRetries() {
+    public int getDefaultCriticalPathRetries() {
         return m_config.getDefaultCriticalPathRetries();
     }
 
@@ -130,12 +128,8 @@ public class OpennmsServerConfigManager {
      *
      * @return boolean flag
      */
-    public synchronized boolean verifyServer() {
-        String flag = m_config.getVerifyServer();
-        if (flag.equals("true"))
-            return true;
-        else
-            return false;
+    public boolean verifyServer() {
+        return Boolean.valueOf(m_config.getVerifyServer());
     }
 
 }

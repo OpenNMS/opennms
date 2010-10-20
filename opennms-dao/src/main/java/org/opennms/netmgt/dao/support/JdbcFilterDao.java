@@ -704,14 +704,20 @@ public class JdbcFilterDao implements FilterDao, InitializingBean {
      *                if the column is not found in the schema
      */
     private String addColumn(List<Table> tables, String column) throws FilterParseException {
-        Table table = m_databaseSchemaConfigFactory.findTableByVisibleColumn(column);
-        if(table == null) {
-            log().error("Could not find the column '" + column +"' in filter rule");
-            throw new FilterParseException("Could not find the column '" + column +"' in filter rule");
+        m_databaseSchemaConfigFactory.getReadLock().lock();
+        try {
+            final Table table = m_databaseSchemaConfigFactory.findTableByVisibleColumn(column);
+            if(table == null) {
+                log().error("Could not find the column '" + column +"' in filter rule");
+                throw new FilterParseException("Could not find the column '" + column +"' in filter rule");
+            }
+            if (!tables.contains(table)) {
+                tables.add(table);
+            }
+            return table.getName() + "." + column;
+        } finally {
+            m_databaseSchemaConfigFactory.getReadLock().unlock();
         }
-        if (!tables.contains(table))
-            tables.add(table);
-        return table.getName() + "." + column;
     }
 
 }

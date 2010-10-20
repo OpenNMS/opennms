@@ -31,6 +31,8 @@
 //
 package org.opennms.netmgt.config;
 
+import java.util.concurrent.locks.Lock;
+
 import org.opennms.netmgt.config.categories.Category;
 import org.opennms.netmgt.config.categories.Catinfo;
 
@@ -83,5 +85,9 @@ public interface CatFactory {
 	 * @return a double.
 	 */
 	public double getWarning(String catlabel);
+
+    public Lock getReadLock();
+    
+    public Lock getWriteLock();
 	
 }

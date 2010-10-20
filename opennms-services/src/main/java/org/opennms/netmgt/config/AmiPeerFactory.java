@@ -46,16 +46,19 @@ import java.io.Writer;
 import java.net.InetAddress;
 import java.net.UnknownHostException;
 import java.util.ArrayList;
-import java.util.Enumeration;
 import java.util.Iterator;
 import java.util.TreeMap;
+import java.util.concurrent.locks.Lock;
+import java.util.concurrent.locks.ReadWriteLock;
+import java.util.concurrent.locks.ReentrantReadWriteLock;
 
+import org.apache.commons.io.IOUtils;
 import org.exolab.castor.xml.MarshalException;
 import org.exolab.castor.xml.Marshaller;
 import org.exolab.castor.xml.ValidationException;
 import org.opennms.core.utils.IPLike;
 import org.opennms.core.utils.InetAddressUtils;
-import org.opennms.core.utils.ThreadCategory;
+import org.opennms.core.utils.LogUtils;
 import org.opennms.netmgt.ConfigFileConstants;
 import org.opennms.netmgt.config.ami.AmiConfig;
 import org.opennms.netmgt.config.ami.Definition;
@@ -83,6 +86,10 @@ import org.opennms.protocols.ip.IPv4Address;
  * @version $Id: $
  */
 public class AmiPeerFactory extends PeerFactory {
+    private final ReadWriteLock m_globalLock = new ReentrantReadWriteLock();
+    private final Lock m_readLock = m_globalLock.readLock();
+    private final Lock m_writeLock = m_globalLock.writeLock();
+    
     /**
      * The singleton instance of this factory
      */
@@ -110,11 +117,19 @@ public class AmiPeerFactory extends PeerFactory {
      *
      * @param configFile the path to the config file to load in.
      */
-    private AmiPeerFactory(String configFile) throws IOException, MarshalException, ValidationException {
+    private AmiPeerFactory(final String configFile) throws IOException, MarshalException, ValidationException {
         super();
-        InputStream cfgIn = new FileInputStream(configFile);
-        m_config = CastorUtils.unmarshal(AmiConfig.class, cfgIn);
-        cfgIn.close();
+        final InputStream cfgIn = new FileInputStream(configFile);
+        m_config = CastorUtils.unmarshal(AmiConfig.class, cfgIn, CastorUtils.PRESERVE_WHITESPACE);
+        IOUtils.closeQuietly(cfgIn);
+    }
+
+    public Lock getReadLock() {
+        return m_readLock;
+    }
+    
+    public Lock getWriteLock() {
+        return m_writeLock;
     }
 
     /**
@@ -138,17 +153,10 @@ public class AmiPeerFactory extends PeerFactory {
             return;
         }
 
-        File cfgFile = ConfigFileConstants.getFile(ConfigFileConstants.AMI_CONFIG_FILE_NAME);
-
-        log().debug("init: config file path: " + cfgFile.getPath());
-
+        final File cfgFile = ConfigFileConstants.getFile(ConfigFileConstants.AMI_CONFIG_FILE_NAME);
+        LogUtils.debugf(AmiPeerFactory.class, "init: config file path: %s", cfgFile.getPath());
         m_singleton = new AmiPeerFactory(cfgFile.getPath());
-
         m_loaded = true;
-    }
-
-    private static ThreadCategory log() {
-        return ThreadCategory.getInstance(AmiPeerFactory.class);
     }
 
     /**
@@ -172,178 +180,6 @@ public class AmiPeerFactory extends PeerFactory {
     }
 
     /**
-     * Saves the current settings to disk
-     *
-     * @throws java.lang.Exception if saving settings to disk fails.
-     */
-    public static synchronized void saveCurrent() throws Exception {
-        optimize();
-
-        // Marshal to a string first, then write the string to the file. This
-        // way the original config
-        // isn't lost if the XML from the marshal is hosed.
-        StringWriter stringWriter = new StringWriter();
-        Marshaller.marshal(m_config, stringWriter);
-        if (stringWriter.toString() != null) {
-            Writer fileWriter = new OutputStreamWriter(new FileOutputStream(ConfigFileConstants.getFile(ConfigFileConstants.AMI_CONFIG_FILE_NAME)), "UTF-8");
-            fileWriter.write(stringWriter.toString());
-            fileWriter.flush();
-            fileWriter.close();
-        }
-
-        reload();
-    }
-
-    /**
-     * Combine specific and range elements so that AMIPeerFactory has to spend
-     * less time iterating all these elements.
-     * TODO This really should be pulled up into PeerFactory somehow, but I'm not sure how (given that "Definition" is different for both
-     * Snmp and AMI.  Maybe some sort of visitor methodology would work.  The basic logic should be fine as it's all IP address manipulation
-     *
-     * @throws UnknownHostException
-     */
-    private static void optimize() throws UnknownHostException {
-        ThreadCategory log = log();
-
-        // First pass: Remove empty definition elements
-        for (Iterator<Definition> definitionsIterator = m_config.getDefinitionCollection().iterator(); definitionsIterator.hasNext();) {
-            Definition definition = definitionsIterator.next();
-            if (definition.getSpecificCount() == 0
-                && definition.getRangeCount() == 0) {
-                if (log.isDebugEnabled())
-                    log.debug("optimize: Removing empty definition element");
-                definitionsIterator.remove();
-            }
-        }
-
-        // Second pass: Replace single IP range elements with specific elements
-        for (Definition definition : m_config.getDefinitionCollection()) {
-            for (Iterator<Range> rangesIterator = definition.getRangeCollection().iterator(); rangesIterator.hasNext();) {
-                Range range = rangesIterator.next();
-                if (range.getBegin().equals(range.getEnd())) {
-                    definition.addSpecific(range.getBegin());
-                    rangesIterator.remove();
-                }
-            }
-        }
-
-        // Third pass: Sort specific and range elements for improved XML
-        // readability and then combine them into fewer elements where possible
-        for (Definition definition : m_config.getDefinitionCollection()) {
-            // Sort specifics
-            TreeMap<Integer,String> specificsMap = new TreeMap<Integer,String>();
-            for (String specific : definition.getSpecificCollection()) {
-                specificsMap.put(new Integer(new IPv4Address(specific).getAddress()), specific.trim());
-            }
-
-            // Sort ranges
-            TreeMap<Integer,Range> rangesMap = new TreeMap<Integer,Range>();
-            for (Range range : definition.getRangeCollection()) {
-                rangesMap.put(new IPv4Address(range.getBegin()).getAddress(), range);
-            }
-
-            // Combine consecutive specifics into ranges
-            Integer priorSpecific = null;
-            Range addedRange = null;
-            for (Integer specific : specificsMap.keySet()) {
-                if (priorSpecific == null) {
-                    priorSpecific = specific;
-                    continue;
-                }
-
-                int specificInt = specific.intValue();
-                int priorSpecificInt = priorSpecific.intValue();
-
-                if (specificInt == priorSpecificInt + 1) {
-                    if (addedRange == null) {
-                        addedRange = new Range();
-                        addedRange.setBegin(IPv4Address.addressToString(priorSpecificInt));
-                        rangesMap.put(priorSpecific, addedRange);
-                        specificsMap.remove(priorSpecific);
-                    }
-
-                    addedRange.setEnd(IPv4Address.addressToString(specificInt));
-                    specificsMap.remove(specific);
-                }
-                else {
-                    addedRange = null;
-                }
-
-                priorSpecific = specific;
-            }
-
-            // Move specifics to ranges
-            for (Integer specific : new ArrayList<Integer>(specificsMap.keySet())) {
-                int specificInt = specific.intValue();
-                for (Integer begin : new ArrayList<Integer>(rangesMap.keySet())) {
-                    int beginInt = begin.intValue();
-
-                    if (specificInt < beginInt - 1) {
-                        continue;
-                    }
-
-                    Range range = rangesMap.get(begin);
-
-                    int endInt = new IPv4Address(range.getEnd()).getAddress();
-
-                    if (specificInt > endInt + 1)
-                        continue;
-
-                    if (specificInt >= beginInt && specificInt <= endInt) {
-                        specificsMap.remove(specific);
-                        break;
-                    }
-
-                    if (specificInt == beginInt - 1) {
-                        rangesMap.remove(begin);
-                        rangesMap.put(specific, range);
-                        range.setBegin(IPv4Address.addressToString(specificInt));
-                        specificsMap.remove(specific);
-                        break;
-                    }
-
-                    if (specificInt == endInt + 1) {
-                        range.setEnd(IPv4Address.addressToString(specificInt));
-                        specificsMap.remove(specific);
-                        break;
-                    }
-                }
-            }
-
-            // Combine consecutive ranges
-            Range priorRange = null;
-            int priorBegin = 0;
-            int priorEnd = 0;
-            for (Iterator<Integer> rangesIterator = rangesMap.keySet().iterator(); rangesIterator.hasNext();) {
-                Integer rangeKey = rangesIterator.next();
-
-                Range range = rangesMap.get(rangeKey);
-
-                int begin = rangeKey.intValue();
-                int end = new IPv4Address(range.getEnd()).getAddress();
-
-                if (priorRange != null) {
-                    if (begin - priorEnd <= 1) {
-                        priorRange.setBegin(IPv4Address.addressToString (Math.min(priorBegin, begin)));
-                        priorRange.setEnd(IPv4Address.addressToString (Math.max(priorEnd, end)));
-
-                        rangesIterator.remove();
-                        continue;
-                    }
-                }
-
-                priorRange = range;
-                priorBegin = begin;
-                priorEnd = end;
-            }
-
-            // Update changes made to sorted maps
-            definition.setSpecific(specificsMap.values().toArray(new String[0]));
-            definition.setRange(rangesMap.values().toArray(new Range[0]));
-        }
-    }
-
-    /**
      * Return the singleton instance of this factory.
      *
      * @return The current factory instance.
@@ -362,9 +198,197 @@ public class AmiPeerFactory extends PeerFactory {
      *
      * @param singleton a {@link org.opennms.netmgt.config.AmiPeerFactory} object.
      */
-    public static synchronized void setInstance(AmiPeerFactory singleton) {
+    public static synchronized void setInstance(final AmiPeerFactory singleton) {
         m_singleton = singleton;
         m_loaded = true;
+    }
+
+    /**
+     * <p>setAmiConfig</p>
+     *
+     * @param m_config a {@link org.opennms.netmgt.config.ami.AmiConfig} object.
+     */
+    public static synchronized void setAmiConfig(AmiConfig m_config) {
+        AmiPeerFactory.m_config = m_config;
+    }
+
+    /**
+     * Saves the current settings to disk
+     *
+     * @throws java.lang.Exception if saving settings to disk fails.
+     */
+    public void saveCurrent() throws Exception {
+        getWriteLock().lock();
+        
+        try {
+            optimize();
+    
+            // Marshal to a string first, then write the string to the file. This
+            // way the original config
+            // isn't lost if the XML from the marshal is hosed.
+            final StringWriter stringWriter = new StringWriter();
+            Marshaller.marshal(m_config, stringWriter);
+            if (stringWriter.toString() != null) {
+                final Writer fileWriter = new OutputStreamWriter(new FileOutputStream(ConfigFileConstants.getFile(ConfigFileConstants.AMI_CONFIG_FILE_NAME)), "UTF-8");
+                fileWriter.write(stringWriter.toString());
+                fileWriter.flush();
+                fileWriter.close();
+            }
+    
+            reload();
+        } finally {
+            getWriteLock().unlock();
+        }
+    }
+
+    /**
+     * Combine specific and range elements so that AMIPeerFactory has to spend
+     * less time iterating all these elements.
+     * TODO This really should be pulled up into PeerFactory somehow, but I'm not sure how (given that "Definition" is different for both
+     * Snmp and AMI.  Maybe some sort of visitor methodology would work.  The basic logic should be fine as it's all IP address manipulation
+     *
+     * @throws UnknownHostException
+     */
+    private void optimize() throws UnknownHostException {
+        getWriteLock().lock();
+        
+        try {
+            // First pass: Remove empty definition elements
+            for (final Iterator<Definition> definitionsIterator = m_config.getDefinitionCollection().iterator(); definitionsIterator.hasNext();) {
+                final Definition definition = definitionsIterator.next();
+                if (definition.getSpecificCount() == 0
+                    && definition.getRangeCount() == 0) {
+                    LogUtils.debugf(this, "optimize: Removing empty definition element");
+                    definitionsIterator.remove();
+                }
+            }
+    
+            // Second pass: Replace single IP range elements with specific elements
+            for (Definition definition : m_config.getDefinitionCollection()) {
+                for (Iterator<Range> rangesIterator = definition.getRangeCollection().iterator(); rangesIterator.hasNext();) {
+                    Range range = rangesIterator.next();
+                    if (range.getBegin().equals(range.getEnd())) {
+                        definition.addSpecific(range.getBegin());
+                        rangesIterator.remove();
+                    }
+                }
+            }
+    
+            // Third pass: Sort specific and range elements for improved XML
+            // readability and then combine them into fewer elements where possible
+            for (final Definition definition : m_config.getDefinitionCollection()) {
+                // Sort specifics
+                final TreeMap<Integer,String> specificsMap = new TreeMap<Integer,String>();
+                for (final String specific : definition.getSpecificCollection()) {
+                    specificsMap.put(new Integer(new IPv4Address(specific).getAddress()), specific.trim());
+                }
+    
+                // Sort ranges
+                final TreeMap<Integer,Range> rangesMap = new TreeMap<Integer,Range>();
+                for (final Range range : definition.getRangeCollection()) {
+                    rangesMap.put(new IPv4Address(range.getBegin()).getAddress(), range);
+                }
+    
+                // Combine consecutive specifics into ranges
+                Integer priorSpecific = null;
+                Range addedRange = null;
+                for (final Integer specific : specificsMap.keySet()) {
+                    if (priorSpecific == null) {
+                        priorSpecific = specific;
+                        continue;
+                    }
+    
+                    final int specificInt = specific.intValue();
+                    final int priorSpecificInt = priorSpecific.intValue();
+    
+                    if (specificInt == priorSpecificInt + 1) {
+                        if (addedRange == null) {
+                            addedRange = new Range();
+                            addedRange.setBegin(IPv4Address.addressToString(priorSpecificInt));
+                            rangesMap.put(priorSpecific, addedRange);
+                            specificsMap.remove(priorSpecific);
+                        }
+    
+                        addedRange.setEnd(IPv4Address.addressToString(specificInt));
+                        specificsMap.remove(specific);
+                    }
+                    else {
+                        addedRange = null;
+                    }
+    
+                    priorSpecific = specific;
+                }
+    
+                // Move specifics to ranges
+                for (final Integer specific : new ArrayList<Integer>(specificsMap.keySet())) {
+                    final int specificInt = specific.intValue();
+                    for (final Integer begin : new ArrayList<Integer>(rangesMap.keySet())) {
+                        final int beginInt = begin.intValue();
+    
+                        if (specificInt < beginInt - 1) {
+                            continue;
+                        }
+    
+                        final Range range = rangesMap.get(begin);
+    
+                        final int endInt = new IPv4Address(range.getEnd()).getAddress();
+    
+                        if (specificInt > endInt + 1)
+                            continue;
+    
+                        if (specificInt >= beginInt && specificInt <= endInt) {
+                            specificsMap.remove(specific);
+                            break;
+                        }
+    
+                        if (specificInt == beginInt - 1) {
+                            rangesMap.remove(begin);
+                            rangesMap.put(specific, range);
+                            range.setBegin(IPv4Address.addressToString(specificInt));
+                            specificsMap.remove(specific);
+                            break;
+                        }
+    
+                        if (specificInt == endInt + 1) {
+                            range.setEnd(IPv4Address.addressToString(specificInt));
+                            specificsMap.remove(specific);
+                            break;
+                        }
+                    }
+                }
+    
+                // Combine consecutive ranges
+                Range priorRange = null;
+                int priorBegin = 0;
+                int priorEnd = 0;
+                for (final Iterator<Integer> rangesIterator = rangesMap.keySet().iterator(); rangesIterator.hasNext();) {
+                    final Integer rangeKey = rangesIterator.next();
+                    final Range range = rangesMap.get(rangeKey);
+                    final int begin = rangeKey.intValue();
+                    final int end = new IPv4Address(range.getEnd()).getAddress();
+    
+                    if (priorRange != null) {
+                        if (begin - priorEnd <= 1) {
+                            priorRange.setBegin(IPv4Address.addressToString (Math.min(priorBegin, begin)));
+                            priorRange.setEnd(IPv4Address.addressToString (Math.max(priorEnd, end)));
+    
+                            rangesIterator.remove();
+                            continue;
+                        }
+                    }
+    
+                    priorRange = range;
+                    priorBegin = begin;
+                    priorEnd = end;
+                }
+    
+                // Update changes made to sorted maps
+                definition.setSpecific(specificsMap.values().toArray(new String[0]));
+                definition.setRange(rangesMap.values().toArray(new Range[0]));
+            }
+        } finally {
+            getWriteLock().unlock();
+        }
     }
 
     /**
@@ -377,103 +401,99 @@ public class AmiPeerFactory extends PeerFactory {
      * @throws java.net.UnknownHostException if any.
      * @param username a {@link java.lang.String} object.
      */
-    public void define(InetAddress ip, String username, String password) throws UnknownHostException {
-        ThreadCategory log = log();
-
+    public void define(final InetAddress ip, final String username, final String password) throws UnknownHostException {
         // Convert IP to long so that it easily compared in range elements
-        int address = new IPv4Address(ip).getAddress();
+        final int address = new IPv4Address(ip).getAddress();
 
-        // Copy the current definitions so that elements can be added and
-        // removed
-        ArrayList<Definition> definitions = new ArrayList<Definition>(m_config.getDefinitionCollection());
-
-        // First step: Find the first definition matching the read-community or
-        // create a new definition, then add the specific IP
-        Definition definition = null;
-        for (Definition currentDefinition : definitions) {
-            if ((currentDefinition.getPassword() != null
-                && currentDefinition.getPassword().equals(password))
-                || (currentDefinition.getPassword() == null
-                && m_config.getPassword() != null
-                && m_config.getPassword().equals(password))) {
-                if (log.isDebugEnabled()) {
-                    log.debug("define: Found existing definition with password " + password);
-                }
-                definition = currentDefinition;
-                break;
-            }
-        }
-        if (definition == null) {
-            if (log.isDebugEnabled())
-                log.debug("define: Creating new definition");
-
-            definition = new Definition();
-            definition.setPassword(password);
-            definition.setUsername(username);
-            definitions.add(definition);
-        }
-        definition.addSpecific(ip.getHostAddress());
-
-        // Second step: Find and remove any existing specific and range
-        // elements with matching IP among all definitions except for the
-        // definition identified in the first step
-        for (Definition currentDefinition : definitions) {
-
-            // Ignore this definition if it was the one identified by the first step
-            if (currentDefinition == definition)
-                continue;
-
-            // Remove any specific elements that match IP
-            while (currentDefinition.removeSpecific(ip.getHostAddress())) {
-                if (log.isDebugEnabled()) {
-                    log.debug("define: Removed an existing specific element with IP " + ip);
+        getWriteLock().lock();
+        
+        try {
+            // Copy the current definitions so that elements can be added and removed
+            final ArrayList<Definition> definitions = new ArrayList<Definition>(m_config.getDefinitionCollection());
+    
+            // First step: Find the first definition matching the read-community or
+            // create a new definition, then add the specific IP
+            Definition definition = null;
+            for (final Definition currentDefinition : definitions) {
+                if ((currentDefinition.getPassword() != null
+                    && currentDefinition.getPassword().equals(password))
+                    || (currentDefinition.getPassword() == null
+                    && m_config.getPassword() != null
+                    && m_config.getPassword().equals(password))) {
+                    LogUtils.debugf(this, "define: Found existing definition with password %s", password);
+                    definition = currentDefinition;
+                    break;
                 }
             }
-
-            // Split and replace any range elements that contain IP
-            ArrayList<Range> ranges = new ArrayList<Range>(currentDefinition.getRangeCollection());
-            Range[] rangesArray = currentDefinition.getRange();
-            for (int rangesArrayIndex = 0; rangesArrayIndex < rangesArray.length; rangesArrayIndex++) {
-                Range range = rangesArray[rangesArrayIndex];
-                int begin = new IPv4Address(range.getBegin()).getAddress();
-                int end = new IPv4Address(range.getEnd()).getAddress();
-                if (address >= begin && address <= end) {
-                    if (log.isDebugEnabled())
-                        log.debug(String.format("define: Splitting range element with begin %s and end %s", range.getBegin(), range.getEnd()));
-
-                    if (begin == end) {
+            if (definition == null) {
+                LogUtils.debugf(this, "define: Creating new definition");
+    
+                definition = new Definition();
+                definition.setPassword(password);
+                definition.setUsername(username);
+                definitions.add(definition);
+            }
+            definition.addSpecific(ip.getHostAddress());
+    
+            // Second step: Find and remove any existing specific and range
+            // elements with matching IP among all definitions except for the
+            // definition identified in the first step
+            for (final Definition currentDefinition : definitions) {
+    
+                // Ignore this definition if it was the one identified by the first step
+                if (currentDefinition == definition) continue;
+    
+                // Remove any specific elements that match IP
+                while (currentDefinition.removeSpecific(ip.getHostAddress())) {
+                    LogUtils.debugf(this, "define: Removed an existing specific element with IP %s", ip);
+                }
+    
+                // Split and replace any range elements that contain IP
+                final ArrayList<Range> ranges = new ArrayList<Range>(currentDefinition.getRangeCollection());
+                final Range[] rangesArray = currentDefinition.getRange();
+                for (int rangesArrayIndex = 0; rangesArrayIndex < rangesArray.length; rangesArrayIndex++) {
+                    final Range range = rangesArray[rangesArrayIndex];
+                    final int begin = new IPv4Address(range.getBegin()).getAddress();
+                    final int end = new IPv4Address(range.getEnd()).getAddress();
+                    if (address >= begin && address <= end) {
+                        LogUtils.debugf(this, "define: Splitting range element with begin %s and end %s", range.getBegin(), range.getEnd());
+    
+                        if (begin == end) {
+                            ranges.remove(range);
+                            continue;
+                        }
+    
+                        if (address == begin) {
+                            range.setBegin(IPv4Address.addressToString(address + 1));
+                            continue;
+                        }
+    
+                        if (address == end) {
+                            range.setEnd(IPv4Address.addressToString(address - 1));
+                            continue;
+                        }
+    
+                        final Range head = new Range();
+                        head.setBegin(range.getBegin());
+                        head.setEnd(IPv4Address.addressToString(address - 1));
+    
+                        final Range tail = new Range();
+                        tail.setBegin(IPv4Address.addressToString(address + 1));
+                        tail.setEnd(range.getEnd());
+    
                         ranges.remove(range);
-                        continue;
+                        ranges.add(head);
+                        ranges.add(tail);
                     }
-
-                    if (address == begin) {
-                        range.setBegin(IPv4Address.addressToString(address + 1));
-                        continue;
-                    }
-
-                    if (address == end) {
-                        range.setEnd(IPv4Address.addressToString(address - 1));
-                        continue;
-                    }
-
-                    Range head = new Range();
-                    head.setBegin(range.getBegin());
-                    head.setEnd(IPv4Address.addressToString(address - 1));
-
-                    Range tail = new Range();
-                    tail.setBegin(IPv4Address.addressToString(address + 1));
-                    tail.setEnd(range.getEnd());
-
-                    ranges.remove(range);
-                    ranges.add(head);
-                    ranges.add(tail);
                 }
+                currentDefinition.setRange(ranges.toArray(new Range[0]));
             }
-            currentDefinition.setRange(ranges.toArray(new Range[0]));
+    
+            // Store the altered list of definitions
+            m_config.setDefinition(definitions.toArray(new Definition[0]));
+        } finally {
+            getWriteLock().unlock();
         }
-
-        // Store the altered list of definitions
-        m_config.setDefinition(definitions.toArray(new Definition[0]));
     }
     
     /**
@@ -482,79 +502,72 @@ public class AmiPeerFactory extends PeerFactory {
      * @param agentInetAddress a {@link java.net.InetAddress} object.
      * @return a {@link org.opennms.protocols.ami.AmiAgentConfig} object.
      */
-    public synchronized AmiAgentConfig getAgentConfig(InetAddress agentInetAddress) {
-
-        if (m_config == null) {
-            return new AmiAgentConfig(agentInetAddress);
-        }
+    public AmiAgentConfig getAgentConfig(final InetAddress agentInetAddress) {
+        getReadLock().lock();
         
-        AmiAgentConfig agentConfig = new AmiAgentConfig(agentInetAddress);
-        
-        //Now set the defaults from the m_config
-        setAmiAgentConfig(agentConfig, new Definition());
-
-        // Attempt to locate the node
-        //
-        Enumeration<Definition> edef = m_config.enumerateDefinition();
-        DEFLOOP: while (edef.hasMoreElements()) {
-            Definition def = (Definition) edef.nextElement();
-
-            // check the specifics first
-            for (String saddr : def.getSpecificCollection()) {
-                saddr = saddr.trim();
-                try {
-                    InetAddress addr = InetAddress.getByName(saddr);
-                    if (addr.equals(agentConfig.getAddress())) {
+        try {
+            if (m_config == null) return new AmiAgentConfig(agentInetAddress);
+            
+            final AmiAgentConfig agentConfig = new AmiAgentConfig(agentInetAddress);
+            
+            //Now set the defaults from the m_config
+            setAmiAgentConfig(agentConfig, new Definition());
+    
+            // Attempt to locate the node
+            DEFLOOP: for (final Definition def : m_config.getDefinitionCollection()) {
+                // check the specifics first
+                for (String saddr : def.getSpecificCollection()) {
+                    saddr = saddr.trim();
+                    try {
+                        final InetAddress addr = InetAddress.getByName(saddr);
+                        if (addr.equals(agentConfig.getAddress())) {
+                            setAmiAgentConfig(agentConfig, def);
+                            break DEFLOOP;
+                        }
+                    } catch (final UnknownHostException e) {
+                        LogUtils.warnf(this, e, "AmiPeerFactory: could not convert host %s to InetAddress", saddr);
+                    }
+                }
+    
+                // check the ranges
+                final long lhost = InetAddressUtils.toIpAddrLong(agentConfig.getAddress());
+                for (final Range rng : def.getRangeCollection()) {
+                    try {
+                        final InetAddress begin = InetAddress.getByName(rng.getBegin());
+                        final InetAddress end = InetAddress.getByName(rng.getEnd());
+                        final long start = InetAddressUtils.toIpAddrLong(begin);
+                        final long stop = InetAddressUtils.toIpAddrLong(end);
+    
+                        if (start <= lhost && lhost <= stop) {
+                            setAmiAgentConfig(agentConfig, def );
+                            break DEFLOOP;
+                        }
+                    } catch (final UnknownHostException e) {
+                        LogUtils.warnf(this, "AmiPeerFactory: could not convert host(s) %s - %s to InetAddress", rng.getBegin(), rng.getEnd());
+                    }
+                }
+                
+                // check the matching IP expressions
+                for (final String ipMatch : def.getIpMatchCollection()) {
+                    if (IPLike.matches(agentInetAddress.getHostAddress(), ipMatch)) {
                         setAmiAgentConfig(agentConfig, def);
                         break DEFLOOP;
                     }
-                } catch (UnknownHostException e) {
-                    log().warn(String.format("AmiPeerFactory: could not convert host %s to InetAddress", saddr), e);
                 }
-            }
-
-            // check the ranges
-            long lhost = InetAddressUtils.toIpAddrLong(agentConfig.getAddress());
-            for (Range rng : def.getRangeCollection()) {
-                try {
-                    InetAddress begin = InetAddress.getByName(rng.getBegin());
-                    InetAddress end = InetAddress.getByName(rng.getEnd());
-
-                    long start = InetAddressUtils.toIpAddrLong(begin);
-                    long stop = InetAddressUtils.toIpAddrLong(end);
-
-                    if (start <= lhost && lhost <= stop) {
-                        setAmiAgentConfig(agentConfig, def );
-                        break DEFLOOP;
-                    }
-                } catch (UnknownHostException e) {
-                    log().warn(String.format("AmiPeerFactory: could not convert host(s) %s - %s to InetAddress", rng.getBegin(), rng.getEnd()), e);
-                }
-            }
-            
-            // check the matching IP expressions
-            for (String ipMatch : def.getIpMatchCollection()) {
-                if (IPLike.matches(agentInetAddress.getHostAddress(), ipMatch)) {
-                    setAmiAgentConfig(agentConfig, def);
-                    break DEFLOOP;
-                }
-            }
-            
-        } // end DEFLOOP
-
-        if (agentConfig == null) {
-
-            Definition def = new Definition();
-            setAmiAgentConfig(agentConfig, def);
+                
+            } // end DEFLOOP
+    
+            if (agentConfig == null) setAmiAgentConfig(agentConfig, new Definition());
+    
+            return agentConfig;
+        } finally {
+            getReadLock().unlock();
         }
-
-        return agentConfig;
-
     }
     
-    private void setAmiAgentConfig(AmiAgentConfig agentConfig, Definition def) {
+    private void setAmiAgentConfig(final AmiAgentConfig agentConfig, final Definition def) {
         setCommonAttributes(agentConfig, def);
-        agentConfig.setPassword(determinePassword(def));       
+        agentConfig.setPassword(determinePassword(def));
     }
     
     /**
@@ -563,7 +576,7 @@ public class AmiPeerFactory extends PeerFactory {
      * @param agentConfig
      * @param def
      */
-    private void setCommonAttributes(AmiAgentConfig agentConfig, Definition def) {
+    private void setCommonAttributes(final AmiAgentConfig agentConfig, final Definition def) {
         agentConfig.setRetries(determineRetries(def));
         agentConfig.setTimeout((int)determineTimeout(def));
         agentConfig.setUsername(determineUsername(def));
@@ -575,7 +588,7 @@ public class AmiPeerFactory extends PeerFactory {
      * @param def
      * @return a string containing the username. will return the default if none is set.
      */
-    private String determineUsername(Definition def) {
+    private String determineUsername(final Definition def) {
         return (def.getPassword() == null ? (m_config.getUsername() == null ? AmiAgentConfig.DEFAULT_USERNAME :m_config.getUsername()) : def.getUsername());
     }
 
@@ -584,7 +597,7 @@ public class AmiPeerFactory extends PeerFactory {
      * @param def
      * @return a string containing the password. will return the default if none is set.
      */
-    private String determinePassword(Definition def) {
+    private String determinePassword(final Definition def) {
         return (def.getPassword() == null ? (m_config.getPassword() == null ? AmiAgentConfig.DEFAULT_PASSWORD :m_config.getPassword()) : def.getPassword());
     }
 
@@ -593,13 +606,13 @@ public class AmiPeerFactory extends PeerFactory {
      * @param def
      * @return a long containing the timeout, AmiAgentConfig.DEFAULT_TIMEOUT if not specified.
      */
-    private long determineTimeout(Definition def) {
-        long timeout = AmiAgentConfig.DEFAULT_TIMEOUT;
+    private long determineTimeout(final Definition def) {
+        final long timeout = AmiAgentConfig.DEFAULT_TIMEOUT;
         return (long)(def.getTimeout() == 0 ? (m_config.getTimeout() == 0 ? timeout : m_config.getTimeout()) : def.getTimeout());
     }
 
-    private int determineRetries(Definition def) {        
-        int retries = AmiAgentConfig.DEFAULT_RETRIES;
+    private int determineRetries(final Definition def) {        
+        final int retries = AmiAgentConfig.DEFAULT_RETRIES;
         return (def.getRetry() == 0 ? (m_config.getRetry() == 0 ? retries : m_config.getRetry()) : def.getRetry());
     }
 
@@ -610,14 +623,5 @@ public class AmiPeerFactory extends PeerFactory {
      */
     public static AmiConfig getAmiConfig() {
         return m_config;
-    }
-
-    /**
-     * <p>setAmiConfig</p>
-     *
-     * @param m_config a {@link org.opennms.netmgt.config.ami.AmiConfig} object.
-     */
-    public static synchronized void setAmiConfig(AmiConfig m_config) {
-        AmiPeerFactory.m_config = m_config;
     }
 }

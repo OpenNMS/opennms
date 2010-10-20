@@ -773,7 +773,7 @@ final class PollerEventProcessor implements EventListener {
      * @return Returns the XMLRPC.
      */
     private boolean isXmlRPCEnabled() {
-        return getPollerConfig().getXmlrpc();
+        return getPollerConfig().shouldNotifyXmlrpc();
     }
 
 } // end class
