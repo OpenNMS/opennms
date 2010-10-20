@@ -21,16 +21,27 @@ public class JRobinDataSource implements JRDataSource {
     }
 
     public Object getFieldValue(JRField field) throws JRException {
-        if ("Timestamp".equals(field.getName())) {
+        Object computeFieldValue = computeFieldValue(field);
+        System.out.println("row: " + m_currentRow + "; " + field.getName() + ": " + computeFieldValue);
+        return computeFieldValue;
+    }
+
+    private Object computeFieldValue(JRField field) {
+        if ("Timestamp".equalsIgnoreCase(getColumnName(field))) {
             return new Date(m_timestamps[m_currentRow] * 1000L);
         }
-        XPort xport = findXPortForField(field.getDescription());
+        XPort xport = findXPortForField(getColumnName(field));
         return xport == null ? null : Double.valueOf(xport.values[m_currentRow]);
+    }
+
+    private String getColumnName(JRField field) {
+        return field.getDescription() == null || field.getDescription().trim().equals("")
+                ? field.getName() : field.getDescription();
     }
 
     private XPort findXPortForField(String description) {
         for(XPort xport : m_xports) {
-            if(xport.legend.equals(description)) {
+            if(xport.legend.equalsIgnoreCase(description)) {
                 return xport;
             }
         }

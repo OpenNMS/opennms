@@ -38,6 +38,7 @@ public class JRobinQueryExecuterTest {
         pdf();
         xhtml();
     }
+    
 
     public void compile() throws JRException {
         // jrxml compiling process
