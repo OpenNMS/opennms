@@ -34,13 +34,20 @@
                --start $P{startDate} --end $P{endDate} --step 3600
                DEF:moAttempts=$P{rrdDir}/mo_calls.jrb:mo_call_attempts:AVERAGE
                DEF:moCompletes=$P{rrdDir}/mo_calls.jrb:mo_call_completes:AVERAGE
+               DEF:mtAttempts=$P{rrdDir}/mt_calls.jrb:mt_call_attempts:AVERAGE
+               DEF:mtCompletes=$P{rrdDir}/mt_calls.jrb:mt_call_completes:AVERAGE
                CDEF:moSuccessRate=moCompletes,100,*,moAttempts,/
+               CDEF:mtSuccessRate=mtCompletes,100,*,mtAttempts,/
                XPORT:moSuccessRate:moSuccessRate
+               XPORT:mtSuccessRate:mtSuccessRate
                ]]></queryString>
         <field name="timestamp" class="java.util.Date">
             <fieldDescription><![CDATA[]]></fieldDescription>
         </field>
         <field name="moSuccessRate" class="java.lang.Double">
+          <fieldDescription><![CDATA[]]></fieldDescription>
+        </field>
+        <field name="mtSuccessRate" class="java.lang.Double">
           <fieldDescription><![CDATA[]]></fieldDescription>
         </field>
         <variable name="Hour" class="java.lang.Integer">
@@ -144,9 +151,15 @@
                             </datasetRun>
                         </dataset>
                         <timeSeries>
-                            <seriesExpression><![CDATA["Success Rate"]]></seriesExpression>
+                            <seriesExpression><![CDATA["MO Success Rate"]]></seriesExpression>
                             <timePeriodExpression><![CDATA[$F{timestamp}]]></timePeriodExpression>
                             <valueExpression><![CDATA[$F{moSuccessRate}]]></valueExpression>
+                            <labelExpression><![CDATA[]]></labelExpression>
+                        </timeSeries>
+                        <timeSeries>
+                            <seriesExpression><![CDATA["MT Success Rate"]]></seriesExpression>
+                            <timePeriodExpression><![CDATA[$F{timestamp}]]></timePeriodExpression>
+                            <valueExpression><![CDATA[$F{mtSuccessRate}]]></valueExpression>
                             <labelExpression><![CDATA[]]></labelExpression>
                         </timeSeries>
                   </timeSeriesDataset>

@@ -162,7 +162,7 @@ public class SpecificationTest {
         Function bigSine = new Sin(start, 15, -10, MILLIS_PER_DAY);
         Function smallSine = new Sin(start, 7, 5, MILLIS_PER_DAY);
         Function moSuccessRate = new Cos(start, .5, .3, MILLIS_PER_DAY);
-        Function mtSuccessRate = new Cos(start-(MILLIS_PER_DAY/8), .6, -.2, MILLIS_PER_DAY/2);
+        Function mtSuccessRate = new Cos(start, .5, -.2, 2*MILLIS_PER_DAY);
         
         Function moAttempts = new Counter(0, bigSine);
         Function moCompletes = new Counter(0, new Times(moSuccessRate, bigSine));
