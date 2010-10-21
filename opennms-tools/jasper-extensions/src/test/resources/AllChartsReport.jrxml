@@ -172,7 +172,7 @@
                                 <tickLabelFont/>
                             </axisFormat>
                         </timeAxisFormat>
-                        <valueAxisLabelExpression><![CDATA["Success Rate (%)"]]></valueAxisLabelExpression>
+                        <valueAxisLabelExpression><![CDATA["Call Success Rate (%)"]]></valueAxisLabelExpression>
                         <valueAxisFormat>
                             <axisFormat>
                                 <labelFont/>
