@@ -150,7 +150,7 @@ public class HostResourceSWRunDetector extends SnmpDetector {
         
     }
 
-    private String stripExtraParens(String string) {
+    private static String stripExtraParens(String string) {
         String retString = "";
         if(string.startsWith("\"")){
             String temp = StringUtils.stripFront(string, '"');

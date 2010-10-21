@@ -150,7 +150,6 @@ public class CollectdConfigFactory {
      * @throws org.exolab.castor.xml.MarshalException if any.
      * @throws org.exolab.castor.xml.ValidationException if any.
      */
-    @Deprecated
     public CollectdConfigFactory(Reader rdr, String localServer, boolean verifyServer) throws IOException, MarshalException, ValidationException {
         CollectdConfiguration config = CastorUtils.unmarshal(CollectdConfiguration.class, rdr);
         m_collectdConfig = new CollectdConfig(config, localServer, verifyServer);

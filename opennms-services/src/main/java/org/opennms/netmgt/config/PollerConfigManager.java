@@ -105,7 +105,6 @@ abstract public class PollerConfigManager implements PollerConfig {
      * @throws org.exolab.castor.xml.ValidationException if any.
      * @throws java.io.IOException if any.
      */
-    @Deprecated
     public PollerConfigManager(final Reader reader, final String localServer, final boolean verifyServer) throws MarshalException, ValidationException, IOException {
         m_localServer = localServer;
         m_verifyServer = verifyServer;
