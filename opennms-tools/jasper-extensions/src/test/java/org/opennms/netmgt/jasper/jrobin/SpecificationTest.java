@@ -159,11 +159,16 @@ public class SpecificationTest {
         RrdDb rrd1 = new RrdDb(rrdDef);
         RrdDb rrd2 = new RrdDb(rrdDef2);
         
-        Function sin = new Sin(start, 15, -10, MILLIS_PER_DAY);
-        Function cos = new Cos(start, .5, .3, MILLIS_PER_DAY);
+        Function bigSine = new Sin(start, 15, -10, MILLIS_PER_DAY);
+        Function smallSine = new Sin(start, 7, 5, MILLIS_PER_DAY);
+        Function moSuccessRate = new Cos(start, .5, .3, MILLIS_PER_DAY);
+        Function mtSuccessRate = new Cos(start-(MILLIS_PER_DAY/8), .6, -.2, MILLIS_PER_DAY/2);
         
-        Function attempts = new Counter(0, sin);
-        Function completes = new Counter(0, new Times(cos, sin));
+        Function moAttempts = new Counter(0, bigSine);
+        Function moCompletes = new Counter(0, new Times(moSuccessRate, bigSine));
+        
+        Function mtAttempts = new Counter(0, smallSine);
+        Function mtCompletes = new Counter(0, new Times(mtSuccessRate, smallSine));
 
         int count = 0;
         for(long timestamp = start - 300000; timestamp<= end; timestamp += 300000){
@@ -171,8 +176,8 @@ public class SpecificationTest {
             
             
             Sample sample = rrd1.createSample(timestamp/1000);
-            double attemptsVal = attempts.evaluate(timestamp);
-            double completesVal = completes.evaluate(timestamp);
+            double attemptsVal = moAttempts.evaluate(timestamp);
+            double completesVal = moCompletes.evaluate(timestamp);
             
             System.out.println("Attempts: " + attemptsVal + " Completes " + completesVal);
             sample.setValue("mo_call_attempts", attemptsVal);
@@ -183,8 +188,8 @@ public class SpecificationTest {
             sample.update();
             
             Sample sample2 = rrd2.createSample(timestamp/1000);
-            sample2.setValue("mt_call_attempts", 5 * count);
-            sample2.setValue("mt_call_completes", 4 * count);
+            sample2.setValue("mt_call_attempts", mtAttempts.evaluate(timestamp));
+            sample2.setValue("mt_call_completes", mtCompletes.evaluate(timestamp));
             sample2.setValue("mt_mins_carried", 16 * count);
             sample2.setValue("mt_calls_active", 1);
             
