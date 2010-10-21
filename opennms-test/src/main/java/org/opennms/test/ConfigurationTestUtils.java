@@ -149,7 +149,6 @@ public class ConfigurationTestUtils extends Assert {
      * @param resource a {@link java.lang.String} object.
      * @return a {@link java.io.Reader} object.
      */
-    @Deprecated
     public static Reader getReaderForResource(Object obj, String resource) {
         Reader retval = null;
         try {
@@ -246,7 +245,6 @@ public class ConfigurationTestUtils extends Assert {
      * @return a {@link java.io.Reader} object.
      * @throws java.io.FileNotFoundException if any.
      */
-    @Deprecated
     public static Reader getReaderForConfigFile(String configFile) throws FileNotFoundException {
         Reader retval = null;
         try {

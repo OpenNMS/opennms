@@ -54,18 +54,8 @@ import java.net.InetAddress;
  * @author <A HREF="mailto:weave@oculan.com">Weave </A>
  * @author <A>Jon Whetzel </A>
  * @author <A HREF="http://www.opennms.org/">OpenNMS </A>
- * @author <A HREF="mailto:sowmya@opennms.org">Sowmya </A>
- * @author <A HREF="mailto:weave@oculan.com">Weave </A>
- * @author <A>Jon Whetzel </A>
- * @author <A HREF="http://www.opennms.org/">OpenNMS </A>
- * @author <A>Jon Whetzel </A>
- * @author <A HREF="mailto:sowmya@opennms.org">Sowmya </A>
- * @author <A HREF="mailto:weave@oculan.com">Weave </A>
- * @author <A>Jon Whetzel </A>
- * @author <A HREF="http://www.opennms.org/">OpenNMS </A>
  * @see IpAddrTable
  * @see <A HREF="http://www.ietf.org/rfc/rfc1213.txt">RFC1213 </A>
- * @version $Id: $
  */
 public final class IpAddrTableEntry extends SnmpTableEntry {
     // Lookup strings for specific table entries
@@ -96,7 +86,7 @@ public final class IpAddrTableEntry extends SnmpTableEntry {
         // ipAdEntReasmMaxSize variable because we aren't currently using
         // it and not all agents implement it which causes the collection
         // of the ipAddrTable to fail
-        IpAddrTableEntry.ms_elemList = (new NamedSnmpVar[4]);
+        IpAddrTableEntry.ms_elemList = new NamedSnmpVar[4];
         int ndx = 0;
 
         ms_elemList[ndx++] = new NamedSnmpVar(NamedSnmpVar.SNMPIPADDRESS, IP_ADDR_ENT_ADDR, ".1.3.6.1.2.1.4.20.1.1", 1);
