@@ -3,18 +3,6 @@
 #  $Id$
 #
 
-# workaround for buggy libc's
-#
-# Disabled Thu Oct 21 00:45:21 EDT 2004 by djgregor to see if this fixes
-# the signal 11 problems that people have been seeing (and with hopes that
-# it doesn't trigger other problems--i.e.: the problem that caused it to be
-# added in the first place).  If this causes problems on certain
-# architectures, it might be good to identify them and add specific cases
-# for those architectures in this script.  If you find a problem, file a
-# new bug and reference bug #959.  Thanks, - djg.
-#
-### ulimit -s 2048
-
 PWD_CMD=`which pwd 2>&1 | grep -v "no pwd in" | grep -v "shell built-in command"`
 [ -z "$PWD_COMMAND" ] && [ -x /bin/pwd ] && PWD_CMD="/bin/pwd"
 
@@ -54,7 +42,45 @@ if [ -n "$JAVA_HOME" ]; then
 	export PATH
 fi
 
+declare -a ARGS
+COUNT=0
+USE_ASSEMBLIES=""
+for ARG in "$@"; do
+	case $ARG in
+		assembly:*)
+			USE_ASSEMBLIES="$ARG"
+			;;
+		*)
+			ARGS[$COUNT]="$ARG"
+			COUNT=`expr $COUNT + 1`
+			;;
+	esac
+done
+
+if [ -n "$USE_ASSEMBLIES" ] && [ `grep -c 'OpenNMS Top-Level POM' pom.xml` -gt 0 ]; then
+	echo ""
+	echo "WARNING: using assemblies from the top-level build are deprecated."
+	echo "If you want an assembly of the full build, do the usual"
+	echo "'$0 install' and then cd to the opennms-full-assembly/"
+	echo "directory and create your assembly from there."
+	echo ""
+	echo "For now, I'll cheat and do it for you."
+	echo ""
+	sleep 5
+fi
+
 [ -z "$MAVEN_OPTS" ] && MAVEN_OPTS='-XX:PermSize=64M -XX:MaxPermSize=256M -Xmx1G'
 export MAVEN_OPTS
 [ -z "$MVN" ] && MVN="$PREFIX/maven/bin/mvn"
-"$MVN" -Droot.dir=$PREFIX -D$MAVEN_SKIP=true "$@"
+"$MVN" -Droot.dir=$PREFIX -D$MAVEN_SKIP=true "${ARGS[@]}"
+EXITVAL="$?"
+
+if [ $EXITVAL -eq 0 ]; then
+	if [ -n "$USE_ASSEMBLIES" ] && [ `grep -c 'OpenNMS Top-Level POM' pom.xml` -gt 0 ]; then
+		pushd opennms-full-assembly >/dev/null 2>&1
+			"$MVN" -Droot.dir=$PREFIX -D$MAVEN_SKIP=true $USE_ASSEMBLIES
+		popd >/dev/null 2>&1
+	fi
+fi
+
+exit $EXITVAL

@@ -1,7 +1,7 @@
 <assembly>
   <id>daemon</id>
   <formats>
-    <format>tgz</format>
+    <format>tar.gz</format>
   </formats>
   <includeBaseDirectory>false</includeBaseDirectory>
   <fileSets>
