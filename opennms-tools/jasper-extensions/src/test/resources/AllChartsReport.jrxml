@@ -68,7 +68,7 @@
 							<titleExpression><![CDATA["Bar Chart"]]></titleExpression>
 						</chartTitle>
 						<chartSubtitle>
-							<subtitleExpression><![CDATA["Chart Displaying Bars"]]></subtitleExpression>
+							<subtitleExpression><![CDATA["Using JRobin Queries to make Bar Charts"]]></subtitleExpression>
 						</chartSubtitle>
 						<chartLegend/>
 						<hyperlinkTooltipExpression><![CDATA["Bar Chart"]]></hyperlinkTooltipExpression>
@@ -88,12 +88,12 @@
 							</datasetRun>
 						</dataset>
 						<categorySeries>
-							<seriesExpression><![CDATA["MO_CALL_ATTEMTPS/HR"]]></seriesExpression>
+							<seriesExpression><![CDATA["MO Call Attempts"]]></seriesExpression>
 							<categoryExpression><![CDATA[$V{Hour}]]></categoryExpression>
 							<valueExpression><![CDATA[$F{mo_call_attempts}]]></valueExpression>
 						</categorySeries>
 						<categorySeries>
-                            <seriesExpression><![CDATA["MT_CALL_ATTEMTPS/HR"]]></seriesExpression>
+                            <seriesExpression><![CDATA["MT Call Attempts"]]></seriesExpression>
                             <categoryExpression><![CDATA[$V{Hour}]]></categoryExpression>
                             <valueExpression><![CDATA[$F{mt_call_attempts}]]></valueExpression>
                         </categorySeries>
@@ -101,14 +101,14 @@
 					<barPlot>
 						<plot/>
 						<itemLabel color="#cccccc" backgroundColor="#FFFFFF"/>
-						<categoryAxisLabelExpression><![CDATA["Without Increment Type or Increment Group "]]></categoryAxisLabelExpression>
+						<categoryAxisLabelExpression><![CDATA["Hour of the Day"]]></categoryAxisLabelExpression>
 						<categoryAxisFormat>
 							<axisFormat>
 								<labelFont/>
 								<tickLabelFont/>
 							</axisFormat>
 						</categoryAxisFormat>
-						<valueAxisLabelExpression><![CDATA["Amount"]]></valueAxisLabelExpression>
+						<valueAxisLabelExpression><![CDATA["Call Attempts"]]></valueAxisLabelExpression>
 						<valueAxisFormat>
 							<axisFormat>
 								<labelFont/>
@@ -131,7 +131,7 @@
                             <titleExpression><![CDATA["Time Series Chart"]]></titleExpression>
                         </chartTitle>
                         <chartSubtitle>
-                            <subtitleExpression><![CDATA["Chart Displaying Time Series"]]></subtitleExpression>
+                            <subtitleExpression><![CDATA["Graphing JRobin Data Over Time"]]></subtitleExpression>
                         </chartSubtitle>
                         <chartLegend/>
                         <hyperlinkTooltipExpression><![CDATA["Time Series Chart"]]></hyperlinkTooltipExpression>
