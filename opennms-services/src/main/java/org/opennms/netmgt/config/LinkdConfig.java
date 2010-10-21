@@ -45,8 +45,6 @@ import org.exolab.castor.xml.MarshalException;
 import org.exolab.castor.xml.ValidationException;
 import org.opennms.netmgt.config.linkd.LinkdConfiguration;
 import org.opennms.netmgt.config.linkd.Package;
-import org.opennms.netmgt.linkd.DiscoveryLink;
-import org.opennms.netmgt.linkd.SnmpCollection;
 
 
 /**
@@ -145,8 +143,86 @@ public interface LinkdConfig {
      * @return a {@link org.opennms.netmgt.config.linkd.Package} object.
      */
     Package getPackage(String pkgName);
-    
-	/**
+
+    /**
+     * <p>getThreads</p>
+     *
+     * @return a int.
+     */
+    int getThreads();
+
+    /**
+     * <p>enableDiscoveryDownload</p>
+     *
+     * @return a boolean.
+     */
+    boolean enableDiscoveryDownload();
+
+    /**
+     * <p>useIpRouteDiscovery</p>
+     *
+     * @return a boolean.
+     */
+    boolean useIpRouteDiscovery();
+
+    boolean forceIpRouteDiscoveryOnEthernet();
+
+    /**
+     * <p>saveRouteTable</p>
+     *
+     * @return a boolean.
+     */
+    boolean saveRouteTable();
+
+    /**
+     * <p>useCdpDiscovery</p>
+     *
+     * @return a boolean.
+     */
+    boolean useCdpDiscovery();
+
+    /**
+     * <p>useBridgeDiscovery</p>
+     *
+     * @return a boolean.
+     */
+    boolean useBridgeDiscovery();
+
+    /**
+     * <p>saveStpNodeTable</p>
+     *
+     * @return a boolean.
+     */
+    boolean saveStpNodeTable();
+    /**
+     * <p>saveStpInterfaceTable</p>
+     *
+     * @return a boolean.
+     */
+    boolean saveStpInterfaceTable();
+
+    /**
+     * <p>getInitialSleepTime</p>
+     *
+     * @return a long.
+     */
+    long getInitialSleepTime();
+
+    /**
+     * <p>getSnmpPollInterval</p>
+     *
+     * @return a long.
+     */
+    long getSnmpPollInterval();
+
+    /**
+     * <p>getDiscoveryLinkInterval</p>
+     *
+     * @return a long.
+     */
+    long getDiscoveryLinkInterval();
+
+    /**
 	 * <p>update</p>
 	 *
 	 * @throws java.io.IOException if any.
@@ -170,34 +246,7 @@ public interface LinkdConfig {
      * @return a {@link org.opennms.netmgt.config.linkd.LinkdConfiguration} object.
      */
     LinkdConfiguration getConfiguration();
-    
-    /**
-     * <p>getSnmpCollections</p>
-     *
-     * @param ipaddr a {@link java.lang.String} object.
-     * @param sysoid a {@link java.lang.String} object.
-     * @return a {@link java.util.List} object.
-     */
-    List<SnmpCollection> getSnmpCollections(String ipaddr, String sysoid);
 
-    /**
-     * <p>getSnmpCollection</p>
-     *
-     * @param ipaddr a {@link java.lang.String} object.
-     * @param sysoid a {@link java.lang.String} object.
-     * @param pkgName a {@link java.lang.String} object.
-     * @return a {@link org.opennms.netmgt.linkd.SnmpCollection} object.
-     */
-    SnmpCollection getSnmpCollection(String ipaddr, String sysoid,String pkgName);
-
-    /**
-     * <p>getDiscoveryLink</p>
-     *
-     * @param pkgName a {@link java.lang.String} object.
-     * @return a {@link org.opennms.netmgt.linkd.DiscoveryLink} object.
-     */
-    DiscoveryLink getDiscoveryLink(String pkgName);
-    
     /**
      * <p>createPackageIpListMap</p>
      */
@@ -222,4 +271,10 @@ public interface LinkdConfig {
 	Lock getReadLock();
 
     Lock getWriteLock();
+
+    boolean hasIpRouteClassName(String sysoid);
+
+    String getIpRouteClassName(String sysoid);
+
+    String getDefaultIpRouteClassName();
 }
