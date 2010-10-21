@@ -187,7 +187,7 @@ public class SpecificationTest {
             
             sample.update();
             
-            Sample sample2 = rrd2.createSample(timestamp/1000);
+            Sample sample2 = rrd2.createSample(timestamp/1000); 
             sample2.setValue("mt_call_attempts", mtAttempts.evaluate(timestamp));
             sample2.setValue("mt_call_completes", mtCompletes.evaluate(timestamp));
             sample2.setValue("mt_mins_carried", 16 * count);
@@ -231,7 +231,7 @@ public class SpecificationTest {
     
     public void fill() throws JRException{
         long start = System.currentTimeMillis();
-        Map params = new HashMap();
+        Map<String, Object> params = new HashMap<String, Object>();
         params.put("rrdDir", "target/rrd");
         params.put("startDate",m_startDate);
         params.put("endDate", m_endDate);
