@@ -3,7 +3,8 @@
   <parent>
     <groupId>org.opennms</groupId>
     <artifactId>opennms</artifactId>
-    <version>1.8.6-SNAPSHOT</version>
+    <version>1.9.3-SNAPSHOT</version>
+    <relativePath>../pom.xml</relativePath>
   </parent>
   <groupId>org.opennms</groupId>
   <artifactId>opennms-full-assembly</artifactId>
