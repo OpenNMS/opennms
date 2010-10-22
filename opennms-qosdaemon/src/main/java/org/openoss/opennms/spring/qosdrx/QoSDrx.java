@@ -29,7 +29,6 @@
 
 package org.openoss.opennms.spring.qosdrx;
 
-import org.apache.log4j.Logger;
 import org.opennms.core.fiber.PausableFiber;
 import org.opennms.core.utils.ThreadCategory;
 import org.opennms.netmgt.daemon.AbstractServiceDaemon;

@@ -49,6 +49,7 @@ import java.util.Set;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
+import org.opennms.core.utils.LogUtils;
 import org.opennms.core.utils.ThreadCategory;
 import org.opennms.netmgt.config.CatFactory;
 import org.opennms.netmgt.config.CategoryFactory;
@@ -128,16 +129,21 @@ public class AddNodesController extends AbstractController {
 				String categoryName = elems;
 				CategoryFactory.init();
 				CatFactory cf = CategoryFactory.getInstance();
-				String rule = cf.getEffectiveRule(categoryName);
-				List<String> nodeIPs = FilterDaoFactory.getInstance().getIPList(rule);
-				log.debug("ips found: "+nodeIPs.toString());
-				nodeids = new Integer[nodeIPs.size()];
-				for (int i = 0; i<nodeIPs.size();i++) {
-					String nodeIp= (String)nodeIPs.get(i);
-					List<Integer> ids = NetworkElementFactory.getInstance(getServletContext()).getNodeIdsWithIpLike(nodeIp);
-					log.debug("Ids by ipaddress "+nodeIp+": "+ids);
-					nodeids[i] = ids.get(0);
-				}
+				cf.getReadLock().lock();
+				try {
+    				final String rule = cf.getEffectiveRule(categoryName);
+    				final List<String> nodeIPs = FilterDaoFactory.getInstance().getIPList(rule);
+    				LogUtils.debugf(this, "ips found: %s", nodeIPs.toString());
+    				nodeids = new Integer[nodeIPs.size()];
+    				for (int i = 0; i<nodeIPs.size();i++) {
+    					final String nodeIp = (String)nodeIPs.get(i);
+    					final List<Integer> ids = NetworkElementFactory.getInstance(getServletContext()).getNodeIdsWithIpLike(nodeIp);
+    					LogUtils.debugf(this, "Ids by ipaddress %s: %s", nodeIp, ids.toString());
+    					nodeids[i] = ids.get(0);
+               }
+            } finally {
+                cf.getReadLock().unlock();
+            }
 			}	
 			
 			

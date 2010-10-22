@@ -43,7 +43,6 @@ import static org.easymock.EasyMock.isA;
 import static org.easymock.EasyMock.replay;
 
 import java.io.IOException;
-import java.io.Reader;
 import java.text.NumberFormat;
 import java.util.ArrayList;
 import java.util.List;
@@ -89,7 +88,7 @@ public class PollerConfigManagerTest extends TestCase {
         RrdTestUtils.initializeNullStrategy();
         RrdUtils.setStrategy(m_rrdStrategy);
         
-        SnmpPeerFactory.setInstance(new SnmpPeerFactory(ConfigurationTestUtils.getReaderForConfigFile("snmp-config.xml")));
+        SnmpPeerFactory.setInstance(new SnmpPeerFactory(ConfigurationTestUtils.getInputStreamForConfigFile("snmp-config.xml")));
     }
 
     @Override
@@ -156,11 +155,7 @@ public class PollerConfigManagerTest extends TestCase {
     
     public static class TestPollerConfigManager extends PollerConfigManager {
         public TestPollerConfigManager() throws MarshalException, ValidationException, IOException {
-            super(ConfigurationTestUtils.getReaderForConfigFile("poller-configuration.xml"), "foo", false);
-        }
-        
-        public TestPollerConfigManager(Reader reader, String localServer, boolean verifyServer) throws MarshalException, ValidationException, IOException {
-            super(reader, localServer, verifyServer);
+            super(ConfigurationTestUtils.getInputStreamForConfigFile("poller-configuration.xml"), "foo", false);
         }
 
         @Override

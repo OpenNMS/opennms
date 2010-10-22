@@ -35,8 +35,6 @@
  */
 package org.opennms.netmgt.dao.support;
 
-import java.io.IOException;
-
 import org.opennms.netmgt.rrd.RrdException;
 import org.opennms.netmgt.rrd.RrdUtils;
 import org.opennms.netmgt.rrd.jrobin.JRobinRrdStrategy;

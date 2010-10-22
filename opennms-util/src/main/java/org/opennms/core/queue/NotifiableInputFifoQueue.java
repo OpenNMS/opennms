@@ -50,7 +50,7 @@ package org.opennms.core.queue;
  * @author <a href="http://www.opennms.org">OpenNMS </a>
  * @version $Id: $
  */
-public interface NotifiableInputFifoQueue extends FifoQueue {
+public interface NotifiableInputFifoQueue<T> extends FifoQueue<T> {
     /**
      * Adds a new listener to the notifiable queue. If the listener already
      * exists then it is up to the implementor to determine behavior. When a new

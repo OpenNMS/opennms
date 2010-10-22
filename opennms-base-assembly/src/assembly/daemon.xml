@@ -1,7 +1,7 @@
 <assembly>
   <id>daemon</id>
   <formats>
-    <format>tgz</format>
+    <format>tar.gz</format>
   </formats>
   <includeBaseDirectory>false</includeBaseDirectory>
   <fileSets>
@@ -87,10 +87,12 @@
         <include>*remote-poller-gwt*.jar</include>
         <include>gwt*.jar</include>
         <include>extremecomponents-*.jar</include>
+      </includes>
+      <excludes>
         <exclude>jsp-api-*.jar</exclude>
         <exclude>jstl-*.jar</exclude>
         <exclude>servlet-api-*.jar</exclude>
-      </includes>
+      </excludes>
     </fileSet>
     <fileSet>
       <directory>target/dependency-remoting</directory>
@@ -120,10 +122,12 @@
         <include>opennms-webapp-*.jar</include>
         <include>gwt*.jar</include>
         <include>extremecomponents-*.jar</include>
+      </includes>
+      <excludes>
         <exclude>jsp-api-*.jar</exclude>
         <exclude>jstl-*.jar</exclude>
         <exclude>servlet-api-*.jar</exclude>
-      </includes>
+      </excludes>
     </fileSet>
     <fileSet>
       <directory>target/dependency-remote-monitor/WEB-INF/lib</directory>
@@ -134,7 +138,7 @@
         <exclude>jstl-*.jar</exclude>
         <exclude>jsp-api-*.jar</exclude>
         <exclude>servlet-api-*.jar</exclude>
-         <exclude>com.springsource.javax.xml.bind*.jar</exclude>
+        <exclude>com.springsource.javax.xml.bind*.jar</exclude>
       </excludes>
     </fileSet>
     <fileSet>
@@ -148,68 +152,43 @@
   </fileSets>
   <dependencySets>
     <dependencySet>
-       <outputFileNameMapping>opennms_bootstrap.jar</outputFileNameMapping>
-       <outputDirectory>lib</outputDirectory>
-       <includes>
-         <include>org.opennms:opennms-bootstrap</include>
-       </includes>
-    </dependencySet>
-    <dependencySet>
-       <outputFileNameMapping>opennms_install.jar</outputFileNameMapping>
-       <outputDirectory>lib</outputDirectory>
-       <includes>
-         <include>org.opennms:opennms-install</include>
-       </includes>
-    </dependencySet>
-    <dependencySet>
-       <outputFileNameMapping>opennms_system_report.jar</outputFileNameMapping>
-       <outputDirectory>lib</outputDirectory>
-       <includes>
-         <include>org.opennms.features:org.opennms.features.system-report</include>
-       </includes>
-    </dependencySet>
-    <dependencySet>
-       <outputFileNameMapping>libjicmp.${extension}</outputFileNameMapping>
-       <outputDirectory>lib</outputDirectory>
-       <!-- all the platforms need to be listed until the IncludesArtifactFiler supports wildcards -->
-       <includes>
-         <include>org.opennms:opennms-icmp-jni-macosx</include>
-         <include>org.opennms:opennms-icmp-jni-linux</include>
-         <include>org.opennms:opennms-icmp-jni-freebsd</include>
-         <include>org.opennms:opennms-icmp-jni-solaris</include>
-       </includes>
-    </dependencySet>
-    <dependencySet>
-       <outputFileNameMapping>libjrrd.${extension}</outputFileNameMapping>
-       <outputDirectory>lib</outputDirectory>
-       <!-- all the platforms need to be listed until the IncludesArtifactFiler supports wildcards -->
-       <includes>
-         <include>org.opennms:opennms-rrdtool-jni-macosx</include>
-         <include>org.opennms:opennms-rrdtool-jni-linux</include>
-         <include>org.opennms:opennms-rrdtool-jni-freebsd</include>
-         <include>org.opennms:opennms-rrdtool-jni-solaris</include>
-       </includes>
-    </dependencySet>
-    <dependencySet>
-      <outputDirectory>lib/endorsed</outputDirectory>
+      <useProjectArtifact>false</useProjectArtifact>
+      <outputFileNameMapping>opennms_bootstrap.jar</outputFileNameMapping>
+      <outputDirectory>lib</outputDirectory>
       <includes>
-         <include>javax.xml.bind:com.springsource.javax.xml.bind</include>
+        <include>org.opennms:opennms-bootstrap</include>
       </includes>
     </dependencySet>
     <dependencySet>
+      <useProjectArtifact>false</useProjectArtifact>
+      <outputFileNameMapping>opennms_install.jar</outputFileNameMapping>
+      <outputDirectory>lib</outputDirectory>
+      <includes>
+        <include>org.opennms:opennms-install</include>
+      </includes>
+    </dependencySet>
+    <dependencySet>
+      <useProjectArtifact>false</useProjectArtifact>
+      <outputFileNameMapping>opennms_system_report.jar</outputFileNameMapping>
+      <outputDirectory>lib</outputDirectory>
+      <includes>
+        <include>org.opennms.features:org.opennms.features.system-report</include>
+      </includes>
+    </dependencySet>
+    <dependencySet>
+      <useProjectArtifact>false</useProjectArtifact>
+      <outputDirectory>lib/endorsed</outputDirectory>
+      <includes>
+        <include>javax.xml.bind:com.springsource.javax.xml.bind</include>
+      </includes>
+    </dependencySet>
+    <dependencySet>
+      <useProjectArtifact>false</useProjectArtifact>
       <outputDirectory>lib</outputDirectory>
       <excludes>
-         <exclude>javax.xml.bind:com.springsource.javax.xml.bind</exclude>
-         <exclude>org.opennms:opennms-bootstrap</exclude>
-         <exclude>org.opennms:opennms-install</exclude>
-         <exclude>org.opennms:opennms-icmp-jni-macosx</exclude>
-         <exclude>org.opennms:opennms-icmp-jni-linux</exclude>
-         <exclude>org.opennms:opennms-icmp-jni-freebsd</exclude>
-         <exclude>org.opennms:opennms-icmp-jni-solaris</exclude>
-         <exclude>org.opennms:opennms-rrdtool-jni-macosx</exclude>
-         <exclude>org.opennms:opennms-rrdtool-jni-linux</exclude>
-         <exclude>org.opennms:opennms-rrdtool-jni-freebsd</exclude>
-         <exclude>org.opennms:opennms-rrdtool-jni-solaris</exclude>
+        <exclude>javax.xml.bind:com.springsource.javax.xml.bind</exclude>
+        <exclude>org.opennms:opennms-bootstrap</exclude>
+        <exclude>org.opennms:opennms-install</exclude>
       </excludes>
     </dependencySet>
   </dependencySets>

@@ -37,8 +37,6 @@
 package org.opennms.netmgt.capsd.plugins;
 
 import java.io.IOException;
-import java.io.Reader;
-import java.io.StringReader;
 import java.net.InetAddress;
 import java.net.UnknownHostException;
 import java.util.HashMap;
@@ -52,6 +50,7 @@ import org.opennms.netmgt.config.SnmpPeerFactory;
 import org.opennms.netmgt.mock.OpenNMSTestCase;
 import org.opennms.netmgt.snmp.SnmpAgentConfig;
 import org.opennms.netmgt.snmp.SnmpTestSuiteUtils;
+import org.springframework.core.io.ByteArrayResource;
 
 public class SnmpPluginTest extends OpenNMSTestCase {
 
@@ -130,8 +129,8 @@ public class SnmpPluginTest extends OpenNMSTestCase {
     
     public final void testIsV3ProtocolSupported() throws ValidationException, IOException, IOException, MarshalException {
         setVersion(SnmpAgentConfig.VERSION3);
-        Reader rdr = new StringReader(getSnmpConfig());
-        SnmpPeerFactory.setInstance(new SnmpPeerFactory(rdr));
+        ByteArrayResource rsrc = new ByteArrayResource(getSnmpConfig().getBytes());
+        SnmpPeerFactory.setInstance(new SnmpPeerFactory(rsrc));
 
         if (m_runAssertions) {
             assertTrue("protocol is not supported", m_plugin.isProtocolSupported(InetAddress.getByName(myLocalHost())));
@@ -140,8 +139,8 @@ public class SnmpPluginTest extends OpenNMSTestCase {
 
     public final void testIsV3ForcedToV1Supported() throws ValidationException, IOException, IOException, MarshalException {
         setVersion(SnmpAgentConfig.VERSION3);
-        Reader rdr = new StringReader(getSnmpConfig());
-        SnmpPeerFactory.setInstance(new SnmpPeerFactory(rdr));
+        ByteArrayResource rsrc = new ByteArrayResource(getSnmpConfig().getBytes());
+        SnmpPeerFactory.setInstance(new SnmpPeerFactory(rsrc));
         
         Map<String, Object> qualifiers = new HashMap<String, Object>();
         qualifiers.put("force version", "snmpv1");

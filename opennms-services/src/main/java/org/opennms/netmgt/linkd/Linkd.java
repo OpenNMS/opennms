@@ -36,6 +36,7 @@
 package org.opennms.netmgt.linkd;
 
 import java.lang.reflect.UndeclaredThrowableException;
+import java.net.InetAddress;
 import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.Collection;
@@ -44,9 +45,12 @@ import java.util.List;
 
 import org.opennms.core.utils.LogUtils;
 import org.opennms.netmgt.config.LinkdConfig;
+import org.opennms.netmgt.config.SnmpPeerFactory;
+import org.opennms.netmgt.config.linkd.Package;
 import org.opennms.netmgt.daemon.AbstractServiceDaemon;
 import org.opennms.netmgt.linkd.scheduler.ReadyRunnable;
 import org.opennms.netmgt.linkd.scheduler.Scheduler;
+import org.opennms.netmgt.model.events.EventForwarder;
 import org.opennms.netmgt.xml.event.Event;
 import org.springframework.util.Assert;
 
@@ -64,19 +68,9 @@ public class Linkd extends AbstractServiceDaemon {
 	private static final String LOG4J_CATEGORY = "OpenNMS.Linkd";
 
 	/**
-	 * Singleton instance of the Linkd class
-	 */
-	private static Linkd m_singleton;
-
-	/**
 	 * Rescan scheduler thread
 	 */
 	private Scheduler m_scheduler;
-
-	/**
-	 * Event manager.
-	 */
-	private LinkdEventProcessor m_eventListener;
 
     /**
      * The Db connection read and write handler
@@ -105,22 +99,18 @@ public class Linkd extends AbstractServiceDaemon {
 	 * the list of ipaddress for which new suspect event is sent
 	 */
 
-	private List<String> m_newSuspenctEventsIpAddr = null;
-	
+	private List<String> m_newSuspectEventsIpAddr = null;
+
 	/**
+	 * Event handler
+	 */
+    private volatile EventForwarder m_eventForwarder;
+
+    /**
 	 * <p>Constructor for Linkd.</p>
 	 */
 	public Linkd() {
 		super(LOG4J_CATEGORY);
-	}
-
-	/**
-	 * <p>getInstance</p>
-	 *
-	 * @return a {@link org.opennms.netmgt.linkd.Linkd} object.
-	 */
-	public static Linkd getInstance() {
-		return m_singleton;
 	}
 
 	/**
@@ -131,14 +121,14 @@ public class Linkd extends AbstractServiceDaemon {
         Assert.state(m_queryMgr != null, "must set the queryManager property");
         Assert.state(m_linkdConfig != null, "must set the linkdConfig property");
         Assert.state(m_scheduler != null, "must set the scheduler property");
-        Assert.state(m_eventListener != null,"must be set the event receiver");
+        Assert.state(m_eventForwarder != null, "must set the eventForwarder property");
 	       
 		m_activepackages = new ArrayList<String>();
 		
 		// initialize the ipaddrsentevents
-		m_newSuspenctEventsIpAddr = new ArrayList<String>();
-		m_newSuspenctEventsIpAddr.add("127.0.0.1");
-		m_newSuspenctEventsIpAddr.add("0.0.0.0");
+		m_newSuspectEventsIpAddr = new ArrayList<String>();
+		m_newSuspectEventsIpAddr.add("127.0.0.1");
+		m_newSuspectEventsIpAddr.add("0.0.0.0");
 
 		try {
 			m_nodes = m_queryMgr.getSnmpNodeList();
@@ -151,7 +141,6 @@ public class Linkd extends AbstractServiceDaemon {
 		Assert.notNull(m_nodes);
 		scheduleCollection();
 		
-		m_singleton = this;
 		LogUtils.infof(this, "init: LINKD CONFIGURATION INITIALIZED");
 	}
 
@@ -172,13 +161,13 @@ public class Linkd extends AbstractServiceDaemon {
 	 */
 	private void scheduleCollectionForNode(LinkableNode node) {
 
-		for (final SnmpCollection snmpcoll : m_linkdConfig.getSnmpCollections(node.getSnmpPrimaryIpAddr(), node.getSysoid())) {
+		for (final SnmpCollection snmpcoll : getSnmpCollections(node.getSnmpPrimaryIpAddr(), node.getSysoid())) {
 			if (m_activepackages.contains(snmpcoll.getPackageName())) {
 			    LogUtils.debugf(this, "ScheduleCollectionForNode: package active: %s", snmpcoll.getPackageName());
 			} else {
 				// schedule discovery link
 			    LogUtils.debugf(this, "ScheduleCollectionForNode: Schedulink Discovery Link for Active Package: %s", snmpcoll.getPackageName());
-				DiscoveryLink discovery = m_linkdConfig.getDiscoveryLink(snmpcoll.getPackageName());
+				DiscoveryLink discovery = this.getDiscoveryLink(snmpcoll.getPackageName());
 	   			if (discovery.getScheduler() == null) {
 	   				discovery.setScheduler(m_scheduler);
 	    		}
@@ -193,7 +182,110 @@ public class Linkd extends AbstractServiceDaemon {
 			snmpcoll.schedule();
 		}
 	}
-	
+
+    /** {@inheritDoc} */
+    public DiscoveryLink getDiscoveryLink(final String pkgName) {
+        final Package pkg = m_linkdConfig.getPackage(pkgName);
+
+        if (pkg == null) return null;
+
+        final DiscoveryLink discoveryLink = new DiscoveryLink();
+        discoveryLink.setLinkd(this);
+        discoveryLink.setPackageName(pkg.getName());
+        discoveryLink.setInitialSleepTime(m_linkdConfig.getInitialSleepTime());
+
+        discoveryLink.setSnmpPollInterval(pkg.hasSnmp_poll_interval()? pkg.getSnmp_poll_interval() : m_linkdConfig.getSnmpPollInterval());
+        discoveryLink.setDiscoveryInterval(pkg.hasDiscovery_link_interval()? pkg.getDiscovery_link_interval() : m_linkdConfig.getDiscoveryLinkInterval());
+        discoveryLink.setDiscoveryUsingBridge(pkg.hasUseBridgeDiscovery()? pkg.getUseBridgeDiscovery() : m_linkdConfig.useBridgeDiscovery());
+        discoveryLink.setDiscoveryUsingCdp(pkg.hasUseCdpDiscovery()? pkg.getUseCdpDiscovery() : m_linkdConfig.useCdpDiscovery());
+        discoveryLink.setDiscoveryUsingRoutes(pkg.hasUseIpRouteDiscovery()? pkg.getUseIpRouteDiscovery() : m_linkdConfig.useIpRouteDiscovery());
+        discoveryLink.setEnableDownloadDiscovery(pkg.hasEnableDiscoveryDownload()? pkg.getEnableDiscoveryDownload() : m_linkdConfig.enableDiscoveryDownload());
+        discoveryLink.setForceIpRouteDiscoveryOnEtherNet(pkg.hasForceIpRouteDiscoveryOnEthernet()? pkg.getForceIpRouteDiscoveryOnEthernet() : m_linkdConfig.forceIpRouteDiscoveryOnEthernet());
+
+        return discoveryLink;
+    }
+
+    /** {@inheritDoc} */
+    public SnmpCollection getSnmpCollection(final String ipaddr, final String sysoid, final String pkgName) {
+        final Package pkg = m_linkdConfig.getPackage(pkgName);
+        if (pkg != null) {
+            final SnmpCollection collection = createCollection(ipaddr);
+            populateSnmpCollection(collection, pkg, sysoid);
+            return collection;
+        }
+        return null;
+    }
+
+    /** {@inheritDoc} */
+    public List<SnmpCollection> getSnmpCollections(final String ipaddr, final String sysoid) {
+        List<SnmpCollection> snmpcolls = new ArrayList<SnmpCollection>();
+
+        Iterator<String> ite = m_linkdConfig.getAllPackageMatches(ipaddr).iterator();
+        
+        while (ite.hasNext()) {
+            final String pkgName = ite.next();
+            snmpcolls.add(getSnmpCollection(ipaddr, sysoid, pkgName));
+        }
+
+        return snmpcolls;
+    }
+
+    public SnmpCollection createCollection(final String ipaddr) {
+        SnmpCollection coll = null;
+        try {
+            coll = new SnmpCollection(this, SnmpPeerFactory.getInstance().getAgentConfig(InetAddress.getByName(ipaddr)));
+        } catch (final Throwable t) {
+            LogUtils.errorf(this, t, "getSnmpCollection: Failed to load snmpcollection parameter from snmp configuration file");
+        }
+
+        return coll;
+    }
+
+    private void populateSnmpCollection(final SnmpCollection coll, final Package pkg, final String sysoid) {
+        coll.setPackageName(pkg.getName());
+        coll.setInitialSleepTime(m_linkdConfig.getInitialSleepTime());
+        coll.setPollInterval(pkg.hasSnmp_poll_interval()? pkg.getSnmp_poll_interval() : m_linkdConfig.getSnmpPollInterval());
+// TODO: Put this logic inside LinkdConfigManager
+        if (m_linkdConfig.hasIpRouteClassName(sysoid)) {
+            coll.setIpRouteClass(m_linkdConfig.getIpRouteClassName(sysoid));
+            LogUtils.debugf(this, "populateSnmpCollection: found class to get ipRoute: %s", coll.getIpRouteClass());
+        } else {
+            coll.setIpRouteClass(m_linkdConfig.getDefaultIpRouteClassName());
+            LogUtils.debugf(this, "populateSnmpCollection: Using default class to get ipRoute: %s", coll.getIpRouteClass());
+        }
+        
+        if (pkg.hasEnableVlanDiscovery() && pkg.getEnableVlanDiscovery() && m_linkdConfig.hasClassName(sysoid)) {
+            coll.setVlanClass(m_linkdConfig.getVlanClassName(sysoid));
+            LogUtils.debugf(this, "populateSnmpCollection: found class to get Vlans: %s", coll.getVlanClass());
+        } else if (!pkg.hasEnableVlanDiscovery() && m_linkdConfig.isVlanDiscoveryEnabled() && m_linkdConfig.hasClassName(sysoid)) {
+            coll.setVlanClass(m_linkdConfig.getVlanClassName(sysoid));
+            LogUtils.debugf(this, "populateSnmpCollection: found class to get Vlans: %s", coll.getVlanClass());
+        } else {
+            LogUtils.debugf(this, "populateSnmpCollection: no class found to get Vlans or VlanDiscoveryDisabled for Package: %s", pkg.getName());
+        }
+
+        coll.collectCdpTable(pkg.hasUseCdpDiscovery()? pkg.getUseCdpDiscovery() : m_linkdConfig.useCdpDiscovery());
+
+        final boolean useIpRouteDiscovery = (pkg.hasUseIpRouteDiscovery()? pkg.getUseIpRouteDiscovery() : m_linkdConfig.useIpRouteDiscovery());
+        final boolean saveRouteTable = (pkg.hasSaveRouteTable()? pkg.getSaveRouteTable() : m_linkdConfig.saveRouteTable());
+
+        coll.SaveIpRouteTable(saveRouteTable);
+        coll.collectIpRouteTable(useIpRouteDiscovery || saveRouteTable);
+
+        final boolean useBridgeDiscovery = (pkg.hasUseBridgeDiscovery()? pkg.getUseBridgeDiscovery() : m_linkdConfig.useBridgeDiscovery());
+        coll.collectBridgeForwardingTable(useBridgeDiscovery);
+
+        final boolean saveStpNodeTable = (pkg.hasSaveStpNodeTable()? pkg.getSaveStpNodeTable() : m_linkdConfig.saveStpNodeTable());
+
+        coll.saveStpNodeTable(saveStpNodeTable);
+        coll.collectStpNode(useBridgeDiscovery || saveStpNodeTable);
+
+        final boolean saveStpInterfaceTable = (pkg.hasSaveStpInterfaceTable()? pkg.getSaveStpInterfaceTable() : m_linkdConfig.saveStpInterfaceTable());
+        
+        coll.saveStpInterfaceTable(saveStpInterfaceTable);
+        coll.collectStpTable(useBridgeDiscovery || saveStpInterfaceTable);
+    }
+
 	/**
 	 * <p>onStart</p>
 	 */
@@ -216,8 +308,6 @@ public class Linkd extends AbstractServiceDaemon {
 
 		// Stop the scheduler
 		m_scheduler.stop();
-		
-		m_eventListener.close();
 
 		m_scheduler = null;
 
@@ -273,7 +363,7 @@ public class Linkd extends AbstractServiceDaemon {
 	 * @return a boolean.
 	 */
 	public boolean isInterfaceInPackage(String ipaddr, String pkg) {
-		if (m_linkdConfig.interfaceInPackage(ipaddr, m_linkdConfig.getPackage(pkg))) return true;
+		if (m_linkdConfig.isInterfaceInPackage(ipaddr, m_linkdConfig.getPackage(pkg))) return true;
 		return false;
 	}
 
@@ -285,7 +375,7 @@ public class Linkd extends AbstractServiceDaemon {
 	 * @return a boolean.
 	 */
 	public boolean isInterfaceInPackageRange(String ipaddr, String pkg) {
-		if (m_linkdConfig.interfaceInPackageRange(ipaddr, m_linkdConfig.getPackage(pkg))) return true;
+		if (m_linkdConfig.isInterfaceInPackageRange(ipaddr, m_linkdConfig.getPackage(pkg))) return true;
 		return false;
 	}
 
@@ -293,7 +383,7 @@ public class Linkd extends AbstractServiceDaemon {
 
 		LinkableNode node = null;
 		// database changed need reload packageiplist
-		m_linkdConfig.createPackageIpListMap();
+		m_linkdConfig.updatePackageIpListMap();
 		
 
 		// First of all get Linkable Node
@@ -329,7 +419,7 @@ public class Linkd extends AbstractServiceDaemon {
 			// get collections
 			// get readyRunnuble
 			// wakeup RR
-			Iterator<SnmpCollection> ite = m_linkdConfig.getSnmpCollections(node.getSnmpPrimaryIpAddr(), node.getSysoid()).iterator();
+			Iterator<SnmpCollection> ite = getSnmpCollections(node.getSnmpPrimaryIpAddr(), node.getSysoid()).iterator();
 			LogUtils.debugf(this, "wakeUpNodeCollection: get Snmp Collection from Scratch! Iterating on found.");
 			while (ite.hasNext()) {
 				ReadyRunnable rr = getReadyRunnable(ite.next());
@@ -359,7 +449,7 @@ public class Linkd extends AbstractServiceDaemon {
 		if (node == null) {
 		    LogUtils.warnf(this, "deleteNode: node not found: %d", nodeid);
 		} else {
-			Iterator<SnmpCollection> ite = m_linkdConfig.getSnmpCollections(node.getSnmpPrimaryIpAddr(), node.getSysoid()).iterator();
+			Iterator<SnmpCollection> ite = getSnmpCollections(node.getSnmpPrimaryIpAddr(), node.getSysoid()).iterator();
 			LogUtils.debugf(this, "deleteNode: get Snmp Collection from Scratch! Iterating on found.");
 
 			while (ite.hasNext()) {
@@ -377,7 +467,7 @@ public class Linkd extends AbstractServiceDaemon {
 		}
 
 		// database changed need reload packageiplist
-		m_linkdConfig.createPackageIpListMap();
+		m_linkdConfig.updatePackageIpListMap();
 
 	}
 	
@@ -402,7 +492,7 @@ public class Linkd extends AbstractServiceDaemon {
 		} 
 
 		// database changed need reload packageiplist
-		m_linkdConfig.createPackageIpListMap();
+		m_linkdConfig.updatePackageIpListMap();
 
 	}
 
@@ -424,7 +514,7 @@ public class Linkd extends AbstractServiceDaemon {
 			// get readyRunnuble
 			// suspend RR
 		    LogUtils.debugf(this, "suspendNodeCollection: get Snmp Collection from Scratch! Iterating on found.");
-			Iterator<SnmpCollection> ite = m_linkdConfig.getSnmpCollections(node.getSnmpPrimaryIpAddr(), node.getSysoid()).iterator();
+			Iterator<SnmpCollection> ite = getSnmpCollections(node.getSnmpPrimaryIpAddr(), node.getSysoid()).iterator();
 			while (ite.hasNext()) {
 				ReadyRunnable rr = getReadyRunnable(ite.next());
 				if (rr == null) {
@@ -508,11 +598,11 @@ public class Linkd extends AbstractServiceDaemon {
 	
 	void sendNewSuspectEvent(String ipaddress,String ipowner, String pkgName) {
 
-		if (m_newSuspenctEventsIpAddr.contains(ipaddress) ) {
-		    LogUtils.infof(this, "sendNewSuspectEvent: nothing to send suspect event previously sent for ip address: %s", ipaddress);
+		if (m_newSuspectEventsIpAddr.contains(ipaddress) ) {
+		    LogUtils.infof(this, "sendNewSuspectEvent: nothing to send, suspect event previously sent for IP address: %s", ipaddress);
 			return;
 		} else if (!isInterfaceInPackageRange(ipaddress, pkgName)) {
-		    LogUtils.infof(this, "sendNewSuspectEvent: nothing to send for ip address: %s not in package: %s", ipaddress, pkgName);
+		    LogUtils.infof(this, "sendNewSuspectEvent: nothing to send for IP address: %s, not in package: %s", ipaddress, pkgName);
 			return;
 		}
 
@@ -520,7 +610,7 @@ public class Linkd extends AbstractServiceDaemon {
 
 		boolean autodiscovery = false;
 		if (pkg.hasAutoDiscovery()) autodiscovery = pkg.getAutoDiscovery(); 
-		else autodiscovery = m_linkdConfig.autoDiscovery();
+		else autodiscovery = m_linkdConfig.isAutoDiscoveryEnabled();
 		
 		if ( autodiscovery ) {
 				
@@ -531,9 +621,9 @@ public class Linkd extends AbstractServiceDaemon {
 			event.setInterface(ipaddress);
 			event.setTime(org.opennms.netmgt.EventConstants.formatToString(new java.util.Date()));
 
-			m_eventListener.getEventMgr().sendNow(event);
+			m_eventForwarder.sendNow(event);
 			
-			m_newSuspenctEventsIpAddr.add(ipaddress);
+			m_newSuspectEventsIpAddr.add(ipaddress);
 			
 		}
 	}
@@ -589,8 +679,10 @@ public class Linkd extends AbstractServiceDaemon {
      *
      * @param queryMgr a {@link org.opennms.netmgt.linkd.QueryManager} object.
      */
-    public void setQueryManager(QueryManager queryMgr) {
+    public void setQueryManager(DbEventWriter queryMgr) {
         m_queryMgr = queryMgr;
+        // TODO: Figure out if there's a way to provide this reference via Spring
+        queryMgr.setLinkd(this);
     }
 
 	/**
@@ -625,28 +717,21 @@ public class Linkd extends AbstractServiceDaemon {
 	 *
 	 * @param config a {@link org.opennms.netmgt.config.LinkdConfig} object.
 	 */
-	public void setLinkdConfig(LinkdConfig config) {
+	public void setLinkdConfig(final LinkdConfig config) {
 		m_linkdConfig = config;
 	}
 
-	/**
-	 * <p>getEventListener</p>
-	 *
-	 * @return a {@link org.opennms.netmgt.linkd.LinkdEventProcessor} object.
-	 */
-	public LinkdEventProcessor getEventListener() {
-		return m_eventListener;
-	}
+    /**
+     * @return the eventForwarder
+     */
+    public EventForwarder getEventForwarder() {
+        return m_eventForwarder;
+    }
 
-	/**
-	 * <p>setEventListener</p>
-	 *
-	 * @param eventListener a {@link org.opennms.netmgt.linkd.LinkdEventProcessor} object.
-	 */
-	public void setEventListener(LinkdEventProcessor eventListener) {
-		m_eventListener = eventListener;
-	}
-	
-
-
+    /**
+     * @param eventForwarder the eventForwarder to set
+     */
+    public void setEventForwarder(EventForwarder eventForwarder) {
+        this.m_eventForwarder = eventForwarder;
+    }
 }

@@ -51,9 +51,6 @@ import org.opennms.netmgt.ConfigFileConstants;
  *
  * @author <a href="mailto:jamesz@opennms.com">James Zuo </a>
  * @author <a href="http://www.opennms.org/">OpenNMS </a>
- * @author <a href="mailto:jamesz@opennms.com">James Zuo </a>
- * @author <a href="http://www.opennms.org/">OpenNMS </a>
- * @version $Id: $
  */
 public final class OpennmsServerConfigFactory extends OpennmsServerConfigManager {
     /**
@@ -81,7 +78,7 @@ public final class OpennmsServerConfigFactory extends OpennmsServerConfigManager
      * @throws org.exolab.castor.xml.ValidationException if any.
      */
     @Deprecated
-    public OpennmsServerConfigFactory(Reader rdr) throws IOException, MarshalException, ValidationException {
+    public OpennmsServerConfigFactory(final Reader rdr) throws IOException, MarshalException, ValidationException {
         super(rdr);
 
     }
@@ -93,7 +90,7 @@ public final class OpennmsServerConfigFactory extends OpennmsServerConfigManager
      * @throws org.exolab.castor.xml.MarshalException if any.
      * @throws org.exolab.castor.xml.ValidationException if any.
      */
-    public OpennmsServerConfigFactory(InputStream is) throws MarshalException, ValidationException {
+    public OpennmsServerConfigFactory(final InputStream is) throws MarshalException, ValidationException {
         super(is);
     }
 

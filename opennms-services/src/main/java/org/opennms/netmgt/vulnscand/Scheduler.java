@@ -72,7 +72,7 @@ final class Scheduler implements Runnable, PausableFiber {
      * List of NessusScanConfiguration objects representing the IP addresses
      * that will be scheduled.
      */
-    private LinkedHashMap<Object, ScheduleTrigger> m_triggers;
+    private LinkedHashMap<Object, ScheduleTrigger<Runnable>> m_triggers;
 
     /**
      * The configured initial sleep (in milliseconds) prior to scheduling
@@ -83,24 +83,24 @@ final class Scheduler implements Runnable, PausableFiber {
     /**
      * The rescan queue where new NessusScan objects are enqueued for execution.
      */
-    private FifoQueue m_scheduledScanQ;
+    private FifoQueue<Runnable> m_scheduledScanQ;
 
     /**
      * Constructs a new instance of the scheduler.
      * @param vulnscand TODO
      * 
      */
-    Scheduler(FifoQueue rescanQ) throws SQLException {
+    Scheduler(FifoQueue<Runnable> rescanQ) throws SQLException {
         m_scheduledScanQ = rescanQ;
 
         m_status = START_PENDING;
         m_worker = null;
 
-        m_triggers = new LinkedHashMap<Object, ScheduleTrigger>();
+        m_triggers = new LinkedHashMap<Object, ScheduleTrigger<Runnable>>();
 
     }
 
-	void schedule(Object key, ScheduleTrigger trigger) {
+	void schedule(Object key, ScheduleTrigger<Runnable> trigger) {
 		synchronized (getSchedulerLock()) {
 			m_triggers.put(key, trigger);
 		}
@@ -108,7 +108,7 @@ final class Scheduler implements Runnable, PausableFiber {
 	
 	private void unschedule(Object key) {
         synchronized (getSchedulerLock()) {
-        	ScheduleTrigger addressInfo = m_triggers.remove(key);
+        	ScheduleTrigger<Runnable> addressInfo = m_triggers.remove(key);
         	log().debug("unscheduleAddress: removing node " + addressInfo + " from the scheduler.");
         }
 	}
@@ -292,7 +292,7 @@ final class Scheduler implements Runnable, PausableFiber {
             synchronized (getSchedulerLock()) {
 
                 log().debug("Scheduler.run: iterating over known nodes list to schedule...");
-                for (ScheduleTrigger addressInfo : getTriggerList()) {
+                for (ScheduleTrigger<Runnable> addressInfo : getTriggerList()) {
 					
                     log().debug("Scheduler.run: working on "  + addressInfo );
                     // Don't schedule if already scheduled
@@ -351,7 +351,7 @@ final class Scheduler implements Runnable, PausableFiber {
 		return m_triggers;
 	}
 	
-	private Collection<ScheduleTrigger> getTriggerList() {
+	private Collection<ScheduleTrigger<Runnable>> getTriggerList() {
 		return m_triggers.values();
 	}
 

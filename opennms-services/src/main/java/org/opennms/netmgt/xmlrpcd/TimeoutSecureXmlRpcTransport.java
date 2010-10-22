@@ -22,9 +22,6 @@ import java.io.InputStream;
 import java.io.OutputStream;
 import java.io.IOException;
 import java.net.URL;
-import java.net.URLConnection;
-import org.apache.xmlrpc.util.HttpUtil;
-
 import org.apache.xmlrpc.DefaultXmlRpcTransport;
 
 /**

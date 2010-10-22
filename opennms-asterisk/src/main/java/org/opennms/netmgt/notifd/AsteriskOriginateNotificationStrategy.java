@@ -37,7 +37,6 @@ package org.opennms.netmgt.notifd;
 
 import java.util.List;
 
-import org.apache.log4j.Logger;
 import org.opennms.core.utils.Argument;
 import org.opennms.core.utils.ThreadCategory;
 import org.opennms.netmgt.asterisk.agi.scripts.BaseOnmsAgiScript;

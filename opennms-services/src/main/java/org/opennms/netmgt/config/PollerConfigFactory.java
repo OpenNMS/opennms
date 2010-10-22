@@ -52,8 +52,10 @@ import java.io.Writer;
 import org.apache.commons.io.IOUtils;
 import org.exolab.castor.xml.MarshalException;
 import org.exolab.castor.xml.ValidationException;
-import org.opennms.core.utils.ThreadCategory;
+import org.opennms.core.utils.LogUtils;
 import org.opennms.netmgt.ConfigFileConstants;
+import org.opennms.netmgt.config.poller.PollerConfiguration;
+import org.opennms.netmgt.dao.castor.CastorUtils;
 
 /**
  * This is the singleton class used to load the configuration for the OpenNMS
@@ -70,19 +72,6 @@ import org.opennms.netmgt.ConfigFileConstants;
  * @author <a href="mailto:mike@opennms.org">Mike Davidson </a>
  * @author <a href="mailto:sowmya@opennms.org">Sowmya Nataraj </a>
  * @author <a href="http://www.opennms.org/">OpenNMS </a>
- * @author <a href="mailto:jamesz@opennms.com">James Zuo </a>
- * @author <a href="mailto:mike@opennms.org">Mike Davidson </a>
- * @author <a href="mailto:sowmya@opennms.org">Sowmya Nataraj </a>
- * @author <a href="http://www.opennms.org/">OpenNMS </a>
- * @author <a href="mailto:jamesz@opennms.com">James Zuo </a>
- * @author <a href="mailto:mike@opennms.org">Mike Davidson </a>
- * @author <a href="mailto:sowmya@opennms.org">Sowmya Nataraj </a>
- * @author <a href="http://www.opennms.org/">OpenNMS </a>
- * @author <a href="mailto:jamesz@opennms.com">James Zuo </a>
- * @author <a href="mailto:mike@opennms.org">Mike Davidson </a>
- * @author <a href="mailto:sowmya@opennms.org">Sowmya Nataraj </a>
- * @author <a href="http://www.opennms.org/">OpenNMS </a>
- * @version $Id: $
  */
 public final class PollerConfigFactory extends PollerConfigManager {
     /**
@@ -118,7 +107,7 @@ public final class PollerConfigFactory extends PollerConfigManager {
      * @throws java.io.IOException if any.
      */
     @Deprecated
-    public PollerConfigFactory(long currentVersion, Reader reader, String localServer, boolean verifyServer) throws MarshalException, ValidationException, IOException {
+    public PollerConfigFactory(final long currentVersion, final Reader reader, final String localServer, final boolean verifyServer) throws MarshalException, ValidationException, IOException {
         super(reader, localServer, verifyServer);
         m_currentVersion = currentVersion;
     }
@@ -133,7 +122,7 @@ public final class PollerConfigFactory extends PollerConfigManager {
      * @throws org.exolab.castor.xml.MarshalException if any.
      * @throws org.exolab.castor.xml.ValidationException if any.
      */
-    public PollerConfigFactory(long currentVersion, InputStream stream, String localServer, boolean verifyServer) throws MarshalException, ValidationException {
+    public PollerConfigFactory(final long currentVersion, final InputStream stream, final String localServer, final boolean verifyServer) throws MarshalException, ValidationException {
         super(stream, localServer, verifyServer);
         m_currentVersion = currentVersion;
     }
@@ -162,9 +151,9 @@ public final class PollerConfigFactory extends PollerConfigManager {
         OpennmsServerConfigFactory.init();
         OpennmsServerConfigFactory onmsSvrConfig = OpennmsServerConfigFactory.getInstance();
 
-        File cfgFile = ConfigFileConstants.getFile(ConfigFileConstants.POLLER_CONFIG_FILE_NAME);
+        final File cfgFile = ConfigFileConstants.getFile(ConfigFileConstants.POLLER_CONFIG_FILE_NAME);
 
-        logStatic().debug("init: config file path: " + cfgFile.getPath());
+        LogUtils.debugf(PollerConfigFactory.class, "init: config file path: %s", cfgFile.getPath());
 
         InputStream stream = null;
         PollerConfigFactory config = null;
@@ -172,14 +161,12 @@ public final class PollerConfigFactory extends PollerConfigManager {
             stream = new FileInputStream(cfgFile);
             config = new PollerConfigFactory(cfgFile.lastModified(), stream, onmsSvrConfig.getServerName(), onmsSvrConfig.verifyServer());
         } finally {
-            if (stream != null) {
-                IOUtils.closeQuietly(stream);
-            }
+            IOUtils.closeQuietly(stream);
         }
 
-        for (org.opennms.netmgt.config.poller.Package pollerPackage : config.getConfiguration().getPackageCollection()) {
-            for (org.opennms.netmgt.config.poller.Service service : pollerPackage.getServiceCollection()) {
-                for (org.opennms.netmgt.config.poller.Parameter parm : service.getParameterCollection()) {
+        for (final org.opennms.netmgt.config.poller.Package pollerPackage : config.getConfiguration().getPackageCollection()) {
+            for (final org.opennms.netmgt.config.poller.Service service : pollerPackage.getServiceCollection()) {
+                for (final org.opennms.netmgt.config.poller.Parameter parm : service.getParameterCollection()) {
                     if (parm.getKey().equals("ds-name")) {
                         if (parm.getValue().length() > ConfigFileConstants.RRD_DS_MAX_SIZE) {
                             throw new ValidationException(
@@ -193,10 +180,6 @@ public final class PollerConfigFactory extends PollerConfigManager {
         }
 
         setInstance(config);
-    }
-
-    private static ThreadCategory logStatic() {
-        return ThreadCategory.getInstance(PollerConfigFactory.class);
     }
 
     /**
@@ -215,20 +198,6 @@ public final class PollerConfigFactory extends PollerConfigManager {
     public static synchronized void reload() throws IOException, MarshalException, ValidationException {
         init();
         getInstance().update();
-    }
-
-    /** {@inheritDoc} */
-    protected synchronized void saveXml(String xml) throws IOException {
-        if (xml != null) {
-            long timestamp = System.currentTimeMillis();
-            File cfgFile = ConfigFileConstants.getFile(ConfigFileConstants.POLLER_CONFIG_FILE_NAME);
-            logStatic().debug("saveXml: saving config file at "+timestamp+": " + cfgFile.getPath());
-            Writer fileWriter = new OutputStreamWriter(new FileOutputStream(cfgFile), "UTF-8");
-            fileWriter.write(xml);
-            fileWriter.flush();
-            fileWriter.close();
-            logStatic().debug("saveXml: finished saving config file: " + cfgFile.getPath());
-        }
     }
 
     /**
@@ -251,9 +220,28 @@ public final class PollerConfigFactory extends PollerConfigManager {
      *
      * @param instance a {@link org.opennms.netmgt.config.PollerConfig} object.
      */
-    public static synchronized void setInstance(PollerConfig instance) {
+    public static synchronized void setInstance(final PollerConfig instance) {
         m_singleton = instance;
         m_loaded = true;
+    }
+
+    /** {@inheritDoc} */
+    protected void saveXml(final String xml) throws IOException {
+        if (xml != null) {
+            getWriteLock().lock();
+            try {
+                final long timestamp = System.currentTimeMillis();
+                final File cfgFile = ConfigFileConstants.getFile(ConfigFileConstants.POLLER_CONFIG_FILE_NAME);
+                LogUtils.debugf(this, "saveXml: saving config file at %d: %s", timestamp, cfgFile.getPath());
+                final Writer fileWriter = new OutputStreamWriter(new FileOutputStream(cfgFile), "UTF-8");
+                fileWriter.write(xml);
+                fileWriter.flush();
+                fileWriter.close();
+                LogUtils.debugf(this, "saveXml: finished saving config file: %s", cfgFile.getPath());
+            } finally {
+                getWriteLock().unlock();
+            }
+        }
     }
 
     /**
@@ -263,23 +251,25 @@ public final class PollerConfigFactory extends PollerConfigManager {
      * @throws org.exolab.castor.xml.MarshalException if any.
      * @throws org.exolab.castor.xml.ValidationException if any.
      */
-    public synchronized void update() throws IOException, MarshalException, ValidationException {
-
-        File cfgFile = ConfigFileConstants.getFile(ConfigFileConstants.POLLER_CONFIG_FILE_NAME);
-        if (cfgFile.lastModified() > m_currentVersion) {
-            m_currentVersion = cfgFile.lastModified();
-            logStatic().debug("init: config file path: " + cfgFile.getPath());
-            InputStream stream = null;
-            try {
-                stream = new FileInputStream(cfgFile);
-                unmarshalConfig(stream);
-            } finally {
-                if (stream != null) {
+    public void update() throws IOException, MarshalException, ValidationException {
+        getWriteLock().lock();
+        try {
+            final File cfgFile = ConfigFileConstants.getFile(ConfigFileConstants.POLLER_CONFIG_FILE_NAME);
+            if (cfgFile.lastModified() > m_currentVersion) {
+                m_currentVersion = cfgFile.lastModified();
+                LogUtils.debugf(this, "init: config file path: %s", cfgFile.getPath());
+                InputStream stream = null;
+                try {
+                    stream = new FileInputStream(cfgFile);
+                    m_config = CastorUtils.unmarshal(PollerConfiguration.class, stream, CastorUtils.PRESERVE_WHITESPACE);
+                } finally {
                     IOUtils.closeQuietly(stream);
                 }
+                init();
+                LogUtils.debugf(this, "init: finished loading config file: %s", cfgFile.getPath());
             }
-            init();
-            logStatic().debug("init: finished loading config file: " + cfgFile.getPath());
+        } finally {
+            getWriteLock().unlock();
         }
     }
 }

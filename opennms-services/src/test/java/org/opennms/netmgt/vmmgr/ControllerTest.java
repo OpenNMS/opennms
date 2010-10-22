@@ -43,8 +43,6 @@ import java.lang.Thread.UncaughtExceptionHandler;
 import java.lang.reflect.UndeclaredThrowableException;
 import java.net.ServerSocket;
 
-import junit.framework.TestCase;
-
 import org.apache.log4j.Level;
 import org.junit.After;
 import org.junit.Before;

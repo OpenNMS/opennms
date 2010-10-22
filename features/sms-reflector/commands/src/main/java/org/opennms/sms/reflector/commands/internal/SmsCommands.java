@@ -6,7 +6,6 @@ import java.util.Enumeration;
 import java.util.List;
 import java.util.Properties;
 
-import org.apache.log4j.Logger;
 import org.eclipse.osgi.framework.console.CommandInterpreter;
 import org.eclipse.osgi.framework.console.CommandProvider;
 import org.opennms.core.utils.ThreadCategory;
@@ -20,7 +19,6 @@ import org.smslib.ICallNotification;
 import org.smslib.IGatewayStatusNotification;
 import org.smslib.IInboundMessageNotification;
 import org.smslib.IOutboundMessageNotification;
-import org.smslib.IUSSDNotification;
 import org.smslib.InboundMessage;
 import org.smslib.Library;
 import org.smslib.OutboundMessage;
@@ -33,7 +31,6 @@ import org.smslib.Message.MessageTypes;
 import org.smslib.helper.CommPortIdentifier;
 import org.smslib.modem.ModemGateway;
 import org.smslib.modem.SerialModemGateway;
-import org.smslib.USSDResponse;
 import org.springframework.osgi.context.BundleContextAware;
 
 /**

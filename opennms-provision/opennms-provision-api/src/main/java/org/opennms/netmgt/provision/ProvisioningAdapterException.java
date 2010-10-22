@@ -43,8 +43,11 @@ package org.opennms.netmgt.provision;
  */
 public class ProvisioningAdapterException extends RuntimeException {
 
-    private static final long serialVersionUID = 1L;
-    
+    /**
+     * 
+     */
+    private static final long serialVersionUID = 658859706579572513L;
+
     /**
      * <p>Constructor for ProvisioningAdapterException.</p>
      *

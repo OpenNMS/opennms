@@ -205,21 +205,10 @@ public final class SnmpCollection implements ReadyRunnable {
 	private boolean runned = false;
 
 	private String packageName;
-	/**
-	 * The default constructor. Since this class requires an IP address to
-	 * collect SNMP information the default constructor is declared private and
-	 * will also throw an exception
-	 * 
-	 * @throws java.lang.UnsupportedOperationException
-	 *             Always thrown.
-	 */
-	
-	SnmpCollection() {
-		throw new UnsupportedOperationException(
-				"default constructor not supported");
-	}
 
-	/**
+    private final Linkd m_linkd;
+
+    /**
 	 * Constructs a new snmp collector for a node using the passed interface as
 	 * the collection point. The collection does not occur until the
 	 * <code>run</code> method is invoked.
@@ -227,7 +216,8 @@ public final class SnmpCollection implements ReadyRunnable {
 	 * @param config
 	 *            The SnmpPeer object to collect from.
 	 */
-	public SnmpCollection(SnmpAgentConfig config) {
+	public SnmpCollection(Linkd linkd, SnmpAgentConfig config) {
+	    m_linkd = linkd;
 		m_agentConfig = config;
 		m_address = m_agentConfig.getAddress();
 		m_ipNetToMedia = null;
@@ -352,7 +342,7 @@ public final class SnmpCollection implements ReadyRunnable {
 	 *
 	 * <p>
 	 * No synchronization is performed, so if this is used in a separate thread
-	 * context synchornization must be added.
+	 * context synchronization must be added.
 	 * </p>
 	 */
 	@SuppressWarnings("unchecked")
@@ -535,7 +525,7 @@ public final class SnmpCollection implements ReadyRunnable {
 			// update info in linkd used correctly by discoveryLink
 			LogUtils.debugf(this, "SnmpCollection.run: saving collection into database");
 
-			Linkd.getInstance().updateNodeSnmpCollection(this);
+			m_linkd.updateNodeSnmpCollection(this);
 			// clean memory
 			// first make every think clean
 			m_ipNetToMedia = null;

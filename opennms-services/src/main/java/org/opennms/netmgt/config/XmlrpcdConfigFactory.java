@@ -126,7 +126,6 @@ public final class XmlrpcdConfigFactory {
      * @throws org.exolab.castor.xml.MarshalException if any.
      * @throws org.exolab.castor.xml.ValidationException if any.
      */
-    @Deprecated
     public XmlrpcdConfigFactory(Reader rdr) throws IOException, MarshalException, ValidationException {
         unmarshal(rdr);
     }

@@ -54,7 +54,6 @@ import java.sql.Timestamp;
 import java.util.Arrays;
 import java.util.Collections;
 import java.util.Date;
-import java.util.Enumeration;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.Iterator;
@@ -73,7 +72,6 @@ import org.opennms.netmgt.EventConstants;
 import org.opennms.netmgt.config.CatFactory;
 import org.opennms.netmgt.config.CategoryFactory;
 import org.opennms.netmgt.config.DataSourceFactory;
-import org.opennms.netmgt.config.categories.Categories;
 import org.opennms.netmgt.config.categories.Categorygroup;
 import org.opennms.netmgt.filter.FilterDaoFactory;
 import org.opennms.netmgt.filter.FilterParseException;
@@ -284,18 +282,17 @@ public class DataManager extends Object {
 
         m_categories = new HashMap<String, RTCCategory>();
 
-        for (Categorygroup cg : cFactory.getConfig().getCategorygroupCollection()) {
-            String commonRule = cg.getCommon().getRule();
-
-            Categories cats = cg.getCategories();
-
-            Enumeration<org.opennms.netmgt.config.categories.Category> enumCat = cats.enumerateCategory();
-            while (enumCat.hasMoreElements()) {
-                org.opennms.netmgt.config.categories.Category cat = enumCat.nextElement();
-
-                RTCCategory rtcCat = new RTCCategory(cat, commonRule);
-                m_categories.put(rtcCat.getLabel(), rtcCat);
+        cFactory.getReadLock().lock();
+        try {
+            for (Categorygroup cg : cFactory.getConfig().getCategorygroupCollection()) {
+                final String commonRule = cg.getCommon().getRule();
+    
+                for (final org.opennms.netmgt.config.categories.Category cat : cg.getCategories().getCategoryCollection()) {
+                    m_categories.put(new RTCCategory(cat, commonRule).getLabel(), new RTCCategory(cat, commonRule));
+                }
             }
+        } finally {
+            cFactory.getReadLock().unlock();
         }
     }
 

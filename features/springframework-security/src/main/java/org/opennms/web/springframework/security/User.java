@@ -41,11 +41,11 @@ import org.springframework.security.userdetails.UserDetails;
  * @version $Id: $
  */
 public class User implements UserDetails {
+	
 	/**
 	 * 
 	 */
-	private static final long serialVersionUID = 1L;
-	
+	private static final long serialVersionUID = 8649420222794568157L;
 	private String m_username;
 	private String m_fullName;
 	private String m_comments;

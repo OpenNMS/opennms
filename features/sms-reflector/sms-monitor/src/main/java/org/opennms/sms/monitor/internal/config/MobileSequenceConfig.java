@@ -27,8 +27,10 @@ import org.springframework.util.Assert;
 @XmlRootElement(name="mobile-sequence")
 public class MobileSequenceConfig implements Serializable, Comparable<MobileSequenceConfig> {
     
-    private static final long serialVersionUID = 1L;
-
+    /**
+     * 
+     */
+    private static final long serialVersionUID = 142043644615784730L;
     /* attributes and elements */
 	private List<SequenceSessionVariable> m_sessionVariables;
     private List<MobileSequenceTransaction> m_transactions;

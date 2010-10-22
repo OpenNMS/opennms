@@ -34,7 +34,6 @@
  */
 package org.opennms.netmgt.config;
 
-import java.io.Reader;
 import java.net.InetAddress;
 import java.net.UnknownHostException;
 
@@ -48,6 +47,7 @@ import org.opennms.netmgt.xml.event.Parm;
 import org.opennms.netmgt.xml.event.Parms;
 import org.opennms.netmgt.xml.event.Value;
 import org.opennms.test.ConfigurationTestUtils;
+import org.springframework.core.io.Resource;
 
 /**
  * 
@@ -64,8 +64,8 @@ public class ConfigureSnmpTest extends TestCase {
     protected void setUp() throws Exception {
     	super.setUp();
     	
-        Reader rdr = ConfigurationTestUtils.getReaderForResource(this, "snmp-config-configureSnmpTest.xml");
-    	SnmpPeerFactory.setInstance(new SnmpPeerFactory(rdr));
+        Resource rsrc = ConfigurationTestUtils.getSpringResourceForResource(this, "snmp-config-configureSnmpTest.xml");
+    	SnmpPeerFactory.setInstance(new SnmpPeerFactory(rsrc));
     }
 
     //start back porting configure snmp enhancements from stable

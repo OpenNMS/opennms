@@ -54,9 +54,6 @@ import org.springframework.core.io.FileSystemResource;
  *
  * @author <a href="mailto:sowmya@opennms.org">Sowmya Nataraj </a>
  * @author <a href="http://www.opennms.org/">OpenNMS </a>
- * @author <a href="mailto:sowmya@opennms.org">Sowmya Nataraj </a>
- * @author <a href="http://www.opennms.org/">OpenNMS </a>
- * @version $Id: $
  */
 public final class EventsArchiverConfigFactory {
     /**
@@ -85,7 +82,7 @@ public final class EventsArchiverConfigFactory {
      *                Thrown if the contents do not match the required schema.
      */
     private EventsArchiverConfigFactory(String configFile) throws IOException, MarshalException, ValidationException {
-        m_config = CastorUtils.unmarshal(EventsArchiverConfiguration.class, new FileSystemResource(configFile));
+        m_config = CastorUtils.unmarshal(EventsArchiverConfiguration.class, new FileSystemResource(configFile), CastorUtils.PRESERVE_WHITESPACE);
     }
 
     /**

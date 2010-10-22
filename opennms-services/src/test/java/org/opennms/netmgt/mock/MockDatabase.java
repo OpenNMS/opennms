@@ -48,7 +48,7 @@ import java.util.List;
 
 import org.opennms.netmgt.EventConstants;
 import org.opennms.netmgt.dao.db.TemporaryDatabase;
-import org.opennms.netmgt.model.events.Constants;
+import org.opennms.netmgt.model.OnmsSeverity;
 import org.opennms.netmgt.model.events.Parameter;
 import org.opennms.netmgt.utils.Querier;
 import org.opennms.netmgt.utils.SingleResultQuerier;
@@ -259,7 +259,7 @@ public class MockDatabase extends TemporaryDatabase implements EventWriter {
                 e.getUei(),
                 convertEventTimeToTimeStamp(e.getCreationTime()),
                 convertEventTimeToTimeStamp(e.getTime()),
-                new Integer(Constants.getSeverity(e.getSeverity())),
+                new Integer(OnmsSeverity.get(e.getSeverity()).getId()),
                 (e.hasNodeid() ? new Long(e.getNodeid()) : null),
                 e.getInterface(),
                 getServiceID(e.getService()),

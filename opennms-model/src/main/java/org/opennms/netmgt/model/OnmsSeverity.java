@@ -175,7 +175,7 @@ public enum OnmsSeverity implements Serializable {
                 return m_idMap.get(key);
             }
         }
-        return null;
+        return OnmsSeverity.INDETERMINATE;
     }
 
 /**

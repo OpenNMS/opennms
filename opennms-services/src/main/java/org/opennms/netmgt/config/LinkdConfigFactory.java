@@ -52,7 +52,7 @@ import java.io.Writer;
 import org.apache.commons.io.IOUtils;
 import org.exolab.castor.xml.MarshalException;
 import org.exolab.castor.xml.ValidationException;
-import org.opennms.core.utils.ThreadCategory;
+import org.opennms.core.utils.LogUtils;
 import org.opennms.netmgt.ConfigFileConstants;
 
 /**
@@ -71,27 +71,6 @@ import org.opennms.netmgt.ConfigFileConstants;
  * @author <a href="mailto:mike@opennms.org">Mike Davidson </a>
  * @author <a href="mailto:sowmya@opennms.org">Sowmya Nataraj </a>
  * @author <a href="http://www.opennms.org/">OpenNMS </a>
- * @author <a href="mailto:antonio@opennms.it">Antonio Russo</a>
- * @author <a href="mailto:jamesz@opennms.com">James Zuo </a>
- * @author <a href="mailto:mike@opennms.org">Mike Davidson </a>
- * @author <a href="mailto:sowmya@opennms.org">Sowmya Nataraj </a>
- * @author <a href="http://www.opennms.org/">OpenNMS </a>
- * @author <a href="mailto:antonio@opennms.it">Antonio Russo</a>
- * @author <a href="mailto:jamesz@opennms.com">James Zuo </a>
- * @author <a href="mailto:mike@opennms.org">Mike Davidson </a>
- * @author <a href="mailto:sowmya@opennms.org">Sowmya Nataraj </a>
- * @author <a href="http://www.opennms.org/">OpenNMS </a>
- * @author <a href="mailto:antonio@opennms.it">Antonio Russo</a>
- * @author <a href="mailto:jamesz@opennms.com">James Zuo </a>
- * @author <a href="mailto:mike@opennms.org">Mike Davidson </a>
- * @author <a href="mailto:sowmya@opennms.org">Sowmya Nataraj </a>
- * @author <a href="http://www.opennms.org/">OpenNMS </a>
- * @author <a href="mailto:antonio@opennms.it">Antonio Russo</a>
- * @author <a href="mailto:jamesz@opennms.com">James Zuo </a>
- * @author <a href="mailto:mike@opennms.org">Mike Davidson </a>
- * @author <a href="mailto:sowmya@opennms.org">Sowmya Nataraj </a>
- * @author <a href="http://www.opennms.org/">OpenNMS </a>
- * @version $Id: $
  */
 public final class LinkdConfigFactory extends LinkdConfigManager {
     /**
@@ -125,7 +104,7 @@ public final class LinkdConfigFactory extends LinkdConfigManager {
      * @throws java.io.IOException if any.
      */
     @Deprecated
-    public LinkdConfigFactory(long currentVersion, Reader reader) throws MarshalException, ValidationException, IOException {
+    public LinkdConfigFactory(final long currentVersion, final Reader reader) throws MarshalException, ValidationException, IOException {
         super(reader);
         m_currentVersion = currentVersion;
     }
@@ -139,7 +118,7 @@ public final class LinkdConfigFactory extends LinkdConfigManager {
      * @throws org.exolab.castor.xml.ValidationException if any.
      * @throws java.io.IOException if any.
      */
-    public LinkdConfigFactory(long currentVersion, InputStream stream) throws MarshalException, ValidationException, IOException {
+    public LinkdConfigFactory(final long currentVersion, final InputStream stream) throws MarshalException, ValidationException, IOException {
         super(stream);
         m_currentVersion = currentVersion;
     }
@@ -165,24 +144,16 @@ public final class LinkdConfigFactory extends LinkdConfigManager {
             return;
         }
 
-        File cfgFile = ConfigFileConstants.getFile(ConfigFileConstants.LINKD_CONFIG_FILE_NAME);
-
-        logStatic().debug("init: config file path: " + cfgFile.getPath());
+        final File cfgFile = ConfigFileConstants.getFile(ConfigFileConstants.LINKD_CONFIG_FILE_NAME);
+        LogUtils.debugf(LinkdConfigFactory.class, "init: config file path: %s", cfgFile.getPath());
 
         InputStream stream = null;
         try {
             stream = new FileInputStream(cfgFile);
-            LinkdConfigFactory config = new LinkdConfigFactory(cfgFile.lastModified(), stream);
-            setInstance(config);
+            setInstance(new LinkdConfigFactory(cfgFile.lastModified(), stream));
         } finally {
-            if (stream != null) {
-                IOUtils.closeQuietly(stream);
-            }
+            IOUtils.closeQuietly(stream);
         }
-    }
-
-    private static ThreadCategory logStatic() {
-        return ThreadCategory.getInstance(LinkdConfigFactory.class);
     }
 
     /**
@@ -207,13 +178,13 @@ public final class LinkdConfigFactory extends LinkdConfigManager {
     protected synchronized void saveXml(String xml) throws IOException {
         if (xml != null) {
             long timestamp = System.currentTimeMillis();
-            File cfgFile = ConfigFileConstants.getFile(ConfigFileConstants.LINKD_CONFIG_FILE_NAME);
-            logStatic().debug("saveXml: saving config file at "+timestamp+": " + cfgFile.getPath());
-            Writer fileWriter = new OutputStreamWriter(new FileOutputStream(cfgFile), "UTF-8");
+            final File cfgFile = ConfigFileConstants.getFile(ConfigFileConstants.LINKD_CONFIG_FILE_NAME);
+            LogUtils.debugf(LinkdConfigFactory.class, "saveXml: saving config file at %d: %s", timestamp, cfgFile.getPath());
+            final Writer fileWriter = new OutputStreamWriter(new FileOutputStream(cfgFile), "UTF-8");
             fileWriter.write(xml);
             fileWriter.flush();
             fileWriter.close();
-            logStatic().debug("saveXml: finished saving config file: " + cfgFile.getPath());
+            LogUtils.debugf(LinkdConfigFactory.class, "saveXml: finished saving config file: %s", cfgFile.getPath());
         }
     }
 
@@ -237,7 +208,7 @@ public final class LinkdConfigFactory extends LinkdConfigManager {
      *
      * @param instance a {@link org.opennms.netmgt.config.LinkdConfig} object.
      */
-    public static synchronized void setInstance(LinkdConfig instance) {
+    public static synchronized void setInstance(final LinkdConfig instance) {
         m_singleton = instance;
         m_loaded = true;
     }
@@ -249,22 +220,26 @@ public final class LinkdConfigFactory extends LinkdConfigManager {
      * @throws org.exolab.castor.xml.MarshalException if any.
      * @throws org.exolab.castor.xml.ValidationException if any.
      */
-    public synchronized void update() throws IOException, MarshalException, ValidationException {
-
-        File cfgFile = ConfigFileConstants.getFile(ConfigFileConstants.LINKD_CONFIG_FILE_NAME);
-        if (cfgFile.lastModified() > m_currentVersion) {
-            m_currentVersion = cfgFile.lastModified();
-            logStatic().debug("init: config file path: " + cfgFile.getPath());
-            InputStream stream = null;
-            try {
-                stream = new FileInputStream(cfgFile);
-                reloadXML(stream);
-            } finally {
-                if (stream != null) {
-                    IOUtils.closeQuietly(stream);
+    public void update() throws IOException, MarshalException, ValidationException {
+        getWriteLock().lock();
+        try {
+            final File cfgFile = ConfigFileConstants.getFile(ConfigFileConstants.LINKD_CONFIG_FILE_NAME);
+            if (cfgFile.lastModified() > m_currentVersion) {
+                m_currentVersion = cfgFile.lastModified();
+                LogUtils.debugf(this, "init: config file path: %s", cfgFile.getPath());
+                InputStream stream = null;
+                try {
+                    stream = new FileInputStream(cfgFile);
+                    reloadXML(stream);
+                } finally {
+                    if (stream != null) {
+                        IOUtils.closeQuietly(stream);
+                    }
                 }
+                LogUtils.debugf(this, "init: finished loading config file: %s", cfgFile.getPath());
             }
-            logStatic().debug("init: finished loading config file: " + cfgFile.getPath());
+        } finally {
+            getWriteLock().unlock();
         }
     }
 }

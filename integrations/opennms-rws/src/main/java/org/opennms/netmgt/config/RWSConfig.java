@@ -36,6 +36,8 @@
 
 package org.opennms.netmgt.config;
 
+import java.util.concurrent.locks.Lock;
+
 import org.opennms.netmgt.config.rws.BaseUrl;
 import org.opennms.netmgt.config.rws.StandbyUrl;
 import org.opennms.rancid.ConnectionProperties;
@@ -99,8 +101,7 @@ public interface RWSConfig {
      */
     public boolean hasStandbyUrl();
 
-    //public void update() throws IOException, MarshalException, ValidationException;
-    
-    //public void save() throws MarshalException, IOException, ValidationException;
+    public Lock getReadLock();
 
+    public Lock getWriteLock();
 }

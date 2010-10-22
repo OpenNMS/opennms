@@ -55,13 +55,6 @@ import org.springframework.core.io.FileSystemResource;
  * @author <a href="mailto:jamesz@opennms.com">James Zuo </a>
  * @author <a href="mailto:sowmya@opennms.org">Sowmya Nataraj </a>
  * @author <a href="http://www.opennms.org/">OpenNMS </a>
- * @author <a href="mailto:jamesz@opennms.com">James Zuo </a>
- * @author <a href="mailto:sowmya@opennms.org">Sowmya Nataraj </a>
- * @author <a href="http://www.opennms.org/">OpenNMS </a>
- * @author <a href="mailto:jamesz@opennms.com">James Zuo </a>
- * @author <a href="mailto:sowmya@opennms.org">Sowmya Nataraj </a>
- * @author <a href="http://www.opennms.org/">OpenNMS </a>
- * @version $Id: $
  */
 public final class OutageManagerConfigFactory implements OutageManagerConfig {
     /**
@@ -89,8 +82,8 @@ public final class OutageManagerConfigFactory implements OutageManagerConfig {
      * @exception org.exolab.castor.xml.ValidationException
      *                Thrown if the contents do not match the required schema.
      */
-    private OutageManagerConfigFactory(String configFile) throws IOException, MarshalException, ValidationException {
-        m_config = CastorUtils.unmarshal(OutageConfiguration.class, new FileSystemResource(configFile));
+    private OutageManagerConfigFactory(final String configFile) throws IOException, MarshalException, ValidationException {
+        m_config = CastorUtils.unmarshal(OutageConfiguration.class, new FileSystemResource(configFile), CastorUtils.PRESERVE_WHITESPACE);
     }
 
     /**
@@ -114,10 +107,8 @@ public final class OutageManagerConfigFactory implements OutageManagerConfig {
             return;
         }
 
-        File cfgFile = ConfigFileConstants.getFile(ConfigFileConstants.OUTAGE_MANAGER_CONFIG_FILE_NAME);
-
+        final File cfgFile = ConfigFileConstants.getFile(ConfigFileConstants.OUTAGE_MANAGER_CONFIG_FILE_NAME);
         m_singleton = new OutageManagerConfigFactory(cfgFile.getPath());
-
         m_loaded = true;
     }
 
@@ -182,7 +173,7 @@ public final class OutageManagerConfigFactory implements OutageManagerConfig {
     public synchronized boolean deletePropagation() {
         boolean propagation = true;
 
-        String deletePropagation = m_config.getDeletePropagation();
+        final String deletePropagation = m_config.getDeletePropagation();
         if (deletePropagation != null && deletePropagation.equals("false"))
             propagation = false;
 

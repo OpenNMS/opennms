@@ -118,6 +118,7 @@ public class CoreImportActivities {
     public ImportOperationsManager auditNodes(Requisition specFile) {
         info("Auditing nodes for requisition %s", specFile);
 
+        // @ipv6
         m_provisionService.createDistPollerIfNecessary("localhost", "127.0.0.1");
         
         String foreignSource = specFile.getForeignSource();

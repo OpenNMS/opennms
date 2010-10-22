@@ -17,9 +17,12 @@ import javax.xml.bind.annotation.XmlRootElement;
 @XmlRootElement(name="detectors")
 public class DetectorCollection extends LinkedList<PluginConfig> {
 
-	private static final long serialVersionUID = 1L;
-
 	/**
+     * 
+     */
+    private static final long serialVersionUID = -3054011579260606775L;
+
+    /**
 	 * <p>Constructor for DetectorCollection.</p>
 	 */
 	public DetectorCollection() {

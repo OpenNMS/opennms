@@ -73,8 +73,8 @@ import org.springframework.jdbc.core.JdbcTemplate;
 /**
  * <P>
  * This class is used to store informations owned by SnmpCollection and
- * DiscoveryLink Classes in DB. When saving Snmp Collection it populate Bean
- * LinkableNode with information for DiscoveryLink. It performes data test for
+ * DiscoveryLink Classes in DB. When saving SNMP Collection it populate Bean
+ * LinkableNode with information for DiscoveryLink. It performs data test for
  * DiscoveryLink. Also take correct action on DB tables in case node is deleted
  * service SNMP is discovered, service SNMP is Lost and Regained Also this class
  * holds
@@ -85,7 +85,20 @@ import org.springframework.jdbc.core.JdbcTemplate;
  */
 public class DbEventWriter implements QueryManager {
 
-    JdbcTemplate jdbcTemplate;
+    private JdbcTemplate jdbcTemplate;
+
+    private Linkd m_linkd;
+
+    /**
+     * @param linkd the linkd to set
+     */
+    public void setLinkd(Linkd linkd) {
+        this.m_linkd = linkd;
+    }
+
+    public Linkd getLinkd() {
+        return m_linkd;
+    }
 
     /**
      * Query to select info for specific node
@@ -212,7 +225,7 @@ public class DbEventWriter implements QueryManager {
     
                 dbentry.store(dbConn);
     
-                // now parsing simmetrical and setting to D if necessary
+                // now parsing symmetrical and setting to D if necessary
     
                 dbentry = DbDataLinkInterfaceEntry.get(dbConn, nodeparentid, parentifindex);
     
@@ -266,7 +279,7 @@ public class DbEventWriter implements QueryManager {
                     continue;
                 }
     
-                if (!Linkd.getInstance().isInterfaceInPackage(ipaddr, discovery.getPackageName())) {
+                if (!m_linkd.isInterfaceInPackage(ipaddr, discovery.getPackageName())) {
                     LogUtils.debugf(this, "storelink: not in package ipaddr found: " + ipaddr + " on link. .... Skipping");
                     continue;
     
@@ -354,7 +367,7 @@ public class DbEventWriter implements QueryManager {
                     }
                     // set the mac address
                     at.setMacAddress(physAddr);
-                    // add At Inteface to list of valid interfaces
+                    // add AtInterface to list of valid interfaces
                     atInterfaces.add(at);
     
                     // Save in DB
@@ -1307,7 +1320,7 @@ public class DbEventWriter implements QueryManager {
     }
 
     private void sendNewSuspectEvent(InetAddress ipaddress, InetAddress ipowner, String name) {
-        Linkd.getInstance().sendNewSuspectEvent(ipaddress.getHostAddress(), ipowner.getHostAddress(), name);
+        m_linkd.sendNewSuspectEvent(ipaddress.getHostAddress(), ipowner.getHostAddress(), name);
     }
 
     /** {@inheritDoc} */

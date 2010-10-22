@@ -19,17 +19,15 @@ import org.hibernate.criterion.Restrictions;
 import org.opennms.core.utils.BeanUtils;
 import org.opennms.core.utils.ThreadCategory;
 import org.opennms.netmgt.dao.EventDao;
-import org.opennms.netmgt.model.events.Constants;
-import org.opennms.netmgt.model.events.Parameter;
 import org.opennms.netmgt.model.OnmsAlarm;
 import org.opennms.netmgt.model.OnmsCriteria;
 import org.opennms.netmgt.model.OnmsEvent;
+import org.opennms.netmgt.model.OnmsSeverity;
+import org.opennms.netmgt.model.events.Parameter;
 import org.opennms.netmgt.xml.event.AlarmData;
 import org.opennms.netmgt.xml.event.Event;
 import org.opennms.netmgt.xml.event.Logmsg;
-
 import org.opennms.netmgt.xml.event.Parms;
-
 import org.springframework.beans.factory.access.BeanFactoryReference;
 import org.springframework.transaction.TransactionStatus;
 import org.springframework.transaction.support.TransactionCallback;
@@ -302,7 +300,7 @@ class InsSession extends InsAbstractSession {
         // severity
         if (ev.getEventSeverity() != null) {
             log.debug("Setting Event Severity");
-            e.setSeverity(Constants.getSeverityString(ev.getEventSeverity()));
+            e.setSeverity(OnmsSeverity.get(ev.getEventSeverity()).getLabel());
         } else {
             log.info("No Event severity found.");
         }

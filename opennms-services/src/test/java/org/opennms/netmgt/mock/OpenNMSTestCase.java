@@ -51,8 +51,6 @@ package org.opennms.netmgt.mock;
 
 import java.io.File;
 import java.io.IOException;
-import java.io.Reader;
-import java.io.StringReader;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -85,6 +83,7 @@ import org.opennms.netmgt.snmp.SnmpUtils;
 import org.opennms.test.ConfigurationTestUtils;
 import org.opennms.test.mock.MockLogAppender;
 import org.opennms.test.mock.MockUtil;
+import org.springframework.core.io.ByteArrayResource;
 import org.springframework.core.io.FileSystemResource;
 import org.springframework.jdbc.core.simple.SimpleJdbcTemplate;
 import org.springframework.jdbc.datasource.DataSourceTransactionManager;
@@ -165,8 +164,7 @@ public class OpenNMSTestCase extends TestCase {
             
             DataSourceFactory.setInstance(m_db);
 
-            Reader rdr = new StringReader(getSnmpConfig());
-            SnmpPeerFactory.setInstance(new SnmpPeerFactory(rdr));
+            SnmpPeerFactory.setInstance(new SnmpPeerFactory(new ByteArrayResource(getSnmpConfig().getBytes())));
             
             if (isStartEventd()) {
                 m_eventdIpcMgr = new EventIpcManagerDefaultImpl();

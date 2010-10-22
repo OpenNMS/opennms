@@ -251,7 +251,7 @@ public class Poller extends AbstractServiceDaemon {
     protected void onInit() {
         
         // serviceUnresponsive behavior enabled/disabled?
-        log().debug("init: serviceUnresponsive behavior: " + (getPollerConfig().serviceUnresponsiveEnabled() ? "enabled" : "disabled"));
+        log().debug("init: serviceUnresponsive behavior: " + (getPollerConfig().isServiceUnresponsiveEnabled() ? "enabled" : "disabled"));
 
         createScheduler();
         
@@ -637,15 +637,15 @@ public class Poller extends AbstractServiceDaemon {
             return false;
         }
         
-        if (!m_pollerConfig.serviceInPackageAndEnabled(serviceName, pkg)) return false;
+        if (!m_pollerConfig.isServiceInPackageAndEnabled(serviceName, pkg)) return false;
         
-        boolean inPkg = m_pollerConfig.interfaceInPackage(ipAddr, pkg);
+        boolean inPkg = m_pollerConfig.isInterfaceInPackage(ipAddr, pkg);
         
         if (inPkg) return true;
         
         if (m_initialized) {
             m_pollerConfig.rebuildPackageIpListMap();
-            return m_pollerConfig.interfaceInPackage(ipAddr, pkg);
+            return m_pollerConfig.isInterfaceInPackage(ipAddr, pkg);
         }
         
         return false;
@@ -662,7 +662,7 @@ public class Poller extends AbstractServiceDaemon {
     public boolean packageIncludesIfAndSvc(Package pkg, String ipAddr, String svcName) {
         ThreadCategory log = ThreadCategory.getInstance(getClass());
 
-        if (!getPollerConfig().serviceInPackageAndEnabled(svcName, pkg)) {
+        if (!getPollerConfig().isServiceInPackageAndEnabled(svcName, pkg)) {
             if (log.isDebugEnabled())
                 log.debug("packageIncludesIfAndSvc: address/service: " + ipAddr + "/" + svcName + " not scheduled, service is not enabled or does not exist in package: " + pkg.getName());
             return false;
@@ -670,11 +670,11 @@ public class Poller extends AbstractServiceDaemon {
 
         // Is the interface in the package?
         //
-        if (!getPollerConfig().interfaceInPackage(ipAddr, pkg)) {
+        if (!getPollerConfig().isInterfaceInPackage(ipAddr, pkg)) {
 
             if (m_initialized) {
                 getPollerConfig().rebuildPackageIpListMap();
-                if (!getPollerConfig().interfaceInPackage(ipAddr, pkg)) {
+                if (!getPollerConfig().isInterfaceInPackage(ipAddr, pkg)) {
                     if (log.isDebugEnabled())
                         log.debug("packageIncludesIfAndSvc: interface " + ipAddr + " gained service " + svcName + ", but the interface was not in package: " + pkg.getName());
                     return false;

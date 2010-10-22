@@ -39,17 +39,21 @@ package org.opennms.netmgt.config;
 import java.io.IOException;
 import java.io.InputStream;
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.Enumeration;
 import java.util.HashMap;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
+import java.util.concurrent.locks.Lock;
+import java.util.concurrent.locks.ReadWriteLock;
+import java.util.concurrent.locks.ReentrantReadWriteLock;
 
 import org.exolab.castor.xml.MarshalException;
 import org.exolab.castor.xml.ValidationException;
 import org.opennms.core.utils.InetAddressUtils;
 import org.opennms.core.utils.IpListFromUrl;
-import org.opennms.core.utils.ThreadCategory;
+import org.opennms.core.utils.LogUtils;
 import org.opennms.netmgt.config.map.adapter.Celement;
 import org.opennms.netmgt.config.map.adapter.Cmap;
 import org.opennms.netmgt.config.map.adapter.Csubmap;
@@ -66,16 +70,12 @@ import org.opennms.netmgt.filter.FilterDaoFactory;
  * @author <a href="mailto:antonio@openms.it">Antonio Russo</a>
  * @author <a href="mailto:brozow@openms.org">Mathew Brozowski</a>
  * @author <a href="mailto:david@opennms.org">David Hustace</a>
- * @author <a href="mailto:antonio@openms.it">Antonio Russo</a>
- * @author <a href="mailto:brozow@openms.org">Mathew Brozowski</a>
- * @author <a href="mailto:david@opennms.org">David Hustace</a>
- * @author <a href="mailto:antonio@openms.it">Antonio Russo</a>
- * @author <a href="mailto:brozow@openms.org">Mathew Brozowski</a>
- * @author <a href="mailto:david@opennms.org">David Hustace</a>
- * @version $Id: $
  */
 abstract public class MapsAdapterConfigManager implements MapsAdapterConfig {
-     
+    private final ReadWriteLock m_globalLock = new ReentrantReadWriteLock();
+    private final Lock m_readLock = m_globalLock.readLock();
+    private final Lock m_writeLock = m_globalLock.writeLock();
+
    /**
     * <p>Constructor for MapsAdapterConfigManager.</p>
     *
@@ -87,7 +87,7 @@ abstract public class MapsAdapterConfigManager implements MapsAdapterConfig {
     * @throws java.io.IOException if any.
     * @param serverName a {@link java.lang.String} object.
     */
-   public MapsAdapterConfigManager(InputStream reader,String serverName, boolean verifyServer) throws MarshalException, ValidationException, IOException {
+   public MapsAdapterConfigManager(final InputStream reader, final String serverName, final boolean verifyServer) throws MarshalException, ValidationException, IOException {
         m_localServer = serverName;
         m_verifyServer = verifyServer;
         reloadXML(reader);
@@ -139,6 +139,13 @@ abstract public class MapsAdapterConfigManager implements MapsAdapterConfig {
      public MapsAdapterConfigManager() {
      }
     
+     public Lock getReadLock() {
+         return m_readLock;
+     }
+     
+     public Lock getWriteLock() {
+         return m_writeLock;
+     }
 
     /**
      * <p>reloadXML</p>
@@ -148,19 +155,25 @@ abstract public class MapsAdapterConfigManager implements MapsAdapterConfig {
      * @throws org.exolab.castor.xml.ValidationException if any.
      * @throws java.io.IOException if any.
      */
-    protected synchronized void reloadXML(InputStream reader) throws MarshalException, ValidationException, IOException {
-        m_config = CastorUtils.unmarshal(MapsAdapterConfiguration.class, reader);
-        createUrlIpMap();
-        createPackageIpListMap();
-        createSubMapMapMap();
-        createmapNameCmapMap();
-        verifyMapConsistency();
-        verifyMapHasLoop();
+    protected void reloadXML(final InputStream reader) throws MarshalException, ValidationException, IOException {
+        getWriteLock().lock();
+        try {
+            m_config = CastorUtils.unmarshal(MapsAdapterConfiguration.class, reader, CastorUtils.PRESERVE_WHITESPACE);
+            createUrlIpMap();
+            createPackageIpListMap();
+            createSubMapMapMap();
+            createmapNameCmapMap();
+            verifyMapConsistency();
+            verifyMapHasLoop();
+        } finally {
+            getWriteLock().unlock();
+        }
     }
     
     private boolean hasCmaps() {
         return (m_config.getCmaps() != null);
     }
+
     /**
      * Go through the maps adapter configuration and build a mapping of each
      * configured map name to container cmap.
@@ -170,11 +183,9 @@ abstract public class MapsAdapterConfigManager implements MapsAdapterConfig {
     private void createmapNameCmapMap() {
         m_mapNameCmapMap = new HashMap<String, Cmap>();
         if (hasCmaps()) {
-            Iterator<Cmap> ite = m_config.getCmaps().iterateCmap();
-            while (ite.hasNext()) {
-                Cmap cmap = ite.next();
+            for (final Cmap cmap : m_config.getCmaps().getCmapCollection()) {
                 m_mapNameCmapMap.put(cmap.getMapName(), cmap);
-                log().debug("createmapNameCmapMap: Added map: " +cmap.getMapName());
+                LogUtils.debugf(this, "createmapNameCmapMap: Added map: %s", cmap.getMapName());
             }
         }
     }
@@ -189,20 +200,16 @@ abstract public class MapsAdapterConfigManager implements MapsAdapterConfig {
     private void createSubMapMapMap() {
         m_submapNameMapNameMap = new HashMap<String, List<String>>();
         if (hasCmaps()) {
-            Iterator<Cmap> ite = m_config.getCmaps().iterateCmap();
-            while (ite.hasNext()) {
-                Cmap cmap = ite.next();
-                Iterator<Csubmap> sub_ite = cmap.iterateCsubmap();
-                while (sub_ite.hasNext()) {
-                    Csubmap csubmap = sub_ite.next();
-                    String subMapName = csubmap.getName();
+            for (final Cmap cmap : m_config.getCmaps().getCmapCollection()) {
+                for (final Csubmap csubmap : cmap.getCsubmapCollection()) {
+                    final String subMapName = csubmap.getName();
                     List<String> containermaps = new ArrayList<String>();
                     if (m_submapNameMapNameMap.containsKey(subMapName)) {
                         containermaps = m_submapNameMapNameMap.get(subMapName);
                     }
                     containermaps.add(cmap.getMapName());
                     m_submapNameMapNameMap.put(subMapName, containermaps);
-                    log().debug("createSubMapMapMap: added container map: " + cmap.getMapName() + " to submap: " + subMapName);
+                    LogUtils.debugf(this, "createSubMapMapMap: added container map: %s to submap: %s", cmap.getMapName(), subMapName);
                 }
             }
         }        
@@ -213,10 +220,8 @@ abstract public class MapsAdapterConfigManager implements MapsAdapterConfig {
     */
     
     private void verifyMapConsistency() throws ValidationException {
-        Iterator<String> ite = m_submapNameMapNameMap.keySet().iterator();
-        while (ite.hasNext()) {
+        for (final String mapName : m_submapNameMapNameMap.keySet()) {
             // verify cmap exists!
-            String mapName = ite.next();
             if (!cmapExist(mapName)) 
                 throw new ValidationException("Defined a submap without defining the map: mapName " + mapName);
             
@@ -252,11 +257,10 @@ abstract public class MapsAdapterConfigManager implements MapsAdapterConfig {
        */
    }
 
-    private boolean cmapExist(String mapName) {
+    private boolean cmapExist(final String mapName) {
         if (hasCmaps()) {
-            Iterator<Cmap> ite = m_config.getCmaps().iterateCmap();
-            while (ite.hasNext()) {
-                if (ite.next().getMapName().equals(mapName)) return true;
+            for (Cmap cmap : m_config.getCmaps().getCmapCollection()) {
+                if (cmap.getMapName().equals(mapName)) return true;
             }
         }
         return false;
@@ -269,11 +273,9 @@ abstract public class MapsAdapterConfigManager implements MapsAdapterConfig {
     private void createUrlIpMap() {
         m_urlIPMap = new HashMap<String, List<String>>();
     
-        for(Package pkg : packages()) {
-    
-            for(String url : includeURLs(pkg)) {
-    
-                List<String> iplist = IpListFromUrl.parse(url);
+        for(final Package pkg : packages()) {
+            for(final String url : includeURLs(pkg)) {
+                final List<String> iplist = IpListFromUrl.parse(url);
                 if (iplist.size() > 0) {
                     m_urlIPMap.put(url, iplist);
                 }
@@ -287,30 +289,35 @@ abstract public class MapsAdapterConfigManager implements MapsAdapterConfig {
      * which, the iplist is selected per package via the configured filter rules
      * from the database.
      */
-    private synchronized void createPackageIpListMap() {
-        m_pkgIpMap = new HashMap<Package, List<String>>();
+    private void createPackageIpListMap() {
+        getWriteLock().lock();
+        try {
+            m_pkgIpMap = new HashMap<Package, List<String>>();
+            
+            for(final Package pkg : packages()) {
         
-        for(Package pkg : packages()) {
-    
-            // Get a list of IP addresses per package against the filter rules from
-            // database and populate the package, IP list map.
-            //
-            try {
-                List<String> ipList = getIpList(pkg);
-                log().debug("createPackageIpMap: package " + pkg.getName() + ": ipList size =  " + ipList.size());
-    
-                if (ipList.size() > 0) {
-                    m_pkgIpMap.put(pkg, ipList);
+                // Get a list of IP addresses per package against the filter rules from
+                // database and populate the package, IP list map.
+                //
+                try {
+                    final List<String> ipList = getIpList(pkg);
+                    LogUtils.debugf(this, "createPackageIpMap: package %s: ipList size = %d", pkg.getName(), ipList.size());
+        
+                    if (ipList.size() > 0) {
+                        m_pkgIpMap.put(pkg, ipList);
+                    }
+                } catch (final Throwable t) {
+                    LogUtils.errorf(this, t, "createPackageIpMap: failed to map package: %s to an IP List", pkg.getName());
                 }
-            } catch (Throwable t) {
-                log().error("createPackageIpMap: failed to map package: " + pkg.getName() + " to an IP List: " + t, t);
+    
             }
-
+        } finally {
+            getWriteLock().unlock();
         }
     }
     
-    private List<String> getIpList(Package pkg) {
-        StringBuffer filterRules = new StringBuffer(pkg.getFilter().getContent());
+    private List<String> getIpList(final Package pkg) {
+        final StringBuffer filterRules = new StringBuffer(pkg.getFilter().getContent());
         if (m_verifyServer) {
             filterRules.append(" & (serverName == ");
             filterRules.append('\"');
@@ -318,9 +325,9 @@ abstract public class MapsAdapterConfigManager implements MapsAdapterConfig {
             filterRules.append('\"');
             filterRules.append(")");
         }
-        log().debug("createPackageIpMap: package is " + pkg.getName() + ". filer rules are  " + filterRules.toString());
-        List<String> ipList = FilterDaoFactory.getInstance().getIPList(filterRules.toString());
-        return ipList;
+        final String rules = filterRules.toString();
+        LogUtils.debugf(this, "createPackageIpMap: package is %s. filter rules are %s", pkg.getName(), rules);
+        return FilterDaoFactory.getInstance().getIPList(rules);
     }
     
     /**
@@ -340,19 +347,16 @@ abstract public class MapsAdapterConfigManager implements MapsAdapterConfig {
      * @return True if the interface is included in the package, false
      *         otherwise.
      */
-    private synchronized boolean interfaceInPackage(String iface, Package pkg) {
-        ThreadCategory log = log();
-    
+    private boolean interfaceInPackage(final String iface, final Package pkg) {
         boolean filterPassed = false;
     
         // get list of IPs in this package
-        List<String> ipList = m_pkgIpMap.get(pkg);
+        final List<String> ipList = m_pkgIpMap.get(pkg);
         if (ipList != null && ipList.size() > 0) {
             filterPassed = ipList.contains(iface);
         }
     
-        if (log.isDebugEnabled())
-            log.debug("interfaceInPackage: Interface " + iface + " passed filter for package " + pkg.getName() + "?: " + filterPassed);
+        LogUtils.debugf(this, "interfaceInPackage: Interface %s passed filter for package %s?: %s", Boolean.valueOf(filterPassed));
     
         if (!filterPassed)
             return false;
@@ -369,14 +373,14 @@ abstract public class MapsAdapterConfigManager implements MapsAdapterConfig {
         // the range 0.0.0.0 - 255.255.255.255
         has_range_include = pkg.getIncludeRangeCount() == 0 && pkg.getSpecificCount() == 0;
         
-        long addr = InetAddressUtils.toIpAddrLong(iface);
+        final long addr = InetAddressUtils.toIpAddrLong(iface);
         
-        Enumeration<IncludeRange> eincs = pkg.enumerateIncludeRange();
+        final Enumeration<IncludeRange> eincs = pkg.enumerateIncludeRange();
         while (!has_range_include && eincs.hasMoreElements()) {
-            IncludeRange rng = eincs.nextElement();
-            long start = InetAddressUtils.toIpAddrLong(rng.getBegin());
+            final IncludeRange rng = eincs.nextElement();
+            final long start = InetAddressUtils.toIpAddrLong(rng.getBegin());
             if (addr > start) {
-                long end = InetAddressUtils.toIpAddrLong(rng.getEnd());
+                final long end = InetAddressUtils.toIpAddrLong(rng.getEnd());
                 if (addr <= end) {
                     has_range_include = true;
                 }
@@ -385,24 +389,24 @@ abstract public class MapsAdapterConfigManager implements MapsAdapterConfig {
             }
         }
     
-        Enumeration<String> espec = pkg.enumerateSpecific();
+        final Enumeration<String> espec = pkg.enumerateSpecific();
         while (!has_specific && espec.hasMoreElements()) {
-            long speca = InetAddressUtils.toIpAddrLong(espec.nextElement());
+            final long speca = InetAddressUtils.toIpAddrLong(espec.nextElement());
             if (speca == addr)
                 has_specific = true;
         }
     
-        Enumeration<String> eurl = pkg.enumerateIncludeUrl();
+        final Enumeration<String> eurl = pkg.enumerateIncludeUrl();
         while (!has_specific && eurl.hasMoreElements()) {
             has_specific = interfaceInUrl(iface, eurl.nextElement());
         }
     
-        Enumeration<ExcludeRange> eex = pkg.enumerateExcludeRange();
+        final Enumeration<ExcludeRange> eex = pkg.enumerateExcludeRange();
         while (!has_range_exclude && !has_specific && eex.hasMoreElements()) {
-            ExcludeRange rng = eex.nextElement();
-            long start = InetAddressUtils.toIpAddrLong(rng.getBegin());
+            final ExcludeRange rng = eex.nextElement();
+            final long start = InetAddressUtils.toIpAddrLong(rng.getBegin());
             if (addr > start) {
-                long end = InetAddressUtils.toIpAddrLong(rng.getEnd());
+                final long end = InetAddressUtils.toIpAddrLong(rng.getEnd());
                 if (addr <= end) {
                     has_range_exclude = true;
                 }
@@ -442,11 +446,11 @@ abstract public class MapsAdapterConfigManager implements MapsAdapterConfig {
      * 
      * @return True if the interface is included in the URL, false otherwise.
      */
-    private boolean interfaceInUrl(String addr, String url) {
+    private boolean interfaceInUrl(final String addr, final String url) {
         boolean bRet = false;
     
         // get list of IPs in this URL
-        List<String> iplist = m_urlIPMap.get(url);
+        final List<String> iplist = m_urlIPMap.get(url);
         if (iplist != null && iplist.size() > 0) {
             bRet = iplist.contains(addr);
         }
@@ -464,20 +468,22 @@ abstract public class MapsAdapterConfigManager implements MapsAdapterConfig {
      *            the interface to check
      * @return a list of package names that the ip belongs to, null if none
      */
-    public synchronized List<String> getAllPackageMatches(String ipaddr) {
+    public List<String> getAllPackageMatches(final String ipaddr) {
+        getReadLock().lock();
+        
+        try {
+            final List<String> matchingPkgs = new ArrayList<String>();
     
-        List<String> matchingPkgs = new ArrayList<String>();
-
-        for(Package pkg : packages()) {
-
-            boolean inPkg = interfaceInPackage(ipaddr, pkg);
-            if (inPkg) {
-                matchingPkgs.add(pkg.getName());
+            for(final Package pkg : packages()) {
+                final boolean inPkg = interfaceInPackage(ipaddr, pkg);
+                if (inPkg) {
+                    matchingPkgs.add(pkg.getName());
+                }
             }
-
+            return matchingPkgs;
+        } finally {
+            getReadLock().unlock();
         }
-    
-        return matchingPkgs;
     }
 
 
@@ -488,7 +494,12 @@ abstract public class MapsAdapterConfigManager implements MapsAdapterConfig {
      * @return a {@link java.lang.Iterable} object.
      */
     public Iterable<Package> packages() {
-        return getConfiguration().getPackageCollection();
+        getReadLock().lock();
+        try {
+            return getConfiguration().getPackageCollection();
+        } finally {
+            getReadLock().unlock();
+        }
     }
 
     /**
@@ -497,8 +508,13 @@ abstract public class MapsAdapterConfigManager implements MapsAdapterConfig {
      * @param pkg a {@link org.opennms.netmgt.config.map.adapter.Package} object.
      * @return a {@link java.lang.Iterable} object.
      */
-    public Iterable<String> includeURLs(Package pkg) {
-        return pkg.getIncludeUrlCollection();
+    public Iterable<String> includeURLs(final Package pkg) {
+        getReadLock().lock();
+        try {
+            return pkg.getIncludeUrlCollection();
+        } finally {
+            getReadLock().unlock();
+        }
     }
 
     /**
@@ -506,14 +522,13 @@ abstract public class MapsAdapterConfigManager implements MapsAdapterConfig {
      *
      * @return a {@link org.opennms.netmgt.config.map.adapter.MapsAdapterConfiguration} object.
      */
-    public synchronized MapsAdapterConfiguration getConfiguration() {
-        return m_config;
-    }
-
-    
- 
-    private ThreadCategory log() {
-        return ThreadCategory.getInstance(this.getClass());
+    public MapsAdapterConfiguration getConfiguration() {
+        getReadLock().lock();
+        try {
+            return m_config;
+        } finally {
+            getReadLock().unlock();
+        }
     }
 
 // methods from interface
@@ -524,50 +539,60 @@ abstract public class MapsAdapterConfigManager implements MapsAdapterConfig {
      * @return a {@link java.util.List} object.
      */
     public List<Cmap> getAllMaps() {
-        if (hasCmaps()) {
-            return getConfiguration().getCmaps().getCmapCollection();
+        getReadLock().lock();
+        try {
+            if (hasCmaps()) {
+                return getConfiguration().getCmaps().getCmapCollection();
+            }
+            return Collections.emptyList();
+        } finally {
+            getReadLock().unlock();
         }
-        return new ArrayList<Cmap>();
     }
 
     /** {@inheritDoc} */
-    public Map<String, Celement> getElementByAddress(String ipaddr) {
-        Map<String,Celement> mapAndElements = new HashMap<String, Celement>();
-        if (hasCmaps()) {
-            List<String> pkgs = getAllPackageMatches(ipaddr);
-            Iterator<Cmap> ite = getConfiguration().getCmaps().getCmapCollection().iterator();
-            while (ite.hasNext()) {
-                Cmap cmap = ite.next();
-                Iterator<Celement> cels = cmap.getCelementCollection().iterator();
-                boolean found = false;
-                while (cels.hasNext()) {
-                     Celement celement = cels.next();
-                     Iterator<String> pkgname = pkgs.iterator();
-                     while (pkgname.hasNext()) {
-                         if (pkgname.next().equals(celement.getPackage())) {
-                             mapAndElements.put(cmap.getMapName(), celement);
-                             found = true;
-                             break;
-                         }
-                     }
-                     if (found) break;
+    public Map<String, Celement> getElementByAddress(final String ipaddr) {
+        getReadLock().lock();
+        try {
+            final Map<String,Celement> mapAndElements = new HashMap<String, Celement>();
+            if (hasCmaps()) {
+                final List<String> pkgs = getAllPackageMatches(ipaddr);
+                for (final Cmap cmap : getConfiguration().getCmaps().getCmapCollection()) {
+                    final Iterator<Celement> cels = cmap.getCelementCollection().iterator();
+                    boolean found = false;
+                    while (cels.hasNext()) {
+                        final Celement celement = cels.next();
+                        final Iterator<String> pkgname = pkgs.iterator();
+                        while (pkgname.hasNext()) {
+                            if (pkgname.next().equals(celement.getPackage())) {
+                                mapAndElements.put(cmap.getMapName(), celement);
+                                found = true;
+                                break;
+                            }
+                        }
+                        if (found) break;
+                    }
                 }
             }
+            return mapAndElements;
+        } finally {
+            getReadLock().unlock();
         }
-        return mapAndElements;
     }
 
     /** {@inheritDoc} */
-    public List<Csubmap> getSubMaps(String mapName) {
-        if (hasCmaps()) {
-            Iterator<Cmap> ite = getConfiguration().getCmaps().getCmapCollection().iterator();
-            while (ite.hasNext()) {
-                Cmap cmap = ite.next();
-                if (cmap.getMapName().equals(mapName))
-                    return cmap.getCsubmapCollection();
+    public List<Csubmap> getSubMaps(final String mapName) {
+        getReadLock().lock();
+        try {
+            if (hasCmaps()) {
+                for (final Cmap cmap : getConfiguration().getCmaps().getCmapCollection()) {
+                    if (cmap.getMapName().equals(mapName)) return cmap.getCsubmapCollection();
+                }
             }
+            return Collections.emptyList();
+        } finally {
+            getReadLock().unlock();
         }
-        return new ArrayList<Csubmap>();
     }
 
     /**
@@ -576,28 +601,34 @@ abstract public class MapsAdapterConfigManager implements MapsAdapterConfig {
      * @return a int.
      */
     public int getMapElementDimension() {
-        return getConfiguration().getElementDimension();
+        getReadLock().lock();
+        try {
+            return getConfiguration().getElementDimension();
+        } finally {
+            getReadLock().unlock();
+        }
     }
 
     /** {@inheritDoc} */
-    public Map<String,Csubmap> getContainerMaps(String submapName) {
-        Map<String,Csubmap> cmaps = new HashMap<String, Csubmap>();
-        if (m_submapNameMapNameMap.containsKey(submapName)) {
-            Iterator<String> ite = m_submapNameMapNameMap.get(submapName).iterator();
-            while (ite.hasNext()) {
-                String mapName = ite.next();
-                Cmap cmap = m_mapNameCmapMap.get(mapName);
-                Iterator<Csubmap> sub_ite = cmap.iterateCsubmap();
-                while (sub_ite.hasNext()) {
-                    Csubmap csubmap = sub_ite.next();
-                    if (csubmap.getName().equals(submapName)) {
-                        cmaps.put(mapName,csubmap);
-                        break;
+    public Map<String,Csubmap> getContainerMaps(final String submapName) {
+        getReadLock().lock();
+        try {
+            final Map<String,Csubmap> cmaps = new HashMap<String, Csubmap>();
+            if (m_submapNameMapNameMap.containsKey(submapName)) {
+                for (final String mapName : m_submapNameMapNameMap.get(submapName)) {
+                    final Cmap cmap = m_mapNameCmapMap.get(mapName);
+                    for (final Csubmap csubmap : cmap.getCsubmapCollection()) {
+                        if (csubmap.getName().equals(submapName)) {
+                            cmaps.put(mapName,csubmap);
+                            break;
+                        }
                     }
                 }
             }
+            return cmaps;
+        } finally {
+            getReadLock().unlock();
         }
-        return cmaps;
     }
 
     /**
@@ -606,17 +637,20 @@ abstract public class MapsAdapterConfigManager implements MapsAdapterConfig {
      * @return a {@link java.util.Map} object.
      */
     public Map<String, List<Csubmap>> getsubMaps() {
-        Map<String,List<Csubmap>> csubmaps = new HashMap<String, List<Csubmap>>();
-        if (hasCmaps()) {
-            Iterator<Cmap> ite = getConfiguration().getCmaps().getCmapCollection().iterator();
-            while (ite.hasNext()) {
-                Cmap cmap = ite.next();
-                if (cmap.getCsubmapCount() > 0) {
-                    csubmaps.put(cmap.getMapName(), cmap.getCsubmapCollection());
+        getReadLock().lock();
+        try {
+            final Map<String,List<Csubmap>> csubmaps = new HashMap<String, List<Csubmap>>();
+            if (hasCmaps()) {
+                for (final Cmap cmap : getConfiguration().getCmaps().getCmapCollection()) {
+                    if (cmap.getCsubmapCount() > 0) {
+                        csubmaps.put(cmap.getMapName(), cmap.getCsubmapCollection());
+                    }
                 }
             }
+            return csubmaps;
+        } finally {
+            getReadLock().unlock();
         }
-        return csubmaps;
     }
     
     /**
@@ -625,18 +659,20 @@ abstract public class MapsAdapterConfigManager implements MapsAdapterConfig {
      * @return a {@link java.util.Map} object.
      */
     public Map<String,List<Celement>> getCelements() {
-        Map<String,List<Celement>> celements = new HashMap<String, List<Celement>>();
-        if (hasCmaps()) {
-            Iterator<Cmap> ite = getConfiguration().getCmaps().getCmapCollection().iterator();
-            while (ite.hasNext()) {
-                Cmap cmap = ite.next();
-                if (cmap.getCelementCount() > 0) {
-                    celements.put(cmap.getMapName(), cmap.getCelementCollection());
+        getReadLock().lock();
+        try {
+            final Map<String,List<Celement>> celements = new HashMap<String, List<Celement>>();
+            if (hasCmaps()) {
+                for (final Cmap cmap : getConfiguration().getCmaps().getCmapCollection()) {
+                    if (cmap.getCelementCount() > 0) {
+                        celements.put(cmap.getMapName(), cmap.getCelementCollection());
+                    }
                 }
             }
+            return celements;
+        } finally {
+            getReadLock().unlock();
         }
-     
-        return celements;
     }
 
     /**
@@ -646,7 +682,7 @@ abstract public class MapsAdapterConfigManager implements MapsAdapterConfig {
      * newly added one, the package IP list should be rebuilt so that poller
      * could know which package this IP/service pair is in.
      */
-    public synchronized void rebuildPackageIpListMap() {
+    public void rebuildPackageIpListMap() {
         createPackageIpListMap();
     }
     

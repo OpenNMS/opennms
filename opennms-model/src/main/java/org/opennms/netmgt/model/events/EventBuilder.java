@@ -38,6 +38,7 @@ import org.opennms.netmgt.EventConstants;
 import org.opennms.netmgt.model.OnmsIpInterface;
 import org.opennms.netmgt.model.OnmsMonitoredService;
 import org.opennms.netmgt.model.OnmsNode;
+import org.opennms.netmgt.model.OnmsSeverity;
 import org.opennms.netmgt.xml.event.AlarmData;
 import org.opennms.netmgt.xml.event.Event;
 import org.opennms.netmgt.xml.event.Logmsg;
@@ -167,7 +168,7 @@ public class EventBuilder {
      * @return a {@link org.opennms.netmgt.model.events.EventBuilder} object.
      */
     public EventBuilder setSeverity(String severity) {
-    	m_event.setSeverity(EventConstants.getSeverityString(EventConstants.getSeverity(severity)));
+    	m_event.setSeverity(OnmsSeverity.get(severity).getLabel());
     	return this;
     }
 

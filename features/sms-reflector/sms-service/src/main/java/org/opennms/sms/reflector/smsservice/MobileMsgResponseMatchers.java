@@ -1,6 +1,5 @@
 package org.opennms.sms.reflector.smsservice;
 
-import org.apache.log4j.Logger;
 import org.opennms.core.utils.ThreadCategory;
 import org.smslib.USSDSessionStatus;
 

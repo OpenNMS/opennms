@@ -1,8 +1,5 @@
 package org.opennms.sms.reflector.commands.internal;
 
-import java.util.ArrayList;
-import java.util.List;
-
 import org.opennms.sms.reflector.smsservice.GatewayGroup;
 import org.smslib.AGateway;
 

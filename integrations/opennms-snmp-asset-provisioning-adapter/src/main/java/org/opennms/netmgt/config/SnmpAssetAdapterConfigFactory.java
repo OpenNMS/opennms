@@ -8,9 +8,10 @@ import java.io.InputStream;
 import java.io.OutputStreamWriter;
 import java.io.Writer;
 
+import org.apache.commons.io.IOUtils;
 import org.exolab.castor.xml.MarshalException;
 import org.exolab.castor.xml.ValidationException;
-import org.opennms.core.utils.ThreadCategory;
+import org.opennms.core.utils.LogUtils;
 import org.opennms.netmgt.ConfigFileConstants;
 
 /**
@@ -24,15 +25,11 @@ public class SnmpAssetAdapterConfigFactory {
 	private final SnmpAssetAdapterConfigManager m_config;
 
 	public SnmpAssetAdapterConfigFactory() throws MarshalException, ValidationException, IOException {
-		File cfgFile = ConfigFileConstants.getFile(ConfigFileConstants.SNMP_ASSET_ADAPTER_CONFIG_FILE_NAME);
-		log().debug("init: config file path: " + cfgFile.getPath());
-		InputStream reader = new FileInputStream(cfgFile);
+	    final File cfgFile = ConfigFileConstants.getFile(ConfigFileConstants.SNMP_ASSET_ADAPTER_CONFIG_FILE_NAME);
+		LogUtils.debugf(this, "init: config file path: %s", cfgFile.getPath());
+		final InputStream reader = new FileInputStream(cfgFile);
 		m_config = new SnmpAssetAdapterConfigManager(cfgFile.lastModified(), reader);
-		reader.close();
-	}
-
-	protected static ThreadCategory log() {
-		return ThreadCategory.getInstance(SnmpAssetAdapterConfigFactory.class);
+		IOUtils.closeQuietly(reader);
 	}
 
 	/**
@@ -48,7 +45,7 @@ public class SnmpAssetAdapterConfigFactory {
 	 * @throws org.exolab.castor.xml.MarshalException if any.
 	 * @throws org.exolab.castor.xml.ValidationException if any.
 	 */
-	public synchronized void reload() throws IOException, MarshalException, ValidationException {
+	public void reload() throws IOException, MarshalException, ValidationException {
 		m_config.update();
 	}
 
@@ -58,17 +55,22 @@ public class SnmpAssetAdapterConfigFactory {
 	 * @param xml a {@link java.lang.String} object.
 	 * @throws java.io.IOException if any.
 	 */
-	protected synchronized void save(String xml) throws IOException {
-		if (xml != null) {
-			long timestamp = System.currentTimeMillis();
-			File cfgFile = ConfigFileConstants.getFile(ConfigFileConstants.SNMP_ASSET_ADAPTER_CONFIG_FILE_NAME);
-			log().debug("saveXml: saving config file at "+timestamp+": " + cfgFile.getPath());
-			Writer fileWriter = new OutputStreamWriter(new FileOutputStream(cfgFile), "UTF-8");
-			fileWriter.write(xml);
-			fileWriter.flush();
-			fileWriter.close();
-			log().debug("saveXml: finished saving config file: " + cfgFile.getPath());
-		}
+	protected void save(final String xml) throws IOException {
+	    m_config.getWriteLock().lock();
+	    try {
+    		if (xml != null) {
+    		    final long timestamp = System.currentTimeMillis();
+    			final File cfgFile = ConfigFileConstants.getFile(ConfigFileConstants.SNMP_ASSET_ADAPTER_CONFIG_FILE_NAME);
+    			LogUtils.debugf(this, "saveXml: saving config file at %d: %s", timestamp, cfgFile.getPath());
+    			final Writer fileWriter = new OutputStreamWriter(new FileOutputStream(cfgFile), "UTF-8");
+    			fileWriter.write(xml);
+    			fileWriter.flush();
+    			fileWriter.close();
+    			LogUtils.debugf(this, "saveXml: finished saving config file: %s", cfgFile.getPath());
+    		}
+	    } finally {
+	        m_config.getWriteLock().unlock();
+	    }
 	}
 
 	/**
@@ -81,7 +83,12 @@ public class SnmpAssetAdapterConfigFactory {
 	 * @throws java.lang.IllegalStateException
 	 *             Thrown if the factory has not yet been initialized.
 	 */
-	public synchronized SnmpAssetAdapterConfig getInstance() {
-		return m_config;
+	public SnmpAssetAdapterConfig getInstance() {
+	    m_config.getReadLock().lock();
+	    try {
+	        return m_config;
+	    } finally {
+	        m_config.getReadLock().unlock();
+	    }
 	}
 }

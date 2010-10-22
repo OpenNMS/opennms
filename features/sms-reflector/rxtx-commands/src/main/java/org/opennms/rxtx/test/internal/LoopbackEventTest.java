@@ -12,8 +12,6 @@ import java.io.InputStream;
 import java.io.OutputStream;
 import java.util.TooManyListenersException;
 
-import org.eclipse.osgi.framework.console.CommandProvider;
-
 /**
  * <p>LoopbackEventTest class.</p>
  *

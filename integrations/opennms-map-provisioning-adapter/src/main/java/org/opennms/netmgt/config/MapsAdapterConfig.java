@@ -3,7 +3,7 @@ package org.opennms.netmgt.config;
 import java.io.IOException;
 import java.util.List;
 import java.util.Map;
-
+import java.util.concurrent.locks.Lock;
 
 import org.exolab.castor.xml.MarshalException;
 import org.exolab.castor.xml.ValidationException;
@@ -76,4 +76,8 @@ public interface MapsAdapterConfig {
      * @throws org.exolab.castor.xml.ValidationException if any.
      */
     public void update() throws IOException, MarshalException, ValidationException;
+
+    public Lock getReadLock();
+    
+    public Lock getWriteLock();
 }

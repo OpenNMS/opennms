@@ -44,7 +44,6 @@ import junit.framework.TestCase;
 
 import org.opennms.netmgt.dao.ResourceDao;
 import org.opennms.netmgt.dao.StatisticsReportDao;
-import org.opennms.netmgt.model.OnmsResource;
 import org.opennms.netmgt.model.ResourceReference;
 import org.opennms.netmgt.model.StatisticsReport;
 import org.opennms.netmgt.model.StatisticsReportData;
@@ -52,7 +51,6 @@ import org.opennms.test.ThrowableAnticipator;
 import org.opennms.test.mock.EasyMockUtils;
 import org.opennms.web.command.StatisticsReportCommand;
 import org.opennms.web.svclayer.support.StatisticsReportModel.Datum;
-import org.springframework.orm.ObjectRetrievalFailureException;
 import org.springframework.validation.BindException;
 
 /**

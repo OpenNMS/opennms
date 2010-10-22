@@ -35,10 +35,10 @@ package org.opennms.netmgt.eventd;
 
 import org.opennms.core.utils.Base64;
 import org.opennms.netmgt.EventConstants;
-import org.opennms.netmgt.mock.MockService;
 import org.opennms.netmgt.mock.MockEventUtil;
+import org.opennms.netmgt.mock.MockService;
 import org.opennms.netmgt.mock.OpenNMSTestCase;
-import org.opennms.netmgt.model.events.Constants;
+import org.opennms.netmgt.model.OnmsSeverity;
 import org.opennms.netmgt.xml.event.Event;
 import org.opennms.netmgt.xml.event.Tticket;
 import org.opennms.netmgt.xml.event.Value;
@@ -87,7 +87,7 @@ public class EventUtilTest extends OpenNMSTestCase {
         String testString = EventUtil.getValueOfParm(EventUtil.TAG_UEI, m_svcLostEvent);
         assertEquals("uei.opennms.org/nodes/nodeLostService", testString);
         
-        m_svcLostEvent.setSeverity(Constants.getSeverityString(EventConstants.SEV_MINOR));
+        m_svcLostEvent.setSeverity(OnmsSeverity.MINOR.getLabel());
         testString = EventUtil.getValueOfParm(EventUtil.TAG_SEVERITY, m_svcLostEvent);
         assertEquals("Minor", testString);
         

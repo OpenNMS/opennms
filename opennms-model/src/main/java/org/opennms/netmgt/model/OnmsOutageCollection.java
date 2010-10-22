@@ -17,9 +17,12 @@ import javax.xml.bind.annotation.XmlRootElement;
 @XmlRootElement(name="outages")
 public class OnmsOutageCollection extends LinkedList<OnmsOutage> {
 
-	private static final long serialVersionUID = 1L;
-
 	/**
+     * 
+     */
+    private static final long serialVersionUID = -12993787944327060L;
+
+    /**
 	 * <p>Constructor for OnmsOutageCollection.</p>
 	 */
 	public OnmsOutageCollection() {

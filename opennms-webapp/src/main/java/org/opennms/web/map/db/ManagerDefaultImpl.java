@@ -44,38 +44,30 @@ package org.opennms.web.map.db;
 import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.math.BigDecimal;
-
 import java.util.ArrayList;
 import java.util.Collection;
-import java.util.Enumeration;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.Iterator;
-import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
 import java.util.TreeSet;
 import java.util.Vector;
 
-
 import org.opennms.core.utils.ThreadCategory;
-
 import org.opennms.netmgt.config.CatFactory;
 import org.opennms.netmgt.config.CategoryFactory;
 import org.opennms.netmgt.config.GroupDao;
 import org.opennms.netmgt.config.categories.Categorygroup;
-import org.opennms.netmgt.config.categories.Catinfo;
 import org.opennms.netmgt.config.groups.Group;
 import org.opennms.netmgt.model.OnmsSeverity;
-
 import org.opennms.web.map.MapNotFoundException;
 import org.opennms.web.map.MapsConstants;
 import org.opennms.web.map.MapsException;
 import org.opennms.web.map.MapsManagementException;
 import org.opennms.web.map.config.MapPropertiesFactory;
 import org.opennms.web.map.db.datasources.DataSourceInterface;
-
 import org.opennms.web.map.view.Manager;
 import org.opennms.web.map.view.VElement;
 import org.opennms.web.map.view.VElementInfo;
@@ -224,19 +216,19 @@ public class ManagerDefaultImpl implements Manager {
         } catch (Exception e) {
             throw new MapsException("Error while getting categories.", e);
         }
-        CatFactory cf = CategoryFactory.getInstance();
-        Catinfo cinfo = cf.getConfig();
-        Enumeration<Categorygroup> catGroupEnum = cinfo.enumerateCategorygroup();
-        log.debug("Get categories:");
-        while (catGroupEnum.hasMoreElements()) {
-            Categorygroup cg = catGroupEnum.nextElement();
-            Enumeration<org.opennms.netmgt.config.categories.Category> catEnum = cg.getCategories().enumerateCategory();
-            while (catEnum.hasMoreElements()) {
-                org.opennms.netmgt.config.categories.Category category = catEnum.nextElement();
-                String categoryName = unescapeHtmlChars(category.getLabel());
-                log.debug(categoryName);
-                categories.add(categoryName);
+        final CatFactory cf = CategoryFactory.getInstance();
+        cf.getReadLock().lock();
+        try {
+            log.debug("Get categories:");
+            for (final Categorygroup cg : cf.getConfig().getCategorygroupCollection()) {
+                for (final org.opennms.netmgt.config.categories.Category category : cg.getCategories().getCategoryCollection()) {
+                    final String categoryName = unescapeHtmlChars(category.getLabel());
+                    log.debug(categoryName);
+                    categories.add(categoryName);
+                }
             }
+        } finally {
+            cf.getReadLock().unlock();
         }
         return categories;
     }

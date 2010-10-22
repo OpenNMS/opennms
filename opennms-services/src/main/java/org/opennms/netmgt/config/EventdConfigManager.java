@@ -40,6 +40,9 @@ import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.Reader;
+import java.util.concurrent.locks.Lock;
+import java.util.concurrent.locks.ReadWriteLock;
+import java.util.concurrent.locks.ReentrantReadWriteLock;
 
 import org.apache.commons.io.IOUtils;
 import org.exolab.castor.xml.MarshalException;
@@ -51,9 +54,11 @@ import org.opennms.netmgt.dao.castor.CastorUtils;
  * <p>EventdConfigManager class.</p>
  *
  * @author david
- * @version $Id: $
  */
 public class EventdConfigManager {
+    private final ReadWriteLock m_globalLock = new ReentrantReadWriteLock();
+    private final Lock m_readLock = m_globalLock.readLock();
+    private final Lock m_writeLock = m_globalLock.writeLock();
 
     /**
      * The config class loaded from the config file
@@ -69,8 +74,8 @@ public class EventdConfigManager {
      * @param reader a {@link java.io.Reader} object.
      */
     @Deprecated
-    protected EventdConfigManager(Reader reader) throws MarshalException, ValidationException, IOException {
-        m_config = CastorUtils.unmarshal(EventdConfiguration.class, reader);
+    protected EventdConfigManager(final Reader reader) throws MarshalException, ValidationException, IOException {
+        m_config = CastorUtils.unmarshal(EventdConfiguration.class, reader, CastorUtils.PRESERVE_WHITESPACE);
         reader.close();
 
     }
@@ -83,8 +88,8 @@ public class EventdConfigManager {
      * @throws org.exolab.castor.xml.ValidationException if any.
      * @throws java.io.IOException if any.
      */
-    protected EventdConfigManager(InputStream stream) throws MarshalException, ValidationException, IOException {
-        m_config = CastorUtils.unmarshal(EventdConfiguration.class, stream);
+    protected EventdConfigManager(final InputStream stream) throws MarshalException, ValidationException, IOException {
+        m_config = CastorUtils.unmarshal(EventdConfiguration.class, stream, CastorUtils.PRESERVE_WHITESPACE);
 
     }
     
@@ -96,11 +101,11 @@ public class EventdConfigManager {
      * @throws org.exolab.castor.xml.MarshalException if any.
      * @throws org.exolab.castor.xml.ValidationException if any.
      */
-    public EventdConfigManager(String configFile) throws FileNotFoundException, MarshalException, ValidationException {
+    public EventdConfigManager(final String configFile) throws FileNotFoundException, MarshalException, ValidationException {
         InputStream stream = null;
         try {
             stream = new FileInputStream(configFile);
-            m_config = CastorUtils.unmarshal(EventdConfiguration.class, stream);
+            m_config = CastorUtils.unmarshal(EventdConfiguration.class, stream, CastorUtils.PRESERVE_WHITESPACE);
         } finally {
             if (stream != null) {
                 IOUtils.closeQuietly(stream);
@@ -108,13 +113,26 @@ public class EventdConfigManager {
         }
     }
 
+    public Lock getReadLock() {
+        return m_readLock;
+    }
+    
+    public Lock getWriteLock() {
+        return m_writeLock;
+    }
+
     /**
      * Return the IP address on which eventd listens for TCP connections.
      *
      * @return the IP address on which eventd listens for TCP connections
      */
-    public synchronized String getTCPIpAddress() {
-        return m_config.getTCPAddress();
+    public String getTCPIpAddress() {
+        getReadLock().lock();
+        try {
+            return m_config.getTCPAddress();
+        } finally {
+            getReadLock().unlock();
+        }
     }
     
     /**
@@ -122,8 +140,13 @@ public class EventdConfigManager {
      *
      * @return the port on which eventd listens for TCP connections
      */
-    public synchronized int getTCPPort() {
-        return m_config.getTCPPort();
+    public int getTCPPort() {
+        getReadLock().lock();
+        try {
+            return m_config.getTCPPort();
+        } finally {
+            getReadLock().unlock();
+        }
     }
 
     /**
@@ -131,8 +154,13 @@ public class EventdConfigManager {
      *
      * @return the IP address on which eventd listens for UDP packets
      */
-    public synchronized String getUDPIpAddress() {
-        return m_config.getUDPAddress();
+    public String getUDPIpAddress() {
+        getReadLock().lock();
+        try {
+            return m_config.getUDPAddress();
+        } finally {
+            getReadLock().unlock();
+        }
     }
 
     /**
@@ -140,8 +168,13 @@ public class EventdConfigManager {
      *
      * @return the port on which eventd listens for UDP data
      */
-    public synchronized int getUDPPort() {
-        return m_config.getUDPPort();
+    public int getUDPPort() {
+        getReadLock().lock();
+        try {
+            return m_config.getUDPPort();
+        } finally {
+            getReadLock().unlock();
+        }
     }
 
     /**
@@ -149,8 +182,13 @@ public class EventdConfigManager {
      *
      * @return the number of event receivers to be started
      */
-    public synchronized int getReceivers() {
-        return m_config.getReceivers();
+    public int getReceivers() {
+        getReadLock().lock();
+        try {
+            return m_config.getReceivers();
+        } finally {
+            getReadLock().unlock();
+        }
     }
 
     /**
@@ -158,8 +196,13 @@ public class EventdConfigManager {
      *
      * @return string indicating if timeout is to be set on the socket
      */
-    public synchronized String getSocketSoTimeoutRequired() {
-        return m_config.getSocketSoTimeoutRequired();
+    public String getSocketSoTimeoutRequired() {
+        getReadLock().lock();
+        try {
+            return m_config.getSocketSoTimeoutRequired();
+        } finally {
+            getReadLock().unlock();
+        }
     }
 
     /**
@@ -167,8 +210,13 @@ public class EventdConfigManager {
      *
      * @return timeout is to be set on the socket
      */
-    public synchronized int getSocketSoTimeoutPeriod() {
-        return m_config.getSocketSoTimeoutPeriod();
+    public int getSocketSoTimeoutPeriod() {
+        getReadLock().lock();
+        try {
+            return m_config.getSocketSoTimeoutPeriod();
+        } finally {
+            getReadLock().unlock();
+        }
     }
 
     /**
@@ -176,16 +224,26 @@ public class EventdConfigManager {
      *
      * @return flag indicating if timeout to be set on the socket is specified <
      */
-    public synchronized boolean hasSocketSoTimeoutPeriod() {
-        return m_config.hasSocketSoTimeoutPeriod();
+    public boolean hasSocketSoTimeoutPeriod() {
+        getReadLock().lock();
+        try {
+            return m_config.hasSocketSoTimeoutPeriod();
+        } finally {
+            getReadLock().unlock();
+        }
     }
 
     /**
-     * Return the SQL statemet to get the next event ID.
+     * Return the SQL statement to get the next event ID.
      *
-     * @return the SQL statemet to get the next event ID
+     * @return the SQL statement to get the next event ID
      */
-    public synchronized String getGetNextEventID() {
-        return m_config.getGetNextEventID();
+    public String getGetNextEventID() {
+        getReadLock().lock();
+        try {
+            return m_config.getGetNextEventID();
+        } finally {
+            getReadLock().unlock();
+        }
     }
 }

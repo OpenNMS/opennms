@@ -54,9 +54,6 @@ import org.springframework.core.io.FileSystemResource;
  *
  * @author <a href="mailto:mike@opennms.org">Mike Davidson </a>
  * @author <a href="http://www.opennms.org/">OpenNMS </a>
- * @author <a href="mailto:mike@opennms.org">Mike Davidson </a>
- * @author <a href="http://www.opennms.org/">OpenNMS </a>
- * @version $Id: $
  */
 public final class DhcpdConfigFactory {
     /**
@@ -85,7 +82,7 @@ public final class DhcpdConfigFactory {
      *                Thrown if the contents do not match the required schema.
      */
     private DhcpdConfigFactory(File configFile) throws IOException, MarshalException, ValidationException {
-        m_config = CastorUtils.unmarshal(DhcpdConfiguration.class, new FileSystemResource(configFile));
+        m_config = CastorUtils.unmarshal(DhcpdConfiguration.class, new FileSystemResource(configFile), CastorUtils.PRESERVE_WHITESPACE);
     }
 
     /**

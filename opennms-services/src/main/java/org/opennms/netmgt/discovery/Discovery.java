@@ -52,6 +52,7 @@ import java.util.List;
 import java.util.Set;
 import java.util.Timer;
 import java.util.TimerTask;
+import java.util.concurrent.locks.Lock;
 
 import org.exolab.castor.xml.MarshalException;
 import org.exolab.castor.xml.ValidationException;
@@ -62,7 +63,6 @@ import org.opennms.netmgt.config.DiscoveryConfigFactory;
 import org.opennms.netmgt.daemon.AbstractServiceDaemon;
 import org.opennms.netmgt.eventd.EventIpcManagerFactory;
 import org.opennms.netmgt.model.discovery.IPPollAddress;
-import org.opennms.netmgt.model.events.AnnotationBasedEventListenerAdapter;
 import org.opennms.netmgt.model.events.EventBuilder;
 import org.opennms.netmgt.model.events.EventForwarder;
 import org.opennms.netmgt.model.events.annotations.EventHandler;
@@ -80,9 +80,6 @@ import org.springframework.util.Assert;
  *
  * @author <a href="mailto:weave@oculan.com">Brian Weaver </a>
  * @author <a href="http://www.opennms.org/">OpenNMS.org </a>
- * @author <a href="mailto:weave@oculan.com">Brian Weaver </a>
- * @author <a href="http://www.opennms.org/">OpenNMS.org </a>
- * @version $Id: $
  */
 @EventListener(name="OpenNMS.Discovery")
 public class Discovery extends AbstractServiceDaemon {
@@ -170,15 +167,10 @@ public class Discovery extends AbstractServiceDaemon {
         try {
             initializeConfiguration();
             EventIpcManagerFactory.init();
-        } catch (Exception e) {
+        } catch (Throwable e) {
             log().debug("onInit: initialization failed: "+e, e);
             throw new IllegalStateException("Could not initialize discovery configuration.", e);
         }
-        
-        @SuppressWarnings("unused")
-        // TODO: Is this doing some kind of wacky initialization?  Or is it ignored?
-        AnnotationBasedEventListenerAdapter listener = new AnnotationBasedEventListenerAdapter(this, EventIpcManagerFactory.getIpcManager());
-
     }
 
     private void initializeConfiguration() throws MarshalException, ValidationException, IOException {
@@ -191,25 +183,30 @@ public class Discovery extends AbstractServiceDaemon {
         
         try {
             initializeConfiguration();
-        } catch (Exception e) {
+        } catch (Throwable e) {
             log().error("doPings: could not re-init configuration, continuing with in memory configuration."+e, e);
         }
 
 
         m_xstatus = PING_RUNNING;
 
-        for (IPPollAddress pollAddress : getDiscoveryFactory().getConfiguredAddresses()) {
-            if (m_xstatus == PING_FINISHING || m_timer == null) {
-                m_xstatus = PING_IDLE;
-                return;
+        getDiscoveryFactory().getReadLock().lock();
+        try {
+            for (IPPollAddress pollAddress : getDiscoveryFactory().getConfiguredAddresses()) {
+                if (m_xstatus == PING_FINISHING || m_timer == null) {
+                    m_xstatus = PING_IDLE;
+                    return;
+                }
+                ping(pollAddress);
+                try {
+                    Thread.sleep(getDiscoveryFactory().getIntraPacketDelay());
+                } catch (InterruptedException e) {
+                    infof("interrupting discovery sweep");
+                    break;
+                }
             }
-            ping(pollAddress);
-            try {
-                Thread.sleep(getDiscoveryFactory().getIntraPacketDelay());
-            } catch (InterruptedException e) {
-                infof("interrupting discovery sweep");
-                break;
-            }
+        } finally {
+            getDiscoveryFactory().getReadLock().unlock();
         }
 
         infof("finished discovery sweep");
@@ -222,7 +219,7 @@ public class Discovery extends AbstractServiceDaemon {
             if (!isAlreadyDiscovered(address)) {
                 try {
                     Pinger.ping(address, pollAddress.getTimeout(), pollAddress.getRetries(), (short) 1, cb);
-                } catch (Exception e) {
+                } catch (Throwable e) {
                     debugf(e, "error pinging %s", address.getAddress());
                 }
             }
@@ -254,8 +251,13 @@ public class Discovery extends AbstractServiceDaemon {
             }
 
         };
-        m_timer.scheduleAtFixedRate(task, getDiscoveryFactory().getInitialSleepTime(), getDiscoveryFactory().getRestartSleepTime());
-
+        final Lock readLock = getDiscoveryFactory().getReadLock();
+        readLock.lock();
+        try {
+            m_timer.scheduleAtFixedRate(task, getDiscoveryFactory().getInitialSleepTime(), getDiscoveryFactory().getRestartSleepTime());
+        } finally {
+            readLock.unlock();
+        }
     }
 
     private void stopTimer() {
