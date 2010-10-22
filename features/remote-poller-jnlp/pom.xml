@@ -38,6 +38,7 @@
                   if (project.properties['webstart.keypass']) {
                     args.put('keypass', project.properties['webstart.keypass'])
                   }
+                  def ant = new AntBuilder();
                   ant.genkey(args)
                 }
               </source>
