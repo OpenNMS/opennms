@@ -291,7 +291,13 @@
           <dependency>
             <groupId>org.codehaus.groovy</groupId>
             <artifactId>groovy-all</artifactId>
-            <version>1.6.8</version>
+            <version>1.7.5</version>
+          </dependency>
+          <!-- Needed for AntBuilder calls in remote poller projects -->
+          <dependency>
+            <groupId>org.apache.ant</groupId>
+            <artifactId>ant</artifactId>
+            <version>1.8.1</version>
           </dependency>
         </dependencies>
         <configuration>
@@ -1387,7 +1393,7 @@
       <dependency>
         <groupId>org.apache.ant</groupId>
         <artifactId>ant</artifactId>
-        <version>1.7.1</version>
+        <version>1.8.1</version>
       </dependency>
       <dependency>
         <groupId>antlr</groupId>
@@ -1865,7 +1871,7 @@
       <dependency>
         <groupId>org.codehaus.groovy</groupId>
         <artifactId>groovy-all</artifactId>
-        <version>1.6.8</version>
+        <version>1.7.5</version>
       </dependency>
   </dependencies>
   </dependencyManagement>
