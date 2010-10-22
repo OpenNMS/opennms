@@ -6,15 +6,13 @@
 	<parameter name="stringParameter" class="java.lang.String"/>
 	<parameter name="integerParameter" class="java.lang.Integer"/>
 	<parameter name="dateParameter" class="java.util.Date"/>
+	<parameter name="sqlDateParameter" class="java.util.Date"/>
  <detail>
     <band height="20">
-      <textField>
+      <staticText>
         <reportElement x="180" y="0" width="200" height="20"/>
-        <textFieldExpression class="java.lang.String">$P{stringParameter}</textFieldExpression>
-		<textFieldExpression class="java.lang.Integer">$P{integerParameter}</textFieldExpression> 
-		<textFieldExpression class="java.util.Date">$P{dateParameter}</textFieldExpression>        
-
-      </textField>
+        <text><![CDATA[trivial test]]></text>
+      </staticText>
     </band>
   </detail>
 </jasperReport>
