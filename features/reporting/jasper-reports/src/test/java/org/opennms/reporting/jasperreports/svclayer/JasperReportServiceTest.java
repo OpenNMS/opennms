@@ -55,71 +55,48 @@ import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
 import org.springframework.test.context.support.DependencyInjectionTestExecutionListener;
 
 @RunWith(SpringJUnit4ClassRunner.class)
-@TestExecutionListeners({
-    DependencyInjectionTestExecutionListener.class
-})
-@ContextConfiguration(locations={
-        "classpath:org/opennms/reporting/jasperreports/svclayer/JasperReportServiceTest.xml"
-})
-
+@TestExecutionListeners( { DependencyInjectionTestExecutionListener.class })
+@ContextConfiguration(locations = { "classpath:org/opennms/reporting/jasperreports/svclayer/JasperReportServiceTest.xml" })
 public class JasperReportServiceTest {
-	
+
 	@Autowired
 	JasperReportConfigDao m_configDao;
 	@Autowired
 	JasperReportService m_reportService;
-	
+
 	private static final String REPORTID = "parameter-test";
 	private static final String BOGUSREPORTID = "bogus-parameter-test";
-	
-	
+
 	@BeforeClass
 	public static void setupOnmsHome() {
 		System.setProperty("opennms.home", "src/test/resources");
-		
+
 	}
-	
-	
+
 	@Test
-    public void testWiring() {
-        Assert.assertNotNull(m_configDao);
-        Assert.assertNotNull(m_reportService);
-    }
-	
-	@Test
-	public void testGetParms() {
-		try {
-			Assert.assertNotNull(m_reportService.getParms(REPORTID));
-		} catch (ReportException e) {
-			// TODO Auto-generated catch block
-			Assert.fail("found an unsupported class");
-		}
+	public void testWiring() {
+		Assert.assertNotNull(m_configDao);
+		Assert.assertNotNull(m_reportService);
 	}
-	
-	@Test
-	public void testGetBogusParms() {
-		try {
-			Assert.assertNotNull(m_reportService.getParms(BOGUSREPORTID));
-			Assert.fail("failed to catch bogus parameter class");
-		} catch (ReportException e) {
-			// TODO Auto-generated catch block
-		} 
-	}
-	
+
 	@Test
 	public void testGetParmeters() {
-		ReportParameters reportParameters = m_reportService.getParameters(REPORTID);
+		ReportParameters reportParameters = m_reportService
+				.getParameters(REPORTID);
+		Assert.assertNotNull(reportParameters);
 		Assert.assertEquals(1, reportParameters.getIntParms().size());
 		Assert.assertEquals(1, reportParameters.getStringParms().size());
 		Assert.assertEquals(2, reportParameters.getDateParms().size());
 	}
-	
+
+	// TODO write test for bogus parms in here.
+
 	@Test
 	public void testValidate() {
 		HashMap<String, Object> reportParms = new HashMap<String, Object>();
 		Assert.assertTrue(m_reportService.validate(reportParms, REPORTID));
 	}
-	
+
 	@Test
 	public void testRunAndRender() {
 		HashMap<String, Object> reportParms;
@@ -131,19 +108,19 @@ public class JasperReportServiceTest {
 		reportParms.put("dateParamter", date);
 		reportParms.put("sqlDateParameter", new java.sql.Date(date.getTime()));
 		try {
-			m_reportService.runAndRender(reportParms, REPORTID, ReportFormat.PDF, new NullOutputStream());
+			m_reportService.runAndRender(reportParms, REPORTID,
+					ReportFormat.PDF, new NullOutputStream());
 		} catch (ReportException e) {
-			// TODO Auto-generated catch block
 			Assert.fail(e.toString());
 		}
-				
+
 	}
-	
-	/**Writes to nowhere*/
+
+	/** Writes to nowhere */
 	private class NullOutputStream extends OutputStream {
-	  @Override
-	  public void write(int b) throws IOException {
-	  }
+		@Override
+		public void write(int b) throws IOException {
+		}
 	}
 
 }
