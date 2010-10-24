@@ -6,7 +6,7 @@
 	<artifactId>opennms</artifactId>
 	<version>1.8.6-SNAPSHOT</version>
 </parent>
-  <artifactId>jasper-extensions</artifactId>
+  <artifactId>opennms-jasper-extensions</artifactId>
   <packaging>jar</packaging>
 
   <name>jasper-extensions</name>
