@@ -9,7 +9,7 @@
   <artifactId>opennms-jasper-extensions</artifactId>
   <packaging>jar</packaging>
 
-  <name>jasper-extensions</name>
+  <name>opennms-jasper-extensions</name>
   <url>http://maven.apache.org</url>
 
 	<dependencies>
