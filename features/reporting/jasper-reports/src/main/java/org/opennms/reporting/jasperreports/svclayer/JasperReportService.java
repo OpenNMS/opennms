@@ -284,7 +284,7 @@ public class JasperReportService implements ReportService {
                 try {
                     jasperPrint = JasperFillManager.fillReport(
                                                                jasperReport,
-                                                               onmsReportParms,
+                                                               jrReportParms,
                                                                new JREmptyDataSource());
                     JRXmlExporter exporter = new JRXmlExporter();
                     exporter.setParameter(JRExporterParameter.JASPER_PRINT,
@@ -359,7 +359,7 @@ public class JasperReportService implements ReportService {
                 try {
                     jasperPrint = JasperFillManager.fillReport(
                                                                jasperReport,
-                                                               onmsReportParms,
+                                                               jrReportParms,
                                                                new JREmptyDataSource());
                     JasperExportManager.exportReportToPdfStream(jasperPrint,
                                                                 outputStream);

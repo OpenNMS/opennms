@@ -106,7 +106,7 @@ public class JasperReportServiceTest {
 		reportParms.put("dateParameter", new java.util.Date());
 		java.util.Date date = new java.util.Date();
 		reportParms.put("dateParamter", date);
-		reportParms.put("sqlDateParameter", new java.sql.Date(date.getTime()));
+		reportParms.put("sqlDateParameter", new java.util.Date(date.getTime()));
 		try {
 			m_reportService.runAndRender(reportParms, REPORTID,
 					ReportFormat.PDF, new NullOutputStream());

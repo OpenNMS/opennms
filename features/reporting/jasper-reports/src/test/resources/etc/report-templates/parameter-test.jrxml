@@ -6,7 +6,7 @@
         <parameter name="stringParameter" class="java.lang.String"/>
         <parameter name="integerParameter" class="java.lang.Integer"/>
         <parameter name="dateParameter" class="java.util.Date"/>
-        <parameter name="sqlDateParameter" class="java.util.Date"/>
+        <parameter name="sqlDateParameter" class="java.sql.Date"/>
     <title>
         <band height="20">
                 <staticText>
