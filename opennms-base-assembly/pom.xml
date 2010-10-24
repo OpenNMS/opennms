@@ -414,5 +414,10 @@
       <groupId>commons-lang</groupId>
       <artifactId>commons-lang</artifactId>
     </dependency>
+    <!--jasper-extensions-->
+    <dependency>
+      <groupId>org.opennms</groupId>
+      <artifactId>opennms-jasper-extensions</artifactId>
+    </dependency>
   </dependencies>
 </project>
