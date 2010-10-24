@@ -2,8 +2,8 @@
 <jasperReport xmlns="http://jasperreports.sourceforge.net/jasperreports" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://jasperreports.sourceforge.net/jasperreports http://jasperreports.sourceforge.net/xsd/jasperreport.xsd" name="AllChartsReport" pageWidth="595" pageHeight="842" whenNoDataType="AllSectionsNoDetail" columnWidth="535" leftMargin="20" rightMargin="20" topMargin="20" bottomMargin="20" whenResourceMissingType="Key">
 	<subDataset name="categoryDataset">
 	   <parameter name="rrdDir" class="java.lang.String"/>
-        <parameter name="startDate" class="java.util.Date"/>
-        <parameter name="endDate" class="java.util.Date"/>
+        <parameter name="startDate" class="java.lang.String"/>
+        <parameter name="endDate" class="java.lang.String"/>
 	   <queryString language="jrobin"><![CDATA[
 	           --start $P{startDate} --end $P{endDate} --step 3600
 	           DEF:mo=$P{rrdDir}/mo_calls.jrb:mo_call_attempts:AVERAGE
@@ -28,8 +28,8 @@
 	</subDataset>
 	<subDataset name="timeSeriesDataset">
 	   <parameter name="rrdDir" class="java.lang.String"/>
-       <parameter name="startDate" class="java.util.Date"/>
-       <parameter name="endDate" class="java.util.Date"/>
+       <parameter name="startDate" class="java.lang.String"/>
+       <parameter name="endDate" class="java.lang.String"/>
        <queryString language="jrobin"><![CDATA[
                --start $P{startDate} --end $P{endDate} --step 3600
                DEF:moAttempts=$P{rrdDir}/mo_calls.jrb:mo_call_attempts:AVERAGE
@@ -55,8 +55,8 @@
         </variable>
     </subDataset>
 	<parameter name="rrdDir" class="java.lang.String"/>
-    <parameter name="startDate" class="java.util.Date"/>
-    <parameter name="endDate" class="java.util.Date"/>
+    <parameter name="startDate" class="java.lang.String"/>
+    <parameter name="endDate" class="java.lang.String"/>
 	<group name="Bar">
 		<groupExpression><![CDATA[null]]></groupExpression>
 		<groupHeader>

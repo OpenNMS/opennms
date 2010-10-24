@@ -138,9 +138,9 @@ public class SpecificationTest {
         long end = now/MILLIS_PER_DAY*MILLIS_PER_DAY + (MILLIS_PER_HOUR * 4);
         long start = end - MILLIS_PER_DAY;
         m_startDate = new Date(start);
-        System.out.println("startDate: " + m_startDate);
+        System.out.println("startDate: " + m_startDate.getTime()/1000);
         m_endDate = new Date(end);
-        System.out.println("endDate: " + m_endDate);
+        System.out.println("endDate: " + m_endDate.getTime()/1000);
         
         RrdDef rrdDef = new RrdDef("target/rrd/mo_calls.jrb", (start/1000) - 600000, 300);
         rrdDef.addDatasource("DS:mo_call_attempts:COUNTER:600:0:U");
@@ -233,8 +233,8 @@ public class SpecificationTest {
         long start = System.currentTimeMillis();
         Map<String, Object> params = new HashMap<String, Object>();
         params.put("rrdDir", "target/rrd");
-        params.put("startDate",m_startDate);
-        params.put("endDate", m_endDate);
+        params.put("startDate","" + m_startDate.getTime()/1000);
+        params.put("endDate", "" + m_endDate.getTime()/1000);
         m_jasperPrint = JasperFillManager.fillReport(m_jasperReport, params);
         System.err.println("Filling time : " + (System.currentTimeMillis() - start));
     }
