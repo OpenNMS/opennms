@@ -18,5 +18,6 @@
     <module>opennms-rancid</module>
     <module>opennms-rws</module>
     <module>opennms-snmp-asset-provisioning-adapter</module>
+    <module>opennms-jasper-extensions</module>
   </modules>
 </project>
