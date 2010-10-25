@@ -13,6 +13,12 @@
   <build>
     <plugins>
       <plugin>
+       <artifactId>maven-deploy-plugin</artifactId>
+       <configuration>
+         <skip>true</skip>
+       </configuration>
+      </plugin>
+      <plugin>
         <groupId>org.dstovall</groupId>
          <artifactId>onejar-maven-plugin</artifactId>
          <version>1.4.3</version>

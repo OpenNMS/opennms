@@ -14,6 +14,12 @@
   <build>
     <plugins>
       <plugin>
+       <artifactId>maven-deploy-plugin</artifactId>
+       <configuration>
+         <skip>true</skip>
+       </configuration>
+      </plugin>
+      <plugin>
         <groupId>org.codehaus.groovy.maven</groupId>
         <artifactId>gmaven-plugin</artifactId>
         <executions>
