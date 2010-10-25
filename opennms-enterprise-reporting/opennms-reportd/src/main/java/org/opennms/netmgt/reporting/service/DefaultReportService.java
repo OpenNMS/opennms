@@ -37,8 +37,9 @@ public class DefaultReportService implements ReportService {
     
     private enum Format { pdf,html,xml,xls };
     
-    /** {@inheritDoc} */
-    public synchronized String runReport(Report report,String reportDirectory) {
+    /** {@inheritDoc} 
+     * @throws ReportRunException */
+    public synchronized String runReport(Report report,String reportDirectory) throws ReportRunException {
 
         String outputFile = null;
         try {
@@ -48,8 +49,10 @@ public class DefaultReportService implements ReportService {
             
         } catch (JRException e) {
             LogUtils.errorf(this, e, "Error running report: %s", e.getMessage());
+            throw new ReportRunException("Caught JRException: " + e.getMessage());
         }  catch (Exception e){
             LogUtils.errorf(this, e, "Unexpected exception: %s", e.getMessage());
+            throw new ReportRunException("Caught unexpected " + e.getClass().getName() + ": " + e.getMessage());
         }        
  
         return outputFile;
@@ -93,8 +96,9 @@ public class DefaultReportService implements ReportService {
         
         JasperReport jasperReport = JasperCompileManager.compileReport(
                                                                        System.getProperty("opennms.home") + 
-                                                                       "/etc/report-templates/" + 
-                                                                       report.getReportTemplate() );
+                                                                       File.separator + "etc" +
+                                                                       File.separator + "report-templates" + 
+                                                                       File.separator + report.getReportTemplate() );
         
         if(report.getReportEngine().equals("jdbc")){
             Connection connection = DataSourceFactory.getDataSource().getConnection();
