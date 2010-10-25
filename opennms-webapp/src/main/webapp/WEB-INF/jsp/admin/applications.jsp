@@ -1,5 +1,6 @@
 <%@ page contentType="text/html;charset=UTF-8" language="java"%>
 <%@ taglib uri="http://java.sun.com/jsp/jstl/core" prefix="c"%>
+<%@ taglib uri="http://java.sun.com/jsp/jstl/functions" prefix="fn"%>
 
 <jsp:include page="/includes/header.jsp" flush="false">
 	<jsp:param name="title" value="Applications" />
@@ -21,7 +22,7 @@
 	  <tr>
 	    <td><a href="admin/applications.htm?removeApplicationId=${app.id}"><img src="images/trash.gif" alt="Delete Application"/></a></td>
 	    <td><a href="admin/applications.htm?applicationid=${app.id}&edit=edit"><img src="images/modify.gif" alt="Edit Application"/></a></td>
-	    <td><a href="admin/applications.htm?applicationid=${app.id}">${app.name}</a></td> 
+	    <td><a href="admin/applications.htm?applicationid=${app.id}">${fn:escapeXml(app.name)}</a></td> 
   	  </tr>
   </c:forEach>
   <tr>
@@ -34,6 +35,5 @@
       </form>
   </tr>
 </table>
-
 
 <jsp:include page="/includes/footer.jsp" flush="false"/>

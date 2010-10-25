@@ -18,11 +18,11 @@
 	<jsp:param name="breadcrumb" value="Edit Foreign Source" />
 </jsp:include>
 
-<h3>Foreign Source: ${foreignSourceEditForm.foreignSourceName}</h3>
+<h3>Foreign Source: ${fn:escapeXml(foreignSourceEditForm.foreignSourceName)}</h3>
 
 <tree:form commandName="foreignSourceEditForm"> 
 
-	<input type="hidden" id="foreignSourceName" name="foreignSourceName" value="${foreignSourceEditForm.foreignSourceName}"/> 
+	<input type="hidden" id="foreignSourceName" name="foreignSourceName" value="${fn:escapeXml(foreignSourceEditForm.foreignSourceName)}"/> 
 	<tree:actionButton label="Done" action="done" />
 
 	<br />
