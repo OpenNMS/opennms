@@ -14,11 +14,11 @@
 	<jsp:param name="breadcrumb" value="Edit Requisition" />
 </jsp:include>
 
-<h3>Manually Provisioned Nodes for Group: ${nodeEditForm.groupName}</h3>
+<h3>Manually Provisioned Nodes for Group: ${fn:escapeXml(nodeEditForm.groupName)}</h3>
 
  <tree:form commandName="nodeEditForm"> 
 
-  <input type="hidden" id="groupName" name="groupName" value="${nodeEditForm.groupName}"/> 
+  <input type="hidden" id="groupName" name="groupName" value="${fn:escapeXml(nodeEditForm.groupName)}"/> 
  
  <tree:actionButton label="Done" action="done" />
  <tree:actionButton label="Add Node" action="addNode"/> 
