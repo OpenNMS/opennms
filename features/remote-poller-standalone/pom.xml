@@ -23,6 +23,12 @@
     </resources>
     <plugins>
       <plugin>
+       <artifactId>maven-deploy-plugin</artifactId>
+       <configuration>
+         <skip>true</skip>
+       </configuration>
+      </plugin>
+      <plugin>
         <artifactId>maven-assembly-plugin</artifactId>
         <configuration>
           <descriptors>
