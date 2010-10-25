@@ -58,6 +58,7 @@ import java.util.Map;
 import org.exolab.castor.xml.MarshalException;
 import org.exolab.castor.xml.Marshaller;
 import org.exolab.castor.xml.ValidationException;
+import org.opennms.core.utils.ByteArrayComparator;
 import org.opennms.core.utils.InetAddressUtils;
 import org.opennms.core.utils.ThreadCategory;
 import org.opennms.netmgt.config.capsd.CapsdConfiguration;
@@ -330,10 +331,9 @@ public abstract class CapsdConfigManager implements CapsdConfig {
                     continue;
                 }
 
-                long start = InetAddressUtils.toIpAddrLong(saddr);
-                long stop = InetAddressUtils.toIpAddrLong(eaddr);
-                long tgt = InetAddressUtils.toIpAddrLong(target);
-                if (start <= tgt && tgt <= stop) {
+                int compareStartToTarget = new ByteArrayComparator().compare(saddr.getAddress(), target.getAddress());
+                int compareTargetToEnd = new ByteArrayComparator().compare(target.getAddress(), eaddr.getAddress());
+                if (compareStartToTarget <= 0 && compareTargetToEnd <= 0) {
                     if (mgt.getPolicy() == null || mgt.getPolicy().equalsIgnoreCase("managed")) {
                         found_accept = true;
                     } else {
@@ -603,12 +603,11 @@ public abstract class CapsdConfigManager implements CapsdConfig {
 			return currentIf;
         }
 	
-		long current = InetAddressUtils.toIpAddrLong(currentIf.getAddress());
-		long primary = InetAddressUtils.toIpAddrLong(oldPrimary.getAddress());
-	
+		int comparison = new ByteArrayComparator().compare(currentIf.getAddress(), oldPrimary.getAddress());
+		
 		if (method.equals(CollectdConfigFactory.SELECT_METHOD_MIN)) {
 			// Smallest address wins
-			if (current < primary) {
+			if (comparison < 0) {
                 /*
 				 * Replace the primary interface with the current
 				 * interface only if the current interface is managed!
@@ -624,7 +623,7 @@ public abstract class CapsdConfigManager implements CapsdConfig {
 			}
 		} else {
 			// Largest address wins
-			if (current > primary) {
+			if (comparison > 0) {
                 /*
 				 * Replace the primary interface with the current
 				 * interface only if the current interface is managed!
