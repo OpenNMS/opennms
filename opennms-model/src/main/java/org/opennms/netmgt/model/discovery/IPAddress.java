@@ -33,6 +33,7 @@ package org.opennms.netmgt.model.discovery;
 
 import java.net.InetAddress;
 
+import org.opennms.core.utils.ByteArrayComparator;
 import org.opennms.core.utils.InetAddressUtils;
 
 /**
@@ -43,7 +44,7 @@ import org.opennms.core.utils.InetAddressUtils;
  */
 public class IPAddress implements Comparable<IPAddress> {
 
-    long m_ipAddr;
+    byte[] m_ipAddr;
     
     /**
      * <p>Constructor for IPAddress.</p>
@@ -60,7 +61,7 @@ public class IPAddress implements Comparable<IPAddress> {
      * @param dottedNotation a {@link java.lang.String} object.
      */
     public IPAddress(String dottedNotation) {
-        m_ipAddr = InetAddressUtils.toIpAddrLong(dottedNotation);
+        m_ipAddr = InetAddressUtils.toIpAddrBytes(dottedNotation);
     }
     
     /**
@@ -69,25 +70,16 @@ public class IPAddress implements Comparable<IPAddress> {
      * @param inetAddress a {@link java.net.InetAddress} object.
      */
     public IPAddress(InetAddress inetAddress) {
-        m_ipAddr = InetAddressUtils.toIpAddrLong(inetAddress);
+        m_ipAddr = inetAddress.getAddress();
     }
     
-    /**
-     * <p>Constructor for IPAddress.</p>
-     *
-     * @param ipAddrAs32bitNumber a long.
-     */
-    public IPAddress(long ipAddrAs32bitNumber) {
-        m_ipAddr = ipAddrAs32bitNumber;
-    }
-
     /**
      * <p>Constructor for IPAddress.</p>
      *
      * @param ipAddrOctets an array of byte.
      */
     public IPAddress(byte[] ipAddrOctets) {
-        m_ipAddr = InetAddressUtils.toIpAddrLong(ipAddrOctets);
+        m_ipAddr = ipAddrOctets;
     }
     
     /**
@@ -105,32 +97,26 @@ public class IPAddress implements Comparable<IPAddress> {
      * @return an array of byte.
      */
     public byte[] toOctets() {
-        return InetAddressUtils.toIpAddrBytes(m_ipAddr);
+        return m_ipAddr;
     }
     
     /**
      * <p>toLong</p>
      *
      * @return a long.
+     * @deprecated Representing IP addresses as long integers is not IPv6-compatible
      */
     public long toLong() {
-        return m_ipAddr;
+        return InetAddressUtils.toIpAddrLong(m_ipAddr);
     }
 
     /** {@inheritDoc} */
     @Override
     public boolean equals(Object obj) {
         if (obj instanceof IPAddress) {
-            IPAddress other = (IPAddress) obj;
-            return m_ipAddr == other.m_ipAddr;
+            return new ByteArrayComparator().compare(m_ipAddr, ((IPAddress) obj).toOctets()) == 0;
         }
         return false;
-    }
-
-    /** {@inheritDoc} */
-    @Override
-    public int hashCode() {
-        return (int)m_ipAddr;
     }
 
     /**
@@ -140,11 +126,7 @@ public class IPAddress implements Comparable<IPAddress> {
      * @return a int.
      */
     public int compareTo(IPAddress o) {
-        IPAddress other = (IPAddress)o;
-        long result = m_ipAddr - other.m_ipAddr;
-        if (result < 0) return -1;
-        if (result > 0) return 1;
-        return 0;
+        return new ByteArrayComparator().compare(m_ipAddr, o.toOctets());
     }
 
     /** {@inheritDoc} */
@@ -157,18 +139,20 @@ public class IPAddress implements Comparable<IPAddress> {
      * <p>incr</p>
      *
      * @return a {@link org.opennms.netmgt.model.discovery.IPAddress} object.
+     * @deprecated Relies on a conversion of an IP address to a long integer which is not IPv6-compatible
      */
     public IPAddress incr() {
-        return new IPAddress(m_ipAddr+1);
+        return new IPAddress(InetAddressUtils.toIpAddrBytes(InetAddressUtils.toIpAddrLong(m_ipAddr) + 1));
     }
     
     /**
      * <p>decr</p>
      *
      * @return a {@link org.opennms.netmgt.model.discovery.IPAddress} object.
+     * @deprecated Relies on a conversion of an IP address to a long integer which is not IPv6-compatible
      */
     public IPAddress decr() {
-        return new IPAddress(m_ipAddr-1);
+        return new IPAddress(InetAddressUtils.toIpAddrBytes(InetAddressUtils.toIpAddrLong(m_ipAddr) - 1));
     }
     
     /**

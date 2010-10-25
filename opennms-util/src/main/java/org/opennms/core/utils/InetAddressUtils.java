@@ -37,6 +37,7 @@ package org.opennms.core.utils;
 
 import java.net.InetAddress;
 import java.net.UnknownHostException;
+import java.util.Comparator;
 
 /**
  * <p>Abstract InetAddressUtils class.</p>
@@ -80,6 +81,7 @@ abstract public class InetAddressUtils {
      *
      * @param ipAddrAs32bitNumber a long.
      * @return a {@link java.net.InetAddress} object.
+     * @deprecated Dealing with IP addresses as 'long' type is not compatible with IPv6
      */
     public static InetAddress getInetAddress(long ipAddrAs32bitNumber) {
         return getInetAddress(toIpAddrBytes(ipAddrAs32bitNumber));
@@ -90,6 +92,7 @@ abstract public class InetAddressUtils {
      *
      * @param address a long.
      * @return an array of byte.
+     * @deprecated Dealing with IP addresses as 'long' type is not compatible with IPv6
      */
     public static byte[] toIpAddrBytes(long address) {
     
@@ -127,6 +130,7 @@ abstract public class InetAddressUtils {
      *
      * @param address an array of byte.
      * @return a long.
+     * @deprecated Dealing with IP addresses as 'long' type is not compatible with IPv6
      */
     public static long toIpAddrLong(byte[] address) {
         if (address.length != 4) {
@@ -152,6 +156,7 @@ abstract public class InetAddressUtils {
      *
      * @param dottedNotation a {@link java.lang.String} object.
      * @return a long.
+     * @deprecated Dealing with IP addresses as 'long' type is not compatible with IPv6
      */
     public static long toIpAddrLong(String dottedNotation) {
         return toIpAddrLong(toIpAddrBytes(dottedNotation));
@@ -162,10 +167,45 @@ abstract public class InetAddressUtils {
      *
      * @param addr a {@link java.net.InetAddress} object.
      * @return a long.
+     * @deprecated Dealing with IP addresses as 'long' type is not compatible with IPv6
      */
     public static long toIpAddrLong(InetAddress addr) {
         return toIpAddrLong(addr.getAddress());
     }
+
+    /*
+    public class InetAddressByteArrayComparator implements Comparator<byte[]> {
+
+        public int compare(byte[] a, byte[] b) {
+            if (a == null && b == null) {
+                return 0;
+            } else if (a == null) {
+                return -1;
+            } else if (b == null) {
+                return 1;
+            } else {
+                // Make shorter byte arrays "less than" longer arrays
+                int comparison = new Integer(a.length).compareTo(new Integer(b.length));
+                if (comparison == 0) {
+                    // Compare byte-by-byte
+                    for (int i = 0; i < a.length; i++) {
+                        int byteComparison = new Long(unsignedByteToLong(a[i])).compareTo(new Long(unsignedByteToLong(b[i])));
+                        if (byteComparison == 0) {
+                            continue;
+                        } else {
+                            return byteComparison;
+                        }
+                    }
+                    // OK both arrays are the same length and every byte is identical so they are equal
+                    return 0;
+                } else {
+                    return comparison;
+                }
+            }
+        }
+
+    }
+    */
 
     
     private static long unsignedByteToLong(byte b) {
@@ -177,6 +217,7 @@ abstract public class InetAddressUtils {
      *
      * @param ipAddr a long.
      * @return a {@link java.lang.String} object.
+     * @deprecated Dealing with IP addresses as 'long' type is not compatible with IPv6
      */
     public static String toIpAddrString(long ipAddr) {
         return getInetAddress(ipAddr).getHostAddress();
