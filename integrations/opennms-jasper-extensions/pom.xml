@@ -1,0 +1,26 @@
+<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+  xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
+  <modelVersion>4.0.0</modelVersion>
+<parent>
+	<groupId>org.opennms</groupId>
+	<artifactId>opennms</artifactId>
+	<version>1.8.6-SNAPSHOT</version>
+</parent>
+  <artifactId>opennms-jasper-extensions</artifactId>
+  <packaging>jar</packaging>
+
+  <name>opennms-jasper-extensions</name>
+  <url>http://maven.apache.org</url>
+
+	<dependencies>
+		<dependency>
+			<groupId>org.opennms.dependencies</groupId>
+			<artifactId>jasper-dependencies</artifactId>
+		</dependency>
+		<dependency>
+            <groupId>org.jrobin</groupId>
+            <artifactId>jrobin</artifactId>
+        </dependency>
+	</dependencies>
+
+</project>
