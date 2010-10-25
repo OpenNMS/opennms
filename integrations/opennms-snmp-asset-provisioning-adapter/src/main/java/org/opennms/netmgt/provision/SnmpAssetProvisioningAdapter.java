@@ -185,7 +185,8 @@ public class SnmpAssetProvisioningAdapter extends SimplerQueuedProvisioningAdapt
 			Properties substitutions = new Properties();
 			boolean foundAValue = false;
 			for (int i = 0; i < values.length; i++) {
-				if (SnmpValue.SNMP_NO_SUCH_OBJECT == values[i].getType()) {
+				// If the value is a NO_SUCH_OBJECT or NO_SUCH_INSTANCE error, then skip it
+				if (values[i].isError()) {
 					// No value for this OID
 					continue;
 				}

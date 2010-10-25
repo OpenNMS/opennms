@@ -131,7 +131,6 @@ public abstract class CapsdConfigManager implements CapsdConfig {
      * @throws org.exolab.castor.xml.MarshalException if any.
      * @throws org.exolab.castor.xml.ValidationException if any.
      */
-    @Deprecated
     public CapsdConfigManager(Reader rdr) throws MarshalException, ValidationException {
         loadXml(rdr);
     }
@@ -184,7 +183,6 @@ public abstract class CapsdConfigManager implements CapsdConfig {
      * @throws org.exolab.castor.xml.MarshalException if any.
      * @throws org.exolab.castor.xml.ValidationException if any.
      */
-    @SuppressWarnings("deprecation")
     protected void loadXml(Reader rdr) throws MarshalException, ValidationException {
         m_config = CastorUtils.unmarshal(CapsdConfiguration.class, rdr);
         loadIncludeUrls();

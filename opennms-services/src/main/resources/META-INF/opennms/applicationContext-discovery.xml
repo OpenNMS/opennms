@@ -13,6 +13,11 @@
     <property name="staticMethod"><value>org.opennms.netmgt.config.DiscoveryConfigFactory.getInstance</value></property>
   </bean>
 
+  <bean id="daemonListener" class="org.opennms.netmgt.model.events.AnnotationBasedEventListenerAdapter">
+    <property name="annotatedListener" ref="daemon" />
+    <property name="eventSubscriptionService" ref="eventSubscriptionService" />
+  </bean>
+
   <bean id="daemon" class="org.opennms.netmgt.discovery.Discovery">
     <property name="discoveryFactory" ref="discoveryFactory" />
     <property name="eventForwarder" ref="eventForwarder"/>
