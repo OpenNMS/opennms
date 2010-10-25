@@ -43,6 +43,7 @@ package org.opennms.netmgt.syslogd;
 
 import java.io.IOException;
 import java.net.DatagramSocket;
+import java.net.InetAddress;
 
 import org.opennms.core.utils.ThreadCategory;
 import org.opennms.netmgt.config.SyslogdConfig;
@@ -185,7 +186,7 @@ public final class SyslogHandler {
 
         try {
             if (m_dgIp != null && m_dgIp.length() != 0) {
-                m_dgSock = new DatagramSocket(m_dgPort, (new IPAddress(m_dgIp)).toInetAddress());
+                m_dgSock = new DatagramSocket(m_dgPort, InetAddress.getByName(m_dgIp));
             } else {
                 m_dgSock = new DatagramSocket(m_dgPort);
             }
