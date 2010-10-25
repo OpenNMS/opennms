@@ -584,6 +584,8 @@ public class EventConstants {
     public static final String REPORTD_RUN_REPORT = "uei.opennms.org/reportd/runReport";
     /** Constant <code>PARM_REPORT_NAME="reportName"</code> */
     public static final String PARM_REPORT_NAME = "reportName";
+    public static final String REPORT_RUN_FAILED_UEI = "uei.opennms.org/reportd/reportRunFailed";
+    public static final String REPORT_DELIVERY_FAILED_UEI = "uei.opennms.org/reportd/reportDeliveryFailed";
     
     /** Constant <code>REMOTE_NODE_LOST_SERVICE_UEI="uei.opennms.org/remote/nodes/nodeLostSe"{trunked}</code> */
     public static final String REMOTE_NODE_LOST_SERVICE_UEI = "uei.opennms.org/remote/nodes/nodeLostService";
