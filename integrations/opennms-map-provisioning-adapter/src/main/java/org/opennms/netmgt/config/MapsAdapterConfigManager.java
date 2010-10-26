@@ -47,6 +47,7 @@ import java.util.Map;
 
 import org.exolab.castor.xml.MarshalException;
 import org.exolab.castor.xml.ValidationException;
+import org.opennms.core.utils.ByteArrayComparator;
 import org.opennms.core.utils.InetAddressUtils;
 import org.opennms.core.utils.IpListFromUrl;
 import org.opennms.core.utils.ThreadCategory;
@@ -369,27 +370,21 @@ abstract public class MapsAdapterConfigManager implements MapsAdapterConfig {
         // the range 0.0.0.0 - 255.255.255.255
         has_range_include = pkg.getIncludeRangeCount() == 0 && pkg.getSpecificCount() == 0;
         
-        long addr = InetAddressUtils.toIpAddrLong(iface);
-        
-        Enumeration<IncludeRange> eincs = pkg.enumerateIncludeRange();
-        while (!has_range_include && eincs.hasMoreElements()) {
-            IncludeRange rng = eincs.nextElement();
-            long start = InetAddressUtils.toIpAddrLong(rng.getBegin());
-            if (addr > start) {
-                long end = InetAddressUtils.toIpAddrLong(rng.getEnd());
-                if (addr <= end) {
-                    has_range_include = true;
-                }
-            } else if (addr == start) {
+        for (IncludeRange rng : pkg.getIncludeRangeCollection()) {
+            if (InetAddressUtils.isInetAddressInRange(iface, rng.getBegin(), rng.getEnd())) {
                 has_range_include = true;
+                break;
             }
         }
     
-        Enumeration<String> espec = pkg.enumerateSpecific();
-        while (!has_specific && espec.hasMoreElements()) {
-            long speca = InetAddressUtils.toIpAddrLong(espec.nextElement());
-            if (speca == addr)
+        byte[] addr = InetAddressUtils.toIpAddrBytes(iface);
+
+        for (String spec : pkg.getSpecificCollection()) {
+            byte[] speca = InetAddressUtils.toIpAddrBytes(spec);
+            if (new ByteArrayComparator().compare(speca, addr) == 0) {
                 has_specific = true;
+                break;
+            }
         }
     
         Enumeration<String> eurl = pkg.enumerateIncludeUrl();
@@ -397,17 +392,10 @@ abstract public class MapsAdapterConfigManager implements MapsAdapterConfig {
             has_specific = interfaceInUrl(iface, eurl.nextElement());
         }
     
-        Enumeration<ExcludeRange> eex = pkg.enumerateExcludeRange();
-        while (!has_range_exclude && !has_specific && eex.hasMoreElements()) {
-            ExcludeRange rng = eex.nextElement();
-            long start = InetAddressUtils.toIpAddrLong(rng.getBegin());
-            if (addr > start) {
-                long end = InetAddressUtils.toIpAddrLong(rng.getEnd());
-                if (addr <= end) {
-                    has_range_exclude = true;
-                }
-            } else if (addr == start) {
+        for (ExcludeRange rng : pkg.getExcludeRangeCollection()) {
+            if (InetAddressUtils.isInetAddressInRange(iface, rng.getBegin(), rng.getEnd())) {
                 has_range_exclude = true;
+                break;
             }
         }
     

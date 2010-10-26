@@ -57,6 +57,7 @@ import java.util.List;
 import org.exolab.castor.xml.MarshalException;
 import org.exolab.castor.xml.Marshaller;
 import org.exolab.castor.xml.ValidationException;
+import org.opennms.core.utils.ByteArrayComparator;
 import org.opennms.core.utils.FilteringIterator;
 import org.opennms.core.utils.InetAddressUtils;
 import org.opennms.core.utils.IteratorIterator;
@@ -469,13 +470,16 @@ public final class DiscoveryConfigFactory {
      */
     public boolean isExcluded(InetAddress address) {
         if (getConfiguration().getExcludeRangeCollection() != null) {
-            long laddr = InetAddressUtils.toIpAddrLong(address.getAddress());
+            byte[] laddr = address.getAddress();
     
             for (ExcludeRange range : getConfiguration().getExcludeRangeCollection()) {
                 try {
-                    long begin = InetAddressUtils.toIpAddrLong(InetAddress.getByName(range.getBegin()).getAddress());
-                    long end = InetAddressUtils.toIpAddrLong(InetAddress.getByName(range.getEnd()).getAddress());
-                    if (begin <= laddr && laddr <= end) {
+                    byte[] begin = InetAddress.getByName(range.getBegin()).getAddress();
+                    byte[] end = InetAddress.getByName(range.getEnd()).getAddress();
+                    ByteArrayComparator comparator = new ByteArrayComparator();
+                    int beginComp = comparator.compare(begin, laddr);
+                    int endComp = comparator.compare(laddr, end);
+                    if (beginComp <= 0 && endComp <= 0) {
                         return true;
                     }
                 } catch (UnknownHostException ex) {

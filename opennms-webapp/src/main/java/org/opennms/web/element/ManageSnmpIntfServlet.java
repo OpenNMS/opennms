@@ -54,7 +54,7 @@ import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import javax.servlet.http.HttpSession;
 
-import org.opennms.core.utils.IPSorter;
+import org.opennms.core.utils.InetAddressUtils;
 import org.opennms.core.utils.ThreadCategory;
 import org.opennms.netmgt.config.SnmpPeerFactory;
 import org.opennms.netmgt.snmp.SnmpAgentConfig;
@@ -143,7 +143,7 @@ public final class ManageSnmpIntfServlet extends HttpServlet {
                             .getIpAddress()));
                 }
 
-                InetAddress lowest = IPSorter.getLowestInetAddress(ips);
+                InetAddress lowest = InetAddressUtils.getLowestInetAddress(ips);
 
                 if (lowest != null) {
                     snmpIp = lowest.getHostAddress();

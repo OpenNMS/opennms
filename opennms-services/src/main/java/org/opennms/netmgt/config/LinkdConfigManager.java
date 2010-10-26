@@ -48,6 +48,7 @@ import java.util.Map;
 import org.exolab.castor.xml.MarshalException;
 import org.exolab.castor.xml.Marshaller;
 import org.exolab.castor.xml.ValidationException;
+import org.opennms.core.utils.ByteArrayComparator;
 import org.opennms.core.utils.InetAddressUtils;
 import org.opennms.core.utils.IpListFromUrl;
 import org.opennms.core.utils.LogUtils;
@@ -499,7 +500,9 @@ abstract public class LinkdConfigManager implements LinkdConfig {
         boolean has_range_include = false;
         boolean has_range_exclude = false;
  
-        long addr = InetAddressUtils.toIpAddrLong(iface);
+        byte[] addr = InetAddressUtils.toIpAddrBytes(iface);
+
+        ByteArrayComparator comparator = new ByteArrayComparator();
 
         // if there are NO include ranges then treat act as if the user include
         // the range 0.0.0.0 - 255.255.255.255
@@ -507,8 +510,8 @@ abstract public class LinkdConfigManager implements LinkdConfig {
 
         // Specific wins; if we find one, return immediately.
         for (final String spec : pkg.getSpecificCollection()) {
-            final long speca = InetAddressUtils.toIpAddrLong(spec);
-            if (speca == addr) {
+            final byte[] speca = InetAddressUtils.toIpAddrBytes(spec);
+            if (comparator.compare(speca, addr) == 0) {
                 has_specific = true;
                 break;
             }
@@ -523,14 +526,14 @@ abstract public class LinkdConfigManager implements LinkdConfig {
 
         if (!has_range_include) {
             for (final IncludeRange rng : pkg.getIncludeRangeCollection()) {
-                final long start = InetAddressUtils.toIpAddrLong(rng.getBegin());
-                if (addr > start) {
-                    final long end = InetAddressUtils.toIpAddrLong(rng.getEnd());
-                    if (addr <= end) {
+                final byte[] start = InetAddressUtils.toIpAddrBytes(rng.getBegin());
+                if (comparator.compare(addr, start) > 0) {
+                    final byte[] end = InetAddressUtils.toIpAddrBytes(rng.getEnd());
+                    if (comparator.compare(addr, end) <= 0) {
                         has_range_include = true;
                         break;
                     }
-                } else if (addr == start) {
+                } else if (comparator.compare(addr, start) == 0) {
                     has_range_include = true;
                     break;
                 }
@@ -538,14 +541,14 @@ abstract public class LinkdConfigManager implements LinkdConfig {
         }
 
         for (final ExcludeRange rng : pkg.getExcludeRangeCollection()) {
-            long start = InetAddressUtils.toIpAddrLong(rng.getBegin());
-            if (addr > start) {
-                long end = InetAddressUtils.toIpAddrLong(rng.getEnd());
-                if (addr <= end) {
+            byte[] start = InetAddressUtils.toIpAddrBytes(rng.getBegin());
+            if (comparator.compare(addr, start) > 0) {
+                final byte[] end = InetAddressUtils.toIpAddrBytes(rng.getEnd());
+                if (comparator.compare(addr, end) <= 0) {
                     has_range_exclude = true;
                     break;
                 }
-            } else if (addr == start) {
+            } else if (comparator.compare(addr, start) == 0) {
                 has_range_exclude = true;
                 break;
             }
@@ -622,7 +625,7 @@ abstract public class LinkdConfigManager implements LinkdConfig {
         createUrlIpMap();
         createPackageIpListMap();
         initializeVlanClassNames();
-        initializeIpRouteClassNames();        
+        initializeIpRouteClassNames();
     }
     /**
      * Saves the current in-memory configuration to disk and reloads

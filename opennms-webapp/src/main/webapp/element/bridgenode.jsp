@@ -49,7 +49,7 @@
 				java.util.*,
 				java.net.*,
 				java.util.regex.Pattern,
-                org.opennms.core.utils.IPSorter,
+                org.opennms.core.utils.InetAddressUtils,
                 org.opennms.web.svclayer.ResourceService,
                 org.springframework.web.context.WebApplicationContext,
                 org.springframework.web.context.support.WebApplicationContextUtils
@@ -121,7 +121,7 @@
             ips.add(InetAddress.getByName(service.getIpAddress()));
         }
         
-        InetAddress lowest = IPSorter.getLowestInetAddress(ips);
+        InetAddress lowest = InetAddressUtils.getLowestInetAddress(ips);
         
         if (lowest != null) {
             telnetIp = lowest.getHostAddress();
@@ -138,7 +138,7 @@
             ips.add(InetAddress.getByName(service.getIpAddress()));
         }
 
-        InetAddress lowest = IPSorter.getLowestInetAddress(ips);
+        InetAddress lowest = InetAddressUtils.getLowestInetAddress(ips);
 
         if (lowest != null) {
             httpIp = lowest.getHostAddress();
