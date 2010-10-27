@@ -99,9 +99,6 @@ import org.springframework.util.Assert;
  *
  * @author <a href="mailto:weave@oculan.com">Brian Weaver </a>
  * @author <a href="http://www.opennms.org/">OpenNMS </a>
- * @author <a href="mailto:weave@oculan.com">Brian Weaver </a>
- * @author <a href="http://www.opennms.org/">OpenNMS </a>
- * @version $Id: $
  */
 public final class BroadcastEventProcessor implements EventListener {
     /**
@@ -223,7 +220,7 @@ public final class BroadcastEventProcessor implements EventListener {
                 m_notificationCommandManager.update();
                 ebldr = new EventBuilder(EventConstants.RELOAD_DAEMON_CONFIG_SUCCESSFUL_UEI, getName());
                 ebldr.addParam(EventConstants.PARM_DAEMON_NAME, "Notifd");
-            } catch (Exception e) {
+            } catch (Throwable e) {
                 log().debug("onEvent: could not reload notifd configuration: "+e, e);
                 ebldr = new EventBuilder(EventConstants.RELOAD_DAEMON_CONFIG_FAILED_UEI, getName());
                 ebldr.addParam(EventConstants.PARM_DAEMON_NAME, "Notifd");
