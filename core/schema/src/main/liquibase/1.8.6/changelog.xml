@@ -16,4 +16,10 @@
 	</modifyColumn>	
 </changeSet>
 
+<changeSet author="rangerrick" id="1.8.6-notifications-index">
+	<createIndex tableName="usersnotified" indexName="usersnotified_notifyid_idx">
+		<column name="notifyid" />
+	</createIndex>
+</changeSet>
+
 </databaseChangeLog>
