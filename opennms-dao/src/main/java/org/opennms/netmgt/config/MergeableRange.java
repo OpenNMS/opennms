@@ -44,7 +44,7 @@ import org.opennms.netmgt.config.common.Range;
  */
 final class MergeableRange implements Comparable<Range> {
     private Range m_range;
-    private RangeComparator m_comparator;
+    private final RangeComparator m_comparator = new RangeComparator();
     private final MergeableSpecific m_first;
     private final MergeableSpecific m_last;
     
@@ -55,7 +55,6 @@ final class MergeableRange implements Comparable<Range> {
      */
     public MergeableRange(Range range) {
         m_range = range;
-        m_comparator = new RangeComparator();
         m_first = new MergeableSpecific(range.getBegin());
         m_last = new MergeableSpecific(range.getEnd());
     }
@@ -269,15 +268,6 @@ final class MergeableRange implements Comparable<Range> {
         }
         return newRange;
     }
-        
-    /**
-     * <p>getComparator</p>
-     *
-     * @return the comparator
-     */
-    public RangeComparator getComparator() {
-        return m_comparator;
-    }
 
     /**
      * <p>getFirst</p>
@@ -296,5 +286,4 @@ final class MergeableRange implements Comparable<Range> {
     public MergeableSpecific getLast() {
         return m_last;
     }
-
 }

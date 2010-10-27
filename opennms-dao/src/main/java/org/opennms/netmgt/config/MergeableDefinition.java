@@ -81,14 +81,11 @@ final class MergeableDefinition {
      */
     public boolean equals(Definition def) {
         boolean compares = false;
-        Definition matchingDef = (Definition)def;
-        
-        if (compareStrings(getConfigDef().getReadCommunity(), matchingDef.getReadCommunity())
-                && compareStrings(getConfigDef().getVersion(), matchingDef.getVersion())
-                && getConfigDef().getPort() == matchingDef.getPort() 
-                && getConfigDef().getRetry() == matchingDef.getRetry()
-                && getConfigDef().getTimeout() == matchingDef.getTimeout()
-                && compareStrings(getConfigDef().getVersion(), matchingDef.getVersion())) {
+        if (compareStrings(getConfigDef().getReadCommunity(), def.getReadCommunity())
+                && compareStrings(getConfigDef().getVersion(), def.getVersion())
+                && getConfigDef().getPort() == def.getPort() 
+                && getConfigDef().getRetry() == def.getRetry()
+                && getConfigDef().getTimeout() == def.getTimeout()) {
             compares = true;
         }
         return compares;
