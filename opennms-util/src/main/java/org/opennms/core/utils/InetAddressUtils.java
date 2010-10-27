@@ -117,16 +117,6 @@ abstract public class InetAddressUtils {
     }
 
     /**
-     * <p>toIpAddrBytes</p>
-     *
-     * @param addr a {@link java.net.InetAddress} object.
-     * @return an array of byte.
-     */
-    public static byte[] toIpAddrBytes(InetAddress addr) {
-        return addr.getAddress();
-    }
-    
-    /**
      * <p>toIpAddrLong</p>
      *
      * @param address an array of byte.
