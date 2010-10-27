@@ -49,7 +49,7 @@ import org.opennms.core.utils.ThreadCategory;
  */
 public final class MergeableSpecific implements Comparable<String> {
     private String m_specific;
-    private final SpecificComparator m_comparator = new SpecificComparator();
+    private static final SpecificComparator m_comparator = new SpecificComparator();
     private long m_value;
 
     /**
