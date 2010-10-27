@@ -46,7 +46,6 @@ import junit.framework.TestCase;
 import org.exolab.castor.xml.MarshalException;
 import org.exolab.castor.xml.ValidationException;
 import org.opennms.core.utils.ByteArrayComparator;
-import org.opennms.core.utils.InetAddressUtils;
 import org.opennms.netmgt.config.snmp.SnmpConfig;
 import org.opennms.test.ConfigurationTestUtils;
 
