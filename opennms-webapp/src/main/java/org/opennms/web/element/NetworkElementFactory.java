@@ -65,6 +65,7 @@ import org.hibernate.criterion.MatchMode;
 import org.hibernate.criterion.Order;
 import org.hibernate.criterion.Restrictions;
 import org.opennms.core.resource.Vault;
+import org.opennms.core.utils.ByteArrayComparator;
 import org.opennms.core.utils.DBUtils;
 import org.opennms.core.utils.InetAddressUtils;
 import org.opennms.netmgt.EventConstants;
@@ -80,16 +81,16 @@ import org.opennms.netmgt.linkd.DbStpInterfaceEntry;
 import org.opennms.netmgt.linkd.DbStpNodeEntry;
 import org.opennms.netmgt.linkd.DbVlanEntry;
 import org.opennms.netmgt.model.OnmsArpInterface;
-import org.opennms.netmgt.model.OnmsArpInterface.StatusType;
 import org.opennms.netmgt.model.OnmsCategory;
 import org.opennms.netmgt.model.OnmsCriteria;
 import org.opennms.netmgt.model.OnmsIpInterface;
-import org.opennms.netmgt.model.OnmsIpInterface.PrimaryType;
 import org.opennms.netmgt.model.OnmsMonitoredService;
 import org.opennms.netmgt.model.OnmsNode;
 import org.opennms.netmgt.model.OnmsRestrictions;
 import org.opennms.netmgt.model.OnmsServiceType;
 import org.opennms.netmgt.model.OnmsSnmpInterface;
+import org.opennms.netmgt.model.OnmsArpInterface.StatusType;
+import org.opennms.netmgt.model.OnmsIpInterface.PrimaryType;
 import org.opennms.web.Util;
 import org.opennms.web.svclayer.AggregateStatus;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -111,10 +112,6 @@ import org.springframework.web.context.support.WebApplicationContextUtils;
  *
  * @author <A HREF="larry@opennms.org">Larry Karnowski </A>
  * @author <A HREF="http://www.opennms.org/">OpenNMS </A>
- * @author <A HREF="larry@opennms.org">Larry Karnowski </A>
- * @author <A HREF="http://www.opennms.org/">OpenNMS </A>
- * @version $Id: $
- * @since 1.8.1
  */
 public class NetworkElementFactory {
     
@@ -2933,13 +2930,7 @@ public class NetworkElementFactory {
 
             // Sort by IP first if the IPs are non-0.0.0.0
             if (!"0.0.0.0".equals(o1.getIpAddress()) && !"0.0.0.0".equals(o2.getIpAddress())) {
-                if (InetAddressUtils.toIpAddrLong(o1.getIpAddress()) > InetAddressUtils.toIpAddrLong(o2.getIpAddress())) {
-                    return 1;
-                } else if (InetAddressUtils.toIpAddrLong(o1.getIpAddress()) < InetAddressUtils.toIpAddrLong(o2.getIpAddress())) {
-                    return -1;
-                } else {
-                    return 0;
-                }
+                return new ByteArrayComparator().compare(InetAddressUtils.toIpAddrBytes(o1.getIpAddress()), InetAddressUtils.toIpAddrBytes(o2.getIpAddress()));
             } else {
                 // Sort IPs that are non-0.0.0.0 so they are first
                 if (!"0.0.0.0".equals(o1.getIpAddress())) {

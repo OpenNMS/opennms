@@ -74,8 +74,8 @@ import java.util.List;
 import java.util.Map;
 import java.util.Set;
 
+import org.opennms.core.utils.ByteArrayComparator;
 import org.opennms.core.utils.DBUtils;
-import org.opennms.core.utils.InetAddressUtils;
 import org.opennms.core.utils.ThreadCategory;
 import org.opennms.netmgt.ConfigFileConstants;
 import org.opennms.netmgt.EventConstants;
@@ -1146,11 +1146,11 @@ final class SuspectEventProcessor implements Runnable {
             }
         }
 
-        long current = InetAddressUtils.toIpAddrLong(currentIf.getAddress());
-        long primary = InetAddressUtils.toIpAddrLong(oldPrimary.getAddress());
+        byte[] current = currentIf.getAddress();
+        byte[] primary = oldPrimary.getAddress();
 
         // Smallest address wins
-        if (current < primary) {
+        if (new ByteArrayComparator().compare(current, primary) < 0) {
             // Replace the primary interface with the current
             // interface only if the current interface is managed!
             if (!CapsdConfigFactory.getInstance().isAddressUnmanaged(currentIf)) {

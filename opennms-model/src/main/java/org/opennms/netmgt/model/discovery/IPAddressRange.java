@@ -31,6 +31,7 @@
  */
 package org.opennms.netmgt.model.discovery;
 
+import java.math.BigInteger;
 import java.util.Iterator;
 import java.util.NoSuchElementException;
 
@@ -43,8 +44,8 @@ import java.util.NoSuchElementException;
  */
 public class IPAddressRange implements Iterable<IPAddress> {
     
-    private IPAddress m_begin;
-    private IPAddress m_end;
+    private final IPAddress m_begin;
+    private final IPAddress m_end;
     
     /**
      * <p>Constructor for IPAddressRange.</p>
@@ -92,9 +93,14 @@ public class IPAddressRange implements Iterable<IPAddress> {
      * <p>size</p>
      *
      * @return a long.
+     * @deprecated Cannot calculate the size of IPv6 ranges that exceed the size of long integer
      */
     public long size() {
-        return m_end.toLong() - m_begin.toLong() + 1L;
+        BigInteger size = m_end.toBigInteger();
+        size = size.subtract(m_begin.toBigInteger());
+        // Add 1 because the range is inclusive of beginning and end
+        size = size.add(new BigInteger("1"));
+        return size.longValue();
     }
 
     /**
@@ -200,7 +206,7 @@ public class IPAddressRange implements Iterable<IPAddress> {
     
     private static class IPAddressRangeIterator implements Iterator<IPAddress> {
         
-        private IPAddressRange m_range;
+        private final IPAddressRange m_range;
         private IPAddress m_next;
 
         public IPAddressRangeIterator(IPAddressRange range) {
@@ -214,10 +220,10 @@ public class IPAddressRange implements Iterable<IPAddress> {
 
         public IPAddress next() {
             if (m_next == null) {
-                throw new NoSuchElementException("already returned the last element");
+                throw new NoSuchElementException("Already returned the last element");
             }
             
-            IPAddress next = m_next;
+            final IPAddress next = m_next;
             m_next = next.incr();
             if (!m_range.contains(m_next)) {
                 m_next = null;
@@ -226,7 +232,7 @@ public class IPAddressRange implements Iterable<IPAddress> {
         }
 
         public void remove() {
-            throw new UnsupportedOperationException("IPAddressRangeIterator.remove is not yet implemented");
+            throw new UnsupportedOperationException("IPAddressRangeIterator.remove() is not yet implemented");
         }
         
     }

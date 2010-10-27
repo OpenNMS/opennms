@@ -31,7 +31,10 @@
  */
 package org.opennms.netmgt.model.discovery;
 
+import java.math.BigInteger;
 import java.net.InetAddress;
+import java.net.UnknownHostException;
+import java.util.Arrays;
 
 import org.opennms.core.utils.ByteArrayComparator;
 import org.opennms.core.utils.InetAddressUtils;
@@ -43,8 +46,17 @@ import org.opennms.core.utils.InetAddressUtils;
  * @version $Id: $
  */
 public class IPAddress implements Comparable<IPAddress> {
+    private static final byte MAX_BYTE = -1; // 0xFF
+    private static final BigInteger MIN_INET_ADDRESS_BIG_INTEGER = new BigInteger("0");
+    private static final BigInteger MAX_INET_ADDRESS_BIG_INTEGER;
+    
+    static {
+        byte[] maxBytes = new byte[16];
+        Arrays.fill(maxBytes, MAX_BYTE);
+        MAX_INET_ADDRESS_BIG_INTEGER = new BigInteger(1, maxBytes);
+    }
 
-    byte[] m_ipAddr;
+    final byte[] m_ipAddr;
     
     /**
      * <p>Constructor for IPAddress.</p>
@@ -99,16 +111,6 @@ public class IPAddress implements Comparable<IPAddress> {
     public byte[] toOctets() {
         return m_ipAddr;
     }
-    
-    /**
-     * <p>toLong</p>
-     *
-     * @return a long.
-     * @deprecated Representing IP addresses as long integers is not IPv6-compatible
-     */
-    public long toLong() {
-        return InetAddressUtils.toIpAddrLong(m_ipAddr);
-    }
 
     /** {@inheritDoc} */
     @Override
@@ -135,24 +137,46 @@ public class IPAddress implements Comparable<IPAddress> {
         return InetAddressUtils.toIpAddrString(m_ipAddr);
     }
     
+    /** {@inheritDoc} */
+    public BigInteger toBigInteger() {
+        return new BigInteger(1, m_ipAddr);
+    }
+    
     /**
      * <p>incr</p>
      *
      * @return a {@link org.opennms.netmgt.model.discovery.IPAddress} object.
-     * @deprecated Relies on a conversion of an IP address to a long integer which is not IPv6-compatible
      */
     public IPAddress incr() {
-        return new IPAddress(InetAddressUtils.toIpAddrBytes(InetAddressUtils.toIpAddrLong(m_ipAddr) + 1));
+        BigInteger addr = new BigInteger(1, m_ipAddr);
+        addr = addr.add(new BigInteger("1"));
+
+        if (addr.compareTo(MAX_INET_ADDRESS_BIG_INTEGER) > 0) {
+            throw new IllegalStateException("Cannot increment IP address above 2^128 - 1 (the maximum IPv6 address): " + this.toString());
+        }
+        try {
+            return new IPAddress(InetAddressUtils.convertBigIntegerIntoInetAddress(addr).getAddress());
+        } catch (UnknownHostException e) {
+            return null;
+        }
     }
     
     /**
      * <p>decr</p>
      *
      * @return a {@link org.opennms.netmgt.model.discovery.IPAddress} object.
-     * @deprecated Relies on a conversion of an IP address to a long integer which is not IPv6-compatible
      */
     public IPAddress decr() {
-        return new IPAddress(InetAddressUtils.toIpAddrBytes(InetAddressUtils.toIpAddrLong(m_ipAddr) - 1));
+        BigInteger addr = new BigInteger(1, m_ipAddr);
+        addr = addr.subtract(new BigInteger("1"));
+        if (addr.compareTo(MIN_INET_ADDRESS_BIG_INTEGER) < 0) {
+            throw new IllegalStateException("Cannot decrement IP address below zero: " + this.toString());
+        }
+        try {
+            return new IPAddress(InetAddressUtils.convertBigIntegerIntoInetAddress(addr).getAddress());
+        } catch (UnknownHostException e) {
+            return null;
+        }
     }
     
     /**

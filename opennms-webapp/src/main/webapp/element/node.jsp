@@ -60,7 +60,7 @@
 		java.util.*,
 		java.net.*,
         java.sql.SQLException,
-        org.opennms.core.utils.IPSorter,
+        org.opennms.core.utils.InetAddressUtils,
         org.opennms.web.pathOutage.*,
         org.opennms.web.springframework.security.Authentication,
         org.opennms.web.svclayer.ResourceService,
@@ -129,7 +129,7 @@
             ips.add(InetAddress.getByName(service.getIpAddress()));
         }
 
-        InetAddress lowest = IPSorter.getLowestInetAddress(ips);
+        InetAddress lowest = InetAddressUtils.getLowestInetAddress(ips);
 
         if (lowest != null) {
             return lowest.getHostAddress();

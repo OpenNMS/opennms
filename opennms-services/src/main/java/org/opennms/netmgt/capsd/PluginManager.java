@@ -164,7 +164,6 @@ public class PluginManager implements InitializingBean {
                 }
     
                 // check the ranges
-                long laddr = InetAddressUtils.toIpAddrLong(address.getAddress());
                 List<Range> ranges = getCapsdConfig().getRanges(pluginConf);
                 Iterator<Range> rangeIter = ranges.iterator();
                 while (rangeIter.hasNext() && !found) {
@@ -186,7 +185,7 @@ public class PluginManager implements InitializingBean {
                         continue;
                     }
     
-                    if (InetAddressUtils.toIpAddrLong(start) <= laddr && laddr <= InetAddressUtils.toIpAddrLong(stop)) {
+                    if (InetAddressUtils.isInetAddressInRange(address.getAddress(), start.getAddress(), stop.getAddress())) {
                         found = true;
                     }
                 }
