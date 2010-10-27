@@ -106,8 +106,8 @@ public class BaseDetectorHandler<Request, Response> extends IoHandlerAdapter {
     /** {@inheritDoc} */
     @SuppressWarnings("unchecked")
     public void messageReceived(IoSession session, Object message) throws Exception {
-        try {    
-        System.err.printf("Client Receiving: %s\n", message.toString().trim());
+        try {
+            LogUtils.debugf(this, "Client Receiving: %s\n", message.toString().trim());
             
             if(m_conversation.hasExchanges() && m_conversation.validate((Response)message)) {
                
