@@ -302,21 +302,21 @@ function doDelete() {
               </tr>
               <tr> 
                 <th>Last Service Scan</th>
-                <td><%=intf_db.getLastCapsdPoll()%></td>
+                <td><%=(intf_db.getLastCapsdPoll() == null) ? "&nbsp;" : intf_db.getLastCapsdPoll()%></td>
               </tr>
 			  <tr>
-	            <th>Snmp Polling Status</th>
-	            <td><%=ElementUtil.getSnmpInterfaceStatusString(intf_db)%></td>
+	            <th>SNMP Polling Status</th>
+	            <td><%=(ElementUtil.getSnmpInterfaceStatusString(intf_db) == null) ? "&nbsp;" : ElementUtil.getSnmpInterfaceStatusString(intf_db)%></td>
 	          </tr>  
        <% if(request.isUserInRole( Authentication.ADMIN_ROLE )) { %>
               <tr>
-                <th>Snmp Polling Package</th>
+                <th>SNMP Polling Package</th>
                 <td><%= (snmpPollerCfgFactory.getPackageName(NetworkElementFactory.getInstance(getServletContext()).getIpPrimaryAddress(nodeId)) == null) ? "&nbsp;" : 
                 snmpPollerCfgFactory.getPackageName(NetworkElementFactory.getInstance(getServletContext()).getIpPrimaryAddress(nodeId))%></td>
               </tr>
 	   <% } %>
               <tr> 
-                <th>Last Snmp Poll</th>
+                <th>Last SNMP Poll</th>
     	        <td><%=(intf_db.getSnmpLastSnmpPoll() == null) ? "&nbsp;" : intf_db.getSnmpLastSnmpPoll()%></td>
         	  </tr>
               
