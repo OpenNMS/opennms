@@ -32,12 +32,10 @@ package org.opennms.netmgt.provision.detector.ssh.client;
 
 import java.io.IOException;
 import java.net.InetAddress;
-import java.util.HashMap;
-import java.util.Map;
+import java.util.Collections;
 
 import org.apache.regexp.RE;
 import org.opennms.core.utils.LogUtils;
-import org.opennms.core.utils.ParameterMap;
 import org.opennms.core.utils.TimeoutTracker;
 import org.opennms.netmgt.model.PollStatus;
 import org.opennms.netmgt.provision.detector.ssh.request.NullRequest;
@@ -55,11 +53,11 @@ import org.opennms.netmgt.provision.support.ssh.Ssh;
 public class SshClient implements Client<NullRequest, SshResponse> {
     
     private boolean m_isAvailable = false;
-    private Map<String, Object> m_parameters = new HashMap<String, Object>();
-    /** Constant <code>DEFAULT_PORT=22</code> */
-    public static final int DEFAULT_PORT = 22;
-    /** Constant <code>DEFAULT_TIMEOUT=3000</code> */
-    public static final int DEFAULT_TIMEOUT = 3000;
+    
+    private String m_banner = null;
+    private String m_match = null;
+    private String m_clientBanner = Ssh.DEFAULT_CLIENT_BANNER;
+    
     public static final int DEFAULT_RETRY = 0;
     
     /**
@@ -71,11 +69,11 @@ public class SshClient implements Client<NullRequest, SshResponse> {
 
     /** {@inheritDoc} */
     public void connect(InetAddress address, int port, int timeout) throws IOException, Exception {
-        TimeoutTracker tracker = new TimeoutTracker(m_parameters, SshClient.DEFAULT_RETRY, SshClient.DEFAULT_TIMEOUT);
+        TimeoutTracker tracker = new TimeoutTracker(Collections.emptyMap(), SshClient.DEFAULT_RETRY, timeout);
         
-        String banner = ParameterMap.getKeyedString(m_parameters, "banner", null);
-        String match = ParameterMap.getKeyedString(m_parameters, "match", null);
-        String clientBanner = ParameterMap.getKeyedString(m_parameters, "client-banner", Ssh.DEFAULT_CLIENT_BANNER);
+        String banner = m_banner;
+        String match = m_match;
+        String clientBanner = m_clientBanner;
         PollStatus ps = PollStatus.unavailable();
         
         Ssh ssh = new Ssh(address, port, tracker.getConnectionTimeout());
@@ -155,7 +153,7 @@ public class SshClient implements Client<NullRequest, SshResponse> {
      * @param banner a {@link java.lang.String} object.
      */
     public void setBanner(String banner) {
-        m_parameters.put("banner", banner);
+        m_banner = banner;
     }
     
     /**
@@ -164,7 +162,7 @@ public class SshClient implements Client<NullRequest, SshResponse> {
      * @param match a {@link java.lang.String} object.
      */
     public void setMatch(String match) {
-        m_parameters.put("match", match);
+        m_match = match;
     }
     
     /**
@@ -173,7 +171,7 @@ public class SshClient implements Client<NullRequest, SshResponse> {
      * @param clientBanner a {@link java.lang.String} object.
      */
     public void setClientBanner(String clientBanner) {
-        m_parameters.put("client-banner", clientBanner);
+        m_clientBanner = clientBanner;
     }
 
 }
