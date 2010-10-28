@@ -29,71 +29,71 @@
             <goals>
               <goal>unpack</goal>
             </goals>
-	         <configuration>
-	           <outputDirectory>${project.build.directory}</outputDirectory>
-	           <artifactItems>
-	             <artifactItem>
-	               <groupId>org.opennms</groupId>
-	               <artifactId>drools-correlation-engine</artifactId>
+            <configuration>
+              <outputDirectory>${project.build.directory}</outputDirectory>
+              <artifactItems>
+                <artifactItem>
+                  <groupId>org.opennms</groupId>
+                  <artifactId>drools-correlation-engine</artifactId>
                   <version>${project.version}</version>
                   <classifier>xsds</classifier>
-	             </artifactItem>
-	             <artifactItem>
-	               <groupId>org.opennms</groupId>
-	               <artifactId>opennms-config</artifactId>
+                </artifactItem>
+                <artifactItem>
+                  <groupId>org.opennms</groupId>
+                  <artifactId>opennms-config</artifactId>
                   <version>${project.version}</version>
                   <classifier>xsds</classifier>
-	             </artifactItem>
-	             <artifactItem>
-	               <groupId>org.opennms</groupId>
-	               <artifactId>opennms-dao</artifactId>
+                </artifactItem>
+                <artifactItem>
+                  <groupId>org.opennms</groupId>
+                  <artifactId>opennms-dao</artifactId>
                   <version>${project.version}</version>
                   <classifier>xsds</classifier>
-	             </artifactItem>
-	             <artifactItem>
-	               <groupId>org.opennms</groupId>
-	               <artifactId>opennms-model</artifactId>
+                </artifactItem>
+                <artifactItem>
+                  <groupId>org.opennms</groupId>
+                  <artifactId>opennms-model</artifactId>
                   <version>${project.version}</version>
                   <classifier>xsds</classifier>
-	             </artifactItem>
-	             <artifactItem>
-	               <groupId>org.opennms</groupId>
-	               <artifactId>opennms-provision-persistence</artifactId>
+                </artifactItem>
+                <artifactItem>
+                  <groupId>org.opennms</groupId>
+                  <artifactId>opennms-provision-persistence</artifactId>
                   <version>${project.version}</version>
                   <classifier>xsds</classifier>
-	             </artifactItem>
-	             <artifactItem>
-	               <groupId>org.opennms</groupId>
-	               <artifactId>opennms-link-provisioning-adapter</artifactId>
+                </artifactItem>
+                <artifactItem>
+                  <groupId>org.opennms</groupId>
+                  <artifactId>opennms-link-provisioning-adapter</artifactId>
                   <version>${project.version}</version>
                   <classifier>xsds</classifier>
-	             </artifactItem>
-	             <artifactItem>
-	               <groupId>org.opennms</groupId>
-	               <artifactId>opennms-qosdaemon</artifactId>
+                </artifactItem>
+                <artifactItem>
+                  <groupId>org.opennms</groupId>
+                  <artifactId>opennms-qosdaemon</artifactId>
                   <version>${project.version}</version>
                   <classifier>xsds</classifier>
-	             </artifactItem>
-	             <artifactItem>
-	               <groupId>org.opennms</groupId>
-	               <artifactId>opennms-reporting</artifactId>
+                </artifactItem>
+                <artifactItem>
+                  <groupId>org.opennms</groupId>
+                  <artifactId>opennms-reporting</artifactId>
                   <version>${project.version}</version>
                   <classifier>xsds</classifier>
-	             </artifactItem>
-	             <artifactItem>
-	               <groupId>org.opennms</groupId>
-	               <artifactId>opennms-webapp</artifactId>
+                </artifactItem>
+                <artifactItem>
+                  <groupId>org.opennms</groupId>
+                  <artifactId>opennms-webapp</artifactId>
                   <version>${project.version}</version>
                   <classifier>xsds</classifier>
-	             </artifactItem>
+                </artifactItem>
                 <artifactItem>
                   <groupId>org.opennms.features.sms-reflector</groupId>
                   <artifactId>sms-monitor</artifactId>
                   <version>${project.version}</version>
                   <classifier>xsds</classifier>
-	             </artifactItem>
-	           </artifactItems>
-	         </configuration>
+                </artifactItem>
+              </artifactItems>
+            </configuration>
           </execution>
           <execution>
             <id>unpack-remote-poller</id>
@@ -101,72 +101,72 @@
             <goals>
               <goal>unpack</goal>
             </goals>
-	         <configuration>
-	           <outputDirectory>${project.build.directory}</outputDirectory>
-	           <artifactItems>
-	             <artifactItem>
-	               <groupId>org.opennms.features</groupId>
-	               <artifactId>org.opennms.features.remote-poller-standalone</artifactId>
+            <configuration>
+              <outputDirectory>${project.build.directory}</outputDirectory>
+              <artifactItems>
+                <artifactItem>
+                  <groupId>org.opennms.features</groupId>
+                  <artifactId>org.opennms.features.remote-poller-standalone</artifactId>
                   <version>${project.version}</version>
                   <classifier>remote-poller</classifier>
-	             </artifactItem>
-	           </artifactItems>
-	         </configuration>
-	       </execution>
+                </artifactItem>
+              </artifactItems>
+            </configuration>
+          </execution>
           <execution>
             <id>unpack-jnlp</id>
             <phase>process-resources</phase>
             <goals>
               <goal>unpack</goal>
             </goals>
-	         <configuration>
-	           <outputDirectory>${project.build.directory}</outputDirectory>
-	           <artifactItems>
-	             <artifactItem>
-	               <groupId>org.opennms.features</groupId>
-	               <artifactId>org.opennms.features.remote-poller-jnlp</artifactId>
+            <configuration>
+              <outputDirectory>${project.build.directory}</outputDirectory>
+              <artifactItems>
+                <artifactItem>
+                  <groupId>org.opennms.features</groupId>
+                  <artifactId>org.opennms.features.remote-poller-jnlp</artifactId>
                   <version>${project.version}</version>
                   <classifier>jnlp</classifier>
-	             </artifactItem>
-	           </artifactItems>
-	         </configuration>
-	       </execution>
+                </artifactItem>
+              </artifactItems>
+            </configuration>
+          </execution>
           <execution>
             <id>unpack-webapp</id>
             <phase>process-resources</phase>
             <goals>
               <goal>unpack</goal>
             </goals>
-	         <configuration>
-	           <outputDirectory>${project.build.directory}/dependency-webapp</outputDirectory>
-	           <artifactItems>
-	             <artifactItem>
-	               <groupId>org.opennms.features</groupId>
-	               <artifactId>org.opennms.features.webapp-full</artifactId>
+            <configuration>
+              <outputDirectory>${project.build.directory}/dependency-webapp</outputDirectory>
+              <artifactItems>
+                <artifactItem>
+                  <groupId>org.opennms.features</groupId>
+                  <artifactId>org.opennms.features.webapp-full</artifactId>
                   <version>${project.version}</version>
-	               <type>war</type>
-	             </artifactItem>
-	           </artifactItems>
-	         </configuration>
-	       </execution>
+                  <type>war</type>
+                </artifactItem>
+              </artifactItems>
+            </configuration>
+          </execution>
           <execution>
             <id>unpack-remoting</id>
             <phase>process-resources</phase>
             <goals>
               <goal>unpack</goal>
             </goals>
-	         <configuration>
-	           <outputDirectory>${project.build.directory}/dependency-remoting</outputDirectory>
-	           <artifactItems>
+            <configuration>
+              <outputDirectory>${project.build.directory}/dependency-remoting</outputDirectory>
+              <artifactItems>
                 <artifactItem>
                   <groupId>org.opennms.features</groupId>
                   <artifactId>org.opennms.features.http-remoting</artifactId>
                   <version>${project.version}</version>
                   <type>war</type>
-	             </artifactItem>
-	           </artifactItems>
-	         </configuration>
-	       </execution>
+                </artifactItem>
+              </artifactItems>
+            </configuration>
+          </execution>
         </executions>
       </plugin>
       <plugin>
