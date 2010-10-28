@@ -35,10 +35,16 @@ import java.net.InetAddress;
 import java.util.HashMap;
 import java.util.Map;
 
+import org.apache.regexp.RE;
+import org.opennms.core.utils.LogUtils;
+import org.opennms.core.utils.ParameterMap;
+import org.opennms.core.utils.TimeoutTracker;
+import org.opennms.netmgt.model.PollStatus;
 import org.opennms.netmgt.provision.detector.ssh.request.NullRequest;
 import org.opennms.netmgt.provision.detector.ssh.response.SshResponse;
 import org.opennms.netmgt.provision.support.Client;
-import org.opennms.netmgt.provision.support.ssh.SshMonitor;
+import org.opennms.netmgt.provision.support.ssh.InsufficientParametersException;
+import org.opennms.netmgt.provision.support.ssh.Ssh;
 
 /**
  * <p>SshClient class.</p>
@@ -50,6 +56,11 @@ public class SshClient implements Client<NullRequest, SshResponse> {
     
     private boolean m_isAvailable = false;
     private Map<String, Object> m_parameters = new HashMap<String, Object>();
+    /** Constant <code>DEFAULT_PORT=22</code> */
+    public static final int DEFAULT_PORT = 22;
+    /** Constant <code>DEFAULT_TIMEOUT=3000</code> */
+    public static final int DEFAULT_TIMEOUT = 3000;
+    public static final int DEFAULT_RETRY = 0;
     
     /**
      * <p>close</p>
@@ -60,10 +71,57 @@ public class SshClient implements Client<NullRequest, SshResponse> {
 
     /** {@inheritDoc} */
     public void connect(InetAddress address, int port, int timeout) throws IOException, Exception {
-        SshMonitor m = new SshMonitor();
-        m_parameters.put("port", port);
+        TimeoutTracker tracker = new TimeoutTracker(m_parameters, SshClient.DEFAULT_RETRY, SshClient.DEFAULT_TIMEOUT);
         
-        m_isAvailable = m.poll(address, m_parameters).isAvailable();
+        String banner = ParameterMap.getKeyedString(m_parameters, "banner", null);
+        String match = ParameterMap.getKeyedString(m_parameters, "match", null);
+        String clientBanner = ParameterMap.getKeyedString(m_parameters, "client-banner", Ssh.DEFAULT_CLIENT_BANNER);
+        PollStatus ps = PollStatus.unavailable();
+        
+        Ssh ssh = new Ssh(address, port, tracker.getConnectionTimeout());
+        ssh.setClientBanner(clientBanner);
+        
+        RE regex = null;
+        if (match == null && (banner == null || banner.equals("*"))) {
+            regex = null;
+        } else if (match != null) {
+            regex = new RE(match);
+        } else if (banner != null) {
+            regex = new RE(banner);
+        }
+        
+        for (tracker.reset(); tracker.shouldRetry() && !ps.isAvailable(); tracker.nextAttempt()) {
+            try {
+                ps = ssh.poll(tracker);
+            } catch (InsufficientParametersException e) {
+                LogUtils.errorf(this, e.getMessage());
+                break;
+            }
+        
+        }
+        
+        // If banner matching string is null or wildcard ("*") then we
+        // only need to test connectivity and we've got that!
+        
+        if (regex != null && ps.isAvailable()) {
+            String response = ssh.getServerBanner();
+        
+            if (response == null) {
+                ps = PollStatus.unavailable("server closed connection before banner was recieved.");
+            }
+        
+            if (!regex.match(response)) {
+                // Got a response but it didn't match... no need to attempt
+                // retries
+                LogUtils.debugf(this, "isServer: NON-matching response='%s'", response);
+                ps = PollStatus.unavailable("server responded, but banner did not match '" + banner + "'");
+            } else {
+                LogUtils.debugf(this, "isServer: matching response='%s'", response);
+            }
+        }
+        PollStatus result = ps;
+        
+        m_isAvailable = result.isAvailable();
     }
 
     /**
