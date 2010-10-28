@@ -55,6 +55,7 @@ import org.opennms.netmgt.model.events.EventBuilder;
 import org.opennms.netmgt.notifd.mock.MockNotifdConfigManager;
 import org.opennms.test.ConfigurationTestUtils;
 import org.opennms.test.DaoTestConfigBean;
+import org.springframework.jdbc.core.JdbcTemplate;
 
 public class NotificationManagerTest extends AbstractTransactionalTemporaryDatabaseSpringContextTests {
     private NotificationManagerImpl m_notificationManager;
@@ -89,44 +90,45 @@ public class NotificationManagerTest extends AbstractTransactionalTemporaryDatab
         m_configManager = new MockNotifdConfigManager(ConfigurationTestUtils.getConfigForResourceWithReplacements(this, "notifd-configuration.xml"));
         m_notificationManager = new NotificationManagerImpl(m_configManager, getDataSource());
         
-        assertNotNull("getJdbcTemplate() should not return null", getJdbcTemplate());
+        JdbcTemplate template = getJdbcTemplate();
+        assertNotNull("getJdbcTemplate() should not return null", template);
         assertNotNull("getJdbcTemplate().getJdbcOperations() should not return null", getSimpleJdbcTemplate().getJdbcOperations());
 
-        getJdbcTemplate().update("INSERT INTO service ( serviceId, serviceName ) VALUES ( 1, 'HTTP' )");
+        template.update("INSERT INTO service ( serviceId, serviceName ) VALUES ( 1, 'HTTP' )");
 
-        getJdbcTemplate().update("INSERT INTO node ( nodeId, nodeCreateTime, nodeLabel ) VALUES ( 1, now(), 'node 1' )");
-        getJdbcTemplate().update("INSERT INTO ipInterface ( nodeId, ipAddr ) VALUES ( 1, '192.168.1.1' )");
-        getJdbcTemplate().update("INSERT INTO ifServices ( nodeId, ipAddr, serviceId ) VALUES ( 1, '192.168.1.1', 1 )");
+        template.update("INSERT INTO node ( nodeId, nodeCreateTime, nodeLabel ) VALUES ( 1, now(), 'node 1' )");
+        template.update("INSERT INTO ipInterface ( nodeId, ipAddr ) VALUES ( 1, '192.168.1.1' )");
+        template.update("INSERT INTO ifServices ( nodeId, ipAddr, serviceId ) VALUES ( 1, '192.168.1.1', 1 )");
 
-        getJdbcTemplate().update("INSERT INTO node ( nodeId, nodeCreateTime, nodeLabel ) VALUES ( 2, now(), 'node 2' )");
-        getJdbcTemplate().update("INSERT INTO ipInterface ( nodeId, ipAddr ) VALUES ( 2, '192.168.1.1' )");
-        getJdbcTemplate().update("INSERT INTO ipInterface ( nodeId, ipAddr ) VALUES ( 2, '0.0.0.0' )");
-        getJdbcTemplate().update("INSERT INTO ifServices ( nodeId, ipAddr, serviceId ) VALUES ( 2, '192.168.1.1', 1 )");
+        template.update("INSERT INTO node ( nodeId, nodeCreateTime, nodeLabel ) VALUES ( 2, now(), 'node 2' )");
+        template.update("INSERT INTO ipInterface ( nodeId, ipAddr ) VALUES ( 2, '192.168.1.1' )");
+        template.update("INSERT INTO ipInterface ( nodeId, ipAddr ) VALUES ( 2, '0.0.0.0' )");
+        template.update("INSERT INTO ifServices ( nodeId, ipAddr, serviceId ) VALUES ( 2, '192.168.1.1', 1 )");
 
-        getJdbcTemplate().update("INSERT INTO node ( nodeId, nodeCreateTime, nodeLabel ) VALUES ( 3, now(), 'node 3' )");
-        getJdbcTemplate().update("INSERT INTO ipInterface ( nodeId, ipAddr ) VALUES ( 3, '192.168.1.2' )");
-        getJdbcTemplate().update("INSERT INTO ifServices ( nodeId, ipAddr, serviceId ) VALUES ( 3, '192.168.1.2', 1 )");
+        template.update("INSERT INTO node ( nodeId, nodeCreateTime, nodeLabel ) VALUES ( 3, now(), 'node 3' )");
+        template.update("INSERT INTO ipInterface ( nodeId, ipAddr ) VALUES ( 3, '192.168.1.2' )");
+        template.update("INSERT INTO ifServices ( nodeId, ipAddr, serviceId ) VALUES ( 3, '192.168.1.2', 1 )");
 
         // Node 4 has an interface, but no services
-        getJdbcTemplate().update("INSERT INTO node ( nodeId, nodeCreateTime, nodeLabel ) VALUES ( 4, now(), 'node 4' )");
-        getJdbcTemplate().update("INSERT INTO ipInterface ( nodeId, ipAddr ) VALUES ( 4, '192.168.1.3' )");
+        template.update("INSERT INTO node ( nodeId, nodeCreateTime, nodeLabel ) VALUES ( 4, now(), 'node 4' )");
+        template.update("INSERT INTO ipInterface ( nodeId, ipAddr ) VALUES ( 4, '192.168.1.3' )");
 
         // Node 5 has no interfaces
-        getJdbcTemplate().update("INSERT INTO node ( nodeId, nodeCreateTime, nodeLabel ) VALUES ( 5, now(), 'node 5' )");
+        template.update("INSERT INTO node ( nodeId, nodeCreateTime, nodeLabel ) VALUES ( 5, now(), 'node 5' )");
 
-        getJdbcTemplate().update("INSERT INTO categories ( categoryId, categoryName ) VALUES ( 1, 'CategoryOne' )");
-        getJdbcTemplate().update("INSERT INTO categories ( categoryId, categoryName ) VALUES ( 2, 'CategoryTwo' )");
-        getJdbcTemplate().update("INSERT INTO categories ( categoryId, categoryName ) VALUES ( 3, 'CategoryThree' )");
-        getJdbcTemplate().update("INSERT INTO categories ( categoryId, categoryName ) VALUES ( 4, 'CategoryFour' )");
+        template.update("INSERT INTO categories ( categoryId, categoryName ) VALUES ( 1, 'CategoryOne' )");
+        template.update("INSERT INTO categories ( categoryId, categoryName ) VALUES ( 2, 'CategoryTwo' )");
+        template.update("INSERT INTO categories ( categoryId, categoryName ) VALUES ( 3, 'CategoryThree' )");
+        template.update("INSERT INTO categories ( categoryId, categoryName ) VALUES ( 4, 'CategoryFour' )");
 
-        getJdbcTemplate().update("INSERT INTO category_node ( categoryId, nodeId ) VALUES ( 1, 1 )");
-        getJdbcTemplate().update("INSERT INTO category_node ( categoryId, nodeId ) VALUES ( 2, 1 )");
-        getJdbcTemplate().update("INSERT INTO category_node ( categoryId, nodeId ) VALUES ( 3, 1 )");
+        template.update("INSERT INTO category_node ( categoryId, nodeId ) VALUES ( 1, 1 )");
+        template.update("INSERT INTO category_node ( categoryId, nodeId ) VALUES ( 2, 1 )");
+        template.update("INSERT INTO category_node ( categoryId, nodeId ) VALUES ( 3, 1 )");
 
-        getJdbcTemplate().update("INSERT INTO category_node ( categoryId, nodeId ) VALUES ( 1, 2 )");
-        getJdbcTemplate().update("INSERT INTO category_node ( categoryId, nodeId ) VALUES ( 2, 2 )");
+        template.update("INSERT INTO category_node ( categoryId, nodeId ) VALUES ( 1, 2 )");
+        template.update("INSERT INTO category_node ( categoryId, nodeId ) VALUES ( 2, 2 )");
         // Not a member of the third category, but is a member of the fourth
-        getJdbcTemplate().update("INSERT INTO category_node ( categoryId, nodeId ) VALUES ( 4, 2 )");
+        template.update("INSERT INTO category_node ( categoryId, nodeId ) VALUES ( 4, 2 )");
 
         setComplete();
         endTransaction();

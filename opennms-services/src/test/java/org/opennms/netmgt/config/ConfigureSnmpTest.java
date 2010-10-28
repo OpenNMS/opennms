@@ -68,16 +68,15 @@ public class ConfigureSnmpTest extends TestCase {
     	SnmpPeerFactory.setInstance(new SnmpPeerFactory(rsrc));
     }
 
-    //start back porting configure snmp enhancements from stable
     /**
      * Tests creating a string representation of an IP address that is converted to an InetAddress and then
      * a long and back to an IP address.
      * 
      * @throws UnknownHostException 
      */
-    public void testToLongToAddr() throws UnknownHostException {
+    public void testToIpAddrString() throws UnknownHostException {
         String addr = "192.168.1.1";
-        assertEquals(addr, InetAddressUtils.toIpAddrString(InetAddressUtils.toIpAddrLong(InetAddress.getByName(addr))));
+        assertEquals(addr, InetAddressUtils.toIpAddrString(InetAddress.getByName(addr).getAddress()));
     }
 
     /**
