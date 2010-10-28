@@ -58,51 +58,57 @@ import org.springframework.util.Assert;
  * @version $Id: $
  * @since 1.8.1
  */
-public class ElementUtil extends Object {
+public abstract class ElementUtil {
     /**
      * Do not use directly. Call {@link #getNodeStatusMap 
      * getInterfaceStatusMap} instead.
      */
-    private static Map<Character, String> m_nodeStatusMap;
+    private static final Map<Character, String> m_nodeStatusMap;
 
     /**
      * Do not use directly. Call {@link #getInterfaceStatusMap 
      * getInterfaceStatusMap} instead.
      */
-    private static Map<Character, String> m_interfaceStatusMap;
+    private static final Map<Character, String> m_interfaceStatusMap;
 
     /**
      * Do not use directly. Call {@link #getSnmpInterfaceStatusMap 
      * getInterfaceStatusMap} instead.
      */
-    private static Map<Character, String> m_interfaceSnmpStatusMap;
+    private static final Map<Character, String> m_interfaceSnmpStatusMap;
 
     /**
      * Do not use directly. Call {@link #getServiceStatusMap 
      * getServiceStatusMap} instead.
      */
-    private static Map<Character, String> m_serviceStatusMap;
+    private static final Map<Character, String> m_serviceStatusMap;
 
-    /**
-     * Returns the interface status map, initializing a new one if necessary.
-     *
-     * @return a java$util$Map object.
-     */
-    protected static Map<Character, String> getNodeStatusMap() {
-        if (m_nodeStatusMap == null) {
-            initNodeStatusMap();
-        }
-
-        return m_nodeStatusMap;
-    }
-
-    private synchronized static void initNodeStatusMap() {
-        Map<Character, String> map = new HashMap<Character, String>();
-        map.put(new Character('A'), "Active");
-        map.put(new Character(' '), "Unknown");
-        map.put(new Character('D'), "Deleted");
+    static {
+        m_nodeStatusMap = new HashMap<Character, String>();
+        m_nodeStatusMap.put('A', "Active");
+        m_nodeStatusMap.put(' ', "Unknown");
+        m_nodeStatusMap.put('D', "Deleted");
         
-        m_nodeStatusMap = map;
+        m_interfaceStatusMap = new HashMap<Character, String>();
+        m_interfaceStatusMap.put('M', "Managed");
+        m_interfaceStatusMap.put('U', "Unmanaged");
+        m_interfaceStatusMap.put('D', "Deleted");
+        m_interfaceStatusMap.put('F', "Forced Unmanaged");
+        m_interfaceStatusMap.put('N', "Not Monitored");
+        
+        m_interfaceSnmpStatusMap = new HashMap<Character, String>();
+        m_interfaceSnmpStatusMap.put('P', "Polled");
+        m_interfaceSnmpStatusMap.put('N', "Not Monitored");
+        
+        m_serviceStatusMap = new HashMap<Character, String>();
+        m_serviceStatusMap.put('A', "Managed");
+        m_serviceStatusMap.put('U', "Unmanaged");
+        m_serviceStatusMap.put('D', "Deleted");
+        m_serviceStatusMap.put('F', "Forced Unmanaged");
+        m_serviceStatusMap.put('N', "Not Monitored");
+        m_serviceStatusMap.put('R', "Rescan to Resume");
+        m_serviceStatusMap.put('S', "Rescan to Suspend");
+        m_serviceStatusMap.put('X', "Remotely Monitored");
     }
 
     /**
@@ -125,54 +131,9 @@ public class ElementUtil extends Object {
      * @return a {@link java.lang.String} object.
      */
     public static String getNodeStatusString(char c) {
-        return getNodeStatusMap().get(new Character(c));
+        return m_nodeStatusMap.get(c);
     }
     
-    /**
-     * Returns the interface status map, initializing a new one if necessary.
-     *
-     * @return a java$util$Map object.
-     */
-    protected static Map<Character, String> getInterfaceStatusMap() {
-        if (m_interfaceStatusMap == null) {
-            initInterfaceStatusMap();
-        }
-
-        return m_interfaceStatusMap;
-    }
-
-    private synchronized static void initInterfaceStatusMap() {
-        Map<Character, String> map = new HashMap<Character, String>();
-        map.put(new Character('M'), "Managed");
-        map.put(new Character('U'), "Unmanaged");
-        map.put(new Character('D'), "Deleted");
-        map.put(new Character('F'), "Forced Unmanaged");
-        map.put(new Character('N'), "Not Monitored");
-        
-        m_interfaceStatusMap = map;
-    }
-
-    /**
-     * Returns the interface status map, initializing a new one if necessary.
-     *
-     * @return a java$util$Map object.
-     */
-    protected static Map<Character, String> getSnmpInterfaceStatusMap() {
-        if (m_interfaceSnmpStatusMap == null) {
-            initSnmpInterfaceStatusMap();
-        }
-
-        return m_interfaceSnmpStatusMap;
-    }
-
-    private synchronized static void initSnmpInterfaceStatusMap() {
-        Map<Character, String> map = new HashMap<Character, String>();
-        map.put(new Character('P'), "Polled");
-        map.put(new Character('N'), "Not Monitored");
-        
-        m_interfaceSnmpStatusMap = map;
-    }
-
     /**
      * Return the human-readable name for a interface's status, may be null.
      *
@@ -193,8 +154,7 @@ public class ElementUtil extends Object {
      * @return a {@link java.lang.String} object.
      */
     public static String getInterfaceStatusString(char c) {
-        Map<Character, String> statusMap = getInterfaceStatusMap();
-        return statusMap.get(new Character(c));
+        return m_interfaceStatusMap.get(c);
     }
 
     /**
@@ -217,36 +177,7 @@ public class ElementUtil extends Object {
      * @return a {@link java.lang.String} object.
      */
     public static String getSnmpInterfaceStatusString(char c) {
-        Map<Character, String> statusMap = getSnmpInterfaceStatusMap();
-        return statusMap.get(new Character(c));
-    }
-
-    /**
-     * Returns the service status map, initializing a new one if necessary.
-     *
-     * @return a java$util$Map object.
-     */
-    protected static Map<Character, String> getServiceStatusMap() {
-        if (m_serviceStatusMap == null) {
-            initServiceStatusMap();
-        }
-
-        return m_serviceStatusMap;
-    }
-
-    private synchronized static void initServiceStatusMap() {
-        Map<Character, String> map = new HashMap<Character, String>();
-
-        map.put(new Character('A'), "Managed");
-        map.put(new Character('U'), "Unmanaged");
-        map.put(new Character('D'), "Deleted");
-        map.put(new Character('F'), "Forced Unmanaged");
-        map.put(new Character('N'), "Not Monitored");
-        map.put(new Character('R'), "Rescan to Resume");
-        map.put(new Character('S'), "Rescan to Suspend");
-        map.put(new Character('X'), "Remotely Monitored");
-
-        m_serviceStatusMap = map;
+        return m_interfaceSnmpStatusMap.get(c);
     }
 
     /**
@@ -269,8 +200,7 @@ public class ElementUtil extends Object {
      * @return a {@link java.lang.String} object.
      */
     public static String getServiceStatusString(char c) {
-        Map<Character, String> statusMap = getServiceStatusMap();
-        return statusMap.get(new Character(c));
+        return m_serviceStatusMap.get(c);
     }
     
     /**
@@ -713,10 +643,4 @@ public class ElementUtil extends Object {
 		}
 		return out;
     }
-    
-
-    /** Private constructor so this class cannot be instantiated. */
-    private ElementUtil() {
-    }
-
 }
