@@ -46,7 +46,6 @@ public class BaseDetectorHandler<Request, Response> extends IoHandlerAdapter {
     
     private DetectFuture m_future;
     private AsyncClientConversation<Request, Response> m_conversation;
-    private String m_idleState = null;
     
 
     /**
