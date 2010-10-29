@@ -130,9 +130,12 @@ public class JasperReportService implements ReportService {
                     log.debug("adding a string parm name "
                             + reportParm.getName());
                     ReportStringParm stringParm = new ReportStringParm();
-                    stringParm.setDisplayName(reportParm.getName());
+                    if (reportParm.getDescription() != null) {
+                        stringParm.setDisplayName(reportParm.getDescription());
+                    } else {
+                        stringParm.setDisplayName(reportParm.getName());
+                    }
                     stringParm.setName(reportParm.getName());
-                    // stringParm.setInputType(strings[i].getInputType());
                     stringParm.setValue(new String());
                     stringParms.add(stringParm);
                     continue;
@@ -142,9 +145,12 @@ public class JasperReportService implements ReportService {
                     log.debug("adding a Integer parm name "
                             + reportParm.getName());
                     ReportIntParm intParm = new ReportIntParm();
-                    intParm.setDisplayName(reportParm.getName());
+                    if (reportParm.getDescription() != null) {
+                        intParm.setDisplayName(reportParm.getDescription());
+                    } else {
+                        intParm.setDisplayName(reportParm.getName());
+                    }
                     intParm.setName(reportParm.getName());
-                    // intParm.setInputType(integers[i].getInputType());
                     intParm.setValue(new Integer(0));
                     intParms.add(intParm);
                     continue;
@@ -155,7 +161,11 @@ public class JasperReportService implements ReportService {
                             + reportParm.getName());
                     ReportDateParm dateParm = new ReportDateParm();
                     dateParm.setUseAbsoluteDate(false);
-                    dateParm.setDisplayName(reportParm.getName());
+                    if (reportParm.getDescription() != null) {
+                        dateParm.setDisplayName(reportParm.getDescription());
+                    } else {
+                        dateParm.setDisplayName(reportParm.getName());
+                    }
                     dateParm.setName(reportParm.getName());
                     dateParm.setCount(new Integer(1));
                     dateParm.setInterval("day");
@@ -176,7 +186,11 @@ public class JasperReportService implements ReportService {
                             + reportParm.getName());
                     ReportDateParm dateParm = new ReportDateParm();
                     dateParm.setUseAbsoluteDate(false);
-                    dateParm.setDisplayName(reportParm.getName());
+                    if (reportParm.getDescription() != null) {
+                        dateParm.setDisplayName(reportParm.getDescription());
+                    } else {
+                        dateParm.setDisplayName(reportParm.getName());
+                    }
                     dateParm.setName(reportParm.getName());
                     dateParm.setCount(new Integer(1));
                     dateParm.setInterval("day");

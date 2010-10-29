@@ -47,6 +47,7 @@ import org.junit.runner.RunWith;
 import org.opennms.api.reporting.ReportException;
 import org.opennms.api.reporting.ReportFormat;
 import org.opennms.api.reporting.parameter.ReportParameters;
+import org.opennms.api.reporting.parameter.ReportStringParm;
 import org.opennms.netmgt.dao.JasperReportConfigDao;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.test.context.ContextConfiguration;
@@ -65,7 +66,6 @@ public class JasperReportServiceTest {
 	JasperReportService m_reportService;
 
 	private static final String REPORTID = "parameter-test";
-	private static final String BOGUSREPORTID = "bogus-parameter-test";
 
 	@BeforeClass
 	public static void setupOnmsHome() {
@@ -78,30 +78,41 @@ public class JasperReportServiceTest {
 		Assert.assertNotNull(m_configDao);
 		Assert.assertNotNull(m_reportService);
 	}
-
+	
 	@Test
 	public void testGetParmeters() {
 		ReportParameters reportParameters = m_reportService
 				.getParameters(REPORTID);
 		Assert.assertNotNull(reportParameters);
 		Assert.assertEquals(1, reportParameters.getIntParms().size());
-		Assert.assertEquals(1, reportParameters.getStringParms().size());
+		Assert.assertEquals(2, reportParameters.getStringParms().size());
 		Assert.assertEquals(2, reportParameters.getDateParms().size());
 	}
 
-	// TODO write test for bogus parms in here.
 
-	@Test
-	public void testValidate() {
-		HashMap<String, Object> reportParms = new HashMap<String, Object>();
-		Assert.assertTrue(m_reportService.validate(reportParms, REPORTID));
-	}
+        @Test
+        public void testValidate() {
+                HashMap<String, Object> reportParms = new HashMap<String, Object>();
+                Assert.assertTrue(m_reportService.validate(reportParms, REPORTID));
+        }
+        
+        @Test
+        public void testDescriptions() {
+                ReportParameters reportParameters = m_reportService
+                                .getParameters(REPORTID);
+                ReportStringParm stringParm1 = reportParameters.getStringParms().get(0);
+                Assert.assertEquals("a string parameter",stringParm1.getDisplayName());
+                ReportStringParm stringParm2 = reportParameters.getStringParms().get(1);
+                Assert.assertEquals("stringParameter2",stringParm2.getDisplayName());
+                Assert.assertEquals(2, reportParameters.getDateParms().size());
+        }
 
 	@Test
 	public void testRunAndRender() {
 		HashMap<String, Object> reportParms;
 		reportParms = new HashMap<String, Object>();
-		reportParms.put("stringParameter", new String("report"));
+		reportParms.put("stringParameter1", new String("string1"));
+	        reportParms.put("stringParameter2", new String("string2"));
 		reportParms.put("integerParameter", new Integer(1));
 		reportParms.put("dateParameter", new java.util.Date());
 		java.util.Date date = new java.util.Date();
