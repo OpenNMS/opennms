@@ -11,6 +11,8 @@
                 report-service="jasperReportService" description="sample Jasper report using jdbc datasource" />
         <report id="trivial-report" display-name="trivial JasperReport" online="true"
                 report-service="jasperReportService" description="trivial Jasper report using null datasource" />
+	<report id="parameter-test" display-name="parameter test report" online="true"
+                report-service="jasperReportService" description="trivial Jasper Report with parameters using null datasource" />
         <report id="Early-Morning-Report" display-name="Early morning report" online="true" 
                 report-service="jasperReportService" description="Global overview of outages, notifications and events in last 24 hours" />
 </database-reports>

@@ -1,0 +1,47 @@
+<!DOCTYPE jasperReport
+  PUBLIC "-//JasperReports//DTD Report Design//EN"
+  "http://jasperreports.sourceforge.net/dtds/jasperreport.dtd">
+
+<jasperReport name="ParameterTest">
+	<parameter name="stringParameter" class="java.lang.String">
+		<parameterDescription>
+			<![CDATA[a string parameter]]>
+		</parameterDescription>
+	</parameter>
+	<parameter name="integerParameter" class="java.lang.Integer">
+		<parameterDescription>
+			<![CDATA[an integer parameter]]>
+		</parameterDescription>
+	</parameter>
+	<parameter name="dateParameter" class="java.util.Date">
+		<parameterDescription>
+			<![CDATA[a java.util.date parameter]]>
+		</parameterDescription>
+	</parameter>
+	<parameter name="sqlDateParameter" class="java.sql.Date">
+		<parameterDescription>
+			<![CDATA[a java.sql.date parameter]]>
+		</parameterDescription>
+	</parameter>
+	<title>
+    	<band height="20">
+      		<staticText>
+				<reportElement x="0" y="0" width="200" height="20"/>
+				<text><![CDATA[Parameter Test]]></text>
+      		</staticText>
+      	</band>
+    </title>
+	<detail>
+	    <band height="80">
+	    	<textField>
+	    	<reportElement x="0" y="0" width="200" height="80"/>
+		    <textFieldExpression>
+		    	"stringParameter: " + $P{stringParameter} + "\n" +
+		    	"integerParameter: " + $P{integerParameter} + "\n" +
+		   		"dateParameter: " + (new SimpleDateFormat("MM/dd/yyyy HH:mm:ss")).format($P{dateParameter}) + "\n" +
+		    	"sqlDateParameter: " + (new SimpleDateFormat("MM/dd/yyyy HH:mm:ss")).format($P{sqlDateParameter})
+		    </textFieldExpression>
+		    </textField>
+		</band>
+	</detail>
+</jasperReport>
