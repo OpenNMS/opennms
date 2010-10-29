@@ -15,6 +15,8 @@ import org.opennms.netmgt.model.events.annotations.EventHandler;
 import org.opennms.netmgt.model.events.annotations.EventListener;
 import org.opennms.netmgt.xml.event.Event;
 import org.opennms.netmgt.xml.event.Parm;
+import org.opennms.netmgt.xml.event.Parms;
+import org.opennms.netmgt.xml.event.Value;
 
 /**
  * <p>Reportd class.</p>
@@ -86,9 +88,29 @@ public class Reportd implements SpringServiceDaemon {
             LogUtils.debugf(this,"reportd -- delivering report %s", report.getReportName());
             m_reportDeliveryService.deliverReport(report, fileName);
             LogUtils.debugf(this,"reportd -- done running job %s",report.getReportName() );
+        } catch (ReportRunException e) {
+            createAndSendReportingEvent(EventConstants.REPORT_RUN_FAILED_UEI, report.getReportName(), e.getMessage());
+        } catch (ReportDeliveryException e) {
+            createAndSendReportingEvent(EventConstants.REPORT_DELIVERY_FAILED_UEI, report.getReportName(), e.getMessage());
         } finally {
             ThreadCategory.setPrefix(originalName);
         }
+    }
+    
+    /**
+     * <p>createAndSendReportingEvent
+     * 
+     * @param uei the UEI of the event to send
+     * @param reportName the name of the report in question
+     * @param reason an explanation of why this event was sent
+     */
+    private void createAndSendReportingEvent(String uei, String reportName, String reason) {
+        LogUtils.debugf(this, "Crafting reporting event with UEI '%s' for report '%s' with reason '%s'", uei, reportName, reason);
+        
+        EventBuilder bldr = new EventBuilder(uei, NAME);
+        bldr.addParam(EventConstants.PARM_REPORT_NAME, reportName);
+        bldr.addParam(EventConstants.PARM_REASON, reason);
+        m_eventForwarder.sendNow(bldr.getEvent());
     }
  
     

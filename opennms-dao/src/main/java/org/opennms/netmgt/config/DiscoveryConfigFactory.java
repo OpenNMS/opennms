@@ -59,6 +59,7 @@ import org.apache.commons.io.IOUtils;
 import org.exolab.castor.xml.MarshalException;
 import org.exolab.castor.xml.Marshaller;
 import org.exolab.castor.xml.ValidationException;
+import org.opennms.core.utils.ByteArrayComparator;
 import org.opennms.core.utils.FilteringIterator;
 import org.opennms.core.utils.InetAddressUtils;
 import org.opennms.core.utils.IteratorIterator;
@@ -509,19 +510,21 @@ public final class DiscoveryConfigFactory {
         try {
             final List<ExcludeRange> excludeRange = getConfiguration().getExcludeRangeCollection();
             if (excludeRange != null) {
-                final long laddr = InetAddressUtils.toIpAddrLong(address.getAddress());
+                final byte[] laddr = address.getAddress();
         
                 for (final ExcludeRange range : excludeRange) {
                     try {
-                        final long begin = InetAddressUtils.toIpAddrLong(InetAddress.getByName(range.getBegin()).getAddress());
-                        final long end = InetAddressUtils.toIpAddrLong(InetAddress.getByName(range.getEnd()).getAddress());
-                        if (begin <= laddr && laddr <= end) {
+                        byte[] begin = InetAddress.getByName(range.getBegin()).getAddress();
+                        byte[] end = InetAddress.getByName(range.getEnd()).getAddress();
+                        ByteArrayComparator comparator = new ByteArrayComparator();
+                        int beginComp = comparator.compare(begin, laddr);
+                        int endComp = comparator.compare(laddr, end);
+                        if (beginComp <= 0 && endComp <= 0) {
                             return true;
                         }
                     } catch (final UnknownHostException ex) {
                         LogUtils.debugf(this, ex, "isExcluded: failed to convert exclusion address to InetAddress");
                     }
-        
                 }
             }
             return false;

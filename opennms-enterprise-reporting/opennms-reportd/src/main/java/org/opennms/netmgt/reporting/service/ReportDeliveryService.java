@@ -15,7 +15,8 @@ public interface ReportDeliveryService {
      *
      * @param report a {@link org.opennms.netmgt.config.reportd.Report} object.
      * @param fileName a {@link java.lang.String} object.
+     * @throws ReportDeliveryException 
      */
-    public void deliverReport(Report report,String fileName);
+    public void deliverReport(Report report,String fileName) throws ReportDeliveryException;
 
 }

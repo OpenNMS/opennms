@@ -48,7 +48,7 @@
 		org.opennms.web.WebSecurityUtils,
 		org.opennms.web.element.*,
 		java.util.*,
-		java.net.*,org.opennms.core.utils.IPSorter,org.opennms.web.svclayer.ResourceService,org.springframework.web.context.WebApplicationContext,org.springframework.web.context.support.WebApplicationContextUtils"
+		java.net.*,org.opennms.core.utils.InetAddressUtils,org.opennms.web.svclayer.ResourceService,org.springframework.web.context.WebApplicationContext,org.springframework.web.context.support.WebApplicationContextUtils"
 %>
 
 <%@ taglib uri="http://java.sun.com/jsp/jstl/core" prefix="c" %>
@@ -114,7 +114,7 @@
             ips.add(InetAddress.getByName(telnetServices[i].getIpAddress()));
         }
         
-        InetAddress lowest = IPSorter.getLowestInetAddress(ips);
+        InetAddress lowest = InetAddressUtils.getLowestInetAddress(ips);
         
         if( lowest != null ) {
             telnetIp = lowest.getHostAddress();
@@ -131,7 +131,7 @@
             ips.add(InetAddress.getByName(httpServices[i].getIpAddress()));
         }
 
-        InetAddress lowest = IPSorter.getLowestInetAddress(ips);
+        InetAddress lowest = InetAddressUtils.getLowestInetAddress(ips);
 
         if( lowest != null ) {
             httpIp = lowest.getHostAddress();

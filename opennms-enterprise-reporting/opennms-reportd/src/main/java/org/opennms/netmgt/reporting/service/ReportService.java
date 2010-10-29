@@ -16,7 +16,8 @@ public interface ReportService {
      * @param report a {@link org.opennms.netmgt.config.reportd.Report} object.
      * @param reportDirectory a {@link java.lang.String} object.
      * @return a {@link java.lang.String} object.
+     * @throws ReportRunException 
      */
-    public String runReport(Report report,String reportDirectory);
+    public String runReport(Report report,String reportDirectory) throws ReportRunException;
 
 }

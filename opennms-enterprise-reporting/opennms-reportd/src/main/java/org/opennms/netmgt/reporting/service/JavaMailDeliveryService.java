@@ -22,8 +22,9 @@ public class JavaMailDeliveryService implements ReportDeliveryService {
 
     JavaMailConfigurationDao m_JavamailConfigDao;
 
-    /** {@inheritDoc} */
-    public void deliverReport(Report report, String fileName) {
+    /** {@inheritDoc} 
+     * @throws ReportDeliveryException */
+    public void deliverReport(Report report, String fileName) throws ReportDeliveryException {
         try {
 
             JavaSendMailer sm = new JavaSendMailer(m_JavamailConfigDao.getDefaultSendmailConfig());
@@ -43,10 +44,13 @@ public class JavaMailDeliveryService implements ReportDeliveryService {
 
         } catch (JavaMailerException e) {
             LogUtils.errorf(this, e, "Problem with JavaMailer %s", e.getMessage());
+            throw new ReportDeliveryException("Caught JavaMailerException: " + e.getMessage());
         } catch (MessagingException e) {
             LogUtils.errorf(this, e, "Problem with Messaging %s", e.getMessage());
+            throw new ReportDeliveryException("Caught MessagingException: " + e.getMessage());
         } catch (Exception e) {
             LogUtils.errorf(this, e, "Unexpected exception: %s",e.getMessage());
+            throw new ReportDeliveryException("Caught unexpected " + e.getClass().getName() + ": " + e.getMessage());
         }
         
     }

@@ -111,8 +111,8 @@ public abstract class AbstractJdbcPersister implements InitializingBean, EventPr
     /** Constant <code>EVENT_HOST_FIELD_SIZE=256</code> */
     protected static final int EVENT_HOST_FIELD_SIZE = 256;
 
-    /** Constant <code>EVENT_INTERFACE_FIELD_SIZE=16</code> */
-    protected static final int EVENT_INTERFACE_FIELD_SIZE = 16;
+    /** Constant <code>EVENT_INTERFACE_FIELD_SIZE=39</code> */
+    protected static final int EVENT_INTERFACE_FIELD_SIZE = 39;
 
     /** Constant <code>EVENT_DPNAME_FIELD_SIZE=12</code> */
     protected static final int EVENT_DPNAME_FIELD_SIZE = 12;

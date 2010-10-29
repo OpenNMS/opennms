@@ -42,10 +42,6 @@ import com.google.gwt.user.client.rpc.AsyncCallback;
  *
  * @author <a href="mailto:brozow@opennms.org">Mathew Brozowski</a>
  * @author <a href="mailto:dj@opennms.org">DJ Gregor</a>
- * @author <a href="mailto:brozow@opennms.org">Mathew Brozowski</a>
- * @author <a href="mailto:dj@opennms.org">DJ Gregor</a>
- * @version $Id: $
- * @since 1.8.1
  */
 public interface SurveillanceServiceAsync {
     /**
@@ -53,7 +49,7 @@ public interface SurveillanceServiceAsync {
      *
      * @param cb a {@link com.google.gwt.user.client.rpc.AsyncCallback} object.
      */
-    public void getSurveillanceData(AsyncCallback cb);
+    public void getSurveillanceData(AsyncCallback<SurveillanceData> cb);
     
     /**
      * <p>getAlarmsForSet</p>
@@ -61,7 +57,7 @@ public interface SurveillanceServiceAsync {
      * @param set a {@link org.opennms.dashboard.client.SurveillanceSet} object.
      * @param cb a {@link com.google.gwt.user.client.rpc.AsyncCallback} object.
      */
-    public void getAlarmsForSet(SurveillanceSet set, AsyncCallback cb);
+    public void getAlarmsForSet(SurveillanceSet set, AsyncCallback<Alarm[]> cb);
     
     /**
      * <p>getNotificationsForSet</p>
@@ -69,7 +65,7 @@ public interface SurveillanceServiceAsync {
      * @param set a {@link org.opennms.dashboard.client.SurveillanceSet} object.
      * @param cb a {@link com.google.gwt.user.client.rpc.AsyncCallback} object.
      */
-    public void getNotificationsForSet(SurveillanceSet set, AsyncCallback cb);
+    public void getNotificationsForSet(SurveillanceSet set, AsyncCallback<Notification[]> cb);
     
     /**
      * <p>getNodeNames</p>
@@ -77,7 +73,7 @@ public interface SurveillanceServiceAsync {
      * @param set a {@link org.opennms.dashboard.client.SurveillanceSet} object.
      * @param cb a {@link com.google.gwt.user.client.rpc.AsyncCallback} object.
      */
-    public void getNodeNames(SurveillanceSet set, AsyncCallback cb);
+    public void getNodeNames(SurveillanceSet set, AsyncCallback<String[][]> cb); // BROKEN
     
     /**
      * <p>getResources</p>
@@ -85,7 +81,7 @@ public interface SurveillanceServiceAsync {
      * @param set a {@link org.opennms.dashboard.client.SurveillanceSet} object.
      * @param cb a {@link com.google.gwt.user.client.rpc.AsyncCallback} object.
      */
-    public void getResources(SurveillanceSet set, AsyncCallback cb);
+    public void getResources(SurveillanceSet set, AsyncCallback<String[][]> cb);
 
     /**
      * <p>getChildResources</p>
@@ -93,7 +89,7 @@ public interface SurveillanceServiceAsync {
      * @param resourceId a {@link java.lang.String} object.
      * @param cb a {@link com.google.gwt.user.client.rpc.AsyncCallback} object.
      */
-    public void getChildResources(String resourceId, AsyncCallback cb);
+    public void getChildResources(String resourceId, AsyncCallback<String[][]> cb);
 
     /**
      * <p>getPrefabGraphs</p>
@@ -101,7 +97,7 @@ public interface SurveillanceServiceAsync {
      * @param resourceId a {@link java.lang.String} object.
      * @param cb a {@link com.google.gwt.user.client.rpc.AsyncCallback} object.
      */
-    public void getPrefabGraphs(String resourceId, AsyncCallback cb);
+    public void getPrefabGraphs(String resourceId, AsyncCallback<String[][]> cb);
     
     /**
      * <p>getRtcForSet</p>
@@ -109,5 +105,5 @@ public interface SurveillanceServiceAsync {
      * @param set a {@link org.opennms.dashboard.client.SurveillanceSet} object.
      * @param cb a {@link com.google.gwt.user.client.rpc.AsyncCallback} object.
      */
-    public void getRtcForSet(SurveillanceSet set, AsyncCallback cb);
+    public void getRtcForSet(SurveillanceSet set, AsyncCallback<NodeRtc[]> cb);
 }

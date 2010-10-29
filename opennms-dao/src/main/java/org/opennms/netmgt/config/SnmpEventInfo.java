@@ -210,11 +210,11 @@ public class SnmpEventInfo {
     }
     
     /**
-     * <p>setListIPAddress</p>
+     * <p>setLastIPAddress</p>
      *
      * @param lastIPAddress a {@link java.net.InetAddress} object.
      */
-    public void setListIPAddress(InetAddress lastIPAddress) {
+    public void setLastIPAddress(InetAddress lastIPAddress) {
         if (lastIPAddress == null) {
             m_lastIPAddress = null;
             m_last = 0;
@@ -227,6 +227,7 @@ public class SnmpEventInfo {
      * <p>getFirst</p>
      *
      * @return a long.
+     * @deprecated Dealing with IP addresses as 'long' type is not compatible with IPv6
      */
     public long getFirst() {
         return m_first;
@@ -235,6 +236,7 @@ public class SnmpEventInfo {
      * <p>getLast</p>
      *
      * @return a long.
+     * @deprecated Dealing with IP addresses as 'long' type is not compatible with IPv6
      */
     public long getLast() {
         return m_last;

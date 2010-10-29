@@ -59,6 +59,7 @@ import java.util.concurrent.locks.ReentrantReadWriteLock;
 import org.exolab.castor.xml.MarshalException;
 import org.exolab.castor.xml.Marshaller;
 import org.exolab.castor.xml.ValidationException;
+import org.opennms.core.utils.ByteArrayComparator;
 import org.opennms.core.utils.InetAddressUtils;
 import org.opennms.core.utils.IpListFromUrl;
 import org.opennms.core.utils.LogUtils;
@@ -539,23 +540,24 @@ abstract public class PollerConfigManager implements PollerConfig {
         // the range 0.0.0.0 - 255.255.255.255
         has_range_include = pkg.getIncludeRangeCount() == 0 && pkg.getSpecificCount() == 0;
         
-        final long addr = InetAddressUtils.toIpAddrLong(iface);
+        final byte[] addr = InetAddressUtils.toIpAddrBytes(iface);
 
         for (final IncludeRange rng : pkg.getIncludeRangeCollection()) {
-            final long start = InetAddressUtils.toIpAddrLong(rng.getBegin());
-            if (addr > start) {
-                final long end = InetAddressUtils.toIpAddrLong(rng.getEnd());
-                if (addr <= end) {
+            int comparison = new ByteArrayComparator().compare(addr, InetAddressUtils.toIpAddrBytes(rng.getBegin()));
+            if (comparison > 0) {
+                int endComparison = new ByteArrayComparator().compare(addr, InetAddressUtils.toIpAddrBytes(rng.getEnd()));
+                if (endComparison <= 0) {
                     has_range_include = true;
+                    break;
                 }
-            } else if (addr == start) {
+            } else if (comparison == 0) {
                 has_range_include = true;
+                break;
             }
         }
 
         for (final String spec : pkg.getSpecificCollection()) {
-            long speca = InetAddressUtils.toIpAddrLong(spec);
-            if (speca == addr) {
+            if (new ByteArrayComparator().compare(addr, InetAddressUtils.toIpAddrBytes(spec)) == 0) {
                 has_specific = true;
                 break;
             }
@@ -568,18 +570,22 @@ abstract public class PollerConfigManager implements PollerConfig {
             }
         }
 
-        for (final ExcludeRange rng : pkg.getExcludeRangeCollection()) {
-            final long start = InetAddressUtils.toIpAddrLong(rng.getBegin());
-            if (addr > start) {
-                final long end = InetAddressUtils.toIpAddrLong(rng.getEnd());
-                if (addr <= end) {
+        if (!has_specific) {
+            for (final ExcludeRange rng : pkg.getExcludeRangeCollection()) {
+                int comparison = new ByteArrayComparator().compare(addr, InetAddressUtils.toIpAddrBytes(rng.getBegin()));
+                if (comparison > 0) {
+                    int endComparison = new ByteArrayComparator().compare(addr, InetAddressUtils.toIpAddrBytes(rng.getEnd()));
+                    if (endComparison <= 0) {
+                        has_range_exclude = true;
+                        break;
+                    }
+                } else if (comparison == 0) {
                     has_range_exclude = true;
+                    break;
                 }
-            } else if (addr == start) {
-                has_range_exclude = true;
             }
         }
-    
+
         return has_specific || (has_range_include && !has_range_exclude);
     }
 

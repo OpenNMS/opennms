@@ -6,6 +6,7 @@
 <%@ taglib uri="http://www.springframework.org/tags/form" prefix="form" %>
 <%@ taglib tagdir="/WEB-INF/tags/tree" prefix="tree" %>
 <%@ taglib tagdir="/WEB-INF/tags/springx" prefix="springx" %>
+<%@ taglib tagdir="/WEB-INF/tags/js" prefix="js" %>
 
 <jsp:include page="/includes/header.jsp" flush="false">
 	<jsp:param name="title" value="Provisioning Groups" /> 
@@ -35,19 +36,19 @@
 <c:forEach var="foreignSourceName" items="${foreignSourceNames}">
 <c:if test='${foreignSourceName != "default"}'>
   <h3 style="vertical-align: middle; margin: 25px 0px 5px 0px; padding: 5px">
-    <span style="font-size: large"><c:out value="${foreignSourceName}" />
+    <span style="font-size: large"><c:out value="${foreignSourceName}" /></span>
   </h3>
   <span style="font-size: large; text-align: right">
     <c:choose>
       <c:when test="${dbNodeCounts[foreignSourceName] > 0}">
-        <input type="button" value="Delete Nodes" onclick="javascript:confirmAction('${foreignSourceName}', 'deleteNodes', 'Are you sure you want to delete all the nodes from group ${foreignSourceName}?  This CANNOT be undone.')" />
+        <input type="button" value="Delete Nodes" onclick="javascript:confirmAction(<js:quote value="${foreignSourceName}"/>}, 'deleteNodes', "Are you sure you want to delete all the nodes from group ${fn:escapeXml(foreignSourceName)}? This CANNOT be undone.")" />
       </c:when>
       <c:otherwise>
-        <input type="button" value="Delete Group" onclick="javascript:doAction('${foreignSourceName}', 'deleteGroup')" />
+        <input type="button" value="Delete Group" onclick="javascript:doAction(<js:quote value="${foreignSourceName}"/>, 'deleteGroup')" />
       </c:otherwise>
     </c:choose>
     <c:if test="${!empty groups[foreignSourceName]}">
-      <input type="button" value="Synchronize" onclick="javascript:doAction('${foreignSourceName}', 'import')" />
+      <input type="button" value="Synchronize" onclick="javascript:doAction(<js:quote value="${foreignSourceName}"/>, 'import')" />
     </c:if>
   </span>
   <br />
@@ -59,7 +60,7 @@
   	  	<span style="font-size: smaller">Define node and interface data for synchronization.</span>
   	  </td>
   	  <td>
-  	  	<a href="javascript:editRequisition('${foreignSourceName}')">EDIT</a>
+  	  	<a href="javascript:editRequisition(<js:quote value="${foreignSourceName}"/>)">Edit</a>
   	  	<br />
         <span style="font-size: smaller">
           <c:choose>
@@ -72,14 +73,14 @@
             </c:otherwise>
           </c:choose>
           <br />
-          last modified:
+          Last Modified:
           <c:choose>
-            <c:when test="${empty groups[foreignSourceName].dateStamp}">never</c:when>
+            <c:when test="${empty groups[foreignSourceName].dateStamp}">Never</c:when>
             <c:otherwise>${groups[foreignSourceName].dateStamp}</c:otherwise>
           </c:choose><br />
-          last synchronization requested:
+          Last Synchronization Requested:
           <c:choose>
-            <c:when test="${empty groups[foreignSourceName].lastImport}">never</c:when>
+            <c:when test="${empty groups[foreignSourceName].lastImport}">Never</c:when>
             <c:otherwise>${groups[foreignSourceName].lastImport}</c:otherwise>
           </c:choose>
         </span>
@@ -91,14 +92,14 @@
   	    <span style="font-size: smaller">Define scanning behavior for synchronization.</span>
   	  </td>
   	  <td>
-  	  	<a href="javascript:editForeignSource('${foreignSourceName}')">EDIT</a> |
-  	  	<a href="javascript:cloneForeignSource('${foreignSourceName}')">CLONE</a>
+  	  	<a href="javascript:editForeignSource(<js:quote value="${foreignSourceName}"/>)">Edit</a> |
+  	  	<a href="javascript:cloneForeignSource(<js:quote value="${foreignSourceName}"/>)">Clone</a>
   	  	<br />
   	  	<c:if test="${!empty foreignSources[foreignSourceName]}">
           <span style="font-size: smaller">
-            last modified:
+            Last Modified:
   	        <c:choose>
-  	          <c:when test="${empty foreignSources[foreignSourceName].dateStamp}">never</c:when>
+  	          <c:when test="${empty foreignSources[foreignSourceName].dateStamp}">Never</c:when>
   	          <c:otherwise>${foreignSources[foreignSourceName].dateStampAsDate}</c:otherwise>
   	        </c:choose>
   	      </span>

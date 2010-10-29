@@ -1,0 +1,9 @@
+<jsp:root version="2.0" xmlns:jsp="http://java.sun.com/JSP/Page" xmlns:c="http://java.sun.com/jsp/jstl/core">
+  <!-- This tag should probably be refactored into a EL function library so that it can be used inside EL -->
+  <jsp:directive.tag body-content="scriptless" dynamic-attributes="dyn" import="
+    net.sf.json.JSONSerializer,
+    net.sf.json.util.JSONUtils
+  "/>
+  <jsp:directive.attribute name="value" type="java.lang.String" required="true"/>
+  <c:out value="%=JSONSerializer.toJSON(value)%"/>
+</jsp:root>
