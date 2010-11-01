@@ -813,7 +813,6 @@ public class DefaultProvisionService implements ProvisionService {
         log().warn(String.format(format, args));
     }
 
-    @SuppressWarnings("unused")
     private void debug(String format, Object... args) {
         if (log().isDebugEnabled()) {
             log().debug(String.format(format, args));

@@ -32,13 +32,17 @@ package org.opennms.netmgt.provision.detector.ssh.client;
 
 import java.io.IOException;
 import java.net.InetAddress;
-import java.util.HashMap;
-import java.util.Map;
+import java.util.Collections;
 
+import org.apache.regexp.RE;
+import org.opennms.core.utils.LogUtils;
+import org.opennms.core.utils.TimeoutTracker;
+import org.opennms.netmgt.model.PollStatus;
 import org.opennms.netmgt.provision.detector.ssh.request.NullRequest;
 import org.opennms.netmgt.provision.detector.ssh.response.SshResponse;
 import org.opennms.netmgt.provision.support.Client;
-import org.opennms.netmgt.provision.support.ssh.SshMonitor;
+import org.opennms.netmgt.provision.support.ssh.InsufficientParametersException;
+import org.opennms.netmgt.provision.support.ssh.Ssh;
 
 /**
  * <p>SshClient class.</p>
@@ -49,7 +53,12 @@ import org.opennms.netmgt.provision.support.ssh.SshMonitor;
 public class SshClient implements Client<NullRequest, SshResponse> {
     
     private boolean m_isAvailable = false;
-    private Map<String, Object> m_parameters = new HashMap<String, Object>();
+    
+    private String m_banner = null;
+    private String m_match = null;
+    private String m_clientBanner = Ssh.DEFAULT_CLIENT_BANNER;
+    
+    public static final int DEFAULT_RETRY = 0;
     
     /**
      * <p>close</p>
@@ -60,10 +69,57 @@ public class SshClient implements Client<NullRequest, SshResponse> {
 
     /** {@inheritDoc} */
     public void connect(InetAddress address, int port, int timeout) throws IOException, Exception {
-        SshMonitor m = new SshMonitor();
-        m_parameters.put("port", port);
+        TimeoutTracker tracker = new TimeoutTracker(Collections.emptyMap(), SshClient.DEFAULT_RETRY, timeout);
         
-        m_isAvailable = m.poll(address, m_parameters).isAvailable();
+        String banner = m_banner;
+        String match = m_match;
+        String clientBanner = m_clientBanner;
+        PollStatus ps = PollStatus.unavailable();
+        
+        Ssh ssh = new Ssh(address, port, tracker.getConnectionTimeout());
+        ssh.setClientBanner(clientBanner);
+        
+        RE regex = null;
+        if (match == null && (banner == null || banner.equals("*"))) {
+            regex = null;
+        } else if (match != null) {
+            regex = new RE(match);
+        } else if (banner != null) {
+            regex = new RE(banner);
+        }
+        
+        for (tracker.reset(); tracker.shouldRetry() && !ps.isAvailable(); tracker.nextAttempt()) {
+            try {
+                ps = ssh.poll(tracker);
+            } catch (InsufficientParametersException e) {
+                LogUtils.errorf(this, e.getMessage());
+                break;
+            }
+        
+        }
+        
+        // If banner matching string is null or wildcard ("*") then we
+        // only need to test connectivity and we've got that!
+        
+        if (regex != null && ps.isAvailable()) {
+            String response = ssh.getServerBanner();
+        
+            if (response == null) {
+                ps = PollStatus.unavailable("server closed connection before banner was recieved.");
+            }
+        
+            if (!regex.match(response)) {
+                // Got a response but it didn't match... no need to attempt
+                // retries
+                LogUtils.debugf(this, "isServer: NON-matching response='%s'", response);
+                ps = PollStatus.unavailable("server responded, but banner did not match '" + banner + "'");
+            } else {
+                LogUtils.debugf(this, "isServer: matching response='%s'", response);
+            }
+        }
+        PollStatus result = ps;
+        
+        m_isAvailable = result.isAvailable();
     }
 
     /**
@@ -97,7 +153,7 @@ public class SshClient implements Client<NullRequest, SshResponse> {
      * @param banner a {@link java.lang.String} object.
      */
     public void setBanner(String banner) {
-        m_parameters.put("banner", banner);
+        m_banner = banner;
     }
     
     /**
@@ -106,7 +162,7 @@ public class SshClient implements Client<NullRequest, SshResponse> {
      * @param match a {@link java.lang.String} object.
      */
     public void setMatch(String match) {
-        m_parameters.put("match", match);
+        m_match = match;
     }
     
     /**
@@ -115,7 +171,7 @@ public class SshClient implements Client<NullRequest, SshResponse> {
      * @param clientBanner a {@link java.lang.String} object.
      */
     public void setClientBanner(String clientBanner) {
-        m_parameters.put("client-banner", clientBanner);
+        m_clientBanner = clientBanner;
     }
 
 }

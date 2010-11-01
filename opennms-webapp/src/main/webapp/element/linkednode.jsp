@@ -439,8 +439,19 @@
 		<td class="standard">
 		<% if (ifl == null || ifl.size() == 0) {%>
 		&nbsp;
+		<% } else {
+		// Don't bother creating a table if all the interfaces in ifl are null
+		Boolean emptyTable = true;
+		for (int j=0; j<ifl.size();j++) {
+		    Interface curlkif =(Interface)ifl.elementAt(j);
+		    if (curlkif != null) {
+		        emptyTable = false;
+		        break;
+		    }
+		}
+		if ( emptyTable ) { %>
+		    &nbsp;
 		<% } else { %>
-		
 		<table>
 		
 		<thead>
@@ -464,7 +475,7 @@
 			<% for (int j=0; j<ifl.size();j++) { 
 				Interface curlkif =(Interface)ifl.elementAt(j); 
 			%>
-		        
+		    <% if (curlkif != null) { %>    
 			<tr>
 			<td class="standard" style="font-size:70%" width="35%">
 		       	<a href="element/linkednode.jsp?node=<%=curlkif.getNodeId()%>"><%=NetworkElementFactory.getInstance(getServletContext()).getNodeLabel(curlkif.getNodeId())%></a>
@@ -508,9 +519,11 @@
 --%>
 			<% } %>
 		    </tr>
-		    
+		    <% } %>
+		
 		</table>
 		
+		<%}%>
 		<%}%>
 		</td>
 		
@@ -592,8 +605,20 @@
 		    <td class="standard">
 		    <% if (ifl == null || ifl.size() == 0) {%>
 			&nbsp;
+		    <% } else {
+		    // Don't bother creating a table if all the interfaces in ifl are null
+		    Boolean emptyTable = true;
+		    for (int j=0; j<ifl.size();j++) {
+		        Interface curlkif =(Interface)ifl.elementAt(j);
+		        if (curlkif != null) {
+		            emptyTable = false;
+		            break;
+		        }
+		    }
+		    if ( emptyTable ) { %>
+		        &nbsp;
 		    <% } else { %>
-		
+		            
 			<table>
 		
 			<thead>
@@ -617,7 +642,7 @@
 			<% for (int j=0; j<ifl.size();j++) { 
 				Interface curlkif =(Interface)ifl.elementAt(j); 
 			%>
-		        
+		    <% if (curlkif != null) { %>    
 			<tr>
 			<td class="standard" style="font-size:70%" width="35%">
 		       	<a href="element/linkednode.jsp?node=<%=curlkif.getNodeId()%>"><%=NetworkElementFactory.getInstance(getServletContext()).getNodeLabel(curlkif.getNodeId())%></a>
@@ -661,9 +686,11 @@
 --%>
 		    <% } %>
 		    </tr>
+		    <% } %>
 		    
 		    </table>
 		
+		    <%}%>
 		    <%}%>
 		    </td>
 		
