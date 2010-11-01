@@ -21,6 +21,12 @@
             <groupId>org.jrobin</groupId>
             <artifactId>jrobin</artifactId>
         </dependency>
+        <dependency>
+            <groupId>com.jaspersoft</groupId>
+            <artifactId>ireport</artifactId>
+            <version>3.7.5</version>
+            <scope>provided</scope>
+        </dependency>
 	</dependencies>
-
+    
 </project>
