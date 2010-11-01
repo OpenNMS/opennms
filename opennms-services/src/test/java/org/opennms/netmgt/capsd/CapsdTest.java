@@ -149,6 +149,7 @@ public class CapsdTest extends OpenNMSTestCase {
 //        m_network.addService("ICMP");
 //        m_network.addService("SNMP");
         m_network.addInterface("172.20.1.201");
+        m_network.addInterface("fe80:0000:0000:0000:ffff:eeee:dddd:cccc");
         m_network.addService("ICMP");
         m_network.addService("SNMP");
     }
@@ -184,7 +185,7 @@ public class CapsdTest extends OpenNMSTestCase {
 
     public final void testRescan() throws Exception {
         
-        assertEquals("Initally only 1 interface", 1, m_db.countRows("select * from ipinterface where nodeid = ?", FOREIGN_NODEID));
+        assertEquals("Initally only 2 interfaces", 2, m_db.countRows("select * from ipinterface where nodeid = ?", FOREIGN_NODEID));
 
         m_capsd.init();
         m_capsd.start();
@@ -195,14 +196,14 @@ public class CapsdTest extends OpenNMSTestCase {
         
         m_capsd.stop();
         
-        assertEquals("after scanning should be 2 interfaces", 2, m_db.countRows("select * from ipinterface where nodeid = ?", FOREIGN_NODEID));
+        assertEquals("after scanning should be 3 interfaces", 3, m_db.countRows("select * from ipinterface where nodeid = ?", FOREIGN_NODEID));
     }
     
     public final void testRescanOfForeignNode() throws Exception {
         
         m_db.getJdbcTemplate().update("update node set foreignSource='testSource', foreignId='123' where nodeid = ?", FOREIGN_NODEID);
         
-        assertEquals("Initally only 1 interface", 1, m_db.countRows("select * from ipinterface where nodeid = ?", FOREIGN_NODEID));
+        assertEquals("Initally only 2 interfaces", 2, m_db.countRows("select * from ipinterface where nodeid = ?", FOREIGN_NODEID));
 
         m_capsd.init();
         m_capsd.start();
@@ -213,7 +214,7 @@ public class CapsdTest extends OpenNMSTestCase {
         
         m_capsd.stop();
         
-        assertEquals("after scanning should still be 1 since its foreign", 1, m_db.countRows("select * from ipinterface where nodeid = ?", FOREIGN_NODEID));
+        assertEquals("after scanning should still be 2 since its foreign", 2, m_db.countRows("select * from ipinterface where nodeid = ?", FOREIGN_NODEID));
 
     }
     
