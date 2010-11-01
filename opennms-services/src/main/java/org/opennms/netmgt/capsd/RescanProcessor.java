@@ -170,9 +170,9 @@ public final class RescanProcessor implements Runnable {
 
     final static String SQL_DB_REPARENT_IP_INTERFACE = "UPDATE ipinterface SET nodeID=? WHERE nodeID=? AND ipaddr=? AND isManaged!='D'";
 
-    final static String SQL_DB_REPARENT_SNMP_IF_LOOKUP = "SELECT ipaddr FROM snmpinterface " + "WHERE nodeID=? AND ipaddr=? AND snmpifindex=?";
+    final static String SQL_DB_REPARENT_SNMP_IF_LOOKUP = "SELECT ipaddr FROM snmpinterface " + "WHERE nodeID=? AND snmpifindex=?";
 
-    final static String SQL_DB_REPARENT_SNMP_IF_DELETE = "DELETE FROM snmpinterface " + "WHERE nodeID=? AND ipaddr = ? AND snmpifindex=?";
+    final static String SQL_DB_REPARENT_SNMP_IF_DELETE = "DELETE FROM snmpinterface " + "WHERE nodeID=? AND snmpifindex=?";
 
     final static String SQL_DB_REPARENT_SNMP_INTERFACE = "UPDATE snmpinterface SET nodeID=? " + "WHERE nodeID=? AND ipaddr=? AND snmpifindex=?";
 
@@ -215,7 +215,7 @@ public final class RescanProcessor implements Runnable {
      * added to the event list. The last thing the rescan process does is send
      * the events out.
      */
-    private List<Event> m_eventList = new ArrayList<Event>();
+    private final List<Event> m_eventList = new ArrayList<Event>();
 
     /**
      * Set during the rescan to true if any of the ifIndex values associated
@@ -732,7 +732,7 @@ public final class RescanProcessor implements Runnable {
         return null;
     }
 
-    private void updateAlias(int ifIndex, IfSnmpCollector snmpc, DbSnmpInterfaceEntry dbSnmpIfEntry) {
+    private static void updateAlias(int ifIndex, IfSnmpCollector snmpc, DbSnmpInterfaceEntry dbSnmpIfEntry) {
         // alias (from interface extensions table)
         String ifAlias = snmpc.getIfAlias(ifIndex);
         if (ifAlias != null) {
@@ -742,7 +742,7 @@ public final class RescanProcessor implements Runnable {
         }
     }
 
-    private void updateName(int ifIndex, IfSnmpCollector snmpc, DbSnmpInterfaceEntry dbSnmpIfEntry) {
+    private static void updateName(int ifIndex, IfSnmpCollector snmpc, DbSnmpInterfaceEntry dbSnmpIfEntry) {
         // name (from interface extensions table)
         String ifName = snmpc.getIfName(ifIndex);
         if (ifName != null && ifName.length() > 0) {
@@ -750,7 +750,7 @@ public final class RescanProcessor implements Runnable {
         }
     }
 
-    private void updateOperationalStatus(IfTableEntry ifte, DbSnmpInterfaceEntry dbSnmpIfEntry) {
+    private static void updateOperationalStatus(IfTableEntry ifte, DbSnmpInterfaceEntry dbSnmpIfEntry) {
         Integer sint = ifte.getIfOperStatus();
         if (sint == null) {
             dbSnmpIfEntry.updateOperationalStatus(0);
@@ -759,7 +759,7 @@ public final class RescanProcessor implements Runnable {
         }
     }
 
-    private void updateAdminStatus(IfTableEntry ifte, DbSnmpInterfaceEntry dbSnmpIfEntry) {
+    private static void updateAdminStatus(IfTableEntry ifte, DbSnmpInterfaceEntry dbSnmpIfEntry) {
         Integer sint = ifte.getIfAdminStatus();
         if (sint == null) {
             dbSnmpIfEntry.updateAdminStatus(0);
@@ -768,7 +768,7 @@ public final class RescanProcessor implements Runnable {
         }
     }
 
-    private void updateType(IfTableEntry ifte, DbSnmpInterfaceEntry dbSnmpIfEntry) {
+    private static void updateType(IfTableEntry ifte, DbSnmpInterfaceEntry dbSnmpIfEntry) {
         Integer sint = ifte.getIfType();
         if (sint == null) {
             dbSnmpIfEntry.updateType(0);
@@ -777,7 +777,7 @@ public final class RescanProcessor implements Runnable {
         }
     }
 
-    private void updateDescription(int ifIndex, IfTableEntry ifte, DbSnmpInterfaceEntry dbSnmpIfEntry) {
+    private static void updateDescription(int ifIndex, IfTableEntry ifte, DbSnmpInterfaceEntry dbSnmpIfEntry) {
         String str = ifte.getIfDescr();
         if (log().isDebugEnabled()) {
             log().debug("updateNonIpInterface: ifIndex: " + ifIndex + " has ifDescription: " + str);
@@ -787,7 +787,7 @@ public final class RescanProcessor implements Runnable {
         }
     }
 
-    private void updatePhysicalAddress(int ifIndex, IfTableEntry ifte, DbSnmpInterfaceEntry dbSnmpIfEntry) {
+    private static void updatePhysicalAddress(int ifIndex, IfTableEntry ifte, DbSnmpInterfaceEntry dbSnmpIfEntry) {
         String physAddr = ifte.getPhysAddr();
 
         if (log().isDebugEnabled()) {
@@ -2120,8 +2120,7 @@ public final class RescanProcessor implements Runnable {
                  */
                 boolean alreadyExists = false;
                 snmpIfLookupStmt.setInt(1, newNodeId);
-                snmpIfLookupStmt.setString(2, ipaddr);
-                snmpIfLookupStmt.setInt(3, ifIndex);
+                snmpIfLookupStmt.setInt(2, ifIndex);
                 ResultSet rs = snmpIfLookupStmt.executeQuery();
                 d.watch(rs);
                 if (rs.next()) {
@@ -2135,8 +2134,7 @@ public final class RescanProcessor implements Runnable {
                     alreadyExists = true;
 
                     snmpIfDeleteStmt.setInt(1, oldNodeId);
-                    snmpIfDeleteStmt.setString(2, ipaddr);
-                    snmpIfDeleteStmt.setInt(3, ifIndex);
+                    snmpIfDeleteStmt.setInt(2, ifIndex);
 
                     snmpIfDeleteStmt.executeUpdate();
                 }
