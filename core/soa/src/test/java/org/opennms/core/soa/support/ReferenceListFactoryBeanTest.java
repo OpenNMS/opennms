@@ -77,7 +77,7 @@ public class ReferenceListFactoryBeanTest {
         Registration reg1 = registry.register(new MyProvider("prov1"), Hello.class, Goodbye.class);
         Registration reg2 = registry.register(new MyProvider("prov2"), Hello.class, Goodbye.class);
         
-        ReferenceListFactoryBean bean = new ReferenceListFactoryBean();
+        ReferenceListFactoryBean<Hello> bean = new ReferenceListFactoryBean<Hello>();
         bean.setServiceInterface(Hello.class);
         bean.setServiceRegistry(registry);
         bean.afterPropertiesSet();
@@ -101,9 +101,8 @@ public class ReferenceListFactoryBeanTest {
         
     }
 
-    @SuppressWarnings("unchecked")
-    private List<Hello> getObject(ReferenceListFactoryBean bean) throws Exception {
-        return (List<Hello>) bean.getObject();
+    private List<Hello> getObject(ReferenceListFactoryBean<Hello> bean) throws Exception {
+        return bean.getObject();
     }
     
     @Test
@@ -114,7 +113,7 @@ public class ReferenceListFactoryBeanTest {
         Registration reg1 = registry.register(new MyProvider("prov1"), Hello.class, Goodbye.class);
         Registration reg2 = registry.register(new MyProvider("prov2"), Hello.class, Goodbye.class);
         
-        ReferenceListFactoryBean bean = new ReferenceListFactoryBean();
+        ReferenceListFactoryBean<Hello> bean = new ReferenceListFactoryBean<Hello>();
         bean.setServiceInterface(Hello.class);
         bean.setServiceRegistry(registry);
         

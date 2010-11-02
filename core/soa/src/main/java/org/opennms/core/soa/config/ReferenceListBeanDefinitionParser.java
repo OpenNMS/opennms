@@ -66,8 +66,7 @@ public class ReferenceListBeanDefinitionParser extends AbstractBeanDefinitionPar
             factory.addPropertyValue("serviceInterface", serviceInterface);
         }
 		
-        @SuppressWarnings("unchecked")
-        List childElements = DomUtils.getChildElementsByTagName(element, "listener");
+        List<Element> childElements = DomUtils.getChildElementsByTagName(element, "listener");
         
         if (childElements != null && childElements.size() > 0) {
         	parseList(childElements, factory);
@@ -76,8 +75,7 @@ public class ReferenceListBeanDefinitionParser extends AbstractBeanDefinitionPar
 		return factory.getBeanDefinition();
 	}
 
-    @SuppressWarnings("unchecked")
-	private void parseList(List childElements, BeanDefinitionBuilder factory) {
+	private void parseList(List<Element> childElements, BeanDefinitionBuilder factory) {
 		BeanDefinitionBuilder listener = parseListener((Element)childElements.get(0));
 		factory.addPropertyValue("listener", listener.getBeanDefinition());
 	}
