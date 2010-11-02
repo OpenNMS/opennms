@@ -113,7 +113,7 @@ javaCheck() {
                 OPENJDK_MINIMUM_BUILD=14
         fi
 
-    ret="`$JP -version 2>&1 | grep ' version "' | sed 's/^.* version \"//;s/\".*$//'`"
+    ret="`$JP -version 2>&1 | grep ' version \"' | sed 's/^.* version \"//;s/\".*$//'`"
     if echo "$ret" | egrep '^1\.[5-9]\.' > /dev/null; then
         # Check for Sun Java
         if $JP -version 2>&1 | egrep '^(Diablo )?Java\(TM\)' > /dev/null; then
