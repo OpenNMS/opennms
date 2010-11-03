@@ -58,11 +58,14 @@ public class DiscoveryConfigFactoryTest {
         final long timeout = 100;
         final int retries = 1;
         DiscoveryConfigFactory.addToSpecificsFromURL(specifics, in.toString(), timeout, retries);
-        assertEquals(4, specifics.size());
+        assertEquals(7, specifics.size());
         assertEquals("127.0.0.1", specifics.get(0).getAddress().getHostAddress());
         assertEquals("10.1.1.1", specifics.get(1).getAddress().getHostAddress());
         assertEquals("10.2.1.1", specifics.get(2).getAddress().getHostAddress());
         assertEquals("8.8.8.8", specifics.get(3).getAddress().getHostAddress());
+        assertEquals("fe80:0:0:0:ffff:eeee:dddd:cccc", specifics.get(4).getAddress().getHostAddress());
+        assertEquals("0:0:0:0:0:0:0:1", specifics.get(5).getAddress().getHostAddress());
+        assertEquals("fe80:0:0:0:ffff:eeee:dddd:cccd", specifics.get(6).getAddress().getHostAddress());
     }
     
     @Test
@@ -74,10 +77,13 @@ public class DiscoveryConfigFactoryTest {
         final long timeout = 100;
         final int retries = 1;
         DiscoveryConfigFactory.addToSpecificsFromURL(specifics, in, timeout, retries);
-        assertEquals(4, specifics.size());
+        assertEquals(7, specifics.size());
         assertEquals("127.0.0.1", specifics.get(0).getAddress().getHostAddress());
         assertEquals("10.1.1.1", specifics.get(1).getAddress().getHostAddress());
         assertEquals("10.2.1.1", specifics.get(2).getAddress().getHostAddress());
         assertEquals("8.8.8.8", specifics.get(3).getAddress().getHostAddress());
+        assertEquals("fe80:0:0:0:ffff:eeee:dddd:cccc", specifics.get(4).getAddress().getHostAddress());
+        assertEquals("0:0:0:0:0:0:0:1", specifics.get(5).getAddress().getHostAddress());
+        assertEquals("fe80:0:0:0:ffff:eeee:dddd:cccd", specifics.get(6).getAddress().getHostAddress());
     }
 }

@@ -6,6 +6,7 @@
 	<package name="example1">
 		<filter>IPADDR IPLIKE *.*.*.*</filter>	 
 		<specific>0.0.0.0</specific>
+		<specific>fe80:0000:0000:0000:ffff:eeee:dddd:cccc</specific>
 		<include-range begin="1.1.1.1" end="254.254.254.254"/>
 		<include-url>file:${install.etc.dir}/include</include-url>
 		
