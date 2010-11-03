@@ -281,8 +281,6 @@ public class FilterParser {
         
         String value = m_lexer.charsTil(')');
         
-        System.err.println("'" + value + "'");
-        
         // a presence filter
         if ("*".equals(value.trim())) {
             return new PresenceFilter(attribute);
