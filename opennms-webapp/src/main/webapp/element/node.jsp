@@ -187,9 +187,6 @@
         nodeModel.put("intfs", new Interface[0]);
     }
 
-    // see if any interfaces have ifAliases
-    nodeModel.put("hasIfAliases", NetworkElementFactory.getInstance(getServletContext()).nodeHasIfAliases(nodeId));
-    
     Service[] snmpServices = NetworkElementFactory.getInstance(getServletContext()).getServicesOnNode(nodeId, m_snmpServiceId);
     if (snmpServices != null && snmpServices.length > 0) {
         for (Interface intf : intfs) {
