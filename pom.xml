@@ -1901,6 +1901,13 @@
       <name>OpenNMS Repository</name>
       <url>http://maven.opennms.org/content/groups/opennms.org-release</url>
     </pluginRepository>
+    <pluginRepository>
+      <snapshots><enabled>false</enabled></snapshots>
+      <releases><enabled>true</enabled></releases>
+      <id>java-net-repo</id>
+      <name>Java.net Repository</name>
+      <url>http://maven.opennms.org/content/groups/java.net-release</url>
+    </pluginRepository>
   </pluginRepositories>
   <distributionManagement>
     <site>
