@@ -34,6 +34,8 @@
 
 package org.opennms.netmgt.config;
 
+import java.math.BigInteger;
+
 import org.opennms.core.utils.InetAddressUtils;
 import org.opennms.netmgt.config.common.Range;
 
@@ -216,12 +218,7 @@ final class MergeableRange implements Comparable<Range> {
      * @return a boolean.
      */
     public boolean isAdjacentToBegin(Range nextRange) {
-        boolean adjacent = false;
-        
-        if (m_last.compareTo(nextRange.getBegin()) == -1) {
-            adjacent = true;
-        }
-        return adjacent;
+        return new BigInteger("-1").equals(InetAddressUtils.difference(m_last.getSpecific(), nextRange.getBegin()));
     }
     
     /**
@@ -231,12 +228,7 @@ final class MergeableRange implements Comparable<Range> {
      * @return a boolean.
      */
     public boolean isAdjacentToEnd(Range nextRange) {
-        boolean adjacent = false;
-        
-        if (m_first.compareTo(nextRange.getEnd()) == 1) {
-            adjacent = true;
-        }
-        return adjacent;
+        return new BigInteger("-1").equals(InetAddressUtils.difference(m_first.getSpecific(), nextRange.getEnd()));
     }
     
     /**

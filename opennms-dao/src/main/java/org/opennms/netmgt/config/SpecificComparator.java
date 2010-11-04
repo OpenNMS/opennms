@@ -38,7 +38,7 @@ import java.net.InetAddress;
 import java.net.UnknownHostException;
 import java.util.Comparator;
 
-import org.opennms.core.utils.InetAddressUtils;
+import org.opennms.core.utils.ByteArrayComparator;
 import org.opennms.core.utils.ThreadCategory;
 
 /**
@@ -48,26 +48,20 @@ import org.opennms.core.utils.ThreadCategory;
  * @version $Id: $
  */
 public class SpecificComparator implements Comparator<String> {
-    ThreadCategory log = ThreadCategory.getInstance(getClass());
-
     /**
      * returns the difference of spec1 - spec2
      *
      * @param spec1 a {@link java.lang.String} object.
      * @param spec2 a {@link java.lang.String} object.
-     * @return a int.
+     * @return -1 for spec1 < spec2, 0 for spec1 == spec2, 1 for spec1 > spec2
      */
     public int compare(String spec1, String spec2) {
-        long compared = 0;
         try {
-            final long specific1 = InetAddressUtils.toIpAddrLong(InetAddress.getByName(spec1));
-            final long specific2 = InetAddressUtils.toIpAddrLong(InetAddress.getByName(spec2));
-            compared = specific1 - specific2;
+            return new ByteArrayComparator().compare(InetAddress.getByName(spec1).getAddress(), InetAddress.getByName(spec2).getAddress());
         } catch (UnknownHostException e) {
-            log.error("compare: Exception sorting ranges.", e);
+            ThreadCategory.getInstance(getClass()).error("compare: Exception sorting ranges.", e);
             throw new IllegalArgumentException(e.getLocalizedMessage());
         }
-        return (int)compared;
     }
 }
 

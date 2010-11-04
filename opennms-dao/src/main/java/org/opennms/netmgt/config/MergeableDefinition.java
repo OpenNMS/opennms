@@ -34,6 +34,7 @@
 
 package org.opennms.netmgt.config;
 
+import java.math.BigInteger;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.LinkedHashSet;
@@ -443,10 +444,10 @@ final class MergeableDefinition {
         for (int i = 0; i < specifics.length; i++) {
             MergeableSpecific specific = new MergeableSpecific(specifics[i]);
             for (Range range : getConfigDef().getRangeCollection()) {
-                if (specific.compareTo(range.getBegin()) == -1) {
+                if (new BigInteger("-1").equals(InetAddressUtils.difference(specific.getSpecific(), range.getBegin()))) {
                     getConfigDef().removeSpecific(specific.getSpecific());
                     range.setBegin(specific.getSpecific());
-                } else if (specific.compareTo(range.getEnd()) == 1) {
+                } else if (new BigInteger("1").equals(InetAddressUtils.difference(specific.getSpecific(), range.getEnd()))) {
                     getConfigDef().removeSpecific(specific.getSpecific());
                     range.setEnd(specific.getSpecific());
                 }
@@ -488,7 +489,7 @@ final class MergeableDefinition {
                 newRange.setBegin(specific.getSpecific());
                 while (it.hasNext()) {
                     String nextSpecific = (String)it.next();
-                    if (specific.compareTo(nextSpecific) == -1) {
+                    if (new BigInteger("-1").equals(InetAddressUtils.difference(specific.getSpecific(), nextSpecific))) {
                         newRange.setEnd(nextSpecific);
                         getConfigDef().removeSpecific(specific.getSpecific());
                         getConfigDef().removeSpecific(nextSpecific);

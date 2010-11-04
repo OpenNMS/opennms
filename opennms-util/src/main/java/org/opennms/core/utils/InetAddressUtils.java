@@ -216,6 +216,10 @@ abstract public class InetAddressUtils {
         return lowest;
     }
 
+    public static BigInteger difference(String addr1, String addr2) {
+        return new BigInteger(getInetAddress(addr1).getAddress()).subtract(new BigInteger(getInetAddress(addr2).getAddress()));
+    }
+
     public static boolean isInetAddressInRange(final String addrString, final String beginString, final String endString) {
         final ByteArrayComparator comparator = new ByteArrayComparator();
         final byte[] addr = InetAddressUtils.toIpAddrBytes(addrString);

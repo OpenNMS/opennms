@@ -835,8 +835,7 @@ public class SnmpPeerFactory extends PeerFactory implements SnmpAgentConfigFacto
     public void define(final SnmpEventInfo info) {
         SnmpPeerFactory.getWriteLock().lock();
         try {
-            SnmpConfigManager mgr = new SnmpConfigManager(getSnmpConfig());
-            mgr.mergeIntoConfig(info.createDef());
+            SnmpConfigManager.mergeIntoConfig(getSnmpConfig(), info.createDef());
         } finally {
             SnmpPeerFactory.getWriteLock().unlock();
         }
