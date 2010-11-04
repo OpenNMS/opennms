@@ -14,21 +14,54 @@
 	
     <bean name="myProvider" class="org.opennms.core.soa.support.MyProvider" />
     
+    <bean name="bigProvider" class="org.opennms.core.soa.support.MyProvider">
+        <constructor-arg value="big" />
+    </bean>
+    <bean name="smallProvider" class="org.opennms.core.soa.support.MyProvider">
+        <constructor-arg value="small" />
+    </bean>
+    
+    <!-- make this first so the unfiltered reference is not the default one -->
+    <onmsgi:service id="big" ref="bigProvider">
+      <onmsgi:interfaces>
+        <value>org.opennms.core.soa.support.Goodbye</value>
+      </onmsgi:interfaces>
+      <onmsgi:service-properties>
+        <entry key="size" value="big" />
+      </onmsgi:service-properties>
+    </onmsgi:service>
+    
 	<onmsgi:service id="simple" ref="myProvider" interface="org.opennms.core.soa.support.Hello" />
 	
-	<onmsgi:service id="nested" ref="myProvider">
-	  <onmsgi:interfaces>
-	    <value>org.opennms.core.soa.support.Hello</value>
-	    <value>org.opennms.core.soa.support.Goodbye</value>
-	  </onmsgi:interfaces>
-	</onmsgi:service>
+    <onmsgi:service id="nested" ref="myProvider">
+      <onmsgi:interfaces>
+        <value>org.opennms.core.soa.support.Hello</value>
+        <value>org.opennms.core.soa.support.Goodbye</value>
+      </onmsgi:interfaces>
+    </onmsgi:service>
+    
+    <onmsgi:service id="small" ref="smallProvider">
+      <onmsgi:interfaces>
+        <value>org.opennms.core.soa.support.Goodbye</value>
+      </onmsgi:interfaces>
+      <onmsgi:service-properties>
+        <entry key="size" value="small" />
+      </onmsgi:service-properties>
+    </onmsgi:service>
     
     <onmsgi:reference id="hello" interface="org.opennms.core.soa.support.Hello"/>
+
+    <onmsgi:reference id="bigGoodbye" interface="org.opennms.core.soa.support.Goodbye" filter="(size=big)"/>
+
+    <onmsgi:reference id="smallGoodbye" interface="org.opennms.core.soa.support.Goodbye" filter="(size=small)"/>
     
     <bean id="helloListListener" class="org.opennms.core.soa.support.HelloListListener"/>
     
     <onmsgi:list id="helloList" interface="org.opennms.core.soa.support.Hello">
-    	<onmsgi:listener ref="helloListListener" bind-method="bind" unbind-method="unbind"/>
+        <onmsgi:listener ref="helloListListener" bind-method="bind" unbind-method="unbind"/>
     </onmsgi:list>
+    
+    <onmsgi:list id="bigGoodbyeList" interface="org.opennms.core.soa.support.Goodbye" filter="(size=big)" />
+
     
 </beans>

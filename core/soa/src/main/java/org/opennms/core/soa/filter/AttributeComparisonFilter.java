@@ -50,7 +50,7 @@ public abstract class AttributeComparisonFilter extends AbstractFilter {
 
     @Override
     public boolean match(Map<String, String> properties) {
-        if (!properties.containsKey(m_attribute)) {
+        if (properties == null || !properties.containsKey(m_attribute)) {
             return false;
         } else {
             return valueMatches(properties.get(m_attribute));

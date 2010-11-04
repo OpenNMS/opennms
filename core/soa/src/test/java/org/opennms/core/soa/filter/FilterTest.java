@@ -45,6 +45,12 @@ import org.opennms.core.soa.Filter;
  * @author brozow
  */
 public class FilterTest {
+    
+    @Test
+    public void testNullProperties() {
+        Filter findA = new PresenceFilter("a");
+        assertThat("a is not in null map", findA.match(null), is(false));
+    }
 
     @Test
     public void testPresence() {
