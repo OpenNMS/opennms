@@ -37,7 +37,6 @@ package org.opennms.netmgt.config;
 import java.net.InetAddress;
 import java.net.UnknownHostException;
 
-import org.opennms.core.utils.InetAddressUtils;
 import org.opennms.core.utils.ThreadCategory;
 
 /**
@@ -50,7 +49,7 @@ import org.opennms.core.utils.ThreadCategory;
 public final class MergeableSpecific implements Comparable<String> {
     private String m_specific;
     private static final SpecificComparator m_comparator = new SpecificComparator();
-    private long m_value;
+    private byte[] m_value;
 
     /**
      * <p>Constructor for MergeableSpecific.</p>
@@ -58,11 +57,11 @@ public final class MergeableSpecific implements Comparable<String> {
      * @param specific a {@link java.lang.String} object.
      */
     public MergeableSpecific(String specific) {
-        ThreadCategory log = ThreadCategory.getInstance(getClass());
         m_specific = specific;
         try {
-            m_value = InetAddressUtils.toIpAddrLong(InetAddress.getByName(specific));
+            m_value = InetAddress.getByName(specific).getAddress();
         } catch (UnknownHostException e) {
+            ThreadCategory log = ThreadCategory.getInstance(getClass());
             log.error("ComparableSpecific(): Exception in construction.", e);
             throw new IllegalArgumentException(e.getLocalizedMessage());
         }
@@ -107,7 +106,7 @@ public final class MergeableSpecific implements Comparable<String> {
      *
      * @return the value
      */
-    public long getValue() {
+    public byte[] getValue() {
         return m_value;
     }
 

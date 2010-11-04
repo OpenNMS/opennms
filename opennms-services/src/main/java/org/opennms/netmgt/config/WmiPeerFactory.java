@@ -558,22 +558,10 @@ public class WmiPeerFactory extends PeerFactory {
             }
 
             // check the ranges
-            long lhost = InetAddressUtils.toIpAddrLong(agentConfig.getAddress());
             for (Range rng : def.getRangeCollection()) {
-                try {
-                    InetAddress begin = InetAddress.getByName(rng.getBegin());
-                    InetAddress end = InetAddress.getByName(rng.getEnd());
-
-                    long start = InetAddressUtils.toIpAddrLong(begin);
-                    long stop = InetAddressUtils.toIpAddrLong(end);
-
-                    if (start <= lhost && lhost <= stop) {
-                        setWmiAgentConfig(agentConfig, def );
-                        break DEFLOOP;
-                    }
-                } catch (UnknownHostException e) {
-                    ThreadCategory log = ThreadCategory.getInstance(getClass());
-                    log.warn("WmiPeerFactory: could not convert host(s) " + rng.getBegin() + " - " + rng.getEnd() + " to InetAddress", e);
+                if (InetAddressUtils.isInetAddressInRange(agentConfig.getAddress().getHostAddress(), rng.getBegin(), rng.getEnd())) {
+                    setWmiAgentConfig(agentConfig, def );
+                    break DEFLOOP;
                 }
             }
             

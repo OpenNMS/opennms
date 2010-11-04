@@ -367,21 +367,10 @@ public final class NSClientPeerFactory extends PeerFactory {
     
                 // check the ranges
                 //
-                final long lhost = InetAddressUtils.toIpAddrLong(agentConfig.getAddress());
                 for (final Range rng : def.getRangeCollection()) {
-                    try {
-                        final InetAddress begin = InetAddress.getByName(rng.getBegin());
-                        final InetAddress end = InetAddress.getByName(rng.getEnd());
-    
-                        final long start = InetAddressUtils.toIpAddrLong(begin);
-                        final long stop = InetAddressUtils.toIpAddrLong(end);
-    
-                        if (start <= lhost && lhost <= stop) {
-                            setNSClientAgentConfig(agentConfig, def);
-                            break DEFLOOP;
-                        }
-                    } catch (final UnknownHostException e) {
-                        LogUtils.warnf(this, e, "NSClientPeerFactory: could not convert host(s) %s - %s to InetAddress", rng.getBegin(), rng.getEnd());
+                    if (InetAddressUtils.isInetAddressInRange(agentConfig.getAddress().getHostAddress(), rng.getBegin(), rng.getEnd())) {
+                        setNSClientAgentConfig(agentConfig, def);
+                        break DEFLOOP;
                     }
                 }
                 

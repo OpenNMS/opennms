@@ -153,15 +153,15 @@ public class IPAddressRangeTest extends TestCase {
     public void testCreate() {
         assertEquals(begin, normal.getBegin());
         assertEquals(end, normal.getEnd());
-        assertEquals(254, normal.size());
+        assertEquals(new BigInteger("254"), normal.size());
 
         assertEquals(maxIPv6MinusFive, highV6.getBegin());
         assertEquals(maxIPv6, highV6.getEnd());
-        assertEquals(6, highV6.size());
+        assertEquals(new BigInteger("6"), highV6.size());
     }
 
     public void testSingletonRange() {
-        assertEquals(1, singleton.size());
+        assertEquals(BigInteger.ONE, singleton.size());
     }
     
     public void testContains() {
@@ -172,7 +172,7 @@ public class IPAddressRangeTest extends TestCase {
     }
 
     public void testIterator() {
-        assertEquals(3, small.size());
+        assertEquals(new BigInteger("3"), small.size());
         Iterator<IPAddress> it = small.iterator();
         assertTrue(it.hasNext());
         assertEquals(addr2, it.next());

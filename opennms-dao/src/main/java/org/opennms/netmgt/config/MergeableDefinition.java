@@ -35,6 +35,7 @@
 package org.opennms.netmgt.config;
 
 import java.math.BigInteger;
+import java.net.UnknownHostException;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.LinkedHashSet;
@@ -533,18 +534,22 @@ final class MergeableDefinition {
         for (int i = 0; i < ranges.length; i++) {
             Range defRng = ranges[i];
 
-            if (range.eclipses(defRng)) {
-                getConfigDef().removeRange(defRng);
-            } else if (range.withInRange(defRng)) {
-                Range newRange = new Range();
-                newRange.setBegin(InetAddressUtils.toIpAddrString((range.getLast().getValue()+1)));
-                newRange.setEnd(defRng.getEnd());
-                getConfigDef().addRange(newRange);
-                defRng.setEnd(InetAddressUtils.toIpAddrString((range.getFirst().getValue()-1)));
-            } else if (range.overlapsBegin(defRng)) {
-                defRng.setBegin(InetAddressUtils.toIpAddrString((range.getLast().getValue()+1)));
-            } else if (range.overlapsEnd(defRng)) {
-                defRng.setEnd(InetAddressUtils.toIpAddrString((range.getFirst().getValue()-1)));
+            try {
+                if (range.eclipses(defRng)) {
+                    getConfigDef().removeRange(defRng);
+                } else if (range.withInRange(defRng)) {
+                    Range newRange = new Range();
+                    newRange.setBegin(InetAddressUtils.incr(range.getLast().getSpecific()));
+                    newRange.setEnd(defRng.getEnd());
+                    getConfigDef().addRange(newRange);
+                    defRng.setEnd(InetAddressUtils.decr(range.getFirst().getSpecific()));
+                } else if (range.overlapsBegin(defRng)) {
+                    defRng.setBegin(InetAddressUtils.incr(range.getLast().getSpecific()));
+                } else if (range.overlapsEnd(defRng)) {
+                    defRng.setEnd(InetAddressUtils.decr(range.getFirst().getSpecific()));
+                }
+            } catch (UnknownHostException e) {
+                ThreadCategory.getInstance(getClass()).error("Error converting string to IP address: " + e.getMessage(), e);
             }
         }
     }

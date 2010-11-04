@@ -38,6 +38,7 @@
 
 package org.opennms.netmgt.config;
 
+import java.math.BigInteger;
 import java.net.InetAddress;
 import java.net.UnknownHostException;
 
@@ -68,8 +69,6 @@ public class SnmpEventInfo {
     private int m_retryCount = 0;
     private String m_version = null;
     private int m_port = 0;
-    private long m_first = 0;
-    private long m_last = 0;
     
     /**
      * Default constructor
@@ -169,7 +168,6 @@ public class SnmpEventInfo {
      */
     public void setFirstIPAddress(String firstIPAddress) throws UnknownHostException {
         m_firstIPAddress = firstIPAddress;
-        m_first = InetAddressUtils.toIpAddrLong(InetAddress.getByName(firstIPAddress));
     }
     
     /**
@@ -180,10 +178,8 @@ public class SnmpEventInfo {
     public void setFirstIPAddress(InetAddress firstIPAddress) {
         if (firstIPAddress == null) {
             m_firstIPAddress = null;
-            m_first = 0;
         } else {
             m_firstIPAddress = firstIPAddress.getHostAddress();
-            m_first = InetAddressUtils.toIpAddrLong(firstIPAddress);
         }
     }
     /**
@@ -202,10 +198,8 @@ public class SnmpEventInfo {
      */
     public void setLastIPAddress(String lastIPAddress) throws UnknownHostException {
     	if (StringUtils.isBlank(lastIPAddress)) {
-			m_last = 0;
 		} else {
 	        m_lastIPAddress = lastIPAddress;
-	        m_last = InetAddressUtils.toIpAddrLong(InetAddress.getByName(lastIPAddress));
 		}
     }
     
@@ -217,30 +211,11 @@ public class SnmpEventInfo {
     public void setLastIPAddress(InetAddress lastIPAddress) {
         if (lastIPAddress == null) {
             m_lastIPAddress = null;
-            m_last = 0;
         } else {
             m_lastIPAddress = lastIPAddress.getHostAddress();
-            m_last = InetAddressUtils.toIpAddrLong(lastIPAddress);
         }
     }
-    /**
-     * <p>getFirst</p>
-     *
-     * @return a long.
-     * @deprecated Dealing with IP addresses as 'long' type is not compatible with IPv6
-     */
-    public long getFirst() {
-        return m_first;
-    }
-    /**
-     * <p>getLast</p>
-     *
-     * @return a long.
-     * @deprecated Dealing with IP addresses as 'long' type is not compatible with IPv6
-     */
-    public long getLast() {
-        return m_last;
-    }
+
     /**
      * <p>getRange</p>
      *
@@ -340,7 +315,7 @@ public class SnmpEventInfo {
             definition.addSpecific(getFirstIPAddress());
         } else {
             
-            if (getFirst() > getLast()) {
+            if (BigInteger.ZERO.compareTo(InetAddressUtils.difference(getFirstIPAddress(), getLastIPAddress())) == 0) {
                 log().error("createDef: Can not create Definition when specified last is < first IP address: "+ this);
                 throw new IllegalArgumentException("First: "+getFirstIPAddress()+" is greater than: "+getLastIPAddress());
             }
@@ -360,7 +335,7 @@ public class SnmpEventInfo {
      * @return true if there is no last IP address specified or if first and last are equal
      */
     public boolean isSpecific() {
-        if (getLast() == 0 ||  getFirst() == getLast()) {
+        if (getLastIPAddress() == null || getLastIPAddress().equals(getFirstIPAddress())) {
             return true;
         } else {
             return false;

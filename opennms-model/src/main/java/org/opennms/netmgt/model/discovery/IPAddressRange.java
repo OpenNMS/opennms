@@ -93,14 +93,13 @@ public class IPAddressRange implements Iterable<IPAddress> {
      * <p>size</p>
      *
      * @return a long.
-     * @deprecated Cannot calculate the size of IPv6 ranges that exceed the size of long integer
      */
-    public long size() {
+    public BigInteger size() {
         BigInteger size = m_end.toBigInteger();
         size = size.subtract(m_begin.toBigInteger());
         // Add 1 because the range is inclusive of beginning and end
         size = size.add(new BigInteger("1"));
-        return size.longValue();
+        return size;
     }
 
     /**

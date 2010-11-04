@@ -93,7 +93,6 @@ public class ConfigureSnmpTest extends TestCase {
         
         assertNotNull(info);
         assertEquals("192.168.1.1", info.getFirstIPAddress());
-        assertEquals(InetAddressUtils.toIpAddrLong(InetAddress.getByName("192.168.1.1")), info.getFirst());
         assertNull(info.getLastIPAddress());
         assertTrue(info.isSpecific());
     }

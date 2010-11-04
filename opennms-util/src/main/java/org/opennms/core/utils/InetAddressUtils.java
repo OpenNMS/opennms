@@ -48,6 +48,26 @@ import java.util.List;
  */
 abstract public class InetAddressUtils {
 
+    public static String incr(String address) throws UnknownHostException {
+        return InetAddressUtils.toIpAddrString(incr(InetAddressUtils.toIpAddrBytes(address)));
+    }
+
+    public static byte[] incr(byte[] address) throws UnknownHostException {
+        BigInteger addr = new BigInteger(1, address);
+        addr = addr.add(new BigInteger("1"));
+        return convertBigIntegerIntoInetAddress(addr).getAddress();
+    }
+
+    public static String decr(String address) throws UnknownHostException {
+        return InetAddressUtils.toIpAddrString(decr(InetAddressUtils.toIpAddrBytes(address)));
+    }
+
+    public static byte[] decr(byte[] address) throws UnknownHostException {
+        BigInteger addr = new BigInteger(1, address);
+        addr = addr.subtract(new BigInteger("1"));
+        return convertBigIntegerIntoInetAddress(addr).getAddress();
+    }
+
     /**
      * <p>getInetAddress</p>
      *
@@ -78,35 +98,6 @@ abstract public class InetAddressUtils {
     }
 
     /**
-     * <p>getInetAddress</p>
-     *
-     * @param ipAddrAs32bitNumber a long.
-     * @return a {@link java.net.InetAddress} object.
-     * @deprecated Dealing with IP addresses as 'long' type is not compatible with IPv6
-     */
-    public static InetAddress getInetAddress(long ipAddrAs32bitNumber) {
-        return getInetAddress(toIpAddrBytes(ipAddrAs32bitNumber));
-    }
-    
-    /**
-     * <p>toIpAddrBytes</p>
-     *
-     * @param address a long.
-     * @return an array of byte.
-     * @deprecated Dealing with IP addresses as 'long' type is not compatible with IPv6
-     */
-    public static byte[] toIpAddrBytes(long address) {
-    
-        byte[] octets = new byte[4];
-        octets[0] = ((byte) ((address >>> 24) & 0xff));
-        octets[1] = ((byte) ((address >>> 16) & 0xff));
-        octets[2] = ((byte) ((address >>> 8) & 0xff));
-        octets[3] = ((byte) (address & 0xff));
-        
-        return octets;
-    }
-    
-    /**
      * <p>toIpAddrBytes</p>
      *
      * @param dottedNotation a {@link java.lang.String} object.
@@ -116,69 +107,10 @@ abstract public class InetAddressUtils {
         return getInetAddress(dottedNotation).getAddress();
     }
 
-    /**
-     * <p>toIpAddrLong</p>
-     *
-     * @param address an array of byte.
-     * @return a long.
-     * @deprecated Dealing with IP addresses as 'long' type is not compatible with IPv6
-     */
-    public static long toIpAddrLong(byte[] address) {
-        if (address.length != 4) {
-            throw new IllegalArgumentException("address "+address+" has the wrong length "+address.length);
-        }
-        long[] octets = new long[address.length];
-        octets[0] = unsignedByteToLong(address[0]);
-        octets[1] = unsignedByteToLong(address[1]);
-        octets[2] = unsignedByteToLong(address[2]);
-        octets[3] = unsignedByteToLong(address[3]);
-        
-        long result = octets[0] << 24 
-            | octets[1] << 16
-            | octets[2] << 8
-            | octets[3];
-        
-        return result;
-        
-    }
-    
-    /**
-     * <p>toIpAddrLong</p>
-     *
-     * @param dottedNotation a {@link java.lang.String} object.
-     * @return a long.
-     * @deprecated Dealing with IP addresses as 'long' type is not compatible with IPv6
-     */
-    public static long toIpAddrLong(String dottedNotation) {
-        return toIpAddrLong(toIpAddrBytes(dottedNotation));
-    }
-    
-    /**
-     * <p>toIpAddrLong</p>
-     *
-     * @param addr a {@link java.net.InetAddress} object.
-     * @return a long.
-     * @deprecated Dealing with IP addresses as 'long' type is not compatible with IPv6
-     */
-    public static long toIpAddrLong(InetAddress addr) {
-        return toIpAddrLong(addr.getAddress());
-    }
-
     private static long unsignedByteToLong(byte b) {
         return b < 0 ? ((long)b)+256 : ((long)b);
     }
 
-    /**
-     * <p>toIpAddrString</p>
-     *
-     * @param ipAddr a long.
-     * @return a {@link java.lang.String} object.
-     * @deprecated Dealing with IP addresses as 'long' type is not compatible with IPv6
-     */
-    public static String toIpAddrString(long ipAddr) {
-        return getInetAddress(ipAddr).getHostAddress();
-    }
-    
     /**
      * <p>toIpAddrString</p>
      *

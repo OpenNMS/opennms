@@ -35,8 +35,11 @@
 package org.opennms.netmgt.config;
 
 import java.math.BigInteger;
+import java.net.UnknownHostException;
 
+import org.opennms.core.utils.ByteArrayComparator;
 import org.opennms.core.utils.InetAddressUtils;
+import org.opennms.core.utils.ThreadCategory;
 import org.opennms.netmgt.config.common.Range;
 
 /**
@@ -248,16 +251,22 @@ final class MergeableRange implements Comparable<Range> {
         
         Range newRange = null;
         
-        if (specific.getValue() == getFirst().getValue()) {
-            getRange().setBegin(InetAddressUtils.toIpAddrString((specific.getValue()+1)));
-        } else if (specific.getValue() == getLast().getValue()) {
-            getRange().setEnd(InetAddressUtils.toIpAddrString((specific.getValue()-1)));
-        } else {
-            newRange = new Range();
-            newRange.setBegin(InetAddressUtils.toIpAddrString((specific.getValue()+1)));
-            newRange.setEnd(getRange().getEnd());
-            getRange().setEnd(InetAddressUtils.toIpAddrString((specific.getValue()-1)));
+        ByteArrayComparator comparator = new ByteArrayComparator();
+        try {
+            if (comparator.compare(specific.getValue(), getFirst().getValue()) == 0) {
+                getRange().setBegin(InetAddressUtils.incr(specific.getSpecific()));
+            } else if (comparator.compare(specific.getValue(), getLast().getValue()) == 0) {
+                getRange().setEnd(InetAddressUtils.decr(specific.getSpecific()));
+            } else {
+                newRange = new Range();
+                newRange.setBegin(InetAddressUtils.incr(specific.getSpecific()));
+                newRange.setEnd(getRange().getEnd());
+                getRange().setEnd(InetAddressUtils.decr(specific.getSpecific()));
+            }
+        } catch (UnknownHostException e) {
+            ThreadCategory.getInstance(getClass()).error("Error converting string to IP address: " + e.getMessage(), e);
         }
+
         return newRange;
     }
 
