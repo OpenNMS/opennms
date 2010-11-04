@@ -2,9 +2,9 @@
   xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
   <modelVersion>4.0.0</modelVersion>
 <parent>
-	<groupId>org.opennms</groupId>
-	<artifactId>opennms-integrations</artifactId>
-	<version>1.8.6-SNAPSHOT</version>
+  <groupId>org.opennms</groupId>
+  <artifactId>opennms-integrations</artifactId>
+  <version>1.8.6-SNAPSHOT</version>
 </parent>
   <artifactId>opennms-jasper-extensions</artifactId>
   <packaging>jar</packaging>
@@ -12,31 +12,25 @@
   <name>opennms-jasper-extensions</name>
   <url>http://maven.apache.org</url>
 
-	<dependencies>
-		<dependency>
-			<groupId>org.opennms.dependencies</groupId>
-			<artifactId>jasper-dependencies</artifactId>
-		</dependency>
-		<dependency>
-            <groupId>org.jrobin</groupId>
-            <artifactId>jrobin</artifactId>
-        </dependency>
-        <dependency>
-            <groupId>com.jaspersoft</groupId>
-            <artifactId>ireport</artifactId>
-            <version>3.7.5</version>
-            <scope>provided</scope>
-        </dependency>
-	</dependencies>
+  <dependencies>
+    <dependency>
+      <groupId>org.opennms.dependencies</groupId>
+      <artifactId>jasper-dependencies</artifactId>
+    </dependency>
+    <dependency>
+      <groupId>org.jrobin</groupId>
+      <artifactId>jrobin</artifactId>
+    </dependency>
+  </dependencies>
     
-	<repositories>
-		<repository>
-			<snapshots><enabled>false</enabled></snapshots>
-			<releases><enabled>true</enabled></releases>
-			<id>opennms-repo</id>
-			<name>OpenNMS Repository</name>
-			<url>http://maven.opennms.org/content/groups/opennms.org-release</url>
-		</repository>
-	</repositories>
+  <repositories>
+    <repository>
+      <snapshots><enabled>false</enabled></snapshots>
+      <releases><enabled>true</enabled></releases>
+      <id>opennms-repo</id>
+      <name>OpenNMS Repository</name>
+      <url>http://maven.opennms.org/content/groups/opennms.org-release</url>
+    </repository>
+  </repositories>
 
 </project>
