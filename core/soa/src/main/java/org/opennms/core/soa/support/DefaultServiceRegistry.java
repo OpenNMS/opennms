@@ -35,9 +35,11 @@ import java.util.LinkedHashSet;
 import java.util.Map;
 import java.util.Set;
 
+import org.opennms.core.soa.Filter;
 import org.opennms.core.soa.Registration;
 import org.opennms.core.soa.RegistrationListener;
 import org.opennms.core.soa.ServiceRegistry;
+import org.opennms.core.soa.filter.FilterParser;
 
 /**
  * DefaultServiceRegistry
@@ -47,6 +49,19 @@ import org.opennms.core.soa.ServiceRegistry;
  */
 public class DefaultServiceRegistry implements ServiceRegistry {
     
+    /**
+     * AnyFilter
+     *
+     * @author brozow
+     */
+    public class AnyFilter implements Filter {
+
+        public boolean match(Map<String, String> properties) {
+            return true;
+        }
+
+    }
+
     /** Constant <code>INSTANCE</code> */
     public static final DefaultServiceRegistry INSTANCE = new DefaultServiceRegistry();
     
@@ -106,11 +121,7 @@ public class DefaultServiceRegistry implements ServiceRegistry {
     
     /** {@inheritDoc} */
     public <T> T findProvider(Class<T> serviceInterface) {
-        Collection<T> providers = findProviders(serviceInterface);
-        for(T provider : providers) {
-            return provider;
-        }
-        return null;
+        return findProvider(serviceInterface, null);
     }
     
     /** {@inheritDoc} */
@@ -124,18 +135,22 @@ public class DefaultServiceRegistry implements ServiceRegistry {
     
     /** {@inheritDoc} */
     public <T> Collection<T> findProviders(Class<T> serviceInterface) {
-        
-        Set<ServiceRegistration> registrations = getRegistrations(serviceInterface);
-        Set<T> providers = new LinkedHashSet<T>(registrations.size());
-        for(ServiceRegistration registration : registrations) {
-            providers.add(registration.getProvider(serviceInterface));
-        }
-        return providers;
+        return findProviders(serviceInterface, null);
     }
 
     /** {@inheritDoc} */
     public <T> Collection<T> findProviders(Class<T> serviceInterface, String filter) {
-        throw new UnsupportedOperationException("DefaultServiceRegistry.findProviders with a filter is not yet implemented");
+        
+        Filter f = filter == null ? new AnyFilter() : new FilterParser().parse(filter);
+
+        Set<ServiceRegistration> registrations = getRegistrations(serviceInterface);
+        Set<T> providers = new LinkedHashSet<T>(registrations.size());
+        for(ServiceRegistration registration : registrations) {
+            if (f.match(registration.getProperties())) {
+                providers.add(registration.getProvider(serviceInterface));
+            }
+        }
+        return providers;
     }
 
     /**

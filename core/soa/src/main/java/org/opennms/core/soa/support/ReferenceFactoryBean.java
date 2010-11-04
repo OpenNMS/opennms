@@ -45,6 +45,7 @@ public class ReferenceFactoryBean<T> implements FactoryBean<T>, InitializingBean
     
     private ServiceRegistry m_serviceRegistry;
     private Class<T> m_serviceInterface;
+    private String m_filter;
     
     private T m_provider;
 
@@ -67,6 +68,15 @@ public class ReferenceFactoryBean<T> implements FactoryBean<T>, InitializingBean
     }
     
     /**
+     * <p>setServiceInterface</p>
+     *
+     * @param serviceInterface a {@link java.lang.Class} object.
+     */
+    public void setFilter(String filter) {
+        m_filter = filter;
+    }
+    
+    /**
      * <p>getObject</p>
      *
      * @return a {@link java.lang.Object} object.
@@ -75,7 +85,7 @@ public class ReferenceFactoryBean<T> implements FactoryBean<T>, InitializingBean
     public T getObject() throws Exception {
         
         if (m_provider == null) {
-            m_provider = ProxyFactory.getProxy(m_serviceInterface, new ServiceRegistryTargetSource(m_serviceRegistry, m_serviceInterface));
+            m_provider = ProxyFactory.getProxy(m_serviceInterface, new ServiceRegistryTargetSource(m_serviceRegistry, m_filter, m_serviceInterface));
         }
         return m_provider;
     }

@@ -32,9 +32,11 @@ package org.opennms.core.soa.support;
 import java.util.List;
 import java.util.concurrent.CopyOnWriteArrayList;
 
+import org.opennms.core.soa.Filter;
 import org.opennms.core.soa.Registration;
 import org.opennms.core.soa.RegistrationListener;
 import org.opennms.core.soa.ServiceRegistry;
+import org.opennms.core.soa.filter.FilterParser;
 import org.springframework.beans.factory.FactoryBean;
 import org.springframework.beans.factory.InitializingBean;
 import org.springframework.util.Assert;
@@ -52,6 +54,7 @@ public class ReferenceListFactoryBean<T> implements FactoryBean<List<T>>, Initia
     private List<RegistrationListener<T>> m_listeners = new CopyOnWriteArrayList<RegistrationListener<T>>();
     
     private List<T> m_providerRegistrations = new CopyOnWriteArrayList<T>();
+    private Filter m_filter;
 
     /**
      * <p>setServiceRegistry</p>
@@ -69,6 +72,10 @@ public class ReferenceListFactoryBean<T> implements FactoryBean<List<T>>, Initia
      */
     public void setServiceInterface(Class<T> serviceInterface) {
         m_serviceInterface = serviceInterface;
+    }
+    
+    public void setFilter(String filter) {
+        m_filter = (filter == null ? null : new FilterParser().parse(filter));
     }
     
     /**
@@ -113,6 +120,12 @@ public class ReferenceListFactoryBean<T> implements FactoryBean<List<T>>, Initia
 
     /** {@inheritDoc} */
     public void providerRegistered(Registration registration, T provider) {
+        
+        if (m_filter != null && !m_filter.match(registration.getProperties())) {
+            // this object doesn't match the filter so skip it
+            return;
+        }
+        
         m_providerRegistrations.add(provider);
         
         for(RegistrationListener<T> listener : m_listeners) {
@@ -122,7 +135,12 @@ public class ReferenceListFactoryBean<T> implements FactoryBean<List<T>>, Initia
 
     /** {@inheritDoc} */
     public void providerUnregistered(Registration registration, T provider) {
-        m_providerRegistrations.remove(provider);
+        boolean found = m_providerRegistrations.remove(provider);
+
+        if (!found) {
+            // this object didn't belong to the match registrations so do nothing
+            return;
+        }
         
         for(RegistrationListener<T> listener : m_listeners) {
             listener.providerUnregistered(registration, provider);
