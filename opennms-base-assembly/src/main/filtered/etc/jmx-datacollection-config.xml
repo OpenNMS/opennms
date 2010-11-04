@@ -1,50 +1,44 @@
 <?xml version="1.0"?>
 <jmx-datacollection-config rrdRepository="${install.share.dir}/rrd/snmp/">
-    <jmx-collection name="jboss">
-        <rrd step = "300">
-            <rra>RRA:AVERAGE:0.5:1:2016</rra>
-            <rra>RRA:AVERAGE:0.5:12:1488</rra>
-            <rra>RRA:AVERAGE:0.5:288:366</rra>
-            <rra>RRA:MAX:0.5:288:366</rra>
-            <rra>RRA:MIN:0.5:288:366</rra>
-        </rrd>
-      
-        <mbeans>   
-          <mbean name="SystemInfo" objectname="jboss.system:type=ServerInfo">  
-              <attrib name="FreeMemory"   alias="FreeMemory"       type="gauge"/> 
-              <attrib name="TotalMemory"  alias="TotalMemory"      type="gauge"/>  
-          </mbean>  
-          
-          <mbean name="DefaultDSManagedConnectionPool" objectname="jboss.jca:service=ManagedConnectionPool,name=DefaultDS">  
-              <attrib name="AvailableConnectionCount"   alias="DefDS_AvailConns"    type="gauge"/> 
-              <attrib name="ConnectionCount"            alias="DefDS_Conns"         type="gauge"/>  
-              <attrib name="InUseConnectionCount"       alias="DefDS_InUseConns"    type="gauge"/>  
-              <attrib name="ConnectionCreatedCount"     alias="DefDS_CreatedConns"  type="counter"/>  
-              <attrib name="ConnectionDestroyedCount"   alias="DefDS_DestroyConns"  type="counter"/>  
-          </mbean>  
-
-          <!-- JmsXA Connector Pool
+  <jmx-collection name="jboss">
+    <rrd step="300">
+      <rra>RRA:AVERAGE:0.5:1:2016</rra>
+      <rra>RRA:AVERAGE:0.5:12:1488</rra>
+      <rra>RRA:AVERAGE:0.5:288:366</rra>
+      <rra>RRA:MAX:0.5:288:366</rra>
+      <rra>RRA:MIN:0.5:288:366</rra>
+    </rrd>
+    <mbeans>
+      <mbean name="SystemInfo" objectname="jboss.system:type=ServerInfo">
+        <attrib name="FreeMemory" alias="FreeMemory" type="gauge"/>
+        <attrib name="TotalMemory" alias="TotalMemory" type="gauge"/>
+      </mbean>
+      <mbean name="DefaultDSManagedConnectionPool" objectname="jboss.jca:service=ManagedConnectionPool,name=DefaultDS">
+        <attrib name="AvailableConnectionCount" alias="DefDS_AvailConns" type="gauge"/>
+        <attrib name="ConnectionCount" alias="DefDS_Conns" type="gauge"/>
+        <attrib name="InUseConnectionCount" alias="DefDS_InUseConns" type="gauge"/>
+        <attrib name="ConnectionCreatedCount" alias="DefDS_CreatedConns" type="counter"/>
+        <attrib name="ConnectionDestroyedCount" alias="DefDS_DestroyConns" type="counter"/>
+      </mbean>
+      <!-- JmsXA Connector Pool
           <mbean name="JmsXAManagedConnectionPool" objectname="jboss.jca:service=ManagedConnectionPool,name=JmsXA">  
               <attrib name="AvailableConnectionCount"   alias="JmsXA_AvailConns"    type="gauge"/> 
               <attrib name="ConnectionCount"            alias="JmsXA_Conns"         type="gauge"/>  
               <attrib name="InUseConnectionCount"       alias="JmsXA_InUseConns"    type="gauge"/>  
               <attrib name="ConnectionCreatedCount"     alias="JmsXA_CreatedConns"  type="gauge"/>  
               <attrib name="ConnectionDestroyedCount"   alias="JmsXA_DestroyConns"  type="gauge"/>  
-          </mbean-->  
- 
-          <!-- Destination Manager
+          </mbean-->
+      <!-- Destination Manager
           <mbean name="MQ_DestinationManager" objectname="jboss.mq:service=DestinationManager">  
               <attrib name="ClientCount"   alias="MQ_ClientCount"    type="gauge"/> 
-          </mbean-->  
-
-          <!-- an example of a Queue 
+          </mbean-->
+      <!-- an example of a Queue 
           <mbean name="MQ_DestinationQueueA" objectname="jboss.mq.destination:service=Queue,name=A">  
               <attrib name="QueueDepth"       alias="A_QueueDepth"       type="gauge"/> 
               <attrib name="ReceiversCount"   alias="A_QueueRecv"        type="gauge"/> 
               <attrib name="MaxDepth"         alias="A_QueueMaxDepth"    type="gauge"/> 
-          </mbean-->  
-
-          <!-- an example of a Topic
+          </mbean-->
+      <!-- an example of a Topic
           <mbean name="SecuredTopic" objectname="jboss.mq.destination:service=Topic,name=securedTopic">  
               <attrib name="DurableMessageCount"         alias="ST_DurMsg"      type="gauge"/> 
               <attrib name="NonDurableMessageCount"      alias="ST_NonDurMsg"   type="gauge"/> 
@@ -53,110 +47,97 @@
               <attrib name="AllMessageCount"             alias="ST_AllMsg"      type="gauge"/> 
               <attrib name="MaxDepth"                    alias="ST_MaxDepth"    type="gauge"/> 
               <attrib name="AllSubscriptionsCount"       alias="ST_AllSub"      type="gauge"/> 
-          </mbean-->  
-
-          <!-- Global Request Processor -->
-          <mbean name="GlobalRequestProcessor" 
-                 objectname="jboss.web:type=GlobalRequestProcessor,name=http-0.0.0.0-8080">
-              <attrib name="requestCount"     alias="GRP_requests"     type="counter"/> 
-              <attrib name="maxTime"          alias="GRP_maxTime"      type="gauge"/> 
-              <attrib name="bytesSent"        alias="GRP_bytesSent"    type="counter"/> 
-              <attrib name="bytesReceived"    alias="GRP_bytesRec"     type="counter"/> 
-              <attrib name="processingTime"   alias="GRP_procTime"     type="counter"/> 
-              <attrib name="errorCount"       alias="GRP_errors"       type="counter"/> 
-          </mbean>  
-
-          <!-- Thread Pool -->
-          <mbean name="ThreadPool" objectname="jboss.web:type=ThreadPool,name=http-0.0.0.0-8080">
-              <attrib name="currentThreadsBusy"   alias="BusyThreads"      type="gauge"/> 
-              <attrib name="currentThreadCount"   alias="Threads"          type="gauge"/> 
-              <attrib name="minSpareThreads"      alias="MinSpareThreads"  type="gauge"/> 
-              <attrib name="maxSpareThreads"      alias="MaxSpareThreads"  type="gauge"/> 
-              <attrib name="maxThreads"           alias="MaxThreads"       type="gauge"/> 
-          </mbean>
- 
-       </mbeans>   
-    </jmx-collection>
-
-    <jmx-collection name="jsr160">
-        <rrd step = "300">
-            <rra>RRA:AVERAGE:0.5:1:2016</rra>
-            <rra>RRA:AVERAGE:0.5:12:1488</rra>
-            <rra>RRA:AVERAGE:0.5:288:366</rra>
-            <rra>RRA:MAX:0.5:288:366</rra>
-            <rra>RRA:MIN:0.5:288:366</rra>
-        </rrd>
-      
-        <mbeans>   
-          <mbean name="OpenNMS Queued" objectname="OpenNMS:Name=Queued">  
-              <attrib name="CreatesCompleted" alias="ONMSQueCreates" type="counter"/> 
-              <attrib name="DequeuedItems" alias="ONMSQueItemDeque" type="counter"/>  
-              <attrib name="DequeuedOperations" alias="ONMSQueDequeOps" type="counter"/> 
-              <attrib name="EnqueuedOperations" alias="ONMSQueEnqueOps" type="counter"/> 
-              <attrib name="Errors" alias="ONMSQueErrors" type="counter"/>  
-              <attrib name="PromotionCount" alias="ONMSQuePromo" type="counter"/> 
-              <attrib name="SignificantOpsCompleted" alias="ONMSQueSigOpsCompl" type="counter"/> 
-              <attrib name="SignificantOpsDequeued" alias="ONMSQueSigOpsDeque" type="counter"/> 
-              <attrib name="SignificantOpsEnqueued" alias="ONMSQueSigOpsEnque" type="counter"/>  
-              <attrib name="TotalOperationsPending" alias="ONMSQueOpsPend" type="gauge"/> 
-              <attrib name="UpdatesCompleted" alias="ONMSQueUpdates" type="counter"/> 
-          </mbean>  
-
-          <mbean name="JVM Memory" objectname="java.lang:type=OperatingSystem">  
-              <attrib name="FreePhysicalMemorySize"   alias="FreeMemory"       type="gauge"/> 
-              <attrib name="TotalPhysicalMemorySize"  alias="TotalMemory"      type="gauge"/>  
-              <attrib name="FreeSwapSpaceSize"        alias="FreeSwapSpace"    type="gauge"/> 
-              <attrib name="TotalSwapSpaceSize"       alias="TotalSwapSpace"   type="gauge"/> 
-          </mbean>  
-          <mbean name="JVM Threading" objectname="java.lang:type=Threading">  
-              <attrib name="ThreadCount"           alias="ThreadCount"          type="gauge"/>  
-              <attrib name="PeakThreadCount"       alias="PeakThreadCount"      type="gauge"/>  
-              <attrib name="DaemonThreadCount"     alias="DaemonThreadCount"    type="gauge"/>  
-              <attrib name="CurrentThreadCpuTime"  alias="CurThreadCpuTime"     type="gauge"/>  
-          </mbean> 
-
-          <mbean name="JVM ClassLoading" objectname="java.lang:type=ClassLoading">  
-              <attrib name="TotalLoadedClassCount"  alias="TotLoadedClasses"   type="gauge"/>  
-              <attrib name="LoadedClassCount"       alias="LoadedClasses"      type="gauge"/>  
-              <attrib name="UnloadedClassCount"     alias="UnloadedClass"      type="gauge"/>  
-          </mbean>
-          
-          <mbean name="JVM MemoryPool:Eden Space" objectname="java.lang:type=MemoryPool,name=Eden Space">
-              <attrib name="CollectionUsageThreshold"       alias="EdenCollUseThrsh"      type="gauge"/>
-              <attrib name="CollectionUsageThresholdCount"    alias="EdenCollUseThrshCnt"   type="gauge"/>
-              <comp-attrib name="Usage"         type="Composite" alias="EdenUsage">
-                  <comp-member name="init"      type="gauge"     alias="EdenUsage.init" />
-          		  <comp-member name="max"       type="gauge"     alias="EdenUsage.max" />
-          		  <comp-member name="used"      type="gauge"     alias="EdenUsage.used" />
-          		  <comp-member name="committed" type="gauge"     alias="EdenUsage.committed" />
-              </comp-attrib>
-              <comp-attrib name="PeakUsage"     type="Composite" alias="EdenPeakUsage">
-          		  <comp-member name="init"      type="gauge"     alias="EdenPeakUsage.init" />
-          		  <comp-member name="max"       type="gauge"     alias="EdenPeakUsage.max" />
-          		  <comp-member name="used"      type="gauge"     alias="EdenPeakUsage.used" />
-          		  <comp-member name="committed" type="gauge"     alias="EdenPeakUsage.committed" />
-              </comp-attrib>
-          </mbean>
-	  	
-          <mbean name="JVM MemoryPool:Survivor Space" objectname="java.lang:type=MemoryPool,name=Survivor Space">
-              <attrib name="CollectionUsageThreshold"       alias="SurvCollUseThresh"      type="gauge"/>
-              <attrib name="CollectionUsageThresholdCount"    alias="SurvCollUseThreshCnt"   type="gauge"/>
-              <comp-attrib name="Usage"         type="Composite" alias="SurvUsage">
-                  <comp-member name="init"      type="gauge"     alias="SurvUsage.init" />
-          		  <comp-member name="max"       type="gauge"     alias="SurvUsage.max" />
-          		  <comp-member name="used"      type="gauge"     alias="SurvUsage.used" />
-          		  <comp-member name="committed" type="gauge"     alias="SurvUsage.committed" />
-              </comp-attrib>
-              <comp-attrib name="PeakUsage"     type="Composite" alias="SurvPeakUsage">
-          		  <comp-member name="init"      type="gauge"     alias="SurvPeakUsage.init" />
-          		  <comp-member name="max"       type="gauge"     alias="SurvPeakUsage.max" />
-          		  <comp-member name="used"      type="gauge"     alias="SurvPeakUsage.used" />
-          		  <comp-member name="committed" type="gauge"     alias="SurvPeakUsage.committed" />
-              </comp-attrib>
-          </mbean>
-	  	  		  
-        </mbeans>
-        
-    </jmx-collection>
-    
+          </mbean-->
+      <!-- Global Request Processor -->
+      <mbean name="GlobalRequestProcessor" objectname="jboss.web:type=GlobalRequestProcessor,name=http-0.0.0.0-8080">
+        <attrib name="requestCount" alias="GRP_requests" type="counter"/>
+        <attrib name="maxTime" alias="GRP_maxTime" type="gauge"/>
+        <attrib name="bytesSent" alias="GRP_bytesSent" type="counter"/>
+        <attrib name="bytesReceived" alias="GRP_bytesRec" type="counter"/>
+        <attrib name="processingTime" alias="GRP_procTime" type="counter"/>
+        <attrib name="errorCount" alias="GRP_errors" type="counter"/>
+      </mbean>
+      <!-- Thread Pool -->
+      <mbean name="ThreadPool" objectname="jboss.web:type=ThreadPool,name=http-0.0.0.0-8080">
+        <attrib name="currentThreadsBusy" alias="BusyThreads" type="gauge"/>
+        <attrib name="currentThreadCount" alias="Threads" type="gauge"/>
+        <attrib name="minSpareThreads" alias="MinSpareThreads" type="gauge"/>
+        <attrib name="maxSpareThreads" alias="MaxSpareThreads" type="gauge"/>
+        <attrib name="maxThreads" alias="MaxThreads" type="gauge"/>
+      </mbean>
+    </mbeans>
+  </jmx-collection>
+  <jmx-collection name="jsr160">
+    <rrd step="300">
+      <rra>RRA:AVERAGE:0.5:1:2016</rra>
+      <rra>RRA:AVERAGE:0.5:12:1488</rra>
+      <rra>RRA:AVERAGE:0.5:288:366</rra>
+      <rra>RRA:MAX:0.5:288:366</rra>
+      <rra>RRA:MIN:0.5:288:366</rra>
+    </rrd>
+    <mbeans>
+      <mbean name="OpenNMS Queued" objectname="OpenNMS:Name=Queued">
+        <attrib name="CreatesCompleted" alias="ONMSQueCreates" type="counter"/>
+        <attrib name="DequeuedItems" alias="ONMSQueItemDeque" type="counter"/>
+        <attrib name="DequeuedOperations" alias="ONMSQueDequeOps" type="counter"/>
+        <attrib name="EnqueuedOperations" alias="ONMSQueEnqueOps" type="counter"/>
+        <attrib name="Errors" alias="ONMSQueErrors" type="counter"/>
+        <attrib name="PromotionCount" alias="ONMSQuePromo" type="counter"/>
+        <attrib name="SignificantOpsCompleted" alias="ONMSQueSigOpsCompl" type="counter"/>
+        <attrib name="SignificantOpsDequeued" alias="ONMSQueSigOpsDeque" type="counter"/>
+        <attrib name="SignificantOpsEnqueued" alias="ONMSQueSigOpsEnque" type="counter"/>
+        <attrib name="TotalOperationsPending" alias="ONMSQueOpsPend" type="gauge"/>
+        <attrib name="UpdatesCompleted" alias="ONMSQueUpdates" type="counter"/>
+      </mbean>
+      <mbean name="JVM Memory" objectname="java.lang:type=OperatingSystem">
+        <attrib name="FreePhysicalMemorySize" alias="FreeMemory" type="gauge"/>
+        <attrib name="TotalPhysicalMemorySize" alias="TotalMemory" type="gauge"/>
+        <attrib name="FreeSwapSpaceSize" alias="FreeSwapSpace" type="gauge"/>
+        <attrib name="TotalSwapSpaceSize" alias="TotalSwapSpace" type="gauge"/>
+      </mbean>
+      <mbean name="JVM Threading" objectname="java.lang:type=Threading">
+        <attrib name="ThreadCount" alias="ThreadCount" type="gauge"/>
+        <attrib name="PeakThreadCount" alias="PeakThreadCount" type="gauge"/>
+        <attrib name="DaemonThreadCount" alias="DaemonThreadCount" type="gauge"/>
+        <attrib name="CurrentThreadCpuTime" alias="CurThreadCpuTime" type="gauge"/>
+      </mbean>
+      <mbean name="JVM ClassLoading" objectname="java.lang:type=ClassLoading">
+        <attrib name="TotalLoadedClassCount" alias="TotLoadedClasses" type="gauge"/>
+        <attrib name="LoadedClassCount" alias="LoadedClasses" type="gauge"/>
+        <attrib name="UnloadedClassCount" alias="UnloadedClass" type="gauge"/>
+      </mbean>
+      <mbean name="JVM MemoryPool:Eden Space" objectname="java.lang:type=MemoryPool,name=Eden Space">
+        <attrib name="CollectionUsageThreshold" alias="EdenCollUseThrsh" type="gauge"/>
+        <attrib name="CollectionUsageThresholdCount" alias="EdenCollUseThrshCnt" type="gauge"/>
+        <comp-attrib name="Usage" type="Composite" alias="EdenUsage">
+          <comp-member name="init" type="gauge" alias="EdenUsage.init"/>
+          <comp-member name="max" type="gauge" alias="EdenUsage.max"/>
+          <comp-member name="used" type="gauge" alias="EdenUsage.used"/>
+          <comp-member name="committed" type="gauge" alias="EdenUsg.cmmttd"/>
+        </comp-attrib>
+        <comp-attrib name="PeakUsage" type="Composite" alias="EdenPeakUsage">
+          <comp-member name="init" type="gauge" alias="EdenPeakUsage.init"/>
+          <comp-member name="max" type="gauge" alias="EdenPeakUsage.max"/>
+          <comp-member name="used" type="gauge" alias="EdenPeakUsage.used"/>
+          <comp-member name="committed" type="gauge" alias="EdenPeakUsg.cmmttd"/>
+        </comp-attrib>
+      </mbean>
+      <mbean name="JVM MemoryPool:Survivor Space" objectname="java.lang:type=MemoryPool,name=Survivor Space">
+        <attrib name="CollectionUsageThreshold" alias="SurvCollUseThresh" type="gauge"/>
+        <attrib name="CollectionUsageThresholdCount" alias="SurvCollUseThrshCnt" type="gauge"/>
+        <comp-attrib name="Usage" type="Composite" alias="SurvUsage">
+          <comp-member name="init" type="gauge" alias="SurvUsage.init"/>
+          <comp-member name="max" type="gauge" alias="SurvUsage.max"/>
+          <comp-member name="used" type="gauge" alias="SurvUsage.used"/>
+          <comp-member name="committed" type="gauge" alias="SurvUsg.cmmttd"/>
+        </comp-attrib>
+        <comp-attrib name="PeakUsage" type="Composite" alias="SurvPeakUsage">
+          <comp-member name="init" type="gauge" alias="SurvPeakUsage.init"/>
+          <comp-member name="max" type="gauge" alias="SurvPeakUsage.max"/>
+          <comp-member name="used" type="gauge" alias="SurvPeakUsage.used"/>
+          <comp-member name="committed" type="gauge" alias="SurvPeakUsg.cmmttd"/>
+        </comp-attrib>
+      </mbean>
+    </mbeans>
+  </jmx-collection>
 </jmx-datacollection-config>
