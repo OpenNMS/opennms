@@ -81,12 +81,12 @@ public class CurrentOutageParseResponse {
      * @param outageService a {@link org.opennms.web.svclayer.outage.OutageService} object.
      * @return a java$util$Map object.
      */
-    public static  Map findSelectedOutagesIDs(HttpServletRequest request, OutageService outageService) {
+    public static  Map<String,String> findSelectedOutagesIDs(HttpServletRequest request, OutageService outageService) {
         Map<String, String> myOutages = new HashMap<String, String>();
-        Enumeration parameterNames = request.getParameterNames();
+        Enumeration<String> parameterNames = request.getParameterNames();
 
         while (parameterNames.hasMoreElements()) {
-            String parameterName = (String) parameterNames.nextElement();
+            String parameterName = parameterNames.nextElement();
             if (parameterName.startsWith("chkbx_")) {
                 String outageId = StringUtils.substringAfter(parameterName, "chkbx_");
                 String parameterValue = request.getParameter(parameterName);

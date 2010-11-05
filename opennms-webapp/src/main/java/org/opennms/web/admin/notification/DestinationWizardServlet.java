@@ -141,7 +141,7 @@ public class DestinationWizardServlet extends HttpServlet {
             String action = request.getParameter("userAction");
             Path path = (Path) user.getAttribute("newPath");
 
-            // load all chanagable values from the outline page into the editing
+            // load all changeable values from the outline page into the editing
             // path
             saveOutlineForm(path, request);
 
@@ -150,7 +150,7 @@ public class DestinationWizardServlet extends HttpServlet {
                 Escalate newEscalate = new Escalate();
                 path.addEscalate(index, newEscalate);
 
-                Map<String, Object> requestParams = new HashMap<String, Object>();
+                Map<String, String> requestParams = new HashMap<String, String>();
                 requestParams.put("targetIndex", request.getParameter("index"));
                 redirectString.append(SOURCE_PAGE_TARGETS).append(makeQueryString(requestParams));
             } else if (action.equals("remove")) {
@@ -158,7 +158,7 @@ public class DestinationWizardServlet extends HttpServlet {
                 removeEscalation(path, index);
                 redirectString.append(SOURCE_PAGE_OUTLINE);
             } else if (action.equals("edit")) {
-                Map<String, Object> requestParams = new HashMap<String, Object>();
+                Map<String, String> requestParams = new HashMap<String, String>();
                 requestParams.put("targetIndex", request.getParameter("index"));
                 redirectString.append(SOURCE_PAGE_TARGETS).append(makeQueryString(requestParams));
             } else if (action.equals("finish")) {
@@ -292,7 +292,7 @@ public class DestinationWizardServlet extends HttpServlet {
                 }
             }
 
-            Map<String, Object> requestParams = new HashMap<String, Object>();
+            Map<String, String> requestParams = new HashMap<String, String>();
             requestParams.put("targetIndex", request.getParameter("targetIndex"));
             String redirectPage = request.getParameter("nextPage");
             redirectString.append(redirectPage);
@@ -320,7 +320,7 @@ public class DestinationWizardServlet extends HttpServlet {
                 }
             }
 
-            Map<String, Object> requestParams = new HashMap<String, Object>();
+            Map<String, String> requestParams = new HashMap<String, String>();
             requestParams.put("targetIndex", request.getParameter("targetIndex"));
             redirectString.append(SOURCE_PAGE_COMMANDS).append(makeQueryString(requestParams));
         } else if (sourcePage.equals(SOURCE_PAGE_COMMANDS)) {
@@ -371,14 +371,14 @@ public class DestinationWizardServlet extends HttpServlet {
         path.removeEscalate(escalate);
     }
 
-    private String makeQueryString(Map map) {
+    private String makeQueryString(Map<String,String> map) {
         StringBuffer buffer = new StringBuffer();
         String separator = "?";
 
-        Iterator i = map.keySet().iterator();
+        Iterator<String> i = map.keySet().iterator();
         while (i.hasNext()) {
-            String key = (String) i.next();
-            buffer.append(separator).append(key).append("=").append(Util.encode((String) map.get(key)));
+            String key = i.next();
+            buffer.append(separator).append(key).append("=").append(Util.encode(map.get(key)));
             separator = "&";
         }
 
@@ -393,21 +393,21 @@ public class DestinationWizardServlet extends HttpServlet {
         newPath.setName(oldPath.getName());
         newPath.setInitialDelay(oldPath.getInitialDelay());
 
-        Collection targets = oldPath.getTargetCollection();
-        Iterator it = targets.iterator();
+        Collection<Target> targets = oldPath.getTargetCollection();
+        Iterator<Target> it = targets.iterator();
         while (it.hasNext()) {
-            newPath.addTarget(copyTarget((Target) it.next()));
+            newPath.addTarget(copyTarget(it.next()));
         }
 
-        Collection escalations = oldPath.getEscalateCollection();
-        Iterator ie = escalations.iterator();
+        Collection<Escalate> escalations = oldPath.getEscalateCollection();
+        Iterator<Escalate> ie = escalations.iterator();
         while (ie.hasNext()) {
-            Escalate curEscalate = (Escalate) ie.next();
+            Escalate curEscalate = ie.next();
             Escalate newEscalate = new Escalate();
             newEscalate.setDelay(curEscalate.getDelay());
 
-            Collection esTargets = curEscalate.getTargetCollection();
-            Iterator iet = esTargets.iterator();
+            Collection<Target> esTargets = curEscalate.getTargetCollection();
+            Iterator<Target> iet = esTargets.iterator();
             while (iet.hasNext()) {
                 newEscalate.addTarget(copyTarget((Target) iet.next()));
             }

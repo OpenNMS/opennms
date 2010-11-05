@@ -156,7 +156,7 @@ public class OutageAllController extends UrlFilenameViewController {
 			}
 		}
 
-		Collection theTable = m_cview.theTable(foundOutages);
+		Collection<Map<String,Object>> theTable = m_cview.theTable(foundOutages);
 		
 		myModel.put("searchfilter",searchFilter);
 		myModel.put("tabledata", theTable);

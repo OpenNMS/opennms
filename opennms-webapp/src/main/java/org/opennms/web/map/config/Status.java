@@ -47,7 +47,7 @@ package org.opennms.web.map.config;
  * @version $Id: $
  * @since 1.8.1
  */
-public class Status implements Comparable{
+public class Status implements Comparable<Status> {
 	private int id;
 	private String uei;
 	private String color;
@@ -79,10 +79,9 @@ public class Status implements Comparable{
 	 *
 	 * Compares the Status to another in input by id.
 	 */
-	public int compareTo(Object otherStatus){
-		Status othStat = (Status) otherStatus;
-		if(this.id==othStat.getId()) return 0;
-		else if(this.id<othStat.getId()) return -1;
+	public int compareTo(Status otherStatus){
+		if(this.id == otherStatus.getId()) return 0;
+		else if(this.id < otherStatus.getId()) return -1;
 		else  return 1;
 	}
 	

@@ -59,7 +59,7 @@ public class SurveillanceDashlet extends Dashlet {
     private SurveillanceView m_view;
     private SurveillanceLoader m_loader;
     
-    class SurveillanceLoader extends DashletLoader implements AsyncCallback {
+    class SurveillanceLoader extends DashletLoader implements AsyncCallback<SurveillanceData> {
         
         private SurveillanceServiceAsync m_surveillanceService;
         
@@ -77,13 +77,12 @@ public class SurveillanceDashlet extends Dashlet {
             error(caught);
         }
 
-        public void onSuccess(Object result) {
-            SurveillanceData data = (SurveillanceData)result;
+        public void onSuccess(SurveillanceData data) {
             setData(data);
             
             
             if (!data.isComplete()) {
-                final AsyncCallback cb = this;
+                final AsyncCallback<SurveillanceData> cb = this;
                 Timer timer = new Timer() {
                     public void run() {
                         m_surveillanceService.getSurveillanceData(cb);

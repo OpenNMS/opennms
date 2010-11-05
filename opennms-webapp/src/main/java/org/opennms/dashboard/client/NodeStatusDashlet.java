@@ -55,7 +55,7 @@ public class NodeStatusDashlet extends Dashlet {
     
     
 
-    class NodeStatusLoader extends DashletLoader implements AsyncCallback {
+    class NodeStatusLoader extends DashletLoader implements AsyncCallback<NodeRtc[]> {
         
         private SurveillanceServiceAsync m_suveillanceService;
         
@@ -81,8 +81,8 @@ public class NodeStatusDashlet extends Dashlet {
             error(caught);
         }
 
-        public void onSuccess(Object result) {
-            onDataLoaded((NodeRtc[])result);
+        public void onSuccess(NodeRtc[] result) {
+            onDataLoaded(result);
         }
         
     }

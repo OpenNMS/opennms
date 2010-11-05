@@ -69,7 +69,7 @@ public class NotificationDashlet extends Dashlet {
     private NotificationView m_view = new NotificationView(this);
     private NotificationLoader m_loader = new NotificationLoader();
     
-    class NotificationLoader extends DashletLoader implements AsyncCallback {
+    class NotificationLoader extends DashletLoader implements AsyncCallback<Notification[]> {
         
         private SurveillanceServiceAsync m_suveillanceService;
         
@@ -99,8 +99,8 @@ public class NotificationDashlet extends Dashlet {
             error(caught);
         }
 
-        public void onSuccess(Object result) {
-            onDataLoaded((Notification[])result);
+        public void onSuccess(Notification[] result) {
+            onDataLoaded(result);
         }
         
     }

@@ -40,6 +40,7 @@ import java.util.Enumeration;
 
 import org.exolab.castor.xml.MarshalException;
 import org.exolab.castor.xml.ValidationException;
+import org.opennms.netmgt.xml.rtc.Node;
 
 /**
  * Adapts the functionality of the category definition and RTC category updates
@@ -376,7 +377,7 @@ public class Category {
      *
      * @return a {@link java.util.Enumeration} object.
      */
-    public Enumeration enumerateNode() {
+    public Enumeration<Node> enumerateNode() {
         return m_rtcCategory.enumerateNode();
     }
 
@@ -395,10 +396,10 @@ public class Category {
         long count = 0;
         long downCount = 0;
 
-        Enumeration nodeEnum = category.enumerateNode();
+        Enumeration<Node> nodeEnum = category.enumerateNode();
 
         while (nodeEnum.hasMoreElements()) {
-            org.opennms.netmgt.xml.rtc.Node node = (org.opennms.netmgt.xml.rtc.Node) nodeEnum.nextElement();
+            org.opennms.netmgt.xml.rtc.Node node = nodeEnum.nextElement();
 
             count += node.getNodesvccount();
             downCount += node.getNodesvcdowncount();

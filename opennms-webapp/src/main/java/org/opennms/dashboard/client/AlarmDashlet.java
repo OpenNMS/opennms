@@ -69,7 +69,7 @@ public class AlarmDashlet extends Dashlet {
     private AlarmView m_view = new AlarmView(this);
     private AlarmLoader m_loader = new AlarmLoader();
     
-    class AlarmLoader extends DashletLoader implements AsyncCallback {
+    class AlarmLoader extends DashletLoader implements AsyncCallback<Alarm[]> {
         
         private SurveillanceServiceAsync m_suveillanceService;
         
@@ -95,8 +95,8 @@ public class AlarmDashlet extends Dashlet {
             error(caught);
         }
 
-        public void onSuccess(Object result) {
-            onDataLoaded((Alarm[])result);
+        public void onSuccess(Alarm[] result) {
+            onDataLoaded(result);
         }
         
     }
