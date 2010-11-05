@@ -313,5 +313,14 @@
   <bean id="simpleJdbcTemplate" class="org.springframework.jdbc.core.simple.SimpleJdbcTemplate">
     <constructor-arg ref="jdbcTemplate" />
   </bean>
+  
+  <bean id="reportdConfigResourceLocation" class="java.lang.String">
+    <constructor-arg value="file:${opennms.home}/etc/reportd-configuration.xml" />
+  </bean>
+  
+  <bean id="reportdConfigDao" class="org.opennms.netmgt.dao.castor.DefaultReportdConfigurationDao">
+    <property name="configResource" ref="reportdConfigResourceLocation"/>
+    <property name="reloadCheckInterval" value="-1" />
+  </bean>
 
 </beans>

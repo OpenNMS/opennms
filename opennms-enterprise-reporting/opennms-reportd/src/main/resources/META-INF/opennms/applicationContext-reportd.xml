@@ -11,9 +11,9 @@
   <tx:annotation-driven />
   <context:annotation-config/>
 
-  <bean id="reportdConfigResourceLocation" class="java.lang.String">
-    <constructor-arg value="file:${opennms.home}/etc/reportd-configuration.xml" />
-  </bean>
+<!--  <bean id="reportdConfigResourceLocation" class="java.lang.String">-->
+<!--    <constructor-arg value="file:${opennms.home}/etc/reportd-configuration.xml" />-->
+<!--  </bean>-->
 
 
 
@@ -39,10 +39,10 @@
     <property name="javamailConfigDao" ref="javamailConfigDao" />
   </bean>
 
-  <bean id="reportdConfigDao" class="org.opennms.netmgt.dao.castor.DefaultReportdConfigurationDao">
-    <property name="configResource" ref="reportdConfigResourceLocation" />
-    <property name="reloadCheckInterval" value="-1" />
-  </bean>
+<!--  <bean id="reportdConfigDao" class="org.opennms.netmgt.dao.castor.DefaultReportdConfigurationDao">-->
+<!--    <property name="configResource" ref="reportdConfigResourceLocation" />-->
+<!--    <property name="reloadCheckInterval" value="-1" />-->
+<!--  </bean>-->
   
   <bean id="reportdQuartzScheduler" class="org.springframework.scheduling.quartz.SchedulerFactoryBean">
     <property name="schedulerName" value="reportd" />
