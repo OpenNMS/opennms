@@ -6,7 +6,8 @@
   <artifactId>opennms-integrations</artifactId>
   <version>1.9.3-SNAPSHOT</version>
 </parent>
-  <artifactId>opennms-jasper-extensions</artifactId>
+<!-- the name must alphabetically come before jasperreports jar -->
+  <artifactId>jasper-extensions</artifactId>
   <packaging>jar</packaging>
 
   <name>opennms-jasper-extensions</name>
