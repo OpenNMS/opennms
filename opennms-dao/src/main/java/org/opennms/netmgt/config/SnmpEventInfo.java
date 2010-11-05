@@ -315,7 +315,7 @@ public class SnmpEventInfo {
             definition.addSpecific(getFirstIPAddress());
         } else {
             
-            if (BigInteger.ZERO.compareTo(InetAddressUtils.difference(getFirstIPAddress(), getLastIPAddress())) == 0) {
+            if (BigInteger.ZERO.compareTo(InetAddressUtils.difference(getFirstIPAddress(), getLastIPAddress())) < 0) {
                 log().error("createDef: Can not create Definition when specified last is < first IP address: "+ this);
                 throw new IllegalArgumentException("First: "+getFirstIPAddress()+" is greater than: "+getLastIPAddress());
             }
