@@ -125,6 +125,7 @@ import org.springframework.transaction.annotation.Transactional;
     TransactionalTestExecutionListener.class
 })
 @ContextConfiguration(locations={
+        "classpath:/META-INF/opennms/applicationContext-soa.xml",
         "classpath:/META-INF/opennms/applicationContext-dao.xml",
         "classpath:/META-INF/opennms/applicationContext-daemon.xml",
         "classpath:/META-INF/opennms/applicationContext-proxy-snmp.xml",
