@@ -2,6 +2,8 @@
 <!DOCTYPE module PUBLIC "-//Google Inc.//DTD Google Web Toolkit 2.0.0//EN" "http://google-web-toolkit.googlecode.com/svn/tags/2.0.0/distro-source/core/src/gwt-module.dtd">
 <module rename-to="coreweb">
 	<inherits name="com.google.gwt.user.User" />
+	<inherits name="org.opennms.gwt.web.ui.enterprisereporting.EnterpriseReporting"/>
+	<inherits name="com.google.gwt.http.HTTP" />
 	<source path="client" />
-	<entry-point class="org.opennms.gwt.web.ui.client.CoreWeb" />
+	<entry-point class="org.opennms.gwt.web.ui.enterprisereporting.client.EnterpriseReportingEntryPoint"/>
 </module>

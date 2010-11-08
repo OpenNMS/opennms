@@ -539,6 +539,9 @@
 	<property name="reportStoreService" ref="reportStoreService"/>
   </bean>
   
+  <!-- Enterprise Reports -->
+  <bean name="/report/enterprise/index.htm" class="org.opennms.web.controller.EnterpriseReportController"/>
+  
   <bean name="/graph/results.htm" class="org.opennms.web.controller.GraphResultsController">
     <property name="graphResultsService" ref="graphResultsService"/>
   </bean>

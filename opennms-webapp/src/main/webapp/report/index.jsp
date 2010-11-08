@@ -82,6 +82,7 @@
         <li><a href="inventory/rancidReport.htm">Inventory</a></li>
 <% }%>
         <li><a href="statisticsReports/index.htm">Statistics Reports</a></li>
+        <li><a href="report/enterprise/index.htm">Enterprise Reports</a></li>
       </ul>
     </div>
   <!-- more reports will follow -->
