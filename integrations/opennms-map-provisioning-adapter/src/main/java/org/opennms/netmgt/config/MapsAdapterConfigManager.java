@@ -357,7 +357,7 @@ abstract public class MapsAdapterConfigManager implements MapsAdapterConfig {
             filterPassed = ipList.contains(iface);
         }
     
-        LogUtils.debugf(this, "interfaceInPackage: Interface %s passed filter for package %s?: %s", Boolean.valueOf(filterPassed));
+        LogUtils.debugf(this, "interfaceInPackage: Interface %s passed filter for package %s?: %s", iface, pkg.getName(), String.valueOf(filterPassed));
     
         if (!filterPassed)
             return false;
