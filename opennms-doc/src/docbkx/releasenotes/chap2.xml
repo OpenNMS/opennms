@@ -78,6 +78,107 @@
 
 	<!-- Start 1.8 -->
 
+	<section id="opennms-1.8.6">
+		<title>Changes in OpenNMS 1.8.6</title>
+
+		<section id="opennms-1.8.6-features">
+			<title>New Features and Enhancements</title>
+
+			<itemizedlist>
+
+				<listitem>
+					<para>SNMP Asset Provisioning Adapter: suppress output like No such instance (Issue
+					<ulink url="http://issues.opennms.org/browse/NMS-4173">NMS-4173</ulink>)</para>
+				</listitem>
+
+				<listitem>
+					<para>Add a few more Cisco Catalyst sysObjectIDs to default Linkd config (Issue
+					<ulink url="http://issues.opennms.org/browse/NMS-4191">NMS-4191</ulink>)</para>
+				</listitem>
+
+				<listitem>
+					<para>Add events for Compuware ServerVantage traps (Issue
+					<ulink url="http://issues.opennms.org/browse/NMS-4195">NMS-4195</ulink>)</para>
+				</listitem>
+
+				<listitem>
+					<para>Reportd should create events run or delivery failure (Issue
+					<ulink url="http://issues.opennms.org/browse/NMS-4213">NMS-4213</ulink>)</para>
+				</listitem>
+
+				<listitem>
+					<para>make build system Maven3-compatible (Issue
+					<ulink url="http://issues.opennms.org/browse/NMS-4235">NMS-4235</ulink>)</para>
+				</listitem>
+
+			</itemizedlist>
+
+		</section>
+
+		<section id="opennms-1.8.6-bugs">
+			<title>Bug Fixes</title>
+
+			<itemizedlist>
+
+				<listitem>
+					<para>Web users can bypass ACLs by editing params of element/node.jsp URLs (Issue
+					<ulink url="http://issues.opennms.org/browse/NMS-3184">NMS-3184</ulink>)</para>
+				</listitem>
+
+				<listitem>
+					<para>Home / Admin / Provisioning Groups page generating bad HTML when a provisioning group has an apostrophe in the name (Issue
+					<ulink url="http://issues.opennms.org/browse/NMS-3601">NMS-3601</ulink>)</para>
+				</listitem>
+
+				<listitem>
+					<para>Bug in netapp.fsfile report (Issue
+					<ulink url="http://issues.opennms.org/browse/NMS-4171">NMS-4171</ulink>)</para>
+				</listitem>
+
+				<listitem>
+					<para>deprecated -c installer option does not produce a warning or error (Issue
+					<ulink url="http://issues.opennms.org/browse/NMS-4174">NMS-4174</ulink>)</para>
+				</listitem>
+
+				<listitem>
+					<para>Net-SNMP agent 5.5 always misreports sysObjectID as ".1.3" or ".0.1" (Issue
+					<ulink url="http://issues.opennms.org/browse/NMS-4192">NMS-4192</ulink>)</para>
+				</listitem>
+
+				<listitem>
+					<para>Notifications fail when Notification name is longer than 63 chars (Issue
+					<ulink url="http://issues.opennms.org/browse/NMS-4194">NMS-4194</ulink>)</para>
+				</listitem>
+
+				<listitem>
+					<para>NPE in "View Node Link Detailed Info" (Issue
+					<ulink url="http://issues.opennms.org/browse/NMS-4215">NMS-4215</ulink>)</para>
+				</listitem>
+
+				<listitem>
+					<para>deleting old notifications is slow (Issue
+					<ulink url="http://issues.opennms.org/browse/NMS-4217">NMS-4217</ulink>)</para>
+				</listitem>
+
+				<listitem>
+					<para>SNMP fails while accessing a Dell/Avocent 2161DS KVM Device (Issue
+					<ulink url="http://issues.opennms.org/browse/NMS-4219">NMS-4219</ulink>)</para>
+				</listitem>
+
+				<listitem>
+					<para>1.8.5 Solaris package fails to install (Issue
+					<ulink url="http://issues.opennms.org/browse/NMS-4227">NMS-4227</ulink>)</para>
+				</listitem>
+
+				<listitem>
+					<para>JMX datacollection aliases longer than 19 characters (Issue
+					<ulink url="http://issues.opennms.org/browse/NMS-4236">NMS-4236</ulink>)</para>
+				</listitem>
+
+		</section>
+
+	</section>
+
 	<section id="opennms-1.8.5">
 		<title>Changes in OpenNMS 1.8.5</title>
 
