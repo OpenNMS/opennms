@@ -44,11 +44,23 @@ fi
 
 declare -a ARGS
 COUNT=0
+declare -a DEFINES
+DEFINES_COUNT=0
 USE_ASSEMBLIES=""
+ROOT_FOUND=""
 for ARG in "$@"; do
 	case $ARG in
 		assembly:*)
 			USE_ASSEMBLIES="$ARG"
+			;;
+		-Droot.dir=*)
+			ROOT_FOUND="true"
+			DEFINES[$DEFINES_COUNT]="$ARG"
+			DEFINES_COUNT=`expr $DEFINES_COUNT + 1`
+			;;
+		-D*)
+			DEFINES[$DEFINES_COUNT]="$ARG"
+			DEFINES_COUNT=`expr $DEFINES_COUNT + 1`
 			;;
 		*)
 			ARGS[$COUNT]="$ARG"
@@ -72,13 +84,20 @@ fi
 [ -z "$MAVEN_OPTS" ] && MAVEN_OPTS='-XX:PermSize=64M -XX:MaxPermSize=256M -Xmx1G'
 export MAVEN_OPTS
 [ -z "$MVN" ] && MVN="$PREFIX/maven/bin/mvn"
-"$MVN" -Droot.dir=$PREFIX -D$MAVEN_SKIP=true "${ARGS[@]}"
-EXITVAL="$?"
+EXITVAL=0
+if [ $COUNT -gt 0 ]; then
+	"$MVN" -Droot.dir=$PREFIX -D$MAVEN_SKIP=true "${DEFINES[@]}" "${ARGS[@]}"
+	EXITVAL="$?"
+fi
 
 if [ $EXITVAL -eq 0 ]; then
 	if [ -n "$USE_ASSEMBLIES" ] && [ `grep -c 'OpenNMS Top-Level POM' pom.xml` -gt 0 ]; then
 		pushd opennms-full-assembly >/dev/null 2>&1
-			"$MVN" -Droot.dir=$PREFIX -D$MAVEN_SKIP=true $USE_ASSEMBLIES
+			if [ "$ROOT_FOUND" = "true" ]; then
+				"$MVN" -D$MAVEN_SKIP=true "${DEFINES[@]}" $USE_ASSEMBLIES
+			else
+				"$MVN" -Droot.dir=$PREFIX -D$MAVEN_SKIP=true "${DEFINES[@]}" $USE_ASSEMBLIES
+			fi
 		popd >/dev/null 2>&1
 	fi
 fi
