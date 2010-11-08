@@ -3,7 +3,6 @@
 <module rename-to="coreweb">
 	<inherits name="com.google.gwt.user.User" />
 	<inherits name="org.opennms.gwt.web.ui.enterprisereporting.EnterpriseReporting"/>
-	<inherits name="com.google.gwt.http.HTTP" />
 	<source path="client" />
 	<entry-point class="org.opennms.gwt.web.ui.enterprisereporting.client.EnterpriseReportingEntryPoint"/>
 </module>
