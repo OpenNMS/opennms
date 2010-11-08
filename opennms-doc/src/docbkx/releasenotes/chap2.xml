@@ -156,6 +156,11 @@
 					<ulink url="http://bugzilla.opennms.org/show_bug.cgi?id=4170">#4170</ulink>)</para>
 				</listitem>
 
+				<listitem>
+					<para>A workaround for Net-SNMP 5.5 on x86_64 was implemented. (Bug
+					<ulink url="http://bugzilla.opennms.org/show_bug.cgi?id=4174">#4174</ulink>)</para>
+				</listitem>
+
 			</itemizedlist>
 
 		</section>
