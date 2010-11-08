@@ -421,7 +421,7 @@
     <!--jasper-extensions-->
     <dependency>
       <groupId>org.opennms</groupId>
-      <artifactId>opennms-jasper-extensions</artifactId>
+      <artifactId>jasper-extensions</artifactId>
       <version>${project.version}</version>
     </dependency>
     <!--
