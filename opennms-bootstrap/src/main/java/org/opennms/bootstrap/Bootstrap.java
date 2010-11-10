@@ -35,16 +35,14 @@ import java.io.File;
 import java.io.FileFilter;
 import java.io.FileInputStream;
 import java.io.FilenameFilter;
-import java.io.InputStream;
 import java.io.IOException;
-
+import java.io.InputStream;
 import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
-
 import java.net.MalformedURLException;
 import java.net.URL;
 import java.net.URLClassLoader;
-
+import java.util.Arrays;
 import java.util.LinkedList;
 import java.util.Map;
 import java.util.Properties;
@@ -165,6 +163,7 @@ public class Bootstrap {
             // Descend into sub-directories
             File[] dirlist = dir.listFiles(m_dirFilter);
             if (dirlist != null) {
+            	Arrays.sort(dirlist);
                 for (File childDir : dirlist) {
                     loadClasses(childDir, recursive, urls);
                 }
@@ -174,6 +173,7 @@ public class Bootstrap {
         // Add individual JAR files
         File[] children = dir.listFiles(m_jarFilter);
         if (children != null) {
+        	Arrays.sort(children);
             for (File childFile : children) {
                 urls.add(childFile.toURI().toURL());
             }
