@@ -95,9 +95,9 @@ public final class IPAddrRange implements Iterable<InetAddress> {
          * reference is returned.
          * 
          * @param addr
-         *            The 32-bit IP address value, in network order.
+         *            The IP address value, in network order.
          * 
-         * @return An Internet Address Object.
+         * @return A {@link java.net.InetAddress} object.
          */
         static InetAddress make(BigInteger addr) {
             InetAddress naddr = null;
@@ -155,8 +155,8 @@ public final class IPAddrRange implements Iterable<InetAddress> {
             if (!hasMoreElements())
                 throw new NoSuchElementException("End of Range");
 
-            m_next = m_next.add(new BigInteger("1"));
             InetAddress element = make(m_next);
+            m_next = m_next.add(new BigInteger("1"));
             return element;
         }
 
@@ -210,8 +210,7 @@ public final class IPAddrRange implements Iterable<InetAddress> {
      * <P>
      * It is important to note that if the address for toIP is greater than
      * fromIP, the values will be swapped so that the iteration is always from
-     * the lowest address to the highest address as defined by a 32-bit unsigned
-     * quantity.
+     * the lowest address to the highest address.
      * </P>
      * 
      * @param fromIP
@@ -241,8 +240,7 @@ public final class IPAddrRange implements Iterable<InetAddress> {
      * <P>
      * It is important to note that if the address for start is greater than
      * end, the values will be swapped so that the iteration is always from the
-     * lowest address to the highest address as defined by a 32-bit unsigned
-     * quantity.
+     * lowest address to the highest address.
      * </P>
      * 
      * @param start
