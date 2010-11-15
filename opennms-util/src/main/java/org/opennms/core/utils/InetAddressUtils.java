@@ -36,8 +36,14 @@
 package org.opennms.core.utils;
 
 import java.math.BigInteger;
+import java.net.Inet4Address;
+import java.net.Inet6Address;
 import java.net.InetAddress;
+import java.net.NetworkInterface;
+import java.net.SocketException;
 import java.net.UnknownHostException;
+import java.util.Collections;
+import java.util.Enumeration;
 import java.util.List;
 
 /**
@@ -47,6 +53,78 @@ import java.util.List;
  * @version $Id: $
  */
 abstract public class InetAddressUtils {
+
+    public static enum AddressType {
+        IPv4,
+        IPv6
+    }
+
+    public static InetAddress getSiteLocalAddress(AddressType type) {
+        try {
+            return findSiteLocalAddress(NetworkInterface.getNetworkInterfaces(), type);
+        } catch (SocketException e) {
+            ThreadCategory.getInstance(InetAddressUtils.class).warn("SocketException thrown while iterating over network interfaces: " + e.getMessage(), e);
+            LogUtils.errorf(InetAddressUtils.class, "getSiteLocalAddress: Returning null");
+            return null;
+        }
+    }
+
+    private static InetAddress findSiteLocalAddress(Enumeration<NetworkInterface> ifaces, AddressType type) {
+        for (NetworkInterface iface : Collections.list(ifaces)) {
+            for (InetAddress address : Collections.list(iface.getInetAddresses())) {
+                LogUtils.errorf(InetAddressUtils.class, "findSiteLocalAddress: Address: " + address + ", site local?: " + address.isSiteLocalAddress());
+                if (address.isSiteLocalAddress()) {
+                    if (AddressType.IPv4.equals(type) && address instanceof Inet4Address) {
+                        LogUtils.errorf(InetAddressUtils.class, "findSiteLocalAddress: Returning IPv4: " + address);
+                        return address;
+                    } else if (AddressType.IPv6.equals(type) && address instanceof Inet6Address) {
+                        LogUtils.errorf(InetAddressUtils.class, "findSiteLocalAddress: Returning IPv6: " + address);
+                        return address;
+                    }
+                }
+            }
+            // Recursively search for a suitable child interface
+            Enumeration<NetworkInterface> children = iface.getSubInterfaces();
+            InetAddress child = findSiteLocalAddress(children, type);
+            if (child != null) return child;
+        }
+        LogUtils.errorf(InetAddressUtils.class, "findSiteLocalAddress: Returning null");
+        return null;
+    }
+
+    public static InetAddress getLinkLocalAddress(AddressType type, int scope) {
+        try {
+            return findLinkLocalAddress(NetworkInterface.getNetworkInterfaces(), type, scope);
+
+        } catch (SocketException e) {
+            ThreadCategory.getInstance(InetAddressUtils.class).warn("SocketException thrown while iterating over network interfaces: " + e.getMessage(), e);
+            LogUtils.errorf(InetAddressUtils.class, "getLinkLocalAddress: Returning null");
+            return null;
+        }
+    }
+
+    private static InetAddress findLinkLocalAddress(Enumeration<NetworkInterface> ifaces, AddressType type, int scope) {
+        for (NetworkInterface iface : Collections.list(ifaces)) {
+            for (InetAddress address : Collections.list(iface.getInetAddresses())) {
+                LogUtils.errorf(InetAddressUtils.class, "findLinkLocalAddress: Address: " + address + ", link local?: " + address.isLinkLocalAddress());
+                if (address.isLinkLocalAddress()) {
+                    if (AddressType.IPv4.equals(type) && address instanceof Inet4Address) {
+                        LogUtils.errorf(InetAddressUtils.class, "findLinkLocalAddress: Returning IPv4: " + address);
+                        return address;
+                    } else if (AddressType.IPv6.equals(type) && address instanceof Inet6Address && ((Inet6Address)address).getScopeId() == scope) {
+                        LogUtils.errorf(InetAddressUtils.class, "findLinkLocalAddress: Returning IPv6: " + address);
+                        return address;
+                    }
+                }
+            }
+            // Recursively search for a suitable child interface
+            Enumeration<NetworkInterface> children = iface.getSubInterfaces();
+            InetAddress child = findLinkLocalAddress(children, type, scope);
+            if (child != null) return child;
+        }
+        LogUtils.errorf(InetAddressUtils.class, "findLinkLocalAddress: Returning null");
+        return null;
+    }
 
     public static String incr(String address) throws UnknownHostException {
         return InetAddressUtils.toIpAddrString(incr(InetAddressUtils.toIpAddrBytes(address)));
@@ -105,10 +183,6 @@ abstract public class InetAddressUtils {
      */
     public static byte[] toIpAddrBytes(String dottedNotation) {
         return getInetAddress(dottedNotation).getAddress();
-    }
-
-    private static long unsignedByteToLong(byte b) {
-        return b < 0 ? ((long)b)+256 : ((long)b);
     }
 
     /**
