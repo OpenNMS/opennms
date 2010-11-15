@@ -50,7 +50,7 @@ import org.springframework.beans.factory.InitializingBean;
  * @author <a href="mailto:brozow@opennms.org">Mathew Brozowski</a>
  * @version $Id: $
  */
-public class XmlRpcWebServerFactoryBean implements FactoryBean, InitializingBean, DisposableBean {
+public class XmlRpcWebServerFactoryBean implements FactoryBean<WebServer>, InitializingBean, DisposableBean {
     
     WebServer webServer;
     int port = -1;
@@ -136,7 +136,7 @@ public class XmlRpcWebServerFactoryBean implements FactoryBean, InitializingBean
      * @return a {@link java.lang.Object} object.
      * @throws java.lang.Exception if any.
      */
-    public Object getObject() throws Exception {
+    public WebServer getObject() throws Exception {
         return webServer;
     }
 
@@ -145,7 +145,7 @@ public class XmlRpcWebServerFactoryBean implements FactoryBean, InitializingBean
      *
      * @return a {@link java.lang.Class} object.
      */
-    public Class getObjectType() {
+    public Class<? extends WebServer> getObjectType() {
         return WebServer.class;
     }
 

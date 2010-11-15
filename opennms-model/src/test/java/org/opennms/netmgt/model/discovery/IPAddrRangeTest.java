@@ -31,18 +31,11 @@
  */
 package org.opennms.netmgt.model.discovery;
 
-import java.math.BigInteger;
-import java.net.Inet4Address;
-import java.net.Inet6Address;
 import java.net.InetAddress;
 import java.net.UnknownHostException;
-import java.util.Collections;
 import java.util.Iterator;
 
 import junit.framework.TestCase;
-
-import org.opennms.core.utils.ByteArrayComparator;
-import org.opennms.core.utils.InetAddressUtils;
 
 /**
  * IPAddressRangeTest

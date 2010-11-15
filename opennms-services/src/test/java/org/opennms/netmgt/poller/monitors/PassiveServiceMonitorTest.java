@@ -60,11 +60,11 @@ public class PassiveServiceMonitorTest extends PassiveStatusKeeperTest {
         ServiceMonitor sm = new PassiveServiceMonitor();
         
         MonitoredService ms = createMonitoredService(1, "localhost", "127.0.0.1", "my-passive-service");
-        PollStatus ps = sm.poll(ms, new HashMap());
+        PollStatus ps = sm.poll(ms, new HashMap<String, Object>());
         assertEquals(PollStatus.down(), ps);
 
         psk.setStatus("localhost", "127.0.0.1", "my-passive-service", PollStatus.get(PollStatus.SERVICE_AVAILABLE, "testing failure"));
-        ps = sm.poll(ms, new HashMap());
+        ps = sm.poll(ms, new HashMap<String, Object>());
         assertEquals(PollStatus.up(), ps);
     }
 

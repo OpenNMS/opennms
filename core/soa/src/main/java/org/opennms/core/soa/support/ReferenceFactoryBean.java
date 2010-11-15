@@ -95,7 +95,7 @@ public class ReferenceFactoryBean<T> implements FactoryBean<T>, InitializingBean
      *
      * @return a {@link java.lang.Class} object.
      */
-    public Class<?> getObjectType() {
+    public Class<? extends T> getObjectType() {
         return m_serviceInterface;
     }
 

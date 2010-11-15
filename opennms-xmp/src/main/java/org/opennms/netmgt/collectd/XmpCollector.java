@@ -419,7 +419,7 @@ public class XmpCollector implements ServiceCollector {
 
         // orphan existing set thus making them available
         // for garbage collection 
-        setOfNodes = new HashSet();
+        setOfNodes = new HashSet<CollectionAgent>();
 
         return;
     }
