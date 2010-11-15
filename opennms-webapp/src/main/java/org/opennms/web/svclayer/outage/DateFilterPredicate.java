@@ -99,11 +99,11 @@ public class DateFilterPredicate implements Predicate
 
         try
         {
-            Iterator iter = model.getColumnHandler().getColumns().iterator();
+            Iterator<Column> iter = model.getColumnHandler().getColumns().iterator();
 
             while (iter.hasNext())
             {
-                Column column = (Column) iter.next();
+                Column column = iter.next();
                 String alias = column.getAlias();
                 String filterValue = model.getLimit().getFilterSet()
                                           .getFilterValue(alias);
