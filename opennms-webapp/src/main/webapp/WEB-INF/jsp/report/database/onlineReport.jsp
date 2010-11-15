@@ -87,6 +87,15 @@
 				</td>
 			</tr>
 		</c:forEach>
+		<%-- // Float parameters --%>
+		<c:forEach items="${parameters.floatParms}" var="floatParm" varStatus="floatParmRow">
+			<tr>
+				<td><c:out value="${floatParm.displayName}"/></td>
+                <td>
+	                <form:input path="floatParms[${floatParmRow.index}].value"/>
+				</td>
+			</tr>
+		</c:forEach>
 		<%-- // date parameters --%>
 		<c:forEach items="${parameters.dateParms}" var="date" varStatus="dateParmRow">
 			<tr>

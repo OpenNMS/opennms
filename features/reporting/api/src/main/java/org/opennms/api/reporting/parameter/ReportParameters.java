@@ -11,6 +11,8 @@
 // Modifications:
 // 
 // Created: November 9th, 2009 jonathan@opennms.org
+// Modified:    November 9th, 2010 jonathan@opennms.org
+//              Add java.lang.Float support
 //
 // Copyright (C) 2009 The OpenNMS Group, Inc.  All rights reserved.
 //
@@ -59,6 +61,7 @@ public class ReportParameters implements Serializable {
     protected List <ReportDateParm> m_dateParms;
     protected List <ReportStringParm> m_stringParms;
     protected List <ReportIntParm> m_intParms;
+    protected List<ReportFloatParm> m_floatParms;
 
     /**
      * <p>Constructor for ReportParameters.</p>
@@ -119,6 +122,24 @@ public class ReportParameters implements Serializable {
      */
     public void setIntParms(List<ReportIntParm> ints) {
         m_intParms = ints;
+    }
+    
+    /**
+     * <p>getFloatParms</p>
+     *
+     * @return a {@link java.util.List} object.
+     */
+    public List<ReportFloatParm> getFloatParms() {
+        return m_floatParms;
+    }
+
+    /**
+     * <p>setFloatParms</p>
+     *
+     * @param ints a {@link java.util.List} object.
+     */
+    public void setFloatParms(List<ReportFloatParm> floats) {
+        m_floatParms = floats;
     }
 
     /**
@@ -227,6 +248,15 @@ public class ReportParameters implements Serializable {
             Iterator<ReportIntParm>intIter = m_intParms.iterator();
             while (intIter.hasNext()) {
                 ReportIntParm parm = intIter.next();
+                parmMap.put(parm.getName(), parm.getValue());
+            }
+        }
+        
+        // Add all the floats from the report
+        if (m_floatParms != null) {
+            Iterator<ReportFloatParm>floatIter = m_floatParms.iterator();
+            while (floatIter.hasNext()) {
+                ReportFloatParm parm = floatIter.next();
                 parmMap.put(parm.getName(), parm.getValue());
             }
         }

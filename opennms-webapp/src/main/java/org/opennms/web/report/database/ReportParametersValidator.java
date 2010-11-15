@@ -3,6 +3,7 @@ package org.opennms.web.report.database;
 import java.util.Iterator;
 import java.util.List;
 
+import org.opennms.api.reporting.parameter.ReportFloatParm;
 import org.opennms.api.reporting.parameter.ReportParameters;
 import org.opennms.api.reporting.parameter.ReportDateParm;
 import org.opennms.api.reporting.parameter.ReportIntParm;
@@ -58,6 +59,16 @@ public class ReportParametersValidator {
             if (intParm.getValue() == 0 ) {
                 messages.addMessage(new MessageBuilder().error().source("int parms").
                                     defaultText("cannot have zero integer field" + intParm.getDisplayName()).build());
+            }
+        }
+        
+        List<ReportFloatParm> floatParms = reportCriteria.getFloatParms();
+        
+        for (Iterator<ReportFloatParm> floatParmIter = floatParms.iterator(); floatParmIter.hasNext();) {
+            ReportFloatParm floatParm = floatParmIter.next();
+            if (floatParm.getValue() == null ) {
+                messages.addMessage(new MessageBuilder().error().source("float parms").
+                                    defaultText("cannot have null float field" + floatParm.getDisplayName()).build());
             }
         }
         

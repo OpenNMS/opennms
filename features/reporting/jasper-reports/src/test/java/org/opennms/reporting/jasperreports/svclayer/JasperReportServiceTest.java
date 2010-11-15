@@ -36,6 +36,8 @@
 
 package org.opennms.reporting.jasperreports.svclayer;
 
+import static org.junit.Assert.*;
+
 import java.io.IOException;
 import java.io.OutputStream;
 import java.util.HashMap;
@@ -83,10 +85,11 @@ public class JasperReportServiceTest {
 	public void testGetParmeters() {
 		ReportParameters reportParameters = m_reportService
 				.getParameters(REPORTID);
-		Assert.assertNotNull(reportParameters);
-		Assert.assertEquals(1, reportParameters.getIntParms().size());
-		Assert.assertEquals(2, reportParameters.getStringParms().size());
-		Assert.assertEquals(2, reportParameters.getDateParms().size());
+		assertNotNull(reportParameters);
+		assertEquals(1, reportParameters.getIntParms().size());
+		assertEquals(1, reportParameters.getFloatParms().size());
+		assertEquals(2, reportParameters.getStringParms().size());
+		assertEquals(2, reportParameters.getDateParms().size());
 	}
 
 
@@ -114,6 +117,7 @@ public class JasperReportServiceTest {
 		reportParms.put("stringParameter1", new String("string1"));
 	        reportParms.put("stringParameter2", new String("string2"));
 		reportParms.put("integerParameter", new Integer(1));
+		reportParms.put("floatParameter", new Float("0.5"));
 		reportParms.put("dateParameter", new java.util.Date());
 		java.util.Date date = new java.util.Date();
 		reportParms.put("dateParamter", date);

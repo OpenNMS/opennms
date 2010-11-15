@@ -9,6 +9,7 @@
         	</parameterDescription>
         </parameter>
         <parameter name="stringParameter2" class="java.lang.String" />
+        <parameter name="floatParameter" class="java.lang.Float" />
         <parameter name="integerParameter" class="java.lang.Integer"/>
         <parameter name="dateParameter" class="java.util.Date"/>
         <parameter name="sqlDateParameter" class="java.sql.Date"/>
@@ -21,13 +22,14 @@
         </band>
     </title>
     <detail>
-        <band height="80">
+        <band height="120">
             <textField>
-            <reportElement x="180" y="0" width="200" height="80"/>
+            <reportElement x="180" y="0" width="200" height="120"/>
                 <textFieldExpression>
                     "stringParameter1: " + $P{stringParameter1} + "\n" +
                     "stringParameter2: " + $P{stringParameter2} + "\n" +
                     "integerParameter: " + $P{integerParameter} + "\n" +
+                    "floatParameter: " + $P{floatParameter} + "\n" +
                     "dateParameter: " + (new SimpleDateFormat("MM/dd/yyyy HH:mm:ss")).format($P{dateParameter}) + "\n" +
                     "sqlDateParameter: " + (new SimpleDateFormat("MM/dd/yyyy HH:mm:ss")).format($P{sqlDateParameter})
                 </textFieldExpression>
