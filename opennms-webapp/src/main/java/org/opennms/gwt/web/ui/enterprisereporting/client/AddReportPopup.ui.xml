@@ -1,0 +1,19 @@
+<!DOCTYPE ui:UiBinder SYSTEM "http://dl.google.com/gwt/DTD/xhtml.ent">
+<ui:UiBinder xmlns:ui="urn:ui:com.google.gwt.uibinder"
+	xmlns:g="urn:import:com.google.gwt.user.client.ui">
+	<ui:style>
+		
+	</ui:style>
+	<g:HTMLPanel>
+	   <g:Label>Report Name:</g:Label>
+	   <g:TextBox ui:field="reportNameTF"></g:TextBox>
+	   <g:Label>Report Template:</g:Label>
+	   <g:TextBox ui:field="reportTemplateTF"></g:TextBox>
+	   <g:Label>Report Format:</g:Label>
+	   <g:ListBox ui:field="reportFormat"></g:ListBox>
+	   <g:Label>cron schedule:</g:Label>
+	   <g:TextBox ui:field="cronScheduleTF"></g:TextBox>
+	   <g:Button ui:field="addBtn">Add Report</g:Button>
+	   <g:Button ui:field="cancelBtn">Cancel</g:Button>
+	</g:HTMLPanel>
+</ui:UiBinder> 

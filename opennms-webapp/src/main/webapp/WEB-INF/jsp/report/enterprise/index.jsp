@@ -49,7 +49,7 @@
     <jsp:param name="breadcrumb" value="Enterprise" />
 </jsp:include>
 
-
+<opennms:EnterpriseReporting id="addReportBtn"/>
 <div class="TwoColLeft" style="height:100%; width:100%;">
     <h3>Enterprise Reports</h3>
     <opennms:EnterpriseReporting id="reportList"/>
