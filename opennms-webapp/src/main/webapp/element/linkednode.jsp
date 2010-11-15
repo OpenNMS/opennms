@@ -70,7 +70,7 @@
 
     public void init() throws ServletException {
 
-        NetworkElementFactory factory = NetworkElementFactory.getInstance(getServletContext());
+        NetworkElementFactoryInterface factory = NetworkElementFactory.getInstance(getServletContext());
         try {
             this.telnetServiceId = factory.getServiceIdFromName("Telnet");
         }
@@ -104,7 +104,7 @@
     }%>
 
 <%
-    NetworkElementFactory factory = NetworkElementFactory.getInstance(getServletContext());
+    NetworkElementFactoryInterface factory = NetworkElementFactory.getInstance(getServletContext());
 
     String nodeIdString = request.getParameter( "node" );
 
