@@ -164,4 +164,11 @@ public class NetworkElementFactoryTest  {
         DataLinkInterface[] dlis2 = NetworkElementFactory.getInstance(m_appContext).getDataLinksOnNode(100);
         assertEquals(0, dlis2.length);
     }
+    
+    @Test
+    public void testGetServicesOnInterface() {
+        m_jdbcTemplate.update("UPDATE ifservices SET status='A' WHERE id=2;");
+        Service[] svc = NetworkElementFactory.getInstance(m_appContext).getServicesOnInterface(1, "192.168.1.1");
+        assertEquals(1, svc.length);
+    }
 }
