@@ -77,7 +77,7 @@ public final class IfInfo extends SnmpCollectionResource {
         m_ifAlias = snmpIfData.getIfAlias();
     }
     
-    private int getNodeId() {
+    public int getNodeId() {
         return m_snmpIfData.getNodeId();
     }
 
