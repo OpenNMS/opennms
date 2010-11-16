@@ -59,6 +59,7 @@ abstract public class InetAddressUtils {
         IPv6
     }
 
+    /*
     public static InetAddress getSiteLocalAddress(AddressType type) {
         try {
             return findSiteLocalAddress(NetworkInterface.getNetworkInterfaces(), type);
@@ -125,6 +126,7 @@ abstract public class InetAddressUtils {
         LogUtils.errorf(InetAddressUtils.class, "findLinkLocalAddress: Returning null");
         return null;
     }
+    */
 
     public static String incr(String address) throws UnknownHostException {
         return InetAddressUtils.toIpAddrString(incr(InetAddressUtils.toIpAddrBytes(address)));
