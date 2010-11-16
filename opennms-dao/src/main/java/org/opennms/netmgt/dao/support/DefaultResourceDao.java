@@ -513,10 +513,7 @@ public class DefaultResourceDao implements ResourceDao, InitializingBean {
 
         if (domainDirs != null && domainDirs.length > 0) {
             for (File domainDir : domainDirs) {
-                if (m_collectdConfig.domainExists(domainDir.getName())
-                        || m_collectdConfig.packageExists(domainDir.getName())) {
-                    resources.add(m_domainResourceType.createChildResource(domainDir.getName()));
-                }
+                resources.add(m_domainResourceType.createChildResource(domainDir.getName()));
             }
         }
         
@@ -573,10 +570,6 @@ public class DefaultResourceDao implements ResourceDao, InitializingBean {
      * @return a {@link org.opennms.netmgt.model.OnmsResource} object.
      */
     protected OnmsResource getDomainEntityResource(String domain) {
-        if (!m_collectdConfig.domainExists(domain)
-                && !m_collectdConfig.packageExists(domain)) {
-            throw new ObjectRetrievalFailureException(OnmsResource.class, domain, "Domain not found as a configured domain or package in collectd configuration", null);
-        }
         
         File directory = new File(getRrdDirectory(), SNMP_DIRECTORY);
         File domainDir = new File(directory, domain);
