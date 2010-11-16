@@ -376,10 +376,10 @@ public final class VulnscandConfigFactory {
     }
 
     private static ScanLevel getScanLevel(int level) {
-        Enumeration<?> scanLevels = m_config.enumerateScanLevel();
+        Enumeration<ScanLevel> scanLevels = m_config.enumerateScanLevel();
 
         while (scanLevels.hasMoreElements()) {
-            ScanLevel scanLevel = (ScanLevel) scanLevels.nextElement();
+            ScanLevel scanLevel = scanLevels.nextElement();
             if (level == scanLevel.getLevel()) {
                 return scanLevel;
             }
@@ -498,9 +498,9 @@ public final class VulnscandConfigFactory {
     public Set<InetAddress> getAllIpAddresses(ScanLevel level) {
         Set<InetAddress> retval = new TreeSet<InetAddress>();
 
-        Enumeration<?> e = level.enumerateRange();
+        Enumeration<Range> e = level.enumerateRange();
         while (e.hasMoreElements()) {
-            Range ir = (Range) e.nextElement();
+            Range ir = e.nextElement();
 
             try {
                 for (long i = Long.parseLong(ir.getBegin()); i <= Long.parseLong(ir.getEnd()); i++) {
@@ -514,9 +514,9 @@ public final class VulnscandConfigFactory {
 
         }
 
-        e = level.enumerateSpecific();
-        while (e.hasMoreElements()) {
-            String current = (String) e.nextElement();
+        Enumeration<String> specifics = level.enumerateSpecific();
+        while (specifics.hasMoreElements()) {
+            String current = specifics.nextElement();
             try {
                 retval.add(InetAddress.getByName(current));
             } catch (UnknownHostException uhE) {
@@ -541,9 +541,9 @@ public final class VulnscandConfigFactory {
 
             if (excludes != null) {
                 if (excludes.getRangeCount() > 0) {
-                    Enumeration<?> e = excludes.enumerateRange();
+                    Enumeration<Range> e = excludes.enumerateRange();
                     while (e.hasMoreElements()) {
-                        Range ir = (Range) e.nextElement();
+                        Range ir = e.nextElement();
 
                         try {
                             for (long i = Long.parseLong(ir.getBegin()); i <= Long.parseLong(ir.getEnd()); i++) {
@@ -555,24 +555,17 @@ public final class VulnscandConfigFactory {
                     }
                 }
 
-		/*
-		new Integer(new IPv4Address(specific).getAddress()),
-                                 specific);
-		*/
-
                 if (excludes.getSpecificCount() > 0) {
-                    Enumeration<?> e = excludes.enumerateSpecific();
+                    Enumeration<String> e = excludes.enumerateSpecific();
                     while (e.hasMoreElements()) {
-                        String current = (String) e.nextElement();
-        		log.debug("excludes: Specific  " + current + " Converted:" + new IPv4Address(current).getAddress());
-              		//          try {
-			//m_excludes.add(InetAddress.getByName(current));
-			//JOHAN - The Scheduler expects a String
-			m_excludes.add(current);
-
-			    
+                        String current = e.nextElement();
+                        log.debug("excludes: Specific: " + current);
+                        // try {
+                            //m_excludes.add(InetAddress.getByName(current));
+                            //JOHAN - The Scheduler expects a String
+                            m_excludes.add(current);
                         //} catch (UnknownHostException uhE) {
-                         //   ThreadCategory.getInstance().warn("Failed to convert address: " + current, uhE);
+                        //    ThreadCategory.getInstance().warn("Failed to convert address: " + current, uhE);
                         //}
                     }
                 }
