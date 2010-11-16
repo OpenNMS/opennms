@@ -80,10 +80,9 @@ public class Service {
      * @param notify a {@link java.lang.String} object.
      * @param status a char.
      */
-    public Service(int id, int nodeid, int ifindex, String ipaddr, int serviceid, String serviceName, String lastGood, String lastFail, String notify, char status) {
+    public Service(int id, int nodeid, String ipaddr, int serviceid, String serviceName, String lastGood, String lastFail, String notify, char status) {
         setId(id);
         setNodeId(nodeid);
-        setIfIndex(ifindex);
         setIpAddress(ipaddr);
         setServiceId(serviceid);
         setServiceName(serviceName);
@@ -109,15 +108,6 @@ public class Service {
      */
     public int getNodeId() {
         return m_nodeId;
-    }
-
-    /**
-     * <p>getIfIndex</p>
-     *
-     * @return a int.
-     */
-    public int getIfIndex() {
-        return m_ifIndex;
     }
 
     /**
@@ -199,7 +189,6 @@ public class Service {
      */
     public String toString() {
         StringBuffer str = new StringBuffer("Node Id = " + getNodeId() + "\n");
-        str.append("Ifindex = " + getIfIndex() + "\n");
         str.append("Ipaddr = " + getIpAddress() + "\n");
         str.append("Service id = " + getServiceId() + "\n");
         str.append("Service name = " + getServiceName() + "\n");
@@ -215,10 +204,6 @@ public class Service {
 
     void setNodeId(int nodeId) {
         m_nodeId = nodeId;
-    }
-
-    void setIfIndex(int ifIndex) {
-        m_ifIndex = ifIndex;
     }
 
     void setIpAddress(String ipAddr) {

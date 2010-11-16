@@ -649,7 +649,6 @@ public class NetworkElementFactory implements InitializingBean, NetworkElementFa
         OnmsCriteria criteria = new OnmsCriteria(OnmsMonitoredService.class);
         criteria.createAlias("ipInterface", "ipIface");
         criteria.createAlias("ipIface.node", "node");
-        criteria.createAlias("ipIface.snmpInterface", "snmpIface");
         criteria.add(Restrictions.eq("node.id", nodeId));
         criteria.add(Restrictions.eq("ipIface.ipAddress", ipAddress));
         
@@ -681,7 +680,7 @@ public class NetworkElementFactory implements InitializingBean, NetworkElementFa
         OnmsCriteria criteria = new OnmsCriteria(OnmsMonitoredService.class);
         criteria.createAlias("ipInterface", "ipIface");
         criteria.createAlias("ipIface.node", "node");
-        criteria.createAlias("ipIface.snmpInterface", "snmpInterface");
+        criteria.createAlias("ipIface.snmpInterface", "snmpInterface", OnmsCriteria.LEFT_JOIN);
         criteria.createAlias("serviceType", "serviceType");
         criteria.add(Restrictions.eq("node.id", nodeId));
         criteria.add(Restrictions.eq("serviceType.id", serviceId));
@@ -960,7 +959,6 @@ public class NetworkElementFactory implements InitializingBean, NetworkElementFa
             
             service.setId(rs.getInt("id"));
             service.setNodeId(rs.getInt("nodeid"));
-            service.setIfIndex(rs.getInt("ifindex"));
             service.setIpAddress(rs.getString("ipaddr"));
 
             element = rs.getTimestamp("lastgood");
@@ -1005,9 +1003,7 @@ public class NetworkElementFactory implements InitializingBean, NetworkElementFa
         Service service = new Service();
         service.setId(monSvc.getId());
         service.setNodeId(monSvc.getNodeId());
-        if(monSvc.getIfIndex() != null) {
-            service.setIfIndex(monSvc.getIfIndex());
-        }
+        
         service.setIpAddress(monSvc.getIpAddress());
         service.setServiceId(monSvc.getServiceId());
         service.setServiceName(monSvc.getServiceName());
