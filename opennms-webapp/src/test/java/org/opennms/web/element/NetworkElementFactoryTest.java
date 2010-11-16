@@ -146,4 +146,22 @@ public class NetworkElementFactoryTest  {
     	assertEquals("active interfaces", 3, intfs.length);
     	
     }
+    
+    @Test
+    public void testGetDataLinksOnInterface() {
+        DataLinkInterface[] dlis = NetworkElementFactory.getInstance(m_appContext).getDataLinksOnInterface(1, 1);
+        assertEquals(4, dlis.length);
+        
+        DataLinkInterface[] dlis2 = NetworkElementFactory.getInstance(m_appContext).getDataLinksOnInterface(1, 9);
+        assertEquals(0, dlis2.length);
+    }
+    
+    @Test
+    public void testGetDataLinksOnNode() throws SQLException {
+        DataLinkInterface[] dlis = NetworkElementFactory.getInstance(m_appContext).getDataLinksOnNode(1);
+        assertEquals(5, dlis.length);
+        
+        DataLinkInterface[] dlis2 = NetworkElementFactory.getInstance(m_appContext).getDataLinksOnNode(100);
+        assertEquals(0, dlis2.length);
+    }
 }

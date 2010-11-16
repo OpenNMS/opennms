@@ -119,7 +119,7 @@ import org.springframework.web.context.support.WebApplicationContextUtils;
 @Transactional(readOnly=true)
 public class NetworkElementFactory implements InitializingBean, NetworkElementFactoryInterface {
     
-    private static NetworkElementFactory s_networkElemFactory;
+    //private static NetworkElementFactory s_networkElemFactory;
     
     @Autowired
     NodeDao m_nodeDao;
@@ -153,19 +153,6 @@ public class NetworkElementFactory implements InitializingBean, NetworkElementFa
      */
     protected static Map<Integer, String> serviceId2NameMap;
 
-    /**
-     * Private, empty constructor so that this class cannot be instantiated. All
-     * of its methods should static and accessed through the class name.
-     */
-//    private NetworkElementFactory(NodeDao nodeDao, IpInterfaceDao ipIfaceDao, SnmpInterfaceDao snmpInterfaceDao, DataLinkInterfaceDao dataLinkInterfaceDao, MonitoredServiceDao monSvcDao, ServiceTypeDao serviceTypeDao, CategoryDao categoryDao) {
-//        setNodeDao(nodeDao);
-//        setIpInterfaceDao(ipIfaceDao);
-//        setSnmpInterfaceDao(snmpInterfaceDao);
-//        setDataLinkInterfaceDao(dataLinkInterfaceDao);
-//        setMonSvcDao(monSvcDao);
-//        setServiceTypeDao(serviceTypeDao);
-//        setCategoryDao(categoryDao);
-//    }
     
     public static NetworkElementFactoryInterface getInstance(ServletContext servletContext) {
         return getInstance(WebApplicationContextUtils.getWebApplicationContext(servletContext));    
@@ -175,48 +162,8 @@ public class NetworkElementFactory implements InitializingBean, NetworkElementFa
 
     public static NetworkElementFactoryInterface getInstance(ApplicationContext appContext) {
     	return appContext.getBean(NetworkElementFactoryInterface.class);
-//    	s_networkElemFactory = new NetworkElementFactory(
-//                    getNodeDao(appContext), 
-//                    getIpInterfaceDao(appContext), 
-//                    getSnmpInterfaceDao(appContext),
-//                    getDataLinkInterfaceDao(appContext),
-//                    getMonitoredServiceDao(appContext),
-//                    getServiceTypeDao(appContext),
-//                    getCategoryDao(appContext));
-//            return s_networkElemFactory;
     }
 
-//    private static IpInterfaceDao getIpInterfaceDao(
-//            ApplicationContext appContext) {
-//        return appContext.getBean(IpInterfaceDao.class);
-//    }
-//
-//    private static NodeDao getNodeDao(ApplicationContext appContext) {
-//        NodeDao nodeDao = appContext.getBean(NodeDao.class);
-//        return nodeDao;
-//    }
-//    
-//    private static SnmpInterfaceDao getSnmpInterfaceDao(ApplicationContext appContext) {
-//        return appContext.getBean(SnmpInterfaceDao.class);
-//    }
-//    
-//    private static DataLinkInterfaceDao getDataLinkInterfaceDao(ApplicationContext appContext) {
-//        return appContext.getBean(DataLinkInterfaceDao.class);
-//    }
-//    
-//    private static MonitoredServiceDao getMonitoredServiceDao(ApplicationContext appContext) {
-//        return appContext.getBean(MonitoredServiceDao.class);
-//    }
-//    
-//    private static ServiceTypeDao getServiceTypeDao(ApplicationContext appContext) {
-//        return appContext.getBean(ServiceTypeDao.class);
-//    }
-//    
-//    private static CategoryDao getCategoryDao(ApplicationContext appContext) {
-//        return appContext.getBean(CategoryDao.class);
-//    }
-    
-    
     private static final Comparator<Interface> INTERFACE_COMPARATOR = new InterfaceComparator();
 
     /* (non-Javadoc)
@@ -1483,13 +1430,13 @@ public class NetworkElementFactory implements InitializingBean, NetworkElementFa
     /* (non-Javadoc)
 	 * @see org.opennms.web.element.NetworkElementFactoryInterfac#getDataLinksOnNode(int)
 	 */
-    public DataLinkInterface[] getDataLinksOnNode(int nodeID) throws SQLException {
-        DataLinkInterface[] normalnodes = null;
-        DataLinkInterface[] parentnodes = null;
-        if(s_networkElemFactory != null) {
-            normalnodes = s_networkElemFactory.getDataLinks(nodeID);
-            parentnodes = s_networkElemFactory.getDataLinksFromNodeParent(nodeID);
-        }
+    public DataLinkInterface[] getDataLinksOnNode(int nodeID) {
+        DataLinkInterface[] normalnodes = getDataLinks(nodeID);
+        DataLinkInterface[] parentnodes = getDataLinksFromNodeParent(nodeID);
+//        if(s_networkElemFactory != null) {
+//            normalnodes = s_networkElemFactory.getDataLinks(nodeID);
+//            parentnodes = s_networkElemFactory.getDataLinksFromNodeParent(nodeID);
+//        }
         
         DataLinkInterface[] nodes = new DataLinkInterface[normalnodes.length+parentnodes.length]; 
         int j = 0;
@@ -1689,12 +1636,9 @@ public class NetworkElementFactory implements InitializingBean, NetworkElementFa
 	 * @see org.opennms.web.element.NetworkElementFactoryInterfac#getDataLinksOnInterface(int, int)
 	 */
     public DataLinkInterface[] getDataLinksOnInterface(int nodeID, int ifindex){
-        DataLinkInterface[] normalnodes = null;
-        DataLinkInterface[] parentnodes = null;
-        if(s_networkElemFactory != null) {
-            normalnodes = s_networkElemFactory.getDataLinks(nodeID,ifindex);
-            parentnodes = s_networkElemFactory.getDataLinksFromNodeParent(nodeID,ifindex);
-        }
+        DataLinkInterface[] normalnodes = getDataLinks(nodeID,ifindex);
+        DataLinkInterface[] parentnodes = getDataLinksFromNodeParent(nodeID,ifindex);
+            
         DataLinkInterface[] nodes = new DataLinkInterface[normalnodes.length+parentnodes.length]; 
         int j = 0;
 
