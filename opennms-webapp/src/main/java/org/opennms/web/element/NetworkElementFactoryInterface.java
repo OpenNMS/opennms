@@ -1,6 +1,5 @@
 package org.opennms.web.element;
 
-import java.sql.SQLException;
 import java.util.List;
 import java.util.Map;
 
@@ -381,8 +380,7 @@ public interface NetworkElementFactoryInterface {
 	 * @return an array of {@link org.opennms.web.element.DataLinkInterface} objects.
 	 * @throws java.sql.SQLException if any.
 	 */
-	public abstract DataLinkInterface[] getDataLinksOnNode(int nodeID)
-			throws SQLException;
+	public abstract DataLinkInterface[] getDataLinksOnNode(int nodeID);
 
 	/**
 	 * <p>getDataLinksOnInterface</p>
