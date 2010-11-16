@@ -1895,6 +1895,13 @@
       <name>OpenNMS Snapshot Maven Repository</name>
       <url>http://maven.opennms.org/content/groups/opennms.org-snapshot</url>
     </repository>
+    <repository>
+      <snapshots><enabled>false</enabled></snapshots>
+      <releases><enabled>true</enabled></releases>
+      <id>opennms-repo</id>
+      <name>OpenNMS Repository</name>
+      <url>http://maven.opennms.org/content/groups/opennms.org-release</url>
+    </repository>
   </repositories>
   <pluginRepositories>
     <pluginRepository>
