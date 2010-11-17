@@ -88,7 +88,7 @@ public class AlarmRestService extends OnmsRestService {
     	MultivaluedMap<java.lang.String,java.lang.String> params=m_uriInfo.getQueryParameters();
 		OnmsCriteria criteria=new OnmsCriteria(OnmsAlarm.class);
 
-    	setLimitOffset(params, criteria);
+		setLimitOffset(params, criteria, 10, false);
         addOrdering(params, criteria, false);
     	addFiltersToCriteria(params, criteria, OnmsAlarm.class);
     	criteria.setFetchMode("firstEvent", FetchMode.JOIN);
