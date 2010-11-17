@@ -48,6 +48,7 @@ import org.exolab.castor.xml.MarshalException;
 import org.exolab.castor.xml.ValidationException;
 import org.opennms.api.reporting.ReportException;
 import org.opennms.api.reporting.ReportFormat;
+import org.opennms.api.reporting.ReportMode;
 import org.opennms.api.reporting.ReportService;
 import org.opennms.api.reporting.parameter.ReportParameters;
 import org.opennms.core.utils.ThreadCategory;
@@ -280,7 +281,7 @@ public class DefaultReportWrapperService implements ReportWrapperService {
 
         try {
             getReportService(parameters.getReportId()).runAndRender(
-                                                                    parameters.getReportParms(),
+                                                                    parameters.getReportParms(ReportMode.ONLINE),
                                                                     parameters.getReportId(),
                                                                     parameters.getFormat(),
                                                                     outputStream);
