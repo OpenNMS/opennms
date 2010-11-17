@@ -73,7 +73,7 @@ public interface SurveillanceServiceAsync {
      * @param set a {@link org.opennms.dashboard.client.SurveillanceSet} object.
      * @param cb a {@link com.google.gwt.user.client.rpc.AsyncCallback} object.
      */
-    public void getNodeNames(SurveillanceSet set, AsyncCallback<String[][]> cb); // BROKEN
+    public void getNodeNames(SurveillanceSet set, AsyncCallback<String[]> cb);
     
     /**
      * <p>getResources</p>
