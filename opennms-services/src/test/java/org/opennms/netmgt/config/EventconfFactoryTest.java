@@ -516,5 +516,9 @@ public class EventconfFactoryTest {
         public long lastModified() throws IOException {
             return m_delegate.lastModified();
         }
+
+        public long contentLength() throws IOException {
+            return m_delegate.contentLength();
+        }
     }
 }
