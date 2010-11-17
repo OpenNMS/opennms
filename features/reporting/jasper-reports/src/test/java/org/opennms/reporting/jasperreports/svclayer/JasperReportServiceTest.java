@@ -89,7 +89,7 @@ public class JasperReportServiceTest {
 		assertEquals(1, reportParameters.getIntParms().size());
 		assertEquals(1, reportParameters.getFloatParms().size());
 		assertEquals(2, reportParameters.getStringParms().size());
-		assertEquals(2, reportParameters.getDateParms().size());
+		assertEquals(3, reportParameters.getDateParms().size());
 	}
 
 
@@ -107,7 +107,7 @@ public class JasperReportServiceTest {
                 Assert.assertEquals("a string parameter",stringParm1.getDisplayName());
                 ReportStringParm stringParm2 = reportParameters.getStringParms().get(1);
                 Assert.assertEquals("stringParameter2",stringParm2.getDisplayName());
-                Assert.assertEquals(2, reportParameters.getDateParms().size());
+                Assert.assertEquals(3, reportParameters.getDateParms().size());
         }
 
 	@Test
@@ -122,6 +122,7 @@ public class JasperReportServiceTest {
 		java.util.Date date = new java.util.Date();
 		reportParms.put("dateParamter", date);
 		reportParms.put("sqlDateParameter", new java.util.Date(date.getTime()));
+		reportParms.put("sqlTimestampParameter", new java.util.Date(date.getTime()));
 		try {
 			m_reportService.runAndRender(reportParms, REPORTID,
 					ReportFormat.PDF, new NullOutputStream());

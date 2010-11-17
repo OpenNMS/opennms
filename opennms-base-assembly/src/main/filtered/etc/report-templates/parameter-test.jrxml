@@ -23,9 +23,9 @@
 			<![CDATA[a java.util.date parameter]]>
 		</parameterDescription>
 	</parameter>
-	<parameter name="sqlDateParameter" class="java.sql.Date">
+	<parameter name="sqlTimestampParameter" class="java.sql.Timestamp">
 		<parameterDescription>
-			<![CDATA[a java.sql.date parameter]]>
+			<![CDATA[a java.sql.Timestamp parameter]]>
 		</parameterDescription>
 	</parameter>
 	<title>
@@ -45,7 +45,7 @@
 		    	"integerParameter: " + $P{integerParameter} + "\n" +
 		    	"floatParameter: " + $P{floatParameter} + "\n" +
 		   		"dateParameter: " + (new SimpleDateFormat("MM/dd/yyyy HH:mm:ss")).format($P{dateParameter}) + "\n" +
-		    	"sqlDateParameter: " + (new SimpleDateFormat("MM/dd/yyyy HH:mm:ss")).format($P{sqlDateParameter})
+		    	"sqlTimestampParameter: " + (new SimpleDateFormat("MM/dd/yyyy HH:mm:ss")).format($P{sqlTimestampParameter})
 		    </textFieldExpression>
 		    </textField>
 		</band>

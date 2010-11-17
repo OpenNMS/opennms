@@ -200,8 +200,9 @@ public class JasperReportService implements ReportService {
                     continue;
                 }
 
-                if (reportParm.getValueClassName().equals("java.sql.Date")) {
-                    log.debug("adding a java.sql.Date parm name "
+                if (reportParm.getValueClassName().equals("java.sql.Date") ||
+                        reportParm.getValueClassName().equals("java.sql.Timestamp") ) {
+                    log.debug("adding a java.sql.Date or Timestamp parm name "
                             + reportParm.getName());
                     ReportDateParm dateParm = new ReportDateParm();
                     dateParm.setUseAbsoluteDate(false);
@@ -461,6 +462,13 @@ public class JasperReportService implements ReportService {
                     Date date = (Date) onmsReportParms.get(parmName);
                     jrReportParms.put(parmName,
                                       new java.sql.Date(date.getTime()));
+                    continue;
+                }
+                
+                if (reportParm.getValueClassName().equals("java.sql.Timestamp")) {
+                    Date date = (Date) onmsReportParms.get(parmName);
+                    jrReportParms.put(parmName,
+                                      new java.sql.Timestamp(date.getTime()));
                     continue;
                 }
 
