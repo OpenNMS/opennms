@@ -150,6 +150,20 @@ public class IPAddressRangeTest extends TestCase {
         }
     }
 
+    public void testToIpAddrString() throws UnknownHostException {
+        assertEquals("0.0.0.0", InetAddressUtils.toIpAddrString(zero.toOctets()));
+        assertEquals("0.0.0.1", InetAddressUtils.toIpAddrString(one.toOctets()));
+
+        assertEquals("ffff:ffff:ffff:ffff:ffff:ffff:ffff:ffff", InetAddressUtils.toIpAddrString(maxIPv6.toOctets()));
+        assertEquals("ffff:ffff:ffff:ffff:ffff:ffff:ffff:fffa", InetAddressUtils.toIpAddrString(maxIPv6MinusFive.toOctets()));
+        assertEquals("0000:0000:0000:0000:0000:0000:0000:0001", InetAddressUtils.toIpAddrString(new IPAddress("::1").toOctets()));
+        assertEquals("aaaa:0000:0000:0000:0000:0000:0000:0001", InetAddressUtils.toIpAddrString(new IPAddress("AAAA::1").toOctets()));
+        assertEquals("aaaa:0000:0000:0000:0000:0000:0000:0000", InetAddressUtils.toIpAddrString(new IPAddress("AAAA::").toOctets()));
+        assertEquals("00aa:0000:0000:0000:0000:0000:0000:0000", InetAddressUtils.toIpAddrString(new IPAddress("AA::").toOctets()));
+        assertEquals("aaaa:0000:0000:0000:0000:0000:0000:0000%15", InetAddressUtils.toIpAddrString(InetAddress.getByName("AAAA::%15")));
+        assertEquals("aaaa:0000:0000:0000:0000:0000:0000:0000", InetAddressUtils.toIpAddrString(InetAddress.getByName("AAAA::%0")));
+    }
+
     public void testCreate() {
         assertEquals(begin, normal.getBegin());
         assertEquals(end, normal.getEnd());

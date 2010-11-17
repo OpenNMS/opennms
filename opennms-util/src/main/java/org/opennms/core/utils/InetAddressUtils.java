@@ -190,11 +190,56 @@ abstract public class InetAddressUtils {
     /**
      * <p>toIpAddrString</p>
      *
+     * @param addr IP address
+     * @return a {@link java.lang.String} object.
+     */
+    public static String toIpAddrString(InetAddress addr) {
+        if (addr instanceof Inet4Address) {
+            return toIpAddrString(addr.getAddress());
+        } else if (addr instanceof Inet6Address) {
+            Inet6Address addr6 = (Inet6Address)addr;
+            if (addr6.getScopeId() == 0) {
+                return toIpAddrString(addr.getAddress());
+            } else {
+                return toIpAddrString(addr.getAddress()) + "%" + addr6.getScopeId();
+            }
+        } else {
+            throw new IllegalArgumentException("Unknown type of InetAddress: " + addr.getClass().getName());
+        }
+    }
+
+    /**
+     * <p>toIpAddrString</p>
+     *
      * @param addr an array of byte.
      * @return a {@link java.lang.String} object.
      */
     public static String toIpAddrString(byte[] addr) {
-        return getInetAddress(addr).getHostAddress();
+        if (addr.length == 4) {
+            return getInetAddress(addr).getHostAddress();
+        } else if (addr.length == 16) {
+            return String.format(
+                                 "%02x%02x:%02x%02x:%02x%02x:%02x%02x:%02x%02x:%02x%02x:%02x%02x:%02x%02x",
+                                 addr[0],
+                                 addr[1],
+                                 addr[2],
+                                 addr[3],
+                                 addr[4],
+                                 addr[5],
+                                 addr[6],
+                                 addr[7],
+                                 addr[8],
+                                 addr[9],
+                                 addr[10],
+                                 addr[11],
+                                 addr[12],
+                                 addr[13],
+                                 addr[14],
+                                 addr[15]
+            );
+        } else {
+            throw new IllegalArgumentException("IP address has an illegal number of bytes: " + addr.length);
+        }
     }
 
     /**
