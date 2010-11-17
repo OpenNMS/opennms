@@ -1,16 +1,12 @@
 /*
  * This file is part of the OpenNMS(R) Application.
  *
- * OpenNMS(R) is Copyright (C) 2009 The OpenNMS Group, Inc.  All rights reserved.
+ * OpenNMS(R) is Copyright (C) 2010 The OpenNMS Group, Inc.  All rights reserved.
  * OpenNMS(R) is a derivative work, containing both original code, included code and modified
  * code that was published under the GNU General Public License. Copyrights for modified
  * and included code are below.
  *
  * OpenNMS(R) is a registered trademark of The OpenNMS Group, Inc.
- *
- * Modifications:
- *
- * Original code base Copyright (C) 1999-2001 Oculan Corp.  All rights reserved.
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -27,39 +23,37 @@
  * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA.
  *
  * For more information contact:
- *      OpenNMS Licensing       <license@opennms.org>
- *      http://www.opennms.org/
- *      http://www.opennms.com/
- *
+ * OpenNMS Licensing       <license@opennms.org>
+ *     http://www.opennms.org/
+ *     http://www.opennms.com/
  */
+package org.opennms.core.soa.filter;
 
-package org.opennms.netmgt.dao;
+import java.util.Map;
 
-import java.util.Collection;
+import org.opennms.core.soa.Filter;
 
 /**
- * <p>ExtensionManager interface.</p>
+ * NotFilter
  *
  * @author brozow
- * @version $Id: $
  */
-public interface ExtensionManager {
+public class NotFilter extends AbstractFilter {
     
-    /**
-     * <p>registerExtension</p>
-     *
-     * @param extension a {@link java.lang.Object} object.
-     * @param extensionPoints a {@link java.lang.Class} object.
-     */
-    public void registerExtension(Object extension, Class<?>... extensionPoints);
-    
-    /**
-     * <p>findExtensions</p>
-     *
-     * @param extensionPoint a {@link java.lang.Class} object.
-     * @param <T> a T object.
-     * @return a {@link java.util.Collection} object.
-     */
-    public <T> Collection<T> findExtensions(Class<T> extensionPoint);
-    
+    Filter m_filter;
+
+    public NotFilter(Filter filter) {
+        m_filter = filter;
+    }
+
+    @Override
+    public boolean match(Map<String, String> properties) {
+        return !m_filter.match(properties);
+    }
+
+    @Override
+    public String toString() {
+        return new StringBuilder().append("(!").append(m_filter).append(")").toString();
+    }
+
 }

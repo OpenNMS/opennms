@@ -60,9 +60,6 @@ import org.opennms.web.WebSecurityUtils;
  *
  * @author <A HREF="mailto:larry@opennms.org">Lawrence Karnowski </A>
  * @author <A HREF="http://www.opennms.org/">OpenNMS </A>
- * @author <A HREF="mailto:larry@opennms.org">Lawrence Karnowski </A>
- * @author <A HREF="http://www.opennms.org/">OpenNMS </A>
- * @version $Id: $
  */
 public abstract class Util extends Object {
 
@@ -204,7 +201,7 @@ public abstract class Util extends Object {
      *         /&gt; tag for each parameter.
      */
     public static String makeHiddenTags(HttpServletRequest request) {
-        return (makeHiddenTags(request, new HashMap(), new String[0]));
+        return (makeHiddenTags(request, new HashMap<String,Object>(), new String[0]));
     }
 
     /**
@@ -219,7 +216,7 @@ public abstract class Util extends Object {
      *         <code>paramName</code>" value=" <code>paramValue</code>"
      *         /&gt; tag for each parameter.
      */
-    public static String makeHiddenTags(HttpServletRequest request, Map additions) {
+    public static String makeHiddenTags(HttpServletRequest request, Map<String,Object> additions) {
         return (makeHiddenTags(request, additions, new String[0]));
     }
 
@@ -236,7 +233,7 @@ public abstract class Util extends Object {
      *         /&gt; tag for each parameter.
      */
     public static String makeHiddenTags(HttpServletRequest request, String[] ignores) {
-        return (makeHiddenTags(request, new HashMap(), ignores));
+        return (makeHiddenTags(request, new HashMap<String,Object>(), ignores));
     }
 
     /**
@@ -255,7 +252,7 @@ public abstract class Util extends Object {
      *         <code>paramName</code>" value=" <code>paramValue</code>"
      *         /&gt; tag for each parameter not in the ignore list.
      */
-    public static String makeHiddenTags(HttpServletRequest request, Map additions, String[] ignores) {
+    public static String makeHiddenTags(HttpServletRequest request, Map<String,Object> additions, String[] ignores) {
         return (makeHiddenTags(request, additions, ignores, IgnoreType.BOTH));
     }
 
@@ -277,7 +274,7 @@ public abstract class Util extends Object {
      *         <code>paramName</code>" value=" <code>paramValue</code>"
      *         /&gt; tag for each parameter not in the ignore list.
      */
-    public static String makeHiddenTags(HttpServletRequest request, Map additions, String[] ignores, IgnoreType ignoreType) {
+    public static String makeHiddenTags(HttpServletRequest request, Map<String,Object> additions, String[] ignores, IgnoreType ignoreType) {
         if (request == null || additions == null || ignores == null || ignoreType == null) {
             throw new IllegalArgumentException("Cannot take null parameters.");
         }
@@ -289,10 +286,10 @@ public abstract class Util extends Object {
             ignoreList.add(ignores[i]);
         }
 
-        Enumeration names = request.getParameterNames();
+        Enumeration<String> names = request.getParameterNames();
 
         while (names.hasMoreElements()) {
-            String name = (String) names.nextElement();
+            String name = names.nextElement();
             String[] values = request.getParameterValues(name);
 
             if ((ignoreType == IgnoreType.ADDITIONS_ONLY || !ignoreList.contains(name)) && values != null) {
@@ -342,7 +339,7 @@ public abstract class Util extends Object {
      * @return a {@link java.lang.String} object.
      */
     public static String makeQueryString(HttpServletRequest request) {
-        return (makeQueryString(request, new HashMap(), new String[0]));
+        return (makeQueryString(request, new HashMap<String,Object>(), new String[0]));
     }
 
     /**
@@ -355,7 +352,7 @@ public abstract class Util extends Object {
      * @param additions a {@link java.util.Map} object.
      * @return a {@link java.lang.String} object.
      */
-    public static String makeQueryString(HttpServletRequest request, Map additions) {
+    public static String makeQueryString(HttpServletRequest request, Map<String,Object> additions) {
         return (makeQueryString(request, additions, new String[0]));
     }
 
@@ -370,7 +367,7 @@ public abstract class Util extends Object {
      * @return a {@link java.lang.String} object.
      */
     public static String makeQueryString(HttpServletRequest request, String[] ignores) {
-        return (makeQueryString(request, new HashMap(), ignores));
+        return (makeQueryString(request, new HashMap<String,Object>(), ignores));
     }
 
     /**
@@ -389,7 +386,7 @@ public abstract class Util extends Object {
      * @return A string in the <em>x-www-form-urlencoded</em> format that is
      *         suitable for adding to a URL as a query string.
      */
-    public static String makeQueryString(HttpServletRequest request, Map additions, String[] ignores) {
+    public static String makeQueryString(HttpServletRequest request, Map<String,Object> additions, String[] ignores) {
         return (makeQueryString(request, additions, ignores, IgnoreType.BOTH));
     }
 
@@ -410,7 +407,7 @@ public abstract class Util extends Object {
      *         suitable for adding to a URL as a query string.
      * @param ignoreType a {@link org.opennms.web.api.Util.IgnoreType} object.
      */
-    public static String makeQueryString(HttpServletRequest request, Map additions, String[] ignores, IgnoreType ignoreType) {
+    public static String makeQueryString(HttpServletRequest request, Map<String,Object> additions, String[] ignores, IgnoreType ignoreType) {
         if (request == null || additions == null || ignores == null || ignoreType == null) {
             throw new IllegalArgumentException("Cannot take null parameters.");
         }
@@ -422,7 +419,7 @@ public abstract class Util extends Object {
             ignoreList.add(ignores[i]);
         }
 
-        Enumeration names = request.getParameterNames();
+        Enumeration<String> names = request.getParameterNames();
 
         while (names.hasMoreElements()) {
             String name = (String) names.nextElement();

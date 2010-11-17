@@ -92,7 +92,7 @@ public class VMTaskFiber implements Fiber, Runnable {
     /**
      * The entry class.
      */
-    private Class m_entryClass;
+    private Class<?> m_entryClass;
 
     /**
      * The entry method.
@@ -123,12 +123,12 @@ public class VMTaskFiber implements Fiber, Runnable {
      *         null is returned.
      * 
      */
-    private static Method findMain(Class c) {
+    private static Method findMain(Class<?> c) {
 
         Method[] methods = c.getMethods();
         for (int i = 0; i < methods.length; i++) {
-            Class[] args = methods[i].getParameterTypes();
-            Class retType = methods[i].getReturnType();
+            Class<?>[] args = methods[i].getParameterTypes();
+            Class<?> retType = methods[i].getReturnType();
             int modifiers = methods[i].getModifiers();
             boolean validModifiers = Modifier.isStatic(modifiers) && Modifier.isPublic(modifiers);
 

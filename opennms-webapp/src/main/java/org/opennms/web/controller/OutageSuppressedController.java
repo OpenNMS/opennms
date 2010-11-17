@@ -152,7 +152,7 @@ public class OutageSuppressedController extends AbstractController {
 		}
 		
 		// Pretty smart to build the collection after any suppressions..... 
-		Collection theTable = m_cview.theTable(foundOutages);
+		Collection<Map<String,Object>> theTable = m_cview.theTable(foundOutages);
 		 
 		myModel.put("tabledata", theTable);
 		myModel.put("totalRows", totalRows);

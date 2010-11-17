@@ -31,30 +31,24 @@
  */
 package org.opennms.netmgt.provision;
 
-/*
- * FIXME: seems like the method: isServiceDetected should be defined here.
- */
 /**
  * ServiceDetector
+ * 
+ * Note: the isServiceDetected method is not defined here because there is
+ * a synchronous version of the method and an asynchronous one that are defined
+ * in sub interfaces.  This interface is used for the configuration so all service
+ * detectors can be found since the would all be initialized and configured the same
+ * way.
  *
  * @author <a href="mailto:brozow@opennms.org>Mathew Brozowski</a>
  * @version $Id: $
  */
 public interface ServiceDetector {
     
-    /*
-     * FIXME: Document this API requirement.  Not sure what is expected, perhaps nothing
-     * but there is a lot of inconsistency in the implementation from abstract classes and their
-     * implementations.
-     */
     /**
      * Perform any necessary initialization after construction and before detecting.
      */
     public void init();
-    
-    /*
-     * FIXME: Probably should make sure that the service names are always unique.
-     */
     
     /**
      * Requires that all implementations of this API return a service name.

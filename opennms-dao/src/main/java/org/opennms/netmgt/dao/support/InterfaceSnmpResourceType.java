@@ -196,7 +196,7 @@ public class InterfaceSnmpResourceType implements OnmsResourceType {
             Long ifSpeed = null;
             String ifSpeedFriendly = null;
             if (snmpInterface == null) {
-                label = name + " (Not Currently Updated)";
+                label = name + " (*)";
             } else {
                 StringBuffer descr = new StringBuffer();
                 StringBuffer parenString = new StringBuffer();

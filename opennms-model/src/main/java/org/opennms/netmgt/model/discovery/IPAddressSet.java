@@ -31,6 +31,7 @@
  */
 package org.opennms.netmgt.model.discovery;
 
+import java.math.BigInteger;
 import java.util.Collections;
 import java.util.Iterator;
 import java.util.LinkedList;
@@ -304,13 +305,13 @@ public class IPAddressSet implements Iterable<IPAddress> {
      *
      * @return a long.
      */
-    public long size() {
+    public BigInteger size() {
         if (m_firstRange == null) {
-            return 0;
+            return BigInteger.ZERO;
         } else if (m_remainingRanges == null) {
             return m_firstRange.size();
         } else {
-            return m_firstRange.size()+m_remainingRanges.size();
+            return m_firstRange.size().add(m_remainingRanges.size());
         }
     }
     

@@ -48,8 +48,6 @@ import java.util.Set;
  */
 public class IsolatingClassLoader extends URLClassLoader {
     
-    private String m_name;
-    
     /** Array of prefixes that identifies packages or classes to isolate. **/
     private String[] m_isolatedPrefixes;
     
@@ -99,8 +97,6 @@ public class IsolatingClassLoader extends URLClassLoader {
     
     private void init(String name, String[] isolated, boolean augmentClassPath) throws InvalidContextClassLoaderException {
         
-        m_name = name;
-        
         final Set<String> prefixes = new HashSet<String>();
         
         for (int i=0; i<isolated.length; i++) {
@@ -138,7 +134,7 @@ public class IsolatingClassLoader extends URLClassLoader {
      * Override to only check parent ClassLoader if the class name
      * doesn't match our list of isolated classes.
      */
-    protected synchronized Class loadClass(String name, boolean resolve) throws ClassNotFoundException {
+    protected synchronized Class<?> loadClass(String name, boolean resolve) throws ClassNotFoundException {
         
         boolean isolated = m_isolatedClassNames.contains(name);
         
@@ -153,7 +149,7 @@ public class IsolatingClassLoader extends URLClassLoader {
         }
         
         if (isolated) {
-            Class c = findLoadedClass(name);
+            Class<?> c = findLoadedClass(name);
             
             if (c == null) {
                 c = findClass(name);

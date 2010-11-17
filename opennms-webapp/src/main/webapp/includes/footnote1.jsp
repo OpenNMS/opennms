@@ -1,14 +1,16 @@
+<%--
 //
 // This file is part of the OpenNMS(R) Application.
 //
-// OpenNMS(R) is Copyright (C) 2002-2003 The OpenNMS Group, Inc.  All rights reserved.
+// OpenNMS(R) is Copyright (C) 2002-2010 The OpenNMS Group, Inc.  All rights reserved.
 // OpenNMS(R) is a derivative work, containing both original code, included code and modified
 // code that was published under the GNU General Public License. Copyrights for modified 
 // and included code are below.
 //
 // OpenNMS(R) is a registered trademark of The OpenNMS Group, Inc.
 //
-// Copyright (C) 1999-2001 Oculan Corp.  All rights reserved.
+// Modifications:
+//
 //
 // This program is free software; you can redistribute it and/or modify
 // it under the terms of the GNU General Public License as published by
@@ -30,34 +32,36 @@
 //      http://www.opennms.com/
 //
 
-package org.opennms.web.notification.bobject;
+--%>
 
-/**
- * An interface used to encapsulate targets for notifications
- *
- * @author <A HREF="mailto:jason@opennms.org">Jason Johns </A>
- * @author <A HREF="http://www.opennms.org/">OpenNMS </A>
- * @author <A HREF="mailto:jason@opennms.org">Jason Johns </A>
- * @author <A HREF="http://www.opennms.org/">OpenNMS </A>
- * @version 1.1.1.1
- * @since 1.8.1
- */
-public abstract class NotificationTarget {
-    /**
-     * The types of targets possible
-     */
-    public static final int TARGET_TYPE_USER = 1;
+<%-- 
+  This page is included by certain other JSPs to create a footnote
+  for resource types that are not interfaceSnmp, but get processed
+  by code that normally deals with interfaceSnmp resources.
+  It expects that a <base> tag has been set in the including page
+  that directs all URLs to be relative to the servlet context.
+--%>
 
-    /** Constant <code>TARGET_TYPE_NOTIF=2</code> */
-    public static final int TARGET_TYPE_NOTIF = 2;
+<%@page language="java"
+	contentType="text/html"
+	session="true"
+	import="java.io.File"
+%>
 
-    /** Constant <code>TARGET_TYPE_GROUP=3</code> */
-    public static final int TARGET_TYPE_GROUP = 3;
+<%@ taglib uri="http://java.sun.com/jsp/jstl/core" prefix="c" %>
 
-    /**
-     * Returns the type of a specific target
-     *
-     * @return a int.
-     */
-    public abstract int getType();
-}
+<c:choose>
+  <c:when test="${param.quiet == 'true'}">
+    <!-- Not displaying footnote1 -->
+  </c:when>
+
+  <c:otherwise>
+    <!-- Footnote1 -->
+
+    <div id="footer">
+      <p>
+          (*) Denotes an interface that no longer exists in the database, or a resource that is not an interface.
+      </p>
+    </div>
+  </c:otherwise>
+</c:choose>

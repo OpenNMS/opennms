@@ -36,8 +36,14 @@
 package org.opennms.core.utils;
 
 import java.math.BigInteger;
+import java.net.Inet4Address;
+import java.net.Inet6Address;
 import java.net.InetAddress;
+import java.net.NetworkInterface;
+import java.net.SocketException;
 import java.net.UnknownHostException;
+import java.util.Collections;
+import java.util.Enumeration;
 import java.util.List;
 
 /**
@@ -47,6 +53,100 @@ import java.util.List;
  * @version $Id: $
  */
 abstract public class InetAddressUtils {
+
+    public static enum AddressType {
+        IPv4,
+        IPv6
+    }
+
+    /*
+    public static InetAddress getSiteLocalAddress(AddressType type) {
+        try {
+            return findSiteLocalAddress(NetworkInterface.getNetworkInterfaces(), type);
+        } catch (SocketException e) {
+            ThreadCategory.getInstance(InetAddressUtils.class).warn("SocketException thrown while iterating over network interfaces: " + e.getMessage(), e);
+            LogUtils.errorf(InetAddressUtils.class, "getSiteLocalAddress: Returning null");
+            return null;
+        }
+    }
+
+    private static InetAddress findSiteLocalAddress(Enumeration<NetworkInterface> ifaces, AddressType type) {
+        for (NetworkInterface iface : Collections.list(ifaces)) {
+            for (InetAddress address : Collections.list(iface.getInetAddresses())) {
+                LogUtils.errorf(InetAddressUtils.class, "findSiteLocalAddress: Address: " + address + ", site local?: " + address.isSiteLocalAddress());
+                if (address.isSiteLocalAddress()) {
+                    if (AddressType.IPv4.equals(type) && address instanceof Inet4Address) {
+                        LogUtils.errorf(InetAddressUtils.class, "findSiteLocalAddress: Returning IPv4: " + address);
+                        return address;
+                    } else if (AddressType.IPv6.equals(type) && address instanceof Inet6Address) {
+                        LogUtils.errorf(InetAddressUtils.class, "findSiteLocalAddress: Returning IPv6: " + address);
+                        return address;
+                    }
+                }
+            }
+            // Recursively search for a suitable child interface
+            Enumeration<NetworkInterface> children = iface.getSubInterfaces();
+            InetAddress child = findSiteLocalAddress(children, type);
+            if (child != null) return child;
+        }
+        LogUtils.errorf(InetAddressUtils.class, "findSiteLocalAddress: Returning null");
+        return null;
+    }
+
+    public static InetAddress getLinkLocalAddress(AddressType type, int scope) {
+        try {
+            return findLinkLocalAddress(NetworkInterface.getNetworkInterfaces(), type, scope);
+
+        } catch (SocketException e) {
+            ThreadCategory.getInstance(InetAddressUtils.class).warn("SocketException thrown while iterating over network interfaces: " + e.getMessage(), e);
+            LogUtils.errorf(InetAddressUtils.class, "getLinkLocalAddress: Returning null");
+            return null;
+        }
+    }
+
+    private static InetAddress findLinkLocalAddress(Enumeration<NetworkInterface> ifaces, AddressType type, int scope) {
+        for (NetworkInterface iface : Collections.list(ifaces)) {
+            for (InetAddress address : Collections.list(iface.getInetAddresses())) {
+                LogUtils.errorf(InetAddressUtils.class, "findLinkLocalAddress: Address: " + address + ", link local?: " + address.isLinkLocalAddress());
+                if (address.isLinkLocalAddress()) {
+                    if (AddressType.IPv4.equals(type) && address instanceof Inet4Address) {
+                        LogUtils.errorf(InetAddressUtils.class, "findLinkLocalAddress: Returning IPv4: " + address);
+                        return address;
+                    } else if (AddressType.IPv6.equals(type) && address instanceof Inet6Address && ((Inet6Address)address).getScopeId() == scope) {
+                        LogUtils.errorf(InetAddressUtils.class, "findLinkLocalAddress: Returning IPv6: " + address);
+                        return address;
+                    }
+                }
+            }
+            // Recursively search for a suitable child interface
+            Enumeration<NetworkInterface> children = iface.getSubInterfaces();
+            InetAddress child = findLinkLocalAddress(children, type, scope);
+            if (child != null) return child;
+        }
+        LogUtils.errorf(InetAddressUtils.class, "findLinkLocalAddress: Returning null");
+        return null;
+    }
+    */
+
+    public static String incr(String address) throws UnknownHostException {
+        return InetAddressUtils.toIpAddrString(incr(InetAddressUtils.toIpAddrBytes(address)));
+    }
+
+    public static byte[] incr(byte[] address) throws UnknownHostException {
+        BigInteger addr = new BigInteger(1, address);
+        addr = addr.add(new BigInteger("1"));
+        return convertBigIntegerIntoInetAddress(addr).getAddress();
+    }
+
+    public static String decr(String address) throws UnknownHostException {
+        return InetAddressUtils.toIpAddrString(decr(InetAddressUtils.toIpAddrBytes(address)));
+    }
+
+    public static byte[] decr(byte[] address) throws UnknownHostException {
+        BigInteger addr = new BigInteger(1, address);
+        addr = addr.subtract(new BigInteger("1"));
+        return convertBigIntegerIntoInetAddress(addr).getAddress();
+    }
 
     /**
      * <p>getInetAddress</p>
@@ -78,35 +178,6 @@ abstract public class InetAddressUtils {
     }
 
     /**
-     * <p>getInetAddress</p>
-     *
-     * @param ipAddrAs32bitNumber a long.
-     * @return a {@link java.net.InetAddress} object.
-     * @deprecated Dealing with IP addresses as 'long' type is not compatible with IPv6
-     */
-    public static InetAddress getInetAddress(long ipAddrAs32bitNumber) {
-        return getInetAddress(toIpAddrBytes(ipAddrAs32bitNumber));
-    }
-    
-    /**
-     * <p>toIpAddrBytes</p>
-     *
-     * @param address a long.
-     * @return an array of byte.
-     * @deprecated Dealing with IP addresses as 'long' type is not compatible with IPv6
-     */
-    public static byte[] toIpAddrBytes(long address) {
-    
-        byte[] octets = new byte[4];
-        octets[0] = ((byte) ((address >>> 24) & 0xff));
-        octets[1] = ((byte) ((address >>> 16) & 0xff));
-        octets[2] = ((byte) ((address >>> 8) & 0xff));
-        octets[3] = ((byte) (address & 0xff));
-        
-        return octets;
-    }
-    
-    /**
      * <p>toIpAddrBytes</p>
      *
      * @param dottedNotation a {@link java.lang.String} object.
@@ -116,69 +187,6 @@ abstract public class InetAddressUtils {
         return getInetAddress(dottedNotation).getAddress();
     }
 
-    /**
-     * <p>toIpAddrLong</p>
-     *
-     * @param address an array of byte.
-     * @return a long.
-     * @deprecated Dealing with IP addresses as 'long' type is not compatible with IPv6
-     */
-    public static long toIpAddrLong(byte[] address) {
-        if (address.length != 4) {
-            throw new IllegalArgumentException("address "+address+" has the wrong length "+address.length);
-        }
-        long[] octets = new long[address.length];
-        octets[0] = unsignedByteToLong(address[0]);
-        octets[1] = unsignedByteToLong(address[1]);
-        octets[2] = unsignedByteToLong(address[2]);
-        octets[3] = unsignedByteToLong(address[3]);
-        
-        long result = octets[0] << 24 
-            | octets[1] << 16
-            | octets[2] << 8
-            | octets[3];
-        
-        return result;
-        
-    }
-    
-    /**
-     * <p>toIpAddrLong</p>
-     *
-     * @param dottedNotation a {@link java.lang.String} object.
-     * @return a long.
-     * @deprecated Dealing with IP addresses as 'long' type is not compatible with IPv6
-     */
-    public static long toIpAddrLong(String dottedNotation) {
-        return toIpAddrLong(toIpAddrBytes(dottedNotation));
-    }
-    
-    /**
-     * <p>toIpAddrLong</p>
-     *
-     * @param addr a {@link java.net.InetAddress} object.
-     * @return a long.
-     * @deprecated Dealing with IP addresses as 'long' type is not compatible with IPv6
-     */
-    public static long toIpAddrLong(InetAddress addr) {
-        return toIpAddrLong(addr.getAddress());
-    }
-
-    private static long unsignedByteToLong(byte b) {
-        return b < 0 ? ((long)b)+256 : ((long)b);
-    }
-
-    /**
-     * <p>toIpAddrString</p>
-     *
-     * @param ipAddr a long.
-     * @return a {@link java.lang.String} object.
-     * @deprecated Dealing with IP addresses as 'long' type is not compatible with IPv6
-     */
-    public static String toIpAddrString(long ipAddr) {
-        return getInetAddress(ipAddr).getHostAddress();
-    }
-    
     /**
      * <p>toIpAddrString</p>
      *
@@ -214,6 +222,10 @@ abstract public class InetAddressUtils {
         }
     
         return lowest;
+    }
+
+    public static BigInteger difference(String addr1, String addr2) {
+        return new BigInteger(getInetAddress(addr1).getAddress()).subtract(new BigInteger(getInetAddress(addr2).getAddress()));
     }
 
     public static boolean isInetAddressInRange(final String addrString, final String beginString, final String endString) {

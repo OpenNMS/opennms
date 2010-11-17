@@ -12,9 +12,9 @@ import java.util.TreeSet;
 import java.util.Map.Entry;
 
 import org.apache.commons.beanutils.MethodUtils;
+import org.opennms.core.soa.ServiceRegistry;
 import org.opennms.core.utils.PropertyPath;
 import org.opennms.core.utils.ThreadCategory;
-import org.opennms.netmgt.dao.ExtensionManager;
 import org.opennms.netmgt.provision.OnmsPolicy;
 import org.opennms.netmgt.provision.ServiceDetector;
 import org.opennms.netmgt.provision.annotations.Policy;
@@ -33,7 +33,7 @@ import org.springframework.beans.factory.annotation.Qualifier;
 public class DefaultForeignSourceService implements ForeignSourceService {
     
     @Autowired
-    private ExtensionManager m_extensionManager;
+    private ServiceRegistry m_serviceRegistry;
     
     @Autowired
     @Qualifier("deployed")
@@ -209,7 +209,7 @@ public class DefaultForeignSourceService implements ForeignSourceService {
     public Map<String, String> getDetectorTypes() {
         if (m_detectors == null) {
             Map<String,String> detectors = new TreeMap<String,String>();
-            for (ServiceDetector d : m_extensionManager.findExtensions(ServiceDetector.class)) {
+            for (ServiceDetector d : m_serviceRegistry.findProviders(ServiceDetector.class)) {
                 String serviceName = d.getServiceName();
                 if (serviceName == null) {
                     serviceName = d.getClass().getSimpleName();
@@ -233,7 +233,7 @@ public class DefaultForeignSourceService implements ForeignSourceService {
     public Map<String, String> getPolicyTypes() {
         if (m_policies == null) {
             Map<String,String> policies = new TreeMap<String,String>();
-            for (OnmsPolicy p : m_extensionManager.findExtensions(OnmsPolicy.class)) {
+            for (OnmsPolicy p : m_serviceRegistry.findProviders(OnmsPolicy.class)) {
                 String policyName = p.getClass().getSimpleName();
                 if (p.getClass().isAnnotationPresent(Policy.class)) {
                     Policy annotation = p.getClass().getAnnotation(Policy.class);

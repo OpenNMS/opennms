@@ -71,7 +71,8 @@ import org.springframework.transaction.annotation.Transactional;
                                   "classpath*:/META-INF/opennms/component-dao.xml",
                                   "classpath*:/META-INF/opennms/component-service.xml",
                                   "classpath:/daoWebAlarmRepositoryTestContext.xml",
-                                  "classpath:/jdbcWebAlarmRepositoryTest.xml"})
+                                  "classpath:/jdbcWebAlarmRepositoryTest.xml",
+                                  "classpath:/NetworkElementFactoryContext.xml"})
 @JUnitTemporaryDatabase()
 public class WebAlarmRepositoryFilterTest {
     

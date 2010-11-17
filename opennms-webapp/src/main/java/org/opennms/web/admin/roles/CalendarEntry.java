@@ -34,6 +34,8 @@ package org.opennms.web.admin.roles;
 import java.util.Date;
 import java.util.List;
 
+import org.opennms.netmgt.config.Owner;
+
 /**
  * <p>CalendarEntry class.</p>
  *
@@ -46,7 +48,7 @@ public class CalendarEntry {
     Date m_start;
     Date m_end;
     String m_descr;
-    List m_labels;
+    List<Owner> m_labels;
     
     /**
      * <p>Constructor for CalendarEntry.</p>
@@ -56,7 +58,7 @@ public class CalendarEntry {
      * @param descr a {@link java.lang.String} object.
      * @param labels a {@link java.util.List} object.
      */
-    public CalendarEntry(Date start, Date end, String descr, List labels) {
+    public CalendarEntry(Date start, Date end, String descr, List<Owner> labels) {
         m_start = start;
         m_end = end;
         m_descr = descr;
@@ -89,5 +91,5 @@ public class CalendarEntry {
      *
      * @return a {@link java.util.List} object.
      */
-    public List getLabels() { return m_labels; }
+    public List<Owner> getLabels() { return m_labels; }
 }

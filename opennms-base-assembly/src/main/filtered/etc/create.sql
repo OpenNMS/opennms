@@ -200,7 +200,7 @@ create sequence mapNxtId minvalue 1;
 --########################################################################
 
 create table serverMap (
-	ipAddr			varchar(16) not null,
+	ipAddr			varchar(39) not null,
 	serverName		varchar(64) not null );
 
 create index server_name_idx on serverMap(serverName);
@@ -217,7 +217,7 @@ create index server_name_idx on serverMap(serverName);
 --########################################################################
 
 create table serviceMap (
-	ipAddr			varchar(16) not null,
+	ipAddr			varchar(39) not null,
 	serviceMapName		varchar(32) not null
 );
 create index servicemap_name_idx on serviceMap(serviceMapName);
@@ -248,7 +248,7 @@ create index serviceMap_ipaddr_idx on serviceMap(ipAddr);
 
 create table distPoller (
 	dpName			varchar(12) not null,
-	dpIP			varchar(16) not null,
+	dpIP			varchar(39) not null,
 	dpComment		varchar(256),
 	dpDiscLimit		numeric(5,2),
 	dpLastNodePull		timestamp with time zone,
@@ -381,7 +381,7 @@ create unique index node_foreign_unique_idx on node(foreignSource, foreignId);
 create table snmpInterface (
     id				INTEGER DEFAULT nextval('opennmsNxtId') NOT NULL,
 	nodeID			integer not null,
-	ipAddr			varchar(16) not null,
+	ipAddr			varchar(39) not null,
 	snmpIpAdEntNetMask	varchar(16),
 	snmpPhysAddr		varchar(32),
 	snmpIfIndex		integer not null,
@@ -450,7 +450,7 @@ create index snmpinterface_ipaddr_idx on snmpinterface(ipaddr);
 create table ipInterface (
     id              INTEGER DEFAULT nextval('opennmsNxtId') NOT NULL,
 	nodeID			integer not null,
-	ipAddr			varchar(16) not null,
+	ipAddr			varchar(39) not null,
 	ifIndex			integer,
 	ipHostname		varchar(256),
 	isManaged		char(1),
@@ -525,7 +525,7 @@ create table service (
 create table ifServices (
     id				integer default nextval('opennmsNxtId') NOT NULL,
 	nodeID			integer not null,
-	ipAddr			varchar(16) not null,
+	ipAddr			varchar(39) not null,
 	ifIndex			integer,
 	serviceID		integer not null,
 	lastGood		timestamp with time zone,
@@ -652,7 +652,7 @@ create table events (
 	eventTime		timestamp with time zone not null,
 	eventHost		varchar(256),
 	eventSource		varchar(128) not null,
-	ipAddr			varchar(16),
+	ipAddr			varchar(39),
 	eventDpName		varchar(12) not null,
 	eventSnmphost		varchar(256),
 	serviceID		integer,
@@ -725,7 +725,7 @@ create table outages (
 	svcLostEventID		integer,
 	svcRegainedEventID	integer,
 	nodeID			integer not null,
-	ipAddr			varchar(16) not null,
+	ipAddr			varchar(39) not null,
 	serviceID		integer not null,
 	ifLostService		timestamp with time zone not null,
 	ifRegainedService	timestamp with time zone,
@@ -785,7 +785,7 @@ create index outages_ifServivceId_idx on outages(ifServiceId);
 create table vulnerabilities (
 	vulnerabilityID		integer not null,
 	nodeID			integer,
-	ipAddr			varchar(16),
+	ipAddr			varchar(39),
 	serviceID		integer,
 	creationTime		timestamp with time zone not null,
 	lastAttemptTime		timestamp with time zone not null,
@@ -982,7 +982,7 @@ create table alarms (
 	eventUei                VARCHAR(256) NOT NULL,
 	dpName                  VARCHAR(12) NOT NULL,
 	nodeID                  INTEGER, CONSTRAINT fk_alarms_nodeid FOREIGN KEY (nodeID) REFERENCES node (nodeID) ON DELETE CASCADE,
-	ipaddr                  VARCHAR(16),
+	ipaddr                  VARCHAR(39),
 	serviceID               INTEGER,
 	reductionKey            VARCHAR(256),
 	alarmType               INTEGER,
@@ -1292,7 +1292,7 @@ create table pollResults (
 	id			integer,
 	pollId      integer,
 	nodeId		integer,
-	ipAddr		varchar(16),
+	ipAddr		varchar(39),
 	ifIndex		integer,
 	serviceId	integer,
 	statusCode	integer,
@@ -1479,7 +1479,7 @@ insert into distPoller (dpName, dpIP, dpComment, dpDiscLimit, dpLastNodePull, dp
 create table atinterface (
     id			integer default nextval('opennmsNxtId') not null,
 	nodeid		integer not null,
-	ipAddr		varchar(16) not null,
+	ipAddr		varchar(39) not null,
 	atPhysAddr	varchar(32) not null,
 	status		char(1) not null,
 	sourceNodeid	integer not null,

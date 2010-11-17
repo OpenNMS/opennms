@@ -91,19 +91,19 @@ public class SnmpEventInfoTest extends TestCase {
         info.setCommunityString("abc");
         info.setFirstIPAddress("192.168.0.5");
         
-        MergeableDefinition configDef = new MergeableDefinition(SnmpPeerFactory.getSnmpConfig().getDefinition(0));
-        SnmpConfigManager mgr = new SnmpConfigManager(SnmpPeerFactory.getSnmpConfig());
-        MergeableDefinition matchingDef = mgr.findDefMatchingAttributes(info.createDef());
+        SnmpConfig config = SnmpPeerFactory.getSnmpConfig();
+        MergeableDefinition configDef = new MergeableDefinition(config.getDefinition(0));
+        MergeableDefinition matchingDef = SnmpConfigManager.findDefMatchingAttributes(SnmpPeerFactory.getSnmpConfig(), info.createDef());
         assertNull(matchingDef);
         assertTrue(configDef.hasMatchingSpecific(info.getFirstIPAddress()));
         assertNull(configDef.getConfigDef().getReadCommunity());
         
-        mgr.mergeIntoConfig(info.createDef());
+        SnmpConfigManager.mergeIntoConfig(config, info.createDef());
         
 //      String config = SnmpPeerFactory.marshallConfig();
 //      System.err.println(config);
         
-        matchingDef = mgr.findDefMatchingAttributes(info.createDef());
+        matchingDef = SnmpConfigManager.findDefMatchingAttributes(config, info.createDef());
         assertNotNull(matchingDef);
         assertFalse(configDef.hasMatchingSpecific(info.getFirstIPAddress()));
         assertTrue(matchingDef.hasMatchingSpecific(info.getFirstIPAddress()));
@@ -133,25 +133,25 @@ public class SnmpEventInfoTest extends TestCase {
         "";
 
         SnmpPeerFactory.setInstance(new SnmpPeerFactory(new ByteArrayResource(snmpConfigXml.getBytes())));
-        SnmpConfigManager mgr = new SnmpConfigManager(SnmpPeerFactory.getSnmpConfig());
+        SnmpConfig config = SnmpPeerFactory.getSnmpConfig();
         
         SnmpEventInfo info = new SnmpEventInfo();
         info.setVersion("v2c");
         info.setFirstIPAddress("192.168.0.6");
         
         MergeableDefinition configDef = new MergeableDefinition(SnmpPeerFactory.getSnmpConfig().getDefinition(0));
-        MergeableDefinition matchingDef = mgr.findDefMatchingAttributes(info.createDef());
+        MergeableDefinition matchingDef = SnmpConfigManager.findDefMatchingAttributes(config, info.createDef());
         assertNotNull(matchingDef);
         assertFalse(matchingDef.hasMatchingSpecific(info.getFirstIPAddress()));
         assertEquals(1, matchingDef.getConfigDef().getSpecificCount());
         assertEquals(0, matchingDef.getConfigDef().getRangeCount());
         assertNull(configDef.getConfigDef().getReadCommunity());
         
-        mgr.mergeIntoConfig(info.createDef());
+        SnmpConfigManager.mergeIntoConfig(config, info.createDef());
 //      String config = SnmpPeerFactory.marshallConfig();
 //      System.err.println(config);
         
-        assertEquals(matchingDef.getConfigDef(), mgr.findDefMatchingAttributes(info.createDef()).getConfigDef());
+        assertEquals(matchingDef.getConfigDef(), SnmpConfigManager.findDefMatchingAttributes(config, info.createDef()).getConfigDef());
         assertFalse(matchingDef.hasMatchingSpecific(info.getFirstIPAddress()));
         assertEquals(0, matchingDef.getConfigDef().getSpecificCount());
         assertEquals(1, matchingDef.getConfigDef().getRangeCount());
@@ -183,27 +183,27 @@ public class SnmpEventInfoTest extends TestCase {
         "";
 
         SnmpPeerFactory.setInstance(new SnmpPeerFactory(new ByteArrayResource(snmpConfigXml.getBytes())));
-        SnmpConfigManager mgr = new SnmpConfigManager(SnmpPeerFactory.getSnmpConfig());
+        SnmpConfig config = SnmpPeerFactory.getSnmpConfig();
 
         SnmpEventInfo info = new SnmpEventInfo();
         info.setVersion("v1");
         info.setFirstIPAddress("192.168.1.120");
         info.setLastIPAddress("192.168.1.130");
 
-        mgr.mergeIntoConfig(info.createDef());
+        SnmpConfigManager.mergeIntoConfig(config, info.createDef());
         
 //        String config = SnmpPeerFactory.marshallConfig();
 //        System.err.println(config);
         
-        assertEquals(2, mgr.getConfig().getDefinitionCount());
-        assertEquals("192.168.1.100", mgr.getConfig().getDefinition(0).getRange(0).getBegin());
-        assertEquals("192.168.1.119", mgr.getConfig().getDefinition(0).getRange(0).getEnd());
+        assertEquals(2, config.getDefinitionCount());
+        assertEquals("192.168.1.100", config.getDefinition(0).getRange(0).getBegin());
+        assertEquals("192.168.1.119", config.getDefinition(0).getRange(0).getEnd());
         
-        assertEquals("192.168.1.131", mgr.getConfig().getDefinition(0).getRange(1).getBegin());
-        assertEquals("192.168.1.200", mgr.getConfig().getDefinition(0).getRange(1).getEnd());
+        assertEquals("192.168.1.131", config.getDefinition(0).getRange(1).getBegin());
+        assertEquals("192.168.1.200", config.getDefinition(0).getRange(1).getEnd());
         
-        assertEquals("192.168.1.120", mgr.getConfig().getDefinition(1).getRange(0).getBegin());
-        assertEquals("192.168.1.130", mgr.getConfig().getDefinition(1).getRange(0).getEnd());
+        assertEquals("192.168.1.120", config.getDefinition(1).getRange(0).getBegin());
+        assertEquals("192.168.1.130", config.getDefinition(1).getRange(0).getEnd());
         
     }
 
@@ -229,32 +229,32 @@ public class SnmpEventInfoTest extends TestCase {
         "";
 
         SnmpPeerFactory.setInstance(new SnmpPeerFactory(new ByteArrayResource(snmpConfigXml.getBytes())));
-        SnmpConfigManager mgr = new SnmpConfigManager(SnmpPeerFactory.getSnmpConfig());
+        SnmpConfig config = SnmpPeerFactory.getSnmpConfig();
 
         SnmpEventInfo info = new SnmpEventInfo();
         info.setVersion("v1");
         info.setFirstIPAddress("192.168.1.120");
 
-        mgr.mergeIntoConfig(info.createDef());
+        SnmpConfigManager.mergeIntoConfig(config, info.createDef());
         
 //        String config = SnmpPeerFactory.marshallConfig();
 //        System.err.println(config);
         
-        assertEquals(2, mgr.getConfig().getDefinitionCount());
+        assertEquals(2, config.getDefinitionCount());
         
-        assertEquals(2, mgr.getConfig().getDefinition(0).getRangeCount());
-        assertEquals(0, mgr.getConfig().getDefinition(0).getSpecificCount());
+        assertEquals(2, config.getDefinition(0).getRangeCount());
+        assertEquals(0, config.getDefinition(0).getSpecificCount());
         
-        assertEquals("192.168.1.100", mgr.getConfig().getDefinition(0).getRange(0).getBegin());
-        assertEquals("192.168.1.119", mgr.getConfig().getDefinition(0).getRange(0).getEnd());
+        assertEquals("192.168.1.100", config.getDefinition(0).getRange(0).getBegin());
+        assertEquals("192.168.1.119", config.getDefinition(0).getRange(0).getEnd());
         
-        assertEquals("192.168.1.121", mgr.getConfig().getDefinition(0).getRange(1).getBegin());
-        assertEquals("192.168.1.200", mgr.getConfig().getDefinition(0).getRange(1).getEnd());
+        assertEquals("192.168.1.121", config.getDefinition(0).getRange(1).getBegin());
+        assertEquals("192.168.1.200", config.getDefinition(0).getRange(1).getEnd());
         
-        assertEquals(0, mgr.getConfig().getDefinition(1).getRangeCount());
-        assertEquals(1, mgr.getConfig().getDefinition(1).getSpecificCount());
+        assertEquals(0, config.getDefinition(1).getRangeCount());
+        assertEquals(1, config.getDefinition(1).getSpecificCount());
         
-        assertEquals("192.168.1.120", mgr.getConfig().getDefinition(1).getSpecific(0));
+        assertEquals("192.168.1.120", config.getDefinition(1).getSpecific(0));
         
     }
     
@@ -285,24 +285,24 @@ public class SnmpEventInfoTest extends TestCase {
         "";
 
         SnmpPeerFactory.setInstance(new SnmpPeerFactory(new ByteArrayResource(snmpConfigXml.getBytes())));
-        SnmpConfigManager mgr = new SnmpConfigManager(SnmpPeerFactory.getSnmpConfig());
+        SnmpConfig config = SnmpPeerFactory.getSnmpConfig();
 
         SnmpEventInfo info = new SnmpEventInfo();
         info.setVersion("v2c");
         info.setFirstIPAddress("192.168.1.15");
 
-        mgr.mergeIntoConfig(info.createDef());
+        SnmpConfigManager.mergeIntoConfig(config, info.createDef());
         
 //        String config = SnmpPeerFactory.marshallConfig();
 //        System.err.println(config);
         
-        assertEquals(1, mgr.getConfig().getDefinitionCount());
+        assertEquals(1, config.getDefinitionCount());
         
-        assertEquals(1, mgr.getConfig().getDefinition(0).getRangeCount());
-        assertEquals(0, mgr.getConfig().getDefinition(0).getSpecificCount());
+        assertEquals(1, config.getDefinition(0).getRangeCount());
+        assertEquals(0, config.getDefinition(0).getSpecificCount());
         
-        assertEquals("192.168.1.10", mgr.getConfig().getDefinition(0).getRange(0).getBegin());
-        assertEquals("192.168.1.40", mgr.getConfig().getDefinition(0).getRange(0).getEnd());
+        assertEquals("192.168.1.10", config.getDefinition(0).getRange(0).getBegin());
+        assertEquals("192.168.1.40", config.getDefinition(0).getRange(0).getEnd());
         
     }
     
@@ -327,28 +327,28 @@ public class SnmpEventInfoTest extends TestCase {
         "";
 
         SnmpPeerFactory.setInstance(new SnmpPeerFactory(new ByteArrayResource(snmpConfigXml.getBytes())));
-        SnmpConfigManager mgr = new SnmpConfigManager(SnmpPeerFactory.getSnmpConfig());
+        SnmpConfig config = SnmpPeerFactory.getSnmpConfig();
 
         SnmpEventInfo info = new SnmpEventInfo();
         info.setVersion("v1");
         info.setFirstIPAddress("192.168.1.15");
         info.setLastIPAddress("192.168.1.35");
 
-        mgr.mergeIntoConfig(info.createDef());
+        SnmpConfigManager.mergeIntoConfig(config, info.createDef());
         
 //        String config = SnmpPeerFactory.marshallConfig();
 //        System.err.println(config);
         
-        assertEquals(2, mgr.getConfig().getDefinitionCount());
-        assertEquals(0, mgr.getConfig().getDefinition(0).getRangeCount());
-        assertEquals(1, mgr.getConfig().getDefinition(0).getSpecificCount());
-        assertEquals(1, mgr.getConfig().getDefinition(1).getRangeCount());
-        assertEquals(0, mgr.getConfig().getDefinition(1).getSpecificCount());
+        assertEquals(2, config.getDefinitionCount());
+        assertEquals(0, config.getDefinition(0).getRangeCount());
+        assertEquals(1, config.getDefinition(0).getSpecificCount());
+        assertEquals(1, config.getDefinition(1).getRangeCount());
+        assertEquals(0, config.getDefinition(1).getSpecificCount());
         
-        assertEquals("10.1.1.1", mgr.getConfig().getDefinition(0).getSpecific(0));
+        assertEquals("10.1.1.1", config.getDefinition(0).getSpecific(0));
         
-        assertEquals("192.168.1.15", mgr.getConfig().getDefinition(1).getRange(0).getBegin());
-        assertEquals("192.168.1.35", mgr.getConfig().getDefinition(1).getRange(0).getEnd());
+        assertEquals("192.168.1.15", config.getDefinition(1).getRange(0).getBegin());
+        assertEquals("192.168.1.35", config.getDefinition(1).getRange(0).getEnd());
         
     }
     
@@ -371,7 +371,7 @@ public class SnmpEventInfoTest extends TestCase {
         "";
         
         SnmpPeerFactory.setInstance(new SnmpPeerFactory(new ByteArrayResource(snmpConfigXml.getBytes())));
-        SnmpConfigManager mgr = new SnmpConfigManager(SnmpPeerFactory.getSnmpConfig());
+        SnmpConfig config = SnmpPeerFactory.getSnmpConfig();
 
         SnmpEventInfo info = new SnmpEventInfo();
         info.setVersion("v1");
@@ -379,7 +379,7 @@ public class SnmpEventInfoTest extends TestCase {
         info.setLastIPAddress("192.168.0.1");
 
         try {
-            mgr.mergeIntoConfig(info.createDef());
+            SnmpConfigManager.mergeIntoConfig(config, info.createDef());
             fail("Expected IllegalArgumentException.");
         } catch (IllegalArgumentException e) {
             
@@ -406,28 +406,28 @@ public class SnmpEventInfoTest extends TestCase {
         "";
         
         SnmpPeerFactory.setInstance(new SnmpPeerFactory(new ByteArrayResource(snmpConfigXml.getBytes())));
-        SnmpConfigManager mgr = new SnmpConfigManager(SnmpPeerFactory.getSnmpConfig());
+        SnmpConfig config = SnmpPeerFactory.getSnmpConfig();
 
         SnmpEventInfo info = new SnmpEventInfo();
         info.setVersion("v1");
         info.setFirstIPAddress("192.168.0.3");
 
-        mgr.mergeIntoConfig(info.createDef());
+        SnmpConfigManager.mergeIntoConfig(config, info.createDef());
         
 //        String config = SnmpPeerFactory.marshallConfig();
 //        System.err.println(config);
         
-        assertEquals(2, mgr.getConfig().getDefinitionCount());
-        assertEquals(1, mgr.getConfig().getDefinition(0).getRangeCount());
-        assertEquals(0, mgr.getConfig().getDefinition(0).getSpecificCount());
+        assertEquals(2, config.getDefinitionCount());
+        assertEquals(1, config.getDefinition(0).getRangeCount());
+        assertEquals(0, config.getDefinition(0).getSpecificCount());
         
-        assertEquals(0, mgr.getConfig().getDefinition(1).getRangeCount());
-        assertEquals(1, mgr.getConfig().getDefinition(1).getSpecificCount());
+        assertEquals(0, config.getDefinition(1).getRangeCount());
+        assertEquals(1, config.getDefinition(1).getSpecificCount());
         
-        assertEquals("192.168.0.4", mgr.getConfig().getDefinition(0).getRange(0).getBegin());
-        assertEquals("192.168.0.100", mgr.getConfig().getDefinition(0).getRange(0).getEnd());
+        assertEquals("192.168.0.4", config.getDefinition(0).getRange(0).getBegin());
+        assertEquals("192.168.0.100", config.getDefinition(0).getRange(0).getEnd());
         
-        assertEquals("192.168.0.3", mgr.getConfig().getDefinition(1).getSpecific(0));
+        assertEquals("192.168.0.3", config.getDefinition(1).getSpecific(0));
 
     }
     
@@ -453,29 +453,29 @@ public class SnmpEventInfoTest extends TestCase {
         "";
 
         SnmpPeerFactory.setInstance(new SnmpPeerFactory(new ByteArrayResource(snmpConfigXml.getBytes())));
-        SnmpConfigManager mgr = new SnmpConfigManager(SnmpPeerFactory.getSnmpConfig());
+        SnmpConfig config = SnmpPeerFactory.getSnmpConfig();
 
         SnmpEventInfo info = new SnmpEventInfo();
         info.setVersion("v1");
         info.setFirstIPAddress("192.168.1.15");
         info.setLastIPAddress("192.168.1.35");
 
-        mgr.mergeIntoConfig(info.createDef());
+        SnmpConfigManager.mergeIntoConfig(config, info.createDef());
         
 //        String config = SnmpPeerFactory.marshallConfig();
 //        System.err.println(config);
         
         
-        assertEquals(2, mgr.getConfig().getDefinitionCount());
+        assertEquals(2, config.getDefinitionCount());
         
-        assertEquals("192.168.1.10", mgr.getConfig().getDefinition(0).getRange(0).getBegin());
-        assertEquals("192.168.1.14", mgr.getConfig().getDefinition(0).getRange(0).getEnd());
+        assertEquals("192.168.1.10", config.getDefinition(0).getRange(0).getBegin());
+        assertEquals("192.168.1.14", config.getDefinition(0).getRange(0).getEnd());
         
-        assertEquals("192.168.1.36", mgr.getConfig().getDefinition(0).getRange(1).getBegin());
-        assertEquals("192.168.1.40", mgr.getConfig().getDefinition(0).getRange(1).getEnd());
+        assertEquals("192.168.1.36", config.getDefinition(0).getRange(1).getBegin());
+        assertEquals("192.168.1.40", config.getDefinition(0).getRange(1).getEnd());
         
-        assertEquals("192.168.1.15", mgr.getConfig().getDefinition(1).getRange(0).getBegin());
-        assertEquals("192.168.1.35", mgr.getConfig().getDefinition(1).getRange(0).getEnd());
+        assertEquals("192.168.1.15", config.getDefinition(1).getRange(0).getBegin());
+        assertEquals("192.168.1.35", config.getDefinition(1).getRange(0).getEnd());
         
     }
 
@@ -504,23 +504,23 @@ public class SnmpEventInfoTest extends TestCase {
         "";
 
         SnmpPeerFactory.setInstance(new SnmpPeerFactory(new ByteArrayResource(snmpConfigXml.getBytes())));
-        SnmpConfigManager mgr = new SnmpConfigManager(SnmpPeerFactory.getSnmpConfig());
+        SnmpConfig config = SnmpPeerFactory.getSnmpConfig();
 
         SnmpEventInfo info = new SnmpEventInfo();
         info.setVersion("v2c");
         info.setFirstIPAddress("192.168.1.15");
         info.setLastIPAddress("192.168.1.35");
 
-        mgr.mergeIntoConfig(info.createDef());
+        SnmpConfigManager.mergeIntoConfig(config, info.createDef());
         
 //        String config = SnmpPeerFactory.marshallConfig();
 //        System.err.println(config);
         
         
-        assertEquals(1, mgr.getConfig().getDefinitionCount());
+        assertEquals(1, config.getDefinitionCount());
         
-        assertEquals("192.168.1.10", mgr.getConfig().getDefinition(0).getRange(0).getBegin());
-        assertEquals("192.168.1.40", mgr.getConfig().getDefinition(0).getRange(0).getEnd());
+        assertEquals("192.168.1.10", config.getDefinition(0).getRange(0).getBegin());
+        assertEquals("192.168.1.40", config.getDefinition(0).getRange(0).getEnd());
         
         
     }
@@ -550,23 +550,23 @@ public class SnmpEventInfoTest extends TestCase {
         "";
 
         SnmpPeerFactory.setInstance(new SnmpPeerFactory(new ByteArrayResource(snmpConfigXml.getBytes())));
-        SnmpConfigManager mgr = new SnmpConfigManager(SnmpPeerFactory.getSnmpConfig());
+        SnmpConfig config = SnmpPeerFactory.getSnmpConfig();
 
         SnmpEventInfo info = new SnmpEventInfo();
         info.setVersion("v2c");
         info.setFirstIPAddress("192.168.1.12");
         info.setLastIPAddress("192.168.1.38");
 
-        mgr.mergeIntoConfig(info.createDef());
+        SnmpConfigManager.mergeIntoConfig(config, info.createDef());
         
 //        String config = SnmpPeerFactory.marshallConfig();
 //        System.err.println(config);
         
         
-        assertEquals(1, mgr.getConfig().getDefinitionCount());
+        assertEquals(1, config.getDefinitionCount());
         
-        assertEquals("192.168.1.10", mgr.getConfig().getDefinition(0).getRange(0).getBegin());
-        assertEquals("192.168.1.40", mgr.getConfig().getDefinition(0).getRange(0).getEnd());
+        assertEquals("192.168.1.10", config.getDefinition(0).getRange(0).getBegin());
+        assertEquals("192.168.1.40", config.getDefinition(0).getRange(0).getEnd());
         
         
     }
@@ -592,14 +592,14 @@ public class SnmpEventInfoTest extends TestCase {
         "";
 
         SnmpPeerFactory.setInstance(new SnmpPeerFactory(new ByteArrayResource(snmpConfigXml.getBytes())));
-        SnmpConfigManager mgr = new SnmpConfigManager(SnmpPeerFactory.getSnmpConfig());
+        SnmpConfig config = SnmpPeerFactory.getSnmpConfig();
         
         SnmpEventInfo info = new SnmpEventInfo();
         info.setVersion("v1");
         info.setFirstIPAddress("192.168.0.6");
         
-        MergeableDefinition configDef = new MergeableDefinition(SnmpPeerFactory.getSnmpConfig().getDefinition(0));
-        MergeableDefinition matchingDef = mgr.findDefMatchingAttributes(info.createDef());
+        MergeableDefinition configDef = new MergeableDefinition(config.getDefinition(0));
+        MergeableDefinition matchingDef = SnmpConfigManager.findDefMatchingAttributes(config, info.createDef());
         assertNull(matchingDef);
         assertTrue(configDef.hasMatchingSpecific(info.getFirstIPAddress()));
         assertEquals(2, configDef.getConfigDef().getSpecificCount());
@@ -607,11 +607,11 @@ public class SnmpEventInfoTest extends TestCase {
         assertNull(configDef.getConfigDef().getReadCommunity());
         assertEquals("v2c", configDef.getConfigDef().getVersion());
         
-        mgr.mergeIntoConfig(info.createDef());
+        SnmpConfigManager.mergeIntoConfig(config, info.createDef());
 //      String config = SnmpPeerFactory.marshallConfig();
 //      System.err.println(config);
         
-        matchingDef = mgr.findDefMatchingAttributes(info.createDef());
+        matchingDef = SnmpConfigManager.findDefMatchingAttributes(config, info.createDef());
         assertNotNull(matchingDef);
         assertFalse(configDef.hasMatchingSpecific(info.getFirstIPAddress()));
         assertEquals(1, configDef.getConfigDef().getSpecificCount());
@@ -639,7 +639,7 @@ public class SnmpEventInfoTest extends TestCase {
 
         MergeableDefinition def;
         
-        SnmpConfigManager mgr = new SnmpConfigManager(SnmpPeerFactory.getSnmpConfig());
+        SnmpConfig config = SnmpPeerFactory.getSnmpConfig();
         
         SnmpEventInfo info = new SnmpEventInfo();
         
@@ -647,17 +647,17 @@ public class SnmpEventInfoTest extends TestCase {
         assertEquals(6, SnmpConfig.getDefinitionCount());
         
         info.setCommunityString("opennmsrules2");
-        def = mgr.findDefMatchingAttributes(info.createDef());
+        def = SnmpConfigManager.findDefMatchingAttributes(config, info.createDef());
         assertNotNull(def);
         assertEquals(9, def.getConfigDef().getRangeCount());
         
         //do bunch more...
         
-        mgr.optimizeAllDefs();
+        SnmpConfigManager.optimizeAllDefs(config);
 //      String config = SnmpPeerFactory.marshallConfig();
 //      System.err.println(config);
         
-        def = mgr.findDefMatchingAttributes(info.createDef());
+        def = SnmpConfigManager.findDefMatchingAttributes(config, info.createDef());
         assertNotNull(def);
         assertEquals(2, def.getConfigDef().getRangeCount());
         

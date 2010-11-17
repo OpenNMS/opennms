@@ -36,6 +36,7 @@
 package org.opennms.netmgt.config;
 
 import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertTrue;
 
 import java.io.InputStream;
 import java.net.URL;
@@ -58,11 +59,23 @@ public class DiscoveryConfigFactoryTest {
         final long timeout = 100;
         final int retries = 1;
         DiscoveryConfigFactory.addToSpecificsFromURL(specifics, in.toString(), timeout, retries);
-        assertEquals(4, specifics.size());
+        assertEquals(7, specifics.size());
         assertEquals("127.0.0.1", specifics.get(0).getAddress().getHostAddress());
         assertEquals("10.1.1.1", specifics.get(1).getAddress().getHostAddress());
         assertEquals("10.2.1.1", specifics.get(2).getAddress().getHostAddress());
         assertEquals("8.8.8.8", specifics.get(3).getAddress().getHostAddress());
+        assertTrue(
+            "fe80:0:0:0:ffff:eeee:dddd:cccc".equals(specifics.get(4).getAddress().getHostAddress()) ||
+            "fe80:0:0:0:ffff:eeee:dddd:cccc%0".equals(specifics.get(4).getAddress().getHostAddress())
+        );
+        assertTrue(
+            "0:0:0:0:0:0:0:1".equals(specifics.get(5).getAddress().getHostAddress()) ||
+            "0:0:0:0:0:0:0:1%0".equals(specifics.get(5).getAddress().getHostAddress())
+        );
+        assertTrue(
+            "fe80:0:0:0:ffff:eeee:dddd:cccd".equals(specifics.get(6).getAddress().getHostAddress()) ||
+            "fe80:0:0:0:ffff:eeee:dddd:cccd%0".equals(specifics.get(6).getAddress().getHostAddress())
+        );
     }
     
     @Test
@@ -74,10 +87,22 @@ public class DiscoveryConfigFactoryTest {
         final long timeout = 100;
         final int retries = 1;
         DiscoveryConfigFactory.addToSpecificsFromURL(specifics, in, timeout, retries);
-        assertEquals(4, specifics.size());
+        assertEquals(7, specifics.size());
         assertEquals("127.0.0.1", specifics.get(0).getAddress().getHostAddress());
         assertEquals("10.1.1.1", specifics.get(1).getAddress().getHostAddress());
         assertEquals("10.2.1.1", specifics.get(2).getAddress().getHostAddress());
         assertEquals("8.8.8.8", specifics.get(3).getAddress().getHostAddress());
+        assertTrue(
+            "fe80:0:0:0:ffff:eeee:dddd:cccc".equals(specifics.get(4).getAddress().getHostAddress()) ||
+            "fe80:0:0:0:ffff:eeee:dddd:cccc%0".equals(specifics.get(4).getAddress().getHostAddress())
+        );
+        assertTrue(
+            "0:0:0:0:0:0:0:1".equals(specifics.get(5).getAddress().getHostAddress()) ||
+            "0:0:0:0:0:0:0:1%0".equals(specifics.get(5).getAddress().getHostAddress())
+        );
+        assertTrue(
+            "fe80:0:0:0:ffff:eeee:dddd:cccd".equals(specifics.get(6).getAddress().getHostAddress()) ||
+            "fe80:0:0:0:ffff:eeee:dddd:cccd%0".equals(specifics.get(6).getAddress().getHostAddress())
+        );
     }
 }

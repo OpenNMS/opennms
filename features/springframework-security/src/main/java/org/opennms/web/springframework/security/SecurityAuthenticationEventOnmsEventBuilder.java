@@ -62,7 +62,7 @@ import org.springframework.web.context.support.ServletRequestHandledEvent;
  * @author ranger
  * @version $Id: $
  */
-public class SecurityAuthenticationEventOnmsEventBuilder implements ApplicationListener, InitializingBean {
+public class SecurityAuthenticationEventOnmsEventBuilder implements ApplicationListener<ApplicationEvent>, InitializingBean {
     /** Constant <code>SUCCESS_UEI="uei.opennms.org/internal/authentication"{trunked}</code> */
     public static final String SUCCESS_UEI = "uei.opennms.org/internal/authentication/successfulLogin";
     /** Constant <code>FAILURE_UEI="uei.opennms.org/internal/authentication"{trunked}</code> */

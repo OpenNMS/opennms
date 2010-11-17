@@ -55,6 +55,21 @@
 
 	<!-- Start 1.8 -->
 
+	<section id="introduction-1.8.6">
+		<title>Release 1.8.6</title>
+
+		<para>
+			Release 1.8.6 is the latest in the 1.8 series of production-ready OpenNMS releases.
+		</para>
+		<para>
+			Since 1.8.5, <ulink url="http://issues.opennms.org/secure/IssueNavigator.jspa?reset=true&amp;jqlQuery=project+%3D+NMS+AND+fixVersion+%3D+%221.8.6%22">a
+			number of bug fixes and enhancements</ulink> were added, including SNMP and Linkd fixes, ACL fixes, and more.
+		</para>
+		<para>
+			The codename for 1.8.6 is <emphasis>King Rail</emphasis>
+		</para>
+	</section>
+
 	<section id="introduction-1.8.5">
 		<title>Release 1.8.5</title>
 

@@ -92,7 +92,7 @@ public class XmpCollector implements ServiceCollector {
     int xmpPort;
     int timeout;  /* millseconds */
     int retries;
-    Set setOfNodes;
+    Set<CollectionAgent> setOfNodes;
     SocketOpts sockopts;
     String authenUser;
 
@@ -106,7 +106,7 @@ public class XmpCollector implements ServiceCollector {
 
         // initialize collections and containers for storing
         // list of systems to query 
-        setOfNodes = new HashSet();
+        setOfNodes = new HashSet<CollectionAgent>();
 
         // defaults
         xmpPort = Xmp.XMP_PORT;
@@ -419,7 +419,7 @@ public class XmpCollector implements ServiceCollector {
 
         // orphan existing set thus making them available
         // for garbage collection 
-        setOfNodes = new HashSet();
+        setOfNodes = new HashSet<CollectionAgent>();
 
         return;
     }
@@ -564,7 +564,6 @@ public class XmpCollector implements ServiceCollector {
 
             // get name of group and MIB objects in group
             String groupName = group.getName();
-            String groupResourceType = group.getResourceType();
             MibObj[] mibObjects = group.getMibObj();
             XmpVar[] vars = new XmpVar[mibObjects.length];
 
@@ -639,7 +638,7 @@ public class XmpCollector implements ServiceCollector {
         log().debug("XMP getRrdRepository called for "+collectionName);
 
         // return the Rrd that I initialized but
-        // I dont have to put data in it; initialize
+        // I don't have to put data in it; initialize
         // it with the defaults, as example, that SNMP uses
         // in datacollection-config.xml 
 

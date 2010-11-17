@@ -39,6 +39,7 @@ import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
 import org.opennms.web.svclayer.DatabaseReportListService;
+import org.opennms.web.svclayer.support.DatabaseReportDescription;
 
 import org.springframework.beans.support.PagedListHolder;
 import org.springframework.web.bind.ServletRequestUtils;
@@ -62,7 +63,7 @@ public class DatabaseReportListController extends AbstractController {
     protected ModelAndView handleRequestInternal(HttpServletRequest request,
             HttpServletResponse response) throws Exception {
         ModelAndView modelAndView = new ModelAndView("report/database/list"); 
-        PagedListHolder pagedListHolder = new PagedListHolder(m_reportListService.getAll());
+        PagedListHolder<DatabaseReportDescription> pagedListHolder = new PagedListHolder<DatabaseReportDescription>(m_reportListService.getAll());
         pagedListHolder.setPageSize(m_pageSize);
         int page = ServletRequestUtils.getIntParameter(request, "p", 0);
         pagedListHolder.setPage(page); 

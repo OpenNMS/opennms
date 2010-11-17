@@ -293,7 +293,7 @@ public class CategoryModel extends Object {
      * @return a {@link java.util.Map} object.
      * @throws java.sql.SQLException if any.
      */
-    public Map<Integer, Double> getNodeAvailability(Set nodeIds) throws SQLException {
+    public Map<Integer, Double> getNodeAvailability(Set<Integer> nodeIds) throws SQLException {
         Calendar cal = new GregorianCalendar();
         Date now = cal.getTime();
         cal.add(Calendar.DATE, -1);
@@ -312,7 +312,7 @@ public class CategoryModel extends Object {
      * @return a {@link java.util.Map} object.
      * @throws java.sql.SQLException if any.
      */
-    public Map<Integer, Double> getNodeAvailability(Set nodeIds, Date start, Date end) throws SQLException {
+    public Map<Integer, Double> getNodeAvailability(Set<Integer> nodeIds, Date start, Date end) throws SQLException {
     	if(nodeIds==null || nodeIds.size()==0){
     		throw new IllegalArgumentException("Cannot take nodeIds null or with length 0.");
     	}
@@ -337,7 +337,7 @@ public class CategoryModel extends Object {
             Connection conn = Vault.getDbConnection();
             d.watch(conn);
         	StringBuffer sb = new StringBuffer("select nodeid, getManagePercentAvailNodeWindow(nodeid, ?, ?)  from node where nodeid in (");
-        	Iterator it = nodeIds.iterator();
+        	Iterator<Integer> it = nodeIds.iterator();
         	while (it.hasNext()){
         		sb.append(it.next());
         		if (it.hasNext()) {

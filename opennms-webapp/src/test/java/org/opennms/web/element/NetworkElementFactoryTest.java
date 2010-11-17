@@ -57,6 +57,7 @@ import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
 import org.springframework.test.context.support.DependencyInjectionTestExecutionListener;
 import org.springframework.test.context.support.DirtiesContextTestExecutionListener;
 import org.springframework.test.context.transaction.TransactionalTestExecutionListener;
+import org.springframework.transaction.annotation.Transactional;
 
 /**
  * 
@@ -136,5 +137,38 @@ public class NetworkElementFactoryTest  {
 
         Node[] nodes = NetworkElementFactory.getInstance(m_appContext).getNodesWithIpLike("*.*.*.*");
         assertEquals("node count", 1, nodes.length);
+    }
+    
+    @Test
+    @Transactional
+    public void testGetActiveInterfacesOnNode() {
+    	Interface[] intfs = NetworkElementFactory.getInstance(m_appContext).getActiveInterfacesOnNode(1);
+    	assertEquals("active interfaces", 3, intfs.length);
+    	
+    }
+    
+    @Test
+    public void testGetDataLinksOnInterface() {
+        DataLinkInterface[] dlis = NetworkElementFactory.getInstance(m_appContext).getDataLinksOnInterface(1, 1);
+        assertEquals(4, dlis.length);
+        
+        DataLinkInterface[] dlis2 = NetworkElementFactory.getInstance(m_appContext).getDataLinksOnInterface(1, 9);
+        assertEquals(0, dlis2.length);
+    }
+    
+    @Test
+    public void testGetDataLinksOnNode() throws SQLException {
+        DataLinkInterface[] dlis = NetworkElementFactory.getInstance(m_appContext).getDataLinksOnNode(1);
+        assertEquals(5, dlis.length);
+        
+        DataLinkInterface[] dlis2 = NetworkElementFactory.getInstance(m_appContext).getDataLinksOnNode(100);
+        assertEquals(0, dlis2.length);
+    }
+    
+    @Test
+    public void testGetServicesOnInterface() {
+        m_jdbcTemplate.update("UPDATE ifservices SET status='A' WHERE id=2;");
+        Service[] svc = NetworkElementFactory.getInstance(m_appContext).getServicesOnInterface(1, "192.168.1.1");
+        assertEquals(1, svc.length);
     }
 }

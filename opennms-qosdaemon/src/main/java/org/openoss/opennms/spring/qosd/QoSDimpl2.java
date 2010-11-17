@@ -55,7 +55,6 @@ import java.util.Properties;
 import javax.oss.fm.monitor.AlarmKey;
 import javax.oss.fm.monitor.AlarmValue;
 
-import org.apache.log4j.Logger;
 import org.exolab.castor.xml.MarshalException;
 import org.exolab.castor.xml.ValidationException;
 import org.opennms.core.fiber.PausableFiber;

@@ -90,9 +90,8 @@ public abstract class DestinationPathManager {
      * @throws org.exolab.castor.xml.MarshalException if any.
      * @throws org.exolab.castor.xml.ValidationException if any.
      */
-    @Deprecated
     protected void parseXML(Reader reader) throws MarshalException, ValidationException {
-        allPaths = CastorUtils.unmarshal(DestinationPaths.class, reader);
+        allPaths = CastorUtils.unmarshal(DestinationPaths.class, reader, CastorUtils.PRESERVE_WHITESPACE);
         oldHeader = allPaths.getHeader();
         initializeDestinationPaths();
     }

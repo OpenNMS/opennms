@@ -220,7 +220,7 @@ abstract public class LinkdConfigManager implements LinkdConfig {
  
         getReadLock().lock();
         try {
-            long addr = InetAddressUtils.toIpAddrLong(iface);
+            byte[] addr = InetAddressUtils.toIpAddrBytes(iface);
     
             // if there are NO include ranges then treat act as if the user include
             // the range 0.0.0.0 - 255.255.255.255
@@ -228,8 +228,8 @@ abstract public class LinkdConfigManager implements LinkdConfig {
     
             // Specific wins; if we find one, return immediately.
             for (final String spec : pkg.getSpecificCollection()) {
-                final long speca = InetAddressUtils.toIpAddrLong(spec);
-                if (speca == addr) {
+                final byte[] speca = InetAddressUtils.toIpAddrBytes(spec);
+                if (new ByteArrayComparator().compare(addr, speca) == 0) {
                     has_specific = true;
                     break;
                 }
@@ -244,14 +244,7 @@ abstract public class LinkdConfigManager implements LinkdConfig {
     
             if (!has_range_include) {
                 for (final IncludeRange rng : pkg.getIncludeRangeCollection()) {
-                    final long start = InetAddressUtils.toIpAddrLong(rng.getBegin());
-                    if (addr > start) {
-                        final long end = InetAddressUtils.toIpAddrLong(rng.getEnd());
-                        if (addr <= end) {
-                            has_range_include = true;
-                            break;
-                        }
-                    } else if (addr == start) {
+                    if (InetAddressUtils.isInetAddressInRange(iface, rng.getBegin(), rng.getEnd())) {
                         has_range_include = true;
                         break;
                     }
@@ -259,14 +252,7 @@ abstract public class LinkdConfigManager implements LinkdConfig {
             }
     
             for (final ExcludeRange rng : pkg.getExcludeRangeCollection()) {
-                long start = InetAddressUtils.toIpAddrLong(rng.getBegin());
-                if (addr > start) {
-                    long end = InetAddressUtils.toIpAddrLong(rng.getEnd());
-                    if (addr <= end) {
-                        has_range_exclude = true;
-                        break;
-                    }
-                } else if (addr == start) {
+                if (InetAddressUtils.isInetAddressInRange(iface, rng.getBegin(), rng.getEnd())) {
                     has_range_exclude = true;
                     break;
                 }

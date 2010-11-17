@@ -48,7 +48,7 @@ import com.google.gwt.user.client.ui.ListBox;
  * @version $Id: $
  * @since 1.8.1
  */
-public class ListBoxCallback implements AsyncCallback {
+public class ListBoxCallback implements AsyncCallback<String[][]> {
     private DashletLoader m_dashletLoader;
     private int m_direction = 1;
     private ListBox m_listBox;
@@ -155,8 +155,8 @@ public class ListBoxCallback implements AsyncCallback {
     }
 
     /** {@inheritDoc} */
-    public void onSuccess(Object result) {
-        onDataLoaded((String[][]) result);
+    public void onSuccess(String[][] result) {
+        onDataLoaded(result);
     }
 
 }

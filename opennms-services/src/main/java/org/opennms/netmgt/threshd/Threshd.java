@@ -47,7 +47,6 @@ import java.sql.SQLException;
 import java.util.Collections;
 import java.util.Enumeration;
 import java.util.HashMap;
-import java.util.Iterator;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
@@ -224,9 +223,9 @@ public final class Threshd extends AbstractServiceDaemon {
     }
 
     private void initializeThresholders() {
-        Enumeration eiter = m_threshdConfig.getConfiguration().enumerateThresholder();
+        Enumeration<Thresholder> eiter = m_threshdConfig.getConfiguration().enumerateThresholder();
         while (eiter.hasMoreElements()) {
-            Thresholder thresholder = (Thresholder) eiter.nextElement();
+            Thresholder thresholder = eiter.nextElement();
             try {
                 if (log().isDebugEnabled()) {
                     log().debug("start: Loading thresholder " + thresholder.getService() + ", classname " + thresholder.getClassName());
@@ -395,14 +394,14 @@ public final class Threshd extends AbstractServiceDaemon {
      *            otheriwse
      */
     void scheduleService(int nodeId, String ipAddress, String svcName, boolean existing) {
-        Enumeration epkgs = m_threshdConfig.getConfiguration().enumeratePackage();
+        Enumeration<org.opennms.netmgt.config.threshd.Package> epkgs = m_threshdConfig.getConfiguration().enumeratePackage();
         
         // Compare interface/service pair against each threshd package
         // For each match, create new ThresholdableService object and
         // schedule it for collection
         //
         while (epkgs.hasMoreElements()) {
-            org.opennms.netmgt.config.threshd.Package pkg = (org.opennms.netmgt.config.threshd.Package) epkgs.nextElement();
+            org.opennms.netmgt.config.threshd.Package pkg = epkgs.nextElement();
 
             // Make certain the the current service is in the package
             // and enabled!
@@ -536,9 +535,7 @@ public final class Threshd extends AbstractServiceDaemon {
      * <p>refreshServicePackages</p>
      */
     public void refreshServicePackages() {
-	Iterator serviceIterator=m_thresholdableServices.iterator();
-	while(serviceIterator.hasNext()) {
-		ThresholdableService thisService=(ThresholdableService)serviceIterator.next();
+	for (ThresholdableService thisService : m_thresholdableServices) {
 		thisService.refreshPackage();
 	}
     }

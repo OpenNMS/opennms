@@ -105,6 +105,7 @@
 
             <table class="normal" align="center">
               <c:set var="graphNum" value="0"/>
+              <c:set var="showFootnote1" value="false"/>
 
               <%-- Loop over each row in the table --%>
               <c:forEach begin="0" end="${(fn:length(resultSets) / graphsPerLine)}">
@@ -138,7 +139,15 @@
                                 <br />
                               </c:if>
                           
-                              ${resultSet.resource.resourceType.label}:
+                              <c:choose>
+                                <c:when test="${fn:contains(resultSet.resource.label,'(*)')}">
+                                  <c:set var="showFootnote1" value="true"/>
+                                  Resource:
+                                </c:when>
+                                <c:otherwise>
+                                  ${resultSet.resource.resourceType.label}:
+                                </c:otherwise>
+                              </c:choose>
                               <c:choose>
                                 <c:when test="${(!empty resultSet.resource.link) && loggedIn}">
                                   <a href="<c:url value='${resultSet.resource.link}'/>">${resultSet.resource.label}</a>
@@ -262,5 +271,9 @@
 
   </c:otherwise>
 </c:choose>
+
+<c:if test="${showFootnote1 == true}">
+  <jsp:include page="/includes/footnote1.jsp" flush="false" />
+</c:if>
 
 <jsp:include page="/includes/footer.jsp" flush="false"/>

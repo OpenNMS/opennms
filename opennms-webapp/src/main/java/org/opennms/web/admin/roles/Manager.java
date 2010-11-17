@@ -39,7 +39,6 @@ import java.io.IOException;
 import java.util.ArrayList;
 import java.util.BitSet;
 import java.util.Collection;
-import java.util.Collections;
 import java.util.Date;
 import java.util.List;
 
@@ -81,7 +80,7 @@ public class Manager implements WebRoleManager, WebUserManager, WebGroupManager 
 
         public InvalidGroup(String name) {
             super(name);
-            super.setUsers(Collections.EMPTY_LIST);
+            super.setUsers(new ArrayList<WebUser>());
         }
         
         public String toString() {

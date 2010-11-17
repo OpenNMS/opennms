@@ -40,22 +40,23 @@ import java.sql.SQLException;
 import javax.sql.DataSource;
 
 import org.apache.commons.lang.StringUtils;
-import org.opennms.core.utils.InetAddressUtils;
 import org.opennms.netmgt.EventConstants;
+import org.opennms.netmgt.config.SnmpEventInfo;
+import org.opennms.netmgt.config.SnmpInterfacePollerConfig;
+import org.opennms.netmgt.daemon.AbstractServiceDaemon;
+import org.opennms.netmgt.model.discovery.IPAddress;
+import org.opennms.netmgt.model.discovery.IPAddressRange;
 import org.opennms.netmgt.model.events.annotations.EventHandler;
 import org.opennms.netmgt.model.events.annotations.EventListener;
 import org.opennms.netmgt.scheduler.LegacyScheduler;
 import org.opennms.netmgt.scheduler.Scheduler;
+import org.opennms.netmgt.snmpinterfacepoller.pollable.PollableInterface;
 import org.opennms.netmgt.snmpinterfacepoller.pollable.PollableNetwork;
 import org.opennms.netmgt.snmpinterfacepoller.pollable.PollableSnmpInterface;
-import org.opennms.netmgt.snmpinterfacepoller.pollable.PollableInterface;
 import org.opennms.netmgt.utils.Querier;
 import org.opennms.netmgt.utils.Updater;
 import org.opennms.netmgt.xml.event.Event;
 import org.opennms.netmgt.xml.event.Parm;
-import org.opennms.netmgt.config.SnmpEventInfo;
-import org.opennms.netmgt.config.SnmpInterfacePollerConfig;
-import org.opennms.netmgt.daemon.AbstractServiceDaemon;
 
 /**
  * SnmpPoller daemon class
@@ -391,19 +392,17 @@ public class SnmpPoller extends AbstractServiceDaemon {
             log().error("reloadSnmpConfig: ",e);
         }
         
-        for (long ipLong=info.getFirst(); ipLong <= info.getLast();ipLong++) {
-            String ipaddr = InetAddressUtils.getInetAddress(ipLong).getHostAddress();
+        IPAddressRange range = new IPAddressRange(info.getFirstIPAddress(), info.getLastIPAddress());
+        for (IPAddress ipaddr : range) {
             log().debug("reloadSnmpConfig: found ipaddr: " + ipaddr);
-            if (getNetwork().hasPollableInterface(ipaddr)) {
+            if (getNetwork().hasPollableInterface(ipaddr.toString())) {
                 log().debug("reloadSnmpConfig: recreating the Interface to poll: " + ipaddr);
-                getNetwork().delete(ipaddr);
-                scheduleNewSnmpInterface(ipaddr);
+                getNetwork().delete(ipaddr.toString());
+                scheduleNewSnmpInterface(ipaddr.toString());
             } else {
-                log().debug("reloadSnmpConfig: no Interface found for ipaddr: " + ipaddr);               
+                log().debug("reloadSnmpConfig: no Interface found for ipaddr: " + ipaddr);
             }
-                
         }
-
     }
     
     /**

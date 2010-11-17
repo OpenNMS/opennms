@@ -37,6 +37,7 @@ import java.util.Collection;
 import java.util.Iterator;
 
 import org.opennms.netmgt.model.RrdRepository;
+import org.opennms.netmgt.utils.NodeLabel;
 
 
 /**
@@ -88,9 +89,20 @@ public class AliasedResource extends SnmpCollectionResource {
      * @return a {@link java.lang.String} object.
      */
     public String getDomain() {
+        if ("nodeid".equalsIgnoreCase(m_domain)) {
+            return Integer.toString(getIfInfo().getNodeId());
+        } else if ("nodelabel".equalsIgnoreCase(m_domain)) {
+            try {
+                return NodeLabel.retrieveLabel(getIfInfo().getNodeId()).getLabel();
+            } 
+            catch (Exception e) {
+                return "nodeid-" + Integer.toString(getIfInfo().getNodeId());
+            }
+        } else {
         return m_domain;
+        }
     }
-
+ 
     /** {@inheritDoc} */
     public File getResourceDir(final RrdRepository repository) {
         File domainDir = new File(repository.getRrdBaseDir(), getDomain());
