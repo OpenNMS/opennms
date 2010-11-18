@@ -7,6 +7,7 @@ create or replace function iplike(i_ipaddress text, i_rule text) returns boolean
     c_addrtemp text;
     c_rulework text;
     c_ruletemp text;
+    c_scopeid text;
 
     i integer;
 
@@ -67,6 +68,11 @@ create or replace function iplike(i_ipaddress text, i_rule text) returns boolean
                 c_addrtemp = substr(c_addrwork, 0, strpos(c_addrwork, ':'));
             else 
                 c_addrtemp = c_addrwork;
+            end if;
+            if (strpos(c_addrtemp, '%') > 0) then
+                -- Strip off the scope ID for now
+                c_scopeid = substr(c_addrtemp, strpos(c_addrtemp, '%') + 1);
+                c_addrtemp = substr(c_addrtemp, 0, strpos(c_addrtemp, '%'));
             end if;
             while length(c_addrtemp) < 4 loop
                 c_addrtemp := '0' || c_addrtemp;
