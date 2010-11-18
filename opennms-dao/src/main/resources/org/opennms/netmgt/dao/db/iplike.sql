@@ -1,143 +1,212 @@
-create or replace function iplike(text, text) returns boolean as '
+create or replace function iplike(i_ipaddress text, i_rule text) returns boolean as $$
   declare
-	i_ipaddress	alias for $1;
-	i_rule		alias for $2;
-	c_i1	integer;
-	c_i2	integer;
-	c_i3	integer;
-	c_i4	integer;
-	c_r1	text;
-	c_r2	text;
-	c_r3	text;
-	c_r4	text;
+    c_i integer;
+    c_r text;
 
-	c_work text;
+    c_addrwork text;
+    c_addrtemp text;
+    c_rulework text;
+    c_ruletemp text;
+
+    i integer;
 
   begin
-	if i_ipaddress is NULL or i_ipaddress is null then
-		return ''f'';
-	end if;
+    if i_ipaddress is NULL or i_ipaddress is null then
+        return 'f';
+    end if;
 
-	if i_rule = ''*.*.*.*'' then
-		return ''t'';
-	end if;
+    if i_rule = '*.*.*.*' or i_rule = '*:*:*:*:*:*:*:*' then
+        return 't';
+    end if;
 
-	-- First, strip apart the IP address into octets, and
-	-- verify that they are legitimate (0-255)
-	if i_ipaddress ~ ''^[0-9]+\.[0-9]+\.[0-9]+\.[0-9]+$'' then
-		c_work := i_ipaddress;
+    -- First, strip apart the IP address into octets, and
+    -- verify that they are legitimate (0-255)
+    --
+    -- IPv4
+    if i_ipaddress ~ E'^[0-9]+\.[0-9]+\.[0-9]+\.[0-9]+$' and i_rule ~ E'^[0-9*,-]+\.[0-9*,-]+\.[0-9*,-]+\.[0-9*,-]+$' then
+        c_addrwork := i_ipaddress;
+        c_rulework := i_rule;
 
-		c_i1 := to_number(substr(c_work, 0, strpos(c_work, ''.'')), ''999'');
-		if c_i1 > 255 then
-			return ''f'';
-		end if;
-		c_work := ltrim(ltrim(c_work, ''0123456789''), ''.'');
+        i := 0;
+        while i < 4 loop
+            if (strpos(c_addrwork, '.') > 0) then
+                c_i := to_number(substr(c_addrwork, 0, strpos(c_addrwork, '.')), '999');
+            else 
+                c_i := to_number(c_addrwork, '999');
+            end if;
 
-		c_i2 := to_number(substr(c_work, 0, strpos(c_work, ''.'')), ''999'');
-		if c_i2 > 255 then
-			return ''f'';
-		end if;
-		c_work := ltrim(ltrim(c_work, ''0123456789''), ''.'');
+            if c_i > 255 then
+                return 'f';
+            end if;
+            c_addrwork := ltrim(ltrim(c_addrwork, '0123456789'), '.');
 
-		c_i3 := to_number(substr(c_work, 0, strpos(c_work, ''.'')), ''999'');
-		if c_i3 > 255 then
-			return ''f'';
-		end if;
-		c_work := ltrim(ltrim(c_work, ''0123456789''), ''.'');
+            if (strpos(c_rulework, '.') > 0) then
+                c_r := substr(c_rulework, 0, strpos(c_rulework, '.'));
+            else
+                c_r := c_rulework;
+            end if;
 
-		c_i4 := to_number(c_work, ''999'');
-		if c_i4 > 255 then
-			return ''f'';
-		end if;
-	else
-		return ''f'';   -- IP address was not even nearly legit
-	end if;
+            if not check_rule(c_i, c_r) then
+                return 'f';
+            end if;
 
-	-- Split apart the rule set
-	if i_rule ~ ''^[0-9*,-]+\.[0-9*,-]+\.[0-9*,-]+\.[0-9*,-]+$'' then
-		c_work := i_rule;
-		c_r1 := substr(c_work, 0, strpos(c_work, ''.''));
+            c_rulework := ltrim(ltrim(c_rulework, '0123456789,-*'), '.');
 
-		if not check_rule(c_i1, c_r1) then
-			return ''f'';
-		end if;
+            i := i + 1;
+        end loop;
+    -- IPv6
+    elsif i_ipaddress ~ E'^[0-9a-f]+:[0-9a-f]+:[0-9a-f]+:[0-9a-f]+:[0-9a-f]+:[0-9a-f]+:[0-9a-f]+:[0-9a-f]+(%[0-9]+)?$' and i_rule ~ E'^[0-9a-f*,-]+:[0-9a-f*,-]+:[0-9a-f*,-]+:[0-9a-f*,-]+:[0-9a-f*,-]+:[0-9a-f*,-]+:[0-9a-f*,-]+:[0-9a-f*,-]+(%[0-9*,-]+)?$' then
+        c_addrwork := i_ipaddress;
+        c_rulework := i_rule;
 
-		c_work := ltrim(ltrim(c_work, ''0123456789,-*''), ''.'');
+        -- TODO Add support for scope identifiers
 
-		c_r2 := substr(c_work, 0, strpos(c_work, ''.''));
-	
-		if not check_rule(c_i2, c_r2) then
-			return ''f'';
-		end if;
+        i := 0;
+        while i < 8 loop
+            if (strpos(c_addrwork, ':') > 0) then
+                c_addrtemp = substr(c_addrwork, 0, strpos(c_addrwork, ':'));
+            else 
+                c_addrtemp = c_addrwork;
+            end if;
+            while length(c_addrtemp) < 4 loop
+                c_addrtemp := '0' || c_addrtemp;
+            end loop;
+            c_i := cast(cast('x' || cast(c_addrtemp as text) as bit(16)) as integer);
 
-		c_work := ltrim(ltrim(c_work, ''0123456789,-*''), ''.'');
-		c_r3 := substr(c_work, 0, strpos(c_work, ''.''));
-	
-		if not check_rule(c_i3, c_r3) then
-			return ''f'';
-		end if;
+            -- Max 16-bit integer value
+            if c_i > 65535 then
+                return 'f';
+            end if;
+            c_addrwork := ltrim(ltrim(c_addrwork, '0123456789abcdef'), ':');
 
-		c_work := ltrim(ltrim(c_work, ''0123456789,-*''), ''.'');
-		c_r4 := c_work;
+            if (strpos(c_rulework, ':') > 0) then
+                c_r := substr(c_rulework, 0, strpos(c_rulework, ':'));
+            else
+                c_r := c_rulework;
+            end if;
 
-		if not check_rule(c_i4, c_r4) then
-			return ''f'';
-		end if;
-	else
-		return ''f'';
-	end if;	
+            if not check_hex_rule(c_i, c_r) then
+                return 'f';
+            end if;
 
-  return ''t'';
-end;' language plpgsql;
+            c_rulework := ltrim(ltrim(c_rulework, '0123456789abcdef,-*'), ':');
 
-create or replace function check_range (integer, text) returns boolean as '
+            i := i + 1;
+        end loop;
+    else
+        return 'f';
+    end if;	
+
+  return 't';
+end;
+$$ language plpgsql;
+
+create or replace function check_range (i_octet integer, i_rule text) returns boolean as $$
 declare
-	i_octet	alias for $1;
-	i_rule	alias for $2;
-	c_r1 integer;
-	c_r2 integer;
+    c_r1 integer;
+    c_r2 integer;
 begin
 
-	c_r1 := to_number(split_part(i_rule, ''-'', 1), ''999'');
-	c_r2 := to_number(split_part(i_rule, ''-'', 2), ''999'');
-	if i_octet between c_r1 and c_r2 then
-		return ''t'';
-	end if;
-	return ''f'';
-end;' language plpgsql;
+    c_r1 := to_number(split_part(i_rule, '-', 1), '999');
+    c_r2 := to_number(split_part(i_rule, '-', 2), '999');
+    if i_octet between c_r1 and c_r2 then
+        return 't';
+    end if;
+    return 'f';
+end;
+$$ language plpgsql;
 
-create or replace function check_rule (integer, text) returns boolean as '
+create or replace function check_hex_range (i_octet integer, i_rule text) returns boolean as $$
 declare
-	i_octet	alias for $1;
-	i_rule	alias for $2;
-	c_element text;
-	c_work	text;
-
+    c_temp text;
+    c_r1 integer;
+    c_r2 integer;
 begin
-	if i_rule = ''*'' then   -- * matches anything!
-		return ''t'';
-	end if;
 
-	c_work := i_rule;
-	while c_work <> '''' loop
-		raise notice ''c_work = %'',c_work;
-		if c_work ~ '','' then
-			c_element := substr(c_work, 0, strpos(c_work, '',''));
-			c_work := substr(c_work, strpos(c_work, '','')+1);
-		else
-			c_element := c_work;
-			c_work := '''';
-		end if;
+    c_temp := split_part(i_rule, '-', 1);
+    while length(c_temp) < 4 loop
+        c_temp := '0' || c_temp;
+    end loop;
+    c_r1 := cast(cast('x' || cast(c_temp as text) as bit(16)) as integer);
+    c_temp := split_part(i_rule, '-', 2);
+    while length(c_temp) < 4 loop
+        c_temp := '0' || c_temp;
+    end loop;
+    c_r2 := cast(cast('x' || cast(c_temp as text) as bit(16)) as integer);
+    if i_octet between c_r1 and c_r2 then
+        return 't';
+    end if;
+    return 'f';
+end;
+$$ language plpgsql;
 
-		if c_element ~ ''-'' then
-			if check_range(i_octet, c_element) then
-				return ''t'';
-			end if;
-		else
-			if i_octet = to_number(c_element, ''999'') then
-				return ''t'';
-			end if;
-		end if;
-	end loop;
-	return ''f'';
-end;' language plpgsql;
+create or replace function check_rule (i_octet integer, i_rule text) returns boolean as $$
+declare
+    c_element text;
+    c_work	text;
+begin
+    if i_rule = '*' then   -- * matches anything!
+        return 't';
+    end if;
+
+    c_work := i_rule;
+    while c_work <> '' loop
+        -- raise notice 'c_work = %',c_work;
+        if c_work ~ ',' then
+            c_element := substr(c_work, 0, strpos(c_work, ','));
+            c_work := substr(c_work, strpos(c_work, ',')+1);
+        else
+            c_element := c_work;
+            c_work := '';
+        end if;
+
+        if c_element ~ '-' then
+            if check_range(i_octet, c_element) then
+                return 't';
+            end if;
+        else
+            if i_octet = to_number(c_element, '99999') then
+                return 't';
+            end if;
+        end if;
+    end loop;
+    return 'f';
+end;
+$$ language plpgsql;
+
+create or replace function check_hex_rule (i_octet integer, i_rule text) returns boolean as $$
+declare
+    c_element text;
+    c_work  text;
+begin
+    if i_rule = '*' then   -- * matches anything!
+        return 't';
+    end if;
+
+    c_work := i_rule;
+    while c_work <> '' loop
+        -- raise notice 'c_work = %',c_work;
+        if c_work ~ ',' then
+            c_element := substr(c_work, 0, strpos(c_work, ','));
+            c_work := substr(c_work, strpos(c_work, ',')+1);
+        else
+            c_element := c_work;
+            c_work := '';
+        end if;
+
+        if c_element ~ '-' then
+            if check_hex_range(i_octet, c_element) then
+                return 't';
+            end if;
+        else
+            while length(c_element) < 4 loop
+                c_element := '0' || c_element;
+            end loop;
+            if i_octet = cast(cast('x' || cast(c_element as text) as bit(16)) as integer) then
+                return 't';
+            end if;
+        end if;
+    end loop;
+    return 'f';
+end;
+$$ language plpgsql;
