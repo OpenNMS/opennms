@@ -8,6 +8,7 @@ import com.google.gwt.uibinder.client.UiHandler;
 import com.google.gwt.user.client.ui.Button;
 import com.google.gwt.user.client.ui.Composite;
 import com.google.gwt.user.client.ui.ListBox;
+import com.google.gwt.user.client.ui.PopupPanel;
 import com.google.gwt.user.client.ui.TextBox;
 import com.google.gwt.user.client.ui.Widget;
 
@@ -35,8 +36,11 @@ public class AddReportPopup extends Composite {
     @UiField
     public Button cancelBtn;
     
-    public AddReportPopup() {
+    private PopupPanel m_popupPanelRef;
+    
+    public AddReportPopup(PopupPanel panel) {
         initWidget(uiBinder.createAndBindUi(this));
+        m_popupPanelRef = panel;
     }
     
     
@@ -47,7 +51,7 @@ public class AddReportPopup extends Composite {
     
     @UiHandler("cancelBtn")
     public void handleCancelReport(ClickEvent e) {
-        
+        m_popupPanelRef.hide();
     }
 
 }

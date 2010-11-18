@@ -2,9 +2,13 @@
 <ui:UiBinder xmlns:ui="urn:ui:com.google.gwt.uibinder"
 	xmlns:g="urn:import:com.google.gwt.user.client.ui">
 	<ui:style>
-		
+		.popupBackGround{
+		  background-color: white;
+		  padding: 5, 5, 5, 5;
+		}
 	</ui:style>
-	<g:HTMLPanel>
+	<g:HTMLPanel styleName="${style.popupBackGround}">
+	   <h3>Add A Report</h3>
 	   <g:Label>Report Name:</g:Label>
 	   <g:TextBox ui:field="reportNameTF"></g:TextBox>
 	   <g:Label>Report Template:</g:Label>

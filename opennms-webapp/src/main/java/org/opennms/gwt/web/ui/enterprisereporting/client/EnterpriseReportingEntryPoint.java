@@ -12,6 +12,8 @@ import com.google.gwt.user.client.ui.RootPanel;
 
 public class EnterpriseReportingEntryPoint implements EntryPoint {
 
+    protected PopupPanel m_popup = new PopupPanel();
+
     public void onModuleLoad() {
         
         NodeList<Element> elementsByTagName = RootPanel.getBodyElement().getElementsByTagName("opennms:enterprisereporting");
@@ -26,9 +28,14 @@ public class EnterpriseReportingEntryPoint implements EntryPoint {
 
                         public void onClick(ClickEvent event) {
                             // TODO Auto-generated method stub
-                            PopupPanel popup = new PopupPanel();
-                            popup.add(new AddReportPopup());
-                            popup.show();
+                            m_popup.clear();
+                            m_popup.add(new AddReportPopup(m_popup));
+                            if(!m_popup.isShowing()) {
+                                m_popup.center();
+                            }else {
+                                m_popup.show();
+                            }
+                            
                             
                         }
                         
