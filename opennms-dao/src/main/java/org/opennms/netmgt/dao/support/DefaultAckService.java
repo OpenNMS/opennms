@@ -60,12 +60,16 @@ public class DefaultAckService implements AckService {
     public void processAcks(Collection<OnmsAcknowledgment> acks) {
         log().info("processAcks: Processing "+acks.size()+" acknowledgements...");
         for (OnmsAcknowledgment ack : acks) {
-            processAck(ack);
+            try {
+				processAck(ack);
+			} catch (IllegalStateException e) {
+				log().warn("processAcks: ",e);
+			}
         }
     }
 
     /** {@inheritDoc} */
-    public void processAck(OnmsAcknowledgment ack) {
+    public void processAck(OnmsAcknowledgment ack) throws IllegalStateException {
         log().info("processAck: Searching DB for acknowledgables for ack: "+ack);
         List<Acknowledgeable> ackables = m_ackDao.findAcknowledgables(ack);
         
