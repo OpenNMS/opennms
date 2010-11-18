@@ -57,6 +57,11 @@ class RrdXportCmd extends RrdToolCmd implements RrdGraphConstants {
     private JRDataSource xport() throws IOException, RrdException {
         dproc.processData();
         long[] timestamps = dproc.getTimestamps();
+        
+        for(int i = 0; i < timestamps.length; i++) {
+            timestamps[i] = timestamps[i] - dproc.getStep();
+        }
+        
         for (XPort xport : xports) {
             xport.values = dproc.getValues(xport.name);
         }
