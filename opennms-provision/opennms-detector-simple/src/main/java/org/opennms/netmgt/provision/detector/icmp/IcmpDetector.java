@@ -91,7 +91,7 @@ public class IcmpDetector extends AbstractDetector {
             LogUtils.infof(this, "isServiceDetected: ICMP based service for address: %s is detected: %s. Received an Exception %s.", address, false, e);
         }
         
-        return false;
+        return found;
     }
 
     
