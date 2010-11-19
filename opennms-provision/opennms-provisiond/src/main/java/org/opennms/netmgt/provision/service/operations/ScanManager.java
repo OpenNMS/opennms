@@ -36,6 +36,7 @@
 // Tab Size = 8
 package org.opennms.netmgt.provision.service.operations;
 
+import java.net.Inet4Address;
 import java.net.InetAddress;
 import java.util.Set;
 import java.util.TreeSet;
@@ -139,7 +140,11 @@ public class ScanManager {
 
             Set<SnmpInstId> ipAddrs = new TreeSet<SnmpInstId>();
             for(OnmsIpInterface iface : node.getIpInterfaces()) {
-                ipAddrs.add(new SnmpInstId(iface.getIpAddress()));
+                // @ipv6
+                InetAddress addr = iface.getInetAddress();
+                if (addr instanceof Inet4Address) {
+                    ipAddrs.add(new SnmpInstId(iface.getIpAddress()));
+                }
             }
 
             m_ipAddrTable = new IpAddrTable(m_address, ipAddrs);
