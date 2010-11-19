@@ -648,8 +648,8 @@
    <oroVersion>2.0.8</oroVersion>
    <xercesVersion>2.6.2</xercesVersion>
    <gmavenVersion>1.0</gmavenVersion>
-   <jettyVersion>6.1.24</jettyVersion>
-   <jettyServletVersion>6.1.14</jettyServletVersion>
+   <jettyVersion>6.1.26</jettyVersion>
+   <jettyServletVersion>6.1.16</jettyServletVersion>
   </properties>
 
   <profiles>
