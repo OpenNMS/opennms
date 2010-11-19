@@ -3,7 +3,6 @@ package org.opennms.features.poller.remote.gwt.server.geocoding;
 import java.io.InputStream;
 import java.io.UnsupportedEncodingException;
 import java.net.URLEncoder;
-import java.util.Date;
 import java.util.List;
 
 import net.simon04.jelementtree.ElementTree;
@@ -23,12 +22,10 @@ import org.opennms.features.poller.remote.gwt.client.GWTLatLng;
  * @since 1.8.1
  */
 public class NominatimGeocoder implements Geocoder {
-	private static final String GEOCODE_URL = "http://nominatim.openstreetmap.org/search?format=xml";
+	private static final String GEOCODE_URL = "http://open.mapquestapi.com/nominatim/v1/search?format=xml";
 	private static final HttpClient m_httpClient = new DefaultHttpClient();
 	private String m_emailAddress;
 	private String m_referer = null;
-	private static final int m_rateLimit = 1000;  // wait 1000 ms
-	private static volatile Date m_lastRequest = new Date();
 
 	/**
 	 * <p>Constructor for NominatimGeocoder.</p>
@@ -56,19 +53,6 @@ public class NominatimGeocoder implements Geocoder {
 
 	/** {@inheritDoc} */
 	public GWTLatLng geocode(final String geolocation) throws GeocoderException {
-		final Date now = new Date();
-		final long difference = now.getTime() - m_lastRequest.getTime();
-		m_lastRequest = now;
-		if (difference < m_rateLimit) {
-			try {
-				LogUtils.tracef(this, "waiting %d milliseconds for the next request", difference);
-				Thread.sleep(difference);
-			} catch (InterruptedException e) {
-				LogUtils.warnf(this, e, "thread was interrupted while sleeping");
-				Thread.currentThread().interrupt();
-			}
-		}
-
 		final HttpUriRequest method = new HttpGet(getUrl(geolocation));
 		method.addHeader("User-Agent", "OpenNMS-MapquestGeocoder/1.0");
 		if (m_referer != null) {
