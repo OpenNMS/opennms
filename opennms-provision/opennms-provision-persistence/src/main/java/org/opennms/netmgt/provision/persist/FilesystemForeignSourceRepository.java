@@ -311,7 +311,7 @@ public class FilesystemForeignSourceRepository extends AbstractForeignSourceRepo
     /** {@inheritDoc} */
     public URL getRequisitionURL(String foreignSource) throws ForeignSourceRepositoryException {
         try {
-            return getOutputFileForRequisition(getRequisition(foreignSource)).toURL();
+            return getOutputFileForRequisition(getRequisition(foreignSource)).toURI().toURL();
         } catch (MalformedURLException e) {
             throw new ForeignSourceRepositoryException("an error occurred getting the requisition URL", e);
         }

@@ -92,7 +92,7 @@ public class ManageDatabaseReportController extends SimpleFormController {
         Map<String, Object> data = new HashMap<String, Object>();
         List<ReportCatalogEntry> reportCatalog = m_reportStoreService.getAll();
         Map<String, Object> formatMap = m_reportStoreService.getFormatMap();
-        PagedListHolder pagedListHolder = new PagedListHolder(reportCatalog);
+        PagedListHolder<ReportCatalogEntry> pagedListHolder = new PagedListHolder<ReportCatalogEntry>(reportCatalog);
         pagedListHolder.setPageSize(m_pageSize);
         int page = ServletRequestUtils.getIntParameter(req, "p", 0);
         pagedListHolder.setPage(page); 

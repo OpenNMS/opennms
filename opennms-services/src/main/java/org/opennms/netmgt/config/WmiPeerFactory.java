@@ -41,7 +41,6 @@ import java.io.StringWriter;
 import java.io.Writer;
 import java.net.InetAddress;
 import java.net.UnknownHostException;
-import java.util.Collection;
 import java.util.Enumeration;
 import java.util.Iterator;
 import java.util.TreeMap;
@@ -129,7 +128,7 @@ public class WmiPeerFactory extends PeerFactory {
      * @param configFile the path to the config file to load in.
      */
     private WmiPeerFactory(String configFile) throws IOException, MarshalException, ValidationException {
-        m_config = CastorUtils.unmarshal(WmiConfig.class, new FileSystemResource(configFile));
+        m_config = CastorUtils.unmarshal(WmiConfig.class, new FileSystemResource(configFile), CastorUtils.PRESERVE_WHITESPACE);
     }
 
     /**
@@ -140,7 +139,7 @@ public class WmiPeerFactory extends PeerFactory {
      * @throws org.exolab.castor.xml.ValidationException if any.
      */
     public WmiPeerFactory(InputStream stream) throws MarshalException, ValidationException {
-        m_config = CastorUtils.unmarshal(WmiConfig.class, stream);
+        m_config = CastorUtils.unmarshal(WmiConfig.class, stream, CastorUtils.PRESERVE_WHITESPACE);
     }
     
     /**
@@ -413,114 +412,6 @@ public class WmiPeerFactory extends PeerFactory {
     }
 
     /**
-     * Puts a specific IP address with associated password into
-     * the currently loaded WMI-config.xml.
-     *  Perhaps with a bit of jiggery pokery this could be pulled up into PeerFactory
-     *
-     * @param ip the IP address of a definition
-     * @param password the password for a definition
-     * @throws java.net.UnknownHostException if any.
-     * @param username a {@link java.lang.String} object.
-     * @param domain a {@link java.lang.String} object.
-     */
-    public void define(InetAddress ip, String username, String password, String domain) throws UnknownHostException {
-        ThreadCategory log = log();
-
-        // Convert IP to long so that it easily compared in range elements
-        int address = new IPv4Address(ip).getAddress();
-
-        // Copy the current definitions so that elements can be added and
-        // removed
-        Collection<Definition> definitions = m_config.getDefinitionCollection();
-
-        // First step: Find the first definition matching the read-community or
-        // create a new definition, then add the specific IP
-        Definition definition = null;
-        for (Iterator<Definition> definitionsIterator = definitions.iterator(); definitionsIterator.hasNext();) {
-            Definition currentDefinition = definitionsIterator.next();
-
-            if ((currentDefinition.getPassword() != null && currentDefinition.getPassword().equals(password))
-                || (currentDefinition.getPassword() == null && m_config.getPassword() != null && m_config.getPassword().equals(password))) {
-                if (log.isDebugEnabled())
-                    log.debug("define: Found existing definition with read-community " + password);
-                definition = currentDefinition;
-                break;
-            }
-        }
-        if (definition == null) {
-            if (log.isDebugEnabled())
-                log.debug("define: Creating new definition");
-
-            definition = new Definition();
-            definition.setPassword(password);
-            definition.setDomain(domain);
-            definition.setUsername(username);
-            definitions.add(definition);
-        }
-        definition.addSpecific(ip.getHostAddress());
-
-        // Second step: Find and remove any existing specific and range
-        // elements with matching IP among all definitions except for the
-        // definition identified in the first step
-        for (Iterator<Definition> definitionsIterator = definitions.iterator(); definitionsIterator.hasNext();) {
-            Definition currentDefinition = definitionsIterator.next();
-
-            // Ignore this definition if it was the one identified by the first step
-            if (currentDefinition == definition)
-                continue;
-
-            // Remove any specific elements that match IP
-            while (currentDefinition.removeSpecific(ip.getHostAddress())) {
-                if (log.isDebugEnabled())
-                    log.debug("define: Removed an existing specific element with IP " + ip);
-            }
-
-            // Split and replace any range elements that contain IP
-            Collection<Range> ranges = currentDefinition.getRangeCollection();
-            for (Iterator<Range> rangeIterator = ranges.iterator(); rangeIterator.hasNext();) {
-                Range range = rangeIterator.next();
-                int begin = new IPv4Address(range.getBegin()).getAddress();
-                int end = new IPv4Address(range.getEnd()).getAddress();
-                if (address >= begin && address <= end) {
-                    if (log.isDebugEnabled())
-                        log.debug("define: Splitting range element with begin " + range.getBegin() + " and end " + range.getEnd());
-
-                    if (begin == end) {
-                        rangeIterator.remove();
-                        continue;
-                    }
-
-                    if (address == begin) {
-                        range.setBegin(IPv4Address.addressToString(address + 1));
-                        continue;
-                    }
-
-                    if (address == end) {
-                        range.setEnd(IPv4Address.addressToString(address - 1));
-                        continue;
-                    }
-
-                    Range head = new Range();
-                    head.setBegin(range.getBegin());
-                    head.setEnd(IPv4Address.addressToString(address - 1));
-
-                    Range tail = new Range();
-                    tail.setBegin(IPv4Address.addressToString(address + 1));
-                    tail.setEnd(range.getEnd());
-
-                    rangeIterator.remove();
-                    ranges.add(head);
-                    ranges.add(tail);
-                }
-            }
-            currentDefinition.setRange(ranges.toArray(new Range[0]));
-        }
-
-        // Store the altered list of definitions
-        m_config.setDefinition(definitions.toArray(new Definition[0]));
-    }
-    
-    /**
      * <p>getAgentConfig</p>
      *
      * @param agentInetAddress a {@link java.net.InetAddress} object.
@@ -558,22 +449,10 @@ public class WmiPeerFactory extends PeerFactory {
             }
 
             // check the ranges
-            long lhost = InetAddressUtils.toIpAddrLong(agentConfig.getAddress());
             for (Range rng : def.getRangeCollection()) {
-                try {
-                    InetAddress begin = InetAddress.getByName(rng.getBegin());
-                    InetAddress end = InetAddress.getByName(rng.getEnd());
-
-                    long start = InetAddressUtils.toIpAddrLong(begin);
-                    long stop = InetAddressUtils.toIpAddrLong(end);
-
-                    if (start <= lhost && lhost <= stop) {
-                        setWmiAgentConfig(agentConfig, def );
-                        break DEFLOOP;
-                    }
-                } catch (UnknownHostException e) {
-                    ThreadCategory log = ThreadCategory.getInstance(getClass());
-                    log.warn("WmiPeerFactory: could not convert host(s) " + rng.getBegin() + " - " + rng.getEnd() + " to InetAddress", e);
+                if (InetAddressUtils.isInetAddressInRange(agentConfig.getAddress().getHostAddress(), rng.getBegin(), rng.getEnd())) {
+                    setWmiAgentConfig(agentConfig, def );
+                    break DEFLOOP;
                 }
             }
             

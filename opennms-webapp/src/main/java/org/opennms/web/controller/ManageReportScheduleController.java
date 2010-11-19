@@ -42,6 +42,7 @@ import javax.servlet.http.HttpServletRequest;
 
 import org.opennms.web.command.ManageReportScheduleCommand;
 import org.opennms.web.svclayer.SchedulerService;
+import org.opennms.web.svclayer.support.TriggerDescription;
 import org.springframework.beans.support.PagedListHolder;
 import org.springframework.web.bind.ServletRequestUtils;
 import org.springframework.web.servlet.ModelAndView;
@@ -87,7 +88,7 @@ public class ManageReportScheduleController extends SimpleFormController {
     @Override
     protected Map<String, Object> referenceData(HttpServletRequest req) throws Exception {
         Map<String, Object> data = new HashMap<String, Object>();
-        PagedListHolder pagedListHolder = new PagedListHolder(m_reportSchedulerService.getTriggerDescriptions());
+        PagedListHolder<TriggerDescription> pagedListHolder = new PagedListHolder<TriggerDescription>(m_reportSchedulerService.getTriggerDescriptions());
         pagedListHolder.setPageSize(m_pageSize);
         int page = ServletRequestUtils.getIntParameter(req, "p", 0);
         pagedListHolder.setPage(page); 

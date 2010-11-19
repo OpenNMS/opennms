@@ -1,22 +1,13 @@
 package org.opennms.netmgt.linkd;
 
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertNotNull;
-import static org.junit.Assert.assertTrue;
-
-import java.util.concurrent.TimeUnit;
-
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
-import org.opennms.mock.snmp.JUnitSnmpAgent;
 import org.opennms.netmgt.dao.NodeDao;
 import org.opennms.netmgt.dao.db.JUnitTemporaryDatabase;
 import org.opennms.netmgt.dao.db.OpenNMSConfigurationExecutionListener;
 import org.opennms.netmgt.dao.db.TemporaryDatabaseExecutionListener;
-import org.opennms.netmgt.dao.support.ProxySnmpAgentConfigFactory;
 import org.opennms.netmgt.model.NetworkBuilder;
-import org.opennms.netmgt.model.OnmsNode;
 import org.opennms.test.mock.MockLogAppender;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.test.context.ContextConfiguration;

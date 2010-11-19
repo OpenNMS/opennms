@@ -97,7 +97,6 @@ import org.apache.http.params.HttpParams;
 import org.apache.http.util.EntityUtils;
 import org.exolab.castor.xml.MarshalException;
 import org.exolab.castor.xml.ValidationException;
-import org.opennms.core.utils.LogUtils;
 import org.opennms.core.utils.MatchTable;
 import org.opennms.core.utils.ParameterMap;
 import org.opennms.core.utils.PropertiesUtils;

@@ -27,4 +27,6 @@
     <bean name="daoWebEventRepository" class="org.opennms.web.event.DaoWebEventRepository">
         <qualifier value="dao" />
     </bean>
+    
+    <bean id="networkElementFactory" class="org.opennms.web.element.NetworkElementFactory"/>
 </beans>

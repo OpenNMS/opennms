@@ -42,6 +42,7 @@ import java.util.Iterator;
 import java.util.LinkedList;
 import java.util.List;
 
+import org.opennms.core.utils.ByteArrayComparator;
 import org.opennms.core.utils.InetAddressUtils;
 import org.opennms.core.utils.ThreadCategory;
 import org.opennms.netmgt.config.collectd.ExcludeRange;
@@ -116,16 +117,13 @@ public class CollectdPackage {
 		return result;
 	}
 
-	boolean hasSpecific(long addr) {
-		Package pkg = getPackage();
-		boolean has_specific = false;
-		Enumeration<String> espec = pkg.enumerateSpecific();
-		while (!has_specific && espec.hasMoreElements()) {
-			long speca = InetAddressUtils.toIpAddrLong(espec.nextElement());
-			if (speca == addr)
-				has_specific = true;
-		}
-		return has_specific;
+	protected boolean hasSpecific(byte[] addr) {
+	    for (String espec : getPackage().getSpecific()) {
+	        if (new ByteArrayComparator().compare(InetAddressUtils.toIpAddrBytes(espec), addr) == 0) {
+	            return true;
+	        }
+	    }
+	    return false;
 	}
 
 	/**
@@ -134,24 +132,18 @@ public class CollectdPackage {
 	 * @param addr a long.
 	 * @return a boolean.
 	 */
-	public boolean hasIncludeRange(long addr) {
+	protected boolean hasIncludeRange(String addr) {
 		Package pkg = getPackage();
-		boolean has_range_include = pkg.getIncludeRangeCount() == 0 && pkg.getSpecificCount() == 0;
-	
-		Enumeration<IncludeRange> eincs = pkg.enumerateIncludeRange();
-		while (!has_range_include && eincs.hasMoreElements()) {
-			IncludeRange rng = eincs.nextElement();
-			long start = InetAddressUtils.toIpAddrLong(rng.getBegin());
-			if (addr > start) {
-				long end = InetAddressUtils.toIpAddrLong(rng.getEnd());
-				if (addr <= end) {
-					has_range_include = true;
-				}
-			} else if (addr == start) {
-				has_range_include = true;
-			}
+		if (pkg.getIncludeRangeCount() == 0 && pkg.getSpecificCount() == 0) {
+		    return true;
 		}
-		return has_range_include;
+
+		for (IncludeRange rng : pkg.getIncludeRange()) {
+		    if (InetAddressUtils.isInetAddressInRange(addr, rng.getBegin(), rng.getEnd())) {
+		        return true;
+		    }
+		}
+		return false;
 	}
 
 	/**
@@ -163,23 +155,13 @@ public class CollectdPackage {
 		return m_pkg.getName();
 	}
 
-	boolean hasExcludeRange(long addr, boolean has_specific) {
-		Package pkg = getPackage();
-		boolean has_range_exclude = false;
-		Enumeration<ExcludeRange> eex = pkg.enumerateExcludeRange();
-		while (!has_range_exclude && !has_specific && eex.hasMoreElements()) {
-			ExcludeRange rng = eex.nextElement();
-			long start = InetAddressUtils.toIpAddrLong(rng.getBegin());
-			if (addr > start) {
-				long end = InetAddressUtils.toIpAddrLong(rng.getEnd());
-				if (addr <= end) {
-					has_range_exclude = true;
-				}
-			} else if (addr == start) {
-				has_range_exclude = true;
-			}
-		}
-		return has_range_exclude;
+	protected boolean hasExcludeRange(String addr, boolean has_specific) {
+	    for (ExcludeRange rng : getPackage().getExcludeRange()) {
+	        if (InetAddressUtils.isInetAddressInRange(addr, rng.getBegin(), rng.getEnd())) {
+	            return true;
+	        }
+	    }
+	    return false;
 	}
 
 	/**
@@ -231,7 +213,7 @@ public class CollectdPackage {
 		return m_includeURLs;
 	}
 
-	boolean hasSpecificUrl(String iface, boolean has_specific) {
+	protected boolean hasSpecificUrl(String iface, boolean has_specific) {
 		for (Iterator<IncludeURL> it = getIncludeURLs().iterator(); it.hasNext() && !has_specific;) {
 			IncludeURL includeURL = it.next();
 			has_specific = includeURL.interfaceInUrl(iface);
@@ -264,13 +246,13 @@ public class CollectdPackage {
 		// that it is in the include range and is not excluded
 		//
 	
-		long addr = InetAddressUtils.toIpAddrLong(iface);
+		byte[] addr = InetAddressUtils.toIpAddrBytes(iface);
 	
-		boolean has_range_include = hasIncludeRange(addr);
+		boolean has_range_include = hasIncludeRange(iface);
 		boolean has_specific = hasSpecific(addr);
 	
 		has_specific = hasSpecificUrl(iface, has_specific);
-		boolean has_range_exclude = hasExcludeRange(addr, has_specific);
+		boolean has_range_exclude = hasExcludeRange(iface, has_specific);
 	
 		boolean packagePassed = has_specific
 				|| (has_range_include && !has_range_exclude);

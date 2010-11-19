@@ -174,7 +174,7 @@ abstract public class PollerConfigManager implements PollerConfig {
     private Map<String, List<String>> m_urlIPMap;
     /**
      * A mapping of the configured package to a list of IPs selected via filter
-     * rules, so as to avoid repetetive database access.
+     * rules, so as to avoid repetitive database access.
      */
     private Map<Package, List<String>> m_pkgIpMap;
     /**
@@ -537,7 +537,7 @@ abstract public class PollerConfigManager implements PollerConfig {
         boolean has_range_exclude = false;
  
         // if there are NO include ranges then treat act as if the user include
-        // the range 0.0.0.0 - 255.255.255.255
+        // the range of all valid addresses (0.0.0.0 - 255.255.255.255, ::1 - ffff:ffff:ffff:ffff:ffff:ffff:ffff:ffff)
         has_range_include = pkg.getIncludeRangeCount() == 0 && pkg.getSpecificCount() == 0;
         
         final byte[] addr = InetAddressUtils.toIpAddrBytes(iface);

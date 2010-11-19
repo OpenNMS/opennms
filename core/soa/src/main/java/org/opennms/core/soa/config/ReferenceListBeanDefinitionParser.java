@@ -51,7 +51,8 @@ import org.w3c.dom.Element;
  */
 public class ReferenceListBeanDefinitionParser extends AbstractBeanDefinitionParser {
 
-	private static final String INTERFACE_ATTR = "interface";
+    private static final String INTERFACE_ATTR = "interface";
+    private static final String FILTER_ATTR = "filter";
 	private String m_serviceInterface = null;
 	
     /** {@inheritDoc} */
@@ -65,9 +66,13 @@ public class ReferenceListBeanDefinitionParser extends AbstractBeanDefinitionPar
         	m_serviceInterface = serviceInterface;
             factory.addPropertyValue("serviceInterface", serviceInterface);
         }
+        
+        String filter = element.getAttribute(FILTER_ATTR);
+        if (StringUtils.hasText(filter)) {
+            factory.addPropertyValue("filter", filter);
+        }
 		
-        @SuppressWarnings("unchecked")
-        List childElements = DomUtils.getChildElementsByTagName(element, "listener");
+        List<Element> childElements = DomUtils.getChildElementsByTagName(element, "listener");
         
         if (childElements != null && childElements.size() > 0) {
         	parseList(childElements, factory);
@@ -76,8 +81,7 @@ public class ReferenceListBeanDefinitionParser extends AbstractBeanDefinitionPar
 		return factory.getBeanDefinition();
 	}
 
-    @SuppressWarnings("unchecked")
-	private void parseList(List childElements, BeanDefinitionBuilder factory) {
+	private void parseList(List<Element> childElements, BeanDefinitionBuilder factory) {
 		BeanDefinitionBuilder listener = parseListener((Element)childElements.get(0));
 		factory.addPropertyValue("listener", listener.getBeanDefinition());
 	}

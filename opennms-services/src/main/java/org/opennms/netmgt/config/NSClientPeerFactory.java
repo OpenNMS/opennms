@@ -231,106 +231,6 @@ public final class NSClientPeerFactory extends PeerFactory {
     }
 
     /**
-     * Puts a specific IP address with associated password into
-     * the currently loaded nsclient-config.xml.
-     *  Perhaps with a bit of jiggery pokery this could be pulled up into PeerFactory
-     *
-     * @param ip a {@link java.net.InetAddress} object.
-     * @param password a {@link java.lang.String} object.
-     * @throws java.net.UnknownHostException if any.
-     */
-    public void define(final InetAddress ip, final String password) throws UnknownHostException {
-        getWriteLock().lock();
-
-        try {
-            // Convert IP to long so that it easily compared in range elements
-            int address = new IPv4Address(ip).getAddress();
-
-            // Copy the current definitions so that elements can be added and removed
-            final ArrayList<Definition> definitions = new ArrayList<Definition>(m_config.getDefinitionCollection());
-
-            // First step: Find the first definition matching the
-            // read-community or
-            // create a new definition, then add the specific IP
-            Definition definition = null;
-            for (final Definition currentDefinition : definitions) {
-                if ((currentDefinition.getPassword() != null && currentDefinition.getPassword().equals(password))
-                        || (currentDefinition.getPassword() == null && m_config.getPassword() != null && m_config.getPassword().equals(password))) {
-                    LogUtils.debugf(this, "define: Found existing definition with read-community %s", password);
-                    definition = currentDefinition;
-                    break;
-                }
-            }
-            if (definition == null) {
-                LogUtils.debugf(this, "define: Creating new definition");
-
-                definition = new Definition();
-                definition.setPassword(password);
-                definitions.add(definition);
-            }
-            definition.addSpecific(ip.getHostAddress());
-
-            // Second step: Find and remove any existing specific and range
-            // elements with matching IP among all definitions except for the
-            // definition identified in the first step
-            for (final Definition currentDefinition : definitions) {
-                // Ignore this definition if it was the one identified by the first step
-                if (currentDefinition == definition) {
-                    continue;
-                }
-
-                // Remove any specific elements that match IP
-                while (currentDefinition.removeSpecific(ip.getHostAddress())) {
-                    LogUtils.debugf(this, "define: Removed an existing specific element with IP %s", ip);
-                }
-
-                // Split and replace any range elements that contain IP
-                final ArrayList<Range> ranges = new ArrayList<Range>(currentDefinition.getRangeCollection());
-                for (final Range range : currentDefinition.getRange()) {
-                    final int begin = new IPv4Address(range.getBegin()).getAddress();
-                    final int end = new IPv4Address(range.getEnd()).getAddress();
-                    if (address >= begin && address <= end) {
-                        LogUtils.debugf(this, "define: Splitting range element with begin %s and end %s", range.getBegin(), range.getEnd());
-
-                        if (begin == end) {
-                            ranges.remove(range);
-                            continue;
-                        }
-
-                        if (address == begin) {
-                            range.setBegin(IPv4Address.addressToString(address + 1));
-                            continue;
-                        }
-
-                        if (address == end) {
-                            range.setEnd(IPv4Address.addressToString(address - 1));
-                            continue;
-                        }
-
-                        final Range head = new Range();
-                        head.setBegin(range.getBegin());
-                        head.setEnd(IPv4Address.addressToString(address - 1));
-
-                        final Range tail = new Range();
-                        tail.setBegin(IPv4Address.addressToString(address + 1));
-                        tail.setEnd(range.getEnd());
-
-                        ranges.remove(range);
-                        ranges.add(head);
-                        ranges.add(tail);
-                    }
-                }
-                currentDefinition.setRange(ranges);
-            }
-
-            // Store the altered list of definitions
-            m_config.setDefinition(definitions);
-        } finally {
-            getWriteLock().unlock();
-        }
-    }
-    
-    /**
      * <p>getAgentConfig</p>
      *
      * @param agentInetAddress a {@link java.net.InetAddress} object.
@@ -367,21 +267,10 @@ public final class NSClientPeerFactory extends PeerFactory {
     
                 // check the ranges
                 //
-                final long lhost = InetAddressUtils.toIpAddrLong(agentConfig.getAddress());
                 for (final Range rng : def.getRangeCollection()) {
-                    try {
-                        final InetAddress begin = InetAddress.getByName(rng.getBegin());
-                        final InetAddress end = InetAddress.getByName(rng.getEnd());
-    
-                        final long start = InetAddressUtils.toIpAddrLong(begin);
-                        final long stop = InetAddressUtils.toIpAddrLong(end);
-    
-                        if (start <= lhost && lhost <= stop) {
-                            setNSClientAgentConfig(agentConfig, def);
-                            break DEFLOOP;
-                        }
-                    } catch (final UnknownHostException e) {
-                        LogUtils.warnf(this, e, "NSClientPeerFactory: could not convert host(s) %s - %s to InetAddress", rng.getBegin(), rng.getEnd());
+                    if (InetAddressUtils.isInetAddressInRange(agentConfig.getAddress().getHostAddress(), rng.getBegin(), rng.getEnd())) {
+                        setNSClientAgentConfig(agentConfig, def);
+                        break DEFLOOP;
                     }
                 }
                 

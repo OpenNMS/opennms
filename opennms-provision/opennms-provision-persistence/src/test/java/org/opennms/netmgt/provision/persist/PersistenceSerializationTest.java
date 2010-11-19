@@ -15,6 +15,8 @@ import java.util.List;
 import javax.xml.bind.JAXBContext;
 import javax.xml.bind.Marshaller;
 import javax.xml.bind.SchemaOutputResolver;
+import javax.xml.datatype.DatatypeFactory;
+import javax.xml.datatype.XMLGregorianCalendar;
 import javax.xml.transform.Result;
 import javax.xml.transform.stream.StreamResult;
 
@@ -29,8 +31,6 @@ import org.opennms.netmgt.provision.persist.foreignsource.ForeignSourceCollectio
 import org.opennms.netmgt.provision.persist.foreignsource.PluginConfig;
 import org.opennms.test.FileAnticipator;
 import org.xml.sax.SAXException;
-
-import com.sun.org.apache.xerces.internal.jaxp.datatype.XMLGregorianCalendarImpl;
 
 public class PersistenceSerializationTest {
     private ForeignSourceCollection fsw;
@@ -61,7 +61,8 @@ public class PersistenceSerializationTest {
 
         fs = fsr.getForeignSource("cheese");
 //        fs.setScanInterval(scanInterval)
-        fs.setDateStamp(XMLGregorianCalendarImpl.parse("2009-02-25T12:45:38.800-05:00"));
+        XMLGregorianCalendar cal = DatatypeFactory.newInstance().newXMLGregorianCalendar("2009-02-25T12:45:38.800-05:00");
+        fs.setDateStamp(cal);
 
         List<PluginConfig> detectors = new ArrayList<PluginConfig>();
         final PluginConfig detector = new PluginConfig("food", "org.opennms.netmgt.provision.persist.detectors.FoodDetector");

@@ -150,18 +150,32 @@ public class IPAddressRangeTest extends TestCase {
         }
     }
 
+    public void testToIpAddrString() throws UnknownHostException {
+        assertEquals("0.0.0.0", InetAddressUtils.toIpAddrString(zero.toOctets()));
+        assertEquals("0.0.0.1", InetAddressUtils.toIpAddrString(one.toOctets()));
+
+        assertEquals("ffff:ffff:ffff:ffff:ffff:ffff:ffff:ffff", InetAddressUtils.toIpAddrString(maxIPv6.toOctets()));
+        assertEquals("ffff:ffff:ffff:ffff:ffff:ffff:ffff:fffa", InetAddressUtils.toIpAddrString(maxIPv6MinusFive.toOctets()));
+        assertEquals("0000:0000:0000:0000:0000:0000:0000:0001", InetAddressUtils.toIpAddrString(new IPAddress("::1").toOctets()));
+        assertEquals("aaaa:0000:0000:0000:0000:0000:0000:0001", InetAddressUtils.toIpAddrString(new IPAddress("AAAA::1").toOctets()));
+        assertEquals("aaaa:0000:0000:0000:0000:0000:0000:0000", InetAddressUtils.toIpAddrString(new IPAddress("AAAA::").toOctets()));
+        assertEquals("00aa:0000:0000:0000:0000:0000:0000:0000", InetAddressUtils.toIpAddrString(new IPAddress("AA::").toOctets()));
+        assertEquals("aaaa:0000:0000:0000:0000:0000:0000:0000%15", InetAddressUtils.toIpAddrString(InetAddress.getByName("AAAA::%15")));
+        assertEquals("aaaa:0000:0000:0000:0000:0000:0000:0000", InetAddressUtils.toIpAddrString(InetAddress.getByName("AAAA::%0")));
+    }
+
     public void testCreate() {
         assertEquals(begin, normal.getBegin());
         assertEquals(end, normal.getEnd());
-        assertEquals(254, normal.size());
+        assertEquals(new BigInteger("254"), normal.size());
 
         assertEquals(maxIPv6MinusFive, highV6.getBegin());
         assertEquals(maxIPv6, highV6.getEnd());
-        assertEquals(6, highV6.size());
+        assertEquals(new BigInteger("6"), highV6.size());
     }
 
     public void testSingletonRange() {
-        assertEquals(1, singleton.size());
+        assertEquals(BigInteger.ONE, singleton.size());
     }
     
     public void testContains() {
@@ -172,7 +186,7 @@ public class IPAddressRangeTest extends TestCase {
     }
 
     public void testIterator() {
-        assertEquals(3, small.size());
+        assertEquals(new BigInteger("3"), small.size());
         Iterator<IPAddress> it = small.iterator();
         assertTrue(it.hasNext());
         assertEquals(addr2, it.next());

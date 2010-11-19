@@ -47,6 +47,7 @@ import java.util.Iterator;
 import java.util.List;
 
 import org.opennms.core.resource.Vault;
+import org.opennms.core.utils.ByteArrayComparator;
 import org.opennms.core.utils.DBUtils;
 import org.opennms.core.utils.ThreadCategory;
 import org.opennms.netmgt.PropertyConstants;
@@ -504,6 +505,8 @@ public class NodeLabel {
 
             // Process result set, store retrieved addresses/host names in lists
             loadAddressList(rs, ipv4AddrList, ipHostNameList);
+        } catch (Throwable e) {
+            log().warn("Exception thrown while fetching managed interfaces: " + e.getMessage(), e);
         } finally {
             d.cleanUp();
         }
@@ -530,11 +533,18 @@ public class NodeLabel {
                 rs = stmt.executeQuery();
                 d.watch(rs);
                 loadAddressList(rs, ipv4AddrList, ipHostNameList);
+            } catch (Throwable e) {
+                log().warn("Exception thrown while fetching managed interfaces: " + e.getMessage(), e);
             } finally {
                 d.cleanUp();
             }
 
             primaryAddr = selectPrimaryAddress(ipv4AddrList, method);
+        }
+
+        if (primaryAddr == null) {
+            log().warn("Could not find primary interface for node " + nodeID + ", cannot compute nodelabel");
+            return new NodeLabel("Unknown", SOURCE_UNKNOWN);
         }
 
         // We now know the IP address of the primary interface so
@@ -654,26 +664,17 @@ public class NodeLabel {
             } else {
                 IPv4Address currentAddr = iter.next();
 
-                int current = currentAddr.getAddress();
-                int primary = primaryAddr.getAddress();
-
-                // If the addresses are 128.0.0.0 or greater then
-                // we will have to wrap them back into the correct
-                // domain
-                if (current < 0)
-                    current += ((long) Integer.MAX_VALUE) + 1L;
-
-                if (primary < 0)
-                    primary += ((long) Integer.MAX_VALUE) + 1L;
+                byte[] current = currentAddr.getAddressBytes();
+                byte[] primary = primaryAddr.getAddressBytes();
 
                 if (method.equals(SELECT_METHOD_MIN)) {
                     // Smallest address wins
-                    if (current < primary) {
+                    if (new ByteArrayComparator().compare(current, primary) < 0) {
                         primaryAddr = currentAddr;
                     }
                 } else {
                     // Largest address wins
-                    if (current > primary) {
+                    if (new ByteArrayComparator().compare(current, primary) > 0) {
                         primaryAddr = currentAddr;
                     }
                 }

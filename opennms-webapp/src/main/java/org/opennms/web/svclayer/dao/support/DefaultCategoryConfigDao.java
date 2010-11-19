@@ -94,11 +94,11 @@ public class DefaultCategoryConfigDao implements CategoryConfigDao {
 		
 		List<Category> catList = new ArrayList<Category>();
 		Catinfo catInfo = CategoryFactory.getInstance().getConfig();
-		List catGroupList = catInfo.getCategorygroupCollection();
+		List<Categorygroup> catGroupList = catInfo.getCategorygroupCollection();
 		if (catGroupList != null) {
-			Iterator catIter = catGroupList.iterator();
+			Iterator<Categorygroup> catIter = catGroupList.iterator();
 			while(catIter.hasNext()){
-				Categorygroup cg = (Categorygroup)catIter.next();
+				Categorygroup cg = catIter.next();
 				Categories cats = cg.getCategories();
 				Category[] categories = cats.getCategory();
 				int i = 0;

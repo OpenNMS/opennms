@@ -162,7 +162,7 @@ public abstract class WebRole {
      *
      * @return a {@link java.util.Collection} object.
      */
-    abstract public Collection getCurrentUsers();
+    abstract public Collection<WebUser> getCurrentUsers();
     
     /**
      * <p>getWeeklyCalendar</p>

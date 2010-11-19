@@ -35,10 +35,11 @@
     <module>twitter4j</module>
   </modules>
   <properties>
-    <springVersion>3.0.2.RELEASE</springVersion>
+    <springVersion>3.0.5.RELEASE</springVersion>
+    <!-- <springWebFlowVersion>2.2.1.RELEASE</springWebFlowVersion> -->
     <springWebFlowVersion>2.0.9.RELEASE</springWebFlowVersion>
     <!-- <springSecurityVersion>3.0.2.RELEASE</springSecurityVersion> -->
-    <springSecurityVersion>2.0.5.RELEASE</springSecurityVersion>
+    <springSecurityVersion>2.0.6.RELEASE</springSecurityVersion>
     <!-- <springLdapVersion>1.3.0.RELEASE</springLdapVersion> -->
     <springLdapVersion>1.2.1</springLdapVersion>
   </properties>

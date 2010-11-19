@@ -99,7 +99,7 @@ public class VersionSettingTestSuite extends TestSuite {
         m_version = version;
     }
     
-    private void checkForVersionMethod(final Class theClass) {
+    private void checkForVersionMethod(final Class<?> theClass) {
         try {
             getSetVersionMethod(theClass);
         } catch (final NoSuchMethodException e) {
@@ -112,7 +112,7 @@ public class VersionSettingTestSuite extends TestSuite {
             
     }
 
-    private Method getSetVersionMethod(final Class theClass) throws NoSuchMethodException {
+    private Method getSetVersionMethod(final Class<?> theClass) throws NoSuchMethodException {
         return theClass.getMethod("setVersion", new Class[] { Integer.TYPE });
     }
 

@@ -29,6 +29,8 @@
  */
 package org.opennms.core.soa.support;
 
+import java.util.Map;
+
 import org.opennms.core.soa.Registration;
 import org.opennms.core.soa.ServiceRegistry;
 import org.springframework.beans.BeansException;
@@ -53,6 +55,7 @@ public class ServiceFactoryBean implements FactoryBean<Registration>, BeanFactor
     private String m_targetBeanName;
     private Object m_target;
     private Class<?>[] m_serviceInterfaces;
+    private Map<String, String> m_serviceProperties;
 
     private Registration m_registration;
 
@@ -90,6 +93,15 @@ public class ServiceFactoryBean implements FactoryBean<Registration>, BeanFactor
     }
     
     /**
+     * <p>setServiceProperties</p>
+     *
+     * @param serviceInterfaces an array of {@link java.lang.Class} objects.
+     */
+    public void setServiceProperties(Map<String, String> serviceProperties) {
+        m_serviceProperties = serviceProperties;
+    }
+    
+    /**
      * <p>setServiceRegistry</p>
      *
      * @param serviceRegistry a {@link org.opennms.core.soa.ServiceRegistry} object.
@@ -116,7 +128,7 @@ public class ServiceFactoryBean implements FactoryBean<Registration>, BeanFactor
         
         Object provider = m_target != null ? m_target : m_beanFactory.getBean(m_targetBeanName);
         
-        m_registration = m_serviceRegistry.register(provider, m_serviceInterfaces);
+        m_registration = m_serviceRegistry.register(provider, m_serviceProperties, m_serviceInterfaces);
 
     }
     

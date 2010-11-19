@@ -23,6 +23,7 @@
 
   <ip-management policy="managed">
     <range begin="0.0.0.0" end="255.255.255.255" />
+    <range begin="::1" end="ffff:ffff:ffff:ffff:ffff:ffff:ffff:ffff" />
   </ip-management>
 
   <ip-management policy="unmanaged">

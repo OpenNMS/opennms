@@ -153,8 +153,8 @@ public class CategoryList {
         TreeMap<String, Category> orderedMap = new TreeMap<String, Category>(categoryMap);
 
         // Iterate over the categories, adding each to the name list.
-        for (Iterator i = orderedMap.entrySet().iterator(); i.hasNext();) {
-            Map.Entry entry = (Map.Entry) i.next();
+        for (Iterator<Map.Entry<String,Category>> i = orderedMap.entrySet().iterator(); i.hasNext();) {
+            Map.Entry<String,Category> entry = i.next();
             Category category = (Category) entry.getValue();
 
             section.addCategory(category.getName());
@@ -214,15 +214,15 @@ public class CategoryList {
      *          is returned.
      * @return a long.
      */
-    public long getEarliestUpdate(Map categoryData) {
+    public long getEarliestUpdate(Map<String,List<Category>> categoryData) {
         long earliestUpdate = 0;
 
-        for (Iterator i = categoryData.keySet().iterator(); i.hasNext();) {
-            String sectionName = (String) i.next();
-            List categories = (List) categoryData.get(sectionName);
+        for (Iterator<String> i = categoryData.keySet().iterator(); i.hasNext();) {
+            String sectionName = i.next();
+            List<Category> categories = categoryData.get(sectionName);
 
-            for (Iterator j = categories.iterator(); j.hasNext();) {
-                Category category = (Category) j.next();
+            for (Iterator<Category> j = categories.iterator(); j.hasNext();) {
+                Category category = j.next();
 
                 if (category.getLastUpdated() == null) {
                     return -1;
@@ -269,15 +269,15 @@ public class CategoryList {
     @SuppressWarnings("unused")
     private void printBox(JspWriter out, HttpServletResponse response) throws IOException, MarshalException, ValidationException {
 
-        Map categoryData = getCategoryData();
+        Map<String,List<Category>> categoryData = getCategoryData();
 
         out.println("<table width=\"100%\" border=\"1\" cellspacing=\"0\" " + "cellpadding=\"2\" bordercolor=\"black\" " + "bgcolor=\"#cccccc\">");
 
         long earliestUpdate = getEarliestUpdate(categoryData);
         boolean opennmsDisconnect = isDisconnected(earliestUpdate);
 
-        for (Iterator i = categoryData.keySet().iterator(); i.hasNext();) {
-            String sectionName = (String) i.next();
+        for (Iterator<String> i = categoryData.keySet().iterator(); i.hasNext();) {
+            String sectionName = i.next();
 
             out.println("<tr bgcolor=\"#999999\">");
             out.println("<td width=\"50%\"><b>" + sectionName + "</b></td>");
@@ -285,7 +285,7 @@ public class CategoryList {
             out.println("<td width=\"30%\" align=\"right\">" + "<b>24hr Avail</b></td>");
             out.println("</tr>");
 
-            List categories = (List) categoryData.get(sectionName);
+            List<Category> categories = categoryData.get(sectionName);
 
             String title;
             String lastUpdated;
@@ -295,8 +295,8 @@ public class CategoryList {
             String availText;
             String availColor;
 
-            for (Iterator j = categories.iterator(); j.hasNext();) {
-                Category category = (Category) j.next();
+            for (Iterator<Category> j = categories.iterator(); j.hasNext();) {
+                Category category = j.next();
                 String categoryName = category.getName();
 
                 title = category.getTitle();

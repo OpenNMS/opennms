@@ -51,17 +51,27 @@ public class AbstractSpringContextJmxServiceDaemonTest {
      */
     @Test
     public void testStopWithNoInit() throws Exception {
-        MockDaemon daemon = new MockDaemon();
+        MockDaemon<MockServiceDaemon> daemon = new MockDaemon<MockServiceDaemon>();
         daemon.stop();
     }
 
-    public class MockDaemon extends AbstractSpringContextJmxServiceDaemon {
+    public class MockDaemon<T extends SpringServiceDaemon> extends AbstractSpringContextJmxServiceDaemon<T> {
         public String getSpringContext() {
             return "thisIsABogusSpringContext";
         }
 
         public String getLoggingPrefix() {
             return "thisIsABogusLoggingPrefix";
+        }
+    }
+
+    public class MockServiceDaemon extends AbstractServiceDaemon {
+        public MockServiceDaemon() {
+            super("MockServiceDaemon");
+        }
+
+        @Override
+        protected void onInit() {
         }
     }
 }

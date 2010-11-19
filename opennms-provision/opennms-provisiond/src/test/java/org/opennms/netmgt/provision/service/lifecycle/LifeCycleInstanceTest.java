@@ -307,10 +307,9 @@ public class LifeCycleInstanceTest {
     public static class InjectionTestActivities {
         
         // this should be called first
-        @SuppressWarnings("unchecked")
         @Activity(phase="phase1", lifecycle="injection")
         @Attribute("one")
-        public Integer doPhaseOne(Phase phase1, Vector dataAccumulator) {
+        public Integer doPhaseOne(Phase phase1, Vector<String> dataAccumulator) {
 
             dataAccumulator.add(phase1.getName());
             
@@ -319,10 +318,9 @@ public class LifeCycleInstanceTest {
         }
 
         // this should be called in the middle
-        @SuppressWarnings("unchecked")
         @Activity(phase="phase2", lifecycle = "injection")
         @Attribute("two")
-        public Integer doPhaseTwo(Phase phase2, Vector dataAccumulator) {
+        public Integer doPhaseTwo(Phase phase2, Vector<String> dataAccumulator) {
 
             dataAccumulator.add(phase2.getName());
             
@@ -331,9 +329,8 @@ public class LifeCycleInstanceTest {
         }
 
         // this should be called last
-        @SuppressWarnings("unchecked")
         @Activity(phase="phase3", lifecycle = "injection")
-        public void doPhaseThree(@Attribute("one") Integer one, Phase phase3, Vector dataAccumulator, @Attribute("two") Integer two) {
+        public void doPhaseThree(@Attribute("one") Integer one, Phase phase3, Vector<String> dataAccumulator, @Attribute("two") Integer two) {
 
             dataAccumulator.add(phase3.getName());
             dataAccumulator.add(one.toString());
@@ -345,17 +342,18 @@ public class LifeCycleInstanceTest {
     }
     
     
-    @SuppressWarnings("unchecked")
     @Test
     public void testInjectionLifeCycle() throws Exception {
         LifeCycleInstance lifecycle = m_lifeCycleFactory.createLifeCycleInstance("injection", new InjectionTestActivities());
-        lifecycle.setAttribute("dataAccumulator", new Vector());
+        lifecycle.setAttribute("dataAccumulator", new Vector<String>());
         
         lifecycle.trigger();
         
         lifecycle.waitFor();
         
-        Vector results = lifecycle.getAttribute("dataAccumulator" , Vector.class);
+        @SuppressWarnings("unchecked")
+        Vector<String> results = lifecycle.getAttribute("dataAccumulator" , Vector.class);
+
         assertNotNull(results);
 
         assertEquals(Integer.valueOf(1), lifecycle.getAttribute("one", Integer.class));

@@ -42,8 +42,8 @@ import java.util.Collection;
  */
 public class WebGroup {
 
-    private String m_name;
-    private Collection m_users;
+    private final String m_name;
+    private Collection<WebUser> m_users;
     
     /**
      * <p>Constructor for WebGroup.</p>
@@ -77,7 +77,7 @@ public class WebGroup {
      *
      * @return a {@link java.util.Collection} object.
      */
-    public Collection getUsers() {
+    public Collection<WebUser> getUsers() {
         return m_users;
     }
     
@@ -86,7 +86,7 @@ public class WebGroup {
      *
      * @param users a {@link java.util.Collection} object.
      */
-    protected void setUsers(Collection users) {
+    protected void setUsers(Collection<WebUser> users) {
         m_users = users;
     }
     

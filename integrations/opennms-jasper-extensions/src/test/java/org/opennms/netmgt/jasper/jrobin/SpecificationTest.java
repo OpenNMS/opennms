@@ -136,7 +136,7 @@ public class SpecificationTest {
         
         long now = System.currentTimeMillis();
         long end = now/MILLIS_PER_DAY*MILLIS_PER_DAY + (MILLIS_PER_HOUR * 4);
-        long start = end - MILLIS_PER_DAY;
+        long start = end - (MILLIS_PER_DAY*7);
         m_startDate = new Date(start);
         System.out.println("startDate: " + m_startDate.getTime()/1000);
         m_endDate = new Date(end);
@@ -233,8 +233,8 @@ public class SpecificationTest {
         long start = System.currentTimeMillis();
         Map<String, Object> params = new HashMap<String, Object>();
         params.put("rrdDir", "target/rrd");
-        params.put("startDate","" + m_startDate.getTime()/1000);
-        params.put("endDate", "" + m_endDate.getTime()/1000);
+        params.put("startDate", "" + m_startDate.getTime()/1000);
+        params.put("endDate",  "" + + m_endDate.getTime()/1000);
         m_jasperPrint = JasperFillManager.fillReport(m_jasperReport, params);
         System.err.println("Filling time : " + (System.currentTimeMillis() - start));
     }

@@ -45,9 +45,9 @@ import org.springframework.util.StringUtils;
  * @author brozow
  * @version $Id: $
  */
-public class RegistrationListenerBean implements RegistrationListener<Object>, InitializingBean {
+public class RegistrationListenerBean<T> implements RegistrationListener<T>, InitializingBean {
 
-    private Class<?> m_serviceInterface;
+    private Class<T> m_serviceInterface;
     private Object m_target;
     private String m_bindMethod;
     private String m_unbindMethod;
@@ -68,7 +68,7 @@ public class RegistrationListenerBean implements RegistrationListener<Object>, I
      *
      * @param serviceInterface the serviceInterface to set
      */
-    public void setServiceInterface(Class<?> serviceInterface) {
+    public void setServiceInterface(Class<T> serviceInterface) {
         m_serviceInterface = serviceInterface;
     }
 

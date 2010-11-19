@@ -46,12 +46,17 @@
 	contentType="text/html"
 	session="true"
 	import="
+		java.net.*,
+		java.util.*,
+		org.springframework.web.context.WebApplicationContext,
+		org.springframework.web.context.support.WebApplicationContextUtils,
+		org.opennms.core.utils.InetAddressUtils,
 		org.opennms.web.WebSecurityUtils,
 		org.opennms.web.element.*,
-		java.util.*,
-		org.opennms.web.springframework.security.Authentication,
 		org.opennms.web.event.*,
-		java.net.*,org.opennms.core.utils.InetAddressUtils,org.opennms.web.svclayer.ResourceService,org.springframework.web.context.WebApplicationContext,org.springframework.web.context.support.WebApplicationContextUtils"
+		org.opennms.web.springframework.security.Authentication,
+		org.opennms.web.svclayer.ResourceService
+	"
 %>
 
 <%@ taglib uri="http://java.sun.com/jsp/jstl/core" prefix="c" %>
@@ -62,40 +67,36 @@
     protected int dellServiceId;
     protected int snmpServiceId;
     private ResourceService m_resourceService;
-    
+
     public void init() throws ServletException {
-        
-    	this.statusMap = new HashMap();
-        this.statusMap.put( new Character('A'), "Active" );
-        this.statusMap.put( new Character(' '), "Unknown" );
-        this.statusMap.put( new Character('D'), "Deleted" );
-        
+
+        NetworkElementFactoryInterface factory = NetworkElementFactory.getInstance(getServletContext());
         try {
-            this.telnetServiceId = NetworkElementFactory.getInstance(getServletContext()).getServiceIdFromName("Telnet");
+            this.telnetServiceId = factory.getServiceIdFromName("Telnet");
         }
-        catch( Exception e ) {
+        catch (Throwable e) {
             throw new ServletException( "Could not determine the Telnet service ID", e );
         }        
 
         try {
-            this.httpServiceId = NetworkElementFactory.getInstance(getServletContext()).getServiceIdFromName("HTTP");
+            this.httpServiceId = factory.getServiceIdFromName("HTTP");
         }
-        catch( Exception e ) {
+        catch (Throwable e) {
             throw new ServletException( "Could not determine the HTTP service ID", e );
         }
 
         try {
-            this.dellServiceId = NetworkElementFactory.getInstance(getServletContext()).getServiceIdFromName("Dell-OpenManage");
+            this.dellServiceId = factory.getServiceIdFromName("Dell-OpenManage");
         }
-        catch( Exception e ) {
+        catch (Throwable e) {
             throw new ServletException( "Could not determine the Dell-OpenManage service ID", e );
         }
 
         try {
-            this.snmpServiceId = NetworkElementFactory.getInstance(getServletContext()).getServiceIdFromName("SNMP");
+            this.snmpServiceId = factory.getServiceIdFromName("SNMP");
         }
-        catch( Exception e ) {
-            throw new ServletException( "Could not determine the Dell-OpenManage service ID", e );
+        catch (Throwable e) {
+            throw new ServletException( "Could not determine the SNMP service ID", e );
         }
 
         WebApplicationContext webAppContext = WebApplicationContextUtils.getRequiredWebApplicationContext(getServletContext());
@@ -103,6 +104,8 @@
     }%>
 
 <%
+    NetworkElementFactoryInterface factory = NetworkElementFactory.getInstance(getServletContext());
+
     String nodeIdString = request.getParameter( "node" );
 
     if( nodeIdString == null ) {
@@ -112,14 +115,14 @@
     int nodeId = WebSecurityUtils.safeParseInt( nodeIdString );
 
     //get the database node info
-    Node node_db = NetworkElementFactory.getInstance(getServletContext()).getNode( nodeId );
+    Node node_db = factory.getNode( nodeId );
     if( node_db == null ) {
 	throw new ElementNotFoundException("No such node in database", "node", "element/linkednode.jsp", "node", "element/nodeList.htm");
     }
 
     //get the child interfaces
-    Interface[] intfs = NetworkElementFactory.getInstance(getServletContext()).getActiveInterfacesOnNode( nodeId );
-    Interface[] snmpIntfs = NetworkElementFactory.getInstance(getServletContext()).getAllSnmpInterfacesOnNode( nodeId );
+    Interface[] intfs = factory.getActiveInterfacesOnNode( nodeId );
+    Interface[] snmpIntfs = factory.getAllSnmpInterfacesOnNode( nodeId );
 
     if( intfs == null ) { 
         intfs = new Interface[0]; 
@@ -130,11 +133,11 @@
     }
 
     //See if node has any ifAliases
-    boolean hasIfAliases = NetworkElementFactory.getInstance(getServletContext()).nodeHasIfAliases(nodeId);
+    boolean hasIfAliases = factory.nodeHasIfAliases(nodeId);
 
     //find the telnet interfaces, if any
     String telnetIp = null;
-    Service[] telnetServices = NetworkElementFactory.getInstance(getServletContext()).getServicesOnNode(nodeId, this.telnetServiceId);
+    Service[] telnetServices = factory.getServicesOnNode(nodeId, this.telnetServiceId);
     
     if( telnetServices != null && telnetServices.length > 0 ) {
         ArrayList<InetAddress> ips = new ArrayList<InetAddress>();
@@ -151,7 +154,7 @@
 
     //find the HTTP interfaces, if any
     String httpIp = null;
-    Service[] httpServices = NetworkElementFactory.getInstance(getServletContext()).getServicesOnNode(nodeId, this.httpServiceId);
+    Service[] httpServices = factory.getServicesOnNode(nodeId, this.httpServiceId);
 
     if( httpServices != null && httpServices.length > 0 ) {
         ArrayList<InetAddress> ips = new ArrayList<InetAddress>();
@@ -168,7 +171,7 @@
 
     //find the Dell-OpenManage interfaces, if any
     String dellIp = null;
-    Service[] dellServices = NetworkElementFactory.getInstance(getServletContext()).getServicesOnNode(nodeId, this.dellServiceId);
+    Service[] dellServices = factory.getServicesOnNode(nodeId, this.dellServiceId);
 
     if( dellServices != null && dellServices.length > 0 ) {
         ArrayList<InetAddress> ips = new ArrayList<InetAddress>();
@@ -185,16 +188,14 @@
 
     //find if SNMP is on this node 
     boolean isSnmp = false;
-    Service[] snmpServices = NetworkElementFactory.getInstance(getServletContext()).getServicesOnNode(nodeId, this.snmpServiceId);
+    Service[] snmpServices = factory.getServicesOnNode(nodeId, this.snmpServiceId);
 
     if( snmpServices != null && snmpServices.length > 0 ) 
 	isSnmp = true;
-%>
 
-<%
     // find links
     Map<Integer,Vector<Interface>> linkMap = new HashMap<Integer,Vector<Interface>>();
-    DataLinkInterface[] dl_if = NetworkElementFactory.getInstance(getServletContext()).getDataLinksOnNode(nodeId);
+    DataLinkInterface[] dl_if = factory.getDataLinksOnNode(nodeId);
 
     for (int i=0; i<dl_if.length;i++){
 	   int nodelinkedId = 0;
@@ -211,9 +212,9 @@
        Interface iface = null;
        if (iplinkaddress != null) {
 	       if (nodelinkedIf == -1 ) {
-		       iface = NetworkElementFactory.getInstance(getServletContext()).getInterface(nodelinkedId,iplinkaddress);
+		       iface = factory.getInterface(nodelinkedId,iplinkaddress);
 	   		} else {
-	   		   iface = NetworkElementFactory.getInstance(getServletContext()).getInterface(nodelinkedId,iplinkaddress,nodelinkedIf);
+	   		   iface = factory.getInterface(nodelinkedId,iplinkaddress,nodelinkedIf);
 	   		}
 		   if (linkMap.containsKey(ifindexmap)){
 			   ifs = linkMap.get(ifindexmap);
@@ -221,7 +222,7 @@
 	   	ifs.addElement(iface);
 	   	linkMap.put(ifindexmap,ifs);
 	} else {
-	    iface = NetworkElementFactory.getInstance(getServletContext()).getSnmpInterface(nodelinkedId,nodelinkedIf);
+	    iface = factory.getSnmpInterface(nodelinkedId,nodelinkedIf);
 	    if (linkMap.containsKey(ifindexmap)){
 		ifs = linkMap.get(ifindexmap);
             } 
@@ -332,7 +333,7 @@
 			     <ul class="plain">
 		            <% if( isRouteIP ) { %>
 		            <li>
-		            	<a href="element/routeipnode.jsp?node=<%=nodeId%>"> View Node Ip Route Info</a>
+		            	<a href="element/routeipnode.jsp?node=<%=nodeId%>"> View Node IP Route Info</a>
 		            </li>
 		            <% }%>
 		         
@@ -360,7 +361,7 @@
                         <% if (hasIfAliases) { %>
                             <th>IfAlias</th>
                         <% } %>
-			<th width="10%">If Status (Adm/Op)</th> 
+			<th width="10%">ifStatus (Adm/Op)</th> 
 <%--
 			// TODO - turning this off until the SET is verified.
 			<% if( request.isUserInRole( Authentication.ADMIN_ROLE )) { %> 
@@ -374,11 +375,11 @@
 		
 		<% for( int i=0; i < intfs.length; i++ ) { 
 		
-			Vector ifl =null;
+			Vector<Interface> ifl =null;
 			if (intfs[i].getIfIndex() == 0 ) {
-		 		ifl =(Vector)linkMap.get(new Integer(-1));
+		 		ifl = linkMap.get(-1);
 			} else {
-		 		ifl =(Vector)linkMap.get(new Integer(intfs[i].getIfIndex()));
+		 		ifl = linkMap.get(intfs[i].getIfIndex());
 			}
 		%>
 		
@@ -439,15 +440,26 @@
 		<td class="standard">
 		<% if (ifl == null || ifl.size() == 0) {%>
 		&nbsp;
+		<% } else {
+		// Don't bother creating a table if all the interfaces in ifl are null
+		Boolean emptyTable = true;
+		for (int j=0; j<ifl.size();j++) {
+		    Interface curlkif =(Interface)ifl.elementAt(j);
+		    if (curlkif != null) {
+		        emptyTable = false;
+		        break;
+		    }
+		}
+		if ( emptyTable ) { %>
+		    &nbsp;
 		<% } else { %>
-		
 		<table>
 		
 		<thead>
 			<tr>
 				<th style="font-size:70%" width="35%">Linked Node</th>
 				<th style="font-size:70%" width="35%">Interface</th> 
-				<th style="font-size:70%" width="15%">If Status (Adm/Op)</th>
+				<th style="font-size:70%" width="15%">ifStatus (Adm/Op)</th>
 			
 <%--
 			// TODO - turning this off until the SET is verified.
@@ -464,10 +476,10 @@
 			<% for (int j=0; j<ifl.size();j++) { 
 				Interface curlkif =(Interface)ifl.elementAt(j); 
 			%>
-		        
+		    <% if (curlkif != null) { %>    
 			<tr>
 			<td class="standard" style="font-size:70%" width="35%">
-		       	<a href="element/linkednode.jsp?node=<%=curlkif.getNodeId()%>"><%=NetworkElementFactory.getInstance(getServletContext()).getNodeLabel(curlkif.getNodeId())%></a>
+		       	<a href="element/linkednode.jsp?node=<%=curlkif.getNodeId()%>"><%=factory.getNodeLabel(curlkif.getNodeId())%></a>
 			</td>
 			<td class="standard" style="font-size:70%" width="35%">
 		       	<% if(curlkif.getIpAddress() == null ||  "0.0.0.0".equals( curlkif.getIpAddress() )) { %>
@@ -508,9 +520,11 @@
 --%>
 			<% } %>
 		    </tr>
-		    
+		    <% } %>
+		
 		</table>
 		
+		<%}%>
 		<%}%>
 		</td>
 		
@@ -520,11 +534,11 @@
 
 		<% for( int i=0; i < snmpIntfs.length; i++ ) {
 		
-			Vector ifl =null;
+			Vector<Interface> ifl =null;
 			if (snmpIntfs[i].getSnmpIfIndex() == 0 ) {
-		 		ifl =(Vector)linkMap.get(new Integer(-1));
+		 		ifl = linkMap.get(-1);
 			} else {
-		 		ifl =(Vector)linkMap.get(new Integer(snmpIntfs[i].getSnmpIfIndex()));
+		 		ifl = linkMap.get(snmpIntfs[i].getSnmpIfIndex());
 			}
 
 		%>
@@ -592,8 +606,20 @@
 		    <td class="standard">
 		    <% if (ifl == null || ifl.size() == 0) {%>
 			&nbsp;
+		    <% } else {
+		    // Don't bother creating a table if all the interfaces in ifl are null
+		    Boolean emptyTable = true;
+		    for (int j=0; j<ifl.size();j++) {
+		        Interface curlkif =(Interface)ifl.elementAt(j);
+		        if (curlkif != null) {
+		            emptyTable = false;
+		            break;
+		        }
+		    }
+		    if ( emptyTable ) { %>
+		        &nbsp;
 		    <% } else { %>
-		
+		            
 			<table>
 		
 			<thead>
@@ -617,10 +643,10 @@
 			<% for (int j=0; j<ifl.size();j++) { 
 				Interface curlkif =(Interface)ifl.elementAt(j); 
 			%>
-		        
+		    <% if (curlkif != null) { %>    
 			<tr>
 			<td class="standard" style="font-size:70%" width="35%">
-		       	<a href="element/linkednode.jsp?node=<%=curlkif.getNodeId()%>"><%=NetworkElementFactory.getInstance(getServletContext()).getNodeLabel(curlkif.getNodeId())%></a>
+		       	<a href="element/linkednode.jsp?node=<%=curlkif.getNodeId()%>"><%=factory.getNodeLabel(curlkif.getNodeId())%></a>
 			</td>
 			<td class="standard" style="font-size:70%" width="35%">
 		       	<% if( "0.0.0.0".equals( curlkif.getIpAddress() ) || curlkif.getIpAddress() == null) { %>
@@ -661,9 +687,11 @@
 --%>
 		    <% } %>
 		    </tr>
+		    <% } %>
 		    
 		    </table>
 		
+		    <%}%>
 		    <%}%>
 		    </td>
 		
@@ -681,11 +709,9 @@
 
 
 
-<%!public static HashMap statusMap;
-
-    
+<%!
     public String getStatusString( char c ) {
-        return( (String)this.statusMap.get( new Character(c) ));
+        return ElementUtil.getNodeStatusString(c);
     }
     
       public static final String[] OPER_ADMIN_STATUS = new String[] {

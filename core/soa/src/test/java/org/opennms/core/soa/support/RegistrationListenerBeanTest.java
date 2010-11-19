@@ -50,7 +50,7 @@ public class RegistrationListenerBeanTest {
     @Test
     public void testCallBindUnbindMethods() throws Exception {
        
-        RegistrationListenerBean listener = new RegistrationListenerBean();
+        RegistrationListenerBean<Hello> listener = new RegistrationListenerBean<Hello>();
         listener.setServiceInterface(Hello.class);
         listener.setTarget(this);
         listener.setBindMethod("bind");
@@ -62,7 +62,7 @@ public class RegistrationListenerBeanTest {
         Registration reg1 = registry.register(new MyProvider("prov1"), Hello.class, Goodbye.class);
         Registration reg2 = registry.register(new MyProvider("prov2"), Hello.class, Goodbye.class);
         
-        ReferenceListFactoryBean bean = new ReferenceListFactoryBean();
+        ReferenceListFactoryBean<Hello> bean = new ReferenceListFactoryBean<Hello>();
         bean.setServiceInterface(Hello.class);
         bean.setServiceRegistry(registry);
         

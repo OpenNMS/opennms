@@ -29,6 +29,7 @@ class RrdXportCmd extends RrdToolCmd implements RrdGraphConstants {
         int maxRows = parseInt(getOptionValue("m", "maxrows", "400"));
         long minStep = (long) Math.ceil((span[1] - span[0]) / (double) (maxRows - 1));
         step = Math.max(step, minStep);
+        dproc.setFetchRequestResolution(step);
         dproc.setStep(step);
         String[] words = getRemainingWords();
         if (words.length < 1) {
@@ -56,6 +57,11 @@ class RrdXportCmd extends RrdToolCmd implements RrdGraphConstants {
     private JRDataSource xport() throws IOException, RrdException {
         dproc.processData();
         long[] timestamps = dproc.getTimestamps();
+        
+        for(int i = 0; i < timestamps.length; i++) {
+            timestamps[i] = timestamps[i] - dproc.getStep();
+        }
+        
         for (XPort xport : xports) {
             xport.values = dproc.getValues(xport.name);
         }

@@ -78,7 +78,6 @@ public class ThresholderTestCase extends TestCase {
     
 	private EventAnticipator m_anticipator;
 	private EventProxy m_proxy;
-    @SuppressWarnings("rawtypes")
     private RrdStrategy m_rrdStrategy;
 	protected Map<Object, Object> m_serviceParameters;
 	protected ThresholdNetworkInterfaceImpl m_iface;

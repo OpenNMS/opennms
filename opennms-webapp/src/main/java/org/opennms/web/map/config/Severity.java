@@ -47,7 +47,7 @@ package org.opennms.web.map.config;
  * @version $Id: $
  * @since 1.8.1
  */
-public class Severity implements Comparable {
+public class Severity implements Comparable<Severity> {
 	private int id;
 	private String label;
 	private String color;
@@ -72,8 +72,8 @@ public class Severity implements Comparable {
 	 *
 	 * Compares the Severity to another in input by ids.
 	 */
-	public int compareTo(Object otherSev){
-		Severity othSev = (Severity) otherSev;
+	public int compareTo(Severity otherSev){
+		Severity othSev = otherSev;
 		if(this.id==othSev.getId()) return 0;
 		else if(this.id<othSev.getId()) return -1;
 		else  return 1;

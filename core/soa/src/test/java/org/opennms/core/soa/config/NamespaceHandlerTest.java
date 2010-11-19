@@ -34,8 +34,10 @@ import static org.junit.Assert.assertNotNull;
 
 import java.io.IOException;
 import java.util.Arrays;
+import java.util.HashMap;
 import java.util.HashSet;
 import java.util.List;
+import java.util.Map;
 import java.util.Set;
 
 import javax.annotation.Resource;
@@ -65,18 +67,39 @@ public class NamespaceHandlerTest {
     @Resource(name="myProvider")
     MyProvider m_provider;
     
+    @Resource(name="bigProvider")
+    MyProvider m_bigProvider;
+
+    @Resource(name="smallProvider")
+    MyProvider m_smallProvider;
+
     @Resource(name="simple")
     Registration m_simpleRegistration;
     
     @Resource(name="nested")
     Registration m_nestedRegistration;
     
+    @Resource(name="big")
+    Registration m_bigRegistration;
+
+    @Resource(name="small")
+    Registration m_smallRegistration;
+    
     @Resource(name="hello")
     Hello m_hello;
     
-	@Resource(name="helloList")
-	List<Object> m_helloList;
-	
+    @Resource(name="bigGoodbye")
+    Goodbye m_bigGoodbye;
+    
+    @Resource(name="smallGoodbye")
+    Goodbye m_smallGoodbye;
+    
+    @Resource(name="helloList")
+    List<Hello> m_helloList;
+    
+    @Resource(name="bigGoodbyeList")
+    List<Goodbye> m_bigGoodbyeList;
+    
 	@Resource(name="serviceRegistry")
 	ServiceRegistry m_defaultServiceRegistry;
 	
@@ -94,20 +117,57 @@ public class NamespaceHandlerTest {
         assertEquals(m_provider, m_nestedRegistration.getProvider(Hello.class));
         
         assertContains(m_nestedRegistration.getProvidedInterfaces(), Hello.class, Goodbye.class);
-
+        
     }
+    
+    @Test
+    @DirtiesContext
+    public void testServiceProperties() {
+        
+        assertNotNull(m_bigRegistration);
+        assertNotNull(m_bigRegistration.getProperties());
+        assertEquals("big", m_bigRegistration.getProperties().get("size"));
+
+        assertNotNull(m_smallRegistration);
+        assertNotNull(m_smallRegistration.getProperties());
+        assertEquals("small", m_smallRegistration.getProperties().get("size"));
+}
     
     @Test
     @DirtiesContext
     public void testReferenceBeanDefinition() throws IOException{
 
         assertNotNull(m_hello);
-    	
-    	int expected = m_provider.helloSaid() + 1;
-    	
-    	m_hello.sayHello();
+        assertEquals("provider", m_hello.toString());
+        
+        int expected = m_provider.helloSaid() + 1;
+        
+        m_hello.sayHello();
 
-		assertEquals(expected, m_provider.helloSaid());
+        assertEquals(expected, m_provider.helloSaid());
+    }
+    
+    @Test
+    @DirtiesContext
+    public void testFilteredReferenceBeanDefinition() throws IOException{
+
+        assertNotNull(m_bigGoodbye);
+        assertEquals("big", m_bigGoodbye.toString());
+        
+        int bigExpected = m_bigProvider.goodbyeSaid() + 1;
+        
+        m_bigGoodbye.sayGoodbye();
+        
+        assertEquals(bigExpected, m_bigProvider.goodbyeSaid());
+
+        assertNotNull(m_smallGoodbye);
+        assertEquals("small", m_smallGoodbye.toString());
+        
+        int smallExpected = m_smallProvider.goodbyeSaid() + 1;
+        
+        m_smallGoodbye.sayGoodbye();
+
+        assertEquals(smallExpected, m_smallProvider.goodbyeSaid());
     }
     
     @Test
@@ -115,19 +175,46 @@ public class NamespaceHandlerTest {
     public void testReferenceListBeanDefinition() {
  
         assertNotNull(m_helloList);
-    	
-    	int expected = m_helloList.size() + 1;
+        
+        int expected = m_helloList.size() + 1;
  
-    	Registration registration = m_defaultServiceRegistry.register(new MyProvider(), Hello.class);
-    	
-    	assertEquals(expected, m_helloList.size());
-    	
-    	expected = m_helloList.size() - 1;
+        Registration registration = m_defaultServiceRegistry.register(new MyProvider(), Hello.class);
+        
+        assertEquals(expected, m_helloList.size());
+        
+        expected = m_helloList.size() - 1;
 
-    	registration.unregister();
-    	
-    	assertEquals(expected, m_helloList.size());
-    	
+        registration.unregister();
+        
+        assertEquals(expected, m_helloList.size());
+        
+    }
+    
+    @Test
+    @DirtiesContext
+    public void testFilteredReferenceListBeanDefinition() {
+ 
+        assertNotNull(m_bigGoodbyeList);
+        
+        int expected = m_bigGoodbyeList.size() + 1;
+ 
+        Map<String, String> bigProps = new HashMap<String, String>();
+        bigProps.put("size", "big");
+        Registration bigRegistration = m_defaultServiceRegistry.register(new MyProvider("alsoBig"), bigProps, Goodbye.class);
+
+        Map<String, String> props = new HashMap<String, String>();
+        props.put("size", "small");
+        Registration smallRegistration = m_defaultServiceRegistry.register(new MyProvider("alsoSmall"), props, Goodbye.class);
+        
+        assertEquals(expected, m_bigGoodbyeList.size());
+        
+        expected = m_bigGoodbyeList.size() - 1;
+
+        bigRegistration.unregister();
+        smallRegistration.unregister();
+        
+        assertEquals(expected, m_bigGoodbyeList.size());
+        
     }
     
     @Test

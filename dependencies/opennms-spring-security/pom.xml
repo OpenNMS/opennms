@@ -67,7 +67,7 @@
     </dependency>
     <dependency>
       <groupId>org.springframework.security</groupId>
-      <artifactId>spring-security-core-tiger</artifactId>
+      <artifactId>spring-security-core</artifactId>
       <version>${springSecurityVersion}</version>
       <exclusions>
         <exclusion>
