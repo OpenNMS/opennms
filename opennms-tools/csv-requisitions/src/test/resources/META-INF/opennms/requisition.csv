@@ -1,0 +1,5 @@
+#Name,Management IP,POP,Customer ID,Netsuite Internal ID,Customer Name
+adtran1,169.254.1.2,PoP1,1,10,OpenNMS Customer 1
+alvarion1,169.254.1.3,PoP1,2,20,OpenNMS Customer 2
+canopy1,169.254.1.4,PoP2,3,30,OpenNMS Customer 3
+dragonwave1,169.254.1.5,PoP2,4,40,OpenNMS Customer 4
