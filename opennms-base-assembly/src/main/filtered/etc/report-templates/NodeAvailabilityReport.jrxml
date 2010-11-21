@@ -57,6 +57,9 @@
 		<parameter name="DS_TIME_RANGE" class="java.lang.String" isForPrompting="false">
 			<defaultValueExpression><![CDATA["7 Days"]]></defaultValueExpression>
 		</parameter>
+		<parameter name="DS_START_TIME" class="java.sql.Timestamp">
+			<defaultValueExpression><![CDATA[new java.sql.Timestamp(new java.util.Date().getTime() - (86400 * 7 * 1000))]]></defaultValueExpression>
+		</parameter>
 		<queryString>
 			<![CDATA[SELECT
 	node_outages.categoryname,
@@ -77,7 +80,7 @@ FROM
 		active_nodes.nodelabel,
 		active_nodes.nodesyslocation,
 		active_nodes.nodesysdescription,
-		EXTRACT (epoch from now() - (now()-'$P!{DS_TIME_RANGE}'::INTERVAL)) AS avail_total,
+		EXTRACT (epoch from ('$P!{DS_START_TIME}'::TIMESTAMP + '$P!{DS_TIME_RANGE}'::INTERVAL) - '$P!{DS_START_TIME}'::TIMESTAMP) AS avail_total,
 		CASE
 			WHEN
 				outages_scope.ifregainedservice - outages_scope.iflostservice is NULL
@@ -104,7 +107,7 @@ FROM
 		FROM
 			outages, service, events
 		WHERE
-			(iflostservice, ifregainedservice) OVERLAPS (now()-'$P!{DS_TIME_RANGE}'::INTERVAL, now()) AND
+			(iflostservice, ifregainedservice) OVERLAPS ('$P!{DS_START_TIME}'::TIMESTAMP, '$P!{DS_START_TIME}'::TIMESTAMP + '$P!{DS_TIME_RANGE}'::INTERVAL) AND
 			outages.serviceid = service.serviceid AND
 			service.servicename = 'ICMP' AND
 			outages.svclosteventid = events.eventid AND
@@ -306,6 +309,9 @@ ORDER BY
 						</datasetParameter>
 						<datasetParameter name="DS_TIME_RANGE">
 							<datasetParameterExpression><![CDATA[$P{TIME_RANGE}]]></datasetParameterExpression>
+						</datasetParameter>
+						<datasetParameter name="DS_START_TIME">
+							<datasetParameterExpression><![CDATA[$P{START_TIME}]]></datasetParameterExpression>
 						</datasetParameter>
 						<connectionExpression><![CDATA[$P{REPORT_CONNECTION}]]></connectionExpression>
 					</datasetRun>
