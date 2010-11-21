@@ -226,10 +226,16 @@ ORDER BY
 	<parameter name="TIME_RANGE" class="java.lang.String">
 		<defaultValueExpression><![CDATA["7 Days"]]></defaultValueExpression>
 	</parameter>
+	<parameter name="START_TIME" class="java.sql.Timestamp">
+		<defaultValueExpression><![CDATA[new java.sql.Timestamp(new java.util.Date().getTime() - (86400 * 7 * 1000))]]></defaultValueExpression>
+	</parameter>
+	<parameter name="TIME_RANGE_DESCRIPTION" class="java.lang.String">
+		<defaultValueExpression><![CDATA[$P{TIME_RANGE} + " from " + $P{START_TIME}]]></defaultValueExpression>
+	</parameter>
 	<queryString>
 		<![CDATA[SELECT
-	now()-'$P!{TIME_RANGE}'::INTERVAL AS start,
-	now() AS end]]>
+	'$P!{START_TIME}'::TIMESTAMP AS start,
+	'$P!{START_TIME}'::TIMESTAMP + '$P!{TIME_RANGE}'::INTERVAL AS end]]>
 	</queryString>
 	<field name="start" class="java.sql.Timestamp"/>
 	<field name="end" class="java.sql.Timestamp"/>
@@ -255,7 +261,7 @@ ORDER BY
 		<band height="4" splitType="Stretch"/>
 	</title>
 	<pageHeader>
-		<band height="52" splitType="Stretch">
+		<band height="63" splitType="Stretch">
 			<staticText>
 				<reportElement style="Report_Title" x="0" y="0" width="391" height="34"/>
 				<textElement verticalAlignment="Middle">
@@ -268,30 +274,15 @@ ORDER BY
 				<imageExpression class="java.lang.String"><![CDATA[$P{COMPANY_LOGO}]]></imageExpression>
 			</image>
 			<line>
-				<reportElement x="0" y="49" width="555" height="1"/>
+				<reportElement x="0" y="62" width="555" height="1"/>
 				<graphicElement>
 					<pen lineWidth="1.5"/>
 				</graphicElement>
 			</line>
-			<staticText>
-				<reportElement style="Report_Subtitle" x="0" y="34" width="67" height="15"/>
+			<textField>
+				<reportElement style="Report_Subtitle" x="0" y="34" width="355" height="20"/>
 				<textElement/>
-				<text><![CDATA[Report begin: ]]></text>
-			</staticText>
-			<staticText>
-				<reportElement style="Report_Subtitle" x="193" y="34" width="67" height="14"/>
-				<textElement/>
-				<text><![CDATA[Report end: ]]></text>
-			</staticText>
-			<textField evaluationTime="Page">
-				<reportElement style="Report_Subtitle" x="67" y="34" width="126" height="14"/>
-				<textElement/>
-				<textFieldExpression class="java.sql.Timestamp"><![CDATA[$F{start}]]></textFieldExpression>
-			</textField>
-			<textField evaluationTime="Page">
-				<reportElement style="Report_Subtitle" x="260" y="34" width="131" height="14"/>
-				<textElement/>
-				<textFieldExpression class="java.sql.Timestamp"><![CDATA[$F{end}]]></textFieldExpression>
+				<textFieldExpression class="java.lang.String"><![CDATA[$P{TIME_RANGE_DESCRIPTION}]]></textFieldExpression>
 			</textField>
 		</band>
 	</pageHeader>
@@ -355,8 +346,8 @@ ORDER BY
 						<jr:columnHeader style="Table_Header_BG" height="30" rowSpan="1">
 							<staticText>
 								<reportElement style="Table_Header" x="2" y="0" width="262" height="30"/>
-								<textElement verticalAlignment="Middle"/>
-								<text><![CDATA[Nodelabel]]></text>
+								<textElement textAlignment="Center" verticalAlignment="Middle"/>
+								<text><![CDATA[Node]]></text>
 							</staticText>
 						</jr:columnHeader>
 						<jr:detailCell style="Table_Grid" height="17" rowSpan="1">
@@ -394,7 +385,7 @@ ORDER BY
 							<staticText>
 								<reportElement style="Table_Header" x="0" y="0" width="64" height="30"/>
 								<textElement textAlignment="Center" verticalAlignment="Middle"/>
-								<text><![CDATA[outages count]]></text>
+								<text><![CDATA[Outage Count]]></text>
 							</staticText>
 						</jr:columnHeader>
 						<jr:detailCell style="Table_Grid" height="17" rowSpan="1">
@@ -432,7 +423,7 @@ ORDER BY
 							<staticText>
 								<reportElement style="Table_Header" x="0" y="0" width="65" height="30"/>
 								<textElement textAlignment="Center" verticalAlignment="Middle"/>
-								<text><![CDATA[MTTR in hours]]></text>
+								<text><![CDATA[MTTR (hours)]]></text>
 							</staticText>
 						</jr:columnHeader>
 						<jr:detailCell style="Table_Grid" height="17" rowSpan="1">
@@ -470,7 +461,7 @@ ORDER BY
 							<staticText>
 								<reportElement style="Table_Header" x="0" y="0" width="55" height="30"/>
 								<textElement textAlignment="Center" verticalAlignment="Middle"/>
-								<text><![CDATA[total in hours]]></text>
+								<text><![CDATA[Outage Hours]]></text>
 							</staticText>
 						</jr:columnHeader>
 						<jr:detailCell style="Table_Grid" height="17" rowSpan="1">
@@ -508,7 +499,7 @@ ORDER BY
 							<staticText>
 								<reportElement style="Table_Header" x="0" y="0" width="47" height="30"/>
 								<textElement textAlignment="Center" verticalAlignment="Middle"/>
-								<text><![CDATA[outages in %]]></text>
+								<text><![CDATA[Outage Percent]]></text>
 							</staticText>
 						</jr:columnHeader>
 						<jr:detailCell style="Table_Grid" height="17" rowSpan="1">
@@ -546,7 +537,7 @@ ORDER BY
 							<staticText>
 								<reportElement style="Table_Header" x="0" y="0" width="60" height="30"/>
 								<textElement textAlignment="Center" verticalAlignment="Middle"/>
-								<text><![CDATA[availability in %]]></text>
+								<text><![CDATA[Availability Percent]]></text>
 							</staticText>
 						</jr:columnHeader>
 						<jr:detailCell style="Table_Grid" height="17" rowSpan="1">
@@ -582,6 +573,26 @@ ORDER BY
 				<textElement/>
 				<textFieldExpression class="java.lang.String"><![CDATA[" " + $V{PAGE_NUMBER}]]></textFieldExpression>
 			</textField>
+			<staticText>
+				<reportElement style="Page_Footer" x="0" y="15" width="67" height="15"/>
+				<textElement/>
+				<text><![CDATA[Report begin: ]]></text>
+			</staticText>
+			<textField evaluationTime="Page">
+				<reportElement style="Page_Footer" x="67" y="15" width="126" height="14"/>
+				<textElement/>
+				<textFieldExpression class="java.sql.Timestamp"><![CDATA[$F{start}]]></textFieldExpression>
+			</textField>
+			<textField evaluationTime="Page">
+				<reportElement style="Page_Footer" x="253" y="15" width="131" height="14"/>
+				<textElement/>
+				<textFieldExpression class="java.sql.Timestamp"><![CDATA[$F{end}]]></textFieldExpression>
+			</textField>
+			<staticText>
+				<reportElement style="Page_Footer" x="193" y="15" width="60" height="14"/>
+				<textElement/>
+				<text><![CDATA[Report end: ]]></text>
+			</staticText>
 		</band>
 	</pageFooter>
 	<summary>
