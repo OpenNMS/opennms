@@ -13,7 +13,18 @@
     <dependency>
       <groupId>jasperreports</groupId>
       <artifactId>jasperreports</artifactId>
-      <version>3.6.0</version>
+      <version>3.7.6</version>
+      <exclusions>
+        <exclusion>
+          <groupId>eclipse</groupId>
+          <artifactId>jdtcore</artifactId>
+        </exclusion>
+      </exclusions>
+    </dependency>
+    <dependency>
+      <groupId>jasperreports</groupId>
+      <artifactId>iText</artifactId>
+      <version>2.1.7</version>
       <exclusions>
         <exclusion>
           <groupId>eclipse</groupId>
