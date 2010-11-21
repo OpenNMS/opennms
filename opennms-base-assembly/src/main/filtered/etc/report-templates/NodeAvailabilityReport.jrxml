@@ -218,7 +218,7 @@ ORDER BY
 		<defaultValueExpression><![CDATA["${install.dir}/etc/report-templates/opennms-logo.png"]]></defaultValueExpression>
 	</parameter>
 	<parameter name="SURVEILLANCE_CATEGORY" class="java.lang.String">
-		<defaultValueExpression><![CDATA["Mon%"]]></defaultValueExpression>
+		<defaultValueExpression><![CDATA["%"]]></defaultValueExpression>
 	</parameter>
 	<parameter name="AVAILABILITY_WARNING" class="java.lang.Double">
 		<defaultValueExpression><![CDATA[new Double("98.0")]]></defaultValueExpression>
