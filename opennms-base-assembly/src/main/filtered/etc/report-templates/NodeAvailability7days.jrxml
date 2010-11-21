@@ -1,0 +1,285 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<jasperReport xmlns="http://jasperreports.sourceforge.net/jasperreports" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://jasperreports.sourceforge.net/jasperreports http://jasperreports.sourceforge.net/xsd/jasperreport.xsd" name="NodeAvailability7days" pageWidth="595" pageHeight="842" columnWidth="555" leftMargin="20" rightMargin="20" topMargin="20" bottomMargin="20">
+	<property name="ireport.zoom" value="2.0"/>
+	<property name="ireport.x" value="0"/>
+	<property name="ireport.y" value="0"/>
+	<style name="Report_Title" forecolor="#000000" fontSize="20"/>
+	<style name="Report_Subtitle" forecolor="#000000" fontSize="12" isBold="false" isItalic="true" isUnderline="false" isStrikeThrough="false"/>
+	<style name="Table_Detail" hAlign="Left" vAlign="Middle" fontName="SansSerif" fontSize="10" isBold="false" isItalic="false" isUnderline="false" isStrikeThrough="false">
+		<conditionalStyle>
+			<conditionExpression><![CDATA[$F{avail_percent} < new Double("95.0")]]></conditionExpression>
+			<style mode="Opaque" backcolor="#FF3333"/>
+		</conditionalStyle>
+		<conditionalStyle>
+			<conditionExpression><![CDATA[$F{avail_percent} < new Double("99.0")]]></conditionExpression>
+			<style mode="Opaque" backcolor="#FFCC66"/>
+		</conditionalStyle>
+	</style>
+	<style name="Table_Grid" mode="Transparent" forecolor="#FFFFFF" isBold="false" isItalic="false" isUnderline="false" isStrikeThrough="false">
+		<pen lineWidth="0.0" lineColor="#FFFFFF"/>
+		<box>
+			<bottomPen lineWidth="1.0"/>
+		</box>
+		<conditionalStyle>
+			<conditionExpression><![CDATA[new Boolean($V{style_helper_COUNT}%new Integer("5") == new Integer("0"))]]></conditionExpression>
+			<style mode="Opaque" forecolor="#999999">
+				<pen lineWidth="1.0" lineColor="#666666"/>
+				<box>
+					<bottomPen lineWidth="1.0"/>
+				</box>
+			</style>
+		</conditionalStyle>
+	</style>
+	<style name="Page_Footer" fontSize="10" isBold="false" isItalic="false" isUnderline="false" isStrikeThrough="false"/>
+	<style name="Table_Header" isBold="true" isItalic="false" isUnderline="false" isStrikeThrough="false"/>
+	<style name="Table_Header_BG" mode="Opaque" backcolor="#CCFFCC"/>
+	<subDataset name="node_availability">
+		<queryString>
+			<![CDATA[SELECT
+	node_outages.nodelabel,
+	node_outages.nodesyslocation,
+	node_outages.nodesysdescription,
+	SUM(node_outages.duration) AS duration_tally,
+	AVG(node_outages.duration) AS average_duration,
+	SUM(node_outages.outage_counter) AS outages_count,
+	SUM(EXTRACT (epoch from node_outages.duration)) AS outages_seconds,
+	100 - SUM(EXTRACT (epoch from node_outages.duration)) * 100 / node_outages.avail_total AS avail_percent,
+	SUM(EXTRACT (epoch from node_outages.duration)) * 100 / node_outages.avail_total AS outages_percent,
+	node_outages.avail_total
+FROM
+	(SELECT
+		active_nodes.nodelabel,
+		active_nodes.nodesyslocation,
+		active_nodes.nodesysdescription,
+		EXTRACT (epoch from now() - (now()-INTERVAL '7 Days')) AS avail_total,
+		CASE
+			WHEN
+				outages_scope.ifregainedservice - outages_scope.iflostservice is NULL
+			THEN
+				CAST('0' AS INTERVAL)
+			ELSE
+				outages_scope.ifregainedservice - outages_scope.iflostservice
+		END AS
+			duration,
+		CASE
+			WHEN
+				outages_scope.ifregainedservice - outages_scope.iflostservice is NULL
+			THEN
+				CAST('0' AS INTEGER)
+			ELSE
+				CAST('1' AS INTEGER)
+		END AS
+			outage_counter
+	FROM
+		(SELECT
+			outages.nodeid,
+			outages.iflostservice,
+			outages.ifregainedservice
+		FROM
+			outages, service, events
+		WHERE
+			(iflostservice, ifregainedservice) OVERLAPS (now()-INTERVAL '7 Days', now()) AND
+			outages.serviceid = service.serviceid AND
+			service.servicename = 'ICMP' AND
+			outages.svclosteventid = events.eventid AND
+			events.eventuei = 'uei.opennms.org/nodes/nodeDown')
+		AS
+			outages_scope
+	RIGHT JOIN
+		(SELECT
+			*
+		FROM
+			node
+		WHERE
+			nodetype = 'A')
+		AS
+			active_nodes
+	ON
+		(outages_scope.nodeid = active_nodes.nodeid))
+	AS
+		node_outages
+GROUP BY
+	node_outages.nodelabel,
+	node_outages.nodesyslocation,
+	node_outages.nodesysdescription,
+	node_outages.avail_total
+ORDER BY
+	node_outages.nodelabel]]>
+		</queryString>
+		<field name="nodelabel" class="java.lang.String"/>
+		<field name="nodesyslocation" class="java.lang.String"/>
+		<field name="nodesysdescription" class="java.lang.String"/>
+		<field name="duration_tally" class="org.postgresql.util.PGInterval"/>
+		<field name="average_duration" class="org.postgresql.util.PGInterval"/>
+		<field name="outages_count" class="java.lang.Long"/>
+		<field name="outages_seconds" class="java.lang.Double"/>
+		<field name="avail_percent" class="java.lang.Double"/>
+		<field name="outages_percent" class="java.lang.Double"/>
+		<field name="avail_total" class="java.lang.Double"/>
+		<variable name="style_helper_COUNT" class="java.lang.Integer" calculation="Count">
+			<variableExpression><![CDATA[$F{nodelabel}]]></variableExpression>
+		</variable>
+	</subDataset>
+	<parameter name="COMPANY_LOGO" class="java.lang.String">
+		<defaultValueExpression><![CDATA["${install.dir}/etc/report-templates/opennms-logo.png"]]></defaultValueExpression>
+	</parameter>
+	<queryString>
+		<![CDATA[SELECT now()]]>
+	</queryString>
+	<field name="now" class="java.sql.Timestamp"/>
+	<background>
+		<band splitType="Stretch"/>
+	</background>
+	<title>
+		<band height="55" splitType="Stretch">
+			<image>
+				<reportElement x="391" y="0" width="164" height="49"/>
+				<imageExpression class="java.lang.String"><![CDATA[$P{COMPANY_LOGO}]]></imageExpression>
+			</image>
+			<line>
+				<reportElement x="0" y="49" width="555" height="1"/>
+				<graphicElement>
+					<pen lineWidth="1.5"/>
+				</graphicElement>
+			</line>
+			<staticText>
+				<reportElement style="Report_Title" x="0" y="0" width="391" height="34"/>
+				<textElement verticalAlignment="Middle">
+					<font size="20" isBold="true"/>
+				</textElement>
+				<text><![CDATA[Node Availability report]]></text>
+			</staticText>
+			<textField pattern="MM/dd/yyyy">
+				<reportElement style="Report_Subtitle" x="0" y="34" width="391" height="15"/>
+				<textElement verticalAlignment="Middle">
+					<font isItalic="true"/>
+				</textElement>
+				<textFieldExpression class="java.util.Date"><![CDATA[new java.util.Date()]]></textFieldExpression>
+			</textField>
+		</band>
+	</title>
+	<pageHeader>
+		<band height="5" splitType="Stretch"/>
+	</pageHeader>
+	<columnHeader>
+		<band height="5" splitType="Stretch"/>
+	</columnHeader>
+	<detail>
+		<band height="20" splitType="Stretch">
+			<componentElement>
+				<reportElement key="table 1" x="0" y="0" width="555" height="20"/>
+				<jr:table xmlns:jr="http://jasperreports.sourceforge.net/jasperreports/components" xsi:schemaLocation="http://jasperreports.sourceforge.net/jasperreports/components http://jasperreports.sourceforge.net/xsd/components.xsd">
+					<datasetRun subDataset="node_availability">
+						<connectionExpression><![CDATA[$P{REPORT_CONNECTION}]]></connectionExpression>
+					</datasetRun>
+					<jr:column width="217">
+						<jr:tableHeader style="Table_Header_BG" height="30" rowSpan="1">
+							<staticText>
+								<reportElement style="Table_Header" x="2" y="0" width="215" height="30"/>
+								<textElement verticalAlignment="Middle"/>
+								<text><![CDATA[Nodelabel]]></text>
+							</staticText>
+						</jr:tableHeader>
+						<jr:detailCell style="Table_Grid" height="16" rowSpan="1">
+							<textField>
+								<reportElement style="Table_Detail" x="2" y="0" width="215" height="16"/>
+								<textElement/>
+								<textFieldExpression class="java.lang.String"><![CDATA[$F{nodelabel}]]></textFieldExpression>
+							</textField>
+						</jr:detailCell>
+					</jr:column>
+					<jr:column width="66">
+						<jr:tableHeader style="Table_Header_BG" height="30" rowSpan="1">
+							<staticText>
+								<reportElement style="Table_Header" x="0" y="0" width="66" height="30"/>
+								<textElement textAlignment="Center" verticalAlignment="Middle"/>
+								<text><![CDATA[outages count]]></text>
+							</staticText>
+						</jr:tableHeader>
+						<jr:detailCell style="Table_Grid" height="16" rowSpan="1">
+							<textField>
+								<reportElement style="Table_Detail" x="0" y="0" width="66" height="16"/>
+								<textElement textAlignment="Center"/>
+								<textFieldExpression class="java.lang.Long"><![CDATA[$F{outages_count}]]></textFieldExpression>
+							</textField>
+						</jr:detailCell>
+					</jr:column>
+					<jr:column width="90">
+						<jr:tableHeader style="Table_Header_BG" height="30" rowSpan="1">
+							<staticText>
+								<reportElement style="Table_Header" x="0" y="0" width="90" height="30"/>
+								<textElement textAlignment="Center" verticalAlignment="Middle"/>
+								<text><![CDATA[outages in seconds]]></text>
+							</staticText>
+						</jr:tableHeader>
+						<jr:detailCell style="Table_Grid" height="16" rowSpan="1">
+							<textField>
+								<reportElement style="Table_Detail" x="0" y="0" width="90" height="16"/>
+								<textElement textAlignment="Center"/>
+								<textFieldExpression class="java.lang.Double"><![CDATA[$F{outages_seconds}]]></textFieldExpression>
+							</textField>
+						</jr:detailCell>
+					</jr:column>
+					<jr:column width="90">
+						<jr:tableHeader style="Table_Header_BG" height="30" rowSpan="1">
+							<staticText>
+								<reportElement style="Table_Header" x="0" y="0" width="90" height="30"/>
+								<textElement textAlignment="Center" verticalAlignment="Middle"/>
+								<text><![CDATA[outages in %]]></text>
+							</staticText>
+						</jr:tableHeader>
+						<jr:detailCell style="Table_Grid" height="16" rowSpan="1">
+							<textField pattern="###0.000">
+								<reportElement style="Table_Detail" x="0" y="0" width="90" height="16"/>
+								<textElement textAlignment="Center"/>
+								<textFieldExpression class="java.lang.Double"><![CDATA[$F{outages_percent}]]></textFieldExpression>
+							</textField>
+						</jr:detailCell>
+					</jr:column>
+					<jr:column width="90">
+						<jr:tableHeader style="Table_Header_BG" height="30" rowSpan="1">
+							<staticText>
+								<reportElement style="Table_Header" x="0" y="0" width="90" height="30"/>
+								<textElement textAlignment="Center" verticalAlignment="Middle"/>
+								<text><![CDATA[availability in %]]></text>
+							</staticText>
+						</jr:tableHeader>
+						<jr:detailCell style="Table_Grid" height="16" rowSpan="1">
+							<textField pattern="###0.000">
+								<reportElement style="Table_Detail" x="0" y="0" width="90" height="16"/>
+								<textElement textAlignment="Center"/>
+								<textFieldExpression class="java.lang.Double"><![CDATA[$F{avail_percent}]]></textFieldExpression>
+							</textField>
+						</jr:detailCell>
+					</jr:column>
+				</jr:table>
+			</componentElement>
+		</band>
+	</detail>
+	<columnFooter>
+		<band splitType="Stretch"/>
+	</columnFooter>
+	<pageFooter>
+		<band height="31" splitType="Stretch">
+			<line>
+				<reportElement x="0" y="9" width="555" height="1"/>
+				<graphicElement>
+					<pen lineWidth="1.5"/>
+				</graphicElement>
+			</line>
+			<textField>
+				<reportElement style="Page_Footer" x="451" y="11" width="80" height="20"/>
+				<textElement textAlignment="Right"/>
+				<textFieldExpression class="java.lang.String"><![CDATA["Page "+$V{PAGE_NUMBER}+" of"]]></textFieldExpression>
+			</textField>
+			<textField evaluationTime="Report">
+				<reportElement style="Page_Footer" x="531" y="11" width="24" height="20"/>
+				<textElement/>
+				<textFieldExpression class="java.lang.String"><![CDATA[" " + $V{PAGE_NUMBER}]]></textFieldExpression>
+			</textField>
+		</band>
+	</pageFooter>
+	<summary>
+		<band height="42" splitType="Stretch"/>
+	</summary>
+</jasperReport>
