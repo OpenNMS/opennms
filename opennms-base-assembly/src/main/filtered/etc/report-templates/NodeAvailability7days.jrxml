@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <jasperReport xmlns="http://jasperreports.sourceforge.net/jasperreports" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://jasperreports.sourceforge.net/jasperreports http://jasperreports.sourceforge.net/xsd/jasperreport.xsd" name="node_availability" pageWidth="595" pageHeight="842" columnWidth="555" leftMargin="20" rightMargin="20" topMargin="20" bottomMargin="20">
 	<property name="ireport.zoom" value="2.0"/>
-	<property name="ireport.x" value="60"/>
+	<property name="ireport.x" value="0"/>
 	<property name="ireport.y" value="0"/>
 	<style name="Report_Title" forecolor="#000000" fontSize="20"/>
 	<style name="Report_Subtitle" forecolor="#000000" vAlign="Middle" fontSize="10" isBold="false" isItalic="true" isUnderline="false" isStrikeThrough="false"/>
@@ -33,14 +33,30 @@
 	<style name="Page_Footer" fontSize="10" isBold="false" isItalic="false" isUnderline="false" isStrikeThrough="false"/>
 	<style name="Table_Header" isBold="true" isItalic="false" isUnderline="false" isStrikeThrough="false"/>
 	<style name="Table_Header_BG" mode="Opaque" backcolor="#CCFFCC"/>
-	<style name="Table_Surveillance_Cat" forecolor="#4B4B4B" vAlign="Middle" fontSize="10" isBold="true" isItalic="false" isUnderline="false" isStrikeThrough="false"/>
+	<style name="Table_Surveillance_Cat" forecolor="#000000" vAlign="Middle" fontSize="10" isBold="true" isItalic="false" isUnderline="false" isStrikeThrough="false"/>
 	<style name="Table_Surveillance_Cat_BG" mode="Opaque" backcolor="#DFDFDF"/>
+	<style name="Table_Surveillance_Cat_Footer_BG" mode="Transparent" backcolor="#FFFFFF">
+		<pen lineWidth="1.0" lineStyle="Double"/>
+	</style>
+	<style name="Table_Surveillance_Cat_Footer" hAlign="Center" vAlign="Middle" fontSize="10" isBold="true" isItalic="false" isUnderline="false" isStrikeThrough="false">
+		<box>
+			<bottomPen lineWidth="0.0" lineStyle="Double" lineColor="#000000"/>
+		</box>
+	</style>
+	<style name="Table_Surveillance_Cat_Footer_Line" hAlign="Center" vAlign="Middle" isBold="true" isItalic="false" isUnderline="false" isStrikeThrough="false">
+		<box>
+			<bottomPen lineWidth="2.0" lineStyle="Double" lineColor="#000000"/>
+		</box>
+	</style>
 	<subDataset name="node_availability">
 		<parameter name="DS_SURVEILLANCE_CATEGORY" class="java.lang.String" isForPrompting="false">
 			<defaultValueExpression><![CDATA[new String("%")]]></defaultValueExpression>
 		</parameter>
 		<parameter name="DS_AVAILABILITY_WARNING" class="java.lang.Double" isForPrompting="false"/>
 		<parameter name="DS_AVAILABILITY_CRITICAL" class="java.lang.Double" isForPrompting="false"/>
+		<parameter name="DS_TIME_RANGE" class="java.lang.String" isForPrompting="false">
+			<defaultValueExpression><![CDATA["7 Days"]]></defaultValueExpression>
+		</parameter>
 		<queryString>
 			<![CDATA[SELECT
 	node_outages.categoryname,
@@ -61,7 +77,7 @@ FROM
 		active_nodes.nodelabel,
 		active_nodes.nodesyslocation,
 		active_nodes.nodesysdescription,
-		EXTRACT (epoch from now() - (now()-INTERVAL '7 days')) AS avail_total,
+		EXTRACT (epoch from now() - (now()-'$P!{DS_TIME_RANGE}'::INTERVAL)) AS avail_total,
 		CASE
 			WHEN
 				outages_scope.ifregainedservice - outages_scope.iflostservice is NULL
@@ -88,7 +104,7 @@ FROM
 		FROM
 			outages, service, events
 		WHERE
-			(iflostservice, ifregainedservice) OVERLAPS (now()-INTERVAL '7 days', now()) AND
+			(iflostservice, ifregainedservice) OVERLAPS (now()-'$P!{DS_TIME_RANGE}'::INTERVAL, now()) AND
 			outages.serviceid = service.serviceid AND
 			service.servicename = 'ICMP' AND
 			outages.svclosteventid = events.eventid AND
@@ -146,12 +162,57 @@ ORDER BY
 		<variable name="style_helper_COUNT" class="java.lang.Integer" calculation="Count">
 			<variableExpression><![CDATA[$F{nodelabel}]]></variableExpression>
 		</variable>
+		<variable name="SURVEILLANCE_CAT_AVAILABILITY_AVG" class="java.lang.Double" resetType="Group" resetGroup="SURVEILLANCE_CAT" calculation="Average">
+			<variableExpression><![CDATA[$F{avail_percent}]]></variableExpression>
+		</variable>
+		<variable name="SURVEILLANCE_CAT_AVAILABILITY_MAX" class="java.lang.Double" resetType="Group" resetGroup="SURVEILLANCE_CAT" calculation="Highest">
+			<variableExpression><![CDATA[$F{avail_percent}]]></variableExpression>
+		</variable>
+		<variable name="SURVEILLANCE_CAT_AVAILABILITY_MIN" class="java.lang.Double" resetType="Group" resetGroup="SURVEILLANCE_CAT" calculation="Lowest">
+			<variableExpression><![CDATA[$F{avail_percent}]]></variableExpression>
+		</variable>
+		<variable name="SURVEILLANCE_CAT_OUTAGES_AVG" class="java.lang.Double" resetType="Group" resetGroup="SURVEILLANCE_CAT" calculation="Average">
+			<variableExpression><![CDATA[$F{outages_percent}]]></variableExpression>
+		</variable>
+		<variable name="SURVEILLANCE_CAT_OUTAGES_MAX" class="java.lang.Double" resetType="Group" resetGroup="SURVEILLANCE_CAT" calculation="Highest">
+			<variableExpression><![CDATA[$F{outages_percent}]]></variableExpression>
+		</variable>
+		<variable name="SURVEILLANCE_CAT_OUTAGES_MIN" class="java.lang.Double" resetType="Group" resetGroup="SURVEILLANCE_CAT" calculation="Lowest">
+			<variableExpression><![CDATA[$F{outages_percent}]]></variableExpression>
+		</variable>
+		<variable name="SURVEILLANCE_CAT_TOTAL_AVG" class="java.lang.Double" resetType="Group" resetGroup="SURVEILLANCE_CAT" calculation="Average">
+			<variableExpression><![CDATA[$F{outages_seconds}/new Double("3600")]]></variableExpression>
+		</variable>
+		<variable name="SURVEILLANCE_CAT_TOTAL_MAX" class="java.lang.Double" resetType="Group" resetGroup="SURVEILLANCE_CAT" calculation="Highest">
+			<variableExpression><![CDATA[$F{outages_seconds}/new Double("3600")]]></variableExpression>
+		</variable>
+		<variable name="SURVEILLANCE_CAT_TOTAL_MIN" class="java.lang.Double" resetType="Group" resetGroup="SURVEILLANCE_CAT" calculation="Lowest">
+			<variableExpression><![CDATA[$F{outages_seconds}/new Double("3600")]]></variableExpression>
+		</variable>
+		<variable name="SURVEILLANCE_CAT_MTTR_AVG" class="java.lang.Double" resetType="Group" resetGroup="SURVEILLANCE_CAT" calculation="Average">
+			<variableExpression><![CDATA[$F{average_duration_seconds}/new Double("3600")]]></variableExpression>
+		</variable>
+		<variable name="SURVEILLANCE_CAT_MTTR_MAX" class="java.lang.Double" resetType="Group" resetGroup="SURVEILLANCE_CAT" calculation="Highest">
+			<variableExpression><![CDATA[$F{average_duration_seconds}/new Double("3600")]]></variableExpression>
+		</variable>
+		<variable name="SURVEILLANCE_CAT_MTTR_MIN" class="java.lang.Double" resetType="Group" resetGroup="SURVEILLANCE_CAT" calculation="Lowest">
+			<variableExpression><![CDATA[$F{average_duration_seconds}/new Double("3600")]]></variableExpression>
+		</variable>
+		<variable name="SURVEILLANCE_CAT_CNT_AVG" class="java.lang.Long" resetType="Group" resetGroup="SURVEILLANCE_CAT" calculation="Average">
+			<variableExpression><![CDATA[$F{outages_count}]]></variableExpression>
+		</variable>
+		<variable name="SURVEILLANCE_CAT_CNT_MAX" class="java.lang.Long" resetType="Group" resetGroup="SURVEILLANCE_CAT" calculation="Highest">
+			<variableExpression><![CDATA[$F{outages_count}]]></variableExpression>
+		</variable>
+		<variable name="SURVEILLANCE_CAT_CNT_MIN" class="java.lang.Long" resetType="Group" resetGroup="SURVEILLANCE_CAT" calculation="Lowest">
+			<variableExpression><![CDATA[$F{outages_count}]]></variableExpression>
+		</variable>
 		<group name="SURVEILLANCE_CAT">
 			<groupExpression><![CDATA[$F{categoryname}]]></groupExpression>
 		</group>
 	</subDataset>
 	<parameter name="COMPANY_LOGO" class="java.lang.String">
-		<defaultValueExpression><![CDATA["/Users/indigo/report-templates/opennms-logo.png"]]></defaultValueExpression>
+		<defaultValueExpression><![CDATA["${install.dir}/etc/report-templates/opennms-logo.png"]]></defaultValueExpression>
 	</parameter>
 	<parameter name="SURVEILLANCE_CATEGORY" class="java.lang.String">
 		<defaultValueExpression><![CDATA["Mon%"]]></defaultValueExpression>
@@ -162,9 +223,12 @@ ORDER BY
 	<parameter name="AVAILABILITY_CRITICAL" class="java.lang.Double">
 		<defaultValueExpression><![CDATA[new Double("97.0")]]></defaultValueExpression>
 	</parameter>
+	<parameter name="TIME_RANGE" class="java.lang.String">
+		<defaultValueExpression><![CDATA["7 Days"]]></defaultValueExpression>
+	</parameter>
 	<queryString>
 		<![CDATA[SELECT
-	now()-INTERVAL '7 Days' AS start,
+	now()-'$P!{TIME_RANGE}'::INTERVAL AS start,
 	now() AS end]]>
 	</queryString>
 	<field name="start" class="java.sql.Timestamp"/>
@@ -176,6 +240,12 @@ ORDER BY
 		<variableExpression><![CDATA[$F{start}]]></variableExpression>
 	</variable>
 	<variable name="end_1" class="java.lang.Integer" resetType="Page" calculation="Count">
+		<variableExpression><![CDATA[$F{end}]]></variableExpression>
+	</variable>
+	<variable name="start_3" class="java.lang.Integer" resetType="Page" calculation="Count">
+		<variableExpression><![CDATA[$F{start}]]></variableExpression>
+	</variable>
+	<variable name="end_2" class="java.lang.Integer" resetType="Page" calculation="Count">
 		<variableExpression><![CDATA[$F{end}]]></variableExpression>
 	</variable>
 	<background>
@@ -243,6 +313,9 @@ ORDER BY
 						<datasetParameter name="DS_AVAILABILITY_CRITICAL">
 							<datasetParameterExpression><![CDATA[$P{AVAILABILITY_CRITICAL}]]></datasetParameterExpression>
 						</datasetParameter>
+						<datasetParameter name="DS_TIME_RANGE">
+							<datasetParameterExpression><![CDATA[$P{TIME_RANGE}]]></datasetParameterExpression>
+						</datasetParameter>
 						<connectionExpression><![CDATA[$P{REPORT_CONNECTION}]]></connectionExpression>
 					</datasetRun>
 					<jr:column width="264">
@@ -255,6 +328,30 @@ ORDER BY
 								</textField>
 							</jr:cell>
 						</jr:groupHeader>
+						<jr:groupFooter groupName="SURVEILLANCE_CAT">
+							<jr:cell style="Table_Surveillance_Cat_Footer_BG" height="121" rowSpan="1">
+								<textField>
+									<reportElement x="12" y="14" width="252" height="20"/>
+									<textElement textAlignment="Left" verticalAlignment="Middle"/>
+									<textFieldExpression class="java.lang.String"><![CDATA["Summary for category: "+$F{categoryname}]]></textFieldExpression>
+								</textField>
+								<textField>
+									<reportElement style="Table_Surveillance_Cat_Footer" x="12" y="34" width="252" height="20"/>
+									<textElement textAlignment="Left"/>
+									<textFieldExpression class="java.lang.String"><![CDATA["Average"]]></textFieldExpression>
+								</textField>
+								<textField>
+									<reportElement style="Table_Surveillance_Cat_Footer" x="12" y="54" width="252" height="20"/>
+									<textElement textAlignment="Left"/>
+									<textFieldExpression class="java.lang.String"><![CDATA["Maximum"]]></textFieldExpression>
+								</textField>
+								<textField>
+									<reportElement style="Table_Surveillance_Cat_Footer_Line" x="12" y="74" width="252" height="20"/>
+									<textElement textAlignment="Left"/>
+									<textFieldExpression class="java.lang.String"><![CDATA["Minimum"]]></textFieldExpression>
+								</textField>
+							</jr:cell>
+						</jr:groupFooter>
 						<jr:columnHeader style="Table_Header_BG" height="30" rowSpan="1">
 							<staticText>
 								<reportElement style="Table_Header" x="2" y="0" width="262" height="30"/>
@@ -274,6 +371,25 @@ ORDER BY
 						<jr:groupHeader groupName="SURVEILLANCE_CAT">
 							<jr:cell style="Table_Surveillance_Cat_BG" height="20" rowSpan="1"/>
 						</jr:groupHeader>
+						<jr:groupFooter groupName="SURVEILLANCE_CAT">
+							<jr:cell height="121" rowSpan="1">
+								<textField pattern="###0.00">
+									<reportElement style="Table_Surveillance_Cat_Footer" x="0" y="34" width="64" height="20"/>
+									<textElement/>
+									<textFieldExpression class="java.lang.Long"><![CDATA[$V{SURVEILLANCE_CAT_CNT_AVG}]]></textFieldExpression>
+								</textField>
+								<textField pattern="###0.00">
+									<reportElement style="Table_Surveillance_Cat_Footer" x="0" y="54" width="64" height="20"/>
+									<textElement/>
+									<textFieldExpression class="java.lang.Long"><![CDATA[$V{SURVEILLANCE_CAT_CNT_MAX}]]></textFieldExpression>
+								</textField>
+								<textField pattern="###0.00">
+									<reportElement style="Table_Surveillance_Cat_Footer_Line" x="0" y="74" width="64" height="20"/>
+									<textElement/>
+									<textFieldExpression class="java.lang.Long"><![CDATA[$V{SURVEILLANCE_CAT_CNT_MIN}]]></textFieldExpression>
+								</textField>
+							</jr:cell>
+						</jr:groupFooter>
 						<jr:columnHeader style="Table_Header_BG" height="30" rowSpan="1">
 							<staticText>
 								<reportElement style="Table_Header" x="0" y="0" width="64" height="30"/>
@@ -293,6 +409,25 @@ ORDER BY
 						<jr:groupHeader groupName="SURVEILLANCE_CAT">
 							<jr:cell style="Table_Surveillance_Cat_BG" height="20" rowSpan="1"/>
 						</jr:groupHeader>
+						<jr:groupFooter groupName="SURVEILLANCE_CAT">
+							<jr:cell height="121" rowSpan="1">
+								<textField pattern="###0.00">
+									<reportElement style="Table_Surveillance_Cat_Footer" x="0" y="34" width="65" height="20"/>
+									<textElement/>
+									<textFieldExpression class="java.lang.Double"><![CDATA[$V{SURVEILLANCE_CAT_MTTR_AVG}]]></textFieldExpression>
+								</textField>
+								<textField pattern="###0.00">
+									<reportElement style="Table_Surveillance_Cat_Footer" x="0" y="54" width="65" height="20"/>
+									<textElement/>
+									<textFieldExpression class="java.lang.Double"><![CDATA[$V{SURVEILLANCE_CAT_MTTR_MAX}]]></textFieldExpression>
+								</textField>
+								<textField pattern="###0.00">
+									<reportElement style="Table_Surveillance_Cat_Footer_Line" x="0" y="74" width="65" height="20"/>
+									<textElement/>
+									<textFieldExpression class="java.lang.Double"><![CDATA[$V{SURVEILLANCE_CAT_MTTR_MIN}]]></textFieldExpression>
+								</textField>
+							</jr:cell>
+						</jr:groupFooter>
 						<jr:columnHeader style="Table_Header_BG" height="30" rowSpan="1">
 							<staticText>
 								<reportElement style="Table_Header" x="0" y="0" width="65" height="30"/>
@@ -312,6 +447,25 @@ ORDER BY
 						<jr:groupHeader groupName="SURVEILLANCE_CAT">
 							<jr:cell style="Table_Surveillance_Cat_BG" height="20" rowSpan="1"/>
 						</jr:groupHeader>
+						<jr:groupFooter groupName="SURVEILLANCE_CAT">
+							<jr:cell style="Table_Surveillance_Cat_Footer_BG" height="121" rowSpan="1">
+								<textField pattern="###0.00">
+									<reportElement style="Table_Surveillance_Cat_Footer" x="0" y="34" width="55" height="20"/>
+									<textElement/>
+									<textFieldExpression class="java.lang.Double"><![CDATA[$V{SURVEILLANCE_CAT_TOTAL_AVG}]]></textFieldExpression>
+								</textField>
+								<textField pattern="###0.00">
+									<reportElement style="Table_Surveillance_Cat_Footer" x="0" y="54" width="55" height="20"/>
+									<textElement/>
+									<textFieldExpression class="java.lang.Double"><![CDATA[$V{SURVEILLANCE_CAT_TOTAL_MAX}]]></textFieldExpression>
+								</textField>
+								<textField pattern="###0.00">
+									<reportElement style="Table_Surveillance_Cat_Footer_Line" x="0" y="74" width="55" height="20"/>
+									<textElement/>
+									<textFieldExpression class="java.lang.Double"><![CDATA[$V{SURVEILLANCE_CAT_TOTAL_MIN}]]></textFieldExpression>
+								</textField>
+							</jr:cell>
+						</jr:groupFooter>
 						<jr:columnHeader style="Table_Header_BG" height="30" rowSpan="1">
 							<staticText>
 								<reportElement style="Table_Header" x="0" y="0" width="55" height="30"/>
@@ -331,6 +485,25 @@ ORDER BY
 						<jr:groupHeader groupName="SURVEILLANCE_CAT">
 							<jr:cell style="Table_Surveillance_Cat_BG" height="20" rowSpan="1"/>
 						</jr:groupHeader>
+						<jr:groupFooter groupName="SURVEILLANCE_CAT">
+							<jr:cell style="Table_Surveillance_Cat_Footer_BG" height="121" rowSpan="1">
+								<textField pattern="###0.000">
+									<reportElement style="Table_Surveillance_Cat_Footer" x="0" y="34" width="47" height="20"/>
+									<textElement/>
+									<textFieldExpression class="java.lang.Double"><![CDATA[$V{SURVEILLANCE_CAT_OUTAGES_AVG}]]></textFieldExpression>
+								</textField>
+								<textField pattern="###0.000">
+									<reportElement style="Table_Surveillance_Cat_Footer" x="0" y="54" width="47" height="20"/>
+									<textElement/>
+									<textFieldExpression class="java.lang.Double"><![CDATA[$V{SURVEILLANCE_CAT_OUTAGES_MAX}]]></textFieldExpression>
+								</textField>
+								<textField pattern="###0.000">
+									<reportElement style="Table_Surveillance_Cat_Footer_Line" x="0" y="74" width="47" height="20"/>
+									<textElement/>
+									<textFieldExpression class="java.lang.Double"><![CDATA[$V{SURVEILLANCE_CAT_OUTAGES_MIN}]]></textFieldExpression>
+								</textField>
+							</jr:cell>
+						</jr:groupFooter>
 						<jr:columnHeader style="Table_Header_BG" height="30" rowSpan="1">
 							<staticText>
 								<reportElement style="Table_Header" x="0" y="0" width="47" height="30"/>
@@ -350,6 +523,25 @@ ORDER BY
 						<jr:groupHeader groupName="SURVEILLANCE_CAT">
 							<jr:cell style="Table_Surveillance_Cat_BG" height="20" rowSpan="1"/>
 						</jr:groupHeader>
+						<jr:groupFooter groupName="SURVEILLANCE_CAT">
+							<jr:cell style="Table_Surveillance_Cat_Footer_BG" height="121" rowSpan="1">
+								<textField pattern="###0.000">
+									<reportElement style="Table_Surveillance_Cat_Footer" x="0" y="34" width="60" height="20"/>
+									<textElement/>
+									<textFieldExpression class="java.lang.Double"><![CDATA[$V{SURVEILLANCE_CAT_AVAILABILITY_AVG}]]></textFieldExpression>
+								</textField>
+								<textField pattern="###0.000">
+									<reportElement style="Table_Surveillance_Cat_Footer" x="0" y="54" width="60" height="20"/>
+									<textElement/>
+									<textFieldExpression class="java.lang.Double"><![CDATA[$V{SURVEILLANCE_CAT_AVAILABILITY_MAX}]]></textFieldExpression>
+								</textField>
+								<textField pattern="###0.000">
+									<reportElement style="Table_Surveillance_Cat_Footer_Line" x="0" y="74" width="60" height="20"/>
+									<textElement/>
+									<textFieldExpression class="java.lang.Double"><![CDATA[$V{SURVEILLANCE_CAT_AVAILABILITY_MIN}]]></textFieldExpression>
+								</textField>
+							</jr:cell>
+						</jr:groupFooter>
 						<jr:columnHeader style="Table_Header_BG" height="30" rowSpan="1">
 							<staticText>
 								<reportElement style="Table_Header" x="0" y="0" width="60" height="30"/>
