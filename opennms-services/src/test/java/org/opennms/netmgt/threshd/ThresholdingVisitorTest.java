@@ -1045,7 +1045,11 @@ public class ThresholdingVisitorTest {
         addHighThresholdEvent(1, 90, 50, 120, label, null, "ifOutOctets", label, ifIndex.toString());
         addHighThresholdEvent(1, 90, 50, 120, label, null, "ifInOctets", label, ifIndex.toString());
 
-        ThresholdingVisitor visitor = createVisitor();
+        Map<String,String> params = new HashMap<String,String>();
+        params.put("thresholding-enabled", "true");
+        params.put("storeByIfAlias", "true");
+        ThresholdingVisitor visitor = createVisitor(params);
+
         SnmpIfData ifData = createSnmpIfData("127.0.0.1", ifName, ifSpeed, ifIndex);
         CollectionAgent agent = createCollectionAgent();
         IfResourceType resourceType = createInterfaceResourceType(agent);
@@ -1068,6 +1072,46 @@ public class ThresholdingVisitorTest {
         verifyEvents(0);
     }
 
+    /*
+     * This test uses this files from src/test/resources:
+     * - thresd-configuration.xml
+     * - test-thresholds-bug3664.xml
+     * 
+     * Updated to reflect the fact that counter are treated as rates.
+     */
+    @Test
+    public void testIgnoreAliasedResources() throws Exception {
+        initFactories("/threshd-configuration.xml","/test-thresholds-bug3664.xml");
+        Integer ifIndex = 1;
+        Long ifSpeed = 10000000l;
+        String ifName = "wlan0";
+        String domain = "myDomain";
+        String ifAlias = ifName;
+        String ifAliasComment = "#";
+
+        ThresholdingVisitor visitor = createVisitor(); // equals to storeByIfAlias = false
+
+        SnmpIfData ifData = createSnmpIfData("127.0.0.1", ifName, ifSpeed, ifIndex);
+        CollectionAgent agent = createCollectionAgent();
+        IfResourceType resourceType = createInterfaceResourceType(agent);
+
+        // Step 1
+        IfInfo ifInfo = new IfInfo(resourceType, agent, ifData);
+        addAttributeToCollectionResource(ifInfo, resourceType, "ifInOctets", "counter", "ifIndex", 10000);
+        addAttributeToCollectionResource(ifInfo, resourceType, "ifOutOctets", "counter", "ifIndex", 10000);
+        AliasedResource resource = new AliasedResource(resourceType, domain, ifInfo, ifAliasComment, ifAlias);
+        resource.visit(visitor);
+
+        // Step 2 - Increment Counters
+        ifInfo = new IfInfo(resourceType, agent, ifData);
+        addAttributeToCollectionResource(ifInfo, resourceType, "ifInOctets", "counter", "ifIndex", 46000);
+        addAttributeToCollectionResource(ifInfo, resourceType, "ifOutOctets", "counter", "ifIndex", 46000);
+        resource = new AliasedResource(resourceType, domain, ifInfo, ifAliasComment, ifAlias);
+        resource.visit(visitor);
+
+        EasyMock.verify(agent);
+        verifyEvents(0);
+    }
     /*
      * Testing custom ThresholdingSet implementation for in-line Latency thresholds processing for Pollerd.
      * 
@@ -1195,6 +1239,12 @@ public class ThresholdingVisitorTest {
     private ThresholdingVisitor createVisitor() {
         Map<String,String> params = new HashMap<String,String>();
         params.put("thresholding-enabled", "true");
+        ThresholdingVisitor visitor = ThresholdingVisitor.create(1, "127.0.0.1", "SNMP", getRepository(), params, 300000);
+        assertNotNull(visitor);
+        return visitor;
+    }
+
+    private ThresholdingVisitor createVisitor(Map<String,String> params) {
         ThresholdingVisitor visitor = ThresholdingVisitor.create(1, "127.0.0.1", "SNMP", getRepository(), params, 300000);
         assertNotNull(visitor);
         return visitor;
