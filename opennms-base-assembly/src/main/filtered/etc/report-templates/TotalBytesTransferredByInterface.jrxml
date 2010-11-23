@@ -46,7 +46,8 @@ ON
 	(categories.categoryid = category_node.categoryid)
 WHERE
 	(snmpinterface.snmpcollect = 'C' OR snmpinterface.snmpcollect = 'UC') AND
-	node.nodetype = 'A'
+	node.nodetype = 'A' AND
+	categories.categoryname like $P{SURVEILLANCE_CATEGORY}
 ORDER BY
 	categories.categoryname,
 	node.nodelabel]]>
