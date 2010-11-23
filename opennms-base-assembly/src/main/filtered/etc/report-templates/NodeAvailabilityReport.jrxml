@@ -215,7 +215,7 @@ ORDER BY
 		</group>
 	</subDataset>
 	<parameter name="COMPANY_LOGO" class="java.lang.String">
-		<defaultValueExpression><![CDATA["${install.dir}/etc/report-templates/opennms-logo.png"]]></defaultValueExpression>
+		<defaultValueExpression><![CDATA["assets/images/company-logo.png"]]></defaultValueExpression>
 	</parameter>
 	<parameter name="SURVEILLANCE_CATEGORY" class="java.lang.String">
 		<defaultValueExpression><![CDATA["%"]]></defaultValueExpression>
