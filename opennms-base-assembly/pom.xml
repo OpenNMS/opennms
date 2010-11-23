@@ -184,6 +184,45 @@
         </executions>
       </plugin>
       <plugin>
+        <groupId>org.codehaus.mojo</groupId>
+        <artifactId>jasperreports-maven-plugin</artifactId>
+        <version>1.0-beta-3-SNAPSHOT</version>
+        <executions>
+          <execution>
+            <phase>compile</phase>
+            <goals>
+              <goal>compile-reports</goal>
+            </goals>
+          </execution>
+        </executions>
+        <configuration>
+          <sourceDirectory>src/main/filtered/etc/report-templates</sourceDirectory>
+          <outputDirectory>${project.build.directory}/jasper</outputDirectory>
+          <xmlValidation>true</xmlValidation>
+          <additionalProperties>
+            <net.sf.jasperreports.query.executer.factory.jrobin>org.opennms.netmgt.jasper.jrobin.JRobinQueryExecutorFactory</net.sf.jasperreports.query.executer.factory.jrobin>
+          </additionalProperties>
+          <compiler>net.sf.jasperreports.compilers.JRGroovyCompiler</compiler>
+        </configuration>
+        <dependencies>
+          <dependency>
+            <groupId>xerces</groupId>
+            <artifactId>xercesImpl</artifactId>
+            <version>2.9.1</version>
+          </dependency>
+          <dependency>
+            <groupId>org.opennms</groupId>
+            <artifactId>jasper-extensions</artifactId>
+            <version>${project.version}</version>
+          </dependency>
+          <dependency>
+            <groupId>org.codehaus.groovy</groupId>
+            <artifactId>groovy-all</artifactId>
+            <version>1.7.5</version>
+          </dependency>
+        </dependencies>
+      </plugin>
+      <plugin>
         <artifactId>maven-resources-plugin</artifactId>
         <executions>
           <execution>
@@ -352,7 +391,7 @@
       <artifactId>org.opennms.features.system-report</artifactId>
       <scope>compile</scope>
     </dependency>
- 
+
     <!-- dependencies for SMS monitors -->
     <dependency>
       <groupId>org.opennms.features.sms-reflector</groupId>
@@ -417,7 +456,7 @@
       <groupId>commons-lang</groupId>
       <artifactId>commons-lang</artifactId>
     </dependency>
-    
+
     <!--jasper-extensions-->
     <dependency>
       <groupId>org.opennms</groupId>

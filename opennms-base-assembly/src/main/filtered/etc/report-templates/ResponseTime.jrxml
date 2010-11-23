@@ -78,10 +78,10 @@
 		<defaultValueExpression><![CDATA[new Double("80.0")]]></defaultValueExpression>
 	</parameter>
 	<parameter name="startDate" class="java.util.Date">
-		<defaultValueExpression><![CDATA[new Date(1290098100000L)]]></defaultValueExpression>
+		<defaultValueExpression><![CDATA[new java.util.Date(new java.util.Date().getTime() - 86400 * 7 * 1000)]]></defaultValueExpression>
 	</parameter>
 	<parameter name="endDate" class="java.util.Date">
-		<defaultValueExpression><![CDATA[new Date(1290120600000L)]]></defaultValueExpression>
+		<defaultValueExpression><![CDATA[new java.util.Date()]]></defaultValueExpression>
 	</parameter>
 	<parameter name="rrdDir" class="java.lang.String">
 		<defaultValueExpression><![CDATA["${install.dir}/share/rrd"]]></defaultValueExpression>
@@ -182,22 +182,22 @@ ORDER BY
 				</graphicElement>
 			</line>
 			<staticText>
-				<reportElement style="Report_Subtitle" x="2" y="83" width="67" height="15"/>
+				<reportElement style="Sub-sub-header" x="2" y="83" width="67" height="15"/>
 				<textElement/>
 				<text><![CDATA[Report begin: ]]></text>
 			</staticText>
 			<textField evaluationTime="Page">
-				<reportElement style="Report_Subtitle" x="69" y="83" width="126" height="14"/>
+				<reportElement style="Sub-sub-header" x="69" y="83" width="126" height="14"/>
 				<textElement/>
 				<textFieldExpression class="java.util.Date"><![CDATA[$P{startDate}]]></textFieldExpression>
 			</textField>
 			<textField evaluationTime="Page">
-				<reportElement style="Report_Subtitle" x="255" y="83" width="131" height="14"/>
+				<reportElement style="Sub-sub-header" x="255" y="83" width="131" height="14"/>
 				<textElement/>
 				<textFieldExpression class="java.util.Date"><![CDATA[$P{endDate}]]></textFieldExpression>
 			</textField>
 			<staticText>
-				<reportElement style="Report_Subtitle" x="195" y="83" width="60" height="14"/>
+				<reportElement style="Sub-sub-header" x="195" y="83" width="60" height="14"/>
 				<textElement/>
 				<text><![CDATA[Report end: ]]></text>
 			</staticText>

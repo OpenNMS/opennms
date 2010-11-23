@@ -148,7 +148,7 @@ public class OpenLayersMapPanel extends Composite implements MapPanel {
         layerOptions.setWrapDateLine(true);
         layerParams = new WMSParams();
         layerParams.setLayers(getLayerName());
-        Layer layer = new WMS("OpenStreetMaps", getLayerUrl(), layerParams, layerOptions);
+        Layer layer = new WMS("Default", getLayerUrl(), layerParams, layerOptions);
         layer.setIsBaseLayer(true);
         layer.setIsVisible(true);
         m_map.addLayer(layer);
@@ -158,15 +158,6 @@ public class OpenLayersMapPanel extends Composite implements MapPanel {
         layerParams = new WMSParams();
         layerParams.setLayers("basic");
         layer = new WMS("MetaCarta (Basic)", new String[] {"http://labs.metacarta.com/wms-c/Basic.py?", "http://t2.labs.metacarta.com/wms-c/Basic.py?", "http://t1.labs.metacarta.com/wms-c/Basic.py?" }, layerParams, layerOptions);
-        layer.setIsBaseLayer(true);
-        layer.setIsVisible(false);
-        m_map.addLayer(layer);
-
-        layerOptions = new WMSOptions();
-        layerOptions.setWrapDateLine(true);
-        layerParams = new WMSParams();
-        layerParams.setLayers("satellite");
-        layer = new WMS("MetaCarta (Satellite)", new String[] {"http://labs.metacarta.com/wms-c/Basic.py?", "http://t2.labs.metacarta.com/wms-c/Basic.py?", "http://t1.labs.metacarta.com/wms-c/Basic.py?" }, layerParams, layerOptions);
         layer.setIsBaseLayer(true);
         layer.setIsVisible(false);
         m_map.addLayer(layer);
