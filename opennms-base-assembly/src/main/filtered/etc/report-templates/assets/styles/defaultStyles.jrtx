@@ -2,10 +2,10 @@
 <!DOCTYPE jasperTemplate PUBLIC "-//JasperReports//DTD Template//EN" "http://jasperreports.sourceforge.net/dtds/jaspertemplate.dtd">
 
 <jasperTemplate>
-	<style name="Title" forecolor="#003366" backcolor="#FFFFFF" fontName="Arial" fontSize="24" isBold="true" isItalic="false" isUnderline="false" isStrikeThrough="false"/>
-	<style name="Header" forecolor="#003366" backcolor="#FFFFFF" fontName="Arial" fontSize="18" isBold="true" isItalic="false" isUnderline="false" isStrikeThrough="false"/>
-	<style name="Sub-header" forecolor="#003366" backcolor="#FFFFFF" fontName="Arial" fontSize="14" isBold="true" isItalic="false" isUnderline="false" isStrikeThrough="false"/>
-	<style name="Sub-sub-header" forecolor="#003366" backcolor="#FFFFFF" fontName="Arial" fontSize="12" isBold="true" isItalic="true" isUnderline="false" isStrikeThrough="false"/>
-	<style name="Sub-sub-sub-header" forecolor="#003366" backcolor="#FFFFFF" fontName="Arial" fontSize="12" isBold="false" isItalic="false" isUnderline="false" isStrikeThrough="false"/>
-	<style name="Body" forecolor="#000000" backcolor="#FFFFFF" markup="none" fontName="Arial" fontSize="10" isBold="false" isItalic="false" isUnderline="false" isStrikeThrough="false"/>
+	<style name="Title" forecolor="#003366" backcolor="#FFFFFF" vAlign="Middle" fontName="Arial" fontSize="24" isBold="true" isItalic="false" isUnderline="false" isStrikeThrough="false"/>
+	<style name="Header" forecolor="#003366" backcolor="#FFFFFF" vAlign="Middle" fontName="Arial" fontSize="18" isBold="true" isItalic="false" isUnderline="false" isStrikeThrough="false"/>
+	<style name="Sub-header" forecolor="#003366" backcolor="#FFFFFF" vAlign="Middle" fontName="Arial" fontSize="14" isBold="true" isItalic="false" isUnderline="false" isStrikeThrough="false"/>
+	<style name="Sub-sub-header" forecolor="#003366" backcolor="#FFFFFF" vAlign="Middle" fontName="Arial" fontSize="12" isBold="true" isItalic="true" isUnderline="false" isStrikeThrough="false"/>
+	<style name="Sub-sub-sub-header" forecolor="#003366" backcolor="#FFFFFF" vAlign="Middle" fontName="Arial" fontSize="12" isBold="false" isItalic="false" isUnderline="false" isStrikeThrough="false"/>
+	<style name="Body" forecolor="#000000" backcolor="#FFFFFF" vAlign="Middle" markup="none" fontName="Arial" fontSize="10" isBold="false" isItalic="false" isUnderline="false" isStrikeThrough="false"/>
 </jasperTemplate>

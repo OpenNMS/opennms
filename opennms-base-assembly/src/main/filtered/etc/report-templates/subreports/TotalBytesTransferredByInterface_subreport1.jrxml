@@ -3,6 +3,9 @@
 	<property name="ireport.zoom" value="1.0"/>
 	<property name="ireport.x" value="0"/>
 	<property name="ireport.y" value="0"/>
+	<template><![CDATA["/Users/indigo/Documents/doc_slides_papers/OpenNMS/Reports/assets/styles/defaultStyles.jrtx"]]></template>
+	<style name="Table_Header" hAlign="Center" vAlign="Middle" isBold="true" isItalic="false" isUnderline="false" isStrikeThrough="false"/>
+	<style name="Table_Body" hAlign="Center" vAlign="Middle" isBold="false" isItalic="false" isUnderline="false" isStrikeThrough="false"/>
 	<parameter name="rrdDir" class="java.lang.String" isForPrompting="false"/>
 	<parameter name="nodeid" class="java.lang.Integer" isForPrompting="false"/>
 	<parameter name="startDate" class="java.util.Date" isForPrompting="false"/>
@@ -10,27 +13,27 @@
 	<parameter name="interface" class="java.lang.String" isForPrompting="false"/>
 	<queryString language="jrobin">
 		<![CDATA[--start $P{startDate} --end $P{endDate}
-		DEF:xx=$P{rrdDir}/snmp/$P{nodeid}/$P{interface}/mib2-interfaces.jrb:ifInOctets:AVERAGE
-		DEF:yy=$P{rrdDir}/snmp/$P{nodeid}/$P{interface}/mib2-interfaces.jrb:ifOutOctets:AVERAGE
-		XPORT:xx:IfInOctets
-		XPORT:yy:IfOutOctets]]>
+		DEF:xx=$P{rrdDir}/snmp/$P{nodeid}/$P{interface}/ifHCInOctets.jrb:ifHCInOctets:AVERAGE
+		DEF:yy=$P{rrdDir}/snmp/$P{nodeid}/$P{interface}/ifHCOutOctets.jrb:ifHCOutOctets:AVERAGE
+		XPORT:xx:IfHCInOctets
+		XPORT:yy:IfHCOutOctets]]>
 	</queryString>
 	<field name="Timestamp" class="java.util.Date">
 		<fieldDescription><![CDATA[Timestamp]]></fieldDescription>
 	</field>
-	<field name="IfInOctets" class="java.lang.Double">
-		<fieldDescription><![CDATA[IfInOctets]]></fieldDescription>
+	<field name="IfHCInOctets" class="java.lang.Double">
+		<fieldDescription><![CDATA[IfHCInOctets]]></fieldDescription>
 	</field>
-	<field name="IfOutOctets" class="java.lang.Double">
-		<fieldDescription><![CDATA[IfOutOctets]]></fieldDescription>
+	<field name="IfHCOutOctets" class="java.lang.Double">
+		<fieldDescription><![CDATA[IfHCOutOctets]]></fieldDescription>
 	</field>
 	<variable name="received_SUM" class="java.lang.Double" calculation="Sum">
-		<variableExpression><![CDATA[$F{IfInOctets}]]></variableExpression>
+		<variableExpression><![CDATA[$F{IfHCInOctets}]]></variableExpression>
 	</variable>
 	<variable name="transmitted_SUM" class="java.lang.Double" calculation="Sum">
-		<variableExpression><![CDATA[$F{IfOutOctets}]]></variableExpression>
+		<variableExpression><![CDATA[$F{IfHCOutOctets}]]></variableExpression>
 	</variable>
-	<filterExpression><![CDATA[!$F{IfInOctets}.isNaN() || !$F{IfOutOctets}.isNaN()]]></filterExpression>
+	<filterExpression><![CDATA[!$F{IfHCInOctets}.isNaN() || !$F{IfHCOutOctets}.isNaN()]]></filterExpression>
 	<background>
 		<band splitType="Stretch"/>
 	</background>
@@ -54,35 +57,35 @@
 	</pageFooter>
 	<summary>
 		<band height="32" splitType="Stretch">
-			<textField>
-				<reportElement x="48" y="16" width="150" height="16"/>
+			<textField pattern="###0.00">
+				<reportElement style="Table_Body" x="36" y="16" width="150" height="16"/>
 				<textElement/>
-				<textFieldExpression class="java.lang.Double"><![CDATA[$V{received_SUM}]]></textFieldExpression>
+				<textFieldExpression class="java.lang.Double"><![CDATA[$V{received_SUM}/new Double("1048576.0")]]></textFieldExpression>
 			</textField>
-			<textField>
-				<reportElement x="198" y="16" width="150" height="16"/>
+			<textField pattern="###0.00">
+				<reportElement style="Table_Body" x="186" y="16" width="150" height="16"/>
 				<textElement/>
-				<textFieldExpression class="java.lang.Double"><![CDATA[$V{transmitted_SUM}]]></textFieldExpression>
+				<textFieldExpression class="java.lang.Double"><![CDATA[$V{transmitted_SUM}/new Double("1048576.0")]]></textFieldExpression>
 			</textField>
 			<staticText>
-				<reportElement x="48" y="0" width="150" height="16"/>
+				<reportElement style="Table_Header" x="36" y="0" width="150" height="16"/>
 				<textElement/>
-				<text><![CDATA[Total Bytes Received]]></text>
+				<text><![CDATA[MiByte Received]]></text>
 			</staticText>
 			<staticText>
-				<reportElement x="198" y="0" width="150" height="16"/>
+				<reportElement style="Table_Header" x="186" y="0" width="150" height="16"/>
 				<textElement/>
-				<text><![CDATA[Total Bytes Transmitted]]></text>
+				<text><![CDATA[MiByte Transmitted]]></text>
 			</staticText>
 			<staticText>
-				<reportElement x="348" y="0" width="150" height="16"/>
+				<reportElement style="Table_Header" x="336" y="0" width="150" height="16"/>
 				<textElement/>
-				<text><![CDATA[Total Bytes In+Out]]></text>
+				<text><![CDATA[Total MiByte In+Out]]></text>
 			</staticText>
-			<textField>
-				<reportElement x="348" y="16" width="150" height="16"/>
+			<textField pattern="###0.00">
+				<reportElement style="Table_Body" x="336" y="16" width="150" height="16"/>
 				<textElement/>
-				<textFieldExpression class="java.lang.Double"><![CDATA[$V{received_SUM} + $V{transmitted_SUM}]]></textFieldExpression>
+				<textFieldExpression class="java.lang.Double"><![CDATA[($V{received_SUM} + $V{transmitted_SUM})/new Double("1048576.0")]]></textFieldExpression>
 			</textField>
 		</band>
 	</summary>
