@@ -220,6 +220,11 @@
             <artifactId>groovy-all</artifactId>
             <version>1.7.5</version>
           </dependency>
+	  <dependency>
+	    <groupId>postgresql</groupId>
+	    <artifactId>postgresql</artifactId>
+	    <version>8.4-701.jdbc3</version>
+	  </dependency>
         </dependencies>
       </plugin>
       <plugin>
