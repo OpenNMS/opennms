@@ -97,9 +97,6 @@
     <module>tests</module>
     <module>integration-tests</module>
 
-    <!-- unfortunate side-effect of the way maven assemblies work -->
-    <module>opennms-full-assembly</module>
-
     <!-- old structure -->
     <module>opennms-doc</module>
     <module>opennms-test</module>
@@ -130,6 +127,9 @@
     <module>opennms-asterisk</module>
     <module>opennms-xmp</module>
     <module>opennms-base-assembly</module>
+
+    <!-- unfortunate side-effect of the way maven assemblies work -->
+    <module>opennms-full-assembly</module>
   </modules>
   <build>
   <pluginManagement>
