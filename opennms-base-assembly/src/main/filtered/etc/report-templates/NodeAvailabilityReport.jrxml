@@ -3,6 +3,7 @@
 	<property name="ireport.zoom" value="1.5"/>
 	<property name="ireport.x" value="0"/>
 	<property name="ireport.y" value="0"/>
+	<template><![CDATA["assets/styles/defaultStyles.jrtx"]]></template>
 	<style name="Report_Title" forecolor="#000000" fontSize="20"/>
 	<style name="Report_Subtitle" forecolor="#000000" vAlign="Middle" fontSize="10" isBold="false" isItalic="true" isUnderline="false" isStrikeThrough="false"/>
 	<style name="Table_Detail" hAlign="Left" vAlign="Middle" fontName="SansSerif" fontSize="10" isBold="false" isItalic="false" isUnderline="false" isStrikeThrough="false">
@@ -266,7 +267,7 @@ ORDER BY
 	<pageHeader>
 		<band height="104" splitType="Stretch">
 			<staticText>
-				<reportElement style="Report_Title" x="0" y="49" width="391" height="34"/>
+				<reportElement style="Title" x="0" y="49" width="391" height="34"/>
 				<textElement verticalAlignment="Middle">
 					<font size="20" isBold="true"/>
 				</textElement>
@@ -283,7 +284,7 @@ ORDER BY
 				</graphicElement>
 			</line>
 			<textField>
-				<reportElement style="Report_Subtitle" x="0" y="83" width="355" height="20"/>
+				<reportElement style="Sub-sub-header" x="0" y="83" width="355" height="20"/>
 				<textElement/>
 				<textFieldExpression class="java.lang.String"><![CDATA[$P{TIME_RANGE_DESCRIPTION}]]></textFieldExpression>
 			</textField>
@@ -570,32 +571,32 @@ ORDER BY
 				</graphicElement>
 			</line>
 			<textField>
-				<reportElement style="Page_Footer" x="451" y="11" width="80" height="20"/>
+				<reportElement style="Body" x="451" y="11" width="80" height="20"/>
 				<textElement textAlignment="Right"/>
 				<textFieldExpression class="java.lang.String"><![CDATA["Page "+$V{PAGE_NUMBER}+" of"]]></textFieldExpression>
 			</textField>
 			<textField evaluationTime="Report">
-				<reportElement style="Page_Footer" x="531" y="11" width="24" height="20"/>
+				<reportElement style="Body" x="531" y="11" width="24" height="20"/>
 				<textElement/>
 				<textFieldExpression class="java.lang.String"><![CDATA[" " + $V{PAGE_NUMBER}]]></textFieldExpression>
 			</textField>
 			<staticText>
-				<reportElement style="Page_Footer" x="0" y="15" width="67" height="15"/>
+				<reportElement style="Body" x="0" y="15" width="67" height="15"/>
 				<textElement/>
 				<text><![CDATA[Report begin: ]]></text>
 			</staticText>
 			<textField evaluationTime="Page">
-				<reportElement style="Page_Footer" x="67" y="15" width="126" height="14"/>
+				<reportElement style="Body" x="67" y="15" width="126" height="14"/>
 				<textElement/>
 				<textFieldExpression class="java.sql.Timestamp"><![CDATA[$F{start}]]></textFieldExpression>
 			</textField>
 			<textField evaluationTime="Page">
-				<reportElement style="Page_Footer" x="253" y="15" width="131" height="14"/>
+				<reportElement style="Body" x="253" y="15" width="131" height="14"/>
 				<textElement/>
 				<textFieldExpression class="java.sql.Timestamp"><![CDATA[$F{end}]]></textFieldExpression>
 			</textField>
 			<staticText>
-				<reportElement style="Page_Footer" x="193" y="15" width="60" height="14"/>
+				<reportElement style="Body" x="193" y="15" width="60" height="14"/>
 				<textElement/>
 				<text><![CDATA[Report end: ]]></text>
 			</staticText>

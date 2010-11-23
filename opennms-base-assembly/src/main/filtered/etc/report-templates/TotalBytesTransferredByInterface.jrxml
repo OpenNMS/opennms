@@ -4,27 +4,22 @@
 	<property name="ireport.x" value="0"/>
 	<property name="ireport.y" value="0"/>
 	<template><![CDATA["/Users/indigo/Documents/doc_slides_papers/OpenNMS/Reports/assets/styles/defaultStyles.jrtx"]]></template>
+	<style name="Header_background" mode="Opaque" backcolor="#DFDFDF"/>
 	<parameter name="COMPANY_LOGO" class="java.lang.String">
-		<defaultValueExpression><![CDATA["/Users/indigo/Documents/doc_slides_papers/OpenNMS/Reports/assets/images/company-logo.png"]]></defaultValueExpression>
+		<defaultValueExpression><![CDATA["${install.dir}/etc/report-templates/assets/images/company-logo.png"]]></defaultValueExpression>
 	</parameter>
 	<parameter name="SURVEILLANCE_CATEGORY" class="java.lang.String">
-		<defaultValueExpression><![CDATA["Mon%"]]></defaultValueExpression>
-	</parameter>
-	<parameter name="RESPONSE_WARNING" class="java.lang.Double">
-		<defaultValueExpression><![CDATA[new Double("50.0")]]></defaultValueExpression>
-	</parameter>
-	<parameter name="RESPONSE_CRITICAL" class="java.lang.Double">
-		<defaultValueExpression><![CDATA[new Double("80.0")]]></defaultValueExpression>
+		<defaultValueExpression><![CDATA["%"]]></defaultValueExpression>
 	</parameter>
 	<parameter name="startDate" class="java.util.Date">
 		<defaultValueExpression><![CDATA[]]></defaultValueExpression>
 	</parameter>
 	<parameter name="endDate" class="java.util.Date"/>
 	<parameter name="rrdDir" class="java.lang.String">
-		<defaultValueExpression><![CDATA[]]></defaultValueExpression>
+		<defaultValueExpression><![CDATA["${install.dir}/share/rrd"]]></defaultValueExpression>
 	</parameter>
 	<parameter name="SUBREPORT_DIR" class="java.lang.String" isForPrompting="false">
-		<defaultValueExpression><![CDATA["/Users/indigo/Documents/doc_slides_papers/OpenNMS/Reports/subreports/"]]></defaultValueExpression>
+		<defaultValueExpression><![CDATA["${install.dir}/etc/report-templates/assets/subreports/"]]></defaultValueExpression>
 	</parameter>
 	<queryString>
 		<![CDATA[SELECT
@@ -51,8 +46,7 @@ ON
 	(categories.categoryid = category_node.categoryid)
 WHERE
 	(snmpinterface.snmpcollect = 'C' OR snmpinterface.snmpcollect = 'UC') AND
-	node.nodetype = 'A' AND
-	node.nodeid = '1730'
+	node.nodetype = 'A'
 ORDER BY
 	categories.categoryname,
 	node.nodelabel]]>
@@ -70,9 +64,9 @@ ORDER BY
 	<group name="surveillance_category_group">
 		<groupExpression><![CDATA[$F{categoryname}]]></groupExpression>
 		<groupHeader>
-			<band height="24">
+			<band height="23">
 				<textField>
-					<reportElement x="0" y="0" width="555" height="22"/>
+					<reportElement style="Sub-header" mode="Opaque" x="0" y="0" width="555" height="22" backcolor="#DFDFDF"/>
 					<textElement/>
 					<textFieldExpression class="java.lang.String"><![CDATA["Surveillance category: " + $F{categoryname}]]></textFieldExpression>
 				</textField>
@@ -85,11 +79,11 @@ ORDER BY
 	<group name="nodelabel_group">
 		<groupExpression><![CDATA[$F{nodelabel}]]></groupExpression>
 		<groupHeader>
-			<band height="22">
+			<band height="21">
 				<textField>
-					<reportElement x="0" y="0" width="555" height="20"/>
+					<reportElement style="Sub-header" x="0" y="0" width="555" height="20"/>
 					<textElement textAlignment="Left"/>
-					<textFieldExpression class="java.lang.String"><![CDATA["Node " + $F{nodelabel}]]></textFieldExpression>
+					<textFieldExpression class="java.lang.String"><![CDATA["Node: " + $F{nodelabel}]]></textFieldExpression>
 				</textField>
 			</band>
 		</groupHeader>
@@ -100,9 +94,9 @@ ORDER BY
 	<group name="physical_interface_group">
 		<groupExpression><![CDATA[$F{snmpifname}]]></groupExpression>
 		<groupHeader>
-			<band height="101">
+			<band height="34">
 				<subreport>
-					<reportElement x="37" y="60" width="518" height="37"/>
+					<reportElement x="14" y="16" width="541" height="13"/>
 					<subreportParameter name="rrdDir">
 						<subreportParameterExpression><![CDATA[$P{rrdDir}]]></subreportParameterExpression>
 					</subreportParameter>
@@ -122,24 +116,14 @@ ORDER BY
 					<subreportExpression class="java.lang.String"><![CDATA[$P{SUBREPORT_DIR} + "TotalBytesTransferredByInterface_subreport1.jasper"]]></subreportExpression>
 				</subreport>
 				<textField>
-					<reportElement x="37" y="0" width="355" height="20"/>
-					<textElement/>
-					<textFieldExpression class="java.lang.String"><![CDATA[$F{snmpifname}]]></textFieldExpression>
-				</textField>
-				<textField>
-					<reportElement x="37" y="40" width="318" height="20"/>
-					<textElement/>
-					<textFieldExpression class="java.lang.String"><![CDATA[$F{ipaddr}]]></textFieldExpression>
-				</textField>
-				<textField>
-					<reportElement x="37" y="20" width="318" height="20"/>
-					<textElement/>
-					<textFieldExpression class="java.lang.String"><![CDATA[$F{snmpifalias}]]></textFieldExpression>
+					<reportElement style="Sub-sub-sub-header" x="14" y="0" width="541" height="16"/>
+					<textElement textAlignment="Left"/>
+					<textFieldExpression class="java.lang.String"><![CDATA["Interface: " + $F{snmpifname} + " (" + $F{ipaddr} + " – " + ($F{snmpifalias}.equals("")?"no alias set":$F{snmpifalias}) +")"]]></textFieldExpression>
 				</textField>
 			</band>
 		</groupHeader>
 		<groupFooter>
-			<band height="22"/>
+			<band/>
 		</groupFooter>
 	</group>
 	<background>
@@ -190,7 +174,7 @@ ORDER BY
 		</band>
 	</pageHeader>
 	<columnHeader>
-		<band height="8" splitType="Stretch"/>
+		<band height="9" splitType="Stretch"/>
 	</columnHeader>
 	<detail>
 		<band splitType="Stretch"/>
