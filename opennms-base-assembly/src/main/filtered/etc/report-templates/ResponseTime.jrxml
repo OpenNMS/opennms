@@ -3,6 +3,7 @@
 	<property name="ireport.zoom" value="1.0"/>
 	<property name="ireport.x" value="0"/>
 	<property name="ireport.y" value="0"/>
+	<template><![CDATA["assets/styles/defaultStyles.jrtx"]]></template>
 	<style name="Report_Title" forecolor="#000000" fontSize="20"/>
 	<style name="Report_Subtitle" forecolor="#000000" vAlign="Middle" fontSize="10" isBold="false" isItalic="true" isUnderline="false" isStrikeThrough="false"/>
 	<style name="Table_Detail" hAlign="Left" vAlign="Middle" fontName="SansSerif" fontSize="10" isBold="false" isItalic="false" isUnderline="false" isStrikeThrough="false"/>
@@ -65,7 +66,7 @@
 		</box>
 	</style>
 	<parameter name="COMPANY_LOGO" class="java.lang.String">
-		<defaultValueExpression><![CDATA["${install.dir}/etc/report-templates/opennms-logo.png"]]></defaultValueExpression>
+		<defaultValueExpression><![CDATA["assets/images/company-logo.png"]]></defaultValueExpression>
 	</parameter>
 	<parameter name="SURVEILLANCE_CATEGORY" class="java.lang.String">
 		<defaultValueExpression><![CDATA["Mon%"]]></defaultValueExpression>
@@ -77,14 +78,16 @@
 		<defaultValueExpression><![CDATA[new Double("80.0")]]></defaultValueExpression>
 	</parameter>
 	<parameter name="startDate" class="java.util.Date">
-		<defaultValueExpression><![CDATA[]]></defaultValueExpression>
+		<defaultValueExpression><![CDATA[new Date(1290098100000L)]]></defaultValueExpression>
 	</parameter>
-	<parameter name="endDate" class="java.util.Date"/>
+	<parameter name="endDate" class="java.util.Date">
+		<defaultValueExpression><![CDATA[new Date(1290120600000L)]]></defaultValueExpression>
+	</parameter>
 	<parameter name="rrdDir" class="java.lang.String">
-		<defaultValueExpression><![CDATA[]]></defaultValueExpression>
+		<defaultValueExpression><![CDATA["${install.dir}/share/rrd"]]></defaultValueExpression>
 	</parameter>
 	<parameter name="SUBREPORT_DIR" class="java.lang.String" isForPrompting="false">
-		<defaultValueExpression><![CDATA["/Users/indigo/Documents/doc_slides_papers/OpenNMS/Reports/"]]></defaultValueExpression>
+		<defaultValueExpression><![CDATA["subreports/"]]></defaultValueExpression>
 	</parameter>
 	<queryString>
 		<![CDATA[SELECT
@@ -128,7 +131,7 @@ ORDER BY
 		<groupHeader>
 			<band height="24">
 				<textField>
-					<reportElement style="Surveillance_Category_Group" x="0" y="0" width="555" height="22"/>
+					<reportElement style="Header" x="0" y="0" width="555" height="22"/>
 					<textElement/>
 					<textFieldExpression class="java.lang.String"><![CDATA["Surveillance category: " + $F{categoryname}]]></textFieldExpression>
 				</textField>
@@ -143,7 +146,7 @@ ORDER BY
 		<groupHeader>
 			<band height="22">
 				<textField>
-					<reportElement style="Node_Group" x="0" y="0" width="555" height="20"/>
+					<reportElement style="Sub-sub-header" x="0" y="0" width="555" height="20"/>
 					<textElement textAlignment="Left"/>
 					<textFieldExpression class="java.lang.String"><![CDATA["Node " + $F{nodelabel}]]></textFieldExpression>
 				</textField>
@@ -162,7 +165,7 @@ ORDER BY
 	<pageHeader>
 		<band height="104" splitType="Stretch">
 			<staticText>
-				<reportElement style="Report_Title" x="0" y="49" width="555" height="34"/>
+				<reportElement style="Title" x="0" y="49" width="555" height="34"/>
 				<textElement verticalAlignment="Middle">
 					<font size="20" isBold="true"/>
 				</textElement>
