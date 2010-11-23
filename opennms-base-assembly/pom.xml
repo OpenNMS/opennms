@@ -186,7 +186,7 @@
       <plugin>
         <groupId>org.codehaus.mojo</groupId>
         <artifactId>jasperreports-maven-plugin</artifactId>
-        <version>1.0-beta-3-SNAPSHOT</version>
+        <version>1.0-beta-3-20101123</version>
         <executions>
           <execution>
             <phase>compile</phase>
