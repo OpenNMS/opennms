@@ -1,0 +1,234 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<jasperReport xmlns="http://jasperreports.sourceforge.net/jasperreports" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://jasperreports.sourceforge.net/jasperreports http://jasperreports.sourceforge.net/xsd/jasperreport.xsd" name="TotalBytesTransferredByInterface" pageWidth="595" pageHeight="842" columnWidth="555" leftMargin="20" rightMargin="20" topMargin="20" bottomMargin="20">
+	<property name="ireport.zoom" value="1.0"/>
+	<property name="ireport.x" value="0"/>
+	<property name="ireport.y" value="0"/>
+	<template><![CDATA["/Users/indigo/Documents/doc_slides_papers/OpenNMS/Reports/assets/styles/defaultStyles.jrtx"]]></template>
+	<parameter name="COMPANY_LOGO" class="java.lang.String">
+		<defaultValueExpression><![CDATA["/Users/indigo/Documents/doc_slides_papers/OpenNMS/Reports/assets/images/company-logo.png"]]></defaultValueExpression>
+	</parameter>
+	<parameter name="SURVEILLANCE_CATEGORY" class="java.lang.String">
+		<defaultValueExpression><![CDATA["Mon%"]]></defaultValueExpression>
+	</parameter>
+	<parameter name="RESPONSE_WARNING" class="java.lang.Double">
+		<defaultValueExpression><![CDATA[new Double("50.0")]]></defaultValueExpression>
+	</parameter>
+	<parameter name="RESPONSE_CRITICAL" class="java.lang.Double">
+		<defaultValueExpression><![CDATA[new Double("80.0")]]></defaultValueExpression>
+	</parameter>
+	<parameter name="startDate" class="java.util.Date">
+		<defaultValueExpression><![CDATA[]]></defaultValueExpression>
+	</parameter>
+	<parameter name="endDate" class="java.util.Date"/>
+	<parameter name="rrdDir" class="java.lang.String">
+		<defaultValueExpression><![CDATA[]]></defaultValueExpression>
+	</parameter>
+	<parameter name="SUBREPORT_DIR" class="java.lang.String" isForPrompting="false">
+		<defaultValueExpression><![CDATA["/Users/indigo/Documents/doc_slides_papers/OpenNMS/Reports/subreports/"]]></defaultValueExpression>
+	</parameter>
+	<queryString>
+		<![CDATA[SELECT
+	categories.categoryname,
+	node.nodelabel,
+	node.nodeid,
+	snmpinterface.ipaddr,
+	snmpinterface.snmpifname,
+	snmpinterface.snmpifalias,
+	snmpinterface.snmpphysaddr
+FROM
+	node
+RIGHT JOIN
+	snmpinterface
+ON
+	(node.nodeid = snmpinterface.nodeid)
+JOIN
+	category_node
+ON
+	(category_node.nodeid = node.nodeid)
+JOIN
+	categories
+ON
+	(categories.categoryid = category_node.categoryid)
+WHERE
+	(snmpinterface.snmpcollect = 'C' OR snmpinterface.snmpcollect = 'UC') AND
+	node.nodetype = 'A' AND
+	node.nodeid = '1730'
+ORDER BY
+	categories.categoryname,
+	node.nodelabel]]>
+	</queryString>
+	<field name="categoryname" class="java.lang.String"/>
+	<field name="nodelabel" class="java.lang.String"/>
+	<field name="nodeid" class="java.lang.Integer"/>
+	<field name="ipaddr" class="java.lang.String"/>
+	<field name="snmpifname" class="java.lang.String"/>
+	<field name="snmpifalias" class="java.lang.String"/>
+	<field name="snmpphysaddr" class="java.lang.String"/>
+	<variable name="ICMP_Latency_AVG" class="java.lang.Double"/>
+	<variable name="ICMP_Latency_MIN" class="java.lang.Double"/>
+	<variable name="ICMP_Latency_MAX" class="java.lang.Double"/>
+	<group name="surveillance_category_group">
+		<groupExpression><![CDATA[$F{categoryname}]]></groupExpression>
+		<groupHeader>
+			<band height="24">
+				<textField>
+					<reportElement x="0" y="0" width="555" height="22"/>
+					<textElement/>
+					<textFieldExpression class="java.lang.String"><![CDATA["Surveillance category: " + $F{categoryname}]]></textFieldExpression>
+				</textField>
+			</band>
+		</groupHeader>
+		<groupFooter>
+			<band/>
+		</groupFooter>
+	</group>
+	<group name="nodelabel_group">
+		<groupExpression><![CDATA[$F{nodelabel}]]></groupExpression>
+		<groupHeader>
+			<band height="22">
+				<textField>
+					<reportElement x="0" y="0" width="555" height="20"/>
+					<textElement textAlignment="Left"/>
+					<textFieldExpression class="java.lang.String"><![CDATA["Node " + $F{nodelabel}]]></textFieldExpression>
+				</textField>
+			</band>
+		</groupHeader>
+		<groupFooter>
+			<band/>
+		</groupFooter>
+	</group>
+	<group name="physical_interface_group">
+		<groupExpression><![CDATA[$F{snmpifname}]]></groupExpression>
+		<groupHeader>
+			<band height="101">
+				<subreport>
+					<reportElement x="37" y="60" width="518" height="37"/>
+					<subreportParameter name="rrdDir">
+						<subreportParameterExpression><![CDATA[$P{rrdDir}]]></subreportParameterExpression>
+					</subreportParameter>
+					<subreportParameter name="startDate">
+						<subreportParameterExpression><![CDATA[$P{startDate}]]></subreportParameterExpression>
+					</subreportParameter>
+					<subreportParameter name="endDate">
+						<subreportParameterExpression><![CDATA[$P{endDate}]]></subreportParameterExpression>
+					</subreportParameter>
+					<subreportParameter name="interface">
+						<subreportParameterExpression><![CDATA[$F{snmpphysaddr}.isEmpty() ? $F{snmpifname}.replaceAll("[\\/ | \\.]", "_") : $F{snmpifname}.replaceAll("[\\/ | \\.]", "_") + "-" + $F{snmpphysaddr}]]></subreportParameterExpression>
+					</subreportParameter>
+					<subreportParameter name="nodeid">
+						<subreportParameterExpression><![CDATA[$F{nodeid}]]></subreportParameterExpression>
+					</subreportParameter>
+					<connectionExpression><![CDATA[$P{REPORT_CONNECTION}]]></connectionExpression>
+					<subreportExpression class="java.lang.String"><![CDATA[$P{SUBREPORT_DIR} + "TotalBytesTransferredByInterface_subreport1.jasper"]]></subreportExpression>
+				</subreport>
+				<textField>
+					<reportElement x="37" y="0" width="355" height="20"/>
+					<textElement/>
+					<textFieldExpression class="java.lang.String"><![CDATA[$F{snmpifname}]]></textFieldExpression>
+				</textField>
+				<textField>
+					<reportElement x="37" y="40" width="318" height="20"/>
+					<textElement/>
+					<textFieldExpression class="java.lang.String"><![CDATA[$F{ipaddr}]]></textFieldExpression>
+				</textField>
+				<textField>
+					<reportElement x="37" y="20" width="318" height="20"/>
+					<textElement/>
+					<textFieldExpression class="java.lang.String"><![CDATA[$F{snmpifalias}]]></textFieldExpression>
+				</textField>
+			</band>
+		</groupHeader>
+		<groupFooter>
+			<band height="22"/>
+		</groupFooter>
+	</group>
+	<background>
+		<band splitType="Stretch"/>
+	</background>
+	<title>
+		<band height="4" splitType="Stretch"/>
+	</title>
+	<pageHeader>
+		<band height="104" splitType="Stretch">
+			<staticText>
+				<reportElement x="0" y="49" width="555" height="34"/>
+				<textElement verticalAlignment="Middle">
+					<font size="20" isBold="true"/>
+				</textElement>
+				<text><![CDATA[Total Bytes Transferred by Interface]]></text>
+			</staticText>
+			<image>
+				<reportElement x="195" y="0" width="164" height="49"/>
+				<imageExpression class="java.lang.String"><![CDATA[$P{COMPANY_LOGO}]]></imageExpression>
+			</image>
+			<line>
+				<reportElement x="0" y="103" width="555" height="1"/>
+				<graphicElement>
+					<pen lineWidth="1.5"/>
+				</graphicElement>
+			</line>
+			<staticText>
+				<reportElement x="2" y="83" width="67" height="15"/>
+				<textElement/>
+				<text><![CDATA[Report begin: ]]></text>
+			</staticText>
+			<textField evaluationTime="Page">
+				<reportElement x="69" y="83" width="126" height="14"/>
+				<textElement/>
+				<textFieldExpression class="java.util.Date"><![CDATA[$P{startDate}]]></textFieldExpression>
+			</textField>
+			<textField evaluationTime="Page">
+				<reportElement x="255" y="83" width="131" height="14"/>
+				<textElement/>
+				<textFieldExpression class="java.util.Date"><![CDATA[$P{endDate}]]></textFieldExpression>
+			</textField>
+			<staticText>
+				<reportElement x="195" y="83" width="60" height="14"/>
+				<textElement/>
+				<text><![CDATA[Report end: ]]></text>
+			</staticText>
+		</band>
+	</pageHeader>
+	<columnHeader>
+		<band height="8" splitType="Stretch"/>
+	</columnHeader>
+	<detail>
+		<band splitType="Stretch"/>
+	</detail>
+	<columnFooter>
+		<band splitType="Stretch"/>
+	</columnFooter>
+	<pageFooter>
+		<band height="31" splitType="Stretch">
+			<line>
+				<reportElement x="0" y="9" width="555" height="1"/>
+				<graphicElement>
+					<pen lineWidth="1.5"/>
+				</graphicElement>
+			</line>
+			<textField>
+				<reportElement x="451" y="11" width="80" height="20"/>
+				<textElement textAlignment="Right"/>
+				<textFieldExpression class="java.lang.String"><![CDATA["Page "+$V{PAGE_NUMBER}+" of"]]></textFieldExpression>
+			</textField>
+			<textField evaluationTime="Report">
+				<reportElement x="531" y="11" width="24" height="20"/>
+				<textElement/>
+				<textFieldExpression class="java.lang.String"><![CDATA[" " + $V{PAGE_NUMBER}]]></textFieldExpression>
+			</textField>
+			<staticText>
+				<reportElement x="0" y="15" width="67" height="15"/>
+				<textElement/>
+				<text><![CDATA[Report begin: ]]></text>
+			</staticText>
+			<staticText>
+				<reportElement x="193" y="15" width="60" height="14"/>
+				<textElement/>
+				<text><![CDATA[Report end: ]]></text>
+			</staticText>
+		</band>
+	</pageFooter>
+	<summary>
+		<band height="42" splitType="Stretch"/>
+	</summary>
+</jasperReport>
