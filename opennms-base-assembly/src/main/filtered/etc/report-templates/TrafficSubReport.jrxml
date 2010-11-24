@@ -15,12 +15,8 @@
 	<parameter name="rrdDir" class="java.lang.String" isForPrompting="false">
 		<defaultValueExpression><![CDATA["/Users/thedesloge/git/opennms/target/opennms-1.8.7-SNAPSHOT/share/rrd"]]></defaultValueExpression>
 	</parameter>
-	<parameter name="ipv4_interface" class="java.lang.String" isForPrompting="false">
-		<defaultValueExpression><![CDATA[11]]></defaultValueExpression>
-	</parameter>
-	<parameter name="snmp_interface" class="java.lang.String">
-		<defaultValueExpression><![CDATA["en1-001124a4ce70"]]></defaultValueExpression>
-	</parameter>
+	<parameter name="ipv4_interface" class="java.lang.String" isForPrompting="false" />
+	<parameter name="snmp_interface" class="java.lang.String" />
 	<queryString language="jrobin">
 		<![CDATA[--start $P{startDate} --end $P{endDate}
 		DEF:xx=$P{rrdDir}/snmp/$P{ipv4_interface}/$P{snmp_interface}/ifHCInOctets.jrb:ifHCInOctets:AVERAGE
