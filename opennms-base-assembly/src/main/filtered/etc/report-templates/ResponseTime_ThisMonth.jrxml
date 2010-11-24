@@ -3,7 +3,7 @@
 	<property name="ireport.zoom" value="1.0"/>
 	<property name="ireport.x" value="0"/>
 	<property name="ireport.y" value="0"/>
-	<template><![CDATA["/opt/opennms/etc/report-templates/assets/styles/defaultStyles.jrtx"]]></template>
+	<template><![CDATA["${install.dir}/etc/report-templates/assets/styles/defaultStyles.jrtx"]]></template>
 	<style name="Report_Title" forecolor="#000000" fontSize="20"/>
 	<style name="Report_Subtitle" forecolor="#000000" vAlign="Middle" fontSize="10" isBold="false" isItalic="true" isUnderline="false" isStrikeThrough="false"/>
 	<style name="Table_Detail" hAlign="Left" vAlign="Middle" fontName="SansSerif" fontSize="10" isBold="false" isItalic="false" isUnderline="false" isStrikeThrough="false"/>
@@ -66,7 +66,7 @@
 		</box>
 	</style>
 	<parameter name="COMPANY_LOGO" class="java.lang.String">
-		<defaultValueExpression><![CDATA["/opt/opennms/etc/report-templates/assets/images/company-logo.png"]]></defaultValueExpression>
+		<defaultValueExpression><![CDATA["${install.dir}/etc/report-templates/assets/images/company-logo.png"]]></defaultValueExpression>
 	</parameter>
 	<parameter name="SURVEILLANCE_CATEGORY" class="java.lang.String">
 		<defaultValueExpression><![CDATA["Routers"]]></defaultValueExpression>
@@ -78,16 +78,18 @@
 		<defaultValueExpression><![CDATA[new Double("80.0")]]></defaultValueExpression>
 	</parameter>
 	<parameter name="startDate" class="java.util.Date">
-		<defaultValueExpression><![CDATA[new java.sql.Date(1288584000)]]></defaultValueExpression>
+		<defaultValueExpression><![CDATA[new java.sql.Date(
+new GregorianCalendar(new GregorianCalendar().get(Calendar.YEAR), new GregorianCalendar().get(Calendar.MONTH), 1).getTimeInMillis()
+)]]></defaultValueExpression>
 	</parameter>
 	<parameter name="endDate" class="java.util.Date">
 		<defaultValueExpression><![CDATA[new java.util.Date()]]></defaultValueExpression>
 	</parameter>
 	<parameter name="rrdDir" class="java.lang.String">
-		<defaultValueExpression><![CDATA["/opt/opennms/share/rrd"]]></defaultValueExpression>
+		<defaultValueExpression><![CDATA["${install.dir}/share/rrd"]]></defaultValueExpression>
 	</parameter>
 	<parameter name="SUBREPORT_DIR" class="java.lang.String" isForPrompting="false">
-		<defaultValueExpression><![CDATA["/opt/opennms/etc/report-templates/subreports/"]]></defaultValueExpression>
+		<defaultValueExpression><![CDATA["${install.dir}/etc/report-templates/subreports/"]]></defaultValueExpression>
 	</parameter>
 	<queryString>
 		<![CDATA[SELECT

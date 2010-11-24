@@ -59,7 +59,9 @@
 			<defaultValueExpression><![CDATA["1 Month"]]></defaultValueExpression>
 		</parameter>
 		<parameter name="DS_START_TIME" class="java.sql.Timestamp">
-			<defaultValueExpression><![CDATA[new java.sql.Timestamp(1288584000000)]]></defaultValueExpression>
+			<defaultValueExpression><![CDATA[new java.sql.Timestamp(
+new GregorianCalendar(new GregorianCalendar().get(Calendar.YEAR), new GregorianCalendar().get(Calendar.MONTH), 1).getTimeInMillis()
+)]]></defaultValueExpression>
 		</parameter>
 		<queryString>
 			<![CDATA[SELECT
@@ -231,7 +233,9 @@ ORDER BY
 		<defaultValueExpression><![CDATA["7 Days"]]></defaultValueExpression>
 	</parameter>
 	<parameter name="START_TIME" class="java.sql.Timestamp">
-		<defaultValueExpression><![CDATA[new java.sql.Timestamp(new java.util.Date().getTime() - (86400 * 7 * 1000))]]></defaultValueExpression>
+		<defaultValueExpression><![CDATA[new java.sql.Timestamp(
+new GregorianCalendar(new GregorianCalendar().get(Calendar.YEAR), new GregorianCalendar().get(Calendar.MONTH), 1).getTimeInMillis()
+)]]></defaultValueExpression>
 	</parameter>
 	<parameter name="TIME_RANGE_DESCRIPTION" class="java.lang.String">
 		<defaultValueExpression><![CDATA["This Month"]]></defaultValueExpression>
