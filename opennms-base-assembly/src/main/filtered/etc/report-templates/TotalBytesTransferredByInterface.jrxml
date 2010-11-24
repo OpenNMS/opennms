@@ -3,10 +3,10 @@
 	<property name="ireport.zoom" value="1.0"/>
 	<property name="ireport.x" value="0"/>
 	<property name="ireport.y" value="0"/>
-	<template><![CDATA["/Users/indigo/Documents/doc_slides_papers/OpenNMS/Reports/assets/styles/defaultStyles.jrtx"]]></template>
+	<template><![CDATA["${install.dir}/etc/report-templates/assets/styles/defaultStyles.jrtx"]]></template>
 	<style name="Header_background" mode="Opaque" backcolor="#DFDFDF"/>
 	<parameter name="COMPANY_LOGO" class="java.lang.String">
-		<defaultValueExpression><![CDATA["${install.dir}/etc/report-templates/assets/images/company-logo.png"]]></defaultValueExpression>
+		<defaultValueExpression><![CDATA["/Users/thedesloge/git/opennms/target/opennms-1.8.7-SNAPSHOT/etc/report-templates/assets/images/company-logo.png"]]></defaultValueExpression>
 	</parameter>
 	<parameter name="SURVEILLANCE_CATEGORY" class="java.lang.String">
 		<defaultValueExpression><![CDATA["%"]]></defaultValueExpression>
@@ -16,10 +16,10 @@
 	</parameter>
 	<parameter name="endDate" class="java.util.Date"/>
 	<parameter name="rrdDir" class="java.lang.String">
-		<defaultValueExpression><![CDATA["${install.dir}/share/rrd"]]></defaultValueExpression>
+		<defaultValueExpression><![CDATA["/Users/thedesloge/git/opennms/target/opennms-1.8.7-SNAPSHOT/share/rrd"]]></defaultValueExpression>
 	</parameter>
 	<parameter name="SUBREPORT_DIR" class="java.lang.String" isForPrompting="false">
-		<defaultValueExpression><![CDATA["${install.dir}/etc/report-templates/assets/subreports/"]]></defaultValueExpression>
+		<defaultValueExpression><![CDATA["/Users/thedesloge/git/opennms/target/opennms-1.8.7-SNAPSHOT/etc/report-templates/subreports/"]]></defaultValueExpression>
 	</parameter>
 	<queryString>
 		<![CDATA[SELECT
@@ -29,6 +29,7 @@
 	snmpinterface.ipaddr,
 	snmpinterface.snmpifname,
 	snmpinterface.snmpifalias,
+	snmpinterface.snmpifdescr,
 	snmpinterface.snmpphysaddr
 FROM
 	node
@@ -58,6 +59,7 @@ ORDER BY
 	<field name="ipaddr" class="java.lang.String"/>
 	<field name="snmpifname" class="java.lang.String"/>
 	<field name="snmpifalias" class="java.lang.String"/>
+	<field name="snmpifdescr" class="java.lang.String"/>
 	<field name="snmpphysaddr" class="java.lang.String"/>
 	<variable name="ICMP_Latency_AVG" class="java.lang.Double"/>
 	<variable name="ICMP_Latency_MIN" class="java.lang.Double"/>
@@ -108,7 +110,7 @@ ORDER BY
 						<subreportParameterExpression><![CDATA[$P{endDate}]]></subreportParameterExpression>
 					</subreportParameter>
 					<subreportParameter name="interface">
-						<subreportParameterExpression><![CDATA[$F{snmpphysaddr}.isEmpty() ? $F{snmpifname}.replaceAll("[\\/ | \\.]", "_") : $F{snmpifname}.replaceAll("[\\/ | \\.]", "_") + "-" + $F{snmpphysaddr}]]></subreportParameterExpression>
+						<subreportParameterExpression><![CDATA[$F{snmpphysaddr}.isEmpty() ? $F{snmpifdescr}.replaceAll("[\\/ | \\.]", "_") : $F{snmpifdescr}.replaceAll("[\\/ | \\.]", "_") + "-" + $F{snmpphysaddr}]]></subreportParameterExpression>
 					</subreportParameter>
 					<subreportParameter name="nodeid">
 						<subreportParameterExpression><![CDATA[$F{nodeid}]]></subreportParameterExpression>

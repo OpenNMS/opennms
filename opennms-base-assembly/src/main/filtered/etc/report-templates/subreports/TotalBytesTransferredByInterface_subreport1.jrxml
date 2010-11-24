@@ -3,7 +3,7 @@
 	<property name="ireport.zoom" value="1.0"/>
 	<property name="ireport.x" value="0"/>
 	<property name="ireport.y" value="0"/>
-	<template><![CDATA["/Users/indigo/Documents/doc_slides_papers/OpenNMS/Reports/assets/styles/defaultStyles.jrtx"]]></template>
+	<template><![CDATA["${install.dir}/etc/report-templates/assets/styles/defaultStyles.jrtx"]]></template>
 	<style name="Table_Header" hAlign="Center" vAlign="Middle" isBold="true" isItalic="false" isUnderline="false" isStrikeThrough="false"/>
 	<style name="Table_Body" hAlign="Center" vAlign="Middle" isBold="false" isItalic="false" isUnderline="false" isStrikeThrough="false"/>
 	<parameter name="rrdDir" class="java.lang.String" isForPrompting="false"/>
@@ -11,10 +11,16 @@
 	<parameter name="startDate" class="java.util.Date" isForPrompting="false"/>
 	<parameter name="endDate" class="java.util.Date" isForPrompting="false"/>
 	<parameter name="interface" class="java.lang.String" isForPrompting="false"/>
+    <parameter name="inOctets" class="java.lang.String" isForPrompting="false">
+		<defaultValueExpression><![CDATA[new java.io.File("$P{rrdDir}/snmp/$P{nodeid}/$P{interface}/ifHCInOctets.jrb").exists() ? "ifHCInOctets" : "ifInOctets"]]></defaultValueExpression>
+	</parameter>
+	<parameter name="outOctets" class="java.lang.String" isForPrompting="false">
+		<defaultValueExpression><![CDATA[new java.io.File("$P{rrdDir}/snmp/$P{nodeid}/$P{interface}/ifHCOutOctets.jrb").exists() ? "ifHCOutOctets" : "ifOutOctets"]]></defaultValueExpression>
+	</parameter>
 	<queryString language="jrobin">
 		<![CDATA[--start $P{startDate} --end $P{endDate}
-		DEF:xx=$P{rrdDir}/snmp/$P{nodeid}/$P{interface}/ifHCInOctets.jrb:ifHCInOctets:AVERAGE
-		DEF:yy=$P{rrdDir}/snmp/$P{nodeid}/$P{interface}/ifHCOutOctets.jrb:ifHCOutOctets:AVERAGE
+		DEF:xx=$P{rrdDir}/snmp/$P{nodeid}/$P{interface}/$P{inOctets}.jrb:$P{inOctets}:AVERAGE
+		DEF:yy=$P{rrdDir}/snmp/$P{nodeid}/$P{interface}/$P{outOctets}.jrb:$P{outOctets}:AVERAGE
 		XPORT:xx:IfHCInOctets
 		XPORT:yy:IfHCOutOctets]]>
 	</queryString>
