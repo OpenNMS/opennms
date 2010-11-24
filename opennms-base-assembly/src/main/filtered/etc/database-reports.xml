@@ -25,4 +25,8 @@
                 report-service="jasperReportService" description="Response time (past 7 days) by node across one or more surveillance categories" />
         <report id="Response-Time-Report_ThisMonth" display-name="Response time by node - This Month" online="true" 
                 report-service="jasperReportService" description="Response time (this month) by node across one or more surveillance categories" />
+        <report id="95th-Percentile-Traffic-Rate" display-name="95th Percentile Traffic Rate by Interface" online="true" 
+                report-service="jasperReportService" description="95th Percentile Traffic Rate by Interface" />
+        <report id="95th-Percentile-Traffic-Rate_ThisMonth" display-name="95th Percentile Traffic Rate by Interface - This Month" online="true" 
+                report-service="jasperReportService" description="95th Percentile Traffic Rate by Interface" />
 </database-reports>
