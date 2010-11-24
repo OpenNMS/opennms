@@ -12,9 +12,11 @@
 		<defaultValueExpression><![CDATA["%"]]></defaultValueExpression>
 	</parameter>
 	<parameter name="startDate" class="java.util.Date">
-		<defaultValueExpression><![CDATA[]]></defaultValueExpression>
+		<defaultValueExpression><![CDATA[new java.util.Date(new java.util.Date().getTime() - (86400 * 7 * 1000))]]></defaultValueExpression>
 	</parameter>
-	<parameter name="endDate" class="java.util.Date"/>
+	<parameter name="endDate" class="java.util.Date">
+		<defaultValueExpression><![CDATA[new Date()]]></defaultValueExpression>
+	</parameter>
 	<parameter name="rrdDir" class="java.lang.String">
 		<defaultValueExpression><![CDATA["/Users/thedesloge/git/opennms/target/opennms-1.8.7-SNAPSHOT/share/rrd"]]></defaultValueExpression>
 	</parameter>
