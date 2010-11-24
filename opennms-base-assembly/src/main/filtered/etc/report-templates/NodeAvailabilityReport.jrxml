@@ -605,4 +605,13 @@ ORDER BY
 	<summary>
 		<band height="42" splitType="Stretch"/>
 	</summary>
+	<noData>
+		<band height="50">
+			<staticText>
+				<reportElement x="196" y="15" width="163" height="20"/>
+				<textElement/>
+				<text><![CDATA[There is No Data for this Report]]></text>
+			</staticText>
+		</band>
+	</noData>
 </jasperReport>
