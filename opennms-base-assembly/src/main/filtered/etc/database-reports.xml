@@ -13,4 +13,10 @@
                 report-service="jasperReportService" description="trivial Jasper report using null datasource" />
         <report id="Early-Morning-Report" display-name="Early morning report" online="true" 
                 report-service="jasperReportService" description="Global overview of outages, notifications and events in last 24 hours" />
+        <report id="Node-Availability-Report" display-name="Availability by node" online="true" 
+                report-service="jasperReportService" description="Availability (past 7 days) by node across one or more surveillance categories" />
+        <report id="Availability-Summary-Report" display-name="Availability Summary" online="true" 
+                report-service="jasperReportService" description="Availability (past 7 days) summary across one or more surveillance categories" />
+        <report id="Response-Time-Report" display-name="Response time by node" online="true" 
+                report-service="jasperReportService" description="Response time (past 7 days) by node across one or more surveillance categories" />
 </database-reports>

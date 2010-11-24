@@ -3,7 +3,7 @@
 	<property name="ireport.zoom" value="1.5"/>
 	<property name="ireport.x" value="0"/>
 	<property name="ireport.y" value="57"/>
-	<template><![CDATA["assets/styles/defaultStyles.jrtx"]]></template>
+	<template><![CDATA["${install.dir}/etc/report-templates/assets/styles/defaultStyles.jrtx"]]></template>
 	<style name="Sans_Normal" isDefault="true" fontName="DejaVu Sans" fontSize="12" isBold="false" isItalic="false" isUnderline="false" isStrikeThrough="false"/>
 	<style name="Sans_Bold" fontName="DejaVu Sans" fontSize="12" isBold="true" isItalic="false" isUnderline="false" isStrikeThrough="false"/>
 	<style name="Sans_Italic" fontName="DejaVu Sans" fontSize="12" isBold="false" isItalic="true" isUnderline="false" isStrikeThrough="false"/>
@@ -58,7 +58,7 @@
 	<parameter name="DS_AVAILABILITY_WARNING" class="java.lang.Double" isForPrompting="false"/>
 	<parameter name="DS_AVAILABILITY_CRITICAL" class="java.lang.Double" isForPrompting="false"/>
 	<parameter name="COMPANY_LOGO" class="java.lang.String" isForPrompting="false">
-		<defaultValueExpression><![CDATA["assets/images/company-logo.png"]]></defaultValueExpression>
+		<defaultValueExpression><![CDATA["${install.dir}/etc/report-templates/assets/images/company-logo.png"]]></defaultValueExpression>
 	</parameter>
 	<parameter name="START_TIME" class="java.sql.Timestamp">
 		<defaultValueExpression><![CDATA[new java.sql.Timestamp(new java.util.Date().getTime() - (86400 * 7 * 1000))]]></defaultValueExpression>

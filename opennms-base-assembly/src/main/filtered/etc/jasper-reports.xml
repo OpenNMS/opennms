@@ -6,4 +6,7 @@
         <report id="sample-report" template="sample-report.jrxml" engine="jdbc" />
         <report id="trivial-report" template="trivial-report.jrxml" engine="null" />
         <report id="Early-Morning-Report" template="Early-Morning-Report.jrxml" engine="jdbc" />
+        <report id="Node-Availability-Report" template="NodeAvailabilityReport.jrxml" engine="jdbc" />
+        <report id="Availability-Summary-Report" template="AvailabilitySummary.jrxml" engine="jdbc" />
+        <report id="Response-Time-Report" template="ResponseTime.jrxml" engine="jdbc" />
 </jasper-reports>
