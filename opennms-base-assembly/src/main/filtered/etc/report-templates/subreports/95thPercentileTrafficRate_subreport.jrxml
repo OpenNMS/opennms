@@ -1,0 +1,96 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<jasperReport xmlns="http://jasperreports.sourceforge.net/jasperreports" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://jasperreports.sourceforge.net/jasperreports http://jasperreports.sourceforge.net/xsd/jasperreport.xsd" name="TotalBytesTransferredByInterface_subreport1" pageWidth="725" pageHeight="802" columnWidth="725" leftMargin="0" rightMargin="0" topMargin="0" bottomMargin="0">
+	<property name="ireport.zoom" value="1.0"/>
+	<property name="ireport.x" value="0"/>
+	<property name="ireport.y" value="0"/>
+	<parameter name="rrdDir" class="java.lang.String" isForPrompting="false">
+		<defaultValueExpression><![CDATA["/Users/thedesloge/Documents/OpenNMS/iReport"]]></defaultValueExpression>
+	</parameter>
+	<parameter name="nodeid" class="java.lang.Integer" isForPrompting="false">
+		<defaultValueExpression><![CDATA[Integer.valueOf(11)]]></defaultValueExpression>
+	</parameter>
+	<parameter name="startDate" class="java.util.Date" isForPrompting="false">
+		<defaultValueExpression><![CDATA[new Date(1290098100000L)]]></defaultValueExpression>
+	</parameter>
+	<parameter name="endDate" class="java.util.Date" isForPrompting="false">
+		<defaultValueExpression><![CDATA[new Date()]]></defaultValueExpression>
+	</parameter>
+	<parameter name="interface" class="java.lang.String" isForPrompting="false">
+		<defaultValueExpression><![CDATA["en0-0014510dd260"]]></defaultValueExpression>
+	</parameter>
+	<parameter name="snmpifalias" class="java.lang.String"/>
+	<parameter name="snmpifname" class="java.lang.String"/>
+	<queryString language="jrobin">
+		<![CDATA[--start $P{startDate} --end $P{endDate}
+		DEF:xx=$P{rrdDir}/snmp/$P{nodeid}/$P{interface}/ifHCInOctets.jrb:ifHCInOctets:AVERAGE
+		DEF:yy=$P{rrdDir}/snmp/$P{nodeid}/$P{interface}/ifHCOutOctets.jrb:ifHCOutOctets:AVERAGE
+		XPORT:xx:IfInOctets
+		XPORT:yy:IfOutOctets]]>
+	</queryString>
+	<field name="Timestamp" class="java.util.Date">
+		<fieldDescription><![CDATA[Timestamp]]></fieldDescription>
+	</field>
+	<field name="IfInOctets" class="java.lang.Double">
+		<fieldDescription><![CDATA[IfInOctets]]></fieldDescription>
+	</field>
+	<field name="IfOutOctets" class="java.lang.Double">
+		<fieldDescription><![CDATA[IfOutOctets]]></fieldDescription>
+	</field>
+	<variable name="received_SUM" class="java.lang.Double" calculation="Sum">
+		<variableExpression><![CDATA[$F{IfInOctets}]]></variableExpression>
+	</variable>
+	<variable name="transmitted_SUM" class="java.lang.Double" calculation="Sum">
+		<variableExpression><![CDATA[$F{IfOutOctets}]]></variableExpression>
+	</variable>
+	<filterExpression><![CDATA[!$F{IfInOctets}.isNaN() || !$F{IfOutOctets}.isNaN()]]></filterExpression>
+	<background>
+		<band splitType="Stretch"/>
+	</background>
+	<title>
+		<band splitType="Stretch"/>
+	</title>
+	<pageHeader>
+		<band splitType="Stretch"/>
+	</pageHeader>
+	<columnHeader>
+		<band splitType="Stretch"/>
+	</columnHeader>
+	<detail>
+		<band splitType="Stretch"/>
+	</detail>
+	<columnFooter>
+		<band splitType="Stretch"/>
+	</columnFooter>
+	<pageFooter>
+		<band splitType="Stretch"/>
+	</pageFooter>
+	<summary>
+		<band height="22" splitType="Stretch">
+			<textField>
+				<reportElement x="0" y="0" width="140" height="20"/>
+				<textElement/>
+				<textFieldExpression class="java.lang.String"><![CDATA[$P{snmpifname}]]></textFieldExpression>
+			</textField>
+			<textField pattern="#,##0.00">
+				<reportElement x="435" y="0" width="140" height="20" backcolor="#333333"/>
+				<textElement textAlignment="Right"/>
+				<textFieldExpression class="java.lang.Double"><![CDATA[$V{transmitted_SUM}]]></textFieldExpression>
+			</textField>
+			<textField pattern="#,##0.00">
+				<reportElement x="580" y="0" width="140" height="20"/>
+				<textElement textAlignment="Right"/>
+				<textFieldExpression class="java.lang.Double"><![CDATA[$V{received_SUM} + $V{transmitted_SUM}]]></textFieldExpression>
+			</textField>
+			<textField pattern="#,##0.00">
+				<reportElement x="290" y="0" width="140" height="20" backcolor="#CC9900"/>
+				<textElement textAlignment="Right"/>
+				<textFieldExpression class="java.lang.Double"><![CDATA[$V{received_SUM}]]></textFieldExpression>
+			</textField>
+			<textField>
+				<reportElement x="145" y="0" width="140" height="20"/>
+				<textElement/>
+				<textFieldExpression class="java.lang.String"><![CDATA[$P{snmpifalias}]]></textFieldExpression>
+			</textField>
+		</band>
+	</summary>
+</jasperReport>
