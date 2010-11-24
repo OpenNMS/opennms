@@ -5,7 +5,7 @@
 	<property name="ireport.y" value="0"/>
 	<template><![CDATA["/Users/thedesloge/git/opennms/opennms-base-assembly/src/main/filtered/etc/report-templates/assets/styles/defaultStyles.jrtx"]]></template>
 	<parameter name="rrdDir" class="java.lang.String" isForPrompting="false">
-		<defaultValueExpression><![CDATA["/Users/thedesloge/Documents/OpenNMS/iReport"]]></defaultValueExpression>
+		<defaultValueExpression><![CDATA[]]></defaultValueExpression>
 	</parameter>
 	<parameter name="nodeid" class="java.lang.Integer" isForPrompting="false">
 		<defaultValueExpression><![CDATA[Integer.valueOf(11)]]></defaultValueExpression>
@@ -46,19 +46,19 @@
 	<variable name="received_SUM" class="java.lang.Double" calculation="Sum">
 		<variableExpression><![CDATA[$F{IfInOctets}]]></variableExpression>
 	</variable>
-    <variable name="received_AVERAGE" class="java.lang.Double" calculation="Average">
+	<variable name="received_AVERAGE" class="java.lang.Double" calculation="Average">
 		<variableExpression><![CDATA[$F{IfInOctets}]]></variableExpression>
 	</variable>
-    <variable name="received_STDDEV" class="java.lang.Double" calculation="StandardDeviation">
+	<variable name="received_STDDEV" class="java.lang.Double" calculation="StandardDeviation">
 		<variableExpression><![CDATA[$F{IfInOctets}]]></variableExpression>
 	</variable>
 	<variable name="transmitted_SUM" class="java.lang.Double" calculation="Sum">
 		<variableExpression><![CDATA[$F{IfOutOctets}]]></variableExpression>
 	</variable>
-    <variable name="transmitted_AVERAGE" class="java.lang.Double" calculation="Average">
+	<variable name="transmitted_AVERAGE" class="java.lang.Double" calculation="Average">
 		<variableExpression><![CDATA[$F{IfOutOctets}]]></variableExpression>
 	</variable>
-    <variable name="transmitted_STDDEV" class="java.lang.Double" calculation="StandardDeviation">
+	<variable name="transmitted_STDDEV" class="java.lang.Double" calculation="StandardDeviation">
 		<variableExpression><![CDATA[$F{IfOutOctets}]]></variableExpression>
 	</variable>
 	<variable name="file" class="java.lang.String">
