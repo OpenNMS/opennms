@@ -150,17 +150,17 @@ ORDER BY
 				<staticText>
 					<reportElement style="Sub-sub-header" x="290" y="28" width="140" height="20"/>
 					<textElement textAlignment="Right"/>
-					<text><![CDATA[received sum]]></text>
+					<text><![CDATA[MiByte Received]]></text>
 				</staticText>
 				<staticText>
 					<reportElement style="Sub-sub-header" x="435" y="28" width="140" height="20"/>
 					<textElement textAlignment="Right"/>
-					<text><![CDATA[transmitted sum]]></text>
+					<text><![CDATA[MiByte Transmitted]]></text>
 				</staticText>
 				<staticText>
 					<reportElement style="Sub-sub-header" x="580" y="28" width="140" height="20"/>
 					<textElement textAlignment="Right"/>
-					<text><![CDATA[total]]></text>
+					<text><![CDATA[Total MiByte In+Out]]></text>
 				</staticText>
 			</band>
 		</groupHeader>

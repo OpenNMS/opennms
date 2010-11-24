@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<jasperReport xmlns="http://jasperreports.sourceforge.net/jasperreports" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://jasperreports.sourceforge.net/jasperreports http://jasperreports.sourceforge.net/xsd/jasperreport.xsd" name="TotalBytesTransferredByInterface_subreport1" pageWidth="725" pageHeight="802" columnWidth="725" leftMargin="0" rightMargin="0" topMargin="0" bottomMargin="0">
-	<property name="ireport.zoom" value="1.0"/>
+<jasperReport xmlns="http://jasperreports.sourceforge.net/jasperreports" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://jasperreports.sourceforge.net/jasperreports http://jasperreports.sourceforge.net/xsd/jasperreport.xsd" name="TotalBytesTransferredByInterface_subreport1" pageWidth="725" pageHeight="802" whenNoDataType="NoDataSection" columnWidth="725" leftMargin="0" rightMargin="0" topMargin="0" bottomMargin="0">
+	<property name="ireport.zoom" value="1.5"/>
 	<property name="ireport.x" value="0"/>
 	<property name="ireport.y" value="0"/>
 	<template><![CDATA["${install.dir}/etc/report-templates/assets/styles/defaultStyles.jrtx"]]></template>
@@ -21,10 +21,10 @@
 	<parameter name="snmpifdescr" class="java.lang.String"/>
 	<parameter name="snmpphysaddr" class="java.lang.String"/>
 	<parameter name="ifLabel" class="java.lang.String" isForPrompting="false">
-	  <defaultValueExpression><![CDATA[$P{snmpifname} == null || "".equals($P{snmpifname}) ? $P{snmpifdescr} : $P{snmpifname}]]></defaultValueExpression>
+		<defaultValueExpression><![CDATA[$P{snmpifname} == null || "".equals($P{snmpifname}) ? $P{snmpifdescr} : $P{snmpifname}]]></defaultValueExpression>
 	</parameter>
 	<parameter name="interface" class="java.lang.String" isForPrompting="false">
-	  <defaultValueExpression><![CDATA[$P{snmpphysaddr} == null || "".equals($P{snmpphysaddr}) ? $P{ifLabel}.replaceAll("[\\/ :| \\.]", "_") : $P{ifLabel}.replaceAll("[\\/ :| \\.]", "_") + "-" + $P{snmpphysaddr}]]></defaultValueExpression>
+		<defaultValueExpression><![CDATA[$P{snmpphysaddr} == null || "".equals($P{snmpphysaddr}) ? $P{ifLabel}.replaceAll("[\\/ :| \\.]", "_") : $P{ifLabel}.replaceAll("[\\/ :| \\.]", "_") + "-" + $P{snmpphysaddr}]]></defaultValueExpression>
 	</parameter>
 	<parameter name="inOctets" class="java.lang.String" isForPrompting="false">
 		<defaultValueExpression><![CDATA[new java.io.File("$P{rrdDir}/snmp/$P{nodeid}/$P{interface}/ifHCInOctets.jrb").exists() ? "ifHCInOctets" : "ifInOctets"]]></defaultValueExpression>
@@ -101,17 +101,17 @@
 			<textField pattern="#,##0.00">
 				<reportElement style="Body" x="435" y="0" width="140" height="20" backcolor="#333333"/>
 				<textElement textAlignment="Right"/>
-				<textFieldExpression class="java.lang.Double"><![CDATA[$V{transmitted_AVERAGE}+1.64485*$V{transmitted_STDDEV}]]></textFieldExpression>
+				<textFieldExpression class="java.lang.Double"><![CDATA[($V{transmitted_AVERAGE}+1.64485*$V{transmitted_STDDEV})/new Double("1048576.0")]]></textFieldExpression>
 			</textField>
 			<textField pattern="#,##0.00">
 				<reportElement style="Body" x="580" y="0" width="140" height="20"/>
 				<textElement textAlignment="Right"/>
-				<textFieldExpression class="java.lang.Double"><![CDATA[$V{received_SUM} + $V{transmitted_SUM}]]></textFieldExpression>
+				<textFieldExpression class="java.lang.Double"><![CDATA[($V{received_SUM} + $V{transmitted_SUM})/new Double("1048576.0")]]></textFieldExpression>
 			</textField>
 			<textField pattern="#,##0.00">
 				<reportElement style="Body" x="290" y="0" width="140" height="20" backcolor="#CC9900"/>
 				<textElement textAlignment="Right"/>
-				<textFieldExpression class="java.lang.Double"><![CDATA[$V{received_AVERAGE}+1.64485*$V{received_STDDEV}]]></textFieldExpression>
+				<textFieldExpression class="java.lang.Double"><![CDATA[($V{received_AVERAGE}+1.64485*$V{received_STDDEV})/new Double("1048576.0")]]></textFieldExpression>
 			</textField>
 			<textField>
 				<reportElement style="Body" x="145" y="0" width="140" height="20"/>
@@ -120,4 +120,23 @@
 			</textField>
 		</band>
 	</summary>
+	<noData>
+		<band height="50">
+			<textField>
+				<reportElement style="Body" x="0" y="15" width="140" height="20"/>
+				<textElement/>
+				<textFieldExpression class="java.lang.String"><![CDATA[$P{snmpifname} != null ? $P{snmpifname} : $P{snmpifdescr}]]></textFieldExpression>
+			</textField>
+			<textField>
+				<reportElement style="Body" x="145" y="15" width="140" height="20"/>
+				<textElement/>
+				<textFieldExpression class="java.lang.String"><![CDATA[$P{snmpifalias}]]></textFieldExpression>
+			</textField>
+			<staticText>
+				<reportElement x="435" y="15" width="166" height="20"/>
+				<textElement/>
+				<text><![CDATA[There is No Data for this Entry]]></text>
+			</staticText>
+		</band>
+	</noData>
 </jasperReport>
