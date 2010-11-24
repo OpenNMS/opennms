@@ -1,7 +1,7 @@
-/* Copyright (c) 2006 MetaCarta, Inc., published under the Clear BSD license.
- * See http://svn.openlayers.org/trunk/openlayers/license.txt 
- * for the full text of the license. */
-
+/* Copyright (c) 2006-2010 by OpenLayers Contributors (see authors.txt for 
+ * full list of contributors). Published under the Clear BSD license.  
+ * See http://svn.openlayers.org/trunk/openlayers/license.txt for the
+ * full text of the license. */
 
 /**
  * @requires OpenLayers/Control/DragFeature.js
@@ -118,7 +118,7 @@ OpenLayers.Control.ModifyFeature = OpenLayers.Class(OpenLayers.Control, {
      * APIProperty: mode
      * {Integer} Bitfields specifying the modification mode. Defaults to
      *      OpenLayers.Control.ModifyFeature.RESHAPE. To set the mode to a
-     *      combination of options, use the | operator. or example, to allow
+     *      combination of options, use the | operator. For example, to allow
      *      the control to both resize and rotate features, use the following
      *      syntax
      * (code)

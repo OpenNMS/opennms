@@ -14,8 +14,6 @@ import java.util.HashSet;
 import java.util.Set;
 import java.util.TreeSet;
 
-import org.opennms.features.poller.remote.gwt.client.utils.StringUtils;
-
 import com.google.gwt.user.client.rpc.IsSerializable;
 public class LocationMonitorState implements Serializable, IsSerializable {
 	private static final long serialVersionUID = 1L;

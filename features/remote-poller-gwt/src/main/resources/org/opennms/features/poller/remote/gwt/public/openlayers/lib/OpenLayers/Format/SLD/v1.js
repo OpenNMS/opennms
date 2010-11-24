@@ -1,5 +1,6 @@
-/* Copyright (c) 2006-2008 MetaCarta, Inc., published under the Clear BSD
- * license.  See http://svn.openlayers.org/trunk/openlayers/license.txt for the
+/* Copyright (c) 2006-2010 by OpenLayers Contributors (see authors.txt for 
+ * full list of contributors). Published under the Clear BSD license.  
+ * See http://svn.openlayers.org/trunk/openlayers/license.txt for the
  * full text of the license. */
 
 /**
@@ -39,6 +40,27 @@ OpenLayers.Format.SLD.v1 = OpenLayers.Class(OpenLayers.Format.Filter.v1_0_0, {
      * {String} Schema location for a particular minor version.
      */
     schemaLocation: null,
+    
+    /** 
+     * APIProperty: multipleSymbolizers
+     * {Boolean} Support multiple symbolizers per rule.  Default is false.  if
+     *     true, an OpenLayers.Style2 instance will be created to represent 
+     *     user styles instead of an OpenLayers.Style instace.  The 
+     *     OpenLayers.Style2 class allows collections of rules with multiple
+     *     symbolizers, but is not currently useful for client side rendering.
+     *     If multiple symbolizers is true, multiple FeatureTypeStyle elements
+     *     are preserved in reading/writing by setting symbolizer zIndex values.
+     *     In addition, the <defaultSymbolizer> property is ignored if 
+     *     multiple symbolizers are supported (defaults should be applied
+     *     when rendering).
+     */
+    multipleSymbolizers: false,
+
+    /**
+     * Property: featureTypeCounter
+     * {Number} Private counter for multiple feature type styles.
+     */
+    featureTypeCounter: null,
 
     /**
      * APIProperty: defaultSymbolizer.
@@ -138,8 +160,15 @@ OpenLayers.Format.SLD.v1 = OpenLayers.Class(OpenLayers.Format.Filter.v1_0_0, {
             },
             "UserStyle": function(node, layer) {
                 var obj = {defaultsPerSymbolizer: true, rules: []};
+                this.featureTypeCounter = -1;
                 this.readChildNodes(node, obj);
-                var style = new OpenLayers.Style(this.defaultSymbolizer, obj);
+                var style;
+                if (this.multipleSymbolizers) {
+                    delete obj.defaultsPerSymbolizer;
+                    style = new OpenLayers.Style2(obj);
+                } else {
+                    style = new OpenLayers.Style(this.defaultSymbolizer, obj);
+                }
                 layer.userStyles.push(style);
             },
             "IsDefault": function(node, style) {
@@ -148,18 +177,21 @@ OpenLayers.Format.SLD.v1 = OpenLayers.Class(OpenLayers.Format.Filter.v1_0_0, {
                 }
             },
             "FeatureTypeStyle": function(node, style) {
-                // OpenLayers doesn't have a place for FeatureTypeStyle
-                // Name, Title, Abstract, FeatureTypeName, or
-                // SemanticTypeIdentifier so, we make a temporary object
-                // and later just use the Rule(s).
+                ++this.featureTypeCounter;
                 var obj = {
-                    rules: []
+                    rules: this.multipleSymbolizers ? style.rules : []
                 };
                 this.readChildNodes(node, obj);
-                style.rules = obj.rules;
+                if (!this.multipleSymbolizers) {
+                    style.rules = obj.rules;
+                }
             },
             "Rule": function(node, obj) {
-                var rule = new OpenLayers.Rule();
+                var config;
+                if (this.multipleSymbolizers) {
+                    config = {symbolizers: []};
+                }
+                var rule = new OpenLayers.Rule(config);
                 this.readChildNodes(node, rule);
                 obj.rules.push(rule);
             },
@@ -173,11 +205,18 @@ OpenLayers.Format.SLD.v1 = OpenLayers.Class(OpenLayers.Format.Filter.v1_0_0, {
                 rule.maxScaleDenominator = parseFloat(this.getChildValue(node));
             },
             "TextSymbolizer": function(node, rule) {
-                // OpenLayers doens't do painter's order, instead we extend
-                var symbolizer = rule.symbolizer["Text"] || {};
-                this.readChildNodes(node, symbolizer);
-                // in case it didn't exist before
-                rule.symbolizer["Text"] = symbolizer;
+                var config = {};
+                this.readChildNodes(node, config);
+                if (this.multipleSymbolizers) {
+                    config.zIndex = this.featureTypeCounter;
+                    rule.symbolizers.push(
+                        new OpenLayers.Symbolizer.Text(config)
+                    );
+                } else {
+                    rule.symbolizer["Text"] = OpenLayers.Util.applyDefaults(
+                        config, rule.symbolizer["Text"]
+                    );
+                }
             },
             "Label": function(node, symbolizer) {
                 // only supporting literal or property name
@@ -210,26 +249,88 @@ OpenLayers.Format.SLD.v1 = OpenLayers.Class(OpenLayers.Format.Filter.v1_0_0, {
                     symbolizer.haloRadius = radius;
                 }
             },
+            "RasterSymbolizer": function(node, rule) {
+                var config = {};
+                this.readChildNodes(node, config);
+                if (this.multipleSymbolizers) {
+                    config.zIndex = this.featureTypeCounter;
+                    rule.symbolizers.push(
+                        new OpenLayers.Symbolizer.Raster(config)
+                    );
+                } else {
+                    rule.symbolizer["Raster"] = OpenLayers.Util.applyDefaults(
+                        config, rule.symbolizer["Raster"]
+                    );
+                }
+            },
+            "Geometry": function(node, obj) {
+                obj.geometry = {};
+                this.readChildNodes(node, obj.geometry);
+            },
+            "ColorMap": function(node, symbolizer) {
+                symbolizer.colorMap = [];
+                this.readChildNodes(node, symbolizer.colorMap);
+            },
+            "ColorMapEntry": function(node, colorMap) {
+                var q = node.getAttribute("quantity");
+                var o = node.getAttribute("opacity");
+                colorMap.push({
+                    color: node.getAttribute("color"),
+                    quantity: q !== null ? parseFloat(q) : undefined,
+                    label: node.getAttribute("label") || undefined,
+                    opacity: o !== null ? parseFloat(o) : undefined
+                });
+            },
             "LineSymbolizer": function(node, rule) {
-                // OpenLayers doesn't do painter's order, instead we extend
-                var symbolizer = rule.symbolizer["Line"] || {};
-                this.readChildNodes(node, symbolizer);
-                // in case it didn't exist before
-                rule.symbolizer["Line"] = symbolizer;
+                var config = {};
+                this.readChildNodes(node, config);
+                if (this.multipleSymbolizers) {
+                    config.zIndex = this.featureTypeCounter;
+                    rule.symbolizers.push(
+                        new OpenLayers.Symbolizer.Line(config)
+                    );
+                } else {
+                    rule.symbolizer["Line"] = OpenLayers.Util.applyDefaults(
+                        config, rule.symbolizer["Line"]
+                    );
+                }
             },
             "PolygonSymbolizer": function(node, rule) {
-                // OpenLayers doens't do painter's order, instead we extend
-                var symbolizer = rule.symbolizer["Polygon"] || {};
-                this.readChildNodes(node, symbolizer);
-                // in case it didn't exist before
-                rule.symbolizer["Polygon"] = symbolizer;
+                var config = {
+                    fill: false,
+                    stroke: false
+                };
+                if (!this.multipleSymbolizers) {
+                    config = rule.symbolizer["Polygon"] || config;
+                }
+                this.readChildNodes(node, config);
+                if (this.multipleSymbolizers) {
+                    config.zIndex = this.featureTypeCounter;
+                    rule.symbolizers.push(
+                        new OpenLayers.Symbolizer.Polygon(config)
+                    );
+                } else {
+                    rule.symbolizer["Polygon"] = config;
+                }
             },
             "PointSymbolizer": function(node, rule) {
-                // OpenLayers doens't do painter's order, instead we extend
-                var symbolizer = rule.symbolizer["Point"] || {};
-                this.readChildNodes(node, symbolizer);
-                // in case it didn't exist before
-                rule.symbolizer["Point"] = symbolizer;
+                var config = {
+                    fill: false,
+                    stroke: false,
+                    graphic: false
+                };
+                if (!this.multipleSymbolizers) {
+                    config = rule.symbolizer["Point"] || config;
+                }
+                this.readChildNodes(node, config);
+                if (this.multipleSymbolizers) {
+                    config.zIndex = this.featureTypeCounter;
+                    rule.symbolizers.push(
+                        new OpenLayers.Symbolizer.Point(config)
+                    );
+                } else {
+                    rule.symbolizer["Point"] = config;
+                }
             },
             "Stroke": function(node, symbolizer) {
                 symbolizer.stroke = true;
@@ -258,8 +359,8 @@ OpenLayers.Format.SLD.v1 = OpenLayers.Class(OpenLayers.Format.Filter.v1_0_0, {
                 this.readChildNodes(node, graphic);
                 // directly properties with names that match symbolizer properties
                 var properties = [
-                    "strokeColor", "strokeWidth", "strokeOpacity",
-                    "strokeLinecap", "fillColor", "fillOpacity",
+                    "stroke", "strokeColor", "strokeWidth", "strokeOpacity",
+                    "strokeLinecap", "fill", "fillColor", "fillOpacity",
                     "graphicName", "rotation", "graphicFormat"
                 ];
                 var prop, value;
@@ -534,7 +635,53 @@ OpenLayers.Format.SLD.v1 = OpenLayers.Class(OpenLayers.Format.Filter.v1_0_0, {
                 }
                 
                 // add FeatureTypeStyles
-                this.writeNode("FeatureTypeStyle", style, node);
+                if (this.multipleSymbolizers && style.rules) {
+                    // group style objects by symbolizer zIndex
+                    var rulesByZ = {
+                        0: []
+                    };
+                    var zValues = [0];
+                    var rule, ruleMap, symbolizer, zIndex, clone;
+                    for (var i=0, ii=style.rules.length; i<ii; ++i) {
+                        rule = style.rules[i];
+                        if (rule.symbolizers) {
+                            ruleMap = {};
+                            for (var j=0, jj=rule.symbolizers.length; j<jj; ++j) {
+                                symbolizer = rule.symbolizers[j];
+                                zIndex = symbolizer.zIndex;
+                                if (!(zIndex in ruleMap)) {
+                                    clone = rule.clone();
+                                    clone.symbolizers = [];
+                                    ruleMap[zIndex] = clone;
+                                }
+                                ruleMap[zIndex].symbolizers.push(symbolizer.clone());
+                            }
+                            for (zIndex in ruleMap) {
+                                if (!(zIndex in rulesByZ)) {
+                                    zValues.push(zIndex);
+                                    rulesByZ[zIndex] = [];
+                                }
+                                rulesByZ[zIndex].push(ruleMap[zIndex]);
+                            }
+                        } else {
+                            // no symbolizers in rule
+                            rulesByZ[0].push(rule.clone());
+                        }
+                    }
+                    // write one FeatureTypeStyle per zIndex
+                    zValues.sort();
+                    var rules;
+                    for (var i=0, ii=zValues.length; i<ii; ++i) {
+                        rules = rulesByZ[zValues[i]];
+                        if (rules.length > 0) {
+                            clone = style.clone();
+                            clone.rules = rulesByZ[zValues[i]];
+                            this.writeNode("FeatureTypeStyle", clone, node);
+                        }
+                    }                    
+                } else {
+                    this.writeNode("FeatureTypeStyle", style, node);
+                }
                 
                 return node;
             },
@@ -594,16 +741,27 @@ OpenLayers.Format.SLD.v1 = OpenLayers.Class(OpenLayers.Format.Filter.v1_0_0, {
                     );
                 }
                 
-                // add in symbolizers (relies on geometry type keys)
-                var types = OpenLayers.Style.SYMBOLIZER_PREFIXES;
                 var type, symbolizer;
-                for(var i=0, len=types.length; i<len; ++i) {
-                    type = types[i];
-                    symbolizer = rule.symbolizer[type];
-                    if(symbolizer) {
+                if (this.multipleSymbolizers && rule.symbolizers) {
+                    var symbolizer;
+                    for (var i=0, ii=rule.symbolizers.length; i<ii; ++i) {
+                        symbolizer = rule.symbolizers[i];
+                        type = symbolizer.CLASS_NAME.split(".").pop();
                         this.writeNode(
                             type + "Symbolizer", symbolizer, node
                         );
+                    }
+                } else {
+                    // add in symbolizers (relies on geometry type keys)
+                    var types = OpenLayers.Style.SYMBOLIZER_PREFIXES;
+                    for(var i=0, len=types.length; i<len; ++i) {
+                        type = types[i];
+                        symbolizer = rule.symbolizer[type];
+                        if(symbolizer) {
+                            this.writeNode(
+                                type + "Symbolizer", symbolizer, node
+                            );
+                        }
                     }
                 }
                 return node;
@@ -780,20 +938,54 @@ OpenLayers.Format.SLD.v1 = OpenLayers.Class(OpenLayers.Format.Filter.v1_0_0, {
                 return node;
             },
             "Radius": function(value) {
-                return node = this.createElementNSPlus("sld:Radius", {
+                return this.createElementNSPlus("sld:Radius", {
                     value: value
                 });
             },
+            "RasterSymbolizer": function(symbolizer) {
+                var node = this.createElementNSPlus("sld:RasterSymbolizer");
+                if (symbolizer.geometry) {
+                    this.writeNode("Geometry", symbolizer.geometry, node);
+                }
+                if (symbolizer.opacity) {
+                    this.writeNode("Opacity", symbolizer.opacity, node);
+                }
+                if (symbolizer.colorMap) {
+                    this.writeNode("ColorMap", symbolizer.colorMap, node);
+                }
+                return node;
+            },
+            "Geometry": function(geometry) {
+                var node = this.createElementNSPlus("sld:Geometry");
+                if (geometry.property) {
+                    this.writeNode("ogc:PropertyName", geometry, node);
+                }
+                return node;
+            },
+            "ColorMap": function(colorMap) {
+                var node = this.createElementNSPlus("sld:ColorMap");
+                for (var i=0, len=colorMap.length; i<len; ++i) {
+                    this.writeNode("ColorMapEntry", colorMap[i], node);
+                }
+                return node;
+            },
+            "ColorMapEntry": function(colorMapEntry) {
+                var node = this.createElementNSPlus("sld:ColorMapEntry");
+                var a = colorMapEntry;
+                node.setAttribute("color", a.color);
+                a.opacity !== undefined && node.setAttribute("opacity",
+                    parseFloat(a.opacity));
+                a.quantity !== undefined && node.setAttribute("quantity",
+                    parseFloat(a.quantity));
+                a.label !== undefined && node.setAttribute("label", a.label);
+                return node;
+            },
             "PolygonSymbolizer": function(symbolizer) {
                 var node = this.createElementNSPlus("sld:PolygonSymbolizer");
-                if(symbolizer.fillColor != undefined ||
-                   symbolizer.fillOpacity != undefined) {
+                if(symbolizer.fill !== false) {
                     this.writeNode("Fill", symbolizer, node);
                 }
-                if(symbolizer.strokeWidth != undefined ||
-                   symbolizer.strokeColor != undefined ||
-                   symbolizer.strokeOpacity != undefined ||
-                   symbolizer.strokeDashstyle != undefined) {
+                if(symbolizer.stroke !== false) {
                     this.writeNode("Stroke", symbolizer, node);
                 }
                 return node;
@@ -859,8 +1051,12 @@ OpenLayers.Format.SLD.v1 = OpenLayers.Class(OpenLayers.Format.Filter.v1_0_0, {
                 if(symbolizer.graphicName) {
                     this.writeNode("WellKnownName", symbolizer.graphicName, node);
                 }
-                this.writeNode("Fill", symbolizer, node);
-                this.writeNode("Stroke", symbolizer, node);
+                if (symbolizer.fill !== false) {
+                    this.writeNode("Fill", symbolizer, node);
+                }
+                if (symbolizer.stroke !== false) {
+                    this.writeNode("Stroke", symbolizer, node);
+                }
                 return node;
             },
             "WellKnownName": function(name) {

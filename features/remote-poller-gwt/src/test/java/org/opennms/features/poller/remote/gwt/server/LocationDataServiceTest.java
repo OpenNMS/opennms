@@ -19,9 +19,6 @@ import org.opennms.features.poller.remote.gwt.client.location.LocationDetails;
 import org.opennms.features.poller.remote.gwt.client.location.LocationInfo;
 import org.opennms.features.poller.remote.gwt.client.utils.Interval;
 import org.opennms.features.poller.remote.gwt.client.utils.IntervalUtils;
-import org.opennms.netmgt.config.monitoringLocations.LocationDef;
-import org.opennms.netmgt.config.monitoringLocations.Locations;
-import org.opennms.netmgt.config.monitoringLocations.MonitoringLocationsConfiguration;
 import org.opennms.netmgt.dao.ApplicationDao;
 import org.opennms.netmgt.dao.DistPollerDao;
 import org.opennms.netmgt.dao.IpInterfaceDao;
@@ -177,6 +174,7 @@ public class LocationDataServiceTest implements TemporaryDatabaseAware<Temporary
         return 3600000 * numHours;
     }
     
+    @SuppressWarnings("unused")
     private long minutes(int numMinutes) {
         return 60000 * numMinutes;
     }

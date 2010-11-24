@@ -1,5 +1,6 @@
-/* Copyright (c) 2006-2008 MetaCarta, Inc., published under the Clear BSD
- * license.  See http://svn.openlayers.org/trunk/openlayers/license.txt for the
+/* Copyright (c) 2006-2010 by OpenLayers Contributors (see authors.txt for 
+ * full list of contributors). Published under the Clear BSD license.  
+ * See http://svn.openlayers.org/trunk/openlayers/license.txt for the
  * full text of the license. */
 
 /**
@@ -19,7 +20,7 @@ OpenLayers.Strategy.Fixed = OpenLayers.Class(OpenLayers.Strategy, {
      * APIProperty: preload
      * {Boolean} Load data before layer made visible. Enabling this may result
      *   in considerable overhead if your application loads many data layers
-     *   that are not visible by default. Default is true.
+     *   that are not visible by default. Default is false.
      */
     preload: false,
 

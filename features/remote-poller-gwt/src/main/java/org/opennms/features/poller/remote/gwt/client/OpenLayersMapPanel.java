@@ -10,18 +10,16 @@ import org.gwtopenmaps.openlayers.client.MapOptions;
 import org.gwtopenmaps.openlayers.client.MapWidget;
 import org.gwtopenmaps.openlayers.client.Marker;
 import org.gwtopenmaps.openlayers.client.Pixel;
+import org.gwtopenmaps.openlayers.client.Projection;
 import org.gwtopenmaps.openlayers.client.Size;
-import org.gwtopenmaps.openlayers.client.control.LayerSwitcher;
 import org.gwtopenmaps.openlayers.client.control.MousePosition;
 import org.gwtopenmaps.openlayers.client.control.PanZoomBar;
 import org.gwtopenmaps.openlayers.client.event.MapMoveListener;
 import org.gwtopenmaps.openlayers.client.event.MapZoomListener;
 import org.gwtopenmaps.openlayers.client.event.MarkerBrowserEventListener;
-import org.gwtopenmaps.openlayers.client.layer.Layer;
 import org.gwtopenmaps.openlayers.client.layer.Markers;
-import org.gwtopenmaps.openlayers.client.layer.WMS;
-import org.gwtopenmaps.openlayers.client.layer.WMSOptions;
-import org.gwtopenmaps.openlayers.client.layer.WMSParams;
+import org.gwtopenmaps.openlayers.client.layer.XYZ;
+import org.gwtopenmaps.openlayers.client.layer.XYZOptions;
 import org.gwtopenmaps.openlayers.client.popup.Popup;
 import org.opennms.features.poller.remote.gwt.client.events.GWTMarkerClickedEvent;
 import org.opennms.features.poller.remote.gwt.client.events.MapPanelBoundsChangedEvent;
@@ -89,6 +87,10 @@ public class OpenLayersMapPanel extends Composite implements MapPanel {
 
     private Map<String, Marker> m_markers = new HashMap<String, Marker>();
     private HandlerManager m_eventBus;
+
+    private static final Projection PROJECTION_SPHERICAL_MERCATOR = new Projection("EPSG:900913");
+
+    private static final Projection PROJECTION_LAT_LON = new Projection("EPSG:4326");
     
     /**
      * <p>Constructor for OpenLayersMapPanel.</p>
@@ -123,14 +125,14 @@ public class OpenLayersMapPanel extends Composite implements MapPanel {
         syncMapSizeWithParent();
     }
 
-
-
     /**
      * <p>initializeMap</p>
      */
     private void initializeMap() {
         final MapOptions mo = new MapOptions();
-        mo.setProjection("EPSG:4326");
+        mo.setProjection(PROJECTION_SPHERICAL_MERCATOR.getProjectionCode());
+        mo.setDisplayProjection(PROJECTION_LAT_LON);
+        mo.setMaxExtent(new Bounds(-180, -90, 180, 90).transform(PROJECTION_LAT_LON,PROJECTION_SPHERICAL_MERCATOR));
         m_mapWidget = new MapWidget("100%", "100%", mo);
         m_mapHolder.add(m_mapWidget);
 
@@ -141,34 +143,23 @@ public class OpenLayersMapPanel extends Composite implements MapPanel {
 
         initializeImageError();
 
-        WMSParams layerParams = null;
-        WMSOptions layerOptions = null;
-
-        layerOptions = new WMSOptions();
-        layerOptions.setWrapDateLine(true);
-        layerParams = new WMSParams();
-        layerParams.setLayers(getLayerName());
-        Layer layer = new WMS("Default", getLayerUrl(), layerParams, layerOptions);
-        layer.setIsBaseLayer(true);
-        layer.setIsVisible(true);
-        m_map.addLayer(layer);
-
-        layerOptions = new WMSOptions();
-        layerOptions.setWrapDateLine(true);
-        layerParams = new WMSParams();
-        layerParams.setLayers("basic");
-        layer = new WMS("MetaCarta (Basic)", new String[] {"http://labs.metacarta.com/wms-c/Basic.py?", "http://t2.labs.metacarta.com/wms-c/Basic.py?", "http://t1.labs.metacarta.com/wms-c/Basic.py?" }, layerParams, layerOptions);
-        layer.setIsBaseLayer(true);
-        layer.setIsVisible(false);
-        m_map.addLayer(layer);
+        XYZOptions xyzOptions = new XYZOptions();
+        xyzOptions.setSphericalMercator(true);
+        xyzOptions.setAttribution("Default tiles courtesy of <a href=\"http://open.mapquest.co.uk/\">MapQuest</a>");
+        XYZ x = new XYZ("OpenStreetMap", getLayerUrl(), xyzOptions);
+        x.setIsBaseLayer(true);
+        x.setIsVisible(true);
+        m_map.addLayer(x);
 
         m_markersLayer = new Markers("Remote Pollers");
         m_markersLayer.setIsVisible(true);
         m_markersLayer.setIsBaseLayer(false);
         m_map.addLayer(m_markersLayer);
 
+        /*
         final LayerSwitcher switcher = new LayerSwitcher();
         m_map.addControl(switcher);
+        */
 
         m_map.zoomToMaxExtent();
 
@@ -196,7 +187,8 @@ public class OpenLayersMapPanel extends Composite implements MapPanel {
             panel.add(new Label(htmlTitle));
             panel.add(new HTML(htmlContent));
             Popup p = new Popup(name, marker.getLonLat(), new Size(300, 300), panel.toString(), true);
-            p.setAutoSize(true);
+            // p.setAutoSize(true);
+            p.getJSObject().setProperty("autoSize", true);
             m_map.addPopupExclusive(p);
     	}
     }
@@ -234,13 +226,16 @@ public class OpenLayersMapPanel extends Composite implements MapPanel {
     }
 
     private static LonLat toLonLat(final GWTLatLng latLng) {
-        return new LonLat(latLng.getLongitude(), latLng.getLatitude());
+        final LonLat ll = new LonLat(latLng.getLongitude(), latLng.getLatitude());
+        ll.transform(PROJECTION_LAT_LON.getProjectionCode(), PROJECTION_SPHERICAL_MERCATOR.getProjectionCode());
+        return ll;
     }
 
-    private static GWTBounds toGWTBounds(final Bounds bounds) {
-        if (bounds == null) {
+    private static GWTBounds toGWTBounds(final Bounds fromBounds) {
+        if (fromBounds == null) {
             return new GWTBounds(-180, -90, 180, 90);
         }
+        final Bounds bounds = fromBounds.transform(PROJECTION_SPHERICAL_MERCATOR, PROJECTION_LAT_LON);
         BoundsBuilder bldr = new BoundsBuilder();
         bldr.extend(Math.max(-90, bounds.getLowerLeftY()), Math.max(-180, bounds.getLowerLeftX()));
         bldr.extend(Math.min(90, bounds.getUpperRightY()), Math.min(180, bounds.getUpperRightX()));
@@ -248,12 +243,14 @@ public class OpenLayersMapPanel extends Composite implements MapPanel {
     }
 
     private static Bounds toBounds(final GWTBounds bounds) {
+        Bounds b = null;
         if (bounds == null) {
-            return new Bounds(-180, -90, 180, 90);
+            b = new Bounds(-180, -90, 180, 90);
         }
         final GWTLatLng nec = bounds.getNorthEastCorner();
         final GWTLatLng swc = bounds.getSouthWestCorner();
-        return new Bounds(swc.getLongitude(), swc.getLatitude(), nec.getLongitude(), nec.getLatitude());
+        b = new Bounds(swc.getLongitude(), swc.getLatitude(), nec.getLongitude(), nec.getLatitude());
+        return b.transform(PROJECTION_LAT_LON, PROJECTION_SPHERICAL_MERCATOR);
     }
 
     private void syncMapSizeWithParent() {
@@ -286,10 +283,6 @@ public class OpenLayersMapPanel extends Composite implements MapPanel {
 
     private native String getLayerUrl() /*-{
         return $wnd.openlayersUrl;
-    }-*/;
-
-    private native String getLayerName() /*-{
-        return $wnd.openlayersLayer;
     }-*/;
 
     /**

@@ -1,5 +1,6 @@
-/* Copyright (c) 2006-2008 MetaCarta, Inc., published under the Clear BSD
- * license.  See http://svn.openlayers.org/trunk/openlayers/license.txt for the
+/* Copyright (c) 2006-2010 by OpenLayers Contributors (see authors.txt for 
+ * full list of contributors). Published under the Clear BSD license.  
+ * See http://svn.openlayers.org/trunk/openlayers/license.txt for the
  * full text of the license. */
 
 /**
@@ -83,7 +84,7 @@ OpenLayers.Strategy.Save = OpenLayers.Class(OpenLayers.Strategy, {
                     this.timer = window.setInterval(
                         OpenLayers.Function.bind(this.save, this),
                         this.auto * 1000
-                    )
+                    );
                 } else {
                     this.layer.events.on({
                         "featureadded": this.triggerSave,
@@ -115,7 +116,7 @@ OpenLayers.Strategy.Save = OpenLayers.Class(OpenLayers.Strategy, {
                         "featureadded": this.triggerSave,
                         "afterfeaturemodified": this.triggerSave,
                         scope: this
-                    })
+                    });
                 }
             }
         }

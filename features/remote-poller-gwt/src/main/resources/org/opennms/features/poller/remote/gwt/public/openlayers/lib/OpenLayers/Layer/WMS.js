@@ -1,5 +1,6 @@
-/* Copyright (c) 2006-2008 MetaCarta, Inc., published under the Clear BSD
- * license.  See http://svn.openlayers.org/trunk/openlayers/license.txt for the
+/* Copyright (c) 2006-2010 by OpenLayers Contributors (see authors.txt for 
+ * full list of contributors). Published under the Clear BSD license.  
+ * See http://svn.openlayers.org/trunk/openlayers/license.txt for the
  * full text of the license. */
 
 
@@ -66,11 +67,11 @@ OpenLayers.Layer.WMS = OpenLayers.Class(OpenLayers.Layer.Grid, {
     
     /**
      * Property: yx
-     * {Array} Array of strings with the EPSG codes for which the axis order
-     *     is to be reversed (yx instead of xy, LatLon instead of LonLat). This
-     *     is only relevant for WMS versions >= 1.3.0.
+     * {Object} Keys in this object are EPSG codes for which the axis order
+     *     is to be reversed (yx instead of xy, LatLon instead of LonLat), with
+     *     true as value. This is only relevant for WMS versions >= 1.3.0.
      */
-    yx: ['EPSG:4326'],
+    yx: {'EPSG:4326': true},
     
     /**
      * Constructor: OpenLayers.Layer.WMS
@@ -95,6 +96,9 @@ OpenLayers.Layer.WMS = OpenLayers.Class(OpenLayers.Layer.Grid, {
         var newArguments = [];
         //uppercase params
         params = OpenLayers.Util.upperCaseObject(params);
+        if (parseFloat(params.VERSION) >= 1.3 && !params.EXCEPTIONS) {
+            params.EXCEPTIONS = "INIMAGE";
+        } 
         newArguments.push(name, url, params, options);
         OpenLayers.Layer.Grid.prototype.initialize.apply(this, newArguments);
         OpenLayers.Util.applyDefaults(
@@ -166,8 +170,7 @@ OpenLayers.Layer.WMS = OpenLayers.Class(OpenLayers.Layer.Grid, {
      */
     reverseAxisOrder: function() {
         return (parseFloat(this.params.VERSION) >= 1.3 && 
-            OpenLayers.Util.indexOf(this.yx, 
-            this.map.getProjectionObject().getCode()) !== -1)
+            !!this.yx[this.map.getProjectionObject().getCode()]);
     },
     
     /**

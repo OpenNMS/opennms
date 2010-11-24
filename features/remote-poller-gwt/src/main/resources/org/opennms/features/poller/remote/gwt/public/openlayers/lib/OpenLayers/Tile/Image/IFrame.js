@@ -1,5 +1,6 @@
-/* Copyright (c) 2006-2008 MetaCarta, Inc., published under the Clear BSD
- * license.  See http://svn.openlayers.org/trunk/openlayers/license.txt for the
+/* Copyright (c) 2006-2010 by OpenLayers Contributors (see authors.txt for 
+ * full list of contributors). Published under the Clear BSD license.  
+ * See http://svn.openlayers.org/trunk/openlayers/license.txt for the
  * full text of the license. */
 
 
@@ -104,7 +105,7 @@ OpenLayers.Tile.Image.IFrame = OpenLayers.Class(OpenLayers.Tile.Image, {
      * Creates the imgDiv property on the tile.
      */
     initImgDiv: function() {
-        this.imgDiv = this.createImgDiv()
+        this.imgDiv = this.createImgDiv();
 
         OpenLayers.Util.modifyDOMElement(this.imgDiv, this.id, null,
             this.layer.getImageSize(), "relative");

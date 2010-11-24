@@ -1,5 +1,6 @@
-/* Copyright (c) 2006-2008 MetaCarta, Inc., published under the Clear BSD
- * license.  See http://svn.openlayers.org/trunk/openlayers/license.txt for the
+/* Copyright (c) 2006-2010 by OpenLayers Contributors (see authors.txt for 
+ * full list of contributors). Published under the Clear BSD license.  
+ * See http://svn.openlayers.org/trunk/openlayers/license.txt for the
  * full text of the license. */
 
 /**
@@ -151,7 +152,9 @@ OpenLayers.Format.WKT = OpenLayers.Class(OpenLayers.Format, {
         'multipoint': function(multipoint) {
             var array = [];
             for(var i=0, len=multipoint.components.length; i<len; ++i) {
-                array.push(this.extract.point.apply(this, [multipoint.components[i]]));
+                array.push('(' +
+                           this.extract.point.apply(this, [multipoint.components[i]]) +
+                           ')');
             }
             return array.join(',');
         },
@@ -244,10 +247,12 @@ OpenLayers.Format.WKT = OpenLayers.Class(OpenLayers.Format, {
          * @private
          */
         'multipoint': function(str) {
-            var points = OpenLayers.String.trim(str).split(',');
+            var point;
+            var points = OpenLayers.String.trim(str).split(this.regExes.parenComma);
             var components = [];
             for(var i=0, len=points.length; i<len; ++i) {
-                components.push(this.parse.point.apply(this, [points[i]]).geometry);
+                point = points[i].replace(this.regExes.trimParens, '$1');
+                components.push(this.parse.point.apply(this, [point]).geometry);
             }
             return new OpenLayers.Feature.Vector(
                 new OpenLayers.Geometry.MultiPoint(components)

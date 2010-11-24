@@ -163,8 +163,8 @@
     </dependency>
     <dependency>
       <groupId>org.gwtopenmaps.openlayers</groupId>
-      <artifactId>openlayers_gwt</artifactId>
-      <version>0.5-20100510</version>
+      <artifactId>gwt-openlayers-client</artifactId>
+      <version>0.6-SNAPSHOT</version>
       <scope>provided</scope>
     </dependency>
     <dependency>

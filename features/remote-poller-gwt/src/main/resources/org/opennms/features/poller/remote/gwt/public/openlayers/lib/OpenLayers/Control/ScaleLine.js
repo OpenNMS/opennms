@@ -1,6 +1,7 @@
-/* Copyright (c) 2006-2007 MetaCarta, Inc., published under a modified BSD license.
- * See http://svn.openlayers.org/trunk/openlayers/repository-license.txt 
- * for the full text of the license. */
+/* Copyright (c) 2006-2010 by OpenLayers Contributors (see authors.txt for 
+ * full list of contributors). Published under the Clear BSD license.  
+ * See http://svn.openlayers.org/trunk/openlayers/license.txt for the
+ * full text of the license. */
 
 /**
  * @requires OpenLayers/Control.js
@@ -64,7 +65,10 @@ OpenLayers.Control.ScaleLine = OpenLayers.Class(OpenLayers.Control, {
     
     /**
      * APIProperty: geodesic
-     * {Boolean} Use geodesic measurement. Default is false.
+     * {Boolean} Use geodesic measurement. Default is false. The recommended
+     * setting for maps in EPSG:4326 is false, and true EPSG:900913. If set to
+     * true, the scale will be calculated based on the horizontal size of the
+     * pixel in the center of the map viewport.
      */
     geodesic: false,
 
@@ -165,7 +169,8 @@ OpenLayers.Control.ScaleLine = OpenLayers.Class(OpenLayers.Control, {
         var maxSizeData = this.maxWidth * res * inches[curMapUnits];
         var geodesicRatio = 1;
         if(this.geodesic === true) {
-            var maxSizeGeodesic = this.getGeodesicLength(this.maxWidth);
+            var maxSizeGeodesic = (this.map.getGeodesicPixelSize().w ||
+                0.000001) * this.maxWidth;
             var maxSizeKilometers = maxSizeData / inches["km"];
             geodesicRatio = maxSizeGeodesic / maxSizeKilometers;
             maxSizeData *= geodesicRatio;
@@ -212,26 +217,6 @@ OpenLayers.Control.ScaleLine = OpenLayers.Class(OpenLayers.Control, {
         }
         
     }, 
-
-    /**
-     * Method: getGeodesicLength
-     * 
-     * Parameters:
-     * pixels - {Number} the pixels to get the geodesic length in meters for.
-     */
-    getGeodesicLength: function(pixels) {
-        var map = this.map;
-        var centerPx = map.getPixelFromLonLat(map.getCenter());
-        var bottom = map.getLonLatFromPixel(centerPx.add(0, -pixels / 2));
-        var top = map.getLonLatFromPixel(centerPx.add(0, pixels / 2));
-        var source = map.getProjectionObject();
-        var dest = new OpenLayers.Projection("EPSG:4326");
-        if(!source.equals(dest)) {
-            bottom.transform(source, dest);
-            top.transform(source, dest);
-        }
-        return OpenLayers.Util.distVincenty(bottom, top);
-    },
 
     CLASS_NAME: "OpenLayers.Control.ScaleLine"
 });

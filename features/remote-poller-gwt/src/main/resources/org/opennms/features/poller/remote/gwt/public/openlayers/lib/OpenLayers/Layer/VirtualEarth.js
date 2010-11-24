@@ -1,5 +1,6 @@
-/* Copyright (c) 2006-2008 MetaCarta, Inc., published under the Clear BSD
- * license.  See http://svn.openlayers.org/trunk/openlayers/license.txt for the
+/* Copyright (c) 2006-2010 by OpenLayers Contributors (see authors.txt for 
+ * full list of contributors). Published under the Clear BSD license.  
+ * See http://svn.openlayers.org/trunk/openlayers/license.txt for the
  * full text of the license. */
 
 
@@ -64,6 +65,14 @@ OpenLayers.Layer.VirtualEarth = OpenLayers.Class(
      * {VEMapType}
      */
     type: null,
+
+    /**
+     * APIProperty: wrapDateLine
+     * {Boolean} Allow user to pan forever east/west.  Default is true.  
+     *     Setting this to false only restricts panning if 
+     *     <sphericalMercator> is true. 
+     */
+    wrapDateLine: true,
 
     /**
      * APIProperty: sphericalMercator

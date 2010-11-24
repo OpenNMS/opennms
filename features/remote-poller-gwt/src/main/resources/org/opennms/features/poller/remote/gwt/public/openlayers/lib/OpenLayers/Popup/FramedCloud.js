@@ -1,5 +1,6 @@
-/* Copyright (c) 2006-2008 MetaCarta, Inc., published under the Clear BSD
- * license.  See http://svn.openlayers.org/trunk/openlayers/license.txt for the
+/* Copyright (c) 2006-2010 by OpenLayers Contributors (see authors.txt for 
+ * full list of contributors). Published under the Clear BSD license.  
+ * See http://svn.openlayers.org/trunk/openlayers/license.txt for the
  * full text of the license. */
 
 /**
@@ -38,7 +39,7 @@ OpenLayers.Popup.FramedCloud =
      * APIProperty: imageSize
      * {<OpenLayers.Size>}
      */
-    imageSize: new OpenLayers.Size(676, 736),
+    imageSize: new OpenLayers.Size(1276, 736),
 
     /**
      * APIProperty: isAlphaImage
@@ -71,7 +72,7 @@ OpenLayers.Popup.FramedCloud =
                 { //top-right
                     size: new OpenLayers.Size(22, 'auto'),
                     anchor: new OpenLayers.Bounds(null, 50, 0, 0),
-                    position: new OpenLayers.Pixel(-638, 0)
+                    position: new OpenLayers.Pixel(-1238, 0)
                 },
                 { //bottom-left
                     size: new OpenLayers.Size('auto', 19),
@@ -81,7 +82,7 @@ OpenLayers.Popup.FramedCloud =
                 { //bottom-right
                     size: new OpenLayers.Size(22, 18),
                     anchor: new OpenLayers.Bounds(null, 32, 0, null),
-                    position: new OpenLayers.Pixel(-638, -632)
+                    position: new OpenLayers.Pixel(-1238, -632)
                 },
                 { // stem
                     size: new OpenLayers.Size(81, 35),
@@ -102,7 +103,7 @@ OpenLayers.Popup.FramedCloud =
                 { //top-right
                     size: new OpenLayers.Size(22, 'auto'),
                     anchor: new OpenLayers.Bounds(null, 50, 0, 0),
-                    position: new OpenLayers.Pixel(-638, 0)
+                    position: new OpenLayers.Pixel(-1238, 0)
                 },
                 { //bottom-left
                     size: new OpenLayers.Size('auto', 19),
@@ -112,7 +113,7 @@ OpenLayers.Popup.FramedCloud =
                 { //bottom-right
                     size: new OpenLayers.Size(22, 19),
                     anchor: new OpenLayers.Bounds(null, 32, 0, null),
-                    position: new OpenLayers.Pixel(-638, -631)
+                    position: new OpenLayers.Pixel(-1238, -631)
                 },
                 { // stem
                     size: new OpenLayers.Size(81, 35),
@@ -133,7 +134,7 @@ OpenLayers.Popup.FramedCloud =
                 { //top-right
                     size: new OpenLayers.Size(22, 'auto'),
                     anchor: new OpenLayers.Bounds(null, 21, 0, 32),
-                    position: new OpenLayers.Pixel(-638, 0)
+                    position: new OpenLayers.Pixel(-1238, 0)
                 },
                 { //bottom-left
                     size: new OpenLayers.Size('auto', 21),
@@ -143,7 +144,7 @@ OpenLayers.Popup.FramedCloud =
                 { //bottom-right
                     size: new OpenLayers.Size(22, 21),
                     anchor: new OpenLayers.Bounds(null, 0, 0, null),
-                    position: new OpenLayers.Pixel(-638, -629)
+                    position: new OpenLayers.Pixel(-1238, -629)
                 },
                 { // stem
                     size: new OpenLayers.Size(81, 33),
@@ -164,7 +165,7 @@ OpenLayers.Popup.FramedCloud =
                 { //top-right
                     size: new OpenLayers.Size(22, 'auto'),
                     anchor: new OpenLayers.Bounds(null, 21, 0, 32),
-                    position: new OpenLayers.Pixel(-638, 0)
+                    position: new OpenLayers.Pixel(-1238, 0)
                 },
                 { //bottom-left
                     size: new OpenLayers.Size('auto', 21),
@@ -174,7 +175,7 @@ OpenLayers.Popup.FramedCloud =
                 { //bottom-right
                     size: new OpenLayers.Size(22, 21),
                     anchor: new OpenLayers.Bounds(null, 0, 0, null),
-                    position: new OpenLayers.Pixel(-638, -629)
+                    position: new OpenLayers.Pixel(-1238, -629)
                 },
                 { // stem
                     size: new OpenLayers.Size(81, 33),
@@ -195,7 +196,7 @@ OpenLayers.Popup.FramedCloud =
      * APIProperty: maxSize
      * {<OpenLayers.Size>}
      */
-    maxSize: new OpenLayers.Size(600, 660),
+    maxSize: new OpenLayers.Size(1200, 660),
 
     /** 
      * Constructor: OpenLayers.Popup.FramedCloud

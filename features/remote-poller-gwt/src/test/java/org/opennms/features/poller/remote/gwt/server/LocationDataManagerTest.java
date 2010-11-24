@@ -1,20 +1,22 @@
 package org.opennms.features.poller.remote.gwt.server;
 
-import static org.easymock.EasyMock.*;
-import static org.junit.Assert.*;
+import static org.easymock.EasyMock.expectLastCall;
+import static org.easymock.EasyMock.isA;
+import static org.easymock.EasyMock.reportMatcher;
+import static org.junit.Assert.assertEquals;
 
 import java.text.DateFormat;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.Calendar;
-import java.util.Date;
 import java.util.Collection;
 import java.util.Collections;
+import java.util.Date;
 import java.util.GregorianCalendar;
 import java.util.List;
 import java.util.Map;
-import java.util.Properties;
 import java.util.Map.Entry;
+import java.util.Properties;
 
 import org.easymock.IArgumentMatcher;
 import org.junit.Before;
@@ -39,7 +41,6 @@ import org.opennms.netmgt.model.OnmsLocationSpecificStatus;
 import org.opennms.netmgt.model.OnmsMonitoringLocationDefinition;
 import org.opennms.test.mock.EasyMockUtils;
 import org.opennms.test.mock.MockLogAppender;
-import org.opennms.test.mock.MockUtil;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.test.context.ContextConfiguration;
 import org.springframework.test.context.TestExecutionListeners;
@@ -263,10 +264,6 @@ public class LocationDataManagerTest {
         
     }
 
-    private LocationUpdatedRemoteEvent isUpLocation() {
-        return isA(LocationUpdatedRemoteEvent.class);
-    }
-    
     @Test
     public void testJune() throws ParseException {
         Date d= june(1, 2009);

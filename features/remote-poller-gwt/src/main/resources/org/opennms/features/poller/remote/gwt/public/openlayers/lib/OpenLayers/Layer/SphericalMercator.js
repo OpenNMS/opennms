@@ -1,3 +1,8 @@
+/* Copyright (c) 2006-2010 by OpenLayers Contributors (see authors.txt for 
+ * full list of contributors). Published under the Clear BSD license.  
+ * See http://svn.openlayers.org/trunk/openlayers/license.txt for the
+ * full text of the license. */
+
 /**
  * @requires OpenLayers/Layer.js
  * @requires OpenLayers/Projection.js
@@ -50,6 +55,38 @@ OpenLayers.Layer.SphericalMercator = {
         return extent;
     },
 
+    /**
+     * Method: getLonLatFromViewPortPx
+     * Get a map location from a pixel location
+     * 
+     * Parameters:
+     * viewPortPx - {<OpenLayers.Pixel>}
+     *
+     * Returns:
+     *  {<OpenLayers.LonLat>} An OpenLayers.LonLat which is the passed-in view
+     *  port OpenLayers.Pixel, translated into lon/lat by map lib
+     *  If the map lib is not loaded or not centered, returns null
+     */
+    getLonLatFromViewPortPx: function (viewPortPx) {
+        return OpenLayers.Layer.prototype.getLonLatFromViewPortPx.apply(this, arguments);
+    },
+    
+    /**
+     * Method: getViewPortPxFromLonLat
+     * Get a pixel location from a map location
+     *
+     * Parameters:
+     * lonlat - {<OpenLayers.LonLat>}
+     *
+     * Returns:
+     * {<OpenLayers.Pixel>} An OpenLayers.Pixel which is the passed-in
+     * OpenLayers.LonLat, translated into view port pixels by map lib
+     * If map lib is not loaded or not centered, returns null
+     */
+    getViewPortPxFromLonLat: function (lonlat) {
+        return OpenLayers.Layer.prototype.getViewPortPxFromLonLat.apply(this, arguments);
+    },
+
     /** 
      * Method: initMercatorParameters 
      * Set up the mercator parameters on the layer: resolutions,
@@ -63,7 +100,7 @@ OpenLayers.Layer.SphericalMercator = {
             this.RESOLUTIONS[zoom] = maxResolution / Math.pow(2, zoom);
         }
         this.units = "m";
-        this.projection = "EPSG:900913";
+        this.projection = this.projection || "EPSG:900913";
     },
 
     /**

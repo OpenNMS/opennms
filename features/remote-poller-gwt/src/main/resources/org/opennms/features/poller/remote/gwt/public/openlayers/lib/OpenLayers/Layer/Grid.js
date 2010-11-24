@@ -1,5 +1,6 @@
-/* Copyright (c) 2006-2008 MetaCarta, Inc., published under the Clear BSD
- * license.  See http://svn.openlayers.org/trunk/openlayers/license.txt for the
+/* Copyright (c) 2006-2010 by OpenLayers Contributors (see authors.txt for 
+ * full list of contributors). Published under the Clear BSD license.  
+ * See http://svn.openlayers.org/trunk/openlayers/license.txt for the
  * full text of the license. */
 
 
@@ -207,7 +208,7 @@ OpenLayers.Layer.Grid = OpenLayers.Class(OpenLayers.Layer.HTTPRequest, {
      */
     setTileSize: function(size) { 
         if (this.singleTile) {
-            size = this.map.getSize().clone();
+            size = this.map.getSize();
             size.h = parseInt(size.h * this.ratio);
             size.w = parseInt(size.w * this.ratio);
         } 
@@ -354,7 +355,7 @@ OpenLayers.Layer.Grid = OpenLayers.Class(OpenLayers.Layer.HTTPRequest, {
         var minCols = Math.ceil(viewSize.w/this.tileSize.w) +
                       Math.max(1, 2 * this.buffer);
         
-        var extent = this.maxExtent;
+        var extent = this.getMaxExtent();
         var resolution = this.map.getResolution();
         
         var tileLayout = this.calculateGridLayout(bounds, extent, resolution);
@@ -428,6 +429,18 @@ OpenLayers.Layer.Grid = OpenLayers.Class(OpenLayers.Layer.HTTPRequest, {
 
         //now actually draw the tiles
         this.spiralTileLoad();
+    },
+
+    /**
+     * Method: getMaxExtent
+     * Get this layer's maximum extent. (Implemented as a getter for
+     *     potential specific implementations in sub-classes.)
+     *
+     * Returns:
+     * {OpenLayers.Bounds}
+     */
+    getMaxExtent: function() {
+        return this.maxExtent;
     },
     
     /**

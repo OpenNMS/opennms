@@ -1,5 +1,6 @@
-/* Copyright (c) 2006-2008 MetaCarta, Inc., published under the Clear BSD
- * license.  See http://svn.openlayers.org/trunk/openlayers/license.txt for the
+/* Copyright (c) 2006-2010 by OpenLayers Contributors (see authors.txt for 
+ * full list of contributors). Published under the Clear BSD license.  
+ * See http://svn.openlayers.org/trunk/openlayers/license.txt for the
  * full text of the license. */
 
 /**
@@ -229,7 +230,7 @@ OpenLayers.Format.WMSGetFeatureInfo = OpenLayers.Class(OpenLayers.Format.XML, {
         var attributes = {};
         if (node.nodeType == 1) {
             var children = node.childNodes;
-            n = children.length;
+            var n = children.length;
             for (var i = 0; i < n; ++i) {
                 var child = children[i];
                 if (child.nodeType == 1) {
@@ -270,8 +271,8 @@ OpenLayers.Format.WMSGetFeatureInfo = OpenLayers.Class(OpenLayers.Format.XML, {
         }
         var feature = this.gmlFormat.parseFeature(node);
         var geometry, bounds = null;
-        if (feature && feature.geometry) {
-            geometry = feature.geometry.clone();
+        if (feature) {
+            geometry = feature.geometry && feature.geometry.clone();
             bounds = feature.bounds && feature.bounds.clone();
             feature.destroy();
         }

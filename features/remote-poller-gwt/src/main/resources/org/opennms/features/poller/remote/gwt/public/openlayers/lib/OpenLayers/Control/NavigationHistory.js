@@ -1,5 +1,6 @@
-/* Copyright (c) 2006-2008 MetaCarta, Inc., published under the Clear BSD
- * license.  See http://svn.openlayers.org/trunk/openlayers/license.txt for the
+/* Copyright (c) 2006-2010 by OpenLayers Contributors (see authors.txt for 
+ * full list of contributors). Published under the Clear BSD license.  
+ * See http://svn.openlayers.org/trunk/openlayers/license.txt for the
  * full text of the license. */
 
 /**
@@ -294,7 +295,10 @@ OpenLayers.Control.NavigationHistory = OpenLayers.Class(OpenLayers.Control, {
     getState: function() {
         return {
             center: this.map.getCenter(),
-            resolution: this.map.getResolution()
+            resolution: this.map.getResolution(),
+            projection: this.map.getProjectionObject(),
+            units: this.map.getProjectionObject().getUnits() || 
+                this.map.units || this.map.baseLayer.units
         };
     },
 
@@ -306,8 +310,21 @@ OpenLayers.Control.NavigationHistory = OpenLayers.Class(OpenLayers.Control, {
      * state - {Object} An object representing the state to restore.
      */
     restore: function(state) {
-        var zoom = this.map.getZoomForResolution(state.resolution);
-        this.map.setCenter(state.center, zoom);
+        var center, zoom;
+        if (this.map.getProjectionObject() == state.projection) { 
+            zoom = this.map.getZoomForResolution(state.resolution);
+            center = state.center;
+        } else {
+            center = state.center.clone();
+            center.transform(state.projection, this.map.getProjectionObject());
+            var sourceUnits = state.units;
+            var targetUnits = this.map.getProjectionObject().getUnits() || 
+                this.map.units || this.map.baseLayer.units;
+            var resolutionFactor = sourceUnits && targetUnits ? 
+                OpenLayers.INCHES_PER_UNIT[sourceUnits] / OpenLayers.INCHES_PER_UNIT[targetUnits] : 1;
+            zoom = this.map.getZoomForResolution(resolutionFactor*state.resolution); 
+        }
+        this.map.setCenter(center, zoom);
     },
     
     /**

@@ -1,5 +1,6 @@
-/* Copyright (c) 2006-2008 MetaCarta, Inc., published under the Clear BSD
- * license.  See http://svn.openlayers.org/trunk/openlayers/license.txt for the
+/* Copyright (c) 2006-2010 by OpenLayers Contributors (see authors.txt for 
+ * full list of contributors). Published under the Clear BSD license.  
+ * See http://svn.openlayers.org/trunk/openlayers/license.txt for the
  * full text of the license. */
 
 /**
@@ -346,12 +347,12 @@ OpenLayers.Control.Split = OpenLayers.Class(OpenLayers.Control, {
      * {Boolean} The supplied feature was split (and destroyed).
      */
     considerSplit: function(feature) {
-        sourceSplit = false;
-        targetSplit = false;
+        var sourceSplit = false;
+        var targetSplit = false;
         if(!this.sourceFilter ||
            this.sourceFilter.evaluate(feature.attributes)) {
             var features = this.layer && this.layer.features || [];
-            var target, results, result, proceed;
+            var target, results, proceed;
             var additions = [], removals = [];
             var mutual = (this.layer === this.source) && this.mutual;
             var options = {

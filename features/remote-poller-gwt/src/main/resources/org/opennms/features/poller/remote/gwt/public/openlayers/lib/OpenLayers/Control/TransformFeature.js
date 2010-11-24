@@ -1,6 +1,7 @@
-/* Copyright (c) 2009 MetaCarta, Inc., published under the Clear BSD license.
- * See http://svn.openlayers.org/trunk/openlayers/license.txt 
- * for the full text of the license. */
+/* Copyright (c) 2006-2010 by OpenLayers Contributors (see authors.txt for 
+ * full list of contributors). Published under the Clear BSD license.  
+ * See http://svn.openlayers.org/trunk/openlayers/license.txt for the
+ * full text of the license. */
 
 
 /**
@@ -47,7 +48,7 @@ OpenLayers.Control.TransformFeature = OpenLayers.Class(OpenLayers.Control, {
      *      <OpenLayers.Geometry.Point> object with the new center of the
      *      transformed feature, the others are Floats with the scale, ratio
      *      or rotation change of the feature since the last transformation.
-     *  - *transformcomplete" Triggered after dragging. Listeners receive
+     *  - *transformcomplete* Triggered after dragging. Listeners receive
      *      an event object with the transformed *feature*.
      */
     EVENT_TYPES: ["beforesetfeature", "setfeature", "beforetransform",
@@ -479,7 +480,6 @@ OpenLayers.Control.TransformFeature = OpenLayers.Class(OpenLayers.Control, {
             },
             // transform while dragging
             onDrag: function(feature, pixel) {
-                var geom = feature.geometry;
                 if(feature === control.box) {
                     control.transformFeature({center: control.center});
                     control.drawHandles();
@@ -500,7 +500,7 @@ OpenLayers.Control.TransformFeature = OpenLayers.Class(OpenLayers.Control, {
             },
             onComplete: function(feature, pixel) {
                 control.events.triggerEvent("transformcomplete",
-                    {feature: feature});
+                    {feature: control.feature});
             }
         });
     },
@@ -567,7 +567,7 @@ OpenLayers.Control.TransformFeature = OpenLayers.Class(OpenLayers.Control, {
             geom._handle = null;
             geom._rotationHandle && geom._rotationHandle.destroy();
             geom._rotationHandle = null;
-        };
+        }
         this.box.destroy();
         this.box = null;
         this.layer = null;

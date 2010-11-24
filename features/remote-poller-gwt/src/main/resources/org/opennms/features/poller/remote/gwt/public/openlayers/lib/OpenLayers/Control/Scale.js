@@ -1,5 +1,6 @@
-/* Copyright (c) 2006-2008 MetaCarta, Inc., published under the Clear BSD
- * license.  See http://svn.openlayers.org/trunk/openlayers/license.txt for the
+/* Copyright (c) 2006-2010 by OpenLayers Contributors (see authors.txt for 
+ * full list of contributors). Published under the Clear BSD license.  
+ * See http://svn.openlayers.org/trunk/openlayers/license.txt for the
  * full text of the license. */
 
 
@@ -23,6 +24,15 @@ OpenLayers.Control.Scale = OpenLayers.Class(OpenLayers.Control, {
      */
     element: null,
     
+    /**
+     * APIProperty: geodesic
+     * {Boolean} Use geodesic measurement. Default is false. The recommended
+     * setting for maps in EPSG:4326 is false, and true EPSG:900913. If set to
+     * true, the scale will be calculated based on the horizontal size of the
+     * pixel in the center of the map viewport.
+     */
+    geodesic: false,
+
     /**
      * Constructor: OpenLayers.Control.Scale
      * 
@@ -56,7 +66,19 @@ OpenLayers.Control.Scale = OpenLayers.Class(OpenLayers.Control, {
      * Method: updateScale
      */
     updateScale: function() {
-        var scale = this.map.getScale();
+        var scale;
+        if(this.geodesic === true) {
+            var units = this.map.getUnits();
+            if(!units) {
+                return;
+            }
+            var inches = OpenLayers.INCHES_PER_UNIT;
+            scale = (this.map.getGeodesicPixelSize().w || 0.000001) *
+                    inches["km"] * OpenLayers.DOTS_PER_INCH;
+        } else {
+            scale = this.map.getScale();
+        }
+            
         if (!scale) {
             return;
         }

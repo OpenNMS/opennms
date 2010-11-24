@@ -1,3 +1,8 @@
+/* Copyright (c) 2006-2010 by OpenLayers Contributors (see authors.txt for 
+ * full list of contributors). Published under the Clear BSD license.  
+ * See http://svn.openlayers.org/trunk/openlayers/license.txt for the
+ * full text of the license. */
+
 /**
  * @requires OpenLayers/Format/WFST/v1.js
  * @requires OpenLayers/Format/Filter/v1_1_0.js
@@ -33,6 +38,12 @@ OpenLayers.Format.WFST.v1_1_0 = OpenLayers.Class(
      * Constructor: OpenLayers.Format.WFST.v1_1_0
      * A class for parsing and generating WFS v1.1.0 transactions.
      *
+     * To read additional information like hit count (numberOfFeatures) from
+     * the  FeatureCollection, call the <OpenLayers.Format.WFST.v1.read> method
+     * with {output: "object"} as 2nd argument. Note that it is possible to
+     * just request the hit count from a WFS 1.1.0 server with the
+     * resultType="hits" request parameter.
+     *
      * Parameters:
      * options - {Object} Optional object whose properties will be set on the
      *     instance.
@@ -59,6 +70,12 @@ OpenLayers.Format.WFST.v1_1_0 = OpenLayers.Class(
      */
     readers: {
         "wfs": OpenLayers.Util.applyDefaults({
+            "FeatureCollection": function(node, obj) {
+                obj.numberOfFeatures = parseInt(node.getAttribute(
+                    "numberOfFeatures"));
+                OpenLayers.Format.WFST.v1.prototype.readers["wfs"]["FeatureCollection"].apply(
+                    this, arguments);
+            },
             "TransactionResponse": function(node, obj) {
                 obj.insertIds = [];
                 obj.success = false;
@@ -90,6 +107,13 @@ OpenLayers.Format.WFST.v1_1_0 = OpenLayers.Class(
      */
     writers: {
         "wfs": OpenLayers.Util.applyDefaults({
+            "GetFeature": function(options) {
+                var node = OpenLayers.Format.WFST.v1.prototype.writers["wfs"]["GetFeature"].apply(this, arguments);
+                options && options.resultType && this.setAttributes(node, {
+                    resultType: options.resultType
+                });
+                return node;
+            },
             "Query": function(options) {
                 options = OpenLayers.Util.extend({
                     featureNS: this.featureNS,

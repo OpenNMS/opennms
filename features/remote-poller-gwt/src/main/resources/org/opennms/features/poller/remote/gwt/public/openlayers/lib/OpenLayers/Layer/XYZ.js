@@ -1,5 +1,6 @@
-/* Copyright (c) 2006-2009 MetaCarta, Inc., published under the Clear BSD
- * license.  See http://svn.openlayers.org/trunk/openlayers/license.txt for the
+/* Copyright (c) 2006-2010 by OpenLayers Contributors (see authors.txt for 
+ * full list of contributors). Published under the Clear BSD license.  
+ * See http://svn.openlayers.org/trunk/openlayers/license.txt for the
  * full text of the license. */
 
 /**
@@ -11,6 +12,9 @@
  * Class: OpenLayers.Layer.XYZ
  * The XYZ class is designed to make it easier for people who have tiles
  * arranged by a standard XYZ grid. 
+ * 
+ * Inherits from:
+ *  - <OpenLayers.Layer.Grid>
  */
 OpenLayers.Layer.XYZ = OpenLayers.Class(OpenLayers.Layer.Grid, {
     
@@ -28,6 +32,18 @@ OpenLayers.Layer.XYZ = OpenLayers.Class(OpenLayers.Layer.Grid, {
      */
     sphericalMercator: false,
 
+    /**
+     * APIProperty: zoomOffset
+     * {Number} If your cache has more zoom levels than you want to provide
+     *     access to with this layer, supply a zoomOffset.  This zoom offset
+     *     is added to the current map zoom level to determine the level
+     *     for a requested tile.  For example, if you supply a zoomOffset
+     *     of 3, when the map is at the zoom 0, tiles will be requested from
+     *     level 3 of your cache.  Default is 0 (assumes cache level and map
+     *     zoom are equivalent).
+     */
+    zoomOffset: 0,
+    
     /**
      * Constructor: OpenLayers.Layer.XYZ
      *
@@ -65,7 +81,7 @@ OpenLayers.Layer.XYZ = OpenLayers.Class(OpenLayers.Layer.Grid, {
      * obj - {Object} Is this ever used?
      * 
      * Returns:
-     * {<OpenLayers.Layer.Grid>} An exact clone of this OpenLayers.Layer.Grid
+     * {<OpenLayers.Layer.XYZ>} An exact clone of this OpenLayers.Layer.XYZ
      */
     clone: function (obj) {
         
@@ -76,15 +92,7 @@ OpenLayers.Layer.XYZ = OpenLayers.Class(OpenLayers.Layer.Grid, {
         }
 
         //get all additions from superclasses
-        obj = OpenLayers.Layer.HTTPRequest.prototype.clone.apply(this, [obj]);
-
-        // copy/set any non-init, non-simple values here
-        if (this.tileSize != null) {
-            obj.tileSize = this.tileSize.clone();
-        }
-        
-        // we do not want to copy reference to grid, so we make a new array
-        obj.grid = [];
+        obj = OpenLayers.Layer.Grid.prototype.clone.apply(this, [obj]);
 
         return obj;
     },    
@@ -106,7 +114,7 @@ OpenLayers.Layer.XYZ = OpenLayers.Class(OpenLayers.Layer.Grid, {
             / (res * this.tileSize.w));
         var y = Math.round((this.maxExtent.top - bounds.top) 
             / (res * this.tileSize.h));
-        var z = this.map.getZoom();
+        var z = this.map.getZoom() + this.zoomOffset;
 
         var url = this.url;
         var s = '' + x + y + z;
@@ -167,12 +175,22 @@ OpenLayers.Layer.XYZ = OpenLayers.Class(OpenLayers.Layer.Grid, {
  * (end)
  *
  * This layer defaults to Spherical Mercator.
+ * 
+ * Inherits from:
+ *  - <OpenLayers.Layer.XYZ>
  */
-
 OpenLayers.Layer.OSM = OpenLayers.Class(OpenLayers.Layer.XYZ, {
      name: "OpenStreetMap",
      attribution: "Data CC-By-SA by <a href='http://openstreetmap.org/'>OpenStreetMap</a>",
      sphericalMercator: true,
      url: 'http://tile.openstreetmap.org/${z}/${x}/${y}.png',
+     clone: function(obj) {
+         if (obj == null) {
+             obj = new OpenLayers.Layer.OSM(
+                 this.name, this.url, this.getOptions());
+         }
+         obj = OpenLayers.Layer.XYZ.prototype.clone.apply(this, [obj]);
+         return obj;
+     },
      CLASS_NAME: "OpenLayers.Layer.OSM"
 });

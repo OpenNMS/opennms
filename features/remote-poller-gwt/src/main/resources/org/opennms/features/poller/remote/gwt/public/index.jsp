@@ -1,8 +1,7 @@
 <%@page language="java" contentType="text/html; charset=UTF-8" %>
 <%
   String mapImplementation = System.getProperty("gwt.maptype", "");
-  String openlayersUrl = System.getProperty("gwt.openlayers.wms.url", "http://www.opennms.org:8080/geowebcache/service/wms");
-  String openlayersLayer = System.getProperty("gwt.openlayers.wms.layer", "openstreetmap");
+  String openlayersUrl = System.getProperty("gwt.openlayers.url", "http://otile1.mqcdn.com/tiles/1.0.0/osm/${z}/${x}/${y}.png");
   String apiKey = System.getProperty("gwt.apikey", "");
 
 	if (!apiKey.equals("")) {
@@ -29,7 +28,6 @@
 			<script type="text/javascript" language="javascript">
 			  window.mapImplementation = "<%= mapImplementation %>";
 			  window.openlayersUrl = "<%= openlayersUrl %>";
-			  window.openlayersLayer = "<%= openlayersLayer %>";
 			</script>
 			<% if (mapImplementation.equalsIgnoreCase("googlemaps")) { %>
 				<script src="<%= URLEncoder.encode("http://maps.google.com/maps?gwt=1&amp;file=api&amp;v=2.x" + apiKey, "UTF-8") %>"></script>
@@ -38,6 +36,7 @@
 				<script type="text/javascript" src="mapquest/debug/mqutils.js"></script>
 				<script type="text/javascript" src="mapquest/debug/mqobjects.js"></script>
 			<% } else if (mapImplementation.equalsIgnoreCase("openlayers")) { %>
+				<script type="text/javascript" src="opennms-openlayers.js"></script>
 				<script type="text/javascript" src="openlayers/OpenLayers.js"></script>
 			<% } %>
 			<script type="text/javascript" language="javascript" src="RemotePollerMap.nocache.js"></script>

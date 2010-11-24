@@ -1,5 +1,6 @@
-/* Copyright (c) 2006-2008 MetaCarta, Inc., published under the Clear BSD
- * license.  See http://svn.openlayers.org/trunk/openlayers/license.txt for the
+/* Copyright (c) 2006-2010 by OpenLayers Contributors (see authors.txt for 
+ * full list of contributors). Published under the Clear BSD license.  
+ * See http://svn.openlayers.org/trunk/openlayers/license.txt for the
  * full text of the license. */
 
 /**
@@ -72,15 +73,9 @@ OpenLayers.Map = OpenLayers.Class({
      *  - *move* triggered after each drag, pan, or zoom
      *  - *moveend* triggered after a drag, pan, or zoom completes
      *  - *zoomend* triggered after a zoom completes
-     *  - *addmarker* triggered after a marker has been added
-     *  - *removemarker* triggered after a marker has been removed
-     *  - *clearmarkers* triggered after markers have been cleared
      *  - *mouseover* triggered after mouseover the map
      *  - *mouseout* triggered after mouseout the map
      *  - *mousemove* triggered after mousemove the map
-     *  - *dragstart* Does not work.  Register for movestart instead.
-     *  - *drag* Does not work.  Register for move instead.
-     *  - *dragend* Does not work.  Register for moveend instead.
      *  - *changebaselayer* triggered after the base layer changes
      */
     EVENT_TYPES: [ 
@@ -647,8 +642,9 @@ OpenLayers.Map = OpenLayers.Class({
         }
         
         // make sure panning doesn't continue after destruction
-        if(this.panTween && this.panTween.playing) {
+        if(this.panTween) {
             this.panTween.stop();
+            this.panTween = null;
         }
 
         // map has been destroyed. dont do it again!
@@ -1402,6 +1398,10 @@ OpenLayers.Map = OpenLayers.Class({
         var size = new OpenLayers.Size(this.div.clientWidth, 
                                        this.div.clientHeight);
 
+        if (size.w == 0 && size.h == 0 || isNaN(size.w) && isNaN(size.h)) {
+            size.w = this.div.offsetWidth;
+            size.h = this.div.offsetHeight;
+        }
         if (size.w == 0 && size.h == 0 || isNaN(size.w) && isNaN(size.h)) {
             size.w = parseInt(this.div.style.width);
             size.h = parseInt(this.div.style.height);
@@ -2282,6 +2282,39 @@ OpenLayers.Map = OpenLayers.Class({
         px.x = Math.round(px.x);
         px.y = Math.round(px.y);
         return px;
+    },
+    
+    /**
+     * Method: getGeodesicPixelSize
+     * 
+     * Parameters:
+     * px - {<OpenLayers.Pixel>} The pixel to get the geodesic length for. If
+     *     not provided, the center pixel of the map viewport will be used.
+     * 
+     * Returns:
+     * {<OpenLayers.Size>} The geodesic size of the pixel in kilometers.
+     */
+    getGeodesicPixelSize: function(px) {
+        var lonlat = px ? this.getLonLatFromPixel(px) : (this.getCenter() ||
+            new OpenLayers.LonLat(0, 0));
+        var res = this.getResolution();
+        var left = lonlat.add(-res / 2, 0);
+        var right = lonlat.add(res / 2, 0);
+        var bottom = lonlat.add(0, -res / 2);
+        var top = lonlat.add(0, res / 2);
+        var dest = new OpenLayers.Projection("EPSG:4326");
+        var source = this.getProjectionObject() || dest;
+        if(!source.equals(dest)) {
+            left.transform(source, dest);
+            right.transform(source, dest);
+            bottom.transform(source, dest);
+            top.transform(source, dest);
+        }
+        
+        return new OpenLayers.Size(
+            OpenLayers.Util.distVincenty(left, right),
+            OpenLayers.Util.distVincenty(bottom, top)
+        );
     },
 
 

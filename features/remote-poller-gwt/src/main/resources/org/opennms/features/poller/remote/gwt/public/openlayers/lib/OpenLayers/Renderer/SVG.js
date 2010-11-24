@@ -1,5 +1,6 @@
-/* Copyright (c) 2006-2008 MetaCarta, Inc., published under the Clear BSD
- * license.  See http://svn.openlayers.org/trunk/openlayers/license.txt for the
+/* Copyright (c) 2006-2010 by OpenLayers Contributors (see authors.txt for 
+ * full list of contributors). Published under the Clear BSD license.  
+ * See http://svn.openlayers.org/trunk/openlayers/license.txt for the
  * full text of the license. */
 
 /**
@@ -273,7 +274,7 @@ OpenLayers.Renderer.SVG = OpenLayers.Class(OpenLayers.Renderer.Elements, {
             } else if (style.externalGraphic) {
                 pos = this.getPosition(node);
                 
-        		if (style.graphicTitle) {
+                if (style.graphicTitle) {
                     node.setAttributeNS(null, "title", style.graphicTitle);
                 }
                 if (style.graphicWidth && style.graphicHeight) {
@@ -340,7 +341,7 @@ OpenLayers.Renderer.SVG = OpenLayers.Class(OpenLayers.Renderer.Elements, {
             }
 
             var rotation = style.rotation;
-            if (node._rotation !== rotation && pos) {
+            if ((rotation !== undefined || node._rotation !== undefined) && pos) {
                 node._rotation = rotation;
                 rotation |= 0;
                 if(node.nodeName !== "svg") {
@@ -348,7 +349,7 @@ OpenLayers.Renderer.SVG = OpenLayers.Class(OpenLayers.Renderer.Elements, {
                         "rotate(" + rotation + " " + pos.x + " " +
                         pos.y + ")");
                 } else {
-                     var metrics = this.symbolMetrics[id]
+                     var metrics = this.symbolMetrics[id];
                      node.firstChild.setAttributeNS(null, "transform",
                      "rotate(" + style.rotation + " " + metrics[1] +
                          " " +  metrics[2] + ")");
@@ -367,12 +368,12 @@ OpenLayers.Renderer.SVG = OpenLayers.Class(OpenLayers.Renderer.Elements, {
             node.setAttributeNS(null, "stroke", style.strokeColor);
             node.setAttributeNS(null, "stroke-opacity", style.strokeOpacity);
             node.setAttributeNS(null, "stroke-width", style.strokeWidth * widthFactor);
-            node.setAttributeNS(null, "stroke-linecap", style.strokeLinecap);
+            node.setAttributeNS(null, "stroke-linecap", style.strokeLinecap || "round");
             // Hard-coded linejoin for now, to make it look the same as in VML.
             // There is no strokeLinejoin property yet for symbolizers.
             node.setAttributeNS(null, "stroke-linejoin", "round");
-            node.setAttributeNS(null, "stroke-dasharray", this.dashStyle(style,
-                widthFactor));
+            style.strokeDashstyle && node.setAttributeNS(null,
+                "stroke-dasharray", this.dashStyle(style, widthFactor));
         } else {
             node.setAttributeNS(null, "stroke", "none");
         }
@@ -380,7 +381,7 @@ OpenLayers.Renderer.SVG = OpenLayers.Class(OpenLayers.Renderer.Elements, {
         if (style.pointerEvents) {
             node.setAttributeNS(null, "pointer-events", style.pointerEvents);
         }
-		        
+                
         if (style.cursor != null) {
             node.setAttributeNS(null, "cursor", style.cursor);
         }
@@ -767,7 +768,7 @@ OpenLayers.Renderer.SVG = OpenLayers.Class(OpenLayers.Renderer.Elements, {
         var complete = true;
         var len = components.length;
         var strings = [];
-        var str, component, j;
+        var str, component;
         for(var i=0; i<len; i++) {
             component = components[i];
             renderCmp.push(component);
@@ -906,7 +907,6 @@ OpenLayers.Renderer.SVG = OpenLayers.Class(OpenLayers.Renderer.Elements, {
         var symbol = OpenLayers.Renderer.symbol[graphicName];
         if (!symbol) {
             throw new Error(graphicName + ' is not a valid symbol name');
-            return;
         }
 
         var symbolNode = this.nodeFactory(id, "symbol");
@@ -915,7 +915,7 @@ OpenLayers.Renderer.SVG = OpenLayers.Class(OpenLayers.Renderer.Elements, {
         var symbolExtent = new OpenLayers.Bounds(
                                     Number.MAX_VALUE, Number.MAX_VALUE, 0, 0);
 
-        var points = "";
+        var points = [];
         var x,y;
         for (var i=0; i<symbol.length; i=i+2) {
             x = symbol[i];
@@ -924,10 +924,10 @@ OpenLayers.Renderer.SVG = OpenLayers.Class(OpenLayers.Renderer.Elements, {
             symbolExtent.bottom = Math.min(symbolExtent.bottom, y);
             symbolExtent.right = Math.max(symbolExtent.right, x);
             symbolExtent.top = Math.max(symbolExtent.top, y);
-            points += " " + x + "," + y;
+            points.push(x, ",", y);
         }
         
-        node.setAttributeNS(null, "points", points);
+        node.setAttributeNS(null, "points", points.join(" "));
         
         var width = symbolExtent.getWidth();
         var height = symbolExtent.getHeight();

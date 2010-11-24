@@ -1,3 +1,8 @@
+/* Copyright (c) 2006-2010 by OpenLayers Contributors (see authors.txt for 
+ * full list of contributors). Published under the Clear BSD license.  
+ * See http://svn.openlayers.org/trunk/openlayers/license.txt for the
+ * full text of the license. */
+
 /**
  * @requires OpenLayers/Protocol/WFS.js
  */
@@ -284,9 +289,9 @@ OpenLayers.Protocol.WFS.v1 = OpenLayers.Class(OpenLayers.Protocol, {
         });    
         
         var root = this.format.createElementNSPlus("wfs:Transaction", {
-        	attributes: {
-       	        service: "WFS",
-        	    version: this.version
+            attributes: {
+                service: "WFS",
+                version: this.version
             }
         });
         

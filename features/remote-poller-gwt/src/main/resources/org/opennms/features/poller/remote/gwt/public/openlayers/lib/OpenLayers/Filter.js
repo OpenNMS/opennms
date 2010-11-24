@@ -1,6 +1,7 @@
-/* Copyright (c) 2006 MetaCarta, Inc., published under a modified BSD license.
- * See http://svn.openlayers.org/trunk/openlayers/repository-license.txt 
- * for the full text of the license. */
+/* Copyright (c) 2006-2010 by OpenLayers Contributors (see authors.txt for 
+ * full list of contributors). Published under the Clear BSD license.  
+ * See http://svn.openlayers.org/trunk/openlayers/license.txt for the
+ * full text of the license. */
 
 
 /**
@@ -42,7 +43,8 @@ OpenLayers.Filter = OpenLayers.Class({
      *     subclasses.
      * 
      * Parameters:
-     * context - {Object} Context to use in evaluating the filter.
+     * context - {Object} Context to use in evaluating the filter.  If a vector
+     *     feature is provided, the feature.attributes will be used as context.
      * 
      * Returns:
      * {Boolean} The filter applies.

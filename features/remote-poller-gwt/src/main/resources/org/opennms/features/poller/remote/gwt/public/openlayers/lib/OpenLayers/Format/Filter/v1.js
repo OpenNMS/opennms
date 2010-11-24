@@ -1,7 +1,7 @@
-/* Copyright (c) 2006-2008 MetaCarta, Inc., published under the Clear BSD
- * license.  See http://svn.openlayers.org/trunk/openlayers/license.txt for the
+/* Copyright (c) 2006-2010 by OpenLayers Contributors (see authors.txt for 
+ * full list of contributors). Published under the Clear BSD license.  
+ * See http://svn.openlayers.org/trunk/openlayers/license.txt for the
  * full text of the license. */
-
 /**
  * @requires OpenLayers/Format/Filter.js
  * @requires OpenLayers/Format/XML.js
@@ -227,7 +227,7 @@ OpenLayers.Format.Filter.v1 = OpenLayers.Class(OpenLayers.Format.XML, {
         var obj = {};
         this.readChildNodes(node, obj);
         var value = obj.value;
-        if(!value) {
+        if(value === undefined) {
             value = this.getChildValue(node);
         }
         return value;

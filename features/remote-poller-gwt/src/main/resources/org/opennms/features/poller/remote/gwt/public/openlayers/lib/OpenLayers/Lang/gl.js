@@ -1,7 +1,3 @@
-/* Copyright (c) 2006-2008 MetaCarta, Inc., published under the Clear BSD
- * license.  See http://svn.openlayers.org/trunk/openlayers/license.txt for the
- * full text of the license. */
-
 /* Translators (2009 onwards):
  *  - Toliño
  */
@@ -34,7 +30,7 @@ OpenLayers.Lang["gl"] = OpenLayers.Util.applyDefaults({
 
     'noFID': "Non se pode actualizar a funcionalidade para a que non hai FID.",
 
-    'errorLoadingGML': "Erro ao cargar o ficheiro GML $(url)",
+    'errorLoadingGML': "Erro ao cargar o ficheiro GML ${url}",
 
     'browserNotSupported': "O seu navegador non soporta a renderización de vectores. Os renderizadores soportados actualmente son:\n${renderers}",
 

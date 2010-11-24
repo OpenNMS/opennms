@@ -1,5 +1,6 @@
-/* Copyright (c) 2006-2008 MetaCarta, Inc., published under the Clear BSD
- * license.  See http://svn.openlayers.org/trunk/openlayers/license.txt for the
+/* Copyright (c) 2006-2010 by OpenLayers Contributors (see authors.txt for 
+ * full list of contributors). Published under the Clear BSD license.  
+ * See http://svn.openlayers.org/trunk/openlayers/license.txt for the
  * full text of the license. */
 
 
@@ -55,6 +56,12 @@ OpenLayers.Handler.RegularPolygon = OpenLayers.Class(OpenLayers.Handler.Drag, {
      */
     snapToggle: 'shiftKey',
     
+    /**
+     * Property: layerOptions
+     * {Object} Any optional properties to be set on the sketch layer.
+     */
+    layerOptions: null,
+
     /**
      * APIProperty: persist
      * {Boolean} Leave the feature rendered until clear is called.  Default
@@ -130,11 +137,13 @@ OpenLayers.Handler.RegularPolygon = OpenLayers.Class(OpenLayers.Handler.Drag, {
      *     cancel callback will receive a geometry.
      */
     initialize: function(control, callbacks, options) {
-        this.style = OpenLayers.Util.extend(OpenLayers.Feature.Vector.style['default'], {});
+        if(!(options && options.layerOptions && options.layerOptions.styleMap)) {
+            this.style = OpenLayers.Util.extend(OpenLayers.Feature.Vector.style['default'], {});
+        }
 
         OpenLayers.Handler.prototype.initialize.apply(this,
                                                 [control, callbacks, options]);
-        this.options = (options) ? options : new Object();
+        this.options = (options) ? options : {};
     },
     
     /**
@@ -159,14 +168,14 @@ OpenLayers.Handler.RegularPolygon = OpenLayers.Class(OpenLayers.Handler.Drag, {
         var activated = false;
         if(OpenLayers.Handler.prototype.activate.apply(this, arguments)) {
             // create temporary vector layer for rendering geometry sketch
-            var options = {
+            var options = OpenLayers.Util.extend({
                 displayInLayerSwitcher: false,
                 // indicate that the temp vector layer will never be out of range
                 // without this, resolution properties must be specified at the
                 // map-level for this temporary layer to init its resolutions
                 // correctly
                 calculateInRange: OpenLayers.Function.True
-            };
+            }, this.layerOptions);
             this.layer = new OpenLayers.Layer.Vector(this.CLASS_NAME, options);
             this.map.addLayer(this.layer);
             activated = true;
@@ -318,7 +327,7 @@ OpenLayers.Handler.RegularPolygon = OpenLayers.Class(OpenLayers.Handler.Drag, {
      * Modify the polygon geometry in place.
      */
     modifyGeometry: function() {
-        var angle, dx, dy, point;
+        var angle, point;
         var ring = this.feature.geometry.components[0];
         // if the number of sides ever changes, create a new geometry
         if(ring.components.length != (this.sides + 1)) {
@@ -379,8 +388,10 @@ OpenLayers.Handler.RegularPolygon = OpenLayers.Class(OpenLayers.Handler.Drag, {
      *     is true).
      */
     clear: function() {
-        this.layer.renderer.clear();
-        this.layer.destroyFeatures();
+        if (this.layer) {
+            this.layer.renderer.clear();
+            this.layer.destroyFeatures();
+        }
     },
     
     /**
