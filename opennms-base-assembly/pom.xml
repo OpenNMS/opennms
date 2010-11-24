@@ -202,7 +202,7 @@
           <additionalProperties>
             <net.sf.jasperreports.query.executer.factory.jrobin>org.opennms.netmgt.jasper.jrobin.JRobinQueryExecutorFactory</net.sf.jasperreports.query.executer.factory.jrobin>
           </additionalProperties>
-          <compiler>net.sf.jasperreports.compilers.JRGroovyCompiler</compiler>
+          <!-- <compiler>net.sf.jasperreports.compilers.JRGroovyCompiler</compiler> -->
         </configuration>
         <dependencies>
           <dependency>
@@ -215,11 +215,13 @@
             <artifactId>jasper-extensions</artifactId>
             <version>${project.version}</version>
           </dependency>
+          <!--
           <dependency>
             <groupId>org.codehaus.groovy</groupId>
             <artifactId>groovy-all</artifactId>
             <version>1.7.5</version>
           </dependency>
+          -->
 	  <dependency>
 	    <groupId>postgresql</groupId>
 	    <artifactId>postgresql</artifactId>
