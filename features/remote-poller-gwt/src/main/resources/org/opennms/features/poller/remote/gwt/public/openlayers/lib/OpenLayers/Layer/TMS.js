@@ -1,5 +1,6 @@
-/* Copyright (c) 2006-2008 MetaCarta, Inc., published under the Clear BSD
- * licence.  See http://svn.openlayers.org/trunk/openlayers/license.txt for the
+/* Copyright (c) 2006-2010 by OpenLayers Contributors (see authors.txt for 
+ * full list of contributors). Published under the Clear BSD license.  
+ * See http://svn.openlayers.org/trunk/openlayers/license.txt for the
  * full text of the license. */
 
 
@@ -41,6 +42,20 @@ OpenLayers.Layer.TMS = OpenLayers.Class(OpenLayers.Layer.Grid, {
      */
     serverResolutions: null,
 
+    /**
+     * APIProperty: zoomOffset
+     * {Number} If your cache has more zoom levels than you want to provide
+     *     access to with this layer, supply a zoomOffset.  This zoom offset
+     *     is added to the current map zoom level to determine the level
+     *     for a requested tile.  For example, if you supply a zoomOffset
+     *     of 3, when the map is at the zoom 0, tiles will be requested from
+     *     level 3 of your cache.  Default is 0 (assumes cache level and map
+     *     zoom are equivalent).  Using <zoomOffset> is an alternative to
+     *     setting <serverResolutions> if you only want to expose a subset
+     *     of the server resolutions.
+     */
+    zoomOffset: 0,
+    
     /**
      * Constructor: OpenLayers.Layer.TMS
      * 
@@ -107,7 +122,7 @@ OpenLayers.Layer.TMS = OpenLayers.Class(OpenLayers.Layer.Grid, {
         var y = Math.round((bounds.bottom - this.tileOrigin.lat) / (res * this.tileSize.h));
         var z = this.serverResolutions != null ?
             OpenLayers.Util.indexOf(this.serverResolutions, res) :
-            this.map.getZoom();
+            this.map.getZoom() + this.zoomOffset;
         var path = this.serviceVersion + "/" + this.layername + "/" + z + "/" + x + "/" + y + "." + this.type; 
         var url = this.url;
         if (url instanceof Array) {

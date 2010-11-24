@@ -1,5 +1,6 @@
-/* Copyright (c) 2006-2008 MetaCarta, Inc., published under the Clear BSD
- * license.  See http://svn.openlayers.org/trunk/openlayers/license.txt for the
+/* Copyright (c) 2006-2010 by OpenLayers Contributors (see authors.txt for 
+ * full list of contributors). Published under the Clear BSD license.  
+ * See http://svn.openlayers.org/trunk/openlayers/license.txt for the
  * full text of the license. */
 
 /**
@@ -65,6 +66,16 @@ OpenLayers.Control.GetFeature = OpenLayers.Class(OpenLayers.Control, {
      *     selected.  Default is true.
      */
     click: true,
+
+    /**
+     * APIProperty: single
+     * {Boolean} Tells whether select by click should select a single
+     *     feature. If set to false, all matching features are selected.
+     *     If set to true, only the best matching feature is selected.
+     *     This option has an effect only of the <click> option is set
+     *     to true. Default is true.
+     */
+    single: true,
     
     /**
      * APIProperty: clickout
@@ -98,7 +109,11 @@ OpenLayers.Control.GetFeature = OpenLayers.Class(OpenLayers.Control, {
 
     /**
      * APIProperty: box
-     * {Boolean} Allow feature selection by drawing a box.
+     * {Boolean} Allow feature selection by drawing a box. If set to
+     *     true set <click> to false to disable the click handler and
+     *     rely on the box handler only, even for "zero extent" boxes.
+     *     See the description of the <click> option for additional
+     *     information.  Default is false.
      */
     box: false,
     
@@ -211,7 +226,7 @@ OpenLayers.Control.GetFeature = OpenLayers.Class(OpenLayers.Control, {
         
         if(this.click) {
             this.handlers.click = new OpenLayers.Handler.Click(this,
-                {click: this.selectSingle}, this.handlerOptions.click || {});
+                {click: this.selectClick}, this.handlerOptions.click || {});
         }
 
         if(this.box) {
@@ -270,20 +285,17 @@ OpenLayers.Control.GetFeature = OpenLayers.Class(OpenLayers.Control, {
     },
     
     /**
-     * Method: selectSingle
+     * Method: selectClick
      * Called on click
      *
      * Parameters:
      * evt - {<OpenLayers.Event>} 
      */
-    selectSingle: function(evt) {
-        // Set the cursor to "wait" to tell the user we're working on their click.
-        OpenLayers.Element.addClass(this.map.viewPortDiv, "olCursorWait");
-        
+    selectClick: function(evt) {
         var bounds = this.pixelToBounds(evt.xy);
         
         this.setModifiers(evt);
-        this.request(bounds, {single: true});
+        this.request(bounds, {single: this.single});
     },
 
     /**
@@ -337,6 +349,8 @@ OpenLayers.Control.GetFeature = OpenLayers.Class(OpenLayers.Control, {
         if (this.hoverResponse) {
             this.protocol.abort(this.hoverResponse);
             this.hoverResponse = null;
+
+            OpenLayers.Element.removeClass(this.map.viewPortDiv, "olCursorWait");
         }
     },
 
@@ -361,6 +375,9 @@ OpenLayers.Control.GetFeature = OpenLayers.Class(OpenLayers.Control, {
             value: bounds
         });
         
+        // Set the cursor to "wait" to tell the user we're working.
+        OpenLayers.Element.addClass(this.map.viewPortDiv, "olCursorWait");
+
         var response = this.protocol.read({
             maxFeatures: options.single == true ? this.maxFeatures : undefined,
             filter: filter,

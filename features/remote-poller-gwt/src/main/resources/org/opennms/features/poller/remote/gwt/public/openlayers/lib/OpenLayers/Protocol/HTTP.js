@@ -1,5 +1,6 @@
-/* Copyright (c) 2006-2008 MetaCarta, Inc., published under the Clear BSD
- * license.  See http://svn.openlayers.org/trunk/openlayers/license.txt for the
+/* Copyright (c) 2006-2010 by OpenLayers Contributors (see authors.txt for 
+ * full list of contributors). Published under the Clear BSD license.  
+ * See http://svn.openlayers.org/trunk/openlayers/license.txt for the
  * full text of the license. */
 
 /**
@@ -8,6 +9,7 @@
  * @requires OpenLayers/Filter/Spatial.js
  * @requires OpenLayers/Filter/Comparison.js
  * @requires OpenLayers/Filter/Logical.js
+ * @requires OpenLayers/Request/XMLHttpRequest.js
  */
 
 /**
@@ -358,10 +360,11 @@ OpenLayers.Protocol.HTTP = OpenLayers.Class(OpenLayers.Protocol, {
      *     the feature received from the server.
      */
     update: function(feature, options) {
-        options = OpenLayers.Util.applyDefaults(options, this.options);
+        options = options || {};
         var url = options.url ||
                   feature.url ||
                   this.options.url + "/" + feature.fid;
+        options = OpenLayers.Util.applyDefaults(options, this.options);
 
         var resp = new OpenLayers.Protocol.Response({
             reqFeatures: feature,
@@ -408,10 +411,11 @@ OpenLayers.Protocol.HTTP = OpenLayers.Class(OpenLayers.Protocol, {
      *     completes.
      */
     "delete": function(feature, options) {
-        options = OpenLayers.Util.applyDefaults(options, this.options);
+        options = options || {};
         var url = options.url ||
                   feature.url ||
                   this.options.url + "/" + feature.fid;
+        options = OpenLayers.Util.applyDefaults(options, this.options);
 
         var resp = new OpenLayers.Protocol.Response({
             reqFeatures: feature,

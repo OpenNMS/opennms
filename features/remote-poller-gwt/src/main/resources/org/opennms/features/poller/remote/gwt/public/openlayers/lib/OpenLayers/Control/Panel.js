@@ -1,5 +1,6 @@
-/* Copyright (c) 2006-2008 MetaCarta, Inc., published under the Clear BSD
- * license.  See http://svn.openlayers.org/trunk/openlayers/license.txt for the
+/* Copyright (c) 2006-2010 by OpenLayers Contributors (see authors.txt for 
+ * full list of contributors). Published under the Clear BSD license.  
+ * See http://svn.openlayers.org/trunk/openlayers/license.txt for the
  * full text of the license. */
 
 /**
@@ -32,13 +33,54 @@ OpenLayers.Control.Panel = OpenLayers.Class(OpenLayers.Control, {
      * APIProperty: defaultControl
      * {<OpenLayers.Control>} The control which is activated when the control is
      * activated (turned on), which also happens at instantiation.
+     * If <saveState> is true, <defaultControl> will be nullified after the
+     * first activation of the panel.
      */
-    defaultControl: null, 
+    defaultControl: null,
+    
+    /**
+     * APIProperty: saveState
+     * {Boolean} If set to true, the active state of this panel's controls will
+     * be stored on panel deactivation, and restored on reactivation. Default
+     * is false.
+     */
+    saveState: false,
+      
+    /**
+     * Property: activeState
+     * {Object} stores the active state of this panel's controls.
+     */
+    activeState: null,
 
     /**
      * Constructor: OpenLayers.Control.Panel
      * Create a new control panel.
-     * 
+     *
+     * Each control in the panel is represented by an icon. When clicking 
+     *     on an icon, the <activateControl> method is called.
+     *
+     * Specific properties for controls on a panel:
+     * type - {Number} One of <OpenLayers.Control.TYPE_TOOL>,
+     *     <OpenLayers.Control.TYPE_TOGGLE>, <OpenLayers.Control.TYPE_BUTTON>.
+     *     If not provided, <OpenLayers.Control.TYPE_TOOL> is assumed.
+     * title - {string} Text displayed when mouse is over the icon that 
+     *     represents the control.     
+     *
+     * The <OpenLayers.Control.type> of a control determines the behavior when
+     * clicking its icon:
+     * <OpenLayers.Control.TYPE_TOOL> - The control is activated and other
+     *     controls of this type in the same panel are deactivated. This is
+     *     the default type.
+     * <OpenLayers.Control.TYPE_TOGGLE> - The active state of the control is
+     *     toggled.
+     * <OpenLayers.Control.TYPE_BUTTON> - The
+     *     <OpenLayers.Control.Button.trigger> method of the control is called,
+     *     but its active state is not changed.
+     *
+     * If a control is <OpenLayers.Control.active>, it will be drawn with the
+     * olControl[Name]ItemActive class, otherwise with the
+     * olControl[Name]ItemInactive class.
+     *
      * Parameters:
      * options - {Object} An optional object whose properties will be used
      *     to extend the control.
@@ -46,6 +88,7 @@ OpenLayers.Control.Panel = OpenLayers.Class(OpenLayers.Control, {
     initialize: function(options) {
         OpenLayers.Control.prototype.initialize.apply(this, [options]);
         this.controls = [];
+        this.activeState = {};
     },
 
     /**
@@ -63,7 +106,8 @@ OpenLayers.Control.Panel = OpenLayers.Class(OpenLayers.Control, {
             }
             OpenLayers.Event.stopObservingElement(this.controls[i].panel_div);
             this.controls[i].panel_div = null;
-        }    
+        }
+        this.activeState = null;
     },
 
     /**
@@ -71,11 +115,17 @@ OpenLayers.Control.Panel = OpenLayers.Class(OpenLayers.Control, {
      */
     activate: function() {
         if (OpenLayers.Control.prototype.activate.apply(this, arguments)) {
-            for(var i=0, len=this.controls.length; i<len; i++) {
-                if (this.controls[i] == this.defaultControl) {
-                    this.controls[i].activate();
+            var control;
+            for (var i=0, len=this.controls.length; i<len; i++) {
+                control = this.controls[i];
+                if (control === this.defaultControl ||
+                            (this.saveState && this.activeState[control.id])) {
+                    control.activate();
                 }
             }    
+            if (this.saveState === true) {
+                this.defaultControl = null;
+            }
             this.redraw();
             return true;
         } else {
@@ -88,8 +138,10 @@ OpenLayers.Control.Panel = OpenLayers.Class(OpenLayers.Control, {
      */
     deactivate: function() {
         if (OpenLayers.Control.prototype.deactivate.apply(this, arguments)) {
-            for(var i=0, len=this.controls.length; i<len; i++) {
-                this.controls[i].deactivate();
+            var control;
+            for (var i=0, len=this.controls.length; i<len; i++) {
+                control = this.controls[i];
+                this.activeState[control.id] = control.deactivate();
             }    
             return true;
         } else {
@@ -105,15 +157,7 @@ OpenLayers.Control.Panel = OpenLayers.Class(OpenLayers.Control, {
      */    
     draw: function() {
         OpenLayers.Control.prototype.draw.apply(this, arguments);
-        for (var i=0, len=this.controls.length; i<len; i++) {
-            this.map.addControl(this.controls[i]);
-            this.controls[i].deactivate();
-            this.controls[i].events.on({
-                "activate": this.redraw,
-                "deactivate": this.redraw,
-                scope: this
-            });
-        }
+        this.addControlsToMap(this.controls);
         return this.div;
     },
 
@@ -121,6 +165,11 @@ OpenLayers.Control.Panel = OpenLayers.Class(OpenLayers.Control, {
      * Method: redraw
      */
     redraw: function() {
+        if (this.div.children.length>0) {
+            for (var l=this.div.children.length, i=l-1 ; i>=0 ; i--) {
+                this.div.removeChild(this.div.children[i]);
+            }
+        }
         this.div.innerHTML = "";
         if (this.active) {
             for (var i=0, len=this.controls.length; i<len; i++) {
@@ -137,7 +186,9 @@ OpenLayers.Control.Panel = OpenLayers.Class(OpenLayers.Control, {
 
     /**
      * APIMethod: activateControl
-     * 
+     * This method is called when the user click on the icon representing a 
+     *     control in the panel.
+     *
      * Parameters:
      * control - {<OpenLayers.Control>}
      */
@@ -157,11 +208,12 @@ OpenLayers.Control.Panel = OpenLayers.Class(OpenLayers.Control, {
             this.redraw();
             return;
         }
+        var c;
         for (var i=0, len=this.controls.length; i<len; i++) {
-            if (this.controls[i] != control) {
-                if (this.controls[i].type != OpenLayers.Control.TYPE_TOGGLE) {
-                    this.controls[i].deactivate();
-                }
+            c = this.controls[i];
+            if (c != control &&
+               (c.type === OpenLayers.Control.TYPE_TOOL || c.type == null)) {
+                c.deactivate();
             }
         }
         control.activate();
@@ -174,7 +226,7 @@ OpenLayers.Control.Panel = OpenLayers.Class(OpenLayers.Control, {
      * Control Panel.
      *
      * Parameters:
-     * controls - {<OpenLayers.Control>} 
+     * controls - {<OpenLayers.Control>} Controls to add in the panel.
      */    
     addControls: function(controls) {
         if (!(controls instanceof Array)) {
@@ -202,19 +254,38 @@ OpenLayers.Control.Panel = OpenLayers.Class(OpenLayers.Control, {
         }    
 
         if (this.map) { // map.addControl() has already been called on the panel
-            for (var i=0, len=controls.length; i<len; i++) {
-                this.map.addControl(controls[i]);
-                controls[i].deactivate();
-                controls[i].events.on({
-                    "activate": this.redraw,
-                    "deactivate": this.redraw,
-                    scope: this
-                });
-            }
+            this.addControlsToMap(controls);
             this.redraw();
         }
     },
    
+    /**
+     * Method: addControlsToMap
+     * Only for internal use in draw() and addControls() methods.
+     *
+     * Parameters:
+     * controls - {Array(<OpenLayers.Control>)} Controls to add into map.
+     */         
+    addControlsToMap: function (controls) {
+        var control;
+        for (var i=0, len=controls.length; i<len; i++) {
+            control = controls[i];
+            if (control.autoActivate === true) {
+                control.autoActivate = false;
+                this.map.addControl(control);
+                control.autoActivate = true;
+            } else {
+                this.map.addControl(control);
+                control.deactivate();
+            }
+            control.events.on({
+                "activate": this.redraw,
+                "deactivate": this.redraw,
+                scope: this
+            });
+        }  
+    },
+
     /**
      * Method: onClick
      */

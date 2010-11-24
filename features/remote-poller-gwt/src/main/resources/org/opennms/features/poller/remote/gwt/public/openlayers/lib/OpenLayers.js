@@ -1,5 +1,6 @@
-/* Copyright (c) 2006-2008 MetaCarta, Inc., published under the Clear BSD
- * license.  See http://svn.openlayers.org/trunk/openlayers/license.txt for the
+/* Copyright (c) 2006-2010 by OpenLayers Contributors (see authors.txt for 
+ * full list of contributors). Published under the Clear BSD license.  
+ * See http://svn.openlayers.org/trunk/openlayers/license.txt for the
  * full text of the license. */
 
 /* 
@@ -107,6 +108,7 @@
             "OpenLayers/Layer/EventPane.js",
             "OpenLayers/Layer/FixedZoomLevels.js",
             "OpenLayers/Layer/Google.js",
+            "OpenLayers/Layer/Google/v3.js",
             "OpenLayers/Layer/VirtualEarth.js",
             "OpenLayers/Layer/Yahoo.js",
             "OpenLayers/Layer/HTTPRequest.js",
@@ -124,6 +126,7 @@
             "OpenLayers/Layer/WMS.js",
             "OpenLayers/Layer/WMS/Untiled.js",
             "OpenLayers/Layer/WMS/Post.js",
+            "OpenLayers/Layer/WMTS.js",
             "OpenLayers/Layer/ArcIMS.js",
             "OpenLayers/Layer/GeoRSS.js",
             "OpenLayers/Layer/Boxes.js",
@@ -178,8 +181,10 @@
             "OpenLayers/Control/NavigationHistory.js",
             "OpenLayers/Control/Measure.js",
             "OpenLayers/Control/WMSGetFeatureInfo.js",
+            "OpenLayers/Control/WMTSGetFeatureInfo.js",
             "OpenLayers/Control/Graticule.js",
             "OpenLayers/Control/TransformFeature.js",
+            "OpenLayers/Control/SLDSelect.js",
             "OpenLayers/Geometry.js",
             "OpenLayers/Geometry/Rectangle.js",
             "OpenLayers/Geometry/Collection.js",
@@ -200,6 +205,7 @@
             "OpenLayers/Layer/Vector.js",
             "OpenLayers/Layer/Vector/RootContainer.js",
             "OpenLayers/Strategy.js",
+            "OpenLayers/Strategy/Filter.js",
             "OpenLayers/Strategy/Fixed.js",
             "OpenLayers/Strategy/Cluster.js",
             "OpenLayers/Strategy/Paging.js",
@@ -224,10 +230,12 @@
             "OpenLayers/Layer/PointTrack.js",
             "OpenLayers/Layer/GML.js",
             "OpenLayers/Style.js",
+            "OpenLayers/Style2.js",
             "OpenLayers/StyleMap.js",
             "OpenLayers/Rule.js",
             "OpenLayers/Format.js",
             "OpenLayers/Format/XML.js",
+            "OpenLayers/Format/Context.js",
             "OpenLayers/Format/ArcXML.js",
             "OpenLayers/Format/ArcXML/Features.js",
             "OpenLayers/Format/GML.js",
@@ -255,6 +263,9 @@
             "OpenLayers/Format/SLD.js",
             "OpenLayers/Format/SLD/v1.js",
             "OpenLayers/Format/SLD/v1_0_0.js",
+            "OpenLayers/Format/OWSCommon/v1.js",
+            "OpenLayers/Format/OWSCommon/v1_0_0.js",
+            "OpenLayers/Format/OWSCommon/v1_1_0.js",
             "OpenLayers/Format/CSWGetDomain.js",
             "OpenLayers/Format/CSWGetDomain/v2_0_2.js",
             "OpenLayers/Format/CSWGetRecords.js",
@@ -278,11 +289,14 @@
             "OpenLayers/Format/WMSCapabilities/v1_3.js",
             "OpenLayers/Format/WMSCapabilities/v1_3_0.js",
             "OpenLayers/Format/WMSGetFeatureInfo.js",
-            "OpenLayers/Format/OWSCommon/v1_1_0.js",
             "OpenLayers/Format/SOSCapabilities.js",
             "OpenLayers/Format/SOSCapabilities/v1_0_0.js",
             "OpenLayers/Format/SOSGetObservation.js",
             "OpenLayers/Format/SOSGetFeatureOfInterest.js",
+            "OpenLayers/Format/OWSContext.js",
+            "OpenLayers/Format/OWSContext/v0_3_1.js",
+            "OpenLayers/Format/WMTSCapabilities.js",
+            "OpenLayers/Format/WMTSCapabilities/v1_0_0.js",
             "OpenLayers/Layer/WFS.js",
             "OpenLayers/Control/GetFeature.js",
             "OpenLayers/Control/MouseToolbar.js",
@@ -293,6 +307,12 @@
             "OpenLayers/Control/ZoomOut.js",
             "OpenLayers/Control/ZoomPanel.js",
             "OpenLayers/Control/EditingToolbar.js",
+            "OpenLayers/Symbolizer.js",
+            "OpenLayers/Symbolizer/Point.js",
+            "OpenLayers/Symbolizer/Line.js",
+            "OpenLayers/Symbolizer/Polygon.js",
+            "OpenLayers/Symbolizer/Text.js",
+            "OpenLayers/Symbolizer/Raster.js",
             "OpenLayers/Lang.js",
             "OpenLayers/Lang/en.js"
         ); // etc.
@@ -325,4 +345,4 @@
 /**
  * Constant: VERSION_NUMBER
  */
-OpenLayers.VERSION_NUMBER="$Revision: 10129 $";
+OpenLayers.VERSION_NUMBER="OpenLayers 2.10 -- $Revision: 10721 $";

@@ -1,5 +1,6 @@
-/* Copyright (c) 2006-2009 MetaCarta, Inc., published under the Clear BSD
- * license.  See http://svn.openlayers.org/trunk/openlayers/license.txt for the
+/* Copyright (c) 2006-2010 by OpenLayers Contributors (see authors.txt for 
+ * full list of contributors). Published under the Clear BSD license.  
+ * See http://svn.openlayers.org/trunk/openlayers/license.txt for the
  * full text of the license. */
 
 /**
@@ -115,6 +116,7 @@ OpenLayers.Format.SOSCapabilities.v1_0_0 = OpenLayers.Class(
                 var id = this.getAttributeNS(node, this.namespaces.gml, "id");
                 offeringList[id] = {
                     procedures: [],
+                    observedProperties: [],
                     featureOfInterestIds: [],
                     responseFormats: [],
                     resultModels: [],
@@ -131,8 +133,8 @@ OpenLayers.Format.SOSCapabilities.v1_0_0 = OpenLayers.Class(
                     this.namespaces.xlink, "href"));
             },
             "observedProperty": function(node, offering) {
-                offering.observedProperty = this.getAttributeNS(node, 
-                    this.namespaces.xlink, "href");
+                offering.observedProperties.push(this.getAttributeNS(node, 
+                    this.namespaces.xlink, "href"));
             },
             "featureOfInterest": function(node, offering) {
                 offering.featureOfInterestIds.push(this.getAttributeNS(node, 

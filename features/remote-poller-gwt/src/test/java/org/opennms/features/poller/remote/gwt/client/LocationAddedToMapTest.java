@@ -35,6 +35,7 @@ public class LocationAddedToMapTest {
         
         GWTBounds bounds;
         private Application m_application;
+        @SuppressWarnings("unused")
         private HandlerManager m_eventBus;
         private int m_marker = 0;
         private String m_statusMessage;
@@ -224,7 +225,7 @@ public class LocationAddedToMapTest {
     public void testStatusMessage() {
         int numLocations = 10;
         Set<LocationInfo> locations = new HashSet<LocationInfo>();
-        GWTBounds bounds = createLocations(numLocations , locations);
+        createLocations(numLocations , locations);
         
         m_testServer.sendDomainEvent(new LocationsUpdatedRemoteEvent(locations));
         

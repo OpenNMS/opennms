@@ -1,5 +1,6 @@
-/* Copyright (c) 2006-2008 MetaCarta, Inc., published under the Clear BSD
- * license.  See http://svn.openlayers.org/trunk/openlayers/license.txt for the
+/* Copyright (c) 2006-2010 by OpenLayers Contributors (see authors.txt for 
+ * full list of contributors). Published under the Clear BSD license.  
+ * See http://svn.openlayers.org/trunk/openlayers/license.txt for the
  * full text of the license. */
 
 // TRASH THIS
@@ -42,8 +43,8 @@ OpenLayers.Feature.Vector = OpenLayers.Class(OpenLayers.Feature, {
 
     /** 
      * APIProperty: attributes 
-     * {Object} This object holds arbitrary properties that describe the
-     *     feature.
+     * {Object} This object holds arbitrary, serializable properties that
+     *     describe the feature.
      */
     attributes: null,
 

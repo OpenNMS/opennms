@@ -1,5 +1,6 @@
-/* Copyright (c) 2006-2008 MetaCarta, Inc., published under the Clear BSD
- * license.  See http://svn.openlayers.org/trunk/openlayers/license.txt for the
+/* Copyright (c) 2006-2010 by OpenLayers Contributors (see authors.txt for 
+ * full list of contributors). Published under the Clear BSD license.  
+ * See http://svn.openlayers.org/trunk/openlayers/license.txt for the
  * full text of the license. */
 
 /**
@@ -179,12 +180,15 @@ OpenLayers.Control.Measure = OpenLayers.Class(OpenLayers.Control, {
      * geometry - {<OpenLayers.Geometry>} The sketch geometry.
      */
     measurePartial: function(point, geometry) {
-        this.delayedTrigger = window.setTimeout(
-            OpenLayers.Function.bind(function() {
-                this.measure(geometry, "measurepartial");
-            }, this),
-            this.partialDelay
-        );
+        if (geometry.getLength() > 0) {
+            geometry = geometry.clone();
+            this.delayedTrigger = window.setTimeout(
+                OpenLayers.Function.bind(function() {
+                    this.measure(geometry, "measurepartial");
+                }, this),
+                this.partialDelay
+            );
+        }
     },
 
     /**

@@ -1,5 +1,6 @@
-/* Copyright (c) 2006-2008 MetaCarta, Inc., published under the Clear BSD
- * license.  See http://svn.openlayers.org/trunk/openlayers/license.txt for the
+/* Copyright (c) 2006-2010 by OpenLayers Contributors (see authors.txt for 
+ * full list of contributors). Published under the Clear BSD license.  
+ * See http://svn.openlayers.org/trunk/openlayers/license.txt for the
  * full text of the license. */
 
 /** 
@@ -119,6 +120,12 @@ OpenLayers.Control.OverviewMap = OpenLayers.Class(OpenLayers.Control, {
      * {Object}
      */
     resolutionFactor: 1,
+
+    /**
+     * APIProperty: maximized
+     * {Boolean} Start as maximized (visible). Defaults to false.
+     */
+    maximized: false,
 
     /**
      * Constructor: OpenLayers.Control.OverviewMap
@@ -288,7 +295,10 @@ OpenLayers.Control.OverviewMap = OpenLayers.Class(OpenLayers.Control, {
         }
         
         this.map.events.register('moveend', this, this.update);
-
+        
+        if (this.maximized) {
+            this.maximizeControl();
+        }
         return this.div;
     },
     

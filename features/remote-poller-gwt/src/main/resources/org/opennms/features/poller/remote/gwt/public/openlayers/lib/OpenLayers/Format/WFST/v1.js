@@ -1,5 +1,6 @@
-/* Copyright (c) 2006-2008 MetaCarta, Inc., published under the Clear BSD
- * license.  See http://svn.openlayers.org/trunk/openlayers/license.txt for the
+/* Copyright (c) 2006-2010 by OpenLayers Contributors (see authors.txt for 
+ * full list of contributors). Published under the Clear BSD license.  
+ * See http://svn.openlayers.org/trunk/openlayers/license.txt for the
  * full text of the license. */
 
 /**
@@ -105,13 +106,31 @@ OpenLayers.Format.WFST.v1 = OpenLayers.Class(OpenLayers.Format.XML, {
     },
 
     /**
-     * Method: read
+     * APIMethod: read
      * Parse the response from a transaction.  Because WFS is split into
      *     Transaction requests (create, update, and delete) and GetFeature
      *     requests (read), this method handles parsing of both types of
      *     responses.
+     *
+     * Parameters:
+     * data - {String | Document} The WFST document to read
+     * options - {Object} Options for the reader
+     *
+     * Valid options properties:
+     * output - {String} either "features" or "object". The default is
+     *     "features", which means that the method will return an array of
+     *     features. If set to "object", an object with a "features" property
+     *     and other properties read by the parser will be returned.
+     *
+     * Returns:
+     * {Array | Object} Output depending on the output option.
      */
-    read: function(data) {
+    read: function(data, options) {
+        options = options || {};
+        OpenLayers.Util.applyDefaults(options, {
+            output: "features"
+        });
+        
         if(typeof data == "string") { 
             data = OpenLayers.Format.XML.prototype.read.apply(this, [data]);
         }
@@ -122,7 +141,7 @@ OpenLayers.Format.WFST.v1 = OpenLayers.Class(OpenLayers.Format.XML, {
         if(data) {
             this.readNode(data, obj);
         }
-        if(obj.features) {
+        if(obj.features && options.output === "features") {
             obj = obj.features;
         }
         return obj;
@@ -186,7 +205,14 @@ OpenLayers.Format.WFST.v1 = OpenLayers.Class(OpenLayers.Format.XML, {
                         "xsi:schemaLocation": this.schemaLocationAttr(options)
                     }
                 });
-                this.writeNode("Query", options, node);
+                if (typeof this.featureType == "string") {
+                    this.writeNode("Query", options, node);
+                } else {
+                    for (var i=0,len = this.featureType.length; i<len; i++) { 
+                        options.featureType = this.featureType[i]; 
+                        this.writeNode("Query", options, node); 
+                    } 
+                }
                 return node;
             },
             "Transaction": function(features) {

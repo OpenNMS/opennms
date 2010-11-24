@@ -1,5 +1,6 @@
-/* Copyright (c) 2006-2008 MetaCarta, Inc., published under the Clear BSD
- * license.  See http://svn.openlayers.org/trunk/openlayers/license.txt for the
+/* Copyright (c) 2006-2010 by OpenLayers Contributors (see authors.txt for 
+ * full list of contributors). Published under the Clear BSD license.  
+ * See http://svn.openlayers.org/trunk/openlayers/license.txt for the
  * full text of the license. */
 
 /**
@@ -265,8 +266,9 @@ OpenLayers.Renderer = OpenLayers.Class({
             features = [features];
         }
         for(var i=0, len=features.length; i<len; ++i) {
-            this.eraseGeometry(features[i].geometry);
-            this.removeText(features[i].id);
+            var feature = features[i];
+            this.eraseGeometry(feature.geometry, feature.id);
+            this.removeText(feature.id);
         }
     },
     
@@ -277,8 +279,9 @@ OpenLayers.Renderer = OpenLayers.Class({
      * 
      * Parameters:
      * geometry - {<OpenLayers.Geometry>} 
+     * featureId - {String}
      */
-    eraseGeometry: function(geometry) {},
+    eraseGeometry: function(geometry, featureId) {},
     
     /**
      * Method: moveRoot
@@ -303,6 +306,57 @@ OpenLayers.Renderer = OpenLayers.Class({
     getRenderLayerId: function() {
         return this.container.id;
     },
+    
+    /**
+     * Method: applyDefaultSymbolizer
+     * 
+     * Parameters:
+     * symbolizer - {Object}
+     * 
+     * Returns:
+     * {Object}
+     */
+    applyDefaultSymbolizer: function(symbolizer) {
+        var result = OpenLayers.Util.extend({},
+            OpenLayers.Renderer.defaultSymbolizer);
+        if(symbolizer.stroke === false) {
+            delete result.strokeWidth;
+            delete result.strokeColor;
+        }
+        if(symbolizer.fill === false) {
+            delete result.fillColor;
+        }
+        OpenLayers.Util.extend(result, symbolizer);
+        return result;
+    },
 
     CLASS_NAME: "OpenLayers.Renderer"
 });
+
+/**
+ * Constant: OpenLayers.Renderer.defaultSymbolizer
+ * {Object} Properties from this symbolizer will be applied to symbolizers
+ *     with missing properties. This can also be used to set a global
+ *     symbolizer default in OpenLayers. To be SLD 1.x compliant, add the
+ *     following code before rendering any vector features:
+ * (code)
+ * OpenLayers.Renderer.defaultSymbolizer = {
+ *     fillColor: "#808080",
+ *     fillOpacity: 1,
+ *     strokeColor: "#000000",
+ *     strokeOpacity: 1,
+ *     strokeWidth: 1,
+ *     pointRadius: 3,
+ *     graphicName: "square"
+ * };
+ * (end)
+ */
+OpenLayers.Renderer.defaultSymbolizer = {
+    fillColor: "#000000",
+    strokeColor: "#000000",
+    strokeWidth: 2,
+    fillOpacity: 1,
+    strokeOpacity: 1,
+    pointRadius: 0
+};
+    

@@ -1,5 +1,6 @@
-/* Copyright (c) 2006-2008 MetaCarta, Inc., published under the Clear BSD
- * license.  See http://svn.openlayers.org/trunk/openlayers/license.txt for the
+/* Copyright (c) 2006-2010 by OpenLayers Contributors (see authors.txt for 
+ * full list of contributors). Published under the Clear BSD license.  
+ * See http://svn.openlayers.org/trunk/openlayers/license.txt for the
  * full text of the license. */
 
 /**
@@ -91,7 +92,8 @@ OpenLayers.Handler = OpenLayers.Class({
      * Parameters:
      * control - {<OpenLayers.Control>} The control that initialized this
      *     handler.  The control is assumed to have a valid map property; that
-     *     map is used in the handler's own setMap method.
+     *     map is used in the handler's own setMap method.  If a map property
+     *     is present in the options argument it will be used instead.
      * callbacks - {Object} An object whose properties correspond to abstracted
      *     events or sequences of browser events.  The values for these
      *     properties are functions defined by the control that get called by
@@ -103,11 +105,11 @@ OpenLayers.Handler = OpenLayers.Class({
         OpenLayers.Util.extend(this, options);
         this.control = control;
         this.callbacks = callbacks;
-        if (control.map) {
-            this.setMap(control.map); 
-        }
 
-        OpenLayers.Util.extend(this, options);
+        var map = this.map || control.map;
+        if (map) {
+            this.setMap(map); 
+        }
         
         this.id = OpenLayers.Util.createUniqueID(this.CLASS_NAME + "_");
     },

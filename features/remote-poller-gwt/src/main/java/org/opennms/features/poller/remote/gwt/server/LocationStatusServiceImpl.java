@@ -11,8 +11,6 @@ import org.opennms.features.poller.remote.gwt.client.ApplicationInfo;
 import org.opennms.features.poller.remote.gwt.client.LocationStatusService;
 import org.opennms.features.poller.remote.gwt.client.location.LocationDetails;
 import org.opennms.features.poller.remote.gwt.client.location.LocationInfo;
-import org.opennms.features.poller.remote.gwt.client.remoteevents.MapRemoteEvent;
-import org.opennms.features.poller.remote.gwt.client.remoteevents.MapRemoteEventHandler;
 import org.springframework.context.ApplicationContext;
 import org.springframework.web.context.support.WebApplicationContextUtils;
 
@@ -32,6 +30,7 @@ public class LocationStatusServiceImpl extends RemoteEventServiceServlet impleme
     volatile Set<String> m_activeApplications = new HashSet<String>();
 
     private ApplicationContext m_context;
+    @SuppressWarnings("unused")
     private LocationBroadcastProcessor m_locationBroadcastProcessor;
     private LocationDataManager m_locationDataManager;
 

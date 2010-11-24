@@ -1,5 +1,6 @@
-/* Copyright (c) 2006-2008 MetaCarta, Inc., published under the Clear BSD
- * license.  See http://svn.openlayers.org/trunk/openlayers/license.txt for the
+/* Copyright (c) 2006-2010 by OpenLayers Contributors (see authors.txt for 
+ * full list of contributors). Published under the Clear BSD license.  
+ * See http://svn.openlayers.org/trunk/openlayers/license.txt for the
  * full text of the license. */
 
 /**
@@ -54,6 +55,9 @@ OpenLayers.Layer.Vector = OpenLayers.Class(OpenLayers.Layer, {
      * beforefeatureremoved - Triggered before a feature is removed. Listeners
      *      will receive an object with a *feature* property referencing the
      *      feature to be removed.
+     * beforefeaturesremoved - Triggered before multiple features are removed. 
+     *      Listeners will receive an object with a *features* property
+     *      referencing the features to be removed.
      * featureremoved - Triggerd after a feature is removed. The event
      *      object passed to listeners will have a *feature* property with a
      *      reference to the removed feature.
@@ -97,8 +101,8 @@ OpenLayers.Layer.Vector = OpenLayers.Class(OpenLayers.Layer, {
      *      for a new set of features.
      */
     EVENT_TYPES: ["beforefeatureadded", "beforefeaturesadded",
-                  "featureadded", "featuresadded",
-                  "beforefeatureremoved", "featureremoved", "featuresremoved",
+                  "featureadded", "featuresadded", "beforefeatureremoved",
+                  "beforefeaturesremoved", "featureremoved", "featuresremoved",
                   "beforefeatureselected", "featureselected", "featureunselected", 
                   "beforefeaturemodified", "featuremodified", "afterfeaturemodified",
                   "vertexmodified", "sketchstarted", "sketchmodified",
@@ -106,8 +110,8 @@ OpenLayers.Layer.Vector = OpenLayers.Class(OpenLayers.Layer, {
 
     /**
      * APIProperty: isBaseLayer
-     * {Boolean} The layer is a base layer.  Default is true.  Set this property
-     * in the layer options
+     * {Boolean} The layer is a base layer.  Default is false.  Set this property
+     * in the layer options.
      */
     isBaseLayer: false,
 
@@ -354,10 +358,12 @@ OpenLayers.Layer.Vector = OpenLayers.Class(OpenLayers.Layer, {
      */    
     assignRenderer: function()  {
         for (var i=0, len=this.renderers.length; i<len; i++) {
-            var rendererClass = OpenLayers.Renderer[this.renderers[i]];
-            if (rendererClass && rendererClass.prototype.supported()) {
-                this.renderer = new rendererClass(this.div,
-                    this.rendererOptions);
+            var rendererClass = this.renderers[i];
+            var renderer = (typeof rendererClass == "function") ?
+                rendererClass :
+                OpenLayers.Renderer[rendererClass];
+            if (renderer && renderer.prototype.supported()) {
+                this.renderer = new renderer(this.div, this.rendererOptions);
                 break;
             }  
         }  
@@ -421,6 +427,7 @@ OpenLayers.Layer.Vector = OpenLayers.Class(OpenLayers.Layer, {
      * map - {<OpenLayers.Map>}
      */
     removeMap: function(map) {
+        this.drawn = false;
         if(this.strategies) {
             var strategy, i, len;
             for(i=0, len=this.strategies.length; i<len; i++) {
@@ -538,7 +545,9 @@ OpenLayers.Layer.Vector = OpenLayers.Class(OpenLayers.Layer, {
             features = event.features;
         }
         
-
+        // Track successfully added features for featuresadded event, since
+        // beforefeatureadded can veto single features.
+        var featuresAdded = [];
         for (var i=0, len=features.length; i<len; i++) {
             if (i != (features.length - 1)) {
                 this.renderer.locked = true;
@@ -554,8 +563,6 @@ OpenLayers.Layer.Vector = OpenLayers.Class(OpenLayers.Layer, {
                 throw throwStr;
               }
 
-            this.features.push(feature);
-            
             //give feature reference to its layer
             feature.layer = this;
 
@@ -571,6 +578,8 @@ OpenLayers.Layer.Vector = OpenLayers.Class(OpenLayers.Layer, {
                 this.preFeatureInsert(feature);
             }
 
+            featuresAdded.push(feature);
+            this.features.push(feature);
             this.drawFeature(feature);
             
             if (notify) {
@@ -582,7 +591,7 @@ OpenLayers.Layer.Vector = OpenLayers.Class(OpenLayers.Layer, {
         }
         
         if(notify) {
-            this.events.triggerEvent("featuresadded", {features: features});
+            this.events.triggerEvent("featuresadded", {features: featuresAdded});
         }
     },
 
@@ -608,14 +617,23 @@ OpenLayers.Layer.Vector = OpenLayers.Class(OpenLayers.Layer, {
         if(!features || features.length === 0) {
             return;
         }
+        if (features === this.features) {
+            return this.removeAllFeatures(options);
+        }
         if (!(features instanceof Array)) {
             features = [features];
         }
-        if (features === this.features || features === this.selectedFeatures) {
+        if (features === this.selectedFeatures) {
             features = features.slice();
         }
 
         var notify = !options || !options.silent;
+        
+        if (notify) {
+            this.events.triggerEvent(
+                "beforefeaturesremoved", {features: features}
+            );
+        }
 
         for (var i = features.length - 1; i >= 0; i--) {
             // We remain locked so long as we're not at 0
@@ -666,6 +684,49 @@ OpenLayers.Layer.Vector = OpenLayers.Class(OpenLayers.Layer, {
             this.events.triggerEvent("featuresremoved", {features: features});
         }
     },
+    
+    /** 
+     * APIMethod: removeAllFeatures
+     * Remove all features from the layer.
+     *
+     * Parameters:
+     * options - {Object} Optional properties for changing behavior of the
+     *     removal.
+     *
+     * Valid options:
+     * silent - {Boolean} Supress event triggering.  Default is false.
+     */
+    removeAllFeatures: function(options) {
+        var notify = !options || !options.silent;
+        var features = this.features;
+        if (notify) {
+            this.events.triggerEvent(
+                "beforefeaturesremoved", {features: features}
+            );
+        }
+        var feature;
+        for (var i = features.length-1; i >= 0; i--) {
+            feature = features[i];
+            if (notify) {
+                this.events.triggerEvent("beforefeatureremoved", {
+                    feature: feature
+                });
+            }
+            feature.layer = null;
+            if (notify) {
+                this.events.triggerEvent("featureremoved", {
+                    feature: feature
+                });
+            }
+        }
+        this.renderer.clear();
+        this.features = [];
+        this.unrenderedFeatures = {};
+        this.selectedFeatures = [];
+        if (notify) {
+            this.events.triggerEvent("featuresremoved", {features: features});
+        }
+    },
 
     /**
      * APIMethod: destroyFeatures
@@ -707,7 +768,7 @@ OpenLayers.Layer.Vector = OpenLayers.Class(OpenLayers.Layer, {
      *
      * Parameters: 
      * feature - {<OpenLayers.Feature.Vector>} 
-     * style - {Object} Symbolizer hash or {String} renderIntent
+     * style - {String | Object} Named render intent or full symbolizer object.
      */
     drawFeature: function(feature, style) {
         // don't try to draw the feature with the renderer if the layer is not 
@@ -763,30 +824,61 @@ OpenLayers.Layer.Vector = OpenLayers.Class(OpenLayers.Layer, {
         var featureId = this.renderer.getFeatureIdFromEvent(evt);
         return this.getFeatureById(featureId);
     },
-    
+
     /**
-     * APIMethod: getFeatureById
-     * Given a feature id, return the feature if it exists in the features array
+     * APIMethod: getFeatureBy
+     * Given a property value, return the feature if it exists in the features array
      *
      * Parameters:
-     * featureId - {String} 
+     * property - {String}
+     * value - {String}
      *
      * Returns:
      * {<OpenLayers.Feature.Vector>} A feature corresponding to the given
-     * featureId
+     * property value or null if there is no such feature.
      */
-    getFeatureById: function(featureId) {
+    getFeatureBy: function(property, value) {
         //TBD - would it be more efficient to use a hash for this.features?
         var feature = null;
         for(var i=0, len=this.features.length; i<len; ++i) {
-            if(this.features[i].id == featureId) {
+            if(this.features[i][property] == value) {
                 feature = this.features[i];
                 break;
             }
         }
         return feature;
     },
-    
+
+    /**
+     * APIMethod: getFeatureById
+     * Given a feature id, return the feature if it exists in the features array
+     *
+     * Parameters:
+     * featureId - {String}
+     *
+     * Returns:
+     * {<OpenLayers.Feature.Vector>} A feature corresponding to the given
+     * featureId or null if there is no such feature.
+     */
+    getFeatureById: function(featureId) {
+        return this.getFeatureBy('id', featureId);
+    },
+
+    /**
+     * APIMethod: getFeatureByFid
+     * Given a feature fid, return the feature if it exists in the features array
+     *
+     * Parameters:
+     * featureFid - {String}
+     *
+     * Returns:
+     * {<OpenLayers.Feature.Vector>} A feature corresponding to the given
+     * featureFid or null if there is no such feature.
+     */
+    getFeatureByFid: function(featureFid) {
+        return this.getFeatureBy('fid', featureFid);
+    },
+
     /**
      * Unselect the selected features
      * i.e. clears the featureSelection array
