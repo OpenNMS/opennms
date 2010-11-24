@@ -84,7 +84,7 @@
 		<defaultValueExpression><![CDATA[]]></defaultValueExpression>
 	</parameter>
 	<parameter name="SUBREPORT_DIR" class="java.lang.String" isForPrompting="false">
-		<defaultValueExpression><![CDATA["/Users/indigo/Documents/doc_slides_papers/OpenNMS/Reports/"]]></defaultValueExpression>
+		<defaultValueExpression><![CDATA["${install.dir}/etc/report-templates"]]></defaultValueExpression>
 	</parameter>
 	<queryString>
 		<![CDATA[SELECT
