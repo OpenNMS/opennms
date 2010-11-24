@@ -195,9 +195,6 @@ ORDER BY
 					<subreportParameter name="endDate">
 						<subreportParameterExpression><![CDATA[$P{endDate}]]></subreportParameterExpression>
 					</subreportParameter>
-					<subreportParameter name="interface">
-						<subreportParameterExpression><![CDATA[$F{snmpphysaddr}.isEmpty() ? $F{snmpifdescr}.replaceAll("[\\/ | \\.]", "_") : $F{snmpifdescr}.replaceAll("[\\/ | \\.]", "_") + "-" + $F{snmpphysaddr}]]></subreportParameterExpression>
-					</subreportParameter>
 					<subreportParameter name="nodeid">
 						<subreportParameterExpression><![CDATA[$F{nodeid}]]></subreportParameterExpression>
 					</subreportParameter>
