@@ -3,6 +3,8 @@ package org.opennms.netmgt.jasper.jrobin;
 import java.io.IOException;
 
 import net.sf.jasperreports.engine.JRDataSource;
+import net.sf.jasperreports.engine.JRException;
+import net.sf.jasperreports.engine.JRField;
 
 import org.jrobin.core.RrdDb;
 import org.jrobin.core.RrdDbPool;
@@ -11,15 +13,32 @@ import org.jrobin.core.RrdException;
 
 abstract class RrdToolCmd {
 
-    private RrdCmdScanner cmdScanner;
+    public class EmptyJRDataSource implements JRDataSource {
+
+		public Object getFieldValue(JRField arg0) throws JRException {
+			return null;
+		}
+
+		public boolean next() throws JRException {
+			return false;
+		}
+
+	}
+
+	private RrdCmdScanner cmdScanner;
 
     abstract String getCmdType();
 
     abstract JRDataSource execute() throws RrdException, IOException;
 
-    JRDataSource executeCommand(String command) throws RrdException, IOException {
+    JRDataSource executeCommand(String command) throws RrdException {
         cmdScanner = new RrdCmdScanner(command);
-        return execute();
+        try {
+        	return execute();
+        }catch(IOException e) {
+        	return new EmptyJRDataSource();
+        }
+        
     }
 
     String getOptionValue(String shortForm, String longForm) throws RrdException {
