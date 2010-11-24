@@ -39,10 +39,23 @@ public class JRobinQueryExecuterTest {
         xhtml();
     }
     
+    @Test
+    public void testNoDataReport() throws JRException{
+    	compileNoDataReport();
+    	fill();
+    	pdf();
+    }
+    
 
     public void compile() throws JRException {
         // jrxml compiling process
         m_jasperReport = JasperCompileManager.compileReport("src/test/resources/RrdGraph.jrxml");
+        
+    }
+    
+    public void compileNoDataReport() throws JRException {
+        // jrxml compiling process
+        m_jasperReport = JasperCompileManager.compileReport("src/test/resources/NoDataReport.jrxml");
         
     }
 
