@@ -84,7 +84,7 @@
 	</parameter>
 	<parameter name="rrdDir" class="java.lang.String" isForPrompting="false">
 		<parameterDescription><![CDATA[]]></parameterDescription>
-		<defaultValueExpression><![CDATA["/Users/thedesloge/Documents/OpenNMS/iReport/"]]></defaultValueExpression>
+		<defaultValueExpression><![CDATA["/Users/thedesloge/git/opennms/target/opennms-1.8.7-SNAPSHOT/share/rrd"]]></defaultValueExpression>
 	</parameter>
 	<queryString>
 		<![CDATA[SELECT
@@ -94,7 +94,8 @@
 	snmpinterface.ipaddr,
 	snmpinterface.snmpifname,
 	snmpinterface.snmpifalias,
-	snmpinterface.snmpphysaddr
+	snmpinterface.snmpphysaddr,
+	snmpinterface.snmpifdescr
 FROM
 	node
 RIGHT JOIN
@@ -123,6 +124,7 @@ ORDER BY
 	<field name="snmpifname" class="java.lang.String"/>
 	<field name="snmpifalias" class="java.lang.String"/>
 	<field name="snmpphysaddr" class="java.lang.String"/>
+	<field name="snmpifdescr" class="java.lang.String"/>
 	<variable name="ICMP_Latency_AVG" class="java.lang.Double"/>
 	<variable name="ICMP_Latency_MIN" class="java.lang.Double"/>
 	<variable name="ICMP_Latency_MAX" class="java.lang.Double"/>
@@ -131,32 +133,32 @@ ORDER BY
 		<groupHeader>
 			<band height="49">
 				<textField>
-					<reportElement x="0" y="0" width="555" height="20"/>
+					<reportElement style="Sub-header" mode="Transparent" x="0" y="0" width="555" height="20"/>
 					<textElement textAlignment="Left"/>
 					<textFieldExpression class="java.lang.String"><![CDATA["Node " + $F{nodelabel}]]></textFieldExpression>
 				</textField>
 				<staticText>
-					<reportElement x="0" y="28" width="140" height="20"/>
+					<reportElement style="Sub-sub-header" x="0" y="28" width="140" height="20"/>
 					<textElement/>
-					<text><![CDATA[snmpifname]]></text>
+					<text><![CDATA[interface]]></text>
 				</staticText>
 				<staticText>
-					<reportElement x="145" y="28" width="140" height="20"/>
+					<reportElement style="Sub-sub-header" x="145" y="28" width="140" height="20"/>
 					<textElement/>
-					<text><![CDATA[snmpifalias]]></text>
+					<text><![CDATA[alias]]></text>
 				</staticText>
 				<staticText>
-					<reportElement x="290" y="28" width="140" height="20"/>
+					<reportElement style="Sub-sub-header" x="290" y="28" width="140" height="20"/>
 					<textElement textAlignment="Right"/>
 					<text><![CDATA[received sum]]></text>
 				</staticText>
 				<staticText>
-					<reportElement x="435" y="28" width="140" height="20"/>
+					<reportElement style="Sub-sub-header" x="435" y="28" width="140" height="20"/>
 					<textElement textAlignment="Right"/>
 					<text><![CDATA[transmitted sum]]></text>
 				</staticText>
 				<staticText>
-					<reportElement x="580" y="28" width="140" height="20"/>
+					<reportElement style="Sub-sub-header" x="580" y="28" width="140" height="20"/>
 					<textElement textAlignment="Right"/>
 					<text><![CDATA[total]]></text>
 				</staticText>
@@ -169,11 +171,14 @@ ORDER BY
 	<group name="physical_interface_group">
 		<groupExpression><![CDATA[$F{snmpifname}]]></groupExpression>
 		<groupHeader>
-			<band height="39">
+			<band height="38">
 				<subreport>
 					<reportElement x="0" y="0" width="720" height="37"/>
 					<subreportParameter name="snmpifname">
 						<subreportParameterExpression><![CDATA[$F{snmpifname}]]></subreportParameterExpression>
+					</subreportParameter>
+					<subreportParameter name="snmpifdescr">
+						<subreportParameterExpression><![CDATA[$F{snmpifdescr}]]></subreportParameterExpression>
 					</subreportParameter>
 					<subreportParameter name="snmpifalias">
 						<subreportParameterExpression><![CDATA[$F{snmpifalias}]]></subreportParameterExpression>
@@ -191,7 +196,7 @@ ORDER BY
 						<subreportParameterExpression><![CDATA[$P{endDate}]]></subreportParameterExpression>
 					</subreportParameter>
 					<subreportParameter name="interface">
-						<subreportParameterExpression><![CDATA[$F{snmpphysaddr}.isEmpty() ? $F{snmpifname}.replaceAll("[\\/ | \\.]", "_") : $F{snmpifname}.replaceAll("[\\/ | \\.]", "_") + "-" + $F{snmpphysaddr}]]></subreportParameterExpression>
+						<subreportParameterExpression><![CDATA[$F{snmpphysaddr}.isEmpty() ? $F{snmpifdescr}.replaceAll("[\\/ | \\.]", "_") : $F{snmpifdescr}.replaceAll("[\\/ | \\.]", "_") + "-" + $F{snmpphysaddr}]]></subreportParameterExpression>
 					</subreportParameter>
 					<subreportParameter name="nodeid">
 						<subreportParameterExpression><![CDATA[$F{nodeid}]]></subreportParameterExpression>
@@ -212,9 +217,9 @@ ORDER BY
 		<band height="32" splitType="Stretch"/>
 	</title>
 	<pageHeader>
-		<band height="107" splitType="Stretch">
+		<band height="106" splitType="Stretch">
 			<staticText>
-				<reportElement style="Report_Title" x="0" y="49" width="391" height="34"/>
+				<reportElement style="Title" x="0" y="49" width="391" height="34"/>
 				<textElement verticalAlignment="Middle">
 					<font size="20" isBold="true"/>
 				</textElement>
@@ -226,27 +231,15 @@ ORDER BY
 				<textFieldExpression class="java.lang.String"><![CDATA[$P{TIME_RANGE_DESCRIPTION}]]></textFieldExpression>
 			</textField>
 			<image>
-				<reportElement x="195" y="0" width="164" height="49"/>
+				<reportElement x="278" y="0" width="164" height="49"/>
 				<imageExpression class="java.lang.String"><![CDATA[$P{COMPANY_LOGO}]]></imageExpression>
 			</image>
 			<line>
-				<reportElement x="0" y="105" width="555" height="1"/>
+				<reportElement x="0" y="105" width="720" height="1"/>
 			</line>
 		</band>
 	</pageHeader>
-	<columnHeader>
-		<band height="61" splitType="Stretch"/>
-	</columnHeader>
-	<detail>
-		<band height="125" splitType="Stretch"/>
-	</detail>
-	<columnFooter>
-		<band height="45" splitType="Stretch"/>
-	</columnFooter>
 	<pageFooter>
 		<band height="54" splitType="Stretch"/>
 	</pageFooter>
-	<summary>
-		<band height="42" splitType="Stretch"/>
-	</summary>
 </jasperReport>

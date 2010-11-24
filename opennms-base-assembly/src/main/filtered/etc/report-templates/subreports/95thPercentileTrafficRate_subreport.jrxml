@@ -3,6 +3,7 @@
 	<property name="ireport.zoom" value="1.0"/>
 	<property name="ireport.x" value="0"/>
 	<property name="ireport.y" value="0"/>
+	<template><![CDATA["/Users/thedesloge/git/opennms/opennms-base-assembly/src/main/filtered/etc/report-templates/assets/styles/defaultStyles.jrtx"]]></template>
 	<parameter name="rrdDir" class="java.lang.String" isForPrompting="false">
 		<defaultValueExpression><![CDATA["/Users/thedesloge/Documents/OpenNMS/iReport"]]></defaultValueExpression>
 	</parameter>
@@ -15,15 +16,21 @@
 	<parameter name="endDate" class="java.util.Date" isForPrompting="false">
 		<defaultValueExpression><![CDATA[new Date()]]></defaultValueExpression>
 	</parameter>
-	<parameter name="interface" class="java.lang.String" isForPrompting="false">
-		<defaultValueExpression><![CDATA["en0-0014510dd260"]]></defaultValueExpression>
+	<parameter name="interface" class="java.lang.String" isForPrompting="false"/>
+	<parameter name="inOctets" class="java.lang.String" isForPrompting="false">
+		<defaultValueExpression><![CDATA[new java.io.File("$P{rrdDir}/snmp/$P{nodeid}/$P{interface}/ifHCInOctets.jrb").exists() ? "ifHCInOctets" : "ifInOctets"]]></defaultValueExpression>
+	</parameter>
+	<parameter name="outOctets" class="java.lang.String" isForPrompting="false">
+		<defaultValueExpression><![CDATA[new java.io.File("$P{rrdDir}/snmp/$P{nodeid}/$P{interface}/ifHCOutOctets.jrb").exists() ? "ifHCOutOctets" : "ifOutOctets"]]></defaultValueExpression>
 	</parameter>
 	<parameter name="snmpifalias" class="java.lang.String"/>
 	<parameter name="snmpifname" class="java.lang.String"/>
+	<parameter name="snmpifdescr" class="java.lang.String"/>
+	<parameter name="snmpphysaddr" class="java.lang.String"/>
 	<queryString language="jrobin">
 		<![CDATA[--start $P{startDate} --end $P{endDate}
-		DEF:xx=$P{rrdDir}/snmp/$P{nodeid}/$P{interface}/ifHCInOctets.jrb:ifHCInOctets:AVERAGE
-		DEF:yy=$P{rrdDir}/snmp/$P{nodeid}/$P{interface}/ifHCOutOctets.jrb:ifHCOutOctets:AVERAGE
+		DEF:xx=$P{rrdDir}/snmp/$P{nodeid}/$P{interface}/$P{inOctets}.jrb:$P{inOctets}:AVERAGE
+		DEF:yy=$P{rrdDir}/snmp/$P{nodeid}/$P{interface}/$P{outOctets}.jrb:$P{outOctets}:AVERAGE
 		XPORT:xx:IfInOctets
 		XPORT:yy:IfOutOctets]]>
 	</queryString>
@@ -41,6 +48,9 @@
 	</variable>
 	<variable name="transmitted_SUM" class="java.lang.Double" calculation="Sum">
 		<variableExpression><![CDATA[$F{IfOutOctets}]]></variableExpression>
+	</variable>
+	<variable name="file" class="java.lang.String">
+		<variableExpression><![CDATA[new File("$P{rrdDir}/snmp/$P{nodeid}/$P{interface}/ifHCInOctets.jrb") == null ? "$P{rrdDir}/snmp/$P{nodeid}/$P{interface}/ifHCInOctets.jrb" : "$P{rrdDir}/snmp/$P{nodeid}/$P{interface}/ifInOctets.jrb"]]></variableExpression>
 	</variable>
 	<filterExpression><![CDATA[!$F{IfInOctets}.isNaN() || !$F{IfOutOctets}.isNaN()]]></filterExpression>
 	<background>
@@ -65,29 +75,29 @@
 		<band splitType="Stretch"/>
 	</pageFooter>
 	<summary>
-		<band height="22" splitType="Stretch">
+		<band height="23" splitType="Stretch">
 			<textField>
-				<reportElement x="0" y="0" width="140" height="20"/>
+				<reportElement style="Body" x="0" y="0" width="140" height="20"/>
 				<textElement/>
-				<textFieldExpression class="java.lang.String"><![CDATA[$P{snmpifname}]]></textFieldExpression>
+				<textFieldExpression class="java.lang.String"><![CDATA[$P{snmpifname} != null ? $P{snmpifname} : $P{snmpifdescr}]]></textFieldExpression>
 			</textField>
 			<textField pattern="#,##0.00">
-				<reportElement x="435" y="0" width="140" height="20" backcolor="#333333"/>
+				<reportElement style="Body" x="435" y="0" width="140" height="20" backcolor="#333333"/>
 				<textElement textAlignment="Right"/>
 				<textFieldExpression class="java.lang.Double"><![CDATA[$V{transmitted_SUM}]]></textFieldExpression>
 			</textField>
 			<textField pattern="#,##0.00">
-				<reportElement x="580" y="0" width="140" height="20"/>
+				<reportElement style="Body" x="580" y="0" width="140" height="20"/>
 				<textElement textAlignment="Right"/>
 				<textFieldExpression class="java.lang.Double"><![CDATA[$V{received_SUM} + $V{transmitted_SUM}]]></textFieldExpression>
 			</textField>
 			<textField pattern="#,##0.00">
-				<reportElement x="290" y="0" width="140" height="20" backcolor="#CC9900"/>
+				<reportElement style="Body" x="290" y="0" width="140" height="20" backcolor="#CC9900"/>
 				<textElement textAlignment="Right"/>
 				<textFieldExpression class="java.lang.Double"><![CDATA[$V{received_SUM}]]></textFieldExpression>
 			</textField>
 			<textField>
-				<reportElement x="145" y="0" width="140" height="20"/>
+				<reportElement style="Body" x="145" y="0" width="140" height="20"/>
 				<textElement/>
 				<textFieldExpression class="java.lang.String"><![CDATA[$P{snmpifalias}]]></textFieldExpression>
 			</textField>
