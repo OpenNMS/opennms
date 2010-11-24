@@ -183,6 +183,7 @@
           </execution>
         </executions>
       </plugin>
+<!--
       <plugin>
         <groupId>org.codehaus.mojo</groupId>
         <artifactId>jasperreports-maven-plugin</artifactId>
@@ -227,6 +228,7 @@
 	  </dependency>
         </dependencies>
       </plugin>
+-->
       <plugin>
         <artifactId>maven-resources-plugin</artifactId>
         <executions>
