@@ -70,6 +70,7 @@ import org.springframework.transaction.annotation.Transactional;
 @ContextConfiguration(locations= {"classpath:/META-INF/opennms/applicationContext-dao.xml",
                                   "classpath*:/META-INF/opennms/component-dao.xml",
                                   "classpath*:/META-INF/opennms/component-service.xml",
+                                  "classpath:/NetworkElementFactoryContext.xml",
                                   "classpath:/daoWebAlarmRepositoryTestContext.xml",
                                   "classpath:/jdbcWebAlarmRepositoryTest.xml"})
 @JUnitTemporaryDatabase()
