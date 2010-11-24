@@ -196,7 +196,7 @@
           </execution>
         </executions>
         <configuration>
-          <sourceDirectory>src/main/filtered/etc/report-templates</sourceDirectory>
+          <sourceDirectory>target/classes/etc/report-templates</sourceDirectory>
           <outputDirectory>${project.build.directory}/jasper</outputDirectory>
           <xmlValidation>true</xmlValidation>
           <additionalProperties>
