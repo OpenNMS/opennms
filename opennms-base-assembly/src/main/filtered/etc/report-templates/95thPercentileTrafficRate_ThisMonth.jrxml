@@ -53,10 +53,10 @@
 		</box>
 	</style>
 	<parameter name="SUBREPORT_DIR" class="java.lang.String" isForPrompting="false">
-		<defaultValueExpression><![CDATA["subreports/"]]></defaultValueExpression>
+		<defaultValueExpression><![CDATA["${install.dir}/etc/report-templates/subreports/"]]></defaultValueExpression>
 	</parameter>
 	<parameter name="COMPANY_LOGO" class="java.lang.String" isForPrompting="false">
-		<defaultValueExpression><![CDATA["assets/images/company-logo.png"]]></defaultValueExpression>
+		<defaultValueExpression><![CDATA["${install.dir}/etc/report-templates/assets/images/company-logo.png"]]></defaultValueExpression>
 	</parameter>
 	<parameter name="START_TIME" class="java.sql.Timestamp" isForPrompting="false">
 		<defaultValueExpression><![CDATA[new java.sql.Timestamp(new GregorianCalendar(new GregorianCalendar().get(Calendar.YEAR), new GregorianCalendar().get(Calendar.MONTH), 1).getTimeInMillis())]]></defaultValueExpression>
@@ -84,7 +84,7 @@
 	</parameter>
 	<parameter name="rrdDir" class="java.lang.String" isForPrompting="false">
 		<parameterDescription><![CDATA[]]></parameterDescription>
-		<defaultValueExpression><![CDATA["/Users/thedesloge/git/opennms/target/opennms-1.8.7-SNAPSHOT/share/rrd"]]></defaultValueExpression>
+		<defaultValueExpression><![CDATA["${install.dir}/share/rrd"]]></defaultValueExpression>
 	</parameter>
 	<queryString>
 		<![CDATA[SELECT
