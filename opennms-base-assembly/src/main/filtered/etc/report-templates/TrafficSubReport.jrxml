@@ -13,7 +13,7 @@
 		<defaultValueExpression><![CDATA[new Date(1290120600000L)]]></defaultValueExpression>
 	</parameter>
 	<parameter name="rrdDir" class="java.lang.String" isForPrompting="false">
-		<defaultValueExpression><![CDATA["/Users/thedesloge/git/opennms/target/opennms-1.8.7-SNAPSHOT/share/rrd"]]></defaultValueExpression>
+		<defaultValueExpression><![CDATA["${install.dir}/share/rrd"]]></defaultValueExpression>
 	</parameter>
 	<parameter name="ipv4_interface" class="java.lang.String" isForPrompting="false" />
 	<parameter name="snmp_interface" class="java.lang.String" />
