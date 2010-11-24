@@ -78,7 +78,7 @@
 		<defaultValueExpression><![CDATA[new Double("80.0")]]></defaultValueExpression>
 	</parameter>
 	<parameter name="startDate" class="java.util.Date">
-		<defaultValueExpression><![CDATA[new java.util.Date(new java.util.Date().getTime() - 86400 * 7 * 1000)]]></defaultValueExpression>
+		<defaultValueExpression><![CDATA[new java.sql.Date(1288584000)]]></defaultValueExpression>
 	</parameter>
 	<parameter name="endDate" class="java.util.Date">
 		<defaultValueExpression><![CDATA[new java.util.Date()]]></defaultValueExpression>

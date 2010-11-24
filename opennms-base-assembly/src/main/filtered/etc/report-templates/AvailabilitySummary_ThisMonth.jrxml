@@ -61,13 +61,13 @@
 		<defaultValueExpression><![CDATA["${install.dir}/etc/report-templates/assets/images/company-logo.png"]]></defaultValueExpression>
 	</parameter>
 	<parameter name="START_TIME" class="java.sql.Timestamp">
-		<defaultValueExpression><![CDATA[new java.sql.Timestamp(new java.util.Date().getTime() - (86400 * 7 * 1000))]]></defaultValueExpression>
+		<defaultValueExpression><![CDATA[new java.sql.Timestamp(1288584000000)]]></defaultValueExpression>
 	</parameter>
 	<parameter name="TIME_RANGE" class="java.lang.String">
-		<defaultValueExpression><![CDATA["7 Days"]]></defaultValueExpression>
+		<defaultValueExpression><![CDATA["1 Month"]]></defaultValueExpression>
 	</parameter>
 	<parameter name="TIME_RANGE_DESCRIPTION" class="java.lang.String">
-		<defaultValueExpression><![CDATA[$P{TIME_RANGE} + " from " + $P{START_TIME}]]></defaultValueExpression>
+		<defaultValueExpression><![CDATA["This Month"]]></defaultValueExpression>
 	</parameter>
 	<queryString>
 		<![CDATA[SELECT

@@ -56,10 +56,10 @@
 		<parameter name="DS_AVAILABILITY_WARNING" class="java.lang.Double" isForPrompting="false"/>
 		<parameter name="DS_AVAILABILITY_CRITICAL" class="java.lang.Double" isForPrompting="false"/>
 		<parameter name="DS_TIME_RANGE" class="java.lang.String" isForPrompting="false">
-			<defaultValueExpression><![CDATA["7 Days"]]></defaultValueExpression>
+			<defaultValueExpression><![CDATA["1 Month"]]></defaultValueExpression>
 		</parameter>
 		<parameter name="DS_START_TIME" class="java.sql.Timestamp">
-			<defaultValueExpression><![CDATA[new java.sql.Timestamp(new java.util.Date().getTime() - (86400 * 7 * 1000))]]></defaultValueExpression>
+			<defaultValueExpression><![CDATA[new java.sql.Timestamp(1288584000000)]]></defaultValueExpression>
 		</parameter>
 		<queryString>
 			<![CDATA[SELECT
@@ -234,7 +234,7 @@ ORDER BY
 		<defaultValueExpression><![CDATA[new java.sql.Timestamp(new java.util.Date().getTime() - (86400 * 7 * 1000))]]></defaultValueExpression>
 	</parameter>
 	<parameter name="TIME_RANGE_DESCRIPTION" class="java.lang.String">
-		<defaultValueExpression><![CDATA[$P{TIME_RANGE} + " from " + $P{START_TIME}]]></defaultValueExpression>
+		<defaultValueExpression><![CDATA["This Month"]]></defaultValueExpression>
 	</parameter>
 	<queryString>
 		<![CDATA[SELECT

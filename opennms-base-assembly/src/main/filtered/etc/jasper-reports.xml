@@ -7,6 +7,9 @@
         <report id="trivial-report" template="trivial-report.jrxml" engine="null" />
         <report id="Early-Morning-Report" template="Early-Morning-Report.jrxml" engine="jdbc" />
         <report id="Node-Availability-Report" template="NodeAvailabilityReport.jrxml" engine="jdbc" />
+        <report id="Node-Availability-Report_ThisMonth" template="NodeAvailabilityReport_ThisMonth.jrxml" engine="jdbc" />
         <report id="Availability-Summary-Report" template="AvailabilitySummary.jrxml" engine="jdbc" />
+        <report id="Availability-Summary-Report_ThisMonth" template="AvailabilitySummary_ThisMonth.jrxml" engine="jdbc" />
         <report id="Response-Time-Report" template="ResponseTime.jrxml" engine="jdbc" />
+        <report id="Response-Time-Report_ThisMonth" template="ResponseTime_ThisMonth.jrxml" engine="jdbc" />
 </jasper-reports>
