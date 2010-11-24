@@ -160,7 +160,7 @@
     <dependency>
       <groupId>org.gwtopenmaps.openlayers</groupId>
       <artifactId>gwt-openlayers-client</artifactId>
-      <version>0.6-SNAPSHOT</version>
+      <version>0.6-20101124</version>
       <scope>provided</scope>
     </dependency>
     <dependency>
