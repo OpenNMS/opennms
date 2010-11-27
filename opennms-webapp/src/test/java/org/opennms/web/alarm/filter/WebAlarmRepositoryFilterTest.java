@@ -267,28 +267,30 @@ public class WebAlarmRepositoryFilterTest {
         alarms = m_jdbcWebAlarmRepo.getMatchingAlarms(criteria);
         assertEquals(1, alarms.length);
     }
-    
+
+    /*
     @Ignore
     @Test
     @Transactional
     public void testNodeFilter(){
-//        AlarmCriteria criteria = getCriteria(new NodeFilter(1));
-//        
-//        Alarm[] alarms = m_daoAlarmRepo.getMatchingAlarms(criteria);
-//        assertEquals(1, alarms.length);
-//        
-//        alarms = m_jdbcWebAlarmRepo.getMatchingAlarms(criteria);
-//        assertEquals(1, alarms.length);
-//        
-//        criteria = getCriteria(new NodeFilter(100));
-//        
-//        alarms = m_daoAlarmRepo.getMatchingAlarms(criteria);
-//        assertEquals(0, alarms.length);
-//        
-//        alarms = m_jdbcWebAlarmRepo.getMatchingAlarms(criteria);
-//        assertEquals(0, alarms.length);
+        AlarmCriteria criteria = getCriteria(new NodeFilter(1));
+        
+        Alarm[] alarms = m_daoAlarmRepo.getMatchingAlarms(criteria);
+        assertEquals(1, alarms.length);
+        
+        alarms = m_jdbcWebAlarmRepo.getMatchingAlarms(criteria);
+        assertEquals(1, alarms.length);
+        
+        criteria = getCriteria(new NodeFilter(100));
+        
+        alarms = m_daoAlarmRepo.getMatchingAlarms(criteria);
+        assertEquals(0, alarms.length);
+        
+        alarms = m_jdbcWebAlarmRepo.getMatchingAlarms(criteria);
+        assertEquals(0, alarms.length);
     }
-    
+    */
+
     @Test
     @Transactional
     public void testNodeNameLikeFilter(){
