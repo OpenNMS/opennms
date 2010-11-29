@@ -13,6 +13,7 @@
         <report id="Response-Time-Report" template="ResponseTime.jrxml" engine="jdbc" />
         <report id="Response-Time-Report_ThisMonth" template="ResponseTime_ThisMonth.jrxml" engine="jdbc" />
         <report id="95th-Percentile-Traffic-Rate" template="95thPercentileTrafficRate.jrxml" engine="jdbc" />
-	<report id="95th-Percentile-Traffic-Rate_ThisMonth" template="95thPercentileTrafficRate_ThisMonth.jrxml" engine="jdbc" />
-	<report id="Total-Bytes-Transferred-By-Interface" template="TotalBytesTransferredByInterface.jrxml" engine="jdbc" />
+        <report id="95th-Percentile-Traffic-Rate_ThisMonth" template="95thPercentileTrafficRate_ThisMonth.jrxml" engine="jdbc" />
+        <report id="95th-Percentile-Traffic-Rate_ThisYear" template="95thPercentileTrafficRate_ThisYear.jrxml" engine="jdbc" />
+        <report id="Total-Bytes-Transferred-By-Interface" template="TotalBytesTransferredByInterface.jrxml" engine="jdbc" />
 </jasper-reports>

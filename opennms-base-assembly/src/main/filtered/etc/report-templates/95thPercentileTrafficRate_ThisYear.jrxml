@@ -1,0 +1,242 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<jasperReport xmlns="http://jasperreports.sourceforge.net/jasperreports" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://jasperreports.sourceforge.net/jasperreports http://jasperreports.sourceforge.net/xsd/jasperreport.xsd" name="95thPercentileTrafficRate" pageWidth="760" pageHeight="842" columnWidth="720" leftMargin="20" rightMargin="20" topMargin="20" bottomMargin="20">
+	<property name="ireport.zoom" value="1.0"/>
+	<property name="ireport.x" value="0"/>
+	<property name="ireport.y" value="0"/>
+	<template><![CDATA["${install.dir}/etc/report-templates/assets/styles/defaultStyles.jrtx"]]></template>
+	<style name="Sans_Normal" isDefault="true" fontName="DejaVu Sans" fontSize="12" isBold="false" isItalic="false" isUnderline="false" isStrikeThrough="false"/>
+	<style name="Sans_Bold" fontName="DejaVu Sans" fontSize="12" isBold="true" isItalic="false" isUnderline="false" isStrikeThrough="false"/>
+	<style name="Sans_Italic" fontName="DejaVu Sans" fontSize="12" isBold="false" isItalic="true" isUnderline="false" isStrikeThrough="false"/>
+	<style name="Report_Title" forecolor="#000000" fontSize="20"/>
+	<style name="Report_Subtitle" forecolor="#000000" vAlign="Middle" fontSize="10" isBold="false" isItalic="true" isUnderline="false" isStrikeThrough="false"/>
+	<style name="Table_Detail" hAlign="Left" vAlign="Middle" fontName="SansSerif" fontSize="10" isBold="false" isItalic="false" isUnderline="false" isStrikeThrough="false">
+		<conditionalStyle>
+			<conditionExpression><![CDATA[$F{avail_percent} < $P{DS_AVAILABILITY_CRITICAL}]]></conditionExpression>
+			<style mode="Opaque" backcolor="#FF3333"/>
+		</conditionalStyle>
+		<conditionalStyle>
+			<conditionExpression><![CDATA[$F{avail_percent} < $P{DS_AVAILABILITY_WARNING}]]></conditionExpression>
+			<style mode="Opaque" backcolor="#FFCC66"/>
+		</conditionalStyle>
+	</style>
+	<style name="Table_Grid" mode="Transparent" forecolor="#FFFFFF" isBold="false" isItalic="false" isUnderline="false" isStrikeThrough="false">
+		<pen lineWidth="0.0" lineColor="#FFFFFF"/>
+		<box>
+			<bottomPen lineWidth="1.0"/>
+		</box>
+		<conditionalStyle>
+			<conditionExpression><![CDATA[new Boolean($V{style_helper_COUNT}%new Integer("5") == new Integer("0"))]]></conditionExpression>
+			<style mode="Opaque" forecolor="#999999">
+				<pen lineWidth="1.0" lineColor="#666666"/>
+				<box>
+					<bottomPen lineWidth="1.0"/>
+				</box>
+			</style>
+		</conditionalStyle>
+	</style>
+	<style name="Page_Footer" fontSize="10" isBold="false" isItalic="false" isUnderline="false" isStrikeThrough="false"/>
+	<style name="Table_Header" isBold="true" isItalic="false" isUnderline="false" isStrikeThrough="false"/>
+	<style name="Table_Header_BG" mode="Opaque" backcolor="#CCFFCC"/>
+	<style name="Table_Surveillance_Cat" forecolor="#000000" vAlign="Middle" fontSize="10" isBold="true" isItalic="false" isUnderline="false" isStrikeThrough="false"/>
+	<style name="Table_Surveillance_Cat_BG" mode="Opaque" backcolor="#DFDFDF"/>
+	<style name="Table_Surveillance_Cat_Footer_BG" mode="Transparent" backcolor="#FFFFFF">
+		<pen lineWidth="1.0" lineStyle="Double"/>
+	</style>
+	<style name="Table_Surveillance_Cat_Footer" hAlign="Center" vAlign="Middle" fontSize="10" isBold="true" isItalic="false" isUnderline="false" isStrikeThrough="false">
+		<box>
+			<bottomPen lineWidth="0.0" lineStyle="Double" lineColor="#000000"/>
+		</box>
+	</style>
+	<style name="Table_Surveillance_Cat_Footer_Line" hAlign="Center" vAlign="Middle" isBold="true" isItalic="false" isUnderline="false" isStrikeThrough="false">
+		<box>
+			<bottomPen lineWidth="2.0" lineStyle="Double" lineColor="#000000"/>
+		</box>
+	</style>
+	<parameter name="SUBREPORT_DIR" class="java.lang.String" isForPrompting="false">
+		<defaultValueExpression><![CDATA["${install.dir}/etc/report-templates/subreports/"]]></defaultValueExpression>
+	</parameter>
+	<parameter name="COMPANY_LOGO" class="java.lang.String" isForPrompting="false">
+		<defaultValueExpression><![CDATA["${install.dir}/etc/report-templates/assets/images/company-logo.png"]]></defaultValueExpression>
+	</parameter>
+	<parameter name="START_TIME" class="java.sql.Timestamp" isForPrompting="false">
+		<defaultValueExpression><![CDATA[new java.sql.Timestamp(new GregorianCalendar(new GregorianCalendar().get(Calendar.YEAR), new GregorianCalendar().get(Calendar.MONTH), 1).getTimeInMillis())]]></defaultValueExpression>
+	</parameter>
+	<parameter name="TIME_RANGE" class="java.lang.String" isForPrompting="false">
+		<defaultValueExpression><![CDATA["1 Month"]]></defaultValueExpression>
+	</parameter>
+	<parameter name="TIME_RANGE_DESCRIPTION" class="java.lang.String" isForPrompting="false">
+		<defaultValueExpression><![CDATA["This Month"]]></defaultValueExpression>
+	</parameter>
+	<parameter name="SURVEILLANCE_CATEGORY" class="java.lang.String" isForPrompting="false">
+		<defaultValueExpression><![CDATA["Mon%"]]></defaultValueExpression>
+	</parameter>
+	<parameter name="RESPONSE_WARNING" class="java.lang.Double" isForPrompting="false">
+		<defaultValueExpression><![CDATA[new Double("50.0")]]></defaultValueExpression>
+	</parameter>
+	<parameter name="RESPONSE_CRITICAL" class="java.lang.Double" isForPrompting="false">
+		<defaultValueExpression><![CDATA[new Double("80.0")]]></defaultValueExpression>
+	</parameter>
+	<parameter name="startDate" class="java.util.Date" isForPrompting="false">
+		<defaultValueExpression><![CDATA[new java.util.Date(new GregorianCalendar(new GregorianCalendar().get(Calendar.YEAR), 0, 1).getTimeInMillis())]]></defaultValueExpression>
+	</parameter>
+	<parameter name="endDate" class="java.util.Date" isForPrompting="false">
+		<defaultValueExpression><![CDATA[new java.util.Date()]]></defaultValueExpression>
+	</parameter>
+	<parameter name="rrdDir" class="java.lang.String" isForPrompting="false">
+		<parameterDescription><![CDATA[]]></parameterDescription>
+		<defaultValueExpression><![CDATA["${install.dir}/share/rrd"]]></defaultValueExpression>
+	</parameter>
+	<queryString>
+		<![CDATA[SELECT
+	categories.categoryname,
+	node.nodelabel,
+	node.nodeid,
+	snmpinterface.ipaddr,
+	snmpinterface.snmpifname,
+	snmpinterface.snmpifalias,
+	snmpinterface.snmpphysaddr,
+	snmpinterface.snmpifdescr
+FROM
+	node
+RIGHT JOIN
+	snmpinterface
+ON
+	(node.nodeid = snmpinterface.nodeid)
+JOIN
+	category_node
+ON
+	(category_node.nodeid = node.nodeid)
+JOIN
+	categories
+ON
+	(categories.categoryid = category_node.categoryid)
+WHERE
+	(snmpinterface.snmpcollect = 'C' OR snmpinterface.snmpcollect = 'UC') AND
+	node.nodetype = 'A'
+ORDER BY
+	categories.categoryname,
+	node.nodelabel]]>
+	</queryString>
+	<field name="categoryname" class="java.lang.String"/>
+	<field name="nodelabel" class="java.lang.String"/>
+	<field name="nodeid" class="java.lang.Integer"/>
+	<field name="ipaddr" class="java.lang.String"/>
+	<field name="snmpifname" class="java.lang.String"/>
+	<field name="snmpifalias" class="java.lang.String"/>
+	<field name="snmpphysaddr" class="java.lang.String"/>
+	<field name="snmpifdescr" class="java.lang.String"/>
+	<variable name="ICMP_Latency_AVG" class="java.lang.Double"/>
+	<variable name="ICMP_Latency_MIN" class="java.lang.Double"/>
+	<variable name="ICMP_Latency_MAX" class="java.lang.Double"/>
+	<group name="nodelabel_group">
+		<groupExpression><![CDATA[$F{nodelabel}]]></groupExpression>
+		<groupHeader>
+			<band height="49">
+				<textField>
+					<reportElement style="Sub-header" mode="Transparent" x="0" y="0" width="555" height="20"/>
+					<textElement textAlignment="Left"/>
+					<textFieldExpression class="java.lang.String"><![CDATA["Node " + $F{nodelabel}]]></textFieldExpression>
+				</textField>
+				<staticText>
+					<reportElement style="Sub-sub-header" x="0" y="28" width="140" height="20"/>
+					<textElement/>
+					<text><![CDATA[interface]]></text>
+				</staticText>
+				<staticText>
+					<reportElement style="Sub-sub-header" x="145" y="28" width="140" height="20"/>
+					<textElement/>
+					<text><![CDATA[alias]]></text>
+				</staticText>
+				<staticText>
+					<reportElement style="Sub-sub-header" x="290" y="28" width="140" height="20"/>
+					<textElement textAlignment="Right"/>
+					<text><![CDATA[MiByte Received]]></text>
+				</staticText>
+				<staticText>
+					<reportElement style="Sub-sub-header" x="435" y="28" width="140" height="20"/>
+					<textElement textAlignment="Right"/>
+					<text><![CDATA[MiByte Transmitted]]></text>
+				</staticText>
+				<staticText>
+					<reportElement style="Sub-sub-header" x="580" y="28" width="140" height="20"/>
+					<textElement textAlignment="Right"/>
+					<text><![CDATA[Total MiByte In+Out]]></text>
+				</staticText>
+			</band>
+		</groupHeader>
+		<groupFooter>
+			<band/>
+		</groupFooter>
+	</group>
+	<group name="physical_interface_group">
+		<groupExpression><![CDATA[$F{snmpifname}]]></groupExpression>
+		<groupHeader>
+			<band height="38">
+				<subreport>
+					<reportElement x="0" y="0" width="720" height="37"/>
+					<subreportParameter name="snmpifname">
+						<subreportParameterExpression><![CDATA[$F{snmpifname}]]></subreportParameterExpression>
+					</subreportParameter>
+					<subreportParameter name="snmpifdescr">
+						<subreportParameterExpression><![CDATA[$F{snmpifdescr}]]></subreportParameterExpression>
+					</subreportParameter>
+					<subreportParameter name="snmpifalias">
+						<subreportParameterExpression><![CDATA[$F{snmpifalias}]]></subreportParameterExpression>
+					</subreportParameter>
+					<subreportParameter name="snmpphysaddr">
+						<subreportParameterExpression><![CDATA[$F{snmpphysaddr}]]></subreportParameterExpression>
+					</subreportParameter>
+					<subreportParameter name="rrdDir">
+						<subreportParameterExpression><![CDATA[$P{rrdDir}]]></subreportParameterExpression>
+					</subreportParameter>
+					<subreportParameter name="startDate">
+						<subreportParameterExpression><![CDATA[$P{startDate}]]></subreportParameterExpression>
+					</subreportParameter>
+					<subreportParameter name="endDate">
+						<subreportParameterExpression><![CDATA[$P{endDate}]]></subreportParameterExpression>
+					</subreportParameter>
+					<subreportParameter name="nodeid">
+						<subreportParameterExpression><![CDATA[$F{nodeid}]]></subreportParameterExpression>
+					</subreportParameter>
+					<connectionExpression><![CDATA[$P{REPORT_CONNECTION}]]></connectionExpression>
+					<subreportExpression class="java.lang.String"><![CDATA[$P{SUBREPORT_DIR} + "95thPercentileTrafficRate_subreport.jasper"]]></subreportExpression>
+				</subreport>
+			</band>
+		</groupHeader>
+		<groupFooter>
+			<band height="22"/>
+		</groupFooter>
+	</group>
+	<background>
+		<band splitType="Stretch"/>
+	</background>
+	<title>
+		<band height="32" splitType="Stretch"/>
+	</title>
+	<pageHeader>
+		<band height="106" splitType="Stretch">
+			<staticText>
+				<reportElement style="Title" x="0" y="49" width="391" height="34"/>
+				<textElement verticalAlignment="Middle">
+					<font size="20" isBold="true"/>
+				</textElement>
+				<text><![CDATA[95th Percentile Traffice Rate]]></text>
+			</staticText>
+			<textField>
+				<reportElement style="Report_Subtitle" x="0" y="83" width="355" height="20"/>
+				<textElement/>
+				<textFieldExpression class="java.lang.String"><![CDATA[$P{TIME_RANGE_DESCRIPTION}]]></textFieldExpression>
+			</textField>
+			<image>
+				<reportElement x="278" y="0" width="164" height="49"/>
+				<imageExpression class="java.lang.String"><![CDATA[$P{COMPANY_LOGO}]]></imageExpression>
+			</image>
+			<line>
+				<reportElement x="0" y="105" width="720" height="1"/>
+			</line>
+		</band>
+	</pageHeader>
+	<pageFooter>
+		<band height="54" splitType="Stretch"/>
+	</pageFooter>
+</jasperReport>
