@@ -62,14 +62,14 @@
 	</parameter>
 	<parameter name="START_TIME" class="java.sql.Timestamp">
 		<defaultValueExpression><![CDATA[new java.sql.Timestamp(
-new GregorianCalendar(new GregorianCalendar().get(Calendar.YEAR), new GregorianCalendar().get(Calendar.MONTH), 1).getTimeInMillis()
+new GregorianCalendar(new GregorianCalendar().get(Calendar.YEAR), new GregorianCalendar().get(Calendar.MONTH) - 1, 1).getTimeInMillis()
 )]]></defaultValueExpression>
 	</parameter>
 	<parameter name="TIME_RANGE" class="java.lang.String">
 		<defaultValueExpression><![CDATA["1 Month"]]></defaultValueExpression>
 	</parameter>
 	<parameter name="TIME_RANGE_DESCRIPTION" class="java.lang.String">
-		<defaultValueExpression><![CDATA["This Month"]]></defaultValueExpression>
+		<defaultValueExpression><![CDATA["Last Month"]]></defaultValueExpression>
 	</parameter>
 	<queryString>
 		<![CDATA[SELECT
