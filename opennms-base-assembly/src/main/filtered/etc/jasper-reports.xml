@@ -15,6 +15,7 @@
         <report id="Availability-Summary-Report_ThisYear" template="AvailabilitySummary_ThisYear.jrxml" engine="jdbc" />
         <report id="Response-Time-Report" template="ResponseTime.jrxml" engine="jdbc" />
         <report id="Response-Time-Report_ThisMonth" template="ResponseTime_ThisMonth.jrxml" engine="jdbc" />
+        <report id="Response-Time-Report_LastMonth" template="ResponseTime_LastMonth.jrxml" engine="jdbc" />
         <report id="95th-Percentile-Traffic-Rate" template="95thPercentileTrafficRate.jrxml" engine="jdbc" />
         <report id="95th-Percentile-Traffic-Rate_ThisMonth" template="95thPercentileTrafficRate_ThisMonth.jrxml" engine="jdbc" />
         <report id="95th-Percentile-Traffic-Rate_LastMonth" template="95thPercentileTrafficRate_LastMonth.jrxml" engine="jdbc" />
