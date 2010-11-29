@@ -29,6 +29,8 @@
                 report-service="jasperReportService" description="95th Percentile Traffic Rate by Interface" />
         <report id="95th-Percentile-Traffic-Rate_ThisMonth" display-name="95th Percentile Traffic Rate by Interface - This Month" online="true" 
                 report-service="jasperReportService" description="95th Percentile Traffic Rate by Interface (this month)" />
+        <report id="95th-Percentile-Traffic-Rate_LastMonth" display-name="95th Percentile Traffic Rate by Interface - Last Month" online="true" 
+                report-service="jasperReportService" description="95th Percentile Traffic Rate by Interface (last month)" />
         <report id="95th-Percentile-Traffic-Rate_ThisYear" display-name="95th Percentile Traffic Rate by Interface - This Year" online="true" 
                 report-service="jasperReportService" description="95th Percentile Traffic Rate by Interface (this year)" />
         <report id="Total-Bytes-Transferred-By-Interface" display-name="Total Bytes Transferred by Interface last seven days" online="true" 
