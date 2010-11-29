@@ -78,7 +78,7 @@
     int alarmId = -1;
 
     try {
-        alarmId = WebSecurityUtils.safeParseInt( alarmIdString );
+        alarmId = WebSecurityUtils.safeParseInt( WebSecurityUtils.sanitizeString(alarmIdString, false) );
     }
     catch( NumberFormatException e ) {
         throw new org.opennms.web.alarm.AlarmIdNotFoundException( "The alarm id must be an integer.", alarmIdString );

@@ -36,7 +36,7 @@ public class OutageDetailController extends AbstractController implements Initia
         }
 
         try {
-            outageId = WebSecurityUtils.safeParseInt(outageIdString);
+            outageId = WebSecurityUtils.safeParseInt(WebSecurityUtils.sanitizeString(outageIdString, false));
         }
         catch( NumberFormatException e ) {
             throw new OutageIdNotFoundException("The outage id must be an integer.", outageIdString);
