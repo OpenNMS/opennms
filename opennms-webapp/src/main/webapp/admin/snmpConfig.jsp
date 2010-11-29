@@ -167,7 +167,7 @@
             <td width="50%">
                <select name="version">
                <option>v1</option>
-               <option>v2c</option>
+               <option selected="true">v2c</option>
                <option>v3</option>
                </select>
                 (Optional)
