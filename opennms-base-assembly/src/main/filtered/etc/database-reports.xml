@@ -23,6 +23,8 @@
                 report-service="jasperReportService" description="Availability (past 7 days) summary across one or more surveillance categories" />
         <report id="Availability-Summary-Report_ThisMonth" display-name="Availability Summary - This Month" online="true" 
                 report-service="jasperReportService" description="Availability (this month) summary across one or more surveillance categories" />
+        <report id="Availability-Summary-Report_LastMonth" display-name="Availability Summary - Last Month" online="true" 
+                report-service="jasperReportService" description="Availability (last month) summary across one or more surveillance categories" />
         <report id="Availability-Summary-Report_ThisYear" display-name="Availability Summary - This Year" online="true" 
                 report-service="jasperReportService" description="Availability (this year) summary across one or more surveillance categories" />
         <report id="Response-Time-Report" display-name="Response time by node" online="true" 

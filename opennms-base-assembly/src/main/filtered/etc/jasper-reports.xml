@@ -11,6 +11,7 @@
         <report id="Node-Availability-Report_LastMonth" template="NodeAvailabilityReport_LastMonth.jrxml" engine="jdbc" />
         <report id="Availability-Summary-Report" template="AvailabilitySummary.jrxml" engine="jdbc" />
         <report id="Availability-Summary-Report_ThisMonth" template="AvailabilitySummary_ThisMonth.jrxml" engine="jdbc" />
+        <report id="Availability-Summary-Report_LastMonth" template="AvailabilitySummary_LastMonth.jrxml" engine="jdbc" />
         <report id="Availability-Summary-Report_ThisYear" template="AvailabilitySummary_ThisYear.jrxml" engine="jdbc" />
         <report id="Response-Time-Report" template="ResponseTime.jrxml" engine="jdbc" />
         <report id="Response-Time-Report_ThisMonth" template="ResponseTime_ThisMonth.jrxml" engine="jdbc" />
