@@ -47,4 +47,6 @@
                 report-service="jasperReportService" description="Total Bytes Transferred by Interface last seven days" />
         <report id="Total-Bytes-Transferred-By-Interface_LastMonth" display-name="Total Bytes Transferred by Interface last month" online="true" 
                 report-service="jasperReportService" description="Total Bytes Transferred by Interface last month" />
+        <report id="Total-Bytes-Transferred-By-Interface_ThisMonth" display-name="Total Bytes Transferred by Interface this month" online="true" 
+                report-service="jasperReportService" description="Total Bytes Transferred by Interface this month" />
 </database-reports>
