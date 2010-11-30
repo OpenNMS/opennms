@@ -1,5 +1,5 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<jasperReport xmlns="http://jasperreports.sourceforge.net/jasperreports" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://jasperreports.sourceforge.net/jasperreports http://jasperreports.sourceforge.net/xsd/jasperreport.xsd" name="TotalBytesTransferredByInterface_subreport1" pageWidth="555" pageHeight="802" columnWidth="555" leftMargin="0" rightMargin="0" topMargin="0" bottomMargin="0">
+<jasperReport xmlns="http://jasperreports.sourceforge.net/jasperreports" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://jasperreports.sourceforge.net/jasperreports http://jasperreports.sourceforge.net/xsd/jasperreport.xsd" name="TotalBytesTransferredByInterface_subreport1" pageWidth="555" pageHeight="802" whenNoDataType="NoDataSection" columnWidth="555" leftMargin="0" rightMargin="0" topMargin="0" bottomMargin="0">
 	<property name="ireport.zoom" value="1.0"/>
 	<property name="ireport.x" value="0"/>
 	<property name="ireport.y" value="0"/>
@@ -15,10 +15,10 @@
 	<parameter name="snmpifdescr" class="java.lang.String"/>
 	<parameter name="snmpphysaddr" class="java.lang.String"/>
 	<parameter name="ifLabel" class="java.lang.String" isForPrompting="false">
-	  <defaultValueExpression><![CDATA[$P{snmpifname} == null || "".equals($P{snmpifname}) ? $P{snmpifdescr} : $P{snmpifname}]]></defaultValueExpression>
+		<defaultValueExpression><![CDATA[$P{snmpifname} == null || "".equals($P{snmpifname}) ? $P{snmpifdescr} : $P{snmpifname}]]></defaultValueExpression>
 	</parameter>
 	<parameter name="interface" class="java.lang.String" isForPrompting="false">
-	  <defaultValueExpression><![CDATA[$P{snmpphysaddr} == null || "".equals($P{snmpphysaddr}) ? $P{ifLabel}.replaceAll("[\\/ :| \\.]", "_") : $P{ifLabel}.replaceAll("[\\/ :| \\.]", "_") + "-" + $P{snmpphysaddr}]]></defaultValueExpression>
+		<defaultValueExpression><![CDATA[$P{snmpphysaddr} == null || "".equals($P{snmpphysaddr}) ? $P{ifLabel}.replaceAll("[\\/ :| \\.]", "_") : $P{ifLabel}.replaceAll("[\\/ :| \\.]", "_") + "-" + $P{snmpphysaddr}]]></defaultValueExpression>
 	</parameter>
 	<parameter name="inOctets" class="java.lang.String" isForPrompting="false">
 		<defaultValueExpression><![CDATA[new java.io.File("$P{rrdDir}/snmp/$P{nodeid}/$P{interface}/ifHCInOctets.jrb").exists() ? "ifHCInOctets" : "ifInOctets"]]></defaultValueExpression>
@@ -104,4 +104,30 @@
 			</textField>
 		</band>
 	</summary>
+	<noData>
+		<band height="50">
+			<staticText>
+				<reportElement style="Table_Header" x="36" y="2" width="150" height="16"/>
+				<textElement/>
+				<text><![CDATA[MiByte Received]]></text>
+			</staticText>
+			<staticText>
+				<reportElement style="Table_Header" x="186" y="2" width="150" height="16"/>
+				<textElement/>
+				<text><![CDATA[MiByte Transmitted]]></text>
+			</staticText>
+			<staticText>
+				<reportElement style="Table_Header" x="336" y="2" width="150" height="16"/>
+				<textElement/>
+				<text><![CDATA[Total MiByte In+Out]]></text>
+			</staticText>
+			<staticText>
+				<reportElement x="149" y="22" width="226" height="20"/>
+				<textElement textAlignment="Center">
+					<font size="14"/>
+				</textElement>
+				<text><![CDATA[No Data For this Interface]]></text>
+			</staticText>
+		</band>
+	</noData>
 </jasperReport>
