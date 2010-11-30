@@ -6,6 +6,19 @@
 
 	<!-- Start 1.9 -->
 
+	<section id="introduction-1.9.3">
+		<title>Release 1.9.3</title>
+
+		<para>
+			Release 1.9.3 is the latest in a series of development releases of OpenNMS.  This
+			represents what will eventually become OpenNMS 1.10.0 when it is declared
+			feature-complete and stable.
+		</para>
+		<para>
+			The codename for 1.9.3 is <emphasis>Recorder</emphasis>
+		</para>
+	</section>
+
 	<section id="introduction-1.9.2">
 		<title>Release 1.9.2</title>
 
