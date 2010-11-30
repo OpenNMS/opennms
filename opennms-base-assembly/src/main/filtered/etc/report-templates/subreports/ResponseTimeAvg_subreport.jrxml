@@ -1,5 +1,5 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<jasperReport xmlns="http://jasperreports.sourceforge.net/jasperreports" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://jasperreports.sourceforge.net/jasperreports http://jasperreports.sourceforge.net/xsd/jasperreport.xsd" name="ResponseTime_subreport1" pageWidth="555" pageHeight="802" columnWidth="555" leftMargin="0" rightMargin="0" topMargin="0" bottomMargin="0">
+<jasperReport xmlns="http://jasperreports.sourceforge.net/jasperreports" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://jasperreports.sourceforge.net/jasperreports http://jasperreports.sourceforge.net/xsd/jasperreport.xsd" name="ResponseTime_subreport1" pageWidth="555" pageHeight="802" whenNoDataType="NoDataSection" columnWidth="555" leftMargin="0" rightMargin="0" topMargin="0" bottomMargin="0">
 	<property name="ireport.zoom" value="1.0"/>
 	<property name="ireport.x" value="0"/>
 	<property name="ireport.y" value="0"/>
@@ -84,4 +84,28 @@
 			</staticText>
 		</band>
 	</summary>
+	<noData>
+		<band height="50">
+			<textField>
+				<reportElement style="Body" x="25" y="21" width="230" height="20"/>
+				<textElement textAlignment="Left"/>
+				<textFieldExpression class="java.lang.String"><![CDATA[$P{ipv4_interface}]]></textFieldExpression>
+			</textField>
+			<staticText>
+				<reportElement style="Sub-sub-sub-header" x="25" y="1" width="230" height="20"/>
+				<textElement textAlignment="Left"/>
+				<text><![CDATA[IP-Interface]]></text>
+			</staticText>
+			<staticText>
+				<reportElement style="Sub-sub-sub-header" x="455" y="1" width="100" height="20"/>
+				<textElement/>
+				<text><![CDATA[Average (ms)]]></text>
+			</staticText>
+			<staticText>
+				<reportElement x="444" y="22" width="111" height="20"/>
+				<textElement/>
+				<text><![CDATA[No Data For Interface]]></text>
+			</staticText>
+		</band>
+	</noData>
 </jasperReport>
