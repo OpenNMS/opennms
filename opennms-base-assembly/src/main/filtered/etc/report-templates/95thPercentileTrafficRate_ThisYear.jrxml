@@ -65,7 +65,7 @@
 		<defaultValueExpression><![CDATA["1 Month"]]></defaultValueExpression>
 	</parameter>
 	<parameter name="TIME_RANGE_DESCRIPTION" class="java.lang.String" isForPrompting="false">
-		<defaultValueExpression><![CDATA["This Month"]]></defaultValueExpression>
+		<defaultValueExpression><![CDATA["This Year"]]></defaultValueExpression>
 	</parameter>
 	<parameter name="SURVEILLANCE_CATEGORY" class="java.lang.String" isForPrompting="false">
 		<defaultValueExpression><![CDATA["Mon%"]]></defaultValueExpression>
