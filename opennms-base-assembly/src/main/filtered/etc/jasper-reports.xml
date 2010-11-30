@@ -22,4 +22,5 @@
         <report id="95th-Percentile-Traffic-Rate_LastMonth" template="95thPercentileTrafficRate_LastMonth.jrxml" engine="jdbc" />
         <report id="95th-Percentile-Traffic-Rate_ThisYear" template="95thPercentileTrafficRate_ThisYear.jrxml" engine="jdbc" />
         <report id="Total-Bytes-Transferred-By-Interface" template="TotalBytesTransferredByInterface.jrxml" engine="jdbc" />
+        <report id="Total-Bytes-Transferred-By-Interface_LastMonth" template="TotalBytesTransferredByInterface_LastMonth.jrxml" engine="jdbc" />
 </jasper-reports>
