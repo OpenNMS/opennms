@@ -8,8 +8,10 @@
         <!-- Don't forget to update the <fail> message below -->
         <contains string="${java.version}" substring="1.5."/>
         <contains string="${java.version}" substring="1.6."/>
+	<contains string="${java.version}" substring="1.7."/>
         <contains string="${java.vm.version}" substring="1.5."/>
         <contains string="${java.vm.version}" substring="1.6."/>
+	<contains string="${java.vm.version}" substring="1.7."/>
       </or>
     </condition>
 
