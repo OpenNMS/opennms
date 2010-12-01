@@ -51,4 +51,10 @@
                 report-service="jasperReportService" description="Total Bytes Transferred by Interface last month" />
         <report id="Total-Bytes-Transferred-By-Interface_ThisMonth" display-name="Total Bytes Transferred by Interface this month" online="true" 
                 report-service="jasperReportService" description="Total Bytes Transferred by Interface this month" />
+        <report id="Average-Peak-Traffic-Rates" display-name="Average and Peak Traffic rates for Nodes by Interface for the last 7 days" online="true" 
+                report-service="jasperReportService" description="Average and Peak Traffic rates for Nodes by Interface for the last 7 days" />
+        <report id="Average-Peak-Traffic-Rates_ThisMonth" display-name="Average and Peak Traffic rates for Nodes by Interface this month" online="true" 
+                report-service="jasperReportService" description="Average and Peak Traffic rates for Nodes by Interface this month" />
+        <report id="Average-Peak-Traffic-Rates_LastMonth" display-name="Average and Peak Traffic rates for Nodes by Interface last month" online="true" 
+                report-service="jasperReportService" description="Average and Peak Traffic rates for Nodes by Interface last month" />
 </database-reports>
