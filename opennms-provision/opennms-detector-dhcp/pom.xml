@@ -41,8 +41,9 @@
     	<scope>test</scope>
     </dependency>
     <dependency>
-    	<groupId>org.dhcp.jdhcp</groupId>
-    	<artifactId>jdhcp</artifactId>
+    	<groupId>org.opennms.dependencies</groupId>
+    	<artifactId>jdhcp-dependencies</artifactId>
+    	<type>pom</type>
     </dependency>
     <dependency>
     	<groupId>org.opennms</groupId>

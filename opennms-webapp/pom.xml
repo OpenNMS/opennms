@@ -167,19 +167,23 @@
     <dependency>
       <groupId>org.opennms.dependencies</groupId>
       <artifactId>spring-security-dependencies</artifactId>
+      <type>pom</type>
     </dependency>
     <!-- Rancid -->
     <dependency>
       <groupId>org.opennms.dependencies</groupId>
       <artifactId>rancid-dependencies</artifactId>
+      <type>pom</type>
     </dependency>
     <dependency>
       <groupId>org.opennms.dependencies</groupId>
       <artifactId>dnsjava-dependencies</artifactId>
+      <type>pom</type>
     </dependency>
     <dependency>
       <groupId>org.opennms.dependencies</groupId>
       <artifactId>castor-dependencies</artifactId>
+      <type>pom</type>
     </dependency>
     <dependency>
       <groupId>org.opennms</groupId>
@@ -199,6 +203,7 @@
     <dependency>
       <groupId>org.opennms.dependencies</groupId>
       <artifactId>hibernate-dependencies</artifactId>
+      <type>pom</type>
     </dependency>
     <dependency>
       <groupId>org.opennms</groupId>
@@ -285,14 +290,17 @@
     <dependency>
       <groupId>org.opennms.dependencies</groupId>
       <artifactId>spring-dependencies</artifactId>
+      <type>pom</type>
     </dependency>
     <dependency>
       <groupId>org.opennms.dependencies</groupId>
       <artifactId>spring-web-dependencies</artifactId>
+      <type>pom</type>
     </dependency>
     <dependency>
       <groupId>org.opennms.dependencies</groupId>
       <artifactId>jersey-dependencies</artifactId>
+      <type>pom</type>
     </dependency>
     <!-- XXX the required test JARs should be moved into a separate project -->
     <dependency>
@@ -304,10 +312,12 @@
     <dependency>
       <groupId>org.opennms.dependencies</groupId>
       <artifactId>snmp-dependencies</artifactId>
+      <type>pom</type>
     </dependency>
     <dependency>
       <groupId>org.opennms.dependencies</groupId>
       <artifactId>javamail-dependencies</artifactId>
+      <type>pom</type>
     </dependency>
     <dependency>
       <groupId>org.opennms</groupId>
@@ -357,6 +367,7 @@
     <dependency>
       <groupId>org.opennms.dependencies</groupId>
       <artifactId>gwt-dependencies</artifactId>
+      <type>pom</type>
     </dependency>
     <dependency>
       <groupId>commons-dbcp</groupId>
@@ -369,10 +380,6 @@
     <dependency>
       <groupId>commons-lang</groupId>
       <artifactId>commons-lang</artifactId>
-    </dependency>
-    <dependency>
-      <groupId>org.jrobin</groupId>
-      <artifactId>jrobin</artifactId>
     </dependency>
     <dependency>
       <groupId>httpunit</groupId>
@@ -429,6 +436,7 @@
     <dependency>
       <groupId>org.opennms.dependencies</groupId>
       <artifactId>quartz-dependencies</artifactId>
+      <type>pom</type>
     </dependency>
     <dependency>
       <groupId>org.tuckey</groupId>

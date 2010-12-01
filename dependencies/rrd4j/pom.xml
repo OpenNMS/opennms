@@ -7,7 +7,7 @@
   <modelVersion>4.0.0</modelVersion>
   <groupId>org.opennms.dependencies</groupId>
   <artifactId>rrd4j-dependencies</artifactId>
-  <packaging>jar</packaging>
+  <packaging>pom</packaging>
   <name>OpenNMS RRD4J Dependencies</name>
   <description>
     This module is used to provide a single artifact that the opennms project
@@ -30,25 +30,16 @@
     <repository>
       <snapshots><enabled>false</enabled></snapshots>
       <releases><enabled>true</enabled></releases>
-      <id>maven-repo</id>
-      <name>Maven Central</name>
-      <url>http://repo1.maven.org/maven2</url>
+      <id>oracleReleases</id>
+      <name>Oracle Released Java Packages</name>
+      <url>http://download.oracle.com/maven</url>
     </repository>
     <repository>
       <snapshots><enabled>false</enabled></snapshots>
       <releases><enabled>true</enabled></releases>
       <id>opennms-repo</id>
-      <name>OpenNMS Repository</name>
+      <name>OpenNMS Maven Repository</name>
       <url>http://maven.opennms.org/content/groups/opennms.org-release</url>
     </repository>
-<!--
-    <repository>
-      <snapshots><enabled>false</enabled></snapshots>
-      <releases><enabled>true</enabled></releases>
-      <id>oracleReleases</id>
-      <name>Oracle Released Java Packages</name>
-      <url>http://download.oracle.com/maven</url>
-    </repository>
--->
   </repositories>
 </project>

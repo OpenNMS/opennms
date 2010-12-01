@@ -7,7 +7,7 @@
   <modelVersion>4.0.0</modelVersion>
   <groupId>org.opennms.dependencies</groupId>
   <artifactId>twitter4j-dependencies</artifactId>
-  <packaging>jar</packaging>
+  <packaging>pom</packaging>
   <name>OpenNMS Twitter4J Dependencies</name>
   <description>
     This module is used to provide a single artifact that the opennms project

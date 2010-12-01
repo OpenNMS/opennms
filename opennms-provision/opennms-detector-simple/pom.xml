@@ -20,21 +20,18 @@
   	<dependency>
       <groupId>org.opennms.dependencies</groupId>
       <artifactId>jcifs-dependencies</artifactId>
+      <type>pom</type>
   	</dependency>
   	<dependency>
       <groupId>org.opennms.dependencies</groupId>
       <artifactId>snmp-dependencies</artifactId>
+      <type>pom</type>
   	</dependency>
   	<dependency>
   		<groupId>org.opennms.dependencies</groupId>
   		<artifactId>spring-test-dependencies</artifactId>
   		<scope>test</scope>
-  	</dependency>
-  	<dependency>
-  		<groupId>org.opennms.lib.snmp</groupId>
-  		<artifactId>org.opennms.lib.snmp.integration-tests</artifactId>
-  		<type>test-jar</type>
-  		<scope>test</scope>
+      <type>pom</type>
   	</dependency>
   	<dependency>
   		<groupId>org.opennms</groupId>
@@ -66,6 +63,7 @@
   	<dependency>
       <groupId>org.opennms.dependencies</groupId>
       <artifactId>spring-dependencies</artifactId>
+      <type>pom</type>
   	</dependency>
   	<dependency>
   		<groupId>org.opennms</groupId>
@@ -78,14 +76,4 @@
    </dependency>
 
   </dependencies>
-  
-  <repositories>
-    <repository>
-      <snapshots><enabled>false</enabled></snapshots>
-      <releases><enabled>true</enabled></releases>
-      <id>opennms-repo</id>
-      <name>OpenNMS Repository</name>
-      <url>http://maven.opennms.org/content/groups/opennms.org-release</url>
-    </repository>
-  </repositories>
 </project>

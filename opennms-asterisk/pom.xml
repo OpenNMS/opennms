@@ -34,10 +34,10 @@
       <scope>compile</scope>
     </dependency>
     <dependency>
-      <groupId>org.asteriskjava</groupId>
-      <artifactId>asterisk-java</artifactId>
-      <version>1.0.0-preview-20090427</version>
+      <groupId>org.opennms.dependencies</groupId>
+      <artifactId>asterisk-dependencies</artifactId>
       <scope>compile</scope>
+      <type>pom</type>
     </dependency>
     <dependency>
       <groupId>junit</groupId>
@@ -50,14 +50,5 @@
       <scope>compile</scope>
     </dependency>
   </dependencies>
-  <repositories>
-    <repository>
-      <snapshots><enabled>false</enabled></snapshots>
-      <releases><enabled>true</enabled></releases>
-      <id>opennms-repo</id>
-      <name>OpenNMS Repository</name>
-      <url>http://maven.opennms.org/content/groups/opennms.org-release</url>
-    </repository>
-  </repositories>
 </project>
 

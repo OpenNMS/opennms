@@ -105,6 +105,7 @@
     <dependency>
       <groupId>org.opennms.dependencies</groupId>
       <artifactId>spring-web-dependencies</artifactId>
+      <type>pom</type>
     </dependency>
     <dependency>
       <groupId>net.simon04.jelementtree</groupId>
@@ -130,6 +131,7 @@
     <dependency>
       <groupId>org.opennms.dependencies</groupId>
       <artifactId>gwt-dependencies</artifactId>
+      <type>pom</type>
     </dependency>
 
     <!-- map APIs -->
@@ -174,6 +176,7 @@
     <dependency>
       <groupId>org.opennms.dependencies</groupId>
       <artifactId>servlet-dependencies</artifactId>
+      <type>pom</type>
       <scope>provided</scope>
     </dependency>
     <dependency>
@@ -228,6 +231,7 @@
     <dependency>
       <groupId>org.opennms.dependencies</groupId>
       <artifactId>spring-test-dependencies</artifactId>
+      <type>pom</type>
       <scope>test</scope>
     </dependency>
     <dependency>
@@ -237,6 +241,7 @@
     </dependency>
   </dependencies>
 
+  <!-- special case, we need the stuff above as direct dependencies -->
   <repositories>
     <repository>
       <snapshots><enabled>false</enabled></snapshots>

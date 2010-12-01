@@ -82,6 +82,7 @@
   		<artifactId>spring-test-dependencies</artifactId>
       <version>${project.version}</version>
       <scope>test</scope>
+      <type>pom</type>
     </dependency>
     <dependency>
     	<groupId>org.opennms.core</groupId>

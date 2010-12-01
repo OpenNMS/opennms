@@ -74,6 +74,7 @@
     <dependency>
       <groupId>org.opennms.dependencies</groupId>
       <artifactId>jasper-dependencies</artifactId>
+      <type>pom</type>
     </dependency>
   </dependencies>
 </project>

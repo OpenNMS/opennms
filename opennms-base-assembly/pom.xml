@@ -326,6 +326,7 @@
     <dependency>
       <groupId>org.opennms.dependencies</groupId>
       <artifactId>snmp-dependencies</artifactId>
+      <type>pom</type>
     </dependency>
     <dependency>
       <groupId>org.opennms</groupId>
@@ -379,8 +380,9 @@
       <artifactId>smslib</artifactId>
     </dependency>
     <dependency>
-      <groupId>org.rxtx</groupId>
-      <artifactId>rxtx-osgi</artifactId>
+      <groupId>org.opennms.dependencies</groupId>
+      <artifactId>rxtx-dependencies</artifactId>
+      <type>pom</type>
     </dependency>
 
 
@@ -390,6 +392,7 @@
       <groupId>org.opennms.dependencies</groupId>
       <artifactId>javamail-dependencies</artifactId>
       <scope>runtime</scope>
+      <type>pom</type>
     </dependency>
     <!-- We depend on our JDBC database driver here instead of in the above
          OpenNMS dependencies that use the database because the database is

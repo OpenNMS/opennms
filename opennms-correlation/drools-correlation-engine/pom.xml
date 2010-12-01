@@ -83,6 +83,7 @@
     <dependency>
       <groupId>org.opennms.dependencies</groupId>
       <artifactId>castor-dependencies</artifactId>
+      <type>pom</type>
     </dependency>
     <dependency>
       <groupId>org.opennms</groupId>
@@ -105,6 +106,7 @@
     <dependency>
       <groupId>org.opennms.dependencies</groupId>
       <artifactId>drools-dependencies</artifactId>
+      <type>pom</type>
     </dependency>
     <dependency>
       <groupId>org.opennms</groupId>
@@ -114,6 +116,7 @@
   		<groupId>org.opennms.dependencies</groupId>
   		<artifactId>spring-test-dependencies</artifactId>
       <scope>test</scope>
+      <type>pom</type>
     </dependency>
     <dependency>
       <groupId>org.opennms.tests</groupId>
