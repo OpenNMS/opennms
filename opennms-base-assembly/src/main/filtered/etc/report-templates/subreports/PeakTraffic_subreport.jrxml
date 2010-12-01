@@ -15,12 +15,27 @@
 	<parameter name="rrdDir" class="java.lang.String" isForPrompting="false">
 		<defaultValueExpression><![CDATA["${install.dir}/share/rrd"]]></defaultValueExpression>
 	</parameter>
-	<parameter name="ipv4_interface" class="java.lang.String" isForPrompting="false" />
-	<parameter name="snmp_interface" class="java.lang.String" />
+    <parameter name="snmpifalias" class="java.lang.String"/>
+	<parameter name="snmpifname" class="java.lang.String"/>
+	<parameter name="snmpifdescr" class="java.lang.String"/>
+	<parameter name="snmpphysaddr" class="java.lang.String"/>
+    <parameter name="nodeid" class="java.lang.Integer" isForPrompting="false"/>
+	<parameter name="ifLabel" class="java.lang.String" isForPrompting="false">
+		<defaultValueExpression><![CDATA[$P{snmpifname} == null || "".equals($P{snmpifname}) ? $P{snmpifdescr} : $P{snmpifname}]]></defaultValueExpression>
+	</parameter>
+	<parameter name="interface" class="java.lang.String" isForPrompting="false">
+		<defaultValueExpression><![CDATA[$P{snmpphysaddr} == null || "".equals($P{snmpphysaddr}) ? $P{ifLabel}.replaceAll("[\\/ :| \\.]", "_") : $P{ifLabel}.replaceAll("[\\/ :| \\.]", "_") + "-" + $P{snmpphysaddr}]]></defaultValueExpression>
+	</parameter>
+    <parameter name="inOctets" class="java.lang.String" isForPrompting="false">
+		<defaultValueExpression><![CDATA[new java.io.File("$P{rrdDir}/snmp/$P{nodeid}/$P{interface}/ifHCInOctets.jrb").exists() ? "ifHCInOctets" : "ifInOctets"]]></defaultValueExpression>
+	</parameter>
+	<parameter name="outOctets" class="java.lang.String" isForPrompting="false">
+		<defaultValueExpression><![CDATA[new java.io.File("$P{rrdDir}/snmp/$P{nodeid}/$P{interface}/ifHCOutOctets.jrb").exists() ? "ifHCOutOctets" : "ifOutOctets"]]></defaultValueExpression>
+	</parameter>
 	<queryString language="jrobin">
 		<![CDATA[--start $P{startDate} --end $P{endDate}
-		DEF:xx=$P{rrdDir}/snmp/$P{ipv4_interface}/$P{snmp_interface}/ifHCInOctets.jrb:ifHCInOctets:AVERAGE
-		DEF:yy=$P{rrdDir}/snmp/$P{ipv4_interface}/$P{snmp_interface}/ifHCOutOctets.jrb:ifHCOutOctets:AVERAGE
+		DEF:xx=$P{rrdDir}/snmp/$P{nodeid}/$P{interface}/$P{inOctets}.jrb:$P{inOctets}:AVERAGE
+		DEF:yy=$P{rrdDir}/snmp/$P{nodeid}/$P{interface}/$P{outOctets}.jrb:$P{outOctets}:AVERAGE
 		XPORT:xx:InOctets
 		XPORT:yy:OutOctets]]>
 	</queryString>

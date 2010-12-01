@@ -76,20 +76,23 @@
 	<parameter name="RESPONSE_CRITICAL" class="java.lang.Double">
 		<defaultValueExpression><![CDATA[new Double("80.0")]]></defaultValueExpression>
 	</parameter>
-	<parameter name="startDate" class="java.util.Date">
-		<defaultValueExpression><![CDATA[]]></defaultValueExpression>
+	<parameter name="startDate" class="java.util.Date" isForPrompting="false">
+		<defaultValueExpression><![CDATA[new java.util.Date(new java.util.Date().getTime() - (86400 * 7 * 1000))]]></defaultValueExpression>
 	</parameter>
-	<parameter name="endDate" class="java.util.Date"/>
+	<parameter name="endDate" class="java.util.Date" isForPrompting="false">
+		<defaultValueExpression><![CDATA[new java.util.Date()]]></defaultValueExpression>
+	</parameter>
 	<parameter name="rrdDir" class="java.lang.String">
 		<defaultValueExpression><![CDATA[]]></defaultValueExpression>
 	</parameter>
 	<parameter name="SUBREPORT_DIR" class="java.lang.String" isForPrompting="false">
-		<defaultValueExpression><![CDATA["${install.dir}/etc/report-templates"]]></defaultValueExpression>
+		<defaultValueExpression><![CDATA["/Users/thedesloge/git/opennms/opennms-base-assembly/src/main/filtered/etc/report-templates/subreports/"]]></defaultValueExpression>
 	</parameter>
 	<queryString>
 		<![CDATA[SELECT
 	categories.categoryname,
 	node.nodelabel,
+	node.nodeid,
 	ifservices.ipaddr
 FROM
 	node
@@ -115,10 +118,12 @@ WHERE
 ORDER BY
 	categories.categoryname,
 	node.nodelabel,
+	node.nodeid,
 	ifservices.ipaddr]]>
 	</queryString>
 	<field name="categoryname" class="java.lang.String"/>
 	<field name="nodelabel" class="java.lang.String"/>
+	<field name="nodeid" class="java.lang.Integer"/>
 	<field name="ipaddr" class="java.lang.String"/>
 	<variable name="ICMP_Latency_AVG" class="java.lang.Double"/>
 	<variable name="ICMP_Latency_MIN" class="java.lang.Double"/>
@@ -213,8 +218,11 @@ ORDER BY
 				<subreportParameter name="startDate">
 					<subreportParameterExpression><![CDATA[$P{startDate}]]></subreportParameterExpression>
 				</subreportParameter>
-				<subreportParameter name="ipv4_interface">
+				<subreportParameter name="interface">
 					<subreportParameterExpression><![CDATA[$F{ipaddr}]]></subreportParameterExpression>
+				</subreportParameter>
+                <subreportParameter name="nodeid">
+					<subreportParameterExpression><![CDATA[$F{nodeid}]]></subreportParameterExpression>
 				</subreportParameter>
 				<subreportParameter name="endDate">
 					<subreportParameterExpression><![CDATA[$P{endDate}]]></subreportParameterExpression>
@@ -223,7 +231,7 @@ ORDER BY
 				<returnValue subreportVariable="ICMP_Latency_AVG" toVariable="ICMP_Latency_AVG"/>
 				<returnValue subreportVariable="ICMP_Latency_MIN" toVariable="ICMP_Latency_MIN"/>
 				<returnValue subreportVariable="ICMP_Latency_MAX" toVariable="ICMP_Latency_MAX"/>
-				<subreportExpression class="java.lang.String"><![CDATA[$P{SUBREPORT_DIR} + "TrafficSubreport.jasper"]]></subreportExpression>
+				<subreportExpression class="java.lang.String"><![CDATA[$P{SUBREPORT_DIR} + "PeakTraffic_subreport.jasper"]]></subreportExpression>
 			</subreport>
 		</band>
 	</detail>
