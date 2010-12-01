@@ -375,7 +375,7 @@
        <artifactId>maven-release-plugin</artifactId>
        <configuration>
           <preparationGoals>clean install</preparationGoals>
-          <arguments>-Droot.dir=${basedir} -Dmaven.test.skip.exec=true</arguments>
+          <arguments>-Dmaven.test.skip.exec=true</arguments>
           <tagBase>https://opennms.svn.sourceforge.net/svnroot/opennms/opennms/tags</tagBase>
        </configuration>
      </plugin>
@@ -614,7 +614,7 @@
     <install.version>${project.version}</install.version>
     <display.version>${install.version}</display.version>
     <opennms.home>${dist.dir}/${dist.name}</opennms.home>
-    <dist.dir>${root.dir}/target</dist.dir>
+    <dist.dir>${project.build.directory}</dist.dir>
     <dist.name>opennms-${project.version}</dist.name>
     <install.dir>${opennms.home}</install.dir>
     <install.init.dir>${install.dir}/bin</install.init.dir>
