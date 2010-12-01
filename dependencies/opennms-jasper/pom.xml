@@ -7,7 +7,7 @@
   <modelVersion>4.0.0</modelVersion>
   <groupId>org.opennms.dependencies</groupId>
   <artifactId>jasper-dependencies</artifactId>
-  <packaging>jar</packaging>
+  <packaging>pom</packaging>
   <name>OpenNMS Jasper Report Dependencies</name>
   <dependencies>
     <dependency>
@@ -30,30 +30,15 @@
     <dependency>
       <groupId>org.opennms.dependencies</groupId>
       <artifactId>spring-dependencies</artifactId>
+      <type>pom</type>
     </dependency>
   </dependencies>
   <repositories>
-<!-- // we had to mirror this on our own, it requires authentication
-    <repository>
-      <snapshots><enabled>false</enabled></snapshots>
-      <releases><enabled>true</enabled></releases>
-      <id>jasperforge-repo</id>
-      <name>JasperForge Maven Repository</name>
-      <url>http://jasperforge.org/svn/repos/maven2/</url>
-    </repository>
--->
-    <repository>
-      <snapshots><enabled>false</enabled></snapshots>
-      <releases><enabled>true</enabled></releases>
-      <id>maven-repo</id>
-      <name>Maven Central</name>
-      <url>http://repo1.maven.org/maven2</url>
-    </repository>
     <repository>
       <snapshots><enabled>false</enabled></snapshots>
       <releases><enabled>true</enabled></releases>
       <id>opennms-repo</id>
-      <name>OpenNMS Repository</name>
+      <name>OpenNMS Maven Repository</name>
       <url>http://maven.opennms.org/content/groups/opennms.org-release</url>
     </repository>
   </repositories>

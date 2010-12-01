@@ -172,6 +172,7 @@
             <artifactId>castor-dependencies</artifactId>
             <version>${project.version}</version>
             <scope>compile</scope>
+            <type>pom</type>
             <exclusions>
               <exclusion>
                 <groupId>javax.jms</groupId>
@@ -249,6 +250,36 @@
             </goals>
           </execution>
         </executions>
+      </plugin>
+      <plugin>
+        <groupId>org.codehaus.mojo</groupId>
+        <artifactId>axistools-maven-plugin</artifactId>
+        <version>1.4</version>
+      </plugin>
+      <plugin>
+        <groupId>org.codehaus.mojo</groupId>
+        <artifactId>jxr-maven-plugin</artifactId>
+        <version>2.2</version>
+      </plugin>
+      <plugin>
+        <groupId>org.apache.maven.plugins</groupId>
+        <artifactId>maven-deploy-plugin</artifactId>
+        <version>2.5</version>
+      </plugin>
+      <plugin>
+        <groupId>org.apache.maven.plugins</groupId>
+        <artifactId>maven-javadoc-plugin</artifactId>
+        <version>2.7</version>
+      </plugin>
+      <plugin>
+        <groupId>org.apache.maven.plugins</groupId>
+        <artifactId>maven-jar-plugin</artifactId>
+        <version>2.3.1</version>
+      </plugin>
+      <plugin>
+        <groupId>org.apache.maven.plugins</groupId>
+        <artifactId>maven-project-info-reports-plugin</artifactId>
+        <version>2.2</version>
       </plugin>
       <plugin>
         <groupId>org.apache.maven.plugins</groupId>
@@ -779,16 +810,6 @@
       <!--  opennms dependencies that are outside of the opennms/trunk project -->
       <!--  PLEASE KEEP THESE IN ALPHABETICAL ORDER -->
       <dependency>
-        <groupId>org.opennms</groupId>
-        <artifactId>jicmp-api</artifactId>
-        <version>1.0.10</version>
-      </dependency>
-      <dependency>
-        <groupId>org.opennms</groupId>
-        <artifactId>jrrd-api</artifactId>
-        <version>1.0</version>
-      </dependency>
-      <dependency>
         <groupId>org.opennms.api.integration</groupId>
         <artifactId>opennms-provisioning</artifactId>
         <version>1.0.0</version>
@@ -939,18 +960,6 @@
         <version>${project.version}</version>
       </dependency>
       <dependency>
-        <groupId>org.opennms.lib</groupId>
-        <artifactId>org.opennms.lib.tracker</artifactId>
-        <version>0.6</version>
-      </dependency>
-      <dependency>
-        <groupId>org.opennms.lib.snmp</groupId>
-        <artifactId>org.opennms.lib.snmp.integration-tests</artifactId>
-        <version>2.0.1</version>
-        <type>test-jar</type>
-        <scope>test</scope>
-      </dependency>
-      <dependency>
         <groupId>org.opennms</groupId>
         <artifactId>opennms-alarmd</artifactId>
         <version>${project.version}</version>
@@ -968,53 +977,105 @@
       </dependency>
       <dependency>
         <groupId>org.opennms.dependencies</groupId>
+        <artifactId>icmp-dependencies</artifactId>
+        <version>${project.version}</version>
+        <type>pom</type>
+      </dependency>
+      <dependency>
+        <groupId>org.opennms.dependencies</groupId>
+        <artifactId>liquibase-dependencies</artifactId>
+        <version>${project.version}</version>
+        <type>pom</type>
+      </dependency>
+      <dependency>
+        <groupId>org.opennms.dependencies</groupId>
         <artifactId>gwt-dependencies</artifactId>
         <version>${project.version}</version>
+        <type>pom</type>
+      </dependency>
+      <dependency>
+        <groupId>org.opennms.dependencies</groupId>
+        <artifactId>gwt-maps-dependencies</artifactId>
+        <version>${project.version}</version>
+        <type>pom</type>
       </dependency>
       <dependency>
         <groupId>org.opennms.dependencies</groupId>
         <artifactId>javamail-dependencies</artifactId>
         <version>${project.version}</version>
+        <type>pom</type>
       </dependency>
       <dependency>
         <groupId>org.opennms.dependencies</groupId>
         <artifactId>jcifs-dependencies</artifactId>
         <version>${project.version}</version>
+        <type>pom</type>
       </dependency>
       <dependency>
         <groupId>org.opennms.dependencies</groupId>
         <artifactId>jinterop-dependencies</artifactId>
         <version>${project.version}</version>
+        <type>pom</type>
       </dependency>
       <dependency>
         <groupId>org.opennms.dependencies</groupId>
         <artifactId>jnlp-dependencies</artifactId>
         <version>${project.version}</version>
+        <type>pom</type>
+      </dependency>
+      <dependency>
+        <groupId>org.opennms.dependencies</groupId>
+        <artifactId>jdhcp-dependencies</artifactId>
+        <version>${project.version}</version>
+        <type>pom</type>
       </dependency>
       <dependency>
         <groupId>org.opennms.dependencies</groupId>
         <artifactId>jradius-dependencies</artifactId>
         <version>${project.version}</version>
+        <type>pom</type>
+      </dependency>
+      <dependency>
+        <groupId>org.opennms.dependencies</groupId>
+        <artifactId>jrobin-dependencies</artifactId>
+        <version>${project.version}</version>
+        <type>pom</type>
+      </dependency>
+      <dependency>
+        <groupId>org.opennms.dependencies</groupId>
+        <artifactId>jrrd-dependencies</artifactId>
+        <version>${project.version}</version>
+        <type>pom</type>
       </dependency>
       <dependency>
         <groupId>org.opennms.dependencies</groupId>
         <artifactId>quartz-dependencies</artifactId>
         <version>${project.version}</version>
+        <type>pom</type>
       </dependency>
       <dependency>
         <groupId>org.opennms.dependencies</groupId>
         <artifactId>rrd4j-dependencies</artifactId>
         <version>${project.version}</version>
+        <type>pom</type>
+      </dependency>
+      <dependency>
+        <groupId>org.opennms.dependencies</groupId>
+        <artifactId>rxtx-dependencies</artifactId>
+        <version>${project.version}</version>
+        <type>pom</type>
       </dependency>
       <dependency>
         <groupId>org.opennms.dependencies</groupId>
         <artifactId>servlet-dependencies</artifactId>
         <version>${project.version}</version>
+        <type>pom</type>
       </dependency>
       <dependency>
         <groupId>org.opennms.dependencies</groupId>
         <artifactId>spring-security-dependencies</artifactId>
         <version>${project.version}</version>
+        <type>pom</type>
       </dependency>
       <dependency>
         <groupId>org.opennms</groupId>
@@ -1073,6 +1134,7 @@
         <groupId>org.opennms.dependencies</groupId>
         <artifactId>castor-dependencies</artifactId>
         <version>${project.version}</version>
+        <type>pom</type>
       </dependency>
       <dependency>
         <groupId>org.opennms</groupId>
@@ -1118,11 +1180,13 @@
         <groupId>org.opennms.dependencies</groupId>
         <artifactId>drools-dependencies</artifactId>
         <version>${project.version}</version>
+        <type>pom</type>
       </dependency>
       <dependency>
         <groupId>org.opennms.dependencies</groupId>
         <artifactId>hibernate-dependencies</artifactId>
         <version>${project.version}</version>
+        <type>pom</type>
       </dependency>
       <dependency>
         <groupId>org.opennms</groupId>
@@ -1165,6 +1229,7 @@
         <groupId>org.opennms.dependencies</groupId>
         <artifactId>jersey-dependencies</artifactId>
         <version>${project.version}</version>
+        <type>pom</type>
       </dependency>
       <dependency>
         <groupId>org.opennms</groupId>
@@ -1175,6 +1240,7 @@
         <groupId>org.opennms.dependencies</groupId>
         <artifactId>mina-dependencies</artifactId>
         <version>${project.version}</version>
+        <type>pom</type>
       </dependency>
       <dependency>
         <groupId>org.opennms</groupId>
@@ -1287,26 +1353,31 @@
         <groupId>org.opennms.dependencies</groupId>
         <artifactId>jasper-dependencies</artifactId>
         <version>${project.version}</version>
+        <type>pom</type>
       </dependency>
       <dependency>
         <groupId>org.opennms.dependencies</groupId>
         <artifactId>jaxb-dependencies</artifactId>
         <version>${project.version}</version>
+        <type>pom</type>
       </dependency>
       <dependency>
         <groupId>org.opennms.dependencies</groupId>
         <artifactId>spring-dependencies</artifactId>
         <version>${project.version}</version>
+        <type>pom</type>
       </dependency>
       <dependency>
         <groupId>org.opennms.dependencies</groupId>
         <artifactId>spring-web-dependencies</artifactId>
         <version>${project.version}</version>
+        <type>pom</type>
       </dependency>
       <dependency>
   		  <groupId>org.opennms.dependencies</groupId>
   		  <artifactId>spring-test-dependencies</artifactId>
         <version>${project.version}</version>
+        <type>pom</type>
       </dependency>
       <dependency>
         <groupId>org.opennms</groupId>
@@ -1348,6 +1419,7 @@
         <groupId>org.opennms.dependencies</groupId>
         <artifactId>rancid-dependencies</artifactId>
         <version>${project.version}</version>
+        <type>pom</type>
       </dependency>
       <dependency>
         <groupId>org.opennms</groupId>
@@ -1356,18 +1428,51 @@
       </dependency>
       <dependency>
         <groupId>org.opennms.dependencies</groupId>
+        <artifactId>asterisk-dependencies</artifactId>
+        <version>${project.version}</version>
+        <type>pom</type>
+      </dependency>
+      <dependency>
+        <groupId>org.opennms.dependencies</groupId>
         <artifactId>dnsjava-dependencies</artifactId>
         <version>${project.version}</version>
+        <type>pom</type>
+      </dependency>
+      <dependency>
+        <groupId>org.opennms.dependencies</groupId>
+        <artifactId>service-registration-dependencies</artifactId>
+        <version>${project.version}</version>
+        <type>pom</type>
+      </dependency>
+      <dependency>
+        <groupId>org.opennms.dependencies</groupId>
+        <artifactId>snmp-agent-dependencies</artifactId>
+        <version>${project.version}</version>
+        <type>pom</type>
       </dependency>
       <dependency>
         <groupId>org.opennms.dependencies</groupId>
         <artifactId>snmp-dependencies</artifactId>
         <version>${project.version}</version>
+        <type>pom</type>
+      </dependency>
+      <dependency>
+        <groupId>org.opennms.dependencies</groupId>
+        <artifactId>snmp-test-dependencies</artifactId>
+        <version>${project.version}</version>
+        <type>pom</type>
       </dependency>
       <dependency>
         <groupId>org.opennms.dependencies</groupId>
         <artifactId>twitter4j-dependencies</artifactId>
         <version>${project.version}</version>
+        <type>pom</type>
+      </dependency>
+      <dependency>
+        <groupId>org.opennms.dependencies</groupId>
+        <artifactId>tracker-dependencies</artifactId>
+        <version>${project.version}</version>
+        <type>pom</type>
       </dependency>
       <dependency>
         <groupId>org.opennms</groupId>
@@ -1714,11 +1819,6 @@
         <version>1.6</version>
       </dependency>
       <dependency>
-        <groupId>org.jrobin</groupId>
-        <artifactId>jrobin</artifactId>
-        <version>1.5.9</version>
-      </dependency>
-      <dependency>
         <groupId>junit</groupId>
         <artifactId>junit</artifactId>
         <version>4.7</version>
@@ -1795,11 +1895,6 @@
       <dependency>
         <groupId>org.rxtx</groupId>
         <artifactId>rxtx</artifactId>
-        <version>2.2-pre2</version>
-      </dependency>
-      <dependency>
-        <groupId>org.rxtx</groupId>
-        <artifactId>rxtx-osgi</artifactId>
         <version>2.2-pre2</version>
       </dependency>
       <dependency>

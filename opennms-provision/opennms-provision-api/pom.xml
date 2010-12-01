@@ -17,6 +17,7 @@
     <dependency>
       <groupId>org.opennms.dependencies</groupId>
       <artifactId>mina-dependencies</artifactId>
+      <type>pom</type>
     </dependency>
 
   </dependencies>

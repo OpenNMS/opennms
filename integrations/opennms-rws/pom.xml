@@ -13,6 +13,7 @@
     <dependency>
       <groupId>org.opennms.dependencies</groupId>
       <artifactId>castor-dependencies</artifactId>
+      <type>pom</type>
     </dependency>
     <dependency>
       <groupId>org.opennms</groupId>
@@ -25,6 +26,7 @@
     <dependency>
       <groupId>org.opennms.dependencies</groupId>
       <artifactId>rancid-dependencies</artifactId>
+      <type>pom</type>
     </dependency>
 
     <dependency>

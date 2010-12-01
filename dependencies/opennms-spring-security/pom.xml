@@ -7,7 +7,7 @@
   <modelVersion>4.0.0</modelVersion>
   <groupId>org.opennms.dependencies</groupId>
   <artifactId>spring-security-dependencies</artifactId>
-  <packaging>jar</packaging>
+  <packaging>pom</packaging>
   <name>OpenNMS Spring Security Dependencies</name>
   <description>
     This module is used to provide a single artifact that the opennms project
@@ -272,6 +272,7 @@
     <dependency>
       <groupId>org.opennms.dependencies</groupId>
       <artifactId>spring-dependencies</artifactId>
+      <type>pom</type>
     </dependency>
   </dependencies>
 </project>

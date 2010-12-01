@@ -22,6 +22,7 @@
   		<groupId>org.opennms.dependencies</groupId>
   		<artifactId>spring-test-dependencies</artifactId>
       <scope>test</scope>
+      <type>pom</type>
     </dependency>
   </dependencies>
 </project>

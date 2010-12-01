@@ -32,11 +32,13 @@
         <groupId>org.opennms.dependencies</groupId>
         <artifactId>hibernate-dependencies</artifactId>
         <version>[1.7.0,2.0.0)</version>
+        <type>pom</type>
       </dependency>
       <dependency>
         <groupId>org.opennms.dependencies</groupId>
         <artifactId>spring-dependencies</artifactId>
         <version>[1.7.0,2.0.0)</version>
+        <type>pom</type>
       </dependency>
       <dependency>
         <groupId>org.opennms</groupId>

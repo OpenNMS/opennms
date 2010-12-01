@@ -55,7 +55,8 @@
       <plugin>
         <groupId>org.codehaus.mojo.webstart</groupId>
         <artifactId>webstart-maven-plugin</artifactId>
-        <version>1.0-alpha-2</version>
+        <!-- remove repository below when beta 2 is released! -->
+        <version>1.0-beta-2-onms1</version>
         <executions>
           <execution>
             <id>gui-app</id>
@@ -143,6 +144,8 @@
       <artifactId>org.opennms.features.remote-poller</artifactId>
     </dependency>
   </dependencies>
+
+  <!-- temporary, until new webstart-maven-plugin is released -->
   <repositories>
     <repository>
       <snapshots><enabled>false</enabled></snapshots>

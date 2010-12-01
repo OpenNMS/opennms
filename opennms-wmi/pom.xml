@@ -31,10 +31,12 @@
     <dependency>
       <groupId>org.opennms.dependencies</groupId>
       <artifactId>jcifs-dependencies</artifactId>
+      <type>pom</type>
     </dependency>
     <dependency>
       <groupId>org.opennms.dependencies</groupId>
       <artifactId>jinterop-dependencies</artifactId>
+      <type>pom</type>
     </dependency>
     <dependency>
       <groupId>commons-cli</groupId>
