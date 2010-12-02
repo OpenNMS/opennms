@@ -1,16 +1,14 @@
-<assembly>
-  <id>dist</id>
-  <formats>
-    <format>tar.gz</format>
-  </formats>
-  <includeBaseDirectory>false</includeBaseDirectory>
+<component>
   <dependencySets>
     <dependencySet>
       <unpack>true</unpack>
       <useProjectArtifact>false</useProjectArtifact>
       <useTransitiveDependencies>false</useTransitiveDependencies>
       <outputDirectory>/</outputDirectory>
-      <includes><include>org.opennms:opennms-full-assembly:tar.gz</include></includes>
+      <includes>
+        <include>org.opennms:opennms-doc:tar.gz:daemon</include>
+        <include>org.opennms:opennms-base-assembly:tar.gz:daemon</include>
+      </includes>
     </dependencySet>
   </dependencySets>
-</assembly>
+</component>

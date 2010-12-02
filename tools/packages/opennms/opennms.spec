@@ -293,7 +293,11 @@ fi
 %if %{build_full}
 	echo "=== RUNNING FULL BUILD AND INSTALL ==="
 	sh ./build.sh $SETTINGS_XML -Dbuild=all -Dinstall.version="%{version}-%{release}" -Ddist.name="$RPM_BUILD_ROOT" \
-	    -Dopennms.home="%{instprefix}" install assembly:attached
+	    -Dopennms.home="%{instprefix}" install
+%fi
+
+sh ./build.sh $SETTINGS_XML -Dbuild=all -Dinstall.version="%{version}-%{release}" -Ddist.name="$RPM_BUILD_ROOT" \
+    -Dopennms.home="%{instprefix}" install assembly:attached
 %else
 	for dir in integrations/*adapter integrations/opennms-rancid assemblies/release-assembly; do
 		pushd "$dir"

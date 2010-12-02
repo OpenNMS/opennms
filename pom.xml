@@ -129,7 +129,7 @@
     <module>opennms-base-assembly</module>
 
     <!-- unfortunate side-effect of the way maven assemblies work -->
-    <module>opennms-full-assembly</module>
+    <!-- <module>opennms-full-assembly</module> -->
   </modules>
   <build>
   <pluginManagement>
@@ -604,6 +604,8 @@
     <install.version>${project.version}</install.version>
     <display.version>${install.version}</display.version>
     <opennms.home>${dist.dir}/${dist.name}</opennms.home>
+    <maven.metadata.legacy>true</maven.metadata.legacy>
+    <root.dir>${project.basedir}</root.dir>
     <dist.dir>${root.dir}/target</dist.dir>
     <dist.name>opennms-${project.version}</dist.name>
     <install.dir>${opennms.home}</install.dir>
