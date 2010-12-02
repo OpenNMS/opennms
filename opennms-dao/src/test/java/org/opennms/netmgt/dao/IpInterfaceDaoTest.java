@@ -35,8 +35,10 @@
 //
 package org.opennms.netmgt.dao;
 
+import java.net.Inet6Address;
 import java.util.Collection;
 import java.util.Iterator;
+import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
 
@@ -69,6 +71,23 @@ public class IpInterfaceDaoTest extends AbstractTransactionalDaoTestCase {
         OnmsCriteria crit = new OnmsCriteria(OnmsIpInterface.class);
         crit.add(Restrictions.like("ipAddress", "192.168.1.%"));
         assertEquals(3, getIpInterfaceDao().countMatching(crit));
+        
+        crit = new OnmsCriteria(OnmsIpInterface.class);
+        crit.add(Restrictions.like("ipAddress", "fe80:%dddd\\%5"));
+        assertEquals(1, getIpInterfaceDao().countMatching(crit));
+    }
+
+    public void testGetIPv6Interfaces() {
+        OnmsCriteria crit = new OnmsCriteria(OnmsIpInterface.class);
+        crit.add(Restrictions.like("ipAddress", "fe80:%dddd\\%5"));
+        List<OnmsIpInterface> ifaces = getIpInterfaceDao().findMatching(crit);
+        assertEquals(1, ifaces.size());
+        
+        OnmsIpInterface iface = ifaces.get(0);
+        assertTrue(iface.getInetAddress() instanceof Inet6Address);
+        Inet6Address v6address = (Inet6Address)iface.getInetAddress();
+        assertEquals(5, v6address.getScopeId());
+        assertEquals("fe80:0000:0000:0000:aaaa:bbbb:cccc:dddd%5", iface.getIpAddress());
     }
 
     public void testGetInterfacesForNodes() {

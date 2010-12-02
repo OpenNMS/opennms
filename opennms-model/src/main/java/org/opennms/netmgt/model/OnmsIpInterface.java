@@ -32,6 +32,7 @@
 package org.opennms.netmgt.model;
 
 import java.io.Serializable;
+import java.net.Inet6Address;
 import java.net.InetAddress;
 import java.net.UnknownHostException;
 import java.util.Collection;
@@ -546,7 +547,11 @@ public class OnmsIpInterface extends OnmsEntity implements Serializable {
         try {
             String hostName = getIpHostName() == null ? ipAddr : getIpHostName();
             addr = InetAddress.getByName(ipAddr);
-            addr = InetAddress.getByAddress(hostName, addr.getAddress());
+            if (addr instanceof Inet6Address) {
+                addr = Inet6Address.getByAddress(hostName, addr.getAddress(), ((Inet6Address)addr).getScopeId());
+            } else {
+                addr = InetAddress.getByAddress(hostName, addr.getAddress());
+            }
         } catch (UnknownHostException e) {
             // this can't happen here
         }

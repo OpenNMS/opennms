@@ -160,6 +160,11 @@ public class DatabasePopulator {
             .setIfOperStatus(1)
             .setIfSpeed(10000000);
         builder.addService(getServiceType("ICMP"));
+        builder.addInterface("fe80:0000:0000:0000:aaaa:bbbb:cccc:dddd%5").setIsManaged("M").setIsSnmpPrimary("P").addSnmpInterface("", 4)
+        .setCollectionEnabled(false)
+        .setIfOperStatus(1)
+        .setIfSpeed(10000000);
+        builder.addService(getServiceType("ICMP"));
         getNodeDao().save(builder.getCurrentNode());
         getNodeDao().flush();
         
