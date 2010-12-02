@@ -52,6 +52,7 @@ import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
 import java.util.Properties;
+
 import org.jrobin.core.FetchData;
 import org.jrobin.core.RrdDb;
 import org.jrobin.core.RrdDef;
@@ -128,6 +129,20 @@ public class JRobinRrdStrategy implements RrdStrategy<RrdDef,RrdDb> {
     /** {@inheritDoc} */
     public void setConfigurationProperties(Properties configurationParameters) {
         m_configurationProperties = configurationParameters;
+        if(!s_initialized) {
+            String factory = null;
+            if (m_configurationProperties == null) {
+                factory = "FILE";
+            } else {
+                factory = (String)m_configurationProperties.get("org.jrobin.core.RrdBackendFactory");
+            }
+            try {
+                RrdDb.setDefaultFactory(factory);
+                s_initialized=true;
+            } catch (RrdException e) {
+                log().error("Could not set default JRobin RRD factory: " + e.getMessage(), e);
+            }
+        }
     }
 
     /**
@@ -217,16 +232,6 @@ public class JRobinRrdStrategy implements RrdStrategy<RrdDef,RrdDb> {
      * @throws java.lang.Exception if any.
      */
     public JRobinRrdStrategy() throws Exception {
-        if (!s_initialized) {
-            String factory;
-            if (m_configurationProperties == null) {
-                factory = DEFAULT_BACKEND_FACTORY;
-            } else {
-                factory = (String) m_configurationProperties.getProperty(BACKEND_FACTORY_PROPERTY, DEFAULT_BACKEND_FACTORY);
-            }
-            RrdDb.setDefaultFactory(factory);
-            s_initialized = true;
-        }
         String home = System.getProperty("opennms.home");
         System.setProperty("jrobin.fontdir", home + File.separator + "etc");
     }
@@ -403,7 +408,7 @@ public class JRobinRrdStrategy implements RrdStrategy<RrdDef,RrdDb> {
         double upperLimit = Double.NaN;
         boolean rigid = false;
         Map<String,List<String>> defs = new HashMap<String,List<String>>();
-        Map<String,List<String>> cdefs = new HashMap<String,List<String>>();
+        // Map<String,List<String>> cdefs = new HashMap<String,List<String>>();
         
         for (int i = 0; i < commandArray.length; i++) {
             String arg = commandArray[i];
