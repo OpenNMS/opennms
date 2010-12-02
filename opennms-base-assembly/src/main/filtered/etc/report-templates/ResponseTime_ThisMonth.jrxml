@@ -147,6 +147,9 @@ ORDER BY
 		<groupExpression><![CDATA[$F{nodelabel}]]></groupExpression>
 		<groupHeader>
 			<band height="22">
+				<rectangle>
+					<reportElement x="0" y="0" width="555" height="20" backcolor="#CCFFCC"/>
+				</rectangle>
 				<textField>
 					<reportElement style="Sub-sub-header" x="0" y="0" width="555" height="20"/>
 					<textElement textAlignment="Left"/>
