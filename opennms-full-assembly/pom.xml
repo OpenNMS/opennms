@@ -92,6 +92,33 @@
         </plugins>
       </build>
     </profile>
+    <profile>
+      <id>dir</id>
+      <activation>
+        <property>
+          <name>build.profile</name>
+          <value>dir</value>
+        </property>
+      </activation>
+      <build>
+        <plugins>
+          <plugin>
+            <inherited>false</inherited>
+            <groupId>org.apache.maven.plugins</groupId>
+            <artifactId>maven-assembly-plugin</artifactId>
+            <configuration>
+              <descriptors>
+                <descriptor>src/assembly/dir.xml</descriptor>
+              </descriptors>
+              <appendAssemblyId>false</appendAssemblyId>
+              <tarLongFileMode>gnu</tarLongFileMode>
+              <outputDirectory>${dist.dir}</outputDirectory>
+              <finalName>${dist.name}</finalName>
+            </configuration>
+          </plugin>
+        </plugins>
+      </build>
+    </profile>
   </profiles>
   <modules>
     <module>../features/http-remoting</module>

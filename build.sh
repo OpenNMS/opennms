@@ -50,8 +50,12 @@ USE_ASSEMBLIES=""
 ROOT_FOUND=""
 for ARG in "$@"; do
 	case $ARG in
+		assembly:directory-inline)
+			USE_ASSEMBLIES="-Dbuild.profile=dir install"
+			echo "WARNING: directory-inline does not work anymore; setting build.profile to 'dir' instead"
+			;;
 		assembly:*)
-			USE_ASSEMBLIES="$ARG"
+			USE_ASSEMBLIES="install"
 			;;
 		-Droot.dir=*)
 			ROOT_FOUND="true"
@@ -87,6 +91,9 @@ export MAVEN_OPTS
 EXITVAL=0
 if [ $COUNT -gt 0 ]; then
 	"$MVN" -Droot.dir=$PREFIX -D$MAVEN_SKIP=true "${DEFINES[@]}" "${ARGS[@]}"
+	EXITVAL="$?"
+elif [ -n "$USE_ASSEMBLIES" ]; then
+	"$MVN" -Droot.dir=$PREFIX -D$MAVEN_SKIP=true "${DEFINES[@]}" "${ARGS[@]}" $USE_ASSEMBLIES
 	EXITVAL="$?"
 fi
 
