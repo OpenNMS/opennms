@@ -1,0 +1,92 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<jasperReport xmlns="http://jasperreports.sourceforge.net/jasperreports" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://jasperreports.sourceforge.net/jasperreports http://jasperreports.sourceforge.net/xsd/jasperreport.xsd" name="NodeAvailabilityMonthly" pageWidth="612" pageHeight="792" columnWidth="555" leftMargin="20" rightMargin="20" topMargin="20" bottomMargin="20">
+	<property name="ireport.zoom" value="1.5"/>
+	<property name="ireport.x" value="0"/>
+	<property name="ireport.y" value="0"/>
+	<parameter name="startDate" class="java.util.Date">
+		<defaultValueExpression><![CDATA[new java.util.Date()]]></defaultValueExpression>
+	</parameter>
+	<queryString>
+		<![CDATA[SELECT
+	CASE
+		WHEN
+			interval_helper.reportMonth = interval_helper.thisMonth
+			AND interval_helper.reportYear = interval_helper.thisYear
+		THEN 'This Month'
+		WHEN
+			interval_helper.reportMonth = interval_helper.lastMonth
+			AND interval_helper.reportYear = interval_helper.thisYear
+		THEN 'Last Month'
+		ELSE CASE
+			WHEN interval_helper.reportMonth =  1 THEN 'January '
+			WHEN interval_helper.reportMonth =  2 THEN 'February '
+			WHEN interval_helper.reportMonth =  3 THEN 'March '
+			WHEN interval_helper.reportMonth =  4 THEN 'April '
+			WHEN interval_helper.reportMonth =  5 THEN 'May '
+			WHEN interval_helper.reportMonth =  6 THEN 'June '
+			WHEN interval_helper.reportMonth =  7 THEN 'July '
+			WHEN interval_helper.reportMonth =  8 THEN 'August '
+			WHEN interval_helper.reportMonth =  9 THEN 'September '
+			WHEN interval_helper.reportMonth = 10 THEN 'October '
+			WHEN interval_helper.reportMonth = 11 THEN 'November '
+			WHEN interval_helper.reportMonth = 12 THEN 'December '
+		END || interval_helper.reportYear
+	END AS intervalDescription
+FROM (
+	SELECT
+		extract(month FROM TIMESTAMP '$P{startDate}') AS reportMonth,
+		extract(year FROM TIMESTAMP '$P{startDate}') AS reportYear,
+		extract(month FROM NOW()) AS thisMonth,
+		extract(month FROM NOW() - INTERVAL '1 month') AS lastMonth,
+		extract(year FROM NOW()) AS thisYear
+) AS interval_helper]]>
+	</queryString>
+	<field name="intervaldescription" class="java.lang.String"/>
+	<background>
+		<band splitType="Stretch"/>
+	</background>
+	<title>
+		<band height="51" splitType="Stretch"/>
+	</title>
+	<pageHeader>
+		<band height="52" splitType="Stretch">
+			<staticText>
+				<reportElement x="0" y="15" width="96" height="20"/>
+				<textElement/>
+				<text><![CDATA[Node Availability - ]]></text>
+			</staticText>
+		</band>
+	</pageHeader>
+	<columnHeader>
+		<band height="61" splitType="Stretch">
+			<staticText>
+				<reportElement x="74" y="0" width="100" height="20"/>
+				<textElement/>
+				<text><![CDATA[nodelabel]]></text>
+			</staticText>
+			<staticText>
+				<reportElement x="209" y="0" width="100" height="20"/>
+				<textElement/>
+				<text><![CDATA[nodesysoid]]></text>
+			</staticText>
+		</band>
+	</columnHeader>
+	<detail>
+		<band height="125" splitType="Stretch">
+			<staticText>
+				<reportElement x="242" y="77" width="100" height="20"/>
+				<textElement/>
+				<text><![CDATA[Static text]]></text>
+			</staticText>
+		</band>
+	</detail>
+	<columnFooter>
+		<band height="45" splitType="Stretch"/>
+	</columnFooter>
+	<pageFooter>
+		<band height="54" splitType="Stretch"/>
+	</pageFooter>
+	<summary>
+		<band height="42" splitType="Stretch"/>
+	</summary>
+</jasperReport>

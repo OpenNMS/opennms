@@ -23,6 +23,10 @@
       <outputDirectory>etc</outputDirectory>
     </fileSet>
     <fileSet>
+      <directory>target/jasper</directory>
+      <outputDirectory>etc/report-templates</outputDirectory>
+    </fileSet>
+    <fileSet>
       <directory>target/classes/contrib</directory>
       <outputDirectory>contrib</outputDirectory>
     </fileSet>

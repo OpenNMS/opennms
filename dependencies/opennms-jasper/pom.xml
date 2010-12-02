@@ -13,7 +13,18 @@
     <dependency>
       <groupId>jasperreports</groupId>
       <artifactId>jasperreports</artifactId>
-      <version>3.6.0</version>
+      <version>3.7.6</version>
+      <exclusions>
+        <exclusion>
+          <groupId>eclipse</groupId>
+          <artifactId>jdtcore</artifactId>
+        </exclusion>
+      </exclusions>
+    </dependency>
+    <dependency>
+      <groupId>jasperreports</groupId>
+      <artifactId>iText</artifactId>
+      <version>2.1.7</version>
       <exclusions>
         <exclusion>
           <groupId>eclipse</groupId>
@@ -32,6 +43,20 @@
       <artifactId>spring-dependencies</artifactId>
       <type>pom</type>
     </dependency>
+    <dependency>
+      <groupId>commons-digester</groupId>
+      <artifactId>commons-digester</artifactId>
+    </dependency>
+    <dependency>
+        <groupId>jfree</groupId>
+        <artifactId>jfreechart</artifactId>
+        <scope>runtime</scope>
+      </dependency>
+      <dependency>
+        <groupId>jfree</groupId>
+        <artifactId>jcommon</artifactId>
+        <scope>runtime</scope>
+      </dependency>
   </dependencies>
   <repositories>
     <repository>

@@ -22,7 +22,6 @@ public class JRobinDataSource implements JRDataSource {
 
     public Object getFieldValue(JRField field) throws JRException {
         Object computeFieldValue = computeFieldValue(field);
-        System.out.println("row: " + m_currentRow + "; " + field.getName() + ": " + computeFieldValue);
         return computeFieldValue;
     }
 
