@@ -13,4 +13,48 @@
                 report-service="jasperReportService" description="trivial Jasper report using null datasource" />
         <report id="Early-Morning-Report" display-name="Early morning report" online="true" 
                 report-service="jasperReportService" description="Global overview of outages, notifications and events in last 24 hours" />
+        <report id="Node-Availability-Report" display-name="Availability by node - Past 7 Days" online="true" 
+                report-service="jasperReportService" description="Availability (past 7 days) by node across one or more surveillance categories" />
+        <report id="Node-Availability-Report_ThisMonth" display-name="Availability by node - This Month" online="true" 
+                report-service="jasperReportService" description="Availability (this month) by node across one or more surveillance categories" />
+        <report id="Node-Availability-Report_LastMonth" display-name="Availability by node - Last Month" online="true" 
+                report-service="jasperReportService" description="Availability (last month) by node across one or more surveillance categories" />
+        <report id="Node-Availability-Report_ThisYear" display-name="Availability by node - This Year" online="true" 
+                report-service="jasperReportService" description="Availability (this year) by node across one or more surveillance categories" />
+        <report id="Availability-Summary-Report" display-name="Availability Summary - Past 7 Days" online="true" 
+                report-service="jasperReportService" description="Availability (past 7 days) summary across one or more surveillance categories" />
+        <report id="Availability-Summary-Report_ThisMonth" display-name="Availability Summary - This Month" online="true" 
+                report-service="jasperReportService" description="Availability (this month) summary across one or more surveillance categories" />
+        <report id="Availability-Summary-Report_LastMonth" display-name="Availability Summary - Last Month" online="true" 
+                report-service="jasperReportService" description="Availability (last month) summary across one or more surveillance categories" />
+        <report id="Availability-Summary-Report_ThisYear" display-name="Availability Summary - This Year" online="true" 
+                report-service="jasperReportService" description="Availability (this year) summary across one or more surveillance categories" />
+        <report id="Response-Time-Report" display-name="Response time by node" online="true" 
+                report-service="jasperReportService" description="Response time (past 7 days) by node across one or more surveillance categories" />
+        <report id="Response-Time-Report_ThisMonth" display-name="Response time by node - This Month" online="true" 
+                report-service="jasperReportService" description="Response time (this month) by node across one or more surveillance categories" />
+        <report id="Response-Time-Report_LastMonth" display-name="Response time by node - Last Month" online="true" 
+                report-service="jasperReportService" description="Response time (last month) by node across one or more surveillance categories" />
+        <report id="Response-Time-Report_ThisYear" display-name="Response time by node - This Year" online="true" 
+                report-service="jasperReportService" description="Response time (this year) by node across one or more surveillance categories" />
+        <report id="95th-Percentile-Traffic-Rate" display-name="95th Percentile Traffic Rate by Interface" online="true" 
+                report-service="jasperReportService" description="95th Percentile Traffic Rate by Interface" />
+        <report id="95th-Percentile-Traffic-Rate_ThisMonth" display-name="95th Percentile Traffic Rate by Interface - This Month" online="true" 
+                report-service="jasperReportService" description="95th Percentile Traffic Rate by Interface (this month)" />
+        <report id="95th-Percentile-Traffic-Rate_LastMonth" display-name="95th Percentile Traffic Rate by Interface - Last Month" online="true" 
+                report-service="jasperReportService" description="95th Percentile Traffic Rate by Interface (last month)" />
+        <report id="95th-Percentile-Traffic-Rate_ThisYear" display-name="95th Percentile Traffic Rate by Interface - This Year" online="true" 
+                report-service="jasperReportService" description="95th Percentile Traffic Rate by Interface (this year)" />
+        <report id="Total-Bytes-Transferred-By-Interface" display-name="Total Bytes Transferred by Interface last seven days" online="true" 
+                report-service="jasperReportService" description="Total Bytes Transferred by Interface last seven days" />
+        <report id="Total-Bytes-Transferred-By-Interface_LastMonth" display-name="Total Bytes Transferred by Interface last month" online="true" 
+                report-service="jasperReportService" description="Total Bytes Transferred by Interface last month" />
+        <report id="Total-Bytes-Transferred-By-Interface_ThisMonth" display-name="Total Bytes Transferred by Interface this month" online="true" 
+                report-service="jasperReportService" description="Total Bytes Transferred by Interface this month" />
+        <report id="Average-Peak-Traffic-Rates" display-name="Average and Peak Traffic rates for Nodes by Interface for the last 7 days" online="true" 
+                report-service="jasperReportService" description="Average and Peak Traffic rates for Nodes by Interface for the last 7 days" />
+        <report id="Average-Peak-Traffic-Rates_ThisMonth" display-name="Average and Peak Traffic rates for Nodes by Interface this month" online="true" 
+                report-service="jasperReportService" description="Average and Peak Traffic rates for Nodes by Interface this month" />
+        <report id="Average-Peak-Traffic-Rates_LastMonth" display-name="Average and Peak Traffic rates for Nodes by Interface last month" online="true" 
+                report-service="jasperReportService" description="Average and Peak Traffic rates for Nodes by Interface last month" />
 </database-reports>

@@ -1,0 +1,133 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<jasperReport xmlns="http://jasperreports.sourceforge.net/jasperreports" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://jasperreports.sourceforge.net/jasperreports http://jasperreports.sourceforge.net/xsd/jasperreport.xsd" name="TotalBytesTransferredByInterface_subreport1" pageWidth="555" pageHeight="802" whenNoDataType="NoDataSection" columnWidth="555" leftMargin="0" rightMargin="0" topMargin="0" bottomMargin="0">
+	<property name="ireport.zoom" value="1.0"/>
+	<property name="ireport.x" value="0"/>
+	<property name="ireport.y" value="0"/>
+	<template><![CDATA["${install.dir}/etc/report-templates/assets/styles/defaultStyles.jrtx"]]></template>
+	<style name="Table_Header" hAlign="Center" vAlign="Middle" isBold="true" isItalic="false" isUnderline="false" isStrikeThrough="false"/>
+	<style name="Table_Body" hAlign="Center" vAlign="Middle" isBold="false" isItalic="false" isUnderline="false" isStrikeThrough="false"/>
+	<parameter name="rrdDir" class="java.lang.String" isForPrompting="false"/>
+	<parameter name="nodeid" class="java.lang.Integer" isForPrompting="false"/>
+	<parameter name="startDate" class="java.util.Date" isForPrompting="false"/>
+	<parameter name="endDate" class="java.util.Date" isForPrompting="false"/>
+	<parameter name="snmpifalias" class="java.lang.String"/>
+	<parameter name="snmpifname" class="java.lang.String"/>
+	<parameter name="snmpifdescr" class="java.lang.String"/>
+	<parameter name="snmpphysaddr" class="java.lang.String"/>
+	<parameter name="ifLabel" class="java.lang.String" isForPrompting="false">
+		<defaultValueExpression><![CDATA[$P{snmpifname} == null || "".equals($P{snmpifname}) ? $P{snmpifdescr} : $P{snmpifname}]]></defaultValueExpression>
+	</parameter>
+	<parameter name="interface" class="java.lang.String" isForPrompting="false">
+		<defaultValueExpression><![CDATA[$P{snmpphysaddr} == null || "".equals($P{snmpphysaddr}) ? $P{ifLabel}.replaceAll("[\\/ :| \\.]", "_") : $P{ifLabel}.replaceAll("[\\/ :| \\.]", "_") + "-" + $P{snmpphysaddr}]]></defaultValueExpression>
+	</parameter>
+	<parameter name="inOctets" class="java.lang.String" isForPrompting="false">
+		<defaultValueExpression><![CDATA[new java.io.File("$P{rrdDir}/snmp/$P{nodeid}/$P{interface}/ifHCInOctets.jrb").exists() ? "ifHCInOctets" : "ifInOctets"]]></defaultValueExpression>
+	</parameter>
+	<parameter name="outOctets" class="java.lang.String" isForPrompting="false">
+		<defaultValueExpression><![CDATA[new java.io.File("$P{rrdDir}/snmp/$P{nodeid}/$P{interface}/ifHCOutOctets.jrb").exists() ? "ifHCOutOctets" : "ifOutOctets"]]></defaultValueExpression>
+	</parameter>
+	<queryString language="jrobin">
+		<![CDATA[--start $P{startDate} --end $P{endDate}
+		DEF:xx=$P{rrdDir}/snmp/$P{nodeid}/$P{interface}/$P{inOctets}.jrb:$P{inOctets}:AVERAGE
+		DEF:yy=$P{rrdDir}/snmp/$P{nodeid}/$P{interface}/$P{outOctets}.jrb:$P{outOctets}:AVERAGE
+		XPORT:xx:IfHCInOctets
+		XPORT:yy:IfHCOutOctets]]>
+	</queryString>
+	<field name="Timestamp" class="java.util.Date">
+		<fieldDescription><![CDATA[Timestamp]]></fieldDescription>
+	</field>
+	<field name="IfHCInOctets" class="java.lang.Double">
+		<fieldDescription><![CDATA[IfHCInOctets]]></fieldDescription>
+	</field>
+	<field name="IfHCOutOctets" class="java.lang.Double">
+		<fieldDescription><![CDATA[IfHCOutOctets]]></fieldDescription>
+	</field>
+	<variable name="received_SUM" class="java.lang.Double" calculation="Sum">
+		<variableExpression><![CDATA[$F{IfHCInOctets}]]></variableExpression>
+	</variable>
+	<variable name="transmitted_SUM" class="java.lang.Double" calculation="Sum">
+		<variableExpression><![CDATA[$F{IfHCOutOctets}]]></variableExpression>
+	</variable>
+	<filterExpression><![CDATA[!$F{IfHCInOctets}.isNaN() || !$F{IfHCOutOctets}.isNaN()]]></filterExpression>
+	<background>
+		<band splitType="Stretch"/>
+	</background>
+	<title>
+		<band splitType="Stretch"/>
+	</title>
+	<pageHeader>
+		<band splitType="Stretch"/>
+	</pageHeader>
+	<columnHeader>
+		<band splitType="Stretch"/>
+	</columnHeader>
+	<detail>
+		<band splitType="Stretch"/>
+	</detail>
+	<columnFooter>
+		<band splitType="Stretch"/>
+	</columnFooter>
+	<pageFooter>
+		<band splitType="Stretch"/>
+	</pageFooter>
+	<summary>
+		<band height="32" splitType="Stretch">
+			<textField pattern="###0.00">
+				<reportElement style="Table_Body" x="36" y="16" width="150" height="16"/>
+				<textElement/>
+				<textFieldExpression class="java.lang.Double"><![CDATA[$V{received_SUM}/new Double("1048576.0")]]></textFieldExpression>
+			</textField>
+			<textField pattern="###0.00">
+				<reportElement style="Table_Body" x="186" y="16" width="150" height="16"/>
+				<textElement/>
+				<textFieldExpression class="java.lang.Double"><![CDATA[$V{transmitted_SUM}/new Double("1048576.0")]]></textFieldExpression>
+			</textField>
+			<staticText>
+				<reportElement style="Table_Header" x="36" y="0" width="150" height="16"/>
+				<textElement/>
+				<text><![CDATA[MiByte Received]]></text>
+			</staticText>
+			<staticText>
+				<reportElement style="Table_Header" x="186" y="0" width="150" height="16"/>
+				<textElement/>
+				<text><![CDATA[MiByte Transmitted]]></text>
+			</staticText>
+			<staticText>
+				<reportElement style="Table_Header" x="336" y="0" width="150" height="16"/>
+				<textElement/>
+				<text><![CDATA[Total MiByte In+Out]]></text>
+			</staticText>
+			<textField pattern="###0.00">
+				<reportElement style="Table_Body" x="336" y="16" width="150" height="16"/>
+				<textElement/>
+				<textFieldExpression class="java.lang.Double"><![CDATA[($V{received_SUM} + $V{transmitted_SUM})/new Double("1048576.0")]]></textFieldExpression>
+			</textField>
+		</band>
+	</summary>
+	<noData>
+		<band height="50">
+			<staticText>
+				<reportElement style="Table_Header" x="36" y="2" width="150" height="16"/>
+				<textElement/>
+				<text><![CDATA[MiByte Received]]></text>
+			</staticText>
+			<staticText>
+				<reportElement style="Table_Header" x="186" y="2" width="150" height="16"/>
+				<textElement/>
+				<text><![CDATA[MiByte Transmitted]]></text>
+			</staticText>
+			<staticText>
+				<reportElement style="Table_Header" x="336" y="2" width="150" height="16"/>
+				<textElement/>
+				<text><![CDATA[Total MiByte In+Out]]></text>
+			</staticText>
+			<staticText>
+				<reportElement x="149" y="22" width="226" height="20"/>
+				<textElement textAlignment="Center">
+					<font size="14"/>
+				</textElement>
+				<text><![CDATA[No Data For this Interface]]></text>
+			</staticText>
+		</band>
+	</noData>
+</jasperReport>
