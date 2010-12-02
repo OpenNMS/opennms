@@ -10,6 +10,7 @@ import org.jrobin.core.RrdDb;
 import org.jrobin.core.RrdDbPool;
 import org.jrobin.core.RrdDef;
 import org.jrobin.core.RrdException;
+import org.opennms.core.utils.LogUtils;
 
 abstract class RrdToolCmd {
 
@@ -36,6 +37,7 @@ abstract class RrdToolCmd {
         try {
         	return execute();
         }catch(IOException e) {
+        	LogUtils.debugf(this, "Error creating JRobinDatasource: The Following Exception Occured: %s", e.getMessage());
         	return new EmptyJRDataSource();
         }
         

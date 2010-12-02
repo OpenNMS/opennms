@@ -24,6 +24,10 @@
       <artifactId>jrobin-dependencies</artifactId>
       <type>pom</type>
     </dependency>
+    <dependency>
+      <groupId>org.opennms.core</groupId>
+      <artifactId>org.opennms.core.lib</artifactId>
+    </dependency>
   </dependencies>
     
 </project>
