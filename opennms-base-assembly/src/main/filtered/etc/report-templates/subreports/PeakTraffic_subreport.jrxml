@@ -74,17 +74,17 @@
 	</background>
 	<summary>
 		<band height="26" splitType="Stretch">
-			<textField pattern="###0.00">
+			<textField pattern="#,##0.00">
 				<reportElement style="Detail" x="534" y="4" width="115" height="20"/>
 				<textElement/>
 				<textFieldExpression class="java.lang.Double"><![CDATA[$V{ifOutOctets_Peak}]]></textFieldExpression>
 			</textField>
-			<textField pattern="###0.00">
+			<textField pattern="#,##0.00">
 				<reportElement style="Detail" x="179" y="4" width="111" height="20"/>
 				<textElement/>
 				<textFieldExpression class="java.lang.Double"><![CDATA[$V{ifInOctets_Average}]]></textFieldExpression>
 			</textField>
-			<textField pattern="###0.00">
+			<textField pattern="#,##0.00">
 				<reportElement style="Detail" x="404" y="4" width="130" height="20"/>
 				<textElement/>
 				<textFieldExpression class="java.lang.Double"><![CDATA[$V{ifOutOctets_Average}]]></textFieldExpression>
@@ -94,7 +94,7 @@
 				<textElement textAlignment="Left"/>
 				<textFieldExpression class="java.lang.String"><![CDATA[$P{interface}]]></textFieldExpression>
 			</textField>
-			<textField pattern="###0.00">
+			<textField pattern="#,##0.00">
 				<reportElement style="Detail" x="290" y="4" width="114" height="20"/>
 				<textElement/>
 				<textFieldExpression class="java.lang.Double"><![CDATA[$V{ifInOctets_Peak}]]></textFieldExpression>
