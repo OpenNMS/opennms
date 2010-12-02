@@ -278,34 +278,22 @@ rm -rf $RPM_BUILD_ROOT
 DONT_GPRINTIFY="yes, please do not"
 export DONT_GPRINTIFY
 
-%if %{with_tests}
-EXTRA_TARGETS="$EXTRA_TARGETS test"
-%endif
-
-%if %{with_docs}
-EXTRA_TARGETS="$EXTRA_TARGETS docs"
-%endif
-
 if [ -e "settings.xml" ]; then
 	SETTINGS_XML="-s `pwd`/settings.xml"
 fi
 
+EXTRA_DEFINES="-Dbuild.profile=full"
 %if %{build_full}
 	echo "=== RUNNING FULL BUILD AND INSTALL ==="
 	sh ./build.sh $SETTINGS_XML -Dbuild=all -Dinstall.version="%{version}-%{release}" -Ddist.name="$RPM_BUILD_ROOT" \
 	    -Dopennms.home="%{instprefix}" install
+	EXTRA_DEFINES="-Dbuild.profile=default"
 %fi
 
-sh ./build.sh $SETTINGS_XML -Dbuild=all -Dinstall.version="%{version}-%{release}" -Ddist.name="$RPM_BUILD_ROOT" \
-    -Dopennms.home="%{instprefix}" install assembly:attached
-%else
-	for dir in integrations/*adapter integrations/opennms-rancid assemblies/release-assembly; do
-		pushd "$dir"
-			sh ../../build.sh $SETTINGS_XML -Dbuild=all -Dinstall.version="%{version}-%{release}" -Ddist.name="$RPM_BUILD_ROOT" \
-				-Dopennms.home="%{instprefix}" install
-		popd
-	done
-%endif
+pushd opennms-full-assembly
+	sh ./build.sh $SETTINGS_XML -Dbuild=all -Dinstall.version="%{version}-%{release}" -Ddist.name="$RPM_BUILD_ROOT" \
+  	  -Dopennms.home="%{instprefix}" $EXTRA_DEFINES install
+popd
 
 pushd opennms-tools
     sh ../build.sh $SETTINGS_XML -N -Dinstall.version="%{version}-%{release}" -Ddist.name="$RPM_BUILD_ROOT" \
