@@ -289,14 +289,20 @@ if [ -e "settings.xml" ]; then
 	SETTINGS_XML="-s `pwd`/settings.xml"
 fi
 
-echo "=== RUNNING INSTALL ==="
-
-sh ./build.sh $SETTINGS_XML -Dbuild=all -Dinstall.version="%{version}-%{release}" -Ddist.name=$RPM_BUILD_ROOT \
-    -Dopennms.home=%{instprefix} install assembly:attached
+if [ -z "$BUILD_FULL" ] || [ "$BUILD_FULL" -eq 1 ] then
+	echo "=== RUNNING FULL BUILD AND INSTALL ==="
+	sh ./build.sh $SETTINGS_XML -Dbuild=all -Dinstall.version="%{version}-%{release}" -Ddist.name="$RPM_BUILD_ROOT" \
+	    -Dopennms.home="%{instprefix}" install assembly:attached
+else
+	pushd assemblies/release-assembly
+		sh ../../build.sh $SETTINGS_XML -Dbuild=all -Dinstall.version="%{version}-%{release}" -Ddist.name="$RPM_BUILD_ROOT" \
+			-Dopennms.home="%{instprefix}" install assembly:attached
+	popd
+fi
 
 pushd opennms-tools
-    sh ../build.sh $SETTINGS_XML -N -Dinstall.version="%{version}-%{release}" -Ddist.name=$RPM_BUILD_ROOT \
-        -Dopennms.home=%{instprefix} install
+    sh ../build.sh $SETTINGS_XML -N -Dinstall.version="%{version}-%{release}" -Ddist.name="$RPM_BUILD_ROOT" \
+        -Dopennms.home="%{instprefix}" install
 popd
 
 echo "=== INSTALL COMPLETED ==="

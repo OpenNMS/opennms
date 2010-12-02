@@ -36,7 +36,12 @@ fi
 
 VERSION=`grep '<version>' pom.xml | sed -e 's,^[^>]*>,,' -e 's,<.*$,,' -e 's,-[^-]*-SNAPSHOT$,,' -e 's,-SNAPSHOT$,,' -e 's,-testing$,,' -e 's,-,.,g' | head -n 1`
 
-if [ -z $JAVA_HOME ]; then
+if [ -z "$BUILD_FULL" ]; then
+	echo "\$BUILD_FULL not set, using default ('1')"
+	BUILD_FULL=1
+fi
+
+if [ -z "$JAVA_HOME" ]; then
 	# hehe
 	for dir in /usr/java/jdk1.{5,6,7,8,9}*; do
 		if [ -x "$dir/bin/java" ]; then
@@ -95,8 +100,8 @@ fi
 if [ -z "$SKIP_RPMBUILD" ]; then
 	echo "=== Building RPMs ==="
 
-	rpmbuild -bb --define "extrainfo $EXTRA_INFO" --define "extrainfo2 $EXTRA_INFO2" --define "_topdir $WORKDIR" --define "_tmppath $WORKDIR/tmp" --define "version $VERSION" --define "releasenumber $RELEASE" tools/packages/opennms/opennms.spec
-	rpmbuild -bb --define "extrainfo $EXTRA_INFO" --define "extrainfo2 $EXTRA_INFO2" --define "_topdir $WORKDIR" --define "_tmppath $WORKDIR/tmp" --define "version $VERSION" --define "releasenumber $RELEASE" opennms-tools/centric-troubleticketer/src/main/rpm/opennms-plugin-ticketer-centric.spec
+	rpmbuild -bb --define "build_full $BUILD_FULL" --define "extrainfo $EXTRA_INFO" --define "extrainfo2 $EXTRA_INFO2" --define "_topdir $WORKDIR" --define "_tmppath $WORKDIR/tmp" --define "version $VERSION" --define "releasenumber $RELEASE" tools/packages/opennms/opennms.spec
+	rpmbuild -bb --define "build_full $BUILD_FULL" --define "extrainfo $EXTRA_INFO" --define "extrainfo2 $EXTRA_INFO2" --define "_topdir $WORKDIR" --define "_tmppath $WORKDIR/tmp" --define "version $VERSION" --define "releasenumber $RELEASE" opennms-tools/centric-troubleticketer/src/main/rpm/opennms-plugin-ticketer-centric.spec
 
 	if [ -n "$GPG" ]; then
 		if [ `$GPG $GPGOPTS --list-keys opennms@opennms.org 2>/dev/null | grep -c '^sub'` -gt 0 ]; then
