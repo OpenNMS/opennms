@@ -374,8 +374,8 @@ public class NodeDaoTest  {
     private void simulateScan(Date timestampe) {
         OnmsNode n = getNodeDao().get(1);
         
-        assertEquals(3, n.getIpInterfaces().size());
-        assertEquals(3, n.getSnmpInterfaces().size());
+        assertEquals(4, n.getIpInterfaces().size());
+        assertEquals(4, n.getSnmpInterfaces().size());
 
         OnmsIpInterface iface = n.getIpInterfaceByIpAddress("192.168.1.1");
         assertNotNull(iface);
@@ -400,7 +400,7 @@ public class NodeDaoTest  {
     private void validateNode(OnmsNode n) throws Exception {
         assertNotNull("Expected node to be non-null", n);
         assertNotNull("Expected node "+n.getId()+" to have interfaces", n.getIpInterfaces());
-        assertEquals("Unexpected number of interfaces for node "+n.getId(), 3, n.getIpInterfaces().size());
+        assertEquals("Unexpected number of interfaces for node "+n.getId(), 4, n.getIpInterfaces().size());
         for (Object o : n.getIpInterfaces()) {
 			OnmsIpInterface iface = (OnmsIpInterface)o;
 			assertNotNull(iface);

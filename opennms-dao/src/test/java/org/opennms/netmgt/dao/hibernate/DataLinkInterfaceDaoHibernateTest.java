@@ -67,8 +67,13 @@ public class DataLinkInterfaceDaoHibernateTest extends AbstractTransactionalDaoT
         assertEquals(dli.getLastPollTime(), dli2.getLastPollTime());
     }
 
-    public void testFindById() {
-        DataLinkInterface dli = getDataLinkInterfaceDao().findById(60);
+    public void testFindById() throws Exception {
+        // Note: This ID is based upon the creation order in DatabasePopulator - if you change
+        // the DatabasePopulator by adding additional new objects that use the onmsNxtId sequence
+        // before the creation of this object then this ID may change and this test will fail.
+        //
+        DataLinkInterface dli = getDataLinkInterfaceDao().findById(63);
+        assertNotNull(dli);
         assertEquals(new Integer(1), dli.getNodeId());
         assertEquals(new Integer(1), dli.getIfIndex());
     }

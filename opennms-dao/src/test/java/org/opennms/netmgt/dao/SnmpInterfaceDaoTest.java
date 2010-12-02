@@ -42,7 +42,7 @@ import org.opennms.netmgt.model.OnmsSnmpInterface;
 public class SnmpInterfaceDaoTest extends AbstractTransactionalDaoTestCase {
 	public void testGet() throws Exception {
 		Collection<OnmsSnmpInterface> snmpIfs = getSnmpInterfaceDao().findAll();
-		assertEquals(3, snmpIfs.size());
+		assertEquals(4, snmpIfs.size());
 		for (OnmsSnmpInterface snmpIf : snmpIfs) {
 			assertEquals(10000000, snmpIf.getIfSpeed().intValue());
 			assertNotNull(snmpIf.getNode());

@@ -438,7 +438,7 @@ public class InstallerDbTest extends TemporaryDatabaseTestCase {
         String s_create_sql = "            create table distPoller (\n"
                 + "                    dpName            varchar(12),\n"
                 + "                                constraint pk_dpName primary key (dpName),\n"
-                + "                    dpIP            varchar(39) not null,\n"
+                + "                    dpIP            text not null,\n"
                 + "                    dpComment        varchar(256),\n"
                 + "                    dpDiscLimit        numeric(5,2),\n"
                 + "                    dpLastNodePull        timestamp without time zone,\n"
@@ -454,7 +454,7 @@ public class InstallerDbTest extends TemporaryDatabaseTestCase {
     public void testConstraintAtEndOfTable() throws Exception {
         String s_create_sql = "            create table distPoller (\n"
                 + "                    dpName            varchar(12),\n"
-                + "                    dpIP            varchar(39) not null,\n"
+                + "                    dpIP            text not null,\n"
                 + "                    dpComment        varchar(256),\n"
                 + "                    dpDiscLimit        numeric(5,2),\n"
                 + "                    dpLastNodePull        timestamp without time zone,\n"
@@ -545,7 +545,7 @@ public class InstallerDbTest extends TemporaryDatabaseTestCase {
     public void testConstraintOnBogusColumn() throws Exception {
         String s_create_sql = "            create table distPoller (\n"
                 + "                    dpName            varchar(12),\n"
-                + "                    dpIP            varchar(39) not null,\n"
+                + "                    dpIP            text not null,\n"
                 + "                    dpComment        varchar(256),\n"
                 + "                    dpDiscLimit        numeric(5,2),\n"
                 + "                    dpLastNodePull        timestamp without time zone,\n"
@@ -1216,8 +1216,8 @@ public class InstallerDbTest extends TemporaryDatabaseTestCase {
         addTableFromSQLWithReplacements(
                                         "ipinterface",
                                         new String[][] { new String[] {
-                                                "(?i)ipAddr\\s+varchar\\(39\\) not null,",
-                                                "ipAddr varchar(39)," } });
+                                                "(?i)ipAddr\\s+text\\s+not null,",
+                                                "ipAddr text," } });
 
         executeSQL("INSERT INTO node (nodeId, nodeCreateTime) VALUES ( 1, now() )");
         executeSQL("INSERT INTO ipInterface (nodeId, ipAddr, ifIndex) VALUES ( 1, '1.2.3.4', null )");
@@ -1237,8 +1237,8 @@ public class InstallerDbTest extends TemporaryDatabaseTestCase {
         addTableFromSQLWithReplacements(
                                         "ipinterface",
                                         new String[][] { new String[] {
-                                                "(?i)ipAddr\\s+varchar\\(39\\) not null,",
-                                                "ipAddr varchar(39)," } });
+                                                "(?i)ipAddr\\s+text\\s+not null,",
+                                                "ipAddr text," } });
 
         executeSQL("INSERT INTO node (nodeId, nodeCreateTime) VALUES ( 1, now() )");
         executeSQL("INSERT INTO snmpInterface (nodeId, ipAddr, snmpIfIndex) VALUES ( 1, '1.2.3.4', 1 )");
@@ -1699,8 +1699,8 @@ public class InstallerDbTest extends TemporaryDatabaseTestCase {
         addTableFromSQLWithReplacements(
                                         "ifservices",
                                         new String[][] { new String[] {
-                                                "(?i)ipAddr\\s+varchar\\(39\\) not null,",
-                                                "ipAddr varchar(39)," } });
+                                                "(?i)ipAddr\\s+text\\s+not null,",
+                                                "ipAddr text," } });
 
         getInstallerDb().createTables();
     }

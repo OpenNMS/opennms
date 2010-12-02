@@ -161,7 +161,11 @@ public class OnmsMapDaoHibernateTest  extends AbstractTransactionalDaoTestCase {
     }
 
     public void testFindById() {
-        OnmsMap map = getOnmsMapDao().findMapById(58);
+        // Note: This ID is based upon the creation order in DatabasePopulator - if you change
+        // the DatabasePopulator by adding additional new objects that use the onmsNxtId sequence
+        // before the creation of this object then this ID may change and this test will fail.
+        //
+        OnmsMap map = getOnmsMapDao().findMapById(61);
         assertEquals("DB_Pop_Test_Map", map.getName());
         assertEquals("fake_background.jpg", map.getBackground());
         assertEquals(OnmsMap.ACCESS_MODE_ADMIN, map.getAccessMode());
@@ -229,12 +233,18 @@ public class OnmsMapDaoHibernateTest  extends AbstractTransactionalDaoTestCase {
     }
 
     public void testDeleteOnmsMap() {
-        OnmsMap map = getOnmsMapDao().findMapById(58);
+        // Note: This ID is based upon the creation order in DatabasePopulator - if you change
+        // the DatabasePopulator by adding additional new objects that use the onmsNxtId sequence
+        // before the creation of this object then this ID may change and this test will fail.
+        //
+        OnmsMap map = getOnmsMapDao().findMapById(61);
+
+        assertNotNull(map);
         getOnmsMapDao().delete(map);
 
-        assertNull(getOnmsMapDao().findMapById(58));
+        assertNull(getOnmsMapDao().findMapById(61));
     }
-    
+
     public void testFindMapByOwner() {
         Collection<OnmsMap> maps = getOnmsMapDao().findMapsByOwner("admin");
         assertEquals(1, maps.size());
