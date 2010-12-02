@@ -288,10 +288,10 @@ EXTRA_DEFINES="-Dbuild.profile=full"
 	sh ./build.sh $SETTINGS_XML -Dbuild=all -Dinstall.version="%{version}-%{release}" -Ddist.name="$RPM_BUILD_ROOT" \
 	    -Dopennms.home="%{instprefix}" install
 	EXTRA_DEFINES="-Dbuild.profile=default"
-%fi
+%endif
 
 pushd opennms-full-assembly
-	sh ./build.sh $SETTINGS_XML -Dbuild=all -Dinstall.version="%{version}-%{release}" -Ddist.name="$RPM_BUILD_ROOT" \
+	sh ../build.sh $SETTINGS_XML -Dbuild=all -Dinstall.version="%{version}-%{release}" -Ddist.name="$RPM_BUILD_ROOT" \
   	  -Dopennms.home="%{instprefix}" $EXTRA_DEFINES install
 popd
 
@@ -392,22 +392,6 @@ find $RPM_BUILD_ROOT%{webappsdir} -type d | \
     sort >> %{_tmppath}/files.webapp
 
 popd
-
-# provisioning adapters
-
-cp integrations/opennms-dns-provisioning-adapter/target/*.jar        $RPM_BUILD_ROOT%{instprefix}/lib/
-cp integrations/opennms-link-provisioning-adapter/target/*.jar       $RPM_BUILD_ROOT%{instprefix}/lib/
-cp integrations/opennms-map-provisioning-adapter/target/*.jar        $RPM_BUILD_ROOT%{instprefix}/lib/
-cp integrations/opennms-rancid/target/*.jar                          $RPM_BUILD_ROOT%{instprefix}/lib/
-cp integrations/opennms-snmp-asset-provisioning-adapter/target/*.jar $RPM_BUILD_ROOT%{instprefix}/lib/
-rm -rf $RPM_BUILD_ROOT%{instprefix}/lib/*-sources.jar
-rm -rf $RPM_BUILD_ROOT%{instprefix}/lib/*-tests.jar
-rm -rf $RPM_BUILD_ROOT%{instprefix}/lib/*-xsds.jar
-
-# config files, this should be more automated  :P
-cp integrations/opennms-link-provisioning-adapter/src/main/resources/link-adapter-configuration.xml $RPM_BUILD_ROOT%{instprefix}/etc/
-cp integrations/opennms-link-provisioning-adapter/src/main/resources/endpoint-configuration.xml $RPM_BUILD_ROOT%{instprefix}/etc/
-cp integrations/opennms-map-provisioning-adapter/src/main/resources/mapsadapter-configuration.xml   $RPM_BUILD_ROOT%{instprefix}/etc/
 
 %clean
 rm -rf $RPM_BUILD_ROOT
