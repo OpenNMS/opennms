@@ -154,22 +154,22 @@ ORDER BY
 				</staticText>
 				<staticText>
 					<reportElement style="Interface_Header" x="156" y="21" width="111" height="36"/>
-					<textElement/>
+					<textElement textAlignment="Right"/>
 					<text><![CDATA[Average Receive bps]]></text>
 				</staticText>
 				<staticText>
 					<reportElement style="Interface_Header" x="267" y="21" width="100" height="36"/>
-					<textElement/>
+					<textElement textAlignment="Right"/>
 					<text><![CDATA[Peak Receive bps]]></text>
 				</staticText>
 				<staticText>
 					<reportElement style="Interface_Header" x="511" y="21" width="115" height="36"/>
-					<textElement/>
+					<textElement textAlignment="Right"/>
 					<text><![CDATA[Peak Transmit bps]]></text>
 				</staticText>
 				<staticText>
 					<reportElement style="Interface_Header" x="367" y="21" width="144" height="36"/>
-					<textElement/>
+					<textElement textAlignment="Right"/>
 					<text><![CDATA[Average Transmit bps]]></text>
 				</staticText>
 			</band>
