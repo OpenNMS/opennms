@@ -126,9 +126,10 @@
     <module>opennms-wmi</module>
     <module>opennms-asterisk</module>
     <module>opennms-xmp</module>
-    <module>opennms-base-assembly</module>
 
-    <!-- unfortunate side-effect of the way maven assemblies work -->
+    <!-- if we were still including these, they would be at the end -->
+    <!-- instead, they're a part of the separate assembly build now -->
+    <!-- <module>opennms-base-assembly</module> -->
     <!-- <module>opennms-full-assembly</module> -->
   </modules>
   <build>

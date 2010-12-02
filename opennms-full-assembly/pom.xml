@@ -91,17 +91,17 @@
           </plugin>
         </plugins>
       </build>
-      <modules>
-        <module>../features/http-remoting</module>
-        <module>../features/remote-poller-onejar</module>
-        <module>../features/remote-poller-standalone</module>
-        <module>../features/webapp-full</module>
-        <module>../opennms-doc</module>
-        <module>../opennms-base-assembly</module>
-        <module>../assemblies/rxtx-assembly</module>
-      </modules>
     </profile>
   </profiles>
+  <modules>
+    <module>../features/http-remoting</module>
+    <module>../features/remote-poller-onejar</module>
+    <module>../features/remote-poller-standalone</module>
+    <module>../features/webapp-full</module>
+    <module>../assemblies/rxtx-assembly</module>
+    <module>../opennms-doc</module>
+    <module>../opennms-base-assembly</module>
+  </modules>
   <dependencies>
     <dependency>
       <groupId>org.opennms.features</groupId>
