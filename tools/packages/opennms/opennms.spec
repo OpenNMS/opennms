@@ -30,6 +30,7 @@
 
 %{!?extrainfo:%define extrainfo }
 %{!?extrainfo2:%define extrainfo2 }
+%{!?build_full:%define build_full 1}
 
 # keep RPM from making an empty debug package
 %define debug_package %{nil}
@@ -289,16 +290,18 @@ if [ -e "settings.xml" ]; then
 	SETTINGS_XML="-s `pwd`/settings.xml"
 fi
 
-if [ -z "$BUILD_FULL" ] || [ "$BUILD_FULL" -eq 1 ] then
+%if %{build_full}
 	echo "=== RUNNING FULL BUILD AND INSTALL ==="
 	sh ./build.sh $SETTINGS_XML -Dbuild=all -Dinstall.version="%{version}-%{release}" -Ddist.name="$RPM_BUILD_ROOT" \
 	    -Dopennms.home="%{instprefix}" install assembly:attached
-else
-	pushd assemblies/release-assembly
-		sh ../../build.sh $SETTINGS_XML -Dbuild=all -Dinstall.version="%{version}-%{release}" -Ddist.name="$RPM_BUILD_ROOT" \
-			-Dopennms.home="%{instprefix}" install assembly:attached
-	popd
-fi
+%else
+	for dir in integrations/*adapter integrations/opennms-rancid assemblies/release-assembly; do
+		pushd "$dir"
+			sh ../../build.sh $SETTINGS_XML -Dbuild=all -Dinstall.version="%{version}-%{release}" -Ddist.name="$RPM_BUILD_ROOT" \
+				-Dopennms.home="%{instprefix}" install
+		popd
+	done
+%endif
 
 pushd opennms-tools
     sh ../build.sh $SETTINGS_XML -N -Dinstall.version="%{version}-%{release}" -Ddist.name="$RPM_BUILD_ROOT" \
