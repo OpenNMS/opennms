@@ -250,9 +250,6 @@ ORDER BY
 				<subreportParameter name="startDate">
 					<subreportParameterExpression><![CDATA[$P{startDate}]]></subreportParameterExpression>
 				</subreportParameter>
-				<subreportParameter name="interface">
-					<subreportParameterExpression><![CDATA[$F{ipaddr}]]></subreportParameterExpression>
-				</subreportParameter>
 				<subreportParameter name="nodeid">
 					<subreportParameterExpression><![CDATA[$F{nodeid}]]></subreportParameterExpression>
 				</subreportParameter>
