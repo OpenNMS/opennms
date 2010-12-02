@@ -18,6 +18,9 @@
     <module>../rxtx-assembly</module>
     <module>../../opennms-full-assembly</module>
   </modules>
+  <properties>
+    <root.dir>${project.basedir}/../..</root.dir>
+  </properties>
   <build>
     <plugins>
       <plugin>
@@ -36,7 +39,7 @@
           </descriptors>
           <appendAssemblyId>false</appendAssemblyId>
           <tarLongFileMode>gnu</tarLongFileMode>
-          <outputDirectory>${dist.dir}</outputDirectory>
+          <outputDirectory>${project.build.directory}</outputDirectory>
           <finalName>${dist.name}</finalName>
         </configuration>
       </plugin>

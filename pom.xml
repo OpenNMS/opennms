@@ -370,16 +370,6 @@
        <artifactId>maven-pax-plugin</artifactId>
      </plugin>
      <plugin>
-       <inherited>false</inherited>
-       <groupId>org.apache.maven.plugins</groupId>
-       <artifactId>maven-release-plugin</artifactId>
-       <configuration>
-          <preparationGoals>clean install</preparationGoals>
-          <arguments>-Dmaven.test.skip.exec=true</arguments>
-          <tagBase>https://opennms.svn.sourceforge.net/svnroot/opennms/opennms/tags</tagBase>
-       </configuration>
-     </plugin>
-     <plugin>
        <groupId>org.apache.maven.plugins</groupId>
        <artifactId>maven-resources-plugin</artifactId>
        <version>2.3</version>
@@ -614,7 +604,7 @@
     <install.version>${project.version}</install.version>
     <display.version>${install.version}</display.version>
     <opennms.home>${dist.dir}/${dist.name}</opennms.home>
-    <dist.dir>${project.build.directory}</dist.dir>
+    <dist.dir>${root.dir}/target</dist.dir>
     <dist.name>opennms-${project.version}</dist.name>
     <install.dir>${opennms.home}</install.dir>
     <install.init.dir>${install.dir}/bin</install.init.dir>
