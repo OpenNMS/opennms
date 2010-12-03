@@ -228,7 +228,6 @@ ${DESTDIR}${BASEDIR}:
 	mkdir -p ${DESTDIR}${BASEDIR}
 
 build: .configured.${SRCVERSION}
-#	cd ${TOPONMSDIR} ; ./build.sh -Dopennms.home=${BASEDIR} install assembly:attached
 	true
 
 clean:

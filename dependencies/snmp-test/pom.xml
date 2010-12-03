@@ -28,6 +28,25 @@
       <artifactId>org.opennms.lib.snmp.integration-tests</artifactId>
       <version>${opennmsSnmpApiVersion}</version>
       <type>test-jar</type>
+      <exclusions>
+        <exclusion><groupId>org.opennms.core</groupId><artifactId>org.opennms.core.lib</artifactId></exclusion>
+        <exclusion><groupId>org.opennms</groupId><artifactId>opennms-util</artifactId></exclusion>
+        <exclusion><groupId>org.opennms.dependencies</groupId><artifactId>hibernate-dependencies</artifactId></exclusion>
+        <exclusion><groupId>org.opennms.dependencies</groupId><artifactId>spring-dependencies</artifactId></exclusion>
+      </exclusions>
+    </dependency>
+    <dependency>
+      <groupId>org.opennms.core</groupId>
+      <artifactId>org.opennms.core.lib</artifactId>
+    </dependency>
+    <dependency>
+      <groupId>org.opennms</groupId>
+      <artifactId>opennms-util</artifactId>
+    </dependency>
+    <dependency>
+      <groupId>org.opennms.dependencies</groupId>
+      <artifactId>spring-dependencies</artifactId>
+      <type>pom</type>
     </dependency>
   </dependencies>
   <repositories>

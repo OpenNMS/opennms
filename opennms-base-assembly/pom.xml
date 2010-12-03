@@ -20,6 +20,12 @@
     </resources>
     <plugins>
       <plugin>
+       <artifactId>maven-deploy-plugin</artifactId>
+       <configuration>
+         <skip>true</skip>
+       </configuration>
+      </plugin>
+      <plugin>
         <groupId>org.apache.maven.plugins</groupId>
         <artifactId>maven-dependency-plugin</artifactId>
         <executions>
@@ -105,8 +111,8 @@
               <outputDirectory>${project.build.directory}</outputDirectory>
               <artifactItems>
                 <artifactItem>
-                  <groupId>org.opennms.features</groupId>
-                  <artifactId>org.opennms.features.remote-poller-standalone</artifactId>
+                  <groupId>org.opennms.assemblies</groupId>
+                  <artifactId>org.opennms.assemblies.remote-poller-standalone</artifactId>
                   <version>${project.version}</version>
                   <classifier>remote-poller</classifier>
                 </artifactItem>
@@ -141,8 +147,8 @@
               <outputDirectory>${project.build.directory}/dependency-webapp</outputDirectory>
               <artifactItems>
                 <artifactItem>
-                  <groupId>org.opennms.features</groupId>
-                  <artifactId>org.opennms.features.webapp-full</artifactId>
+                  <groupId>org.opennms.assemblies</groupId>
+                  <artifactId>org.opennms.assemblies.webapp-full</artifactId>
                   <version>${project.version}</version>
                   <type>war</type>
                 </artifactItem>
@@ -174,6 +180,7 @@
         <configuration>
           <descriptors>
             <descriptor>src/assembly/daemon.xml</descriptor>
+            <descriptor>src/assembly/web-inf.xml</descriptor>
           </descriptors>
         </configuration>
         <executions>
@@ -186,7 +193,7 @@
       <plugin>
         <groupId>org.codehaus.mojo</groupId>
         <artifactId>jasperreports-maven-plugin</artifactId>
-        <version>1.0-beta-3-20101123</version>
+        <version>1.0-beta-3-SNAPSHOT</version>
         <executions>
           <execution>
             <phase>compile</phase>
@@ -199,10 +206,10 @@
           <sourceDirectory>target/classes/etc/report-templates</sourceDirectory>
           <outputDirectory>${project.build.directory}/jasper</outputDirectory>
           <xmlValidation>true</xmlValidation>
+          <forceCompile>false</forceCompile>
           <additionalProperties>
             <net.sf.jasperreports.query.executer.factory.jrobin>org.opennms.netmgt.jasper.jrobin.JRobinQueryExecutorFactory</net.sf.jasperreports.query.executer.factory.jrobin>
           </additionalProperties>
-          <!-- <compiler>net.sf.jasperreports.compilers.JRGroovyCompiler</compiler> -->
         </configuration>
         <dependencies>
           <dependency>

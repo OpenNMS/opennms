@@ -36,7 +36,7 @@ fi
 
 VERSION=`grep '<version>' pom.xml | sed -e 's,^[^>]*>,,' -e 's,<.*$,,' -e 's,-[^-]*-SNAPSHOT$,,' -e 's,-SNAPSHOT$,,' -e 's,-testing$,,' -e 's,-,.,g' | head -n 1`
 
-if [ -z $JAVA_HOME ]; then
+if [ -z "$JAVA_HOME" ]; then
 	# hehe
 	for dir in /usr/java/jdk1.{5,6,7,8,9}*; do
 		if [ -x "$dir/bin/java" ]; then
@@ -73,10 +73,15 @@ echo "Version: " $VERSION
 echo "Release: " $RELEASE
 echo
 
+if [ -z "$OPENNMS_SKIP_COMPILE" ]; then
+	OPENNMS_SKIP_COMPILE=0
+fi
+
 if [ -z "$SKIP_SETUP" ]; then
 	if [ -z "$SKIP_CLEAN" ]; then
 		echo "=== Clean Up ==="
-		./build.sh clean
+		./compile.pl clean
+		./assemble.pl clean
 	fi
 
 	echo "=== Creating Working Directories ==="
@@ -88,15 +93,15 @@ if [ -z "$SKIP_SETUP" ]; then
 
 	echo "=== Creating a tar.gz archive of the Source in /usr/src/redhat/SOURCES ==="
 
-	$TAR zcvf "$WORKDIR/SOURCES/opennms-source-$VERSION-$RELEASE.tar.gz" -C "$WORKDIR/tmp" "opennms-$VERSION-$RELEASE"
-	$TAR zcvf "$WORKDIR/SOURCES/centric-troubleticketer.tar.gz" -C "$WORKDIR/tmp/opennms-$VERSION-$RELEASE/source/opennms-tools" "centric-troubleticketer"
+	$TAR zcf "$WORKDIR/SOURCES/opennms-source-$VERSION-$RELEASE.tar.gz" -C "$WORKDIR/tmp" "opennms-$VERSION-$RELEASE"
+	$TAR zcf "$WORKDIR/SOURCES/centric-troubleticketer.tar.gz" -C "$WORKDIR/tmp/opennms-$VERSION-$RELEASE/source/opennms-tools" "centric-troubleticketer"
 fi
 
 if [ -z "$SKIP_RPMBUILD" ]; then
 	echo "=== Building RPMs ==="
 
-	rpmbuild -bb --define "extrainfo $EXTRA_INFO" --define "extrainfo2 $EXTRA_INFO2" --define "_topdir $WORKDIR" --define "_tmppath $WORKDIR/tmp" --define "version $VERSION" --define "releasenumber $RELEASE" tools/packages/opennms/opennms.spec
-	rpmbuild -bb --define "extrainfo $EXTRA_INFO" --define "extrainfo2 $EXTRA_INFO2" --define "_topdir $WORKDIR" --define "_tmppath $WORKDIR/tmp" --define "version $VERSION" --define "releasenumber $RELEASE" opennms-tools/centric-troubleticketer/src/main/rpm/opennms-plugin-ticketer-centric.spec
+	rpmbuild -bb --define "skip_compile $OPENNMS_SKIP_COMPILE" --define "extrainfo $EXTRA_INFO" --define "extrainfo2 $EXTRA_INFO2" --define "_topdir $WORKDIR" --define "_tmppath $WORKDIR/tmp" --define "version $VERSION" --define "releasenumber $RELEASE" tools/packages/opennms/opennms.spec
+	rpmbuild -bb --define "skip_compile $OPENNMS_SKIP_COMPILE" --define "extrainfo $EXTRA_INFO" --define "extrainfo2 $EXTRA_INFO2" --define "_topdir $WORKDIR" --define "_tmppath $WORKDIR/tmp" --define "version $VERSION" --define "releasenumber $RELEASE" opennms-tools/centric-troubleticketer/src/main/rpm/opennms-plugin-ticketer-centric.spec
 
 	if [ -n "$GPG" ]; then
 		if [ `$GPG $GPGOPTS --list-keys opennms@opennms.org 2>/dev/null | grep -c '^sub'` -gt 0 ]; then

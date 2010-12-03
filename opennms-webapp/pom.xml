@@ -237,13 +237,6 @@
     </dependency>
     <dependency>
       <groupId>org.opennms.features</groupId>
-      <artifactId>org.opennms.features.remote-poller-onejar</artifactId>
-      <version>${project.version}</version>
-      <classifier>signed-jar-with-dependencies</classifier>
-      <scope>provided</scope>
-    </dependency>
-    <dependency>
-      <groupId>org.opennms.features</groupId>
       <artifactId>org.opennms.features.instrumentationLogReader</artifactId>
       <version>1.0-SNAPSHOT</version>
     </dependency>	

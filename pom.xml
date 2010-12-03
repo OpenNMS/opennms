@@ -92,7 +92,7 @@
     <module>dependencies</module>
     <module>core</module>
     <module>features</module>
-    <module>assemblies</module>
+    <module>opennms-assemblies</module>
     <module>integrations</module>
     <module>tests</module>
     <module>integration-tests</module>
@@ -126,10 +126,11 @@
     <module>opennms-wmi</module>
     <module>opennms-asterisk</module>
     <module>opennms-xmp</module>
-    <module>opennms-base-assembly</module>
 
-    <!-- unfortunate side-effect of the way maven assemblies work -->
-    <module>opennms-full-assembly</module>
+    <!-- if we were still including these, they would be at the end -->
+    <!-- instead, they're a part of the separate assembly build now -->
+    <!-- <module>opennms-base-assembly</module> -->
+    <!-- <module>opennms-full-assembly</module> -->
   </modules>
   <build>
   <pluginManagement>
@@ -370,16 +371,6 @@
        <artifactId>maven-pax-plugin</artifactId>
      </plugin>
      <plugin>
-       <inherited>false</inherited>
-       <groupId>org.apache.maven.plugins</groupId>
-       <artifactId>maven-release-plugin</artifactId>
-       <configuration>
-          <preparationGoals>clean install</preparationGoals>
-          <arguments>-Droot.dir=${basedir} -Dmaven.test.skip.exec=true</arguments>
-          <tagBase>https://opennms.svn.sourceforge.net/svnroot/opennms/opennms/tags</tagBase>
-       </configuration>
-     </plugin>
-     <plugin>
        <groupId>org.apache.maven.plugins</groupId>
        <artifactId>maven-resources-plugin</artifactId>
        <version>2.3</version>
@@ -614,6 +605,8 @@
     <install.version>${project.version}</install.version>
     <display.version>${install.version}</display.version>
     <opennms.home>${dist.dir}/${dist.name}</opennms.home>
+    <maven.metadata.legacy>true</maven.metadata.legacy>
+    <root.dir>${project.basedir}</root.dir>
     <dist.dir>${root.dir}/target</dist.dir>
     <dist.name>opennms-${project.version}</dist.name>
     <install.dir>${opennms.home}</install.dir>
@@ -955,8 +948,8 @@
         <version>${project.version}</version>
       </dependency>
       <dependency>
-        <groupId>org.opennms.features</groupId>
-        <artifactId>org.opennms.features.webapp-full</artifactId>
+        <groupId>org.opennms.assemblies</groupId>
+        <artifactId>org.opennms.assemblies.webapp-full</artifactId>
         <version>${project.version}</version>
       </dependency>
       <dependency>
@@ -1284,8 +1277,8 @@
         <version>${project.version}</version>
       </dependency>
       <dependency>
-        <groupId>org.opennms.features</groupId>
-        <artifactId>org.opennms.features.remote-poller-onejar</artifactId>
+        <groupId>org.opennms.assemblies</groupId>
+        <artifactId>org.opennms.assemblies.remote-poller-onejar</artifactId>
         <version>${project.version}</version>
       </dependency>
       <dependency>

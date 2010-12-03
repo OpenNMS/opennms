@@ -11,7 +11,6 @@
   <name>OpenNMS Features</name>
   <modules>
     <module>acl</module>
-    <module>http-remoting</module>
     <module>jdbc-collector</module>
     <module>instrumentationLogReader</module>
     <module>poller</module>
@@ -21,9 +20,7 @@
     <module>sms-reflector</module>
     <module>reporting</module>
     <module>springframework-security</module>
-    <module>webapp-full</module>
     <module>system-report</module>
-    <module>system-report-onejar</module>
   </modules>
 
   <profiles>
@@ -36,9 +33,7 @@
       <modules>
         <module>remote-poller</module>
         <module>remote-poller-jnlp</module>
-        <module>remote-poller-onejar</module>
         <module>remote-poller-gwt</module>
-        <module>remote-poller-standalone</module>
       </modules>
     </profile>
 
