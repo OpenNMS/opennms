@@ -131,8 +131,8 @@
   </modules>
   <dependencies>
     <dependency>
-      <groupId>org.opennms.features</groupId>
-      <artifactId>org.opennms.features.webapp-full</artifactId>
+      <groupId>org.opennms.assemblies</groupId>
+      <artifactId>org.opennms.assemblies.webapp-full</artifactId>
       <type>war</type>
       <version>${project.version}</version>
     </dependency>

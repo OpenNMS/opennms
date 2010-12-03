@@ -948,8 +948,8 @@
         <version>${project.version}</version>
       </dependency>
       <dependency>
-        <groupId>org.opennms.features</groupId>
-        <artifactId>org.opennms.features.webapp-full</artifactId>
+        <groupId>org.opennms.assemblies</groupId>
+        <artifactId>org.opennms.assemblies.webapp-full</artifactId>
         <version>${project.version}</version>
       </dependency>
       <dependency>
@@ -1283,8 +1283,8 @@
         <version>${project.version}</version>
       </dependency>
       <dependency>
-        <groupId>org.opennms.features</groupId>
-        <artifactId>org.opennms.features.remote-poller-onejar</artifactId>
+        <groupId>org.opennms.assemblies</groupId>
+        <artifactId>org.opennms.assemblies.remote-poller-onejar</artifactId>
         <version>${project.version}</version>
       </dependency>
       <dependency>

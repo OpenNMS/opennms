@@ -111,8 +111,8 @@
               <outputDirectory>${project.build.directory}</outputDirectory>
               <artifactItems>
                 <artifactItem>
-                  <groupId>org.opennms.features</groupId>
-                  <artifactId>org.opennms.features.remote-poller-standalone</artifactId>
+                  <groupId>org.opennms.assemblies</groupId>
+                  <artifactId>org.opennms.assemblies.remote-poller-standalone</artifactId>
                   <version>${project.version}</version>
                   <classifier>remote-poller</classifier>
                 </artifactItem>
@@ -147,8 +147,8 @@
               <outputDirectory>${project.build.directory}/dependency-webapp</outputDirectory>
               <artifactItems>
                 <artifactItem>
-                  <groupId>org.opennms.features</groupId>
-                  <artifactId>org.opennms.features.webapp-full</artifactId>
+                  <groupId>org.opennms.assemblies</groupId>
+                  <artifactId>org.opennms.assemblies.webapp-full</artifactId>
                   <version>${project.version}</version>
                   <type>war</type>
                 </artifactItem>
