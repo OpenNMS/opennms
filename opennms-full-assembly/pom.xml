@@ -122,10 +122,10 @@
   </profiles>
   <modules>
     <module>../features/http-remoting</module>
-    <module>../features/remote-poller-onejar</module>
-    <module>../features/remote-poller-standalone</module>
-    <module>../features/webapp-full</module>
-    <module>../assemblies/rxtx-assembly</module>
+    <module>../opennms-assemblies/remote-poller-onejar</module>
+    <module>../opennms-assemblies/remote-poller-standalone</module>
+    <module>../opennms-assemblies/webapp-full</module>
+    <module>../opennms-assemblies/rxtx-assembly</module>
     <module>../opennms-doc</module>
     <module>../opennms-base-assembly</module>
   </modules>
