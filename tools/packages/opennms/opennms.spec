@@ -30,7 +30,7 @@
 
 %{!?extrainfo:%define extrainfo }
 %{!?extrainfo2:%define extrainfo2 }
-%{!?build_full:%define build_full 1}
+%{!?skip_compile:%define skip_compile 0}
 
 # keep RPM from making an empty debug package
 %define debug_package %{nil}
@@ -295,13 +295,16 @@ if [ -e "settings.xml" ]; then
 fi
 
 EXTRA_DEFINES="-Dbuild.profile=full"
-%if %{build_full}
-	echo "=== RUNNING FULL BUILD AND INSTALL ==="
+if [ "%{skip_compile}" = 1 ]; then
+	echo "=== SKIPPING COMPILE ==="
+else
+	echo "=== RUNNING COMPILE ==="
 	./compile.pl $SETTINGS_XML -Dbuild=all -Dinstall.version="%{version}-%{release}" -Ddist.name="$RPM_BUILD_ROOT" \
 	    -Dopennms.home="%{instprefix}" install
 	EXTRA_DEFINES="-Dbuild.profile=default"
-%endif
+fi
 
+echo "=== BUILDING ASSEMBLIES ==="
 ./assemble.pl $SETTINGS_XML -Dbuild=all -Dinstall.version="%{version}-%{release}" -Ddist.name="$RPM_BUILD_ROOT" \
 	-Dopennms.home="%{instprefix}" $EXTRA_DEFINES install
 
