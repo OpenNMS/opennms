@@ -285,18 +285,16 @@ fi
 EXTRA_DEFINES="-Dbuild.profile=full"
 %if %{build_full}
 	echo "=== RUNNING FULL BUILD AND INSTALL ==="
-	sh ./build.sh $SETTINGS_XML -Dbuild=all -Dinstall.version="%{version}-%{release}" -Ddist.name="$RPM_BUILD_ROOT" \
+	./compile.pl $SETTINGS_XML -Dbuild=all -Dinstall.version="%{version}-%{release}" -Ddist.name="$RPM_BUILD_ROOT" \
 	    -Dopennms.home="%{instprefix}" install
 	EXTRA_DEFINES="-Dbuild.profile=default"
 %endif
 
-pushd opennms-full-assembly
-	sh ../build.sh $SETTINGS_XML -Dbuild=all -Dinstall.version="%{version}-%{release}" -Ddist.name="$RPM_BUILD_ROOT" \
-  	  -Dopennms.home="%{instprefix}" $EXTRA_DEFINES install
-popd
+./assemble.pl $SETTINGS_XML -Dbuild=all -Dinstall.version="%{version}-%{release}" -Ddist.name="$RPM_BUILD_ROOT" \
+	-Dopennms.home="%{instprefix}" $EXTRA_DEFINES install
 
 pushd opennms-tools
-    sh ../build.sh $SETTINGS_XML -N -Dinstall.version="%{version}-%{release}" -Ddist.name="$RPM_BUILD_ROOT" \
+	../assemble.pl $SETTINGS_XML -N -Dinstall.version="%{version}-%{release}" -Ddist.name="$RPM_BUILD_ROOT" \
         -Dopennms.home="%{instprefix}" install
 popd
 
