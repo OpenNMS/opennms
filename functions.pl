@@ -85,7 +85,9 @@ if (grep { $_ =~ /^-Droot.dir=/ } @ARGS) {
 
 sub handle_errors_and_exit {
 	my $exit = $_;
-	if ($_ == -1) {
+	if ($_ == 0) {
+		info("finished successfully");
+	} elsif ($_ == -1) {
 		error("failed to execute: $!");
 	} elsif ($_ & 127) {
 		error("child died with signal " . ($_ & 127));
