@@ -301,7 +301,6 @@ else
 	echo "=== RUNNING COMPILE ==="
 	./compile.pl $SETTINGS_XML -Dbuild=all -Dinstall.version="%{version}-%{release}" -Ddist.name="$RPM_BUILD_ROOT" \
 	    -Dopennms.home="%{instprefix}" install
-	EXTRA_DEFINES="-Dbuild.profile=default"
 fi
 
 echo "=== BUILDING ASSEMBLIES ==="

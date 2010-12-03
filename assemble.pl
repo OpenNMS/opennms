@@ -10,11 +10,6 @@ use vars qw(
 $PREFIX = abs_path(dirname($0));
 require($PREFIX . "/functions.pl");
 
-if (not grep { $_ =~ /^[^-]/ } @ARGS) {
-	debug("no maven targets specified, adding 'install' to the command-line");
-	push(@ARGS, "install");
-}
-
 @profiles = ('default', 'full', 'dir');
 if (-f $PREFIX . "/opennms-full-assembly/pom.xml") {
 	if (open (FILEIN, $PREFIX . "/opennms-full-assembly/pom.xml")) {
@@ -37,6 +32,12 @@ if (-f $PREFIX . "/opennms-full-assembly/pom.xml") {
 
 if (not grep { $_ =~ /^-Dbuild.profile=/ } @ARGS) {
 	info("No build profile set, using the default.  Possible profiles are: " . join(", ", @profiles));
+	push(@ARGS, '-Dbuild.profile=default');
+}
+
+if (not grep { $_ =~ /^[^-]/ } @ARGS) {
+	debug("no maven targets specified, adding 'install' to the command-line");
+	push(@ARGS, "install");
 }
 
 my @command = ($MVN, @ARGS);
