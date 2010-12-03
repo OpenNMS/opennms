@@ -75,32 +75,32 @@
 			<textField pattern="###0.00">
 				<reportElement style="Table_Body" x="36" y="16" width="150" height="16"/>
 				<textElement/>
-				<textFieldExpression class="java.lang.Double"><![CDATA[$V{received_SUM}/new Double("1048576.0")]]></textFieldExpression>
+				<textFieldExpression class="java.lang.String"><![CDATA[$V{received_SUM} > 1048576 ? String.format("%10.2f", $V{received_SUM}/new Double("1048576.0")) + " MB" : String.format("%10.2f", $V{received_SUM}/new Double("1024.0")) + " KB"]]></textFieldExpression>
 			</textField>
 			<textField pattern="###0.00">
 				<reportElement style="Table_Body" x="186" y="16" width="150" height="16"/>
 				<textElement/>
-				<textFieldExpression class="java.lang.Double"><![CDATA[$V{transmitted_SUM}/new Double("1048576.0")]]></textFieldExpression>
+				<textFieldExpression class="java.lang.String"><![CDATA[$V{transmitted_SUM} > 1048576 ? String.format("%10.2f", $V{transmitted_SUM}/new Double("1048576.0")) + " MB" : String.format("%10.2f", $V{transmitted_SUM}/new Double("1024.0")) + " KB"]]></textFieldExpression>
 			</textField>
 			<staticText>
 				<reportElement style="Table_Header" x="36" y="0" width="150" height="16"/>
 				<textElement/>
-				<text><![CDATA[MiByte Received]]></text>
+				<text><![CDATA[Bytes Received]]></text>
 			</staticText>
 			<staticText>
 				<reportElement style="Table_Header" x="186" y="0" width="150" height="16"/>
 				<textElement/>
-				<text><![CDATA[MiByte Transmitted]]></text>
+				<text><![CDATA[Bytes Transmitted]]></text>
 			</staticText>
 			<staticText>
 				<reportElement style="Table_Header" x="336" y="0" width="150" height="16"/>
 				<textElement/>
-				<text><![CDATA[Total MiByte In+Out]]></text>
+				<text><![CDATA[Total Bytes In+Out]]></text>
 			</staticText>
 			<textField pattern="###0.00">
 				<reportElement style="Table_Body" x="336" y="16" width="150" height="16"/>
 				<textElement/>
-				<textFieldExpression class="java.lang.Double"><![CDATA[($V{received_SUM} + $V{transmitted_SUM})/new Double("1048576.0")]]></textFieldExpression>
+				<textFieldExpression class="java.lang.String"><![CDATA[($V{received_SUM} + $V{transmitted_SUM}) > 1048576 ? String.format("%10.2f", ($V{received_SUM} + $V{transmitted_SUM})/new Double("1048576.0")) + " MB" : String.format("%10.2f", ($V{received_SUM} + $V{transmitted_SUM})/new Double("1024.0")) + " KB"]]></textFieldExpression>
 			</textField>
 		</band>
 	</summary>
@@ -109,17 +109,17 @@
 			<staticText>
 				<reportElement style="Table_Header" x="36" y="2" width="150" height="16"/>
 				<textElement/>
-				<text><![CDATA[MiByte Received]]></text>
+				<text><![CDATA[Bytes Received]]></text>
 			</staticText>
 			<staticText>
 				<reportElement style="Table_Header" x="186" y="2" width="150" height="16"/>
 				<textElement/>
-				<text><![CDATA[MiByte Transmitted]]></text>
+				<text><![CDATA[Bytes Transmitted]]></text>
 			</staticText>
 			<staticText>
 				<reportElement style="Table_Header" x="336" y="2" width="150" height="16"/>
 				<textElement/>
-				<text><![CDATA[Total MiByte In+Out]]></text>
+				<text><![CDATA[Total Bytes In+Out]]></text>
 			</staticText>
 			<staticText>
 				<reportElement x="149" y="22" width="226" height="20"/>

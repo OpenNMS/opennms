@@ -1,9 +1,9 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <jasperReport xmlns="http://jasperreports.sourceforge.net/jasperreports" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://jasperreports.sourceforge.net/jasperreports http://jasperreports.sourceforge.net/xsd/jasperreport.xsd" name="TotalBytesTransferredByInterface" pageWidth="595" pageHeight="842" columnWidth="555" leftMargin="20" rightMargin="20" topMargin="20" bottomMargin="20">
-	<property name="ireport.zoom" value="1.0"/>
+	<property name="ireport.zoom" value="2.0"/>
 	<property name="ireport.x" value="0"/>
-	<property name="ireport.y" value="0"/>
-	<template><![CDATA["${install.dir}/etc/report-templates/assets/styles/defaultStyles.jrtx"]]></template>
+	<property name="ireport.y" value="88"/>
+	<template><![CDATA["/Users/thedesloge/git/opennms/opennms-base-assembly/src/main/filtered/etc/report-templates/assets/styles/defaultStyles.jrtx"]]></template>
 	<style name="Header_background" mode="Opaque" backcolor="#DFDFDF"/>
 	<parameter name="COMPANY_LOGO" class="java.lang.String">
 		<defaultValueExpression><![CDATA["${install.dir}/etc/report-templates/assets/images/company-logo.png"]]></defaultValueExpression>
@@ -71,7 +71,7 @@ ORDER BY
 		<groupHeader>
 			<band height="23">
 				<textField>
-					<reportElement style="Sub-header" mode="Opaque" x="0" y="0" width="555" height="22" backcolor="#DFDFDF"/>
+					<reportElement style="Header" mode="Opaque" x="0" y="0" width="555" height="22" backcolor="#DFDFDF"/>
 					<textElement/>
 					<textFieldExpression class="java.lang.String"><![CDATA["Surveillance category: " + $F{categoryname}]]></textFieldExpression>
 				</textField>
@@ -101,7 +101,7 @@ ORDER BY
 		<groupHeader>
 			<band height="34">
 				<subreport>
-					<reportElement x="14" y="16" width="541" height="13"/>	
+					<reportElement x="14" y="16" width="541" height="13"/>
 					<subreportParameter name="snmpifname">
 						<subreportParameterExpression><![CDATA[$F{snmpifname}]]></subreportParameterExpression>
 					</subreportParameter>
@@ -149,7 +149,7 @@ ORDER BY
 	<pageHeader>
 		<band height="104" splitType="Stretch">
 			<staticText>
-				<reportElement x="0" y="49" width="555" height="34"/>
+				<reportElement style="Title" x="0" y="49" width="555" height="34"/>
 				<textElement verticalAlignment="Middle">
 					<font size="20" isBold="true"/>
 				</textElement>
@@ -205,12 +205,12 @@ ORDER BY
 				</graphicElement>
 			</line>
 			<textField>
-				<reportElement x="451" y="11" width="80" height="20"/>
+				<reportElement x="451" y="15" width="80" height="14"/>
 				<textElement textAlignment="Right"/>
 				<textFieldExpression class="java.lang.String"><![CDATA["Page "+$V{PAGE_NUMBER}+" of"]]></textFieldExpression>
 			</textField>
 			<textField evaluationTime="Report">
-				<reportElement x="531" y="11" width="24" height="20"/>
+				<reportElement x="531" y="15" width="24" height="14"/>
 				<textElement/>
 				<textFieldExpression class="java.lang.String"><![CDATA[" " + $V{PAGE_NUMBER}]]></textFieldExpression>
 			</textField>
@@ -224,6 +224,16 @@ ORDER BY
 				<textElement/>
 				<text><![CDATA[Report end: ]]></text>
 			</staticText>
+			<textField>
+				<reportElement x="67" y="15" width="100" height="15"/>
+				<textElement/>
+				<textFieldExpression class="java.lang.String"><![CDATA[new SimpleDateFormat().format($P{startDate})]]></textFieldExpression>
+			</textField>
+			<textField>
+				<reportElement x="253" y="15" width="100" height="14"/>
+				<textElement/>
+				<textFieldExpression class="java.lang.String"><![CDATA[new SimpleDateFormat().format($P{endDate})]]></textFieldExpression>
+			</textField>
 		</band>
 	</pageFooter>
 	<summary>
