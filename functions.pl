@@ -62,12 +62,12 @@ if (not defined $JAVA_HOME) {
 	debug("--java-home not passed, searching for \$JAVA_HOME");
 	if (exists $ENV{'JAVA_HOME'} and -e $ENV{'JAVA_HOME'}) {
 		$JAVA_HOME = $ENV{'JAVA_HOME'};
-		debug("found JAVA_HOME = $JAVA_HOME");
 	} else {
 		warning("\$JAVA_HOME is not set, things might go wonky.  Or not.");
 	}
 }
 $ENV{'JAVA_HOME'} = $JAVA_HOME;
+info("JAVA_HOME = $JAVA_HOME") if (defined $JAVA_HOME and $JAVA_HOME ne "");
 
 if (defined $TESTS) {
 	debug("tests are enabled");
@@ -82,6 +82,8 @@ if (grep { $_ =~ /^-Droot.dir=/ } @ARGS) {
 	debug("setting root.dir to $PREFIX");
 	unshift(@ARGS, '-Droot.dir=' . $PREFIX);
 }
+
+info("MAVEN_OPTS = $MAVEN_OPTS"); 
 
 sub handle_errors_and_exit {
 	my $exit = $_;

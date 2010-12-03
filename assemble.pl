@@ -42,8 +42,6 @@ if (not grep { $_ =~ /^-Dbuild.profile=/ } @ARGS) {
 my @command = ($MVN, @ARGS);
 info("changing working directory to $PREFIX/opennms-full-assembly");
 chdir($PREFIX . "/opennms-full-assembly");
-info("JAVA_HOME = $JAVA_HOME");
-info("MAVEN_OPTS = $MAVEN_OPTS");
 info("running:", @command);
 system(@command);
 handle_errors_and_exit($?);
