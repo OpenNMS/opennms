@@ -350,7 +350,7 @@ public class ConfigurationTestUtils extends Assert {
     }
 
     private static File findTopProjectDirectory(File currentDirectory) {
-        File buildFile = new File(currentDirectory, "build.sh");
+        File buildFile = new File(currentDirectory, "compile.pl");
         if (buildFile.exists()) {
             File pomFile = new File(currentDirectory, POM_FILE);
             assertTrue("pom.xml in " + DAEMON_DIRECTORY + " directory should exist: " + pomFile.getAbsolutePath(), pomFile.exists());

@@ -31,9 +31,11 @@ $(STAMP_BUILD):
 	# -Duser.home=$(HOME) is needed to get maven to use the correct ~/.m2/ directory when being run with fakeroot
 	@if [ -f "$$OPENNMS_SETTINGS_XML" ]; then \
 		echo "using $$OPENNMS_SETTINGS_XML"; \
-		sh ./build.sh -Dbuild=all -s $$OPENNMS_SETTINGS_XML $(BUILDDEFINES) install assembly:directory-inline; \
+		./compile.pl -Dbuild=all -s $$OPENNMS_SETTINGS_XML $(BUILDDEFINES) install; \
+		./assemble.pl -Dbuild=all -Dbuild.profile=dir -s $$OPENNMS_SETTINGS_XML $(BUILDDEFINES) install; \
 	else \
-		sh ./build.sh -Dbuild=all -Duser.home=$(HOME) $(BUILDDEFINES) install assembly:directory-inline; \
+		./compile.pl -Dbuild=all -Duser.home=$(HOME) $(BUILDDEFINES) install; \
+		./assemble.pl -Dbuild=all -Dbuild.profile=dir -Duser.home=$(HOME) $(BUILDDEFINES) install; \
 	fi
 	install -d -m 755 debian/temp/integrations
 	cp integrations/opennms-dns-provisioning-adapter/target/*.jar        debian/temp/integrations/
@@ -53,7 +55,8 @@ $(STAMP_BUILD):
 clean:
 	dh_testdir
 	dh_testroot
-	sh ./build.sh -Dbuild=all -Duser.home=$(HOME) -Ddist.dir=$(CURDIR)/debian -Ddist.name=temp clean
+	./compile.pl -Dbuild=all -Duser.home=$(HOME) -Ddist.dir=$(CURDIR)/debian -Ddist.name=temp clean
+	./assemble.pl -Dbuild=all -Duser.home=$(HOME) -Ddist.dir=$(CURDIR)/debian -Ddist.name=temp clean
 	rm -f opennms-remote-poller.{init,default}
 	dh_clean
 	rm -f $(STAMP_BUILD)

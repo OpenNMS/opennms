@@ -81,7 +81,8 @@ echo
 if [ -z "$SKIP_SETUP" ]; then
 	if [ -z "$SKIP_CLEAN" ]; then
 		echo "=== Clean Up ==="
-		./build.sh clean
+		./compile.pl clean
+		./assemble.pl clean
 	fi
 
 	echo "=== Creating Working Directories ==="
