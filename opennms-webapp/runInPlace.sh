@@ -13,7 +13,7 @@ function warInPlace() {
 	if $OFFLINE; then
         OFFLINE_ARGS="-o"
     fi
-    ../build.sh $OFFLINE_ARGS $DEFINES compile war:inplace
+    ../compile.pl $OFFLINE_ARGS $DEFINES compile war:inplace
 }
 
 function runInPlace() {
@@ -21,7 +21,7 @@ function runInPlace() {
 	if $OFFLINE; then
         OFFLINE_ARGS="-o"
     fi
-    ../build.sh $OFFLINE_ARGS $DEFINES -Dweb.port=$PORT -Dopennms.home=$OPENNMS_ROOT jetty:run-exploded
+    ../compile.pl $OFFLINE_ARGS $DEFINES -Dweb.port=$PORT -Dopennms.home=$OPENNMS_ROOT jetty:run-exploded
 }
 
 function removeGwtModuleFiles() {
@@ -62,7 +62,7 @@ function clean() {
 	if $OFFLINE; then
         OFFLINE_ARGS="-o"
     fi
-    ../build.sh $OFFLINE_ARGS clean
+    ../compile.pl $OFFLINE_ARGS clean
 }
 
 function usage() {

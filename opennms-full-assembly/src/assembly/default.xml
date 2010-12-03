@@ -1,0 +1,12 @@
+<assembly>
+  <id>default</id>
+  <formats>
+    <format>tar.gz</format>
+  </formats>
+  <includeBaseDirectory>false</includeBaseDirectory>
+  <componentDescriptors>
+    <componentDescriptor>src/assembly/components/base-assembly.xml</componentDescriptor>
+    <componentDescriptor>src/assembly/components/rxtx.xml</componentDescriptor>
+    <componentDescriptor>src/assembly/components/webapps.xml</componentDescriptor>
+  </componentDescriptors>
+</assembly>
