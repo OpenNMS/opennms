@@ -101,17 +101,17 @@
 			<textField pattern="#,##0.00">
 				<reportElement style="Body" x="435" y="0" width="140" height="20" backcolor="#333333"/>
 				<textElement textAlignment="Right"/>
-				<textFieldExpression class="java.lang.Double"><![CDATA[($V{transmitted_AVERAGE}+1.64485*$V{transmitted_STDDEV})/new Double("1048576.0")]]></textFieldExpression>
+				<textFieldExpression class="java.lang.Double"><![CDATA[new Double(($V{transmitted_AVERAGE}.doubleValue()+1.64485*$V{transmitted_STDDEV}.doubleValue())/1048576.0)]]></textFieldExpression>
 			</textField>
 			<textField pattern="#,##0.00">
 				<reportElement style="Body" x="580" y="0" width="140" height="20"/>
 				<textElement textAlignment="Right"/>
-				<textFieldExpression class="java.lang.Double"><![CDATA[($V{received_SUM} + $V{transmitted_SUM})/new Double("1048576.0")]]></textFieldExpression>
+				<textFieldExpression class="java.lang.Double"><![CDATA[new Double(($V{received_SUM}.doubleValue() + $V{transmitted_SUM}.doubleValue())/1048576.0)]]></textFieldExpression>
 			</textField>
 			<textField pattern="#,##0.00">
 				<reportElement style="Body" x="290" y="0" width="140" height="20" backcolor="#CC9900"/>
 				<textElement textAlignment="Right"/>
-				<textFieldExpression class="java.lang.Double"><![CDATA[($V{received_AVERAGE}+1.64485*$V{received_STDDEV})/new Double("1048576.0")]]></textFieldExpression>
+				<textFieldExpression class="java.lang.Double"><![CDATA[new Double(($V{received_AVERAGE}.doubleValue()+1.64485*$V{received_STDDEV}.doubleValue())/1048576.0)]]></textFieldExpression>
 			</textField>
 			<textField>
 				<reportElement style="Body" x="145" y="0" width="140" height="20"/>

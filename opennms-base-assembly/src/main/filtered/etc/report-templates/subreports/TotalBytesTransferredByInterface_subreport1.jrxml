@@ -75,12 +75,12 @@
 			<textField pattern="###0.00">
 				<reportElement style="Table_Body" x="36" y="16" width="150" height="16"/>
 				<textElement/>
-				<textFieldExpression class="java.lang.String"><![CDATA[$V{received_SUM} > 1048576 ? String.format("%10.2f", $V{received_SUM}/new Double("1048576.0")) + " MB" : String.format("%10.2f", $V{received_SUM}/new Double("1024.0")) + " KB"]]></textFieldExpression>
+				<textFieldExpression class="java.lang.String"><![CDATA[$V{received_SUM}.doubleValue() > 1048576.0 ? String.format("%10.2f", $V{received_SUM}.doubleValue()/1048576.0) + " MB" : String.format("%10.2f", $V{received_SUM}.doubleValue()/1024.0) + " KB"]]></textFieldExpression>
 			</textField>
 			<textField pattern="###0.00">
 				<reportElement style="Table_Body" x="186" y="16" width="150" height="16"/>
 				<textElement/>
-				<textFieldExpression class="java.lang.String"><![CDATA[$V{transmitted_SUM} > 1048576 ? String.format("%10.2f", $V{transmitted_SUM}/new Double("1048576.0")) + " MB" : String.format("%10.2f", $V{transmitted_SUM}/new Double("1024.0")) + " KB"]]></textFieldExpression>
+				<textFieldExpression class="java.lang.String"><![CDATA[$V{transmitted_SUM}.doubleValue() > 1048576 ? String.format("%10.2f", $V{transmitted_SUM}.doubleValue()/1048576.0) + " MB" : String.format("%10.2f", $V{transmitted_SUM}.doubleValue()/1024.0) + " KB"]]></textFieldExpression>
 			</textField>
 			<staticText>
 				<reportElement style="Table_Header" x="36" y="0" width="150" height="16"/>
@@ -100,7 +100,7 @@
 			<textField pattern="###0.00">
 				<reportElement style="Table_Body" x="336" y="16" width="150" height="16"/>
 				<textElement/>
-				<textFieldExpression class="java.lang.String"><![CDATA[($V{received_SUM} + $V{transmitted_SUM}) > 1048576 ? String.format("%10.2f", ($V{received_SUM} + $V{transmitted_SUM})/new Double("1048576.0")) + " MB" : String.format("%10.2f", ($V{received_SUM} + $V{transmitted_SUM})/new Double("1024.0")) + " KB"]]></textFieldExpression>
+				<textFieldExpression class="java.lang.String"><![CDATA[($V{received_SUM}.doubleValue() + $V{transmitted_SUM}.doubleValue()) > 1048576.0 ? String.format("%10.2f", ($V{received_SUM}.doubleValue() + $V{transmitted_SUM}.doubleValue())/1048576.0) + " MB" : String.format("%10.2f", ($V{received_SUM}.doubleValue() + $V{transmitted_SUM}.doubleValue())/1024.0) + " KB"]]></textFieldExpression>
 			</textField>
 		</band>
 	</summary>

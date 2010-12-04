@@ -255,7 +255,7 @@ ORDER BY
 					<categorySeries>
 						<seriesExpression><![CDATA[$P{ds_IPv4_interface}]]></seriesExpression>
 						<categoryExpression><![CDATA[$F{Timestamp}]]></categoryExpression>
-						<valueExpression><![CDATA[$F{IcmpLatency}/new Double("1000")]]></valueExpression>
+						<valueExpression><![CDATA[new Double($F{IcmpLatency}.doubleValue()/1000.0)]]></valueExpression>
 						<labelExpression><![CDATA["ICMP response time"]]></labelExpression>
 					</categorySeries>
 				</categoryDataset>

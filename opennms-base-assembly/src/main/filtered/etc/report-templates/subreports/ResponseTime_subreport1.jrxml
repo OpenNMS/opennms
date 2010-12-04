@@ -68,17 +68,17 @@
 			<textField pattern="###0.00">
 				<reportElement style="Body" x="355" y="20" width="100" height="20"/>
 				<textElement/>
-				<textFieldExpression class="java.lang.Double"><![CDATA[$V{ICMP_Latency_AVG}/new Double("1000.0")]]></textFieldExpression>
+				<textFieldExpression class="java.lang.Double"><![CDATA[new Double($V{ICMP_Latency_AVG}.doubleValue()/1000.0)]]></textFieldExpression>
 			</textField>
 			<textField pattern="###0.00">
 				<reportElement style="Body" x="255" y="20" width="100" height="20"/>
 				<textElement/>
-				<textFieldExpression class="java.lang.Double"><![CDATA[$V{ICMP_Latency_MIN}/new Double("1000.0")]]></textFieldExpression>
+				<textFieldExpression class="java.lang.Double"><![CDATA[new Double($V{ICMP_Latency_MIN}.doubleValue()/1000.0)]]></textFieldExpression>
 			</textField>
 			<textField pattern="###0.00">
 				<reportElement style="Body" x="455" y="20" width="100" height="20"/>
 				<textElement/>
-				<textFieldExpression class="java.lang.Double"><![CDATA[$V{ICMP_Latency_MAX}/new Double("1000.0")]]></textFieldExpression>
+				<textFieldExpression class="java.lang.Double"><![CDATA[new Double($V{ICMP_Latency_MAX}.doubleValue()/1000.0)]]></textFieldExpression>
 			</textField>
 			<textField>
 				<reportElement style="Body" x="25" y="20" width="230" height="20"/>
