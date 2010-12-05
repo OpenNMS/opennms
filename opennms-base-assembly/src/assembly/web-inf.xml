@@ -8,10 +8,12 @@
     <file>
       <source>target/dependency-webapp/WEB-INF/configuration.properties</source>
       <outputDirectory>/</outputDirectory>
+      <filtered>true</filtered>
     </file>
     <file>
       <source>target/classes/etc/log4j.properties</source>
       <outputDirectory>/</outputDirectory>
+      <filtered>true</filtered>
     </file>
   </files>
 </assembly>
