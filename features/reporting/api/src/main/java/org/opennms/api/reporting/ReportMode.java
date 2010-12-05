@@ -41,4 +41,4 @@ package org.opennms.api.reporting;
  * @author jonathan@opennms.org
  * @version $Id: $
  */
-public enum ReportMode { ONLINE, BATCH }
+public enum ReportMode { IMMEDIATE, SCHEDULED }

@@ -221,32 +221,36 @@ public class ReportParameters implements Serializable {
             Iterator<ReportDateParm>dateIter = m_dateParms.iterator();
             while (dateIter.hasNext()) {
                 ReportDateParm parm = dateIter.next();
-                Calendar cal = Calendar.getInstance();
-                if (mode == ReportMode.ONLINE) {
-                    cal.setTime(parm.getValue());
-                } else {
-                    if (parm.getUseAbsoluteDate() && (mode == ReportMode.ONLINE)) {
-                        // use the absolute date set when the report was scheduled.
-                        cal.setTime(parm.getValue());
-                    } else {
-                        // use the offset date set when the report was scheduled
-                        int amount = 0 - parm.getCount();
-                        if (parm.getInterval().equals("year")) {
-                            cal.add(Calendar.YEAR, amount);
-                        } else { 
-                            if (parm.getInterval().equals("month")) {
-                                cal.add(Calendar.MONTH, amount);
-                            } else {
-                                cal.add(Calendar.DATE, amount);
-                            }
+                /*Calendar cal = Calendar.getInstance();
+                if ((mode == ReportMode.SCHEDULED) && (parm.getUseAbsoluteDate() == false)) {
+                    // use the offset date set when the report was scheduled
+                    int amount = 0 - parm.getCount();
+                    if (parm.getInterval().equals("year")) {
+                        cal.add(Calendar.YEAR, amount);
+                    } else { 
+                        if (parm.getInterval().equals("month")) {
+                            cal.add(Calendar.MONTH, amount);
+                        } else {
+                            cal.add(Calendar.DATE, amount);
                         }
                     }
+                } else {
+                    cal.setTime(parm.getValue());
+                } 
+                if (parm.getHours() != null) {
+                    cal.set(Calendar.HOUR_OF_DAY, parm.getHours());
+                } else {
+                    cal.set(Calendar.HOUR_OF_DAY, 0);
                 }
-                cal.set(Calendar.HOUR_OF_DAY, parm.getHours());
-                cal.set(Calendar.MINUTE, parm.getMinutes());
+                if (parm.getMinutes() != null) {
+                    cal.set(Calendar.MINUTE, parm.getMinutes());
+                } else {
+                    cal.set(Calendar.MINUTE, 0);
+                }                
                 cal.set(Calendar.SECOND,0);
                 cal.set(Calendar.MILLISECOND,0);
-                parmMap.put(parm.getName(), cal.getTime());
+                parmMap.put(parm.getName(), cal.getTime());*/
+                parmMap.put(parm.getName(), parm.getValue(mode));
             }
         }
         
@@ -278,65 +282,8 @@ public class ReportParameters implements Serializable {
      */
     public HashMap<String, Object> getReportParms() {
         
-        HashMap <String,Object>parmMap = new HashMap<String, Object>();
+        return getReportParms(ReportMode.IMMEDIATE);
         
-        // Add all the strings from the report
-        if (m_stringParms != null ) {
-            Iterator<ReportStringParm>stringIter = m_stringParms.iterator();
-            while (stringIter.hasNext()) {
-                ReportStringParm parm = stringIter.next();
-                parmMap.put(parm.getName(), parm.getValue());
-            }
-        }
-        // Add all the dates from the report
-        if (m_dateParms != null) {
-            Iterator<ReportDateParm>dateIter = m_dateParms.iterator();
-            while (dateIter.hasNext()) {
-                ReportDateParm parm = dateIter.next();
-                Calendar cal = Calendar.getInstance();
-                if (parm.getUseAbsoluteDate()) {
-                    // use the absolute date set when the report was scheduled.
-                    cal.setTime(parm.getValue());
-                } else {
-                    // use the offset date set when the report was scheduled
-                    int amount = 0 - parm.getCount();
-                    if (parm.getInterval().equals("year")) {
-                        cal.add(Calendar.YEAR, amount);
-                    } else { 
-                        if (parm.getInterval().equals("month")) {
-                            cal.add(Calendar.MONTH, amount);
-                        } else {
-                            cal.add(Calendar.DATE, amount);
-                        }
-                    }
-                }
-                cal.set(Calendar.HOUR_OF_DAY, parm.getHours());
-                cal.set(Calendar.MINUTE, parm.getMinutes());
-                cal.set(Calendar.SECOND,0);
-                cal.set(Calendar.MILLISECOND,0);
-                parmMap.put(parm.getName(), cal.getTime());
-            }
-        }
-        
-        // Add all the integers from the report
-        if (m_intParms != null) {
-            Iterator<ReportIntParm>intIter = m_intParms.iterator();
-            while (intIter.hasNext()) {
-                ReportIntParm parm = intIter.next();
-                parmMap.put(parm.getName(), parm.getValue());
-            }
-        }
-        
-        // Add all the floats from the report
-        if (m_floatParms != null) {
-            Iterator<ReportFloatParm>floatIter = m_floatParms.iterator();
-            while (floatIter.hasNext()) {
-                ReportFloatParm parm = floatIter.next();
-                parmMap.put(parm.getName(), parm.getValue());
-            }
-        }
-        
-        return parmMap;
     }
     
     

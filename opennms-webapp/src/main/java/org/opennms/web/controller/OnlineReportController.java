@@ -46,6 +46,7 @@ import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
 import org.opennms.api.reporting.ReportFormat;
+import org.opennms.api.reporting.ReportMode;
 import org.opennms.api.reporting.parameter.ReportParameters;
 import org.opennms.reporting.core.svclayer.ReportWrapperService;
 import org.opennms.web.svclayer.CategoryConfigService;
@@ -117,7 +118,7 @@ public class OnlineReportController extends SimpleFormController {
             response.setHeader("Cache-Control", "cache");
             response.setHeader("Cache-Control", "must-revalidate");
         }
-        m_reportWrapperService.runAndRender(parameters, response.getOutputStream());        
+        m_reportWrapperService.runAndRender(parameters, ReportMode.IMMEDIATE, response.getOutputStream());        
         return null;
     }
     

@@ -35,7 +35,7 @@ public class ReportParametersValidator {
         
         for (Iterator<ReportDateParm> dateParmIter = dateParms.iterator(); dateParmIter.hasNext();) {
             ReportDateParm dateParm = dateParmIter.next();
-            if (dateParm.getValue() == null) {
+            if (dateParm.getDate() == null) {
                 messages.addMessage(new MessageBuilder().error().source("date parms").
                                     defaultText("cannot have null date field" + dateParm.getDisplayName()).build());
             }

@@ -114,7 +114,7 @@
 			<p><span class="label">
 				<c:out value="${date.displayName}"/>
 			</span>
-					<form:input path="dateParms[${dateParmRow.index}].value" />
+					<form:input path="dateParms[${dateParmRow.index}].date" />
 					<form:select path="dateParms[${dateParmRow.index}].hours">
 						<c:forEach var="hour" begin="0" end="23">
 							<form:option value="${hour}">

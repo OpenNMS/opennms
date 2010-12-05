@@ -195,7 +195,7 @@ public class JasperReportService implements ReportService {
                     cal.set(Calendar.MINUTE, 0);
                     cal.set(Calendar.SECOND, 0);
                     cal.set(Calendar.MILLISECOND, 0);
-                    dateParm.setValue(cal.getTime());
+                    dateParm.setDate(cal.getTime());
                     dateParms.add(dateParm);
                     continue;
                 }
@@ -221,7 +221,7 @@ public class JasperReportService implements ReportService {
                     cal.set(Calendar.MINUTE, 0);
                     cal.set(Calendar.SECOND, 0);
                     cal.set(Calendar.MILLISECOND, 0);
-                    dateParm.setValue(cal.getTime());
+                    dateParm.setDate(cal.getTime());
                     dateParms.add(dateParm);
                     continue;
                 }

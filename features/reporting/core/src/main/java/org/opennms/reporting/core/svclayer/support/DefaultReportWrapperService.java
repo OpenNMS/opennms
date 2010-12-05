@@ -153,16 +153,19 @@ public class DefaultReportWrapperService implements ReportWrapperService {
         }
 
     }
-
+    
     /** {@inheritDoc} */
     public void run(ReportParameters parameters,
-            DeliveryOptions deliveryOptions, String reportId) {
+            ReportMode mode,
+            DeliveryOptions deliveryOptions,
+            String reportId) {
+        
         if (!deliveryOptions.getPersist()) {
             ByteArrayOutputStream out = new ByteArrayOutputStream();
             BufferedOutputStream bout = new BufferedOutputStream(out);
             try {
                 getReportService(reportId).runAndRender(
-                                                        parameters.getReportParms(),
+                                                        parameters.getReportParms(mode),
                                                         reportId,
                                                         deliveryOptions.getFormat(),
                                                         bout);
@@ -174,7 +177,7 @@ public class DefaultReportWrapperService implements ReportWrapperService {
             String outputPath;
             try {
                 outputPath = getReportService(reportId).run(
-                                                                   parameters.getReportParms(),
+                                                                   parameters.getReportParms(mode),
                                                                    reportId);
                 ReportCatalogEntry catalogEntry = new ReportCatalogEntry();
                 catalogEntry.setReportId(reportId);
@@ -264,11 +267,12 @@ public class DefaultReportWrapperService implements ReportWrapperService {
     }
 
     /** {@inheritDoc} */
-    public void runAndRender(ReportParameters parameters,
+   
+    public void runAndRender(ReportParameters parameters, ReportMode mode,
             OutputStream outputStream) {
 
         // TODO remove this debug code
-        Map<String, Object> reportParms = parameters.getReportParms();
+        Map<String, Object> reportParms = parameters.getReportParms(mode);
         for (String key : reportParms.keySet()) {
             String value;
             if (reportParms.get(key) == null) {
@@ -281,7 +285,7 @@ public class DefaultReportWrapperService implements ReportWrapperService {
 
         try {
             getReportService(parameters.getReportId()).runAndRender(
-                                                                    parameters.getReportParms(ReportMode.ONLINE),
+                                                                    parameters.getReportParms(mode),
                                                                     parameters.getReportId(),
                                                                     parameters.getFormat(),
                                                                     outputStream);

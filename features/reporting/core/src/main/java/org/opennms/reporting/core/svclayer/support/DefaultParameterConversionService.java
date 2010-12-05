@@ -97,7 +97,7 @@ public class DefaultParameterConversionService implements
                         cal.add(Calendar.DATE, amount);
                     }
                 }
-                dateParm.setValue(cal.getTime());
+                dateParm.setDate(cal.getTime());
                 dateParms.add(dateParm);
             }
         }

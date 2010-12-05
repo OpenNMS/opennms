@@ -114,7 +114,7 @@
 						ago.
 					</c:when>
 					<c:otherwise>
-						<form:input path="dateParms[${dateParmRow.index}].value" />
+						<form:input path="dateParms[${dateParmRow.index}].date" />
 						<script type="text/javascript">
 							Spring.addDecoration(new Spring.ElementDecoration({
 							elementId : "dateParms${dateParmRow.index}.value",

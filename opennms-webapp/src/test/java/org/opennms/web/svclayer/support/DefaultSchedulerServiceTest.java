@@ -48,6 +48,7 @@ import org.junit.Before;
 import org.junit.BeforeClass;
 import org.junit.Test;
 import org.junit.runner.RunWith;
+import org.opennms.api.reporting.ReportMode;
 import org.opennms.api.reporting.parameter.ReportParameters;
 import org.opennms.reporting.core.DeliveryOptions;
 import org.opennms.reporting.core.svclayer.ReportWrapperService;
@@ -126,7 +127,7 @@ public class DefaultSchedulerServiceTest {
         expect(m_reportWrapperService.validate(m_criteria, REPORT_ID)).andReturn(true);
         DeliveryOptions deliveryOptions = new DeliveryOptions();
         deliveryOptions.setInstanceId("testExecuteSuccessTrigger");
-        m_reportWrapperService.run(m_criteria, deliveryOptions, REPORT_ID);
+        m_reportWrapperService.run(m_criteria, ReportMode.IMMEDIATE, deliveryOptions, REPORT_ID);
         replay(m_reportWrapperService);
         MockRequestContext context = new MockRequestContext();
         assertEquals("success",m_schedulerService.execute(REPORT_ID, m_criteria, deliveryOptions, context));
@@ -203,7 +204,7 @@ public class DefaultSchedulerServiceTest {
         DeliveryOptions deliveryOptions = new DeliveryOptions();
         deliveryOptions.setInstanceId("testScheduleAndRunTrigger");
         expect(m_reportWrapperService.validate(m_criteria, REPORT_ID)).andReturn(true);
-        m_reportWrapperService.run(m_criteria, deliveryOptions, REPORT_ID);
+        m_reportWrapperService.run(m_criteria, ReportMode.SCHEDULED, deliveryOptions, REPORT_ID);
         replay(m_reportWrapperService);
         MockRequestContext context = new MockRequestContext();
         assertEquals("success", m_schedulerService.addCronTrigger(REPORT_ID, m_criteria, deliveryOptions, CRON_EXPRESSION, context));

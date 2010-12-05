@@ -46,6 +46,7 @@ import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
 
+import org.opennms.api.reporting.ReportMode;
 import org.opennms.api.reporting.parameter.ReportParameters;
 import org.opennms.core.utils.ThreadCategory;
 import org.opennms.reporting.core.DeliveryOptions;
@@ -214,6 +215,7 @@ public class DefaultSchedulerService implements InitializingBean, SchedulerServi
                 cronTrigger.setJobName(m_jobDetail.getName());
                 cronTrigger.getJobDataMap().put("criteria", (ReportParameters) criteria);
                 cronTrigger.getJobDataMap().put("reportId", id);
+                cronTrigger.getJobDataMap().put("mode", ReportMode.SCHEDULED);
                 cronTrigger.getJobDataMap().put("deliveryOptions",
                                                 (DeliveryOptions) deliveryOptions);
                 try {
@@ -263,6 +265,7 @@ public class DefaultSchedulerService implements InitializingBean, SchedulerServi
                 trigger.setJobName(m_jobDetail.getName());
                 trigger.getJobDataMap().put("criteria", (ReportParameters) criteria);
                 trigger.getJobDataMap().put("reportId", id);
+                trigger.getJobDataMap().put("mode", ReportMode.IMMEDIATE);
                 trigger.getJobDataMap().put("deliveryOptions", (DeliveryOptions) deliveryOptions);
                 try {
                     m_scheduler.scheduleJob(trigger);
