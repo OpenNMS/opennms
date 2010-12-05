@@ -101,7 +101,6 @@
     <module>opennms-test</module>
     <module>opennms-util</module>
     <module>opennms-bootstrap</module>
-    <module>opennms-install</module>
     <module>opennms-model</module>
     <module>opennms-ackd</module>
     <module>opennms-alarmd</module>
@@ -372,6 +371,7 @@
      <plugin>
        <groupId>org.apache.maven.plugins</groupId>
        <artifactId>maven-resources-plugin</artifactId>
+       <!-- Don't upgrade this past 2.3 for now!  Major escaping bugs! -->
        <version>2.3</version>
        <configuration>
           <encoding>UTF-8</encoding>
