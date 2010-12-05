@@ -34,8 +34,8 @@ if (not defined $MAVEN_OPTS or $MAVEN_OPTS eq '') {
 my $result = GetOptions(
 	"help|h"                    => \$HELP,
 	"enable-tests|tests|test|t" => \$TESTS,
-	"maven-opts|m"              => \$MAVEN_OPTS,
-	"java-home|java|j"          => \$JAVA_HOME,
+	"maven-opts|m=s"            => \$MAVEN_OPTS,
+	"java-home|java|j=s"        => \$JAVA_HOME,
 	"verbose|v"                 => \$VERBOSE,
 );
 if (not $result) {
