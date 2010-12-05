@@ -294,7 +294,6 @@ if [ -e "settings.xml" ]; then
 	SETTINGS_XML="-s `pwd`/settings.xml"
 fi
 
-EXTRA_DEFINES="-Dbuild.profile=full"
 if [ "%{skip_compile}" = 1 ]; then
 	echo "=== SKIPPING COMPILE ==="
 else
@@ -305,7 +304,7 @@ fi
 
 echo "=== BUILDING ASSEMBLIES ==="
 ./assemble.pl $SETTINGS_XML -Dbuild=all -Dinstall.version="%{version}-%{release}" -Ddist.name="$RPM_BUILD_ROOT" \
-	-Dopennms.home="%{instprefix}" $EXTRA_DEFINES install
+	-Dopennms.home="%{instprefix}" -Dbuild.profile=full install
 
 pushd opennms-tools
 	../assemble.pl $SETTINGS_XML -N -Dinstall.version="%{version}-%{release}" -Ddist.name="$RPM_BUILD_ROOT" \
