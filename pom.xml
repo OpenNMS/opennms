@@ -98,7 +98,6 @@
     <module>integration-tests</module>
 
     <!-- old structure -->
-    <module>opennms-doc</module>
     <module>opennms-test</module>
     <module>opennms-util</module>
     <module>opennms-bootstrap</module>
