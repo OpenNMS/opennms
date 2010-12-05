@@ -307,7 +307,7 @@ echo "=== BUILDING ASSEMBLIES ==="
 	-Dopennms.home="%{instprefix}" -Dbuild.profile=full install
 
 pushd opennms-tools
-	../assemble.pl $SETTINGS_XML -N -Dinstall.version="%{version}-%{release}" -Ddist.name="$RPM_BUILD_ROOT" \
+	../compile.pl $SETTINGS_XML -N -Dinstall.version="%{version}-%{release}" -Ddist.name="$RPM_BUILD_ROOT" \
         -Dopennms.home="%{instprefix}" install
 popd
 
