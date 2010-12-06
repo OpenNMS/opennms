@@ -437,7 +437,7 @@ ORDER BY
 							<textField pattern="###0.00">
 								<reportElement style="Table_Detail" x="0" y="0" width="65" height="17"/>
 								<textElement textAlignment="Center"/>
-								<textFieldExpression class="java.lang.Double"><![CDATA[$F{average_duration_seconds}/new Double("3600")]]></textFieldExpression>
+								<textFieldExpression class="java.lang.Double"><![CDATA[new Double($F{average_duration_seconds}.doubleValue()/3600.0)]]></textFieldExpression>
 							</textField>
 						</jr:detailCell>
 					</jr:column>
@@ -475,7 +475,7 @@ ORDER BY
 							<textField pattern="###0.00">
 								<reportElement style="Table_Detail" x="0" y="0" width="55" height="17"/>
 								<textElement textAlignment="Center"/>
-								<textFieldExpression class="java.lang.Double"><![CDATA[$F{outages_seconds}/new Double("3600")]]></textFieldExpression>
+								<textFieldExpression class="java.lang.Double"><![CDATA[new Double($F{outages_seconds}.doubleValue()/3600.0)]]></textFieldExpression>
 							</textField>
 						</jr:detailCell>
 					</jr:column>
