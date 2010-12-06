@@ -48,7 +48,7 @@
 	<variable name="transmitted_SUM" class="java.lang.Double" calculation="Sum">
 		<variableExpression><![CDATA[$F{IfHCOutOctets}]]></variableExpression>
 	</variable>
-	<filterExpression><![CDATA[!$F{IfHCInOctets}.isNaN() || !$F{IfHCOutOctets}.isNaN()]]></filterExpression>
+	<filterExpression><![CDATA[new Boolean(!$F{IfHCInOctets}.isNaN() || !$F{IfHCOutOctets}.isNaN())]]></filterExpression>
 	<background>
 		<band splitType="Stretch"/>
 	</background>

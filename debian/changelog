@@ -1,9 +1,3 @@
-opennms (1.9.3-1) unstable; urgency=low
-
-  * New upstream release.
-
- -- Mathew Brozowski <brozow@opennms.org>  Tue, 30 Nov 2010 15:18:00 -0500
-
 opennms (1.9.2-1) unstable; urgency=low
 
   * New upstream release.
