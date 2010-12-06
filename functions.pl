@@ -28,7 +28,7 @@ if (not -x $MVN) {
 # maven options
 $MAVEN_OPTS = $ENV{'MAVEN_OPTS'};
 if (not defined $MAVEN_OPTS or $MAVEN_OPTS eq '') {
-	$MAVEN_OPTS = '-XX:PermSize=64M -XX:MaxPermSize=256M -Xmx1G';
+	$MAVEN_OPTS = '-XX:PermSize=512M -XX:MaxPermSize=1G -Xmx1G';
 }
 
 my $result = GetOptions(
