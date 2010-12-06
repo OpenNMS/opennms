@@ -1400,6 +1400,33 @@
       </dependency>
       <dependency>
         <groupId>org.opennms</groupId>
+        <artifactId>opennms-webapp</artifactId>
+        <version>${project.version}</version>
+        <type>tar.gz</type>
+        <classifier>meta-inf</classifier>
+      </dependency>
+      <dependency>
+        <groupId>org.opennms</groupId>
+        <artifactId>opennms-webapp</artifactId>
+        <version>${project.version}</version>
+        <type>tar.gz</type>
+        <classifier>web-inf</classifier>
+      </dependency>
+      <dependency>
+        <groupId>org.opennms</groupId>
+        <artifactId>opennms-webapp</artifactId>
+        <version>${project.version}</version>
+        <type>tar.gz</type>
+        <classifier>lib</classifier>
+      </dependency>
+      <dependency>
+        <groupId>org.opennms.features</groupId>
+        <artifactId>root-webapp</artifactId>
+        <version>${project.version}</version>
+        <type>war</type>
+      </dependency>
+      <dependency>
+        <groupId>org.opennms</groupId>
         <artifactId>opennms-webapp-ng</artifactId>
         <version>${project.version}</version>
       </dependency>

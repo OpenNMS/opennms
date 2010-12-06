@@ -165,9 +165,36 @@
   </modules>
   <dependencies>
     <dependency>
+      <groupId>org.opennms.features</groupId>
+      <artifactId>root-webapp</artifactId>
+      <type>war</type>
+      <version>${project.version}</version>
+    </dependency>
+    <dependency>
       <groupId>org.opennms.assemblies</groupId>
       <artifactId>org.opennms.assemblies.webapp-full</artifactId>
       <type>war</type>
+      <version>${project.version}</version>
+    </dependency>
+    <dependency>
+      <groupId>org.opennms.assemblies</groupId>
+      <artifactId>org.opennms.assemblies.webapp-full</artifactId>
+      <type>tar.gz</type>
+      <classifier>lib</classifier>
+      <version>${project.version}</version>
+    </dependency>
+    <dependency>
+      <groupId>org.opennms</groupId>
+      <artifactId>opennms-webapp</artifactId>
+      <type>tar.gz</type>
+      <classifier>meta-inf</classifier>
+      <version>${project.version}</version>
+    </dependency>
+    <dependency>
+      <groupId>org.opennms</groupId>
+      <artifactId>opennms-webapp</artifactId>
+      <type>tar.gz</type>
+      <classifier>web-inf</classifier>
       <version>${project.version}</version>
     </dependency>
     <dependency>
@@ -177,25 +204,32 @@
       <version>${project.version}</version>
     </dependency>
     <dependency>
+      <groupId>org.opennms.features</groupId>
+      <artifactId>org.opennms.features.http-remoting</artifactId>
+      <type>tar.gz</type>
+      <classifier>lib</classifier>
+      <version>${project.version}</version>
+    </dependency>
+    <dependency>
+      <groupId>org.opennms.features</groupId>
+      <artifactId>org.opennms.features.remote-poller-jnlp</artifactId>
+      <type>tar.gz</type>
+      <classifier>jnlp</classifier>
+      <version>${project.version}</version>
+    </dependency>
+    <dependency>
       <groupId>org.opennms</groupId>
       <artifactId>opennms-doc</artifactId>
-      <version>${project.version}</version>
       <type>tar.gz</type>
+      <version>${project.version}</version>
       <classifier>daemon</classifier>
     </dependency>
     <dependency>
       <groupId>org.opennms</groupId>
       <artifactId>opennms-base-assembly</artifactId>
-      <version>${project.version}</version>
       <type>tar.gz</type>
+      <version>${project.version}</version>
       <classifier>daemon</classifier>
-    </dependency>
-    <dependency>
-      <groupId>org.opennms</groupId>
-      <artifactId>opennms-base-assembly</artifactId>
-      <version>${project.version}</version>
-      <type>tar.gz</type>
-      <classifier>web-inf</classifier>
     </dependency>
     <dependency>
       <groupId>org.opennms</groupId>
