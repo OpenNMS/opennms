@@ -44,5 +44,4 @@ my @command = ($MVN, @ARGS);
 info("changing working directory to $PREFIX/opennms-full-assembly");
 chdir($PREFIX . "/opennms-full-assembly");
 info("running:", @command);
-system(@command);
-handle_errors_and_exit($?);
+handle_errors_and_exit(system(@command));

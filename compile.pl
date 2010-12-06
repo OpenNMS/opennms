@@ -18,5 +18,4 @@ if (not grep { $_ =~ /^[^-]/ } @ARGS) {
 
 my @command = ($MVN, @ARGS);
 info("running:", @command);
-system(@command);
-handle_errors_and_exit($?);
+handle_errors_and_exit(system(@command));
