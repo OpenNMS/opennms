@@ -30,10 +30,10 @@
   </fileSets>
   <dependencySets>
     <dependencySet>
-      <outputFileNameMapping>opennms-model-1.3.3-SNAPSHOT.jar</outputFileNameMapping>
+      <outputFileNameMapping>opennms-model-${project.version}.jar</outputFileNameMapping>
       <outputDirectory>lib</outputDirectory>
       <includes>
-        <include>org.opennms:opennms-model</include>
+        <include>org.opennms:opennms-model:jar:${project.version}</include>
       </includes>
     </dependencySet>
     <dependencySet>

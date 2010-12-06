@@ -18,8 +18,8 @@
         <exclude>org.eclipse.osgi:services</exclude>
         <exclude>org.eclipse.osgi:util</exclude>
         <exclude>org.ops4j.pax.runner:*</exclude>
-	<exclude>dist*</exclude>
-	<exclude>log4j*</exclude>
+        <exclude>dist*</exclude>
+        <exclude>log4j*</exclude>
       </excludes>
     </dependencySet>  
     <dependencySet>   

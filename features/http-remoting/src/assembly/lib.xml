@@ -1,13 +1,14 @@
 <assembly>
-  <id>jnlp</id>
+  <id>lib</id>
   <formats>
     <format>tar.gz</format>
   </formats>
   <includeBaseDirectory>false</includeBaseDirectory>
   <fileSets>
     <fileSet>
-      <directory>target/jnlp</directory>
+      <filtered>false</filtered>
       <outputDirectory>/</outputDirectory>
+      <directory>target/${project.artifactId}-${project.version}/WEB-INF/lib</directory>
     </fileSet>
   </fileSets>
 </assembly>
