@@ -8,9 +8,4 @@
   <artifactId>org.opennms.assemblies</artifactId>
   <packaging>pom</packaging>
   <name>OpenNMS Assemblies</name>
-  
-  <modules>
-    <module>rxtx-assembly</module>
-  </modules>
-
 </project>
