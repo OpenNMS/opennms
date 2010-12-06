@@ -28,7 +28,7 @@ if (not -x $MVN) {
 # maven options
 $MAVEN_OPTS = $ENV{'MAVEN_OPTS'};
 if (not defined $MAVEN_OPTS or $MAVEN_OPTS eq '') {
-	$MAVEN_OPTS = '-XX:PermSize=512M -XX:MaxPermSize=1G -Xmx1G';
+	$MAVEN_OPTS = '-XX:PermSize=512m -XX:MaxPermSize=1g -Xmx1g';
 }
 
 my $result = GetOptions(
@@ -83,6 +83,7 @@ if (grep { $_ =~ /^-Droot.dir=/ } @ARGS) {
 	unshift(@ARGS, '-Droot.dir=' . $PREFIX);
 }
 
+$ENV{'MAVEN_OPTS'} = $MAVEN_OPTS;
 info("MAVEN_OPTS = $MAVEN_OPTS"); 
 
 sub handle_errors_and_exit {
