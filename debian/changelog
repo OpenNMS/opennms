@@ -1,3 +1,9 @@
+opennms (1.9.3-2) unstable; urgency=high
+
+  * Rerelease with reporting fixes.
+
+ -- OpenNMS Release Manager <opennms@opennms.org>  Tue, 7 Dec 2010 16:32:00 -0500
+
 opennms (1.9.3-1) unstable; urgency=high
 
   * New upstream release.
