@@ -54,20 +54,20 @@
     <dependency>
       <groupId>org.opennms</groupId>
       <artifactId>opennms-provision-persistence</artifactId>
-      <version>1.9.3-SNAPSHOT</version>
+      <version>1.9.3</version>
     </dependency>
     <dependency>
       <groupId>org.opennms</groupId>
       <artifactId>opennms-provision-persistence</artifactId>
       <type>test-jar</type>
       <scope>test</scope>
-      <version>1.9.3-SNAPSHOT</version>
+      <version>1.9.3</version>
     </dependency>
 <!--
     <dependency>
       <groupId>org.opennms</groupId>
       <artifactId>opennms-rrd-tcp</artifactId>
-      <version>1.9.3-SNAPSHOT</version>
+      <version>1.9.3</version>
     </dependency>
 -->
     <dependency>
