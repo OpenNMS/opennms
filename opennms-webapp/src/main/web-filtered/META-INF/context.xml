@@ -1,3 +1,0 @@
-<Context path="/opennms" docBase="${install.servlet.dir}"
-         debug="0" reloadable="true">
-</Context>

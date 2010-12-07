@@ -1,34 +1,214 @@
 <component>
   <dependencySets>
+    <!-- ROOT webapp -->
+    <!-- don't do this for the opennms webapp, assume tomcat has a root
+    <dependencySet>
+      <unpack>true</unpack>
+      <useProjectArtifact>false</useProjectArtifact>
+      <useTransitiveDependencies>false</useTransitiveDependencies>
+      <outputDirectory>webapps/ROOT</outputDirectory>
+      <includes><include>org.opennms.features:root-webapp:war:${project.version}</include></includes>
+    </dependencySet>
+    -->
+    <dependencySet>
+      <unpack>true</unpack>
+      <useProjectArtifact>false</useProjectArtifact>
+      <useTransitiveDependencies>false</useTransitiveDependencies>
+      <outputDirectory>jetty-webapps/ROOT</outputDirectory>
+      <includes><include>org.opennms.features:root-webapp:war:${project.version}</include></includes>
+    </dependencySet>
+
+    <!-- OpenNMS webapp -->
     <dependencySet>
       <unpack>true</unpack>
       <useProjectArtifact>false</useProjectArtifact>
       <useTransitiveDependencies>false</useTransitiveDependencies>
       <outputDirectory>webapps/opennms</outputDirectory>
-      <includes><include>org.opennms.assemblies:org.opennms.assemblies.webapp-full:war</include></includes>
+      <includes><include>org.opennms.assemblies:org.opennms.assemblies.webapp-full:war:${project.version}</include></includes>
+    </dependencySet>
+    <dependencySet>
+      <unpack>true</unpack>
+      <unpackOptions>
+        <excludes>
+          <exclude>index.html</exclude>
+          <exclude>WEB-INF/lib/*</exclude>
+        </excludes>
+      </unpackOptions>
+      <useProjectArtifact>false</useProjectArtifact>
+      <useTransitiveDependencies>false</useTransitiveDependencies>
+      <outputDirectory>jetty-webapps/opennms</outputDirectory>
+      <includes><include>org.opennms.assemblies:org.opennms.assemblies.webapp-full:war:${project.version}</include></includes>
+    </dependencySet>
+    <dependencySet>
+      <!-- for jetty, just a few dependencies should go in WEB-INF/lib -->
+      <unpack>true</unpack>
+      <unpackOptions>
+        <includes>
+          <include>opennms-webapp-*.jar</include>
+          <include>*remote-poller-gwt*.jar</include>
+          <include>gwt*.jar</include>
+          <include>extremecomponents-*.jar</include>
+        </includes>
+        <excludes>
+          <exclude>jsp-api-*.jar</exclude>
+          <exclude>jstl-*.jar</exclude>
+          <exclude>servlet-api-*.jar</exclude>
+        </excludes>
+      </unpackOptions>
+      <useProjectArtifact>false</useProjectArtifact>
+      <useTransitiveDependencies>false</useTransitiveDependencies>
+      <outputDirectory>jetty-webapps/opennms/WEB-INF/lib</outputDirectory>
+      <includes><include>org.opennms.assemblies:org.opennms.assemblies.webapp-full:tar.gz:lib:${project.version}</include></includes>
+    </dependencySet>
+    <dependencySet>
+      <!-- for jetty, all other webapp dependencies should go in normal lib/ -->
+      <unpack>true</unpack>
+      <unpackOptions>
+        <excludes>
+          <exclude>opennms-webapp-*.jar</exclude>
+          <exclude>*remote-poller-gwt*.jar</exclude>
+          <exclude>gwt*.jar</exclude>
+          <exclude>extremecomponents-*.jar</exclude>
+          <exclude>jstl-*.jar</exclude>
+          <exclude>jsp-api-*.jar</exclude>
+          <exclude>servlet-api-*.jar</exclude>
+          <exclude>com.springsource.javax.xml.bind*.jar</exclude>
+        </excludes>
+      </unpackOptions>
+      <useProjectArtifact>false</useProjectArtifact>
+      <useTransitiveDependencies>false</useTransitiveDependencies>
+      <outputDirectory>lib</outputDirectory>
+      <includes><include>org.opennms.assemblies:org.opennms.assemblies.webapp-full:tar.gz:lib:${project.version}</include></includes>
+    </dependencySet>
+    <dependencySet>
+      <unpack>true</unpack>
+      <unpackOptions><filtered>true</filtered></unpackOptions>
+      <useProjectArtifact>false</useProjectArtifact>
+      <useTransitiveDependencies>false</useTransitiveDependencies>
+      <outputDirectory>webapps/opennms/META-INF</outputDirectory>
+      <outputFileNameMapping></outputFileNameMapping>
+      <includes><include>org.opennms:opennms-webapp:tar.gz:meta-inf:${project.version}</include></includes>
+    </dependencySet>
+    <dependencySet>
+      <unpack>true</unpack>
+      <unpackOptions><filtered>true</filtered></unpackOptions>
+      <useProjectArtifact>false</useProjectArtifact>
+      <useTransitiveDependencies>false</useTransitiveDependencies>
+      <outputDirectory>jetty-webapps/opennms/META-INF</outputDirectory>
+      <outputFileNameMapping></outputFileNameMapping>
+      <includes><include>org.opennms:opennms-webapp:tar.gz:meta-inf:${project.version}</include></includes>
+    </dependencySet>
+    <dependencySet>
+      <unpack>true</unpack>
+      <unpackOptions><filtered>true</filtered></unpackOptions>
+      <useProjectArtifact>false</useProjectArtifact>
+      <useTransitiveDependencies>false</useTransitiveDependencies>
+      <outputDirectory>webapps/opennms/WEB-INF</outputDirectory>
+      <outputFileNameMapping></outputFileNameMapping>
+      <includes><include>org.opennms:opennms-webapp:tar.gz:web-inf:${project.version}</include></includes>
+    </dependencySet>
+    <dependencySet>
+      <unpack>true</unpack>
+      <unpackOptions><filtered>true</filtered></unpackOptions>
+      <useProjectArtifact>false</useProjectArtifact>
+      <useTransitiveDependencies>false</useTransitiveDependencies>
+      <outputDirectory>jetty-webapps/opennms/WEB-INF</outputDirectory>
+      <outputFileNameMapping></outputFileNameMapping>
+      <includes><include>org.opennms:opennms-webapp:tar.gz:web-inf:${project.version}</include></includes>
+    </dependencySet>
+
+    <!-- Remoting webapp -->
+    <dependencySet>
+      <unpack>true</unpack>
+      <unpackOptions>
+        <excludes>
+          <exclude>WEB-INF/lib/*</exclude>
+        </excludes>
+      </unpackOptions>
+      <useProjectArtifact>false</useProjectArtifact>
+      <useTransitiveDependencies>false</useTransitiveDependencies>
+      <outputDirectory>jetty-webapps/opennms-remoting</outputDirectory>
+      <includes><include>org.opennms.features:org.opennms.features.http-remoting:war:${project.version}</include></includes>
+    </dependencySet>
+    <dependencySet>
+      <!-- for jetty, just a few dependencies should go in WEB-INF/lib -->
+      <unpack>true</unpack>
+      <unpackOptions>
+        <includes>
+          <include>opennms-webapp-*.jar</include>
+          <include>*remote-poller-gwt*.jar</include>
+          <include>gwt*.jar</include>
+          <include>extremecomponents-*.jar</include>
+        </includes>
+        <excludes>
+          <exclude>jsp-api-*.jar</exclude>
+          <exclude>jstl-*.jar</exclude>
+          <exclude>servlet-api-*.jar</exclude>
+        </excludes>
+      </unpackOptions>
+      <useProjectArtifact>false</useProjectArtifact>
+      <useTransitiveDependencies>false</useTransitiveDependencies>
+      <outputDirectory>jetty-webapps/opennms-remoting/WEB-INF/lib</outputDirectory>
+      <includes><include>org.opennms.features:org.opennms.features.http-remoting:tar.gz:lib:${project.version}</include></includes>
+    </dependencySet>
+    <dependencySet>
+      <!-- for jetty, all other webapp dependencies should go in normal lib/ -->
+      <unpack>true</unpack>
+      <unpackOptions>
+        <excludes>
+          <exclude>opennms-webapp-*.jar</exclude>
+          <exclude>*remote-poller-gwt*.jar</exclude>
+          <exclude>gwt*.jar</exclude>
+          <exclude>extremecomponents-*.jar</exclude>
+          <exclude>jstl-*.jar</exclude>
+          <exclude>jsp-api-*.jar</exclude>
+          <exclude>servlet-api-*.jar</exclude>
+          <exclude>com.springsource.javax.xml.bind*.jar</exclude>
+        </excludes>
+      </unpackOptions>
+      <useProjectArtifact>false</useProjectArtifact>
+      <useTransitiveDependencies>false</useTransitiveDependencies>
+      <outputDirectory>lib</outputDirectory>
+      <includes><include>org.opennms.features:org.opennms.features.http-remoting:tar.gz:lib:${project.version}</include></includes>
     </dependencySet>
     <dependencySet>
       <unpack>true</unpack>
       <useProjectArtifact>false</useProjectArtifact>
       <useTransitiveDependencies>false</useTransitiveDependencies>
       <outputDirectory>webapps/opennms-remoting</outputDirectory>
-      <includes><include>org.opennms.features:org.opennms.features.http-remoting:war</include></includes>
+      <includes><include>org.opennms.features:org.opennms.features.http-remoting:war:${project.version}</include></includes>
     </dependencySet>
-
-    <!-- configuration from base assembly -->
     <dependencySet>
       <unpack>true</unpack>
       <useProjectArtifact>false</useProjectArtifact>
       <useTransitiveDependencies>false</useTransitiveDependencies>
-      <outputDirectory>webapps/opennms/WEB-INF</outputDirectory>
-      <includes><include>org.opennms:opennms-base-assembly:tar.gz:web-inf</include></includes>
+      <outputDirectory>jetty-webapps/opennms-remoting/webstart</outputDirectory>
+      <includes><include>org.opennms.features:org.opennms.features.remote-poller-jnlp:tar.gz:jnlp:${project.version}</include></includes>
     </dependencySet>
     <dependencySet>
       <unpack>true</unpack>
+      <useProjectArtifact>false</useProjectArtifact>
+      <useTransitiveDependencies>false</useTransitiveDependencies>
+      <outputDirectory>webapps/opennms-remoting/webstart</outputDirectory>
+      <includes><include>org.opennms.features:org.opennms.features.remote-poller-jnlp:tar.gz:jnlp:${project.version}</include></includes>
+    </dependencySet>
+    <dependencySet>
+      <unpack>true</unpack>
+      <unpackOptions><filtered>true</filtered></unpackOptions>
       <useProjectArtifact>false</useProjectArtifact>
       <useTransitiveDependencies>false</useTransitiveDependencies>
       <outputDirectory>webapps/opennms-remoting/WEB-INF</outputDirectory>
-      <includes><include>org.opennms:opennms-base-assembly:tar.gz:web-inf</include></includes>
+      <outputFileNameMapping></outputFileNameMapping>
+      <includes><include>org.opennms:opennms-webapp:tar.gz:web-inf:${project.version}</include></includes>
+    </dependencySet>
+    <dependencySet>
+      <unpack>true</unpack>
+      <unpackOptions><filtered>true</filtered></unpackOptions>
+      <useProjectArtifact>false</useProjectArtifact>
+      <useTransitiveDependencies>false</useTransitiveDependencies>
+      <outputDirectory>jetty-webapps/opennms-remoting/WEB-INF</outputDirectory>
+      <outputFileNameMapping></outputFileNameMapping>
+      <includes><include>org.opennms:opennms-webapp:tar.gz:web-inf:${project.version}</include></includes>
     </dependencySet>
   </dependencySets>
 </component>

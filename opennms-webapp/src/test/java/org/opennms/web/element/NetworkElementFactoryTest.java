@@ -119,7 +119,7 @@ public class NetworkElementFactoryTest  {
         m_jdbcTemplate.update("INSERT INTO ipInterface (nodeId, ipAddr, isManaged) VALUES (12, '1.1.1.1', 'M')");
         
         assertEquals("node count in DB", 7, m_jdbcTemplate.queryForInt("SELECT count(*) FROM node"));
-        assertEquals("ipInterface count in DB", 19, m_jdbcTemplate.queryForInt("SELECT count(*) FROM ipInterface"));
+        assertEquals("ipInterface count in DB", 20, m_jdbcTemplate.queryForInt("SELECT count(*) FROM ipInterface"));
         
         Node[] nodes = NetworkElementFactory.getInstance(m_appContext).getNodesWithIpLike("*.*.*.*");
         assertEquals("node count", 1, nodes.length);
@@ -133,7 +133,7 @@ public class NetworkElementFactoryTest  {
         m_jdbcTemplate.update("INSERT INTO ipInterface (nodeId, ipAddr, isManaged) VALUES (12, '1.1.1.2', 'M')");
         
         assertEquals("node count in DB", 7, m_jdbcTemplate.queryForInt("SELECT count(*) FROM node"));
-        assertEquals("ipInterface count in DB", 20, m_jdbcTemplate.queryForInt("SELECT count(*) FROM ipInterface"));
+        assertEquals("ipInterface count in DB", 21, m_jdbcTemplate.queryForInt("SELECT count(*) FROM ipInterface"));
 
         Node[] nodes = NetworkElementFactory.getInstance(m_appContext).getNodesWithIpLike("*.*.*.*");
         assertEquals("node count", 1, nodes.length);
@@ -143,7 +143,7 @@ public class NetworkElementFactoryTest  {
     @Transactional
     public void testGetActiveInterfacesOnNode() {
     	Interface[] intfs = NetworkElementFactory.getInstance(m_appContext).getActiveInterfacesOnNode(1);
-    	assertEquals("active interfaces", 3, intfs.length);
+    	assertEquals("active interfaces", 4, intfs.length);
     	
     }
     

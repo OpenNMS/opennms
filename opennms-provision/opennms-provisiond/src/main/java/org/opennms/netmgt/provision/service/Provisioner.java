@@ -631,7 +631,7 @@ public class Provisioner implements SpringServiceDaemon {
                 log().debug("handleRelodConfigEvent: reports rescheduled.");
                 
                 ebldr = new EventBuilder(EventConstants.RELOAD_DAEMON_CONFIG_SUCCESSFUL_UEI, "Provisiond");
-                ebldr.addParam(EventConstants.PARM_DAEMON_NAME, "Statsd");
+                ebldr.addParam(EventConstants.PARM_DAEMON_NAME, "Provisiond");
                 
             } catch (Exception exception) {
                 

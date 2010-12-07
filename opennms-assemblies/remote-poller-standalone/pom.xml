@@ -50,6 +50,8 @@
     <dependency>
       <groupId>org.opennms.assemblies</groupId>
       <artifactId>org.opennms.assemblies.remote-poller-onejar</artifactId>
+      <version>${project.version}</version>
+      <classifier>signed-jar-with-dependencies</classifier>
     </dependency>
   </dependencies>
 </project>
