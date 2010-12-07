@@ -35,6 +35,7 @@
 				<listitem><para>In-line thresholding should ignore Aliased Resources if they are not enabled (Issue <ulink url='http://issues.opennms.org/browse/NMS-4255'>NMS-4255</ulink>)</para></listitem>
 				<listitem><para>Fix lower limit in Net-SNMP CPU graphs (Issue <ulink url='http://issues.opennms.org/browse/NMS-4257'>NMS-4257</ulink>)</para></listitem>
 				<listitem><para>Make SNMPv2c the default in web SNMP config dialog (Issue <ulink url='http://issues.opennms.org/browse/NMS-4263'>NMS-4263</ulink>)</para></listitem>
+				<listitem><para>build blacklists JDKs other than version 1.5 or 1.6 (Issue <ulink url='http://issues.opennms.org/browse/NMS-4270'>NMS-4270</ulink>)</para></listitem>
 			</itemizedlist>
 		</section>
 		<section id="opennms-1.9.3-enhancement">
