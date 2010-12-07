@@ -3,7 +3,7 @@
 	<property name="ireport.zoom" value="2.0"/>
 	<property name="ireport.x" value="0"/>
 	<property name="ireport.y" value="88"/>
-	<template><![CDATA["/Users/thedesloge/git/opennms/opennms-base-assembly/src/main/filtered/etc/report-templates/assets/styles/defaultStyles.jrtx"]]></template>
+	<template><![CDATA["${install.dir}/etc/report-templates/assets/styles/defaultStyles.jrtx"]]></template>
 	<style name="Header_background" mode="Opaque" backcolor="#DFDFDF"/>
 	<parameter name="COMPANY_LOGO" class="java.lang.String">
 		<defaultValueExpression><![CDATA["${install.dir}/etc/report-templates/assets/images/company-logo.png"]]></defaultValueExpression>
