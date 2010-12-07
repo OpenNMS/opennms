@@ -15,6 +15,7 @@
     <module>instrumentationLogReader</module>
     <module>poller</module>
     <module>provisioning</module>
+    <module>root-webapp</module>
     <module>ticketing</module>
     <module>phonebook</module>
     <module>sms-reflector</module>
