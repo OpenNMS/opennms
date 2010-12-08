@@ -1165,6 +1165,65 @@ public class ThresholdingVisitorTest {
     }
 
     /*
+     * Testing counter reset.
+     * When a threshold condition increases the violation count, and before reach the trigger, the value of the variable is on rearm
+     * condition, the counter should be reinitialized and should start over again.
+     * 
+     * This test validate that Bug 1582 has been fixed.
+     */
+    @Test    
+    public void testCounterReset() throws Exception {
+        String ifName = "lo0";
+        setupSnmpInterfaceDatabase("127.0.0.1", ifName);
+
+        LatencyThresholdingSet thresholdingSet = new LatencyThresholdingSet(1, "127.0.0.1", "HTTP", getRepository(), 0);
+        assertTrue(thresholdingSet.hasThresholds()); // Global Test
+        Map<String, Double> attributes = new HashMap<String, Double>();
+        attributes.put("http", 90.0);
+        assertTrue(thresholdingSet.hasThresholds(attributes)); // Datasource Test
+        List<Event> triggerEvents = thresholdingSet.applyThresholds("http", attributes);
+        assertTrue(triggerEvents.size() == 0);
+
+        // Testing trigger the threshold 3 times
+        attributes.put("http", 200.0);
+        for (int i = 1; i <= 3; i++) {
+            log().debug("testLatencyThresholdingSet: ------------------------------------ trigger number " + i);
+            if (thresholdingSet.hasThresholds(attributes)) {
+                triggerEvents = thresholdingSet.applyThresholds("http", attributes);
+                assertTrue(triggerEvents.size() == 0);
+            }
+        }
+        assertTrue(triggerEvents.size() == 0);
+        
+        // This should reset the counter
+        attributes.put("http", 40.0);
+        log().debug("testLatencyThresholdingSet: ------------------------------------ reseting counter");
+        triggerEvents = thresholdingSet.applyThresholds("http", attributes);
+
+        // Increase the counter again two times, no threshold should be generated
+        attributes.put("http", 300.0);
+        for (int i = 4; i <= 5; i++) {
+            log().debug("testLatencyThresholdingSet: ------------------------------------ trigger number " + i);
+            if (thresholdingSet.hasThresholds(attributes)) {
+                triggerEvents = thresholdingSet.applyThresholds("http", attributes);
+                assertTrue(triggerEvents.size() == 0);
+            }
+        }
+        
+        // Increase 3 more times and now, the threshold event should be triggered.
+        for (int i = 6; i <= 8; i++) {
+            log().debug("testLatencyThresholdingSet: ------------------------------------ trigger number " + i);
+            if (thresholdingSet.hasThresholds(attributes)) {
+                triggerEvents = thresholdingSet.applyThresholds("http", attributes);
+                if (i < 8)
+                    assertTrue(triggerEvents.size() == 0);
+            }
+        }
+        
+        assertTrue(triggerEvents.size() == 1);
+    }
+
+    /*
      * This test uses this files from src/test/resources:
      * - thresd-configuration.xml
      * - test-thresholds.xml
