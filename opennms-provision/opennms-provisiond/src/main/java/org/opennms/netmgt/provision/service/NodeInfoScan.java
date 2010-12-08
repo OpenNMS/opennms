@@ -99,7 +99,7 @@ final class NodeInfoScan implements RunInBatch {
             walker.waitFor();
         
             if (walker.timedOut()) {
-                abort("Aborting node scan : Agent timedout while scanning the system table");
+                abort("Aborting node scan : Agent timed out while scanning the system table");
             }
             else if (walker.failed()) {
                 abort("Aborting node scan : Agent failed while scanning the system table: " + walker.getErrorMessage());

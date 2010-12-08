@@ -13791,7 +13791,7 @@
 	<uei>uei.opennms.org/vendor/veraz/traps/ipvrEmsTrapInformationalGatekeeperRegistrationTimeout</uei>
 	<event-label>IPVREMS-MIB defined trap event: ipvrEmsTrapInformationalGatekeeperRegistrationTimeout</event-label>
 	<descr>
-	&lt;p&gt;The H.323 Local Gateway tried to register with a GK and the request has timedout.
+	&lt;p&gt;The H.323 Local Gateway tried to register with a GK and the request has timed out.
 	&lt;/p&gt;
 	&lt;table&gt;
 	&lt;tr&gt;&lt;td&gt;&lt;b&gt;
@@ -14064,7 +14064,7 @@
 	<uei>uei.opennms.org/vendor/veraz/traps/ipvrEmsTrapInformationalGatekeeperUnregistrationTimeout</uei>
 	<event-label>IPVREMS-MIB defined trap event: ipvrEmsTrapInformationalGatekeeperUnregistrationTimeout</event-label>
 	<descr>
-	&lt;p&gt;The H.323 Local Gateway tried to register with a GK and the request has timedout.
+	&lt;p&gt;The H.323 Local Gateway tried to register with a GK and the request has timed out.
 	&lt;/p&gt;
 	&lt;table&gt;
 	&lt;tr&gt;&lt;td&gt;&lt;b&gt;
