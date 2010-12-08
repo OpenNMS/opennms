@@ -6,6 +6,40 @@
 
 	<!-- Start 1.8 -->
 
+	<section id="opennms-1.8.7">
+		<title>Changes in OpenNMS 1.8.7</title>
+
+		<section id="opennms-1.8.7-bug">
+			<title>Bug</title>
+
+			<itemizedlist>
+				<listitem><para>Going to edit KSC reports generates an uncaught exception (Issue <ulink url='http://issues.opennms.org/browse/NMS-3414'>NMS-3414</ulink>)</para></listitem>
+				<listitem><para>Yet another uncaught exception, KSC reports (Issue <ulink url='http://issues.opennms.org/browse/NMS-3455'>NMS-3455</ulink>)</para></listitem>
+				<listitem><para>Home  / Admin  / Provisioning Groups page generating bad HTML when a provisioning group has an apostrophe in the name (Issue <ulink url='http://issues.opennms.org/browse/NMS-3601'>NMS-3601</ulink>)</para></listitem>
+				<listitem><para>DNS outage identified on interface X with reason code: IOException while polling address (Issue <ulink url='http://issues.opennms.org/browse/NMS-4071'>NMS-4071</ulink>)</para></listitem>
+				<listitem><para>ThresholdingVisitor: create: Can&#39;t create ThresholdingVisitor for &lt;IP ADDRESS&gt; (Issue <ulink url='http://issues.opennms.org/browse/NMS-4233'>NMS-4233</ulink>)</para></listitem>
+				<listitem><para>Two BGP-related SNMP graphs use daily RRAs (Issue <ulink url='http://issues.opennms.org/browse/NMS-4245'>NMS-4245</ulink>)</para></listitem>
+				<listitem><para>Acknowledgement Service bails when an ack is sent for an invalid ID (Issue <ulink url='http://issues.opennms.org/browse/NMS-4248'>NMS-4248</ulink>)</para></listitem>
+				<listitem><para>In-line thresholding should ignore Aliased Resources if they are not enabled (Issue <ulink url='http://issues.opennms.org/browse/NMS-4255'>NMS-4255</ulink>)</para></listitem>
+				<listitem><para>Fix lower limit in Net-SNMP CPU graphs (Issue <ulink url='http://issues.opennms.org/browse/NMS-4257'>NMS-4257</ulink>)</para></listitem>
+				<listitem><para>Make SNMPv2c the default in web SNMP config dialog (Issue <ulink url='http://issues.opennms.org/browse/NMS-4263'>NMS-4263</ulink>)</para></listitem>
+				<listitem><para>build blacklists JDKs other than version 1.5 or 1.6 (Issue <ulink url='http://issues.opennms.org/browse/NMS-4270'>NMS-4270</ulink>)</para></listitem>
+				<listitem><para>OpenJDK fails privatevoidcheckJvmName() check (Issue <ulink url='http://issues.opennms.org/browse/NMS-4277'>NMS-4277</ulink>)</para></listitem>
+				<listitem><para>Wrongly substituted path in some reports (&quot;last month&quot;)? (Issue <ulink url='http://issues.opennms.org/browse/NMS-4288'>NMS-4288</ulink>)</para></listitem>
+			</itemizedlist>
+		</section>
+		<section id="opennms-1.8.7-enhancement">
+			<title>Enhancement</title>
+
+			<itemizedlist>
+				<listitem><para>SNMP Asset Provisioning Adapter: suppress output like No such instance (Issue <ulink url='http://issues.opennms.org/browse/NMS-4173'>NMS-4173</ulink>)</para></listitem>
+				<listitem><para>Add new options for domain/ifalias resource collection (Issue <ulink url='http://issues.opennms.org/browse/NMS-4239'>NMS-4239</ulink>)</para></listitem>
+				<listitem><para>Improve Liebert power-related SNMP data collection and resource graph definitions (Issue <ulink url='http://issues.opennms.org/browse/NMS-4241'>NMS-4241</ulink>)</para></listitem>
+				<listitem><para>Create performance resource graphs for MS HTTP stats (Issue <ulink url='http://issues.opennms.org/browse/NMS-4242'>NMS-4242</ulink>)</para></listitem>
+			</itemizedlist>
+		</section>
+	</section>
+
 	<section id="opennms-1.8.6">
 		<title>Changes in OpenNMS 1.8.6</title>
 
