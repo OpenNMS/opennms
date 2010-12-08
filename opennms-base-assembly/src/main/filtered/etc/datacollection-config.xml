@@ -4121,6 +4121,9 @@
           <includeGroup>ucd-sysstat</includeGroup>
 	  <includeGroup>ucd-sysstat-raw</includeGroup>
 	  <includeGroup>ucd-sysstat-raw-more</includeGroup>
+          <includeGroup>zxtm</includeGroup>
+          <includeGroup>zxtmvs</includeGroup>
+          <includeGroup>zxtmpool</includeGroup>
         </collect>
       </systemDef>
 
@@ -4145,6 +4148,9 @@
           <includeGroup>ucd-sysstat</includeGroup>
 	  <includeGroup>ucd-sysstat-raw</includeGroup>
 	  <includeGroup>ucd-sysstat-raw-more</includeGroup>
+          <includeGroup>zxtm</includeGroup>
+          <includeGroup>zxtmvs</includeGroup>
+          <includeGroup>zxtmpool</includeGroup>
         </collect>
       </systemDef>
 
@@ -4169,6 +4175,9 @@
           <includeGroup>ucd-sysstat</includeGroup>
 	  <includeGroup>ucd-sysstat-raw</includeGroup>
 	  <includeGroup>ucd-sysstat-raw-more</includeGroup>
+          <includeGroup>zxtm</includeGroup>
+          <includeGroup>zxtmvs</includeGroup>
+          <includeGroup>zxtmpool</includeGroup>
         </collect>
       </systemDef>
 
