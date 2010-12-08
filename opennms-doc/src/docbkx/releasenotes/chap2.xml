@@ -13,6 +13,8 @@
 			<title>Bug</title>
 
 			<itemizedlist>
+				<listitem><para>icmp and http thresholds not working properly (Issue <ulink url='http://issues.opennms.org/browse/NMS-1657'>NMS-1657</ulink>)</para></listitem>
+				<listitem><para>Going to edit KSC reports generates an uncaught exception (Issue <ulink url='http://issues.opennms.org/browse/NMS-3414'>NMS-3414</ulink>)</para></listitem>
 				<listitem><para>Going to edit KSC reports generates an uncaught exception (Issue <ulink url='http://issues.opennms.org/browse/NMS-3414'>NMS-3414</ulink>)</para></listitem>
 				<listitem><para>Yet another uncaught exception, KSC reports (Issue <ulink url='http://issues.opennms.org/browse/NMS-3455'>NMS-3455</ulink>)</para></listitem>
 				<listitem><para>Home  / Admin  / Provisioning Groups page generating bad HTML when a provisioning group has an apostrophe in the name (Issue <ulink url='http://issues.opennms.org/browse/NMS-3601'>NMS-3601</ulink>)</para></listitem>
