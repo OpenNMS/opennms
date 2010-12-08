@@ -169,9 +169,12 @@ public class OnmsIpInterfaceResource extends OnmsRestService {
         OnmsNode node = m_nodeDao.get(nodeCriteria);
         if (node == null) {
             throwException(Status.BAD_REQUEST, "addIpInterface: can't find node " + nodeCriteria);
-        }
-        if (ipInterface == null) {
-            throwException(Status.BAD_REQUEST, "addIpInterface: ip interface object cannot be null");
+        } else if (ipInterface == null) {
+            throwException(Status.BAD_REQUEST, "addIpInterface: ipInterface object cannot be null");
+        } else if (ipInterface.getInetAddress() == null) {
+            throwException(Status.BAD_REQUEST, "addIpInterface: ipInterface's ipAddress cannot be null");
+        } else if (ipInterface.getInetAddress().getAddress() == null) {
+            throwException(Status.BAD_REQUEST, "addIpInterface: ipInterface's ipAddress bytes cannot be null");
         }
         log().debug("addIpInterface: adding interface " + ipInterface);
         node.addIpInterface(ipInterface);
