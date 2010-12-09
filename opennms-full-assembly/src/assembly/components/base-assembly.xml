@@ -10,5 +10,16 @@
         <include>org.opennms:opennms-base-assembly:tar.gz:daemon:${project.version}</include>
       </includes>
     </dependencySet>
+    <dependencySet>
+      <unpack>true</unpack>
+      <unpackOptions><filtered>true</filtered></unpackOptions>
+      <useProjectArtifact>false</useProjectArtifact>
+      <useTransitiveDependencies>false</useTransitiveDependencies>
+      <outputDirectory>share/</outputDirectory>
+      <outputFileNameMapping></outputFileNameMapping>
+      <includes>
+        <include>org.opennms.assemblies:org.opennms.assemblies.xsds:tar.gz:xsds:${project.version}</include>
+      </includes>
+    </dependencySet>
   </dependencySets>
 </component>
