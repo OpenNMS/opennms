@@ -30,6 +30,12 @@
   </build>
   <dependencies>
     <dependency>
+      <groupId>org.opennms.core</groupId>
+      <artifactId>org.opennms.core.soa</artifactId>
+      <version>${project.version}</version>
+      <classifier>xsds</classifier>
+    </dependency>
+    <dependency>
       <groupId>org.opennms</groupId>
       <artifactId>drools-correlation-engine</artifactId>
       <version>${project.version}</version>
