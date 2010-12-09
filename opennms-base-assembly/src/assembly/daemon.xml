@@ -39,10 +39,6 @@
       <outputDirectory>share</outputDirectory>
     </fileSet>
     <fileSet>
-      <directory>target/xsds</directory>
-      <outputDirectory>share/xsds</outputDirectory>
-    </fileSet>
-    <fileSet>
       <directory>target/remote-poller/etc</directory>
       <outputDirectory>contrib/remote-poller</outputDirectory>
     </fileSet>
