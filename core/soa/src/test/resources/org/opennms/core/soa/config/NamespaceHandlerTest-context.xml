@@ -4,7 +4,7 @@
 	xmlns:onmsgi="http://xmlns.opennms.org/xsd/spring/onms-osgi"
 	xsi:schemaLocation="
 	http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans.xsd
-	http://xmlns.opennms.org/xsd/spring/onms-osgi http://xmlns.opennms.org/xsd/spring/onms-osgi/onms-osgi.xsd
+	http://xmlns.opennms.org/xsd/spring/onms-osgi http://xmlns.opennms.org/xsd/spring/onms-osgi.xsd
 	">
 	
     <!-- in order to make the tests independent I create a new registry for each test context
