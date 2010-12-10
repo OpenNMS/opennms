@@ -232,16 +232,19 @@ public class JRobinRrdStrategyTest {
                 "--end=" + (endTime + 300),
                 "DEF:baz=" + rrdFile.getAbsolutePath() + ":bar:AVERAGE",
                 "CDEF:bazX1=baz,1,*",
+                "CDEF:bazX1P0=bazX1,0,+",
                 "VDEF:avg=bazX1,AVERAGE",
                 "VDEF:min=bazX1,MIN",
                 "VDEF:max=bazX1,MAX",
                 "VDEF:tot=bazX1,TOTAL",
                 "VDEF:nfp=bazX1,95,PERCENT",
+                "VDEF:nfp2=bazX1P0,95,PERCENT",
                 "PRINT:avg:AVERAGE:\"%le\"",
                 "PRINT:min:AVERAGE:\"%le\"",
                 "PRINT:max:AVERAGE:\"%le\"",
                 "PRINT:tot:AVERAGE:\"%le\"",
-                "PRINT:nfp:AVERAGE:\"%le\""
+                "PRINT:nfp:AVERAGE:\"%le\"",
+                "PRINT:nfp2:AVERAGE:\"%le\""
         };
         graphDef = ((JRobinRrdStrategy)m_strategy).createGraphDef(new File(""), command);
         graph = new RrdGraph(graphDef);
@@ -252,12 +255,13 @@ public class JRobinRrdStrategyTest {
         
         printLines = info.getPrintLines();
         assertNotNull("graph printLines - CDEF", printLines);
-        assertEquals("graph printLines - CDEF size", 5, printLines.length);
+        assertEquals("graph printLines - CDEF size", 6, printLines.length);
         assertEquals("graph printLines - CDEF item 0", "1.649453e+05", printLines[0]);
         assertEquals("graph printLines - CDEF item 1", "3.900000e+01", printLines[1]);
         assertEquals("graph printLines - CDEF item 2", "1.600000e+07", printLines[2]);
         assertEquals("graph printLines - CDEF item 3", "9.896721e+09", printLines[3]);
         assertEquals("graph printLines - CDEF item 4", "9.574000e+03", printLines[4]);
+        assertEquals("graph printLines - CDEF item 5", "9.574000e+03", printLines[5]);
         
     }
 
