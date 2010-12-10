@@ -1190,7 +1190,7 @@ WHERE
 									<font fontName="SansSerif" size="6"/>
 								</labelFont>
 								<tickLabelFont>
-									<font fontName="Helvetica Neue" size="6"/>
+									<font fontName="SansSerif" size="6"/>
 								</tickLabelFont>
 							</axisFormat>
 						</categoryAxisFormat>
@@ -1494,15 +1494,15 @@ WHERE
 					<chart theme="default">
 						<reportElement x="-1" y="35" width="555" height="185"/>
 						<chartTitle>
-							<font fontName="Helvetica Neue" size="10" isBold="true"/>
+							<font fontName="SansSerif" size="10" isBold="true"/>
 							<titleExpression><![CDATA["All Events in last 24h"]]></titleExpression>
 						</chartTitle>
 						<chartSubtitle>
-							<font fontName="Helvetica Neue" size="8"/>
+							<font fontName="SansSerif" size="8"/>
 							<subtitleExpression><![CDATA["Event in hour"]]></subtitleExpression>
 						</chartSubtitle>
 						<chartLegend>
-							<font fontName="Helvetica Neue" size="8"/>
+							<font fontName="SansSerif" size="8"/>
 						</chartLegend>
 					</chart>
 					<categoryDataset>
@@ -1563,25 +1563,25 @@ WHERE
 							<seriesColor seriesOrder="6" color="#CD0200"/>
 						</plot>
 						<itemLabel color="#000000" backgroundColor="#FFFFFF">
-							<font fontName="Helvetica Neue" size="8"/>
+							<font fontName="SansSerif" size="8"/>
 						</itemLabel>
 						<categoryAxisFormat>
 							<axisFormat>
 								<labelFont>
-									<font fontName="Helvetica Neue" size="8"/>
+									<font fontName="SansSerif" size="8"/>
 								</labelFont>
 								<tickLabelFont>
-									<font fontName="Helvetica Neue" size="8"/>
+									<font fontName="SansSerif" size="8"/>
 								</tickLabelFont>
 							</axisFormat>
 						</categoryAxisFormat>
 						<valueAxisFormat>
 							<axisFormat>
 								<labelFont>
-									<font fontName="Helvetica Neue" size="8"/>
+									<font fontName="SansSerif" size="8"/>
 								</labelFont>
 								<tickLabelFont>
-									<font fontName="Helvetica Neue" size="8"/>
+									<font fontName="SansSerif" size="8"/>
 								</tickLabelFont>
 							</axisFormat>
 						</valueAxisFormat>
@@ -1607,15 +1607,15 @@ WHERE
 					<chart theme="default">
 						<reportElement x="0" y="231" width="555" height="185"/>
 						<chartTitle>
-							<font fontName="Helvetica Neue" size="10" isBold="true"/>
+							<font fontName="SansSerif" size="10" isBold="true"/>
 							<titleExpression><![CDATA["Top 20 Nodes with events"]]></titleExpression>
 						</chartTitle>
 						<chartSubtitle>
-							<font fontName="Helvetica Neue" size="8"/>
+							<font fontName="SansSerif" size="8"/>
 							<subtitleExpression><![CDATA["All events acknowledged and unacknowledged"]]></subtitleExpression>
 						</chartSubtitle>
 						<chartLegend>
-							<font fontName="Helvetica Neue" size="8"/>
+							<font fontName="SansSerif" size="8"/>
 						</chartLegend>
 					</chart>
 					<categoryDataset>
@@ -1676,25 +1676,25 @@ WHERE
 							<seriesColor seriesOrder="6" color="#CD0200"/>
 						</plot>
 						<itemLabel color="#000000" backgroundColor="#FFFFFF">
-							<font fontName="Helvetica Neue" size="8"/>
+							<font fontName="SansSerif" size="8"/>
 						</itemLabel>
 						<categoryAxisFormat>
 							<axisFormat>
 								<labelFont>
-									<font fontName="Helvetica Neue" size="8"/>
+									<font fontName="SansSerif" size="8"/>
 								</labelFont>
 								<tickLabelFont>
-									<font fontName="Helvetica Neue" size="8"/>
+									<font fontName="SansSerif" size="8"/>
 								</tickLabelFont>
 							</axisFormat>
 						</categoryAxisFormat>
 						<valueAxisFormat>
 							<axisFormat>
 								<labelFont>
-									<font fontName="Helvetica Neue" size="8"/>
+									<font fontName="SansSerif" size="8"/>
 								</labelFont>
 								<tickLabelFont>
-									<font fontName="Helvetica Neue" size="8"/>
+									<font fontName="SansSerif" size="8"/>
 								</tickLabelFont>
 							</axisFormat>
 						</valueAxisFormat>
@@ -1751,7 +1751,7 @@ WHERE
 			<staticText>
 				<reportElement x="0" y="4" width="555" height="8"/>
 				<textElement textAlignment="Center">
-					<font fontName="Helvetica Neue" size="6" isBold="false"/>
+					<font fontName="SansSerif" size="6" isBold="false"/>
 				</textElement>
 				<text><![CDATA[OpenNMS Copyright 2002-2010 The OpenNMS Group, Inc. OpenNMS is a registered trademark of The OpenNMS Group, Inc.]]></text>
 			</staticText>
