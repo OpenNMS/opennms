@@ -49,21 +49,51 @@
 		value="<a href='report/database/index.htm'>Database</a>" />
   <jsp:param name="breadcrumb" value="Run"/>
 </jsp:include>
+<style type="text/css">
+	
+.newform {
+	margin:0 50px; 
+	padding:50px 0;
+}
+
+.newform .label{
+	font-size: 100%;
+	float: left;
+	width: 230px;
+	margin-right: 10px;
+	text-align: right;
+	clear: left;
+	display: block;
+}
+
+.newform p select, .newform p input, .newform p option, .newform p options, .newform p checkbox {
+	font-size: 70%;
+}
+
+.newform .indent {
+	margin-left: 240px;
+}
+
+</style>
 
 <h3>Cron Expression</h3>
 
   
-<form:form commandName="triggerDetails">
+<form:form commandName="triggerDetails" cssClass="newform">
 	
 	<p>
-	Cron Expression: 
-	<form:input path="cronExpression"/>
+		<form:label path="cronExpression" cssClass="label">
+			<c:out value="cron expression"/>
+		</form:label>
+		<form:input path="cronExpression"/>
 	</p>	   
 
-    <br/>
-    <input type="submit" id="proceed" name="_eventId_proceed" value="Proceed" />&#160;
-	<input type="submit" name="_eventId_revise" value="Revise"/>&#160;
-	<input type="submit" name="_eventId_cancel" value="Cancel"/>&#160;
+	<span class="indent">
+		<input type="submit" id="proceed" name="_eventId_proceed" value="Proceed" />&#160;
+		<input type="submit" name="_eventId_revise" value="Revise"/>&#160;
+		<input type="submit" name="_eventId_cancel" value="Cancel"/>&#160;
+	</span>
+		
 </form:form>
   
 <jsp:include page="/includes/footer.jsp" flush="false" />

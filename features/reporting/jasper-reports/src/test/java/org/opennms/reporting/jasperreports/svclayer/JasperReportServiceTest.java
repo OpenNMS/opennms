@@ -83,13 +83,20 @@ public class JasperReportServiceTest {
 	
 	@Test
 	public void testGetParmeters() {
-		ReportParameters reportParameters = m_reportService
-				.getParameters(REPORTID);
-		assertNotNull(reportParameters);
-		assertEquals(1, reportParameters.getIntParms().size());
-		assertEquals(1, reportParameters.getFloatParms().size());
-		assertEquals(2, reportParameters.getStringParms().size());
-		assertEquals(3, reportParameters.getDateParms().size());
+		ReportParameters reportParameters;
+        try {
+            reportParameters = m_reportService
+            		.getParameters(REPORTID);
+            assertNotNull(reportParameters);
+            assertEquals(1, reportParameters.getIntParms().size());
+            assertEquals(1, reportParameters.getFloatParms().size());
+            assertEquals(2, reportParameters.getStringParms().size());
+            assertEquals(3, reportParameters.getDateParms().size());
+        } catch (ReportException e) {
+            // TODO Auto-generated catch block
+            e.printStackTrace();
+        }
+		
 	}
 
 
@@ -101,13 +108,20 @@ public class JasperReportServiceTest {
         
         @Test
         public void testDescriptions() {
-                ReportParameters reportParameters = m_reportService
-                                .getParameters(REPORTID);
-                ReportStringParm stringParm1 = reportParameters.getStringParms().get(0);
-                Assert.assertEquals("a string parameter",stringParm1.getDisplayName());
-                ReportStringParm stringParm2 = reportParameters.getStringParms().get(1);
-                Assert.assertEquals("stringParameter2",stringParm2.getDisplayName());
-                Assert.assertEquals(3, reportParameters.getDateParms().size());
+                ReportParameters reportParameters;
+                try {
+                    reportParameters = m_reportService
+                                    .getParameters(REPORTID);
+                    ReportStringParm stringParm1 = reportParameters.getStringParms().get(0);
+                    Assert.assertEquals("a string parameter",stringParm1.getDisplayName());
+                    ReportStringParm stringParm2 = reportParameters.getStringParms().get(1);
+                    Assert.assertEquals("stringParameter2",stringParm2.getDisplayName());
+                    Assert.assertEquals(3, reportParameters.getDateParms().size());
+                } catch (ReportException e) {
+                    // TODO Auto-generated catch block
+                    e.printStackTrace();
+                }
+                
         }
 
 	@Test

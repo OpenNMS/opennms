@@ -44,7 +44,6 @@
 <%@ taglib prefix="form" uri="http://www.springframework.org/tags/form" %>
 
 <jsp:include page="/includes/header.jsp" flush="false" >
-  <jsp:param name="enableSpringDojo" value="true" />
   <jsp:param name="title" value="Database Reports" />
   <jsp:param name="headTitle" value="Database Reports" />
   <jsp:param name="breadcrumb" value="<a href='report/index.jsp'>Reports</a>" />
@@ -56,32 +55,38 @@
 </jsp:include>
 <style type="text/css">
 
-#parameters {
-	font-size: 114%;
+.newform {
+	margin:0 50px; 
+	padding:50px 0;
 }
 
-#parameters .label{
+.newform .label{
+	font-size: 100%;
 	float: left;
 	width: 230px;
 	margin-right: 10px;
 	text-align: right;
 	clear: left;
-	display: block
+	display: block;
 }
 
-#run {
-	margin-left: 240px
+.newform p select, .newform p input, .newform p option, .newform p options {
+	font-size: 70%;
+}
+
+.newform .indent {
+	margin-left: 240px;
 }
 
 </style>
 
 <h3>Run Online Report</h3>
 
-<form:form commandName="parameters">
+<form:form commandName="parameters" cssClass="newform">
 	
 		<%-- // string parameters --%>
-		<c:forEach items="${parameters.stringParms}" var="stringParm" varStatus="stringParmRow">
-			<p><form:label path="stringParms[${stringParmRow.index}].value" cssClass="label" >
+		<p><c:forEach items="${parameters.stringParms}" var="stringParm" varStatus="stringParmRow">
+			<form:label path="stringParms[${stringParmRow.index}].value" cssClass="label" >
 				<c:out value="${stringParm.displayName}"/>
 			</form:label>
                 <c:choose>
@@ -96,15 +101,15 @@
                 </c:choose></p>
 		</c:forEach>
 		<%-- // int parameters --%>
-		<c:forEach items="${parameters.intParms}" var="intParm" varStatus="intParmRow">
+		<p><c:forEach items="${parameters.intParms}" var="intParm" varStatus="intParmRow">
 				<p><form:label path="intParms[${intParmRow.index}].value" cssClass="label" >
 					<c:out value="${intParm.displayName}"/>
 				</form:label>
 	            <form:input path="intParms[${intParmRow.index}].value"/></p>
 		</c:forEach>
 		<%-- // Float parameters --%>
-		<c:forEach items="${parameters.floatParms}" var="floatParm" varStatus="floatParmRow">
-			<p><form:label path="floatParms[${floatParmRow.index}].value" cssClass="label" >
+		<p><c:forEach items="${parameters.floatParms}" var="floatParm" varStatus="floatParmRow">
+			<form:label path="floatParms[${floatParmRow.index}].value" cssClass="label" >
 				<c:out value="${floatParm.displayName}"/>
 			</form:label>
 	        <form:input path="floatParms[${floatParmRow.index}].value"/></p>
@@ -135,8 +140,9 @@
 				<form:select path="format"> 
 					<form:options items="${formats}"/>
 				</form:select></p>
-  
- 	<input type="submit" value="run report" id="run"/>&#160;
+	<span class="indent">
+	 	<input type="submit" value="run report" id="run"/>&#160;
+	</span>
 	
  </form:form>
   

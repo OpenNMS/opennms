@@ -128,7 +128,13 @@ public class DefaultReportWrapperService implements ReportWrapperService {
 
     /** {@inheritDoc} */
     public ReportParameters getParameters(String reportId) {
-        return getReportService(reportId).getParameters(reportId);
+        try {
+            return getReportService(reportId).getParameters(reportId);
+        } catch (ReportException e) {
+            log.error("Report Exception when retrieving report parameters",
+                      e);
+        }
+        return null;
     }
     
     /** {@inheritDoc} */

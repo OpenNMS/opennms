@@ -90,8 +90,9 @@ public class JasperReportService implements ReportService {
         return formats;
     }
 
-    /** {@inheritDoc} */
-    public ReportParameters getParameters(String reportId) {
+    /** {@inheritDoc} 
+     * @throws ReportException */
+    public ReportParameters getParameters(String reportId) throws ReportException {
 
         ReportParameters reportParameters = new ReportParameters();
         ArrayList<ReportIntParm> intParms;
@@ -110,8 +111,8 @@ public class JasperReportService implements ReportService {
                         + "/etc/report-templates/" + sourceFileName);
             } catch (JRException e) {
                 log.error("unable to compile jasper report", e);
-                // throw new ReportException("unable to compile jasperReport",
-                // e);
+                throw new ReportException("unable to compile jasperReport",
+                e);
             }
         }
 
@@ -129,6 +130,17 @@ public class JasperReportService implements ReportService {
         for (JRParameter reportParm : reportParms) {
 
             if (reportParm.isSystemDefined() == false) {
+            	
+            	if (reportParm.isForPrompting() == false) {
+            		log.debug("report parm  "
+                            + reportParm.getName()
+                            + " is not for prompting - continuing");
+            		continue;
+            	} else {
+            		log.debug("found promptable report parm  "
+                            + reportParm.getName());
+                           
+            	}
 
                 if (reportParm.getValueClassName().equals("java.lang.String")) {
                     log.debug("adding a string parm name "
@@ -226,9 +238,8 @@ public class JasperReportService implements ReportService {
                     continue;
                 }
 
-                // throw new
-                // ReportException("Unsupported report parameter type "
-                // + reportParm.getValueClassName());
+                throw new ReportException("Unsupported report parameter type "
+                 + reportParm.getValueClassName());
 
             }
         }
@@ -422,6 +433,13 @@ public class JasperReportService implements ReportService {
             if (reportParm.isSystemDefined() == false) {
 
                 String parmName = reportParm.getName();
+                
+                if (reportParm.isForPrompting() == false) {
+                	log.debug("Required parameter  "
+                            + parmName
+                            + " is not for prompting - continuing");
+                	continue;
+                }
 
                 if (onmsReportParms.containsKey(parmName) == false)
                     throw new ReportException("Required parameter "

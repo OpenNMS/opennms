@@ -12,7 +12,9 @@
  *
  * Modifications:
  *
- * 2009 December 14th: Created jonathan@opennms.org
+ * 2009 December 14th:	Created jonathan@opennms.org
+ * 2010 December 6th:	Removed table formatting, replaced with CSS
+ *						removed springDojo
  * 
  * Copyright (C) 2009 The OpenNMS Group, Inc.  All rights reserved.
  *
@@ -44,7 +46,6 @@
 <%@ taglib prefix="form" uri="http://www.springframework.org/tags/form" %>
 
 <jsp:include page="/includes/header.jsp" flush="false" >
-  <jsp:param name="enableSpringDojo" value="true" />
   <jsp:param name="title" value="Database Reports" />
   <jsp:param name="headTitle" value="Database Reports" />
   <jsp:param name="breadcrumb" value="<a href='report/index.jsp'>Reports</a>" />
@@ -52,99 +53,113 @@
 		value="<a href='report/database/index.htm'>Database</a>" />
   <jsp:param name="breadcrumb" value="Run"/>
 </jsp:include>
+<style type="text/css">
+	
+.newform {
+	margin:0 50px; 
+	padding:50px 0;
+}
+
+.newform .label{
+	font-size: 100%;
+	float: left;
+	width: 230px;
+	margin-right: 10px;
+	text-align: right;
+	clear: left;
+	display: block;
+}
+
+.newform p select, .newform p input, .newform p option, .newform p options {
+	font-size: 70%;
+}
+
+.newform .indent {
+	margin-left: 240px;
+}
+
+</style>
 
 <h3>Report Parameters</h3>
 
-<form:form modelAttribute="parameters">
+<form:form modelAttribute="parameters" cssClass="newform">
 	
-	<table>
+	
 		<%-- // string parameters --%>
 		<c:forEach items="${parameters.stringParms}" var="stringParm" varStatus="stringParmRow">
-			<tr>
-				<td><c:out value="${stringParm.displayName}"/></td>
-                <td>
-                <c:choose>
-	                <c:when test="${stringParm.inputType == 'reportCategorySelector'}">
-	                	<form:select path="stringParms[${stringParmRow.index}].value"> 
-		                <form:options items="${categories}"/>
-		                </form:select>
-	                </c:when>
-	                <c:otherwise>
-	                	<form:input path="stringParms[${stringParmRow.index}].value"/>
-	                </c:otherwise>
-                </c:choose>
-				</td>
-			</tr>
+			<p><form:label path="stringParms[${stringParmRow.index}].value" cssClass="label">
+				<c:out value="${stringParm.displayName}"/>
+			</form:label>
+            <c:choose>
+                <c:when test="${stringParm.inputType == 'reportCategorySelector'}">
+                	<form:select path="stringParms[${stringParmRow.index}].value"> 
+	                <form:options items="${categories}"/>
+	                </form:select>
+                </c:when>
+                <c:otherwise>
+                	<form:input path="stringParms[${stringParmRow.index}].value"/>
+                </c:otherwise>
+            </c:choose>
+            </p>
 		</c:forEach>
 		<%-- // int parameters --%>
 		<c:forEach items="${parameters.intParms}" var="intParm" varStatus="intParmRow">
-			<tr>
-				<td><c:out value="${intParm.displayName}"/></td>
-                <td>
-	                <form:input path="intParms[${intParmRow.index}].value"/>
-				</td>
-			</tr>
+			<p><form:label path="intParms[${intParmRow.index}].value" cssClass="label" >
+				<c:out value="${intParm.displayName}"/>
+			</form:label>
+            <form:input path="intParms[${intParmRow.index}].value"/></p>
 		</c:forEach>
 		<%-- // Float parameters --%>
 		<c:forEach items="${parameters.floatParms}" var="floatParm" varStatus="floatParmRow">
-			<tr>
-				<td><c:out value="${floatParm.displayName}"/></td>
-                <td>
-	                <form:input path="floatParms[${floatParmRow.index}].value"/>
-				</td>
-			</tr>
+			<p><form:label path="floatParms[${floatParmRow.index}].value" cssClass="label" >
+				<c:out value="${floatParm.displayName}"/>
+			</form:label>
+			<form:input path="floatParms[${floatParmRow.index}].value"/></p>
 		</c:forEach>
 		<%-- // date parameters --%>
 		<c:forEach items="${parameters.dateParms}" var="date" varStatus="dateParmRow">
-			<tr>
-				<td><c:out value="${date.displayName}"/></td>
-				<td>
-				<c:choose>
-					<c:when test="${ schedule && !date.useAbsoluteDate}">
-						<form:select path="dateParms[${dateParmRow.index}].count">
-							<c:forEach var="count" begin="0" end="31">
-								<form:option value="${count}" />
-							</c:forEach>
-						</form:select>
-						<form:select path="dateParms[${dateParmRow.index}].interval">
-								<form:option value="day">day</form:option>
-								<form:option value="month">month</form:option>
-								<form:option value="year">year</form:option>
-	                	</form:select>	
-						ago.
-					</c:when>
-					<c:otherwise>
-						<form:input path="dateParms[${dateParmRow.index}].date" />
-						<script type="text/javascript">
-							Spring.addDecoration(new Spring.ElementDecoration({
-							elementId : "dateParms${dateParmRow.index}.value",
-							widgetType : "dijit.form.DateTextBox",
-							widgetAttrs : { datePattern : "yyyy-MM-dd", required : true }}));  
-						</script>
-					</c:otherwise>
-				</c:choose>
-				<form:select path="dateParms[${dateParmRow.index}].hours">
-					<c:forEach var="hour" begin="0" end="23">
-						<form:option value="${hour}">
-							<fmt:formatNumber minIntegerDigits="2" value="${hour}" />
-						</form:option>
-					</c:forEach>
-				</form:select>
-				:
-				<form:select path="dateParms[${dateParmRow.index}].minutes">
-					<c:forEach var="minute" begin="0" end="59">
-						<form:option value="${minute}">
-							<fmt:formatNumber minIntegerDigits="2" value="${minute}" />
-						</form:option>
-					</c:forEach>
-				</form:select>
-				</td>
-			</tr>
+			<p><span class="label">
+				<c:out value="${date.displayName}"/>
+			</span>
+			<c:choose>
+				<c:when test="${ schedule && !date.useAbsoluteDate}">
+					<form:select path="dateParms[${dateParmRow.index}].count">
+						<c:forEach var="count" begin="0" end="31">
+							<form:option value="${count}" />
+						</c:forEach>
+					</form:select>
+					<form:select path="dateParms[${dateParmRow.index}].interval">
+							<form:option value="day">day</form:option>
+							<form:option value="month">month</form:option>
+							<form:option value="year">year</form:option>
+                	</form:select>	
+					ago, at
+				</c:when>
+				<c:otherwise>
+					<form:input path="dateParms[${dateParmRow.index}].date" />
+				</c:otherwise>
+			</c:choose>
+			<form:select path="dateParms[${dateParmRow.index}].hours">
+				<c:forEach var="hour" begin="0" end="23">
+					<form:option value="${hour}">
+						<fmt:formatNumber minIntegerDigits="2" value="${hour}" />
+					</form:option>
+				</c:forEach>
+			</form:select>
+			:
+			<form:select path="dateParms[${dateParmRow.index}].minutes">
+				<c:forEach var="minute" begin="0" end="59">
+					<form:option value="${minute}">
+						<fmt:formatNumber minIntegerDigits="2" value="${minute}" />
+					</form:option>
+				</c:forEach>
+			</form:select></p>
 		</c:forEach>
-	</table>
-  
- 	<input type="submit" id="proceed" name="_eventId_proceed" value="Proceed" />&#160;
-	<input type="submit" name="_eventId_cancel" value="Cancel"/>&#160;
+		
+	<span class="indent">
+ 		<input type="submit" id="proceed" name="_eventId_proceed" value="Proceed" />&#160;
+		<input type="submit" id="cancel" name="_eventId_cancel" value="Cancel"/>&#160;
+	</span>
 	
  </form:form>
   
