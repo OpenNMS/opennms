@@ -36,8 +36,8 @@ if (not grep { $_ =~ /^-Dbuild.profile=/ } @ARGS) {
 }
 
 if (not grep { $_ =~ /^[^-]/ } @ARGS) {
-	debug("no maven targets specified, adding 'install' to the command-line");
-	push(@ARGS, "install");
+	debug("no maven targets specified, adding 'clean' and 'install' to the command-line");
+	push(@ARGS, "clean", "install");
 }
 
 my @command = ($MVN, @ARGS);
