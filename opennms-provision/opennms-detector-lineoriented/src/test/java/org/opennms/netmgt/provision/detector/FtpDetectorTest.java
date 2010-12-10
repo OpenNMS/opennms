@@ -15,6 +15,7 @@ import org.opennms.netmgt.provision.ServiceDetector;
 import org.opennms.netmgt.provision.detector.simple.FtpDetector;
 import org.opennms.netmgt.provision.server.SimpleServer;
 import org.opennms.netmgt.provision.support.NullDetectorMonitor;
+import org.opennms.test.mock.MockLogAppender;
 import org.springframework.beans.BeansException;
 import org.springframework.context.ApplicationContext;
 import org.springframework.context.ApplicationContextAware;
@@ -31,7 +32,9 @@ public class FtpDetectorTest implements ApplicationContextAware{
     
     @Before
     public void setUp() throws Exception {
-       m_detector = getDetector(FtpDetector.class);
+        MockLogAppender.setupLogging();
+
+        m_detector = getDetector(FtpDetector.class);
        m_detector.init();
        
        m_server = new SimpleServer() {
@@ -49,8 +52,10 @@ public class FtpDetectorTest implements ApplicationContextAware{
     
     @After
     public void tearDown() throws IOException {
-        m_server.stopServer();
-        m_server = null;
+        if (m_server != null) {
+            m_server.stopServer();
+            m_server = null;
+        }
     }
     
     

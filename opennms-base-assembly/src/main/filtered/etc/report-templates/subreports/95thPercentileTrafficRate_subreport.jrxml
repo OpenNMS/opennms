@@ -24,7 +24,7 @@
 		<defaultValueExpression><![CDATA[$P{snmpifname} == null || "".equals($P{snmpifname}) ? $P{snmpifdescr} : $P{snmpifname}]]></defaultValueExpression>
 	</parameter>
 	<parameter name="interface" class="java.lang.String" isForPrompting="false">
-		<defaultValueExpression><![CDATA[$P{snmpphysaddr} == null || "".equals($P{snmpphysaddr}) ? $P{ifLabel}.replaceAll("[^[:alnum:]]", "_") : $P{ifLabel}.replaceAll("[^[:alnum:]]", "_") + "-" + $P{snmpphysaddr}]]></defaultValueExpression>
+		<defaultValueExpression><![CDATA[$P{snmpphysaddr} == null || "".equals($P{snmpphysaddr}) ? $P{ifLabel}.replaceAll("[\\/ :| \\.]", "_") : $P{ifLabel}.replaceAll("[\\/ :| \\.]", "_") + "-" + $P{snmpphysaddr}]]></defaultValueExpression>
 	</parameter>
 	<parameter name="inOctets" class="java.lang.String" isForPrompting="false">
 		<defaultValueExpression><![CDATA[new java.io.File("$P{rrdDir}/snmp/$P{nodeid}/$P{interface}/ifHCInOctets.jrb").exists() ? "ifHCInOctets" : "ifInOctets"]]></defaultValueExpression>
@@ -69,7 +69,7 @@
 	<variable name="file" class="java.lang.String">
 		<variableExpression><![CDATA[new File("$P{rrdDir}/snmp/$P{nodeid}/$P{interface}/ifHCInOctets.jrb") == null ? "$P{rrdDir}/snmp/$P{nodeid}/$P{interface}/ifHCInOctets.jrb" : "$P{rrdDir}/snmp/$P{nodeid}/$P{interface}/ifInOctets.jrb"]]></variableExpression>
 	</variable>
-	<filterExpression><![CDATA[new Boolean(!$F{IfInOctets}.isNaN() || !$F{IfOutOctets}.isNaN())]]></filterExpression>
+	<filterExpression><![CDATA[!$F{IfInOctets}.isNaN() || !$F{IfOutOctets}.isNaN()]]></filterExpression>
 	<background>
 		<band splitType="Stretch"/>
 	</background>
@@ -101,17 +101,17 @@
 			<textField pattern="#,##0.00">
 				<reportElement style="Body" x="435" y="0" width="140" height="20" backcolor="#333333"/>
 				<textElement textAlignment="Right"/>
-				<textFieldExpression class="java.lang.Double"><![CDATA[new Double(($V{transmitted_AVERAGE}.doubleValue()+1.64485*$V{transmitted_STDDEV}.doubleValue())/1048576.0)]]></textFieldExpression>
+				<textFieldExpression class="java.lang.Double"><![CDATA[($V{transmitted_AVERAGE}+1.64485*$V{transmitted_STDDEV})/new Double("1048576.0")]]></textFieldExpression>
 			</textField>
 			<textField pattern="#,##0.00">
 				<reportElement style="Body" x="580" y="0" width="140" height="20"/>
 				<textElement textAlignment="Right"/>
-				<textFieldExpression class="java.lang.Double"><![CDATA[new Double(($V{received_SUM}.doubleValue() + $V{transmitted_SUM}.doubleValue())/1048576.0)]]></textFieldExpression>
+				<textFieldExpression class="java.lang.Double"><![CDATA[($V{received_SUM} + $V{transmitted_SUM})/new Double("1048576.0")]]></textFieldExpression>
 			</textField>
 			<textField pattern="#,##0.00">
 				<reportElement style="Body" x="290" y="0" width="140" height="20" backcolor="#CC9900"/>
 				<textElement textAlignment="Right"/>
-				<textFieldExpression class="java.lang.Double"><![CDATA[new Double(($V{received_AVERAGE}.doubleValue()+1.64485*$V{received_STDDEV}.doubleValue())/1048576.0)]]></textFieldExpression>
+				<textFieldExpression class="java.lang.Double"><![CDATA[($V{received_AVERAGE}+1.64485*$V{received_STDDEV})/new Double("1048576.0")]]></textFieldExpression>
 			</textField>
 			<textField>
 				<reportElement style="Body" x="145" y="0" width="140" height="20"/>

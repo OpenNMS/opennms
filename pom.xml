@@ -877,8 +877,8 @@
         <version>${project.version}</version>
       </dependency>
       <dependency>
-        <groupId>org.opennms.features</groupId>
-        <artifactId>org.opennms.features.http-remoting</artifactId>
+        <groupId>org.opennms.assemblies</groupId>
+        <artifactId>org.opennms.assemblies.http-remoting</artifactId>
         <version>${project.version}</version>
       </dependency>
       <dependency>

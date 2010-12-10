@@ -401,19 +401,20 @@ public class PageSequenceMonitorTest {
     }
 
     @Test
+    @JUnitHttpServer(port=10342, webapps=@Webapp(context="/opennms", path="src/test/resources/loginTestWar"))
     public void testDsNamePerPage() throws Exception {
         m_params.put("page-sequence", "" +
                      "<?xml version=\"1.0\"?>" +
                      "<page-sequence>\n" + 
-                     "  <page path=\"/opennms/\" ds-name=\"slash\" port=\"80\" virtual-host=\"demo.opennms.org\" successMatch=\"(?s)User:.*&lt;strong&gt;(.*?)&lt;/strong&gt;.*?Password:.*?&lt;strong&gt;(.*?)&lt;/strong&gt;\" />\n" +
-                     "  <page path=\"/opennms/acegilogin.jsp\" ds-name=\"acegilogin\"  port=\"80\" virtual-host=\"demo.opennms.org\" successMatch=\"(?s)User:.*&lt;strong&gt;(.*?)&lt;/strong&gt;.*?Password:.*?&lt;strong&gt;(.*?)&lt;/strong&gt;\" />\n" +
+                     "  <page path=\"/opennms/\" ds-name=\"test1\" port=\"10342\" virtual-host=\"localhost\" successMatch=\"&lt;title&gt;(.*?)&lt;/title&gt;\" />\n" +
+                     "  <page path=\"/opennms/j_spring_security_check\" ds-name=\"test2\" port=\"10342\" virtual-host=\"localhost\" successMatch=\"&lt;title&gt;(.*?)&lt;/title&gt;\" />\n" +
                      "</page-sequence>\n");
                           
-             PollStatus status = m_monitor.poll(getHttpService("demo.opennms.org"), m_params);
+             PollStatus status = m_monitor.poll(getHttpService("localhost"), m_params);
              assertTrue("Expected available but was "+status+": reason = "+status.getReason(), status.isAvailable());
              assertTrue("Expected three DSes", (3 == status.getProperties().size()));
-             assertTrue("Expected a DS called 'slash' but did not find one", status.getProperties().containsKey("slash"));
-             assertTrue("Expected a DS called 'acegilogin' but did not find one", status.getProperties().containsKey("acegilogin"));
+             assertTrue("Expected a DS called 'test1' but did not find one", status.getProperties().containsKey("test1"));
+             assertTrue("Expected a DS called 'test2' but did not find one", status.getProperties().containsKey("test2"));
     }
     
 }

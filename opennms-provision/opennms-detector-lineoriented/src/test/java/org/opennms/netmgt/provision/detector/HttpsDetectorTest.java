@@ -15,6 +15,7 @@ import org.opennms.netmgt.provision.ServiceDetector;
 import org.opennms.netmgt.provision.detector.simple.HttpsDetector;
 import org.opennms.netmgt.provision.server.SSLServer;
 import org.opennms.netmgt.provision.support.NullDetectorMonitor;
+import org.opennms.test.mock.MockLogAppender;
 import org.springframework.beans.BeansException;
 import org.springframework.context.ApplicationContext;
 import org.springframework.context.ApplicationContextAware;
@@ -67,6 +68,7 @@ public class HttpsDetectorTest implements ApplicationContextAware{
     
     @Before
     public void setUp() throws Exception {
+        MockLogAppender.setupLogging();
         m_detector = getDetector(HttpsDetector.class);
         m_detector.setRetries(0);
     }
@@ -75,6 +77,7 @@ public class HttpsDetectorTest implements ApplicationContextAware{
     public void tearDown() throws IOException {
        if(m_server != null) {
            m_server.stopServer();
+           m_server = null;
        }
     }
     
