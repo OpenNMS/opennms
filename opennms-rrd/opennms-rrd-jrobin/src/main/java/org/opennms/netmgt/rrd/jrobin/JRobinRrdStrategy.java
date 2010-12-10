@@ -47,7 +47,7 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.util.ArrayList;
 import java.util.Collection;
-import java.util.HashMap;
+import java.util.LinkedHashMap;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
@@ -401,7 +401,7 @@ public class JRobinRrdStrategy implements RrdStrategy<RrdDef,RrdDb> {
         double lowerLimit = Double.NaN;
         double upperLimit = Double.NaN;
         boolean rigid = false;
-        Map<String,List<String>> defs = new HashMap<String,List<String>>();
+        Map<String,List<String>> defs = new LinkedHashMap<String,List<String>>();
         // Map<String,List<String>> cdefs = new HashMap<String,List<String>>();
         
         for (int i = 0; i < commandArray.length; i++) {
