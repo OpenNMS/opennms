@@ -187,22 +187,22 @@ ORDER BY
 			<variableExpression><![CDATA[$F{outages_percent}]]></variableExpression>
 		</variable>
 		<variable name="SURVEILLANCE_CAT_TOTAL_AVG" class="java.lang.Double" resetType="Group" resetGroup="SURVEILLANCE_CAT" calculation="Average">
-			<variableExpression><![CDATA[new Double($F{outages_seconds}.doubleValue()/3600.0)]]></variableExpression>
+			<variableExpression><![CDATA[$F{outages_seconds}/new Double("3600")]]></variableExpression>
 		</variable>
 		<variable name="SURVEILLANCE_CAT_TOTAL_MAX" class="java.lang.Double" resetType="Group" resetGroup="SURVEILLANCE_CAT" calculation="Highest">
-			<variableExpression><![CDATA[new Double($F{outages_seconds}.doubleValue()/3600.0)]]></variableExpression>
+			<variableExpression><![CDATA[$F{outages_seconds}/new Double("3600")]]></variableExpression>
 		</variable>
 		<variable name="SURVEILLANCE_CAT_TOTAL_MIN" class="java.lang.Double" resetType="Group" resetGroup="SURVEILLANCE_CAT" calculation="Lowest">
-			<variableExpression><![CDATA[new Double($F{outages_seconds}.doubleValue()/3600.0)]]></variableExpression>
+			<variableExpression><![CDATA[$F{outages_seconds}/new Double("3600")]]></variableExpression>
 		</variable>
 		<variable name="SURVEILLANCE_CAT_MTTR_AVG" class="java.lang.Double" resetType="Group" resetGroup="SURVEILLANCE_CAT" calculation="Average">
-			<variableExpression><![CDATA[new Double($F{average_duration_seconds}.doubleValue()/3600.0)]]></variableExpression>
+			<variableExpression><![CDATA[$F{average_duration_seconds}/new Double("3600")]]></variableExpression>
 		</variable>
 		<variable name="SURVEILLANCE_CAT_MTTR_MAX" class="java.lang.Double" resetType="Group" resetGroup="SURVEILLANCE_CAT" calculation="Highest">
-			<variableExpression><![CDATA[new Double($F{average_duration_seconds}.doubleValue()/3600.0)]]></variableExpression>
+			<variableExpression><![CDATA[$F{average_duration_seconds}/new Double("3600")]]></variableExpression>
 		</variable>
 		<variable name="SURVEILLANCE_CAT_MTTR_MIN" class="java.lang.Double" resetType="Group" resetGroup="SURVEILLANCE_CAT" calculation="Lowest">
-			<variableExpression><![CDATA[new Double($F{average_duration_seconds}.doubleValue()/3600.0)]]></variableExpression>
+			<variableExpression><![CDATA[$F{average_duration_seconds}/new Double("3600")]]></variableExpression>
 		</variable>
 		<variable name="SURVEILLANCE_CAT_CNT_AVG" class="java.lang.Long" resetType="Group" resetGroup="SURVEILLANCE_CAT" calculation="Average">
 			<variableExpression><![CDATA[$F{outages_count}]]></variableExpression>
