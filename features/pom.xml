@@ -3,7 +3,7 @@
   <parent>
     <groupId>org.opennms</groupId>
     <artifactId>opennms</artifactId>
-    <version>1.9.3-SNAPSHOT</version>
+    <version>1.9.4-SNAPSHOT</version>
   </parent>
   <modelVersion>4.0.0</modelVersion>
   <artifactId>org.opennms.features</artifactId>
@@ -15,6 +15,7 @@
     <module>instrumentationLogReader</module>
     <module>poller</module>
     <module>provisioning</module>
+    <module>root-webapp</module>
     <module>ticketing</module>
     <module>phonebook</module>
     <module>sms-reflector</module>

@@ -36,13 +36,12 @@ if (not grep { $_ =~ /^-Dbuild.profile=/ } @ARGS) {
 }
 
 if (not grep { $_ =~ /^[^-]/ } @ARGS) {
-	debug("no maven targets specified, adding 'install' to the command-line");
-	push(@ARGS, "install");
+	debug("no maven targets specified, adding 'clean' and 'install' to the command-line");
+	push(@ARGS, "clean", "install");
 }
 
 my @command = ($MVN, @ARGS);
 info("changing working directory to $PREFIX/opennms-full-assembly");
 chdir($PREFIX . "/opennms-full-assembly");
 info("running:", @command);
-system(@command);
-handle_errors_and_exit($?);
+handle_errors_and_exit(system(@command));

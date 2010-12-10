@@ -39,14 +39,6 @@
       <outputDirectory>share</outputDirectory>
     </fileSet>
     <fileSet>
-      <directory>target/xsds</directory>
-      <outputDirectory>share/xsds</outputDirectory>
-    </fileSet>
-    <fileSet>
-      <directory>target/classes/jetty-webapps/ROOT</directory>
-      <outputDirectory>jetty-webapps/ROOT</outputDirectory>
-    </fileSet>
-    <fileSet>
       <directory>target/remote-poller/etc</directory>
       <outputDirectory>contrib/remote-poller</outputDirectory>
     </fileSet>
@@ -58,101 +50,6 @@
       <directory>target/remote-poller/lib</directory>
       <outputDirectory>bin</outputDirectory>
     </fileSet>
-    <fileSet>
-      <directory>target/dependency-webapp</directory>
-      <outputDirectory>jetty-webapps/opennms</outputDirectory>
-      <excludes>
-        <exclude>index.html</exclude>
-        <exclude>WEB-INF/lib/*</exclude>
-        <exclude>WEB-INF/log4j.properties</exclude>
-        <exclude>xsds</exclude>
-        <exclude>xsds/*</exclude>
-      </excludes>
-    </fileSet>
-    <fileSet>
-      <directory>target/dependency-webapp/WEB-INF/lib</directory>
-      <outputDirectory>lib</outputDirectory>
-      <excludes>
-        <exclude>opennms-webapp-*.jar</exclude>
-        <exclude>*remote-poller-gwt*.jar</exclude>
-        <exclude>gwt*.jar</exclude>
-        <exclude>extremecomponents-*.jar</exclude>
-        <exclude>jstl-*.jar</exclude>
-        <exclude>jsp-api-*.jar</exclude>
-        <exclude>servlet-api-*.jar</exclude>
-        <exclude>com.springsource.javax.xml.bind*.jar</exclude>
-      </excludes>
-    </fileSet>
-    <fileSet>
-      <directory>target/dependency-webapp/WEB-INF/lib</directory>
-      <outputDirectory>jetty-webapps/opennms/WEB-INF/lib</outputDirectory>
-      <includes>
-        <include>opennms-webapp-*.jar</include>
-        <include>*remote-poller-gwt*.jar</include>
-        <include>gwt*.jar</include>
-        <include>extremecomponents-*.jar</include>
-      </includes>
-      <excludes>
-        <exclude>jsp-api-*.jar</exclude>
-        <exclude>jstl-*.jar</exclude>
-        <exclude>servlet-api-*.jar</exclude>
-      </excludes>
-    </fileSet>
-    <fileSet>
-      <directory>target/dependency-remoting</directory>
-      <outputDirectory>jetty-webapps/opennms-remoting</outputDirectory>
-      <excludes>
-        <exclude>WEB-INF/lib/*</exclude>
-        <exclude>WEB-INF/log4j.properties</exclude>
-      </excludes>
-    </fileSet>
-    <fileSet>
-      <directory>target/dependency-remoting/WEB-INF/lib</directory>
-      <outputDirectory>lib</outputDirectory>
-      <excludes>
-        <exclude>opennms-webapp-*.jar</exclude>
-        <exclude>gwt*.jar</exclude>
-        <exclude>extremecomponents-*.jar</exclude>
-        <exclude>jstl-*.jar</exclude>
-        <exclude>jsp-api-*.jar</exclude>
-        <exclude>servlet-api-*.jar</exclude>
-         <exclude>com.springsource.javax.xml.bind*.jar</exclude>
-      </excludes>
-    </fileSet>
-    <fileSet>
-      <directory>target/dependency-remoting/WEB-INF/lib</directory>
-      <outputDirectory>jetty-webapps/opennms-remoting/WEB-INF/lib</outputDirectory>
-      <includes>
-        <include>opennms-webapp-*.jar</include>
-        <include>gwt*.jar</include>
-        <include>extremecomponents-*.jar</include>
-      </includes>
-      <excludes>
-        <exclude>jsp-api-*.jar</exclude>
-        <exclude>jstl-*.jar</exclude>
-        <exclude>servlet-api-*.jar</exclude>
-      </excludes>
-    </fileSet>
-    <fileSet>
-      <directory>target/dependency-remote-monitor/WEB-INF/lib</directory>
-      <outputDirectory>lib</outputDirectory>
-      <excludes>
-        <exclude>*gwt*.jar</exclude>
-        <exclude>extremecomponents-*.jar</exclude>
-        <exclude>jstl-*.jar</exclude>
-        <exclude>jsp-api-*.jar</exclude>
-        <exclude>servlet-api-*.jar</exclude>
-        <exclude>com.springsource.javax.xml.bind*.jar</exclude>
-      </excludes>
-    </fileSet>
-    <fileSet>
-      <directory>target/jnlp</directory>
-      <outputDirectory>webapps/opennms-remoting/webstart</outputDirectory>
-    </fileSet>
-    <fileSet>
-      <directory>target/jnlp</directory>
-      <outputDirectory>jetty-webapps/opennms-remoting/webstart</outputDirectory>
-    </fileSet>
   </fileSets>
   <dependencySets>
     <dependencySet>
@@ -160,7 +57,7 @@
       <outputFileNameMapping>opennms_bootstrap.jar</outputFileNameMapping>
       <outputDirectory>lib</outputDirectory>
       <includes>
-        <include>org.opennms:opennms-bootstrap</include>
+        <include>org.opennms:opennms-bootstrap:jar:${project.version}</include>
       </includes>
     </dependencySet>
     <dependencySet>
@@ -168,7 +65,7 @@
       <outputFileNameMapping>opennms_install.jar</outputFileNameMapping>
       <outputDirectory>lib</outputDirectory>
       <includes>
-        <include>org.opennms:opennms-install</include>
+        <include>org.opennms:opennms-install:jar:${project.version}</include>
       </includes>
     </dependencySet>
     <dependencySet>
@@ -176,7 +73,7 @@
       <outputFileNameMapping>opennms_system_report.jar</outputFileNameMapping>
       <outputDirectory>lib</outputDirectory>
       <includes>
-        <include>org.opennms.features:org.opennms.features.system-report</include>
+        <include>org.opennms.features:org.opennms.features.system-report:jar:${project.version}</include>
       </includes>
     </dependencySet>
     <dependencySet>

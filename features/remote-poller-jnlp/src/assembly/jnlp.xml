@@ -1,13 +1,13 @@
 <assembly>
   <id>jnlp</id>
   <formats>
-    <format>jar</format>
+    <format>tar.gz</format>
   </formats>
   <includeBaseDirectory>false</includeBaseDirectory>
   <fileSets>
     <fileSet>
       <directory>target/jnlp</directory>
-      <outputDirectory>jnlp</outputDirectory>
+      <outputDirectory>/</outputDirectory>
     </fileSet>
   </fileSets>
 </assembly>

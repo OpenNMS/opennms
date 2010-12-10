@@ -1,0 +1,34 @@
+<assembly>
+  <id>xsds</id>
+  <formats>
+    <format>tar.gz</format>
+  </formats>
+  <includeBaseDirectory>false</includeBaseDirectory>
+  <dependencySets>
+    <dependencySet>
+      <unpack>true</unpack>
+      <unpackOptions>
+        <excludes>
+          <exclude>META-INF</exclude>
+          <exclude>META-INF/*</exclude>
+        </excludes>
+      </unpackOptions>
+      <useProjectArtifact>false</useProjectArtifact>
+      <useTransitiveDependencies>false</useTransitiveDependencies>
+      <outputDirectory>/</outputDirectory>
+      <includes>
+        <include>org.opennms.core:org.opennms.core.soa:jar:xsds:${project.version}</include>
+        <include>org.opennms:drools-correlation-engine:jar:xsds:${project.version}</include>
+        <include>org.opennms:opennms-config:jar:xsds:${project.version}</include>
+        <include>org.opennms:opennms-dao:jar:xsds:${project.version}</include>
+        <include>org.opennms:opennms-model:jar:xsds:${project.version}</include>
+        <include>org.opennms:opennms-provision-persistence:jar:xsds:${project.version}</include>
+        <include>org.opennms:opennms-link-provisioning-adapter:jar:xsds:${project.version}</include>
+        <include>org.opennms:opennms-qosdaemon:jar:xsds:${project.version}</include>
+        <include>org.opennms:opennms-reporting:jar:xsds:${project.version}</include>
+        <include>org.opennms:opennms-webapp:jar:xsds:${project.version}</include>
+        <include>org.opennms.features.sms-reflector:sms-monitor:jar:xsds:${project.version}</include>
+      </includes>
+    </dependencySet>
+  </dependencySets>
+</assembly>

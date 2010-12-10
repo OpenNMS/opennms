@@ -2,15 +2,10 @@
   <parent>
     <groupId>org.opennms</groupId>
     <artifactId>opennms</artifactId>
-    <version>1.9.3-SNAPSHOT</version>
+    <version>1.9.4-SNAPSHOT</version>
   </parent>
   <modelVersion>4.0.0</modelVersion>
   <artifactId>org.opennms.assemblies</artifactId>
   <packaging>pom</packaging>
   <name>OpenNMS Assemblies</name>
-  
-  <modules>
-    <module>rxtx-assembly</module>
-  </modules>
-
 </project>

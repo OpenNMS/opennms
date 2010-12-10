@@ -2,7 +2,7 @@
   <parent>
     <artifactId>opennms</artifactId>
     <groupId>org.opennms</groupId>
-    <version>1.9.3-SNAPSHOT</version>
+    <version>1.9.4-SNAPSHOT</version>
   </parent>
   <modelVersion>4.0.0</modelVersion>
   <artifactId>opennms-base-assembly</artifactId>
@@ -30,78 +30,6 @@
         <artifactId>maven-dependency-plugin</artifactId>
         <executions>
           <execution>
-            <id>unpack-xsds</id>
-            <phase>process-resources</phase>
-            <goals>
-              <goal>unpack</goal>
-            </goals>
-            <configuration>
-              <outputDirectory>${project.build.directory}</outputDirectory>
-              <artifactItems>
-                <artifactItem>
-                  <groupId>org.opennms</groupId>
-                  <artifactId>drools-correlation-engine</artifactId>
-                  <version>${project.version}</version>
-                  <classifier>xsds</classifier>
-                </artifactItem>
-                <artifactItem>
-                  <groupId>org.opennms</groupId>
-                  <artifactId>opennms-config</artifactId>
-                  <version>${project.version}</version>
-                  <classifier>xsds</classifier>
-                </artifactItem>
-                <artifactItem>
-                  <groupId>org.opennms</groupId>
-                  <artifactId>opennms-dao</artifactId>
-                  <version>${project.version}</version>
-                  <classifier>xsds</classifier>
-                </artifactItem>
-                <artifactItem>
-                  <groupId>org.opennms</groupId>
-                  <artifactId>opennms-model</artifactId>
-                  <version>${project.version}</version>
-                  <classifier>xsds</classifier>
-                </artifactItem>
-                <artifactItem>
-                  <groupId>org.opennms</groupId>
-                  <artifactId>opennms-provision-persistence</artifactId>
-                  <version>${project.version}</version>
-                  <classifier>xsds</classifier>
-                </artifactItem>
-                <artifactItem>
-                  <groupId>org.opennms</groupId>
-                  <artifactId>opennms-link-provisioning-adapter</artifactId>
-                  <version>${project.version}</version>
-                  <classifier>xsds</classifier>
-                </artifactItem>
-                <artifactItem>
-                  <groupId>org.opennms</groupId>
-                  <artifactId>opennms-qosdaemon</artifactId>
-                  <version>${project.version}</version>
-                  <classifier>xsds</classifier>
-                </artifactItem>
-                <artifactItem>
-                  <groupId>org.opennms</groupId>
-                  <artifactId>opennms-reporting</artifactId>
-                  <version>${project.version}</version>
-                  <classifier>xsds</classifier>
-                </artifactItem>
-                <artifactItem>
-                  <groupId>org.opennms</groupId>
-                  <artifactId>opennms-webapp</artifactId>
-                  <version>${project.version}</version>
-                  <classifier>xsds</classifier>
-                </artifactItem>
-                <artifactItem>
-                  <groupId>org.opennms.features.sms-reflector</groupId>
-                  <artifactId>sms-monitor</artifactId>
-                  <version>${project.version}</version>
-                  <classifier>xsds</classifier>
-                </artifactItem>
-              </artifactItems>
-            </configuration>
-          </execution>
-          <execution>
             <id>unpack-remote-poller</id>
             <phase>process-resources</phase>
             <goals>
@@ -119,60 +47,6 @@
               </artifactItems>
             </configuration>
           </execution>
-          <execution>
-            <id>unpack-jnlp</id>
-            <phase>process-resources</phase>
-            <goals>
-              <goal>unpack</goal>
-            </goals>
-            <configuration>
-              <outputDirectory>${project.build.directory}</outputDirectory>
-              <artifactItems>
-                <artifactItem>
-                  <groupId>org.opennms.features</groupId>
-                  <artifactId>org.opennms.features.remote-poller-jnlp</artifactId>
-                  <version>${project.version}</version>
-                  <classifier>jnlp</classifier>
-                </artifactItem>
-              </artifactItems>
-            </configuration>
-          </execution>
-          <execution>
-            <id>unpack-webapp</id>
-            <phase>process-resources</phase>
-            <goals>
-              <goal>unpack</goal>
-            </goals>
-            <configuration>
-              <outputDirectory>${project.build.directory}/dependency-webapp</outputDirectory>
-              <artifactItems>
-                <artifactItem>
-                  <groupId>org.opennms.assemblies</groupId>
-                  <artifactId>org.opennms.assemblies.webapp-full</artifactId>
-                  <version>${project.version}</version>
-                  <type>war</type>
-                </artifactItem>
-              </artifactItems>
-            </configuration>
-          </execution>
-          <execution>
-            <id>unpack-remoting</id>
-            <phase>process-resources</phase>
-            <goals>
-              <goal>unpack</goal>
-            </goals>
-            <configuration>
-              <outputDirectory>${project.build.directory}/dependency-remoting</outputDirectory>
-              <artifactItems>
-                <artifactItem>
-                  <groupId>org.opennms.features</groupId>
-                  <artifactId>org.opennms.features.http-remoting</artifactId>
-                  <version>${project.version}</version>
-                  <type>war</type>
-                </artifactItem>
-              </artifactItems>
-            </configuration>
-          </execution>
         </executions>
       </plugin>
       <plugin>
@@ -180,7 +54,6 @@
         <configuration>
           <descriptors>
             <descriptor>src/assembly/daemon.xml</descriptor>
-            <descriptor>src/assembly/web-inf.xml</descriptor>
           </descriptors>
         </configuration>
         <executions>

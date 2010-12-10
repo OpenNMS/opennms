@@ -4,7 +4,7 @@
   <modelVersion>4.0.0</modelVersion>
   <groupId>org.opennms</groupId>
   <artifactId>opennms</artifactId>
-  <version>1.9.3-SNAPSHOT</version>
+  <version>1.9.4-SNAPSHOT</version>
   <packaging>pom</packaging>
   <name>OpenNMS</name>
   <url>http://opennms.org</url>
@@ -1394,6 +1394,33 @@
       <dependency>
         <groupId>org.opennms</groupId>
         <artifactId>opennms-webapp</artifactId>
+        <version>${project.version}</version>
+        <type>war</type>
+      </dependency>
+      <dependency>
+        <groupId>org.opennms</groupId>
+        <artifactId>opennms-webapp</artifactId>
+        <version>${project.version}</version>
+        <type>tar.gz</type>
+        <classifier>meta-inf</classifier>
+      </dependency>
+      <dependency>
+        <groupId>org.opennms</groupId>
+        <artifactId>opennms-webapp</artifactId>
+        <version>${project.version}</version>
+        <type>tar.gz</type>
+        <classifier>web-inf</classifier>
+      </dependency>
+      <dependency>
+        <groupId>org.opennms</groupId>
+        <artifactId>opennms-webapp</artifactId>
+        <version>${project.version}</version>
+        <type>tar.gz</type>
+        <classifier>lib</classifier>
+      </dependency>
+      <dependency>
+        <groupId>org.opennms.features</groupId>
+        <artifactId>root-webapp</artifactId>
         <version>${project.version}</version>
         <type>war</type>
       </dependency>

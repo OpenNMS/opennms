@@ -1,0 +1,14 @@
+<assembly>
+  <id>web-inf</id>
+  <formats>
+    <format>tar.gz</format>
+  </formats>
+  <includeBaseDirectory>false</includeBaseDirectory>
+  <fileSets>
+    <fileSet>
+      <filtered>false</filtered>
+      <outputDirectory>/</outputDirectory>
+      <directory>src/web-inf</directory>
+    </fileSet>
+  </fileSets>
+</assembly>

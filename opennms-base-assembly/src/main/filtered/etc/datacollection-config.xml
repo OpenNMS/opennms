@@ -16,11 +16,14 @@
     <include-collection dataCollectionGroup="APC"/>
     <include-collection dataCollectionGroup="Ascend"/>
     <include-collection dataCollectionGroup="Asterisk"/>
+    <include-collection dataCollectionGroup="Bluecat"/>
+    <include-collection dataCollectionGroup="Bluecoat"/>
     <include-collection dataCollectionGroup="Brocade"/>
     <include-collection dataCollectionGroup="Checkpoint"/>
     <include-collection dataCollectionGroup="Cisco"/>
     <include-collection dataCollectionGroup="Colubris"/>
     <include-collection dataCollectionGroup="Concord"/>
+    <include-collection dataCollectionGroup="Cyclades"/>
     <include-collection dataCollectionGroup="Equallogic"/>
     <include-collection dataCollectionGroup="Extreme Networks"/>
     <include-collection dataCollectionGroup="F5"/>
@@ -54,6 +57,7 @@
     <include-collection dataCollectionGroup="Trango"/>
     <include-collection dataCollectionGroup="WMI"/>
     <include-collection dataCollectionGroup="XMP"/>
+    <include-collection dataCollectionGroup="Zeus"/>
   </snmp-collection>
 
 </datacollection-config>
