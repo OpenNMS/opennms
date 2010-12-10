@@ -35,9 +35,11 @@ import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertTrue;
 
+import java.io.IOException;
 import java.net.InetAddress;
 import java.net.UnknownHostException;
 
+import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
@@ -85,7 +87,12 @@ public class NtpDetectorTest implements ApplicationContextAware {
         }
     }
     
-    
+    @After
+    public void tearDown() throws IOException {
+        m_server.stopServer();
+        m_server = null;
+    }
+     
     @Test
     public void testDetectorSuccess() throws Exception{
         m_server.onInit();

@@ -678,6 +678,22 @@
   <profiles>
 
     <profile>
+      <id>enable.snapshots</id>
+      <activation>
+        <property><name>enable.snapshots</name><value>true</value></property>
+      </activation>
+      <repositories>
+        <repository>
+          <snapshots><enabled>true</enabled></snapshots>
+          <releases><enabled>false</enabled></releases>
+          <id>opennms-snapshots</id>
+          <name>OpenNMS Snapshot Maven Repository</name>
+          <url>http://maven.opennms.org/content/groups/opennms.org-snapshot</url>
+        </repository>
+      </repositories>
+    </profile>
+
+    <profile>
       <id>build.all</id>
       <activation>
         <property><name>build</name><value>all</value></property>
@@ -1909,7 +1925,7 @@
         <!-- Change back to org.smslib once our USSD changes are accepted upstream -->
         <groupId>org.opennms.smslib</groupId>
         <artifactId>smslib</artifactId>
-        <version>3.4.3-SNAPSHOT</version>
+        <version>3.4.3-20100302</version>
       </dependency>
       <dependency>
         <groupId>org.rxtx</groupId>
@@ -2002,13 +2018,6 @@
   </dependencies>
   </dependencyManagement>
   <repositories>
-    <repository>
-      <snapshots><enabled>true</enabled></snapshots>
-      <releases><enabled>false</enabled></releases>
-      <id>opennms-snapshots</id>
-      <name>OpenNMS Snapshot Maven Repository</name>
-      <url>http://maven.opennms.org/content/groups/opennms.org-snapshot</url>
-    </repository>
     <repository>
       <snapshots><enabled>false</enabled></snapshots>
       <releases><enabled>true</enabled></releases>
