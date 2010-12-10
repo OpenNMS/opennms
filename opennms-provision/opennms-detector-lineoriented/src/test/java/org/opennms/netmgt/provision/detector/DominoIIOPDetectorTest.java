@@ -43,6 +43,7 @@ import org.junit.runner.RunWith;
 import org.opennms.netmgt.provision.ServiceDetector;
 import org.opennms.netmgt.provision.detector.simple.DominoIIOPDetector;
 import org.opennms.netmgt.provision.support.NullDetectorMonitor;
+import org.opennms.test.mock.MockLogAppender;
 import org.springframework.beans.BeansException;
 import org.springframework.context.ApplicationContext;
 import org.springframework.context.ApplicationContextAware;
@@ -63,7 +64,8 @@ public class DominoIIOPDetectorTest implements ApplicationContextAware {
     
     @Before
     public void setUp() {
-       m_detector = getDetector(DominoIIOPDetector.class); 
+        MockLogAppender.setupLogging();
+        m_detector = getDetector(DominoIIOPDetector.class); 
     }
     
     /*
