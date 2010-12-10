@@ -43,7 +43,7 @@ $(STAMP_BUILD):
 			./assemble.pl -Dbuild=all -Dbuild.profile=fulldir -Duser.home=$(HOME) $(BUILDDEFINES) install; \
 		else \
 			./assemble.pl -Dbuild=all -Denable.snapshots=true -Dbuild.profile=fulldir -Duser.home=$(HOME) $(BUILDDEFINES) install; \
-		fi
+		fi; \
 	fi
 	find debian/temp -type d -name .svn -exec rm -rf {} \;
 	find debian/temp -type d -name .git -exec rm -rf {} \;
