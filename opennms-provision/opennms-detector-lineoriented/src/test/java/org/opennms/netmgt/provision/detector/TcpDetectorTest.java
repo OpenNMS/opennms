@@ -17,6 +17,7 @@ import org.opennms.netmgt.provision.ServiceDetector;
 import org.opennms.netmgt.provision.detector.simple.TcpDetector;
 import org.opennms.netmgt.provision.server.SimpleServer;
 import org.opennms.netmgt.provision.support.NullDetectorMonitor;
+import org.opennms.test.mock.MockLogAppender;
 import org.springframework.beans.BeansException;
 import org.springframework.context.ApplicationContext;
 import org.springframework.context.ApplicationContextAware;
@@ -35,8 +36,7 @@ public class TcpDetectorTest implements ApplicationContextAware {
     
     @Before
     public void setUp() throws Exception {
-        
-        
+        MockLogAppender.setupLogging();
     }
 
     private void initializeDetector() {
@@ -67,6 +67,7 @@ public class TcpDetectorTest implements ApplicationContextAware {
     public void tearDown() throws IOException {
         if(m_server != null){
             m_server.stopServer();
+            m_server = null;
         }
     }
     

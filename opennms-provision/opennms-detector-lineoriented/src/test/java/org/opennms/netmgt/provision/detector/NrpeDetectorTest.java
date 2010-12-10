@@ -40,6 +40,7 @@ import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.opennms.netmgt.provision.ServiceDetector;
 import org.opennms.netmgt.provision.detector.simple.NrpeDetector;
+import org.opennms.test.mock.MockLogAppender;
 import org.springframework.beans.BeansException;
 import org.springframework.context.ApplicationContext;
 import org.springframework.context.ApplicationContextAware;
@@ -60,6 +61,7 @@ public class NrpeDetectorTest implements ApplicationContextAware {
     
     @Before
     public void setUp() {
+        MockLogAppender.setupLogging();
         m_detector = getDetector(NrpeDetector.class);
         m_detector.setPort(5666);
         m_detector.init();

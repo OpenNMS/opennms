@@ -44,6 +44,7 @@ import org.opennms.netmgt.provision.DetectFuture;
 import org.opennms.netmgt.provision.detector.simple.NotesHttpDetector;
 import org.opennms.netmgt.provision.server.SimpleServer;
 import org.opennms.netmgt.provision.support.NullDetectorMonitor;
+import org.opennms.test.mock.MockLogAppender;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.test.context.ContextConfiguration;
 import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
@@ -96,13 +97,14 @@ public class NotesDetectorTest {
     
     @Before
     public void setUp() throws Exception {
-        
+        MockLogAppender.setupLogging();
     }
     
     @After
     public void tearDown() throws IOException {
        if(m_server != null) {
            m_server.stopServer();   
+           m_server = null;
        } 
     }
     
