@@ -68,7 +68,7 @@
 	<variable name="ifOutOctets_Peak" class="java.lang.Double" calculation="Highest">
 		<variableExpression><![CDATA[$F{OutOctets}]]></variableExpression>
 	</variable>
-	<filterExpression><![CDATA[new Boolean(!$F{InOctets}.isNaN() && !$F{OutOctets}.isNaN())]]></filterExpression>
+	<filterExpression><![CDATA[!$F{InOctets}.isNaN() && !$F{OutOctets}.isNaN()]]></filterExpression>
 	<background>
 		<band splitType="Stretch"/>
 	</background>

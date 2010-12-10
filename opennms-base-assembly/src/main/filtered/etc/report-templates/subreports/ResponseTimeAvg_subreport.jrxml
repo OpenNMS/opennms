@@ -38,7 +38,7 @@
 	<variable name="MY_COUNT" class="java.lang.Integer" resetType="Column" calculation="Count">
 		<variableExpression><![CDATA[$F{IcmpLatency}]]></variableExpression>
 	</variable>
-	<filterExpression><![CDATA[new Boolean(!$F{IcmpLatency}.isNaN())]]></filterExpression>
+	<filterExpression><![CDATA[!$F{IcmpLatency}.isNaN()]]></filterExpression>
 	<background>
 		<band splitType="Stretch"/>
 	</background>
