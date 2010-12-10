@@ -199,14 +199,14 @@
       <version>${project.version}</version>
     </dependency>
     <dependency>
-      <groupId>org.opennms.features</groupId>
-      <artifactId>org.opennms.features.http-remoting</artifactId>
+      <groupId>org.opennms.assemblies</groupId>
+      <artifactId>org.opennms.assemblies.http-remoting</artifactId>
       <type>war</type>
       <version>${project.version}</version>
     </dependency>
     <dependency>
-      <groupId>org.opennms.features</groupId>
-      <artifactId>org.opennms.features.http-remoting</artifactId>
+      <groupId>org.opennms.assemblies</groupId>
+      <artifactId>org.opennms.assemblies.http-remoting</artifactId>
       <type>tar.gz</type>
       <classifier>lib</classifier>
       <version>${project.version}</version>
