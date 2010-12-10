@@ -194,17 +194,28 @@ abstract public class InetAddressUtils {
      * @return a {@link java.lang.String} object.
      */
     public static String toIpAddrString(InetAddress addr) {
-        if (addr instanceof Inet4Address) {
-            return toIpAddrString(addr.getAddress());
-        } else if (addr instanceof Inet6Address) {
-            Inet6Address addr6 = (Inet6Address)addr;
-            if (addr6.getScopeId() == 0) {
-                return toIpAddrString(addr.getAddress());
-            } else {
-                return toIpAddrString(addr.getAddress()) + "%" + addr6.getScopeId();
-            }
+        if (addr == null) {
+            throw new IllegalArgumentException("Cannot convert null InetAddress to a string");
         } else {
-            throw new IllegalArgumentException("Unknown type of InetAddress: " + addr.getClass().getName());
+            byte[] address = addr.getAddress();
+            if (address == null) {
+                // This case can occur when Jersey uses Spring bean classes which use
+                // CGLIB bytecode manipulation to generate InetAddress classes. This will
+                // occur during REST calls. {@see org.opennms.web.rest.NodeRestServiceTest}
+                //
+                throw new IllegalArgumentException("InetAddress instance violates contract by returning a null address from getAddress()");
+            } else if (addr instanceof Inet4Address) {
+                return toIpAddrString(address);
+            } else if (addr instanceof Inet6Address) {
+                Inet6Address addr6 = (Inet6Address)addr;
+                if (addr6.getScopeId() == 0) {
+                    return toIpAddrString(address);
+                } else {
+                    return toIpAddrString(address) + "%" + addr6.getScopeId();
+                }
+            } else {
+                throw new IllegalArgumentException("Unknown type of InetAddress: " + addr.getClass().getName());
+            }
         }
     }
 

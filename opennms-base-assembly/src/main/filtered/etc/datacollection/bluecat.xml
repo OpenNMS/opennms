@@ -1,0 +1,48 @@
+<?xml version="1.0"?>
+<datacollection-group name="Bluecat">
+
+    <resourceType name="dhcpSubnetIP" label="Bluecat Networks Adonis DHCP">
+      <persistenceSelectorStrategy class="org.opennms.netmgt.collectd.PersistAllSelectorStrategy"/>
+      <storageStrategy class="org.opennms.netmgt.dao.support.IndexStorageStrategy"/>
+    </resourceType>
+
+      <group name="adonisdns" ifType="ignore">
+        <mibObj oid=".1.3.6.1.4.1.13315.100.101.1.1.1.1" instance="0" alias="dnsDaemonRunning"    type="INTEGER" />
+        <mibObj oid=".1.3.6.1.4.1.13315.100.101.1.1.1.2" instance="0" alias="dnsDaemonNumOfZones" type="Gauge32" />
+        <mibObj oid=".1.3.6.1.4.1.13315.100.101.1.1.1.3" instance="0" alias="dnsDaemonDebugLevel" type="Gauge32" />
+        <mibObj oid=".1.3.6.1.4.1.13315.100.101.1.1.1.4" instance="0" alias="dnsDaemonZoneTInPrg" type="Gauge32" />
+        <mibObj oid=".1.3.6.1.4.1.13315.100.101.1.1.1.5" instance="0" alias="dnsDaemonZoneTDefer" type="Gauge32" />
+        <mibObj oid=".1.3.6.1.4.1.13315.100.101.1.1.1.6" instance="0" alias="dnsDaemonSOAInProg"  type="Gauge32" />
+        <mibObj oid=".1.3.6.1.4.1.13315.100.101.1.1.1.7" instance="0" alias="dnsDaemonQLogState"  type="INTEGER" />
+        <mibObj oid=".1.3.6.1.4.1.13315.100.101.1.1.1.8" instance="0" alias="dnsDaemon"           type="STRING" />
+        <mibObj oid=".1.3.6.1.4.1.13315.100.101.1.1.2.1" instance="0" alias="dnsStatsSuccess"     type="Counter64" />
+        <mibObj oid=".1.3.6.1.4.1.13315.100.101.1.1.2.2" instance="0" alias="dnsStatsReferral"    type="Counter64" />
+        <mibObj oid=".1.3.6.1.4.1.13315.100.101.1.1.2.3" instance="0" alias="dnsStatsNXRRSet"     type="Counter64" />
+        <mibObj oid=".1.3.6.1.4.1.13315.100.101.1.1.2.4" instance="0" alias="dnsStatsNXDomain"    type="Counter64" />
+        <mibObj oid=".1.3.6.1.4.1.13315.100.101.1.1.2.5" instance="0" alias="dnsStatsRecursion"   type="Counter64" />
+        <mibObj oid=".1.3.6.1.4.1.13315.100.101.1.1.2.6" instance="0" alias="dnsStatsFailure"     type="Counter64" />
+      </group>
+
+      <group name="dhcpSubnetIP" ifType="all">
+        <mibObj oid=".1.3.6.1.4.1.13315.100.101.1.2.2.2.1.1" instance="dhcpSubnetIP" alias="dhcpSubnetIP"   type="string" />
+        <mibObj oid=".1.3.6.1.4.1.13315.100.101.1.2.2.2.1.3" instance="dhcpSubnetIP" alias="dhcpSubnetSize" type="Gauge" />
+        <mibObj oid=".1.3.6.1.4.1.13315.100.101.1.2.2.2.1.4" instance="dhcpSubnetIP" alias="dhcpSubnetUsed" type="Gauge" />
+      </group>
+
+      <systemDef name="Bluecat">
+         <sysoidMask>.1.3.6.1.4.1.8072.3.2.</sysoidMask>
+         <collect>
+           <includeGroup>adonisdns</includeGroup>
+           <includeGroup>dhcpSubnetIP</includeGroup>
+         </collect>
+       </systemDef>
+
+       <systemDef name="Bluecat Adonis Statistics">
+         <sysoidMask>.1.3.6.1.4.1.13315.</sysoidMask>
+         <collect>
+           <includeGroup>adonisdns</includeGroup>
+           <includeGroup>dhcpSubnetIP</includeGroup>
+         </collect>
+       </systemDef>
+
+</datacollection-group>

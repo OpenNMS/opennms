@@ -160,6 +160,7 @@
     <module>../opennms-assemblies/remote-poller-standalone</module>
     <module>../opennms-assemblies/webapp-full</module>
     <module>../opennms-assemblies/rxtx-assembly</module>
+    <module>../opennms-assemblies/xsds</module>
     <module>../opennms-doc</module>
     <module>../opennms-base-assembly</module>
   </modules>
@@ -237,6 +238,13 @@
       <version>${project.version}</version>
       <type>tar.gz</type>
       <classifier>rxtx</classifier>
+    </dependency>
+    <dependency>
+      <groupId>org.opennms.assemblies</groupId>
+      <artifactId>org.opennms.assemblies.xsds</artifactId>
+      <version>${project.version}</version>
+      <type>tar.gz</type>
+      <classifier>xsds</classifier>
     </dependency>
     <dependency>
       <groupId>org.opennms</groupId>

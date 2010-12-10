@@ -191,6 +191,21 @@
                 <!-- The number of failed logon attempts to the server. -->
                 <attrib name="ErrorsLogon" alias="wmiServerErrsLogon" wmiObject="ErrorsLogon" type="Counter" />
             </wpm>
+
+            <!-- A collection of HTTP statistics -->
+            <wpm name="win32_w3svc" wmiClass="Win32_PerfFormattedData_W3SVC_WebService" keyvalue="Name"
+                 recheckInterval="3600000" ifType="all" resourceType="wmiW3">
+                <!-- Label for this Web instance -->
+                <attrib name="WebSvcName" alias="wmiW3Name" wmiObject="Name" type="string"/>
+                <!-- GET requests per second. -->
+                <attrib name="GetRequests" alias="wmiW3GetReq" wmiObject="TotalGetRequests" type="Counter" />
+                <!-- HEAD requests per second. -->
+                <attrib name="HeadRequests" alias="wmiW3HeadReq" wmiObject="TotalHeadRequests" type="Counter" />
+                <!-- POST requests per second. -->
+                <attrib name="PostRequests" alias="wmiW3PostReq" wmiObject="TotalPostRequests" type="Counter" />
+                <!-- PUT requests per second. -->
+                <attrib name="PutRequests" alias="wmiW3PutReq" wmiObject="TotalPutRequests" type="Counter" />
+            </wpm>
         </wpms>
     </wmi-collection>
 </wmi-datacollection-config>
