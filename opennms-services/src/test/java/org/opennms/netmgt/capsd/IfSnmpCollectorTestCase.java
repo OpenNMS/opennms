@@ -61,11 +61,11 @@ public class IfSnmpCollectorTestCase extends OpenNMSTestCase {
 
     private InetAddress m_addr;
     
-    private MockSnmpAgent m_agent;
+    private volatile MockSnmpAgent m_agent;
 
-    private IfSnmpCollector m_ifSnmpc;
+    private volatile IfSnmpCollector m_ifSnmpc;
 
-    private boolean m_hasRun = false;
+    private volatile boolean m_hasRun = false;
     
     public static class JoeSnmpIfSnmpCollectorTestCase extends IfSnmpCollectorTestCase {
         public void setUp() throws Exception {
@@ -88,9 +88,9 @@ public class IfSnmpCollectorTestCase extends OpenNMSTestCase {
 
         String hostName = System.getProperty(HOST_PROPERTY, DEFAULT_HOST);
         m_addr = InetAddress.getByName(hostName);
+        m_ifSnmpc = new IfSnmpCollector(m_addr);
 
         m_agent = MockSnmpAgent.createAgentAndRun(new ClassPathResource("org/opennms/netmgt/snmp/snmpTestData1.properties"), m_addr.getHostAddress() + "/" + PORT);
-        m_ifSnmpc = new IfSnmpCollector(m_addr);
         
         runCollection();
     }
@@ -154,7 +154,7 @@ public class IfSnmpCollectorTestCase extends OpenNMSTestCase {
         assertFalse("ipAddrTable collection should not hahve failed", ipAddrTable.failed());
         assertEquals("ipAddrTable ifIndex of 127.0.0.1", 1, ipAddrTable.getIfIndex(InetAddress.getByName(DEFAULT_HOST)));
         
-        List addresses = ipAddrTable.getIpAddresses();
+        List<InetAddress> addresses = ipAddrTable.getIpAddresses();
         assertTrue("ipAddrTable should contain 172.20.1.201", addresses.contains(InetAddress.getByName("172.20.1.201")));
         assertTrue("ipAddrTable should contain 127.0.0.1 like any good IP stack should", addresses.contains(InetAddress.getByName(DEFAULT_HOST)));
     }
