@@ -29,7 +29,8 @@
  */
 package org.opennms.netmgt.poller.remote;
 
-import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertTrue;
+import static org.junit.Assert.fail;
 
 import org.junit.Test;
 
@@ -40,6 +41,7 @@ import org.junit.Test;
  * @author brozow
  */
 public class DefaultTimeAdjustmentTest {
+    private static final long m_jitter = 2;
     
     @Test
     public void testNoTimeDifference() {
@@ -50,8 +52,7 @@ public class DefaultTimeAdjustmentTest {
         
         long adjusted = timeAdjustment.adjustTimeToMasterTime(time);
         
-        assertEquals(time, adjusted);
-        
+        assertEqualsWithin(time, adjusted, m_jitter);
     }
     
     @Test
@@ -65,7 +66,7 @@ public class DefaultTimeAdjustmentTest {
         
         long adjusted = timeAdjustment.adjustTimeToMasterTime(time);
         
-        assertEquals(time, adjusted);
+        assertEqualsWithin(time, adjusted, m_jitter);
 
     }
 
@@ -80,7 +81,7 @@ public class DefaultTimeAdjustmentTest {
         
         long adjusted = timeAdjustment.adjustTimeToMasterTime(time);
         
-        assertEquals(time-60000, adjusted);
+        assertEqualsWithin(time-60000, adjusted, m_jitter);
 
     }
 
@@ -95,8 +96,38 @@ public class DefaultTimeAdjustmentTest {
         
         long adjusted = timeAdjustment.adjustTimeToMasterTime(time);
         
-        assertEquals(time+60000, adjusted);
+        assertEqualsWithin(time+60000, adjusted, m_jitter);
 
+    }
+
+    @Test
+    public void testAssertEqualsWithin() {
+        assertEqualsWithin(5, 7, 2);
+        assertEqualsWithin(7, 5, 2);
+        
+        try {
+            assertEqualsWithin(5, 8, 2);
+        } catch (AssertionError e) {
+            assertTrue(e != null);
+        }
+        
+        try {
+            assertEqualsWithin(8, 5, 2);
+        } catch (AssertionError e) {
+            assertTrue(e != null);
+        }
+    }
+
+    private void assertEqualsWithin(final long a, final long b, final long distance) {
+        boolean fail = false;
+        if (a + distance < b) {
+            fail = true;
+        } else if (b + distance < a) {
+            fail = true;
+        }
+        if (fail) {
+            fail(String.format("%d and %d were not within %d of each other", a, b, distance));
+        }
     }
 
 }
