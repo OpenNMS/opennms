@@ -68,7 +68,7 @@
 		<defaultValueExpression><![CDATA[$P{TIME_RANGE} + " from " + $P{START_TIME}]]></defaultValueExpression>
 	</parameter>
 	<parameter name="SURVEILLANCE_CATEGORY" class="java.lang.String" isForPrompting="false">
-		<defaultValueExpression><![CDATA["Mon%"]]></defaultValueExpression>
+		<defaultValueExpression><![CDATA["Routers"]]></defaultValueExpression>
 	</parameter>
 	<parameter name="RESPONSE_WARNING" class="java.lang.Double" isForPrompting="false">
 		<defaultValueExpression><![CDATA[new Double("50.0")]]></defaultValueExpression>
