@@ -42,6 +42,7 @@ import org.opennms.mock.snmp.MockSnmpAgent;
 import org.opennms.netmgt.dao.SnmpAgentConfigFactory;
 import org.opennms.netmgt.provision.ScanContext;
 import org.opennms.netmgt.snmp.SnmpAgentConfig;
+import org.opennms.test.mock.MockLogAppender;
 import org.springframework.core.io.ClassPathResource;
 
 public class SnmpNodeScannerTest {
@@ -131,6 +132,8 @@ public class SnmpNodeScannerTest {
 
     @Before
     public void setUp() throws Exception {
+        MockLogAppender.setupLogging();
+
         m_agentAddress = InetAddress.getLocalHost();
         
         m_agent = MockSnmpAgent.createAgentAndRun(

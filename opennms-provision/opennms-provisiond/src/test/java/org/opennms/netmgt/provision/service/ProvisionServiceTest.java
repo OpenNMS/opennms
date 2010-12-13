@@ -48,6 +48,7 @@ import org.opennms.netmgt.provision.persist.requisition.Requisition;
 import org.opennms.netmgt.provision.persist.requisition.RequisitionInterface;
 import org.opennms.netmgt.provision.persist.requisition.RequisitionNode;
 import org.opennms.netmgt.provision.service.dns.DnsUrlFactory;
+import org.opennms.test.mock.MockLogAppender;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.core.io.Resource;
 import org.springframework.core.io.UrlResource;
@@ -211,6 +212,11 @@ public class ProvisionServiceTest {
      * Also need an indication of where transactions should live 
      * 
      */
+
+    @Before
+    public void setUp() {
+        MockLogAppender.setupLogging();
+    }
 
     @Before
     public void verifyWiring() {

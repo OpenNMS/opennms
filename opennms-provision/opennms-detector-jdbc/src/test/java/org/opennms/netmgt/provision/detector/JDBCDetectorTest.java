@@ -20,6 +20,7 @@ import org.opennms.netmgt.dao.db.OpenNMSConfigurationExecutionListener;
 import org.opennms.netmgt.dao.db.TemporaryDatabaseExecutionListener;
 import org.opennms.netmgt.provision.detector.jdbc.JdbcDetector;
 import org.opennms.netmgt.provision.support.NullDetectorMonitor;
+import org.opennms.test.mock.MockLogAppender;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.test.context.ContextConfiguration;
 import org.springframework.test.context.TestExecutionListeners;
@@ -50,6 +51,8 @@ public class JDBCDetectorTest{
     
     @Before
     public void setUp() throws UnknownHostException {
+        MockLogAppender.setupLogging();
+
         assertNotNull(m_dataSource);
         String url = null;
         String username = null;

@@ -14,6 +14,7 @@ import org.opennms.netmgt.dao.db.JUnitTemporaryDatabase;
 import org.opennms.netmgt.dao.db.OpenNMSConfigurationExecutionListener;
 import org.opennms.netmgt.dao.db.TemporaryDatabaseExecutionListener;
 import org.opennms.netmgt.model.OnmsIpInterface;
+import org.opennms.test.mock.MockLogAppender;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.test.context.ContextConfiguration;
 import org.springframework.test.context.TestExecutionListeners;
@@ -49,6 +50,7 @@ public class InterfacePolicyTest {
     
     @Before
     public void setUp() {
+        MockLogAppender.setupLogging();
         m_populator.populateDatabase();
         m_interfaces = m_ipInterfaceDao.findAll();
     }

@@ -6,6 +6,7 @@ import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.opennms.netmgt.provision.detector.ssh.SshDetector;
+import org.opennms.test.mock.MockLogAppender;
 import org.springframework.beans.BeansException;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.ApplicationContext;
@@ -23,6 +24,7 @@ public class SSHDetectorTest implements ApplicationContextAware{
     
     @Before
     public void setUp() {
+        MockLogAppender.setupLogging();
         m_detector = new SshDetector();
         m_detector.setTimeout(1);
     }
