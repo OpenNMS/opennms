@@ -88,6 +88,7 @@
           <dependency>
             <groupId>xerces</groupId>
             <artifactId>xercesImpl</artifactId>
+            <version>${xercesVersion}</version>
           </dependency>
           <dependency>
             <groupId>org.opennms</groupId>
