@@ -155,7 +155,7 @@
   </build>
   <modules>
     <module>../opennms-install</module>
-    <module>../features/http-remoting</module>
+    <module>../opennms-assemblies/http-remoting</module>
     <module>../opennms-assemblies/remote-poller-onejar</module>
     <module>../opennms-assemblies/remote-poller-standalone</module>
     <module>../opennms-assemblies/webapp-full</module>
@@ -199,14 +199,14 @@
       <version>${project.version}</version>
     </dependency>
     <dependency>
-      <groupId>org.opennms.features</groupId>
-      <artifactId>org.opennms.features.http-remoting</artifactId>
+      <groupId>org.opennms.assemblies</groupId>
+      <artifactId>org.opennms.assemblies.http-remoting</artifactId>
       <type>war</type>
       <version>${project.version}</version>
     </dependency>
     <dependency>
-      <groupId>org.opennms.features</groupId>
-      <artifactId>org.opennms.features.http-remoting</artifactId>
+      <groupId>org.opennms.assemblies</groupId>
+      <artifactId>org.opennms.assemblies.http-remoting</artifactId>
       <type>tar.gz</type>
       <classifier>lib</classifier>
       <version>${project.version}</version>

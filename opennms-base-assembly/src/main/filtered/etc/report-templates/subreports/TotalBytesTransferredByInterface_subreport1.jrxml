@@ -18,7 +18,7 @@
 		<defaultValueExpression><![CDATA[$P{snmpifname} == null || "".equals($P{snmpifname}) ? $P{snmpifdescr} : $P{snmpifname}]]></defaultValueExpression>
 	</parameter>
 	<parameter name="interface" class="java.lang.String" isForPrompting="false">
-		<defaultValueExpression><![CDATA[$P{snmpphysaddr} == null || "".equals($P{snmpphysaddr}) ? $P{ifLabel}.replaceAll("[[^:alnum:]]", "_") : $P{ifLabel}.replaceAll("[^[:alnum:]]", "_") + "-" + $P{snmpphysaddr}]]></defaultValueExpression>
+		<defaultValueExpression><![CDATA[$P{snmpphysaddr} == null || "".equals($P{snmpphysaddr}) ? $P{ifLabel}.replaceAll("[\\/ :| \\.]", "_") : $P{ifLabel}.replaceAll("[\\/ :| \\.]", "_") + "-" + $P{snmpphysaddr}]]></defaultValueExpression>
 	</parameter>
 	<parameter name="inOctets" class="java.lang.String" isForPrompting="false">
 		<defaultValueExpression><![CDATA[new java.io.File("$P{rrdDir}/snmp/$P{nodeid}/$P{interface}/ifHCInOctets.jrb").exists() ? "ifHCInOctets" : "ifInOctets"]]></defaultValueExpression>
@@ -48,7 +48,7 @@
 	<variable name="transmitted_SUM" class="java.lang.Double" calculation="Sum">
 		<variableExpression><![CDATA[$F{IfHCOutOctets}]]></variableExpression>
 	</variable>
-	<filterExpression><![CDATA[new Boolean(!$F{IfHCInOctets}.isNaN() || !$F{IfHCOutOctets}.isNaN())]]></filterExpression>
+	<filterExpression><![CDATA[!$F{IfHCInOctets}.isNaN() || !$F{IfHCOutOctets}.isNaN()]]></filterExpression>
 	<background>
 		<band splitType="Stretch"/>
 	</background>
@@ -75,12 +75,12 @@
 			<textField pattern="###0.00">
 				<reportElement style="Table_Body" x="36" y="16" width="150" height="16"/>
 				<textElement/>
-				<textFieldExpression class="java.lang.String"><![CDATA[$V{received_SUM}.doubleValue() > 1048576.0 ? String.format("%10.2f", $V{received_SUM}.doubleValue()/1048576.0) + " MB" : String.format("%10.2f", $V{received_SUM}.doubleValue()/1024.0) + " KB"]]></textFieldExpression>
+				<textFieldExpression class="java.lang.String"><![CDATA[$V{received_SUM} > 1048576 ? String.format("%10.2f", $V{received_SUM}/new Double("1048576.0")) + " MB" : String.format("%10.2f", $V{received_SUM}/new Double("1024.0")) + " KB"]]></textFieldExpression>
 			</textField>
 			<textField pattern="###0.00">
 				<reportElement style="Table_Body" x="186" y="16" width="150" height="16"/>
 				<textElement/>
-				<textFieldExpression class="java.lang.String"><![CDATA[$V{transmitted_SUM}.doubleValue() > 1048576 ? String.format("%10.2f", $V{transmitted_SUM}.doubleValue()/1048576.0) + " MB" : String.format("%10.2f", $V{transmitted_SUM}.doubleValue()/1024.0) + " KB"]]></textFieldExpression>
+				<textFieldExpression class="java.lang.String"><![CDATA[$V{transmitted_SUM} > 1048576 ? String.format("%10.2f", $V{transmitted_SUM}/new Double("1048576.0")) + " MB" : String.format("%10.2f", $V{transmitted_SUM}/new Double("1024.0")) + " KB"]]></textFieldExpression>
 			</textField>
 			<staticText>
 				<reportElement style="Table_Header" x="36" y="0" width="150" height="16"/>
@@ -100,7 +100,7 @@
 			<textField pattern="###0.00">
 				<reportElement style="Table_Body" x="336" y="16" width="150" height="16"/>
 				<textElement/>
-				<textFieldExpression class="java.lang.String"><![CDATA[($V{received_SUM}.doubleValue() + $V{transmitted_SUM}.doubleValue()) > 1048576.0 ? String.format("%10.2f", ($V{received_SUM}.doubleValue() + $V{transmitted_SUM}.doubleValue())/1048576.0) + " MB" : String.format("%10.2f", ($V{received_SUM}.doubleValue() + $V{transmitted_SUM}.doubleValue())/1024.0) + " KB"]]></textFieldExpression>
+				<textFieldExpression class="java.lang.String"><![CDATA[($V{received_SUM} + $V{transmitted_SUM}) > 1048576 ? String.format("%10.2f", ($V{received_SUM} + $V{transmitted_SUM})/new Double("1048576.0")) + " MB" : String.format("%10.2f", ($V{received_SUM} + $V{transmitted_SUM})/new Double("1024.0")) + " KB"]]></textFieldExpression>
 			</textField>
 		</band>
 	</summary>

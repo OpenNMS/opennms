@@ -60,7 +60,7 @@
     <dependency>
       <groupId>org.opennms.smslib</groupId>
       <artifactId>smslib</artifactId>
-      <version>3.4.3-SNAPSHOT</version>
+      <version>3.4.3-20100302</version>
       <scope>provided</scope>
     </dependency>
     <dependency>

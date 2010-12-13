@@ -44,6 +44,7 @@ import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.opennms.netmgt.provision.server.SimpleServer;
 import org.opennms.netmgt.provision.support.NullDetectorMonitor;
+import org.opennms.test.mock.MockLogAppender;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.test.context.ContextConfiguration;
 import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
@@ -63,6 +64,8 @@ public class MSExchangeDetectorTest {
     
     @Before
     public void setUp() throws Exception{
+        MockLogAppender.setupLogging();
+
         m_pop3Server = new SimpleServer(){
             
             @Override
@@ -90,10 +93,12 @@ public class MSExchangeDetectorTest {
     public void tearDown() throws IOException{
         if(m_imapServer != null){
             m_imapServer.stopServer();
+            m_imapServer = null;
         }
         
         if(m_pop3Server != null){
             m_pop3Server.stopServer();
+            m_pop3Server = null;
         }
     }
     
