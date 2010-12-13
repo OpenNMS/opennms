@@ -10,12 +10,17 @@
 	</parameter>
 	<parameter name="integerParameter" class="java.lang.Integer">
 		<parameterDescription>
-			<![CDATA[an integer parameter]]>
+			<![CDATA[an Integer parameter]]>
 		</parameterDescription>
 	</parameter>
 	<parameter name="floatParameter" class="java.lang.Float">
 		<parameterDescription>
 			<![CDATA[a Float parameter]]>
+		</parameterDescription>
+	</parameter>
+	<parameter name="doubleParameter" class="java.lang.Double">
+		<parameterDescription>
+			<![CDATA[a Double parameter]]>
 		</parameterDescription>
 	</parameter>
 	<parameter name="dateParameter" class="java.util.Date">
@@ -37,13 +42,14 @@
       	</band>
     </title>
 	<detail>
-	    <band height="100">
+	    <band height="120">
 	    	<textField>
-	    	<reportElement x="0" y="0" width="200" height="100"/>
+	    	<reportElement x="0" y="0" width="200" height="120"/>
 		    <textFieldExpression>
 		    	"stringParameter: " + $P{stringParameter} + "\n" +
 		    	"integerParameter: " + $P{integerParameter} + "\n" +
 		    	"floatParameter: " + $P{floatParameter} + "\n" +
+		    	"doubleParameter: " + $P{doubleParameter} + "\n" +
 		   		"dateParameter: " + (new SimpleDateFormat("MM/dd/yyyy HH:mm:ss")).format($P{dateParameter}) + "\n" +
 		    	"sqlTimestampParameter: " + (new SimpleDateFormat("MM/dd/yyyy HH:mm:ss")).format($P{sqlTimestampParameter})
 		    </textFieldExpression>

@@ -11,6 +11,8 @@
  * Modifications:
  * 
  * Created: October 22nd 2010 jonathan@opennms.org
+ * Updated:	December 14th 2010 jonathan@opennms.org
+ * 			Added test for Double wrapper support
  *
  * Copyright (C) 2010 The OpenNMS Group, Inc.  All rights reserved.
  *
@@ -90,6 +92,7 @@ public class JasperReportServiceTest {
             assertNotNull(reportParameters);
             assertEquals(1, reportParameters.getIntParms().size());
             assertEquals(1, reportParameters.getFloatParms().size());
+            assertEquals(1, reportParameters.getDoubleParms().size());
             assertEquals(2, reportParameters.getStringParms().size());
             assertEquals(3, reportParameters.getDateParms().size());
         } catch (ReportException e) {
@@ -132,6 +135,7 @@ public class JasperReportServiceTest {
 	        reportParms.put("stringParameter2", new String("string2"));
 		reportParms.put("integerParameter", new Integer(1));
 		reportParms.put("floatParameter", new Float("0.5"));
+		reportParms.put("doubleParameter", new Double("0.5"));
 		reportParms.put("dateParameter", new java.util.Date());
 		java.util.Date date = new java.util.Date();
 		reportParms.put("dateParamter", date);

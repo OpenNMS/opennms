@@ -47,6 +47,7 @@ import org.opennms.api.reporting.ReportException;
 import org.opennms.api.reporting.ReportFormat;
 import org.opennms.api.reporting.ReportService;
 import org.opennms.api.reporting.parameter.ReportDateParm;
+import org.opennms.api.reporting.parameter.ReportDoubleParm;
 import org.opennms.api.reporting.parameter.ReportFloatParm;
 import org.opennms.api.reporting.parameter.ReportIntParm;
 import org.opennms.api.reporting.parameter.ReportParameters;
@@ -97,6 +98,7 @@ public class JasperReportService implements ReportService {
         ReportParameters reportParameters = new ReportParameters();
         ArrayList<ReportIntParm> intParms;
         ArrayList<ReportFloatParm> floatParms;
+        ArrayList<ReportDoubleParm> doubleParms;
         ArrayList<ReportStringParm> stringParms;
         ArrayList<ReportDateParm> dateParms;
 
@@ -122,6 +124,8 @@ public class JasperReportService implements ReportService {
         reportParameters.setIntParms(intParms);
         floatParms = new ArrayList<ReportFloatParm>();
         reportParameters.setFloatParms(floatParms);
+        doubleParms = new ArrayList<ReportDoubleParm>();
+        reportParameters.setDoubleParms(doubleParms);
         stringParms = new ArrayList<ReportStringParm>();
         reportParameters.setStringParms(stringParms);
         dateParms = new ArrayList<ReportDateParm>();
@@ -184,6 +188,21 @@ public class JasperReportService implements ReportService {
                     floatParm.setName(reportParm.getName());
                     floatParm.setValue(new Float(0));
                     floatParms.add(floatParm);
+                    continue;
+                }
+                
+                if (reportParm.getValueClassName().equals("java.lang.Double")) {
+                    log.debug("adding a Double parm name "
+                            + reportParm.getName());
+                    ReportDoubleParm doubleParm = new ReportDoubleParm();
+                    if (reportParm.getDescription() != null) {
+                        doubleParm.setDisplayName(reportParm.getDescription());
+                    } else {
+                        doubleParm.setDisplayName(reportParm.getName());
+                    }
+                    doubleParm.setName(reportParm.getName());
+                    doubleParm.setValue(new Double(0));
+                    doubleParms.add(doubleParm);
                     continue;
                 }
 
@@ -467,6 +486,14 @@ public class JasperReportService implements ReportService {
                                       parmName,
                                       new Float(
                                                   (Float) onmsReportParms.get(parmName)));
+                    continue;
+                }
+                
+                if (reportParm.getValueClassName().equals("java.lang.Double")) {
+                    jrReportParms.put(
+                                      parmName,
+                                      new Double(
+                                                  (Double) onmsReportParms.get(parmName)));
                     continue;
                 }
 

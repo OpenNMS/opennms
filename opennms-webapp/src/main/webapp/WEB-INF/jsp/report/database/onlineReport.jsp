@@ -114,6 +114,13 @@
 			</form:label>
 	        <form:input path="floatParms[${floatParmRow.index}].value"/></p>
 		</c:forEach>
+		<%-- // Double parameters --%>
+		<p><c:forEach items="${parameters.doubleParms}" var="doubleParm" varStatus="doubleParmRow">
+			<form:label path="doubleParms[${doubleParmRow.index}].value" cssClass="label" >
+				<c:out value="${doubleParm.displayName}"/>
+			</form:label>
+	        <form:input path="doubleParms[${doubleParmRow.index}].value"/></p>
+		</c:forEach>
 		<%-- // date parameters --%>
 		<c:forEach items="${parameters.dateParms}" var="date" varStatus="dateParmRow">
 			<p><span class="label">

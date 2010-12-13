@@ -63,6 +63,7 @@ public class ReportParameters implements Serializable {
     protected List <ReportStringParm> m_stringParms;
     protected List <ReportIntParm> m_intParms;
     protected List<ReportFloatParm> m_floatParms;
+    protected List<ReportDoubleParm> m_doubleParms;
 
     /**
      * <p>Constructor for ReportParameters.</p>
@@ -144,6 +145,24 @@ public class ReportParameters implements Serializable {
     }
 
     /**
+     * <p>getDoubleParms</p>
+     *
+     * @return a {@link java.util.List} object.
+     */
+	public List<ReportDoubleParm> getDoubleParms() {
+		return m_doubleParms;
+	}
+
+	/**
+     * <p>setDoubleParms</p>
+     *
+     * @param ints a {@link java.util.List} object.
+     */
+	public void setDoubleParms(List<ReportDoubleParm> doubleParms) {
+		m_doubleParms = doubleParms;
+	}
+
+	/**
      * <p>setReportId</p>
      *
      * @param reportId a {@link java.lang.String} object.
@@ -221,35 +240,6 @@ public class ReportParameters implements Serializable {
             Iterator<ReportDateParm>dateIter = m_dateParms.iterator();
             while (dateIter.hasNext()) {
                 ReportDateParm parm = dateIter.next();
-                /*Calendar cal = Calendar.getInstance();
-                if ((mode == ReportMode.SCHEDULED) && (parm.getUseAbsoluteDate() == false)) {
-                    // use the offset date set when the report was scheduled
-                    int amount = 0 - parm.getCount();
-                    if (parm.getInterval().equals("year")) {
-                        cal.add(Calendar.YEAR, amount);
-                    } else { 
-                        if (parm.getInterval().equals("month")) {
-                            cal.add(Calendar.MONTH, amount);
-                        } else {
-                            cal.add(Calendar.DATE, amount);
-                        }
-                    }
-                } else {
-                    cal.setTime(parm.getValue());
-                } 
-                if (parm.getHours() != null) {
-                    cal.set(Calendar.HOUR_OF_DAY, parm.getHours());
-                } else {
-                    cal.set(Calendar.HOUR_OF_DAY, 0);
-                }
-                if (parm.getMinutes() != null) {
-                    cal.set(Calendar.MINUTE, parm.getMinutes());
-                } else {
-                    cal.set(Calendar.MINUTE, 0);
-                }                
-                cal.set(Calendar.SECOND,0);
-                cal.set(Calendar.MILLISECOND,0);
-                parmMap.put(parm.getName(), cal.getTime());*/
                 parmMap.put(parm.getName(), parm.getValue(mode));
             }
         }
@@ -268,6 +258,15 @@ public class ReportParameters implements Serializable {
             Iterator<ReportFloatParm>floatIter = m_floatParms.iterator();
             while (floatIter.hasNext()) {
                 ReportFloatParm parm = floatIter.next();
+                parmMap.put(parm.getName(), parm.getValue());
+            }
+        }
+        
+        // Add all the double parameters from the report
+        if (m_doubleParms != null) {
+            Iterator<ReportDoubleParm>doubleIter = m_doubleParms.iterator();
+            while (doubleIter.hasNext()) {
+                ReportDoubleParm parm = doubleIter.next();
                 parmMap.put(parm.getName(), parm.getValue());
             }
         }
