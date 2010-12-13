@@ -53,6 +53,7 @@ import org.junit.Before;
 import org.junit.Ignore;
 import org.junit.Test;
 import org.opennms.netmgt.provision.persist.requisition.Requisition;
+import org.opennms.test.mock.MockLogAppender;
 import org.springframework.core.io.Resource;
 import org.springframework.core.io.UrlResource;
 
@@ -66,7 +67,11 @@ public class DnsRequisitionUrlConnectionTest {
 
     private static final String TEST_URL = "dns://localhost/localhost";
 
-    
+    @Before
+    public void setUp() {
+        MockLogAppender.setupLogging();
+    }
+
     @Before
     public void registerFactory() {
         

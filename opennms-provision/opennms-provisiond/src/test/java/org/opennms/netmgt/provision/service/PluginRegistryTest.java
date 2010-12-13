@@ -34,10 +34,12 @@ import static org.junit.Assert.assertEquals;
 import java.util.Collection;
 import java.util.Map;
 
+import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.opennms.netmgt.provision.IpInterfacePolicy;
 import org.opennms.netmgt.provision.NodePolicy;
+import org.opennms.test.mock.MockLogAppender;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.ApplicationContext;
 import org.springframework.test.context.ContextConfiguration;
@@ -63,6 +65,11 @@ public class PluginRegistryTest {
         boolean matches(T t);
     }
     
+    @Before
+    public void setUp() {
+        MockLogAppender.setupLogging();
+    }
+
     @Test
     public void testGo() {
         

@@ -7,6 +7,7 @@ import java.util.List;
 import java.util.concurrent.CountDownLatch;
 import java.util.concurrent.ExecutionException;
 
+import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.opennms.core.tasks.Task;
@@ -22,6 +23,7 @@ import org.opennms.netmgt.mock.MockEventIpcManager;
 import org.opennms.netmgt.model.OnmsNode;
 import org.opennms.netmgt.model.events.EventListener;
 import org.opennms.netmgt.xml.event.Event;
+import org.opennms.test.mock.MockLogAppender;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.core.io.ResourceLoader;
 import org.springframework.test.context.ContextConfiguration;
@@ -70,6 +72,11 @@ public class IfIndexNullTest {
     @Autowired
     private MockEventIpcManager m_eventSubscriber;
     
+    @Before
+    public void setUp() {
+        MockLogAppender.setupLogging();
+    }
+
     @Test
     @JUnitSnmpAgent(resource="classpath:snmpTestData-null.properties")
     public void testNullIfIndex() throws Exception {

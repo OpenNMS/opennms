@@ -44,6 +44,7 @@ import org.opennms.mock.snmp.MockSnmpAgent;
 import org.opennms.netmgt.provision.ServiceDetector;
 import org.opennms.netmgt.provision.detector.snmp.SnmpDetector;
 import org.opennms.netmgt.provision.support.NullDetectorMonitor;
+import org.opennms.test.mock.MockLogAppender;
 import org.springframework.beans.BeansException;
 import org.springframework.context.ApplicationContext;
 import org.springframework.context.ApplicationContextAware;
@@ -66,6 +67,8 @@ public class SnmpDetectorTest implements ApplicationContextAware {
     
     @Before
     public void setUp() throws InterruptedException {
+        MockLogAppender.setupLogging();
+
         if(m_detector == null) {
             m_detector = getDetector(SnmpDetector.class);
             m_detector.setRetries(2);

@@ -39,6 +39,7 @@ import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.opennms.netmgt.provision.detector.jmx.JBossDetector;
+import org.opennms.test.mock.MockLogAppender;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.test.context.ContextConfiguration;
 import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
@@ -53,7 +54,7 @@ public class JBossDetectorTest {
     
     @Before
     public void setUp() throws RemoteException{
-       
+       MockLogAppender.setupLogging();
     }
     
     @Test

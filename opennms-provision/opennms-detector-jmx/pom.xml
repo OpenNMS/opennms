@@ -15,8 +15,8 @@
       <artifactId>opennms-provision-api</artifactId>
     </dependency>
     <dependency>
-    	<groupId>org.opennms</groupId>
-    	<artifactId>opennms-util</artifactId>
+      <groupId>org.opennms</groupId>
+      <artifactId>opennms-util</artifactId>
     </dependency>
     <dependency>
       <groupId>org.opennms.dependencies</groupId>
@@ -24,10 +24,15 @@
       <type>pom</type>
     </dependency>
     <dependency>
-  		<groupId>org.opennms.dependencies</groupId>
-  		<artifactId>spring-test-dependencies</artifactId>
-    	<scope>test</scope>
+  	  <groupId>org.opennms.dependencies</groupId>
+  	  <artifactId>spring-test-dependencies</artifactId>
+      <scope>test</scope>
       <type>pom</type>
+    </dependency>
+    <dependency>
+  	  <groupId>org.opennms</groupId>
+  	  <artifactId>opennms-test</artifactId>
+      <scope>test</scope>
     </dependency>
   </dependencies>
 </project>

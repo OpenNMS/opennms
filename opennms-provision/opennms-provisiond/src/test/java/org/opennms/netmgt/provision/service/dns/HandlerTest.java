@@ -50,10 +50,16 @@ import org.junit.Ignore;
 import org.junit.Test;
 import org.opennms.netmgt.config.modelimport.ModelImport;
 import org.opennms.netmgt.dao.castor.CastorUtils;
+import org.opennms.test.mock.MockLogAppender;
 
 public class HandlerTest {
     
     private static final String DNS_URL = "dns://127.0.0.1:53/localhost";
+
+    @Before
+    public void setUp() {
+        MockLogAppender.setupLogging();
+    }
 
     @Before
     public void registerFactory() {

@@ -48,6 +48,7 @@ import org.opennms.netmgt.provision.detector.datagram.NtpDetector;
 import org.opennms.netmgt.provision.server.SimpleUDPServer;
 import org.opennms.netmgt.provision.support.NullDetectorMonitor;
 import org.opennms.netmgt.provision.support.ntp.NtpMessage;
+import org.opennms.test.mock.MockLogAppender;
 import org.springframework.beans.BeansException;
 import org.springframework.context.ApplicationContext;
 import org.springframework.context.ApplicationContextAware;
@@ -64,6 +65,8 @@ public class NtpDetectorTest implements ApplicationContextAware {
     
     @Before
     public void setUp(){
+        MockLogAppender.setupLogging();
+
         m_detector = getDetector(NtpDetector.class);
         m_detector.setRetries(0);
         assertNotNull(m_detector);

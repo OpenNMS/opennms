@@ -44,6 +44,7 @@ import java.net.Socket;
 import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
+import org.opennms.test.mock.MockLogAppender;
 
 
 public class SimpleServerTest {
@@ -54,7 +55,7 @@ public class SimpleServerTest {
     
     @Before
     public void setUp() {
-        
+        MockLogAppender.setupLogging();
     }
     
     @After

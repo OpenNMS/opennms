@@ -56,6 +56,7 @@ import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.opennms.netmgt.provision.detector.jmx.Jsr160Detector;
 import org.opennms.netmgt.provision.support.NullDetectorMonitor;
+import org.opennms.test.mock.MockLogAppender;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.test.context.ContextConfiguration;
 import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
@@ -82,8 +83,9 @@ public class Jsr160DetectorTest {
     
     @Before
     public void setUp() throws IOException {
+        MockLogAppender.setupLogging();
+
         assertNotNull(m_detector);
-        
         
         JMXServiceURL url = new JMXServiceURL("service:jmx:rmi:///jndi/rmi://localhost:9999/server");
         

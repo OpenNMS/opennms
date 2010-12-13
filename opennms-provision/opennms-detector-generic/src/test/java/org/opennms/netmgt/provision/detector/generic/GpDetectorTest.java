@@ -38,9 +38,11 @@ import static org.junit.Assert.assertTrue;
 import java.net.InetAddress;
 import java.net.UnknownHostException;
 
+import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.opennms.netmgt.provision.support.NullDetectorMonitor;
+import org.opennms.test.mock.MockLogAppender;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.test.context.ContextConfiguration;
 import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
@@ -52,6 +54,11 @@ public class GpDetectorTest {
     @Autowired
     public GpDetector m_detector;
     
+    
+    @Before
+    public void setUp() {
+        MockLogAppender.setupLogging();
+    }
     
     @Test
     public void testDetectorWired(){

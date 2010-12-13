@@ -16,6 +16,7 @@ import org.opennms.netmgt.dao.db.OpenNMSConfigurationExecutionListener;
 import org.opennms.netmgt.dao.db.TemporaryDatabaseExecutionListener;
 import org.opennms.netmgt.model.OnmsCategory;
 import org.opennms.netmgt.model.OnmsNode;
+import org.opennms.test.mock.MockLogAppender;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.test.context.ContextConfiguration;
 import org.springframework.test.context.TestExecutionListeners;
@@ -51,6 +52,7 @@ public class NodeCategoryPolicyTest {
     
     @Before
     public void setUp() {
+        MockLogAppender.setupLogging();
         m_populator.populateDatabase();
         m_nodes = m_nodeDao.findAll();
     }
