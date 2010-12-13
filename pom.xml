@@ -234,7 +234,7 @@
       <plugin>
         <groupId>org.codehaus.mojo</groupId>
         <artifactId>gwt-maven-plugin</artifactId>
-        <version>1.2</version>
+        <version>2.1.0-1</version>
         <executions>
           <execution>
             <goals>
@@ -669,7 +669,7 @@
    <log4jVersion>1.2.15</log4jVersion>
    <minaVersion>2.0.0-M6</minaVersion>
    <oroVersion>2.0.8</oroVersion>
-   <xercesVersion>2.6.2</xercesVersion>
+   <xercesVersion>2.9.1</xercesVersion>
    <gmavenVersion>1.0</gmavenVersion>
    <jettyVersion>6.1.24</jettyVersion>
    <jettyServletVersion>6.1.14</jettyServletVersion>
