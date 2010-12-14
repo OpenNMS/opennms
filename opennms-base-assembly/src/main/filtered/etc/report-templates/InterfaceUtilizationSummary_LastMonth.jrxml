@@ -96,7 +96,8 @@
 	snmpinterface.snmpifalias,
 	snmpinterface.snmpphysaddr,
 	snmpinterface.snmpifdescr,
-	snmpinterface.snmpifspeed
+	snmpinterface.snmpifspeed,
+	snmpinterface.snmpiftype
 FROM
 	node
 RIGHT JOIN
@@ -113,7 +114,8 @@ ON
 	(categories.categoryid = category_node.categoryid)
 WHERE
 	(snmpinterface.snmpcollect = 'C' OR snmpinterface.snmpcollect = 'UC') AND
-	node.nodetype = 'A'
+	node.nodetype = 'A' AND
+	snmpinterface.snmpiftype in (23)
 ORDER BY
 	categories.categoryname,
 	node.nodelabel]]>
@@ -127,6 +129,7 @@ ORDER BY
 	<field name="snmpphysaddr" class="java.lang.String"/>
 	<field name="snmpifdescr" class="java.lang.String"/>
 	<field name="snmpifspeed" class="java.lang.Long"/>
+	<field name="snmpiftype" class="java.lang.Integer"/>
 	<variable name="ICMP_Latency_AVG" class="java.lang.Double"/>
 	<variable name="ICMP_Latency_MIN" class="java.lang.Double"/>
 	<variable name="ICMP_Latency_MAX" class="java.lang.Double"/>
@@ -143,11 +146,6 @@ ORDER BY
 					<reportElement style="Sub-sub-header" x="0" y="28" width="140" height="20"/>
 					<textElement/>
 					<text><![CDATA[interface]]></text>
-				</staticText>
-				<staticText>
-					<reportElement style="Sub-sub-header" x="145" y="28" width="140" height="20"/>
-					<textElement/>
-					<text><![CDATA[alias]]></text>
 				</staticText>
 				<staticText>
 					<reportElement style="Sub-sub-header" x="290" y="28" width="140" height="20"/>

@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <jasperReport xmlns="http://jasperreports.sourceforge.net/jasperreports" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://jasperreports.sourceforge.net/jasperreports http://jasperreports.sourceforge.net/xsd/jasperreport.xsd" name="TotalBytesTransferredByInterface_subreport1" pageWidth="725" pageHeight="802" whenNoDataType="NoDataSection" columnWidth="725" leftMargin="0" rightMargin="0" topMargin="0" bottomMargin="0">
 	<property name="ireport.zoom" value="1.5"/>
-	<property name="ireport.x" value="0"/>
+	<property name="ireport.x" value="103"/>
 	<property name="ireport.y" value="0"/>
 	<template><![CDATA["${install.dir}/etc/report-templates/assets/styles/defaultStyles.jrtx"]]></template>
 	<parameter name="rrdDir" class="java.lang.String" isForPrompting="false">
@@ -20,6 +20,7 @@
 	<parameter name="snmpifname" class="java.lang.String"/>
 	<parameter name="snmpifdescr" class="java.lang.String"/>
 	<parameter name="snmpphysaddr" class="java.lang.String"/>
+	<parameter name="snmpifspeed" class="java.lang.Long" isForPrompting="false"/>
 	<parameter name="ifLabel" class="java.lang.String" isForPrompting="false">
 		<defaultValueExpression><![CDATA[$P{snmpifname} == null || "".equals($P{snmpifname}) ? $P{snmpifdescr} : $P{snmpifname}]]></defaultValueExpression>
 	</parameter>
@@ -57,6 +58,12 @@
 	<variable name="received_STDDEV" class="java.lang.Double" calculation="StandardDeviation">
 		<variableExpression><![CDATA[$F{IfInOctets}]]></variableExpression>
 	</variable>
+	<variable name="received_RATE_BYTES" class="java.lang.Double">
+		<variableExpression><![CDATA[($V{received_AVERAGE}+1.64485*$V{received_STDDEV})]]></variableExpression>
+	</variable>
+	<variable name="received_RATE_BITS" class="java.lang.Double">
+		<variableExpression><![CDATA[$V{received_RATE_BYTES} * 8.0]]></variableExpression>
+	</variable>
 	<variable name="transmitted_SUM" class="java.lang.Double" calculation="Sum">
 		<variableExpression><![CDATA[$F{IfOutOctets}]]></variableExpression>
 	</variable>
@@ -65,6 +72,12 @@
 	</variable>
 	<variable name="transmitted_STDDEV" class="java.lang.Double" calculation="StandardDeviation">
 		<variableExpression><![CDATA[$F{IfOutOctets}]]></variableExpression>
+	</variable>
+	<variable name="transmitted_RATE_BYTES" class="java.lang.Double">
+		<variableExpression><![CDATA[($V{transmitted_AVERAGE}+1.64485*$V{transmitted_STDDEV})]]></variableExpression>
+	</variable>
+	<variable name="transmitted_RATE_BITS" class="java.lang.Double">
+		<variableExpression><![CDATA[$V{transmitted_RATE_BYTES} * 8.0]]></variableExpression>
 	</variable>
 	<variable name="file" class="java.lang.String">
 		<variableExpression><![CDATA[new File("$P{rrdDir}/snmp/$P{nodeid}/$P{interface}/ifHCInOctets.jrb") == null ? "$P{rrdDir}/snmp/$P{nodeid}/$P{interface}/ifHCInOctets.jrb" : "$P{rrdDir}/snmp/$P{nodeid}/$P{interface}/ifInOctets.jrb"]]></variableExpression>
@@ -92,7 +105,7 @@
 		<band splitType="Stretch"/>
 	</pageFooter>
 	<summary>
-		<band height="23" splitType="Stretch">
+		<band height="108" splitType="Stretch">
 			<textField>
 				<reportElement style="Body" x="0" y="0" width="140" height="20"/>
 				<textElement/>
@@ -101,23 +114,62 @@
 			<textField pattern="#,##0.00">
 				<reportElement style="Body" x="435" y="0" width="140" height="20" backcolor="#333333"/>
 				<textElement textAlignment="Right"/>
-				<textFieldExpression class="java.lang.Double"><![CDATA[($V{transmitted_AVERAGE}+1.64485*$V{transmitted_STDDEV})/new Double("1048576.0")]]></textFieldExpression>
+				<textFieldExpression class="java.lang.String"><![CDATA[$V{transmitted_RATE_BITS} > 1048576 ? String.format("%10.2f", $V{transmitted_RATE_BITS}/new Double("1048576.0")) + " mb/s" : String.format("%10.2f", $V{transmitted_RATE_BITS}/new Double("1024.0")) + " kb/s"]]></textFieldExpression>
 			</textField>
 			<textField pattern="#,##0.00">
 				<reportElement style="Body" x="580" y="0" width="140" height="20"/>
 				<textElement textAlignment="Right"/>
-				<textFieldExpression class="java.lang.Double"><![CDATA[($V{received_SUM} + $V{transmitted_SUM})/new Double("1048576.0")]]></textFieldExpression>
+				<textFieldExpression class="java.lang.String"><![CDATA[$P{snmpifspeed} > 1048576 ? String.format("%10.2f", $P{snmpifspeed}/new Double("1048576.0")) + " mb/s" : String.format("%10.2f", $P{snmpifspeed}/new Double("1024.0")) + " kb/s"]]></textFieldExpression>
 			</textField>
 			<textField pattern="#,##0.00">
 				<reportElement style="Body" x="290" y="0" width="140" height="20" backcolor="#CC9900"/>
 				<textElement textAlignment="Right"/>
-				<textFieldExpression class="java.lang.Double"><![CDATA[($V{received_AVERAGE}+1.64485*$V{received_STDDEV})/new Double("1048576.0")]]></textFieldExpression>
+				<textFieldExpression class="java.lang.String"><![CDATA[$V{received_RATE_BITS} > 1048576 ? String.format("%10.2f", $V{received_RATE_BITS}/new Double("1048576.0")) + " mb/s" : String.format("%10.2f", $V{received_RATE_BITS}/new Double("1024.0")) + " kb/s"]]></textFieldExpression>
 			</textField>
-			<textField>
-				<reportElement style="Body" x="145" y="0" width="140" height="20"/>
-				<textElement/>
-				<textFieldExpression class="java.lang.String"><![CDATA[$P{snmpifalias}]]></textFieldExpression>
-			</textField>
+			<pieChart>
+				<chart isShowLegend="false">
+					<reportElement x="345" y="20" width="85" height="85"/>
+					<chartTitle/>
+					<chartSubtitle/>
+					<chartLegend/>
+				</chart>
+				<pieDataset>
+					<pieSeries>
+						<keyExpression><![CDATA["receive rate"]]></keyExpression>
+						<valueExpression><![CDATA[$V{received_RATE_BITS}]]></valueExpression>
+					</pieSeries>
+					<pieSeries>
+						<keyExpression><![CDATA["interface rate"]]></keyExpression>
+						<valueExpression><![CDATA[new Double("" + $P{snmpifspeed}) - $V{received_RATE_BITS}]]></valueExpression>
+					</pieSeries>
+				</pieDataset>
+				<piePlot>
+					<plot/>
+					<itemLabel color="#000000" backgroundColor="#FFFFFF"/>
+				</piePlot>
+			</pieChart>
+			<pieChart>
+				<chart isShowLegend="false">
+					<reportElement x="490" y="20" width="85" height="85"/>
+					<chartTitle/>
+					<chartSubtitle/>
+					<chartLegend/>
+				</chart>
+				<pieDataset>
+					<pieSeries>
+						<keyExpression><![CDATA["transmitted rate"]]></keyExpression>
+						<valueExpression><![CDATA[$V{transmitted_RATE_BITS}]]></valueExpression>
+					</pieSeries>
+					<pieSeries>
+						<keyExpression><![CDATA["interface rate"]]></keyExpression>
+						<valueExpression><![CDATA[new Double("" + $P{snmpifspeed}) - $V{transmitted_RATE_BITS}]]></valueExpression>
+					</pieSeries>
+				</pieDataset>
+				<piePlot>
+					<plot/>
+					<itemLabel color="#000000" backgroundColor="#FFFFFF"/>
+				</piePlot>
+			</pieChart>
 		</band>
 	</summary>
 	<noData>
@@ -126,11 +178,6 @@
 				<reportElement style="Body" x="0" y="15" width="140" height="20"/>
 				<textElement/>
 				<textFieldExpression class="java.lang.String"><![CDATA[$P{snmpifname} != null ? $P{snmpifname} : $P{snmpifdescr}]]></textFieldExpression>
-			</textField>
-			<textField>
-				<reportElement style="Body" x="145" y="15" width="140" height="20"/>
-				<textElement/>
-				<textFieldExpression class="java.lang.String"><![CDATA[$P{snmpifalias}]]></textFieldExpression>
 			</textField>
 			<staticText>
 				<reportElement x="435" y="15" width="166" height="20"/>

@@ -2,7 +2,7 @@
 <jasperReport xmlns="http://jasperreports.sourceforge.net/jasperreports" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://jasperreports.sourceforge.net/jasperreports http://jasperreports.sourceforge.net/xsd/jasperreport.xsd" name="AvailabilitySummaryReport" pageWidth="700" pageHeight="842" whenNoDataType="NoDataSection" columnWidth="620" leftMargin="40" rightMargin="40" topMargin="50" bottomMargin="50">
 	<property name="ireport.zoom" value="1.5"/>
 	<property name="ireport.x" value="0"/>
-	<property name="ireport.y" value="503"/>
+	<property name="ireport.y" value="871"/>
 	<template><![CDATA["${install.dir}/etc/report-templates/assets/styles/defaultStyles.jrtx"]]></template>
 	<style name="Sans_Normal" isDefault="true" fontName="DejaVu Sans" fontSize="12" isBold="false" isItalic="false" isUnderline="false" isStrikeThrough="false"/>
 	<style name="Sans_Bold" fontName="DejaVu Sans" fontSize="12" isBold="true" isItalic="false" isUnderline="false" isStrikeThrough="false"/>
@@ -70,6 +70,9 @@ new GregorianCalendar(new GregorianCalendar().get(Calendar.YEAR), new GregorianC
 	</parameter>
 	<parameter name="TIME_RANGE_DESCRIPTION" class="java.lang.String">
 		<defaultValueExpression><![CDATA["Last Month"]]></defaultValueExpression>
+	</parameter>
+	<parameter name="SUBREPORT_DIR" class="java.lang.String" isForPrompting="false">
+		<defaultValueExpression><![CDATA["${install.dir}/etc/report-templates/subreports/"]]></defaultValueExpression>
 	</parameter>
 	<queryString>
 		<![CDATA[SELECT
@@ -412,6 +415,22 @@ ORDER BY
 						</valueAxisFormat>
 					</bar3DPlot>
 				</stackedBar3DChart>
+			</band>
+			<band height="67">
+				<subreport>
+					<reportElement x="0" y="0" width="619" height="61"/>
+					<subreportParameter name="CATEGORY_NAME">
+						<subreportParameterExpression><![CDATA[$F{categoryname}]]></subreportParameterExpression>
+					</subreportParameter>
+					<subreportParameter name="TIME_RANGE">
+						<subreportParameterExpression><![CDATA[$P{TIME_RANGE}]]></subreportParameterExpression>
+					</subreportParameter>
+					<subreportParameter name="START_TIME">
+						<subreportParameterExpression><![CDATA[$P{START_TIME}]]></subreportParameterExpression>
+					</subreportParameter>
+					<connectionExpression><![CDATA[$P{REPORT_CONNECTION}]]></connectionExpression>
+					<subreportExpression class="java.lang.String"><![CDATA[$P{SUBREPORT_DIR} + "Top25PercentDown_subreport.jasper"]]></subreportExpression>
+				</subreport>
 			</band>
 		</groupFooter>
 	</group>
