@@ -52,10 +52,9 @@ import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
 @RunWith(SpringJUnit4ClassRunner.class)
 @ContextConfiguration(locations={"classpath:/META-INF/opennms/detectors.xml"})
 public class ImapDetectorTest implements ApplicationContextAware {
-    private ImapDetector m_detector;
-    private SimpleServer m_server;
-    private ApplicationContext m_applicationContext; 
-    
+    private ImapDetector m_detector = null;
+    private SimpleServer m_server = null;
+    private ApplicationContext m_applicationContext = null;
     
     @Before
     public void setUp() throws Exception{
@@ -69,7 +68,10 @@ public class ImapDetectorTest implements ApplicationContextAware {
     
     @After
     public void tearDown() throws Exception{
-        
+        if (m_server != null) {
+            m_server.stopServer();
+            m_server = null;
+        }
     }
     
     @Test
