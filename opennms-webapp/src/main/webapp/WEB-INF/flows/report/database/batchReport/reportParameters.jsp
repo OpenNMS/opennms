@@ -53,36 +53,10 @@
 		value="<a href='report/database/index.htm'>Database</a>" />
   <jsp:param name="breadcrumb" value="Run"/>
 </jsp:include>
-<style type="text/css">
-	
-.newform {
-	margin:0 50px; 
-	padding:50px 0;
-}
-
-.newform .label{
-	font-size: 100%;
-	float: left;
-	width: 230px;
-	margin-right: 10px;
-	text-align: right;
-	clear: left;
-	display: block;
-}
-
-.newform p select, .newform p input, .newform p option, .newform p options {
-	font-size: 70%;
-}
-
-.newform .indent {
-	margin-left: 240px;
-}
-
-</style>
 
 <h3>Report Parameters</h3>
 
-<form:form modelAttribute="parameters" cssClass="newform">
+<form:form modelAttribute="parameters" cssClass="stdform">
 	
 	
 		<%-- // string parameters --%>
@@ -117,8 +91,8 @@
 			<form:input path="floatParms[${floatParmRow.index}].value"/></p>
 		</c:forEach>
 		<%-- // Double parameters --%>
-		<p><c:forEach items="${parameters.doubleParms}" var="doubleParm" varStatus="doubleParmRow">
-			<form:label path="doubleParms[${doubleParmRow.index}].value" cssClass="label" >
+		<c:forEach items="${parameters.doubleParms}" var="doubleParm" varStatus="doubleParmRow">
+			<p><form:label path="doubleParms[${doubleParmRow.index}].value" cssClass="label" >
 				<c:out value="${doubleParm.displayName}"/>
 			</form:label>
 	        <form:input path="doubleParms[${doubleParmRow.index}].value"/></p>

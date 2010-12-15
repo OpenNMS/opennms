@@ -49,37 +49,10 @@
 		value="<a href='report/database/index.htm'>Database</a>" />
   <jsp:param name="breadcrumb" value="Run"/>
 </jsp:include>
-<style type="text/css">
-
-.newform {
-	margin:0 50px; 
-	padding:50px 0;
-}
-
-.newform .label{
-	font-size: 100%;
-	float: left;
-	width: 230px;
-	margin-right: 10px;
-	text-align: right;
-	clear: left;
-	display: block;
-}
-
-.newform p select, .newform p input, .newform p option, .newform p options, .newform p checkbox {
-	font-size: 70%;
-}
-
-.newform .indent {
-	margin-left: 240px;
-}
-
-</style>
 
 <h3>Report Delivery Options</h3>
-
   
-<form:form commandName="deliveryOptions" cssClass="newform">
+<form:form commandName="deliveryOptions" cssClass="stdform">
 
 	<p><form:label path="instanceId" cssClass="label">
 		name to identify this report

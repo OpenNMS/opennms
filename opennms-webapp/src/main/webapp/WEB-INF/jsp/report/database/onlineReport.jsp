@@ -53,40 +53,14 @@
 		value="<a href='report/database/onlineList.htm'>Online Reports</a>" />
   <jsp:param name="breadcrumb" value="run"/>
 </jsp:include>
-<style type="text/css">
-
-.newform {
-	margin:0 50px; 
-	padding:50px 0;
-}
-
-.newform .label{
-	font-size: 100%;
-	float: left;
-	width: 230px;
-	margin-right: 10px;
-	text-align: right;
-	clear: left;
-	display: block;
-}
-
-.newform p select, .newform p input, .newform p option, .newform p options {
-	font-size: 70%;
-}
-
-.newform .indent {
-	margin-left: 240px;
-}
-
-</style>
 
 <h3>Run Online Report</h3>
 
-<form:form commandName="parameters" cssClass="newform">
+<form:form commandName="parameters" cssClass="stdform">
 	
 		<%-- // string parameters --%>
-		<p><c:forEach items="${parameters.stringParms}" var="stringParm" varStatus="stringParmRow">
-			<form:label path="stringParms[${stringParmRow.index}].value" cssClass="label" >
+		<c:forEach items="${parameters.stringParms}" var="stringParm" varStatus="stringParmRow">
+			<p><form:label path="stringParms[${stringParmRow.index}].value" cssClass="label" >
 				<c:out value="${stringParm.displayName}"/>
 			</form:label>
                 <c:choose>
@@ -101,22 +75,22 @@
                 </c:choose></p>
 		</c:forEach>
 		<%-- // int parameters --%>
-		<p><c:forEach items="${parameters.intParms}" var="intParm" varStatus="intParmRow">
+		<c:forEach items="${parameters.intParms}" var="intParm" varStatus="intParmRow">
 				<p><form:label path="intParms[${intParmRow.index}].value" cssClass="label" >
 					<c:out value="${intParm.displayName}"/>
 				</form:label>
 	            <form:input path="intParms[${intParmRow.index}].value"/></p>
 		</c:forEach>
 		<%-- // Float parameters --%>
-		<p><c:forEach items="${parameters.floatParms}" var="floatParm" varStatus="floatParmRow">
-			<form:label path="floatParms[${floatParmRow.index}].value" cssClass="label" >
+		<c:forEach items="${parameters.floatParms}" var="floatParm" varStatus="floatParmRow">
+			<p><form:label path="floatParms[${floatParmRow.index}].value" cssClass="label" >
 				<c:out value="${floatParm.displayName}"/>
 			</form:label>
 	        <form:input path="floatParms[${floatParmRow.index}].value"/></p>
 		</c:forEach>
 		<%-- // Double parameters --%>
-		<p><c:forEach items="${parameters.doubleParms}" var="doubleParm" varStatus="doubleParmRow">
-			<form:label path="doubleParms[${doubleParmRow.index}].value" cssClass="label" >
+		<c:forEach items="${parameters.doubleParms}" var="doubleParm" varStatus="doubleParmRow">
+			<p><form:label path="doubleParms[${doubleParmRow.index}].value" cssClass="label" >
 				<c:out value="${doubleParm.displayName}"/>
 			</form:label>
 	        <form:input path="doubleParms[${doubleParmRow.index}].value"/></p>
