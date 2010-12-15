@@ -333,7 +333,7 @@
 			     <ul class="plain">
 		            <% if( isRouteIP ) { %>
 		            <li>
-		            	<a href="element/routeipnode.jsp?node=<%=nodeId%>"> View Node IP Route Info</a>
+		            	<a href="element/routeipnode.jsp?node=<%=nodeId%>">View Node IP Route Info</a>
 		            </li>
 		            <% }%>
 		         

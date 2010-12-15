@@ -68,6 +68,7 @@ import org.opennms.core.resource.Vault;
 import org.opennms.core.utils.ByteArrayComparator;
 import org.opennms.core.utils.DBUtils;
 import org.opennms.core.utils.InetAddressUtils;
+import org.opennms.core.utils.LogUtils;
 import org.opennms.netmgt.EventConstants;
 import org.opennms.netmgt.dao.CategoryDao;
 import org.opennms.netmgt.dao.DataLinkInterfaceDao;
@@ -429,8 +430,7 @@ public class NetworkElementFactory implements InitializingBean, NetworkElementFa
         criteria.createAlias("node", "node");
         criteria.createAlias("snmpInterface", "snmpIface");
         criteria.add(Restrictions.eq("ipAddress", ipAddress));
-        
-        
+
         return onmsIpInterfaces2InterfaceArray(m_ipInterfaceDao.findMatching(criteria));
     }
 
@@ -774,6 +774,16 @@ public class NetworkElementFactory implements InitializingBean, NetworkElementFa
         return node;
     }
 
+    private AtInterface getAtInterfaceForOnmsNode(final OnmsNode onmsNode, final String ipAddr) {
+        for (final OnmsArpInterface iface : onmsNode.getArpInterfaces()) {
+            final String ifaceAddress = iface.getIpAddress();
+            if (ifaceAddress != null && ifaceAddress.equals(ipAddr)) {
+                return new AtInterface(onmsNode.getId(), iface.getSourceNode().getId(), iface.getIfIndex(), iface.getIpAddress(), iface.getPhysAddr(), iface.getLastPoll().toString(), iface.getStatus().getCharCode());
+            }
+        }
+        return null;
+    }
+    
     /**
      * This method returns the data from the result set as an vector of
      * ipinterface objects.
@@ -1270,8 +1280,17 @@ public class NetworkElementFactory implements InitializingBean, NetworkElementFa
         criteria.add(Restrictions.eq("node.id", nodeId));
         criteria.add(Restrictions.eq("ipAddress", ipAddr));
         criteria.add(Restrictions.ne("status", StatusType.DELETED));
-        
-        return null;
+        criteria.setResultTransformer(Criteria.DISTINCT_ROOT_ENTITY);
+
+        final List<OnmsNode> nodes = m_nodeDao.findMatching(criteria);
+        if (nodes.size() > 1) {
+            LogUtils.warnf(this, "More than 1 node returned!  Using the first one, but this could be wrong...");
+        } else if (nodes.size() == 0) {
+            LogUtils.debugf(this, "No nodes matched for nodeId = %d, IP Address = %s", nodeId, ipAddr);
+            return null;
+        }
+        final OnmsNode node = nodes.get(0);
+        return getAtInterfaceForOnmsNode(node, ipAddr);
     }
 
     /**
@@ -1305,8 +1324,13 @@ public class NetworkElementFactory implements InitializingBean, NetworkElementFa
     /* (non-Javadoc)
 	 * @see org.opennms.web.element.NetworkElementFactoryInterfac#getIpRoute(int)
 	 */
-    public IpRouteInterface[] getIpRoute(int nodeId) {
-        return null;
+    public IpRouteInterface[] getIpRoute(final int nodeId) {
+        try {
+            return getIpRoute(nodeId, null);
+        } catch (final SQLException e) {
+            LogUtils.warnf(this, e, "An error occurred getting the IP Route for node %d", nodeId);
+            return null;
+        }
     }
 
     /**
@@ -2641,48 +2665,60 @@ public class NetworkElementFactory implements InitializingBean, NetworkElementFa
             
             return intf;
     }
-
     
+    // FIXME: Do any of these @SuppressWarnings("unused") methods get reflected?  Or can we drop them?
+
+    @SuppressWarnings("unused")
     private void setNodeDao(NodeDao nodeDao) {
         m_nodeDao = nodeDao;
     }
 
+    @SuppressWarnings("unused")
     private NodeDao getNodeDao() {
         return m_nodeDao;
     }
 
+    @SuppressWarnings("unused")
     private void setIpInterfaceDao(IpInterfaceDao ipInterfaceDao) {
         m_ipInterfaceDao = ipInterfaceDao;
     }
 
+    @SuppressWarnings("unused")
     private IpInterfaceDao getIpInterfaceDao() {
         return m_ipInterfaceDao;
     }
 
+    @SuppressWarnings("unused")
     private void setSnmpInterfaceDao(SnmpInterfaceDao snmpInterfaceDao) {
         m_snmpInterfaceDao = snmpInterfaceDao;
     }
 
+    @SuppressWarnings("unused")
     private SnmpInterfaceDao getSnmpInterfaceDao() {
         return m_snmpInterfaceDao;
     }
 
+    @SuppressWarnings("unused")
     private void setDataLinkInterfaceDao(DataLinkInterfaceDao dataLinkInterfaceDao) {
         m_dataLinkInterfaceDao = dataLinkInterfaceDao;
     }
 
+    @SuppressWarnings("unused")
     private DataLinkInterfaceDao getDataLinkInterfaceDao() {
         return m_dataLinkInterfaceDao;
     }
 
+    @SuppressWarnings("unused")
     private void setMonSvcDao(MonitoredServiceDao monSvcDao) {
         m_monSvcDao = monSvcDao;
     }
 
+    @SuppressWarnings("unused")
     private MonitoredServiceDao getMonSvcDao() {
         return m_monSvcDao;
     }
 
+    @SuppressWarnings("unused")
     private void setServiceTypeDao(ServiceTypeDao serviceTypeDao) {
         m_serviceTypeDao = serviceTypeDao;
     }
@@ -2691,6 +2727,7 @@ public class NetworkElementFactory implements InitializingBean, NetworkElementFa
         return m_serviceTypeDao;
     }
 
+    @SuppressWarnings("unused")
     private void setCategoryDao(CategoryDao categoryDao) {
         m_categoryDao = categoryDao;
     }
