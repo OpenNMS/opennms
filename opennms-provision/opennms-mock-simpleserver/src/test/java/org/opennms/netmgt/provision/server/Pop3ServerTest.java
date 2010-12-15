@@ -44,6 +44,7 @@ import java.net.Socket;
 import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
+import org.opennms.test.mock.MockLogAppender;
 
 
 public class Pop3ServerTest {
@@ -53,20 +54,22 @@ public class Pop3ServerTest {
     
     @Before
     public void setUp() throws Exception{
-       m_pop3Server = new Pop3Server();
+        MockLogAppender.setupLogging();
+        m_pop3Server = new Pop3Server();
         try{
-           m_pop3Server.init();
-           m_pop3Server.startServer();
-           m_socket = createSocketConnection(m_pop3Server.getInetAddress(), m_pop3Server.getLocalPort(), 1000);
-           m_in = new BufferedReader(new InputStreamReader(m_socket.getInputStream()));
-       }catch(Exception e){
-          throw new Exception(e); 
-       }
+            m_pop3Server.init();
+            m_pop3Server.startServer();
+            m_socket = createSocketConnection(m_pop3Server.getInetAddress(), m_pop3Server.getLocalPort(), 1000);
+            m_in = new BufferedReader(new InputStreamReader(m_socket.getInputStream()));
+        }catch(Exception e){
+           throw new Exception(e); 
+        }
     }
     
     @After
     public void tearDown() throws IOException{
         m_socket.close();
+        m_pop3Server.stopServer();
     }
     
     @Test

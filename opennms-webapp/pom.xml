@@ -93,6 +93,7 @@
               <goal>jspc</goal>
             </goals>
             <configuration>
+              <webXmlFragment>${basedir}/target/web.xml.jspc-insert</webXmlFragment>
               <generatedClasses>${basedir}/target/jsp-classes</generatedClasses>
             </configuration>
           </execution>

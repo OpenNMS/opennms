@@ -2,7 +2,7 @@
 <jasperReport xmlns="http://jasperreports.sourceforge.net/jasperreports" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://jasperreports.sourceforge.net/jasperreports http://jasperreports.sourceforge.net/xsd/jasperreport.xsd" name="AvailabilitySummaryReport" pageWidth="700" pageHeight="842" whenNoDataType="NoDataSection" columnWidth="620" leftMargin="40" rightMargin="40" topMargin="50" bottomMargin="50">
 	<property name="ireport.zoom" value="1.5"/>
 	<property name="ireport.x" value="0"/>
-	<property name="ireport.y" value="0"/>
+	<property name="ireport.y" value="184"/>
 	<template><![CDATA["${install.dir}/etc/report-templates/assets/styles/defaultStyles.jrtx"]]></template>
 	<style name="Sans_Normal" isDefault="true" fontName="DejaVu Sans" fontSize="12" isBold="false" isItalic="false" isUnderline="false" isStrikeThrough="false"/>
 	<style name="Sans_Bold" fontName="DejaVu Sans" fontSize="12" isBold="true" isItalic="false" isUnderline="false" isStrikeThrough="false"/>
@@ -53,7 +53,7 @@
 		</box>
 	</style>
 	<parameter name="DS_SURVEILLANCE_CATEGORY" class="java.lang.String" isForPrompting="false">
-		<defaultValueExpression><![CDATA[new String("Routers")]]></defaultValueExpression>
+		<defaultValueExpression><![CDATA["%"]]></defaultValueExpression>
 	</parameter>
 	<parameter name="DS_AVAILABILITY_WARNING" class="java.lang.Double" isForPrompting="false"/>
 	<parameter name="DS_AVAILABILITY_CRITICAL" class="java.lang.Double" isForPrompting="false"/>
@@ -225,7 +225,7 @@ ORDER BY
 	<group name="SURVEILLANCE_CAT" minHeightToStartNewPage="60">
 		<groupExpression><![CDATA[$F{categoryname}]]></groupExpression>
 		<groupFooter>
-			<band height="109">
+			<band height="587">
 				<textField>
 					<reportElement style="Sub-sub-sub-header" x="0" y="0" width="252" height="30"/>
 					<textElement textAlignment="Left" verticalAlignment="Middle"/>
@@ -346,6 +346,72 @@ ORDER BY
 					<textElement textAlignment="Center" verticalAlignment="Middle"/>
 					<text><![CDATA[Availability Percent]]></text>
 				</staticText>
+				<pie3DChart>
+					<chart>
+						<reportElement x="0" y="103" width="304" height="208"/>
+						<chartTitle>
+							<titleExpression><![CDATA["% Available Time to Outage Time"]]></titleExpression>
+						</chartTitle>
+						<chartSubtitle/>
+						<chartLegend/>
+					</chart>
+					<pieDataset>
+						<dataset resetType="Group" resetGroup="SURVEILLANCE_CAT"/>
+						<pieSeries>
+							<keyExpression><![CDATA["% Outage"]]></keyExpression>
+							<valueExpression><![CDATA[$F{outages_percent}]]></valueExpression>
+						</pieSeries>
+						<pieSeries>
+							<keyExpression><![CDATA["% Available"]]></keyExpression>
+							<valueExpression><![CDATA[$F{avail_percent}]]></valueExpression>
+						</pieSeries>
+					</pieDataset>
+					<pie3DPlot>
+						<plot/>
+						<itemLabel color="#000000" backgroundColor="#FFFFFF"/>
+					</pie3DPlot>
+				</pie3DChart>
+				<stackedBar3DChart>
+					<chart>
+						<reportElement x="0" y="326" width="580" height="252"/>
+						<chartTitle>
+							<titleExpression><![CDATA["This Year"]]></titleExpression>
+						</chartTitle>
+						<chartSubtitle>
+							<subtitleExpression><![CDATA["Percentage Outage Time Over Availability Time"]]></subtitleExpression>
+						</chartSubtitle>
+						<chartLegend/>
+					</chart>
+					<categoryDataset>
+						<dataset resetType="Group" resetGroup="SURVEILLANCE_CAT"/>
+						<categorySeries>
+							<seriesExpression><![CDATA["Outage Percent"]]></seriesExpression>
+							<categoryExpression><![CDATA[$F{nodelabel}]]></categoryExpression>
+							<valueExpression><![CDATA[$F{outages_percent}]]></valueExpression>
+						</categorySeries>
+						<categorySeries>
+							<seriesExpression><![CDATA["Availability Percent"]]></seriesExpression>
+							<categoryExpression><![CDATA[$F{nodelabel}]]></categoryExpression>
+							<valueExpression><![CDATA[$F{avail_percent}]]></valueExpression>
+						</categorySeries>
+					</categoryDataset>
+					<bar3DPlot>
+						<plot labelRotation="45.0"/>
+						<itemLabel color="#000000" backgroundColor="#FFFFFF"/>
+						<categoryAxisFormat labelRotation="45.0">
+							<axisFormat>
+								<labelFont/>
+								<tickLabelFont/>
+							</axisFormat>
+						</categoryAxisFormat>
+						<valueAxisFormat>
+							<axisFormat>
+								<labelFont/>
+								<tickLabelFont/>
+							</axisFormat>
+						</valueAxisFormat>
+					</bar3DPlot>
+				</stackedBar3DChart>
 			</band>
 		</groupFooter>
 	</group>

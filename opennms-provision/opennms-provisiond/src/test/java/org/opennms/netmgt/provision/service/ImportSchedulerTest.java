@@ -51,6 +51,7 @@ import org.opennms.netmgt.dao.ProvisiondConfigurationDao;
 import org.opennms.netmgt.dao.db.JUnitTemporaryDatabase;
 import org.opennms.netmgt.dao.db.OpenNMSConfigurationExecutionListener;
 import org.opennms.netmgt.dao.db.TemporaryDatabaseExecutionListener;
+import org.opennms.test.mock.MockLogAppender;
 import org.quartz.Job;
 import org.quartz.JobDetail;
 import org.quartz.JobExecutionContext;
@@ -101,6 +102,11 @@ public class ImportSchedulerTest {
     
     @Autowired
     ProvisiondConfigurationDao m_dao;
+
+    @Before
+    public void setUp() {
+        MockLogAppender.setupLogging();
+    }
 
     @Before
     public void verifyWiring() {

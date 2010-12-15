@@ -30,6 +30,7 @@ import org.opennms.netmgt.provision.persist.foreignsource.ForeignSource;
 import org.opennms.netmgt.provision.persist.foreignsource.ForeignSourceCollection;
 import org.opennms.netmgt.provision.persist.foreignsource.PluginConfig;
 import org.opennms.test.FileAnticipator;
+import org.opennms.test.mock.MockLogAppender;
 import org.xml.sax.SAXException;
 
 public class PersistenceSerializationTest {
@@ -54,6 +55,8 @@ public class PersistenceSerializationTest {
 
     @Before
     public void setUp() throws Exception {
+        MockLogAppender.setupLogging();
+
         fa = new FileAnticipator();
 
         fsr = new MockForeignSourceRepository();

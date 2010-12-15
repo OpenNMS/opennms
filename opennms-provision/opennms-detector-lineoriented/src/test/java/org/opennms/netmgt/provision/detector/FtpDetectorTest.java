@@ -35,18 +35,18 @@ public class FtpDetectorTest implements ApplicationContextAware{
         MockLogAppender.setupLogging();
 
         m_detector = getDetector(FtpDetector.class);
-       m_detector.init();
+        m_detector.init();
        
-       m_server = new SimpleServer() {
+        m_server = new SimpleServer() {
            
-           public void onInit() {
-               setBanner("220 ProFTPD 1.3.0 Server (ProFTPD)");
-               addResponseHandler(matches("quit"), shutdownServer("221 Goodbye."));
-           }
-       };
+            public void onInit() {
+                setBanner("220 ProFTPD 1.3.0 Server (ProFTPD)");
+                addResponseHandler(matches("quit"), shutdownServer("221 Goodbye."));
+            }
+        };
        
-       m_server.init();
-       m_server.startServer();
+        m_server.init();
+        m_server.startServer();
        
     }
     

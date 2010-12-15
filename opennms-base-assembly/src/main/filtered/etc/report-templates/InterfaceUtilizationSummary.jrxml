@@ -1,5 +1,5 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<jasperReport xmlns="http://jasperreports.sourceforge.net/jasperreports" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://jasperreports.sourceforge.net/jasperreports http://jasperreports.sourceforge.net/xsd/jasperreport.xsd" name="95thPercentileTrafficRate" pageWidth="760" pageHeight="842" columnWidth="720" leftMargin="20" rightMargin="20" topMargin="20" bottomMargin="20">
+<jasperReport xmlns="http://jasperreports.sourceforge.net/jasperreports" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://jasperreports.sourceforge.net/jasperreports http://jasperreports.sourceforge.net/xsd/jasperreport.xsd" name="InterfaceUtilizationSummary" pageWidth="760" pageHeight="842" columnWidth="720" leftMargin="20" rightMargin="20" topMargin="20" bottomMargin="20">
 	<property name="ireport.zoom" value="1.0"/>
 	<property name="ireport.x" value="0"/>
 	<property name="ireport.y" value="0"/>
@@ -59,16 +59,16 @@
 		<defaultValueExpression><![CDATA["${install.dir}/etc/report-templates/assets/images/company-logo.png"]]></defaultValueExpression>
 	</parameter>
 	<parameter name="START_TIME" class="java.sql.Timestamp" isForPrompting="false">
-		<defaultValueExpression><![CDATA[new java.sql.Timestamp(new GregorianCalendar(new GregorianCalendar().get(Calendar.YEAR), new GregorianCalendar().get(Calendar.MONTH), 1).getTimeInMillis())]]></defaultValueExpression>
+		<defaultValueExpression><![CDATA[new java.sql.Timestamp(new java.util.Date().getTime() - (86400 * 7 * 1000))]]></defaultValueExpression>
 	</parameter>
 	<parameter name="TIME_RANGE" class="java.lang.String" isForPrompting="false">
-		<defaultValueExpression><![CDATA["1 Month"]]></defaultValueExpression>
+		<defaultValueExpression><![CDATA["7 Days"]]></defaultValueExpression>
 	</parameter>
 	<parameter name="TIME_RANGE_DESCRIPTION" class="java.lang.String" isForPrompting="false">
-		<defaultValueExpression><![CDATA["This Month"]]></defaultValueExpression>
+		<defaultValueExpression><![CDATA[$P{TIME_RANGE} + " from " + $P{START_TIME}]]></defaultValueExpression>
 	</parameter>
 	<parameter name="SURVEILLANCE_CATEGORY" class="java.lang.String" isForPrompting="false">
-		<defaultValueExpression><![CDATA["Mon%"]]></defaultValueExpression>
+		<defaultValueExpression><![CDATA["Routers"]]></defaultValueExpression>
 	</parameter>
 	<parameter name="RESPONSE_WARNING" class="java.lang.Double" isForPrompting="false">
 		<defaultValueExpression><![CDATA[new Double("50.0")]]></defaultValueExpression>
@@ -77,10 +77,10 @@
 		<defaultValueExpression><![CDATA[new Double("80.0")]]></defaultValueExpression>
 	</parameter>
 	<parameter name="startDate" class="java.util.Date" isForPrompting="false">
-		<defaultValueExpression><![CDATA[new java.util.Date(new GregorianCalendar(new GregorianCalendar().get(Calendar.YEAR), new GregorianCalendar().get(Calendar.MONTH), 1).getTimeInMillis())]]></defaultValueExpression>
+		<defaultValueExpression><![CDATA[new java.util.Date(new java.util.Date().getTime() - (86400 * 7 * 1000))]]></defaultValueExpression>
 	</parameter>
 	<parameter name="endDate" class="java.util.Date" isForPrompting="false">
-		<defaultValueExpression><![CDATA[new java.util.Date()]]></defaultValueExpression>
+		<defaultValueExpression><![CDATA[new Date()]]></defaultValueExpression>
 	</parameter>
 	<parameter name="rrdDir" class="java.lang.String" isForPrompting="false">
 		<parameterDescription><![CDATA[]]></parameterDescription>
@@ -95,7 +95,8 @@
 	snmpinterface.snmpifname,
 	snmpinterface.snmpifalias,
 	snmpinterface.snmpphysaddr,
-	snmpinterface.snmpifdescr
+	snmpinterface.snmpifdescr,
+	snmpinterface.snmpifspeed
 FROM
 	node
 RIGHT JOIN
@@ -125,6 +126,7 @@ ORDER BY
 	<field name="snmpifalias" class="java.lang.String"/>
 	<field name="snmpphysaddr" class="java.lang.String"/>
 	<field name="snmpifdescr" class="java.lang.String"/>
+	<field name="snmpifspeed" class="java.lang.Long"/>
 	<variable name="ICMP_Latency_AVG" class="java.lang.Double"/>
 	<variable name="ICMP_Latency_MIN" class="java.lang.Double"/>
 	<variable name="ICMP_Latency_MAX" class="java.lang.Double"/>
@@ -150,17 +152,17 @@ ORDER BY
 				<staticText>
 					<reportElement style="Sub-sub-header" x="290" y="28" width="140" height="20"/>
 					<textElement textAlignment="Right"/>
-					<text><![CDATA[MiByte Received]]></text>
+					<text><![CDATA[avg rate (in)	]]></text>
 				</staticText>
 				<staticText>
 					<reportElement style="Sub-sub-header" x="435" y="28" width="140" height="20"/>
 					<textElement textAlignment="Right"/>
-					<text><![CDATA[MiByte Transmitted]]></text>
+					<text><![CDATA[avg rate (out)]]></text>
 				</staticText>
 				<staticText>
 					<reportElement style="Sub-sub-header" x="580" y="28" width="140" height="20"/>
 					<textElement textAlignment="Right"/>
-					<text><![CDATA[Total MiByte In+Out]]></text>
+					<text><![CDATA[interface rate]]></text>
 				</staticText>
 			</band>
 		</groupHeader>
@@ -174,23 +176,26 @@ ORDER BY
 			<band height="38">
 				<subreport>
 					<reportElement x="0" y="0" width="720" height="37"/>
+					<subreportParameter name="rrdDir">
+						<subreportParameterExpression><![CDATA[$P{rrdDir}]]></subreportParameterExpression>
+					</subreportParameter>
+					<subreportParameter name="snmpifalias">
+						<subreportParameterExpression><![CDATA[$F{snmpifalias}]]></subreportParameterExpression>
+					</subreportParameter>
+					<subreportParameter name="startDate">
+						<subreportParameterExpression><![CDATA[$P{startDate}]]></subreportParameterExpression>
+					</subreportParameter>
+					<subreportParameter name="snmpifspeed">
+						<subreportParameterExpression><![CDATA[$F{snmpifspeed}]]></subreportParameterExpression>
+					</subreportParameter>
+					<subreportParameter name="snmpphysaddr">
+						<subreportParameterExpression><![CDATA[$F{snmpphysaddr}]]></subreportParameterExpression>
+					</subreportParameter>
 					<subreportParameter name="snmpifname">
 						<subreportParameterExpression><![CDATA[$F{snmpifname}]]></subreportParameterExpression>
 					</subreportParameter>
 					<subreportParameter name="snmpifdescr">
 						<subreportParameterExpression><![CDATA[$F{snmpifdescr}]]></subreportParameterExpression>
-					</subreportParameter>
-					<subreportParameter name="snmpifalias">
-						<subreportParameterExpression><![CDATA[$F{snmpifalias}]]></subreportParameterExpression>
-					</subreportParameter>
-					<subreportParameter name="snmpphysaddr">
-						<subreportParameterExpression><![CDATA[$F{snmpphysaddr}]]></subreportParameterExpression>
-					</subreportParameter>
-					<subreportParameter name="rrdDir">
-						<subreportParameterExpression><![CDATA[$P{rrdDir}]]></subreportParameterExpression>
-					</subreportParameter>
-					<subreportParameter name="startDate">
-						<subreportParameterExpression><![CDATA[$P{startDate}]]></subreportParameterExpression>
 					</subreportParameter>
 					<subreportParameter name="endDate">
 						<subreportParameterExpression><![CDATA[$P{endDate}]]></subreportParameterExpression>
@@ -220,7 +225,7 @@ ORDER BY
 				<textElement verticalAlignment="Middle">
 					<font size="20" isBold="true"/>
 				</textElement>
-				<text><![CDATA[95th Percentile Traffice Rate]]></text>
+				<text><![CDATA[Interface Utilization Summary]]></text>
 			</staticText>
 			<textField>
 				<reportElement style="Report_Subtitle" x="0" y="83" width="355" height="20"/>

@@ -31,5 +31,10 @@
     	<artifactId>opennms-mock-simpleserver</artifactId>
     	<scope>test</scope>
     </dependency>
+    <dependency>
+    	<groupId>org.opennms</groupId>
+    	<artifactId>opennms-test</artifactId>
+    	<scope>test</scope>
+    </dependency>
   </dependencies>
 </project>

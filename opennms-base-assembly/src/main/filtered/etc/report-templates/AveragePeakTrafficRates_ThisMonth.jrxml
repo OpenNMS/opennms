@@ -70,7 +70,7 @@
 		<defaultValueExpression><![CDATA["${install.dir}/etc/report-templates/opennms-logo.png"]]></defaultValueExpression>
 	</parameter>
 	<parameter name="SURVEILLANCE_CATEGORY" class="java.lang.String" isForPrompting="false">
-		<defaultValueExpression><![CDATA["Mon%"]]></defaultValueExpression>
+		<defaultValueExpression><![CDATA["Routers"]]></defaultValueExpression>
 	</parameter>
 	<parameter name="startDate" class="java.util.Date" isForPrompting="false">
 		<defaultValueExpression><![CDATA[new java.util.Date(new GregorianCalendar(new GregorianCalendar().get(Calendar.YEAR), new GregorianCalendar().get(Calendar.MONTH), 1).getTimeInMillis())]]></defaultValueExpression>

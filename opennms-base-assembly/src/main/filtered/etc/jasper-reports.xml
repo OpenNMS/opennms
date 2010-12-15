@@ -19,10 +19,10 @@
         <report id="Response-Time-Report_ThisMonth" template="ResponseTime_ThisMonth.jrxml" engine="jdbc" />
         <report id="Response-Time-Report_LastMonth" template="ResponseTime_LastMonth.jrxml" engine="jdbc" />
         <report id="Response-Time-Report_ThisYear" template="ResponseTime_ThisYear.jrxml" engine="jdbc" />
-        <report id="95th-Percentile-Traffic-Rate" template="95thPercentileTrafficRate.jrxml" engine="jdbc" />
-        <report id="95th-Percentile-Traffic-Rate_ThisMonth" template="95thPercentileTrafficRate_ThisMonth.jrxml" engine="jdbc" />
-        <report id="95th-Percentile-Traffic-Rate_LastMonth" template="95thPercentileTrafficRate_LastMonth.jrxml" engine="jdbc" />
-        <report id="95th-Percentile-Traffic-Rate_ThisYear" template="95thPercentileTrafficRate_ThisYear.jrxml" engine="jdbc" />
+        <report id="Interface-Utilization-Summary" template="InterfaceUtilizationSummary.jrxml" engine="jdbc" />
+        <report id="Interface-Utilization-Summary_ThisMonth" template="InterfaceUtilizationSummary_ThisMonth.jrxml" engine="jdbc" />
+        <report id="Interface-Utilization-Summary_LastMonth" template="InterfaceUtilizationSummary_LastMonth.jrxml" engine="jdbc" />
+        <report id="Interface-Utilization-Summary_ThisYear" template="InterfaceUtilizationSummary_ThisYear.jrxml" engine="jdbc" />
         <report id="Total-Bytes-Transferred-By-Interface" template="TotalBytesTransferredByInterface.jrxml" engine="jdbc" />
         <report id="Total-Bytes-Transferred-By-Interface_LastMonth" template="TotalBytesTransferredByInterface_LastMonth.jrxml" engine="jdbc" />
         <report id="Total-Bytes-Transferred-By-Interface_ThisMonth" template="TotalBytesTransferredByInterface_ThisMonth.jrxml" engine="jdbc" />

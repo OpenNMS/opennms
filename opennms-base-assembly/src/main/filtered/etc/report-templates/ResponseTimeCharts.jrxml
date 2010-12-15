@@ -91,7 +91,7 @@
 		<defaultValueExpression><![CDATA["${install.dir}/etc/report-templates/opennms-logo.png"]]></defaultValueExpression>
 	</parameter>
 	<parameter name="SURVEILLANCE_CATEGORY" class="java.lang.String">
-		<defaultValueExpression><![CDATA["Mon%"]]></defaultValueExpression>
+		<defaultValueExpression><![CDATA["Routers"]]></defaultValueExpression>
 	</parameter>
 	<parameter name="RESPONSE_WARNING" class="java.lang.Double">
 		<defaultValueExpression><![CDATA[new Double("50.0")]]></defaultValueExpression>
