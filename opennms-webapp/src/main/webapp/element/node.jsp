@@ -449,7 +449,7 @@
           <c:param name="node" value="${model.id}"/>
         </c:url>
         <li>
-          <a href="${ipRouteLink}">View Node Ip Route Info</a>
+          <a href="${ipRouteLink}">View Node IP Route Info</a>
         </li>
       </c:if>
      
