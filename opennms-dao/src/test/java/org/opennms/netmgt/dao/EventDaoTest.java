@@ -66,7 +66,7 @@ public class EventDaoTest extends AbstractTransactionalDaoTestCase {
 	    event.setServiceType(service.getServiceType());
         OnmsAlarm alarm = new OnmsAlarm();
 	    event.setAlarm(alarm);
-        event.setIpAddr(iface.getIpAddress());
+        event.setIpAddr(iface.getInetAddress());
         getEventDao().save(event);
        
         OnmsEvent newEvent = getEventDao().load(event.getId());

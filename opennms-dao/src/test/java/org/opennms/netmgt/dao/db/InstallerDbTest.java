@@ -1129,7 +1129,7 @@ public class InstallerDbTest extends TemporaryDatabaseTestCase {
                                                         "" } });
 
         executeSQL("INSERT INTO node (nodeId, nodeCreateTime) VALUES ( 1, now() )");
-        executeSQL("INSERT INTO snmpInterface (nodeId, ipAddr, snmpIfIndex) VALUES (1, '1.2.3.4', 1)");
+        executeSQL("INSERT INTO snmpInterface (nodeId, snmpIfIndex) VALUES (1, 1)");
 
         getInstallerDb().createTables();
 
@@ -1159,7 +1159,7 @@ public class InstallerDbTest extends TemporaryDatabaseTestCase {
                                                 "nodeId integer," } });
 
         executeSQL("INSERT INTO node (nodeId, nodeCreateTime) VALUES ( 1, now() )");
-        executeSQL("INSERT INTO snmpInterface (nodeId, ipAddr, snmpIfIndex) VALUES ( 1, '1.2.3.4', 1 )");
+        executeSQL("INSERT INTO snmpInterface (nodeId, snmpIfIndex) VALUES ( 1, 1 )");
 
         getInstallerDb().createTables();
 
@@ -1190,7 +1190,7 @@ public class InstallerDbTest extends TemporaryDatabaseTestCase {
                                                 "nodeId integer," } });
 
         executeSQL("INSERT INTO node (nodeId, nodeCreateTime) VALUES ( 1, now() )");
-        executeSQL("INSERT INTO snmpInterface (nodeId, ipAddr, snmpIfIndex) VALUES ( null, '1.2.3.4', 1 )");
+        executeSQL("INSERT INTO snmpInterface (nodeId, snmpIfIndex) VALUES ( null, 1 )");
 
         ThrowableAnticipator ta = new ThrowableAnticipator();
         ta.anticipate(new Exception(
@@ -1241,7 +1241,7 @@ public class InstallerDbTest extends TemporaryDatabaseTestCase {
                                                 "ipAddr text," } });
 
         executeSQL("INSERT INTO node (nodeId, nodeCreateTime) VALUES ( 1, now() )");
-        executeSQL("INSERT INTO snmpInterface (nodeId, ipAddr, snmpIfIndex) VALUES ( 1, '1.2.3.4', 1 )");
+        executeSQL("INSERT INTO snmpInterface (nodeId, snmpIfIndex) VALUES ( 1, 1 )");
         executeSQL("INSERT INTO ipInterface (nodeId, ipAddr, ifIndex) VALUES ( 1, null, 1 )");
 
         ThrowableAnticipator ta = new ThrowableAnticipator();
@@ -1393,7 +1393,7 @@ public class InstallerDbTest extends TemporaryDatabaseTestCase {
         addTableFromSQL("outages");
 
         executeSQL("INSERT INTO node (nodeId, nodeCreateTime) VALUES ( 1, now() )");
-        executeSQL("INSERT INTO snmpInterface (nodeId, ipAddr, snmpIfIndex) VALUES ( 1, '1.2.3.4', 1)");
+        executeSQL("INSERT INTO snmpInterface (nodeId, snmpIfIndex) VALUES ( 1, 1)");
         executeSQL("INSERT INTO ipInterface (nodeId, ipAddr, ifIndex) VALUES ( 1, '1.2.3.4', 1 )");
 
         //      executeSQL("INSERT INTO node (nodeId, nodeCreateTime) VALUES ( 2, now() )");
@@ -1565,7 +1565,7 @@ public class InstallerDbTest extends TemporaryDatabaseTestCase {
                                                         "" } }, false);
 
         executeSQL("INSERT INTO node (nodeId, nodeCreateTime) VALUES ( 1, now() )");
-        executeSQL("INSERT INTO snmpInterface (id, nodeId, ipAddr, snmpIfIndex) VALUES ( 1, 1, '1.2.3.4', 1 )");
+        executeSQL("INSERT INTO snmpInterface (id, nodeId, snmpIfIndex) VALUES ( 1, 1, 1 )");
         executeSQL("INSERT INTO ipInterface (id, nodeId, ipAddr, ifIndex, snmpInterfaceId ) VALUES ( 1, 1, '1.2.3.4', 1, 1 )");
         executeSQL("INSERT INTO service (serviceID, serviceName) VALUES ( 1, 'COFFEE-READY' )");
         executeSQL("INSERT INTO ifServices (nodeID, ipAddr, ifIndex, serviceID, ipInterfaceId) VALUES ( 1, '1.2.3.4', 1, 1, 1)");
@@ -1802,16 +1802,16 @@ public class InstallerDbTest extends TemporaryDatabaseTestCase {
                    + "VALUES ( 1, now() )");
 
         // One test with identical entries
-        executeSQL("INSERT INTO snmpInterface ( nodeID, ipAddr, snmpIfIndex ) "
-                   + "VALUES ( 1, '0.0.0.0', 1 )");
-        executeSQL("INSERT INTO snmpInterface ( nodeID, ipAddr, snmpIfIndex ) "
-                   + "VALUES ( 1, '0.0.0.0', 1 )");
+        executeSQL("INSERT INTO snmpInterface ( nodeID, snmpIfIndex ) "
+                   + "VALUES ( 1, 1 )");
+        executeSQL("INSERT INTO snmpInterface ( nodeID, snmpIfIndex ) "
+                   + "VALUES ( 1, 1 )");
         
         // One with different different IPs
-        executeSQL("INSERT INTO snmpInterface ( nodeID, ipAddr, snmpIfIndex ) "
-                   + "VALUES ( 1, '0.0.0.1', 1 )");
-        executeSQL("INSERT INTO snmpInterface ( nodeID, ipAddr, snmpIfIndex ) "
-                   + "VALUES ( 1, '0.0.0.2', 1 )");
+        executeSQL("INSERT INTO snmpInterface ( nodeID, snmpIfIndex ) "
+                   + "VALUES ( 1, 1 )");
+        executeSQL("INSERT INTO snmpInterface ( nodeID, snmpIfIndex ) "
+                   + "VALUES ( 1, 1 )");
         
         ThrowableAnticipator ta = new ThrowableAnticipator();
         ta.anticipate(new Exception("Unique index "
@@ -1854,14 +1854,14 @@ public class InstallerDbTest extends TemporaryDatabaseTestCase {
                    + "VALUES ( 2, now() )");
         executeSQL("INSERT INTO node ( nodeId, nodeCreateTime ) "
                    + "VALUES ( 3, now() )");
-        executeSQL("INSERT INTO snmpInterface ( nodeID, ipAddr, snmpIfIndex ) "
-                   + "VALUES ( 1, '0.0.0.0', 1 )");
-        executeSQL("INSERT INTO snmpInterface ( nodeID, ipAddr, snmpIfIndex ) "
-                   + "VALUES ( 1, '0.0.0.0', 2 )");
-        executeSQL("INSERT INTO snmpInterface ( nodeID, ipAddr, snmpIfIndex ) "
-                   + "VALUES ( 3, '1.1.1.1', 1 )");
-        executeSQL("INSERT INTO snmpInterface ( nodeID, ipAddr, snmpIfIndex ) "
-                   + "VALUES ( 3, '1.1.1.1', 2 )");
+        executeSQL("INSERT INTO snmpInterface ( nodeID, snmpIfIndex ) "
+                   + "VALUES ( 1, 1 )");
+        executeSQL("INSERT INTO snmpInterface ( nodeID, snmpIfIndex ) "
+                   + "VALUES ( 1, 2 )");
+        executeSQL("INSERT INTO snmpInterface ( nodeID, snmpIfIndex ) "
+                   + "VALUES ( 3, 1 )");
+        executeSQL("INSERT INTO snmpInterface ( nodeID, snmpIfIndex ) "
+                   + "VALUES ( 3, 2 )");
         
         // These aren't dups because their ipaddr = 0.0.0.0
         executeSQL("INSERT INTO ipInterface ( nodeID, ipAddr, ifIndex ) "
@@ -1927,14 +1927,14 @@ public class InstallerDbTest extends TemporaryDatabaseTestCase {
                    + "VALUES ( 2, now() )");
         executeSQL("INSERT INTO node ( nodeId, nodeCreateTime ) "
                    + "VALUES ( 3, now() )");
-        executeSQL("INSERT INTO snmpInterface ( nodeID, ipAddr, snmpIfIndex ) "
-                   + "VALUES ( 1, '0.0.0.0', 1 )");
-        executeSQL("INSERT INTO snmpInterface ( nodeID, ipAddr, snmpIfIndex ) "
-                   + "VALUES ( 1, '0.0.0.0', 2 )");
-        executeSQL("INSERT INTO snmpInterface ( nodeID, ipAddr, snmpIfIndex ) "
-                   + "VALUES ( 3, '1.1.1.1', 1 )");
-        executeSQL("INSERT INTO snmpInterface ( nodeID, ipAddr, snmpIfIndex ) "
-                   + "VALUES ( 3, '1.1.1.1', 2 )");
+        executeSQL("INSERT INTO snmpInterface ( nodeID, snmpIfIndex ) "
+                   + "VALUES ( 1, 1 )");
+        executeSQL("INSERT INTO snmpInterface ( nodeID, snmpIfIndex ) "
+                   + "VALUES ( 1, 2 )");
+        executeSQL("INSERT INTO snmpInterface ( nodeID, snmpIfIndex ) "
+                   + "VALUES ( 3, 1 )");
+        executeSQL("INSERT INTO snmpInterface ( nodeID, snmpIfIndex ) "
+                   + "VALUES ( 3, 2 )");
         
         // These aren't dups because their ipaddr = 0.0.0.0
         executeSQL("INSERT INTO ipInterface ( nodeID, ipAddr, ifIndex ) "
@@ -2029,8 +2029,8 @@ public class InstallerDbTest extends TemporaryDatabaseTestCase {
 
         executeSQL("INSERT INTO node ( nodeId, nodeCreateTime ) "
                    + "VALUES ( 1, now() )");
-        executeSQL("INSERT INTO snmpInterface ( nodeID, ipAddr, snmpIfIndex ) "
-                   + "VALUES ( 1, '0.0.0.0', 1 )");
+        executeSQL("INSERT INTO snmpInterface ( nodeID, snmpIfIndex ) "
+                   + "VALUES ( 1, 1 )");
         
         int id = jdbcTemplate.queryForInt("SELECT id from snmpInterface");
         

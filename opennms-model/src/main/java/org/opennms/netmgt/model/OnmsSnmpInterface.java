@@ -57,6 +57,7 @@ import javax.xml.bind.annotation.XmlAttribute;
 import javax.xml.bind.annotation.XmlElement;
 import javax.xml.bind.annotation.XmlIDREF;
 import javax.xml.bind.annotation.XmlRootElement;
+import javax.xml.bind.annotation.XmlTransient;
 
 import org.opennms.core.utils.AlphaNumeric;
 import org.opennms.core.utils.ThreadCategory;
@@ -79,9 +80,6 @@ public class OnmsSnmpInterface extends OnmsEntity implements Serializable {
     private static final long serialVersionUID = -5396189389666285305L;
 
     private Integer m_id;
-
-    /** identifier field */
-    private String m_ipAddr;
 
     /** identifier field */
     private String m_netMask;
@@ -127,24 +125,19 @@ public class OnmsSnmpInterface extends OnmsEntity implements Serializable {
 
     /**
      * <p>Constructor for OnmsSnmpInterface.</p>
-     *
-     * @param ipAddr a {@link java.lang.String} object.
-     * @param ifIndex a int.
      * @param node a {@link org.opennms.netmgt.model.OnmsNode} object.
+     * @param ifIndex a int.
      */
-    public OnmsSnmpInterface(String ipAddr, int ifIndex, OnmsNode node) {
-        this(ipAddr, new Integer(ifIndex), node);
+    public OnmsSnmpInterface(OnmsNode node, int ifIndex) {
+        this(node, new Integer(ifIndex));
     }
 
     /**
      * <p>Constructor for OnmsSnmpInterface.</p>
-     *
-     * @param ipaddr a {@link java.lang.String} object.
-     * @param ifIndex a {@link java.lang.Integer} object.
      * @param node a {@link org.opennms.netmgt.model.OnmsNode} object.
+     * @param ifIndex a {@link java.lang.Integer} object.
      */
-    public OnmsSnmpInterface(String ipaddr, Integer ifIndex, OnmsNode node) {
-        m_ipAddr = ipaddr == null ? "0.0.0.0" : ipaddr;
+    public OnmsSnmpInterface(OnmsNode node, Integer ifIndex) {
         m_ifIndex = ifIndex;
         m_node = node;
         if (node != null) {
@@ -180,33 +173,10 @@ public class OnmsSnmpInterface extends OnmsEntity implements Serializable {
         m_id = id;
     }
 
-    /*
-     * TODO this doesn't belong on SnmpInterface
-     */
-    /**
-     * <p>getIpAddress</p>
-     *
-     * @return a {@link java.lang.String} object.
-     */
-    @Column(name = "ipAddr", length = 16)
-    public String getIpAddress() {
-        return m_ipAddr;
-    }
-
-    /**
-     * <p>setIpAddress</p>
-     *
-     * @param ipaddr a {@link java.lang.String} object.
-     */
-    public void setIpAddress(String ipaddr) {
-        m_ipAddr = ipaddr;
-    }
-
-    /*
-     * TODO this doesn't belong on SnmpInterface
-     */
     /**
      * <p>getNetMask</p>
+     * 
+     * @deprecated This doesn't belong on SnmpInterface
      *
      * @return a {@link java.lang.String} object.
      */
@@ -217,6 +187,8 @@ public class OnmsSnmpInterface extends OnmsEntity implements Serializable {
 
     /**
      * <p>setNetMask</p>
+     * 
+     * @deprecated This doesn't belong on SnmpInterface
      *
      * @param snmpipadentnetmask a {@link java.lang.String} object.
      */
@@ -560,7 +532,6 @@ public class OnmsSnmpInterface extends OnmsEntity implements Serializable {
      */
     public String toString() {
         return new ToStringCreator(this)
-            .append("ipaddr", getIpAddress())
             .append("snmpipadentnetmask", getNetMask())
             .append("snmpphysaddr", getPhysAddr())
             .append("snmpifindex", getIfIndex())
@@ -614,6 +585,17 @@ public class OnmsSnmpInterface extends OnmsEntity implements Serializable {
     // }
     // return ifsForSnmpIface;
     // }
+
+    /**
+     * <p>getPrimaryIpInterface</p>
+     *
+     * @return an {@link OnmsIpInterface} object.
+     */
+    @Transient
+    @XmlTransient
+    public OnmsIpInterface getPrimaryIpInterface() {
+        return getNode().getPrimaryInterface();
+    }
 
     /**
      * <p>log</p>
@@ -739,10 +721,6 @@ public class OnmsSnmpInterface extends OnmsEntity implements Serializable {
         
         if (hasNewValue(scannedSnmpIface.getIfType(), getIfType())) {
             setIfType(scannedSnmpIface.getIfType());
-        }
-        
-        if (hasNewValue(scannedSnmpIface.getIpAddress(), getIpAddress())) {
-            setIpAddress(scannedSnmpIface.getIpAddress());
         }
         
         if (hasNewValue(scannedSnmpIface.getNetMask(), getNetMask())) {

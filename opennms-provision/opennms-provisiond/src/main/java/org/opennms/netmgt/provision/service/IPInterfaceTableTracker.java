@@ -112,7 +112,7 @@ public class IPInterfaceTableTracker extends TableTracker {
             String netMask = getNetMask();
             Integer ifIndex = getIfIndex();
             
-            OnmsSnmpInterface snmpIface = new OnmsSnmpInterface(ipAddr, ifIndex, null);
+            OnmsSnmpInterface snmpIface = new OnmsSnmpInterface(null, ifIndex);
             snmpIface.setNetMask(netMask);
             snmpIface.setCollectionEnabled(true);
             

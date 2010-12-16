@@ -204,12 +204,15 @@ public class InterfaceSnmpResourceType implements OnmsResourceType {
                 if (snmpInterface.getIfAlias() != null) {
                     parenString.append(snmpInterface.getIfAlias());
                 }
-                if ((snmpInterface.getIpAddress() != null) && !snmpInterface.getIpAddress().equals("0.0.0.0")) {
-                    String ipaddr = snmpInterface.getIpAddress();
-                    if (parenString.length() > 0) {
-                        parenString.append(", ");
+                // Append all of the IP addresses on this ifindex
+                for (OnmsIpInterface ipif : snmpInterface.getIpInterfaces()) {
+                    String ipaddr = ipif.getIpAddress();
+                    if (!"0.0.0.0".equals(ipaddr)) {
+                        if (parenString.length() > 0) {
+                            parenString.append(", ");
+                        }
+                        parenString.append(ipaddr);
                     }
-                    parenString.append(ipaddr);
                 }
                 if ((snmpInterface.getIfSpeed() != null) && (snmpInterface.getIfSpeed() != 0)) {
                     ifSpeed = snmpInterface.getIfSpeed();

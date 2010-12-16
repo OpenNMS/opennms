@@ -32,6 +32,7 @@
 package org.opennms.netmgt.model;
 
 import java.io.Serializable;
+import java.net.InetAddress;
 import java.util.Calendar;
 import java.util.Date;
 import java.util.HashSet;
@@ -54,8 +55,11 @@ import javax.xml.bind.annotation.XmlAttribute;
 import javax.xml.bind.annotation.XmlElement;
 import javax.xml.bind.annotation.XmlRootElement;
 import javax.xml.bind.annotation.XmlTransient;
+import javax.xml.bind.annotation.adapters.XmlJavaTypeAdapter;
 
 import org.hibernate.annotations.Filter;
+import org.hibernate.annotations.Type;
+import org.opennms.core.xml.bind.InetAddressXmlAdapter;
 import org.springframework.core.style.ToStringCreator;
 
 
@@ -109,7 +113,7 @@ public class OnmsNotification implements Acknowledgeable, Serializable {
     /** persistent field */
     private Set<OnmsUserNotification> m_usersNotified = new HashSet<OnmsUserNotification>();
 
-	private String m_ipAddress;
+	private InetAddress m_ipAddress;
     
     /**
      * persistent field representing the name of the configured notification from
@@ -135,7 +139,7 @@ public class OnmsNotification implements Acknowledgeable, Serializable {
      * @param usersNotified a {@link java.util.Set} object.
      * @param notifConfigName a {@link java.lang.String} object.
      */
-    public OnmsNotification(Integer notifyId, String textMsg, String subject, String numericMsg, Date pageTime, Date respondTime, String answeredBy, String ipAddress, OnmsServiceType serviceType, String queueId, OnmsEvent event, OnmsNode node, Set<OnmsUserNotification> usersNotified, String notifConfigName) {
+    public OnmsNotification(Integer notifyId, String textMsg, String subject, String numericMsg, Date pageTime, Date respondTime, String answeredBy, InetAddress ipAddress, OnmsServiceType serviceType, String queueId, OnmsEvent event, OnmsNode node, Set<OnmsUserNotification> usersNotified, String notifConfigName) {
         m_notifyId = notifyId;
         m_textMsg = textMsg;
         m_subject = subject;
@@ -326,9 +330,11 @@ public class OnmsNotification implements Acknowledgeable, Serializable {
      *
      * @return a {@link java.lang.String} object.
      */
+    @Column(name="interfaceId")
     @XmlElement(name="ipAddress")
-    @Column(name="interfaceId", length=16)
-    public String getIpAddress() {
+    @Type(type="org.opennms.netmgt.model.InetAddressUserType")
+    @XmlJavaTypeAdapter(InetAddressXmlAdapter.class)
+    public InetAddress getIpAddress() {
     	return m_ipAddress;
     }
     
@@ -337,7 +343,7 @@ public class OnmsNotification implements Acknowledgeable, Serializable {
      *
      * @param ipAddress a {@link java.lang.String} object.
      */
-    public void setIpAddress(String ipAddress) {
+    public void setIpAddress(InetAddress ipAddress) {
     	m_ipAddress = ipAddress;
     }
 

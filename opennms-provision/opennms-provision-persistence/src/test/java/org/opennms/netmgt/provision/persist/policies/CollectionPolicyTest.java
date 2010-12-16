@@ -17,8 +17,10 @@ import org.opennms.netmgt.dao.SnmpInterfaceDao;
 import org.opennms.netmgt.dao.db.JUnitTemporaryDatabase;
 import org.opennms.netmgt.dao.db.OpenNMSConfigurationExecutionListener;
 import org.opennms.netmgt.dao.db.TemporaryDatabaseExecutionListener;
+import org.opennms.netmgt.model.OnmsIpInterface;
 import org.opennms.netmgt.model.OnmsNode;
 import org.opennms.netmgt.model.OnmsSnmpInterface;
+import org.opennms.netmgt.provision.BasePolicy;
 import org.opennms.test.mock.MockLogAppender;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.test.context.ContextConfiguration;
@@ -70,12 +72,12 @@ public class CollectionPolicyTest {
         MatchingSnmpInterfacePolicy p = createPolicy();
         p.setIfDescr("~^ATM.*");
 
-        matchPolicy(p, "192.168.1.1");
+        matchPolicy(m_interfaces, p, "192.168.1.1");
     }
 
     private MatchingSnmpInterfacePolicy createPolicy() {
         MatchingSnmpInterfacePolicy policy = new MatchingSnmpInterfacePolicy();
-        policy.setMatchBehavior("NO_PARAMETERS");
+        policy.setMatchBehavior(BasePolicy.Match.NO_PARAMETERS.toString());
         return policy;
     }
 
@@ -85,7 +87,7 @@ public class CollectionPolicyTest {
         MatchingSnmpInterfacePolicy p = createPolicy();
         p.setIfName("eth0");
 
-        matchPolicy(p, "192.168.1.2");
+        matchPolicy(m_interfaces, p, "192.168.1.2");
     }
 
     @Test
@@ -94,7 +96,7 @@ public class CollectionPolicyTest {
         MatchingSnmpInterfacePolicy p = createPolicy();
         p.setIfType("6");
 
-        matchPolicy(p, "192.168.1.2");
+        matchPolicy(m_interfaces, p, "192.168.1.2");
     }
     
     @Test
@@ -128,19 +130,21 @@ public class CollectionPolicyTest {
         
     }
 
-    private void matchPolicy(MatchingSnmpInterfacePolicy p, String matchingIp) {
+    private static void matchPolicy(List<OnmsSnmpInterface> interfaces, MatchingSnmpInterfacePolicy p, String matchingIp) {
         OnmsSnmpInterface o;
         List<OnmsSnmpInterface> populatedInterfaces = new ArrayList<OnmsSnmpInterface>();
         List<OnmsSnmpInterface> matchedInterfaces = new ArrayList<OnmsSnmpInterface>();
         
-        for (OnmsSnmpInterface iface : m_interfaces) {
+        for (OnmsSnmpInterface iface : interfaces) {
             System.err.println(iface);
             o = p.apply(iface);
             if (o != null) {
                 matchedInterfaces.add(o);
             }
-            if (iface.getIpAddress().equalsIgnoreCase(matchingIp)) {
-                populatedInterfaces.add(iface);
+            for (OnmsIpInterface ipif : iface.getIpInterfaces()) {
+                if (ipif.getIpAddress().equalsIgnoreCase(matchingIp)) {
+                    populatedInterfaces.add(iface);
+                }
             }
         }
         

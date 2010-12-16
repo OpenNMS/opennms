@@ -17,6 +17,7 @@ import org.exolab.castor.xml.ValidationException;
 import org.hibernate.ObjectNotFoundException;
 import org.hibernate.criterion.Restrictions;
 import org.opennms.core.utils.BeanUtils;
+import org.opennms.core.utils.InetAddressUtils;
 import org.opennms.core.utils.ThreadCategory;
 import org.opennms.netmgt.dao.EventDao;
 import org.opennms.netmgt.model.OnmsAlarm;
@@ -265,8 +266,7 @@ class InsSession extends InsAbstractSession {
         // interface
         if (ev.getIpAddr() != null) {
             log.debug("Setting Event Interface/ipaddress: " + ev.getIpAddr());
-            e.setInterface(ev
-                           .getIpAddr());
+            e.setInterface(InetAddressUtils.toIpAddrString(ev.getIpAddr()));
         } else {
             log.info("No Event ip address found.");
         }

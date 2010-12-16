@@ -67,16 +67,13 @@ import org.opennms.netmgt.config.DataSourceFactory;
  *
  * @author <a href="mailto:weave@oculan.com">Weave </a>
  * @author <a href="http://www.opennms.org/">OpenNMS </a>
- * @author <a href="mailto:weave@oculan.com">Weave </a>
- * @author <a href="http://www.opennms.org/">OpenNMS </a>
- * @version $Id: $
  */
 public final class DbSnmpInterfaceEntry {
     /**
      * The SQL statement used to read a node from the database. This record is
      * keyed by the node identifier and the ifIndex.
      */
-    private static final String SQL_LOAD_REC = "SELECT ipAddr, "
+    private static final String SQL_LOAD_REC = "SELECT "
         + "snmpIpAdEntNetMask, snmpPhysAddr, snmpIfDescr, snmpIfType, "
         + "snmpIfName, snmpIfSpeed, snmpIfAdminStatus, snmpIfOperStatus, "
         + "snmpIfAlias, snmpCollect FROM snmpInterface WHERE nodeID = ? AND snmpIfIndex = ?";
@@ -89,12 +86,7 @@ public final class DbSnmpInterfaceEntry {
     /**
      * The node identifier
      */
-    private int m_nodeId;
-
-    /**
-     * The IP address.
-     */
-    private InetAddress m_ipAddr;
+    private long m_nodeId;
 
     /**
      * The SNMP ifIndex
@@ -128,7 +120,7 @@ public final class DbSnmpInterfaceEntry {
     private int m_changed;
 
     // Mask fields
-    private static final int CHANGED_IFADDRESS = 1 << 0;
+    // private static final int CHANGED_IFADDRESS = 1 << 0;
 
     private static final int CHANGED_NETMASK = 1 << 1;
 
@@ -152,7 +144,7 @@ public final class DbSnmpInterfaceEntry {
 
     /**
      * Inserts the new interface into the ipInterface table of the OpenNMS
-     * databasee.
+     * database.
      * 
      * @param c
      *            The connection to the database.
@@ -168,8 +160,8 @@ public final class DbSnmpInterfaceEntry {
         ThreadCategory log = ThreadCategory.getInstance(getClass());
 
         // first extract the next node identifier
-        StringBuffer names = new StringBuffer("INSERT INTO snmpInterface (nodeID,snmpIfIndex,ipaddr");
-        StringBuffer values = new StringBuffer("?,?,?");
+        StringBuffer names = new StringBuffer("INSERT INTO snmpInterface (nodeID,snmpIfIndex");
+        StringBuffer values = new StringBuffer("?,?");
 
         if ((m_changed & CHANGED_NETMASK) == CHANGED_NETMASK) {
             values.append(",?");
@@ -235,14 +227,8 @@ public final class DbSnmpInterfaceEntry {
             names = null;
 
             int ndx = 1;
-            stmt.setInt(ndx++, m_nodeId);
+            stmt.setLong(ndx++, m_nodeId);
             stmt.setInt(ndx++, m_ifIndex);
-
-            if ((m_changed & CHANGED_IFADDRESS) == CHANGED_IFADDRESS) {
-                stmt.setString(ndx++, m_ipAddr.getHostAddress());
-            } else {
-                stmt.setString(ndx++, "0.0.0.0"); 
-            }
 
             if ((m_changed & CHANGED_NETMASK) == CHANGED_NETMASK) {
                 stmt.setString(ndx++, m_netmask.getHostAddress());
@@ -316,11 +302,6 @@ public final class DbSnmpInterfaceEntry {
 
         char comma = ' ';
 
-        if ((m_changed & CHANGED_IFADDRESS) == CHANGED_IFADDRESS) {
-            sqlText.append(comma).append("ipAddr = ?");
-            comma = ',';
-        }
-
         if ((m_changed & CHANGED_NETMASK) == CHANGED_NETMASK) {
             sqlText.append(comma).append("snmpIpAdEntNetMask = ?");
             comma = ',';
@@ -386,15 +367,6 @@ public final class DbSnmpInterfaceEntry {
             sqlText = null;
 
             int ndx = 1;
-
-            if ((m_changed & CHANGED_IFADDRESS) == CHANGED_IFADDRESS) {
-                // FIXME: What's this about? shouldn't it be m_ipAddr == null ?
-                if (m_ifIndex == -1) {
-                    stmt.setNull(ndx++, Types.VARCHAR);
-                } else {
-                    stmt.setString(ndx++, m_ipAddr.getHostAddress());
-                }
-            }
 
             if ((m_changed & CHANGED_NETMASK) == CHANGED_NETMASK) {
                 if (m_netmask == null) {
@@ -476,7 +448,7 @@ public final class DbSnmpInterfaceEntry {
                 }
             }
 
-            stmt.setInt(ndx++, m_nodeId);
+            stmt.setLong(ndx++, m_nodeId);
 
             if (m_ifIndex == -1) {
                 stmt.setNull(ndx++, Types.INTEGER);
@@ -522,7 +494,7 @@ public final class DbSnmpInterfaceEntry {
         try {
             stmt = c.prepareStatement(SQL_LOAD_REC);
             d.watch(stmt);
-            stmt.setInt(1, m_nodeId);
+            stmt.setLong(1, m_nodeId);
             stmt.setInt(2, m_ifIndex);
 
             // Run the query
@@ -535,27 +507,15 @@ public final class DbSnmpInterfaceEntry {
             // extract the values
             int ndx = 1;
 
-            // get the IP address
-            String str = rset.getString(ndx++);
-            if (str != null && !rset.wasNull()) {
-                try {
-                    m_ipAddr = InetAddress.getByName(str);
-                } catch (UnknownHostException e) {
-                    log.warn("DbSnmpInterface.load: the ipAddr field was "
-                             + "malformed: nodeid = " + m_nodeId + ", ifIndex = " 
-                             + m_ifIndex, e);
-                }
-            }
-
             // get the netmask
-            str = rset.getString(ndx++);
+            String str = rset.getString(ndx++);
             if (str != null && !rset.wasNull()) {
                 try {
                     m_netmask = InetAddress.getByName(str);
                 } catch (UnknownHostException e) {
                     log.warn("DbSnmpInterface.load: the netmask field was "
-                             + "malformed: nodeid = " + m_nodeId + ", ipAddr = "
-                             + m_ipAddr.getHostAddress(), e);
+                             + "malformed: nodeid = " + m_nodeId + ", netmask = "
+                             + str, e);
                 }
             }
 
@@ -633,20 +593,20 @@ public final class DbSnmpInterfaceEntry {
     /**
      * Constructs a new interface.
      * 
-     * @param nid
+     * @param nodeId
      *            The node identifier.
      * @param ifIndex
      *            The interface index to load
      * 
      */
-    private DbSnmpInterfaceEntry(int nid, int ifIndex) {
-        this(nid, ifIndex, true);
+    private DbSnmpInterfaceEntry(long nodeId, int ifIndex) {
+        this(nodeId, ifIndex, true);
     }
 
     /**
      * Constructs a new interface.
      * 
-     * @param nid
+     * @param nodeId
      *            The node identifier.
      * @param ifIndex
      *            The interface index to load
@@ -654,10 +614,9 @@ public final class DbSnmpInterfaceEntry {
      *            True if the interface already exists.
      * 
      */
-    private DbSnmpInterfaceEntry(int nid, int ifIndex, boolean exists) {
+    private DbSnmpInterfaceEntry(long nodeId, int ifIndex, boolean exists) {
         m_fromDb = exists;
-        m_nodeId = nid;
-        m_ipAddr = null;
+        m_nodeId = nodeId;
         m_ifIndex = ifIndex;
         m_netmask = null;
         m_physAddr = null;
@@ -678,38 +637,8 @@ public final class DbSnmpInterfaceEntry {
      * returned.
      * 
      */
-    int getNodeId() {
+    long getNodeId() {
         return m_nodeId;
-    }
-
-    /**
-     * Returns the IP address for the entry.
-     * 
-     */
-    InetAddress getIfAddress() {
-        return m_ipAddr;
-    }
-
-    void setIfAddress(InetAddress addr) {
-        m_ipAddr = addr;
-        m_changed |= CHANGED_IFADDRESS;
-    }
-
-    boolean hasIfAddressChanged() {
-        if ((m_changed & CHANGED_IFADDRESS) == CHANGED_IFADDRESS) {
-            return true;
-        } else {
-            return false;
-        }
-    }
-
-    boolean updateIfAddress(InetAddress addr) {
-        if (addr == null || addr.equals(m_ipAddr)) {
-            return false;
-        } else {
-            setIfAddress(addr);
-            return true;
-        }
     }
 
     /**
@@ -935,7 +864,7 @@ public final class DbSnmpInterfaceEntry {
         }
     }
     
-    String getAlias() {
+    public String getAlias() {
         return m_ifAlias;
     }
 
@@ -1052,7 +981,7 @@ public final class DbSnmpInterfaceEntry {
      * <em>nodeID</em> and <em>ifindex</em>. If the record cannot be found
      * then a null reference is returned.
      * 
-     * @param nid
+     * @param nodeId
      *            The node id key
      * @param ifIndex
      *            the interface index.
@@ -1060,11 +989,11 @@ public final class DbSnmpInterfaceEntry {
      * @return The loaded entry or null if one could not be found.
      * 
      */
-    static DbSnmpInterfaceEntry get(int nid, int ifIndex) throws SQLException {
+    public static DbSnmpInterfaceEntry get(long nodeId, int ifIndex) throws SQLException {
         Connection db = null;
         try {
             db = DataSourceFactory.getInstance().getConnection();
-            return get(db, nid, ifIndex);
+            return get(db, nodeId, ifIndex);
         } finally {
             try {
                 if (db != null) {
@@ -1083,7 +1012,7 @@ public final class DbSnmpInterfaceEntry {
      * 
      * @param db
      *            The database connection used to load the entry.
-     * @param nid
+     * @param nodeId
      *            The node id key
      * @param ifIndex
      *            The interface index.
@@ -1091,9 +1020,9 @@ public final class DbSnmpInterfaceEntry {
      * @return The loaded entry or null if one could not be found.
      * 
      */
-    static DbSnmpInterfaceEntry get(Connection db, int nid, int ifIndex)
+    public static DbSnmpInterfaceEntry get(Connection db, long nodeId, int ifIndex)
     throws SQLException {
-        DbSnmpInterfaceEntry entry = new DbSnmpInterfaceEntry(nid, ifIndex);
+        DbSnmpInterfaceEntry entry = new DbSnmpInterfaceEntry(nodeId, ifIndex);
         if (!entry.load(db)) {
             entry = null;
         }
@@ -1112,7 +1041,6 @@ public final class DbSnmpInterfaceEntry {
 
         buf.append("from database   = ").append(m_fromDb).append(sep);
         buf.append("node identifier = ").append(m_nodeId).append(sep);
-        buf.append("IP Address      = ").append(m_ipAddr.getHostAddress()).append(sep);
         buf.append("IP Netmask      = ").append(m_netmask.getHostAddress()).append(sep);
         buf.append("MAC             = ").append(m_physAddr).append(sep);
         buf.append("ifIndex         = ").append(m_ifIndex).append(sep);

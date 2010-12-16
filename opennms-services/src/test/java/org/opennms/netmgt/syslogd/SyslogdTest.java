@@ -225,25 +225,25 @@ public class SyslogdTest extends OpenNMSTestCase {
     
     public void testSubstrUEIRewrite() throws Exception {
         doMessageTest("2007-01-01 localhost A CRISCO message",
-                      myLocalHost(), "uei.opennms.org/tests/syslogd/substrUeiRewriteTest",
+                      myLocalHost().getHostAddress(), "uei.opennms.org/tests/syslogd/substrUeiRewriteTest",
                       "A CRISCO message");
     }
     public void testRegexUEIRewrite() throws Exception {
 //        MockLogAppender.setupLogging(true, "TRACE");
         doMessageTest("2007-01-01 localhost foo: 100 out of 666 tests failed for bar",
-                      myLocalHost(), "uei.opennms.org/tests/syslogd/regexUeiRewriteTest",
+                      myLocalHost().getHostAddress(), "uei.opennms.org/tests/syslogd/regexUeiRewriteTest",
                       "100 out of 666 tests failed for bar");
     }
     
     public void testSubstrTESTTestThatRemovesATESTString() throws Exception {
         doMessageTest("2007-01-01 localhost A CRISCO message that is also a TESTHIDING message -- hide me!",
-                      myLocalHost(), "uei.opennms.org/tests/syslogd/substrUeiRewriteTest",
+                      myLocalHost().getHostAddress(), "uei.opennms.org/tests/syslogd/substrUeiRewriteTest",
                       ConvertToEvent.HIDDEN_MESSAGE);
     }
     
     public void testRegexTESTTestThatRemovesADoubleSecretString() throws Exception {
         doMessageTest("2007-01-01 localhost foo: 100 out of 666 tests failed for doubleSecret",
-                      myLocalHost(), "uei.opennms.org/tests/syslogd/regexUeiRewriteTest",
+                      myLocalHost().getHostAddress(), "uei.opennms.org/tests/syslogd/regexUeiRewriteTest",
                       ConvertToEvent.HIDDEN_MESSAGE);
     }
     
@@ -291,13 +291,13 @@ public class SyslogdTest extends OpenNMSTestCase {
         expectedParms.put("group3", testGroups[2]);
         expectedParms.put("replacementItem", testGroups[2]);
         
-        doMessageTest(testPDU, myLocalHost(), expectedUEI, expectedLogMsg, expectedParms);
+        doMessageTest(testPDU, myLocalHost().getHostAddress(), expectedUEI, expectedLogMsg, expectedParms);
     }
 
     public void testRegexUEIWithOnlyUserSpecifiedParameterAssignments() throws InterruptedException {
         startSyslogdGracefully();
         
-        String localhost = myLocalHost();
+        String localhost = myLocalHost().getHostAddress();
         final String testPDU = "2007-01-01 127.0.0.1 tea: Secretly replaced cmiskell's tea with 666 ferrets";
         final String testUEI = "uei.opennms.org/tests/syslogd/regexParameterAssignmentTest/userSpecifiedOnly";
         final String testMsg = "Secretly replaced cmiskell's tea with 666 ferrets";

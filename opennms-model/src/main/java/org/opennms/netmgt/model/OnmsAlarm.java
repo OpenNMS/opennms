@@ -38,6 +38,7 @@
 package org.opennms.netmgt.model;
 
 import java.io.Serializable;
+import java.net.InetAddress;
 import java.util.Calendar;
 import java.util.Date;
 import java.util.Map;
@@ -59,10 +60,13 @@ import javax.xml.bind.annotation.XmlAttribute;
 import javax.xml.bind.annotation.XmlElement;
 import javax.xml.bind.annotation.XmlRootElement;
 import javax.xml.bind.annotation.XmlTransient;
+import javax.xml.bind.annotation.adapters.XmlJavaTypeAdapter;
 
 import org.hibernate.annotations.CollectionOfElements;
 import org.hibernate.annotations.Filter;
 import org.hibernate.annotations.MapKey;
+import org.hibernate.annotations.Type;
+import org.opennms.core.xml.bind.InetAddressXmlAdapter;
 import org.springframework.core.style.ToStringCreator;
 
 /**
@@ -97,7 +101,7 @@ public class OnmsAlarm implements Acknowledgeable, Serializable {
     private OnmsNode m_node;
 
     /** nullable persistent field */
-    private String m_ipAddr;
+    private InetAddress m_ipAddr;
 
     /** nullable persistent field */
     private OnmsServiceType m_serviceType;
@@ -308,9 +312,11 @@ public class OnmsAlarm implements Acknowledgeable, Serializable {
      *
      * @return a {@link java.lang.String} object.
      */
-    @Column(name="ipaddr", length=16)
+    @Column(name="ipAddr")
     @XmlElement(name="ipAddress")
-    public String getIpAddr() {
+    @Type(type="org.opennms.netmgt.model.InetAddressUserType")
+    @XmlJavaTypeAdapter(InetAddressXmlAdapter.class)
+    public InetAddress getIpAddr() {
         return this.m_ipAddr;
     }
 
@@ -319,7 +325,7 @@ public class OnmsAlarm implements Acknowledgeable, Serializable {
      *
      * @param ipaddr a {@link java.lang.String} object.
      */
-    public void setIpAddr(String ipaddr) {
+    public void setIpAddr(InetAddress ipaddr) {
         this.m_ipAddr = ipaddr;
     }
 

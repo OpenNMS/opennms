@@ -208,7 +208,8 @@ public final class BroadcastEventProcessor implements EventListener {
      * available for processing.
      */
     public void onEvent(Event event) {
-        
+        if (event == null) return;
+
         if (isReloadConfigEvent(event)) {
             log().info("onEvent: handling reload configuration event...");
             EventBuilder ebldr = null;
@@ -230,8 +231,6 @@ public final class BroadcastEventProcessor implements EventListener {
             log().info("onEvent: reload configuration event handled.");
             return;
         }
-        
-        if (event == null) return;
 
         boolean notifsOn = computeNullSafeStatus();
 
@@ -320,7 +319,7 @@ public final class BroadcastEventProcessor implements EventListener {
         } catch (MarshalException e) {
             log().error("onEvent: problem marshalling configuration", e);
         } catch (ValidationException e) {
-            log().error("onEvent: problem validating marsharled configuraion", e);
+            log().error("onEvent: problem validating marshalled configuration", e);
         } catch (IOException e) {
             log().error("onEvent: IO problem marshalling configuration", e);
         }
@@ -619,7 +618,7 @@ public final class BroadcastEventProcessor implements EventListener {
 
                         String scheduledOutageName = scheduledOutage(nodeid, ipaddr);
                         if (scheduledOutageName != null) {
-                            // This event occured during a scheduled outage.
+                            // This event occurred during a scheduled outage.
                             // Must decide what to do
                             if (autoAckExistsForEvent(event.getUei())) {
                                 // Defer starttime till the given outage ends -

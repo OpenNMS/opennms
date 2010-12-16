@@ -265,7 +265,7 @@ public class DefaultOutageService implements OutageService {
             criteria.addOrder(hibernateOrder);
         }
         criteria.addOrder(Order.asc("node.label"));
-        criteria.addOrder(Order.asc("ipInterface.ipAddress"));
+        criteria.addOrder(Order.asc("ipInterface.inetAddress"));
         criteria.addOrder(Order.asc("serviceType.name"));
 
         return m_dao.findMatching(criteria);
@@ -281,7 +281,7 @@ public class DefaultOutageService implements OutageService {
         if ("node".equals(orderProperty)) {
             hibernateOrderProperty = "node.label";
         } else if ("ipaddr".equals(orderProperty)) {
-            hibernateOrderProperty = "ipInterface.ipAddress";
+            hibernateOrderProperty = "ipInterface.inetAddress";
         } else if ("service".equals(orderProperty)) {
             hibernateOrderProperty = "serviceType.name";
         } else if ("iflostservice".equals(orderProperty)) {

@@ -163,8 +163,8 @@ public class OnmsSnmpInterfaceResource extends OnmsRestService {
         }
         log().debug("addSnmpInterface: adding interface " + snmpInterface);
         node.addSnmpInterface(snmpInterface);
-        if (snmpInterface.getIpAddress() != null) {
-            OnmsIpInterface iface = node.getIpInterfaceByIpAddress(snmpInterface.getIpAddress());
+        if (snmpInterface.getPrimaryIpInterface() != null) {
+            OnmsIpInterface iface = snmpInterface.getPrimaryIpInterface();
             iface.setSnmpInterface(snmpInterface);
             // TODO Add important events here
         }

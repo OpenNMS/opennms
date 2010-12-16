@@ -199,7 +199,7 @@ public abstract class AbstractSaveOrUpdateOperation extends AbstractImportOperat
 	            
 	            if (snmpIf == null) {
 	                // if not then create one
-                    snmpIf = new OnmsSnmpInterface(ipAddress, ifIndex, m_node);
+                    snmpIf = new OnmsSnmpInterface(m_node, ifIndex);
 	            }
 	            
 	            snmpIf.setIfAlias(m_collector.getIfAlias(ifIndex));
@@ -262,7 +262,7 @@ public abstract class AbstractSaveOrUpdateOperation extends AbstractImportOperat
         
         if (snmpIf == null) {
             // if not then create one
-            snmpIf = new OnmsSnmpInterface(ipAddr, new Integer(ifIndex), m_node);
+            snmpIf = new OnmsSnmpInterface(m_node, new Integer(ifIndex));
             snmpIf.setIfAlias(m_collector.getIfAlias(ifIndex));
             snmpIf.setIfName(m_collector.getIfName(ifIndex));
             snmpIf.setIfType(getIfType(ifIndex));
@@ -275,11 +275,6 @@ public abstract class AbstractSaveOrUpdateOperation extends AbstractImportOperat
         
         snmpIf.setCollectionEnabled(true);
 
-        if (ipIf.getIsSnmpPrimary() == PrimaryType.PRIMARY) {
-            // make sure the snmpIf has the ipAddr of the primary interface
-            snmpIf.setIpAddress(ipAddr);
-        }
-        
         ipIf.setSnmpInterface(snmpIf);
 
     	//FIXME: Improve OpenNMS to provide these values

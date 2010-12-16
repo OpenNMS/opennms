@@ -401,7 +401,7 @@ public class CollectdTest extends TestCase {
     }
 
     private void setupInterface(OnmsIpInterface iface) {
-        expect(m_ipIfDao.findByServiceType("SNMP")).andReturn(Collections.singleton(iface));
+        expect(m_ipIfDao.findByServiceType("SNMP")).andReturn(Collections.singletonList(iface));
         expect(m_ipIfDao.load(iface.getId())).andReturn(iface).atLeastOnce();
     }
 

@@ -51,12 +51,14 @@ package org.opennms.netmgt.mock;
 
 import java.io.File;
 import java.io.IOException;
+import java.net.InetAddress;
 import java.util.ArrayList;
 import java.util.List;
 
 import junit.framework.TestCase;
 
 import org.junit.Test;
+import org.opennms.core.utils.InetAddressUtils;
 import org.opennms.netmgt.config.DataSourceFactory;
 import org.opennms.netmgt.config.DefaultEventConfDao;
 import org.opennms.netmgt.config.EventconfFactory;
@@ -103,7 +105,7 @@ public class OpenNMSTestCase extends TestCase {
     public String getSnmpConfig() throws IOException {
         return ConfigurationTestUtils.getConfigForResourceWithReplacements(this, "/org/opennms/netmgt/mock/snmp-config.xml",
                 new String[] { "@myVersion@", myVersion() },
-                new String[] { "@myLocalHost@", myLocalHost() }
+                new String[] { "@myLocalHost@", myLocalHost().getHostAddress() }
                 );
     }
 
@@ -114,7 +116,7 @@ public class OpenNMSTestCase extends TestCase {
      * String to be used in the snmp-config.
      * @return
      */
-    protected String myLocalHost() {
+    protected InetAddress myLocalHost() {
         
 //        try {
 //            return InetAddress.getLocalHost().getHostAddress();
@@ -125,7 +127,7 @@ public class OpenNMSTestCase extends TestCase {
 //        
 //        return null;
         
-        return "127.0.0.1";
+        return InetAddressUtils.getInetAddress("127.0.0.1");
     }
     
     protected String myVersion() {

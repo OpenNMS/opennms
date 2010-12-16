@@ -36,13 +36,14 @@ import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
-import java.util.Set;
 
 import junit.framework.TestCase;
 
 import org.easymock.EasyMock;
 import org.easymock.IAnswer;
+import org.opennms.core.utils.ThreadCategory;
 import org.opennms.netmgt.EventConstants;
 import org.opennms.netmgt.capsd.InsufficientInformationException;
 import org.opennms.netmgt.config.CollectdPackage;
@@ -57,6 +58,7 @@ import org.opennms.netmgt.dao.CollectorConfigDao;
 import org.opennms.netmgt.dao.FilterDao;
 import org.opennms.netmgt.dao.IpInterfaceDao;
 import org.opennms.netmgt.dao.NodeDao;
+import org.opennms.netmgt.eventd.EventIpcManager;
 import org.opennms.netmgt.eventd.EventIpcManagerFactory;
 import org.opennms.netmgt.filter.FilterDaoFactory;
 import org.opennms.netmgt.mock.MockEventIpcManager;
@@ -64,6 +66,7 @@ import org.opennms.netmgt.mock.MockTransactionTemplate;
 import org.opennms.netmgt.model.NetworkBuilder;
 import org.opennms.netmgt.model.OnmsIpInterface;
 import org.opennms.netmgt.model.OnmsMonitoredService;
+import org.opennms.netmgt.model.OnmsNode;
 import org.opennms.netmgt.model.OnmsServiceType;
 import org.opennms.netmgt.model.RrdRepository;
 import org.opennms.netmgt.model.NetworkBuilder.InterfaceBuilder;
@@ -85,8 +88,7 @@ public class CollectdIntegrationTest extends TestCase {
 
     private static Map<String, CollectdIntegrationTest> m_tests = new HashMap<String, CollectdIntegrationTest>();
 
-
-    private MockEventIpcManager m_eventIpcManager;
+    private EventIpcManager m_eventIpcManager;
     private Collectd m_collectd;
     private EasyMockUtils m_mockUtils;
     private CollectorConfigDao m_collectorConfigDao;
@@ -133,11 +135,9 @@ public class CollectdIntegrationTest extends TestCase {
         param.setValue(m_key);
         collector.addParameter(param);
         
-        MockTransactionTemplate transTemplate = new MockTransactionTemplate();
-        
         m_collectorConfigDao = m_mockUtils.createMock(CollectorConfigDao.class);
-        EasyMock.expect(m_collectorConfigDao.getCollectors()).andReturn(Collections.singleton(collector));
-        EasyMock.expect(m_collectorConfigDao.getSchedulerThreads()).andReturn(1);
+        EasyMock.expect(m_collectorConfigDao.getCollectors()).andReturn(Collections.singleton(collector)).anyTimes();
+        EasyMock.expect(m_collectorConfigDao.getSchedulerThreads()).andReturn(1).anyTimes();
 
         m_ifaceDao = m_mockUtils.createMock(IpInterfaceDao.class);
         m_nodeDao = m_mockUtils.createMock(NodeDao.class);
@@ -150,11 +150,39 @@ public class CollectdIntegrationTest extends TestCase {
             }
             
         };
+
+        OnmsServiceType snmp = new OnmsServiceType("SNMP");
+        NetworkBuilder netBuilder = new NetworkBuilder("localhost", "127.0.0.1");
+        NodeBuilder nodeBuilder = netBuilder.addNode("node1").setId(1);
+        InterfaceBuilder ifaceBlder = 
+            netBuilder.addInterface("192.168.1.1")
+            .setId(2)
+            .setIsSnmpPrimary("P");
+        ifaceBlder.addSnmpInterface(1);
+        OnmsMonitoredService svc = netBuilder.addService(snmp);
+        
+        List<OnmsIpInterface> initialIfs = Collections.emptyList();
+        EasyMock.expect(m_ifaceDao.findByServiceType(snmp.getName())).andReturn(initialIfs).anyTimes();
+        
+        m_collectorConfigDao.rebuildPackageIpListMap();
+        
+        EasyMock.expect(m_nodeDao.load(1)).andReturn(nodeBuilder.getNode()).anyTimes();
+        
+        createGetPackagesExpectation(svc);
+        
+        EasyMock.expect(m_ifaceDao.load(2)).andReturn(ifaceBlder.getInterface()).anyTimes();
+        
+        m_mockUtils.replayAll();
+        
         m_collectd.setCollectorConfigDao(m_collectorConfigDao);
         m_collectd.setEventIpcManager(m_eventIpcManager);
-        m_collectd.setTransactionTemplate(transTemplate);
+        m_collectd.setTransactionTemplate(new MockTransactionTemplate());
         m_collectd.setIpInterfaceDao(m_ifaceDao);
         m_collectd.setNodeDao(m_nodeDao);
+        
+        // Inits the class
+        m_collectd.afterPropertiesSet();
+        //assertNotNull(m_serviceCollector);
     }
     
     public static void setServiceCollectorInTest(String testKey, MockServiceCollector collector) {
@@ -171,37 +199,8 @@ public class CollectdIntegrationTest extends TestCase {
         m_tests.remove(m_key);
     }
     
-    
-    
     public void testIt() throws InterruptedException {
 
-        OnmsServiceType snmp = new OnmsServiceType("SNMP");
-        NetworkBuilder netBuilder = new NetworkBuilder("localhost", "127.0.0.1");
-        NodeBuilder nodeBuilder = netBuilder.addNode("node1").setId(1);
-        InterfaceBuilder ifaceBlder = 
-            netBuilder.addInterface("192.168.1.1")
-            .setId(2)
-            .setIsSnmpPrimary("P");
-        ifaceBlder.addSnmpInterface("192.168.1.1", 1);
-        OnmsMonitoredService svc = netBuilder.addService(snmp);
-        
-        Set<OnmsIpInterface> initialIfs = Collections.emptySet();
-        EasyMock.expect(m_ifaceDao.findByServiceType(snmp.getName())).andReturn(initialIfs);
-        
-        
-        m_collectorConfigDao.rebuildPackageIpListMap();
-        
-        EasyMock.expect(m_nodeDao.load(1)).andReturn(nodeBuilder.getNode()).anyTimes();
-        
-        createGetPackagesExpectation(svc);
-        
-        EasyMock.expect(m_ifaceDao.load(2)).andReturn(ifaceBlder.getInterface()).anyTimes();
-        
-        m_mockUtils.replayAll();
-        
-        m_collectd.init();
-        //assertNotNull(m_serviceCollector);
-        
         m_collectd.start();
         
         EventBuilder bldr = new EventBuilder(EventConstants.NODE_GAINED_SERVICE_EVENT_UEI, "Test");
@@ -215,7 +214,6 @@ public class CollectdIntegrationTest extends TestCase {
         
         assertNotNull(m_serviceCollector);
         assertEquals(1, m_serviceCollector.getCollectCount());
-        
         
         m_mockUtils.verifyAll();
     }
@@ -231,7 +229,7 @@ public class CollectdIntegrationTest extends TestCase {
         filter.setContent(rule);
         pkg.setFilter(filter);
         
-        Service collector = new Service();
+        final Service collector = new Service();
         collector.setName("SNMP");
         collector.setStatus("on");
         collector.setInterval(3000);
@@ -243,8 +241,6 @@ public class CollectdIntegrationTest extends TestCase {
         collector.setParameter(Collections.singletonList(parm));
         
         pkg.addService(collector);
-        
-        
         
         EasyMock.expect(m_collectorConfigDao.getPackages()).andAnswer(new IAnswer<Collection<CollectdPackage>>() {
 
@@ -302,11 +298,11 @@ public class CollectdIntegrationTest extends TestCase {
         }
 
         public void release() {
-            throw new UnsupportedOperationException("MockServiceCollector.release is not yet implemented");
+            throw new UnsupportedOperationException("MockServiceCollector.release() is not yet implemented");
         }
 
         public void release(CollectionAgent agent) {
-            throw new UnsupportedOperationException("MockServiceCollector.release is not yet implemented");
+            throw new UnsupportedOperationException("MockServiceCollector.release() is not yet implemented");
         }
         
         public RrdRepository getRrdRepository(String collectionName) {

@@ -177,7 +177,7 @@ public class DemandPollServiceTest extends TestCase {
 		svcType.setName("HTTP");
 		OnmsNode node = new OnmsNode();
 		node.setId(1);
-		OnmsSnmpInterface snmpIface = new OnmsSnmpInterface("192.168.1.1", 1, node);
+		OnmsSnmpInterface snmpIface = new OnmsSnmpInterface(node, 1);
 		OnmsIpInterface iface = new OnmsIpInterface("192.168.1.1", node);
 		iface.setSnmpInterface(snmpIface);
 		OnmsMonitoredService monSvc = new OnmsMonitoredService(iface, svcType);

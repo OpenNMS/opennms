@@ -58,6 +58,7 @@
         org.opennms.web.MissingParameterException
 	"
 %>
+<%@ taglib uri="http://java.sun.com/jsp/jstl/core" prefix="c" %>
 
 
 <%!
@@ -83,7 +84,7 @@
     public void init() throws ServletException {
         try {
             m_model = CategoryModel.getInstance();
-        } catch (Exception e) {
+        } catch (Throwable e) {
             throw new ServletException("Could not instantiate the CategoryModel: " + e, e);
         }
         
@@ -149,14 +150,18 @@
         <% for( int i=0; i < availIntfs.length; i++ ) { %>
           <% Interface intf = availIntfs[i]; %>
           <% String ipAddr = intf.getIpAddress(); %>
-               
+          
+          <c:url var="interfaceLink" value="element/interface.jsp">
+            <c:param name="node" value="<%=String.valueOf(nodeId)%>"/>
+            <c:param name="intf" value="<%=ipAddr%>"/>
+          </c:url>
           <% if( intf.isManaged() ) { %>
             <%-- interface is managed --%>
             <% double intfValue = m_model.getInterfaceAvailability(nodeId, ipAddr); %>                              
             <% Service[] svcs = getServices(intf); %>
-    
+
             <tr class="CellStatus">
-	      <%
+              <%
                 if (svcs.length < 1) {
                     availClass = "Indeterminate";
                     availValue = "Not Monitored";
@@ -167,8 +172,8 @@
                   availClass = CategoryUtil.getCategoryClass(m_normalThreshold, m_warningThreshold, intfValue);
                   availValue = CategoryUtil.formatValue(intfValue) + "%";
                 }
-	      %>
-              <td class="<%= availClass %> nobright" rowspan="<%=svcs.length+1%>"><a href="element/interface.jsp?node=<%=nodeId%>&intf=<%=ipAddr%>"><%=ipAddr%></a></td>
+              %>
+              <td class="<%= availClass %> nobright" rowspan="<%=svcs.length+1%>"><a href="${interfaceLink}"><%=ipAddr%></a></td>
               <td class="<%= availClass %> nobright">Overall</td>
               <td class="<%= availClass %> bright"><%= availValue %></td>
             </tr>
@@ -187,8 +192,13 @@
                 }
               %>
                        
+                <c:url var="serviceLink" value="element/service.jsp">
+                  <c:param name="node" value="<%=String.valueOf(nodeId)%>"/>
+                  <c:param name="intf" value="<%=ipAddr%>"/>
+                  <c:param name="service" value="<%=String.valueOf(service.getServiceId())%>"/>
+                </c:url>
                 <tr class="CellStatus">
-                  <td class="<%= availClass %> nobright"><a href="element/service.jsp?node=<%=nodeId%>&intf=<%=ipAddr%>&service=<%=service.getServiceId()%>"><%=service.getServiceName()%></a></td>
+                  <td class="<%= availClass %> nobright"><a href="${serviceLink}"><%=service.getServiceName()%></a></td>
                   <td class="<%= availClass %> bright"><%= availValue %></td>
                 </tr>
             <% } %>
@@ -199,7 +209,7 @@
             else { %>
             <tr class="CellStatus">
               <td>
-              <a href="element/interface.jsp?node=<%=nodeId%>&intf=<%=ipAddr%>"><%=ipAddr%></a>
+              <a href="${interfaceLink}"><%=ipAddr%></a>
               </td>
               <td class="Indeterminate" colspan="2"><%=ElementUtil.getInterfaceStatusString(intf)%></td>
             </tr>

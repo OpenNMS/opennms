@@ -338,7 +338,6 @@ create unique index node_foreign_unique_idx on node(foreignSource, foreignId);
 --# This table provides the following information:
 --#
 --#  nodeID             : Unique identifier for node to which this if belongs
---#  ipAddr             : IP Address associated with this interface
 --#  snmpIpAdEntNetMask : SNMP MIB-2 ipAddrTable.ipAddrEntry.ipAdEntNetMask
 --#                       Value is interface's subnet mask
 --#  snmpPhysAddr       : SNMP MIB-2 ifTable.ifEntry.ifPhysAddress
@@ -381,7 +380,6 @@ create unique index node_foreign_unique_idx on node(foreignSource, foreignId);
 create table snmpInterface (
     id				INTEGER DEFAULT nextval('opennmsNxtId') NOT NULL,
 	nodeID			integer not null,
-	ipAddr			text not null,
 	snmpIpAdEntNetMask	varchar(16),
 	snmpPhysAddr		varchar(32),
 	snmpIfIndex		integer not null,
@@ -403,7 +401,6 @@ create table snmpInterface (
 
 create unique index snmpinterface_nodeid_ifindex_unique_idx on snmpinterface(nodeID, snmpIfIndex);
 create index snmpinterface_nodeid_idx on snmpinterface(nodeID);
-create index snmpinterface_ipaddr_idx on snmpinterface(ipaddr);
 
 --########################################################################
 --# ipInterface Table - Contains information on interfaces which support

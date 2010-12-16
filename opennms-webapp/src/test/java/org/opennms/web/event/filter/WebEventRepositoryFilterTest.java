@@ -40,6 +40,7 @@ import java.util.GregorianCalendar;
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
+import org.opennms.core.utils.InetAddressUtils;
 import org.opennms.netmgt.dao.DatabasePopulator;
 import org.opennms.netmgt.dao.db.JUnitTemporaryDatabase;
 import org.opennms.netmgt.dao.db.OpenNMSConfigurationExecutionListener;
@@ -110,7 +111,7 @@ public class WebEventRepositoryFilterTest {
         event.setEventLog("Y");
         event.setEventDisplay("Y");
         event.setIfIndex(11);
-        event.setIpAddr("192.168.1.1");
+        event.setIpAddr(InetAddressUtils.getInetAddress("192.168.1.1"));
         event.setEventLogMsg("This is a test log message");
         event.setEventDescr("This is a test event");
         event.setServiceType(m_dbPopulator.getServiceTypeDao().get(1));
