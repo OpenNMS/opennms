@@ -65,6 +65,7 @@ import org.opennms.netmgt.notifd.mock.MockNotificationStrategy;
 import org.opennms.netmgt.notifd.mock.MockUserManager;
 import org.opennms.netmgt.notifd.mock.NotificationAnticipator;
 import org.opennms.test.ConfigurationTestUtils;
+import org.opennms.test.DaoTestConfigBean;
 import org.opennms.test.mock.MockLogAppender;
 import org.opennms.test.mock.MockUtil;
 
@@ -85,6 +86,10 @@ public class NotificationsTestCase {
 
     protected void setUp() throws Exception {
         MockUtil.println("################# Running Test ################");
+
+        DaoTestConfigBean bean = new DaoTestConfigBean();
+        bean.afterPropertiesSet();
+
         MockLogAppender.setupLogging();
         
         m_network = createMockNetwork();
@@ -137,7 +142,7 @@ public class NotificationsTestCase {
     
     }
 
-    private MockDatabase createDatabase(MockNetwork network) throws Exception {
+    protected MockDatabase createDatabase(MockNetwork network) throws Exception {
         MockDatabase db = new MockDatabase();
         DataSourceFactory.setInstance(db);
         db.populate(network);
@@ -148,7 +153,7 @@ public class NotificationsTestCase {
      * TODO Use {@link MockNetwork#createStandardNetwork()} instead?
      * @return
      */
-    private MockNetwork createMockNetwork() {
+    protected MockNetwork createMockNetwork() {
         MockNetwork network = new MockNetwork();
         network.setCriticalService("ICMP");
         network.addNode(1, "Router");

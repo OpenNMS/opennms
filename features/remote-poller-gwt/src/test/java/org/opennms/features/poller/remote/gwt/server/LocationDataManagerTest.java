@@ -1,19 +1,24 @@
 package org.opennms.features.poller.remote.gwt.server;
 
-import static org.easymock.EasyMock.*;
-import static org.junit.Assert.*;
+import static org.easymock.EasyMock.expectLastCall;
+import static org.easymock.EasyMock.isA;
+import static org.easymock.EasyMock.reportMatcher;
+import static org.junit.Assert.assertEquals;
 
 import java.text.DateFormat;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.Calendar;
-import java.util.Date;
 import java.util.Collection;
 import java.util.Collections;
+import java.util.Date;
 import java.util.GregorianCalendar;
 import java.util.List;
+import java.util.Map;
+import java.util.Map.Entry;
 import java.util.Properties;
 
+import org.easymock.IArgumentMatcher;
 import org.junit.Before;
 import org.junit.Ignore;
 import org.junit.Test;
@@ -36,7 +41,6 @@ import org.opennms.netmgt.model.OnmsLocationSpecificStatus;
 import org.opennms.netmgt.model.OnmsMonitoringLocationDefinition;
 import org.opennms.test.mock.EasyMockUtils;
 import org.opennms.test.mock.MockLogAppender;
-import org.opennms.test.mock.MockUtil;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.test.context.ContextConfiguration;
 import org.springframework.test.context.TestExecutionListeners;
@@ -64,7 +68,7 @@ import de.novanic.eventservice.service.EventExecutorService;
         "file:src/main/webapp/WEB-INF/applicationContext-remote-poller.xml",
         "classpath:/locationDataManagerTest.xml"
 })
-@JUnitTemporaryDatabase(useExistingDatabase="opennmspj")
+@JUnitTemporaryDatabase(useExistingDatabase="opennms")
 @Transactional
 @Ignore("requires custom database")
 public class LocationDataManagerTest {
@@ -96,9 +100,9 @@ public class LocationDataManagerTest {
     @Test
     public void testHandleAllMonitoringLocationDefinitions() {
         LocationDefHandler handler = m_easyMockUtils.createMock(LocationDefHandler.class);
-        handler.start(2864);
+        handler.start(2880);
         handler.handle(isA(OnmsMonitoringLocationDefinition.class));
-        expectLastCall().times(2864);
+        expectLastCall().times(2880);
         handler.finish();
         
         m_easyMockUtils.replayAll();
@@ -116,10 +120,35 @@ public class LocationDataManagerTest {
         
         for(int i = 0; i < count; i++ ) {
             List<LocationInfo> locations = m_locationDataService.getInfoForAllLocations();
-            assertEquals(2864, locations.size());
+            assertEquals(2880, locations.size());
         }
         
         System.err.printf("Avg getInfoForAllLocations: %d\n", (System.currentTimeMillis() - start)/count);
+    }
+    
+    @Test
+    public void testGetStatusDetailsForAllLocations() {
+        Map<String, StatusDetails> statusDetails = m_locationDataService.getStatusDetailsForAllLocations();
+        assertEquals(2880, statusDetails.size());
+
+        assertEquals(2880-376, countStatus(Status.UNKNOWN, statusDetails));
+        assertEquals(3, countStatus(Status.DISCONNECTED, statusDetails));
+        assertEquals(4, countStatus(Status.STOPPED, statusDetails));
+        assertEquals(0, countStatus(Status.MARGINAL, statusDetails));
+
+        assertEquals(12, countStatus(Status.DOWN, statusDetails));
+        assertEquals(357, countStatus(Status.UP, statusDetails));
+        
+    }
+
+    private int countStatus(Status status, Map<String, StatusDetails> statusDetails) {
+        int count = 0;
+        for(Entry<String, StatusDetails> entry : statusDetails.entrySet()) {
+            if (status.equals(entry.getValue().getStatus())) {
+                count++;
+            }
+        }
+        return count;
     }
     
     @Test
@@ -128,8 +157,8 @@ public class LocationDataManagerTest {
         long start = System.currentTimeMillis();
         
         for(int i = 0; i < count; i++ ) {
-            List<ApplicationInfo> locations = m_locationDataService.getInfoForAllApplications();
-            assertEquals(14, locations.size());
+            List<ApplicationInfo> applications = m_locationDataService.getInfoForAllApplications();
+            assertEquals(12, applications.size());
         }
 
         System.err.printf("Avg getInfoForAllApplications: %d\n", (System.currentTimeMillis() - start)/count);
@@ -184,7 +213,7 @@ public class LocationDataManagerTest {
         
         Collection<OnmsLocationMonitor> monitors = m_locationMonitorDao.findByApplication(app);
         
-        assertEquals(18, monitors.size());
+        assertEquals(376, monitors.size());
 
     }
 
@@ -194,11 +223,12 @@ public class LocationDataManagerTest {
         Collection<OnmsLocationSpecificStatus> changes = m_locationMonitorDao.getAllStatusChangesAt(new Date());
         
 
-        assertEquals(450, changes.size());
+        assertEquals(4888, changes.size());
 
     }
 
     @Test
+    @Ignore
     public void testGetStatusChangesForApplicationBetween() throws ParseException {
         
         Collection<OnmsLocationSpecificStatus> changes = m_locationMonitorDao.getStatusChangesForApplicationBetween(june(7, 2010), june(8, 2010), "Domain Controllers");
@@ -209,17 +239,31 @@ public class LocationDataManagerTest {
     @Test
     public void testStart() {
         EventExecutorService service = m_easyMockUtils.createMock(EventExecutorService.class);
-        service.addEventUserSpecific(isA(LocationUpdatedRemoteEvent.class));
-        expectLastCall().times(2864);
+        
+        service.addEventUserSpecific(hasStatus(Status.DOWN));
+        expectLastCall().times(12);
+        service.addEventUserSpecific(hasStatus(Status.UP));
+        expectLastCall().times(357);
+
+
+        service.addEventUserSpecific(hasStatus(Status.DISCONNECTED));
+        expectLastCall().times(3);
+
+        service.addEventUserSpecific(hasStatus(Status.STOPPED));
+        expectLastCall().times(4);
+        
+        service.addEventUserSpecific(hasStatus(Status.UNKNOWN));
+        expectLastCall().times(2880-376);
+        
         service.addEventUserSpecific(isA(ApplicationUpdatedRemoteEvent.class));
-        expectLastCall().times(14);
+        expectLastCall().times(12);
         service.addEventUserSpecific(isA(UpdateCompleteRemoteEvent.class));
         m_easyMockUtils.replayAll();
         m_locationDataManager.doInitialize(service);
         m_easyMockUtils.verifyAll();
         
     }
-    
+
     @Test
     public void testJune() throws ParseException {
         Date d= june(1, 2009);
@@ -233,5 +277,25 @@ public class LocationDataManagerTest {
         return cal.getTime();
     }
     
+
+    public static LocationUpdatedRemoteEvent hasStatus(final Status status) {
+        reportMatcher(new IArgumentMatcher() {
+
+            public void appendTo(StringBuffer buffer) {
+                buffer.append("hasStatus(\"" + status + "\")");
+            }
+
+            public boolean matches(Object argument) {
+                if (argument instanceof LocationUpdatedRemoteEvent) {
+                    LocationUpdatedRemoteEvent e = (LocationUpdatedRemoteEvent)argument;
+                    return status.equals(e.getLocationInfo().getStatus());
+                } else {
+                    return false;
+                }
+            }
+            
+        });
+        return null;
+    }
     
 }

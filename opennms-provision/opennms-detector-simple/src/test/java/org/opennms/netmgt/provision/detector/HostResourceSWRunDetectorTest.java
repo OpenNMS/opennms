@@ -44,6 +44,7 @@ import org.junit.runner.RunWith;
 import org.opennms.mock.snmp.MockSnmpAgent;
 import org.opennms.netmgt.provision.detector.snmp.HostResourceSWRunDetector;
 import org.opennms.netmgt.provision.support.NullDetectorMonitor;
+import org.opennms.test.mock.MockLogAppender;
 import org.springframework.beans.BeansException;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.ApplicationContext;
@@ -69,6 +70,8 @@ public class HostResourceSWRunDetectorTest implements ApplicationContextAware {
     
     @Before
     public void setUp() throws InterruptedException{
+        MockLogAppender.setupLogging();
+
         m_detector.setRetries(2);
         m_detector.setTimeout(500);
         m_detector.setPort(TEST_PORT);

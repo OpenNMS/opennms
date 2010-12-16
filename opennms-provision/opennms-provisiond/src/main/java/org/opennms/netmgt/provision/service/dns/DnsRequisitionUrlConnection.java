@@ -45,7 +45,6 @@ import java.net.MalformedURLException;
 import java.net.URL;
 import java.net.URLConnection;
 import java.net.URLDecoder;
-import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.HashMap;
 import java.util.List;
@@ -59,7 +58,6 @@ import javax.xml.bind.Marshaller;
 
 import org.apache.commons.io.IOExceptionWithCause;
 import org.apache.commons.lang.StringUtils;
-import org.apache.log4j.Logger;
 import org.opennms.core.utils.ThreadCategory;
 import org.opennms.netmgt.provision.persist.ProvisionPrefixContextResolver;
 import org.opennms.netmgt.provision.persist.requisition.Requisition;
@@ -133,7 +131,7 @@ public class DnsRequisitionUrlConnection extends URLConnection {
         }
         
         m_serial = Long.valueOf(0L);
-        m_fallback = Boolean.valueOf(false);
+        m_fallback = Boolean.FALSE;
 
         m_key = null;
         
@@ -255,7 +253,7 @@ public class DnsRequisitionUrlConnection extends URLConnection {
         i.setDescr("DNS-A");
         i.setIpAddr(addr);
         i.setSnmpPrimary("P");
-        i.setManaged(Boolean.valueOf(true));
+        i.setManaged(Boolean.TRUE);
         i.setStatus(Integer.valueOf(1));
         
         i.insertMonitoredService(new RequisitionMonitoredService("ICMP"));
@@ -321,14 +319,6 @@ public class DnsRequisitionUrlConnection extends URLConnection {
         String hash = String.valueOf(nodeLabel.hashCode());
         return hash;
     }
-
-    /** {@inheritDoc} */
-    @Override
-    public URL getURL() {
-        // TODO Auto-generated method stub
-        return super.getURL();
-    }
-
 
     /**
      * Utility to marshal the Requisition class into XML.
@@ -478,8 +468,7 @@ public class DnsRequisitionUrlConnection extends URLConnection {
             throw new IllegalArgumentException("The URL query is null");
         }
 
-        List<String> queryArgs = new ArrayList<String>();
-        queryArgs = Arrays.asList(StringUtils.split(query, QUERY_ARG_SEPARATOR));
+        List<String> queryArgs = Arrays.asList(StringUtils.split(query, QUERY_ARG_SEPARATOR));
 
         return queryArgs;
     }
@@ -491,12 +480,11 @@ public class DnsRequisitionUrlConnection extends URLConnection {
      * @return a {@link java.lang.String} object.
      */
     protected static String decodeQueryString(URL url) {
-        String query = null;
-        
         if (url == null || url.getQuery() == null) {
             throw new IllegalArgumentException("The URL or the URL query is null: "+url);
         }
         
+        String query = null;
         try {
             query = URLDecoder.decode(url.getQuery(), "UTF-8");
         } catch (UnsupportedEncodingException e) {

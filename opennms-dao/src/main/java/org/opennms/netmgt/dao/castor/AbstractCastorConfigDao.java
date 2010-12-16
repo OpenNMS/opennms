@@ -75,7 +75,7 @@ public abstract class AbstractCastorConfigDao<K, V> implements InitializingBean 
      * @param <K> a K object.
      * @param <V> a V object.
      */
-    public AbstractCastorConfigDao(Class<K> entityClass, String description) {
+    public AbstractCastorConfigDao(final Class<K> entityClass, final String description) {
         super();
         
         m_castorClass = entityClass;
@@ -105,14 +105,14 @@ public abstract class AbstractCastorConfigDao<K, V> implements InitializingBean 
      * @param resource a {@link org.springframework.core.io.Resource} object.
      * @return a V object.
      */
-    protected V loadConfig(Resource resource) {
+    protected V loadConfig(final Resource resource) {
         long startTime = System.currentTimeMillis();
         
         if (log().isDebugEnabled()) {
             log().debug("Loading " + m_description + " configuration from " + resource);
         }
 
-        V config = translateConfig(CastorUtils.unmarshalWithTranslatedExceptions(m_castorClass, resource));
+        V config = translateConfig(CastorUtils.unmarshalWithTranslatedExceptions(m_castorClass, resource, CastorUtils.PRESERVE_WHITESPACE));
         
         long endTime = System.currentTimeMillis();
         log().info(createLoadedLogMessage(config, (endTime - startTime)));
@@ -127,7 +127,7 @@ public abstract class AbstractCastorConfigDao<K, V> implements InitializingBean 
      * @param diffTime a long.
      * @return a {@link java.lang.String} object.
      */
-    protected String createLoadedLogMessage(V translatedConfig, long diffTime) {
+    protected String createLoadedLogMessage(final V translatedConfig, final long diffTime) {
         return "Loaded " + getDescription() + " in " + diffTime + "ms";
     }
 
@@ -137,7 +137,7 @@ public abstract class AbstractCastorConfigDao<K, V> implements InitializingBean 
     public void afterPropertiesSet() {
         Assert.state(m_configResource != null, "property configResource must be set and be non-null");
     
-        V config = loadConfig(m_configResource);
+        final V config = loadConfig(m_configResource);
         m_container = new FileReloadContainer<V>(config, m_configResource, m_callback);
 
         if (m_reloadCheckInterval != null) {
@@ -159,7 +159,7 @@ public abstract class AbstractCastorConfigDao<K, V> implements InitializingBean 
      *
      * @param configResource a {@link org.springframework.core.io.Resource} object.
      */
-    public void setConfigResource(Resource configResource) {
+    public void setConfigResource(final Resource configResource) {
         m_configResource = configResource;
     }
     
@@ -173,7 +173,7 @@ public abstract class AbstractCastorConfigDao<K, V> implements InitializingBean 
     }
     
     public class CastorReloadCallback implements FileReloadCallback<V> {
-        public V reload(V object, Resource resource) {
+        public V reload(final V object, final Resource resource) {
             return loadConfig(resource);
         }
     }
@@ -192,7 +192,7 @@ public abstract class AbstractCastorConfigDao<K, V> implements InitializingBean 
      *
      * @param reloadCheckInterval a {@link java.lang.Long} object.
      */
-    public void setReloadCheckInterval(Long reloadCheckInterval) {
+    public void setReloadCheckInterval(final Long reloadCheckInterval) {
         m_reloadCheckInterval = reloadCheckInterval;
         if (m_reloadCheckInterval != null && m_container != null) {
             m_container.setReloadCheckInterval(m_reloadCheckInterval);

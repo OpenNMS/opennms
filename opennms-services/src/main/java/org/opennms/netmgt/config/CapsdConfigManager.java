@@ -58,7 +58,8 @@ import java.util.Map;
 import org.exolab.castor.xml.MarshalException;
 import org.exolab.castor.xml.Marshaller;
 import org.exolab.castor.xml.ValidationException;
-import org.opennms.core.utils.IPSorter;
+import org.opennms.core.utils.ByteArrayComparator;
+import org.opennms.core.utils.InetAddressUtils;
 import org.opennms.core.utils.ThreadCategory;
 import org.opennms.netmgt.config.capsd.CapsdConfiguration;
 import org.opennms.netmgt.config.capsd.IpManagement;
@@ -131,7 +132,6 @@ public abstract class CapsdConfigManager implements CapsdConfig {
      * @throws org.exolab.castor.xml.MarshalException if any.
      * @throws org.exolab.castor.xml.ValidationException if any.
      */
-    @Deprecated
     public CapsdConfigManager(Reader rdr) throws MarshalException, ValidationException {
         loadXml(rdr);
     }
@@ -184,7 +184,6 @@ public abstract class CapsdConfigManager implements CapsdConfig {
      * @throws org.exolab.castor.xml.MarshalException if any.
      * @throws org.exolab.castor.xml.ValidationException if any.
      */
-    @SuppressWarnings("deprecation")
     protected void loadXml(Reader rdr) throws MarshalException, ValidationException {
         m_config = CastorUtils.unmarshal(CapsdConfiguration.class, rdr);
         loadIncludeUrls();
@@ -332,10 +331,9 @@ public abstract class CapsdConfigManager implements CapsdConfig {
                     continue;
                 }
 
-                long start = toLong(saddr);
-                long stop = toLong(eaddr);
-                long tgt = toLong(target);
-                if (start <= tgt && tgt <= stop) {
+                int compareStartToTarget = new ByteArrayComparator().compare(saddr.getAddress(), target.getAddress());
+                int compareTargetToEnd = new ByteArrayComparator().compare(target.getAddress(), eaddr.getAddress());
+                if (compareStartToTarget <= 0 && compareTargetToEnd <= 0) {
                     if (mgt.getPolicy() == null || mgt.getPolicy().equalsIgnoreCase("managed")) {
                         found_accept = true;
                     } else {
@@ -404,7 +402,7 @@ public abstract class CapsdConfigManager implements CapsdConfig {
      * 
      * @return List of addresses retrieved from the URL
      */
-    private List<String> getAddressesFromURL(String url) {
+    private static List<String> getAddressesFromURL(String url) {
         List<String> addrList = new ArrayList<String>();
     
         try {
@@ -605,12 +603,11 @@ public abstract class CapsdConfigManager implements CapsdConfig {
 			return currentIf;
         }
 	
-		long current = IPSorter.convertToLong(currentIf.getAddress());
-		long primary = IPSorter.convertToLong(oldPrimary.getAddress());
-	
+		int comparison = new ByteArrayComparator().compare(currentIf.getAddress(), oldPrimary.getAddress());
+		
 		if (method.equals(CollectdConfigFactory.SELECT_METHOD_MIN)) {
 			// Smallest address wins
-			if (current < primary) {
+			if (comparison < 0) {
                 /*
 				 * Replace the primary interface with the current
 				 * interface only if the current interface is managed!
@@ -626,7 +623,7 @@ public abstract class CapsdConfigManager implements CapsdConfig {
 			}
 		} else {
 			// Largest address wins
-			if (current > primary) {
+			if (comparison > 0) {
                 /*
 				 * Replace the primary interface with the current
 				 * interface only if the current interface is managed!
@@ -689,23 +686,6 @@ public abstract class CapsdConfigManager implements CapsdConfig {
 	}
 
     /**
-     * {@inheritDoc}
-     *
-     * This method is used to convert the passed IP address to a
-     * <code>long</code> value. The address is converted in network byte order
-     * (big endin). This is compatable with the number format of the JVM, and
-     * thus the return longs can be compared with other converted IP Addresses
-     * to determine inclusion.
-     * @deprecated Use org.opennms.netmgt.utils.IPSorter.convertToLong()
-     *             instead.
-     */
-    public long toLong(InetAddress addr) {
-        byte[] baddr = addr.getAddress();
-    
-        return ((((long) baddr[0] & 0xffL) << 24) | (((long) baddr[1] & 0xffL) << 16) | (((long) baddr[2] & 0xffL) << 8) | ((long) baddr[3] & 0xffL));
-    }
-
-    /**
      * Return a list of configured protocols from the loaded configuration.
      *
      * @return a {@link java.util.List} object.
@@ -718,8 +698,8 @@ public abstract class CapsdConfigManager implements CapsdConfig {
         return protocols;
     }
 
-    private ThreadCategory log() {
-        return ThreadCategory.getInstance(getClass());
+    private static ThreadCategory log() {
+        return ThreadCategory.getInstance(CapsdConfigManager.class);
     }
 
     /**

@@ -164,7 +164,7 @@ public class EventFilterController extends AbstractController implements Initial
             String[] filterStrings = request.getParameterValues("filter");
             if (filterStrings != null) {
                 for (String filterString : filterStrings) {
-                    Filter filter = EventUtil.getFilter(filterString);
+                    Filter filter = EventUtil.getFilter(filterString, getServletContext());
                     if (filter != null) {
                         filterList.add(filter);
                     }

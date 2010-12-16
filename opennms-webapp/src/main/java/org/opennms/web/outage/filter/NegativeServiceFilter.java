@@ -32,7 +32,7 @@
 
 package org.opennms.web.outage.filter;
 
-import java.sql.SQLException;
+import javax.servlet.ServletContext;
 
 import org.opennms.web.element.NetworkElementFactory;
 import org.opennms.web.filter.NotEqualOrNullFilter;
@@ -63,15 +63,11 @@ public class NegativeServiceFilter extends NotEqualOrNullFilter<Integer> {
      *
      * @return a {@link java.lang.String} object.
      */
-    public String getTextDescription() {
+    public String getTextDescription(ServletContext servletContext) {
         int serviceId = getServiceId();
         String serviceName = Integer.toString(serviceId);
 
-        try {
-            serviceName = NetworkElementFactory.getServiceNameFromId(serviceId);
-        } catch (SQLException e) {
-            throw new IllegalStateException("Could not get the service name for id " + serviceId);
-        }
+        serviceName = NetworkElementFactory.getInstance(servletContext).getServiceNameFromId(serviceId);
 
         return ("service is not " + serviceName);
     }
@@ -97,5 +93,11 @@ public class NegativeServiceFilter extends NotEqualOrNullFilter<Integer> {
     /** {@inheritDoc} */
     public boolean equals(Object obj) {
         return (this.toString().equals(obj.toString()));
+    }
+
+    @Override
+    public String getTextDescription() {
+        // TODO Auto-generated method stub
+        return null;
     }
 }

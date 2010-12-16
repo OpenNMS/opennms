@@ -3,7 +3,7 @@
   <parent>
     <groupId>org.opennms</groupId>
     <artifactId>org.opennms.features</artifactId>
-    <version>1.8.4-SNAPSHOT</version>
+    <version>1.8.8-SNAPSHOT</version>
   </parent>
 
   <modelVersion>4.0.0</modelVersion>
@@ -24,7 +24,6 @@
       <plugin>
         <groupId>org.codehaus.mojo</groupId>
         <artifactId>gwt-maven-plugin</artifactId>
-        <version>1.2</version>
         <executions>
           <execution>
             <goals>
@@ -105,6 +104,7 @@
     <dependency>
       <groupId>org.opennms.dependencies</groupId>
       <artifactId>spring-web-dependencies</artifactId>
+      <type>pom</type>
     </dependency>
     <dependency>
       <groupId>net.simon04.jelementtree</groupId>
@@ -130,6 +130,7 @@
     <dependency>
       <groupId>org.opennms.dependencies</groupId>
       <artifactId>gwt-dependencies</artifactId>
+      <type>pom</type>
     </dependency>
 
     <!-- map APIs -->
@@ -159,8 +160,8 @@
     </dependency>
     <dependency>
       <groupId>org.gwtopenmaps.openlayers</groupId>
-      <artifactId>openlayers_gwt</artifactId>
-      <version>0.5-20100510</version>
+      <artifactId>gwt-openlayers-client</artifactId>
+      <version>0.6-20101124</version>
       <scope>provided</scope>
     </dependency>
     <dependency>
@@ -174,6 +175,7 @@
     <dependency>
       <groupId>org.opennms.dependencies</groupId>
       <artifactId>servlet-dependencies</artifactId>
+      <type>pom</type>
       <scope>provided</scope>
     </dependency>
     <dependency>
@@ -228,6 +230,7 @@
     <dependency>
       <groupId>org.opennms.dependencies</groupId>
       <artifactId>spring-test-dependencies</artifactId>
+      <type>pom</type>
       <scope>test</scope>
     </dependency>
     <dependency>
@@ -237,6 +240,7 @@
     </dependency>
   </dependencies>
 
+  <!-- special case, we need the stuff above as direct dependencies -->
   <repositories>
     <repository>
       <snapshots><enabled>false</enabled></snapshots>

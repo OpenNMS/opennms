@@ -60,7 +60,7 @@ import org.opennms.web.map.view.Manager;
 import org.opennms.web.map.view.VElement;
 import org.opennms.web.map.view.VMap;
 import org.springframework.web.servlet.ModelAndView;
-import org.springframework.web.servlet.mvc.Controller;
+import org.springframework.web.servlet.mvc.AbstractController;
 
 
 /**
@@ -73,7 +73,7 @@ import org.springframework.web.servlet.mvc.Controller;
  * @version $Id: $
  * @since 1.8.1
  */
-public class AddNodesController implements Controller {
+public class AddNodesController extends AbstractController {
 	ThreadCategory log;
 
 	private Manager manager;
@@ -134,7 +134,7 @@ public class AddNodesController implements Controller {
 				nodeids = new Integer[nodeIPs.size()];
 				for (int i = 0; i<nodeIPs.size();i++) {
 					String nodeIp= (String)nodeIPs.get(i);
-					List<Integer> ids = NetworkElementFactory.getNodeIdsWithIpLike(nodeIp);
+					List<Integer> ids = NetworkElementFactory.getInstance(getServletContext()).getNodeIdsWithIpLike(nodeIp);
 					log.debug("Ids by ipaddress "+nodeIp+": "+ids);
 					nodeids[i] = ids.get(0);
 				}
@@ -144,7 +144,7 @@ public class AddNodesController implements Controller {
 			if (action.equals(MapsConstants.ADDNODES_BY_LABEL_ACTION)) {
 				log.debug("Adding nodes by label: "+ elems);
 				actionfound = true;
-				Node[] nodes = NetworkElementFactory.getNodesLike(elems);
+				Node[] nodes = NetworkElementFactory.getInstance(getServletContext()).getAllNodes();
 				nodeids = new Integer[nodes.length];
 				for (int i = 0; i<nodes.length;i++) {
 					nodeids[i] = new Integer(nodes[i].getNodeId());
@@ -154,7 +154,7 @@ public class AddNodesController implements Controller {
 			if (action.equals(MapsConstants.ADDRANGE_ACTION)) {
 				log.debug("Adding nodes by range: "+ elems);
 				actionfound = true;
-				nodeids = (Integer[]) NetworkElementFactory.getNodeIdsWithIpLike(elems).toArray(new Integer[0]);
+				nodeids = (Integer[]) NetworkElementFactory.getInstance(getServletContext()).getNodeIdsWithIpLike(elems).toArray(new Integer[0]);
 			}
 
 			if (action.equals(MapsConstants.ADDNODES_NEIG_ACTION)) {
@@ -207,5 +207,11 @@ public class AddNodesController implements Controller {
 
 		return null;
 	}
+
+    @Override
+    protected ModelAndView handleRequestInternal(HttpServletRequest request, HttpServletResponse response) throws Exception {
+        return handleRequest(request, response);
+    }
+
 
 }

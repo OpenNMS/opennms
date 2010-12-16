@@ -49,13 +49,12 @@ import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
 
+import org.opennms.core.utils.LogUtils;
 import org.opennms.core.utils.ThreadCategory;
 import org.opennms.netmgt.EventConstants;
 import org.opennms.netmgt.capsd.EventUtils;
 import org.opennms.netmgt.capsd.InsufficientInformationException;
 import org.opennms.netmgt.config.PollerConfig;
-import org.opennms.netmgt.config.ThreshdConfigFactory;
-import org.opennms.netmgt.config.ThresholdingConfigFactory;
 import org.opennms.netmgt.dao.DemandPollDao;
 import org.opennms.netmgt.eventd.EventIpcManager;
 import org.opennms.netmgt.model.events.EventListener;
@@ -174,6 +173,13 @@ final class PollerEventProcessor implements EventListener {
         // update threshold configuration
         ueiList.add(EventConstants.THRESHOLDCONFIG_CHANGED_EVENT_UEI);
 
+        // asset information updated
+        ueiList.add(EventConstants.ASSET_INFO_CHANGED_EVENT_UEI);
+        
+        // categories updated
+        ueiList.add(EventConstants.NODE_CATEGORY_MEMBERSHIP_CHANGED_EVENT_UEI);
+        
+        
         // Subscribe to eventd
         getEventManager().addEventListener(this, ueiList);
     }
@@ -230,7 +236,7 @@ final class PollerEventProcessor implements EventListener {
      *            The event to process.
      * 
      */
-    private void interfaceReparentedHandler(Event event) {
+    private void interfaceReparentedHandler(Event event) { 
         ThreadCategory log = ThreadCategory.getInstance(getClass());
         if (log.isDebugEnabled())
             log.debug("interfaceReparentedHandler:  processing interfaceReparented event for " + event.getInterface());
@@ -402,7 +408,7 @@ final class PollerEventProcessor implements EventListener {
           return;
         }
         node.delete();
-
+       
     }
 
     /**
@@ -551,11 +557,12 @@ final class PollerEventProcessor implements EventListener {
     }
 
     /**
-     * {@inheritDoc}
-     *
      * This method is invoked by the EventIpcManager when a new event is
      * available for processing. Each message is examined for its Universal
      * Event Identifier and the appropriate action is taking based on each UEI.
+     * 
+     * @param event
+     *            The event
      */
     public void onEvent(Event event) {
         if (event == null)
@@ -636,11 +643,83 @@ final class PollerEventProcessor implements EventListener {
             } else {
                 serviceDeletedHandler(event);
             }
-
+        } else if (event.getUei().equals(EventConstants.NODE_CATEGORY_MEMBERSHIP_CHANGED_EVENT_UEI)){
+            if (!(event.getNodeid() < 0)) { 
+                
+                serviceReschedule(event);
+            }
+        } else if (event.getUei().equals(EventConstants.ASSET_INFO_CHANGED_EVENT_UEI)){
+            if (!(event.getNodeid() < 0)) { 
+                serviceReschedule(event);
+            }
+            
         } // end single event process
 
     } // end onEvent()
     
+    private void serviceReschedule(Event event)   {       
+       PollableNode pnode = getNetwork().getNode((int) event.getNodeid());
+       Integer nodeId = (int) event.getNodeid();
+       String nodeLabel = pnode.getNodeLabel();
+       
+       //pnode.delete();
+       //nodeDeletedHandler(event);
+       
+       /*while(pnode.isDeleted()==false){
+           
+           LogUtils.debugf(this,"Waiting for node to delete...");
+           
+       }*/
+       
+       List<String[]> list = getPoller().getQueryManager().getNodeServices(nodeId);
+       
+       for(String[] row : list){
+           LogUtils.debugf(this," Removing the following from the list: %s:%s", row[0],row[1]);
+           
+           InetAddress addr;
+           
+           try {
+               addr = InetAddress.getByName(row[0]);
+           } catch (UnknownHostException e) {
+               LogUtils.warnf(this,"Rescheduler: Could not convert "+row[0]+" to an InetAddress", e);
+               return;
+           }
+           
+           Date closeDate;
+           try {
+               closeDate = EventConstants.parseToDate(event.getTime());
+           } catch (ParseException e) {
+               closeDate = new Date();
+           }
+           
+           getPoller().closeOutagesForService(closeDate, event.getDbid(), nodeId, row[0], row[1]);
+           
+           PollableService svc = getNetwork().getService(nodeId,addr,row[1]);
+           
+           if (svc != null) {
+           
+               svc.delete();
+           
+               while(svc.isDeleted()==false){
+                   LogUtils.debugf(this,"Waiting for the service to delete...");
+               }
+           
+           }
+           
+           else {
+               LogUtils.debugf(this, "Service Not Found");
+           }
+           
+       }
+       
+       getPoller().getPollerConfig().rebuildPackageIpListMap();
+       
+       for(String[] row : list){
+           LogUtils.debugf(this," Re-adding the following to the list: %s:%s", row[0],row[1]);
+           getPoller().scheduleService(nodeId,nodeLabel,row[0],row[1]);
+       }
+    }
+
     @SuppressWarnings("unused")
     private void demandPollServiceHandler(Event e) throws InsufficientInformationException {
     	EventUtils.checkNodeId(e);
@@ -667,8 +746,6 @@ final class PollerEventProcessor implements EventListener {
 
     /**
      * Return an id for this event listener
-     *
-     * @return a {@link java.lang.String} object.
      */
     public String getName() {
         return "Poller:PollerEventProcessor";

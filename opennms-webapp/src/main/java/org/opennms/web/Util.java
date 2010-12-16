@@ -36,28 +36,14 @@
 //
 package org.opennms.web;
 
-import java.io.UnsupportedEncodingException;
-import java.lang.reflect.UndeclaredThrowableException;
-import java.net.InetAddress;
-import java.net.InetSocketAddress;
-import java.net.URLDecoder;
-import java.net.URLEncoder;
-import java.net.UnknownHostException;
-import java.text.DateFormat;
-import java.util.ArrayList;
 import java.util.Date;
-import java.util.Enumeration;
 import java.util.HashMap;
-import java.util.Iterator;
 import java.util.Map;
-import java.util.Set;
-import java.util.TreeMap;
 
+import javax.servlet.ServletContext;
 import javax.servlet.http.HttpServletRequest;
 
-import org.opennms.core.resource.Vault;
 import org.opennms.netmgt.model.events.EventProxy;
-import org.opennms.netmgt.utils.TcpEventProxy;
 import org.opennms.web.element.NetworkElementFactory;
 
 /**
@@ -117,11 +103,11 @@ public abstract class Util {
      *             NetworkElementFactory.getHostname} instead.
      * @return a {@link java.lang.String} object.
      */
-    public static String getHostname(String ipAddress) {
+    public static String getHostname(String ipAddress, ServletContext servletContext) {
         String hostname = ipAddress;
 
         try {
-            hostname = NetworkElementFactory.getHostname(ipAddress);
+            hostname = NetworkElementFactory.getInstance(servletContext).getHostname(ipAddress);
         } catch (Exception e) {
             // ignore this exception and just return the IP address
         }
@@ -163,11 +149,11 @@ public abstract class Util {
      *             NetworkElementFactory.getHostname} instead.
      * @return a {@link java.lang.String} object.
      */
-    public static String resolveIpAddress(String ipAddress) {
+    public static String resolveIpAddress(String ipAddress, ServletContext servletContext) {
         String hostname = ipAddress;
 
         try {
-            hostname = NetworkElementFactory.getHostname(ipAddress);
+            hostname = NetworkElementFactory.getInstance(servletContext).getHostname(ipAddress);
         } catch (Exception e) {
             // ignore this exception and just return the IP address
         }

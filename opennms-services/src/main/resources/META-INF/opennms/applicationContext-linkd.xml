@@ -13,9 +13,7 @@
 
     <aop:aspectj-autoproxy proxy-target-class="true" />
 
-
-    <bean id="queryManager"
-      class="org.opennms.netmgt.linkd.DbEventWriter">
+    <bean id="queryManager" class="org.opennms.netmgt.linkd.DbEventWriter">
       <property name="jdbcTemplate" ref="jdbcTemplate" />
     </bean>
 
@@ -26,16 +24,20 @@
       </constructor-arg>
     </bean>
 
-    <bean id="receiver"
-      class="org.opennms.netmgt.linkd.LinkdEventProcessor">
-      <property name="eventMgr" ref="eventIpcManager" />
+    <bean id="receiver" class="org.opennms.netmgt.linkd.LinkdEventProcessor">
+      <property name="linkd" ref="daemon"/>
+    </bean>
+
+    <bean id="daemonListener" class="org.opennms.netmgt.model.events.AnnotationBasedEventListenerAdapter">
+      <property name="annotatedListener" ref="receiver" />
+      <property name="eventSubscriptionService" ref="eventSubscriptionService" />
     </bean>
 
     <bean name="daemon" class="org.opennms.netmgt.linkd.Linkd">
       <property name="queryManager" ref="queryManager" />
       <property name="linkdConfig" ref="linkdConfig" />
       <property name="scheduler" ref="scheduler" />
-      <property name="eventListener" ref="receiver" />
+      <property name="eventForwarder" ref="eventForwarder" />
     </bean>
 
     <tx:annotation-driven/>

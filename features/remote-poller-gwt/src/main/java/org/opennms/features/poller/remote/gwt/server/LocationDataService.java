@@ -3,6 +3,7 @@ package org.opennms.features.poller.remote.gwt.server;
 import java.util.Collection;
 import java.util.Date;
 import java.util.List;
+import java.util.Map;
 
 import org.opennms.features.poller.remote.gwt.client.ApplicationDetails;
 import org.opennms.features.poller.remote.gwt.client.ApplicationInfo;
@@ -134,6 +135,13 @@ public interface LocationDataService {
      * @return a {@link java.util.List} object.
      */
     public List<LocationInfo> getInfoForAllLocations();
+
+    /**
+     * <p>getStatusDetailsForAllLocations</p>
+     *
+     */
+    public Map<String, StatusDetails> getStatusDetailsForAllLocations();
+
     /**
      * <p>getInfoForAllApplications</p>
      *

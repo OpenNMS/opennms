@@ -37,13 +37,13 @@ package org.opennms.web.element;
 import java.util.HashMap;
 import java.util.Map;
 
+import org.opennms.netmgt.linkd.DbStpInterfaceEntry;
+
 
 /**
  * <p>StpInterface class.</p>
  *
  * @author <a href="mailto:antonio@opennms.it">Antonio Russo</a>
- * @version $Id: $
- * @since 1.8.1
  */
 public class StpInterface
 {
@@ -63,9 +63,19 @@ public class StpInterface
         int		m_stprootnodeid;
         int		m_stpbridgenodeid;
 
-        /** Constant <code>STP_PORT_STATUS="new String[] {&nbsp;,     //0 (not supp"{trunked}</code> */
+        /**
+         * <p>String identifiers for the enumeration of values:</p>
+         * <ul>
+         * <li>{@link DbStpInterfaceEntry#STP_PORT_DISABLED}</li>
+         * <li>{@link DbStpInterfaceEntry#STP_PORT_BLOCKING}</li>
+         * <li>{@link DbStpInterfaceEntry#STP_PORT_LISTENING}</li>
+         * <li>{@link DbStpInterfaceEntry#STP_PORT_LEARNING}</li>
+         * <li>{@link DbStpInterfaceEntry#STP_PORT_FORWARDING}</li>
+         * <li>{@link DbStpInterfaceEntry#STP_PORT_BROKEN}</li>
+         * </ul>
+         */ 
         public static final String[] STP_PORT_STATUS = new String[] {
-            "&nbsp;",     //0 (not supported)
+            null,         //0 (not a valid index)
             "Disabled",   //1
             "Blocking",   //2
             "Listening",  //3
@@ -74,13 +84,13 @@ public class StpInterface
             "Broken",     //6
           };
 
-        private static final Map<Character, String>     statusMap = new HashMap<Character, String>();
+        private static final Map<Character, String> statusMap = new HashMap<Character, String>();
       	
         static {
-            statusMap.put( new Character('A'), "Active" );
-            statusMap.put( new Character(' '), "Unknown" );
-            statusMap.put( new Character('D'), "Deleted" );
-            statusMap.put( new Character('N'), "Not Active" );
+            statusMap.put( DbStpInterfaceEntry.STATUS_ACTIVE, "Active" );
+            statusMap.put( DbStpInterfaceEntry.STATUS_UNKNOWN, "Unknown" );
+            statusMap.put( DbStpInterfaceEntry.STATUS_DELETED, "Deleted" );
+            statusMap.put( DbStpInterfaceEntry.STATUS_NOT_POLLED, "Not Active" );
         }
 
 
@@ -241,8 +251,11 @@ public class StpInterface
 		 * @return a {@link java.lang.String} object.
 		 */
 		public String getStpPortState() {
-			return STP_PORT_STATUS[m_stpportstate];
-			
+		    try {
+		        return STP_PORT_STATUS[m_stpportstate];
+		    } catch (ArrayIndexOutOfBoundsException e) {
+		        return STP_PORT_STATUS[DbStpInterfaceEntry.STP_PORT_DISABLED];
+		    }
 		}
 			
 		/**
@@ -293,7 +306,7 @@ public class StpInterface
 	     * @return a {@link java.lang.String} object.
 	     */
 	    public String getStatusString() {
-	        return( (String)statusMap.get( new Character(m_status) ));
+	        return statusMap.get( new Character(m_status) );
 	    }
 
 	    /**

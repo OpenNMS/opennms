@@ -79,7 +79,7 @@
                 return errorMsg;
         }
     
-        function verifyAndSubmit()
+        function verifySnmpConfig()
         {
                 var errorMsg = new String("");
                 var ipValue = new String("");
@@ -102,10 +102,11 @@
 
                 if (errorMsg != ""){
                         alert (errorMsg);
+                        return false;
                 }
                 else{
                         document.snmpConfigForm.action="admin/snmpConfig";
-                        document.snmpConfigForm.submit();
+                        return true;
                 }
         }
     
@@ -116,7 +117,7 @@
         }
 </script>
 
-<form method="post" name="snmpConfigForm">
+<form method="post" name="snmpConfigForm" onsubmit="return verifySnmpConfig();">
 
   <div class="TwoColLAdmin">
 
@@ -166,7 +167,7 @@
             <td width="50%">
                <select name="version">
                <option>v1</option>
-               <option>v2c</option>
+               <option selected="true">v2c</option>
                <option>v3</option>
                </select>
                 (Optional)
@@ -193,10 +194,10 @@
 
           <tr>
              <td>
-                <input type="submit" value="Submit" onClick="verifyAndSubmit()">
+                <input type="submit" value="Submit">
              </td>
              <td>
-                <input type="button" value="Cancel" onClick="cancel()">
+                <input type="button" value="Cancel" onclick="cancel()">
              </td>
           </tr>
        </table>

@@ -49,7 +49,6 @@ import java.util.TreeSet;
 import org.opennms.netmgt.model.OnmsResource;
 import org.opennms.netmgt.model.StatisticsReport;
 import org.opennms.web.controller.statisticsReports.PrettyOnmsResource;
-import org.springframework.orm.ObjectRetrievalFailureException;
 import org.springframework.util.Assert;
 import org.springframework.validation.BindException;
 
@@ -64,7 +63,6 @@ public class StatisticsReportModel {
     public static class Datum implements Comparable<Datum> {
         private Double m_value;
         private OnmsResource m_resource;
-        private Throwable m_resourceThrowable;
     
         public int compareTo(Datum o) {
             return m_value.compareTo(o.getValue());
@@ -83,7 +81,7 @@ public class StatisticsReportModel {
         }
         
         public String getResourceParentLabel() {
-            Assert.state(m_resource != null, "the resource must be set before calling this method");
+            Assert.notNull(m_resource, "the resource must be set before calling this method");
             
             StringBuffer buffer = new StringBuffer();
             
@@ -134,32 +132,12 @@ public class StatisticsReportModel {
             return resources;
         }
         
-        public String getResourceThrowableId() {
-            Throwable t = getResourceThrowable();
-            
-            if (t == null) {
-                return null;
-            } else if (t instanceof ObjectRetrievalFailureException) {
-                return ((ObjectRetrievalFailureException) t).getIdentifier().toString();
-            } else {
-                return "No identifier";
-            }
-        }
-    
         public Double getValue() {
             return m_value;
         }
     
         public void setValue(Double value) {
             m_value = value;
-        }
-
-        public void setResourceThrowable(Throwable resourceThrowable) {
-            m_resourceThrowable = resourceThrowable;
-        }
-        
-        public Throwable getResourceThrowable() {
-            return m_resourceThrowable;
         }
     }
     

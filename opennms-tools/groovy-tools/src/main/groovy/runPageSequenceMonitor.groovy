@@ -6,10 +6,10 @@ import org.opennms.netmgt.poller.*;
 import org.opennms.netmgt.poller.monitors.*;
 
 public class runPageSequenceMonitor implements MonitoredService {
-    private int m_nodeId;
-    private String m_nodeLabel;
+    private int m_nodeId = 21;
+    private String m_nodeLabel = "nodeLabel";
     private String m_ipAddr;
-    private String m_svcName;
+    private String m_svcName = "PSMTest";
     private InetAddress m_inetAddr;
 
     public void setSvcName(String svcName) {
@@ -67,7 +67,7 @@ public class runPageSequenceMonitor implements MonitoredService {
         String pageSequenceConfig = new File(args[1]).getText();
         println pageSequenceConfig;
     
-        Map parms = [retry:'1', timeout:'2000', 'page-sequence':pageSequenceConfig];
+        Map parms = [retry:'1', timeout:'20000', 'page-sequence':pageSequenceConfig];
 	  
         PageSequenceMonitor monitor = new PageSequenceMonitor();
 	  

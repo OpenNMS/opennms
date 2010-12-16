@@ -235,15 +235,4 @@ public interface CapsdConfig {
      * @return a {@link java.util.List} object.
      */
     List<Property> getProtocolConfigurationProperties(ProtocolConfiguration pluginConf);
-
-    /**
-     * <p>toLong</p>
-     *
-     * @param start a {@link java.net.InetAddress} object.
-     * @return a long.
-     */
-    long toLong(InetAddress start);
-
-
-
 }

@@ -15,6 +15,7 @@ import org.opennms.netmgt.provision.persist.foreignsource.PluginConfig;
 import org.opennms.netmgt.provision.persist.requisition.Requisition;
 import org.opennms.netmgt.provision.persist.requisition.RequisitionInterface;
 import org.opennms.netmgt.provision.persist.requisition.RequisitionNode;
+import org.opennms.test.mock.MockLogAppender;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.core.io.UrlResource;
@@ -47,6 +48,8 @@ public class FusedForeignSourceRepositoryTest {
 
     @Before
     public void setUp() {
+        MockLogAppender.setupLogging();
+
         /* 
          * since we share the filesystem with other tests, best
          * to make sure it's totally clean here.

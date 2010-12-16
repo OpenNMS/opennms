@@ -32,9 +32,6 @@
 package org.opennms.protocols.wmi;
 
 import org.opennms.protocols.wmi.wbem.OnmsWbemObjectSet;
-import org.opennms.protocols.wmi.wbem.OnmsWbemFlagReturnEnum;
-
-import java.util.ArrayList;
 
 /**
  * <p>IWmiClient interface.</p>

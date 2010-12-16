@@ -32,9 +32,11 @@ package org.opennms.core.soa.support;
 import java.util.List;
 import java.util.concurrent.CopyOnWriteArrayList;
 
+import org.opennms.core.soa.Filter;
 import org.opennms.core.soa.Registration;
 import org.opennms.core.soa.RegistrationListener;
 import org.opennms.core.soa.ServiceRegistry;
+import org.opennms.core.soa.filter.FilterParser;
 import org.springframework.beans.factory.FactoryBean;
 import org.springframework.beans.factory.InitializingBean;
 import org.springframework.util.Assert;
@@ -45,13 +47,14 @@ import org.springframework.util.Assert;
  * @author brozow
  * @version $Id: $
  */
-public class ReferenceListFactoryBean implements FactoryBean, InitializingBean, RegistrationListener {
+public class ReferenceListFactoryBean<T> implements FactoryBean<List<T>>, InitializingBean, RegistrationListener<T> {
     
     private ServiceRegistry m_serviceRegistry;
-    private Class<?> m_serviceInterface;
-    private List<RegistrationListener<Object>> m_listeners = new CopyOnWriteArrayList<RegistrationListener<Object>>();
+    private Class<T> m_serviceInterface;
+    private List<RegistrationListener<T>> m_listeners = new CopyOnWriteArrayList<RegistrationListener<T>>();
     
-    private List<Object> m_providerRegistrations = new CopyOnWriteArrayList<Object>();
+    private List<T> m_providerRegistrations = new CopyOnWriteArrayList<T>();
+    private Filter m_filter;
 
     /**
      * <p>setServiceRegistry</p>
@@ -67,8 +70,12 @@ public class ReferenceListFactoryBean implements FactoryBean, InitializingBean, 
      *
      * @param serviceInterface a {@link java.lang.Class} object.
      */
-    public void setServiceInterface(Class<?> serviceInterface) {
+    public void setServiceInterface(Class<T> serviceInterface) {
         m_serviceInterface = serviceInterface;
+    }
+    
+    public void setFilter(String filter) {
+        m_filter = (filter == null ? null : new FilterParser().parse(filter));
     }
     
     /**
@@ -77,7 +84,7 @@ public class ReferenceListFactoryBean implements FactoryBean, InitializingBean, 
      * @return a {@link java.lang.Object} object.
      * @throws java.lang.Exception if any.
      */
-    public Object getObject() throws Exception {
+    public List<T> getObject() throws Exception {
         return m_providerRegistrations;
     }
     
@@ -104,7 +111,6 @@ public class ReferenceListFactoryBean implements FactoryBean, InitializingBean, 
      *
      * @throws java.lang.Exception if any.
      */
-    @SuppressWarnings("unchecked")
     public void afterPropertiesSet() throws Exception {
         Assert.notNull(m_serviceRegistry, "The serviceRegistry must be set");
         Assert.notNull(m_serviceInterface, "The serviceInterface must be set");
@@ -113,19 +119,30 @@ public class ReferenceListFactoryBean implements FactoryBean, InitializingBean, 
     }
 
     /** {@inheritDoc} */
-    public void providerRegistered(Registration registration, Object provider) {
+    public void providerRegistered(Registration registration, T provider) {
+        
+        if (m_filter != null && !m_filter.match(registration.getProperties())) {
+            // this object doesn't match the filter so skip it
+            return;
+        }
+        
         m_providerRegistrations.add(provider);
         
-        for(RegistrationListener<Object> listener : m_listeners) {
+        for(RegistrationListener<T> listener : m_listeners) {
             listener.providerRegistered(registration, provider);
         }
     }
 
     /** {@inheritDoc} */
-    public void providerUnregistered(Registration registration, Object provider) {
-        m_providerRegistrations.remove(provider);
+    public void providerUnregistered(Registration registration, T provider) {
+        boolean found = m_providerRegistrations.remove(provider);
+
+        if (!found) {
+            // this object didn't belong to the match registrations so do nothing
+            return;
+        }
         
-        for(RegistrationListener<Object> listener : m_listeners) {
+        for(RegistrationListener<T> listener : m_listeners) {
             listener.providerUnregistered(registration, provider);
         }
         
@@ -136,7 +153,7 @@ public class ReferenceListFactoryBean implements FactoryBean, InitializingBean, 
      *
      * @param listener a {@link org.opennms.core.soa.RegistrationListener} object.
      */
-    public void setListener(RegistrationListener<?> listener) {
+    public void setListener(RegistrationListener<T> listener) {
     	addListener(listener);
     }
     
@@ -145,9 +162,8 @@ public class ReferenceListFactoryBean implements FactoryBean, InitializingBean, 
      *
      * @param listener a {@link org.opennms.core.soa.RegistrationListener} object.
      */
-    @SuppressWarnings("unchecked")
-    public void addListener(RegistrationListener<?> listener) {
-        m_listeners.add((RegistrationListener<Object>) listener);
+    public void addListener(RegistrationListener<T> listener) {
+        m_listeners.add((RegistrationListener<T>) listener);
     }
     
     /**

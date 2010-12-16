@@ -1,5 +1,6 @@
-/* Copyright (c) 2006-2008 MetaCarta, Inc., published under the Clear BSD
- * license.  See http://svn.openlayers.org/trunk/openlayers/license.txt for the
+/* Copyright (c) 2006-2010 by OpenLayers Contributors (see authors.txt for 
+ * full list of contributors). Published under the Clear BSD license.  
+ * See http://svn.openlayers.org/trunk/openlayers/license.txt for the
  * full text of the license. */
 
 /**
@@ -76,9 +77,9 @@ OpenLayers.Control = OpenLayers.Class({
 
     /** 
      * Property: type 
-     * {OpenLayers.Control.TYPES} Controls can have a 'type'. The type
-     * determines the type of interactions which are possible with them when
-     * they are placed into a toolbar. 
+     * {Number} Controls can have a 'type'. The type determines the type of
+     * interactions which are possible with them when they are placed in an
+     * <OpenLayers.Control.Panel>. 
      */
     type: null, 
 
@@ -351,6 +352,17 @@ OpenLayers.Control = OpenLayers.Class({
     CLASS_NAME: "OpenLayers.Control"
 });
 
+/**
+ * Constant: OpenLayers.Control.TYPE_BUTTON
+ */
 OpenLayers.Control.TYPE_BUTTON = 1;
+
+/**
+ * Constant: OpenLayers.Control.TYPE_TOGGLE
+ */
 OpenLayers.Control.TYPE_TOGGLE = 2;
+
+/**
+ * Constant: OpenLayers.Control.TYPE_TOOL
+ */
 OpenLayers.Control.TYPE_TOOL   = 3;

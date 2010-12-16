@@ -1,5 +1,6 @@
-/* Copyright (c) 2006-2008 MetaCarta, Inc., published under the Clear BSD
- * license.  See http://svn.openlayers.org/trunk/openlayers/license.txt for the
+/* Copyright (c) 2006-2010 by OpenLayers Contributors (see authors.txt for 
+ * full list of contributors). Published under the Clear BSD license.  
+ * See http://svn.openlayers.org/trunk/openlayers/license.txt for the
  * full text of the license. */
 
 
@@ -17,6 +18,13 @@
  */
 OpenLayers.Control.MousePosition = OpenLayers.Class(OpenLayers.Control, {
     
+    /**
+     * APIProperty: autoActivate
+     * {Boolean} Activate the control when it is added to a map.  Default is
+     *     true.
+     */
+    autoActivate: true,
+
     /** 
      * Property: element
      * {DOMElement} 
@@ -87,11 +95,37 @@ OpenLayers.Control.MousePosition = OpenLayers.Class(OpenLayers.Control, {
      * Method: destroy
      */
      destroy: function() {
-         if (this.map) {
-             this.map.events.unregister('mousemove', this, this.redraw);
-         }
+         this.deactivate();
          OpenLayers.Control.prototype.destroy.apply(this, arguments);
      },
+
+    /**
+     * APIMethod: activate
+     */
+    activate: function() {
+        if (OpenLayers.Control.prototype.activate.apply(this, arguments)) {
+            this.map.events.register('mousemove', this, this.redraw);
+            this.map.events.register('mouseout', this, this.reset);
+            this.redraw();
+            return true;
+        } else {
+            return false;
+        }
+    },
+    
+    /**
+     * APIMethod: deactivate
+     */
+    deactivate: function() {
+        if (OpenLayers.Control.prototype.deactivate.apply(this, arguments)) {
+            this.map.events.unregister('mousemove', this, this.redraw);
+            this.map.events.unregister('mouseout', this, this.reset);
+            this.element.innerHTML = "";
+            return true;
+        } else {
+            return false;
+        }
+    },
 
     /**
      * Method: draw
@@ -106,7 +140,6 @@ OpenLayers.Control.MousePosition = OpenLayers.Class(OpenLayers.Control, {
             this.element = this.div;
         }
         
-        this.redraw();
         return this.div;
     },
    
@@ -174,16 +207,7 @@ OpenLayers.Control.MousePosition = OpenLayers.Class(OpenLayers.Control, {
             lonLat.lat.toFixed(digits) +
             this.suffix;
         return newHtml;
-     },
-
-    /** 
-     * Method: setMap
-     */
-    setMap: function() {
-        OpenLayers.Control.prototype.setMap.apply(this, arguments);
-        this.map.events.register( 'mousemove', this, this.redraw);
-        this.map.events.register( 'mouseout', this, this.reset);
-    },     
+    },
 
     CLASS_NAME: "OpenLayers.Control.MousePosition"
 });

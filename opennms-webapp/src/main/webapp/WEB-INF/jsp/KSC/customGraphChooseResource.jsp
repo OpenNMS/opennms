@@ -36,7 +36,11 @@
 
 --%>
 
-<%@ page language="java" contentType="text/html" session="true" %>
+<%@ page language="java" contentType="text/html" session="true" import="
+	org.opennms.web.controller.ksc.CustomGraphChooseResourceController,
+	org.opennms.web.controller.ksc.CustomGraphChooseParentResourceController,
+	org.opennms.web.controller.ksc.CustomGraphEditDetailsController
+"%>
 
 <%@ taglib uri="http://java.sun.com/jsp/jstl/core" prefix="c" %>
 <%@ taglib uri="http://java.sun.com/jsp/jstl/functions" prefix="fn" %>
@@ -63,6 +67,7 @@
   <script type="text/javascript" src="js/opennms/ux/PageableGrid.js" ></script>
   <script type="text/javascript" src="js/opennms/ux/LocalPageableProxy.js" ></script>
   <script type="text/javascript" src="js/CustomGraphResourceView.js" ></script>
+  <%--
   <script type="text/javascript" >
   
       function validateResource()
@@ -111,6 +116,7 @@
           }
       }
   </script>
+  --%>
 
 <h2>
   <c:choose>
@@ -175,7 +181,7 @@
         </ul>
         
         <form method="get" name="resourceSelected" action="KSC/customGraphEditDetails.htm" >
-          <input type="hidden" name="resourceId" value="${parentResource.id}"/>
+          <input type="hidden" name="<%=CustomGraphEditDetailsController.Parameters.resourceId%>" value="${parentResource.id}"/>
           <input type="submit" value="Choose this resource"/>
         </form>
       </c:otherwise>
@@ -204,7 +210,7 @@
             <c:forEach var="resource" items="${resources}">
               <c:set var="selected" value=""/>
               <c:if test="${!empty selectedResourceAndParents[resource.id]}">
-                <c:set var="selected" value="selected"/>
+                <c:set var="selected">selected="selected"</c:set>
               </c:if>
               <option value="${resource.id}" ${selected}>${resource.resourceType.label}: ${resource.label}</option>
             </c:forEach>
@@ -238,15 +244,15 @@
         </p>
         
         <form method="get" name="viewTopLevel" action="KSC/customGraphChooseParentResource.htm" >
-          <input type="hidden" name="selectedResourceId" value="${param.selectedResourceId}" />
+          <input type="hidden" name="<%=CustomGraphChooseParentResourceController.Parameters.selectedResourceId%>" value="${param.selectedResourceId}" />
           <input type="submit" value="View top-level resources" />
         </form>
       </c:when>
     
       <c:otherwise>
         <form method="get" name="viewParent" action="KSC/customGraphChooseResource.htm" >
-          <input type="hidden" name="selectedResourceId" value="${param.selectedResourceId}"/>
-          <input type="hidden" name="resourceId" value="${parentResource.parent.id}"/>
+          <input type="hidden" name="<%=CustomGraphChooseResourceController.Parameters.selectedResourceId%>" value="${param.selectedResourceId}"/>
+          <input type="hidden" name="<%=CustomGraphChooseResourceController.Parameters.resourceId%>" value="${parentResource.parent.id}"/>
           <input type="submit" value="View the parent resource"/>
         </form>
       </c:otherwise>

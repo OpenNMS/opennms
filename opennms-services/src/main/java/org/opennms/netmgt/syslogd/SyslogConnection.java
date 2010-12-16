@@ -119,10 +119,10 @@ public class SyslogConnection implements Runnable {
         ConvertToEvent re = null;
         try {
             re = ConvertToEvent.make(_packet, _matchPattern, _hostGroup,  _messageGroup, _ueiList, _hideMessages, _discardUei);
-        } catch (UnsupportedEncodingException e1) {
-            log.debug("Failure to convert package");
-        } catch (MessageDiscardedException e) {
-            log.debug("Message discarded, returning without enqueueing event.");
+        } catch (final UnsupportedEncodingException e1) {
+            log.debug("Failure to convert package", e1);
+        } catch (final MessageDiscardedException e) {
+            log.debug("Message discarded, returning without enqueueing event.", e);
             return;
         }
 
@@ -132,8 +132,8 @@ public class SyslogConnection implements Runnable {
         // delay a random period of time
         try {
             Thread.sleep((new Random()).nextInt(100));
-        } catch (InterruptedException e) {
-            log.debug("Syslogd: Interruption " + e);
+        } catch (final InterruptedException e) {
+            log.debug("Syslogd: Interruption ", e);
         }
 
     }

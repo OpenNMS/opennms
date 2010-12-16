@@ -51,6 +51,7 @@ import org.opennms.netmgt.dao.ProvisiondConfigurationDao;
 import org.opennms.netmgt.dao.db.JUnitTemporaryDatabase;
 import org.opennms.netmgt.dao.db.OpenNMSConfigurationExecutionListener;
 import org.opennms.netmgt.dao.db.TemporaryDatabaseExecutionListener;
+import org.opennms.test.mock.MockLogAppender;
 import org.quartz.Job;
 import org.quartz.JobDetail;
 import org.quartz.JobExecutionContext;
@@ -76,6 +77,7 @@ import org.springframework.test.context.transaction.TransactionalTestExecutionLi
     TransactionalTestExecutionListener.class
 })
 @ContextConfiguration(locations={
+        "classpath:/META-INF/opennms/applicationContext-soa.xml",
         "classpath:/META-INF/opennms/applicationContext-dao.xml",
         "classpath:/META-INF/opennms/applicationContext-daemon.xml",
         "classpath:/META-INF/opennms/applicationContext-proxy-snmp.xml",
@@ -100,6 +102,11 @@ public class ImportSchedulerTest {
     
     @Autowired
     ProvisiondConfigurationDao m_dao;
+
+    @Before
+    public void setUp() {
+        MockLogAppender.setupLogging();
+    }
 
     @Before
     public void verifyWiring() {

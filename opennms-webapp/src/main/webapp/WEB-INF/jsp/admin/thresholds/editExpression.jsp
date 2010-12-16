@@ -68,7 +68,7 @@
     				<c:forEach items="${thresholdTypes}" var="thisType">
    						<c:choose>
   							<c:when test="${expression.type==thisType}">
-    							<c:set var="selected" value="selected"/>
+    							<c:set var="selected">selected="selected"</c:set>
   							</c:when>
 	 						<c:otherwise>
 	    						<c:set var="selected" value=""/>
@@ -84,7 +84,7 @@
     				<c:forEach items="${dsTypes}" var="thisDsType">
    						<c:choose>
   							<c:when test="${expression.dsType==thisDsType.key}">
-    							<c:set var="selected" value="selected"/>
+    							<c:set var="selected">selected="selected"</c:set>
   							</c:when>
 	 						<c:otherwise>
 	    						<c:set var="selected" value=""/>

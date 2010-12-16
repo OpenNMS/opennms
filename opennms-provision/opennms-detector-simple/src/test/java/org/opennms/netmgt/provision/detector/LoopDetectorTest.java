@@ -44,6 +44,7 @@ import org.junit.runner.RunWith;
 import org.opennms.netmgt.provision.ServiceDetector;
 import org.opennms.netmgt.provision.detector.loop.LoopDetector;
 import org.opennms.netmgt.provision.support.NullDetectorMonitor;
+import org.opennms.test.mock.MockLogAppender;
 import org.springframework.beans.BeansException;
 import org.springframework.context.ApplicationContext;
 import org.springframework.context.ApplicationContextAware;
@@ -59,6 +60,7 @@ public class LoopDetectorTest implements ApplicationContextAware {
     
     @Before
     public void setUp(){
+        MockLogAppender.setupLogging();
         m_detector = getDetector(LoopDetector.class);
         m_detector.setSupported(true);
     }

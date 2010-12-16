@@ -96,12 +96,12 @@ public class ThresholdingVisitor extends AbstractCollectionSetVisitor {
             return null;
         }
 
-        CollectorThresholdingSet thresholdingSet = new CollectorThresholdingSet(nodeId, hostAddress, serviceName, repo, interval);
+        CollectorThresholdingSet thresholdingSet = new CollectorThresholdingSet(nodeId, hostAddress, serviceName, repo, interval, params);
         if (thresholdingSet.hasThresholds()) {
             return new ThresholdingVisitor(thresholdingSet);
         }
 
-        log.warn("create: Can't create ThresholdingVisitor for " + hostAddress + "/" + serviceName);
+        log.warn("create: Can't create ThresholdingVisitor for " + hostAddress + "/" + serviceName + " on node " + nodeId + ", because it has no configured thresholds.");
         return null;
     }
 

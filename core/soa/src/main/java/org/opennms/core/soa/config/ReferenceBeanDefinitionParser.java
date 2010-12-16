@@ -17,6 +17,7 @@ public class ReferenceBeanDefinitionParser extends AbstractSingleBeanDefinitionP
         
     /** Constant <code>INTERFACE_ATTR="interface"</code> */
     public static final String INTERFACE_ATTR = "interface";
+    public static final String FILTER_ATTR = "filter";
     
     /** {@inheritDoc} */
     protected Class<?> getBeanClass(Element element) {
@@ -31,6 +32,11 @@ public class ReferenceBeanDefinitionParser extends AbstractSingleBeanDefinitionP
         String serviceInterface = element.getAttribute(INTERFACE_ATTR);
         if (StringUtils.hasText(serviceInterface)) {
             bean.addPropertyValue("serviceInterface", serviceInterface);
+        }
+        
+        String filter = element.getAttribute(FILTER_ATTR);
+        if (StringUtils.hasText(filter)) {
+            bean.addPropertyValue("filter", filter);
         }
     }
 }

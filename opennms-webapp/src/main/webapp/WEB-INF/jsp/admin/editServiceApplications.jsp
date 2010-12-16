@@ -12,13 +12,13 @@
 	<jsp:param name="breadcrumb" value="Show" />
 </jsp:include>
 
-<h3>Edit applications on ${model.service.serviceName}</h3>
+<h3>Edit applications on ${fn:escapeXml(model.service.serviceName)}</h3>
 
 <p>
-Service <a href="<c:url value='element/service.jsp?ifserviceid=${model.service.id}'/>">${model.service.serviceName}</a>
+Service <a href="<c:url value='element/service.jsp?ifserviceid=${model.service.id}'/>">${fn:escapeXml(model.service.serviceName)}</a>
 on interface <a href="<c:url value='element/interface.jsp?ipinterfaceid=${model.service.ipInterface.id}'/>">${model.service.ipAddress}</a>
-of node <a href="<c:url value='element/node.jsp?node=${model.service.ipInterface.node.id}'/>">${model.service.ipInterface.node.label}</a>
-(node ID: ${model.service.ipInterface.node.id}) has ${fn:length(model.service.applications)} applications
+of node <a href="<c:url value='element/node.jsp?node=${model.service.ipInterface.node.id}'/>">${fn:escapeXml(model.service.ipInterface.node.label)}</a>
+(node ID: ${model.service.ipInterface.node.id}) has ${fn:length(model.service.applications)} applications.
 </p>
 
 <form action="admin/applications.htm" method="get">
@@ -43,7 +43,7 @@ of node <a href="<c:url value='element/node.jsp?node=${model.service.ipInterface
       <td class="normal">  
     <select name="toAdd" size="20" multiple>
 	  <c:forEach items="${model.applications}" var="application">
-	    <option value="${application.id}">${application.name}</option>
+	    <option value="${application.id}">${fn:escapeXml(application.name)}</option>
 	  </c:forEach>
     </select>
       </td>
@@ -58,7 +58,7 @@ of node <a href="<c:url value='element/node.jsp?node=${model.service.ipInterface
       <td class="normal">  
     <select name="toDelete" size="20" multiple>
 	  <c:forEach items="${model.sortedApplications}" var="application">
-	    <option value="${application.id}">${application.name}</option>
+	    <option value="${application.id}">${fn:escapeXml(application.name)}</option>
 	  </c:forEach>
     </select>
       </td>

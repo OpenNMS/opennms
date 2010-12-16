@@ -1,5 +1,6 @@
-/* Copyright (c) 2006-2008 MetaCarta, Inc., published under the Clear BSD
- * license.  See http://svn.openlayers.org/trunk/openlayers/license.txt for the
+/* Copyright (c) 2006-2010 by OpenLayers Contributors (see authors.txt for 
+ * full list of contributors). Published under the Clear BSD license.  
+ * See http://svn.openlayers.org/trunk/openlayers/license.txt for the
  * full text of the license. */
 
 /**
@@ -168,7 +169,9 @@ OpenLayers.Request = {
             request.send(config.data);
         } else {
             window.setTimeout(function(){
-                request.send(config.data);
+                if (request._aborted !== true) {
+                    request.send(config.data);
+                }
             }, 0);
         }
         return request;

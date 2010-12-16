@@ -2,7 +2,7 @@
   <parent>
     <artifactId>opennms-provision</artifactId>
     <groupId>org.opennms</groupId>
-    <version>1.8.4-SNAPSHOT</version>
+    <version>1.8.8-SNAPSHOT</version>
   </parent>
   <modelVersion>4.0.0</modelVersion>
   <groupId>org.opennms</groupId>
@@ -41,8 +41,9 @@
     	<scope>test</scope>
     </dependency>
     <dependency>
-    	<groupId>org.dhcp.jdhcp</groupId>
-    	<artifactId>jdhcp</artifactId>
+    	<groupId>org.opennms.dependencies</groupId>
+    	<artifactId>jdhcp-dependencies</artifactId>
+    	<type>pom</type>
     </dependency>
     <dependency>
     	<groupId>org.opennms</groupId>

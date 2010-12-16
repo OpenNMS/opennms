@@ -38,37 +38,22 @@
 package org.opennms.netmgt.provision.service;
 
 import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertFalse;
-import static org.junit.Assert.assertNotNull;
-import static org.junit.Assert.assertTrue;
-
 import java.io.File;
 import java.net.InetAddress;
-import java.net.MalformedURLException;
-import java.net.URL;
-import java.util.Collection;
-import java.util.Date;
-import java.util.List;
 import java.util.Properties;
 import java.util.concurrent.ExecutionException;
 
 import org.joda.time.Duration;
-import org.junit.After;
 import org.junit.AfterClass;
 import org.junit.Before;
 import org.junit.BeforeClass;
-import org.junit.Ignore;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.opennms.core.concurrent.PausibleScheduledThreadPoolExecutor;
 import org.opennms.core.tasks.Task;
 import org.opennms.mock.snmp.JUnitSnmpAgent;
 import org.opennms.mock.snmp.JUnitSnmpAgentExecutionListener;
-import org.opennms.mock.snmp.MockSnmpAgent;
-import org.opennms.mock.snmp.MockSnmpAgentAware;
-import org.opennms.netmgt.EventConstants;
 import org.opennms.netmgt.config.SnmpPeerFactory;
-import org.opennms.netmgt.dao.AssetRecordDao;
 import org.opennms.netmgt.dao.DistPollerDao;
 import org.opennms.netmgt.dao.IpInterfaceDao;
 import org.opennms.netmgt.dao.MonitoredServiceDao;
@@ -78,16 +63,7 @@ import org.opennms.netmgt.dao.SnmpInterfaceDao;
 import org.opennms.netmgt.dao.db.JUnitTemporaryDatabase;
 import org.opennms.netmgt.dao.db.OpenNMSConfigurationExecutionListener;
 import org.opennms.netmgt.dao.db.TemporaryDatabaseExecutionListener;
-import org.opennms.netmgt.mock.EventAnticipator;
-import org.opennms.netmgt.mock.MockElement;
-import org.opennms.netmgt.mock.MockEventIpcManager;
-import org.opennms.netmgt.mock.MockNetwork;
-import org.opennms.netmgt.mock.MockNode;
-import org.opennms.netmgt.mock.MockVisitorAdapter;
-import org.opennms.netmgt.model.OnmsAssetRecord;
-import org.opennms.netmgt.model.OnmsNode;
 import org.opennms.netmgt.provision.persist.ForeignSourceRepository;
-import org.opennms.netmgt.provision.persist.ForeignSourceRepositoryException;
 import org.opennms.netmgt.provision.persist.MockForeignSourceRepository;
 import org.opennms.netmgt.provision.persist.OnmsAssetRequisition;
 import org.opennms.netmgt.provision.persist.OnmsIpInterfaceRequisition;
@@ -97,14 +73,9 @@ import org.opennms.netmgt.provision.persist.OnmsNodeRequisition;
 import org.opennms.netmgt.provision.persist.OnmsServiceCategoryRequisition;
 import org.opennms.netmgt.provision.persist.RequisitionVisitor;
 import org.opennms.netmgt.provision.persist.foreignsource.ForeignSource;
-import org.opennms.netmgt.provision.persist.policies.NodeCategorySettingPolicy;
 import org.opennms.netmgt.provision.persist.requisition.Requisition;
-import org.opennms.netmgt.xml.event.Event;
 import org.opennms.test.mock.MockLogAppender;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.core.io.ClassPathResource;
-import org.springframework.core.io.ResourceLoader;
-import org.springframework.core.io.UrlResource;
 import org.springframework.core.style.ToStringCreator;
 import org.springframework.test.context.ContextConfiguration;
 import org.springframework.test.context.TestExecutionListeners;
@@ -127,6 +98,7 @@ import org.springframework.transaction.annotation.Transactional;
     TransactionalTestExecutionListener.class
 })
 @ContextConfiguration(locations={
+        "classpath:/META-INF/opennms/applicationContext-soa.xml",
         "classpath:/META-INF/opennms/applicationContext-dao.xml",
         "classpath:/META-INF/opennms/applicationContext-daemon.xml",
         "classpath:/META-INF/opennms/applicationContext-proxy-snmp.xml",
@@ -138,10 +110,7 @@ import org.springframework.transaction.annotation.Transactional;
         "classpath:/importerServiceTest.xml"
 })
 @JUnitTemporaryDatabase()
-public class NewSuspectScanTest implements MockSnmpAgentAware {
-    
-    @Autowired
-    private MockEventIpcManager m_mockEventIpcManager;
+public class NewSuspectScanTest {
     
     @Autowired
     private Provisioner m_provisioner;
@@ -165,33 +134,16 @@ public class NewSuspectScanTest implements MockSnmpAgentAware {
     private DistPollerDao m_distPollerDao;
     
     @Autowired
-    private AssetRecordDao m_assetRecordDao;
-    
-    @Autowired
-    private ResourceLoader m_resourceLoader;
-    
-    @Autowired
     private ProvisionService m_provisionService;
     
     @Autowired
     private PausibleScheduledThreadPoolExecutor m_pausibleExecutor;
     
-    @Autowired
-    private ImportScheduler m_importSchedule;
-    
-    private EventAnticipator m_eventAnticipator;
-
     private ForeignSourceRepository m_foreignSourceRepository;
     
     private ForeignSource m_foreignSource;
 
-    private MockSnmpAgent m_agent;
-    
     static private String s_initialDiscoveryEnabledValue;
-    
-    public void setMockSnmpAgent(MockSnmpAgent agent) {
-        m_agent = agent;
-    }
     
     @BeforeClass
     public static void setUpSnmpConfig() {
@@ -227,8 +179,6 @@ public class NewSuspectScanTest implements MockSnmpAgentAware {
     @Before
     public void setUp() throws Exception {
         
-        m_eventAnticipator = m_mockEventIpcManager.getEventAnticipator();
-        
         m_provisioner.start();
         
         m_foreignSource = new ForeignSource();
@@ -263,9 +213,6 @@ public class NewSuspectScanTest implements MockSnmpAgentAware {
 
         // wait for NodeScan triggered by NodeAdded to complete
         Thread.sleep(100000);
-
-        List<OnmsNode> nodes = getNodeDao().findAll();
-        OnmsNode node = nodes.get(0);
 
         //Verify distpoller count
         assertEquals(1, getDistPollerDao().countAll());
@@ -303,8 +250,6 @@ public class NewSuspectScanTest implements MockSnmpAgentAware {
         NewSuspectScan scan = m_provisioner.createNewSuspectScan(InetAddress.getByName("172.20.2.201"));
         runScan(scan);
         
-        List<OnmsNode> nodes = getNodeDao().findAll();
-        OnmsNode node = nodes.get(0);
 
         //Verify distpoller count
         assertEquals(1, getDistPollerDao().countAll());
@@ -362,55 +307,6 @@ public class NewSuspectScanTest implements MockSnmpAgentAware {
         return m_serviceTypeDao;
     }
     
-    private AssetRecordDao getAssetRecordDao() {
-        return m_assetRecordDao;
-    }
-    
-
-    
-    
-    
-    private OnmsNode createNode() {
-        OnmsNode node = new OnmsNode();
-        //node.setId(nodeId);
-        node.setLastCapsdPoll(new Date());
-        node.setForeignSource("imported:");
-        
-        m_nodeDao.save(node);
-        m_nodeDao.flush();
-        return node;
-    }
-    
-    private void verifyCounts2(CountingVisitor visitor) {
-        assertEquals(1, visitor.getModelImportCount());
-        assertEquals(1, visitor.getNodeCount());
-        assertEquals(0, visitor.getNodeCategoryCount());
-        assertEquals(1, visitor.getInterfaceCount());
-        assertEquals(2, visitor.getMonitoredServiceCount());
-        assertEquals(0, visitor.getServiceCategoryCount());
-        assertEquals(visitor.getModelImportCount(), visitor.getModelImportCompletedCount());
-        assertEquals(visitor.getNodeCount(), visitor.getNodeCompletedCount());
-        assertEquals(visitor.getNodeCategoryCount(), visitor.getNodeCategoryCompletedCount());
-        assertEquals(visitor.getInterfaceCount(), visitor.getInterfaceCompletedCount());
-        assertEquals(visitor.getMonitoredServiceCount(), visitor.getMonitoredServiceCompletedCount());
-        assertEquals(visitor.getServiceCategoryCount(), visitor.getServiceCategoryCompletedCount());
-    }
-    
-    private void verifyCounts(CountingVisitor visitor) {
-        assertEquals(1, visitor.getModelImportCount());
-        assertEquals(1, visitor.getNodeCount());
-        assertEquals(3, visitor.getNodeCategoryCount());
-        assertEquals(4, visitor.getInterfaceCount());
-        assertEquals(6, visitor.getMonitoredServiceCount());
-        assertEquals(0, visitor.getServiceCategoryCount());
-        assertEquals(visitor.getModelImportCount(), visitor.getModelImportCompletedCount());
-        assertEquals(visitor.getNodeCount(), visitor.getNodeCompletedCount());
-        assertEquals(visitor.getNodeCategoryCount(), visitor.getNodeCategoryCompletedCount());
-        assertEquals(visitor.getInterfaceCount(), visitor.getInterfaceCompletedCount());
-        assertEquals(visitor.getMonitoredServiceCount(), visitor.getMonitoredServiceCompletedCount());
-        assertEquals(visitor.getServiceCategoryCount(), visitor.getServiceCategoryCompletedCount());
-    }
-
     static class CountingVisitor implements RequisitionVisitor {
         private int m_modelImportCount;
         private int m_modelImportCompleted;

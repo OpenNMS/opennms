@@ -33,10 +33,12 @@ package org.opennms.netmgt.provision.detector;
 import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertTrue;
 
+import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.opennms.netmgt.provision.ServiceDetector;
 import org.opennms.netmgt.provision.detector.datagram.DnsDetector;
+import org.opennms.test.mock.MockLogAppender;
 import org.springframework.beans.BeansException;
 import org.springframework.context.ApplicationContext;
 import org.springframework.context.ApplicationContextAware;
@@ -53,6 +55,11 @@ public class DatagramWiringTest implements ApplicationContextAware {
     
     private ApplicationContext m_applicationContext;
     
+    @Before
+    public void setUp() {
+        MockLogAppender.setupLogging();
+    }
+
     private void testWiredDetector(Class<? extends ServiceDetector> detectorClass) {
         Object bean = m_applicationContext.getBean(detectorClass.getName());
         assertNotNull(bean);

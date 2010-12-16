@@ -1,5 +1,6 @@
-/* Copyright (c) 2006-2008 MetaCarta, Inc., published under the Clear BSD
- * license.  See http://svn.openlayers.org/trunk/openlayers/license.txt for the
+/* Copyright (c) 2006-2010 by OpenLayers Contributors (see authors.txt for 
+ * full list of contributors). Published under the Clear BSD license.  
+ * See http://svn.openlayers.org/trunk/openlayers/license.txt for the
  * full text of the license. */
 
 
@@ -149,6 +150,7 @@ OpenLayers.Control.WMSGetFeatureInfo = OpenLayers.Class(OpenLayers.Control, {
      * beforegetfeatureinfo - Triggered before the request is sent.
      *      The event object has an *xy* property with the position of the 
      *      mouse click or hover event that triggers the request.
+     * nogetfeatureinfo - no queryable layers were found.
      * getfeatureinfo - Triggered when a GetFeatureInfo response is received.
      *      The event object has a *text* property with the body of the
      *      response (String), a *features* property with an array of the
@@ -159,7 +161,7 @@ OpenLayers.Control.WMSGetFeatureInfo = OpenLayers.Class(OpenLayers.Control, {
      *      layers, *text* and *request* will only contain the response body
      *      and request object of the last request.
      */
-    EVENT_TYPES: ["beforegetfeatureinfo", "getfeatureinfo"],
+    EVENT_TYPES: ["beforegetfeatureinfo", "nogetfeatureinfo", "getfeatureinfo"],
 
     /**
      * Constructor: <OpenLayers.Control.WMSGetFeatureInfo>
@@ -424,6 +426,7 @@ OpenLayers.Control.WMSGetFeatureInfo = OpenLayers.Class(OpenLayers.Control, {
     request: function(clickPosition, options) {
         var layers = this.findLayers();
         if(layers.length == 0) {
+            this.events.triggerEvent("nogetfeatureinfo");
             // Reset the cursor.
             OpenLayers.Element.removeClass(this.map.viewPortDiv, "olCursorWait");
             return;
@@ -433,10 +436,10 @@ OpenLayers.Control.WMSGetFeatureInfo = OpenLayers.Class(OpenLayers.Control, {
         if(this.drillDown === false) {
             var wmsOptions = this.buildWMSOptions(this.url, layers,
                 clickPosition, layers[0].params.FORMAT); 
-            var response = OpenLayers.Request.GET(wmsOptions);
+            var request = OpenLayers.Request.GET(wmsOptions);
     
             if (options.hover === true) {
-                this.hoverRequest = response.priv;
+                this.hoverRequest = request;
             }
         } else {
             this._requestCount = 0;
@@ -515,18 +518,6 @@ OpenLayers.Control.WMSGetFeatureInfo = OpenLayers.Class(OpenLayers.Control, {
                 delete this._numRequests;
             }
         }
-    },
-   
-    /** 
-     * Method: setMap
-     * Set the map property for the control. 
-     * 
-     * Parameters:
-     * map - {<OpenLayers.Map>} 
-     */
-    setMap: function(map) {
-        this.handler.setMap(map);
-        OpenLayers.Control.prototype.setMap.apply(this, arguments);
     },
 
     CLASS_NAME: "OpenLayers.Control.WMSGetFeatureInfo"

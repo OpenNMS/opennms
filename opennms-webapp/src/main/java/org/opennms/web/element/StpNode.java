@@ -37,13 +37,13 @@ package org.opennms.web.element;
 import java.util.HashMap;
 import java.util.Map;
 
+import org.opennms.netmgt.linkd.DbStpNodeEntry;
+
 
 /**
  * <p>StpNode class.</p>
  *
  * @author <a href="mailto:antonio@opennms.it">Antonio Russo</a>
- * @version $Id: $
- * @since 1.8.1
  */
 public class StpNode
 {
@@ -62,29 +62,46 @@ public class StpNode
         char    m_status;
         int 	m_stprootnodeid;
 
+        /**
+         * <p>String identifiers for the enumeration of values:</p>
+         * <ul>
+         * <li>{@link DbStpNodeEntry#BASE_TYPE_UNKNOWN}</li>
+         * <li>{@link DbStpNodeEntry#BASE_TYPE_TRANSPARENT_ONLY}</li>
+         * <li>{@link DbStpNodeEntry#BASE_TYPE_SOURCEROUTE_ONLY}</li>
+         * <li>{@link DbStpNodeEntry#BASE_TYPE_SRT}</li>
+         * </ul>
+         */ 
 	    private static final String[] BRIDGE_BASE_TYPE = new String[] {
-		    "&nbsp;",           //0 (not supported)
-		    "UnKnown",          //1
-		    "Trasparent-Only",  //2
-		    "Sourceroute-Only", //3
-		    "Src"               //4
+		    null,                //0 (not a valid index)
+		    "Unknown",           //1
+		    "Transparent-Only",  //2
+		    "Source-Route-Only", //3
+		    "SRT"                //4
 		    };
 
+        /**
+         * <p>String identifiers for the enumeration of values:</p>
+         * <ul>
+         * <li>{@link DbStpNodeEntry#STP_UNKNOWN}</li>
+         * <li>{@link DbStpNodeEntry#STP_DECLB100}</li>
+         * <li>{@link DbStpNodeEntry#STP_IEEE8011D}</li>
+         * </ul>
+         */ 
 		    private static final String[] STP_PROTO_TYPE = new String[] {
-		    "&nbsp;",           //0 (not supported)
-		    "UnKnown",          //1
-		    "DEC Lan Bridge",  //2
-		    "IEEE 802.1d", //3
+		    null,               //0 (not a valid index)
+		    "Unknown",          //1
+		    "DEC LAN Bridge",   //2
+		    "IEEE 802.1D",      //3
 		 };
 
 
-        private static final Map<Character, String>     statusMap = new HashMap<Character, String>();
+        private static final Map<Character, String> statusMap = new HashMap<Character, String>();
       	
         static {
-            statusMap.put( new Character('A'), "Active" );
-            statusMap.put( new Character(' '), "Unknown" );
-            statusMap.put( new Character('D'), "Deleted" );
-            statusMap.put( new Character('N'), "Not Active" );
+            statusMap.put( DbStpNodeEntry.STATUS_ACTIVE, "Active" );
+            statusMap.put( DbStpNodeEntry.STATUS_UNKNOWN, "Unknown" );
+            statusMap.put( DbStpNodeEntry.STATUS_DELETED, "Deleted" );
+            statusMap.put( DbStpNodeEntry.STATUS_NOT_POLLED, "Not Active" );
         }
 
         /* package-protected so only the NetworkElementFactory can instantiate */
@@ -172,7 +189,11 @@ public class StpNode
 		 * @return a {@link java.lang.String} object.
 		 */
 		public String getBaseType() {
-			return BRIDGE_BASE_TYPE[m_basetype];
+		    try {
+		        return BRIDGE_BASE_TYPE[m_basetype];
+		    } catch (ArrayIndexOutOfBoundsException e) {
+		        return BRIDGE_BASE_TYPE[DbStpNodeEntry.BASE_TYPE_UNKNOWN];
+		    }
 		}
 		/**
 		 * <p>get_basevlan</p>
@@ -243,7 +264,11 @@ public class StpNode
 		 * @return a {@link java.lang.String} object.
 		 */
 		public String getStpProtocolSpecification() {
-			return STP_PROTO_TYPE[m_stpprotocolspecification];
+            try {
+                return STP_PROTO_TYPE[m_stpprotocolspecification];
+            } catch (ArrayIndexOutOfBoundsException e) {
+                return STP_PROTO_TYPE[DbStpNodeEntry.STP_UNKNOWN];
+            }
 		}
 
 		/**
@@ -288,7 +313,7 @@ public class StpNode
 	     * @return a {@link java.lang.String} object.
 	     */
 	    public String getStatusString() {
-	        return( (String)statusMap.get( new Character(m_status) ));
+	        return statusMap.get( new Character(m_status) );
 	    }
 
 	    /**

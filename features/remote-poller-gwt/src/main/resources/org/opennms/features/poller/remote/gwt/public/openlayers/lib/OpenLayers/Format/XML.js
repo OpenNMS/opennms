@@ -1,5 +1,6 @@
-/* Copyright (c) 2006-2008 MetaCarta, Inc., published under the Clear BSD
- * license.  See http://svn.openlayers.org/trunk/openlayers/license.txt for the
+/* Copyright (c) 2006-2010 by OpenLayers Contributors (see authors.txt for 
+ * full list of contributors). Published under the Clear BSD license.  
+ * See http://svn.openlayers.org/trunk/openlayers/license.txt for the
  * full text of the license. */
 
 /**
@@ -243,6 +244,9 @@ OpenLayers.Format.XML = OpenLayers.Class(OpenLayers.Format, {
      */
     createTextNode: function(text) {
         var node;
+        if (typeof text !== "string") {
+            text = String(text);
+        }
         if(this.xmldom) {
             node = this.xmldom.createTextNode(text);
         } else {
@@ -568,9 +572,6 @@ OpenLayers.Format.XML = OpenLayers.Class(OpenLayers.Format, {
         }
         var value = options.value;
         if(value != null) {
-            if(typeof value == "boolean") {
-                value = String(value);
-            }
             node.appendChild(this.createTextNode(value));
         }
         return node;

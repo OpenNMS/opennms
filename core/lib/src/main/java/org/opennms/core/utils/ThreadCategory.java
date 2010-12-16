@@ -41,7 +41,6 @@
 package org.opennms.core.utils;
 
 import org.apache.log4j.Logger;
-import org.apache.log4j.Priority;
 
 /**
  * This class is designed to work with log4j based on threads and not class

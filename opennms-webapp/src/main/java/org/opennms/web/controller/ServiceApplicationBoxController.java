@@ -61,7 +61,7 @@ public class ServiceApplicationBoxController extends AbstractController {
     /** {@inheritDoc} */
     @Override
     protected ModelAndView handleRequestInternal(HttpServletRequest request, HttpServletResponse response) throws Exception {
-        Service service = ElementUtil.getServiceByParams(request);
+        Service service = ElementUtil.getServiceByParams(request, getServletContext());
 
         List<OnmsApplication> applications = m_adminApplicationService.findByMonitoredService(service.getId());
         

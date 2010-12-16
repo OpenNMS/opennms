@@ -94,10 +94,7 @@
 
   function applyChanges()
   {
-      if (confirm("Are you sure you want to proceed? It may take several minutes to update the database based on the changes made."))
-      {
-          document.manageAll.submit();
-      }
+      return confirm("Are you sure you want to proceed? It may take several minutes to update the database based on the changes made.");
   }
   
   function cancel()
@@ -165,7 +162,7 @@
         if (lineItems.intValue() > 0)
         {
                 ManagedInterface firstInterface = (ManagedInterface)interfaces.get(0);
-                nodeLabel = NetworkElementFactory.getNodeLabel(firstInterface.getNodeid());
+                nodeLabel = NetworkElementFactory.getInstance(getServletContext()).getNodeLabel(firstInterface.getNodeid());
     
                 if ( interfaces.size() == 1)
                 { 
@@ -199,7 +196,7 @@
 
 <hr/>
     
-<form method="post" name="manageAll" action="admin/manageNode">
+<form method="post" name="manageAll" action="admin/manageNode" onsubmit="return applyChanges();">
 
   <h3>Manage and Unmanage Interfaces and Services</h3>
 
@@ -225,10 +222,10 @@
 
   <input type="hidden" name="node" value="<%= nodeId %>"/>
 
-  <input type="submit" value="Apply Changes" onClick="applyChanges()"/>
-  <input type="button" value="Cancel" onClick="cancel()"/>
-  <input type="button" value="Select All" onClick="checkAll()"/>
-  <input type="button" value="Unselect All" onClick="uncheckAll()"/>
+  <input type="submit" value="Apply Changes"/>
+  <input type="button" value="Cancel" onclick="cancel()"/>
+  <input type="button" value="Select All" onclick="checkAll()"/>
+  <input type="button" value="Unselect All" onclick="uncheckAll()"/>
   <input type="reset"/>
 
   <% if (interfaces.size() > 0) { %>
@@ -258,10 +255,10 @@
       
   <br/>
 
-  <input type="submit" value="Apply Changes" onClick="applyChanges()"/>
-  <input type="button" value="Cancel" onClick="cancel()"/> 
-  <input type="button" value="Select All" onClick="checkAll()"/>
-  <input type="button" value="Unselect All" onClick="uncheckAll()"/>
+  <input type="submit" value="Apply Changes"/>
+  <input type="button" value="Cancel" onclick="cancel()"/> 
+  <input type="button" value="Select All" onclick="checkAll()"/>
+  <input type="button" value="Unselect All" onclick="uncheckAll()"/>
   <input type="reset"/>
 
 </form>
@@ -322,7 +319,7 @@
           StringBuffer row = new StringBuffer( "<tr>");
           
           row.append("<td class=\"standardheaderplain\" width=\"5%\" align=\"center\">");
-          row.append("<input type=\"checkbox\" name=\"interfaceCheck\" value=\"").append(key).append("\" onClick=\"javascript:updateServices(" + interfaceIndex + ", " + serviceArray + ")\" ").append(status).append(" >");
+          row.append("<input type=\"checkbox\" name=\"interfaceCheck\" value=\"").append(key).append("\" onclick=\"javascript:updateServices(" + interfaceIndex + ", " + serviceArray + ")\" ").append(status).append(" >");
           row.append("</td>").append("\n");
           row.append("</td>").append("\n");
           row.append("<td class=\"standardheaderplain\" width=\"10%\" align=\"center\">");
@@ -338,7 +335,7 @@
           StringBuffer row = new StringBuffer( "<tr>");
           
           row.append("<td class=\"standard\" width=\"5%\" align=\"center\">");
-          row.append("<input type=\"checkbox\" name=\"serviceCheck\" value=\"").append(key).append("\" onClick=\"javascript:verifyManagedInterface(" + interfaceIndex + ", " + serviceIndex + ")\" ").append(status).append(" >");
+          row.append("<input type=\"checkbox\" name=\"serviceCheck\" value=\"").append(key).append("\" onclick=\"javascript:verifyManagedInterface(" + interfaceIndex + ", " + serviceIndex + ")\" ").append(status).append(" >");
           row.append("</td>").append("\n");
           row.append("<td class=\"standard\" width=\"10%\" align=\"center\">").append(address).append("</td>").append("\n");
           row.append("<td class=\"standard\" width=\"10%\" align=\"center\">").append(service).append("</td></tr>").append("\n");

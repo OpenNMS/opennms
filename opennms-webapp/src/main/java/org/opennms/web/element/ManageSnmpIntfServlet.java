@@ -41,24 +41,24 @@
  */
 package org.opennms.web.element;
 
+import java.io.IOException;
+import java.net.InetAddress;
+import java.net.UnknownHostException;
+import java.sql.SQLException;
+import java.util.ArrayList;
+import java.util.List;
+
 import javax.servlet.ServletException;
-import javax.servlet.http.HttpSession;
 import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
+import javax.servlet.http.HttpSession;
 
-import org.opennms.core.utils.IPSorter;
+import org.opennms.core.utils.InetAddressUtils;
 import org.opennms.core.utils.ThreadCategory;
 import org.opennms.netmgt.config.SnmpPeerFactory;
 import org.opennms.netmgt.snmp.SnmpAgentConfig;
 import org.opennms.web.WebSecurityUtils;
-
-import java.sql.SQLException;
-import java.util.ArrayList;
-import java.util.List;
-import java.io.IOException;
-import java.net.InetAddress;
-import java.net.UnknownHostException;
 
 /**
  * <p>ManageSnmpIntfServlet class.</p>
@@ -89,8 +89,7 @@ public final class ManageSnmpIntfServlet extends HttpServlet {
      */
     public void init() throws ServletException {
         try {
-            this.snmpServiceId = NetworkElementFactory
-                    .getServiceIdFromName("SNMP");
+            this.snmpServiceId = NetworkElementFactory.getInstance(getServletContext()).getServiceIdFromName("SNMP");
             SnmpPeerFactory.init();
         } catch (Exception e) {
             throw new ServletException(
@@ -136,8 +135,7 @@ public final class ManageSnmpIntfServlet extends HttpServlet {
         String snmpIp = null;
         Service[] snmpServices = null;
         try {
-            snmpServices = NetworkElementFactory.getServicesOnNode(nodeId,
-                    this.snmpServiceId);
+            snmpServices = NetworkElementFactory.getInstance(getServletContext()).getServicesOnNode(nodeId, this.snmpServiceId);
             if (snmpServices != null && snmpServices.length > 0) {
                 List<InetAddress> ips = new ArrayList<InetAddress>();
                 for (int i = 0; i < snmpServices.length; i++) {
@@ -145,7 +143,7 @@ public final class ManageSnmpIntfServlet extends HttpServlet {
                             .getIpAddress()));
                 }
 
-                InetAddress lowest = IPSorter.getLowestInetAddress(ips);
+                InetAddress lowest = InetAddressUtils.getLowestInetAddress(ips);
 
                 if (lowest != null) {
                     snmpIp = lowest.getHostAddress();

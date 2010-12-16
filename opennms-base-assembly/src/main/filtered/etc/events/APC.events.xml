@@ -152,7 +152,8 @@ for necessary action cannot be guaranteed.&lt;/p&gt;&lt;table&gt;
 			APC Event: upsOnBattery trap received 
 			mtrapargsString=%parm[#1]%&lt;/p&gt;
 		</logmsg>
-	<severity>Minor</severity>
+	<severity>Warning</severity>
+	<alarm-data reduction-key="%uei%:%dpname%:%nodeid%:%interface%" alarm-type="1" auto-clean="false"/>
 </event>
 <event>
 	<mask>
@@ -274,7 +275,8 @@ to 'sleep' and immediately cut power to the load.&lt;/p&gt;&lt;table&gt;
 			APC Event: powerRestored trap received 
 			mtrapargsString=%parm[#1]%&lt;/p&gt;
 		</logmsg>
-	<severity>Cleared</severity>
+	<severity>Normal</severity>
+	<alarm-data reduction-key="%uei%:%dpname%:%nodeid%:%interface%" alarm-type="2" clear-key="uei.opennms.org/vendor/APC/traps/upsOnBattery:%dpname%:%nodeid%:%interface%" auto-clean="false"/>
 </event>
 <event>
 	<mask>
@@ -1632,7 +1634,7 @@ has changed configuration.&lt;/p&gt;&lt;table&gt;
 			APC Event: batteryOverTemperatureCleared trap received 
 			mtrapargsString=%parm[#1]%&lt;/p&gt;
 		</logmsg>
-	<severity>Cleared</severity>
+	<severity>Normal</severity>
 	<alarm-data reduction-key="%uei%:%dpname%:%nodeid%:%interface%" clear-key="uei.opennms.org/vendor/APC/traps/batteryOverTemperature:%dpname%:%nodeid%:%interface%" alarm-type="2" auto-clean="false"/>
 </event>
 <event>

@@ -73,26 +73,26 @@ public class DefaultKscReportService implements KscReportService, InitializingBe
     /** {@inheritDoc} */
     public Report buildDomainReport(String domain) {
         String resourceId = OnmsResource.createResourceId("domain", domain);
-        OnmsResource node = getResourceService().loadResourceById(resourceId);
-        return buildResourceReport(node, "Domain Report for Domain " + domain);
+        OnmsResource node = getResourceService().getResourceById(resourceId);
+        return buildResourceReport(getResourceService(), node, "Domain Report for Domain " + domain);
     }
 
     /** {@inheritDoc} */
     public Report buildNodeReport(int node_id) {
         String resourceId = OnmsResource.createResourceId("node", Integer.toString(node_id));
-        OnmsResource node = getResourceService().loadResourceById(resourceId);
-        return buildResourceReport(node, "Node Report for Node Number " + node_id);
+        OnmsResource node = getResourceService().getResourceById(resourceId);
+        return buildResourceReport(getResourceService(), node, "Node Report for Node Number " + node_id);
     }
     
-    private Report buildResourceReport(OnmsResource parentResource, String title) {
+    private static Report buildResourceReport(ResourceService service, OnmsResource parentResource, String title) {
         Report report = new Report();
         report.setTitle(title);
         report.setShow_timespan_button(true);
         report.setShow_graphtype_button(true);
 
-        List<OnmsResource> resources = getResourceService().findChildResources(parentResource, "interfaceSnmp");
+        List<OnmsResource> resources = service.findChildResources(parentResource, "interfaceSnmp");
         for (OnmsResource resource : resources) {
-            PrefabGraph[] graphs = getResourceService().findPrefabGraphsForResource(resource);
+            PrefabGraph[] graphs = service.findPrefabGraphsForResource(resource);
             if (graphs.length == 0) {
                 continue;
             }
@@ -108,9 +108,7 @@ public class DefaultKscReportService implements KscReportService, InitializingBe
         return report;
     }
 
-
-    /** {@inheritDoc} */
-    public OnmsResource getResourceFromGraph(Graph graph) {
+    private static String getResourceIdForGraph(Graph graph) {
         Assert.notNull(graph, "graph argument cannot be null");
         
         String resourceId;
@@ -144,7 +142,12 @@ public class DefaultKscReportService implements KscReportService, InitializingBe
             resourceId = OnmsResource.createResourceId(parentResourceTypeName, parentResourceName, resourceTypeName, resourceName);
         }
         
-        return getResourceService().loadResourceById(resourceId);
+        return resourceId;
+    }
+
+    /** {@inheritDoc} */
+    public OnmsResource getResourceFromGraph(Graph graph) {
+        return getResourceService().getResourceById(getResourceIdForGraph(graph));
     }
     
     /** {@inheritDoc} */
@@ -153,58 +156,44 @@ public class DefaultKscReportService implements KscReportService, InitializingBe
         List<OnmsResource> resources = new LinkedList<OnmsResource>();
         HashMap<String, List<OnmsResource>> resourcesMap = new HashMap<String, List<OnmsResource>>();
         for(Graph graph : graphs) {
-            String resourceId;
-            if (graph.getResourceId() != null) {
-                resourceId = graph.getResourceId();
-            } else {
-                String parentResourceTypeName;
-                String parentResourceName;
-                String resourceTypeName;
-                String resourceName;
+            String resourceId = getResourceIdForGraph(graph);
             
-                if (graph.getNodeId() != null && !graph.getNodeId().equals("null")) {
-                    parentResourceTypeName = "node";
-                    parentResourceName = graph.getNodeId();
-                } else if (graph.getDomain() != null && !graph.getDomain().equals("null")) {
-                    parentResourceTypeName = "domain";
-                    parentResourceName = graph.getDomain();
-                } else {
-                    throw new IllegalArgumentException("Graph does not have a resourceId, nodeId, or domain.");
-                }
-            
-                String intf = graph.getInterfaceId();
-                if (intf == null || "".equals(intf)) {
-                    resourceTypeName = "nodeSnmp";
-                    resourceName = "";
-                } else {
-                    resourceTypeName = "interfaceSnmp";
-                    resourceName = intf;
-                }
-                resourceId = OnmsResource.createResourceId(parentResourceTypeName, parentResourceName, resourceTypeName, resourceName);
-            }
-            
-            String parent = resourceId.substring(0, resourceId.indexOf("]") + 1);
-            String child = resourceId.substring(resourceId.indexOf("]") + 2);
-            String childType = child.substring(0, child.indexOf("["));
-            String childName = child.substring(child.indexOf("[") + 1, child.indexOf("]"));
-            OnmsResource resource = null;
             if (resourceId != null) {
-                if (!resourcesMap.containsKey(parent)) {
-                    List<OnmsResource> resourceList = getResourceService().getResourceListById(resourceId);
-                    resourcesMap.put(parent, resourceList);
-                    log().debug("getResourcesFromGraphs: add resourceList to map for " + parent);
+                String[] resourceParts = DefaultGraphResultsService.parseResourceId(resourceId);
+                if (resourceParts == null) {
+                    log().warn("getResourcesFromGraphs: unparsable resourceId, skipping: " + resourceId);
+                    continue;
                 }
-            
-                for (OnmsResource r : resourcesMap.get(parent)) {
-                    if (childType.equals(r.getResourceType().getName())
-                            && childName.equals(r.getName())) {
-                        resource = r;
+                
+                String parent = resourceParts[0];
+                String childType = resourceParts[1];
+                String childName = resourceParts[2];
+                
+                List<OnmsResource> resourcesForParent = resourcesMap.get(parent);
+                if (resourcesForParent == null) {
+                    try {
+                        resourcesForParent = getResourceService().getResourceListById(resourceId);
+                        if (resourcesForParent == null) {
+                            log().warn("getResourcesFromGraphs: no resources found for parent " + parent);
+                            continue;
+                        } else {
+                            resourcesMap.put(parent, resourcesForParent);
+                            log().debug("getResourcesFromGraphs: add resourceList to map for " + parent);
+                        }
+                    } catch (Throwable e) {
+                        log().warn("getResourcesFromGraphs: unexpected exception thrown while fetching resource list for \"" + parent + "\", skipping resource", e);
+                        continue;
+                    }
+                }
+                
+                for (OnmsResource r : resourcesForParent) {
+                    if (childType.equals(r.getResourceType().getName()) && childName.equals(r.getName())) {
+                        resources.add(r);
                         log().debug("getResourcesFromGraphs: found resource in map" + r.toString());
                         break;
                     }
                 }
             }
-            resources.add(resource);
         }
         return resources;
     }
@@ -284,8 +273,8 @@ public class DefaultKscReportService implements KscReportService, InitializingBe
         
         initTimeSpans();
     }
-    private ThreadCategory log() {
-        return ThreadCategory.getInstance();
+    private static ThreadCategory log() {
+        return ThreadCategory.getInstance(DefaultKscReportService.class);
     }
 
 }

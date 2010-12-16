@@ -180,4 +180,7 @@ public interface QueryManager {
      * @return an array of {@link java.lang.String} objects.
      */
     public String[] getCriticalPath(int nodeId);
+    
+    public List<String[]> getNodeServices(int nodeId);
+    
 }

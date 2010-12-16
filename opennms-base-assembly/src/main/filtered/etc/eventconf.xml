@@ -1968,11 +1968,11 @@
     <event-label>OpenNMS-defined Acknowledgment request</event-label>
     <descr>
       A message received requesting an Acknowledgable be acknowledged.
-      &lt;p&gt;Acknowledgement Request:%parm[refId] of type:%parm[ackType]% was received with the action:%parm[ackAction]% was received for User: %parm[ackUser]%&lt;/p&gt;
+      &lt;p&gt;Acknowledgement Request:%parm[refId]% of type:%parm[ackType]% was received with the action:%parm[ackAction]% was received for User: %parm[ackUser]%&lt;/p&gt;
       Typically received from an external source or as a choice of an AckReader implementation.
     </descr>
     <logmsg dest='logndisplay' >
-      &lt;p&gt;Acknowledgement Request:%parm[refId] of type:%parm[ackType]% was received with the action:%parm[ackAction]% was received for User: %parm[ackUser]%.&lt;/p&gt;
+      &lt;p&gt;Acknowledgement Request:%parm[refId]% of type:%parm[ackType]% was received with the action:%parm[ackAction]% was received for User: %parm[ackUser]%.&lt;/p&gt;
      </logmsg>
      <severity>Normal</severity>
   </event>
@@ -1981,17 +1981,17 @@
     <event-label>OpenNMS-defined Acknowledgment message</event-label>
     <descr>
       A message from the acknowledgment service that an acknowledgment has been processed:
-      &lt;p&gt;Acknowledgable:%parm[refId] of type:%parm[ackType]% was processed with the action:%parm[ackAction]%&lt;/p&gt;
+      &lt;p&gt;Acknowledgable:%parm[refId]% of type:%parm[ackType]% was processed with the action:%parm[ackAction]%&lt;/p&gt;
       Typically the result of a request via an AckReader or a generated acknowledge request event.
     </descr>
     <logmsg dest='logndisplay' >
-      &lt;p&gt;Acknowledgable:%parm[refId] of type:%parm[ackType]% was processed with the action:%parm[ackAction]%; Acknowledgment:%parm[ackId]%.&lt;/p&gt;
+      &lt;p&gt;Acknowledgable:%parm[refId]% of type:%parm[ackType]% was processed with the action:%parm[ackAction]%; Acknowledgment:%parm[ackId]%.&lt;/p&gt;
      </logmsg>
      <severity>Normal</severity>
   </event>
   <event>
     <uei>uei.opennms.org/internal/provisiond/nodeScanCompleted</uei>
-    <event-label>OpenNMS-defined Provisiond Event</event-label>
+    <event-label>OpenNMS-defined Provisiond Event: nodeScanCompleted</event-label>
     <descr>
       A message from the Provisiond NodeScan lifecycle that a NodeScan has completed:
       &lt;p&gt;The Node with Id: %nodeid%; ForeignSource: %parm[foreignSource]%; ForeignId:%parm[foreignId]% has completed.&lt;/p&gt;
@@ -2004,7 +2004,7 @@
   </event>
   <event>
     <uei>uei.opennms.org/internal/provisiond/nodeScanAborted</uei>
-    <event-label>OpenNMS-defined Provisiond Event</event-label>
+    <event-label>OpenNMS-defined Provisiond Event: nodeScanAborted</event-label>
     <descr>
       A message from the Provisiond NodeScan lifecycle that a NodeScan has Aborted:
       &lt;p&gt;The Node with Id: %nodeid%; ForeignSource: %parm[foreignSource]%; ForeignId:%parm[foreignId]% has aborted for the following reason: %parm[reason]% &lt;/p&gt;
@@ -2026,6 +2026,33 @@
      </logmsg>
      <severity>Normal</severity>
   </event>
+  <event>
+    <uei>uei.opennms.org/reportd/reportRunFailed</uei>
+    <event-label>OpenNMS-defined Reportd Event: reportRunFailed</event-label>
+    <descr>
+      A message from the Reportd reporting service that a report has failed to run:
+      &lt;p&gt;The report with name %parm[reportName]% failed to run for the following reason: %parm[reason]% &lt;/p&gt;
+    </descr>
+    <logmsg dest='logndisplay' >
+      &lt;p&gt;The report with name %parm[reportName]% failed to run for the following reason: %parm[reason]% &lt;/p&gt;
+     </logmsg>
+     <severity>Minor</severity>
+     <alarm-data reduction-key="%uei%:%nodeid%:%dpname%:%parm[reportName]%" alarm-type="3" auto-clean="false" />
+  </event>
+  <event>
+    <uei>uei.opennms.org/reportd/reportDeliveryFailed</uei>
+    <event-label>OpenNMS-defined Reportd Event: reportDeliveryFailed</event-label>
+    <descr>
+      A message from the Reportd delivery service that a report could not be delivered:
+      &lt;p&gt;The report with name %parm[reportName]% could not be delivered for the following reason: %parm[reason]% &lt;/p&gt;
+    </descr>
+    <logmsg dest='logndisplay' >
+      &lt;p&gt;The report with name %parm[reportName]% could not be delivered for the following reason: %parm[reason]% &lt;/p&gt;
+     </logmsg>
+     <severity>Minor</severity>
+     <alarm-data reduction-key="%uei%:%nodeid%:%dpname%:%parm[reportName]%" alarm-type="3" auto-clean="false" />
+  </event>
+
 
   <event-file>events/Rancid.events.xml</event-file>
   <event-file>events/3Com.events.xml</event-file>
@@ -2080,10 +2107,12 @@
   <event-file>events/Cisco2.events.xml</event-file>
   <event-file>events/Cisco.events.xml</event-file>
   <event-file>events/Colubris.events.xml</event-file>
+  <event-file>events/Concord.events.xml</event-file>
   <event-file>events/Covergence.events.xml</event-file>
   <event-file>events/CPQHPIM.events.xml</event-file>
   <event-file>events/Clarent.events.xml</event-file>
   <event-file>events/Clarinet.events.xml</event-file>
+  <event-file>events/Compuware.events.xml</event-file>
   <event-file>events/Cricket.events.xml</event-file>
   <event-file>events/CRITAPP.events.xml</event-file>
   <event-file>events/Crossbeam.events.xml</event-file>

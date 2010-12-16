@@ -207,7 +207,7 @@ public class FactoryBasedSnmpConfigDao implements SnmpConfigDao, InitializingBea
         
         SnmpEventInfo eventInfo = new SnmpEventInfo();
         eventInfo.setFirstIPAddress(newConfig.getAddress());
-        eventInfo.setListIPAddress(newConfig.getAddress());
+        eventInfo.setLastIPAddress(newConfig.getAddress());
 
         boolean save = false;
         if (!nullSafeEquals(oldConfig.getReadCommunity(), newConfig.getReadCommunity())) {

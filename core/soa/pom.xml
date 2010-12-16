@@ -3,7 +3,7 @@
   <parent>
     <groupId>org.opennms</groupId>
     <artifactId>org.opennms.core</artifactId>
-    <version>1.8.4-SNAPSHOT</version>
+    <version>1.8.8-SNAPSHOT</version>
   </parent>
   <modelVersion>4.0.0</modelVersion>
   <groupId>org.opennms.core</groupId>
@@ -16,6 +16,7 @@
       <artifactId>spring-dependencies</artifactId>
       <scope>provided</scope>
       <optional>true</optional>
+      <type>pom</type>
     </dependency>
     <dependency>
       <groupId>junit</groupId>
@@ -26,6 +27,7 @@
       <groupId>org.opennms.dependencies</groupId>
       <artifactId>spring-test-dependencies</artifactId>
       <scope>test</scope>
+      <type>pom</type>
     </dependency>
   </dependencies>
   <build>
@@ -50,6 +52,23 @@
           </instructions>
        </configuration>
      </plugin>
+      <plugin>
+        <artifactId>maven-assembly-plugin</artifactId>
+        <extensions>true</extensions>
+        <configuration>
+          <descriptors>
+            <descriptor>src/assembly/xsds.xml</descriptor>
+          </descriptors>
+        </configuration>
+        <executions>
+          <execution>
+            <phase>package</phase>
+            <goals>
+              <goal>single</goal>
+            </goals>
+          </execution>
+        </executions>
+      </plugin>
     </plugins>
   </build>
 </project>

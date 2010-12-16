@@ -51,10 +51,20 @@ import org.springframework.util.Assert;
  * @version $Id: $
  */
 public class DefaultPollService implements PollService {
+    
+    TimeAdjustment m_timeAdjustment;
 	
     Collection<ServiceMonitorLocator> m_locators;
     Map<String, ServiceMonitor> m_monitors;
-	
+    
+
+    /**
+     * @param timeAdjustment the timeAdjustment to set
+     */
+    public void setTimeAdjustment(TimeAdjustment timeAdjustment) {
+        m_timeAdjustment = timeAdjustment;
+    }
+
     /** {@inheritDoc} */
     public void setServiceMonitorLocators(Collection<ServiceMonitorLocator> locators) {
         m_locators = locators;
@@ -76,7 +86,9 @@ public class DefaultPollService implements PollService {
     /** {@inheritDoc} */
     public PollStatus poll(PolledService polledService) {
         ServiceMonitor monitor = getServiceMonitor(polledService);
-        return monitor.poll(polledService, polledService.getMonitorConfiguration());
+        PollStatus result = monitor.poll(polledService, polledService.getMonitorConfiguration());
+        result.setTimestamp(m_timeAdjustment.adjustDateToMasterDate(result.getTimestamp()));
+        return result;
     }
 
     private ServiceMonitor getServiceMonitor(PolledService polledService) {

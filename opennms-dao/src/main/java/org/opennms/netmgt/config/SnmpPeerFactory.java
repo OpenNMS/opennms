@@ -137,7 +137,6 @@ public class SnmpPeerFactory extends PeerFactory implements SnmpAgentConfigFacto
      * @throws org.exolab.castor.xml.MarshalException if any.
      * @throws org.exolab.castor.xml.ValidationException if any.
      */
-    @Deprecated
     public SnmpPeerFactory(Reader rdr) throws IOException, MarshalException, ValidationException {
         m_config = CastorUtils.unmarshalWithTranslatedExceptions(SnmpConfig.class, rdr);
     }

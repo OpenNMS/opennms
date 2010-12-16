@@ -149,23 +149,29 @@ public class SnmpAssetProvisioningAdapter extends SimplerQueuedProvisioningAdapt
 		OnmsAssetRecord asset = node.getAssetRecord();
 		AssetField[] fields = m_config.getAssetFieldsForAddress(ipaddress, node.getSysObjectId());
 		for (AssetField field : fields) {
-			String value = fetchSnmpAssetString(agentConfig, field.getMibObjs(), field.getFormatString());
-			if (log().isDebugEnabled()) {
-				log().debug("doAdd: Setting asset field \"" + field.getName() + "\" to value: " + value);
-			}
-			// Use Spring bean-accessor classes to set the field value
-			BeanWrapper wrapper = PropertyAccessorFactory.forBeanPropertyAccess(asset);
 			try {
-				wrapper.setPropertyValue(field.getName(), value);
-			} catch (BeansException e) {
-				log().warn("doAdd: Could not set property \"" + field.getName() + "\" on asset object: " + e.getMessage(), e);
+				String value = fetchSnmpAssetString(agentConfig, field.getMibObjs(), field.getFormatString());
+				if (log().isDebugEnabled()) {
+					log().debug("doAdd: Setting asset field \"" + field.getName() + "\" to value: " + value);
+				}
+				// Use Spring bean-accessor classes to set the field value
+				BeanWrapper wrapper = PropertyAccessorFactory.forBeanPropertyAccess(asset);
+				try {
+					wrapper.setPropertyValue(field.getName(), value);
+				} catch (BeansException e) {
+					log().warn("doAdd: Could not set property \"" + field.getName() + "\" on asset object: " + e.getMessage(), e);
+				}
+			} catch (MissingFormatArgumentException e) {
+				// This exception is thrown if the SNMP operation fails or an incorrect number of
+				// parameters is returned by the agent or because of a misconfiguration.
+				log().warn("doAdd: Could not set value for asset field \"" + field.getName() + "\": " + e.getMessage(), e);
 			}
 		}
 		node.setAssetRecord(asset);
 		m_nodeDao.saveOrUpdate(node);
 	}
 
-	private static String fetchSnmpAssetString(SnmpAgentConfig agentConfig, MibObjs mibObjs, String formatString) {
+	private static String fetchSnmpAssetString(SnmpAgentConfig agentConfig, MibObjs mibObjs, String formatString) throws MissingFormatArgumentException {
 
 		List<String> aliases = new ArrayList<String>();
 		List<SnmpObjId> objs = new ArrayList<SnmpObjId>();
@@ -177,26 +183,35 @@ public class SnmpAssetProvisioningAdapter extends SimplerQueuedProvisioningAdapt
 		SnmpValue[] values = SnmpUtils.get(agentConfig, objs.toArray(new SnmpObjId[0]));
 		if (values.length == aliases.size()) {
 			Properties substitutions = new Properties();
+			boolean foundAValue = false;
 			for (int i = 0; i < values.length; i++) {
+				// If the value is a NO_SUCH_OBJECT or NO_SUCH_INSTANCE error, then skip it
+				if (values[i].isError()) {
+					// No value for this OID
+					continue;
+				}
+				foundAValue = true;
 				substitutions.setProperty(aliases.get(i), values[i].toString());
 			}
-			if (log().isDebugEnabled()) {
+
+			if (!foundAValue) {
+				if (log().isDebugEnabled()) {
+					log().debug("fetchSnmpAssetString: Failed to fetch any SNMP values for system " + agentConfig.toString());
+				}
+				throw new MissingFormatArgumentException("fetchSnmpAssetString: Failed to fetch any SNMP values for system " + agentConfig.toString());
+			} else {
 				log().debug("fetchSnmpAssetString: Fetched asset properties from SNMP agent:\n" + formatPropertiesAsString(substitutions));
 			}
+
 			if (objs.size() != substitutions.size()) {
 				String props = formatPropertiesAsString(substitutions);
 				log().warn("fetchSnmpAssetString: Unexpected number of properties returned from SNMP GET:\n" + props);
 			}
 
-			try {
-				return PropertiesUtils.substitute(formatString, substitutions);
-			} catch (MissingFormatArgumentException e) {
-				log().warn("fetchSnmpAssetString: Insufficient SNMP parameters returned to satisfy format string: " + formatString);
-				return formatString;
-			}
+			return PropertiesUtils.substitute(formatString, substitutions);
 		} else {
 			log().warn("fetchSnmpAssetString: Invalid number of SNMP parameters returned: " + values.length + " != " + aliases.size());
-			return formatString;
+			throw new MissingFormatArgumentException("fetchSnmpAssetString: Invalid number of SNMP parameters returned: " + values.length + " != " + aliases.size());
 		}
 	}
 
@@ -237,16 +252,22 @@ public class SnmpAssetProvisioningAdapter extends SimplerQueuedProvisioningAdapt
 		OnmsAssetRecord asset = node.getAssetRecord();
 		AssetField[] fields = m_config.getAssetFieldsForAddress(ipaddress, node.getSysObjectId());
 		for (AssetField field : fields) {
-			String value = fetchSnmpAssetString(agentConfig, field.getMibObjs(), field.getFormatString());
-			if (log().isDebugEnabled()) {
-				log().debug("doUpdate: Setting asset field \"" + field.getName() + "\" to value: " + value);
-			}
-			// Use Spring bean-accessor classes to set the field value
-			BeanWrapper wrapper = PropertyAccessorFactory.forBeanPropertyAccess(asset);
 			try {
-				wrapper.setPropertyValue(field.getName(), value);
-			} catch (BeansException e) {
-				log().warn("doUpdate: Could not set property \"" + field.getName() + "\" on asset object: " + e.getMessage(), e);
+				String value = fetchSnmpAssetString(agentConfig, field.getMibObjs(), field.getFormatString());
+				if (log().isDebugEnabled()) {
+					log().debug("doUpdate: Setting asset field \"" + field.getName() + "\" to value: " + value);
+				}
+				// Use Spring bean-accessor classes to set the field value
+				BeanWrapper wrapper = PropertyAccessorFactory.forBeanPropertyAccess(asset);
+				try {
+					wrapper.setPropertyValue(field.getName(), value);
+				} catch (BeansException e) {
+					log().warn("doUpdate: Could not set property \"" + field.getName() + "\" on asset object: " + e.getMessage(), e);
+				}
+			} catch (MissingFormatArgumentException e) {
+				// This exception is thrown if the SNMP operation fails or an incorrect number of
+				// parameters is returned by the agent or because of a misconfiguration.
+				log().warn("doUpdate: Could not set value for asset field \"" + field.getName() + "\": " + e.getMessage(), e);
 			}
 		}
 		node.setAssetRecord(asset);

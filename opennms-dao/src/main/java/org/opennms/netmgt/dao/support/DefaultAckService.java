@@ -39,7 +39,6 @@ import java.util.Collection;
 import java.util.Iterator;
 import java.util.List;
 
-import org.apache.log4j.Logger;
 import org.opennms.core.utils.ThreadCategory;
 import org.opennms.netmgt.dao.AcknowledgmentDao;
 import org.opennms.netmgt.model.Acknowledgeable;
@@ -61,12 +60,16 @@ public class DefaultAckService implements AckService {
     public void processAcks(Collection<OnmsAcknowledgment> acks) {
         log().info("processAcks: Processing "+acks.size()+" acknowledgements...");
         for (OnmsAcknowledgment ack : acks) {
-            processAck(ack);
+            try {
+				processAck(ack);
+			} catch (IllegalStateException e) {
+				log().warn("processAcks: ",e);
+			}
         }
     }
 
     /** {@inheritDoc} */
-    public void processAck(OnmsAcknowledgment ack) {
+    public void processAck(OnmsAcknowledgment ack) throws IllegalStateException {
         log().info("processAck: Searching DB for acknowledgables for ack: "+ack);
         List<Acknowledgeable> ackables = m_ackDao.findAcknowledgables(ack);
         

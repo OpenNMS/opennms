@@ -4,7 +4,7 @@
   <parent>
     <groupId>org.opennms.features</groupId>
     <artifactId>sms-reflector</artifactId>
-    <version>1.8.4-SNAPSHOT</version>
+    <version>1.8.8-SNAPSHOT</version>
   </parent>
 
   <modelVersion>4.0.0</modelVersion>
@@ -48,14 +48,14 @@
       <version>0.2.2</version>
     </dependency>
     <dependency>
-      <groupId>org.rxtx</groupId>
-      <artifactId>rxtx-osgi</artifactId>
-      <version>2.2-pre2</version>
+      <groupId>org.opennms.dependencies</groupId>
+      <artifactId>rxtx-dependencies</artifactId>
+      <type>pom</type>
     </dependency>
     <dependency>
       <groupId>org.opennms.smslib</groupId>
       <artifactId>smslib</artifactId>
-      <version>3.4.3-SNAPSHOT</version>
+      <version>3.4.3-20100302</version>
     </dependency>
     <dependency>
       <groupId>commons-lang</groupId>
@@ -113,9 +113,9 @@
       <version>${spring.version}</version>
     </dependency>
     <dependency>
-      <groupId>org.opennms.lib</groupId>
-      <artifactId>org.opennms.lib.tracker</artifactId>
-      <version>0.6</version>
+      <groupId>org.opennms.dependencies</groupId>
+      <artifactId>tracker-dependencies</artifactId>
+      <type>pom</type>
     </dependency>
     <dependency>
       <groupId>org.ops4j.base</groupId>

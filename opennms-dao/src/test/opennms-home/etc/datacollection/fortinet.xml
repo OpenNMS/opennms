@@ -1,0 +1,17 @@
+<?xml version="1.0"?>
+<datacollection-group name="Fortinet">
+
+      <group name="fortinet-sys-stat" ifType="ignore">
+        <mibObj oid=".1.3.6.1.4.1.12356.1.8"  instance="0" alias="fnSysCpuUsage" type="Gauge32" />
+        <mibObj oid=".1.3.6.1.4.1.12356.1.9"  instance="0" alias="fnSysMemUsage" type="Gauge32" />
+        <mibObj oid=".1.3.6.1.4.1.12356.1.10" instance="0" alias="fnSysSesCount" type="Gauge32" />
+      </group>
+
+      <systemDef name="Fortinet Fortigate">
+        <sysoidMask>.1.3.6.1.4.1.12356.</sysoidMask>
+        <collect>
+          <includeGroup>fortinet-sys-stat</includeGroup>
+        </collect>
+      </systemDef>
+
+</datacollection-group>

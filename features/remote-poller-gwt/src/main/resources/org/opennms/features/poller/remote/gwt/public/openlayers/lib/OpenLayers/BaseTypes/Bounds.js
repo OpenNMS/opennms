@@ -1,5 +1,6 @@
-/* Copyright (c) 2006-2008 MetaCarta, Inc., published under the Clear BSD
- * license.  See http://svn.openlayers.org/trunk/openlayers/license.txt for the
+/* Copyright (c) 2006-2010 by OpenLayers Contributors (see authors.txt for 
+ * full list of contributors). Published under the Clear BSD license.  
+ * See http://svn.openlayers.org/trunk/openlayers/license.txt for the
  * full text of the license. */
 
 /**
@@ -477,7 +478,7 @@ OpenLayers.Bounds = OpenLayers.Class({
      * 
      * bounds - {<OpenLayers.Bounds>} The target bounds.
      * partial - {Boolean} If any of the target corners is within this bounds
-     *     consider the bounds contained.  Default is false.  If true, the
+     *     consider the bounds contained.  Default is false.  If false, the
      *     entire target bounds must be contained within this bounds.
      * inclusive - {Boolean} Treat shared edges as contained.  Default is
      *     true.

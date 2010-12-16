@@ -32,11 +32,12 @@
 
 package org.opennms.web.event.filter;
 
-import java.sql.SQLException;
+import javax.servlet.ServletContext;
 
 import org.opennms.web.element.NetworkElementFactory;
 import org.opennms.web.filter.EqualsFilter;
 import org.opennms.web.filter.SQLType;
+import org.springframework.context.ApplicationContext;
 
 /**
  * Encapsulates all node filtering functionality.
@@ -48,14 +49,22 @@ import org.opennms.web.filter.SQLType;
 public class NodeFilter extends EqualsFilter<Integer> {
     /** Constant <code>TYPE="node"</code> */
     public static final String TYPE = "node";
+    private ServletContext m_servletContext;
+    private ApplicationContext m_appContext;
 
     /**
      * <p>Constructor for NodeFilter.</p>
      *
      * @param nodeId a int.
      */
-    public NodeFilter(int nodeId) {
+    public NodeFilter(int nodeId, ServletContext servletContext) {
         super(TYPE, SQLType.INT, "EVENTS.NODEID", "node.id", nodeId);
+        m_servletContext = servletContext;
+    }
+    
+    public NodeFilter(int nodeId, ApplicationContext appContext) {
+        super(TYPE, SQLType.INT, "EVENTS.NODEID", "node.id", nodeId);
+        m_appContext = appContext;
     }
 
     /**
@@ -64,13 +73,17 @@ public class NodeFilter extends EqualsFilter<Integer> {
      * @return a {@link java.lang.String} object.
      */
     public String getTextDescription() {
-        String nodeName = Integer.toString(getNodeId());
-        try {
-            nodeName = NetworkElementFactory.getNodeLabel(getNodeId());
-        } catch (SQLException e) {
+        String nodeName = getNodeLabel();
+        
+        if(nodeName == null) {
+            nodeName = Integer.toString(getNodeId());
         }
-
+            
         return (TYPE + "=" + nodeName);
+    }
+
+    private String getNodeLabel() {
+        return m_servletContext != null ? NetworkElementFactory.getInstance(m_servletContext).getNodeLabel(getNodeId()) : NetworkElementFactory.getInstance(m_appContext).getNodeLabel(getNodeId());
     }
 
     /**

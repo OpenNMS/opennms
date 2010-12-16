@@ -50,6 +50,7 @@ import java.util.HashSet;
 import java.util.Iterator;
 import java.util.LinkedHashMap;
 import java.util.List;
+import java.util.Map;
 import java.util.Set;
 import java.util.TreeSet;
 import java.util.concurrent.Executor;
@@ -85,7 +86,15 @@ import org.springframework.web.servlet.mvc.AbstractController;
  * @since 1.8.1
  */
 public class CustomViewController extends AbstractController implements InitializingBean {
-    
+
+    public enum Parameters {
+        report,
+        domain,
+        type,
+        timespan,
+        graphtype
+    }
+
     private KSC_PerformanceReportFactory m_kscReportFactory;
     private KscReportService m_kscReportService;
     private ResourceService m_resourceService;
@@ -100,13 +109,13 @@ public class CustomViewController extends AbstractController implements Initiali
         String[] requiredParameters = new String[] { "report or domain", "type" };
       
         // Get Form Variable
-        String reportType = WebSecurityUtils.sanitizeString(request.getParameter("type"));
+        String reportType = WebSecurityUtils.sanitizeString(request.getParameter(Parameters.type.toString()));
         if (reportType == null) {
-            throw new MissingParameterException("type", requiredParameters);
+            throw new MissingParameterException(Parameters.type.toString(), requiredParameters);
         }
       
-        String reportIdString = WebSecurityUtils.sanitizeString(request.getParameter("report"));
-        String domain = WebSecurityUtils.sanitizeString(request.getParameter("domain"));
+        String reportIdString = WebSecurityUtils.sanitizeString(request.getParameter(Parameters.report.toString()));
+        String domain = WebSecurityUtils.sanitizeString(request.getParameter(Parameters.domain.toString()));
         int reportId = 0;
         if (reportIdString != null) {
             reportId = WebSecurityUtils.safeParseInt(reportIdString);
@@ -114,12 +123,12 @@ public class CustomViewController extends AbstractController implements Initiali
             throw new MissingParameterException("report or domain", requiredParameters);
         }
       
-        String overrideTimespan = WebSecurityUtils.sanitizeString(request.getParameter("timespan"));
+        String overrideTimespan = WebSecurityUtils.sanitizeString(request.getParameter(Parameters.timespan.toString()));
         if ("null".equals(overrideTimespan) || "none".equals(overrideTimespan)) {
             overrideTimespan = null;
         }
 
-        String overrideGraphType = WebSecurityUtils.sanitizeString(request.getParameter("graphtype"));
+        String overrideGraphType = WebSecurityUtils.sanitizeString(request.getParameter(Parameters.graphtype.toString()));
         if ("null".equals(overrideGraphType) || "none".equals(overrideGraphType)) {
             overrideGraphType = null;
         }
@@ -132,16 +141,15 @@ public class CustomViewController extends AbstractController implements Initiali
             report = getKscReportService().buildDomainReport(domain);
         } else if ("custom".equals(reportType)) {
             report = m_kscReportFactory.getReportByIndex(reportId);
+            if (report == null) {
+                throw new ServletException("Report could not be found in config file for index '" + reportId + "'");
+            }
         } else {
             throw new IllegalArgumentException("value to 'type' parameter of '" + reportType + "' is not supported.  Must be one of: node, domain, or custom");
         }
       
-        if (report == null) {
-            throw new ServletException("Report does not exist");
-        }
-      
         // Get the list of available prefabricated graph options 
-        HashMap<String, OnmsResource> resourceMap = new HashMap<String, OnmsResource>();
+        Map<String, OnmsResource> resourceMap = new HashMap<String, OnmsResource>();
         Set<PrefabGraph> prefabGraphs = new TreeSet<PrefabGraph>();
         removeBrokenGraphsFromReport(report);
         List<Graph> graphCollection = report.getGraphCollection();
@@ -280,18 +288,17 @@ public class CustomViewController extends AbstractController implements Initiali
     }
     
     private void removeBrokenGraphsFromReport(Report report) {
-        List<Graph> badGraphs = new ArrayList<Graph>();
-        for (Graph graph : report.getGraphCollection()) {
+        for (Iterator<Graph> itr = report.getGraphCollection().iterator(); itr.hasNext();) {
+            Graph graph = itr.next();
             try {
                 getKscReportService().getResourceFromGraph(graph);
             } catch (ObjectRetrievalFailureException orfe) {
-                badGraphs.add(graph);
+                log().error("Removing graph '" + graph.getTitle() + "' in KSC report '" + report.getTitle() + "' because the resource it refers to could not be found. Perhaps resource '"+ graph.getResourceId() + "' (or its ancestor) referenced by this graph no longer exists?");
+                itr.remove();
+            } catch (Throwable e) {
+                log().error("Unexpected error while scanning through graphs in report: " + e.getMessage(), e);
+                itr.remove();
             }
-        }
-        
-        for (Graph badGraph : badGraphs) {
-            log().error("Removing graph '" + badGraph.getTitle() + "' in KSC report '" + report.getTitle() + "' because the resource it refers to could not be found. Perhaps resource '"+ badGraph.getResourceId() + "' (or its ancestor) referenced by this graph no longer exists?");
-            report.removeGraph(badGraph);
         }
     }
 
@@ -313,8 +320,8 @@ public class CustomViewController extends AbstractController implements Initiali
         
     }
 
-    private ThreadCategory log() {
-        return ThreadCategory.getInstance(getClass());
+    private static ThreadCategory log() {
+        return ThreadCategory.getInstance(CustomViewController.class);
     }
 
     /**

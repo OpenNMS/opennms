@@ -52,7 +52,8 @@ import org.hibernate.criterion.MatchMode;
 import org.hibernate.criterion.Order;
 import org.hibernate.criterion.Restrictions;
 import org.hibernate.type.StringType;
-import org.opennms.core.utils.IPSorter;
+import org.opennms.core.utils.ByteArrayComparator;
+import org.opennms.core.utils.InetAddressUtils;
 import org.opennms.netmgt.config.siteStatusViews.Category;
 import org.opennms.netmgt.config.siteStatusViews.RowDef;
 import org.opennms.netmgt.config.siteStatusViews.Rows;
@@ -79,10 +80,6 @@ import org.springframework.util.Assert;
  *
  * @author <a href="mailto:dj@opennms.org">DJ Gregor</a>
  * @author <a href="mailto:ayres@opennms.org">Bill Ayres</a>
- * @author <a href="mailto:dj@opennms.org">DJ Gregor</a>
- * @author <a href="mailto:ayres@opennms.org">Bill Ayres</a>
- * @version $Id: $
- * @since 1.8.1
  */
 public class DefaultNodeListService implements NodeListService, InitializingBean {
     private static final Comparator<OnmsIpInterface> IP_INTERFACE_COMPARATOR = new IpInterfaceComparator();
@@ -478,13 +475,7 @@ public class DefaultNodeListService implements NodeListService, InitializingBean
 
             // Sort by IP first if the IPs are non-0.0.0.0
             if (!"0.0.0.0".equals(o1.getIpAddress()) && !"0.0.0.0".equals(o2.getIpAddress())) {
-                if (IPSorter.convertToLong(o1.getIpAddress()) > IPSorter.convertToLong(o2.getIpAddress())) {
-                    return 1;
-                } else if (IPSorter.convertToLong(o1.getIpAddress()) < IPSorter.convertToLong(o2.getIpAddress())) {
-                    return -1;
-                } else {
-                    return 0;
-                }
+                return new ByteArrayComparator().compare(InetAddressUtils.toIpAddrBytes(o1.getIpAddress()), InetAddressUtils.toIpAddrBytes(o2.getIpAddress()));
             } else {
                 // Sort IPs that are non-0.0.0.0 so they are first
                 if (!"0.0.0.0".equals(o1.getIpAddress())) {
@@ -585,13 +576,7 @@ public class DefaultNodeListService implements NodeListService, InitializingBean
 
             // Sort by IP first if the IPs are non-0.0.0.0
             if (!"0.0.0.0".equals(o1.getIpAddress()) && !"0.0.0.0".equals(o2.getIpAddress())) {
-                if (IPSorter.convertToLong(o1.getIpAddress()) > IPSorter.convertToLong(o2.getIpAddress())) {
-                    return 1;
-                } else if (IPSorter.convertToLong(o1.getIpAddress()) < IPSorter.convertToLong(o2.getIpAddress())) {
-                    return -1;
-                } else {
-                    return 0;
-                }
+                return new ByteArrayComparator().compare(InetAddressUtils.toIpAddrBytes(o1.getIpAddress()), InetAddressUtils.toIpAddrBytes(o2.getIpAddress()));
             } else {
                 // Sort IPs that are non-0.0.0.0 so they are first
                 if (!"0.0.0.0".equals(o1.getIpAddress())) {

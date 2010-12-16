@@ -163,8 +163,6 @@ public class InstallerDb {
     private Connection m_adminConnection;
     private String m_user;
     
-    private float m_pg_version;
-
     private boolean m_force = false;
     
     private boolean m_ignore_notnull = false;

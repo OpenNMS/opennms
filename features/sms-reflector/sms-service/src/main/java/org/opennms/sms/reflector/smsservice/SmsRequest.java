@@ -36,8 +36,6 @@
 package org.opennms.sms.reflector.smsservice;
 
 
-import java.util.concurrent.TimeUnit;
-
 import org.smslib.OutboundMessage;
 import org.springframework.core.style.ToStringCreator;
 

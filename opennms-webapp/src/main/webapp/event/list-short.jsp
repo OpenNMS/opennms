@@ -232,7 +232,7 @@
 
       <!-- hidden form for acknowledging the result set --> 
       <form action="event/acknowledgeByFilter" method="post" name="acknowledge_by_filter_form">    
-        <input type="hidden" name="redirectParms" value="<%=req.getQueryString()%>" />
+        <input type="hidden" name="redirectParms" value="<%=org.opennms.web.Util.htmlify(req.getQueryString())%>" />
         <input type="hidden" name="action" value="<%=action%>" />
         <%=org.opennms.web.Util.makeHiddenTags(req)%>
       </form>      
@@ -276,7 +276,7 @@
 
     <% if( req.isUserInRole( Authentication.ADMIN_ROLE ) || !req.isUserInRole( Authentication.READONLY_ROLE ) ) { %>
       <form action="event/acknowledge" method="post" name="acknowledge_form">
-        <input type="hidden" name="redirectParms" value="<%=req.getQueryString()%>" />
+        <input type="hidden" name="redirectParms" value="<%=org.opennms.web.Util.htmlify(req.getQueryString())%>" />
         <input type="hidden" name="action" value="<%=action%>" />
         <%=org.opennms.web.Util.makeHiddenTags(req)%>
     <% } %>
@@ -328,12 +328,12 @@
           </td>
           <td class="noWrap">
 	    <% if(events[i].getNodeId() != 0 && events[i].getNodeLabel()!= null ) { %>
-              <% Filter nodeFilter = new NodeFilter(events[i].getNodeId()); %>             
+              <% Filter nodeFilter = new NodeFilter(events[i].getNodeId(), getServletContext()); %>             
               <% String[] labels = this.getNodeLabels( events[i].getNodeLabel() ); %>
               <a href="element/node.jsp?node=<%=events[i].getNodeId()%>" title="<%=labels[1]%>"><%=labels[0]%></a>   
               <% if( !parms.filters.contains(nodeFilter) ) { %>
                   <a href="<%=this.makeLink( parms, nodeFilter, true)%>" class="filterLink" title="Show only events on this node"><%=addPositiveFilterString%></a>
-                  <a href="<%=this.makeLink( parms, new NegativeNodeFilter(events[i].getNodeId()), true)%>" class="filterLink" title="Do not show events for this node"><%=addNegativeFilterString%></a>
+                  <a href="<%=this.makeLink( parms, new NegativeNodeFilter(events[i].getNodeId(), getServletContext()), true)%>" class="filterLink" title="Do not show events for this node"><%=addNegativeFilterString%></a>
               <% } %>
             <% } %>
           </td>

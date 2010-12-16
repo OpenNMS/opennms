@@ -31,6 +31,7 @@ package org.opennms.core.soa.config;
 
 import static org.opennms.core.soa.config.Constants.SERVICE_REGISTRY_BEAN_NAME;
 
+import java.util.Map;
 import java.util.Set;
 
 import org.opennms.core.soa.support.ServiceFactoryBean;
@@ -71,6 +72,7 @@ public class ServiceBeanDefinitionParser extends AbstractSingleBeanDefinitionPar
     public static final String INTERFACE_ATTR = "interface";
     /** Constant <code>INTERFACES_ELEM="interfaces"</code> */
     public static final String INTERFACES_ELEM = "interfaces";
+    public static final String PROPS_ELEM = "service-properties";
     
     
     /** {@inheritDoc} */
@@ -107,6 +109,9 @@ public class ServiceBeanDefinitionParser extends AbstractSingleBeanDefinitionPar
                     Set<?> interfaces = context.getDelegate().parseSetElement(child, bean.getBeanDefinition());
                     bean.addPropertyValue("interfaces", interfaces);
                 
+                } else if (PROPS_ELEM.equals(child.getLocalName())) {
+                    Map<?,?> svcProps = context.getDelegate().parseMapElement(child, bean.getBeanDefinition());
+                    bean.addPropertyValue("serviceProperties", svcProps);
                 }
                 
             }

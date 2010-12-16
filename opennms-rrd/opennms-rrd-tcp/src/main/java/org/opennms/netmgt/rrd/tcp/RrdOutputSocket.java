@@ -55,7 +55,8 @@ public class RrdOutputSocket {
     // private final RrdDefinition m_def;
     private final String m_host;
     private final int m_port;
-    private final PerformanceDataProtos.PerformanceDataReadings.Builder m_messages; 
+    private final PerformanceDataProtos.PerformanceDataReadings.Builder m_messages;
+    private int m_messageCount = 0;
 
     /**
      * <p>Constructor for RrdOutputSocket.</p>
@@ -85,6 +86,7 @@ public class RrdOutputSocket {
                 .setTimestamp(timestamp).
                 addAllValue(values)
         );
+        m_messageCount++;
     }
 
     /**
@@ -100,7 +102,7 @@ public class RrdOutputSocket {
             // m_messages.build().writeTo(out);
             out.flush();
         } catch (Throwable e) {
-            ThreadCategory.getInstance(this.getClass()).warn("Error when trying to open connection to " + m_host + ":" + m_port + ", dropping " + m_messages.getMessageCount() + " performance messages: " + e.getMessage());
+            ThreadCategory.getInstance(this.getClass()).warn("Error when trying to open connection to " + m_host + ":" + m_port + ", dropping " + m_messageCount + " performance messages: " + e.getMessage());
         } finally {
             if (socket != null) {
                 try { 

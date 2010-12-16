@@ -1,5 +1,6 @@
-/* Copyright (c) 2009 MetaCarta, Inc., published under the Clear BSD
- * license.  See http://svn.openlayers.org/trunk/openlayers/license.txt for the
+/* Copyright (c) 2006-2010 by OpenLayers Contributors (see authors.txt for 
+ * full list of contributors). Published under the Clear BSD license.  
+ * See http://svn.openlayers.org/trunk/openlayers/license.txt for the
  * full text of the license. */
 
 /**
@@ -221,7 +222,9 @@ OpenLayers.Format.ArcXML = OpenLayers.Class(OpenLayers.Format.XML, {
             }
         }
           
-        if (!arcNode) {
+        // in Safari, arcNode will be there but will have a child named 
+        // parsererror
+        if (!arcNode || arcNode.firstChild.nodeName === 'parsererror') {
             var error, source;
             try {
                 error = data.firstChild.nodeValue;

@@ -35,9 +35,11 @@ import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertTrue;
 
+import java.io.IOException;
 import java.net.InetAddress;
 import java.net.UnknownHostException;
 
+import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
@@ -46,6 +48,7 @@ import org.opennms.netmgt.provision.detector.datagram.NtpDetector;
 import org.opennms.netmgt.provision.server.SimpleUDPServer;
 import org.opennms.netmgt.provision.support.NullDetectorMonitor;
 import org.opennms.netmgt.provision.support.ntp.NtpMessage;
+import org.opennms.test.mock.MockLogAppender;
 import org.springframework.beans.BeansException;
 import org.springframework.context.ApplicationContext;
 import org.springframework.context.ApplicationContextAware;
@@ -62,6 +65,8 @@ public class NtpDetectorTest implements ApplicationContextAware {
     
     @Before
     public void setUp(){
+        MockLogAppender.setupLogging();
+
         m_detector = getDetector(NtpDetector.class);
         m_detector.setRetries(0);
         assertNotNull(m_detector);
@@ -85,7 +90,12 @@ public class NtpDetectorTest implements ApplicationContextAware {
         }
     }
     
-    
+    @After
+    public void tearDown() throws IOException {
+        m_server.stopServer();
+        m_server = null;
+    }
+     
     @Test
     public void testDetectorSuccess() throws Exception{
         m_server.onInit();

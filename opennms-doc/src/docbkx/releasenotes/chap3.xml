@@ -4,11 +4,21 @@
 
 	<para>Here is the list of known issues in this release of OpenNMS.</para>
 
-
-	<section id="current-release">
+	<!--
+	<section id="issues-current-release">
 		<title>Current Release</title>
 		<para>
 			There are no known major issues in OpenNMS 1.8.
+		</para>
+	</section>
+	-->
+
+	<section id="issues-1.8.5">
+		<title>OpenNMS 1.8.5</title>
+		<para>
+			When upgrading OpenNMS to version 1.8.5, it is important to upgrade your
+			remote pollers to 1.8.5 as well.  The remote poller wire protocol has changed
+			since 1.8.4.
 		</para>
 	</section>
 

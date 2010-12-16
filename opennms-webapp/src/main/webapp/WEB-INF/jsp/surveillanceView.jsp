@@ -84,7 +84,7 @@
         <c:forEach var="viewName" items="${viewNames}">
           <c:choose>
             <c:when test="${viewName == webTable.title}">
-              <c:set var="selected" value="selected"/>
+              <c:set var="selected">selected="selected"</c:set>
             </c:when>
             
             <c:otherwise>

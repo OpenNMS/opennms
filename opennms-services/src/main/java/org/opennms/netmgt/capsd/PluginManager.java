@@ -46,7 +46,7 @@ import java.util.Map;
 import java.util.TreeMap;
 
 import org.exolab.castor.xml.ValidationException;
-import org.opennms.core.utils.IPSorter;
+import org.opennms.core.utils.InetAddressUtils;
 import org.opennms.core.utils.ThreadCategory;
 import org.opennms.netmgt.config.CapsdConfig;
 import org.opennms.netmgt.config.CapsdProtocolInfo;
@@ -164,7 +164,6 @@ public class PluginManager implements InitializingBean {
                 }
     
                 // check the ranges
-                long laddr = IPSorter.convertToLong(address.getAddress());
                 List<Range> ranges = getCapsdConfig().getRanges(pluginConf);
                 Iterator<Range> rangeIter = ranges.iterator();
                 while (rangeIter.hasNext() && !found) {
@@ -186,7 +185,7 @@ public class PluginManager implements InitializingBean {
                         continue;
                     }
     
-                    if (getCapsdConfig().toLong(start) <= laddr && laddr <= getCapsdConfig().toLong(stop)) {
+                    if (InetAddressUtils.isInetAddressInRange(address.getAddress(), start.getAddress(), stop.getAddress())) {
                         found = true;
                     }
                 }

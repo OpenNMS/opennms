@@ -1,6 +1,7 @@
-/* Copyright (c) 2008 MetaCarta, Inc., published under the Clear BSD 
- * license.  See http://svn.openlayers.org/trunk/openlayers/license.txt for the 
- * full text of the license. */ 
+/* Copyright (c) 2006-2010 by OpenLayers Contributors (see authors.txt for 
+ * full list of contributors). Published under the Clear BSD license.  
+ * See http://svn.openlayers.org/trunk/openlayers/license.txt for the
+ * full text of the license. */
 
 /**
  * @requires OpenLayers/Layer/Grid.js
@@ -419,6 +420,29 @@ OpenLayers.Layer.ArcIMS = OpenLayers.Class(OpenLayers.Layer.Grid, {
                 }
             }
         });
+    },
+
+    /**
+     * Method: clone
+     * Create a clone of this layer
+     *
+     * Returns:
+     * {<OpenLayers.Layer.ArcIMS>} An exact clone of this layer
+     */
+    clone: function (obj) {
+
+        if (obj == null) {
+            obj = new OpenLayers.Layer.ArcIMS(this.name,
+                                           this.url,
+                                           this.getOptions());
+        }
+
+        //get all additions from superclasses
+        obj = OpenLayers.Layer.Grid.prototype.clone.apply(this, [obj]);
+
+        // copy/set any non-init, non-simple values here
+
+        return obj;
     },
     
     /**

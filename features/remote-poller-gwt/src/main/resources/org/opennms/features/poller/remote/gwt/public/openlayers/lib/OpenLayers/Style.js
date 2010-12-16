@@ -1,6 +1,7 @@
-/* Copyright (c) 2006-2008 MetaCarta, Inc., published under the Clear BSD
- * license.  See http://svn.openlayers.org/trunk/openlayers/license.txt for the
-  * full text of the license. */
+/* Copyright (c) 2006-2010 by OpenLayers Contributors (see authors.txt for 
+ * full list of contributors). Published under the Clear BSD license.  
+ * See http://svn.openlayers.org/trunk/openlayers/license.txt for the
+ * full text of the license. */
 
 
 /**
@@ -15,6 +16,12 @@
  */
 OpenLayers.Style = OpenLayers.Class({
 
+    /**
+     * Property: id
+     * {String} A unique id for this session.
+     */
+    id: null,
+    
     /**
      * APIProperty: name
      * {String}
@@ -119,6 +126,7 @@ OpenLayers.Style = OpenLayers.Class({
         this.setDefaultStyle(style ||
                              OpenLayers.Feature.Vector.style["default"]);
 
+        this.id = OpenLayers.Util.createUniqueID(this.CLASS_NAME + "_");
     },
 
     /** 
@@ -333,7 +341,7 @@ OpenLayers.Style = OpenLayers.Class({
      * rules - {Array(<OpenLayers.Rule>)}
      */
     addRules: function(rules) {
-        this.rules = this.rules.concat(rules);
+        Array.prototype.push.apply(this.rules, rules);
         this.propertyStyles = this.findPropertyStyles();
     },
     
@@ -367,6 +375,29 @@ OpenLayers.Style = OpenLayers.Class({
                 return prefixes[i];
             }
         }
+    },
+    
+    /**
+     * APIMethod: clone
+     * Clones this style.
+     * 
+     * Returns:
+     * {<OpenLayers.Style>} Clone of this style.
+     */
+    clone: function() {
+        var options = OpenLayers.Util.extend({}, this);
+        // clone rules
+        if(this.rules) {
+            options.rules = [];
+            for(var i=0, len=this.rules.length; i<len; ++i) {
+                options.rules.push(this.rules[i].clone());
+            }
+        }
+        // clone context
+        options.context = this.context && OpenLayers.Util.extend({}, this.context);
+        //clone default style
+        var defaultStyle = OpenLayers.Util.extend({}, this.defaultStyle);
+        return new OpenLayers.Style(defaultStyle, options);
     },
     
     CLASS_NAME: "OpenLayers.Style"
@@ -408,4 +439,5 @@ OpenLayers.Style.createLiteral = function(value, context, feature, property) {
  * {Array} prefixes of the sld symbolizers. These are the
  * same as the main geometry types
  */
-OpenLayers.Style.SYMBOLIZER_PREFIXES = ['Point', 'Line', 'Polygon', 'Text'];
+OpenLayers.Style.SYMBOLIZER_PREFIXES = ['Point', 'Line', 'Polygon', 'Text',
+    'Raster'];

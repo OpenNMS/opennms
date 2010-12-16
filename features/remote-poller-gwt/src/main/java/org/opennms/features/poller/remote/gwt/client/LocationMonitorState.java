@@ -14,8 +14,6 @@ import java.util.HashSet;
 import java.util.Set;
 import java.util.TreeSet;
 
-import org.opennms.features.poller.remote.gwt.client.utils.StringUtils;
-
 import com.google.gwt.user.client.rpc.IsSerializable;
 public class LocationMonitorState implements Serializable, IsSerializable {
 	private static final long serialVersionUID = 1L;
@@ -25,6 +23,7 @@ public class LocationMonitorState implements Serializable, IsSerializable {
 
 	private Collection<GWTLocationSpecificStatus> m_locationStatuses;
 	private Set<String> m_serviceNames = new HashSet<String>();
+	private Set<Integer> m_serviceIds = new  HashSet<Integer>();
 
 	private StatusDetails m_statusDetails;
 
@@ -76,6 +75,7 @@ public class LocationMonitorState implements Serializable, IsSerializable {
 			for (final GWTLocationSpecificStatus status : statuses) {
 				handleMonitor(status.getLocationMonitor());
 				m_serviceNames.add(status.getMonitoredService().getServiceName());
+				m_serviceIds.add(status.getMonitoredService().getId());
 			}
 			m_locationStatuses = statuses;
 		}
@@ -285,27 +285,27 @@ public class LocationMonitorState implements Serializable, IsSerializable {
 			return StatusDetails.marginal("Only 1 monitor is started, the rest are disconnected.");
 		}
 
-		Set<String> anyDown = new HashSet<String>();
-		Set<String> services = new HashSet<String>();
-		Set<String> servicesDown = new HashSet<String>();
-		for (String serviceName : m_serviceNames) {
+		Set<Integer> anyDown = new HashSet<Integer>();
+		Set<Integer> services = new HashSet<Integer>();
+		Set<Integer> servicesDown = new HashSet<Integer>();
+		for (Integer serviceId : m_serviceIds) {
 			boolean serviceAllDown = true;
 			boolean foundService = false;
 			for (GWTLocationSpecificStatus status : m_locationStatuses) {
 				final GWTMonitoredService monitoredService = status.getMonitoredService();
-				if (monitoredService.getServiceName().equals(serviceName)) {
+				if (monitoredService.getId().equals(serviceId)) {
 					foundService = true;
-					services.add(serviceName);
+					services.add(serviceId);
 					final GWTPollResult pollResult = status.getPollResult();
 					if (pollResult.getStatus().equalsIgnoreCase("down")) {
-						anyDown.add(serviceName);
+						anyDown.add(serviceId);
 					} else {
 						serviceAllDown = false;
 					}
 				}
 			}
 			if (foundService && serviceAllDown) {
-				servicesDown.add(serviceName);
+				servicesDown.add(serviceId);
 			}
 		}
 
@@ -316,19 +316,43 @@ public class LocationMonitorState implements Serializable, IsSerializable {
 			} else {
 				// red/down: If all started monitors report "down" for the same service
 				if (servicesDown.size() == 1) {
-					return StatusDetails.down(servicesDown.iterator().next() + " has been reported down by all monitors.");
+					return StatusDetails.down(getServiceName(servicesDown.iterator().next()) + " has been reported down by all monitors.");
 				} else {
-					return StatusDetails.down("The following services are reported down by all monitors: " + StringUtils.join(servicesDown, ", ") + ".");
+					return StatusDetails.down("The following services are reported down by all monitors: " + getServiceNames(servicesDown) + ".");
 				}
 			}
 		}
 		
 		// yellow/marginal: If some (but not all) started monitors report "down" for the same service
 		if (anyDown.size() > 0) {
-			return StatusDetails.marginal("The following services are reported down by at least one monitor: " + StringUtils.join(anyDown, ", ") + ".");
+			return StatusDetails.marginal("The following services are reported down by at least one monitor: " + getServiceNames(anyDown) + ".");
 		}
 
 		return StatusDetails.up();
+	}
+	
+	private String getServiceNames(Set<Integer> serviceIds) {
+	    StringBuilder buf = new StringBuilder();
+	    
+	    boolean first = true;
+	    for(Integer serviceId : serviceIds) {
+	        if (first) {
+	            first = false;
+	        } else {
+	            buf.append(", ");
+	        }
+	        buf.append(getServiceName(serviceId));
+	    }
+	    return buf.toString();
+	}
+	
+	private String getServiceName(Integer serviceId) {
+	    for(GWTLocationSpecificStatus status : m_locationStatuses) {
+	        if (serviceId.equals(status.getMonitoredService().getId())) {
+	            return status.getMonitoredService().getServiceName();
+	        }
+	    }
+	    return null;
 	}
 
 	/**

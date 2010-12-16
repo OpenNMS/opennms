@@ -41,11 +41,8 @@ import java.util.StringTokenizer;
 /**
  * This class is used to hold an email address
  *
- * @author <A HREF="mailto:jason@opennms.org">Jason</A>
- * @author <A HREF="http://www.opennsm.org">OpenNMS</A>
- * @author <A HREF="mailto:jason@opennms.org">Jason</A>
- * @author <A HREF="http://www.opennsm.org">OpenNMS</A>
- * @version $Id: $
+ * @author <a href="mailto:jason@opennms.org">Jason</A>
+ * @author <a href="http://www.opennms.org">OpenNMS</A>
  */
 public class EmailAddress {
     private String address;

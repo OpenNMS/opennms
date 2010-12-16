@@ -263,7 +263,7 @@ public class SyslogDefs {
      * @param code a int.
      * @return a int.
      */
-    static public int extractFacility(int code) {
+    static public int extractFacility(final int code) {
         return ((code & SyslogDefs.LOG_FACMASK) >> 3);
     }
 
@@ -273,7 +273,7 @@ public class SyslogDefs {
      * @param code a int.
      * @return a int.
      */
-    static public int extractPriority(int code) {
+    static public int extractPriority(final int code) {
         return (code & SyslogDefs.LOG_PRIMASK);
     }
 
@@ -284,7 +284,7 @@ public class SyslogDefs {
      * @param priority a int.
      * @return a int.
      */
-    static public int computeCode(int facility, int priority) {
+    static public int computeCode(final int facility, final int priority) {
         return ((facility << 3) | priority);
     }
 
@@ -310,7 +310,7 @@ public class SyslogDefs {
      * @param level a int.
      * @return a {@link java.lang.String} object.
      */
-    static public String getPriorityName(int level) {
+    static public String getPriorityName(final int level) {
         switch (level) {
             case SyslogDefs.LOG_EMERG:
                 return "Emergency";
@@ -350,7 +350,7 @@ public class SyslogDefs {
      * @param facility a int.
      * @return a {@link java.lang.String} object.
      */
-    static public String getFacilityName(int facility) {
+    static public String getFacilityName(final int facility) {
         switch (facility) {
             case SyslogDefs.LOG_KERN:
                 return "kernel";
@@ -401,9 +401,9 @@ public class SyslogDefs {
      * @return a {@link java.lang.String} object.
      * @throws java.text.ParseException if any.
      */
-    static public String getPriority(String priority) throws ParseException {
-        String priKey = priority.toUpperCase();
-        String result = SyslogDefs.priHash.get(priKey).toString();
+    static public String getPriority(final String priority) throws ParseException {
+        final String priKey = priority.toUpperCase();
+        final String result = SyslogDefs.priHash.get(priKey).toString();
 
         if (result == null) {
             throw new ParseException("unknown priority '" + priority + "'", 0);
@@ -419,9 +419,9 @@ public class SyslogDefs {
      * @return a int.
      * @throws java.text.ParseException if any.
      */
-    static public int getFacility(String facility) throws ParseException {
-        String facKey = facility.toUpperCase();
-        Integer result = SyslogDefs.facHash.get(facKey);
+    static public int getFacility(final String facility) throws ParseException {
+        final String facKey = facility.toUpperCase();
+        final Integer result = SyslogDefs.facHash.get(facKey);
 
         if (result == null) {
             throw new ParseException("unknown facility '" + facility + "'", 0);

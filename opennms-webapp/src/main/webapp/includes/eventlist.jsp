@@ -114,16 +114,16 @@
     if( ipAddr != null && ! ipAddr.equals("0.0.0.0")) {
         if( serviceIdString != null ) {
             int serviceId = WebSecurityUtils.safeParseInt(serviceIdString);
-            events = EventFactory.getEventsForService(nodeId, ipAddr, serviceId, sortStyle, ackType, throttle, offset);
+            events = EventFactory.getEventsForService(nodeId, ipAddr, serviceId, sortStyle, ackType, throttle, offset, getServletContext());
         }
         else {
-            events = EventFactory.getEventsForInterface(nodeId, ipAddr, sortStyle, ackType, throttle, offset);
+            events = EventFactory.getEventsForInterface(nodeId, ipAddr, sortStyle, ackType, throttle, offset, getServletContext());
         }
     } else if (ifIndex != -1 ) {
-        events = EventFactory.getEventsForInterface(nodeId, ifIndex, sortStyle, ackType, throttle, offset);
+        events = EventFactory.getEventsForInterface(nodeId, ifIndex, sortStyle, ackType, throttle, offset, getServletContext());
     }
     else {
-        events = EventFactory.getEventsForNode(nodeId, sortStyle, ackType, throttle, offset);            
+        events = EventFactory.getEventsForNode(nodeId, sortStyle, ackType, throttle, offset, getServletContext());            
     }
 %>
 

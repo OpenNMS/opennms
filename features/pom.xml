@@ -3,7 +3,7 @@
   <parent>
     <groupId>org.opennms</groupId>
     <artifactId>opennms</artifactId>
-    <version>1.8.4-SNAPSHOT</version>
+    <version>1.8.8-SNAPSHOT</version>
   </parent>
   <modelVersion>4.0.0</modelVersion>
   <artifactId>org.opennms.features</artifactId>
@@ -11,17 +11,17 @@
   <name>OpenNMS Features</name>
   <modules>
     <module>acl</module>
-    <module>http-remoting</module>
     <module>jdbc-collector</module>
     <module>instrumentationLogReader</module>
     <module>poller</module>
     <module>provisioning</module>
+    <module>root-webapp</module>
     <module>ticketing</module>
     <module>phonebook</module>
     <module>sms-reflector</module>
     <module>reporting</module>
     <module>springframework-security</module>
-    <module>webapp-full</module>
+    <module>system-report</module>
   </modules>
 
   <profiles>
@@ -34,44 +34,10 @@
       <modules>
         <module>remote-poller</module>
         <module>remote-poller-jnlp</module>
-        <module>remote-poller-onejar</module>
         <module>remote-poller-gwt</module>
-        <module>remote-poller-standalone</module>
       </modules>
     </profile>
 
   </profiles>
-
-  <repositories>
-    <repository>
-      <snapshots><enabled>false</enabled></snapshots>
-      <releases><enabled>true</enabled></releases>
-      <id>maven-repo</id>
-      <name>Maven Central</name>
-      <url>http://repo1.maven.org/maven2</url>
-    </repository>
-    <repository>
-      <snapshots>
-        <enabled>false</enabled>
-      </snapshots>
-      <releases>
-        <enabled>true</enabled>
-      </releases>
-      <id>opennms-repo</id>
-      <name>OpenNMS Repository</name>
-      <url>http://maven.opennms.org/content/groups/opennms.org-release</url>
-    </repository>
-    <repository>
-      <snapshots>
-        <enabled>true</enabled>
-      </snapshots>
-      <releases>
-        <enabled>false</enabled>
-      </releases>
-      <id>opennms-snapshots</id>
-      <name>OpenNMS Repository</name>
-      <url>http://maven.opennms.org/content/groups/opennms.org-snapshot</url>
-    </repository>
-  </repositories>
 
 </project>

@@ -37,11 +37,8 @@ package org.opennms.netmgt.collectd.wmi;
  * WPM collection and storage.
  * </P>
  *
- * @author <A HREF="mailto:matt.raykowski@gmail.com">Matt Raykowski </A>
- * @author <A HREF="http://www.opennsm.org">OpenNMS </A>
- * @author <A HREF="mailto:matt.raykowski@gmail.com">Matt Raykowski </A>
- * @author <A HREF="http://www.opennsm.org">OpenNMS </A>
- * @version $Id: $
+ * @author <a href="mailto:matt.raykowski@gmail.com">Matt Raykowski</a>
+ * @author <a href="http://www.opennms.org">OpenNMS</a>
  */
 public class WmiCollectorException extends RuntimeException {
         /** Constant <code>serialVersionUID=1L</code> */
@@ -53,7 +50,7 @@ public class WmiCollectorException extends RuntimeException {
          * @param message a {@link java.lang.String} object.
          * @param cause a {@link java.lang.Throwable} object.
          */
-        public WmiCollectorException(String message, Throwable cause) {
+        public WmiCollectorException(final String message, final Throwable cause) {
             super(message, cause);
         }
 }

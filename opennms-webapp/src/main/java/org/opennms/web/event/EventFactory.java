@@ -45,6 +45,8 @@ import java.sql.Timestamp;
 import java.util.Date;
 import java.util.Vector;
 
+import javax.servlet.ServletContext;
+
 import org.opennms.core.resource.Vault;
 import org.opennms.netmgt.model.OnmsSeverity;
 import org.opennms.web.event.filter.IfIndexFilter;
@@ -392,8 +394,8 @@ public class EventFactory {
      * @return an array of {@link org.opennms.web.event.Event} objects.
      * @throws java.sql.SQLException if any.
      */
-    public static Event[] getEventsForNode(int nodeId) throws SQLException {
-        return getEventsForNode(nodeId, SortStyle.ID, AcknowledgeType.UNACKNOWLEDGED, -1, -1);
+    public static Event[] getEventsForNode(int nodeId, ServletContext servletContext) throws SQLException {
+        return getEventsForNode(nodeId, SortStyle.ID, AcknowledgeType.UNACKNOWLEDGED, -1, -1, servletContext);
     }
 
     /**
@@ -407,9 +409,9 @@ public class EventFactory {
      * @return an array of {@link org.opennms.web.event.Event} objects.
      * @throws java.sql.SQLException if any.
      */
-    public static Event[] getEventsForNode(int nodeId, boolean includeAcknowledged) throws SQLException {
+    public static Event[] getEventsForNode(int nodeId, boolean includeAcknowledged, ServletContext servletContext) throws SQLException {
         AcknowledgeType ackType = (includeAcknowledged) ? AcknowledgeType.BOTH : AcknowledgeType.UNACKNOWLEDGED;
-        return getEventsForNode(nodeId, SortStyle.ID, ackType, -1, -1);
+        return getEventsForNode(nodeId, SortStyle.ID, ackType, -1, -1, servletContext);
     }
 
     /**
@@ -422,8 +424,8 @@ public class EventFactory {
      * @return an array of {@link org.opennms.web.event.Event} objects.
      * @throws java.sql.SQLException if any.
      */
-    public static Event[] getEventsForNode(int nodeId, SortStyle sortStyle, AcknowledgeType ackType) throws SQLException {
-        return getEventsForNode(nodeId, sortStyle, ackType, -1, -1);
+    public static Event[] getEventsForNode(int nodeId, SortStyle sortStyle, AcknowledgeType ackType, ServletContext servletContext) throws SQLException {
+        return getEventsForNode(nodeId, sortStyle, ackType, -1, -1, servletContext);
     }
 
     /**
@@ -439,12 +441,12 @@ public class EventFactory {
      * @return an array of {@link org.opennms.web.event.Event} objects.
      * @throws java.sql.SQLException if any.
      */
-    public static Event[] getEventsForNode(int nodeId, SortStyle sortStyle, AcknowledgeType ackType, int throttle, int offset) throws SQLException {
+    public static Event[] getEventsForNode(int nodeId, SortStyle sortStyle, AcknowledgeType ackType, int throttle, int offset, ServletContext servletContext) throws SQLException {
         if (sortStyle == null || ackType == null) {
             throw new IllegalArgumentException("Cannot take null parameters.");
         }
 
-        Filter[] filters = new Filter[] { new NodeFilter(nodeId) };
+        Filter[] filters = new Filter[] { new NodeFilter(nodeId, servletContext) };
         return getEvents(sortStyle, ackType, filters, throttle, offset);
     }
 
@@ -504,8 +506,8 @@ public class EventFactory {
      * @return an array of {@link org.opennms.web.event.Event} objects.
      * @throws java.sql.SQLException if any.
      */
-    public static Event[] getEventsForInterface(int nodeId, String ipAddress) throws SQLException {
-        return getEventsForInterface(nodeId, ipAddress, SortStyle.ID, AcknowledgeType.UNACKNOWLEDGED, -1, -1);
+    public static Event[] getEventsForInterface(int nodeId, String ipAddress, ServletContext servletContext) throws SQLException {
+        return getEventsForInterface(nodeId, ipAddress, SortStyle.ID, AcknowledgeType.UNACKNOWLEDGED, -1, -1, servletContext);
     }
 
     /**
@@ -520,9 +522,9 @@ public class EventFactory {
      * @return an array of {@link org.opennms.web.event.Event} objects.
      * @throws java.sql.SQLException if any.
      */
-    public static Event[] getEventsForInterface(int nodeId, String ipAddress, boolean includeAcknowledged) throws SQLException {
+    public static Event[] getEventsForInterface(int nodeId, String ipAddress, boolean includeAcknowledged, ServletContext servletContext) throws SQLException {
         AcknowledgeType ackType = (includeAcknowledged) ? AcknowledgeType.BOTH : AcknowledgeType.UNACKNOWLEDGED;
-        return getEventsForInterface(nodeId, ipAddress, SortStyle.ID, ackType, -1, -1);
+        return getEventsForInterface(nodeId, ipAddress, SortStyle.ID, ackType, -1, -1, servletContext);
     }
 
     /**
@@ -541,12 +543,12 @@ public class EventFactory {
      * @return an array of {@link org.opennms.web.event.Event} objects.
      * @throws java.sql.SQLException if any.
      */
-    public static Event[] getEventsForInterface(int nodeId, String ipAddress, SortStyle sortStyle, AcknowledgeType ackType, int throttle, int offset) throws SQLException {
+    public static Event[] getEventsForInterface(int nodeId, String ipAddress, SortStyle sortStyle, AcknowledgeType ackType, int throttle, int offset, ServletContext servletContext) throws SQLException {
         if (ipAddress == null || sortStyle == null || ackType == null) {
             throw new IllegalArgumentException("Cannot take null parameters.");
         }
 
-        Filter[] filters = new Filter[] { new NodeFilter(nodeId), new InterfaceFilter(ipAddress) };
+        Filter[] filters = new Filter[] { new NodeFilter(nodeId, servletContext), new InterfaceFilter(ipAddress) };
         return getEvents(sortStyle, ackType, filters, throttle, offset);
     }
 
@@ -566,12 +568,12 @@ public class EventFactory {
      * @return an array of {@link org.opennms.web.event.Event} objects.
      * @throws java.sql.SQLException if any.
      */
-    public static Event[] getEventsForInterface(int nodeId, int ifIndex, SortStyle sortStyle, AcknowledgeType ackType, int throttle, int offset) throws SQLException {
+    public static Event[] getEventsForInterface(int nodeId, int ifIndex, SortStyle sortStyle, AcknowledgeType ackType, int throttle, int offset, ServletContext servletContext) throws SQLException {
         if (sortStyle == null || ackType == null) {
             throw new IllegalArgumentException("Cannot take null parameters.");
         }
 
-        Filter[] filters = new Filter[] { new NodeFilter(nodeId), new  IfIndexFilter(ifIndex)};
+        Filter[] filters = new Filter[] { new NodeFilter(nodeId, servletContext), new  IfIndexFilter(ifIndex)};
         return getEvents(sortStyle, ackType, filters, throttle, offset);
     }
 
@@ -638,12 +640,12 @@ public class EventFactory {
      * @return a int.
      * @throws java.sql.SQLException if any.
      */
-    public static int getEventCountForInterface(int nodeId, String ipAddress, AcknowledgeType ackType) throws SQLException {
+    public static int getEventCountForInterface(int nodeId, String ipAddress, AcknowledgeType ackType, ServletContext servletContext) throws SQLException {
         if (ipAddress == null || ackType == null) {
             throw new IllegalArgumentException("Cannot take null parameters.");
         }
 
-        Filter[] filters = new Filter[] { new NodeFilter(nodeId), new InterfaceFilter(ipAddress) };
+        Filter[] filters = new Filter[] { new NodeFilter(nodeId, servletContext), new InterfaceFilter(ipAddress) };
         return getEventCount(ackType, filters);
     }
 
@@ -680,8 +682,8 @@ public class EventFactory {
      * @return an array of {@link org.opennms.web.event.Event} objects.
      * @throws java.sql.SQLException if any.
      */
-    public static Event[] getEventsForService(int nodeId, String ipAddress, int serviceId) throws SQLException {
-        return getEventsForService(nodeId, ipAddress, serviceId, SortStyle.ID, AcknowledgeType.UNACKNOWLEDGED, -1, -1);
+    public static Event[] getEventsForService(int nodeId, String ipAddress, int serviceId, ServletContext servletContext) throws SQLException {
+        return getEventsForService(nodeId, ipAddress, serviceId, SortStyle.ID, AcknowledgeType.UNACKNOWLEDGED, -1, -1, servletContext);
     }
 
     /**
@@ -697,9 +699,9 @@ public class EventFactory {
      * @return an array of {@link org.opennms.web.event.Event} objects.
      * @throws java.sql.SQLException if any.
      */
-    public static Event[] getEventsForService(int nodeId, String ipAddress, int serviceId, boolean includeAcknowledged) throws SQLException {
+    public static Event[] getEventsForService(int nodeId, String ipAddress, int serviceId, boolean includeAcknowledged, ServletContext servletContext) throws SQLException {
         AcknowledgeType ackType = (includeAcknowledged) ? AcknowledgeType.BOTH : AcknowledgeType.UNACKNOWLEDGED;
-        return getEventsForService(nodeId, ipAddress, serviceId, SortStyle.ID, ackType, -1, -1);
+        return getEventsForService(nodeId, ipAddress, serviceId, SortStyle.ID, ackType, -1, -1, servletContext);
     }
 
     /**
@@ -719,12 +721,12 @@ public class EventFactory {
      * @return an array of {@link org.opennms.web.event.Event} objects.
      * @throws java.sql.SQLException if any.
      */
-    public static Event[] getEventsForService(int nodeId, String ipAddress, int serviceId, SortStyle sortStyle, AcknowledgeType ackType, int throttle, int offset) throws SQLException {
+    public static Event[] getEventsForService(int nodeId, String ipAddress, int serviceId, SortStyle sortStyle, AcknowledgeType ackType, int throttle, int offset, ServletContext servletContext) throws SQLException {
         if (ipAddress == null || sortStyle == null || ackType == null) {
             throw new IllegalArgumentException("Cannot take null parameters.");
         }
 
-        Filter[] filters = new Filter[] { new NodeFilter(nodeId), new InterfaceFilter(ipAddress), new ServiceFilter(serviceId) };
+        Filter[] filters = new Filter[] { new NodeFilter(nodeId, servletContext), new InterfaceFilter(ipAddress), new ServiceFilter(serviceId) };
         return getEvents(sortStyle, ackType, filters, throttle, offset);
     }
 
@@ -790,12 +792,12 @@ public class EventFactory {
      * @return a int.
      * @throws java.sql.SQLException if any.
      */
-    public static int getEventCountForService(int nodeId, String ipAddress, int serviceId, AcknowledgeType ackType) throws SQLException {
+    public static int getEventCountForService(int nodeId, String ipAddress, int serviceId, AcknowledgeType ackType, ServletContext servletContext) throws SQLException {
         if (ipAddress == null || ackType == null) {
             throw new IllegalArgumentException("Cannot take null parameters.");
         }
 
-        Filter[] filters = new Filter[] { new NodeFilter(nodeId), new InterfaceFilter(ipAddress), new ServiceFilter(serviceId) };
+        Filter[] filters = new Filter[] { new NodeFilter(nodeId, servletContext), new InterfaceFilter(ipAddress), new ServiceFilter(serviceId) };
         return getEventCount(ackType, filters);
     }
 

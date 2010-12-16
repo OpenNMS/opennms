@@ -46,7 +46,6 @@ import org.opennms.netmgt.dao.NodeDao;
 import org.opennms.netmgt.model.OnmsNode;
 import org.opennms.web.WebSecurityUtils;
 import org.opennms.web.event.Event;
-import org.opennms.web.event.EventUtil;
 import org.opennms.web.event.WebEventRepository;
 import org.opennms.web.event.filter.EventCriteria;
 import org.opennms.web.event.filter.EventIdListFilter;
@@ -121,10 +120,19 @@ public class NotificationFilterController extends AbstractController implements 
         List<Filter> filterList = new ArrayList<Filter>();
         if (filterStrings != null) {
             for (String filterString : filterStrings) {
-                Filter filter = NoticeUtil.getFilter(filterString);
+                Filter filter = NoticeUtil.getFilter(filterString, getServletContext());
                 if (filter != null) {
                     filterList.add(filter);
                 }
+            }
+        }
+
+        // Check for a username filter (used on notifications/index.jsp)
+        String username = request.getParameter("user");
+        if (username != null) {
+            Filter filter = NoticeUtil.getFilter("user=" + username, getServletContext());
+            if (filter != null) {
+                filterList.add(filter);
             }
         }
 

@@ -176,8 +176,11 @@ public class SecurityAuthenticationEventOnmsEventBuilderTest extends TestCase {
     }
     
     public static class TestingDetailsAuthenticationToken extends AbstractAuthenticationToken {
-        private static final long serialVersionUID = 1L;
-        private Object m_principal;
+        /**
+		 * 
+		 */
+		private static final long serialVersionUID = -6197934198093164407L;
+		private Object m_principal;
         private Object m_credentials;
         private Object m_details;
 
@@ -203,9 +206,13 @@ public class SecurityAuthenticationEventOnmsEventBuilderTest extends TestCase {
     }
     
     public static class TestApplicationEvent extends ApplicationEvent {
-        private static final long serialVersionUID = 1L;
 
-        public TestApplicationEvent(Object obj) {
+        /**
+		 * 
+		 */
+		private static final long serialVersionUID = 7573808524408766331L;
+
+		public TestApplicationEvent(Object obj) {
             super(obj);
         }
     }

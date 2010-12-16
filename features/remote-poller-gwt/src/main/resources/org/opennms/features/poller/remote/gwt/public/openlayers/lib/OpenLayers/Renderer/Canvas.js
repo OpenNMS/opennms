@@ -1,5 +1,6 @@
-/* Copyright (c) 2006-2008 MetaCarta, Inc., published under the Clear BSD
- * license.  See http://svn.openlayers.org/trunk/openlayers/license.txt for the
+/* Copyright (c) 2006-2010 by OpenLayers Contributors (see authors.txt for 
+ * full list of contributors). Published under the Clear BSD license.  
+ * See http://svn.openlayers.org/trunk/openlayers/license.txt for the
  * full text of the license. */
 
 /**
@@ -28,14 +29,6 @@ OpenLayers.Renderer.Canvas = OpenLayers.Class(OpenLayers.Renderer, {
     features: null, 
    
     /**
-     * Property: geometryMap
-     * {Object} Geometry -> Feature lookup table. Used by eraseGeometry to
-     *     lookup features to remove from our internal table (this.features)
-     *     when erasing geoms.
-     */
-    geometryMap: null,
- 
-    /**
      * Constructor: OpenLayers.Renderer.Canvas
      *
      * Parameters:
@@ -47,7 +40,6 @@ OpenLayers.Renderer.Canvas = OpenLayers.Class(OpenLayers.Renderer, {
         this.container.appendChild(this.root);
         this.canvas = this.root.getContext("2d");
         this.features = {};
-        this.geometryMap = {};
     },
     
     /** 
@@ -58,9 +50,10 @@ OpenLayers.Renderer.Canvas = OpenLayers.Class(OpenLayers.Renderer, {
      * 
      * Parameters:
      * geometry - {<OpenLayers.Geometry>}
+     * featureId - {String}
      */
-    eraseGeometry: function(geometry) {
-        this.eraseFeatures(this.features[this.geometryMap[geometry.id]][0]);
+    eraseGeometry: function(geometry, featureId) {
+        this.eraseFeatures(this.features[featureId][0]);
     },
 
     /**
@@ -118,20 +111,10 @@ OpenLayers.Renderer.Canvas = OpenLayers.Class(OpenLayers.Renderer, {
      * style - {<Object>} 
      */
     drawFeature: function(feature, style) {
-        if(style == null) {
-            style = feature.style;
-        }
-        style = OpenLayers.Util.extend({
-          'fillColor': '#000000',
-          'strokeColor': '#000000',
-          'strokeWidth': 2,
-          'fillOpacity': 1,
-          'strokeOpacity': 1
-        }, style);  
+        style = style || feature.style;
+        style = this.applyDefaultSymbolizer(style);  
+        
         this.features[feature.id] = [feature, style]; 
-        if (feature.geometry) { 
-            this.geometryMap[feature.geometry.id] = feature.id;
-        }    
         this.redraw();
     },
 
@@ -155,7 +138,7 @@ OpenLayers.Renderer.Canvas = OpenLayers.Class(OpenLayers.Renderer, {
                 this.drawGeometry(geometry.components[i], style);
             }
             return;
-        };
+        }
         switch (geometry.CLASS_NAME) {
             case "OpenLayers.Geometry.Point":
                 this.drawPoint(geometry, style);
@@ -184,7 +167,6 @@ OpenLayers.Renderer.Canvas = OpenLayers.Class(OpenLayers.Renderer, {
      */ 
     drawExternalGraphic: function(pt, style) {
        var img = new Image();
-       img.src = style.externalGraphic;
        
        if(style.graphicTitle) {
            img.title=style.graphicTitle;           
@@ -198,19 +180,21 @@ OpenLayers.Renderer.Canvas = OpenLayers.Class(OpenLayers.Renderer, {
            style.graphicXOffset : -(0.5 * width);
        var yOffset = (style.graphicYOffset != undefined) ?
            style.graphicYOffset : -(0.5 * height);
-       var opacity = style.graphicOpacity || style.fillOpacity;
        
        var context = { img: img, 
                        x: (pt[0]+xOffset), 
                        y: (pt[1]+yOffset), 
                        width: width, 
                        height: height, 
+                       opacity: style.graphicOpacity || style.fillOpacity,
                        canvas: this.canvas };
 
        img.onload = OpenLayers.Function.bind( function() {
+           this.canvas.globalAlpha = this.opacity;
            this.canvas.drawImage(this.img, this.x, 
                                  this.y, this.width, this.height);
-       }, context);   
+       }, context);
+       img.src = style.externalGraphic;
     },
 
     /**
@@ -313,7 +297,6 @@ OpenLayers.Renderer.Canvas = OpenLayers.Class(OpenLayers.Renderer, {
         }
         
         if(style.stroke !== false) {
-            var oldWidth = this.canvas.lineWidth; 
             this.setCanvasStyle("stroke", style);
             this.canvas.beginPath();
             var start = this.getLocalXY(geometry.components[0]);
@@ -412,14 +395,14 @@ OpenLayers.Renderer.Canvas = OpenLayers.Class(OpenLayers.Renderer, {
         var y = ((extent.top / resolution) - point.y / resolution);
         return [x, y];
     },
-        
+
     /**
      * Method: clear
      * Clear all vectors from the renderer.
-     * virtual function.
      */    
     clear: function() {
         this.canvas.clearRect(0, 0, this.root.width, this.root.height);
+        this.features = {};
     },
 
     /**
@@ -477,7 +460,7 @@ OpenLayers.Renderer.Canvas = OpenLayers.Class(OpenLayers.Renderer, {
      */
     redraw: function() {
         if (!this.locked) {
-            this.clear();
+            this.canvas.clearRect(0, 0, this.root.width, this.root.height);
             var labelMap = [];
             var feature, style;
             for (var id in this.features) {
@@ -491,7 +474,7 @@ OpenLayers.Renderer.Canvas = OpenLayers.Class(OpenLayers.Renderer, {
                 }
             }
             var item;
-            for (var i=0; len=labelMap.length, i<len; ++i) {
+            for (var i=0, len=labelMap.length; i<len; ++i) {
                 item = labelMap[i];
                 this.drawText(item[0].geometry.getCentroid(), item[1]);
             }

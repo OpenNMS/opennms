@@ -57,8 +57,9 @@ import java.util.List;
 import org.exolab.castor.xml.MarshalException;
 import org.exolab.castor.xml.Marshaller;
 import org.exolab.castor.xml.ValidationException;
+import org.opennms.core.utils.ByteArrayComparator;
 import org.opennms.core.utils.FilteringIterator;
-import org.opennms.core.utils.IPSorter;
+import org.opennms.core.utils.InetAddressUtils;
 import org.opennms.core.utils.IteratorIterator;
 import org.opennms.core.utils.ThreadCategory;
 import org.opennms.netmgt.ConfigFileConstants;
@@ -82,9 +83,6 @@ import org.springframework.core.io.FileSystemResource;
  *
  * @author <a href="mailto:mike@opennms.org">Mike Davidson </a>
  * @author <a href="http://www.opennms.org/">OpenNMS </a>
- * @author <a href="mailto:mike@opennms.org">Mike Davidson </a>
- * @author <a href="http://www.opennms.org/">OpenNMS </a>
- * @version $Id: $
  */
 public final class DiscoveryConfigFactory {
     /** Constant <code>COMMENT_STR="#"</code> */
@@ -389,7 +387,22 @@ public final class DiscoveryConfigFactory {
         Enumeration<IncludeRange> includeRangeEntries = getConfiguration().enumerateIncludeRange();
         while (includeRangeEntries.hasMoreElements()) {
             IncludeRange ir = includeRangeEntries.nextElement();
-    
+
+            // Validate IP range; if invalid, then log and discard this range
+            try {
+                InetAddressUtils.toIpAddrBytes(ir.getBegin());
+            } catch (Throwable e) {
+                ThreadCategory.getInstance(getClass()).warn("Begin address of discovery range is invalid, discarding: " + ir.getBegin());
+                continue;
+            } 
+            
+            try {
+                InetAddressUtils.toIpAddrBytes(ir.getEnd());
+            } catch (Throwable e) {
+                ThreadCategory.getInstance(getClass()).warn("End address of discovery range is invalid, discarding: " + ir.getEnd());
+                continue;
+            }
+
             long timeout = 800L;
             if (ir.hasTimeout()) {
                 timeout = ir.getTimeout();
@@ -457,13 +470,16 @@ public final class DiscoveryConfigFactory {
      */
     public boolean isExcluded(InetAddress address) {
         if (getConfiguration().getExcludeRangeCollection() != null) {
-            long laddr = IPSorter.convertToLong(address.getAddress());
+            byte[] laddr = address.getAddress();
     
             for (ExcludeRange range : getConfiguration().getExcludeRangeCollection()) {
                 try {
-                    long begin = IPSorter.convertToLong(InetAddress.getByName(range.getBegin()).getAddress());
-                    long end = IPSorter.convertToLong(InetAddress.getByName(range.getEnd()).getAddress());
-                    if (begin <= laddr && laddr <= end) {
+                    byte[] begin = InetAddress.getByName(range.getBegin()).getAddress();
+                    byte[] end = InetAddress.getByName(range.getEnd()).getAddress();
+                    ByteArrayComparator comparator = new ByteArrayComparator();
+                    int beginComp = comparator.compare(begin, laddr);
+                    int endComp = comparator.compare(laddr, end);
+                    if (beginComp <= 0 && endComp <= 0) {
                         return true;
                     }
                 } catch (UnknownHostException ex) {

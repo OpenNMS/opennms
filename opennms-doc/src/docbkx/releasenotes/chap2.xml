@@ -6,6 +6,440 @@
 
 	<!-- Start 1.8 -->
 
+	<section id="opennms-1.8.7">
+		<title>Changes in OpenNMS 1.8.7</title>
+
+		<section id="opennms-1.8.7-bug">
+			<title>Bug</title>
+
+			<itemizedlist>
+				<listitem><para>icmp and http thresholds not working properly (Issue <ulink url='http://issues.opennms.org/browse/NMS-1657'>NMS-1657</ulink>)</para></listitem>
+				<listitem><para>Going to edit KSC reports generates an uncaught exception (Issue <ulink url='http://issues.opennms.org/browse/NMS-3414'>NMS-3414</ulink>)</para></listitem>
+				<listitem><para>Going to edit KSC reports generates an uncaught exception (Issue <ulink url='http://issues.opennms.org/browse/NMS-3414'>NMS-3414</ulink>)</para></listitem>
+				<listitem><para>Yet another uncaught exception, KSC reports (Issue <ulink url='http://issues.opennms.org/browse/NMS-3455'>NMS-3455</ulink>)</para></listitem>
+				<listitem><para>Home  / Admin  / Provisioning Groups page generating bad HTML when a provisioning group has an apostrophe in the name (Issue <ulink url='http://issues.opennms.org/browse/NMS-3601'>NMS-3601</ulink>)</para></listitem>
+				<listitem><para>DNS outage identified on interface X with reason code: IOException while polling address (Issue <ulink url='http://issues.opennms.org/browse/NMS-4071'>NMS-4071</ulink>)</para></listitem>
+				<listitem><para>ThresholdingVisitor: create: Can&#39;t create ThresholdingVisitor for &lt;IP ADDRESS&gt; (Issue <ulink url='http://issues.opennms.org/browse/NMS-4233'>NMS-4233</ulink>)</para></listitem>
+				<listitem><para>Two BGP-related SNMP graphs use daily RRAs (Issue <ulink url='http://issues.opennms.org/browse/NMS-4245'>NMS-4245</ulink>)</para></listitem>
+				<listitem><para>Acknowledgement Service bails when an ack is sent for an invalid ID (Issue <ulink url='http://issues.opennms.org/browse/NMS-4248'>NMS-4248</ulink>)</para></listitem>
+				<listitem><para>In-line thresholding should ignore Aliased Resources if they are not enabled (Issue <ulink url='http://issues.opennms.org/browse/NMS-4255'>NMS-4255</ulink>)</para></listitem>
+				<listitem><para>Fix lower limit in Net-SNMP CPU graphs (Issue <ulink url='http://issues.opennms.org/browse/NMS-4257'>NMS-4257</ulink>)</para></listitem>
+				<listitem><para>Make SNMPv2c the default in web SNMP config dialog (Issue <ulink url='http://issues.opennms.org/browse/NMS-4263'>NMS-4263</ulink>)</para></listitem>
+				<listitem><para>build blacklists JDKs other than version 1.5 or 1.6 (Issue <ulink url='http://issues.opennms.org/browse/NMS-4270'>NMS-4270</ulink>)</para></listitem>
+				<listitem><para>OpenJDK fails privatevoidcheckJvmName() check (Issue <ulink url='http://issues.opennms.org/browse/NMS-4277'>NMS-4277</ulink>)</para></listitem>
+				<listitem><para>Wrongly substituted path in some reports (&quot;last month&quot;)? (Issue <ulink url='http://issues.opennms.org/browse/NMS-4288'>NMS-4288</ulink>)</para></listitem>
+			</itemizedlist>
+		</section>
+		<section id="opennms-1.8.7-enhancement">
+			<title>Enhancement</title>
+
+			<itemizedlist>
+				<listitem><para>SNMP Asset Provisioning Adapter: suppress output like No such instance (Issue <ulink url='http://issues.opennms.org/browse/NMS-4173'>NMS-4173</ulink>)</para></listitem>
+				<listitem><para>Add new options for domain/ifalias resource collection (Issue <ulink url='http://issues.opennms.org/browse/NMS-4239'>NMS-4239</ulink>)</para></listitem>
+				<listitem><para>Improve Liebert power-related SNMP data collection and resource graph definitions (Issue <ulink url='http://issues.opennms.org/browse/NMS-4241'>NMS-4241</ulink>)</para></listitem>
+				<listitem><para>Create performance resource graphs for MS HTTP stats (Issue <ulink url='http://issues.opennms.org/browse/NMS-4242'>NMS-4242</ulink>)</para></listitem>
+			</itemizedlist>
+		</section>
+	</section>
+
+	<section id="opennms-1.8.6">
+		<title>Changes in OpenNMS 1.8.6</title>
+
+		<section id="opennms-1.8.6-features">
+			<title>New Features and Enhancements</title>
+
+			<itemizedlist>
+
+				<listitem>
+					<para>SNMP Asset Provisioning Adapter: suppress output like No such instance (Issue
+					<ulink url="http://issues.opennms.org/browse/NMS-4173">NMS-4173</ulink>)</para>
+				</listitem>
+
+				<listitem>
+					<para>Add a few more Cisco Catalyst sysObjectIDs to default Linkd config (Issue
+					<ulink url="http://issues.opennms.org/browse/NMS-4191">NMS-4191</ulink>)</para>
+				</listitem>
+
+				<listitem>
+					<para>Add events for Compuware ServerVantage traps (Issue
+					<ulink url="http://issues.opennms.org/browse/NMS-4195">NMS-4195</ulink>)</para>
+				</listitem>
+
+				<listitem>
+					<para>Reportd should create events run or delivery failure (Issue
+					<ulink url="http://issues.opennms.org/browse/NMS-4213">NMS-4213</ulink>)</para>
+				</listitem>
+
+				<listitem>
+					<para>make build system Maven3-compatible (Issue
+					<ulink url="http://issues.opennms.org/browse/NMS-4235">NMS-4235</ulink>)</para>
+				</listitem>
+
+			</itemizedlist>
+
+		</section>
+
+		<section id="opennms-1.8.6-bugs">
+			<title>Bug Fixes</title>
+
+			<itemizedlist>
+
+				<listitem>
+					<para>Web users can bypass ACLs by editing params of element/node.jsp URLs (Issue
+					<ulink url="http://issues.opennms.org/browse/NMS-3184">NMS-3184</ulink>)</para>
+				</listitem>
+
+				<listitem>
+					<para>Home / Admin / Provisioning Groups page generating bad HTML when a provisioning group has an apostrophe in the name (Issue
+					<ulink url="http://issues.opennms.org/browse/NMS-3601">NMS-3601</ulink>)</para>
+				</listitem>
+
+				<listitem>
+					<para>Bug in netapp.fsfile report (Issue
+					<ulink url="http://issues.opennms.org/browse/NMS-4171">NMS-4171</ulink>)</para>
+				</listitem>
+
+				<listitem>
+					<para>deprecated -c installer option does not produce a warning or error (Issue
+					<ulink url="http://issues.opennms.org/browse/NMS-4174">NMS-4174</ulink>)</para>
+				</listitem>
+
+				<listitem>
+					<para>Net-SNMP agent 5.5 always misreports sysObjectID as ".1.3" or ".0.1" (Issue
+					<ulink url="http://issues.opennms.org/browse/NMS-4192">NMS-4192</ulink>)</para>
+				</listitem>
+
+				<listitem>
+					<para>Notifications fail when Notification name is longer than 63 chars (Issue
+					<ulink url="http://issues.opennms.org/browse/NMS-4194">NMS-4194</ulink>)</para>
+				</listitem>
+
+				<listitem>
+					<para>NPE in "View Node Link Detailed Info" (Issue
+					<ulink url="http://issues.opennms.org/browse/NMS-4215">NMS-4215</ulink>)</para>
+				</listitem>
+
+				<listitem>
+					<para>deleting old notifications is slow (Issue
+					<ulink url="http://issues.opennms.org/browse/NMS-4217">NMS-4217</ulink>)</para>
+				</listitem>
+
+				<listitem>
+					<para>SNMP fails while accessing a Dell/Avocent 2161DS KVM Device (Issue
+					<ulink url="http://issues.opennms.org/browse/NMS-4219">NMS-4219</ulink>)</para>
+				</listitem>
+
+				<listitem>
+					<para>1.8.5 Solaris package fails to install (Issue
+					<ulink url="http://issues.opennms.org/browse/NMS-4227">NMS-4227</ulink>)</para>
+				</listitem>
+
+				<listitem>
+					<para>JMX datacollection aliases longer than 19 characters (Issue
+					<ulink url="http://issues.opennms.org/browse/NMS-4236">NMS-4236</ulink>)</para>
+				</listitem>
+
+			</itemizedlist>
+
+		</section>
+
+	</section>
+
+	<section id="opennms-1.8.5">
+		<title>Changes in OpenNMS 1.8.5</title>
+
+		<section id="opennms-1.8.5-features">
+			<title>New Features and Enhancements</title>
+
+			<itemizedlist>
+
+				<listitem>
+					<para>Forms involving adding/removing surveillance categories now
+					redirects back to the referring page when submitted. (Bug
+					<ulink url="http://bugzilla.opennms.org/show_bug.cgi?id=3028">#3028</ulink>)</para>
+				</listitem>
+
+				<listitem>
+					<para>Data collection and resource graph definitions for AKCP sensorProbes was added. (Bug
+					<ulink url="http://bugzilla.opennms.org/show_bug.cgi?id=4118">#4118</ulink>)</para>
+				</listitem>
+
+				<listitem>
+					<para>The DNS service monitor now gives useful logging when set to INFO. (Bug
+					<ulink url="http://bugzilla.opennms.org/show_bug.cgi?id=4142">#4142</ulink>)</para>
+				</listitem>
+
+				<listitem>
+					<para>Events for Concord eHealth Health Report / LiveExceptions traps were added. (Bug
+					<ulink url="http://bugzilla.opennms.org/show_bug.cgi?id=4145">#4145</ulink>)</para>
+				</listitem>
+
+				<listitem>
+					<para>The Manage/Unmanage Interfaces form now validates IP addresses. (Bug
+					<ulink url="http://bugzilla.opennms.org/show_bug.cgi?id=4146">#4146</ulink>)</para>
+				</listitem>
+
+				<listitem>
+					<para>A tool for creating a detailed report of OpenNMS and system statistics was created.
+					For details, see the <ulink url="http://www.opennms.org/wiki/System_Dump_Specification">feature
+					specification here</ulink>. (Bug
+					<ulink url="http://bugzilla.opennms.org/show_bug.cgi?id=4167">#4167</ulink>)</para>
+				</listitem>
+
+				<listitem>
+					<para>If the JDK has been forced with "runjava -f," the install and opennms scripts now
+					warn, rather than error, if the JDK is invalid at runtime. (Bug
+					<ulink url="http://bugzilla.opennms.org/show_bug.cgi?id=4168">#4168</ulink>)</para>
+				</listitem>
+
+				<listitem>
+					<para>An example of how to monitor a specific virtual host has been added to the HttpMonitor
+					examples. (Bug
+					<ulink url="http://bugzilla.opennms.org/show_bug.cgi?id=4169">#4169</ulink>)</para>
+				</listitem>
+
+				<listitem>
+					<para>The remote poller is now capable of reporting correct timestamps even if the host
+					that it is running on is invalid.  Note, this <bold>requires</bold> that you update remote
+					pollers to the new version, the protocol between the remote poller and OpenNMS server
+					has changed. (Bug
+					<ulink url="http://bugzilla.opennms.org/show_bug.cgi?id=4172">#4172</ulink>)</para>
+				</listitem>
+
+			</itemizedlist>
+
+		</section>
+
+		<section id="opennms-1.8.5-bugs">
+			<title>Bug Fixes</title>
+
+			<itemizedlist>
+
+				<listitem>
+					<para>Some issues with field validation in the outage editor have been fixed. (Bug
+					<ulink url="http://bugzilla.opennms.org/show_bug.cgi?id=1225">#1225</ulink>)</para>
+				</listitem>
+
+				<listitem>
+					<para>While customizing an new/existing report from the KSC Reports page, it would lose
+					the prefabricated report selection. (Bug
+					<ulink url="http://bugzilla.opennms.org/show_bug.cgi?id=2230">#2230</ulink>)</para>
+				</listitem>
+
+				<listitem>
+					<para>While modifying the first graph in a custom report, an exception was thrown. (Bug
+					<ulink url="http://bugzilla.opennms.org/show_bug.cgi?id=2823">#2823</ulink>)</para>
+				</listitem>
+
+				<listitem>
+					<para>Form submission bugs in the KSC reports, Add Interface, and a number of other
+					places have been resolved.  This mostly affects IE and some mobile browsers. (Bugs
+					<ulink url="http://bugzilla.opennms.org/show_bug.cgi?id=1675">#1675</ulink>,
+					<ulink url="http://bugzilla.opennms.org/show_bug.cgi?id=3015">#3015</ulink>,
+					<ulink url="http://bugzilla.opennms.org/show_bug.cgi?id=3606">#3606</ulink>, and
+					<ulink url="http://bugzilla.opennms.org/show_bug.cgi?id=3729">#3729</ulink>)
+					</para>
+				</listitem>
+
+				<listitem>
+					<para>A number of exceptions have been cleaned up. (Bugs
+					<ulink url="http://bugzilla.opennms.org/show_bug.cgi?id=3319">#3319</ulink>,
+					<ulink url="http://bugzilla.opennms.org/show_bug.cgi?id=3450">#3450</ulink>)</para>
+				</listitem>
+
+				<listitem>
+					<para>A thread-contention bug that could cause it to take a long time for
+					scheduled outages and potentially other code to lag was fixed. (Bug
+					<ulink url="http://bugzilla.opennms.org/show_bug.cgi?id=3790">#3790</ulink>)</para>
+				</listitem>
+
+				<listitem>
+					<para>A bug in "Check Notices" for a user was fixed. (Bug
+					<ulink url="http://bugzilla.opennms.org/show_bug.cgi?id=3903">#3903</ulink>)</para>
+				</listitem>
+
+				<listitem>
+					<para>A large number of outstanding issues with Linkd have been resolved. (Bugs
+					<ulink url="http://bugzilla.opennms.org/show_bug.cgi?id=3989">#3989</ulink>,
+					<ulink url="http://bugzilla.opennms.org/show_bug.cgi?id=4051">#4051</ulink>,
+					<ulink url="http://bugzilla.opennms.org/show_bug.cgi?id=4055">#4055</ulink>,
+					<ulink url="http://bugzilla.opennms.org/show_bug.cgi?id=4133">#4133</ulink>,
+					<ulink url="http://bugzilla.opennms.org/show_bug.cgi?id=4149">#4149</ulink>, and
+					<ulink url="http://bugzilla.opennms.org/show_bug.cgi?id=4165">#4165</ulink>)
+					</para>
+				</listitem>
+
+				<listitem>
+					<para>The event configuration for the acknowledgement had incorrect formatting. (Bug
+					<ulink url="http://bugzilla.opennms.org/show_bug.cgi?id=4114">#4114</ulink>)</para>
+				</listitem>
+
+				<listitem>
+					<para>Latency thresholding is working properly again. (Bug
+					<ulink url="http://bugzilla.opennms.org/show_bug.cgi?id=4117">#4117</ulink>)</para>
+				</listitem>
+
+				<listitem>
+					<para>Modern versions of OpenJDK are properly detected by the install and
+					runtime scripts again. (Bug
+					<ulink url="http://bugzilla.opennms.org/show_bug.cgi?id=4129">#4129</ulink>)</para>
+				</listitem>
+
+				<listitem>
+					<para>The Net-SNMP diskHighLow specification (for Net-SNMP 5.5+) was broken. (Bug
+					<ulink url="http://bugzilla.opennms.org/show_bug.cgi?id=4131">#4131</ulink>)</para>
+				</listitem>
+
+				<listitem>
+					<para>A bug in the runPageSequenceMonitor groovy script was resolved. (Bug
+					<ulink url="http://bugzilla.opennms.org/show_bug.cgi?id=4170">#4170</ulink>)</para>
+				</listitem>
+
+				<listitem>
+					<para>A workaround for Net-SNMP 5.5 on x86_64 was implemented. (Bug
+					<ulink url="http://bugzilla.opennms.org/show_bug.cgi?id=4174">#4174</ulink>)</para>
+				</listitem>
+
+			</itemizedlist>
+
+		</section>
+
+	</section>
+
+	<section id="opennms-1.8.4">
+		<title>Changes in OpenNMS 1.8.4</title>
+
+		<section id="opennms-1.8.4-features">
+			<title>New Features and Enhancements</title>
+
+			<itemizedlist>
+
+				<listitem>
+					<para>The ifIndex parm is now provided in events received as traps. (Bug
+					<ulink url="http://bugzilla.opennms.org/show_bug.cgi?id=1145">#1145</ulink>)</para>
+				</listitem>
+
+				<listitem>
+					<para>The Cisco firewall service module is now detected for data collection. (Bug
+					<ulink url="http://bugzilla.opennms.org/show_bug.cgi?id=3120">#3120</ulink>)</para>
+				</listitem>
+
+				<listitem>
+					<para>APC upsOnBattery and powerRestored events now have alarm-data annotations so
+					they can be auto-cleared. (Bug
+					<ulink url="http://bugzilla.opennms.org/show_bug.cgi?id=4054">#4054</ulink>)</para>
+				</listitem>
+
+				<listitem>
+					<para>Notification text now preserves multi-line text formatting. (Bug
+					<ulink url="http://bugzilla.opennms.org/show_bug.cgi?id=4056">#4056</ulink>)</para>
+				</listitem>
+
+				<listitem>
+					<para>Data collection support for the Cisco C1250 was added. (Bug
+					<ulink url="http://bugzilla.opennms.org/show_bug.cgi?id=4071">#4071</ulink>)</para>
+				</listitem>
+
+				<listitem>
+					<para>Support for a number of new Cisco devices was added to Linkd. (Bug
+					<ulink url="http://bugzilla.opennms.org/show_bug.cgi?id=4082">#4082</ulink>)</para>
+				</listitem>
+
+				<listitem>
+					<para>Data collection and graph definitions were added for Force10 stack units. (Bug
+					<ulink url="http://bugzilla.opennms.org/show_bug.cgi?id=4088">#4088</ulink>)</para>
+				</listitem>
+
+				<listitem>
+					<para>Data collection definitions for Makelsan UPSes were added. (Bug
+					<ulink url="http://bugzilla.opennms.org/show_bug.cgi?id=4090">#4090</ulink>)</para>
+				</listitem>
+
+				<listitem>
+					<para>A shell script for calling the WMI validation/checker utility has been added. (Bug
+					<ulink url="http://bugzilla.opennms.org/show_bug.cgi?id=4101">#4101</ulink>)</para>
+				</listitem>
+
+				<listitem>
+					<para>foreignSource and foreignId can now be used when filtering nodes. (Bug
+					<ulink url="http://bugzilla.opennms.org/show_bug.cgi?id=4102">#4102</ulink>)</para>
+				</listitem>
+
+				<listitem>
+					<para>datacollection-config.xml can now <ulink
+					url="http://www.opennms.org/wiki/Data_Collection_Configuration_How-To#Modular_Configuration">modularly
+					include configuration from multiple files</ulink>, like eventconf.xml. (Bug
+					<ulink url="http://bugzilla.opennms.org/show_bug.cgi?id=4109">#4109</ulink>)</para>
+				</listitem>
+
+			</itemizedlist>
+
+		</section>
+
+		<section id="opennms-1.8.4-bugs">
+			<title>Bug Fixes</title>
+
+			<itemizedlist>
+
+				<listitem>
+					<para>A typo in the example snmp-config.xml was fixed.  (Bug
+					<ulink url="http://bugzilla.opennms.org/show_bug.cgi?id=2909">#2909</ulink>)</para>
+				</listitem>
+
+				<listitem>
+					<para>Paths are now substituted in files in etc/examples. (Bug
+					<ulink url="http://bugzilla.opennms.org/show_bug.cgi?id=3140">#3140</ulink>)</para>
+				</listitem>
+
+				<listitem>
+					<para>Colors were off in JFreeChart bar graphs in some instances. (Bug
+					<ulink url="http://bugzilla.opennms.org/show_bug.cgi?id=3976">#3976</ulink>)</para>
+				</listitem>
+
+				<listitem>
+					<para>Early morning reports could crash when fonts weren't installed. (Bug
+					<ulink url="http://bugzilla.opennms.org/show_bug.cgi?id=4059">#4059</ulink>)</para>
+				</listitem>
+
+				<listitem>
+					<para>Group names with spaces in them now work as expected.  Unless you expected
+					them to fail, in which case, expect the unexpected. (Bug
+					<ulink url="http://bugzilla.opennms.org/show_bug.cgi?id=4095">#4095</ulink>)</para>
+				</listitem>
+
+				<listitem>
+					<para>Renaming a group no longer creates duplicate groups in the XML. (Bug
+					<ulink url="http://bugzilla.opennms.org/show_bug.cgi?id=4096">#4096</ulink>)</para>
+				</listitem>
+
+				<listitem>
+					<para>Remote poller map markers are now ordered by severity, so low-severity
+					markers aren't covered up by high-severity markers. (Bug
+					<ulink url="http://bugzilla.opennms.org/show_bug.cgi?id=4105">#4105</ulink>)</para>
+				</listitem>
+
+				<listitem>
+					<para>The TcpDetector now properly detects and open port even if it doesn't
+					send a banner. (Bug
+					<ulink url="http://bugzilla.opennms.org/show_bug.cgi?id=4107">#4107</ulink>)</para>
+				</listitem>
+
+				<listitem>
+					<para>A number of WMI issues were fixed, including one that could cause file
+					descriptor leaks. (Bug
+					<ulink url="http://bugzilla.opennms.org/show_bug.cgi?id=4108">#4108</ulink>)</para>
+				</listitem>
+
+				<listitem>
+					<para>A cross-site scripting vulnerability in the web UI was fixed. (Bug
+					<ulink url="http://bugzilla.opennms.org/show_bug.cgi?id=4110">#4110</ulink>)</para>
+				</listitem>
+
+			</itemizedlist>
+
+		</section>
+	</section>
+
 	<section id="opennms-1.8.3">
 		<title>Changes in OpenNMS 1.8.3</title>
 

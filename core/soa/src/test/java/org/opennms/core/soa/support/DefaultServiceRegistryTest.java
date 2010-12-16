@@ -34,7 +34,9 @@ import static org.junit.Assert.assertSame;
 import static org.junit.Assert.assertTrue;
 
 import java.util.Collection;
+import java.util.HashMap;
 import java.util.LinkedHashSet;
+import java.util.Map;
 import java.util.Set;
 
 import org.junit.Test;
@@ -97,6 +99,64 @@ public class DefaultServiceRegistryTest {
         
         registration.unregister();
         
+        hellos = m_registry.findProviders(Hello.class);
+        goodbyes = m_registry.findProviders(Goodbye.class);
+        
+        assertTrue(hellos.isEmpty());
+        assertTrue(goodbyes.isEmpty());
+        
+    }
+    
+    @Test
+    public void testRegisterUnregisterUsingFilters() {
+        
+        MyProvider bigProvider = new MyProvider();
+        MyProvider smallProvider = new MyProvider();
+        
+        Map<String, String> bigProps = new HashMap<String, String>();
+        bigProps.put("size", "big");
+
+        Map<String, String> smallProps = new HashMap<String, String>();
+        smallProps.put("size", "small");
+
+        Registration bigRegistration = m_registry.register(bigProvider, bigProps, Hello.class, Goodbye.class);
+        Registration smallRegistration = m_registry.register(smallProvider, smallProps, Hello.class, Goodbye.class);
+        
+        Collection<Hello> hellos = m_registry.findProviders(Hello.class);
+        Collection<Goodbye> goodbyes = m_registry.findProviders(Goodbye.class);
+        
+        assertEquals(2, hellos.size());
+        assertEquals(2, goodbyes.size());
+        
+        Collection<Hello> bigHellos = m_registry.findProviders(Hello.class, "(size=big)");
+        Collection<Goodbye> bigGoodbyes = m_registry.findProviders(Goodbye.class, "(size=big)");
+        
+        assertEquals(1, bigHellos.size());
+        assertEquals(1, bigGoodbyes.size());
+        
+        assertSame(bigProvider, bigHellos.iterator().next());
+        assertSame(bigProvider, bigGoodbyes.iterator().next());
+        
+        Collection<Hello> smallHellos = m_registry.findProviders(Hello.class, "(size=small)");
+        Collection<Goodbye> smallGoodbyes = m_registry.findProviders(Goodbye.class, "(size=small)");
+        
+        assertEquals(1, smallHellos.size());
+        assertEquals(1, smallGoodbyes.size());
+        
+        assertSame(smallProvider, smallHellos.iterator().next());
+        assertSame(smallProvider, smallGoodbyes.iterator().next());
+        
+        bigRegistration.unregister();
+        
+        assertTrue(m_registry.findProviders(Hello.class, "(size=big)").isEmpty());
+        assertEquals(1, m_registry.findProviders(Hello.class, "(size=small)").size());
+        
+        smallRegistration.unregister();
+        
+        assertTrue(m_registry.findProviders(Hello.class, "(size=big)").isEmpty());
+        assertTrue(m_registry.findProviders(Hello.class, "(size=small)").isEmpty());
+        
+
         hellos = m_registry.findProviders(Hello.class);
         goodbyes = m_registry.findProviders(Goodbye.class);
         

@@ -42,6 +42,7 @@ import org.junit.Before;
 import org.junit.Test;
 import org.opennms.netmgt.provision.detector.datagram.DnsDetector;
 import org.opennms.netmgt.provision.support.NullDetectorMonitor;
+import org.opennms.test.mock.MockLogAppender;
 
 /**
  * @author Donald Desloge
@@ -53,6 +54,8 @@ public class DnsDetectorTest {
     
     @Before
     public void setUp() throws SocketException {
+        MockLogAppender.setupLogging();
+
         m_detector = new DnsDetector();
         m_detector.setTimeout(500);
         

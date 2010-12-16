@@ -45,6 +45,8 @@ import java.sql.Timestamp;
 import java.util.ArrayList;
 import java.util.List;
 
+import javax.servlet.ServletContext;
+
 import org.opennms.core.resource.Vault;
 import org.opennms.core.utils.ThreadCategory;
 import org.opennms.web.filter.Filter;
@@ -315,8 +317,8 @@ public class OutageFactory extends Object {
      * @return an array of {@link org.opennms.web.outage.Outage} objects.
      * @throws java.sql.SQLException if any.
      */
-    public static Outage[] getOutagesForNode(int nodeId) throws SQLException {
-        return (getOutagesForNode(nodeId, SortStyle.DEFAULT_SORT_STYLE, OutageType.CURRENT));
+    public static Outage[] getOutagesForNode(int nodeId, ServletContext servletContext) throws SQLException {
+        return (getOutagesForNode(nodeId, SortStyle.DEFAULT_SORT_STYLE, OutageType.CURRENT, servletContext));
     }
 
     /**
@@ -329,12 +331,12 @@ public class OutageFactory extends Object {
      * @return an array of {@link org.opennms.web.outage.Outage} objects.
      * @throws java.sql.SQLException if any.
      */
-    public static Outage[] getOutagesForNode(int nodeId, SortStyle sortStyle, OutageType outType) throws SQLException {
+    public static Outage[] getOutagesForNode(int nodeId, SortStyle sortStyle, OutageType outType, ServletContext servletContext) throws SQLException {
         if (sortStyle == null || outType == null) {
             throw new IllegalArgumentException("Cannot take null parameters.");
         }
 
-        Filter[] filters = new Filter[] { new NodeFilter(nodeId) };
+        Filter[] filters = new Filter[] { new NodeFilter(nodeId, servletContext) };
         return (OutageFactory.getOutages(sortStyle, outType, filters));
     }
 
@@ -346,8 +348,8 @@ public class OutageFactory extends Object {
      * @return an array of {@link org.opennms.web.outage.Outage} objects.
      * @throws java.sql.SQLException if any.
      */
-    public static Outage[] getOutagesForInterface(int nodeId, String ipAddress) throws SQLException {
-        return (getOutagesForInterface(nodeId, ipAddress, SortStyle.DEFAULT_SORT_STYLE, OutageType.CURRENT));
+    public static Outage[] getOutagesForInterface(int nodeId, String ipAddress, ServletContext servletContext) throws SQLException {
+        return (getOutagesForInterface(nodeId, ipAddress, SortStyle.DEFAULT_SORT_STYLE, OutageType.CURRENT, servletContext));
     }
 
     /**
@@ -361,12 +363,12 @@ public class OutageFactory extends Object {
      * @return an array of {@link org.opennms.web.outage.Outage} objects.
      * @throws java.sql.SQLException if any.
      */
-    public static Outage[] getOutagesForInterface(int nodeId, String ipAddress, SortStyle sortStyle, OutageType outType) throws SQLException {
+    public static Outage[] getOutagesForInterface(int nodeId, String ipAddress, SortStyle sortStyle, OutageType outType, ServletContext servletContext) throws SQLException {
         if (ipAddress == null || sortStyle == null || outType == null) {
             throw new IllegalArgumentException("Cannot take null parameters.");
         }
 
-        Filter[] filters = new Filter[] { new NodeFilter(nodeId), new InterfaceFilter(ipAddress) };
+        Filter[] filters = new Filter[] { new NodeFilter(nodeId, servletContext), new InterfaceFilter(ipAddress) };
         return (OutageFactory.getOutages(sortStyle, outType, filters));
     }
 
@@ -382,13 +384,13 @@ public class OutageFactory extends Object {
      * @return an array of {@link org.opennms.web.outage.Outage} objects.
      * @throws java.sql.SQLException if any.
      */
-    public static Outage[] getOutagesForInterface(int nodeId, String ipAddress, boolean includeResolved) throws SQLException {
+    public static Outage[] getOutagesForInterface(int nodeId, String ipAddress, boolean includeResolved, ServletContext servletContext) throws SQLException {
         if (ipAddress == null) {
             throw new IllegalArgumentException("Cannot take null parameters.");
         }
 
         OutageType outageType = includeResolved ? OutageType.BOTH : OutageType.CURRENT;
-        Outage[] outages = getOutagesForInterface(nodeId, ipAddress, SortStyle.DEFAULT_SORT_STYLE, outageType);
+        Outage[] outages = getOutagesForInterface(nodeId, ipAddress, SortStyle.DEFAULT_SORT_STYLE, outageType, servletContext);
 
         return outages;
     }
@@ -455,8 +457,8 @@ public class OutageFactory extends Object {
      * @return an array of {@link org.opennms.web.outage.Outage} objects.
      * @throws java.sql.SQLException if any.
      */
-    public static Outage[] getOutagesForService(int nodeId, String ipAddress, int serviceId) throws SQLException {
-        return (getOutagesForService(nodeId, ipAddress, serviceId, SortStyle.DEFAULT_SORT_STYLE, OutageType.CURRENT));
+    public static Outage[] getOutagesForService(int nodeId, String ipAddress, int serviceId, ServletContext servletContext) throws SQLException {
+        return (getOutagesForService(nodeId, ipAddress, serviceId, SortStyle.DEFAULT_SORT_STYLE, OutageType.CURRENT, servletContext));
     }
 
     /**
@@ -471,12 +473,12 @@ public class OutageFactory extends Object {
      * @return an array of {@link org.opennms.web.outage.Outage} objects.
      * @throws java.sql.SQLException if any.
      */
-    public static Outage[] getOutagesForService(int nodeId, String ipAddress, int serviceId, SortStyle sortStyle, OutageType outType) throws SQLException {
+    public static Outage[] getOutagesForService(int nodeId, String ipAddress, int serviceId, SortStyle sortStyle, OutageType outType, ServletContext servletContext) throws SQLException {
         if (ipAddress == null || sortStyle == null || outType == null) {
             throw new IllegalArgumentException("Cannot take null parameters.");
         }
 
-        Filter[] filters = new Filter[] { new NodeFilter(nodeId), new InterfaceFilter(ipAddress), new ServiceFilter(serviceId) };
+        Filter[] filters = new Filter[] { new NodeFilter(nodeId, servletContext), new InterfaceFilter(ipAddress), new ServiceFilter(serviceId) };
         return (OutageFactory.getOutages(sortStyle, outType, filters));
     }
 
@@ -493,13 +495,13 @@ public class OutageFactory extends Object {
      * @return an array of {@link org.opennms.web.outage.Outage} objects.
      * @throws java.sql.SQLException if any.
      */
-    public static Outage[] getOutagesForService(int nodeId, String ipAddress, int serviceId, boolean includeResolved) throws SQLException {
+    public static Outage[] getOutagesForService(int nodeId, String ipAddress, int serviceId, boolean includeResolved, ServletContext servletContext) throws SQLException {
         if (ipAddress == null) {
             throw new IllegalArgumentException("Cannot take null parameters.");
         }
 
         OutageType outageType = includeResolved ? OutageType.BOTH : OutageType.CURRENT;
-        Outage[] outages = getOutagesForService(nodeId, ipAddress, serviceId, SortStyle.DEFAULT_SORT_STYLE, outageType);
+        Outage[] outages = getOutagesForService(nodeId, ipAddress, serviceId, SortStyle.DEFAULT_SORT_STYLE, outageType, servletContext);
 
         return outages;
     }

@@ -33,7 +33,6 @@ import java.lang.reflect.UndeclaredThrowableException;
 import java.util.Collection;
 import javax.sql.DataSource;
 
-import org.apache.log4j.Logger;
 import org.opennms.core.utils.ThreadCategory;
 import org.opennms.netmgt.dao.AlarmDao;
 import org.opennms.netmgt.dao.AssetRecordDao;
@@ -41,7 +40,6 @@ import org.opennms.netmgt.dao.NodeDao;
 import org.opennms.netmgt.model.OnmsAlarm;
 import org.opennms.netmgt.model.OnmsNode;
 import org.opennms.netmgt.model.OnmsAssetRecord;
-import org.openoss.opennms.spring.qosdrx.QoSDrx;
 import org.openoss.opennms.spring.qosd.QoSD;
 import org.springframework.transaction.support.TransactionTemplate;
 import org.springframework.transaction.TransactionStatus;

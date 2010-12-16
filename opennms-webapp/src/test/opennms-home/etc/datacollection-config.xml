@@ -998,7 +998,7 @@
       </group>
 
       <!-- 3Com MIBs -->
-      <group name="3Com-router-perf" ifType="ignore">
+      <group name="3com-router-perf" ifType="ignore">
         <mibObj oid=".1.3.6.1.4.1.43.2.33.1.1.2.1.4" instance="0" alias="a3perfBufMemAvail" type="integer" />
         <mibObj oid=".1.3.6.1.4.1.43.2.33.1.1.2.1.5" instance="0" alias="a3perfBufMemFailed" type="integer" />
         <mibObj oid=".1.3.6.1.4.1.43.2.33.1.1.2.1.3" instance="0" alias="a3perfBufMemTotal" type="integer" />
@@ -1054,7 +1054,7 @@
         <sysoidMask>.1.3.6.1.4.1.3076.</sysoidMask>
         <collect>
           <includeGroup>cisco-cike</includeGroup>
-          <includeGroup>altiga-hardware</includeGroup>
+          <includeGroup>altiga</includeGroup>
         </collect>
       </systemDef>
 

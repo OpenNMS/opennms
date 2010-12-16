@@ -31,11 +31,10 @@
 //
 package org.opennms.protocols.wmi.wbem.jinterop;
 
-import org.jinterop.dcom.impls.automation.IJIDispatch;
-import org.jinterop.dcom.core.JIVariant;
 import org.jinterop.dcom.common.JIException;
-import org.opennms.protocols.wmi.WmiException;
+import org.jinterop.dcom.impls.automation.IJIDispatch;
 import org.opennms.protocols.wmi.WmiClient;
+import org.opennms.protocols.wmi.WmiException;
 import org.opennms.protocols.wmi.wbem.OnmsWbemProperty;
 
 /**
@@ -52,7 +51,7 @@ public class OnmsWbemPropertyImpl implements OnmsWbemProperty {
      *
      * @param wbemPropertyDispatch a {@link org.jinterop.dcom.impls.automation.IJIDispatch} object.
      */
-    public OnmsWbemPropertyImpl(IJIDispatch wbemPropertyDispatch) {
+    public OnmsWbemPropertyImpl(final IJIDispatch wbemPropertyDispatch) {
         this.wbemPropertyDispatch = wbemPropertyDispatch;
     }
 
@@ -63,13 +62,7 @@ public class OnmsWbemPropertyImpl implements OnmsWbemProperty {
      * @throws org.opennms.protocols.wmi.WmiException if any.
      */
     public String getWmiName() throws WmiException {
-        try {
-            JIVariant variant = wbemPropertyDispatch.get("Name");
-
-            return variant.getObjectAsString2();
-        } catch (JIException e) {
-            throw new WmiException("Unable to retrieve WbemProperty Name attribute: " + e.getMessage(), e);
-        }
+        return getWmiString("Name");
     }
 
     /**
@@ -79,13 +72,7 @@ public class OnmsWbemPropertyImpl implements OnmsWbemProperty {
      * @throws org.opennms.protocols.wmi.WmiException if any.
      */
     public String getWmiOrigin() throws WmiException {
-        try {
-            JIVariant variant = wbemPropertyDispatch.get("Origin");
-
-            return variant.getObjectAsString2();
-        } catch (JIException e) {
-            throw new WmiException("Unable to retrieve WbemProperty Origin attribute: " + e.getMessage(), e);
-        }
+        return getWmiString("Origin");
     }
 
     /**
@@ -95,13 +82,7 @@ public class OnmsWbemPropertyImpl implements OnmsWbemProperty {
      * @throws org.opennms.protocols.wmi.WmiException if any.
      */
     public Boolean getWmiIsArray() throws WmiException {
-        try {
-            JIVariant variant = wbemPropertyDispatch.get("IsArray");
-
-            return new Boolean(variant.getObjectAsBoolean());
-        } catch (JIException e) {
-            throw new WmiException("Unable to retrieve WbemProperty IsArray attribute: " + e.getMessage(), e);
-        }
+        return getWmiBoolean("IsArray");
     }
 
     /**
@@ -111,13 +92,7 @@ public class OnmsWbemPropertyImpl implements OnmsWbemProperty {
      * @throws org.opennms.protocols.wmi.WmiException if any.
      */
     public Boolean getWmiIsLocal() throws WmiException {
-        try {
-            JIVariant variant = wbemPropertyDispatch.get("IsLocal");
-
-            return new Boolean(variant.getObjectAsBoolean());
-        } catch (JIException e) {
-            throw new WmiException("Unable to retrieve WbemProperty IsLocal attribute: " + e.getMessage(), e);
-        }
+        return getWmiBoolean("IsLocal");
     }
 
     /**
@@ -128,10 +103,8 @@ public class OnmsWbemPropertyImpl implements OnmsWbemProperty {
      */
     public Object getWmiValue() throws WmiException {
         try {
-            JIVariant variant = wbemPropertyDispatch.get("Value");
-            Object foo = WmiClient.convertToNativeType(variant);
-            return foo;
-        } catch (JIException e) {
+            return WmiClient.convertToNativeType(wbemPropertyDispatch.get("Value"));
+        } catch (final JIException e) {
             throw new WmiException("Unable to retrieve or convert WbemProperty Value attribute: " + e.getMessage(), e);
         }
     }
@@ -144,11 +117,26 @@ public class OnmsWbemPropertyImpl implements OnmsWbemProperty {
      */
     public Integer getWmiCIMType() throws WmiException {
         try {
-            JIVariant variant = wbemPropertyDispatch.get("CIMType");
-
-            return new Integer(variant.getObjectAsInt());
-        } catch (JIException e) {
+            return wbemPropertyDispatch.get("CIMType").getObjectAsInt();
+        } catch (final JIException e) {
             throw new WmiException("Unable to retrieve WbemProperty CIMType attribute: " + e.getMessage(), e);
         }
     }
+
+    private String getWmiString(final String name) throws WmiException {
+        try {
+            return wbemPropertyDispatch.get(name).getObjectAsString2();
+        } catch (final JIException e) {
+            throw new WmiException("Unable to retrieve WbemProperty " + name + " attribute: " + e.getMessage(), e);
+        }
+    }
+
+    private Boolean getWmiBoolean(final String name) throws WmiException {
+        try {
+            return wbemPropertyDispatch.get(name).getObjectAsBoolean();
+        } catch (final JIException e) {
+            throw new WmiException("Unable to retrieve WbemProperty " + name + " attribute: " + e.getMessage(), e);
+        }
+    }
+
 }

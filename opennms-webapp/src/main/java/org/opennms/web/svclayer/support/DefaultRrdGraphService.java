@@ -74,10 +74,6 @@ import org.springframework.util.StringUtils;
  *
  * @author <a href="mailto:dj@opennms.org">DJ Gregor</a>
  * @author <a href="mailto:cmiskell@opennms.org">Craig Miskell</a>
- * @author <a href="mailto:dj@opennms.org">DJ Gregor</a>
- * @author <a href="mailto:cmiskell@opennms.org">Craig Miskell</a>
- * @version $Id: $
- * @since 1.8.1
  */
 public class DefaultRrdGraphService implements RrdGraphService, InitializingBean {
 //    private static final String s_missingParamsPath = "/images/rrd/missingparams.png";
@@ -105,7 +101,8 @@ public class DefaultRrdGraphService implements RrdGraphService, InitializingBean
         
         AdhocGraphType t = m_graphDao.findAdhocByName("performance");
 
-        OnmsResource r = m_resourceDao.loadResourceById(resourceId);
+        OnmsResource r = m_resourceDao.getResourceById(resourceId);
+        Assert.notNull(r, "resource \"" + resourceId + "\" could not be located");
         
         String command = createAdHocCommand(t,
                                   r,
@@ -170,7 +167,8 @@ public class DefaultRrdGraphService implements RrdGraphService, InitializingBean
                                                + "\" is not valid");
         }
         
-        OnmsResource r = m_resourceDao.loadResourceById(resourceId);
+        OnmsResource r = m_resourceDao.getResourceById(resourceId);
+        Assert.notNull(r, "resource could not be located");
 
         PrefabGraph prefabGraph = m_graphDao.getPrefabGraph(report);
         
@@ -266,7 +264,7 @@ public class DefaultRrdGraphService implements RrdGraphService, InitializingBean
                                     starttime, endtime, graphtitle);
     }
 
-    private String[] getRrdNames(OnmsResource resource, String[] dsNames) {
+    private static String[] getRrdNames(OnmsResource resource, String[] dsNames) {
         String[] rrds = new String[dsNames.length];
         
         Map<String, RrdGraphAttribute> attributes = resource.getRrdGraphAttributes();
@@ -274,7 +272,7 @@ public class DefaultRrdGraphService implements RrdGraphService, InitializingBean
         for (int i=0; i < dsNames.length; i++) {
             RrdGraphAttribute attribute = attributes.get(dsNames[i]);
             if (attribute == null) {
-                throw new IllegalArgumentException("RRD attribute '" + dsNames[i] + "' is not available on this resource.  Available RRD attributes: " + StringUtils.collectionToDelimitedString(attributes.keySet(), ", "));
+                throw new IllegalArgumentException("RRD attribute '" + dsNames[i] + "' is not available on resource '" + resource.getId() + "'.  Available RRD attributes: " + StringUtils.collectionToDelimitedString(attributes.keySet(), ", "));
             }
 
             rrds[i] = attribute.getRrdRelativePath(); 
@@ -283,7 +281,7 @@ public class DefaultRrdGraphService implements RrdGraphService, InitializingBean
         return rrds;
     }
     
-    private Map<String, String> getTranslationsForAttributes(Map<String, String> attributes, String[] requiredAttributes, String type) {
+    private static Map<String, String> getTranslationsForAttributes(Map<String, String> attributes, String[] requiredAttributes, String type) {
         if (requiredAttributes == null) {
             // XXX Nothing to do; not sure if we need this check
             return new HashMap<String, String>(0);
@@ -294,7 +292,7 @@ public class DefaultRrdGraphService implements RrdGraphService, InitializingBean
         for (String requiredAttribute : requiredAttributes) {
             String attributeValue = attributes.get(requiredAttribute);
             if (attributeValue == null) {
-                throw new IllegalArgumentException(type + " '" + requiredAttribute + "' is not available on this resource.  Available " + type + "s: " + StringUtils.collectionToDelimitedString(attributes.keySet(), ", "));
+                throw new IllegalArgumentException(type + " '" + requiredAttribute + "' is not available in the list of provided attributes.  Available " + type + "s: " + StringUtils.collectionToDelimitedString(attributes.keySet(), ", "));
             }
 
             // Replace any single backslashes in the value with escaped backslashes so other parsing won't barf
@@ -351,8 +349,13 @@ public class DefaultRrdGraphService implements RrdGraphService, InitializingBean
         translationMap.put(RE.simplePatternToFullRegularExpression("{endTime}"), endTimeString);
         translationMap.put(RE.simplePatternToFullRegularExpression("{diffTime}"), diffTimeString);
 
-        translationMap.putAll(getTranslationsForAttributes(graph.getResource().getExternalValueAttributes(), prefabGraph.getExternalValues(), "external value attribute"));
-        translationMap.putAll(getTranslationsForAttributes(graph.getResource().getStringPropertyAttributes(), prefabGraph.getPropertiesValues(), "string property attribute"));
+        try {
+            translationMap.putAll(getTranslationsForAttributes(graph.getResource().getExternalValueAttributes(), prefabGraph.getExternalValues(), "external value attribute"));
+            translationMap.putAll(getTranslationsForAttributes(graph.getResource().getStringPropertyAttributes(), prefabGraph.getPropertiesValues(), "string property attribute"));
+        } catch (RuntimeException e) {
+            log().error("Invalid attributes were found on resource '" + graph.getResource().getId() + "'");
+            throw e;
+        }
         
         
         try {
@@ -370,8 +373,8 @@ public class DefaultRrdGraphService implements RrdGraphService, InitializingBean
         return command;
     }
 
-    private ThreadCategory log() {
-        return ThreadCategory.getInstance();
+    private static ThreadCategory log() {
+        return ThreadCategory.getInstance(DefaultRrdGraphService.class);
     }
 
     /**

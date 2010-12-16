@@ -29,7 +29,6 @@ import javax.oss.fm.monitor.AlarmValue;
 import javax.oss.fm.monitor.JVTAlarmMonitorHome;
 import javax.oss.fm.monitor.JVTAlarmMonitorSession;
 import javax.rmi.PortableRemoteObject;
-import org.apache.log4j.Logger;
 import org.opennms.core.utils.ThreadCategory;
 import org.openoss.opennms.spring.qosd.AlarmListConnectionManager;
 import org.openoss.opennms.spring.qosd.PropertiesLoader;

@@ -1,3 +1,35 @@
+opennms (1.8.7-1) unstable; urgency=high
+
+  * New upstream release.
+
+ -- OpenNMS Release Manager <opennms@opennms.org>  Wed, 08 Dec 2010 10:31:00 -0400
+
+opennms (1.8.6-1) unstable; urgency=medium
+
+  * New upstream release.
+
+ -- Benjamin Reed <ranger@opennms.org>  Mon, 08 Nov 2010 11:18:00 -0400
+
+opennms (1.8.5-1) unstable; urgency=medium
+
+  * New upstream release.
+
+ -- Benjamin Reed <ranger@opennms.org>  Wed, 13 Oct 2010 12:33:00 -0500
+
+opennms (1.8.4-2) unstable; urgency=high
+
+  * Re-release with proper jar versions.
+
+ -- Benjamin Reed <ranger@opennms.org>  Mon, 13 Sep 2010 14:59:00 -0500
+
+opennms (1.8.4-1) unstable; urgency=high
+
+  * New upstream release.  Includes a fix to file handle leaks when monitoring
+    WMI, as well as a fix for a cross-site scripting vulnerability in the
+    web UI.
+
+ -- Benjamin Reed <ranger@opennms.org>  Mon, 13 Sep 2010 13:20:00 -0500
+
 opennms (1.8.3-1) unstable; urgency=high
 
   * New upstream release.  Includes a critical fix to snmp-graph.properties.

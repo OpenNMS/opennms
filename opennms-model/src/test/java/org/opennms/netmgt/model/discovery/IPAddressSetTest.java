@@ -37,25 +37,25 @@ import junit.framework.TestCase;
 
 public class IPAddressSetTest extends TestCase {
     
-    private IPAddress m_oneDot1 = new IPAddress("192.168.1.1");
-    private IPAddress m_oneDot2 = new IPAddress("192.168.1.2");
-    private IPAddress m_oneDot3 = new IPAddress("192.168.1.3");
-    private IPAddress m_oneDot4 = new IPAddress("192.168.1.4");
-    private IPAddress m_oneDot5 = new IPAddress("192.168.1.5");
-    private IPAddress m_oneDot6 = new IPAddress("192.168.1.6");
-    private IPAddress m_oneDot7 = new IPAddress("192.168.1.7");
-    private IPAddress m_oneDot8 = new IPAddress("192.168.1.8");
-    private IPAddress m_oneDot9 = new IPAddress("192.168.1.9");
-    private IPAddress m_oneDotA = new IPAddress("192.168.1.10");
-    private IPAddress m_oneDotB = new IPAddress("192.168.1.11");
-    private IPAddress m_oneDotC = new IPAddress("192.168.1.12");
-    private IPAddress m_oneDotD = new IPAddress("192.168.1.13");
-    private IPAddress m_oneDotE = new IPAddress("192.168.1.14");
-    private IPAddress m_oneDotF = new IPAddress("192.168.1.15");
+    private final IPAddress m_oneDot1 = new IPAddress("192.168.1.1");
+    private final IPAddress m_oneDot2 = new IPAddress("192.168.1.2");
+    private final IPAddress m_oneDot3 = new IPAddress("192.168.1.3");
+    private final IPAddress m_oneDot4 = new IPAddress("192.168.1.4");
+    private final IPAddress m_oneDot5 = new IPAddress("192.168.1.5");
+    private final IPAddress m_oneDot6 = new IPAddress("192.168.1.6");
+    private final IPAddress m_oneDot7 = new IPAddress("192.168.1.7");
+    private final IPAddress m_oneDot8 = new IPAddress("192.168.1.8");
+    private final IPAddress m_oneDot9 = new IPAddress("192.168.1.9");
+    private final IPAddress m_oneDotA = new IPAddress("192.168.1.10");
+    private final IPAddress m_oneDotB = new IPAddress("192.168.1.11");
+    private final IPAddress m_oneDotC = new IPAddress("192.168.1.12");
+    private final IPAddress m_oneDotD = new IPAddress("192.168.1.13");
+    private final IPAddress m_oneDotE = new IPAddress("192.168.1.14");
+    private final IPAddress m_oneDotF = new IPAddress("192.168.1.15");
     
 
-    private IPAddressRange m_small = new IPAddressRange(m_oneDot1, m_oneDot5);
-    private IPAddressRange m_smaller = new IPAddressRange(m_oneDot7, m_oneDot9);
+    private final IPAddressRange m_small = new IPAddressRange(m_oneDot1, m_oneDot5);
+    private final IPAddressRange m_smaller = new IPAddressRange(m_oneDot7, m_oneDot9);
     
 
     public void testIPAddressSet() {
@@ -170,7 +170,7 @@ public class IPAddressSetTest extends TestCase {
         
     }
     
-    public long iterateAndCount(IPAddressSet set) {
+    private static long iterateAndCount(IPAddressSet set) {
         int count = 0;
         Iterator<IPAddress> it = set.iterator();
         while(it.hasNext()) {

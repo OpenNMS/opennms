@@ -45,6 +45,7 @@ import java.util.List;
 
 import junit.framework.Assert;
 
+import org.opennms.core.utils.LogUtils;
 import org.opennms.netmgt.model.events.EventListener;
 import org.opennms.netmgt.xml.event.Event;
 
@@ -171,7 +172,7 @@ public class EventAnticipator implements EventListener {
      * @return
      */
     public Collection<Event> unanticipatedEvents() {
-        return Collections.unmodifiableCollection(m_unanticipatedEvents);
+        return Collections.synchronizedCollection(Collections.unmodifiableCollection(m_unanticipatedEvents));
     }
 
     /**
@@ -180,17 +181,19 @@ public class EventAnticipator implements EventListener {
      */
     public synchronized Collection<Event> waitForAnticipated(long millis) {
         long waitTime = millis;
-        long start = System.currentTimeMillis();
-        long now = start;
+        long last = System.currentTimeMillis();
+        long now = last;
         while (waitTime > 0) {
             if (m_anticipatedEvents.isEmpty())
                 return new ArrayList<Event>(0);
             try {
                 wait(waitTime);
             } catch (InterruptedException e) {
+                LogUtils.errorf(this, e, "interrupted while waiting for anticipated events");
             }
             now = System.currentTimeMillis();
-            waitTime -= (now - start);
+            waitTime -= (now - last);
+            last = now;
         }
         return getAnticipatedEvents();
     }
@@ -244,7 +247,7 @@ public class EventAnticipator implements EventListener {
     private static String listEvents(String prefix, Collection<Event> events) {
         StringBuffer b = new StringBuffer();
 
-        for (Event event : events) {
+        for (final Event event : events) {
             b.append(prefix);
             b.append(event.getUei() + " / " + event.getNodeid() + " / " + event.getInterface() + " / " + event.getService());
             b.append("\n");

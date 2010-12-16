@@ -2,7 +2,7 @@
   <parent>
     <artifactId>opennms</artifactId>
     <groupId>org.opennms</groupId>
-    <version>1.8.4-SNAPSHOT</version>
+    <version>1.8.8-SNAPSHOT</version>
   </parent>
   <modelVersion>4.0.0</modelVersion>
   <artifactId>dependencies</artifactId>
@@ -20,18 +20,30 @@
     <module>opennms-jersey</module>
     <module>opennms-mina</module>
     <module>opennms-spring-test</module>
+    <module>asterisk</module>
     <module>dnsjava</module>
     <module>gwt</module>
+    <module>icmp</module>
     <module>javamail</module>
     <module>jcifs</module>
+    <module>jdhcp</module>
+    <module>jep</module>
     <module>jinterop</module>
     <module>jnlp</module>
     <module>jradius</module>
+    <module>jrobin</module>
+    <module>jrrd</module>
+    <module>liquibase</module>
     <module>quartz</module>
     <module>rancid</module>
     <!-- <module>rrd4j</module> -->
+    <module>rxtx</module>
+    <module>service-registration</module>
     <module>servlet</module>
     <module>snmp</module>
+    <module>snmp-agent</module>
+    <module>snmp-test</module>
+    <module>tracker</module>
     <module>twitter4j</module>
   </modules>
   <properties>

@@ -32,6 +32,7 @@ package org.opennms.netmgt.provision.detector.icmp;
 
 import java.net.InetAddress;
 
+import org.opennms.core.utils.LogUtils;
 import org.opennms.netmgt.ping.PingConstants;
 import org.opennms.netmgt.ping.Pinger;
 import org.opennms.netmgt.provision.DetectorMonitor;
@@ -67,68 +68,30 @@ public class IcmpDetector extends AbstractDetector {
     
     /** {@inheritDoc} */
     public boolean isServiceDetected(InetAddress address, DetectorMonitor detectorMonitor) {
-        StringBuffer sb = new StringBuffer();
-
-        sb.delete(0, sb.length());
-        sb.append("isServiceDetected: Testing ICMP based service for address: ");
-        sb.append(address);
-        sb.append("...");
-        log().info(sb.toString());
         
+        LogUtils.debugf(this, "isServiceDetected: Testing ICMP based service for address: %s...", address);
+
+        boolean found = false;
         try {
-            for(int i = 0; i < getRetries(); i++) {
+            for(int i = 0; i < getRetries() && !found; i++) {
                 Long retval = Pinger.ping(address, getTimeout(), getRetries());
                 
-                sb.delete(0, sb.length());
-                sb.append("isServiceDetected: Response time for address: ");
-                sb.append(address);
-                sb.append(" is: ");
-                sb.append(retval);
-                sb.append('.');
-                log().debug(retval.toString());
+                LogUtils.debugf(this, "isServiceDetected: Response time for address: %s is: %d.", address, retval);
                 
                 if (retval != null) {
-                    sb.delete(0, sb.length());
-                    sb.append("isServiceDetected: ICMP based service for address: ");
-                    sb.append(address);
-                    sb.append(" is detected: ");
-                    sb.append(true);
-                    sb.append('.');
-                    log().debug(sb.toString());
-                    return true;
+                    found = true;
                 }
             }
             
-//        } catch (Exception e) {
-//            sb.delete(0, sb.length());
-//            sb.append("isServiceDetected: ICMP based protocol for address: ");
-//            sb.append(address);
-//            sb.append(" is detected: ");
-//            sb.append(false);
-//            sb.append('.');
-//            log().debug(sb.toString());
-//            detectorMonitor.failure(this, "%s: Failed to detect %s on address %s", getServiceName(), getServiceName(), address.getHostAddress());
+            LogUtils.infof(this, "isServiceDetected: ICMP based service for address: %s is detected: %s.", address, found);
+
         } catch (InterruptedException e) {
-          sb.delete(0, sb.length());
-          sb.append("isServiceDetected: ICMP based protocol for address: ");
-          sb.append(address);
-          sb.append(" is detected: ");
-          sb.append(false);
-          sb.append(". Received an Interrupted exception.");
-          log().debug(sb.toString());
+            LogUtils.infof(this, "isServiceDetected: ICMP based service for address: %s is detected: %s. Received an InterruptedException.", address, false);
         } catch (Exception e) {
-            sb.delete(0, sb.length());
-            sb.append("isServiceDetected: ICMP based protocol for address: ");
-            sb.append(address);
-            sb.append(" is detected: ");
-            sb.append(false);
-            sb.append(". Received an Exception.");
-            log().debug(sb.toString());
-        } finally {
-            
+            LogUtils.infof(this, "isServiceDetected: ICMP based service for address: %s is detected: %s. Received an Exception %s.", address, false, e);
         }
         
-        return false;
+        return found;
     }
 
     

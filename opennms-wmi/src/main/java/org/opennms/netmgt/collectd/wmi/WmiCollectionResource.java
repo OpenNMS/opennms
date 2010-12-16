@@ -72,7 +72,7 @@ public abstract class WmiCollectionResource extends AbstractCollectionResource {
     }
 
     /** {@inheritDoc} */
-    public boolean shouldPersist(ServiceParameters params) {
+    public boolean shouldPersist(final ServiceParameters params) {
         return true;
     }
 
@@ -82,8 +82,8 @@ public abstract class WmiCollectionResource extends AbstractCollectionResource {
      * @param type a {@link org.opennms.netmgt.collectd.CollectionAttributeType} object.
      * @param value a {@link java.lang.String} object.
      */
-    public void setAttributeValue(CollectionAttributeType type, String value) {
-        WmiCollectionAttribute attr = new WmiCollectionAttribute(this, type, type.getName(), value);
+    public void setAttributeValue(final CollectionAttributeType type, final String value) {
+        final WmiCollectionAttribute attr = new WmiCollectionAttribute(this, type, type.getName(), value);
         addAttribute(attr);
     }
 

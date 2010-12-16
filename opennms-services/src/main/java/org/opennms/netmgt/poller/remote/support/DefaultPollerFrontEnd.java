@@ -58,7 +58,6 @@ import org.opennms.netmgt.poller.DistributionContext;
 import org.opennms.netmgt.poller.remote.ConfigurationChangedListener;
 import org.opennms.netmgt.poller.remote.PollService;
 import org.opennms.netmgt.poller.remote.PolledService;
-import org.opennms.netmgt.poller.remote.Poller;
 import org.opennms.netmgt.poller.remote.PollerBackEnd;
 import org.opennms.netmgt.poller.remote.PollerConfiguration;
 import org.opennms.netmgt.poller.remote.PollerFrontEnd;
@@ -66,6 +65,7 @@ import org.opennms.netmgt.poller.remote.PollerSettings;
 import org.opennms.netmgt.poller.remote.ServicePollState;
 import org.opennms.netmgt.poller.remote.ServicePollStateChangedEvent;
 import org.opennms.netmgt.poller.remote.ServicePollStateChangedListener;
+import org.opennms.netmgt.poller.remote.TimeAdjustment;
 import org.springframework.beans.factory.DisposableBean;
 import org.springframework.beans.factory.InitializingBean;
 import org.springframework.util.Assert;
@@ -367,6 +367,8 @@ public class DefaultPollerFrontEnd implements PollerFrontEnd, InitializingBean, 
     private PollerSettings m_pollerSettings;
 
     private PollService m_pollService;
+    
+    private TimeAdjustment m_timeAdjustment;
 
     // listeners
     private LinkedList<PropertyChangeListener> m_propertyChangeListeners = new LinkedList<PropertyChangeListener>();
@@ -423,6 +425,7 @@ public class DefaultPollerFrontEnd implements PollerFrontEnd, InitializingBean, 
      * @throws java.lang.Exception if any.
      */
     public void afterPropertiesSet() throws Exception {
+        assertNotNull(m_timeAdjustment, "timeAdjustment");
         m_state.initialize();
     }
 
@@ -695,6 +698,13 @@ public class DefaultPollerFrontEnd implements PollerFrontEnd, InitializingBean, 
     }
 
     /**
+     * @param timeAdjustment the timeAdjustment to set
+     */
+    public void setTimeAdjustment(TimeAdjustment timeAdjustment) {
+        m_timeAdjustment = timeAdjustment;
+    }
+
+    /**
      * <p>setPollService</p>
      *
      * @param pollService a {@link org.opennms.netmgt.poller.remote.PollService} object.
@@ -715,7 +725,7 @@ public class DefaultPollerFrontEnd implements PollerFrontEnd, InitializingBean, 
     }
 
     private void assertNotNull(final Object propertyValue, final String propertyName) {
-        Assert.state(propertyValue != null, propertyName + " must be set for instances of " + Poller.class);
+        Assert.state(propertyValue != null, propertyName + " must be set for instances of " + getClass());
     }
 
     @SuppressWarnings("unused")
@@ -728,7 +738,7 @@ public class DefaultPollerFrontEnd implements PollerFrontEnd, InitializingBean, 
 
         try {
             m_pollService.setServiceMonitorLocators(m_backEnd.getServiceMonitorLocators(DistributionContext.REMOTE_MONITOR));
-            m_pollerConfiguration = m_backEnd.getPollerConfiguration(getMonitorId());
+            m_pollerConfiguration = retrieveLatestConfiguration();
 
             synchronized (m_pollState) {
 
@@ -747,6 +757,12 @@ public class DefaultPollerFrontEnd implements PollerFrontEnd, InitializingBean, 
                 m_pollerConfiguration = new EmptyPollerConfiguration();
             }
         }
+    }
+
+    private PollerConfiguration retrieveLatestConfiguration() {
+        PollerConfiguration config = m_backEnd.getPollerConfiguration(getMonitorId());
+        m_timeAdjustment.setMasterTime(config.getServerTime());
+        return config;
     }
 
     private PollStatus doPoll(final Integer polledServiceId) {

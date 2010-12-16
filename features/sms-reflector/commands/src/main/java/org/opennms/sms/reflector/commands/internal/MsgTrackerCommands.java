@@ -12,7 +12,6 @@ import org.opennms.sms.reflector.smsservice.MobileMsgResponseMatchers;
 import org.opennms.sms.reflector.smsservice.MobileMsgTracker;
 import org.smslib.OutboundMessage;
 import org.smslib.USSDRequest;
-import org.apache.log4j.Logger;
 import org.opennms.core.utils.ThreadCategory;
 
 /**

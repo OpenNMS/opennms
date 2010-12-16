@@ -1,5 +1,6 @@
-/* Copyright (c) 2006-2008 MetaCarta, Inc., published under the Clear BSD
- * license.  See http://svn.openlayers.org/trunk/openlayers/license.txt for the
+/* Copyright (c) 2006-2010 by OpenLayers Contributors (see authors.txt for 
+ * full list of contributors). Published under the Clear BSD license.  
+ * See http://svn.openlayers.org/trunk/openlayers/license.txt for the
  * full text of the license. */
 
 /**
@@ -231,6 +232,14 @@ OpenLayers.Format.WMC.v1 = OpenLayers.Class(OpenLayers.Format.XML, {
         layerContext.singleTile = (this.getChildValue(node) == "true");
     },
 
+    /**
+     * Method: read_ol_tileSize
+     */
+    read_ol_tileSize: function(layerContext, node) {
+        var obj = {"width": node.getAttribute("width"), "height": node.getAttribute("height")};
+        layerContext.tileSize = obj;
+    },
+    
     /**
      * Method: read_ol_isBaseLayer
      */
@@ -617,6 +626,14 @@ OpenLayers.Format.WMC.v1 = OpenLayers.Class(OpenLayers.Format.XML, {
             maxy: bounds.top.toPrecision(18)
         });
         node.appendChild(maxExtent);
+        
+        if (context.tileSize && !context.singleTile) {
+            var size = this.createElementNS(
+                this.namespaces.ol, "ol:tileSize"
+            );
+            this.setAttributes(size, context.tileSize);
+            node.appendChild(size);
+        }
         
         var properties = [
             "transparent", "numZoomLevels", "units", "isBaseLayer",

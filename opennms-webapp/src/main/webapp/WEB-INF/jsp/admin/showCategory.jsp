@@ -12,13 +12,15 @@
 	<jsp:param name="breadcrumb" value="Show" />
 </jsp:include>
 
-<h3>Surveillance Category ${model.category.name}</h3>
+<h3>Surveillance Category: ${fn:escapeXml(model.category.name)}</h3>
 
 <p>
-Category '${model.category.name}' has ${fn:length(model.memberNodes)} nodes
-(<a href="admin/categories.htm?edit&categoryid=${model.category.id}">edit</a>)
+Category '${fn:escapeXml(model.category.name)}' has ${fn:length(model.memberNodes)} nodes.
 </p>
 
+<p>
+<a href="admin/categories.htm?edit&categoryid=${model.category.id}">Edit category</a>
+</p>
 
 <table>
   <tr>
@@ -26,7 +28,7 @@ Category '${model.category.name}' has ${fn:length(model.memberNodes)} nodes
   </tr>
   <c:forEach items="${model.memberNodes}" var="node">
     <tr>
-    	<td><a href="element/node.jsp?node=${node.id}">${node.label}</a></td> 
+    	<td><a href="element/node.jsp?node=${node.id}">${fn:escapeXml(node.label)}</a></td> 
     </tr>
   </c:forEach>
 </table>

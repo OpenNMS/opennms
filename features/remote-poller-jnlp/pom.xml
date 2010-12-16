@@ -3,7 +3,7 @@
   <parent>
     <groupId>org.opennms</groupId>
     <artifactId>org.opennms.features</artifactId>
-    <version>1.8.4-SNAPSHOT</version>
+    <version>1.8.8-SNAPSHOT</version>
   </parent>
   <modelVersion>4.0.0</modelVersion>
   <groupId>org.opennms.features</groupId>
@@ -38,6 +38,7 @@
                   if (project.properties['webstart.keypass']) {
                     args.put('keypass', project.properties['webstart.keypass'])
                   }
+                  def ant = new AntBuilder();
                   ant.genkey(args)
                 }
               </source>
@@ -54,7 +55,8 @@
       <plugin>
         <groupId>org.codehaus.mojo.webstart</groupId>
         <artifactId>webstart-maven-plugin</artifactId>
-        <version>1.0-alpha-2</version>
+        <!-- remove repository below when beta 2 is released! -->
+        <version>1.0-beta-2-onms2</version>
         <executions>
           <execution>
             <id>gui-app</id>
@@ -142,6 +144,8 @@
       <artifactId>org.opennms.features.remote-poller</artifactId>
     </dependency>
   </dependencies>
+
+  <!-- temporary, until new webstart-maven-plugin is released -->
   <repositories>
     <repository>
       <snapshots><enabled>false</enabled></snapshots>

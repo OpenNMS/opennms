@@ -65,11 +65,8 @@ import org.opennms.netmgt.capsd.ConnectionConfig;
  * plugins by the daemon.
  * </P>
  *
- * @author <A HREF="mailto:jason@opennms.org">Jason </A>
- * @author <A HREF="http://www.opennsm.org">OpenNMS </A>
- * @author <A HREF="mailto:jason@opennms.org">Jason </A>
- * @author <A HREF="http://www.opennsm.org">OpenNMS </A>
- * @version $Id: $
+ * @author <a href="mailto:jason@opennms.org">Jason</a>
+ * @author <a href="http://www.opennms.org">OpenNMS</a>
  */
 public final class DominoIIOPPlugin extends AbstractTcpPlugin {
 

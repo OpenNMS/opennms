@@ -31,9 +31,8 @@
 //
 package org.opennms.protocols.wmi.wbem.jinterop;
 
-import org.jinterop.dcom.impls.automation.IJIDispatch;
-import org.jinterop.dcom.core.JIVariant;
 import org.jinterop.dcom.common.JIException;
+import org.jinterop.dcom.impls.automation.IJIDispatch;
 import org.opennms.protocols.wmi.WmiException;
 import org.opennms.protocols.wmi.wbem.OnmsWbemObjectPath;
 
@@ -61,62 +60,36 @@ public class OnmsWbemObjectPathImpl implements OnmsWbemObjectPath {
      * @return a {@link java.lang.String} object.
      * @throws org.opennms.protocols.wmi.WmiException if any.
      */
+    private String getWmiString(final String name) throws WmiException {
+        try {
+            return wbemObjectPathDispatch.get(name).getObjectAsString2();
+        } catch (final JIException e) {
+            throw new WmiException("Unable to retrieve WbemObjectPath " + name + " attribute: " + e.getMessage(), e);
+        }
+    }
+
+    private Boolean getWmiBoolean(final String name) throws WmiException {
+        try {
+            return wbemObjectPathDispatch.get(name).getObjectAsBoolean();
+        } catch (final JIException e) {
+            throw new WmiException("Unable to retrieve WbemObjectPath " + name + " attribute: " + e.getMessage(), e);
+        }
+    }
+
     public String getWmiAuthority() throws WmiException {
-        try {
-            JIVariant variant = wbemObjectPathDispatch.get("Authority");
-
-            return variant.getObjectAsString2();
-        } catch (JIException e) {
-            throw new WmiException("Unable to retrieve WbemObjectPath Authority attribute: " + e.getMessage(), e);
-        }
+        return getWmiString("Authority");
     }
 
-    /**
-     * <p>getWmiClass</p>
-     *
-     * @return a {@link java.lang.String} object.
-     * @throws org.opennms.protocols.wmi.WmiException if any.
-     */
     public String getWmiClass() throws WmiException {
-        try {
-            JIVariant variant = wbemObjectPathDispatch.get("Class");
-
-            return variant.getObjectAsString2();
-        } catch (JIException e) {
-            throw new WmiException("Unable to retrieve WbemObjectPath Class attribute: " + e.getMessage(), e);
-        }
+        return getWmiString("Class");
     }
 
-    /**
-     * <p>getWmiDisplayName</p>
-     *
-     * @return a {@link java.lang.String} object.
-     * @throws org.opennms.protocols.wmi.WmiException if any.
-     */
     public String getWmiDisplayName() throws WmiException {
-        try {
-            JIVariant variant = wbemObjectPathDispatch.get("DisplayName");
-
-            return variant.getObjectAsString2();
-        } catch (JIException e) {
-            throw new WmiException("Unable to retrieve WbemObjectPath DisplayName attribute: " + e.getMessage(), e);
-        }
+        return getWmiString("DisplayName");
     }
 
-    /**
-     * <p>getWmiLocale</p>
-     *
-     * @return a {@link java.lang.String} object.
-     * @throws org.opennms.protocols.wmi.WmiException if any.
-     */
     public String getWmiLocale() throws WmiException {
-        try {
-            JIVariant variant = wbemObjectPathDispatch.get("Locale");
-
-            return variant.getObjectAsString2();
-        } catch (JIException e) {
-            throw new WmiException("Unable to retrieve WbemObjectPath Locale attribute: " + e.getMessage(), e);
-        }
+        return getWmiString("Locale");
     }
 
     /**
@@ -126,13 +99,7 @@ public class OnmsWbemObjectPathImpl implements OnmsWbemObjectPath {
      * @throws org.opennms.protocols.wmi.WmiException if any.
      */
     public String getWmiNamespace() throws WmiException {
-        try {
-            JIVariant variant = wbemObjectPathDispatch.get("Namespace");
-
-            return variant.getObjectAsString2();
-        } catch (JIException e) {
-            throw new WmiException("Unable to retrieve WbemObjectPath Namespace attribute: " + e.getMessage(), e);
-        }
+        return getWmiString("Namespace");
     }
 
     /**
@@ -142,13 +109,7 @@ public class OnmsWbemObjectPathImpl implements OnmsWbemObjectPath {
      * @throws org.opennms.protocols.wmi.WmiException if any.
      */
     public String getWmiParentNamespace() throws WmiException {
-        try {
-            JIVariant variant = wbemObjectPathDispatch.get("ParentNamespace");
-
-            return variant.getObjectAsString2();
-        } catch (JIException e) {
-            throw new WmiException("Unable to retrieve WbemObjectPath ParentNamespace attribute: " + e.getMessage(), e);
-        }
+        return getWmiString("ParentNamespace");
     }
 
     /**
@@ -158,13 +119,7 @@ public class OnmsWbemObjectPathImpl implements OnmsWbemObjectPath {
      * @throws org.opennms.protocols.wmi.WmiException if any.
      */
     public String getWmiPath() throws WmiException {
-        try {
-            JIVariant variant = wbemObjectPathDispatch.get("Path");
-
-            return variant.getObjectAsString2();
-        } catch (JIException e) {
-            throw new WmiException("Unable to retrieve WbemObjectPath Path attribute: " + e.getMessage(), e);
-        }
+        return getWmiString("Path");
     }
 
     /**
@@ -174,13 +129,7 @@ public class OnmsWbemObjectPathImpl implements OnmsWbemObjectPath {
      * @throws org.opennms.protocols.wmi.WmiException if any.
      */
     public String getWmiRelPath() throws WmiException {
-        try {
-            JIVariant variant = wbemObjectPathDispatch.get("RelPath");
-
-            return variant.getObjectAsString2();
-        } catch (JIException e) {
-            throw new WmiException("Unable to retrieve WbemObjectPath RelPath attribute: " + e.getMessage(), e);
-        }
+        return getWmiString("RelPath");
     }
 
     /**
@@ -190,13 +139,7 @@ public class OnmsWbemObjectPathImpl implements OnmsWbemObjectPath {
      * @throws org.opennms.protocols.wmi.WmiException if any.
      */
     public String getWmiServer() throws WmiException {
-        try {
-            JIVariant variant = wbemObjectPathDispatch.get("Server");
-
-            return variant.getObjectAsString2();
-        } catch (JIException e) {
-            throw new WmiException("Unable to retrieve WbemObjectPath Server attribute: " + e.getMessage(), e);
-        }
+        return getWmiString("Server");
     }
 
     /**
@@ -206,13 +149,7 @@ public class OnmsWbemObjectPathImpl implements OnmsWbemObjectPath {
      * @throws org.opennms.protocols.wmi.WmiException if any.
      */
     public Boolean getWmiIsClass() throws WmiException {
-        try {
-            JIVariant variant = wbemObjectPathDispatch.get("IsClass");
-
-            return new Boolean(variant.getObjectAsBoolean());
-        } catch (JIException e) {
-            throw new WmiException("Unable to retrieve WbemObjectPath IsClass attribute: " + e.getMessage(), e);
-        }
+        return getWmiBoolean("IsClass");
     }
 
     /**
@@ -222,12 +159,6 @@ public class OnmsWbemObjectPathImpl implements OnmsWbemObjectPath {
      * @throws org.opennms.protocols.wmi.WmiException if any.
      */
     public Boolean getWmiIsSingleton() throws WmiException {
-        try {
-            JIVariant variant = wbemObjectPathDispatch.get("IsSingleton");
-
-            return new Boolean(variant.getObjectAsBoolean());
-        } catch (JIException e) {
-            throw new WmiException("Unable to retrieve WbemObjectPath IsSingleton attribute: " + e.getMessage(), e);
-        }
+        return getWmiBoolean("IsSingleton");
     }
 }

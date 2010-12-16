@@ -88,7 +88,7 @@
         <c:forEach var="month" items="${results.monthMap}">
           <c:choose>
             <c:when test="${month.key == results.startCalendar.month}">
-              <c:set var="selected" value="selected"/>
+              <c:set var="selected">selected="selected"</c:set>
             </c:when>
             <c:otherwise>
               <c:set var="selected" value=""/>
@@ -105,7 +105,7 @@
         <c:forEach var="hour" items="${results.hourMap}">
           <c:choose>
             <c:when test="${hour.key == results.startCalendar.hourOfDay}">
-              <c:set var="selected" value="selected"/>
+              <c:set var="selected">selected="selected"</c:set>
             </c:when>
             <c:otherwise>
               <c:set var="selected" value=""/>
@@ -123,7 +123,7 @@
         <c:forEach var="month" items="${results.monthMap}">
           <c:choose>
             <c:when test="${month.key == results.endCalendar.month}">
-              <c:set var="selected" value="selected"/>
+              <c:set var="selected">selected="selected"</c:set>
             </c:when>
             <c:otherwise>
               <c:set var="selected" value=""/>
@@ -140,7 +140,7 @@
         <c:forEach var="hour" items="${results.hourMap}">
           <c:choose>
             <c:when test="${hour.key == results.endCalendar.hourOfDay}">
-              <c:set var="selected" value="selected"/>
+              <c:set var="selected">selected="selected"</c:set>
             </c:when>
             <c:otherwise>
               <c:set var="selected" value=""/>
@@ -159,7 +159,9 @@
     <strong>From</strong> ${results.start} <br/>
     <strong>To</strong> ${results.end} <br/>
   </p>
-
+  
+  <c:set var="showFootnote1" value="false"/>
+  
   <c:forEach var="resultSet" items="${results.graphResultSets}">
     <h3>
       ${resultSet.resource.parent.resourceType.label}:
@@ -174,7 +176,15 @@
   
       <c:if test="${!empty resultSet.resource}">
         <br />
-        ${resultSet.resource.resourceType.label}:
+        <c:choose>
+          <c:when test="${fn:contains(resultSet.resource.label,'(*)')}">
+            <c:set var="showFootnote1" value="true"/>
+            Resource:
+          </c:when>
+          <c:otherwise>
+            ${resultSet.resource.resourceType.label}:
+          </c:otherwise>
+        </c:choose>
         <c:choose>
           <c:when test="${(!empty resultSet.resource.link) && loggedIn}">
             <a href="<c:url value='${resultSet.resource.link}'/>">${resultSet.resource.label}</a>
@@ -318,6 +328,10 @@
 	);
 	</script>
 	
+</c:if>
+
+<c:if test="${showFootnote1 == true}">
+  <jsp:include page="/includes/footnote1.jsp" flush="false" />
 </c:if>
 
 <jsp:include page="/includes/footer.jsp" flush="false" />

@@ -185,7 +185,7 @@ public class JBossConnectionFactory {
         final PrivilegedAction<ClassLoader> p = new PrivilegedAction<ClassLoader>() {
             public ClassLoader run() {
                 try {
-                    return new IsolatingClassLoader("jboss", new URL[] { clientJar.toURL() }, originalLoader, packages, true);
+                    return new IsolatingClassLoader("jboss", new URL[] { clientJar.toURI().toURL() }, originalLoader, packages, true);
                 } catch (MalformedURLException e) {
                 } catch (InvalidContextClassLoaderException e) {
                 }

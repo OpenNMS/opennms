@@ -48,7 +48,7 @@
 <%@ taglib tagdir="/WEB-INF/tags/form" prefix="form" %>
 <%
     //get the service names, in alpha order
-    Map<String, Integer> serviceNameMap = new TreeMap<String, Integer>(NetworkElementFactory.getServiceNameToIdMap());
+    Map<String, Integer> serviceNameMap = new TreeMap<String, Integer>(NetworkElementFactory.getInstance(getServletContext()).getServiceNameToIdMap());
     Set<String> serviceNameSet = serviceNameMap.keySet();
     Iterator<String> serviceNameIterator = serviceNameSet.iterator();
 

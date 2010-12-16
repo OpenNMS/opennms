@@ -71,9 +71,9 @@
     <c:when test="${model.permitModifyClogin}">
 		<c:choose>
 		<c:when test="${model.deviceexist}">
-<form id="updateForm" method="post" name="updateForm">				
-			<INPUT TYPE="hidden" NAME="groupName" VALUE="${model.groupname}"> 
-			<INPUT TYPE="hidden" NAME="deviceName" VALUE="${model.id}">			
+<form id="updateForm" method="post" name="updateForm" onsubmit="return validateFormUpdate();">
+			<input type="hidden" name="groupName" value="${model.groupname}"/>
+			<input type="hidden" name="deviceName" value="${model.id}"/>
 		<tr>
 			<th width="50%">Device Name</th>
 			<td>${model.id}</td>
@@ -95,7 +95,7 @@
 		</tr>
 		<tr>
 			<th>Comment</th>
-			<td><input id="comment" type="text" name="comment" value="${model.comment}"></td>
+			<td><input id="comment" type="text" name="comment" value="${model.comment}"/></td>
 		</tr>
 		
 		<tr>
@@ -117,16 +117,16 @@
 		<tr>
 		<th></th>
 		<th>
-			<input name="updateInput" id="updateButton" type="submit" value="Update" onClick="validateFormUpdate()">
-			<input name="deleteInput" id="deleteButton" type="submit" value="Delete" onClick="validateFormDelete()">
+			<input name="updateInput" id="updateButton" type="submit" value="Update"/>
+			<input name="deleteInput" id="deleteButton" type="button" value="Delete" onclick="validateFormDelete()"/>
 </form>
 		</th>
 		</tr>
 		</c:when>
 		<c:otherwise>
- <form id="createForm" method="post" name="createForm">
-			<INPUT TYPE="hidden" NAME="groupName" VALUE="${model.groupname}"> 			
-			<INPUT TYPE="hidden" NAME="deviceName" VALUE="${model.id}"> 			
+ <form id="createForm" method="post" name="createForm" onsubmit="return validateFormCreate();">
+			<input type="hidden" name="groupName" value="${model.groupname}"/>
+			<input type="hidden" name="deviceName" value="${model.id}"/>
 		<tr>
 			<th width="50%">Device Name</th>
 			<td>${model.id}</td>
@@ -148,7 +148,7 @@
 		</tr>
 		<tr>
 			<th>Comment</th>
-			<td><input id="comment" type="text" name="comment" value="${model.comment}"></td>
+			<td><input id="comment" type="text" name="comment" value="${model.comment}"/></td>
 		</tr>
 		
 		<tr>
@@ -163,7 +163,7 @@
 		<tr>
 		<th></th>
 		<th>
-			<input name="createInput" id="createButton" type="submit" value="Create" onClick="validateFormCreate()">
+			<input name="createInput" id="createButton" type="submit" value="Create"/>
 </form>
 		</th>
 		</tr>
@@ -195,11 +195,11 @@
 			<td>
 			 <c:if test="${!empty model.status}">			
 			<em>${model.status}</em>
-	<form id="newUserForm2" method="post" name="newUserForm2">	
-	<input name="newStatus" id="doOKStatus" type="submit" value="Switch" onClick="validateFormInputStatus()">
-	<INPUT TYPE="hidden" NAME="statusName" VALUE="${model.status}">
-	<INPUT TYPE="hidden" NAME="groupName" VALUE="${model.groupname}"> 
-	<INPUT TYPE="hidden" NAME="deviceName" VALUE="${model.id}"> 
+	<form id="newUserForm2" method="post" name="newUserForm2" onsubmit="return validateFormInputStatus();">	
+	<input name="newStatus" id="doOKStatus" type="submit" value="Switch"/>
+	<input type="hidden" name="statusName" value="${model.status}"/>
+	<input type="hidden" name="groupName" value="${model.groupname}"/>
+	<input type="hidden" name="deviceName" value="${model.id}"/>
 	</form>
 	</c:if>
 			</td>
@@ -212,22 +212,22 @@
 	<c:choose>
     <c:when test="${model.permitModifyClogin}">
 	<h3>Clogin Info</h3>
-	<form id="newUserForm" method="post" name="newUserForm">
-		 <INPUT TYPE="hidden" NAME="groupName" VALUE="${model.groupname}"> 
-		 <INPUT TYPE="hidden" NAME="deviceName" VALUE="${model.id}"> 
+	<form id="newUserForm" method="post" name="newUserForm" onsubmit="return validateFormInput();">
+		 <input type="hidden" name="groupName" value="${model.groupname}"> 
+		 <input type="hidden" name="deviceName" value="${model.id}"> 
 		<table class="o-box">
 			<tr>
 			    <th width="50%"><label id="userIDLabel" for="userID">Username:</label></th>
-			    <td><input id="userID" type="text" name="userID" value="${model.cloginuser}"></td>
+			    <td><input id="userID" type="text" name="userID" value="${model.cloginuser}"/></td>
 			 </tr>
 		
 			 <tr>
 			 	<th><label id="pass1Label" for="password">Password:</label></th>
-			 	<td><input id="pass" type="text" name="pass" value="${model.cloginpassword}" ></td>
+			 	<td><input id="pass" type="text" name="pass" value="${model.cloginpassword}"/></td>
 			 </tr>
 			 <tr>
 			 	<th><label id="enpass1Label" for="enpassword">Enable password:</label></th>
-			 	<td><input id="enpass" type="text" name="enpass" value="${model.cloginenablepass}" ></td>
+			 	<td><input id="enpass" type="text" name="enpass" value="${model.cloginenablepass}"/></td>
 			 </tr>
 			 <tr>
 				 <th><label id="loginMethodLabel" for="loginMethod">Connection Method:</label></th>
@@ -252,9 +252,9 @@
 		
 			 <tr>
 			 	<th></th>
-			 	<th><input id="doCancel" type="button" value="Cancel" onClick="cancelUser()">
-			 		<input id="doOK" type="submit" value="OK" onClick="validateFormInput()">
-			 		<input id="doDelete" type="submit" value="Delete" onClick="deleteCloginInfo()">
+			 	<th><input id="doCancel" type="button" value="Cancel" onclick="cancelUser()"/>
+			 		<input id="doOK" type="submit" value="OK"/>
+			 		<input id="doDelete" type="button" value="Delete" onclick="deleteCloginInfo()"/>
 			 	</th>
 			 </tr>	
 		 </table>
@@ -357,18 +357,18 @@ function validateFormInput()
 	  
   if (document.newUserForm.userID.value == "") {
 	  alert("The user field cannot be empty");
-	  return;
+	  return false;
   }
   if (document.newUserForm.pass.value == "") {
 	  alert("The password field cannot be empty");
-	  return;
+	  return false;
   }
   if (document.newUserForm.loginM.value == "") {
 	  alert("The login method field cannot be empty");
-	  return;
+	  return false;
   }
   document.newUserForm.action="admin/rancid/rancidClogin.htm?node=${model.db_id}";
-  document.newUserForm.submit();
+  return true;
 }    
 function cancelUser()
 {
@@ -377,27 +377,27 @@ function cancelUser()
 }
 function validateFormInputStatus() {
 	  document.newUserForm2.action="admin/rancid/rancidStatus.htm?node=${model.db_id}";
-	  document.newUserForm2.submit();
+	  return true;
 }
 
 function validateFormCreate() {
 	  if (document.createForm.deviceTypeName.value == "") {
 		  alert("The Device Type field cannot be empty");
-		  return;
+		  return false;
 	  }
 
 	  if (document.createForm.groupName.value == "") {
 		  alert("The group field cannot be empty");
-		  return;
+		  return false;
 	  }
 
 	  if (document.createForm.statusName.value == "") {
 		  alert("The Status field cannot be empty");
-		  return;
+		  return false;
 	  }
 	  
 	  document.createForm.action="admin/rancid/rancidCreate.htm?node=${model.db_id}";
-	  document.createForm.submit();
+	  return true;
 }
 
 function validateFormDelete() {
@@ -409,7 +409,7 @@ function validateFormDelete() {
 function validateFormUpdate() {
 
 	  document.updateForm.action="admin/rancid/rancidUpdate.htm?node=${model.db_id}";
-	  document.updateForm.submit();
+	  return true;
 }
 
 </script>

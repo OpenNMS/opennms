@@ -37,6 +37,8 @@
 package org.opennms.netmgt.linkd;
 
 import java.net.InetAddress;
+
+import org.opennms.core.utils.InetAddressUtils;
 /**
  * <p>RouterInterface class.</p>
  *
@@ -55,32 +57,24 @@ public class RouterInterface {
 
 	InetAddress nextHop;
 
-	int nextHopnodeid;
+	final int nextHopnodeid;
 	
-	int nextHopIfindex;
+	final int nextHopIfindex;
 	
-	InetAddress nextHopNetmask;
+	final InetAddress nextHopNetmask;
 	
 	int snmpiftype; 
 	
 	RouterInterface(int nextHopnodeid, int nextHopIfindex, String nextHopNetmask) {
 		this.nextHopnodeid = nextHopnodeid;
 		this.nextHopIfindex = nextHopIfindex;
-		try {
-			this.nextHopNetmask = InetAddress.getByName(nextHopNetmask);
-		} catch (Exception e) {
-			
-		}
+		this.nextHopNetmask = InetAddressUtils.getInetAddress(nextHopNetmask);
 	}
 
 	RouterInterface(int nextHopnodeid, int nextHopIfindex) {
 		this.nextHopnodeid = nextHopnodeid;
 		this.nextHopIfindex = nextHopIfindex;
-		try {
-			this.nextHopNetmask = InetAddress.getByName("255.255.255.255");
-		} catch (Exception e) {
-			
-		}
+		this.nextHopNetmask = InetAddressUtils.getInetAddress("255.255.255.255");
 	}
 
 	/**
@@ -150,28 +144,12 @@ public class RouterInterface {
 		return nextHopNetmask;
 	}
 	/**
-	 * <p>setNetmask</p>
-	 *
-	 * @param netmask a {@link java.net.InetAddress} object.
-	 */
-	public void setNetmask(InetAddress netmask) {
-		this.nextHopNetmask = netmask;
-	}
-	/**
 	 * <p>getNextHopNodeid</p>
 	 *
 	 * @return a int.
 	 */
 	public int getNextHopNodeid() {
 		return nextHopnodeid;
-	}
-	/**
-	 * <p>setNextHopNodeid</p>
-	 *
-	 * @param nexhopnodeid a int.
-	 */
-	public void setNextHopNodeid(int nexhopnodeid) {
-		this.nextHopnodeid = nexhopnodeid;
 	}
 	/**
 	 * <p>Getter for the field <code>nextHopIfindex</code>.</p>
@@ -181,15 +159,6 @@ public class RouterInterface {
 	public int getNextHopIfindex() {
 		return nextHopIfindex;
 	}
-	/**
-	 * <p>Setter for the field <code>nextHopIfindex</code>.</p>
-	 *
-	 * @param nextHopIfindex a int.
-	 */
-	public void setNextHopIfindex(int nextHopIfindex) {
-		this.nextHopIfindex = nextHopIfindex;
-	}
-
 	/**
 	 * <p>Setter for the field <code>ifindex</code>.</p>
 	 *
@@ -213,11 +182,7 @@ public class RouterInterface {
 			netWork[i] = Integer.valueOf(ipAddress[i] & netMask[i]).byteValue();
 			
 		}
-		try {
-			return InetAddress.getByAddress(netWork);
-		} catch (Exception e){
-			return null;
-		}
+		return InetAddressUtils.getInetAddress(netWork);
 	}
 
 	/**
@@ -234,11 +199,7 @@ public class RouterInterface {
 			netWork[i] = Integer.valueOf(ipAddress[i] & netMask[i]).byteValue();
 			
 		}
-		try {
-			return InetAddress.getByAddress(netWork);
-		} catch (Exception e){
-			return null;
-		}
+		return InetAddressUtils.getInetAddress(netWork);
 	}
 
 	/**

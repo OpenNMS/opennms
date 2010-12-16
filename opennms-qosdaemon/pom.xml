@@ -3,7 +3,7 @@
   <parent>
     <artifactId>opennms</artifactId>
     <groupId>org.opennms</groupId>
-    <version>1.8.4-SNAPSHOT</version>
+    <version>1.8.8-SNAPSHOT</version>
   </parent>
   <modelVersion>4.0.0</modelVersion>
   <artifactId>opennms-qosdaemon</artifactId>
@@ -187,16 +187,17 @@
       <plugin>
         <groupId>org.apache.maven.plugins</groupId>
         <artifactId>maven-javadoc-plugin</artifactId>
+        <version>2.7</version>
       </plugin>
       <plugin>
         <groupId>org.codehaus.mojo</groupId>
         <artifactId>jxr-maven-plugin</artifactId>
+        <version>2.2</version>
       </plugin>
       <plugin>
         <groupId>org.apache.maven.plugins</groupId>
-        <artifactId>
-          maven-project-info-reports-plugin
-        </artifactId>
+        <artifactId>maven-project-info-reports-plugin</artifactId>
+        <version>2.2</version>
         <reportSets>
           <reportSet>
             <reports>
@@ -253,6 +254,7 @@
     <dependency>
       <groupId>org.opennms.dependencies</groupId>
       <artifactId>castor-dependencies</artifactId>
+      <type>pom</type>
     </dependency>
 
     <dependency>
@@ -268,6 +270,7 @@
     <dependency>
       <groupId>org.opennms.dependencies</groupId>
       <artifactId>spring-dependencies</artifactId>
+      <type>pom</type>
     </dependency>
     
     <dependency>
@@ -435,8 +438,6 @@
     </dependencies>
     
   </dependencyManagement>
-  
-  
   
   <repositories>
     <repository>

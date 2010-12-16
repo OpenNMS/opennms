@@ -6,14 +6,76 @@
 
 	<!-- Start 1.8 -->
 
+	<section id="introduction-1.8.7">
+		<title>Release 1.8.7</title>
+
+		<para>
+			Release 1.8.7 is the latest in the 1.8 series of production-ready OpenNMS releases.
+		</para>
+		<para>
+			Since 1.8.6, <ulink url="http://issues.opennms.org/secure/IssueNavigator.jspa?reset=true&amp;jqlQuery=project+%3D+NMS+AND+fixVersion+%3D+%221.8.7%22">a
+			number of bug fixes and enhancements</ulink> were added, including new reports for Database Reporting
+		</para>
+		<para>
+			The codename for 1.8.7 is <emphasis>Chuck-will's-widow</emphasis>
+		</para>
+	</section>
+
+	<section id="introduction-1.8.6">
+		<title>Release 1.8.6</title>
+
+		<para>
+			Release 1.8.6 is the latest in the 1.8 series of production-ready OpenNMS releases.
+		</para>
+		<para>
+			Since 1.8.5, <ulink url="http://issues.opennms.org/secure/IssueNavigator.jspa?reset=true&amp;jqlQuery=project+%3D+NMS+AND+fixVersion+%3D+%221.8.6%22">a
+			number of bug fixes and enhancements</ulink> were added, including SNMP and Linkd fixes, ACL fixes, and more.
+		</para>
+		<para>
+			The codename for 1.8.6 is <emphasis>King Rail</emphasis>
+		</para>
+	</section>
+
+	<section id="introduction-1.8.5">
+		<title>Release 1.8.5</title>
+
+		<para>
+			Release 1.8.5 is the latest in the 1.8 series of production-ready OpenNMS releases.
+		</para>
+		<para>
+			Since 1.8.4, <ulink url="http://bugzilla.opennms.org/buglist.cgi?target_milestone=1.8.5">a number of bug fixes
+			and enhancements</ulink> were added, including a ton of Linkd fixes, a bunch of KSC report cleanups, and a tool
+			for gathering useful debugging info when reporting issues.
+		</para>
+		<para>
+			The codename for 1.8.5 is <emphasis>Plover</emphasis>
+		</para>
+	</section>
+
+	<section id="introduction-1.8.4">
+		<title>Release 1.8.4</title>
+
+		<para>
+			Release 1.8.4 is the latest in the 1.8 series of production-ready OpenNMS releases.
+		</para>
+		<para>
+			Since 1.8.3, <ulink url="http://bugzilla.opennms.org/buglist.cgi?target_milestone=1.8.4">a number of bug fixes</ulink>
+			were added, including a fix for filehandle leaks in the WMI monitor, and a cross-site-scripting vulnerability in
+			the web UI.
+		</para>
+		<para>
+			The codename for 1.8.4 is <emphasis>Grey Goose</emphasis>
+		</para>
+	</section>
+
 	<section id="introduction-1.8.3">
 		<title>Release 1.8.3</title>
 
 		<para>
-			Release 1.8.3 is the fourth in the 1.8 series of production-ready OpenNMS releases.
+			Release 1.8.3 is the latest in the 1.8 series of production-ready OpenNMS releases.
 		</para>
 		<para>
-			Since 1.8.2, <ulink url="http://bugzilla.opennms.org/buglist.cgi?target_milestone=1.8.2">a few bug fixes</ulink>
+			Since 1.8.2, <ulink url="http://bugzilla.opennms.org/buglist.cgi?target_milestone=1.8.3">a few bug fixes</ulink>
 			were added, including a fix for an issue where snmp-graph.properties could cause OpenNMS not to start.
 		</para>
 		<para>
@@ -25,7 +87,7 @@
 		<title>Release 1.8.2</title>
 
 		<para>
-			Release 1.8.2 is the third in the 1.8 series of production-ready OpenNMS releases.
+			Release 1.8.2 is the latest in the 1.8 series of production-ready OpenNMS releases.
 		</para>
 		<para>
 			Since 1.8.1, <ulink url="http://bugzilla.opennms.org/buglist.cgi?target_milestone=1.8.2">a number of bug fixes and
@@ -40,7 +102,7 @@
 		<title>Release 1.8.1</title>
 
 		<para>
-			Release 1.8.1 is the second in the 1.8 series of production-ready OpenNMS releases.
+			Release 1.8.1 is the latest in the 1.8 series of production-ready OpenNMS releases.
 		</para>
 		<para>
 			Since 1.8.0, <ulink url="http://bugzilla.opennms.org/buglist.cgi?target_milestone=1.8.1">a ton of bug fixes</ulink>

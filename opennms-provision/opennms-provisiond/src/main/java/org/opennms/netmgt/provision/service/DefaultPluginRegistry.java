@@ -37,9 +37,8 @@ import java.util.HashMap;
 import java.util.Map;
 import java.util.Set;
 
-import org.apache.log4j.Logger;
+import org.opennms.core.soa.ServiceRegistry;
 import org.opennms.core.utils.ThreadCategory;
-import org.opennms.netmgt.dao.ExtensionManager;
 import org.opennms.netmgt.provision.AsyncServiceDetector;
 import org.opennms.netmgt.provision.IpInterfacePolicy;
 import org.opennms.netmgt.provision.NodePolicy;
@@ -81,7 +80,7 @@ public class DefaultPluginRegistry implements PluginRegistry, InitializingBean {
     Set<SnmpInterfacePolicy> m_snmpInterfacePolicies;
     
     @Autowired
-    ExtensionManager m_extensionManager;
+    ServiceRegistry m_serviceRegistry;
     
     @Autowired
     private ApplicationContext m_applicationContext;
@@ -91,7 +90,7 @@ public class DefaultPluginRegistry implements PluginRegistry, InitializingBean {
      * <p>afterPropertiesSet</p>
      */
     public void afterPropertiesSet() {
-        Assert.notNull(m_extensionManager, "ExtensionManager must not be null");
+        Assert.notNull(m_serviceRegistry, "ServiceRegistry must not be null");
         addAllExtensions(m_asyncDetectors, AsyncServiceDetector.class, ServiceDetector.class);
         addAllExtensions(m_syncDetectors, SyncServiceDetector.class, ServiceDetector.class);
         addAllExtensions(m_nodePolicies, NodePolicy.class, OnmsPolicy.class);
@@ -120,10 +119,10 @@ public class DefaultPluginRegistry implements PluginRegistry, InitializingBean {
         }
         for(T extension : extensions) {
             info("Register Extension %s for ExtensionPoints %s", extension, Arrays.toString(extensionPoints));
-            m_extensionManager.registerExtension(extension, extensionPoints);
+            m_serviceRegistry.register(extension, extensionPoints);
         }
     }
-    
+
     /** {@inheritDoc} */
     public <T> Collection<T> getAllPlugins(Class<T> pluginClass) {
         return beansOfType(pluginClass).values();

@@ -1,0 +1,310 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<jasperReport xmlns="http://jasperreports.sourceforge.net/jasperreports" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://jasperreports.sourceforge.net/jasperreports http://jasperreports.sourceforge.net/xsd/jasperreport.xsd" name="node-response-time" pageWidth="668" pageHeight="842" columnWidth="628" leftMargin="20" rightMargin="20" topMargin="20" bottomMargin="20">
+	<property name="ireport.zoom" value="1.0"/>
+	<property name="ireport.x" value="0"/>
+	<property name="ireport.y" value="0"/>
+	<style name="Report_Title" forecolor="#000000" fontSize="20"/>
+	<style name="Report_Subtitle" forecolor="#000000" vAlign="Middle" fontSize="10" isBold="false" isItalic="true" isUnderline="false" isStrikeThrough="false"/>
+	<style name="Table_Detail" hAlign="Left" vAlign="Middle" fontName="SansSerif" fontSize="10" isBold="false" isItalic="false" isUnderline="false" isStrikeThrough="false"/>
+	<style name="Table_Grid" mode="Transparent" forecolor="#FFFFFF" isBold="false" isItalic="false" isUnderline="false" isStrikeThrough="false">
+		<pen lineWidth="0.0" lineColor="#FFFFFF"/>
+		<box>
+			<bottomPen lineWidth="1.0"/>
+		</box>
+		<conditionalStyle>
+			<conditionExpression><![CDATA[new Boolean($V{style_helper_COUNT}%new Integer("5") == new Integer("0"))]]></conditionExpression>
+			<style mode="Opaque" forecolor="#999999">
+				<pen lineWidth="1.0" lineColor="#666666"/>
+				<box>
+					<bottomPen lineWidth="1.0"/>
+				</box>
+			</style>
+		</conditionalStyle>
+	</style>
+	<style name="Page_Footer" fontSize="10" isBold="false" isItalic="false" isUnderline="false" isStrikeThrough="false"/>
+	<style name="Table_Header" isBold="true" isItalic="false" isUnderline="false" isStrikeThrough="false"/>
+	<style name="Table_Header_BG" mode="Opaque" backcolor="#CCFFCC"/>
+	<style name="Table_Surveillance_Cat" forecolor="#000000" vAlign="Middle" fontSize="10" isBold="true" isItalic="false" isUnderline="false" isStrikeThrough="false"/>
+	<style name="Table_Surveillance_Cat_BG" mode="Opaque" backcolor="#DFDFDF"/>
+	<style name="Table_Surveillance_Cat_Footer_BG" mode="Transparent" backcolor="#FFFFFF">
+		<pen lineWidth="1.0" lineStyle="Double"/>
+	</style>
+	<style name="Table_Surveillance_Cat_Footer" hAlign="Center" vAlign="Middle" fontSize="10" isBold="true" isItalic="false" isUnderline="false" isStrikeThrough="false">
+		<box>
+			<bottomPen lineWidth="0.0" lineStyle="Double" lineColor="#000000"/>
+		</box>
+	</style>
+	<style name="Table_Surveillance_Cat_Footer_Line" hAlign="Center" vAlign="Middle" isBold="true" isItalic="false" isUnderline="false" isStrikeThrough="false">
+		<box>
+			<bottomPen lineWidth="2.0" lineStyle="Double" lineColor="#000000"/>
+		</box>
+	</style>
+	<style name="Surveillance_Category_Group" mode="Opaque" backcolor="#CCFFCC" hAlign="Left" vAlign="Middle" fontSize="12" isBold="true" isItalic="false" isUnderline="false" isStrikeThrough="false"/>
+	<style name="Node_Group" mode="Opaque" backcolor="#DFDFDF" hAlign="Left" vAlign="Middle" fontSize="10" isBold="false" isItalic="false" isUnderline="false" isStrikeThrough="false"/>
+	<style name="table">
+		<box>
+			<pen lineWidth="1.0" lineColor="#000000"/>
+		</box>
+	</style>
+	<style name="table_TH" mode="Opaque" backcolor="#F0F8FF">
+		<box>
+			<topPen lineWidth="0.5" lineColor="#000000"/>
+			<bottomPen lineWidth="0.5" lineColor="#000000"/>
+		</box>
+	</style>
+	<style name="table_CH" mode="Opaque" backcolor="#BFE1FF">
+		<box>
+			<topPen lineWidth="0.5" lineColor="#000000"/>
+			<bottomPen lineWidth="0.5" lineColor="#000000"/>
+		</box>
+	</style>
+	<style name="table_TD" mode="Opaque" backcolor="#FFFFFF">
+		<box>
+			<topPen lineWidth="0.5" lineColor="#000000"/>
+			<bottomPen lineWidth="0.5" lineColor="#000000"/>
+		</box>
+	</style>
+	<style name="style1"/>
+	<style name="Interface_Header" hAlign="Center" vAlign="Middle" isBold="true" isItalic="false" isUnderline="false" isStrikeThrough="false"/>
+	<parameter name="COMPANY_LOGO" class="java.lang.String" isForPrompting="false">
+		<defaultValueExpression><![CDATA["${install.dir}/etc/report-templates/opennms-logo.png"]]></defaultValueExpression>
+	</parameter>
+	<parameter name="SURVEILLANCE_CATEGORY" class="java.lang.String" isForPrompting="false">
+		<defaultValueExpression><![CDATA["Routers"]]></defaultValueExpression>
+	</parameter>
+	<parameter name="startDate" class="java.util.Date" isForPrompting="false">
+		<defaultValueExpression><![CDATA[new java.util.Date(new GregorianCalendar(new GregorianCalendar().get(Calendar.YEAR), new GregorianCalendar().get(Calendar.MONTH) - 1, 1).getTimeInMillis())]]></defaultValueExpression>
+	</parameter>
+	<parameter name="endDate" class="java.util.Date" isForPrompting="false">
+		<defaultValueExpression><![CDATA[new java.util.Date(new GregorianCalendar(new GregorianCalendar().get(Calendar.YEAR), new GregorianCalendar().get(Calendar.MONTH), 1).getTimeInMillis())]]></defaultValueExpression>
+	</parameter>
+	<parameter name="rrdDir" class="java.lang.String" isForPrompting="false">
+		<defaultValueExpression><![CDATA["${install.dir}/share/rrd"]]></defaultValueExpression>
+	</parameter>
+	<parameter name="SUBREPORT_DIR" class="java.lang.String" isForPrompting="false">
+		<defaultValueExpression><![CDATA["${install.dir}/etc/report-templates/subreports/"]]></defaultValueExpression>
+	</parameter>
+	<queryString>
+		<![CDATA[SELECT
+	categories.categoryname,
+	node.nodelabel,
+	node.nodeid,
+	snmpinterface.ipaddr,
+	snmpinterface.snmpifname,
+	snmpinterface.snmpifalias,
+	snmpinterface.snmpphysaddr,
+	snmpinterface.snmpifdescr
+FROM
+	node
+RIGHT JOIN
+	snmpinterface
+ON
+	(node.nodeid = snmpinterface.nodeid)
+JOIN
+	category_node
+ON
+	(category_node.nodeid = node.nodeid)
+JOIN
+	categories
+ON
+	(categories.categoryid = category_node.categoryid)
+WHERE
+	(snmpinterface.snmpcollect = 'C' OR snmpinterface.snmpcollect = 'UC') AND
+	node.nodetype = 'A'
+ORDER BY
+	categories.categoryname,
+	node.nodelabel]]>
+	</queryString>
+	<field name="categoryname" class="java.lang.String"/>
+	<field name="nodelabel" class="java.lang.String"/>
+	<field name="nodeid" class="java.lang.Integer"/>
+	<field name="ipaddr" class="java.lang.String"/>
+	<field name="snmpifname" class="java.lang.String"/>
+	<field name="snmpifalias" class="java.lang.String"/>
+	<field name="snmpphysaddr" class="java.lang.String"/>
+	<field name="snmpifdescr" class="java.lang.String"/>
+	<group name="surveillance_category_group">
+		<groupExpression><![CDATA[$F{categoryname}]]></groupExpression>
+		<groupHeader>
+			<band height="24">
+				<textField>
+					<reportElement style="Surveillance_Category_Group" x="0" y="0" width="628" height="22"/>
+					<textElement/>
+					<textFieldExpression class="java.lang.String"><![CDATA["Surveillance category: " + $F{categoryname}]]></textFieldExpression>
+				</textField>
+			</band>
+		</groupHeader>
+		<groupFooter>
+			<band/>
+		</groupFooter>
+	</group>
+	<group name="nodelabel_group">
+		<groupExpression><![CDATA[$F{nodelabel}]]></groupExpression>
+		<groupHeader>
+			<band height="59">
+				<textField>
+					<reportElement style="Node_Group" x="0" y="0" width="628" height="20"/>
+					<textElement textAlignment="Left"/>
+					<textFieldExpression class="java.lang.String"><![CDATA["Node " + $F{nodelabel}]]></textFieldExpression>
+				</textField>
+				<staticText>
+					<reportElement style="Interface_Header" x="1" y="21" width="155" height="36"/>
+					<textElement textAlignment="Left"/>
+					<text><![CDATA[IP-Interface]]></text>
+				</staticText>
+				<staticText>
+					<reportElement style="Interface_Header" x="156" y="21" width="111" height="36"/>
+					<textElement textAlignment="Right"/>
+					<text><![CDATA[Average Receive bps]]></text>
+				</staticText>
+				<staticText>
+					<reportElement style="Interface_Header" x="267" y="21" width="100" height="36"/>
+					<textElement textAlignment="Right"/>
+					<text><![CDATA[Peak Receive bps]]></text>
+				</staticText>
+				<staticText>
+					<reportElement style="Interface_Header" x="511" y="21" width="115" height="36"/>
+					<textElement textAlignment="Right"/>
+					<text><![CDATA[Peak Transmit bps]]></text>
+				</staticText>
+				<staticText>
+					<reportElement style="Interface_Header" x="367" y="21" width="144" height="36"/>
+					<textElement textAlignment="Right"/>
+					<text><![CDATA[Average Transmit bps]]></text>
+				</staticText>
+			</band>
+		</groupHeader>
+		<groupFooter>
+			<band/>
+		</groupFooter>
+	</group>
+	<background>
+		<band splitType="Stretch"/>
+	</background>
+	<title>
+		<band height="4" splitType="Stretch"/>
+	</title>
+	<pageHeader>
+		<band height="104" splitType="Stretch">
+			<staticText>
+				<reportElement style="Report_Title" x="0" y="49" width="555" height="34"/>
+				<textElement verticalAlignment="Middle">
+					<font size="20" isBold="true"/>
+				</textElement>
+				<text><![CDATA[Average and Peak Traffic Rates]]></text>
+			</staticText>
+			<image>
+				<reportElement x="195" y="0" width="164" height="49"/>
+				<imageExpression class="java.lang.String"><![CDATA[$P{COMPANY_LOGO}]]></imageExpression>
+			</image>
+			<line>
+				<reportElement x="0" y="103" width="626" height="1"/>
+				<graphicElement>
+					<pen lineWidth="1.5"/>
+				</graphicElement>
+			</line>
+			<staticText>
+				<reportElement style="Report_Subtitle" x="2" y="83" width="67" height="15"/>
+				<textElement/>
+				<text><![CDATA[Report begin: ]]></text>
+			</staticText>
+			<textField evaluationTime="Page">
+				<reportElement style="Report_Subtitle" x="69" y="83" width="126" height="14"/>
+				<textElement/>
+				<textFieldExpression class="java.util.Date"><![CDATA[$P{startDate}]]></textFieldExpression>
+			</textField>
+			<textField evaluationTime="Page">
+				<reportElement style="Report_Subtitle" x="255" y="83" width="131" height="14"/>
+				<textElement/>
+				<textFieldExpression class="java.util.Date"><![CDATA[$P{endDate}]]></textFieldExpression>
+			</textField>
+			<staticText>
+				<reportElement style="Report_Subtitle" x="195" y="83" width="60" height="14"/>
+				<textElement/>
+				<text><![CDATA[Report end: ]]></text>
+			</staticText>
+		</band>
+	</pageHeader>
+	<columnHeader>
+		<band height="8" splitType="Stretch"/>
+	</columnHeader>
+	<detail>
+		<band height="29" splitType="Stretch">
+			<subreport>
+				<reportElement x="0" y="0" width="628" height="26"/>
+				<subreportParameter name="snmpifname">
+					<subreportParameterExpression><![CDATA[$F{snmpifname}]]></subreportParameterExpression>
+				</subreportParameter>
+				<subreportParameter name="snmpifdescr">
+					<subreportParameterExpression><![CDATA[$F{snmpifdescr}]]></subreportParameterExpression>
+				</subreportParameter>
+				<subreportParameter name="snmpifalias">
+					<subreportParameterExpression><![CDATA[$F{snmpifalias}]]></subreportParameterExpression>
+				</subreportParameter>
+				<subreportParameter name="snmpphysaddr">
+					<subreportParameterExpression><![CDATA[$F{snmpphysaddr}]]></subreportParameterExpression>
+				</subreportParameter>
+				<subreportParameter name="rrdDir">
+					<subreportParameterExpression><![CDATA[$P{rrdDir}]]></subreportParameterExpression>
+				</subreportParameter>
+				<subreportParameter name="startDate">
+					<subreportParameterExpression><![CDATA[$P{startDate}]]></subreportParameterExpression>
+				</subreportParameter>
+				<subreportParameter name="nodeid">
+					<subreportParameterExpression><![CDATA[$F{nodeid}]]></subreportParameterExpression>
+				</subreportParameter>
+				<subreportParameter name="endDate">
+					<subreportParameterExpression><![CDATA[$P{endDate}]]></subreportParameterExpression>
+				</subreportParameter>
+				<connectionExpression><![CDATA[$P{REPORT_CONNECTION}]]></connectionExpression>
+				<subreportExpression class="java.lang.String"><![CDATA[$P{SUBREPORT_DIR} + "PeakTraffic_subreport.jasper"]]></subreportExpression>
+			</subreport>
+		</band>
+	</detail>
+	<columnFooter>
+		<band splitType="Stretch"/>
+	</columnFooter>
+	<pageFooter>
+		<band height="36" splitType="Stretch">
+			<line>
+				<reportElement x="0" y="9" width="626" height="1"/>
+				<graphicElement>
+					<pen lineWidth="1.5"/>
+				</graphicElement>
+			</line>
+			<textField>
+				<reportElement style="Page_Footer" x="521" y="13" width="80" height="20"/>
+				<textElement textAlignment="Right"/>
+				<textFieldExpression class="java.lang.String"><![CDATA["Page "+$V{PAGE_NUMBER}+" of"]]></textFieldExpression>
+			</textField>
+			<textField evaluationTime="Report">
+				<reportElement style="Page_Footer" x="601" y="13" width="24" height="20"/>
+				<textElement/>
+				<textFieldExpression class="java.lang.String"><![CDATA[" " + $V{PAGE_NUMBER}]]></textFieldExpression>
+			</textField>
+			<staticText>
+				<reportElement style="Page_Footer" x="0" y="13" width="67" height="15"/>
+				<textElement/>
+				<text><![CDATA[Report begin: ]]></text>
+			</staticText>
+			<staticText>
+				<reportElement style="Page_Footer" x="193" y="13" width="60" height="14"/>
+				<textElement/>
+				<text><![CDATA[Report end: ]]></text>
+			</staticText>
+			<textField evaluationTime="Page">
+				<reportElement style="Report_Subtitle" x="67" y="13" width="126" height="14"/>
+				<textElement/>
+				<textFieldExpression class="java.util.Date"><![CDATA[$P{startDate}]]></textFieldExpression>
+			</textField>
+			<textField evaluationTime="Page">
+				<reportElement style="Report_Subtitle" x="253" y="13" width="131" height="14"/>
+				<textElement/>
+				<textFieldExpression class="java.util.Date"><![CDATA[$P{endDate}]]></textFieldExpression>
+			</textField>
+		</band>
+	</pageFooter>
+	<summary>
+		<band height="42" splitType="Stretch"/>
+	</summary>
+</jasperReport>

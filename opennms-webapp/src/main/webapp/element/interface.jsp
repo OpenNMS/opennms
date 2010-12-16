@@ -71,14 +71,14 @@
     
     public void init() throws ServletException {
         try {
-            this.telnetServiceId = NetworkElementFactory.getServiceIdFromName("Telnet");            
+            this.telnetServiceId = NetworkElementFactory.getInstance(getServletContext()).getServiceIdFromName("Telnet");            
         }
         catch( Exception e ) {
             throw new ServletException( "Could not determine the Telnet service ID", e );
         }
 
         try {
-            this.httpServiceId = NetworkElementFactory.getServiceIdFromName("HTTP");
+            this.httpServiceId = NetworkElementFactory.getInstance(getServletContext()).getServiceIdFromName("HTTP");
         }
         catch( Exception e ) {
             throw new ServletException( "Could not determine the HTTP service ID", e );
@@ -89,7 +89,7 @@
     }%>
 
 <%
-    Interface intf_db = ElementUtil.getInterfaceByParams(request);
+    Interface intf_db = ElementUtil.getInterfaceByParams(request, getServletContext());
     int nodeId = intf_db.getNodeId();
     String ipAddr = intf_db.getIpAddress();
 	int ifIndex = -1;    
@@ -97,10 +97,10 @@
 		ifIndex = intf_db.getIfIndex();
 	}
     
-    AtInterface atif_db = NetworkElementFactory.getAtInterface(nodeId, ipAddr);
+    AtInterface atif_db = NetworkElementFactory.getInstance(getServletContext()).getAtInterface(nodeId, ipAddr);
 
 
-    Service[] services = NetworkElementFactory.getServicesOnInterface( nodeId, ipAddr );
+    Service[] services = NetworkElementFactory.getInstance(getServletContext()).getServicesOnInterface( nodeId, ipAddr );
     if( services == null ) {
         services = new Service[0];
     }
@@ -109,14 +109,14 @@
     String eventUrl2 = "event/list.htm?filter=node%3D" + nodeId + "&filter=ifindex%3D" + ifIndex;
     
     String telnetIp = null;
-    Service telnetService = NetworkElementFactory.getService(nodeId, ipAddr, this.telnetServiceId);
+    Service telnetService = NetworkElementFactory.getInstance(getServletContext()).getService(nodeId, ipAddr, this.telnetServiceId);
     
     if( telnetService != null  ) {
         telnetIp = ipAddr;
     }    
 
     String httpIp = null;
-    Service httpService = NetworkElementFactory.getService(nodeId, ipAddr, this.httpServiceId);
+    Service httpService = NetworkElementFactory.getInstance(getServletContext()).getService(nodeId, ipAddr, this.httpServiceId);
 
     if( httpService != null  ) {
         httpIp = ipAddr;
@@ -274,7 +274,7 @@ function doDelete() {
 	    <table>
               <tr>
                 <th>Node</th>
-                <td><a href="element/node.jsp?node=<%=intf_db.getNodeId()%>"><%=NetworkElementFactory.getNodeLabel(intf_db.getNodeId())%></a></td>
+                <td><a href="element/node.jsp?node=<%=intf_db.getNodeId()%>"><%=NetworkElementFactory.getInstance(getServletContext()).getNodeLabel(intf_db.getNodeId())%></a></td>
               </tr>
               <tr> 
                 <th>Polling Status</th>
@@ -311,8 +311,8 @@ function doDelete() {
        <% if(request.isUserInRole( Authentication.ADMIN_ROLE )) { %>
               <tr>
                 <th>Snmp Polling Package</th>
-                <td><%= (snmpPollerCfgFactory.getPackageName(NetworkElementFactory.getIpPrimaryAddress(nodeId)) == null) ? "&nbsp;" : 
-                snmpPollerCfgFactory.getPackageName(NetworkElementFactory.getIpPrimaryAddress(nodeId))%></td>
+                <td><%= (snmpPollerCfgFactory.getPackageName(NetworkElementFactory.getInstance(getServletContext()).getIpPrimaryAddress(nodeId)) == null) ? "&nbsp;" : 
+                snmpPollerCfgFactory.getPackageName(NetworkElementFactory.getInstance(getServletContext()).getIpPrimaryAddress(nodeId))%></td>
               </tr>
 	   <% } %>
               <tr> 

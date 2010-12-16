@@ -20,6 +20,7 @@ import org.opennms.netmgt.provision.detector.simple.TcpDetector;
 import org.opennms.netmgt.provision.server.SimpleServer;
 import org.opennms.netmgt.provision.support.DefaultDetectFuture;
 import org.opennms.netmgt.provision.support.NullDetectorMonitor;
+import org.opennms.test.mock.MockLogAppender;
 import org.springframework.beans.BeansException;
 import org.springframework.context.ApplicationContext;
 import org.springframework.context.ApplicationContextAware;
@@ -37,9 +38,12 @@ public class AsyncDetectorFileDescriptorLeakTest implements ApplicationContextAw
     
     @Before
     public void setUp() throws Exception {
+        MockLogAppender.setupLogging();
+
         m_detector.set(getDetector(TcpDetector.class));
         m_detector.get().setServiceName("TCP");
         m_detector.get().setTimeout(1000);
+        m_detector.get().setBanner(".*");
         m_detector.get().init();
     }
     
@@ -52,6 +56,7 @@ public class AsyncDetectorFileDescriptorLeakTest implements ApplicationContextAw
     public void tearDown() throws IOException {
         if(m_server != null){
             m_server.stopServer();
+            m_server = null;
         }
         
     }

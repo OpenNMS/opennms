@@ -391,7 +391,7 @@ public class SnmpPoller extends AbstractServiceDaemon {
             log().error("reloadSnmpConfig: ",e);
         }
         
-        for (Long ipLong=info.getFirst(); ipLong <= info.getLast();ipLong++) {
+        for (long ipLong=info.getFirst(); ipLong <= info.getLast();ipLong++) {
             String ipaddr = InetAddressUtils.getInetAddress(ipLong).getHostAddress();
             log().debug("reloadSnmpConfig: found ipaddr: " + ipaddr);
             if (getNetwork().hasPollableInterface(ipaddr)) {

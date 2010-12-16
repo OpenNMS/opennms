@@ -49,7 +49,7 @@ import org.opennms.core.utils.ThreadCategory;
  */
 public final class MergeableSpecific implements Comparable<String> {
     private String m_specific;
-    private SpecificComparator m_comparator;
+    private static final SpecificComparator m_comparator = new SpecificComparator();
     private long m_value;
 
     /**
@@ -66,7 +66,6 @@ public final class MergeableSpecific implements Comparable<String> {
             log.error("ComparableSpecific(): Exception in construction.", e);
             throw new IllegalArgumentException(e.getLocalizedMessage());
         }
-        m_comparator = new SpecificComparator();
     }
     
     /**
@@ -113,4 +112,3 @@ public final class MergeableSpecific implements Comparable<String> {
     }
 
 }
-    

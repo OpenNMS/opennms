@@ -14,6 +14,7 @@ import org.opennms.netmgt.dao.db.OpenNMSConfigurationExecutionListener;
 import org.opennms.netmgt.provision.persist.foreignsource.ForeignSource;
 import org.opennms.netmgt.provision.persist.foreignsource.PluginConfig;
 import org.opennms.netmgt.provision.persist.requisition.Requisition;
+import org.opennms.test.mock.MockLogAppender;
 import org.springframework.core.io.ClassPathResource;
 import org.springframework.test.context.TestExecutionListeners;
 import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
@@ -30,6 +31,7 @@ public class MockForeignSourceRepositoryTest {
 
     @Before
     public void setUp() {
+        MockLogAppender.setupLogging();
         m_repository = new MockForeignSourceRepository();
         m_defaultForeignSourceName = new ModelImport().getForeignSource();
     }

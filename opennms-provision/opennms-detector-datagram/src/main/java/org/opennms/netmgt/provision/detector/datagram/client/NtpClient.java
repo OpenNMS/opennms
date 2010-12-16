@@ -36,7 +36,6 @@ import java.net.DatagramPacket;
 import java.net.DatagramSocket;
 import java.net.InetAddress;
 
-import org.apache.log4j.Logger;
 import org.opennms.core.utils.ThreadCategory;
 import org.opennms.netmgt.provision.support.Client;
 import org.opennms.netmgt.provision.support.ntp.NtpMessage;

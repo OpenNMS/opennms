@@ -36,7 +36,10 @@
 
 --%>
 
-<%@ page language="java" contentType="text/html" session="true" %>
+<%@ page language="java" contentType="text/html" session="true" import="
+	org.opennms.web.controller.ksc.FormProcGraphController,
+	org.opennms.web.controller.ksc.CustomGraphEditDetailsController
+"%>
 
 <%@ taglib uri="http://java.sun.com/jsp/jstl/core" prefix="c" %>
 <%@ taglib uri="http://java.sun.com/jsp/jstl/functions" prefix="fn" %>
@@ -74,8 +77,7 @@
    
     function cancelGraph()
     {
-        var fer_sure = confirm("Do you really want to cancel graph configuration changes?");
-        if (fer_sure==true) {
+        if (confirm("Do you really want to cancel graph configuration changes?")) {
             document.customize_graph.action.value="Cancel";
             document.customize_graph.submit();
         }
@@ -156,7 +158,7 @@
       <div class="boxWrapper">
 
       <form name="customize_graph" method="get" action="KSC/formProcGraph.htm" >
-        <input type="hidden" name="action" value="none" />
+        <input type="hidden" name="<%=FormProcGraphController.Parameters.action%>" value="none" />
 
                     <table class="normal">
                         <tr>
@@ -164,7 +166,7 @@
                             Title
                           </td>
                           <td class="normal">
-                            <input type="text" name="title" value="${resultSet.title}" size="40" maxlength="40"/>
+                            <input type="text" name="<%=FormProcGraphController.Parameters.title%>" value="${resultSet.title}" size="40" maxlength="40"/>
                           </td>
                         </tr>
                         <tr>
@@ -172,18 +174,18 @@
                               Timespan
                             </td>
                             <td class="normal">
-                                <select name="timespan">
+                                <select name="<%=FormProcGraphController.Parameters.timespan%>">
                                   <c:forEach var="option" items="${timeSpans}">
                                     <c:choose>
                                       <c:when test="${timeSpan == option.key}">
-                                        <c:set var="selected" value="selected"/>
+                                        <c:set var="timespanSelected">selected="selected"</c:set>
                                       </c:when>
                                       
                                       <c:otherwise>
-                                        <c:set var="selected" value=""/>
+                                        <c:set var="timespanSelected" value=""/>
                                       </c:otherwise>
                                     </c:choose>
-                                    <option value="${option.key}" ${selected}>${option.value}</option>
+                                    <option value="${option.key}" ${timespanSelected}>${option.value}</option>
                                   </c:forEach>
                                 </select>  
                                 (This selects the relative start and stop times for the report) 
@@ -194,18 +196,18 @@
                                 Prefabricated Report
                             </td>
                             <td class="normal">
-                                <select name="graphtype">
+                                <select name="<%=FormProcGraphController.Parameters.graphtype%>">
                                   <c:forEach var="prefabGraph" items="${prefabGraphs}">
                                     <c:choose>
                                       <c:when test="${resultSet.prefabGraph.name == prefabGraph.name}">
-                                        <c:set var="selected" value="selected"/>
+                                        <c:set var="prefabSelected">selected="selected"</c:set>
                                       </c:when>
                                       
                                       <c:otherwise>
-                                        <c:set var="selected" value=""/>
+                                        <c:set var="prefabSelected" value=""/>
                                       </c:otherwise>
                                     </c:choose>
-                                    <option value="${prefabGraph.name}" ${selected}>${prefabGraph.name}</option>
+                                    <option value="${prefabGraph.name}" ${prefabSelected}>${prefabGraph.name}</option>
                                   </c:forEach>
                                 </select>  
                                 (This selects the prefabricated graph report to use) 
@@ -213,22 +215,22 @@
                         </tr>
                         <tr>
                             <td class="normal">
-                                <!-- Select Graph Index -->  
+                                <!-- Select Graph Index -->
                                 Graph Index  
                             </td>
                             <td class="normal">
-                                <select name="graphindex">
+                                <select name="<%=FormProcGraphController.Parameters.graphindex%>">
                                   <c:forEach var="index" begin="1" end="${maxGraphIndex}">
                                     <c:choose>
                                       <c:when test="${index == (graphIndex + 1)}">
-                                        <c:set var="selected" value="selected"/>
+                                        <c:set var="indexSelected">selected="selected"</c:set>
                                       </c:when>
                                       
                                       <c:otherwise>
-                                        <c:set var="selected" value=""/>
+                                        <c:set var="indexSelected" value=""/>
                                       </c:otherwise>
                                     </c:choose>
-                                    <option value="${index}" ${selected}>${index}</option>
+                                    <option value="${index}" ${indexSelected}>${index}</option>
                                   </c:forEach>
                                 </select>  
                                 (This selects the desired position in the report for the graph to be inserted) 
@@ -239,7 +241,7 @@
                     <input type="button" value="Cancel edits to this graph" onclick="cancelGraph()" alt="Cancel this graph configuration"/>
                     <input type="button" value="Refresh sample view" onclick="updateGraph()" alt="Update changes to sample graph"/>
                     <input type="button" value="Choose different resource" onclick="chooseResource()" alt="Choose a different resource to graph"/>
-                    <input type="submit" value="Done with edits to this graph" onclick="saveGraph()" alt="Done with this graph configuration"/>
+                    <input type="button" value="Done with edits to this graph" onclick="saveGraph()" alt="Done with this graph configuration"/>
       </form>
       </div>
 

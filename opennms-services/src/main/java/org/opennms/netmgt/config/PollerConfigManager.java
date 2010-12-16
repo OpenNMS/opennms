@@ -56,7 +56,8 @@ import java.util.TreeMap;
 import org.exolab.castor.xml.MarshalException;
 import org.exolab.castor.xml.Marshaller;
 import org.exolab.castor.xml.ValidationException;
-import org.opennms.core.utils.IPSorter;
+import org.opennms.core.utils.ByteArrayComparator;
+import org.opennms.core.utils.InetAddressUtils;
 import org.opennms.core.utils.IpListFromUrl;
 import org.opennms.core.utils.ThreadCategory;
 import org.opennms.netmgt.config.poller.ExcludeRange;
@@ -102,7 +103,6 @@ abstract public class PollerConfigManager implements PollerConfig {
      * @throws org.exolab.castor.xml.ValidationException if any.
      * @throws java.io.IOException if any.
      */
-    @Deprecated
     public PollerConfigManager(Reader reader, String localServer, boolean verifyServer) throws MarshalException, ValidationException, IOException {
         m_localServer = localServer;
         m_verifyServer = verifyServer;
@@ -518,26 +518,25 @@ abstract public class PollerConfigManager implements PollerConfig {
         // the range 0.0.0.0 - 255.255.255.255
         has_range_include = pkg.getIncludeRangeCount() == 0 && pkg.getSpecificCount() == 0;
         
-        long addr = IPSorter.convertToLong(iface);
+        byte[] addr = InetAddressUtils.toIpAddrBytes(iface);
         
         Enumeration<IncludeRange> eincs = pkg.enumerateIncludeRange();
         while (!has_range_include && eincs.hasMoreElements()) {
             IncludeRange rng = eincs.nextElement();
-            long start = IPSorter.convertToLong(rng.getBegin());
-            if (addr > start) {
-                long end = IPSorter.convertToLong(rng.getEnd());
-                if (addr <= end) {
+            int comparison = new ByteArrayComparator().compare(addr, InetAddressUtils.toIpAddrBytes(rng.getBegin()));
+            if (comparison > 0) {
+                int endComparison = new ByteArrayComparator().compare(addr, InetAddressUtils.toIpAddrBytes(rng.getEnd()));
+                if (endComparison <= 0) {
                     has_range_include = true;
                 }
-            } else if (addr == start) {
+            } else if (comparison == 0) {
                 has_range_include = true;
             }
         }
     
         Enumeration<String> espec = pkg.enumerateSpecific();
         while (!has_specific && espec.hasMoreElements()) {
-            long speca = IPSorter.convertToLong(espec.nextElement());
-            if (speca == addr)
+            if (new ByteArrayComparator().compare(addr, InetAddressUtils.toIpAddrBytes(espec.nextElement())) == 0)
                 has_specific = true;
         }
     
@@ -549,13 +548,13 @@ abstract public class PollerConfigManager implements PollerConfig {
         Enumeration<ExcludeRange> eex = pkg.enumerateExcludeRange();
         while (!has_range_exclude && !has_specific && eex.hasMoreElements()) {
             ExcludeRange rng = eex.nextElement();
-            long start = IPSorter.convertToLong(rng.getBegin());
-            if (addr > start) {
-                long end = IPSorter.convertToLong(rng.getEnd());
-                if (addr <= end) {
+            int comparison = new ByteArrayComparator().compare(addr, InetAddressUtils.toIpAddrBytes(rng.getBegin()));
+            if (comparison > 0) {
+                int endComparison = new ByteArrayComparator().compare(addr, InetAddressUtils.toIpAddrBytes(rng.getEnd()));
+                if (endComparison <= 0) {
                     has_range_exclude = true;
                 }
-            } else if (addr == start) {
+            } else if (comparison == 0) {
                 has_range_exclude = true;
             }
         }

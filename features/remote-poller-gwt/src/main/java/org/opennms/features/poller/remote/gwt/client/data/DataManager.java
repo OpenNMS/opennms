@@ -127,4 +127,8 @@ public class DataManager implements MapRemoteEventHandler {
         // TODO Auto-generated method stub
         
     }
+
+    public int getLocationCount() {
+        return m_locations.size();
+    }
 }

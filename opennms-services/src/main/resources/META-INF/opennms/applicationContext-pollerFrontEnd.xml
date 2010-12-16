@@ -3,15 +3,20 @@
 	   xsi:schemaLocation=
 	   "http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans-2.0.xsd
 	   http://www.springframework.org/schema/lang http://www.springframework.org/schema/lang/spring-lang-2.0.xsd">
+	   
 
+    <bean name="timeAdjustment" class="org.opennms.netmgt.poller.remote.DefaultTimeAdjustment" />
 
-    <bean name="pollService" class="org.opennms.netmgt.poller.remote.DefaultPollService" />
+    <bean name="pollService" class="org.opennms.netmgt.poller.remote.DefaultPollService" >
+        <property name="timeAdjustment" ref="timeAdjustment" />
+    </bean>
 
     <bean name="pollerSettings" class="org.opennms.netmgt.poller.remote.support.DefaultPollerSettings">
       <property name="configurationResource" value="${opennms.poller.configuration.resource}"/>
     </bean>
 
     <bean name="pollerFrontEnd" class="org.opennms.netmgt.poller.remote.support.DefaultPollerFrontEnd">
+      <property name="timeAdjustment" ref="timeAdjustment" />
       <property name="pollerBackEnd" ref="pollerBackEnd" />
       <property name="pollService" ref="pollService" />
       <property name="pollerSettings" ref="pollerSettings" />

@@ -36,6 +36,7 @@ package org.opennms.netmgt.linkd.snmp;
 
 import java.net.InetAddress;
 
+import org.opennms.core.utils.InetAddressUtils;
 import org.opennms.netmgt.capsd.snmp.NamedSnmpVar;
 import org.opennms.netmgt.capsd.snmp.SnmpTableEntry;
 import org.opennms.netmgt.snmp.SnmpObjId;
@@ -508,7 +509,10 @@ public final class CdpCacheTableEntry extends SnmpTableEntry {
 		return 	getDisplayString(CdpCacheTableEntry.CDP_PLATFORM);
 	}
 
-	private InetAddress getIpAddressByHexString(String ipaddrhexstrng) {
+	/**
+	 * TODO: Move to {@link InetAddressUtils}?
+	 */
+	private static InetAddress getIpAddressByHexString(String ipaddrhexstrng) {
 
 		long ipAddr = Long.parseLong(ipaddrhexstrng, 16);
 		byte[] bytes = new byte[4];
@@ -517,12 +521,7 @@ public final class CdpCacheTableEntry extends SnmpTableEntry {
 		bytes[1] = (byte) ((ipAddr >> 16) & 0xff);
 		bytes[0] = (byte) ((ipAddr >> 24) & 0xff);
 
-		try {
-			return InetAddress.getByAddress(bytes);
-		} catch (Exception e) {
-			return null;
-		}
-		
+		return InetAddressUtils.getInetAddress(bytes);
 	}
 
 

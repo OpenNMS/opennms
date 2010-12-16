@@ -51,7 +51,7 @@
 %>
 <%@ taglib prefix="c" uri="http://java.sun.com/jsp/jstl/core" %>
 <%
-  pageContext.setAttribute("serviceNameMap", new TreeMap(NetworkElementFactory.getServiceNameToIdMap()).entrySet());
+  pageContext.setAttribute("serviceNameMap", new TreeMap(NetworkElementFactory.getInstance(getServletContext()).getServiceNameToIdMap()).entrySet());
 %>
 <h3 class="o-box">Quick Search</h3>
 <div class="boxWrapper">

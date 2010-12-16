@@ -5,7 +5,7 @@
     <relativePath>../poms/compiled/</relativePath>
     <groupId>org.opennms.features.sms-reflector.build</groupId>
     <artifactId>compiled-bundle-settings</artifactId>
-    <version>1.8.4-SNAPSHOT</version>
+    <version>1.8.8-SNAPSHOT</version>
   </parent>
 
   <properties>
@@ -50,7 +50,7 @@
     <dependency>
       <groupId>org.opennms.smslib</groupId>
       <artifactId>smslib</artifactId>
-      <version>3.4.3-SNAPSHOT</version>
+      <version>3.4.3-20100302</version>
       <scope>provided</scope>
     </dependency>
     <dependency>
@@ -82,6 +82,7 @@
   		<artifactId>spring-test-dependencies</artifactId>
       <version>${project.version}</version>
       <scope>test</scope>
+      <type>pom</type>
     </dependency>
     <dependency>
     	<groupId>org.opennms.core</groupId>

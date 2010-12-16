@@ -2,12 +2,12 @@
   <parent>
     <groupId>org.opennms</groupId>
     <artifactId>dependencies</artifactId>
-    <version>1.8.4-SNAPSHOT</version>
+    <version>1.8.8-SNAPSHOT</version>
   </parent>
   <modelVersion>4.0.0</modelVersion>
   <groupId>org.opennms.dependencies</groupId>
   <artifactId>snmp-dependencies</artifactId>
-  <packaging>jar</packaging>
+  <packaging>pom</packaging>
   <name>OpenNMS SNMP Dependencies</name>
   <description>
     This module is used to provide a single artifact that the opennms project
@@ -18,48 +18,89 @@
     <opennmsSnmpApiVersion>2.0.4</opennmsSnmpApiVersion>
   </properties>
 
-
   <dependencies>
     <dependency>
-      <groupId>org.opennms.lib</groupId>
-      <artifactId>org.opennms.lib.joesnmp</artifactId>
-      <version>${opennmsJoesnmpVersion}</version>
+      <groupId>org.opennms.core</groupId>
+      <artifactId>org.opennms.core.lib</artifactId>
     </dependency>
     <dependency>
-      <groupId>org.opennms.lib.snmp</groupId>
-      <artifactId>org.opennms.lib.snmp.api</artifactId>
-      <version>${opennmsSnmpApiVersion}</version>
+      <groupId>org.opennms</groupId>
+      <artifactId>opennms-util</artifactId>
     </dependency>
     <dependency>
-      <groupId>org.opennms.lib.snmp</groupId>
-      <artifactId>org.opennms.lib.snmp.joesnmp</artifactId>
-      <version>${opennmsSnmpApiVersion}</version>
+      <groupId>org.opennms.dependencies</groupId>
+      <artifactId>hibernate-dependencies</artifactId>
+      <type>pom</type>
     </dependency>
     <dependency>
-      <groupId>org.opennms.lib.snmp</groupId>
-      <artifactId>org.opennms.lib.snmp.snmp4j</artifactId>
-      <version>${opennmsSnmpApiVersion}</version>
+      <groupId>org.opennms.dependencies</groupId>
+      <artifactId>spring-dependencies</artifactId>
+      <type>pom</type>
     </dependency>
     <dependency>
       <groupId>org.snmp4j</groupId>
       <artifactId>snmp4j</artifactId>
       <version>1.11.1</version>
     </dependency>
+    <dependency>
+      <groupId>org.opennms.lib</groupId>
+      <artifactId>org.opennms.lib.joesnmp</artifactId>
+      <version>${opennmsJoesnmpVersion}</version>
+      <exclusions>
+        <exclusion><groupId>org.opennms.core</groupId><artifactId>org.opennms.core.lib</artifactId></exclusion>
+        <exclusion><groupId>org.opennms</groupId><artifactId>opennms-util</artifactId></exclusion>
+        <exclusion><groupId>org.opennms.dependencies</groupId><artifactId>hibernate-dependencies</artifactId></exclusion>
+        <exclusion><groupId>org.opennms.dependencies</groupId><artifactId>spring-dependencies</artifactId></exclusion>
+      </exclusions>
+    </dependency>
+    <dependency>
+      <groupId>org.opennms.lib.snmp</groupId>
+      <artifactId>org.opennms.lib.snmp.api</artifactId>
+      <version>${opennmsSnmpApiVersion}</version>
+      <exclusions>
+        <exclusion><groupId>org.opennms.core</groupId><artifactId>org.opennms.core.lib</artifactId></exclusion>
+        <exclusion><groupId>org.opennms</groupId><artifactId>opennms-util</artifactId></exclusion>
+        <exclusion><groupId>org.opennms.dependencies</groupId><artifactId>hibernate-dependencies</artifactId></exclusion>
+        <exclusion><groupId>org.opennms.dependencies</groupId><artifactId>spring-dependencies</artifactId></exclusion>
+      </exclusions>
+    </dependency>
+    <dependency>
+      <groupId>org.opennms.lib.snmp</groupId>
+      <artifactId>org.opennms.lib.snmp.joesnmp</artifactId>
+      <version>${opennmsSnmpApiVersion}</version>
+      <exclusions>
+        <exclusion><groupId>org.opennms.core</groupId><artifactId>org.opennms.core.lib</artifactId></exclusion>
+        <exclusion><groupId>org.opennms</groupId><artifactId>opennms-util</artifactId></exclusion>
+        <exclusion><groupId>org.opennms.dependencies</groupId><artifactId>hibernate-dependencies</artifactId></exclusion>
+        <exclusion><groupId>org.opennms.dependencies</groupId><artifactId>spring-dependencies</artifactId></exclusion>
+      </exclusions>
+    </dependency>
+    <dependency>
+      <groupId>org.opennms.lib.snmp</groupId>
+      <artifactId>org.opennms.lib.snmp.snmp4j</artifactId>
+      <version>${opennmsSnmpApiVersion}</version>
+      <exclusions>
+        <exclusion><groupId>org.opennms.core</groupId><artifactId>org.opennms.core.lib</artifactId></exclusion>
+        <exclusion><groupId>org.opennms</groupId><artifactId>opennms-util</artifactId></exclusion>
+        <exclusion><groupId>org.opennms.dependencies</groupId><artifactId>hibernate-dependencies</artifactId></exclusion>
+        <exclusion><groupId>org.opennms.dependencies</groupId><artifactId>spring-dependencies</artifactId></exclusion>
+      </exclusions>
+    </dependency>
   </dependencies>
   <repositories>
-    <repository>
-      <snapshots><enabled>false</enabled></snapshots>
-      <releases><enabled>true</enabled></releases>
-      <id>opennms-repo</id>
-      <name>OpenNMS Repository</name>
-      <url>http://maven.opennms.org/content/groups/opennms.org-release</url>
-    </repository>
     <repository>
       <snapshots><enabled>false</enabled></snapshots>
       <releases><enabled>true</enabled></releases>
       <id>snmp4j-repo</id>
       <name>SNMP4J Maven Repository</name>
       <url>http://maven.opennms.org/content/groups/oosnmp.net-release</url>
+    </repository>
+    <repository>
+      <snapshots><enabled>false</enabled></snapshots>
+      <releases><enabled>true</enabled></releases>
+      <id>opennms-repo</id>
+      <name>OpenNMS Maven Repository</name>
+      <url>http://maven.opennms.org/content/groups/opennms.org-release</url>
     </repository>
   </repositories>
 </project>

@@ -65,11 +65,11 @@
     String requestIntf = request.getParameter("intf");
     String requestIfindex = request.getParameter("ifindex");
     if(requestNode != null && requestIfindex != null && requestIntf == null) {
-        intf = ElementUtil.getSnmpInterfaceByParams(request);
-        dl_if = NetworkElementFactory.getDataLinksOnInterface(intf.getNodeId(), intf.getSnmpIfIndex());
+        intf = ElementUtil.getSnmpInterfaceByParams(request, getServletContext());
+        dl_if = NetworkElementFactory.getInstance(getServletContext()).getDataLinksOnInterface(intf.getNodeId(), intf.getSnmpIfIndex());
     } else {
-        intf = ElementUtil.getInterfaceByParams(request);
-        dl_if = NetworkElementFactory.getDataLinksOnInterface(intf.getNodeId(), intf.getIfIndex());
+        intf = ElementUtil.getInterfaceByParams(request, getServletContext());
+        dl_if = NetworkElementFactory.getInstance(getServletContext()).getDataLinksOnInterface(intf.getNodeId(), intf.getIfIndex());
     }
 
 %>
@@ -92,10 +92,10 @@
   <% for( int i=0; i < dl_if.length; i++ ) { %>
     <% Interface iface = null; %>
     <tr>
-      <td class="standard"><a href="element/linkednode.jsp?node=<%=dl_if[i].get_nodeparentid()%>"><%=NetworkElementFactory.getNodeLabel(dl_if[i].get_nodeparentid())%></a></td>
+      <td class="standard"><a href="element/linkednode.jsp?node=<%=dl_if[i].get_nodeparentid()%>"><%=NetworkElementFactory.getInstance(getServletContext()).getNodeLabel(dl_if[i].get_nodeparentid())%></a></td>
       <td class="standard">
       <% if( "0.0.0.0".equals( dl_if[i].get_parentipaddr() ) || dl_if[i].get_parentipaddr() == null ) {
-        iface = NetworkElementFactory.getSnmpInterface(dl_if[i].get_nodeparentid(),dl_if[i].get_parentifindex()); %>
+        iface = NetworkElementFactory.getInstance(getServletContext()).getSnmpInterface(dl_if[i].get_nodeparentid(),dl_if[i].get_parentifindex()); %>
         <a href="element/snmpinterface.jsp?node=<%=dl_if[i].get_nodeparentid()%>&ifindex=<%=dl_if[i].get_parentifindex()%>"><%=iface.getSnmpIfDescription()%></a>
       <% } else { %>  
         <a href="element/interface.jsp?node=<%=dl_if[i].get_nodeparentid()%>&intf=<%=dl_if[i].get_parentipaddr()%>"><%=dl_if[i].get_parentipaddr()%></a>

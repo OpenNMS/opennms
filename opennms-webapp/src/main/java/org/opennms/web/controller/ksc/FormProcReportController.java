@@ -37,6 +37,9 @@
 //
 package org.opennms.web.controller.ksc;
 
+import java.util.HashMap;
+import java.util.Map;
+
 import javax.servlet.ServletException;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
@@ -62,6 +65,15 @@ import org.springframework.web.servlet.mvc.AbstractController;
  */
 public class FormProcReportController extends AbstractController implements InitializingBean {
     
+    public enum Parameters {
+        action,
+        report_title,
+        show_timespan,
+        show_graphtype,
+        graph_index,
+        graphs_per_line
+    }
+    
     private KSC_PerformanceReportFactory m_kscReportFactory;
     private KscReportService m_kscReportService;
 
@@ -74,13 +86,13 @@ public class FormProcReportController extends AbstractController implements Init
         Report report = editor.getWorkingReport();
 
         // Get Form Variables
-        String action = WebSecurityUtils.sanitizeString(request.getParameter("action"));
-        String report_title = WebSecurityUtils.sanitizeString(request.getParameter("report_title"));
-        String show_timespan = WebSecurityUtils.sanitizeString(request.getParameter("show_timespan"));
-        String show_graphtype = WebSecurityUtils.sanitizeString(request.getParameter("show_graphtype"));
-        String g_index = WebSecurityUtils.sanitizeString(request.getParameter("graph_index"));
+        String action = WebSecurityUtils.sanitizeString(request.getParameter(Parameters.action.toString()));
+        String report_title = WebSecurityUtils.sanitizeString(request.getParameter(Parameters.report_title.toString()));
+        String show_timespan = WebSecurityUtils.sanitizeString(request.getParameter(Parameters.show_timespan.toString()));
+        String show_graphtype = WebSecurityUtils.sanitizeString(request.getParameter(Parameters.show_graphtype.toString()));
+        String g_index = WebSecurityUtils.sanitizeString(request.getParameter(Parameters.graph_index.toString()));
         int graph_index = WebSecurityUtils.safeParseInt(g_index);
-        int graphs_per_line = WebSecurityUtils.safeParseInt(request.getParameter("graphs_per_line"));
+        int graphs_per_line = WebSecurityUtils.safeParseInt(request.getParameter(Parameters.graphs_per_line.toString()));
      
         // Save the global variables into the working report
         report.setTitle(report_title);
@@ -105,10 +117,14 @@ public class FormProcReportController extends AbstractController implements Init
         if (action.equals("Save")) {
             // The working model is complete now... lets save working model to configuration file 
             try {
-                editor.unloadWorkingReport(getKscReportFactory());  // first copy working report into report arrays
-                getKscReportFactory().saveCurrent();          // Now unmarshal array to file
-            } catch (Exception e) {
-                throw new ServletException("Couldn't save KSC_PerformanceReportFactory.", e);
+                // First copy working report into report arrays
+                editor.unloadWorkingReport(getKscReportFactory());
+                // Save the changes to the config file
+                getKscReportFactory().saveCurrent();
+                // Go ahead and unload the editor from the session since we're done using it
+                KscReportEditor.unloadFromSession(request.getSession());
+            } catch (Throwable e) {
+                throw new ServletException("Couldn't save report: " + e.getMessage(), e);
             }
         } else {
             if (action.equals("AddGraph") || action.equals("ModGraph")) {
@@ -132,7 +148,12 @@ public class FormProcReportController extends AbstractController implements Init
         } else if (action.equals("ModGraph")) {
             Graph graph = editor.getWorkingGraph();
             OnmsResource resource = getKscReportService().getResourceFromGraph(graph);
-            return new ModelAndView("redirect:/KSC/customGraphEditDetails.htm", "resourceId", resource.getId());
+            String graphType = graph.getGraphtype();
+            
+            Map<String,String> modelData = new HashMap<String,String>();
+            modelData.put(CustomGraphEditDetailsController.Parameters.resourceId.toString(), resource.getId());
+            modelData.put(CustomGraphEditDetailsController.Parameters.graphtype.toString(), graphType);
+            return new ModelAndView("redirect:/KSC/customGraphEditDetails.htm", modelData);
         } else {
             throw new IllegalArgumentException("parameter action of '" + action + "' is not supported.  Must be one of: Save, Cancel, Update, AddGraph, or DelGraph");
         }
@@ -179,7 +200,7 @@ public class FormProcReportController extends AbstractController implements Init
      *
      * @throws java.lang.Exception if any.
      */
-    public void afterPropertiesSet() throws Exception {
+    public void afterPropertiesSet() {
         Assert.state(m_kscReportFactory != null, "property kscReportFactory must be set");
         Assert.state(m_kscReportService != null, "property kscReportService must be set");
     }

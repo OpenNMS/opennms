@@ -55,6 +55,7 @@ import javax.servlet.http.HttpSession;
 
 import org.opennms.core.resource.Vault;
 import org.opennms.core.utils.DBUtils;
+import org.opennms.core.utils.LogUtils;
 import org.opennms.netmgt.EventConstants;
 import org.opennms.netmgt.config.DataSourceFactory;
 import org.opennms.netmgt.config.NotificationFactory;
@@ -124,7 +125,7 @@ public class SnmpManageNodesServlet extends HttpServlet {
 
                 for (SnmpManagedInterface curInterface : allInterfaces) {
                     String option = request.getParameter("collect-" + curInterface.getIfIndex());
-                    System.err.println(String.format("option = %s", option));
+                    LogUtils.debugf(this, "option = %s", option);
                     stmt.setString(1, option);
                     stmt.setInt(2, curInterface.getSnmpInterfaceId());
                     stmt.execute();

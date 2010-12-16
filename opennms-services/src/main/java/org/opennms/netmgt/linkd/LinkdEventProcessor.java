@@ -41,119 +41,45 @@
 
 package org.opennms.netmgt.linkd;
 
-import java.util.ArrayList;
-import java.util.List;
-
-import org.opennms.core.utils.LogUtils;
 import org.opennms.netmgt.EventConstants;
 import org.opennms.netmgt.capsd.InsufficientInformationException;
-import org.opennms.netmgt.eventd.EventIpcManager;
-import org.opennms.netmgt.model.events.EventListener;
+import org.opennms.netmgt.model.events.annotations.EventHandler;
+import org.opennms.netmgt.model.events.annotations.EventListener;
 import org.opennms.netmgt.xml.event.Event;
-import org.springframework.beans.factory.InitializingBean;
-import org.springframework.util.Assert;
 
 /**
  * @author <a href="mailto:antonio@opennms.it">Antonio Russo</a>
  * @author <a href="mailto:matt@opennms.org">Matt Brozowski </a>
  * @author <a href="http://www.opennms.org/">OpenNMS </a>
  */
-final class LinkdEventProcessor implements EventListener, InitializingBean {
+@EventListener(name="OpenNMS.Linkd")
+final class LinkdEventProcessor {
 
-	/**
-	 * Event Manager To Send Events
-	 */
-	private EventIpcManager m_eventMgr;
+    private Linkd m_linkd;
 
     /**
-     * local openNMS server name
+     * @param linkd the linkd to set
      */
-    //private String m_localServer = null;
-
-    /**
-     * Constructor
-     * 
-     * @param linkd.
-     */
-    
-    LinkdEventProcessor() {
-
-        // the local servername
-        //m_localServer = OpennmsServerConfigFactory.getInstance().getServerName();
-
-        // Subscribe to eventd
-        //
+    public void setLinkd(Linkd linkd) {
+        this.m_linkd = linkd;
     }
 
-    /**
-     * Unsubscribe from eventd
-     */
-    public void close() {
-        getEventMgr().removeEventListener(this);
+    public Linkd getLinkd() {
+        return m_linkd;
     }
-
-    /**
-     * Create message selector to set to the subscription
-     */
-    private void createMessageSelectorAndSubscribe() {
-        // Create the selector for the ueis this service is interested in
-        //
-        List<String> ueiList = new ArrayList<String>();
-
-        // node gained service
-        ueiList.add(EventConstants.NODE_GAINED_SERVICE_EVENT_UEI);
-
-        // node lost service
-        ueiList.add(EventConstants.NODE_LOST_SERVICE_EVENT_UEI);
-
-        // nodeDeleted
-        ueiList.add(EventConstants.NODE_DELETED_EVENT_UEI);
-
-        // node regained service
-        ueiList.add(EventConstants.NODE_REGAINED_SERVICE_EVENT_UEI);
-        
-        // interface deleted
-        ueiList.add(EventConstants.INTERFACE_DELETED_EVENT_UEI);
-
-        getEventMgr().addEventListener(this, ueiList);
-    }
-
-    /**
-     * Get the local server name
-     */
-//    public String getLocalServer() {
-//        return m_localServer;
-//    }
-
-    /**
-     * Return an id for this event listener
-     *
-     * @return a {@link java.lang.String} object.
-     */
-    public String getName() {
-        return "Linkd:LinkdEventProcessor";
-    }
-
-    /**
-     * @return
-     */
-
-    private Linkd getLinkd() {
-        return Linkd.getInstance();
-    }
-
 
     /**
      * Handle a Node Deleted Event
      * 
      * @param event
      */
-    private void handleNodeDeleted(Event event) throws InsufficientInformationException {
- 
+    @EventHandler(uei=EventConstants.NODE_DELETED_EVENT_UEI)
+    public void handleNodeDeleted(Event event) throws InsufficientInformationException {
+
         EventUtils.checkNodeId(event);
 
         // Remove the deleted node from the scheduler if it's an SNMP node
-        getLinkd().deleteNode((int)event.getNodeid());
+        m_linkd.deleteNode((int)event.getNodeid());
         // set to status = D in all the rows in table
         // atinterface, iprouteinterface, datalinkinterface,stpnode, stpinterface
     }
@@ -163,8 +89,9 @@ final class LinkdEventProcessor implements EventListener, InitializingBean {
      * 
      * @param event
      */
-    private void handleInterfaceDeleted(Event event) throws InsufficientInformationException {
- 
+    @EventHandler(uei=EventConstants.INTERFACE_DELETED_EVENT_UEI)
+    public void handleInterfaceDeleted(Event event) throws InsufficientInformationException {
+
         EventUtils.checkNodeId(event);
         EventUtils.checkInterfaceOrIfIndex(event);
         int ifIndex = -1;
@@ -172,7 +99,7 @@ final class LinkdEventProcessor implements EventListener, InitializingBean {
             ifIndex = event.getIfIndex();
         }
 
-        getLinkd().deleteInterface((int)event.getNodeid(), event.getInterface(), ifIndex);
+        m_linkd.deleteInterface((int)event.getNodeid(), event.getInterface(), ifIndex);
         // set to status = D in all the rows in table
         // atinterface, iprouteinterface, datalinkinterface, stpinterface
     }
@@ -182,11 +109,12 @@ final class LinkdEventProcessor implements EventListener, InitializingBean {
      * 
      * @param event
      */
-    private void handleNodeGainedService(Event event) throws InsufficientInformationException {
- 
+    @EventHandler(uei=EventConstants.NODE_GAINED_SERVICE_EVENT_UEI)
+    public void handleNodeGainedService(Event event) throws InsufficientInformationException {
+
         EventUtils.checkNodeId(event);
 
-        getLinkd().scheduleNodeCollection((int)event.getNodeid());
+        m_linkd.scheduleNodeCollection((int)event.getNodeid());
     }
 
     /**
@@ -194,12 +122,13 @@ final class LinkdEventProcessor implements EventListener, InitializingBean {
      * 
      * @param event
      */
-    private void handleNodeLostService(Event event) throws InsufficientInformationException {
-        
+    @EventHandler(uei=EventConstants.NODE_LOST_SERVICE_EVENT_UEI)
+    public void handleNodeLostService(Event event) throws InsufficientInformationException {
+
         EventUtils.checkNodeId(event);
 
         // Remove the deleted node from the scheduler
-        getLinkd().suspendNodeCollection((int)event.getNodeid());
+        m_linkd.suspendNodeCollection((int)event.getNodeid());
         // set to status = N in all the rows in table
         // atinterface, iprouteinterface, datalinkinterface,
     }
@@ -209,84 +138,11 @@ final class LinkdEventProcessor implements EventListener, InitializingBean {
      * 
      * @param event
      */
-    private void handleRegainedService(Event event) throws InsufficientInformationException {
-        
+    @EventHandler(uei=EventConstants.NODE_REGAINED_SERVICE_EVENT_UEI)
+    public void handleRegainedService(Event event) throws InsufficientInformationException {
+
         EventUtils.checkNodeId(event);
 
-        getLinkd().wakeUpNodeCollection((int)event.getNodeid());
+        m_linkd.wakeUpNodeCollection((int)event.getNodeid());
     }
-
-
-    /**
-     * {@inheritDoc}
-     *
-     * This method is invoked by the EventIpcManager when a new event is
-     * available for processing. Currently only text based messages are
-     * processed by this callback. Each message is examined for its Universal
-     * Event Identifier and the appropriate action is taking based on each UEI.
-     */
-    public void onEvent(Event event) {
-        try {
-        	int eventid = event.getDbid();
-            String eventUei = event.getUei();
-            if (eventUei == null) {
-                return;
-            }
-
-            LogUtils.infof(this, "onEvent: Received event %s UEI %s", eventid, eventUei);
-
-            if (eventUei.equals(EventConstants.NODE_DELETED_EVENT_UEI)) {
-                LogUtils.infof(this, "onEvent: calling handleNodeDeleted for event %s", eventid);
-                handleNodeDeleted(event);
-            } else if (eventUei.equals(EventConstants.INTERFACE_DELETED_EVENT_UEI)) {
-                LogUtils.infof(this, "onEvent: calling handleInterfaceDeleted for event %s", eventid);
-                handleInterfaceDeleted(event);
-            } else if (event.getUei().equals(EventConstants.NODE_LOST_SERVICE_EVENT_UEI)&& event.getService().equals("SNMP")) {
-                LogUtils.infof(this, "onEvent: calling handleNodeLostService for event %s", eventid);
-                handleNodeLostService(event);
-            } else if (event.getUei().equals(EventConstants.NODE_REGAINED_SERVICE_EVENT_UEI)&& event.getService().equals("SNMP")) {
-                LogUtils.infof(this, "onEvent: calling handleRegainedService for event %s", eventid);
-            	handleRegainedService(event);
-            } else if (eventUei.equals(EventConstants.NODE_GAINED_SERVICE_EVENT_UEI) && event.getService().equals("SNMP")) {
-                LogUtils.infof(this, "onEvent: calling handleNodeGainedService for event %s", eventid);
-                handleNodeGainedService(event);
-            } 
-        } catch (InsufficientInformationException ex) {
-            LogUtils.infof(this, ex, "onEvent: insufficient information in event, discarding it.");
-        } catch (Throwable t) {
-            LogUtils.warnf(this, t, "onEvent: operation failed for event: %s, discarding it.", event.getUei());
-        }
-    } // end onEvent()
-
-	/**
-	 * <p>afterPropertiesSet</p>
-	 *
-	 * @throws java.lang.Exception if any.
-	 */
-	public void afterPropertiesSet() throws Exception {
-        Assert.state(m_eventMgr != null, "must set the eventMgr property");
-        createMessageSelectorAndSubscribe();
-	}
-    
-	/**
-	 * <p>getEventMgr</p>
-	 *
-	 * @return a {@link org.opennms.netmgt.eventd.EventIpcManager} object.
-	 */
-	public EventIpcManager getEventMgr() {
-		return m_eventMgr;
-	}
-
-	/**
-	 * <p>setEventMgr</p>
-	 *
-	 * @param mgr a {@link org.opennms.netmgt.eventd.EventIpcManager} object.
-	 */
-	public void setEventMgr(EventIpcManager mgr) {
-		m_eventMgr = mgr;
-	}
-
-
-
 } // end class
-

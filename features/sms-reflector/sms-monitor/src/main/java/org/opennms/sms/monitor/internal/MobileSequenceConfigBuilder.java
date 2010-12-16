@@ -43,7 +43,6 @@ import org.opennms.sms.monitor.internal.config.UssdSequenceRequest;
 import org.opennms.sms.monitor.internal.config.UssdSequenceResponse;
 import org.opennms.sms.monitor.internal.config.UssdSessionStatusMatcher;
 import org.opennms.sms.monitor.session.SessionVariableGenerator;
-import org.opennms.sms.monitor.session.UniqueNumber;
 import org.smslib.USSDSessionStatus;
 
 /**

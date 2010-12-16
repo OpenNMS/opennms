@@ -3,7 +3,7 @@
   <parent>
     <artifactId>opennms</artifactId>
     <groupId>org.opennms</groupId>
-    <version>1.8.4-SNAPSHOT</version>
+    <version>1.8.8-SNAPSHOT</version>
   </parent>
   <modelVersion>4.0.0</modelVersion>
   <artifactId>opennms-webapp</artifactId>
@@ -22,6 +22,7 @@
       </plugin>
       <plugin>
         <artifactId>maven-clean-plugin</artifactId>
+        <version>2.4.1</version>
         <configuration>
           <filesets>
             <fileset>
@@ -92,22 +93,11 @@
               <goal>jspc</goal>
             </goals>
             <configuration>
+              <webXmlFragment>${basedir}/target/web.xml.jspc-insert</webXmlFragment>
               <generatedClasses>${basedir}/target/jsp-classes</generatedClasses>
             </configuration>
           </execution>
         </executions>
-      </plugin>
-      <plugin>
-        <groupId>org.apache.maven.plugins</groupId>
-        <artifactId>maven-eclipse-plugin</artifactId>
-        <configuration>
-         <additionalBuildcommands>
-           <buildcommand>org.springframework.ide.eclipse.core.springbuilder</buildcommand>
-         </additionalBuildcommands>
-         <additionalProjectnatures>
-           <projectnature>org.springframework.ide.eclipse.core.springnature</projectnature>
-         </additionalProjectnatures>
-        </configuration>
       </plugin>
       <plugin>
         <groupId>com.sun.tools.jxc.maven2</groupId>
@@ -140,6 +130,8 @@
         <artifactId>maven-assembly-plugin</artifactId>
         <configuration>
           <descriptors>
+            <descriptor>src/assembly/meta-inf.xml</descriptor>
+            <descriptor>src/assembly/web-inf.xml</descriptor>
             <descriptor>src/assembly/xsds.xml</descriptor>
           </descriptors>
         </configuration>
@@ -178,19 +170,23 @@
     <dependency>
       <groupId>org.opennms.dependencies</groupId>
       <artifactId>spring-security-dependencies</artifactId>
+      <type>pom</type>
     </dependency>
     <!-- Rancid -->
     <dependency>
       <groupId>org.opennms.dependencies</groupId>
       <artifactId>rancid-dependencies</artifactId>
+      <type>pom</type>
     </dependency>
     <dependency>
       <groupId>org.opennms.dependencies</groupId>
       <artifactId>dnsjava-dependencies</artifactId>
+      <type>pom</type>
     </dependency>
     <dependency>
       <groupId>org.opennms.dependencies</groupId>
       <artifactId>castor-dependencies</artifactId>
+      <type>pom</type>
     </dependency>
     <dependency>
       <groupId>org.opennms</groupId>
@@ -210,6 +206,7 @@
     <dependency>
       <groupId>org.opennms.dependencies</groupId>
       <artifactId>hibernate-dependencies</artifactId>
+      <type>pom</type>
     </dependency>
     <dependency>
       <groupId>org.opennms</groupId>
@@ -240,13 +237,6 @@
     <dependency>
       <groupId>org.opennms</groupId>
       <artifactId>opennms-rws</artifactId>
-    </dependency>
-    <dependency>
-      <groupId>org.opennms.features</groupId>
-      <artifactId>org.opennms.features.remote-poller-onejar</artifactId>
-      <version>${project.version}</version>
-      <classifier>signed-jar-with-dependencies</classifier>
-      <scope>provided</scope>
     </dependency>
     <dependency>
       <groupId>org.opennms.features</groupId>
@@ -296,14 +286,17 @@
     <dependency>
       <groupId>org.opennms.dependencies</groupId>
       <artifactId>spring-dependencies</artifactId>
+      <type>pom</type>
     </dependency>
     <dependency>
       <groupId>org.opennms.dependencies</groupId>
       <artifactId>spring-web-dependencies</artifactId>
+      <type>pom</type>
     </dependency>
     <dependency>
       <groupId>org.opennms.dependencies</groupId>
       <artifactId>jersey-dependencies</artifactId>
+      <type>pom</type>
     </dependency>
     <!-- XXX the required test JARs should be moved into a separate project -->
     <dependency>
@@ -315,10 +308,12 @@
     <dependency>
       <groupId>org.opennms.dependencies</groupId>
       <artifactId>snmp-dependencies</artifactId>
+      <type>pom</type>
     </dependency>
     <dependency>
       <groupId>org.opennms.dependencies</groupId>
       <artifactId>javamail-dependencies</artifactId>
+      <type>pom</type>
     </dependency>
     <dependency>
       <groupId>org.opennms</groupId>
@@ -368,6 +363,7 @@
     <dependency>
       <groupId>org.opennms.dependencies</groupId>
       <artifactId>gwt-dependencies</artifactId>
+      <type>pom</type>
     </dependency>
     <dependency>
       <groupId>commons-dbcp</groupId>
@@ -380,10 +376,6 @@
     <dependency>
       <groupId>commons-lang</groupId>
       <artifactId>commons-lang</artifactId>
-    </dependency>
-    <dependency>
-      <groupId>org.jrobin</groupId>
-      <artifactId>jrobin</artifactId>
     </dependency>
     <dependency>
       <groupId>httpunit</groupId>
@@ -440,6 +432,7 @@
     <dependency>
       <groupId>org.opennms.dependencies</groupId>
       <artifactId>quartz-dependencies</artifactId>
+      <type>pom</type>
     </dependency>
     <dependency>
       <groupId>org.tuckey</groupId>

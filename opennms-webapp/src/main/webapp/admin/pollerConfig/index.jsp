@@ -199,7 +199,7 @@
   {
       document.poller.redirect.value="finishPollerConfig.jsp";
       document.poller.action="admin/pollerConfig/pollerConfig";
-      document.poller.submit();
+      return true;
   }
 
   function addPoller()
@@ -213,7 +213,7 @@
 <div id="contentleft">
   <h3>Default Pollers</h3>
 
-  <form method="post" name="poller" action="admin/pollerConfig/pollerConfig">
+  <form method="post" name="poller" action="admin/pollerConfig/pollerConfig" onsubmit="return modifyPoller();">
     <input type="hidden" name="redirect" value=""/>
     <!-- All the information that is in capsd is displayed on the form, if
          they are in poller they are checked -->
@@ -347,9 +347,9 @@
 
     <br/>
 
-    <input type="submit" value="Apply Changes" onClick="modifyPoller()" />
+    <input type="submit" value="Apply Changes"/>
     &nbsp;&nbsp;
-    <input type="button" value="Add Custom Poller" onClick="addPoller()" />
+    <input type="button" value="Add Custom Poller" onclick="addPoller()" />
   </form>
 </div>
 

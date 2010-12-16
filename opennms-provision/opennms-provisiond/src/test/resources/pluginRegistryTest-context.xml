@@ -3,11 +3,14 @@
 	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
 	xmlns:context="http://www.springframework.org/schema/context"
 	xmlns:util="http://www.springframework.org/schema/util"
+	xmlns:onmsgi="http://xmlns.opennms.org/xsd/spring/onms-osgi"	
 	xsi:schemaLocation="http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans.xsd
+        http://xmlns.opennms.org/xsd/spring/onms-osgi http://xmlns.opennms.org/xsd/spring/onms-osgi.xsd
 		http://www.springframework.org/schema/context http://www.springframework.org/schema/context/spring-context.xsd
 		http://www.springframework.org/schema/util http://www.springframework.org/schema/util/spring-util.xsd">
-
-	<bean class="org.opennms.netmgt.dao.support.DefaultExtensionManager" />
+		
+    <onmsgi:default-registry />
+    
     <bean class="org.opennms.netmgt.provision.persist.policies.NodeCategorySettingPolicy" />
     <bean class="org.opennms.netmgt.provision.service.NodePolicyImpl" />
     <bean class="org.opennms.netmgt.provision.service.SubNodePolicy" />

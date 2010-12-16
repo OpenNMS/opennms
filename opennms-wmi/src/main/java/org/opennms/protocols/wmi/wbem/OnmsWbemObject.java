@@ -31,16 +31,9 @@
 //
 package org.opennms.protocols.wmi.wbem;
 
-import org.jinterop.dcom.core.IJIComObject;
-import org.jinterop.dcom.core.JIVariant;
-import org.jinterop.dcom.core.JIArray;
-import org.jinterop.dcom.impls.automation.IJIDispatch;
-import org.jinterop.dcom.impls.JIObjectFactory;
-import org.jinterop.dcom.common.JIException;
-import org.opennms.protocols.wmi.WmiException;
-
 import java.util.List;
-import java.util.ArrayList;
+
+import org.opennms.protocols.wmi.WmiException;
 
 /**
  * <p>OnmsWbemObject interface.</p>
@@ -57,6 +50,7 @@ public interface OnmsWbemObject {
      * @param namedValueSet A list of parameter values.
      * @return The result of the method execution.
      */
+    @SuppressWarnings("unchecked")
     public OnmsWbemObject wmiExecMethod(String methodName, List params, List namedValueSet);
 
     /**

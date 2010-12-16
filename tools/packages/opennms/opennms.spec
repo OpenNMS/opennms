@@ -30,6 +30,7 @@
 
 %{!?extrainfo:%define extrainfo }
 %{!?extrainfo2:%define extrainfo2 }
+%{!?skip_compile:%define skip_compile 0}
 
 # keep RPM from making an empty debug package
 %define debug_package %{nil}
@@ -90,6 +91,7 @@ web UI:
 %{extrainfo}
 %{extrainfo2}
 
+
 %package core
 Summary:	The core OpenNMS backend.
 Group:		Applications/System
@@ -118,6 +120,7 @@ option, like so:
 %{extrainfo}
 %{extrainfo2}
 
+
 %if %{with_docs}
 %package docs
 Summary:	Documentation for the OpenNMS network management platform
@@ -129,6 +132,7 @@ for OpenNMS.
 
 %{extrainfo}
 %{extrainfo2}
+
 %endif
 
 %package remote-poller
@@ -142,6 +146,7 @@ The OpenNMS distributed monitor.  For details, see:
 
 %{extrainfo}
 %{extrainfo2}
+
 
 %package webapp-jetty
 Summary:	Embedded web interface for OpenNMS
@@ -157,6 +162,7 @@ embedded in the main OpenNMS core process.
 %{extrainfo}
 %{extrainfo2}
 
+
 %package webapp-standalone
 Summary:	Standalone web interface for OpenNMS
 Group:		Applications/System
@@ -170,6 +176,7 @@ use with Tomcat or another servlet container.
 
 %{extrainfo}
 %{extrainfo2}
+
 
 %package plugins
 Summary:	All Plugins for OpenNMS
@@ -187,6 +194,7 @@ This installs all optional plugins for OpenNMS.
 %{extrainfo}
 %{extrainfo2}
 
+
 %package plugin-provisioning-dns
 Summary:	DNS Provisioning Adapter for OpenNMS
 Group:		Applications/System
@@ -198,6 +206,7 @@ provisioned nodes.
 
 %{extrainfo}
 %{extrainfo2}
+
 
 %package plugin-provisioning-link
 Summary:	Link Provisioning Adapter for OpenNMS
@@ -212,6 +221,7 @@ status of the map links based on data link events.
 %{extrainfo}
 %{extrainfo2}
 
+
 %package plugin-provisioning-map
 Summary:	Map Provisioning Adapter for OpenNMS
 Group:		Applications/System
@@ -223,6 +233,7 @@ in OpenNMS.
 
 %{extrainfo}
 %{extrainfo2}
+
 
 %package plugin-provisioning-rancid
 Summary:	RANCID Provisioning Adapter for OpenNMS
@@ -236,6 +247,7 @@ RANCID's device database when OpenNMS provisions nodes.
 %{extrainfo}
 %{extrainfo2}
 
+
 %package plugin-provisioning-snmp-asset
 Summary:    SNMP Asset Provisioning Adapter for OpenNMS
 Group:      Applications/System
@@ -247,6 +259,7 @@ fields with data fetched from SNMP GET requests.
 
 %{extrainfo}
 %{extrainfo2}
+
 
 %prep
 
@@ -277,26 +290,27 @@ rm -rf $RPM_BUILD_ROOT
 DONT_GPRINTIFY="yes, please do not"
 export DONT_GPRINTIFY
 
-%if %{with_tests}
-EXTRA_TARGETS="$EXTRA_TARGETS test"
-%endif
-
-%if %{with_docs}
-EXTRA_TARGETS="$EXTRA_TARGETS docs"
-%endif
-
+export EXTRA_OPTIONS=""
 if [ -e "settings.xml" ]; then
-	SETTINGS_XML="-s `pwd`/settings.xml"
+	export EXTRA_OPTIONS="-s `pwd`/settings.xml"
 fi
 
-echo "=== RUNNING INSTALL ==="
+if [ "%{skip_compile}" = 1 ]; then
+	echo "=== SKIPPING COMPILE ==="
+	export EXTRA_OPTIONS="$EXTRA_OPTIONS -Denable.snapshots=true"
+else
+	echo "=== RUNNING COMPILE ==="
+	./compile.pl $EXTRA_OPTIONS -Dbuild=all -Dinstall.version="%{version}-%{release}" -Ddist.name="$RPM_BUILD_ROOT" \
+	    -Dopennms.home="%{instprefix}" install
+fi
 
-sh ./build.sh $SETTINGS_XML -Dbuild=all -Dinstall.version="%{version}-%{release}" -Ddist.name=$RPM_BUILD_ROOT \
-    -Dopennms.home=%{instprefix} install assembly:attached
+echo "=== BUILDING ASSEMBLIES ==="
+./assemble.pl $EXTRA_OPTIONS -Dbuild=all -Dinstall.version="%{version}-%{release}" -Ddist.name="$RPM_BUILD_ROOT" \
+	-Dopennms.home="%{instprefix}" -Dbuild.profile=full install
 
 pushd opennms-tools
-    sh ../build.sh $SETTINGS_XML -N -Dinstall.version="%{version}-%{release}" -Ddist.name=$RPM_BUILD_ROOT \
-        -Dopennms.home=%{instprefix} install
+	../compile.pl $EXTRA_OPTIONS -N -Dinstall.version="%{version}-%{release}" -Ddist.name="$RPM_BUILD_ROOT" \
+        -Dopennms.home="%{instprefix}" install
 popd
 
 echo "=== INSTALL COMPLETED ==="
@@ -357,6 +371,12 @@ pushd $RPM_BUILD_ROOT
 # core package files
 find $RPM_BUILD_ROOT%{instprefix}/etc ! -type d | \
     sed -e "s,^$RPM_BUILD_ROOT,%config(noreplace) ," | \
+    grep -v '%{_initrddir}/opennms-remote-poller' | \
+    grep -v '%{_sysconfdir}/sysconfig/opennms-remote-poller' | \
+    grep -v 'link-adapter-configuration.xml' | \
+    grep -v 'endpoint-configuration.xml' | \
+    grep -v 'mapsadapter-configuration.xml' | \
+    grep -v 'snmp-asset-adapter-configuration.xml' | \
     sort > %{_tmppath}/files.main
 find $RPM_BUILD_ROOT%{instprefix}/bin ! -type d | \
     sed -e "s|^$RPM_BUILD_ROOT|%attr(755,root,root) |" | \
@@ -365,6 +385,7 @@ find $RPM_BUILD_ROOT%{instprefix}/bin ! -type d | \
     sort >> %{_tmppath}/files.main
 find $RPM_BUILD_ROOT%{instprefix}/lib ! -type d | \
     sed -e "s|^$RPM_BUILD_ROOT|%attr(755,root,root) |" | \
+    grep -v 'provisioning-adapter' | \
     sort >> %{_tmppath}/files.main
 find $RPM_BUILD_ROOT%{instprefix}/etc -type d | \
     sed -e "s,^$RPM_BUILD_ROOT,%dir ," | \
@@ -391,22 +412,6 @@ find $RPM_BUILD_ROOT%{webappsdir} -type d | \
     sort >> %{_tmppath}/files.webapp
 
 popd
-
-# provisioning adapters
-
-cp integrations/opennms-dns-provisioning-adapter/target/*.jar        $RPM_BUILD_ROOT%{instprefix}/lib/
-cp integrations/opennms-link-provisioning-adapter/target/*.jar       $RPM_BUILD_ROOT%{instprefix}/lib/
-cp integrations/opennms-map-provisioning-adapter/target/*.jar        $RPM_BUILD_ROOT%{instprefix}/lib/
-cp integrations/opennms-rancid/target/*.jar                          $RPM_BUILD_ROOT%{instprefix}/lib/
-cp integrations/opennms-snmp-asset-provisioning-adapter/target/*.jar $RPM_BUILD_ROOT%{instprefix}/lib/
-rm -rf $RPM_BUILD_ROOT%{instprefix}/lib/*-sources.jar
-rm -rf $RPM_BUILD_ROOT%{instprefix}/lib/*-tests.jar
-rm -rf $RPM_BUILD_ROOT%{instprefix}/lib/*-xsds.jar
-
-# config files, this should be more automated  :P
-cp integrations/opennms-link-provisioning-adapter/src/main/resources/link-adapter-configuration.xml $RPM_BUILD_ROOT%{instprefix}/etc/
-cp integrations/opennms-link-provisioning-adapter/src/main/resources/endpoint-configuration.xml $RPM_BUILD_ROOT%{instprefix}/etc/
-cp integrations/opennms-map-provisioning-adapter/src/main/resources/mapsadapter-configuration.xml   $RPM_BUILD_ROOT%{instprefix}/etc/
 
 %clean
 rm -rf $RPM_BUILD_ROOT
@@ -467,6 +472,7 @@ rm -rf $RPM_BUILD_ROOT
 
 %files plugin-provisioning-map
 %attr(664,root,root) %{instprefix}/lib/opennms-map-provisioning-adapter*.jar
+%attr(664,root,root) %{instprefix}/etc/examples/mapsadapter-configuration.xml
 %attr(664,root,root) %{instprefix}/etc/mapsadapter-configuration.xml
 
 %files plugin-provisioning-rancid

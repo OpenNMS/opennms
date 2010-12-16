@@ -34,18 +34,21 @@
 
 package org.opennms.netmgt.model.discovery;
 
+import java.math.BigInteger;
 import java.net.InetAddress;
 import java.net.UnknownHostException;
 import java.util.Enumeration;
 import java.util.Iterator;
 import java.util.NoSuchElementException;
 
-import org.opennms.core.utils.IPSorter;
+import org.opennms.core.utils.ByteArrayComparator;
+import org.opennms.core.utils.InetAddressUtils;
+import org.opennms.core.utils.ThreadCategory;
 
 /**
  * <P>
  * The IPAddressRange object is used to encapsulate the starting and ending
- * points of a continguous IPv4 Address range. The class can then generate
+ * points of a contiguous IPv4/IPv6 Address range. The class can then generate
  * either an Enumeration or Iterator that can be used to cycle through the range
  * of addresses by the object's user.
  * </P>
@@ -53,24 +56,17 @@ import org.opennms.core.utils.IPSorter;
  * @author <A HREF="mailto:sowmya@opennms.org">Sowmya </A>
  * @author <A HREF="mailto:weave@oculan.com">Brian Weaver </A>
  * @author <A HREF="http://www.opennms.org/">OpenNMS </A>
- * @author <A HREF="mailto:sowmya@opennms.org">Sowmya </A>
- * @author <A HREF="mailto:weave@oculan.com">Brian Weaver </A>
- * @author <A HREF="http://www.opennms.org/">OpenNMS </A>
- * @author <A HREF="mailto:sowmya@opennms.org">Sowmya </A>
- * @author <A HREF="mailto:weave@oculan.com">Brian Weaver </A>
- * @author <A HREF="http://www.opennms.org/">OpenNMS </A>
- * @version $Id: $
  */
 public final class IPAddrRange implements Iterable<InetAddress> {
     /**
      * The starting address for the object.
      */
-    private long m_begin;
+    private final byte[] m_begin;
 
     /**
      * The ending address for the object.
      */
-    private long m_end;
+    private final byte[] m_end;
 
     /**
      * <P>
@@ -85,13 +81,13 @@ public final class IPAddrRange implements Iterable<InetAddress> {
         /**
          * The next address in the range.
          */
-        private long m_next;
+        private BigInteger m_next;
 
         /**
          * The last address in the range. The remaining address are in the range
          * of [m_next .. m_end].
          */
-        private final long m_end;
+        private final BigInteger m_end;
 
         /**
          * Converts an integer to an InetAdrress object and discards any
@@ -99,14 +95,14 @@ public final class IPAddrRange implements Iterable<InetAddress> {
          * reference is returned.
          * 
          * @param addr
-         *            The 32-bit IP address value, int network order.
+         *            The IP address value, in network order.
          * 
-         * @return An Internet Address Object.
+         * @return A {@link java.net.InetAddress} object.
          */
-        static InetAddress make(long addr) {
+        static InetAddress make(BigInteger addr) {
             InetAddress naddr = null;
             try {
-                naddr = InetAddress.getByName(IPAddrRange.IPv4String(addr));
+                naddr = InetAddressUtils.convertBigIntegerIntoInetAddress(addr);
             } catch (UnknownHostException uhE) {
                 naddr = null;
             }
@@ -129,12 +125,12 @@ public final class IPAddrRange implements Iterable<InetAddress> {
          *                address.
          * 
          */
-        IPAddressRangeGenerator(long start, long end) {
-            if (start > end)
+        IPAddressRangeGenerator(byte[] start, byte[] end) {
+            if (new ByteArrayComparator().compare(start, end) > 0)
                 throw new IllegalArgumentException("start must be less than or equal to end");
 
-            m_next = start;
-            m_end = end;
+            m_next = new BigInteger(1, start);
+            m_end = new BigInteger(1, end);
         }
 
         /**
@@ -143,7 +139,7 @@ public final class IPAddrRange implements Iterable<InetAddress> {
          * </P>
          */
         public boolean hasMoreElements() {
-            return (m_next <= m_end);
+            return (m_next.compareTo(m_end) <= 0);
         }
 
         /**
@@ -156,10 +152,12 @@ public final class IPAddrRange implements Iterable<InetAddress> {
          *                Thrown if the collection is exhausted.
          */
         public InetAddress nextElement() {
-            if (m_next > m_end)
+            if (!hasMoreElements())
                 throw new NoSuchElementException("End of Range");
 
-            return make(m_next++);
+            InetAddress element = make(m_next);
+            m_next = m_next.add(new BigInteger("1"));
+            return element;
         }
 
         /**
@@ -212,8 +210,7 @@ public final class IPAddrRange implements Iterable<InetAddress> {
      * <P>
      * It is important to note that if the address for toIP is greater than
      * fromIP, the values will be swapped so that the iteration is always from
-     * the lowest address to the highest address as defined by a 32-bit unsigned
-     * quantity.
+     * the lowest address to the highest address.
      * </P>
      * 
      * @param fromIP
@@ -229,14 +226,7 @@ public final class IPAddrRange implements Iterable<InetAddress> {
      * 
      */
     IPAddrRange(String fromIP, String toIP) throws java.net.UnknownHostException {
-        m_begin = IPSorter.convertToLong(InetAddress.getByName(fromIP).getAddress());
-        m_end = IPSorter.convertToLong(InetAddress.getByName(toIP).getAddress());
-
-        if (m_begin > m_end) {
-            long a = m_end;
-            m_end = m_begin;
-            m_begin = a;
-        }
+        this(InetAddress.getByName(fromIP), InetAddress.getByName(toIP));
     }
 
     /**
@@ -250,8 +240,7 @@ public final class IPAddrRange implements Iterable<InetAddress> {
      * <P>
      * It is important to note that if the address for start is greater than
      * end, the values will be swapped so that the iteration is always from the
-     * lowest address to the highest address as defined by a 32-bit unsigned
-     * quantity.
+     * lowest address to the highest address.
      * </P>
      * 
      * @param start
@@ -261,61 +250,17 @@ public final class IPAddrRange implements Iterable<InetAddress> {
      * 
      */
     IPAddrRange(InetAddress start, InetAddress end) {
-        m_begin = IPSorter.convertToLong(start.getAddress());
-        m_end = IPSorter.convertToLong(end.getAddress());
-    }
+        byte[] from = start.getAddress();
+        byte[] to = end.getAddress();
 
-    /**
-     * Returns the begin address of the IP address range as a String value.
-     * 
-     * @return Begin IP address as String.
-     */
-    String getBeginAddrAsString() {
-        return IPv4String(m_begin);
-    }
-
-    /**
-     * Returns the end address of the IP address range as a String value.
-     * 
-     * @return End IP address as String.
-     */
-    String getEndAddrAsString() {
-        return IPv4String(m_end);
-    }
-
-    /**
-     * Returns the begin address of the IP address range as a long value.
-     * 
-     * @return Begin IP address as a long
-     */
-    long getBeginAddrAsLong() {
-        return m_begin;
-    }
-
-    /**
-     * Returns the end address of the IP address range as a long value.
-     * 
-     * @return End IP address as a long
-     */
-    long getEndAddrAsLong() {
-        return m_end;
-    }
-
-    /**
-     * This method may be used to determine if the specified IP address is
-     * contained within the IP address range.
-     * 
-     * @param ipAddr
-     *            IP address (long) to compare
-     * 
-     * @return 'true' if the specified IP address falls within the IP address
-     *         range. 'false' otherwise.
-     */
-    boolean contains(long ipAddr) {
-        if (ipAddr >= m_begin && ipAddr <= m_end)
-            return true;
-        else
-            return false;
+        if (new ByteArrayComparator().compare(from, to) > 0) {
+            ThreadCategory.getInstance(this.getClass()).warn("The beginning of the address range is greater than the end of the address range (" +  start.getHostAddress() + " - " + end.getHostAddress() + "), swapping values to create a valid IP address range");
+            m_end = from;
+            m_begin = to;
+        } else {
+            m_begin = from;
+            m_end = to;
+        }
     }
 
     /**
@@ -329,7 +274,7 @@ public final class IPAddrRange implements Iterable<InetAddress> {
      *         range. 'false' otherwise.
      */
     boolean contains(InetAddress ipAddr) {
-        return contains(IPSorter.convertToLong(ipAddr.getAddress()));
+        return InetAddressUtils.isInetAddressInRange(ipAddr.getAddress(), m_begin, m_end);
     }
 
     /**
@@ -343,7 +288,7 @@ public final class IPAddrRange implements Iterable<InetAddress> {
      *         range. 'false' otherwise.
      */
     boolean contains(String ipAddr) throws java.net.UnknownHostException {
-        return contains(convertToLong(InetAddress.getByName(ipAddr).getAddress()));
+        return contains(InetAddress.getByName(ipAddr));
     }
 
     /**
@@ -381,99 +326,5 @@ public final class IPAddrRange implements Iterable<InetAddress> {
      */
     Enumeration<InetAddress> elements() {
         return new IPAddressRangeGenerator(m_begin, m_end);
-    }
-
-    /**
-     * <P>
-     * Converts a 64-bit unsigned quantity to a IPv4 dotted decimal string
-     * address.
-     * </P>
-     * 
-     * @param address
-     *            The 64-bit quantity to convert.
-     * 
-     * @return The dotted decimal IPv4 address string.
-     * 
-     */
-    static String IPv4String(long address) {
-        StringBuffer buf = new StringBuffer();
-        buf.append((int) ((address >>> 24) & 0xff)).append('.');
-        buf.append((int) ((address >>> 16) & 0xff)).append('.');
-        buf.append((int) ((address >>> 8) & 0xff)).append('.');
-        buf.append((int) (address & 0xff));
-
-        return buf.toString();
-    }
-
-    /**
-     * <P>
-     * Converts a 32-bit unsigned quantity to a IPv4 dotted decimal string
-     * address.
-     * </P>
-     * 
-     * @param address
-     *            The 32-bit quantity to convert.
-     * 
-     * @return The dotted decimal IPv4 address string.
-     * 
-     */
-    static String IPv4String(int address) {
-        StringBuffer buf = new StringBuffer();
-        buf.append((int) ((address >>> 24) & 0xff)).append('.');
-        buf.append((int) ((address >>> 16) & 0xff)).append('.');
-        buf.append((int) ((address >>> 8) & 0xff)).append('.');
-        buf.append((int) (address & 0xff));
-
-        return buf.toString();
-    }
-
-    /**
-     * <P>
-     * Converts an 8-bit byte to a 64-bit long integer. If the quantity is a
-     * sign extended negative number then the value of 256 is added to wrap the
-     * conversion into the range of [0..255].
-     * </P>
-     * 
-     * @param b
-     *            The byte to convert
-     * 
-     * @return The converted 64-bit unsigned value.
-     * 
-     * @deprecated Use org.opennms.netmgt.utils.IPSorter.byteToLong() instead.
-     */
-    static long byteToLong(byte b) {
-        long r = (long) b;
-        if (r < 0)
-            r += 256;
-        return r;
-    }
-
-    /**
-     * <P>
-     * The convertToLong method takes an array of bytes and shifts them into a
-     * long value. The bytes at the front of the array are shifted into the MSB
-     * of the long as each new byte is added to the LSB of the long. if the
-     * array is of sufficent size the first bytes of the array may be shifted
-     * out of the returned long.
-     * </P>
-     *
-     * @param addr
-     *            The array to convert to a long.
-     * @return The created long value.
-     * @exception IllegalArgumentException
-     *                Thrown if the addr parameter is null.
-     * @deprecated Use org.opennms.netmgt.utils.IPSorter.convertToLong()
-     *             instead.
-     */
-    public static long convertToLong(byte[] addr) {
-        if (addr == null)
-            throw new IllegalArgumentException("The passed array must not be null");
-
-        long address = 0;
-        for (int i = 0; i < addr.length; i++) {
-            address <<= 8;
-            address |= byteToLong(addr[i]);
-        }
-        return address;
     }
 }

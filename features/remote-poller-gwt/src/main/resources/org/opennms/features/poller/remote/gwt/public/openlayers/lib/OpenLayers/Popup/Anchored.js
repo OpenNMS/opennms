@@ -1,5 +1,6 @@
-/* Copyright (c) 2006-2008 MetaCarta, Inc., published under the Clear BSD
- * license.  See http://svn.openlayers.org/trunk/openlayers/license.txt for the
+/* Copyright (c) 2006-2010 by OpenLayers Contributors (see authors.txt for 
+ * full list of contributors). Published under the Clear BSD license.  
+ * See http://svn.openlayers.org/trunk/openlayers/license.txt for the
  * full text of the license. */
 
 
@@ -185,10 +186,10 @@ OpenLayers.Popup.Anchored =
         var size = this.size || this.contentSize;
 
         var top = (this.relativePosition.charAt(0) == 't');
-        newPx.y += (top) ? -size.h : this.anchor.size.h;
+        newPx.y += (top) ? -(size.h + this.anchor.size.h) : this.anchor.size.h;
         
         var left = (this.relativePosition.charAt(1) == 'l');
-        newPx.x += (left) ? -size.w : this.anchor.size.w;
+        newPx.x += (left) ? -(size.w + this.anchor.size.w) : this.anchor.size.w;
 
         return newPx;   
     },

@@ -38,15 +38,16 @@ package org.opennms.web.svclayer.support;
 
 import java.util.List;
 
+import org.opennms.core.utils.ThreadCategory;
 import org.opennms.netmgt.dao.ResourceDao;
 import org.opennms.netmgt.dao.StatisticsReportDao;
+import org.opennms.netmgt.model.OnmsResource;
 import org.opennms.netmgt.model.StatisticsReport;
 import org.opennms.netmgt.model.StatisticsReportData;
 import org.opennms.web.command.StatisticsReportCommand;
 import org.opennms.web.svclayer.StatisticsReportService;
 import org.opennms.web.svclayer.support.StatisticsReportModel.Datum;
 import org.springframework.beans.factory.InitializingBean;
-import org.springframework.orm.ObjectRetrievalFailureException;
 import org.springframework.util.Assert;
 import org.springframework.validation.BindException;
 
@@ -90,10 +91,11 @@ public class DefaultStatisticsReportService implements StatisticsReportService, 
         for (StatisticsReportData datum : report.getData()) {
             Datum d = new Datum();
             d.setValue(datum.getValue());
-            try {
-                d.setResource(m_resourceDao.loadResourceById(datum.getResourceId()));
-            } catch (ObjectRetrievalFailureException e) {
-                d.setResourceThrowable(e);
+            OnmsResource resource = m_resourceDao.getResourceById(datum.getResourceId());
+            if (resource == null) {
+                ThreadCategory.getInstance(getClass()).warn("Could not find resource for statistics report: " + datum.getResourceId());
+            } else {
+                d.setResource(resource);
             }
             model.addData(d);
         }

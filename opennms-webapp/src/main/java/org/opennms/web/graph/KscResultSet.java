@@ -43,11 +43,11 @@ import java.util.Date;
 import org.opennms.netmgt.model.PrefabGraph;
 import org.opennms.netmgt.model.OnmsResource;
 public class KscResultSet {
-    private String m_title;
-    private Date m_start;
-    private Date m_end;
-    private OnmsResource m_resource;
-    private PrefabGraph m_prefabGraph;
+    private final String m_title;
+    private final Date m_start;
+    private final Date m_end;
+    private final OnmsResource m_resource;
+    private final PrefabGraph m_prefabGraph;
     
     /**
      * <p>Constructor for KscResultSet.</p>

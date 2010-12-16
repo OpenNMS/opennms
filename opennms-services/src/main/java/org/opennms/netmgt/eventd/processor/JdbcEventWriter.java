@@ -59,6 +59,7 @@ import org.opennms.netmgt.eventd.EventdConstants;
 import org.opennms.netmgt.eventd.db.AutoAction;
 import org.opennms.netmgt.eventd.db.OperatorAction;
 import org.opennms.netmgt.eventd.db.SnmpInfo;
+import org.opennms.netmgt.model.OnmsSeverity;
 import org.opennms.netmgt.model.events.Constants;
 import org.opennms.netmgt.model.events.Parameter;
 import org.opennms.netmgt.xml.event.Event;
@@ -284,7 +285,7 @@ public final class JdbcEventWriter extends AbstractJdbcPersister implements Even
             }
 
             // eventSeverity
-            set(insStmt, 18, Constants.getSeverity(event.getSeverity()));
+            set(insStmt, 18, OnmsSeverity.get(event.getSeverity()).getId());
 
             // eventPathOutage
             set(insStmt, 19, (event.getPathoutage() != null) ? Constants.format(event.getPathoutage(), EVENT_PATHOUTAGE_FIELD_SIZE) : null);

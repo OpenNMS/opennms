@@ -64,6 +64,7 @@
 </jsp:include>
 
 <c:set var="totalRecords" value="0"/>
+<c:set var="showFootnote1" value="false"/>
 <c:forEach var="resourceType" items="${model.resourceTypes}">
    <c:set var="totalRecords" value="${fn:length(resourceType.value) + totalRecords}"/>
 </c:forEach>
@@ -73,6 +74,9 @@
 	<c:set var="first" value="true"/>
 	<c:forEach var="resourceType" items="${model.resourceTypes}">
        <c:forEach var="resource" items="${resourceType.value}" >
+            <c:if test="${fn:contains(resource.label,'(*)')}">
+               <c:set var="showFootnote1" value="true"/>
+            </c:if>
 	   		<c:choose>
 	   			<c:when test="${first == true}">
 	   			<c:set var="first" value="false"/>
@@ -139,11 +143,12 @@
           return false;
       }
   
-      function submitForm(selectNode, formNode, itemName) {
+      function submitForm(selectNode, itemName) {
           if (isSomethingSelected(selectNode)) {
-              formNode.submit();
+              return true;
           } else {
-              alert("Please select at least one " + itemName);
+              alert("Please select at least one " + itemName + ".");
+              return false;
           }
       }
       
@@ -207,7 +212,7 @@
         Please choose one or more resources that you wish to query.
       </p>
 
-      <form method="get" name="report" action="${model.endUrl}">
+      <form method="get" name="report" action="${model.endUrl}" onsubmit="return submitForm(document.report.resourceId, 'resource');">
         <%=Util.makeHiddenTags(request, new String[] { "parentResourceId", "parentResourceType", "parentResource", "endUrl" })%>
   
         <c:set var="num" value="0"/>
@@ -237,7 +242,7 @@
       
         <br/>
         <br/>
-        <input type="submit" value="Submit" onclick="submitForm(document.report.resourceId, document.report, 'resource')" />
+        <input type="submit" value="Submit" />
         <input type="button" value="Select All" onclick="selectAll('resourceId', true)" />
         <input type="button" value="Unselect All" onclick="selectAll('resourceId', false)" />
       </form>
@@ -248,5 +253,8 @@
       
   </c:otherwise>
   </c:choose>
-  
+  <c:if test="${showFootnote1 == true}">
+      <jsp:include page="/includes/footnote1.jsp" flush="false" />
+ qq </c:if>
+
 <jsp:include page="/includes/footer.jsp" flush="false" />

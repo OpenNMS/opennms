@@ -1,0 +1,80 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<beans xmlns="http://www.springframework.org/schema/beans"
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xmlns:onmsgi="http://xmlns.opennms.org/xsd/spring/onms-osgi"
+	xsi:schemaLocation="
+        http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans-3.0.xsd
+		http://xmlns.opennms.org/xsd/spring/onms-osgi http://xmlns.opennms.org/xsd/spring/onms-osgi.xsd
+        ">
+
+	<!-- DAOs -->
+	<bean id="eventCountDao" class="org.opennms.systemreport.dao.EventCountDaoHibernate">
+		<property name="sessionFactory" ref="sessionFactory" />
+	</bean>
+
+    <!-- SYSTEM REPORT PLUGINS -->
+
+	<!-- basic Java information -->
+	<bean name="javaReportPlugin" class="org.opennms.systemreport.system.JavaReportPlugin" />
+	<onmsgi:service id="javaReportPluginService" ref="javaReportPlugin" interface="org.opennms.systemreport.SystemReportPlugin" />
+
+	<!-- operating system information -->
+	<bean name="osReportPlugin" class="org.opennms.systemreport.system.OSReportPlugin" />
+	<onmsgi:service id="osReportPluginService" ref="osReportPlugin" interface="org.opennms.systemreport.SystemReportPlugin" />
+
+	<!-- OpenNMS information -->
+	<bean name="opennmsReportPlugin" class="org.opennms.systemreport.opennms.OpenNMSReportPlugin" />
+	<onmsgi:service id="opennmsReportPluginService" ref="opennmsReportPlugin" interface="org.opennms.systemreport.SystemReportPlugin" />
+
+	<!-- Thread Dump -->
+	<bean name="threadReportPlugin" class="org.opennms.systemreport.system.ThreadReportPlugin" />
+	<onmsgi:service id="threadReportPluginService" ref="threadReportPlugin" interface="org.opennms.systemreport.SystemReportPlugin" />
+
+	<!-- lsof -->
+	<bean name="lsofReportPlugin" class="org.opennms.systemreport.system.LsofReportPlugin" />
+	<onmsgi:service id="lsofReportPluginService" ref="lsofReportPlugin" interface="org.opennms.systemreport.SystemReportPlugin" />
+
+	<!-- Top -->
+	<bean name="topReportPlugin" class="org.opennms.systemreport.system.TopReportPlugin" />
+	<onmsgi:service id="topReportPluginService" ref="topReportPlugin" interface="org.opennms.systemreport.SystemReportPlugin" />
+
+	<!-- Configuration -->
+	<bean name="configReportPlugin" class="org.opennms.systemreport.opennms.ConfigurationReportPlugin" />
+	<onmsgi:service id="configReportPluginService" ref="configReportPlugin" interface="org.opennms.systemreport.SystemReportPlugin" />
+
+	<!-- Logs -->
+	<bean name="logReportPlugin" class="org.opennms.systemreport.opennms.LogReportPlugin" />
+	<onmsgi:service id="logReportPluginService" ref="logReportPlugin" interface="org.opennms.systemreport.SystemReportPlugin" />
+
+	<!-- Top Events -->
+	<bean name="topEventReportPlugin" class="org.opennms.systemreport.opennms.TopEventReportPlugin" />
+	<onmsgi:service id="topEventReportPluginService" ref="topEventReportPlugin" interface="org.opennms.systemreport.SystemReportPlugin" />
+
+	<onmsgi:list id="systemReportPluginList" interface="org.opennms.systemreport.SystemReportPlugin" />
+
+    <!-- SYSTEM REPORT FORMATTERS -->
+    
+    <!-- Plain Text -->
+    <bean name="textReportFormatter" class="org.opennms.systemreport.formatters.TextSystemReportFormatter" />
+    <onmsgi:service id="textReportFormatterService" ref="textReportFormatter" interface="org.opennms.systemreport.SystemReportFormatter" />
+    
+    <!-- Full Text -->
+    <bean name="fullTextReportFormatter" class="org.opennms.systemreport.formatters.FullTextSystemReportFormatter" />
+    <onmsgi:service id="fullTextReportFormatterService" ref="fullTextReportFormatter" interface="org.opennms.systemreport.SystemReportFormatter" />
+    
+    <!-- XML -->
+    <bean name="xmlReportFormatter" class="org.opennms.systemreport.formatters.XmlSystemReportFormatter" />
+    <onmsgi:service id="xmlReportFormatterService" ref="xmlReportFormatter" interface="org.opennms.systemreport.SystemReportFormatter" />
+    
+    <!-- ZIP -->
+    <bean name="zipReportFormatter" class="org.opennms.systemreport.formatters.ZipSystemReportFormatter" />
+    <onmsgi:service id="zipReportFormatterService" ref="zipReportFormatter" interface="org.opennms.systemreport.SystemReportFormatter" />
+    
+    <!-- FTP -->
+    <bean name="ftpReportFormatter" class="org.opennms.systemreport.formatters.FtpSystemReportFormatter" />
+    <onmsgi:service id="ftpReportFormatterService" ref="ftpReportFormatter" interface="org.opennms.systemreport.SystemReportFormatter" />
+    
+	<onmsgi:list id="systemReportFormatterList" interface="org.opennms.systemreport.SystemReportFormatter" />
+
+
+</beans>

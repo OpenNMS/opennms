@@ -72,10 +72,6 @@ import org.springframework.util.Assert;
  *
  * @author <a href="mailto:david@opennms.org">David Hustace</a>
  * @author <a href="mailto:brozow@opennms.org">Mathew Brozowski</a>
- * @author <a href="mailto:david@opennms.org">David Hustace</a>
- * @author <a href="mailto:brozow@opennms.org">Mathew Brozowski</a>
- * @version $Id: $
- * @since 1.8.1
  */
 public class DefaultGraphResultsService implements GraphResultsService, InitializingBean {
 
@@ -132,8 +128,12 @@ public class DefaultGraphResultsService implements GraphResultsService, Initiali
             OnmsResource resource = null;
             if (!resourcesMap.containsKey(parent)) {
                 List<OnmsResource> resourceList = m_resourceDao.getResourceListById(resourceId);
-                resourcesMap.put(parent, resourceList);
-                log().debug("findResults: add resourceList to map for " + parent);
+                if (resourceList == null) {
+                    log().warn("findResults: zero child resources found for " + parent);
+                } else {
+                    resourcesMap.put(parent, resourceList);
+                    log().debug("findResults: add resourceList to map for " + parent);
+                }
             }
             for (OnmsResource r : resourcesMap.get(parent)) {
                 if (childType.equals(r.getResourceType().getName())
@@ -143,7 +143,12 @@ public class DefaultGraphResultsService implements GraphResultsService, Initiali
                     break;
                 }
             }
-            graphResults.addGraphResultSet(createGraphResultSet(resourceId, resource, reports, graphResults));
+            try {
+                graphResults.addGraphResultSet(createGraphResultSet(resourceId, resource, reports, graphResults));
+            } catch (IllegalArgumentException e) {
+                log().warn(e.getMessage(), e);
+                continue;
+            }
         }
         
         graphResults.setGraphTopOffsetWithText(m_rrdDao.getGraphTopOffsetWithText());
@@ -156,8 +161,8 @@ public class DefaultGraphResultsService implements GraphResultsService, Initiali
     /**
      * <p>parseResourceId</p>
      *
-     * @param resourceId a {@link java.lang.String} object.
-     * @return an array of {@link java.lang.String} objects.
+     * @param resourceId a {@link java.lang.String} resource ID
+     * @return an array of {@link java.lang.String} objects or null if the string is unparsable.
      */
     public static String[] parseResourceId(String resourceId) {
         try {
@@ -166,7 +171,7 @@ public class DefaultGraphResultsService implements GraphResultsService, Initiali
             String childType = child.substring(0, child.indexOf("["));
             String childName = child.substring(child.indexOf("[") + 1, child.indexOf("]"));
             return new String[] { parent, childType, childName };
-        } catch (StringIndexOutOfBoundsException e) {
+        } catch (Throwable e) {
             log().warn("Illegally formatted resourceId found in DefaultGraphResultsService: " + resourceId, e);
             return null;
         }
@@ -181,11 +186,14 @@ public class DefaultGraphResultsService implements GraphResultsService, Initiali
      * @param graphResults a {@link org.opennms.web.graph.GraphResults} object.
      * @return a {@link org.opennms.web.graph.GraphResults.GraphResultSet} object.
      */
-    public GraphResultSet createGraphResultSet(String resourceId, OnmsResource resource, String[] reports, GraphResults graphResults) {
+    private GraphResultSet createGraphResultSet(String resourceId, OnmsResource resource, String[] reports, GraphResults graphResults) throws IllegalArgumentException {
         if (resource == null) {
-            resource = m_resourceDao.loadResourceById(resourceId);
+            resource = m_resourceDao.getResourceById(resourceId);
+            if (resource == null) {
+                throw new IllegalArgumentException("Could not find resource \"" + resourceId + "\"");
+            }
         }
-         GraphResultSet rs = graphResults.new GraphResultSet();
+        GraphResultSet rs = graphResults.new GraphResultSet();
         rs.setResource(resource);
         
         if (reports.length == 1 && "all".equals(reports[0])) {

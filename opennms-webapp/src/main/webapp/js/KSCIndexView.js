@@ -46,7 +46,7 @@ function domainGridInitView(elementId, domainData, urlTemplate){
 			var url = urlTpl.apply(domainGrid.getSelectionModel().getSelected().data);
 			window.location = url;
 		}else{
-			alert('Please Select a Node to Continue');
+			alert('Please select a node to continue.');
 		}
 	}
 }
@@ -97,7 +97,7 @@ function nodeSNMPReportsInitView(elementId, snmpNodeData, urlTemplate){
 			var url = urlTpl.apply(snmpNodeGrid.getSelectionModel().getSelected().data);
 			window.location = url;
 		}else{
-			alert('Please Select a Node to Continue');
+			alert('Please select the node that you would like to report on.');
 		}
 	}
 }
@@ -180,7 +180,7 @@ function customizedReportsInitView(elementId, customData, urlTemplate){
 			if(reportAction.action == "Create"){
 				window.location = url;
 			}else{
-				alert('No reports selected.  Please click on a report title to make a report selection.');	
+				alert('No reports are selected.  Please click on a report title to make a report selection.');	
 			}
 		}
 	};

@@ -35,10 +35,6 @@ public class MyProvider implements Hello, Goodbye {
         return m_goodbyeSaid;
     }
     
-    private void printf(String fmt, Object... args) {
-        System.err.println(String.format("XXXXXXXXXXXXXXXXXX %s : %s --- %s", Thread.currentThread(), this, String.format(fmt, args)));
-    }
-
     @Override
     public String toString() {
         return m_name;

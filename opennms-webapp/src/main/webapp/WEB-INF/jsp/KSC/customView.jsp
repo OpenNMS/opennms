@@ -42,7 +42,9 @@
 <%@page language="java"
     contentType="text/html"
     session="true"
-%>
+    import="
+    org.opennms.web.controller.ksc.FormProcViewController
+"%>
 
 <%@ taglib uri="http://java.sun.com/jsp/jstl/core" prefix="c" %>
 <%@ taglib uri="http://java.sun.com/jsp/jstl/functions" prefix="fn" %>
@@ -92,17 +94,18 @@
     <h3>Custom View: ${title}</h3>
     <div class="boxWrapper">
     <form name="view_form" method="get" action="KSC/formProcView.htm">
-      <input type="hidden" name="type" value="${reportType}" >
-      <input type="hidden" name="action" value="none">
+      <input type="hidden" name="<%=FormProcViewController.Parameters.type%>" value="${reportType}" >
+      <input type="hidden" name="<%=FormProcViewController.Parameters.action%>" value="none">
       <c:if test="${!empty report}">
-        <input type="hidden" name="report" value="${report}">
+        <input type="hidden" name="<%=FormProcViewController.Parameters.report%>" value="${report}">
       </c:if>
       <c:if test="${!empty domain}">
-        <input type="hidden" name="domain" value="${domain}">
+        <input type="hidden" name="<%=FormProcViewController.Parameters.domain%>" value="${domain}">
       </c:if>
 
             <table class="normal" align="center">
               <c:set var="graphNum" value="0"/>
+              <c:set var="showFootnote1" value="false"/>
 
               <%-- Loop over each row in the table --%>
               <c:forEach begin="0" end="${(fn:length(resultSets) / graphsPerLine)}">
@@ -136,7 +139,15 @@
                                 <br />
                               </c:if>
                           
-                              ${resultSet.resource.resourceType.label}:
+                              <c:choose>
+                                <c:when test="${fn:contains(resultSet.resource.label,'(*)')}">
+                                  <c:set var="showFootnote1" value="true"/>
+                                  Resource:
+                                </c:when>
+                                <c:otherwise>
+                                  ${resultSet.resource.resourceType.label}:
+                                </c:otherwise>
+                              </c:choose>
                               <c:choose>
                                 <c:when test="${(!empty resultSet.resource.link) && loggedIn}">
                                   <a href="<c:url value='${resultSet.resource.link}'/>">${resultSet.resource.label}</a>
@@ -200,7 +211,7 @@
                       <c:forEach var="option" items="${timeSpans}">
                         <c:choose>
                           <c:when test="${timeSpan == option.key}">
-                            <c:set var="selected" value="selected"/>
+                            <c:set var="selected">selected="selected"</c:set>
                           </c:when>
                           
                           <c:otherwise>
@@ -227,7 +238,7 @@
                       <c:forEach var="option" items="${graphTypes}">
                         <c:choose>
                           <c:when test="${graphType == option.key}">
-                            <c:set var="selected" value="selected"/>
+                            <c:set var="selected">selected="selected"</c:set>
                           </c:when>
                           
                           <c:otherwise>
@@ -260,5 +271,9 @@
 
   </c:otherwise>
 </c:choose>
+
+<c:if test="${showFootnote1 == true}">
+  <jsp:include page="/includes/footnote1.jsp" flush="false" />
+</c:if>
 
 <jsp:include page="/includes/footer.jsp" flush="false"/>

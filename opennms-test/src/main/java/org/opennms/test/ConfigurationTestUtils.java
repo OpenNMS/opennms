@@ -51,6 +51,7 @@ import java.io.ByteArrayInputStream;
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.FileNotFoundException;
+import java.io.FileWriter;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
@@ -108,6 +109,20 @@ public class ConfigurationTestUtils extends Assert {
         }
     }
     
+    public static Resource getSpringResourceForResourceWithReplacements(final Object obj, final String resource, final String[] ... replacements) throws IOException {
+        try {
+        	String config = getConfigForResourceWithReplacements(obj, resource, replacements);
+        	File tmp = File.createTempFile("testConfigFile", ".xml");
+        	tmp.deleteOnExit();
+        	FileWriter fw = new FileWriter(tmp);
+        	fw.write(config);
+        	fw.close();
+            return new FileSystemResource(tmp);
+        } catch (final Throwable t) {
+            return new InputStreamResource(getInputStreamForResourceWithReplacements(obj, resource, replacements));
+        }
+    }
+    
     /**
      * <p>getFileForResource</p>
      *
@@ -134,7 +149,6 @@ public class ConfigurationTestUtils extends Assert {
      * @param resource a {@link java.lang.String} object.
      * @return a {@link java.io.Reader} object.
      */
-    @Deprecated
     public static Reader getReaderForResource(Object obj, String resource) {
         Reader retval = null;
         try {
@@ -231,7 +245,6 @@ public class ConfigurationTestUtils extends Assert {
      * @return a {@link java.io.Reader} object.
      * @throws java.io.FileNotFoundException if any.
      */
-    @Deprecated
     public static Reader getReaderForConfigFile(String configFile) throws FileNotFoundException {
         Reader retval = null;
         try {
@@ -337,7 +350,7 @@ public class ConfigurationTestUtils extends Assert {
     }
 
     private static File findTopProjectDirectory(File currentDirectory) {
-        File buildFile = new File(currentDirectory, "build.sh");
+        File buildFile = new File(currentDirectory, "compile.pl");
         if (buildFile.exists()) {
             File pomFile = new File(currentDirectory, POM_FILE);
             assertTrue("pom.xml in " + DAEMON_DIRECTORY + " directory should exist: " + pomFile.getAbsolutePath(), pomFile.exists());

@@ -2,16 +2,17 @@
   <parent>
     <artifactId>opennms-rrd-rrdtool</artifactId>
     <groupId>org.opennms</groupId>
-    <version>1.8.4-SNAPSHOT</version>
+    <version>1.8.8-SNAPSHOT</version>
   </parent>
   <modelVersion>4.0.0</modelVersion>
   <artifactId>opennms-rrdtool-api</artifactId>
   <name>OpenNMS RRDTool RRD Interface</name>
   <dependencies>
     <dependency>
-      <groupId>org.opennms</groupId>
-      <artifactId>jrrd-api</artifactId>
+      <groupId>org.opennms.dependencies</groupId>
+      <artifactId>jrrd-dependencies</artifactId>
       <scope>provided</scope>
+      <type>pom</type>
     </dependency>
     <dependency>
       <groupId>org.opennms</groupId>
@@ -21,6 +22,7 @@
     <dependency>
       <groupId>org.opennms.dependencies</groupId>
       <artifactId>spring-dependencies</artifactId>
+      <type>pom</type>
     </dependency>
     <dependency>
       <groupId>org.opennms</groupId>
@@ -28,13 +30,4 @@
       <scope>test</scope>
     </dependency>
   </dependencies>
-  <repositories>
-    <repository>
-      <snapshots><enabled>false</enabled></snapshots>
-      <releases><enabled>true</enabled></releases>
-      <id>opennms-repo</id>
-      <name>OpenNMS Repository</name>
-      <url>http://maven.opennms.org/content/groups/opennms.org-release</url>
-    </repository>
-  </repositories>
 </project>

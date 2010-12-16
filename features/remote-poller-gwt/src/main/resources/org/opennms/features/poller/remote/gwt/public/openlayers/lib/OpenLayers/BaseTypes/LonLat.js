@@ -1,5 +1,6 @@
-/* Copyright (c) 2006-2008 MetaCarta, Inc., published under the Clear BSD
- * license.  See http://svn.openlayers.org/trunk/openlayers/license.txt for the
+/* Copyright (c) 2006-2010 by OpenLayers Contributors (see authors.txt for 
+ * full list of contributors). Published under the Clear BSD license.  
+ * See http://svn.openlayers.org/trunk/openlayers/license.txt for the
  * full text of the license. */
 
 /**
@@ -92,7 +93,8 @@ OpenLayers.LonLat = OpenLayers.Class({
             OpenLayers.Console.error(msg);
             return null;
         }
-        return new OpenLayers.LonLat(this.lon + lon, this.lat + lat);
+        return new OpenLayers.LonLat(this.lon + OpenLayers.Util.toFloat(lon), 
+                                     this.lat + OpenLayers.Util.toFloat(lat));
     },
 
     /** 
@@ -184,6 +186,5 @@ OpenLayers.LonLat = OpenLayers.Class({
  */
 OpenLayers.LonLat.fromString = function(str) {
     var pair = str.split(",");
-    return new OpenLayers.LonLat(parseFloat(pair[0]), 
-                                 parseFloat(pair[1]));
+    return new OpenLayers.LonLat(pair[0], pair[1]);
 };

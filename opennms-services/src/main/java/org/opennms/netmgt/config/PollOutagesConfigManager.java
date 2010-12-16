@@ -31,19 +31,20 @@
 //
 package org.opennms.netmgt.config;
 
-import java.io.IOException;
-import java.io.StringWriter;
 import java.util.Calendar;
 import java.util.GregorianCalendar;
+import java.util.concurrent.locks.Lock;
+import java.util.concurrent.locks.ReadWriteLock;
+import java.util.concurrent.locks.ReentrantReadWriteLock;
 
-import org.exolab.castor.xml.MarshalException;
-import org.exolab.castor.xml.Marshaller;
-import org.exolab.castor.xml.ValidationException;
 import org.opennms.netmgt.config.common.Time;
 import org.opennms.netmgt.config.poller.Interface;
 import org.opennms.netmgt.config.poller.Node;
 import org.opennms.netmgt.config.poller.Outage;
 import org.opennms.netmgt.config.poller.Outages;
+import org.opennms.netmgt.dao.castor.AbstractCastorConfigDao;
+import org.springframework.dao.DataAccessException;
+import org.springframework.util.Assert;
 
 /**
  * Represents a PollOutagesConfigManager
@@ -51,22 +52,46 @@ import org.opennms.netmgt.config.poller.Outages;
  * @author brozow
  * @version $Id: $
  */
-abstract public class PollOutagesConfigManager implements PollOutagesConfig {
-
-    /**
-     * The config class loaded from the config file
-     */
-    private Outages m_config;
-
-    /**
-     * <p>setConfig</p>
-     *
-     * @param config
-     *            The config to set.
-     */
-    protected void setConfig(Outages config) {
-        m_config = config;
+abstract public class PollOutagesConfigManager extends AbstractCastorConfigDao<Outages, Outages> implements PollOutagesConfig {
+    private final ReadWriteLock m_globalLock = new ReentrantReadWriteLock();
+    private final Lock m_readLock = m_globalLock.readLock();
+    private final Lock m_writeLock = m_globalLock.writeLock();
+    
+    public PollOutagesConfigManager() {
+        super(Outages.class, "poll outage configuration");
     }
+
+    public Lock getReadLock() {
+        return m_readLock;
+    }
+    
+    public Lock getWriteLock() {
+        return m_writeLock;
+    }
+
+    /** {@inheritDoc} */
+    @Override
+    protected String createLoadedLogMessage(final Outages config, final long diffTime) {
+        return "Loaded " + getDescription() + " with " + config.getOutageCount() + " outages in " + diffTime + "ms";
+    }
+
+    /** {@inheritDoc} */
+    @Override
+    public void afterPropertiesSet() throws DataAccessException {
+        /**
+         * It sucks to duplicate this first test from AbstractCastorConfigDao,
+         * but we need to do so to ensure we don't get an NPE while initializing
+         * programmaticStoreConfigResource (if needed).
+         */
+        Assert.state(getConfigResource() != null, "property configResource must be set and be non-null");
+        
+        super.afterPropertiesSet();
+    }
+
+    public Outages translateConfig(final Outages outages) {
+        return outages;
+    }
+    
 
     /**
      * <p>getConfig</p>
@@ -74,7 +99,12 @@ abstract public class PollOutagesConfigManager implements PollOutagesConfig {
      * @return Returns the config.
      */
     protected Outages getConfig() {
-        return m_config;
+        getReadLock().lock();
+        try {
+            return getContainer().getObject();
+        } finally {
+            getReadLock().unlock();
+        }
     }
 
     /**
@@ -82,8 +112,13 @@ abstract public class PollOutagesConfigManager implements PollOutagesConfig {
      *
      * @return the outages configured
      */
-    public synchronized Outage[] getOutages() {
-        return getConfig().getOutage();
+    public Outage[] getOutages() {
+        getReadLock().lock();
+        try {
+            return getConfig().getOutage();
+        } finally {
+            getReadLock().unlock();
+        }
     }
 
     /**
@@ -93,13 +128,17 @@ abstract public class PollOutagesConfigManager implements PollOutagesConfig {
      *            the outage that is to be looked up
      * @return the specified outage, null if not found
      */
-    public synchronized Outage getOutage(String name) {
-        for (Outage out : getConfig().getOutageCollection()) {
-            if (out.getName().equals(name)) {
-                return out;
+    public Outage getOutage(final String name) {
+        getReadLock().lock();
+        try {
+            for (final Outage out : getConfig().getOutageCollection()) {
+                if (out.getName().equals(name)) {
+                    return out;
+                }
             }
+        } finally {
+            getReadLock().unlock();
         }
-
         return null;
     }
 
@@ -110,12 +149,10 @@ abstract public class PollOutagesConfigManager implements PollOutagesConfig {
      *            the outage that is to be looked up
      * @return the type for the specified outage, null if not found
      */
-    public synchronized String getOutageType(String name) {
-        Outage out = getOutage(name);
-        if (out == null)
-            return null;
-        else
-            return out.getType();
+    public String getOutageType(final String name) {
+        final Outage out = getOutage(name);
+        if (out == null) return null;
+        return out.getType();
     }
 
     /**
@@ -125,12 +162,10 @@ abstract public class PollOutagesConfigManager implements PollOutagesConfig {
      *            the outage that is to be looked up
      * @return the outage times for the specified outage, null if not found
      */
-    public synchronized Time[] getOutageTimes(String name) {
-        Outage out = getOutage(name);
-        if (out == null)
-            return null;
-        else
-            return out.getTime();
+    public Time[] getOutageTimes(final String name) {
+        final Outage out = getOutage(name);
+        if (out == null) return null;
+        return out.getTime();
     }
 
     /**
@@ -140,12 +175,10 @@ abstract public class PollOutagesConfigManager implements PollOutagesConfig {
      *            the outage that is to be looked up
      * @return the interfaces for the specified outage, null if not found
      */
-    public synchronized Interface[] getInterfaces(String name) {
-        Outage out = getOutage(name);
-        if (out == null)
-            return null;
-        else
-            return out.getInterface();
+    public Interface[] getInterfaces(final String name) {
+        final Outage out = getOutage(name);
+        if (out == null) return null;
+        return out.getInterface();
     }
 
     /**
@@ -153,11 +186,9 @@ abstract public class PollOutagesConfigManager implements PollOutagesConfig {
      *
      * Return if interfaces is part of specified outage.
      */
-    public synchronized boolean isInterfaceInOutage(String linterface, String outName) {
-        Outage out = getOutage(outName);
-        if (out == null)
-            return false;
-
+    public boolean isInterfaceInOutage(final String linterface, final String outName) {
+        final Outage out = getOutage(outName);
+        if (out == null) return false;
         return isInterfaceInOutage(linterface, out);
     }
 
@@ -170,11 +201,10 @@ abstract public class PollOutagesConfigManager implements PollOutagesConfig {
      *            the outage
      * @return the interface is part of the specified outage
      */
-    public synchronized boolean isInterfaceInOutage(String linterface, Outage out) {
-        if (out == null)
-            return false;
+    public boolean isInterfaceInOutage(final String linterface, final Outage out) {
+        if (out == null) return false;
 
-        for (Interface ointerface : out.getInterfaceCollection()) {
+        for (final Interface ointerface : out.getInterfaceCollection()) {
             if (ointerface.getAddress().equals(linterface)) {
                 return true;
             }
@@ -188,10 +218,9 @@ abstract public class PollOutagesConfigManager implements PollOutagesConfig {
      *
      * Return if time is part of specified outage.
      */
-    public synchronized boolean isTimeInOutage(Calendar cal, String outName) {
-        Outage out = getOutage(outName);
-        if (out == null)
-            return false;
+    public boolean isTimeInOutage(final Calendar cal, final String outName) {
+        final Outage out = getOutage(outName);
+        if (out == null) return false;
 
         return isTimeInOutage(cal, out);
     }
@@ -201,12 +230,11 @@ abstract public class PollOutagesConfigManager implements PollOutagesConfig {
      *
      * Return if time is part of specified outage.
      */
-    public synchronized boolean isTimeInOutage(long time, String outName) {
-        Outage out = getOutage(outName);
-        if (out == null)
-            return false;
+    public boolean isTimeInOutage(final long time, final String outName) {
+        final Outage out = getOutage(outName);
+        if (out == null) return false;
 
-        Calendar cal = Calendar.getInstance();
+        final Calendar cal = Calendar.getInstance();
         cal.setTimeInMillis(time);
         return isTimeInOutage(cal, out);
     }
@@ -220,7 +248,7 @@ abstract public class PollOutagesConfigManager implements PollOutagesConfig {
      *            the outage
      * @return true if time is in outage
      */
-    public synchronized boolean isTimeInOutage(Calendar cal, Outage outage) {
+    public boolean isTimeInOutage(final Calendar cal, final Outage outage) {
         return BasicScheduleUtils.isTimeInSchedule(cal, outage);
 
     }
@@ -230,11 +258,8 @@ abstract public class PollOutagesConfigManager implements PollOutagesConfig {
      *
      * Return if current time is part of specified outage.
      */
-    public synchronized boolean isCurTimeInOutage(String outName) {
-        // get current time
-        Calendar cal = new GregorianCalendar();
-
-        return isTimeInOutage(cal, outName);
+    public boolean isCurTimeInOutage(final String outName) {
+        return isTimeInOutage(new GregorianCalendar(), outName);
     }
 
     /**
@@ -244,11 +269,8 @@ abstract public class PollOutagesConfigManager implements PollOutagesConfig {
      *            the outage
      * @return true if current time is in outage
      */
-    public synchronized boolean isCurTimeInOutage(Outage out) {
-        // get current time
-        Calendar cal = new GregorianCalendar();
-
-        return isTimeInOutage(cal, out);
+    public boolean isCurTimeInOutage(final Outage out) {
+        return isTimeInOutage(new GregorianCalendar(), out);
     }
 
     /**
@@ -256,8 +278,8 @@ abstract public class PollOutagesConfigManager implements PollOutagesConfig {
      *
      * @param newOutage a {@link org.opennms.netmgt.config.poller.Outage} object.
      */
-    public synchronized void addOutage(Outage newOutage) {
-        m_config.addOutage(newOutage);
+    public void addOutage(final Outage newOutage) {
+        getConfig().addOutage(newOutage);
     }
 
     /**
@@ -265,8 +287,8 @@ abstract public class PollOutagesConfigManager implements PollOutagesConfig {
      *
      * @param outageName a {@link java.lang.String} object.
      */
-    public synchronized void removeOutage(String outageName) {
-        m_config.removeOutage(getOutage(outageName));
+    public void removeOutage(final String outageName) {
+        getConfig().removeOutage(getOutage(outageName));
     }
 
     /**
@@ -274,8 +296,8 @@ abstract public class PollOutagesConfigManager implements PollOutagesConfig {
      *
      * @param outageToRemove a {@link org.opennms.netmgt.config.poller.Outage} object.
      */
-    public synchronized void removeOutage(Outage outageToRemove) {
-        m_config.removeOutage(outageToRemove);
+    public void removeOutage(final Outage outageToRemove) {
+        getConfig().removeOutage(outageToRemove);
     }
 
     /**
@@ -284,11 +306,11 @@ abstract public class PollOutagesConfigManager implements PollOutagesConfig {
      * @param oldOutage a {@link org.opennms.netmgt.config.poller.Outage} object.
      * @param newOutage a {@link org.opennms.netmgt.config.poller.Outage} object.
      */
-    public synchronized void replaceOutage(Outage oldOutage, Outage newOutage) {
-        int count = m_config.getOutageCount();
+    public void replaceOutage(final Outage oldOutage, final Outage newOutage) {
+        int count = getConfig().getOutageCount();
         for (int i = 0; i < count; i++) {
-            if (m_config.getOutage(i).equals(oldOutage)) {
-                m_config.setOutage(i, newOutage);
+            if (getConfig().getOutage(i).equals(oldOutage)) {
+                getConfig().setOutage(i, newOutage);
                 return;
             }
         }
@@ -307,12 +329,10 @@ abstract public class PollOutagesConfigManager implements PollOutagesConfig {
      * @param name a {@link java.lang.String} object.
      * @return an array of {@link org.opennms.netmgt.config.poller.Node} objects.
      */
-    public synchronized Node[] getNodeIds(String name) {
-        Outage out = getOutage(name);
-        if (out == null)
-            return null;
-        else
-            return out.getNode();
+    public Node[] getNodeIds(final String name) {
+        final Outage out = getOutage(name);
+        if (out == null) return null;
+        return out.getNode();
     }
 
     /**
@@ -322,11 +342,9 @@ abstract public class PollOutagesConfigManager implements PollOutagesConfig {
      * Return if nodeid is part of specified outage
      * </p>
      */
-    public synchronized boolean isNodeIdInOutage(long lnodeid, String outName) {
-        Outage out = getOutage(outName);
-        if (out == null)
-            return false;
-
+    public boolean isNodeIdInOutage(final long lnodeid, final String outName) {
+        final Outage out = getOutage(outName);
+        if (out == null) return false;
         return isNodeIdInOutage(lnodeid, out);
     }
 
@@ -336,11 +354,9 @@ abstract public class PollOutagesConfigManager implements PollOutagesConfig {
      * @param outName a {@link java.lang.String} object.
      * @return a {@link java.util.Calendar} object.
      */
-    public synchronized Calendar getEndOfOutage(String outName) {
-        Outage out = getOutage(outName);
-        if (out == null)
-            return null;
-
+    public Calendar getEndOfOutage(final String outName) {
+        final Outage out = getOutage(outName);
+        if (out == null) return null;
         return getEndOfOutage(out);
     }
 
@@ -354,7 +370,7 @@ abstract public class PollOutagesConfigManager implements PollOutagesConfig {
      * @param out a {@link org.opennms.netmgt.config.poller.Outage} object.
      * @return a {@link java.util.Calendar} object.
      */
-    public static synchronized Calendar getEndOfOutage(Outage out) {
+    public static Calendar getEndOfOutage(final Outage out) {
         // FIXME: We need one that takes the time as a parm.  This makes it more testable
         return BasicScheduleUtils.getEndOfSchedule(out);
     }
@@ -369,60 +385,15 @@ abstract public class PollOutagesConfigManager implements PollOutagesConfig {
      * @return the node iis part of the specified outage
      * @param out a {@link org.opennms.netmgt.config.poller.Outage} object.
      */
-    public synchronized boolean isNodeIdInOutage(long lnodeid, Outage out) {
-        if (out == null)
-            return false;
+    public boolean isNodeIdInOutage(final long lnodeid, final Outage out) {
+        if (out == null) return false;
 
-        for (Node onode : out.getNodeCollection()) {
-            if ((long) onode.getId() == lnodeid) {
+        for (final Node onode : out.getNodeCollection()) {
+            if (onode.getId() == lnodeid) {
                 return true;
             }
         }
 
         return false;
     }
-
-    /**
-     * Saves the current in-memory configuration to disk and reloads
-     *
-     * @throws org.exolab.castor.xml.MarshalException if any.
-     * @throws java.io.IOException if any.
-     * @throws org.exolab.castor.xml.ValidationException if any.
-     */
-    public synchronized void saveCurrent() throws MarshalException, IOException, ValidationException {
-        // Marshal to a string first, then write the string to the file. This
-        // way the original configuration isn't lost if the XML from the
-        // marshal is hosed.
-        StringWriter stringWriter = new StringWriter();
-        Marshaller.marshal(m_config, stringWriter);
-
-        String xmlString = stringWriter.toString();
-        if (xmlString != null) {
-            saveXML(xmlString);
-        }
-        
-        update();
-
-    }
-
-    /**
-     * <p>saveXML</p>
-     *
-     * @param xmlString a {@link java.lang.String} object.
-     * @throws java.io.IOException if any.
-     * @throws org.exolab.castor.xml.MarshalException if any.
-     * @throws org.exolab.castor.xml.ValidationException if any.
-     */
-    abstract protected void saveXML(String xmlString) throws IOException, MarshalException, ValidationException;
-    
-    /**
-     * <p>update</p>
-     *
-     * @throws java.io.IOException if any.
-     * @throws org.exolab.castor.xml.MarshalException if any.
-     * @throws org.exolab.castor.xml.ValidationException if any.
-     */
-    abstract public void update() throws IOException, MarshalException, ValidationException;
-
-
 }

@@ -54,7 +54,7 @@
 %>
 <%
     //get the service names, in alpha order
-    Map serviceNameMap = new TreeMap(NetworkElementFactory.getServiceNameToIdMap());
+    Map serviceNameMap = new TreeMap(NetworkElementFactory.getInstance(getServletContext()).getServiceNameToIdMap());
     Set serviceNameSet = serviceNameMap.keySet();
     Iterator serviceNameIterator = serviceNameSet.iterator();
  

@@ -35,8 +35,8 @@ package org.opennms.netmgt.capsd.plugins;
 import java.net.InetAddress;
 import java.util.Map;
 
+import org.opennms.core.utils.LogUtils;
 import org.opennms.core.utils.ParameterMap;
-import org.opennms.core.utils.ThreadCategory;
 import org.opennms.netmgt.capsd.AbstractPlugin;
 import org.opennms.netmgt.config.WmiPeerFactory;
 import org.opennms.protocols.wmi.WmiAgentConfig;
@@ -52,11 +52,8 @@ import org.opennms.protocols.wmi.WmiResult;
  * can be successfully retrieved from the service.
  * </P>
  *
- * @author <A HREF="mailto:matt.raykowski@gmail.com">Matt Raykowski </A>
- * @author <A HREF="http://www.opennsm.org">OpenNMS </A>
- * @author <A HREF="mailto:matt.raykowski@gmail.com">Matt Raykowski </A>
- * @author <A HREF="http://www.opennsm.org">OpenNMS </A>
- * @version $Id: $
+ * @author <a href="mailto:matt.raykowski@gmail.com">Matt Raykowski</a>
+ * @author <a href="http://www.opennms.org">OpenNMS</a>
  */
 public class WmiPlugin extends AbstractPlugin {
 	/**
@@ -92,9 +89,8 @@ public class WmiPlugin extends AbstractPlugin {
 	 * parameters to determine how to issue a check to the target server.
 	 */
 	@Override
-	public boolean isProtocolSupported(InetAddress address) {
-		throw new UnsupportedOperationException("Undirected TCP checking not "
-				+ "supported");
+	public boolean isProtocolSupported(final InetAddress address) {
+		throw new UnsupportedOperationException("Undirected TCP checking not supported");
 	}
 
 	/**
@@ -122,9 +118,8 @@ public class WmiPlugin extends AbstractPlugin {
 	 * <code>WmiResult.RES_STATE_WARNING</code>.
 	 */
 	@Override
-	public boolean isProtocolSupported(InetAddress address,
-			Map<String, Object> qualifiers) {
-		WmiAgentConfig agentConfig = WmiPeerFactory.getInstance().getAgentConfig(address);
+	public boolean isProtocolSupported(final InetAddress address, final Map<String, Object> qualifiers) {
+	    final WmiAgentConfig agentConfig = WmiPeerFactory.getInstance().getAgentConfig(address);
 		String matchType = DEFAULT_WMI_MATCH_TYPE;
 		String compVal = DEFAULT_WMI_COMP_VAL;
 		String compOp = DEFAULT_WMI_COMP_OP;
@@ -158,28 +153,22 @@ public class WmiPlugin extends AbstractPlugin {
                 agentConfig.setUsername(domain);
             }
             
-            matchType = ParameterMap.getKeyedString(qualifiers, "matchType",
-					DEFAULT_WMI_MATCH_TYPE);
-			compVal = ParameterMap.getKeyedString(qualifiers, "compareValue",
-					DEFAULT_WMI_COMP_VAL);
+            matchType = ParameterMap.getKeyedString(qualifiers, "matchType", DEFAULT_WMI_MATCH_TYPE);
+			compVal = ParameterMap.getKeyedString(qualifiers, "compareValue", DEFAULT_WMI_COMP_VAL);
 			compOp = ParameterMap.getKeyedString(qualifiers, "compareOp", DEFAULT_WMI_COMP_OP);
             wmiWqlStr = ParameterMap.getKeyedString(qualifiers, "wql", DEFAULT_WMI_WQL);
-            wmiClass = ParameterMap.getKeyedString(qualifiers, "wmiClass",
-					DEFAULT_WMI_CLASS);
-			wmiObject = ParameterMap.getKeyedString(qualifiers, "wmiObject",
-					DEFAULT_WMI_OBJECT);
+            wmiClass = ParameterMap.getKeyedString(qualifiers, "wmiClass", DEFAULT_WMI_CLASS);
+			wmiObject = ParameterMap.getKeyedString(qualifiers, "wmiObject", DEFAULT_WMI_OBJECT);
 		}
 
         WmiParams clientParams = null;
 
         if(wmiWqlStr.equals(DEFAULT_WMI_WQL)) {
             // Create the check parameters holder.
-		    clientParams = new WmiParams(WmiParams.WMI_OPERATION_INSTANCEOF,
-                                         compVal, compOp, wmiClass, wmiObject);
+		    clientParams = new WmiParams(WmiParams.WMI_OPERATION_INSTANCEOF, compVal, compOp, wmiClass, wmiObject);
         } else {
             // Define the WQL Query.
-            clientParams = new WmiParams(WmiParams.WMI_OPERATION_WQL,
-                                         compVal, compOp, wmiWqlStr, wmiObject);
+            clientParams = new WmiParams(WmiParams.WMI_OPERATION_WQL, compVal, compOp, wmiWqlStr, wmiObject);
         }
 
 
@@ -188,14 +177,8 @@ public class WmiPlugin extends AbstractPlugin {
 				agentConfig.getRetries(), agentConfig.getTimeout(), clientParams);
 
 		// Only fail on critical and unknown returns.
-		if (result != null && result.getResultCode() != WmiResult.RES_STATE_CRIT
-				&& result.getResultCode() != WmiResult.RES_STATE_UNKNOWN) {
-
-			return true;
-		} else {
-			return false;
-		}
-
+	    return (result != null && result.getResultCode() != WmiResult.RES_STATE_CRIT
+				&& result.getResultCode() != WmiResult.RES_STATE_UNKNOWN);
 	}
 
 	/**
@@ -217,9 +200,8 @@ public class WmiPlugin extends AbstractPlugin {
 	 * @return The WmiResult the server sent, updated by WmiManager to
 	 *         contain the proper result code based on the params passed.
 	 */
-	private WmiResult isServer(InetAddress host, String user, String pass,
-			String domain, String matchType, int retries, int timeout,
-			WmiParams params) {
+	private WmiResult isServer(final InetAddress host, final String user, final String pass,
+	        final String domain, final String matchType, final int retries, final int timeout, final WmiParams params) {
 		boolean isAServer = false;
 
 		WmiResult result = null;
@@ -227,8 +209,7 @@ public class WmiPlugin extends AbstractPlugin {
 		    WmiManager mgr = null;
 			try {
 				// Create the WMI Manager
-				mgr = new WmiManager(host.getHostAddress(), user,
-						pass, domain, matchType);
+				mgr = new WmiManager(host.getHostAddress(), user, pass, domain, matchType);
 
 				// Connect to the WMI server.
 				mgr.init();
@@ -236,46 +217,25 @@ public class WmiPlugin extends AbstractPlugin {
 				// Perform the operation specified in the parameters.
 				result = mgr.performOp(params);
                 if(params.getWmiOperation().equals(WmiParams.WMI_OPERATION_WQL)) {
-                    log().debug(
-						"WmiPlugin: "
-								+ params.getWql()								
-								+ " : "
-								+ WmiResult.convertStateToString(result
-										.getResultCode()));
+                    LogUtils.debugf(this, "WmiPlugin: %s :  %s", params.getWql(), WmiResult.convertStateToString(result.getResultCode()));
                 } else {
-				    log().debug(
-						"WmiPlugin: \\\\"
-								+ params.getWmiClass()
-								+ "\\"
-								+ params.getWmiObject()
-								+ " : "
-								+ WmiResult.convertStateToString(result
-										.getResultCode()));
+                    LogUtils.debugf(this, "\\\\%s\\%s : %s", params.getWmiClass(), params.getWmiObject(), WmiResult.convertStateToString(result.getResultCode()));
                 }
 
                 isAServer = true;
-			} catch (WmiException e) {
-				StringBuffer message = new StringBuffer();
-				message.append("WmiPlugin: Check failed... : ");
-				message.append(e.getMessage());
-				message.append(" : ");
-				message.append((e.getCause() == null ? "" : e.getCause().getMessage()));
-				log().info(message.toString());
+			} catch (final WmiException e) {
+			    LogUtils.infof(this, e, "WmiPlugin: Check failed.");
 				isAServer = false;
 			} finally {
 			    if (mgr != null) {
 			        try {
 			            mgr.close();
-			        } catch (WmiException e) {
-			            log().warn("an error occurred closing the WMI Manager", e);
+			        } catch (final WmiException e) {
+			            LogUtils.warnf(this, e, "An error occurred closing the WMI manager.");
 			        }
 			    }
 			}
 		}
 		return result;
-	}
-
-    private ThreadCategory log() {
-		return ThreadCategory.getInstance(getClass());
 	}
 }

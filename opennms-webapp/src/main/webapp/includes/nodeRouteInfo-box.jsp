@@ -39,17 +39,18 @@
 
 <%
     //required parameter node
-    String nodeIdString = request.getParameter("node");
+    final String nodeIdString = request.getParameter("node");
 
     if( nodeIdString == null ) {
         throw new org.opennms.web.MissingParameterException("node");
     }
         
-    int nodeId = WebSecurityUtils.safeParseInt(nodeIdString);
+    final int nodeId = WebSecurityUtils.safeParseInt(nodeIdString);
     
     //gets active route entry on node
     
-   	IpRouteInterface[] iproutes = NetworkElementFactory.getIpRoute(nodeId);
+    final NetworkElementFactoryInterface factory = NetworkElementFactory.getInstance(getServletContext());
+   	final IpRouteInterface[] iproutes = factory.getIpRoute(nodeId);
 
 %>
 
@@ -57,7 +58,7 @@
   
 
 
-<% if(iproutes.length == 0) { %>
+<% if(iproutes != null && iproutes.length == 0) { %>
   <tr>
     <td colspan="7">There have been no ip routes on this node.</td>
   </tr>
@@ -84,7 +85,7 @@
 			 <% 
 				Node[] nodes = null;
 			 	if (!iproutes[t].get_routenexthop().equals("0.0.0.0"))
-					nodes = NetworkElementFactory.getNodesWithIpLike(iproutes[t].get_routenexthop()); 	
+					nodes = factory.getNodesWithIpLike(iproutes[t].get_routenexthop()); 	
 			 	if (nodes != null && nodes.length>0) {
 			 %>			 
 		    <td align="left" ><a href="element/node.jsp?node=<%=nodes[0].getNodeId()%>"><%=iproutes[t].get_routenexthop()%></a></td>

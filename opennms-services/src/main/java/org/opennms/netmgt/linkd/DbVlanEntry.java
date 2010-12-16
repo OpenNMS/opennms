@@ -62,35 +62,44 @@ public class DbVlanEntry
 	 * The character returned if the entry is active
 	 */
 
-	static final char STATUS_ACTIVE = 'A';
+    public static final char STATUS_ACTIVE = 'A';
 
 	/**
 	 * The character returned if the entry is not active
 	 * means last polled
 	 */
 
-	static final char STATUS_NOT_POLLED = 'N';
+    public static final char STATUS_NOT_POLLED = 'N';
 
 	/**
 	 * It stats that node is deleted
 	 * The character returned if the node is deleted
 	 */
-	static final char STATUS_DELETE = 'D';
+    public static final char STATUS_DELETED = 'D';
 
 	/**
 	 * The character returned if the entry type is unset/unknown.
 	 */
 
-	static final char STATUS_UNKNOWN = 'K';
+    public static final char STATUS_UNKNOWN = 'K';
 
-	/**
-	 * the bridge type
-	 */
+    public static final int VLAN_TYPE_UNKNOWN = 0;
+    public static final int VLAN_TYPE_ETHERNET = 1;
+    public static final int VLAN_TYPE_FDDI = 2;
+    public static final int VLAN_TYPE_TOKEN_RING = 3;
+    public static final int VLAN_TYPE_FDDINET = 4;
+    public static final int VLAN_TYPE_TRNET = 5;
+    public static final int VLAN_TYPE_DEPRECATED = 6;
+
+    public static final int VLAN_STATUS_UNKNOWN = 0;
+    public static final int VLAN_STATUS_OPERATIONAL = 1;
+    public static final int VLAN_STATUS_SUSPENDED = 2;
+    public static final int VLAN_STATUS_MTU_TOO_BIG_FOR_DEVICE = 3;
+    public static final int VLAN_STATUS_MTU_TOO_BIG_FOR_TRUNK = 4;
 
 	/**
 	 * The node identifier
 	 */
-
     int     m_nodeId;
 
     /**
@@ -99,9 +108,8 @@ public class DbVlanEntry
     int     m_vlanId;
 
     /**
-     * the name the vlan
+     * The name of the VLAN
      */
-    
     String m_vlanname;
     
     /**
@@ -114,7 +122,7 @@ public class DbVlanEntry
      * '6' Deprecated
      * 
      */
-    int     m_vlantype;
+    int     m_vlantype = VLAN_TYPE_UNKNOWN;
 
     /**
      * 
@@ -125,20 +133,18 @@ public class DbVlanEntry
      * '4' mtuTooBigForTrunk
      * 
      */
-    int     m_vlanstatus;
+    int     m_vlanstatus = VLAN_STATUS_UNKNOWN;
 
 		/**
 		 * The Status of
 		 * this information
 		 */
-
 		char m_status = STATUS_UNKNOWN;
 
 		/**
 		 * The Time when
 		 * this information was learned
 		 */
-
 		Timestamp m_lastPollTime;
 
 		/**
@@ -183,7 +189,7 @@ public class DbVlanEntry
 		private void insert(Connection c) throws SQLException {
 			if (m_fromDb)
 				throw new IllegalStateException(
-						"The record already exists in the database");
+						"The VLAN record already exists in the database");
 
 			// first extract the next node identifier
 			//
@@ -375,7 +381,7 @@ public class DbVlanEntry
                 //
                 m_vlantype = rset.getInt(ndx++);
                 if (rset.wasNull())
-                	m_vlantype = -1;
+                	m_vlantype = VLAN_TYPE_UNKNOWN;
 
                 // get the vlan status
                 //
@@ -405,15 +411,6 @@ public class DbVlanEntry
 			return true;
 		}
 
-		/**
-		 * Default constructor. 
-		 *
-		 */
-		DbVlanEntry() {
-			throw new UnsupportedOperationException(
-					"Default constructor not supported!");
-		}
-
         DbVlanEntry(int nodeId,int vlanid, boolean exists)
         {
                 m_nodeId = nodeId;
@@ -432,7 +429,7 @@ public class DbVlanEntry
 		 *
 		 * @return a int.
 		 */
-		public int get_nodeId() {
+        protected int get_nodeId() {
 			return m_nodeId;
 		}
 
@@ -441,7 +438,7 @@ public class DbVlanEntry
 		 *
 		 * @return a int.
 		 */
-		public int getVlanId() {
+        protected int getVlanId() {
 			return m_vlanId;
 		}
 
@@ -450,16 +447,16 @@ public class DbVlanEntry
 		 *
 		 * @return a {@link java.lang.String} object.
 		 */
-		public String getVlanName() {
+        protected String getVlanName() {
 			return m_vlanname;
 		}
 
-		void setVlanName(String vlanname) {
+		protected void setVlanName(String vlanname) {
 			m_vlanname = vlanname;
 			m_changed |= CHANGED_VLANNAME;
 		}
 
-		boolean hasBaseVlanNameChanged() {
+		protected boolean hasBaseVlanNameChanged() {
 			if ((m_changed & CHANGED_VLANNAME) == CHANGED_VLANNAME)
 				return true;
 			else
@@ -467,9 +464,12 @@ public class DbVlanEntry
 		}
 
 		boolean updateVlanName(final String vlanname) {
-		    final boolean retval = (m_vlanname == vlanname);
-		    m_vlanname = vlanname;
-		    return retval;
+		    if (m_vlanname == null || !m_vlanname.equals(vlanname)) {
+		        setVlanName(vlanname);
+		        return true;
+		    } else {
+		        return false;
+		    }
 		}
 
 		/**
@@ -477,16 +477,16 @@ public class DbVlanEntry
 		 *
 		 * @return a int.
 		 */
-		public int getVlanType() {
+		protected int getVlanType() {
 			return m_vlantype;
 		}
 
-		void setVlanType(int vlantype) {
+		protected void setVlanType(int vlantype) {
 			m_vlantype = vlantype;
 			m_changed |= CHANGED_VLANTYPE;
 		}
 
-		boolean hasBaseTypeChanged() {
+		protected boolean hasBaseTypeChanged() {
 			if ((m_changed & CHANGED_VLANTYPE) == CHANGED_VLANTYPE)
 				return true;
 			else
@@ -506,16 +506,16 @@ public class DbVlanEntry
 		 *
 		 * @return a int.
 		 */
-		public int getVlanStatus() {
+		protected int getVlanStatus() {
 			return m_vlanstatus;
 		}
 
-		void setVlanStatus(int vlanstatus) {
+		protected void setVlanStatus(int vlanstatus) {
 			m_vlanstatus = vlanstatus;
 			m_changed |= CHANGED_VLANSTATUS;
 		}
 
-		boolean hasBaseStatusChanged() {
+		protected boolean hasBaseStatusChanged() {
 			if ((m_changed & CHANGED_VLANSTATUS) == CHANGED_VLANSTATUS)
 				return true;
 			else
@@ -534,18 +534,18 @@ public class DbVlanEntry
 		/**
 		 * @return
 		 */
-		char get_status() {
+		protected char get_status() {
 			return m_status;
 		}
 
-		void set_status(char status) {
+		protected void set_status(char status) {
 			if (status == STATUS_ACTIVE || status == STATUS_NOT_POLLED
-					|| status == STATUS_DELETE)
+					|| status == STATUS_DELETED)
 				m_status = status;
 			m_changed |= CHANGED_STATUS;
 		}
 
-		boolean hasStatusChanged() {
+		protected boolean hasStatusChanged() {
 			if ((m_changed & CHANGED_STATUS) == CHANGED_STATUS)
 				return true;
 			else
@@ -563,7 +563,7 @@ public class DbVlanEntry
 		/**
 		 * @return
 		 */
-		Timestamp get_lastpolltime() {
+		protected Timestamp get_lastpolltime() {
 			return m_lastPollTime;
 		}
 
@@ -584,7 +584,7 @@ public class DbVlanEntry
 		 * @param time	The last poll time.
 		 *
 		 */
-		void set_lastpolltime(String time) throws ParseException {
+		protected void set_lastpolltime(String time) throws ParseException {
 			if (time == null) {
 				m_lastPollTime = null;
 			} else {
@@ -600,7 +600,7 @@ public class DbVlanEntry
 		 * @param time	The last poll time.
 		 *
 		 */
-		void set_lastpolltime(Date time) {
+		protected void set_lastpolltime(Date time) {
 			m_lastPollTime = new Timestamp(time.getTime());
 			m_changed |= CHANGED_POLLTIME;
 		}
@@ -611,7 +611,7 @@ public class DbVlanEntry
 		 * @param time	The last poll time.
 		 *
 		 */
-		void set_lastpolltime(Timestamp time) {
+		protected void set_lastpolltime(Timestamp time) {
 			m_lastPollTime = time;
 			m_changed |= CHANGED_POLLTIME;
 		}

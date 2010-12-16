@@ -94,7 +94,7 @@
         pageContext.setAttribute("tooManyResourceIds", "true");
     } else {
         String resourceId = req.getParameter("resourceId");
-        OnmsResource resource = m_resourceService.loadResourceById(resourceId);
+        OnmsResource resource = m_resourceService.getResourceById(resourceId);
         m_resourceService.promoteGraphAttributesForResource(resource);
         pageContext.setAttribute("resource", resource);
         pageContext.setAttribute("colors", s_colors);
@@ -128,6 +128,8 @@
   </c:when>
   
   <c:otherwise>
+    <c:set var="showFootnote1" value="false"/>
+    
     <h2>Step 2: Choose Data Sources</h2>
 
     <h3>
@@ -143,7 +145,15 @@
   
       <c:if test="${!empty resource}">
         <br />
-        ${resource.resourceType.label}:
+        <c:choose>
+          <c:when test="${fn:contains(resource.label,'(*)')}">
+            <c:set var="showFootnote1" value="true"/>
+            Resource:
+          </c:when>
+          <c:otherwise>
+            ${resource.resourceType.label}:
+          </c:otherwise>
+        </c:choose>
         <c:choose>
           <c:when test="${!empty resource.link}">
             <a href="<c:url value='${resource.link}'/>">${resource.label}</a>
@@ -181,7 +191,7 @@
                 <c:forEach var="attribute" items="${resource.attributes}">
                   <c:choose>
                     <c:when test="${! anythingSelected}">
-                      <c:set var="selected" value="selected"/>
+                      <c:set var="selected">selected="selected"</c:set>
                       <c:set var="anythingSelected" value="true"/>
                     </c:when>
                     <c:otherwise>
@@ -209,7 +219,7 @@
                       <c:forEach var="color" items="${colors}">
                         <c:choose>
                           <c:when test="${(dsIndex % fn:length(colors)) == color.key}">
-                            <c:set var="selected" value="selected"/>
+                            <c:set var="selected">selected="selected"</c:set>
                           </c:when>
                           <c:otherwise>
                             <c:set var="selected" value=""/>
@@ -260,5 +270,9 @@
     </form>
   </c:otherwise>
 </c:choose>
+
+<c:if test="${showFootnote1 == true}">
+  <jsp:include page="/includes/footnote1.jsp" flush="false" />
+</c:if>
 
 <jsp:include page="/includes/footer.jsp" flush="false" />

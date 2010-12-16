@@ -31,29 +31,29 @@ $(STAMP_BUILD):
 	# -Duser.home=$(HOME) is needed to get maven to use the correct ~/.m2/ directory when being run with fakeroot
 	@if [ -f "$$OPENNMS_SETTINGS_XML" ]; then \
 		echo "using $$OPENNMS_SETTINGS_XML"; \
-		sh ./build.sh -Dbuild=all -s $$OPENNMS_SETTINGS_XML $(BUILDDEFINES) install assembly:directory-inline; \
+		if [ -z "$$OPENNMS_SKIP_COMPILE" ]; then \
+			./compile.pl -Dbuild=all -s $$OPENNMS_SETTINGS_XML $(BUILDDEFINES) install; \
+			./assemble.pl -Dbuild=all -Dbuild.profile=fulldir -s $$OPENNMS_SETTINGS_XML $(BUILDDEFINES) install; \
+		else \
+			./assemble.pl -Dbuild=all -Denable.snapshots=true -Dbuild.profile=fulldir -s $$OPENNMS_SETTINGS_XML $(BUILDDEFINES) install; \
+		fi; \
 	else \
-		sh ./build.sh -Dbuild=all -Duser.home=$(HOME) $(BUILDDEFINES) install assembly:directory-inline; \
+		if [ -z "$$OPENNMS_SKIP_COMPILE" ]; then \
+			./compile.pl -Dbuild=all -Duser.home=$(HOME) $(BUILDDEFINES) install; \
+			./assemble.pl -Dbuild=all -Dbuild.profile=fulldir -Duser.home=$(HOME) $(BUILDDEFINES) install; \
+		else \
+			./assemble.pl -Dbuild=all -Denable.snapshots=true -Dbuild.profile=fulldir -Duser.home=$(HOME) $(BUILDDEFINES) install; \
+		fi; \
 	fi
-	install -d -m 755 debian/temp/integrations
-	cp integrations/opennms-dns-provisioning-adapter/target/*.jar        debian/temp/integrations/
-	cp integrations/opennms-link-provisioning-adapter/target/*.jar       debian/temp/integrations/
-	cp integrations/opennms-map-provisioning-adapter/target/*.jar        debian/temp/integrations/
-	cp integrations/opennms-rancid/target/*.jar                          debian/temp/integrations/
-	cp integrations/opennms-snmp-asset-provisioning-adapter/target/*.jar debian/temp/integrations/
-	rm -rf debian/temp/integrations/*-sources.jar
-	rm -rf debian/temp/integrations/*-tests.jar
-	rm -rf debian/temp/integrations/*-xsds.jar
-	cp integrations/opennms-link-provisioning-adapter/src/main/resources/link-adapter-configuration.xml debian/temp/integrations/
-	cp integrations/opennms-link-provisioning-adapter/src/main/resources/endpoint-configuration.xml     debian/temp/integrations/
-	cp integrations/opennms-map-provisioning-adapter/src/main/resources/mapsadapter-configuration.xml   debian/temp/integrations/
 	find debian/temp -type d -name .svn -exec rm -rf {} \;
+	find debian/temp -type d -name .git -exec rm -rf {} \;
 	touch $(STAMP_BUILD)
 
 clean:
 	dh_testdir
 	dh_testroot
-	sh ./build.sh -Dbuild=all -Duser.home=$(HOME) -Ddist.dir=$(CURDIR)/debian -Ddist.name=temp clean
+	./compile.pl -Dbuild=all -Duser.home=$(HOME) -Ddist.dir=$(CURDIR)/debian -Ddist.name=temp clean
+	./assemble.pl -Dbuild=all -Duser.home=$(HOME) -Ddist.dir=$(CURDIR)/debian -Ddist.name=temp clean
 	rm -f opennms-remote-poller.{init,default}
 	dh_clean
 	rm -f $(STAMP_BUILD)
@@ -63,6 +63,22 @@ install: build
 	dh_clean -k --exclude=temp
 	dh_installdirs
 	dh_testroot
+
+	##
+	## Setup the provision adapter packages
+	##
+	install -d -m 755 debian/opennms-plugin-provisioning-{dns,link,map,rancid,snmp-asset}/usr/share/java/opennms
+	install -d -m 755 debian/opennms-plugin-provisioning-{link,map,snmp-asset}/etc/opennms
+	mv debian/temp/lib/opennms-dns-provisioning-adapter*.jar         debian/opennms-plugin-provisioning-dns/usr/share/java/opennms/
+	mv debian/temp/lib/opennms-link-provisioning-adapter*.jar        debian/opennms-plugin-provisioning-link/usr/share/java/opennms/
+	mv debian/temp/lib/opennms-map-provisioning-adapter*.jar         debian/opennms-plugin-provisioning-map/usr/share/java/opennms/
+	mv debian/temp/lib/opennms-rancid*.jar                           debian/opennms-plugin-provisioning-rancid/usr/share/java/opennms/
+	mv debian/temp/lib/opennms-snmp-asset-provisioning-adapter*.jar  debian/opennms-plugin-provisioning-snmp-asset/usr/share/java/opennms/
+	mv debian/temp/etc/link-adapter-configuration.xml                debian/opennms-plugin-provisioning-link/etc/opennms/
+	mv debian/temp/etc/endpoint-configuration.xml                    debian/opennms-plugin-provisioning-link/etc/opennms/
+	mv debian/temp/etc/mapsadapter-configuration.xml                 debian/opennms-plugin-provisioning-map/etc/opennms/
+	mv debian/temp/etc/snmp-asset-adapter-configuration.xml          debian/opennms-plugin-provisioning-snmp-asset/etc/opennms/
+	find debian/opennms-plugin*/etc/opennms -type f -execdir chmod 644 {} \;
 
 	##
 	## Setup the libopennms-java package
@@ -84,7 +100,6 @@ install: build
 	find debian/opennms-common/usr/share/opennms/bin -type f -execdir chmod 755 {} \;
 	mv debian/temp/etc/* debian/opennms-common/etc/opennms/
 	find debian/opennms-common/etc/opennms -type f -execdir chmod 644 {} \;
-	rm -rf debian/opennms-common/etc/opennms/{link-adapter,endpoint,mapsadapter}-configuration.xml
 
 	# Adjust permissions for config files containing sensitive information
 	install -m 644 debian/opennms-common.overrides debian/opennms-common/usr/share/lintian/overrides/opennms-common
@@ -165,21 +180,6 @@ install: build
 	chmod 755 debian/opennms-contrib/usr/share/opennms/contrib/downOpenNMS \
 		debian/opennms-contrib/usr/share/opennms/contrib/alvarion/link_quality \
 		debian/opennms-contrib/usr/share/opennms/contrib/alvarion/run_link_quality
-
-	##
-	## Setup the provision adapter packages
-	##
-	install -d -m 755 debian/opennms-plugin-provisioning-{dns,link,map,rancid,snmp-asset}/usr/share/java/opennms
-	install -d -m 755 debian/opennms-plugin-provisioning-{link,map,snmp-asset}/etc/opennms
-	mv debian/temp/integrations/opennms-dns-provisioning-adapter*.jar         debian/opennms-plugin-provisioning-dns/usr/share/java/opennms/
-	mv debian/temp/integrations/opennms-link-provisioning-adapter*.jar        debian/opennms-plugin-provisioning-link/usr/share/java/opennms/
-	mv debian/temp/integrations/opennms-map-provisioning-adapter*.jar         debian/opennms-plugin-provisioning-map/usr/share/java/opennms/
-	mv debian/temp/integrations/opennms-rancid*.jar                           debian/opennms-plugin-provisioning-rancid/usr/share/java/opennms/
-	mv debian/temp/integrations/opennms-snmp-asset-provisioning-adapter*.jar  debian/opennms-plugin-provisioning-snmp-asset/usr/share/java/opennms/
-	mv debian/temp/integrations/link-adapter-configuration.xml                debian/opennms-plugin-provisioning-link/etc/opennms/
-	mv debian/temp/integrations/endpoint-configuration.xml                    debian/opennms-plugin-provisioning-link/etc/opennms/
-	mv debian/temp/integrations/mapsadapter-configuration.xml                 debian/opennms-plugin-provisioning-map/etc/opennms/
-	mv debian/opennms-common/etc/opennms/snmp-asset-adapter-configuration.xml debian/opennms-plugin-provisioning-snmp-asset/etc/opennms/
 
 # Build architecture-independent files here.
 binary-indep: build install

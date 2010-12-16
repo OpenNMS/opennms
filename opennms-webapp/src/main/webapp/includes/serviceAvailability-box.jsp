@@ -78,7 +78,7 @@
 %>
 
 <%
-    Service service = ElementUtil.getServiceByParams(request);
+    Service service = ElementUtil.getServiceByParams(request, getServletContext());
     
     String styleClass;
     String statusContent;

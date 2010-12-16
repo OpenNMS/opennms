@@ -46,6 +46,7 @@ import javax.servlet.ServletException;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
+import org.opennms.core.utils.LogUtils;
 import org.opennms.web.MissingParameterException;
 import org.opennms.web.WebSecurityUtils;
 import org.opennms.web.event.AcknowledgeType;
@@ -130,7 +131,7 @@ public class AcknowledgeEventController extends AbstractController implements In
         filters.add(new EventIdListFilter(WebSecurityUtils.safeParseInt(eventIdStrings)));
         EventCriteria criteria = new EventCriteria(filters.toArray(new Filter[0]));
 
-        System.err.println("criteria = " + criteria + ", action = " + action);
+        LogUtils.debugf(this, "criteria = %s, action = %s", criteria, action);
         if (action.equals(AcknowledgeType.ACKNOWLEDGED.getShortName())) {
             m_webEventRepository.acknowledgeMatchingEvents(request.getRemoteUser(), new Date(), criteria);
         } else if (action.equals(AcknowledgeType.UNACKNOWLEDGED.getShortName())) {

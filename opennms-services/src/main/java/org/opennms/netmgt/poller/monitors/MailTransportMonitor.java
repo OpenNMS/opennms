@@ -110,7 +110,7 @@ public class MailTransportMonitor extends IPMonitor {
         } catch (IllegalStateException ise) {
             //ignore this because we don't have to have both a send and read
             
-        } catch (Exception e) {
+        } catch (Throwable e) {
             log.error("poll, Exception from mailer: ", e);
             status = PollStatus.down("Exception from mailer: " + e.getLocalizedMessage());
         }

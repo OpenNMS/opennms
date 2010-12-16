@@ -175,7 +175,7 @@ public class CollectdTest extends TestCase {
         FilterDaoFactory.setInstance(m_filterDao);
 
         Resource resource = new ClassPathResource("etc/poll-outages.xml"); 
-        PollOutagesConfigFactory.setInstance(new PollOutagesConfigFactory(resource.getInputStream()));
+        PollOutagesConfigFactory.setInstance(new PollOutagesConfigFactory(resource));
 
         CollectdConfigFactory collectdConfig = new CollectdConfigFactory(ConfigurationTestUtils.getInputStreamForResource(this, "/org/opennms/netmgt/config/collectd-testdata.xml"), "nms1", false);
         CollectdConfigFactory.setInstance(collectdConfig);

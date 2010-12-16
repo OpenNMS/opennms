@@ -34,6 +34,7 @@ package org.opennms.netmgt.provision.service.lifecycle;
 import java.lang.annotation.Annotation;
 import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
+import java.lang.reflect.ParameterizedType;
 import java.lang.reflect.Type;
 
 import org.opennms.core.tasks.BatchTask;
@@ -222,6 +223,9 @@ public class Phase extends BatchTask {
                     if (type instanceof Class<?>) {
                         Class<?> clazz = (Class<?>)type;
                         args[i] = lifeCycle.findAttributeByType(clazz);
+                    } else if (type instanceof ParameterizedType) {
+                        ParameterizedType paramType = (ParameterizedType)type;
+                        args[i] = lifeCycle.findAttributeByType((Class<?>) paramType.getRawType());
                     } else {
                         args[i] = null;
                     }

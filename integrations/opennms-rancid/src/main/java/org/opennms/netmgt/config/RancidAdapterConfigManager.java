@@ -38,7 +38,6 @@ package org.opennms.netmgt.config;
 
 import java.io.IOException;
 import java.io.InputStream;
-import java.io.Reader;
 import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.Enumeration;
@@ -50,20 +49,19 @@ import java.util.Map;
 import java.util.Map.Entry;
 
 import org.exolab.castor.xml.MarshalException;
-import org.exolab.castor.xml.Unmarshaller;
 import org.exolab.castor.xml.ValidationException;
-import org.opennms.core.utils.IPSorter;
+import org.opennms.core.utils.ByteArrayComparator;
+import org.opennms.core.utils.InetAddressUtils;
 import org.opennms.core.utils.IpListFromUrl;
 import org.opennms.core.utils.ThreadCategory;
-import org.opennms.netmgt.config.rancid.adapter.Mapping;
-import org.opennms.netmgt.config.rancid.adapter.Package;
 import org.opennms.netmgt.config.rancid.adapter.ExcludeRange;
 import org.opennms.netmgt.config.rancid.adapter.IncludeRange;
+import org.opennms.netmgt.config.rancid.adapter.Mapping;
+import org.opennms.netmgt.config.rancid.adapter.Package;
 import org.opennms.netmgt.config.rancid.adapter.PolicyManage;
 import org.opennms.netmgt.config.rancid.adapter.RancidConfiguration;
 import org.opennms.netmgt.config.rancid.adapter.Schedule;
 import org.opennms.netmgt.dao.castor.CastorUtils;
-
 import org.opennms.netmgt.filter.FilterDaoFactory;
 
 /**
@@ -287,45 +285,32 @@ abstract public class RancidAdapterConfigManager implements RancidAdapterConfig 
         // the range 0.0.0.0 - 255.255.255.255
         has_range_include = pkg.getIncludeRangeCount() == 0 && pkg.getSpecificCount() == 0;
         
-        long addr = IPSorter.convertToLong(iface);
-        
-        Enumeration<IncludeRange> eincs = pkg.enumerateIncludeRange();
-        while (!has_range_include && eincs.hasMoreElements()) {
-            IncludeRange rng = eincs.nextElement();
-            long start = IPSorter.convertToLong(rng.getBegin());
-            if (addr > start) {
-                long end = IPSorter.convertToLong(rng.getEnd());
-                if (addr <= end) {
-                    has_range_include = true;
-                }
-            } else if (addr == start) {
+        for (IncludeRange rng : pkg.getIncludeRange()) {
+            if (InetAddressUtils.isInetAddressInRange(iface, rng.getBegin(), rng.getEnd())) {
                 has_range_include = true;
+                break;
             }
         }
-    
-        Enumeration<String> espec = pkg.enumerateSpecific();
-        while (!has_specific && espec.hasMoreElements()) {
-            long speca = IPSorter.convertToLong(espec.nextElement());
-            if (speca == addr)
+
+        byte[] addr = InetAddressUtils.toIpAddrBytes(iface);
+
+        for (String spec : pkg.getSpecific()) {
+            byte[] speca = InetAddressUtils.toIpAddrBytes(spec);
+            if (new ByteArrayComparator().compare(speca, addr) == 0) {
                 has_specific = true;
+                break;
+            }
         }
-    
+
         Enumeration<String> eurl = pkg.enumerateIncludeUrl();
         while (!has_specific && eurl.hasMoreElements()) {
             has_specific = interfaceInUrl(iface, eurl.nextElement());
         }
     
-        Enumeration<ExcludeRange> eex = pkg.enumerateExcludeRange();
-        while (!has_range_exclude && !has_specific && eex.hasMoreElements()) {
-            ExcludeRange rng = eex.nextElement();
-            long start = IPSorter.convertToLong(rng.getBegin());
-            if (addr > start) {
-                long end = IPSorter.convertToLong(rng.getEnd());
-                if (addr <= end) {
-                    has_range_exclude = true;
-                }
-            } else if (addr == start) {
+        for (ExcludeRange rng : pkg.getExcludeRangeCollection()) {
+            if (InetAddressUtils.isInetAddressInRange(iface, rng.getBegin(), rng.getEnd())) {
                 has_range_exclude = true;
+                break;
             }
         }
     

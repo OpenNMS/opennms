@@ -103,7 +103,7 @@ public class ScheduleEditorServlet extends HttpServlet {
             } else {
                 try {
                     Reader reader = new InputStreamReader(new FileInputStream(m_fileName), "UTF-8");
-                    m_outages = CastorUtils.unmarshal(Outages.class, reader);
+                    m_outages = CastorUtils.unmarshal(Outages.class, reader, CastorUtils.PRESERVE_WHITESPACE);
                     reader.close();
                 } catch (MarshalException e) {
                     throw new ServletException("Unable to unmarshal "+m_fileName, e);

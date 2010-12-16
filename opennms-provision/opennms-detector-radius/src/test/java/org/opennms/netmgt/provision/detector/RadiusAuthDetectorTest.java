@@ -10,6 +10,7 @@ import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.opennms.netmgt.provision.detector.radius.RadiusAuthDetector;
 import org.opennms.netmgt.provision.support.NullDetectorMonitor;
+import org.opennms.test.mock.MockLogAppender;
 import org.springframework.beans.BeansException;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.ApplicationContext;
@@ -26,7 +27,7 @@ public class RadiusAuthDetectorTest implements ApplicationContextAware{
 
     @Before
     public void setUp(){
-         
+         MockLogAppender.setupLogging();
     }
     
 	@Test

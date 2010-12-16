@@ -45,6 +45,7 @@ import org.opennms.netmgt.provision.detector.simple.AsyncLineOrientedDetector;
 import org.opennms.netmgt.provision.server.SimpleServer;
 import org.opennms.netmgt.provision.server.exchange.RequestHandler;
 import org.opennms.netmgt.provision.support.NullDetectorMonitor;
+import org.opennms.test.mock.MockLogAppender;
 
 /**
  * @author Donald Desloge
@@ -113,6 +114,8 @@ public class LineDecoderTest {
     
     @Before
     public void setUp() throws Exception {
+        MockLogAppender.setupLogging();
+
         m_server = new TestServer() {
             
             public void onInit() {
@@ -128,6 +131,7 @@ public class LineDecoderTest {
     public void tearDown() throws Exception {
         if(m_server != null) {
             m_server.stopServer();
+            m_server = null;
         }
     }
     

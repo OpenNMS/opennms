@@ -42,10 +42,8 @@ import java.util.List;
 
 import org.exolab.castor.xml.MarshalException;
 import org.exolab.castor.xml.ValidationException;
-import org.opennms.netmgt.config.linkd.Package;
 import org.opennms.netmgt.config.linkd.LinkdConfiguration;
-import org.opennms.netmgt.linkd.DiscoveryLink;
-import org.opennms.netmgt.linkd.SnmpCollection;
+import org.opennms.netmgt.config.linkd.Package;
 
 
 /**
@@ -154,7 +152,9 @@ public interface LinkdConfig {
      * @return a boolean.
      */
     boolean enableDiscoveryDownload();
-    
+
+    boolean forceIpRouteDiscoveryOnEthernet();
+
     /**
      * <p>useIpRouteDiscovery</p>
      *
@@ -256,34 +256,7 @@ public interface LinkdConfig {
      * @return a {@link org.opennms.netmgt.config.linkd.LinkdConfiguration} object.
      */
     LinkdConfiguration getConfiguration();
-    
-    /**
-     * <p>getSnmpCollections</p>
-     *
-     * @param ipaddr a {@link java.lang.String} object.
-     * @param sysoid a {@link java.lang.String} object.
-     * @return a {@link java.util.List} object.
-     */
-    List<SnmpCollection> getSnmpCollections(String ipaddr, String sysoid);
 
-    /**
-     * <p>getSnmpCollection</p>
-     *
-     * @param ipaddr a {@link java.lang.String} object.
-     * @param sysoid a {@link java.lang.String} object.
-     * @param pkgName a {@link java.lang.String} object.
-     * @return a {@link org.opennms.netmgt.linkd.SnmpCollection} object.
-     */
-    SnmpCollection getSnmpCollection(String ipaddr, String sysoid,String pkgName);
-
-    /**
-     * <p>getDiscoveryLink</p>
-     *
-     * @param pkgName a {@link java.lang.String} object.
-     * @return a {@link org.opennms.netmgt.linkd.DiscoveryLink} object.
-     */
-    DiscoveryLink getDiscoveryLink(String pkgName);
-    
     /**
      * <p>createPackageIpListMap</p>
      */
@@ -304,5 +277,10 @@ public interface LinkdConfig {
 	 * @return a boolean.
 	 */
 	boolean hasClassName(String sysoid);
-    
+
+    boolean hasIpRouteClassName(String sysoid);
+
+    String getIpRouteClassName(String sysoid);
+
+    String getDefaultIpRouteClassName();
 }

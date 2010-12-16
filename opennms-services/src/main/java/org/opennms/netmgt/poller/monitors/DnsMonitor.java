@@ -201,11 +201,11 @@ final public class DnsMonitor extends IPMonitor {
                     // No response received, retry without marking the poll failed. If we get this condition over and over until 
                     // the retries are exhausted, it will leave serviceStatus null and we'll get the log message at the bottom 
                 } catch (NoRouteToHostException e) {
-                    serviceStatus = logDown(Level.DEBUG, "No route to host exception for address: " + ipv4Addr, e);
+                    serviceStatus = logDown(Level.WARN, "No route to host exception for address: " + ipv4Addr, e);
                 } catch (ConnectException e) {
-                    serviceStatus = logDown(Level.DEBUG, "Connection exception for address: " + ipv4Addr, e);
+                    serviceStatus = logDown(Level.WARN, "Connection exception for address: " + ipv4Addr, e);
                 } catch (IOException ex) {
-                    serviceStatus = logDown(Level.DEBUG, "IOException while polling address: " + ipv4Addr, ex);
+                    serviceStatus = logDown(Level.WARN, "IOException while polling address: " + ipv4Addr + " " + ex.getMessage(), ex);
                 }
             }
         } catch (IOException ex) {

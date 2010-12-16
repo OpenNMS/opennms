@@ -45,6 +45,7 @@ public class SmbDetectorTest {
     
 //    @Before
 //    public void setUp() {
+//        MockLogAppender.setupLogging();
 //        m_detector = new SmbDetector();
 //        
 //    }

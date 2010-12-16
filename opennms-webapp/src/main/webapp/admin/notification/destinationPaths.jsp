@@ -86,7 +86,7 @@
     function newPath()
     {
         document.path.userAction.value="new";
-        document.path.submit();
+        return true;
     }
     
     function deletePath()
@@ -111,13 +111,13 @@
 
 <h2>Destination Paths</h2>
 
-<form method="post" name="path" action="admin/notification/destinationWizard">
+<form method="post" name="path" action="admin/notification/destinationWizard" onsubmit="return newPath();">
   <input type="hidden" name="userAction" value=""/>
   <input type="hidden" name="sourcePage" value="destinationPaths.jsp"/>
 
   <h3>Create a new Destination Path or edit an existing path.</h3>
 
-  <input type="submit" value="New Path" onclick="javascript:newPath()"/>
+  <input type="submit" value="New Path"/>
 
   <h4>Existing Paths</h4>
  
@@ -131,8 +131,8 @@
 
   <br/>
 
-  <input type="button" value="Edit" onclick="javascript:editPath()"/>
-  <input type="button" value="Delete" onclick="javascript:deletePath()"/>
+  <input type="button" value="Edit" onclick="editPath()"/>
+  <input type="button" value="Delete" onclick="deletePath()"/>
 </form>
     
 <jsp:include page="/includes/footer.jsp" flush="false" />

@@ -111,6 +111,7 @@ import org.opennms.core.utils.ThreadCategory;
             }// end while
         } catch (InterruptedException E) {
             log.info("InterruptedException: " + E, E);
+            Thread.currentThread().interrupt();
         }// end catch block
 
         // get the byte from the queue

@@ -43,7 +43,7 @@ public static class AutocompleteRecord {
 }
 %>
 <%
-List<org.opennms.web.element.Node> items = Arrays.asList(NetworkElementFactory.getAllNodes());
+List<org.opennms.web.element.Node> items = Arrays.asList(NetworkElementFactory.getInstance(getServletContext()).getAllNodes());
 %>
 [
 <% 

@@ -32,7 +32,7 @@
 
 package org.opennms.web.outage.filter;
 
-import java.sql.SQLException;
+import javax.servlet.ServletContext;
 
 import org.opennms.web.element.NetworkElementFactory;
 import org.opennms.web.filter.NotEqualOrNullFilter;
@@ -51,13 +51,16 @@ public class NegativeNodeFilter extends NotEqualOrNullFilter<Integer> {
 
     protected int nodeId;
 
+    private ServletContext m_servletContext;
+
     /**
      * <p>Constructor for NegativeNodeFilter.</p>
      *
      * @param nodeId a int.
      */
-    public NegativeNodeFilter(int nodeId) {
+    public NegativeNodeFilter(int nodeId, ServletContext servletContext) {
         super(TYPE, SQLType.INT, "OUTAGES.NODEID", "node.id", nodeId);
+        m_servletContext = servletContext;
     }
 
     /**
@@ -66,10 +69,10 @@ public class NegativeNodeFilter extends NotEqualOrNullFilter<Integer> {
      * @return a {@link java.lang.String} object.
      */
     public String getTextDescription() {
-        String nodeName = Integer.toString(getNode());
-        try {
-            nodeName = NetworkElementFactory.getNodeLabel(getNode());
-        } catch (SQLException e) {
+        
+        String nodeName = NetworkElementFactory.getInstance(m_servletContext).getNodeLabel(getNode());
+        if(nodeName == null) {
+            nodeName = Integer.toString(getNode());
         }
 
         return ("node is not " + nodeName);

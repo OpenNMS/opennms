@@ -41,14 +41,11 @@
 package org.opennms.netmgt.capsd;
 
 import java.io.InputStream;
-import java.net.InetAddress;
-import java.net.UnknownHostException;
 
 import org.opennms.core.concurrent.RunnableConsumerThreadPool;
 import org.opennms.mock.snmp.MockSnmpAgent;
 import org.opennms.netmgt.config.CapsdConfigFactory;
 import org.opennms.netmgt.config.CollectdConfigFactory;
-import org.opennms.netmgt.config.DataCollectionConfigFactory;
 import org.opennms.netmgt.config.DatabaseSchemaConfigFactory;
 import org.opennms.netmgt.config.DefaultCapsdConfigManager;
 import org.opennms.netmgt.config.OpennmsServerConfigFactory;
@@ -90,10 +87,6 @@ public class CapsdTest extends OpenNMSTestCase {
         PollerConfigFactory.setInstance(new PollerConfigFactory(System.currentTimeMillis(), configStream, onmsSvrConfig.getServerName(), onmsSvrConfig.verifyServer()));
         configStream.close();
         RrdTestUtils.initialize();
-
-        configStream = ConfigurationTestUtils.getInputStreamForResource(this, "/org/opennms/netmgt/capsd/datacollection-config.xml");
-        DataCollectionConfigFactory.setInstance(new DataCollectionConfigFactory(configStream));
-        configStream.close();
 
         configStream = ConfigurationTestUtils.getInputStreamForResource(this, "/org/opennms/netmgt/capsd/collectd-configuration.xml");
         CollectdConfigFactory.setInstance(new CollectdConfigFactory(configStream, onmsSvrConfig.getServerName(), onmsSvrConfig.verifyServer()));
@@ -189,17 +182,6 @@ public class CapsdTest extends OpenNMSTestCase {
         super.tearDown();
     }
 
-    protected String myLocalHost() {
-      try {
-          return InetAddress.getLocalHost().getHostAddress();
-      } catch (UnknownHostException e) {
-          e.printStackTrace();
-          fail("Exception getting localhost");
-      }
-      
-      return null;
-    }
-    
     public final void testRescan() throws Exception {
         
         assertEquals("Initally only 1 interface", 1, m_db.countRows("select * from ipinterface where nodeid = ?", FOREIGN_NODEID));
@@ -209,7 +191,7 @@ public class CapsdTest extends OpenNMSTestCase {
         
         m_capsd.rescanInterfaceParent(77);
         
-        Thread.sleep(10000);
+        Thread.sleep(30000);
         
         m_capsd.stop();
         

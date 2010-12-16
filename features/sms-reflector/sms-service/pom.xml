@@ -5,7 +5,7 @@
     <relativePath>../poms/compiled/</relativePath>
     <groupId>org.opennms.features.sms-reflector.build</groupId>
     <artifactId>compiled-bundle-settings</artifactId>
-    <version>1.8.4-SNAPSHOT</version>
+    <version>1.8.8-SNAPSHOT</version>
   </parent>
 
   <properties>
@@ -26,6 +26,7 @@
       <plugin>
         <groupId>org.apache.maven.plugins</groupId>
         <artifactId>maven-jar-plugin</artifactId>
+        <version>2.3.1</version>
         <executions>
           <execution>
             <goals>
@@ -86,7 +87,7 @@
     <dependency>
       <groupId>org.opennms.smslib</groupId>
       <artifactId>smslib</artifactId>
-      <version>3.4.3-SNAPSHOT</version>
+      <version>3.4.3-20100302</version>
       <scope>provided</scope>
     </dependency>
     <dependency>
@@ -109,6 +110,7 @@
   		<artifactId>spring-test-dependencies</artifactId>
       <version>${project.version}</version>
       <scope>test</scope>
+      <type>pom</type>
     </dependency>
     <dependency>
       <groupId>org.opennms.core</groupId>
@@ -136,9 +138,9 @@
       <scope>provided</scope>
     </dependency>
     <dependency>
-      <groupId>org.opennms.lib</groupId>
-      <artifactId>org.opennms.lib.tracker</artifactId>
-      <version>0.6</version>
+      <groupId>org.opennms.dependencies</groupId>
+      <artifactId>tracker-dependencies</artifactId>
+      <type>pom</type>
       <scope>provided</scope>
     </dependency>
   </dependencies>

@@ -1,11 +1,17 @@
-/* Copyright (c) 2006 MetaCarta, Inc., published under a modified BSD license.
- * See http://svn.openlayers.org/trunk/openlayers/repository-license.txt 
- * for the full text of the license. */
+/* Copyright (c) 2006-2010 by OpenLayers Contributors (see authors.txt for 
+ * full list of contributors). Published under the Clear BSD license.  
+ * See http://svn.openlayers.org/trunk/openlayers/license.txt for the
+ * full text of the license. */
 
 
 /**
  * @requires OpenLayers/Util.js
  * @requires OpenLayers/Style.js
+ * @requires OpenLayers/Symbolizer/Point.js
+ * @requires OpenLayers/Symbolizer/Line.js
+ * @requires OpenLayers/Symbolizer/Polygon.js
+ * @requires OpenLayers/Symbolizer/Text.js
+ * @requires OpenLayers/Symbolizer/Raster.js
  */
 
 /**
@@ -24,7 +30,7 @@ OpenLayers.Rule = OpenLayers.Class({
      * APIProperty: name
      * {String} name of this rule
      */
-    name: 'default',
+    name: null,
     
     /**
      * Property: title
@@ -74,6 +80,17 @@ OpenLayers.Rule = OpenLayers.Class({
     symbolizer: null,
     
     /**
+     * Property: symbolizers
+     * {Array} Collection of symbolizers associated with this rule.  If 
+     *     provided at construction, the symbolizers array has precedence
+     *     over the deprecated symbolizer property.  Note that multiple 
+     *     symbolizers are not currently supported by the vector renderers.
+     *     Rules with multiple symbolizers are currently only useful for
+     *     maintaining elements in an SLD document.
+     */
+    symbolizers: null,
+    
+    /**
      * APIProperty: minScaleDenominator
      * {Number} or {String} minimum scale at which to draw the feature.
      * In the case of a String, this can be a combination of text and
@@ -103,6 +120,9 @@ OpenLayers.Rule = OpenLayers.Class({
     initialize: function(options) {
         this.symbolizer = {};
         OpenLayers.Util.extend(this, options);
+        if (this.symbolizers) {
+            delete this.symbolizer;
+        }
         this.id = OpenLayers.Util.createUniqueID(this.CLASS_NAME + "_");
     },
 
@@ -115,6 +135,7 @@ OpenLayers.Rule = OpenLayers.Class({
             this.symbolizer[i] = null;
         }
         this.symbolizer = null;
+        delete this.symbolizers;
     },
     
     /**
@@ -187,15 +208,25 @@ OpenLayers.Rule = OpenLayers.Class({
      */
     clone: function() {
         var options = OpenLayers.Util.extend({}, this);
-        // clone symbolizer
-        options.symbolizer = {};
-        for(var key in this.symbolizer) {
-            value = this.symbolizer[key];
-            type = typeof value;
-            if(type === "object") {
-                options.symbolizer[key] = OpenLayers.Util.extend({}, value);
-            } else if(type === "string") {
-                options.symbolizer[key] = value;
+        if (this.symbolizers) {
+            // clone symbolizers
+            var len = this.symbolizers.length;
+            options.symbolizers = new Array(len);
+            for (var i=0; i<len; ++i) {
+                options.symbolizers[i] = this.symbolizers[i].clone();
+            }
+        } else {
+            // clone symbolizer
+            options.symbolizer = {};
+            var value, type;
+            for(var key in this.symbolizer) {
+                value = this.symbolizer[key];
+                type = typeof value;
+                if(type === "object") {
+                    options.symbolizer[key] = OpenLayers.Util.extend({}, value);
+                } else if(type === "string") {
+                    options.symbolizer[key] = value;
+                }
             }
         }
         // clone filter

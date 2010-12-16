@@ -33,6 +33,7 @@ package org.opennms.netmgt.threshd;
 import java.util.List;
 import java.util.Map;
 
+import org.opennms.netmgt.collectd.AliasedResource;
 import org.opennms.netmgt.collectd.CollectionAttribute;
 import org.opennms.netmgt.collectd.CollectionResource;
 import org.opennms.netmgt.model.RrdRepository;
@@ -46,6 +47,9 @@ import org.opennms.netmgt.xml.event.Event;
  */
 public class CollectorThresholdingSet extends ThresholdingSet {
     
+    // CollectionSpecification parameters
+    boolean storeByIfAlias = false;
+    
     /**
      * <p>Constructor for CollectorThresholdingSet.</p>
      *
@@ -55,8 +59,10 @@ public class CollectorThresholdingSet extends ThresholdingSet {
      * @param repository a {@link org.opennms.netmgt.model.RrdRepository} object.
      * @param interval a long.
      */
-    public CollectorThresholdingSet(int nodeId, String hostAddress, String serviceName, RrdRepository repository, long interval) {
+    public CollectorThresholdingSet(int nodeId, String hostAddress, String serviceName, RrdRepository repository, long interval, Map<String,String> params) {
         super(nodeId, hostAddress, serviceName, repository, interval);
+        String storeByIfAliasString = params.get("storeByIfAlias");
+        storeByIfAlias = storeByIfAliasString != null && storeByIfAliasString.toLowerCase().equals("true");
     }
     
     /*
@@ -70,6 +76,8 @@ public class CollectorThresholdingSet extends ThresholdingSet {
      */
     public boolean hasThresholds(CollectionAttribute attribute) {
         CollectionResource resource = attribute.getResource();
+        if (resource instanceof AliasedResource && !storeByIfAlias)
+            return false;
         return hasThresholds(resource.getResourceTypeName(), attribute.getName());
     }
 

@@ -5,7 +5,7 @@
     <relativePath>../poms/compiled/</relativePath>
     <groupId>org.opennms.features.sms-reflector.build</groupId>
     <artifactId>compiled-bundle-settings</artifactId>
-    <version>1.8.4-SNAPSHOT</version>
+    <version>1.8.8-SNAPSHOT</version>
   </parent>
 
   <properties>
@@ -42,9 +42,9 @@
       <optional>true</optional>
     </dependency>
     <dependency>
-      <groupId>org.rxtx</groupId>
-      <artifactId>rxtx-osgi</artifactId>
-      <version>2.2-pre2</version>
+      <groupId>org.opennms.dependencies</groupId>
+      <artifactId>rxtx-dependencies</artifactId>
+      <type>pom</type>
       <scope>provided</scope>
     </dependency>
     <dependency>

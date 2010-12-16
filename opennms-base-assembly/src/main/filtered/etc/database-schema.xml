@@ -24,6 +24,8 @@
 		<column name="nodeSysLocation"/>
 		<column name="nodeSysContact"/>
 		<column name="nodeLabel"/>
+		<column name="foreignSource"/>
+		<column name="foreignID"/>
 	</table>
 
 	<table name="categories">

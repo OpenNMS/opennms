@@ -53,6 +53,7 @@ import org.opennms.web.event.WebEventRepository;
 import org.opennms.web.filter.Filter;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
+import org.springframework.context.ApplicationContext;
 import org.springframework.test.context.ContextConfiguration;
 import org.springframework.test.context.TestExecutionListeners;
 import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
@@ -73,7 +74,8 @@ import org.springframework.transaction.annotation.Transactional;
                                   "classpath*:/META-INF/opennms/component-dao.xml",
                                   "classpath*:/META-INF/opennms/component-service.xml",
                                   "classpath:/daoWebEventRepositoryTestContext.xml",
-                                  "classpath:/jdbcWebEventRepositoryTestContext.xml"})
+                                  "classpath:/jdbcWebEventRepositoryTestContext.xml",
+                                  "classpath:/NetworkElementFactoryContext.xml"})
 @JUnitTemporaryDatabase()
 public class WebEventRepositoryFilterTest {
     
@@ -87,6 +89,9 @@ public class WebEventRepositoryFilterTest {
     @Autowired
     @Qualifier("jdbc")
     WebEventRepository m_jdbcEventRepo;
+    
+    @Autowired
+    ApplicationContext m_appContext;
     
     
     @Before
@@ -357,7 +362,7 @@ public class WebEventRepositoryFilterTest {
     
     @Test
     public void testNegativeNodeFilter(){
-        NegativeNodeFilter filter = new NegativeNodeFilter(2);
+        NegativeNodeFilter filter = new NegativeNodeFilter(2, m_appContext);
         
         Event[] events = getMatchingDaoEvents(filter);
         assertEquals(2, events.length);
@@ -365,13 +370,15 @@ public class WebEventRepositoryFilterTest {
         events = getMatchingJdbcEvents(filter);
         assertEquals(2, events.length);
         
-        filter = new NegativeNodeFilter(1);
+        filter = new NegativeNodeFilter(1, m_appContext);
         
         events = getMatchingDaoEvents(filter);
         assertEquals(1, events.length);
         
         events = getMatchingJdbcEvents(filter);
         assertEquals(1, events.length);
+        
+        assertEquals("node is not node1", filter.getTextDescription());
     }
     
     @Test
@@ -431,9 +438,10 @@ public class WebEventRepositoryFilterTest {
         assertEquals(1, events.length);
     }
     
+    
     @Test
     public void testNodeFilter(){
-        NodeFilter filter = new NodeFilter(1);
+        NodeFilter filter = new NodeFilter(1, m_appContext);
         
         Event[] events = getMatchingDaoEvents(filter);
         assertEquals(1, events.length);
@@ -441,13 +449,15 @@ public class WebEventRepositoryFilterTest {
         events = getMatchingJdbcEvents(filter);
         assertEquals(1, events.length);
         
-        filter = new NodeFilter(2);
+        filter = new NodeFilter(2, m_appContext);
         
         events = getMatchingDaoEvents(filter);
         assertEquals(0, events.length);
         
         events = getMatchingJdbcEvents(filter);
         assertEquals(0, events.length);
+        
+        assertEquals("node=node2", filter.getTextDescription());
     }
     
     @Test

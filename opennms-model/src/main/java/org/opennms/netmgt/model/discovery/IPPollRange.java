@@ -53,29 +53,22 @@ import java.util.Iterator;
  * @author <A HREF="mailto:sowmya@opennms.org">Sowmya </A>
  * @author <A HREF="mailto:weave@oculan.com">Brian Weaver </A>
  * @author <A HREF="http://www.opennms.org/">OpenNMS </A>
- * @author <A HREF="mailto:sowmya@opennms.org">Sowmya </A>
- * @author <A HREF="mailto:weave@oculan.com">Brian Weaver </A>
- * @author <A HREF="http://www.opennms.org/">OpenNMS </A>
- * @author <A HREF="mailto:sowmya@opennms.org">Sowmya </A>
- * @author <A HREF="mailto:weave@oculan.com">Brian Weaver </A>
- * @author <A HREF="http://www.opennms.org/">OpenNMS </A>
- * @version $Id: $
  */
 public class IPPollRange implements Iterable<IPPollAddress> {
     /**
      * The range to cycle over.
      */
-    private IPAddrRange m_range;
+    private final IPAddrRange m_range;
 
     /**
      * The timeout in milliseconds (1/1000th)
      */
-    private long m_timeout;
+    private final long m_timeout;
 
     /**
      * The number of retries for each generate object.
      */
-    private int m_retries;
+    private final int m_retries;
 
     /**
      * <P>

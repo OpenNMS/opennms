@@ -96,14 +96,14 @@
                 <td><%=stpifs[i].getStatusString()%></td>
                 <td><%=stpifs[i].get_stpportpathcost()%></td>
 				<% if (stpifs[i].get_stprootnodeid() != 0) { 
-						Node node = NetworkElementFactory.getNode(stpifs[i].get_stprootnodeid());
+						Node node = NetworkElementFactory.getInstance(getServletContext()).getNode(stpifs[i].get_stprootnodeid());
 				%>
 				<td><a href="element/node.jsp?node=<%=stpifs[i].get_stprootnodeid()%>"><%=node.getLabel()%></a><br/>(<strong><%=stpifs[i].get_stpdesignatedroot()%></strong>)</td>
 				<% } else { %>
 				<td><%=stpifs[i].get_stpdesignatedroot()%></td>
 				<% } %>
 				<% if (stpifs[i].get_stpbridgenodeid() != 0) { 
-						Node node = NetworkElementFactory.getNode(stpifs[i].get_stpbridgenodeid());
+						Node node = NetworkElementFactory.getInstance(getServletContext()).getNode(stpifs[i].get_stpbridgenodeid());
 				%>
 				<td><a href="element/node.jsp?node=<%=stpifs[i].get_stpbridgenodeid()%>"><%=node.getLabel()%></a><br/>(<strong><%=stpifs[i].get_stpdesignatedbridge()%></strong>)</td>
 				<% } else {%>

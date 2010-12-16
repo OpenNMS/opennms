@@ -1,3 +1,8 @@
+/* Copyright (c) 2006-2010 by OpenLayers Contributors (see authors.txt for 
+ * full list of contributors). Published under the Clear BSD license.  
+ * See http://svn.openlayers.org/trunk/openlayers/license.txt for the
+ * full text of the license. */
+
 /**
  * @requires OpenLayers/Format/WFSCapabilities.js
  */
@@ -88,7 +93,11 @@ OpenLayers.Format.WFSCapabilities.v1 = OpenLayers.Class(
     read_cap_Name: function(obj, node) {
         var name = this.getChildValue(node);
         if(name) {
-            obj.name = name;
+            var parts = name.split(":");
+            obj.name = parts.pop();
+            if(parts.length > 0) {
+                obj.featureNS = this.lookupNamespaceURI(node, parts[0]);
+            }
         }
     },
 

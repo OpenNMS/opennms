@@ -37,6 +37,14 @@
         <property key="timeout" value="3000" />
         <property key="retry" value="2" />
     </protocol-plugin>
+    <protocol-plugin protocol="HTTP-HostExample" class-name="org.opennms.netmgt.capsd.plugins.HttpPlugin" scan="on">
+        <protocol-configuration scan="enable" user-defined="false">
+            <specific>216.216.217.254</specific>
+        </protocol-configuration>
+        <property key="port" value="80" />
+        <property key="timeout" value="3000" />
+        <property key="retry" value="2" />
+    </protocol-plugin>
     <protocol-plugin protocol="HTTPS" class-name="org.opennms.netmgt.capsd.plugins.HttpsPlugin" scan="on">
         <property key="port" value="443" />
         <property key="timeout" value="5000" />

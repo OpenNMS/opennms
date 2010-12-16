@@ -17,9 +17,12 @@ import javax.xml.bind.annotation.XmlRootElement;
 @XmlRootElement(name="acknowledgments")
 public class OnmsAcknowledgmentCollection extends LinkedList<OnmsAcknowledgment> {
 
-	private static final long serialVersionUID = 1L;
-
 	/**
+     * 
+     */
+    private static final long serialVersionUID = -8540172282769996576L;
+
+    /**
 	 * <p>Constructor for OnmsAcknowledgmentCollection.</p>
 	 */
 	public OnmsAcknowledgmentCollection() {

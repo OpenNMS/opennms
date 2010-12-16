@@ -2,11 +2,11 @@
   <parent>
     <artifactId>opennms</artifactId>
     <groupId>org.opennms</groupId>
-    <version>1.8.4-SNAPSHOT</version>
+    <version>1.8.8-SNAPSHOT</version>
   </parent>
   <modelVersion>4.0.0</modelVersion>
   <artifactId>opennms-base-assembly</artifactId>
-  <packaging>tgz</packaging>
+  <packaging>pom</packaging>
   <name>OpenNMS Base Assembly</name>
   <build>
     <resources>
@@ -20,165 +20,87 @@
     </resources>
     <plugins>
       <plugin>
+       <artifactId>maven-deploy-plugin</artifactId>
+       <configuration>
+         <skip>true</skip>
+       </configuration>
+      </plugin>
+      <plugin>
         <groupId>org.apache.maven.plugins</groupId>
         <artifactId>maven-dependency-plugin</artifactId>
         <executions>
-          <execution>
-            <id>unpack-xsds</id>
-            <phase>process-resources</phase>
-            <goals>
-              <goal>unpack</goal>
-            </goals>
-	         <configuration>
-	           <outputDirectory>${project.build.directory}</outputDirectory>
-	           <artifactItems>
-	             <artifactItem>
-	               <groupId>org.opennms</groupId>
-	               <artifactId>drools-correlation-engine</artifactId>
-                  <version>${project.version}</version>
-                  <classifier>xsds</classifier>
-	             </artifactItem>
-	             <artifactItem>
-	               <groupId>org.opennms</groupId>
-	               <artifactId>opennms-config</artifactId>
-                  <version>${project.version}</version>
-                  <classifier>xsds</classifier>
-	             </artifactItem>
-	             <artifactItem>
-	               <groupId>org.opennms</groupId>
-	               <artifactId>opennms-dao</artifactId>
-                  <version>${project.version}</version>
-                  <classifier>xsds</classifier>
-	             </artifactItem>
-	             <artifactItem>
-	               <groupId>org.opennms</groupId>
-	               <artifactId>opennms-model</artifactId>
-                  <version>${project.version}</version>
-                  <classifier>xsds</classifier>
-	             </artifactItem>
-	             <artifactItem>
-	               <groupId>org.opennms</groupId>
-	               <artifactId>opennms-provision-persistence</artifactId>
-                  <version>${project.version}</version>
-                  <classifier>xsds</classifier>
-	             </artifactItem>
-	             <artifactItem>
-	               <groupId>org.opennms</groupId>
-	               <artifactId>opennms-link-provisioning-adapter</artifactId>
-                  <version>${project.version}</version>
-                  <classifier>xsds</classifier>
-	             </artifactItem>
-	             <artifactItem>
-	               <groupId>org.opennms</groupId>
-	               <artifactId>opennms-qosdaemon</artifactId>
-                  <version>${project.version}</version>
-                  <classifier>xsds</classifier>
-	             </artifactItem>
-	             <artifactItem>
-	               <groupId>org.opennms</groupId>
-	               <artifactId>opennms-reporting</artifactId>
-                  <version>${project.version}</version>
-                  <classifier>xsds</classifier>
-	             </artifactItem>
-	             <artifactItem>
-	               <groupId>org.opennms</groupId>
-	               <artifactId>opennms-webapp</artifactId>
-                  <version>${project.version}</version>
-                  <classifier>xsds</classifier>
-	             </artifactItem>
-                <artifactItem>
-                  <groupId>org.opennms.features.sms-reflector</groupId>
-                  <artifactId>sms-monitor</artifactId>
-                  <version>${project.version}</version>
-                  <classifier>xsds</classifier>
-	             </artifactItem>
-	           </artifactItems>
-	         </configuration>
-          </execution>
           <execution>
             <id>unpack-remote-poller</id>
             <phase>process-resources</phase>
             <goals>
               <goal>unpack</goal>
             </goals>
-	         <configuration>
-	           <outputDirectory>${project.build.directory}</outputDirectory>
-	           <artifactItems>
-	             <artifactItem>
-	               <groupId>org.opennms.features</groupId>
-	               <artifactId>org.opennms.features.remote-poller-standalone</artifactId>
+            <configuration>
+              <outputDirectory>${project.build.directory}</outputDirectory>
+              <artifactItems>
+                <artifactItem>
+                  <groupId>org.opennms.assemblies</groupId>
+                  <artifactId>org.opennms.assemblies.remote-poller-standalone</artifactId>
                   <version>${project.version}</version>
                   <classifier>remote-poller</classifier>
-	             </artifactItem>
-	           </artifactItems>
-	         </configuration>
-	       </execution>
-          <execution>
-            <id>unpack-jnlp</id>
-            <phase>process-resources</phase>
-            <goals>
-              <goal>unpack</goal>
-            </goals>
-	         <configuration>
-	           <outputDirectory>${project.build.directory}</outputDirectory>
-	           <artifactItems>
-	             <artifactItem>
-	               <groupId>org.opennms.features</groupId>
-	               <artifactId>org.opennms.features.remote-poller-jnlp</artifactId>
-                  <version>${project.version}</version>
-                  <classifier>jnlp</classifier>
-	             </artifactItem>
-	           </artifactItems>
-	         </configuration>
-	       </execution>
-          <execution>
-            <id>unpack-webapp</id>
-            <phase>process-resources</phase>
-            <goals>
-              <goal>unpack</goal>
-            </goals>
-	         <configuration>
-	           <outputDirectory>${project.build.directory}/dependency-webapp</outputDirectory>
-	           <artifactItems>
-	             <artifactItem>
-	               <groupId>org.opennms.features</groupId>
-	               <artifactId>org.opennms.features.webapp-full</artifactId>
-                  <version>${project.version}</version>
-	               <type>war</type>
-	             </artifactItem>
-	           </artifactItems>
-	         </configuration>
-	       </execution>
-          <execution>
-            <id>unpack-remoting</id>
-            <phase>process-resources</phase>
-            <goals>
-              <goal>unpack</goal>
-            </goals>
-	         <configuration>
-	           <outputDirectory>${project.build.directory}/dependency-remoting</outputDirectory>
-	           <artifactItems>
-                <artifactItem>
-                  <groupId>org.opennms.features</groupId>
-                  <artifactId>org.opennms.features.http-remoting</artifactId>
-                  <version>${project.version}</version>
-                  <type>war</type>
-	             </artifactItem>
-	           </artifactItems>
-	         </configuration>
-	       </execution>
+                </artifactItem>
+              </artifactItems>
+            </configuration>
+          </execution>
         </executions>
       </plugin>
       <plugin>
-        <groupId>org.opennms.maven.plugins</groupId>
-        <artifactId>tgz-maven-plugin</artifactId>
-        <extensions>true</extensions>
+        <artifactId>maven-assembly-plugin</artifactId>
         <configuration>
           <descriptors>
             <descriptor>src/assembly/daemon.xml</descriptor>
           </descriptors>
-          <appendAssemblyId>false</appendAssemblyId>
         </configuration>
+        <executions>
+          <execution>
+            <phase>package</phase>
+            <goals><goal>single</goal></goals>
+          </execution>
+        </executions>
+      </plugin>
+      <plugin>
+        <groupId>org.codehaus.mojo</groupId>
+        <artifactId>jasperreports-maven-plugin</artifactId>
+        <version>1.0-beta-3-20101123</version>
+        <executions>
+          <execution>
+            <phase>compile</phase>
+            <goals>
+              <goal>compile-reports</goal>
+            </goals>
+          </execution>
+        </executions>
+        <configuration>
+          <sourceDirectory>target/classes/etc/report-templates</sourceDirectory>
+          <outputDirectory>${project.build.directory}/jasper</outputDirectory>
+          <xmlValidation>true</xmlValidation>
+          <forceCompile>false</forceCompile>
+          <additionalProperties>
+            <net.sf.jasperreports.query.executer.factory.jrobin>org.opennms.netmgt.jasper.jrobin.JRobinQueryExecutorFactory</net.sf.jasperreports.query.executer.factory.jrobin>
+          </additionalProperties>
+        </configuration>
+        <dependencies>
+          <dependency>
+            <groupId>xerces</groupId>
+            <artifactId>xercesImpl</artifactId>
+            <version>${xercesVersion}</version>
+          </dependency>
+          <dependency>
+            <groupId>org.opennms</groupId>
+            <artifactId>jasper-extensions</artifactId>
+            <version>${project.version}</version>
+          </dependency>
+          <dependency>
+            <groupId>postgresql</groupId>
+            <artifactId>postgresql</artifactId>
+            <version>8.4-701.jdbc3</version>
+          </dependency>
+        </dependencies>
       </plugin>
       <plugin>
         <artifactId>maven-resources-plugin</artifactId>
@@ -323,6 +245,7 @@
     <dependency>
       <groupId>org.opennms.dependencies</groupId>
       <artifactId>snmp-dependencies</artifactId>
+      <type>pom</type>
     </dependency>
     <dependency>
       <groupId>org.opennms</groupId>
@@ -337,6 +260,16 @@
     <dependency>
       <groupId>org.opennms</groupId>
       <artifactId>opennms-xmp</artifactId>
+      <scope>compile</scope>
+    </dependency>
+    <dependency>
+      <groupId>org.opennms.features</groupId>
+      <artifactId>org.opennms.features.jdbc-collector</artifactId>
+      <scope>compile</scope>
+    </dependency>
+    <dependency>
+      <groupId>org.opennms.features</groupId>
+      <artifactId>org.opennms.features.system-report</artifactId>
       <scope>compile</scope>
     </dependency>
 
@@ -366,8 +299,9 @@
       <artifactId>smslib</artifactId>
     </dependency>
     <dependency>
-      <groupId>org.rxtx</groupId>
-      <artifactId>rxtx-osgi</artifactId>
+      <groupId>org.opennms.dependencies</groupId>
+      <artifactId>rxtx-dependencies</artifactId>
+      <type>pom</type>
     </dependency>
 
 
@@ -377,6 +311,7 @@
       <groupId>org.opennms.dependencies</groupId>
       <artifactId>javamail-dependencies</artifactId>
       <scope>runtime</scope>
+      <type>pom</type>
     </dependency>
     <!-- We depend on our JDBC database driver here instead of in the above
          OpenNMS dependencies that use the database because the database is
@@ -385,7 +320,7 @@
     <dependency>
       <groupId>postgresql</groupId>
       <artifactId>postgresql</artifactId>
-      <scope>runtime</scope>
+      <scope>compile</scope>
     </dependency>
     <dependency>
       <groupId>org.opennms</groupId>
@@ -403,6 +338,13 @@
     <dependency>
       <groupId>commons-lang</groupId>
       <artifactId>commons-lang</artifactId>
+    </dependency>
+
+    <!--jasper-extensions-->
+    <dependency>
+      <groupId>org.opennms</groupId>
+      <artifactId>jasper-extensions</artifactId>
+      <version>${project.version}</version>
     </dependency>
   </dependencies>
 </project>

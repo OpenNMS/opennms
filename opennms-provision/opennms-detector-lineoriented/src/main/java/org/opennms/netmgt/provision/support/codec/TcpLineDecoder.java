@@ -38,6 +38,7 @@ import org.apache.mina.core.buffer.IoBuffer;
 import org.apache.mina.core.session.IoSession;
 import org.apache.mina.filter.codec.CumulativeProtocolDecoder;
 import org.apache.mina.filter.codec.ProtocolDecoderOutput;
+import org.opennms.core.utils.LogUtils;
 import org.opennms.netmgt.provision.detector.simple.response.LineOrientedResponse;
 
 /**
@@ -84,7 +85,7 @@ public class TcpLineDecoder extends CumulativeProtocolDecoder {
                     in.limit(position);
                     // The bytes between in.position() and in.limit()
                     // now contain a full CRLF terminated line.
-                    System.err.println("slice: " + in.slice());
+                    LogUtils.debugf(this, "slice: %s", in.slice());
                     out.write(parseCommand(in.slice()));
                 } finally {
                     // Set the position to point right after the
@@ -149,6 +150,14 @@ public class TcpLineDecoder extends CumulativeProtocolDecoder {
      */
     public Charset getCharset() {
         return m_charset;
+    }
+    
+    @Override
+    public void finishDecode(IoSession session, ProtocolDecoderOutput out) {
+        if(session.getReadMessages() == 0) {
+            out.write(new LineOrientedResponse("TCP Failed to send Banner"));
+        }
+        
     }
 
 }

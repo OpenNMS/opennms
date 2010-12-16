@@ -198,7 +198,9 @@ public class CollectionResourceWrapper {
      * @return a {@link java.lang.String} object.
      */
     protected String getIfInfoValue(String attribute) {
-        return m_ifInfo.get(attribute);
+        if (m_ifInfo != null)
+            return m_ifInfo.get(attribute);
+        return null;
     }
     
     /**

@@ -111,7 +111,6 @@ public final class SyslogdConfigFactory implements SyslogdConfig {
      * @throws org.exolab.castor.xml.MarshalException if any.
      * @throws org.exolab.castor.xml.ValidationException if any.
      */
-    @Deprecated
     public SyslogdConfigFactory(Reader rdr) throws MarshalException, ValidationException {
         m_config = CastorUtils.unmarshal(SyslogdConfiguration.class, rdr);
     }

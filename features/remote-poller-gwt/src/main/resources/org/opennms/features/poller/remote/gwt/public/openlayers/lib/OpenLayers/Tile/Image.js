@@ -1,5 +1,6 @@
-/* Copyright (c) 2006-2008 MetaCarta, Inc., published under the Clear BSD
- * license.  See http://svn.openlayers.org/trunk/openlayers/license.txt for the
+/* Copyright (c) 2006-2010 by OpenLayers Contributors (see authors.txt for 
+ * full list of contributors). Published under the Clear BSD license.  
+ * See http://svn.openlayers.org/trunk/openlayers/license.txt for the
  * full text of the license. */
 
 
@@ -183,7 +184,8 @@ OpenLayers.Tile.Image = OpenLayers.Class(OpenLayers.Tile, {
         }
         var drawTile = OpenLayers.Tile.prototype.draw.apply(this, arguments);
         
-        if (OpenLayers.Util.indexOf(this.layer.SUPPORTED_TRANSITIONS, this.layer.transitionEffect) != -1) {
+        if ((OpenLayers.Util.indexOf(this.layer.SUPPORTED_TRANSITIONS, this.layer.transitionEffect) != -1) || 
+            this.layer.singleTile) {
             if (drawTile) {
                 //we use a clone of this tile to create a double buffer for visual
                 //continuity.  The backBufferTile is used to create transition
@@ -317,9 +319,9 @@ OpenLayers.Tile.Image = OpenLayers.Class(OpenLayers.Tile, {
      positionImage: function() {
         // if the this layer doesn't exist at the point the image is
         // returned, do not attempt to use it for size computation
-        if ( this.layer == null )
+        if (this.layer === null) {
             return;
-        
+        }
         // position the frame 
         OpenLayers.Util.modifyDOMElement(this.frame, 
                                           null, this.position, this.size);   

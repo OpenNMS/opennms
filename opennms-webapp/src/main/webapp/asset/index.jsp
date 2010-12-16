@@ -134,13 +134,13 @@
     <ul class="plain" style="width:48%; margin-right:2%; float:left;">
     <% for( int i=0; i < middle; i++ ) {%>
       <%  Asset asset = (Asset)assetsList.get(i); %>
-      <li> <%=asset.getAssetNumber()%>: <a href="asset/modify.jsp?node=<%=asset.getNodeId()%>"><%=NetworkElementFactory.getNodeLabel(asset.getNodeId())%></a></li>
+      <li> <%=asset.getAssetNumber()%>: <a href="asset/modify.jsp?node=<%=asset.getNodeId()%>"><%=NetworkElementFactory.getInstance(getServletContext()).getNodeLabel(asset.getNodeId())%></a></li>
     <% } %>
     </ul>
     <ul class="plain" style="width:50%; float:left;">
     <% for( int i=middle; i < assetCount; i++ ) {%>
       <%  Asset asset = (Asset)assetsList.get(i); %>
-      <li><%=asset.getAssetNumber()%>: <a href="asset/modify.jsp?node=<%=asset.getNodeId()%>"><%=NetworkElementFactory.getNodeLabel(asset.getNodeId())%></a></li>
+      <li><%=asset.getAssetNumber()%>: <a href="asset/modify.jsp?node=<%=asset.getNodeId()%>"><%=NetworkElementFactory.getInstance(getServletContext()).getNodeLabel(asset.getNodeId())%></a></li>
     <% } %>
     </ul>
     <hr />

@@ -56,7 +56,7 @@
     }
     
     int nodeId = WebSecurityUtils.safeParseInt(nodeIdString);
-    String nodeLabel = NetworkElementFactory.getNodeLabel(nodeId);
+    String nodeLabel = NetworkElementFactory.getInstance(getServletContext()).getNodeLabel(nodeId);
         
     String returnUrl = null;        
     if( ipAddr == null ) {        

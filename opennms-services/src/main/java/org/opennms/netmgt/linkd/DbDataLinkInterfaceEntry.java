@@ -53,44 +53,39 @@ import org.opennms.netmgt.config.DataSourceFactory;
  * 
  * @author <a href="mailto:antonio@opennms.it">Antonio Russo</a>
  */
-final class DbDataLinkInterfaceEntry
+public final class DbDataLinkInterfaceEntry
 {
 	/**
 	 * The character returned if the entry is active
 	 */
-
-	static final char STATUS_ACTIVE = 'A';
+	public static final char STATUS_ACTIVE = 'A';
 
 	/**
 	 * The character returned if the entry is not active
 	 * means last polled
 	 */
-
-	static final char STATUS_NOT_POLLED = 'N';
+	public static final char STATUS_NOT_POLLED = 'N';
 
 	/**
 	 * It stats that node is deleted
 	 * The character returned if the node is deleted
 	 */
-	static final char STATUS_DELETE = 'D';
+	public static final char STATUS_DELETED = 'D';
 
 	/**
 	 * The character returned if the entry type is unset/unknown.
 	 */
-
-	static final char STATUS_UNKNOWN = 'K';
+	public static final char STATUS_UNKNOWN = 'K';
 
 	/**
 	 * The node identifier
 	 */
-        
 	int     m_nodeId;
 
         /**
          * SNMP index of interface connected to the link on the node, 
          * is "-1" if it doesn't support SNMP 
          */
-
         int     m_ifindex;
 
         /**
@@ -101,7 +96,6 @@ final class DbDataLinkInterfaceEntry
         /**
          * SNMP interface index on the parent node.
          */
-		
         int     m_parentifindex;
 		
 		
@@ -109,27 +103,23 @@ final class DbDataLinkInterfaceEntry
 		 * The Status of
 		 * this information
 		 */
-
 		char m_status = STATUS_UNKNOWN;
 
 		/**
 		 * The Time when
 		 * this information was learned
 		 */
-
 		Timestamp m_lastPollTime;
 
 		/**
 		 * the sql statement to load data from database
 		 */
-		
 		private static final String SQL_LOAD_DATALINKINTERFACE = "SELECT nodeparentid,parentIfIndex,status,lastpolltime FROM datalinkinterface WHERE nodeid = ? AND ifindex = ? ";
 
 		/**
 		 * True if this recored was loaded from the database.
 		 * False if it's new.
 		 */
-		
 		private boolean m_fromDb;
 
 		/**
@@ -159,7 +149,7 @@ final class DbDataLinkInterfaceEntry
 		 */
 		private void insert(Connection c) throws SQLException {
 			if (m_fromDb)
-				throw new IllegalStateException("The record already exists in the database");
+				throw new IllegalStateException("The data link interface record already exists in the database");
 
 			// first extract the next node identifier
 			//
@@ -355,17 +345,6 @@ final class DbDataLinkInterfaceEntry
 			return true;
 		}
 
-		/**
-		 * Default constructor. 
-		 *
-		 */
-
-		DbDataLinkInterfaceEntry()
-        {
-			throw new UnsupportedOperationException(
-			"Default constructor not supported!");
-        }
-
         DbDataLinkInterfaceEntry(int nodeId, int ifindex, boolean exists)
         {
                 m_nodeId = nodeId;
@@ -480,7 +459,7 @@ final class DbDataLinkInterfaceEntry
 		
 		void set_status(char status) {
 			if (status == STATUS_ACTIVE || status == STATUS_NOT_POLLED
-					|| status == STATUS_DELETE)
+					|| status == STATUS_DELETED)
 				m_status = status;
 			m_changed |= CHANGED_STATUS;
 		}

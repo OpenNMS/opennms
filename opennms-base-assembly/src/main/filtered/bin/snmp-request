@@ -1,0 +1,18 @@
+#!/bin/sh -
+
+OPENNMS_HOME="${install.dir}"
+
+if [ -f "$OPENNMS_HOME/etc/opennms.conf" ]; then
+	. "$OPENNMS_HOME/etc/opennms.conf"
+fi
+
+SNMP4J_JAR=`ls -1 $OPENNMS_HOME/lib/snmp4j-*.jar | grep -v snmp4j-agent | tail -n 1`
+if [ -f $SNMP4J_JAR ]; then
+	echo "Using SNMP4J from: $SNMP4J_JAR"
+else
+	echo "SNMP4J missing from $OPENNMS_HOME/lib, cannot continue, giving up"
+	exit 255
+fi
+
+exec ${install.bin.dir}/runjava -r -- \
+     $ADDITIONAL_MANAGER_OPTIONS -cp $SNMP4J_JAR org.snmp4j.tools.console.SnmpRequest "$@"

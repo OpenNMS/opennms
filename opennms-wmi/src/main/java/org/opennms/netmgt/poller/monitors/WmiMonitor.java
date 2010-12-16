@@ -37,8 +37,8 @@ import java.net.InetAddress;
 import java.util.ArrayList;
 import java.util.Map;
 
+import org.opennms.core.utils.LogUtils;
 import org.opennms.core.utils.ParameterMap;
-import org.opennms.core.utils.ThreadCategory;
 import org.opennms.core.utils.TimeoutTracker;
 import org.opennms.netmgt.config.WmiPeerFactory;
 import org.opennms.netmgt.model.PollStatus;
@@ -68,17 +68,6 @@ import org.opennms.protocols.wmi.WmiResult;
 @Distributable
 public class WmiMonitor extends IPv4Monitor {
 
-	/**
-	 * Default retries.
-	 */
-	private static final int DEFAULT_RETRY = 0;
-
-	/**
-	 * Default timeout. Specifies how long (in milliseconds) to block waiting
-	 * for data from the monitored interface.
-	 */
-	private static final int DEFAULT_TIMEOUT = 3000;
-
 	private final static String DEFAULT_WMI_CLASS = "Win32_ComputerSystem";
 	private final static String DEFAULT_WMI_OBJECT = "Status";
 	private final static String DEFAULT_WMI_COMP_VAL = "OK";
@@ -99,8 +88,9 @@ public class WmiMonitor extends IPv4Monitor {
 	 * we are talking to a valid service and we set the service status to
 	 * SERVICE_AVAILABLE and return.
 	 */
-	@Override
-	public PollStatus poll(MonitoredService svc, Map parameters) {
+	@SuppressWarnings("unchecked")
+    @Override
+	public PollStatus poll(final MonitoredService svc, final Map parameters) {
 		// Holds the response reason.
 		String reason = null;
 		// Used to exit the retry loop early, if possible.
@@ -109,19 +99,16 @@ public class WmiMonitor extends IPv4Monitor {
 		WmiResult response = null;
 		// Used to track how long the request took.
 		Double responseTime = null;
-		NetworkInterface iface = svc.getNetInterface();
+		final NetworkInterface iface = svc.getNetInterface();
 		// Get the address we're going to poll.
-		InetAddress ipv4Addr = (InetAddress) iface.getAddress();
+		final InetAddress ipv4Addr = (InetAddress) iface.getAddress();
 		
-		ThreadCategory log = ThreadCategory.getInstance(getClass());
-
 		// Validate the interface type.
 		if (iface.getType() != NetworkInterface.TYPE_IPV4) {
-			throw new NetworkInterfaceNotSupportedException(
-					"Unsupported interface type, only TYPE_IPV4 currently supported");
+			throw new NetworkInterfaceNotSupportedException("Unsupported interface type, only TYPE_IPV4 currently supported");
 		}
 
-		WmiAgentConfig agentConfig = WmiPeerFactory.getInstance().getAgentConfig(ipv4Addr);
+		final WmiAgentConfig agentConfig = WmiPeerFactory.getInstance().getAgentConfig(ipv4Addr);
 		String matchType = DEFAULT_WMI_MATCH_TYPE;
 		String compVal = DEFAULT_WMI_COMP_VAL;
 		String compOp = DEFAULT_WMI_COMP_OP;
@@ -155,46 +142,34 @@ public class WmiMonitor extends IPv4Monitor {
                 agentConfig.setUsername(domain);
             }
             
-            matchType = ParameterMap.getKeyedString(parameters, "matchType",
-					DEFAULT_WMI_MATCH_TYPE);
-			compVal = ParameterMap.getKeyedString(parameters, "compareValue",
-					DEFAULT_WMI_COMP_VAL);
+            matchType = ParameterMap.getKeyedString(parameters, "matchType", DEFAULT_WMI_MATCH_TYPE);
+			compVal = ParameterMap.getKeyedString(parameters, "compareValue", DEFAULT_WMI_COMP_VAL);
 			compOp = ParameterMap.getKeyedString(parameters, "compareOp", DEFAULT_WMI_COMP_OP);
             wmiWqlStr = ParameterMap.getKeyedString(parameters, "wql", DEFAULT_WMI_WQL);
-            wmiClass = ParameterMap.getKeyedString(parameters, "wmiClass",
-					DEFAULT_WMI_CLASS);
-			wmiObject = ParameterMap.getKeyedString(parameters, "wmiObject",
-					DEFAULT_WMI_OBJECT);
+            wmiClass = ParameterMap.getKeyedString(parameters, "wmiClass", DEFAULT_WMI_CLASS);
+			wmiObject = ParameterMap.getKeyedString(parameters, "wmiObject", DEFAULT_WMI_OBJECT);
 		}
 
-		TimeoutTracker tracker = new TimeoutTracker(parameters, agentConfig.getRetries(),
-				agentConfig.getTimeout());
+        final TimeoutTracker tracker = new TimeoutTracker(parameters, agentConfig.getRetries(), agentConfig.getTimeout());
 
-
-        if (log().isDebugEnabled())
-            log().debug("poll: address = " + ipv4Addr.getHostAddress() + ", user = " + agentConfig.getUsername() + ", " + tracker);
+        LogUtils.debugf(this, "poll: address = %s, user = %s, %s", ipv4Addr.getHostAddress(), agentConfig.getUsername(), tracker);
         
         WmiManager mgr = null;
         
-        for (tracker.reset(); tracker.shouldRetry()
-				&& serviceStatus != PollStatus.SERVICE_AVAILABLE; tracker
-				.nextAttempt()) {
+        for (tracker.reset(); tracker.shouldRetry() && serviceStatus != PollStatus.SERVICE_AVAILABLE; tracker.nextAttempt()) {
 			try {
 
 				tracker.startAttempt();
 
-                if (log().isDebugEnabled())
-                        log().debug("poll: creating WmiManager object.");
+				LogUtils.debugf(this, "poll: creating WmiManager object.");
 
                 // Create a client, set up details and connect.
-				mgr = new WmiManager(ipv4Addr.getHostAddress(),
-						agentConfig.getUsername(), agentConfig.getPassword(), agentConfig.getDomain(), matchType);
+				mgr = new WmiManager(ipv4Addr.getHostAddress(), agentConfig.getUsername(), agentConfig.getPassword(), agentConfig.getDomain(), matchType);
 
 				mgr.setTimeout(tracker.getSoTimeout());
 				mgr.init();
 
-                if (log().isDebugEnabled())
-                        log().debug("Completed initializing WmiManager object.");
+				LogUtils.debugf(this, "Completed initializing WmiManager object.");
                 
                 // We are connected, so upgrade status to unresponsive
                 serviceStatus = PollStatus.SERVICE_UNRESPONSIVE;
@@ -204,23 +179,18 @@ public class WmiMonitor extends IPv4Monitor {
                 WmiParams clientParams = null;
                 if(wmiWqlStr.equals(DEFAULT_WMI_WQL)) {
 
-				    clientParams = new WmiParams(WmiParams.WMI_OPERATION_INSTANCEOF,
-                                                 compVal, compOp, wmiClass, wmiObject);
-                    if (log().isDebugEnabled())
-                        log().debug("Attempting to perform operation: \\\\" + wmiClass + "\\" + wmiObject);
+				    clientParams = new WmiParams(WmiParams.WMI_OPERATION_INSTANCEOF, compVal, compOp, wmiClass, wmiObject);
+				    LogUtils.debugf(this, "Attempting to perform operation: \\\\%s\\%s", wmiClass, wmiObject);
                 } else {
                     // Create parameters to run a WQL query.
-                    clientParams = new WmiParams(WmiParams.WMI_OPERATION_WQL,
-                                                 compVal, compOp, wmiWqlStr, wmiObject);
-                    if (log().isDebugEnabled())
-                        log().debug("Attempting to perform operation: " + wmiWqlStr);
+                    clientParams = new WmiParams(WmiParams.WMI_OPERATION_WQL, compVal, compOp, wmiWqlStr, wmiObject);
+                    LogUtils.debugf(this, "Attempting to perform operation: %s", wmiWqlStr);
                 }                
                 
                 // Send the request to the server and receive the response..
 				response = mgr.performOp(clientParams);
 
-                if (log().isDebugEnabled())
-                        log().debug("Received result: " + response);
+				LogUtils.debugf(this, "Received result: %s", response);
                 
                 // Now save the time it took to process the check command.
 				responseTime = tracker.elapsedTimeInMillis();
@@ -229,30 +199,29 @@ public class WmiMonitor extends IPv4Monitor {
 					continue;
 				}
 
-				ArrayList<Object> wmiObjects = response.getResponse();
+				final ArrayList<Object> wmiObjects = response.getResponse();
+
+				final StringBuffer reasonBuffer = new StringBuffer();
+				reasonBuffer.append("Result for ").append(wmiClass).append("\\").append(wmiObject);
 
 				if (response.getResultCode() == WmiResult.RES_STATE_OK) {
 					serviceStatus = PollStatus.SERVICE_AVAILABLE;
-					reason = "Result for  " + wmiClass + "\\" + wmiObject
-							+ ": " + wmiObjects.get(0).toString();
+					reasonBuffer.append(": ").append(wmiObjects.get(0));
 				} else if (response.getResultCode() == WmiResult.RES_STATE_CRIT) {
 					serviceStatus = PollStatus.SERVICE_UNAVAILABLE;
-					reason = "Result for  " + wmiClass + "\\" + wmiObject
-							+ ": " + wmiObjects.get(0).toString();
 					// set this to null so we don't try to save data when the node is down
 					responseTime = null;
 				}
-
-			} catch (WmiException e) {
-				log.debug("WMI Poller received exception from client: "
-						+ e.getMessage());
+				reason = reasonBuffer.toString();
+			} catch (final WmiException e) {
+				LogUtils.debugf(this, e, "WMI Poller received exception from client.");
 				reason = "WmiException: " + e.getMessage();
 			} finally {
                 if (mgr != null) {
                     try {
                         mgr.close();
                     } catch (WmiException e) {
-                        log().warn("an error occurred closing the WMI Manager", e);
+                        LogUtils.warnf(this, e, "An error occurred closing the WMI Manager.");
                     }
                 }
             }

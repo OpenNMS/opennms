@@ -161,6 +161,10 @@ public class ThresholdEvaluatorHighLow implements ThresholdEvaluator {
                     setExceededCount(0);
                     return Status.RE_ARMED;
                 }
+                if (getExceededCount() > 0) {
+                    log().debug("evaluate: resetting " + getType() + " threshold count to 0, because the current value indicates that the in-progress threshold has been rearmed, but it doesn't triggered yet.");
+                    setExceededCount(0);
+                }
             } else {
                 log().debug("evaluate: resetting " + getType() + " threshold count to 0");
                 setExceededCount(0);

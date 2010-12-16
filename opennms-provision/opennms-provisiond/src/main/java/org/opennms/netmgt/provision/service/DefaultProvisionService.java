@@ -813,7 +813,6 @@ public class DefaultProvisionService implements ProvisionService {
         log().warn(String.format(format, args));
     }
 
-    @SuppressWarnings("unused")
     private void debug(String format, Object... args) {
         if (log().isDebugEnabled()) {
             log().debug(String.format(format, args));
@@ -876,6 +875,7 @@ public class DefaultProvisionService implements ProvisionService {
         
         String hostname = getHostnameForIp(ipAddress);
         
+        // @ipv6
         OnmsNode node = new OnmsNode(createDistPollerIfNecessary("localhost", "127.0.0.1"));
         node.setLabel(hostname == null ? ipAddress : hostname);
         node.setLabelSource(hostname == null ? "A" : "H");

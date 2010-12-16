@@ -159,7 +159,7 @@ function doCommand(){
           <td>&nbsp;</td>
           <td align="left">
             <h3>
-              Node: <%=NetworkElementFactory.getNodeLabel(nodeId)%><br/>
+              Node: <%=NetworkElementFactory.getInstance(getServletContext()).getNodeLabel(nodeId)%><br/>
             </h3>
           </td>
           <td>&nbsp;</td>
@@ -185,7 +185,7 @@ function doCommand(){
 	    <td><select id="address" name="address">
 	<%
     String ipAddress = null;              
-    Interface[] intfs = NetworkElementFactory.getActiveInterfacesOnNode( nodeId );
+    Interface[] intfs = NetworkElementFactory.getInstance(getServletContext()).getActiveInterfacesOnNode( nodeId );
     for( int i=0; i < intfs.length; i++ ) { 
       	if(intfs[i]!=null){
 		   ipAddress = intfs[i].getIpAddress();

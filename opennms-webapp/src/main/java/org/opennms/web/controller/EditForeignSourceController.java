@@ -43,6 +43,7 @@ import javax.servlet.http.HttpServletResponse;
 
 import org.apache.commons.lang.builder.ToStringBuilder;
 import org.joda.time.Duration;
+import org.opennms.core.utils.LogUtils;
 import org.opennms.core.utils.PropertyPath;
 import org.opennms.core.utils.ThreadCategory;
 import org.opennms.netmgt.provision.persist.ForeignSourceService;
@@ -102,8 +103,6 @@ public class EditForeignSourceController extends SimpleFormController {
             return m_formData;
         }
         public void setFormData(ForeignSource importData) {
-//            System.err.println("setFormData:");
-//            System.err.println(importData);
             m_formData = importData;
         }
         public String getDefaultFormPath() {
@@ -155,7 +154,7 @@ public class EditForeignSourceController extends SimpleFormController {
     @Override
     protected ModelAndView onSubmit(HttpServletRequest request, HttpServletResponse response, Object command, BindException errors) throws Exception {
         TreeCommand treeCmd = (TreeCommand)command;
-        System.err.println("treeCmd = " + treeCmd);
+        LogUtils.debugf(this, "treeCmd = %s", treeCmd);
         String action = treeCmd.getAction();
         if (action == null) {
             return doShow(request, response, treeCmd, errors);

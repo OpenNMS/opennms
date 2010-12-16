@@ -1,0 +1,50 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<schema targetNamespace="http://xmlns.opennms.org/xsd/config/datacollection-groups"
+        xmlns="http://www.w3.org/2001/XMLSchema"
+        xmlns:types="http://xmlns.opennms.org/xsd/config/datacollection-types"
+        xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+        xmlns:ns2="http://www.w3.org/1999/xhtml"
+        xmlns:ns="http://www.w3.org/2001/XMLSchema"
+        xmlns:hfp="http://www.w3.org/2001/XMLSchema-hasFacetAndProperty"
+        xmlns:dc="http://xmlns.opennms.org/xsd/config/datacollection-groups">
+  <annotation>
+    <documentation>XML Schema for the sub files associated to datacollection-config.xml configuration
+    file. Version: $Id$. </documentation>
+  </annotation>
+
+  <import namespace="http://xmlns.opennms.org/xsd/config/datacollection-types" schemaLocation="datacollection-types.xsd"/>
+          
+  <element name="datacollection-group">
+    <annotation>
+      <documentation>Top-level element for the datacollection group
+      configuration file.</documentation>
+    </annotation>
+
+    <complexType>
+      <sequence>
+        <element maxOccurs="unbounded" minOccurs="0" ref="types:resourceType">
+          <annotation>
+            <documentation>Custom resource types</documentation>
+          </annotation>
+        </element>
+        <element maxOccurs="unbounded" minOccurs="0" ref="types:group">
+          <annotation>
+            <documentation>a MIB object group</documentation>
+          </annotation>
+        </element>
+        <element maxOccurs="unbounded" minOccurs="0" ref="types:systemDef">
+          <annotation>
+            <documentation>list of system definitions</documentation>
+          </annotation>
+        </element>
+      </sequence>
+
+      <attribute name="name" type="string" use="required">
+        <annotation>
+          <documentation>data collector group name</documentation>
+        </annotation>
+      </attribute>
+    </complexType>
+  </element>
+
+</schema>

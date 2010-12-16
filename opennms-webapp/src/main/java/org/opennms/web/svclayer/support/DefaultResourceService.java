@@ -41,6 +41,7 @@
 package org.opennms.web.svclayer.support;
 
 import java.io.File;
+import java.util.ArrayList;
 import java.util.LinkedHashMap;
 import java.util.LinkedList;
 import java.util.List;
@@ -66,10 +67,6 @@ import org.springframework.util.Assert;
  *
  * @author <a href="mailto:dj@opennms.org">DJ Gregor</a>
  * @author <a href="mailto:brozow@opennms.org">Mathew Brozowski</a>
- * @author <a href="mailto:dj@opennms.org">DJ Gregor</a>
- * @author <a href="mailto:brozow@opennms.org">Mathew Brozowski</a>
- * @version $Id: $
- * @since 1.8.1
  */
 public class DefaultResourceService implements ResourceService, InitializingBean {
     private ResourceDao m_resourceDao;
@@ -170,17 +167,23 @@ public class DefaultResourceService implements ResourceService, InitializingBean
 
     /** {@inheritDoc} */
     public List<OnmsResource> findNodeChildResources(int nodeId) {
-        OnmsResource resource = m_resourceDao.loadResourceById(OnmsResource.createResourceId("node", Integer.toString(nodeId)));
-        List<OnmsResource> resources = resource.getChildResources();
-        resources.size(); // Get the size to force the list to be loaded
+        List<OnmsResource> resources = new ArrayList<OnmsResource>();
+        OnmsResource resource = m_resourceDao.getResourceById(OnmsResource.createResourceId("node", Integer.toString(nodeId)));
+        if (resource != null) {
+            resources = resource.getChildResources();
+            resources.size(); // Get the size to force the list to be loaded
+        }
         return resources;
     }
 
     /** {@inheritDoc} */
     public List<OnmsResource> findDomainChildResources(String domain) {
-        OnmsResource resource = m_resourceDao.loadResourceById(OnmsResource.createResourceId("domain", domain));
-        List<OnmsResource> resources = resource.getChildResources();
-        resources.size(); // Get the size to force the list to be loaded
+        List<OnmsResource> resources = new ArrayList<OnmsResource>();
+        OnmsResource resource = m_resourceDao.getResourceById(OnmsResource.createResourceId("domain", domain));
+        if (resource != null) {
+            resources = resource.getChildResources();
+            resources.size(); // Get the size to force the list to be loaded
+        }
         return resources;
     }
     
@@ -194,28 +197,30 @@ public class DefaultResourceService implements ResourceService, InitializingBean
     public List<OnmsResource> findChildResources(OnmsResource resource, String... resourceTypeMatches) {
         List<OnmsResource> matchingChildResources = new LinkedList<OnmsResource>();
         
-        for (OnmsResource childResource : resource.getChildResources()) {
-            boolean addGraph = false;
-            if (resourceTypeMatches.length > 0) {
-                for (String resourceTypeMatch : resourceTypeMatches) {
-                    if (resourceTypeMatch.equals(childResource.getResourceType().getName())) {
-                        addGraph = true;
-                        break;
+        if (resource != null) {
+            for (OnmsResource childResource : resource.getChildResources()) {
+                boolean addGraph = false;
+                if (resourceTypeMatches.length > 0) {
+                    for (String resourceTypeMatch : resourceTypeMatches) {
+                        if (resourceTypeMatch.equals(childResource.getResourceType().getName())) {
+                            addGraph = true;
+                            break;
+                        }
                     }
+                } else {
+                    addGraph = true;
                 }
-            } else {
-                addGraph = true;
-            }
-        
-            if (addGraph) {
-                matchingChildResources.add(checkLabelForQuotes(childResource));
+            
+                if (addGraph) {
+                    matchingChildResources.add(checkLabelForQuotes(childResource));
+                }
             }
         }
 
         return matchingChildResources;
     }
     
-    private OnmsResource checkLabelForQuotes(OnmsResource childResource) {
+    private static OnmsResource checkLabelForQuotes(OnmsResource childResource) {
         
         String lbl  = Util.convertToJsSafeString(childResource.getLabel());
         
@@ -231,11 +236,6 @@ public class DefaultResourceService implements ResourceService, InitializingBean
         return m_resourceDao.getResourceById(id);
     }
 
-    /** {@inheritDoc} */
-    public OnmsResource loadResourceById(String id) {
-        return m_resourceDao.loadResourceById(id);
-    }
-    
     /** {@inheritDoc} */
     public List<OnmsResource> getResourceListById(String resourceId) {
         return m_resourceDao.getResourceListById(resourceId);
@@ -269,11 +269,11 @@ public class DefaultResourceService implements ResourceService, InitializingBean
      * @param resourceId a {@link java.lang.String} object.
      */
     public void promoteGraphAttributesForResource(String resourceId) {
-        promoteGraphAttributesForResource(loadResourceById(resourceId));
+        promoteGraphAttributesForResource(getResourceById(resourceId));
     }
     
-    private ThreadCategory log() {
-        return ThreadCategory.getInstance(getClass());
+    private static ThreadCategory log() {
+        return ThreadCategory.getInstance(DefaultResourceService.class);
     }
 
     /**

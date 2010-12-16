@@ -2,12 +2,12 @@
   <parent>
     <groupId>org.opennms</groupId>
     <artifactId>org.opennms.features.notifications</artifactId>
-    <version>1.8.4-SNAPSHOT</version>
+    <version>1.8.8-SNAPSHOT</version>
   </parent>
   <modelVersion>4.0.0</modelVersion>
   <groupId>org.opennms</groupId>
   <artifactId>org.opennms.features.notifications.sms-strategy</artifactId>
-  <version>1.8.4-SNAPSHOT</version>
+  <version>1.8.8-SNAPSHOT</version>
   <packaging>pom</packaging>
   <name>OpenNMS SMS Notification Strategy</name>
   <build>
@@ -32,11 +32,13 @@
         <groupId>org.opennms.dependencies</groupId>
         <artifactId>hibernate-dependencies</artifactId>
         <version>[1.7.0,2.0.0)</version>
+        <type>pom</type>
       </dependency>
       <dependency>
         <groupId>org.opennms.dependencies</groupId>
         <artifactId>spring-dependencies</artifactId>
         <version>[1.7.0,2.0.0)</version>
+        <type>pom</type>
       </dependency>
       <dependency>
         <groupId>org.opennms</groupId>

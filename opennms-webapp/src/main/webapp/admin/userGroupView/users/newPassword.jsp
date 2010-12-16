@@ -68,10 +68,10 @@
 }
 </script>
 
-<h3>Please enter the New Password and Confirm.</h3>
+<h3>Please enter a new password and confirm</h3>
 
-<br/
->
+<br/>
+
 <form method="post" name="goForm">
 
 <table>
@@ -95,10 +95,10 @@
   
   <tr>
     <td>
-      <input type="submit" value="OK" onClick="verifyGoForm()">
+      <input type="button" value="OK" onclick="verifyGoForm()">
     </td>
     <td>
-      <input type="button" value="Cancel" onClick="window.close()">
+      <input type="button" value="Cancel" onclick="window.close()">
     </tr>
 </table>
 </form>

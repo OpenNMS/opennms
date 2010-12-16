@@ -2,7 +2,7 @@
 <engine-configuration 
 	xmlns="http://xmlns.opennms.org/xsd/drools-engine" 
 	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" 
-	xsi:schemaLocation="http://xmlns.opennms.org/xsd/drools-engine ../../../main/castor/drools-engine.xsd ">
+	xsi:schemaLocation="http://xmlns.opennms.org/xsd/drools-engine ${install.share.dir}/xsds/drools-engine.xsd ">
   <rule-set name="locationMonitorRules">
     <rule-file>${opennms.home}/etc/LocationMonitorRules.drl</rule-file>
     <event>uei.opennms.org/remote/nodes/nodeLostService</event>

@@ -120,7 +120,7 @@ function addSpecific(){
  </tr>
 </table>
 
-<input type="submit" name="addSpecific" id="addSpecific" value="Add" onclick="addSpecific();" />
+<input type="button" name="addSpecific" id="addSpecific" value="Add" onclick="addSpecific();" />
 <input type="button" name="cancel" id="cancel" value="Cancel" onclick="window.close();opener.document.focus();" />
 
   <hr />

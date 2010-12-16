@@ -42,19 +42,11 @@ import org.opennms.protocols.wmi.test.stubs.OnmsWbemObjectBiosStub;
 import org.opennms.protocols.wmi.test.stubs.OnmsWbemPropSetBiosStub;
 import org.opennms.protocols.wmi.test.stubs.OnmsWbemPropBiosStub;
 import org.opennms.protocols.wmi.wbem.OnmsWbemObjectSet;
-import org.opennms.protocols.wmi.wbem.OnmsWbemObject;
-import org.opennms.protocols.wmi.wbem.OnmsWbemPropertySet;
-import org.opennms.protocols.wmi.wbem.OnmsWbemMethodSet;
-import org.opennms.protocols.wmi.wbem.OnmsWbemObjectPath;
-
 import junit.framework.TestCase;
 
-import java.util.List;
-
 /**
- * @author <A HREF="mailto:matt.raykowski@gmail.com">Matt Raykowski </A>
- * @author <A HREF="http://www.opennsm.org">OpenNMS </A>
- * 
+ * @author <a href="mailto:matt.raykowski@gmail.com">Matt Raykowski</a>
+ * @author <a href="http://www.opennms.org">OpenNMS</a>
  */
 public class WmiManagerTest extends TestCase {
 	private IWmiClient m_WmiMock;

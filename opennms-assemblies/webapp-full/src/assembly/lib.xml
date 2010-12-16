@@ -1,0 +1,14 @@
+<assembly>
+  <id>lib</id>
+  <formats>
+    <format>tar.gz</format>
+  </formats>
+  <includeBaseDirectory>false</includeBaseDirectory>
+  <fileSets>
+    <fileSet>
+      <filtered>false</filtered>
+      <outputDirectory>/</outputDirectory>
+      <directory>${project.build.directory}/warmerge-temp/WEB-INF/lib</directory>
+    </fileSet>
+  </fileSets>
+</assembly>

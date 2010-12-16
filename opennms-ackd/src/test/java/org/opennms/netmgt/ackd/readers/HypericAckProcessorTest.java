@@ -36,7 +36,6 @@
 package org.opennms.netmgt.ackd.readers;
 
 import static org.junit.Assert.*;
-import static org.junit.Assert.assertEquals;
 import static org.easymock.EasyMock.*;
 
 import java.io.IOException;

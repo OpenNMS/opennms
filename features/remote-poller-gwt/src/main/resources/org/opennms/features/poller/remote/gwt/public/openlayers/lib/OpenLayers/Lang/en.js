@@ -1,7 +1,3 @@
-/* Copyright (c) 2006-2008 MetaCarta, Inc., published under the Clear BSD
- * license.  See http://svn.openlayers.org/trunk/openlayers/license.txt for the
- * full text of the license. */
-
 /**
  * @requires OpenLayers/Lang.js
  */
@@ -87,6 +83,7 @@ OpenLayers.Lang.en = {
     'E': 'E',
     'N': 'N',
     'S': 'S',
+    'graticule': 'Graticule',
 
     // console message
     'layerAlreadyAdded':
@@ -121,9 +118,11 @@ OpenLayers.Lang.en = {
     // console message
     'pagePositionFailed':
         "OpenLayers.Util.pagePosition failed: element with id ${elemId} may be misplaced.",
-                    
-    'end': '',
 
     // console message
-    'filterEvaluateNotImplemented': "evaluate is not implemented for this filter type."
+    'filterEvaluateNotImplemented': "evaluate is not implemented for this filter type.",
+
+    // **** end ****
+    'end': ''
+    
 };

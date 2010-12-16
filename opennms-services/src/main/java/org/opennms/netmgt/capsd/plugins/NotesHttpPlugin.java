@@ -43,11 +43,8 @@ package org.opennms.netmgt.capsd.plugins;
  * plugins by the daemon.
  * </P>
  *
- * @author <A HREF="mailto:jason@opennms.org">Jason </A>
- * @author <A HREF="http://www.opennsm.org">OpenNMS </A>
- * @author <A HREF="mailto:jason@opennms.org">Jason </A>
- * @author <A HREF="http://www.opennsm.org">OpenNMS </A>
- * @version 1.1.1.1
+ * @author <a href="mailto:jason@opennms.org">Jason</a>
+ * @author <a href="http://www.opennms.org">OpenNMS</a>
  */
 public class NotesHttpPlugin extends HttpPlugin {
 

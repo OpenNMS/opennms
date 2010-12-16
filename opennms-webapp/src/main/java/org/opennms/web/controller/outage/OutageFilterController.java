@@ -98,7 +98,7 @@ public class OutageFilterController extends AbstractController implements Initia
         List<Filter> filterList = new ArrayList<Filter>();
         if (filterStrings != null) {
             for (String filterString : filterStrings) {
-                Filter filter = OutageUtil.getFilter(filterString);
+                Filter filter = OutageUtil.getFilter(filterString, getServletContext());
                 if (filter != null) {
                     filterList.add(filter);
                 }

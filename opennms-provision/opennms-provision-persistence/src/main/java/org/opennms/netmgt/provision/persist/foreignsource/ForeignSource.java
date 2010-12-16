@@ -64,9 +64,6 @@ import org.opennms.netmgt.provision.persist.StringIntervalAdapter;
  *
  * @author <a href="mailto:ranger@opennms.org">Benjamin Reed</a>
  * @author <a href="mailto:brozow@opennms.org">Matt Brozowski</a>
- * @author <a href="mailto:ranger@opennms.org">Benjamin Reed</a>
- * @author <a href="mailto:brozow@opennms.org">Matt Brozowski</a>
- * @version $Id: $
  */
 @XmlRootElement(name="foreign-source")
 public class ForeignSource implements Serializable, Comparable<ForeignSource> {

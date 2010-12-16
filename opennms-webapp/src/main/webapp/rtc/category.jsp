@@ -99,7 +99,7 @@
         Node node = (Node) nodeEnum.nextElement();
         int nodeId = (int)node.getNodeid();
         String nodeLabel =
-		NetworkElementFactory.getNodeLabel(nodeId);
+		NetworkElementFactory.getInstance(getServletContext()).getNodeLabel(nodeId);
         // nodeMap.put( nodeLabel, node );
 
         if (accessChecker.isNodeAccessible(nodeId)) {

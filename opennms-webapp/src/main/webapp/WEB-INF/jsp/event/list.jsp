@@ -95,18 +95,16 @@
 
     //required attributes
     Event[] events = (Event[])req.getAttribute( "events" );
-    Integer eventCount = (Integer)req.getAttribute( "eventCount" );
+    int eventCount = req.getAttribute( "eventCount" ) == null ? -1 : (Integer)req.getAttribute( "eventCount" );
     EventQueryParms parms = (EventQueryParms)req.getAttribute( "parms" );
 
     if( events == null || parms == null ) {
         throw new ServletException( "Missing either the events or parms request attribute." );
     }
-    if (eventCount == null) {
-	    eventCount = Integer.valueOf(-1);
-	}
 
+    // Make 'action' the opposite of the current acknowledgement state
     String action = AcknowledgeType.ACKNOWLEDGED.getShortName();
-    if (parms.ackType == AcknowledgeType.ACKNOWLEDGED) {
+    if (parms.ackType != null && parms.ackType == AcknowledgeType.ACKNOWLEDGED) {
     	action = AcknowledgeType.UNACKNOWLEDGED.getShortName();
     }
 
@@ -210,22 +208,25 @@
         <li><a href="<%=this.makeLink( parms, new ArrayList<Filter>())%>" title="Remove all search constraints" >View all events</a></li>
         <li><a href="event/advsearch.jsp" title="More advanced searching and sorting options">Advanced Search</a></li>
         <li><a href="<%=org.opennms.web.Util.calculateUrlBase(req)%>/event/severity.jsp">Severity Legend</a></li>
-      
-      <% if( req.isUserInRole( Authentication.ADMIN_ROLE ) || !req.isUserInRole( Authentication.READONLY_ROLE ) ) { %>
-        <% if( parms.ackType == AcknowledgeType.UNACKNOWLEDGED ) { %> 
-          <% if ( eventCount == -1 ) { %>
-            <li><a href="javascript: void document.acknowledge_by_filter_form.submit()" onclick="return confirm('Are you sure you want to acknowledge all events in the current search including those not shown on your screen?')" title="Acknowledge all events that match the current search constraints, even those not shown on the screen">Acknowledge entire search</a></li>
-          <% } else { %>
-            <li><a href="javascript: void document.acknowledge_by_filter_form.submit()" onclick="return confirm('Are you sure you want to acknowledge all events in the current search including those not shown on your screen?  (<%=eventCount%> total events)')" title="Acknowledge all events that match the current search constraints, even those not shown on the screen">Acknowledge entire search</a></li>
-          <% } %>
-        <% } else { %>
-          <% if ( eventCount == -1 ) { %>
-            <li><a href="javascript: void document.acknowledge_by_filter_form.submit()" onclick="return confirm('Are you sure you want to unacknowledge all events in the current search including those not shown on your screen)?')" title="Unacknowledge all events that match the current search constraints, even those not shown on the screen">Unacknowledge entire search</a></li>
-          <% } else { %>
-            <li><a href="javascript: void document.acknowledge_by_filter_form.submit()" onclick="return confirm('Are you sure you want to unacknowledge all events in the current search including those not shown on your screen)?  (<%=eventCount%> total events)')" title="Unacknowledge all events that match the current search constraints, even those not shown on the screen">Unacknowledge entire search</a></li>
+
+        <% if( req.isUserInRole( Authentication.ADMIN_ROLE ) || !req.isUserInRole( Authentication.READONLY_ROLE ) ) { %>
+          <% if ( eventCount > 0 ) { %>
+            <li>
+              <!-- hidden form for acknowledging the result set -->
+              <form style="display:inline" action="event/acknowledgeByFilter" method="post" name="acknowledge_by_filter_form">
+                <input type="hidden" name="redirectParms" value="<%=org.opennms.web.Util.htmlify(req.getQueryString())%>" />
+                <input type="hidden" name="actionCode" value="<%=action%>" />
+                <%=org.opennms.web.Util.makeHiddenTags(req)%>
+              </form>
+
+              <% if( parms.ackType == AcknowledgeType.UNACKNOWLEDGED ) { %> 
+                <a href="javascript:void()" onclick="if (confirm('Are you sure you want to acknowledge all events in the current search including those not shown on your screen?  (<%=eventCount%> total events)')) {  document.acknowledge_by_filter_form.submit(); }" title="Acknowledge all events that match the current search constraints, even those not shown on the screen">Acknowledge entire search</a>
+              <% } else { %>
+                <a href="javascript:void()" onclick="if (confirm('Are you sure you want to unacknowledge all events in the current search including those not shown on your screen)?  (<%=eventCount%> total events)')) { document.acknowledge_by_filter_form.submit(); }" title="Unacknowledge all events that match the current search constraints, even those not shown on the screen">Unacknowledge entire search</a>
+              <% } %>
+            </li>
           <% } %>
         <% } %>
-      <% } %>
       </ul>
       </div>
       <!-- end menu -->
@@ -236,13 +237,6 @@
 	  	<input type="hidden" name="uei" id="uei" value="" /> <!-- Set by java script -->
 	  </form>
 	  
-      <!-- hidden form for acknowledging the result set --> 
-      <form action="event/acknowledgeByFilter" method="post" name="acknowledge_by_filter_form">    
-        <input type="hidden" name="redirectParms" value="<%=req.getQueryString()%>" />
-        <input type="hidden" name="actionCode" value="<%=action%>" />
-        <%=org.opennms.web.Util.makeHiddenTags(req)%>
-      </form>      
-
 
       <jsp:include page="/includes/event-querypanel.jsp" flush="false" />
           
@@ -284,7 +278,7 @@
 
     <% if( req.isUserInRole( Authentication.ADMIN_ROLE ) || !req.isUserInRole( Authentication.READONLY_ROLE ) ) { %>
       <form action="event/acknowledge" method="post" name="acknowledge_form">
-        <input type="hidden" name="redirectParms" value="<%=req.getQueryString()%>" />
+        <input type="hidden" name="redirectParms" value="<%=org.opennms.web.Util.htmlify(req.getQueryString())%>" />
         <input type="hidden" name="actionCode" value="<%=action%>" />
         <%=org.opennms.web.Util.makeHiddenTags(req)%>
     <% } %>
@@ -344,14 +338,14 @@
           </td>
           <td class="divider">
 	    <% if(events[i].getNodeId() != 0 && events[i].getNodeLabel()!= null ) { %>
-              <% Filter nodeFilter = new NodeFilter(events[i].getNodeId()); %>             
+              <% Filter nodeFilter = new NodeFilter(events[i].getNodeId(), getServletContext()); %>             
               <% String[] labels = this.getNodeLabels( events[i].getNodeLabel() ); %>
               <a href="element/node.jsp?node=<%=events[i].getNodeId()%>" title="<%=labels[1]%>"><%=labels[0]%></a>
                     
               <% if( !parms.filters.contains(nodeFilter) ) { %>
                 <nobr>
                   <a href="<%=this.makeLink( parms, nodeFilter, true)%>" class="filterLink" title="Show only events on this node">${addPositiveFilter}</a>
-                  <a href="<%=this.makeLink( parms, new NegativeNodeFilter(events[i].getNodeId()), true)%>" class="filterLink" title="Do not show events for this node">${addNegativeFilter}</a>
+                  <a href="<%=this.makeLink( parms, new NegativeNodeFilter(events[i].getNodeId(), getServletContext()), true)%>" class="filterLink" title="Do not show events for this node">${addNegativeFilter}</a>
                 </nobr>
               <% } %>
             <% } else { %>

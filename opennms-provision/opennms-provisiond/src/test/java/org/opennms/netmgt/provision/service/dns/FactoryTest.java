@@ -39,9 +39,16 @@ import static org.junit.Assert.*;
 
 import java.net.URLStreamHandler;
 
+import org.junit.Before;
 import org.junit.Test;
+import org.opennms.test.mock.MockLogAppender;
 
 public class FactoryTest {
+
+    @Before
+    public void setUp() {
+        MockLogAppender.setupLogging();
+    }
 
     @Test
     public void dwCreateURLStreamHandler() {

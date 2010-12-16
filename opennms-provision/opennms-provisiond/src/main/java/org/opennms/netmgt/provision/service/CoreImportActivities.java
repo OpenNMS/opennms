@@ -118,6 +118,7 @@ public class CoreImportActivities {
     public ImportOperationsManager auditNodes(Requisition specFile) {
         info("Auditing nodes for requisition %s", specFile);
 
+        // @ipv6
         m_provisionService.createDistPollerIfNecessary("localhost", "127.0.0.1");
         
         String foreignSource = specFile.getForeignSource();
@@ -200,7 +201,7 @@ public class CoreImportActivities {
         RequisitionVisitor visitor = new AbstractRequisitionVisitor() {
             @Override
             public void visitNode(OnmsNodeRequisition nodeReq) {
-                System.out.println("Scheduling relate of node "+nodeReq);
+            	LogUtils.debugf(this, "Scheduling relate of node %s", nodeReq);
                 currentPhase.add(parentSetter(nodeReq, requisition.getForeignSource()));
             }
         };
@@ -232,7 +233,7 @@ public class CoreImportActivities {
      * @param args a {@link java.lang.Object} object.
      */
     protected void info(String format, Object... args) {
-        log().info(String.format(format, args));
+    	LogUtils.infof(this, format, args);
     }
 
     /**
@@ -242,9 +243,7 @@ public class CoreImportActivities {
      * @param args a {@link java.lang.Object} object.
      */
     protected void debug(String format, Object... args) {
-        if (log().isDebugEnabled()) {
-            log().debug(String.format(format, args));
-        }
+    	LogUtils.debugf(this, format, args);
     }
 
     /**

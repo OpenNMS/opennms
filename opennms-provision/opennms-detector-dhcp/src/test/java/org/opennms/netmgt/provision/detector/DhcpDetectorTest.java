@@ -16,6 +16,7 @@ import org.junit.runner.RunWith;
 import org.opennms.netmgt.dhcpd.Dhcpd;
 import org.opennms.netmgt.provision.detector.dhcp.DhcpDetector;
 import org.opennms.netmgt.provision.support.NullDetectorMonitor;
+import org.opennms.test.mock.MockLogAppender;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.test.context.ContextConfiguration;
 import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
@@ -39,6 +40,8 @@ public class DhcpDetectorTest{
     
     @Before
     public void setup() {
+        MockLogAppender.setupLogging();
+
         m_dhcpd = Dhcpd.getInstance();
         m_dhcpd.init();
         m_dhcpd.start();

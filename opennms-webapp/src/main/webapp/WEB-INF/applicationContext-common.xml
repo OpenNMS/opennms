@@ -11,4 +11,6 @@
       </list>
     </property>
   </bean>
+  
+  <bean id="networkElementFactory" class="org.opennms.web.element.NetworkElementFactory"/>
 </beans>

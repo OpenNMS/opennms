@@ -47,7 +47,6 @@ import org.opennms.netmgt.model.OnmsResource;
 import org.opennms.web.MissingParameterException;
 import org.opennms.web.svclayer.ResourceService;
 import org.springframework.beans.factory.InitializingBean;
-import org.springframework.dao.DataAccessException;
 import org.springframework.util.Assert;
 import org.springframework.web.servlet.ModelAndView;
 import org.springframework.web.servlet.mvc.AbstractController;
@@ -60,6 +59,12 @@ import org.springframework.web.servlet.mvc.AbstractController;
  * @since 1.8.1
  */
 public class CustomGraphChooseResourceController extends AbstractController implements InitializingBean {
+
+    public enum Parameters {
+        resourceId,
+        selectedResourceId
+    }
+
     private ResourceService m_resourceService;
 
     /** {@inheritDoc} */
@@ -67,30 +72,26 @@ public class CustomGraphChooseResourceController extends AbstractController impl
     protected ModelAndView handleRequestInternal(HttpServletRequest request, HttpServletResponse response) throws Exception {
         ModelAndView modelAndView = new ModelAndView("KSC/customGraphChooseResource");
 
-        String resourceId = request.getParameter("resourceId");
+        String resourceId = request.getParameter(Parameters.resourceId.toString());
         if (resourceId == null) {
-            throw new MissingParameterException("resourceId");
+            throw new MissingParameterException(Parameters.resourceId.toString());
         }
         
-        String selectedResourceId = request.getParameter("selectedResourceId");
+        String selectedResourceId = request.getParameter(Parameters.selectedResourceId.toString());
         if (selectedResourceId != null) {
-            try {
-                OnmsResource selectedResource = m_resourceService.getResourceById(selectedResourceId);
+            OnmsResource selectedResource = m_resourceService.getResourceById(selectedResourceId);
 
-                Map<String, OnmsResource> selectedResourceAndParents = new HashMap<String, OnmsResource>();
-                OnmsResource r = selectedResource;
-                while (r != null) {
-                    selectedResourceAndParents.put(r.getId(), r);
-                    r = r.getParent();
-                }
-                
-                modelAndView.addObject("selectedResourceAndParents", selectedResourceAndParents);
-            } catch (DataAccessException e) {
-                // Don't do anything
+            Map<String, OnmsResource> selectedResourceAndParents = new HashMap<String, OnmsResource>();
+            OnmsResource r = selectedResource;
+            while (r != null) {
+                selectedResourceAndParents.put(r.getId(), r);
+                r = r.getParent();
             }
+            
+            modelAndView.addObject("selectedResourceAndParents", selectedResourceAndParents);
         }
         
-        OnmsResource resource = getResourceService().loadResourceById(resourceId);
+        OnmsResource resource = getResourceService().getResourceById(resourceId);
         modelAndView.addObject("parentResource", resource);
         
         modelAndView.addObject("parentResourcePrefabGraphs", m_resourceService.findPrefabGraphsForResource(resource));

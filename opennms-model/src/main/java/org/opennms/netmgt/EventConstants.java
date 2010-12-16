@@ -584,6 +584,8 @@ public class EventConstants {
     public static final String REPORTD_RUN_REPORT = "uei.opennms.org/reportd/runReport";
     /** Constant <code>PARM_REPORT_NAME="reportName"</code> */
     public static final String PARM_REPORT_NAME = "reportName";
+    public static final String REPORT_RUN_FAILED_UEI = "uei.opennms.org/reportd/reportRunFailed";
+    public static final String REPORT_DELIVERY_FAILED_UEI = "uei.opennms.org/reportd/reportDeliveryFailed";
     
     /** Constant <code>REMOTE_NODE_LOST_SERVICE_UEI="uei.opennms.org/remote/nodes/nodeLostSe"{trunked}</code> */
     public static final String REMOTE_NODE_LOST_SERVICE_UEI = "uei.opennms.org/remote/nodes/nodeLostService";
@@ -987,48 +989,6 @@ public class EventConstants {
     public final static int XMLRPC_NOTIFY_FAILURE = 2;
 
     /**
-     * Enumerated values for severity being indeterminate
-     * @deprecated see OnmsSeverity.class
-     */
-    public static final int SEV_INDETERMINATE = 1;
-
-    /**
-     * Enumerated values for severity being unimplemented at this time
-     * @deprecated see OnmsSeverity.class
-     */
-    public static final int SEV_CLEARED = 2;
-
-    /**
-     * Enumerated values for severity indicates a warning
-     * @deprecated see OnmsSeverity.class
-     */
-    public static final int SEV_NORMAL = 3;
-
-    /**
-     * Enumerated values for severity indicates a warning
-     * @deprecated see OnmsSeverity.class
-     */
-    public static final int SEV_WARNING = 4;
-
-    /**
-     * Enumerated values for severity is minor
-     * @deprecated see OnmsSeverity.class
-     */
-    public static final int SEV_MINOR = 5;
-
-    /**
-     * Enumerated values for severity is major
-     * @deprecated see OnmsSeverity.class
-     */
-    public static final int SEV_MAJOR = 6;
-
-    /**
-     * Enumerated values for severity is critical
-     * @deprecated see OnmsSeverity.class
-     */
-    public static final int SEV_CRITICAL = 7;
-
-    /**
      * Enumerated value for the state(tticket and forward) when entry is active
      */
     public static final int STATE_ON = 1;
@@ -1116,66 +1076,4 @@ public class EventConstants {
     public static final String formatToUIString(Date date) {
         return DateFormat.getDateTimeInstance(DateFormat.SHORT, DateFormat.MEDIUM).format(date);
     }
-
-    /**
-     * Converts the severity to an integer
-     *
-     * @return integer equivalent for the severity
-     * @param sev a {@link java.lang.String} object.
-     */
-    public static int getSeverity(String sev) {
-        int rc = SEV_INDETERMINATE;
-        if (sev != null) {
-            sev = sev.trim();
-            if (sev.equalsIgnoreCase("normal")) {
-                rc = SEV_NORMAL;
-            } else if (sev.equalsIgnoreCase("warning")) {
-                rc = SEV_WARNING;
-            } else if (sev.equalsIgnoreCase("minor")) {
-                rc = SEV_MINOR;
-            } else if (sev.equalsIgnoreCase("major")) {
-                rc = SEV_MAJOR;
-            } else if (sev.equalsIgnoreCase("critical")) {
-                rc = SEV_CRITICAL;
-            } else if (sev.equalsIgnoreCase("cleared")) {
-                rc = SEV_CLEARED;
-            }
-        }
-        return rc;
-    }
-
-    /**
-     * Returns a severity constant as a printable string.
-     *
-     * @param sev a int.
-     * @return A capitalized String representing severity.
-     */
-    public static String getSeverityString(int sev) {
-        String retString = null;
-        switch (sev) {
-        case SEV_CLEARED :
-            retString = "Cleared";
-            break;
-        case SEV_CRITICAL :
-            retString = "Critical";
-            break;
-        case SEV_MAJOR :
-            retString = "Major";
-            break;
-        case SEV_MINOR :
-            retString = "Minor";
-            break;
-        case SEV_NORMAL :
-            retString = "Normal";
-            break;
-        case SEV_WARNING :
-            retString = "Warning";
-            break;
-        default :
-            retString = "Indeterminate";
-        }
-        return retString;
-    }
-
-
 }
