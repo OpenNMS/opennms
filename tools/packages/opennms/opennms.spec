@@ -472,6 +472,7 @@ rm -rf $RPM_BUILD_ROOT
 
 %files plugin-provisioning-map
 %attr(664,root,root) %{instprefix}/lib/opennms-map-provisioning-adapter*.jar
+%attr(664,root,root) %{instprefix}/etc/examples/mapsadapter-configuration.xml
 %attr(664,root,root) %{instprefix}/etc/mapsadapter-configuration.xml
 
 %files plugin-provisioning-rancid
