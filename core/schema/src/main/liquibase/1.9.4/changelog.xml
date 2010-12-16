@@ -30,9 +30,6 @@
         <modifyColumn tableName="distpoller">
             <column name="dpip" type="text"/>
         </modifyColumn>
-        <modifyColumn tableName="snmpinterface">
-            <column name="ipaddr" type="text"/>
-        </modifyColumn>
         <modifyColumn tableName="ipinterface">
             <column name="ipaddr" type="text"/>
         </modifyColumn>
