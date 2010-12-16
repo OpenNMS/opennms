@@ -7,6 +7,7 @@
         <report id="trivial-report" template="trivial-report.jrxml" engine="null" />
 	<report id="parameter-test" template="parameter-test.jrxml" engine="null" />
         <report id="Early-Morning-Report" template="Early-Morning-Report.jrxml" engine="jdbc" />
+        <report id="Response-Time-Summary-Report"template="ResponseTimeSummary.jrxml" engine="jdbc" />
         <report id="Node-Availability-Report" template="NodeAvailabilityReport.jrxml" engine="jdbc" />
         <report id="Node-Availability-Report_ThisMonth" template="NodeAvailabilityReport_ThisMonth.jrxml" engine="jdbc" />
         <report id="Node-Availability-Report_LastMonth" template="NodeAvailabilityReport_LastMonth.jrxml" engine="jdbc" />
