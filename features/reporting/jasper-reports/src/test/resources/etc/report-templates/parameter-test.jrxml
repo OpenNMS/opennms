@@ -7,14 +7,25 @@
         	<parameterDescription>
             	<![CDATA[a string parameter]]>
         	</parameterDescription>
+        	<defaultValueExpression><![CDATA["Hosts"]]></defaultValueExpression>
         </parameter>
-        <parameter name="stringParameter2" class="java.lang.String" />
-        <parameter name="floatParameter" class="java.lang.Float" />
-        <parameter name="integerParameter" class="java.lang.Integer"/>
-        <parameter name="dateParameter" class="java.util.Date"/>
+        <parameter name="stringParameter2" class="java.lang.String">
+        	<defaultValueExpression><![CDATA["Routers"]]></defaultValueExpression>
+        </parameter>
+        <parameter name="floatParameter" class="java.lang.Float">
+        	<defaultValueExpression><![CDATA[new Float("99.99")]]></defaultValueExpression>
+        </parameter>
+        <parameter name="integerParameter" class="java.lang.Integer">
+        	<defaultValueExpression><![CDATA[new Integer("100")]]></defaultValueExpression>
+        </parameter>
+        <parameter name="dateParameter" class="java.util.Date">
+        	<defaultValueExpression><![CDATA[new Date(-112426200000L)]]></defaultValueExpression>
+        </parameter>
         <parameter name="sqlDateParameter" class="java.sql.Date"/>
         <parameter name="sqlTimestampParameter" class="java.sql.Timestamp"/>
-        <parameter name="doubleParameter" class="java.lang.Double" />
+        <parameter name="doubleParameter" class="java.lang.Double">
+        	<defaultValueExpression><![CDATA[new Double("99.99")]]></defaultValueExpression>
+        </parameter>
         <parameter name="longParameter" class="java.lang.Long" isForPrompting="false"/>
     <title>
         <band height="20">

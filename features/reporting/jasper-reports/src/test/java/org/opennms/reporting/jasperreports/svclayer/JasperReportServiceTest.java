@@ -50,6 +50,10 @@ import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.opennms.api.reporting.ReportException;
 import org.opennms.api.reporting.ReportFormat;
+import org.opennms.api.reporting.parameter.ReportDateParm;
+import org.opennms.api.reporting.parameter.ReportDoubleParm;
+import org.opennms.api.reporting.parameter.ReportFloatParm;
+import org.opennms.api.reporting.parameter.ReportIntParm;
 import org.opennms.api.reporting.parameter.ReportParameters;
 import org.opennms.api.reporting.parameter.ReportStringParm;
 import org.opennms.netmgt.dao.JasperReportConfigDao;
@@ -59,6 +63,10 @@ import org.springframework.test.context.TestExecutionListeners;
 import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
 import org.springframework.test.context.support.DependencyInjectionTestExecutionListener;
 
+/**
+ * @author user
+ *
+ */
 @RunWith(SpringJUnit4ClassRunner.class)
 @TestExecutionListeners( { DependencyInjectionTestExecutionListener.class })
 @ContextConfiguration(locations = { "classpath:org/opennms/reporting/jasperreports/svclayer/JasperReportServiceTest.xml" })
@@ -120,6 +128,35 @@ public class JasperReportServiceTest {
                     ReportStringParm stringParm2 = reportParameters.getStringParms().get(1);
                     Assert.assertEquals("stringParameter2",stringParm2.getDisplayName());
                     Assert.assertEquals(3, reportParameters.getDateParms().size());
+                } catch (ReportException e) {
+                    // TODO Auto-generated catch block
+                    e.printStackTrace();
+                }
+                
+        }
+        /**
+         * Using a test date of -112426200000L ( Thu, 09 Jun 1966 18:30:00)
+         */
+        @Test
+        public void testDefaults() {
+                ReportParameters reportParameters;
+                try {
+                    reportParameters = m_reportService
+                                    .getParameters(REPORTID);
+                    ReportStringParm stringParm1 = reportParameters.getStringParms().get(0);
+                    Assert.assertEquals("Hosts",stringParm1.getValue());
+                    ReportStringParm stringParm2 = reportParameters.getStringParms().get(1);
+                    Assert.assertEquals("Routers",stringParm2.getValue());
+                    ReportFloatParm floatParm = reportParameters.getFloatParms().get(0);
+                    Assert.assertEquals(new Float("99.99"), floatParm.getValue());
+                    ReportIntParm intParm = reportParameters.getIntParms().get(0);
+                    Assert.assertEquals(100, intParm.getValue());
+                    ReportDoubleParm doubleParm = reportParameters.getDoubleParms().get(0);
+                    Assert.assertEquals(new Double("99.99"), doubleParm.getValue());
+//                    ReportDateParm dateParm1 = reportParameters.getDateParms().get(0);
+//                    Assert.assertEquals(19, dateParm1.getHours().intValue());
+//                    Assert.assertEquals(30, dateParm1.getMinutes().intValue());
+                    
                 } catch (ReportException e) {
                     // TODO Auto-generated catch block
                     e.printStackTrace();

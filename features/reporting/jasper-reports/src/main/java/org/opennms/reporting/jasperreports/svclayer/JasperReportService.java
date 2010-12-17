@@ -30,6 +30,7 @@ import java.util.Calendar;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 import net.sf.jasperreports.engine.JREmptyDataSource;
 import net.sf.jasperreports.engine.JRException;
@@ -41,6 +42,7 @@ import net.sf.jasperreports.engine.JasperFillManager;
 import net.sf.jasperreports.engine.JasperPrint;
 import net.sf.jasperreports.engine.JasperReport;
 import net.sf.jasperreports.engine.export.JRXmlExporter;
+import net.sf.jasperreports.engine.fill.JRParameterDefaultValuesEvaluator;
 import net.sf.jasperreports.engine.xml.JRPrintXmlLoader;
 
 import org.opennms.api.reporting.ReportException;
@@ -105,12 +107,14 @@ public class JasperReportService implements ReportService {
         JRParameter[] reportParms;
 
         JasperReport jasperReport = null;
+        Map defaultValues = null;
 
         String sourceFileName = m_jasperReportConfigDao.getTemplateLocation(reportId);
         if (sourceFileName != null) {
             try {
                 jasperReport = JasperCompileManager.compileReport(System.getProperty("opennms.home")
                         + "/etc/report-templates/" + sourceFileName);
+                defaultValues = JRParameterDefaultValuesEvaluator.evaluateParameterDefaultValues(jasperReport, null);
             } catch (JRException e) {
                 log.error("unable to compile jasper report", e);
                 throw new ReportException("unable to compile jasperReport",
@@ -156,7 +160,12 @@ public class JasperReportService implements ReportService {
                         stringParm.setDisplayName(reportParm.getName());
                     }
                     stringParm.setName(reportParm.getName());
-                    stringParm.setValue(new String());
+                    if (defaultValues.containsKey(reportParm.getName()) &&
+                    		(defaultValues.get(reportParm.getName()) != null)) {
+                    	stringParm.setValue((String) defaultValues.get(reportParm.getName()));
+                    } else {
+                    	stringParm.setValue(new String());
+                    }
                     stringParms.add(stringParm);
                     continue;
                 }
@@ -171,7 +180,12 @@ public class JasperReportService implements ReportService {
                         intParm.setDisplayName(reportParm.getName());
                     }
                     intParm.setName(reportParm.getName());
-                    intParm.setValue(new Integer(0));
+                    if (defaultValues.containsKey(reportParm.getName()) &&
+                    		(defaultValues.get(reportParm.getName()) != null)) {
+                    	intParm.setValue((Integer) defaultValues.get(reportParm.getName()));
+                    } else {
+                    	intParm.setValue(new Integer(0));
+                    }
                     intParms.add(intParm);
                     continue;
                 }
@@ -186,7 +200,12 @@ public class JasperReportService implements ReportService {
                         floatParm.setDisplayName(reportParm.getName());
                     }
                     floatParm.setName(reportParm.getName());
-                    floatParm.setValue(new Float(0));
+                    if (defaultValues.containsKey(reportParm.getName()) &&
+            			(defaultValues.get(reportParm.getName()) != null)) {
+                    	floatParm.setValue((Float) defaultValues.get(reportParm.getName()));
+                    } else {
+                    	floatParm.setValue(new Float(0));
+                    }
                     floatParms.add(floatParm);
                     continue;
                 }
@@ -201,7 +220,12 @@ public class JasperReportService implements ReportService {
                         doubleParm.setDisplayName(reportParm.getName());
                     }
                     doubleParm.setName(reportParm.getName());
-                    doubleParm.setValue(new Double(0));
+                    if (defaultValues.containsKey(reportParm.getName()) &&
+                    		(defaultValues.get(reportParm.getName()) != null)) {
+                    	doubleParm.setValue((Double) defaultValues.get(reportParm.getName()));
+                    } else {
+                    	doubleParm.setValue(new Double(0));
+                    }
                     doubleParms.add(doubleParm);
                     continue;
                 }
@@ -221,12 +245,21 @@ public class JasperReportService implements ReportService {
                     dateParm.setInterval("day");
                     dateParm.setHours(0);
                     dateParm.setMinutes(0);
-                    Calendar cal = Calendar.getInstance();
-                    cal.set(Calendar.HOUR_OF_DAY, 0);
-                    cal.set(Calendar.MINUTE, 0);
-                    cal.set(Calendar.SECOND, 0);
-                    cal.set(Calendar.MILLISECOND, 0);
-                    dateParm.setDate(cal.getTime());
+                    if (defaultValues.containsKey(reportParm.getName()) &&
+                    		(defaultValues.get(reportParm.getName()) != null)) {
+                    	dateParm.setDate((Date) defaultValues.get(reportParm.getName()));
+                    	Calendar cal = Calendar.getInstance();
+                    	cal.setTime(dateParm.getDate());
+                    	dateParm.setMinutes(cal.get(Calendar.MINUTE));
+                    	dateParm.setHours(cal.get(Calendar.HOUR_OF_DAY));
+                    } else {
+                        Calendar cal = Calendar.getInstance();
+                        cal.set(Calendar.HOUR_OF_DAY, 0);
+                        cal.set(Calendar.MINUTE, 0);
+                        cal.set(Calendar.SECOND, 0);
+                        cal.set(Calendar.MILLISECOND, 0);
+                        dateParm.setDate(cal.getTime());
+                    }
                     dateParms.add(dateParm);
                     continue;
                 }
@@ -247,12 +280,21 @@ public class JasperReportService implements ReportService {
                     dateParm.setInterval("day");
                     dateParm.setHours(0);
                     dateParm.setMinutes(0);
-                    Calendar cal = Calendar.getInstance();
-                    cal.set(Calendar.HOUR_OF_DAY, 0);
-                    cal.set(Calendar.MINUTE, 0);
-                    cal.set(Calendar.SECOND, 0);
-                    cal.set(Calendar.MILLISECOND, 0);
-                    dateParm.setDate(cal.getTime());
+                    if (defaultValues.containsKey(reportParm.getName()) &&
+                    		(defaultValues.get(reportParm.getName()) != null)) {
+                    	dateParm.setDate((Date) defaultValues.get(reportParm.getName()));
+                    	Calendar cal = Calendar.getInstance();
+                    	cal.setTime(dateParm.getDate());
+                    	dateParm.setMinutes(cal.get(Calendar.MINUTE));
+                    	dateParm.setHours(cal.get(Calendar.HOUR_OF_DAY));
+                    } else {
+                        Calendar cal = Calendar.getInstance();
+                        cal.set(Calendar.HOUR_OF_DAY, 0);
+                        cal.set(Calendar.MINUTE, 0);
+                        cal.set(Calendar.SECOND, 0);
+                        cal.set(Calendar.MILLISECOND, 0);
+                        dateParm.setDate(cal.getTime());
+                    }
                     dateParms.add(dateParm);
                     continue;
                 }

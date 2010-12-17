@@ -7,31 +7,49 @@
 		<parameterDescription>
 			<![CDATA[a string parameter]]>
 		</parameterDescription>
+		<defaultValueExpression>
+			<![CDATA["Routers"]]>
+		</defaultValueExpression>
 	</parameter>
 	<parameter name="integerParameter" class="java.lang.Integer">
 		<parameterDescription>
 			<![CDATA[an Integer parameter]]>
 		</parameterDescription>
+		<defaultValueExpression>
+			<![CDATA[new Integer("100")]]>
+		</defaultValueExpression>
 	</parameter>
 	<parameter name="floatParameter" class="java.lang.Float">
 		<parameterDescription>
 			<![CDATA[a Float parameter]]>
 		</parameterDescription>
+		<defaultValueExpression>
+			<![CDATA[new Float("99.99")]]>
+		</defaultValueExpression>
 	</parameter>
 	<parameter name="doubleParameter" class="java.lang.Double">
 		<parameterDescription>
 			<![CDATA[a Double parameter]]>
 		</parameterDescription>
+		<defaultValueExpression>
+			<![CDATA[new Double("3.1415")]]>
+		</defaultValueExpression>
 	</parameter>
 	<parameter name="dateParameter" class="java.util.Date">
 		<parameterDescription>
 			<![CDATA[a java.util.date parameter]]>
 		</parameterDescription>
+		<defaultValueExpression>
+			<![CDATA[new Date(-112426200000L)]]>
+		</defaultValueExpression>
 	</parameter>
 	<parameter name="sqlTimestampParameter" class="java.sql.Timestamp">
 		<parameterDescription>
 			<![CDATA[a java.sql.Timestamp parameter]]>
 		</parameterDescription>
+		<defaultValueExpression>
+			<![CDATA[new java.sql.Timestamp(-135506700000L)]]>
+		</defaultValueExpression>
 	</parameter>
 	<title>
     	<band height="20">
