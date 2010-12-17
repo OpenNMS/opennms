@@ -306,6 +306,14 @@
         <version>2.1.1</version>
         <configuration>
           <archiveClasses>true</archiveClasses>
+          <outputFileNameMapping>@{artifactId}@-@{baseVersion}@@{dashClassifier?}@.@{extension}@</outputFileNameMapping>
+          <archive>
+            <manifest>
+              <addClasspath>true</addClasspath>
+              <classpathLayoutType>custom</classpathLayoutType>
+              <customClasspathLayout>WEB-INF/lib/@{artifact.groupIdPath}/@{artifact.artifactId}-@{artifact.baseVersion}@{dashClassifier?}.@{artifact.extension}</customClasspathLayout>
+            </manifest>
+          </archive>
         </configuration>
       </plugin>
       <plugin>
