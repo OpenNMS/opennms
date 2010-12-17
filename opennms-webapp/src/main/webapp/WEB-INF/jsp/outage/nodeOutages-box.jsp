@@ -48,8 +48,8 @@
 --%>
 
 <%@page language="java" contentType="text/html" session="true" import="org.opennms.web.WebSecurityUtils,org.opennms.web.outage.*,java.util.*" %>
-<%@ taglib uri="http://java.sun.com/jsp/jstl/core" prefix="c" %>
-<%@ taglib uri="http://java.sun.com/jsp/jstl/fmt" prefix="fmt" %>
+<%@taglib uri="http://java.sun.com/jsp/jstl/core" prefix="c" %>
+<%@taglib uri="http://java.sun.com/jsp/jstl/fmt" prefix="fmt" %>
 
 <%
 	int nodeId = (Integer)request.getAttribute("nodeId");
@@ -84,10 +84,19 @@
 		<% if( outages[i].getRegainedServiceTime() == null ) { %>
       <tr class="Critical">
     <% } else { %>
-      <tr class="Cleared">      
+      <tr class="Cleared">
     <% } %>
-      <td class="divider"><a href="element/interface.jsp?node=<%=nodeId%>&intf=<%=outages[i].getIpAddress()%>"><%=outages[i].getIpAddress()%></a></td>
-      <td class="divider"><a href="element/service.jsp?node=<%=nodeId%>&intf=<%=outages[i].getIpAddress()%>&service=<%=outages[i].getServiceId()%>"><%=outages[i].getServiceName()%></a></td>
+      <c:url var="interfaceLink" value="element/interface.jsp">
+        <c:param name="node" value="<%=String.valueOf(nodeId)%>"/>
+        <c:param name="intf" value="<%=outages[i].getIpAddress()%>"/>
+      </c:url>
+      <td class="divider"><a href="${interfaceLink}"><%=outages[i].getIpAddress()%></a></td>
+      <c:url var="serviceLink" value="element/service.jsp">
+        <c:param name="node" value="<%=String.valueOf(nodeId)%>"/>
+        <c:param name="intf" value="<%=outages[i].getIpAddress()%>"/>
+        <c:param name="service" value="<%=String.valueOf(outages[i].getServiceId())%>"/>
+      </c:url>
+      <td class="divider"><a href="${serviceLink}"><c:out value="<%=outages[i].getServiceName()%>"/></a></td>
       <td class="divider"><fmt:formatDate value="${outage.lostServiceTime}" type="date" dateStyle="short"/>&nbsp;<fmt:formatDate value="${outage.lostServiceTime}" type="time" pattern="HH:mm:ss"/></td>
       
       <% if( outages[i].getRegainedServiceTime() == null ) { %>
@@ -100,4 +109,4 @@
   <% } %>
 <% } %>
 
-</table>      
+</table>

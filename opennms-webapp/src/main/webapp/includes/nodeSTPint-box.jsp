@@ -47,6 +47,8 @@
 
 <%@page language="java" contentType="text/html" session="true" import="org.opennms.web.WebSecurityUtils,org.opennms.web.element.*" %>
 
+<%@taglib uri="http://java.sun.com/jsp/jstl/core" prefix="c" %>
+<%@taglib uri="http://java.sun.com/jsp/jstl/fmt" prefix="fmt" %>
 
 <%
     //required parameter node
@@ -67,17 +69,17 @@
 <table>
 <% if(stpifs.length == 0) { %>
   <tr>
-    <td >There have been no STP Interfaces info on this node.</td>
+    <td>There are no STP interfaces on this node.</td>
   </tr>
 <% } else { %>
 			<thead>
               <tr>
-                <th>Vlan Identifier</th>			  
+                <th>VLAN Identifier</th>			  
                 <th>Port/Ifindex</th>
                 <th>Port Status</th>
                 <th>Status</th>
                 <th>Path Cost</th>
-                <th>Stp Root</th>
+                <th>STP Root</th>
                 <th>Designated Bridge</th>
                 <th>Designated Port</th>
                 <th>Designated Cost</th>
@@ -88,7 +90,12 @@
 			  <tr bgcolor="<%=stpifs[i].getVlanColorIdentifier()%>">
                 <td><%=stpifs[i].get_stpvlan()%></td>		  
 		<% if (stpifs[i].get_ipaddr() != null && !"0.0.0.0".equals(stpifs[i].get_ipaddr())) { %>
-                	<td><%=stpifs[i].get_bridgeport()%>/<a href="element/interface.jsp?node=<%=nodeId%>&intf=<%=stpifs[i].get_ipaddr()%>&ifindex=<%=stpifs[i].get_ifindex()%>"><%=stpifs[i].get_ifindex()%></a></td>
+                <c:url var="interfaceLink" value="element/interface.jsp">
+                  <c:param name="node" value="<%=String.valueOf(nodeId)%>"/>
+                  <c:param name="intf" value="<%=stpifs[i].get_ipaddr()%>"/>
+                  <c:param name="ifindex" value="<%=String.valueOf(stpifs[i].get_ifindex())%>"/>
+                </c:url>
+                <td><%=stpifs[i].get_bridgeport()%>/<a href="${interfaceLink}"><%=stpifs[i].get_ifindex()%></a></td>
 		<% } else { %>
 			<td><%=stpifs[i].get_bridgeport()%>/<a href="element/snmpinterface.jsp?node=<%=nodeId%>&ifindex=<%=stpifs[i].get_ifindex()%>"><%=stpifs[i].get_ifindex()%></a></td>
 		<% } %>
@@ -98,14 +105,22 @@
 				<% if (stpifs[i].get_stprootnodeid() != 0) { 
 						Node node = NetworkElementFactory.getInstance(getServletContext()).getNode(stpifs[i].get_stprootnodeid());
 				%>
-				<td><a href="element/node.jsp?node=<%=stpifs[i].get_stprootnodeid()%>"><%=node.getLabel()%></a><br/>(<strong><%=stpifs[i].get_stpdesignatedroot()%></strong>)</td>
+				<td>
+				    <a href="element/node.jsp?node=<%=stpifs[i].get_stprootnodeid()%>"><c:out value="<%=node.getLabel()%>"/></a>
+				    <br/>
+				    (<strong><%=stpifs[i].get_stpdesignatedroot()%></strong>)
+				</td>
 				<% } else { %>
 				<td><%=stpifs[i].get_stpdesignatedroot()%></td>
 				<% } %>
 				<% if (stpifs[i].get_stpbridgenodeid() != 0) { 
 						Node node = NetworkElementFactory.getInstance(getServletContext()).getNode(stpifs[i].get_stpbridgenodeid());
 				%>
-				<td><a href="element/node.jsp?node=<%=stpifs[i].get_stpbridgenodeid()%>"><%=node.getLabel()%></a><br/>(<strong><%=stpifs[i].get_stpdesignatedbridge()%></strong>)</td>
+				<td>
+				    <a href="element/node.jsp?node=<%=stpifs[i].get_stpbridgenodeid()%>"><c:out value="<%=node.getLabel()%>"/></a>
+				    <br/>
+				    (<strong><%=stpifs[i].get_stpdesignatedbridge()%></strong>)
+				</td>
 				<% } else {%>
 				<td><%=stpifs[i].get_stpdesignatedbridge()%></td>
 				<% } %>
@@ -115,6 +130,4 @@
               </tr>
               <% } %>
        <% } %>
-                     
-</table>      
-
+</table>

@@ -41,6 +41,7 @@
 
 <%@page language="java"	contentType="text/html"	session="true" %>
 <%@taglib prefix="fmt" uri="http://java.sun.com/jsp/jstl/fmt" %>
+<%@taglib prefix="c" uri="http://java.sun.com/jsp/jstl/core" %>
 
 <%@page import="java.util.HashMap"%>
 <%@page import="java.util.regex.Matcher"%>
@@ -131,7 +132,11 @@
           <td>
             <% if( event.getIpAddress() != null ) { %>
               <% if( event.getNodeId() > 0 ) { %>
-                <a href="element/interface.jsp?node=<%=event.getNodeId()%>&intf=<%=event.getIpAddress()%>"><%=event.getIpAddress()%></a>
+                <c:url var="interfaceLink" value="element/interface.jsp">
+                  <c:param name="node" value="<%=String.valueOf(event.getNodeId())%>"/>
+                  <c:param name="intf" value="<%=event.getIpAddress()%>"/>
+                </c:url>
+                <a href="${interfaceLink}"><%=event.getIpAddress()%></a>
               <% } else { %>
                 <%=event.getIpAddress()%>
               <% } %>
@@ -148,9 +153,14 @@
           <td>
             <% if( event.getServiceName() != null ) { %>
               <% if( event.getIpAddress() != null && event.getNodeId() > 0 ) { %>
-                <a href="element/service.jsp?node=<%=event.getNodeId()%>&intf=<%=event.getIpAddress()%>&service=<%=event.getServiceId()%>"><%=event.getServiceName()%></a>
+                <c:url var="serviceLink" value="element/service.jsp">
+                  <c:param name="node" value="<%=String.valueOf(event.getNodeId())%>"/>
+                  <c:param name="intf" value="<%=event.getIpAddress()%>"/>
+                  <c:param name="service" value="<%=String.valueOf(event.getServiceId())%>"/>
+                </c:url>
+                <a href="${serviceLink}"><c:out value="<%=event.getServiceName()%>"/></a>
               <% } else { %>
-                <%=event.getServiceName()%>
+                <c:out value="<%=event.getServiceName()%>"/>
               <% } %>
             <% } else {%>
               &nbsp;

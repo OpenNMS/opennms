@@ -48,7 +48,8 @@
 		org.opennms.web.element.Service
 	"
 %>
-<%@ taglib uri="http://java.sun.com/jsp/jstl/core" prefix="c" %>
+<%@taglib uri="http://java.sun.com/jsp/jstl/core" prefix="c" %>
+<%@taglib uri="http://java.sun.com/jsp/jstl/fmt" prefix="fmt" %>
 
 <%
     Service service = ElementUtil.getServiceByParams(request, getServletContext());
