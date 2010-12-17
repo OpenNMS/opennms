@@ -48,6 +48,8 @@
 		java.text.DateFormat
 	"
 %>
+<%@taglib uri="http://java.sun.com/jsp/jstl/core" prefix="c" %>
+<%@taglib uri="http://java.sun.com/jsp/jstl/fmt" prefix="fmt" %>
 
 <%!
     public static DateFormat DATE_FORMAT = DateFormat.getDateTimeInstance(DateFormat.SHORT, DateFormat.MEDIUM);
@@ -95,7 +97,11 @@
           <td class="standard">
             <% if( outage.getIpAddress() != null ) { %>
               <% if( outage.getNodeId() > 0 ) { %>
-                <a href="element/interface.jsp?node=<%=outage.getNodeId()%>&intf=<%=outage.getIpAddress()%>"><%=outage.getIpAddress()%></a>
+                <c:url var="interfaceLink" value="element/interface.jsp">
+                  <c:param name="node" value="<%=String.valueOf(outage.getNodeId())%>"/>
+                  <c:param name="intf" value="<%=outage.getIpAddress()%>"/>
+                </c:url>
+                <a href="${interfaceLink}"><%=outage.getIpAddress()%></a>
               <% } else { %>
                 <%=outage.getIpAddress()%>
               <% } %>
@@ -135,9 +141,14 @@
           <td class="standard">
             <% if( outage.getServiceName() != null ) { %>
               <% if( outage.getIpAddress() != null && outage.getNodeId() > 0 ) { %>
-                <a href="element/service.jsp?node=<%=outage.getNodeId()%>&intf=<%=outage.getIpAddress()%>&service=<%=outage.getServiceId()%>"><%=outage.getServiceName()%></a>              
+                <c:url var="serviceLink" value="element/service.jsp">
+                  <c:param name="node" value="<%=String.valueOf(outage.getNodeId())%>"/>
+                  <c:param name="intf" value="<%=outage.getIpAddress()%>"/>
+                  <c:param name="service" value="<%=String.valueOf(outage.getServiceId())%>"/>
+                </c:url>
+                <a href="${serviceLink}"><c:out value="<%=outage.getServiceName()%>"/></a>              
               <% } else { %>
-                <%=outage.getServiceName()%>
+                <c:out value="<%=outage.getServiceName()%>"/>
               <% } %>
             <% } else {%>
               &nbsp;

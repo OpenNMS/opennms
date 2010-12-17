@@ -76,9 +76,8 @@
 <%@page import="org.opennms.web.event.filter.AcknowledgedByFilter"%>
 <%@page import="org.opennms.web.event.filter.NegativeAcknowledgedByFilter"%>
 
-
-
-<%@ taglib prefix="fmt" uri="http://java.sun.com/jsp/jstl/fmt" %>
+<%@taglib uri="http://java.sun.com/jsp/jstl/core" prefix="c" %>
+<%@taglib uri="http://java.sun.com/jsp/jstl/fmt" prefix="fmt" %>
 
 <%--
   This page is written to be the display (view) portion of the EventQueryServlet
@@ -330,7 +329,7 @@
 	    <% if(events[i].getNodeId() != 0 && events[i].getNodeLabel()!= null ) { %>
               <% Filter nodeFilter = new NodeFilter(events[i].getNodeId(), getServletContext()); %>             
               <% String[] labels = this.getNodeLabels( events[i].getNodeLabel() ); %>
-              <a href="element/node.jsp?node=<%=events[i].getNodeId()%>" title="<%=labels[1]%>"><%=labels[0]%></a>   
+              <a href="element/node.jsp?node=<%=events[i].getNodeId()%>" title="<%=labels[1]%>"><c:out value="<%=labels[0]%>"/></a>
               <% if( !parms.filters.contains(nodeFilter) ) { %>
                   <a href="<%=this.makeLink( parms, nodeFilter, true)%>" class="filterLink" title="Show only events on this node"><%=addPositiveFilterString%></a>
                   <a href="<%=this.makeLink( parms, new NegativeNodeFilter(events[i].getNodeId(), getServletContext()), true)%>" class="filterLink" title="Do not show events for this node"><%=addNegativeFilterString%></a>
@@ -341,7 +340,11 @@
             <% if(events[i].getIpAddress() != null ) { %>
               <% Filter intfFilter = new InterfaceFilter(events[i].getIpAddress()); %>
               <% if( events[i].getNodeId() != 0 ) { %>
-                 <a href="element/interface.jsp?node=<%=events[i].getNodeId()%>&intf=<%=events[i].getIpAddress()%>" title="More info on this interface"><%=events[i].getIpAddress()%></a>
+                 <c:url var="interfaceLink" value="element/interface.jsp">
+                     <c:param name="node" value="<%=String.valueOf(events[i].getNodeId())%>"/>
+                     <c:param name="intf" value="<%=events[i].getIpAddress()%>"/>
+                 </c:url>
+                 <a href="${interfaceLink}" title="More info on this interface"><%=events[i].getIpAddress()%></a>
               <% } else { %>
                  <%=events[i].getIpAddress()%>
               <% } %>
@@ -355,9 +358,14 @@
             <% if(events[i].getServiceName() != null) { %>
               <% Filter serviceFilter = new ServiceFilter(events[i].getServiceId()); %>
               <% if( events[i].getNodeId() != 0 && events[i].getIpAddress() != null ) { %>
-                <a href="element/service.jsp?node=<%=events[i].getNodeId()%>&intf=<%=events[i].getIpAddress()%>&service=<%=events[i].getServiceId()%>" title="More info on this service"><%=events[i].getServiceName()%></a>
+                <c:url var="serviceLink" value="element/service.jsp">
+                  <c:param name="node" value="<%=String.valueOf(events[i].getNodeId())%>"/>
+                  <c:param name="intf" value="<%=events[i].getIpAddress()%>"/>
+                  <c:param name="service" value="<%=String.valueOf(events[i].getServiceId())%>"/>
+                </c:url>
+                <a href="${serviceLink}" title="More info on this service"><c:out value="<%=events[i].getServiceName()%>"/></a>
               <% } else { %>
-                <%=events[i].getServiceName()%>
+                <c:out value="<%=events[i].getServiceName()%>"/>
               <% } %>
               <% if( !parms.filters.contains( serviceFilter )) { %>
                   <a href="<%=this.makeLink( parms, serviceFilter, true)%>" class="filterLink" title="Show only events with this service type"><%=addPositiveFilterString%></a>
@@ -543,5 +551,3 @@
     }
 
 %>
-
-

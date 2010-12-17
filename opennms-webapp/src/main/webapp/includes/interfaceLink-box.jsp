@@ -47,18 +47,10 @@
 
 <%@page language="java" contentType="text/html" session="true" import="org.opennms.web.element.*,java.util.*" %>
 
+<%@taglib uri="http://java.sun.com/jsp/jstl/core" prefix="c" %>
+<%@taglib uri="http://java.sun.com/jsp/jstl/fmt" prefix="fmt" %>
+
 <%
-    statusMap = new HashMap<Character, String>();
-  	statusMap.put( new Character('A'), "Active - See Interface status" );
-    statusMap.put( new Character(' '), "Unknown" );
-    statusMap.put( new Character('U'), "Unknown" );
-    statusMap.put( new Character('D'), "Deleted" );
-    statusMap.put( new Character('N'), "Not Polled" );
-    statusMap.put( new Character('B'), "Bad" );
-    statusMap.put( new Character('G'), "Good" );
-    statusMap.put( new Character('X'), "Admin Down" );
-
-
     Interface intf = null;
     DataLinkInterface[] dl_if = null;
     String requestNode = request.getParameter("node");
@@ -96,13 +88,17 @@
       <td class="standard">
       <% if( "0.0.0.0".equals( dl_if[i].get_parentipaddr() ) || dl_if[i].get_parentipaddr() == null ) {
         iface = NetworkElementFactory.getInstance(getServletContext()).getSnmpInterface(dl_if[i].get_nodeparentid(),dl_if[i].get_parentifindex()); %>
-        <a href="element/snmpinterface.jsp?node=<%=dl_if[i].get_nodeparentid()%>&ifindex=<%=dl_if[i].get_parentifindex()%>"><%=iface.getSnmpIfDescription()%></a>
-      <% } else { %>  
-        <a href="element/interface.jsp?node=<%=dl_if[i].get_nodeparentid()%>&intf=<%=dl_if[i].get_parentipaddr()%>"><%=dl_if[i].get_parentipaddr()%></a>
+        <a href="element/snmpinterface.jsp?node=<%=dl_if[i].get_nodeparentid()%>&ifindex=<%=dl_if[i].get_parentifindex()%>"><c:out value="<%=iface.getSnmpIfDescription()%>"/></a>
+      <% } else { %>
+        <c:url var="interfaceLink" value="element/interface.jsp">
+            <c:param name="node" value="<%=String.valueOf(dl_if[i].get_nodeparentid())%>"/>
+            <c:param name="intf" value="<%=dl_if[i].get_parentipaddr()%>"/>
+        </c:url>
+        <a href="${interfaceLink}"><c:out value="<%=dl_if[i].get_parentipaddr()%>"/></a>
       <% } %>
       </td>
 
-      <td><%=(getStatusString(dl_if[i].get_status())==null) ? "&nbsp;" : getStatusString(dl_if[i].get_status())%></td>
+      <td><%=dl_if[i].getStatusString() == null ? "&nbsp;" : dl_if[i].getStatusString()%></td>
       <td><%=dl_if[i].get_lastPollTime()%></td>
     </tr>
   <% } %>
@@ -111,8 +107,6 @@
 </table>
 
 <%!
-    public static HashMap<Character, String> statusMap;
-
      public String getVlanColorIdentifier( int i ) {
         int red = 128;
         int green = 128;
@@ -129,9 +123,4 @@
         if (blue < 64) blue = blue+64;
         return "#"+Integer.toHexString(red)+Integer.toHexString(green)+Integer.toHexString(blue);
     }
-    
-    public String getStatusString( char c ) {
-        return statusMap.get(new Character(c));
-    }
-
 %>

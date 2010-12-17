@@ -39,7 +39,6 @@
 --%>
 
 <%@page language="java"	contentType="text/html"	session="true" %>
-<%@ taglib prefix="fmt" uri="http://java.sun.com/jsp/jstl/fmt" %>
 
 <%@page import="java.text.DateFormat"%>
 <%@page import="java.util.Date"%>
@@ -60,6 +59,9 @@
 <%@page import="org.opennms.web.outage.filter.LostServiceDateBeforeFilter"%>
 <%@page import="org.opennms.web.outage.filter.RegainedServiceDateAfterFilter"%>
 <%@page import="org.opennms.web.outage.filter.RegainedServiceDateBeforeFilter"%>
+
+<%@taglib uri="http://java.sun.com/jsp/jstl/core" prefix="c" %>
+<%@taglib uri="http://java.sun.com/jsp/jstl/fmt" prefix="fmt" %>
 
 <%--
   This page is written to be the display (view) portion of the OutageFilterServlet
@@ -151,7 +153,11 @@
           <td class="noWrap">
             <% if(outages[i].getIpAddress() != null ) { %>
               <% if( outages[i].getNodeId() != 0 ) { %>
-                 <a href="element/interface.jsp?node=<%=outages[i].getNodeId()%>&intf=<%=outages[i].getIpAddress()%>" title="More info on this interface"><%=outages[i].getIpAddress()%></a>
+                <c:url var="interfaceLink" value="element/interface.jsp">
+                  <c:param name="node" value="<%=String.valueOf(outages[i].getNodeId())%>"/>
+                  <c:param name="intf" value="<%=outages[i].getIpAddress()%>"/>
+                </c:url>
+                <a href="${interfaceLink}" title="More info on this interface"><%=outages[i].getIpAddress()%></a>
               <% } else { %>
                  <%=outages[i].getIpAddress()%>
               <% } %>
@@ -168,9 +174,14 @@
           <td class="noWrap">
             <% if(outages[i].getServiceName() != null) { %>
               <% if( outages[i].getNodeId() != 0 && outages[i].getIpAddress() != null ) { %>
-                <a href="element/service.jsp?node=<%=outages[i].getNodeId()%>&intf=<%=outages[i].getIpAddress()%>&service=<%=outages[i].getServiceId()%>" title="More info on this service"><%=outages[i].getServiceName()%></a>
+                <c:url var="serviceLink" value="element/service.jsp">
+                  <c:param name="node" value="<%=String.valueOf(outages[i].getNodeId())%>"/>
+                  <c:param name="intf" value="<%=outages[i].getIpAddress()%>"/>
+                  <c:param name="service" value="<%=String.valueOf(outages[i].getServiceId())%>"/>
+                </c:url>
+                <a href="${serviceLink}" title="More info on this service"><c:out value="<%=outages[i].getServiceName()%>"/></a>
               <% } else { %>
-                <%=outages[i].getServiceName()%>
+                <c:out value="<%=outages[i].getServiceName()%>"/>
               <% } %>                
               
               <% Filter serviceFilter = new ServiceFilter(outages[i].getServiceId()); %>
@@ -250,4 +261,3 @@
       return( buffer.toString() );
     }  
 %>
-

@@ -59,7 +59,8 @@
 	"
 %>
 
-<%@ taglib uri="http://java.sun.com/jsp/jstl/core" prefix="c" %>
+<%@taglib uri="http://java.sun.com/jsp/jstl/core" prefix="c" %>
+<%@taglib uri="http://java.sun.com/jsp/jstl/fmt" prefix="fmt" %>
 
 <%!
     protected int telnetServiceId;
@@ -386,8 +387,12 @@
 		<tr>
 		
 		<td class="standard">
-		<a href="element/interface.jsp?node=<%=nodeId%>&intf=<%=intfs[i].getIpAddress()%>"><%=intfs[i].getIpAddress()%></a>
-		<%=intfs[i].getIpAddress().equals(intfs[i].getHostname()) ? "" : "(" + intfs[i].getHostname() + ")"%>
+        <c:url var="interfaceLink" value="element/interface.jsp">
+            <c:param name="node" value="<%=String.valueOf(nodeId)%>"/>
+            <c:param name="intf" value="<%=intfs[i].getIpAddress()%>"/>
+        </c:url>
+		<a href="${interfaceLink}"><%=intfs[i].getIpAddress()%></a>
+		<c:out value="<%=intfs[i].getIpAddress().equals(intfs[i].getHostname()) ? "" : "(" + intfs[i].getHostname() + ")"%>"/>
 
 		</td>
                 <td>
@@ -399,9 +404,9 @@
                 </td>
                 <td>
                     <% if (intfs[i].getSnmpIfDescription() != null && !intfs[i].getSnmpIfDescription().equals("")) { %>
-                        <%=intfs[i].getSnmpIfDescription()%>
+                        <c:out value="<%=intfs[i].getSnmpIfDescription()%>"/>
                     <% } else if (intfs[i].getSnmpIfName() != null && !intfs[i].getSnmpIfName().equals("")) { %>
-                        <%=intfs[i].getSnmpIfName()%>
+                        <c:out value="<%=intfs[i].getSnmpIfName()%>"/>
                     <% } else { %>
                         &nbsp;
                     <% } %>
@@ -409,7 +414,7 @@
                 <% if (hasIfAliases) { %>
                     <td>
                         <% if (intfs[i].getSnmpIfAlias() != null && !intfs[i].getSnmpIfAlias().equals("")) { %>
-                            <%=intfs[i].getSnmpIfAlias()%>
+                            <c:out value="<%=intfs[i].getSnmpIfAlias()%>"/>
 		        <% } else {%>
                             &nbsp;
 		        <% } %>
@@ -479,18 +484,22 @@
 		    <% if (curlkif != null) { %>    
 			<tr>
 			<td class="standard" style="font-size:70%" width="35%">
-		       	<a href="element/linkednode.jsp?node=<%=curlkif.getNodeId()%>"><%=factory.getNodeLabel(curlkif.getNodeId())%></a>
+		       	<a href="element/linkednode.jsp?node=<%=curlkif.getNodeId()%>"><c:out value="<%=factory.getNodeLabel(curlkif.getNodeId())%>"/></a>
 			</td>
 			<td class="standard" style="font-size:70%" width="35%">
 		       	<% if(curlkif.getIpAddress() == null ||  "0.0.0.0".equals( curlkif.getIpAddress() )) { %>
 		        <a href="element/snmpinterface.jsp?node=<%=curlkif.getNodeId()%>&ifindex=<%=curlkif.getSnmpIfIndex()%>"><%=curlkif.getSnmpIfName()%></a>
 		        <% } else { %>  
-		        <a href="element/interface.jsp?node=<%=curlkif.getNodeId()%>&intf=<%=curlkif.getIpAddress()%>"><%=curlkif.getIpAddress()%></a>
+                <c:url var="interfaceLink" value="element/interface.jsp">
+                    <c:param name="node" value="<%=String.valueOf(curlkif.getNodeId())%>"/>
+                    <c:param name="intf" value="<%=curlkif.getIpAddress()%>"/>
+                </c:url>
+		        <a href="${interfaceLink}"><%=curlkif.getIpAddress()%></a>
 		        <% } %>
 		       	<% if( curlkif.getIfIndex() != 0 ) { %>
-		        <%=" (ifIndex: "+curlkif.getIfIndex()+"-"+curlkif.getSnmpIfDescription()+")"%>
+		          <c:out value="<%=" (ifIndex: "+curlkif.getIfIndex()+"-"+curlkif.getSnmpIfDescription()+")"%>"/>
 		        <% } else if( curlkif.getSnmpIfIndex() != 0 ) { %>
-		        <%=" (ifIndex: "+curlkif.getSnmpIfIndex()+"-"+curlkif.getSnmpIfDescription()+")"%>
+		          <c:out value="<%=" (ifIndex: "+curlkif.getSnmpIfIndex()+"-"+curlkif.getSnmpIfDescription()+")"%>"/>
 		        <% } %>
 		    </td>
 			<td class="standard" style="font-size:70%" width="15%">
@@ -547,15 +556,17 @@
 		<% if(("0.0.0.0".equals( snmpIntfs[i].getIpAddress())) || (snmpIntfs[i].getIpAddress() == null)) { %>
 		    <tr>
 		    <td class="standard">
-                    <% if (snmpIntfs[i].getSnmpIfName() != null && !snmpIntfs[i].getSnmpIfName().equals("")) { %>
-		        <a href="element/snmpinterface.jsp?node=<%=nodeId%>&ifindex=<%=snmpIntfs[i].getSnmpIfIndex()%>"><%=snmpIntfs[i].getSnmpIfName()%></a>
-                    <% } else if (snmpIntfs[i].getSnmpIfDescription() != null && !snmpIntfs[i].getSnmpIfDescription().equals("")) { %>
-		        <a href="element/snmpinterface.jsp?node=<%=nodeId%>&ifindex=<%=snmpIntfs[i].getSnmpIfIndex()%>"><%=snmpIntfs[i].getSnmpIfDescription()%></a>
-                    <% } else { %>
-		        <a href="element/snmpinterface.jsp?node=<%=nodeId%>&ifindex=<%=snmpIntfs[i].getSnmpIfIndex()%>">Non-IP</a>
-		    <% } %>
+                    <a href="element/snmpinterface.jsp?node=<%=nodeId%>&ifindex=<%=snmpIntfs[i].getSnmpIfIndex()%>">
+                        <% if (snmpIntfs[i].getSnmpIfName() != null && !snmpIntfs[i].getSnmpIfName().equals("")) { %>
+                            <c:out value="<%=snmpIntfs[i].getSnmpIfName()%>"/>
+                        <% } else if (snmpIntfs[i].getSnmpIfDescription() != null && !snmpIntfs[i].getSnmpIfDescription().equals("")) { %>
+                            <c:out value="<%=snmpIntfs[i].getSnmpIfDescription()%>"/>
+                        <% } else { %>
+                            Non-IP
+                        <% } %>
+                    </a>
 
-		    </td>
+                    </td>
                     <td>
                     <% if (snmpIntfs[i].getSnmpIfIndex() > 0) { %>
                         <%=snmpIntfs[i].getSnmpIfIndex()%>
@@ -565,9 +576,9 @@
                     </td>
                     <td>
                     <% if (snmpIntfs[i].getSnmpIfDescription() != null && !snmpIntfs[i].getSnmpIfDescription().equals("")) { %>
-                        <%=snmpIntfs[i].getSnmpIfDescription()%>
+                        <c:out value="<%=snmpIntfs[i].getSnmpIfDescription()%>"/>
                     <% } else if (snmpIntfs[i].getSnmpIfName() != null && !snmpIntfs[i].getSnmpIfName().equals("")) { %>
-                        <%=snmpIntfs[i].getSnmpIfName()%>
+                        <c:out value="<%=snmpIntfs[i].getSnmpIfName()%>"/>
                     <% } else { %>
                         &nbsp;
                     <% } %>
@@ -575,10 +586,10 @@
                     <% if (hasIfAliases) { %>
                         <td>
                         <% if (snmpIntfs[i].getSnmpIfAlias() != null && !snmpIntfs[i].getSnmpIfAlias().equals("")) { %>
-                            <%=snmpIntfs[i].getSnmpIfAlias()%>
-		        <% } else {%>
+                            <c:out value="<%=snmpIntfs[i].getSnmpIfAlias()%>"/>
+                        <% } else {%>
                             &nbsp;
-		        <% } %>
+                        <% } %>
                         </td>
 		    <% } %>
 		    <td class="standard">
@@ -652,12 +663,16 @@
 		       	<% if( "0.0.0.0".equals( curlkif.getIpAddress() ) || curlkif.getIpAddress() == null) { %>
 			    <a href="element/snmpinterface.jsp?node=<%=curlkif.getNodeId()%>&ifindex=<%=curlkif.getSnmpIfIndex()%>"><%=curlkif.getSnmpIfName()%></a>
 		        <% } else { %>  
-			    <a href="element/interface.jsp?node=<%=curlkif.getNodeId()%>&intf=<%=curlkif.getIpAddress()%>"><%=curlkif.getIpAddress()%></a>
+                <c:url var="interfaceLink" value="element/interface.jsp">
+                    <c:param name="node" value="<%=String.valueOf(curlkif.getNodeId())%>"/>
+                    <c:param name="intf" value="<%=curlkif.getIpAddress()%>"/>
+                </c:url>
+			    <a href="${interfaceLink}"><%=curlkif.getIpAddress()%></a>
 		        <% } %>
 		       	<% if( curlkif.getSnmpIfIndex() != 0 ) { %>
-			    <%=" (ifIndex: "+curlkif.getSnmpIfIndex()+"-"+curlkif.getSnmpIfDescription()+")"%>
+			      <c:out value="<%=" (ifIndex: "+curlkif.getSnmpIfIndex()+"-"+curlkif.getSnmpIfDescription()+")"%>"/>
 		        <% } else if( curlkif.getIfIndex() != 0 ) { %>
-			    <%=" (ifIndex: "+curlkif.getIfIndex()+"-"+curlkif.getSnmpIfDescription()+")"%>
+			      <c:out value="<%=" (ifIndex: "+curlkif.getIfIndex()+"-"+curlkif.getSnmpIfDescription()+")"%>"/>
 		        <% } %>
 		        </td>
 			<td class="standard" style="font-size:70%" width="15%">

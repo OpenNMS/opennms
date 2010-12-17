@@ -84,22 +84,6 @@
       </plugin>
 
       <plugin>
-        <groupId>org.mortbay.jetty</groupId>
-        <artifactId>maven-jetty-jspc-plugin</artifactId>
-        <executions>
-          <execution>
-            <id>jspc</id>
-            <goals>
-              <goal>jspc</goal>
-            </goals>
-            <configuration>
-              <webXmlFragment>${basedir}/target/web.xml.jspc-insert</webXmlFragment>
-              <generatedClasses>${basedir}/target/jsp-classes</generatedClasses>
-            </configuration>
-          </execution>
-        </executions>
-      </plugin>
-      <plugin>
         <groupId>com.sun.tools.jxc.maven2</groupId>
         <artifactId>maven-jaxb-schemagen-plugin</artifactId>
         <version>1.2</version>
@@ -165,6 +149,32 @@
       </plugin>
     </plugins>
   </build>
+  <profiles>
+    <profile>
+      <id>jspc</id>
+      <activation><activeByDefault>true</activeByDefault></activation>
+      <build>
+        <plugins>
+          <plugin>
+            <groupId>org.mortbay.jetty</groupId>
+            <artifactId>maven-jetty-jspc-plugin</artifactId>
+            <executions>
+              <execution>
+                <id>jspc</id>
+                <goals>
+                  <goal>jspc</goal>
+                </goals>
+                <configuration>
+                  <webXmlFragment>${basedir}/target/web.xml.jspc-insert</webXmlFragment>
+                  <generatedClasses>${basedir}/target/jsp-classes</generatedClasses>
+                </configuration>
+              </execution>
+            </executions>
+          </plugin>
+        </plugins>
+      </build>
+    </profile>
+  </profiles>
   <dependencies>
     <!-- Sort dependencies by groupId then artifactId, but put dependencies with a groupId of org.opennms first. -->
     <dependency>
@@ -486,6 +496,14 @@
     <dependency>
       <groupId>com.google.collections</groupId>
       <artifactId>google-collections</artifactId>
+    </dependency>
+    <dependency>
+      <groupId>org.opennms.features</groupId>
+      <artifactId>org.opennms.features.system-report</artifactId>
+    </dependency>
+    <dependency>
+      <groupId>org.opennms.features</groupId>
+      <artifactId>org.opennms.features.request-tracker</artifactId>
     </dependency>
   </dependencies>
 </project>

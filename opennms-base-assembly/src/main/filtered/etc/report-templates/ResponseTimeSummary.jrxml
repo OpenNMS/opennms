@@ -2,7 +2,7 @@
 <jasperReport xmlns="http://jasperreports.sourceforge.net/jasperreports" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://jasperreports.sourceforge.net/jasperreports http://jasperreports.sourceforge.net/xsd/jasperreport.xsd" name="node-response-time" pageWidth="595" pageHeight="842" whenNoDataType="NoDataSection" columnWidth="555" leftMargin="20" rightMargin="20" topMargin="20" bottomMargin="20">
 	<property name="ireport.zoom" value="2.0"/>
 	<property name="ireport.x" value="0"/>
-	<property name="ireport.y" value="181"/>
+	<property name="ireport.y" value="325"/>
 	<template><![CDATA["${install.dir}/etc/report-templates/assets/styles/defaultStyles.jrtx"]]></template>
 	<style name="Report_Title" forecolor="#000000" fontSize="20"/>
 	<style name="Report_Subtitle" forecolor="#000000" vAlign="Middle" fontSize="10" isBold="false" isItalic="true" isUnderline="false" isStrikeThrough="false"/>
@@ -89,6 +89,18 @@
 	<parameter name="SUBREPORT_DIR" class="java.lang.String" isForPrompting="false">
 		<defaultValueExpression><![CDATA["${install.dir}/etc/report-templates/subreports/"]]></defaultValueExpression>
 	</parameter>
+	<parameter name="SUBREPORT_START_TIME" class="java.sql.Timestamp" isForPrompting="false">
+		<defaultValueExpression><![CDATA[new java.sql.Timestamp(new java.util.Date().getTime() - (86400 * 7 * 1000))]]></defaultValueExpression>
+	</parameter>
+	<parameter name="SUBREPORT_TIME_RANGE" class="java.lang.String" isForPrompting="false">
+		<defaultValueExpression><![CDATA["7 Days"]]></defaultValueExpression>
+	</parameter>
+	<parameter name="SUBREPORT_DS_SURVEILLANCE" class="java.lang.String" isForPrompting="false">
+		<defaultValueExpression><![CDATA[$F{categoryname}]]></defaultValueExpression>
+	</parameter>
+	<parameter name="SUBEREPORT_NODE_LABEL" class="java.lang.String" isForPrompting="false">
+		<defaultValueExpression><![CDATA[$F{nodelabel}]]></defaultValueExpression>
+	</parameter>
 	<queryString>
 		<![CDATA[SELECT
 	categories.categoryname,
@@ -169,7 +181,7 @@ ORDER BY
 			<band/>
 		</groupHeader>
 		<groupFooter>
-			<band height="24">
+			<band height="164">
 				<textField pattern="###0.00">
 					<reportElement x="452" y="1" width="98" height="20"/>
 					<textElement textAlignment="Center"/>
@@ -186,8 +198,25 @@ ORDER BY
 					<textFieldExpression class="java.lang.String"><![CDATA[$F{nodelabel}]]></textFieldExpression>
 				</textField>
 				<line>
-					<reportElement x="0" y="21" width="554" height="1"/>
+					<reportElement x="0" y="159" width="554" height="1"/>
 				</line>
+				<subreport>
+					<reportElement x="2" y="21" width="548" height="136"/>
+					<subreportParameter name="DS_SURVEILLANCE_CATEGORY">
+						<subreportParameterExpression><![CDATA[$P{SUBREPORT_DS_SURVEILLANCE}]]></subreportParameterExpression>
+					</subreportParameter>
+					<subreportParameter name="TIME_RANGE">
+						<subreportParameterExpression><![CDATA[$P{SUBREPORT_TIME_RANGE}]]></subreportParameterExpression>
+					</subreportParameter>
+					<subreportParameter name="START_TIME">
+						<subreportParameterExpression><![CDATA[$P{SUBREPORT_START_TIME}]]></subreportParameterExpression>
+					</subreportParameter>
+					<subreportParameter name="NODE_LABEL">
+						<subreportParameterExpression><![CDATA[$P{SUBEREPORT_NODE_LABEL}]]></subreportParameterExpression>
+					</subreportParameter>
+					<connectionExpression><![CDATA[$P{REPORT_CONNECTION}]]></connectionExpression>
+					<subreportExpression class="java.lang.String"><![CDATA[$P{SUBREPORT_DIR} + "ResponseTimeSummary_Availability_subreport.jasper"]]></subreportExpression>
+				</subreport>
 			</band>
 		</groupFooter>
 	</group>

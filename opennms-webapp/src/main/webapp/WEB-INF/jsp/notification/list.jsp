@@ -59,6 +59,8 @@
 		org.opennms.netmgt.model.OnmsSeverity
 	"
 %>
+<%@taglib uri="http://java.sun.com/jsp/jstl/core" prefix="c" %>
+<%@taglib uri="http://java.sun.com/jsp/jstl/fmt" prefix="fmt" %>
 
 <%--
   This page is written to be the display (view) portion of the NotificationQueryServlet
@@ -274,7 +276,11 @@
             <% if(notices[i].getIpAddress() != null ) { %>
               <% Filter intfFilter = new InterfaceFilter(notices[i].getIpAddress()); %>
               <% if( notices[i].getNodeId() != 0 ) { %>
-                 <a href="element/interface.jsp?node=<%=notices[i].getNodeId()%>&intf=<%=notices[i].getIpAddress()%>" title="More info on this interface"><%=notices[i].getIpAddress()%></a>
+                <c:url var="interfaceLink" value="element/interface.jsp">
+                  <c:param name="node" value="<%=String.valueOf(notices[i].getNodeId())%>"/>
+                  <c:param name="intf" value="<%=notices[i].getIpAddress()%>"/>
+                </c:url>
+                <a href="${interfaceLink}" title="More info on this interface"><%=notices[i].getIpAddress()%></a>
               <% } else { %>
                  <%=notices[i].getInterfaceId()%>
               <% } %>
@@ -287,9 +293,14 @@
             <% if(notices[i].getServiceName() != null) { %>
               <% Filter serviceFilter = new ServiceFilter(notices[i].getServiceId()); %>
               <% if( notices[i].getNodeId() != 0 && notices[i].getIpAddress() != null ) { %>
-                <a href="element/service.jsp?node=<%=notices[i].getNodeId()%>&intf=<%=notices[i].getIpAddress()%>&service=<%=notices[i].getServiceId()%>" title="More info on this service"><%=notices[i].getServiceName()%></a>
+                <c:url var="serviceLink" value="element/service.jsp">
+                  <c:param name="node" value="<%=String.valueOf(notices[i].getNodeId())%>"/>
+                  <c:param name="intf" value="<%=notices[i].getIpAddress()%>"/>
+                  <c:param name="service" value="<%=String.valueOf(notices[i].getServiceId())%>"/>
+                </c:url>
+                <a href="${serviceLink}" title="More info on this service"><c:out value="<%=notices[i].getServiceName()%>"/></a>
               <% } else { %>
-                <%=notices[i].getServiceName()%>
+                <c:out value="<%=notices[i].getServiceName()%>"/>
               <% } %>
               <% if( !parms.filters.contains( serviceFilter )) { %>
                 <a href="<%=this.makeLink( parms, serviceFilter, true)%>" class="filterLink" title="Show only notices with this service type">${addPositiveFilter}</a>
@@ -415,4 +426,3 @@
     }
 
 %>
-

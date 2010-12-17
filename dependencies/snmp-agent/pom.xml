@@ -28,8 +28,8 @@
   </dependencies>
   <repositories>
     <repository>
-      <snapshots><enabled>false</enabled></snapshots>
-      <releases><enabled>true</enabled></releases>
+      <snapshots><enabled>false</enabled><updatePolicy>${updatePolicy}</updatePolicy></snapshots>
+      <releases><enabled>true</enabled><updatePolicy>${updatePolicy}</updatePolicy></releases>
       <id>snmp4j-repo</id>
       <name>SNMP4J Maven Repository</name>
       <url>http://maven.opennms.org/content/groups/oosnmp.net-release</url>
