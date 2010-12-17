@@ -40,6 +40,7 @@
 
 package org.opennms.netmgt.dao.hibernate;
 
+import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Date;
@@ -48,12 +49,16 @@ import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
 
+import org.hibernate.HibernateException;
+import org.hibernate.Session;
+import org.hibernate.type.Type;
 import org.opennms.netmgt.dao.NodeDao;
 import org.opennms.netmgt.model.OnmsCategory;
 import org.opennms.netmgt.model.OnmsDistPoller;
 import org.opennms.netmgt.model.OnmsIpInterface;
 import org.opennms.netmgt.model.OnmsNode;
 import org.opennms.netmgt.model.OnmsSnmpInterface;
+import org.springframework.orm.hibernate3.HibernateCallback;
 import org.springframework.util.StringUtils;
 
 /**
@@ -175,15 +180,33 @@ public class NodeDaoHibernate extends AbstractDaoHibernate<OnmsNode, Integer>
     }
 
     /** {@inheritDoc} */
-    public Collection<OnmsNode> findAllByCategoryLists( Collection<OnmsCategory> rowCatNames, Collection<OnmsCategory> colCatNames) {
+    public Collection<OnmsNode> findAllByCategoryLists( final Collection<OnmsCategory> rowCategories, final Collection<OnmsCategory> columnCategories) {
     	
-    	HashSet<OnmsNode> rowNodes = new HashSet<OnmsNode>(findAllByCategoryList(rowCatNames));
-    	HashSet<OnmsNode> colNodes = new HashSet<OnmsNode>(findAllByCategoryList(colCatNames));
-    	
-    	HashSet<OnmsNode> results = new HashSet<OnmsNode>(rowNodes);
-    	results.retainAll(colNodes);
-    	
-    	return results;
+        return getHibernateTemplate().execute(new HibernateCallback<Collection<OnmsNode>>() {
+
+            public Collection<OnmsNode> doInHibernate(Session session) throws HibernateException, SQLException {
+                
+                return (Collection<OnmsNode>)session.createQuery("select distinct n from OnmsNode as n "
+                + "join n.categories c1 "
+                + "join n.categories c2 "
+                + "left join fetch n.assetRecord "
+                + "left join fetch n.ipInterfaces as iface "
+                + "left join fetch n.snmpInterfaces as snmpIface"
+                + "left join fetch iface.monitoredServices as monSvc "
+                + "left join fetch monSvc.serviceType "
+                + "left join fetch monSvc.currentOutages "
+                + "where c1 in (:rowCategories) "
+                + "and c2 in (:colCategories) "
+                + "and n.type != 'D'")
+                .setParameterList("rowCategories", rowCategories)
+                .setParameterList("colCategories", columnCategories)
+                .list();
+                
+
+            }
+
+        });
+        
     }
 
     /** {@inheritDoc} */

@@ -78,14 +78,18 @@ public class DefaultSurveillanceService implements SurveillanceService {
     private NodeDao m_nodeDao;
     private CategoryDao m_categoryDao;
     private SurveillanceViewConfigDao m_surveillanceConfigDao;
+    
+    interface CellStatusStrategy {
+        public AggregateStatus[][] calculateCellStatus(SurveillanceView sView, ProgressMonitor progressMonitor);
+    }
 
-    class CellStatusStrategy {
+    class DefaultCellStatusStrategy implements CellStatusStrategy {
 
-        Collection<OnmsNode> getNodesInCategories(Set<OnmsCategory> categories) {
+        private Collection<OnmsNode> getNodesInCategories(Set<OnmsCategory> categories) {
             return m_nodeDao.findAllByCategoryList(categories);
         }
 
-        AggregateStatus[][] calculateCellStatus(SurveillanceView sView, ProgressMonitor progressMonitor) {
+        public AggregateStatus[][] calculateCellStatus(SurveillanceView sView, ProgressMonitor progressMonitor) {
 
             List<Collection<OnmsNode>> nodesByRowIndex = new ArrayList<Collection<OnmsNode>>();
             List<Collection<OnmsNode>> nodesByColIndex = new ArrayList<Collection<OnmsNode>>();
@@ -125,6 +129,54 @@ public class DefaultSurveillanceService implements SurveillanceService {
                     cellStatus[rowIndex][colIndex] = new AggregateStatus(cellNodes);
 
 
+
+                }
+
+            }
+            return cellStatus;
+        }
+
+    }
+
+    class LowMemCellStatusStrategy implements CellStatusStrategy {
+        
+        private String toString(Collection<OnmsCategory> categories) {
+            StringBuilder buf = new StringBuilder();
+            
+            buf.append("{");
+            
+            boolean first = true;
+            for(OnmsCategory cat : categories) {
+                if (first) {
+                    first = !first;
+                } else {
+                    buf.append(", ");
+                }
+                buf.append(cat.getName());
+            }
+            
+            buf.append("}");
+            
+            return buf.toString();
+        }
+        
+
+        public AggregateStatus[][] calculateCellStatus(SurveillanceView sView, ProgressMonitor progressMonitor) {
+
+            AggregateStatus[][] cellStatus = new AggregateStatus[sView.getRowCount()][sView.getColumnCount()];
+
+            for(int rowIndex = 0; rowIndex < sView.getRowCount(); rowIndex++) {
+
+                for(int colIndex = 0; colIndex < sView.getColumnCount(); colIndex++) {
+                    
+                    Collection<OnmsCategory> rowCategories = sView.getCategoriesForRow(rowIndex);
+                    Collection<OnmsCategory> columnCategories = sView.getCategoriesForColumn(colIndex);
+                    
+                    progressMonitor.beginNextPhase(String.format("Finding nodes in %s intersect %s", toString(rowCategories), toString(columnCategories)));
+
+                    Collection<OnmsNode> cellNodes = m_nodeDao.findAllByCategoryLists(rowCategories, columnCategories);
+
+                    cellStatus[rowIndex][colIndex] = new AggregateStatus(cellNodes);
 
                 }
 
@@ -241,7 +293,7 @@ public class DefaultSurveillanceService implements SurveillanceService {
 
         // build the set of nodes for each cell
 
-        CellStatusStrategy strategy = new CellStatusStrategy();
+        CellStatusStrategy strategy = getCellStatusStrategy();
 
         AggregateStatus[][] cellStatus = strategy.calculateCellStatus(sView, progressMonitor);
 
@@ -269,6 +321,10 @@ public class DefaultSurveillanceService implements SurveillanceService {
         progressMonitor.finished(webTable);
 
         return webTable;
+    }
+
+    private CellStatusStrategy getCellStatusStrategy() {
+        return new LowMemCellStatusStrategy();
     }
 
     private String computeReportCategoryLink(String reportCategory) {
