@@ -1584,7 +1584,7 @@ public class ManagerDefaultImpl implements Manager {
                           + label);
             } else {
                 String nodename=elemInfoMap.get(elem.getId());
-                if (nodename.equals(label))
+                if (label.equals(nodename))
                     continue;
                 else
                     label=nodename;
