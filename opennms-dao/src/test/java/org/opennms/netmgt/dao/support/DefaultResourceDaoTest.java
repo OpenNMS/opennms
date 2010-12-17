@@ -42,6 +42,8 @@ import static org.easymock.EasyMock.expect;
 import java.io.File;
 import java.io.IOException;
 import java.io.InputStream;
+import java.net.InetAddress;
+import java.net.UnknownHostException;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.HashMap;
@@ -475,7 +477,7 @@ public class DefaultResourceDaoTest extends TestCase {
     }
     
 
-    public void testGetResourceForIpInterfaceWithNullNodeOnOnmsIpInterface() {
+    public void testGetResourceForIpInterfaceWithNullNodeOnOnmsIpInterface() throws UnknownHostException {
         OnmsIpInterface ip = createIpInterface();
         
         ThrowableAnticipator ta = new ThrowableAnticipator();
@@ -558,13 +560,13 @@ public class DefaultResourceDaoTest extends TestCase {
         return node;
     }
 
-    private OnmsIpInterface createIpInterface() {
+    private OnmsIpInterface createIpInterface() throws UnknownHostException {
         OnmsIpInterface ip = new OnmsIpInterface();
-        ip.setIpAddress("192.168.1.1");
+        ip.setInetAddress(InetAddress.getByName("192.168.1.1"));
         return ip;
     }
 
-    private OnmsIpInterface createIpInterfaceOnNode() {
+    private OnmsIpInterface createIpInterfaceOnNode() throws UnknownHostException {
         OnmsIpInterface ip = createIpInterface();
         createNode().addIpInterface(ip);
         return ip;

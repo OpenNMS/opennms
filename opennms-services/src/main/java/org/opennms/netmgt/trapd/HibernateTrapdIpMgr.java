@@ -36,9 +36,11 @@
 //
 package org.opennms.netmgt.trapd;
 
+import java.net.InetAddress;
 import java.util.HashMap;
 import java.util.Map;
 
+import org.opennms.core.utils.InetAddressUtils;
 import org.opennms.netmgt.dao.IpInterfaceDao;
 import org.springframework.beans.factory.InitializingBean;
 import org.springframework.transaction.annotation.Transactional;
@@ -58,7 +60,7 @@ public class HibernateTrapdIpMgr implements TrapdIpMgr, InitializingBean {
     /**
      * A Map of IP addresses and node IDs
      */
-    private Map<String, Integer> m_knownips = new HashMap<String, Integer>();
+    private Map<InetAddress, Integer> m_knownips = new HashMap<InetAddress, Integer>();
 
     /**
      * Default construct for the instance.
@@ -97,7 +99,7 @@ public class HibernateTrapdIpMgr implements TrapdIpMgr, InitializingBean {
             return -1;
         }
         
-        return longValue(m_knownips.put(addr, new Integer((int) nodeid)));
+        return longValue(m_knownips.put(InetAddressUtils.getInetAddress(addr), new Integer((int) nodeid)));
     }
 
     /* (non-Javadoc)

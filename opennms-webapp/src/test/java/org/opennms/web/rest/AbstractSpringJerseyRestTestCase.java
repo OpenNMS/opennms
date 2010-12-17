@@ -216,7 +216,7 @@ public abstract class AbstractSpringJerseyRestTestCase {
         
         MockHttpServletResponse response = createResponse();        
         dispatch(request, response);
-        assertEquals(200, response.getStatus());
+        assertEquals(response.getErrorMessage(), 200, response.getStatus());
     }
 
     private Map<String, String> parseParamData(String data) throws UnsupportedEncodingException {

@@ -32,6 +32,7 @@
 
 package org.openoss.opennms.spring.dao;
 
+import java.net.InetAddress;
 import java.util.Date;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
@@ -42,6 +43,7 @@ import javax.oss.fm.monitor.AlarmKey;
 import javax.oss.fm.monitor.AlarmType;
 import javax.oss.fm.monitor.AlarmValue;
 
+import org.opennms.core.utils.InetAddressUtils;
 import org.opennms.core.utils.ThreadCategory;
 import org.opennms.netmgt.dao.AssetRecordDao;
 import org.opennms.netmgt.dao.DistPollerDao;
@@ -357,7 +359,7 @@ public class OnmsAlarmOssjMapper {
 //					//event.setId(new Integer(1));  // This is NOT set since unique constraint in alarms table on Events table
 //					onmsAlarm.setLastEvent(event); 
 
-					onmsAlarm.setIpAddr("localhost"); // needed?
+					onmsAlarm.setIpAddr(InetAddress.getLocalHost()); // needed?
 					onmsAlarm.setId(null); // set null as updating alarm
 					onmsAlarm.setFirstEventTime(alarmValue.getAlarmRaisedTime());
 					onmsAlarm.setLastEventTime(alarmValue.getAlarmChangedTime());
@@ -599,7 +601,7 @@ public class OnmsAlarmOssjMapper {
 					nodeid= _openNMSalarm.getNode().getId();
 					onmsnodelabel= _openNMSalarm.getNode().getLabel();
 				}
-				String ipaddress= _openNMSalarm.getIpAddr();
+				InetAddress ipaddress= _openNMSalarm.getIpAddr();
 				String x733AlarmType= _openNMSalarm.getX733AlarmType();
 				String x733ProbableCause;
 				try {
@@ -618,7 +620,7 @@ public class OnmsAlarmOssjMapper {
 						"<reductionkey>" + reductionkey + "</reductionkey>" +  "\n            " +
 						"<nodeid>" + nodeid + "</nodeid>" +  "\n            " +
 						"<nodelabel>" + onmsnodelabel + "</nodelabel>" +  "\n            " +
-						"<ipaddress>" + ipaddress + "</ipaddress>" +   "\n            " +
+						"<ipaddress>" + InetAddressUtils.toIpAddrString(ipaddress) + "</ipaddress>" +   "\n            " +
 						"<description>"+ _description +"</description>" +  "\n            " +
 						"<opinstr>" + _opinstr + "</opinstr>" + "\n            " +
 						"<asset.managedobjectinstance>" + assetManagedObjectInstance + "</asset.managedobjectinstance>" + "\n            "+              //TODO - was used for object instance

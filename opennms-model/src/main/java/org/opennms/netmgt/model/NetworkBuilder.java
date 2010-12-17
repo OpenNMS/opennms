@@ -178,8 +178,8 @@ public class NetworkBuilder {
 			return m_iface;
 		}
 
-		public SnmpInterfaceBuilder addSnmpInterface(String ipAddr, int ifIndex) {
-		    OnmsSnmpInterface snmpIf = new OnmsSnmpInterface(ipAddr, ifIndex, m_currentNode);
+		public SnmpInterfaceBuilder addSnmpInterface(int ifIndex) {
+		    OnmsSnmpInterface snmpIf = new OnmsSnmpInterface(m_currentNode, ifIndex);
 		    m_iface.setSnmpInterface(snmpIf);
             // TODO: Should this be done in setSnmpInterface?
             snmpIf.getIpInterfaces().add(m_iface);
@@ -209,13 +209,12 @@ public class NetworkBuilder {
     
 	/**
 	 * <p>addSnmpInterface</p>
-	 *
-	 * @param ipAddr a {@link java.lang.String} object.
 	 * @param ifIndex a int.
+	 *
 	 * @return a {@link org.opennms.netmgt.model.SnmpInterfaceBuilder} object.
 	 */
-	public SnmpInterfaceBuilder addSnmpInterface(String ipAddr, int ifIndex) {
-		OnmsSnmpInterface snmpIf = new OnmsSnmpInterface(ipAddr, ifIndex, m_currentNode);
+	public SnmpInterfaceBuilder addSnmpInterface(int ifIndex) {
+		OnmsSnmpInterface snmpIf = new OnmsSnmpInterface(m_currentNode, ifIndex);
 		return new SnmpInterfaceBuilder(snmpIf);
 
 	}

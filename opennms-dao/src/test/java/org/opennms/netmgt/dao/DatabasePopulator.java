@@ -41,6 +41,7 @@ import java.util.Date;
 
 import junit.framework.Assert;
 
+import org.opennms.core.utils.InetAddressUtils;
 import org.opennms.netmgt.dao.hibernate.LocationMonitorDaoHibernate;
 import org.opennms.netmgt.model.AckAction;
 import org.opennms.netmgt.model.AckType;
@@ -137,7 +138,7 @@ public class DatabasePopulator {
         builder.addCategory(ops);
         builder.addCategory(catRouter); 
         builder.setBuilding("HQ");
-        builder.addInterface("192.168.1.1").setIsManaged("M").setIsSnmpPrimary("P").addSnmpInterface("192.168.1.1", 1)
+        builder.addInterface("192.168.1.1").setIsManaged("M").setIsSnmpPrimary("P").addSnmpInterface(1)
             .setCollectionEnabled(true)
             .setIfOperStatus(1)
             .setIfSpeed(10000000)
@@ -147,7 +148,7 @@ public class DatabasePopulator {
         //getNodeDao().flush();
         builder.addService(getServiceType("ICMP"));
         builder.addService(getServiceType("SNMP"));
-        builder.addInterface("192.168.1.2").setIsManaged("M").setIsSnmpPrimary("S").addSnmpInterface("192.168.1.2", 2)
+        builder.addInterface("192.168.1.2").setIsManaged("M").setIsSnmpPrimary("S").addSnmpInterface(2)
             .setCollectionEnabled(true)
             .setIfOperStatus(1)
             .setIfSpeed(10000000)
@@ -155,12 +156,12 @@ public class DatabasePopulator {
             .setIfType(6);
         builder.addService(getServiceType("ICMP"));
         builder.addService(getServiceType("HTTP"));
-        builder.addInterface("192.168.1.3").setIsManaged("M").setIsSnmpPrimary("N").addSnmpInterface("192.168.1.3", 3)
+        builder.addInterface("192.168.1.3").setIsManaged("M").setIsSnmpPrimary("N").addSnmpInterface(3)
             .setCollectionEnabled(false)
             .setIfOperStatus(1)
             .setIfSpeed(10000000);
         builder.addService(getServiceType("ICMP"));
-        builder.addInterface("fe80:0000:0000:0000:aaaa:bbbb:cccc:dddd%5").setIsManaged("M").setIsSnmpPrimary("N").addSnmpInterface("", 4)
+        builder.addInterface("fe80:0000:0000:0000:aaaa:bbbb:cccc:dddd%5").setIsManaged("M").setIsSnmpPrimary("N").addSnmpInterface(4)
         .setCollectionEnabled(false)
         .setIfOperStatus(1)
         .setIfSpeed(10000000);
@@ -253,7 +254,7 @@ public class DatabasePopulator {
         OnmsNotification notif = new OnmsNotification();
         notif.setEvent(event);
         notif.setTextMsg("This is a test notification");
-        notif.setIpAddress("192.168.1.1");
+        notif.setIpAddress(InetAddressUtils.getInetAddress("192.168.1.1"));
         notif.setNode(m_node1);
         notif.setServiceType(getServiceType("ICMP"));
         getNotificationDao().save(notif);
@@ -293,7 +294,7 @@ public class DatabasePopulator {
         alarm.setDescription("This is a test alarm");
         alarm.setLogMsg("this is a test alarm log message");
         alarm.setCounter(1);
-        alarm.setIpAddr("192.168.1.1");
+        alarm.setIpAddr(InetAddressUtils.getInetAddress("192.168.1.1"));
         alarm.setSeverity(OnmsSeverity.NORMAL);
         alarm.setFirstEventTime(event.getEventTime());
         alarm.setLastEvent(event);

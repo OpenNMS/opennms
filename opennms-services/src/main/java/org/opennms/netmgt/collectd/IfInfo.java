@@ -54,8 +54,6 @@ import org.opennms.netmgt.model.RrdRepository;
  *
  * @author <a href="mailto:mike@opennms.org">Mike Davidson </a>
  * @author <a href="http://www.opennms.org/">OpenNMS </a>
- * @author <a href="mailto:mike@opennms.org">Mike Davidson </a>
- * @author <a href="http://www.opennms.org/">OpenNMS </a>
  * @version $Id: $
  */
 public final class IfInfo extends SnmpCollectionResource {
@@ -154,7 +152,7 @@ public final class IfInfo extends SnmpCollectionResource {
      * @return a {@link java.util.Map} object.
      */
     public Map<String,String> getAttributesMap() {
-        return m_snmpIfData.getAttribtuesMap();
+        return m_snmpIfData.getAttributesMap();
     }
 
     /**

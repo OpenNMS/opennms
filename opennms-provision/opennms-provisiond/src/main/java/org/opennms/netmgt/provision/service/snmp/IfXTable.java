@@ -144,7 +144,7 @@ public final class IfXTable extends SnmpTable<IfXTableEntry> {
         
         if (snmpIf2 == null) {
             // if not then create one
-            snmpIf2 = new OnmsSnmpInterface(null, ifIndex, node);
+            snmpIf2 = new OnmsSnmpInterface(node, ifIndex);
         }
         // ifXTable Attributes
         snmpIf2.setIfAlias(getIfAlias(ifIndex));

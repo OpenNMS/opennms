@@ -341,7 +341,7 @@ public class AckdTest {
         event.setEventSource("AckdTest");
         event.setEventTime(time);
         event.setEventUei(EventConstants.NODE_DOWN_EVENT_UEI);
-        event.setIpAddr(node.getPrimaryInterface().getIpAddress());
+        event.setIpAddr(node.getPrimaryInterface().getInetAddress());
         event.setEventLog("Y");
         event.setEventDisplay("Y");
         event.setEventLogMsg("Testing node down event from AckdTest.");

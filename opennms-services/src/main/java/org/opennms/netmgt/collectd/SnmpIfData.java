@@ -70,7 +70,6 @@ public class SnmpIfData {
         m_rrdLabel = snmpIface.computeLabelForRRD();
         m_ifAlias = snmpIface.getIfAlias();
         m_attributes = new HashMap<String,String>();
-        m_attributes.put("ipaddr", snmpIface.getIpAddress());
         m_attributes.put("snmpphysaddr", snmpIface.getPhysAddr());
         m_attributes.put("snmpifindex", Integer.toString(m_ifIndex));
         m_attributes.put("snmpifdescr", snmpIface.getIfDescr());
@@ -149,7 +148,7 @@ public class SnmpIfData {
      *
      * @return a {@link java.util.Map} object.
      */
-    public Map<String,String> getAttribtuesMap() {
+    public Map<String,String> getAttributesMap() {
         return m_attributes;
     }
 

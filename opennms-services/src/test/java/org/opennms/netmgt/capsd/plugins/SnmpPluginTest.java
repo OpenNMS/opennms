@@ -94,7 +94,7 @@ public class SnmpPluginTest extends OpenNMSTestCase {
      * @throws UnknownHostException 
      */
     public void testIsForcedV1ProtocolSupported() throws UnknownHostException {
-        InetAddress address = InetAddress.getByName(myLocalHost());
+        InetAddress address = myLocalHost();
         Map<String, Object> map = new HashMap<String, Object>();
         map.put("forced version", "snmpv1");
         
@@ -109,7 +109,7 @@ public class SnmpPluginTest extends OpenNMSTestCase {
      * @throws UnknownHostException 
      */
     public void testIsExpectedValue() throws UnknownHostException {
-        InetAddress address = InetAddress.getByName(myLocalHost());
+        InetAddress address = myLocalHost();
         Map<String, Object> map = new HashMap<String, Object>();
         map.put("vbvalue", "\\.1\\.3\\.6\\.1\\.4\\.1.*");
         
@@ -123,7 +123,7 @@ public class SnmpPluginTest extends OpenNMSTestCase {
      */
     public final void testIsProtocolSupportedInetAddress() throws UnknownHostException {
         if (m_runAssertions) {
-            assertTrue("protocol is not supported", m_plugin.isProtocolSupported(InetAddress.getByName(myLocalHost())));
+            assertTrue("protocol is not supported", m_plugin.isProtocolSupported(myLocalHost()));
         }
     }
     
@@ -133,7 +133,7 @@ public class SnmpPluginTest extends OpenNMSTestCase {
         SnmpPeerFactory.setInstance(new SnmpPeerFactory(rsrc));
 
         if (m_runAssertions) {
-            assertTrue("protocol is not supported", m_plugin.isProtocolSupported(InetAddress.getByName(myLocalHost())));
+            assertTrue("protocol is not supported", m_plugin.isProtocolSupported(myLocalHost()));
         }
     }
 
@@ -146,7 +146,7 @@ public class SnmpPluginTest extends OpenNMSTestCase {
         qualifiers.put("force version", "snmpv1");
 
         if (m_runAssertions) {
-            assertTrue("protocol is not supported", m_plugin.isProtocolSupported(InetAddress.getByName(myLocalHost()), qualifiers));
+            assertTrue("protocol is not supported", m_plugin.isProtocolSupported(myLocalHost(), qualifiers));
         }
     }
 

@@ -363,7 +363,7 @@ public class DefaultNodeListService implements NodeListService, InitializingBean
                 	}
                 	for (OnmsSnmpInterface snmpIntf : node.getSnmpInterfaces()) {
                 	    if (snmpIntf.getPhysAddr() != null && !"D".equals(snmpIntf.getCollect()) && snmpIntf.getPhysAddr().toLowerCase().contains(macLikeStripped)) {
-                	        OnmsIpInterface intf = node.getIpInterfaceByIpAddress(snmpIntf.getIpAddress());
+                	        OnmsIpInterface intf = snmpIntf.getPrimaryIpInterface();
                 	        if (intf == null) {
                 	            displaySnmpInterfaces.add(snmpIntf);
                 	        }

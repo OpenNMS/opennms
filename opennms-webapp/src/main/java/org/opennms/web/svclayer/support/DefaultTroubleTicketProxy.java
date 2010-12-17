@@ -34,6 +34,7 @@
  */
 package org.opennms.web.svclayer.support;
 
+import org.opennms.core.utils.InetAddressUtils;
 import org.opennms.netmgt.EventConstants;
 import org.opennms.netmgt.dao.AlarmDao;
 import org.opennms.netmgt.model.OnmsAlarm;
@@ -101,7 +102,7 @@ public class DefaultTroubleTicketProxy implements TroubleTicketProxy {
         
         EventBuilder bldr = new EventBuilder(uei, "AlarmUI");
         bldr.setNode(alarm.getNode());
-        bldr.setInterface(alarm.getIpAddr());
+        bldr.setInterface(InetAddressUtils.toIpAddrString(alarm.getIpAddr()));
         bldr.setService(alarm.getServiceType() == null ? null : alarm.getServiceType().getName());
         bldr.addParam(EventConstants.PARM_ALARM_UEI, alarm.getUei());
         bldr.addParam(EventConstants.PARM_USER, alarm.getAlarmAckUser());

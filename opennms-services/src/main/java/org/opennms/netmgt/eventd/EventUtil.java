@@ -56,7 +56,10 @@ import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
 import org.opennms.core.utils.Base64;
+import org.opennms.core.utils.InetAddressUtils;
 import org.opennms.core.utils.ThreadCategory;
+import org.opennms.netmgt.capsd.DbIpInterfaceEntry;
+import org.opennms.netmgt.capsd.DbSnmpInterfaceEntry;
 import org.opennms.netmgt.config.DataSourceFactory;
 import org.opennms.netmgt.trapd.EventConstants;
 import org.opennms.netmgt.xml.event.Event;
@@ -74,13 +77,6 @@ import org.opennms.netmgt.xml.event.Value;
  * @author <A HREF="mailto:sowmya@opennms.org">Sowmya Kumaraswamy </A>
  * @author <A HREF="mailto:weave@oculan.com">Brain Weaver </A>
  * @author <A HREF="http://www.opennms.org/">OpenNMS </A>
- * @author <A HREF="mailto:sowmya@opennms.org">Sowmya Kumaraswamy </A>
- * @author <A HREF="mailto:weave@oculan.com">Brain Weaver </A>
- * @author <A HREF="http://www.opennms.org/">OpenNMS </A>
- * @author <A HREF="mailto:sowmya@opennms.org">Sowmya Kumaraswamy </A>
- * @author <A HREF="mailto:weave@oculan.com">Brain Weaver </A>
- * @author <A HREF="http://www.opennms.org/">OpenNMS </A>
- * @version $Id: $
  */
 public final class EventUtil {
 	/**
@@ -1111,15 +1107,10 @@ public final class EventUtil {
 	        try {
 	            // Get database connection from the factory
 	            dbConn = DataSourceFactory.getInstance().getConnection();
-			
-	            // Issue query and extract ifAlias from result set
-	            stmt = dbConn.createStatement();
-	            ResultSet rs = stmt
-	                 .executeQuery("SELECT snmpifalias FROM snmpinterface WHERE nodeid="
-					     + nodeId + " and ipaddr='" + ipaddr + "'");
-	            // Assumes only one response.  It will pick the first hit
-	            if (rs.next()) {
-	                ifAlias = (String) rs.getString("snmpifalias");
+	            DbIpInterfaceEntry ipif = DbIpInterfaceEntry.get(dbConn, nodeId, InetAddressUtils.getInetAddress(ipaddr));
+	            if (ipif != null) {
+	                DbSnmpInterfaceEntry snmpif = DbSnmpInterfaceEntry.get(dbConn, nodeId, ipif.getIfIndex());
+	                if (snmpif != null) ifAlias = snmpif.getAlias();
 	            }
 	        } finally {
 	            // Close the statement

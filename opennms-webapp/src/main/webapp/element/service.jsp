@@ -48,6 +48,7 @@
 		org.opennms.web.element.Service
 	"
 %>
+<%@ taglib uri="http://java.sun.com/jsp/jstl/core" prefix="c" %>
 
 <%
     Service service = ElementUtil.getServiceByParams(request, getServletContext());
@@ -55,11 +56,13 @@
 	int nodeId = service.getNodeId();
 	String ipAddr = service.getIpAddress();
  	int serviceId = service.getServiceId();
-
-    String eventUrl = "event/list.htm?filter=node%3D" + nodeId
-                      + "&filter=interface%3D" + ipAddr + "&filter=service%3D"
-                      + serviceId;
 %>
+<c:url var="eventUrl" value="event/list.htm">
+  <c:param name="filter" value="<%="node=" + nodeId%>"/>
+  <c:param name="filter" value="<%="interface=" + ipAddr%>"/>
+  <c:param name="filter" value="<%="service=" + serviceId%>"/>
+</c:url>
+
 
 <% String headTitle = service.getServiceName() + " Service on " + ipAddr; %>
 <% String breadcrumb2 = "<a href='element/node.jsp?node=" + nodeId  + "'>Node</a>"; %>
@@ -92,12 +95,12 @@ function doDelete() {
 
          <% if (request.isUserInRole(Authentication.ADMIN_ROLE)) { %>
          <form method="post" name="delete" action="admin/deleteService">
-         <input type="hidden" name="node" value="<%=nodeId%>">
-         <input type="hidden" name="intf" value="<%=ipAddr%>">
-         <input type="hidden" name="service" value="<%=serviceId%>">
+         <input type="hidden" name="node" value="<%=nodeId%>"/>
+         <input type="hidden" name="intf" value="<%=ipAddr%>"/>
+         <input type="hidden" name="service" value="<%=serviceId%>"/>
          <% } %>
       <p>
-         <a href="<%=eventUrl%>">View Events</a>
+         <a href="${eventUrl}">View Events</a>
          
          <% if (request.isUserInRole(Authentication.ADMIN_ROLE)) { %>
          &nbsp;&nbsp;&nbsp;<a href="admin/deleteService" onClick="return doDelete()">Delete</a>
@@ -114,12 +117,19 @@ function doDelete() {
             <h3>General</h3>
             <table>
               <tr>
-                <th>Node</th> 
-                <td><a href="element/node.jsp?node=<%=service.getNodeId()%>"><%=NetworkElementFactory.getInstance(getServletContext()).getNodeLabel(service.getNodeId())%></a></td>
+                <c:url var="nodeLink" value="element/node.jsp">
+                  <c:param name="node" value="<%=String.valueOf(nodeId)%>"/>
+                </c:url>
+                <th>Node</th>
+                <td><a href="${nodeLink}"><%=NetworkElementFactory.getInstance(getServletContext()).getNodeLabel(nodeId)%></a></td>
               </tr>
               <tr>
+                <c:url var="interfaceLink" value="element/interface.jsp">
+                  <c:param name="node" value="<%=String.valueOf(nodeId)%>"/>
+                  <c:param name="intf" value="<%=ipAddr%>"/>
+                </c:url>
                 <th>Interface</th> 
-                <td><a href="element/interface.jsp?node=<%=service.getNodeId()%>&intf=<%=service.getIpAddress()%>"><%=service.getIpAddress()%></a></td>
+                <td><a href="${interfaceLink}"><%=ipAddr%></a></td>
               </tr>              
               <tr>
                 <th>Polling Status</th>
@@ -136,16 +146,14 @@ function doDelete() {
 
       <div class="TwoColRight">
             <!-- events list box -->
-            <% String eventHeader = "<a href='" + eventUrl + "'>Recent Events</a>"; %>
-            <% String moreEventsUrl = eventUrl; %>
             <jsp:include page="/includes/eventlist.jsp" flush="false" >
               <jsp:param name="node" value="<%=nodeId%>" />
               <jsp:param name="ipAddr" value="<%=ipAddr%>" />
-              <jsp:param name="service" value="<%=serviceId%>" />              
+              <jsp:param name="service" value="<%=serviceId%>" />
               <jsp:param name="throttle" value="5" />
-              <jsp:param name="header" value="<%=eventHeader%>" />
-              <jsp:param name="moreUrl" value="<%=moreEventsUrl%>" />
-            </jsp:include>            
+              <jsp:param name="header" value="<a href='${eventUrl}'>Recent Events</a>" />
+              <jsp:param name="moreUrl" value="${eventUrl}" />
+            </jsp:include>
       
             <!-- Recent outages box -->
             <jsp:include page="/outage/serviceOutages-box.htm" flush="false" />

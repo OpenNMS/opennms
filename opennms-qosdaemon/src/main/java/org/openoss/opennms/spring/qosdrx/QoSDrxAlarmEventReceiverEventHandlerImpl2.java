@@ -31,6 +31,7 @@
 package org.openoss.opennms.spring.qosdrx;
 
 import java.lang.reflect.UndeclaredThrowableException;
+import java.net.InetAddress;
 import java.util.Date;
 import java.util.HashMap;
 
@@ -415,7 +416,7 @@ public class QoSDrxAlarmEventReceiverEventHandlerImpl2 implements AlarmEventRece
 //				//event.setId(new Integer(1));  // This is NOT set since unique constraint in alarms table on Events table
 //				alarm.setLastEvent(event); 
 
-				alarm.setIpAddr("localhost"); // needed?
+				alarm.setIpAddr(InetAddress.getLocalHost()); // needed?
 				alarm.setId(null); // set null as updating alarm
 				alarm.setFirstEventTime(nnae.getEventTime());
 				alarm.setLastEventTime(nnae.getEventTime());

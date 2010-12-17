@@ -140,7 +140,7 @@ public class LocationMonitorDaoHibernateTest extends AbstractTransactionalDaoTes
                    getLocationMonitorDao().findMonitoringLocationDefinition("bogus"));
     }
     
-    public void testFindStatusChangesForNodeForUniqueMonitorAndInterface() throws InterruptedException {
+    public void testFindStatusChangesForNodeForUniqueMonitorAndInterface() {
         OnmsLocationMonitor monitor1 = new OnmsLocationMonitor();
         monitor1.setDefinitionName("Outer Space");
         getLocationMonitorDao().save(monitor1);
@@ -157,23 +157,24 @@ public class LocationMonitorDaoHibernateTest extends AbstractTransactionalDaoTes
         
         // Add node1/192.168.1.1 on monitor1
         addStatusChangesForMonitorAndService(monitor1, node1.getIpInterfaceByIpAddress("192.168.1.1").getMonitoredServices());
-
+        
         // Add node1/192.168.1.2 on monitor1
         addStatusChangesForMonitorAndService(monitor1, node1.getIpInterfaceByIpAddress("192.168.1.2").getMonitoredServices());
         
         // Add node1/192.168.1.1 on monitor2
         addStatusChangesForMonitorAndService(monitor2, node1.getIpInterfaceByIpAddress("192.168.1.1").getMonitoredServices());
         
+        // Add node1/fe80:0000:0000:0000:aaaa:bbbb:cccc:dddd%5 on monitor1
+        addStatusChangesForMonitorAndService(monitor1, node1.getIpInterfaceByIpAddress("fe80::aaaa:bbbb:cccc:dddd%5").getMonitoredServices());
+        
         // Add node2/192.168.2.1 on monitor1 to test filtering on a specific node (this shouldn't show up in the results)
         addStatusChangesForMonitorAndService(monitor1, node2.getIpInterfaceByIpAddress("192.168.2.1").getMonitoredServices());
 
-        Thread.sleep(10);
-        
         // Add another copy for node1/192.168.1.1 on monitor1 to test distinct
         addStatusChangesForMonitorAndService(monitor1, node1.getIpInterfaceByIpAddress("192.168.1.1").getMonitoredServices());
         
         Collection<LocationMonitorIpInterface> statuses = getLocationMonitorDao().findStatusChangesForNodeForUniqueMonitorAndInterface(1);
-        assertEquals("number of statuses found", 3, statuses.size());
+        assertEquals("number of statuses found", 4, statuses.size());
 
         /*
         for (LocationMonitorIpInterface status : statuses) {

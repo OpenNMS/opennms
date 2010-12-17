@@ -120,8 +120,8 @@ public class MockDatabase extends TemporaryDatabase implements EventWriter {
     }
 
     public void writeSnmpInterface(MockInterface iface) {
-        Object[] values = { new Integer(iface.getNodeId()), iface.getIpAddr(), iface.getIfAlias(), iface.getIfIndex() };
-        update("insert into snmpInterface (nodeID, ipAddr, snmpifAlias, snmpIfIndex) values (?, ?, ?, ?);", values);
+        Object[] values = { new Integer(iface.getNodeId()), iface.getIfAlias(), iface.getIfIndex() };
+        update("insert into snmpInterface (nodeID, snmpifAlias, snmpIfIndex) values (?, ?, ?);", values);
     }
 
     public void writeService(MockService svc) {

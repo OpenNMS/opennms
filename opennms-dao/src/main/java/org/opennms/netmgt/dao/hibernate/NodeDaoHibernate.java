@@ -128,8 +128,8 @@ public class NodeDaoHibernate extends AbstractDaoHibernate<OnmsNode, Integer>
         return find("select distinct n from OnmsNode as n "
         		+ "join n.categories as c "
                 + "left join fetch n.assetRecord "
-                + "left join fetch n.ipInterfaces as iface "
-                + "left join fetch iface.monitoredServices as monSvc "
+                + "left join fetch n.ipInterfaces as ipInterface "
+                + "left join fetch ipInterface.monitoredServices as monSvc "
                 + "left join fetch monSvc.serviceType "
                 + "left join fetch monSvc.currentOutages "
                 + "where n.assetRecord." + columnName + " = ? "
@@ -141,8 +141,8 @@ public class NodeDaoHibernate extends AbstractDaoHibernate<OnmsNode, Integer>
         return find("select distinct n from OnmsNode as n "
                     + "join n.categories c "
                     + "left join fetch n.assetRecord "
-                    + "left join fetch n.ipInterfaces as iface "
-                    + "left join fetch iface.monitoredServices as monSvc "
+                    + "left join fetch n.ipInterfaces as ipInterface "
+                    + "left join fetch ipInterface.monitoredServices as monSvc "
                     + "left join fetch monSvc.serviceType "
                     + "left join fetch monSvc.currentOutages "
                     + "where c.name = ?",
@@ -165,9 +165,9 @@ public class NodeDaoHibernate extends AbstractDaoHibernate<OnmsNode, Integer>
         return find("select distinct n from OnmsNode as n "
                 + "join n.categories c " 
                 + "left join fetch n.assetRecord "
-                + "left join fetch n.ipInterfaces as iface "
+                + "left join fetch n.ipInterfaces as ipInterface "
                 + "left join fetch n.snmpInterfaces as snmpIface"
-                + "left join fetch iface.monitoredServices as monSvc "
+                + "left join fetch ipInterface.monitoredServices as monSvc "
                 + "left join fetch monSvc.serviceType "
                 + "left join fetch monSvc.currentOutages "
                 + "where c.name in ("+categoryListToNameList(categories)+")"
@@ -210,9 +210,9 @@ public class NodeDaoHibernate extends AbstractDaoHibernate<OnmsNode, Integer>
     /** {@inheritDoc} */
     public List<OnmsNode> findByForeignSourceAndIpAddress(String foreignSource, String ipAddress) {
         if (foreignSource == null) {
-            return find("select distinct n from OnmsNode n join n.ipInterfaces as ip where n.foreignSource is NULL and ip.ipAddress = ?", ipAddress);
+            return find("select distinct n from OnmsNode n join n.ipInterfaces as ipInterface where n.foreignSource is NULL and ipInterface.inetAddress = ?", ipAddress);
         } else {
-            return find("select distinct n from OnmsNode n join n.ipInterfaces as ip where n.foreignSource = ? and ip.ipAddress = ?", foreignSource, ipAddress);
+            return find("select distinct n from OnmsNode n join n.ipInterfaces as ipInterface where n.foreignSource = ? and ipInterface.inetAddress = ?", foreignSource, ipAddress);
         }
     }
 
@@ -241,13 +241,13 @@ public class NodeDaoHibernate extends AbstractDaoHibernate<OnmsNode, Integer>
     
     /** {@inheritDoc} */
     public List<OnmsIpInterface> findObsoleteIpInterfaces(Integer nodeId, Date scanStamp) {
-        return findObjects(OnmsIpInterface.class, "from OnmsIpInterface iface where iface.node.id = ? and (iface.ipLastCapsdPoll is null or iface.ipLastCapsdPoll < ?)", nodeId, scanStamp);
+        return findObjects(OnmsIpInterface.class, "from OnmsIpInterface ipInterface where ipInterface.node.id = ? and (ipInterface.ipLastCapsdPoll is null or ipInterface.ipLastCapsdPoll < ?)", nodeId, scanStamp);
     }
 
     /** {@inheritDoc} */
     public void deleteObsoleteInterfaces(Integer nodeId, Date scanStamp) {
-        getHibernateTemplate().bulkUpdate("delete from OnmsIpInterface iface where iface.node.id = ? and (iface.ipLastCapsdPoll is null or iface.ipLastCapsdPoll < ?)", new Object[] { nodeId, scanStamp });
-        getHibernateTemplate().bulkUpdate("delete from OnmsSnmpInterface iface where iface.node.id = ? and (iface.lastCapsdPoll is null or iface.lastCapsdPoll < ?)", new Object[] { nodeId, scanStamp });
+        getHibernateTemplate().bulkUpdate("delete from OnmsIpInterface ipInterface where ipInterface.node.id = ? and (ipInterface.ipLastCapsdPoll is null or ipInterface.ipLastCapsdPoll < ?)", new Object[] { nodeId, scanStamp });
+        getHibernateTemplate().bulkUpdate("delete from OnmsSnmpInterface ipInterface where ipInterface.node.id = ? and (ipInterface.lastCapsdPoll is null or ipInterface.lastCapsdPoll < ?)", new Object[] { nodeId, scanStamp });
     }
 
     /** {@inheritDoc} */

@@ -151,12 +151,12 @@ public class SnmpCollectorTest implements MockSnmpAgentAware {
             NetworkBuilder builder = new NetworkBuilder();
             builder.addNode(TEST_NODE_LABEL).setId(1).setSysObjectId(".1.3.6.1.4.1.1588.2.1.1.1");
 
-            builder.addSnmpInterface(m_testHostName, 1).setIfName("lo0").setPhysAddr("00:11:22:33:44");
-            builder.addSnmpInterface(m_testHostName, 2).setIfName("gif0").setPhysAddr("00:11:22:33:45").setIfType(55);
-            builder.addSnmpInterface(m_testHostName, 3).setIfName("stf0").setPhysAddr("00:11:22:33:46").setIfType(57);
+            builder.addSnmpInterface(1).setIfName("lo0").setPhysAddr("00:11:22:33:44");
+            builder.addSnmpInterface(2).setIfName("gif0").setPhysAddr("00:11:22:33:45").setIfType(55);
+            builder.addSnmpInterface(3).setIfName("stf0").setPhysAddr("00:11:22:33:46").setIfType(57);
 
             InterfaceBuilder ifBldr = builder.addInterface(m_testHostName).setIsSnmpPrimary("P");
-            ifBldr.addSnmpInterface(m_testHostName, 6).setIfName("fw0").setPhysAddr("44:33:22:11:00").setIfType(144).setCollectionEnabled(true);
+            ifBldr.addSnmpInterface(6).setIfName("fw0").setPhysAddr("44:33:22:11:00").setIfType(144).setCollectionEnabled(true);
 
             testNode = builder.getCurrentNode();
             assertNotNull(testNode);

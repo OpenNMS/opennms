@@ -206,7 +206,10 @@ public class DefaultPollContext implements PollContext {
         bldr.setField("ifIndex", snmpinterface.getIfIndex().toString());
 
         bldr.addParam(EventConstants.PARM_SNMP_INTERFACE_IFINDEX, snmpinterface.getIfIndex().toString());
-        bldr.addParam(EventConstants.PARM_SNMP_INTERFACE_IP, snmpinterface.getIpAddress());
+        // TODO: This doesn't handle cases where there are multiple addresses on the same ifindex
+        bldr.addParam(EventConstants.PARM_SNMP_INTERFACE_IP, 
+                      snmpinterface.getIpInterfaces().size() > 0 ? snmpinterface.getIpInterfaces().iterator().next().getIpAddress() : null
+        );
         if (snmpinterface.getIfName() != null) bldr.addParam(EventConstants.PARM_SNMP_INTERFACE_NAME, snmpinterface.getIfName());
         if (snmpinterface.getIfDescr() != null) bldr.addParam(EventConstants.PARM_SNMP_INTERFACE_DESC, snmpinterface.getIfDescr());
         if (snmpinterface.getIfAlias() != null) bldr.addParam(EventConstants.PARM_SNMP_INTERFACE_ALIAS, snmpinterface.getIfAlias());

@@ -172,7 +172,7 @@ public class IfSnmpCollectorTestCase extends OpenNMSTestCase {
     public final void testGetCollectorTargetAddress() {
         InetAddress target = m_ifSnmpc.getCollectorTargetAddress();
         assertNotNull("target addresss should not be null", target);
-        assertEquals("target address", myLocalHost(), target.getHostAddress());
+        assertEquals("target address", myLocalHost(), target);
     }
 
     public final void testGetIfAddressAndMask() {

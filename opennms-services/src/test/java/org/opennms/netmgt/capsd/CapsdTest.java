@@ -67,7 +67,7 @@ public class CapsdTest extends OpenNMSTestCase {
 
     	super.setUp();
 
-        m_agent = MockSnmpAgent.createAgentAndRun(new ClassPathResource("org/opennms/netmgt/snmp/snmpTestData1.properties"), this.myLocalHost() + "/9161");
+        m_agent = MockSnmpAgent.createAgentAndRun(new ClassPathResource("org/opennms/netmgt/snmp/snmpTestData1.properties"), this.myLocalHost().getHostAddress() + "/9161");
 
         InputStream configStream = ConfigurationTestUtils.getInputStreamForConfigFile("database-schema.xml");
         DatabaseSchemaConfigFactory.setInstance(new DatabaseSchemaConfigFactory(configStream));
@@ -168,10 +168,10 @@ public class CapsdTest extends OpenNMSTestCase {
                 "       security-name=\"opennmsUser\" \n" + 
                 "       auth-passphrase=\"0p3nNMSv3\" \n" +
                 "       privacy-passphrase=\"0p3nNMSv3\" >\n" +
-                "       <specific>"+myLocalHost()+"</specific>\n" +
+                "       <specific>"+myLocalHost().getHostAddress()+"</specific>\n" +
                 "   </definition>\n" + 
                 "\n" + 
-                "   <definition version=\"v2c\" port=\"9161\" read-community=\"public\" proxy-host=\""+myLocalHost()+"\">\n" + 
+                "   <definition version=\"v2c\" port=\"9161\" read-community=\"public\" proxy-host=\""+myLocalHost().getHostAddress()+"\">\n" + 
                 "      <specific>172.20.1.201</specific>\n" +
                 "      <specific>172.20.1.204</specific>\n" +
                 "   </definition>\n" + 
@@ -192,7 +192,7 @@ public class CapsdTest extends OpenNMSTestCase {
         
         m_capsd.rescanInterfaceParent(77);
         
-        Thread.sleep(30000);
+        Thread.sleep(10000);
         
         m_capsd.stop();
         

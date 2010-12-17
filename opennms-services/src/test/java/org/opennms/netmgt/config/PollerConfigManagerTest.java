@@ -43,6 +43,7 @@ import static org.easymock.EasyMock.isA;
 import static org.easymock.EasyMock.replay;
 
 import java.io.IOException;
+import java.net.InetAddress;
 import java.text.NumberFormat;
 import java.util.ArrayList;
 import java.util.List;
@@ -115,7 +116,7 @@ public class PollerConfigManagerTest extends TestCase {
         svcType.setName("HTTP");
         svc.setServiceType(svcType);
         OnmsIpInterface intf = new OnmsIpInterface();
-        intf.setIpAddress("1.2.3.4");
+        intf.setInetAddress(InetAddress.getByName("1.2.3.4"));
         svc.setIpInterface(intf);
         
         Package pkg = new Package();

@@ -44,7 +44,7 @@ public class TriggerSetSnmpInterfaceKeysOnInsertTest extends
     
     public void testSetSnmpInterfaceIdInIpInterface() throws Exception {
         executeSQL("INSERT INTO node (nodeId, nodeCreateTime) VALUES ( 1, now() )");
-        executeSQL("INSERT INTO snmpInterface (nodeId, ipAddr, snmpIfIndex) VALUES ( 1, '1.2.3.4', 1)");
+        executeSQL("INSERT INTO snmpInterface (nodeId, snmpIfIndex) VALUES ( 1, 1)");
         executeSQL("INSERT INTO ipInterface (nodeId, ipAddr, ifIndex) VALUES ( 1, '1.2.3.4', 1 )");
 
         Connection connection = getConnection();
@@ -87,7 +87,7 @@ public class TriggerSetSnmpInterfaceKeysOnInsertTest extends
     public void testSetSnmpInterfaceIdInIpInterfaceNullIfIndex()
             throws Exception {
         executeSQL("INSERT INTO node (nodeId, nodeCreateTime) VALUES ( 1, now() )");
-        executeSQL("INSERT INTO snmpInterface (nodeId, ipAddr, snmpIfIndex) VALUES ( 1, '1.2.3.4', 1)");
+        executeSQL("INSERT INTO snmpInterface (nodeId, snmpIfIndex) VALUES ( 1, 1)");
         executeSQL("INSERT INTO ipInterface (nodeId, ipAddr, ifIndex) VALUES ( 1, '1.2.3.4', null )");
 
         Connection connection = getConnection();
@@ -155,7 +155,7 @@ public class TriggerSetSnmpInterfaceKeysOnInsertTest extends
     public void testSetSnmpInterfaceIdInIpInterfaceLessThanOneIfIndexWithSnmpInterface()
             throws Exception {
         executeSQL("INSERT INTO node (nodeId, nodeCreateTime) VALUES ( 1, now() )");
-        executeSQL("INSERT INTO snmpInterface (nodeId, ipAddr, snmpIfIndex) VALUES ( 1, '1.2.3.4', 0)");
+        executeSQL("INSERT INTO snmpInterface (nodeId, snmpIfIndex) VALUES ( 1, 0)");
         executeSQL("INSERT INTO ipInterface (nodeId, ipAddr, ifIndex) VALUES ( 1, '1.2.3.4', 0 )");
 
         Connection connection = getConnection();
@@ -180,7 +180,7 @@ public class TriggerSetSnmpInterfaceKeysOnInsertTest extends
      */
     public void testSetSnmpInterfaceIdInIpInterfaceWithSnmpInterfaceId() {
         executeSQL("INSERT INTO node (nodeId, nodeCreateTime) VALUES ( 1, now() )");
-        executeSQL("INSERT INTO snmpInterface (id, nodeId, ipAddr, snmpIfIndex) VALUES ( 1, 1, '1.2.3.4', 1 )");
+        executeSQL("INSERT INTO snmpInterface (id, nodeId, snmpIfIndex) VALUES ( 1, 1, 1 )");
         executeSQL("INSERT INTO ipInterface (nodeId, ipAddr, ifIndex, snmpInterfaceId) VALUES ( 1, '1.2.3.4', 1, 1 )");
     }
 
@@ -191,7 +191,7 @@ public class TriggerSetSnmpInterfaceKeysOnInsertTest extends
      */
     public void testSetSnmpInterfaceIdInIpInterfaceWithSnmpInterfaceIdNullIfIndex() throws Exception {
         executeSQL("INSERT INTO node (nodeId, nodeCreateTime) VALUES ( 1, now() )");
-        executeSQL("INSERT INTO snmpInterface (id, nodeId, ipAddr, snmpIfIndex) VALUES ( 1, 1, '1.2.3.4', 1 )");
+        executeSQL("INSERT INTO snmpInterface (id, nodeId, snmpIfIndex) VALUES ( 1, 1, 1 )");
         executeSQL("INSERT INTO ipInterface (nodeId, ipAddr, snmpInterfaceId) VALUES ( 1, '1.2.3.4', 1 )");
 
         Connection connection = getConnection();
@@ -217,7 +217,7 @@ public class TriggerSetSnmpInterfaceKeysOnInsertTest extends
      */
     public void testSetSnmpInterfaceIdInIpInterfaceWithSnmpInterfaceIdNullNodeId() throws Exception {
         executeSQL("INSERT INTO node (nodeId, nodeCreateTime) VALUES ( 1, now() )");
-        executeSQL("INSERT INTO snmpInterface (id, nodeId, ipAddr, snmpIfIndex) VALUES ( 1, 1, '1.2.3.4', 1 )");
+        executeSQL("INSERT INTO snmpInterface (id, nodeId, snmpIfIndex) VALUES ( 1, 1, 1 )");
         executeSQL("INSERT INTO ipInterface (ipAddr, ifIndex, snmpInterfaceId) VALUES ( '1.2.3.4', 1, 1 )");
 
         Connection connection = getConnection();
@@ -243,7 +243,7 @@ public class TriggerSetSnmpInterfaceKeysOnInsertTest extends
      */
     public void testSetSnmpInterfaceIdInIpInterfaceWithSnmpInterfaceIdNullNodeIdAndIpAddr() throws Exception {
         executeSQL("INSERT INTO node (nodeId, nodeCreateTime) VALUES ( 1, now() )");
-        executeSQL("INSERT INTO snmpInterface (id, nodeId, ipAddr, snmpIfIndex) VALUES ( 1, 1, '1.2.3.4', 1 )");
+        executeSQL("INSERT INTO snmpInterface (id, nodeId, snmpIfIndex) VALUES ( 1, 1, 1 )");
         executeSQL("INSERT INTO ipInterface (ipAddr, snmpInterfaceId) VALUES ( '1.2.3.4', 1 )");
 
         Connection connection = getConnection();

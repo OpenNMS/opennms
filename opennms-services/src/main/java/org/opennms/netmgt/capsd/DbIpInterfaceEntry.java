@@ -148,7 +148,7 @@ public final class DbIpInterfaceEntry {
     /**
      * The node identifier
      */
-    private int m_nodeId;
+    private long m_nodeId;
 
     /**
      * The IP address.
@@ -272,7 +272,7 @@ public final class DbIpInterfaceEntry {
             d.watch(stmt);
             names = null;
             int ndx = 1;
-            stmt.setInt(ndx++, m_nodeId);
+            stmt.setLong(ndx++, m_nodeId);
             stmt.setString(ndx++, m_ipAddr.getHostAddress());
             if ((m_changed & CHANGED_IFINDEX) == CHANGED_IFINDEX) {
                 stmt.setInt(ndx++, m_ifIndex);
@@ -421,7 +421,7 @@ public final class DbIpInterfaceEntry {
                                    new String(new char[] { m_primaryState }));
                 }
             }
-            stmt.setInt(ndx++, m_nodeId);
+            stmt.setLong(ndx++, m_nodeId);
             stmt.setString(ndx++, m_ipAddr.getHostAddress());
             if (m_useIfIndexAsKey) {
                 if (m_ifIndex == -1) {
@@ -466,13 +466,13 @@ public final class DbIpInterfaceEntry {
             if (m_useIfIndexAsKey) {
                 stmt = c.prepareStatement(SQL_LOAD_REC_IFINDEX);
                 d.watch(stmt);
-                stmt.setInt(1, m_nodeId);
+                stmt.setLong(1, m_nodeId);
                 stmt.setString(2, m_ipAddr.getHostAddress());
                 stmt.setInt(3, m_ifIndex);
             } else {
                 stmt = c.prepareStatement(SQL_LOAD_REC);
                 d.watch(stmt);
-                stmt.setInt(1, m_nodeId);
+                stmt.setLong(1, m_nodeId);
                 stmt.setString(2, m_ipAddr.getHostAddress());
             }
 
@@ -550,7 +550,7 @@ public final class DbIpInterfaceEntry {
      *            True if the interface already exists.
      * 
      */
-    private DbIpInterfaceEntry(int nid, InetAddress address, boolean exists) {
+    private DbIpInterfaceEntry(long nid, InetAddress address, boolean exists) {
         m_fromDb = exists;
         m_nodeId = nid;
         m_ipAddr = address;
@@ -578,7 +578,7 @@ public final class DbIpInterfaceEntry {
      *            True if the interface already exists.
      * 
      */
-    private DbIpInterfaceEntry(int nid, InetAddress address, int ifIndex, boolean exists) {
+    private DbIpInterfaceEntry(long nid, InetAddress address, int ifIndex, boolean exists) {
         m_fromDb = exists;
         m_nodeId = nid;
         m_ipAddr = address;
@@ -598,7 +598,7 @@ public final class DbIpInterfaceEntry {
      * returned.
      * 
      */
-    int getNodeId() {
+    long getNodeId() {
         return m_nodeId;
     }
 
@@ -680,7 +680,7 @@ public final class DbIpInterfaceEntry {
     /**
      * Returns the current ifIndex
      */
-    int getIfIndex() {
+    public int getIfIndex() {
         return m_ifIndex;
     }
 
@@ -940,7 +940,7 @@ public final class DbIpInterfaceEntry {
         try {
             stmt = db.prepareStatement(SQL_LOAD_IFSVC_LIST);
             d.watch(stmt);
-            stmt.setInt(1, m_nodeId);
+            stmt.setLong(1, m_nodeId);
             stmt.setString(2, m_ipAddr.getHostAddress());
 
             rset = stmt.executeQuery();
@@ -968,13 +968,13 @@ public final class DbIpInterfaceEntry {
      * 
      * @param address
      *            The address of the interface.
-     * @param nid
+     * @param l
      *            The node id of the interface.
      * 
      * @return A new interface record.
      */
-    static DbIpInterfaceEntry create(int nid, InetAddress address) {
-        return new DbIpInterfaceEntry(nid, address, false);
+    static DbIpInterfaceEntry create(long l, InetAddress address) {
+        return new DbIpInterfaceEntry(l, address, false);
     }
 
     /**
@@ -1089,7 +1089,7 @@ public final class DbIpInterfaceEntry {
      * @return The loaded entry or null if one could not be found.
      * 
      */
-    static DbIpInterfaceEntry get(Connection db, int nid, InetAddress addr)
+    public static DbIpInterfaceEntry get(Connection db, long nid, InetAddress addr)
     throws SQLException {
         DbIpInterfaceEntry entry = new DbIpInterfaceEntry(nid, addr, true);
         if (!entry.load(db)) {
@@ -1115,7 +1115,7 @@ public final class DbIpInterfaceEntry {
      * @return The loaded entry or null if one could not be found.
      * 
      */
-    static DbIpInterfaceEntry get(Connection db, int nid, InetAddress addr, int ifIndex) throws SQLException {
+    static DbIpInterfaceEntry get(Connection db, long nid, InetAddress addr, int ifIndex) throws SQLException {
         DbIpInterfaceEntry entry = new DbIpInterfaceEntry(nid, addr, ifIndex, true);
         if (!entry.load(db)) {
             entry = null;

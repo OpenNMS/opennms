@@ -396,10 +396,10 @@ public class NodeScan implements RunInBatch {
 
                 // mark all provisioned interfaces as 'in need of scanning' so we can mark them
                 // as scanned during ipAddrTable processing
-                final Set<String> provisionedIps = new HashSet<String>();
+                final Set<InetAddress> provisionedIps = new HashSet<InetAddress>();
                 if (getForeignSource() != null) {
                     for(OnmsIpInterface provisioned : getNode().getIpInterfaces()) {
-                        provisionedIps.add(provisioned.getIpAddress());
+                        provisionedIps.add(provisioned.getInetAddress());
                     }
                 }
 
@@ -443,7 +443,7 @@ public class NodeScan implements RunInBatch {
                     walker.waitFor();
         
                     if (walker.timedOut()) {
-                        abort("Aborting node scan : Agent timedout while scanning the ipAddrTable");
+                        abort("Aborting node scan : Agent timed out while scanning the ipAddrTable");
                     }
                     else if (walker.failed()) {
                         abort("Aborting node scan : Agent failed while scanning the ipAddrTable : " + walker.getErrorMessage());
@@ -453,7 +453,7 @@ public class NodeScan implements RunInBatch {
         
                         // After processing the snmp provided interfaces then we need to scan any that 
                         // were provisioned but missing from the ip table
-                        for(String ipAddr : provisionedIps) {
+                        for(InetAddress ipAddr : provisionedIps) {
                             OnmsIpInterface iface = getNode().getIpInterfaceByIpAddress(ipAddr);
                             iface.setIpLastCapsdPoll(getScanStamp());
                             iface.setIsManaged("M");
@@ -515,7 +515,7 @@ public class NodeScan implements RunInBatch {
                 walker.waitFor();
         
                 if (walker.timedOut()) {
-                    abort("Aborting node scan : Agent timedout while scanning the interfaces table");
+                    abort("Aborting node scan : Agent timed out while scanning the interfaces table");
                 }
                 else if (walker.failed()) {
                     abort("Aborting node scan : Agent failed while scanning the interfaces table: " + walker.getErrorMessage());

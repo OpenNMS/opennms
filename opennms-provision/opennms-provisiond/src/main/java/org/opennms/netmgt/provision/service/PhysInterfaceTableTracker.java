@@ -174,7 +174,7 @@ public class PhysInterfaceTableTracker extends TableTracker {
         }
         
         public OnmsSnmpInterface createInterfaceFromRow() {
-            OnmsSnmpInterface snmpIface = new OnmsSnmpInterface("0.0.0.0", getIfIndex(), null);
+            OnmsSnmpInterface snmpIface = new OnmsSnmpInterface(null, getIfIndex());
             snmpIface.setIfAdminStatus(getIfAdminStatus());
             snmpIface.setIfAlias(getIfAlias());
             snmpIface.setIfDescr(getIfDescr());

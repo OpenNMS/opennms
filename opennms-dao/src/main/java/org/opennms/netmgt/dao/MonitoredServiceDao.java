@@ -33,7 +33,8 @@
 
 package org.opennms.netmgt.dao;
 
-import java.util.Collection;
+import java.net.InetAddress;
+import java.util.List;
 
 import org.opennms.netmgt.model.OnmsApplication;
 import org.opennms.netmgt.model.OnmsMonitoredService;
@@ -50,6 +51,8 @@ public interface MonitoredServiceDao extends OnmsDao<OnmsMonitoredService, Integ
 
     /**
      * <p>get</p>
+     * 
+     * @deprecated Use {@link #get(Integer, InetAddress, Integer, Integer)} instead
      *
      * @param nodeId a {@link java.lang.Integer} object.
      * @param ipAddr a {@link java.lang.String} object.
@@ -63,6 +66,19 @@ public interface MonitoredServiceDao extends OnmsDao<OnmsMonitoredService, Integ
      * <p>get</p>
      *
      * @param nodeId a {@link java.lang.Integer} object.
+     * @param ipAddr a {@link java.net.InetAddress} object.
+     * @param ifIndex a {@link java.lang.Integer} object.
+     * @param serviceId a {@link java.lang.Integer} object.
+     * @return a {@link org.opennms.netmgt.model.OnmsMonitoredService} object.
+     */
+    OnmsMonitoredService get(Integer nodeId, InetAddress ipAddr, Integer ifIndex, Integer serviceId);
+
+    /**
+     * <p>get</p>
+     * 
+     * @deprecated Use {@link #get(Integer, InetAddress, String)} instead
+     *
+     * @param nodeId a {@link java.lang.Integer} object.
      * @param ipAddress a {@link java.lang.String} object.
      * @param svcName a {@link java.lang.String} object.
      * @return a {@link org.opennms.netmgt.model.OnmsMonitoredService} object.
@@ -70,12 +86,22 @@ public interface MonitoredServiceDao extends OnmsDao<OnmsMonitoredService, Integ
     OnmsMonitoredService get(Integer nodeId, String ipAddress, String svcName);
 
     /**
+     * <p>get</p>
+     *
+     * @param nodeId a {@link java.lang.Integer} object.
+     * @param ipAddress a {@link java.lang.String} object.
+     * @param svcName a {@link java.lang.String} object.
+     * @return a {@link org.opennms.netmgt.model.OnmsMonitoredService} object.
+     */
+    OnmsMonitoredService get(Integer nodeId, InetAddress ipAddress, String svcName);
+
+    /**
      * <p>findByType</p>
      *
      * @param typeName a {@link java.lang.String} object.
      * @return a {@link java.util.Collection} object.
      */
-    Collection<OnmsMonitoredService> findByType(String typeName);
+    List<OnmsMonitoredService> findByType(String typeName);
 
     /**
      * <p>findMatchingServices</p>
@@ -83,7 +109,7 @@ public interface MonitoredServiceDao extends OnmsDao<OnmsMonitoredService, Integ
      * @param serviceSelector a {@link org.opennms.netmgt.model.ServiceSelector} object.
      * @return a {@link java.util.Collection} object.
      */
-    Collection<OnmsMonitoredService> findMatchingServices(ServiceSelector serviceSelector);
+    List<OnmsMonitoredService> findMatchingServices(ServiceSelector serviceSelector);
 
     /**
      * <p>findByApplication</p>
@@ -91,7 +117,7 @@ public interface MonitoredServiceDao extends OnmsDao<OnmsMonitoredService, Integ
      * @param application a {@link org.opennms.netmgt.model.OnmsApplication} object.
      * @return a {@link java.util.Collection} object.
      */
-    Collection<OnmsMonitoredService> findByApplication(OnmsApplication application);
+    List<OnmsMonitoredService> findByApplication(OnmsApplication application);
     
     /**
      * <p>getPrimaryService</p>
