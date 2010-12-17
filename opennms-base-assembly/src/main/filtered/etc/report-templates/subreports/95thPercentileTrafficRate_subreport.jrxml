@@ -1,5 +1,5 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<jasperReport xmlns="http://jasperreports.sourceforge.net/jasperreports" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://jasperreports.sourceforge.net/jasperreports http://jasperreports.sourceforge.net/xsd/jasperreport.xsd" name="TotalBytesTransferredByInterface_subreport1" pageWidth="725" pageHeight="802" whenNoDataType="NoDataSection" columnWidth="725" leftMargin="0" rightMargin="0" topMargin="0" bottomMargin="0">
+<jasperReport xmlns="http://jasperreports.sourceforge.net/jasperreports" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://jasperreports.sourceforge.net/jasperreports http://jasperreports.sourceforge.net/xsd/jasperreport.xsd" name="InterfaceUtilizationSummary_subreport" pageWidth="725" pageHeight="802" whenNoDataType="NoDataSection" columnWidth="725" leftMargin="0" rightMargin="0" topMargin="0" bottomMargin="0">
 	<property name="ireport.zoom" value="1.5"/>
 	<property name="ireport.x" value="0"/>
 	<property name="ireport.y" value="0"/>
@@ -92,7 +92,7 @@
 		<band splitType="Stretch"/>
 	</pageFooter>
 	<summary>
-		<band height="23" splitType="Stretch">
+		<band height="162" splitType="Stretch">
 			<textField>
 				<reportElement style="Body" x="0" y="0" width="140" height="20"/>
 				<textElement/>
@@ -118,6 +118,53 @@
 				<textElement/>
 				<textFieldExpression class="java.lang.String"><![CDATA[$P{snmpifalias}]]></textFieldExpression>
 			</textField>
+<<<<<<< HEAD:opennms-base-assembly/src/main/filtered/etc/report-templates/subreports/95thPercentileTrafficRate_subreport.jrxml
+=======
+			<pieChart>
+				<chart isShowLegend="true">
+					<reportElement x="290" y="20" width="140" height="140"/>
+					<chartTitle/>
+					<chartSubtitle/>
+					<chartLegend/>
+				</chart>
+				<pieDataset>
+					<pieSeries>
+						<keyExpression><![CDATA["receive rate"]]></keyExpression>
+						<valueExpression><![CDATA[$V{received_RATE_BITS}]]></valueExpression>
+					</pieSeries>
+					<pieSeries>
+						<keyExpression><![CDATA["interface rate"]]></keyExpression>
+						<valueExpression><![CDATA[new Double("" + $P{snmpifspeed}) - $V{received_RATE_BITS}]]></valueExpression>
+					</pieSeries>
+				</pieDataset>
+				<piePlot>
+					<plot/>
+					<itemLabel color="#000000" backgroundColor="#FFFFFF"/>
+				</piePlot>
+			</pieChart>
+			<pieChart>
+				<chart isShowLegend="true">
+					<reportElement x="435" y="20" width="140" height="140"/>
+					<chartTitle/>
+					<chartSubtitle/>
+					<chartLegend/>
+				</chart>
+				<pieDataset>
+					<pieSeries>
+						<keyExpression><![CDATA["transmitted rate"]]></keyExpression>
+						<valueExpression><![CDATA[$V{transmitted_RATE_BITS}]]></valueExpression>
+					</pieSeries>
+					<pieSeries>
+						<keyExpression><![CDATA["interface rate"]]></keyExpression>
+						<valueExpression><![CDATA[new Double("" + $P{snmpifspeed}) - $V{transmitted_RATE_BITS}]]></valueExpression>
+					</pieSeries>
+				</pieDataset>
+				<piePlot>
+					<plot/>
+					<itemLabel color="#000000" backgroundColor="#FFFFFF"/>
+				</piePlot>
+			</pieChart>
+>>>>>>> 304afb7... Added legend to piechart in InterfaceUtilizationSummary report:opennms-base-assembly/src/main/filtered/etc/report-templates/subreports/95thPercentileTrafficRate_subreport.jrxml
 		</band>
 	</summary>
 	<noData>
