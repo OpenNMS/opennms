@@ -37,5 +37,5 @@ build:
 	( cd .. && ./compile.pl clean && ./compile.pl -Dopennms.home=/opt/opennms install )
 
 package:
-	( cd .. && ./assemble.pl clean && ./assemble.pl -Dopennms.home=/opt/opennms -Dbuild.profile=full -Denable.snapshots=true install )
+	( cd .. && ./assemble.pl clean && ./assemble.pl -Dopennms.home=/opt/opennms -Dbuild.profile=full -Denable.snapshots=true -DupdatePolicy=always install )
 	${MAKE} -f opennms.Makefile package

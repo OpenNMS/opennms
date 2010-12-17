@@ -23,8 +23,8 @@
   </dependencies>
   <repositories>
     <repository>
-      <snapshots><enabled>false</enabled></snapshots>
-      <releases><enabled>true</enabled></releases>
+      <snapshots><enabled>false</enabled><updatePolicy>${updatePolicy}</updatePolicy></snapshots>
+      <releases><enabled>true</enabled><updatePolicy>${updatePolicy}</updatePolicy></releases>
       <id>JBOSS</id>
       <url>http://maven.opennms.org/content/groups/jboss.com-release</url>
     </repository>
