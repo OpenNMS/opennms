@@ -45,7 +45,7 @@ public class TriggerTest extends PopulatedTemporaryDatabaseTestCase {
     public void testSetIpInterfaceIfIndexLikeCapsdDoes() throws Exception {
         executeSQL("INSERT INTO node (nodeId, nodeCreateTime) VALUES ( 1, now() )");
         executeSQL("INSERT INTO ipInterface (nodeId, ipAddr, ifIndex) VALUES ( 1, '1.2.3.4', null )");
-        executeSQL("INSERT INTO snmpInterface (nodeId, ipAddr, snmpIfIndex) VALUES ( 1, '1.2.3.4', 1)");
+        executeSQL("INSERT INTO snmpInterface (nodeId, snmpIfIndex) VALUES ( 1, 1)");
         
         assertEquals("ipinterface.id", 1, jdbcTemplate.queryForInt("SELECT id FROM ipinterface"));
         assertEquals("snmpinterface.id", 2, jdbcTemplate.queryForInt("SELECT id FROM snmpinterface"));
@@ -60,7 +60,7 @@ public class TriggerTest extends PopulatedTemporaryDatabaseTestCase {
     public void testSetIpInterfaceIfIndexLikeCapsdDoesBadIfIndex() throws Exception {
         executeSQL("INSERT INTO node (nodeId, nodeCreateTime) VALUES ( 1, now() )");
         executeSQL("INSERT INTO ipInterface (nodeId, ipAddr, ifIndex) VALUES ( 1, '1.2.3.4', null )");
-        executeSQL("INSERT INTO snmpInterface (nodeId, ipAddr, snmpIfIndex) VALUES ( 1, '1.2.3.4', 1)");
+        executeSQL("INSERT INTO snmpInterface (nodeId, snmpIfIndex) VALUES ( 1, 1)");
         
         assertEquals("ifIndex", 0, jdbcTemplate.queryForInt("SELECT ifIndex FROM ipinterface"));
 
@@ -77,7 +77,7 @@ public class TriggerTest extends PopulatedTemporaryDatabaseTestCase {
     
     public void testSetIpInterfaceIfIndexLikeCapsdButOppositeOrder() throws Exception {
         executeSQL("INSERT INTO node (nodeId, nodeCreateTime) VALUES ( 1, now() )");
-        executeSQL("INSERT INTO snmpInterface (nodeId, ipAddr, snmpIfIndex) VALUES ( 1, '1.2.3.4', 1)");
+        executeSQL("INSERT INTO snmpInterface (nodeId, snmpIfIndex) VALUES ( 1, 1)");
         executeSQL("INSERT INTO ipInterface (nodeId, ipAddr, ifIndex) VALUES ( 1, '1.2.3.4', 1 )");
         
         assertEquals("snmpInterfaceId", 1, jdbcTemplate.queryForInt("SELECT snmpInterfaceId FROM ipInterface WHERE nodeID = ?", 1));
@@ -85,7 +85,7 @@ public class TriggerTest extends PopulatedTemporaryDatabaseTestCase {
 
     public void testSetIpInterfaceIfIndexLikeCapsdButOppositeOrderUpdateWithBadIfIndex() throws Exception {
         executeSQL("INSERT INTO node (nodeId, nodeCreateTime) VALUES ( 1, now() )");
-        executeSQL("INSERT INTO snmpInterface (nodeId, ipAddr, snmpIfIndex) VALUES ( 1, '1.2.3.4', 1)");
+        executeSQL("INSERT INTO snmpInterface (nodeId, snmpIfIndex) VALUES ( 1, 1)");
         executeSQL("INSERT INTO ipInterface (nodeId, ipAddr, ifIndex) VALUES ( 1, '1.2.3.4', 1 )");
         
         assertEquals("snmpInterfaceId", 1, jdbcTemplate.queryForInt("SELECT snmpInterfaceId FROM ipInterface WHERE nodeID = ?", 1));

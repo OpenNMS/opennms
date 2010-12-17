@@ -35,6 +35,8 @@ import java.net.InetAddress;
 
 import javax.xml.bind.annotation.adapters.XmlAdapter;
 
+import org.opennms.core.utils.InetAddressUtils;
+
 /**
  * InetAddresssXmlAdapter
  *
@@ -46,13 +48,13 @@ public class InetAddressXmlAdapter extends XmlAdapter<String, InetAddress> {
     /** {@inheritDoc} */
     @Override
     public String marshal(InetAddress inetAddr) throws Exception {
-        return inetAddr.getHostAddress();
+        return InetAddressUtils.toIpAddrString(inetAddr);
     }
 
     /** {@inheritDoc} */
     @Override
     public InetAddress unmarshal(String ipAddr) throws Exception {
-        return InetAddress.getByName(ipAddr);
+        return InetAddressUtils.getInetAddress(ipAddr);
     }
 
 }

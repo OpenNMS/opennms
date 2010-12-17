@@ -41,6 +41,14 @@ public class ZipSystemReportFormatter extends AbstractSystemReportFormatter impl
         return "compressed file of all resources";
     }
 
+    public String getContentType() {
+        return "application/zip";
+    }
+
+    public String getExtension() {
+        return "zip";
+    }
+
     public boolean canStdout() {
         return false;
     }

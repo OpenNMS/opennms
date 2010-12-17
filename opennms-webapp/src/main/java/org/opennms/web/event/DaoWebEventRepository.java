@@ -38,6 +38,7 @@ import java.util.List;
 
 import org.hibernate.criterion.Order;
 import org.hibernate.criterion.Restrictions;
+import org.opennms.core.utils.InetAddressUtils;
 import org.opennms.core.utils.ThreadCategory;
 import org.opennms.netmgt.dao.EventDao;
 import org.opennms.netmgt.model.OnmsCriteria;
@@ -157,7 +158,7 @@ public class DaoWebEventRepository implements WebEventRepository {
         event.forward = onmsEvent.getEventForward();
         event.host = onmsEvent.getEventHost();
         event.id = onmsEvent.getId();
-        event.ipAddr = onmsEvent.getIpAddr();
+        event.ipAddr = onmsEvent.getIpAddr() == null ? null : InetAddressUtils.toIpAddrString(onmsEvent.getIpAddr());
         event.logGroup = onmsEvent.getEventLogGroup();
         event.logMessage = onmsEvent.getEventLogMsg();
         event.mouseOverText = onmsEvent.getEventMouseOverText();

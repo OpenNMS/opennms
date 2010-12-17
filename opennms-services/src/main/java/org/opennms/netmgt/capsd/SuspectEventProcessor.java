@@ -576,8 +576,6 @@ final class SuspectEventProcessor implements Runnable {
                 || !addedSnmpInterfaceEntry) {
             DbSnmpInterfaceEntry snmpEntry =
                 DbSnmpInterfaceEntry.create(nodeId, ifIndex);
-            // IP address
-            snmpEntry.setIfAddress(ifaddr);
             snmpEntry.store(dbc);
         }
 
@@ -823,34 +821,33 @@ final class SuspectEventProcessor implements Runnable {
              * returns the FIRST IP address and mask for a given interface as
              * specified in the ipAddrTable.
              */
-            InetAddress[] aaddrs = null;
+            InetAddress[] addrs = null;
             if (snmpc.hasIpAddrTable()) {
-                aaddrs = snmpc.getIfAddressAndMask(xifIndex);
+                addrs = snmpc.getIfAddressAndMask(xifIndex);
             }
 
             // At some point back in the day this was done with ifType
             // Skip loopback interfaces
-            if (aaddrs != null && aaddrs[0].getHostAddress().startsWith("127.")) {
+            if (addrs != null && addrs[0].getHostAddress().startsWith("127.")) {
                 continue;
             }
 
             final DbSnmpInterfaceEntry snmpEntry =
                 DbSnmpInterfaceEntry.create(nodeId, xifIndex);
 
-            if (aaddrs == null) {
+            if (addrs == null) {
                 // No IP associeated with the interface
                 snmpEntry.setCollect("N");
 
             } else {
                 // IP address
-                snmpEntry.setIfAddress(aaddrs[0]);
-                if (aaddrs[0].equals(ifaddr)) {
+                if (addrs[0].equals(ifaddr)) {
                     addedSnmpInterfaceEntry = true;
                 }
 
                 // netmask
-                if (aaddrs[1] != null) {
-                    snmpEntry.setNetmask(aaddrs[1]);
+                if (addrs[1] != null) {
+                    snmpEntry.setNetmask(addrs[1]);
                 }
                 
                 snmpEntry.setCollect("C");
@@ -858,9 +855,9 @@ final class SuspectEventProcessor implements Runnable {
 
             // description
             final String str = ifte.getIfDescr();
-            if (log().isDebugEnabled() && aaddrs != null) {
+            if (log().isDebugEnabled() && addrs != null) {
                 log().debug("SuspectEventProcessor: "
-                        + aaddrs[0].getHostAddress() + " has ifDescription: "
+                        + addrs[0].getHostAddress() + " has ifDescription: "
                         + str);
             }
             if (str != null && str.length() > 0) {
@@ -871,16 +868,16 @@ final class SuspectEventProcessor implements Runnable {
             String physAddr = null;
             try {
                 physAddr = ifte.getPhysAddr();
-                if (log().isDebugEnabled() && aaddrs != null) {
+                if (log().isDebugEnabled() && addrs != null) {
                     log().debug("SuspectEventProcessor: "
-                            + aaddrs[0].getHostAddress()
+                            + addrs[0].getHostAddress()
                             + " has physical address: -" + physAddr + "-");
                 }
             } catch (IllegalArgumentException iae) {
                 physAddr = null;
-                if (log().isDebugEnabled() && aaddrs != null) {
+                if (log().isDebugEnabled() && addrs != null) {
                     log().debug("ifPhysAddress." + ifte.getIfIndex() + " on node "
-                               + nodeId + " / " + aaddrs[0].getHostAddress()
+                               + nodeId + " / " + addrs[0].getHostAddress()
                                + " could not be converted to a hex string (not a PhysAddr / OCTET STRING?), setting to null.");
                 }
                 StringBuffer errMsg = new StringBuffer("SNMP agent bug on node ");

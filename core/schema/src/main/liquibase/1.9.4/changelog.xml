@@ -1,0 +1,69 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<databaseChangeLog
+    xmlns="http://www.liquibase.org/xml/dbchangelog/1.9"
+    xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+    xsi:schemaLocation="http://www.liquibase.org/xml/ns/dbchangelog/1.9
+        http://www.liquibase.org/xml/ns/dbchangelog/dbchangelog-1.9.xsd">
+
+    <!-- Remove the deprecated snmpinterface.ipaddr field from the database -->
+    <changeSet author="seth" id="1.9.4-remove-snmpinterface-ipaddr">
+        <dropColumn tableName="snmpinterface" columnName="ipaddr"/>
+        <rollback>
+            <addColumn tableName="snmpinterface">
+                <column name="ipaddr" type="text"/>
+            </addColumn>
+        </rollback>
+    </changeSet>
+
+    <!-- 
+        Change the type of all IP address fields to 'text' so that they can
+        handle IPv6 addresses of arbitrary length (39 characters plus scope ID) 
+    -->
+    <changeSet author="thedesloge" id="1.9.4-changeIpAddrTablesCountForIPV6">
+        <modifyColumn tableName="servermap">
+            <column name="ipaddr" type="text"/>
+        </modifyColumn>
+        <modifyColumn tableName="servicemap">
+            <column name="ipaddr" type="text"/>
+        </modifyColumn>
+        <modifyColumn tableName="distpoller">
+            <column name="dpip" type="text"/>
+        </modifyColumn>
+        <modifyColumn tableName="ipinterface">
+            <column name="ipaddr" type="text"/>
+        </modifyColumn>
+        <modifyColumn tableName="ifservices">
+            <column name="ipaddr" type="text"/>
+        </modifyColumn>
+        <modifyColumn tableName="events">
+            <column name="ipaddr" type="text"/>
+        </modifyColumn>
+        <modifyColumn tableName="outages">
+            <column name="ipaddr" type="text"/>
+        </modifyColumn>
+        <modifyColumn tableName="vulnerabilities">
+            <column name="ipaddr" type="text"/>
+        </modifyColumn>
+        <modifyColumn tableName="alarms">
+            <column name="ipaddr" type="text"/>
+        </modifyColumn>
+        <modifyColumn tableName="pollresults">
+            <column name="ipaddr" type="text"/>
+        </modifyColumn>
+        <modifyColumn tableName="atinterface">
+            <column name="ipaddr" type="text"/>
+        </modifyColumn>
+    </changeSet>
+
+    <!-- Remove the deprecated alarms.clearuei column from the database -->
+    <changeSet author="seth" id="1.9.4-remove-alarms-clearuei">
+        <dropColumn tableName="alarms" columnName="clearuei"/>
+        <rollback>
+            <addColumn tableName="alarms">
+                <column name="clearuei" type="varchar(256)"/>
+            </addColumn>
+        </rollback>
+    </changeSet>
+
+</databaseChangeLog>

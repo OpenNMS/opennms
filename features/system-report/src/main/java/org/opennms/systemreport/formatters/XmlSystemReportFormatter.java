@@ -25,6 +25,14 @@ public class XmlSystemReportFormatter extends AbstractSystemReportFormatter impl
         return "XML text";
     }
 
+    public String getContentType() {
+        return "text/xml";
+    }
+
+    public String getExtension() {
+        return "xml";
+    }
+
     public boolean canStdout() {
         return true;
     }

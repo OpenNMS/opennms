@@ -54,7 +54,8 @@
 		java.util.*
 	"
 %>
-
+<%@taglib uri="http://java.sun.com/jsp/jstl/core" prefix="c" %>
+<%@taglib uri="http://java.sun.com/jsp/jstl/fmt" prefix="fmt" %>
 
 <%!
     protected CategoryModel model;
@@ -130,7 +131,12 @@ if (overallRtcValue < 0) {
     <% } else { %>
       <tr class="Indeterminate">
     <% } %>
-    <td class="divider"><a href="element/service.jsp?node=<%=nodeId%>&intf=<%=ipAddr%>&service=<%=service.getServiceId()%>"><%=service.getServiceName()%></a></td>
+    <c:url var="serviceLink" value="element/service.jsp">
+      <c:param name="node" value="<%=String.valueOf(nodeId)%>"/>
+      <c:param name="intf" value="<%=ipAddr%>"/>
+      <c:param name="service" value="<%=String.valueOf(service.getServiceId())%>"/>
+    </c:url>
+    <td class="divider"><a href="${serviceLink}"><%=service.getServiceName()%></a></td>
     <% if( service.isManaged() ) { %>
       <td class="divider bright"><%=CategoryUtil.formatValue(svcValue)%>%</td>
     <% } else { %>

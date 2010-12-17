@@ -40,6 +40,7 @@ import static org.easymock.EasyMock.expect;
 import static org.easymock.EasyMock.isA;
 import static org.easymock.EasyMock.matches;
 
+import java.net.InetAddress;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.HashMap;
@@ -99,7 +100,7 @@ public class SnmpAttributeTest extends TestCase {
         OnmsIpInterface ipInterface = new OnmsIpInterface();
         ipInterface.setId(1);
         ipInterface.setNode(node);
-        ipInterface.setIpAddress("192.168.1.1");
+        ipInterface.setInetAddress(InetAddress.getByName("192.168.1.1"));
         
         expect(m_ipInterfaceDao.load(1)).andReturn(ipInterface).times(3);
 

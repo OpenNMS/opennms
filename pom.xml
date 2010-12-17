@@ -306,6 +306,14 @@
         <version>2.1.1</version>
         <configuration>
           <archiveClasses>true</archiveClasses>
+          <outputFileNameMapping>@{artifactId}@-@{baseVersion}@@{dashClassifier?}@.@{extension}@</outputFileNameMapping>
+          <archive>
+            <manifest>
+              <addClasspath>true</addClasspath>
+              <classpathLayoutType>custom</classpathLayoutType>
+              <customClasspathLayout>WEB-INF/lib/@{artifact.groupIdPath}/@{artifact.artifactId}-@{artifact.baseVersion}@{dashClassifier?}.@{artifact.extension}</customClasspathLayout>
+            </manifest>
+          </archive>
         </configuration>
       </plugin>
       <plugin>
@@ -684,8 +692,8 @@
       </activation>
       <repositories>
         <repository>
-          <snapshots><enabled>true</enabled></snapshots>
-          <releases><enabled>false</enabled></releases>
+          <snapshots><enabled>true</enabled><updatePolicy>${updatePolicy}</updatePolicy></snapshots>
+          <releases><enabled>false</enabled><updatePolicy>${updatePolicy}</updatePolicy></releases>
           <id>opennms-snapshots</id>
           <name>OpenNMS Snapshot Maven Repository</name>
           <url>http://maven.opennms.org/content/groups/opennms.org-snapshot</url>
@@ -869,6 +877,11 @@
       <dependency>
         <groupId>org.opennms.features</groupId>
         <artifactId>org.opennms.features.jdbc-collector</artifactId>
+        <version>${project.version}</version>
+      </dependency>
+      <dependency>
+        <groupId>org.opennms.features</groupId>
+        <artifactId>org.opennms.features.request-tracker</artifactId>
         <version>${project.version}</version>
       </dependency>
       <dependency>
@@ -2019,8 +2032,8 @@
   </dependencyManagement>
   <repositories>
     <repository>
-      <snapshots><enabled>false</enabled></snapshots>
-      <releases><enabled>true</enabled></releases>
+      <snapshots><enabled>false</enabled><updatePolicy>${updatePolicy}</updatePolicy></snapshots>
+      <releases><enabled>true</enabled><updatePolicy>${updatePolicy}</updatePolicy></releases>
       <id>opennms-repo</id>
       <name>OpenNMS Repository</name>
       <url>http://maven.opennms.org/content/groups/opennms.org-release</url>
@@ -2028,8 +2041,8 @@
   </repositories>
   <pluginRepositories>
     <pluginRepository>
-      <snapshots><enabled>false</enabled></snapshots>
-      <releases><enabled>true</enabled></releases>
+      <snapshots><enabled>false</enabled><updatePolicy>${updatePolicy}</updatePolicy></snapshots>
+      <releases><enabled>true</enabled><updatePolicy>${updatePolicy}</updatePolicy></releases>
       <id>maven-repo</id>
       <name>Maven Central</name>
       <url>http://repo1.maven.org/maven2</url>

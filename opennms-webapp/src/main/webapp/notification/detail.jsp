@@ -51,6 +51,9 @@
 	"
 %>
 
+<%@taglib uri="http://java.sun.com/jsp/jstl/core" prefix="c" %>
+<%@taglib uri="http://java.sun.com/jsp/jstl/fmt" prefix="fmt" %>
+
 <%!
     NotificationModel model = new NotificationModel();
 %>
@@ -111,17 +114,21 @@
     <td width="15%">Node</td>
     <td width="17%">
       <%if (NetworkElementFactory.getInstance(getServletContext()).getNodeLabel(notice.getNodeId())!=null) { %>
-        <a href="element/node.jsp?node=<%=notice.getNodeId()%>"><%=NetworkElementFactory.getInstance(getServletContext()).getNodeLabel(notice.getNodeId())%></a>
+        <a href="element/node.jsp?node=<%=notice.getNodeId()%>"><c:out value="<%=NetworkElementFactory.getInstance(getServletContext()).getNodeLabel(notice.getNodeId())%>"/></a>
       <% } else { %>
         &nbsp;
       <% } %>
     </td>
-          
+
     <td width="15%">Interface</td>
 
     <td width="17%">
       <%if (NetworkElementFactory.getInstance(getServletContext()).getNodeLabel(notice.getNodeId())!=null && notice.getIpAddress()!=null) { %>
-        <a href="element/interface.jsp?node=<%=notice.getNodeId()%>&intf=<%=notice.getIpAddress()%>"><%=notice.getIpAddress()%></a>
+        <c:url var="interfaceLink" value="element/interface.jsp">
+          <c:param name="node" value="<%=String.valueOf(notice.getNodeId())%>"/>
+          <c:param name="intf" value="<%=notice.getIpAddress()%>"/>
+        </c:url>
+        <a href="${interfaceLink}"><%=notice.getIpAddress()%></a>
       <% } else if (notice.getIpAddress()!=null) { %>
         <%=notice.getIpAddress()%>
       <% } else { %>
@@ -133,9 +140,14 @@
 
     <td width="17%">
       <%if (NetworkElementFactory.getInstance(getServletContext()).getNodeLabel(notice.getNodeId())!=null && notice.getIpAddress()!=null && notice.getServiceName()!=null) { %>
-        <a href="element/service.jsp?node=<%=notice.getNodeId()%>&intf=<%=notice.getIpAddress()%>&service=<%=notice.getServiceId()%>"><%=notice.getServiceName()%></a>
+        <c:url var="serviceLink" value="element/service.jsp">
+          <c:param name="node" value="<%=String.valueOf(notice.getNodeId())%>"/>
+          <c:param name="intf" value="<%=notice.getIpAddress()%>"/>
+          <c:param name="service" value="<%=String.valueOf(notice.getServiceId())%>"/>
+        </c:url>
+        <a href="${serviceLink}"><c:out value="<%=notice.getServiceName()%>"/></a>
       <% } else if (notice.getServiceName()!=null) { %>
-        <%=notice.getServiceName()%>
+        <c:out value="<%=notice.getServiceName()%>"/>
       <% } else { %>
         &nbsp;
       <% } %>
@@ -145,7 +157,10 @@
   <%if (NetworkElementFactory.getInstance(getServletContext()).getNodeLabel(notice.getNodeId())!=null) { %>
     <tr class="<%=eventSeverity%>">
       <td colspan="6">
-        <a href="outage/list.htm?filter=node%3D<%=notice.getNodeId()%>">See outages for <%=NetworkElementFactory.getInstance(getServletContext()).getNodeLabel(notice.getNodeId())%></a>
+        <c:url var="outageLink" value="outage/list.htm">
+          <c:param name="filter" value="<%="node=" + notice.getNodeId()%>"/>
+        </c:url>
+        <a href="${outageLink}">See outages for <c:out value="<%=NetworkElementFactory.getInstance(getServletContext()).getNodeLabel(notice.getNodeId())%>"/></a>
       </td>
     </tr>
   <% } %>
@@ -210,9 +225,9 @@
     </tr>
   <% } %>
 </table>
- 
+
 <br/>
-     
+
 <% if (notice.getTimeReplied()==null) { %>
   <form method="post" name="acknowledge" action="notification/acknowledge">
     <input type="hidden" name="curUser" value="<%=request.getRemoteUser()%>">

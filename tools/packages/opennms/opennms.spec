@@ -297,7 +297,7 @@ fi
 
 if [ "%{skip_compile}" = 1 ]; then
 	echo "=== SKIPPING COMPILE ==="
-	export EXTRA_OPTIONS="$EXTRA_OPTIONS -Denable.snapshots=true"
+	export EXTRA_OPTIONS="$EXTRA_OPTIONS -Denable.snapshots=true -DupdatePolicy=always"
 else
 	echo "=== RUNNING COMPILE ==="
 	./compile.pl $EXTRA_OPTIONS -Dbuild=all -Dinstall.version="%{version}-%{release}" -Ddist.name="$RPM_BUILD_ROOT" \
@@ -371,6 +371,12 @@ pushd $RPM_BUILD_ROOT
 # core package files
 find $RPM_BUILD_ROOT%{instprefix}/etc ! -type d | \
     sed -e "s,^$RPM_BUILD_ROOT,%config(noreplace) ," | \
+    grep -v '%{_initrddir}/opennms-remote-poller' | \
+    grep -v '%{_sysconfdir}/sysconfig/opennms-remote-poller' | \
+    grep -v 'link-adapter-configuration.xml' | \
+    grep -v 'endpoint-configuration.xml' | \
+    grep -v 'mapsadapter-configuration.xml' | \
+    grep -v 'snmp-asset-adapter-configuration.xml' | \
     sort > %{_tmppath}/files.main
 find $RPM_BUILD_ROOT%{instprefix}/bin ! -type d | \
     sed -e "s|^$RPM_BUILD_ROOT|%attr(755,root,root) |" | \
@@ -379,6 +385,7 @@ find $RPM_BUILD_ROOT%{instprefix}/bin ! -type d | \
     sort >> %{_tmppath}/files.main
 find $RPM_BUILD_ROOT%{instprefix}/lib ! -type d | \
     sed -e "s|^$RPM_BUILD_ROOT|%attr(755,root,root) |" | \
+    grep -v 'provisioning-adapter' | \
     sort >> %{_tmppath}/files.main
 find $RPM_BUILD_ROOT%{instprefix}/etc -type d | \
     sed -e "s,^$RPM_BUILD_ROOT,%dir ," | \
@@ -465,6 +472,7 @@ rm -rf $RPM_BUILD_ROOT
 
 %files plugin-provisioning-map
 %attr(664,root,root) %{instprefix}/lib/opennms-map-provisioning-adapter*.jar
+%attr(664,root,root) %{instprefix}/etc/examples/mapsadapter-configuration.xml
 %attr(664,root,root) %{instprefix}/etc/mapsadapter-configuration.xml
 
 %files plugin-provisioning-rancid

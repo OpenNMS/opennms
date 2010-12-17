@@ -1612,7 +1612,7 @@ public class ThresholdingVisitorTest {
         OnmsNode node = new OnmsNode();
         node.setId(1);
         node.setLabel("testNode");
-        OnmsSnmpInterface snmpIface = new OnmsSnmpInterface(ipAddress, ifIndex, node);
+        OnmsSnmpInterface snmpIface = new OnmsSnmpInterface(node, ifIndex);
         snmpIface.setIfDescr(ifName);
         snmpIface.setIfName(ifName);
         snmpIface.setIfAlias(ifName);

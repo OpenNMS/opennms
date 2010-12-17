@@ -106,9 +106,9 @@ public class DefaultDistributedStatusServiceTest extends TestCase {
 
     private String m_ip;
 
-    private HashSet<OnmsMonitoredService> m_applicationServices1;
+    private List<OnmsMonitoredService> m_applicationServices1;
 
-    private HashSet<OnmsMonitoredService> m_applicationServices2;
+    private List<OnmsMonitoredService> m_applicationServices2;
     
     private static final SimpleDateFormat s_dbDate = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss.mmm");
     
@@ -175,12 +175,12 @@ public class DefaultDistributedStatusServiceTest extends TestCase {
         m_services.add(new OnmsMonitoredService(new OnmsIpInterface(m_ip, m_node), new OnmsServiceType("HTTPS")));
 
         // Can't shuffle since these since they are sets
-        m_applicationServices1 = new HashSet<OnmsMonitoredService>();
+        m_applicationServices1 = new ArrayList<OnmsMonitoredService>();
         m_applicationServices1.add(findMonitoredService(m_services, m_ip, "HTTP"));
         m_applicationServices1.add(findMonitoredService(m_services, m_ip, "HTTPS"));
 //        m_application1.setMemberServices(applicationServices1);
         
-        m_applicationServices2 = new HashSet<OnmsMonitoredService>();
+        m_applicationServices2 = new ArrayList<OnmsMonitoredService>();
         m_applicationServices2.add(findMonitoredService(m_services, m_ip, "HTTPS"));
 //        m_application2.setMemberServices(applicationServices2);
 

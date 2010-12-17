@@ -37,6 +37,7 @@ import java.util.List;
 
 import org.hibernate.criterion.Order;
 import org.hibernate.criterion.Restrictions;
+import org.opennms.core.utils.InetAddressUtils;
 import org.opennms.netmgt.dao.NotificationDao;
 import org.opennms.netmgt.model.AckAction;
 import org.opennms.netmgt.model.OnmsAcknowledgment;
@@ -151,7 +152,7 @@ public class DaoWebNotificationRepository implements WebNotificationRepository {
         if(onmsNotification != null){
             Notification notif = new Notification();
             notif.m_eventId = onmsNotification.getEvent() != null ? onmsNotification.getEvent().getId() : 0;
-            notif.m_interfaceID = onmsNotification.getIpAddress();
+            notif.m_interfaceID = onmsNotification.getIpAddress() == null ? null : InetAddressUtils.toIpAddrString(onmsNotification.getIpAddress());
             notif.m_nodeID = onmsNotification.getNode() != null ? onmsNotification.getNode().getId() : 0;
             notif.m_notifyID = onmsNotification.getNotifyId();
             notif.m_numMsg = onmsNotification.getNumericMsg();

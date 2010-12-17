@@ -666,9 +666,6 @@ public final class RescanProcessor implements Runnable {
             // index
             // dbSnmpIfEntry.updateIfIndex(ifIndex);
 
-            // ipAddress
-            dbSnmpIfEntry.updateIfAddress(ifAddr);
-
             /*
              * netmask
              *
@@ -695,7 +692,6 @@ public final class RescanProcessor implements Runnable {
         // dbSnmpIfEntry.hasIfIndexChanged() ||
         if (!m_snmpIfTableChangedFlag
                 && newSnmpIfTableEntry
-                || dbSnmpIfEntry.hasIfAddressChanged()
                 || dbSnmpIfEntry.hasTypeChanged()
                 || dbSnmpIfEntry.hasNameChanged()
                 || dbSnmpIfEntry.hasDescriptionChanged()
@@ -1313,7 +1309,7 @@ public final class RescanProcessor implements Runnable {
                     PreparedStatement stmt = dbc.prepareStatement(SQL_DB_UPDATE_ISMANAGED);
                     d.watch(stmt);
                     stmt.setString(1, new String(new char[] { DbIpInterfaceEntry.STATE_MANAGED }));
-                    stmt.setInt(2, dbIpIfEntry.getNodeId());
+                    stmt.setLong(2, dbIpIfEntry.getNodeId());
                     stmt.setString(3, ifaddr.getHostAddress());
                     stmt.executeUpdate();
                     if (log().isDebugEnabled()) {
@@ -1829,11 +1825,10 @@ public final class RescanProcessor implements Runnable {
             // Make sure we have a valid IfTableEntry object
             if (ifte == null
                     && ifIndex == CapsdConfig.LAME_SNMP_HOST_IFINDEX) {
-                currSnmpIfEntry.setIfAddress(snmpc.getCollectorTargetAddress());
                  if (log().isDebugEnabled()) {
                     log().debug("updateSnmpInfo: interface "
                               + snmpc.getCollectorTargetAddress().getHostAddress()
-                              + " appears to be a lame SNMP host. Setting ipaddr only.");
+                              + " appears to be a lame SNMP host");
                  }
             } else if (ifte != null) {
                 /*
@@ -1850,10 +1845,6 @@ public final class RescanProcessor implements Runnable {
                     // disable collection on interface with no ip address by default
                     currSnmpIfEntry.setCollect("N");
                 } else {
-
-                    // IP address
-                    currSnmpIfEntry.setIfAddress(aaddrs[0]);
-                    
                     // mark the interface is collection enable
                     currSnmpIfEntry.setCollect("C");
 
@@ -1928,7 +1919,6 @@ public final class RescanProcessor implements Runnable {
 
             // Update any fields which have changed
             // dbSnmpIfEntry.updateIfIndex(currSnmpIfEntry.getIfIndex());
-            dbSnmpIfEntry.updateIfAddress(currSnmpIfEntry.getIfAddress());
             dbSnmpIfEntry.updateNetmask(currSnmpIfEntry.getNetmask());
             dbSnmpIfEntry.updatePhysicalAddress(currSnmpIfEntry.getPhysicalAddress());
             dbSnmpIfEntry.updateDescription(currSnmpIfEntry.getDescription());
@@ -1949,7 +1939,6 @@ public final class RescanProcessor implements Runnable {
              */
             // dbSnmpIfEntry.hasIfIndexChanged() ||
             if (!m_snmpIfTableChangedFlag && newSnmpIfTableEntry
-                    || dbSnmpIfEntry.hasIfAddressChanged()
                     || dbSnmpIfEntry.hasTypeChanged()
                     || dbSnmpIfEntry.hasNameChanged()
                     || dbSnmpIfEntry.hasDescriptionChanged()
@@ -1992,14 +1981,7 @@ public final class RescanProcessor implements Runnable {
              * Create SNMP interface entry representing latest information
              * retrieved for the interface via the collector
              */
-            DbSnmpInterfaceEntry currSnmpIfEntry =
-                DbSnmpInterfaceEntry.create(node.getNodeId(), ifIndex);
-
-            // IP address
-            currSnmpIfEntry.setIfAddress(ifaddr);
-
-            // Update any fields which have changed
-            dbSnmpIfEntry.updateIfAddress(currSnmpIfEntry.getIfAddress());
+            DbSnmpInterfaceEntry.create(node.getNodeId(), ifIndex);
 
             // Update the database
             dbSnmpIfEntry.store(dbc);
@@ -2037,14 +2019,7 @@ public final class RescanProcessor implements Runnable {
              * Create SNMP interface entry representing latest information
              * retrieved for the interface via the collector
              */
-            DbSnmpInterfaceEntry currSnmpIfEntry =
-                DbSnmpInterfaceEntry.create(node.getNodeId(), ifIndex);
-
-            // IP address
-            currSnmpIfEntry.setIfAddress(ifaddr);
-
-            // Update any fields which have changed
-            dbSnmpIfEntry.updateIfAddress(currSnmpIfEntry.getIfAddress());
+            DbSnmpInterfaceEntry.create(node.getNodeId(), ifIndex);
 
             // Update the database
             dbSnmpIfEntry.store(dbc);

@@ -7,6 +7,7 @@
         <report id="trivial-report" template="trivial-report.jrxml" engine="null" />
 	<report id="parameter-test" template="parameter-test.jrxml" engine="null" />
         <report id="Early-Morning-Report" template="Early-Morning-Report.jrxml" engine="jdbc" />
+        <report id="Response-Time-Summary-Report" template="ResponseTimeSummary.jrxml" engine="jdbc" />
         <report id="Node-Availability-Report" template="NodeAvailabilityReport.jrxml" engine="jdbc" />
         <report id="Node-Availability-Report_ThisMonth" template="NodeAvailabilityReport_ThisMonth.jrxml" engine="jdbc" />
         <report id="Node-Availability-Report_LastMonth" template="NodeAvailabilityReport_LastMonth.jrxml" engine="jdbc" />
@@ -19,10 +20,10 @@
         <report id="Response-Time-Report_ThisMonth" template="ResponseTime_ThisMonth.jrxml" engine="jdbc" />
         <report id="Response-Time-Report_LastMonth" template="ResponseTime_LastMonth.jrxml" engine="jdbc" />
         <report id="Response-Time-Report_ThisYear" template="ResponseTime_ThisYear.jrxml" engine="jdbc" />
-        <report id="Interface-Utilization-Summary" template="InterfaceUtilizationSummary.jrxml" engine="jdbc" />
-        <report id="Interface-Utilization-Summary_ThisMonth" template="InterfaceUtilizationSummary_ThisMonth.jrxml" engine="jdbc" />
-        <report id="Interface-Utilization-Summary_LastMonth" template="InterfaceUtilizationSummary_LastMonth.jrxml" engine="jdbc" />
-        <report id="Interface-Utilization-Summary_ThisYear" template="InterfaceUtilizationSummary_ThisYear.jrxml" engine="jdbc" />
+        <report id="Serial-Interface-Utilization-Summary" template="SerialInterfaceUtilizationSummary.jrxml" engine="jdbc" />
+        <report id="Serial-Interface-Utilization-Summary_ThisMonth" template="SerialInterfaceUtilizationSummary_ThisMonth.jrxml" engine="jdbc" />
+        <report id="Serial-Interface-Utilization-Summary_LastMonth" template="SerialInterfaceUtilizationSummary_LastMonth.jrxml" engine="jdbc" />
+        <report id="Serial-Interface-Utilization-Summary_ThisYear" template="SerialInterfaceUtilizationSummary_ThisYear.jrxml" engine="jdbc" />
         <report id="Total-Bytes-Transferred-By-Interface" template="TotalBytesTransferredByInterface.jrxml" engine="jdbc" />
         <report id="Total-Bytes-Transferred-By-Interface_LastMonth" template="TotalBytesTransferredByInterface_LastMonth.jrxml" engine="jdbc" />
         <report id="Total-Bytes-Transferred-By-Interface_ThisMonth" template="TotalBytesTransferredByInterface_ThisMonth.jrxml" engine="jdbc" />

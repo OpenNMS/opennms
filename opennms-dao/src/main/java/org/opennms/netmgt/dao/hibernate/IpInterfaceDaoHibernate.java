@@ -37,7 +37,7 @@
 
 package org.opennms.netmgt.dao.hibernate;
 
-import java.util.Collection;
+import java.net.InetAddress;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -64,23 +64,23 @@ public class IpInterfaceDaoHibernate extends AbstractDaoHibernate<OnmsIpInterfac
         
         
         m_findByServiceTypeQuery = System.getProperty("org.opennms.dao.ipinterface.findByServiceType", 
-                                                      "select distinct ipIf from OnmsIpInterface as ipIf join ipIf.monitoredServices as monSvc where monSvc.serviceType.name = ?");
+                                                      "select distinct ipInterface from OnmsIpInterface as ipInterface join ipInterface.monitoredServices as monSvc where monSvc.serviceType.name = ?");
         
     }
 
     /** {@inheritDoc} */
     public OnmsIpInterface get(OnmsNode node, String ipAddress) {
-        return findUnique("from OnmsIpInterface as ipIf where ipIf.node = ? and ipIf.ipAddress = ?", node, ipAddress);
+        return findUnique("from OnmsIpInterface as ipInterface where ipInterface.node = ? and ipInterface.inetAddress = ?", node, ipAddress);
     }
 
     /** {@inheritDoc} */
-    public Collection<OnmsIpInterface> findByIpAddress(String ipAddress) {
-        return find("from OnmsIpInterface ipIf where ipIf.ipAddress = ?", ipAddress);
+    public List<OnmsIpInterface> findByIpAddress(String ipAddress) {
+        return find("from OnmsIpInterface ipInterface where ipInterface.inetAddress = ?", ipAddress);
     }
     
     /** {@inheritDoc} */
     public OnmsIpInterface findByNodeIdAndIpAddress(Integer nodeId, String ipAddress) {
-        return findUnique("select iface from OnmsIpInterface as iface where iface.node.id = ? and iface.ipAddress = ?", 
+        return findUnique("select ipInterface from OnmsIpInterface as ipInterface where ipInterface.node.id = ? and ipInterface.inetAddress = ?", 
                           nodeId, 
                           ipAddress);
         
@@ -88,7 +88,7 @@ public class IpInterfaceDaoHibernate extends AbstractDaoHibernate<OnmsIpInterfac
 
     /** {@inheritDoc} */
     public OnmsIpInterface findByForeignKeyAndIpAddress(String foreignSource, String foreignId, String ipAddress) {
-        return findUnique("select iface from OnmsIpInterface as iface join iface.node as node where node.foreignSource = ? and node.foreignId = ? and iface.ipAddress = ?", 
+        return findUnique("select ipInterface from OnmsIpInterface as ipInterface join ipInterface.node as node where node.foreignSource = ? and node.foreignId = ? and ipInterface.inetAddress = ?", 
                           foreignSource, 
                           foreignId, 
                           ipAddress);
@@ -96,20 +96,20 @@ public class IpInterfaceDaoHibernate extends AbstractDaoHibernate<OnmsIpInterfac
     }
 
     /** {@inheritDoc} */
-    public Collection<OnmsIpInterface> findByServiceType(String svcName) {
+    public List<OnmsIpInterface> findByServiceType(String svcName) {
         
         return find(m_findByServiceTypeQuery, svcName);
     }
 
     /** {@inheritDoc} */
-    public Collection<OnmsIpInterface> findHierarchyByServiceType(String svcName) {
-        return find("select distinct ipIf " +
-                    "from OnmsIpInterface as ipIf " +
-                    "left join fetch ipIf.node as node " +
+    public List<OnmsIpInterface> findHierarchyByServiceType(String svcName) {
+        return find("select distinct ipInterface " +
+                    "from OnmsIpInterface as ipInterface " +
+                    "left join fetch ipInterface.node as node " +
                     "left join fetch node.assetRecord " +
-                    "left join fetch ipIf.node.snmpInterfaces as snmpIf " +
+                    "left join fetch ipInterface.node.snmpInterfaces as snmpIf " +
                     "left join fetch snmpIf.ipInterfaces " +
-                    "join ipIf.monitoredServices as monSvc " +
+                    "join ipInterface.monitoredServices as monSvc " +
                     "where monSvc.serviceType.name = ?", svcName);
     }
 
@@ -118,14 +118,14 @@ public class IpInterfaceDaoHibernate extends AbstractDaoHibernate<OnmsIpInterfac
      *
      * @return a {@link java.util.Map} object.
      */
-    @SuppressWarnings("unchecked")
-    public Map<String, Integer> getInterfacesForNodes() {
-        Map<String, Integer> map = new HashMap<String, Integer>();
+    public Map<InetAddress, Integer> getInterfacesForNodes() {
+        Map<InetAddress, Integer> map = new HashMap<InetAddress, Integer>();
         
-        List l = getHibernateTemplate().find("select distinct ipIf.ipAddress, ipIf.node.id from OnmsIpInterface as ipIf");
+        @SuppressWarnings("unchecked")
+        List l = getHibernateTemplate().find("select distinct ipInterface.inetAddress, ipInterface.node.id from OnmsIpInterface as ipInterface");
 
         for (Object o : l) {
-            String ip = (String) ((Object[]) o)[0];
+            InetAddress ip = (InetAddress) ((Object[]) o)[0];
             Integer nodeId = (Integer) ((Object[]) o)[1];
             map.put(ip, nodeId);
         }
@@ -143,15 +143,15 @@ public class IpInterfaceDaoHibernate extends AbstractDaoHibernate<OnmsIpInterfac
     public boolean addressExistsWithForeignSource(String ipAddress, String foreignSource) {
         Assert.notNull(ipAddress, "ipAddress cannot be null");
         if (foreignSource == null) {
-            return queryInt("select count(iface.id) from OnmsIpInterface as iface " +
-                    "join iface.node as node " +
+            return queryInt("select count(ipInterface.id) from OnmsIpInterface as ipInterface " +
+                    "join ipInterface.node as node " +
                     "where node.foreignSource is NULL " +
-                    "and iface.ipAddress = ? ", ipAddress) > 0;
+                    "and ipInterface.inetAddress = ? ", ipAddress) > 0;
         } else {
-            return queryInt("select count(iface.id) from OnmsIpInterface as iface " +
-                    "join iface.node as node " +
+            return queryInt("select count(ipInterface.id) from OnmsIpInterface as ipInterface " +
+                    "join ipInterface.node as node " +
                     "where node.foreignSource = ? " +
-                    "and iface.ipAddress = ? ", foreignSource, ipAddress) > 0;
+                    "and ipInterface.inetAddress = ? ", foreignSource, ipAddress) > 0;
         }
     }
 

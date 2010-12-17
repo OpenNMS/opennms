@@ -292,10 +292,6 @@ public class UpdateOperation extends AbstractSaveOrUpdateOperation {
             if (!nullSafeEquals(snmpIface.getIfType(), importedSnmpIface.getIfType())) {
                 snmpIface.setIfType(importedSnmpIface.getIfType());
             }
-
-            if (!nullSafeEquals(snmpIface.getIpAddress(), importedSnmpIface.getIpAddress())) {
-                snmpIface.setIpAddress(importedSnmpIface.getIpAddress());
-            }
             
             if (!nullSafeEquals(snmpIface.getNetMask(), importedSnmpIface.getNetMask())) {
                 snmpIface.setNetMask(importedSnmpIface.getNetMask());

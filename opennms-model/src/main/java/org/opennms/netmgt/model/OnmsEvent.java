@@ -36,6 +36,7 @@
 package org.opennms.netmgt.model;
 
 import java.io.Serializable;
+import java.net.InetAddress;
 import java.util.Date;
 import java.util.HashSet;
 import java.util.Set;
@@ -58,8 +59,11 @@ import javax.xml.bind.annotation.XmlElement;
 import javax.xml.bind.annotation.XmlIDREF;
 import javax.xml.bind.annotation.XmlRootElement;
 import javax.xml.bind.annotation.XmlTransient;
+import javax.xml.bind.annotation.adapters.XmlJavaTypeAdapter;
 
 import org.hibernate.annotations.Filter;
+import org.hibernate.annotations.Type;
+import org.opennms.core.xml.bind.InetAddressXmlAdapter;
 import org.springframework.core.style.ToStringCreator;
 
 /**
@@ -95,7 +99,7 @@ public class OnmsEvent extends OnmsEntity implements Serializable {
 	private String m_eventSource;
 
 	/** nullable persistent field */
-	private String m_ipAddr;
+	private InetAddress m_ipAddr;
 
 	/** persistent field */
 	private OnmsDistPoller m_distPoller;
@@ -235,7 +239,7 @@ public class OnmsEvent extends OnmsEntity implements Serializable {
 	 * @param outagesBySvclosteventid a {@link java.util.Set} object.
 	 */
 	public OnmsEvent(Integer eventid, String eventuei, Date eventtime,
-			String eventhost, String eventsource, String ipaddr,
+			String eventhost, String eventsource, InetAddress ipaddr,
 			OnmsDistPoller distPoller, String eventsnmphost, OnmsServiceType service,
 			String eventsnmp, String eventparms, Date eventcreatetime,
 			String eventdescr, String eventloggroup, String eventlogmsg,
@@ -442,9 +446,11 @@ public class OnmsEvent extends OnmsEntity implements Serializable {
 	 *
 	 * @return a {@link java.lang.String} object.
 	 */
+	@Column(name="ipAddr")
 	@XmlElement(name="ipAddress")
-	@Column(name="ipAddr", length=16)
-	public String getIpAddr() {
+	@Type(type="org.opennms.netmgt.model.InetAddressUserType")
+	@XmlJavaTypeAdapter(InetAddressXmlAdapter.class)
+	public InetAddress getIpAddr() {
 		return m_ipAddr;
 	}
 
@@ -453,7 +459,7 @@ public class OnmsEvent extends OnmsEntity implements Serializable {
 	 *
 	 * @param ipaddr a {@link java.lang.String} object.
 	 */
-	public void setIpAddr(String ipaddr) {
+	public void setIpAddr(InetAddress ipaddr) {
 		m_ipAddr = ipaddr;
 	}
 

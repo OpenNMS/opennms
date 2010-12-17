@@ -36,6 +36,7 @@
 package org.opennms.netmgt.model;
 
 import java.io.Serializable;
+import java.net.InetAddress;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.Iterator;
@@ -71,6 +72,7 @@ import javax.xml.bind.annotation.XmlRootElement;
 import javax.xml.bind.annotation.XmlTransient;
 
 import org.hibernate.annotations.Filter;
+import org.opennms.core.utils.InetAddressUtils;
 import org.opennms.netmgt.EventConstants;
 import org.opennms.netmgt.model.OnmsIpInterface.PrimaryType;
 import org.opennms.netmgt.model.events.AddEventVisitor;
@@ -840,13 +842,23 @@ public class OnmsNode extends OnmsEntity implements Serializable,
 
     /**
      * <p>getIpInterfaceByIpAddress</p>
-     *
+     * 
      * @param ipAddress a {@link java.lang.String} object.
      * @return a {@link org.opennms.netmgt.model.OnmsIpInterface} object.
      */
     public OnmsIpInterface getIpInterfaceByIpAddress(String ipAddress) {
+        return getIpInterfaceByIpAddress(InetAddressUtils.getInetAddress(ipAddress));
+    }
+
+    /**
+     * <p>getIpInterfaceByIpAddress</p>
+     *
+     * @param ipAddress a {@link java.lang.String} object.
+     * @return a {@link org.opennms.netmgt.model.OnmsIpInterface} object.
+     */
+    public OnmsIpInterface getIpInterfaceByIpAddress(InetAddress ipAddress) {
         for (OnmsIpInterface iface : getIpInterfaces()) {
-            if (ipAddress.equals(iface.getIpAddress())) {
+            if (ipAddress.equals(iface.getInetAddress())) {
                 return iface;
             }
         }
@@ -1046,7 +1058,7 @@ public class OnmsNode extends OnmsEntity implements Serializable,
         OnmsIpInterface oldPrimaryInterface = null;
         OnmsIpInterface scannedPrimaryIf = null;
         // build a map of ipAddrs to ipInterfaces for the scanned node
-        Map<String, OnmsIpInterface> ipInterfaceMap = new HashMap<String, OnmsIpInterface>();
+        Map<InetAddress, OnmsIpInterface> ipInterfaceMap = new HashMap<InetAddress, OnmsIpInterface>();
         for (OnmsIpInterface iface : scannedNode.getIpInterfaces()) {
             if(scannedPrimaryIf == null && iface.isPrimary()){
                 scannedPrimaryIf = iface;
@@ -1054,14 +1066,14 @@ public class OnmsNode extends OnmsEntity implements Serializable,
                 iface.setIsSnmpPrimary(PrimaryType.SECONDARY);
             }
             
-            ipInterfaceMap.put(iface.getIpAddress(), iface);
+            ipInterfaceMap.put(iface.getInetAddress(), iface);
         }
     
         // for each ipInterface from the database
         for (Iterator<OnmsIpInterface> it = getIpInterfaces().iterator(); it.hasNext();) {
             OnmsIpInterface dbIface = it.next();
             // find the corresponding scanned Interface
-            OnmsIpInterface scannedIface = ipInterfaceMap.get(dbIface.getIpAddress());
+            OnmsIpInterface scannedIface = ipInterfaceMap.get(dbIface.getInetAddress());
             
             // if we can't find a scanned interface remove from the database
             if (scannedIface == null) {
@@ -1083,7 +1095,7 @@ public class OnmsNode extends OnmsEntity implements Serializable,
             }
             
             // now remove the interface from the map to indicate it was processed
-            ipInterfaceMap.remove(dbIface.getIpAddress());
+            ipInterfaceMap.remove(dbIface.getInetAddress());
         }
         
         

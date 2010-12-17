@@ -205,7 +205,7 @@ public final class IfTable extends SnmpTable<IfTableEntry> {
         
         if (snmpIf == null) {
             // if not then create one
-            snmpIf = new OnmsSnmpInterface(null, ifIndex, node);
+            snmpIf = new OnmsSnmpInterface(node, ifIndex);
         }
         
         updateSnmpInterfaceData(ifIndex, snmpIf);

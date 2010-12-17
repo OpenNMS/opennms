@@ -332,12 +332,12 @@ public class NodeDaoTest  {
     @Test
     public void testDeleteObsoleteInterfaces() {
         
-        final Date timestampe = new Date(1234);
+        final Date timestamp = new Date(1234);
 
         m_transTemplate.execute(new TransactionCallback<Object>() {
 
             public Object doInTransaction(TransactionStatus status) {
-                simulateScan(timestampe);
+                simulateScan(timestamp);
                 return null;
             }
             
@@ -346,7 +346,7 @@ public class NodeDaoTest  {
         m_transTemplate.execute(new TransactionCallback<Object>() {
 
             public Object doInTransaction(TransactionStatus status) {
-                deleteObsoleteInterfaces(timestampe);
+                deleteObsoleteInterfaces(timestamp);
                 return null;
             }
             
@@ -371,7 +371,7 @@ public class NodeDaoTest  {
         assertEquals(1, after.getSnmpInterfaces().size());
     }
 
-    private void simulateScan(Date timestampe) {
+    private void simulateScan(Date timestamp) {
         OnmsNode n = getNodeDao().get(1);
         
         assertEquals(4, n.getIpInterfaces().size());
@@ -379,11 +379,11 @@ public class NodeDaoTest  {
 
         OnmsIpInterface iface = n.getIpInterfaceByIpAddress("192.168.1.1");
         assertNotNull(iface);
-        iface.setIpLastCapsdPoll(timestampe);
+        iface.setIpLastCapsdPoll(timestamp);
         
         OnmsSnmpInterface snmpIface = n.getSnmpInterfaceWithIfIndex(1);
         assertNotNull(snmpIface);
-        snmpIface.setLastCapsdPoll(timestampe);
+        snmpIface.setLastCapsdPoll(timestamp);
         
         getNodeDao().saveOrUpdate(n);
         
@@ -393,8 +393,8 @@ public class NodeDaoTest  {
 
     }
 
-    private void deleteObsoleteInterfaces(Date timestampe) {
-        getNodeDao().deleteObsoleteInterfaces(1, timestampe);
+    private void deleteObsoleteInterfaces(Date timestamp) {
+        getNodeDao().deleteObsoleteInterfaces(1, timestamp);
     }
     
     private void validateNode(OnmsNode n) throws Exception {

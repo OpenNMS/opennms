@@ -129,7 +129,7 @@ public final class DbIfServiceEntry {
     /**
      * The node identifier
      */
-    private int m_nodeId;
+    private long m_nodeId;
 
     /**
      * The IP address.
@@ -269,7 +269,7 @@ public final class DbIfServiceEntry {
             names = null;
 
             int ndx = 1;
-            stmt.setInt(ndx++, m_nodeId);
+            stmt.setLong(ndx++, m_nodeId);
             stmt.setString(ndx++, m_ipAddr.getHostAddress());
             stmt.setInt(ndx++, m_serviceId);
 
@@ -317,7 +317,7 @@ public final class DbIfServiceEntry {
 
                 delStmt = c.prepareStatement(delCmd);
                 d.watch(delStmt);
-                delStmt.setInt(1, m_nodeId);
+                delStmt.setLong(1, m_nodeId);
                 delStmt.setString(2, m_ipAddr.getHostAddress());
                 delStmt.setInt(3, m_serviceId);
 
@@ -443,7 +443,7 @@ public final class DbIfServiceEntry {
                     stmt.setString(ndx++, new String(new char[] { m_notify }));
             }
 
-            stmt.setInt(ndx++, m_nodeId);
+            stmt.setLong(ndx++, m_nodeId);
             stmt.setString(ndx++, m_ipAddr.getHostAddress());
             stmt.setInt(ndx++, m_serviceId);
 
@@ -484,7 +484,7 @@ public final class DbIfServiceEntry {
             // start setting the result values
             stmt = c.prepareStatement(SQL_LOAD_REC);
             d.watch(stmt);
-            stmt.setInt(1, m_nodeId);
+            stmt.setLong(1, m_nodeId);
             stmt.setString(2, m_ipAddr.getHostAddress());
             stmt.setInt(3, m_serviceId);
 
@@ -573,7 +573,7 @@ public final class DbIfServiceEntry {
      *            True if the interface already exists.
      * 
      */
-    private DbIfServiceEntry(int nid, InetAddress address, int sid, boolean exists) {
+    private DbIfServiceEntry(long nid, InetAddress address, int sid, boolean exists) {
         m_fromDb = exists;
         m_nodeId = nid;
         m_ipAddr = address;
@@ -594,7 +594,7 @@ public final class DbIfServiceEntry {
      * returned.
      * 
      */
-    int getNodeId() {
+    long getNodeId() {
         return m_nodeId;
     }
 
@@ -1000,7 +1000,7 @@ public final class DbIfServiceEntry {
      * 
      * @param db
      *            The database connection used to load the entry.
-     * @param nid
+     * @param nodeId
      *            The node id key
      * @param addr
      *            The IP address.
@@ -1008,8 +1008,8 @@ public final class DbIfServiceEntry {
      * @return The loaded entry or null if one could not be found.
      * 
      */
-    static DbIfServiceEntry get(Connection db, int nid, InetAddress addr, int sid) throws SQLException {
-        DbIfServiceEntry entry = new DbIfServiceEntry(nid, addr, sid, true);
+    static DbIfServiceEntry get(Connection db, long nodeId, InetAddress addr, int sid) throws SQLException {
+        DbIfServiceEntry entry = new DbIfServiceEntry(nodeId, addr, sid, true);
         if (!entry.load(db)) {
             entry = null;
         }

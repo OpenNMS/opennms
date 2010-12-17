@@ -15,7 +15,7 @@ BEGIN
 
   --
   -- (Used for Trigger insert with old style foreign key)
-  -- This condition keeps the snmpInterfaceId inSync with the composite foreign key of nodeid, ipaddr, ifindex
+  -- This condition keeps the snmpInterfaceId inSync with the composite foreign key of nodeid, ifindex
   -- This usually happens when a new record is written by our JDBC code (non-Hibernate DAO) for the old JDBC style
   -- code has no knowledge of the new keys
   --
@@ -35,7 +35,7 @@ BEGIN
        
   --
   -- (Used for Insert with new style foreign key)
-  -- This condition keeps the composite foreign key of nodeid, ipaddr, ifindex inSync with the SnmpInterfaceId
+  -- This condition keeps the composite foreign key of nodeid, ifindex inSync with the SnmpInterfaceId
   -- This usually happens when a new record is written by our Hibernate DAOs... these DAOs have no knowledge of
   -- the composite key columns
   --

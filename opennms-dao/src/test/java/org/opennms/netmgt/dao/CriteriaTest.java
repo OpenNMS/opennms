@@ -41,7 +41,7 @@ import org.hibernate.criterion.Restrictions;
 import org.opennms.netmgt.model.OnmsCriteria;
 import org.opennms.netmgt.model.OnmsNode;
 
-public class CriteriaTestCase extends AbstractTransactionalDaoTestCase {
+public class CriteriaTest extends AbstractTransactionalDaoTestCase {
 
     public void testSimple() {
         OnmsCriteria crit = new OnmsCriteria(OnmsNode.class);
@@ -53,14 +53,14 @@ public class CriteriaTestCase extends AbstractTransactionalDaoTestCase {
         
         OnmsNode node = matching.iterator().next();
         assertEquals("node1", node.getLabel());
-        assertEquals(3, node.getIpInterfaces().size());
+        assertEquals(4, node.getIpInterfaces().size());
     }
     
     public void testComplicated() {
         OnmsCriteria crit = 
             new OnmsCriteria(OnmsNode.class)
             .createAlias("ipInterfaces", "iface")
-            .add(Restrictions.eq("iface.ipAddress", "192.168.2.1"));
+            .add(Restrictions.eq("iface.inetAddress", "192.168.2.1"));
         
         Collection<OnmsNode> matching = getNodeDao().findMatching(crit);
         

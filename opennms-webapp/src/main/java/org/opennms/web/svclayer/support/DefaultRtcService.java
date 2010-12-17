@@ -81,7 +81,7 @@ public class DefaultRtcService implements RtcService, InitializingBean {
     public RtcNodeModel getNodeListForCriteria(OnmsCriteria serviceCriteria, OnmsCriteria outageCriteria) {
         serviceCriteria.addOrder(Order.asc("node.label"));
         serviceCriteria.addOrder(Order.asc("node.id"));
-        serviceCriteria.addOrder(Order.asc("ipInterface.ipAddress"));
+        serviceCriteria.addOrder(Order.asc("ipInterface.inetAddress"));
         serviceCriteria.addOrder(Order.asc("serviceType.name"));
 
         Date periodEnd = new Date(System.currentTimeMillis());

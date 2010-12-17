@@ -186,10 +186,10 @@ public class ScanSuspectTest extends OpenNMSTestCase {
         super.tearDown();
     }
 
-    protected String myLocalHost() {
+    protected InetAddress myLocalHost() {
         
       try {
-          return InetAddress.getLocalHost().getHostAddress();
+          return InetAddress.getLocalHost();
       } catch (UnknownHostException e) {
           e.printStackTrace();
           fail("Exception getting localhost");
@@ -200,7 +200,7 @@ public class ScanSuspectTest extends OpenNMSTestCase {
     
     public final void testStartStop() throws MarshalException, ValidationException, IOException {
         m_capsd.start();
-        m_capsd.scanSuspectInterface(this.myLocalHost());
+        m_capsd.scanSuspectInterface(this.myLocalHost().getHostAddress());
         m_capsd.stop();
     }
     

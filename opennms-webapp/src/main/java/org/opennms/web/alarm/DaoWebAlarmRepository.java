@@ -39,6 +39,7 @@ import java.util.List;
 import org.hibernate.criterion.Order;
 import org.hibernate.criterion.Projections;
 import org.hibernate.criterion.Restrictions;
+import org.opennms.core.utils.InetAddressUtils;
 import org.opennms.netmgt.dao.AlarmDao;
 import org.opennms.netmgt.model.AckAction;
 import org.opennms.netmgt.model.OnmsAcknowledgment;
@@ -167,7 +168,7 @@ public class DaoWebAlarmRepository implements WebAlarmRepository {
 
         // node id can be null, in which case nodeID will be 0
         alarm.nodeID = onmsAlarm.getNode() != null ? onmsAlarm.getNode().getId() : 0;
-        alarm.ipAddr = onmsAlarm.getIpAddr();
+        alarm.ipAddr = onmsAlarm.getIpAddr() == null ? null : InetAddressUtils.toIpAddrString(onmsAlarm.getIpAddr());
 
         // This causes serviceID to be null if the column in the database is null
         alarm.serviceID = onmsAlarm.getServiceType() != null ? onmsAlarm.getServiceType().getId() : 0;

@@ -35,7 +35,8 @@
 //
 package org.opennms.netmgt.dao;
 
-import java.util.Collection;
+import java.net.InetAddress;
+import java.util.List;
 import java.util.Map;
 
 import org.opennms.netmgt.model.OnmsIpInterface;
@@ -86,7 +87,7 @@ public interface IpInterfaceDao extends OnmsDao<OnmsIpInterface, Integer> {
      * @param ipAddress a {@link java.lang.String} object.
      * @return a {@link java.util.Collection} object.
      */
-    Collection<OnmsIpInterface> findByIpAddress(String ipAddress);
+    List<OnmsIpInterface> findByIpAddress(String ipAddress);
 
     /**
      * <p>findByServiceType</p>
@@ -94,7 +95,7 @@ public interface IpInterfaceDao extends OnmsDao<OnmsIpInterface, Integer> {
      * @param svcName a {@link java.lang.String} object.
      * @return a {@link java.util.Collection} object.
      */
-    Collection<OnmsIpInterface> findByServiceType(String svcName);
+    List<OnmsIpInterface> findByServiceType(String svcName);
 
     /**
      * <p>findHierarchyByServiceType</p>
@@ -102,14 +103,14 @@ public interface IpInterfaceDao extends OnmsDao<OnmsIpInterface, Integer> {
      * @param svcName a {@link java.lang.String} object.
      * @return a {@link java.util.Collection} object.
      */
-    Collection<OnmsIpInterface> findHierarchyByServiceType(String svcName);
+    List<OnmsIpInterface> findHierarchyByServiceType(String svcName);
 
     /**
      * Returns a map of all IP to node ID mappings in the database.
      *
      * @return a {@link java.util.Map} object.
      */
-    Map<String, Integer> getInterfacesForNodes();
+    Map<InetAddress, Integer> getInterfacesForNodes();
 
 
 }

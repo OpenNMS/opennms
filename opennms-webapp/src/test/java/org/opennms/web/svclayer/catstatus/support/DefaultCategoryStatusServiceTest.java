@@ -122,7 +122,7 @@ public class DefaultCategoryStatusServiceTest extends TestCase {
 		OnmsNode node = new OnmsNode();
 		node.setId(1);
 		node.setLabel("superLabel");
-		OnmsSnmpInterface snmpIface = new OnmsSnmpInterface("192.168.1.1", 1, node);
+		OnmsSnmpInterface snmpIface = new OnmsSnmpInterface(node, 1);
 		OnmsIpInterface iface = new OnmsIpInterface("192.168.1.1", node);
 		iface.setSnmpInterface(snmpIface);
 		//iface.setId(9);

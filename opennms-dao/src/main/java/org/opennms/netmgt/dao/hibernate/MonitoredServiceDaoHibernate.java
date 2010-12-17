@@ -33,6 +33,7 @@
 
 package org.opennms.netmgt.dao.hibernate;
 
+import java.net.InetAddress;
 import java.util.Collection;
 import java.util.HashSet;
 import java.util.LinkedList;
@@ -61,17 +62,24 @@ public class MonitoredServiceDaoHibernate extends AbstractDaoHibernate<OnmsMonit
 	}
 
 	/** {@inheritDoc} */
-	public Collection<OnmsMonitoredService> findByType(String type) {
+	public List<OnmsMonitoredService> findByType(String type) {
 		return find("from OnmsMonitoredService svc where svc.serviceType.name = ?", type);
 	}
 
 	/** {@inheritDoc} */
 	public OnmsMonitoredService get(Integer nodeId, String ipAddress, String svcName) {
 		return findUnique("from OnmsMonitoredService as svc " +
-				    "where svc.ipInterface.node.id = ? and svc.ipInterface.ipAddress = ? and svc.serviceType.name = ?",
+				    "where svc.ipInterface.node.id = ? and svc.ipInterface.inetAddress = ? and svc.serviceType.name = ?",
 				   nodeId, ipAddress, svcName);
 	}
 	
+    /** {@inheritDoc} */
+    public OnmsMonitoredService get(Integer nodeId, InetAddress ipAddress, String svcName) {
+        return findUnique("from OnmsMonitoredService as svc " +
+                    "where svc.ipInterface.node.id = ? and svc.ipInterface.inetAddress = ? and svc.serviceType.name = ?",
+                   nodeId, ipAddress, svcName);
+    }
+    
 	/** {@inheritDoc} */
 	public OnmsMonitoredService getPrimaryService(Integer nodeId, String svcName) {
 	    return findUnique("from OnmsMonitoredService as svc " +
@@ -82,12 +90,19 @@ public class MonitoredServiceDaoHibernate extends AbstractDaoHibernate<OnmsMonit
 	/** {@inheritDoc} */
 	public OnmsMonitoredService get(Integer nodeId, String ipAddr, Integer ifIndex, Integer serviceId) {
 		return findUnique("from OnmsMonitoredService as svc " +
-			    "where svc.ipInterface.node.id = ? and svc.ipInterface.ipAddress = ? and svc.ipInterface.snmpInterface.ifIndex = ? and svc.serviceType.id = ?",
+			    "where svc.ipInterface.node.id = ? and svc.ipInterface.inetAddress = ? and svc.ipInterface.snmpInterface.ifIndex = ? and svc.serviceType.id = ?",
 			   nodeId, ipAddr, ifIndex, serviceId);
 	}
 
     /** {@inheritDoc} */
-    public Collection<OnmsMonitoredService> findMatchingServices(ServiceSelector selector) {
+    public OnmsMonitoredService get(Integer nodeId, InetAddress ipAddr, Integer ifIndex, Integer serviceId) {
+        return findUnique("from OnmsMonitoredService as svc " +
+                "where svc.ipInterface.node.id = ? and svc.ipInterface.inetAddress = ? and svc.ipInterface.snmpInterface.ifIndex = ? and svc.serviceType.id = ?",
+               nodeId, ipAddr, ifIndex, serviceId);
+    }
+
+    /** {@inheritDoc} */
+    public List<OnmsMonitoredService> findMatchingServices(ServiceSelector selector) {
         Set<String> matchingIps = new HashSet<String>(FilterDaoFactory.getInstance().getIPList(selector.getFilterRule()));
         Set<String> matchingSvcs = new HashSet<String>(selector.getServiceNames());
         
@@ -116,7 +131,7 @@ public class MonitoredServiceDaoHibernate extends AbstractDaoHibernate<OnmsMonit
     }
 
     /** {@inheritDoc} */
-    public Collection<OnmsMonitoredService> findByApplication(OnmsApplication application) {
+    public List<OnmsMonitoredService> findByApplication(OnmsApplication application) {
         return find("select distinct svc from OnmsMonitoredService as svc " +
         		"left join fetch svc.serviceType " +
         		"left join fetch svc.ipInterface " +

@@ -46,7 +46,6 @@
 --%>
 
 <%@page language="java"	contentType="text/html"	session="true" %>
-<%@ taglib prefix="fmt" uri="http://java.sun.com/jsp/jstl/fmt" %>
 
 <%@page import="java.util.List"%>
 <%@page import="java.util.ArrayList"%>
@@ -79,6 +78,9 @@
 <%@page import="org.opennms.web.event.filter.NegativeAcknowledgedByFilter"%>
 <%@page import="org.opennms.web.event.filter.ExactUEIFilter"%>
 <%@page import="org.opennms.web.event.filter.NegativeExactUEIFilter"%>
+
+<%@taglib uri="http://java.sun.com/jsp/jstl/core" prefix="c" %>
+<%@taglib uri="http://java.sun.com/jsp/jstl/fmt" prefix="fmt" %>
 
 <%--
   This page is written to be the display (view) portion of the EventFilterController
@@ -356,7 +358,11 @@
             <% if(events[i].getIpAddress() != null ) { %>
               <% Filter intfFilter = new InterfaceFilter(events[i].getIpAddress()); %>
               <% if( events[i].getNodeId() != 0 ) { %>
-                 <a href="element/interface.jsp?node=<%=events[i].getNodeId()%>&intf=<%=events[i].getIpAddress()%>" title="More info on this interface"><%=events[i].getIpAddress()%></a>
+                <c:url var="interfaceLink" value="element/interface.jsp">
+                  <c:param name="node" value="<%=String.valueOf(events[i].getNodeId())%>"/>
+                  <c:param name="intf" value="<%=events[i].getIpAddress()%>"/>
+                </c:url>
+                <a href="${interfaceLink}" title="More info on this interface"><%=events[i].getIpAddress()%></a>
               <% } else { %>
                  <%=events[i].getIpAddress()%>
               <% } %>
@@ -374,9 +380,14 @@
             <% if(events[i].getServiceName() != null && events[i].getServiceName() != "") { %>
               <% Filter serviceFilter = new ServiceFilter(events[i].getServiceId()); %>
               <% if( events[i].getNodeId() != 0 && events[i].getIpAddress() != null ) { %>
-                <a href="element/service.jsp?node=<%=events[i].getNodeId()%>&intf=<%=events[i].getIpAddress()%>&service=<%=events[i].getServiceId()%>" title="More info on this service"><%=events[i].getServiceName()%></a>
+                <c:url var="serviceLink" value="element/service.jsp">
+                  <c:param name="node" value="<%=String.valueOf(events[i].getNodeId())%>"/>
+                  <c:param name="intf" value="<%=events[i].getIpAddress()%>"/>
+                  <c:param name="service" value="<%=String.valueOf(events[i].getServiceId())%>"/>
+                </c:url>
+                <a href="${serviceLink}" title="More info on this service"><c:out value="<%=events[i].getServiceName()%>"/></a>
               <% } else { %>
-                <%=events[i].getServiceName()%>
+                <c:out value="<%=events[i].getServiceName()%>"/>
               <% } %>
               <% if( !parms.filters.contains( serviceFilter )) { %>
                 <nobr>
@@ -573,5 +584,3 @@
     }
 
 %>
-
-
