@@ -297,7 +297,7 @@ fi
 
 if [ "%{skip_compile}" = 1 ]; then
 	echo "=== SKIPPING COMPILE ==="
-	export EXTRA_OPTIONS="$EXTRA_OPTIONS -Denable.snapshots=true"
+	export EXTRA_OPTIONS="$EXTRA_OPTIONS -Denable.snapshots=true -DupdatePolicy=always"
 else
 	echo "=== RUNNING COMPILE ==="
 	./compile.pl $EXTRA_OPTIONS -Dbuild=all -Dinstall.version="%{version}-%{release}" -Ddist.name="$RPM_BUILD_ROOT" \
