@@ -230,7 +230,11 @@ public class LogUtils {
 		org.apache.log4j.Logger.getRootLogger().setLevel(org.apache.log4j.Level.ALL);
 	}
 
-	private static Logger getLogger(final Object logee) {
+    public static boolean isTraceEnabled(final Object logee) {
+        return getLogger(logee).isTraceEnabled();
+    }
+
+    private static Logger getLogger(final Object logee) {
         Logger log;
         if (logee instanceof String) {
             log = ThreadCategory.getSlf4jInstance((String)logee);

@@ -18,6 +18,20 @@ public interface SystemReportFormatter extends Comparable<SystemReportFormatter>
     public String getDescription();
 
     /**
+     * The Content-Type that this formatter outputs.  This can be null
+     * if the formatter does not produce a file (like the FtpSystemReportFormatter).
+     * @return the content-type the formatter writes.
+     */
+    public String getContentType();
+
+    /**
+     * The default extension to use when creating files if no output
+     * is specified.
+     * @return the extension
+     */
+    public String getExtension();
+
+    /**
      * Whether or not this formatter needs to be given an output stream.
      */
     public boolean needsOutputStream();
