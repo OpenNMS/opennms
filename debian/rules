@@ -35,14 +35,14 @@ $(STAMP_BUILD):
 			./compile.pl -Dbuild=all -s $$OPENNMS_SETTINGS_XML $(BUILDDEFINES) install; \
 			./assemble.pl -Dbuild=all -Dbuild.profile=fulldir -s $$OPENNMS_SETTINGS_XML $(BUILDDEFINES) install; \
 		else \
-			./assemble.pl -Dbuild=all -Denable.snapshots=true -Dbuild.profile=fulldir -s $$OPENNMS_SETTINGS_XML $(BUILDDEFINES) install; \
+			./assemble.pl -Dbuild=all -Denable.snapshots=true -DupdatePolicy=always -Dbuild.profile=fulldir -s $$OPENNMS_SETTINGS_XML $(BUILDDEFINES) install; \
 		fi; \
 	else \
 		if [ -z "$$OPENNMS_SKIP_COMPILE" ]; then \
 			./compile.pl -Dbuild=all -Duser.home=$(HOME) $(BUILDDEFINES) install; \
 			./assemble.pl -Dbuild=all -Dbuild.profile=fulldir -Duser.home=$(HOME) $(BUILDDEFINES) install; \
 		else \
-			./assemble.pl -Dbuild=all -Denable.snapshots=true -Dbuild.profile=fulldir -Duser.home=$(HOME) $(BUILDDEFINES) install; \
+			./assemble.pl -Dbuild=all -Denable.snapshots=true -DupdatePolicy=always -Dbuild.profile=fulldir -Duser.home=$(HOME) $(BUILDDEFINES) install; \
 		fi; \
 	fi
 	find debian/temp -type d -name .svn -exec rm -rf {} \;
