@@ -37,7 +37,7 @@ public class ConfigurationReportPlugin extends AbstractSystemReportPlugin {
         } else {
             String filename = file.getPath();
             filename = filename.replaceFirst("^" + System.getProperty("opennms.home") + "/etc/?", "");
-            if (!filename.contains("/examples/") && file.length() > 0) {
+            if ((!filename.contains("/examples/")) && file.length() > 0) {
                 map.put(filename, new FileSystemResource(file));
             }
         }

@@ -181,13 +181,14 @@ public class SystemReport extends Bootstrap {
             formatter.begin();
             if (stream != null) stream.flush();
             for (final String pluginName : plugins) {
-                if (!pluginMap.containsKey(pluginName)) {
+                final SystemReportPlugin plugin = pluginMap.get(pluginName);
+                if (plugin == null) {
                     LogUtils.warnf(this, "No plugin named '%s' found, skipping.", pluginName);
                 } else {
                     try {
-                        formatter.write(pluginMap.get(pluginName));
+                        formatter.write(plugin);
                     } catch (final Exception e) {
-                        LogUtils.errorf(this, e, "An error occurred calling plugin '%s'", pluginName);
+                        LogUtils.errorf(this, e, "An error occurred calling plugin '%s'", plugin.getName());
                     }
                     if (stream != null) stream.flush();
                 }
@@ -214,14 +215,14 @@ public class SystemReport extends Bootstrap {
         }
     }
 
-    private List<SystemReportPlugin> getPlugins() {
+    public List<SystemReportPlugin> getPlugins() {
         initializeSpring();
         final List<SystemReportPlugin> plugins = new ArrayList<SystemReportPlugin>(m_serviceRegistry.findProviders(SystemReportPlugin.class));
         Collections.sort(plugins);
         return plugins;
     }
 
-    private List<SystemReportFormatter> getFormatters() {
+    public List<SystemReportFormatter> getFormatters() {
         initializeSpring();
         final List<SystemReportFormatter> formatters = new ArrayList<SystemReportFormatter>(m_serviceRegistry.findProviders(SystemReportFormatter.class));
         Collections.sort(formatters);
@@ -249,5 +250,9 @@ public class SystemReport extends Bootstrap {
         logConfig.setProperty("log4j.appender.CONSOLE.layout.ConversionPattern", "%d %-5p [%t] %c: %m%n");
         logConfig.setProperty("log4j.logger.org.opennms.systemreport", level);
         PropertyConfigurator.configure(logConfig);
+    }
+    
+    public void setServiceRegistry(final ServiceRegistry registry) {
+        m_serviceRegistry = registry;
     }
 }

@@ -144,6 +144,11 @@ td div.clip {
 	overflow:hidden;
 }
 
+.normal {
+	font-size: 100%;
+	margin: 5px;
+}
+
 /* Layouts */
 div.TwoColLeft {
 	width: 40%;

@@ -873,6 +873,11 @@
       </dependency>
       <dependency>
         <groupId>org.opennms.features</groupId>
+        <artifactId>org.opennms.features.request-tracker</artifactId>
+        <version>${project.version}</version>
+      </dependency>
+      <dependency>
+        <groupId>org.opennms.features</groupId>
         <artifactId>org.opennms.features.phonebook</artifactId>
         <version>${project.version}</version>
       </dependency>

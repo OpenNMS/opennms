@@ -21,6 +21,7 @@
     <module>sms-reflector</module>
     <module>reporting</module>
     <module>springframework-security</module>
+    <module>request-tracker</module>
     <module>system-report</module>
   </modules>
 

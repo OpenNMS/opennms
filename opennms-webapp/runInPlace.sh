@@ -2,6 +2,10 @@
 
 if [ -z "$OPENNMS_ROOT" ]; then
 	OPENNMS_ROOT=`ls -d ../target/opennms-*-SNAPSHOT 2>/dev/null | sort -u | tail -n 1`
+	if [ -z "$OPENNMS_ROOT" ]; then
+		echo "You must run assemble.pl at least once before doing runInPlace.sh!"
+		exit 1
+	fi
 	OPENNMS_ROOT=`cd $OPENNMS_ROOT; pwd`
 fi
 
@@ -13,7 +17,10 @@ function warInPlace() {
 	if $OFFLINE; then
         OFFLINE_ARGS="-o"
     fi
-    ../compile.pl $OFFLINE_ARGS $DEFINES compile war:inplace
+    ../compile.pl $OFFLINE_ARGS $DEFINES '-P!jspc' compile war:inplace
+    mkdir -p src/main/webapp/{WEB-INF,META-INF}
+    sed -e "s,\${install.dir},$OPENNMS_ROOT,g" src/web-inf/configuration.properties > src/main/webapp/WEB-INF/configuration.properties
+    sed -e "s,\${install.servlet.dir},`pwd`/src/main/webapp,g" src/meta-inf/context.xml > src/main/webapp/META-INF/context.xml
 }
 
 function runInPlace() {
@@ -21,7 +28,7 @@ function runInPlace() {
 	if $OFFLINE; then
         OFFLINE_ARGS="-o"
     fi
-    ../compile.pl $OFFLINE_ARGS $DEFINES -Dweb.port=$PORT -Dopennms.home=$OPENNMS_ROOT jetty:run-exploded
+    ../compile.pl $OFFLINE_ARGS $DEFINES -Dweb.port=$PORT -Dopennms.home=$OPENNMS_ROOT '-P!jspc' jetty:run-exploded
 }
 
 function removeGwtModuleFiles() {
