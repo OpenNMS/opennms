@@ -47,7 +47,7 @@ import java.io.File;
 import java.io.FileNotFoundException;
 import java.io.IOException;
 
-import org.opennms.core.utils.ThreadCategory;
+import org.opennms.core.utils.LogUtils;
 
 /**
  * This class holds all OpenNMS related config filenames
@@ -782,7 +782,7 @@ public final class ConfigFileConstants {
         // Check to make sure that the home directory exists
         File fhome = new File(home);
         if (!fhome.exists()) {
-            log().warn("getFile: The specified home directory does not exist");
+            LogUtils.debugf(ConfigFileConstants.class, "The specified home directory does not exist.");
             throw new FileNotFoundException("The OpenNMS home directory \"" + home + "\" does not exist");
         }
 
@@ -801,10 +801,6 @@ public final class ConfigFileConstants {
         }
 
         return frfile;
-    }
-
-    private static ThreadCategory log() {
-        return ThreadCategory.getInstance(ConfigFileConstants.class);
     }
 
     /**
@@ -840,20 +836,15 @@ public final class ConfigFileConstants {
         //
         File fhome = new File(home);
         if (!fhome.exists()) {
-            log().warn("getConfigFileByName: The specified home directory does not exist");
-            throw new FileNotFoundException("The OpenNMS home directory \"" + home + "\" does not exist");
+            LogUtils.debugf(ConfigFileConstants.class, "The specified home directory does not exist.");
+            throw new FileNotFoundException("The OpenNMS home directory \"" + home + "\" does not exist.");
         }
 
         File frfile = new File(home + File.separator + "etc" + File.separator + fname);
         if (!frfile.exists()) {
             File frfileNoEtc = new File(home + File.separator + fname);
             if (!frfileNoEtc.exists()) {
-                throw new FileNotFoundException("The requested file '" + fname
-                                                + "' could not be found at '"
-                                                + frfile.getAbsolutePath()
-                                                + "' or '"
-                                                + frfileNoEtc.getAbsolutePath()
-                                                + "'");
+                throw new FileNotFoundException(String.format("The requested file '%s' could not be found at '%s' or '%s'", fname, frfile.getAbsolutePath(), frfileNoEtc.getAbsolutePath()));
             }
         }
 
@@ -868,7 +859,7 @@ public final class ConfigFileConstants {
     public static final String getHome() {
         String home = System.getProperty("opennms.home");
         if (home == null) {
-            log().warn("getConfigFileByName: The \"opennms.home\" property was not set, falling back to /opt/opennms");
+            LogUtils.debugf(ConfigFileConstants.class, "The 'opennms.home' property was not set, falling back to /opt/opennms.  This should really only happen in unit tests.");
             home = File.separator + "opt" + File.separator + "opennms";
         }
         // Remove the trailing slash if necessary

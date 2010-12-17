@@ -9,6 +9,7 @@ import java.net.MalformedURLException;
 import java.net.URL;
 
 import org.apache.commons.io.IOUtils;
+import org.apache.commons.net.ftp.FTP;
 import org.apache.commons.net.ftp.FTPClient;
 import org.apache.commons.net.ftp.FTPReply;
 import org.opennms.core.utils.LogUtils;
@@ -26,9 +27,17 @@ public class FtpSystemReportFormatter extends AbstractSystemReportFormatter impl
     }
 
     public String getDescription() {
-        return "ftp to the URL specified in --output";
+        return "ftp to the URL specified in the output option (eg, ftp://ftp.example.com/incoming/my-file.zip)";
     }
-    
+
+    public String getContentType() {
+        return null;
+    }
+
+    public String getExtension() {
+        return "zip";
+    }
+
     public boolean canStdout() {
         return false;
     }
@@ -50,6 +59,7 @@ public class FtpSystemReportFormatter extends AbstractSystemReportFormatter impl
         m_zipFormatter = new ZipSystemReportFormatter();
         try {
             m_zipFile = File.createTempFile("ftpSystemReportFormatter", null);
+            LogUtils.debugf(this, "temporary zip file = %s", m_zipFile.getPath());
             m_outputStream = new FileOutputStream(m_zipFile);
             m_zipFormatter.setOutput(getOutput());
             m_zipFormatter.setOutputStream(m_outputStream);
@@ -104,6 +114,7 @@ public class FtpSystemReportFormatter extends AbstractSystemReportFormatter impl
                 return;
             }
             LogUtils.infof(this, "uploading %s to %s", f.getName(), path);
+            ftp.setFileType(FTP.BINARY_FILE_TYPE);
             fis = new FileInputStream(m_zipFile);
             if (!ftp.storeFile(f.getName(), fis)) {
                 LogUtils.infof(this, "unable to store file");
