@@ -253,7 +253,7 @@ public class LogUtils {
 	}
 
 	private static Logger getLogger(final Object logee) {
-        Logger log;
+       Logger log;
 	    synchronized(m_hot) {
 	        log = m_hot.get(logee);
 	        if (log != null) {

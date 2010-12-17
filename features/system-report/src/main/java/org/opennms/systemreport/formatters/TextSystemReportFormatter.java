@@ -17,6 +17,14 @@ public class TextSystemReportFormatter extends AbstractSystemReportFormatter imp
         return "simple human-readable indented text";
     }
     
+    public String getContentType() {
+        return "text/plain";
+    }
+
+    public String getExtension() {
+        return "txt";
+    }
+
     public boolean canStdout() {
         return true;
     }

@@ -98,10 +98,29 @@
   	<property name="groupManager" ref="groupManager"/>
   </bean>
 
-	<!-- Converted from a Dispatcher to controller -->
-    <!-- This one uses Autowired -->
-	<bean name="/admin/userGroupView/groups/modifyGroup" class="org.opennms.web.controller.admin.group.GroupController" />
-  	
+  <!-- Converted from a Dispatcher to controller -->
+  <!-- This one uses Autowired -->
+  <bean name="/admin/userGroupView/groups/modifyGroup" class="org.opennms.web.controller.admin.group.GroupController" />
+
+  <bean name="supportRtConfigDao" class="org.opennms.web.controller.support.SupportRtConfigDao" />
+
+  <bean name="systemReport" class="org.opennms.systemreport.SystemReport">
+    <property name="serviceRegistry" ref="serviceRegistry" />
+  </bean>
+  
+  <bean name="/admin/support/systemReport.htm" class="org.opennms.web.controller.admin.support.SystemReportController">
+    <property name="systemReport" ref="systemReport" />
+  </bean>  	
+
+  <bean name="/admin/support/systemReportList.htm" class="org.opennms.web.controller.admin.support.SystemReportListController">
+    <property name="systemReport" ref="systemReport" />
+  </bean>  	
+
+  <bean name="/support/index.htm" class="org.opennms.web.controller.support.SupportController">
+    <property name="rtConfigDao" ref="supportRtConfigDao" />
+    <property name="systemReport" ref="systemReport" />
+  </bean>
+
   <bean name="/aggregateStatus.htm"
 		class="org.opennms.web.controller.SiteStatusViewController">
     <property name="service" ref="siteStatusViewService" />
@@ -464,9 +483,9 @@
         </bean>
 
         <bean class="org.opennms.web.navigate.LocationBasedNavBarEntry">
-          <property name="name" value="Help"/>
-          <property name="url" value="help/index.jsp"/>
-          <property name="locationMatch" value="help"/>
+          <property name="name" value="Support"/>
+          <property name="url" value="support/index.htm"/>
+          <property name="locationMatch" value="support"/>
         </bean>
       </list>
     </property>

@@ -18,6 +18,14 @@ public class FullTextSystemReportFormatter extends AbstractSystemReportFormatter
         return "human-readable text (including large resources like logs)";
     }
 
+    public String getContentType() {
+        return "text/plain";
+    }
+
+    public String getExtension() {
+        return "txt";
+    }
+
     public boolean canStdout() {
         return true;
     }
