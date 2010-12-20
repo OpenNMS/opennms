@@ -37,7 +37,7 @@ package org.opennms.web.svclayer;
 import java.util.ArrayList;
 import java.util.List;
 
-import org.opennms.web.Util;
+import org.opennms.web.api.Util;
 import org.springframework.validation.Errors;
 
 /**

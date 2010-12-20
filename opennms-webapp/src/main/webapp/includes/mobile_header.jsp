@@ -65,7 +65,7 @@
   <c:forEach var="meta" items="${paramValues.meta}">
     <c:out value="${meta}" escapeXml="false"/>
   </c:forEach>
-  <base href="<%=org.opennms.web.Util.calculateUrlBase( request )%>" />
+  <base href="<%=org.opennms.web.api.Util.calculateUrlBase( request )%>" />
   <link rel="stylesheet" type="text/css" href="css/mobile.css" media="screen" />
 	<link rel="stylesheet" type="text/css" href="css/print.css" media="print" />
   <script type="text/javascript" src="js/global.js"></script>

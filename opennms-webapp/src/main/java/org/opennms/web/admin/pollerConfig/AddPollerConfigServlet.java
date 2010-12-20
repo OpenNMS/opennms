@@ -69,7 +69,7 @@ import org.opennms.netmgt.config.capsd.ProtocolPlugin;
 import org.opennms.netmgt.config.poller.Monitor;
 import org.opennms.netmgt.config.poller.PollerConfiguration;
 import org.opennms.netmgt.config.poller.Service;
-import org.opennms.web.Util;
+import org.opennms.web.api.Util;
 
 /**
  * A servlet that handles managing or unmanaging interfaces and services on a

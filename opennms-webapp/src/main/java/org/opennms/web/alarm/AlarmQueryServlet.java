@@ -56,7 +56,6 @@ import javax.servlet.http.HttpServletResponse;
 
 import org.opennms.netmgt.model.OnmsSeverity;
 import org.opennms.web.MissingParameterException;
-import org.opennms.web.Util;
 import org.opennms.web.WebSecurityUtils;
 import org.opennms.web.alarm.filter.AfterFirstEventTimeFilter;
 import org.opennms.web.alarm.filter.AfterLastEventTimeFilter;
@@ -68,6 +67,7 @@ import org.opennms.web.alarm.filter.LogMessageSubstringFilter;
 import org.opennms.web.alarm.filter.NodeNameLikeFilter;
 import org.opennms.web.alarm.filter.ServiceFilter;
 import org.opennms.web.alarm.filter.SeverityFilter;
+import org.opennms.web.api.Util;
 import org.opennms.web.controller.event.EventFilterController;
 import org.opennms.web.filter.Filter;
 

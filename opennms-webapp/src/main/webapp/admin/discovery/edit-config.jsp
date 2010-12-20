@@ -70,19 +70,19 @@
 
 
 function addSpecific(){
-	window.open('<%=org.opennms.web.Util.calculateUrlBase( request )%>admin/discovery/add-specific.jsp', 'AddSpecific', 'toolbar=0,width=700 ,height=150, left=0, top=0, resizable=1, scrollbars=1') 
+	window.open('<%=org.opennms.web.api.Util.calculateUrlBase( request )%>admin/discovery/add-specific.jsp', 'AddSpecific', 'toolbar=0,width=700 ,height=150, left=0, top=0, resizable=1, scrollbars=1') 
 }
 
 function addIncludeRange(){
-	window.open('<%=org.opennms.web.Util.calculateUrlBase( request )%>admin/discovery/add-ir.jsp', 'AddIncludeRange', 'toolbar=0,width=750 ,height=230, left=0, top=0, resizable=1, scrollbars=1') 
+	window.open('<%=org.opennms.web.api.Util.calculateUrlBase( request )%>admin/discovery/add-ir.jsp', 'AddIncludeRange', 'toolbar=0,width=750 ,height=230, left=0, top=0, resizable=1, scrollbars=1') 
 }
 
 function addIncludeUrl(){
-	window.open('<%=org.opennms.web.Util.calculateUrlBase( request )%>admin/discovery/add-url.jsp', 'AddIncludeUrl', 'toolbar=0,width=750 ,height=150, left=0, top=0, resizable=1, scrollbars=1') 
+	window.open('<%=org.opennms.web.api.Util.calculateUrlBase( request )%>admin/discovery/add-url.jsp', 'AddIncludeUrl', 'toolbar=0,width=750 ,height=150, left=0, top=0, resizable=1, scrollbars=1') 
 }
 
 function addExcludeRange(){
-	window.open('<%=org.opennms.web.Util.calculateUrlBase( request )%>admin/discovery/add-er.jsp', 'AddExcludeRange', 'toolbar=0,width=600 ,height=200, left=0, top=0, resizable=1, scrollbars=1') 
+	window.open('<%=org.opennms.web.api.Util.calculateUrlBase( request )%>admin/discovery/add-er.jsp', 'AddExcludeRange', 'toolbar=0,width=600 ,height=200, left=0, top=0, resizable=1, scrollbars=1') 
 }
 
 
@@ -131,7 +131,7 @@ DiscoveryConfiguration currConfig  = (DiscoveryConfiguration) sess.getAttribute(
 
 <br/>
 
-<form method="post" id="modifyDiscoveryConfig" name="modifyDiscoveryConfig" action="<%=org.opennms.web.Util.calculateUrlBase( request )%>admin/discovery/actionDiscovery" onsubmit="return restartDiscovery();">
+<form method="post" id="modifyDiscoveryConfig" name="modifyDiscoveryConfig" action="<%=org.opennms.web.api.Util.calculateUrlBase( request )%>admin/discovery/actionDiscovery" onsubmit="return restartDiscovery();">
 <input type="hidden" id="specificipaddress" name="specificipaddress" value=""/>
 <input type="hidden" id="specifictimeout" name="specifictimeout" value=""/>
 <input type="hidden" id="specificretries" name="specificretries" value=""/>

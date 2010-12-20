@@ -41,7 +41,7 @@
 
 <%@page language="java"	contentType="text/html"	session="true" %>
 
-<%@page import="org.opennms.web.Util"%>
+<%@page import="org.opennms.web.api.Util"%>
 <%@page import="org.opennms.web.WebSecurityUtils"%>
 <%@page import="org.opennms.web.XssRequestWrapper"%>
 <%@page import="org.opennms.web.filter.Filter"%>

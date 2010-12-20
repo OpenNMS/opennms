@@ -104,9 +104,9 @@
 <table>
   <tr class="<%=eventSeverity%>">
     <td width="15%">Notification Time</td>
-    <td width="17%"><%=org.opennms.web.Util.formatDateToUIString(notice.getTimeSent())%></td>
+    <td width="17%"><%=org.opennms.web.api.Util.formatDateToUIString(notice.getTimeSent())%></td>
     <td width="15%">Time&nbsp;Replied</td>
-    <td width="17%"><%=notice.getTimeReplied()!=null ? org.opennms.web.Util.formatDateToUIString(notice.getTimeReplied()) : "&nbsp;"%></td>
+    <td width="17%"><%=notice.getTimeReplied()!=null ? org.opennms.web.api.Util.formatDateToUIString(notice.getTimeReplied()) : "&nbsp;"%></td>
     <td width="15%">Responder</td>
     <td width="17%"><%=notice.getResponder()!=null ? notice.getResponder() : "&nbsp;"%></td>
   </tr>
@@ -205,7 +205,7 @@
     <tr class="<%=eventSeverity%>">
       <td><%=sentTo.getUserId()%></td>
 
-      <td><%=org.opennms.web.Util.formatDateToUIString(sentTo.getTime())%></td>
+      <td><%=org.opennms.web.api.Util.formatDateToUIString(sentTo.getTime())%></td>
 
       <td>
         <% if (sentTo.getMedia()!=null && !sentTo.getMedia().trim().equals("")) { %>

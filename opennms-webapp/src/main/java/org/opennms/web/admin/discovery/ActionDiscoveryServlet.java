@@ -56,8 +56,8 @@ import org.opennms.netmgt.config.discovery.IncludeUrl;
 import org.opennms.netmgt.config.discovery.Specific;
 import org.opennms.netmgt.model.events.EventProxy;
 import org.opennms.netmgt.xml.event.Event;
-import org.opennms.web.Util;
 import org.opennms.web.WebSecurityUtils;
+import org.opennms.web.api.Util;
 
 /**
  * A servlet that handles updating the status of the notifications
@@ -264,7 +264,7 @@ public class ActionDiscoveryServlet extends HttpServlet {
 
             log.info("Restart Discovery requested!");  
             sess.removeAttribute("discoveryConfiguration");
-            response.sendRedirect(org.opennms.web.Util.calculateUrlBase( request )+"event/query?msgmatchany=Discovery");
+            response.sendRedirect(Util.calculateUrlBase(request)+"event/query?msgmatchany=Discovery");
             return;
         }
         

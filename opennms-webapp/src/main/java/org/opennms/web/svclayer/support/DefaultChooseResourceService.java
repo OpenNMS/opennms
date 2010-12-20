@@ -45,7 +45,7 @@ import org.opennms.core.utils.ThreadCategory;
 import org.opennms.netmgt.dao.ResourceDao;
 import org.opennms.netmgt.model.OnmsResource;
 import org.opennms.netmgt.model.OnmsResourceType;
-import org.opennms.web.Util;
+import org.opennms.web.api.Util;
 import org.opennms.web.svclayer.ChooseResourceService;
 import org.springframework.beans.factory.InitializingBean;
 

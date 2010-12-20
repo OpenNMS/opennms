@@ -43,6 +43,7 @@
 	session="true"
 	import="org.opennms.web.WebSecurityUtils,
 		org.opennms.web.element.*,
+        org.opennms.web.api.Util,
 		org.opennms.web.*
 	"
 %>

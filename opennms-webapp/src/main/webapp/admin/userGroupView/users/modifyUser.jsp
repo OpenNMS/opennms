@@ -124,7 +124,7 @@
 
     function resetPassword()
     {
-        newUserWin = window.open("<%=org.opennms.web.Util.calculateUrlBase(request)%>/admin/userGroupView/users/newPassword.jsp", "", "fullscreen=no,toolbar=no,status=no,menubar=no,scrollbars=yes,resizable=yes,directories=no,location=no,width=500,height=300");
+        newUserWin = window.open("<%=org.opennms.web.api.Util.calculateUrlBase(request)%>/admin/userGroupView/users/newPassword.jsp", "", "fullscreen=no,toolbar=no,status=no,menubar=no,scrollbars=yes,resizable=yes,directories=no,location=no,width=500,height=300");
     }
 
     function addDutySchedules()

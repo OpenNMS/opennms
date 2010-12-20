@@ -73,7 +73,7 @@ import org.opennms.netmgt.config.notifications.Varbind;
 import org.opennms.netmgt.dao.FilterDao;
 import org.opennms.netmgt.filter.FilterDaoFactory;
 import org.opennms.netmgt.filter.FilterParseException;
-import org.opennms.web.Util;
+import org.opennms.web.api.Util;
 
 /**
  * A servlet that handles the data comming in from the notification wizard jsps.

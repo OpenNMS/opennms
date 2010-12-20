@@ -50,7 +50,7 @@ import org.exolab.castor.xml.MarshalException;
 import org.exolab.castor.xml.ValidationException;
 import org.opennms.core.utils.ThreadCategory;
 import org.opennms.netmgt.dao.castor.CastorUtils;
-import org.opennms.web.Util;
+import org.opennms.web.api.Util;
 
 /**
  * <p>RTCPostServlet class.</p>

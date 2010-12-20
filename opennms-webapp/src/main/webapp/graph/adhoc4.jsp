@@ -41,7 +41,7 @@
 --%>
 
 <%@page language="java"	contentType="text/html"	session="true"%>
-<%@page import="org.opennms.web.*"%>
+<%@page import="org.opennms.web.*,org.opennms.web.api.Util"%>
 <%@page import="java.util.*"%>
 <%@page import="org.springframework.web.context.support.WebApplicationContextUtils"%>
 <%@page import="org.springframework.web.context.WebApplicationContext"%>

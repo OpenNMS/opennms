@@ -23,9 +23,9 @@ while (__request_param_e.hasMoreElements()) {
     String name = (String) __request_param_e.nextElement();
     String valueClass = request.getParameter(name).getClass().getName();
     String value = request.getParameter(name).toString();
-    out.println("<tr><td>" + org.opennms.web.Util.htmlify(name) + "</td><td>"
-                + org.opennms.web.Util.htmlify(valueClass) + "</td><td>"
-                + org.opennms.web.Util.htmlify(value) + "</td></tr>");
+    out.println("<tr><td>" + org.opennms.web.api.Util.htmlify(name) + "</td><td>"
+                + org.opennms.web.api.Util.htmlify(valueClass) + "</td><td>"
+                + org.opennms.web.api.Util.htmlify(value) + "</td></tr>");
 }
 %>
 </table>
@@ -39,9 +39,9 @@ while (__pageContext_attr_e.hasMoreElements()) {
     String name = (String) __pageContext_attr_e.nextElement();
     String valueClass = pageContext.getAttribute(name, PageContext.PAGE_SCOPE).getClass().getName();
     String value = pageContext.getAttribute(name, PageContext.PAGE_SCOPE).toString();
-    out.println("<tr><td>" + org.opennms.web.Util.htmlify(name) + "</td><td>"
-                + org.opennms.web.Util.htmlify(valueClass) + "</td><td>"
-                + org.opennms.web.Util.htmlify(value) + "</td></tr>");
+    out.println("<tr><td>" + org.opennms.web.api.Util.htmlify(name) + "</td><td>"
+                + org.opennms.web.api.Util.htmlify(valueClass) + "</td><td>"
+                + org.opennms.web.api.Util.htmlify(value) + "</td></tr>");
 }
 %>
 </table>
@@ -55,9 +55,9 @@ while (__request_attr_e.hasMoreElements()) {
     String name = (String) __request_attr_e.nextElement();
     String valueClass = request.getAttribute(name).getClass().getName();
     String value = request.getAttribute(name).toString();
-    out.println("<tr><td>" + org.opennms.web.Util.htmlify(name) + "</td><td>"
-                + org.opennms.web.Util.htmlify(valueClass) + "</td><td>"
-                + org.opennms.web.Util.htmlify(value) + "</td></tr>");
+    out.println("<tr><td>" + org.opennms.web.api.Util.htmlify(name) + "</td><td>"
+                + org.opennms.web.api.Util.htmlify(valueClass) + "</td><td>"
+                + org.opennms.web.api.Util.htmlify(value) + "</td></tr>");
 }
 %>
 </table>
@@ -76,9 +76,9 @@ if (__show_detail_session == null) {
 	    String name = (String) __session_attr_e.nextElement();
 	    String valueClass = __show_detail_session.getAttribute(name).getClass().getName();
 	    String value = __show_detail_session.getAttribute(name).toString();
-	    out.println("<tr><td>" + org.opennms.web.Util.htmlify(name) + "</td><td>"
-	                + org.opennms.web.Util.htmlify(valueClass) + "</td><td>"
-	                + org.opennms.web.Util.htmlify(value) + "</td></tr>");
+	    out.println("<tr><td>" + org.opennms.web.api.Util.htmlify(name) + "</td><td>"
+	                + org.opennms.web.api.Util.htmlify(valueClass) + "</td><td>"
+	                + org.opennms.web.api.Util.htmlify(value) + "</td></tr>");
 	}
 }
 %>
@@ -94,9 +94,9 @@ while (__init_param_e.hasMoreElements()) {
     String name = (String) __init_param_e.nextElement();
     String valueClass = getServletConfig().getInitParameter(name).getClass().getName();
     String value = getServletConfig().getInitParameter(name).toString();
-    out.println("<tr><td>" + org.opennms.web.Util.htmlify(name) + "</td><td>"
-                + org.opennms.web.Util.htmlify(valueClass) + "</td><td>"
-                + org.opennms.web.Util.htmlify(value) + "</td></tr>");
+    out.println("<tr><td>" + org.opennms.web.api.Util.htmlify(name) + "</td><td>"
+                + org.opennms.web.api.Util.htmlify(valueClass) + "</td><td>"
+                + org.opennms.web.api.Util.htmlify(value) + "</td></tr>");
 }
 %>
 </table>
@@ -112,9 +112,9 @@ while (__context_attr_e.hasMoreElements()) {
     String name = (String) __context_attr_e.nextElement();
     String valueClass = __servlet_context.getAttribute(name).getClass().getName();
     String value = __servlet_context.getAttribute(name).toString();
-    out.println("<tr><td>" + org.opennms.web.Util.htmlify(name) + "</td><td>"
-                + org.opennms.web.Util.htmlify(valueClass) + "</td><td>"
-                + org.opennms.web.Util.htmlify(value) + "</td></tr>");
+    out.println("<tr><td>" + org.opennms.web.api.Util.htmlify(name) + "</td><td>"
+                + org.opennms.web.api.Util.htmlify(valueClass) + "</td><td>"
+                + org.opennms.web.api.Util.htmlify(value) + "</td></tr>");
 }
 %>
 </table>
