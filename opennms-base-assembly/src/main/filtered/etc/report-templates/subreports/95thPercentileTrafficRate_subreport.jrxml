@@ -118,8 +118,6 @@
 				<textElement/>
 				<textFieldExpression class="java.lang.String"><![CDATA[$P{snmpifalias}]]></textFieldExpression>
 			</textField>
-<<<<<<< HEAD:opennms-base-assembly/src/main/filtered/etc/report-templates/subreports/95thPercentileTrafficRate_subreport.jrxml
-=======
 			<pieChart>
 				<chart isShowLegend="true">
 					<reportElement x="290" y="20" width="140" height="140"/>
@@ -164,7 +162,6 @@
 					<itemLabel color="#000000" backgroundColor="#FFFFFF"/>
 				</piePlot>
 			</pieChart>
->>>>>>> 304afb7... Added legend to piechart in InterfaceUtilizationSummary report:opennms-base-assembly/src/main/filtered/etc/report-templates/subreports/95thPercentileTrafficRate_subreport.jrxml
 		</band>
 	</summary>
 	<noData>
