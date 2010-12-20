@@ -171,11 +171,13 @@ public class AggregateStatus implements SurveillanceStatus {
 
         @Override
         public void visitNode(OnmsNode node) {
+            System.err.println("visitNode(" + node + ")");
             m_isCurrentNodeDown = true;
         }
 
         @Override
         public void visitNodeComplete(OnmsNode node) {
+            System.err.println("visitNodeComplete(" + node + ") -- m_isCurrentNodeDown = " + m_isCurrentNodeDown);
             if (m_isCurrentNodeDown) {
                 m_downNodes.add(node);
                 m_status = AggregateStatus.NODES_ARE_DOWN;
@@ -185,6 +187,7 @@ public class AggregateStatus implements SurveillanceStatus {
 
         @Override
         public void visitMonitoredService(OnmsMonitoredService svc) {
+            System.err.println("visitMonitoredService(" + svc + ") - currentOutages.isEmpty = " + svc.getCurrentOutages().isEmpty());
             if ("A".equals(svc.getStatus())
                     && !svc.getCurrentOutages().isEmpty()) {
                 if (AggregateStatus.ALL_NODES_UP.equals(m_status)) {
