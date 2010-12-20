@@ -2,7 +2,7 @@
 <jasperReport xmlns="http://jasperreports.sourceforge.net/jasperreports" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://jasperreports.sourceforge.net/jasperreports http://jasperreports.sourceforge.net/xsd/jasperreport.xsd" name="node-response-time" pageWidth="595" pageHeight="842" whenNoDataType="NoDataSection" columnWidth="555" leftMargin="20" rightMargin="20" topMargin="20" bottomMargin="20">
 	<property name="ireport.zoom" value="2.0"/>
 	<property name="ireport.x" value="0"/>
-	<property name="ireport.y" value="325"/>
+	<property name="ireport.y" value="502"/>
 	<template><![CDATA["${install.dir}/etc/report-templates/assets/styles/defaultStyles.jrtx"]]></template>
 	<style name="Report_Title" forecolor="#000000" fontSize="20"/>
 	<style name="Report_Subtitle" forecolor="#000000" vAlign="Middle" fontSize="10" isBold="false" isItalic="true" isUnderline="false" isStrikeThrough="false"/>
@@ -197,11 +197,8 @@ ORDER BY
 					<textElement/>
 					<textFieldExpression class="java.lang.String"><![CDATA[$F{nodelabel}]]></textFieldExpression>
 				</textField>
-				<line>
-					<reportElement x="0" y="159" width="554" height="1"/>
-				</line>
-				<subreport>
-					<reportElement x="2" y="21" width="548" height="136"/>
+				<subreport isUsingCache="true">
+					<reportElement x="0" y="21" width="554" height="136"/>
 					<subreportParameter name="DS_SURVEILLANCE_CATEGORY">
 						<subreportParameterExpression><![CDATA[$P{SUBREPORT_DS_SURVEILLANCE}]]></subreportParameterExpression>
 					</subreportParameter>
@@ -212,7 +209,7 @@ ORDER BY
 						<subreportParameterExpression><![CDATA[$P{SUBREPORT_START_TIME}]]></subreportParameterExpression>
 					</subreportParameter>
 					<subreportParameter name="NODE_LABEL">
-						<subreportParameterExpression><![CDATA[$P{SUBEREPORT_NODE_LABEL}]]></subreportParameterExpression>
+						<subreportParameterExpression><![CDATA[$F{nodelabel}]]></subreportParameterExpression>
 					</subreportParameter>
 					<connectionExpression><![CDATA[$P{REPORT_CONNECTION}]]></connectionExpression>
 					<subreportExpression class="java.lang.String"><![CDATA[$P{SUBREPORT_DIR} + "ResponseTimeSummary_Availability_subreport.jasper"]]></subreportExpression>
@@ -286,7 +283,7 @@ ORDER BY
 		<band splitType="Stretch"/>
 	</columnFooter>
 	<pageFooter>
-		<band height="23" splitType="Stretch">
+		<band height="24" splitType="Stretch">
 			<line>
 				<reportElement x="0" y="1" width="555" height="1"/>
 				<graphicElement>
@@ -326,7 +323,19 @@ ORDER BY
 		</band>
 	</pageFooter>
 	<summary>
-		<band height="42" splitType="Stretch"/>
+		<band height="57" splitType="Stretch">
+			<subreport>
+				<reportElement x="0" y="0" width="554" height="55"/>
+				<subreportParameter name="TIME_RANGE">
+					<subreportParameterExpression><![CDATA[$P{SUBREPORT_TIME_RANGE}]]></subreportParameterExpression>
+				</subreportParameter>
+				<subreportParameter name="START_TIME">
+					<subreportParameterExpression><![CDATA[$P{SUBREPORT_START_TIME}]]></subreportParameterExpression>
+				</subreportParameter>
+				<connectionExpression><![CDATA[$P{REPORT_CONNECTION}]]></connectionExpression>
+				<subreportExpression class="java.lang.String"><![CDATA[$P{SUBREPORT_DIR} + "ResponseTimeSummary_Availability_Offenders_subreport.jasper"]]></subreportExpression>
+			</subreport>
+		</band>
 	</summary>
 	<noData>
 		<band height="50">
