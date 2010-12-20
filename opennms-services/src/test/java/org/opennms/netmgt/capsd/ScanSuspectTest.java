@@ -71,7 +71,7 @@ public class ScanSuspectTest extends OpenNMSTestCase {
     	System.setProperty("opennms.db.nextNodeId", "select max(nodeId) + 1 from node");
     	super.setUp();
 
-        m_agent = MockSnmpAgent.createAgentAndRun(new ClassPathResource("org/opennms/netmgt/snmp/stonegate.properties"), this.myLocalHost() + "/9161");
+        m_agent = MockSnmpAgent.createAgentAndRun(new ClassPathResource("org/opennms/netmgt/snmp/stonegate.properties"), this.myLocalHost().getHostAddress() + "/9161");
 
         InputStream configStream = ConfigurationTestUtils.getInputStreamForResource(this, "/org/opennms/netmgt/capsd/capsd-configuration.xml");
         DefaultCapsdConfigManager capsdConfig = new DefaultCapsdConfigManager(configStream);
