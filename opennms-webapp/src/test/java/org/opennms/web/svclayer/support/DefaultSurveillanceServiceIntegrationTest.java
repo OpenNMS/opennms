@@ -87,6 +87,10 @@ public class DefaultSurveillanceServiceIntegrationTest extends AbstractTransacti
        assertNotNull(m_databasePopulator);
        m_databasePopulator.populateDatabase();
        
+       setDefaultRollback(false);
+       endTransaction();
+       startNewTransaction();
+              
         String viewName = "default";
         SimpleWebTable table = m_surveillanceService.createSurveillanceTable(viewName, new ProgressMonitor() {
 

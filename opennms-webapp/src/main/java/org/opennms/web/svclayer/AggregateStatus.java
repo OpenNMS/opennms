@@ -42,6 +42,7 @@ import java.util.Set;
 import org.opennms.netmgt.model.AbstractEntityVisitor;
 import org.opennms.netmgt.model.OnmsMonitoredService;
 import org.opennms.netmgt.model.OnmsNode;
+import org.opennms.netmgt.model.SurveillanceStatus;
 
 /**
  * Use this class to aggregate status to be presented in a view layer technology.
@@ -52,7 +53,7 @@ import org.opennms.netmgt.model.OnmsNode;
  * @version $Id: $
  * @since 1.8.1
  */
-public class AggregateStatus {
+public class AggregateStatus implements SurveillanceStatus {
 
     private String m_label;
 
