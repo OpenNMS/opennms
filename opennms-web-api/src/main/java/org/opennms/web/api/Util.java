@@ -293,11 +293,11 @@ public abstract class Util extends Object {
             String[] values = request.getParameterValues(name);
 
             if ((ignoreType == IgnoreType.ADDITIONS_ONLY || !ignoreList.contains(name)) && values != null) {
-                for (int i = 0; i < values.length; i++) {
+                for (String value : values) {
                     buffer.append("<input type=\"hidden\" name=\"");
-                    buffer.append(name);
+                    buffer.append(WebSecurityUtils.sanitizeString(name));
                     buffer.append("\" value=\"");
-                    buffer.append(WebSecurityUtils.sanitizeString(values[i]));
+                    buffer.append(WebSecurityUtils.sanitizeString(value));
                     buffer.append("\" />");
                     buffer.append("\n");
                 }
@@ -316,11 +316,11 @@ public abstract class Util extends Object {
             String[] values = (tmp instanceof String[]) ? ((String[]) tmp) : (new String[] { (String) tmp });
 
             if ((ignoreType == IgnoreType.REQUEST_ONLY || !ignoreList.contains(name)) && values != null) {
-                for (int i = 0; i < values.length; i++) {
+                for (String value : values) {
                     buffer.append("<input type=\"hidden\" name=\"");
-                    buffer.append(name);
+                    buffer.append(WebSecurityUtils.sanitizeString(name));
                     buffer.append("\" value=\"");
-                    buffer.append(values[i]);
+                    buffer.append(WebSecurityUtils.sanitizeString(value));
                     buffer.append("\" />");
                     buffer.append("\n");
                 }

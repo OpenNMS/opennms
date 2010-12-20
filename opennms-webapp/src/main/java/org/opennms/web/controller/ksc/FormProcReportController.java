@@ -64,7 +64,7 @@ import org.springframework.web.servlet.mvc.AbstractController;
  * @since 1.8.1
  */
 public class FormProcReportController extends AbstractController implements InitializingBean {
-    
+
     public enum Parameters {
         action,
         report_title,
@@ -73,7 +73,14 @@ public class FormProcReportController extends AbstractController implements Init
         graph_index,
         graphs_per_line
     }
-    
+
+    public enum Actions {
+        Save,
+        AddGraph,
+        DelGraph,
+        ModGraph
+    }
+
     private KSC_PerformanceReportFactory m_kscReportFactory;
     private KscReportService m_kscReportService;
 
@@ -114,7 +121,7 @@ public class FormProcReportController extends AbstractController implements Init
             report.setGraphs_per_line(0);
         } 
 
-        if (action.equals("Save")) {
+        if (Actions.Save.toString().equals(action)) {
             // The working model is complete now... lets save working model to configuration file 
             try {
                 // First copy working report into report arrays
@@ -127,11 +134,11 @@ public class FormProcReportController extends AbstractController implements Init
                 throw new ServletException("Couldn't save report: " + e.getMessage(), e);
             }
         } else {
-            if (action.equals("AddGraph") || action.equals("ModGraph")) {
+            if (Actions.AddGraph.toString().equals(action) || Actions.ModGraph.toString().equals(action)) {
                 // Making a graph change... load it into the working area (the graph_index of -1 indicates a new graph)
                 editor.loadWorkingGraph(graph_index);
             } else {
-                if (action.equals("DelGraph")) { 
+                if (Actions.DelGraph.toString().equals(action)) { 
                     report.removeGraph(report.getGraph(graph_index));
                 } else {
                     throw new ServletException("Invalid Argument for Customize Form Action.");
@@ -139,13 +146,13 @@ public class FormProcReportController extends AbstractController implements Init
             }
         }
         
-        if (action.equals("Save")) {
+        if (Actions.Save.toString().equals(action)) {
             return new ModelAndView("redirect:/KSC/index.htm");
-        } else if (action.equals("DelGraph")) {
+        } else if (Actions.DelGraph.toString().equals(action)) {
             return new ModelAndView("redirect:/KSC/customReport.htm");
-        } else if (action.equals("AddGraph")) {
+        } else if (Actions.AddGraph.toString().equals(action)) {
             return new ModelAndView("redirect:/KSC/customGraphChooseParentResource.htm");
-        } else if (action.equals("ModGraph")) {
+        } else if (Actions.ModGraph.toString().equals(action)) {
             Graph graph = editor.getWorkingGraph();
             OnmsResource resource = getKscReportService().getResourceFromGraph(graph);
             String graphType = graph.getGraphtype();
@@ -155,7 +162,7 @@ public class FormProcReportController extends AbstractController implements Init
             modelData.put(CustomGraphEditDetailsController.Parameters.graphtype.toString(), graphType);
             return new ModelAndView("redirect:/KSC/customGraphEditDetails.htm", modelData);
         } else {
-            throw new IllegalArgumentException("parameter action of '" + action + "' is not supported.  Must be one of: Save, Cancel, Update, AddGraph, or DelGraph");
+            throw new IllegalArgumentException("Parameter action of '" + action + "' is not supported.  Must be one of: Save, Cancel, Update, AddGraph, or DelGraph");
         }
     }
     

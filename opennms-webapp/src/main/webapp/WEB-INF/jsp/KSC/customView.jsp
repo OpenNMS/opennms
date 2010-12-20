@@ -64,19 +64,19 @@
 <script type="text/javascript">
     function customizeReport()
     {
-        document.view_form.action.value = "Customize"; 
+        document.view_form.action.value = "<c:out value="<%=FormProcViewController.Actions.Customize.toString()%>"/>"; 
         document.view_form.submit();
     }
  
     function updateReport()
     {
-        document.view_form.action.value = "Update"; 
+        document.view_form.action.value = "<c:out value="<%=FormProcViewController.Actions.Update.toString()%>"/>"; 
         document.view_form.submit();
     }
  
     function exitReport()
     {
-        document.view_form.action.value = "Exit"; 
+        document.view_form.action.value = "<c:out value="<%=FormProcViewController.Actions.Exit.toString()%>"/>"; 
         document.view_form.submit();
     }
 </script>

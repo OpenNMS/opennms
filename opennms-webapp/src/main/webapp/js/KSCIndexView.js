@@ -156,15 +156,15 @@ function customizedReportsInitView(elementId, customData, urlTemplate){
 	function submitCustomChoice(){
 		var reportAction = {};
 		if(Ext.getCmp('viewRB').checked){
-			reportAction.action = "View";
+			reportAction.action = "View"; // FormProcMainController.Actions.View
 		}else if(Ext.getCmp('customizeRB').checked){
-			reportAction.action = "Customize";
+			reportAction.action = "Customize"; // FormProcMainController.Actions.Customize
 		}else if(Ext.getCmp('createNewRB').checked){
-			reportAction.action = "Create";
+			reportAction.action = "Create"; // FormProcMainController.Actions.Create
 		}else if(Ext.getCmp('createNewfromExistingRB').checked){
-			reportAction.action = "CreateFrom";
+			reportAction.action = "CreateFrom"; // FormProcMainController.Actions.CreateFrom
 		}else if(Ext.getCmp('deleteRB').checked){
-			reportAction.action = "Delete";
+			reportAction.action = "Delete"; // FormProcMainController.Actions.Delete
 		}
 		
 		var urlTpl = new Ext.XTemplate(urlTemplate);
@@ -177,7 +177,7 @@ function customizedReportsInitView(elementId, customData, urlTemplate){
 			url += "&report=" + customResourceGrid.getSelectionModel().getSelected().data.id;
 			window.location = url;
 		}else{
-			if(reportAction.action == "Create"){
+			if(reportAction.action == "Create"){ // FormProcMainController.Actions.Create
 				window.location = url;
 			}else{
 				alert('No reports are selected.  Please click on a report title to make a report selection.');	

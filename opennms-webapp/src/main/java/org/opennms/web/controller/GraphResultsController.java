@@ -80,24 +80,24 @@ public class GraphResultsController extends AbstractController implements Initia
             }
         }
 
-        String[] resourceIds = WebSecurityUtils.sanitizeString(request.getParameterValues("resourceId"));
-        String[] reports = WebSecurityUtils.sanitizeString(request.getParameterValues("reports"));
+        String[] resourceIds = request.getParameterValues("resourceId");
+        String[] reports = request.getParameterValues("reports");
         
         // see if the start and end time were explicitly set as params
-        String start = WebSecurityUtils.sanitizeString(request.getParameter("start"));
-        String end = WebSecurityUtils.sanitizeString(request.getParameter("end"));
+        final String start = request.getParameter("start");
+        final String end = request.getParameter("end");
 
-        String relativeTime = WebSecurityUtils.sanitizeString(request.getParameter("relativetime"));
+        String relativeTime = request.getParameter("relativetime");
         
-        String startMonth = WebSecurityUtils.sanitizeString(request.getParameter("startMonth"));
-        String startDate = WebSecurityUtils.sanitizeString(request.getParameter("startDate"));
-        String startYear = WebSecurityUtils.sanitizeString(request.getParameter("startYear"));
-        String startHour = WebSecurityUtils.sanitizeString(request.getParameter("startHour"));
+        final String startMonth = request.getParameter("startMonth");
+        final String startDate = request.getParameter("startDate");
+        final String startYear = request.getParameter("startYear");
+        final String startHour = request.getParameter("startHour");
 
-        String endMonth = WebSecurityUtils.sanitizeString(request.getParameter("endMonth"));
-        String endDate = WebSecurityUtils.sanitizeString(request.getParameter("endDate"));
-        String endYear = WebSecurityUtils.sanitizeString(request.getParameter("endYear"));
-        String endHour = WebSecurityUtils.sanitizeString(request.getParameter("endHour"));
+        final String endMonth = request.getParameter("endMonth");
+        final String endDate = request.getParameter("endDate");
+        final String endYear = request.getParameter("endYear");
+        final String endHour = request.getParameter("endHour");
         
         long startLong;
         long endLong;

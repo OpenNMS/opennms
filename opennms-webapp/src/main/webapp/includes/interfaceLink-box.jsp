@@ -84,7 +84,11 @@
   <% for( int i=0; i < dl_if.length; i++ ) { %>
     <% Interface iface = null; %>
     <tr>
-      <td class="standard"><a href="element/linkednode.jsp?node=<%=dl_if[i].get_nodeparentid()%>"><%=NetworkElementFactory.getInstance(getServletContext()).getNodeLabel(dl_if[i].get_nodeparentid())%></a></td>
+      <td class="standard">
+        <a href="element/linkednode.jsp?node=<%=dl_if[i].get_nodeparentid()%>">
+          <c:out value="<%=NetworkElementFactory.getInstance(getServletContext()).getNodeLabel(dl_if[i].get_nodeparentid())%>"/>
+        </a>
+      </td>
       <td class="standard">
       <% if( "0.0.0.0".equals( dl_if[i].get_parentipaddr() ) || dl_if[i].get_parentipaddr() == null ) {
         iface = NetworkElementFactory.getInstance(getServletContext()).getSnmpInterface(dl_if[i].get_nodeparentid(),dl_if[i].get_parentifindex()); %>
