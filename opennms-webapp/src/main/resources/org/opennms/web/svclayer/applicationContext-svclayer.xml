@@ -46,7 +46,7 @@
   <bean id="categoryConfigDao" class="org.opennms.web.svclayer.dao.support.DefaultCategoryConfigDao" />
   <bean id="viewDisplayDao" class="org.opennms.web.svclayer.dao.support.DefaultViewDisplayDao" />
  
-  <bean id="eventProxy" class="org.opennms.web.Util" factory-method="createEventProxy"/>
+  <bean id="eventProxy" class="org.opennms.web.api.Util" factory-method="createEventProxy"/>
  
   <bean id="pollerApi" class="org.opennms.web.services.DefaultPollerService">
     <property name="eventProxy" ref="eventProxy"></property>
