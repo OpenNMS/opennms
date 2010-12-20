@@ -46,14 +46,13 @@ import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Date;
 import java.util.HashMap;
-import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
 
 import org.hibernate.HibernateException;
 import org.hibernate.Session;
-import org.hibernate.transform.AliasToBeanConstructorResultTransformer;
-import org.hibernate.type.Type;
+import org.hibernate.transform.ResultTransformer;
+import org.opennms.core.utils.LogUtils;
 import org.opennms.netmgt.dao.NodeDao;
 import org.opennms.netmgt.model.OnmsCategory;
 import org.opennms.netmgt.model.OnmsDistPoller;
@@ -284,14 +283,20 @@ public class NodeDaoHibernate extends AbstractDaoHibernate<OnmsNode, Integer>
                  * and 
                  *      qonmsnode0_.nodeType<>'D';
                  */
-                Constructor<?> constructor = SimpleSurveillanceStatus.class.getConstructors()[0];
+                Constructor<?> constructor = null;
+                try {
+                    constructor = SimpleSurveillanceStatus.class.getConstructor(Number.class, Number.class, Number.class);
+                } catch (final Exception e) {
+                    LogUtils.warnf(this, e, "Unable to find constructor for Hibernate transformation.");
+                    throw new HibernateException(e);
+                }
                 
                 session.flush();
 
                 return (SimpleSurveillanceStatus)session.createSQLQuery("select" +
-                		" count(distinct case when outages.outageid is null then null else monSvc.id end)," +
-                		" count(distinct case when outages.outageid is null then null else node.nodeid end)," +
-                		" count(distinct node.nodeid)" +
+                		" count(distinct case when outages.outageid is null then null else monSvc.id end) as svcCount," +
+                		" count(distinct case when outages.outageid is null then null else node.nodeid end) as nodeOutageCount," +
+                		" count(distinct node.nodeid) as nodeCount" +
                 		" from node" +
                 		" join category_node cn1 using (nodeid)" +
                 		" join category_node cn2 using (nodeid)" +
@@ -305,7 +310,24 @@ public class NodeDaoHibernate extends AbstractDaoHibernate<OnmsNode, Integer>
                 		)
                 		.setParameterList("rowCategories", rowCategories)
                 		.setParameterList("columnCategories", columnCategories)
-                        .setResultTransformer(new AliasToBeanConstructorResultTransformer(constructor))
+                		.setResultTransformer(new ResultTransformer() {
+                            private static final long serialVersionUID = 1L;
+
+                            public Object transformTuple(Object[] tuple, String[] aliases) {
+                                System.err.println("tuple length = " + tuple.length);
+                                for (int i = 0; i < tuple.length; i++) {
+                                    System.err.println(i + ": " + tuple[i] + " (" + tuple[i].getClass() + ")");
+                                }
+                                return new SimpleSurveillanceStatus((Number)tuple[0], (Number)tuple[1], (Number)tuple[2]);
+                            }
+
+                            @SuppressWarnings("rawtypes")
+                            public List transformList(List collection) {
+                                return collection;
+                            }
+                		    
+                		})
+//                        .setResultTransformer(new AliasToBeanConstructorResultTransformer(constructor))
                         .uniqueResult();
                         
 
