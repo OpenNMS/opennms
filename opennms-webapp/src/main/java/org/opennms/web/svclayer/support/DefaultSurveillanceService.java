@@ -51,10 +51,12 @@ import org.opennms.netmgt.dao.SurveillanceViewConfigDao;
 import org.opennms.netmgt.model.OnmsCategory;
 import org.opennms.netmgt.model.OnmsNode;
 import org.opennms.web.api.Util;
+import org.opennms.netmgt.model.SurveillanceStatus;
 import org.opennms.web.svclayer.AggregateStatus;
 import org.opennms.web.svclayer.ProgressMonitor;
 import org.opennms.web.svclayer.SimpleWebTable;
 import org.opennms.web.svclayer.SurveillanceService;
+import org.opennms.web.svclayer.support.DefaultSurveillanceService.CellStatusStrategy;
 import org.springframework.orm.ObjectRetrievalFailureException;
 import org.springframework.util.StringUtils;
 
@@ -78,14 +80,20 @@ public class DefaultSurveillanceService implements SurveillanceService {
     private NodeDao m_nodeDao;
     private CategoryDao m_categoryDao;
     private SurveillanceViewConfigDao m_surveillanceConfigDao;
+    
+    interface CellStatusStrategy {
+        public SurveillanceStatus[][] calculateCellStatus(SurveillanceView sView, ProgressMonitor progressMonitor);
 
-    class CellStatusStrategy {
+        public int getPhaseCount(SurveillanceView sView);
+    }
 
-        Collection<OnmsNode> getNodesInCategories(Set<OnmsCategory> categories) {
+    class DefaultCellStatusStrategy implements CellStatusStrategy {
+
+        private Collection<OnmsNode> getNodesInCategories(Set<OnmsCategory> categories) {
             return m_nodeDao.findAllByCategoryList(categories);
         }
 
-        AggregateStatus[][] calculateCellStatus(SurveillanceView sView, ProgressMonitor progressMonitor) {
+        public SurveillanceStatus[][] calculateCellStatus(SurveillanceView sView, ProgressMonitor progressMonitor) {
 
             List<Collection<OnmsNode>> nodesByRowIndex = new ArrayList<Collection<OnmsNode>>();
             List<Collection<OnmsNode>> nodesByColIndex = new ArrayList<Collection<OnmsNode>>();
@@ -106,7 +114,7 @@ public class DefaultSurveillanceService implements SurveillanceService {
                 nodesByColIndex.add(colIndex, nodesForCol);
             }
 
-            AggregateStatus[][] cellStatus = new AggregateStatus[sView.getRowCount()][sView.getColumnCount()];
+            SurveillanceStatus[][] cellStatus = new SurveillanceStatus[sView.getRowCount()][sView.getColumnCount()];
 
 
             progressMonitor.beginNextPhase("Intersecting rows and columns");
@@ -130,6 +138,116 @@ public class DefaultSurveillanceService implements SurveillanceService {
 
             }
             return cellStatus;
+        }
+
+        public int getPhaseCount(SurveillanceView sView) {
+            return sView.getRowCount()+sView.getColumnCount()+1;
+        }
+
+    }
+
+    class LowMemCellStatusStrategy implements CellStatusStrategy {
+        
+        private String toString(Collection<OnmsCategory> categories) {
+            StringBuilder buf = new StringBuilder();
+            
+            buf.append("{");
+            
+            boolean first = true;
+            for(OnmsCategory cat : categories) {
+                if (first) {
+                    first = !first;
+                } else {
+                    buf.append(", ");
+                }
+                buf.append(cat.getName());
+            }
+            
+            buf.append("}");
+            
+            return buf.toString();
+        }
+        
+
+        public SurveillanceStatus[][] calculateCellStatus(SurveillanceView sView, ProgressMonitor progressMonitor) {
+
+            SurveillanceStatus[][] cellStatus = new SurveillanceStatus[sView.getRowCount()][sView.getColumnCount()];
+
+            for(int rowIndex = 0; rowIndex < sView.getRowCount(); rowIndex++) {
+
+                for(int colIndex = 0; colIndex < sView.getColumnCount(); colIndex++) {
+                    
+                    Collection<OnmsCategory> rowCategories = sView.getCategoriesForRow(rowIndex);
+                    Collection<OnmsCategory> columnCategories = sView.getCategoriesForColumn(colIndex);
+                    
+                    progressMonitor.beginNextPhase(String.format("Finding nodes in %s intersect %s", toString(rowCategories), toString(columnCategories)));
+
+                    Collection<OnmsNode> cellNodes = m_nodeDao.findAllByCategoryLists(rowCategories, columnCategories);
+
+                    cellStatus[rowIndex][colIndex] = new AggregateStatus(cellNodes);
+
+                }
+
+            }
+            return cellStatus;
+        }
+
+
+        public int getPhaseCount(SurveillanceView sView) {
+            return sView.getRowCount()*sView.getColumnCount();
+        }
+
+    }
+
+    class VeryLowMemCellStatusStrategy implements CellStatusStrategy {
+        
+        private String toString(Collection<OnmsCategory> categories) {
+            StringBuilder buf = new StringBuilder();
+            
+            buf.append("{");
+            
+            boolean first = true;
+            for(OnmsCategory cat : categories) {
+                if (first) {
+                    first = !first;
+                } else {
+                    buf.append(", ");
+                }
+                buf.append(cat.getName());
+            }
+            
+            buf.append("}");
+            
+            return buf.toString();
+        }
+        
+
+        public SurveillanceStatus[][] calculateCellStatus(SurveillanceView sView, ProgressMonitor progressMonitor) {
+
+            SurveillanceStatus[][] cellStatus = new SurveillanceStatus[sView.getRowCount()][sView.getColumnCount()];
+
+            for(int rowIndex = 0; rowIndex < sView.getRowCount(); rowIndex++) {
+
+                for(int colIndex = 0; colIndex < sView.getColumnCount(); colIndex++) {
+                    
+                    Collection<OnmsCategory> rowCategories = sView.getCategoriesForRow(rowIndex);
+                    Collection<OnmsCategory> columnCategories = sView.getCategoriesForColumn(colIndex);
+                    
+                    progressMonitor.beginNextPhase(String.format("Finding status for nodes in %s intersect %s", toString(rowCategories), toString(columnCategories)));
+                    
+                    SurveillanceStatus status = m_nodeDao.findSurveillanceStatusByCategoryLists(rowCategories, columnCategories);
+                    
+                    cellStatus[rowIndex][colIndex] = status;
+
+                }
+
+            }
+            return cellStatus;
+        }
+
+
+        public int getPhaseCount(SurveillanceView sView) {
+            return sView.getRowCount()*sView.getColumnCount();
         }
 
     }
@@ -217,12 +335,14 @@ public class DefaultSurveillanceService implements SurveillanceService {
      */
     public SimpleWebTable createSurveillanceTable(String surveillanceViewName, ProgressMonitor progressMonitor) {
         
+        CellStatusStrategy strategy = getCellStatusStrategy();
+
         surveillanceViewName = (surveillanceViewName == null ? m_surveillanceConfigDao.getDefaultView().getName() : surveillanceViewName);
         View view = m_surveillanceConfigDao.getView(surveillanceViewName);
 
         SurveillanceView sView = new SurveillanceView(surveillanceViewName, m_surveillanceConfigDao, m_categoryDao);
 
-        progressMonitor.setPhaseCount(sView.getRowCount()+sView.getColumnCount()+2);
+        progressMonitor.setPhaseCount(strategy.getPhaseCount(sView) + 1);
 
         /*
          * Initialize a status table 
@@ -241,9 +361,8 @@ public class DefaultSurveillanceService implements SurveillanceService {
 
         // build the set of nodes for each cell
 
-        CellStatusStrategy strategy = new CellStatusStrategy();
 
-        AggregateStatus[][] cellStatus = strategy.calculateCellStatus(sView, progressMonitor);
+        SurveillanceStatus[][] cellStatus = strategy.calculateCellStatus(sView, progressMonitor);
 
         progressMonitor.beginNextPhase("Calculating Status Values");
 
@@ -256,11 +375,12 @@ public class DefaultSurveillanceService implements SurveillanceService {
 
             for(int colIndex = 0; colIndex < sView.getColumnCount(); colIndex++) {
 
-                AggregateStatus aggStatus = cellStatus[rowIndex][colIndex];
+                SurveillanceStatus survStatus = cellStatus[rowIndex][colIndex];
 
-                SimpleWebTable.Cell cell = webTable.addCell(aggStatus.getDownEntityCount()+" of "+aggStatus.getTotalEntityCount(), aggStatus.getStatus());
+                System.err.println(String.format("Text: %s, Style %s", survStatus.getDownEntityCount()+" of "+survStatus.getTotalEntityCount(), survStatus.getStatus()));
+                SimpleWebTable.Cell cell = webTable.addCell(survStatus.getDownEntityCount()+" of "+survStatus.getTotalEntityCount(), survStatus.getStatus());
 
-                if (aggStatus.getDownEntityCount() > 0) {
+                if (survStatus.getDownEntityCount() > 0) {
                     cell.setLink(createNodePageUrl(sView, colIndex, rowIndex));
                 }
             }
@@ -269,6 +389,10 @@ public class DefaultSurveillanceService implements SurveillanceService {
         progressMonitor.finished(webTable);
 
         return webTable;
+    }
+
+    private CellStatusStrategy getCellStatusStrategy() {
+        return new VeryLowMemCellStatusStrategy();
     }
 
     private String computeReportCategoryLink(String reportCategory) {
