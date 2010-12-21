@@ -451,4 +451,8 @@ public class PollableService extends PollableElement implements ReadyRunnable, M
     public void refreshThresholds() {
         m_pollConfig.refreshThresholds();
     }
+
+    public String getSvcUrl() {
+        return null;
+    }
 }

@@ -94,7 +94,7 @@ import org.opennms.netmgt.utils.RelaxedX509TrustManager;
  */
 
 @Distributable
-final public class NrpeMonitor extends IPv4Monitor {
+final public class NrpeMonitor extends AbstractServiceMonitor {
 
     /**
      * Default port.

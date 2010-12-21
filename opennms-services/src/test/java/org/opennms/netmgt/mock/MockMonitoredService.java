@@ -76,5 +76,8 @@ public class MockMonitoredService implements MonitoredService {
     public InetAddress getAddress() {
         return m_inetAddr;
     }
-    
+
+    public String getSvcUrl() {
+        return null;
+    }
 }

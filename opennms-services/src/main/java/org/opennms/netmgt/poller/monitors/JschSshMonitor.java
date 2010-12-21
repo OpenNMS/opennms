@@ -58,7 +58,7 @@ import org.opennms.netmgt.poller.MonitoredService;
  */
 
 @Distributable
-final public class JschSshMonitor extends IPv4Monitor {
+final public class JschSshMonitor extends AbstractServiceMonitor {
     private SshMonitor m_monitor;
     
     /**

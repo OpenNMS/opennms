@@ -11,7 +11,7 @@ import org.opennms.netmgt.model.PollStatus;
 import org.opennms.netmgt.poller.Distributable;
 import org.opennms.netmgt.poller.DistributionContext;
 import org.opennms.netmgt.poller.MonitoredService;
-import org.opennms.netmgt.poller.monitors.IPv4Monitor;
+import org.opennms.netmgt.poller.monitors.AbstractServiceMonitor;
 import org.opennms.sms.ping.PingConstants;
 import org.opennms.sms.ping.SmsPinger;
 import org.springframework.context.support.ClassPathXmlApplicationContext;
@@ -23,7 +23,7 @@ import org.springframework.context.support.ClassPathXmlApplicationContext;
  * @version $Id: $
  */
 @Distributable(DistributionContext.DAEMON)
-final public class SMSPingMonitor extends IPv4Monitor {
+final public class SMSPingMonitor extends AbstractServiceMonitor {
 	Phonebook phonebook = new PropertyPhonebook();
 
 	/** {@inheritDoc} */

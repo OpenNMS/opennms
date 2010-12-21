@@ -119,7 +119,7 @@ import org.opennms.netmgt.poller.MonitoredService;
  * @version $Id: $
  */
 @Distributable
-public class PageSequenceMonitor extends IPv4Monitor {
+public class PageSequenceMonitor extends AbstractServiceMonitor {
     // Make sure that the {@link EmptyKeyRelaxedTrustSSLContext} algorithm
     // is available to JSSE
     static {

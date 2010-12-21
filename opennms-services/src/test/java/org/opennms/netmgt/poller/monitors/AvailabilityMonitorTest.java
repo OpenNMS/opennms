@@ -109,6 +109,9 @@ public class AvailabilityMonitorTest extends TestCase {
             public String getSvcName() {
                 return "ICMP";
             }
+            public String getSvcUrl() {
+                return null;
+            }
             
         };
         PollStatus status = sm.poll(svc, parameters);

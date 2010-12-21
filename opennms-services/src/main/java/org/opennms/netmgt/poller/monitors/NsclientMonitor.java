@@ -62,7 +62,7 @@ import org.opennms.netmgt.poller.nsclient.NsclientPacket;
  */
 
 @Distributable
-public class NsclientMonitor extends IPv4Monitor {
+public class NsclientMonitor extends AbstractServiceMonitor {
     /**
      * Default retries.
      */
