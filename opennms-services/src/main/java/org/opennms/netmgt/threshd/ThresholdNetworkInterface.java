@@ -32,6 +32,8 @@
 
 package org.opennms.netmgt.threshd;
 
+import java.net.InetAddress;
+
 import org.opennms.netmgt.poller.NetworkInterface;
 
 /**
@@ -42,7 +44,7 @@ import org.opennms.netmgt.poller.NetworkInterface;
  * @author ranger
  * @version $Id: $
  */
-public interface ThresholdNetworkInterface extends NetworkInterface {
+public interface ThresholdNetworkInterface extends NetworkInterface<InetAddress> {
     /**
      * <p>getNodeId</p>
      *

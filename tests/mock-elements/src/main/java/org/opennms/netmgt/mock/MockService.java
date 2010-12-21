@@ -39,7 +39,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 import org.opennms.netmgt.model.PollStatus;
-import org.opennms.netmgt.poller.IPv4NetworkInterface;
+import org.opennms.netmgt.poller.InetNetworkInterface;
 import org.opennms.netmgt.poller.MonitoredService;
 import org.opennms.netmgt.poller.NetworkInterface;
 import org.opennms.netmgt.xml.event.Event;
@@ -95,7 +95,7 @@ public class MockService extends MockElement implements MonitoredService {
 
     private List<PollAnticipator> m_triggers = new ArrayList<PollAnticipator>();
 
-    private NetworkInterface m_netAddr;
+    private NetworkInterface<InetAddress> m_netAddr;
 
    /**
     * <p>Constructor for MockService.</p>
@@ -369,9 +369,9 @@ public class MockService extends MockElement implements MonitoredService {
      *
      * @return a {@link org.opennms.netmgt.poller.NetworkInterface} object.
      */
-    public NetworkInterface getNetInterface() {
+    public NetworkInterface<InetAddress> getNetInterface() {
         if (m_netAddr == null)
-            m_netAddr = new IPv4NetworkInterface(getAddress());
+            m_netAddr = new InetNetworkInterface(getAddress());
         
         return m_netAddr;
     }

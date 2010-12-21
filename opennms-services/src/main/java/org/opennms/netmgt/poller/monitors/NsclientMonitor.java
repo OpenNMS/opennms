@@ -97,13 +97,13 @@ public class NsclientMonitor extends IPv4Monitor {
         // Used to track how long the request took.
         Double responseTime = null;
 
-        NetworkInterface iface = svc.getNetInterface();
+        NetworkInterface<InetAddress> iface = svc.getNetInterface();
         ThreadCategory log = ThreadCategory.getInstance(getClass());
 
         // Validate the interface type.
-        if (iface.getType() != NetworkInterface.TYPE_IPV4) {
+        if (iface.getType() != NetworkInterface.TYPE_INET) {
             throw new NetworkInterfaceNotSupportedException(
-                                                            "Unsupported interface type, only TYPE_IPV4 currently supported");
+                                                            "Unsupported interface type, only TYPE_INET currently supported");
         }
 
         // NSClient related parameters.

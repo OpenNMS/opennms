@@ -42,6 +42,7 @@
 package org.opennms.netmgt.threshd;
 
 import java.io.File;
+import java.net.InetAddress;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.Date;
@@ -93,7 +94,7 @@ public final class SnmpThresholder implements ServiceThresholder {
     
     private ThresholdsDao m_thresholdsDao;
     
-    private Map<NetworkInterface, SnmpThresholdNetworkInterface> m_snmpThresholdNetworkInterfaces;
+    private Map<NetworkInterface<InetAddress>, SnmpThresholdNetworkInterface> m_snmpThresholdNetworkInterfaces;
 
     private IfInfoGetter m_ifInfoGetter;
 
@@ -128,7 +129,7 @@ public final class SnmpThresholder implements ServiceThresholder {
        
         log().debug("initialize: successfully instantiated RRD subsystem");
        
-        m_snmpThresholdNetworkInterfaces = Collections.synchronizedMap(new HashMap<NetworkInterface, SnmpThresholdNetworkInterface>()); 
+        m_snmpThresholdNetworkInterfaces = Collections.synchronizedMap(new HashMap<NetworkInterface<InetAddress>, SnmpThresholdNetworkInterface>()); 
     }
 
     private void setupIfInfoGetter() {
@@ -178,7 +179,7 @@ public final class SnmpThresholder implements ServiceThresholder {
         SnmpThresholdConfiguration config = snmpThresholdNetworkInterface.getThresholdConfiguration();
 
         if (!snmpThresholdNetworkInterface.isIPV4()) {
-            throw new RuntimeException("Unsupported interface type, only TYPE_IPV4 currently supported");
+            throw new RuntimeException("Unsupported interface type, only TYPE_INET currently supported");
         }
 
         if (log().isDebugEnabled()) {

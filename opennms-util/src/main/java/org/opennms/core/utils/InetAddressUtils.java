@@ -318,7 +318,7 @@ abstract public class InetAddressUtils {
     }
 
     public static InetAddress convertBigIntegerIntoInetAddress(BigInteger i) throws UnknownHostException {
-        if (i.compareTo(new BigInteger("0")) < 0) {
+        if (i.compareTo(BigInteger.ZERO) < 0) {
             throw new IllegalArgumentException("BigInteger is negative, cannot convert into an IP address: " + i.toString());
         } else {
             // Note: This function will return the two's complement byte array so there will always

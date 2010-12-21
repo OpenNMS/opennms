@@ -75,7 +75,7 @@ public abstract class JMXMonitor extends IPv4Monitor {
     /** {@inheritDoc} */
     public PollStatus poll(MonitoredService svc, Map<String, Object> map) {
 
-        NetworkInterface iface = svc.getNetInterface();
+        NetworkInterface<InetAddress> iface = svc.getNetInterface();
 
         PollStatus     serviceStatus = PollStatus.unavailable();
         String         dsName        = null;

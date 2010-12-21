@@ -117,7 +117,7 @@ final public class OmsaStorageMonitor extends SnmpMonitorStrategy {
 
     /** {@inheritDoc} */
     public PollStatus poll(MonitoredService svc, Map<String, Object> parameters) {
-        NetworkInterface iface = svc.getNetInterface();
+        NetworkInterface<InetAddress> iface = svc.getNetInterface();
         
         PollStatus status = PollStatus.available();
         InetAddress ipaddr = (InetAddress) iface.getAddress();
@@ -200,7 +200,7 @@ final public class OmsaStorageMonitor extends SnmpMonitorStrategy {
         return status;
     }
 
-	private SnmpAgentConfig configureAgent(Map<String, Object> parameters, NetworkInterface iface, InetAddress ipaddr) throws RuntimeException {
+	private SnmpAgentConfig configureAgent(Map<String, Object> parameters, NetworkInterface<InetAddress> iface, InetAddress ipaddr) throws RuntimeException {
         // Retrieve this interface's SNMP peer object
         //
         SnmpAgentConfig agentConfig = SnmpPeerFactory.getInstance().getAgentConfig(ipaddr);

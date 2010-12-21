@@ -62,7 +62,7 @@ import org.opennms.netmgt.mock.MockEventUtil;
 import org.opennms.netmgt.mock.MockNetwork;
 import org.opennms.netmgt.model.events.EventBuilder;
 import org.opennms.netmgt.model.events.EventProxy;
-import org.opennms.netmgt.poller.IPv4NetworkInterface;
+import org.opennms.netmgt.poller.InetNetworkInterface;
 import org.opennms.netmgt.rrd.RrdException;
 import org.opennms.netmgt.rrd.RrdStrategy;
 import org.opennms.netmgt.rrd.RrdUtils;
@@ -237,7 +237,7 @@ public class ThresholderTestCase extends TestCase {
         m_easyMockUtils.verifyAll();
     }
 
-    public static class ThresholdNetworkInterfaceImpl extends IPv4NetworkInterface implements  ThresholdNetworkInterface {
+    public static class ThresholdNetworkInterfaceImpl extends InetNetworkInterface implements  ThresholdNetworkInterface {
         /**
          * Generated serial version ID.
          */

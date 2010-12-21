@@ -52,7 +52,7 @@ import org.opennms.netmgt.config.poller.Package;
 import org.opennms.netmgt.config.poller.Service;
 import org.opennms.netmgt.model.PollStatus;
 import org.opennms.netmgt.model.events.EventListener;
-import org.opennms.netmgt.poller.IPv4NetworkInterface;
+import org.opennms.netmgt.poller.InetNetworkInterface;
 import org.opennms.netmgt.poller.IfKey;
 import org.opennms.netmgt.poller.MonitoredService;
 import org.opennms.netmgt.poller.QueryManager;
@@ -129,7 +129,7 @@ public class MockNetworkTest extends TestCase {
         }
     }
 
-    static class MockNetworkInterface extends IPv4NetworkInterface {
+    static class MockNetworkInterface extends InetNetworkInterface {
         private static final long serialVersionUID = 1L;
 
         public MockNetworkInterface(String addr) throws UnknownHostException {

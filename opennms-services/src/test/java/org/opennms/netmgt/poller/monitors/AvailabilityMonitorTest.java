@@ -84,9 +84,9 @@ public class AvailabilityMonitorTest extends TestCase {
             public String getIpAddr() {
                 return getAddress().getHostAddress();
             }
-            public NetworkInterface getNetInterface() {
-                return new NetworkInterface() {
-                    public Object getAddress() {
+            public NetworkInterface<InetAddress> getNetInterface() {
+                return new NetworkInterface<InetAddress>() {
+                    public InetAddress getAddress() {
                         return getNetworkAddress();
                     }
                     public Object getAttribute(String property) {

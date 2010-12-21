@@ -181,8 +181,8 @@ final class LatencyThresholder implements ServiceThresholder {
     public void initialize(ThresholdNetworkInterface iface, Map parameters) {
         // Get interface address from NetworkInterface
         //
-        if (iface.getType() != NetworkInterface.TYPE_IPV4)
-            throw new RuntimeException("Unsupported interface type, only TYPE_IPV4 currently supported");
+        if (iface.getType() != NetworkInterface.TYPE_INET)
+            throw new RuntimeException("Unsupported interface type, only TYPE_INET currently supported");
         InetAddress ipAddr = (InetAddress) iface.getAddress();
         String groupName = ParameterMap.getKeyedString(parameters, "thresholding-group", "default");
 

@@ -126,13 +126,7 @@ abstract public class IPv4Monitor implements ServiceMonitor {
      *                interface from being monitored.
      * @param svc a {@link org.opennms.netmgt.poller.MonitoredService} object.
      */
-    public void initialize(MonitoredService svc) {
-        NetworkInterface iface = svc.getNetInterface();
-
-        if (!(iface.getAddress() instanceof InetAddress))
-            throw new NetworkInterfaceNotSupportedException("Address type not supported");
-
-    }
+    public void initialize(MonitoredService svc) {}
 
     /**
      * {@inheritDoc}

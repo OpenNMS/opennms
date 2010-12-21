@@ -55,7 +55,7 @@ import org.opennms.netmgt.xml.event.Value;
  */
 public class LatencyInterface {
 
-	private NetworkInterface m_iface;
+	private NetworkInterface<InetAddress> m_iface;
 	private String m_serviceName;
 
 	/**
@@ -64,7 +64,7 @@ public class LatencyInterface {
 	 * @param iface a {@link org.opennms.netmgt.poller.NetworkInterface} object.
 	 * @param serviceName a {@link java.lang.String} object.
 	 */
-	public LatencyInterface(NetworkInterface iface, String serviceName) {
+	public LatencyInterface(NetworkInterface<InetAddress> iface, String serviceName) {
 		m_iface = iface;
 		m_serviceName = serviceName;
 	}
@@ -74,12 +74,12 @@ public class LatencyInterface {
 	 *
 	 * @return a {@link org.opennms.netmgt.poller.NetworkInterface} object.
 	 */
-	public NetworkInterface getNetworkInterface() {
+	public NetworkInterface<InetAddress> getNetworkInterface() {
 		return m_iface;
 	}
 
 	Map getThresholdMap() {
-	    NetworkInterface iface = getNetworkInterface();
+	    NetworkInterface<InetAddress> iface = getNetworkInterface();
 		// ThresholdEntity map attributes
 	    //
 	    Map thresholdMap = (Map) iface.getAttribute(LatencyThresholder.THRESHOLD_MAP_KEY);
@@ -87,10 +87,7 @@ public class LatencyInterface {
 	}
 
 	InetAddress getInetAddress() {
-	    NetworkInterface iface = getNetworkInterface();
-	
-		InetAddress ipAddr = (InetAddress) iface.getAddress();
-	    return ipAddr;
+	    return getNetworkInterface().getAddress();
 	}
 
 	/**
@@ -104,7 +101,7 @@ public class LatencyInterface {
 	}
 
 	int getNodeId() throws ThresholdingException {
-	    NetworkInterface iface = getNetworkInterface();
+	    NetworkInterface<InetAddress> iface = getNetworkInterface();
 	
 		int nodeId = -1;
 	    Integer tmp = (Integer) iface.getAttribute(LatencyThresholder.NODE_ID_KEY);

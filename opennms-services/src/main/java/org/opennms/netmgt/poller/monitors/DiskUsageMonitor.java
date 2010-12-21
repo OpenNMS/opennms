@@ -159,7 +159,7 @@ final public class DiskUsageMonitor extends SnmpMonitorStrategy {
     public PollStatus poll(MonitoredService svc, Map<String, Object> parameters) {
         int matchType = MATCH_TYPE_EXACT;
         
-        NetworkInterface iface = svc.getNetInterface();
+        NetworkInterface<InetAddress> iface = svc.getNetInterface();
 
         PollStatus status = PollStatus.available();
         InetAddress ipaddr = (InetAddress) iface.getAddress();

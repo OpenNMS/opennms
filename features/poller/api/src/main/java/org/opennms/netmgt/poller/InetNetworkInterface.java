@@ -63,7 +63,7 @@ import java.util.Map;
  * @author <A HREF="mailto:weave@oculan.com">Weave </A>
  * @author <A HREF="http://www.opennms.org/">OpenNMS </A>
  */
-public class IPv4NetworkInterface implements NetworkInterface, Serializable {
+public class InetNetworkInterface implements NetworkInterface<InetAddress>, Serializable {
     private static final long serialVersionUID = 1L;
 
     /**
@@ -81,7 +81,7 @@ public class IPv4NetworkInterface implements NetworkInterface, Serializable {
      *
      * @param address a {@link java.net.InetAddress} object.
      */
-    public IPv4NetworkInterface(InetAddress address) {
+    public InetNetworkInterface(InetAddress address) {
         m_address = address;
     }
 
@@ -93,7 +93,7 @@ public class IPv4NetworkInterface implements NetworkInterface, Serializable {
      * @return a int.
      */
     public int getType() {
-        return TYPE_IPV4;
+        return TYPE_INET;
     }
 
     /**
@@ -105,7 +105,7 @@ public class IPv4NetworkInterface implements NetworkInterface, Serializable {
      *
      * @return a {@link java.lang.Object} object.
      */
-    public Object getAddress() {
+    public InetAddress getAddress() {
         return m_address;
     }
     

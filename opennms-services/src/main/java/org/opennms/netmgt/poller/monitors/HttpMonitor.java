@@ -131,10 +131,10 @@ public class HttpMonitor extends IPv4Monitor {
      * SERVICE_AVAILABLE and return.
      */
     public PollStatus poll(MonitoredService svc, Map<String, Object> parameters) {
-        NetworkInterface iface = svc.getNetInterface();
+        NetworkInterface<InetAddress> iface = svc.getNetInterface();
 
-        if (iface.getType() != NetworkInterface.TYPE_IPV4) {
-            throw new NetworkInterfaceNotSupportedException("Unsupported interface type, only TYPE_IPV4 currently supported");
+        if (iface.getType() != NetworkInterface.TYPE_INET) {
+            throw new NetworkInterfaceNotSupportedException("Unsupported interface type, only TYPE_INET currently supported");
         }
 
         // Cycle through the port list
@@ -263,7 +263,7 @@ public class HttpMonitor extends IPv4Monitor {
         return ParameterMap.getKeyedString(parameters, key, null);
     }
     
-    private String determineVirtualHost(NetworkInterface iface, final Map<String, Object> parameters) {
+    private String determineVirtualHost(NetworkInterface<InetAddress> iface, final Map<String, Object> parameters) {
         boolean res = ParameterMap.getKeyedBoolean(parameters, PARAMETER_RESOLVE_IP, false);
         String virtualHost = ParameterMap.getKeyedString(parameters, PARAMETER_HOST_NAME, null);
 
@@ -318,7 +318,7 @@ public class HttpMonitor extends IPv4Monitor {
 
     final class HttpMonitorClient {
         private double m_responseTime;
-        NetworkInterface m_iface;
+        NetworkInterface<InetAddress> m_iface;
         Map<String, Object> m_parameters;
         String m_httpCmd;
         Socket m_httpSocket;
@@ -333,7 +333,7 @@ public class HttpMonitor extends IPv4Monitor {
         private String m_responseText;
         private boolean m_responseTextFound = false;
         
-        HttpMonitorClient(NetworkInterface iface, TreeMap<String, Object>parameters) {
+        HttpMonitorClient(NetworkInterface<InetAddress> iface, TreeMap<String, Object>parameters) {
             m_iface = iface;
             m_parameters = parameters;
             buildCommand();

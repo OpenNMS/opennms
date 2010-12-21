@@ -146,7 +146,7 @@ public class XmpMonitor extends IPv4Monitor {
     /** {@inheritDoc} */
     @Override
     public PollStatus poll(MonitoredService svc, Map parameters) {
-        NetworkInterface iface = svc.getNetInterface();
+        NetworkInterface<InetAddress> iface = svc.getNetInterface();
         
         PollStatus status = PollStatus.unavailable();
         InetAddress ipaddr = (InetAddress) iface.getAddress();
