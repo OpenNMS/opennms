@@ -1,7 +1,7 @@
 <assembly>
   <id>remote-poller</id>
   <formats>
-    <format>jar</format>
+    <format>tar.gz</format>
   </formats>
   <includeBaseDirectory>false</includeBaseDirectory>
   <fileSets>
