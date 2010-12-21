@@ -43,6 +43,7 @@
                   <artifactId>org.opennms.assemblies.remote-poller-standalone</artifactId>
                   <version>${project.version}</version>
                   <classifier>remote-poller</classifier>
+                  <type>tar.gz</type>
                 </artifactItem>
               </artifactItems>
             </configuration>
