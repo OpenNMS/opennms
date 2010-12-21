@@ -44,7 +44,7 @@ package org.opennms.netmgt.poller;
  * <P>
  * In addition to providing typing and address information, the interface allows
  * for the monitor to associate key-value pairs with an interface. This can be
- * used to save state information between the various invocations if neccessary.
+ * used to save state information between the various invocations if necessary.
  * The attributes may be shared with other monitors concurrently, so a monitor
  * must be careful to choose unique keys to prevent namespace collisions.
  * </P>
@@ -55,7 +55,7 @@ package org.opennms.netmgt.poller;
  * @author <A HREF="http://www.opennms.org/">OpenNMS </A>
  * @version $Id: $
  */
-public interface NetworkInterface {
+public interface NetworkInterface<T> {
     /**
      * Defines an unknown interface that has no associated address information.
      */
@@ -67,7 +67,7 @@ public interface NetworkInterface {
      * InetAddress object.
      * </P>
      */
-    public static final int TYPE_IPV4 = 1; // InetAddress object returned
+    public static final int TYPE_INET = 1; // InetAddress object returned
 
     /**
      * <P>
@@ -87,7 +87,7 @@ public interface NetworkInterface {
      *
      * @return a {@link java.lang.Object} object.
      */
-    public Object getAddress();
+    public T getAddress();
 
     /**
      * <P>

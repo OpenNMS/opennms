@@ -170,7 +170,7 @@ final public class OpenManageChassisMonitor extends SnmpMonitorStrategy {
      *                Thrown for any uncrecoverable errors.
      */
     public PollStatus poll(MonitoredService svc, Map<String,Object> parameters) {
-        NetworkInterface iface = svc.getNetInterface();
+        NetworkInterface<InetAddress> iface = svc.getNetInterface();
 
         String returnValue = "";
 

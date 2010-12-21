@@ -91,8 +91,8 @@ public class WebSecurityUtils {
 
         Matcher scriptMatcher = scriptPattern.matcher(raw);
         String next = scriptMatcher.replaceAll("&#x73;cript");
-        if (! allowHTML) {
-            next = next.replaceAll("<", "&lt;").replaceAll(">", "&gt;");
+        if (!allowHTML) {
+            next = next.replaceAll("<", "&lt;").replaceAll(">", "&gt;").replaceAll("\"", "&quot;");
         }
         return next;
     }

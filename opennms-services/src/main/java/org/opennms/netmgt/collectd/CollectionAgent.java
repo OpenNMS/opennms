@@ -48,7 +48,7 @@ import org.opennms.netmgt.snmp.SnmpAgentConfig;
  * @author <a href="mailto:brozow@opennms.org">Mathew Brozowski</a>
  * @version $Id: $
  */
-public interface CollectionAgent extends NetworkInterface,StorageStrategyService {
+public interface CollectionAgent extends NetworkInterface<InetAddress>,StorageStrategyService {
 
     /**
      * <p>getHostAddress</p>

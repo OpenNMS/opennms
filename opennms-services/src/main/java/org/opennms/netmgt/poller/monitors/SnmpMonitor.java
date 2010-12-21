@@ -170,7 +170,7 @@ public class SnmpMonitor extends SnmpMonitorStrategy {
      *                Thrown for any unrecoverable errors.
      */
     public PollStatus poll(MonitoredService svc, Map<String, Object> parameters) {
-        NetworkInterface iface = svc.getNetInterface();
+        NetworkInterface<InetAddress> iface = svc.getNetInterface();
 
         PollStatus status = PollStatus.unavailable();
         InetAddress ipaddr = (InetAddress) iface.getAddress();

@@ -49,7 +49,7 @@
         java.util.LinkedHashMap,
         java.util.Map,
         org.opennms.web.MissingParameterException,
-        org.opennms.web.Util,
+        org.opennms.web.api.Util,
         org.opennms.netmgt.model.OnmsResource,
         org.opennms.web.svclayer.ResourceService,
         org.springframework.web.context.WebApplicationContext,

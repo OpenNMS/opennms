@@ -60,19 +60,27 @@ import org.springframework.web.servlet.mvc.AbstractController;
  * @since 1.8.1
  */
 public class FormProcMainController extends AbstractController implements InitializingBean {
-    
+
+    public enum Actions {
+        View,
+        Customize,
+        CreateFrom,
+        Delete,
+        Create
+    }
+
     private KSC_PerformanceReportFactory m_kscReportFactory;
 
     /** {@inheritDoc} */
     @Override
     protected ModelAndView handleRequestInternal(HttpServletRequest request, HttpServletResponse response) throws Exception {
-        String action = WebSecurityUtils.sanitizeString(request.getParameter("report_action"));
+        String action = request.getParameter("report_action");
 
         if (action == null) {
             throw new MissingParameterException("report_action");
         }
 
-        if (action.equals("View")) {
+        if (Actions.View.toString().equals(action)) {
             ModelAndView modelAndView = new ModelAndView("redirect:/KSC/customView.htm");
             modelAndView.addObject("report", getReportIndex(request));
             modelAndView.addObject("type", "custom");
@@ -82,16 +90,16 @@ public class FormProcMainController extends AbstractController implements Initia
             // Fetch the KscReportEditor or create one if there isn't one already
             KscReportEditor editor = KscReportEditor.getFromSession(request.getSession(), false);
 
-            if (action.equals("Customize")) {
+            if (Actions.Customize.toString().equals(action)) {
                 editor.loadWorkingReport(getKscReportFactory(), getReportIndex(request));
                 return new ModelAndView("redirect:/KSC/customReport.htm");
-            } else if (action.equals("CreateFrom")) {
+            } else if (Actions.CreateFrom.toString().equals(action)) {
                 editor.loadWorkingReportDuplicate(getKscReportFactory(), getReportIndex(request));
                 return new ModelAndView("redirect:/KSC/customReport.htm");
-            } else if (action.equals("Delete")) {
+            } else if (Actions.Delete.toString().equals(action)) {
                 getKscReportFactory().deleteReportAndSave(getReportIndex(request)); 
                 return new ModelAndView("redirect:/KSC/index.htm");
-            } else if (action.equals("Create")) {
+            } else if (Actions.Create.toString().equals(action)) {
                 editor.loadNewWorkingReport();
                return new ModelAndView("redirect:/KSC/customReport.htm");
             }

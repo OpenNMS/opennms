@@ -76,7 +76,7 @@
 
 <p>
   Could not send an event to the OpenNMS event daemon due to this
-  error: <%= org.opennms.web.Util.htmlify(e.getMessage()) %>
+  error: <%= org.opennms.web.api.Util.htmlify(e.getMessage()) %>
 </p>
 
 <p>

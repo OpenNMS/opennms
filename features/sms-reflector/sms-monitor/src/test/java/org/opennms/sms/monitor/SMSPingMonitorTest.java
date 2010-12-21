@@ -14,7 +14,7 @@ import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.opennms.netmgt.model.PollStatus;
-import org.opennms.netmgt.poller.IPv4NetworkInterface;
+import org.opennms.netmgt.poller.InetNetworkInterface;
 import org.opennms.netmgt.poller.MonitoredService;
 import org.opennms.netmgt.poller.NetworkInterface;
 import org.opennms.sms.reflector.smsservice.SmsService;
@@ -56,8 +56,8 @@ public class SMSPingMonitorTest {
 				return "127.0.0.1";
 			}
 
-			public NetworkInterface getNetInterface() {
-				return new IPv4NetworkInterface(getAddress());
+			public NetworkInterface<InetAddress> getNetInterface() {
+				return new InetNetworkInterface(getAddress());
 			}
 
 			public int getNodeId() {

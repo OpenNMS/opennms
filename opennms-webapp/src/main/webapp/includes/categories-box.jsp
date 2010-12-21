@@ -52,7 +52,7 @@
 <%@page language="java" contentType="text/html" session="true"
 	import="org.opennms.web.category.Category,
 		org.opennms.web.category.CategoryList,
-		org.opennms.web.Util,
+		org.opennms.web.api.Util,
 		java.util.Date,
 		java.util.Iterator,
 		java.util.List,

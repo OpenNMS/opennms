@@ -59,7 +59,7 @@ public class SyntaxToEvent {
      * @param typeId a int.
      * @param type a {@link java.lang.String} object.
      */
-    public SyntaxToEvent(int typeId, String type) {
+    private SyntaxToEvent(int typeId, String type) {
         m_typeId = typeId;
         m_type = type;
     }
@@ -69,7 +69,7 @@ public class SyntaxToEvent {
      *
      * @return a int.
      */
-    public int getTypeId() {
+    private int getTypeId() {
         return m_typeId;
     }
 
@@ -78,7 +78,7 @@ public class SyntaxToEvent {
      *
      * @return a {@link java.lang.String} object.
      */
-    public String getType() {
+    private String getType() {
         return m_type;
     }
 

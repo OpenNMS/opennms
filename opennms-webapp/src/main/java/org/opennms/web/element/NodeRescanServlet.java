@@ -43,8 +43,8 @@ import org.opennms.netmgt.EventConstants;
 import org.opennms.netmgt.model.events.EventProxy;
 import org.opennms.netmgt.xml.event.Event;
 import org.opennms.web.MissingParameterException;
-import org.opennms.web.Util;
 import org.opennms.web.WebSecurityUtils;
+import org.opennms.web.api.Util;
 
 /**
  * <p>NodeRescanServlet class.</p>

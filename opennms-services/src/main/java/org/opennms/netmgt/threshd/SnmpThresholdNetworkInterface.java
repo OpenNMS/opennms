@@ -124,7 +124,7 @@ public class SnmpThresholdNetworkInterface {
      * @return a boolean.
      */
     public boolean isIPV4() {
-        return getNetworkInterface().getType() == NetworkInterface.TYPE_IPV4;
+        return getNetworkInterface().getType() == NetworkInterface.TYPE_INET;
     }
 
     /**

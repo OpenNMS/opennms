@@ -71,6 +71,12 @@ public class FormProcViewController extends AbstractController implements Initia
         graphtype
     }
 
+    public enum Actions {
+        Customize,
+        Update,
+        Exit
+    }
+
     private KSC_PerformanceReportFactory m_kscReportFactory;
     private KscReportService m_kscReportService;
 
@@ -91,7 +97,7 @@ public class FormProcViewController extends AbstractController implements Initia
             throw new MissingParameterException ("type", new String[] {"action", "report", "type"});
         }
 
-        if (report_action.equals("Customize") || report_action.equals("Update")) {
+        if (Actions.Customize.toString().equals(report_action) || Actions.Update.toString().equals(report_action)) {
             String r_index = WebSecurityUtils.sanitizeString(request.getParameter(Parameters.report.toString()));
             if (r_index != null && !r_index.equals("null")) {
                report_index = WebSecurityUtils.safeParseInt(r_index); 
@@ -106,7 +112,7 @@ public class FormProcViewController extends AbstractController implements Initia
             if (override_graphtype == null || override_graphtype.equals("null")) {
                 override_graphtype = "none";
             }
-            if (report_action.equals("Customize")) {
+            if (Actions.Customize.toString().equals(report_action)) {
              // Fetch the KscReportEditor or create one if there isn't one already
                 KscReportEditor editor = KscReportEditor.getFromSession(request.getSession(), false);
                 
@@ -131,12 +137,12 @@ public class FormProcViewController extends AbstractController implements Initia
                 }
             }
         } else { 
-            if (!report_action.equals("Exit")) {
+            if (!Actions.Exit.toString().equals(report_action)) {
                 throw new ServletException ("Invalid Parameter contents for report_action");
             }
         }
         
-        if (report_action.equals("Update")) {
+        if (Actions.Update.toString().equals(report_action)) {
             ModelAndView modelAndView = new ModelAndView("redirect:/KSC/customView.htm");
             modelAndView.addObject("type", report_type);
 
@@ -154,12 +160,12 @@ public class FormProcViewController extends AbstractController implements Initia
             }
 
             return modelAndView;
-        } else if (report_action.equals("Customize")) { 
+        } else if (Actions.Customize.toString().equals(report_action)) { 
             return new ModelAndView("redirect:/KSC/customReport.htm");
-        } else if (report_action.equals("Exit")) {
+        } else if (Actions.Exit.toString().equals(report_action)) {
             return new ModelAndView("redirect:/KSC/index.htm");
         } else {
-            throw new IllegalArgumentException("parameter action of '" + report_action + "' is not supported.  Must be one of: Update, Customize, or Exit");
+            throw new IllegalArgumentException("Parameter action of '" + report_action + "' is not supported.  Must be one of: Update, Customize, or Exit");
         }
     }
 

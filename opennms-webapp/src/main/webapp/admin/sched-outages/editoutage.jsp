@@ -10,7 +10,7 @@
         org.opennms.netmgt.EventConstants,
         org.opennms.netmgt.xml.event.Event,
         org.opennms.netmgt.utils.*,
-        org.opennms.web.Util,
+        org.opennms.web.api.Util,
         org.exolab.castor.xml.ValidationException,
         java.net.*,
         java.io.*,

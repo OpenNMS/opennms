@@ -209,16 +209,16 @@
       <ul>
         <li><a href="<%=this.makeLink( parms, new ArrayList<Filter>())%>" title="Remove all search constraints" >View all events</a></li>
         <li><a href="event/advsearch.jsp" title="More advanced searching and sorting options">Advanced Search</a></li>
-        <li><a href="<%=org.opennms.web.Util.calculateUrlBase(req)%>/event/severity.jsp">Severity Legend</a></li>
+        <li><a href="<%=org.opennms.web.api.Util.calculateUrlBase(req)%>/event/severity.jsp">Severity Legend</a></li>
 
         <% if( req.isUserInRole( Authentication.ADMIN_ROLE ) || !req.isUserInRole( Authentication.READONLY_ROLE ) ) { %>
           <% if ( eventCount > 0 ) { %>
             <li>
               <!-- hidden form for acknowledging the result set -->
               <form style="display:inline" action="event/acknowledgeByFilter" method="post" name="acknowledge_by_filter_form">
-                <input type="hidden" name="redirectParms" value="<%=org.opennms.web.Util.htmlify(req.getQueryString())%>" />
+                <input type="hidden" name="redirectParms" value="<%=org.opennms.web.api.Util.htmlify(req.getQueryString())%>" />
                 <input type="hidden" name="actionCode" value="<%=action%>" />
-                <%=org.opennms.web.Util.makeHiddenTags(req)%>
+                <%=org.opennms.web.api.Util.makeHiddenTags(req)%>
               </form>
 
               <% if( parms.ackType == AcknowledgeType.UNACKNOWLEDGED ) { %> 
@@ -280,9 +280,9 @@
 
     <% if( req.isUserInRole( Authentication.ADMIN_ROLE ) || !req.isUserInRole( Authentication.READONLY_ROLE ) ) { %>
       <form action="event/acknowledge" method="post" name="acknowledge_form">
-        <input type="hidden" name="redirectParms" value="<%=org.opennms.web.Util.htmlify(req.getQueryString())%>" />
+        <input type="hidden" name="redirectParms" value="<%=org.opennms.web.api.Util.htmlify(req.getQueryString())%>" />
         <input type="hidden" name="actionCode" value="<%=action%>" />
-        <%=org.opennms.web.Util.makeHiddenTags(req)%>
+        <%=org.opennms.web.api.Util.makeHiddenTags(req)%>
     <% } %>
                 <jsp:include page="/includes/key.jsp" flush="false" />
       <table>

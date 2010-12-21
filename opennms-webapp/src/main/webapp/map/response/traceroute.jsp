@@ -59,7 +59,7 @@
 <html>
 <head>
     <title>Trace Route | OpenNMS Web Console</title>
-    <base HREF="<%=org.opennms.web.Util.calculateUrlBase( request )%>" />
+    <base HREF="<%=org.opennms.web.api.Util.calculateUrlBase( request )%>" />
     <link rel="stylesheet" type="text/css" href="includes/styles.css" />
 </head>
 
@@ -77,7 +77,7 @@ function checkIpAddress(ip){
 
 
 function doCommand(){
-    var url ='<%=org.opennms.web.Util.calculateUrlBase( request )%>ExecCommand.map?command='+document.getElementById("command").value;
+    var url ='<%=org.opennms.web.api.Util.calculateUrlBase( request )%>ExecCommand.map?command='+document.getElementById("command").value;
     var address = document.getElementById("address").value;
     
     url = url+'&address='+address;

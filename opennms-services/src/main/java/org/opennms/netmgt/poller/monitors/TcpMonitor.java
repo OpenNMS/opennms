@@ -113,7 +113,7 @@ final public class TcpMonitor extends IPv4Monitor {
      * status to SERVICE_AVAILABLE and return.
      */
     public PollStatus poll(MonitoredService svc, Map<String, Object> parameters) {
-        NetworkInterface iface = svc.getNetInterface();
+        NetworkInterface<InetAddress> iface = svc.getNetInterface();
 
         //
         // Process parameters
@@ -122,8 +122,8 @@ final public class TcpMonitor extends IPv4Monitor {
         //
         // Get interface address from NetworkInterface
         //
-        if (iface.getType() != NetworkInterface.TYPE_IPV4)
-            throw new NetworkInterfaceNotSupportedException("Unsupported interface type, only TYPE_IPV4 currently supported");
+        if (iface.getType() != NetworkInterface.TYPE_INET)
+            throw new NetworkInterfaceNotSupportedException("Unsupported interface type, only TYPE_INET currently supported");
 
         TimeoutTracker tracker = new TimeoutTracker(parameters, DEFAULT_RETRY, DEFAULT_TIMEOUT);
 

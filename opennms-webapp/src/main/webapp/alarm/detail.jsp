@@ -150,7 +150,7 @@
         </tr>
         <tr class="<%=alarm.getSeverity().getLabel()%>">
           <th>Last&nbsp;Event</th>
-          <td><span title="Event <%= alarm.getLastEventID() %>"><a href="event/detail.jsp?id=<%= alarm.getLastEventID() %>"><%=org.opennms.web.Util.formatDateToUIString(alarm.getLastEventTime())%></a></span></td>
+          <td><span title="Event <%= alarm.getLastEventID() %>"><a href="event/detail.jsp?id=<%= alarm.getLastEventID() %>"><%=org.opennms.web.api.Util.formatDateToUIString(alarm.getLastEventTime())%></a></span></td>
           <th>Interface</th>
           <td>
             <% if( alarm.getIpAddress() != null ) { %>
@@ -168,11 +168,11 @@
             <% } %>
           </td>
           <th>Time&nbsp;Acknowledged</th>
-          <td><%=alarm.getAcknowledgeTime()!=null ? org.opennms.web.Util.formatDateToUIString(alarm.getAcknowledgeTime()) : "&nbsp;"%></td>
+          <td><%=alarm.getAcknowledgeTime()!=null ? org.opennms.web.api.Util.formatDateToUIString(alarm.getAcknowledgeTime()) : "&nbsp;"%></td>
         </tr>
         <tr class="<%=alarm.getSeverity().getLabel()%>">
           <th>First&nbsp;Event</th>
-          <td><%=org.opennms.web.Util.formatDateToUIString(alarm.getFirstEventTime())%></td>
+          <td><%=org.opennms.web.api.Util.formatDateToUIString(alarm.getFirstEventTime())%></td>
           <th>Service</th>
           <td>
             <% if( alarm.getServiceName() != null ) { %>

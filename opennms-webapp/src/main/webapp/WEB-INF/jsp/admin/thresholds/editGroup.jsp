@@ -37,7 +37,7 @@
 	contentType="text/html"
 	session="true"
 	import="org.opennms.web.admin.notification.noticeWizard.*,
-	org.opennms.web.Util"
+	org.opennms.web.api.Util"
 %>
 
 <%@ taglib uri="http://java.sun.com/jsp/jstl/core" prefix="c"%>

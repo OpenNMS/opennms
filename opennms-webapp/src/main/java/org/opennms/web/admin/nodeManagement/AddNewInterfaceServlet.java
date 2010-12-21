@@ -57,7 +57,7 @@ import org.opennms.core.utils.DBUtils;
 import org.opennms.netmgt.EventConstants;
 import org.opennms.netmgt.config.DataSourceFactory;
 import org.opennms.netmgt.xml.event.Event;
-import org.opennms.web.Util;
+import org.opennms.web.api.Util;
 
 /**
  * A servlet that handles adding a new interface

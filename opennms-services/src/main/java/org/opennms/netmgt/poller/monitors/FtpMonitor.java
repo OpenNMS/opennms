@@ -131,11 +131,11 @@ final public class FtpMonitor extends IPv4Monitor {
      * valid we set the service status to SERVICE_AVAILABLE and return.
      */
     public PollStatus poll(MonitoredService svc, Map<String, Object> parameters) {
-        NetworkInterface iface = svc.getNetInterface();
+        NetworkInterface<InetAddress> iface = svc.getNetInterface();
 
         // Check the interface type
-        if (iface.getType() != NetworkInterface.TYPE_IPV4) {
-            throw new NetworkInterfaceNotSupportedException("Unsupported interface type, only TYPE_IPV4 currently supported");
+        if (iface.getType() != NetworkInterface.TYPE_INET) {
+            throw new NetworkInterfaceNotSupportedException("Unsupported interface type, only TYPE_INET currently supported");
         }
 
         // Get the parameters

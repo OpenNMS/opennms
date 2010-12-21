@@ -44,7 +44,7 @@
         noticeStatus = "<font color=\"ff0000\">Unknown</font>";
     }
     pageContext.setAttribute("noticeStatus", noticeStatus);
-    final String baseHref = org.opennms.web.Util.calculateUrlBase( request );
+    final String baseHref = org.opennms.web.api.Util.calculateUrlBase( request );
 %>
 <c:choose>
 <c:when test="${param.docType == 'html'}">

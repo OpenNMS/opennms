@@ -51,7 +51,7 @@ import org.opennms.netmgt.EventConstants;
 import org.opennms.netmgt.model.events.EventBuilder;
 import org.opennms.netmgt.model.events.EventProxy;
 import org.opennms.netmgt.xml.event.Event;
-import org.opennms.web.Util;
+import org.opennms.web.api.Util;
 
 /**
  * A servlet that handles configuring SNMP

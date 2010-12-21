@@ -45,7 +45,7 @@
 <%@page language="java"
 	contentType="text/html"
 	session="true"
-	import="org.opennms.web.Util,
+	import="org.opennms.web.api.Util,
 			org.opennms.web.element.*,
 			java.util.*"
 %>

@@ -213,8 +213,8 @@
 	<jsp:include page="/includes/key.jsp" flush="false" />
         <form action="notification/acknowledge" method="post" name="acknowledge_form">
           <input type="hidden" name="curUser" value="<%=request.getRemoteUser()%>">
-          <input type="hidden" name="redirectParms" value="<%=org.opennms.web.Util.htmlify(request.getQueryString())%>" />
-          <%=org.opennms.web.Util.makeHiddenTags(request)%>
+          <input type="hidden" name="redirectParms" value="<%=org.opennms.web.api.Util.htmlify(request.getQueryString())%>" />
+          <%=org.opennms.web.api.Util.makeHiddenTags(request)%>
       <table>
 			<thead>
 			  <tr>
@@ -246,7 +246,7 @@
             <% } %>
           </td>
           <td class="bright divider" rowspan="2"><%=eventSeverity%></td>
-          <td class="divider"><%=org.opennms.web.Util.formatDateToUIString(notices[i].getTimeSent())%></td>
+          <td class="divider"><%=org.opennms.web.api.Util.formatDateToUIString(notices[i].getTimeSent())%></td>
           <td class="divider"><% Filter responderFilter = new ResponderFilter(notices[i].getResponder()); %>      
             <% if(notices[i].getResponder()!=null) {%>
               <%=notices[i].getResponder()%>
@@ -257,7 +257,7 @@
           </td>
           <td class="divider">
             <%if (notices[i].getTimeReplied()!=null) { %>
-              <%=org.opennms.web.Util.formatDateToUIString(notices[i].getTimeReplied())%>
+              <%=org.opennms.web.api.Util.formatDateToUIString(notices[i].getTimeReplied())%>
             <% } %>
 					</td>
           <td class="divider">

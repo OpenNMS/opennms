@@ -61,26 +61,26 @@
 <script type="text/javascript">
     function saveReport()
     {
-        document.customize_form.action.value = "Save"; 
+        document.customize_form.action.value = "<c:out value="<%=FormProcReportController.Actions.Save.toString()%>"/>"; 
         document.customize_form.submit();
     }
  
     function addNewGraph()
     {
-        document.customize_form.action.value = "AddGraph"; 
+        document.customize_form.action.value = "<c:out value="<%=FormProcReportController.Actions.AddGraph.toString()%>"/>"; 
         document.customize_form.submit();
     }
  
     function modifyGraph(graph_index)
     {
-        document.customize_form.action.value = "ModGraph"; 
+        document.customize_form.action.value = "<c:out value="<%=FormProcReportController.Actions.ModGraph.toString()%>"/>"; 
         document.customize_form.graph_index.value = graph_index; 
         document.customize_form.submit();
     }
  
     function deleteGraph(graph_index)
     {
-        document.customize_form.action.value = "DelGraph";
+        document.customize_form.action.value = "<c:out value="<%=FormProcReportController.Actions.DelGraph.toString()%>"/>";
         document.customize_form.graph_index.value = graph_index; 
         document.customize_form.submit();
     }

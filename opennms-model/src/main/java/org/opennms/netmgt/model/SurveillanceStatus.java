@@ -1,14 +1,12 @@
 /*
  * This file is part of the OpenNMS(R) Application.
  *
- * OpenNMS(R) is Copyright (C) 2006 The OpenNMS Group, Inc.  All rights reserved.
+ * OpenNMS(R) is Copyright (C) 2010 The OpenNMS Group, Inc.  All rights reserved.
  * OpenNMS(R) is a derivative work, containing both original code, included code and modified
  * code that was published under the GNU General Public License. Copyrights for modified
  * and included code are below.
  *
  * OpenNMS(R) is a registered trademark of The OpenNMS Group, Inc.
- *
- * Original code base Copyright (C) 1999-2001 Oculan Corp.  All rights reserved.
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -25,30 +23,38 @@
  * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA.
  *
  * For more information contact:
- *      OpenNMS Licensing       <license@opennms.org>
- *      http://www.opennms.org/
- *      http://www.opennms.com/
+ * OpenNMS Licensing       <license@opennms.org>
+ *     http://www.opennms.org/
+ *     http://www.opennms.com/
  */
-
-package org.opennms.netmgt.threshd;
-
-import java.net.InetAddress;
-
-import org.opennms.netmgt.poller.NetworkInterface;
+package org.opennms.netmgt.model;
 
 /**
- * Extension to the NetworkInterface class that includes the node ID.
- * This helps to minimize a database query to get information that is
- * already available in Threshd.
+ * SurveillanceStatus
  *
- * @author ranger
- * @version $Id: $
+ * @author brozow
  */
-public interface ThresholdNetworkInterface extends NetworkInterface<InetAddress> {
+public interface SurveillanceStatus {
+
     /**
-     * <p>getNodeId</p>
-     *
-     * @return a int.
+     * The number of nodes that do not have at least one service up
      */
-    public int getNodeId();
+    Integer getDownEntityCount();
+
+    /**
+     * The total number of nodes represented by this status
+     */
+    Integer getTotalEntityCount();
+
+    /**
+     * A string presenting the status of the associated set of nodes
+     * Possible values are:
+     * <ul>
+     * <li>'Normal' representing that there are no ouages for active services on the set of associated nodes<li>
+     * <li>'Warning' representing exactly one service from set of all active services on the associated nodes has an outage
+     * <li>'Critical' representing that more than one service on the from the set of all active services on the assocuate nodes has an outage
+     * </ul> 
+     */
+    String getStatus();
+
 }

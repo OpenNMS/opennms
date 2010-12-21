@@ -71,7 +71,7 @@ public class ScanSuspectTest extends OpenNMSTestCase {
     	System.setProperty("opennms.db.nextNodeId", "select max(nodeId) + 1 from node");
     	super.setUp();
 
-        m_agent = MockSnmpAgent.createAgentAndRun(new ClassPathResource("org/opennms/netmgt/snmp/stonegate.properties"), this.myLocalHost() + "/9161");
+        m_agent = MockSnmpAgent.createAgentAndRun(new ClassPathResource("org/opennms/netmgt/snmp/stonegate.properties"), this.myLocalHost().getHostAddress() + "/9161");
 
         InputStream configStream = ConfigurationTestUtils.getInputStreamForResource(this, "/org/opennms/netmgt/capsd/capsd-configuration.xml");
         DefaultCapsdConfigManager capsdConfig = new DefaultCapsdConfigManager(configStream);
@@ -155,10 +155,10 @@ public class ScanSuspectTest extends OpenNMSTestCase {
                 "       security-name=\"opennmsUser\" \n" + 
                 "       auth-passphrase=\"0p3nNMSv3\" \n" +
                 "       privacy-passphrase=\"0p3nNMSv3\" >\n" +
-                "       <specific>"+myLocalHost()+"</specific>\n" +
+	    "       <specific>"+myLocalHost().getHostAddress()+"</specific>\n" +
                 "   </definition>\n" + 
                 "\n" + 
-                "   <definition version=\"v2c\" port=\"9161\" read-community=\"public\" proxy-host=\""+myLocalHost()+"\">\n" + 
+	    "   <definition version=\"v2c\" port=\"9161\" read-community=\"public\" proxy-host=\""+myLocalHost().getHostAddress()+"\">\n" + 
                 "<specific>149.134.45.45</specific>\n" +
                 "<specific>172.16.201.2</specific>\n" +
                 "<specific>172.17.1.230</specific>\n" +

@@ -76,7 +76,7 @@ public interface MonitoredService {
      *
      * @return the Netinterface
      */
-    public abstract NetworkInterface getNetInterface();
+    public abstract NetworkInterface<InetAddress> getNetInterface();
 
     /**
      * Returns the InetAddress associated with the service

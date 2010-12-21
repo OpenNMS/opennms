@@ -14,7 +14,7 @@ import org.apache.commons.io.FileUtils;
 import org.junit.Before;
 import org.junit.Test;
 import org.opennms.netmgt.model.PollStatus;
-import org.opennms.netmgt.poller.IPv4NetworkInterface;
+import org.opennms.netmgt.poller.InetNetworkInterface;
 import org.opennms.netmgt.poller.MonitoredService;
 import org.opennms.netmgt.poller.NetworkInterface;
 
@@ -39,8 +39,8 @@ public class MobileMsgSequenceMonitorTest {
 				return "127.0.0.1";
 			}
 
-			public NetworkInterface getNetInterface() {
-				return new IPv4NetworkInterface(getAddress());
+			public NetworkInterface<InetAddress> getNetInterface() {
+				return new InetNetworkInterface(getAddress());
 			}
 
 			public int getNodeId() {

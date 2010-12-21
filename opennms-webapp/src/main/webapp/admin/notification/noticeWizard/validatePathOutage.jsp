@@ -43,7 +43,7 @@
 	session="true"
 	import="java.util.*,
 		org.opennms.web.admin.notification.noticeWizard.*,
-		org.opennms.web.Util,
+		org.opennms.web.api.Util,
         org.opennms.netmgt.filter.FilterDaoFactory,
         org.opennms.netmgt.filter.FilterParseException
 	"

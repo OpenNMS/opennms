@@ -66,7 +66,7 @@ import org.opennms.netmgt.provision.persist.requisition.RequisitionInterface;
 import org.opennms.netmgt.provision.persist.requisition.RequisitionMonitoredService;
 import org.opennms.netmgt.provision.persist.requisition.RequisitionNode;
 import org.opennms.web.BeanUtils;
-import org.opennms.web.Util;
+import org.opennms.web.api.Util;
 import org.opennms.web.svclayer.ManualProvisioningService;
 import org.springframework.dao.DataAccessResourceFailureException;
 import org.springframework.util.Assert;

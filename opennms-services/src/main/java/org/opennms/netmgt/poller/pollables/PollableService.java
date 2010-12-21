@@ -41,7 +41,7 @@ import java.util.Date;
 import org.opennms.core.utils.ThreadCategory;
 import org.opennms.netmgt.EventConstants;
 import org.opennms.netmgt.model.PollStatus;
-import org.opennms.netmgt.poller.IPv4NetworkInterface;
+import org.opennms.netmgt.poller.InetNetworkInterface;
 import org.opennms.netmgt.poller.MonitoredService;
 import org.opennms.netmgt.poller.NetworkInterface;
 import org.opennms.netmgt.scheduler.PostponeNecessary;
@@ -71,7 +71,7 @@ public class PollableService extends PollableElement implements ReadyRunnable, M
 	}
 
 	private final String m_svcName;
-    private final IPv4NetworkInterface m_netInterface;
+    private final InetNetworkInterface m_netInterface;
 
     private volatile PollConfig m_pollConfig;
     private volatile PollStatus m_oldStatus;
@@ -86,7 +86,7 @@ public class PollableService extends PollableElement implements ReadyRunnable, M
     public PollableService(PollableInterface iface, String svcName) {
         super(iface, Scope.SERVICE);
         m_svcName = svcName;
-        m_netInterface = new IPv4NetworkInterface(iface.getAddress());
+        m_netInterface = new InetNetworkInterface(iface.getAddress());
     }
     
     /**
@@ -195,7 +195,7 @@ public class PollableService extends PollableElement implements ReadyRunnable, M
      * @throws UnknownHostException if any.
      * @return a {@link org.opennms.netmgt.poller.NetworkInterface} object.
      */
-    public NetworkInterface getNetInterface() {
+    public NetworkInterface<InetAddress> getNetInterface() {
         return m_netInterface;
     }
 

@@ -132,7 +132,7 @@ final public class LdapMonitor extends IPv4Monitor {
      * to SERVICE_AVAILABLE and return.
      */
     public PollStatus poll(MonitoredService svc, Map<String, Object> parameters) {
-        NetworkInterface iface = svc.getNetInterface();
+        NetworkInterface<InetAddress> iface = svc.getNetInterface();
 
         int serviceStatus = PollStatus.SERVICE_UNAVAILABLE;
         String reason = null;

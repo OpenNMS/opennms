@@ -32,7 +32,8 @@
 
 package org.opennms.web.element;
 
-import org.opennms.web.Util;
+import org.opennms.web.api.Util;
+
 
 /**
  * <p>Node class.</p>
