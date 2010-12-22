@@ -49,7 +49,7 @@ import org.opennms.netmgt.poller.MonitoredService;
  * @version $Id: $
  */
 @Distributable
-public class AvailabilityMonitor extends IPv4Monitor {
+public class AvailabilityMonitor extends AbstractServiceMonitor {
     
     
 

@@ -60,7 +60,7 @@ import org.opennms.netmgt.protocols.xmp.XmpUtilException;
  * @author jeffg
  * @version $Id: $
  */
-public class XmpMonitor extends IPv4Monitor {
+public class XmpMonitor extends AbstractServiceMonitor {
     
     /**
      * The protocol supported by the plugin

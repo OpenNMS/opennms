@@ -87,7 +87,7 @@ import org.opennms.netmgt.poller.NetworkInterfaceNotSupportedException;
  */
 
 @Distributable
-final public class Pop3Monitor extends IPv4Monitor {
+final public class Pop3Monitor extends AbstractServiceMonitor {
 
     /**
      * Default POP3 port.

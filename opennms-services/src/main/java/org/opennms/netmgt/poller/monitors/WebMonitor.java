@@ -37,7 +37,7 @@ import org.opennms.netmgt.poller.MonitoredService;
  * @author ranger
  * @version $Id: $
  */
-public class WebMonitor extends IPv4Monitor {
+public class WebMonitor extends AbstractServiceMonitor {
 
     static Integer DEFAULT_TIMEOUT = 3000;
     static Integer DEFAULT_PORT = 80;

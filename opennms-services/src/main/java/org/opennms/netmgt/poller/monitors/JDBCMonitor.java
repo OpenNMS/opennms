@@ -77,7 +77,7 @@ import org.opennms.netmgt.poller.NetworkInterfaceNotSupportedException;
 
 // NOTE: This requires that the JDBC Drivers for the dbs be included with the remote poller
 @Distributable
-public class JDBCMonitor extends IPv4Monitor {
+public class JDBCMonitor extends AbstractServiceMonitor {
 	/**
 	 * Number of miliseconds to wait before timing out a database login using
 	 * JDBC Hint: 1 minute is 6000 miliseconds.

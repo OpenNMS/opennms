@@ -90,7 +90,7 @@ import org.opennms.netmgt.poller.NetworkInterfaceNotSupportedException;
  * @version $Id: $
  */
 @Distributable
-final public class DominoIIOPMonitor extends IPv4Monitor {
+final public class DominoIIOPMonitor extends AbstractServiceMonitor {
 
     /**
      * Default port.

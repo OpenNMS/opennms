@@ -79,7 +79,7 @@ import org.opennms.netmgt.poller.NetworkInterfaceNotSupportedException;
  */
 
 @Distributable
-final public class TcpMonitor extends IPv4Monitor {
+final public class TcpMonitor extends AbstractServiceMonitor {
 
     /**
      * Default port.

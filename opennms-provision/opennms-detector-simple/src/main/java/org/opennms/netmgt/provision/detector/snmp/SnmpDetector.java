@@ -35,6 +35,7 @@ import java.io.IOException;
 import java.io.OutputStream;
 import java.lang.reflect.UndeclaredThrowableException;
 import java.net.InetAddress;
+import java.util.Map;
 import java.util.regex.Pattern;
 
 import org.opennms.netmgt.dao.SnmpAgentConfigFactory;
@@ -42,6 +43,7 @@ import org.opennms.netmgt.provision.DetectorMonitor;
 import org.opennms.netmgt.provision.exchange.Exchange;
 import org.opennms.netmgt.provision.support.AbstractDetector;
 import org.opennms.netmgt.snmp.SnmpAgentConfig;
+import org.opennms.netmgt.snmp.SnmpInstId;
 import org.opennms.netmgt.snmp.SnmpObjId;
 import org.opennms.netmgt.snmp.SnmpUtils;
 import org.opennms.netmgt.snmp.SnmpValue;
@@ -79,11 +81,10 @@ public class SnmpDetector extends AbstractDetector {
             // TODO Auto-generated method stub
             return false;
         }
-        
     }
     
     /**
-     * The system object identifier to retreive from the remote agent.
+     * The system object identifier to retrieve from the remote agent.
      */
     private static final String DEFAULT_OID = ".1.3.6.1.2.1.1.2.0";
     
@@ -93,9 +94,9 @@ public class SnmpDetector extends AbstractDetector {
     private static final int DEFAULT_RETRIES = -1;
     
     private String m_oid = DEFAULT_OID;
+    private boolean m_isTable = false;
     private String m_forceVersion;
     private String m_vbvalue;
-    
     private SnmpAgentConfigFactory m_agentConfigFactory;
     
     /**
@@ -133,19 +134,41 @@ public class SnmpDetector extends AbstractDetector {
             
             if (getVbvalue() != null) {
                 expectedValue = getVbvalue();
-            }
-            
-            String retrievedValue = getValue(agentConfig, getOid());
-            
-            if (retrievedValue != null && expectedValue != null) {
-                return (Pattern.compile(expectedValue).matcher(retrievedValue).matches());
             } else {
-                return (retrievedValue != null);
+                log().error(getServiceName() + ": Expected value for SNMP table " + getOid() + " is null. Vbvalue is required.");
+                return false;
             }
             
+            if (this.m_isTable) {
+                log().debug(getServiceName() + ": Table detect enabled");
+
+                Map<SnmpInstId, SnmpValue> table = getTable(agentConfig, getOid());
+                if (table != null) {
+                    for (Map.Entry<SnmpInstId, SnmpValue> e : table.entrySet()) {
+                        log().debug(getServiceName() + ": retrieved value [" + e.getValue().toString() + "] expected value [" + expectedValue + "]");
+                        if (e.getValue().toString().equals(expectedValue)) {
+                            log().debug(getServiceName() + ": expected value matched");
+                            return true;
+                        }
+                    }
+                } else {
+                    log().error(getServiceName() + ": SNMP table " + getOid() + " is null.");
+                    return false;
+                }
+            } else {
+                log().debug(getServiceName() + ": Table detect disabled");
+                String retrievedValue = getValue(agentConfig, getOid());
+                log().debug(getServiceName() + ": retrieved value [" + retrievedValue + "] expected value [" + expectedValue + "]");
+                if (retrievedValue != null && expectedValue != null) {
+                    return (Pattern.compile(expectedValue).matcher(retrievedValue).matches());
+                } else {
+                    return (retrievedValue != null);
+                }
+            }
         } catch (Throwable t) {
             throw new UndeclaredThrowableException(t);
         }
+        return false;
     }
 
     /**
@@ -201,7 +224,27 @@ public class SnmpDetector extends AbstractDetector {
         else {
             return val.toString();
         }
+    }
+
+    /**
+     * <p>getTable</p>
+     *
+     * @param agentConfig a {@link org.opennms.netmgt.snmp.SnmpAgentConfig} object.
+     * @param oid a {@link java.lang.String} object.
+     * @return {@link java.util.Map} object.
+     */
+    protected Map<SnmpInstId, SnmpValue> getTable(SnmpAgentConfig agentConfig, String oid) {
+        Map<SnmpInstId, SnmpValue> table = null;
+        SnmpObjId snmpObjId = SnmpObjId.get(oid);
         
+        try {
+             table = SnmpUtils.getOidValues(agentConfig,getServiceName(),snmpObjId);
+        } catch (InterruptedException e) {
+            log().error(getServiceName() + "Unable to retrieve " + oid);
+            // throw new Exception("Unable to retrieve SNMP table " + oid);
+            // TODO: SNMP exception handling to avoid if (null or empty) checks
+        }
+        return table;
     }
 
     /**
@@ -277,6 +320,32 @@ public class SnmpDetector extends AbstractDetector {
         return m_agentConfigFactory;
     }
 
+    /**
+     * <p>setIsTable</p>
+     *
+     * @param table a {@link java.lang.String} object.
+     */
+    public void setIsTable(String table) {
+        if ("true".equalsIgnoreCase(table)) {
+            this.m_isTable = true;
+        } else {
+            this.m_isTable = false;
+        }
+    }
+
+    /**
+     * <p>getIsTable</p>
+     *
+     * @return a {@link java.lang.String} object.
+     */
+    public String getIsTable() {
+        if (this.m_isTable) {
+            return new String("true");
+        } else {
+            return new String("false");
+        }
+    }
+
     /* (non-Javadoc)
      * @see org.opennms.netmgt.provision.detector.AbstractDetector#onInit()
      */
@@ -293,6 +362,4 @@ public class SnmpDetector extends AbstractDetector {
         // TODO Auto-generated method stub
         
     }
-    
-
 }

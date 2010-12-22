@@ -78,7 +78,7 @@ import org.opennms.javamail.JavaMailerException;
  * @version $Id: $
  */
 @Distributable
-public class MailTransportMonitor extends IPv4Monitor {
+public class MailTransportMonitor extends AbstractServiceMonitor {
 
     /** {@inheritDoc} */
     @Override

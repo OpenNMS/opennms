@@ -55,28 +55,28 @@ import org.springframework.util.ClassUtils;
  * This class provides a basic implementation for most of the interface methods
  * of the <code>ServiceMonitor</code> class. Since most pollers do not do any
  * special initialization, and only require that the interface is an
- * <code>InetAddress</code> object this class provides eveything by the
+ * <code>InetAddress</code> object this class provides everything by the
  * <code>poll<code> interface.
  *
  * @author <A HREF="mike@opennms.org">Mike</A>
  * @author <A HREF="weave@oculan.com">Weave</A>
  * @author <A HREF="http://www.opennms.org/">OpenNMS</A>
  */
-abstract public class IPv4Monitor implements ServiceMonitor {
+abstract public class AbstractServiceMonitor implements ServiceMonitor {
     /**
      * {@inheritDoc}
      *
      * <P>
      * This method is called after the framework creates an instance of the
      * plug-in. The framework passes the object a proxy object that can be used
-     * to retreive configuration information specific to the plug-in.
+     * to retrieve configuration information specific to the plug-in.
      * Additionally, any parameters for the plug-in from the package definition
      * are passed using the parameters element.
      * </P>
      *
      * <P>
-     * If there is a critical error, like missing service libraries, the the
-     * montior may throw a ServiceMonitorException. If the plug-in throws an
+     * If there is a critical error, like missing service libraries, the
+     * monitor may throw a ServiceMonitorException. If the plug-in throws an
      * exception then the plug-in will be disabled in the framework.
      * </P>
      * @exception java.lang.RuntimeException

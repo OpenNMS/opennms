@@ -93,7 +93,7 @@ import org.opennms.netmgt.poller.NetworkInterfaceNotSupportedException;
  * @version CVS 1.1.1.1
  */
 @Distributable
-final public class ImapMonitor extends IPv4Monitor {
+final public class ImapMonitor extends AbstractServiceMonitor {
 
     /**
      * Default IMAP port.

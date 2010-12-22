@@ -27,7 +27,7 @@ import org.opennms.netmgt.poller.MonitoredService;
  */
 @Distributable(DistributionContext.DAEMON)
 
-public class BSFMonitor extends IPv4Monitor {
+public class BSFMonitor extends AbstractServiceMonitor {
     
     /** {@inheritDoc} */
     @SuppressWarnings("unchecked")

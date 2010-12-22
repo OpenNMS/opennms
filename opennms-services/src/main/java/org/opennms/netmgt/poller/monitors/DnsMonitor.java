@@ -81,7 +81,7 @@ import org.opennms.protocols.dns.DNSAddressRequest;
  * @version $Id: $
  */
 @Distributable
-final public class DnsMonitor extends IPv4Monitor {
+final public class DnsMonitor extends AbstractServiceMonitor {
     /**
      * Default DNS port.
      */

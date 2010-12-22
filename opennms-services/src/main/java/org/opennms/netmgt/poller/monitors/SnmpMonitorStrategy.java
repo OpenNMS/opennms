@@ -47,7 +47,7 @@ import org.opennms.netmgt.snmp.SnmpValue;
  * @author david
  * @version $Id: $
  */
-abstract public class SnmpMonitorStrategy extends IPv4Monitor {
+abstract public class SnmpMonitorStrategy extends AbstractServiceMonitor {
 
     /**
      * Constant for less-than operand

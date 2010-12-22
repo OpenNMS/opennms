@@ -11,7 +11,7 @@ import org.opennms.netmgt.model.PollStatus;
 import org.opennms.netmgt.poller.Distributable;
 import org.opennms.netmgt.poller.DistributionContext;
 import org.opennms.netmgt.poller.MonitoredService;
-import org.opennms.netmgt.poller.monitors.IPv4Monitor;
+import org.opennms.netmgt.poller.monitors.AbstractServiceMonitor;
 import org.opennms.sms.monitor.internal.SequenceException;
 import org.opennms.sms.monitor.internal.config.MobileSequenceConfig;
 import org.opennms.sms.monitor.internal.config.SequenceConfigFactory;
@@ -27,7 +27,7 @@ import org.springframework.util.StringUtils;
  * @version $Id: $
  */
 @Distributable(DistributionContext.DAEMON)
-public class MobileMsgSequenceMonitor extends IPv4Monitor {
+public class MobileMsgSequenceMonitor extends AbstractServiceMonitor {
 
     /** Constant <code>DEFAULT_CONTEXT_NAME="mobileMessagePollerContext"</code> */
     public static final String DEFAULT_CONTEXT_NAME = "mobileMessagePollerContext";

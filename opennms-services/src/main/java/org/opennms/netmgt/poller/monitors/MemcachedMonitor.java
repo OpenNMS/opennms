@@ -67,7 +67,7 @@ import org.opennms.netmgt.poller.MonitoredService;
  * @version $Id: $
  */
 @Distributable
-final public class MemcachedMonitor extends IPv4Monitor {
+final public class MemcachedMonitor extends AbstractServiceMonitor {
 
     /**
      * Default FTP port.

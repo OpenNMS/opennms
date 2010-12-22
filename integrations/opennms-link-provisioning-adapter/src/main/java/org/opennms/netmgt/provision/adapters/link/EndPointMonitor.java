@@ -8,7 +8,7 @@ import org.opennms.netmgt.dao.SnmpAgentConfigFactory;
 import org.opennms.netmgt.model.OnmsNode;
 import org.opennms.netmgt.model.PollStatus;
 import org.opennms.netmgt.poller.MonitoredService;
-import org.opennms.netmgt.poller.monitors.IPv4Monitor;
+import org.opennms.netmgt.poller.monitors.AbstractServiceMonitor;
 import org.opennms.netmgt.provision.adapters.link.endpoint.EndPointTypeValidator;
 import org.opennms.netmgt.provision.adapters.link.endpoint.dao.EndPointConfigurationDao;
 import org.opennms.netmgt.snmp.SnmpAgentConfig;
@@ -20,7 +20,7 @@ import org.springframework.context.support.ClassPathXmlApplicationContext;
  * @author ranger
  * @version $Id: $
  */
-public class EndPointMonitor extends IPv4Monitor {
+public class EndPointMonitor extends AbstractServiceMonitor {
     
     /** Constant <code>SNMP_AGENTCONFIG_KEY="org.opennms.netmgt.snmp.SnmpAgentConfig"</code> */
     public static final String SNMP_AGENTCONFIG_KEY = "org.opennms.netmgt.snmp.SnmpAgentConfig";

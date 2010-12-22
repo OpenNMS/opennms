@@ -66,7 +66,7 @@ import org.opennms.protocols.wmi.WmiResult;
  */
 
 @Distributable
-public class WmiMonitor extends IPv4Monitor {
+public class WmiMonitor extends AbstractServiceMonitor {
 
 	private final static String DEFAULT_WMI_CLASS = "Win32_ComputerSystem";
 	private final static String DEFAULT_WMI_OBJECT = "Status";
