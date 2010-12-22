@@ -1276,7 +1276,7 @@ public class NetworkElementFactory implements InitializingBean, NetworkElementFa
 	 * @see org.opennms.web.element.NetworkElementFactoryInterfac#getAtInterface(int, java.lang.String)
 	 */
     public AtInterface getAtInterface(int nodeId, String ipAddr) {
-        OnmsCriteria criteria = new OnmsCriteria(OnmsArpInterface.class);
+        OnmsCriteria criteria = new OnmsCriteria(OnmsNode.class);
         criteria.createAlias("node", "node");
         criteria.add(Restrictions.eq("node.id", nodeId));
         criteria.add(Restrictions.eq("ipAddress", ipAddr));
