@@ -65,6 +65,7 @@ import org.opennms.netmgt.snmp.SnmpAgentConfig;
 import org.opennms.netmgt.snmp.SnmpObjId;
 import org.opennms.netmgt.snmp.SnmpUtils;
 import org.opennms.netmgt.snmp.SnmpValue;
+import org.opennms.netmgt.trapd.SyntaxToEvent;
 import org.opennms.netmgt.xml.event.Event;
 import org.opennms.netmgt.xml.event.Parm;
 import org.springframework.beans.BeanWrapper;
@@ -191,7 +192,13 @@ public class SnmpAssetProvisioningAdapter extends SimplerQueuedProvisioningAdapt
 					continue;
 				}
 				foundAValue = true;
-				substitutions.setProperty(aliases.get(i), values[i].toString());
+				// Use trapd's SyntaxToEvent parser so that we format base64
+				// and MAC address values appropriately
+				Parm parm = SyntaxToEvent.processSyntax(aliases.get(i), values[i]);
+				substitutions.setProperty(
+						aliases.get(i),
+						parm.getValue().getContent()
+				);
 			}
 
 			if (!foundAValue) {

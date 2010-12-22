@@ -14,7 +14,7 @@
     can depend on to use Google Web Toolkit
   </description>
   <properties>
-    <gwtVersion>2.1.0</gwtVersion>
+    <gwtVersion>2.1.1</gwtVersion>
   </properties>
 
   <dependencies>

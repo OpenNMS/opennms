@@ -40,6 +40,7 @@ import org.opennms.netmgt.model.OnmsCategory;
 import org.opennms.netmgt.model.OnmsDistPoller;
 import org.opennms.netmgt.model.OnmsIpInterface;
 import org.opennms.netmgt.model.OnmsNode;
+import org.opennms.netmgt.model.SurveillanceStatus;
 import org.springframework.stereotype.Repository;
 
 @Repository
@@ -215,4 +216,6 @@ public interface NodeDao extends OnmsDao<OnmsNode, Integer> {
      * @return a {@link java.util.List} object.
      */
     List<OnmsNode> findByForeignSourceAndIpAddress(String foreignSource, String ipAddress);
+
+    SurveillanceStatus findSurveillanceStatusByCategoryLists(Collection<OnmsCategory> rowCategories, Collection<OnmsCategory> columnCategories);
 }

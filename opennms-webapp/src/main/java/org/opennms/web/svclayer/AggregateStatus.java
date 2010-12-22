@@ -42,6 +42,7 @@ import java.util.Set;
 import org.opennms.netmgt.model.AbstractEntityVisitor;
 import org.opennms.netmgt.model.OnmsMonitoredService;
 import org.opennms.netmgt.model.OnmsNode;
+import org.opennms.netmgt.model.SurveillanceStatus;
 
 /**
  * Use this class to aggregate status to be presented in a view layer technology.
@@ -49,16 +50,10 @@ import org.opennms.netmgt.model.OnmsNode;
  * @author <a href="mailto:david@opennms.org">David Hustace</a>
  * @author <a href="mailto:brozow@opennms.org">Mathew Brozowski</a>
  * @author <a href="mailto:dj@opennms.org">DJ Gregor</a>
- * @author <a href="mailto:david@opennms.org">David Hustace</a>
- * @author <a href="mailto:brozow@opennms.org">Mathew Brozowski</a>
- * @author <a href="mailto:dj@opennms.org">DJ Gregor</a>
- * @author <a href="mailto:david@opennms.org">David Hustace</a>
- * @author <a href="mailto:brozow@opennms.org">Mathew Brozowski</a>
- * @author <a href="mailto:dj@opennms.org">DJ Gregor</a>
  * @version $Id: $
  * @since 1.8.1
  */
-public class AggregateStatus {
+public class AggregateStatus implements SurveillanceStatus {
 
     private String m_label;
 
@@ -176,11 +171,13 @@ public class AggregateStatus {
 
         @Override
         public void visitNode(OnmsNode node) {
+            System.err.println("visitNode(" + node + ")");
             m_isCurrentNodeDown = true;
         }
 
         @Override
         public void visitNodeComplete(OnmsNode node) {
+            System.err.println("visitNodeComplete(" + node + ") -- m_isCurrentNodeDown = " + m_isCurrentNodeDown);
             if (m_isCurrentNodeDown) {
                 m_downNodes.add(node);
                 m_status = AggregateStatus.NODES_ARE_DOWN;
@@ -190,6 +187,7 @@ public class AggregateStatus {
 
         @Override
         public void visitMonitoredService(OnmsMonitoredService svc) {
+            System.err.println("visitMonitoredService(" + svc + ") - currentOutages.isEmpty = " + svc.getCurrentOutages().isEmpty());
             if ("A".equals(svc.getStatus())
                     && !svc.getCurrentOutages().isEmpty()) {
                 if (AggregateStatus.ALL_NODES_UP.equals(m_status)) {
