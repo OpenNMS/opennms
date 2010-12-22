@@ -45,7 +45,7 @@ import org.opennms.netmgt.threshd.ThresholdEvaluatorState.Status;
 import org.opennms.netmgt.xml.event.Event;
 import org.opennms.test.ThrowableAnticipator;
 
-public class ThresholdEvaluatorAbsoluteChangeTest extends AbstractThresholdEvaluatorTest {
+public class ThresholdEvaluatorAbsoluteChangeTest extends AbstractThresholdEvaluatorTestCase {
 
     public void testConstructor() {
         Threshold threshold = new Threshold();

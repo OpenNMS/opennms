@@ -45,7 +45,7 @@ import junit.framework.TestCase;
  * @author jeffg
  *
  */
-public abstract class AbstractThresholdEvaluatorTest extends TestCase {
+public abstract class AbstractThresholdEvaluatorTestCase extends TestCase {
     protected static void parmPresentAndValueNonNull(Event event, String parmName) {
         boolean parmPresent = false;
         
