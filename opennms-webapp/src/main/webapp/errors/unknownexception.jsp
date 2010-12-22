@@ -40,7 +40,9 @@
 	contentType="text/html"
 	session="true"
 	isErrorPage="true"
-	import="org.opennms.core.resource.Vault"
+	import="org.opennms.core.resource.Vault,
+                java.lang.StackTraceElement,
+                java.lang.StringBuilder"
  %>
 
 <jsp:include page="/includes/header.jsp" flush="false" >
@@ -55,6 +57,8 @@
     if (exception == null) {
         exception = (Throwable)request.getAttribute("javax.servlet.error.exception");
     }
+
+    HttpSession userSession = request.getSession();
 %>
 
 <script type="text/javascript">
@@ -88,6 +92,55 @@ function toggleDiv(divName) {
   (if applicable), and the database are all running without errors.
 </p>
 
+<%
+StringBuilder stBuilder = new StringBuilder();
+
+if (exception != null) {
+  if (exception instanceof ServletException && ((ServletException)exception).getRootCause() != null) {
+    exception = ((ServletException) exception).getRootCause();
+  } else if (exception.getCause() != null) {
+    exception = exception.getCause();
+  }
+  stBuilder.append(exception.getClass().getName()).append("\n");
+  for (StackTraceElement ste : exception.getStackTrace()) {
+    stBuilder.append("\tat ").append(ste.toString()).append("\n");
+  }
+} else {
+  stBuilder.append("No exception to see here, please move along.");
+}
+
+String errorDetails = 
+"System Details\n" +
+"--------------\n" +
+"OpenNMS Version: " + Vault.getProperty("version.display") + "\n" +
+"Java Version: " + System.getProperty("java.version") + " " + System.getProperty("java.vendor") + "\n" +
+"Java Virtual Machine: " + System.getProperty("java.vm.version") + " " + System.getProperty("java.vm.vendor") + "\n" +
+"Operating System: " + System.getProperty("os.name") + " " +  System.getProperty("os.version") + " " + (System.getProperty("os.arch")) + "\n" +
+"Servlet Container: " + application.getServerInfo() + " (Servlet Spec " + application.getMajorVersion() + "." + application.getMinorVersion() + ")\n" +
+"User Agent: " + request.getHeader("User-Agent") + "\n" +
+"\n" +
+"\n" +
+"Request Details\n" +
+"---------------\n" +
+"Locale: " + request.getLocale() + "\n" +
+"Method: " + request.getMethod() + "\n" +
+"Path Info: " + request.getPathInfo() + "\n" +
+"Path Info (translated): " + request.getPathTranslated() + "\n" +
+"Protocol: " + request.getProtocol() + "\n" +
+"URI: " + request.getRequestURI() + "\n" +
+"URL: " + request.getRequestURL() + "\n" +
+"Scheme: " + request.getScheme() + "\n" +
+"Server Name: " + request.getServerName() + "\n" +
+"Server Port: " + request.getServerPort() + "\n" +
+"\n" +
+"Exception Stack Trace\n" +
+"---------------------\n" + stBuilder.toString();
+
+userSession.setAttribute("errorReportSubject", "Uncaught " + exception.getClass().getSimpleName() + " in webapp");
+userSession.setAttribute("errorReportDetails", errorDetails);
+
+%>
+
 <p>
   To reveal details of the error encountered and instructions for
   reporting it, click
@@ -102,21 +155,9 @@ Please include the information below when reporting problems.
 </p>
 
 <h3>Exception Trace</h3>
-  <pre id="exceptionTrace"><%
-    while (exception != null) {
-      exception.printStackTrace(new java.io.PrintWriter(out));
-
-      if (exception instanceof ServletException) {
-        exception = ((ServletException) exception).getRootCause();
-      } else {
-        exception = exception.getCause();
-      }
-
-      if (exception != null) {
-        out.print("Caused by: ");
-      }
-    }
-  %></pre>
+  <pre id="exceptionTrace">
+<%=stBuilder.toString()%>
+  </pre>
   
 <h3>Request Details</h3>
 <table class="standard">
@@ -227,29 +268,8 @@ or support ticket, click
 <textarea id="plainTextArea" style="width: 100%; height: 300px;">
 Please take a few moments to include a description of what you were doing when you encountered this problem. Without knowing the context of the error, it's often difficult for the person looking at the problem to narrow the range of possible causes. Bug reports that do not include any information on the context in which the problem occurred will receive a lower priority and may even be closed as invalid. 
 
+<%= errorDetails %>
 
-System Details
---------------
-OpenNMS Version: <%=Vault.getProperty("version.display")%>
-Java Version: <%=System.getProperty( "java.version" )%> <%=System.getProperty( "java.vendor" )%>
-Java Virtual Machine: <%=System.getProperty( "java.vm.version" )%> <%=System.getProperty( "java.vm.vendor" )%>
-Operating System: <%=System.getProperty( "os.name" )%> <%=System.getProperty( "os.version" )%> (<%=System.getProperty( "os.arch" )%>)
-Servlet Container: <%=application.getServerInfo()%> (Servlet Spec <%=application.getMajorVersion()%>.<%=application.getMinorVersion()%>)
-User Agent: <%=request.getHeader( "User-Agent" )%>
-
-
-Request Details
----------------
-Locale: <%=request.getLocale()%>
-Method: <%=request.getMethod()%>
-Path Info: <%=request.getPathInfo()%>
-Path Info (translated): <%=request.getPathTranslated()%>
-Protocol: <%=request.getProtocol()%>
-URI: <%=request.getRequestURI()%>
-URL: <%=request.getRequestURL()%>
-Scheme: <%=request.getScheme()%>
-Server Name: <%=request.getServerName()%>
-Server Port: <%=request.getServerPort()%>
 </textarea>
 
 </div>
@@ -258,7 +278,6 @@ Server Port: <%=request.getServerPort()%>
 
 <script type="text/javascript">
 var reportArea = document.getElementById("plainTextArea");
-reportArea.innerHTML += "\n\nException Trace:\n\n" + document.getElementById("exceptionTrace").innerHTML;
 </script>
 
 
