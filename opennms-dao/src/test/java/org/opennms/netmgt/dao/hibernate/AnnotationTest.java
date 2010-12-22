@@ -131,7 +131,7 @@ public class AnnotationTest extends AbstractTransactionalDaoTestCase {
 		assertLoadAll(OnmsIpInterface.class, new EmptyChecker<OnmsIpInterface>() {
 
 			public void check(OnmsIpInterface entity) {
-				assertNotNull("ip address should not be null", entity.getIpAddress());
+				assertNotNull("ip address should not be null", entity.getIpAddressAsString());
 				assertNotNull("node should not be null", entity.getNode());
 				assertNotNull("node label should not be null", entity.getNode().getLabel());
 				assertNotNull("monitored services list should not be null", entity.getMonitoredServices());

@@ -446,7 +446,7 @@ public class Collectd extends AbstractServiceDaemon implements
 
     private void scheduleInterface(OnmsIpInterface iface, String svcName, boolean existing) {
         
-        instrumentation().beginScheduleInterface(iface.getNode().getId(), iface.getIpAddress(), svcName);
+        instrumentation().beginScheduleInterface(iface.getNode().getId(), iface.getIpAddressAsString(), svcName);
         try {
         
         Collection<CollectionSpecification> matchingSpecs = getSpecificationsForInterface(iface, svcName);
@@ -550,7 +550,7 @@ public class Collectd extends AbstractServiceDaemon implements
         } // end while more specifications  exist
         
         } finally {
-            instrumentation().endScheduleInterface(iface.getNode().getId(), iface.getIpAddress(), svcName);
+            instrumentation().endScheduleInterface(iface.getNode().getId(), iface.getIpAddressAsString(), svcName);
         }
     }
 
@@ -590,7 +590,7 @@ public class Collectd extends AbstractServiceDaemon implements
             }
 
             // Is the interface in the package?
-            if (!wpkg.interfaceInPackage(iface.getIpAddress())) {
+            if (!wpkg.interfaceInPackage(iface.getIpAddressAsString())) {
                 if (log().isDebugEnabled()) {
                     StringBuffer sb = new StringBuffer();
                     sb.append("getSpecificationsForInterface: address/service: ");
@@ -633,7 +633,7 @@ public class Collectd extends AbstractServiceDaemon implements
      */
     private boolean alreadyScheduled(OnmsIpInterface iface,
             CollectionSpecification spec) {
-        String ipAddress = iface.getIpAddress();
+        String ipAddress = iface.getIpAddressAsString();
         String svcName = spec.getServiceName();
         String pkgName = spec.getPackageName();
         StringBuffer sb;

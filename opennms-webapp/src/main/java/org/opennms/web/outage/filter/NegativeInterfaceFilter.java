@@ -52,7 +52,7 @@ public class NegativeInterfaceFilter extends NotEqualOrNullFilter<String> {
      * @param ipAddress a {@link java.lang.String} object.
      */
     public NegativeInterfaceFilter(String ipAddress) {
-        super(TYPE, SQLType.STRING, "OUTAGES.IPADDR", "ipInterface.inetAddress", ipAddress);
+        super(TYPE, SQLType.STRING, "OUTAGES.IPADDR", "ipInterface.ipAddress", ipAddress);
     }
 
     /**

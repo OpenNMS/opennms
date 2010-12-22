@@ -117,7 +117,7 @@ public class DaoWebOutageRepository implements WebOutageRepository {
                     criteria.addOrder(Order.desc("node.label"));
                     break;
                 case INTERFACE:
-                    criteria.addOrder(Order.desc("ipInterface.inetAddress"));
+                    criteria.addOrder(Order.desc("ipInterface.ipAddress"));
                     break;
                 case SERVICE:
                     criteria.addOrder(Order.desc("serviceType.name"));
@@ -135,7 +135,7 @@ public class DaoWebOutageRepository implements WebOutageRepository {
                     criteria.addOrder(Order.asc("node.label"));
                     break;
                 case REVERSE_INTERFACE:
-                    criteria.addOrder(Order.asc("ipInterface.inetAddress"));
+                    criteria.addOrder(Order.asc("ipInterface.ipAddress"));
                     break;
                 case REVERSE_SERVICE:
                     criteria.addOrder(Order.asc("serviceType.name"));

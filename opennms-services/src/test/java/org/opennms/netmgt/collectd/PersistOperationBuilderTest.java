@@ -78,7 +78,7 @@ public class PersistOperationBuilderTest extends TestCase {
         m_node = new OnmsNode();
         m_node.setId(1);
         m_intf.setNode(m_node);
-        m_intf.setInetAddress(InetAddress.getByName("1.1.1.1"));
+        m_intf.setIpAddress(InetAddress.getByName("1.1.1.1"));
         m_intf.setId(27);
         
         m_ifDao = EasyMock.createMock(IpInterfaceDao.class);

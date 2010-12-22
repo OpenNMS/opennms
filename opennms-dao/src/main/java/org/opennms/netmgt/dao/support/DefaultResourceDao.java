@@ -481,7 +481,7 @@ public class DefaultResourceDao implements ResourceDao, InitializingBean {
                 found = true;
             } else if (responseTimeInterfaces.size() > 0 || distributedResponseTimeInterfaces.size() > 0) {
                 for (OnmsIpInterface ip : node.getIpInterfaces()) {
-                    if (responseTimeInterfaces.contains(ip.getIpAddress()) || distributedResponseTimeInterfaces.contains(ip.getIpAddress())) {
+                    if (responseTimeInterfaces.contains(ip.getIpAddressAsString()) || distributedResponseTimeInterfaces.contains(ip.getIpAddressAsString())) {
                         found = true;
                         break;
                     }
@@ -705,7 +705,7 @@ public class DefaultResourceDao implements ResourceDao, InitializingBean {
         Assert.notNull(ipInterface, "ipInterface argument must not be null");
         Assert.notNull(ipInterface.getNode(), "getNode() on ipInterface must not return null");
         
-        return getChildResourceForNode(ipInterface.getNode(), "responseTime", ipInterface.getIpAddress());
+        return getChildResourceForNode(ipInterface.getNode(), "responseTime", ipInterface.getIpAddressAsString());
     }
 
     /**
@@ -717,7 +717,7 @@ public class DefaultResourceDao implements ResourceDao, InitializingBean {
         Assert.notNull(locMon, "locMon argument must not be null");
         Assert.notNull(ipInterface.getNode(), "getNode() on ipInterface must not return null");
         
-        return getChildResourceForNode(ipInterface.getNode(), "distributedStatus", locMon.getId() + File.separator + ipInterface.getIpAddress());
+        return getChildResourceForNode(ipInterface.getNode(), "distributedStatus", locMon.getId() + File.separator + ipInterface.getIpAddressAsString());
     }
     
     /**

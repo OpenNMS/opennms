@@ -56,12 +56,12 @@ class DnsRecord {
             log().debug("Constructor: no primary interface found for nodeid: " + node.getNodeId());
             Set<OnmsIpInterface> ipInterfaces = node.getIpInterfaces();
             for (OnmsIpInterface onmsIpInterface : ipInterfaces) {
-                m_ip = onmsIpInterface.getInetAddress();
+                m_ip = onmsIpInterface.getIpAddress();
                 break;
             }
         } else {
             log().debug("Constructor: primary interface found for nodeid: " + node.getNodeId());
-            m_ip = primaryInterface.getInetAddress();
+            m_ip = primaryInterface.getIpAddress();
         }
         log().debug("Constructor: set ip address: " + m_ip);
         m_hostname = node.getLabel() + ".";

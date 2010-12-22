@@ -171,9 +171,9 @@ public class OnmsIpInterfaceResource extends OnmsRestService {
             throwException(Status.BAD_REQUEST, "addIpInterface: can't find node " + nodeCriteria);
         } else if (ipInterface == null) {
             throwException(Status.BAD_REQUEST, "addIpInterface: ipInterface object cannot be null");
-        } else if (ipInterface.getInetAddress() == null) {
+        } else if (ipInterface.getIpAddress() == null) {
             throwException(Status.BAD_REQUEST, "addIpInterface: ipInterface's ipAddress cannot be null");
-        } else if (ipInterface.getInetAddress().getAddress() == null) {
+        } else if (ipInterface.getIpAddress().getAddress() == null) {
             throwException(Status.BAD_REQUEST, "addIpInterface: ipInterface's ipAddress bytes cannot be null");
         }
         log().debug("addIpInterface: adding interface " + ipInterface);
@@ -182,7 +182,7 @@ public class OnmsIpInterfaceResource extends OnmsRestService {
         Event e = new Event();
         e.setUei(EventConstants.NODE_GAINED_INTERFACE_EVENT_UEI);
         e.setNodeid(node.getId());
-        e.setInterface(ipInterface.getIpAddress());
+        e.setInterface(ipInterface.getIpAddressAsString());
         e.setSource(getClass().getName());
         e.setTime(EventConstants.formatToString(new java.util.Date()));
         try {

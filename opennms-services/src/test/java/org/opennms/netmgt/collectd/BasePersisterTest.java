@@ -83,7 +83,7 @@ public class BasePersisterTest extends TestCase {
         m_node.setId(1);
         m_intf.setId(25);
         m_intf.setNode(m_node);
-        m_intf.setInetAddress(InetAddress.getByName("1.1.1.1"));
+        m_intf.setIpAddress(InetAddress.getByName("1.1.1.1"));
         
         m_ifDao = m_easyMockUtils.createMock(IpInterfaceDao.class);
         m_serviceParams = new ServiceParameters(new HashMap<String,String>());

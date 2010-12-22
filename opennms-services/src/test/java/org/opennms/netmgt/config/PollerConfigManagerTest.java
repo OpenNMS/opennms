@@ -116,7 +116,7 @@ public class PollerConfigManagerTest extends TestCase {
         svcType.setName("HTTP");
         svc.setServiceType(svcType);
         OnmsIpInterface intf = new OnmsIpInterface();
-        intf.setInetAddress(InetAddress.getByName("1.2.3.4"));
+        intf.setIpAddress(InetAddress.getByName("1.2.3.4"));
         svc.setIpInterface(intf);
         
         Package pkg = new Package();

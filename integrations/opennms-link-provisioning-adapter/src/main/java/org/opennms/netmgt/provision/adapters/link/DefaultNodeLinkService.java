@@ -203,7 +203,7 @@ public class DefaultNodeLinkService implements NodeLinkService {
         OnmsIpInterface primaryInterface = node.getPrimaryInterface();
         
         if(node != null && primaryInterface != null) {
-            return primaryInterface.getIpAddress();
+            return primaryInterface.getIpAddressAsString();
         }
         
         return null;

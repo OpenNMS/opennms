@@ -206,7 +206,7 @@ public class InterfaceSnmpResourceType implements OnmsResourceType {
                 }
                 // Append all of the IP addresses on this ifindex
                 for (OnmsIpInterface ipif : snmpInterface.getIpInterfaces()) {
-                    String ipaddr = ipif.getIpAddress();
+                    String ipaddr = ipif.getIpAddressAsString();
                     if (!"0.0.0.0".equals(ipaddr)) {
                         if (parenString.length() > 0) {
                             parenString.append(", ");

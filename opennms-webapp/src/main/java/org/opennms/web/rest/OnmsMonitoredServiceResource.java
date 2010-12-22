@@ -158,7 +158,7 @@ public class OnmsMonitoredServiceResource extends OnmsRestService {
         log().debug("addService: adding service " + service);
         m_serviceDao.save(service);
         
-        Event e = EventUtils.createNodeGainedServiceEvent(getClass().getName(), node.getId(), intf.getInetAddress(), 
+        Event e = EventUtils.createNodeGainedServiceEvent(getClass().getName(), node.getId(), intf.getIpAddress(), 
                 service.getServiceName(), node.getLabel(), node.getLabelSource(), node.getSysName(), node.getSysDescription());
         
         try {

@@ -351,7 +351,7 @@ public class EventBuilder {
             if (iface.getNode() != null) {
                 m_event.setNodeid(iface.getNode().getId().longValue());
             }
-            m_event.setInterface(iface.getIpAddress());
+            m_event.setInterface(iface.getIpAddressAsString());
         }
         return this;
     }

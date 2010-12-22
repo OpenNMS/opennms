@@ -313,9 +313,9 @@ public class NodeDaoHibernate extends AbstractDaoHibernate<OnmsNode, Integer>
     /** {@inheritDoc} */
     public List<OnmsNode> findByForeignSourceAndIpAddress(String foreignSource, String ipAddress) {
         if (foreignSource == null) {
-            return find("select distinct n from OnmsNode n join n.ipInterfaces as ipInterface where n.foreignSource is NULL and ipInterface.inetAddress = ?", ipAddress);
+            return find("select distinct n from OnmsNode n join n.ipInterfaces as ipInterface where n.foreignSource is NULL and ipInterface.ipAddress = ?", ipAddress);
         } else {
-            return find("select distinct n from OnmsNode n join n.ipInterfaces as ipInterface where n.foreignSource = ? and ipInterface.inetAddress = ?", foreignSource, ipAddress);
+            return find("select distinct n from OnmsNode n join n.ipInterfaces as ipInterface where n.foreignSource = ? and ipInterface.ipAddress = ?", foreignSource, ipAddress);
         }
     }
 

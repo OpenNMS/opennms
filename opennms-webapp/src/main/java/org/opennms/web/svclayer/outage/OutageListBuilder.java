@@ -90,7 +90,7 @@ public class OutageListBuilder {
             outagerow.put("outageid", outage.getId());
             outagerow.put("node", ipInterface.getNode().getLabel());
             outagerow.put("nodeid", monitoredService.getNodeId());
-            outagerow.put("ipaddr", ipInterface.getIpAddress());
+            outagerow.put("ipaddr", ipInterface.getIpAddressAsString());
             outagerow.put("interfaceid", ipInterface.getId());
             outagerow.put("ifserviceid", monitoredService.getId());
             outagerow.put("service", serviceType.getName());

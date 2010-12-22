@@ -69,14 +69,14 @@ public class MonitoredServiceDaoHibernate extends AbstractDaoHibernate<OnmsMonit
 	/** {@inheritDoc} */
 	public OnmsMonitoredService get(Integer nodeId, String ipAddress, String svcName) {
 		return findUnique("from OnmsMonitoredService as svc " +
-				    "where svc.ipInterface.node.id = ? and svc.ipInterface.inetAddress = ? and svc.serviceType.name = ?",
+				    "where svc.ipInterface.node.id = ? and svc.ipInterface.ipAddress = ? and svc.serviceType.name = ?",
 				   nodeId, ipAddress, svcName);
 	}
 	
     /** {@inheritDoc} */
     public OnmsMonitoredService get(Integer nodeId, InetAddress ipAddress, String svcName) {
         return findUnique("from OnmsMonitoredService as svc " +
-                    "where svc.ipInterface.node.id = ? and svc.ipInterface.inetAddress = ? and svc.serviceType.name = ?",
+                    "where svc.ipInterface.node.id = ? and svc.ipInterface.ipAddress = ? and svc.serviceType.name = ?",
                    nodeId, ipAddress, svcName);
     }
     
@@ -90,14 +90,14 @@ public class MonitoredServiceDaoHibernate extends AbstractDaoHibernate<OnmsMonit
 	/** {@inheritDoc} */
 	public OnmsMonitoredService get(Integer nodeId, String ipAddr, Integer ifIndex, Integer serviceId) {
 		return findUnique("from OnmsMonitoredService as svc " +
-			    "where svc.ipInterface.node.id = ? and svc.ipInterface.inetAddress = ? and svc.ipInterface.snmpInterface.ifIndex = ? and svc.serviceType.id = ?",
+			    "where svc.ipInterface.node.id = ? and svc.ipInterface.ipAddress = ? and svc.ipInterface.snmpInterface.ifIndex = ? and svc.serviceType.id = ?",
 			   nodeId, ipAddr, ifIndex, serviceId);
 	}
 
     /** {@inheritDoc} */
     public OnmsMonitoredService get(Integer nodeId, InetAddress ipAddr, Integer ifIndex, Integer serviceId) {
         return findUnique("from OnmsMonitoredService as svc " +
-                "where svc.ipInterface.node.id = ? and svc.ipInterface.inetAddress = ? and svc.ipInterface.snmpInterface.ifIndex = ? and svc.serviceType.id = ?",
+                "where svc.ipInterface.node.id = ? and svc.ipInterface.ipAddress = ? and svc.ipInterface.snmpInterface.ifIndex = ? and svc.serviceType.id = ?",
                nodeId, ipAddr, ifIndex, serviceId);
     }
 

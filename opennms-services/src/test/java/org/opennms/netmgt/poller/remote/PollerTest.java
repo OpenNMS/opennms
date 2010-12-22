@@ -125,7 +125,7 @@ public class PollerTest {
         node.setId(1);
         OnmsIpInterface iface = new OnmsIpInterface("::1", node);
         // Make sure that the address is being converted into fully-qualified format
-        assertEquals("0000:0000:0000:0000:0000:0000:0000:0001", iface.getIpAddress());
+        assertEquals("0000:0000:0000:0000:0000:0000:0000:0001", iface.getIpAddressAsString());
         OnmsServiceType svcType = new OnmsServiceType("HTTP");
         OnmsMonitoredService svc = new OnmsMonitoredService(iface, svcType);
         return svc;
