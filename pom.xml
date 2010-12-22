@@ -592,9 +592,9 @@
     <project.reporting.outputEncoding>UTF-8</project.reporting.outputEncoding>
 
     <!-- maven surefire version added here so it could be overridden -->
-    <maven.surefire.plugin.version>2.7</maven.surefire.plugin.version>
-    <maven.surefire.report.plugin.version>2.7</maven.surefire.report.plugin.version>
-    <maven.eclipse.plugin.version>2.8</maven.eclipse.plugin.version>
+    <maven.surefire.plugin.version>2.5</maven.surefire.plugin.version>
+    <maven.surefire.report.plugin.version>2.5</maven.surefire.report.plugin.version>
+    <maven.eclipse.plugin.version>2.5.1</maven.eclipse.plugin.version>
     <maven.pax.plugin.version>1.4</maven.pax.plugin.version>
 
     <!-- turn down the default DEBUG logLevel. Override on the command line if you want -->
