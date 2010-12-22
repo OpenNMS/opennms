@@ -73,4 +73,8 @@ public abstract class AbstractThresholdEvaluatorTestCase extends TestCase {
         }
         assertTrue("Parm '" + parmName + "' present", parmPresent);
     }
+
+    /* just here to make surefire happy */
+    public void testDoNothing() {
+    }
 }
