@@ -283,7 +283,7 @@ public class OnmsIpInterface extends OnmsEntity implements Serializable {
      * @return a {@link java.lang.String} object.
      */
     @Transient
-    public String getIpAddress() {
+    public String getIpAddressAsString() {
         return InetAddressUtils.toIpAddrString(m_ipAddress);
     }
 
@@ -511,7 +511,7 @@ public class OnmsIpInterface extends OnmsEntity implements Serializable {
      */
     public String toString() {
         return new ToStringCreator(this)
-        .append("ipaddr", getIpAddress())
+        .append("ipaddr", getIpAddressAsString())
         //.append("ifindex", getIfIndex())
         .append("iphostname", getIpHostName())
         .append("ismanaged", getIsManaged())
@@ -540,7 +540,7 @@ public class OnmsIpInterface extends OnmsEntity implements Serializable {
     @XmlElement(name="ipAddress")
     @Type(type="org.opennms.netmgt.model.InetAddressUserType")
     @XmlJavaTypeAdapter(InetAddressXmlAdapter.class)
-    public InetAddress getInetAddress() {
+    public InetAddress getIpAddress() {
         return m_ipAddress;
     }
 
@@ -549,7 +549,7 @@ public class OnmsIpInterface extends OnmsEntity implements Serializable {
      *
      * @param ipaddr a {@link java.lang.String} object.
      */
-    public void setInetAddress(InetAddress ipaddr) {
+    public void setIpAddress(InetAddress ipaddr) {
         m_ipAddress = ipaddr;
     }
 

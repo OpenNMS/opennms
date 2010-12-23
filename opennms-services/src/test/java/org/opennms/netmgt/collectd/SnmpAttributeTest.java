@@ -100,7 +100,7 @@ public class SnmpAttributeTest extends TestCase {
         OnmsIpInterface ipInterface = new OnmsIpInterface();
         ipInterface.setId(1);
         ipInterface.setNode(node);
-        ipInterface.setInetAddress(InetAddress.getByName("192.168.1.1"));
+        ipInterface.setIpAddress(InetAddress.getByName("192.168.1.1"));
         
         expect(m_ipInterfaceDao.load(1)).andReturn(ipInterface).times(3);
 

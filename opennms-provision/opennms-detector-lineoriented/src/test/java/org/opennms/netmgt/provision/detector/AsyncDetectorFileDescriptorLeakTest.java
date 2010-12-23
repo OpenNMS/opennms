@@ -42,7 +42,7 @@ public class AsyncDetectorFileDescriptorLeakTest implements ApplicationContextAw
 
         m_detector.set(getDetector(TcpDetector.class));
         m_detector.get().setServiceName("TCP");
-        m_detector.get().setTimeout(1000);
+        m_detector.get().setTimeout(2000);
         m_detector.get().setBanner(".*");
         m_detector.get().init();
     }
@@ -74,16 +74,11 @@ public class AsyncDetectorFileDescriptorLeakTest implements ApplicationContextAw
         m_server.startServer();
     }
     
-    private void tearDownServer() throws IOException {
-        m_server.stopServer();
-        m_server = null;
-    }
-
     @Test
     public void testSucessServer() throws Throwable {
         setUpServer();
-        int port = m_server.getLocalPort();
-        InetAddress address = m_server.getInetAddress();
+        final int port = m_server.getLocalPort();
+        final InetAddress address = m_server.getInetAddress();
         for (int i = 0; i < 10000; i++) {
             setUp();
             System.err.println("current loop: " + i);
@@ -93,10 +88,10 @@ public class AsyncDetectorFileDescriptorLeakTest implements ApplicationContextAw
             
             detector.setPort(port);
             
-            DefaultDetectFuture future = (DefaultDetectFuture)detector.isServiceDetected(address, new NullDetectorMonitor());
+            final DefaultDetectFuture future = (DefaultDetectFuture)detector.isServiceDetected(address, new NullDetectorMonitor());
             future.addListener(new IoFutureListener<DetectFuture>() {
     
-                public void operationComplete(DetectFuture future) {
+                public void operationComplete(final DetectFuture future) {
                     detector.dispose();
                 }
                 
@@ -112,8 +107,8 @@ public class AsyncDetectorFileDescriptorLeakTest implements ApplicationContextAw
             assertTrue(future.isServiceDetected());
 
             m_detector.set(null);
+            Thread.sleep(10);
         }
-        tearDownServer();
     }
     
     @Test
@@ -123,10 +118,10 @@ public class AsyncDetectorFileDescriptorLeakTest implements ApplicationContextAw
         final TcpDetector detector = m_detector.get();
         detector.setPort(1999);
         
-        DetectFuture future = detector.isServiceDetected(InetAddress.getLocalHost(), new NullDetectorMonitor());
+        final DetectFuture future = detector.isServiceDetected(InetAddress.getLocalHost(), new NullDetectorMonitor());
         future.addListener(new IoFutureListener<DetectFuture>() {
 
-            public void operationComplete(DetectFuture future) {
+            public void operationComplete(final DetectFuture future) {
                 detector.dispose();
             }
             
@@ -140,12 +135,12 @@ public class AsyncDetectorFileDescriptorLeakTest implements ApplicationContextAw
         System.err.println("Finish test");
     }
     
-    public void setApplicationContext(ApplicationContext applicationContext) throws BeansException {
+    public void setApplicationContext(final ApplicationContext applicationContext) throws BeansException {
         m_applicationContext = applicationContext;
     }
     
-    private TcpDetector getDetector(Class<? extends ServiceDetector> detectorClass) {
-        Object bean = m_applicationContext.getBean(detectorClass.getName());
+    private TcpDetector getDetector(final Class<? extends ServiceDetector> detectorClass) {
+        final Object bean = m_applicationContext.getBean(detectorClass.getName());
         assertNotNull(bean);
         assertTrue(detectorClass.isInstance(bean));
         return (TcpDetector)bean;

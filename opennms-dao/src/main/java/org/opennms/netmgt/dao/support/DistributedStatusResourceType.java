@@ -113,7 +113,7 @@ public class DistributedStatusResourceType implements OnmsResourceType {
         for (LocationMonitorIpInterface status : statuses) {
             String definitionName = status.getLocationMonitor().getDefinitionName();
             int id = status.getLocationMonitor().getId();
-            String ipAddr = status.getIpInterface().getIpAddress();
+            String ipAddr = status.getIpInterface().getIpAddressAsString();
             
             File iface = getInterfaceDirectory(id, ipAddr);
             

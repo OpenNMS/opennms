@@ -276,7 +276,7 @@ public class NodeDaoTest  {
         validateNode(n);
 
         for (OnmsIpInterface ip : n.getIpInterfaces()) {
-            ip.getIpAddress();
+            ip.getIpAddressAsString();
             for (OnmsMonitoredService service : ip.getMonitoredServices()) {
                 service.getServiceName();
             }
@@ -285,7 +285,7 @@ public class NodeDaoTest  {
         // Test for bug 1594
         for (OnmsSnmpInterface snmp : n.getSnmpInterfaces()) {
             for (OnmsIpInterface ip : snmp.getIpInterfaces()) {
-                ip.getIpAddress();
+                ip.getIpAddressAsString();
             }
         }
     }
@@ -404,7 +404,7 @@ public class NodeDaoTest  {
         for (Object o : n.getIpInterfaces()) {
 			OnmsIpInterface iface = (OnmsIpInterface)o;
 			assertNotNull(iface);
-			assertNotNull(iface.getIpAddress());
+			assertNotNull(iface.getIpAddressAsString());
 		}
         
         assertNodeEquals(getNode1(), n);

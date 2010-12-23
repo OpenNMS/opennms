@@ -63,13 +63,13 @@ public final class AddEventVisitor extends AbstractEntityVisitor {
 
 	/** {@inheritDoc} */
 	public void visitIpInterface(OnmsIpInterface iface) {
-		m_events.add(EventUtils.createNodeGainedInterfaceEvent("ModelImporter", iface.getNode().getId().intValue(), iface.getInetAddress()));
+		m_events.add(EventUtils.createNodeGainedInterfaceEvent("ModelImporter", iface.getNode().getId().intValue(), iface.getIpAddress()));
 	}
 
 	/** {@inheritDoc} */
 	public void visitMonitoredService(OnmsMonitoredService monSvc) {
 		OnmsIpInterface iface = monSvc.getIpInterface();
 		OnmsNode node = iface.getNode();
-		m_events.add(EventUtils.createNodeGainedServiceEvent("ModelImporter", monSvc.getNodeId().intValue(), iface.getInetAddress(), monSvc.getServiceType().getName(), node.getLabel(), node.getLabelSource(), node.getSysName(), node.getSysDescription()));
+		m_events.add(EventUtils.createNodeGainedServiceEvent("ModelImporter", monSvc.getNodeId().intValue(), iface.getIpAddress(), monSvc.getServiceType().getName(), node.getLabel(), node.getLabelSource(), node.getSysName(), node.getSysDescription()));
 	}
 }

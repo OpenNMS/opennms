@@ -53,14 +53,6 @@ import org.opennms.netmgt.model.OnmsOutage;
  * @author <a href="mailto:joed@opennms.org">Johan Edstrom</a>
  * @author <a href="mailto:brozow@opennms.org">Mathew Brozowski</a>
  * @author <a href="mailto:dj@opennms.org">DJ Gregor</a>
- * @author <a href="mailto:joed@opennms.org">Johan Edstrom</a>
- * @author <a href="mailto:brozow@opennms.org">Mathew Brozowski</a>
- * @author <a href="mailto:dj@opennms.org">DJ Gregor</a>
- * @author <a href="mailto:joed@opennms.org">Johan Edstrom</a>
- * @author <a href="mailto:brozow@opennms.org">Mathew Brozowski</a>
- * @author <a href="mailto:dj@opennms.org">DJ Gregor</a>
- * @version $Id: $
- * @since 1.8.1
  */
 public class DefaultOutageService implements OutageService {
 
@@ -265,7 +257,7 @@ public class DefaultOutageService implements OutageService {
             criteria.addOrder(hibernateOrder);
         }
         criteria.addOrder(Order.asc("node.label"));
-        criteria.addOrder(Order.asc("ipInterface.inetAddress"));
+        criteria.addOrder(Order.asc("ipInterface.ipAddress"));
         criteria.addOrder(Order.asc("serviceType.name"));
 
         return m_dao.findMatching(criteria);
@@ -281,7 +273,7 @@ public class DefaultOutageService implements OutageService {
         if ("node".equals(orderProperty)) {
             hibernateOrderProperty = "node.label";
         } else if ("ipaddr".equals(orderProperty)) {
-            hibernateOrderProperty = "ipInterface.inetAddress";
+            hibernateOrderProperty = "ipInterface.ipAddress";
         } else if ("service".equals(orderProperty)) {
             hibernateOrderProperty = "serviceType.name";
         } else if ("iflostservice".equals(orderProperty)) {

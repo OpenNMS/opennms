@@ -199,7 +199,7 @@ public class ImportOperationsManagerTest extends AbstractTransactionalTemporaryD
             	assertEquals("cat7", node.getAssetRecord().getDisplayCategory());
             	assertEquals(1, node.getIpInterfaces().size());
             	OnmsIpInterface iface = node.getIpInterfaces().iterator().next();
-            	assertEquals("192.168.7.1", iface.getIpAddress());
+            	assertEquals("192.168.7.1", iface.getIpAddressAsString());
             	assertEquals("M", iface.getIsManaged());
             	assertEquals(2, iface.getMonitoredServices().size());
             	

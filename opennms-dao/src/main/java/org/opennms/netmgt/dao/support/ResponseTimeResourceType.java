@@ -109,7 +109,7 @@ public class ResponseTimeResourceType implements OnmsResourceType {
         }
         
         for (OnmsIpInterface i : node.getIpInterfaces()) {
-            String ipAddr = i.getIpAddress();
+            String ipAddr = i.getIpAddressAsString();
 
             File iface = getInterfaceDirectory(ipAddr, false);
             
@@ -137,7 +137,7 @@ public class ResponseTimeResourceType implements OnmsResourceType {
     }
     
     private OnmsResource createResource(OnmsIpInterface ipInterface) {
-        String intf = ipInterface.getIpAddress();
+        String intf = ipInterface.getIpAddressAsString();
         String label = intf;
         String resource = intf;
 

@@ -52,7 +52,7 @@ public class InterfaceFilter extends EqualsFilter<String> {
      * @param ipAddress a {@link java.lang.String} object.
      */
     public InterfaceFilter(String ipAddress) {
-        super(TYPE, SQLType.STRING, "OUTAGES.IPADDR", "ipInterface.inetAddress", ipAddress);
+        super(TYPE, SQLType.STRING, "OUTAGES.IPADDR", "ipInterface.ipAddress", ipAddress);
     }
 
     /**

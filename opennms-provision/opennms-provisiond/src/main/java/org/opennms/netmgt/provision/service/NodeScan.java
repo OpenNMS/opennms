@@ -302,7 +302,7 @@ public class NodeScan implements RunInBatch {
                 abort(String.format("Unable to get requisitioned node (%s/%s): aborted", m_foreignSource, m_foreignId));
             } else {
                 for(OnmsIpInterface iface : m_node.getIpInterfaces()) {
-                    loadNode.add(new IpInterfaceScan(getNodeId(), iface.getInetAddress(), getForeignSource(), getProvisionService()));
+                    loadNode.add(new IpInterfaceScan(getNodeId(), iface.getIpAddress(), getForeignSource(), getProvisionService()));
                 }
             }
         } else {
@@ -399,7 +399,7 @@ public class NodeScan implements RunInBatch {
                 final Set<InetAddress> provisionedIps = new HashSet<InetAddress>();
                 if (getForeignSource() != null) {
                     for(OnmsIpInterface provisioned : getNode().getIpInterfaces()) {
-                        provisionedIps.add(provisioned.getInetAddress());
+                        provisionedIps.add(provisioned.getIpAddress());
                     }
                 }
 
@@ -655,7 +655,7 @@ public class NodeScan implements RunInBatch {
         void updateIpInterface(final BatchTask currentPhase, final OnmsIpInterface iface) {
             getProvisionService().updateIpInterfaceAttributes(getNodeId(), iface);
             if (iface.isManaged()) {
-                currentPhase.add(new IpInterfaceScan(getNodeId(), iface.getInetAddress(), getForeignSource(), getProvisionService()));
+                currentPhase.add(new IpInterfaceScan(getNodeId(), iface.getIpAddress(), getForeignSource(), getProvisionService()));
             }
         }
 
@@ -719,7 +719,7 @@ public class NodeScan implements RunInBatch {
 
     private void onAgentFound(ContainerTask<?> currentPhase, OnmsIpInterface primaryIface) {
         // Make AgentScan a NeedContainer class and have that call run
-        currentPhase.add(createAgentScan(primaryIface.getInetAddress(), "SNMP"));
+        currentPhase.add(createAgentScan(primaryIface.getIpAddress(), "SNMP"));
         setAgentFound(true);
     }
 

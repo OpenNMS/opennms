@@ -252,7 +252,7 @@ public class IpAddrTable extends SnmpTable<IpAddrTableEntry> {
             ipIf = new OnmsIpInterface(ipAddr, node);
         }
 
-        InetAddress inetAddr = ipIf.getInetAddress();
+        InetAddress inetAddr = ipIf.getIpAddress();
         Integer ifIndex = getIfIndex(inetAddr);
 
         // if we've found an ifIndex for this interface

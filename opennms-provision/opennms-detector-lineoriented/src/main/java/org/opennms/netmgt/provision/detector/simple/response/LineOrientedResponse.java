@@ -19,7 +19,7 @@ public class LineOrientedResponse {
      *
      * @param response a {@link java.lang.String} object.
      */
-    public LineOrientedResponse(String response) {
+    public LineOrientedResponse(final String response) {
         setResponse(response);
     }
     
@@ -29,7 +29,7 @@ public class LineOrientedResponse {
      * @param in a {@link java.io.BufferedReader} object.
      * @throws java.io.IOException if any.
      */
-    public void receive(BufferedReader in) throws IOException {
+    public void receive(final BufferedReader in) throws IOException {
         setResponse(in.readLine());
     }
 
@@ -39,7 +39,7 @@ public class LineOrientedResponse {
      * @param prefix a {@link java.lang.String} object.
      * @return a boolean.
      */
-    public boolean startsWith(String prefix) {
+    public boolean startsWith(final String prefix) {
         return getResponse() != null && getResponse().startsWith(prefix);
     }
     
@@ -49,7 +49,7 @@ public class LineOrientedResponse {
      * @param pattern a {@link java.lang.String} object.
      * @return a boolean.
      */
-    public boolean contains(String pattern) {
+    public boolean contains(final String pattern) {
         return getResponse() != null && getResponse().contains(pattern);
     }
     
@@ -59,7 +59,7 @@ public class LineOrientedResponse {
      * @param suffix a {@link java.lang.String} object.
      * @return a boolean.
      */
-    public boolean endsWith(String suffix) {
+    public boolean endsWith(final String suffix) {
         return getResponse() != null && getResponse().endsWith(suffix);
     }
     
@@ -69,7 +69,7 @@ public class LineOrientedResponse {
      * @param regex a {@link java.lang.String} object.
      * @return a boolean.
      */
-    public boolean matches(String regex) {
+    public boolean matches(final String regex) {
         return getResponse() != null && getResponse().toString().trim().matches(regex);
     }
     
@@ -79,7 +79,7 @@ public class LineOrientedResponse {
      * @param regex a {@link java.lang.String} object.
      * @return a boolean.
      */
-    public boolean find(String regex) {
+    public boolean find(final String regex) {
         return getResponse() != null && Pattern.compile(regex).matcher(getResponse()).find();
     }
     
@@ -89,7 +89,7 @@ public class LineOrientedResponse {
      * @param response a {@link java.lang.String} object.
      * @return a boolean.
      */
-    public boolean equals(String response) {
+    public boolean equals(final String response) {
         return (response == null ? getResponse() == null : response.equals(getResponse()));
     }
     
@@ -107,7 +107,7 @@ public class LineOrientedResponse {
      *
      * @param response a {@link java.lang.String} object.
      */
-    public void setResponse(String response) {
+    public void setResponse(final String response) {
         m_response = response;
     }
 

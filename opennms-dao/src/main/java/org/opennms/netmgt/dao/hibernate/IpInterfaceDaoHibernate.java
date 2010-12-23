@@ -70,17 +70,17 @@ public class IpInterfaceDaoHibernate extends AbstractDaoHibernate<OnmsIpInterfac
 
     /** {@inheritDoc} */
     public OnmsIpInterface get(OnmsNode node, String ipAddress) {
-        return findUnique("from OnmsIpInterface as ipInterface where ipInterface.node = ? and ipInterface.inetAddress = ?", node, ipAddress);
+        return findUnique("from OnmsIpInterface as ipInterface where ipInterface.node = ? and ipInterface.ipAddress = ?", node, ipAddress);
     }
 
     /** {@inheritDoc} */
     public List<OnmsIpInterface> findByIpAddress(String ipAddress) {
-        return find("from OnmsIpInterface ipInterface where ipInterface.inetAddress = ?", ipAddress);
+        return find("from OnmsIpInterface ipInterface where ipInterface.ipAddress = ?", ipAddress);
     }
     
     /** {@inheritDoc} */
     public OnmsIpInterface findByNodeIdAndIpAddress(Integer nodeId, String ipAddress) {
-        return findUnique("select ipInterface from OnmsIpInterface as ipInterface where ipInterface.node.id = ? and ipInterface.inetAddress = ?", 
+        return findUnique("select ipInterface from OnmsIpInterface as ipInterface where ipInterface.node.id = ? and ipInterface.ipAddress = ?", 
                           nodeId, 
                           ipAddress);
         
@@ -88,7 +88,7 @@ public class IpInterfaceDaoHibernate extends AbstractDaoHibernate<OnmsIpInterfac
 
     /** {@inheritDoc} */
     public OnmsIpInterface findByForeignKeyAndIpAddress(String foreignSource, String foreignId, String ipAddress) {
-        return findUnique("select ipInterface from OnmsIpInterface as ipInterface join ipInterface.node as node where node.foreignSource = ? and node.foreignId = ? and ipInterface.inetAddress = ?", 
+        return findUnique("select ipInterface from OnmsIpInterface as ipInterface join ipInterface.node as node where node.foreignSource = ? and node.foreignId = ? and ipInterface.ipAddress = ?", 
                           foreignSource, 
                           foreignId, 
                           ipAddress);
@@ -122,7 +122,7 @@ public class IpInterfaceDaoHibernate extends AbstractDaoHibernate<OnmsIpInterfac
         Map<InetAddress, Integer> map = new HashMap<InetAddress, Integer>();
         
         @SuppressWarnings("unchecked")
-        List l = getHibernateTemplate().find("select distinct ipInterface.inetAddress, ipInterface.node.id from OnmsIpInterface as ipInterface");
+        List l = getHibernateTemplate().find("select distinct ipInterface.ipAddress, ipInterface.node.id from OnmsIpInterface as ipInterface");
 
         for (Object o : l) {
             InetAddress ip = (InetAddress) ((Object[]) o)[0];
@@ -146,12 +146,12 @@ public class IpInterfaceDaoHibernate extends AbstractDaoHibernate<OnmsIpInterfac
             return queryInt("select count(ipInterface.id) from OnmsIpInterface as ipInterface " +
                     "join ipInterface.node as node " +
                     "where node.foreignSource is NULL " +
-                    "and ipInterface.inetAddress = ? ", ipAddress) > 0;
+                    "and ipInterface.ipAddress = ? ", ipAddress) > 0;
         } else {
             return queryInt("select count(ipInterface.id) from OnmsIpInterface as ipInterface " +
                     "join ipInterface.node as node " +
                     "where node.foreignSource = ? " +
-                    "and ipInterface.inetAddress = ? ", foreignSource, ipAddress) > 0;
+                    "and ipInterface.ipAddress = ? ", foreignSource, ipAddress) > 0;
         }
     }
 
