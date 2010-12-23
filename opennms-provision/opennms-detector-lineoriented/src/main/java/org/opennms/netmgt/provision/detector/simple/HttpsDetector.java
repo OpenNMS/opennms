@@ -62,7 +62,7 @@ public class HttpsDetector extends HttpDetector {
      * @param serviceName a {@link java.lang.String} object.
      * @param port a int.
      */
-    public HttpsDetector(String serviceName, int port) {
+    public HttpsDetector(final String serviceName, final int port) {
         super(serviceName, port);
     }
     

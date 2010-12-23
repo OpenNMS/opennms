@@ -38,7 +38,8 @@ import java.net.InetAddress;
 import java.net.ServerSocket;
 import java.net.Socket;
 
-import org.opennms.core.utils.ThreadCategory;
+import org.apache.commons.io.IOUtils;
+import org.opennms.core.utils.LogUtils;
 import org.opennms.netmgt.provision.server.exchange.Exchange;
 import org.opennms.netmgt.provision.server.exchange.RequestHandler;
 import org.opennms.netmgt.provision.server.exchange.SimpleConversationEndPoint;
@@ -54,19 +55,19 @@ public class SimpleServer extends SimpleConversationEndPoint {
     public static class ServerErrorExchange implements Exchange{
         protected RequestHandler m_errorRequest;
         
-        public ServerErrorExchange(RequestHandler requestHandler) {
+        public ServerErrorExchange(final RequestHandler requestHandler) {
             m_errorRequest = requestHandler;
         }
         
-        public boolean matchResponseByString(String response) {
+        public boolean matchResponseByString(final String response) {
             return false;
         }
 
-        public boolean processResponse(BufferedReader in) throws IOException {
+        public boolean processResponse(final BufferedReader in) throws IOException {
             return false;
         }
 
-        public boolean sendRequest(OutputStream out) throws IOException {
+        public boolean sendRequest(final OutputStream out) throws IOException {
             m_errorRequest.doRequest(out);
             return false;
         }
@@ -85,7 +86,7 @@ public class SimpleServer extends SimpleConversationEndPoint {
      *
      * @param banner a {@link java.lang.String} object.
      */
-    public void setBanner(String banner){
+    public void setBanner(final String banner){
         m_banner = banner;
     }
     
@@ -121,7 +122,7 @@ public class SimpleServer extends SimpleConversationEndPoint {
      *
      * @param timeout a int.
      */
-    public void setThreadSleepLength(int timeout) {
+    public void setThreadSleepLength(final int timeout) {
         m_threadSleepLength = timeout;
     }
     
@@ -168,7 +169,6 @@ public class SimpleServer extends SimpleConversationEndPoint {
      */
     public void stopServer() throws IOException {
         m_stopped = true;
-//        getServerSocket().getSoTimeout();
         getServerSocket().close();
         if(getServerThread() != null && getServerThread().isAlive()) { 
             
@@ -196,6 +196,9 @@ public class SimpleServer extends SimpleConversationEndPoint {
         return new Runnable(){
             
             public void run(){
+                OutputStream out = null;
+                InputStreamReader isr = null;
+                BufferedReader in = null;
                 try{
                     if (getTimeout() > 0) {
                         getServerSocket().setSoTimeout(getTimeout());
@@ -208,21 +211,24 @@ public class SimpleServer extends SimpleConversationEndPoint {
                         if (getTimeout() > 0) {
                             getSocket().setSoTimeout(getTimeout());
                         }
-                        OutputStream out = getSocket().getOutputStream();
+                        out = getSocket().getOutputStream();
                         if (getBanner() != null) {
                             sendBanner(out);
                         }
-                        ;
-                        BufferedReader in = new BufferedReader(new InputStreamReader(getSocket().getInputStream()));
+                        isr = new InputStreamReader(getSocket().getInputStream());
+                        in = new BufferedReader(isr);
                         attemptConversation(in, out);
                     }
-                } catch (Exception e){
-                    info(e, "SimpleServer Exception on conversation");
+                } catch (final Exception e){
+                    LogUtils.infof(this, e, "SimpleServer Exception on conversation");
                 } finally {
+                    IOUtils.closeQuietly(in);
+                    IOUtils.closeQuietly(isr);
+                    IOUtils.closeQuietly(out);
                     try {
                         stopServer();
-                    } catch (IOException e) {
-                        info(e, "SimpleServer Exception on stopping server");
+                    } catch (final IOException e) {
+                        LogUtils.infof(this, e, "SimpleServer Exception on stopping server");
                     }
                 }
             }
@@ -236,7 +242,7 @@ public class SimpleServer extends SimpleConversationEndPoint {
      * @param out a {@link java.io.OutputStream} object.
      * @throws java.io.IOException if any.
      */
-    protected void sendBanner(OutputStream out) throws IOException {
+    protected void sendBanner(final OutputStream out) throws IOException {
         out.write(String.format("%s\r\n", getBanner()).getBytes());        
     }
     
@@ -248,7 +254,7 @@ public class SimpleServer extends SimpleConversationEndPoint {
      * @throws java.lang.Exception if any.
      * @return a boolean.
      */
-    protected boolean attemptConversation(BufferedReader in, OutputStream out) throws Exception{
+    protected boolean attemptConversation(final BufferedReader in, final OutputStream out) throws Exception{
         m_conversation.attemptServerConversation(in, out);      
         return true;
     }
@@ -258,7 +264,7 @@ public class SimpleServer extends SimpleConversationEndPoint {
      *
      * @param requestHandler a {@link org.opennms.netmgt.provision.server.exchange.RequestHandler} object.
      */
-    protected void addErrorHandler(RequestHandler requestHandler) {
+    protected void addErrorHandler(final RequestHandler requestHandler) {
         m_conversation.addErrorExchange(new ServerErrorExchange(requestHandler));
     }
     
@@ -271,7 +277,7 @@ public class SimpleServer extends SimpleConversationEndPoint {
     protected RequestHandler errorString(final String error) {
         return new RequestHandler() {
 
-            public void doRequest(OutputStream out) throws IOException {
+            public void doRequest(final OutputStream out) throws IOException {
                 out.write(String.format("%s\r\n", error).getBytes());
                 
             }
@@ -288,7 +294,7 @@ public class SimpleServer extends SimpleConversationEndPoint {
     protected RequestHandler shutdownServer(final String response) {
         return new RequestHandler() {
             
-            public void doRequest(OutputStream out) throws IOException {
+            public void doRequest(final OutputStream out) throws IOException {
                 out.write(String.format("%s\r\n", response).getBytes());
                 stopServer();
             }
@@ -301,7 +307,7 @@ public class SimpleServer extends SimpleConversationEndPoint {
      *
      * @param serverSocket a {@link java.net.ServerSocket} object.
      */
-    public void setServerSocket(ServerSocket serverSocket) {
+    public void setServerSocket(final ServerSocket serverSocket) {
         m_serverSocket = serverSocket;
     }
     
@@ -319,7 +325,7 @@ public class SimpleServer extends SimpleConversationEndPoint {
      *
      * @param socket a {@link java.net.Socket} object.
      */
-    public void setSocket(Socket socket) {
+    public void setSocket(final Socket socket) {
         m_socket = socket;
     }
 
@@ -337,7 +343,7 @@ public class SimpleServer extends SimpleConversationEndPoint {
      *
      * @param serverThread a {@link java.lang.Thread} object.
      */
-    protected void setServerThread(Thread serverThread) {
+    protected void setServerThread(final Thread serverThread) {
         m_serverThread = serverThread;
     }
 
@@ -349,12 +355,4 @@ public class SimpleServer extends SimpleConversationEndPoint {
     protected Thread getServerThread() {
         return m_serverThread;
     }
-    
-    private void info(Throwable t, String format, Object... args) {
-        ThreadCategory log = ThreadCategory.getInstance(getClass());
-        if (log.isInfoEnabled()) {
-            log.info(String.format(format, args), t);
-        }
-    }
-    
 }

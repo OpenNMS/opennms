@@ -194,29 +194,31 @@ public class DNSAddressRequest {
      */
     private static int globalID = 1;
 
+    private static final String[] CODENAMES = { "Format error", "Server failure", "Name not known", "Not implemented", "Refused" };
+
     /**
      * <P>
      * Decodes the integer to get the flags - refer header for more info on the
      * flags.
      * </P>
      */
-    private void decodeFlags(int flags) throws IOException {
+    private void decodeFlags(final int flags) throws IOException {
         //
         // check the response flag
         //
-        boolean isResponse = ((flags >> SHIFT_QUERY) & 1) != 0;
-        if (!isResponse)
-            throw new IOException("Response flag not set");
+        final boolean isResponse = ((flags >> SHIFT_QUERY) & 1) != 0;
+        if (!isResponse) throw new IOException("Response flag not set");
 
         //
         // check if error free
         //
-        int code = (flags >> SHIFT_RESPONSE_CODE) & 15;
+        final int code = (flags >> SHIFT_RESPONSE_CODE) & 15;
 
         if (code != 0) {
-            if (code == 2) // Throw exception if error code indicates 'Server
-                            // Failure'
+            if (code == 2) {
+                // Throw exception if error code indicates 'Server Failure'
                 throw new IOException(codeName(code) + " (" + code + ")");
+            }
         }
 
         //
@@ -239,19 +241,17 @@ public class DNSAddressRequest {
      * @param host
      *            hostname for which address is to be constructed
      */
-    public DNSAddressRequest(String host) {
+    public DNSAddressRequest(final String host) {
         //
-        // Split the host into its component
-        // parts.
-        //
-        StringTokenizer labels = new StringTokenizer(host, ".");
+        // Split the host into its component parts.
+
+        final StringTokenizer labels = new StringTokenizer(host, ".");
         while (labels.hasMoreTokens()) {
             //
             // if any section is longer than
             // 63 characters then it's illegal
-            //
-            if (labels.nextToken().length() > 63)
-                throw new IllegalArgumentException("Invalid hostname: " + host);
+
+            if (labels.nextToken().length() > 63) throw new IllegalArgumentException("Invalid hostname: " + host);
         }
 
         //
@@ -280,8 +280,8 @@ public class DNSAddressRequest {
      * @throws java.io.IOException if any.
      */
     public byte[] buildRequest() throws IOException {
-        ByteArrayOutputStream byteArrayOut = new ByteArrayOutputStream();
-        DataOutputStream dataOut = new DataOutputStream(byteArrayOut);
+        final ByteArrayOutputStream byteArrayOut = new ByteArrayOutputStream();
+        final DataOutputStream dataOut = new DataOutputStream(byteArrayOut);
 
         dataOut.writeShort(m_reqID);
         dataOut.writeShort((0 << SHIFT_QUERY) | (OPCODE_QUERY << SHIFT_OPCODE) | (1 << SHIFT_RECURSE_PLEASE));
@@ -291,9 +291,9 @@ public class DNSAddressRequest {
         dataOut.writeShort(0); // # authorities
         dataOut.writeShort(0); // # additional
 
-        StringTokenizer labels = new StringTokenizer(m_reqHost, ".");
+        final StringTokenizer labels = new StringTokenizer(m_reqHost, ".");
         while (labels.hasMoreTokens()) {
-            String label = labels.nextToken();
+            final String label = labels.nextToken();
             dataOut.writeByte(label.length());
             dataOut.writeBytes(label);
         }
@@ -319,19 +319,17 @@ public class DNSAddressRequest {
      *                packet
      * @throws java.io.IOException if any.
      */
-    public void receiveResponse(byte[] data, int length) throws IOException {
+    public void receiveResponse(final byte[] data, final int length) throws IOException {
         /*
          * Decode the input stream.
          */
-        DNSInputStream dnsIn = new DNSInputStream(data, 0, length);
-        int id = dnsIn.readShort();
-        if (id != m_reqID)
-            throw new IOException("ID does not match request");
+        final DNSInputStream dnsIn = new DNSInputStream(data, 0, length);
+        final int id = dnsIn.readShort();
+        if (id != m_reqID) throw new IOException("ID does not match request");
 
-        //
         // read in the flags
-        //
-        int flags = dnsIn.readShort();
+
+        final int flags = dnsIn.readShort();
         decodeFlags(flags);
 
         int numQueries = dnsIn.readShort();
@@ -363,7 +361,7 @@ public class DNSAddressRequest {
              * (numAdditional -- > 0) dnsIn.readRR ();
              */
 
-        } catch (IOException ex) {
+        } catch (final IOException ex) {
             if (!m_truncated)
                 throw ex;
         }
@@ -389,19 +387,18 @@ public class DNSAddressRequest {
      *                packet
      * @throws java.io.IOException if any.
      */
-    public void verifyResponse(byte[] data, int length) throws IOException {
+    public void verifyResponse(final byte[] data, final int length) throws IOException {
         /*
          * Decode the input stream.
          */
-        DNSInputStream dnsIn = new DNSInputStream(data, 0, length);
-        int id = dnsIn.readShort();
-        if (id != m_reqID)
-            throw new IOException("ID in received packet (" + id + ") does not match ID from request (" + m_reqID + ")");
+        final DNSInputStream dnsIn = new DNSInputStream(data, 0, length);
+        final int id = dnsIn.readShort();
+        if (id != m_reqID) throw new IOException("ID in received packet (" + id + ") does not match ID from request (" + m_reqID + ")");
 
         //
         // read in the flags
         //
-        int flags = dnsIn.readShort();
+        final int flags = dnsIn.readShort();
         decodeFlags(flags);
     }
 
@@ -480,10 +477,8 @@ public class DNSAddressRequest {
      *            The error code.
      * @return The error string corresponding to the error code
      */
-    public static String codeName(int code) {
-        String[] codeNames = { "Format error", "Server failure", "Name not known", "Not implemented", "Refused" };
-
-        return ((code >= 1) && (code <= 5)) ? codeNames[code - 1] : "Unknown error";
+    public static String codeName(final int code) {
+        return ((code >= 1) && (code <= 5)) ? CODENAMES[code - 1] : "Unknown error";
     }
 
 }

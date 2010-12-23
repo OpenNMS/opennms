@@ -61,18 +61,18 @@ public class MultilineOrientedCodecFactory implements ProtocolCodecFactory {
      * @param charset a {@link java.nio.charset.Charset} object.
      * @param multipleLineIndicator a {@link java.lang.String} object.
      */
-    public MultilineOrientedCodecFactory(Charset charset, String multipleLineIndicator) {
+    public MultilineOrientedCodecFactory(final Charset charset, final String multipleLineIndicator) {
         m_encoder = new LineOrientedEncoder(charset);
         m_decoder = new MultiLineDecoder(charset, multipleLineIndicator);
     }
     
     /** {@inheritDoc} */
-    public ProtocolDecoder getDecoder(IoSession session) throws Exception {
+    public ProtocolDecoder getDecoder(final IoSession session) throws Exception {
         return m_decoder;
     }
 
     /** {@inheritDoc} */
-    public ProtocolEncoder getEncoder(IoSession session) throws Exception {
+    public ProtocolEncoder getEncoder(final IoSession session) throws Exception {
         return m_encoder;
     }
 

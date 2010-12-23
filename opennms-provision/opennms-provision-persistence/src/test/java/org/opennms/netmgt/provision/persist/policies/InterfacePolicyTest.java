@@ -60,15 +60,15 @@ public class InterfacePolicyTest {
     public void testMatchingPolicy() {
         OnmsIpInterface o = null;
         
-        MatchingIpInterfacePolicy p = new MatchingIpInterfacePolicy();
+        final MatchingIpInterfacePolicy p = new MatchingIpInterfacePolicy();
         p.setAction("DO_NOT_PERSIST");
         p.setMatchBehavior("NO_PARAMETERS");
         p.setIpAddress("~^10\\..*$");
 
-        List<OnmsIpInterface> populatedInterfaces = new ArrayList<OnmsIpInterface>();
-        List<OnmsIpInterface> matchedInterfaces = new ArrayList<OnmsIpInterface>();
+        final List<OnmsIpInterface> populatedInterfaces = new ArrayList<OnmsIpInterface>();
+        final List<OnmsIpInterface> matchedInterfaces = new ArrayList<OnmsIpInterface>();
         
-        for (OnmsIpInterface iface : m_interfaces) {
+        for (final OnmsIpInterface iface : m_interfaces) {
             System.err.println(iface);
             o = p.apply(iface);
             if (o != null) {

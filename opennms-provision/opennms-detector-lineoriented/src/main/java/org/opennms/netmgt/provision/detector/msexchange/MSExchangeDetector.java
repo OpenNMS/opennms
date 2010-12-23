@@ -71,7 +71,7 @@ public class MSExchangeDetector extends BasicDetector<LineOrientedRequest, MSExc
     /** {@inheritDoc} */
     @Override
     protected Client<LineOrientedRequest, MSExchangeResponse> getClient() {
-        MSExchangeDetectorClient client = new MSExchangeDetectorClient();
+        final MSExchangeDetectorClient client = new MSExchangeDetectorClient();
         client.setImapPort(getImapPort());
         client.setPop3Port(getPop3Port());
         return client;
@@ -92,7 +92,7 @@ public class MSExchangeDetector extends BasicDetector<LineOrientedRequest, MSExc
     public ResponseValidator<MSExchangeResponse> find(final String regex){
         return new ResponseValidator<MSExchangeResponse>() {
 
-            public boolean validate(MSExchangeResponse response) {
+            public boolean validate(final MSExchangeResponse response) {
                 return response.contains(regex);
             }
           
@@ -105,7 +105,7 @@ public class MSExchangeDetector extends BasicDetector<LineOrientedRequest, MSExc
      *
      * @param pop3Port a int.
      */
-    public void setPop3Port(int pop3Port) {
+    public void setPop3Port(final int pop3Port) {
         m_pop3Port = pop3Port;
     }
 
@@ -123,7 +123,7 @@ public class MSExchangeDetector extends BasicDetector<LineOrientedRequest, MSExc
      *
      * @param imapPort a int.
      */
-    public void setImapPort(int imapPort) {
+    public void setImapPort(final int imapPort) {
         m_imapPort = imapPort;
     }
 

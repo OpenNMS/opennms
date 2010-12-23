@@ -45,7 +45,7 @@ public class NrpeRequest {
     /** Constant <code>Null</code> */
     public static final NrpeRequest Null = new NrpeRequest(null) {
         @Override
-        public void send(OutputStream out) throws IOException {
+        public void send(final OutputStream out) throws IOException {
         }
     };
     
@@ -56,7 +56,7 @@ public class NrpeRequest {
      *
      * @param command an array of byte.
      */
-    public NrpeRequest(byte[] command) {
+    public NrpeRequest(final byte[] command) {
         if (command != null) {
             m_command = command.clone();
         } else {
@@ -70,7 +70,7 @@ public class NrpeRequest {
      * @throws java.io.IOException if any.
      * @param out a {@link java.io.OutputStream} object.
      */
-    public void send(OutputStream out) throws IOException {
+    public void send(final OutputStream out) throws IOException {
         out.write( m_command);
     }
     

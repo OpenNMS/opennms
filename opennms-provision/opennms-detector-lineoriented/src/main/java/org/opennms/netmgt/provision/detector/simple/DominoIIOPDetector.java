@@ -72,7 +72,7 @@ public class DominoIIOPDetector extends LineOrientedDetector {
      * @param serviceName a {@link java.lang.String} object.
      * @param port a int.
      */
-    public DominoIIOPDetector(String serviceName, int port) {
+    public DominoIIOPDetector(final String serviceName, final int port) {
         super(serviceName, port);
     }
 
@@ -88,7 +88,7 @@ public class DominoIIOPDetector extends LineOrientedDetector {
     /** {@inheritDoc} */
     @Override
     protected DominoIIOPClient getClient() {
-        DominoIIOPClient client = new DominoIIOPClient();
+        final DominoIIOPClient client = new DominoIIOPClient();
         client.setIorPort(getIorPort());
         return client;
     }
@@ -98,7 +98,7 @@ public class DominoIIOPDetector extends LineOrientedDetector {
      *
      * @param iorPort a int.
      */
-    public void setIorPort(int iorPort) {
+    public void setIorPort(final int iorPort) {
         m_iorPort = iorPort;
     }
 

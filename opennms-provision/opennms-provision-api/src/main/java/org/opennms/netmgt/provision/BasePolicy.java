@@ -3,7 +3,7 @@ package org.opennms.netmgt.provision;
 import java.util.LinkedHashMap;
 import java.util.Map.Entry;
 
-import org.opennms.core.utils.ThreadCategory;
+import org.opennms.core.utils.LogUtils;
 import org.opennms.netmgt.provision.annotations.Require;
 import org.springframework.beans.BeanWrapper;
 import org.springframework.beans.BeanWrapperImpl;
@@ -32,13 +32,12 @@ public abstract class BasePolicy<T> {
      * @param <T> a T object.
      * @return a boolean.
      */
-    protected boolean match(String s, String matcher) {
+    protected boolean match(final String s, final String matcher) {
         if (s == null) {
             return false;
         }
         if (matcher.startsWith("~")) {
-            matcher = matcher.replaceFirst("~", "");
-            return s.matches(matcher);
+            return s.matches(matcher.replaceFirst("~", ""));
         } else {
             return s.equals(matcher);
         }
@@ -61,10 +60,11 @@ public abstract class BasePolicy<T> {
      *
      * @param matchBehavior a {@link java.lang.String} object.
      */
-    public void setMatchBehavior(String matchBehavior) {
-        if (matchBehavior != null && matchBehavior.toUpperCase().contains("ALL")) {
+    public void setMatchBehavior(final String matchBehavior) {
+        final String upperMatchBehavior = matchBehavior.toUpperCase();
+        if (matchBehavior != null && upperMatchBehavior.contains("ALL")) {
             setMatch(Match.ALL_PARAMETERS);
-        } else if (matchBehavior != null && matchBehavior.toUpperCase().contains("NO")) {
+        } else if (matchBehavior != null && upperMatchBehavior.contains("NO")) {
             setMatch(Match.NO_PARAMETERS);
         } else {
             setMatch(Match.ANY_PARAMETER);
@@ -77,7 +77,7 @@ public abstract class BasePolicy<T> {
      *
      * @param match the match to set
      */
-    protected void setMatch(Match match) {
+    protected void setMatch(final Match match) {
         m_match = match;
     }
 
@@ -98,7 +98,7 @@ public abstract class BasePolicy<T> {
      * @param key a {@link java.lang.String} object.
      * @return a {@link java.lang.String} object.
      */
-    protected String getCriteria(String key) {
+    protected String getCriteria(final String key) {
         return getCriteria().get(key);
     }
 
@@ -110,7 +110,7 @@ public abstract class BasePolicy<T> {
      * @param expression a {@link java.lang.String} object.
      * @return a {@link java.lang.String} object.
      */
-    protected String putCriteria(String key, String expression) {
+    protected String putCriteria(final String key, final String expression) {
         return getCriteria().put(key, expression);
     }
 
@@ -131,7 +131,7 @@ public abstract class BasePolicy<T> {
      * @param iface a T object.
      * @return a boolean.
      */
-    protected boolean matches(T iface) {
+    protected boolean matches(final T iface) {
         
         switch (getMatch()) {
         case ALL_PARAMETERS: 
@@ -145,14 +145,13 @@ public abstract class BasePolicy<T> {
     
     }
 
+    private boolean matchAll(final T iface) {
+        final BeanWrapper bean = new BeanWrapperImpl(iface);
 
-    private boolean matchAll(T iface) {
-        BeanWrapper bean = new BeanWrapperImpl(iface);
-        
-        for(Entry<String, String> term : getCriteria().entrySet()) {
+        for(final Entry<String, String> term : getCriteria().entrySet()) {
             
-            String val = getPropertyValueAsString(bean, term.getKey());
-            String matchExpression = term.getValue();
+            final String val = getPropertyValueAsString(bean, term.getKey());
+            final String matchExpression = term.getValue();
             
             if (!match(val, matchExpression)) {
                 return false;
@@ -165,13 +164,13 @@ public abstract class BasePolicy<T> {
     }
 
 
-    private boolean matchAny(T iface) {
-        BeanWrapper bean = new BeanWrapperImpl(iface);
+    private boolean matchAny(final T iface) {
+        final BeanWrapper bean = new BeanWrapperImpl(iface);
         
-        for(Entry<String, String> term : getCriteria().entrySet()) {
+        for(final Entry<String, String> term : getCriteria().entrySet()) {
             
-            String val = getPropertyValueAsString(bean, term.getKey());
-            String matchExpression = term.getValue();
+            final String val = getPropertyValueAsString(bean, term.getKey());
+            final String matchExpression = term.getValue();
             
             if (match(val, matchExpression)) {
                 return true;
@@ -182,12 +181,12 @@ public abstract class BasePolicy<T> {
     }
 
 
-    private boolean matchNone(T iface) {
+    private boolean matchNone(final T iface) {
         return !matchAny(iface);
     }
 
 
-    private String getPropertyValueAsString(BeanWrapper bean, String propertyName) {
+    private String getPropertyValueAsString(final BeanWrapper bean, final String propertyName) {
         return (String) bean.convertIfNecessary(bean.getPropertyValue(propertyName), String.class);
     }
 
@@ -198,7 +197,7 @@ public abstract class BasePolicy<T> {
      * @param iface a T object.
      * @return a T object.
      */
-    public abstract T act(T iface);
+    public abstract T act(final T iface);
 
 
     /**
@@ -207,44 +206,17 @@ public abstract class BasePolicy<T> {
      * @param iface a T object.
      * @return a T object.
      */
-    public T apply(T iface) {
+    public T apply(final T iface) {
         if (iface == null) {
             return null;
         }
         
         if (matches(iface)) {
-            debug("Found Match %s for %s", iface, this);
+            LogUtils.debugf(this, "Found Match %s for %s", iface, this);
             return act(iface);
         }
         
-        debug("No Match Found: %s for %s", iface, this);
+        LogUtils.debugf(this, "No Match Found: %s for %s", iface, this);
         return iface;
-    }
-    
-    /**
-     * <p>debug</p>
-     *
-     * @param format a {@link java.lang.String} object.
-     * @param args a {@link java.lang.Object} object.
-     */
-    protected void debug(String format, Object... args) {
-        ThreadCategory log = ThreadCategory.getInstance(getClass());
-        
-        if (log.isDebugEnabled()) {
-            log.debug(String.format(format, args));
-        }
-    }
-    /**
-     * <p>info</p>
-     *
-     * @param format a {@link java.lang.String} object.
-     * @param args a {@link java.lang.Object} object.
-     */
-    protected void info(String format, Object... args) {
-        ThreadCategory log = ThreadCategory.getInstance(getClass());
-        
-        if (log.isInfoEnabled()) {
-            log.info(String.format(format, args));
-        }
     }
 }

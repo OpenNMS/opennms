@@ -55,11 +55,11 @@ public class LdapDetectorClient extends LineOrientedClient {
         private final int m_timeout;
         private Socket m_socket;
 
-        public TimeoutLDAPSocket(int timeout) {
+        public TimeoutLDAPSocket(final int timeout) {
             m_timeout = timeout;
         }
 
-        public Socket createSocket(String host, int port) throws IOException, UnknownHostException {
+        public Socket createSocket(final String host, final int port) throws IOException, UnknownHostException {
             m_socket = new Socket(host, port);
             m_socket.setSoTimeout(m_timeout);
             return m_socket;
@@ -67,9 +67,9 @@ public class LdapDetectorClient extends LineOrientedClient {
     }
     
     /** {@inheritDoc} */
-    public void connect(InetAddress address, int port, int timeout) throws IOException, Exception {
+    public void connect(final InetAddress address, final int port, final int timeout) throws IOException, Exception {
         super.connect(address, port, timeout);
-        LDAPConnection lc = new LDAPConnection(new TimeoutLDAPSocket(timeout));
+        final LDAPConnection lc = new LDAPConnection(new TimeoutLDAPSocket(timeout));
         lc.connect(address.getHostAddress(), port);
 
     }

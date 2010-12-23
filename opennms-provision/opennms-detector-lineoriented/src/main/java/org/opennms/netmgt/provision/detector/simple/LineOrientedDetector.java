@@ -51,7 +51,7 @@ public abstract class LineOrientedDetector extends BasicDetector<LineOrientedReq
      * @param serviceName a {@link java.lang.String} object.
      * @param port a int.
      */
-    protected LineOrientedDetector(String serviceName, int port) {
+    protected LineOrientedDetector(final String serviceName, final int port) {
         super(serviceName, port);
     }
     
@@ -63,7 +63,7 @@ public abstract class LineOrientedDetector extends BasicDetector<LineOrientedReq
      * @param retries a int.
      * @param serviceName a {@link java.lang.String} object.
      */
-    protected LineOrientedDetector(String serviceName, int port, int timeout, int retries) {
+    protected LineOrientedDetector(final String serviceName, final int port, final int timeout, final int retries) {
         super(serviceName, port, timeout, retries);
 
     }
@@ -76,7 +76,7 @@ public abstract class LineOrientedDetector extends BasicDetector<LineOrientedReq
      */
     public ResponseValidator<LineOrientedResponse> startsWith(final String pattern) {
         return new ResponseValidator<LineOrientedResponse>() {
-            public boolean validate(LineOrientedResponse response) {
+            public boolean validate(final LineOrientedResponse response) {
                 return response.startsWith(pattern);
             }
             
@@ -91,7 +91,7 @@ public abstract class LineOrientedDetector extends BasicDetector<LineOrientedReq
      */
     public ResponseValidator<LineOrientedResponse> equals(final String pattern) {
         return new ResponseValidator<LineOrientedResponse>() {
-            public boolean validate(LineOrientedResponse response) {
+            public boolean validate(final LineOrientedResponse response) {
                 return response.equals(pattern);
             }
             
@@ -107,7 +107,7 @@ public abstract class LineOrientedDetector extends BasicDetector<LineOrientedReq
     public ResponseValidator<LineOrientedResponse> matches(final String regex){
         return new ResponseValidator<LineOrientedResponse>() {
 
-            public boolean validate(LineOrientedResponse response) {
+            public boolean validate(final LineOrientedResponse response) {
                 return response.matches(regex);
             }
             
@@ -123,7 +123,7 @@ public abstract class LineOrientedDetector extends BasicDetector<LineOrientedReq
     public ResponseValidator<LineOrientedResponse> find(final String regex){
         return new ResponseValidator<LineOrientedResponse>() {
 
-            public boolean validate(LineOrientedResponse response) {
+            public boolean validate(final LineOrientedResponse response) {
                 return response.find(regex);
             }
           
@@ -137,7 +137,7 @@ public abstract class LineOrientedDetector extends BasicDetector<LineOrientedReq
      * @param command a {@link java.lang.String} object.
      * @return a {@link org.opennms.netmgt.provision.detector.simple.request.LineOrientedRequest} object.
      */
-    public LineOrientedRequest request(String command) {
+    public LineOrientedRequest request(final String command) {
         return new LineOrientedRequest(command);
     }
     

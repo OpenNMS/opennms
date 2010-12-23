@@ -46,6 +46,8 @@ import java.io.StringWriter;
 import java.util.Date;
 import java.util.StringTokenizer;
 
+import org.apache.commons.io.IOUtils;
+
 /**
  * <P>
  * Runs external executables, optionally under a watched thread.
@@ -109,14 +111,12 @@ public class ExecRunner {
      * @throws java.lang.ExceptionInInitializerError
      *             thrown if a problem occurs
      */
-    public ExecRunner(String command) throws ExceptionInInitializerError {
+    public ExecRunner(final String command) throws ExceptionInInitializerError {
         this();
         try {
             exec(command);
-        } catch (IOException ioe) {
+        } catch (final Exception ioe) {
             throw new ExceptionInInitializerError(ioe.getMessage());
-        } catch (InterruptedException inte) {
-            throw new ExceptionInInitializerError(inte.getMessage());
         }
 
     }
@@ -169,18 +169,31 @@ public class ExecRunner {
      * @throws java.lang.InterruptedException
      *             thrown if a problem occurs
      */
-    public int exec(String command) throws IOException, InterruptedException {
+    public int exec(final String command) throws IOException, InterruptedException {
 
-        StringWriter swOut = new StringWriter();
-        PrintWriter pwOut = new PrintWriter(swOut, true);
+        StringWriter swOut = null;
+        PrintWriter pwOut = null;
 
-        StringWriter swErr = new StringWriter();
-        PrintWriter pwErr = new PrintWriter(swErr, true);
+        StringWriter swErr = null;
+        PrintWriter pwErr = null;
 
-        int rc = exec(command, pwOut, pwErr);
+        int rc = 0;
+        try {
+            swOut = new StringWriter();
+            pwOut = new PrintWriter(swOut, true);
 
-        out = swOut.toString();
-        err = swErr.toString();
+            swErr = new StringWriter();
+            pwErr = new PrintWriter(swErr, true);
+
+            rc = exec(command, pwOut, pwErr);
+            out = swOut.toString();
+            err = swErr.toString();
+        } finally {
+            IOUtils.closeQuietly(pwErr);
+            IOUtils.closeQuietly(swErr);
+            IOUtils.closeQuietly(pwOut);
+            IOUtils.closeQuietly(swOut);
+        }
 
         return rc;
 
@@ -201,13 +214,23 @@ public class ExecRunner {
      * @throws java.lang.InterruptedException
      *             thrown if a problem occurs
      */
-    public int exec(String command, OutputStream stdoutStream, OutputStream stderrStream) throws IOException, InterruptedException {
+    public int exec(final String command, final OutputStream stdoutStream, final OutputStream stderrStream) throws IOException, InterruptedException {
 
-        PrintWriter pwOut = new PrintWriter(stdoutStream, true);
-        PrintWriter pwErr = new PrintWriter(stderrStream, true);
+        PrintWriter pwOut = null;
+        PrintWriter pwErr = null;
 
-        return exec(command, pwOut, pwErr);
+        int rc = 0;
+        try {
+            pwOut = new PrintWriter(stdoutStream, true);
+            pwErr = new PrintWriter(stderrStream, true);
 
+            rc = exec(command, pwOut, pwErr);
+        } finally {
+            IOUtils.closeQuietly(pwErr);
+            IOUtils.closeQuietly(pwOut);
+        }
+
+        return rc;
     }
 
     /**
@@ -227,39 +250,39 @@ public class ExecRunner {
      * @throws java.lang.InterruptedException
      *             thrown if a problem occurs
      */
-    public int exec(String command, PrintWriter stdoutWriter, PrintWriter stderrWriter) throws IOException, InterruptedException {
+    public int exec(final String command, final PrintWriter stdoutWriter, final PrintWriter stderrWriter) throws IOException, InterruptedException {
 
         // Default exit value is non-zero to indicate a problem.
         int exitVal = 1;
 
         // //////////////////////////////////////////////////////////////
-        Runtime rt = Runtime.getRuntime();
+        final Runtime rt = Runtime.getRuntime();
         Process proc;
         String[] cmd = null;
 
         // First get the start time & calculate comparison numbers
-        Date startTime = new Date();
-        long startTimeMs = startTime.getTime();
-        long maxTimeMs = startTimeMs + (maxRunTimeSecs * 1000);
+        final Date startTime = new Date();
+        final long startTimeMs = startTime.getTime();
+        final long maxTimeMs = startTimeMs + (maxRunTimeSecs * 1000);
 
         // //////////////////////////////////////////////////////////////
         // First determine the OS to build the right command string
-        String osName = System.getProperty("os.name");
-        if (osName.equals("Windows NT") || osName.equals("Windows 2000")) {
-            cmd = new String[3];
-            cmd[0] = WINDOWS_NT_2000_COMMAND_1;
-            cmd[1] = WINDOWS_NT_2000_COMMAND_2;
-            cmd[2] = command;
-        } else if (osName.equals("Windows 95") || osName.equals("Windows 98") || osName.equals("Windows ME")) {
+        final String osName = System.getProperty("os.name");
+        if (osName.equals("Windows 95") || osName.equals("Windows 98") || osName.equals("Windows ME")) {
             cmd = new String[3];
             cmd[0] = WINDOWS_9X_ME_COMMAND_1;
             cmd[1] = WINDOWS_9X_ME_COMMAND_2;
+            cmd[2] = command;
+        } else if (osName.contains("Windows")) {
+            cmd = new String[3];
+            cmd[0] = WINDOWS_NT_2000_COMMAND_1;
+            cmd[1] = WINDOWS_NT_2000_COMMAND_2;
             cmd[2] = command;
         } else {
             // Linux (and probably other *nixes) prefers to be called
             // with each argument supplied separately, so we first
             // Tokenize it across spaces as the boundary.
-            StringTokenizer st = new StringTokenizer(command, " ");
+            final StringTokenizer st = new StringTokenizer(command, " ");
             cmd = new String[st.countTokens()];
             int token = 0;
             while (st.hasMoreTokens()) {
@@ -275,8 +298,8 @@ public class ExecRunner {
             throw new IOException("Insufficient commands!");
         }
 
-        StreamGobbler outputGobbler = new StreamGobbler(proc.getInputStream(), stdoutWriter);
-        StreamGobbler errorGobbler = new StreamGobbler(proc.getErrorStream(), stderrWriter);
+        final StreamGobbler outputGobbler = new StreamGobbler(proc.getInputStream(), stdoutWriter);
+        final StreamGobbler errorGobbler = new StreamGobbler(proc.getErrorStream(), stderrWriter);
         outputGobbler.start();
         errorGobbler.start();
 
@@ -287,14 +310,14 @@ public class ExecRunner {
             try {
                 exitVal = proc.exitValue();
                 break;
-            } catch (IllegalThreadStateException e) {
+            } catch (final IllegalThreadStateException e) {
 
                 // If we get this exception, then the process isn't
                 // done executing and we determine if our time is up.
                 if (maxRunTimeSecs > 0) {
 
-                    Date endTime = new Date();
-                    long endTimeMs = endTime.getTime();
+                    final Date endTime = new Date();
+                    final long endTimeMs = endTime.getTime();
                     if (endTimeMs > maxTimeMs) {
                         // Time's up - kill the process and the gobblers and
                         // return
@@ -375,24 +398,16 @@ public class ExecRunner {
      * @throws java.io.IOException
      *             thrown if a problem occurs
      */
-    public static void main(String[] args) throws IOException {
+    public static void main(final String[] args) throws IOException {
 
         try {
 
-            ExecRunner er = new ExecRunner();
-
-            // ///////////////////////////////////////////////////////////////////
-            // Linux: Test the exec operation with just STDOUT and STDERR
-            // System.out.println("Testing ExecRunner with STDOUT and
-            // STDERR...");
-            // er.exec("ls -l", System.out, System.err);
-            // System.out.println("Complete");
+            final ExecRunner er = new ExecRunner();
 
             // ///////////////////////////////////////////////////////////////////
             // Windows: Test the exec operation with just STDOUT and STDERR
             System.out.println("Testing ExecRunner with StringWriter...");
 
-            er = new ExecRunner();
             er.setMaxRunTimeSecs(1);
             er.exec("dir /s c:\\");
             // er.exec("ls -l");
@@ -405,7 +420,7 @@ public class ExecRunner {
             // Exit nicely
             System.exit(0);
 
-        } catch (Exception e) {
+        } catch (final Exception e) {
 
             e.printStackTrace();
             System.exit(1);
@@ -422,7 +437,7 @@ public class ExecRunner {
      * @throws IOException
      *             thrown if a problem occurs
      */
-    private final void readObject(ObjectInputStream in) throws IOException {
+    private final void readObject(final ObjectInputStream in) throws IOException {
 
         throw new IOException("Object cannot be deserialized");
 
@@ -435,7 +450,7 @@ public class ExecRunner {
      * @param max
      *            Maximim number of seconds to let program run
      */
-    public void setMaxRunTimeSecs(int max) {
+    public void setMaxRunTimeSecs(final int max) {
 
         maxRunTimeSecs = max;
 
@@ -450,7 +465,7 @@ public class ExecRunner {
      * @throws IOException
      *             thrown if a problem occurs
      */
-    private final void writeObject(ObjectOutputStream out) throws IOException {
+    private final void writeObject(final ObjectOutputStream out) throws IOException {
 
         throw new IOException("Object cannot be serialized");
 

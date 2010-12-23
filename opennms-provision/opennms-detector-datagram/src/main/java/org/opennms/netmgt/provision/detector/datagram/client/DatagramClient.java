@@ -40,7 +40,7 @@ import java.net.DatagramPacket;
 import java.net.DatagramSocket;
 import java.net.InetAddress;
 
-import org.opennms.core.utils.ThreadCategory;
+import org.opennms.core.utils.LogUtils;
 import org.opennms.netmgt.provision.support.Client;
 
 
@@ -68,10 +68,8 @@ public class DatagramClient implements Client<DatagramPacket, DatagramPacket> {
      * @see org.opennms.netmgt.provision.detector.Client#connect(java.net.InetAddress, int, int)
      */
     /** {@inheritDoc} */
-    public void connect(InetAddress address, int port, int timeout) throws IOException {
-        if (log().isDebugEnabled()) {
-            log().debug("Addres: " + address + " port: " + port + " timeout: " + timeout);
-        }
+    public void connect(final InetAddress address, final int port, final int timeout) throws IOException {
+        LogUtils.debugf(this, "Address: %s, port: %d, timeout: %d", address, port, timeout);
 
         m_socket = new DatagramSocket();
         m_socket.setSoTimeout(timeout);
@@ -102,21 +100,14 @@ public class DatagramClient implements Client<DatagramPacket, DatagramPacket> {
      * @return a {@link java.net.DatagramPacket} object.
      * @throws java.io.IOException if any.
      */
-    public DatagramPacket sendRequest(DatagramPacket request) throws IOException {
+    public DatagramPacket sendRequest(final DatagramPacket request) throws IOException {
 
         m_socket.send(request);
 
-        byte[] data = new byte[512];
+        final byte[] data = new byte[512];
         DatagramPacket response = new DatagramPacket(data, data.length);
-
         m_socket.receive(response);
 
         return response;
     }
-
-    
-    private ThreadCategory log() {
-        return ThreadCategory.getInstance(getClass());
-    }
-
 }

@@ -47,15 +47,17 @@ import org.opennms.netmgt.provision.support.codec.LineOrientedCodecFactory;
  */
 public abstract class AsyncLineOrientedDetector extends AsyncBasicDetector<LineOrientedRequest, LineOrientedResponse> {
 
+    private static final ProtocolCodecFilter DEFAULT_PROTOCOL_CODEC_FILTER = new ProtocolCodecFilter ( new LineOrientedCodecFactory ( Charset.forName("UTF-8" )));
+
     /**
      * <p>Constructor for AsyncLineOrientedDetector.</p>
      *
      * @param serviceName a {@link java.lang.String} object.
      * @param port a int.
      */
-    public AsyncLineOrientedDetector(String serviceName, int port) {
+    public AsyncLineOrientedDetector(final String serviceName, final int port) {
         super(serviceName, port);
-        setProtocolCodecFilter( new ProtocolCodecFilter ( new LineOrientedCodecFactory ( Charset.forName("UTF-8" ))));
+        setProtocolCodecFilter(DEFAULT_PROTOCOL_CODEC_FILTER);
     }
 
     /**
@@ -66,9 +68,9 @@ public abstract class AsyncLineOrientedDetector extends AsyncBasicDetector<LineO
      * @param retries a int.
      * @param serviceName a {@link java.lang.String} object.
      */
-    public AsyncLineOrientedDetector(String serviceName, int port, int timeout, int retries) {
+    public AsyncLineOrientedDetector(final String serviceName, final int port, final int timeout, final int retries) {
         super(serviceName, port, timeout, retries);
-        setProtocolCodecFilter( new ProtocolCodecFilter (new LineOrientedCodecFactory ( Charset.forName("UTF-8" ))));
+        setProtocolCodecFilter(DEFAULT_PROTOCOL_CODEC_FILTER);
     }
 
     /** {@inheritDoc} */
@@ -79,7 +81,7 @@ public abstract class AsyncLineOrientedDetector extends AsyncBasicDetector<LineO
     protected ResponseValidator<LineOrientedResponse> startsWith(final String prefix) {
         return new ResponseValidator<LineOrientedResponse>() {
 
-            public boolean validate(LineOrientedResponse response) {
+            public boolean validate(final LineOrientedResponse response) {
                 return response.startsWith(prefix);
             }
             
@@ -90,7 +92,7 @@ public abstract class AsyncLineOrientedDetector extends AsyncBasicDetector<LineO
     public ResponseValidator<LineOrientedResponse> find(final String regex){
         return new ResponseValidator<LineOrientedResponse>() {
 
-            public boolean validate(LineOrientedResponse response) {
+            public boolean validate(final LineOrientedResponse response) {
                 return response.find(regex);
             }
           
@@ -104,7 +106,7 @@ public abstract class AsyncLineOrientedDetector extends AsyncBasicDetector<LineO
      * @param command a {@link java.lang.String} object.
      * @return a {@link org.opennms.netmgt.provision.detector.simple.request.LineOrientedRequest} object.
      */
-    public LineOrientedRequest request(String command) {
+    public LineOrientedRequest request(final String command) {
         return new LineOrientedRequest(command);
     }
 

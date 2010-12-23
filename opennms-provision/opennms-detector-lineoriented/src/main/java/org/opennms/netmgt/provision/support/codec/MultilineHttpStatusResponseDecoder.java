@@ -54,30 +54,30 @@ public class MultilineHttpStatusResponseDecoder extends MultiLineDecoder {
      *
      * @param charset a {@link java.nio.charset.Charset} object.
      */
-    public MultilineHttpStatusResponseDecoder(Charset charset) {
+    public MultilineHttpStatusResponseDecoder(final Charset charset) {
         super(charset, "\r\n");
     }
     
     /** {@inheritDoc} */
     @Override
-    protected boolean doDecode(IoSession session, IoBuffer in, ProtocolDecoderOutput out) throws Exception {
+    protected boolean doDecode(final IoSession session, final IoBuffer in, final ProtocolDecoderOutput out) throws Exception {
         MultilineOrientedResponse response = (MultilineHttpResponse) session.getAttribute(CURRENT_RESPONSE);
         if(response == null) {
             response = new MultilineHttpResponse();
             session.setAttribute(CURRENT_RESPONSE, response);
         }
         // Remember the initial position.
-        int start = in.position();
+        final int start = in.position();
         
         // Now find the first CRLF in the buffer.
         byte previous = 0;
         while (in.hasRemaining()) {
-            byte current = in.get();
+            final byte current = in.get();
             
             if (previous == '\r' && current == '\n') {
                 // Remember the current position and limit.
-                int position = in.position();
-                int limit = in.limit();
+                final int position = in.position();
+                final int limit = in.limit();
                 try {
                     in.position(start);
                     in.limit(position);
@@ -119,8 +119,8 @@ public class MultilineHttpStatusResponseDecoder extends MultiLineDecoder {
     }
     
     /** {@inheritDoc} */
-    protected boolean checkIndicator(IoBuffer in) throws CharacterCodingException {
-        String line = in.getString(getCharset().newDecoder());
+    protected boolean checkIndicator(final IoBuffer in) throws CharacterCodingException {
+        final String line = in.getString(getCharset().newDecoder());
         return !line.equals("\r\n"); //line.substring(3, 4).equals(getMultilineIndicator());
     }
 

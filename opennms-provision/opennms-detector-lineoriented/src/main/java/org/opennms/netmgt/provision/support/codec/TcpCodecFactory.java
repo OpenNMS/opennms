@@ -54,7 +54,7 @@ public class TcpCodecFactory implements ProtocolCodecFactory {
      *
      * @param charset a {@link java.nio.charset.Charset} object.
      */
-    public TcpCodecFactory(Charset charset) {
+    public TcpCodecFactory(final Charset charset) {
         this(charset, null);
     }
     
@@ -64,18 +64,18 @@ public class TcpCodecFactory implements ProtocolCodecFactory {
      * @param charset a {@link java.nio.charset.Charset} object.
      * @param delimit a {@link java.lang.String} object.
      */
-    public TcpCodecFactory(Charset charset, String delimit) {
+    public TcpCodecFactory(final Charset charset, final String delimit) {
         m_encoder = new LineOrientedEncoder(charset);
         m_decoder = new TcpLineDecoder(charset);
     }
     
     /** {@inheritDoc} */
-    public ProtocolDecoder getDecoder(IoSession session) throws Exception {
+    public ProtocolDecoder getDecoder(final IoSession session) throws Exception {
         return m_decoder;
     }
 
     /** {@inheritDoc} */
-    public ProtocolEncoder getEncoder(IoSession session) throws Exception {
+    public ProtocolEncoder getEncoder(final IoSession session) throws Exception {
         return m_encoder;
     }
 

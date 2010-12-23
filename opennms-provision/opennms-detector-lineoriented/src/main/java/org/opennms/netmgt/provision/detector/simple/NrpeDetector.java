@@ -74,7 +74,7 @@ public class NrpeDetector extends BasicDetector<NrpeRequest, NrpePacket> {
      * @param serviceName a {@link java.lang.String} object.
      * @param port a int.
      */
-    public NrpeDetector(String serviceName, int port) {
+    public NrpeDetector(final String serviceName, final int port) {
         super(serviceName, port);
     }
 
@@ -87,7 +87,7 @@ public class NrpeDetector extends BasicDetector<NrpeRequest, NrpePacket> {
     private ResponseValidator<NrpePacket> resultCodeEquals(final int desiredResultCode){
         return new ResponseValidator<NrpePacket>() {
 
-            public boolean validate(NrpePacket response) throws Exception {
+            public boolean validate(final NrpePacket response) throws Exception {
                 if(response.getResultCode() == desiredResultCode) {
                     return true;
                 }
@@ -100,16 +100,16 @@ public class NrpeDetector extends BasicDetector<NrpeRequest, NrpePacket> {
     /**
      * @return
      */
-    private NrpeRequest request(String command) {
-        NrpePacket packet = new NrpePacket(NrpePacket.QUERY_PACKET, (short) 0, command);
-        byte[] b = packet.buildPacket(getPadding());
+    private NrpeRequest request(final String command) {
+        final NrpePacket packet = new NrpePacket(NrpePacket.QUERY_PACKET, (short) 0, command);
+        final byte[] b = packet.buildPacket(getPadding());
         return new NrpeRequest(b);
     }
 
     /** {@inheritDoc} */
     @Override
     protected Client<NrpeRequest, NrpePacket> getClient() {
-        NrpeClient client = new NrpeClient();
+        final NrpeClient client = new NrpeClient();
         client.setPadding(getPadding());
         client.setUseSsl(isUseSsl());
         return client;
@@ -121,7 +121,7 @@ public class NrpeDetector extends BasicDetector<NrpeRequest, NrpePacket> {
      *
      * @param useSsl a boolean.
      */
-    public void setUseSsl(boolean useSsl) {
+    public void setUseSsl(final boolean useSsl) {
         m_useSsl = useSsl;
     }
 
@@ -139,7 +139,7 @@ public class NrpeDetector extends BasicDetector<NrpeRequest, NrpePacket> {
      *
      * @param padding a int.
      */
-    public void setPadding(int padding) {
+    public void setPadding(final int padding) {
         m_padding = padding;
     }
 

@@ -35,6 +35,7 @@ import java.net.DatagramPacket;
 import java.net.InetAddress;
 import java.net.UnknownHostException;
 
+import org.opennms.core.utils.LogUtils;
 import org.opennms.netmgt.provision.detector.datagram.client.NtpClient;
 import org.opennms.netmgt.provision.support.BasicDetector;
 import org.opennms.netmgt.provision.support.Client;
@@ -78,7 +79,7 @@ public class NtpDetector extends BasicDetector<NtpMessage, DatagramPacket> {
     private ResponseValidator<DatagramPacket> validateResponse(final InetAddress nserver) {
         return new ResponseValidator<DatagramPacket>(){
 
-            public boolean validate(DatagramPacket response) throws Exception {
+            public boolean validate(final DatagramPacket response) throws Exception {
                 if (response.getAddress().equals(nserver)) {
                     // parse the incoming data
                     new NtpMessage(response.getData());
@@ -104,8 +105,8 @@ public class NtpDetector extends BasicDetector<NtpMessage, DatagramPacket> {
     private InetAddress getAddress(){
         try {
             return InetAddress.getByName(getIpToValidate());
-        } catch (UnknownHostException e) {
-            e.printStackTrace();
+        } catch (final UnknownHostException e) {
+            LogUtils.debugf(this, e, "Failed to get InetAddress from %s", getIpToValidate());
             return null;
         }
     }
@@ -115,7 +116,7 @@ public class NtpDetector extends BasicDetector<NtpMessage, DatagramPacket> {
      *
      * @param ipToValidate a {@link java.lang.String} object.
      */
-    public void setIpToValidate(String ipToValidate) {
+    public void setIpToValidate(final String ipToValidate) {
         m_ipToValidate = ipToValidate;
     }
 

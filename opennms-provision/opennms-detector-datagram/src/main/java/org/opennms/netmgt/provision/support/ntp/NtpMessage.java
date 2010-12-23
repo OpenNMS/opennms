@@ -95,6 +95,10 @@ import java.util.Date;
 import java.util.Random;
 public class NtpMessage {
     
+    private static final DecimalFormat NTP_FRACTION_FORMAT = new DecimalFormat(".000000");
+
+    private static final SimpleDateFormat NTP_DATE_FORMAT = new SimpleDateFormat("dd-MMM-yyyy HH:mm:ss");
+
     /**
      * This is a two-bit code warning of an impending leap second to be
      * inserted/deleted in the last minute of the current day. It's values may
@@ -225,7 +229,7 @@ public class NtpMessage {
      *
      * @param array an array of byte.
      */
-    public NtpMessage(byte[] array) {
+    public NtpMessage(final byte[] array) {
         // See the packet format diagram in RFC 2030 for details
         leapIndicator = (byte) ((array[0] >> 6) & 0x3);
         version = (byte) ((array[0] >> 3) & 0x7);
@@ -266,7 +270,7 @@ public class NtpMessage {
      * @param receiveTimestamp a double.
      * @param transmitTimestamp a double.
      */
-    public NtpMessage(byte leapIndicator, byte version, byte mode, short stratum, byte pollInterval, byte precision, double rootDelay, double rootDispersion, byte[] referenceIdentifier, double referenceTimestamp, double originateTimestamp, double receiveTimestamp, double transmitTimestamp) {
+    public NtpMessage(final byte leapIndicator, final byte version, final byte mode, final short stratum, final byte pollInterval, final byte precision, final double rootDelay, final double rootDispersion, final byte[] referenceIdentifier, final double referenceTimestamp, final double originateTimestamp, final double receiveTimestamp, final double transmitTimestamp) {
         // ToDo: Validity checking
         this.leapIndicator = leapIndicator;
         this.version = version;
@@ -301,7 +305,7 @@ public class NtpMessage {
      */
     public byte[] toByteArray() {
         // All bytes are automatically set to 0
-        byte[] p = new byte[48];
+        final byte[] p = new byte[48];
 
         p[0] = (byte) (leapIndicator << 6 | version << 3 | mode);
         p[1] = (byte) stratum;
@@ -309,7 +313,7 @@ public class NtpMessage {
         p[3] = (byte) precision;
 
         // root delay is a signed 16.16-bit FP, in Java an int is 32-bits
-        int l = (int) (rootDelay * 65536.0);
+        final int l = (int) (rootDelay * 65536.0);
         p[4] = (byte) ((l >> 24) & 0xFF);
         p[5] = (byte) ((l >> 16) & 0xFF);
         p[6] = (byte) ((l >> 8) & 0xFF);
@@ -317,7 +321,7 @@ public class NtpMessage {
 
         // root dispersion is an unsigned 16.16-bit FP, in Java there are no
         // unsigned primitive types, so we use a long which is 64-bits
-        long ul = (long) (rootDispersion * 65536.0);
+        final long ul = (long) (rootDispersion * 65536.0);
         p[8] = (byte) ((ul >> 24) & 0xFF);
         p[9] = (byte) ((ul >> 16) & 0xFF);
         p[10] = (byte) ((ul >> 8) & 0xFF);
@@ -342,7 +346,7 @@ public class NtpMessage {
      * @return a {@link java.lang.String} object.
      */
     public String toString() {
-        String precisionStr = new DecimalFormat("0.#E0").format(Math.pow(2, precision));
+        final String precisionStr = new DecimalFormat("0.#E0").format(Math.pow(2, precision));
         return "Leap indicator: " + leapIndicator + "\n" + "Version: " + version + "\n" + "Mode: " + mode + "\n" + "Stratum: " + stratum + "\n" + "Poll: " + pollInterval + "\n" + "Precision: " + precision + " (" + precisionStr + " seconds)\n" + "Root delay: " + new DecimalFormat("0.00").format(rootDelay * 1000) + " ms\n" + "Root dispersion: " + new DecimalFormat("0.00").format(rootDispersion * 1000) + " ms\n" + "Reference identifier: " + referenceIdentifierToString(referenceIdentifier, stratum, version) + "\n" + "Reference timestamp: " + timestampToString(referenceTimestamp) + "\n" + "Originate timestamp: " + timestampToString(originateTimestamp) + "\n" + "Receive timestamp:   " + timestampToString(receiveTimestamp) + "\n" + "Transmit timestamp:  " + timestampToString(transmitTimestamp);
     }
 
@@ -353,11 +357,12 @@ public class NtpMessage {
      * @param b a byte.
      * @return a short.
      */
-    public static short unsignedByteToShort(byte b) {
-        if ((b & 0x80) == 0x80)
+    public static short unsignedByteToShort(final byte b) {
+        if ((b & 0x80) == 0x80) {
             return (short) (128 + (b & 0x7f));
-        else
+        } else {
             return (short) b;
+        }
     }
 
     /**
@@ -368,7 +373,7 @@ public class NtpMessage {
      * @param pointer a int.
      * @return a double.
      */
-    public static double decodeTimestamp(byte[] array, int pointer) {
+    public static double decodeTimestamp(final byte[] array, final int pointer) {
         double r = 0.0;
 
         for (int i = 0; i < 8; i++) {
@@ -385,11 +390,11 @@ public class NtpMessage {
      * @param pointer a int.
      * @param timestamp a double.
      */
-    public static void encodeTimestamp(byte[] array, int pointer, double timestamp) {
+    public static void encodeTimestamp(final byte[] array, final int pointer, double timestamp) {
         // Converts a double into a 64-bit fixed point
         for (int i = 0; i < 8; i++) {
             // 2^24, 2^16, 2^8, .. 2^-32
-            double base = Math.pow(2, (3 - i) * 8);
+            final double base = Math.pow(2, (3 - i) * 8);
 
             // Capture byte value
             array[pointer + i] = (byte) (timestamp / base);
@@ -412,23 +417,22 @@ public class NtpMessage {
      * @param timestamp a double.
      * @return a {@link java.lang.String} object.
      */
-    public static String timestampToString(double timestamp) {
-        if (timestamp == 0)
-            return "0";
+    public static String timestampToString(final double timestamp) {
+        if (timestamp == 0) return "0";
 
         // timestamp is relative to 1900, utc is used by Java and is relative
         // to 1970
-        double utc = timestamp - (2208988800.0);
+        final double utc = timestamp - (2208988800.0);
 
         // milliseconds
-        long ms = (long) (utc * 1000.0);
+        final long ms = (long) (utc * 1000.0);
 
         // date/time
-        String date = new SimpleDateFormat("dd-MMM-yyyy HH:mm:ss").format(new Date(ms));
+        final String date = NTP_DATE_FORMAT.format(new Date(ms));
 
         // fraction
-        double fraction = timestamp - ((long) timestamp);
-        String fractionSting = new DecimalFormat(".000000").format(fraction);
+        final double fraction = timestamp - ((long) timestamp);
+        final String fractionSting = NTP_FRACTION_FORMAT.format(fraction);
 
         return date + fractionSting;
     }
@@ -442,7 +446,7 @@ public class NtpMessage {
      * @param version a byte.
      * @return a {@link java.lang.String} object.
      */
-    public static String referenceIdentifierToString(byte[] ref, short stratum, byte version) {
+    public static String referenceIdentifierToString(final byte[] ref, final short stratum, final byte version) {
         // From the RFC 2030:
         // In the case of NTP Version 3 or Version 4 stratum-0 (unspecified)
         // or stratum-1 (primary) servers, this is a four-character ASCII

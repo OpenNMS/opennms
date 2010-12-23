@@ -95,7 +95,7 @@ public class TcpDetector extends AsyncLineOrientedDetector {
         
         return new AsyncExchange<LineOrientedRequest, LineOrientedResponse>(){
 
-            public boolean validateResponse(LineOrientedResponse response) {
+            public boolean validateResponse(final LineOrientedResponse response) {
                 return response.equals("TCP Failed to send Banner");
             }
 

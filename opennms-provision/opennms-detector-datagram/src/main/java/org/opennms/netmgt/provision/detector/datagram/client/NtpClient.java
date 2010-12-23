@@ -36,7 +36,7 @@ import java.net.DatagramPacket;
 import java.net.DatagramSocket;
 import java.net.InetAddress;
 
-import org.opennms.core.utils.ThreadCategory;
+import org.opennms.core.utils.LogUtils;
 import org.opennms.netmgt.provision.support.Client;
 import org.opennms.netmgt.provision.support.ntp.NtpMessage;
 import org.springframework.context.annotation.Scope;
@@ -64,10 +64,8 @@ public class NtpClient implements Client<NtpMessage, DatagramPacket> {
     }
 
     /** {@inheritDoc} */
-    public void connect(InetAddress address, int port, int timeout) throws IOException, Exception {
-        if (log().isDebugEnabled()) {
-            log().debug("Address: " + address + ", port: " + port + ", timeout: " + timeout);
-        }
+    public void connect(final InetAddress address, final int port, final int timeout) throws IOException, Exception {
+        LogUtils.debugf(this, "Address: %s, port: %d, timeout: %d", address, port, timeout);
         m_socket = new DatagramSocket();
         m_socket.setSoTimeout(timeout);
         setAddress(address);
@@ -93,18 +91,16 @@ public class NtpClient implements Client<NtpMessage, DatagramPacket> {
      * @throws java.io.IOException if any.
      * @throws java.lang.Exception if any.
      */
-    public DatagramPacket sendRequest(NtpMessage request) throws IOException, Exception {
+    public DatagramPacket sendRequest(final NtpMessage request) throws IOException, Exception {
         
-        byte[] buf = new NtpMessage().toByteArray();
-        DatagramPacket outpkt = new DatagramPacket(buf, buf.length, getAddress(), getPort());
-        m_socket.send(outpkt);
+        final byte[] buf = new NtpMessage().toByteArray();
+        m_socket.send(new DatagramPacket(buf, buf.length, getAddress(), getPort()));
 
-        byte[] data = new byte[512];
-        DatagramPacket response = new DatagramPacket(data, data.length);
+        final byte[] data = new byte[512];
+        final DatagramPacket packet = new DatagramPacket(data, data.length);
+        m_socket.receive(packet);
 
-        m_socket.receive(response);
-
-        return response;
+        return packet;
     }
 
     /**
@@ -112,7 +108,7 @@ public class NtpClient implements Client<NtpMessage, DatagramPacket> {
      *
      * @param address a {@link java.net.InetAddress} object.
      */
-    protected void setAddress(InetAddress address) {
+    protected void setAddress(final InetAddress address) {
         m_address = address;
     }
 
@@ -130,7 +126,7 @@ public class NtpClient implements Client<NtpMessage, DatagramPacket> {
      *
      * @param port a int.
      */
-    protected void setPort(int port) {
+    protected void setPort(final int port) {
         m_port = port;
     }
 
@@ -142,9 +138,4 @@ public class NtpClient implements Client<NtpMessage, DatagramPacket> {
     protected int getPort() {
         return m_port;
     }
-
-    private ThreadCategory log() {
-        return ThreadCategory.getInstance(NtpClient.class);
-    }
-
 }
