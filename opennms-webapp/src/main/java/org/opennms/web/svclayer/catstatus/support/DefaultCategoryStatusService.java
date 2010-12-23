@@ -124,8 +124,8 @@ public class DefaultCategoryStatusService implements CategoryStatusService {
 			
 			categoryBuilder.addOutageService(
 					monitoredService.getNodeId(), 
-					ipInterface.getIpAddress(), 
-					ipInterface.getIpAddress(), 
+					ipInterface.getIpAddressAsString(), 
+					ipInterface.getIpAddressAsString(), 
 					ipInterface.getNode().getLabel(), 
 					serviceType.getName());
 		

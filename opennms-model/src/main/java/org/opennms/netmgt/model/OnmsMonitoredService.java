@@ -160,7 +160,7 @@ Comparable<OnmsMonitoredService> {
     @XmlTransient
     @Transient
     public String getIpAddress() {
-        return m_ipInterface.getIpAddress();
+        return m_ipInterface.getIpAddressAsString();
     }
 
     /**

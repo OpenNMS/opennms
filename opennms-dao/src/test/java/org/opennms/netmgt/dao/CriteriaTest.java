@@ -60,7 +60,7 @@ public class CriteriaTest extends AbstractTransactionalDaoTestCase {
         OnmsCriteria crit = 
             new OnmsCriteria(OnmsNode.class)
             .createAlias("ipInterfaces", "iface")
-            .add(Restrictions.eq("iface.inetAddress", "192.168.2.1"));
+            .add(Restrictions.eq("iface.ipAddress", "192.168.2.1"));
         
         Collection<OnmsNode> matching = getNodeDao().findMatching(crit);
         

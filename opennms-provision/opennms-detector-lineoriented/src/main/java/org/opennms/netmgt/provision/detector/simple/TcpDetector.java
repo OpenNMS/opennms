@@ -55,6 +55,7 @@ import org.springframework.stereotype.Component;
 @Scope("prototype")
 public class TcpDetector extends AsyncLineOrientedDetector {
 
+    private static final ProtocolCodecFilter PROTOCOL_CODEC_FILTER = new ProtocolCodecFilter ( new TcpCodecFactory ( Charset.forName("UTF-8" )));
     private static final String DEFAULT_SERVICE_NAME = "TCP";
     private static final int DEFAULT_PORT = 23;
     
@@ -65,7 +66,7 @@ public class TcpDetector extends AsyncLineOrientedDetector {
      */
     public TcpDetector() {
         super(DEFAULT_SERVICE_NAME, DEFAULT_PORT);
-        setProtocolCodecFilter(new ProtocolCodecFilter ( new TcpCodecFactory ( Charset.forName("UTF-8" ))));
+        setProtocolCodecFilter(PROTOCOL_CODEC_FILTER);
     }
     
     /**
@@ -74,7 +75,7 @@ public class TcpDetector extends AsyncLineOrientedDetector {
      * @param serviceName a {@link java.lang.String} object.
      * @param port a int.
      */
-    public TcpDetector(String serviceName, int port) {
+    public TcpDetector(final String serviceName, final int port) {
         super(serviceName, port);
     }
 
@@ -112,7 +113,7 @@ public class TcpDetector extends AsyncLineOrientedDetector {
     public ResponseValidator<LineOrientedResponse> matches(final String regex){
         return new ResponseValidator<LineOrientedResponse>() {
 
-            public boolean validate(LineOrientedResponse response) {
+            public boolean validate(final LineOrientedResponse response) {
                 
                 return response.matches(regex);
             }
@@ -124,7 +125,7 @@ public class TcpDetector extends AsyncLineOrientedDetector {
      *
      * @param banner a {@link java.lang.String} object.
      */
-    public void setBanner(String banner) {
+    public void setBanner(final String banner) {
         m_banner = banner;
     }
 

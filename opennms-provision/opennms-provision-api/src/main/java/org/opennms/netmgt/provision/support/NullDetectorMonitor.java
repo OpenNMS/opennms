@@ -29,7 +29,7 @@
  */
 package org.opennms.netmgt.provision.support;
 
-import org.opennms.core.utils.ThreadCategory;
+import org.opennms.core.utils.LogUtils;
 import org.opennms.netmgt.provision.DetectorMonitor;
 import org.opennms.netmgt.provision.ServiceDetector;
 
@@ -49,8 +49,8 @@ public class NullDetectorMonitor implements DetectorMonitor{
      * @param format a {@link java.lang.String} object.
      * @param args a {@link java.lang.Object} object.
      */
-    public void attempt(ServiceDetector detector, int attempt, String format, Object... args) {
-        info(format, args);
+    public void attempt(final ServiceDetector detector, final int attempt, final String format, final Object... args) {
+        LogUtils.infof(this, format, args);
     }
 
     /**
@@ -61,8 +61,8 @@ public class NullDetectorMonitor implements DetectorMonitor{
      * @param format a {@link java.lang.String} object.
      * @param args a {@link java.lang.Object} object.
      */
-    public void error(ServiceDetector detector, Throwable t, String format, Object... args) {
-        info(t, format, args);
+    public void error(final ServiceDetector detector, final Throwable t, final String format, final Object... args) {
+        LogUtils.infof(this, t, format, args);
     }
 
     /**
@@ -72,8 +72,8 @@ public class NullDetectorMonitor implements DetectorMonitor{
      * @param format a {@link java.lang.String} object.
      * @param args a {@link java.lang.Object} object.
      */
-    public void failure(ServiceDetector detector, String format, Object... args) {
-        info(format, args);
+    public void failure(final ServiceDetector detector, final String format, final Object... args) {
+        LogUtils.infof(this, format, args);
     }
 
     /**
@@ -84,8 +84,8 @@ public class NullDetectorMonitor implements DetectorMonitor{
      * @param format a {@link java.lang.String} object.
      * @param args a {@link java.lang.Object} object.
      */
-    public void info(ServiceDetector detector, Exception e, String format, Object... args) {
-        info(format, args);
+    public void info(final ServiceDetector detector, final Exception e, final String format, final Object... args) {
+        LogUtils.infof(this, format, args);
     }
 
     /**
@@ -95,8 +95,8 @@ public class NullDetectorMonitor implements DetectorMonitor{
      * @param format a {@link java.lang.String} object.
      * @param args a {@link java.lang.Object} object.
      */
-    public void start(ServiceDetector detector, String format, Object... args) {
-        info(format, args);
+    public void start(final ServiceDetector detector, final String format, final Object... args) {
+        LogUtils.infof(this, format, args);
     }
 
     /**
@@ -106,8 +106,8 @@ public class NullDetectorMonitor implements DetectorMonitor{
      * @param format a {@link java.lang.String} object.
      * @param args a {@link java.lang.Object} object.
      */
-    public void stopped(ServiceDetector detector, String format, Object... args) {
-        info(format, args);
+    public void stopped(final ServiceDetector detector, final String format, final Object... args) {
+        LogUtils.infof(this, format, args);
     }
 
     /**
@@ -117,22 +117,8 @@ public class NullDetectorMonitor implements DetectorMonitor{
      * @param format a {@link java.lang.String} object.
      * @param args a {@link java.lang.Object} object.
      */
-    public void success(ServiceDetector detector, String format, Object... args) {
-        info(format, args);
-    }
-    
-    private void info(Throwable t, String format, Object... args) {
-        ThreadCategory log = ThreadCategory.getInstance(getClass());
-        if (log.isInfoEnabled()) {
-            log.info(String.format(format, args), t);
-        }
-    }
-    
-    private void info(String format, Object... args) {
-        ThreadCategory log = ThreadCategory.getInstance(getClass());
-        if (log.isInfoEnabled()) {
-            log.info(String.format(format, args));
-        }
+    public void success(final ServiceDetector detector, final String format, final Object... args) {
+        LogUtils.infof(this, format, args);
     }
 
 }

@@ -379,7 +379,7 @@ public class DefaultNodeListService implements NodeListService, InitializingBean
                 	}
                 } else {
                     for (OnmsIpInterface intf : node.getIpInterfaces()) {
-                        if (!"D".equals(intf.getIsManaged()) && !"0.0.0.0".equals(intf.getIpAddress())) {
+                        if (!"D".equals(intf.getIsManaged()) && !"0.0.0.0".equals(intf.getIpAddressAsString())) {
                             displayInterfaces.add(intf);
                         }
                     }
@@ -474,13 +474,13 @@ public class DefaultNodeListService implements NodeListService, InitializingBean
             int diff;
 
             // Sort by IP first if the IPs are non-0.0.0.0
-            if (!"0.0.0.0".equals(o1.getIpAddress()) && !"0.0.0.0".equals(o2.getIpAddress())) {
-                return new ByteArrayComparator().compare(InetAddressUtils.toIpAddrBytes(o1.getIpAddress()), InetAddressUtils.toIpAddrBytes(o2.getIpAddress()));
+            if (!"0.0.0.0".equals(o1.getIpAddressAsString()) && !"0.0.0.0".equals(o2.getIpAddressAsString())) {
+                return new ByteArrayComparator().compare(InetAddressUtils.toIpAddrBytes(o1.getIpAddressAsString()), InetAddressUtils.toIpAddrBytes(o2.getIpAddressAsString()));
             } else {
                 // Sort IPs that are non-0.0.0.0 so they are first
-                if (!"0.0.0.0".equals(o1.getIpAddress())) {
+                if (!"0.0.0.0".equals(o1.getIpAddressAsString())) {
                     return -1;
-                } else if (!"0.0.0.0".equals(o2.getIpAddress())) {
+                } else if (!"0.0.0.0".equals(o2.getIpAddressAsString())) {
                     return 1;
                 }
             }

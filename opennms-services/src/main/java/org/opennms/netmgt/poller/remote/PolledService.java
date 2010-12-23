@@ -77,7 +77,7 @@ public class PolledService implements MonitoredService, Serializable, Comparable
         m_nodeId = monitoredService.getNodeId();
         m_nodeLabel = monitoredService.getIpInterface().getNode().getLabel();
         m_svcName = monitoredService.getServiceName();
-        m_netInterface = new InetNetworkInterface(monitoredService.getIpInterface().getInetAddress());
+        m_netInterface = new InetNetworkInterface(monitoredService.getIpInterface().getIpAddress());
 		m_monitorConfiguration = monitorConfiguration;
 		m_pollModel = pollModel;
 	}

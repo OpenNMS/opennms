@@ -54,7 +54,7 @@ public class DefaultDetectFuture extends DefaultIoFuture implements DetectFuture
      *
      * @param detector a {@link org.opennms.netmgt.provision.AsyncServiceDetector} object.
      */
-    public DefaultDetectFuture(AsyncServiceDetector detector) {
+    public DefaultDetectFuture(final AsyncServiceDetector detector) {
         super(null);
         m_detector = detector;
     }
@@ -83,7 +83,7 @@ public class DefaultDetectFuture extends DefaultIoFuture implements DetectFuture
      * @return a {@link java.lang.Throwable} object.
      */
     public Throwable getException() {
-        Object val = getValue();
+        final Object val = getValue();
         if (val instanceof Throwable) {
             return (Throwable)val;
         }
@@ -91,12 +91,12 @@ public class DefaultDetectFuture extends DefaultIoFuture implements DetectFuture
     }
 
     /** {@inheritDoc} */
-    public void setServiceDetected(boolean serviceDetected) {
+    public void setServiceDetected(final boolean serviceDetected) {
         setValue(serviceDetected);
     }
 
     /** {@inheritDoc} */
-    public void setException(Throwable throwable) {
+    public void setException(final Throwable throwable) {
 //        System.err.println("setting exeception to " + throwable);
         setValue(throwable);
     }

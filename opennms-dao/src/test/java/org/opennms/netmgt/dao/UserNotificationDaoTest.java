@@ -68,7 +68,7 @@ public class UserNotificationDaoTest extends AbstractTransactionalDaoTestCase {
         OnmsMonitoredService service = (OnmsMonitoredService)iface.getMonitoredServices().iterator().next();
         event.setNode(node);
 	    event.setServiceType(service.getServiceType());
-        event.setIpAddr(iface.getInetAddress());
+        event.setIpAddr(iface.getIpAddress());
         getEventDao().save(event);
         OnmsEvent newEvent = getEventDao().load(event.getId());
         assertEquals("uei://org/opennms/test/UserNotificationDaoTest", newEvent.getEventUei());

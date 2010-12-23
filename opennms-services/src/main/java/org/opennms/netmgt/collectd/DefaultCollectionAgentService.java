@@ -251,7 +251,7 @@ public class DefaultCollectionAgentService implements CollectionAgentService {
      * @return a {@link java.net.InetAddress} object.
      */
     public InetAddress getInetAddress() {
-        return getIpInterface().getInetAddress();
+        return getIpInterface().getIpAddress();
     }
 
 }

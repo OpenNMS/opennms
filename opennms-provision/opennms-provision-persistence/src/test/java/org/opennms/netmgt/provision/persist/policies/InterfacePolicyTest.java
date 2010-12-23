@@ -74,7 +74,7 @@ public class InterfacePolicyTest {
             if (o != null) {
                 matchedInterfaces.add(o);
             }
-            if (iface.getIpAddress().startsWith("10.")) {
+            if (iface.getIpAddressAsString().startsWith("10.")) {
                 populatedInterfaces.add(iface);
             }
         }

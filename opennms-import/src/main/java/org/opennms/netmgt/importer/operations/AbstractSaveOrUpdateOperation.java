@@ -184,7 +184,7 @@ public abstract class AbstractSaveOrUpdateOperation extends AbstractImportOperat
 	
 	private void updateSnmpDataForSnmpInterfaces() {
 	    if (m_collector != null && m_collector.hasIfTable()) {
-            String ipAddress = m_node.getPrimaryInterface().getIpAddress();
+            String ipAddress = m_node.getPrimaryInterface().getIpAddressAsString();
 
             for(IfTableEntry entry : m_collector.getIfTable().getEntries()) {
 	            
@@ -247,10 +247,10 @@ public abstract class AbstractSaveOrUpdateOperation extends AbstractImportOperat
             return;
         }
 
-    	String ipAddr = ipIf.getIpAddress();
+    	String ipAddr = ipIf.getIpAddressAsString();
     	log().debug("Creating SNMP info for interface "+ipAddr);
 
-    	InetAddress inetAddr = ipIf.getInetAddress();
+    	InetAddress inetAddr = ipIf.getIpAddress();
 
     	int ifIndex = m_collector.getIfIndex(inetAddr);
     	if (ifIndex == -1) {
@@ -301,7 +301,7 @@ public abstract class AbstractSaveOrUpdateOperation extends AbstractImportOperat
 	}
 
 	private void resolveIpHostname(OnmsIpInterface ipIf) {
-		ipIf.setIpHostName(ipIf.getIpAddress());
+		ipIf.setIpHostName(ipIf.getIpAddressAsString());
 //
 //     DON'T DO THIS SINCE DNS DOESN'T RELIABLY AVOID HANGING
 //
@@ -423,7 +423,7 @@ public abstract class AbstractSaveOrUpdateOperation extends AbstractImportOperat
     protected Map<String, OnmsIpInterface> getIpAddrToInterfaceMap(OnmsNode imported) {
         Map<String, OnmsIpInterface> ipAddrToIface = new HashMap<String, OnmsIpInterface>();
         for (OnmsIpInterface iface : imported.getIpInterfaces()) {
-            ipAddrToIface.put(iface.getIpAddress(), iface);
+            ipAddrToIface.put(iface.getIpAddressAsString(), iface);
         }
         return ipAddrToIface;
     }

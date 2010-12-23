@@ -858,7 +858,7 @@ public class OnmsNode extends OnmsEntity implements Serializable,
      */
     public OnmsIpInterface getIpInterfaceByIpAddress(InetAddress ipAddress) {
         for (OnmsIpInterface iface : getIpInterfaces()) {
-            if (ipAddress.equals(iface.getInetAddress())) {
+            if (ipAddress.equals(iface.getIpAddress())) {
                 return iface;
             }
         }
@@ -1066,14 +1066,14 @@ public class OnmsNode extends OnmsEntity implements Serializable,
                 iface.setIsSnmpPrimary(PrimaryType.SECONDARY);
             }
             
-            ipInterfaceMap.put(iface.getInetAddress(), iface);
+            ipInterfaceMap.put(iface.getIpAddress(), iface);
         }
     
         // for each ipInterface from the database
         for (Iterator<OnmsIpInterface> it = getIpInterfaces().iterator(); it.hasNext();) {
             OnmsIpInterface dbIface = it.next();
             // find the corresponding scanned Interface
-            OnmsIpInterface scannedIface = ipInterfaceMap.get(dbIface.getInetAddress());
+            OnmsIpInterface scannedIface = ipInterfaceMap.get(dbIface.getIpAddress());
             
             // if we can't find a scanned interface remove from the database
             if (scannedIface == null) {
@@ -1095,7 +1095,7 @@ public class OnmsNode extends OnmsEntity implements Serializable,
             }
             
             // now remove the interface from the map to indicate it was processed
-            ipInterfaceMap.remove(dbIface.getInetAddress());
+            ipInterfaceMap.remove(dbIface.getIpAddress());
         }
         
         
@@ -1112,8 +1112,8 @@ public class OnmsNode extends OnmsEntity implements Serializable,
             EventBuilder bldr = new EventBuilder(EventConstants.PRIMARY_SNMP_INTERFACE_CHANGED_EVENT_UEI, "Provisiond");
             bldr.setIpInterface(scannedPrimaryIf);
             bldr.setService("SNMP");
-            bldr.addParam(EventConstants.PARM_OLD_PRIMARY_SNMP_ADDRESS, oldPrimaryInterface.getIpAddress());
-            bldr.addParam(EventConstants.PARM_NEW_PRIMARY_SNMP_ADDRESS, scannedPrimaryIf.getIpAddress());
+            bldr.addParam(EventConstants.PARM_OLD_PRIMARY_SNMP_ADDRESS, oldPrimaryInterface.getIpAddressAsString());
+            bldr.addParam(EventConstants.PARM_NEW_PRIMARY_SNMP_ADDRESS, scannedPrimaryIf.getIpAddressAsString());
             
             eventForwarder.sendNow(bldr.getEvent());
         }

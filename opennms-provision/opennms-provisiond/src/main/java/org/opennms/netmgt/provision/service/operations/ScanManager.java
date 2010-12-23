@@ -141,9 +141,9 @@ public class ScanManager {
             Set<SnmpInstId> ipAddrs = new TreeSet<SnmpInstId>();
             for(OnmsIpInterface iface : node.getIpInterfaces()) {
                 // @ipv6
-                InetAddress addr = iface.getInetAddress();
+                InetAddress addr = iface.getIpAddress();
                 if (addr instanceof Inet4Address) {
-                    ipAddrs.add(new SnmpInstId(iface.getIpAddress()));
+                    ipAddrs.add(new SnmpInstId(iface.getIpAddressAsString()));
                 }
             }
 

@@ -53,7 +53,7 @@ public class AsyncClientConversation<Request, Response> {
          * @param message
          * @return
          */
-        boolean validateResponse(Response response);
+        boolean validateResponse(final Response response);
 
         /**
          * @return
@@ -66,10 +66,10 @@ public class AsyncClientConversation<Request, Response> {
     
     public static class AsyncExchangeImpl<Request, Response> implements AsyncExchange<Request, Response>{
         
-        private Request m_request;
-        private ResponseValidator<Response> m_responseValidator;
+        private final Request m_request;
+        private final ResponseValidator<Response> m_responseValidator;
 
-        public AsyncExchangeImpl(Request request, ResponseValidator<Response> responseValidator) {
+        public AsyncExchangeImpl(final Request request, final ResponseValidator<Response> responseValidator) {
             m_request = request;
             m_responseValidator = responseValidator;
         }
@@ -78,13 +78,13 @@ public class AsyncClientConversation<Request, Response> {
             return m_request;
         }
 
-        public boolean validateResponse(Response message) {
+        public boolean validateResponse(final Response message) {
             return m_responseValidator.validate(message);
         }
         
     }
     
-    private List<AsyncExchange<Request, Response>> m_conversation = new ArrayList<AsyncExchange<Request, Response>>();
+    private final List<AsyncExchange<Request, Response>> m_conversation = new ArrayList<AsyncExchange<Request, Response>>();
     private boolean m_isComplete = false;
     private boolean m_hasBanner = false;
     
@@ -93,7 +93,7 @@ public class AsyncClientConversation<Request, Response> {
      *
      * @param request a {@link org.opennms.netmgt.provision.support.AsyncClientConversation.AsyncExchange} object.
      */
-    public void addExchange(AsyncExchange<Request, Response> request) {
+    public void addExchange(final AsyncExchange<Request, Response> request) {
         m_conversation.add(request);
     }
     
@@ -102,7 +102,7 @@ public class AsyncClientConversation<Request, Response> {
      *
      * @param hasBanner a boolean.
      */
-    public void setHasBanner(boolean hasBanner){
+    public void setHasBanner(final boolean hasBanner){
         m_hasBanner = hasBanner;
     }
     
@@ -140,9 +140,9 @@ public class AsyncClientConversation<Request, Response> {
      * @param message a Response object.
      * @return a boolean.
      */
-    public boolean validate(Response message) {
-        AsyncExchange<Request, Response> ex = m_conversation.remove(0);
-        
+    public boolean validate(final Response message) {
+        final AsyncExchange<Request, Response> ex = m_conversation.remove(0);
+
         if(m_conversation.isEmpty()) {
             m_isComplete = true;
         }

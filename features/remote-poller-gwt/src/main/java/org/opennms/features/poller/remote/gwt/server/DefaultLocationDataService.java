@@ -720,7 +720,7 @@ public class DefaultLocationDataService implements LocationDataService, Initiali
             if (ipi.getNode() != null) {
                 service.setNodeId(ipi.getNode().getId());
             }
-            service.setIpAddress(ipi.getIpAddress());
+            service.setIpAddress(ipi.getIpAddressAsString());
             service.setHostname(ipi.getIpHostName());
             final OnmsSnmpInterface snmpi = ipi.getSnmpInterface();
             if (snmpi != null) {

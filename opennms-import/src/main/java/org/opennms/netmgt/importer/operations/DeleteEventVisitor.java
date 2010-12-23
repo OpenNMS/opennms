@@ -63,7 +63,7 @@ public final class DeleteEventVisitor extends AbstractEntityVisitor {
 
 	/** {@inheritDoc} */
 	public void visitIpInterfaceComplete(OnmsIpInterface iface) {
-		m_events.add(EventUtils.createInterfaceDeletedEvent("ModelImporter", iface.getNode().getId().longValue(), iface.getIpAddress(), -1L));
+		m_events.add(EventUtils.createInterfaceDeletedEvent("ModelImporter", iface.getNode().getId().longValue(), iface.getIpAddressAsString(), -1L));
 	}
 
 	/** {@inheritDoc} */

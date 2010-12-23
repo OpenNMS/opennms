@@ -101,13 +101,13 @@ session="true"
             <tr>
               <td>Subject:</td>
               <td colspan="2">
-                <input class="textwrapper" type="text" name="subject" />
+                <input class="textwrapper" type="text" name="subject" value="${sessionScope.errorReportSubject}" />
               </td>
             </tr>
             <tr>
               <td>Text:</td>
               <td colspan="2">
-                <textarea class="textwrapper" name="text" /></textarea>
+                <textarea class="textwrapper" name="text" rows="15" />${sessionScope.errorReportDetails}</textarea>
               </td>
             </tr>
             <tr>

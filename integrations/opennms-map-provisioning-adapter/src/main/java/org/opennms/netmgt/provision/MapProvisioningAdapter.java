@@ -816,11 +816,11 @@ public class MapProvisioningAdapter extends SimpleQueuedProvisioningAdapter impl
         if (primaryInterface == null) {
             final Set<OnmsIpInterface> ipInterfaces = node.getIpInterfaces();
             for (final OnmsIpInterface onmsIpInterface : ipInterfaces) {
-                    return onmsIpInterface.getIpAddress();
+                    return onmsIpInterface.getIpAddressAsString();
             }
             return "0.0.0.0";
         }
-        return primaryInterface.getIpAddress();
+        return primaryInterface.getIpAddressAsString();
     }
     
     private String getLabel(final String FQDN) {

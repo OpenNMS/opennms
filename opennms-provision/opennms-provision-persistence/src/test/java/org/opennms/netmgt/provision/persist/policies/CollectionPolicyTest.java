@@ -142,7 +142,7 @@ public class CollectionPolicyTest {
                 matchedInterfaces.add(o);
             }
             for (OnmsIpInterface ipif : iface.getIpInterfaces()) {
-                if (ipif.getIpAddress().equalsIgnoreCase(matchingIp)) {
+                if (ipif.getIpAddressAsString().equalsIgnoreCase(matchingIp)) {
                     populatedInterfaces.add(iface);
                 }
             }
