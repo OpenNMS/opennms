@@ -23,7 +23,7 @@ public class LineOrientedRequest {
      *
      * @param command a {@link java.lang.String} object.
      */
-    public LineOrientedRequest(String command) {
+    public LineOrientedRequest(final String command) {
         m_command = command;
     }
 
@@ -33,7 +33,7 @@ public class LineOrientedRequest {
      * @throws java.io.IOException if any.
      * @param out a {@link java.io.OutputStream} object.
      */
-    public void send(OutputStream out) throws IOException {
+    public void send(final OutputStream out) throws IOException {
         out.write(String.format("%s\r\n", m_command).getBytes());
     }
     
