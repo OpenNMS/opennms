@@ -59,7 +59,7 @@ public abstract class AsyncAbstractDetector implements AsyncServiceDetector {
      * @param serviceName a {@link java.lang.String} object.
      * @param port a int.
      */
-    protected AsyncAbstractDetector(String serviceName, int port) {
+    protected AsyncAbstractDetector(final String serviceName, final int port) {
         this(serviceName, port, DEFAULT_TIMEOUT, DEFAULT_RETRIES);
     }
     
@@ -71,7 +71,7 @@ public abstract class AsyncAbstractDetector implements AsyncServiceDetector {
      * @param timeout a int.
      * @param retries a int.
      */
-    protected AsyncAbstractDetector(String serviceName, int port, int timeout, int retries) {
+    protected AsyncAbstractDetector(final String serviceName, final int port, final int timeout, final int retries) {
         m_serviceName = serviceName;
         m_port = port;
         m_timeout = timeout;
@@ -95,7 +95,7 @@ public abstract class AsyncAbstractDetector implements AsyncServiceDetector {
     abstract protected void onInit();
     
     /** {@inheritDoc} */
-    abstract public DetectFuture isServiceDetected(InetAddress address, DetectorMonitor monitor) throws Exception;
+    abstract public DetectFuture isServiceDetected(final InetAddress address, final DetectorMonitor monitor) throws Exception;
     
     /**
      * <p>dispose</p>
@@ -107,7 +107,7 @@ public abstract class AsyncAbstractDetector implements AsyncServiceDetector {
      *
      * @param port a int.
      */
-    public void setPort(int port) {
+    public void setPort(final int port) {
         m_port = port;
     }
 
@@ -125,7 +125,7 @@ public abstract class AsyncAbstractDetector implements AsyncServiceDetector {
      *
      * @param retries a int.
      */
-    public void setRetries(int retries) {
+    public void setRetries(final int retries) {
         m_retries = retries;
     }
 
@@ -143,7 +143,7 @@ public abstract class AsyncAbstractDetector implements AsyncServiceDetector {
      *
      * @param timeout a int.
      */
-    public void setTimeout(int timeout) {
+    public void setTimeout(final int timeout) {
         m_timeout = timeout;
     }
 
@@ -157,7 +157,7 @@ public abstract class AsyncAbstractDetector implements AsyncServiceDetector {
     }
 
     /** {@inheritDoc} */
-    public void setServiceName(String serviceName) {
+    public void setServiceName(final String serviceName) {
         m_serviceName = serviceName;
     }
 

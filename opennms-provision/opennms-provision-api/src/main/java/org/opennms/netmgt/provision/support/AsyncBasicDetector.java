@@ -51,7 +51,7 @@ import org.apache.mina.filter.codec.textline.TextLineCodecFactory;
 import org.apache.mina.filter.logging.LoggingFilter;
 import org.apache.mina.filter.ssl.SslFilter;
 import org.apache.mina.transport.socket.SocketConnector;
-import org.opennms.core.utils.ThreadCategory;
+import org.opennms.core.utils.LogUtils;
 import org.opennms.netmgt.provision.DetectFuture;
 import org.opennms.netmgt.provision.DetectorMonitor;
 import org.opennms.netmgt.provision.support.AsyncClientConversation.AsyncExchangeImpl;
@@ -84,7 +84,7 @@ public abstract class AsyncBasicDetector<Request, Response> extends AsyncAbstrac
      * @param <Request> a Request object.
      * @param <Response> a Response object.
      */
-    public AsyncBasicDetector(String serviceName, int port) {
+    public AsyncBasicDetector(final String serviceName, final int port) {
         super(serviceName, port);
     }
     
@@ -96,7 +96,7 @@ public abstract class AsyncBasicDetector<Request, Response> extends AsyncAbstrac
      * @param timeout a int.
      * @param retries a int.
      */
-    public AsyncBasicDetector(String serviceName, int port, int timeout, int retries){
+    public AsyncBasicDetector(final String serviceName, final int port, final int timeout, final int retries){
         super(serviceName, port, timeout, retries);
     }
     
@@ -107,19 +107,17 @@ public abstract class AsyncBasicDetector<Request, Response> extends AsyncAbstrac
     
     /** {@inheritDoc} */
     @Override
-    public DetectFuture isServiceDetected(InetAddress address, DetectorMonitor monitor) throws Exception {
-        DetectFuture future = null;
-        
+    public DetectFuture isServiceDetected(final InetAddress address, final DetectorMonitor monitor) throws Exception {
         m_connector = s_connectorFactory.getConnector();
         
-        future = new DefaultDetectFuture(this);
+        final DetectFuture future = new DefaultDetectFuture(this);
         
         // Set connect timeout.
         m_connector.setConnectTimeoutMillis( getTimeout() );
         m_connector.setHandler( createDetectorHandler(future) );
         
         if(isUseSSLFilter()) {
-            SslFilter filter = new SslFilter(createClientSSLContext());
+            final SslFilter filter = new SslFilter(createClientSSLContext());
             filter.setUseClientMode(true);
             m_connector.getFilterChain().addFirst("SSL", filter);
         }
@@ -129,8 +127,8 @@ public abstract class AsyncBasicDetector<Request, Response> extends AsyncAbstrac
         m_connector.getSessionConfig().setIdleTime( IdleStatus.READER_IDLE, getIdleTime() );
 
         // Start communication
-        InetSocketAddress socketAddress = new InetSocketAddress(address, getPort());
-        ConnectFuture cf = m_connector.connect( socketAddress );
+        final InetSocketAddress socketAddress = new InetSocketAddress(address, getPort());
+        final ConnectFuture cf = m_connector.connect( socketAddress );
         cf.addListener(retryAttemptListener( m_connector, future, socketAddress, getRetries() ));
         
         return future;
@@ -140,7 +138,7 @@ public abstract class AsyncBasicDetector<Request, Response> extends AsyncAbstrac
      * <p>dispose</p>
      */
     public void dispose(){
-        info("calling dispose on detector %s", getServiceName());
+        LogUtils.debugf(this, "calling dispose on detector %s", getServiceName());
         s_connectorFactory.dispose(m_connector);
         m_connector = null;
     }
@@ -151,8 +149,8 @@ public abstract class AsyncBasicDetector<Request, Response> extends AsyncAbstrac
      * @throws KeyManagementException 
      */
     private SSLContext createClientSSLContext() throws NoSuchAlgorithmException, KeyManagementException {
-        TrustManager[] tm = { new RelaxedX509TrustManager() };
-        SSLContext sslContext = SSLContext.getInstance("SSL");
+        final TrustManager[] tm = { new RelaxedX509TrustManager() };
+        final SSLContext sslContext = SSLContext.getInstance("SSL");
         sslContext.init(null, tm, new java.security.SecureRandom());
         return sslContext;
     }
@@ -171,19 +169,19 @@ public abstract class AsyncBasicDetector<Request, Response> extends AsyncAbstrac
         return new IoFutureListener<ConnectFuture>() {
 
             public void operationComplete(ConnectFuture future) {
-                Throwable cause = future.getException();
+                final Throwable cause = future.getException();
                
                 if(cause instanceof ConnectException) {
                     if(retryAttempt == 0) {
-                        info("service %s detected false",getServiceName());
+                        LogUtils.infof(this, "service %s detected false",getServiceName());
                         detectFuture.setServiceDetected(false);
                     }else {
-                        info("Connection exception occurred %s for service %s retrying attempt: ", cause, getServiceName());
+                        LogUtils.infof(this, "Connection exception occurred %s for service %s retrying attempt: ", cause, getServiceName());
                         future = connector.connect(address);
                         future.addListener(retryAttemptListener(connector, detectFuture, address, retryAttempt -1));
                     }
                 }else if(cause instanceof Throwable) {
-                    info("Threw a Throwable and detection is false for service %s", getServiceName());
+                    LogUtils.infof(this, "Threw a Throwable and detection is false for service %s", getServiceName());
                     detectFuture.setServiceDetected(false);
                 } 
             }
@@ -196,7 +194,7 @@ public abstract class AsyncBasicDetector<Request, Response> extends AsyncAbstrac
      *
      * @param bannerValidator a {@link org.opennms.netmgt.provision.support.AsyncClientConversation.ResponseValidator} object.
      */
-    protected void expectBanner(ResponseValidator<Response> bannerValidator) {
+    protected void expectBanner(final ResponseValidator<Response> bannerValidator) {
         getConversation().setHasBanner(true);
         getConversation().addExchange(new AsyncExchangeImpl<Request, Response>(null, bannerValidator));
     }
@@ -207,7 +205,7 @@ public abstract class AsyncBasicDetector<Request, Response> extends AsyncAbstrac
      * @param request a Request object.
      * @param responseValidator a {@link org.opennms.netmgt.provision.support.AsyncClientConversation.ResponseValidator} object.
      */
-    protected void send(Request request, ResponseValidator<Response> responseValidator) {
+    protected void send(final Request request, final ResponseValidator<Response> responseValidator) {
         getConversation().addExchange(new AsyncExchangeImpl<Request, Response>(request, responseValidator));
     }
     
@@ -217,7 +215,7 @@ public abstract class AsyncBasicDetector<Request, Response> extends AsyncAbstrac
      *
      * @param detectorHandler a {@link org.opennms.netmgt.provision.support.BaseDetectorHandler} object.
      */
-    protected void setDetectorHandler(BaseDetectorHandler<Request, Response> detectorHandler) {
+    protected void setDetectorHandler(final BaseDetectorHandler<Request, Response> detectorHandler) {
         m_detectorHandler = detectorHandler;
     }
     
@@ -227,7 +225,7 @@ public abstract class AsyncBasicDetector<Request, Response> extends AsyncAbstrac
      * @param future a {@link org.opennms.netmgt.provision.DetectFuture} object.
      * @return a {@link org.apache.mina.core.service.IoHandler} object.
      */
-    protected IoHandler createDetectorHandler(DetectFuture future) {
+    protected IoHandler createDetectorHandler(final DetectFuture future) {
         ((BaseDetectorHandler<Request, Response>) m_detectorHandler).setConversation(getConversation());
         m_detectorHandler.setFuture(future);
         return m_detectorHandler;
@@ -238,7 +236,7 @@ public abstract class AsyncBasicDetector<Request, Response> extends AsyncAbstrac
      *
      * @param filterLogging a {@link org.apache.mina.core.filterchain.IoFilterAdapter} object.
      */
-    protected void setLoggingFilter(IoFilterAdapter filterLogging) {
+    protected void setLoggingFilter(final IoFilterAdapter filterLogging) {
         m_filterLogging = filterLogging;
     }
 
@@ -256,7 +254,7 @@ public abstract class AsyncBasicDetector<Request, Response> extends AsyncAbstrac
      *
      * @param protocolCodecFilter a {@link org.apache.mina.filter.codec.ProtocolCodecFilter} object.
      */
-    protected void setProtocolCodecFilter(ProtocolCodecFilter protocolCodecFilter) {
+    protected void setProtocolCodecFilter(final ProtocolCodecFilter protocolCodecFilter) {
         m_protocolCodecFilter = protocolCodecFilter;
     }
 
@@ -274,7 +272,7 @@ public abstract class AsyncBasicDetector<Request, Response> extends AsyncAbstrac
      *
      * @param idleTime a int.
      */
-    public void setIdleTime(int idleTime) {
+    public void setIdleTime(final int idleTime) {
         m_idleTime = idleTime;
     }
 
@@ -301,7 +299,7 @@ public abstract class AsyncBasicDetector<Request, Response> extends AsyncAbstrac
      *
      * @param conversation a {@link org.opennms.netmgt.provision.support.AsyncClientConversation} object.
      */
-    protected void setConversation(AsyncClientConversation<Request, Response> conversation) {
+    protected void setConversation(final AsyncClientConversation<Request, Response> conversation) {
         m_conversation = conversation;
     }
 
@@ -320,7 +318,7 @@ public abstract class AsyncBasicDetector<Request, Response> extends AsyncAbstrac
      * @param request a Request object.
      * @return a Request object.
      */
-    protected Request request(Request request) {
+    protected Request request(final Request request) {
         return request;
     }
     
@@ -333,8 +331,8 @@ public abstract class AsyncBasicDetector<Request, Response> extends AsyncAbstrac
     protected ResponseValidator<Response> startsWith(final String prefix) {
         return new ResponseValidator<Response>() {
 
-            public boolean validate(Object message) {
-                String str = message.toString().trim();
+            public boolean validate(final Object message) {
+                final String str = message.toString().trim();
                 return str.startsWith(prefix);
             }
             
@@ -350,8 +348,8 @@ public abstract class AsyncBasicDetector<Request, Response> extends AsyncAbstrac
     public ResponseValidator<Response> find(final String regex){
         return new ResponseValidator<Response>() {
 
-            public boolean validate(Object message) {
-                String str = message.toString().trim();
+            public boolean validate(final Object message) {
+                final String str = message.toString().trim();
                 return Pattern.compile(regex).matcher(str).find();
             }
           
@@ -364,7 +362,7 @@ public abstract class AsyncBasicDetector<Request, Response> extends AsyncAbstrac
      *
      * @param useSSLFilter a boolean.
      */
-    public void setUseSSLFilter(boolean useSSLFilter) {
+    public void setUseSSLFilter(final boolean useSSLFilter) {
         this.useSSLFilter = useSSLFilter;
     }
 
@@ -376,12 +374,4 @@ public abstract class AsyncBasicDetector<Request, Response> extends AsyncAbstrac
     public boolean isUseSSLFilter() {
         return useSSLFilter;
     }
-    
-    private void info(String format, Object... args) {
-        ThreadCategory log = ThreadCategory.getInstance(getClass());
-        if (log.isInfoEnabled()) {
-            log.info(String.format(format, args));
-        }
-    }
-
 }

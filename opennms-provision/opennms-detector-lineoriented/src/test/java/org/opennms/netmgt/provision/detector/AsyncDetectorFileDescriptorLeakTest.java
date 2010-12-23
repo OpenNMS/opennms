@@ -42,7 +42,7 @@ public class AsyncDetectorFileDescriptorLeakTest implements ApplicationContextAw
 
         m_detector.set(getDetector(TcpDetector.class));
         m_detector.get().setServiceName("TCP");
-        m_detector.get().setTimeout(2000);
+        m_detector.get().setTimeout(10000);
         m_detector.get().setBanner(".*");
         m_detector.get().init();
     }
@@ -69,7 +69,8 @@ public class AsyncDetectorFileDescriptorLeakTest implements ApplicationContextAw
             }
             
         };
-        
+
+        m_server.setTimeout(10000);
         m_server.init();
         m_server.startServer();
     }
@@ -107,7 +108,6 @@ public class AsyncDetectorFileDescriptorLeakTest implements ApplicationContextAw
             assertTrue(future.isServiceDetected());
 
             m_detector.set(null);
-            Thread.sleep(10);
         }
     }
     

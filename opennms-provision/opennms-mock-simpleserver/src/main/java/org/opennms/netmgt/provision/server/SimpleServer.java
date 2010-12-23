@@ -79,7 +79,7 @@ public class SimpleServer extends SimpleConversationEndPoint {
     private int m_threadSleepLength = 0;
     private Socket m_socket;
     private String m_banner;
-    protected volatile boolean m_stopped;
+    protected volatile boolean m_stopped = false;
     
     /**
      * <p>setBanner</p>
