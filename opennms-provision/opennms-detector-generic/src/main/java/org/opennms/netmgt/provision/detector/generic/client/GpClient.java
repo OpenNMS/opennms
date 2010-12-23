@@ -66,12 +66,12 @@ public class GpClient implements Client<GpRequest, GpResponse> {
     }
 
     /** {@inheritDoc} */
-    public void connect(InetAddress address, int port, int timeout) throws IOException, Exception {
+    public void connect(final InetAddress address, final int port, final int timeout) throws IOException, Exception {
         setExitStatus(100);
         
         m_execRunner = new ExecRunner();
         m_execRunner.setMaxRunTimeSecs(convertToSeconds(timeout));
-        String script = "" + getScript() + " " + getHoption() + " " + address.getHostAddress() + " " + getToption() + " " + convertToSeconds(timeout);
+        final String script = "" + getScript() + " " + getHoption() + " " + address.getHostAddress() + " " + getToption() + " " + convertToSeconds(timeout);
         if (getArgs() == null)
             setExitStatus(m_execRunner.exec(script));
         else
@@ -109,7 +109,7 @@ public class GpClient implements Client<GpRequest, GpResponse> {
     }
 
     private GpResponse receiveResponse() {
-        GpResponse response = new GpResponse();
+        final GpResponse response = new GpResponse();
         response.setExitStatus(getExitStatus());
         response.setResponse(getResponse());
         response.setError(getError());
@@ -124,7 +124,7 @@ public class GpClient implements Client<GpRequest, GpResponse> {
      * @throws java.io.IOException if any.
      * @throws java.lang.Exception if any.
      */
-    public GpResponse sendRequest(GpRequest request) throws IOException, Exception {
+    public GpResponse sendRequest(final GpRequest request) throws IOException, Exception {
         // TODO Auto-generated method stub
         return null;
     }
@@ -134,7 +134,7 @@ public class GpClient implements Client<GpRequest, GpResponse> {
      *
      * @param script a {@link java.lang.String} object.
      */
-    public void setScript(String script) {
+    public void setScript(final String script) {
         m_script = script;
     }
 
@@ -152,7 +152,7 @@ public class GpClient implements Client<GpRequest, GpResponse> {
      *
      * @param args a {@link java.lang.String} object.
      */
-    public void setArgs(String args) {
+    public void setArgs(final String args) {
         m_args = args;
     }
 
@@ -170,7 +170,7 @@ public class GpClient implements Client<GpRequest, GpResponse> {
      *
      * @param banner a {@link java.lang.String} object.
      */
-    public void setBanner(String banner) {
+    public void setBanner(final String banner) {
         m_banner = banner;
     }
 
@@ -188,7 +188,7 @@ public class GpClient implements Client<GpRequest, GpResponse> {
      *
      * @param match a {@link java.lang.String} object.
      */
-    public void setMatch(String match) {
+    public void setMatch(final String match) {
         m_match = match;
     }
 
@@ -206,7 +206,7 @@ public class GpClient implements Client<GpRequest, GpResponse> {
      *
      * @param hoption a {@link java.lang.String} object.
      */
-    public void setHoption(String hoption) {
+    public void setHoption(final String hoption) {
         m_hoption = hoption;
     }
 
@@ -224,7 +224,7 @@ public class GpClient implements Client<GpRequest, GpResponse> {
      *
      * @param toption a {@link java.lang.String} object.
      */
-    public void setToption(String toption) {
+    public void setToption(final String toption) {
         m_toption = toption;
     }
 
@@ -242,7 +242,7 @@ public class GpClient implements Client<GpRequest, GpResponse> {
      *
      * @param exitStatus a int.
      */
-    public void setExitStatus(int exitStatus) {
+    public void setExitStatus(final int exitStatus) {
         m_exitStatus = exitStatus;
     }
 
@@ -260,7 +260,7 @@ public class GpClient implements Client<GpRequest, GpResponse> {
      *
      * @param response a {@link java.lang.String} object.
      */
-    public void setResponse(String response) {
+    public void setResponse(final String response) {
         m_response = response;
     }
 
@@ -278,7 +278,7 @@ public class GpClient implements Client<GpRequest, GpResponse> {
      *
      * @param error a {@link java.lang.String} object.
      */
-    public void setError(String error) {
+    public void setError(final String error) {
         m_error = error;
     }
 

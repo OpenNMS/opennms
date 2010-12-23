@@ -50,7 +50,7 @@ public abstract class MultilineOrientedDetector extends BasicDetector<LineOrient
      * @param serviceName a {@link java.lang.String} object.
      * @param port a int.
      */
-    protected MultilineOrientedDetector(String serviceName, int port) {
+    protected MultilineOrientedDetector(final String serviceName, final int port) {
         super(serviceName, port);
     }
     
@@ -62,7 +62,7 @@ public abstract class MultilineOrientedDetector extends BasicDetector<LineOrient
      * @param retries a int.
      * @param serviceName a {@link java.lang.String} object.
      */
-    protected MultilineOrientedDetector(String serviceName, int port, int timeout, int retries) {
+    protected MultilineOrientedDetector(final String serviceName, final int port, final int timeout, final int retries) {
         super(serviceName, port, timeout, retries);
     }
     
@@ -72,7 +72,7 @@ public abstract class MultilineOrientedDetector extends BasicDetector<LineOrient
      * @param command a {@link java.lang.String} object.
      * @return a {@link org.opennms.netmgt.provision.detector.simple.request.LineOrientedRequest} object.
      */
-    protected LineOrientedRequest request(String command) {
+    protected LineOrientedRequest request(final String command) {
         return new LineOrientedRequest(command);
     }
     
@@ -93,7 +93,7 @@ public abstract class MultilineOrientedDetector extends BasicDetector<LineOrient
     public ResponseValidator<MultilineOrientedResponse> equals(final String pattern) {
         return new ResponseValidator<MultilineOrientedResponse>() {
             
-            public boolean validate(MultilineOrientedResponse response) {
+            public boolean validate(final MultilineOrientedResponse response) {
                 return response.equals(pattern);
             }
             
@@ -109,7 +109,7 @@ public abstract class MultilineOrientedDetector extends BasicDetector<LineOrient
     public ResponseValidator<MultilineOrientedResponse> startsWith(final String pattern){
         return new ResponseValidator<MultilineOrientedResponse>(){
 
-            public boolean validate(MultilineOrientedResponse response) {
+            public boolean validate(final MultilineOrientedResponse response) {
                 return response.startsWith(pattern);
             }
             

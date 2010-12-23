@@ -41,12 +41,6 @@ import java.io.IOException;
  * DNSInputStrean extends a ByteArrayInputStream and has methods to decode the
  * data of a DNS response to an address resquest.
  * </P>
- *
- * @author <A HREF="mailto:sowmya@opennms.org">Sowmya </A>
- * @author <A HREF="http://www.opennms.org">OpenNMS </A>
- * @author <A HREF="mailto:sowmya@opennms.org">Sowmya </A>
- * @author <A HREF="http://www.opennms.org">OpenNMS </A>
- * @version $Id: $
  */
 public class DNSInputStream extends ByteArrayInputStream {
     /**
@@ -57,7 +51,7 @@ public class DNSInputStream extends ByteArrayInputStream {
      * @param data
      *            The array of data to pass to the base class.
      */
-    public DNSInputStream(byte[] data) {
+    public DNSInputStream(final byte[] data) {
         super(data);
     }
 
@@ -73,7 +67,7 @@ public class DNSInputStream extends ByteArrayInputStream {
      * @param len
      *            length of the byte array
      */
-    public DNSInputStream(byte[] data, int off, int len) {
+    public DNSInputStream(final byte[] data, final int off, final int len) {
         super(data, off, len);
     }
 
@@ -89,7 +83,7 @@ public class DNSInputStream extends ByteArrayInputStream {
      * @throws java.io.IOException if any.
      */
     public int readByte() throws IOException {
-        int rc = read();
+        final int rc = read();
         if (rc == -1)
             throw new EOFException("end of buffer on read");
         return rc;
@@ -138,15 +132,14 @@ public class DNSInputStream extends ByteArrayInputStream {
      * @throws java.io.IOException if any.
      */
     public String readString() throws IOException {
-        int len = readByte();
+        final int len = readByte();
         if (len == 0) {
             return "";
         }
 
-        byte[] buffer = new byte[len];
-        int rc = read(buffer);
-        if (rc == -1 || rc != len)
-            throw new EOFException("end of file while reading array");
+        final byte[] buffer = new byte[len];
+        final int rc = read(buffer);
+        if (rc == -1 || rc != len) throw new EOFException("end of file while reading array");
 
         return new String(buffer);
     }
@@ -189,7 +182,7 @@ public class DNSInputStream extends ByteArrayInputStream {
                 // append the tail and return the new domain
                 // name.
                 //
-                String tail = readDomainName();
+                final String tail = readDomainName();
                 if (tail.length() > 0)
                     label = label + '.' + tail;
             }
@@ -211,15 +204,14 @@ public class DNSInputStream extends ByteArrayInputStream {
         // Throw an I/O exception if the compression offset is
         // malformed.
         //
-        if ((buf[pos] & 0xc0) != 0xc0)
-            throw new IOException("Invalid domain name compression offset");
+        if ((buf[pos] & 0xc0) != 0xc0) throw new IOException("Invalid domain name compression offset");
 
         //
         // read the short that is the pointer to the other
         // part of the stream. Note buf is a protected buffer.
         //
-        int offset = readShort() & 0x3fff;
-        DNSInputStream dnsIn = new DNSInputStream(buf, offset, buf.length - offset);
+        final int offset = readShort() & 0x3fff;
+        final DNSInputStream dnsIn = new DNSInputStream(buf, offset, buf.length - offset);
         return dnsIn.readDomainName();
     }
 
@@ -234,11 +226,11 @@ public class DNSInputStream extends ByteArrayInputStream {
      * @throws java.io.IOException if any.
      */
     public DNSAddressRR readRR() throws IOException {
-        String rrName = readDomainName();
-        int rrType = readShort();
-        int rrClass = readShort();
-        long rrTTL = readInt();
-        int rrDataLen = readShort();
+        final String rrName = readDomainName();
+        final int rrType = readShort();
+        final int rrClass = readShort();
+        final long rrTTL = readInt();
+        final int rrDataLen = readShort();
 
         //
         // Convert the length of data in this byte array input stream
@@ -247,15 +239,10 @@ public class DNSInputStream extends ByteArrayInputStream {
         // stream. If that is the case then synchronization code
         // should be used to wrap the next two lines -- Weave
         //
-        DNSInputStream rrDNSIn = new DNSInputStream(buf, pos, rrDataLen);
+        final DNSInputStream rrDNSIn = new DNSInputStream(buf, pos, rrDataLen);
         pos += rrDataLen;
         try {
-            //
-            // Create the route record and return it to
-            // the caller.
-            //
-            DNSAddressRR rr = new DNSAddressRR(rrName, rrType, rrClass, rrTTL, rrDNSIn);
-            return rr;
+            return new DNSAddressRR(rrName, rrType, rrClass, rrTTL, rrDNSIn);
         } catch (Exception ex) {
             throw new IOException("Unknown DNSAddressRR (type " + " (" + rrType + "))" + "\nOriginating Exception: " + ex.getMessage());
         }

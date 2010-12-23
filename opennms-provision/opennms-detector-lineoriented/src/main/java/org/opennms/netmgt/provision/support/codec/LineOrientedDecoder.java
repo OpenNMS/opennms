@@ -54,26 +54,26 @@ public class LineOrientedDecoder extends CumulativeProtocolDecoder {
      *
      * @param charset a {@link java.nio.charset.Charset} object.
      */
-    public LineOrientedDecoder(Charset charset) {
+    public LineOrientedDecoder(final Charset charset) {
         setCharset(charset);
     }
     
     /** {@inheritDoc} */
     @Override
-    protected boolean doDecode(IoSession session, IoBuffer in, ProtocolDecoderOutput out) throws Exception {
+    protected boolean doDecode(final IoSession session, final IoBuffer in, final ProtocolDecoderOutput out) throws Exception {
         // Remember the initial position.
-        int start = in.position();
+        final int start = in.position();
         
         // Now find the first CRLF in the buffer.
         byte previous = 0;
         while (in.hasRemaining()) {
             
-            byte current = in.get();
+            final byte current = in.get();
             
             if (previous == '\r' && current == '\n') {
                 // Remember the current position and limit.
-                int position = in.position();
-                int limit = in.limit();
+                final int position = in.position();
+                final int limit = in.limit();
                 try {
                     in.position(start);
                     in.limit(position);
@@ -113,7 +113,7 @@ public class LineOrientedDecoder extends CumulativeProtocolDecoder {
      * @return a {@link java.lang.Object} object.
      * @throws java.nio.charset.CharacterCodingException if any.
      */
-    protected Object parseCommand(IoBuffer in) throws CharacterCodingException {
+    protected Object parseCommand(final IoBuffer in) throws CharacterCodingException {
         return new LineOrientedResponse(in.getString(getCharset().newDecoder()));
     }
 
@@ -122,7 +122,7 @@ public class LineOrientedDecoder extends CumulativeProtocolDecoder {
      *
      * @param charset a {@link java.nio.charset.Charset} object.
      */
-    public void setCharset(Charset charset) {
+    public void setCharset(final Charset charset) {
         m_charset = charset;
     }
 

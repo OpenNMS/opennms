@@ -61,18 +61,18 @@ public class MultilineHttpProtocolFactory implements ProtocolCodecFactory {
      *
      * @param charset a {@link java.nio.charset.Charset} object.
      */
-    public MultilineHttpProtocolFactory(Charset charset) {
+    public MultilineHttpProtocolFactory(final Charset charset) {
         m_encoder = new LineOrientedEncoder(charset);
         m_decoder = new MultilineHttpStatusResponseDecoder(charset);
     }
     
     /** {@inheritDoc} */
-    public ProtocolDecoder getDecoder(IoSession session) throws Exception {
+    public ProtocolDecoder getDecoder(final IoSession session) throws Exception {
         return m_decoder;
     }
 
     /** {@inheritDoc} */
-    public ProtocolEncoder getEncoder(IoSession session) throws Exception {
+    public ProtocolEncoder getEncoder(final IoSession session) throws Exception {
         return m_encoder;
     }
 

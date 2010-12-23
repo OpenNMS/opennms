@@ -46,7 +46,7 @@ public class GpResponse {
      *
      * @param exitStatus a int.
      */
-    public void setExitStatus(int exitStatus) {
+    public void setExitStatus(final int exitStatus) {
     }
 
     /**
@@ -54,7 +54,7 @@ public class GpResponse {
      *
      * @param response a {@link java.lang.String} object.
      */
-    public void setResponse(String response) {
+    public void setResponse(final String response) {
         m_response = response;
     }
 
@@ -63,7 +63,7 @@ public class GpResponse {
      *
      * @param error a {@link java.lang.String} object.
      */
-    public void setError(String error) {
+    public void setError(final String error) {
     }
 
     /**
@@ -72,7 +72,7 @@ public class GpResponse {
      * @param banner a {@link java.lang.String} object.
      * @return a boolean.
      */
-    public boolean validate(String banner) {
+    public boolean validate(final String banner) {
         return banner.matches(m_response);
     }
 

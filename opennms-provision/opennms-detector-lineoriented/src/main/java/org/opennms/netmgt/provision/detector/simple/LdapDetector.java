@@ -72,7 +72,7 @@ public class LdapDetector extends LineOrientedDetector {
      * @param serviceName a {@link java.lang.String} object.
      * @param port a int.
      */
-    protected LdapDetector(String serviceName, int port) {
+    protected LdapDetector(final String serviceName, final int port) {
         super(serviceName, port);
     }
     

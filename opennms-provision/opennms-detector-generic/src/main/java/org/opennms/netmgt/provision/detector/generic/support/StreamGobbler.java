@@ -42,6 +42,9 @@ import java.io.ObjectOutputStream;
 import java.io.OutputStream;
 import java.io.PrintWriter;
 
+import org.apache.commons.io.IOUtils;
+import org.opennms.core.utils.LogUtils;
+
 /**
  * <P>
  * Captures the output of an InputStream.
@@ -79,7 +82,7 @@ class StreamGobbler extends Thread {
      * @param in
      *            InputStream
      */
-    public StreamGobbler(InputStream in) {
+    public StreamGobbler(final InputStream in) {
         this();
         this.in = in;
         this.pwOut = new PrintWriter(System.out, true);
@@ -95,7 +98,7 @@ class StreamGobbler extends Thread {
      * @param out
      *            OutputStream
      */
-    public StreamGobbler(InputStream in, OutputStream out) {
+    public StreamGobbler(final InputStream in, final OutputStream out) {
         this();
         this.in = in;
         this.pwOut = new PrintWriter(out, true);
@@ -111,7 +114,7 @@ class StreamGobbler extends Thread {
      * @param pwOut
      *            PrintWriter
      */
-    public StreamGobbler(InputStream in, PrintWriter pwOut) {
+    public StreamGobbler(final InputStream in, final PrintWriter pwOut) {
         this();
         this.in = in;
         this.pwOut = pwOut;
@@ -148,7 +151,7 @@ class StreamGobbler extends Thread {
      * @throws IOException
      *             thrown if a problem occurs
      */
-    private final void readObject(ObjectInputStream in) throws IOException {
+    private final void readObject(final ObjectInputStream in) throws IOException {
         throw new IOException("Object cannot be deserialized");
     }
 
@@ -157,12 +160,14 @@ class StreamGobbler extends Thread {
      * OutputStream specified during object construction.
      */
     public void run() {
+        InputStreamReader isr = null;
+        BufferedReader br = null;
 
         try {
 
             // Set up the input stream
-            InputStreamReader isr = new InputStreamReader(in);
-            BufferedReader br = new BufferedReader(isr);
+            isr = new InputStreamReader(in);
+            br = new BufferedReader(isr);
 
             // Initialize the temporary results containers
             String line = null;
@@ -176,9 +181,11 @@ class StreamGobbler extends Thread {
                 }
             }
 
-        } catch (Exception e) {
-        	// if we're not passing the exception on, why bother?
-            // e.printStackTrace();
+        } catch (final Exception e) {
+            LogUtils.debugf(this, e, "Unable to read lines.");
+        } finally {
+            IOUtils.closeQuietly(br);
+            IOUtils.closeQuietly(isr);
         }
 
     }

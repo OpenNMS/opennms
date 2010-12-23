@@ -70,7 +70,7 @@ public class GpDetector extends BasicDetector<GpRequest, GpResponse>{
     /** {@inheritDoc} */
     @Override
     protected Client<GpRequest, GpResponse> getClient() {
-        GpClient client = new GpClient();
+        final GpClient client = new GpClient();
         client.setScript(getScript());
         client.setArgs(getArgs());
         client.setBanner(getBanner());
@@ -89,8 +89,7 @@ public class GpDetector extends BasicDetector<GpRequest, GpResponse>{
     private ResponseValidator<GpResponse> responseMatches(final String banner) {
         return new ResponseValidator<GpResponse>(){
 
-            public boolean validate(GpResponse response) throws Exception {
-                
+            public boolean validate(final GpResponse response) throws Exception {
                 return response.validate(banner);
             }
             
@@ -102,7 +101,7 @@ public class GpDetector extends BasicDetector<GpRequest, GpResponse>{
      *
      * @param script a {@link java.lang.String} object.
      */
-    public void setScript(String script) {
+    public void setScript(final String script) {
         m_script = script;
     }
 
@@ -120,7 +119,7 @@ public class GpDetector extends BasicDetector<GpRequest, GpResponse>{
      *
      * @param args a {@link java.lang.String} object.
      */
-    public void setArgs(String args) {
+    public void setArgs(final String args) {
         m_args = args;
     }
 
@@ -138,7 +137,7 @@ public class GpDetector extends BasicDetector<GpRequest, GpResponse>{
      *
      * @param banner a {@link java.lang.String} object.
      */
-    public void setBanner(String banner) {
+    public void setBanner(final String banner) {
         m_banner = banner;
     }
 
@@ -156,7 +155,7 @@ public class GpDetector extends BasicDetector<GpRequest, GpResponse>{
      *
      * @param match a {@link java.lang.String} object.
      */
-    public void setMatch(String match) {
+    public void setMatch(final String match) {
         m_match = match;
     }
 
@@ -174,7 +173,7 @@ public class GpDetector extends BasicDetector<GpRequest, GpResponse>{
      *
      * @param hoption a {@link java.lang.String} object.
      */
-    public void setHoption(String hoption) {
+    public void setHoption(final String hoption) {
         m_hoption = hoption;
     }
 
@@ -192,7 +191,7 @@ public class GpDetector extends BasicDetector<GpRequest, GpResponse>{
      *
      * @param toption a {@link java.lang.String} object.
      */
-    public void setToption(String toption) {
+    public void setToption(final String toption) {
         m_toption = toption;
     }
 

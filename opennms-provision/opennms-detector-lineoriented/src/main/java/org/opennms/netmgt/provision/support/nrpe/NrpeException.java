@@ -56,7 +56,7 @@ public class NrpeException extends Exception {
 	 *
 	 * @param message a {@link java.lang.String} object.
 	 */
-	public NrpeException(String message) {
+	public NrpeException(final String message) {
 		super(message);
 	}
 }

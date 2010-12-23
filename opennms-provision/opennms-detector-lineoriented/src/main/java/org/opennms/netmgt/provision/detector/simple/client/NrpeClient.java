@@ -79,14 +79,14 @@ public class NrpeClient implements Client<NrpeRequest, NrpePacket> {
                 socket.close();
             }
             
-        } catch (IOException e) {
+        } catch (final IOException e) {
             e.printStackTrace();
         }
         
     }
 
     /** {@inheritDoc} */
-    public void connect(InetAddress address, int port, int timeout) throws IOException, Exception {
+    public void connect(final InetAddress address, final int port, final int timeout) throws IOException, Exception {
         m_socket = getWrappedSocket(address, port, timeout);
         setOutput(m_socket.getOutputStream());
         setInput(m_socket.getInputStream());
@@ -102,7 +102,7 @@ public class NrpeClient implements Client<NrpeRequest, NrpePacket> {
      * @throws java.io.IOException if any.
      */
     protected Socket getWrappedSocket(InetAddress address, int port, int timeout) throws IOException {
-        Socket socket = new Socket();
+        final Socket socket = new Socket();
         socket.connect(new InetSocketAddress(address, port), timeout);
         socket.setSoTimeout(timeout);
         try {
@@ -122,7 +122,7 @@ public class NrpeClient implements Client<NrpeRequest, NrpePacket> {
      * @return a {@link java.net.Socket} object.
      * @throws java.lang.Exception if any.
      */
-    protected Socket wrapSocket(Socket socket, String hostAddress, int port) throws Exception {
+    protected Socket wrapSocket(final Socket socket, final String hostAddress, final int port) throws Exception {
         if (! isUseSsl()) {
             return socket;
         } 
@@ -133,12 +133,12 @@ public class NrpeClient implements Client<NrpeRequest, NrpePacket> {
         // CERTIFICATES
         SSLSocketFactory sslSF = null;
 
-        TrustManager[] tm = { new RelaxedX509TrustManager() };
-        SSLContext sslContext = SSLContext.getInstance("SSL");
+        final TrustManager[] tm = { new RelaxedX509TrustManager() };
+        final SSLContext sslContext = SSLContext.getInstance("SSL");
         sslContext.init(null, tm, new java.security.SecureRandom());
         sslSF = sslContext.getSocketFactory();
         wrappedSocket = sslSF.createSocket(socket, hostAddress, port, true);
-        SSLSocket sslSocket = (SSLSocket) wrappedSocket;
+        final SSLSocket sslSocket = (SSLSocket) wrappedSocket;
         // Set this socket to use anonymous Diffie-Hellman ciphers. This removes the authentication
         // benefits of SSL, but it's how NRPE rolls so we have to play along.
         sslSocket.setEnabledCipherSuites(ADH_CIPHER_SUITES);
@@ -164,13 +164,13 @@ public class NrpeClient implements Client<NrpeRequest, NrpePacket> {
      * @throws java.io.IOException if any.
      * @throws java.lang.Exception if any.
      */
-    public NrpePacket sendRequest(NrpeRequest request) throws IOException, Exception {
+    public NrpePacket sendRequest(final NrpeRequest request) throws IOException, Exception {
         request.send(getOutput());
         return receiveResponse();
     }
     
     private NrpePacket receiveResponse() throws Exception {
-        NrpePacket response = NrpePacket.receivePacket(getInput(), getPadding());
+        final NrpePacket response = NrpePacket.receivePacket(getInput(), getPadding());
         LogUtils.infof(this, "what is response: " + response.getResultCode());
         return response;
     }
@@ -180,7 +180,7 @@ public class NrpeClient implements Client<NrpeRequest, NrpePacket> {
      *
      * @param padding a int.
      */
-    public void setPadding(int padding) {
+    public void setPadding(final int padding) {
         m_padding = padding;
     }
 
@@ -198,7 +198,7 @@ public class NrpeClient implements Client<NrpeRequest, NrpePacket> {
      *
      * @param useSsl a boolean.
      */
-    public void setUseSsl(boolean useSsl) {
+    public void setUseSsl(final boolean useSsl) {
         m_useSsl = useSsl;
     }
 
@@ -216,7 +216,7 @@ public class NrpeClient implements Client<NrpeRequest, NrpePacket> {
      *
      * @param out a {@link java.io.OutputStream} object.
      */
-    public void setOutput(OutputStream out) {
+    public void setOutput(final OutputStream out) {
         m_out = out;
     }
 
@@ -234,7 +234,7 @@ public class NrpeClient implements Client<NrpeRequest, NrpePacket> {
      *
      * @param in a {@link java.io.InputStream} object.
      */
-    public void setInput(InputStream in) {
+    public void setInput(final InputStream in) {
         m_in = in;
     }
 

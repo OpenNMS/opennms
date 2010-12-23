@@ -58,7 +58,7 @@ public class SSLClient extends MultilineOrientedClient implements Client<LineOri
     
 
     /** {@inheritDoc} */
-    public void connect(InetAddress address, int port, int timeout) throws IOException {
+    public void connect(final InetAddress address, final int port, final int timeout) throws IOException {
         m_socket = getWrappedSocket(address, port, timeout);
         setOutput(m_socket.getOutputStream());
         setInput(new BufferedReader(new InputStreamReader(m_socket.getInputStream())));
@@ -73,15 +73,14 @@ public class SSLClient extends MultilineOrientedClient implements Client<LineOri
      * @return a {@link java.net.Socket} object.
      * @throws java.io.IOException if any.
      */
-    protected Socket getWrappedSocket(InetAddress address, int port, int timeout) throws IOException {
+    protected Socket getWrappedSocket(final InetAddress address, final int port, final int timeout) throws IOException {
         Socket socket = new Socket();
         socket.connect(new InetSocketAddress(address, port), timeout);
         socket.setSoTimeout(timeout);
         try {
             return wrapSocket(socket, address.getHostAddress(), port);
-        } catch (Exception e) {
-            // TODO Auto-generated catch block
-            e.printStackTrace();
+        } catch (final Exception e) {
+            LogUtils.debugf(this, e, "Unable to wrap socket in SSL.");
             return null;
         }
     }
@@ -95,17 +94,16 @@ public class SSLClient extends MultilineOrientedClient implements Client<LineOri
      * @return a {@link java.net.Socket} object.
      * @throws java.lang.Exception if any.
      */
-    protected Socket wrapSocket(Socket socket, String hostAddress, int port) throws Exception {
+    protected Socket wrapSocket(final Socket socket, final String hostAddress, final int port) throws Exception {
         Socket sslSocket;
 
-        // set up the certificate validation. USING THIS SCHEME WILL ACCEPT ALL
-        // CERTIFICATES
+        // set up the certificate validation. USING THIS SCHEME WILL ACCEPT ALL CERTIFICATES
         SSLSocketFactory sslSF = null;
-        TrustManager[] tm = { new RelaxedX509TrustManager() };
-        SSLContext sslContext = SSLContext.getInstance("SSL");
+        final TrustManager[] tm = { new RelaxedX509TrustManager() };
+        final SSLContext sslContext = SSLContext.getInstance("SSL");
         sslContext.init(null, tm, new java.security.SecureRandom());
         sslSF = sslContext.getSocketFactory();
-        LogUtils.infof(this, "SSL port: " + port);
+        LogUtils.debugf(this, "SSL port: %d", port);
         sslSocket = sslSF.createSocket(socket, hostAddress, port, true);
         return sslSocket;
     }

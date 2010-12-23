@@ -38,6 +38,8 @@ import java.net.InetAddress;
 import java.net.InetSocketAddress;
 import java.net.Socket;
 
+import org.apache.commons.io.IOUtils;
+import org.opennms.core.utils.LogUtils;
 import org.opennms.netmgt.provision.detector.msexchange.response.MSExchangeResponse;
 import org.opennms.netmgt.provision.detector.simple.request.LineOrientedRequest;
 import org.opennms.netmgt.provision.support.Client;
@@ -63,40 +65,45 @@ public class MSExchangeDetectorClient implements Client<LineOrientedRequest, MSE
     }
 
     /** {@inheritDoc} */
-    public void connect(InetAddress address, int port, int timeout) throws IOException, Exception {
+    public void connect(final InetAddress address, final int port, final int timeout) throws IOException, Exception {
         setImapResponse(connectAndGetResponse(address, getImapPort(), timeout));
         setPop3Response(connectAndGetResponse(address, getPop3Port(), timeout));
     }
 
-    private String connectAndGetResponse(InetAddress address, Integer port, int timeout) {
+    private String connectAndGetResponse(final InetAddress address, final Integer port, final int timeout) {
+        Socket socket = null;
+        InputStreamReader isr = null;
+        BufferedReader lineRdr = null;
+        
         if(port != null){
-            Socket socket = new Socket();
             try{
-                
-                socket.connect(new InetSocketAddress(address, port.intValue()), timeout);
+                socket = new Socket();
+                final InetSocketAddress inetSocketAddress = new InetSocketAddress(address, port.intValue());
+                socket.connect(inetSocketAddress, timeout);
                 socket.setSoTimeout(timeout);
                 
     
                 // Allocate a line reader
-                //
-                BufferedReader lineRdr = new BufferedReader(new InputStreamReader(socket.getInputStream()));
+                isr = new InputStreamReader(socket.getInputStream());
+                lineRdr = new BufferedReader(isr);
     
                 // Read the banner line and see if it contains the
                 // substring "Microsoft Exchange"
                 //
-                String banner = lineRdr.readLine();
+                final String banner = lineRdr.readLine();
                 
                 socket.close();
                 return banner;
                 
-            }catch(Exception e){
-                e.printStackTrace();
-                if(socket != null){
+            }catch(final Exception e) {
+                LogUtils.warnf(this, e, "An error occurred while connecting to %s:%d", address.getHostAddress(), port);
+                IOUtils.closeQuietly(lineRdr);
+                IOUtils.closeQuietly(isr);
+                if(socket != null) {
                     try {
                         socket.close();
-                    } catch (IOException e1) {
-                        // TODO Auto-generated catch block
-                        e1.printStackTrace();
+                    } catch (final IOException e1) {
+                        LogUtils.warnf(this, e, "Additionally, an exception occurred while trying to close the socket.");
                     }
                 }
             }

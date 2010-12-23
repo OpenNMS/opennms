@@ -59,7 +59,7 @@ public class ImapDetector extends AsyncLineOrientedDetector {
      * @param serviceName a {@link java.lang.String} object.
      * @param port a int.
      */
-    public ImapDetector(String serviceName, int port) {
+    public ImapDetector(final String serviceName, final int port) {
         super(serviceName, port);
     }
     

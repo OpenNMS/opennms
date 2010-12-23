@@ -53,7 +53,7 @@ public class LineOrientedCodecFactory implements ProtocolCodecFactory {
      *
      * @param charset a {@link java.nio.charset.Charset} object.
      */
-    public LineOrientedCodecFactory(Charset charset) {
+    public LineOrientedCodecFactory(final Charset charset) {
         this(charset, null);
     }
     
@@ -63,18 +63,18 @@ public class LineOrientedCodecFactory implements ProtocolCodecFactory {
      * @param charset a {@link java.nio.charset.Charset} object.
      * @param delimit a {@link java.lang.String} object.
      */
-    public LineOrientedCodecFactory(Charset charset, String delimit) {
+    public LineOrientedCodecFactory(final Charset charset, final String delimit) {
         m_encoder = new LineOrientedEncoder(charset);
         m_decoder = new LineOrientedDecoder(charset);
     }
     
     /** {@inheritDoc} */
-    public ProtocolDecoder getDecoder(IoSession session) throws Exception {
+    public ProtocolDecoder getDecoder(final IoSession session) throws Exception {
         return m_decoder;
     }
 
     /** {@inheritDoc} */
-    public ProtocolEncoder getEncoder(IoSession session) throws Exception {
+    public ProtocolEncoder getEncoder(final IoSession session) throws Exception {
         return m_encoder;
     }
 

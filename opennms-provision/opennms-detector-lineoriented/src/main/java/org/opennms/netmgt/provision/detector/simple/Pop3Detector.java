@@ -62,7 +62,7 @@ public class Pop3Detector extends AsyncLineOrientedDetector {
      * @param serviceName a {@link java.lang.String} object.
      * @param port a int.
      */
-    public Pop3Detector(String serviceName, int port) {
+    public Pop3Detector(final String serviceName, final int port) {
         super(serviceName, port);
     }
 
