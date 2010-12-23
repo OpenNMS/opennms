@@ -1,0 +1,7 @@
+api/bin
+doc/bin
+lib/bin
+runtime/bin
+schema/bin
+soa/bin
+tasks/bin
