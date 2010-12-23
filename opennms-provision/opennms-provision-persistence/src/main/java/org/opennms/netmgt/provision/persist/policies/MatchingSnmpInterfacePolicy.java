@@ -1,6 +1,7 @@
 package org.opennms.netmgt.provision.persist.policies;
 
 
+import org.opennms.core.utils.LogUtils;
 import org.opennms.netmgt.model.OnmsSnmpInterface;
 import org.opennms.netmgt.provision.BasePolicy;
 import org.opennms.netmgt.provision.SnmpInterfacePolicy;
@@ -54,15 +55,15 @@ public class MatchingSnmpInterfacePolicy extends BasePolicy<OnmsSnmpInterface> i
     public OnmsSnmpInterface act(OnmsSnmpInterface iface) {
         switch (m_action) {
         case DO_NOT_PERSIST: 
-            info("NOT Peristing %s according to policy", iface);
+            LogUtils.debugf(this, "NOT Peristing %s according to policy", iface);
             return null;
         case DISABLE_COLLECTION:
             iface.setCollectionEnabled(false);
-            info("Disabled collection for %s according to policy", iface);
+            LogUtils.debugf(this, "Disabled collection for %s according to policy", iface);
             return iface;
         case ENABLE_COLLECTION:
             iface.setCollectionEnabled(true);
-            info("Enabled collection for %s according to policy", iface);
+            LogUtils.debugf(this, "Enabled collection for %s according to policy", iface);
             return iface;
         default:
             return iface;    
