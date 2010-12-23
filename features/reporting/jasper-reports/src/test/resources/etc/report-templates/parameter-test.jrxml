@@ -10,6 +10,7 @@
         	<defaultValueExpression><![CDATA["Hosts"]]></defaultValueExpression>
         </parameter>
         <parameter name="stringParameter2" class="java.lang.String">
+        	<property name="org.opennms.report.stringInputType" value="onmsCategorySelector" /> 
         	<defaultValueExpression><![CDATA["Routers"]]></defaultValueExpression>
         </parameter>
         <parameter name="floatParameter" class="java.lang.Float">

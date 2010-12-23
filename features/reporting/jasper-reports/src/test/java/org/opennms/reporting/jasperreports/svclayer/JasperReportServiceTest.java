@@ -134,6 +134,22 @@ public class JasperReportServiceTest {
                 }
                 
         }
+        
+        @Test
+        public void testStringInputType() {
+                ReportParameters reportParameters;
+                try {
+                    reportParameters = m_reportService
+                                    .getParameters(REPORTID);
+                    ReportStringParm stringParm2 = reportParameters.getStringParms().get(1);
+                    Assert.assertEquals("onmsCategorySelector",stringParm2.getInputType());
+                } catch (ReportException e) {
+                    // TODO Auto-generated catch block
+                    e.printStackTrace();
+                }
+                
+        }
+        
         /**
          * Using a test date of -112426200000L ( Thu, 09 Jun 1966 18:30:00)
          */

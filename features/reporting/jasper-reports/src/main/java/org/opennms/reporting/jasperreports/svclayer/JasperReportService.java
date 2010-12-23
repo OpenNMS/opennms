@@ -69,6 +69,8 @@ import org.opennms.netmgt.dao.JasperReportConfigDao;
 public class JasperReportService implements ReportService {
 
     private static final String LOG4J_CATEGORY = "OpenNMS.Report";
+    
+    private static final String STRING_INPUT_TYPE = "org.opennms.report.stringInputType";
 
     private JasperReportConfigDao m_jasperReportConfigDao;
 
@@ -158,6 +160,9 @@ public class JasperReportService implements ReportService {
                         stringParm.setDisplayName(reportParm.getDescription());
                     } else {
                         stringParm.setDisplayName(reportParm.getName());
+                    }
+                    if (reportParm.getPropertiesMap().containsProperty(STRING_INPUT_TYPE)) {
+                    	stringParm.setInputType(reportParm.getPropertiesMap().getProperty(STRING_INPUT_TYPE));
                     }
                     stringParm.setName(reportParm.getName());
                     if (defaultValues.containsKey(reportParm.getName()) &&

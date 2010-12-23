@@ -48,6 +48,7 @@ import javax.servlet.http.HttpServletResponse;
 import org.opennms.api.reporting.ReportFormat;
 import org.opennms.api.reporting.ReportMode;
 import org.opennms.api.reporting.parameter.ReportParameters;
+import org.opennms.netmgt.dao.CategoryDao;
 import org.opennms.reporting.core.svclayer.ReportWrapperService;
 import org.opennms.web.svclayer.CategoryConfigService;
 import org.springframework.beans.propertyeditors.CustomDateEditor;
@@ -67,6 +68,7 @@ public class OnlineReportController extends SimpleFormController {
     
     private ReportWrapperService m_reportWrapperService;
     private CategoryConfigService m_catConfigService;
+    private CategoryDao m_categoryDao;
     
     /**
      * <p>Constructor for OnlineReportController.</p>
@@ -88,6 +90,8 @@ public class OnlineReportController extends SimpleFormController {
         Map<String, Object> data = new HashMap<String, Object>();
         List<ReportFormat> formats = m_reportWrapperService.getFormats(reportId);
         data.put("formats", formats);
+        List<String> onmsCategories = m_categoryDao.getAllCategoryNames();
+        data.put("onmsCategories", onmsCategories);
         List<String> categories = m_catConfigService.getCategoriesList();
         data.put("categories", categories);
         return data;
@@ -139,5 +143,13 @@ public class OnlineReportController extends SimpleFormController {
     public void setCategoryConfigService(CategoryConfigService catConfigService) {
         m_catConfigService = catConfigService;
     }
-
+    
+    /**
+     * <p>setCategoryDao</p>
+     *
+     * @param categoryDao a {@link org.opennms.netmgt.dao.CategoryDao} object.
+     */
+    public void setCategoryDao(CategoryDao categoryDao) {
+    	m_categoryDao = categoryDao;
+    }
 }

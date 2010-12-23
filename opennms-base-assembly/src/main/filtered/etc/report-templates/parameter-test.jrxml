@@ -11,6 +11,12 @@
 			<![CDATA["Routers"]]>
 		</defaultValueExpression>
 	</parameter>
+	<parameter name="categoryParameter" class="java.lang.String">
+		<property name="org.opennms.report.stringInputType" value="onmsCategorySelector" /> 
+		<parameterDescription>
+			<![CDATA[a drop-down category parameter]]>
+		</parameterDescription>
+	</parameter>
 	<parameter name="integerParameter" class="java.lang.Integer">
 		<parameterDescription>
 			<![CDATA[an Integer parameter]]>
@@ -60,11 +66,12 @@
       	</band>
     </title>
 	<detail>
-	    <band height="120">
+	    <band height="140">
 	    	<textField>
-	    	<reportElement x="0" y="0" width="200" height="120"/>
+	    	<reportElement x="0" y="0" width="200" height="140"/>
 		    <textFieldExpression>
 		    	"stringParameter: " + $P{stringParameter} + "\n" +
+		    	"categoryParameter: " + $P{categoryParameter} + "\n" +
 		    	"integerParameter: " + $P{integerParameter} + "\n" +
 		    	"floatParameter: " + $P{floatParameter} + "\n" +
 		    	"doubleParameter: " + $P{doubleParameter} + "\n" +

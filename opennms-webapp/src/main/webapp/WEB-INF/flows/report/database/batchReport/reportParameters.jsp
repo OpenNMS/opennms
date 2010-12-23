@@ -70,6 +70,11 @@
 	                <form:options items="${categories}"/>
 	                </form:select>
                 </c:when>
+				<c:when test="${stringParm.inputType == 'onmsCategorySelector'}">
+                	<form:select path="stringParms[${stringParmRow.index}].value"> 
+	                <form:options items="${onmsCategories}"/>
+	                </form:select>
+                </c:when>
                 <c:otherwise>
                 	<form:input path="stringParms[${stringParmRow.index}].value"/>
                 </c:otherwise>
