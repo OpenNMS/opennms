@@ -220,19 +220,19 @@ public class DefaultReportWrapperService implements ReportWrapperService {
             switch (deliveryOptions.getFormat()) {
 
             case HTML:
-                jm.setInputStreamName("report.htm");
+                jm.setInputStreamName(deliveryOptions.getInstanceId() + ".htm");
                 jm.setInputStreamContentType("text/html");
                 break;
             case PDF:
-                jm.setInputStreamName("report.pdf");
+                jm.setInputStreamName(deliveryOptions.getInstanceId() + ".pdf");
                 jm.setInputStreamContentType("application/pdf");
                 break;
             case SVG:
-                jm.setInputStreamName("svgreport.pdf");
+                jm.setInputStreamName(deliveryOptions.getInstanceId()+ ".pdf");
                 jm.setInputStreamContentType("application/pdf");
                 break;
             default:
-                jm.setInputStreamName("report.htm");
+                jm.setInputStreamName(deliveryOptions.getInstanceId() + ".htm");
                 jm.setInputStreamContentType("text/html");
 
             }
