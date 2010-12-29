@@ -116,7 +116,7 @@ public class DefaultReportWrapperService implements ReportWrapperService {
                       e);
         }
 
-        options.setInstanceId(reportId + "_" + userId);
+        options.setInstanceId(reportId + " " + userId);
 
         return options;
     }
@@ -213,7 +213,7 @@ public class DefaultReportWrapperService implements ReportWrapperService {
         try {
             JavaMailer jm = new JavaMailer();
             jm.setTo(deliveryOptions.getMailTo());
-            jm.setSubject("OpenNMS Report");
+            jm.setSubject(deliveryOptions.getInstanceId());
             jm.setMessageText("Here is your report from the OpenNMS report service.");
             jm.setInputStream(new ByteArrayInputStream(
                                                        outputStream.toByteArray()));
