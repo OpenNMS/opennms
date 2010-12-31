@@ -1272,24 +1272,10 @@ public class NetworkElementFactory implements InitializingBean, NetworkElementFa
     }
     
     /* (non-Javadoc)
-	 * @see org.opennms.web.element.NetworkElementFactoryInterfac#getAtInterface(int, java.lang.String)
-	 */
+     * @see org.opennms.web.element.NetworkElementFactoryInterface#getAtInterface(int, java.lang.String)
+     */
     public AtInterface getAtInterface(int nodeId, String ipAddr) {
-        OnmsCriteria criteria = new OnmsCriteria(OnmsNode.class);
-        criteria.createAlias("node", "node");
-        criteria.add(Restrictions.eq("node.id", nodeId));
-        criteria.add(Restrictions.eq("ipAddress", ipAddr));
-        criteria.add(Restrictions.ne("status", StatusType.DELETED));
-        criteria.setResultTransformer(Criteria.DISTINCT_ROOT_ENTITY);
-
-        final List<OnmsNode> nodes = m_nodeDao.findMatching(criteria);
-        if (nodes.size() > 1) {
-            LogUtils.warnf(this, "More than 1 node returned!  Using the first one, but this could be wrong...");
-        } else if (nodes.size() == 0) {
-            LogUtils.debugf(this, "No nodes matched for nodeId = %d, IP Address = %s", nodeId, ipAddr);
-            return null;
-        }
-        final OnmsNode node = nodes.get(0);
+        OnmsNode node = m_nodeDao.get(nodeId);
         return getAtInterfaceForOnmsNode(node, ipAddr);
     }
 
