@@ -1,0 +1,132 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<jasperReport xmlns="http://jasperreports.sourceforge.net/jasperreports" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://jasperreports.sourceforge.net/jasperreports http://jasperreports.sourceforge.net/xsd/jasperreport.xsd" name="ResponseTimeSummary_subreport" pageWidth="555" pageHeight="802" whenNoDataType="NoDataSection" columnWidth="555" leftMargin="0" rightMargin="0" topMargin="0" bottomMargin="0">
+	<property name="ireport.zoom" value="2.0"/>
+	<property name="ireport.x" value="164"/>
+	<property name="ireport.y" value="0"/>
+	<template><![CDATA["${install.dir}/etc/report-templates/assets/styles/defaultStyles.jrtx"]]></template>
+	<style name="Node_Group" mode="Opaque" backcolor="#DFDFDF" hAlign="Center" vAlign="Middle" fontSize="10" isBold="false" isItalic="false" isUnderline="false" isStrikeThrough="false"/>
+	<style name="Detail" hAlign="Center" vAlign="Middle"/>
+	<style name="Interface_Header" hAlign="Center" vAlign="Middle" isBold="true" isItalic="false" isUnderline="false" isStrikeThrough="false"/>
+	<parameter name="SUBREPORT_DIR" class="java.lang.String" isForPrompting="false">
+		<defaultValueExpression><![CDATA["${install.dir}/etc/report-templates/subreports/"]]></defaultValueExpression>
+	</parameter>
+	<parameter name="STATSD_REPORT" class="java.lang.String">
+		<defaultValueExpression><![CDATA["TopN_Response"]]></defaultValueExpression>
+	</parameter>
+	<queryString>
+		<![CDATA[SELECT
+  statisticsreportdata.id,
+  statisticsreportdata.reportid,
+  statisticsreportdata.resourceid,
+  statisticsreportdata."value",
+  statisticsreport."name",
+  statisticsreport.jobcompleteddate,
+  resourcereference.resourceid as noderesourceid
+FROM
+  public.statisticsreportdata,
+  public.statisticsreport,
+  public.resourcereference
+WHERE
+  statisticsreportdata.reportid = statisticsreport.id AND
+  statisticsreportdata.resourceid = resourcereference.id AND
+  statisticsreport."name" = '$P!{STATSD_REPORT}'
+ORDER BY
+  statisticsreport.jobcompleteddate DESC,
+  statisticsreportdata."value" DESC
+LIMIT 10;]]>
+	</queryString>
+	<field name="id" class="java.lang.Integer"/>
+	<field name="reportid" class="java.lang.Integer"/>
+	<field name="resourceid" class="java.lang.Integer"/>
+	<field name="value" class="java.lang.Double"/>
+	<field name="name" class="java.lang.String"/>
+	<field name="jobcompleteddate" class="java.sql.Timestamp"/>
+	<field name="noderesourceid" class="java.lang.String"/>
+	<variable name="NODE_LABEL" class="java.lang.String">
+		<variableExpression><![CDATA[$F{noderesourceid}]]></variableExpression>
+	</variable>
+	<variable name="RESOURCE" class="java.lang.String">
+		<variableExpression><![CDATA[$F{noderesourceid}]]></variableExpression>
+	</variable>
+	<variable name="RESPONSE_TIME" class="java.lang.Double">
+		<variableExpression><![CDATA[($F{value}/1000)]]></variableExpression>
+	</variable>
+	<background>
+		<band splitType="Stretch"/>
+	</background>
+	<title>
+		<band splitType="Stretch"/>
+	</title>
+	<pageHeader>
+		<band height="45" splitType="Stretch">
+			<staticText>
+				<reportElement x="199" y="0" width="156" height="12"/>
+				<textElement/>
+				<text><![CDATA[Top Offenders (Response Time)]]></text>
+			</staticText>
+			<staticText>
+				<reportElement x="0" y="25" width="206" height="20"/>
+				<textElement/>
+				<text><![CDATA[Node]]></text>
+			</staticText>
+			<staticText>
+				<reportElement x="206" y="25" width="149" height="20"/>
+				<textElement textAlignment="Right"/>
+				<text><![CDATA[Resource]]></text>
+			</staticText>
+			<staticText>
+				<reportElement x="355" y="25" width="131" height="20"/>
+				<textElement textAlignment="Right"/>
+				<text><![CDATA[Avg. Response(ms)]]></text>
+			</staticText>
+		</band>
+	</pageHeader>
+	<columnHeader>
+		<band splitType="Stretch"/>
+	</columnHeader>
+	<detail>
+		<band height="21" splitType="Stretch">
+			<textField pattern="###0.000">
+				<reportElement x="206" y="0" width="149" height="20"/>
+				<textElement textAlignment="Right"/>
+				<textFieldExpression class="java.lang.String"><![CDATA[new org.opennms.netmgt.jasper.helper.ResourceIdParser().getResource($F{noderesourceid})]]></textFieldExpression>
+			</textField>
+			<textField pattern="###0.00">
+				<reportElement x="355" y="0" width="131" height="20"/>
+				<textElement textAlignment="Right"/>
+				<textFieldExpression class="java.lang.Double"><![CDATA[$V{RESPONSE_TIME}]]></textFieldExpression>
+			</textField>
+			<subreport>
+				<reportElement stretchType="RelativeToBandHeight" x="0" y="0" width="206" height="20"/>
+				<subreportParameter name="NODE_ID">
+					<subreportParameterExpression><![CDATA[new Integer(new org.opennms.netmgt.jasper.helper.ResourceIdParser().getNodeId($F{noderesourceid}))]]></subreportParameterExpression>
+				</subreportParameter>
+				<connectionExpression><![CDATA[$P{REPORT_CONNECTION}]]></connectionExpression>
+				<subreportExpression class="java.lang.String"><![CDATA[$P{SUBREPORT_DIR} + "NodeId_to_NodeLabel_subreport.jasper"]]></subreportExpression>
+			</subreport>
+		</band>
+	</detail>
+	<columnFooter>
+		<band splitType="Stretch"/>
+	</columnFooter>
+	<pageFooter>
+		<band splitType="Stretch"/>
+	</pageFooter>
+	<summary>
+		<band splitType="Stretch"/>
+	</summary>
+	<noData>
+		<band height="100">
+			<staticText>
+				<reportElement x="96" y="35" width="363" height="50"/>
+				<textElement textAlignment="Justified"/>
+				<text><![CDATA[There seems to be no data for this section. Please check the statsd-configuration.xml and change the status from off to on for the Top 10 reports. To turn them on change the status from off to on.]]></text>
+			</staticText>
+			<staticText>
+				<reportElement x="199" y="10" width="156" height="12"/>
+				<textElement/>
+				<text><![CDATA[Top Offenders (Response Time)]]></text>
+			</staticText>
+		</band>
+	</noData>
+</jasperReport>

@@ -15,6 +15,10 @@
                 report-service="jasperReportService" description="Global overview of outages, notifications and events in last 24 hours" />
         <report id="Response-Time-Summary-Report" display-name="Response Time Summary for node - Past 7 Days" online="true" 
                 report-service="jasperReportService" description="Response Time (past 7 days) by node across one or more surveillance categories" />
+        <report id="Response-Time-Summary-Report-ThisMonth" display-name="Response Time Summary for node - This Month" online="true" 
+                report-service="jasperReportService" description="Response Time (this month) by node across one or more surveillance categories" />
+        <report id="Response-Time-Summary-Report-LastMonth" display-name="Response Time Summary for node - Last Month" online="true" 
+                report-service="jasperReportService" description="Response Time (last month) by node across one or more surveillance categories" />
         <report id="Node-Availability-Report" display-name="Availability by node - Past 7 Days" online="true" 
                 report-service="jasperReportService" description="Availability (past 7 days) by node across one or more surveillance categories" />
         <report id="Node-Availability-Report_ThisMonth" display-name="Availability by node - This Month" online="true" 

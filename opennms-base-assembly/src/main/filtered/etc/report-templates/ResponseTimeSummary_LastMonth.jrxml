@@ -2,7 +2,7 @@
 <jasperReport xmlns="http://jasperreports.sourceforge.net/jasperreports" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://jasperreports.sourceforge.net/jasperreports http://jasperreports.sourceforge.net/xsd/jasperreport.xsd" name="node-response-time" pageWidth="595" pageHeight="842" whenNoDataType="NoDataSection" columnWidth="555" leftMargin="20" rightMargin="20" topMargin="20" bottomMargin="20">
 	<property name="ireport.zoom" value="2.0"/>
 	<property name="ireport.x" value="0"/>
-	<property name="ireport.y" value="302"/>
+	<property name="ireport.y" value="319"/>
 	<template><![CDATA["${install.dir}/etc/report-templates/assets/styles/defaultStyles.jrtx"]]></template>
 	<style name="Report_Title" forecolor="#000000" fontSize="20"/>
 	<style name="Report_Subtitle" forecolor="#000000" vAlign="Middle" fontSize="10" isBold="false" isItalic="true" isUnderline="false" isStrikeThrough="false"/>
@@ -78,10 +78,14 @@
 		<defaultValueExpression><![CDATA[new Double("80.0")]]></defaultValueExpression>
 	</parameter>
 	<parameter name="startDate" class="java.util.Date" isForPrompting="false">
-		<defaultValueExpression><![CDATA[new java.util.Date(new java.util.Date().getTime() - 86400 * 7 * 1000)]]></defaultValueExpression>
+		<defaultValueExpression><![CDATA[new java.sql.Date(
+new GregorianCalendar(new GregorianCalendar().get(Calendar.YEAR), new GregorianCalendar().get(Calendar.MONTH) - 1 , 1).getTimeInMillis()
+)]]></defaultValueExpression>
 	</parameter>
 	<parameter name="endDate" class="java.util.Date" isForPrompting="false">
-		<defaultValueExpression><![CDATA[new java.util.Date()]]></defaultValueExpression>
+		<defaultValueExpression><![CDATA[new java.sql.Date(
+new GregorianCalendar(new GregorianCalendar().get(Calendar.YEAR), new GregorianCalendar().get(Calendar.MONTH), 1).getTimeInMillis()
+)]]></defaultValueExpression>
 	</parameter>
 	<parameter name="rrdDir" class="java.lang.String" isForPrompting="false">
 		<defaultValueExpression><![CDATA["${install.dir}/share/rrd"]]></defaultValueExpression>
@@ -249,14 +253,14 @@ ORDER BY
 				</graphicElement>
 			</line>
 			<staticText>
-				<reportElement style="Sub-sub-header" x="2" y="83" width="83" height="15"/>
+				<reportElement style="Sub-sub-header" x="2" y="83" width="65" height="15"/>
 				<textElement/>
-				<text><![CDATA[7 days from: ]]></text>
+				<text><![CDATA[Last Month]]></text>
 			</staticText>
 			<textField>
-				<reportElement style="Sub-sub-header" x="85" y="83" width="198" height="15" isPrintWhenDetailOverflows="true"/>
+				<reportElement style="Sub-sub-header" x="68" y="83" width="382" height="15" isPrintWhenDetailOverflows="true"/>
 				<textElement/>
-				<textFieldExpression class="java.lang.String"><![CDATA[new SimpleDateFormat().format($P{startDate})]]></textFieldExpression>
+				<textFieldExpression class="java.lang.String"><![CDATA[new SimpleDateFormat().format($P{startDate}) + " to " + new SimpleDateFormat().format($P{endDate})]]></textFieldExpression>
 			</textField>
 		</band>
 	</pageHeader>
@@ -344,7 +348,7 @@ ORDER BY
 			<subreport>
 				<reportElement x="0" y="297" width="554" height="58"/>
 				<subreportParameter name="STATSD_REPORT">
-					<subreportParameterExpression><![CDATA["Top10_Response_Weekly"]]></subreportParameterExpression>
+					<subreportParameterExpression><![CDATA["Top10_Response_Last_Month"]]></subreportParameterExpression>
 				</subreportParameter>
 				<connectionExpression><![CDATA[$P{REPORT_CONNECTION}]]></connectionExpression>
 				<subreportExpression class="java.lang.String"><![CDATA[$P{SUBREPORT_DIR} + "ResponseTimeSummary_Response_Offenders_subreport.jasper"]]></subreportExpression>

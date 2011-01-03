@@ -16,7 +16,43 @@
     </packageReport>
   </package>
   
+  <package name="ResponseTimeReports">
+    <packageReport name="Top10_Response_Weekly" description="Weekly Top 10 responses across all nodes"
+                   schedule="0 0 0 ? * MON" retainInterval="2592000000"
+                   status="off">
+      <parameter key="count" value="10"/>
+      <parameter key="consolidationFunction" value="AVERAGE"/>
+      <parameter key="relativeTime" value="LASTSEVENDAYS"/>
+      <parameter key="resourceTypeMatch" value="responseTime"/>
+      <parameter key="attributeMatch" value="icmp"/>
+    </packageReport>
+    
+    <packageReport name="Top10_Response_This_Month" description="This Month Top 10 responses across all nodes"
+                   schedule="0 0 0 L * ?" retainInterval="2592000000"
+                   status="off">
+      <parameter key="count" value="10"/>
+      <parameter key="consolidationFunction" value="AVERAGE"/>
+      <parameter key="relativeTime" value="LASTTHIRTYONEDAYS"/>
+      <parameter key="resourceTypeMatch" value="responseTime"/>
+      <parameter key="attributeMatch" value="icmp"/>
+    </packageReport>
+    
+    <packageReport name="Top10_Response_Last_Month" description="Last Month Top 10 responses across all nodes"
+                   schedule="0 0 0 1 * ?" retainInterval="2592000000"
+                   status="off">
+      <parameter key="count" value="10"/>
+      <parameter key="consolidationFunction" value="AVERAGE"/>
+      <parameter key="relativeTime" value="LASTTHIRTYONEDAYS"/>
+      <parameter key="resourceTypeMatch" value="responseTime"/>
+      <parameter key="attributeMatch" value="icmp"/>
+    </packageReport>
+  </package>
+  
+  
   <report name="TopN" class-name="org.opennms.netmgt.dao.support.TopNAttributeStatisticVisitor"/>
+  <report name="Top10_Response_Weekly" class-name="org.opennms.netmgt.dao.support.TopNAttributeStatisticVisitor"/>
+  <report name="Top10_Response_This_Month" class-name="org.opennms.netmgt.dao.support.TopNAttributeStatisticVisitor"/>
+  <report name="Top10_Response_Last_Month" class-name="org.opennms.netmgt.dao.support.TopNAttributeStatisticVisitor"/>
 
 </statistics-daemon-configuration>
 
