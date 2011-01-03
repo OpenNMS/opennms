@@ -208,7 +208,7 @@ final public class GpMonitor extends IPv4Monitor {
                             if (scriptoutput.indexOf(strBannerMatch) > -1) {
                                 serviceStatus = PollStatus.available(responseTime);
                             } else {
-                                serviceStatus = PollStatus.unavailable(script + "banner not contained in output banner='"+strBannerMatch+"' output='"+scriptoutput+"'");
+                                serviceStatus = PollStatus.unavailable(script + " banner not contained in output banner='"+strBannerMatch+"' output='"+scriptoutput+"'");
                             }
                         }
                     }
