@@ -97,7 +97,7 @@
     }
     
     if ( baseUrl.indexOf(limitName) < 0) {
-        baseUrl = baseUrl + "&" + limitName + "=" + limit;
+        baseUrl = baseUrl + "&amp;" + limitName + "=" + limit;
     }
 
     //calculate the start and end numbers of the results that we are showing
@@ -116,12 +116,12 @@
   <% if( itemCount >= limit || multiple > 0 ) { %>  
     <span>
 <% if( multiple > 0 ) { %>
-      <a href="<%=baseUrl%>&<%=multipleName%>=0">First</a>&nbsp;  
-      <a href="<%=baseUrl%>&<%=multipleName%>=<%=multiple-1%>">Previous</a>&nbsp;  
+      <a href="<%=baseUrl%>&amp;<%=multipleName%>=0">First</a>&nbsp;  
+      <a href="<%=baseUrl%>&amp;<%=multipleName%>=<%=multiple-1%>">Previous</a>&nbsp;  
     <% } %>
     
     <% if( itemCount >= limit  ) { %>
-      <a href="<%=baseUrl%>&<%=multipleName%>=<%=multiple+1%>">Next</a>&nbsp;
+      <a href="<%=baseUrl%>&amp;<%=multipleName%>=<%=multiple+1%>">Next</a>&nbsp;
     <% } %>
 		</span>
    <% } %>      

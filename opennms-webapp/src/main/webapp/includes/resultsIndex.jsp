@@ -123,22 +123,22 @@
   <% if( count > limit ) { %>  
     <span>
 <% if( multiple > 0 ) { %>
-      <a href="<%=baseUrl%>&<%=multipleName%>=0&<%=limitName%>=<%=limit%>">First</a>&nbsp;  
-      <a href="<%=baseUrl%>&<%=multipleName%>=<%=multiple-1%>&<%=limitName%>=<%=limit%>">Previous</a>&nbsp;  
+      <a href="<%=baseUrl%>&amp;<%=multipleName%>=0&amp;<%=limitName%>=<%=limit%>">First</a>&nbsp;  
+      <a href="<%=baseUrl%>&amp;<%=multipleName%>=<%=multiple-1%>&amp;<%=limitName%>=<%=limit%>">Previous</a>&nbsp;  
     <% } %>
     
     <% for( int i=startIndex; i <= endIndex; i++ ) { %>
       <% if( multiple == i ) { %>
          <strong><%=i+1%></strong>
       <% } else { %>
-        <a href="<%=baseUrl%>&<%=multipleName%>=<%=i%>&<%=limitName%>=<%=limit%>"><%=i+1%></a>
+        <a href="<%=baseUrl%>&amp;<%=multipleName%>=<%=i%>&amp;<%=limitName%>=<%=limit%>"><%=i+1%></a>
       <% } %>
       &nbsp;
     <% } %>
       
     <% if( multiple < highestPossibleIndex ) { %>
-      <a href="<%=baseUrl%>&<%=multipleName%>=<%=multiple+1%>&<%=limitName%>=<%=limit%>">Next</a>&nbsp;
-      <a href="<%=baseUrl%>&<%=multipleName%>=<%=highestPossibleIndex%>&<%=limitName%>=<%=limit%>">Last</a>
+      <a href="<%=baseUrl%>&amp;<%=multipleName%>=<%=multiple+1%>&amp;<%=limitName%>=<%=limit%>">Next</a>&nbsp;
+      <a href="<%=baseUrl%>&amp;<%=multipleName%>=<%=highestPossibleIndex%>&amp;<%=limitName%>=<%=limit%>">Last</a>
     <% } %>
 		</span>
    <% } %>      
