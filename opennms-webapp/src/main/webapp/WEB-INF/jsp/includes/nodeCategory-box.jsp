@@ -50,14 +50,14 @@
 <h3 class="o-box">
   Surveillance Category Memberships
   <c:if test="${isAdmin == 'true'}">
-    (<a href="<c:url value='admin/categories.htm?edit&node=${param.node}'/>">Edit</a>)
+    (<a href="<c:url value="admin/categories.htm?edit&amp;node=${param.node}"/>">Edit</a>)
   </c:if>
 </h3>
 
 <table class="o-box">
   <c:if test="${empty categories}">
     <tr>
-      <td>This node is not a member of any categories</td>
+      <td>This node is not a member of any categories.</td>
     </tr>
   </c:if>
   

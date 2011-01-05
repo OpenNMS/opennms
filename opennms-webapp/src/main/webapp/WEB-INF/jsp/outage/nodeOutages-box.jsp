@@ -90,13 +90,13 @@
         <c:param name="node" value="<%=String.valueOf(nodeId)%>"/>
         <c:param name="intf" value="<%=outages[i].getIpAddress()%>"/>
       </c:url>
-      <td class="divider"><a href="${interfaceLink}"><%=outages[i].getIpAddress()%></a></td>
+      <td class="divider"><a href="<c:out value="${interfaceLink}"/>"><%=outages[i].getIpAddress()%></a></td>
       <c:url var="serviceLink" value="element/service.jsp">
         <c:param name="node" value="<%=String.valueOf(nodeId)%>"/>
         <c:param name="intf" value="<%=outages[i].getIpAddress()%>"/>
         <c:param name="service" value="<%=String.valueOf(outages[i].getServiceId())%>"/>
       </c:url>
-      <td class="divider"><a href="${serviceLink}"><c:out value="<%=outages[i].getServiceName()%>"/></a></td>
+      <td class="divider"><a href="<c:out value="${serviceLink}"/>"><c:out value="<%=outages[i].getServiceName()%>"/></a></td>
       <td class="divider"><fmt:formatDate value="${outage.lostServiceTime}" type="date" dateStyle="short"/>&nbsp;<fmt:formatDate value="${outage.lostServiceTime}" type="time" pattern="HH:mm:ss"/></td>
       
       <% if( outages[i].getRegainedServiceTime() == null ) { %>
