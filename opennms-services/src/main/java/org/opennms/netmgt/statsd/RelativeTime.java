@@ -51,6 +51,20 @@ import org.opennms.core.utils.TimeKeeper;
  * @version $Id: $
  */
 public enum RelativeTime {
+
+    THISYEAR{
+        @Override
+        public Date getStart() {
+            return new Date(new GregorianCalendar(new GregorianCalendar().get(Calendar.YEAR), 0, 1).getTimeInMillis());
+        }
+
+        @Override
+        public Date getEnd() {
+            return getStartOfToday();
+        }
+        
+    },
+    
     LASTTHIRTYONEDAYS {
         public Date getStart() {
             return getStartDate(31);

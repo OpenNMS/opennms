@@ -38,11 +38,11 @@ package org.opennms.netmgt.dao.castor;
 import java.io.InputStream;
 import java.util.List;
 
+import junit.framework.TestCase;
+
 import org.opennms.netmgt.dao.castor.statsd.Report;
 import org.opennms.test.ConfigurationTestUtils;
 import org.springframework.core.io.InputStreamResource;
-
-import junit.framework.TestCase;
 
 /**
  * Unit tests for DefaultStatisticsDaemonConfigDao.
@@ -68,7 +68,7 @@ public class DefaultStatisticsDaemonConfigDaoTest extends TestCase {
 
         List<Report> reports = dao.getReports();
         assertNotNull("reports list should not be null", reports);
-        assertEquals("reports list size", 1, reports.size());
+        assertEquals("reports list size", 5, reports.size());
         
         Report report = reports.get(0);
         assertNotNull("first report should not be zero", report);

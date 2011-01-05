@@ -46,6 +46,16 @@
       <parameter key="resourceTypeMatch" value="responseTime"/>
       <parameter key="attributeMatch" value="icmp"/>
     </packageReport>
+    
+    <packageReport name="Top10_Response_This_Year" description="This Year Top 10 responses across all nodes"
+                   schedule="0 0 0 1 * ?" retainInterval="2592000000"
+                   status="off">
+      <parameter key="count" value="10"/>
+      <parameter key="consolidationFunction" value="AVERAGE"/>
+      <parameter key="relativeTime" value="THISYEAR"/>
+      <parameter key="resourceTypeMatch" value="responseTime"/>
+      <parameter key="attributeMatch" value="icmp"/>
+    </packageReport>
   </package>
   
   
@@ -53,6 +63,7 @@
   <report name="Top10_Response_Weekly" class-name="org.opennms.netmgt.dao.support.TopNAttributeStatisticVisitor"/>
   <report name="Top10_Response_This_Month" class-name="org.opennms.netmgt.dao.support.TopNAttributeStatisticVisitor"/>
   <report name="Top10_Response_Last_Month" class-name="org.opennms.netmgt.dao.support.TopNAttributeStatisticVisitor"/>
+  <report name="Top10_Response_This_Year" class-name="org.opennms.netmgt.dao.support.TopNAttributeStatisticVisitor"/>
 
 </statistics-daemon-configuration>
 
