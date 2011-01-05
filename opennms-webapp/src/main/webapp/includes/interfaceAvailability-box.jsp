@@ -136,7 +136,7 @@ if (overallRtcValue < 0) {
       <c:param name="intf" value="<%=ipAddr%>"/>
       <c:param name="service" value="<%=String.valueOf(service.getServiceId())%>"/>
     </c:url>
-    <td class="divider"><a href="${serviceLink}"><c:out value="<%=service.getServiceName()%>"/></a></td>
+    <td class="divider"><a href="<c:out value="${serviceLink}"/>"><c:out value="<%=service.getServiceName()%>"/></a></td>
     <% if( service.isManaged() ) { %>
       <td class="divider bright"><%=CategoryUtil.formatValue(svcValue)%>%</td>
     <% } else { %>
