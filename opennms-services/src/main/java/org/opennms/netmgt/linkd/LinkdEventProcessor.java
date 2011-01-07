@@ -53,7 +53,7 @@ import org.opennms.netmgt.xml.event.Event;
  * @author <a href="http://www.opennms.org/">OpenNMS </a>
  */
 @EventListener(name="OpenNMS.Linkd")
-final class LinkdEventProcessor {
+public final class LinkdEventProcessor {
 
     private Linkd m_linkd;
 
@@ -81,7 +81,7 @@ final class LinkdEventProcessor {
         // Remove the deleted node from the scheduler if it's an SNMP node
         m_linkd.deleteNode((int)event.getNodeid());
         // set to status = D in all the rows in table
-        // atinterface, iprouteinterface, datalinkinterface,stpnode, stpinterface
+        // atinterface, iprouteinterface, datalinkinterface, stpnode, stpinterface
     }
 
     /**
