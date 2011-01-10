@@ -27,6 +27,7 @@
       <groupId>org.jrobin</groupId>
       <artifactId>jrobin</artifactId>
       <scope>compile</scope>
+      <version>1.5.9</version>
     </dependency>
     <dependency>
       <groupId>commons-cli</groupId>
