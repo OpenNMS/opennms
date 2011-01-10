@@ -231,7 +231,6 @@ public class MockSnmpAgent extends BaseAgent implements Runnable {
         String dumpFile = "";
         String listenAddr;
         long listenPort;
-        AgentConfigData agentConfig;
 
         CommandLineParser parser = new PosixParser();
         try {
