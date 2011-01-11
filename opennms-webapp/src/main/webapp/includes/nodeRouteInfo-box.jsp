@@ -58,9 +58,9 @@
   
 
 
-<% if(iproutes != null && iproutes.length == 0) { %>
+<% if (iproutes == null || iproutes.length == 0) { %>
   <tr>
-    <td colspan="7">There have been no ip routes on this node.</td>
+    <td colspan="7">No IP routes have been discovered for this node.</td>
   </tr>
 <% } else { %>
  <thead>
@@ -69,40 +69,35 @@
     <th>Mask</th>
     <th>Next Hop</th>
     <th>Ifindex</th>
-    <th>Metric1</th>
+    <th>Metric 1</th>
     <th>Protocol</th>
     <th>Type</th>
   </tr>
  </thead>
 
-  <% for( int t=0; t < iproutes.length; t++ ) {
- 		{
-      	
-		%>
-		<tr width="40%"> 
-		     <td align="left" ><%=iproutes[t].get_routedest()%></td>
-		     <td align="left" ><%=iproutes[t].get_routemask()%></td>
-			 <% 
-				Node[] nodes = null;
-			 	if (!iproutes[t].get_routenexthop().equals("0.0.0.0"))
-					nodes = factory.getNodesWithIpLike(iproutes[t].get_routenexthop()); 	
-			 	if (nodes != null && nodes.length>0) {
-			 %>			 
-		    <td align="left" ><a href="element/node.jsp?node=<%=nodes[0].getNodeId()%>"><%=iproutes[t].get_routenexthop()%></a></td>
-		  	       <% } else { %>
-		    <td align="left" ><%=iproutes[t].get_routenexthop()%></td>
-			       <% } %>
-			 <td align="left" ><%=iproutes[t].get_ifindex()%></td>
-		     <td align="left" ><%=iproutes[t].get_routemetric1()%></td>
-		     <td align="left" ><%=IP_ROUTE_PROTO[iproutes[t].get_routeproto()]%></td>
-		     <td align="left" ><%=IP_ROUTE_TYPE[iproutes[t].get_routetype()]%></td>
-		</tr>
-		<%
-		}
-	}
-  } %>
+    <% for (int t = 0; t < iproutes.length; t++) { %>
+        <tr width="40%"> 
+            <td align="left" ><%=iproutes[t].get_routedest()%></td>
+            <td align="left" ><%=iproutes[t].get_routemask()%></td>
+            <% 
+            Node[] nodes = null;
+            if (!iproutes[t].get_routenexthop().equals("0.0.0.0")) {
+                nodes = factory.getNodesWithIpLike(iproutes[t].get_routenexthop());
+            }
+            if (nodes != null && nodes.length > 0) { %>
+                <td align="left" ><a href="element/node.jsp?node=<%=nodes[0].getNodeId()%>"><%=iproutes[t].get_routenexthop()%></a></td>
+            <% } else { %>
+                <td align="left" ><%=iproutes[t].get_routenexthop()%></td>
+            <% } %>
+            <td align="left" ><%=iproutes[t].get_ifindex()%></td>
+            <td align="left" ><%=iproutes[t].get_routemetric1()%></td>
+            <td align="left" ><%=IP_ROUTE_PROTO[iproutes[t].get_routeproto()]%></td>
+            <td align="left" ><%=IP_ROUTE_TYPE[iproutes[t].get_routetype()]%></td>
+        </tr>
+    <% } %>
+<% } %>
 
-</table>      
+</table>
 
 <%!
   //from the book _SNMP, SNMPv2, SNMPv3, and RMON 1 and 2_  (3rd Ed)
