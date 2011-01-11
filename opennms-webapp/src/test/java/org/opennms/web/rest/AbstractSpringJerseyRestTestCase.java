@@ -172,7 +172,7 @@ public abstract class AbstractSpringJerseyRestTestCase {
     protected void dispatch(final MockHttpServletRequest request, final MockHttpServletResponse response) throws Exception {
         FilterChain filterChain = new FilterChain() {
             public void doFilter(ServletRequest arg0, ServletResponse arg1) throws IOException, ServletException {
-                dispatcher.service(request, response);
+                dispatcher.service(arg0, arg1);
             }
         };
         filter.doFilter(request, response, filterChain);
@@ -219,7 +219,7 @@ public abstract class AbstractSpringJerseyRestTestCase {
         assertEquals(200, response.getStatus());
     }
 
-    private Map<String, String> parseParamData(String data) throws UnsupportedEncodingException {
+    protected static Map<String, String> parseParamData(String data) throws UnsupportedEncodingException {
         Map<String, String> retVal = new HashMap<String, String>();
         for (String item : data.split("&")) {
             String[] kv = item.split("=");
@@ -247,11 +247,11 @@ public abstract class AbstractSpringJerseyRestTestCase {
     protected String sendRequest(MockHttpServletRequest request, int spectedStatus) throws Exception, UnsupportedEncodingException {
         MockHttpServletResponse response = createResponse();
         dispatch(request, response);
-        assertEquals(spectedStatus, response.getStatus());
         String xml = response.getContentAsString();
         if (xml != null) {
             System.err.println(xml);
         }
+        assertEquals(spectedStatus, response.getStatus());
         return xml;
     }
     

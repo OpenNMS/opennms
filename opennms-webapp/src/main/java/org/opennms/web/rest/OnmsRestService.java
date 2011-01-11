@@ -70,6 +70,8 @@ import com.sun.jersey.core.util.MultivaluedMapImpl;
  */
 public class OnmsRestService {
 
+	protected static final int DEFAULT_LIMIT = 10;
+
 	protected enum ComparisonOperation { EQ, NE, ILIKE, LIKE, GT, LT, GE, LE, CONTAINS }
 
 	private List<Order> m_ordering = new ArrayList<Order>();
@@ -395,7 +397,7 @@ public class OnmsRestService {
                                    )
                                )
                            );
-        LogUtils.infof(this, "**** m_offset: " + m_offset + " ****");
+        LogUtils.infof(this, "**** m_offset: " + (m_offset == null ? 0 : m_offset) + " ****");
         OnmsCriteria rootCriteria = new OnmsCriteria(clazz);
         rootCriteria.add(Subqueries.propertyIn("id", criteria.getDetachedCriteria()));
         for (Order o : m_ordering) {

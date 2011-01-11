@@ -39,6 +39,7 @@ import com.sun.jersey.spi.resource.PerRequest;
 @Scope("prototype")
 @Path("alarms")
 public class AlarmRestService extends OnmsRestService {
+
     @Autowired
     private AlarmDao m_alarmDao;
     
@@ -55,7 +56,7 @@ public class AlarmRestService extends OnmsRestService {
      * @return a {@link org.opennms.netmgt.model.OnmsAlarm} object.
      */
     @GET
-    @Produces("text/xml")
+    @Produces({MediaType.APPLICATION_XML, MediaType.APPLICATION_JSON})
     @Path("{alarmId}")
     @Transactional
     public OnmsAlarm getAlarm(@PathParam("alarmId") String alarmId) {
@@ -69,7 +70,7 @@ public class AlarmRestService extends OnmsRestService {
      * @return a {@link java.lang.String} object.
      */
     @GET
-    @Produces("text/plain")
+    @Produces(MediaType.TEXT_PLAIN)
     @Path("count")
     @Transactional
     public String getCount() {
@@ -82,18 +83,17 @@ public class AlarmRestService extends OnmsRestService {
      * @return a {@link org.opennms.netmgt.model.OnmsAlarmCollection} object.
      */
     @GET
-    @Produces("text/xml")
+    @Produces({MediaType.APPLICATION_XML, MediaType.APPLICATION_JSON})
     @Transactional
     public OnmsAlarmCollection getAlarms() {
-    	MultivaluedMap<java.lang.String,java.lang.String> params=m_uriInfo.getQueryParameters();
-		OnmsCriteria criteria=new OnmsCriteria(OnmsAlarm.class);
+        OnmsAlarmCollection coll = new OnmsAlarmCollection(m_alarmDao.findMatching(getQueryFilters(m_uriInfo.getQueryParameters())));
 
-		setLimitOffset(params, criteria, 10, false);
-        addOrdering(params, criteria, false);
-    	addFiltersToCriteria(params, criteria, OnmsAlarm.class);
-    	criteria.setFetchMode("firstEvent", FetchMode.JOIN);
-        criteria.setFetchMode("lastEvent", FetchMode.JOIN);
-        return new OnmsAlarmCollection(m_alarmDao.findMatching(getDistinctIdCriteria(OnmsAlarm.class, criteria)));
+        //For getting totalCount
+        OnmsCriteria crit = new OnmsCriteria(OnmsAlarm.class);
+        addFiltersToCriteria(m_uriInfo.getQueryParameters(), crit, OnmsAlarm.class);
+        coll.setTotalCount(m_alarmDao.countMatching(crit));
+
+        return coll;
     }
     
     /**
@@ -132,10 +132,7 @@ public class AlarmRestService extends OnmsRestService {
 			ack="true".equals(formProperties.getFirst("ack"));
 			formProperties.remove("ack");
 		}
-		OnmsCriteria criteria = new OnmsCriteria(OnmsAlarm.class);
-		setLimitOffset(formProperties, criteria, 10, true);
-		addFiltersToCriteria(formProperties, criteria, OnmsAlarm.class);
-		for (OnmsAlarm alarm : m_alarmDao.findMatching(criteria)) {
+		for (OnmsAlarm alarm : m_alarmDao.findMatching(getQueryFilters(formProperties))) {
 			processAlarmAck(alarm, ack);
 		}
 	}
@@ -150,5 +147,25 @@ public class AlarmRestService extends OnmsRestService {
 		}
 		m_alarmDao.save(alarm);
 	}
-}
 
+	private OnmsCriteria getQueryFilters(MultivaluedMap<String,String> params) {
+	    OnmsCriteria criteria = new OnmsCriteria(OnmsAlarm.class);
+
+	    setLimitOffset(params, criteria, DEFAULT_LIMIT, false);
+	    addOrdering(params, criteria, false);
+        // Set default ordering
+        addOrdering(
+            new MultivaluedMapImpl(
+                new String[][] { 
+                    new String[] { "orderBy", "lastEventTime" }, 
+                    new String[] { "order", "desc" } 
+                }
+            ), criteria, false
+        );
+	    addFiltersToCriteria(params, criteria, OnmsAlarm.class);
+
+	    criteria.setFetchMode("firstEvent", FetchMode.JOIN);
+	    criteria.setFetchMode("lastEvent", FetchMode.JOIN);
+	    return getDistinctIdCriteria(OnmsAlarm.class, criteria);
+	}
+}

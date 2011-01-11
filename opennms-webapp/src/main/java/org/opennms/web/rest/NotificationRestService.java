@@ -15,6 +15,7 @@ import javax.ws.rs.core.MultivaluedMap;
 import javax.ws.rs.core.SecurityContext;
 import javax.ws.rs.core.UriInfo;
 
+import org.hibernate.criterion.Order;
 import org.opennms.netmgt.dao.NotificationDao;
 import org.opennms.netmgt.model.OnmsCriteria;
 import org.opennms.netmgt.model.OnmsNotification;
@@ -54,7 +55,7 @@ public class NotificationRestService extends OnmsRestService {
      * @return a {@link org.opennms.netmgt.model.OnmsNotification} object.
      */
     @GET
-    @Produces("text/xml")
+    @Produces({MediaType.APPLICATION_XML, MediaType.APPLICATION_JSON})
     @Path("{notifId}")
     @Transactional
     public OnmsNotification getNotification(@PathParam("eventId") String notifId) {
@@ -68,7 +69,7 @@ public class NotificationRestService extends OnmsRestService {
      * @return a {@link java.lang.String} object.
      */
     @GET
-    @Produces("text/plain")
+    @Produces(MediaType.TEXT_PLAIN)
     @Path("count")
     @Transactional
     public String getCount() {
@@ -81,17 +82,17 @@ public class NotificationRestService extends OnmsRestService {
      * @return a {@link org.opennms.netmgt.model.OnmsNotificationCollection} object.
      */
     @GET
-    @Produces("text/xml")
+    @Produces({MediaType.APPLICATION_XML, MediaType.APPLICATION_JSON})
     @Transactional
     public OnmsNotificationCollection getNotifications() {
-    	MultivaluedMap<java.lang.String,java.lang.String> params=m_uriInfo.getQueryParameters();
-		OnmsCriteria criteria=new OnmsCriteria(OnmsNotification.class);
+        OnmsNotificationCollection coll = new OnmsNotificationCollection(m_notifDao.findMatching(getQueryFilters(m_uriInfo.getQueryParameters())));
 
-    	setLimitOffset(params, criteria, 10, false);
-    	addOrdering(params, criteria, false);
-    	addFiltersToCriteria(params, criteria, OnmsNotification.class);
+        //For getting totalCount
+        OnmsCriteria crit = new OnmsCriteria(OnmsNotification.class);
+        addFiltersToCriteria(m_uriInfo.getQueryParameters(), crit, OnmsNotification.class);
+        coll.setTotalCount(m_notifDao.countMatching(crit));
 
-        return new OnmsNotificationCollection(m_notifDao.findMatching(getDistinctIdCriteria(OnmsNotification.class,criteria)));
+        return coll;
     }
     
     /**
@@ -129,7 +130,7 @@ public class NotificationRestService extends OnmsRestService {
 		}
 		
 		OnmsCriteria criteria = new OnmsCriteria(OnmsNotification.class);
-		setLimitOffset(formProperties, criteria, 10, true);
+		setLimitOffset(formProperties, criteria, DEFAULT_LIMIT, true);
 		addFiltersToCriteria(formProperties, criteria, OnmsNotification.class);
 
 		
@@ -149,5 +150,23 @@ public class NotificationRestService extends OnmsRestService {
     	}
        	m_notifDao.save(notif);
 	}
-}
 
+    private OnmsCriteria getQueryFilters(MultivaluedMap<String,String> params) {
+        OnmsCriteria criteria = new OnmsCriteria(OnmsNotification.class);
+
+        setLimitOffset(params, criteria, DEFAULT_LIMIT, false);
+        addOrdering(params, criteria, false);
+        // Set default ordering
+        addOrdering(
+            new MultivaluedMapImpl(
+                new String[][] { 
+                    new String[] { "orderBy", "notifyId" }, 
+                    new String[] { "order", "desc" } 
+                }
+            ), criteria, false
+        );
+        addFiltersToCriteria(params, criteria, OnmsNotification.class);
+
+        return getDistinctIdCriteria(OnmsNotification.class, criteria);
+    }
+}

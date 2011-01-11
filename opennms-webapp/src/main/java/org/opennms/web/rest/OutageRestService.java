@@ -82,6 +82,7 @@ import com.sun.jersey.spi.resource.PerRequest;
 @Scope("prototype")
 @Path("outages")
 public class OutageRestService extends OnmsRestService {
+
     @Autowired
     private OutageDao m_outageDao;
     
@@ -115,7 +116,7 @@ public class OutageRestService extends OnmsRestService {
      * @return a {@link java.lang.String} object.
      */
     @GET
-    @Produces("text/plain")
+    @Produces(MediaType.TEXT_PLAIN)
     @Path("count")
     @Transactional
     public String getCount() {
@@ -131,14 +132,14 @@ public class OutageRestService extends OnmsRestService {
     @Produces({MediaType.APPLICATION_XML, MediaType.APPLICATION_JSON})
     @Transactional
     public OnmsOutageCollection getOutages() {
-    	MultivaluedMap<java.lang.String,java.lang.String> params=m_uriInfo.getQueryParameters();
-		OnmsCriteria criteria=new OnmsCriteria(OnmsOutage.class);
+        OnmsOutageCollection coll = new OnmsOutageCollection(m_outageDao.findMatching(getQueryFilters(m_uriInfo.getQueryParameters())));
 
-    	setLimitOffset(params, criteria, 10, false);
-    	addOrdering(params, criteria, false);
-    	addFiltersToCriteria(params, criteria, OnmsOutage.class);
+        //For getting totalCount
+        OnmsCriteria crit = new OnmsCriteria(OnmsOutage.class);
+        addFiltersToCriteria(m_uriInfo.getQueryParameters(), crit, OnmsOutage.class);
+        coll.setTotalCount(m_outageDao.countMatching(crit));
 
-    	return new OnmsOutageCollection(m_outageDao.findMatching(getDistinctIdCriteria(OnmsOutage.class, criteria)));
+        return coll;
     }
 
     /**
@@ -172,6 +173,25 @@ public class OutageRestService extends OnmsRestService {
         criteria.add(recent.getCriterion());
 
         return new OnmsOutageCollection(m_outageDao.findMatching(getDistinctIdCriteria(OnmsOutage.class, criteria)));
+    }
+
+    private OnmsCriteria getQueryFilters(MultivaluedMap<String,String> params) {
+        OnmsCriteria criteria = new OnmsCriteria(OnmsOutage.class);
+
+        setLimitOffset(params, criteria, DEFAULT_LIMIT, false);
+        addOrdering(params, criteria, false);
+        // Set default ordering
+        addOrdering(
+            new MultivaluedMapImpl(
+                new String[][] { 
+                    new String[] { "orderBy", "ifLostService" }, 
+                    new String[] { "order", "desc" } 
+                }
+            ), criteria, false
+        );
+        addFiltersToCriteria(params, criteria, OnmsOutage.class);
+
+        return getDistinctIdCriteria(OnmsOutage.class, criteria);
     }
 }
 
