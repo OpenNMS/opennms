@@ -2,7 +2,7 @@
 <jasperReport xmlns="http://jasperreports.sourceforge.net/jasperreports" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://jasperreports.sourceforge.net/jasperreports http://jasperreports.sourceforge.net/xsd/jasperreport.xsd" name="AvailabilitySummaryReport" pageWidth="700" pageHeight="842" whenNoDataType="NoDataSection" columnWidth="620" leftMargin="40" rightMargin="40" topMargin="50" bottomMargin="50">
 	<property name="ireport.zoom" value="1.5"/>
 	<property name="ireport.x" value="0"/>
-	<property name="ireport.y" value="871"/>
+	<property name="ireport.y" value="663"/>
 	<template><![CDATA["${install.dir}/etc/report-templates/assets/styles/defaultStyles.jrtx"]]></template>
 	<style name="Sans_Normal" isDefault="true" fontName="DejaVu Sans" fontSize="12" isBold="false" isItalic="false" isUnderline="false" isStrikeThrough="false"/>
 	<style name="Sans_Bold" fontName="DejaVu Sans" fontSize="12" isBold="true" isItalic="false" isUnderline="false" isStrikeThrough="false"/>
@@ -74,6 +74,11 @@ new GregorianCalendar(new GregorianCalendar().get(Calendar.YEAR), new GregorianC
 	<parameter name="SUBREPORT_DIR" class="java.lang.String" isForPrompting="false">
 		<defaultValueExpression><![CDATA["${install.dir}/etc/report-templates/subreports/"]]></defaultValueExpression>
 	</parameter>
+	<parameter name="END_TIME" class="java.sql.Timestamp">
+		<defaultValueExpression><![CDATA[new java.sql.Timestamp(
+new GregorianCalendar(new GregorianCalendar().get(Calendar.YEAR), new GregorianCalendar().get(Calendar.MONTH), 1).getTimeInMillis()
+)]]></defaultValueExpression>
+	</parameter>
 	<queryString>
 		<![CDATA[SELECT
 	node_outages.categoryname,
@@ -110,19 +115,20 @@ FROM
 		active_nodes.nodelabel,
 		active_nodes.nodesyslocation,
 		active_nodes.nodesysdescription,
-		EXTRACT (epoch from ('$P!{START_TIME}'::TIMESTAMP + '$P!{TIME_RANGE}'::INTERVAL) - '$P!{START_TIME}'::TIMESTAMP) AS avail_total,
+		('$P!{END_TIME}'::TIMESTAMP) - '$P!{START_TIME}'::TIMESTAMP AS avail_time_interval,
+		EXTRACT (epoch from ('$P!{END_TIME}'::TIMESTAMP) - '$P!{START_TIME}'::TIMESTAMP) AS avail_total,
 		CASE
 			WHEN
-				outages_scope.ifregainedservice - outages_scope.iflostservice is NULL
+				outages_scope.gained_service_timestamp - outages_scope.lost_service_timestamp is NULL
 			THEN
 				CAST('0' AS INTERVAL)
 			ELSE
-				outages_scope.ifregainedservice - outages_scope.iflostservice
+				outages_scope.gained_service_timestamp - outages_scope.lost_service_timestamp
 		END AS
 			duration,
 		CASE
 			WHEN
-				outages_scope.ifregainedservice - outages_scope.iflostservice is NULL
+				outages_scope.gained_service_timestamp - outages_scope.lost_service_timestamp is NULL
 			THEN
 				CAST('0' AS INTEGER)
 			ELSE
@@ -132,12 +138,12 @@ FROM
 	FROM
 		(SELECT
 			outages.nodeid,
-			outages.iflostservice,
-			outages.ifregainedservice
+			least(('$P!{END_TIME}'::TIMESTAMP), outages.ifregainedservice) as gained_service_timestamp,
+			greatest('$P!{START_TIME}'::TIMESTAMP,outages.iflostservice) as lost_service_timestamp
 		FROM
 			outages, service, events
 		WHERE
-			(iflostservice, ifregainedservice) OVERLAPS ('$P!{START_TIME}'::TIMESTAMP, '$P!{START_TIME}'::TIMESTAMP + '$P!{TIME_RANGE}'::INTERVAL) AND
+			(iflostservice, ifregainedservice) OVERLAPS ('$P!{START_TIME}'::TIMESTAMP, '$P!{END_TIME}'::TIMESTAMP) AND
 			outages.serviceid = service.serviceid AND
 			service.servicename = 'ICMP' AND
 			outages.svclosteventid = events.eventid AND
@@ -163,7 +169,7 @@ FROM
 			(category_node.categoryid = categories.categoryid)
 		WHERE
 			nodetype = 'A' AND
-			categories.categoryname like $P{DS_SURVEILLANCE_CATEGORY})
+			categories.categoryname like 'Routers')
 		AS
 			active_nodes
 	ON
@@ -390,47 +396,20 @@ ORDER BY
 						<itemLabel color="#000000" backgroundColor="#FFFFFF"/>
 					</pie3DPlot>
 				</pie3DChart>
-				<stackedBar3DChart>
-					<chart>
-						<reportElement x="0" y="328" width="580" height="252"/>
-						<chartTitle>
-							<titleExpression><![CDATA["Last Month"]]></titleExpression>
-						</chartTitle>
-						<chartSubtitle>
-							<subtitleExpression><![CDATA["Percentage Outage Time Over Availability Time"]]></subtitleExpression>
-						</chartSubtitle>
-						<chartLegend/>
-					</chart>
-					<categoryDataset>
-						<dataset resetType="Group" resetGroup="SURVEILLANCE_CAT"/>
-						<categorySeries>
-							<seriesExpression><![CDATA["Outage Percent"]]></seriesExpression>
-							<categoryExpression><![CDATA[$F{nodelabel}]]></categoryExpression>
-							<valueExpression><![CDATA[$F{outages_percent}]]></valueExpression>
-						</categorySeries>
-						<categorySeries>
-							<seriesExpression><![CDATA["Availability Percent"]]></seriesExpression>
-							<categoryExpression><![CDATA[$F{nodelabel}]]></categoryExpression>
-							<valueExpression><![CDATA[$F{avail_percent}]]></valueExpression>
-						</categorySeries>
-					</categoryDataset>
-					<bar3DPlot>
-						<plot labelRotation="45.0"/>
-						<itemLabel color="#000000" backgroundColor="#FFFFFF"/>
-						<categoryAxisFormat labelRotation="45.0">
-							<axisFormat>
-								<labelFont/>
-								<tickLabelFont/>
-							</axisFormat>
-						</categoryAxisFormat>
-						<valueAxisFormat>
-							<axisFormat>
-								<labelFont/>
-								<tickLabelFont/>
-							</axisFormat>
-						</valueAxisFormat>
-					</bar3DPlot>
-				</stackedBar3DChart>
+				<subreport>
+					<reportElement x="0" y="330" width="620" height="252"/>
+					<subreportParameter name="DS_SURVEILLANCE_CAT">
+						<subreportParameterExpression><![CDATA[$P{DS_SURVEILLANCE_CATEGORY}]]></subreportParameterExpression>
+					</subreportParameter>
+					<subreportParameter name="TIME_SERIES_START_TIMESTAMP">
+						<subreportParameterExpression><![CDATA[$P{START_TIME}]]></subreportParameterExpression>
+					</subreportParameter>
+					<subreportParameter name="TIME_SERIES_LENGTH">
+						<subreportParameterExpression><![CDATA[new GregorianCalendar(new GregorianCalendar().get(Calendar.YEAR), new GregorianCalendar().get(Calendar.MONTH) - 1, 1).getMaximum(Calendar.DAY_OF_MONTH) - 1]]></subreportParameterExpression>
+					</subreportParameter>
+					<connectionExpression><![CDATA[$P{REPORT_CONNECTION}]]></connectionExpression>
+					<subreportExpression class="java.lang.String"><![CDATA[$P{SUBREPORT_DIR} + "AvailabilitySummaryChart_subreport.jasper"]]></subreportExpression>
+				</subreport>
 			</band>
 			<band height="67">
 				<subreport>

@@ -1,0 +1,140 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<jasperReport xmlns="http://jasperreports.sourceforge.net/jasperreports" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://jasperreports.sourceforge.net/jasperreports http://jasperreports.sourceforge.net/xsd/jasperreport.xsd" name="AvailabilitySummaryChart_subreport" pageWidth="595" pageHeight="842" columnWidth="555" leftMargin="20" rightMargin="20" topMargin="20" bottomMargin="20">
+	<property name="ireport.zoom" value="1.0"/>
+	<property name="ireport.x" value="0"/>
+	<property name="ireport.y" value="0"/>
+	<parameter name="DS_SURVEILLANCE_CATEGORY" class="java.lang.String" isForPrompting="false">
+		<defaultValueExpression><![CDATA["Routers"]]></defaultValueExpression>
+	</parameter>
+	<parameter name="TIME_SERIES_LENGTH" class="java.lang.Integer" isForPrompting="false">
+		<defaultValueExpression><![CDATA[6]]></defaultValueExpression>
+	</parameter>
+	<parameter name="TIME_SERIES_START_TIMESTAMP" class="java.sql.Timestamp" isForPrompting="false">
+		<defaultValueExpression><![CDATA[new java.sql.Timestamp(
+new GregorianCalendar(new GregorianCalendar().get(Calendar.YEAR), new GregorianCalendar().get(Calendar.MONTH), new GregorianCalendar().get(Calendar.DATE) - 7).getTimeInMillis()
+)]]></defaultValueExpression>
+	</parameter>
+	<queryString>
+		<![CDATA[select
+  dow,
+  days.ds as daystart,
+  ifaces.avail_time as avail_time_interval,
+  ifaces.avail_time_seconds as avail_time_second,
+  sum(case when iflostservice-ifregainedservice is null then interval'0' else least(de,ifregainedservice)-greatest(ds,iflostservice) end) as outageTime,
+  EXTRACT( epoch from sum(case when iflostservice-ifregainedservice is null then interval'0' else least(de,ifregainedservice)-greatest(ds,iflostservice) end) ) as outagetime_seconds
+
+from (
+      select * from generate_daily_series($P{TIME_SERIES_START_TIMESTAMP}, $P{TIME_SERIES_LENGTH})
+      )
+      as days
+
+      LEFT JOIN (SELECT
+		   outages.nodeid,
+		   outages.iflostservice,
+		   outages.ifregainedservice
+		 FROM
+		   outages
+
+		 JOIN service ON outages.serviceid = service.serviceid
+
+		 JOIN events ON outages.svclosteventid = events.eventid
+
+		 JOIN (values(44, 'routers'), (55, 'routers')) AS node(nodeid, category)
+
+		 ON outages.nodeid=node.nodeid
+
+		 WHERE
+		   service.servicename = 'ICMP' AND
+		   events.eventuei = 'uei.opennms.org/nodes/nodeDown'
+		 )
+		 AS o
+
+      on (days.ds, days.de) overlaps (o.iflostservice, o.ifregainedservice)
+
+      LEFT JOIN (
+		  SELECT
+			CAST( ipinterfaces.ipaddrcount || ' days' as interval) as avail_time,
+			EXTRACT( epoch from CAST( ipinterfaces.ipaddrcount || ' days' as interval) ) as avail_time_seconds,
+			ipinterfaces.categoryname
+
+		  FROM(
+			SELECT
+				count(ipinterface.ipaddr) as ipaddrcount,
+				categories.categoryname
+			FROM
+				node,
+				ipinterface,
+				category_node,
+				categories
+			WHERE
+				node.nodeid = category_node.nodeid AND
+				node.nodeid = ipinterface.nodeid AND
+				category_node.categoryid = categories.categoryid
+			GROUP BY
+				categories.categoryname
+
+			) AS ipinterfaces
+
+		) AS ifaces ON ifaces.categoryname = '$P!{DS_SURVEILLANCE_CATEGORY}'
+
+group by
+  dow,
+  ifaces.avail_time,
+  ifaces.avail_time_seconds,
+  days.ds
+
+order by
+	dow]]>
+	</queryString>
+	<field name="dow" class="java.lang.Integer"/>
+	<field name="daystart" class="java.sql.Timestamp"/>
+	<field name="avail_time_interval" class="org.postgresql.util.PGInterval"/>
+	<field name="avail_time_second" class="java.lang.Double"/>
+	<field name="outagetime" class="org.postgresql.util.PGInterval"/>
+	<field name="outagetime_seconds" class="java.lang.Double"/>
+	<background>
+		<band splitType="Stretch"/>
+	</background>
+	<summary>
+		<band height="212" splitType="Stretch">
+			<stackedBarChart>
+				<chart>
+					<reportElement x="0" y="0" width="555" height="209"/>
+					<chartTitle>
+						<titleExpression><![CDATA["Daily % Outage Time over last " + ($P{TIME_SERIES_LENGTH} + 1) + " days"]]></titleExpression>
+					</chartTitle>
+					<chartSubtitle/>
+					<chartLegend/>
+				</chart>
+				<categoryDataset>
+					<categorySeries>
+						<seriesExpression><![CDATA["% Outage Time"]]></seriesExpression>
+						<categoryExpression><![CDATA[new SimpleDateFormat("EEE, MMM d, ''yy").format( new Date( $F{daystart}.getTime() ) )]]></categoryExpression>
+						<valueExpression><![CDATA[$F{outagetime_seconds} == 0.0 ? 0.0 : ( ($F{outagetime_seconds}/$F{avail_time_second}) * 100.0)]]></valueExpression>
+					</categorySeries>
+					<categorySeries>
+						<seriesExpression><![CDATA["% Available Time"]]></seriesExpression>
+						<categoryExpression><![CDATA[new SimpleDateFormat("EEE, MMM d, ''yy").format( new Date( $F{daystart}.getTime() ) )]]></categoryExpression>
+						<valueExpression><![CDATA[100 - ($F{outagetime_seconds} == 0.0 ? 0.0 : (($F{outagetime_seconds}/$F{avail_time_second}) * 100) )]]></valueExpression>
+					</categorySeries>
+				</categoryDataset>
+				<barPlot>
+					<plot labelRotation="45.0"/>
+					<itemLabel color="#000000" backgroundColor="#FFFFFF"/>
+					<categoryAxisFormat labelRotation="45.0">
+						<axisFormat>
+							<labelFont/>
+							<tickLabelFont/>
+						</axisFormat>
+					</categoryAxisFormat>
+					<valueAxisFormat>
+						<axisFormat>
+							<labelFont/>
+							<tickLabelFont/>
+						</axisFormat>
+					</valueAxisFormat>
+				</barPlot>
+			</stackedBarChart>
+		</band>
+	</summary>
+</jasperReport>
