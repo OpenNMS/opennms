@@ -1,5 +1,6 @@
 package org.opennms.sms.reflector.smsservice.internal;
 
+import org.opennms.core.utils.LogUtils;
 import org.opennms.core.utils.ThreadCategory;
 import org.opennms.sms.reflector.smsservice.GatewayGroup;
 import org.opennms.sms.reflector.smsservice.OnmsInboundMessageNotification;
@@ -98,8 +99,8 @@ public class SmsServiceListFactoryBean implements FactoryBean<SmsService[]>, Ini
 					}
 					smsService.addGateway(gateways[i]);
 					
-				} catch (GatewayException e) {
-					e.printStackTrace();
+				} catch (final GatewayException e) {
+				    LogUtils.warnf(this, e, "Unable to add gateway (%s) to SMS service", gateways[i]);
 				}
 			}
 			

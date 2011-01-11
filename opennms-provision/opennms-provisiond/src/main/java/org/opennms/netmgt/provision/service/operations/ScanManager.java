@@ -41,6 +41,7 @@ import java.net.InetAddress;
 import java.util.Set;
 import java.util.TreeSet;
 
+import org.opennms.core.utils.LogUtils;
 import org.opennms.core.utils.ThreadCategory;
 import org.opennms.netmgt.config.SnmpPeerFactory;
 import org.opennms.netmgt.model.OnmsIpInterface;
@@ -185,9 +186,9 @@ public class ScanManager {
                 m_ipAddrTable.updateIpInterfaceData(node, ipAddr.toString());
             }
 
-        } catch (InterruptedException e) {
-            // TODO Auto-generated catch block
-            e.printStackTrace();
+        } catch (final InterruptedException e) {
+            LogUtils.infof(this, e, "thread interrupted while updating SNMP data");
+            Thread.currentThread().interrupt();
 
         }
         

@@ -58,7 +58,7 @@ import javax.servlet.http.HttpServletResponse;
 import org.exolab.castor.xml.MarshalException;
 import org.exolab.castor.xml.Marshaller;
 import org.exolab.castor.xml.ValidationException;
-import org.opennms.core.utils.ThreadCategory;
+import org.opennms.core.utils.LogUtils;
 import org.opennms.netmgt.ConfigFileConstants;
 import org.opennms.netmgt.config.CapsdConfig;
 import org.opennms.netmgt.config.CapsdConfigFactory;
@@ -239,23 +239,23 @@ public class AddPollerConfigServlet extends HttpServlet {
                     props.setProperty("service." + name1 + ".protocol", protoArray1);
                 } else
                     return;
-                log().debug("Add Capsd Info 1");
+                LogUtils.debugf(this, "Add Capsd Info 1");
             }
 
-            log().debug("b4 writing to files");
+            LogUtils.debugf(this, "b4 writing to files");
             props.store(new FileOutputStream(ConfigFileConstants.getFile(ConfigFileConstants.POLLER_CONF_FILE_NAME)), null);
             Writer poller_fileWriter = new OutputStreamWriter(new FileOutputStream(ConfigFileConstants.getFile(ConfigFileConstants.POLLER_CONFIG_FILE_NAME)), "UTF-8");
             Writer capsd_fileWriter = new OutputStreamWriter(new FileOutputStream(ConfigFileConstants.getFile(ConfigFileConstants.CAPSD_CONFIG_FILE_NAME)), "UTF-8");
             try {
                 Marshaller.marshal(pollerConfig, poller_fileWriter);
                 Marshaller.marshal(capsdConfig, capsd_fileWriter);
-                log().debug("writing to files");
+                LogUtils.debugf(this, "writing to files");
             } catch (MarshalException e) {
-                log().error("failed to marshall config files: " + e, e);
-                throw new ServletException(e.getMessage());
+                LogUtils.errorf(this, e, "failed to marshall config files");
+                throw new ServletException(e);
             } catch (ValidationException e) {
-                e.printStackTrace();
-                throw new ServletException(e.getMessage());
+                LogUtils.warnf(this, e, "failed to validate XML");
+                throw new ServletException(e);
             }
         }
 
@@ -277,7 +277,7 @@ public class AddPollerConfigServlet extends HttpServlet {
     public void addCapsdInfo(String name, String port, String user, String protocol, HttpServletResponse response) throws ServletException, IOException {
         // Check to see if the name is duplicate of the already specified names
         // first.
-        log().debug("Adding " + name + "to capsd");
+        LogUtils.debugf(this, "Adding %s to capsd", name);
         for (ProtocolPlugin svc : capsdConfig.getProtocolPluginCollection()) {
             if (svc.getProtocol().equals(name)) {
                 // delete from the poller configuration.
@@ -296,7 +296,7 @@ public class AddPollerConfigServlet extends HttpServlet {
                     List<Service> tmpPoller = pkg.getServiceCollection();
                     if (tmpPoller.contains(pollersvc) && pollersvc.getName().equals(name)) {
                         errorflag = true;
-                        log().debug("Removed from poller-config");
+                        LogUtils.debugf(this, "Removed from poller-config");
                         tmpPoller.remove(pollersvc);
                         response.sendRedirect("error.jsp?error=1&name=" + name);
                         return;
@@ -307,7 +307,7 @@ public class AddPollerConfigServlet extends HttpServlet {
                 // is already defined.. Try assigning another unique name");
             }
         }
-        log().debug(name + "doesnt already exist in capsd ");
+        LogUtils.debugf(this, "%s doesnt already exist in capsd", name);
         ProtocolPlugin pluginAdd = new ProtocolPlugin();
         pluginAdd.setProtocol(name);
         String className = (String) props.get("service." + protocol + ".capsd-class");
@@ -332,7 +332,7 @@ public class AddPollerConfigServlet extends HttpServlet {
                     newprop.setKey("ports");
                 pluginAdd.addProperty(newprop);
             } else {
-                log().debug("Port from props " + props.get("port"));
+                LogUtils.debugf(this, "Port from props " + props.get("port"));
                 if (props.get("service." + protocol + ".port") == null || ((String) props.get("service." + protocol + ".port")).equals("")) {
                     errorflag = true;
                     response.sendRedirect("error.jsp?error=0&name=" + "service." + protocol + ".port ");
@@ -351,7 +351,7 @@ public class AddPollerConfigServlet extends HttpServlet {
                     pluginAdd.addProperty(newprop);
                 }
             }
-            log().debug("Executing this section");
+            LogUtils.debugf(this, "Executing this section");
             newprop = new org.opennms.netmgt.config.capsd.Property();
             String timeout = "3000";
             if (props.get("timeout") != null)
@@ -397,7 +397,7 @@ public class AddPollerConfigServlet extends HttpServlet {
             if (svc.getName().equals(name)) {
                 errorflag = true;
                 response.sendRedirect("error.jsp?error=1&name=" + name);
-                log().info(name + " already exists");
+                LogUtils.infof(this, "%s already exists", name);
                 return;
                 // throw new ServletException ("Service name " + name + " is
                 // already defined.. Try assigning another unique name");
@@ -477,9 +477,5 @@ public class AddPollerConfigServlet extends HttpServlet {
             newService.addParameter(newprop);
             pkg.addService(newService);
         }
-    }
-
-    private ThreadCategory log() {
-        return ThreadCategory.getInstance(getClass());
     }
 }

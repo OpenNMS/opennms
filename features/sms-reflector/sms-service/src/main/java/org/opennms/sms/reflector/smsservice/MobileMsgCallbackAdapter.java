@@ -9,6 +9,7 @@ package org.opennms.sms.reflector.smsservice;
 
 import java.net.SocketTimeoutException;
 
+import org.apache.commons.lang.builder.ToStringBuilder;
 import org.opennms.core.tasks.Callback;
 public class MobileMsgCallbackAdapter implements MobileMsgResponseCallback {
 	private final Callback<MobileMsgResponse> cb;
@@ -32,18 +33,24 @@ public class MobileMsgCallbackAdapter implements MobileMsgResponseCallback {
 	}
 
 	/** {@inheritDoc} */
-	public void handleError(MobileMsgRequest request, Throwable t) {
+	public void handleError(final MobileMsgRequest request, final Throwable t) {
 		getCb().handleException(t);
 	}
 
 	/** {@inheritDoc} */
-	public boolean handleResponse(MobileMsgRequest request, MobileMsgResponse packet) {
+	public boolean handleResponse(final MobileMsgRequest request, final MobileMsgResponse packet) {
 		getCb().complete(packet);
 		return true;
 	}
 
 	/** {@inheritDoc} */
-	public void handleTimeout(MobileMsgRequest request) {
+	public void handleTimeout(final MobileMsgRequest request) {
 		getCb().handleException(new SocketTimeoutException("timed out processing request " + request));
+	}
+	
+	public String toString() {
+	    return new ToStringBuilder(this)
+	        .append("callback", cb)
+	        .toString();
 	}
 }

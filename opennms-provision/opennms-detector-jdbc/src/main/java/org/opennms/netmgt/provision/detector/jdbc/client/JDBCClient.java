@@ -37,6 +37,7 @@ import java.sql.Driver;
 import java.sql.SQLException;
 import java.util.Properties;
 
+import org.opennms.core.utils.LogUtils;
 import org.opennms.core.utils.ThreadCategory;
 import org.opennms.netmgt.provision.detector.jdbc.request.JDBCRequest;
 import org.opennms.netmgt.provision.detector.jdbc.response.JDBCResponse;
@@ -66,8 +67,8 @@ public class JDBCClient implements Client<JDBCRequest, JDBCResponse> {
         if(m_connection != null) {
             try {
                 m_connection.close();
-            } catch (SQLException e) {
-                e.printStackTrace();
+            } catch (final SQLException e) {
+                LogUtils.debugf(this, e, "unable to close JDBC connection");
             }
         }
     }

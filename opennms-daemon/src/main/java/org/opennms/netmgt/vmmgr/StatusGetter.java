@@ -66,9 +66,8 @@ public class StatusGetter {
 
     static {
         try {
-            DEFAULT_INVOKE_URL = new URL("http://127.0.0.1:8181/"
-                    + "invoke?objectname=OpenNMS:Name=Manager&operation=status");
-        } catch (MalformedURLException e) {
+            DEFAULT_INVOKE_URL = new URL("http://127.0.0.1:8181/invoke?objectname=OpenNMS:Name=Manager&operation=status");
+        } catch (final MalformedURLException e) {
             // This should never happen
             throw new UndeclaredThrowableException(e);
         }

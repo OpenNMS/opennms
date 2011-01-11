@@ -39,6 +39,7 @@ import java.util.List;
 import java.util.Properties;
 
 import org.apache.commons.io.IOUtils;
+import org.opennms.core.utils.LogUtils;
 import org.snmp4j.agent.MOAccess;
 import org.snmp4j.agent.ManagedObject;
 import org.snmp4j.agent.mo.MOAccessImpl;
@@ -91,13 +92,11 @@ public class PropsMockSnmpMOLoaderImpl implements MockSnmpMOLoader {
 		try {
             inStream = propertiesFile.getInputStream();
 			moProps.load( inStream );
-		} catch (Exception ex) {
-			ex.printStackTrace();
+		} catch (final Exception ex) {
+		    LogUtils.warnf(PropsMockSnmpMOLoaderImpl.class, ex, "Unable to read property file %s", propertiesFile);
 			return null;
 		} finally {
-		    if (inStream != null) {
-		        IOUtils.closeQuietly(inStream);
-		    }
+            IOUtils.closeQuietly(inStream);
 		}
         return moProps;
     }

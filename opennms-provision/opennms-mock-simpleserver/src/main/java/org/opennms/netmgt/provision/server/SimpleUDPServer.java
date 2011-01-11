@@ -40,6 +40,8 @@ import java.net.UnknownHostException;
 import java.util.ArrayList;
 import java.util.List;
 
+import org.opennms.core.utils.LogUtils;
+
 /**
  * <p>SimpleUDPServer class.</p>
  *
@@ -275,8 +277,8 @@ public class SimpleUDPServer {
         if(m_testInetAddress == null){
             try {
                 return InetAddress.getLocalHost();
-            } catch (UnknownHostException e) {
-                e.printStackTrace();
+            } catch (final UnknownHostException e) {
+                LogUtils.debugf(this, e, "Unable to get localhost");
                 return null;
             }
         }else{

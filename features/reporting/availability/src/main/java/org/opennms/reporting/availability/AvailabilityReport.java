@@ -66,6 +66,7 @@ import org.apache.log4j.PatternLayout;
 import org.exolab.castor.xml.MarshalException;
 import org.exolab.castor.xml.Marshaller;
 import org.exolab.castor.xml.ValidationException;
+import org.opennms.core.utils.LogUtils;
 import org.opennms.core.utils.ThreadCategory;
 import org.opennms.netmgt.ConfigFileConstants;
 import org.opennms.reporting.availability.render.HTMLReportRenderer;
@@ -335,11 +336,9 @@ public class AvailabilityReport extends Object {
         }
         
         try {
-            generateReport(logourl, categoryName, format, monthFormat,
-                           startMonth, startDate, startYear);
-        } catch (Exception e) {
-            log().error("Caught exception while generating report: " + e, e);
-            e.printStackTrace();
+            generateReport(logourl, categoryName, format, monthFormat, startMonth, startDate, startYear);
+        } catch (final Exception e) {
+            LogUtils.warnf(AvailabilityReport.class, e, "Error while generating report.");
         }
     }
 

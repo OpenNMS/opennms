@@ -51,6 +51,7 @@ import java.net.PasswordAuthentication;
 import java.net.URL;
 
 import org.apache.log4j.PropertyConfigurator;
+import org.opennms.core.utils.LogUtils;
 import org.opennms.core.utils.ThreadCategory;
 import org.opennms.netmgt.config.ServiceConfigFactory;
 import org.opennms.netmgt.config.service.Argument;
@@ -84,14 +85,6 @@ import org.opennms.netmgt.config.service.Service;
  *
  * @author <a href="mailto:weave@oculan.com">Brian Weaver</a>
  * @author <a href="mailto:sowmya@opennms.org">Sowmya Nataraj</a>
- * @author <a href="http://www.opennms.org">OpenNMS.org</a>
- * @author <a href="mailto:weave@oculan.com">Brian Weaver</a>
- * @author <a href="mailto:sowmya@opennms.org">Sowmya Nataraj</a>
- * @author <a href="http://www.opennms.org">OpenNMS.org</a>
- * @author <a href="mailto:weave@oculan.com">Brian Weaver</a>
- * @author <a href="mailto:sowmya@opennms.org">Sowmya Nataraj</a>
- * @author <a href="http://www.opennms.org">OpenNMS.org</a>
- * @version $Id: $
  */
 public class Controller {
     private static final String JMX_HTTP_ADAPTER_NAME = ":Name=HttpAdaptorMgmt";
@@ -149,8 +142,7 @@ public class Controller {
                 System.out.println("");
                 System.out.println("Accepted commands: start, stop, status");
                 System.out.println("");
-                System.out.println("The default invoker URL is: "
-                        + DEFAULT_INVOKER_URL);
+                System.out.println("The default invoker URL is: " + DEFAULT_INVOKER_URL);
                 System.exit(0);
             } else if (argv[i].equals("-t")) {
                 c.setHttpRequestReadTimeout(Integer.parseInt(argv[i + 1]) * 1000);
@@ -161,8 +153,7 @@ public class Controller {
                 c.setInvokeUrl(argv[i + 1]);
                 i++;
             } else if (i != (argv.length - 1)) {
-                System.err.println("Invalid command-line option: \""
-                        + argv[i] + "\".  Use \"-h\" option for help.");
+                System.err.println("Invalid command-line option: \"" + argv[i] + "\".  Use \"-h\" option for help.");
                 System.exit(1);
             } else {
                 break;
@@ -235,18 +226,17 @@ public class Controller {
         try {
             statusGetter.setInvokeURL(new URL(url));
         } catch (MalformedURLException e) {
-            String message = "Error creating URL object for invoke URL: '"
-                + url + "': " + e;
+            String message = "Error creating URL object for invoke URL: '" + url + "'";
             System.err.println(message);
-            log().error(message, e);
+            LogUtils.errorf(this, e, message);
         }
 
         try {
             statusGetter.queryStatus();
         } catch (Throwable t) {
-            String message =  "Error invoking status command: " + t;
+            String message =  "Error invoking status command";
             System.err.println(message);
-            log().error(message, t);
+            LogUtils.errorf(this, t, message);
             return 1;
         }
 
@@ -266,11 +256,7 @@ public class Controller {
             return 0; // everything should be good and running
 
         default:
-            String message = "Unknown status returned from "
-                + "statusGetter.getStatus(): "
-                + statusGetter.getStatus();
-            System.err.println(message);
-            log().error(message);
+            LogUtils.errorf(this, "Unknown status returned from statusGetter.getStatus(): %s", statusGetter.getStatus());
             return 1;
         }
     }
@@ -282,11 +268,9 @@ public class Controller {
      */
     public int check() {
         try {
-            DatabaseChecker checker = new DatabaseChecker();
-            checker.check();
-        } catch (Throwable t) {
-            log().error("error invoking check command", t);
-            System.err.println(t);
+            new DatabaseChecker().check();
+        } catch (final Throwable t) {
+            LogUtils.errorf(this, t, "error invoking check command");
             return 1;
         }
         return 0;
@@ -318,19 +302,15 @@ public class Controller {
             in.close();
             System.out.println("");
             System.out.flush();
-        } catch (ConnectException e) {
-            log().error(e.getMessage() + " when attempting to fetch URL \""
-                      + urlString + "\"");
+        } catch (final ConnectException e) {
+            LogUtils.errorf(this, e, "error when attempting to fetch URL \"%s\"", urlString);
             if (isVerbose()) {
-                System.out.println(e.getMessage()
-                                   + " when attempting to fetch URL \""
-                                   + urlString + "\"");
+                System.out.println(e.getMessage() + " when attempting to fetch URL \"" + urlString + "\"");
             }
             return 1;
-        } catch (Throwable t) {
-            log().error("error invoking " + operation + " operation", t);
+        } catch (final Throwable t) {
+            LogUtils.errorf(this, t, "error invoking %s operation", operation);
             System.out.println("error invoking " + operation + " operation");
-            t.printStackTrace();
             return 1;
         }
 
@@ -345,7 +325,7 @@ public class Controller {
         Service service = getConfiguredService(JMX_HTTP_ADAPTER_NAME);
         if (service == null) {
             // Didn't find the service we were looking for
-            log().warn("Could not find configured service for '" + JMX_HTTP_ADAPTER_NAME + "'");
+            LogUtils.warnf(this, "Could not find configured service for '%s'", JMX_HTTP_ADAPTER_NAME);
             return null;
         }
 
@@ -360,9 +340,7 @@ public class Controller {
         for (org.opennms.netmgt.config.service.Attribute attrib : attribs) {
             if (attrib.getName().equals("AuthenticationMethod")) {
                 if (!attrib.getValue().getContent().equals("basic")) {
-                    log().error("AuthenticationMethod is \""
-                              + attrib.getValue()
-                              + "\", but only \"basic\" is supported");
+                    LogUtils.errorf(this, "AuthenticationMethod is \"%s\", but only \"basic\" is supported", attrib.getValue());
                     return null;
                 }
                 usingBasic = true;
@@ -468,10 +446,6 @@ public class Controller {
      */
     public void setInvokeUrl(String invokerUrl) {
         m_invokeUrl = invokerUrl;
-    }
-
-    private ThreadCategory log() {
-        return ThreadCategory.getInstance(getClass());
     }
 
     /**

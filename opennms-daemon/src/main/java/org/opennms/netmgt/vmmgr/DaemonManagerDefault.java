@@ -37,6 +37,7 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
+import org.opennms.core.utils.LogUtils;
 import org.opennms.netmgt.model.ServiceDaemon;
 
 /**
@@ -112,9 +113,8 @@ public class DaemonManagerDefault implements DaemonManager {
 	private void stopService(ServiceDaemon serviceDaemon) {
 		try {
 			serviceDaemon.stop();
-		} catch (Exception e) {
-			System.err.println("An exception occurred stoppoing service "+serviceDaemon.getName());
-			e.printStackTrace();
+		} catch (final Exception e) {
+		    LogUtils.warnf(this, e, "an error occurred while stopping service: %s", serviceDaemon.getName());
 		}
 	}
 

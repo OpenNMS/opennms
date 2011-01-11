@@ -51,6 +51,7 @@ import org.apache.commons.cli.CommandLineParser;
 import org.apache.commons.cli.Options;
 import org.apache.commons.cli.ParseException;
 import org.apache.commons.cli.PosixParser;
+import org.opennms.core.utils.LogUtils;
 import org.snmp4j.MessageDispatcherImpl;
 import org.snmp4j.TransportMapping;
 import org.snmp4j.agent.BaseAgent;
@@ -327,29 +328,26 @@ public class MockSnmpAgent extends BaseAgent implements Runnable {
             finishInit();
             super.run();
             m_running = true;
-        } catch (BindException e) {
-            e.printStackTrace();
-            System.err.println("You probably specified an invalid address or a port < 1024 and are not running as root");
-        } catch (IOException e) {
-            e.printStackTrace();
-        } catch (Throwable e) {
-            e.printStackTrace();
+        } catch (final BindException e) {
+            LogUtils.errorf(this, e, "Unable to bind to %s.  You probably specified an invalid address or a port < 1024 and are not running as root.", m_address);
+        } catch (final Throwable t) {
+            LogUtils.errorf(this, t, "An error occurred while initializing.");
         }
 
         while (m_running) {
             try {
                 Thread.sleep(10); // fast, Fast, FAST, *FAST*!!!
-            } catch (InterruptedException e) {
+            } catch (final InterruptedException e) {
                 break;
             }
         }
 
         try {
-            for (TransportMapping transportMapping : transportMappings) {
+            for (final TransportMapping transportMapping : transportMappings) {
                 transportMapping.close();
             }
-        } catch (Throwable t) {
-            t.printStackTrace();
+        } catch (final Throwable t) {
+            LogUtils.debugf(this, t, "an error occurred while closing the transport mapping");
         }
 
         m_stopped = true;
@@ -591,8 +589,8 @@ public class MockSnmpAgent extends BaseAgent implements Runnable {
             try {
                 server.register(moListIter.next(), null);
             }
-            catch (DuplicateRegistrationException ex) {
-                ex.printStackTrace();
+            catch (final DuplicateRegistrationException ex) {
+                LogUtils.warnf(this, ex, "unable to register managed object");
             }
         }
     }

@@ -65,6 +65,7 @@ import javax.management.MBeanServer;
 import org.apache.commons.io.IOUtils;
 import org.apache.log4j.PropertyConfigurator;
 import org.apache.log4j.xml.DOMConfigurator;
+import org.opennms.core.utils.LogUtils;
 import org.opennms.core.utils.ThreadCategory;
 import org.opennms.netmgt.config.service.Service;
 import org.opennms.netmgt.config.service.types.InvokeAtType;
@@ -235,10 +236,7 @@ public class Starter {
      * @param t Throwable for which to print a stack trace
      */
     private void die(String message, Throwable  t) {
-        System.err.println(message);
-        if (t != null) {
-            t.printStackTrace();
-        }
+        LogUtils.errorf(this, t, message);
         System.exit(1);
     }
 

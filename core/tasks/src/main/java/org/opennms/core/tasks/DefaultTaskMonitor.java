@@ -31,6 +31,8 @@
  */
 package org.opennms.core.tasks;
 
+import org.opennms.core.utils.LogUtils;
+
 /**
  * DefaultTaskMonitor
  *
@@ -44,57 +46,59 @@ public class DefaultTaskMonitor implements TaskMonitor {
      *
      * @param task a {@link org.opennms.core.tasks.Task} object.
      */
-    public DefaultTaskMonitor(Task task) {
+    public DefaultTaskMonitor(final Task task) {
     }
 
     /** {@inheritDoc} */
-    public void completed(Task task) {
+    public void completed(final Task task) {
         log("completed(%s)", task);
     }
 
     /** {@inheritDoc} */
-    public void prerequisiteAdded(Task monitored, Task prerequsite) {
+    public void prerequisiteAdded(final Task monitored, final Task prerequsite) {
         log("prerequisiteAdded(%s, %s)", monitored, prerequsite);
     }
 
     /** {@inheritDoc} */
-    public void prerequisiteCompleted(Task monitored, Task prerequisite) {
+    public void prerequisiteCompleted(final Task monitored, final Task prerequisite) {
         log("prerequisiteCompleted(%s, %s)", monitored, prerequisite);
     }
 
     /** {@inheritDoc} */
-    public void scheduled(Task task) {
+    public void scheduled(final Task task) {
         log("scheduled(%s)", task);
     }
 
     /** {@inheritDoc} */
-    public void started(Task task) {
+    public void started(final Task task) {
         log("started(%s)", task);
     }
 
     /** {@inheritDoc} */
-    public void submitted(Task task) {
+    public void submitted(final Task task) {
         log("submitted(%s)", task);
     }
 
     /** {@inheritDoc} */
-    public void monitorException(Throwable t) {
+    public void monitorException(final Throwable t) {
         log(t, "monitorException(%s)", t);
     }
     
     /** {@inheritDoc} */
-    public TaskMonitor getChildTaskMonitor(Task task, Task child) {
+    public TaskMonitor getChildTaskMonitor(final Task task, final Task child) {
         return this;
     }
 
-    private void log(String format, Object... args) {
-        //String msg = String.format("%1$tY-%1$tm-%1$td %1$tT,%1$tL : [%2$s] MONITOR: %3$s", System.currentTimeMillis(), Thread.currentThread(), String.format(format, args));
-        //System.err.println(msg);
+    private void log(final String format, final Object... args) {
+        if (LogUtils.isTraceEnabled(this)) {
+            LogUtils.tracef(this, format, args);
+        }
     }
     
-    private void log(Throwable t, String format, Object... args) {
-        //log(format, args);
-        //t.printStackTrace();
+    private void log(final Throwable t, final String format, final Object... args) {
+        if (LogUtils.isTraceEnabled(this)) {
+            LogUtils.tracef(this, t, format, args);
+        }
     }
 
 }

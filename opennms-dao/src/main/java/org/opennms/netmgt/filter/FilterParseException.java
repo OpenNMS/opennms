@@ -46,9 +46,6 @@ import java.io.PrintWriter;
  *
  * @author <a href="jason@opennms.org">Jason </a>
  * @author <a href="weave@oculan.com">Weave </a>
- * @author <a href="jason@opennms.org">Jason </a>
- * @author <a href="weave@oculan.com">Weave </a>
- * @version $Id: $
  */
 public class FilterParseException extends RuntimeException {
     

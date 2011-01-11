@@ -48,7 +48,7 @@ import java.net.UnknownHostException;
 import java.util.HashMap;
 import java.util.Map;
 
-import org.opennms.core.utils.ThreadCategory;
+import org.opennms.core.utils.LogUtils;
 
 /**
  * <P>
@@ -72,20 +72,6 @@ import org.opennms.core.utils.ThreadCategory;
  * @author <A HREF="mailto:matt.raykowski@gmail.com">Matt Raykowski</A>
  * @author <A HREF="mailto:ranger@opennms.org">Benjamin Reed</A>
  * @author <A HREF="mailto:jeffg@opennms.org">Jeff Gehlbach</A>
- * @author <A HREF="http://www.opennms.org">OpenNMS</A>
- * @author <A HREF="mailto:matt.raykowski@gmail.com">Matt Raykowski</A>
- * @author <A HREF="mailto:ranger@opennms.org">Benjamin Reed</A>
- * @author <A HREF="mailto:jeffg@opennms.org">Jeff Gehlbach</A>
- * @author <A HREF="http://www.opennms.org">OpenNMS</A>
- * @author <A HREF="mailto:matt.raykowski@gmail.com">Matt Raykowski</A>
- * @author <A HREF="mailto:ranger@opennms.org">Benjamin Reed</A>
- * @author <A HREF="mailto:jeffg@opennms.org">Jeff Gehlbach</A>
- * @author <A HREF="http://www.opennms.org">OpenNMS</A>
- * @author <A HREF="mailto:matt.raykowski@gmail.com">Matt Raykowski</A>
- * @author <A HREF="mailto:ranger@opennms.org">Benjamin Reed</A>
- * @author <A HREF="mailto:jeffg@opennms.org">Jeff Gehlbach</A>
- * @author <A HREF="http://www.opennms.org">OpenNMS</A>
- * @version $Id: $
  */
 public class NsclientManager {
     /**
@@ -426,12 +412,12 @@ public class NsclientManager {
         }
     }
 
-    private void closeSocketAndThrow(NsclientException e) throws NsclientException {
+    private void closeSocketAndThrow(final NsclientException e) throws NsclientException {
         if (m_Socket != null && !m_Socket.isClosed()) {
             try {
                 m_Socket.close();
-            } catch (IOException ioe) {
-                log().info("unable to close socket after a previous failure failure", e);
+            } catch (final IOException ioe) {
+                LogUtils.debugf(this, ioe, "unable to close socket after a previous failure");
             }
         }
         throw e;
@@ -443,8 +429,8 @@ public class NsclientManager {
     public void close() {
         try {
             m_Socket.close();
-        } catch (Exception e) {
-            e.printStackTrace();
+        } catch (final Exception e) {
+            LogUtils.debugf(this, e, "unable to close socket");
         }
     }
 
@@ -1057,9 +1043,7 @@ public class NsclientManager {
     		}
     		
     		// If we did not receive an ERROR report, then we are done here
-    		if (log().isDebugEnabled()) {
-    			log().debug("checkInstances: received result '" + pack.getResponse() + "'");
-    		}
+    		LogUtils.debugf(this, "checkInstances: received result '%s'", pack.getResponse());
     		return pack;
     	} catch (NsclientException e) {
     		throw e;
@@ -1071,19 +1055,9 @@ public class NsclientManager {
     }
     
     private NsclientPacket handleNumberFormatException(NsclientPacket pack, NumberFormatException e) throws NsclientException {
-        String errorMessage = "Unable to parse numeric value returned (" + pack.getResponse() + ")";
-        
-        if (pack != null) {
-            pack.setResultCode(NsclientPacket.RES_STATE_UNKNOWN);
-            log().info(errorMessage, e);
-            return pack;
-        } else {
-            throw new NsclientException(errorMessage, e);
-        }
-    }
-    
-    private ThreadCategory log() {
-        return ThreadCategory.getInstance(getClass());
+        pack.setResultCode(NsclientPacket.RES_STATE_UNKNOWN);
+        LogUtils.infof(this, e, "Unable to parse numeric value returned (%s)", pack.getResponse());
+        return pack;
     }
 
 }

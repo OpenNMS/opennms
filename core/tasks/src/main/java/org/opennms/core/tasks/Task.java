@@ -40,7 +40,7 @@ import java.util.concurrent.atomic.AtomicBoolean;
 import java.util.concurrent.atomic.AtomicInteger;
 import java.util.concurrent.atomic.AtomicReference;
 
-import org.opennms.core.utils.ThreadCategory;
+import org.opennms.core.utils.LogUtils;
 
 /**
  * BaseTask
@@ -109,7 +109,7 @@ public abstract class Task {
         return m_dependents;
     }
     
-    final void doAddDependent(Task dependent) {
+    final void doAddDependent(final Task dependent) {
         if (!isFinished()) {
             m_dependents.add(dependent);
         }
@@ -123,25 +123,25 @@ public abstract class Task {
         return m_prerequisites;
     }
     
-    final void doAddPrerequisite(Task prereq) {
+    final void doAddPrerequisite(final Task prereq) {
         if (!prereq.isFinished()) {
             m_prerequisites.add(prereq);
             notifyPrerequisteAdded(prereq);
         }
     }
 
-    private void notifyPrerequisteAdded(Task prereq) {
+    private void notifyPrerequisteAdded(final Task prereq) {
         try {
             m_monitor.prerequisiteAdded(this, prereq);
-        } catch (Throwable t) {
+        } catch (final Throwable t) {
             m_monitor.monitorException(t);
         }
     }
     
-    private void notifyPrerequisteCompleted(Task prereq) {
+    private void notifyPrerequisteCompleted(final Task prereq) {
         try {
             m_monitor.prerequisiteCompleted(this, prereq);
-        } catch (Throwable t) {
+        } catch (final Throwable t) {
             m_monitor.monitorException(t);
         }
     }
@@ -149,7 +149,7 @@ public abstract class Task {
     private void notifyScheduled() {
         try {
             m_monitor.scheduled(this);
-        } catch (Throwable t) {
+        } catch (final Throwable t) {
             m_monitor.monitorException(t);
         }
     }
@@ -157,7 +157,7 @@ public abstract class Task {
     private void notifySubmitted() {
         try {
             m_monitor.submitted(this);
-        } catch (Throwable t) {
+        } catch (final Throwable t) {
             m_monitor.monitorException(t);
         }
     }
@@ -165,12 +165,12 @@ public abstract class Task {
     private void notifyCompleted() {
         try {
             m_monitor.completed(this);
-        } catch (Throwable t) {
+        } catch (final Throwable t) {
             m_monitor.monitorException(t);
         }
     }
         
-    final void doCompletePrerequisite(Task prereq) {
+    final void doCompletePrerequisite(final Task prereq) {
         m_prerequisites.remove(prereq);
         notifyPrerequisteCompleted(prereq);
     }
@@ -185,12 +185,13 @@ public abstract class Task {
         notifyScheduled();
     }
     
-    private final void setState(State oldState, State newState) {
+    private final void setState(final State oldState, final State newState) {
         if (!m_state.compareAndSet(oldState, newState)) {
-            String msg = String.format("Attempted to move to state %s with state not %s (actual value %s) for task %s", newState, oldState, m_state.get(), this);
-            new IllegalStateException(msg).printStackTrace();
+            LogUtils.debugf(this, "Attempted to move to state %s with state not %s (actual value %s)", newState, oldState, m_state.get());
         } else {
-            //System.err.printf("Set state of %s to %s\n", this, newState);
+            if (LogUtils.isTraceEnabled(this)) {
+                LogUtils.tracef(this, "Set state to %s\n", newState);
+            }
         }
     }
     
@@ -308,7 +309,7 @@ public abstract class Task {
      *
      * @param prereq a {@link org.opennms.core.tasks.Task} object.
      */
-    public void addPrerequisite(Task prereq) {
+    public void addPrerequisite(final Task prereq) {
         getCoordinator().addDependency(prereq, this);
     }
     
@@ -318,7 +319,7 @@ public abstract class Task {
      *
      * @param dependent a {@link org.opennms.core.tasks.Task} object.
      */
-    public void addDependent(Task dependent) {
+    public void addDependent(final Task dependent) {
         getCoordinator().addDependency(this, dependent);
     }
 
@@ -339,7 +340,7 @@ public abstract class Task {
      * @param unit a {@link java.util.concurrent.TimeUnit} object.
      * @throws java.lang.InterruptedException if any.
      */
-    public void waitFor(long timeout, TimeUnit unit) throws InterruptedException {
+    public void waitFor(final long timeout, final TimeUnit unit) throws InterruptedException {
         m_latch.await(timeout, unit);
     }
     
@@ -375,8 +376,8 @@ public abstract class Task {
      * @param format a {@link java.lang.String} object.
      * @param args a {@link java.lang.Object} object.
      */
-    protected void info(String format, Object... args) {
-        log().info(String.format(format, args));
+    protected void info(final String format, final Object... args) {
+        LogUtils.infof(this, format, args);
     }
 
     /**
@@ -386,18 +387,6 @@ public abstract class Task {
      * @param args a {@link java.lang.Object} object.
      */
     protected void debug(String format, Object... args) {
-        if (log().isDebugEnabled()) {
-            log().debug(String.format(format, args));
-        }
+        LogUtils.debugf(this, format, args);
     }
-
-    /**
-     * <p>log</p>
-     *
-     * @return a {@link org.opennms.core.utils.ThreadCategory} object.
-     */
-    protected ThreadCategory log() {
-        return ThreadCategory.getInstance(getClass());
-    }
-
 }

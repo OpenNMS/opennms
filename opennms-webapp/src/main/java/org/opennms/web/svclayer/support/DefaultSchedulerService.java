@@ -47,6 +47,7 @@ import java.util.Date;
 import java.util.List;
 
 import org.opennms.api.reporting.parameter.ReportParameters;
+import org.opennms.core.utils.LogUtils;
 import org.opennms.core.utils.ThreadCategory;
 import org.opennms.reporting.core.DeliveryOptions;
 import org.opennms.reporting.core.svclayer.ReportServiceLocatorException;
@@ -252,14 +253,10 @@ public class DefaultSchedulerService implements InitializingBean, SchedulerServi
 
         try {
             if (m_reportWrapperService.validate(criteria,id) == false ) {
-                context.getMessageContext().addMessage(
-                                                       new MessageBuilder().error().defaultText(
-                                                                                                PARAMETER_ERROR).build());
+                context.getMessageContext().addMessage(new MessageBuilder().error().defaultText(PARAMETER_ERROR).build());
                 return ERROR;
             } else {
-                SimpleTrigger trigger = new SimpleTrigger(deliveryOptions.getInstanceId(),
-                                                          m_triggerGroup,
-                                                          new Date(), null, 0, 0L);
+                SimpleTrigger trigger = new SimpleTrigger(deliveryOptions.getInstanceId(), m_triggerGroup, new Date(), null, 0, 0L);
                 trigger.setJobName(m_jobDetail.getName());
                 trigger.getJobDataMap().put("criteria", (ReportParameters) criteria);
                 trigger.getJobDataMap().put("reportId", id);
@@ -267,20 +264,16 @@ public class DefaultSchedulerService implements InitializingBean, SchedulerServi
                 try {
                     m_scheduler.scheduleJob(trigger);
                 } catch (SchedulerException e) {
-                    e.printStackTrace();
-                    context.getMessageContext().addMessage(
-                                                           new MessageBuilder().error().defaultText(
-                                                                                                    SCHEDULER_ERROR).build());
+                    LogUtils.warnf(this, e, SCHEDULER_ERROR);
+                    context.getMessageContext().addMessage(new MessageBuilder().error().defaultText(SCHEDULER_ERROR).build());
                     return ERROR;
                 }
 
                 return SUCCESS;
             }
         } catch (ReportServiceLocatorException e) {
-            log().error(REPORTID_ERROR);
-            context.getMessageContext().addMessage(
-                                                   new MessageBuilder().error().defaultText(
-                                                                                            REPORTID_ERROR).build());
+            LogUtils.errorf(this, e, REPORTID_ERROR);
+            context.getMessageContext().addMessage(new MessageBuilder().error().defaultText(REPORTID_ERROR).build());
             return ERROR;
         }
 

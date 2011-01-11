@@ -73,14 +73,6 @@ import org.opennms.netmgt.config.DataSourceFactory;
  *
  * @author <a href="mailto:jamesz@opennms.com">James Zuo </a>
  * @author <a href="mailto:weave@oculan.com">Weave </a>
- * @author <a href="http://www.opennms.org/">OpenNMS </a>
- * @author <a href="mailto:jamesz@opennms.com">James Zuo </a>
- * @author <a href="mailto:weave@oculan.com">Weave </a>
- * @author <a href="http://www.opennms.org/">OpenNMS </a>
- * @author <a href="mailto:jamesz@opennms.com">James Zuo </a>
- * @author <a href="mailto:weave@oculan.com">Weave </a>
- * @author <a href="http://www.opennms.org/">OpenNMS </a>
- * @version $Id: $
  */
 public final class DbIpInterfaceEntry {
     /** Constant <code>SNMP_PRIMARY='P'</code> */

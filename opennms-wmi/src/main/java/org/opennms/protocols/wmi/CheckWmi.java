@@ -47,10 +47,6 @@ import org.apache.commons.cli.PosixParser;
  * services using <code>WmiClient</code>
  *
  * @author <A HREF="mailto:matt.raykowski@gmail.com">Matt Raykowski </A>
- * @author <A HREF="http://www.opennms.org">OpenNMS </A>
- * @author <A HREF="mailto:matt.raykowski@gmail.com">Matt Raykowski </A>
- * @author <A HREF="http://www.opennms.org">OpenNMS </A>
- * @version $Id: $
  */
 public class CheckWmi {
 
@@ -165,7 +161,6 @@ public class CheckWmi {
 			// Disconnect when we're done.
 			mgr.close();
 		} catch (final Exception e) {
-			// TODO Auto-generated catch block
 			e.printStackTrace();
 		}
 	}

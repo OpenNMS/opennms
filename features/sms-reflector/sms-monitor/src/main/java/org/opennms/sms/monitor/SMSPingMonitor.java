@@ -3,6 +3,7 @@ package org.opennms.sms.monitor;
 import java.util.Map;
 
 import org.opennms.core.utils.BeanUtils;
+import org.opennms.core.utils.LogUtils;
 import org.opennms.core.utils.ParameterMap;
 import org.opennms.sms.phonebook.Phonebook;
 import org.opennms.sms.phonebook.PhonebookException;
@@ -43,15 +44,15 @@ final public class SMSPingMonitor extends AbstractServiceMonitor {
 		String phoneNumber = null;
 		try {
 			phoneNumber = phonebook.getTargetForAddress(svc.getIpAddr());
-		} catch (PhonebookException e) {
-			e.printStackTrace();
+		} catch (final PhonebookException e) {
+		    LogUtils.warnf(this, e, "Unable to get phonebook target for %s", svc.getIpAddr());
 		}
 
 		if (phoneNumber != null) {
 			try {
 				rtt = SmsPinger.ping(phoneNumber, timeout, retries);
-			} catch (Exception e) {
-				e.printStackTrace();
+			} catch (final Exception e) {
+			    LogUtils.warnf(this, e, "Unable to ping phone number: %s", phoneNumber);
 			}
 		}
 
