@@ -51,6 +51,7 @@
 	<include file="stored-procedures/getOutageTimeInWindow.xml" />
 	<include file="stored-procedures/getPercentAvailabilityInWindow.xml" />
 	<include file="stored-procedures/dropTriggerIfExists.xml" />
+	<include file="stored-procedures/generate_daily_series.xml"/>
 
 	<include file="triggers/setIfServiceKeysOnInsertTrigger.xml" />
 	<include file="triggers/setIfServiceKeysOnUpdateTrigger.xml" />

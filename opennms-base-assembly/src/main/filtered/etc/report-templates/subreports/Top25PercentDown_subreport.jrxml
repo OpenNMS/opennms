@@ -1,0 +1,183 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<jasperReport xmlns="http://jasperreports.sourceforge.net/jasperreports" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://jasperreports.sourceforge.net/jasperreports http://jasperreports.sourceforge.net/xsd/jasperreport.xsd" name="Top25PercentDown_subreport" pageWidth="595" pageHeight="842" columnWidth="555" leftMargin="20" rightMargin="20" topMargin="20" bottomMargin="20">
+	<property name="ireport.zoom" value="1.0"/>
+	<property name="ireport.x" value="0"/>
+	<property name="ireport.y" value="0"/>
+	<template><![CDATA["${install.dir}/etc/report-templates/assets/styles/defaultStyles.jrtx"]]></template>
+	<parameter name="START_TIME" class="java.sql.Timestamp" isForPrompting="false">
+		<defaultValueExpression><![CDATA[new java.sql.Timestamp(new java.util.Date().getTime() - (86400 * 7 * 1000))]]></defaultValueExpression>
+	</parameter>
+	<parameter name="TIME_RANGE" class="java.lang.String" isForPrompting="false">
+		<defaultValueExpression><![CDATA["7 days"]]></defaultValueExpression>
+	</parameter>
+	<parameter name="CATEGORY_NAME" class="java.lang.String" isForPrompting="false">
+		<defaultValueExpression><![CDATA["Routers"]]></defaultValueExpression>
+	</parameter>
+	<parameter name="END_TIME" class="java.sql.Timestamp">
+		<defaultValueExpression><![CDATA[new java.sql.Timestamp(
+new GregorianCalendar(new GregorianCalendar().get(Calendar.YEAR), new GregorianCalendar().get(Calendar.MONTH), new GregorianCalendar().get(Calendar.DATE)).getTimeInMillis()
+)]]></defaultValueExpression>
+	</parameter>
+	<queryString>
+		<![CDATA[SELECT
+	node_outages.categoryname,
+	node_outages.nodelabel,
+	node_outages.nodesyslocation,
+	node_outages.nodesysdescription,
+	SUM(node_outages.duration) AS duration_tally,
+	AVG(node_outages.duration) AS average_duration,
+	AVG(EXTRACT(epoch from node_outages.duration)) AS average_duration_seconds,
+	SUM(node_outages.outage_counter) AS outages_count,
+	SUM(EXTRACT (epoch from node_outages.duration)) AS outages_seconds,
+	CASE
+		WHEN
+			AVG(EXTRACT (epoch from node_outages.duration)) > node_outages.avail_total
+		THEN
+			100
+		ELSE
+			AVG(EXTRACT (epoch from node_outages.duration)) * 100 / node_outages.avail_total
+	END AS
+		outages_percent,
+	CASE
+		WHEN
+			AVG(EXTRACT (epoch from node_outages.duration)) > node_outages.avail_total
+		THEN
+			0
+		ELSE
+			100 - AVG(EXTRACT (epoch from node_outages.duration)) * 100 / node_outages.avail_total
+	END AS
+		avail_percent,
+	node_outages.avail_total
+FROM
+	(SELECT
+		active_nodes.categoryname,
+		active_nodes.nodelabel,
+		active_nodes.nodesyslocation,
+		active_nodes.nodesysdescription,
+		('$P!{END_TIME}'::TIMESTAMP) - '$P!{START_TIME}'::TIMESTAMP AS avail_time_interval,
+		EXTRACT (epoch from ('$P!{END_TIME}'::TIMESTAMP) - '$P!{START_TIME}'::TIMESTAMP) AS avail_total,
+		CASE
+			WHEN
+				outages_scope.gained_service_timestamp - outages_scope.lost_service_timestamp is NULL
+			THEN
+				CAST('0' AS INTERVAL)
+			ELSE
+				outages_scope.gained_service_timestamp - outages_scope.lost_service_timestamp
+		END AS
+			duration,
+		CASE
+			WHEN
+				outages_scope.gained_service_timestamp - outages_scope.lost_service_timestamp is NULL
+			THEN
+				CAST('0' AS INTEGER)
+			ELSE
+				CAST('1' AS INTEGER)
+		END AS
+			outage_counter
+	FROM
+		(SELECT
+			outages.nodeid,
+			least(('$P!{END_TIME}'::TIMESTAMP), outages.ifregainedservice) as gained_service_timestamp,
+			greatest('$P!{START_TIME}'::TIMESTAMP,outages.iflostservice) as lost_service_timestamp
+		FROM
+			outages, service, events
+		WHERE
+			(iflostservice, ifregainedservice) OVERLAPS ('$P!{START_TIME}'::TIMESTAMP, '$P!{END_TIME}'::TIMESTAMP) AND
+			outages.serviceid = service.serviceid AND
+			service.servicename = 'ICMP' AND
+			outages.svclosteventid = events.eventid AND
+			events.eventuei = 'uei.opennms.org/nodes/nodeDown')
+		AS
+			outages_scope
+	RIGHT JOIN
+		(SELECT
+			node.nodeid,
+			node.nodelabel,
+			node.nodesyslocation,
+			node.nodesysdescription,
+			categories.categoryname
+		FROM
+			node
+		JOIN
+			category_node
+		ON
+			(category_node.nodeid = node.nodeid)
+		JOIN
+			categories
+		ON
+			(category_node.categoryid = categories.categoryid)
+		WHERE
+			nodetype = 'A' AND
+			categories.categoryname like 'Routers')
+		AS
+			active_nodes
+	ON
+		(outages_scope.nodeid = active_nodes.nodeid))
+	AS
+		node_outages
+GROUP BY
+	node_outages.categoryname,
+	node_outages.nodelabel,
+	node_outages.nodesyslocation,
+	node_outages.nodesysdescription,
+	node_outages.avail_total
+ORDER BY
+	outages_percent DESC
+
+LIMIT 25]]>
+	</queryString>
+	<field name="categoryname" class="java.lang.String"/>
+	<field name="nodelabel" class="java.lang.String"/>
+	<field name="nodesyslocation" class="java.lang.String"/>
+	<field name="nodesysdescription" class="java.lang.String"/>
+	<field name="duration_tally" class="org.postgresql.util.PGInterval"/>
+	<field name="average_duration" class="org.postgresql.util.PGInterval"/>
+	<field name="average_duration_seconds" class="java.lang.Double"/>
+	<field name="outages_count" class="java.lang.Long"/>
+	<field name="outages_seconds" class="java.lang.Double"/>
+	<field name="avail_percent" class="java.lang.Double"/>
+	<field name="outages_percent" class="java.lang.Double"/>
+	<field name="avail_total" class="java.lang.Double"/>
+	<background>
+		<band splitType="Stretch"/>
+	</background>
+	<columnHeader>
+		<band height="50">
+			<staticText>
+				<reportElement style="Sub-sub-sub-header" x="125" y="30" width="148" height="20"/>
+				<textElement/>
+				<text><![CDATA[Node]]></text>
+			</staticText>
+			<staticText>
+				<reportElement style="Sub-sub-sub-header" x="273" y="30" width="151" height="20"/>
+				<textElement textAlignment="Right"/>
+				<text><![CDATA[Percent Down]]></text>
+			</staticText>
+			<staticText>
+				<reportElement style="Sub-sub-header" x="220" y="0" width="108" height="20"/>
+				<textElement/>
+				<text><![CDATA[Top 25 Percent Down]]></text>
+			</staticText>
+		</band>
+	</columnHeader>
+	<detail>
+		<band height="29" splitType="Stretch">
+			<textField>
+				<reportElement style="Body" x="125" y="0" width="148" height="20"/>
+				<textElement/>
+				<textFieldExpression class="java.lang.String"><![CDATA[$F{nodelabel}]]></textFieldExpression>
+			</textField>
+			<textField pattern="###0.00">
+				<reportElement style="Body" x="273" y="0" width="151" height="20"/>
+				<textElement textAlignment="Right"/>
+				<textFieldExpression class="java.lang.String"><![CDATA[String.format("%10.2f", $F{outages_percent}) + "%"]]></textFieldExpression>
+			</textField>
+			<line>
+				<reportElement x="125" y="20" width="299" height="1"/>
+			</line>
+		</band>
+	</detail>
+	<noData>
+		<band height="50"/>
+	</noData>
+</jasperReport>

@@ -1,0 +1,17 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<databaseChangeLog
+    xmlns="http://www.liquibase.org/xml/ns/dbchangelog/1.9"
+    xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+    xsi:schemaLocation="http://www.liquibase.org/xml/ns/dbchangelog/1.9
+        http://www.liquibase.org/xml/ns/dbchangelog/dbchangelog-1.9.xsd">
+
+<changeSet runOnChange="true" author="thedesloge" id="generate_daily_series">
+<sql> CREATE TYPE daily_series AS (ds timestamp without time zone, de timestamp without time zone, dow integer);</sql>
+<createProcedure>
+CREATE OR REPLACE FUNCTION generate_daily_series("start" timestamp without time zone, days integer)
+  RETURNS SETOF daily_series AS
+$BODY$ select $1 + CAST(n || ' days' as interval) as ds, $1 + CAST((n+1)||' days' as interval) as de, n as dow from generate_series(0,$2) as n $BODY$
+  LANGUAGE sql;
+</createProcedure>
+</changeSet>
+</databaseChangeLog>
