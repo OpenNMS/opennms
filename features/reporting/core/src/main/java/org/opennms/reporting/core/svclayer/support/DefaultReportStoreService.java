@@ -68,16 +68,16 @@ public class DefaultReportStoreService implements ReportStoreService {
     
     private static final String LOG4J_CATEGORY = "OpenNMS.Report";
     
-    private ThreadCategory log;
+    private final ThreadCategory log;
     
     /**
      * <p>Constructor for DefaultReportStoreService.</p>
      */
     public DefaultReportStoreService () {
-        
+        String oldPrefix = ThreadCategory.getPrefix();
         ThreadCategory.setPrefix(LOG4J_CATEGORY);
         log = ThreadCategory.getInstance(DefaultReportStoreService.class);
-    
+        ThreadCategory.setPrefix(oldPrefix);
     }
 
     /**

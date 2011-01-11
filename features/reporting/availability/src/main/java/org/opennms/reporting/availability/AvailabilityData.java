@@ -67,9 +67,6 @@ import org.opennms.reporting.datablock.Node;
  *
  * @author <A HREF="mailto:jacinta@oculan.com">Jacinta Remedios </A>
  * @author <A HREF="http://www.oculan.com">Oculan </A>
- * @author <A HREF="mailto:jacinta@oculan.com">Jacinta Remedios </A>
- * @author <A HREF="http://www.oculan.com">Oculan </A>
- * @version $Id: $
  */
 public class AvailabilityData {
     /**
@@ -180,6 +177,7 @@ public class AvailabilityData {
             Date periodEndDate)
             throws IOException, MarshalException, ValidationException,
             Exception {
+        String oldPrefix = ThreadCategory.getPrefix();
         ThreadCategory.setPrefix(LOG4J_CATEGORY);
         ThreadCategory log = ThreadCategory.getInstance(this.getClass());
         log.debug("Inside AvailabilityData");
@@ -256,6 +254,7 @@ public class AvailabilityData {
         if (log.isDebugEnabled()) {
             log.debug("After availCalculations");
         }
+        ThreadCategory.setPrefix(oldPrefix);
     }
 
     /**

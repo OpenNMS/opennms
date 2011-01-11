@@ -77,14 +77,16 @@ public class HTMLReportRenderer implements ReportRenderer {
 
     private String m_baseDir;
 
-    private ThreadCategory log;
+    private final ThreadCategory log;
 
     /**
      * <p>Constructor for HTMLReportRenderer.</p>
      */
     public HTMLReportRenderer() {
+        String oldPrefix = ThreadCategory.getPrefix();
         ThreadCategory.setPrefix(LOG4J_CATEGORY);
         log = ThreadCategory.getInstance(HTMLReportRenderer.class);
+        ThreadCategory.setPrefix(oldPrefix);
     }
 
     /**

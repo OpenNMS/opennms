@@ -67,11 +67,12 @@ public class NullReportRenderer implements ReportRenderer {
      * @throws org.opennms.reporting.availability.render.ReportRenderException if any.
      */
     public void render() throws ReportRenderException {
-
+        String oldPrefix = ThreadCategory.getPrefix();
         ThreadCategory.setPrefix(LOG4J_CATEGORY);
         ThreadCategory log = ThreadCategory.getInstance(NullReportRenderer.class);
         log.debug("Do nothing");
         m_outputFileName = m_inputFileName;
+        ThreadCategory.setPrefix(oldPrefix);
     }
 
     /** {@inheritDoc} */

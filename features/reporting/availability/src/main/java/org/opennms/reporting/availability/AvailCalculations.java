@@ -66,8 +66,6 @@ import org.opennms.reporting.datablock.Service;
  *
  * @author <A HREF="mailto:jacinta@oculan.com">Jacinta Remedios </A>
  * @author <A HREF="http://www.oculan.com">Oculan </A>
- * @author <A HREF="mailto:jacinta@oculan.com">Jacinta Remedios </A>
- * @author <A HREF="http://www.oculan.com">Oculan </A>
  * @version $Id: $
  */
 public class AvailCalculations extends Object {
@@ -75,6 +73,8 @@ public class AvailCalculations extends Object {
      * The log4j category used to log debug messsages and statements.
      */
     private static final String LOG4J_CATEGORY = "OpenNMS.Report";
+
+    private final ThreadCategory log;
 
     /**
      * Castor object that holds all the information required for the generating
@@ -180,10 +180,12 @@ public class AvailCalculations extends Object {
         category.setServiceCount(serviceCount);
 
         org.opennms.reporting.availability.Categories categories = report.getCategories();
+        String oldPrefix = ThreadCategory.getPrefix();
         ThreadCategory.setPrefix(LOG4J_CATEGORY);
-        ThreadCategory log = ThreadCategory.getInstance(this.getClass());
+        log = ThreadCategory.getInstance(this.getClass());
         if (log.isDebugEnabled())
             log.debug("Inside AvailCalculations using endTime " + endTime);
+        ThreadCategory.setPrefix(oldPrefix);
 
         m_monitoredServices = monitoredServices;
         m_endLastMonthTime = lastMonthEndTime;
@@ -453,8 +455,6 @@ public class AvailCalculations extends Object {
      *            Section descr.
      */
     private void lastMonTopNServiceOutages(CatSections catSections, String label, String descr) {
-        ThreadCategory.setPrefix(LOG4J_CATEGORY);
-        ThreadCategory log = ThreadCategory.getInstance(this.getClass());
         // Result is a map of outage / lost time
         //
 
@@ -624,8 +624,6 @@ public class AvailCalculations extends Object {
     private void lastMoTopNOffenders(TreeMap<Double, List<String>> offenders, CatSections catSections, String label, String descr) {
         // copy this method from the outage data code.
         //
-        ThreadCategory.setPrefix(LOG4J_CATEGORY);
-        ThreadCategory log = ThreadCategory.getInstance(this.getClass());
         if (log.isDebugEnabled()) {
             log.debug("Offenders " + offenders);
             log.debug("Inside lastMoTopNOffenders");
@@ -742,8 +740,6 @@ public class AvailCalculations extends Object {
      *            Section name
      */
     private void lastNDaysCalDailyAvailability(int days, long endTime, CatSections catSections, String label, String descr, String sectionName) {
-        ThreadCategory.setPrefix(LOG4J_CATEGORY);
-        ThreadCategory log = ThreadCategory.getInstance(this.getClass());
         if (log.isDebugEnabled())
             log.debug("Inside lastNDaysDailyAvailability");
         int numdays = 0;
@@ -827,8 +823,6 @@ public class AvailCalculations extends Object {
      *            Section name
      */
     private void lastNDaysDailyAvailability(int days, long endTime, CatSections catSections, String label, String descr, String sectionName) {
-        ThreadCategory.setPrefix(LOG4J_CATEGORY);
-        ThreadCategory log = ThreadCategory.getInstance(this.getClass());
         if (log.isDebugEnabled())
             log.debug("Inside lastNDaysDailyAvailability");
         int numdays = 0;
@@ -916,8 +910,6 @@ public class AvailCalculations extends Object {
      *            Section descr.
      */
     private void lastNDaysTotalAvailability(int days, long endTime, CatSections catSections, String label, String descr) {
-        ThreadCategory.setPrefix(LOG4J_CATEGORY);
-        ThreadCategory log = ThreadCategory.getInstance(this.getClass());
         log.debug("Inside lastNDaysTotalAvailability");
         Rows rows = new Rows();
         int serviceCount = 0;
@@ -988,8 +980,6 @@ public class AvailCalculations extends Object {
      *            Section descr.
      */
     private void lastNMonthsAvailability(int nMonths, long endTime, CatSections catSections, String label, String descr) {
-        ThreadCategory.setPrefix(LOG4J_CATEGORY);
-        ThreadCategory log = ThreadCategory.getInstance(this.getClass());
         log.debug("Inside lastNMonthsAvailability");
         Rows rows = new Rows();
         int numMonths = 0;
@@ -1146,8 +1136,6 @@ public class AvailCalculations extends Object {
      *            Section descr.
      */
     private void lastNDaysDailyServiceAvailability(int days, long endTime, CatSections catSections, String label, String descr) {
-        ThreadCategory.setPrefix(LOG4J_CATEGORY);
-        ThreadCategory log = ThreadCategory.getInstance(this.getClass());
         log.debug("Inside lastNDaysDailyServiceAvailability " + days);
 
 

@@ -42,9 +42,6 @@ import org.opennms.core.utils.ThreadCategory;
  *
  * @author <A HREF="mailto:jacinta@oculan.com">Jacinta Remedios </A>
  * @author <A HREF="http://www.oculan.com">Oculan Corp </A>
- * @author <A HREF="mailto:jacinta@oculan.com">Jacinta Remedios </A>
- * @author <A HREF="http://www.oculan.com">Oculan Corp </A>
- * @version $Id: $
  */
 public class Outage extends Object {
     /**
@@ -144,6 +141,7 @@ public class Outage extends Object {
      *         the last rolling window
      */
     public long getDownTime(long curTime, long rollingWindow) {
+        String oldPrefix = ThreadCategory.getPrefix();
         ThreadCategory.setPrefix(LOG4J_CATEGORY);
         // Category log = ThreadCategory.getInstance(this.getClass());
         long downTime = 0;
@@ -189,6 +187,8 @@ public class Outage extends Object {
                 }
             }
         }
+        ThreadCategory.setPrefix(oldPrefix);
+        
         // if(log.isDebugEnabled())
         // log.debug("Downtime " + downTime);
         return downTime;

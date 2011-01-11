@@ -72,7 +72,7 @@ public class DefaultReportWrapperService implements ReportWrapperService {
 
     private ReportServiceLocator m_reportServiceLocator;
 
-    private ThreadCategory log;
+    private final ThreadCategory log;
 
     private ReportStoreService m_reportStoreService;
 
@@ -82,10 +82,10 @@ public class DefaultReportWrapperService implements ReportWrapperService {
      * <p>Constructor for DefaultReportWrapperService.</p>
      */
     public DefaultReportWrapperService() {
-
+        String oldPrefix = ThreadCategory.getPrefix();
         ThreadCategory.setPrefix(LOG4J_CATEGORY);
         log = ThreadCategory.getInstance(DefaultReportWrapperService.class);
-
+        ThreadCategory.setPrefix(oldPrefix);
     }
 
     /** {@inheritDoc} */

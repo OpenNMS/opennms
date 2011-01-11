@@ -132,7 +132,7 @@ public class AvailabilityCalculatorImpl implements AvailabilityCalculator {
 
     private Report m_report = null;
 
-    private ThreadCategory log;
+    private final ThreadCategory log;
 
     private ReportStoreService m_reportStoreService;
     
@@ -143,8 +143,10 @@ public class AvailabilityCalculatorImpl implements AvailabilityCalculator {
      */
     public AvailabilityCalculatorImpl() {
 
+        String oldPrefix = ThreadCategory.getPrefix();
         ThreadCategory.setPrefix(LOG4J_CATEGORY);
         log = ThreadCategory.getInstance(this.getClass());
+        ThreadCategory.setPrefix(oldPrefix);
         
         m_report = new Report();
         m_report.setAuthor(m_author);
@@ -165,7 +167,6 @@ public class AvailabilityCalculatorImpl implements AvailabilityCalculator {
         created.setYear(year);
         created.setContent(new BigDecimal(today.getTime().getTime()));
         m_report.setCreated(created);
-
     }
 
     /* (non-Javadoc)

@@ -197,6 +197,8 @@ public class EventsArchiver {
      */
     private void init() throws ArchiverException {
         String oldPrefix = ThreadCategory.getPrefix();
+        try {
+        
         // The general logs from the events archiver go to this category
         ThreadCategory.setPrefix("OpenNMS.Archiver.Events");
         m_logCat = ThreadCategory.getInstance(this.getClass());
@@ -218,15 +220,12 @@ public class EventsArchiver {
                 EventsArchiverConfigFactory.getInstance();
         } catch (MarshalException ex) {
             m_logCat.fatal("MarshalException", ex);
-            ThreadCategory.setPrefix(oldPrefix);
             throw new UndeclaredThrowableException(ex);
         } catch (ValidationException ex) {
             m_logCat.fatal("ValidationException", ex);
-            ThreadCategory.setPrefix(oldPrefix);
             throw new UndeclaredThrowableException(ex);
         } catch (IOException ex) {
             m_logCat.fatal("IOException", ex);
-            ThreadCategory.setPrefix(oldPrefix);
             throw new UndeclaredThrowableException(ex);
         }
 
@@ -236,7 +235,6 @@ public class EventsArchiver {
         try {
             archAge = TimeConverter.convertToMillis(archAgeStr);
         } catch (NumberFormatException nfe) {
-            ThreadCategory.setPrefix(oldPrefix);
             throw new ArchiverException("Archive age: " + archAgeStr
                                         + "- Incorrect format "
                                         + nfe.getMessage());
@@ -276,33 +274,29 @@ public class EventsArchiver {
             m_conn = DataSourceFactory.getInstance().getConnection();
         } catch (IOException e) {
             m_logCat.fatal("IOException while initializing database", e);
-            ThreadCategory.setPrefix(oldPrefix);
             throw new UndeclaredThrowableException(e);
         } catch (MarshalException e) {
             m_logCat.fatal("MarshalException while initializing database", e);
-            ThreadCategory.setPrefix(oldPrefix);
             throw new UndeclaredThrowableException(e);
         } catch (ValidationException e) {
             m_logCat.fatal("ValidationException while initializing database", e);
-            ThreadCategory.setPrefix(oldPrefix);
             throw new UndeclaredThrowableException(e);
         } catch (PropertyVetoException e) {
             m_logCat.fatal("PropertyVetoException while initializing database",
                            e);
-            ThreadCategory.setPrefix(oldPrefix);
             throw new UndeclaredThrowableException(e);
         } catch (SQLException e) {
             m_logCat.fatal("SQLException while initializing database", e);
-            ThreadCategory.setPrefix(oldPrefix);
             throw new UndeclaredThrowableException(e);
         } catch (ClassNotFoundException e) {
             m_logCat.fatal("ClassNotFoundException while initializing database",
                            e);
-            ThreadCategory.setPrefix(oldPrefix);
             throw new UndeclaredThrowableException(e);
         }
         // XXX should we be throwing ArchiverException instead?
-        ThreadCategory.setPrefix(oldPrefix);
+        } finally {
+            ThreadCategory.setPrefix(oldPrefix);
+        }
     }
 
     /**
