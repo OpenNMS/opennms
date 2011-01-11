@@ -37,6 +37,7 @@
  */
 package org.opennms.netmgt.dao;
 
+import java.sql.Timestamp;
 import java.util.Date;
 
 import junit.framework.Assert;
@@ -166,7 +167,8 @@ public class DatabasePopulator {
         .setIfOperStatus(1)
         .setIfSpeed(10000000);
         builder.addService(getServiceType("ICMP"));
-        getNodeDao().save(builder.getCurrentNode());
+        OnmsNode node1 = builder.getCurrentNode();
+        getNodeDao().save(node1);
         getNodeDao().flush();
         
         builder.addNode("node2").setForeignSource("imported:").setForeignId("2");
@@ -181,6 +183,7 @@ public class DatabasePopulator {
         builder.addService(getServiceType("HTTP"));
         builder.addInterface("192.168.2.3").setIsManaged("M").setIsSnmpPrimary("N");
         builder.addService(getServiceType("ICMP"));
+        builder.addAtInterface("192.168.2.1", "AA:BB:CC:DD:EE:FF").setSourceNode(node1).setIfIndex(1).setLastPollTime(new Date()).setStatus('A');
         getNodeDao().save(builder.getCurrentNode());
         getNodeDao().flush();
         

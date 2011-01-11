@@ -1183,39 +1183,6 @@ public class NetworkElementFactory implements InitializingBean, NetworkElementFa
         return onmsNodes2Nodes(m_nodeDao.findMatching(criteria));
     }
 
-    /**
-     * <p>getAtInterfacesFromPhysaddr</p>
-     *
-     * @param AtPhysAddr a {@link java.lang.String} object.
-     * @return an array of {@link org.opennms.web.element.AtInterface} objects.
-     * @throws java.sql.SQLException if any.
-     */
-    public static AtInterface[] getAtInterfacesFromPhysaddr(String AtPhysAddr)
-            throws SQLException {
-
-        if (AtPhysAddr == null) {
-            throw new IllegalArgumentException("Cannot take null parameters.");
-        }
-
-        AtInterface[] nodes = null;
-        final DBUtils d = new DBUtils(NetworkElementFactory.class);
-        try {
-            Connection conn = Vault.getDbConnection();
-            d.watch(conn);
-            PreparedStatement stmt = conn.prepareStatement("SELECT * FROM ATINTERFACE WHERE ATPHYSADDR LIKE '%"
-                            + AtPhysAddr + "%' AND STATUS != 'D'");
-            d.watch(stmt);
-            ResultSet rs = stmt.executeQuery();
-            d.watch(rs);
-            
-            nodes = rs2AtInterface(rs);
-        } finally {
-            d.cleanUp();
-        }
-
-        return nodes;
-    }
-
     /* (non-Javadoc)
 	 * @see org.opennms.web.element.NetworkElementFactoryInterfac#getNodesFromPhysaddr(java.lang.String)
 	 */

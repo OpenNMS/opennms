@@ -157,6 +157,16 @@ public class NetworkElementFactoryTest  {
     }
     
     @Test
+    @Transactional
+    public void testGetAtInterfaces() throws Exception {
+        AtInterface atif = NetworkElementFactory.getInstance(m_appContext).getAtInterface(2, "192.168.2.1");
+        assertEquals("AA:BB:CC:DD:EE:FF", atif.get_physaddr());
+        
+        Node[] nodes = NetworkElementFactory.getInstance(m_appContext).getNodesFromPhysaddr("AA:BB:CC:DD:EE:FF");
+        assertEquals(1, nodes.length);
+    }
+    
+    @Test
     public void testGetDataLinksOnNode() throws SQLException {
         DataLinkInterface[] dlis = NetworkElementFactory.getInstance(m_appContext).getDataLinksOnNode(1);
         assertEquals(5, dlis.length);
