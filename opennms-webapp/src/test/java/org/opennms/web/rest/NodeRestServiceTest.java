@@ -12,9 +12,7 @@ import java.util.regex.Pattern;
 import javax.xml.bind.JAXBContext;
 import javax.xml.bind.Unmarshaller;
 
-import org.hibernate.annotations.AccessType;
 import org.junit.Before;
-import org.junit.BeforeClass;
 import org.junit.Test;
 import org.opennms.core.utils.LogUtils;
 import org.opennms.netmgt.model.OnmsNodeList;
@@ -89,6 +87,9 @@ public class NodeRestServiceTest extends AbstractSpringJerseyRestTestCase {
 
     @Test
     public void testLimits() throws Exception {
+        JAXBContext context = JAXBContext.newInstance(OnmsNodeList.class);
+        Unmarshaller unmarshaller = context.createUnmarshaller();
+
         // Testing POST
         for (int i = 0; i < 20; i++) {
             createNode();
@@ -106,6 +107,12 @@ public class NodeRestServiceTest extends AbstractSpringJerseyRestTestCase {
             count++;
         }
         assertEquals("should get 10 nodes back", 10, count);
+        
+        // Validate object by unmarshalling
+        OnmsNodeList list = (OnmsNodeList)unmarshaller.unmarshal(new StringReader(xml));
+        assertEquals(10, list.getCount());
+        assertEquals(10, list.getNodes().size());
+        assertEquals(20, list.getTotalCount());
     }
 
     @Test
