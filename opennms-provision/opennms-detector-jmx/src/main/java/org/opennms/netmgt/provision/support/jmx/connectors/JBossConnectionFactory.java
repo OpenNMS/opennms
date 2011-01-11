@@ -43,6 +43,7 @@ import javax.naming.Context;
 import javax.naming.InitialContext;
 import javax.naming.NamingException;
 
+import org.opennms.core.utils.LogUtils;
 import org.opennms.core.utils.ParameterMap;
 import org.opennms.netmgt.provision.support.jmx.connectors.IsolatingClassLoader.InvalidContextClassLoaderException;
 import org.opennms.netmgt.provision.support.protocol.jmx.MBeanServerProxy;
@@ -67,7 +68,6 @@ import org.opennms.netmgt.provision.support.protocol.jmx.MBeanServerProxy;
  */
 public class JBossConnectionFactory {
     
-    //static Category log = ThreadCategory.getInstance(JBossConnectionFactory.class);
     static String[] packages = {"org.jboss.naming.*", "org.jboss.interfaces.*"};
 
     /* (non-Javadoc)
@@ -94,7 +94,6 @@ public class JBossConnectionFactory {
 
         
         if (connectionType == null) {
-            //log.error("factory property is not set, check the configuration files.");
             return null;
         }
 
@@ -128,20 +127,16 @@ public class JBossConnectionFactory {
                         ctx = new InitialContext(props);
                         Object rmiAdaptor = ctx.lookup("jmx/rmi/RMIAdaptor");
                         wrapper = new JBossConnectionWrapper(MBeanServerProxy.buildServerProxy(rmiAdaptor));
-                    } catch (Exception e) {
-                        e.printStackTrace();
-                    } catch (Throwable t) {
-                        t.printStackTrace();
+                    } catch (final Throwable t) {
+                        LogUtils.debugf(JBossConnectionFactory.class, t, "Unable to connect to JBOSS");
                     }
-
-                    //log.debug("JBossConnectionFactory - unable to get MBeanServer using RMI on " + address.getHostAddress() + ":" + port);
                 } finally {
                     try {
                         if (ctx != null) {
                             ctx.close();
                         }
                     } catch (Throwable e1) {
-                        //log.debug("JBossConnectionFactory error closing initial context");
+                        // ignore
                     }
                 }
             } else if (connectionType.equals("HTTP")) {

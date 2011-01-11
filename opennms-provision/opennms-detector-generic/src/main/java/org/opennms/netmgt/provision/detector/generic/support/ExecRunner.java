@@ -421,7 +421,6 @@ public class ExecRunner {
             System.exit(0);
 
         } catch (final Exception e) {
-
             e.printStackTrace();
             System.exit(1);
 

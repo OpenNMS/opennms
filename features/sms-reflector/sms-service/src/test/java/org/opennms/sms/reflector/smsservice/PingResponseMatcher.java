@@ -1,6 +1,7 @@
 package org.opennms.sms.reflector.smsservice;
 
 
+
 /**
  * PingResponseMatcher
  *

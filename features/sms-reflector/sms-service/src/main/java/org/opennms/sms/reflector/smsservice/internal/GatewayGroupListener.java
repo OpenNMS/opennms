@@ -5,6 +5,7 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
+import org.opennms.core.utils.LogUtils;
 import org.opennms.sms.reflector.smsservice.GatewayGroup;
 import org.opennms.sms.reflector.smsservice.OnmsInboundMessageNotification;
 import org.slf4j.Logger;
@@ -63,8 +64,8 @@ public class GatewayGroupListener implements InitializingBean {
                 }
                 smsService.addGateway(gateways[i]);
 
-            } catch (GatewayException e) {
-                e.printStackTrace();
+            } catch (final GatewayException e) {
+                LogUtils.warnf(this, e, "Unable to add gateway (%s) to SMS service", gateways[i]);
             }
         }
 

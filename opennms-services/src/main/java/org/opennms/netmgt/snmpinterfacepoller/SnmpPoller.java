@@ -41,6 +41,7 @@ import javax.sql.DataSource;
 
 import org.apache.commons.lang.StringUtils;
 import org.opennms.core.utils.InetAddressUtils;
+import org.opennms.core.utils.LogUtils;
 import org.opennms.netmgt.EventConstants;
 import org.opennms.netmgt.model.events.annotations.EventHandler;
 import org.opennms.netmgt.model.events.annotations.EventListener;
@@ -365,24 +366,21 @@ public class SnmpPoller extends AbstractServiceDaemon {
      *
      * @param event a {@link org.opennms.netmgt.xml.event.Event} object.
      */
+    @SuppressWarnings("deprecation")
     @EventHandler(uei = EventConstants.CONFIGURE_SNMP_EVENT_UEI)
     public void reloadSnmpConfig(Event event) {
         log().debug("reloadSnmpConfig: managing event: " + event.getUei());
         try {
             Thread.sleep(5000);
-        } catch (InterruptedException e) {
-            e.printStackTrace();
+        } catch (final InterruptedException e) {
+            LogUtils.debugf(this, e, "interrupted while waiting for reload");
+            Thread.currentThread().interrupt();
         }
         
         SnmpEventInfo info = null;
         try {
             info = new SnmpEventInfo(event);
             
-            if (info == null) {
-                log().error("reloadSnmpConfig: event contained invalid parameters.  "+event);
-                return;
-            }
-
             if (StringUtils.isBlank(info.getFirstIPAddress())) {                
                 log().error("configureSNMPHandler: event contained invalid firstIpAddress.  "+event);
                 return;

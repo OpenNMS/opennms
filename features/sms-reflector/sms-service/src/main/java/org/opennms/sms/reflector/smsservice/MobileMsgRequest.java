@@ -34,6 +34,7 @@ package org.opennms.sms.reflector.smsservice;
 import java.util.concurrent.Delayed;
 import java.util.concurrent.TimeUnit;
 
+import org.apache.commons.lang.builder.ToStringBuilder;
 import org.opennms.protocols.rt.Request;
 
 /**
@@ -251,5 +252,16 @@ public abstract class MobileMsgRequest implements Request<String, MobileMsgReque
         return m_processed;
     }
 
+    public String toString() {
+        return new ToStringBuilder(this)
+            .append("matcher", m_responseMatcher)
+            .append("callback", m_cb)
+            .append("timeout", m_timeout)
+            .append("retries", m_retries)
+            .append("expiration", m_expiration)
+            .append("sent", m_sentTime)
+            .append("processed", m_processed)
+            .toString();
+    }
     
 }

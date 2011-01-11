@@ -33,7 +33,6 @@
 
 package org.opennms.netmgt.collectd;
 
-import java.beans.PropertyVetoException;
 import java.io.File;
 import java.io.IOException;
 import java.lang.reflect.UndeclaredThrowableException;
@@ -57,11 +56,9 @@ import javax.management.MalformedObjectNameException;
 import javax.management.ObjectName;
 import javax.management.openmbean.CompositeData;
 
-import org.exolab.castor.xml.MarshalException;
-import org.exolab.castor.xml.ValidationException;
 import org.opennms.core.utils.DBUtils;
+import org.opennms.core.utils.LogUtils;
 import org.opennms.core.utils.ParameterMap;
-import org.opennms.core.utils.ThreadCategory;
 import org.opennms.netmgt.config.BeanInfo;
 import org.opennms.netmgt.config.DataSourceFactory;
 import org.opennms.netmgt.config.JMXDataCollectionConfigFactory;
@@ -199,24 +196,12 @@ public abstract class JMXCollector implements ServiceCollector {
      *                the plug-in from functioning.
      */
     public void initialize(Map<String, String> parameters) {
-        // Log4j category
-        ThreadCategory log = ThreadCategory.getInstance(getClass());
-
         // Initialize the JMXDataCollectionConfigFactory
         try {
         	// XXX was reload(), which isn't test-friendly
             JMXDataCollectionConfigFactory.init();
-        } catch (MarshalException e) {
-            log.fatal("initialize: Failed to load data collection configuration",
-                      e);
-            throw new UndeclaredThrowableException(e);
-        } catch (ValidationException e) {
-            log.fatal("initialize: Failed to load data collection configuration",
-                      e);
-            throw new UndeclaredThrowableException(e);
-        } catch (IOException e) {
-            log.fatal("initialize: Failed to load data collection configuration",
-                      e);
+        } catch (Exception e) {
+            LogUtils.errorf(this, e, "initialize: Failed to load data collection configuration");
             throw new UndeclaredThrowableException(e);
         }
 
@@ -225,43 +210,22 @@ public abstract class JMXCollector implements ServiceCollector {
         try {
             DataSourceFactory.init();
             ctest = DataSourceFactory.getInstance().getConnection();
-        } catch (IOException e) {
-            log.fatal("initialize: IOException getting database connection",
-                      e);
-            throw new UndeclaredThrowableException(e);
-        } catch (MarshalException e) {
-            log.fatal("initialize: Marshall Exception getting database "
-                      + "connection", e);
-            throw new UndeclaredThrowableException(e);
-        } catch (ValidationException e) {
-            log.fatal("initialize: Validation Exception getting database "
-                      + "connection", e);
-            throw new UndeclaredThrowableException(e);
-        } catch (SQLException e) {
-            log.fatal("initialize: Failed getting connection to the database.",
-                      e);
-            throw new UndeclaredThrowableException(e);
-        } catch (PropertyVetoException e) {
-            log.fatal("initialize: Failed getting connection to the database.",
-                      e);
-            throw new UndeclaredThrowableException(e);
-        } catch (ClassNotFoundException e) {
-            log.fatal("initialize: Failed loading database driver.", e);
+        } catch (final Exception e) {
+            LogUtils.errorf(this, e, "initialize: failed to get a database connection");
             throw new UndeclaredThrowableException(e);
         } finally {
             if (ctest != null) {
                 try {
                     ctest.close();
-                } catch (Throwable t) {
-                    log.warn("initialize: an exception occured while closing the "
-                             + "JDBC connection", t);
+                } catch (final Throwable t) {
+                    LogUtils.debugf(this, "initialize: an exception occured while closing the JDBC connection");
                 }
             }
         }
 
         // Save local reference to singleton instance
 
-        log.debug("initialize: successfully instantiated JNI interface to RRD.");
+        LogUtils.debugf(this, "initialize: successfully instantiated JNI interface to RRD.");
     }
 
     /**
@@ -278,26 +242,21 @@ public abstract class JMXCollector implements ServiceCollector {
      * specified interface in preparation for data collection.
      */
     public void initialize(CollectionAgent agent, Map<String, String> parameters) {
-        ThreadCategory log = ThreadCategory.getInstance(getClass());
         InetAddress ipAddr = (InetAddress) agent.getAddress();
-
-        if (log.isDebugEnabled()) {
-            log.debug("initialize: InetAddress=" + ipAddr.getHostAddress());
-        }
 
         // Retrieve the name of the JMX data collector
         String collectionName = ParameterMap.getKeyedString(parameters, "collection", serviceName);
 
-        if (log.isDebugEnabled()) {
-            log.debug("initialize: collectionName=" + collectionName);
-        }
+        final String hostAddress = ipAddr.getHostAddress();
+        LogUtils.debugf(this, "initialize: InetAddress=%s, collectionName=%s", hostAddress, collectionName);
+
         java.sql.Connection dbConn = null;
         final DBUtils d = new DBUtils(getClass());
         try {
             dbConn = DataSourceFactory.getInstance().getConnection();
             d.watch(dbConn);
-        } catch (SQLException e) {
-            log.error("initialize: Failed getting connection to the database.", e);
+        } catch (final SQLException e) {
+            LogUtils.errorf(this, e, "initialize: Failed getting connection to the database.");
             throw new UndeclaredThrowableException(e);
         }
 
@@ -315,7 +274,7 @@ public abstract class JMXCollector implements ServiceCollector {
         try {
             stmt = dbConn.prepareStatement(SQL_GET_NODEID);
             d.watch(stmt);
-            stmt.setString(1, ipAddr.getHostAddress()); // interface address
+            stmt.setString(1, hostAddress); // interface address
             ResultSet rs = stmt.executeQuery();
             d.watch(rs);
 
@@ -327,15 +286,16 @@ public abstract class JMXCollector implements ServiceCollector {
             } else {
                 nodeID = -1;
             }
-        } catch (SQLException e) {
-            log.error("initialize: SQL exception!!", e);
-            throw new RuntimeException("SQL exception while attempting to retrieve node id for interface " + ipAddr.getHostAddress());
+        } catch (final SQLException e) {
+            final String message = "initialize: exception while attempting to retrieve node id for interface " + hostAddress;
+            LogUtils.errorf(this, e, message);
+            throw new RuntimeException(message);
         } finally {
             d.cleanUp();
         }
 
         JMXNodeInfo nodeInfo = new JMXNodeInfo(nodeID);
-        log.debug("nodeInfo: " + ipAddr.getHostAddress() + " " + nodeID + " " + agent);
+        LogUtils.debugf(this, "nodeInfo: %s %d %s", hostAddress, nodeID, agent);
 
         /*
          * Retrieve list of MBean objects to be collected from the
@@ -343,7 +303,7 @@ public abstract class JMXCollector implements ServiceCollector {
          * These objects pertain to the node itself not any individual
          * interfaces.
          */
-        Map<String, List<Attrib>> attrMap = JMXDataCollectionConfigFactory.getInstance().getAttributeMap(collectionName, serviceName, ipAddr.getHostAddress());
+        Map<String, List<Attrib>> attrMap = JMXDataCollectionConfigFactory.getInstance().getAttributeMap(collectionName, serviceName, hostAddress);
         nodeInfo.setAttributeMap(attrMap);
 
         Map<String, JMXDataSource> dsList = buildDataSourceList(collectionName, attrMap);
@@ -381,7 +341,6 @@ public abstract class JMXCollector implements ServiceCollector {
      * Perform data collection.
      */
     public CollectionSet collect(CollectionAgent agent, EventProxy eproxy, Map<String, String> map) {
-        ThreadCategory log = ThreadCategory.getInstance(getClass());
         InetAddress ipaddr = (InetAddress) agent.getAddress();
         JMXNodeInfo nodeInfo = (JMXNodeInfo) agent.getAttribute(NODE_INFO_KEY);
         Map<String, BeanInfo> mbeans = nodeInfo.getMBeans();
@@ -399,8 +358,7 @@ public abstract class JMXCollector implements ServiceCollector {
         
         ConnectionWrapper connection = null;
 
-        log.debug("collect " + ipaddr.getHostAddress() + " "
-                + nodeInfo.getNodeId());
+        LogUtils.debugf(this, "collecting %s on node ID %d", ipaddr.getHostAddress(), nodeInfo.getNodeId());
 
         try {
             connection = getMBeanServerConnection(map, ipaddr);
@@ -444,12 +402,8 @@ public abstract class JMXCollector implements ServiceCollector {
                         
                         String[] attrNames = (String[])attribNames.toArray(new String[attribNames.size()]);
 
-                        if (objectName.indexOf("*") == -1) {                            
-                            log.debug(serviceName
-                                    + " Collector - getAttributes: "
-                                    + objectName + " #attributes: "
-                                    + attrNames.length + "#compositeAttributeMembers: "
-                                    + compAttribNames.size() );
+                        if (objectName.indexOf("*") == -1) {      
+                            LogUtils.debugf(this, "%s Collector - getAttributes: %s, # attributes: %d, # composite attribute members: %d", serviceName, objectName, attrNames.length, compAttribNames.size());
                             try {
                                 ObjectName oName = new ObjectName(objectName);
                                 if (mbeanServer.isRegistered(oName)) {
@@ -480,9 +434,8 @@ public abstract class JMXCollector implements ServiceCollector {
                                                      JMXCollectionAttributeType attribType=new JMXCollectionAttributeType(ds, null, null, attribGroupType);
                                                      collectionResource.setAttributeValue(attribType, cd.get(key).toString());
                                                  }
-                                            } catch (ClassCastException cce) {
-                                                log.debug(" Collection - getAttributes (try CompositeData) - ERROR: " + 
-                                                          "Failed to cast attribute value to type CompositeData!");
+                                            } catch (final ClassCastException cce) {
+                                                LogUtils.debugf(this, cce, "%s Collection - getAttributes (try CompositeData) - ERROR: Failed to cast attribute value to type CompositeData!", serviceName);
                                             }
                                         }
                                         else {
@@ -493,9 +446,8 @@ public abstract class JMXCollector implements ServiceCollector {
                                         }
                                     }  
                                 }
-                            } catch (InstanceNotFoundException e) {
-                                log.error("Unable to retrieve attributes from "
-                                        + objectName, e);
+                            } catch (final InstanceNotFoundException e) {
+                                LogUtils.errorf(this, e, "Unable to retrieve attributes from %s", objectName);
                             }
                         } else {
                             /*
@@ -505,11 +457,7 @@ public abstract class JMXCollector implements ServiceCollector {
                             Set<ObjectName> mbeanSet = getObjectNames(mbeanServer, objectName);
                             for (Iterator<ObjectName> objectNameIter = mbeanSet.iterator(); objectNameIter.hasNext(); ) {
                                 ObjectName oName = objectNameIter.next();
-                                if (log.isDebugEnabled()) {
-                                    log.debug(serviceName + " Collector - getAttributesWC: " + oName + " #attributes: "
-                                              + attrNames.length + " "
-                                              + beanInfo.getKeyAlias());
-                                }
+                                LogUtils.debugf(this, "%s Collector - getAttributesWC: %s, # attributes: %d, alias: %s", serviceName, oName, attrNames.length, beanInfo.getKeyAlias());
 
                                 try {
                                     if (excludeList == null) {
@@ -571,23 +519,19 @@ public abstract class JMXCollector implements ServiceCollector {
                                             }
                                         }
                                     }
-                                } catch (InstanceNotFoundException e) {
-                                    log.error("Error retrieving attributes for "
-                                              + oName, e);
+                                } catch (final InstanceNotFoundException e) {
+                                    LogUtils.errorf(this, e, "Error retrieving attributes for %s", oName);
                                 }
                             }
                         }
                     }
                     break;
-                } catch (Exception e) {
-                    //e.fillInStackTrace(); <-  this throws it's own class cast exception - try printStackTrace() instead
-                    log.debug(serviceName
-                              + " Collector.collect: IOException while collect "
-                              + "address: " + agent.getAddress(), e);
+                } catch (final Exception e) {
+                    LogUtils.debugf(this, e, "%s Collector.collect: IOException while collecting address: %s", serviceName, agent.getAddress());
                 }
-            } // of for
-        } catch (Exception e) {
-            log.error("Error getting MBeanServer", e);
+            }
+        } catch (final Exception e) {
+            LogUtils.errorf(this, e, "Error getting MBeanServer");
         } finally {
             if (connection != null) {
                 connection.close();
@@ -655,9 +599,7 @@ public abstract class JMXCollector implements ServiceCollector {
     public String getRRDValue_isthis_used_(JMXDataSource ds,
             JMXCollectorEntry collectorEntry) throws IllegalArgumentException {
 
-        ThreadCategory log = ThreadCategory.getInstance(getClass());
-
-        log.debug("getRRDValue: " + ds.getName());
+        LogUtils.debugf(this, "getRRDValue: %s", ds.getName());
 
         // Make sure we have an actual object id value.
         if (ds.getOid() == null) {
@@ -678,9 +620,7 @@ public abstract class JMXCollector implements ServiceCollector {
      * @return list of RRDDataSource objects
      */
     private Map<String, JMXDataSource> buildDataSourceList(String collectionName, Map<String, List<Attrib>> attributeMap) {
-        ThreadCategory log = ThreadCategory.getInstance(getClass());
-
-        log.debug("buildDataSourceList - ***");
+        LogUtils.debugf(this, "buildDataSourceList - ***");
 
         /*
          * Retrieve the RRD expansion data source list which contains all
@@ -696,15 +636,13 @@ public abstract class JMXCollector implements ServiceCollector {
          * the data sources pertinent to it.
          */
 
-        log.debug("attributeMap size: " + attributeMap.size());
+        LogUtils.debugf(this, "attributeMap size: %d", attributeMap.size());
         Iterator<String> objNameIter = attributeMap.keySet().iterator();
         while (objNameIter.hasNext()) {
             String objectName = objNameIter.next().toString();
-
-            log.debug("ObjectName: " + objectName);
-
             List<Attrib> list = attributeMap.get(objectName);
-            log.debug("Attributes: " + list.size());
+
+            LogUtils.debugf(this, "ObjectName: %s, Attributes: %d", objectName, list.size());
 
             Iterator<Attrib> iter = list.iterator();
             while (iter.hasNext()) {
@@ -752,11 +690,7 @@ public abstract class JMXCollector implements ServiceCollector {
                      */
                     String ds_name = attr.getAlias();
                     if (ds_name.length() > MAX_DS_NAME_LENGTH) {
-                        if (log.isEnabledFor(ThreadCategory.Level.WARN))
-                            log.warn("buildDataSourceList: alias '"
-                                    + attr.getAlias()
-                                    + "' exceeds 19 char maximum for RRD data "
-                                    + "source names, truncating.");
+                        LogUtils.warnf(this, "buildDataSourceList: alias '%s' exceeds 19 char maximum for RRD data source names, truncating.", attr.getAlias());
                         char[] temp = ds_name.toCharArray();
                         ds_name = String.copyValueOf(temp, 0,
                                                      MAX_DS_NAME_LENGTH);
@@ -772,23 +706,12 @@ public abstract class JMXCollector implements ServiceCollector {
                      */
                     ds.setOid(attr.getName());
 
-                    if (log.isDebugEnabled()) {
-                        log.debug("buildDataSourceList: ds_name: " + ds.getName()
-                                  + " ds_oid: " + ds.getOid() + "."
-                                  + ds.getInstance() + " ds_max: " + ds.getMax()
-                                  + " ds_min: " + ds.getMin());
-                    }
+                    LogUtils.debugf(this, "buildDataSourceList: ds_name: %s ds_oid: %s.%s ds_max: %s ds_min: %s", ds.getName(), ds.getOid(), ds.getInstance(), ds.getMax(), ds.getMin());
 
                     // Add the new data source to the list
                     dsList.put(objectName + "|" + attr.getName(), ds);
-                } else if (log.isEnabledFor(ThreadCategory.Level.WARN)) {
-                    log.warn("buildDataSourceList: Data type '"
-                            + attr.getType()
-                            + "' not supported.  Only integer-type data may be "
-                            + "stored in RRD.");
-                    log.warn("buildDataSourceList: MBean object '"
-                             + attr.getAlias()
-                             + "' will not be mapped to RRD data source.");
+                } else {
+                    LogUtils.warnf(this, "buildDataSourceList: Data type '%s' not supported.  Only integer-type data may be stored in RRD.  MBean object '%s' will not be mapped to RRD data source.", attr.getType(), attr.getAlias());
                  }
              }
          }

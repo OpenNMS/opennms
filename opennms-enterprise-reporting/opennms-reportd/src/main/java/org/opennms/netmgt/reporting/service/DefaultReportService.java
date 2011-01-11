@@ -140,10 +140,8 @@ public class DefaultReportService implements ReportService {
                 }
                 reportArchive.close();
             }
-            catch (FileNotFoundException e) {
-                e.printStackTrace();
-            } catch (IOException e) {
-                e.printStackTrace();
+            catch (final Exception e) {
+                LogUtils.warnf(this, e, "unable to create %s", zipFile);
             }
 
         }

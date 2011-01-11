@@ -39,7 +39,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 import org.hibernate.ObjectNotFoundException;
-import org.opennms.core.utils.ThreadCategory;
+import org.opennms.core.utils.LogUtils;
 import org.opennms.netmgt.dao.AcknowledgmentDao;
 import org.opennms.netmgt.model.AckType;
 import org.opennms.netmgt.model.Acknowledgeable;
@@ -89,14 +89,14 @@ public class AcknowledgmentDaoHibernate extends AbstractDaoHibernate<OnmsAcknowl
                                 if (notif.getAckId() != null) {
                                     ackables.add(notif);
                                 }
-                            } catch (ObjectNotFoundException e) {
-                                log().warn("found ackables for alarm " + ack.getRefId() + " but ackable was invalid", e);
+                            } catch (final ObjectNotFoundException e) {
+                                LogUtils.warnf(this, e, "found ackables for alarm #%d but ackable was invalid", ack.getRefId());
                             }
                         }
                     }
                 }
-            } catch (ObjectNotFoundException e) {
-                log().warn("unable to find alarm with ID " + ack.getRefId(), e);
+            } catch (final ObjectNotFoundException e) {
+                LogUtils.warnf(this, e, "unable to find alarm with ID %d", ack.getRefId());
             }
         }
 
@@ -113,12 +113,12 @@ public class AcknowledgmentDaoHibernate extends AbstractDaoHibernate<OnmsAcknowl
                                 ackables.add(alarm);
                             }
                         }
-                    } catch (ObjectNotFoundException e) {
-                        log().warn("unable to find alarm for notification " + notif.getNotifyId(), e);
+                    } catch (final ObjectNotFoundException e) {
+                        LogUtils.warnf(this, e, "unable to find alarm for notification #%d", notif.getNotifyId());
                     }
                 }
-            } catch (ObjectNotFoundException e) {
-                log().warn("unable to find notification with ID " + ack.getRefId(), e);
+            } catch (final ObjectNotFoundException e) {
+                LogUtils.warnf(this, e, "unable to find notification with ID %d", ack.getRefId());
             }
         }
         
@@ -137,9 +137,8 @@ public class AcknowledgmentDaoHibernate extends AbstractDaoHibernate<OnmsAcknowl
             if (ack != null) {
                 return (OnmsAlarm) getHibernateTemplate().load(OnmsAlarm.class, ack.getRefId());
             }
-        } catch (Exception e) {
-            log().warn("unable to find alarm with ID " + ack.getRefId(), e);
-            e.printStackTrace();
+        } catch (final Exception e) {
+            LogUtils.warnf(this, e, "unable to find alarm with ID %d", ack.getRefId());
         }
         return null;
     }
@@ -151,15 +150,10 @@ public class AcknowledgmentDaoHibernate extends AbstractDaoHibernate<OnmsAcknowl
             if (ack != null) {
                 return (OnmsNotification) getHibernateTemplate().load(OnmsNotification.class, ack.getRefId());
             }
-        } catch (Exception e) {
-            log().warn("unable to find notification with ID " + ack.getRefId(), e);
-            e.printStackTrace();
+        } catch (final Exception e) {
+            LogUtils.warnf(this, e, "unable to find notification with ID %d", ack.getRefId());
         }
         return null;
     }
 
-    private ThreadCategory log() {
-        return ThreadCategory.getInstance(getClass());
-    }
-    
 }

@@ -2,6 +2,7 @@ package org.opennms.sms.reflector.commands.internal;
 
 import java.util.concurrent.CountDownLatch;
 
+import org.apache.commons.lang.builder.ToStringBuilder;
 import org.eclipse.osgi.framework.console.CommandInterpreter;
 import org.eclipse.osgi.framework.console.CommandProvider;
 import org.opennms.sms.reflector.smsservice.MobileMsgRequest;
@@ -12,6 +13,7 @@ import org.opennms.sms.reflector.smsservice.MobileMsgResponseMatchers;
 import org.opennms.sms.reflector.smsservice.MobileMsgTracker;
 import org.smslib.OutboundMessage;
 import org.smslib.USSDRequest;
+import org.opennms.core.utils.LogUtils;
 import org.opennms.core.utils.ThreadCategory;
 
 /**
@@ -30,8 +32,9 @@ public class MsgTrackerCommands implements CommandProvider
         MobileMsgResponse m_response;
         CountDownLatch m_latch = new CountDownLatch(1);
 
-        public void handleError(MobileMsgRequest request, Throwable t) {
+        public void handleError(final MobileMsgRequest request, final Throwable t) {
             t.printStackTrace();
+            LogUtils.warnf(this, t, "failed request: %s", request);
             m_latch.countDown();
         }
 
@@ -70,7 +73,12 @@ public class MsgTrackerCommands implements CommandProvider
             tracef("Matching: %s for regex %s response %s", retVal, m_regex, response);
             return retVal;
         }
-        
+
+        public String toString() {
+            return new ToStringBuilder(this)
+                .append("regex", m_regex)
+                .toString();
+        }
     }
     
     

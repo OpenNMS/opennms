@@ -73,14 +73,13 @@ public class NrpeClient implements Client<NrpeRequest, NrpePacket> {
     public void close() {
         Socket socket = m_socket;
         m_socket = null;
-        
         try {
             if(socket != null) {
                 socket.close();
             }
             
         } catch (final IOException e) {
-            e.printStackTrace();
+            LogUtils.debugf(this, e, "failed to close socket");
         }
         
     }
@@ -107,8 +106,8 @@ public class NrpeClient implements Client<NrpeRequest, NrpePacket> {
         socket.setSoTimeout(timeout);
         try {
             return wrapSocket(socket, address.getHostAddress(), port);
-        } catch (Exception e) {
-            e.printStackTrace();
+        } catch (final Exception e) {
+            LogUtils.debugf(this, e, "an error occurred while SSL-wrapping a socket (%s:%d)", address, port);
             return null;
         }
     }

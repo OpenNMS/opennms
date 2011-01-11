@@ -178,7 +178,6 @@ class StreamGobbler extends Thread {
 
         } catch (Exception e) {
         	// if we're not passing the exception on, why bother?
-            // e.printStackTrace();
         }
 
     }
