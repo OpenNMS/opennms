@@ -44,7 +44,6 @@
 <%@ taglib prefix="form" uri="http://www.springframework.org/tags/form" %>
 
 <jsp:include page="/includes/header.jsp" flush="false" >
-  <jsp:param name="enableSpringDojo" value="true" />
   <jsp:param name="title" value="Database Reports" />
   <jsp:param name="headTitle" value="Database Reports" />
   <jsp:param name="breadcrumb" value="<a href='report/index.jsp'>Reports</a>" />
@@ -57,58 +56,56 @@
 
 <h3>Run Online Report</h3>
 
-<form:form commandName="parameters">
+<form:form commandName="parameters" cssClass="stdform">
 	
-	<table>
 		<%-- // string parameters --%>
 		<c:forEach items="${parameters.stringParms}" var="stringParm" varStatus="stringParmRow">
-			<tr>
-				<td><c:out value="${stringParm.displayName}"/></td>
-                <td>
+			<p><form:label path="stringParms[${stringParmRow.index}].value" cssClass="label" >
+				<c:out value="${stringParm.displayName}"/>
+			</form:label>
                 <c:choose>
 	                <c:when test="${stringParm.inputType == 'reportCategorySelector'}">
 	                	<form:select path="stringParms[${stringParmRow.index}].value"> 
 		                <form:options items="${categories}"/>
 		                </form:select>
 	                </c:when>
+					<c:when test="${stringParm.inputType == 'onmsCategorySelector'}">
+	                	<form:select path="stringParms[${stringParmRow.index}].value"> 
+		                <form:options items="${onmsCategories}"/>
+		                </form:select>
+	                </c:when>
 	                <c:otherwise>
 	                	<form:input path="stringParms[${stringParmRow.index}].value"/>
 	                </c:otherwise>
-                </c:choose>
-				</td>
-			</tr>
+                </c:choose></p>
 		</c:forEach>
 		<%-- // int parameters --%>
 		<c:forEach items="${parameters.intParms}" var="intParm" varStatus="intParmRow">
-			<tr>
-				<td><c:out value="${intParm.displayName}"/></td>
-                <td>
-	                <form:input path="intParms[${intParmRow.index}].value"/>
-				</td>
-			</tr>
+				<p><form:label path="intParms[${intParmRow.index}].value" cssClass="label" >
+					<c:out value="${intParm.displayName}"/>
+				</form:label>
+	            <form:input path="intParms[${intParmRow.index}].value"/></p>
 		</c:forEach>
 		<%-- // Float parameters --%>
 		<c:forEach items="${parameters.floatParms}" var="floatParm" varStatus="floatParmRow">
-			<tr>
-				<td><c:out value="${floatParm.displayName}"/></td>
-                <td>
-	                <form:input path="floatParms[${floatParmRow.index}].value"/>
-				</td>
-			</tr>
+			<p><form:label path="floatParms[${floatParmRow.index}].value" cssClass="label" >
+				<c:out value="${floatParm.displayName}"/>
+			</form:label>
+	        <form:input path="floatParms[${floatParmRow.index}].value"/></p>
+		</c:forEach>
+		<%-- // Double parameters --%>
+		<c:forEach items="${parameters.doubleParms}" var="doubleParm" varStatus="doubleParmRow">
+			<p><form:label path="doubleParms[${doubleParmRow.index}].value" cssClass="label" >
+				<c:out value="${doubleParm.displayName}"/>
+			</form:label>
+	        <form:input path="doubleParms[${doubleParmRow.index}].value"/></p>
 		</c:forEach>
 		<%-- // date parameters --%>
 		<c:forEach items="${parameters.dateParms}" var="date" varStatus="dateParmRow">
-			<tr>
-				<td>
-					<c:out value="${date.displayName}"/></td>
-				<td>
-					<form:input path="dateParms[${dateParmRow.index}].value" />
-					<script type="text/javascript">
-						Spring.addDecoration(new Spring.ElementDecoration({
-						elementId : "dateParms${dateParmRow.index}.value",
-						widgetType : "dijit.form.DateTextBox",
-						widgetAttrs : { datePattern : "yyyy-MM-dd", required : true }}));  
-					</script>
+			<p><span class="label">
+				<c:out value="${date.displayName}"/>
+			</span>
+					<form:input path="dateParms[${dateParmRow.index}].date" />
 					<form:select path="dateParms[${dateParmRow.index}].hours">
 						<c:forEach var="hour" begin="0" end="23">
 							<form:option value="${hour}">
@@ -123,23 +120,15 @@
 								<fmt:formatNumber minIntegerDigits="2" value="${minute}" />
 							</form:option>
 						</c:forEach>
-					</form:select>
-				</td>
-			</tr>
+					</form:select></p>
 		</c:forEach>
-		<tr>
-			<td>
-				Report Format:
-			</td>
-			<td>
+				<p><form:label path="format" cssClass="label">Report Format</form:label>
 				<form:select path="format"> 
 					<form:options items="${formats}"/>
-				</form:select>
-			</td>
-		</tr>
-	</table>
-  
- 	<input type="submit" value="run report" />&#160;
+				</form:select></p>
+	<span class="indent">
+	 	<input type="submit" value="run report" id="run"/>&#160;
+	</span>
 	
  </form:form>
   

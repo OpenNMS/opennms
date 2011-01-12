@@ -23,6 +23,8 @@
 		<on-render>
         	<evaluate expression="categoryConfigService.getCategoriesList()"
                   result="viewScope.categories" />
+            <evaluate expression="categoryDao.getAllCategoryNames()"
+                  result="viewScope.onmsCategories" />
     	</on-render>
 		<transition on="proceed" to="deliveryOptions" />
 		<transition on="cancel" to="reportCancelled" bind="false" />

@@ -11,6 +11,8 @@
  * Modifications:
  * 
  * Created: October 22nd 2010 jonathan@opennms.org
+ * Updated:	December 14th 2010 jonathan@opennms.org
+ * 			Added test for Double wrapper support
  *
  * Copyright (C) 2010 The OpenNMS Group, Inc.  All rights reserved.
  *
@@ -48,6 +50,10 @@ import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.opennms.api.reporting.ReportException;
 import org.opennms.api.reporting.ReportFormat;
+import org.opennms.api.reporting.parameter.ReportDateParm;
+import org.opennms.api.reporting.parameter.ReportDoubleParm;
+import org.opennms.api.reporting.parameter.ReportFloatParm;
+import org.opennms.api.reporting.parameter.ReportIntParm;
 import org.opennms.api.reporting.parameter.ReportParameters;
 import org.opennms.api.reporting.parameter.ReportStringParm;
 import org.opennms.netmgt.dao.JasperReportConfigDao;
@@ -57,6 +63,10 @@ import org.springframework.test.context.TestExecutionListeners;
 import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
 import org.springframework.test.context.support.DependencyInjectionTestExecutionListener;
 
+/**
+ * @author user
+ *
+ */
 @RunWith(SpringJUnit4ClassRunner.class)
 @TestExecutionListeners( { DependencyInjectionTestExecutionListener.class })
 @ContextConfiguration(locations = { "classpath:org/opennms/reporting/jasperreports/svclayer/JasperReportServiceTest.xml" })
@@ -83,13 +93,21 @@ public class JasperReportServiceTest {
 	
 	@Test
 	public void testGetParmeters() {
-		ReportParameters reportParameters = m_reportService
-				.getParameters(REPORTID);
-		assertNotNull(reportParameters);
-		assertEquals(1, reportParameters.getIntParms().size());
-		assertEquals(1, reportParameters.getFloatParms().size());
-		assertEquals(2, reportParameters.getStringParms().size());
-		assertEquals(3, reportParameters.getDateParms().size());
+		ReportParameters reportParameters;
+        try {
+            reportParameters = m_reportService
+            		.getParameters(REPORTID);
+            assertNotNull(reportParameters);
+            assertEquals(1, reportParameters.getIntParms().size());
+            assertEquals(1, reportParameters.getFloatParms().size());
+            assertEquals(1, reportParameters.getDoubleParms().size());
+            assertEquals(2, reportParameters.getStringParms().size());
+            assertEquals(3, reportParameters.getDateParms().size());
+        } catch (ReportException e) {
+            // TODO Auto-generated catch block
+            e.printStackTrace();
+        }
+		
 	}
 
 
@@ -101,13 +119,65 @@ public class JasperReportServiceTest {
         
         @Test
         public void testDescriptions() {
-                ReportParameters reportParameters = m_reportService
-                                .getParameters(REPORTID);
-                ReportStringParm stringParm1 = reportParameters.getStringParms().get(0);
-                Assert.assertEquals("a string parameter",stringParm1.getDisplayName());
-                ReportStringParm stringParm2 = reportParameters.getStringParms().get(1);
-                Assert.assertEquals("stringParameter2",stringParm2.getDisplayName());
-                Assert.assertEquals(3, reportParameters.getDateParms().size());
+                ReportParameters reportParameters;
+                try {
+                    reportParameters = m_reportService
+                                    .getParameters(REPORTID);
+                    ReportStringParm stringParm1 = reportParameters.getStringParms().get(0);
+                    Assert.assertEquals("a string parameter",stringParm1.getDisplayName());
+                    ReportStringParm stringParm2 = reportParameters.getStringParms().get(1);
+                    Assert.assertEquals("stringParameter2",stringParm2.getDisplayName());
+                    Assert.assertEquals(3, reportParameters.getDateParms().size());
+                } catch (ReportException e) {
+                    // TODO Auto-generated catch block
+                    e.printStackTrace();
+                }
+                
+        }
+        
+        @Test
+        public void testStringInputType() {
+                ReportParameters reportParameters;
+                try {
+                    reportParameters = m_reportService
+                                    .getParameters(REPORTID);
+                    ReportStringParm stringParm2 = reportParameters.getStringParms().get(1);
+                    Assert.assertEquals("onmsCategorySelector",stringParm2.getInputType());
+                } catch (ReportException e) {
+                    // TODO Auto-generated catch block
+                    e.printStackTrace();
+                }
+                
+        }
+        
+        /**
+         * Using a test date of -112426200000L ( Thu, 09 Jun 1966 18:30:00)
+         */
+        @Test
+        public void testDefaults() {
+                ReportParameters reportParameters;
+                try {
+                    reportParameters = m_reportService
+                                    .getParameters(REPORTID);
+                    ReportStringParm stringParm1 = reportParameters.getStringParms().get(0);
+                    Assert.assertEquals("Hosts",stringParm1.getValue());
+                    ReportStringParm stringParm2 = reportParameters.getStringParms().get(1);
+                    Assert.assertEquals("Routers",stringParm2.getValue());
+                    ReportFloatParm floatParm = reportParameters.getFloatParms().get(0);
+                    Assert.assertEquals(new Float("99.99"), floatParm.getValue());
+                    ReportIntParm intParm = reportParameters.getIntParms().get(0);
+                    Assert.assertEquals(100, intParm.getValue());
+                    ReportDoubleParm doubleParm = reportParameters.getDoubleParms().get(0);
+                    Assert.assertEquals(new Double("99.99"), doubleParm.getValue());
+//                    ReportDateParm dateParm1 = reportParameters.getDateParms().get(0);
+//                    Assert.assertEquals(19, dateParm1.getHours().intValue());
+//                    Assert.assertEquals(30, dateParm1.getMinutes().intValue());
+                    
+                } catch (ReportException e) {
+                    // TODO Auto-generated catch block
+                    e.printStackTrace();
+                }
+                
         }
 
 	@Test
@@ -118,6 +188,7 @@ public class JasperReportServiceTest {
 	        reportParms.put("stringParameter2", new String("string2"));
 		reportParms.put("integerParameter", new Integer(1));
 		reportParms.put("floatParameter", new Float("0.5"));
+		reportParms.put("doubleParameter", new Double("0.5"));
 		reportParms.put("dateParameter", new java.util.Date());
 		java.util.Date date = new java.util.Date();
 		reportParms.put("dateParamter", date);

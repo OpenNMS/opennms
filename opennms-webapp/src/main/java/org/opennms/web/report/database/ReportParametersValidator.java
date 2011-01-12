@@ -3,6 +3,7 @@ package org.opennms.web.report.database;
 import java.util.Iterator;
 import java.util.List;
 
+import org.opennms.api.reporting.parameter.ReportDoubleParm;
 import org.opennms.api.reporting.parameter.ReportFloatParm;
 import org.opennms.api.reporting.parameter.ReportParameters;
 import org.opennms.api.reporting.parameter.ReportDateParm;
@@ -35,7 +36,7 @@ public class ReportParametersValidator {
         
         for (Iterator<ReportDateParm> dateParmIter = dateParms.iterator(); dateParmIter.hasNext();) {
             ReportDateParm dateParm = dateParmIter.next();
-            if (dateParm.getValue() == null) {
+            if (dateParm.getDate() == null) {
                 messages.addMessage(new MessageBuilder().error().source("date parms").
                                     defaultText("cannot have null date field" + dateParm.getDisplayName()).build());
             }
@@ -69,6 +70,16 @@ public class ReportParametersValidator {
             if (floatParm.getValue() == null ) {
                 messages.addMessage(new MessageBuilder().error().source("float parms").
                                     defaultText("cannot have null float field" + floatParm.getDisplayName()).build());
+            }
+        }
+        
+        List<ReportDoubleParm> doubleParms = reportCriteria.getDoubleParms();
+        
+        for (Iterator<ReportDoubleParm> doubleParmIter = doubleParms.iterator(); doubleParmIter.hasNext();) {
+            ReportDoubleParm doubleParm = doubleParmIter.next();
+            if (doubleParm.getValue() == null ) {
+                messages.addMessage(new MessageBuilder().error().source("double parms").
+                                    defaultText("cannot have null double field" + doubleParm.getDisplayName()).build());
             }
         }
         

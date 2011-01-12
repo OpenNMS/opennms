@@ -51,19 +51,22 @@
 </jsp:include>
 
 <h3>Cron Expression</h3>
-
   
-<form:form commandName="triggerDetails">
+<form:form commandName="triggerDetails" cssClass="stdform">
 	
 	<p>
-	Cron Expression: 
-	<form:input path="cronExpression"/>
+		<form:label path="cronExpression" cssClass="label">
+			<c:out value="cron expression"/>
+		</form:label>
+		<form:input path="cronExpression"/>
 	</p>	   
 
-    <br/>
-    <input type="submit" id="proceed" name="_eventId_proceed" value="Proceed" />&#160;
-	<input type="submit" name="_eventId_revise" value="Revise"/>&#160;
-	<input type="submit" name="_eventId_cancel" value="Cancel"/>&#160;
+	<span class="indent">
+		<input type="submit" id="proceed" name="_eventId_proceed" value="Proceed" />&#160;
+		<input type="submit" name="_eventId_revise" value="Revise"/>&#160;
+		<input type="submit" name="_eventId_cancel" value="Cancel"/>&#160;
+	</span>
+		
 </form:form>
   
 <jsp:include page="/includes/footer.jsp" flush="false" />

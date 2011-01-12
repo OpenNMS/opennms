@@ -529,6 +529,7 @@
   		class="org.opennms.web.controller.OnlineReportController">
   	<property name="reportWrapperService" ref="reportWrapperService" />
   	<property name="categoryConfigService" ref="categoryConfigService" />
+  	<property name="categoryDao" ref="categoryDao" />
   	<property name="bindOnNewForm" value="true" />
   	<property name="commandName" value="parameters" />
   </bean>

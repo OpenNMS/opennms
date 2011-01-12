@@ -7,13 +7,27 @@
         	<parameterDescription>
             	<![CDATA[a string parameter]]>
         	</parameterDescription>
+        	<defaultValueExpression><![CDATA["Hosts"]]></defaultValueExpression>
         </parameter>
-        <parameter name="stringParameter2" class="java.lang.String" />
-        <parameter name="floatParameter" class="java.lang.Float" />
-        <parameter name="integerParameter" class="java.lang.Integer"/>
-        <parameter name="dateParameter" class="java.util.Date"/>
+        <parameter name="stringParameter2" class="java.lang.String">
+        	<property name="org.opennms.report.stringInputType" value="onmsCategorySelector" /> 
+        	<defaultValueExpression><![CDATA["Routers"]]></defaultValueExpression>
+        </parameter>
+        <parameter name="floatParameter" class="java.lang.Float">
+        	<defaultValueExpression><![CDATA[new Float("99.99")]]></defaultValueExpression>
+        </parameter>
+        <parameter name="integerParameter" class="java.lang.Integer">
+        	<defaultValueExpression><![CDATA[new Integer("100")]]></defaultValueExpression>
+        </parameter>
+        <parameter name="dateParameter" class="java.util.Date">
+        	<defaultValueExpression><![CDATA[new Date(-112426200000L)]]></defaultValueExpression>
+        </parameter>
         <parameter name="sqlDateParameter" class="java.sql.Date"/>
         <parameter name="sqlTimestampParameter" class="java.sql.Timestamp"/>
+        <parameter name="doubleParameter" class="java.lang.Double">
+        	<defaultValueExpression><![CDATA[new Double("99.99")]]></defaultValueExpression>
+        </parameter>
+        <parameter name="longParameter" class="java.lang.Long" isForPrompting="false"/>
     <title>
         <band height="20">
                 <staticText>
@@ -23,14 +37,15 @@
         </band>
     </title>
     <detail>
-        <band height="140">
+        <band height="160">
             <textField>
-            <reportElement x="180" y="0" width="200" height="140"/>
+            <reportElement x="180" y="0" width="200" height="160"/>
                 <textFieldExpression>
                     "stringParameter1: " + $P{stringParameter1} + "\n" +
                     "stringParameter2: " + $P{stringParameter2} + "\n" +
                     "integerParameter: " + $P{integerParameter} + "\n" +
                     "floatParameter: " + $P{floatParameter} + "\n" +
+                    "doubleParameter: " + $P{doubleParameter} + "\n" +
                     "dateParameter: " + (new SimpleDateFormat("MM/dd/yyyy HH:mm:ss")).format($P{dateParameter}) + "\n" +
                     "sqlDateParameter: " + (new SimpleDateFormat("MM/dd/yyyy HH:mm:ss")).format($P{sqlDateParameter})  + "\n" +
                     "sqlTimestampParameter: " + (new SimpleDateFormat("MM/dd/yyyy HH:mm:ss")).format($P{sqlTimestampParameter})
