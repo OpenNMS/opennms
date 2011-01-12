@@ -43,8 +43,8 @@ import java.util.HashMap;
 import java.util.Map;
 import java.util.Properties;
 
+import org.opennms.core.utils.LogUtils;
 import org.opennms.core.utils.ParameterMap;
-import org.opennms.core.utils.ThreadCategory;
 import org.opennms.netmgt.DBTools;
 import org.opennms.netmgt.capsd.AbstractPlugin;
 
@@ -88,17 +88,8 @@ public class JDBCPlugin extends AbstractPlugin {
      */
     public JDBCPlugin() {
         super();
-        log().info("JDBCPlugin class loaded");
+        LogUtils.debugf(this, "JDBCPlugin class loaded");
     }
-
-	/**
-	 * <p>log</p>
-	 *
-	 * @return a {@link org.opennms.core.utils.ThreadCategory} object.
-	 */
-	protected ThreadCategory log() {
-		return ThreadCategory.getInstance(getClass());
-	}
 
     /**
      * Checks if a given server is listening o a given interface
@@ -136,16 +127,15 @@ public class JDBCPlugin extends AbstractPlugin {
         boolean connected = false;
 
         for (int attempts = 0; attempts <= retries && !connected;) {
-            log().info("Trying to detect JDBC server on '" + hostname + "', attempts #: " + attempts);
+            LogUtils.infof(this, "Trying to detect JDBC server on '%s', attempt #: %d", hostname, attempts);
 
             try {
-
-                log().debug("Loading JDBC driver: '" + db_driver + "'");
+                LogUtils.infof(this, "Loading JDBC driver: '%s'", db_driver);
                 Driver driver = (Driver)Class.forName(db_driver).newInstance();
-                log().debug("JDBC driver loaded: '" + db_driver + "'");
+                LogUtils.debugf(this, "JDBC driver loaded: '%s'", db_driver);
 
                 String url = DBTools.constructUrl(db_url, hostname);
-                log().debug("Constructed JDBC url: '" + url + "'");
+                LogUtils.debugf(this, "Constructed JDBC url: '%s'", url);
 
                 Properties props = new Properties();
                 props.setProperty("user", user);
@@ -153,16 +143,14 @@ public class JDBCPlugin extends AbstractPlugin {
                 props.setProperty("timeout", String.valueOf(timeout/1000));
                 con = driver.connect(url, props);
                 connected = true;
-                log().debug("Got database connection: '" + con + "' (" + url + ", " + user + ", " + password + ")");
+                LogUtils.debugf(this, "Got database connection: '%s' (%s, %s, %s)", con, url, user, password);
                 
                 status = checkStatus(con, qualifiers);
 
-                if (status)
-                	log().info("JDBC server detected on: '" + hostname + "', attempts #:" + attempts);
+                if (status) LogUtils.infof(this, "JDBC server detected on: '%s', attempt #: %d", hostname, attempts);
                 
-            } catch (Exception e) {
-                log().info(e.getMessage());
-                e.printStackTrace();
+            } catch (final Exception e) {
+                LogUtils.infof(this, e, "failed to make JDBC connection");
             } finally {
                 attempts++;
                 closeStmt(statement);
@@ -186,22 +174,21 @@ public class JDBCPlugin extends AbstractPlugin {
     	try
     	{
     		DatabaseMetaData metadata = con.getMetaData();
-    		log().debug("Got database metadata");
+    		LogUtils.debugf(this, "Got database metadata");
 
     		result = metadata.getCatalogs();
     		while (result.next())
     		{
     			result.getString(1);
-    			log().debug("Metadata catalog: '" + result.getString(1) + "'");
+    			LogUtils.debugf(this, "Metadata catalog: '%s'", result.getString(1));
     		}
 
     		// The JDBC server was detected using JDBC, update the status
-    		if ( result != null )
-    			status = true;
+    		if ( result != null ) status = true;
     	}
     	catch ( SQLException sqlException )
     	{
-    		log().warn(sqlException.toString());
+    		LogUtils.warnf(this, sqlException, "error while getting database metadata");
     	}
     	finally
     	{
@@ -265,8 +252,8 @@ public class JDBCPlugin extends AbstractPlugin {
 
         try {
             status = isServer(address.getCanonicalHostName(), new HashMap<String, Object>());
-        } catch (Exception exp) {
-            log().error(exp.getMessage());
+        } catch (final Exception exp) {
+            LogUtils.errorf(this, exp, "an error occurred while checking whether the protocol is supported");
         }
         return status;
     }
@@ -299,8 +286,8 @@ public class JDBCPlugin extends AbstractPlugin {
 
         try {
             status = isServer(address.getCanonicalHostName(), qualifiers);
-        } catch (Exception exp) {
-            log().error(exp.getMessage());
+        } catch (final Exception exp) {
+            LogUtils.errorf(this, exp, "an error occurred while checking if the protocol is supported");
         }
         return status;
     }

@@ -30,6 +30,7 @@
 package org.opennms.netmgt.provision.detector.simple;
 
 import org.apache.mina.filter.codec.ProtocolCodecFilter;
+import org.opennms.core.utils.LogUtils;
 import org.opennms.netmgt.provision.detector.simple.request.LineOrientedRequest;
 import org.opennms.netmgt.provision.detector.simple.response.HttpStatusResponse;
 import org.opennms.netmgt.provision.support.AsyncBasicDetector;
@@ -71,7 +72,7 @@ public class HttpDetector extends AsyncBasicDetector<LineOrientedRequest, HttpSt
      * @param serviceName a {@link java.lang.String} object.
      * @param port a int.
      */
-    public HttpDetector(String serviceName, int port) {
+    public HttpDetector(final String serviceName, final int port) {
         super(serviceName, port);
         contructDefaults();
     }
@@ -95,7 +96,7 @@ public class HttpDetector extends AsyncBasicDetector<LineOrientedRequest, HttpSt
      * @param command a {@link java.lang.String} object.
      * @return a {@link java.lang.String} object.
      */
-    protected String httpCommand(String command) {
+    protected String httpCommand(final String command) {
         
         return String.format("%s %s  HTTP/1.0\r\n\r\n", command, getUrl());
     }
@@ -106,7 +107,7 @@ public class HttpDetector extends AsyncBasicDetector<LineOrientedRequest, HttpSt
      * @param command a {@link java.lang.String} object.
      * @return a {@link org.opennms.netmgt.provision.detector.simple.request.LineOrientedRequest} object.
      */
-    protected LineOrientedRequest request(String command) {
+    protected LineOrientedRequest request(final String command) {
         return new LineOrientedRequest(command);
     }
     
@@ -122,13 +123,12 @@ public class HttpDetector extends AsyncBasicDetector<LineOrientedRequest, HttpSt
     protected ResponseValidator<HttpStatusResponse> contains(final String pattern, final String url, final boolean isCheckCode, final int maxRetCode){
         return new ResponseValidator<HttpStatusResponse>(){
 
-            public boolean validate(HttpStatusResponse message) {
+            public boolean validate(final HttpStatusResponse message) {
                 
                 try {
                     return message.validateResponse(pattern, url, isCheckCode, maxRetCode);
-                } catch (Exception e) {
-                    // TODO Auto-generated catch block
-                    e.printStackTrace();
+                } catch (final Exception e) {
+                    LogUtils.debugf(this, e, "Failed to validate response.");
                     return false;
                 }
             }
@@ -144,7 +144,7 @@ public class HttpDetector extends AsyncBasicDetector<LineOrientedRequest, HttpSt
      *
      * @param url a {@link java.lang.String} object.
      */
-    public void setUrl(String url) {
+    public void setUrl(final String url) {
         m_url = url;
     }
 
@@ -162,7 +162,7 @@ public class HttpDetector extends AsyncBasicDetector<LineOrientedRequest, HttpSt
      *
      * @param maxRetCode a int.
      */
-    public void setMaxRetCode(int maxRetCode) {
+    public void setMaxRetCode(final int maxRetCode) {
         m_maxRetCode = maxRetCode;
     }
 
@@ -180,7 +180,7 @@ public class HttpDetector extends AsyncBasicDetector<LineOrientedRequest, HttpSt
      *
      * @param checkRetCode a boolean.
      */
-    public void setCheckRetCode(boolean checkRetCode) {
+    public void setCheckRetCode(final boolean checkRetCode) {
         m_checkRetCode = checkRetCode;
     }
 

@@ -37,6 +37,7 @@ import java.lang.reflect.Constructor;
 import java.util.List;
 
 import org.junit.Test;
+import org.opennms.core.utils.LogUtils;
 
 /**
  * This JUnit test simply checks for public constructors on the list of classes
@@ -59,8 +60,8 @@ public abstract class PublicConstructorTest {
 				Constructor<? extends Object> constructor = clazz.getConstructor();
 				assertNotNull(constructor);
 				System.out.println("Found public constructor on class: " + clazz.getName());
-			} catch (NoSuchMethodException e) {
-				e.printStackTrace();
+			} catch (final Exception e) {
+			    LogUtils.warnf(this, e, "unable to locate constructor on class: %s", clazz.getName());
 				throw e;
 			}
 		}

@@ -66,7 +66,7 @@
 <c:url var="outageLink" value="outage/list.htm">
   <c:param name="filter" value="intf=${ipAddr}"/>
 </c:url>
-<h3><a href="${outageLink}">Recent&nbsp;Outages</a></h3>
+<h3><a href="<c:out value="${outageLink}"/>">Recent&nbsp;Outages</a></h3>
 
 <table>
 
@@ -96,7 +96,7 @@
         <c:param name="intf" value="<%=outages[i].getIpAddress()%>"/>
         <c:param name="service" value="<%=String.valueOf(outages[i].getServiceId())%>"/>
       </c:url>
-      <td class="divider"><a href="${serviceLink}"><c:out value="<%=outages[i].getServiceName()%>"/></a></td>
+      <td class="divider"><a href="<c:out value="${serviceLink}"/>"><c:out value="<%=outages[i].getServiceName()%>"/></a></td>
       <td class="divider"><fmt:formatDate value="${outage.lostServiceTime}" type="date" dateStyle="short"/>&nbsp;<fmt:formatDate value="${outage.lostServiceTime}" type="time" pattern="HH:mm:ss"/></td>
       <% if( outages[i].getRegainedServiceTime() == null ) { %>
         <td class="divider"><b>DOWN</b></td>

@@ -40,6 +40,8 @@ import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.io.PrintStream;
 
+import org.apache.commons.io.IOUtils;
+
 /**
  * <p>ProcessExec class.</p>
  *
@@ -101,21 +103,23 @@ public class ProcessExec {
         }
 
         public void run() {
+            InputStreamReader isr = null;
+            BufferedReader in = null;
+
             try {
-                BufferedReader in = new BufferedReader(new InputStreamReader(m_inputStream));
+                isr = new InputStreamReader(m_inputStream);
+                in = new BufferedReader(isr);
                 String line;
 
                 while ((line = in.readLine()) != null) {
                     m_printStream.println(line);
                 }
-
-                m_inputStream.close();
-            } catch (IOException e) {
-                e.printStackTrace();
-                try {
-                    m_inputStream.close();
-                } catch (IOException e2) {
-                } // do nothing
+            } catch (final Exception e) {
+                LogUtils.warnf(this, e, "an error occurred while reading the input stream");
+            } finally {
+                IOUtils.closeQuietly(in);
+                IOUtils.closeQuietly(isr);
+                IOUtils.closeQuietly(m_inputStream);
             }
         }
 

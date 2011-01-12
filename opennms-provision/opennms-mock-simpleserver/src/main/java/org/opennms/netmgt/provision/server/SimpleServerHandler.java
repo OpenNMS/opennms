@@ -58,7 +58,7 @@ public class SimpleServerHandler extends IoHandlerAdapter {
     /** {@inheritDoc} */
     @Override
     public void exceptionCaught(IoSession session, Throwable cause) throws Exception {
-        cause.printStackTrace();
+        LogUtils.warnf(this, cause, "An error was caught in session %s", session);
     }
     
     /** {@inheritDoc} */

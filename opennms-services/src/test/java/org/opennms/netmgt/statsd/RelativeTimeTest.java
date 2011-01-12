@@ -35,6 +35,8 @@
  */
 package org.opennms.netmgt.statsd;
 
+import static org.junit.Assert.assertEquals;
+
 import java.text.DateFormat;
 import java.util.Calendar;
 import java.util.Date;
@@ -44,18 +46,18 @@ import java.util.TimeZone;
 
 import javax.mail.internet.MailDateFormat;
 
-import junit.framework.TestCase;
-
+import org.junit.Test;
 import org.opennms.core.utils.TimeKeeper;
 
 /**
  * @author <a href="mailto:dj@opennms.org">DJ Gregor</a>
  */
-public class RelativeTimeTest extends TestCase {
+public class RelativeTimeTest {
 //    private DateFormat m_dateFormat = new SimpleDateFormat("EEE, dd MMM yyyy HH:mm:ss Z");
     private DateFormat m_dateFormat = new MailDateFormat();
     private TimeZone m_timeZone = TimeZone.getTimeZone("GMT-05:00");
     
+    @Test
     public void testYesterdayBeginningDST() {
         RelativeTime yesterday = RelativeTime.YESTERDAY;
         yesterday.setTimeKeeper(new TimeKeeper() {
@@ -97,6 +99,7 @@ public class RelativeTimeTest extends TestCase {
         assertEquals("end date - start date", 82800000, end.getTime() - start.getTime());
     }
     
+    @Test
     public void testYesterdayEndingDST() {
         RelativeTime yesterday = RelativeTime.YESTERDAY;
         yesterday.setTimeKeeper(new TimeKeeper() {
@@ -137,4 +140,5 @@ public class RelativeTimeTest extends TestCase {
         assertEquals("end date", "Mon, 30 Oct 2006 00:00:00 -0500 (EST)", m_dateFormat.format(end));
         assertEquals("end date - start date", 90000000, end.getTime() - start.getTime());
     }
+    
 }

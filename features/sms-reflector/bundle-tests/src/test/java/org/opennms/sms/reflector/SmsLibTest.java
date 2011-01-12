@@ -267,7 +267,7 @@ public class SmsLibTest {
             Thread.sleep(20000);
 
         } catch (Exception e) {
-            e.printStackTrace();
+            LogUtils.warnf(this, e, "failed to read message");
         } finally {
             if (srv != null) srv.stopService();
         }
@@ -296,8 +296,7 @@ public class SmsLibTest {
                 // upon arrival.
                 // ReadMessages.this.srv.deleteMessage(msg);
             } catch (Exception e) {
-                System.out.println("Oops!!! Something gone bad...");
-                e.printStackTrace();
+                LogUtils.errorf(this, e, "Oops!!! Something gone bad...");
             }
         }
     }

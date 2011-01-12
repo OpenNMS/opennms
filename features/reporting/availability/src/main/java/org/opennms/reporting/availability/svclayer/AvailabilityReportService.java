@@ -79,7 +79,7 @@ public class AvailabilityReportService implements ReportService {
 
     private OnmsReportConfigDao m_configDao;
 
-    private ThreadCategory log;
+    private final ThreadCategory log;
 
     private ParameterConversionService m_parameterConversionService;
 
@@ -92,10 +92,10 @@ public class AvailabilityReportService implements ReportService {
      * <p>Constructor for AvailabilityReportService.</p>
      */
     public AvailabilityReportService() {
-
+        String oldPrefix = ThreadCategory.getPrefix();
         ThreadCategory.setPrefix(LOG4J_CATEGORY);
         log = ThreadCategory.getInstance(AvailabilityReportService.class);
-
+        ThreadCategory.setPrefix(oldPrefix);
     }
 
     /** {@inheritDoc} */

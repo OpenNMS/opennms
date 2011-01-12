@@ -39,8 +39,8 @@ import java.io.InterruptedIOException;
 import java.net.InetAddress;
 import java.util.Map;
 
+import org.opennms.core.utils.LogUtils;
 import org.opennms.core.utils.ParameterMap;
-import org.opennms.core.utils.ThreadCategory;
 import org.opennms.netmgt.capsd.AbstractPlugin;
 import org.opennms.netmgt.dhcpd.Dhcpd;
 
@@ -99,10 +99,6 @@ public final class DhcpPlugin extends AbstractPlugin {
      * @return True if the remote host supports DHCP.
      */
     private boolean isServer(InetAddress host, int retries, int timeout) {
-        // Load the category for logging
-        //
-        ThreadCategory log = ThreadCategory.getInstance(getClass());
-
         boolean isAServer = false;
         long responseTime = -1;
 
@@ -111,20 +107,15 @@ public final class DhcpPlugin extends AbstractPlugin {
             // if the remote host is a DHCP server or -1 if the remote
             // host is not a DHCP server.
             responseTime = Dhcpd.isServer(host, timeout, retries);
-        } catch (InterruptedIOException ioE) {
-            if (log.isDebugEnabled()) {
-                ioE.fillInStackTrace();
-                log.debug("isServer: The DHCP discovery operation was interrupted", ioE);
-            }
-            ioE.printStackTrace();
-        } catch (IOException ioE) {
-            log.warn("isServer: An I/O exception occured during DHCP discovery", ioE);
+        } catch (final InterruptedIOException ioE) {
+            ioE.fillInStackTrace();
+            LogUtils.debugf(this, ioE, "isServer: The DHCP discovery operation was interrupted");
+        } catch (final IOException ioE) {
+            LogUtils.warnf(this, ioE, "isServer: An I/O exception occured during DHCP discovery");
             isAServer = false;
-            ioE.printStackTrace();
-        } catch (Throwable t) {
-            log.error("isServer: An undeclared throwable exception was caught during test", t);
+        } catch (final Throwable t) {
+            LogUtils.errorf(this, t, "isServer: An undeclared throwable exception was caught during test");
             isAServer = false;
-            t.printStackTrace();
         }
 
         // If response time is equal to or greater than zero

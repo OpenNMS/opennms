@@ -54,9 +54,8 @@ public class MSExchangeResponse {
      * @param pattern a {@link java.lang.String} object.
      * @return a boolean.
      */
-    public boolean contains(String pattern) {
-        Boolean result = (getPop3Response()!= null && getPop3Response().indexOf(pattern) > -1) || (getImapResponse() != null &&getImapResponse().indexOf(pattern) > -1); 
-        return result;
+    public boolean contains(final String pattern) {
+        return (getPop3Response()!= null && getPop3Response().indexOf(pattern) > -1) || (getImapResponse() != null &&getImapResponse().indexOf(pattern) > -1);
     }
 
     /**
@@ -64,7 +63,7 @@ public class MSExchangeResponse {
      *
      * @param ftpResponse a {@link java.lang.String} object.
      */
-    public void setPop3Response(String ftpResponse) {
+    public void setPop3Response(final String ftpResponse) {
         m_pop3Response = ftpResponse;
     }
 
@@ -82,7 +81,7 @@ public class MSExchangeResponse {
      *
      * @param imapResponse a {@link java.lang.String} object.
      */
-    public void setImapResponse(String imapResponse) {
+    public void setImapResponse(final String imapResponse) {
         m_imapResponse = imapResponse;
     }
 

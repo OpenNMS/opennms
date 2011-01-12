@@ -3,12 +3,20 @@ package org.opennms.web.rest;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertTrue;
 
+import java.io.StringReader;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
+import javax.xml.bind.JAXBContext;
+import javax.xml.bind.Unmarshaller;
+
+import org.junit.Before;
 import org.junit.Test;
+import org.opennms.core.utils.LogUtils;
+import org.opennms.netmgt.model.OnmsNodeList;
+import org.opennms.test.mock.MockLogAppender;
 import org.springframework.mock.web.MockHttpServletRequest;
 
 /*
@@ -16,23 +24,62 @@ import org.springframework.mock.web.MockHttpServletRequest;
  * 1. Need to figure it out how to create a Mock for EventProxy to validate events sent by RESTful service
  */
 public class NodeRestServiceTest extends AbstractSpringJerseyRestTestCase {
-    
-    
+
+    @Before
+    public void setUp() throws Throwable {
+        super.setUp();
+        MockLogAppender.setupLogging();
+    }
+
     @Test
     public void testNode() throws Exception {
+        JAXBContext context = JAXBContext.newInstance(OnmsNodeList.class);
+        Unmarshaller unmarshaller = context.createUnmarshaller();
+
         // Testing POST
         createNode();
         String url = "/nodes";
+
         // Testing GET Collection
         String xml = sendRequest(GET, url, 200);
         assertTrue(xml.contains("Darwin TestMachine 9.4.0 Darwin Kernel Version 9.4.0"));
-        url += "/1";
+        OnmsNodeList list = (OnmsNodeList)unmarshaller.unmarshal(new StringReader(xml));
+        assertEquals(1, list.getNodes().size());
+
+        // Testing orderBy
+        xml = sendRequest(GET, url, parseParamData("orderBy=sysObjectId"), 200);
+        list = (OnmsNodeList)unmarshaller.unmarshal(new StringReader(xml));
+        assertEquals(1, list.getNodes().size());
+
+        // Testing limit/offset
+        xml = sendRequest(GET, url, parseParamData("limit=0&offset=3&orderBy=label"), 200);
+        list = (OnmsNodeList)unmarshaller.unmarshal(new StringReader(xml));
+        assertEquals(1, list.getNodes().size());
+
+        // This filter should match
+        xml = sendRequest(GET, url, parseParamData("comparator=like&label=%25Test%25"), 200);
+        LogUtils.infof(this, xml);
+        list = (OnmsNodeList)unmarshaller.unmarshal(new StringReader(xml));
+        assertEquals(1, list.getCount());
+        assertEquals(1, list.getTotalCount());
+
+        // This filter should fail (return 0 results)
+        // TODO: Make this test work properly
+        xml = sendRequest(GET, url, parseParamData("comparator=like&label=%25DOES_NOT_MATCH%25"), 200);
+        LogUtils.infof(this, xml);
+        list = (OnmsNodeList)unmarshaller.unmarshal(new StringReader(xml));
+        //assertEquals(0, list.getCount());
+        //assertEquals(0, list.getTotalCount());
+
         // Testing PUT
+        url += "/1";
         sendPut(url, "sysContact=OpenNMS&assetRecord.manufacturer=Apple&assetRecord.operatingSystem=MacOSX Leopard");
+
         // Testing GET Single Object
         xml = sendRequest(GET, url, 200);
         assertTrue(xml.contains("<sysContact>OpenNMS</sysContact>"));        
         assertTrue(xml.contains("<operatingSystem>MacOSX Leopard</operatingSystem>"));        
+
         // Testing DELETE
         sendRequest(DELETE, url, 200);
         sendRequest(GET, url, 204);
@@ -40,6 +87,9 @@ public class NodeRestServiceTest extends AbstractSpringJerseyRestTestCase {
 
     @Test
     public void testLimits() throws Exception {
+        JAXBContext context = JAXBContext.newInstance(OnmsNodeList.class);
+        Unmarshaller unmarshaller = context.createUnmarshaller();
+
         // Testing POST
         for (int i = 0; i < 20; i++) {
             createNode();
@@ -57,6 +107,12 @@ public class NodeRestServiceTest extends AbstractSpringJerseyRestTestCase {
             count++;
         }
         assertEquals("should get 10 nodes back", 10, count);
+        
+        // Validate object by unmarshalling
+        OnmsNodeList list = (OnmsNodeList)unmarshaller.unmarshal(new StringReader(xml));
+        assertEquals(10, list.getCount());
+        assertEquals(10, list.getNodes().size());
+        assertEquals(20, list.getTotalCount());
     }
 
     @Test
@@ -188,5 +244,4 @@ public class NodeRestServiceTest extends AbstractSpringJerseyRestTestCase {
             "</category>";
         sendPost("/nodes/1/categories", service);
     }
-
 }

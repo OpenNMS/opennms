@@ -173,7 +173,7 @@
                   availValue = CategoryUtil.formatValue(intfValue) + "%";
                 }
               %>
-              <td class="<%= availClass %> nobright" rowspan="<%=svcs.length+1%>"><a href="${interfaceLink}"><%=ipAddr%></a></td>
+              <td class="<%= availClass %> nobright" rowspan="<%=svcs.length+1%>"><a href="<c:out value="${interfaceLink}"/>"><%=ipAddr%></a></td>
               <td class="<%= availClass %> nobright">Overall</td>
               <td class="<%= availClass %> bright"><%= availValue %></td>
             </tr>
@@ -198,7 +198,7 @@
                   <c:param name="service" value="<%=String.valueOf(service.getServiceId())%>"/>
                 </c:url>
                 <tr class="CellStatus">
-                  <td class="<%= availClass %> nobright"><a href="${serviceLink}"><%=service.getServiceName()%></a></td>
+                  <td class="<%= availClass %> nobright"><a href="<c:out value="${serviceLink}"/>"><%=service.getServiceName()%></a></td>
                   <td class="<%= availClass %> bright"><%= availValue %></td>
                 </tr>
             <% } %>
@@ -209,7 +209,7 @@
             else { %>
             <tr class="CellStatus">
               <td>
-              <a href="${interfaceLink}"><%=ipAddr%></a>
+              <a href="<c:out value="${interfaceLink}"/>"><%=ipAddr%></a>
               </td>
               <td class="Indeterminate" colspan="2"><%=ElementUtil.getInterfaceStatusString(intf)%></td>
             </tr>

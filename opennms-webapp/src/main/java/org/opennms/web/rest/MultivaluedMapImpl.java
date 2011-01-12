@@ -16,7 +16,22 @@ import javax.ws.rs.core.MultivaluedMap;
  */
 public class MultivaluedMapImpl extends HashMap<String, List<String>> implements MultivaluedMap<String, String> {
 
-	private static final long serialVersionUID = 1L;
+    private static final long serialVersionUID = 8520828454808579795L;
+
+    public MultivaluedMapImpl() {
+        super();
+    }
+
+    /** 
+	 * This constructor can be used as a convenience method to create populated
+	 * {@link MultivaluedMapImpl} instances.
+	 */
+	public MultivaluedMapImpl(String[][] keyValuePairs) {
+	    super();
+	    for (String[] keyValuePair : keyValuePairs) {
+	        this.add(keyValuePair[0], keyValuePair[1]);
+	    }
+	}
 
 	/**
 	 * <p>add</p>

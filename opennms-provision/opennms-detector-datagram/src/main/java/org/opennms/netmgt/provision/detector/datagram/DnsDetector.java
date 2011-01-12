@@ -38,7 +38,7 @@ package org.opennms.netmgt.provision.detector.datagram;
 import java.io.IOException;
 import java.net.DatagramPacket;
 
-import org.opennms.core.utils.ThreadCategory;
+import org.opennms.core.utils.LogUtils;
 import org.opennms.netmgt.provision.detector.datagram.client.DatagramClient;
 import org.opennms.netmgt.provision.support.BasicDetector;
 import org.opennms.netmgt.provision.support.Client;
@@ -77,7 +77,7 @@ public class DnsDetector extends BasicDetector<DatagramPacket, DatagramPacket> {
      * @param serviceName a {@link java.lang.String} object.
      * @param port a int.
      */
-    public DnsDetector(String serviceName, int port) {
+    public DnsDetector(final String serviceName, final int port) {
         super(serviceName, port);
     }
     
@@ -85,8 +85,8 @@ public class DnsDetector extends BasicDetector<DatagramPacket, DatagramPacket> {
      * <p>onInit</p>
      */
     public void onInit() {
-        DNSAddressRequest req;
-        send(encode(req = addrRequest(getLookup())), verifyResponse(req));
+        final DNSAddressRequest req = addrRequest(getLookup());
+        send(encode(req), verifyResponse(req));
     }
     
     /**
@@ -97,12 +97,12 @@ public class DnsDetector extends BasicDetector<DatagramPacket, DatagramPacket> {
         
         return new ResponseValidator<DatagramPacket>() {
 
-            public boolean validate(DatagramPacket response) {
+            public boolean validate(final DatagramPacket response) {
                 
                 try {
                     request.verifyResponse(response.getData(), response.getLength());
-                } catch (IOException e) {
-                    info("DNSDetector failed to connect");
+                } catch (final IOException e) {
+                    LogUtils.infof(this, e, "failed to connect");
                     return false;
                 } 
                 
@@ -112,12 +112,12 @@ public class DnsDetector extends BasicDetector<DatagramPacket, DatagramPacket> {
         };
     }
     
-    private DNSAddressRequest addrRequest(String host) {
+    private DNSAddressRequest addrRequest(final String host) {
         return new DNSAddressRequest(host);
     }
     
-    private DatagramPacket encode(DNSAddressRequest dnsPacket) {
-        byte[] data = buildRequest(dnsPacket);
+    private DatagramPacket encode(final DNSAddressRequest dnsPacket) {
+        final byte[] data = buildRequest(dnsPacket);
         return new DatagramPacket(data, data.length);
     }
 
@@ -126,12 +126,12 @@ public class DnsDetector extends BasicDetector<DatagramPacket, DatagramPacket> {
      * @return
      * @throws IOException
      */
-    private byte[] buildRequest(DNSAddressRequest request) {
+    private byte[] buildRequest(final DNSAddressRequest request) {
         try {
             return request.buildRequest();
-        } catch (IOException e) {
-            // this can't really happen
-            throw new IllegalStateException("Unable to build dnsRequest!!! This can't happen!!");
+        } catch (final IOException e) {
+            // this shouldn't really happen
+            throw new IllegalStateException("Unable to build dnsRequest!!! This shouldn't happen!!");
         }
     }
 
@@ -149,7 +149,7 @@ public class DnsDetector extends BasicDetector<DatagramPacket, DatagramPacket> {
      *
      * @param lookup the lookup to set
      */
-    public void setLookup(String lookup) {
+    public void setLookup(final String lookup) {
         m_lookup = lookup;
     }
 
@@ -161,12 +161,4 @@ public class DnsDetector extends BasicDetector<DatagramPacket, DatagramPacket> {
     public String getLookup() {
         return m_lookup;
     }
-    
-    private void info(String format, Object... args) {
-        ThreadCategory log = ThreadCategory.getInstance(getClass());
-        if (log.isInfoEnabled()) {
-            log.info(String.format(format, args));
-        }
-    }
-
 }

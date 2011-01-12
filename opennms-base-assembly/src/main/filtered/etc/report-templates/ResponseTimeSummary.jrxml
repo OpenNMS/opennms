@@ -2,7 +2,7 @@
 <jasperReport xmlns="http://jasperreports.sourceforge.net/jasperreports" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://jasperreports.sourceforge.net/jasperreports http://jasperreports.sourceforge.net/xsd/jasperreport.xsd" name="node-response-time" pageWidth="595" pageHeight="842" whenNoDataType="NoDataSection" columnWidth="555" leftMargin="20" rightMargin="20" topMargin="20" bottomMargin="20">
 	<property name="ireport.zoom" value="2.0"/>
 	<property name="ireport.x" value="0"/>
-	<property name="ireport.y" value="502"/>
+	<property name="ireport.y" value="302"/>
 	<template><![CDATA["${install.dir}/etc/report-templates/assets/styles/defaultStyles.jrtx"]]></template>
 	<style name="Report_Title" forecolor="#000000" fontSize="20"/>
 	<style name="Report_Subtitle" forecolor="#000000" vAlign="Middle" fontSize="10" isBold="false" isItalic="true" isUnderline="false" isStrikeThrough="false"/>
@@ -214,6 +214,12 @@ ORDER BY
 					<connectionExpression><![CDATA[$P{REPORT_CONNECTION}]]></connectionExpression>
 					<subreportExpression class="java.lang.String"><![CDATA[$P{SUBREPORT_DIR} + "ResponseTimeSummary_Availability_subreport.jasper"]]></subreportExpression>
 				</subreport>
+				<line>
+					<reportElement x="0" y="157" width="555" height="1"/>
+					<graphicElement>
+						<pen lineWidth="1.5"/>
+					</graphicElement>
+				</line>
 			</band>
 		</groupFooter>
 	</group>
@@ -323,9 +329,9 @@ ORDER BY
 		</band>
 	</pageFooter>
 	<summary>
-		<band height="57" splitType="Stretch">
+		<band height="355" splitType="Stretch">
 			<subreport>
-				<reportElement x="0" y="0" width="554" height="55"/>
+				<reportElement x="0" y="0" width="554" height="286"/>
 				<subreportParameter name="TIME_RANGE">
 					<subreportParameterExpression><![CDATA[$P{SUBREPORT_TIME_RANGE}]]></subreportParameterExpression>
 				</subreportParameter>
@@ -334,6 +340,14 @@ ORDER BY
 				</subreportParameter>
 				<connectionExpression><![CDATA[$P{REPORT_CONNECTION}]]></connectionExpression>
 				<subreportExpression class="java.lang.String"><![CDATA[$P{SUBREPORT_DIR} + "ResponseTimeSummary_Availability_Offenders_subreport.jasper"]]></subreportExpression>
+			</subreport>
+			<subreport>
+				<reportElement x="0" y="297" width="554" height="58"/>
+				<subreportParameter name="STATSD_REPORT">
+					<subreportParameterExpression><![CDATA["Top10_Response_Weekly"]]></subreportParameterExpression>
+				</subreportParameter>
+				<connectionExpression><![CDATA[$P{REPORT_CONNECTION}]]></connectionExpression>
+				<subreportExpression class="java.lang.String"><![CDATA[$P{SUBREPORT_DIR} + "ResponseTimeSummary_Response_Offenders_subreport.jasper"]]></subreportExpression>
 			</subreport>
 		</band>
 	</summary>

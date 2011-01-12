@@ -52,7 +52,7 @@ public class ReportMailer {
 	
 	private static final String LOG4J_CATEGORY = "OpenNMS.Report";
 	
-	private ThreadCategory log;
+	private final ThreadCategory log;
 	
 	private String m_filename;
 	
@@ -64,10 +64,9 @@ public class ReportMailer {
 	 * <p>Constructor for ReportMailer.</p>
 	 */
 	public ReportMailer() {
-		ThreadCategory.setPrefix(LOG4J_CATEGORY);
-		log = ThreadCategory.getInstance(ReportMailer.class);
+	    this(null, null, null);
 	}
-	
+
 	
 	/**
 	 * <p>Constructor for ReportMailer.</p>
@@ -80,8 +79,11 @@ public class ReportMailer {
 		this.m_address = address;
 		this.m_filename = filename;
 		this.m_subject = subject;
+		
+		String oldPrefix = ThreadCategory.getPrefix();
 		ThreadCategory.setPrefix(LOG4J_CATEGORY);
 		log = ThreadCategory.getInstance(ReportMailer.class);
+		ThreadCategory.setPrefix(oldPrefix);
 	}
 	
 	/**

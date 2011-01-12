@@ -41,6 +41,7 @@ import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.opennms.mock.snmp.MockSnmpAgent;
+import org.opennms.netmgt.provision.DetectorMonitor;
 import org.opennms.netmgt.provision.ServiceDetector;
 import org.opennms.netmgt.provision.detector.snmp.SnmpDetector;
 import org.opennms.netmgt.provision.support.NullDetectorMonitor;
@@ -64,10 +65,15 @@ public class SnmpDetectorTest implements ApplicationContextAware {
     private MockSnmpAgent m_snmpAgent;
     private SnmpDetector m_detector;
     private ApplicationContext m_applicationContext;
+    private InetAddress m_testIpAddress;
+    private DetectorMonitor m_detectorMonitor;
     
     @Before
-    public void setUp() throws InterruptedException {
+    public void setUp() throws InterruptedException, UnknownHostException {
         MockLogAppender.setupLogging();
+
+        m_testIpAddress = InetAddress.getByName(TEST_IP_ADDRESS);
+        m_detectorMonitor = new NullDetectorMonitor();
 
         if(m_detector == null) {
             m_detector = getDetector(SnmpDetector.class);
@@ -92,25 +98,22 @@ public class SnmpDetectorTest implements ApplicationContextAware {
         m_detector.setForceVersion("snmpv1");
         m_detector.setAgentConfigFactory(new AnAgentConfigFactory());
         
-        assertTrue(m_detector.isServiceDetected(InetAddress.getByName(TEST_IP_ADDRESS), new NullDetectorMonitor()));
+        assertTrue(m_detector.isServiceDetected(m_testIpAddress, m_detectorMonitor));
     }
     
     @Test
     public void testIsExpectedValue() throws UnknownHostException {      
         m_detector.setVbvalue("\\.1\\.3\\.6\\.1\\.4\\.1.*");
-        assertTrue("protocol is not supported", m_detector.isServiceDetected(InetAddress.getByName(TEST_IP_ADDRESS), new NullDetectorMonitor()));
+        assertTrue("protocol is not supported", m_detector.isServiceDetected(m_testIpAddress, m_detectorMonitor));
     }
     
     @Test
      public void testIsProtocolSupportedInetAddress() throws UnknownHostException {
          
-         assertTrue("protocol is not supported", m_detector.isServiceDetected(InetAddress.getByName(TEST_IP_ADDRESS), new NullDetectorMonitor()));
+         assertTrue("protocol is not supported", m_detector.isServiceDetected(m_testIpAddress, m_detectorMonitor));
          
      }
 
-    /* (non-Javadoc)
-     * @see org.springframework.context.ApplicationContextAware#setApplicationContext(org.springframework.context.ApplicationContext)
-     */
     public void setApplicationContext(ApplicationContext applicationContext) throws BeansException {
         m_applicationContext = applicationContext;
     }
@@ -121,11 +124,4 @@ public class SnmpDetectorTest implements ApplicationContextAware {
         assertTrue(detectorClass.isInstance(bean));
         return (SnmpDetector) bean;
     }
-    
-//    @Test
-//    public final void testIsV3ProtocolSupported() throws  IOException, IOException {      
-//      m_detector.setForceVersion("snmpv1");
-//      assertTrue("protocol is not supported", m_detector.isServiceDetected(InetAddress.getByName(TEST_IP_ADDRESS), new NullDetectorMonitor()));
-//      
-//    }
 }

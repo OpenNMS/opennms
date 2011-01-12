@@ -21,6 +21,7 @@ public class OnmsAcknowledgmentCollection extends LinkedList<OnmsAcknowledgment>
      * 
      */
     private static final long serialVersionUID = -8540172282769996576L;
+    private int m_totalCount;
 
     /**
 	 * <p>Constructor for OnmsAcknowledgmentCollection.</p>
@@ -67,5 +68,23 @@ public class OnmsAcknowledgmentCollection extends LinkedList<OnmsAcknowledgment>
     public Integer getCount() {
     	return this.size();
     }
-}
 
+    /**
+     * <p>getTotalCount</p>
+     *
+     * @return a int.
+     */
+    @XmlAttribute(name="totalCount")
+    public int getTotalCount() {
+        return m_totalCount;
+    }
+
+    /**
+     * <p>setTotalCount</p>
+     *
+     * @param count a int.
+     */
+    public void setTotalCount(int count) {
+        m_totalCount = count;
+    }
+}

@@ -31,6 +31,7 @@
  */
 package org.opennms.netmgt.provision.detector.simple.response;
 
+import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
 
@@ -43,6 +44,8 @@ import java.util.regex.Pattern;
 public class MultilineHttpResponse extends MultilineOrientedResponse {
     
     
+    private static final Pattern DEFAULT_REGEX = Pattern.compile("([H][T][T][P+]/[1].[0-1]) ([0-6]+) ([a-zA-Z ]+)\r\n");
+
     /**
      * <p>Constructor for MultilineHttpResponse.</p>
      */
@@ -58,22 +61,23 @@ public class MultilineHttpResponse extends MultilineOrientedResponse {
      * @return a boolean.
      * @throws java.lang.Exception if any.
      */
-    public boolean validateResponse(String pattern, String url, boolean isCheckCode, int maxRetCode) throws Exception {
-        String codeStr = Integer.toString(maxRetCode);
-        String[] codeArray = codeStr.split("");
+    public boolean validateResponse(final String pattern, final String url, final boolean isCheckCode, final int maxRetCode) throws Exception {
+        final String[] codeArray = Integer.toString(maxRetCode).split("");
         if(codeArray.length < 3) {
             throw new Exception("Max Ret Code is too Short");
         }
-        String REGEX = String.format("([H][T][T][P+]/[1].[0-1]) ([0-%s][0-2][0-%s]) ([a-zA-Z ]+)\r\n", codeArray[1], codeArray[3]);
-        
-        if(!isCheckCode) {
-            REGEX = "([H][T][T][P+]/[1].[0-1]) ([0-6]+) ([a-zA-Z ]+)\r\n";
-        }
-        
-        String httpResponse = (String)getResponseList().toArray()[0];
+        final String httpResponse = (String)getResponseList().toArray()[0];
 
-        if(Pattern.matches(REGEX, httpResponse)){
-           return getResponseListAsString(getResponseList().toArray()).contains(pattern);
+        final Pattern p;
+        if (isCheckCode) {
+            p = Pattern.compile(String.format("([H][T][T][P+]/[1].[0-1]) ([0-%s][0-2][0-%s]) ([a-zA-Z ]+)\r\n", codeArray[1], codeArray[3]));
+        } else {
+            p = DEFAULT_REGEX;
+        }
+
+        final Matcher m = p.matcher(httpResponse);
+        if (m.matches()) {
+            return getResponseListAsString(getResponseList().toArray()).contains(pattern);
         }
         
         return false;
@@ -88,8 +92,8 @@ public class MultilineHttpResponse extends MultilineOrientedResponse {
         return getResponseList().isEmpty() ? "MultilineHttpResponse" : String.format("Response: %s", getResponseListAsString(getResponseList().toArray()));
     }
     
-    private String getResponseListAsString(Object[] array) {
-        StringBuffer retVal = new StringBuffer();
+    private String getResponseListAsString(final Object[] array) {
+        final StringBuffer retVal = new StringBuffer();
         for(int i = 0; i < array.length; i++){
             retVal.append((String)array[i]);
         }
@@ -101,7 +105,7 @@ public class MultilineHttpResponse extends MultilineOrientedResponse {
      *
      * @return a {@link java.lang.String} object.
      */
-    protected String getResponse(){
+    protected String getResponse() {
         return getResponseList().toArray().toString();
     }
     

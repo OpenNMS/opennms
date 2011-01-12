@@ -121,7 +121,6 @@ public class DefaultTicketerServiceLayer implements TicketerServiceLayer, Initia
             alarm.setTTicketState(TroubleTicketState.CANCEL_FAILED);
             log().error("Unable to cancel ticket for alarm: " + e.getMessage());
             m_eventIpcManager.sendNow(createEvent(e.getMessage()));
-            // e.printStackTrace();
         }
 
         m_alarmDao.saveOrUpdate(alarm);
@@ -155,7 +154,6 @@ public class DefaultTicketerServiceLayer implements TicketerServiceLayer, Initia
             alarm.setTTicketState(TroubleTicketState.CLOSE_FAILED);
             log().error("Unable to close ticket for alarm: " + e.getMessage());
             m_eventIpcManager.sendNow(createEvent(e.getMessage()));
-            //e.printStackTrace();
         }
         
 		m_alarmDao.saveOrUpdate(alarm);

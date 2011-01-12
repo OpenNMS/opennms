@@ -19,14 +19,14 @@ public class HttpStatusResponseDecoder extends LineOrientedDecoder {
      *
      * @param charset a {@link java.nio.charset.Charset} object.
      */
-    public HttpStatusResponseDecoder(Charset charset) {
+    public HttpStatusResponseDecoder(final Charset charset) {
         super(charset);
         
     }
     
     /** {@inheritDoc} */
     @Override
-    protected Object parseCommand(IoBuffer in) throws CharacterCodingException {
+    protected Object parseCommand(final IoBuffer in) throws CharacterCodingException {
         return new HttpStatusResponse(in.getString(getCharset().newDecoder()));
     }
 }

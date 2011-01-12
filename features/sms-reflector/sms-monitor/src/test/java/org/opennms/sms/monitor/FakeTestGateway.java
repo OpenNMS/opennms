@@ -26,6 +26,7 @@ import java.util.concurrent.DelayQueue;
 import java.util.concurrent.Delayed;
 import java.util.concurrent.TimeUnit;
 
+import org.opennms.core.utils.LogUtils;
 import org.opennms.sms.reflector.smsservice.MobileMsgTrackerTest;
 import org.smslib.AGateway;
 import org.smslib.GatewayException;
@@ -132,7 +133,7 @@ public class FakeTestGateway extends AGateway
 						runner.run();
 					} catch (InterruptedException e) {
 						// TODO Auto-generated catch block
-						e.printStackTrace();
+						LogUtils.warnf(this, e, "failed to run queue");
 						break;
 					}
 				}

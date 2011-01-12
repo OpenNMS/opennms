@@ -59,7 +59,9 @@
 		org.opennms.web.MissingParameterException
 	"
 %>
-<%@ taglib prefix="fmt" uri="http://java.sun.com/jsp/jstl/fmt" %>
+<%@taglib uri="http://java.sun.com/jsp/jstl/core" prefix="c" %>
+<%@taglib uri="http://java.sun.com/jsp/jstl/functions" prefix="fn" %>
+<%@taglib uri="http://java.sun.com/jsp/jstl/fmt" prefix="fmt" %>
 
 <%
     //required parameter: node
@@ -171,7 +173,7 @@
 
 <% if( request.isUserInRole( Authentication.ADMIN_ROLE ) || !request.isUserInRole( Authentication.READONLY_ROLE ) ) { %>
     <form action="event/acknowledge" method="post" name="acknowledge_form">
-    <input type="hidden" name="redirect" value="<%= request.getServletPath() + "?" + request.getQueryString()%>" />
+    <input type="hidden" name="redirect" value="<c:out value="<%= request.getServletPath() + "?" + request.getQueryString()%>"/>" />
     <input type="hidden" name="actionCode" value="<%=org.opennms.web.event.AcknowledgeType.ACKNOWLEDGED.getShortName() %>" />
 <% } %>
 
@@ -211,7 +213,7 @@
        </td>
 
   <% if( moreUrl != null ) { %>     
-       <td class="standard" colspan="2"><a href="<%=moreUrl%>">More...</a></td>
+       <td class="standard" colspan="2"><a href="<c:out value="<%=moreUrl%>"/>">More...</a></td>
   <% } %>
      </tr>
       

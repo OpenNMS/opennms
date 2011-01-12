@@ -142,8 +142,7 @@
     public static Collection<Map<String, String>> createLinkForService(int nodeId, int serviceId, String linkText, String linkPrefix, String linkSuffix, ServletContext servletContext) throws SQLException, UnknownHostException {
         String ip = findServiceAddress(nodeId, serviceId, servletContext);
         if (ip == null) {
-            Map<String, String> empty = new HashMap<String, String>(0);
-            return Collections.singleton(empty);
+            return new ArrayList<Map<String,String>>();
         }
         
         Map<String, String> map = new HashMap<String, String>();
@@ -241,28 +240,28 @@
       <c:param name="filter" value="node=${model.id}"/>
     </c:url>
     <li class="o-menuitem">
-      <a href="${eventLink}">View Events</a>
+      <a href="<c:out value="${eventLink}"/>">View Events</a>
     </li>
 
     <c:url var="alarmLink" value="alarm/list.htm">
       <c:param name="filter" value="node=${model.id}"/>
     </c:url>
     <li class="o-menuitem">
-      <a href="${alarmLink}">View Alarms</a>
+      <a href="<c:out value="${alarmLink}"/>">View Alarms</a>
     </li>
     
     <c:url var="outageLink" value="outage/list.htm">
       <c:param name="filter" value="node=${model.id}"/>
     </c:url>
     <li class="o-menuitem">
-      <a href="${outageLink}">View Outages</a>
+      <a href="<c:out value="${outageLink}"/>">View Outages</a>
     </li>
     
     <c:url var="assetLink" value="asset/modify.jsp">
       <c:param name="node" value="${model.id}"/>
     </c:url>
     <li class="o-menuitem">
-      <a href="${assetLink}">Asset Info</a>
+      <a href="<c:out value="${assetLink}"/>">Asset Info</a>
     </li>
 
     <c:if test="${! empty model.statusSite}">
@@ -270,13 +269,13 @@
         <c:param name="statusSite" value="${model.statusSite}"/>
       </c:url>
       <li class="o-menuitem">
-        <a href="${siteLink}">Site Status</a>
+        <a href="<c:out value="${siteLink}"/>">Site Status</a>
       </li>
     </c:if>
 
     <c:forEach items="${model.links}" var="link">
       <li class="o-menuitem">
-        <a href="${link.url}">${link.text}</a>
+        <a href="<c:out value="${link.url}"/>">${link.text}</a>
       </li>
     </c:forEach>
     
@@ -287,7 +286,7 @@
         <c:param name="reports" value="all"/>
       </c:url>
       <li class="o-menuitem">
-        <a href="${resourceGraphsUrl}">Resource Graphs</a>
+        <a href="<c:out value="${resourceGraphsUrl}"/>">Resource Graphs</a>
       </li>
     </c:if>
     
@@ -296,14 +295,14 @@
         <c:param name="node" value="${model.id}"/>
       </c:url>
       <li class="o-menuitem">
-        <a href="${rescanLink}">Rescan</a>
+        <a href="<c:out value="${rescanLink}"/>">Rescan</a>
       </li>
       
       <c:url var="adminLink" value="admin/nodemanagement/index.jsp">
         <c:param name="node" value="${model.id}"/>
       </c:url>
       <li class="o-menuitem">
-        <a href="${adminLink}">Admin</a>
+        <a href="<c:out value="${adminLink}"/>">Admin</a>
       </li>
 
       <c:if test="${! empty model.snmpPrimaryIntf}">
@@ -312,7 +311,7 @@
           <c:param name="ipaddr" value="${model.snmpPrimaryIntf.ipAddress}"/>
         </c:url>
         <li class="o-menuitem">
-          <a href="${updateSnmpLink}">Update SNMP</a>
+          <a href="<c:out value="${updateSnmpLink}"/>">Update SNMP</a>
         </li>
       </c:if>
       
@@ -322,7 +321,7 @@
 	<c:param name="nodeID" value="${model.id}"/>
       </c:url>
       <li class="o-menuitem">
-        <a href="${createOutage}">Schedule Outage</a>
+        <a href="<c:out value="${createOutage}"/>">Schedule Outage</a>
       </li>
     </c:if>
   </ul>
@@ -437,7 +436,7 @@
           <c:param name="node" value="${model.id}"/>
         </c:url>
         <li>
-          <a href="${rancidLink}">View Node Rancid Inventory Info </a>
+          <a href="<c:out value="${rancidLink}"/>">View Node Rancid Inventory Info </a>
         </li>
       </c:if>
 
@@ -446,7 +445,7 @@
           <c:param name="node" value="${model.id}"/>
         </c:url>
         <li>
-          <a href="${ipRouteLink}">View Node IP Route Info</a>
+          <a href="<c:out value="${ipRouteLink}"/>">View Node IP Route Info</a>
         </li>
       </c:if>
      
@@ -455,7 +454,7 @@
           <c:param name="node" value="${model.id}"/>
         </c:url>
         <li>
-          <a href="${bridgeLink}">View Node Bridge/STP Info</a>
+          <a href="<c:out value="${bridgeLink}"/>">View Node Bridge/STP Info</a>
         </li>
       </c:if>
 
@@ -463,7 +462,7 @@
         <c:param name="node" value="${model.id}"/>
       </c:url>
       <li>
-        <a href="${detailLink}">View Node Link Detailed Info</a>
+        <a href="<c:out value="${detailLink}"/>">View Node Link Detailed Info</a>
       </li>
     </ul>	     
   </div>

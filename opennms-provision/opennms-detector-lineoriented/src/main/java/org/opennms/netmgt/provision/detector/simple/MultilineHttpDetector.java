@@ -32,6 +32,7 @@
 package org.opennms.netmgt.provision.detector.simple;
 
 import org.apache.mina.filter.codec.ProtocolCodecFilter;
+import org.opennms.core.utils.LogUtils;
 import org.opennms.netmgt.provision.detector.simple.request.LineOrientedRequest;
 import org.opennms.netmgt.provision.detector.simple.response.MultilineHttpResponse;
 import org.opennms.netmgt.provision.support.AsyncBasicDetector;
@@ -70,7 +71,7 @@ public abstract class MultilineHttpDetector extends AsyncBasicDetector<LineOrien
      * @param serviceName a {@link java.lang.String} object.
      * @param port a int.
      */
-    public MultilineHttpDetector(String serviceName, int port) {
+    public MultilineHttpDetector(final String serviceName, final int port) {
         super(serviceName, port);
         contructDefaults();
     }
@@ -95,7 +96,7 @@ public abstract class MultilineHttpDetector extends AsyncBasicDetector<LineOrien
      * @param command a {@link java.lang.String} object.
      * @return a {@link java.lang.String} object.
      */
-    protected String httpCommand(String command) {
+    protected String httpCommand(final String command) {
         
         return String.format("%s %s  HTTP/1.0\r\n\r\n", command, getUrl());
     }
@@ -106,7 +107,7 @@ public abstract class MultilineHttpDetector extends AsyncBasicDetector<LineOrien
      * @param command a {@link java.lang.String} object.
      * @return a {@link org.opennms.netmgt.provision.detector.simple.request.LineOrientedRequest} object.
      */
-    protected LineOrientedRequest request(String command) {
+    protected LineOrientedRequest request(final String command) {
         return new LineOrientedRequest(command);
     }
     
@@ -122,12 +123,12 @@ public abstract class MultilineHttpDetector extends AsyncBasicDetector<LineOrien
     protected ResponseValidator<MultilineHttpResponse> contains(final String pattern, final String url, final boolean isCheckCode, final int maxRetCode){
         return new ResponseValidator<MultilineHttpResponse>(){
 
-            public boolean validate(MultilineHttpResponse message) {
+            public boolean validate(final MultilineHttpResponse message) {
                 
                 try {
                     return message.validateResponse(pattern, url, isCheckCode, maxRetCode);
-                } catch (Exception e) {
-                    e.printStackTrace();
+                } catch (final Exception e) {
+                    LogUtils.debugf(this, e, "Unable to validate response");
                     return false;
                 }
             }
@@ -140,7 +141,7 @@ public abstract class MultilineHttpDetector extends AsyncBasicDetector<LineOrien
      *
      * @param url a {@link java.lang.String} object.
      */
-    public void setUrl(String url) {
+    public void setUrl(final String url) {
         m_url = url;
     }
 
@@ -158,7 +159,7 @@ public abstract class MultilineHttpDetector extends AsyncBasicDetector<LineOrien
      *
      * @param maxRetCode a int.
      */
-    public void setMaxRetCode(int maxRetCode) {
+    public void setMaxRetCode(final int maxRetCode) {
         m_maxRetCode = maxRetCode;
     }
 
@@ -176,7 +177,7 @@ public abstract class MultilineHttpDetector extends AsyncBasicDetector<LineOrien
      *
      * @param checkRetCode a boolean.
      */
-    public void setCheckRetCode(boolean checkRetCode) {
+    public void setCheckRetCode(final boolean checkRetCode) {
         m_checkRetCode = checkRetCode;
     }
 

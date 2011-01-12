@@ -1,4 +1,4 @@
-<style>
+<style type="text/css">
 .notstyle
 {
 background-color:transparent;
@@ -25,6 +25,7 @@ border:1px solid #666666
 <img src="images/key.png" alt="openNMS status colour key" usemap="#keymap" />
 -->
 <table style="width:100%">
+<tbody><tr>
 <td class="notstyle" style="text-align:right;width:100%;vertical-align:middle;height:15px">
 Legend
 </td>
@@ -43,6 +44,7 @@ Legend
 </tbody>
 </table>
 </td>
+</tr></tbody>
 </table>
 <!--
 <map id="keymap" name="keymap">

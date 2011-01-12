@@ -32,10 +32,12 @@ package org.opennms.netmgt.provision.detector.simple.client;
 
 import java.io.BufferedReader;
 import java.io.IOException;
-import java.io.InputStream;
+import java.io.InputStreamReader;
 import java.net.InetAddress;
 import java.net.URL;
 import java.net.URLConnection;
+
+import org.apache.commons.io.IOUtils;
 
 /**
  * <p>DominoIIOPClient class.</p>
@@ -48,18 +50,10 @@ public class DominoIIOPClient extends LineOrientedClient {
     private int m_iorPort = 1000;
     
     /** {@inheritDoc} */
-    public void connect(InetAddress host, int port, int timeout) throws IOException, Exception {        
+    public void connect(final InetAddress host, final int port, final int timeout) throws IOException, Exception {        
         if(!preconnect(host, getIorPort(), timeout)) {
             throw new Exception("Failed to preconnect");
         }
-        
-//        Socket socket = new Socket();
-//        socket.connect(new InetSocketAddress(host, port), timeout);
-//        socket.setSoTimeout(timeout);
-//        setInput(new BufferedReader(new InputStreamReader(socket.getInputStream())));
-//        setOutput(socket.getOutputStream());
-//        m_socket = socket;
-        
     }
 
     /**
@@ -70,7 +64,7 @@ public class DominoIIOPClient extends LineOrientedClient {
      * @return
      * @throws IOException 
      */
-    private boolean preconnect(InetAddress host, int port, int timeout) throws IOException {
+    private boolean preconnect(final InetAddress host, final int port, final int timeout) throws IOException {
         return retrieveIORText(host.getHostAddress(), port, timeout);
     }
 
@@ -79,32 +73,36 @@ public class DominoIIOPClient extends LineOrientedClient {
      * @param port
      * @return
      */
-    private boolean retrieveIORText(String hostAddress, int port, int timeout) throws IOException {
+    private boolean retrieveIORText(final String hostAddress, final int port, final int timeout) throws IOException {
         String IOR = "";
-        URL u = new URL("http://" + hostAddress + ":" + port + "/diiop_ior.txt");
-        URLConnection conn = u.openConnection();
+        final URL u = new URL("http://" + hostAddress + ":" + port + "/diiop_ior.txt");
+        final URLConnection conn = u.openConnection();
         conn.setConnectTimeout(timeout);
         conn.setReadTimeout(timeout);
-        InputStream is = conn.getInputStream();
-        BufferedReader dis = new BufferedReader(new java.io.InputStreamReader(is));
-        boolean done = false;
-        while (!done) {
-            String line = dis.readLine();
-            if (line == null) {
-                // end of stream
-                done = true;
-            } else {
-                IOR += line;
-                if (IOR.startsWith("IOR:")) {
-                    // the IOR does not span a line, so we're done
+        InputStreamReader isr = null;
+        BufferedReader br = null;
+        try {
+            isr = new InputStreamReader(conn.getInputStream());
+            br = new BufferedReader(isr);
+            boolean done = false;
+            while (!done) {
+                final String line = br.readLine();
+                if (line == null) {
+                    // end of stream
                     done = true;
+                } else {
+                    IOR += line;
+                    if (IOR.startsWith("IOR:")) {
+                        // the IOR does not span a line, so we're done
+                        done = true;
+                    }
                 }
             }
+        } finally {
+            IOUtils.closeQuietly(br);
+            IOUtils.closeQuietly(isr);
         }
-        dis.close();
-
-        if (!IOR.startsWith("IOR:")) { return false; }
-
+        if (!IOR.startsWith("IOR:")) return false;
         
         return true;
     }
@@ -114,7 +112,7 @@ public class DominoIIOPClient extends LineOrientedClient {
      *
      * @param iorPort a int.
      */
-    public void setIorPort(int iorPort) {
+    public void setIorPort(final int iorPort) {
         m_iorPort = iorPort;
     }
 

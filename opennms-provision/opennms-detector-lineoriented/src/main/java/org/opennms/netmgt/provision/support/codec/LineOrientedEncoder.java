@@ -56,13 +56,13 @@ public class LineOrientedEncoder extends ProtocolEncoderAdapter {
      *
      * @param charset a {@link java.nio.charset.Charset} object.
      */
-    public LineOrientedEncoder(Charset charset) {
+    public LineOrientedEncoder(final Charset charset) {
         m_charset = charset;
     }
     
     /** {@inheritDoc} */
-    public void encode(IoSession session, Object message, ProtocolEncoderOutput out) throws Exception {
-        LineOrientedRequest request = (LineOrientedRequest) message;
+    public void encode(final IoSession session, final Object message, final ProtocolEncoderOutput out) throws Exception {
+        final LineOrientedRequest request = (LineOrientedRequest) message;
         
         if(request.getRequest().contains("null")) {
 
@@ -75,13 +75,13 @@ public class LineOrientedEncoder extends ProtocolEncoderAdapter {
             session.setAttribute(ENCODER, encoder);
         }
         
-        String value = request.getRequest();
-        IoBuffer buffer = IoBuffer.allocate(value.length()).setAutoExpand(true);
+        final String value = request.getRequest();
+        final IoBuffer buffer = IoBuffer.allocate(value.length()).setAutoExpand(true);
         
         buffer.putString(request.getRequest(), encoder);
         
         buffer.flip();
-        LogUtils.infof(this, "Client sending: %s\n", request.getRequest().trim());
+        LogUtils.debugf(this, "Client sending: %s\n", value);
         out.write(buffer);
 
     }

@@ -81,7 +81,7 @@ public class LegacyAvailabilityDataService implements
 
     private Connection m_availConn;
     
-    private ThreadCategory log;
+    private final ThreadCategory log;
     
     private List<Node> m_nodes;
 
@@ -91,13 +91,11 @@ public class LegacyAvailabilityDataService implements
      * <p>Constructor for LegacyAvailabilityDataService.</p>
      */
     public LegacyAvailabilityDataService() {
-        
-    ThreadCategory.setPrefix(LOG4J_CATEGORY);
-    log = ThreadCategory.getInstance(LegacyAvailabilityDataService.class);
-    
-    
-    
-    log.debug("initialised DefaultAvailablityReportService");
+        String oldPrefix = ThreadCategory.getPrefix();
+        ThreadCategory.setPrefix(LOG4J_CATEGORY);
+        log = ThreadCategory.getInstance(LegacyAvailabilityDataService.class);
+        log.debug("initialised DefaultAvailablityReportService");
+        ThreadCategory.setPrefix(oldPrefix);
     }
 
     /** {@inheritDoc} */

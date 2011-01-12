@@ -55,6 +55,7 @@ import org.opennms.core.tasks.ContainerTask;
 import org.opennms.core.tasks.DefaultTaskCoordinator;
 import org.opennms.core.tasks.SequenceTask;
 import org.opennms.core.tasks.Task;
+import org.opennms.core.utils.LogUtils;
 
 
 /**
@@ -520,8 +521,7 @@ public class TaskTest {
                 try {
                     latch.await();
                 } catch (InterruptedException e) {
-                    // TODO Auto-generated catch block
-                    e.printStackTrace();
+                    LogUtils.debugf(this, e, "interrupted waiting for task");
                 }
             }
             public String toString() {

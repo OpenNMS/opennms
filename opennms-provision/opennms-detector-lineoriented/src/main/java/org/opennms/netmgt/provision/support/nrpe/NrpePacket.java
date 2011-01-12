@@ -95,7 +95,7 @@ public class NrpePacket {
 	 * @param resultCode a short.
 	 * @param buffer a {@link java.lang.String} object.
 	 */
-	public NrpePacket(short type, short resultCode, String buffer) {
+	public NrpePacket(final short type, final short resultCode, final String buffer) {
 		m_type = type;
 		m_resultCode = resultCode;
 		m_buffer = buffer;
@@ -115,7 +115,7 @@ public class NrpePacket {
 	 *
 	 * @param version a short.
 	 */
-	public void setVersion(short version) {
+	public void setVersion(final short version) {
 		m_version = version;
 	}
 
@@ -133,7 +133,7 @@ public class NrpePacket {
 	 *
 	 * @param type a short.
 	 */
-	public void setType(short type) {
+	public void setType(final short type) {
 		m_type = type;
 	}
 
@@ -151,7 +151,7 @@ public class NrpePacket {
 	 *
 	 * @param resultCode a short.
 	 */
-	public void setResultCode(short resultCode) {
+	public void setResultCode(final short resultCode) {
 		m_resultCode = resultCode;
 	}
 
@@ -182,11 +182,11 @@ public class NrpePacket {
 	 * @throws org.opennms.netmgt.provision.support.nrpe.NrpeException if any.
 	 * @throws java.io.IOException if any.
 	 */
-	public static NrpePacket receivePacket(InputStream i, int padding) throws NrpeException, IOException {
+	public static NrpePacket receivePacket(final InputStream i, final int padding) throws NrpeException, IOException {
 
-		NrpePacket p = new NrpePacket();
+	    final NrpePacket p = new NrpePacket();
 
-		byte[] packet = new byte[PACKET_SIZE + padding];
+	    final byte[] packet = new byte[PACKET_SIZE + padding];
 
 		int j, k;
 		for (k = 0; (j = i.read()) != -1; k++) {
@@ -194,8 +194,7 @@ public class NrpePacket {
 		}
 
 		if (k < PACKET_SIZE) {
-			throw new NrpeException("Received packet is too small.  " + "Received "
-					+ k + ", expected at least " + PACKET_SIZE);
+			throw new NrpeException("Received packet is too small.  " + "Received " + k + ", expected at least " + PACKET_SIZE);
 		}
 
 		p.m_version = (short) ((positive(packet[0]) << 8) + positive(packet[1]));
@@ -211,15 +210,15 @@ public class NrpePacket {
 		packet[6] = 0;
 		packet[7] = 0;
 
-		CRC32 crc = new CRC32();
+		final CRC32 crc = new CRC32();
 		crc.update(packet);
 
-		long crc_calc = crc.getValue();
+		final long crc_calc = crc.getValue();
 		if (crc_calc != crc_l) {
 			throw new NrpeException("CRC mismatch: " + crc_calc + " vs. " + crc_l);
 		}
 
-		byte[] buffer = new byte[MAX_PACKETBUFFER_LENGTH];
+		final byte[] buffer = new byte[MAX_PACKETBUFFER_LENGTH];
 		System.arraycopy(packet, 10, buffer, 0, buffer.length);
 
 		p.m_buffer = new String(buffer);
@@ -236,7 +235,7 @@ public class NrpePacket {
 	 * @param b a byte.
 	 * @return a int.
 	 */
-	public static int positive(byte b) {
+	public static int positive(final byte b) {
 		if (b < 0) {
 			return b + 256;
 		} else {
@@ -260,12 +259,12 @@ public class NrpePacket {
 	 * @param padding a int.
 	 * @return an array of byte.
 	 */
-	public byte[] buildPacket(int padding) {
+	public byte[] buildPacket(final int padding) {
 		SecureRandom random;
 		
 		try {
 			random = SecureRandom.getInstance("SHA1PRNG");
-		} catch (NoSuchAlgorithmException e) {
+		} catch (final NoSuchAlgorithmException e) {
 			random = null;
 		}
 		
@@ -279,9 +278,9 @@ public class NrpePacket {
 	 * @param random a {@link java.security.SecureRandom} object.
 	 * @return an array of byte.
 	 */
-	public byte[] buildPacket(int padding, SecureRandom random) {
-		byte[] packet = new byte[PACKET_SIZE + padding];
-		byte[] buffer = m_buffer.getBytes();
+	public byte[] buildPacket(final int padding, final SecureRandom random) {
+	    final byte[] packet = new byte[PACKET_SIZE + padding];
+		final byte[] buffer = m_buffer.getBytes();
 
 		if (random != null) {
 			random.nextBytes(packet);
@@ -317,10 +316,10 @@ public class NrpePacket {
 		// Make sure that the last character in the buffer is null.
 		packet[PACKET_SIZE - 1] = 0;
 
-		CRC32 crc = new CRC32();
+		final CRC32 crc = new CRC32();
 		crc.update(packet);
 
-		long crc_l = crc.getValue();
+		final long crc_l = crc.getValue();
 
 		packet[4] = (byte) ((crc_l >> 24) & 0xff);
 		packet[5] = (byte) ((crc_l >> 16) & 0xff);

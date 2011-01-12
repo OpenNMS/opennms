@@ -66,6 +66,7 @@ import org.apache.log4j.PatternLayout;
 import org.exolab.castor.xml.MarshalException;
 import org.exolab.castor.xml.Marshaller;
 import org.exolab.castor.xml.ValidationException;
+import org.opennms.core.utils.LogUtils;
 import org.opennms.core.utils.ThreadCategory;
 import org.opennms.netmgt.ConfigFileConstants;
 import org.opennms.reporting.availability.render.HTMLReportRenderer;
@@ -77,9 +78,6 @@ import org.springframework.util.StringUtils;
  *
  * @author <A HREF="mailto:jacinta@oculan.com">Jacinta Remedios </A>
  * @author <A HREF="http://www.oculan.com">Oculan </A>
- * @author <A HREF="mailto:jacinta@oculan.com">Jacinta Remedios </A>
- * @author <A HREF="http://www.oculan.com">Oculan </A>
- * @version $Id: $
  */
 public class AvailabilityReport extends Object {
     /**
@@ -117,6 +115,7 @@ public class AvailabilityReport extends Object {
      */
     public AvailabilityReport(String author, String startMonth,
             String startDate, String startYear) {
+        String oldPrefix = ThreadCategory.getPrefix();
         ThreadCategory.setPrefix(LOG4J_CATEGORY);
         if (log().isDebugEnabled()) {
             log().debug("Inside AvailabilityReport");
@@ -152,6 +151,7 @@ public class AvailabilityReport extends Object {
         if (log().isDebugEnabled()) {
             log().debug("Leaving AvailabilityReport");
         }
+        ThreadCategory.setPrefix(oldPrefix);
     }
 
     /**
@@ -263,6 +263,7 @@ public class AvailabilityReport extends Object {
      */
     public void generatePDF(String xsltFileName, OutputStream out,
             String format) throws Exception {
+        String oldPrefix = ThreadCategory.getPrefix();
         ThreadCategory.setPrefix(LOG4J_CATEGORY);
         if (log().isDebugEnabled()) {
             log().debug("inside generatePDF");
@@ -288,6 +289,7 @@ public class AvailabilityReport extends Object {
         if (log().isInfoEnabled()) {
             log().info("leaving generatePDF");
         }
+        ThreadCategory.setPrefix(oldPrefix);
     }
 
     /**
@@ -334,11 +336,9 @@ public class AvailabilityReport extends Object {
         }
         
         try {
-            generateReport(logourl, categoryName, format, monthFormat,
-                           startMonth, startDate, startYear);
-        } catch (Exception e) {
-            log().error("Caught exception while generating report: " + e, e);
-            e.printStackTrace();
+            generateReport(logourl, categoryName, format, monthFormat, startMonth, startDate, startYear);
+        } catch (final Exception e) {
+            LogUtils.warnf(AvailabilityReport.class, e, "Error while generating report.");
         }
     }
 

@@ -49,7 +49,7 @@ public abstract class AsyncMultilineDetector extends AsyncBasicDetector<LineOrie
      * @param serviceName a {@link java.lang.String} object.
      * @param port a int.
      */
-    public AsyncMultilineDetector(String serviceName, int port) {
+    public AsyncMultilineDetector(final String serviceName, final int port) {
         super(serviceName, port);
     }
 
@@ -61,7 +61,7 @@ public abstract class AsyncMultilineDetector extends AsyncBasicDetector<LineOrie
      * @param retries a int.
      * @param serviceName a {@link java.lang.String} object.
      */
-    public AsyncMultilineDetector(String serviceName, int port, int timeout, int retries) {
+    public AsyncMultilineDetector(final String serviceName, final int port, final int timeout, final int retries) {
         super(serviceName, port, timeout, retries);
     }
 
@@ -79,7 +79,7 @@ public abstract class AsyncMultilineDetector extends AsyncBasicDetector<LineOrie
     protected ResponseValidator<MultilineOrientedResponse> expectCodeRange(final int beginRange, final int endRange){
         return new ResponseValidator<MultilineOrientedResponse>() {
             
-            public boolean validate(MultilineOrientedResponse response) {
+            public boolean validate(final MultilineOrientedResponse response) {
                 return response.expectedCodeRange(beginRange, endRange);
             }
             
@@ -90,7 +90,7 @@ public abstract class AsyncMultilineDetector extends AsyncBasicDetector<LineOrie
     public ResponseValidator<MultilineOrientedResponse> startsWith(final String pattern){
         return new ResponseValidator<MultilineOrientedResponse>(){
 
-            public boolean validate(MultilineOrientedResponse response) {
+            public boolean validate(final MultilineOrientedResponse response) {
                 return response.startsWith(pattern);
             }
             
@@ -103,7 +103,7 @@ public abstract class AsyncMultilineDetector extends AsyncBasicDetector<LineOrie
      * @param command a {@link java.lang.String} object.
      * @return a {@link org.opennms.netmgt.provision.detector.simple.request.LineOrientedRequest} object.
      */
-    public LineOrientedRequest request(String command) {
+    public LineOrientedRequest request(final String command) {
         return new LineOrientedRequest(command);
     }
 

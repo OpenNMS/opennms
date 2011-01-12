@@ -47,6 +47,7 @@ package org.opennms.netmgt.ping;
 import java.io.IOException;
 import java.net.DatagramPacket;
 
+import org.opennms.core.utils.LogUtils;
 import org.opennms.protocols.icmp.ICMPEchoPacket;
 import org.opennms.protocols.icmp.IcmpSocket;
 
@@ -92,10 +93,8 @@ public class Ping {
                                            + rtt + " ms");
                     }
                 }
-            } catch (Throwable t) {
-                System.err.println("An exception occured processing the "
-                                   + "datagram, thread exiting.");
-                t.printStackTrace();
+            } catch (final Throwable t) {
+                LogUtils.errorf(this, t, "An exception occured processing the datagram, thread exiting.");
                 System.exit(1);
             }
         }

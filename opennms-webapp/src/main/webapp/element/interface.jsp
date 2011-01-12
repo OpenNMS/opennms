@@ -63,6 +63,8 @@
                 org.springframework.web.context.WebApplicationContext,
                 org.springframework.web.context.support.WebApplicationContextUtils"
 %>
+<%@taglib uri="http://java.sun.com/jsp/jstl/core" prefix="c" %>
+
 
 <%!protected int telnetServiceId;
     protected int httpServiceId;
@@ -105,9 +107,6 @@
         services = new Service[0];
     }
 
-    String eventUrl1 = "event/list.htm?filter=node%3D" + nodeId + "&filter=interface%3D" + ipAddr;
-    String eventUrl2 = "event/list.htm?filter=node%3D" + nodeId + "&filter=ifindex%3D" + ifIndex;
-    
     String telnetIp = null;
     Service telnetService = NetworkElementFactory.getInstance(getServletContext()).getService(nodeId, ipAddr, this.telnetServiceId);
     
@@ -129,6 +128,14 @@
     SnmpInterfacePollerConfig snmpPollerCfgFactory = SnmpInterfacePollerConfigFactory.getInstance();
     snmpPollerCfgFactory.rebuildPackageIpListMap();
 %>
+<c:url var="eventUrl1" value="event/list.htm">
+    <c:param name="filter" value="<%="node=" + nodeId%>"/>
+    <c:param name="filter" value="<%="interface=" + ipAddr%>"/>
+</c:url>
+<c:url var="eventUrl2" value="event/list.htm">
+    <c:param name="filter" value="<%="node=" + nodeId%>"/>
+    <c:param name="filter" value="<%="ifindex=" + ifIndex%>"/>
+</c:url>
 
 <%
 String nodeBreadCrumb = "<a href='element/node.jsp?node=" + nodeId  + "'>Node</a>";
@@ -162,7 +169,7 @@ function doDelete() {
 
       <h2>Interface: <%=intf_db.getIpAddress()%>
         <% if (intf_db.getHostname() != null && !intf_db.getIpAddress().equals(intf_db.getHostname())) { %>
-          <%= intf_db.getHostname() %>
+          (<c:out value="<%=intf_db.getHostname()%>"/>)
         <% } %>
       </h2>
 
@@ -172,94 +179,98 @@ function doDelete() {
       <form method="post" name="delete" action="admin/deleteInterface">
       <input type="hidden" name="node" value="<%=nodeId%>"/>
       <input type="hidden" name="ifindex" value="<%=(ifIndex == -1 ? "" : "" + ifIndex)%>"/>
-      <input type="hidden" name="intf" value="<%=ipAddr%>"/>
+      <input type="hidden" name="intf" value="<c:out value="<%=ipAddr%>"/>"/>
       <%
       }
       %>
 
       <div id="linkbar">
       <ul>
-        <%
-        if (! ipAddr.equals("0.0.0.0")) {
-        %>
-	<li>
-        <a href="<%=eventUrl1%>">View Events by IP Address</a>
-	</li>
-		<% } %>
-		
-        <%
-        if (ifIndex > 0 ) {
-        %>
-	<li>
-        <a href="<%=eventUrl2%>">View Events by ifIndex</a>
-	</li>
-		<% } %>
-		
-        <%
-        if( telnetIp != null ) {
-        %>
-	  <li>
-          <a href="telnet://<%=telnetIp%>">Telnet</a>
-	  </li>
-        <%
-        }
-        %>
-        
-        <%
-                if( httpIp != null ) {
-                %>
-	  <li>
-          <a href="http://<%=httpIp%>">HTTP</a>
-	  </li>
-        <%
-        }
-        %>
-
-      <%
-                          String ifLabel;
-                          if (ifIndex != -1) {
-                              ifLabel = IfLabel.getIfLabelfromIfIndex(nodeId, ipAddr, ifIndex);
-                          } else {
-                              ifLabel = IfLabel.getIfLabel(nodeId, ipAddr);
-                          }
-
-                          List<OnmsResource> resources = m_resourceService.findNodeChildResources(nodeId);
-                          for (OnmsResource resource : resources) {
-                              if (resource.getName().equals(ipAddr) || resource.getName().equals(ifLabel)) {
-                                  out.println("<li>");
-                                  out.println("<a href=\"graph/results.htm?reports=all"
-                                              + "&amp;resourceId="
-                                              + Util.encode(resource.getId())
-                                              + "\">" + Util.htmlify(resource.getResourceType().getLabel())
-                                              + " Graphs</a>");
-                                  out.println("</li>");
-                              }
-                          }
-      %>
-        
-        <% if (request.isUserInRole( Authentication.ADMIN_ROLE )) { %>
-	 <li>
-         <a href="admin/deleteInterface" onClick="return doDelete()">Delete</a>
-	 </li>
-         <% } %>
-         
-        <% if (request.isUserInRole( Authentication.ADMIN_ROLE )) { %>
-	  <li>
-            <a href="element/rescan.jsp?node=<%=nodeId%>&ipaddr=<%=ipAddr%>">Rescan</a>      
+        <% if (! ipAddr.equals("0.0.0.0")) { %>
+          <li>
+            <a href="<c:out value="${eventUrl1}"/>">View Events by IP Address</a>
           </li>
-         <% } %>
+        <% } %>
+
+        <% if (ifIndex > 0 ) { %>
+          <li>
+            <a href="<c:out value="${eventUrl2}"/>">View Events by ifIndex</a>
+          </li>
+        <% } %>
+
+        <% if( telnetIp != null ) { %>
+          <li>
+            <a href="telnet://<%=telnetIp%>">Telnet</a>
+          </li>
+        <% } %>
+
+        <% if( httpIp != null ) { %>
+          <li>
+            <a href="http://<%=httpIp%>">HTTP</a>
+          </li>
+        <% } %>
+
+        <%
+          String ifLabel;
+          if (ifIndex != -1) {
+              ifLabel = IfLabel.getIfLabelfromIfIndex(nodeId, ipAddr, ifIndex);
+          } else {
+              ifLabel = IfLabel.getIfLabel(nodeId, ipAddr);
+          }
+
+          List<OnmsResource> resources = m_resourceService.findNodeChildResources(nodeId);
+          for (OnmsResource resource : resources) {
+              if (resource.getName().equals(ipAddr) || resource.getName().equals(ifLabel)) {
+                  %>
+                      <c:url var="graphLink" value="graph/results.htm">
+                          <c:param name="reports" value="all"/>
+                          <c:param name="resourceId" value="<%=resource.getId()%>"/>
+                      </c:url>
+                      <li>
+                          <a href="<c:out value="${graphLink}"/>"><c:out value="<%=resource.getResourceType().getLabel()%>"/> Graphs</a>
+                      </li>
+                  <% 
+              }
+          }
+        %>
+
+        <% if (request.isUserInRole( Authentication.ADMIN_ROLE )) { %>
+          <li>
+            <a href="admin/deleteInterface" onClick="return doDelete()">Delete</a>
+          </li>
+        <% } %>
+
+        <% if (request.isUserInRole( Authentication.ADMIN_ROLE )) { %>
+          <li>
+            <c:url var="rescanUrl" value="element/rescan.jsp">
+              <c:param name="node" value="<%=String.valueOf(nodeId)%>"/>
+              <c:param name="ipaddr" value="<%=ipAddr%>"/>
+            </c:url>
+            <a href="<c:out value="${rescanUrl}"/>">Rescan</a>
+          </li>
+        <% } %>
 
         <% if (request.isUserInRole( Authentication.ADMIN_ROLE ) && hasSNMPData(intf_db) && "P".equals(intf_db.getIsSnmpPrimary())) { %>
-	 <li>
-         <a href="admin/updateSnmp.jsp?node=<%=nodeId%>&ipaddr=<%=ipAddr%>">Update SNMP</a>
-	 </li>
-         <% } %>
-        <% if (request.isUserInRole( Authentication.ADMIN_ROLE )) { %>
-	  <li>
-            <a href="admin/sched-outages/editoutage.jsp?newName=<%=ipAddr%>&addNew=true&ipAddr=<%=ipAddr%>">Schedule Outage</a>      
+          <li>
+            <c:url var="updateSnmpUrl" value="admin/updateSnmp.jsp">
+              <c:param name="node" value="<%=String.valueOf(nodeId)%>"/>
+              <c:param name="ipaddr" value="<%=ipAddr%>"/>
+            </c:url>
+            <a href="<c:out value="${updateSnmpUrl}"/>">Update SNMP</a>
           </li>
-         <% } %>
-     
+        <% } %>
+
+        <% if (request.isUserInRole( Authentication.ADMIN_ROLE )) { %>
+          <li>
+            <c:url var="schedOutageUrl" value="admin/sched-outages/editoutage.jsp">
+              <c:param name="newName" value="<%=ipAddr%>"/>
+              <c:param name="addNew" value="true"/>
+              <c:param name="ipAddr" value="<%=ipAddr%>"/>
+            </c:url>
+            <a href="<c:out value="${schedOutageUrl}"/>">Schedule Outage</a>      
+          </li>
+        <% } %>
+
       </ul>
       </div>
 
@@ -390,28 +401,30 @@ function doDelete() {
             <!-- interface desktop information box -->
           
             <!-- events list box 1 using ipaddress-->
-            <% if (!ipAddr.equals("0.0.0.0")) {
-            	String eventHeader1 = "<a href='" + eventUrl1 + "'>Recent Events (Using Filter IP Address:" + ipAddr + ")</a>"; %>
-            <% String moreEventsUrl1 = eventUrl1; %>
-            <jsp:include page="/includes/eventlist.jsp" flush="false" >
-              <jsp:param name="node" value="<%=nodeId%>" />
-              <jsp:param name="ipAddr" value="<%=ipAddr%>" />
-              <jsp:param name="throttle" value="5" />
-              <jsp:param name="header" value="<%=eventHeader1%>" />
-              <jsp:param name="moreUrl" value="<%=moreEventsUrl1%>" />
-            </jsp:include>
+            <% if (!ipAddr.equals("0.0.0.0")) { %>
+              <c:set var="eventHeader1">
+                <a href="<c:out value="${eventUrl1}"/>">Recent Events (Using Filter IP Address: <c:out value="<%=ipAddr%>"/>)</a>
+              </c:set>
+              <jsp:include page="/includes/eventlist.jsp" flush="false" >
+                <jsp:param name="node" value="<%=nodeId%>" />
+                <jsp:param name="ipAddr" value="<%=ipAddr%>" />
+                <jsp:param name="throttle" value="5" />
+                <jsp:param name="header" value="${eventHeader1}" />
+                <jsp:param name="moreUrl" value="${eventUrl1}" />
+              </jsp:include>
             <% } %>
             <!-- events list box 2 using ifindex -->
-			<% if (ifIndex > 0 ) { %>
-            <% String eventHeader2 = "<a href='" + eventUrl1 + "'>Recent Events (Using Filter ifIndex = " + ifIndex + ")</a>"; %>
-            <% String moreEventsUrl2 = eventUrl2; %>
-            <jsp:include page="/includes/eventlist.jsp" flush="false" >
-              <jsp:param name="node" value="<%=nodeId%>" />
-              <jsp:param name="throttle" value="5" />
-              <jsp:param name="header" value="<%=eventHeader2%>" />
-              <jsp:param name="moreUrl" value="<%=moreEventsUrl2%>" />
-              <jsp:param name="ifIndex" value="<%=ifIndex%>" />
-            </jsp:include>
+            <% if (ifIndex > 0 ) { %>
+              <c:set var="eventHeader2">
+                <a href="<c:out value="${eventUrl2}"/>">Recent Events (Using Filter ifIndex: <c:out value="<%=ifIndex%>"/>)</a>
+              </c:set>
+              <jsp:include page="/includes/eventlist.jsp" flush="false" >
+                <jsp:param name="node" value="<%=nodeId%>" />
+                <jsp:param name="throttle" value="5" />
+                <jsp:param name="header" value="${eventHeader2}" />
+                <jsp:param name="moreUrl" value="${eventUrl2}" />
+                <jsp:param name="ifIndex" value="<%=ifIndex%>" />
+              </jsp:include>
             <% } %>
             <!-- Recent outages box -->
             <jsp:include page="/outage/interfaceOutages-box.htm" flush="false" />

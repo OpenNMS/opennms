@@ -8,6 +8,7 @@ import java.util.Properties;
 
 import org.eclipse.osgi.framework.console.CommandInterpreter;
 import org.eclipse.osgi.framework.console.CommandProvider;
+import org.opennms.core.utils.LogUtils;
 import org.opennms.core.utils.ThreadCategory;
 import org.opennms.sms.ping.SmsPinger;
 import org.opennms.sms.reflector.smsservice.GatewayGroup;
@@ -15,19 +16,19 @@ import org.osgi.framework.BundleContext;
 import org.osgi.service.cm.Configuration;
 import org.osgi.service.cm.ConfigurationAdmin;
 import org.smslib.AGateway;
+import org.smslib.AGateway.GatewayStatuses;
+import org.smslib.AGateway.Protocols;
 import org.smslib.ICallNotification;
 import org.smslib.IGatewayStatusNotification;
 import org.smslib.IInboundMessageNotification;
 import org.smslib.IOutboundMessageNotification;
 import org.smslib.InboundMessage;
+import org.smslib.InboundMessage.MessageClasses;
 import org.smslib.Library;
+import org.smslib.Message.MessageTypes;
 import org.smslib.OutboundMessage;
 import org.smslib.Service;
 import org.smslib.USSDRequest;
-import org.smslib.AGateway.GatewayStatuses;
-import org.smslib.AGateway.Protocols;
-import org.smslib.InboundMessage.MessageClasses;
-import org.smslib.Message.MessageTypes;
 import org.smslib.helper.CommPortIdentifier;
 import org.smslib.modem.ModemGateway;
 import org.smslib.modem.SerialModemGateway;
@@ -66,9 +67,8 @@ public class SmsCommands implements CommandProvider, BundleContextAware
         if (m_service != null){
             try {
                 m_service.stopService();
-            } catch (Exception e) {
-                ThreadCategory.getInstance(SmsCommands.class).debug("Exception Stopping Service Occurred", e);
-                //intp.printStackTrace(e);
+            } catch (final Exception e) {
+                LogUtils.debugf(this, e, "Exception Stopping Service Occurred");
             }
         }
     }
@@ -78,11 +78,11 @@ public class SmsCommands implements CommandProvider, BundleContextAware
      *
      * @param msg a {@link org.smslib.OutboundMessage} object.
      */
-    public void smsSend(OutboundMessage msg){
+    public void smsSend(final OutboundMessage msg){
         try{
             m_service.sendMessage(msg);
-        }catch(Exception e){
-            e.printStackTrace();
+        }catch(final Exception e){
+            LogUtils.debugf(this, e, "error sending message (%s)", msg);
         }
     }
 
@@ -96,8 +96,8 @@ public class SmsCommands implements CommandProvider, BundleContextAware
         try{
             m_service.readMessages(msgList, MessageClasses.UNREAD);
 
-        }catch(Exception e){
-            e.printStackTrace();
+        }catch(final Exception e){
+            LogUtils.warnf(this, e, "unable to check messages");
         }
 
         return msgList;
@@ -119,7 +119,7 @@ public class SmsCommands implements CommandProvider, BundleContextAware
                 intp.println("Ping roundtrip time: " + latency);
             }
 
-        } catch (Exception e) {
+        } catch (final Exception e) {
             intp.printStackTrace(e);
         }
         return null;
@@ -167,7 +167,6 @@ public class SmsCommands implements CommandProvider, BundleContextAware
         } catch (Exception e) {
             intp.println("Exception Sending Message: ");
             intp.printStackTrace(e);
-
         } 
 
         return null;
@@ -189,10 +188,6 @@ public class SmsCommands implements CommandProvider, BundleContextAware
         intp.println("Gateway ID is : " + gwId);
         
         USSDRequest req = new USSDRequest(data);
-        if (req == null) {
-            intp.println("Failed to create USSDRequest object");
-            return;
-        }
         intp.println("USSD request to send: " + req.toString());
 
         if (m_service == null) {

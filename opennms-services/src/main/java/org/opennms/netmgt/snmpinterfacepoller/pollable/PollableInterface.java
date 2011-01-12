@@ -41,6 +41,7 @@ import java.util.HashMap;
 
 import org.exolab.castor.xml.MarshalException;
 import org.exolab.castor.xml.ValidationException;
+import org.opennms.core.utils.LogUtils;
 import org.opennms.netmgt.config.SnmpPeerFactory;
 import org.opennms.netmgt.snmp.SnmpAgentConfig;
 
@@ -160,8 +161,8 @@ public class PollableInterface {
         InetAddress ipAddr = null;
 		try {
 			ipAddr = InetAddress.getByName(getIpaddress());
-		} catch (UnknownHostException e) {
-			e.printStackTrace();
+		} catch (final UnknownHostException e) {
+		    LogUtils.debugf(this, e, "unable to get host for IP address %s", getIpaddress());
 		}
         SnmpAgentConfig agentConfig = SnmpPeerFactory.getInstance().getAgentConfig(ipAddr);
         if (hasPort) agentConfig.setPort(port);

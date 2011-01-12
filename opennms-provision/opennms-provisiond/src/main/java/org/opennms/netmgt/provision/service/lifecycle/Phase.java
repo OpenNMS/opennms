@@ -40,6 +40,7 @@ import java.lang.reflect.Type;
 import org.opennms.core.tasks.BatchTask;
 import org.opennms.core.tasks.ContainerTask;
 import org.opennms.core.tasks.Task;
+import org.opennms.core.utils.LogUtils;
 import org.opennms.netmgt.provision.service.lifecycle.annotations.Activity;
 import org.opennms.netmgt.provision.service.lifecycle.annotations.Attribute;
 
@@ -174,15 +175,8 @@ public class Phase extends BatchTask {
                 public void run() {
                     try {
                         doInvoke(m_phase.getLifeCycleInstance());
-                    } catch (IllegalArgumentException e) {
-                        // TODO Auto-generated catch block
-                        e.printStackTrace();
-                    } catch (IllegalAccessException e) {
-                        // TODO Auto-generated catch block
-                        e.printStackTrace();
-                    } catch (InvocationTargetException e) {
-                        // TODO Auto-generated catch block
-                        e.printStackTrace();
+                    } catch (final Exception e) {
+                        LogUtils.infof(this, e, "failed to invoke lifecycle instance");
                     }
                 }
                 public String toString() {

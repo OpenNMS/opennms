@@ -41,6 +41,7 @@ import org.apache.commons.lang.builder.ToStringBuilder;
 import org.opennms.core.tasks.BatchTask;
 import org.opennms.core.tasks.DefaultTaskCoordinator;
 import org.opennms.core.tasks.SequenceTask;
+import org.opennms.core.utils.LogUtils;
 
 class DefaultLifeCycleInstance extends SequenceTask implements LifeCycleInstance {
     
@@ -86,17 +87,13 @@ class DefaultLifeCycleInstance extends SequenceTask implements LifeCycleInstance
         m_coordinator = coordinator;
         m_name = lifeCycleName;
         m_providers = providers;
-        
-        if (log().isDebugEnabled()) {
-            log().debug("Set up default lifecycle instance: " + this);
-        }
+
+        LogUtils.debugf(this, "Set up default lifecycle instance");
 
         m_phases = new Phase[phaseNames.length];
         for(int i = 0; i < phaseNames.length; i++) {
             m_phases[i] = new Phase(this, this, phaseNames[i], m_providers);
-            if (log().isDebugEnabled()) {
-                log().debug(String.format("Adding phase %s to lifecycle", m_phases[i].getName()));
-            }
+            LogUtils.debugf(this, "Adding phase %s to lifecycle", m_phases[i].getName());
             add(m_phases[i]);
         }
         

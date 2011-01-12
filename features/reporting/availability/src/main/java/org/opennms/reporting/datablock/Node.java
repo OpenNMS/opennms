@@ -43,15 +43,8 @@ import java.util.List;
  *
  * @author <A HREF="mailto:jacinta@oculan.com">Jacinta Remedios </A>
  * @author <A HREF="http://www.oculan.com">oculan.com </A>
- * @author <A HREF="mailto:jacinta@oculan.com">Jacinta Remedios </A>
- * @author <A HREF="http://www.oculan.com">oculan.com </A>
- * @version $Id: $
  */
 public class Node extends StandardNamedObject {
-    /**
-     * The log4j category used to log debug messages and statements.
-     */
-    //private static final String LOG4J_CATEGORY = "OpenNMS.Report";
 
     private static class InterfaceComparator {
         private String m_intfname;

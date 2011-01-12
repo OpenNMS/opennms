@@ -236,14 +236,14 @@
       <li><a href="<%=this.makeLink(parms, "long")%>" title="Detailed List of Alarms">Long Listing</a></li>
         </c:otherwise>
       </c:choose>
-      <li><a href="javascript: void window.open('<%=Util.calculateUrlBase(req)%>/alarm/severity.jsp','', 'fullscreen=no,toolbar=no,status=no,menubar=no,scrollbars=no,resizable=yes,directories=no,location=no,width=525,height=158')" title="Open a window explaining the alarm severities">Severity Legend</a></li>
+      <li><a href="javascript:void()" onclick="javascript:window.open('<%=Util.calculateUrlBase(req)%>/alarm/severity.jsp','', 'fullscreen=no,toolbar=no,status=no,menubar=no,scrollbars=no,resizable=yes,directories=no,location=no,width=525,height=158')" title="Open a window explaining the alarm severities">Severity Legend</a></li>
       
       <% if( req.isUserInRole( Authentication.ADMIN_ROLE ) || !req.isUserInRole( Authentication.READONLY_ROLE ) ) { %>
         <% if ( alarmCount > 0 ) { %>
           <li>
             <!-- hidden form for acknowledging the result set -->
             <form style="display:inline" method="post" action="alarm/acknowledgeByFilter" name="acknowledge_by_filter_form">
-              <input type="hidden" name="redirectParms" value="<%=Util.htmlify(req.getQueryString())%>" />
+              <input type="hidden" name="redirectParms" value="<c:out value="<%=req.getQueryString()%>"/>" />
               <input type="hidden" name="actionCode" value="<%=action%>" />
               <%=Util.makeHiddenTags(req)%>
             </form>
@@ -291,7 +291,7 @@
 
       <% if( req.isUserInRole( Authentication.ADMIN_ROLE ) || !req.isUserInRole( Authentication.READONLY_ROLE ) ) { %>
           <form action="alarm/acknowledge" method="post" name="alarm_action_form">
-          <input type="hidden" name="redirectParms" value="<%=Util.htmlify(req.getQueryString())%>" />
+          <input type="hidden" name="redirectParms" value="<c:out value="<%=req.getQueryString()%>"/>" />
           <input type="hidden" name="actionCode" value="<%=action%>" />
           <%=Util.makeHiddenTags(req)%>
       <% } %>
@@ -414,7 +414,7 @@
                   <c:param name="node" value="<%=String.valueOf(alarms[i].getNodeId())%>"/>
                   <c:param name="intf" value="<%=alarms[i].getIpAddress()%>"/>
                 </c:url>
-                <a href="${interfaceLink}" title="More info on this interface"><%=alarms[i].getIpAddress()%></a>
+                <a href="<c:out value="${interfaceLink}"/>" title="More info on this interface"><%=alarms[i].getIpAddress()%></a>
               <% } else { %>
                 <%=alarms[i].getIpAddress()%>
               <% } %>
@@ -436,7 +436,7 @@
                   <c:param name="intf" value="<%=alarms[i].getIpAddress()%>"/>
                   <c:param name="service" value="<%=String.valueOf(alarms[i].getServiceId())%>"/>
                 </c:url>
-                <a href="${serviceLink}" title="More info on this service"><c:out value="<%=alarms[i].getServiceName()%>"/></a>
+                <a href="<c:out value="${serviceLink}"/>" title="More info on this service"><c:out value="<%=alarms[i].getServiceName()%>"/></a>
               <% } else { %>
                 <c:out value="<%=alarms[i].getServiceName()%>"/>
               <% } %>
@@ -452,7 +452,7 @@
           <td class="divider" valign="middle" rowspan="1" >
 	    <% if(alarms[i].getId() > 0 ) { %>           
                 <nobr>
-                  <a href="event/list.htm?sortby=id&acktype=unack&filter=alarm=<%=alarms[i].getId()%>"><%=alarms[i].getCount()%></a>
+                  <a href="event/list.htm?sortby=id&amp;acktype=unack&amp;filter=alarm%3d<%=alarms[i].getId()%>"><%=alarms[i].getCount()%></a>
                 </nobr>
             <% } else { %>
             <%=alarms[i].getCount()%>
@@ -552,6 +552,7 @@
       buffer.append( title );
       buffer.append( "</a>" );
 
+      buffer.append( "</nobr>" );
 
       return( buffer.toString() );
     }
@@ -562,7 +563,7 @@
     
         if( filters != null ) {
             for( int i=0; i < filters.size(); i++ ) {
-                buffer.append( "&filter=" );
+                buffer.append( "&amp;filter=" );
                 String filterString = AlarmUtil.getFilterString(filters.get(i));
                 buffer.append(Util.encode(filterString));
             }
@@ -575,13 +576,13 @@
       StringBuffer buffer = new StringBuffer( this.urlBase );
       buffer.append( "?sortby=" );
       buffer.append( sortStyle.getShortName() );
-      buffer.append( "&acktype=" );
+      buffer.append( "&amp;acktype=" );
       buffer.append( ackType.getShortName() );
       if (limit > 0) {
-          buffer.append( "&limit=" ).append(limit);
+          buffer.append( "&amp;limit=" ).append(limit);
       }
       if (display != null) {
-          buffer.append( "&display=" ).append(display);
+          buffer.append( "&amp;display=" ).append(display);
       }
       buffer.append( this.getFiltersAsString(filters) );
 
@@ -599,7 +600,7 @@
       StringBuffer buffer = new StringBuffer( "event/list.htm" );
       buffer.append( "?sortby=" );
       buffer.append( parms.sortStyle.getShortName() );
-      buffer.append( "&acktype=" );
+      buffer.append( "&amp;acktype=" );
       buffer.append( parms.ackType.getShortName() );
       buffer.append( this.getFiltersAsString(filters) );
 

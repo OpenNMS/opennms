@@ -3,6 +3,8 @@ package org.opennms.acl.conf;
 import java.io.IOException;
 import java.util.Properties;
 
+import org.opennms.core.utils.LogUtils;
+
 public class Config {
 
     public String getDbDriver() {
@@ -25,8 +27,8 @@ public class Config {
         Properties props = new Properties();
         try {
             props.load(Config.class.getResourceAsStream("/org/opennms/acl/conf/config.properties"));
-        } catch (IOException e) {
-            e.printStackTrace();
+        } catch (final IOException e) {
+            LogUtils.warnf(this, e, "Unable to get configuration resource.");
         }
 
         dbDriver = props.getProperty("jdbc.driver");

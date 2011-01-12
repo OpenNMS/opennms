@@ -53,6 +53,7 @@ import java.util.Random;
 import junit.framework.Assert;
 import junit.framework.AssertionFailedError;
 
+import org.opennms.core.utils.LogUtils;
 import org.opennms.core.utils.ProcessExec;
 
 /**
@@ -144,8 +145,7 @@ public class FileAnticipator extends Assert {
                         command.append(" ");
                         command.append(cmd[i]);
                     }
-                    System.err.println("Got throwable while forcibly removing temporary directory " + m_tempDir + " with '" + command + "': " + innerThrowable);
-                    innerThrowable.printStackTrace();
+                    LogUtils.warnf(this, innerThrowable, "an error occurred while forcibly removing temporary directory %s", m_tempDir);
                 }
             }
             if (t instanceof RuntimeException) {

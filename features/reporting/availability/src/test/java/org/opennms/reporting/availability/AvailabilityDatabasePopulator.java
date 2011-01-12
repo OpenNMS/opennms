@@ -43,6 +43,7 @@ import java.util.Date;
 
 import junit.framework.Assert;
 
+import org.opennms.core.utils.LogUtils;
 import org.opennms.netmgt.dao.AcknowledgmentDao;
 import org.opennms.netmgt.dao.AlarmDao;
 import org.opennms.netmgt.dao.AssetRecordDao;
@@ -265,9 +266,8 @@ public class AvailabilityDatabasePopulator {
             getOutageDao().save(outage6);
             getOutageDao().flush();
             
-        } catch (ParseException e) {
-            // TODO Auto-generated catch block
-            e.printStackTrace();
+        } catch (final ParseException e) {
+            LogUtils.warnf(this, e, "populating database failed");
         }
         
   

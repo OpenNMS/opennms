@@ -81,14 +81,16 @@ public class PDFReportRenderer implements ReportRenderer {
 
     private String m_baseDir;
 
-    private ThreadCategory log;
+    private final ThreadCategory log;
 
     /**
      * <p>Constructor for PDFReportRenderer.</p>
      */
     public PDFReportRenderer() {
+        String oldPrefix = ThreadCategory.getPrefix();
         ThreadCategory.setPrefix(LOG4J_CATEGORY);
         log = ThreadCategory.getInstance(PDFReportRenderer.class);
+        ThreadCategory.setPrefix(oldPrefix);
     }
 
     /**

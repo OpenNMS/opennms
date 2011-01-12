@@ -35,6 +35,9 @@
 //
 package org.opennms.netmgt.model;
 
+import java.util.Date;
+
+import org.opennms.netmgt.model.OnmsArpInterface.StatusType;
 import org.springframework.beans.BeanWrapper;
 import org.springframework.beans.BeanWrapperImpl;
 
@@ -53,6 +56,8 @@ public class NetworkBuilder {
 	BeanWrapper m_assetBean;
 
 	OnmsIpInterface m_currentIf;
+
+	OnmsArpInterface m_currentAtIf;
 
 	OnmsMonitoredService m_currentMonSvc;
 
@@ -193,6 +198,43 @@ public class NetworkBuilder {
 		}
 	}
     
+    public class AtInterfaceBuilder {
+        OnmsArpInterface m_iface;
+
+        AtInterfaceBuilder(OnmsArpInterface iface) {
+            m_iface = iface;
+        }
+
+        public AtInterfaceBuilder setStatus(char managed) {
+            m_iface.setStatus(StatusType.get(managed));
+            return this;
+        }
+
+        public AtInterfaceBuilder setIfIndex(int ifIndex) {
+            m_iface.setIfIndex(ifIndex);
+            return this;
+        }
+
+        public AtInterfaceBuilder setSourceNode(OnmsNode node) {
+            m_iface.setSourceNode(node);
+            return this;
+        }
+
+        public OnmsArpInterface getInterface() {
+            return m_iface;
+        }
+
+        public AtInterfaceBuilder setId(int id) {
+            m_iface.setId(id);
+            return this;
+        }
+
+        public AtInterfaceBuilder setLastPollTime(Date timestamp) {
+            m_iface.setLastPoll(timestamp);
+            return this;
+        }
+    }
+    
     /**
      * <p>addInterface</p>
      *
@@ -204,6 +246,13 @@ public class NetworkBuilder {
         m_currentIf = new OnmsIpInterface(ipAddr, m_currentNode);
         m_currentIf.setSnmpInterface(snmpInterface);
         return new InterfaceBuilder(m_currentIf);
+    }
+
+    /**
+     */
+    public AtInterfaceBuilder addAtInterface(String ipAddr, String physAddr) {
+        m_currentAtIf = new OnmsArpInterface(ipAddr, physAddr, m_currentNode);
+        return new AtInterfaceBuilder(m_currentAtIf);
     }
 
     

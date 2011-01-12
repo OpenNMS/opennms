@@ -212,8 +212,8 @@
 <% } %>
 	<jsp:include page="/includes/key.jsp" flush="false" />
         <form action="notification/acknowledge" method="post" name="acknowledge_form">
-          <input type="hidden" name="curUser" value="<%=request.getRemoteUser()%>">
-          <input type="hidden" name="redirectParms" value="<%=org.opennms.web.api.Util.htmlify(request.getQueryString())%>" />
+          <input type="hidden" name="curUser" value="<%=request.getRemoteUser()%>"/>
+          <input type="hidden" name="redirectParms" value="<c:out value="<%=request.getQueryString()%>"/>" />
           <%=org.opennms.web.api.Util.makeHiddenTags(request)%>
       <table>
 			<thead>
@@ -280,7 +280,7 @@
                   <c:param name="node" value="<%=String.valueOf(notices[i].getNodeId())%>"/>
                   <c:param name="intf" value="<%=notices[i].getIpAddress()%>"/>
                 </c:url>
-                <a href="${interfaceLink}" title="More info on this interface"><%=notices[i].getIpAddress()%></a>
+                <a href="<c:out value="${interfaceLink}"/>" title="More info on this interface"><%=notices[i].getIpAddress()%></a>
               <% } else { %>
                  <%=notices[i].getInterfaceId()%>
               <% } %>
@@ -298,7 +298,7 @@
                   <c:param name="intf" value="<%=notices[i].getIpAddress()%>"/>
                   <c:param name="service" value="<%=String.valueOf(notices[i].getServiceId())%>"/>
                 </c:url>
-                <a href="${serviceLink}" title="More info on this service"><c:out value="<%=notices[i].getServiceName()%>"/></a>
+                <a href="<c:out value="${serviceLink}"/>" title="More info on this service"><c:out value="<%=notices[i].getServiceName()%>"/></a>
               <% } else { %>
                 <c:out value="<%=notices[i].getServiceName()%>"/>
               <% } %>
@@ -346,6 +346,8 @@
     protected String makeSortLink( NoticeQueryParms parms, SortStyle style, SortStyle revStyle, String sortString, String title ) {
       StringBuffer buffer = new StringBuffer();
 
+      buffer.append( "<nobr>" );
+
       if( parms.sortStyle == style ) {
           buffer.append( "<img src=\"images/arrowdown.gif\" hspace=\"0\" vspace=\"0\" border=\"0\" alt=\"" );
           buffer.append( title );
@@ -371,6 +373,8 @@
       buffer.append( title );
       buffer.append( "</a>" );
 
+      buffer.append( "</nobr>" );
+
       return( buffer.toString() );
     }
 
@@ -378,15 +382,15 @@
       StringBuffer buffer = new StringBuffer( this.urlBase );
       buffer.append( "?sortby=" );
       buffer.append( sortStyle.getShortName() );
-      buffer.append( "&acktype=" );
+      buffer.append( "&amp;acktype=" );
       buffer.append( ackType.getShortName() );
       if (limit > 0) {
-          buffer.append( "&limit=" ).append(limit);
+          buffer.append( "&amp;limit=" ).append(limit);
       }
 
       if( filters != null ) {
         for( int i=0; i < filters.size(); i++ ) {
-          buffer.append( "&filter=" );
+          buffer.append( "&amp;filter=" );
           String filterString = filters.get(i).getDescription();
           buffer.append( java.net.URLEncoder.encode(filterString) );
         }

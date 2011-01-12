@@ -1,5 +1,6 @@
 package org.opennms.netmgt.provision.persist.policies;
 
+import org.opennms.core.utils.LogUtils;
 import org.opennms.netmgt.model.OnmsIpInterface;
 import org.opennms.netmgt.provision.BasePolicy;
 import org.opennms.netmgt.provision.IpInterfacePolicy;
@@ -55,14 +56,14 @@ public class MatchingIpInterfacePolicy extends BasePolicy<OnmsIpInterface> imple
     public OnmsIpInterface act(OnmsIpInterface iface) {
         switch (m_action) {
         case DO_NOT_PERSIST: 
-            info("NOT Peristing %s according to policy", iface);
+            LogUtils.debugf(this, "NOT Peristing %s according to policy", iface);
             return null;
         case MANAGE:
-            info("Managing %s according to policy", iface);
+            LogUtils.debugf(this, "Managing %s according to policy", iface);
             iface.setIsManaged("M");
             return iface;
         case UNMANAGE:
-            info("Unmanaging %s according to policy", iface);
+            LogUtils.debugf(this, "Unmanaging %s according to policy", iface);
             iface.setIsManaged("U");
             return iface;
         default:

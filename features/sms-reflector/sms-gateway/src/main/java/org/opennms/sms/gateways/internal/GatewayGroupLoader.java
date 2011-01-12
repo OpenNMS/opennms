@@ -5,6 +5,7 @@ import java.io.InputStream;
 import java.net.URL;
 import java.util.Properties;
 
+import org.opennms.core.utils.LogUtils;
 import org.opennms.sms.reflector.smsservice.GatewayGroup;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -123,14 +124,14 @@ public class GatewayGroupLoader implements InitializingBean {
         try{
             in = configURL.openStream();
             modemProperties.load(in);
-        } catch (IOException e) {
-            e.printStackTrace();
+        } catch (final IOException e) {
+            LogUtils.errorf(GatewayGroupLoader.class, e, "Unable to load properties.");
         }finally{
             if(in != null){
                 try {
                     in.close();
-                } catch (IOException e) {
-                    e.printStackTrace();
+                } catch (final IOException e) {
+                    LogUtils.warnf(GatewayGroupLoader.class, e, "unable to close config stream");
                 }
             }
         }

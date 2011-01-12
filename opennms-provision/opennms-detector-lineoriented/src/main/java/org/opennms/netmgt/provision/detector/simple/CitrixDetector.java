@@ -63,7 +63,7 @@ public class CitrixDetector extends AsyncLineOrientedDetector {
      * @param serviceName a {@link java.lang.String} object.
      * @param port a int.
      */
-    public CitrixDetector(String serviceName, int port) {
+    public CitrixDetector(final String serviceName, final int port) {
         super(serviceName, port);
     }
     

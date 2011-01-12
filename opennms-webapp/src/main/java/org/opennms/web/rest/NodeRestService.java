@@ -83,8 +83,6 @@ import com.sun.jersey.spi.resource.PerRequest;
 @Transactional
 public class NodeRestService extends OnmsRestService {
     
-    private static final int LIMIT=10;
-	
     @Autowired
     private NodeDao m_nodeDao;
     
@@ -105,14 +103,14 @@ public class NodeRestService extends OnmsRestService {
     @GET
     @Produces({MediaType.APPLICATION_XML, MediaType.APPLICATION_JSON})
     public OnmsNodeList getNodes() {
-        OnmsCriteria criteria = getQueryFilters();
-        
-        OnmsNodeList nodeList = new OnmsNodeList(m_nodeDao.findMatching(criteria));
-        
-        OnmsCriteria countCrit = getQueryFilters();
-        int count = m_nodeDao.countMatching(countCrit);
-        nodeList.setTotalCount(count);
-        return nodeList;
+        OnmsNodeList coll = new OnmsNodeList(m_nodeDao.findMatching(getQueryFilters(m_uriInfo.getQueryParameters())));
+
+        //For getting totalCount
+        OnmsCriteria crit = new OnmsCriteria(OnmsNode.class);
+        addFiltersToCriteria(m_uriInfo.getQueryParameters(), crit, OnmsNode.class);
+        coll.setTotalCount(m_nodeDao.countMatching(crit));
+
+        return coll;
     }
 
     /**
@@ -239,16 +237,25 @@ public class NodeRestService extends OnmsRestService {
         return m_context.getResource(AssetRecordResource.class);
     }
     
-    private OnmsCriteria getQueryFilters() {
-        MultivaluedMap<String,String> params = m_uriInfo.getQueryParameters();
+    private OnmsCriteria getQueryFilters(MultivaluedMap<String,String> params) {
         OnmsCriteria criteria = new OnmsCriteria(OnmsNode.class);
 
-    	setLimitOffset(params, criteria, LIMIT, false);
+        setLimitOffset(params, criteria, DEFAULT_LIMIT, false);
         addOrdering(params, criteria, false);
-    	addFiltersToCriteria(params, criteria, OnmsNode.class);
+        // Set default ordering
+        addOrdering(
+            new MultivaluedMapImpl(
+                new String[][] { 
+                    new String[] { "orderBy", "label" }, 
+                    new String[] { "order", "asc" } 
+                }
+            ), criteria, false
+        );
+        addFiltersToCriteria(params, criteria, OnmsNode.class);
 
-    	criteria.createAlias("snmpInterfaces", "snmpInterface", CriteriaSpecification.LEFT_JOIN);
+        criteria.createAlias("snmpInterfaces", "snmpInterface", CriteriaSpecification.LEFT_JOIN);
         criteria.createAlias("ipInterfaces", "ipInterface", CriteriaSpecification.LEFT_JOIN);
+
         return getDistinctIdCriteria(OnmsNode.class, criteria);
     }
     

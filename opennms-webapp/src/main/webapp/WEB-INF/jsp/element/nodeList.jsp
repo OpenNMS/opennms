@@ -50,12 +50,14 @@
 </c:if>
 <c:if test="${model.interfaceCount == 1 && (command.snmpParm != null || command.maclike != null)}">
   <c:choose>
+    <%-- @ipv6 --%>
     <c:when test="${model.nodes[0].arpInterfaces[0].ipAddress != null && model.nodes[0].arpInterfaces[0].ipAddress != '0.0.0.0'}">
       <jsp:forward page="/element/interface.jsp?node=${model.nodes[0].node.id}&intf=${model.nodes[0].arpInterfaces[0].ipAddress}"/>
     </c:when>
     <c:when test="${model.nodes[0].snmpInterfaces[0].ipAddress == null || model.nodes[0].snmpInterfaces[0].ipAddress == '0.0.0.0'}">
       <jsp:forward page="/element/snmpinterface.jsp?node=${model.nodes[0].node.id}&ifindex=${model.nodes[0].snmpInterfaces[0].ifIndex}"/>
     </c:when>
+    <%-- @ipv6 --%>
     <c:when test="${model.nodes[0].snmpInterfaces[0].ipAddress != null && model.nodes[0].snmpInterfaces[0].ipAddress != '0.0.0.0'}">
       <jsp:forward page="/element/interface.jsp?node=${model.nodes[0].node.id}&intf=${model.nodes[0].snmpInterfaces[0].ipAddress}"/>
     </c:when>

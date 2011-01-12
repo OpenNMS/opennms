@@ -63,7 +63,7 @@ public class OnmsNodeList extends LinkedList<OnmsNode> {
      * @return a {@link java.lang.Integer} object.
      */
     @XmlAttribute(name="count")
-    public Integer getCount() {
+    public int getCount() {
         return this.size();
     }
     

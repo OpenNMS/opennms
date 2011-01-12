@@ -43,6 +43,7 @@ import java.net.InetAddress;
 import java.net.InetSocketAddress;
 import java.net.Socket;
 
+import org.opennms.core.utils.LogUtils;
 import org.opennms.netmgt.provision.detector.simple.request.LineOrientedRequest;
 import org.opennms.netmgt.provision.detector.simple.response.LineOrientedResponse;
 import org.opennms.netmgt.provision.support.Client;
@@ -60,8 +61,8 @@ public class LineOrientedClient implements Client<LineOrientedRequest, LineOrien
     private BufferedReader m_in;
     
     /** {@inheritDoc} */
-    public void connect(InetAddress host, int port, int timeout) throws IOException, Exception {        
-        Socket socket = new Socket();
+    public void connect(final InetAddress host, final int port, final int timeout) throws IOException, Exception {        
+        final Socket socket = new Socket();
         socket.connect(new InetSocketAddress(host, port), timeout);
         socket.setSoTimeout(timeout);
         setInput(new BufferedReader(new InputStreamReader(socket.getInputStream())));
@@ -77,7 +78,7 @@ public class LineOrientedClient implements Client<LineOrientedRequest, LineOrien
      * @return a {@link org.opennms.netmgt.provision.detector.simple.response.LineOrientedResponse} object.
      * @throws java.io.IOException if any.
      */
-    public LineOrientedResponse sendRequest(LineOrientedRequest request) throws IOException {
+    public LineOrientedResponse sendRequest(final LineOrientedRequest request) throws IOException {
         request.send(getOutput());
         return receiveResponse();
     }
@@ -108,14 +109,14 @@ public class LineOrientedClient implements Client<LineOrientedRequest, LineOrien
      * <p>close</p>
      */
     public void close() {
-        Socket socket = m_socket;
+        final Socket socket = m_socket;
         m_socket = null;
         try {
             if (socket != null) {
                 socket.close();
             }
-        } catch (IOException e) {
-            e.printStackTrace();
+        } catch (final IOException e) {
+            LogUtils.debugf(this, e, "Unable to close socket");
         }
     }
 
@@ -124,7 +125,7 @@ public class LineOrientedClient implements Client<LineOrientedRequest, LineOrien
      *
      * @param out a {@link java.io.OutputStream} object.
      */
-    public void setOutput(OutputStream out) {
+    public void setOutput(final OutputStream out) {
         m_out = out;
     }
 
@@ -142,7 +143,7 @@ public class LineOrientedClient implements Client<LineOrientedRequest, LineOrien
      *
      * @param in a {@link java.io.BufferedReader} object.
      */
-    public void setInput(BufferedReader in) {
+    public void setInput(final BufferedReader in) {
         m_in = in;
     }
 

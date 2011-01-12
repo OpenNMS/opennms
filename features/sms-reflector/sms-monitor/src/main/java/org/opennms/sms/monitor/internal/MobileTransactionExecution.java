@@ -35,6 +35,7 @@ import java.util.Iterator;
 import java.util.LinkedHashSet;
 import java.util.Set;
 
+import org.apache.commons.lang.builder.ToStringBuilder;
 import org.opennms.core.tasks.Callback;
 import org.opennms.sms.monitor.MobileSequenceSession;
 import org.opennms.sms.monitor.internal.config.MobileSequenceResponse;
@@ -113,6 +114,13 @@ public class MobileTransactionExecution {
         public void handleError(MobileMsgRequest request, Throwable t) {
             setError(t);
             m_cb.handleException(t);
+        }
+        
+        public String toString() {
+            return new ToStringBuilder(this)
+                .append("callback", m_cb)
+                .append("session", m_session)
+                .toString();
         }
     }
 

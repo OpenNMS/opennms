@@ -21,6 +21,7 @@ public class OnmsNotificationCollection extends LinkedList<OnmsNotification> {
      * 
      */
     private static final long serialVersionUID = 1140502309473962746L;
+    private int m_totalCount;
 
     /**
 	 * <p>Constructor for OnmsNotificationCollection.</p>
@@ -67,5 +68,23 @@ public class OnmsNotificationCollection extends LinkedList<OnmsNotification> {
     public Integer getCount() {
     	return this.size();
     }
-}
 
+    /**
+     * <p>getTotalCount</p>
+     *
+     * @return a int.
+     */
+    @XmlAttribute(name="totalCount")
+    public int getTotalCount() {
+        return m_totalCount;
+    }
+
+    /**
+     * <p>setTotalCount</p>
+     *
+     * @param count a int.
+     */
+    public void setTotalCount(int count) {
+        m_totalCount = count;
+    }
+}

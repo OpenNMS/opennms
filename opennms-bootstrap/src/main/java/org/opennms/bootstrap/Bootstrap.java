@@ -37,7 +37,6 @@ import java.io.FileInputStream;
 import java.io.FilenameFilter;
 import java.io.IOException;
 import java.io.InputStream;
-import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
 import java.net.MalformedURLException;
 import java.net.URL;
@@ -351,13 +350,7 @@ public class Bootstrap {
                 public void run() {
                     try {
                         method.invoke(null, methodArgs);
-                    } catch (IllegalArgumentException e) {
-                        e.printStackTrace();
-                        System.exit(1);
-                    } catch (IllegalAccessException e) {
-                        e.printStackTrace();
-                        System.exit(1);
-                    } catch (InvocationTargetException e) {
+                    } catch (final Exception e) {
                         e.printStackTrace();
                         System.exit(1);
                     }

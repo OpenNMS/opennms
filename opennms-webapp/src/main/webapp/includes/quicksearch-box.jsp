@@ -74,7 +74,7 @@
       <input type="text" name="iplike" value="*.*.*.*" />
       <input type="submit" value="Search"/>               
     </form>
-    <form action="element/nodeList.htm" method="GET">
+    <form action="element/nodeList.htm" method="get">
       <font style="font-size: 70%; line-height: 1.25em; align=left">Providing service:</font><br />
       <input type="hidden" name="listInterfaces" value="false"/>
       <select name="service" size="1">

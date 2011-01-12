@@ -129,7 +129,7 @@ public final class DNSAddressRR {
      * 
      * @return The address in the dotted decimal format.
      */
-    private String AddressToByteString() {
+    private String addressToByteString() {
         return ipAddress[0] + "." + ipAddress[1] + "." + ipAddress[2] + "." + ipAddress[3];
     }
 
@@ -154,7 +154,7 @@ public final class DNSAddressRR {
      *                DNSInputStream.
      * @throws java.io.IOException if any.
      */
-    public DNSAddressRR(String name, int type, int clas, long ttl, DNSInputStream dnsIn) throws IOException {
+    public DNSAddressRR(final String name, final int type, final int clas, final long ttl, final DNSInputStream dnsIn) throws IOException {
         m_name = name;
         m_type = type;
         m_class = clas;
@@ -176,7 +176,7 @@ public final class DNSAddressRR {
      * @return The address as a byte array.
      */
     public byte[] getAddress() {
-        byte[] ip = new byte[4];
+        final byte[] ip = new byte[4];
         for (int j = 0; j < 4; j++)
             ip[j] = (byte) (ipAddress[j]);
         return ip;
@@ -193,7 +193,7 @@ public final class DNSAddressRR {
      * @throws java.net.UnknownHostException if any.
      */
     public InetAddress getInetAddress() throws UnknownHostException {
-        return InetAddress.getByName(AddressToByteString());
+        return InetAddress.getByName(addressToByteString());
     }
 
     /**
@@ -205,7 +205,7 @@ public final class DNSAddressRR {
      * @return The string describing the object.
      */
     public String toString() {
-        return getRRName() + "\tInternet Address = " + AddressToByteString();
+        return getRRName() + "\tInternet Address = " + addressToByteString();
     }
 
     /**

@@ -57,6 +57,7 @@
                 org.springframework.web.context.WebApplicationContext,
                 org.springframework.web.context.support.WebApplicationContextUtils"
 %>
+<%@taglib uri="http://java.sun.com/jsp/jstl/core" prefix="c" %>
 
 <%!
     private WebApplicationContext m_webAppContext;
@@ -151,14 +152,16 @@ function doDelete() {
 
                           List<OnmsResource> resources = m_resourceService.findNodeChildResources(nodeId);
                           for (OnmsResource resource : resources) {
-                              if (resource.getName().equals(ipAddr) || resource.getName().equals(ifLabel)) {
-                                  out.println("<li>");
-                                  out.println("<a href=\"graph/results.htm?reports=all"
-                                              + "&amp;resourceId="
-                                              + Util.encode(resource.getId())
-                                              + "\">" + Util.htmlify(resource.getResourceType().getLabel())
-                                              + " Graphs</a>");
-                                  out.println("</li>");
+                              if (resource.getName().equals(ipAddr) || resource.getName().equals(ifLabel)) { 
+                                  %>
+                                      <c:url var="graphLink" value="graph/results.htm">
+                                          <c:param name="reports" value="all"/>
+                                          <c:param name="resourceId" value="<%=resource.getId()%>"/>
+                                      </c:url>
+                                      <li>
+                                          <a href="<c:out value="${graphLink}"/>"><c:out value="<%=resource.getResourceType().getLabel()%>"/> Graphs</a>
+                                      </li>
+                                  <% 
                               }
                           }
       %>

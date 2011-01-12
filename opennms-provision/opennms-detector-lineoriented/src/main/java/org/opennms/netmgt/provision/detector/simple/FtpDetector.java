@@ -34,7 +34,7 @@ public class FtpDetector extends AsyncMultilineDetector {
      * @param serviceName a {@link java.lang.String} object.
      * @param port a int.
      */
-    public FtpDetector(String serviceName, int port) {
+    public FtpDetector(final String serviceName, final int port) {
         super(serviceName, port);
     }
 
@@ -54,7 +54,7 @@ public class FtpDetector extends AsyncMultilineDetector {
      *
      * @param multilineIndicator a {@link java.lang.String} object.
      */
-    public void setMultilineIndicator(String multilineIndicator) {
+    public void setMultilineIndicator(final String multilineIndicator) {
         m_multilineIndicator = multilineIndicator;
     }
 
