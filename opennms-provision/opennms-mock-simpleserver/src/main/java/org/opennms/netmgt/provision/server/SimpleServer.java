@@ -37,6 +37,7 @@ import java.io.OutputStream;
 import java.net.InetAddress;
 import java.net.ServerSocket;
 import java.net.Socket;
+import java.util.concurrent.CountDownLatch;
 
 import org.apache.commons.io.IOUtils;
 import org.opennms.core.utils.LogUtils;
@@ -80,7 +81,8 @@ public class SimpleServer extends SimpleConversationEndPoint {
     private Socket m_socket;
     private String m_banner;
     protected volatile boolean m_stopped = false;
-    
+    protected CountDownLatch m_latch = new CountDownLatch(1);
+
     /**
      * <p>setBanner</p>
      *
@@ -169,13 +171,17 @@ public class SimpleServer extends SimpleConversationEndPoint {
      */
     public void stopServer() throws IOException {
         m_stopped = true;
+        try {
+            m_latch.await();
+        } catch (final InterruptedException e) {
+            LogUtils.warnf(this, e, "interrupted while waiting for server to stop");
+            Thread.currentThread().interrupt();
+        }
         getServerSocket().close();
         if(getServerThread() != null && getServerThread().isAlive()) { 
-            
             if(getSocket() != null && !getSocket().isClosed()) {
                getSocket().close();  
             }
-            
         }
     }
     
@@ -220,15 +226,17 @@ public class SimpleServer extends SimpleConversationEndPoint {
                         attemptConversation(in, out);
                     }
                 } catch (final Exception e){
-                    LogUtils.infof(this, e, "SimpleServer Exception on conversation");
+                    LogUtils.infof(this, e, "error during conversation");
                 } finally {
                     IOUtils.closeQuietly(in);
                     IOUtils.closeQuietly(isr);
                     IOUtils.closeQuietly(out);
+                    m_latch.countDown();
                     try {
+                        // just in case we're stopping because of an exception
                         stopServer();
                     } catch (final IOException e) {
-                        LogUtils.infof(this, e, "SimpleServer Exception on stopping server");
+                        LogUtils.infof(this, e, "error while stopping server");
                     }
                 }
             }
