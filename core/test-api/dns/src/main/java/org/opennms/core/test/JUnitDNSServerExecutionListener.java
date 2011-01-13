@@ -28,13 +28,14 @@ public class JUnitDNSServerExecutionListener extends OpenNMSAbstractTestExecutio
 
     /** {@inheritDoc} */
     @Override
-    public void beforeTestMethod(TestContext testContext) throws Exception {
+    public void beforeTestMethod(final TestContext testContext) throws Exception {
         super.beforeTestMethod(testContext);
 
         final JUnitDNSServer config = findTestAnnotation(JUnitDNSServer.class, testContext);
 
-        if (config == null)
+        if (config == null) {
             return;
+        }
 
         LogUtils.infof(this, "initializing DNS on port %d", config.port());
 
@@ -51,7 +52,9 @@ public class JUnitDNSServerExecutionListener extends OpenNMSAbstractTestExecutio
             final Zone zone = new Zone(zoneName, new Record[] {
                     new SOARecord(zoneName, DClass.IN, DEFAULT_TTL, zoneName, Name.fromString("admin." + name), 1, DEFAULT_TTL, DEFAULT_TTL, DEFAULT_TTL, DEFAULT_TTL),
                     new NSRecord(zoneName, DClass.IN, DEFAULT_TTL, Name.fromString("resolver1.opendns.com.")),
-                    new NSRecord(zoneName, DClass.IN, DEFAULT_TTL, Name.fromString("resolver2.opendns.com."))
+                    new NSRecord(zoneName, DClass.IN, DEFAULT_TTL, Name.fromString("resolver2.opendns.com.")),
+                    new ARecord(zoneName, DClass.IN, DEFAULT_TTL, InetAddress.getByName(dnsZone.v4address())),
+                    new AAAARecord(zoneName, DClass.IN, DEFAULT_TTL, InetAddress.getByName(dnsZone.v6address()))
             });
             LogUtils.debugf(this, "zone = %s", zone);
 
@@ -69,7 +72,7 @@ public class JUnitDNSServerExecutionListener extends OpenNMSAbstractTestExecutio
 
             m_server.addZone(zone);
         }
-        
+
         LogUtils.debugf(this, "starting DNS server");
         m_server.start();
     }
@@ -79,8 +82,10 @@ public class JUnitDNSServerExecutionListener extends OpenNMSAbstractTestExecutio
     public void afterTestMethod(TestContext testContext) throws Exception {
         super.afterTestMethod(testContext);
 
-        LogUtils.infof(this, "stopping DNS server");
-        m_server.stop();
+        if (m_server != null) {
+            LogUtils.infof(this, "stopping DNS server");
+            m_server.stop();
+        }
     }
 
 }

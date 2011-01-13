@@ -10,6 +10,8 @@ import java.lang.annotation.Target;
 public @interface DNSZone {
 
     String name();
+    String v4address() default "127.0.0.1";
+    String v6address() default "::1";
     DNSEntry[] entries() default {};
 
 }

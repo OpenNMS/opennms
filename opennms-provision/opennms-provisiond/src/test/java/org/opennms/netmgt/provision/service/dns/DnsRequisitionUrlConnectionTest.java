@@ -50,12 +50,20 @@ import junit.framework.Assert;
 import org.exolab.castor.xml.MarshalException;
 import org.exolab.castor.xml.ValidationException;
 import org.junit.Before;
-import org.junit.Ignore;
+import org.junit.BeforeClass;
 import org.junit.Test;
+import org.junit.runner.RunWith;
+import org.opennms.core.test.JUnitDNSServerExecutionListener;
+import org.opennms.core.test.annotations.DNSEntry;
+import org.opennms.core.test.annotations.DNSZone;
+import org.opennms.core.test.annotations.JUnitDNSServer;
 import org.opennms.netmgt.provision.persist.requisition.Requisition;
 import org.opennms.test.mock.MockLogAppender;
 import org.springframework.core.io.Resource;
 import org.springframework.core.io.UrlResource;
+import org.springframework.test.context.ContextConfiguration;
+import org.springframework.test.context.TestExecutionListeners;
+import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
 
 /**
  * This class tests the new "dns" protocol handling created for the Provisioner.
@@ -63,12 +71,17 @@ import org.springframework.core.io.UrlResource;
  * @author <a href="mailto:david@opennms.org">David Hustace</a>
  *
  */
+@RunWith(SpringJUnit4ClassRunner.class)
+@ContextConfiguration(locations={"classpath:/META-INF/opennms/empty-context.xml"})
+@TestExecutionListeners(listeners={
+                        JUnitDNSServerExecutionListener.class
+})
 public class DnsRequisitionUrlConnectionTest {
 
-    private static final String TEST_URL = "dns://localhost/localhost";
+    private static final String TEST_URL = "dns://localhost:9153/example.com";
 
-    @Before
-    public void setUp() {
+    @BeforeClass
+    static public void setUp() {
         MockLogAppender.setupLogging();
     }
 
@@ -208,7 +221,11 @@ public class DnsRequisitionUrlConnectionTest {
     }
     
     @Test
-    @Ignore
+    @JUnitDNSServer(port=9153, zones={
+            @DNSZone(name="example.com", entries={
+                    @DNSEntry(hostname="www", address="72.14.204.99")
+            })
+    })
     public void dwoUrlAsResource() throws IOException, MarshalException, ValidationException, JAXBException {
         Resource resource = new UrlResource(TEST_URL);
         
@@ -222,16 +239,21 @@ public class DnsRequisitionUrlConnectionTest {
         um.setSchema(null);
         req = (Requisition) um.unmarshal(resourceStream);
         
-        Assert.assertEquals(1, req.getNodeCount());
+        Assert.assertEquals("should have 2 A records: 1 for example.com, and 1 for www.example.com", 2, req.getNodeCount());
         resourceStream.close();
     }
     
     @Test
-    @Ignore
+    @JUnitDNSServer(port=9153, zones={
+            @DNSZone(name="example.com", entries={
+                    @DNSEntry(hostname="www", address="72.14.204.99"),
+                    @DNSEntry(hostname="monkey", address="72.14.204.99")
+            })
+    })
     public void dwoUrlAsResourceUsingMatchingExpression() throws IOException, MarshalException, ValidationException, JAXBException {
-        String urlString = "dns://localhost/localhost/?expression=[Ll]ocal.*";
+        String urlString = "dns://localhost:9153/example.com/?expression=[Ww]ww.*";
         Resource resource = new UrlResource(urlString);
-        
+
         Assert.assertEquals(urlString, resource.getURL().toString());
         
         Requisition req = null;
@@ -247,9 +269,14 @@ public class DnsRequisitionUrlConnectionTest {
     }
 
     @Test
-    @Ignore
+    @JUnitDNSServer(port=9153, zones={
+            @DNSZone(name="example.com", entries={
+                    @DNSEntry(hostname="www", address="72.14.204.99"),
+                    @DNSEntry(hostname="monkey", address="72.14.204.99")
+            })
+    })
     public void dwoUrlAsResourceUsingNonMatchingExpression() throws IOException, MarshalException, ValidationException, JAXBException {
-        String urlString = "dns://localhost/localhost/?expression=Local.*";
+        String urlString = "dns://localhost:9153/example.com/?expression=Local.*";
         Resource resource = new UrlResource(urlString);
         
         Assert.assertEquals(urlString, resource.getURL().toString());
@@ -267,9 +294,13 @@ public class DnsRequisitionUrlConnectionTest {
     }
     
     @Test
-    @Ignore
+    @JUnitDNSServer(port=9153, zones={
+            @DNSZone(name="example.com", entries={
+                    @DNSEntry(hostname="www", address="72.14.204.99")
+            })
+    })
     public void dwoUrlAsResourceUsingComplexMatchingExpression() throws IOException, MarshalException, ValidationException, JAXBException {
-        String urlString = "dns://localhost/localhost/?expression=(%3Fi)^LOCALH.*";
+        String urlString = "dns://localhost:9153/example.com/?expression=(%3Fi)^WWW.EXAM.*";
         Resource resource = new UrlResource(urlString);
         
         Assert.assertEquals(urlString, resource.getURL().toString());
@@ -297,13 +328,22 @@ public class DnsRequisitionUrlConnectionTest {
      * @throws IOException
      */
     @Test
+    @JUnitDNSServer(port=9153, zones={
+            @DNSZone(name="example.com", entries={
+                    @DNSEntry(hostname="www", address="72.14.204.99")
+            })
+    })
     public void dwoConnect() throws IOException {
         URLConnection c = new DnsRequisitionUrlConnection(new URL(TEST_URL));
         c.connect();
     }
 
     @Test
-    @Ignore
+    @JUnitDNSServer(port=9153, zones={
+            @DNSZone(name="example.com", entries={
+                    @DNSEntry(hostname="www", address="72.14.204.99")
+            })
+    })
     public void dwoGetInputStream() throws IOException {
         URLConnection c = new DnsRequisitionUrlConnection(new URL(TEST_URL));
         InputStream s = c.getInputStream();
@@ -316,7 +356,7 @@ public class DnsRequisitionUrlConnectionTest {
         URLConnection c = new DnsRequisitionUrlConnection(new URL(TEST_URL));
         Assert.assertEquals(53, c.getURL().getDefaultPort());
         Assert.assertEquals("localhost", c.getURL().getHost());
-        Assert.assertEquals("/localhost", c.getURL().getPath());
+        Assert.assertEquals("/example.com", c.getURL().getPath());
         Assert.assertEquals(DnsRequisitionUrlConnection.PROTOCOL, c.getURL().getProtocol());
         Assert.assertNull(c.getURL().getUserInfo());
     }

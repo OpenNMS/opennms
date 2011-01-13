@@ -3,9 +3,12 @@ package org.opennms.netmgt.provision;
 import java.util.concurrent.TimeUnit;
 
 import org.junit.Before;
-import org.junit.Ignore;
 import org.junit.Test;
 import org.junit.runner.RunWith;
+import org.opennms.core.test.JUnitDNSServerExecutionListener;
+import org.opennms.core.test.annotations.DNSEntry;
+import org.opennms.core.test.annotations.DNSZone;
+import org.opennms.core.test.annotations.JUnitDNSServer;
 import org.opennms.netmgt.dao.NodeDao;
 import org.opennms.netmgt.dao.db.JUnitTemporaryDatabase;
 import org.opennms.netmgt.dao.db.OpenNMSConfigurationExecutionListener;
@@ -29,7 +32,8 @@ import org.springframework.transaction.annotation.Transactional;
     TemporaryDatabaseExecutionListener.class,
     DependencyInjectionTestExecutionListener.class,
     DirtiesContextTestExecutionListener.class,
-    TransactionalTestExecutionListener.class
+    TransactionalTestExecutionListener.class,
+    JUnitDNSServerExecutionListener.class
 })
 @ContextConfiguration(locations= {
         "classpath:/META-INF/opennms/applicationContext-dao.xml",
@@ -38,7 +42,6 @@ import org.springframework.transaction.annotation.Transactional;
         "classpath:/META-INF/opennms/mockEventIpcManager.xml",
         "classpath:/META-INF/opennms/applicationContext-databasePopulator.xml",
         "classpath:/META-INF/opennms/provisiond-extensions.xml"})
-@JUnitTemporaryDatabase()
 public class DnsProvisioningAdapterTest {
     @Autowired
     private DnsProvisioningAdapter m_adapter;
@@ -63,13 +66,12 @@ public class DnsProvisioningAdapterTest {
             new SimpleQueuedProvisioningAdapter.AdapterOperationSchedule(0, 1, 1, TimeUnit.SECONDS)
         );
         
-        System.setProperty("importer.adapter.dns.server", "127.0.0.1");
+        System.setProperty("importer.adapter.dns.server", "127.0.0.1:9153");
         System.setProperty("importer.adapter.dns.privatekey", "hmac-md5/test.example.com./QBMBi+8THN8iyAuGIhniB+fiURwQjrrpwFuq1L6NmHcya7QdKqjwp6kLIczPjsAUDcqiLAdQJnQUhCPThA4XtQ==");
     }
 
     @Test
     @Transactional
-    @Ignore
     public void testAdd() throws Exception {
         OnmsNode n = m_nodeDao.findByForeignId("dns", "1");
         m_adapter.addNode(n.getId());
@@ -79,7 +81,12 @@ public class DnsProvisioningAdapterTest {
     
     @Test
     @Transactional
-    @Ignore
+    @JUnitTemporaryDatabase()
+    @JUnitDNSServer(port=9153, zones={
+            @DNSZone(name="example.com", entries={
+                    @DNSEntry(hostname="test", address="192.168.0.1")
+            })
+    })
     public void testDelete() throws Exception {
         OnmsNode n = m_nodeDao.findByForeignId("dns", "1");
         m_adapter.deleteNode(n.getId());

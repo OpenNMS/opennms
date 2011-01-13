@@ -58,6 +58,7 @@ import javax.xml.bind.Marshaller;
 
 import org.apache.commons.io.IOExceptionWithCause;
 import org.apache.commons.lang.StringUtils;
+import org.opennms.core.utils.LogUtils;
 import org.opennms.core.utils.ThreadCategory;
 import org.opennms.netmgt.provision.persist.ProvisionPrefixContextResolver;
 import org.opennms.netmgt.provision.persist.requisition.Requisition;
@@ -188,6 +189,7 @@ public class DnsRequisitionUrlConnection extends URLConnection {
 	ZoneTransferIn xfer = null;
         List<Record> records = null;
         
+        LogUtils.debugf(this, "connecting to host %s:%d", m_url.getHost(), m_port);
         try { 
             xfer = ZoneTransferIn.newIXFR(new Name(m_zone), 
                                         m_serial.longValue(), 
