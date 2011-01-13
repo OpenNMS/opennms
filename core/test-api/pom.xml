@@ -11,6 +11,7 @@
   <packaging>pom</packaging>
 
   <modules>
+    <module>dns</module>
     <module>lib</module>
     <module>http</module>
   </modules>

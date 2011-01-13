@@ -40,14 +40,30 @@ import java.net.UnknownHostException;
 import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
+import org.junit.runner.RunWith;
+import org.opennms.core.test.JUnitDNSServerExecutionListener;
+import org.opennms.core.test.annotations.DNSEntry;
+import org.opennms.core.test.annotations.DNSZone;
+import org.opennms.core.test.annotations.JUnitDNSServer;
 import org.opennms.netmgt.provision.detector.datagram.DnsDetector;
 import org.opennms.netmgt.provision.support.NullDetectorMonitor;
 import org.opennms.test.mock.MockLogAppender;
+import org.springframework.test.context.ContextConfiguration;
+import org.springframework.test.context.TestExecutionListeners;
+import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
 
 /**
  * @author Donald Desloge
  *
  */
+@RunWith(SpringJUnit4ClassRunner.class)
+@ContextConfiguration(locations={"classpath:/META-INF/opennms/empty-context.xml"})
+@TestExecutionListeners(JUnitDNSServerExecutionListener.class)
+@JUnitDNSServer(port=9153, zones={
+        @DNSZone(name="google.com.", entries={
+                @DNSEntry(hostname="www", address="72.14.204.99")
+        })
+})
 public class DnsDetectorTest {
     
     private DnsDetector m_detector;
@@ -69,23 +85,13 @@ public class DnsDetectorTest {
         //m_serverThread.stop();
     }
     
-//    @Test
-//    public void testMyDetector() throws UnknownHostException {
-//        m_detector.setPort(4445);
-//        m_detector.setLookup("www.google.com");
-//        
-//        assertTrue(m_detector.isServiceDetected(InetAddress.getByName("192.168.1.101"), new NullDetectorMonitor()));
-//
-//    }
-    
     @Test
     public void testDetectorSuccess() throws UnknownHostException {
-        m_detector.setPort(53);
+        m_detector.setPort(9153);
         m_detector.setLookup("www.google.com");
         m_detector.init();
         
-        assertTrue(m_detector.isServiceDetected(InetAddress.getByName("208.67.222.222"), new NullDetectorMonitor()));
-
+        assertTrue(m_detector.isServiceDetected(InetAddress.getByName("localhost"), new NullDetectorMonitor()));
     }
     
     @Test
@@ -94,7 +100,7 @@ public class DnsDetectorTest {
         m_detector.setLookup("www.google.com");
         m_detector.init();
         
-        assertFalse(m_detector.isServiceDetected(InetAddress.getByName("208.67.222.222"), new NullDetectorMonitor()));
+        assertFalse(m_detector.isServiceDetected(InetAddress.getByName("localhost"), new NullDetectorMonitor()));
 
     }
 }
