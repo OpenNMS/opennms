@@ -38,7 +38,6 @@ import java.util.Iterator;
 import java.util.List;
 
 import org.opennms.core.utils.LogUtils;
-import org.opennms.core.utils.ThreadCategory;
 
 /**
  * <p>Conversation class.</p>
@@ -101,7 +100,7 @@ public class Conversation {
            try { 
                 if(m_conversation.size() == 0) { return; }
                 String line  = in.readLine();
-                LogUtils.infof(this, "Server line read: " + line);
+                LogUtils.debugf(this, "Server line read: " + line);
                 
                 if(line == null) {
                     return;
@@ -118,7 +117,8 @@ public class Conversation {
                 }
            }catch(Exception e) {
                isFinished = true;
-               info(e, "SimpleServer conversation attempt failed");
+               Object[] args = {};
+               LogUtils.infof(this, e, "SimpleServer conversation attempt failed", args);
            }
             
         }
@@ -141,11 +141,11 @@ public class Conversation {
             if(!ex.processResponse(in)) {
                return false; 
             }
-            LogUtils.infof(this, "processed response successfully");
+            LogUtils.debugf(this, "processed response successfully");
             if(!ex.sendRequest(out)) {
                 return false;
             }
-            LogUtils.infof(this, "send request if there was a request");
+            LogUtils.debugf(this, "send request if there was a request");
         }
         
         return true;
@@ -210,13 +210,6 @@ public class Conversation {
             }
             
         };
-    }
-    
-    private void info(Throwable t, String format, Object... args) {
-        ThreadCategory log = ThreadCategory.getInstance(getClass());
-        if (log.isInfoEnabled()) {
-            log.info(String.format(format, args), t);
-        }
     }
 
     
