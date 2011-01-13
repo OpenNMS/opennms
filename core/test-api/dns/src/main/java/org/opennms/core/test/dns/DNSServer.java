@@ -67,11 +67,42 @@ public class DNSServer {
                 while (!m_stopped) {
                     try {
                         final Socket s = m_socket.accept();
-                        Thread t;
-                        t = new Thread(new Runnable() {
+                        final Thread t = new Thread(new Runnable() {
                             public void run() {
                                 try {
-                                    handleTCPRequest(s);
+                                    try {
+                                        final InputStream is = s.getInputStream();
+                                        final DataInputStream dataIn = new DataInputStream(is);
+                                        final int inLength = dataIn.readUnsignedShort();
+                                        final byte[] in = new byte[inLength];
+                                        dataIn.readFully(in);
+
+                                        final Message query;
+                                        byte[] response = null;
+                                        try {
+                                            query = new Message(in);
+                                            LogUtils.debugf(this, "received query: %s", query);
+                                            response = generateReply(query, in, in.length, s);
+                                        } catch (final IOException e) {
+                                            response = formerrMessage(in);
+                                        }
+                                        LogUtils.debugf(this, "returned response: %s", response == null? null : new Message(response));
+                                        if (response != null) {
+                                            final DataOutputStream dataOut = new DataOutputStream(s.getOutputStream());
+                                            dataOut.writeShort(response.length);
+                                            dataOut.write(response);
+                                        }
+                                    } catch (final SocketTimeoutException e) {
+                                        throw e;
+                                    } catch (final IOException e) {
+                                        LogUtils.warnf(this, e, "error while processing socket");
+                                    } finally {
+                                        try {
+                                            s.close();
+                                        } catch (final IOException e) {
+                                            LogUtils.warnf(this, e, "unable to close TCP socket");
+                                        }
+                                    }
                                 } catch (final SocketTimeoutException e) {
                                     if (LogUtils.isTraceEnabled(this)) {
                                         LogUtils.tracef(this, e, "timed out waiting for request");
@@ -86,7 +117,7 @@ public class DNSServer {
                         }
                     }
                 }
-            } catch (IOException e) {
+            } catch (final IOException e) {
                 LogUtils.warnf(this, e, "unable to serve socket on %s", addrport(m_addr, m_port));
             } finally {
                 try {
@@ -209,13 +240,13 @@ public class DNSServer {
         for (final InetAddress addr : m_addresses) {
             for (final Integer port : m_ports) {
                 final UDPListener udpListener = new UDPListener(port, addr);
-                Thread t1 = new Thread(udpListener);
-                t1.start();
+                final Thread udpThread = new Thread(udpListener);
+                udpThread.start();
                 m_activeListeners.add(udpListener);
 
                 final TCPListener tcpListener = new TCPListener(port, addr);
-                Thread t = new Thread(tcpListener);
-                t.start();
+                final Thread tcpThread = new Thread(tcpListener);
+                tcpThread.start();
                 m_activeListeners.add(tcpListener);
 
                 LogUtils.infof(this, "listening on %s", addrport(addr, port));
@@ -249,34 +280,37 @@ public class DNSServer {
         try {
             String line = null;
             while ((line = br.readLine()) != null) {
-                StringTokenizer st = new StringTokenizer(line);
-                if (!st.hasMoreTokens())
+                final StringTokenizer st = new StringTokenizer(line);
+                if (!st.hasMoreTokens()) {
                     continue;
+                }
                 final String keyword = st.nextToken();
                 if (!st.hasMoreTokens()) {
                     LogUtils.warnf(this, "unable to parse line: %s", line);
                     continue;
                 }
-                if (keyword.charAt(0) == '#')
+                if (keyword.charAt(0) == '#') {
                     continue;
-                if (keyword.equals("primary"))
+                }
+                if (keyword.equals("primary")) {
                     addPrimaryZone(st.nextToken(), st.nextToken());
-                else if (keyword.equals("secondary"))
+                } else if (keyword.equals("secondary")) {
                     addSecondaryZone(st.nextToken(), st.nextToken());
-                else if (keyword.equals("cache")) {
-                    Cache cache = new Cache(st.nextToken());
+                } else if (keyword.equals("cache")) {
+                    final Cache cache = new Cache(st.nextToken());
                     m_caches.put(new Integer(DClass.IN), cache);
                 } else if (keyword.equals("key")) {
-                    String s1 = st.nextToken();
-                    String s2 = st.nextToken();
-                    if (st.hasMoreTokens())
+                    final String s1 = st.nextToken();
+                    final String s2 = st.nextToken();
+                    if (st.hasMoreTokens()) {
                         addTSIG(s1, s2, st.nextToken());
-                    else
+                    } else {
                         addTSIG("hmac-md5", s1, s2);
+                    }
                 } else if (keyword.equals("port")) {
                     m_ports.add(Integer.valueOf(st.nextToken()));
                 } else if (keyword.equals("address")) {
-                    String addr = st.nextToken();
+                    final String addr = st.nextToken();
                     m_addresses.add(Address.getByAddress(addr));
                 } else {
                     LogUtils.warnf(this, "unknown keyword: %s", keyword);
@@ -324,23 +358,23 @@ public class DNSServer {
         Name origin = null;
         if (zname != null)
             origin = Name.fromString(zname, Name.root);
-        Zone newzone = new Zone(origin, zonefile);
+        final Zone newzone = new Zone(origin, zonefile);
         m_znames.put(newzone.getOrigin(), newzone);
     }
 
     public void addSecondaryZone(final String zone, final String remote) throws IOException, ZoneTransferException {
-        Name zname = Name.fromString(zone, Name.root);
-        Zone newzone = new Zone(zname, DClass.IN, remote);
+        final Name zname = Name.fromString(zone, Name.root);
+        final Zone newzone = new Zone(zname, DClass.IN, remote);
         m_znames.put(zname, newzone);
     }
 
-    public void addTSIG(String algstr, String namestr, String key) throws IOException {
-        Name name = Name.fromString(namestr, Name.root);
+    public void addTSIG(final String algstr, final String namestr, final String key) throws IOException {
+        final Name name = Name.fromString(namestr, Name.root);
         m_TSIGs.put(name, new TSIG(algstr, namestr, key));
     }
 
-    public Cache getCache(int dclass) {
-        Cache c = m_caches.get(new Integer(dclass));
+    public Cache getCache(final int dclass) {
+        Cache c = m_caches.get(dclass);
         if (c == null) {
             c = new Cache(dclass);
             m_caches.put(new Integer(dclass), c);
@@ -348,110 +382,114 @@ public class DNSServer {
         return c;
     }
 
-    public Zone findBestZone(Name name) {
-        Zone foundzone = null;
-        foundzone = m_znames.get(name);
-        if (foundzone != null)
+    public Zone findBestZone(final Name name) {
+        Zone foundzone = m_znames.get(name);
+        if (foundzone != null) {
             return foundzone;
-        int labels = name.labels();
+        }
+        final int labels = name.labels();
         for (int i = 1; i < labels; i++) {
-            Name tname = new Name(name, i);
+            final Name tname = new Name(name, i);
             foundzone = m_znames.get(tname);
-            if (foundzone != null)
+            if (foundzone != null) {
                 return foundzone;
+            }
         }
         return null;
     }
 
-    public RRset findExactMatch(Name name, int type, int dclass, boolean glue) {
-        Zone zone = findBestZone(name);
-        if (zone != null)
+    public RRset findExactMatch(final Name name, final int type, final int dclass, final boolean glue) {
+        final Zone zone = findBestZone(name);
+        if (zone != null) {
             return zone.findExactMatch(name, type);
-        else {
-            RRset[] rrsets;
-            Cache cache = getCache(dclass);
-            if (glue)
+        } else {
+            final RRset[] rrsets;
+            final Cache cache = getCache(dclass);
+            if (glue) {
                 rrsets = cache.findAnyRecords(name, type);
-            else
+            } else {
                 rrsets = cache.findRecords(name, type);
-            if (rrsets == null)
+            }
+            if (rrsets == null) {
                 return null;
-            else
+            } else {
                 return rrsets[0]; /* not quite right */
+            }
         }
     }
 
-    void addRRset(Name name, Message response, RRset rrset, int section, int flags) {
-        for (int s = 1; s <= section; s++)
-            if (response.findRRset(name, rrset.getType(), s))
-                return;
+    void addRRset(final Name name, final Message response, final RRset rrset, final int section, final int flags) {
+        for (int s = 1; s <= section; s++) {
+            if (response.findRRset(name, rrset.getType(), s)) return;
+        }
         if ((flags & FLAG_SIGONLY) == 0) {
             @SuppressWarnings("rawtypes")
-            Iterator it = rrset.rrs();
+            final Iterator it = rrset.rrs();
             while (it.hasNext()) {
-                Record r = (Record) it.next();
-                if (r.getName().isWild() && !name.isWild())
-                    r = r.withName(name);
-                response.addRecord(r, section);
+                final Record r = (Record) it.next();
+                if (r.getName().isWild() && !name.isWild()) {
+                    response.addRecord(r.withName(name), section);
+                } else {
+                    response.addRecord(r, section);
+                }
             }
         }
         if ((flags & (FLAG_SIGONLY | FLAG_DNSSECOK)) != 0) {
             @SuppressWarnings("rawtypes")
-            Iterator it = rrset.sigs();
+            final Iterator it = rrset.sigs();
             while (it.hasNext()) {
-                Record r = (Record) it.next();
-                if (r.getName().isWild() && !name.isWild())
-                    r = r.withName(name);
-                response.addRecord(r, section);
+                final Record r = (Record) it.next();
+                if (r.getName().isWild() && !name.isWild()) {
+                    response.addRecord(r.withName(name), section);
+                } else {
+                    response.addRecord(r, section);
+                }
             }
         }
     }
 
-    private final void addSOA(Message response, Zone zone) {
+    private final void addSOA(final Message response, final Zone zone) {
         response.addRecord(zone.getSOA(), Section.AUTHORITY);
     }
 
-    private final void addNS(Message response, Zone zone, int flags) {
-        RRset nsRecords = zone.getNS();
+    private final void addNS(final Message response, final Zone zone, final int flags) {
+        final RRset nsRecords = zone.getNS();
         addRRset(nsRecords.getName(), response, nsRecords, Section.AUTHORITY, flags);
     }
 
-    private final void addCacheNS(Message response, Cache cache, Name name) {
-        SetResponse sr = cache.lookupRecords(name, Type.NS, Credibility.HINT);
-        if (!sr.isDelegation())
-            return;
-        RRset nsRecords = sr.getNS();
+    private final void addCacheNS(final Message response, final Cache cache, final Name name) {
+        final SetResponse sr = cache.lookupRecords(name, Type.NS, Credibility.HINT);
+        if (!sr.isDelegation()) return;
+        final RRset nsRecords = sr.getNS();
         @SuppressWarnings("rawtypes")
-        Iterator it = nsRecords.rrs();
+        final Iterator it = nsRecords.rrs();
         while (it.hasNext()) {
-            Record r = (Record) it.next();
+            final Record r = (Record) it.next();
             response.addRecord(r, Section.AUTHORITY);
         }
     }
 
-    private void addGlue(Message response, Name name, int flags) {
-        RRset a = findExactMatch(name, Type.A, DClass.IN, true);
-        if (a == null)
-            return;
+    private void addGlue(final Message response, final Name name, final int flags) {
+        final RRset a = findExactMatch(name, Type.A, DClass.IN, true);
+        if (a == null) return;
         addRRset(name, response, a, Section.ADDITIONAL, flags);
     }
 
-    private void addAdditional2(Message response, int section, int flags) {
-        Record[] records = response.getSectionArray(section);
+    private void addAdditional2(final Message response, final int section, final int flags) {
+        final Record[] records = response.getSectionArray(section);
         for (int i = 0; i < records.length; i++) {
-            Record r = records[i];
-            Name glueName = r.getAdditionalName();
-            if (glueName != null)
-                addGlue(response, glueName, flags);
+            final Record r = records[i];
+            final Name glueName = r.getAdditionalName();
+            if (glueName != null) addGlue(response, glueName, flags);
         }
     }
 
-    private final void addAdditional(Message response, int flags) {
+    private final void addAdditional(final Message response, final int flags) {
         addAdditional2(response, Section.ANSWER, flags);
         addAdditional2(response, Section.AUTHORITY, flags);
     }
 
-    byte addAnswer(Message response, Name name, int type, int dclass, int iterations, int flags) {
+    byte addAnswer(final Message response, final Name name, int type, int dclass, int iterations, int flags) {
         SetResponse sr;
         byte rcode = Rcode.NOERROR;
 
@@ -463,12 +501,11 @@ public class DNSServer {
             flags |= FLAG_SIGONLY;
         }
 
-        Zone zone = findBestZone(name);
+        final Zone zone = findBestZone(name);
         if (zone != null)
             sr = zone.findRecords(name, type);
         else {
-            Cache cache = getCache(dclass);
-            sr = cache.lookupRecords(name, type, Credibility.NORMAL);
+            sr = getCache(dclass).lookupRecords(name, type, Credibility.NORMAL);
         }
 
         if (sr.isUnknown()) {
@@ -478,34 +515,30 @@ public class DNSServer {
             response.getHeader().setRcode(Rcode.NXDOMAIN);
             if (zone != null) {
                 addSOA(response, zone);
-                if (iterations == 0)
-                    response.getHeader().setFlag(Flags.AA);
+                if (iterations == 0) response.getHeader().setFlag(Flags.AA);
             }
             rcode = Rcode.NXDOMAIN;
         } else if (sr.isNXRRSET()) {
             if (zone != null) {
                 addSOA(response, zone);
-                if (iterations == 0)
-                    response.getHeader().setFlag(Flags.AA);
+                if (iterations == 0) response.getHeader().setFlag(Flags.AA);
             }
         } else if (sr.isDelegation()) {
-            RRset nsRecords = sr.getNS();
+            final RRset nsRecords = sr.getNS();
             addRRset(nsRecords.getName(), response, nsRecords, Section.AUTHORITY, flags);
         } else if (sr.isCNAME()) {
-            CNAMERecord cname = sr.getCNAME();
-            RRset rrset = new RRset(cname);
-            addRRset(name, response, rrset, Section.ANSWER, flags);
-            if (zone != null && iterations == 0)
-                response.getHeader().setFlag(Flags.AA);
+            final CNAMERecord cname = sr.getCNAME();
+            addRRset(name, response, new RRset(cname), Section.ANSWER, flags);
+            if (zone != null && iterations == 0) response.getHeader().setFlag(Flags.AA);
             rcode = addAnswer(response, cname.getTarget(), type, dclass, iterations + 1, flags);
         } else if (sr.isDNAME()) {
-            DNAMERecord dname = sr.getDNAME();
+            final DNAMERecord dname = sr.getDNAME();
             RRset rrset = new RRset(dname);
             addRRset(name, response, rrset, Section.ANSWER, flags);
-            Name newname;
+            final Name newname;
             try {
                 newname = name.fromDNAME(dname);
-            } catch (NameTooLongException e) {
+            } catch (final NameTooLongException e) {
                 return Rcode.YXDOMAIN;
             }
             rrset = new RRset(new CNAMERecord(name, dclass, 0, newname));
@@ -514,7 +547,7 @@ public class DNSServer {
                 response.getHeader().setFlag(Flags.AA);
             rcode = addAnswer(response, newname, type, dclass, iterations + 1, flags);
         } else if (sr.isSuccessful()) {
-            RRset[] rrsets = sr.answers();
+            final RRset[] rrsets = sr.answers();
             for (int i = 0; i < rrsets.length; i++)
                 addRRset(name, response, rrsets[i], Section.ANSWER, flags);
             if (zone != null) {
@@ -527,21 +560,20 @@ public class DNSServer {
         return rcode;
     }
 
-    byte[] doAXFR(Name name, Message query, TSIG tsig, TSIGRecord qtsig, Socket s) {
-        Zone zone = m_znames.get(name);
+    byte[] doAXFR(final Name name, final Message query, final TSIG tsig, TSIGRecord qtsig, final Socket s) {
+        final Zone zone = m_znames.get(name);
         boolean first = true;
         if (zone == null)
             return errorMessage(query, Rcode.REFUSED);
         @SuppressWarnings("rawtypes")
-        Iterator it = zone.AXFR();
+        final Iterator it = zone.AXFR();
         try {
-            DataOutputStream dataOut;
-            dataOut = new DataOutputStream(s.getOutputStream());
+            final DataOutputStream dataOut = new DataOutputStream(s.getOutputStream());
             int id = query.getHeader().getID();
             while (it.hasNext()) {
-                RRset rrset = (RRset) it.next();
-                Message response = new Message(id);
-                Header header = response.getHeader();
+                final RRset rrset = (RRset) it.next();
+                final Message response = new Message(id);
+                final Header header = response.getHeader();
                 header.setFlag(Flags.QR);
                 header.setFlag(Flags.AA);
                 addRRset(rrset.getName(), response, rrset, Section.ANSWER, FLAG_DNSSECOK);
@@ -550,7 +582,7 @@ public class DNSServer {
                     qtsig = response.getTSIG();
                 }
                 first = false;
-                byte[] out = response.toWire();
+                final byte[] out = response.toWire();
                 dataOut.writeShort(out.length);
                 dataOut.write(out);
             }
@@ -570,12 +602,11 @@ public class DNSServer {
      * anything. Currently this only happens if this is an AXFR request over
      * TCP.
      */
-    byte[] generateReply(Message query, byte[] in, int length, Socket s) throws IOException {
-        Header header;
+    byte[] generateReply(final Message query, final byte[] in, final int length, final Socket s) throws IOException {
+        final Header header = query.getHeader();
         int maxLength;
         int flags = 0;
 
-        header = query.getHeader();
         if (header.getFlag(Flags.QR))
             return null;
         if (header.getRcode() != Rcode.NOERROR)
@@ -583,9 +614,9 @@ public class DNSServer {
         if (header.getOpcode() != Opcode.QUERY)
             return errorMessage(query, Rcode.NOTIMP);
 
-        Record queryRecord = query.getQuestion();
+        final Record queryRecord = query.getQuestion();
 
-        TSIGRecord queryTSIG = query.getTSIG();
+        final TSIGRecord queryTSIG = query.getTSIG();
         TSIG tsig = null;
         if (queryTSIG != null) {
             tsig = m_TSIGs.get(queryTSIG.getName());
@@ -593,7 +624,7 @@ public class DNSServer {
                 return formerrMessage(in);
         }
 
-        OPTRecord queryOPT = query.getOPT();
+        final OPTRecord queryOPT = query.getOPT();
 
         if (s != null)
             maxLength = 65535;
@@ -605,29 +636,30 @@ public class DNSServer {
         if (queryOPT != null && (queryOPT.getFlags() & ExtendedFlags.DO) != 0)
             flags = FLAG_DNSSECOK;
 
-        Message response = new Message(query.getHeader().getID());
+        final Message response = new Message(query.getHeader().getID());
         response.getHeader().setFlag(Flags.QR);
-        if (query.getHeader().getFlag(Flags.RD))
+        if (query.getHeader().getFlag(Flags.RD)) {
             response.getHeader().setFlag(Flags.RD);
+        }
         response.addRecord(queryRecord, Section.QUESTION);
 
-        Name name = queryRecord.getName();
-        int type = queryRecord.getType();
-        int dclass = queryRecord.getDClass();
-        if (type == Type.AXFR && s != null)
+        final Name name = queryRecord.getName();
+        final int type = queryRecord.getType();
+        final int dclass = queryRecord.getDClass();
+        if ((type == Type.AXFR || type == Type.IXFR) && s != null)
             return doAXFR(name, query, tsig, queryTSIG, s);
         if (!Type.isRR(type) && type != Type.ANY)
             return errorMessage(query, Rcode.NOTIMP);
 
-        byte rcode = addAnswer(response, name, type, dclass, 0, flags);
+        final byte rcode = addAnswer(response, name, type, dclass, 0, flags);
         if (rcode != Rcode.NOERROR && rcode != Rcode.NXDOMAIN)
             return errorMessage(query, rcode);
 
         addAdditional(response, flags);
 
         if (queryOPT != null) {
-            int optflags = (flags == FLAG_DNSSECOK) ? ExtendedFlags.DO : 0;
-            OPTRecord opt = new OPTRecord((short) 4096, rcode, (byte) 0, optflags);
+            final int optflags = (flags == FLAG_DNSSECOK) ? ExtendedFlags.DO : 0;
+            final OPTRecord opt = new OPTRecord((short) 4096, rcode, (byte) 0, optflags);
             response.addRecord(opt, Section.ADDITIONAL);
         }
 
@@ -635,8 +667,8 @@ public class DNSServer {
         return response.toWire(maxLength);
     }
 
-    byte[] buildErrorMessage(Header header, int rcode, Record question) {
-        Message response = new Message();
+    byte[] buildErrorMessage(final Header header, final int rcode, final Record question) {
+        final Message response = new Message();
         response.setHeader(header);
         for (int i = 0; i < 4; i++)
             response.removeAllRecords(i);
@@ -646,51 +678,16 @@ public class DNSServer {
         return response.toWire();
     }
 
-    public byte[] formerrMessage(byte[] in) {
-        Header header;
+    public byte[] formerrMessage(final byte[] in) {
         try {
-            header = new Header(in);
-        } catch (IOException e) {
+            return buildErrorMessage(new Header(in), Rcode.FORMERR, null);
+        } catch (final IOException e) {
+            LogUtils.debugf(this, e, "unable to build error message");
             return null;
         }
-        return buildErrorMessage(header, Rcode.FORMERR, null);
     }
 
-    public byte[] errorMessage(Message query, int rcode) {
+    public byte[] errorMessage(final Message query, final int rcode) {
         return buildErrorMessage(query.getHeader(), rcode, query.getQuestion());
-    }
-
-    public void handleTCPRequest(final Socket s) throws SocketTimeoutException {
-        try {
-            final InputStream is = s.getInputStream();
-            final DataInputStream dataIn = new DataInputStream(is);
-            int inLength = dataIn.readUnsignedShort();
-            byte[] in = new byte[inLength];
-            dataIn.readFully(in);
-
-            Message query;
-            byte[] response = null;
-            try {
-                query = new Message(in);
-                response = generateReply(query, in, in.length, s);
-                if (response == null)
-                    return;
-            } catch (final IOException e) {
-                response = formerrMessage(in);
-            }
-            final DataOutputStream dataOut = new DataOutputStream(s.getOutputStream());
-            dataOut.writeShort(response.length);
-            dataOut.write(response);
-        } catch (final SocketTimeoutException e) {
-            throw e;
-        } catch (final IOException e) {
-            LogUtils.warnf(this, e, "error while processing socket");
-        } finally {
-            try {
-                s.close();
-            } catch (final IOException e) {
-                LogUtils.warnf(this, e, "unable to close TCP socket");
-            }
-        }
     }
 }

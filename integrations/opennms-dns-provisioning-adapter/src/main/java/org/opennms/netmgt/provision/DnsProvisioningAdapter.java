@@ -103,7 +103,13 @@ public class DnsProvisioningAdapter extends SimpleQueuedProvisioningAdapter impl
         String dnsServer = System.getProperty("importer.adapter.dns.server");
         if (!StringUtils.isBlank(dnsServer)) {
             log().info("DNS property found: "+dnsServer);
-            m_resolver = new SimpleResolver(dnsServer);
+            if (dnsServer.contains(":")) {
+                final String[] serverAddress = dnsServer.split(":");
+                m_resolver = new SimpleResolver(serverAddress[0]);
+                m_resolver.setPort(Integer.valueOf(serverAddress[1]));
+            } else {
+                m_resolver = new SimpleResolver(dnsServer);
+            }
     
             // Doesn't work for some reason, haven't figured out why yet
             String key = System.getProperty("importer.adapter.dns.privatekey");
