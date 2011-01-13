@@ -10,4 +10,5 @@ import java.lang.annotation.Target;
 public @interface DNSEntry {
     String hostname();
     String address();
+    boolean ipv6() default false;
 }

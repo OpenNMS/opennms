@@ -9,6 +9,7 @@ import org.opennms.core.test.dns.DNSServer;
 import org.opennms.core.utils.LogUtils;
 import org.springframework.test.context.TestContext;
 import org.springframework.test.context.TestExecutionListener;
+import org.xbill.DNS.AAAARecord;
 import org.xbill.DNS.ARecord;
 import org.xbill.DNS.DClass;
 import org.xbill.DNS.NSRecord;
@@ -59,7 +60,11 @@ public class JUnitDNSServerExecutionListener extends OpenNMSAbstractTestExecutio
                 String hostname = entry.hostname();
                 final Name recordName = Name.fromString(hostname, zoneName);
                 LogUtils.debugf(this, "name = %s", recordName);
-                zone.addRecord(new ARecord(recordName, DClass.IN, DEFAULT_TTL, InetAddress.getByName(entry.address())));
+                if (entry.ipv6()) {
+                    zone.addRecord(new AAAARecord(recordName, DClass.IN, DEFAULT_TTL, InetAddress.getByName(entry.address())));
+                } else {
+                    zone.addRecord(new ARecord(recordName, DClass.IN, DEFAULT_TTL, InetAddress.getByName(entry.address())));
+                }
             }
 
             m_server.addZone(zone);
