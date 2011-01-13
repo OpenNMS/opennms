@@ -1,9 +1,11 @@
 package org.opennms.netmgt.dao.hibernate;
 
 import org.opennms.netmgt.dao.AbstractTransactionalDaoTestCase;
+import org.opennms.netmgt.model.DataLinkInterface;
 import org.opennms.netmgt.model.OnmsMap;
 
 import java.util.Collection;
+import java.util.List;
 
 public class OnmsMapDaoHibernateTest  extends AbstractTransactionalDaoTestCase {
     public void testInitialize() {
@@ -165,7 +167,20 @@ public class OnmsMapDaoHibernateTest  extends AbstractTransactionalDaoTestCase {
         // the DatabasePopulator by adding additional new objects that use the onmsNxtId sequence
         // before the creation of this object then this ID may change and this test will fail.
         //
-        OnmsMap map = getOnmsMapDao().findMapById(61);
+        int id = 62;
+        OnmsMap map = getOnmsMapDao().findMapById(id);
+        if (map == null) {
+            List<OnmsMap> maps = getOnmsMapDao().findAll();
+            StringBuffer ids = new StringBuffer();
+            for (OnmsMap current : maps) {
+                if (ids.length() > 0) {
+                    ids.append(", ");
+                }
+                ids.append(current.getId());
+            }
+            fail("No OnmsMap record with ID " + id + " was found, the only IDs are: " + ids.toString());
+        }
+        assertNotNull(map);
         assertEquals("DB_Pop_Test_Map", map.getName());
         assertEquals("fake_background.jpg", map.getBackground());
         assertEquals(OnmsMap.ACCESS_MODE_ADMIN, map.getAccessMode());
@@ -237,7 +252,19 @@ public class OnmsMapDaoHibernateTest  extends AbstractTransactionalDaoTestCase {
         // the DatabasePopulator by adding additional new objects that use the onmsNxtId sequence
         // before the creation of this object then this ID may change and this test will fail.
         //
-        OnmsMap map = getOnmsMapDao().findMapById(61);
+        int id = 62;
+        OnmsMap map = getOnmsMapDao().findMapById(id);
+        if (map == null) {
+            List<OnmsMap> maps = getOnmsMapDao().findAll();
+            StringBuffer ids = new StringBuffer();
+            for (OnmsMap current : maps) {
+                if (ids.length() > 0) {
+                    ids.append(", ");
+                }
+                ids.append(current.getId());
+            }
+            fail("No OnmsMap record with ID " + id + " was found, the only IDs are: " + ids.toString());
+        }
 
         assertNotNull(map);
         getOnmsMapDao().delete(map);

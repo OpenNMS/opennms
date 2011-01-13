@@ -31,10 +31,11 @@
 //
 package org.opennms.netmgt.dao.hibernate;
 
+import java.util.Date;
+import java.util.List;
+
 import org.opennms.netmgt.dao.AbstractTransactionalDaoTestCase;
 import org.opennms.netmgt.model.DataLinkInterface;
-
-import java.util.Date;
 
 public class DataLinkInterfaceDaoHibernateTest extends AbstractTransactionalDaoTestCase {
     
@@ -72,7 +73,19 @@ public class DataLinkInterfaceDaoHibernateTest extends AbstractTransactionalDaoT
         // the DatabasePopulator by adding additional new objects that use the onmsNxtId sequence
         // before the creation of this object then this ID may change and this test will fail.
         //
-        DataLinkInterface dli = getDataLinkInterfaceDao().findById(63);
+        int id = 64;
+        DataLinkInterface dli = getDataLinkInterfaceDao().findById(id);
+        if (dli == null) {
+            List<DataLinkInterface> dlis = getDataLinkInterfaceDao().findAll();
+            StringBuffer ids = new StringBuffer();
+            for (DataLinkInterface current : dlis) {
+                if (ids.length() > 0) {
+                    ids.append(", ");
+                }
+                ids.append(current.getId());
+            }
+            fail("No DataLinkInterface record with ID " + id + " was found, the only IDs are: " + ids.toString());
+        }
         assertNotNull(dli);
         assertEquals(new Integer(1), dli.getNodeId());
         assertEquals(new Integer(1), dli.getIfIndex());
