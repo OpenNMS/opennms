@@ -16,11 +16,12 @@
 
   <dependencies>
     <dependency>
-      <groupId>org.dnsjava</groupId>
+      <groupId>dnsjava</groupId>
       <artifactId>dnsjava</artifactId>
-      <version>2.0.6</version>
+      <version>2.1.0</version>
     </dependency>
   </dependencies>
+  <!--
   <repositories>
     <repository>
       <snapshots><enabled>false</enabled><updatePolicy>${updatePolicy}</updatePolicy></snapshots>
@@ -30,4 +31,5 @@
       <url>http://maven.opennms.org/content/groups/java.net-release</url>
     </repository>
   </repositories>
+  -->
 </project>
