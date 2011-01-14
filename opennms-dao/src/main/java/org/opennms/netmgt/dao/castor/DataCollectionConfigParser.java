@@ -72,7 +72,7 @@ public class DataCollectionConfigParser {
     
     private String configDirectory;
     
-    private Map<String,DatacollectionGroup> externalGroupsMap;
+    private final Map<String,DatacollectionGroup> externalGroupsMap;
     
     public DataCollectionConfigParser(String configDirectory) {
         this.configDirectory = configDirectory;

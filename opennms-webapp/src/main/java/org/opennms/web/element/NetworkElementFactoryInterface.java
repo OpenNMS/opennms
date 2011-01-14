@@ -1,7 +1,9 @@
 package org.opennms.web.element;
 
+import java.sql.SQLException;
 import java.util.List;
 import java.util.Map;
+import java.util.Set;
 
 import org.springframework.transaction.support.TransactionTemplate;
 
@@ -481,4 +483,17 @@ public interface NetworkElementFactoryInterface {
 	Node[] getNodesWithCategories(String[] categories1,
 			String[] categories2, boolean onlyNodesWithDownAggregateStatus);
 
+    Set<Integer> getLinkedNodeIdOnNode(int safeParseInt) throws SQLException;
+
+    boolean isRouteInfoNode(int nodeId) throws SQLException;
+
+    boolean isBridgeNode(int nodeId) throws SQLException;
+
+    StpNode[] getStpNode(int nodeId) throws SQLException;
+
+    StpInterface[] getStpInterface(int nodeId) throws SQLException;
+
+    StpInterface[] getStpInterface(int nodeId, int ifIndex) throws SQLException;
+
+    Vlan[] getVlansOnNode(int nodeID) throws SQLException;
 }

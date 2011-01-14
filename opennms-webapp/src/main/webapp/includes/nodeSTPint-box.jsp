@@ -62,7 +62,7 @@
     
     //gets active route entry on node
     
-   	StpInterface[] stpifs = NetworkElementFactory.getStpInterface(nodeId);
+   	StpInterface[] stpifs = NetworkElementFactory.getInstance(getServletContext()).getStpInterface(nodeId);
 
 %>
 <h3>Node STP Interface Info</h3>

@@ -621,7 +621,7 @@ public abstract class ElementUtil {
      * @return a boolean.
      * @throws java.sql.SQLException if any.
      */
-    public static boolean isRouteInfoNodeByParams(HttpServletRequest request) throws SQLException {
+    public static boolean isRouteInfoNodeByParams(HttpServletRequest request, ServletContext servletContext) throws SQLException {
     	int nodeId;
     	
     	try {
@@ -630,7 +630,7 @@ public abstract class ElementUtil {
     		throw new ElementIdNotFoundException("Wrong type for parameter \"node\" (should be integer)",
     					request.getParameter("node"), "node", "element/node.jsp", "node", "element/nodeList.jsp");
     	}
-    	return NetworkElementFactory.isRouteInfoNode(nodeId);
+    	return NetworkElementFactory.getInstance(servletContext).isRouteInfoNode(nodeId);
     }
     
     @SuppressWarnings("unused")

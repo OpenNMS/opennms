@@ -56,10 +56,10 @@
     String requestIfindex = request.getParameter("ifindex");
     if(requestNode != null && requestIfindex != null && requestIntf == null) {
         intf = ElementUtil.getSnmpInterfaceByParams(request, getServletContext());
-        stpifs = NetworkElementFactory.getStpInterface(intf.getNodeId(), intf.getSnmpIfIndex());
+        stpifs = NetworkElementFactory.getInstance(getServletContext()).getStpInterface(intf.getNodeId(), intf.getSnmpIfIndex());
     } else {
         intf = ElementUtil.getInterfaceByParams(request, getServletContext());
-        stpifs = NetworkElementFactory.getStpInterface(intf.getNodeId(), intf.getIfIndex());
+        stpifs = NetworkElementFactory.getInstance(getServletContext()).getStpInterface(intf.getNodeId(), intf.getIfIndex());
     }
 
 

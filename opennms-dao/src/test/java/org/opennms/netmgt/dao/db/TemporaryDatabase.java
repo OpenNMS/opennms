@@ -120,9 +120,10 @@ public class TemporaryDatabase implements DataSource {
         this(testDatabase, driver, url, adminUser, adminPassword, false);
     }
 
-        public TemporaryDatabase(String testDatabase, String driver, String url,
+    public TemporaryDatabase(String testDatabase, String driver, String url,
                              String adminUser, String adminPassword, boolean useExisting) throws Exception {
-        m_testDatabase = testDatabase;
+        // Append the current object's hashcode to make this value truly unique
+        m_testDatabase = testDatabase + "_" + this.hashCode();
         m_driver = driver;
         m_url = url;
         m_adminUser = adminUser;

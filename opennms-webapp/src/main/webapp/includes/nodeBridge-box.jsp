@@ -49,7 +49,7 @@
     
     //gets active route entry on node
     
-   	StpNode[] stpnodes = NetworkElementFactory.getStpNode(nodeId);
+   	StpNode[] stpnodes = NetworkElementFactory.getInstance(getServletContext()).getStpNode(nodeId);
 
 %>
 
@@ -69,17 +69,17 @@
 		<table>
 			<thead>
               <tr>
-                <th>Vlan Id</th>			  
-                <th>Vlan Name</th>			  
+                <th>VLAN ID</th>			  
+                <th>VLAN Name</th>			  
                 <th>Base Address</th>
                 <th>Type</th>
-                <th>Stp Proto Spec</th>
+                <th>STP Proto Spec</th>
                 <th>Port Num.</th>
                 <th>Status</th>
-                <th>Stp Root</th>
-                <th>Stp Priority</th>
-                <th>Stp Root Cost</th>
-                <th>Stp Root Port</th>
+                <th>STP Root</th>
+                <th>STP Priority</th>
+                <th>STP Root Cost</th>
+                <th>STP Root Port</th>
                 <th>Last Poll Time</th>
               </tr>
              </thead>

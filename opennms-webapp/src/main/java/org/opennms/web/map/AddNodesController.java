@@ -166,13 +166,13 @@ public class AddNodesController extends AbstractController {
 			if (action.equals(MapsConstants.ADDNODES_NEIG_ACTION)) {
 				log.debug("Adding nodes neighbor of:"+ elems);
 				actionfound = true;
-				nodeids = (Integer[]) NetworkElementFactory.getLinkedNodeIdOnNode(WebSecurityUtils.safeParseInt(elems)).toArray(new Integer[0]);
+				nodeids = (Integer[]) NetworkElementFactory.getInstance(getServletContext()).getLinkedNodeIdOnNode(WebSecurityUtils.safeParseInt(elems)).toArray(new Integer[0]);
 			}
 
 			if (action.equals(MapsConstants.ADDNODES_WITH_NEIG_ACTION)) {
 				log.debug("Adding nodes with neighbor of:"+ elems);
 				actionfound = true;
-				Set<Integer> linkednodeids = NetworkElementFactory.getLinkedNodeIdOnNode(WebSecurityUtils.safeParseInt(elems));
+				Set<Integer> linkednodeids = NetworkElementFactory.getInstance(getServletContext()).getLinkedNodeIdOnNode(WebSecurityUtils.safeParseInt(elems));
 				linkednodeids.add(new Integer(elems));
 				nodeids = linkednodeids.toArray(new Integer[linkednodeids.size()]);
 			} 

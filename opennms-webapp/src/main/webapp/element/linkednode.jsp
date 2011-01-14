@@ -233,8 +233,8 @@
 	   
    }
 
-    boolean isBridge = NetworkElementFactory.isBridgeNode(nodeId);
-    boolean isRouteIP = NetworkElementFactory.isRouteInfoNode(nodeId);
+    boolean isBridge = factory.isBridgeNode(nodeId);
+    boolean isRouteIP = factory.isRouteInfoNode(nodeId);
 
 %>
 <script type="text/javascript">

@@ -37,7 +37,6 @@
  */
 package org.opennms.netmgt.dao;
 
-import java.sql.Timestamp;
 import java.util.Date;
 
 import junit.framework.Assert;
@@ -62,6 +61,9 @@ import org.opennms.netmgt.model.OnmsOutage;
 import org.opennms.netmgt.model.OnmsServiceType;
 import org.opennms.netmgt.model.OnmsSeverity;
 import org.opennms.netmgt.model.OnmsUserNotification;
+import org.springframework.transaction.TransactionStatus;
+import org.springframework.transaction.support.TransactionCallback;
+import org.springframework.transaction.support.TransactionTemplate;
 
 /**
  * Populates a test database with some entities (nodes, interfaces, services).
@@ -109,10 +111,13 @@ public class DatabasePopulator {
     private OnmsMapElementDao m_onmsMapElementDao;
     private DataLinkInterfaceDao m_dataLinkInterfaceDao;
     private AcknowledgmentDao m_acknowledgmentDao;
+    private TransactionTemplate m_transTemplate;
     
     private OnmsNode m_node1;
 
     public void populateDatabase() {
+        m_transTemplate.execute(new TransactionCallback<Object>() {
+            public Object doInTransaction(TransactionStatus status) {
         OnmsDistPoller distPoller = getDistPoller("localhost", "127.0.0.1");
         
         OnmsCategory ac = getCategory("DEV_AC");
@@ -167,9 +172,10 @@ public class DatabasePopulator {
         .setIfOperStatus(1)
         .setIfSpeed(10000000);
         builder.addService(getServiceType("ICMP"));
-        OnmsNode node1 = builder.getCurrentNode();
-        getNodeDao().save(node1);
+        getNodeDao().save(builder.getCurrentNode());
         getNodeDao().flush();
+        
+        OnmsNode node1 = getNodeDao().get(1);
         
         builder.addNode("node2").setForeignSource("imported:").setForeignId("2");
         builder.addCategory(mid);
@@ -183,7 +189,7 @@ public class DatabasePopulator {
         builder.addService(getServiceType("HTTP"));
         builder.addInterface("192.168.2.3").setIsManaged("M").setIsSnmpPrimary("N");
         builder.addService(getServiceType("ICMP"));
-        builder.addAtInterface("192.168.2.1", "AA:BB:CC:DD:EE:FF").setSourceNode(node1).setIfIndex(1).setLastPollTime(new Date()).setStatus('A');
+        builder.addAtInterface(node1, "192.168.2.1", "AA:BB:CC:DD:EE:FF").setIfIndex(1).setLastPollTime(new Date()).setStatus('A');
         getNodeDao().save(builder.getCurrentNode());
         getNodeDao().flush();
         
@@ -341,6 +347,10 @@ public class DatabasePopulator {
         getAcknowledgmentDao().save(ack);
         getAcknowledgmentDao().flush();
         
+        return null;
+            }
+            
+        });
     }
 
     private OnmsCategory getCategory(String categoryName) {
@@ -552,4 +562,11 @@ public class DatabasePopulator {
         m_acknowledgmentDao = acknowledgmentDao;
     }
 
+    public TransactionTemplate getTransactionTemplate() {
+        return m_transTemplate;
+    }
+
+    public void setTransactionTemplate(TransactionTemplate transactionTemplate) {
+        m_transTemplate = transactionTemplate;
+    }
 }

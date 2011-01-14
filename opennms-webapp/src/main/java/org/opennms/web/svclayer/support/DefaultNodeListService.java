@@ -569,7 +569,8 @@ public class DefaultNodeListService implements NodeListService, InitializingBean
     }
 
     public static class ArpInterfaceComparator implements Comparator<OnmsArpInterface>, Serializable {
-        private static final long serialVersionUID = 1L;
+
+        private static final long serialVersionUID = 2955682030166384496L;
 
         public int compare(OnmsArpInterface o1, OnmsArpInterface o2) {
             int diff;

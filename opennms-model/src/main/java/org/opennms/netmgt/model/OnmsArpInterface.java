@@ -46,19 +46,22 @@ import javax.persistence.SequenceGenerator;
 import javax.persistence.Table;
 import javax.persistence.Temporal;
 import javax.persistence.TemporalType;
+import javax.xml.bind.annotation.XmlRootElement;
+import javax.xml.bind.annotation.XmlTransient;
 
 import org.springframework.core.style.ToStringCreator;
 
 
-@Entity
 /**
  * <p>OnmsArpInterface class.</p>
  *
  * @author ranger
  * @version $Id: $
  */
+@XmlRootElement(name = "arpInterface")
+@Entity
 @Table(name="atInterface")
-public class OnmsArpInterface implements Serializable {
+public class OnmsArpInterface extends OnmsEntity implements Serializable {
 
     @Embeddable
     public static class StatusType implements Comparable<StatusType>, Serializable {
@@ -168,16 +171,21 @@ public class OnmsArpInterface implements Serializable {
 
     /**
      * minimal constructor
-     *
+     * @param node a {@link org.opennms.netmgt.model.OnmsNode} object.
      * @param ipAddr a {@link java.lang.String} object.
      * @param physAddr a {@link java.lang.String} object.
-     * @param node a {@link org.opennms.netmgt.model.OnmsNode} object.
      */
-    public OnmsArpInterface(String ipAddr, String physAddr, OnmsNode node) {
+    public OnmsArpInterface(OnmsNode sourceNode, OnmsNode node, String ipAddr, String physAddr) {
         m_ipAddress = ipAddr;
         m_physAddr = physAddr;
         m_node = node;
-        node.getArpInterfaces().add(this);
+        if (node != null) {
+            node.getArpInterfaces().add(this);
+        }
+        m_sourceNode = sourceNode;
+        if (sourceNode != null) {
+            sourceNode.getArpInterfacesBySource().add(this);
+        }
     }
 
     /**
@@ -186,8 +194,9 @@ public class OnmsArpInterface implements Serializable {
      * @return a {@link java.lang.Integer} object.
      */
     @Id
+    @XmlTransient
     @SequenceGenerator(name="opennmsSequence", sequenceName="opennmsNxtId")
-    @GeneratedValue(generator="opennmsSequence")    
+    @GeneratedValue(generator="opennmsSequence")
     public Integer getId() {
         return m_id;
     }
@@ -206,8 +215,9 @@ public class OnmsArpInterface implements Serializable {
      *
      * @return a {@link org.opennms.netmgt.model.OnmsNode} object.
      */
+    @XmlTransient
     @ManyToOne(optional=false, fetch=FetchType.LAZY)
-    @JoinColumn(name="nodeId")
+    @JoinColumn(name="nodeId", nullable=false)
     public OnmsNode getNode() {
         return m_node;
     }
@@ -226,7 +236,7 @@ public class OnmsArpInterface implements Serializable {
      *
      * @return a {@link java.lang.String} object.
      */
-    @Column(name="ipAddr", length=16)
+    @Column(name="ipAddr", nullable=false)
     public String getIpAddress() {
         return m_ipAddress;
     }
@@ -245,7 +255,7 @@ public class OnmsArpInterface implements Serializable {
      *
      * @return a {@link java.lang.String} object.
      */
-    @Column(name="atPhysAddr", length=32)
+    @Column(name="atPhysAddr", length=32, nullable=false)
     public String getPhysAddr() {
         return m_physAddr;
     }
@@ -264,7 +274,7 @@ public class OnmsArpInterface implements Serializable {
      *
      * @return a {@link org.opennms.netmgt.model.OnmsArpInterface.StatusType} object.
      */
-    @Column(name="status", length=1)
+    @Column(name="status", length=1, nullable=false)
     public StatusType getStatus() {
         return m_status;
     }
@@ -283,8 +293,9 @@ public class OnmsArpInterface implements Serializable {
      *
      * @return a {@link org.opennms.netmgt.model.OnmsNode} object.
      */
+    @XmlTransient
     @ManyToOne(optional=false, fetch=FetchType.LAZY)
-    @JoinColumn(name="sourceNodeId")
+    @JoinColumn(name="sourceNodeId", nullable=false)
     public OnmsNode getSourceNode() {
         return m_sourceNode;
     }
@@ -303,7 +314,7 @@ public class OnmsArpInterface implements Serializable {
      *
      * @return a {@link java.lang.Integer} object.
      */
-    @Column(name="ifIndex")
+    @Column(name="ifIndex", nullable=false)
     public Integer getIfIndex() {
         return m_ifIndex;
     }
@@ -324,7 +335,7 @@ public class OnmsArpInterface implements Serializable {
      * @return a {@link java.util.Date} object.
      */
     @Temporal(TemporalType.TIMESTAMP)
-    @Column(name="lastPollTime")
+    @Column(name="lastPollTime", nullable=false)
     public Date getLastPoll() {
         return m_lastPoll;
     }
@@ -343,6 +354,7 @@ public class OnmsArpInterface implements Serializable {
      *
      * @return a {@link java.lang.String} object.
      */
+    @Override
     public String toString() {
         return new ToStringCreator(this)
         .append("ipaddr", getIpAddress())
@@ -352,6 +364,15 @@ public class OnmsArpInterface implements Serializable {
         .append("ifindex", getIfIndex())
         .append("lastpoll", getLastPoll())
         .toString();
+    }
+
+    @Override
+    public void visit(EntityVisitor visitor) {
+        // Do nothing??
+        /*
+        visitor.visitArpInterface(this);
+        visitor.visitArpInterfaceComplete(this);
+        */
     }
 
 }

@@ -255,8 +255,6 @@ public class NodeDaoTest  {
         validateNode(n);
     }
     
-    
-    @Transactional
     public OnmsNode getNodeHierarchy(final int nodeId) {
         return m_transTemplate.execute(new TransactionCallback<OnmsNode>() {
 
@@ -269,6 +267,7 @@ public class NodeDaoTest  {
     
     /** Test for bug 1594 */
     @Test
+    @Transactional
     public void testQueryWithHierarchyCloseTransaction() throws Exception {
 
         OnmsNode n = getNodeHierarchy(1);

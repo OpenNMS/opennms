@@ -127,7 +127,8 @@ public class TemporaryDatabaseExecutionListener extends AbstractTestExecutionLis
     }
 
     private String getDatabaseName(TestContext testContext) {
-        return String.format("opennms_test_%s", System.currentTimeMillis());
+        // Append the current object's hashcode to make this value truly unique
+        return String.format("opennms_test_%s_%s", System.currentTimeMillis(), this.hashCode());
     }
 
 }

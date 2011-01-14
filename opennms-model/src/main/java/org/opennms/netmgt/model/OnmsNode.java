@@ -164,6 +164,9 @@ public class OnmsNode extends OnmsEntity implements Serializable,
     /** persistent field */
     private Set<OnmsArpInterface> m_arpInterfaces = new LinkedHashSet<OnmsArpInterface>();
 
+    /** persistent field */
+    private Set<OnmsArpInterface> m_arpInterfacesBySource = new LinkedHashSet<OnmsArpInterface>();
+
     private Set<OnmsCategory> m_categories = new LinkedHashSet<OnmsCategory>();
 
 	private PathElement m_pathElement;
@@ -679,15 +682,41 @@ public class OnmsNode extends OnmsEntity implements Serializable,
     }
     
     /**
-     * The arp interfaces on this node
+     * The ARP interfaces with this node as a source
+     *
+     * @return a {@link java.util.Set} object.
+     */
+    @XmlTransient
+    @OneToMany(mappedBy="sourceNode")
+    @org.hibernate.annotations.Cascade( {
+        org.hibernate.annotations.CascadeType.ALL,
+        org.hibernate.annotations.CascadeType.DELETE_ORPHAN })
+    public Set<OnmsArpInterface> getArpInterfacesBySource() {
+        return m_arpInterfacesBySource;
+    }
+
+    /**
+     * @param arpInterfaces a {@link java.util.Set} object.
+     */
+    public void setArpInterfacesBySource(Set<OnmsArpInterface> arpInterfaces) {
+        m_arpInterfacesBySource = arpInterfaces;
+    }
+    
+    /**
+     * @param iface a {@link org.opennms.netmgt.model.OnmsArpInterface} object.
+     */
+    public void addArpInterfaceBySource(OnmsArpInterface iface) {
+        iface.setNode(this);
+        getArpInterfacesBySource().add(iface);
+    }
+
+    /**
+     * The ARP interfaces on this node
      *
      * @return a {@link java.util.Set} object.
      */
     @XmlTransient
     @OneToMany(mappedBy="node")
-    @org.hibernate.annotations.Cascade( {
-        org.hibernate.annotations.CascadeType.ALL,
-        org.hibernate.annotations.CascadeType.DELETE_ORPHAN })
     public Set<OnmsArpInterface> getArpInterfaces() {
         return m_arpInterfaces;
     }

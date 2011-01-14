@@ -250,8 +250,8 @@ public class NetworkBuilder {
 
     /**
      */
-    public AtInterfaceBuilder addAtInterface(String ipAddr, String physAddr) {
-        m_currentAtIf = new OnmsArpInterface(ipAddr, physAddr, m_currentNode);
+    public AtInterfaceBuilder addAtInterface(OnmsNode sourceNode, String ipAddr, String physAddr) {
+        m_currentAtIf = new OnmsArpInterface(sourceNode, m_currentNode, ipAddr, physAddr);
         return new AtInterfaceBuilder(m_currentAtIf);
     }
 

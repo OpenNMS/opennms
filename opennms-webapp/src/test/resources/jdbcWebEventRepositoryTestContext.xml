@@ -4,6 +4,7 @@
 	xsi:schemaLocation="http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans.xsd">
 	
 	<bean id="databasePopulator" class="org.opennms.netmgt.dao.DatabasePopulator">
+     <property name="transactionTemplate" ref="transactionTemplate" />
      <property name="distPollerDao" ref="distPollerDao" />
      <property name="nodeDao" ref="nodeDao" />
      <property name="ipInterfaceDao" ref="ipInterfaceDao" />

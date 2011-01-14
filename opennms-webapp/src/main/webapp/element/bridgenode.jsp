@@ -145,7 +145,7 @@
         }
     }
 
-    boolean isRouteIP = NetworkElementFactory.isRouteInfoNode(nodeId);
+    boolean isRouteIP = NetworkElementFactory.getInstance(getServletContext()).isRouteInfoNode(nodeId);
 %>
 
 <% pageContext.setAttribute("nodeId", nodeId); %>

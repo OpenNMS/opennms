@@ -147,12 +147,12 @@ public class NetworkElementFactory implements InitializingBean, NetworkElementFa
     /**
      * A mapping of service names (strings) to service identifiers (integers).
      */
-    protected static Map<String, Integer> serviceName2IdMap;
+    protected Map<String, Integer> serviceName2IdMap;
 
     /**
      * A mapping of service identifiers (integers) to service names (strings).
      */
-    protected static Map<Integer, String> serviceId2NameMap;
+    protected Map<Integer, String> serviceId2NameMap;
 
     
     public static NetworkElementFactoryInterface getInstance(ServletContext servletContext) {
@@ -775,7 +775,7 @@ public class NetworkElementFactory implements InitializingBean, NetworkElementFa
         return node;
     }
 
-    private AtInterface getAtInterfaceForOnmsNode(final OnmsNode onmsNode, final String ipAddr) {
+    public AtInterface getAtInterfaceForOnmsNode(final OnmsNode onmsNode, final String ipAddr) {
         for (final OnmsArpInterface iface : onmsNode.getArpInterfaces()) {
             final String ifaceAddress = iface.getIpAddress();
             if (ifaceAddress != null && ifaceAddress.equals(ipAddr)) {
@@ -1209,7 +1209,7 @@ public class NetworkElementFactory implements InitializingBean, NetworkElementFa
      * @return a {@link org.opennms.web.element.AtInterface} object.
      * @throws java.sql.SQLException if any.
      */
-    public static AtInterface getAtInterface(int nodeID, String ipaddr, ServletContext servletContext)
+    public AtInterface getAtInterface(int nodeID, String ipaddr, ServletContext servletContext)
             throws SQLException {
 
         if (ipaddr == null) {
@@ -1254,7 +1254,7 @@ public class NetworkElementFactory implements InitializingBean, NetworkElementFa
      * @return an array of {@link org.opennms.web.element.IpRouteInterface} objects.
      * @throws java.sql.SQLException if any.
      */
-    public static IpRouteInterface[] getIpRoute(int nodeID, ServletContext servletContext) throws SQLException {
+    public IpRouteInterface[] getIpRoute(int nodeID, ServletContext servletContext) throws SQLException {
 
         IpRouteInterface[] nodes = null;
         final DBUtils d = new DBUtils(NetworkElementFactory.class);
@@ -1295,7 +1295,7 @@ public class NetworkElementFactory implements InitializingBean, NetworkElementFa
      * @return an array of {@link org.opennms.web.element.IpRouteInterface} objects.
      * @throws java.sql.SQLException if any.
      */
-    public static IpRouteInterface[] getIpRoute(int nodeID, int ifindex)
+    public IpRouteInterface[] getIpRoute(int nodeID, int ifindex)
             throws SQLException {
 
         IpRouteInterface[] nodes = null;
@@ -1343,7 +1343,7 @@ public class NetworkElementFactory implements InitializingBean, NetworkElementFa
      * @return a boolean.
      * @throws java.sql.SQLException if any.
      */
-    public static boolean isBridgeNode(int nodeID) throws SQLException {
+    public boolean isBridgeNode(int nodeID) throws SQLException {
 
         boolean isPN = false;
         final DBUtils d = new DBUtils(NetworkElementFactory.class);
@@ -1375,7 +1375,7 @@ public class NetworkElementFactory implements InitializingBean, NetworkElementFa
      * @return a boolean.
      * @throws java.sql.SQLException if any.
      */
-    public static boolean isRouteInfoNode(int nodeID) throws SQLException {
+    public boolean isRouteInfoNode(int nodeID) throws SQLException {
 
         boolean isRI = false;
         final DBUtils d = new DBUtils(NetworkElementFactory.class);
@@ -1435,7 +1435,7 @@ public class NetworkElementFactory implements InitializingBean, NetworkElementFa
      * @return a {@link java.util.Set} object.
      * @throws java.sql.SQLException if any.
      */
-    public static Set<Integer> getLinkedNodeIdOnNode(int nodeID) throws SQLException {
+    public Set<Integer> getLinkedNodeIdOnNode(int nodeID) throws SQLException {
         Set<Integer> nodes = new TreeSet<Integer>();
         Integer node = null;
         
@@ -1483,7 +1483,7 @@ public class NetworkElementFactory implements InitializingBean, NetworkElementFa
      * @return a {@link java.util.Set} object.
      * @throws java.sql.SQLException if any.
      */
-    public static Set<Integer> getLinkedNodeIdOnNode(int nodeID,Connection conn) throws SQLException {
+    public Set<Integer> getLinkedNodeIdOnNode(int nodeID,Connection conn) throws SQLException {
         Set<Integer> nodes = new TreeSet<Integer>();
         Integer node = null;
         
@@ -1531,7 +1531,7 @@ public class NetworkElementFactory implements InitializingBean, NetworkElementFa
      * @return a {@link java.util.Set} object.
      * @throws java.sql.SQLException if any.
      */
-    public static Set<Integer> getLinkedNodeIdOnNodes(Set<Integer> nodeIds, Connection conn) throws SQLException {
+    public Set<Integer> getLinkedNodeIdOnNodes(Set<Integer> nodeIds, Connection conn) throws SQLException {
         List<Integer> nodes = new ArrayList<Integer>();
         if(nodeIds==null || nodeIds.size()==0){
         	return new TreeSet<Integer>();
@@ -1695,7 +1695,7 @@ public class NetworkElementFactory implements InitializingBean, NetworkElementFa
      * @return an array of {@link org.opennms.web.element.Vlan} objects.
      * @throws java.sql.SQLException if any.
      */
-    public static Vlan[] getVlansOnNode(int nodeID) throws SQLException {
+    public Vlan[] getVlansOnNode(int nodeID) throws SQLException {
     	Vlan[] vlans = null;
         final DBUtils d = new DBUtils(NetworkElementFactory.class);
         try {
@@ -1725,7 +1725,7 @@ public class NetworkElementFactory implements InitializingBean, NetworkElementFa
      * @return an array of {@link org.opennms.web.element.StpInterface} objects.
      * @throws java.sql.SQLException if any.
      */
-    public static StpInterface[] getStpInterface(int nodeID)
+    public StpInterface[] getStpInterface(int nodeID)
             throws SQLException {
 
         StpInterface[] nodes = null;
@@ -1763,7 +1763,7 @@ public class NetworkElementFactory implements InitializingBean, NetworkElementFa
      * @return an array of {@link org.opennms.web.element.StpInterface} objects.
      * @throws java.sql.SQLException if any.
      */
-    public static StpInterface[] getStpInterface(int nodeID, int ifindex)
+    public StpInterface[] getStpInterface(int nodeID, int ifindex)
             throws SQLException {
 
         StpInterface[] nodes = null;
@@ -1801,7 +1801,7 @@ public class NetworkElementFactory implements InitializingBean, NetworkElementFa
      * @return an array of {@link org.opennms.web.element.StpNode} objects.
      * @throws java.sql.SQLException if any.
      */
-    public static StpNode[] getStpNode(int nodeID) throws SQLException {
+    public StpNode[] getStpNode(int nodeID) throws SQLException {
 
         StpNode[] nodes = null;
         final DBUtils d = new DBUtils(NetworkElementFactory.class);
@@ -2476,7 +2476,7 @@ public class NetworkElementFactory implements InitializingBean, NetworkElementFa
      * @param ourNodes a {@link java.util.Collection} object.
      * @return an array of {@link org.opennms.web.element.Node} objects.
      */
-    public static Node[] convertOnmsNodeCollectionToNodeArray(Collection<OnmsNode> ourNodes) {
+    public Node[] convertOnmsNodeCollectionToNodeArray(Collection<OnmsNode> ourNodes) {
         ArrayList<Node> theirNodes = new ArrayList<Node>(ourNodes.size());
         for (OnmsNode on : ourNodes) {
             theirNodes.add(new Node(on.getId().intValue(),

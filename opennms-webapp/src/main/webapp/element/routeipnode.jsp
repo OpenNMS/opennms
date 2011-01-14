@@ -138,7 +138,7 @@
         }
     }
 
-    boolean isBridgeIP = NetworkElementFactory.isBridgeNode(nodeId);
+    boolean isBridgeIP = NetworkElementFactory.getInstance(getServletContext()).isBridgeNode(nodeId);
 %>
 
 <% pageContext.setAttribute("nodeId", nodeId); %>
