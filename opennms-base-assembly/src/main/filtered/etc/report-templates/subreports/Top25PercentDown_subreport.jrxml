@@ -4,17 +4,17 @@
 	<property name="ireport.x" value="0"/>
 	<property name="ireport.y" value="0"/>
 	<template><![CDATA["${install.dir}/etc/report-templates/assets/styles/defaultStyles.jrtx"]]></template>
-	<parameter name="START_TIME" class="java.sql.Timestamp" isForPrompting="false">
-		<defaultValueExpression><![CDATA[new java.sql.Timestamp(new java.util.Date().getTime() - (86400 * 7 * 1000))]]></defaultValueExpression>
+	<parameter name="START_TIME" class="java.util.Date">
+		<defaultValueExpression><![CDATA[new java.util.Date(new java.util.Date().getTime() - (86400 * 7 * 1000))]]></defaultValueExpression>
 	</parameter>
-	<parameter name="TIME_RANGE" class="java.lang.String" isForPrompting="false">
-		<defaultValueExpression><![CDATA["7 days"]]></defaultValueExpression>
+	<parameter name="TIME_RANGE" class="java.lang.Integer" isForPrompting="false">
+		<defaultValueExpression><![CDATA[7]]></defaultValueExpression>
 	</parameter>
 	<parameter name="CATEGORY_NAME" class="java.lang.String" isForPrompting="false">
 		<defaultValueExpression><![CDATA["Routers"]]></defaultValueExpression>
 	</parameter>
-	<parameter name="END_TIME" class="java.sql.Timestamp">
-		<defaultValueExpression><![CDATA[new java.sql.Timestamp(
+	<parameter name="END_TIME" class="java.util.Date">
+		<defaultValueExpression><![CDATA[new java.util.Date(
 new GregorianCalendar(new GregorianCalendar().get(Calendar.YEAR), new GregorianCalendar().get(Calendar.MONTH), new GregorianCalendar().get(Calendar.DATE)).getTimeInMillis()
 )]]></defaultValueExpression>
 	</parameter>

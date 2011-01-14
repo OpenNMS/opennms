@@ -91,8 +91,8 @@ new GregorianCalendar(new GregorianCalendar().get(Calendar.YEAR), 0, 1).getTimeI
 	<parameter name="SUBREPORT_DIR" class="java.lang.String" isForPrompting="false">
 		<defaultValueExpression><![CDATA["${install.dir}/etc/report-templates/subreports/"]]></defaultValueExpression>
 	</parameter>
-	<parameter name="SUBREPORT_START_TIME" class="java.sql.Timestamp" isForPrompting="false">
-		<defaultValueExpression><![CDATA[new java.sql.Timestamp(new java.util.Date().getTime() - (86400 * 7 * 1000))]]></defaultValueExpression>
+	<parameter name="SUBREPORT_START_TIME" class="java.util.Date" isForPrompting="false">
+		<defaultValueExpression><![CDATA[new java.util.Date(new java.util.Date().getTime() - (86400 * 7 * 1000))]]></defaultValueExpression>
 	</parameter>
 	<parameter name="SUBREPORT_TIME_RANGE" class="java.lang.String" isForPrompting="false">
 		<defaultValueExpression><![CDATA["7 Days"]]></defaultValueExpression>

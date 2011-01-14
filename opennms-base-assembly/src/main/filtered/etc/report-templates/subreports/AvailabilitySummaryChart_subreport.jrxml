@@ -7,10 +7,10 @@
 		<defaultValueExpression><![CDATA["Routers"]]></defaultValueExpression>
 	</parameter>
 	<parameter name="TIME_SERIES_LENGTH" class="java.lang.Integer" isForPrompting="false">
-		<defaultValueExpression><![CDATA[6]]></defaultValueExpression>
+		<defaultValueExpression><![CDATA[60]]></defaultValueExpression>
 	</parameter>
-	<parameter name="TIME_SERIES_START_TIMESTAMP" class="java.sql.Timestamp" isForPrompting="false">
-		<defaultValueExpression><![CDATA[new java.sql.Timestamp(
+	<parameter name="TIME_SERIES_START_TIMESTAMP" class="java.util.Date" isForPrompting="false">
+		<defaultValueExpression><![CDATA[new java.util.Date(
 new GregorianCalendar(new GregorianCalendar().get(Calendar.YEAR), new GregorianCalendar().get(Calendar.MONTH), new GregorianCalendar().get(Calendar.DATE) - 7).getTimeInMillis()
 )]]></defaultValueExpression>
 	</parameter>
@@ -87,7 +87,7 @@ order by
 	dow]]>
 	</queryString>
 	<field name="dow" class="java.lang.Integer"/>
-	<field name="daystart" class="java.sql.Timestamp"/>
+	<field name="daystart" class="java.util.Date"/>
 	<field name="avail_time_interval" class="org.postgresql.util.PGInterval"/>
 	<field name="avail_time_second" class="java.lang.Double"/>
 	<field name="outagetime" class="org.postgresql.util.PGInterval"/>
@@ -97,9 +97,12 @@ order by
 	</background>
 	<summary>
 		<band height="212" splitType="Stretch">
+			<printWhenExpression><![CDATA[$P{TIME_SERIES_LENGTH} <= 31]]></printWhenExpression>
 			<stackedBarChart>
 				<chart>
-					<reportElement x="0" y="0" width="555" height="209"/>
+					<reportElement x="0" y="0" width="555" height="209">
+						<printWhenExpression><![CDATA[$P{TIME_SERIES_LENGTH} <= 31 ? true : false]]></printWhenExpression>
+					</reportElement>
 					<chartTitle>
 						<titleExpression><![CDATA["Daily % Outage Time over last " + ($P{TIME_SERIES_LENGTH} + 1) + " days"]]></titleExpression>
 					</chartTitle>

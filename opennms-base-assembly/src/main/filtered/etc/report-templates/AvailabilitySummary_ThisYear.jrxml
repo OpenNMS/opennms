@@ -60,22 +60,22 @@
 	<parameter name="COMPANY_LOGO" class="java.lang.String" isForPrompting="false">
 		<defaultValueExpression><![CDATA["${install.dir}/etc/report-templates/assets/images/company-logo.png"]]></defaultValueExpression>
 	</parameter>
-	<parameter name="START_TIME" class="java.sql.Timestamp">
-		<defaultValueExpression><![CDATA[new java.sql.Timestamp(
+	<parameter name="START_TIME" class="java.util.Date" isForPrompting="false">
+		<defaultValueExpression><![CDATA[new java.util.Date(
 new GregorianCalendar(new GregorianCalendar().get(Calendar.YEAR), 0, 1).getTimeInMillis()
 )]]></defaultValueExpression>
 	</parameter>
-	<parameter name="TIME_RANGE" class="java.lang.String">
-		<defaultValueExpression><![CDATA["1 Year"]]></defaultValueExpression>
+	<parameter name="TIME_RANGE" class="java.lang.Integer" isForPrompting="false">
+		<defaultValueExpression><![CDATA[Calendar.getInstance().get(Calendar.DAY_OF_YEAR)]]></defaultValueExpression>
 	</parameter>
-	<parameter name="TIME_RANGE_DESCRIPTION" class="java.lang.String">
+	<parameter name="TIME_RANGE_DESCRIPTION" class="java.lang.String" isForPrompting="false">
 		<defaultValueExpression><![CDATA["This Year"]]></defaultValueExpression>
 	</parameter>
 	<parameter name="SUBREPORT_DIR" class="java.lang.String" isForPrompting="false">
 		<defaultValueExpression><![CDATA["${install.dir}/etc/report-templates/subreports/"]]></defaultValueExpression>
 	</parameter>
-	<parameter name="END_TIME" class="java.sql.Timestamp">
-		<defaultValueExpression><![CDATA[new java.sql.Timestamp(
+	<parameter name="END_TIME" class="java.util.Date" isForPrompting="false">
+		<defaultValueExpression><![CDATA[new java.util.Date(
 new GregorianCalendar(new GregorianCalendar().get(Calendar.YEAR), new GregorianCalendar().get(Calendar.MONTH), new GregorianCalendar().get(Calendar.DATE), 0, 0).getTimeInMillis()
 )]]></defaultValueExpression>
 	</parameter>

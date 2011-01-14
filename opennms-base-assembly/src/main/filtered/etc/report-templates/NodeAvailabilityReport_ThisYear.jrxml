@@ -55,11 +55,13 @@
 		</parameter>
 		<parameter name="DS_AVAILABILITY_WARNING" class="java.lang.Double" isForPrompting="false"/>
 		<parameter name="DS_AVAILABILITY_CRITICAL" class="java.lang.Double" isForPrompting="false"/>
-		<parameter name="DS_TIME_RANGE" class="java.lang.String" isForPrompting="false">
-			<defaultValueExpression><![CDATA["1 Month"]]></defaultValueExpression>
+		<parameter name="DS_TIME_RANGE" class="java.util.Date" isForPrompting="false">
+			<defaultValueExpression><![CDATA[new java.util.Date(
+new GregorianCalendar(new GregorianCalendar().get(Calendar.YEAR), new GregorianCalendar().get(Calendar.MONTH), new GregorianCalendar().get(Calendar.DATE)).getTimeInMillis()
+)]]></defaultValueExpression>
 		</parameter>
-		<parameter name="DS_START_TIME" class="java.sql.Timestamp">
-			<defaultValueExpression><![CDATA[new java.sql.Timestamp(
+		<parameter name="DS_START_TIME" class="java.util.Date">
+			<defaultValueExpression><![CDATA[new java.util.Date(
 new GregorianCalendar(new GregorianCalendar().get(Calendar.YEAR), new GregorianCalendar().get(Calendar.MONTH), 1).getTimeInMillis()
 )]]></defaultValueExpression>
 		</parameter>
@@ -83,7 +85,9 @@ FROM
 		active_nodes.nodelabel,
 		active_nodes.nodesyslocation,
 		active_nodes.nodesysdescription,
-		EXTRACT (epoch from ('$P!{DS_START_TIME}'::TIMESTAMP + '$P!{DS_TIME_RANGE}'::INTERVAL) - '$P!{DS_START_TIME}'::TIMESTAMP) AS avail_total,
+		EXTRACT( epoch from ( '$P!{DS_START_TIME}'::TIMESTAMP + CAST( EXTRACT( DAY FROM '$P!{DS_TIME_RANGE}'::TIMESTAMP) || ' days' as interval ) - '$P!{DS_START_TIME}'::TIMESTAMP ) ) AS avail_total,
+
+		--EXTRACT ( epoch from ('$P!{DS_START_TIME}'::TIMESTAMP + CAST( EXTRACT(DAY FROM '$P!{DS_TIME_RANGE}'::TIMESTAMP) || ' days' as interval ) ) ) - '$P!{DS_START_TIME}'::TIMESTAMP) AS avail_total,
 		CASE
 			WHEN
 				outages_scope.ifregainedservice - outages_scope.iflostservice is NULL
@@ -110,7 +114,7 @@ FROM
 		FROM
 			outages, service, events
 		WHERE
-			(iflostservice, ifregainedservice) OVERLAPS ('$P!{DS_START_TIME}'::TIMESTAMP, '$P!{DS_START_TIME}'::TIMESTAMP + '$P!{DS_TIME_RANGE}'::INTERVAL) AND
+			(iflostservice, ifregainedservice) OVERLAPS ('$P!{DS_START_TIME}'::TIMESTAMP, '$P!{DS_START_TIME}'::TIMESTAMP + CAST( EXTRACT(DAY FROM '$P!{DS_TIME_RANGE}'::TIMESTAMP) || ' days' as interval )) AND
 			outages.serviceid = service.serviceid AND
 			service.servicename = 'ICMP' AND
 			outages.svclosteventid = events.eventid AND
@@ -217,33 +221,39 @@ ORDER BY
 			<groupExpression><![CDATA[$F{categoryname}]]></groupExpression>
 		</group>
 	</subDataset>
-	<parameter name="COMPANY_LOGO" class="java.lang.String">
+	<parameter name="COMPANY_LOGO" class="java.lang.String" isForPrompting="false">
 		<defaultValueExpression><![CDATA["${install.dir}/etc/report-templates/assets/images/company-logo.png"]]></defaultValueExpression>
 	</parameter>
 	<parameter name="SURVEILLANCE_CATEGORY" class="java.lang.String">
+		<parameterDescription><![CDATA[Surveillance Category]]></parameterDescription>
 		<defaultValueExpression><![CDATA["Routers"]]></defaultValueExpression>
 	</parameter>
 	<parameter name="AVAILABILITY_WARNING" class="java.lang.Double">
+		<parameterDescription><![CDATA[Availability Warning]]></parameterDescription>
 		<defaultValueExpression><![CDATA[new Double("98.0")]]></defaultValueExpression>
 	</parameter>
 	<parameter name="AVAILABILITY_CRITICAL" class="java.lang.Double">
+		<parameterDescription><![CDATA[Availability Critical]]></parameterDescription>
 		<defaultValueExpression><![CDATA[new Double("97.0")]]></defaultValueExpression>
 	</parameter>
-	<parameter name="TIME_RANGE" class="java.lang.String">
-		<defaultValueExpression><![CDATA["1 Year"]]></defaultValueExpression>
+	<parameter name="TIME_RANGE" class="java.util.Date" isForPrompting="false">
+		<defaultValueExpression><![CDATA[new java.util.Date(
+new GregorianCalendar(new GregorianCalendar().get(Calendar.YEAR), new GregorianCalendar().get(Calendar.MONTH), new GregorianCalendar().get(Calendar.DATE)).getTimeInMillis()
+)]]></defaultValueExpression>
 	</parameter>
-	<parameter name="START_TIME" class="java.sql.Timestamp">
-		<defaultValueExpression><![CDATA[new java.sql.Timestamp(
+	<parameter name="START_TIME" class="java.util.Date" isForPrompting="false">
+		<parameterDescription><![CDATA[Report Start Date]]></parameterDescription>
+		<defaultValueExpression><![CDATA[new java.util.Date(
 new GregorianCalendar(new GregorianCalendar().get(Calendar.YEAR), 0, 1).getTimeInMillis()
 )]]></defaultValueExpression>
 	</parameter>
-	<parameter name="TIME_RANGE_DESCRIPTION" class="java.lang.String">
+	<parameter name="TIME_RANGE_DESCRIPTION" class="java.lang.String" isForPrompting="false">
 		<defaultValueExpression><![CDATA["This Year"]]></defaultValueExpression>
 	</parameter>
 	<queryString>
 		<![CDATA[SELECT
 	'$P!{START_TIME}'::TIMESTAMP AS start,
-	'$P!{START_TIME}'::TIMESTAMP + '$P!{TIME_RANGE}'::INTERVAL AS end]]>
+	'$P!{START_TIME}'::TIMESTAMP + CAST( EXTRACT( DAY FROM '$P!{TIME_RANGE}'::TIMESTAMP ) - 1 || ' days' as interval) AS end]]>
 	</queryString>
 	<field name="start" class="java.sql.Timestamp"/>
 	<field name="end" class="java.sql.Timestamp"/>
@@ -592,12 +602,12 @@ new GregorianCalendar(new GregorianCalendar().get(Calendar.YEAR), 0, 1).getTimeI
 			<textField evaluationTime="Page">
 				<reportElement style="Body" x="67" y="15" width="126" height="14"/>
 				<textElement/>
-				<textFieldExpression class="java.sql.Timestamp"><![CDATA[$F{start}]]></textFieldExpression>
+				<textFieldExpression class="java.util.Date"><![CDATA[$F{start}]]></textFieldExpression>
 			</textField>
 			<textField evaluationTime="Page">
 				<reportElement style="Body" x="253" y="15" width="131" height="14"/>
 				<textElement/>
-				<textFieldExpression class="java.sql.Timestamp"><![CDATA[$F{end}]]></textFieldExpression>
+				<textFieldExpression class="java.util.Date"><![CDATA[$F{end}]]></textFieldExpression>
 			</textField>
 			<staticText>
 				<reportElement style="Body" x="193" y="15" width="60" height="14"/>
