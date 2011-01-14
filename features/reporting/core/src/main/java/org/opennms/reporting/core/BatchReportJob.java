@@ -36,6 +36,7 @@
 
 package org.opennms.reporting.core;
 
+import org.opennms.api.reporting.ReportMode;
 import org.opennms.api.reporting.parameter.ReportParameters;
 import org.opennms.reporting.core.svclayer.ReportWrapperService;
 import org.quartz.JobDataMap;
@@ -77,6 +78,7 @@ public class BatchReportJob extends QuartzJobBean {
             (ReportWrapperService)m_context.getBean("reportWrapperService");
         
         reportWrapperService.run((ReportParameters) dataMap.get("criteria"),
+                                 (ReportMode) dataMap.get("mode"),
                                  (DeliveryOptions) dataMap.get("deliveryOptions"),
                                  (String)dataMap.get("reportId"));
         

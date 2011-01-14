@@ -44,6 +44,7 @@ import java.util.Map;
 
 import org.junit.BeforeClass;
 import org.junit.Test;
+import org.opennms.api.reporting.ReportMode;
 import org.opennms.api.reporting.parameter.ReportDateParm;
 import org.opennms.api.reporting.parameter.ReportParameters;
 import org.opennms.netmgt.dao.castor.DefaultOnmsReportConfigDao;
@@ -82,7 +83,7 @@ public class DefaultParameterConversionServiceTest {
         cal.set(Calendar.MILLISECOND,0);
         System.out.println("test date " + cal.getTime().toString());
         cal.add(Calendar.DATE, -1);
-        Date configDate = parameters.getDateParms().get(0).getValue();
+        Date configDate = parameters.getDateParms().get(0).getDate();
         assertEquals(0, configDate.compareTo(cal.getTime()));
     }
     
@@ -100,7 +101,7 @@ public class DefaultParameterConversionServiceTest {
         dateParm.setInterval("month");
         dateParm.setHours(0);
         dateParm.setMinutes(0);
-        Map <String, Object> parmMap = parameters.getReportParms();
+        Map <String, Object> parmMap = parameters.getReportParms(ReportMode.SCHEDULED);
         Date storedDate = (Date) parmMap.get("endDate");
         assertEquals(0, storedDate.compareTo(cal.getTime()));
     }

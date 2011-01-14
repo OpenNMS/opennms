@@ -53,13 +53,14 @@
 </jsp:include>
 
 <h3>Report Error</h3>
-
-      <p>
-        It has not been possible to execute your report.
-      </p>
       
-<form:form>  
-    <input type="submit" id="proceed" name="_eventId_proceed" value="Finished" />&#160;
+<form:form cssClass="stdform">
+	<p><span class="indent">
+    	An error has occurred and it has not been possible to run or schedule your report.
+	</span></p>
+	<span class="indent">
+    	<input type="submit" id="proceed" name="_eventId_proceed" value="Finished" />&#160;
+	</span>
 </form:form>
 
 <jsp:include page="/includes/footer.jsp" flush="false" />

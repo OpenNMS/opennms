@@ -1,0 +1,84 @@
+<!DOCTYPE jasperReport
+  PUBLIC "-//JasperReports//DTD Report Design//EN"
+  "http://jasperreports.sourceforge.net/dtds/jasperreport.dtd">
+
+<jasperReport name="ParameterTest">
+	<parameter name="stringParameter" class="java.lang.String">
+		<parameterDescription>
+			<![CDATA[a string parameter]]>
+		</parameterDescription>
+		<defaultValueExpression>
+			<![CDATA["Routers"]]>
+		</defaultValueExpression>
+	</parameter>
+	<parameter name="categoryParameter" class="java.lang.String">
+		<property name="org.opennms.report.stringInputType" value="onmsCategorySelector" /> 
+		<parameterDescription>
+			<![CDATA[a drop-down category parameter]]>
+		</parameterDescription>
+	</parameter>
+	<parameter name="integerParameter" class="java.lang.Integer">
+		<parameterDescription>
+			<![CDATA[an Integer parameter]]>
+		</parameterDescription>
+		<defaultValueExpression>
+			<![CDATA[new Integer("100")]]>
+		</defaultValueExpression>
+	</parameter>
+	<parameter name="floatParameter" class="java.lang.Float">
+		<parameterDescription>
+			<![CDATA[a Float parameter]]>
+		</parameterDescription>
+		<defaultValueExpression>
+			<![CDATA[new Float("99.99")]]>
+		</defaultValueExpression>
+	</parameter>
+	<parameter name="doubleParameter" class="java.lang.Double">
+		<parameterDescription>
+			<![CDATA[a Double parameter]]>
+		</parameterDescription>
+		<defaultValueExpression>
+			<![CDATA[new Double("3.1415")]]>
+		</defaultValueExpression>
+	</parameter>
+	<parameter name="dateParameter" class="java.util.Date">
+		<parameterDescription>
+			<![CDATA[a java.util.date parameter]]>
+		</parameterDescription>
+		<defaultValueExpression>
+			<![CDATA[new Date(-112426200000L)]]>
+		</defaultValueExpression>
+	</parameter>
+	<parameter name="sqlTimestampParameter" class="java.sql.Timestamp">
+		<parameterDescription>
+			<![CDATA[a java.sql.Timestamp parameter]]>
+		</parameterDescription>
+		<defaultValueExpression>
+			<![CDATA[new java.sql.Timestamp(-135506700000L)]]>
+		</defaultValueExpression>
+	</parameter>
+	<title>
+    	<band height="20">
+      		<staticText>
+				<reportElement x="0" y="0" width="200" height="20"/>
+				<text><![CDATA[Parameter Test]]></text>
+      		</staticText>
+      	</band>
+    </title>
+	<detail>
+	    <band height="140">
+	    	<textField>
+	    	<reportElement x="0" y="0" width="200" height="140"/>
+		    <textFieldExpression>
+		    	"stringParameter: " + $P{stringParameter} + "\n" +
+		    	"categoryParameter: " + $P{categoryParameter} + "\n" +
+		    	"integerParameter: " + $P{integerParameter} + "\n" +
+		    	"floatParameter: " + $P{floatParameter} + "\n" +
+		    	"doubleParameter: " + $P{doubleParameter} + "\n" +
+		   		"dateParameter: " + (new SimpleDateFormat("MM/dd/yyyy HH:mm:ss")).format($P{dateParameter}) + "\n" +
+		    	"sqlTimestampParameter: " + (new SimpleDateFormat("MM/dd/yyyy HH:mm:ss")).format($P{sqlTimestampParameter})
+		    </textFieldExpression>
+		    </textField>
+		</band>
+	</detail>
+</jasperReport>

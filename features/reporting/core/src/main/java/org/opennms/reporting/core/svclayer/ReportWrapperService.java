@@ -39,6 +39,7 @@ import java.io.OutputStream;
 import java.util.List;
 
 import org.opennms.api.reporting.ReportFormat;
+import org.opennms.api.reporting.ReportMode;
 import org.opennms.api.reporting.parameter.ReportParameters;
 import org.opennms.reporting.core.DeliveryOptions;
 
@@ -69,8 +70,9 @@ public interface ReportWrapperService {
      * @param parameters runtime report parameters
      * @param deliveryOptions delivery options for the report
      * @param reportId reportId as defined in database-reports.xml
+     * @param mode in which to run the report (ONLINE, BATCH or IMMEDIATE)
      */
-    public abstract void run(ReportParameters parameters, DeliveryOptions deliveryOptions,
+    public abstract void run(ReportParameters parameters, ReportMode mode, DeliveryOptions deliveryOptions,
             String reportId);
     
     /**
@@ -98,8 +100,9 @@ public interface ReportWrapperService {
      *
      * @param parameters runtime report parameters
      * @param outputStream stream to render the resulting report
+     * @param mode in which to run the report (ONLINE, BATCH or IMMEDIATE)
      */
-    public abstract void runAndRender(ReportParameters parameters, OutputStream outputStream);
+    public abstract void runAndRender(ReportParameters parameters, ReportMode mode, OutputStream outputStream);
     
     /**
      * This method renders the report into a given output stream.

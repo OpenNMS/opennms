@@ -131,6 +131,7 @@ public interface ReportService {
      *         the report
      * @param ReportId a {@link java.lang.String} object.
      */
-    public abstract ReportParameters getParameters(String ReportId);
+    public abstract ReportParameters getParameters(String ReportId)
+            throws ReportException;
     
 }

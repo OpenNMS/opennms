@@ -36,7 +36,10 @@
 package org.opennms.api.reporting.parameter;
 
 import java.io.Serializable;
+import java.util.Calendar;
 import java.util.Date;
+
+import org.opennms.api.reporting.ReportMode;
 
 /**
  * <p>ReportDateParm class.</p>
@@ -115,22 +118,54 @@ public class ReportDateParm extends ReportParm implements Serializable {
     public void setCount(Integer count) {
         m_count = count;
     }
-
+    
     /**
-     * <p>getValue</p>
+     * <p>getDate</p>
      *
      * @return a {@link java.util.Date} object.
      */
-    public Date getValue() {
+    public Date getDate() {
         return m_date;
     }
     /**
-     * <p>setValue</p>
+     * <p>setDate</p>
      *
      * @param date a {@link java.util.Date} object.
      */
-    public void setValue(Date date) {
+    public void setDate(Date date) {
         m_date = date;
+    }
+       
+    public Date getValue(ReportMode mode) {
+        Calendar cal = Calendar.getInstance();
+        if ((mode == ReportMode.SCHEDULED) && (m_useAbsoluteDate == false)) {
+            // use the offset date set when the report was scheduled
+            int amount = 0 - m_count;
+            if (m_interval.equals("year")) {
+                cal.add(Calendar.YEAR, amount);
+            } else { 
+                if (m_interval.equals("month")) {
+                    cal.add(Calendar.MONTH, amount);
+                } else {
+                    cal.add(Calendar.DATE, amount);
+                }
+            }
+        } else {
+            cal.setTime(m_date);
+        } 
+        if (m_hours != null) {
+            cal.set(Calendar.HOUR_OF_DAY, m_hours);
+        } else {
+            cal.set(Calendar.HOUR_OF_DAY, 0);
+        }
+        if (m_minutes != null) {
+            cal.set(Calendar.MINUTE, m_minutes);
+        } else {
+            cal.set(Calendar.MINUTE, 0);
+        }                
+        cal.set(Calendar.SECOND,0);
+        cal.set(Calendar.MILLISECOND,0);
+        return cal.getTime();
     }
 
     /**
