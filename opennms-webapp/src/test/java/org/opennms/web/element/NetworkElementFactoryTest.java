@@ -64,10 +64,12 @@ import org.springframework.transaction.annotation.Transactional;
  * @author <a href="mailto:dj@opennms.org">DJ Gregor</a>
  */
 @RunWith(SpringJUnit4ClassRunner.class)
-@ContextConfiguration(locations= {"classpath:/META-INF/opennms/applicationContext-dao.xml",
-                                  "classpath*:/META-INF/opennms/component-dao.xml",
-                                  "classpath:/META-INF/opennms/applicationContext-dao.xml",
-                                  "classpath:/NetworkElementFactoryContext.xml"})
+@ContextConfiguration(locations= {
+        "classpath:/META-INF/opennms/applicationContext-dao.xml",
+        "classpath*:/META-INF/opennms/component-dao.xml",
+        "classpath*:/META-INF/opennms/component-service.xml",
+        "classpath:/daoWebRepositoryTestContext.xml"
+})
 @TestExecutionListeners({
     OpenNMSConfigurationExecutionListener.class,
     TemporaryDatabaseExecutionListener.class,

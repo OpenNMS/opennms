@@ -71,12 +71,13 @@ import org.springframework.transaction.annotation.Transactional;
     DirtiesContextTestExecutionListener.class,
     TransactionalTestExecutionListener.class
 })
-@ContextConfiguration(locations= {"classpath:/META-INF/opennms/applicationContext-dao.xml",
-                                  "classpath*:/META-INF/opennms/component-dao.xml",
-                                  "classpath*:/META-INF/opennms/component-service.xml",
-                                  "classpath:/daoWebEventRepositoryTestContext.xml",
-                                  "classpath:/jdbcWebEventRepositoryTestContext.xml",
-                                  "classpath:/NetworkElementFactoryContext.xml"})
+@ContextConfiguration(locations= {
+        "classpath:/META-INF/opennms/applicationContext-dao.xml",
+        "classpath*:/META-INF/opennms/component-dao.xml",
+        "classpath*:/META-INF/opennms/component-service.xml",
+        "classpath:/daoWebRepositoryTestContext.xml",
+        "classpath:/jdbcWebRepositoryTestContext.xml"
+})
 @JUnitTemporaryDatabase()
 public class WebEventRepositoryFilterTest {
     

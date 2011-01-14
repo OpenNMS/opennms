@@ -52,10 +52,10 @@ import org.opennms.netmgt.model.OnmsEvent;
 import org.opennms.netmgt.model.OnmsMonitoredService;
 import org.opennms.netmgt.model.OnmsOutage;
 import org.opennms.test.mock.MockLogAppender;
-import org.opennms.web.outage.DaoWebOutageRepository;
-import org.opennms.web.outage.JdbcWebOutageRepository;
 import org.opennms.web.outage.Outage;
+import org.opennms.web.outage.WebOutageRepository;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.context.ApplicationContext;
 import org.springframework.test.context.ContextConfiguration;
 import org.springframework.test.context.TestExecutionListeners;
@@ -72,10 +72,13 @@ import org.springframework.test.context.transaction.TransactionalTestExecutionLi
     DirtiesContextTestExecutionListener.class,
     TransactionalTestExecutionListener.class
 })
-@ContextConfiguration(locations={"classpath:/META-INF/opennms/applicationContext-dao.xml",
-                                 "classpath*:/META-INF/opennms/component-dao.xml",
-                                 "classpath:/daoWebOutageRepositoryTest.xml",
-                                 "classpath:/jdbcWebOutageRepositoryTest.xml"})
+@ContextConfiguration(locations={
+        "classpath:/META-INF/opennms/applicationContext-dao.xml",
+        "classpath*:/META-INF/opennms/component-dao.xml",
+        "classpath*:/META-INF/opennms/component-service.xml",
+        "classpath:/daoWebRepositoryTestContext.xml",
+        "classpath:/jdbcWebRepositoryTestContext.xml"
+})
 @JUnitTemporaryDatabase()
 public class WebOutageRepositoryFilterTest {
     
@@ -83,10 +86,12 @@ public class WebOutageRepositoryFilterTest {
     DatabasePopulator m_dbPopulator;
     
     @Autowired
-    DaoWebOutageRepository m_daoOutageRepo;
+    @Qualifier("dao")
+    WebOutageRepository m_daoOutageRepo;
     
     @Autowired
-    JdbcWebOutageRepository m_jdbcOutageRepo;
+    @Qualifier("jdbc")
+    WebOutageRepository m_jdbcOutageRepo;
     
     @Autowired
     ApplicationContext m_appContext;

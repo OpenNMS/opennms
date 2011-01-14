@@ -36,9 +36,11 @@ import org.springframework.test.context.transaction.TransactionalTestExecutionLi
     DirtiesContextTestExecutionListener.class,
     TransactionalTestExecutionListener.class
 })
-@ContextConfiguration(locations= {"classpath:/META-INF/opennms/applicationContext-dao.xml",
-                                  "classpath*:/META-INF/opennms/component-dao.xml",
-                                  "classpath:/jdbcWebEventRepositoryTestContext.xml"})
+@ContextConfiguration(locations= {
+        "classpath:/META-INF/opennms/applicationContext-dao.xml",
+        "classpath*:/META-INF/opennms/component-dao.xml",
+        "classpath:/jdbcWebRepositoryTestContext.xml"
+})
 @JUnitTemporaryDatabase()
 public class JdbcWebEventRepositoryTest {
     
