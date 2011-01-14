@@ -2,7 +2,7 @@
 <jasperReport xmlns="http://jasperreports.sourceforge.net/jasperreports" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://jasperreports.sourceforge.net/jasperreports http://jasperreports.sourceforge.net/xsd/jasperreport.xsd" name="node-response-time" pageWidth="595" pageHeight="842" whenNoDataType="NoDataSection" columnWidth="555" leftMargin="20" rightMargin="20" topMargin="20" bottomMargin="20">
 	<property name="ireport.zoom" value="4.0"/>
 	<property name="ireport.x" value="0"/>
-	<property name="ireport.y" value="960"/>
+	<property name="ireport.y" value="224"/>
 	<template><![CDATA["${install.dir}/etc/report-templates/assets/styles/defaultStyles.jrtx"]]></template>
 	<style name="Report_Title" forecolor="#000000" fontSize="20"/>
 	<style name="Report_Subtitle" forecolor="#000000" vAlign="Middle" fontSize="10" isBold="false" isItalic="true" isUnderline="false" isStrikeThrough="false"/>
@@ -91,8 +91,8 @@ new GregorianCalendar(new GregorianCalendar().get(Calendar.YEAR), new GregorianC
 	<parameter name="SUBREPORT_DIR" class="java.lang.String" isForPrompting="false">
 		<defaultValueExpression><![CDATA["${install.dir}/etc/report-templates/subreports/"]]></defaultValueExpression>
 	</parameter>
-	<parameter name="SUBREPORT_START_TIME" class="java.sql.Timestamp" isForPrompting="false">
-		<defaultValueExpression><![CDATA[new java.sql.Timestamp(new java.util.Date().getTime() - (86400 * 7 * 1000))]]></defaultValueExpression>
+	<parameter name="SUBREPORT_START_TIME" class="java.util.Date" isForPrompting="false">
+		<defaultValueExpression><![CDATA[new java.util.Date(new java.util.Date().getTime() - (86400 * 7 * 1000))]]></defaultValueExpression>
 	</parameter>
 	<parameter name="SUBREPORT_TIME_RANGE" class="java.lang.String" isForPrompting="false">
 		<defaultValueExpression><![CDATA["7 Days"]]></defaultValueExpression>
@@ -251,12 +251,12 @@ ORDER BY
 				</graphicElement>
 			</line>
 			<staticText>
-				<reportElement style="Sub-sub-header" x="2" y="83" width="65" height="15"/>
+				<reportElement style="Sub-sub-header" x="2" y="83" width="79" height="15"/>
 				<textElement/>
 				<text><![CDATA[This Month: ]]></text>
 			</staticText>
 			<textField>
-				<reportElement style="Sub-sub-header" x="67" y="83" width="322" height="15" isPrintWhenDetailOverflows="true"/>
+				<reportElement style="Sub-sub-header" x="81" y="83" width="322" height="15" isPrintWhenDetailOverflows="true"/>
 				<textElement/>
 				<textFieldExpression class="java.lang.String"><![CDATA[new SimpleDateFormat().format($P{startDate}) + " to " + new SimpleDateFormat().format($P{endDate})]]></textFieldExpression>
 			</textField>

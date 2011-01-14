@@ -58,8 +58,8 @@
 		<parameter name="DS_TIME_RANGE" class="java.lang.String" isForPrompting="false">
 			<defaultValueExpression><![CDATA["1 Month"]]></defaultValueExpression>
 		</parameter>
-		<parameter name="DS_START_TIME" class="java.sql.Timestamp">
-			<defaultValueExpression><![CDATA[new java.sql.Timestamp(
+		<parameter name="DS_START_TIME" class="java.util.Date">
+			<defaultValueExpression><![CDATA[new java.util.Date(
 new GregorianCalendar(new GregorianCalendar().get(Calendar.YEAR), new GregorianCalendar().get(Calendar.MONTH), 1).getTimeInMillis()
 )]]></defaultValueExpression>
 		</parameter>
@@ -217,7 +217,7 @@ ORDER BY
 			<groupExpression><![CDATA[$F{categoryname}]]></groupExpression>
 		</group>
 	</subDataset>
-	<parameter name="COMPANY_LOGO" class="java.lang.String">
+	<parameter name="COMPANY_LOGO" class="java.lang.String" isForPrompting="false">
 		<defaultValueExpression><![CDATA["${install.dir}/etc/report-templates/assets/images/company-logo.png"]]></defaultValueExpression>
 	</parameter>
 	<parameter name="SURVEILLANCE_CATEGORY" class="java.lang.String">
@@ -229,15 +229,15 @@ ORDER BY
 	<parameter name="AVAILABILITY_CRITICAL" class="java.lang.Double">
 		<defaultValueExpression><![CDATA[new Double("97.0")]]></defaultValueExpression>
 	</parameter>
-	<parameter name="TIME_RANGE" class="java.lang.String">
+	<parameter name="TIME_RANGE" class="java.lang.String" isForPrompting="false">
 		<defaultValueExpression><![CDATA["1 Month"]]></defaultValueExpression>
 	</parameter>
-	<parameter name="START_TIME" class="java.sql.Timestamp">
-		<defaultValueExpression><![CDATA[new java.sql.Timestamp(
+	<parameter name="START_TIME" class="java.util.Date" isForPrompting="false">
+		<defaultValueExpression><![CDATA[new java.util.Date(
 new GregorianCalendar(new GregorianCalendar().get(Calendar.YEAR), new GregorianCalendar().get(Calendar.MONTH) -1, 1).getTimeInMillis()
 )]]></defaultValueExpression>
 	</parameter>
-	<parameter name="TIME_RANGE_DESCRIPTION" class="java.lang.String">
+	<parameter name="TIME_RANGE_DESCRIPTION" class="java.lang.String" isForPrompting="false">
 		<defaultValueExpression><![CDATA["Last Month"]]></defaultValueExpression>
 	</parameter>
 	<queryString>
@@ -245,8 +245,8 @@ new GregorianCalendar(new GregorianCalendar().get(Calendar.YEAR), new GregorianC
 	'$P!{START_TIME}'::TIMESTAMP AS start,
 	'$P!{START_TIME}'::TIMESTAMP + '$P!{TIME_RANGE}'::INTERVAL AS end]]>
 	</queryString>
-	<field name="start" class="java.sql.Timestamp"/>
-	<field name="end" class="java.sql.Timestamp"/>
+	<field name="start" class="java.util.Date"/>
+	<field name="end" class="java.util.Date"/>
 	<variable name="start_1" class="java.lang.Integer" resetType="Page" calculation="Count">
 		<variableExpression><![CDATA[$F{start}]]></variableExpression>
 	</variable>
@@ -592,12 +592,12 @@ new GregorianCalendar(new GregorianCalendar().get(Calendar.YEAR), new GregorianC
 			<textField evaluationTime="Page">
 				<reportElement style="Body" x="67" y="15" width="126" height="14"/>
 				<textElement/>
-				<textFieldExpression class="java.sql.Timestamp"><![CDATA[$F{start}]]></textFieldExpression>
+				<textFieldExpression class="java.util.Date"><![CDATA[$F{start}]]></textFieldExpression>
 			</textField>
 			<textField evaluationTime="Page">
 				<reportElement style="Body" x="253" y="15" width="131" height="14"/>
 				<textElement/>
-				<textFieldExpression class="java.sql.Timestamp"><![CDATA[$F{end}]]></textFieldExpression>
+				<textFieldExpression class="java.util.Date"><![CDATA[$F{end}]]></textFieldExpression>
 			</textField>
 			<staticText>
 				<reportElement style="Body" x="193" y="15" width="60" height="14"/>
