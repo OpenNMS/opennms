@@ -34,6 +34,7 @@ package org.opennms.netmgt.provision.detector.snmp;
 import java.net.InetAddress;
 import java.util.Map;
 
+import org.opennms.core.utils.LogUtils;
 import org.opennms.netmgt.provision.DetectorMonitor;
 import org.opennms.netmgt.snmp.SnmpAgentConfig;
 import org.opennms.netmgt.snmp.SnmpInstId;
@@ -118,47 +119,41 @@ public class CiscoIpSlaDetector extends SnmpDetector {
              */
             Map<SnmpInstId, SnmpValue> tagResults = getTable(agentConfig, RTT_ADMIN_TAG_OID);
             if (tagResults == null || tagResults.isEmpty()) {
-                log().warn(getServiceName() + ": No admin tags received! ");
+                LogUtils.warnf(this, "%s: No admin tags received!", getServiceName());
                 return detected;
             }
 
             Map<SnmpInstId, SnmpValue> operStateResults = getTable(agentConfig,RTT_OPER_STATE_OID);
             if (operStateResults == null || operStateResults.isEmpty()) {
-                log().warn(getServiceName() + ": No oper status received! ");
+                LogUtils.warnf(this, "%s: No oper status received!", getServiceName());
                 return detected;
             }
             
             // Iterate over the list of configured IP SLAs
             for (SnmpInstId ipslaInstance : tagResults.keySet()) {
-                log().debug(getServiceName() + " detect: [" + tagResults.get(ipslaInstance).toString() + "] compared with [" + getVbvalue() + "]");
+                LogUtils.debugf(this, getServiceName() + "%s detect: [%s] compared with [%s]", getServiceName(), tagResults.get(ipslaInstance), getVbvalue());
                 /*
                  * Check if a configured IP SLA with specific tag exist and the
                  * the operational state ACTIVE(6), detected with first match.
                  */
                 if (tagResults.get(ipslaInstance).toString().equals(getVbvalue())
                         && operStateResults.get(ipslaInstance).toInt() == RTT_MON_OPER_STATE.ACTIVE.value()) {
-                    log().debug(getServiceName()
-                                        + ": admin tag [" + getVbvalue() + "] found and status is "
-                                        + operStateResults.get(ipslaInstance).toInt());
+                    LogUtils.debugf(this, "%s: admin tag [%s] found and status is %d", getServiceName(), getVbvalue(), operStateResults.get(ipslaInstance).toInt());
                     detected = true;
                     break; // detected leave for()
                 } else {
-                    log().debug(getServiceName()
-                                + ": admin tag [" + getVbvalue() + "] found and status is "
-                                + operStateResults.get(ipslaInstance).toInt());
+                    LogUtils.debugf(this, "%s: admin tag [%s] not found and status is %d", getServiceName(), getVbvalue(), operStateResults.get(ipslaInstance).toInt());
                     detected = false; // not detected, check next or return with not detected
                 }
             }
-        } catch (NullPointerException e) {
-            log().warn("SNMP not available or CISCO-RTT-MON-MIB not supported!");
-        } catch (NumberFormatException e) {
-            log().warn("Number operator used on a non-number "
-                               + e.getMessage());
-        } catch (IllegalArgumentException e) {
-            log().warn("Invalid Snmp Criteria: " + e.getMessage());
-        } catch (Throwable t) {
-            log().warn("Unexpected exception during SNMP poll of interface "
-                               + address.getHostAddress(), t);
+        } catch (final NullPointerException e) {
+            LogUtils.warnf(this, e, "SNMP not available or CISCO-RTT-MON-MIB not supported!");
+        } catch (final NumberFormatException e) {
+            LogUtils.warnf(this, e, "Number operator used on a non-number.");
+        } catch (final IllegalArgumentException e) {
+            LogUtils.warnf(this, e, "Invalid SNMP criteria.");
+        } catch (final Throwable t) {
+            LogUtils.warnf(this, t, "Unexpected exception during SNMP poll of interface %s", address.getHostAddress());
         }
         return detected; // return detected
     }
@@ -170,6 +165,6 @@ public class CiscoIpSlaDetector extends SnmpDetector {
      * @param isTable @ {java.lang.String} object
      */
     public void setIsTable (String isTable) {
-        log().warn("The paramater isTable is not used and will be ignored.");
+        LogUtils.warnf(this, "The paramater isTable is not used and will be ignored.");
     }
 }
