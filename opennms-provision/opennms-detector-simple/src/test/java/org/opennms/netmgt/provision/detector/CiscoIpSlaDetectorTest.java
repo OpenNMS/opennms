@@ -39,7 +39,6 @@ import java.net.UnknownHostException;
 
 import org.junit.After;
 import org.junit.Before;
-import org.junit.Ignore;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.opennms.mock.snmp.MockSnmpAgent;
@@ -73,7 +72,7 @@ public class CiscoIpSlaDetectorTest {
         m_detector.setPort(TEST_PORT);
         
         if(m_snmpAgent == null) {
-            m_snmpAgent = MockSnmpAgent.createAgentAndRun(new ClassPathResource("org/opennms/netmgt/provision/detector/snmpTestData1.properties"), String.format("%s/%s", TEST_IP_ADDRESS, TEST_PORT));
+            m_snmpAgent = MockSnmpAgent.createAgentAndRun(new ClassPathResource("org/opennms/netmgt/provision/detector/ciscoIpSlaSnmpTestData1.properties"), String.format("%s/%s", TEST_IP_ADDRESS, TEST_PORT));
         }
         
     }
@@ -86,14 +85,14 @@ public class CiscoIpSlaDetectorTest {
     }
     
     @Test
-    @Ignore
     public void testDetectorSuccess() throws UnknownHostException{
-        m_detector.setVbvalue("IP_SLA_AdminTag");
+        m_detector.setVbvalue(new String("\"to_detect\""));
         assertTrue(m_detector.isServiceDetected(InetAddress.getByName(TEST_IP_ADDRESS), new NullDetectorMonitor()));
     }
     
     @Test
     public void testDetectorFail() throws UnknownHostException{
+        m_detector.setVbvalue("\"not_detected\"");
         assertFalse(m_detector.isServiceDetected(InetAddress.getByName(TEST_IP_ADDRESS), new NullDetectorMonitor()));
     }
 }

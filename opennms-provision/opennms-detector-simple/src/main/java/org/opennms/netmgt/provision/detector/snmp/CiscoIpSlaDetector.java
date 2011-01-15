@@ -131,7 +131,7 @@ public class CiscoIpSlaDetector extends SnmpDetector {
             
             // Iterate over the list of configured IP SLAs
             for (SnmpInstId ipslaInstance : tagResults.keySet()) {
-                LogUtils.debugf(this, getServiceName() + "%s detect: [%s] compared with [%s]", getServiceName(), tagResults.get(ipslaInstance), getVbvalue());
+                LogUtils.debugf(this, "%s detect: [%s] compared with [%s]", getServiceName(), tagResults.get(ipslaInstance), getVbvalue());
                 /*
                  * Check if a configured IP SLA with specific tag exist and the
                  * the operational state ACTIVE(6), detected with first match.
