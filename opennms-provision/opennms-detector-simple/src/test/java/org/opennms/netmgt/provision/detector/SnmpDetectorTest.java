@@ -80,6 +80,7 @@ public class SnmpDetectorTest implements ApplicationContextAware {
             m_detector.setRetries(2);
             m_detector.setTimeout(500);
             m_detector.setPort(TEST_PORT);
+            m_detector.setVbvalue("\\.1\\.3\\.6\\.1\\.4\\.1.*");
         }
         
         if(m_snmpAgent == null) {
@@ -102,8 +103,7 @@ public class SnmpDetectorTest implements ApplicationContextAware {
     }
     
     @Test
-    public void testIsExpectedValue() throws UnknownHostException {      
-        m_detector.setVbvalue("\\.1\\.3\\.6\\.1\\.4\\.1.*");
+    public void testIsExpectedValue() throws UnknownHostException {
         assertTrue("protocol is not supported", m_detector.isServiceDetected(m_testIpAddress, m_detectorMonitor));
     }
     
