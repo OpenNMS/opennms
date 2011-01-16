@@ -22,8 +22,8 @@
         <parameter name="dateParameter" class="java.util.Date">
         	<defaultValueExpression><![CDATA[new Date(-112426200000L)]]></defaultValueExpression>
         </parameter>
-        <parameter name="sqlDateParameter" class="java.sql.Date"/>
-        <parameter name="sqlTimestampParameter" class="java.sql.Timestamp"/>
+        <parameter name="sqlDateParameter" class="java.util.Date"/>
+        <parameter name="sqlTimestampParameter" class="java.util.Date"/>
         <parameter name="doubleParameter" class="java.lang.Double">
         	<defaultValueExpression><![CDATA[new Double("99.99")]]></defaultValueExpression>
         </parameter>
