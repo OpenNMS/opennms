@@ -1,0 +1,15 @@
+<!DOCTYPE jasperReport
+  PUBLIC "-//JasperReports//DTD Report Design//EN"
+  "http://jasperreports.sourceforge.net/dtds/jasperreport.dtd">
+
+<jasperReport name="BogusParameterTest">
+	<parameter name="bogusParameter" class="java.lang.Boolean"/>
+ <detail>
+    <band height="20">
+      <staticText>
+        <reportElement x="180" y="0" width="200" height="20"/>
+        <text><![CDATA[bogus parameter test]]></text>
+      </staticText>
+    </band>
+  </detail>
+</jasperReport>
