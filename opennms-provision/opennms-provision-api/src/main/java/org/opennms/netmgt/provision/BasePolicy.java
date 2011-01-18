@@ -1,12 +1,15 @@
 package org.opennms.netmgt.provision;
 
+import java.net.InetAddress;
 import java.util.LinkedHashMap;
 import java.util.Map.Entry;
 
+import org.opennms.core.utils.InetAddressUtils;
 import org.opennms.core.utils.LogUtils;
 import org.opennms.netmgt.provision.annotations.Require;
 import org.springframework.beans.BeanWrapper;
 import org.springframework.beans.BeanWrapperImpl;
+import org.springframework.beans.ConversionNotSupportedException;
 
 
 /**
@@ -187,7 +190,16 @@ public abstract class BasePolicy<T> {
 
 
     private String getPropertyValueAsString(final BeanWrapper bean, final String propertyName) {
-        return (String) bean.convertIfNecessary(bean.getPropertyValue(propertyName), String.class);
+        Object value = bean.getPropertyValue(propertyName);
+        try {
+            return bean.convertIfNecessary(value, String.class);
+        } catch (ConversionNotSupportedException e) {
+            if (value instanceof InetAddress) {
+                return InetAddressUtils.toIpAddrString((InetAddress) value);
+            } else {
+                throw e;
+            }
+        }
     }
 
 
