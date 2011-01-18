@@ -149,6 +149,7 @@ public class DatabasePopulator {
                     .setIfOperStatus(1)
                     .setIfSpeed(10000000)
                     .setIfDescr("ATM0")
+                    .setIfAlias("Initial ifAlias value")
                     .setIfType(37);
                 //getNodeDao().save(builder.getCurrentNode());
                 //getNodeDao().flush();
@@ -168,9 +169,9 @@ public class DatabasePopulator {
                     .setIfSpeed(10000000);
                 builder.addService(getServiceType("ICMP"));
                 builder.addInterface("fe80:0000:0000:0000:aaaa:bbbb:cccc:dddd%5").setIsManaged("M").setIsSnmpPrimary("N").addSnmpInterface(4)
-                .setCollectionEnabled(false)
-                .setIfOperStatus(1)
-                .setIfSpeed(10000000);
+                    .setCollectionEnabled(false)
+                    .setIfOperStatus(1)
+                    .setIfSpeed(10000000);
                 builder.addService(getServiceType("ICMP"));
                 getNodeDao().save(builder.getCurrentNode());
                 getNodeDao().flush();

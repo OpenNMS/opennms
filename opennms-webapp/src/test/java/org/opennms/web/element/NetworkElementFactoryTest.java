@@ -35,6 +35,8 @@
 package org.opennms.web.element;
 
 import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertFalse;
+import static org.junit.Assert.assertTrue;
 
 import java.sql.SQLException;
 
@@ -147,6 +149,17 @@ public class NetworkElementFactoryTest  {
     	Interface[] intfs = NetworkElementFactory.getInstance(m_appContext).getActiveInterfacesOnNode(1);
     	assertEquals("active interfaces", 4, intfs.length);
     	
+    }
+    
+    @Test
+    public void testNodeHasIfAliases() throws InterruptedException {
+        assertTrue(NetworkElementFactory.getInstance(m_appContext).nodeHasIfAliases(1));
+        assertEquals("Number of snmpinterface records updated during test", 1, m_jdbcTemplate.update("UPDATE snmpinterface SET snmpifalias = '' WHERE snmpifalias = 'Initial ifAlias value'"));
+        assertFalse(NetworkElementFactory.getInstance(m_appContext).nodeHasIfAliases(1));
+        assertEquals("Number of snmpinterface records updated during test", 1, m_jdbcTemplate.update("UPDATE snmpinterface SET snmpifalias = 'New ifAlias value' WHERE snmpifalias = ''"));
+        assertTrue(NetworkElementFactory.getInstance(m_appContext).nodeHasIfAliases(1));
+        assertEquals("Number of snmpinterface records updated during test", 1, m_jdbcTemplate.update("UPDATE snmpinterface SET snmpifalias = NULL WHERE snmpifalias = 'New ifAlias value'"));
+        assertFalse(NetworkElementFactory.getInstance(m_appContext).nodeHasIfAliases(1));
     }
     
     @Test

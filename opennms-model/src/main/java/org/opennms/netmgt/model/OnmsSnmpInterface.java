@@ -176,11 +176,9 @@ public class OnmsSnmpInterface extends OnmsEntity implements Serializable {
     /**
      * <p>getNetMask</p>
      * 
-     * @deprecated This doesn't belong on SnmpInterface
-     *
      * @return a {@link java.lang.String} object.
      */
-    @Column(name = "snmpIpAdEntNetMask", length = 16)
+    @Column(name = "snmpIpAdEntNetMask")
     public String getNetMask() {
         return m_netMask;
     }
@@ -188,8 +186,6 @@ public class OnmsSnmpInterface extends OnmsEntity implements Serializable {
     /**
      * <p>setNetMask</p>
      * 
-     * @deprecated This doesn't belong on SnmpInterface
-     *
      * @param snmpipadentnetmask a {@link java.lang.String} object.
      */
     public void setNetMask(String snmpipadentnetmask) {

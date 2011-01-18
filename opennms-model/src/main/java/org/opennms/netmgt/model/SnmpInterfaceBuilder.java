@@ -73,6 +73,17 @@ public class SnmpInterfaceBuilder {
     }
     
     /**
+     * <p>setIfAlias</p>
+     *
+     * @param ifAlias a {@link java.lang.String} object.
+     * @return a {@link org.opennms.netmgt.model.SnmpInterfaceBuilder} object.
+     */
+    public SnmpInterfaceBuilder setIfAlias(String ifAlias) {
+        m_snmpIf.setIfAlias(ifAlias);
+        return this;
+    }
+    
+    /**
      * <p>setIfName</p>
      *
      * @param ifName a {@link java.lang.String} object.
