@@ -39,13 +39,16 @@ from (
 
 		 JOIN events ON outages.svclosteventid = events.eventid
 
-		 JOIN (values(44, 'routers'), (55, 'routers')) AS node(nodeid, category)
+		 JOIN node ON outages.nodeid = node.nodeid
 
-		 ON outages.nodeid=node.nodeid
+		 JOIN category_node ON node.nodeid = category_node.nodeid
+
+		 JOIN categories ON category_node.categoryid = categories.categoryid
 
 		 WHERE
 		   service.servicename = 'ICMP' AND
-		   events.eventuei = 'uei.opennms.org/nodes/nodeDown'
+		   events.eventuei = 'uei.opennms.org/nodes/nodeDown' AND
+		   categories.categoryname = '$P!{DS_SURVEILLANCE_CATEGORY}'
 		 )
 		 AS o
 
