@@ -87,6 +87,15 @@ public class DownloadReportController extends AbstractController {
                 response.setHeader("Cache-Control", "cache");
                 response.setHeader("Cache-Control", "must-revalidate");
             }
+            if(ReportFormat.CSV == ReportFormat.valueOf(requestFormat)) {
+                response.setContentType("text/csv;charset=UTF-8");
+                response.setHeader("Content-disposition", "inline; filename="
+                                   + reportCatalogEntryId.toString()
+                                   + ".csv");
+                response.setHeader("Pragma", "public");
+                response.setHeader("Cache-Control", "cache");
+                response.setHeader("Cache-Control", "must-revalidate");
+            }
             m_reportStoreService.render(
                                         reportCatalogEntryId,
                                         ReportFormat.valueOf(requestFormat),

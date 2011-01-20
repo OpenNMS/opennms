@@ -122,6 +122,14 @@ public class OnlineReportController extends SimpleFormController {
             response.setHeader("Cache-Control", "cache");
             response.setHeader("Cache-Control", "must-revalidate");
         }
+        
+        if(parameters.getFormat() == ReportFormat.CSV) {
+            response.setContentType("text/csv;charset=UTF-8");
+            response.setHeader("Content-disposition", "inline; filename=report.csv");
+            response.setHeader("Pragma", "public");
+            response.setHeader("Cache-Control", "cache");
+            response.setHeader("Cache-Control", "must-revalidate");
+        }
         m_reportWrapperService.runAndRender(parameters, ReportMode.IMMEDIATE, response.getOutputStream());        
         return null;
     }

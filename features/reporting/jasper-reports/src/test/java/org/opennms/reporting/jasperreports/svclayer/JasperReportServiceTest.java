@@ -38,7 +38,8 @@
 
 package org.opennms.reporting.jasperreports.svclayer;
 
-import static org.junit.Assert.*;
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertNotNull;
 
 import java.io.IOException;
 import java.io.OutputStream;
@@ -50,7 +51,6 @@ import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.opennms.api.reporting.ReportException;
 import org.opennms.api.reporting.ReportFormat;
-import org.opennms.api.reporting.parameter.ReportDateParm;
 import org.opennms.api.reporting.parameter.ReportDoubleParm;
 import org.opennms.api.reporting.parameter.ReportFloatParm;
 import org.opennms.api.reporting.parameter.ReportIntParm;
@@ -202,6 +202,29 @@ public class JasperReportServiceTest {
 		}
 
 	}
+	
+	@Test
+    public void testRunAndRenderCSV() {
+        HashMap<String, Object> reportParms;
+        reportParms = new HashMap<String, Object>();
+        reportParms.put("stringParameter1", new String("string1"));
+            reportParms.put("stringParameter2", new String("string2"));
+        reportParms.put("integerParameter", new Integer(1));
+        reportParms.put("floatParameter", new Float("0.5"));
+        reportParms.put("doubleParameter", new Double("0.5"));
+        reportParms.put("dateParameter", new java.util.Date());
+        java.util.Date date = new java.util.Date();
+        reportParms.put("dateParamter", date);
+        reportParms.put("sqlDateParameter", new java.util.Date(date.getTime()));
+        reportParms.put("sqlTimestampParameter", new java.util.Date(date.getTime()));
+        try {
+            m_reportService.runAndRender(reportParms, REPORTID,
+                    ReportFormat.CSV, new NullOutputStream());
+        } catch (ReportException e) {
+            Assert.fail(e.toString());
+        }
+
+    }
 
 	/** Writes to nowhere */
 	private class NullOutputStream extends OutputStream {

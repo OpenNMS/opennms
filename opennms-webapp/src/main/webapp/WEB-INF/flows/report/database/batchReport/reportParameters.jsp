@@ -88,8 +88,6 @@
 			</form:label>
             <form:input path="intParms[${intParmRow.index}].value"/></p>
 		</c:forEach>
-<<<<<<< HEAD:opennms-webapp/src/main/webapp/WEB-INF/flows/report/database/batchReport/reportParameters.jsp
-=======
 		<%-- // Float parameters --%>
 		<c:forEach items="${parameters.floatParms}" var="floatParm" varStatus="floatParmRow">
 			<p><form:label path="floatParms[${floatParmRow.index}].value" cssClass="label" >
@@ -104,7 +102,6 @@
 			</form:label>
 	        <form:input path="doubleParms[${doubleParmRow.index}].value"/></p>
 		</c:forEach>
->>>>>>> fca04e5... merge squashed feature-report-api-parameters, this allows for setting parameters in Jasper reports:opennms-webapp/src/main/webapp/WEB-INF/flows/report/database/batchReport/reportParameters.jsp
 		<%-- // date parameters --%>
 		<c:forEach items="${parameters.dateParms}" var="date" varStatus="dateParmRow">
 			<p><span class="label">
