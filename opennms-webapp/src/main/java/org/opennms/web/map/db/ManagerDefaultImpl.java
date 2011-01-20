@@ -373,7 +373,7 @@ public class ManagerDefaultImpl implements Manager {
                 elem = new VElement(mapElem);
                 elem.setSeverity(mapsPropertiesFactory.getIndeterminateSeverity().getId());
                 elem.setStatus(mapsPropertiesFactory.getUnknownStatus().getId());
-                elem.setAvail(/*mapsPropertiesFactory.getDisabledAvail().getMin()*/50.40);
+                elem.setAvail(mapsPropertiesFactory.getDisabledAvail().getMin());
                 // here we must add all the stuff required
                 log.debug("openMap: adding element to map with label: "
                         + elem.getLabel());
@@ -1143,7 +1143,7 @@ public class ManagerDefaultImpl implements Manager {
                 while (ite.hasNext()) {
                     Integer nextNodeId = ite.next();
                     if (deletedNodeids.contains(nextNodeId)) {
- 		        elementAvail += mapsPropertiesFactory.getUndefinedAvail().getMin();
+                    	elementAvail += mapsPropertiesFactory.getUndefinedAvail().getMin();
                         elementStatus = mapsPropertiesFactory.getUnknownStatus().getId();
                         elementSeverity = mapsPropertiesFactory.getIndeterminateSeverity().getId();
                     } else { // if the node isn't deleted
