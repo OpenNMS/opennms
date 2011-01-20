@@ -35,6 +35,7 @@
       <list>
         <value>org.opennms.netmgt.model.OnmsDistPoller</value>
         <value>org.opennms.netmgt.model.OnmsAssetRecord</value>
+        <value>org.opennms.netmgt.model.OnmsGeolocation</value>
         <value>org.opennms.netmgt.model.PathElement</value>
         <value>org.opennms.netmgt.model.OnmsNode</value>
         <value>org.opennms.netmgt.model.OnmsIpInterface</value>

@@ -69,6 +69,7 @@ import org.opennms.netmgt.provision.persist.OnmsAssetRequisition;
 import org.opennms.netmgt.provision.persist.OnmsIpInterfaceRequisition;
 import org.opennms.netmgt.provision.persist.OnmsMonitoredServiceRequisition;
 import org.opennms.netmgt.provision.persist.OnmsNodeCategoryRequisition;
+import org.opennms.netmgt.provision.persist.OnmsNodeGeolocationRequisition;
 import org.opennms.netmgt.provision.persist.OnmsNodeRequisition;
 import org.opennms.netmgt.provision.persist.OnmsServiceCategoryRequisition;
 import org.opennms.netmgt.provision.persist.RequisitionVisitor;
@@ -311,6 +312,7 @@ public class NewSuspectScanTest {
         private int m_modelImportCount;
         private int m_modelImportCompleted;
         private int m_nodeCount;
+        private int m_nodeGeolocationCount;
         private int m_nodeCompleted;
         private int m_nodeCategoryCount;
         private int m_nodeCategoryCompleted;
@@ -322,6 +324,7 @@ public class NewSuspectScanTest {
         private int m_svcCategoryCompleted;
         private int m_assetCount;
         private int m_assetCompleted;
+        private int m_nodeGeolocationCompleted;
         
         public int getModelImportCount() {
             return m_modelImportCount;
@@ -389,6 +392,10 @@ public class NewSuspectScanTest {
             assertEquals("4243", nodeReq.getForeignId());
         }
 
+       public void visitNodeGeolocation(OnmsNodeGeolocationRequisition nodeReq) {
+            m_nodeGeolocationCount++;
+        }
+
         public void visitInterface(OnmsIpInterfaceRequisition ifaceReq) {
             m_ifaceCount++;
         }
@@ -434,6 +441,10 @@ public class NewSuspectScanTest {
 
         public void completeNode(OnmsNodeRequisition nodeReq) {
             m_nodeCompleted++;
+        }
+       
+       public void completeNodeGeolocation(OnmsNodeGeolocationRequisition nodeReq) {
+            m_nodeGeolocationCompleted++;
         }
 
         public void completeInterface(OnmsIpInterfaceRequisition ifaceReq) {

@@ -78,7 +78,7 @@ public class AddEventVisitor extends AbstractEntityVisitor {
         LogUtils.infof(this, "Sending nodeGainedService Event for %s\n", monSvc);
         m_eventForwarder.sendNow(createNodeGainedServiceEvent(monSvc));
     }
-
+   
     /**
      * <p>createNodeAddedEvent</p>
      *

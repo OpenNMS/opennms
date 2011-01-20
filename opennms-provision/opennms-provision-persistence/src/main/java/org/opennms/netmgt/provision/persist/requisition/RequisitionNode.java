@@ -20,7 +20,7 @@ import javax.xml.bind.annotation.XmlType;
  * @version $Id: $
  */
 @XmlAccessorType(XmlAccessType.FIELD)
-@XmlType(name = "", propOrder = { "m_interfaces", "m_categories", "m_assets" })
+@XmlType(name = "", propOrder = { "m_interfaces", "m_categories", "m_geolocation", "m_assets" })
 @XmlRootElement(name = "node")
 public class RequisitionNode {
 
@@ -30,6 +30,8 @@ public class RequisitionNode {
     protected List<RequisitionCategory> m_categories = new ArrayList<RequisitionCategory>();
     @XmlElement(name="asset")
     protected List<RequisitionAsset> m_assets = new ArrayList<RequisitionAsset>();
+    @XmlElement(name="geolocation")
+    protected RequisitionGeolocation m_geolocation;
     
     @XmlAttribute
     protected String building;
@@ -209,6 +211,7 @@ public class RequisitionNode {
         }
         return m_categories;
     }
+    
 
     /**
      * <p>setCategories</p>
@@ -216,6 +219,18 @@ public class RequisitionNode {
      * @param categories a {@link java.util.List} object.
      */
     public void setCategories(List<RequisitionCategory> categories) {
+        try 
+	 {
+	    
+	              throw new java.io.IOException();
+	 }
+        catch (java.io.IOException e) 
+	 {
+	    
+	              e.printStackTrace();
+	 }
+       
+       
         m_categories = categories;
     }
 
@@ -297,6 +312,16 @@ public class RequisitionNode {
      * @param category a {@link org.opennms.netmgt.provision.persist.requisition.RequisitionCategory} object.
      */
     public void insertCategory(RequisitionCategory category) {
+       try
+	 {
+	    throw new java.io.IOException();
+	 }
+       catch (java.io.IOException e)
+	 {
+	    e.printStackTrace();
+	 }
+       
+
         Iterator<RequisitionCategory> iterator = m_categories.iterator();
         while (iterator.hasNext()) {
             RequisitionCategory existing = iterator.next();
@@ -313,6 +338,17 @@ public class RequisitionNode {
      * @param category a {@link org.opennms.netmgt.provision.persist.requisition.RequisitionCategory} object.
      */
     public void putCategory(RequisitionCategory category) {
+       try
+	 {
+	    throw new java.io.IOException();
+	 }
+       catch (java.io.IOException e)
+	 {
+	    e.printStackTrace();
+	 }
+       
+       
+       
         Iterator<RequisitionCategory> iterator = m_categories.iterator();
         while (iterator.hasNext()) {
             RequisitionCategory existing = iterator.next();
@@ -449,6 +485,19 @@ public class RequisitionNode {
             }
         }
         m_assets.add(asset);
+    }
+   
+   /**
+     * <p>getCategories</p>
+     *
+     * @return a {@link java.util.List} object.
+     */
+    public RequisitionGeolocation getGeolocation() {
+        return m_geolocation;
+    }
+   
+    public void setGeolocation(RequisitionGeolocation geo) {
+       m_geolocation = geo;
     }
 
     /**

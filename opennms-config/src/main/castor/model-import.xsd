@@ -23,6 +23,7 @@
       <sequence>
         <element ref="this:interface" minOccurs="0" maxOccurs="unbounded" />
         <element ref="this:category" minOccurs="0" maxOccurs="unbounded" />
+        <element ref="this:geolocation" minOccurs="0" maxOccurs="1" />
         <element ref="this:asset" minOccurs="0" maxOccurs="unbounded" />
       </sequence>
       <attribute name="node-label" use="required">
@@ -145,6 +146,16 @@
     <complexType>
       <attribute name="name" type="string" use="required" />
       <attribute name="value" type="string" use="required" />
+    </complexType>
+  </element>
+  
+  <element name="geolocation">
+    <annotation>
+      <documentation>This element is used to specify a nodes physical location.</documentation>
+    </annotation>
+    <complexType>
+      <attribute name="lat" type="double" use="required" />
+      <attribute name="lon" type="double" use="required" />
     </complexType>
   </element>
 </schema>

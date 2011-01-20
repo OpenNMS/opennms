@@ -455,6 +455,12 @@
           <property name="url" value="RemotePollerMap/index.jsp"/>
           <property name="locationMatch" value="RemotePollerMap"/>
         </bean>
+	
+        <bean class="org.opennms.web.navigate.LocationBasedNavBarEntry">
+          <property name="name" value="Node Map"/>
+          <property name="url" value="node_map/index.jsp"/>
+          <property name="locationMatch" value="node_map"/>
+        </bean>
 
         <bean class="org.opennms.web.navigate.FileBasedNavBarEntry">
           <property name="name" value="Vulnerabilities"/>

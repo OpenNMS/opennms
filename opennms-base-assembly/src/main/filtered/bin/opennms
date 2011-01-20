@@ -94,6 +94,12 @@ MAXIMUM_FILE_DESCRIPTORS=10240
 # maximum size of stack segment (in kbytes) to be setted by ulimit -s
 MAXIMUM_SIZE_STACK_SEGMENT=8192
 
+# location of openlayers server
+CBNL_OPENLAYERS_SERVER="ERROR CBNL_OPENLAYERS_SERVER_NOTSET configuration variable not set correctly. Override in $OPENNMS_HOME/etc/opennms.conf"
+
+# tilecase server
+CBNL_TILECACHE_SERVER="ERROR CBNL_TILECACHE_SERVER_NOTSET configuration variable not set correctly. Override in $OPENNMS_HOME/etc/opennms.conf"
+
 #### ------------> DO NOT CHANGE VARIABLES IN THIS FILE <------------- ####
 #### Create $OPENNMS_HOME/etc/opennms.conf and put overrides in there. ####
 #### ------------> DO NOT CHANGE VARIABLES IN THIS FILE <------------- ####
@@ -483,6 +489,8 @@ MANAGER_OPTIONS="$MANAGER_OPTIONS -Dopennms.home=$OPENNMS_HOME"
 MANAGER_OPTIONS="$MANAGER_OPTIONS -Dcom.sun.management.jmxremote.port=18980"
 MANAGER_OPTIONS="$MANAGER_OPTIONS -Dcom.sun.management.jmxremote.ssl=false"
 MANAGER_OPTIONS="$MANAGER_OPTIONS -Dcom.sun.management.jmxremote.authenticate=false"
+MANAGER_OPTIONS="$MANAGER_OPTIONS -Dcom.cbnl.onms.openlayers_location=$CBNL_OPENLAYERS_SERVER"
+MANAGER_OPTIONS="$MANAGER_OPTIONS -Dcom.cbnl.onms.tilecache_location=$CBNL_TILECACHE_SERVER"
 #MANAGER_OPTIONS="$MANAGER_OPTIONS -Djcifs.properties=$OPENNMS_HOME/etc/jcifs.properties"
 MANAGER_OPTIONS="$MANAGER_OPTIONS -Xmx${JAVA_HEAP_SIZE}m"
 

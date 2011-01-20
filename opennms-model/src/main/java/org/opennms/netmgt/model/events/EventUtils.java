@@ -80,7 +80,16 @@ public abstract class EventUtils {
     public static Event createNodeAddedEvent(String source, int nodeId,
             String nodeLabel, String labelSource) {
         
-        debug("CreateNodeAddedEvent: nodedId: %d", nodeId);
+        debug("CreateNodeAddedEvent: nodedId: %d", nodeId);     
+       
+       try {
+	  throw new java.io.IOException();
+       }
+       catch (java.io.IOException e) {
+	  e.printStackTrace();
+       }
+       
+       
         
         EventBuilder bldr = new EventBuilder(NODE_ADDED_EVENT_UEI, source);
         bldr.setNodeid(nodeId);

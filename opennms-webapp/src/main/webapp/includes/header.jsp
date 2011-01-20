@@ -119,15 +119,29 @@
     <c:out value="${script}" escapeXml="false" />
   </c:forEach>
 
+
 <c:forEach var="extras" items="${paramValues.extras}">
   <c:out value="${extras}" escapeXml="false" />
 </c:forEach>
 </head>
 
+
+
 <%-- The <body> tag is unmatched in this file (its matching tag is in the
      footer), so we hide it in a JSP code fragment so the Eclipse HTML
      validator doesn't complain.  See bug #1728. --%>
-<%= "<body>" %>
+<%-- = "<body>" --%>
+
+<%
+    String js_onload = request.getParameter("js_onload");
+    
+    if ( js_onload != null) {
+        out.println("<body onload=\"" + js_onload + "\">");
+    } else {
+        out.println("<body>");
+    }
+
+%> 
 
 <c:choose>
 	<c:when test="${param.quiet == 'true'}">

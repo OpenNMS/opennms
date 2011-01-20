@@ -408,6 +408,7 @@ public class Provisioner implements SpringServiceDaemon {
             ImportManager importManager) throws Exception {
         
         LifeCycleInstance doImport = m_lifeCycleRepository.createLifeCycleInstance("import", m_importActivities);
+
         doImport.setAttribute("resource", resource);
         
         doImport.trigger();
@@ -471,8 +472,8 @@ public class Provisioner implements SpringServiceDaemon {
         }
         
     }
-
-    /**
+   
+   /**
      * <p>doImport</p>
      *
      * @param url a {@link java.lang.String} object.
