@@ -175,7 +175,7 @@ public final class BroadcastEventProcessor implements EventListener {
 
     /**
      * Initializes the expansion regular expression. The exception is going to
-     * be thrown away if the RE can't be compiled, thus the complilation should
+     * be thrown away if the RE can't be compiled, thus the compilation should
      * be tested prior to runtime.
      */
     protected void initExpandRe() {

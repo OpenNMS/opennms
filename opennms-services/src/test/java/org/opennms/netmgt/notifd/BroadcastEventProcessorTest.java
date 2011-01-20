@@ -39,6 +39,7 @@ import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertNull;
 
+import java.util.Collections;
 import java.util.Date;
 import java.util.Map;
 import java.util.TreeMap;
@@ -81,6 +82,18 @@ public class BroadcastEventProcessorTest extends NotificationsTestCase {
     public void testExpandNotifParms() throws Exception {
         String expandResult = BroadcastEventProcessor.expandNotifParms("%foo%", new TreeMap<String,String>());
         assertEquals("%foo%", expandResult);
+
+        // This is kinda non-intuitive... but expandNotifParms() only works on whitelisted expansion params
+        expandResult = BroadcastEventProcessor.expandNotifParms("%foo%", Collections.singletonMap("foo", "bar"));
+        assertEquals("%foo%", expandResult);
+
+        // The 'noticeid' param is in the whitelist
+        expandResult = BroadcastEventProcessor.expandNotifParms("Notice #%noticeid% RESOLVED: ", Collections.singletonMap("noticeid", "999"));
+        assertEquals("Notice #999 RESOLVED: ", expandResult);
+
+        expandResult = BroadcastEventProcessor.expandNotifParms("RESOLVED: ", Collections.singletonMap("noticeid", "999"));
+        assertEquals("RESOLVED: ", expandResult);
+
         // <notification name="Disk Threshold" status="on"> from bug 2888
         expandResult = BroadcastEventProcessor.expandNotifParms("Notice %noticeid%: Disk threshold exceeded on %nodelabel%: %parm[all]%.", new TreeMap<String,String>());
         assertEquals("Notice %noticeid%: Disk threshold exceeded on %nodelabel%: %parm[all]%.", expandResult);
