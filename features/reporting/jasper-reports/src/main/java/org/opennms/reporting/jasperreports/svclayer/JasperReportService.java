@@ -41,6 +41,7 @@ import net.sf.jasperreports.engine.JasperExportManager;
 import net.sf.jasperreports.engine.JasperFillManager;
 import net.sf.jasperreports.engine.JasperPrint;
 import net.sf.jasperreports.engine.JasperReport;
+import net.sf.jasperreports.engine.export.JRCsvExporter;
 import net.sf.jasperreports.engine.export.JRXmlExporter;
 import net.sf.jasperreports.engine.fill.JRParameterDefaultValuesEvaluator;
 import net.sf.jasperreports.engine.xml.JRPrintXmlLoader;
@@ -92,6 +93,7 @@ public class JasperReportService implements ReportService {
     public List<ReportFormat> getFormats(String reportId) {
         List<ReportFormat> formats = new ArrayList<ReportFormat>();
         formats.add(ReportFormat.PDF);
+        formats.add(ReportFormat.CSV);
         return formats;
     }
 
@@ -314,20 +316,23 @@ public class JasperReportService implements ReportService {
     }
 
     /** {@inheritDoc} */
-    public void render(String ReportId, String location, ReportFormat format,
-            OutputStream outputStream) throws ReportException {
+    public void render(String ReportId, String location, ReportFormat format, OutputStream outputStream) throws ReportException {
         try {
             JasperPrint jasperPrint = JRPrintXmlLoader.load(location);
             switch (format) {
             case PDF:
                 log.debug("rendering as PDF");
-                JasperExportManager.exportReportToPdfStream(jasperPrint,
-                                                            outputStream);
+                exportReportToPdf(jasperPrint, outputStream);
                 break;
+                
+            case CSV:
+                log.debug("rendering as CSV");
+                exportReportToCsv(jasperPrint, outputStream);
+                break;
+                
             default:
                 log.debug("rendering as PDF as no valid format found");
-                JasperExportManager.exportReportToPdfStream(jasperPrint,
-                                                            outputStream);
+                exportReportToPdf(jasperPrint, outputStream);
             }
         } catch (JRException e) {
             log.error("unable to render report", e);
@@ -337,9 +342,7 @@ public class JasperReportService implements ReportService {
     }
 
     /** {@inheritDoc} */
-    public String run(HashMap<String, Object> onmsReportParms, String reportId)
-            throws ReportException {
-
+    public String run(HashMap<String, Object> reportParms, String reportId) throws ReportException {
         String baseDir = System.getProperty("opennms.report.dir");
         JasperReport jasperReport = null;
         JasperPrint jasperPrint = null;
@@ -357,7 +360,7 @@ public class JasperReportService implements ReportService {
                 throw new ReportException("unable to compile jasperReport", e);
             }
 
-            jrReportParms = buildJRparameters(onmsReportParms,
+            jrReportParms = buildJRparameters(reportParms,
                                               jasperReport.getParameters());
 
             outputFileName = new String(baseDir + "/"
@@ -422,9 +425,7 @@ public class JasperReportService implements ReportService {
     }
 
     /** {@inheritDoc} */
-    public void runAndRender(HashMap<String, Object> onmsReportParms,
-            String reportId, ReportFormat format, OutputStream outputStream)
-            throws ReportException {
+    public void runAndRender(HashMap<String, Object> reportParms, String reportId, ReportFormat format, OutputStream outputStream) throws ReportException {
 
         JasperReport jasperReport = null;
         JasperPrint jasperPrint = null;
@@ -440,7 +441,7 @@ public class JasperReportService implements ReportService {
                 throw new ReportException("unable to compile jasperReport", e);
             }
 
-            jrReportParms = buildJRparameters(onmsReportParms,
+            jrReportParms = buildJRparameters(reportParms,
                                               jasperReport.getParameters());
 
             if (m_jasperReportConfigDao.getEngine(reportId).equals("jdbc")) {
@@ -450,8 +451,7 @@ public class JasperReportService implements ReportService {
                     jasperPrint = JasperFillManager.fillReport(jasperReport,
                                                                jrReportParms,
                                                                connection);
-                    JasperExportManager.exportReportToPdfStream(jasperPrint,
-                                                                outputStream);
+                    exportReport(format, jasperPrint, outputStream);
                     connection.close();
                 } catch (SQLException e) {
                     log.error("sql exception getting or closing datasource ",
@@ -465,15 +465,13 @@ public class JasperReportService implements ReportService {
                                               "unable to run or render jdbc jasperReport",
                                               e);
                 }
-            } else if (m_jasperReportConfigDao.getEngine(reportId).equals(
-                                                                          "null")) {
+            } else if (m_jasperReportConfigDao.getEngine(reportId).equals("null")) {
                 try {
                     jasperPrint = JasperFillManager.fillReport(
                                                                jasperReport,
                                                                jrReportParms,
                                                                new JREmptyDataSource());
-                    JasperExportManager.exportReportToPdfStream(jasperPrint,
-                                                                outputStream);
+                    exportReport(format, jasperPrint, outputStream);
                 } catch (JRException e) {
                     log.error("jasper report exception ", e);
                     throw new ReportException(
@@ -485,6 +483,34 @@ public class JasperReportService implements ReportService {
 
         }
 
+    }
+
+    private void exportReport(ReportFormat format, JasperPrint jasperPrint, OutputStream outputStream) throws JRException {
+        switch (format) {
+            case PDF:
+                exportReportToPdf(jasperPrint, outputStream);
+                break;
+                
+            case CSV:
+                exportReportToCsv(jasperPrint, outputStream);
+                break;
+    
+            default:
+                break;
+        }
+        
+    }
+
+    private void exportReportToPdf(JasperPrint jasperPrint, OutputStream outputStream) throws JRException {
+        JasperExportManager.exportReportToPdfStream(jasperPrint, outputStream);
+    }
+    
+    private void exportReportToCsv(JasperPrint jasperPrint, OutputStream outputStream) throws JRException {
+        JRCsvExporter exporter = new JRCsvExporter();
+        exporter.setParameter(JRExporterParameter.JASPER_PRINT, jasperPrint);
+        exporter.setParameter(JRExporterParameter.OUTPUT_STREAM, outputStream);
+        
+        exporter.exportReport();
     }
 
     private HashMap<String, Object> buildJRparameters(
