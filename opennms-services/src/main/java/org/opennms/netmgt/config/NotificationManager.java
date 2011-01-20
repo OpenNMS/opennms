@@ -47,6 +47,7 @@ import java.sql.Timestamp;
 import java.sql.Types;
 import java.util.ArrayList;
 import java.util.Collection;
+import java.util.Collections;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.LinkedList;
@@ -69,6 +70,7 @@ import org.opennms.netmgt.dao.castor.CastorUtils;
 import org.opennms.netmgt.eventd.EventUtil;
 import org.opennms.netmgt.filter.FilterDaoFactory;
 import org.opennms.netmgt.filter.FilterParseException;
+import org.opennms.netmgt.notifd.BroadcastEventProcessor;
 import org.opennms.netmgt.utils.Querier;
 import org.opennms.netmgt.utils.RowProcessor;
 import org.opennms.netmgt.utils.SingleResultQuerier;
@@ -1062,13 +1064,34 @@ public abstract class NotificationManager {
                  * of which we have none in this table so this row processor is using getString
                  * to correctly align with annotated types in the map.
                  */
-                parmMap.put(NotificationManager.PARAM_TEXT_MSG, resolutionPrefix+rs.getString("textMsg"));
+                parmMap.put(
+                    NotificationManager.PARAM_TEXT_MSG, 
+                    BroadcastEventProcessor.expandNotifParms(
+                        resolutionPrefix, 
+                        Collections.singletonMap("noticeid", String.valueOf(notifId))
+                    ) + rs.getString("textMsg")
+                );
                 if (skipNumericPrefix) {
-                    parmMap.put(NotificationManager.PARAM_NUM_MSG, rs.getString("numericMsg"));
+                    parmMap.put(
+                        NotificationManager.PARAM_NUM_MSG, 
+                        rs.getString("numericMsg")
+                    );
                 } else {
-                    parmMap.put(NotificationManager.PARAM_NUM_MSG, resolutionPrefix+rs.getString("numericMsg"));
+                    parmMap.put(
+                        NotificationManager.PARAM_NUM_MSG, 
+                        BroadcastEventProcessor.expandNotifParms(
+                            resolutionPrefix, 
+                            Collections.singletonMap("noticeid", String.valueOf(notifId))
+                        ) + rs.getString("numericMsg")
+                    );
                 }
-                parmMap.put(NotificationManager.PARAM_SUBJECT, resolutionPrefix+rs.getString("subject"));
+                parmMap.put(
+                    NotificationManager.PARAM_SUBJECT, 
+                    BroadcastEventProcessor.expandNotifParms(
+                        resolutionPrefix, 
+                        Collections.singletonMap("noticeid", String.valueOf(notifId))
+                    ) + rs.getString("subject")
+                );
                 parmMap.put(NotificationManager.PARAM_NODE, rs.getString("nodeID"));
                 parmMap.put(NotificationManager.PARAM_INTERFACE, rs.getString("interfaceID"));
                 parmMap.put(NotificationManager.PARAM_SERVICE, rs.getString("serviceName"));
