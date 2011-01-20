@@ -4,6 +4,7 @@
 
 # Uncomment this to turn on verbose mode.
 #export DH_VERBOSE=1
+export SHELL=/bin/bash
 
 # Maven requires JAVA_HOME to be set properly
 export JAVA_HOME=$(shell debian/getjava)
