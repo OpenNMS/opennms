@@ -402,17 +402,6 @@ public class JasperReportService implements ReportService {
                 try {
                     
                     JasperFillManager.fillReportToFile(jasperReport, outputFileName, reportParms, new JREmptyDataSource());
-//                    jasperPrint = JasperFillManager.fillReport(
-//                                                               jasperReport,
-//                                                               reportParms,
-//                                                               new JREmptyDataSource());
-//                    JRXmlExporter exporter = new JRXmlExporter();
-//                    exporter.setParameter(JRExporterParameter.JASPER_PRINT,
-//                                          jasperPrint);
-//                    exporter.setParameter(
-//                                          JRExporterParameter.OUTPUT_FILE_NAME,
-//                                          outputFileName);
-//                    exporter.exportReport();
                 } catch (JRException e) {
                     log.error("jasper report exception ", e);
                     throw new ReportException(
