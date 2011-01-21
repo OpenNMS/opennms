@@ -55,8 +55,8 @@ import net.sf.jasperreports.engine.JasperFillManager;
 import net.sf.jasperreports.engine.JasperPrint;
 import net.sf.jasperreports.engine.JasperReport;
 import net.sf.jasperreports.engine.export.JRCsvExporter;
-import net.sf.jasperreports.engine.export.JRXmlExporter;
 import net.sf.jasperreports.engine.fill.JRParameterDefaultValuesEvaluator;
+import net.sf.jasperreports.engine.util.JRLoader;
 import net.sf.jasperreports.engine.xml.JRPrintXmlLoader;
 
 import org.opennms.api.reporting.ReportException;
@@ -327,7 +327,9 @@ public class JasperReportService implements ReportService {
     /** {@inheritDoc} */
     public void render(String ReportId, String location, ReportFormat format, OutputStream outputStream) throws ReportException {
         try {
-            JasperPrint jasperPrint = JRPrintXmlLoader.load(location);
+            
+            JasperPrint jasperPrint = getJasperPrint(location);
+            
             switch (format) {
             case PDF:
                 log.debug("rendering as PDF");
@@ -350,11 +352,18 @@ public class JasperReportService implements ReportService {
 
     }
 
+    private JasperPrint getJasperPrint(String location) throws JRException {
+        if(location.contains("jrpxml")) {
+            return JRPrintXmlLoader.load(location);
+        }else {
+            return (JasperPrint)JRLoader.loadObject(location);
+        }
+    }
+
     /** {@inheritDoc} */
     public String run(HashMap<String, Object> reportParms, String reportId) throws ReportException {
         String baseDir = System.getProperty("opennms.report.dir");
         JasperReport jasperReport = null;
-        JasperPrint jasperPrint = null;
         String outputFileName = null;
         String sourceFileName = m_jasperReportConfigDao.getTemplateLocation(reportId);
         if (sourceFileName != null) {
@@ -367,22 +376,14 @@ public class JasperReportService implements ReportService {
                 throw new ReportException("unable to compile jasperReport", e);
             }
             outputFileName = new String(baseDir + "/"
-                    + jasperReport.getName() + ".jrpxml");
+                    + jasperReport.getName() + ".jrprint");
             log.debug("jrpcml output file: " + outputFileName);
             if (m_jasperReportConfigDao.getEngine(reportId).equals("jdbc")) {
                 Connection connection;
                 try {
                     connection = DataSourceFactory.getDataSource().getConnection();
-                    jasperPrint = JasperFillManager.fillReport(jasperReport,
-                                                               reportParms,
-                                                               connection);
-                    JRXmlExporter exporter = new JRXmlExporter();
-                    exporter.setParameter(JRExporterParameter.JASPER_PRINT,
-                                          jasperPrint);
-                    exporter.setParameter(
-                                          JRExporterParameter.OUTPUT_FILE_NAME,
-                                          outputFileName);
-                    exporter.exportReport();
+                    JasperFillManager.fillReportToFile(jasperReport, outputFileName, reportParms, connection);
+                    
                     connection.close();
                 } catch (SQLException e) {
                     log.error("sql exception getting or closing datasource ",
@@ -396,20 +397,22 @@ public class JasperReportService implements ReportService {
                                               "unable to run emptyDataSource jasperReport",
                                               e);
                 }
-            } else if (m_jasperReportConfigDao.getEngine(reportId).equals(
-                                                                          "null")) {
+            } else if (m_jasperReportConfigDao.getEngine(reportId).equals("null")) {
+                
                 try {
-                    jasperPrint = JasperFillManager.fillReport(
-                                                               jasperReport,
-                                                               reportParms,
-                                                               new JREmptyDataSource());
-                    JRXmlExporter exporter = new JRXmlExporter();
-                    exporter.setParameter(JRExporterParameter.JASPER_PRINT,
-                                          jasperPrint);
-                    exporter.setParameter(
-                                          JRExporterParameter.OUTPUT_FILE_NAME,
-                                          outputFileName);
-                    exporter.exportReport();
+                    
+                    JasperFillManager.fillReportToFile(jasperReport, outputFileName, reportParms, new JREmptyDataSource());
+//                    jasperPrint = JasperFillManager.fillReport(
+//                                                               jasperReport,
+//                                                               reportParms,
+//                                                               new JREmptyDataSource());
+//                    JRXmlExporter exporter = new JRXmlExporter();
+//                    exporter.setParameter(JRExporterParameter.JASPER_PRINT,
+//                                          jasperPrint);
+//                    exporter.setParameter(
+//                                          JRExporterParameter.OUTPUT_FILE_NAME,
+//                                          outputFileName);
+//                    exporter.exportReport();
                 } catch (JRException e) {
                     log.error("jasper report exception ", e);
                     throw new ReportException(
