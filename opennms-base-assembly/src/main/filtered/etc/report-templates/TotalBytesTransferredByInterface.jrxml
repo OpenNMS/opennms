@@ -9,7 +9,7 @@
 		<defaultValueExpression><![CDATA["${install.dir}/etc/report-templates/assets/images/company-logo.png"]]></defaultValueExpression>
 	</parameter>
 	<parameter name="SURVEILLANCE_CATEGORY" class="java.lang.String">
-		<parameterDescription><![CDATA[Serveillance Category]]></parameterDescription>
+		<parameterDescription><![CDATA[Surveillance Category]]></parameterDescription>
 		<defaultValueExpression><![CDATA["Routers"]]></defaultValueExpression>
 	</parameter>
 	<parameter name="startDate" class="java.util.Date">
