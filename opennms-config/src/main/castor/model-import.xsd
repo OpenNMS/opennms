@@ -104,8 +104,9 @@
         </annotation>
         <simpleType>
           <restriction base="string">
-            <pattern value="(P|S|C|N)" />
-            <length value="1" />
+            <enumeration value="P"/>
+            <enumeration value="S"/>
+            <enumeration value="N"/>
           </restriction>
         </simpleType>
       </attribute>

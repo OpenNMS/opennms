@@ -68,6 +68,7 @@ public class UpdateOperation extends SaveOrUpdateOperation {
 	 *
 	 * @return a {@link java.lang.String} object.
 	 */
+	@Override
 	public String toString() {
        return "UPDATE: Node: "+getNode().getId()+": "+getNode().getLabel();
     }

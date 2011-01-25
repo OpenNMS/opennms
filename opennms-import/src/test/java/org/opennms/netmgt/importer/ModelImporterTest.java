@@ -93,13 +93,13 @@ public class ModelImporterTest extends AbstractTransactionalTemporaryDatabaseSpr
         };
     }
 
+    @Override
     public void onSetUpInTransactionIfEnabled() throws Exception {
         super.onSetUpInTransactionIfEnabled();
         
         initSnmpPeerFactory();
     }
 
-    @SuppressWarnings("deprecation")
     private void initSnmpPeerFactory() throws IOException, MarshalException, ValidationException {
         Reader rdr = new StringReader("<?xml version=\"1.0\"?>" +
         		"<snmp-config port=\"9161\" retry=\"3\" timeout=\"800\" " +
@@ -298,7 +298,7 @@ public class ModelImporterTest extends AbstractTransactionalTemporaryDatabaseSpr
             createAndFlushServiceTypes();
             createAndFlushCategories();
 
-            ModelImporter mi = m_importer;        
+            ModelImporter mi = m_importer;
             String specFile = "/tec_dump.xml";
             mi.importModelFromResource(new ClassPathResource(specFile));
 

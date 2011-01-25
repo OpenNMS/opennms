@@ -33,6 +33,8 @@
 
 package org.opennms.netmgt.importer.operations;
 
+import org.opennms.netmgt.config.modelimport.types.InterfaceSnmpPrimaryType;
+
 
 /**
  * <p>SaveOrUpdateOperation interface.</p>
@@ -47,11 +49,11 @@ public interface SaveOrUpdateOperation extends ImportOperation{
      *
      * @param ipAddr a {@link java.lang.String} object.
      * @param descr a {@link java.lang.Object} object.
-     * @param snmpPrimary a {@link java.lang.String} object.
+     * @param interfaceSnmpPrimaryType a {@link InterfaceSnmpPrimaryType} object.
      * @param managed a boolean.
      * @param status a int.
      */
-    void foundInterface(String ipAddr, Object descr, String snmpPrimary, boolean managed, int status);
+    void foundInterface(String ipAddr, Object descr, InterfaceSnmpPrimaryType interfaceSnmpPrimaryType, boolean managed, int status);
 
     /**
      * <p>foundMonitoredService</p>

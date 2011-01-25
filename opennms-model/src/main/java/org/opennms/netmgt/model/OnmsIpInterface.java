@@ -83,14 +83,13 @@ public class OnmsIpInterface extends OnmsEntity implements Serializable {
     public static class PrimaryType implements Comparable<PrimaryType>, Serializable {
         private static final long serialVersionUID = -647348487361201657L;
         private static final char[] s_order = { 'N', 'S', 'P' };
-        char m_collType = 'N';
+        private char m_collType;
 
-        @SuppressWarnings("unused")
         private PrimaryType() {
-            //this exists for Hibernate
+            this('N');
         }
 
-        public PrimaryType(char collType) {
+        private PrimaryType(char collType) {
             m_collType = collType;
         }
 
@@ -114,17 +113,6 @@ public class OnmsIpInterface extends OnmsEntity implements Serializable {
                 }
             }
             throw new IllegalArgumentException("illegal collType code '"+code+"'");
-        }
-
-        public boolean equals(PrimaryType o) {
-            if (o == null) {
-                return false;
-            }
-            return m_collType == o.m_collType;
-        }
-
-        public int hashCode() {
-            return toString().hashCode();
         }
 
         public String toString() {
@@ -171,23 +159,9 @@ public class OnmsIpInterface extends OnmsEntity implements Serializable {
             }
         }
 
-        public static PrimaryType PRIMARY = new PrimaryType('P');
-        public static PrimaryType SECONDARY = new PrimaryType('S');
-        public static PrimaryType NOT_ELIGIBLE = new PrimaryType('N');
-
-        public static PrimaryType getCanonical(PrimaryType issnmpprimary) {
-            if (issnmpprimary == null) {
-                return NOT_ELIGIBLE;
-            }
-            switch (issnmpprimary.getCharCode()) {
-                case 'P': return PRIMARY;
-                case 'S': return SECONDARY;
-                case 'N': return NOT_ELIGIBLE;
-                default: return NOT_ELIGIBLE;
-            }
-        }
-            
-
+        public static final PrimaryType PRIMARY = new PrimaryType('P');
+        public static final PrimaryType SECONDARY = new PrimaryType('S');
+        public static final PrimaryType NOT_ELIGIBLE = new PrimaryType('N');
     }
 
     private static final long serialVersionUID = 7750043250236397014L;
@@ -422,7 +396,7 @@ public class OnmsIpInterface extends OnmsEntity implements Serializable {
      * @param issnmpprimary a {@link org.opennms.netmgt.model.OnmsIpInterface.PrimaryType} object.
      */
     public void setIsSnmpPrimary(PrimaryType issnmpprimary) {
-        m_isSnmpPrimary = PrimaryType.getCanonical(issnmpprimary);
+        m_isSnmpPrimary = issnmpprimary;
     }
     
     /**

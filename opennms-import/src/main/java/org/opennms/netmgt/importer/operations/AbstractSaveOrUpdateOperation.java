@@ -44,6 +44,7 @@ import java.util.Map;
 import org.opennms.core.utils.ThreadCategory;
 import org.opennms.netmgt.capsd.IfSnmpCollector;
 import org.opennms.netmgt.capsd.snmp.IfTableEntry;
+import org.opennms.netmgt.config.modelimport.types.InterfaceSnmpPrimaryType;
 import org.opennms.netmgt.dao.CategoryDao;
 import org.opennms.netmgt.dao.DistPollerDao;
 import org.opennms.netmgt.dao.NodeDao;
@@ -114,7 +115,7 @@ public abstract class AbstractSaveOrUpdateOperation extends AbstractImportOperat
 	}
 
 	/** {@inheritDoc} */
-	public void foundInterface(String ipAddr, Object descr, String snmpPrimary, boolean managed, int status) {
+	public void foundInterface(String ipAddr, Object descr, InterfaceSnmpPrimaryType snmpPrimary, boolean managed, int status) {
 		
 		if ("".equals(ipAddr)) {
 			log().error("Found interface on node "+m_node.getLabel()+" with an empty ipaddr! Ignoring!");
@@ -125,10 +126,10 @@ public abstract class AbstractSaveOrUpdateOperation extends AbstractImportOperat
 
         m_currentInterface = new OnmsIpInterface(ipAddr, m_node);
         m_currentInterface.setIsManaged(status == 3 ? "U" : "M");
-        m_currentInterface.setIsSnmpPrimary(PrimaryType.get(snmpPrimary));
+        m_currentInterface.setIsSnmpPrimary(PrimaryType.get(snmpPrimary.toString()));
         //m_currentInterface.setIpStatus(status == 3 ? new Integer(3) : new Integer(1));
         
-        if ("P".equals(snmpPrimary)) {
+        if (InterfaceSnmpPrimaryType.P.equals(snmpPrimary)) {
         	try {
         		m_collector = new IfSnmpCollector(InetAddress.getByName(ipAddr));
         	} catch (UnknownHostException e) {

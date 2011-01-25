@@ -31,8 +31,9 @@
 //
 package org.opennms.web.controller;
 
-import java.util.Arrays;
+import java.util.ArrayList;
 import java.util.Collection;
+import java.util.Collections;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -40,6 +41,7 @@ import java.util.Map;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
+import org.opennms.netmgt.config.modelimport.types.InterfaceSnmpPrimaryType;
 import org.opennms.netmgt.provision.persist.requisition.Requisition;
 import org.opennms.web.svclayer.ManualProvisioningService;
 import org.springframework.validation.BindException;
@@ -280,7 +282,11 @@ public class EditProvisioningGroupController extends SimpleFormController {
     protected Map<String, Collection<String>> referenceData(HttpServletRequest request) throws Exception {
         Map<String, Collection<String>> map = new HashMap<String, Collection<String>>();
         
-        List<String> choices = Arrays.asList("P", "S", "C", "N");
+        // Fetch the list of possible values out of the Castor enumeration
+        List<String> choices = new ArrayList<String>();
+        for (Object type : Collections.list(InterfaceSnmpPrimaryType.enumerate())) {
+            choices.add(type.toString());
+        }
         map.put("snmpPrimaryChoices", choices);
         
         map.put("categories", m_provisioningService.getNodeCategoryNames());
