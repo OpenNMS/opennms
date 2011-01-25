@@ -71,7 +71,7 @@ public class OnmsIpInterfaceTest extends TestCase {
 	}
 	
 	public void testCollectionTypeComparison () {
-		PrimaryType left = new PrimaryType('N');
+		PrimaryType left = PrimaryType.NOT_ELIGIBLE;
 		PrimaryType right = null;
 		try {
 			left.isLessThan(right);

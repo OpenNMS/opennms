@@ -66,8 +66,9 @@ public class InsertOperation extends SaveOrUpdateOperation {
 	 *
 	 * @return a {@link java.lang.String} object.
 	 */
+    @Override
 	public String toString() {
-        return "INSERT: Node: "+getNode().getLabel();
+        return "INSERT: Node: "+getNode().getId()+": "+getNode().getLabel();
     }
 
     /** {@inheritDoc} */

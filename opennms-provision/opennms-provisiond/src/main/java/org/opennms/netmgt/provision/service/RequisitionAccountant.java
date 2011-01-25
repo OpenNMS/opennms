@@ -33,6 +33,7 @@
 
 package org.opennms.netmgt.provision.service;
 
+import org.opennms.netmgt.config.modelimport.types.InterfaceSnmpPrimaryType;
 import org.opennms.netmgt.provision.persist.AbstractRequisitionVisitor;
 import org.opennms.netmgt.provision.persist.OnmsAssetRequisition;
 import org.opennms.netmgt.provision.persist.OnmsIpInterfaceRequisition;
@@ -77,7 +78,7 @@ public class RequisitionAccountant extends AbstractRequisitionVisitor {
     /** {@inheritDoc} */
     @Override
     public void visitInterface(OnmsIpInterfaceRequisition ifaceReq) {
-        m_currentOp.foundInterface(ifaceReq.getIpAddr().trim(), ifaceReq.getDescr(), ifaceReq.getSnmpPrimary(), ifaceReq.getManaged(), ifaceReq.getStatus());
+        m_currentOp.foundInterface(ifaceReq.getIpAddr().trim(), ifaceReq.getDescr(), InterfaceSnmpPrimaryType.valueOf(ifaceReq.getSnmpPrimary()), ifaceReq.getManaged(), ifaceReq.getStatus());
         
     }
     
