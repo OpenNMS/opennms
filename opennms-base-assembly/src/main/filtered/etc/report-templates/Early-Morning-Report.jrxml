@@ -224,6 +224,7 @@ FROM
 	FROM
 		node, events
 	WHERE
+		events.eventtime > now() - INTERVAL '23 hour' AND
 		events.nodeid = node.nodeid) AS node_events
 GROUP BY
 	nodelabel
@@ -1612,7 +1613,7 @@ WHERE
 						</chartTitle>
 						<chartSubtitle>
 							<font fontName="SansSerif" size="8"/>
-							<subtitleExpression><![CDATA["All events acknowledged and unacknowledged"]]></subtitleExpression>
+							<subtitleExpression><![CDATA["All events acknowledged and unacknowledged in last 24hours"]]></subtitleExpression>
 						</chartSubtitle>
 						<chartLegend>
 							<font fontName="SansSerif" size="8"/>
