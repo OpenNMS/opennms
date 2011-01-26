@@ -341,7 +341,7 @@
 
      <!-- Resource Type for WMI CPUs -->
      <resourceType name="wmiOSCpu" label="Windows Processor"
-                  resourceLabel="${wmiOSCpuName}">
+                  resourceLabel="CPU ${wmiOSCpuName}">
       <persistenceSelectorStrategy class="org.opennms.netmgt.collectd.PersistAllSelectorStrategy"/>
       <storageStrategy class="org.opennms.netmgt.dao.support.IndexStorageStrategy"/>
     </resourceType>
