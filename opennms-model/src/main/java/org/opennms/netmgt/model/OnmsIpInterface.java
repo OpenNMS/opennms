@@ -104,6 +104,13 @@ public class OnmsIpInterface extends OnmsEntity implements Serializable {
         public void setCharCode(char collType) {
             m_collType = collType;
         }
+        
+        @Override
+        public boolean equals(Object o) {
+            if (o instanceof PrimaryType) {
+                return this.compareTo((PrimaryType)o) == 0;
+            } else return false;
+        }
 
         public int compareTo(PrimaryType collType) {
             return getIndex(m_collType) - getIndex(collType.m_collType);
@@ -118,6 +125,7 @@ public class OnmsIpInterface extends OnmsEntity implements Serializable {
             throw new IllegalArgumentException("illegal collType code '"+code+"'");
         }
 
+        @Override
         public String toString() {
             return String.valueOf(m_collType);
         }
