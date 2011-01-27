@@ -243,7 +243,7 @@ public final class JdbcEventWriter extends AbstractJdbcPersister implements Even
             insStmt.setTimestamp(12, eventCreateTime);
 
             // eventDescr
-            set(insStmt, 13, Constants.format(event.getDescr(), EVENT_DESCR_FIELD_SIZE));
+            set(insStmt, 13, event.getDescr());
 
             // eventLoggroup
             set(insStmt, 14, (event.getLoggroupCount() > 0) ? Constants.format(event.getLoggroup(), EVENT_LOGGRP_FIELD_SIZE) : null);
@@ -253,7 +253,7 @@ public final class JdbcEventWriter extends AbstractJdbcPersister implements Even
             // eventDisplay
             if (event.getLogmsg() != null) {
                 // set log message
-                set(insStmt, 15, Constants.format(event.getLogmsg().getContent(), EVENT_LOGMSG_FIELD_SIZE));
+                set(insStmt, 15, event.getLogmsg().getContent());
                 String logdest = event.getLogmsg().getDest();
                 if (logdest.equals("logndisplay")) {
                     // if 'logndisplay' set both log and display column to yes

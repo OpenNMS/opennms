@@ -626,7 +626,7 @@ public class OnmsEvent extends OnmsEntity implements Serializable {
 	 * @return a {@link java.lang.String} object.
 	 */
 	@XmlElement(name="logMessage")
-	@Column(name="eventLogMsg", length=256)
+	@Column(name="eventLogMsg", length=1024)
 	public String getEventLogMsg() {
 		return m_eventLogMsg;
 	}
