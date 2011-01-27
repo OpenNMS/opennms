@@ -515,7 +515,7 @@ public class OnmsAlarm implements Acknowledgeable, Serializable {
      *
      * @return a {@link java.lang.String} object.
      */
-    @Column(name="logmsg", length=256)
+    @Column(name="logmsg", length=1024)
     @XmlElement(name="logMessage")
     public String getLogMsg() {
         return this.m_logMsg;

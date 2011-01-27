@@ -1,0 +1,69 @@
+<?xml version="1.0" encoding="UTF-8"?>
+ 
+<databaseChangeLog
+	xmlns="http://www.liquibase.org/xml/ns/dbchangelog/1.9"
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xsi:schemaLocation="http://www.liquibase.org/xml/ns/dbchangelog/1.9
+		http://www.liquibase.org/xml/ns/dbchangelog/dbchangelog-1.9.xsd">
+
+<changeSet author="rangerrick" id="1.8.8-alarms-text-columns">
+	<modifyColumn tableName="alarms">
+		<column name="description" type="text" />
+	</modifyColumn>	
+	<modifyColumn tableName="alarms">
+		<column name="logmsg" type="text" />
+	</modifyColumn>	
+
+	<rollback>
+		<modifyColumn tableName="alarms">
+			<column name="description" type="varchar(4000)" />
+		</modifyColumn>	
+		<modifyColumn tableName="alarms">
+			<column name="logmsg" type="varchar(256)" />
+		</modifyColumn>	
+	</rollback>
+</changeSet>
+
+<changeSet author="rangerrick" id="1.8.8-events-text-columns">
+	<modifyColumn tableName="events">
+		<column name="eventdescr" type="text" />
+	</modifyColumn>	
+	<modifyColumn tableName="events">
+		<column name="eventlogmsg" type="text" />
+	</modifyColumn>	
+
+	<rollback>
+		<modifyColumn tableName="events">
+			<column name="eventdescr" type="varchar(4000)" />
+		</modifyColumn>	
+		<modifyColumn tableName="events">
+			<column name="eventlogmsg" type="varchar(256)" />
+		</modifyColumn>	
+	</rollback>
+</changeSet>
+
+<changeSet author="rangerrick" id="1.8.8-notifications-text-columns">
+	<modifyColumn tableName="notifications">
+		<column name="textmsg" type="text" />
+	</modifyColumn>	
+
+	<rollback>
+		<modifyColumn tableName="notifications">
+			<column name="textmsg" type="varchar(4000)" />
+		</modifyColumn>	
+	</rollback>
+</changeSet>
+
+<changeSet author="rangerrick" id="1.8.8-vulnerabilities-text-columns">
+	<modifyColumn tableName="vulnerabilities">
+		<column name="logmsg" type="text" />
+	</modifyColumn>	
+
+	<rollback>
+		<modifyColumn tableName="vulnerabilities">
+			<column name="logmsg" type="varchar(256)" />
+		</modifyColumn>	
+	</rollback>
+</changeSet>
+
+</databaseChangeLog>
