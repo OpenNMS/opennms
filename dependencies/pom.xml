@@ -28,6 +28,7 @@
     <module>jcifs</module>
     <module>jdhcp</module>
     <module>jinterop</module>
+    <module>jna</module>
     <module>jnlp</module>
     <module>jradius</module>
     <module>jrobin</module>
