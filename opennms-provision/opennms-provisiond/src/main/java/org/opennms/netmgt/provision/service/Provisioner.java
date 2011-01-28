@@ -555,10 +555,12 @@ public class Provisioner implements SpringServiceDaemon {
 
         if (ip == null) {
             log().error("Received a "+uei+" event with a null ipAddress");
+            return;
         }
 
         if (!getProvisionService().isDiscoveryEnabled()) {
             log().info("Ignoring "+uei+" event for ip "+ip+" since discovery handling is disabled in provisiond");
+            return;
         }
         
         Runnable r = new Runnable() {
