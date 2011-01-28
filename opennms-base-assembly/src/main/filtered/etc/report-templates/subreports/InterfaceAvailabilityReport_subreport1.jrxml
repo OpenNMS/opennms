@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<jasperReport xmlns="http://jasperreports.sourceforge.net/jasperreports" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://jasperreports.sourceforge.net/jasperreports http://jasperreports.sourceforge.net/xsd/jasperreport.xsd" name="InterfaceAvailabilityReport_subreport1" language="java" pageWidth="555" pageHeight="802" columnWidth="555" leftMargin="0" rightMargin="0" topMargin="0" bottomMargin="0">
-	<property name="ireport.zoom" value="1.5"/>
+<jasperReport xmlns="http://jasperreports.sourceforge.net/jasperreports" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://jasperreports.sourceforge.net/jasperreports http://jasperreports.sourceforge.net/xsd/jasperreport.xsd" name="InterfaceAvailabilityReport_subreport1" pageWidth="555" pageHeight="802" columnWidth="555" leftMargin="0" rightMargin="0" topMargin="0" bottomMargin="0">
+	<property name="ireport.zoom" value="4.0"/>
 	<property name="ireport.x" value="0"/>
 	<property name="ireport.y" value="0"/>
 	<style name="Warning/Critical">
@@ -148,45 +148,45 @@ GROUP BY
 		</band>
 	</pageHeader>
 	<detail>
-		<band height="40">
+		<band height="24">
 			<rectangle>
-				<reportElement style="Warning/Critical" x="0" y="12" width="555" height="20"/>
+				<reportElement style="Warning/Critical" x="0" y="2" width="555" height="20"/>
 				<graphicElement>
 					<pen lineWidth="0.0"/>
 				</graphicElement>
 			</rectangle>
 			<staticText>
-				<reportElement x="0" y="12" width="100" height="20"/>
+				<reportElement x="0" y="2" width="100" height="20"/>
 				<textElement verticalAlignment="Middle"/>
 				<text><![CDATA[interface:]]></text>
 			</staticText>
 			<textField>
-				<reportElement x="100" y="12" width="172" height="20"/>
+				<reportElement x="100" y="2" width="172" height="20"/>
 				<textElement verticalAlignment="Middle"/>
 				<textFieldExpression class="java.lang.String"><![CDATA[$F{ipaddr}]]></textFieldExpression>
 			</textField>
 			<textField>
-				<reportElement x="299" y="12" width="50" height="20"/>
+				<reportElement x="299" y="2" width="50" height="20"/>
 				<textElement textAlignment="Center" verticalAlignment="Middle"/>
 				<textFieldExpression class="java.lang.Long"><![CDATA[$F{outages_count}]]></textFieldExpression>
 			</textField>
 			<textField pattern="###0.00">
-				<reportElement x="349" y="12" width="50" height="20"/>
+				<reportElement x="349" y="2" width="50" height="20"/>
 				<textElement textAlignment="Center" verticalAlignment="Middle"/>
 				<textFieldExpression class="java.lang.Double"><![CDATA[$F{average_duration_seconds}/new Double("3600")]]></textFieldExpression>
 			</textField>
 			<textField pattern="###0.00">
-				<reportElement x="399" y="12" width="50" height="20"/>
+				<reportElement x="399" y="2" width="50" height="20"/>
 				<textElement textAlignment="Center" verticalAlignment="Middle"/>
 				<textFieldExpression class="java.lang.Double"><![CDATA[$F{outages_seconds}/new Double("3600")]]></textFieldExpression>
 			</textField>
 			<textField pattern="###0.00">
-				<reportElement x="449" y="12" width="50" height="20"/>
+				<reportElement x="449" y="2" width="50" height="20"/>
 				<textElement textAlignment="Center" verticalAlignment="Middle"/>
 				<textFieldExpression class="java.lang.Double"><![CDATA[$F{outages_percent}]]></textFieldExpression>
 			</textField>
 			<textField pattern="###0.00">
-				<reportElement x="499" y="12" width="50" height="20"/>
+				<reportElement x="499" y="2" width="50" height="20"/>
 				<textElement textAlignment="Center" verticalAlignment="Middle"/>
 				<textFieldExpression class="java.lang.Double"><![CDATA[$F{avail_percent}]]></textFieldExpression>
 			</textField>

@@ -154,7 +154,7 @@ GROUP BY
 				<textElement verticalAlignment="Middle">
 					<font size="20" isBold="true"/>
 				</textElement>
-				<text><![CDATA[Node Availability Report]]></text>
+				<text><![CDATA[Interface Availability Report]]></text>
 			</staticText>
 			<image>
 				<reportElement x="195" y="0" width="164" height="49"/>
