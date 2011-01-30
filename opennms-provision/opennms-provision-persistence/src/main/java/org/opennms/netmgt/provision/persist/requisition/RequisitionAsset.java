@@ -23,7 +23,7 @@ import javax.xml.bind.annotation.XmlType;
 @XmlAccessorType(XmlAccessType.FIELD)
 @XmlType(name="")
 @XmlRootElement(name="asset")
-public class RequisitionAsset {
+public class RequisitionAsset implements Comparable<RequisitionAsset> {
 
     @XmlAttribute(name="name", required=true)
     protected String m_name;
@@ -82,6 +82,10 @@ public class RequisitionAsset {
      */
     public void setValue(String value) {
         m_value = value;
+    }
+
+    public int compareTo(RequisitionAsset o) {
+        return m_name.compareTo(o.getName());
     }
 
 }

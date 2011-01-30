@@ -30,7 +30,7 @@ import javax.xml.bind.annotation.XmlType;
 @XmlAccessorType(XmlAccessType.FIELD)
 @XmlType(name="", propOrder = { "m_monitoredServices", "m_categories" })
 @XmlRootElement(name = "interface")
-public class RequisitionInterface {
+public class RequisitionInterface implements Comparable<RequisitionInterface> {
 
     //TODO Change these to be sets so that we don't have to verify duplicates in the lists
     
@@ -356,4 +356,7 @@ public class RequisitionInterface {
         m_status = value;
     }
 
+    public int compareTo(RequisitionInterface o) {
+        return this.m_ipAddress.compareTo(o.getIpAddr());
+    }
 }

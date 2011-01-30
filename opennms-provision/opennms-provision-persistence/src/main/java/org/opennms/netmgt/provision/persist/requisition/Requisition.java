@@ -44,7 +44,8 @@ import org.opennms.netmgt.provision.persist.RequisitionVisitor;
 @XmlAccessorType(XmlAccessType.FIELD)
 @XmlRootElement(name="model-import")
 public class Requisition implements Serializable, Comparable<Requisition> {
-    private static final long serialVersionUID = 1L;
+
+    private static final long serialVersionUID = 2099710942679236239L;
 
     @XmlTransient
     private Map<String, OnmsNodeRequisition> m_nodeReqs = new LinkedHashMap<String, OnmsNodeRequisition>();
@@ -86,7 +87,7 @@ public class Requisition implements Serializable, Comparable<Requisition> {
      *
      * @param node a {@link org.opennms.netmgt.provision.persist.requisition.RequisitionNode} object.
      */
-    public void removeNode(RequisitionNode node) {
+    public void deleteNode(RequisitionNode node) {
         if (m_nodes != null) {
             Iterator<RequisitionNode> i = m_nodes.iterator();
             while (i.hasNext()) {

@@ -68,7 +68,7 @@ public class FilesystemForeignSourceRepositoryTest {
         Requisition r = m_foreignSourceRepository.getRequisition(m_defaultForeignSourceName);
         TestVisitor v = new TestVisitor();
         r.visit(v);
-        assertEquals("number of nodes visited", 1, v.getNodeReqs().size());
+        assertEquals("number of nodes visited", 2, v.getNodeReqs().size());
         assertEquals("node name matches", "apknd", v.getNodeReqs().get(0).getNodeLabel());
     }
 

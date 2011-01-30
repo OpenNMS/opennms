@@ -22,4 +22,12 @@
                 <asset name="operatingSystem" value="Windows Pi" />
                 <asset name="description" value="Large and/or In Charge" />
         </node>
+        <node node-label="wan0" foreign-id="4244">
+                <interface ip-addr="10.0.0.1" status="1" snmp-primary="P" descr="WAN Interface">
+                        <monitored-service service-name="ICMP"/>
+                        <monitored-service service-name="SNMP"/>
+                </interface>
+                <asset name="manufacturer" value="HP" />
+                <asset name="operatingSystem" value="Windows Epsilon" />
+        </node>
 </model-import>

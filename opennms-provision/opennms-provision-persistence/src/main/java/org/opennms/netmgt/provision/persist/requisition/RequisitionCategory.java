@@ -23,7 +23,7 @@ import javax.xml.bind.annotation.XmlType;
 @XmlAccessorType(XmlAccessType.FIELD)
 @XmlType(name="")
 @XmlRootElement(name="category")
-public class RequisitionCategory {
+public class RequisitionCategory implements Comparable<RequisitionCategory> {
 
     @XmlAttribute(name="name", required=true)
     protected String m_name;
@@ -59,5 +59,9 @@ public class RequisitionCategory {
      */
     public void setName(String value) {
         m_name = value;
+    }
+
+    public int compareTo(RequisitionCategory o) {
+        return m_name.compareTo(o.getName());
     }
 }

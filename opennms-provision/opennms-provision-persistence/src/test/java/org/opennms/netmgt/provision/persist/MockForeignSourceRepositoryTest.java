@@ -1,6 +1,7 @@
 package org.opennms.netmgt.provision.persist;
 
 import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.fail;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -8,13 +9,16 @@ import java.util.List;
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
-import org.opennms.netmgt.provision.persist.ForeignSourceRepository;
 import org.opennms.netmgt.config.modelimport.ModelImport;
 import org.opennms.netmgt.dao.db.OpenNMSConfigurationExecutionListener;
 import org.opennms.netmgt.provision.persist.foreignsource.ForeignSource;
 import org.opennms.netmgt.provision.persist.foreignsource.PluginConfig;
 import org.opennms.netmgt.provision.persist.requisition.Requisition;
+import org.opennms.netmgt.provision.persist.requisition.RequisitionCategory;
 import org.opennms.test.mock.MockLogAppender;
+import org.springframework.beans.BeanWrapper;
+import org.springframework.beans.BeanWrapperImpl;
+import org.springframework.beans.InvalidPropertyException;
 import org.springframework.core.io.ClassPathResource;
 import org.springframework.test.context.TestExecutionListeners;
 import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
@@ -54,7 +58,7 @@ public class MockForeignSourceRepositoryTest {
         Requisition r = m_repository.getRequisition(m_defaultForeignSourceName);
         TestVisitor v = new TestVisitor();
         r.visit(v);
-        assertEquals("number of nodes visited", 1, v.getNodeReqs().size());
+        assertEquals("number of nodes visited", 2, v.getNodeReqs().size());
         assertEquals("node name matches", "apknd", v.getNodeReqs().get(0).getNodeLabel());
     }
 
@@ -66,6 +70,34 @@ public class MockForeignSourceRepositoryTest {
         assertEquals("number of foreign sources", 1, foreignSources.size());
         assertEquals("getAll() foreign source name matches", m_defaultForeignSourceName, foreignSources.get(0).getName());
         assertEquals("get() returns the foreign source", foreignSource, m_repository.getForeignSource(m_defaultForeignSourceName));
+    }
+
+    /**
+     * This test ensures that the Spring Bean accessor classes work properly
+     * since our REST implementation uses bean access to update the values.
+     */
+    @Test
+    public void testBeanWrapperAccess() throws Exception {
+        createRequisition();
+        Requisition r = m_repository.getRequisition(m_defaultForeignSourceName);
+        BeanWrapper wrapper = new BeanWrapperImpl(r);
+        assertEquals("AC", wrapper.getPropertyValue("node[0].category[0].name"));
+        assertEquals("UK", wrapper.getPropertyValue("node[0].category[1].name"));
+        assertEquals("low", wrapper.getPropertyValue("node[0].category[2].name"));
+        
+        try {
+            wrapper.getPropertyValue("node[1].category[0].name");
+            fail("Did not catch expected InvalidPropertyException exception");
+        } catch (InvalidPropertyException e) {
+            // Expected failure
+        }
+        
+        assertEquals(0, ((RequisitionCategory[])wrapper.getPropertyValue("node[1].category")).length);
+        
+        wrapper.setPropertyValue("node[1].categories[0]", new RequisitionCategory("Hello world"));
+        wrapper.setPropertyValue("node[1].categories[1]", new RequisitionCategory("Hello again"));
+        
+        assertEquals(2, ((RequisitionCategory[])wrapper.getPropertyValue("node[1].category")).length);
     }
 
     @Test

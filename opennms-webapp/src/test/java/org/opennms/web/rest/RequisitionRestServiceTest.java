@@ -61,6 +61,7 @@ public class RequisitionRestServiceTest extends AbstractSpringJerseyRestTestCase
         url = "/requisitions/test/nodes/4243";
         xml = sendRequest(GET, url, 200);
         assertTrue(xml.contains("parent-node-label=\"apknd\""));
+        assertTrue(xml.contains("node-label=\"apknd\""));
         
         // set attributes
         sendPut(url, "node-label=homo+sapien");
@@ -167,6 +168,14 @@ public class RequisitionRestServiceTest extends AbstractSpringJerseyRestTestCase
         // confirm there are less categories
         xml = sendRequest(GET, "/requisitions/test/nodes/4243/categories", 200);
         assertTrue(xml.contains("count=\"3\""));
+
+        base = "/requisitions/test/nodes/4244/categories";
+        // create a category
+        sendPost(base, "<category xmlns=\"http://xmlns.opennms.org/xsd/config/model-import\" name=\"New Category\" />");
+        // confirm that the category was created
+        xml = sendRequest(GET, "/requisitions/test/nodes/4244/categories", 200);
+        assertTrue(xml.contains("count=\"1\""));
+        assertTrue(xml.contains("name=\"New Category\""));
     }
     
     @Test
