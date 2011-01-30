@@ -260,7 +260,7 @@ public class DnsRequisitionUrlConnection extends URLConnection {
         
         i.insertMonitoredService(new RequisitionMonitoredService("ICMP"));
         i.insertMonitoredService(new RequisitionMonitoredService("SNMP"));
-        n.insertInterface(i );
+        n.putInterface(i);
         
         return n;
     }

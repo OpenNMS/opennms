@@ -149,7 +149,7 @@ public class DefaultManualProvisioningService implements ManualProvisioningServi
         
         RequisitionCategory category = new RequisitionCategory();
         category.setName(categoryName);
-        node.insertCategory(category);
+        node.putCategory(category);
 
         m_pendingForeignSourceRepository.save(group);
 
@@ -183,7 +183,7 @@ public class DefaultManualProvisioningService implements ManualProvisioningServi
         }
 
         RequisitionInterface iface = createInterface(ipAddr, snmpPrimary);
-        node.insertInterface(iface);
+        node.putInterface(iface);
 
         m_pendingForeignSourceRepository.save(group);
         return m_pendingForeignSourceRepository.getRequisition(groupName);
