@@ -59,4 +59,9 @@
                 report-service="jasperReportService" description="Average and Peak Traffic rates for Nodes by Interface this month" />
         <report id="Average-Peak-Traffic-Rates_LastMonth" display-name="Average and Peak Traffic rates for Nodes by Interface last month" online="true" 
                 report-service="jasperReportService" description="Average and Peak Traffic rates for Nodes by Interface last month" />
+                
+        <report id="Interface-Availability-Report" display-name="Interface Availability Report" online="true" 
+                report-service="jasperReportService" description="Interface Availability Report, show interface availability for interfaces with outages within time range" />
+        <report id="Snmp-Interface-Oper-Availability" display-name="Snmp Interface Availability Report" online="true" 
+                report-service="jasperReportService" description="Snmp Interface Availability Report, shows availability for snmp interfaces with interfaceOperDown outages within the time range" />
 </database-reports>
