@@ -164,7 +164,7 @@ public class DefaultManualProvisioningService implements ManualProvisioningServi
         RequisitionAsset asset = new RequisitionAsset();
         asset.setName(assetName);
         asset.setValue(assetValue);
-        node.insertAsset(asset);
+        node.putAsset(asset);
 
         m_pendingForeignSourceRepository.save(group);
         return m_pendingForeignSourceRepository.getRequisition(groupName);
