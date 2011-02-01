@@ -185,8 +185,16 @@ public abstract class SaveOrUpdateOperation extends ImportOperation {
      * @param name a {@link java.lang.String} object.
      */
     public void foundCategory(String name) {
-    	OnmsCategory category = getProvisionService().createCategoryIfNecessary(name);
-    	m_node.getCategories().add(category);
+       try {
+	  throw new java.io.IOException();
+       }
+       catch (java.io.IOException e) {
+	  e.printStackTrace();
+       }
+       
+       
+       OnmsCategory category = getProvisionService().createCategoryIfNecessary(name);
+        m_node.getCategories().add(category);
     }
    
    

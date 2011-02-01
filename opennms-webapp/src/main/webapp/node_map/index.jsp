@@ -38,7 +38,7 @@
 <% 
    String breadcrumb1 = "Node Map";
 
-   String openlayers_location = "<script src=\"" + System.getProperty("slippy.openlayers.url") + "/lib/OpenLayers.js\" type=\"text/javascript\"></script>";
+   String openlayers_location = "<script src=\"" + System.getProperty("com.cbnl.onms.openlayers_location") + "/lib/OpenLayers.js\" type=\"text/javascript\"></script>";
 
    //avoid cache
    response.setHeader("Cache-Control","no-store");

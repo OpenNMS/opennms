@@ -10,6 +10,8 @@
 //
 // Modifications:
 //
+// 2007 Jul 24: Add serialVersionUID, refactor logging. - dj@opennms.org
+//
 // Copyright (C) 1999-2001 Oculan Corp.  All rights reserved.
 //
 // This program is free software; you can redistribute it and/or modify
@@ -34,33 +36,67 @@
 
 package org.opennms.web.nodemap;
 
+import java.io.BufferedReader;
 import java.io.IOException;
+import java.io.InputStreamReader;
 import java.io.PrintWriter;
-import java.sql.Connection;
-import java.sql.PreparedStatement;
-import java.sql.ResultSet;
-import java.sql.SQLException;
-import java.sql.Timestamp;
-import java.util.ArrayList;
-import java.util.Calendar;
-import java.util.Date;
-import java.util.GregorianCalendar;
-import java.util.HashMap;
-import java.util.List;
+import java.io.StringReader;
+import java.io.StringWriter;
 
+import javax.servlet.ServletConfig;
 import javax.servlet.ServletException;
 import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
+import javax.servlet.http.HttpSession;
+
+import org.apache.log4j.Logger;
+import org.opennms.core.utils.StreamUtils;
+import org.opennms.web.MissingParameterException;
+
+import java.sql.Connection;
+import java.sql.PreparedStatement;
+import java.sql.ResultSet;
+import java.sql.SQLException;
+import java.sql.Statement;
+import java.sql.Timestamp;
+
+import java.util.Date;
+import java.util.Calendar;
+import java.util.GregorianCalendar;
 
 import org.opennms.core.utils.DBUtils;
 import org.opennms.netmgt.config.DataSourceFactory;
 
+import java.util.HashMap;
+import java.util.List;
+import java.util.ArrayList;
+import net.sf.json.JSONSerializer;
+
+/**
+ * <p>MailerServlet class.</p>
+ *
+ * @author <A HREF="mailto:jacinta@opennms.org">Jacinta Remedios </A>
+ * @author <A HREF="mailto:larry@opennms.org">Lawrence Karnowski </A>
+ * @author <A HREF="http://www.opennms.org/">OpenNMS </A>
+ * @author <A HREF="mailto:jacinta@opennms.org">Jacinta Remedios </A>
+ * @author <A HREF="mailto:larry@opennms.org">Lawrence Karnowski </A>
+ * @author <A HREF="http://www.opennms.org/">OpenNMS </A>
+ * @author <A HREF="mailto:jacinta@opennms.org">Jacinta Remedios </A>
+ * @author <A HREF="mailto:larry@opennms.org">Lawrence Karnowski </A>
+ * @author <A HREF="http://www.opennms.org/">OpenNMS </A>
+ * @version $Id: $
+ * @since 1.8.1
+ */
+
+	//select node.nodeid, node.nodelabel, node_geolocation.geolocationlatitude, node_geolocation.geolocationlongitude from node inner join node_geolocation on node_geolocation.nodeid = node.nodeid;
+
+	//select node.nodeid, node.nodelabel, node_geolocation.geolocationlatitude, node_geolocation.geolocationlongitude, outages.outageid, outages.serviceid, service.servicename from ((node inner join node_geolocation on node_geolocation.nodeid = node.nodeid) inner join outages on node.nodeid = outages.nodeid) inner join service on service.serviceid = outages.serviceid;
+
+
 public class MapNodeServlet extends HttpServlet {
-	private static final long serialVersionUID = 1L;
 
-
-	private Timestamp getNow() {
+    private Timestamp getNow() {
 	Calendar cal = new GregorianCalendar();
 	Date end = cal.getTime();
 
@@ -94,6 +130,14 @@ public class MapNodeServlet extends HttpServlet {
     private static final String GET_OUTAGES_QUERY = "SELECT nodeid, eventuei,severity FROM alarms WHERE nodeid IS NOT NULL ORDER BY nodeid, lasteventtime desc";
 
 
+    //    INDETERMINATE(1, "Indeterminate", "lightblue"),
+    //CLEARED(2, "Cleared", "white"),
+    //NORMAL(3, "Normal", "green"),
+    //WARNING(4, "Warning", "cyan"),
+    //MINOR(5, "Minor", "yellow"),
+    //MAJOR(6, "Major", "orange"),
+    //CRITICAL(7, "Critical", "red");
+
     private void getStatus(List< HashMap<Integer, NodeResult> > hashes) throws  SQLException { 
 	final DBUtils d = new DBUtils();
         Connection connection = null;
@@ -114,6 +158,7 @@ public class MapNodeServlet extends HttpServlet {
 
             if (results != null) {
                 while (results.next()) {
+		    int i;
 		    int nodeid = results.getInt(1);
 		    String uei = results.getString(2);
 		    int severity = results.getInt(3);
@@ -373,6 +418,7 @@ public class MapNodeServlet extends HttpServlet {
 	} catch (Exception e) {
 	    final StackTraceElement[] stackTrace = e.getStackTrace();
 	    String st = "";
+	    int index = 0;
 	    for (StackTraceElement element : stackTrace) {
 		st += "Exception thrown from " + element.getMethodName() + 
 		    " in class " + element.getClassName() + 

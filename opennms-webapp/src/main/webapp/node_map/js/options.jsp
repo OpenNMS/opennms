@@ -13,8 +13,8 @@ if (!onms.vs.NodeMapOptions) {
     onms.vs.NodeMapOptions.CAT_ID = "categories";
     onms.vs.NodeMapOptions.UPDATE_ID = "update_time";
     onms.vs.NodeMapOptions.CLUSTER_THRESH = 20;
-    <% out.println("onms.vs.NodeMapOptions.TILECACHE_URL=\"" + System.getProperty("slippy.tilecache.url") + "/tilecache.cgi?\";"); %>
-    <% out.println("onms.vs.NodeMapOptions.OPENLAYERS_BASE=\"" + System.getProperty("slippy.openlayers.url") + "\";"); %>
+    <% out.println("onms.vs.NodeMapOptions.TILECACHE_URL=\"" + System.getProperty("com.cbnl.onms.tilecache_location") + "/tilecache.cgi?\";"); %>
+    <% out.println("onms.vs.NodeMapOptions.OPENLAYERS_BASE=\"" + System.getProperty("com.cbnl.onms.openlayers_location") + "\";"); %>
 
 
 }

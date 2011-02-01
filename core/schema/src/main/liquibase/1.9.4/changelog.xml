@@ -66,22 +66,4 @@
         </rollback>
     </changeSet>
 
-	<changeSet author="gb@kynesim" id="1.9.4-cbnl-node_geoloctaion_table">
-        <preConditions onFail="MARK_RAN">
-            <not>
-                <tableExists tableName="node_geolocation" />
-            </not>
-        </preConditions>
-
-        <createTable tableName="node_geolocation">
-            <column name="nodeid" type="int">
-                <constraints primaryKey="true" nullable="false"/>
-            </column>
-            <column name="id" type="int" />
-
-            <column name="geolocationlatitude" type="double precision"/>
-            <column name="geolocationlongitude" type="double precision"/>
-        </createTable>
-    </changeSet>
-
 </databaseChangeLog>

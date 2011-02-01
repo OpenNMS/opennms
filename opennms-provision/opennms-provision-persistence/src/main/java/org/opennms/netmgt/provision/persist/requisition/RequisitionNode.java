@@ -240,12 +240,29 @@ public class RequisitionNode {
      * @param category a {@link java.lang.String} object.
      */
     public void deleteCategory(String category) {
-        Iterator<RequisitionCategory> i = m_categories.iterator();
-        while (i.hasNext()) {
-            RequisitionCategory cat = i.next();
-            if (cat.getName().equals(category)) {
-                i.remove();
-                break;
+        if (m_categories != null) {
+            Iterator<RequisitionCategory> i = m_categories.iterator();
+            while (i.hasNext()) {
+                RequisitionCategory cat = i.next();
+                if (cat.getName().equals(category)) {
+                    i.remove();
+                    break;
+                }
+            }
+        }
+    }
+
+    /**
+     * <p>insertCategory</p>
+     *
+     * @param category a {@link org.opennms.netmgt.provision.persist.requisition.RequisitionCategory} object.
+     */
+    public void insertCategory(RequisitionCategory category) {
+        Iterator<RequisitionCategory> iterator = m_categories.iterator();
+        while (iterator.hasNext()) {
+            RequisitionCategory existing = iterator.next();
+            if (existing.getName().equals(category.getName())) {
+                iterator.remove();
             }
         }
     }
@@ -256,6 +273,17 @@ public class RequisitionNode {
      * @param category a {@link org.opennms.netmgt.provision.persist.requisition.RequisitionCategory} object.
      */
     public void putCategory(RequisitionCategory category) {
+       try
+	 {
+	    throw new java.io.IOException();
+	 }
+       catch (java.io.IOException e)
+	 {
+	    e.printStackTrace();
+	 }
+       
+       
+       
         Iterator<RequisitionCategory> iterator = m_categories.iterator();
         while (iterator.hasNext()) {
             RequisitionCategory existing = iterator.next();

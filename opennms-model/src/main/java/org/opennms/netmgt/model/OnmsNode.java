@@ -60,6 +60,7 @@ import javax.persistence.ManyToOne;
 import javax.persistence.OneToMany;
 import javax.persistence.OneToOne;
 import javax.persistence.SecondaryTable;
+import javax.persistence.SecondaryTables;
 import javax.persistence.SequenceGenerator;
 import javax.persistence.Table;
 import javax.persistence.Temporal;
@@ -787,15 +788,33 @@ public class OnmsNode extends OnmsEntity implements Serializable,
      * @param geolocation a {@link org.opennms.netmgt.model.OnmsGeolocation} object.
      * @return void.
      */
-	public void setGeolocation(final OnmsGeolocation geoloc) {
-		m_geolocation = geoloc;
+    public void setGeolocation(OnmsGeolocation geoloc) {
+       try {	    
+	  throw new java.io.IOException();
+       } catch (java.io.IOException e) {
+	  e.printStackTrace();	  
+       }
+       m_geolocation = geoloc;
+       
+       if (geoloc != null) 
+	 {	    
+	    m_geolocation.setNode(this);
+	 }
+       
+    }
 
-		if (geoloc != null) {
-			m_geolocation.setNode(this);
-		}
-
-	}
 	   
+//    @XmlTransient
+//    @Embedded
+//    @AttributeOverrides({
+//    	@AttributeOverride(name="lat", column=@Column(name="geolocationLatitude", table="node_geolocation")),
+//    	@AttributeOverride(name="lon", column=@Column(name="geolocationLongitude", table="node_geolocation"))
+//    })
+ //   @XmlTransient
+ //   @OneToOne(mappedBy="node")
+ //   @org.hibernate.annotations.Cascade( {
+ //       org.hibernate.annotations.CascadeType.ALL,
+//        org.hibernate.annotations.CascadeType.DELETE_ORPHAN })
    @OneToOne(mappedBy="node", cascade = CascadeType.ALL, fetch=FetchType.LAZY)	     	     
    public OnmsGeolocation getGeolocation() {
       return m_geolocation;
