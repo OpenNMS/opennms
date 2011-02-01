@@ -171,7 +171,6 @@ public class RolesTest extends IntervalTestCase {
         assertEquals(user.getUserId(), webUser.getName());
     }
 
-    @SuppressWarnings("unchecked")
     private void assertGroup(Group group, WebGroup webGroup) throws Exception {
         assertEquals(group.getName(), webGroup.getName());
         Collection<String> userNames = group.getUserCollection();
@@ -184,7 +183,6 @@ public class RolesTest extends IntervalTestCase {
         }
     }
 
-    @SuppressWarnings("unchecked")
     private void assertRole(Role role, WebRole webRole) throws Exception {
         assertEquals(role.getName(), webRole.getName());
         assertEquals(role.getDescription(), webRole.getDescription());

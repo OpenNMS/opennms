@@ -145,7 +145,6 @@ public class PollerConfigFactoryTest extends TestCase {
     static class TestPollerConfigManager extends PollerConfigManager {
         private String m_xml;
 
-        @SuppressWarnings("deprecation")
         public TestPollerConfigManager(String xml, String localServer, boolean verifyServer) throws MarshalException, ValidationException, IOException {
             super(new StringReader(xml), localServer, verifyServer);
             save();

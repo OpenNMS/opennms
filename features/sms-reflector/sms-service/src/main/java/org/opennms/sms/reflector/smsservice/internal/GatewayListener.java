@@ -33,7 +33,8 @@ public class GatewayListener {
 	 * @param gateway a {@link org.smslib.AGateway} object.
 	 * @param properties a {@link java.util.Map} object.
 	 */
-	public void addGateway(AGateway gateway, @SuppressWarnings("rawtypes") Map properties){
+	@SuppressWarnings("unchecked")
+    public void addGateway(AGateway gateway, Map properties){
 		if(m_service != null){
 			try{
 				if(m_service.getServiceStatus() == ServiceStatus.STARTED){
@@ -56,7 +57,8 @@ public class GatewayListener {
 	 * @param gateway a {@link org.smslib.AGateway} object.
 	 * @param properties a {@link java.util.Map} object.
 	 */
-	public void removeGateway(AGateway gateway, @SuppressWarnings("rawtypes") Map properties){
+	@SuppressWarnings("unchecked")
+    public void removeGateway(AGateway gateway, Map properties){
 		if(m_service != null){
 			try{
 				if(m_service.getServiceStatus() == ServiceStatus.STARTED){
@@ -78,7 +80,8 @@ public class GatewayListener {
 	 * @param arg1 a {@link java.util.Map} object.
 	 * @throws java.lang.Exception if any.
 	 */
-	public void bind(Object arg0, @SuppressWarnings("rawtypes") Map arg1) throws Exception {
+	@SuppressWarnings("unchecked")
+    public void bind(Object arg0, Map arg1) throws Exception {
 		// TODO Auto-generated method stub
 		
 	}
@@ -90,7 +93,8 @@ public class GatewayListener {
 	 * @param arg1 a {@link java.util.Map} object.
 	 * @throws java.lang.Exception if any.
 	 */
-	public void unbind(Object arg0, @SuppressWarnings("rawtypes") Map arg1) throws Exception {
+	@SuppressWarnings("unchecked")
+    public void unbind(Object arg0, Map arg1) throws Exception {
 		// TODO Auto-generated method stub
 		
 	}

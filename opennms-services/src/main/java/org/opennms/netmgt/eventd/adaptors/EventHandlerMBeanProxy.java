@@ -84,7 +84,6 @@ public class EventHandlerMBeanProxy implements EventHandler {
         
     }
 
-    @SuppressWarnings("unchecked")
     private List<MBeanServer> findMBeanServers() {
         // In java 1.5 this returns a generic ArrayList
         return MBeanServerFactory.findMBeanServer(null);

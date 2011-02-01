@@ -367,7 +367,6 @@ public class SnmpPoller extends AbstractServiceDaemon {
      *
      * @param event a {@link org.opennms.netmgt.xml.event.Event} object.
      */
-    @SuppressWarnings("deprecation")
     @EventHandler(uei = EventConstants.CONFIGURE_SNMP_EVENT_UEI)
     public void reloadSnmpConfig(Event event) {
         log().debug("reloadSnmpConfig: managing event: " + event.getUei());

@@ -56,7 +56,7 @@ package org.opennms.core.queue;
  * @author <a href="http://www.opennms.org">OpenNMS </a>
  * @version $Id: $
  */
-public interface InputFifoQueueListener {
+public interface InputFifoQueueListener<T> {
     /**
      * This method is invoked by a queue implementation when a new element is
      * added its queue. The exact instance when the method is invoked is
@@ -65,5 +65,5 @@ public interface InputFifoQueueListener {
      * @param queue
      *            The queue where the element was added.
      */
-    public void onQueueInput(NotifiableInputFifoQueue queue);
+    public void onQueueInput(NotifiableInputFifoQueue<T> queue);
 }

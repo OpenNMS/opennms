@@ -205,7 +205,6 @@ public class OpenNMSProvisionerTest {
     static class TestPollerConfigManager extends PollerConfigManager {
         String m_xml;
 
-        @SuppressWarnings("deprecation")
         public TestPollerConfigManager(String xml, String localServer, boolean verifyServer) throws MarshalException, ValidationException, IOException {
             super(new StringReader(xml), localServer, verifyServer);
             save();

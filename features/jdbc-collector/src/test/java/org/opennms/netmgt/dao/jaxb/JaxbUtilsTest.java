@@ -6,14 +6,14 @@ import java.io.IOException;
 
 import javax.xml.bind.JAXBException;
 
+import junit.framework.AssertionFailedError;
+import junit.framework.TestCase;
+
 import org.opennms.netmgt.config.jdbc.JdbcDataCollectionConfig;
 import org.opennms.test.ConfigurationTestUtils;
 import org.opennms.test.mock.MockLogAppender;
 import org.springframework.core.io.FileSystemResource;
 import org.springframework.core.io.InputStreamResource;
-
-import junit.framework.AssertionFailedError;
-import junit.framework.TestCase;
 
 public class JaxbUtilsTest extends TestCase {
     @Override
@@ -30,7 +30,6 @@ public class JaxbUtilsTest extends TestCase {
         MockLogAppender.assertNoWarningsOrGreater();
     }
     
-    @SuppressWarnings("deprecation")
     public void testUnmarshalReader() throws JAXBException, FileNotFoundException, IOException {
         JaxbUtils.unmarshal(JdbcDataCollectionConfig.class, ConfigurationTestUtils.getReaderForConfigFile("/jdbc-datacollection-config.xml"));
     }

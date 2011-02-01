@@ -30,7 +30,9 @@
 package org.opennms.netmgt.reporting.service;
 
 public class ReportRunException extends Exception {
-    public ReportRunException(String message) {
+	private static final long serialVersionUID = -2647786378451512658L;
+
+	public ReportRunException(String message) {
         super(message);
     }
 }

@@ -88,7 +88,7 @@ public class CentricAPITest extends TestCase {
     }
     
     
-    public void testCreateTicket() {
+	public void testCreateTicket() {
         
         CRMConnection crm = createConnection();
         
@@ -114,6 +114,7 @@ public class CentricAPITest extends TestCase {
         
         assertEquals(1, crm.getRecordCount());
         
+        @SuppressWarnings("unchecked")
         List<RecordLocator> results = crm.getRecords(RecordLocator.class.getName());
         
         assertEquals(1, results.size());

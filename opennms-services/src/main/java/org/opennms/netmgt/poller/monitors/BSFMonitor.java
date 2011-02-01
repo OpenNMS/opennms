@@ -30,8 +30,6 @@ import org.opennms.netmgt.poller.MonitoredService;
 public class BSFMonitor extends AbstractServiceMonitor {
     
     /** {@inheritDoc} */
-    @SuppressWarnings("unchecked")
-    
     public PollStatus poll(MonitoredService svc, Map<String,Object> map) {
         BSFManager bsfManager = new BSFManager();
         PollStatus pollStatus = PollStatus.unavailable();
