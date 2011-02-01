@@ -208,15 +208,6 @@ public class FilesystemForeignSourceRepository extends AbstractForeignSourceRepo
      * @throws org.opennms.netmgt.provision.persist.ForeignSourceRepositoryException if any.
      */
     public synchronized void save(Requisition requisition) throws ForeignSourceRepositoryException {
-        try 
-	 {
-	    throw new java.io.IOException();
-	 }
-       catch (java.io.IOException e) 
-	 {
-	    e.printStackTrace();
-	 }
-       
         if (requisition == null) {
             throw new ForeignSourceRepositoryException("can't save a null requisition!");
         }
@@ -271,16 +262,6 @@ public class FilesystemForeignSourceRepository extends AbstractForeignSourceRepo
     }
     
     private synchronized ForeignSource get(File inputFile) throws ForeignSourceRepositoryException {
-       
-        try 
-	 {
-	    throw new java.io.IOException();
-	 }
-       catch (java.io.IOException e) 
-	 {
-	    e.printStackTrace();
-	 }
-       
         try {
             Unmarshaller um = getUnmarshaller(ForeignSource.class);
             JAXBElement<ForeignSource> fs = um.unmarshal(new StreamSource(inputFile), ForeignSource.class);
@@ -291,16 +272,6 @@ public class FilesystemForeignSourceRepository extends AbstractForeignSourceRepo
     }
 
     private synchronized Requisition getRequisition(File inputFile) throws ForeignSourceRepositoryException {
-        try 
-	 {
-	    throw new java.io.IOException();
-	 }
-       catch (java.io.IOException e) 
-	 {
-	    e.printStackTrace();
-	 }
-       
-       
         try {
             Unmarshaller um = getUnmarshaller(Requisition.class);
             JAXBElement<Requisition> req = um.unmarshal(new StreamSource(inputFile), Requisition.class);

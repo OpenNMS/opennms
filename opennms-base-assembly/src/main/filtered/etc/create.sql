@@ -43,7 +43,6 @@ drop table snmpInterface cascade;
 drop table ipInterface cascade;
 drop table alarms cascade;
 drop table node cascade;
-drop table node_geolocation cascade;
 drop table service cascade;
 drop table distPoller cascade;
 drop table events cascade;
@@ -326,13 +325,6 @@ create table node (
 	constraint fk_dpName foreign key (dpName) references distPoller
 );
 
-
-create table node_geolocation (
-       nodeId               integer not null,
-       geolocationlatitude  real,
-       geolocationlongitude real
-);
-		     
 create index node_id_type_idx on node(nodeID, nodeType);
 create index node_label_idx on node(nodeLabel);
 create index node_dpname_idx on node(dpName);

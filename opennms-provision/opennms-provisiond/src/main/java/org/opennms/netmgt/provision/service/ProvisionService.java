@@ -34,7 +34,6 @@ import java.util.List;
 import java.util.Map;
 
 import org.opennms.netmgt.model.OnmsCategory;
-import org.opennms.netmgt.model.OnmsGeolocation;
 import org.opennms.netmgt.model.OnmsDistPoller;
 import org.opennms.netmgt.model.OnmsIpInterface;
 import org.opennms.netmgt.model.OnmsMonitoredService;
@@ -229,9 +228,6 @@ public interface ProvisionService {
      */
     @Transactional
     public abstract OnmsCategory createCategoryIfNecessary(String name);
-   
-    @Transactional
-    public abstract OnmsGeolocation createGeolocationIfNecessary(Double lat, Double lon);
 
     /**
      * Creates a map of foreignIds to nodeIds for all nodes that have the indicated foreignSorce.

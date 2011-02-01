@@ -59,7 +59,6 @@ import org.opennms.netmgt.dao.SnmpInterfaceDao;
 import org.opennms.netmgt.model.AbstractEntityVisitor;
 import org.opennms.netmgt.model.EntityVisitor;
 import org.opennms.netmgt.model.OnmsCategory;
-import org.opennms.netmgt.model.OnmsGeolocation;
 import org.opennms.netmgt.model.OnmsDistPoller;
 import org.opennms.netmgt.model.OnmsIpInterface;
 import org.opennms.netmgt.model.OnmsMonitoredService;
@@ -419,10 +418,6 @@ public class DefaultProvisionService implements ProvisionService {
         }
         return category;
     }
-   
-   public OnmsGeolocation createGeolocationIfNecessary(Double lat, Double lon) {
-      return new OnmsGeolocation(lat, lon);
-    }
     
     /** {@inheritDoc} */
     @Transactional(readOnly=true)
@@ -498,7 +493,7 @@ public class DefaultProvisionService implements ProvisionService {
         }
         return category;
     }
-   
+    
     private ThreadCategory log() {
         return ThreadCategory.getInstance(getClass());
     }

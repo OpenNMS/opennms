@@ -40,7 +40,6 @@ import java.net.UnknownHostException;
 
 import org.opennms.netmgt.config.modelimport.types.InterfaceSnmpPrimaryType;
 import org.opennms.netmgt.model.OnmsCategory;
-import org.opennms.netmgt.model.OnmsGeolocation;
 import org.opennms.netmgt.model.OnmsIpInterface;
 import org.opennms.netmgt.model.OnmsMonitoredService;
 import org.opennms.netmgt.model.OnmsNode;
@@ -185,27 +184,8 @@ public abstract class SaveOrUpdateOperation extends ImportOperation {
      * @param name a {@link java.lang.String} object.
      */
     public void foundCategory(String name) {
-       try {
-	  throw new java.io.IOException();
-       }
-       catch (java.io.IOException e) {
-	  e.printStackTrace();
-       }
-       
-       
-       OnmsCategory category = getProvisionService().createCategoryIfNecessary(name);
+        OnmsCategory category = getProvisionService().createCategoryIfNecessary(name);
         m_node.getCategories().add(category);
-    }
-   
-   
-    /**
-     * <p>foundGeolocation</p>
-     *
-     * @param name a {@link java.lang.String} object.
-     */
-    public void foundGeolocation(Double lat, Double lon) {
-        OnmsGeolocation geoloc = getProvisionService().createGeolocationIfNecessary(lat, lon);
-        m_node.setGeolocation(geoloc);
     }
 
     /**

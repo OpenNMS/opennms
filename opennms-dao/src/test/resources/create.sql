@@ -42,7 +42,6 @@ drop table snmpInterface cascade;
 drop table ipInterface cascade;
 drop table alarms cascade;
 drop table node cascade;
-drop table node_geolocation cascade;
 drop table service cascade;
 drop table distPoller cascade;
 drop table events cascade;
@@ -304,12 +303,6 @@ create table node (
 
 create index node_id_type_idx on node(nodeID, nodeType);
 create index node_label_idx on node(nodeLabel);
-
-create table node_geolocation2 (
-       nodeId               integer not null,
-       geolocationlatitude  real, 
-       geolocationlongitude real
-);       
 
 --#########################################################################
 --# snmpInterface Table - Augments the ipInterface table with information

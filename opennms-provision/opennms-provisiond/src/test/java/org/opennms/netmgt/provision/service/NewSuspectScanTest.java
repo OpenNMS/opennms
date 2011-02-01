@@ -67,6 +67,13 @@ import org.opennms.netmgt.dao.db.TemporaryDatabaseExecutionListener;
 import org.opennms.netmgt.model.OnmsIpInterface;
 import org.opennms.netmgt.provision.persist.ForeignSourceRepository;
 import org.opennms.netmgt.provision.persist.MockForeignSourceRepository;
+import org.opennms.netmgt.provision.persist.OnmsAssetRequisition;
+import org.opennms.netmgt.provision.persist.OnmsIpInterfaceRequisition;
+import org.opennms.netmgt.provision.persist.OnmsMonitoredServiceRequisition;
+import org.opennms.netmgt.provision.persist.OnmsNodeCategoryRequisition;
+import org.opennms.netmgt.provision.persist.OnmsNodeRequisition;
+import org.opennms.netmgt.provision.persist.OnmsServiceCategoryRequisition;
+import org.opennms.netmgt.provision.persist.RequisitionVisitor;
 import org.opennms.netmgt.provision.persist.foreignsource.ForeignSource;
 import org.opennms.test.mock.MockLogAppender;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -299,4 +306,157 @@ public class NewSuspectScanTest {
     private ServiceTypeDao getServiceTypeDao() {
         return m_serviceTypeDao;
     }
+    
+    static class CountingVisitor implements RequisitionVisitor {
+        private int m_modelImportCount;
+        private int m_modelImportCompleted;
+        private int m_nodeCount;
+        private int m_nodeCompleted;
+        private int m_nodeCategoryCount;
+        private int m_nodeCategoryCompleted;
+        private int m_ifaceCount;
+        private int m_ifaceCompleted;
+        private int m_svcCount;
+        private int m_svcCompleted;
+        private int m_svcCategoryCount;
+        private int m_svcCategoryCompleted;
+        private int m_assetCount;
+        private int m_assetCompleted;
+        
+        public int getModelImportCount() {
+            return m_modelImportCount;
+        }
+        
+        public int getModelImportCompletedCount() {
+            return m_modelImportCompleted;
+        }
+        
+        public int getNodeCount() {
+            return m_nodeCount;
+        }
+        
+        public int getNodeCompletedCount() {
+            return m_nodeCompleted;
+        }
+        
+        public int getInterfaceCount() {
+            return m_ifaceCount;
+        }
+        
+        public int getInterfaceCompletedCount() {
+            return m_ifaceCompleted;
+        }
+        
+        public int getMonitoredServiceCount() {
+            return m_svcCount;
+        }
+        
+        public int getMonitoredServiceCompletedCount() {
+            return m_svcCompleted;
+        }
+        
+        public int getNodeCategoryCount() {
+            return m_nodeCategoryCount;
+        }
+
+        public int getNodeCategoryCompletedCount() {
+            return m_nodeCategoryCompleted;
+        }
+
+        public int getServiceCategoryCount() {
+            return m_svcCategoryCount;
+        }
+
+        public int getServiceCategoryCompletedCount() {
+            return m_svcCategoryCompleted;
+        }
+
+        public int getAssetCount() {
+            return m_assetCount;
+        }
+        
+        public int getAssetCompletedCount() {
+            return m_assetCompleted;
+        }
+        
+        public void visitModelImport(Requisition req) {
+            m_modelImportCount++;
+        }
+
+        public void visitNode(OnmsNodeRequisition nodeReq) {
+            m_nodeCount++;
+            assertEquals("apknd", nodeReq.getNodeLabel());
+            assertEquals("4243", nodeReq.getForeignId());
+        }
+
+        public void visitInterface(OnmsIpInterfaceRequisition ifaceReq) {
+            m_ifaceCount++;
+        }
+
+        public void visitMonitoredService(OnmsMonitoredServiceRequisition monSvcReq) {
+            m_svcCount++;
+        }
+
+        public void visitNodeCategory(OnmsNodeCategoryRequisition catReq) {
+            m_nodeCategoryCount++;
+        }
+        
+        public void visitServiceCategory(OnmsServiceCategoryRequisition catReq) {
+            m_svcCategoryCount++;
+        }
+        
+        public void visitAsset(OnmsAssetRequisition assetReq) {
+            m_assetCount++;
+        }
+        
+        public String toString() {
+            return (new ToStringCreator(this)
+                .append("modelImportCount", getModelImportCount())
+                .append("modelImportCompletedCount", getModelImportCompletedCount())
+                .append("nodeCount", getNodeCount())
+                .append("nodeCompletedCount", getNodeCompletedCount())
+                .append("nodeCategoryCount", getNodeCategoryCount())
+                .append("nodeCategoryCompletedCount", getNodeCategoryCompletedCount())
+                .append("interfaceCount", getInterfaceCount())
+                .append("interfaceCompletedCount", getInterfaceCompletedCount())
+                .append("monitoredServiceCount", getMonitoredServiceCount())
+                .append("monitoredServiceCompletedCount", getMonitoredServiceCompletedCount())
+                .append("serviceCategoryCount", getServiceCategoryCount())
+                .append("serviceCategoryCompletedCount", getServiceCategoryCompletedCount())
+                .append("assetCount", getAssetCount())
+                .append("assetCompletedCount", getAssetCompletedCount())
+                .toString());
+        }
+
+        public void completeModelImport(Requisition req) {
+            m_modelImportCompleted++;
+        }
+
+        public void completeNode(OnmsNodeRequisition nodeReq) {
+            m_nodeCompleted++;
+        }
+
+        public void completeInterface(OnmsIpInterfaceRequisition ifaceReq) {
+            m_ifaceCompleted++;
+        }
+
+        public void completeMonitoredService(OnmsMonitoredServiceRequisition monSvcReq) {
+            m_svcCompleted++;
+        }
+
+        public void completeNodeCategory(OnmsNodeCategoryRequisition catReq) {
+            m_nodeCategoryCompleted++;
+        }
+        
+        public void completeServiceCategory(OnmsServiceCategoryRequisition catReq) {
+            m_nodeCategoryCompleted++;
+        }
+        
+        public void completeAsset(OnmsAssetRequisition assetReq) {
+            m_assetCompleted++;
+        }
+        
+    }
+    
+
 }

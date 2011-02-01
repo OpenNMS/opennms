@@ -95,7 +95,7 @@ public interface RequisitionVisitor {
      *
      * @param catReq a {@link org.opennms.netmgt.provision.persist.OnmsNodeCategoryRequisition} object.
      */
-    public void visitNodeCategory(OnmsNodeCategoryRequisition catReq);   
+    public void visitNodeCategory(OnmsNodeCategoryRequisition catReq);
     /**
      * <p>completeNodeCategory</p>
      *
@@ -126,20 +126,5 @@ public interface RequisitionVisitor {
      * @param assetReq a {@link org.opennms.netmgt.provision.persist.OnmsAssetRequisition} object.
      */
     public void completeAsset(OnmsAssetRequisition assetReq);
-   
-   
-   /**
-     * <p>visitNodeGeolocation</p>
-     *
-     * @param geoReq a {@link org.opennms.netmgt.provision.persist.OnmsNodeGeolocationRequisition} object.
-     */
-    public void visitNodeGeolocation(OnmsNodeGeolocationRequisition geoReq);   
-    /**
-     * <p>completeNodeGeolocation</p>
-     *
-     * @param geoReq a {@link org.opennms.netmgt.provision.persist.OnmsNodeGeolocationRequisition} object.
-     */
-    public void completeNodeGeolocation(OnmsNodeGeolocationRequisition geoReq);
-
 
 }

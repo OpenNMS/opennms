@@ -65,10 +65,6 @@ public class AbstractRequisitionVisitor implements RequisitionVisitor {
     /** {@inheritDoc} */
     public void completeNodeCategory(OnmsNodeCategoryRequisition catReq) {
     }
-   
-   /** {@inheritDoc} */
-    public void completeNodeGeolocation(OnmsNodeGeolocationRequisition geoReq) {
-    }
 
     /** {@inheritDoc} */
     public void completeServiceCategory(OnmsServiceCategoryRequisition catReq) {
@@ -96,10 +92,6 @@ public class AbstractRequisitionVisitor implements RequisitionVisitor {
 
     /** {@inheritDoc} */
     public void visitNodeCategory(OnmsNodeCategoryRequisition catReq) {
-    }
-   
-   /** {@inheritDoc} */
-    public void visitNodeGeolocation(OnmsNodeGeolocationRequisition geoReq) {
     }
 
     /** {@inheritDoc} */

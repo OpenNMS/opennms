@@ -57,7 +57,6 @@ public class OnmsNodeRequisition {
     private List<OnmsAssetRequisition> m_assetReqs;
     private List<OnmsIpInterfaceRequisition> m_ifaceReqs;
     private List<OnmsNodeCategoryRequisition> m_categoryReqs;
-    private OnmsNodeGeolocationRequisition m_geolocationReq;
 
     /**
      * <p>Constructor for OnmsNodeRequisition.</p>
@@ -71,7 +70,6 @@ public class OnmsNodeRequisition {
         m_assetReqs = constructAssetRequistions();
         m_ifaceReqs = constructIpInterfaceRequistions();
         m_categoryReqs = constructCategoryRequistions();
-        m_geolocationReq = constructGeolocationRequistion();
     }
     
     /* (non-Javadoc)
@@ -109,16 +107,6 @@ public class OnmsNodeRequisition {
         }
         return reqs;
     }
-   
-    private OnmsNodeGeolocationRequisition constructGeolocationRequistion() {
-       OnmsNodeGeolocationRequisition req = null;
-       
-       if (m_node.getGeolocation() != null) {
-	  req = new OnmsNodeGeolocationRequisition(m_node.getGeolocation());
-       }
-       
-       return req;
-    }
 
     /* (non-Javadoc)
      * @see org.opennms.netmgt.provision.persist.NodeRequisition#visit(org.opennms.netmgt.provision.persist.RequisitionVisitor)
@@ -139,11 +127,6 @@ public class OnmsNodeRequisition {
         for(OnmsAssetRequisition assetReq : m_assetReqs) {
             assetReq.visit(visitor);
         }
-       
-       if (m_geolocationReq != null) {
-	  m_geolocationReq.visit(visitor);
-       }     
-       
         visitor.completeNode(this);
     }
     

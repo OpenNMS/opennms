@@ -60,7 +60,6 @@ import javax.persistence.ManyToOne;
 import javax.persistence.OneToMany;
 import javax.persistence.OneToOne;
 import javax.persistence.SecondaryTable;
-import javax.persistence.SecondaryTables;
 import javax.persistence.SequenceGenerator;
 import javax.persistence.Table;
 import javax.persistence.Temporal;
@@ -94,9 +93,6 @@ import org.springframework.core.style.ToStringCreator;
 @XmlRootElement(name="node")
 @Entity()
 @Table(name="node")
-//@SecondaryTables({@SecondaryTable(name="pathOutage"),
-//		  @SecondaryTable(name="node_geolocation")
-//})         
 @SecondaryTable(name="pathOutage")
 @Filter(name=FilterManager.AUTH_FILTER_NAME, condition="exists (select distinct x.nodeid from node x join category_node cn on x.nodeid = cn.nodeid join category_group cg on cn.categoryId = cg.categoryId where x.nodeid = nodeid and cg.groupId in (:userGroups))")
 public class OnmsNode extends OnmsEntity implements Serializable,
@@ -172,8 +168,6 @@ public class OnmsNode extends OnmsEntity implements Serializable,
     private Set<OnmsArpInterface> m_arpInterfacesBySource = new LinkedHashSet<OnmsArpInterface>();
 
     private Set<OnmsCategory> m_categories = new LinkedHashSet<OnmsCategory>();
-	   
-    private OnmsGeolocation m_geolocation;
 
 	private PathElement m_pathElement;
 	
@@ -592,7 +586,7 @@ public class OnmsNode extends OnmsEntity implements Serializable,
      *
      * @return a {@link org.opennms.netmgt.model.OnmsAssetRecord} object.
      */
-    @OneToOne(mappedBy="node", cascade = CascadeType.ALL, fetch=FetchType.LAZY)	     
+    @OneToOne(mappedBy="node", cascade = CascadeType.ALL, fetch=FetchType.LAZY)
     public OnmsAssetRecord getAssetRecord() {
         return m_assetRecord;
     }
@@ -618,7 +612,7 @@ public class OnmsNode extends OnmsEntity implements Serializable,
     	@AttributeOverride(name="serviceName", column=@Column(name="criticalPathServiceName", table="pathOutage"))
     })
     public PathElement getPathElement() {
-       return m_pathElement;
+    	return m_pathElement;
     }
     
     /**
@@ -780,46 +774,7 @@ public class OnmsNode extends OnmsEntity implements Serializable,
     public boolean addCategory(OnmsCategory category) {
         return getCategories().add(category);
     }
-
-   
-    /**
-     * <p>setGeolocation</p>
-     *
-     * @param geolocation a {@link org.opennms.netmgt.model.OnmsGeolocation} object.
-     * @return void.
-     */
-    public void setGeolocation(OnmsGeolocation geoloc) {
-       try {	    
-	  throw new java.io.IOException();
-       } catch (java.io.IOException e) {
-	  e.printStackTrace();	  
-       }
-       m_geolocation = geoloc;
-       
-       if (geoloc != null) 
-	 {	    
-	    m_geolocation.setNode(this);
-	 }
-       
-    }
-
-	   
-//    @XmlTransient
-//    @Embedded
-//    @AttributeOverrides({
-//    	@AttributeOverride(name="lat", column=@Column(name="geolocationLatitude", table="node_geolocation")),
-//    	@AttributeOverride(name="lon", column=@Column(name="geolocationLongitude", table="node_geolocation"))
-//    })
- //   @XmlTransient
- //   @OneToOne(mappedBy="node")
- //   @org.hibernate.annotations.Cascade( {
- //       org.hibernate.annotations.CascadeType.ALL,
-//        org.hibernate.annotations.CascadeType.DELETE_ORPHAN })
-   @OneToOne(mappedBy="node", cascade = CascadeType.ALL, fetch=FetchType.LAZY)	     	     
-   public OnmsGeolocation getGeolocation() {
-      return m_geolocation;
-    }
-
+    
     /**
      * <p>removeCategory</p>
      *
@@ -1204,29 +1159,6 @@ public class OnmsNode extends OnmsEntity implements Serializable,
         }
     }
 
-
-    /**
-     * Truly merges the node's geolocaion
-     *
-     * @param scannedNode a {@link org.opennms.netmgt.model.OnmsNode} object.
-     */
-    public void mergeGeolocation(OnmsNode scannedNode) {
-	if (this.getGeolocation() == null) {
-	    OnmsGeolocation last_geo = scannedNode.getGeolocation();
-	    m_geolocation = new OnmsGeolocation(last_geo.getLat(), 
-						last_geo.getLon());
-	    m_geolocation.setNode(this);
-	    
-
-	    System.out.println(" ######################################### NEW GEO ################################### " +last_geo.getLat()  + ", " + last_geo.getLon() );
-
-	}
-
-	this.getGeolocation().mergeLocation(scannedNode.getGeolocation());
-    }   
-
-
-
     /**
      * Truly merges the node's assert record
      *
@@ -1234,9 +1166,8 @@ public class OnmsNode extends OnmsEntity implements Serializable,
      */
     public void mergeAssets(OnmsNode scannedNode) {
         this.getAssetRecord().mergeRecord(scannedNode.getAssetRecord());
-    }   
-
-
+    }
+    
     /**
      * Simply replaces the current asset record with the new record
      *
@@ -1266,8 +1197,6 @@ public class OnmsNode extends OnmsEntity implements Serializable,
     	mergeCategorySet(scannedNode);
     	
     	mergeAssets(scannedNode);
-
-    	mergeGeolocation(scannedNode);
     }
 
 }

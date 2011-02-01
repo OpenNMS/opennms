@@ -598,17 +598,6 @@
   </servlet>
 
   <servlet>
-    <servlet-name>getMapNodes</servlet-name>
-    <servlet-class>org.opennms.web.nodemap.MapNodeServlet</servlet-class>
-  </servlet>
-  
-  <servlet>
-    <servlet-name>getMapViewCategories</servlet-name>
-    <servlet-class>org.opennms.web.nodemap.CategoryServlet</servlet-class>
-  </servlet>
-
-
-  <servlet>
     <servlet-name>nodeRescan</servlet-name>
     <servlet-class>org.opennms.web.element.NodeRescanServlet</servlet-class>
   </servlet>
@@ -896,16 +885,6 @@
   <servlet-mapping>
     <servlet-name>sendMail</servlet-name>
     <url-pattern>/mail/send</url-pattern>
-  </servlet-mapping>
-
-  <servlet-mapping>
-    <servlet-name>getMapNodes</servlet-name>
-    <url-pattern>/nodemap/getMapNodes</url-pattern>
-  </servlet-mapping>
-  
-  <servlet-mapping>
-    <servlet-name>getMapViewCategories</servlet-name>
-    <url-pattern>/nodemap/getMapViewCategories</url-pattern>
   </servlet-mapping>
 
   <servlet-mapping>

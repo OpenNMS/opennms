@@ -39,7 +39,6 @@ import org.opennms.netmgt.provision.persist.OnmsAssetRequisition;
 import org.opennms.netmgt.provision.persist.OnmsIpInterfaceRequisition;
 import org.opennms.netmgt.provision.persist.OnmsMonitoredServiceRequisition;
 import org.opennms.netmgt.provision.persist.OnmsNodeCategoryRequisition;
-import org.opennms.netmgt.provision.persist.OnmsNodeGeolocationRequisition;
 import org.opennms.netmgt.provision.persist.OnmsNodeRequisition;
 import org.opennms.netmgt.provision.service.operations.ImportOperationsManager;
 import org.opennms.netmgt.provision.service.operations.SaveOrUpdateOperation;
@@ -98,11 +97,5 @@ public class RequisitionAccountant extends AbstractRequisitionVisitor {
     @Override
     public void visitAsset(OnmsAssetRequisition assetReq) {
         m_currentOp.foundAsset(assetReq.getName(), assetReq.getValue());
-    }
-   
-   /** {@inheritDoc} */
-    @Override
-    public void visitNodeGeolocation(OnmsNodeGeolocationRequisition geoReq) {
-        m_currentOp.foundGeolocation(geoReq.getLat(), geoReq.getLon());
     }
 }
