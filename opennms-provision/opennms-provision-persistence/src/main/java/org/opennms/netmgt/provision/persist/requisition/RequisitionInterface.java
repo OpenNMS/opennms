@@ -20,6 +20,8 @@ import javax.xml.bind.annotation.XmlRootElement;
 import javax.xml.bind.annotation.XmlTransient;
 import javax.xml.bind.annotation.XmlType;
 
+import org.opennms.core.utils.InetAddressUtils;
+
 
 /**
  * <p>RequisitionInterface class.</p>
@@ -291,7 +293,11 @@ public class RequisitionInterface implements Comparable<RequisitionInterface> {
      * @param value a {@link java.lang.String} object.
      */
     public void setIpAddr(String value) {
-        m_ipAddress = value;
+        try {
+            m_ipAddress = InetAddressUtils.toIpAddrString(InetAddressUtils.getInetAddress(value));
+        } catch (Throwable e) {
+            throw new IllegalArgumentException("Invalid IP address specified", e);
+        }
     }
 
     /**

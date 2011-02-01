@@ -39,7 +39,7 @@
     
       <!-- Form for editing an interface -->
       <tree:nodeForm>
-        <tree:field label="IP Interface" property="ipAddr" />
+        <tree:field label="IP Interface" property="ipAddr" size="36"/>
         <tree:field label="Description" property="descr" />
         
         <tree:select label="SNMP Primary" property="snmpPrimary" items="${snmpPrimaryChoices}" />
