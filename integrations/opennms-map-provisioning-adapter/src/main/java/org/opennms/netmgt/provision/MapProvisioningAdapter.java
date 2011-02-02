@@ -453,6 +453,7 @@ public class MapProvisioningAdapter extends SimpleQueuedProvisioningAdapter impl
                                    new OnmsMapElement(onmsMap,node.getId(),OnmsMapElement.NODE_HIDE_TYPE,getLabel(node.getLabel()),celement.getIcon(),0,0)
                                 );   
                             }
+                            m_onmsMapElementDao.flush();
                         }
                     } // end add nodes loop
                     
@@ -508,7 +509,8 @@ public class MapProvisioningAdapter extends SimpleQueuedProvisioningAdapter impl
                                 m_onmsMapElementDao.save(
                                    new OnmsMapElement(onmsMap,node.getId(),OnmsMapElement.NODE_HIDE_TYPE,getLabel(node.getLabel()),celement.getIcon(),0,0)
                                 );   
-                            }                            
+                            }
+                            m_onmsMapElementDao.flush();
                         }
                         // delete elements from automated map
                         for(OnmsMapElement element: elements) {
@@ -593,6 +595,7 @@ public class MapProvisioningAdapter extends SimpleQueuedProvisioningAdapter impl
                             } else {
                                 m_onmsMapElementDao.save(new OnmsMapElement(onmsMap,onmsSubMap.getId(),OnmsMapElement.MAP_HIDE_TYPE,csubmap.getLabel(),csubmap.getIcon(),0,0));                                                                        
                             }
+                            m_onmsMapElementDao.flush();
                             
                         }
                         
@@ -696,6 +699,7 @@ public class MapProvisioningAdapter extends SimpleQueuedProvisioningAdapter impl
                                 onmsMap.setLastModifiedTime(now);
     
                                 m_onmsMapDao.saveOrUpdate(onmsMap);
+                                m_onmsMapDao.flush();
                                 m_mapNameMapSizeListMap.put(cmap.getMapName(),0);
                             } else {
                                 log().debug("syncMaps: skipping not automated map: " + onmsMap.getName());
@@ -726,6 +730,7 @@ public class MapProvisioningAdapter extends SimpleQueuedProvisioningAdapter impl
                                        new OnmsMapElement(onmsMap,node.getId(),OnmsMapElement.NODE_HIDE_TYPE,getLabel(node.getLabel()),celement.getIcon(),0,0)
                                     );   
                                 }
+                                m_onmsMapElementDao.flush();
                             }
                         }
 
@@ -769,6 +774,7 @@ SUBMAP:                     for (Csubmap csubmap : submaps.get(mapName)) {
                                     }
                                     m_onmsMapElementDao.save(new OnmsMapElement(onmsMap,onmsSubMap.getId(),OnmsMapElement.MAP_HIDE_TYPE,csubmap.getLabel(),csubmap.getIcon(),0,0));                                                                        
                                 }
+                                m_onmsMapElementDao.flush();
                                 
                             }
                             

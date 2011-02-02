@@ -170,6 +170,7 @@ public class SnmpAssetProvisioningAdapter extends SimplerQueuedProvisioningAdapt
 		}
 		node.setAssetRecord(asset);
 		m_nodeDao.saveOrUpdate(node);
+		m_nodeDao.flush();
 	}
 
 	private static String fetchSnmpAssetString(SnmpAgentConfig agentConfig, MibObjs mibObjs, String formatString) throws MissingFormatArgumentException {
@@ -279,6 +280,7 @@ public class SnmpAssetProvisioningAdapter extends SimplerQueuedProvisioningAdapt
 		}
 		node.setAssetRecord(asset);
 		m_nodeDao.saveOrUpdate(node);
+		m_nodeDao.flush();
 	}
 
 	/**

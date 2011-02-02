@@ -320,6 +320,7 @@ public class DefaultNodeLinkServiceTest {
                 if(svcType == null){
                     svcType = new OnmsServiceType(serviceName);
                     m_serviceTypeDao.save(svcType);
+                    m_serviceTypeDao.flush();
                 }
                 
                 OnmsNode node = m_nodeDao.get(nodeId);
@@ -330,6 +331,7 @@ public class DefaultNodeLinkServiceTest {
                 svc.setIpInterface(ipInterface);
                 svc.setServiceType(svcType);
                 m_monitoredServiceDao.save(svc);
+                m_monitoredServiceDao.flush();
                 
                 return null;
             }
@@ -342,8 +344,9 @@ public class DefaultNodeLinkServiceTest {
     public void saveLinkState(final OnmsLinkState linkState){
         m_transactionTemplate.execute(new TransactionCallback<Object>() {
             
-            public Object doInTransaction(TransactionStatus status) {
+            public Object doInTransaction(final TransactionStatus status) {
                 m_linkStateDao.saveOrUpdate(linkState);
+                m_linkStateDao.flush();
                 return null;
             }
         });
