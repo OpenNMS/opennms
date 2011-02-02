@@ -42,7 +42,8 @@ import org.springframework.osgi.context.BundleContextAware;
  */
 public class SmsCommands implements CommandProvider, BundleContextAware
 {
-    // private String m_port;
+    // Unused?
+    private String m_port;
     private Service m_service;
     private OutboundNotification m_outboundNotification;
     private InboundNotification m_inboundNotification;
