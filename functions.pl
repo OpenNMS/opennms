@@ -87,17 +87,17 @@ $ENV{'MAVEN_OPTS'} = $MAVEN_OPTS;
 info("MAVEN_OPTS = $MAVEN_OPTS"); 
 
 sub handle_errors_and_exit {
-	my $exit = $_;
-	if ($_ == 0) {
+	my $exit = shift;
+	if ($exit == 0) {
 		info("finished successfully");
-	} elsif ($_ == -1) {
+	} elsif ($exit == -1) {
 		error("failed to execute: $!");
-	} elsif ($_ & 127) {
-		error("child died with signal " . ($_ & 127));
+	} elsif ($exit & 127) {
+		error("child died with signal " . ($exit & 127));
 	} else {
-		error("child exited with value " . ($_ >> 8));
+		error("child exited with value " . ($exit >> 8));
 	}
-	exit $_ >> 8;
+	exit ($exit >> 8);
 }
 
 sub debug {
