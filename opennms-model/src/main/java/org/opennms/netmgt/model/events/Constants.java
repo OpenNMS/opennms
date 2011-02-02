@@ -38,7 +38,6 @@
 
 package org.opennms.netmgt.model.events;
 
-import java.util.Iterator;
 import java.util.List;
 
 import org.opennms.netmgt.EventConstants;
@@ -101,11 +100,11 @@ public class Constants extends EventConstants {
      * @see #DB_ATTRIB_DELIM
      * @see #MULTIPLE_VAL_DELIM
      */
-    public static String escape(String inStr, char delimchar) {
+    public static String escape(final String inStr, final char delimchar) {
         
-        StringBuilder buf = new StringBuilder(inStr.length()+16);
+        final StringBuilder buf = new StringBuilder(inStr.length()+16);
 
-        for (char ch : inStr.toCharArray()) {
+        for (final char ch : inStr.toCharArray()) {
             if (ch == delimchar || (Character.isISOControl(ch) && !Character.isWhitespace(ch))) {
                 buf.append('%');
                 buf.append(String.valueOf((int)ch));
@@ -130,26 +129,24 @@ public class Constants extends EventConstants {
      *                Thrown if any processed item in the list is not a string
      *                object.
      */
-    public static String format(List<String> strings, int maxlen) {
+    public static String format(final List<String> strings, final int maxlen) {
         if (strings == null) {
             return null;
         }
 
-        StringBuffer buf = new StringBuffer();
+        final StringBuffer buf = new StringBuffer();
         boolean first = true;
-        Iterator<String> i = strings.iterator();
 
-        while (i.hasNext() && buf.length() < maxlen) {
-            String s = i.next();
+        for (String s : strings) {
+            if (maxlen != 0 && buf.length() >= maxlen) break;
             s = escape(s, MULTIPLE_VAL_DELIM);
-            if (!first) {
+            if (!first)
                 buf.append(MULTIPLE_VAL_DELIM);
-            }
             buf.append(s);
             first = false;
         }
 
-        if (buf.length() >= maxlen) {
+        if (maxlen != 0 && buf.length() >= maxlen) {
             buf.setLength(maxlen - 4);
             buf.append(VALUE_TRUNCATE_INDICATOR);
         }
@@ -169,15 +166,15 @@ public class Constants extends EventConstants {
      *                Thrown if any processed item in the list is not a string
      *                object.
      */
-    public static String format(String[] strings, int maxlen) {
+    public static String format(final String[] strings, final int maxlen) {
         if (strings == null || strings.length <= 0)
             return null;
 
         StringBuffer buf = new StringBuffer();
         boolean first = true;
 
-        for (int index = 0; index < strings.length && buf.length() < maxlen; index++) {
-            String s = (String) strings[index];
+        for (String s : strings) {
+            if (maxlen != 0 && buf.length() >= maxlen) break;
             s = escape(s, MULTIPLE_VAL_DELIM);
             if (!first)
                 buf.append(MULTIPLE_VAL_DELIM);
@@ -185,7 +182,7 @@ public class Constants extends EventConstants {
             first = false;
         }
 
-        if (buf.length() >= maxlen) {
+        if (maxlen != 0 && buf.length() >= maxlen) {
             buf.setLength(maxlen - 4);
             buf.append(VALUE_TRUNCATE_INDICATOR);
         }
@@ -201,14 +198,14 @@ public class Constants extends EventConstants {
      * @return The string(truncated if necessary).
      * @param origString a {@link java.lang.String} object.
      */
-    public static String format(String origString, int maxlen) {
+    public static String format(final String origString, final int maxlen) {
         if (origString == null)
             return null;
         
-        String escapedString = Constants.escape(origString, '\u0000');
+        final String escapedString = Constants.escape(origString, '\u0000');
 
-        if (escapedString.length() >= maxlen) {
-            StringBuffer buf = new StringBuffer(escapedString);
+        if (maxlen != 0 && escapedString.length() >= maxlen) {
+            final StringBuffer buf = new StringBuffer(escapedString);
 
             buf.setLength(maxlen - 4);
             buf.append(VALUE_TRUNCATE_INDICATOR);

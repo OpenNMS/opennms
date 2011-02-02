@@ -90,7 +90,8 @@ public class JdbcEventWriterTest extends PopulatedTemporaryDatabaseTestCase {
         EventBuilder bldr = new EventBuilder("testUei", "testSource");
         bldr.setLogDest("logndisplay");
         bldr.addParam("test", "testVal");
-        bldr.addParam("test2", "valWith\u0000Null\u0000");
+        final String testVal2 = "valWith\u0000Null\u0000";
+        bldr.addParam("test2", testVal2);
 
         byte[] bytes = new byte[] { 0x07, (byte)0xD7, 0x04, 0x0A, 0x01, 0x17, 0x06, 0x00, 0x2B, 0x00, 0x00 };
 
@@ -106,6 +107,8 @@ public class JdbcEventWriterTest extends PopulatedTemporaryDatabaseTestCase {
         bldr.addParam("test", b64);
 
         m_jdbcEventWriter.process(null, bldr.getEvent());
+        final String parms = jdbcTemplate.queryForObject("SELECT eventParms FROM events LIMIT 1", String.class);
+        assertEquals("test=testVal(string,text);test2=valWith%0Null%0(string,text);test3=" + snmpVal.toString() + "(string,text);test=B9cECgEXBgArAAA%61(string,text)", parms);
     }
 
     /**
@@ -119,6 +122,8 @@ public class JdbcEventWriterTest extends PopulatedTemporaryDatabaseTestCase {
         bldr.setDescription("abc\u0000def");
 
         m_jdbcEventWriter.process(null, bldr.getEvent());
+        final String descr = jdbcTemplate.queryForObject("SELECT eventDescr FROM events LIMIT 1", String.class);
+        assertEquals("abc%0def", descr);
     }
     
     public void testGetEventHostWithNullHost() throws Exception {
