@@ -453,6 +453,7 @@ public class MapProvisioningAdapter extends SimpleQueuedProvisioningAdapter impl
                                    new OnmsMapElement(onmsMap,node.getId(),OnmsMapElement.NODE_HIDE_TYPE,getLabel(node.getLabel()),celement.getIcon(),0,0)
                                 );   
                             }
+                            m_onmsMapElementDao.flush();
                         }
                     } // end add nodes loop
                     
@@ -508,7 +509,8 @@ public class MapProvisioningAdapter extends SimpleQueuedProvisioningAdapter impl
                                 m_onmsMapElementDao.save(
                                    new OnmsMapElement(onmsMap,node.getId(),OnmsMapElement.NODE_HIDE_TYPE,getLabel(node.getLabel()),celement.getIcon(),0,0)
                                 );   
-                            }                            
+                            }
+                            m_onmsMapElementDao.flush();
                         }
                         // delete elements from automated map
                         for(OnmsMapElement element: elements) {
@@ -593,6 +595,7 @@ public class MapProvisioningAdapter extends SimpleQueuedProvisioningAdapter impl
                             } else {
                                 m_onmsMapElementDao.save(new OnmsMapElement(onmsMap,onmsSubMap.getId(),OnmsMapElement.MAP_HIDE_TYPE,csubmap.getLabel(),csubmap.getIcon(),0,0));                                                                        
                             }
+                            m_onmsMapElementDao.flush();
                             
                         }
                         
@@ -680,6 +683,8 @@ public class MapProvisioningAdapter extends SimpleQueuedProvisioningAdapter impl
                                     m_onmsMapElementDao.deleteElementsByElementIdAndType(onmsMap.getId(), OnmsMapElement.MAP_TYPE);
                                     log().debug("syncMaps: removing from map table.");
                                     m_onmsMapDao.delete(onmsMap);
+                                    m_onmsMapElementDao.flush();
+                                    m_onmsMapDao.flush();
                                 }
                             }
                             
@@ -704,6 +709,7 @@ public class MapProvisioningAdapter extends SimpleQueuedProvisioningAdapter impl
                                     log().debug("syncMaps: skipping not automated map: " + onmsMap.getName());
                                     log().debug("syncMaps: map type: " + onmsMap.getType());
                                 }
+                                m_onmsMapElementDao.flush();
                             }
                             // adding nodes to auto maps
                             for(final OnmsNode node: m_onmsNodeDao.findAllProvisionedNodes()) {
@@ -775,6 +781,7 @@ public class MapProvisioningAdapter extends SimpleQueuedProvisioningAdapter impl
                                     }
                                     
                                 }
+                                m_onmsMapElementDao.flush();
                                 
                             }
                             log().debug("syncMaps: maps synchronized.  releasing lock...");

@@ -1,6 +1,7 @@
 package org.opennms.netmgt.linkd;
 
 import org.junit.Before;
+import org.junit.Ignore;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.opennms.netmgt.dao.NodeDao;
@@ -39,7 +40,8 @@ import org.springframework.test.context.transaction.TransactionalTestExecutionLi
 @JUnitTemporaryDatabase()
 public class LinkdTest {
 
-	@Autowired
+	@SuppressWarnings("unused")
+    @Autowired
 	private Linkd m_linkd;
 
 	@Autowired
@@ -62,6 +64,7 @@ public class LinkdTest {
 	}
 
 	@Test
+	@Ignore
 	//@JUnitSnmpAgent(resource = "snmpTestData.properties")
 	public void testSomething() throws Exception {
 	    // TODO: Add some functionality tests

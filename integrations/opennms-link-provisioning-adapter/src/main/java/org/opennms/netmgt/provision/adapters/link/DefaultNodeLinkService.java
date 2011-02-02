@@ -129,6 +129,8 @@ public class DefaultNodeLinkService implements NodeLinkService {
         
         m_dataLinkDao.save(dli);
         m_linkStateDao.save(onmsLinkState);
+        m_dataLinkDao.flush();
+        m_linkStateDao.flush();
     }
     
     private int getPrimaryIfIndexForNode(OnmsNode node) {

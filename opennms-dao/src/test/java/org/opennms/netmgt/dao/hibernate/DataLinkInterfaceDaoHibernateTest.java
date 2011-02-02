@@ -43,6 +43,7 @@ public class DataLinkInterfaceDaoHibernateTest extends AbstractTransactionalDaoT
         // do nothing, just test that setUp() / tearDown() works
     }
 
+    @SuppressWarnings("deprecation")
     public void testSaveDataLinkInterface() {
         // Create a new data link interface and save it.
         DataLinkInterface dli = new DataLinkInterface(2, 2, 1, 1, "?", new Date());
