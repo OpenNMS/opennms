@@ -11,6 +11,7 @@ import java.util.Map.Entry;
 import org.apache.bsf.BSFException;
 import org.apache.bsf.BSFManager;
 import org.apache.bsf.util.IOUtils;
+import org.opennms.core.utils.LogUtils;
 import org.opennms.core.utils.ParameterMap;
 import org.opennms.netmgt.model.PollStatus;
 import org.opennms.netmgt.poller.Distributable;
@@ -72,15 +73,21 @@ public class BSFMonitor extends AbstractServiceMonitor {
                     }
                    
             } else {
-                pollStatus = PollStatus.unavailable("can not locate or read file: " + fileName);
+                pollStatus = PollStatus.unavailable("Cannot locate or read BSF script file: " + fileName);
             }            
 
         } catch (BSFException e) {
-            pollStatus = PollStatus.unavailable(e.toString());
+            pollStatus = PollStatus.unavailable(e.getMessage());
+            LogUtils.warnf(this, e, "BSFMonitor poll failed: %s", e.getMessage());
         } catch (FileNotFoundException e){
-           pollStatus = PollStatus.unavailable("Could not find file: " + fileName);
+           pollStatus = PollStatus.unavailable("Could not find BSF script file: " + fileName);
         } catch (IOException e) {
-            pollStatus = PollStatus.unavailable(e.toString());
+            pollStatus = PollStatus.unavailable(e.getMessage());
+            LogUtils.warnf(this, e, "BSFMonitor poll failed: %s", e.getMessage());
+        } catch (Throwable e) {
+            // Catch any RuntimeException throws
+            pollStatus = PollStatus.unavailable(e.getMessage());
+            LogUtils.warnf(this, e, "BSFMonitor poll failed unexpectedly: %s", e.getMessage());
         } finally { 
             bsfManager.terminate();
         }
