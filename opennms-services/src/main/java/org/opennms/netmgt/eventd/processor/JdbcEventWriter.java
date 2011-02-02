@@ -225,11 +225,7 @@ public final class JdbcEventWriter extends AbstractJdbcPersister implements Even
 
             // Replace any null bytes with a space, otherwise postgres will complain about encoding in UNICODE 
             String parametersString=(event.getParms() != null) ? Parameter.format(event.getParms()) : null;
-            if (parametersString != null) {
-                parametersString=parametersString.replace((char)0, ' ');
-            }
-
-            set(insStmt, 11, parametersString);
+            set(insStmt, 11, Constants.format(parametersString, 0));
 
             // grab the ifIndex out of the parms if it is defined   
             if (event.hasIfIndex()) {
@@ -243,7 +239,7 @@ public final class JdbcEventWriter extends AbstractJdbcPersister implements Even
             insStmt.setTimestamp(12, eventCreateTime);
 
             // eventDescr
-            set(insStmt, 13, event.getDescr());
+            set(insStmt, 13, Constants.format(event.getDescr(), 0));
 
             // eventLoggroup
             set(insStmt, 14, (event.getLoggroupCount() > 0) ? Constants.format(event.getLoggroup(), EVENT_LOGGRP_FIELD_SIZE) : null);
