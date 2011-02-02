@@ -78,28 +78,6 @@ import com.google.common.collect.TreeMultimap;
  * @author <a href="mailto:cmiskell@opennms.org">Craig Miskell</a>
  * @author <a href="mailto:agalue@opennms.org">Alejandro Galue</a>
  * @author <a href="mailto:tarus@opennms.org">Tarus Balog</a>
- * @author <a href="mailto:dj@opennms.org">DJ Gregor</a>
- * @author <a href="mailto:jeffg@opennms.org">Jeff Gehlbach</a>
- * @author <a href="mailto:cmiskell@opennms.org">Craig Miskell</a>
- * @author <a href="mailto:agalue@opennms.org">Alejandro Galue</a>
- * @author <a href="mailto:tarus@opennms.org">Tarus Balog</a>
- * @author <a href="mailto:dj@opennms.org">DJ Gregor</a>
- * @author <a href="mailto:jeffg@opennms.org">Jeff Gehlbach</a>
- * @author <a href="mailto:cmiskell@opennms.org">Craig Miskell</a>
- * @author <a href="mailto:agalue@opennms.org">Alejandro Galue</a>
- * @author <a href="mailto:tarus@opennms.org">Tarus Balog</a>
- * @author <a href="mailto:dj@opennms.org">DJ Gregor</a>
- * @author <a href="mailto:jeffg@opennms.org">Jeff Gehlbach</a>
- * @author <a href="mailto:cmiskell@opennms.org">Craig Miskell</a>
- * @author <a href="mailto:agalue@opennms.org">Alejandro Galue</a>
- * @author <a href="mailto:tarus@opennms.org">Tarus Balog</a>
- * @author <a href="mailto:dj@opennms.org">DJ Gregor</a>
- * @author <a href="mailto:jeffg@opennms.org">Jeff Gehlbach</a>
- * @author <a href="mailto:cmiskell@opennms.org">Craig Miskell</a>
- * @author <a href="mailto:agalue@opennms.org">Alejandro Galue</a>
- * @author <a href="mailto:tarus@opennms.org">Tarus Balog</a>
- * @version $Id: $
- * @since 1.8.1
  */
 public class ThresholdController extends AbstractController implements InitializingBean {
 

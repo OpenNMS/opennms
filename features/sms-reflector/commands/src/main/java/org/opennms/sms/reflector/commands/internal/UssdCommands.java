@@ -14,7 +14,7 @@ import org.smslib.USSDRequest;
 public class UssdCommands implements CommandProvider
 {
     private SmsService m_service;
-    private USSDNotification m_ussdNotification;
+    // private USSDNotification m_ussdNotification;
     
     /**
      * <p>setService</p>
