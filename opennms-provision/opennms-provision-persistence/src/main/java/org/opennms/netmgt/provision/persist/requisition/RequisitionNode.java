@@ -141,7 +141,7 @@ public class RequisitionNode {
      */
     public void putInterface(RequisitionInterface iface) {
         m_interfaces.remove(iface);
-        m_interfaces.add(iface);
+        m_interfaces.add(0, iface);
     }
 
     /**
@@ -236,7 +236,7 @@ public class RequisitionNode {
      */
     public void putCategory(RequisitionCategory category) {
         m_categories.remove(category);
-        m_categories.add(category);
+        m_categories.add(0, category);
     }
 
     /**
@@ -320,7 +320,7 @@ public class RequisitionNode {
      */
     public void putAsset(RequisitionAsset asset) {
         m_assets.remove(asset);
-        m_assets.add(asset);
+        m_assets.add(0, asset);
     }
 
     /**
