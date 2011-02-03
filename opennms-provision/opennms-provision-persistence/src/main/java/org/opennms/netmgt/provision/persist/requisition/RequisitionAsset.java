@@ -83,6 +83,13 @@ public class RequisitionAsset implements Comparable<RequisitionAsset> {
     public void setValue(String value) {
         m_value = value;
     }
+    
+    @Override
+    public boolean equals(Object o) {
+        if (o instanceof RequisitionAsset) {
+            return this.compareTo((RequisitionAsset)o) == 0;
+        } else return false;
+    }
 
     public int compareTo(RequisitionAsset o) {
         return m_name.compareTo(o.getName());

@@ -115,14 +115,7 @@ public class RequisitionNode {
      * @param iface a {@link org.opennms.netmgt.provision.persist.requisition.RequisitionInterface} object.
      */
     public void deleteInterface(RequisitionInterface iface) {
-        Iterator<RequisitionInterface> i = m_interfaces.iterator();
-        while (i.hasNext()) {
-            RequisitionInterface ri = i.next();
-            if (ri.getIpAddr().equals(iface.getIpAddr())) {
-                i.remove();
-                break;
-            }
-        }
+        m_interfaces.remove(iface);
     }
 
     /**
@@ -147,13 +140,7 @@ public class RequisitionNode {
      * @param iface a {@link org.opennms.netmgt.provision.persist.requisition.RequisitionInterface} object.
      */
     public void putInterface(RequisitionInterface iface) {
-        Iterator<RequisitionInterface> iterator = m_interfaces.iterator();
-        while (iterator.hasNext()) {
-            RequisitionInterface existingIface = iterator.next();
-            if (existingIface.getIpAddr().equals(iface.getIpAddr())) {
-                iterator.remove();
-            }
-        }
+        m_interfaces.remove(iface);
         m_interfaces.add(iface);
     }
 
@@ -221,14 +208,7 @@ public class RequisitionNode {
      * @param category a {@link org.opennms.netmgt.provision.persist.requisition.RequisitionCategory} object.
      */
     public void deleteCategory(RequisitionCategory category) {
-        Iterator<RequisitionCategory> i = m_categories.iterator();
-        while (i.hasNext()) {
-            RequisitionCategory cat = i.next();
-            if (cat.getName().equals(category.getName())) {
-                i.remove();
-                break;
-            }
-        }
+        m_categories.remove(category);
     }
 
     /**
@@ -250,33 +230,12 @@ public class RequisitionNode {
     }
 
     /**
-     * <p>insertCategory</p>
-     *
-     * @param category a {@link org.opennms.netmgt.provision.persist.requisition.RequisitionCategory} object.
-     */
-    public void insertCategory(RequisitionCategory category) {
-        Iterator<RequisitionCategory> iterator = m_categories.iterator();
-        while (iterator.hasNext()) {
-            RequisitionCategory existing = iterator.next();
-            if (existing.getName().equals(category.getName())) {
-                iterator.remove();
-            }
-        }
-    }
-
-    /**
      * <p>putCategory</p>
      *
      * @param category a {@link org.opennms.netmgt.provision.persist.requisition.RequisitionCategory} object.
      */
     public void putCategory(RequisitionCategory category) {
-        Iterator<RequisitionCategory> iterator = m_categories.iterator();
-        while (iterator.hasNext()) {
-            RequisitionCategory existing = iterator.next();
-            if (existing.getName().equals(category.getName())) {
-                iterator.remove();
-            }
-        }
+        m_categories.remove(category);
         m_categories.add(category);
     }
 
@@ -360,13 +319,7 @@ public class RequisitionNode {
      * @param asset a {@link org.opennms.netmgt.provision.persist.requisition.RequisitionAsset} object.
      */
     public void putAsset(RequisitionAsset asset) {
-        Iterator<RequisitionAsset> iterator = m_assets.iterator();
-        while (iterator.hasNext()) {
-            RequisitionAsset existing = iterator.next();
-            if (existing.getName().equals(asset.getName())) {
-                iterator.remove();
-            }
-        }
+        m_assets.remove(asset);
         m_assets.add(asset);
     }
 

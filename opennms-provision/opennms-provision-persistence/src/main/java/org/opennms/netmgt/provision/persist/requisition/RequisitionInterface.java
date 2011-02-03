@@ -362,6 +362,13 @@ public class RequisitionInterface implements Comparable<RequisitionInterface> {
         m_status = value;
     }
 
+    @Override
+    public boolean equals(Object o) {
+        if (o instanceof RequisitionInterface) {
+            return this.compareTo((RequisitionInterface)o) == 0;
+        } else return false;
+    }
+
     public int compareTo(RequisitionInterface o) {
         return this.m_ipAddress.compareTo(o.getIpAddr());
     }

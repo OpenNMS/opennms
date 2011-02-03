@@ -61,6 +61,13 @@ public class RequisitionCategory implements Comparable<RequisitionCategory> {
         m_name = value;
     }
 
+    @Override
+    public boolean equals(Object o) {
+        if (o instanceof RequisitionCategory) {
+            return this.compareTo((RequisitionCategory)o) == 0;
+        } else return false;
+    }
+
     public int compareTo(RequisitionCategory o) {
         return m_name.compareTo(o.getName());
     }
