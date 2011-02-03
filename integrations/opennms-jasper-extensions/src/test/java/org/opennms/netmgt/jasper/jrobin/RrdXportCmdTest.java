@@ -31,7 +31,7 @@ public class RrdXportCmdTest {
     
     @Test
     public void testColonSplitter() throws RrdException {
-        String[] splitter = new ColonSplitter("DEF:xx=C\\\\:\\jrbs\\http-8980.jrb:http-8980:AVERAGE").split();
+        String[] splitter = new ColonSplitter("DEF:xx=C\\:\\jrbs\\http-8980.jrb:http-8980:AVERAGE").split();
         assertEquals(4, splitter.length);
     }
 }
