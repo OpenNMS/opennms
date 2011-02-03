@@ -86,6 +86,7 @@ public class DefaultReportStoreServiceTest {
         
         ReportCatalogEntry reportCatalogEntry = new ReportCatalogEntry();
         m_reportCatalogDao.save(reportCatalogEntry);
+        m_reportCatalogDao.flush();
         replay(m_reportCatalogDao);
         
         m_reportStoreService.save(reportCatalogEntry);
