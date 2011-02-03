@@ -87,6 +87,17 @@
         </configuration>
         <dependencies>
           <dependency>
+            <groupId>net.sf.jasperreports</groupId>
+            <artifactId>jasperreports</artifactId>
+            <version>${jasperreportsVersion}</version>
+            <exclusions>
+              <exclusion>
+                <groupId>eclipse</groupId>
+                <artifactId>jdtcore</artifactId>
+              </exclusion>
+            </exclusions>
+          </dependency>
+          <dependency>
             <groupId>xerces</groupId>
             <artifactId>xercesImpl</artifactId>
             <version>${xercesVersion}</version>

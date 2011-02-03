@@ -681,6 +681,7 @@
    <gmavenVersion>1.0</gmavenVersion>
    <jettyVersion>6.1.24</jettyVersion>
    <jettyServletVersion>6.1.14</jettyServletVersion>
+   <jasperreportsVersion>3.7.6</jasperreportsVersion>
   </properties>
 
   <profiles>

@@ -11,9 +11,9 @@
   <name>OpenNMS Jasper Report Dependencies</name>
   <dependencies>
     <dependency>
-      <groupId>jasperreports</groupId>
+      <groupId>net.sf.jasperreports</groupId>
       <artifactId>jasperreports</artifactId>
-      <version>3.7.6</version>
+      <version>${jasperreportsVersion}</version>
       <exclusions>
         <exclusion>
           <groupId>eclipse</groupId>
@@ -58,13 +58,4 @@
         <scope>runtime</scope>
       </dependency>
   </dependencies>
-  <repositories>
-    <repository>
-      <snapshots><enabled>false</enabled><updatePolicy>${updatePolicy}</updatePolicy></snapshots>
-      <releases><enabled>true</enabled><updatePolicy>${updatePolicy}</updatePolicy></releases>
-      <id>opennms-repo</id>
-      <name>OpenNMS Maven Repository</name>
-      <url>http://maven.opennms.org/content/groups/opennms.org-release</url>
-    </repository>
-  </repositories>
 </project>
