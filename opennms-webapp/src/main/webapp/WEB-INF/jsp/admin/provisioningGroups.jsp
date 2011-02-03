@@ -41,7 +41,7 @@
   <span style="font-size: large; text-align: right">
     <c:choose>
       <c:when test="${dbNodeCounts[foreignSourceName] > 0}">
-        <input type="button" value="Delete Nodes" onclick="javascript:confirmAction(<js:quote value="${foreignSourceName}"/>}, 'deleteNodes', "Are you sure you want to delete all the nodes from group ${fn:escapeXml(foreignSourceName)}? This CANNOT be undone.")" />
+        <input type="button" value="Delete Nodes" onclick="javascript:confirmAction(<js:quote value="${foreignSourceName}"/>, 'deleteNodes', <js:quote value="Are you sure you want to delete all the nodes from group ${fn:escapeXml(foreignSourceName)}? This CANNOT be undone."/>)" />
       </c:when>
       <c:otherwise>
         <input type="button" value="Delete Group" onclick="javascript:doAction(<js:quote value="${foreignSourceName}"/>, 'deleteGroup')" />
