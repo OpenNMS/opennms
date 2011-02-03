@@ -198,12 +198,13 @@
       </c:when>
       
       <c:otherwise>
-      	<script type="text/javascript">
+      	<%-- <script type="text/javascript">
 	      	Ext.onReady(function(){
 	  	      customResourceViewInit("resource-grid", data, "blah");
 	  	 	});
       	</script>
-      	<div id="resource-grid"></div>
+      	<div id="resource-grid"></div> --%>
+      	<div id="opennms:chooseResource" style="left: 20px;"></div>
         <%-- <form method="get" name="report" action="KSC/customGraphChooseResource.htm" >
           <input type="hidden" name="selectedResourceId" value="${param.selectedResourceId}"/>
           <select name="resourceId" size="10">

@@ -1,0 +1,26 @@
+<!DOCTYPE ui:UiBinder SYSTEM "http://dl.google.com/gwt/DTD/xhtml.ent">
+<ui:UiBinder xmlns:ui="urn:ui:com.google.gwt.uibinder"
+	xmlns:g="urn:import:com.google.gwt.user.client.ui">
+	<ui:style>
+		.m_hPanel{
+		  border: none;
+		}
+		
+		.m_vPanel{
+		  border: none;
+		  width: 100%;
+		  border-style: none;
+		}
+	</ui:style>
+	<g:HTMLPanel>
+	   <g:VerticalPanel ui:field="m_vPanel" styleName="{style.m_vPanel}">
+	       <g:FlowPanel ui:field="m_cellTableHolder">
+	       </g:FlowPanel>
+	       <g:HorizontalPanel ui:field="m_hPanel" styleName="{style.m_hPanel}">
+	           <g:Button ui:field="m_searchBtn">Search</g:Button>
+	       </g:HorizontalPanel>
+	       <g:Button ui:field="m_chooseChildResourceBtn">Choose Child Resource</g:Button>
+           <g:Button ui:field="m_viewChildResourceBtn">View Child Resource</g:Button>
+	   </g:VerticalPanel>
+	</g:HTMLPanel>
+</ui:UiBinder> 
