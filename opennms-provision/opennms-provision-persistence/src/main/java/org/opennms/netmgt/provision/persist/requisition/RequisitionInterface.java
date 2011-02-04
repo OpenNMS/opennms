@@ -117,21 +117,12 @@ public class RequisitionInterface implements Comparable<RequisitionInterface> {
     }
 
     /**
-     * <p>removeMonitoredService</p>
+     * <p>deleteMonitoredService</p>
      *
      * @param service a {@link org.opennms.netmgt.provision.persist.requisition.RequisitionMonitoredService} object.
      */
-    public void removeMonitoredService(RequisitionMonitoredService service) {
-        if (m_monitoredServices != null) {
-            Iterator<RequisitionMonitoredService> i = m_monitoredServices.iterator();
-            while (i.hasNext()) {
-                RequisitionMonitoredService svc = i.next();
-                if (svc.getServiceName().equals(service.getServiceName())) {
-                    i.remove();
-                    break;
-                }
-            }
-        }
+    public void deleteMonitoredService(RequisitionMonitoredService service) {
+        m_monitoredServices.remove(service);
     }
 
     /**
@@ -224,23 +215,14 @@ public class RequisitionInterface implements Comparable<RequisitionInterface> {
     }
 
     /**
-     * <p>removeCategory</p>
+     * <p>deleteCategory</p>
      *
      * @param category a {@link org.opennms.netmgt.provision.persist.requisition.RequisitionCategory} object.
      */
-    public void removeCategory(RequisitionCategory category) {
-        if (m_categories != null) {
-            Iterator<RequisitionCategory> i = m_categories.iterator();
-            while (i.hasNext()) {
-                RequisitionCategory cat = i.next();
-                if (cat.getName().equals(category.getName())) {
-                    i.remove();
-                    break;
-                }
-            }
-        }
+    public void deleteCategory(RequisitionCategory category) {
+        m_categories.remove(category);
     }
-    
+
     /**
      * <p>deleteCategory</p>
      *

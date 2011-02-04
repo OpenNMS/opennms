@@ -394,7 +394,7 @@ public class DefaultManualProvisioningService implements ManualProvisioningServi
             
             final String propName = path.getPropertyName();
             final String methodSuffix = Character.toUpperCase(propName.charAt(0))+propName.substring(1);
-            final String methodName = "remove"+methodSuffix;
+            final String methodName = "delete"+methodSuffix;
     
             try {
                 MethodUtils.invokeMethod(parentObject, methodName, new Object[] { objToDelete });
