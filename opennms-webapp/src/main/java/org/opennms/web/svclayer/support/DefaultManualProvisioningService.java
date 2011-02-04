@@ -143,9 +143,11 @@ public class DefaultManualProvisioningService implements ManualProvisioningServi
         
         RequisitionNode node = BeanUtils.getPathValue(group, pathToNode, RequisitionNode.class);
         
+        int catCount = node.getCategoryCount();
         RequisitionCategory category = new RequisitionCategory();
         category.setName(categoryName);
         node.putCategory(category);
+        // Assert.isTrue(node.getCategoryCount() == (catCount + 1), "Category was not added correctly");
 
         m_pendingForeignSourceRepository.save(group);
 
@@ -157,10 +159,12 @@ public class DefaultManualProvisioningService implements ManualProvisioningServi
         Requisition group = getProvisioningGroup(groupName);
         RequisitionNode node = BeanUtils.getPathValue(group, pathToNode, RequisitionNode.class);
 
+        int assetCount = node.getAssetCount();
         RequisitionAsset asset = new RequisitionAsset();
         asset.setName(assetName);
         asset.setValue(assetValue);
         node.putAsset(asset);
+        // Assert.isTrue(node.getCategoryCount() == (assetCount + 1), "Asset was not added correctly");
 
         m_pendingForeignSourceRepository.save(group);
         return m_pendingForeignSourceRepository.getRequisition(groupName);
@@ -178,8 +182,10 @@ public class DefaultManualProvisioningService implements ManualProvisioningServi
             snmpPrimary = "S";
         }
 
+        int ifaceCount = node.getInterfaceCount();
         RequisitionInterface iface = createInterface(ipAddr, snmpPrimary);
         node.putInterface(iface);
+        // Assert.isTrue(node.getInterfaceCount() == (ifaceCount + 1), "Interface was not added correctly");
 
         m_pendingForeignSourceRepository.save(group);
         return m_pendingForeignSourceRepository.getRequisition(groupName);
@@ -307,7 +313,7 @@ public class DefaultManualProvisioningService implements ManualProvisioningServi
         
         String propName = path.getPropertyName();
         String methodSuffix = Character.toUpperCase(propName.charAt(0))+propName.substring(1);
-        String methodName = "remove"+methodSuffix;
+        String methodName = "delete"+methodSuffix;
 
         try {
             MethodUtils.invokeMethod(parentObject, methodName, new Object[] { objToDelete });

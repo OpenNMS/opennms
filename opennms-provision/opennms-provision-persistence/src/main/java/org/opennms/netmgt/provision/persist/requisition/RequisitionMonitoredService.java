@@ -30,7 +30,7 @@ import javax.xml.bind.annotation.XmlType;
 @XmlAccessorType(XmlAccessType.FIELD)
 @XmlType(name="", propOrder = { "m_categories" })
 @XmlRootElement(name="monitored-service")
-public class RequisitionMonitoredService {
+public class RequisitionMonitoredService implements Comparable<RequisitionMonitoredService> {
 
     @XmlElement(name="category")
     protected List<RequisitionCategory> m_categories = new ArrayList<RequisitionCategory>();;
@@ -165,4 +165,14 @@ public class RequisitionMonitoredService {
         m_serviceName = value;
     }
 
+    @Override
+    public boolean equals(Object o) {
+        if (o instanceof RequisitionMonitoredService) {
+            return this.compareTo((RequisitionMonitoredService)o) == 0;
+        } else return false;
+    }
+
+    public int compareTo(RequisitionMonitoredService o) {
+        return this.m_serviceName.compareTo(o.getServiceName());
+    }
 }
