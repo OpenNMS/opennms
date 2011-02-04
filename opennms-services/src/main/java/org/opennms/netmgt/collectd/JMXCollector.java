@@ -200,7 +200,7 @@ public abstract class JMXCollector implements ServiceCollector {
         try {
         	// XXX was reload(), which isn't test-friendly
             JMXDataCollectionConfigFactory.init();
-        } catch (Exception e) {
+        } catch (Throwable e) {
             LogUtils.errorf(this, e, "initialize: Failed to load data collection configuration");
             throw new UndeclaredThrowableException(e);
         }

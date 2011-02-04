@@ -204,7 +204,7 @@ public class AddNodesController extends AbstractController {
 	
 				bw.write(ResponseAssembler.getAddElementResponse(null, velems, map.getLinks()));
 			}
-		} catch (Exception e) {
+		} catch (Throwable e) {
 			log.error("Error while adding nodes for action: "+action,e);
 			bw.write(ResponseAssembler.getMapErrorResponse(action));
 		} finally {

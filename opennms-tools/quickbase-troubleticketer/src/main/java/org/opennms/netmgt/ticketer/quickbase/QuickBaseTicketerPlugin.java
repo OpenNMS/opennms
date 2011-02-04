@@ -96,7 +96,7 @@ public class QuickBaseTicketerPlugin implements Plugin {
 	        
 	        return ticket;
         
-	    } catch (Exception e) {
+	    } catch (Throwable e) {
 	        throw new DataRetrievalFailureException("Failed to commit QuickBase transaction: "+e.getMessage(), e);
 	    }
     
@@ -166,7 +166,7 @@ public class QuickBaseTicketerPlugin implements Plugin {
 
 	       }
 	       
-	    } catch (Exception e) {
+	    } catch (Throwable e) {
             throw new DataRetrievalFailureException("Failed to commit QuickBase transaction: "+e.getMessage(), e);
 	    }
 	        

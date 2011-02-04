@@ -66,7 +66,7 @@ public class AddNewGroupServlet extends HttpServlet {
     public void doPost(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
     	try {
     		GroupFactory.init();
-    	} catch (Exception e) {
+    	} catch (Throwable e) {
     		throw new ServletException("AddNewGroupServlet: Error initialising group factory." + e);
     	}
     	GroupManager groupFactory = GroupFactory.getInstance();
@@ -80,7 +80,7 @@ public class AddNewGroupServlet extends HttpServlet {
         boolean hasGroup = false;
         try {
         	hasGroup = groupFactory.hasGroup(groupName);
-        } catch (Exception e) {
+        } catch (Throwable e) {
         	throw new ServletException("Can't determine if group " + groupName + " already exists in groups.xml.", e);
         }
         

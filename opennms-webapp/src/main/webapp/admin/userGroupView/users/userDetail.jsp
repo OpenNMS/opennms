@@ -61,7 +61,7 @@
 	try {
 		UserFactory.init();
       		user = userFactory.getUser(userID);
-  	} catch (Exception e) {
+  	} catch (Throwable e) {
       		throw new ServletException("Could not find user " + userID + " in user factory.", e);
   	}
 

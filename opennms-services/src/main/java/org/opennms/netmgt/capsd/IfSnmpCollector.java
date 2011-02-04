@@ -346,7 +346,7 @@ public final class IfSnmpCollector implements Runnable {
                 log().debug("getInterfaceSpeed:  Using ifSpeed for ifIndex "+ifIndex+": "+ ifSpeed);
             }
             
-        } catch(Exception e) {
+        } catch(Throwable e) {
             log().warn("getInterfaceSpeed: exception retrieving interface speed for ifIndex " + ifIndex);
         }
         return ifSpeed;

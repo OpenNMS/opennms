@@ -65,7 +65,7 @@ public class GroupManagerGroupDao implements GroupDao, InitializingBean {
     public void deleteGroup(String name) {
         try {
             m_groupManager.deleteGroup(name);
-        } catch (Exception e) {
+        } catch (Throwable e) {
             throw CASTOR_EXCEPTION_TRANSLATOR.translate("deleting group '" + name + "'", e);
         }
     }
@@ -74,7 +74,7 @@ public class GroupManagerGroupDao implements GroupDao, InitializingBean {
     public void deleteRole(String name) {
         try {
             m_groupManager.deleteRole(name);
-        } catch (Exception e) {
+        } catch (Throwable e) {
             throw CASTOR_EXCEPTION_TRANSLATOR.translate("deleting role '" + name + "'", e);
         }
     }
@@ -83,7 +83,7 @@ public class GroupManagerGroupDao implements GroupDao, InitializingBean {
     public void deleteUser(String name) {
         try {
             m_groupManager.deleteUser(name);
-        } catch (Exception e) {
+        } catch (Throwable e) {
             throw CASTOR_EXCEPTION_TRANSLATOR.translate("deleting user '" + name + "'", e);
         }
     }
@@ -97,7 +97,7 @@ public class GroupManagerGroupDao implements GroupDao, InitializingBean {
     public Group getGroup(String name) {
         try {
             return m_groupManager.getGroup(name);
-        } catch (Exception e) {
+        } catch (Throwable e) {
             throw CASTOR_EXCEPTION_TRANSLATOR.translate("getting group '" + name + "'", e);
         }
     }
@@ -110,7 +110,7 @@ public class GroupManagerGroupDao implements GroupDao, InitializingBean {
     public List<String> getGroupNames() {
         try {
             return m_groupManager.getGroupNames();
-        } catch (Exception e) {
+        } catch (Throwable e) {
             throw CASTOR_EXCEPTION_TRANSLATOR.translate("getting group names", e);
         }
     }
@@ -123,7 +123,7 @@ public class GroupManagerGroupDao implements GroupDao, InitializingBean {
     public Map<String, Group> getGroups() {
         try {
             return m_groupManager.getGroups();
-        } catch (Exception e) {
+        } catch (Throwable e) {
             throw CASTOR_EXCEPTION_TRANSLATOR.translate("getting groups", e);
         }
     }
@@ -132,7 +132,7 @@ public class GroupManagerGroupDao implements GroupDao, InitializingBean {
     public Role getRole(String name) {
         try {
             return m_groupManager.getRole(name);
-        } catch (Exception e) {
+        } catch (Throwable e) {
             throw CASTOR_EXCEPTION_TRANSLATOR.translate("getting role '" + name + "'", e);
         }
     }
@@ -150,7 +150,7 @@ public class GroupManagerGroupDao implements GroupDao, InitializingBean {
     public OwnedIntervalSequence getRoleScheduleEntries(String role, Date start, Date end) {
         try {
             return m_groupManager.getRoleScheduleEntries(role, start, end);
-        } catch (Exception e) {
+        } catch (Throwable e) {
             throw CASTOR_EXCEPTION_TRANSLATOR.translate("getting scheduled entries for role '" + role + "' between " + start + " and " + end, e);
         }
     }
@@ -163,7 +163,7 @@ public class GroupManagerGroupDao implements GroupDao, InitializingBean {
     public Collection<Role> getRoles() {
         try {
             return m_groupManager.getRoles();
-        } catch (Exception e) {
+        } catch (Throwable e) {
             throw CASTOR_EXCEPTION_TRANSLATOR.translate("getting roles", e);
         }
     }
@@ -172,7 +172,7 @@ public class GroupManagerGroupDao implements GroupDao, InitializingBean {
     public List<Schedule> getSchedulesForRoleAt(String role, Date time) {
         try {
             return m_groupManager.getSchedulesForRoleAt(role, time);
-        } catch (Exception e) {
+        } catch (Throwable e) {
             throw CASTOR_EXCEPTION_TRANSLATOR.translate("getting schedules for role '" + role + "' at " + time, e);
         }
     }
@@ -181,7 +181,7 @@ public class GroupManagerGroupDao implements GroupDao, InitializingBean {
     public List<Schedule> getUserSchedulesForRole(String user, String role) {
         try {
             return m_groupManager.getUserSchedulesForRole(user, role);
-        } catch (Exception e) {
+        } catch (Throwable e) {
             throw CASTOR_EXCEPTION_TRANSLATOR.translate("getting user schedules for user '" + user + "' for role '" + role + "'", e);
         }
     }
@@ -190,7 +190,7 @@ public class GroupManagerGroupDao implements GroupDao, InitializingBean {
     public long groupNextOnDuty(String group, Calendar time) {
         try {
             return m_groupManager.groupNextOnDuty(group, time);
-        } catch (Exception e) {
+        } catch (Throwable e) {
             throw CASTOR_EXCEPTION_TRANSLATOR.translate("getting next on duty time for group '" + group + "' after " + time, e);
         }
     }
@@ -199,7 +199,7 @@ public class GroupManagerGroupDao implements GroupDao, InitializingBean {
     public boolean hasGroup(String name) {
         try {
             return m_groupManager.hasGroup(name);
-        } catch (Exception e) {
+        } catch (Throwable e) {
             throw CASTOR_EXCEPTION_TRANSLATOR.translate("getting group '" + name + "'", e);
         }
     }
@@ -208,7 +208,7 @@ public class GroupManagerGroupDao implements GroupDao, InitializingBean {
     public boolean isGroupOnDuty(String group, Calendar time) {
         try {
             return m_groupManager.isGroupOnDuty(group, time);
-        } catch (Exception e) {
+        } catch (Throwable e) {
             throw CASTOR_EXCEPTION_TRANSLATOR.translate("getting group '" + group + "' to see if it is on duty at " + time, e);
         }
     }
@@ -217,7 +217,7 @@ public class GroupManagerGroupDao implements GroupDao, InitializingBean {
     public boolean isUserScheduledForRole(String user, String role, Date time) {
         try {
             return m_groupManager.isUserScheduledForRole(user, role, time);
-        } catch (Exception e) {
+        } catch (Throwable e) {
             throw CASTOR_EXCEPTION_TRANSLATOR.translate("checking to see if user '" + user + "' is schedule for role '" + role + "' at " + time, e);
         }
     }
@@ -226,7 +226,7 @@ public class GroupManagerGroupDao implements GroupDao, InitializingBean {
     public void renameGroup(String oldName, String newName) {
         try {
             m_groupManager.renameGroup(oldName, newName);
-        } catch (Exception e) {
+        } catch (Throwable e) {
             throw CASTOR_EXCEPTION_TRANSLATOR.translate("renaming group from '" + oldName + "' to '" + newName + "'", e);
         }
     }
@@ -235,7 +235,7 @@ public class GroupManagerGroupDao implements GroupDao, InitializingBean {
     public void renameUser(String oldName, String newName) {
         try {
             m_groupManager.renameUser(oldName, newName);
-        } catch (Exception e) {
+        } catch (Throwable e) {
             throw CASTOR_EXCEPTION_TRANSLATOR.translate("renaming user from '" + oldName + "' to '" + newName + "'", e);
         }
     }
@@ -244,7 +244,7 @@ public class GroupManagerGroupDao implements GroupDao, InitializingBean {
     public void saveGroup(String name, Group details) {
         try {
             m_groupManager.saveGroup(name, details);
-        } catch (Exception e) {
+        } catch (Throwable e) {
             throw CASTOR_EXCEPTION_TRANSLATOR.translate("saving group '" + name + "' with details " + details, e);
         }
     }
@@ -255,7 +255,7 @@ public class GroupManagerGroupDao implements GroupDao, InitializingBean {
     public void saveGroups() {
         try {
             m_groupManager.saveGroups();
-        } catch (Exception e) {
+        } catch (Throwable e) {
             throw CASTOR_EXCEPTION_TRANSLATOR.translate("saving groups", e);
         }
     }
@@ -264,7 +264,7 @@ public class GroupManagerGroupDao implements GroupDao, InitializingBean {
     public void saveRole(Role name) {
         try {
             m_groupManager.saveRole(name);
-        } catch (Exception e) {
+        } catch (Throwable e) {
             throw CASTOR_EXCEPTION_TRANSLATOR.translate("saving role '" + name + "'", e);
         }
     }
@@ -278,7 +278,7 @@ public class GroupManagerGroupDao implements GroupDao, InitializingBean {
     public boolean userHasRole(String user, String role) {
         try {
             return m_groupManager.userHasRole(user, role);
-        } catch (Exception e) {
+        } catch (Throwable e) {
             throw CASTOR_EXCEPTION_TRANSLATOR.translate("checking to see if user '" + user + "' has role '" + role + "'", e);
         }
     }
@@ -309,7 +309,7 @@ public class GroupManagerGroupDao implements GroupDao, InitializingBean {
     }
     
     public static class GroupManagerCastorExceptionTranslator extends CastorExceptionTranslator {
-        public DataAccessException translate(String task, Exception e) {
+        public DataAccessException translate(String task, Throwable e) {
             return new CastorObjectRetrievalFailureException("General error while " + task + ": " + e, e);
         }
     }

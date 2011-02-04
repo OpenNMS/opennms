@@ -115,7 +115,7 @@ public class Conversation {
                         m_errorExchange.sendRequest(out);
                     }
                 }
-           }catch(Exception e) {
+           }catch(Throwable e) {
                isFinished = true;
                Object[] args = {};
                LogUtils.infof(this, e, "SimpleServer conversation attempt failed", args);

@@ -110,7 +110,7 @@ public class CheckNsc {
         try {
         	client = new NsclientManager(host, port);
         }
-        catch (Exception e) {
+        catch (Throwable e) {
         	usage(options, cmd, "An error occurred creating a new NsclientManager.", e);
         }
         
@@ -122,14 +122,14 @@ public class CheckNsc {
         	client.setTimeout(5000);
         	client.init();
         }
-        catch (Exception e) {
+        catch (Throwable e) {
         	usage(options, cmd, "An error occurred initializing the NsclientManager.", e);
         }
 
         try {
         	params = new NsclientCheckParams( warningLevel, criticalLevel, clientParams.toString() );
         }
-        catch (Exception e) {
+        catch (Throwable e) {
         	usage(options, cmd, "An error occurred creating the parameter object.", e);
         }
 
@@ -138,7 +138,7 @@ public class CheckNsc {
                                               NsclientManager.convertStringToType(command),
                                               params);
         }
-        catch(Exception e) {
+        catch(Throwable e) {
         	usage(options, cmd, "An error occurred processing the command.", e);
         }
         
@@ -153,7 +153,7 @@ public class CheckNsc {
         }
     }
 
-	private static void usage(Options options, CommandLine cmd, String error, Exception e) {
+	private static void usage(Options options, CommandLine cmd, String error, Throwable e) {
 		HelpFormatter formatter = new HelpFormatter();
     	PrintWriter pw = new PrintWriter(System.out);
     	if (error != null) {

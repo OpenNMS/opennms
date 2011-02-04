@@ -256,7 +256,7 @@ public class QoSDrx extends AbstractServiceDaemon implements PausableFiber {
 		try {
 			runtimeStats=initialOssBeanRunner.getRuntimeStatistics();
 		}
-		catch (Exception ex){
+		catch (Throwable ex){
 			log.error("QoSDrx.getStats() Problem getting statistics:",ex);
 		}
 		return runtimeStats;

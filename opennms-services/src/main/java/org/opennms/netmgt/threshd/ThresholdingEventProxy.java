@@ -83,7 +83,7 @@ public class ThresholdingEventProxy implements EventProxy {
                 }
                 log.setEvents(events);
                 EventIpcManagerFactory.getIpcManager().sendNow(log);
-            } catch (Exception e) {
+            } catch (Throwable e) {
                 log().info("sendAllEvents: Failed sending threshold events: " + e, e);
             }
             removeAllEvents();

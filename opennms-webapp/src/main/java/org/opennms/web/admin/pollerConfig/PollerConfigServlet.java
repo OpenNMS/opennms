@@ -139,7 +139,7 @@ public class PollerConfigServlet extends HttpServlet {
     private void initCapsdConfigFactory() throws ServletException {
         try {
             CapsdConfigFactory.init();
-        } catch (Exception e) {
+        } catch (Throwable e) {
             throw new ServletException(e);
         }
         m_capsdFactory = CapsdConfigFactory.getInstance();
@@ -152,7 +152,7 @@ public class PollerConfigServlet extends HttpServlet {
     private void initPollerConfigFactory() throws ServletException {
         try {
             PollerConfigFactory.init();
-        } catch (Exception e) {
+        } catch (Throwable e) {
             throw new ServletException(e);
         }
         m_pollerFactory = PollerConfigFactory.getInstance();
@@ -165,7 +165,7 @@ public class PollerConfigServlet extends HttpServlet {
     private void loadPollerConfProperties() throws ServletException {
         try {
             m_props.load(new FileInputStream(ConfigFileConstants.getFile(ConfigFileConstants.POLLER_CONF_FILE_NAME)));
-        } catch (Exception e) {
+        } catch (Throwable e) {
             throw new ServletException(e);
         }
         
@@ -183,7 +183,7 @@ public class PollerConfigServlet extends HttpServlet {
             loadPollerConfProperties();
             initPollerConfigFactory();
             initCapsdConfigFactory();
-        } catch (Exception e) {
+        } catch (Throwable e) {
             throw new ServletException(e);
         }
         initPollerServices();

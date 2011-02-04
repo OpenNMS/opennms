@@ -224,7 +224,7 @@ public class MobileSequenceSession {
             msg.setGatewayId(substitute(gatewayId));
             msg.setValidityPeriod(validityPeriodInHours);
             request = m_tracker.sendSmsRequest(msg, getTimeout(), getRetries(), responseHandler, responseHandler);
-        } catch (Exception e) {
+        } catch (Throwable e) {
         	responseHandler.handleError(request, e);
         }
     }
@@ -242,7 +242,7 @@ public class MobileSequenceSession {
             USSDRequest ussdRequest = new USSDRequest(substitute(text));
             ussdRequest.setGatewayId(substitute(gatewayId));
             request = m_tracker.sendUssdRequest(ussdRequest, getTimeout(), getRetries(), responseHandler, responseHandler);
-        } catch (Exception e) {
+        } catch (Throwable e) {
         	responseHandler.handleError(request, e);
         }
     }

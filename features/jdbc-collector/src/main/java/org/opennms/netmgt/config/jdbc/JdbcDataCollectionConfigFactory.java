@@ -35,7 +35,7 @@ public class JdbcDataCollectionConfigFactory {
             JdbcDataCollectionConfig jdcc = (JdbcDataCollectionConfig) um.unmarshal(jdccStream);
             m_jdbcDataCollectionConfig = jdcc;
             return jdcc;
-        } catch (Exception e) {
+        } catch (Throwable e) {
             // TODO!!
             //throw new ForeignSourceRepositoryException("unable to access default foreign source resource", e);
         }

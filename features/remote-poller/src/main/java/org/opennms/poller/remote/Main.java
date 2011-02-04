@@ -131,7 +131,7 @@ public class Main {
 	private GroovyGui createGui() {
 		try {
 			return (GroovyGui)Class.forName("org.opennms.groovy.poller.remote.ConfigurationGui").newInstance();
-		} catch (Exception e) {
+		} catch (Throwable e) {
 			throw new RuntimeException("Unable to find Configuration GUI!", e);
 		}
 	}
@@ -154,7 +154,7 @@ public class Main {
                     }
                 }
             }
-        } catch(Exception e) {
+        } catch(Throwable e) {
             // a fatal exception occurred
             LogUtils.errorf(this, e, "Exception occurred during registration!");
             System.exit(27);

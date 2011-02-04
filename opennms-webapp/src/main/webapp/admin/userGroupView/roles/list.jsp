@@ -58,7 +58,7 @@
 		userFactory = UserFactory.getInstance();
       		users = userFactory.getUsers();
 	}
-	catch(Exception e)
+	catch(Throwable e)
 	{
 		throw new ServletException("User:list " + e.getMessage());
 	}

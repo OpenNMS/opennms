@@ -203,7 +203,7 @@ public class AvailabilityReportTest extends TestCase {
             AvailabilityData reportSource = new AvailabilityData();
             reportSource.setAvailabilityDataService(new LegacyAvailabilityDataService());
             reportSource.fillReport("Network Interfaces", report, "HTML", calFormat, "4", "18", "2005");
-        } catch (Exception e) {
+        } catch (Throwable e) {
             throw new UndeclaredThrowableException(e); 
         }
         return report;

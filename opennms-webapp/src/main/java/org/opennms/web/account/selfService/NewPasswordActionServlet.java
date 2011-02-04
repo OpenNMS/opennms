@@ -68,7 +68,7 @@ public class NewPasswordActionServlet extends HttpServlet {
     public void doPost(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
         try {
             UserFactory.init();
-        } catch (Exception e) {
+        } catch (Throwable e) {
             throw new ServletException("NewPasswordActionServlet: Error initialising user factory." + e);
         }
         HttpSession userSession = request.getSession(false);
@@ -92,7 +92,7 @@ public class NewPasswordActionServlet extends HttpServlet {
             try {
             	userFactory.saveUser(user.getUserId(), user);
             }
-            catch (Exception e) {
+            catch (Throwable e) {
             	throw new ServletException("Error saving user " + user.getUserId(), e);
             }
 

@@ -123,7 +123,7 @@ public class SpectrumTrapImporter {
         
         try {
             importer.afterPropertiesSet();
-        } catch (Exception e) {
+        } catch (Throwable e) {
             importer.printHelp("Fatal exception caught at startup: " + e.getMessage());
             System.exit(1);
         }

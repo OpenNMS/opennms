@@ -178,7 +178,7 @@ public class JettyServer extends AbstractServiceDaemon implements SpringServiceD
             
             srs.initialize("HTTP", contextName + "-" + host, port, properties);
             services.put(contextName, srs);
-        } catch (Exception e) {
+        } catch (Throwable e) {
             log().warn("unable to get a DNS-SD object for context '" + contextPath + "'", e);
         }
     }
@@ -224,7 +224,7 @@ public class JettyServer extends AbstractServiceDaemon implements SpringServiceD
     protected void onStart() {
         try {
             m_server.start();
-        } catch (Exception e) {
+        } catch (Throwable e) {
             log().error("Error starting Jetty Server", e);
         }
         for (String key: services.keySet()) {
@@ -232,7 +232,7 @@ public class JettyServer extends AbstractServiceDaemon implements SpringServiceD
         	if (srs != null) {
             	try {
             		srs.register();
-            	} catch (Exception e) {
+            	} catch (Throwable e) {
             		log().warn("unable to register a DNS-SD object for context '" + key + "'", e);
             	}
         	}
@@ -247,14 +247,14 @@ public class JettyServer extends AbstractServiceDaemon implements SpringServiceD
         	if (srs != null) {
             	try {
             		srs.unregister();
-            	} catch (Exception e) {
+            	} catch (Throwable e) {
             		log().warn("unable to unregister a DNS-SD object for context '" + key + "'", e);
             	}
         	}
         }
         try {
             m_server.stop();
-        } catch (Exception e) {
+        } catch (Throwable e) {
             log().error("Error stopping Jetty Server", e);
         }
     }

@@ -238,7 +238,7 @@ public class SnmpPoller extends AbstractServiceDaemon {
         try {
             log().debug("onInit: Scheduling existing snmp interfaces polling");
             scheduleExistingSnmpInterface();
-        } catch (Exception sqlE) {
+        } catch (Throwable sqlE) {
             log().error("onInit: Failed to schedule existing interfaces", sqlE);
         }
 
@@ -385,7 +385,7 @@ public class SnmpPoller extends AbstractServiceDaemon {
                 log().error("configureSNMPHandler: event contained invalid firstIpAddress.  "+event);
                 return;
             }
-        } catch (Exception e) {
+        } catch (Throwable e) {
             log().error("reloadSnmpConfig: ",e);
         }
         
@@ -414,7 +414,7 @@ public class SnmpPoller extends AbstractServiceDaemon {
             getPollerConfig().update();
             getNetwork().deleteAll();
             scheduleExistingSnmpInterface();
-        } catch (Exception e) {
+        } catch (Throwable e) {
             log().error("Update SnmpPoller configuration file failed",e);
         }
     }

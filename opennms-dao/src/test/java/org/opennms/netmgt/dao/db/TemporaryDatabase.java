@@ -316,7 +316,7 @@ public class TemporaryDatabase implements DataSource {
                 try {
                     Thread.sleep(100);
                     destroyTestDatabase();
-                } catch (Exception e) {
+                } catch (Throwable e) {
                     e.printStackTrace();
                 }
             }

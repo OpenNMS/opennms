@@ -275,7 +275,7 @@ public class Ssh extends org.opennms.netmgt.protocols.AbstractPoll {
             log().debug("connection failed: " + e.getMessage());
             setError(e);
             disconnect();
-        } catch (Exception e) {
+        } catch (Throwable e) {
             log().debug("connection failed", e);
             setError(e);
             disconnect();

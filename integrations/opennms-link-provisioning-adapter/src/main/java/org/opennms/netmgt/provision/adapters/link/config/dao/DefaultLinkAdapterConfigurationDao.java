@@ -87,7 +87,7 @@ public class DefaultLinkAdapterConfigurationDao extends AbstractCastorConfigDao<
         }
         try {
             m_marshaller.marshal(getContainer().getObject(), file);
-        } catch (Exception e) {
+        } catch (Throwable e) {
             throw new DataAccessResourceFailureException("Could not marshal configuration file for " + getConfigResource() + ": " + e, e);
         }
     }
@@ -110,7 +110,7 @@ public class DefaultLinkAdapterConfigurationDao extends AbstractCastorConfigDao<
             log().info(createLoadedLogMessage(config, (endTime - startTime)));
 
             return config;
-        } catch (Exception e) {
+        } catch (Throwable e) {
             throw new JAXBDataAccessFailureException("Unable to unmarshal the link adapter configuration.", e);
         }
     }
@@ -131,7 +131,7 @@ public class DefaultLinkAdapterConfigurationDao extends AbstractCastorConfigDao<
             
             ValidationEventHandler handler = new DefaultValidationEventHandler();
             m_unmarshaller.setEventHandler(handler);
-        } catch (Exception e) {
+        } catch (Throwable e) {
             throw new IllegalStateException("Unable to create JAXB context.", e);
         }
 

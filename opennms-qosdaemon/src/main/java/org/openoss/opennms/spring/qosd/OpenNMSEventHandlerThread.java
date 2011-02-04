@@ -103,14 +103,14 @@ public class OpenNMSEventHandlerThread extends Thread {
 			if (localupdateNCache) try {
 				if (log.isDebugEnabled()) log.debug("OpenNMSEventHandlerThread.run() updating node list");
 				ossDao.updateNodeCaches();
-			} catch (Exception ex) {
+			} catch (Throwable ex) {
 				log.error("OpenNMSEventHandlerThread.run() Exception caught in ossDao.updateNodeCaches():", ex);
 			}
 			if (localsendList) try{
 				if (log.isDebugEnabled()) log.debug("OpenNMSEventHandlerThread.run() updating and sending alarm list");
 				ossDao.updateAlarmCacheAndSendAlarms();
 			}
-			catch (Exception ex) {
+			catch (Throwable ex) {
 				log.error("OpenNMSEventHandlerThread.run() Exception caught in ossDao.updateAlarmCacheAndSendAlarms():", ex);
 			}
 

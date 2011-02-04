@@ -53,7 +53,7 @@ public class OpenNmsXmlClient  {
 			basicHttpMethods.setLog(log);
 			result = basicHttpMethods.sendGetRequest(opennmsUrl+requisitionCmd,"", username, password);
 			log.debug("Requisition after command is : " + result.replace("<", "\n<"));
-		} catch (Exception e){
+		} catch (Throwable e){
 			log.error("OpenNmsXmlClient add() command error: ",e);
 			return "failed to get result; Error: "+e;
 		}
@@ -83,7 +83,7 @@ public class OpenNmsXmlClient  {
 			basicHttpMethods.postData(data, url, output, username,password);
 
 			log.debug("requisitionAdd() Reply: "+ output.toString());
-		} catch (Exception ex){
+		} catch (Throwable ex){
 			log.debug("requisitionAdd() Failure sending message Error: ", ex);
 			return false;
 		}
@@ -111,7 +111,7 @@ public class OpenNmsXmlClient  {
 			basicHttpMethods.deleteData(url, output,username, password);
 
 			log.debug("requisitionRemove() Reply: "+ output.toString());
-		} catch (Exception ex){
+		} catch (Throwable ex){
 			log.debug("requisitionRemove() Failure sending message Error: ", ex);
 			return false;
 		}
@@ -132,7 +132,7 @@ public class OpenNmsXmlClient  {
 			basicHttpMethods.putData(data, url, output, username, password);
 
 			log.debug("requisitionImport() Reply: "+ output.toString());
-		} catch (Exception ex){
+		} catch (Throwable ex){
 			log.debug("requisitionImport() Failure sending message Error: ", ex);
 			return false;
 		}
@@ -166,7 +166,7 @@ public class OpenNmsXmlClient  {
 			basicHttpMethods.postData(data, url, output, username, password);
 
 			log.debug("nodeAdd() Reply: "+ output.toString());
-		} catch (Exception ex){
+		} catch (Throwable ex){
 			log.debug("nodeAdd() Failure sending message Error: ", ex);
 			return false;
 		}
@@ -189,7 +189,7 @@ public class OpenNmsXmlClient  {
 			basicHttpMethods.deleteData(url, output, username, password);
 
 			log.debug("nodeRemove() Reply: "+ output.toString());
-		} catch (Exception ex){
+		} catch (Throwable ex){
 			log.debug("nodeRemove() Failure sending message Error: ", ex);
 			return false;
 		}
@@ -241,7 +241,7 @@ public class OpenNmsXmlClient  {
 			basicHttpMethods.postData(data, url, output, username, password);
 
 			log.debug("interfaceAdd() Reply: "+ output.toString());
-		} catch (Exception ex){
+		} catch (Throwable ex){
 			log.debug("interfaceAdd() Failure sending message Error: ", ex);
 			return false;
 		}
@@ -266,7 +266,7 @@ public class OpenNmsXmlClient  {
 			basicHttpMethods.deleteData(url, output, username, password);
 
 			log.debug("interfaceRemove() Reply: "+ output.toString());
-		} catch (Exception ex){
+		} catch (Throwable ex){
 			log.debug("interfaceRemove() Failure sending message Error: ", ex);
 			return false;
 		}

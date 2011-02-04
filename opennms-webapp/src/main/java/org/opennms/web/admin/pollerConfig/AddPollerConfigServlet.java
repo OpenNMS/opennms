@@ -136,7 +136,7 @@ public class AddPollerConfigServlet extends HttpServlet {
                 errorflag = true;
                 throw new ServletException("Capsd Configuration file is empty");
             }
-        } catch (Exception e) {
+        } catch (Throwable e) {
             throw new ServletException(e.getMessage());
         }
         initPollerServices();
@@ -174,7 +174,7 @@ public class AddPollerConfigServlet extends HttpServlet {
                 // response.sendRedirect( "error.jsp?error=3");
                 throw new ServletException("Capsd Configuration file is empty");
             }
-        } catch (Exception e) {
+        } catch (Throwable e) {
             throw new ServletException(e.getMessage());
         }
         initPollerServices();

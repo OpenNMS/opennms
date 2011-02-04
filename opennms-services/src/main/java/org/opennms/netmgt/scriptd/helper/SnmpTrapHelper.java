@@ -823,7 +823,7 @@ public class SnmpTrapHelper {
     private void sendTrap(String destAddr, int destPort, String community, SnmpTrapBuilder trap) throws SnmpTrapHelperException {
         try {
             trap.send(destAddr, destPort, community);
-        } catch (Exception e) {
+        } catch (Throwable e) {
             throw new SnmpTrapHelperException("Failed to send trap "+e.getMessage(), e);
         }
     }

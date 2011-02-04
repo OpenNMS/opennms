@@ -127,7 +127,7 @@ public class ReportScheduler implements InitializingBean {
                 LogUtils.infof(this, sb.toString());
             }
 
-        } catch (Exception e) {
+        } catch (Throwable e) {
             LogUtils.errorf(this, e, "printCurrentSchedule: %s", e.getMessage());
         }
 

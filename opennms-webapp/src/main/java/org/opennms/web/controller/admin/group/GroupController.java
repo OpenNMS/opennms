@@ -331,7 +331,7 @@ public class GroupController extends AbstractController {
         boolean hasGroup = false;
         try {
             hasGroup = m_groupRepository.groupExists(groupName);
-        } catch (Exception e) {
+        } catch (Throwable e) {
             throw new ServletException("Can't determine if group " + groupName + " already exists in groups.xml.", e);
         }
         

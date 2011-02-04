@@ -68,7 +68,7 @@ public class RenameUserServlet extends HttpServlet {
         try {
             UserManager userFactory = UserFactory.getInstance();
             userFactory.renameUser(userID, newID);
-        } catch (Exception e) {
+        } catch (Throwable e) {
             throw new ServletException("Error renaming user " + userID + " to " + newID, e);
         }
 

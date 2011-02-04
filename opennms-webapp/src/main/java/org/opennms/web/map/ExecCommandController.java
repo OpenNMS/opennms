@@ -176,11 +176,11 @@ public class ExecCommandController implements Controller {
 			}, this.getClass().getSimpleName()).start();
 			try{
 				p.waitFor();
-			}catch(Exception e){
+			}catch(Throwable e){
 				log.warn(e.getMessage());
 			}
 
-		} catch (Exception e) {
+		} catch (Throwable e) {
 			log.error("An error occourred while executing command.",e);
 			os.write("An error occourred.");
 		}finally{

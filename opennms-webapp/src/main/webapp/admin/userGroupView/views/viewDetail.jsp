@@ -60,7 +60,7 @@
 		ViewFactory.init();
 		ViewFactory viewFactory = ViewFactory.getInstance();
       		view = viewFactory.getView(viewName);
-  	} catch (Exception e) {
+  	} catch (Throwable e) {
       		throw new ServletException("Could not find view " + viewName + " in view factory.", e);
   	}
 	if (view == null) {

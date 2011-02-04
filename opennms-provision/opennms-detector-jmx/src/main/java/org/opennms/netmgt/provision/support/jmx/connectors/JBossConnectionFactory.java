@@ -155,7 +155,7 @@ public class JBossConnectionFactory {
                     Object rmiAdaptor = ctx.lookup("jmx/rmi/RMIAdaptor");
                     wrapper = new JBossConnectionWrapper(MBeanServerProxy.buildServerProxy(rmiAdaptor));
 
-                } catch (Exception e) {
+                } catch (Throwable e) {
                     //log.debug("JBossConnectionFactory - unable to get MBeanServer using HTTP on " + address.getHostAddress() + invokerSuffix);
                 } finally {
                     try {

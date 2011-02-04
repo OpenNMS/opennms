@@ -65,7 +65,7 @@ public class Dumper {
             }
     
     
-        } catch(Exception e) {
+        } catch(Throwable e) {
             e.printStackTrace();
         }
  

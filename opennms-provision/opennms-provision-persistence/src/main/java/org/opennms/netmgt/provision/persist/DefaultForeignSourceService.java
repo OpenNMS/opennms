@@ -265,7 +265,7 @@ public class DefaultForeignSourceService implements ForeignSourceService {
                 try {
                     PluginWrapper wrapper = new PluginWrapper(key);
                     m_wrappers.put(key, wrapper);
-                } catch (Exception e) {
+                } catch (Throwable e) {
                     log().warn("unable to wrap " + key, e);
                 }
             }
@@ -273,7 +273,7 @@ public class DefaultForeignSourceService implements ForeignSourceService {
                 try {
                     PluginWrapper wrapper = new PluginWrapper(key);
                     m_wrappers.put(key, wrapper);
-                } catch (Exception e) {
+                } catch (Throwable e) {
                     log().warn("unable to wrap " + key, e);
                 }
             }

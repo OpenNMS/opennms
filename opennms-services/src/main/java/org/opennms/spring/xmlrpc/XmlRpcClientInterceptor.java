@@ -105,7 +105,7 @@ public class XmlRpcClientInterceptor extends UrlBasedRemoteAccessor implements M
                 client = new SecureXmlRpcClient(getServiceUrl());
                 client.setup();
                 
-            } catch (Exception e) {
+            } catch (Throwable e) {
                 throw new RemoteLookupFailureException("Invalid url ", e);
             }
         }

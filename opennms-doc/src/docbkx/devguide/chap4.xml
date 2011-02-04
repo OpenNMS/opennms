@@ -266,7 +266,7 @@
 			{
 				DatabaseConnectionFactory.init();
 			}
-			catch (Exception e)
+			catch (Throwable e)
 			{
 				// Log error
 				...
@@ -361,7 +361,7 @@
 			{
 				SnmpPeerFactory.init();
 			}
-			catch (Exception e)
+			catch (Throwable e)
 			{
 				// Log error
 				...
@@ -393,7 +393,7 @@
 			{
 				session.close();
 			}
-			catch (Exception E)
+			catch (Throwable E)
 			{
 				// Log the error
 				...

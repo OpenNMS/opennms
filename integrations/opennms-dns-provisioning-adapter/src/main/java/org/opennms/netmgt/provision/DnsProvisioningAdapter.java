@@ -229,7 +229,7 @@ public class DnsProvisioningAdapter extends SimpleQueuedProvisioningAdapter impl
             m_resolver.send(update);
 
             m_nodeDnsRecordMap.put(Integer.valueOf(op.getNodeId()), record);
-        } catch (Exception e) {
+        } catch (Throwable e) {
             log().error("addNode: Error handling node added event.", e);
             sendAndThrow(op.getNodeId(), e);
         }
@@ -244,13 +244,13 @@ public class DnsProvisioningAdapter extends SimpleQueuedProvisioningAdapter impl
             m_resolver.send(update);
 
             m_nodeDnsRecordMap.remove(Integer.valueOf(op.getNodeId()));
-        } catch (Exception e) {
+        } catch (Throwable e) {
             log().error("deleteNode: Error handling node deleted event.", e);
             sendAndThrow(op.getNodeId(), e);
         }
     }
     
-    private void sendAndThrow(int nodeId, Exception e) {
+    private void sendAndThrow(int nodeId, Throwable e) {
         Event event = buildEvent(EventConstants.PROVISIONING_ADAPTER_FAILED, nodeId).addParam("reason", MESSAGE_PREFIX+e.getLocalizedMessage()).getEvent();
         m_eventForwarder.sendNow(event);
         throw new ProvisioningAdapterException(MESSAGE_PREFIX, e);

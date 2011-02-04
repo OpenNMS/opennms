@@ -222,7 +222,7 @@ public class AvailabilityCalculatorTest extends TestCase {
             calculator.setCategoryName("Network Interfaces");
             calculator.calculate();
             report = calculator.getReport();
-        } catch (Exception e) {
+        } catch (Throwable e) {
             throw new UndeclaredThrowableException(e);
         }
         return report;

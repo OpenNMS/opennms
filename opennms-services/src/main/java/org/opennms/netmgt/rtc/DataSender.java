@@ -137,7 +137,7 @@ final class DataSender implements Fiber {
         int oldPriority = currentThread.getPriority();
         try {
             currentThread.setPriority(priority);
-        } catch (Exception e) {
+        } catch (Throwable e) {
             if (log().isDebugEnabled()) {
                 log().debug("Error setting thread priority: ", e);
             }
@@ -183,7 +183,7 @@ final class DataSender implements Fiber {
         try {
             m_dsrPool.start();
             log().info("Datasender thread pool started..");
-        } catch (Exception e) {
+        } catch (Throwable e) {
             log().error("Error starting data sender pool", e);
         }
 
@@ -204,7 +204,7 @@ final class DataSender implements Fiber {
         log().info("DataSender - shutting down the data sender pool");
         try {
             m_dsrPool.stop();
-        } catch (Exception e) {
+        } catch (Throwable e) {
             log().error("Error shutting down data sender pool", e);
         }
 

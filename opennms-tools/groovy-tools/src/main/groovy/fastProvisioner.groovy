@@ -997,7 +997,7 @@ class ServiceURL {
         String host = getHost();
         try {
             addr = InetAddress.getByName(host).getHostAddress();
-        } catch(Exception e) {
+        } catch(Throwable e) {
             System.err.println e
             addr = host;
         }

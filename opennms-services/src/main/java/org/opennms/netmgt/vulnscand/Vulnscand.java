@@ -394,12 +394,12 @@ public class Vulnscand extends AbstractServiceDaemon {
 					interfaces.close();
 				if (selectInterfaces != null)
 					selectInterfaces.close();
-			} catch (Exception ex) {
+			} catch (Throwable ex) {
 			} finally {
 				try {
 					if (connection != null)
 						connection.close();
-				} catch (Exception e) {
+				} catch (Throwable e) {
 				}
 			}
 		}

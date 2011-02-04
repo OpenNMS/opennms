@@ -169,7 +169,7 @@ public class SimpleUDPServer {
                     attemptConversation(m_socket);
                     
                     m_socket.close();
-                }catch(Exception e){
+                }catch(Throwable e){
                     throw new UndeclaredThrowableException(e);
                 }
             }

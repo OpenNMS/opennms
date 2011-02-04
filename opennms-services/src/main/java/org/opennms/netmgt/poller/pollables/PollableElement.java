@@ -270,7 +270,7 @@ abstract public class PollableElement {
             return c.call();
         } catch (RuntimeException e) {
             throw e;
-        } catch (Exception e) {
+        } catch (Throwable e) {
             throw new RuntimeException(e);
         } finally {
             releaseTreeLock();

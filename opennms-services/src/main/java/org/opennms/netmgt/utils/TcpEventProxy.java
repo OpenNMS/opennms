@@ -151,7 +151,7 @@ public final class TcpEventProxy implements EventProxy {
             writer.flush();
         } catch (ConnectException e) {
             throw new EventProxyException("Could not connect to event daemon " + m_address + " to send event: " + e.getMessage(), e);
-        } catch (Exception e) {
+        } catch (Throwable e) {
             throw new EventProxyException("Unknown exception while sending event: " + e, e);
         } finally {
             if (connection != null) {

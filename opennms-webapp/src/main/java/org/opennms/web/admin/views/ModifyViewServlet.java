@@ -71,7 +71,7 @@ public class ModifyViewServlet extends HttpServlet {
             ViewFactory viewFactory = ViewFactory.getInstance();
             View view = viewFactory.getView(request.getParameter("viewName"));
             userSession.setAttribute("view.modifyView.jsp", view);
-        } catch (Exception e) {
+        } catch (Throwable e) {
             throw new ServletException("Couldn't initialize ViewFactory", e);
         }
 

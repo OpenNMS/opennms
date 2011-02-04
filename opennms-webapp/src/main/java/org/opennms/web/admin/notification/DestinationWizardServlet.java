@@ -121,14 +121,14 @@ public class DestinationWizardServlet extends HttpServlet {
                     user.setAttribute("newPath", newPath);
 
                     redirectString.append(SOURCE_PAGE_OUTLINE);
-                } catch (Exception e) {
+                } catch (Throwable e) {
                     throw new ServletException("Couldn't get path to edit.", e);
                 }
             } else if (action.equals("delete")) {
                 try {
                     DestinationPathFactory.getInstance().removePath(request.getParameter("paths"));
                     redirectString.append(SOURCE_PAGE_PATHS);
-                } catch (Exception e) {
+                } catch (Throwable e) {
                     throw new ServletException("Couldn't save/reload destination path configuration file.", e);
                 }
             } else if (action.equals("new")) {
@@ -173,7 +173,7 @@ public class DestinationWizardServlet extends HttpServlet {
                     } else {
                         DestinationPathFactory.getInstance().addPath(path);
                     }
-                } catch (Exception e) {
+                } catch (Throwable e) {
 
                     throw new ServletException("Couldn't save/reload destination path configuration file.", e);
                 }
@@ -199,7 +199,7 @@ public class DestinationWizardServlet extends HttpServlet {
 
             try {
                 existingTargets = DestinationPathFactory.getInstance().getTargetList(index, newPath);
-            } catch (Exception e) {
+            } catch (Throwable e) {
                 throw new ServletException("Unable to get targets for path " + newPath.getName(), e);
             }
 
@@ -309,7 +309,7 @@ public class DestinationWizardServlet extends HttpServlet {
 
             try {
                 targets = DestinationPathFactory.getInstance().getTargetList(index, newPath);
-            } catch (Exception e) {
+            } catch (Throwable e) {
                 throw new ServletException("Couldn't get target list for path " + newPath.getName(), e);
             }
 
@@ -330,7 +330,7 @@ public class DestinationWizardServlet extends HttpServlet {
 
             try {
                 targets = DestinationPathFactory.getInstance().getTargetList(index, newPath);
-            } catch (Exception e) {
+            } catch (Throwable e) {
                 throw new ServletException("Couldn't get target list for path " + newPath.getName(), e);
             }
 

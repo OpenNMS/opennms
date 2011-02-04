@@ -126,7 +126,7 @@ public class VersionSettingTestSuite extends TestSuite {
         try {
             Method m = getSetVersionMethod(test.getClass());
             m.invoke(test, new Object[] { new Integer(m_version) });
-        } catch (Exception e) {
+        } catch (Throwable e) {
             AssertionFailedError newE = new AssertionFailedError("Could not call setVersion on " + test.getClass().getName() + ": " + e);
             newE.initCause(e);
             throw newE;

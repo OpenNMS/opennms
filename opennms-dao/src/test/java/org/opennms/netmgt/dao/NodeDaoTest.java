@@ -424,7 +424,7 @@ public class NodeDaoTest  {
 				expectedValue = ""+BeanUtils.getProperty(o1, m_propertyName);
 				String actualValue = ""+BeanUtils.getProperty(o2, m_propertyName);
 				return expectedValue.compareTo(actualValue);
-			} catch (Exception e) {
+			} catch (Throwable e) {
 				throw new IllegalArgumentException("Unable to compare property "+m_propertyName, e);
 			}
 		}

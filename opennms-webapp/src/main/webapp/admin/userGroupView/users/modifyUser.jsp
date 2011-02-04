@@ -56,7 +56,7 @@
         try {
             UserFactory.init();
             userFactory = UserFactory.getInstance();
-        } catch (Exception e) {
+        } catch (Throwable e) {
             throw new ServletException("UserFactory:modify() " + e);
         }
 

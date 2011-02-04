@@ -521,7 +521,7 @@ public class JniRrdStrategy implements RrdStrategy<String,StringBuffer> {
             // Creating PNG InputStream
             byte[] byteArray = FileCopyUtils.copyToByteArray(pngFile);
             pngStream = new ByteArrayInputStream(byteArray);
-        } catch (Exception e) {
+        } catch (Throwable e) {
             throw new RrdException("Can't execute command " + command, e);
         } finally {
             pngFile.delete();

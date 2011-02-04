@@ -110,14 +110,14 @@ public class DefaultRrdDao implements RrdDao, InitializingBean {
         RrdGraphDetails graphDetails;
         try {
             graphDetails = m_rrdStrategy.createGraphReturnDetails(commandString, m_rrdBaseDirectory);
-        } catch (Exception e) {
+        } catch (Throwable e) {
             throw new DataAccessResourceFailureException("Failure when generating graph to get data with command '" + commandString + "'", e);
         }
         
         String[] printLines;
         try {
             printLines = graphDetails.getPrintLines();
-        } catch (Exception e) {
+        } catch (Throwable e) {
             throw new DataAccessResourceFailureException("Failure to get print lines from graph after graphing with command '" + commandString + "'", e);
         }
       
@@ -216,7 +216,7 @@ public class DefaultRrdDao implements RrdDao, InitializingBean {
     public InputStream createGraph(String command, File workDir) throws DataRetrievalFailureException {
        try {
            return m_rrdStrategy.createGraph(command, workDir);
-       } catch (Exception e) {
+       } catch (Throwable e) {
            throw new DataRetrievalFailureException("Could not create graph: " + e, e);
        }
     }
@@ -262,7 +262,7 @@ public class DefaultRrdDao implements RrdDao, InitializingBean {
         File rrdFile = new File(m_rrdBaseDirectory, rrdAttribute.getRrdRelativePath());
         try {
             return m_rrdStrategy.fetchLastValue(rrdFile.getAbsolutePath(), attribute.getName(), interval);
-        } catch (Exception e) {
+        } catch (Throwable e) {
             throw new DataAccessResourceFailureException("Failure to fetch last value from file '" + rrdFile + "' with interval " + interval, e);
         }
     }
@@ -279,7 +279,7 @@ public class DefaultRrdDao implements RrdDao, InitializingBean {
         File rrdFile = new File(m_rrdBaseDirectory, rrdAttribute.getRrdRelativePath());
         try {
             return m_rrdStrategy.fetchLastValueInRange(rrdFile.getAbsolutePath(), attribute.getName(), interval, range);
-        } catch (Exception e) {
+        } catch (Throwable e) {
             throw new DataAccessResourceFailureException("Failure to fetch last value from file '" + rrdFile + "' with interval " + interval + " and range " + range, e);
         }
     }

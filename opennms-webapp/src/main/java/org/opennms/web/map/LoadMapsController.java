@@ -97,7 +97,7 @@ public class LoadMapsController implements Controller {
 		BufferedWriter bw = new BufferedWriter(new OutputStreamWriter(response.getOutputStream(), "UTF-8"));
 		try {
 			bw.write(ResponseAssembler.getLoadMapsResponse(manager.getVisibleMapsMenu(user)));
-		} catch (Exception e) {
+		} catch (Throwable e) {
 			log.error("Error while loading visible maps for user:"+user,e);
 			bw.write(ResponseAssembler.getMapErrorResponse(MapsConstants.LOADMAPS_ACTION));
 		} finally {

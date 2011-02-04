@@ -46,7 +46,7 @@ public class UssdCommands implements CommandProvider
 
         try {
             m_service.sendUSSDRequest(req, gwId);
-        } catch (Exception e) {
+        } catch (Throwable e) {
             intp.println("Exception sending USSD request: " + e.getMessage());
             intp.printStackTrace(e);
         }

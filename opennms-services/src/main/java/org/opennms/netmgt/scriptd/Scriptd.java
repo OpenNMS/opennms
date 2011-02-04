@@ -120,7 +120,7 @@ public final class Scriptd extends AbstractServiceDaemon {
 
         try {
             m_eventReader = new BroadcastEventProcessor(execQ);
-        } catch (Exception ex) {
+        } catch (Throwable ex) {
             log().error("Failed to setup event reader", ex);
             throw new UndeclaredThrowableException(ex);
         }
@@ -148,7 +148,7 @@ public final class Scriptd extends AbstractServiceDaemon {
             if (m_execution != null) {
                 m_execution.stop();
             }
-        } catch (Exception e) {
+        } catch (Throwable e) {
         }
 
         if (m_eventReader != null) {

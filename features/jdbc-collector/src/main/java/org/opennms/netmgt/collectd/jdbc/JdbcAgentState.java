@@ -69,7 +69,7 @@ public class JdbcAgentState {
         try {
             m_driverClass = ParameterMap.getKeyedString(parameters, "driver", DBTools.DEFAULT_JDBC_DRIVER);
             m_driver = (Driver)Class.forName(m_driverClass).newInstance();
-        } catch (Exception exp) {
+        } catch (Throwable exp) {
             throw new RuntimeException("Unable to load driver class: "+exp.toString(), exp);
         }
         

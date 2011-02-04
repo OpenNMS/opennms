@@ -178,7 +178,7 @@ public class LinkMonitoringSnmpTest implements MockSnmpAgentAware {
         
         try {
             m_configDao.getValidator().validate(endPoint);
-        } catch (Exception e) {
+        } catch (Throwable e) {
             assertTrue("An EndPointStatusException was thrown which shouldn't have and thats why the test failed", false);
         }
         

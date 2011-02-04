@@ -73,7 +73,7 @@ public abstract class DbUnit extends DBTestCase {
             e.printStackTrace();
         } catch (SQLException e) {
             e.printStackTrace();
-        } catch (Exception e) {
+        } catch (Throwable e) {
             e.printStackTrace();
         }
         ++operation;
@@ -87,7 +87,7 @@ public abstract class DbUnit extends DBTestCase {
             } finally {
                 // connection.close();
             }
-        } catch (Exception e) {
+        } catch (Throwable e) {
             /* do we care?
             System.err.print("An error occurred deleting dataset: ");
             e.printStackTrace();

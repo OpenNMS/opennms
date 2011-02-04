@@ -138,7 +138,7 @@ public class AvailiabilityDatabasePopulatorTest {
 //                ResultSet srs = stmt.executeQuery("SELECT ipInterface.ipaddr, ipInterface.nodeid FROM ipInterface WHERE ipInterface.ipaddr = '192.168.100.1'" );
                 Assert.assertTrue("interface results for 192.168.100.2", srs.next());
                 Assert.assertEquals(1 ,srs.getInt(1));
-            } catch (Exception e) {
+            } catch (Throwable e) {
                 LogUtils.errorf(this, e, "unable to execute SQL");
                 fail("unable to execute SQL");
             } finally {

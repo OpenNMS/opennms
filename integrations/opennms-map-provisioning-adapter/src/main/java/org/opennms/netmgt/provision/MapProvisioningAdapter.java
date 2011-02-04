@@ -290,7 +290,7 @@ public class MapProvisioningAdapter extends SimpleQueuedProvisioningAdapter impl
             try {
                 MapsAdapterConfigFactory.reload();
                 syncMaps();
-            } catch (Exception e) {
+            } catch (Throwable e) {
                 LogUtils.infof(this, e, "unable to reload maps adapter configuration");
             }
         }
@@ -602,7 +602,7 @@ public class MapProvisioningAdapter extends SimpleQueuedProvisioningAdapter impl
                     }
                     int i = m_onmsMapDao.updateAllAutomatedMap(new Date());
                     log().debug("reSyncMap: updated last modified time for automated map: row#: " + i);
-                } catch (Exception e) {
+                } catch (Throwable e) {
                     log().error(e.getMessage());
                     sendAndThrow(e);
                 }
@@ -800,7 +800,7 @@ public class MapProvisioningAdapter extends SimpleQueuedProvisioningAdapter impl
         }
     }    
 
-    private void sendAndThrow(final Exception e) {
+    private void sendAndThrow(final Throwable e) {
         final Event event = buildEvent(EventConstants.PROVISIONING_ADAPTER_FAILED).addParam("reason", MESSAGE_PREFIX+e.getLocalizedMessage()).getEvent();
         m_eventForwarder.sendNow(event);
         log().error(e.getMessage());

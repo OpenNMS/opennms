@@ -425,13 +425,13 @@ public class EventsArchiver {
             m_logCat.info("Number of events removed from the event table: "
                           + remCount);
             m_logCat.info("Number of events sent to the archive: " + archCount);
-        } catch (Exception oe) {
+        } catch (Throwable oe) {
             m_logCat.error("EventsArchiver: Error reading events for archival: ");
             m_logCat.error(oe.getMessage());
         } finally {
             try {
                 eventsRS.close();
-            } catch (Exception e) {
+            } catch (Throwable e) {
                 m_logCat.info("EventsArchiver: Exception while events result "
                               + "set: message -> " + e.getMessage());
             }

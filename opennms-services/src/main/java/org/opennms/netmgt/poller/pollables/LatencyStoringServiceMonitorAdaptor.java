@@ -177,7 +177,7 @@ public class LatencyStoringServiceMonitorAdaptor implements ServiceMonitor {
             }
         }
 
-	} catch(Exception e) {
+	} catch(Throwable e) {
 	    log().error("Failed to threshold on " + service + " for " + dsName + " because of an exception", e);
 	}
     }

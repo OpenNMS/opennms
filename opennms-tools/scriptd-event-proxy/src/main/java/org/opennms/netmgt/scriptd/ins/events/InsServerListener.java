@@ -107,7 +107,7 @@ public class InsServerListener extends InsServerAbstractListener {
 					if(ps!=null){
 						try {
 							event.marshal(new PrintWriter(ps));
-						} catch (Exception e) {
+						} catch (Throwable e) {
 							log.error("Error while sending current event to client"+e);
 						}
 					}	

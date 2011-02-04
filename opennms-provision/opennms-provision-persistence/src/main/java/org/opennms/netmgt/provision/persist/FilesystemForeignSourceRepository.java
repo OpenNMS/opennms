@@ -168,7 +168,7 @@ public class FilesystemForeignSourceRepository extends AbstractForeignSourceRepo
                 }
                 writer = new OutputStreamWriter(new FileOutputStream(outputFile), "UTF-8");
                 getMarshaller(ForeignSource.class).marshal(foreignSource, writer);
-            } catch (final Exception e) {
+            } catch (final Throwable e) {
                 throw new ForeignSourceRepositoryException("unable to write requisition to " + outputFile.getPath(), e);
             } finally {
                 IOUtils.closeQuietly(writer);
@@ -278,7 +278,7 @@ public class FilesystemForeignSourceRepository extends AbstractForeignSourceRepo
                 }
                 writer = new OutputStreamWriter(new FileOutputStream(outputFile), "UTF-8");
                 getMarshaller(Requisition.class).marshal(requisition, writer);
-            } catch (final Exception e) {
+            } catch (final Throwable e) {
                 throw new ForeignSourceRepositoryException("unable to write requisition to " + outputFile.getPath(), e);
             } finally {
                 IOUtils.closeQuietly(writer);
@@ -365,7 +365,7 @@ public class FilesystemForeignSourceRepository extends AbstractForeignSourceRepo
             final Unmarshaller um = getUnmarshaller(Requisition.class);
             final JAXBElement<Requisition> req = um.unmarshal(new StreamSource(inputFile), Requisition.class);
             return req.getValue();
-        } catch (final Exception e) {
+        } catch (final Throwable e) {
             throw new ForeignSourceRepositoryException("unable to unmarshal " + inputFile.getPath(), e);
         }
     }

@@ -87,7 +87,7 @@ public class OutageFilterController extends AbstractController implements Initia
                     // handle old URLs which used numeric constants
                     int outageTypeInt = Integer.parseInt(outageTypeString);
                     outageType = OutageType.values()[outageTypeInt - 1];
-                } catch (Exception e) {
+                } catch (Throwable e) {
                     // nothing else to try, leave it at the default
                 }
             }

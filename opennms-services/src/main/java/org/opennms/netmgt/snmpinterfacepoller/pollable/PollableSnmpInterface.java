@@ -348,7 +348,7 @@ public class PollableSnmpInterface implements ReadyRunnable {
                     // Save Data to Database
                     try {
                         update(iface);
-                    } catch (Exception e) {
+                    } catch (Throwable e) {
                         log().warn("Error updating Interface" + iface.getIfName()+" " + e.getLocalizedMessage());
                         refresh = true;
                     }

@@ -278,7 +278,7 @@ public class InventoryReportRunner implements Runnable {
 
             }
         }
-        catch (Exception e){
+        catch (Throwable e){
             log().debug("InventoryService runNodeBaseInventoryReport exception "+ e.getMessage() );
         }
             */

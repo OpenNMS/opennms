@@ -88,14 +88,14 @@ public class FilterDaoFactory {
         
         try {
             DataSourceFactory.init();
-        } catch (Exception e) {
+        } catch (Throwable e) {
             throw new DataAccessResourceFailureException("Could not initialize DataSourceFactory: " + e, e);
         }
         jdbcFilterDao.setDataSource(DataSourceFactory.getInstance());
         
         try {
             DatabaseSchemaConfigFactory.init();
-        } catch (Exception e) {
+        } catch (Throwable e) {
             throw new DataAccessResourceFailureException("Could not initialize DatabaseSchemaConfigFactory: " + e, e);
         }
         jdbcFilterDao.setDatabaseSchemaConfigFactory(DatabaseSchemaConfigFactory.getInstance());

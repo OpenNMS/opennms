@@ -45,7 +45,7 @@ public class GoogleMapsGeocoder implements Geocoder {
 				return getLatLng(addresses.get(0).getCoordinate());
 			}
 			throw new GeocoderException("unable to find latitude/longitude for geolocation '" + geolocation + "'");
-		} catch (Exception e) {
+		} catch (Throwable e) {
 			LogUtils.infof(this, e, "unable to convert geolocation '%s'", geolocation);
 			throw new GeocoderException(e);
 		}

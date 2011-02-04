@@ -38,7 +38,7 @@ public class JDBCQueryPlugin extends JDBCPlugin {
             
         }
         
-        catch (Exception exp) {
+        catch (Throwable exp) {
             return false;
         }
         finally {

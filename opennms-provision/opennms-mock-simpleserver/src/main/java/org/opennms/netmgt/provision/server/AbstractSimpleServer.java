@@ -193,7 +193,7 @@ abstract public class AbstractSimpleServer {
                     attemptConversation(in, out);
                     
                     m_socket.close();
-                }catch(Exception e){
+                }catch(Throwable e){
                     throw new UndeclaredThrowableException(e);
                 }
             }

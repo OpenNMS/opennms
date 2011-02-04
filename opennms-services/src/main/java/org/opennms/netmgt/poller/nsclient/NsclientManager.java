@@ -459,7 +459,7 @@ public class NsclientManager {
                 m_ByteArrayOutStream.write(buffer, 0, read);
 
             return new NsclientPacket(m_ByteArrayOutStream.toString());
-        } catch (Exception e) {
+        } catch (Throwable e) {
             throw new NsclientException("Unknown exception: "
                     + e.getMessage(), e);
         }

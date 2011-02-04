@@ -159,7 +159,7 @@ public class RegistrationListenerBean<T> implements RegistrationListener<T>, Ini
         try {
           Method method = getMethod(methodName);
           method.invoke(m_target, registration.getProvider(m_serviceInterface), registration.getProperties());
-        } catch (Exception e) {
+        } catch (Throwable e) {
             throw new UndeclaredThrowableException(e, "Unexexpected exception invoking method " + methodName);
         } finally {
             

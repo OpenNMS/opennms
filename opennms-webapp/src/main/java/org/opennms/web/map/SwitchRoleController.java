@@ -104,7 +104,7 @@ public class SwitchRoleController implements Controller {
 			} else{
 				throw new IllegalStateException("Parameter adminMode is null ");
 			}
-		} catch (Exception e) {
+		} catch (Throwable e) {
 			log.error("Exception found when changing adminMode: ",e);
 			bw.write(ResponseAssembler.getMapErrorResponse(MapsConstants.SWITCH_MODE_ACTION));
 		} finally {

@@ -257,7 +257,7 @@ public class RancidProvisioningAdapter extends SimpleQueuedProvisioningAdapter i
             }
         } catch (ProvisioningAdapterException ae) {    
             sendAndThrow(nodeId, ae);
-        } catch (Exception e) {
+        } catch (Throwable e) {
             cp = getStandByRWSConnection();
             if (retry && cp != null) {
                 log().info("doAdd: retry Add on standByConn: " + cp.getUrl());
@@ -307,7 +307,7 @@ public class RancidProvisioningAdapter extends SimpleQueuedProvisioningAdapter i
                         rUpdatedNode.setStateUp(rRemoteNode.isStateUp());
                         log().debug("doUpdate: updating router.db");
                         RWSClientApi.updateRWSRancidNode(cp, rLocalNode);
-                    } catch (Exception e) {
+                    } catch (Throwable e) {
                         log().error("doUpdate: failed to update node: " + nodeId + " Exception: " + e.getMessage());
                     }
                 }
@@ -316,7 +316,7 @@ public class RancidProvisioningAdapter extends SimpleQueuedProvisioningAdapter i
                     log().debug("doUpdate: updating authentication data");
                     try {
                         RWSClientApi.updateRWSAuthNode(cp, rUpdatedNode.getAuth());                                                        
-                    } catch (Exception e) {
+                    } catch (Throwable e) {
                         log().error("doUpdate: Failed to update node authentication data: " + nodeId + " Exception: " + e.getMessage());
                     }
                 }
@@ -400,7 +400,7 @@ public class RancidProvisioningAdapter extends SimpleQueuedProvisioningAdapter i
             } finally {
                 m_rwsConfig.getWriteLock().unlock();
             }
-        } catch (Exception e) {
+        } catch (Throwable e) {
             cp = getStandByRWSConnection();
             if (retry && cp != null) {
                 log().info("doDelete: retry Delete on standByConn: " + cp.getUrl());
@@ -432,7 +432,7 @@ public class RancidProvisioningAdapter extends SimpleQueuedProvisioningAdapter i
         log().debug("updateConfiguration: Updating Rancid Router.db configuration for node: " + rNode.getDeviceName() + " type: " + rNode.getDeviceType() + " group: " + rNode.getGroup());
         try {
                 RWSClientApi.updateRWSRancidNode(cp, rNode);
-        } catch (Exception e) {
+        } catch (Throwable e) {
             cp = getStandByRWSConnection();
             if (retry && cp != null) {
                 log().info("updateConfiguration: retry update on standByConn: " + cp.getUrl());
@@ -443,7 +443,7 @@ public class RancidProvisioningAdapter extends SimpleQueuedProvisioningAdapter i
         }
     }
 
-    private void sendAndThrow(int nodeId, Exception e) {
+    private void sendAndThrow(int nodeId, Throwable e) {
         log().debug("sendAndThrow: error working on nodeid: " + nodeId);
         log().debug("sendAndThrow: Exception: " + e.getMessage());
         Event event = buildEvent(EventConstants.PROVISIONING_ADAPTER_FAILED, nodeId).addParam("reason", MESSAGE_PREFIX+e.getLocalizedMessage()).getEvent();
@@ -714,7 +714,7 @@ public class RancidProvisioningAdapter extends SimpleQueuedProvisioningAdapter i
                 } finally {
                     factory.getWriteLock().unlock();
                 }
-            } catch (Exception e) {
+            } catch (Throwable e) {
                 LogUtils.infof(this, e, "unable to reload rancid adapter configuration");
             }
         }

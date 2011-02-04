@@ -165,7 +165,7 @@ public class DnsRequisitionUrlConnection extends URLConnection {
         } catch (IOException e) {
             log().warn("getInputStream: Problem getting input stream: "+e, e);
             throw e;
-        } catch (Exception e) {
+        } catch (Throwable e) {
             String message = "Problem getting input stream: "+e;
             log().warn(message, e);
             throw new IOExceptionWithCause(message,e );

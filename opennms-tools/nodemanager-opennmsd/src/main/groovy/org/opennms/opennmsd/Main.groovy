@@ -16,7 +16,7 @@ public class Main {
             daemon.setConfiguration(new DefaultConfiguration());
             daemon.setEventForwarder(new DefaultEventForwarder());
             daemon.execute();
-        } catch(Exception e) {
+        } catch(Throwable e) {
             log.error("Exception executing opennmsd", e);
             System.exit(27);
         }

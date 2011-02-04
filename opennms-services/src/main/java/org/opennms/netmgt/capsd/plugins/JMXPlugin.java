@@ -114,7 +114,7 @@ public abstract class JMXPlugin extends AbstractPlugin {
             if (result != null) {
                 res = true;
             }
-        } catch (Exception e) {
+        } catch (Throwable e) {
             log.debug(getProtocolName(map) + " - isProtocolSupported - failed! " + address.getHostAddress());
         } finally {
             if (connection != null) {

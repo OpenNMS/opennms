@@ -391,13 +391,13 @@ public class Migrator {
 
         try {
             connection = m_dataSource.getConnection();
-        } catch (Exception e) {
+        } catch (Throwable e) {
             throw new MigrationException("unable to get a database connection from the datasource", e);
         }
 
         try {
             database = DatabaseFactory.getInstance().findCorrectDatabaseImplementation(connection);
-        } catch (Exception e) {
+        } catch (Throwable e) {
             cleanUpDatabase(connection, null, null);
             throw new MigrationException("unable to determine the Liquibase database object", e);
         }
@@ -410,7 +410,7 @@ public class Migrator {
         final String contexts = System.getProperty("opennms.contexts", "production");
         try {
             liquibase.update(contexts);
-        } catch (Exception e) {
+        } catch (Throwable e) {
             cleanUpDatabase(connection, null, null);
             throw new MigrationException("unable to update the database", e);
         }

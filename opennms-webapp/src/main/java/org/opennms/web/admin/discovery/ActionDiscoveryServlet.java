@@ -238,7 +238,7 @@ public class ActionDiscoveryServlet extends HttpServlet {
         		DiscoveryConfigFactory.init();
         		dcf = DiscoveryConfigFactory.getInstance();
             	        dcf.saveConfiguration(config);
-        	}catch(Exception ex){
+        	}catch(Throwable ex){
         		log.error("Error while saving configuration. "+ex);
         		throw new ServletException(ex);
         	}
@@ -246,7 +246,7 @@ public class ActionDiscoveryServlet extends HttpServlet {
         	EventProxy proxy = null;
         	try {
     			proxy = Util.createEventProxy();
-    		} catch (Exception me) {
+    		} catch (Throwable me) {
     			log.error(me.getMessage());
     		}
 
@@ -258,7 +258,7 @@ public class ActionDiscoveryServlet extends HttpServlet {
 
             try {
             	proxy.send(event);
-            } catch (Exception me) {
+            } catch (Throwable me) {
     			log.error(me.getMessage());
     		}
 

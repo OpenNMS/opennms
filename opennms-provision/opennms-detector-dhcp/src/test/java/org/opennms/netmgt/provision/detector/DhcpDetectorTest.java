@@ -101,7 +101,7 @@ public class DhcpDetectorTest{
         DHCPMessage messageIn = new DHCPMessage();
         try{
             mySocket.receive(messageIn);
-        }catch(Exception ex){
+        }catch(Throwable ex){
             ex.printStackTrace();
         }
     

@@ -211,7 +211,7 @@ public class XMPPNotificationManager {
 			} else {
 				log().debug("XMPP Manager Not Connected");
 			}
-		} catch (Exception e) {
+		} catch (Throwable e) {
 			log().fatal("XMPP Manager unable to connect", e);
 		}
 	}
@@ -231,7 +231,7 @@ public class XMPPNotificationManager {
             } else {
                 log().debug("XMPP Manager unable to login: Not connected to XMPP server");
             }
-        } catch (Exception e) {
+        } catch (Throwable e) {
             log().fatal("XMPP Manager unable to login: ", e);
         }
     }

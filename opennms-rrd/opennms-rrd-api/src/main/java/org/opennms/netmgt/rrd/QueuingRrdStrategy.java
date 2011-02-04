@@ -518,7 +518,7 @@ public class QueuingRrdStrategy implements RrdStrategy<QueuingRrdStrategy.Operat
             try {
                 // process the update
                 m_delegate.updateFile(rrd, "", update);
-            } catch (Exception e) {
+            } catch (Throwable e) {
                 throw new Exception("Error processing update for file " + getFileName() + ": " + update, e);
             }
 
@@ -563,7 +563,7 @@ public class QueuingRrdStrategy implements RrdStrategy<QueuingRrdStrategy.Operat
                 try {
                     // process the update
                     m_delegate.updateFile(rrd, "", update);
-                } catch (Exception e) {
+                } catch (Throwable e) {
                     throw new Exception("Error processing update " + i + " for file " + getFileName() + ": " + update, e);
                 }
                 ts += getInterval();
@@ -1134,7 +1134,7 @@ public class QueuingRrdStrategy implements RrdStrategy<QueuingRrdStrategy.Operat
                 fileName = op.getFileName();
                 rrd = op.process(rrd);
             }
-        } catch (Exception e) {
+        } catch (Throwable e) {
             setErrors(getErrors() + 1);
             logLapTime("Error updating file " + fileName + ": " + e.getMessage());
             log().debug("Error upading file " + fileName + ": " + e.getMessage(), e);

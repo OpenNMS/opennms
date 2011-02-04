@@ -188,7 +188,7 @@ public final class DominoIIOPPlugin extends AbstractTcpPlugin {
             return true;
         } catch (FileNotFoundException e) {
             return true;
-        } catch (Exception e) {
+        } catch (Throwable e) {
             if (log.isDebugEnabled())
                 log.debug("DominoIIOPMonitor: failed to get the corba IOR from " + config.getInetAddress().getHostAddress());
             return false;

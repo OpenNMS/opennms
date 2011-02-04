@@ -269,7 +269,7 @@ public class Ssh extends AbstractPoll {
             log().debug("unable to parse server version", e);
             setError(e);
             disconnect();
-        } catch (Exception e) {
+        } catch (Throwable e) {
             log().debug("connection failed", e);
             setError(e);
             disconnect();

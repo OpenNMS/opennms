@@ -111,7 +111,7 @@ public class NewMapController implements Controller {
 						.getRemoteUser(), request.getRemoteUser(),
 						mapWidth, mapHeight);
 			bw.write(ResponseAssembler.getMapResponse(map));				
-		} catch (Exception e) {
+		} catch (Throwable e) {
 			log.error("Error while creating new map for user:"+request.getRemoteUser(),e);
 			bw.write(ResponseAssembler.getMapErrorResponse(MapsConstants.NEWMAP_ACTION));
 		} finally {

@@ -211,7 +211,7 @@ public class AvailabilityCalculatorImpl implements AvailabilityCalculator {
         } catch (IOException ioe) {
             log.fatal("Validation Exception ", ioe);
             throw new AvailabilityCalculationException(ioe);
-        } catch (Exception e) {
+        } catch (Throwable e) {
             log.fatal("Exception ", e);
             throw new AvailabilityCalculationException(e);
         }

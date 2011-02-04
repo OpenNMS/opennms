@@ -128,7 +128,7 @@ public class Vacuumd extends AbstractServiceDaemon implements Runnable, EventLis
             getEventManager().addEventListener(this, EventConstants.RELOAD_VACUUMD_CONFIG_UEI);
 
             initializeDataSources();
-        } catch (Exception ex) {
+        } catch (Throwable ex) {
             log().error("Failed to load outage configuration", ex);
             throw new UndeclaredThrowableException(ex);
         }
@@ -207,7 +207,7 @@ public class Vacuumd extends AbstractServiceDaemon implements Runnable, EventLis
 
                 m_startTime = System.currentTimeMillis();
 
-            } catch (Exception e) {
+            } catch (Throwable e) {
                 log().error("Unexpected exception: ", e);
             }
         }
@@ -285,7 +285,7 @@ public class Vacuumd extends AbstractServiceDaemon implements Runnable, EventLis
                     if (dbConn != null) {
                         try {
                             dbConn.close();
-                        } catch (Exception e) {
+                        } catch (Throwable e) {
                         }
                     }
                 }

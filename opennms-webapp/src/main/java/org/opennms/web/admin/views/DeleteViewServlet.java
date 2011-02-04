@@ -66,7 +66,7 @@ public class DeleteViewServlet extends HttpServlet {
         try {
             ViewFactory viewFactory = ViewFactory.getInstance();
             viewFactory.deleteView(viewName);
-        } catch (Exception e) {
+        } catch (Throwable e) {
             throw new ServletException("Error deleting view " + viewName, e);
         }
 

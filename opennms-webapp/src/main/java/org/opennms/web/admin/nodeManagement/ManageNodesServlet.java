@@ -113,13 +113,13 @@ public class ManageNodesServlet extends HttpServlet {
     public void init() throws ServletException {
         try {
             DataSourceFactory.init();
-        } catch (Exception e) {
+        } catch (Throwable e) {
             throw new ServletException("Could not initialize database factory: " + e.getMessage(), e);
         }
 
         try {
             NotificationFactory.init();
-        } catch (Exception e) {
+        } catch (Throwable e) {
             throw new ServletException("Could not initialize notification factory: " + e.getMessage(), e);
         }
     }
@@ -367,7 +367,7 @@ public class ManageNodesServlet extends HttpServlet {
     private void sendEvent(Event event) throws ServletException {
         try {
             Util.createEventProxy().send(event);
-        } catch (Exception e) {
+        } catch (Throwable e) {
             throw new ServletException("Could not send event " + event.getUei(), e);
         }
     }

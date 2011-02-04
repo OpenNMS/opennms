@@ -54,7 +54,7 @@
             UserFactory.init();
             GroupFactory.init();
             DestinationPathFactory.init();
-        } catch (Exception e) {
+        } catch (Throwable e) {
             throw new ServletException("Cannot load configuration file", e);
         }
     }%>
@@ -313,7 +313,7 @@ public Map getUsers(Collection targets) throws ServletException {
                 allUsers.put(key, targetNames.contains(key));
             }
 
-        } catch (Exception e) {
+        } catch (Throwable e) {
             throw new ServletException("could not get list of all users.", e);
         }
 
@@ -330,7 +330,7 @@ public Map getUsers(Collection targets) throws ServletException {
             }
             return allGroups;
             
-        } catch (Exception e) {
+        } catch (Throwable e) {
             throw new ServletException("could not get list of all groups.", e);
         }
     }
@@ -346,7 +346,7 @@ public Map getUsers(Collection targets) throws ServletException {
             }
 
             return rolesMap;
-        } catch (Exception e) {
+        } catch (Throwable e) {
             throw new ServletException("could not get list of all groups.", e);
         }
     }
@@ -364,7 +364,7 @@ public Map getUsers(Collection targets) throws ServletException {
                     emails.put(key, key);
                 }
             }
-        } catch (Exception e) {
+        } catch (Throwable e) {
             throw new ServletException("could not get list of email targets.",
                     e);
         }

@@ -68,7 +68,7 @@ public class DeleteGroupServlet extends HttpServlet {
             GroupFactory.init();
             GroupManager groupFactory = GroupFactory.getInstance();
             groupFactory.deleteGroup(groupName);
-        } catch (Exception e) {
+        } catch (Throwable e) {
             throw new ServletException("Error deleting group " + groupName, e);
         }
 

@@ -397,7 +397,7 @@ public class OpenNMSProvisioner implements Provisioner {
             event.setSource("OpenNMSProvisioner");
             m_eventManager.sendNow(event);
             
-        } catch (Exception e) {
+        } catch (Throwable e) {
             throw new RuntimeException("Error saving poller or capsd configuration: " + e, e);
         }
     }

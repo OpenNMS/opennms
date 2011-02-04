@@ -223,7 +223,7 @@ public class RrdStresser {
                     try {
                         RrdStresser test = new RrdStresser();
                         test.execute(args);
-                    } catch (Exception e) {
+                    } catch (Throwable e) {
                         e.printStackTrace();
                     }
                 }
@@ -334,7 +334,7 @@ public class RrdStresser {
                 try {
                     rrdUpdateFile(rrd, line);
                     countUpdate();
-                } catch (Exception e) {
+                } catch (Throwable e) {
                     print("RRD ERROR: " + line + " : " + e.getMessage());
                 }
             }

@@ -75,7 +75,7 @@ public class DBUtils {
             if (rs != null) {
                 try {
                     rs.close();
-                } catch (Exception e) {
+                } catch (Throwable e) {
                     log().warn("Unable to close result set", e);
                 }
             }
@@ -86,7 +86,7 @@ public class DBUtils {
             if (s != null) {
                 try {
                     s.close();
-                } catch (Exception e) {
+                } catch (Throwable e) {
                     log().warn("Unable to close statement", e);
                 }
             }
@@ -97,7 +97,7 @@ public class DBUtils {
             if (c != null) {
                 try {
                     c.close();
-                } catch (Exception e) {
+                } catch (Throwable e) {
                     log().warn("Unable to close connection", e);
                 }
             }

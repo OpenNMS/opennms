@@ -485,7 +485,7 @@ public final class RTCManager extends AbstractServiceDaemon {
         if (ur != null) {
             try {
                 m_userRefreshInterval = rFactory.getUserRefreshInterval();
-            } catch (Exception nfE) {
+            } catch (Throwable nfE) {
                 log().warn("User refresh time has an incorrect format - using 1 minute instead");
                 m_userRefreshInterval = 60 * 1000;
             }
@@ -515,7 +515,7 @@ public final class RTCManager extends AbstractServiceDaemon {
         // Intialize the data from the database
         try {
             m_dataMgr = new DataManager();
-        } catch (Exception ex) {
+        } catch (Throwable ex) {
             throw new UndeclaredThrowableException(ex);
         }
 
@@ -644,7 +644,7 @@ public final class RTCManager extends AbstractServiceDaemon {
             if (log().isDebugEnabled())
                 log().debug("shutdown: Timer Canceled");
 
-        } catch (Exception e) {
+        } catch (Throwable e) {
             log().error(e.getLocalizedMessage(), e);
         }
 	}

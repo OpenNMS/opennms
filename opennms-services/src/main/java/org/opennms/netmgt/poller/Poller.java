@@ -259,7 +259,7 @@ public class Poller extends AbstractServiceDaemon {
             log().debug("init: Closing outages for unmanaged services");
             
             closeOutagesForUnmanagedServices();
-        } catch (Exception e) {
+        } catch (Throwable e) {
             log().error("init: Failed to close ouates for unmanage services", e);
         }
         
@@ -270,7 +270,7 @@ public class Poller extends AbstractServiceDaemon {
             log().debug("start: Scheduling existing interfaces");
 
             scheduleExistingServices();
-        } catch (Exception sqlE) {
+        } catch (Throwable sqlE) {
             log().error("start: Failed to schedule existing interfaces", sqlE);
         }
 
@@ -498,7 +498,7 @@ public class Poller extends AbstractServiceDaemon {
             };
             node.withTreeLock(r);
 
-        } catch (Exception e) {
+        } catch (Throwable e) {
             log.error("Unable to schedule service "+nodeId+"/"+ipAddr+"/"+svcName, e);
         }
     }

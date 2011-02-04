@@ -162,7 +162,7 @@ choose the desired behavior for automatic notification on "UP" events.</h3>
             buffer.append("<td>").append(buildAutoNotifySelect(targets[i].getName(), targets[i].getAutoNotify())).append("<td>");
             buffer.append("</tr>");
         }
-        } catch (Exception e)
+        } catch (Throwable e)
         {
             throw new ServletException("couldn't get list of targets for path " + path.getName(), e);
         }
@@ -199,7 +199,7 @@ choose the desired behavior for automatic notification on "UP" events.</h3>
                 buffer.append("<option VALUE=\"" + curCommand + "\">").append(curCommand).append("</option>");
             }
         }
-        } catch (Exception e)
+        } catch (Throwable e)
         {
             throw new ServletException("couldn't get list of commands for path/target " + path.getName()+"/"+name, e);
         }

@@ -116,7 +116,7 @@ public class Tl1d extends AbstractServiceDaemon implements PausableFiber, Initia
                 ebldr = new EventBuilder(EventConstants.RELOAD_DAEMON_CONFIG_SUCCESSFUL_UEI, getName());
                 ebldr.addParam(EventConstants.PARM_DAEMON_NAME, "Tl1d");
 
-            } catch (Exception exception) {
+            } catch (Throwable exception) {
                 log().error("handleReloadConfigurationEvent: failed.", exception);
                 ebldr = new EventBuilder(EventConstants.RELOAD_DAEMON_CONFIG_FAILED_UEI, getName());
                 ebldr.addParam(EventConstants.PARM_DAEMON_NAME, "Tl1d");

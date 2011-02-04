@@ -181,7 +181,7 @@ public class AvailabilityReportIntegrationTest {
             Created created = report.getCreated();
             Assert.assertNotNull("report created period", created.getPeriod());
             
-        } catch (Exception e) {
+        } catch (Throwable e) {
             throw new UndeclaredThrowableException(e);
         }
 
@@ -267,7 +267,7 @@ public class AvailabilityReportIntegrationTest {
             Assert.assertTrue("day 1,2 visibility", day.getVisible());
             Assert.assertEquals("day 1,2 date", 5,day.getDate());
             
-        } catch (Exception e) {
+        } catch (Throwable e) {
             throw new UndeclaredThrowableException(e);
         }
   

@@ -108,7 +108,7 @@ public class AsteriskOriginateNotificationStrategy implements NotificationStrate
                 ao.setChannelVariable(BaseOnmsAgiScript.VAR_OPENNMS_NODEID, arg.getValue());
                 try {
                     ao.setChannelVariable(BaseOnmsAgiScript.VAR_OPENNMS_NODELABEL, Notifd.getInstance().getNodeDao().get(arg.getValue()).getLabel());
-                } catch (Exception e) {
+                } catch (Throwable e) {
                     ao.setChannelVariable(BaseOnmsAgiScript.VAR_OPENNMS_NODELABEL, null);
                 }
             } else if (NotificationManager.PARAM_INTERFACE.equals(arg.getSwitch())) {

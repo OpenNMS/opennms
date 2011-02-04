@@ -377,7 +377,7 @@ public class JRobinRrdStrategy implements RrdStrategy<RrdDef,RrdDb> {
              * we don't want to throw an exception.
              */
             return new JRobinRrdGraphDetails(graph, command);
-        } catch (Exception e) {
+        } catch (Throwable e) {
             log().error("JRobin: exception occurred creating graph: " + e.getMessage(), e);
             throw new org.opennms.netmgt.rrd.RrdException("An exception occurred creating the graph: " + e.getMessage(), e);
         }
@@ -676,7 +676,7 @@ public class JRobinRrdStrategy implements RrdStrategy<RrdDef,RrdDb> {
 		} else {
 			try {
 				Font font = Font.createFont(Font.TRUETYPE_FONT, new File(argValue[0]));
-			} catch (Exception e) {
+			} catch (Throwable e) {
 				// oh well, fall back to existing font stuff
 				log().warn("unable to create font from font argument " + argParm, e);
 			}
@@ -745,7 +745,7 @@ public class JRobinRrdStrategy implements RrdStrategy<RrdDef,RrdDb> {
             else {
                 throw new org.jrobin.core.RrdException("Unknown color tag " + colorTag);
             }
-        } catch (Exception e) {
+        } catch (Throwable e) {
             log().error("JRobin: exception occurred creating graph: " + e, e);
         }
     }

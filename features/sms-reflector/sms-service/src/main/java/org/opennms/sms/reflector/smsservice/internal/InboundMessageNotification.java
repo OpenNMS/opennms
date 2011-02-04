@@ -76,7 +76,7 @@ public class InboundMessageNotification implements OnmsInboundMessageNotificatio
     private void deleteMessage(AGateway gateway, InboundMessage msg) {
         try {
             gateway.deleteMessage(msg);
-        } catch (Exception e) {
+        } catch (Throwable e) {
             log.error("Unable to delete message " + msg, e);
         }
     }

@@ -51,7 +51,7 @@ public abstract class AbstractForeignSourceRepository implements ForeignSourceRe
             Requisition req = (Requisition) um.unmarshal(resourceStream);
             save(req);
             return req;
-        } catch (Exception e) {
+        } catch (Throwable e) {
             throw new ForeignSourceRepositoryException("unable to import requisition resource " + resource, e);
         }
     }
@@ -75,7 +75,7 @@ public abstract class AbstractForeignSourceRepository implements ForeignSourceRe
             ForeignSource fs = (ForeignSource) um.unmarshal(fsStream);
             fs.setDefault(true);
             return fs;
-        } catch (Exception e) {
+        } catch (Throwable e) {
             throw new ForeignSourceRepositoryException("unable to access default foreign source resource", e);
         }
     }
@@ -94,7 +94,7 @@ public abstract class AbstractForeignSourceRepository implements ForeignSourceRe
             foreignSource.updateDateStamp();
             writer = new OutputStreamWriter(new FileOutputStream(outputFile), "UTF-8");
             getMarshaller(ForeignSource.class).marshal(foreignSource, writer);
-        } catch (Exception e) {
+        } catch (Throwable e) {
             throw new ForeignSourceRepositoryException("unable to write requisition to " + outputFile.getPath(), e);
         } finally {
             IOUtils.closeQuietly(writer);

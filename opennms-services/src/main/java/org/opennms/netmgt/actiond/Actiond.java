@@ -102,7 +102,7 @@ public final class Actiond extends AbstractServiceDaemon {
         //
         try {
             m_eventReader = new BroadcastEventProcessor(execQ);
-        } catch (Exception ex) {
+        } catch (Throwable ex) {
             log().error("Failed to setup event reader", ex);
             throw new UndeclaredThrowableException(ex);
         }
@@ -129,7 +129,7 @@ public final class Actiond extends AbstractServiceDaemon {
             if (m_executor != null) {
                 m_executor.stop();
             }
-        } catch (Exception e) {
+        } catch (Throwable e) {
         }
 
         if (m_eventReader != null) {

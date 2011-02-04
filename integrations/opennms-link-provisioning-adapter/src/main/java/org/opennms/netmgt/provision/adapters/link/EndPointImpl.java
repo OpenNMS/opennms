@@ -91,7 +91,7 @@ public class EndPointImpl implements EndPoint {
             if (result != null) {
                 return true;
             }
-        } catch (Exception e) {
+        } catch (Throwable e) {
             debugf(this, e, "Ping failed for address %s", getAddress());
         }
         return false;

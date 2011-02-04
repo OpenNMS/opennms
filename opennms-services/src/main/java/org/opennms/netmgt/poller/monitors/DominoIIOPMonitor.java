@@ -161,7 +161,7 @@ final public class DominoIIOPMonitor extends AbstractServiceMonitor {
         //
         try {
             retrieveIORText(ipv4Addr.getHostAddress(), IORport);
-        } catch (Exception e) {
+        } catch (Throwable e) {
             return logDown(Level.DEBUG, "failed to get the corba IOR from " + ipv4Addr, e);
         }
 

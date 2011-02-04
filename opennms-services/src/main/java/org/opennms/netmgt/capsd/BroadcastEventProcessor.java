@@ -1649,7 +1649,7 @@ public class BroadcastEventProcessor implements InitializingBean {
         try {
             log().debug("onMessage: Adding interface to suspectInterface Q: " + event.getInterface());
             m_suspectQ.add(m_suspectEventProcessorFactory.createSuspectEventProcessor(event.getInterface()));
-        } catch (Exception ex) {
+        } catch (Throwable ex) {
             log().error("onMessage: Failed to add interface to suspect queue", ex);
         }
     }

@@ -128,7 +128,7 @@ public final class DataCollectionConfigFactory {
                 config.getConfiguredResourceTypes();
                 System.out.println("OK: no errors found");
             }
-        } catch (Exception e) {
+        } catch (Throwable e) {
             System.err.println("ERROR: " + e.getMessage());
         }
     }

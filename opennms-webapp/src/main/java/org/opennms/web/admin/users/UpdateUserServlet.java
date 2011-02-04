@@ -77,7 +77,7 @@ public class UpdateUserServlet extends HttpServlet {
             User newUser = (User) userSession.getAttribute("user.modifyUser.jsp");
             try {
                 UserFactory.init();
-            } catch (Exception e) {
+            } catch (Throwable e) {
                 throw new ServletException("UpdateUserServlet:init Error initialising UserFactory " + e);
             }
             

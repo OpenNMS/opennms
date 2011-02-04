@@ -74,7 +74,7 @@ public class SaveGroupServlet extends HttpServlet {
                 try {
                     GroupManager groupFactory = GroupFactory.getInstance();
                     groupFactory.saveGroup(newGroup.getName(), newGroup);
-                } catch (Exception e) {
+                } catch (Throwable e) {
                     throw new ServletException("Error saving group " + newGroup.getName(), e);
                 }
             }

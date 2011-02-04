@@ -310,7 +310,7 @@ public abstract class AbstractSaveOrUpdateOperation extends AbstractImportOperat
 //		try {
 //			InetAddress addr = InetAddress.getByName(ipIf.getIpAddress());
 //			ipIf.setIpHostName(addr.getHostName());
-//		} catch (Exception e) {
+//		} catch (Throwable e) {
 //			if (ipIf.getIpHostName() == null)
 //				ipIf.setIpHostName(ipIf.getIpAddress());
 //		}

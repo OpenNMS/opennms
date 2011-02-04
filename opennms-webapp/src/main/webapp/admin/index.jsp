@@ -167,7 +167,7 @@
           {
             NotifdConfigFactory.init();
             status = NotifdConfigFactory.getInstance().getPrettyStatus();
-          } catch (Exception e) { /*if factory can't be initialized, status is already 'Unknown'*/ }
+          } catch (Throwable e) { /*if factory can't be initialized, status is already 'Unknown'*/ }
         %>
           <p align="right">Notification Status:
             <%if (status.equals("Unknown")) { %>

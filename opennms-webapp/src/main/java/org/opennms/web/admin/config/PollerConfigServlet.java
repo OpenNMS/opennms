@@ -131,7 +131,7 @@ public class PollerConfigServlet extends HttpServlet {
             if (capsdConfig == null) {
                 throw new ServletException("Poller Configuration file is empty");
             }
-        } catch (Exception e) {
+        } catch (Throwable e) {
             throw new ServletException(e.getMessage());
         }
         initPollerServices();
@@ -165,7 +165,7 @@ public class PollerConfigServlet extends HttpServlet {
             if (capsdConfig == null) {
                 throw new ServletException("Poller Configuration file is empty");
             }
-        } catch (Exception e) {
+        } catch (Throwable e) {
             throw new ServletException(e.getMessage());
         }
         initPollerServices();

@@ -201,7 +201,7 @@ public class OssDaoOpenNMSImpl implements OssDao {
 			localUpdateNodeCaches();
 			localUpdateAlarmCache();
 			initialised=true;
-		} catch (Exception ex){
+		} catch (Throwable ex){
 			throw new UndeclaredThrowableException(ex, this.getClass().getSimpleName()+"init() problem initialising class");
 		}
 	}
@@ -253,13 +253,13 @@ public class OssDaoOpenNMSImpl implements OssDao {
 				alarmCacheByID.put(new Integer (alarm.getId()), alarm); // update local cache
 				alarmCacheByUniqueKey.put(uniqueKey, alarm);			
 
-			} catch (Exception ex){
+			} catch (Throwable ex){
 				log.error("OssDaoOpenNMSImpl().addCurrentAlarmForUniqueKey():Error creating alarm in database:",ex);
 				return null;
 			}
 //			try { // add new alarm then update alarm in local alarm list 
 //			alarm = getCurrentAlarmForUniqueKey(alarm.getApplicationDN() , alarm.getOssPrimaryKey());
-//			} catch (Exception ex){
+//			} catch (Throwable ex){
 //			log.error("OssDaoOpenNMSImpl().addCurrentAlarmForUniqueKey():Error updating alarm in local list:"+ex);
 //			return null;
 //			}
@@ -311,7 +311,7 @@ public class OssDaoOpenNMSImpl implements OssDao {
 				alarmCacheByID.put(new Integer (alarm.getId()), alarm); // update local cache
 				alarmCacheByUniqueKey.put(uniqueKey, alarm);
 
-			} catch (Exception ex){
+			} catch (Throwable ex){
 				log.error("OssDaoOpenNMSImpl().updateCurrentAlarmForUniqueKey():Error updating alarm in database:",ex);
 				return null;
 			}		
@@ -582,7 +582,7 @@ public class OssDaoOpenNMSImpl implements OssDao {
 		OnmsNode node=null;
 		try {
 			node = (OnmsNode)nodeCacheByLabel.get(label);
-		} catch (Exception ex){
+		} catch (Throwable ex){
 			log.error("\tOssDaoOpenNMSImpl().findNodeByLabel ERROR : ", ex);
 		}
 		return node; //null if not found
@@ -602,7 +602,7 @@ public class OssDaoOpenNMSImpl implements OssDao {
 		OnmsNode node=null;
 		try {
 			node = (OnmsNode)nodeCacheByUniqueID.get(uniqueid);
-		} catch (Exception ex){
+		} catch (Throwable ex){
 			log.error("\tOssDaoOpenNMSImpl().findNodeByInstanceAndType ERROR : ", ex);
 		}
 		return node; //null if not found
@@ -620,7 +620,7 @@ public class OssDaoOpenNMSImpl implements OssDao {
 		OnmsNode node=null;
 		try {
 			node = (OnmsNode)this.nodeCacheByID.get(nodeid);
-		} catch (Exception ex){
+		} catch (Throwable ex){
 			getLog().error("\tOssDaoOpenNMSImpl().findNodeByLabel ERROR : ", ex);
 		}
 		return node; //null if not found
@@ -717,7 +717,7 @@ public class OssDaoOpenNMSImpl implements OssDao {
 						}
 						
 					}
-				} catch (Exception ex){
+				} catch (Throwable ex){
 					log.error("\tOssDaoOpenNMSImpl().updateNodeCaches Error updating node caches: ERROR : ", ex);
 				}	
 			}
@@ -750,7 +750,7 @@ public class OssDaoOpenNMSImpl implements OssDao {
 					log.error("\tOssDaoOpenNMSImpl().updateNodeCaches: Problem listing nodeCacheByUniqueID contents Error:",e);
 				}
 			}
-		} catch (Exception ex){
+		} catch (Throwable ex){
 			log.error("\tOssDaoOpenNMSImpl().updateNodeCaches ERROR : ", ex);
 		}
 	}

@@ -97,7 +97,7 @@ public class DeleteMapController implements Controller {
 		try {
 			manager.deleteMap(); 
 			bw.write(ResponseAssembler.getActionOKMapResponse(MapsConstants.DELETEMAP_ACTION));
-		} catch (Exception e) {
+		} catch (Throwable e) {
 			log.error("Error deleting map",e);
 			bw.write(ResponseAssembler.getMapErrorResponse(MapsConstants.DELETEMAP_ACTION));
 		} finally {

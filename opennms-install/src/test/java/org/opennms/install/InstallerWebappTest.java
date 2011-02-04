@@ -116,7 +116,7 @@ public class InstallerWebappTest extends TestCase {
 
         try {
             m_installer.checkWebappOldOpennmsDir();
-        } catch (Exception e) {
+        } catch (Throwable e) {
             if (!e.getMessage().startsWith(expecting)) {
                 fail("Unexpected exception received while waiting for \""
                         + expecting + "\": " + e);
@@ -149,7 +149,7 @@ public class InstallerWebappTest extends TestCase {
 
         try {
             m_installer.checkServerXmlOldOpennmsContext();
-        } catch (Exception e) {
+        } catch (Throwable e) {
             if (!e.getMessage().startsWith(expecting)) {
                 fail("Unexpected exception received while waiting for \""
                         + expecting + "\": " + e);

@@ -59,7 +59,7 @@
 
         try {
                 Util.createEventProxy().send(snmpRestart);
-        } catch (Exception e) {
+        } catch (Throwable e) {
                 throw new ServletException("Could not send event " + snmpRestart.getUei(), e);
         }
 

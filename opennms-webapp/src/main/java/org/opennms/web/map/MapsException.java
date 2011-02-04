@@ -70,7 +70,7 @@ public class MapsException extends Exception {
      * @param msg   The detail message.
      * @param e     The exception to be encapsulated in a MapsException
      */
-    public MapsException(String msg, Exception e) {
+    public MapsException(String msg, Throwable e) {
         super(msg, e);
     }
 
@@ -79,7 +79,7 @@ public class MapsException extends Exception {
      *
      * @param e     The exception to be encapsulated in a MapsException
      */
-    public MapsException(Exception e) {
+    public MapsException(Throwable e) {
         super(e);
     }
 

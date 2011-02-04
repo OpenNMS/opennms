@@ -61,7 +61,7 @@ public class Pop3ServerTest {
             m_pop3Server.startServer();
             m_socket = createSocketConnection(m_pop3Server.getInetAddress(), m_pop3Server.getLocalPort(), 1000);
             m_in = new BufferedReader(new InputStreamReader(m_socket.getInputStream()));
-        }catch(Exception e){
+        }catch(Throwable e){
            throw new Exception(e); 
         }
     }

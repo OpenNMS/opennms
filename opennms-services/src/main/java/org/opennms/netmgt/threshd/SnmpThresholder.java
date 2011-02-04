@@ -757,7 +757,7 @@ public final class SnmpThresholder implements ServiceThresholder {
             } else {
                 value = ResourceTypeUtils.getStringProperty(resourceDirectory, attribute);
             }
-        } catch (Exception e) {
+        } catch (Throwable e) {
             log().warn("Can't get value for attribute " + attribute + ". " + e, e);
         }
         return value;

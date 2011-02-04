@@ -428,7 +428,7 @@ final class TcpStreamHandler implements Runnable {
                                 log().debug("Sent Event Receipt {");
                                 log().debug(swriter.getBuffer().toString());
                                 log().debug("}");
-                            } catch (Exception e) {
+                            } catch (Throwable e) {
                                 log().error("An error occured during marshalling of event receipt for the log: " + e, e);
                             }
                         }

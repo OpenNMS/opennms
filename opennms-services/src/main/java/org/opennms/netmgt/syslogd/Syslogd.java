@@ -166,7 +166,7 @@ import org.opennms.netmgt.dao.EventDao;
 
         try {
             new BroadcastEventProcessor();
-        } catch (Exception ex) {
+        } catch (Throwable ex) {
             log().error("Failed to setup event reader", ex);
             throw new UndeclaredThrowableException(ex);
         }

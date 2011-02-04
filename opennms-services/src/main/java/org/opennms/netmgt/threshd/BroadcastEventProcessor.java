@@ -357,7 +357,7 @@ final class BroadcastEventProcessor implements EventListener {
         //Force a reload of the configuration, then tell the thresholders to reinitialize
         try {
             ThresholdingConfigFactory.reload();
-        } catch (Exception e) {
+        } catch (Throwable e) {
             log.error("thresholdConfigurationChangedHandler: Failed to reload threshold configuration because "+e.getMessage(), e);
             return; //Do nothing else - the config is borked, so we carry on with what we've got which should still be relatively ok
         }

@@ -137,7 +137,7 @@ public final class DataSourceFactory implements DataSource {
             public void run() {
                 try {
                     dataSource.close();
-                } catch (Exception e) {
+                } catch (Throwable e) {
                     ThreadCategory.getInstance(DataSourceFactory.class).info("Unabled to close datasource " + dsName + ": " + e, e);
                 }
             }

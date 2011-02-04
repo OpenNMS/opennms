@@ -118,7 +118,7 @@ public class AlarmListConnectionManagerSpringImpl implements AlarmListConnection
 			alarmMonitorDao.init();
 			
 		}
-		catch (Exception ex) {
+		catch (Throwable ex) {
 			log.error("AlarmListConnectionManagerSpringImpl.init() problem creating AlarmMonitorDao"+ ex);
 		}
 		init = true;		//inform the thread that it has been initialised 
@@ -136,7 +136,7 @@ public class AlarmListConnectionManagerSpringImpl implements AlarmListConnection
 	public void kill() {
 		try {
 			//alarmMonitorDao.ejbRemove(); TODO - NEED TO CLOSE BEAN PROPERLY
-		}catch (Exception ex) {
+		}catch (Throwable ex) {
 			log.error("AlarmListConnectionManagerSpringImpl.init() problem stopping alarmMonitorDao"+ ex);
 		}
 		status = DISCONNECTED;

@@ -84,25 +84,25 @@
     public void init() throws ServletException {
         try {
             m_telnetServiceId = NetworkElementFactory.getInstance(getServletContext()).getServiceIdFromName("Telnet");
-        } catch (Exception e) {
+        } catch (Throwable e) {
             throw new ServletException("Could not determine the Telnet service ID", e);
         }        
 
         try {
             m_httpServiceId = NetworkElementFactory.getInstance(getServletContext()).getServiceIdFromName("HTTP");
-        } catch (Exception e) {
+        } catch (Throwable e) {
             throw new ServletException("Could not determine the HTTP service ID", e);
         }
 
         try {
             m_dellServiceId = NetworkElementFactory.getInstance(getServletContext()).getServiceIdFromName("Dell-OpenManage");
-        } catch (Exception e) {
+        } catch (Throwable e) {
             throw new ServletException("Could not determine the Dell-OpenManage service ID", e);
         }
 
         try {
             m_snmpServiceId = NetworkElementFactory.getInstance(getServletContext()).getServiceIdFromName("SNMP");
-        } catch (Exception e) {
+        } catch (Throwable e) {
             throw new ServletException("Could not determine the SNMP service ID", e);
         }
 

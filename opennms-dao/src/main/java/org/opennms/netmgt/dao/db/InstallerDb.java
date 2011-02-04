@@ -575,9 +575,14 @@ public class InstallerDb {
         	}
         	st.execute(createFunction.toString());
         	m_out.println("OK");
-        } catch (Exception e) {
+        } catch (Throwable e) {
         	m_out.println("FAILED");
-        	throw e;
+        	if (e instanceof Exception) {
+        	    throw (Exception)e;
+        	}
+        	else {
+        	    throw new Exception(e);
+        	}
         } finally {
             // don't forget to close the statement
             closeQuietly(st);
@@ -602,7 +607,7 @@ public class InstallerDb {
             if (st != null) {
                 st.close();
             }
-        } catch(Exception e) {
+        } catch(Throwable e) {
             
         }
     }
@@ -729,7 +734,7 @@ public class InstallerDb {
         Column c = new Column();
         try {
             c.parseColumnType(returnType);
-        } catch (Exception e) {
+        } catch (Throwable e) {
             throw new Exception("Could not parse column type '" + returnType + "' for function '" + function + "'.  Nested exception: " + e.getMessage(), e);
         }
         int retType = (types.get(c.getType())).intValue();
@@ -786,7 +791,7 @@ public class InstallerDb {
                 m.put(Column.normalizeColumnType(rs.getString(2),
                                                  (rs.getInt(3) < 0)),
                       new Integer(rs.getInt(1)));
-            } catch (Exception e) {
+            } catch (Throwable e) {
                 // ignore
             }
         }
@@ -881,7 +886,7 @@ public class InstallerDb {
                     } else {
                         try {
                             changeTable(tableName, oldTable, newTable);
-                        } catch (Exception e) {
+                        } catch (Throwable e) {
                             throw new Exception("Error changing table '"
                                                 + tableName
                                                 + "'.  Nested exception: "
@@ -933,7 +938,7 @@ public class InstallerDb {
                     Constraint constraint;
                     try {
                         constraint = new Constraint(tableName, a);
-                    } catch (Exception e) {
+                    } catch (Throwable e) {
                         throw new Exception("Could not parse constraint for table '" + tableName + "'.  Nested exception: " + e.getMessage(), e);
                     }
                     List<String> constraintColumns = constraint.getColumns();
@@ -960,7 +965,7 @@ public class InstallerDb {
                     try {
                         column.parse(accumulator.toString());
                         columns.add(column);
-                    } catch (Exception e) {
+                    } catch (Throwable e) {
                         throw new Exception("Could not parse table " + tableName
                                 + ".  Chained: " + e.getMessage(), e);
                     }
@@ -1133,7 +1138,7 @@ public class InstallerDb {
             String columnType = rs.getString(2);
             try {
                 c.parseColumnType(columnType);
-            } catch (Exception e) {
+            } catch (Throwable e) {
                 throw new Exception("Error parsing column type '"
                         + columnType + "' for column '" + rs.getString(1)
                         + "' in table '" + tableName + "'.  Nested: "
@@ -1311,7 +1316,7 @@ public class InstallerDb {
      * @throws java.lang.Exception if any.
      */
     public void changeTable(String table, Table oldTable, Table newTable)
-            throws Exception {
+            throws Throwable {
         assertUserSet();
         
         List<Column> oldColumns = oldTable.getColumns();
@@ -1451,7 +1456,7 @@ public class InstallerDb {
             m_out.print("    - optimizing table " + table + "... ");
             st.execute("VACUUM ANALYZE " + table);
             m_out.println("DONE");
-        } catch (Exception e) {
+        } catch (Throwable e) {
             if (m_no_revert) {
                 m_out.println("FAILED!  Not reverting due to '-R' being "
                         + "passed.  Old data in " + tmpTable);

@@ -95,7 +95,7 @@ public class FtpPluginTest extends TestCase {
                     if (command.equals("QUIT")) {
                         s.getOutputStream().write("221 See ya\r\n".getBytes());
                     }
-                } catch (Exception e) {
+                } catch (Throwable e) {
                     throw new UndeclaredThrowableException(e);
                 }
             }
@@ -121,7 +121,7 @@ public class FtpPluginTest extends TestCase {
                     if (command.equals("QUIT")) {
                         s.getOutputStream().write("221 See ya\r\n".getBytes());
                     }
-                } catch (Exception e) {
+                } catch (Throwable e) {
                     throw new UndeclaredThrowableException(e);
                 }
             }
@@ -139,7 +139,7 @@ public class FtpPluginTest extends TestCase {
                     m_serverSocket.setSoTimeout(1000);
                     Socket s = m_serverSocket.accept();
                     s.getOutputStream().write("Go away!".getBytes());
-                } catch (Exception e) {
+                } catch (Throwable e) {
                     throw new UndeclaredThrowableException(e);
                 }
             }
@@ -157,7 +157,7 @@ public class FtpPluginTest extends TestCase {
                     m_serverSocket.setSoTimeout(1000);
                     m_serverSocket.accept();
                     Thread.sleep(TIMEOUT);
-                } catch (Exception e) {
+                } catch (Throwable e) {
                     throw new UndeclaredThrowableException(e);
                 }
             }

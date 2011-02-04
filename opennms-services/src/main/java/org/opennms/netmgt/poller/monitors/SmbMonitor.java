@@ -146,7 +146,7 @@ final public class SmbMonitor extends AbstractServiceMonitor {
         	serviceStatus = logDown(Level.DEBUG, "Unknown host exception generated for " + ipv4Addr.toString() + ", reason: " + uhE.getLocalizedMessage());
         } catch (RuntimeException rE) {
         	serviceStatus = logDown(Level.ERROR, "Unexpected runtime exception", rE);
-        } catch (Exception e) {
+        } catch (Throwable e) {
         	serviceStatus = logDown(Level.DEBUG, "Unexpected exception", e);
         }
 

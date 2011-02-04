@@ -124,7 +124,7 @@ public class Mib2Events {
         out.println("<!-- Start of auto generated data from MIB: " + convertor.getMib().getName() + " -->");
         try {
             convertor.printEvents(out);
-        } catch (Exception e) {
+        } catch (Throwable e) {
             printError(convertor.getMibLocation(), e);
             System.exit(1);
         }
@@ -266,7 +266,7 @@ public class Mib2Events {
         printError(buf.toString());
     }
     
-    public static void printError(String msg, Exception e) {
+    public static void printError(String msg, Throwable e) {
         StringBuffer buf = new StringBuffer();
         buf.append("Error: ");
         buf.append(msg);

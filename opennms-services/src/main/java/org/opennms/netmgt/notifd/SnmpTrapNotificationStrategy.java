@@ -84,7 +84,7 @@ public class SnmpTrapNotificationStrategy implements NotificationStrategy {
                 log().info("send: No version specified in first argument to notification.");
                 return 1;
             }
-        } catch (Exception e) {
+        } catch (Throwable e) {
             log().info("send: Exception trying to send trap. ",e);
             return 1;
         }

@@ -331,7 +331,7 @@ public class ImportScheduler implements InitializingBean {
                 log().info(sb.toString());
             }
             
-        } catch (Exception e) {
+        } catch (Throwable e) {
             log().error("printCurrentSchedule: "+e.getLocalizedMessage(), e);
         }
         

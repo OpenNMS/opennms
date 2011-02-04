@@ -71,7 +71,7 @@ public class NodeRescanServlet extends HttpServlet {
     public void init() throws ServletException {
         try {
             this.proxy = Util.createEventProxy();
-        } catch (Exception e) {
+        } catch (Throwable e) {
             throw new ServletException("Exception", e);
         }
     }
@@ -105,7 +105,7 @@ public class NodeRescanServlet extends HttpServlet {
 
             // redirect the request for display
             response.sendRedirect(Util.calculateUrlBase(request) + "/" + returnUrl);
-        } catch (Exception e) {
+        } catch (Throwable e) {
             throw new ServletException("Exception sending node rescan event", e);
         }
     }

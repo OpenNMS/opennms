@@ -87,7 +87,7 @@ public class InitializerServletContextListener implements ServletContextListener
             log().info("Initialized servlet systems successfully");
         } catch (ServletException e) {
             log().error("Error while initializing servlet systems: " + e, e);
-        } catch (Exception e) {
+        } catch (Throwable e) {
             log().error("Error while initializing user, group, or view factory: " + e, e);
         }
 
@@ -136,7 +136,7 @@ public class InitializerServletContextListener implements ServletContextListener
                 if (!m_categorylist.isDisconnected()) {
                     return;
                 }
-            } catch (Exception e) {
+            } catch (Throwable e) {
                 log().error("Error checking if OpenNMS is disconnected: " + e, e);
                 return;
             }
@@ -152,7 +152,7 @@ public class InitializerServletContextListener implements ServletContextListener
                 } else {
                     log().error("Error subscribing to RTC POSTs: " + e, e);
                 }
-            } catch (Exception e) {
+            } catch (Throwable e) {
                 log().error("Error subscribing to RTC POSTs: " + e, e);
             }
         }

@@ -1020,7 +1020,7 @@ public class Installer {
                     searchPaths.add(value);
                 }
             }
-        } catch (Exception e) {
+        } catch (Throwable e) {
             // ok if we can't read these, we'll try to find them
         }
 

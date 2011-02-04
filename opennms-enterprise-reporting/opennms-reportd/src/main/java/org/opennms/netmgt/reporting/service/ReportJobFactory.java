@@ -29,7 +29,7 @@ public class ReportJobFactory implements JobFactory {
             job = jobClass.newInstance();
             job.setReportd(getReportd());
             return job;
-        } catch (Exception e) {
+        } catch (Throwable e) {
             SchedulerException se = new SchedulerException("failed to create job class: "+ jobDetail.getJobClass().getName()+"; "+
                                                            e.getLocalizedMessage(), e);
             throw se;

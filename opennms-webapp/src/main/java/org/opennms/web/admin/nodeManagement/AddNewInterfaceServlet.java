@@ -90,7 +90,7 @@ public class AddNewInterfaceServlet extends HttpServlet {
     public void init() throws ServletException {
         try {
             DataSourceFactory.init();
-        } catch (Exception e) {
+        } catch (Throwable e) {
             throw new ServletException("AddNewInterfaceServlet: Error initialising database connection factory." + e);
         }
 
@@ -135,7 +135,7 @@ public class AddNewInterfaceServlet extends HttpServlet {
 
         try {
             Util.createEventProxy().send(event);
-        } catch (Exception e) {
+        } catch (Throwable e) {
             throw new ServletException("Could not send event " + event.getUei(), e);
         }
     }

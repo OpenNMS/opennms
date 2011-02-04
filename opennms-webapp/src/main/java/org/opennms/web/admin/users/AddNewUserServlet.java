@@ -66,7 +66,7 @@ public class AddNewUserServlet extends HttpServlet {
     public void doPost(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
         try {
             UserFactory.init();
-        } catch (Exception e) {
+        } catch (Throwable e) {
             throw new ServletException("AddNewUserServlet: Error initialising user factory." + e);
         }
         UserManager userFactory = UserFactory.getInstance();
@@ -77,7 +77,7 @@ public class AddNewUserServlet extends HttpServlet {
         boolean hasUser = false;
         try {
             hasUser = userFactory.hasUser(userID);
-        } catch (Exception e) {
+        } catch (Throwable e) {
             throw new ServletException("can't determine if user " + userID + " already exists in users.xml.", e);
         }
 

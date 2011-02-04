@@ -110,7 +110,7 @@ public class PingThreadTest {
                 try {
                     Thread.sleep(id/10);
                     listener.ping(InetAddress.getByName("127.0.0.1"), id, count, 1000);
-                } catch(Exception e) {
+                } catch(Throwable e) {
                     e.printStackTrace();
                 }
             }

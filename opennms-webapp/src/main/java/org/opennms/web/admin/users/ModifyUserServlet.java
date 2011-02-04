@@ -72,7 +72,7 @@ public class ModifyUserServlet extends HttpServlet {
             UserManager userFactory = UserFactory.getInstance();
             User user = userFactory.getUser(request.getParameter("userID"));
             userSession.setAttribute("user.modifyUser.jsp", user);
-        } catch (Exception e) {
+        } catch (Throwable e) {
             throw new ServletException("Couldn't initialize UserFactory", e);
         }
 

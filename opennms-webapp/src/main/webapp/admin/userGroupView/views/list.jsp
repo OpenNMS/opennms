@@ -56,7 +56,7 @@
 		ViewFactory.init();
 		viewFactory = ViewFactory.getInstance();
 		views = viewFactory.getViews();
-	} catch(Exception e) {
+	} catch(Throwable e) {
 	  	throw new ServletException("View:change " + e.getMessage());
 	}
 %>

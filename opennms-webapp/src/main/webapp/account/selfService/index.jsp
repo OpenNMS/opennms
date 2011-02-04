@@ -55,7 +55,7 @@
        		if (!user.isReadOnly()) {
        		    canEdit = true;
        		}
-	    } catch (Exception e) {
+	    } catch (Throwable e) {
 	    	throw new ServletException("Couldn't initialize UserFactory", e);
 	    }
 	}

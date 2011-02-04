@@ -206,7 +206,7 @@ public class JdbcFilterDao implements FilterDao, InitializingBean {
         } catch (SQLException e) {
             log().info("SQL Exception occurred getting node map: " + e, e);
             throw new FilterParseException("SQL Exception occurred getting node map: " + e);
-        } catch (Exception e) {
+        } catch (Throwable e) {
             log().fatal("Exception getting database connection: " + e, e);
             throw new UndeclaredThrowableException(e);
         } finally {
@@ -264,7 +264,7 @@ public class JdbcFilterDao implements FilterDao, InitializingBean {
         } catch (SQLException e) {
             log().info("SQL Exception occurred getting IP Service List: " + e, e);
             throw new FilterParseException("SQL Exception occurred getting IP Service List: " + e);
-        } catch (Exception e) {
+        } catch (Throwable e) {
             log().fatal("Exception getting database connection: " + e, e);
             throw new UndeclaredThrowableException(e);
         } finally {
@@ -324,7 +324,7 @@ public class JdbcFilterDao implements FilterDao, InitializingBean {
         } catch (SQLException e) {
             log().info("SQL Exception occurred getting IP List: " + e, e);
             throw new FilterParseException("SQL Exception occurred getting IP List: " + e);
-        } catch (Exception e) {
+        } catch (Throwable e) {
             log().fatal("Exception getting database connection: " + e, e);
             throw new UndeclaredThrowableException(e);
         } finally {
@@ -395,7 +395,7 @@ public class JdbcFilterDao implements FilterDao, InitializingBean {
         } catch (SQLException e) {
             log().warn("SQL Exception occurred testing rule \""+ rule + "\" for matching results: " + e, e);
             throw new FilterParseException("SQL Exception occurred testing rule \""+ rule + "\" for matching results: " + e);
-        } catch (Exception e) {
+        } catch (Throwable e) {
             log().fatal("Exception getting database connection: " + e, e);
             throw new UndeclaredThrowableException(e);
         } finally {

@@ -77,7 +77,7 @@ public class Jsr160ConnectionFactory {
                 MBeanServerConnection connection = connector.getMBeanServerConnection();
                 
                 connectionWrapper = new Jsr160ConnectionWrapper(connector, connection);
-            } catch(Exception e) {
+            } catch(Throwable e) {
                 log.warn("Unable to get MBeanServerConnection: " + url);
             }
         }
@@ -119,7 +119,7 @@ public class Jsr160ConnectionFactory {
 
                 connectionWrapper = new Jsr160ConnectionWrapper(connector, connection);
                 
-            } catch(Exception e) {
+            } catch(Throwable e) {
                 log.error("Unable to get MBeanServerConnection: " + url, e);
             }
         }
@@ -162,7 +162,7 @@ public class Jsr160ConnectionFactory {
 
                 connectionWrapper = new Jsr160ConnectionWrapper(connector, connection);
                 
-            } catch(Exception e) {
+            } catch(Throwable e) {
                 e.fillInStackTrace();
                 log.error("Unable to get MBeanServerConnection", e);
             }
@@ -206,7 +206,7 @@ public class Jsr160ConnectionFactory {
 
                 connectionWrapper = new Jsr160ConnectionWrapper(connector, connection);
                 
-            } catch(Exception e) {
+            } catch(Throwable e) {
                 e.fillInStackTrace();
                 log.error("Unable to get MBeanServerConnection", e);
             }

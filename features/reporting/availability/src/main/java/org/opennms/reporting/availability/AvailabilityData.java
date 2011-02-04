@@ -349,9 +349,9 @@ public class AvailabilityData {
                 report.setSectionCount(m_sectionIndex);
                 m_sectionIndex++;
             }
-        } catch (Exception e) {
-            log.fatal("Exception has occured", e);
-            throw e;
+        } catch (Throwable e) {
+            log.fatal("Exception has occurred", e);
+            throw new Exception(e);
         }
     }
 

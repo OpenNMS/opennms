@@ -86,7 +86,7 @@ public class SuppressOutageCheckBox implements Cell {
 				columnBuilder.getHtmlBuilder().onclick("setOutageState(this)");
 				columnBuilder.getHtmlBuilder().xclose();
 			}
-		} catch (Exception e) {
+		} catch (Throwable e) {
 		}
 
 		columnBuilder.tdEnd();

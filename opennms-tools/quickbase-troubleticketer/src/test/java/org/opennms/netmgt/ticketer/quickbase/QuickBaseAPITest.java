@@ -63,7 +63,7 @@ public class QuickBaseAPITest extends TestCase {
         } catch (QuickBaseException qdbe) {
             System.err.println("Exception in main "+ qdbe.toString()+ " error code: "+qdbe.getErrorCode() );
             qdbe.printStackTrace();
-        } catch (Exception e) {
+        } catch (Throwable e) {
             System.err.println("Exception in main "+ e.toString() );
             e.printStackTrace();
 

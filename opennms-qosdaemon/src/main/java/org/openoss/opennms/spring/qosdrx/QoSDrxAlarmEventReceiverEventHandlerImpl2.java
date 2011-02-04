@@ -233,7 +233,7 @@ public class QoSDrxAlarmEventReceiverEventHandlerImpl2 implements AlarmEventRece
 		try {
 			ossDao.init();  // initialises the node and alarm caches
 			initialised=true;
-		} catch (Exception ex){
+		} catch (Throwable ex){
 		throw new UndeclaredThrowableException(ex, this.getClass().getSimpleName()+"init() problem initialising class");
 	}
 		
@@ -243,7 +243,7 @@ public class QoSDrxAlarmEventReceiverEventHandlerImpl2 implements AlarmEventRece
 //				ossDao.updateNodeCaches();
 //				ossDao.updateAlarmCache();
 //				ossDaoIsInitialised=true;
-//			} catch (Exception ex){
+//			} catch (Throwable ex){
 //				throw new UndeclaredThrowableException(ex, this.getClass().getSimpleName()+"init() problem initialising class");
 //			}
 //		}
@@ -350,7 +350,7 @@ public class QoSDrxAlarmEventReceiverEventHandlerImpl2 implements AlarmEventRece
 							// TODO temp remove ?
 							try {
 								node =ossDao.findNodeByLabel(callingAer.getName());
-							} catch (Exception ex){
+							} catch (Throwable ex){
 								log.error(logheader+" alarmUpdateBehaviour.equals(USE_TYPE_INSTANCE) Problem looking up Node "+ex);
 							}
 
@@ -366,7 +366,7 @@ public class QoSDrxAlarmEventReceiverEventHandlerImpl2 implements AlarmEventRece
 								node.setId(new Integer(1));  // node id cannot be null
 								alarm.setNode(node); // 
 							}
-						} catch (Exception ex){
+						} catch (Throwable ex){
 							log.error(logheader+" alarmUpdateBehaviour.equals(USE_TYPE_INSTANCE) Problem looking up Node for alarm Set to default nodeID:1"+ex);
 						}
 
@@ -394,7 +394,7 @@ public class QoSDrxAlarmEventReceiverEventHandlerImpl2 implements AlarmEventRece
 								node.setId(new Integer(1));  // node id cannot be null
 								alarm.setNode(node); // 
 							}
-						} catch (Exception ex){
+						} catch (Throwable ex){
 							log.error(logheader+" alarmUpdateBehaviour.equals(USE_TYPE_INSTANCE) Problem looking up Node for alarm Set to default nodeID:1"+ex);
 						}
 					}		
@@ -451,7 +451,7 @@ public class QoSDrxAlarmEventReceiverEventHandlerImpl2 implements AlarmEventRece
 			}
 			//TODO remove			}
 		}
-		catch(Exception e){
+		catch(Throwable e){
 			log.error(logheader+" Error : ", e);
 		}
 	}
@@ -544,7 +544,7 @@ public class QoSDrxAlarmEventReceiverEventHandlerImpl2 implements AlarmEventRece
 				}
 			}
 		}
-		catch(Exception e){
+		catch(Throwable e){
 			log.error(logheader+" Error : ", e);
 		}
 	}

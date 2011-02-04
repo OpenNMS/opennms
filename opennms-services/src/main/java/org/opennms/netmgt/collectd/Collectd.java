@@ -122,7 +122,7 @@ public class Collectd extends AbstractServiceDaemon implements
             String className = System.getProperty("org.opennms.collectd.instrumentationClass", DefaultCollectdInstrumentation.class.getName());
             try { 
                 s_instrumentation = (CollectdInstrumentation) ClassUtils.forName(className, Thread.currentThread().getContextClassLoader()).newInstance();
-            } catch (Exception e) {
+            } catch (Throwable e) {
                 s_instrumentation = new DefaultCollectdInstrumentation();
             }
         }
@@ -763,7 +763,7 @@ public class Collectd extends AbstractServiceDaemon implements
             log().info("Reloading Collectd config factory");
             CollectdConfigFactory.reload();
             refreshServicePackages();
-        } catch (Exception e) {
+        } catch (Throwable e) {
             log().error(
                         "Failed to reload CollectdConfigFactory because "
                                 + e.getMessage(), e);
@@ -811,7 +811,7 @@ public class Collectd extends AbstractServiceDaemon implements
             SnmpPeerFactory.saveCurrent();
             log().debug("configureSNMPHandler: process complete. "+info);
             
-        } catch (Exception e) {
+        } catch (Throwable e) {
             log().error("configureSNMPHandler: ",e);
         }
     }
@@ -1113,7 +1113,7 @@ public class Collectd extends AbstractServiceDaemon implements
                 ebldr = new EventBuilder(EventConstants.RELOAD_DAEMON_CONFIG_SUCCESSFUL_UEI, "Collectd");
                 ebldr.addParam(EventConstants.PARM_DAEMON_NAME, daemonName);
                 ebldr.addParam(EventConstants.PARM_CONFIG_FILE_NAME, targetFile);
-            } catch (Exception e) {
+            } catch (Throwable e) {
                 log().error("handleReloadDaemonConfig: Error reloading configuration: " + e, e);
                 ebldr = new EventBuilder(EventConstants.RELOAD_DAEMON_CONFIG_FAILED_UEI, "Collectd");
                 ebldr.addParam(EventConstants.PARM_DAEMON_NAME, daemonName);

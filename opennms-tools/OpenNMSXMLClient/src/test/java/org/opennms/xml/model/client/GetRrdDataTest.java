@@ -62,7 +62,7 @@ public class GetRrdDataTest  {
 		
 		try {
 		   result = basicHttpMethods.sendGetRequest(opennmsUrl+"/opennms/summary/results.htm", requestParameters, username, password);
-	    } catch (Exception e) {
+	    } catch (Throwable e) {
 	    	e.printStackTrace();
 	    	fail("exception caught in basicHttpMethods: "+e);
 	    }

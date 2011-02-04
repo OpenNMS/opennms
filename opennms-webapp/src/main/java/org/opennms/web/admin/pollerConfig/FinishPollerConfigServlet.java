@@ -86,7 +86,7 @@ public class FinishPollerConfigServlet extends HttpServlet {
             } else {
                 throw new ServletException("Event proxy object is null, unable to send event " + newEvent.getUei());
             }
-        } catch (Exception e) {
+        } catch (Throwable e) {
             throw new ServletException("Could not send event " + newEvent.getUei(), e);
         }
 

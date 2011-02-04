@@ -117,7 +117,7 @@ public class DBManager extends Manager {
         m_factory = new SimpleDbConnectionFactory();
         try {
             m_factory.init(url, driver, user, password);
-        } catch (Exception e) {
+        } catch (Throwable e) {
             throw new MapsException(
                                     "Error while initializing dbconnection factory",
                                     e);
@@ -158,7 +158,7 @@ public class DBManager extends Manager {
                     Vault.releaseDbConnection(conn);
                 }
             }
-        } catch (Exception e) {
+        } catch (Throwable e) {
             log.error("Exception while releasing connection");
             throw new MapsException(e);
         }
@@ -174,7 +174,7 @@ public class DBManager extends Manager {
         log.debug("finalizing...");
         try {
             releaseConnection(conn);
-        } catch (Exception e) {
+        } catch (Throwable e) {
             log.error("Exception while finalizing", e);
             throw new MapsException(e);
         }
@@ -186,7 +186,7 @@ public class DBManager extends Manager {
             conn.setAutoCommit(false);
             conn.setTransactionIsolation(Connection.TRANSACTION_READ_COMMITTED);
             return conn;
-        } catch (Exception e) {
+        } catch (Throwable e) {
             log.error("error while starting session");
             throw new MapsException(e);
         }
@@ -198,7 +198,7 @@ public class DBManager extends Manager {
             conn.commit();
             conn.setAutoCommit(true);
             releaseConnection(conn);
-        } catch (Exception e) {
+        } catch (Throwable e) {
             log.error("error while ending session");
             throw new MapsException(e);
         }
@@ -638,7 +638,7 @@ public class DBManager extends Manager {
             statement.close();
 
             return el;
-        } catch (Exception e) {
+        } catch (Throwable e) {
             log.error("Exception while getting element with elementid=" + id
                     + " and mapid=" + mapId);
             throw new MapsException(e);
@@ -691,7 +691,7 @@ public class DBManager extends Manager {
             rs.close();
             statement.close();
 
-        } catch (Exception e1) {
+        } catch (Throwable e1) {
             log.error("Error while completing element (" + e.getId()
                     + ") with label and icon ", e1);
             throw new MapsException(e1);
@@ -724,7 +724,7 @@ public class DBManager extends Manager {
             DbElement[] el = new DbElement[elements.size()];
             el = elements.toArray(el);
             return el;
-        } catch (Exception e) {
+        } catch (Throwable e) {
             log.error("Exception while getting all elements");
             throw new MapsException(e);
         } finally {
@@ -751,7 +751,7 @@ public class DBManager extends Manager {
             rs.close();
             statement.close();
             return el;
-        } catch (Exception e) {
+        } catch (Throwable e) {
             log.error("Exception while getting elements of map with mapid="
                     + mapid);
             throw new MapsException(e);
@@ -778,7 +778,7 @@ public class DBManager extends Manager {
             rs.close();
             statement.close();
             return el;
-        } catch (Exception e) {
+        } catch (Throwable e) {
             log.error("Exception while getting element node of map with mapid "
                     + mapid);
             throw new MapsException(e);
@@ -806,7 +806,7 @@ public class DBManager extends Manager {
             rs.close();
             statement.close();
             return el;
-        } catch (Exception e) {
+        } catch (Throwable e) {
             log.error("Exception while getting map element of map with mapid "
                     + mapid);
             throw new MapsException(e);
@@ -833,7 +833,7 @@ public class DBManager extends Manager {
             rs.close();
             statement.close();
             return el;
-        } catch (Exception e) {
+        } catch (Throwable e) {
             log.error("Exception while getting elements by label like "
                     + elementLabel);
             throw new MapsException(e);
@@ -874,7 +874,7 @@ public class DBManager extends Manager {
                 maps.put(parentId, childs);
             }
             return maps;
-        } catch (Exception e) {
+        } catch (Throwable e) {
             log.error("Exception while getting maps parent-child structure");
             throw new MapsException(e);
         } finally {
@@ -899,7 +899,7 @@ public class DBManager extends Manager {
             rs.close();
             statement.close();
             return count;
-        } catch (Exception e) {
+        } catch (Throwable e) {
             log.error("Exception while counting maps");
             throw new MapsException(e);
         } finally {
@@ -921,7 +921,7 @@ public class DBManager extends Manager {
             statement.close();
 
             return map;
-        } catch (Exception e) {
+        } catch (Throwable e) {
             log.error("Exception while getting map with mapid=" + id);
             throw new MapsException(e);
         } finally {
@@ -948,7 +948,7 @@ public class DBManager extends Manager {
             rs.close();
             statement.close();
             return el;
-        } catch (Exception e) {
+        } catch (Throwable e) {
             log.error("Exception while getting maps with name=" + mapname
                     + " and type=" + maptype);
             throw new MapsException(e);
@@ -979,7 +979,7 @@ public class DBManager extends Manager {
             rs.close();
             statement.close();
             return el;
-        } catch (Exception e) {
+        } catch (Throwable e) {
             log.error("Exception while getting all Maps");
             throw new MapsException(e);
         } finally {
@@ -1008,7 +1008,7 @@ public class DBManager extends Manager {
             statement.close();
             // conn.close();
             return maps;
-        } catch (Exception e) {
+        } catch (Throwable e) {
             log.error("Exception while getting maps by label like "
                     + mapLabel);
             throw new MapsException(e);
@@ -1037,7 +1037,7 @@ public class DBManager extends Manager {
             statement.close();
 
             return maps;
-        } catch (Exception e) {
+        } catch (Throwable e) {
             log.error("Exception while getting elements with label "
                     + mapLabel);
             throw new MapsException(e);
@@ -1066,7 +1066,7 @@ public class DBManager extends Manager {
             statement.close();
 
             return maps;
-        } catch (Exception e) {
+        } catch (Throwable e) {
             log.error("Exception while getting container maps of element with id/type "
                     + id + "/" + type);
             throw new MapsException(e);
@@ -1100,7 +1100,7 @@ public class DBManager extends Manager {
             statement.close();
             // conn.close();
             return el;
-        } catch (Exception e) {
+        } catch (Throwable e) {
             log.error("Exception while getting all map-menu");
             throw new MapsException(e);
         } finally {
@@ -1125,7 +1125,7 @@ public class DBManager extends Manager {
             // conn.close();
 
             return mm;
-        } catch (Exception e) {
+        } catch (Throwable e) {
             log.error("Exception while getting map-menu for mapid " + mapId);
             throw new MapsException(e);
         } finally {
@@ -1153,7 +1153,7 @@ public class DBManager extends Manager {
             statement.close();
             // conn.close();
             return maps;
-        } catch (Exception e) {
+        } catch (Throwable e) {
             log.error("Exception while getting all map-menu for map named "
                     + mapLabel);
             throw new MapsException(e);
@@ -1183,7 +1183,7 @@ public class DBManager extends Manager {
             rs.close();
             statement.close();
             return maps;
-        } catch (Exception e) {
+        } catch (Throwable e) {
             log.error("Exception while getting all map-menu for owner "
                     + owner);
             throw new MapsException(e);
@@ -1213,7 +1213,7 @@ public class DBManager extends Manager {
             rs.close();
             statement.close();
             return maps;
-        } catch (Exception e) {
+        } catch (Throwable e) {
             log.error("Exception while getting all map-menu for group "
                     + group);
             throw new MapsException(e);
@@ -1248,7 +1248,7 @@ public class DBManager extends Manager {
             rs.close();
             statement.close();
             return maps;
-        } catch (Exception e) {
+        } catch (Throwable e) {
             log.error("Exception while getting other map for access ");
             throw new MapsException(e);
         } finally {
@@ -1263,7 +1263,7 @@ public class DBManager extends Manager {
             DbElement element = null;
             element = getElement(elementId, mapId, type);
             return (element != null);
-        } catch (Exception e) {
+        } catch (Throwable e) {
             throw new MapsException(e);
         }
     }
@@ -1294,7 +1294,7 @@ public class DBManager extends Manager {
             rs.close();
             statement.close();
             return elements;
-        } catch (Exception e) {
+        } catch (Throwable e) {
             log.error("Exception while getting all element infos", e);
             throw new MapsException(e);
         } finally {
@@ -1327,7 +1327,7 @@ public class DBManager extends Manager {
             statement.close();
             // conn.close();
             return elems;
-        } catch (Exception e) {
+        } catch (Throwable e) {
             log.error("Exception while getting outaged elements");
             throw new MapsException(e);
         } finally {
@@ -1428,7 +1428,7 @@ public class DBManager extends Manager {
                     avail = rs.getDouble(2);
                     retMap.put(new Integer(nodeid), new Double(avail));
                 }
-            } catch (Exception e) {
+            } catch (Throwable e) {
                 throw new MapsException(e);
             } finally {
                 releaseConnection(conn);
@@ -1454,7 +1454,7 @@ public class DBManager extends Manager {
             statement.close();
             // conn.close();
             return label;
-        } catch (Exception e) {
+        } catch (Throwable e) {
             log.error("Exception while getting name of map with mapid " + id);
             throw new MapsException(e);
         } finally {
@@ -1484,7 +1484,7 @@ public class DBManager extends Manager {
             statement.close();
             // conn.close();
             return elements;
-        } catch (Exception e) {
+        } catch (Throwable e) {
             log.error("Exception while getting deleted nodes");
             throw new MapsException(e);
         } finally {
@@ -1928,7 +1928,7 @@ public class DBManager extends Manager {
             rs.close();
             stmt.close();
 
-        } catch (Exception e) {
+        } catch (Throwable e) {
             log.error(
                       "Exception while getting links on elements " + allnodes,
                       e);
@@ -1959,7 +1959,7 @@ public class DBManager extends Manager {
             }
             rs.close();
             stmt.close();
-        } catch (Exception e) {
+        } catch (Throwable e) {
             throw new MapsException(
                                     "Exception while getting nodes by source label "
                                             + e);
@@ -1982,7 +1982,7 @@ public class DBManager extends Manager {
             }
             rs.close();
             stmt.close();
-        } catch (Exception e) {
+        } catch (Throwable e) {
             throw new MapsException("Exception while getting all nodes " + e);
         } finally {
             releaseConnection(conn);
@@ -2022,7 +2022,7 @@ public class DBManager extends Manager {
             isThere = !rs.next();
             rs.close();
             stmt.close();
-        } catch (Exception e) {
+        } catch (Throwable e) {
             throw new MapsException("Exception while getting mapid " + e);
         } finally {
             releaseConnection(conn);
@@ -2045,7 +2045,7 @@ public class DBManager extends Manager {
             isThere = !rs.next();
             rs.close();
             stmt.close();
-        } catch (Exception e) {
+        } catch (Throwable e) {
             throw new MapsException("Exception while getting nodeid " + e);
         } finally {
             releaseConnection(conn);

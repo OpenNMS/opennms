@@ -171,7 +171,7 @@ public final class GpPlugin extends AbstractPlugin {
                 isAServer = false;
                 e.fillInStackTrace();
                 log.debug("IOException occurred. Check for proper operation of " + script);
-            } catch (Exception e) {
+            } catch (Throwable e) {
                 isAServer = false;
                 e.fillInStackTrace();
                 log.debug(script + " Exception occurred");

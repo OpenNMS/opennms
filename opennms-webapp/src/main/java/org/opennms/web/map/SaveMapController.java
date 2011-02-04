@@ -194,7 +194,7 @@ public class SaveMapController implements Controller {
 			    map.setId(mapId);
 
 			bw.write(ResponseAssembler.getSaveMapResponse(map));
-		} catch (Exception e) {
+		} catch (Throwable e) {
 			log.error("Map save error: " + e,e);
 			bw.write(ResponseAssembler.getMapErrorResponse(MapsConstants.SAVEMAP_ACTION));
 		} finally {

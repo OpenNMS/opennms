@@ -128,7 +128,7 @@ public final class JdbcEventWriter extends AbstractJdbcPersister implements Even
                 log().warn("JdbcEventWriter: Error inserting event into the datastore: " + e, e);
                 try {
                     connection.rollback();
-                } catch (Exception e2) {
+                } catch (Throwable e2) {
                     log().warn("JdbcEventWriter: Rollback of transaction failed: " + e2, e2);
                 }
 
@@ -137,7 +137,7 @@ public final class JdbcEventWriter extends AbstractJdbcPersister implements Even
                 log().warn("JdbcEventWriter: Error inserting event into the datastore: " + e, e);
                 try {
                     connection.rollback();
-                } catch (Exception e2) {
+                } catch (Throwable e2) {
                     log().warn("JdbcEventWriter: Rollback of transaction failed: " + e2, e2);
                 }
 

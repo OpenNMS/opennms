@@ -115,7 +115,7 @@ public class TemporaryDatabaseExecutionListener extends AbstractTestExecutionLis
         m_database.setPopulateSchema(jtd == null? true : (jtd.populate() && !useExisting));
         try {
             m_database.create();
-        } catch (Exception e) {
+        } catch (Throwable e) {
             System.err.printf("TemporaryDatabaseExecutionListener.prepareTestInstance: error while creating database: %s\n", e.getMessage());
         }
         

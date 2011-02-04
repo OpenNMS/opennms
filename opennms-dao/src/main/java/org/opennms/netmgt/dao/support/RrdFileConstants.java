@@ -90,7 +90,7 @@ public class RrdFileConstants extends Object {
         try {
             // if the directory name is an integer
             Integer.parseInt(file.getName());
-        } catch (Exception e) {
+        } catch (Throwable e) {
             return false;
         }
 
@@ -134,7 +134,7 @@ public class RrdFileConstants extends Object {
         try {
             // if the directory name is an integer
             Integer.parseInt(file.getName());
-        } catch (Exception e) {
+        } catch (Throwable e) {
         
             // if the domain dir contains queryable interface directories, then
             // it is queryable

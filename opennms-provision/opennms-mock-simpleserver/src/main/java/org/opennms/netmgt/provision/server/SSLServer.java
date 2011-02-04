@@ -98,7 +98,7 @@ public class SSLServer extends SimpleServer{
                     BufferedReader in = new BufferedReader(new InputStreamReader(getSocket().getInputStream()));
                     attemptConversation(in, out);
 
-                }catch(Exception e){
+                }catch(Throwable e){
                     throw new UndeclaredThrowableException(e);
                 } finally {
                     try {

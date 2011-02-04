@@ -113,7 +113,7 @@ public class ZipSystemReportFormatter extends AbstractSystemReportFormatter impl
                     while ((len = is.read(buf)) > 0) {
                         m_zipOutputStream.write(buf, 0, len);
                     }
-                } catch (Exception e) {
+                } catch (Throwable e) {
                     LogUtils.warnf(this, e, "Unable to read resource '%s'", resource);
                     return;
                 } finally {

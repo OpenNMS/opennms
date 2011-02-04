@@ -116,12 +116,9 @@ public class PollableServiceConfig implements PollConfig, ScheduleInterval {
             PollStatus result = monitor.poll(m_service, getParameters());
             ThreadCategory.getInstance(getClass()).debug("Finish polling "+m_service+" using pkg "+m_pkg.getName()+" result ="+result);
             return result;
-        } catch (Exception e) {
+        } catch (Throwable e) {
             ThreadCategory.getInstance(getClass()).error("Unexpected exception while polling "+m_service+". Marking service as DOWN", e);
             return PollStatus.down("Unexpected exception while polling "+m_service+". "+e);
-        } catch (Error e) {
-            ThreadCategory.getInstance(getClass()).error("Unexpected error while polling "+m_service+". Marking service as DOWN", e);
-            return PollStatus.down("Unexpected error while polling "+m_service+". "+e);
         }
     }
 

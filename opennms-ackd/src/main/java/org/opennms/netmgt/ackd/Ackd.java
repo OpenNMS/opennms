@@ -105,7 +105,7 @@ public class Ackd implements SpringServiceDaemon, DisposableBean {
     
             //fairly arbitrary time (grin)
             m_executor.awaitTermination(10, TimeUnit.SECONDS);
-        } catch (Exception e) {
+        } catch (Throwable e) {
             log().error("destroy: error destorying readers."+e, e);
             m_executor.shutdownNow();
         }
@@ -143,7 +143,7 @@ public class Ackd implements SpringServiceDaemon, DisposableBean {
             
             try {
                 adjustReaderState(reader, AckReaderState.STARTED, allowedStates, reloadConfig);
-            } catch (Exception e) {
+            } catch (Throwable e) {
                 log().error("startReaders: Could not start reader: "+reader.getName(), e);
                 continue;
             }
@@ -171,7 +171,7 @@ public class Ackd implements SpringServiceDaemon, DisposableBean {
             
             try {
                 adjustReaderState(reader, AckReaderState.STOPPED, allowedStates, false);
-            } catch (Exception e) {
+            } catch (Throwable e) {
                 log().error("startReaders: Could not stop reader: "+reader.getName(), e);
             }
             
@@ -191,7 +191,7 @@ public class Ackd implements SpringServiceDaemon, DisposableBean {
             
             try {
                 adjustReaderState(reader, AckReaderState.PAUSED, allowedStates, false);
-            } catch (Exception e) {
+            } catch (Throwable e) {
                 log().error("startReaders: Could not pause reader: "+reader.getName(), e);
             }
         }
@@ -207,7 +207,7 @@ public class Ackd implements SpringServiceDaemon, DisposableBean {
             
             try {
                 adjustReaderState(reader, AckReaderState.RESUMED, allowedStates, false);
-            } catch (Exception e) {
+            } catch (Throwable e) {
                 log().error("startReaders: Could not resume reader: "+reader.getName(), e);
             }
         }
@@ -344,7 +344,7 @@ public class Ackd implements SpringServiceDaemon, DisposableBean {
                         
                         log().debug("handleReloadConfigEvent: restarting readers due to reload configuration event...");
                         this.restartReaders(true);
-                    } catch (Exception e) {
+                    } catch (Throwable e) {
                         log().error("handleReloadConfigEvent: "+e, e);
                         EventBuilder bldr = new EventBuilder(
                                                              EventConstants.RELOAD_DAEMON_CONFIG_FAILED_UEI, 

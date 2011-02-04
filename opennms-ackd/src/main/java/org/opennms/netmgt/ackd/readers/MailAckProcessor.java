@@ -369,7 +369,7 @@ class MailAckProcessor implements AckProcessor {
             log().info("run: Processing mail acknowledgments (opposed to femail acks ;)..." );
             findAndProcessAcks();
             log().info("run: Finished processing mail acknowledgments." );
-        } catch (Exception e) {
+        } catch (Throwable e) {
             log().debug("run: threw exception: "+e, e);
         } finally {
             log().debug("run: method completed.");

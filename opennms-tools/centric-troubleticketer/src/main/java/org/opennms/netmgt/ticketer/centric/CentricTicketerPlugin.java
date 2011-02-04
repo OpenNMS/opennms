@@ -88,7 +88,7 @@ public class CentricTicketerPlugin implements Plugin {
                 Element response = xml.getFirstChild("response");
                 Element errorText = XMLUtils.getFirstChild(response, "errorText");
                 return errorText.getTextContent();
-            } catch (Exception e) {
+            } catch (Throwable e) {
             	throw new CentricPluginException(e);
             }
         }
@@ -104,7 +104,7 @@ public class CentricTicketerPlugin implements Plugin {
 
 			private static final long serialVersionUID = -2279922257910422937L;
 			
-			public CentricPluginException(Exception e) {
+			public CentricPluginException(Throwable e) {
 				super(e);
 			}
         	

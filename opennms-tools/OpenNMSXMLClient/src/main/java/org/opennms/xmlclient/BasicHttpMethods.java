@@ -102,7 +102,7 @@ public class BasicHttpMethods  {
 				rd.close();
 				result = sb.toString();
 
-			} catch (Exception e) {
+			} catch (Throwable e) {
 				throw new Exception("problem issuing get to URL", e);
 			}
 		}

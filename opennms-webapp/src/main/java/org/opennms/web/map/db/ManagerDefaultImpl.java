@@ -213,7 +213,7 @@ public class ManagerDefaultImpl implements Manager {
         List<String> categories = new ArrayList<String>();
         try {
             CategoryFactory.init();
-        } catch (Exception e) {
+        } catch (Throwable e) {
             throw new MapsException("Error while getting categories.", e);
         }
         final CatFactory cf = CategoryFactory.getInstance();
@@ -791,7 +791,7 @@ public class ManagerDefaultImpl implements Manager {
                     }
                 }
             }
-        } catch (Exception e) {
+        } catch (Throwable e) {
             log.error("Exception while getting icons by sysoid");
             throw new MapsException(e);
         }
@@ -1641,7 +1641,7 @@ public class ManagerDefaultImpl implements Manager {
                     ve.setLabel(hve.getLabel());
                     log.debug("preserving label map is hidden: label found: " + hve.getLabel());
                 }
-            } catch (Exception e) {
+            } catch (Throwable e) {
                log.debug("No Hidden Element found for id: " +ve.getId()+ve.getType()); 
             }
             map.addElement(ve);

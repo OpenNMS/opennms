@@ -68,7 +68,7 @@ public class DeleteUserServlet extends HttpServlet {
             UserFactory.init();
             UserManager userFactory = UserFactory.getInstance();
             userFactory.deleteUser(userID);
-        } catch (Exception e) {
+        } catch (Throwable e) {
             throw new ServletException("Error deleting user " + userID, e);
         }
 

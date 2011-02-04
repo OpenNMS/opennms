@@ -204,7 +204,7 @@ public class EventTranslator extends AbstractServiceDaemon implements EventListe
             log().debug("onEvent: configuration reloaded.");
             ebldr = new EventBuilder(EventConstants.RELOAD_DAEMON_CONFIG_SUCCESSFUL_UEI, getName());
             ebldr.addParam(EventConstants.PARM_DAEMON_NAME, "Translator");
-        } catch (Exception exception) {
+        } catch (Throwable exception) {
             log().error("onEvent: reload config failed:"+e, exception);
             ebldr = new EventBuilder(EventConstants.RELOAD_DAEMON_CONFIG_FAILED_UEI, getName());
             ebldr.addParam(EventConstants.PARM_DAEMON_NAME, "Translator");

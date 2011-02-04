@@ -151,7 +151,7 @@ public class AbstractFeed implements Feed {
             StringWriter writer = new StringWriter();
             output.output(feed, writer);
             return writer.toString();
-        } catch (Exception e) {
+        } catch (Throwable e) {
             log().warn("unable to render feed", e);
             return "";
         }

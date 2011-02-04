@@ -180,7 +180,7 @@ public class ServletInitializer extends Object {
             
             try {
                 DataSourceFactory.init();
-            } catch (Exception e) {
+            } catch (Throwable e) {
                 throw new ServletException("Could not initialize data source factory: " + e, e);
             }
             
@@ -230,7 +230,7 @@ public class ServletInitializer extends Object {
                 factory.destroy();
                 factory = null;
             }
-        } catch (Exception e) {
+        } catch (Throwable e) {
             throw new ServletException("Could not destroy the database connection factory", e);
         }
     }

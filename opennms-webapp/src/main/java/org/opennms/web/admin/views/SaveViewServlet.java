@@ -72,7 +72,7 @@ public class SaveViewServlet extends HttpServlet {
             try {
                 ViewFactory viewFactory = ViewFactory.getInstance();
                 viewFactory.saveView(newView.getName(), newView);
-            } catch (Exception e) {
+            } catch (Throwable e) {
                 throw new ServletException("Error saving view " + newView.getName(), e);
             }
         }

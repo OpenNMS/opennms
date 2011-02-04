@@ -71,7 +71,7 @@ public class UpdateNotifdStatusServlet extends HttpServlet {
             } else {
                 NotifdConfigFactory.getInstance().turnNotifdOff();
             }
-        } catch (Exception e) {
+        } catch (Throwable e) {
             new ServletException("Could not update notification status: " + e.getMessage(), e);
         }
 

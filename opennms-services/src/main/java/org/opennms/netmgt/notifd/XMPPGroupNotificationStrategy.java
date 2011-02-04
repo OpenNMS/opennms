@@ -118,7 +118,7 @@ public class XMPPGroupNotificationStrategy implements NotificationStrategy {
 
 			xmppManager.sendGroupChat(parsedArgs[XMPP_TO],parsedArgs[XMPP_MESSAGE]);
 
-		} catch (Exception e) {
+		} catch (Throwable e) {
 			ThreadCategory.getInstance(getClass()).error(e.getMessage());
 			return 1;
 		}

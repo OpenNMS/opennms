@@ -184,7 +184,7 @@ public class AvailabilityReport extends Object {
                        startMonth, startDate, startYear);
         try {
             marshalReport();
-        } catch (Exception e) {
+        } catch (Throwable e) {
             log().fatal("Exception: " + e, e);
         }
     }
@@ -218,7 +218,7 @@ public class AvailabilityReport extends Object {
             reportSource.fillReport(categoryName, m_report, reportFormat,
                                  monthFormat, startMonth,
                                  startDate, startYear);
-        } catch (Exception e) {
+        } catch (Throwable e) {
             log().fatal("Exception: " + e, e);
         }
     }
@@ -248,7 +248,7 @@ public class AvailabilityReport extends Object {
                                     + "/share/reports/AvailReport.xml");
             }
             fileWriter.close();
-        } catch (Exception e) {
+        } catch (Throwable e) {
             log().fatal("Exception: " + e, e);
         }
     }
@@ -283,7 +283,7 @@ public class AvailabilityReport extends Object {
             } else {
                 new HTMLReportRenderer().render(fileReader, out, new InputStreamReader(new FileInputStream(xsltFileName), "UTF-8"));
             }
-        } catch (Exception e) {
+        } catch (Throwable e) {
             log().fatal("Exception: " + e, e);
         }
         if (log().isInfoEnabled()) {
@@ -411,7 +411,7 @@ public class AvailabilityReport extends Object {
                                     + pdfFileName + " format -> " + format);
                 log().info("Generated Report ... and saved as " + pdfFileName);
             }
-        } catch (Exception e) {
+        } catch (Throwable e) {
             log().fatal("Exception " + e, e);
         }
     }

@@ -48,7 +48,7 @@ public final class Main {
                 formatter.printHelp("syslog-profiler", "You must specify your OpenNMS home.", options, null);
                 System.exit(1);
             }
-        } catch (Exception e) {
+        } catch (Throwable e) {
             LogUtils.warnf(Main.class, e, "An error occurred trying to parse the command-line.");
         }
         

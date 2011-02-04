@@ -145,7 +145,7 @@ public class DateFilterPredicate implements Predicate
                 match = true;
             }
         }
-        catch (Exception e)
+        catch (Throwable e)
         {
             logger.error("FilterPredicate.evaluate() had problems", e);
         }
@@ -217,7 +217,7 @@ public class DateFilterPredicate implements Predicate
                     return StringUtils.contains(valueStr, search);
                 }
             }
-            catch (Exception e)
+            catch (Throwable e)
             {
                 logger.error(
                     "The parse was incorrectly defined for date String [" +

@@ -52,7 +52,7 @@ public class Actiond implements ActiondMBean {
     	
     	try {
 			ActiondConfigFactory.init();
-		} catch (Exception e) {
+		} catch (Throwable e) {
 			throw new UndeclaredThrowableException(e);
 		}
     	ActiondConfigFactory actiondConfig = ActiondConfigFactory.getInstance();

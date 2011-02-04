@@ -169,7 +169,7 @@ public class Reportd implements SpringServiceDaemon {
                 ebldr = new EventBuilder(EventConstants.RELOAD_DAEMON_CONFIG_SUCCESSFUL_UEI, "Reportd");
                 ebldr.addParam(EventConstants.PARM_DAEMON_NAME, "Reportd");
 
-            } catch (Exception ex) {
+            } catch (Throwable ex) {
 
                 LogUtils.errorf(this, ex, "handleReloadConfigurationEvent: Error reloading configuration: %s", ex.getMessage());
                 ebldr = new EventBuilder(EventConstants.RELOAD_DAEMON_CONFIG_FAILED_UEI, "Reportd");

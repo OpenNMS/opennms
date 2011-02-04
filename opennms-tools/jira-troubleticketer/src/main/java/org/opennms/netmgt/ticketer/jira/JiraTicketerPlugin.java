@@ -107,13 +107,13 @@ public class JiraTicketerPlugin implements Plugin {
 
         try {
             jira.setJira(jiraSoapServiceGetter.getJirasoapserviceV2(jiraUrl));
-        } catch (Exception e) {
+        } catch (Throwable e) {
             log().error("Failed initialzing JiraConnection" + e);
         }
 	log().debug("Jira factory: " + jiraSoapServiceGetter.getJirasoapserviceV2Address());
         try {
             jira.setToken(jira.getJira().login(getProperties().getProperty("jira.username"), getProperties().getProperty("jira.password")));
-        } catch (Exception e) {
+        } catch (Throwable e) {
             log().error("Login failure: " + e);
         }
 
@@ -270,7 +270,7 @@ public class JiraTicketerPlugin implements Plugin {
                 comment.setAuthor(getProperties().getProperty("jira.username"));
                 jira.getJira().addComment(jira.getToken(), ticket.getId(), comment);
                 log().error("Ticket ID: " + addedIssue.getKey());
-            } catch (Exception e) {
+            } catch (Throwable e) {
                 log().error("Error: Could not create a Jira issue id " + e);
             }
         } else {

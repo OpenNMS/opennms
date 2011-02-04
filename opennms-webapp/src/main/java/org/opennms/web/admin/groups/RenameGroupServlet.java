@@ -63,7 +63,7 @@ public class RenameGroupServlet extends HttpServlet {
     public void doPost(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
         try {
         	GroupFactory.init();
-        } catch (Exception e) {
+        } catch (Throwable e) {
         	throw new ServletException("RenameGroupServlet: Error initialising group factory." + e);
         }
         GroupManager groupFactory = GroupFactory.getInstance();
@@ -78,7 +78,7 @@ public class RenameGroupServlet extends HttpServlet {
         boolean hasGroup = false;
         try {
         	hasGroup = groupFactory.hasGroup(newName);
-        } catch (Exception e) {
+        } catch (Throwable e) {
         	throw new ServletException("Can't determine if group " + newName + " already exists in groups.xml.", e);
         }
         if (hasGroup) {
@@ -86,7 +86,7 @@ public class RenameGroupServlet extends HttpServlet {
         } else {
 	        try {
 	            groupFactory.renameGroup(groupName, newName);
-	        } catch (Exception e) {
+	        } catch (Throwable e) {
 	            throw new ServletException("Error renaming group " + groupName + " to " + newName, e);
 	        }
 	

@@ -222,7 +222,7 @@ final public class GpMonitor extends AbstractServiceMonitor {
             	
             	serviceStatus = logDown(Level.DEBUG, "IOException occurred. Check for proper operation of " + script, e);
             	
-            } catch (Exception e) {
+            } catch (Throwable e) {
             	
             	serviceStatus = logDown(Level.DEBUG, script + "Exception occurred", e);
             	

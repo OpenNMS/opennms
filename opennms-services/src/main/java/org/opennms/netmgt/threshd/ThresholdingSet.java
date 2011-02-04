@@ -112,7 +112,7 @@ public abstract class ThresholdingSet {
                 if (log().isDebugEnabled()) {
                     log().debug("initialize: Adding threshold group: " + thresholdGroup);
                 }
-            } catch (Exception e) {
+            } catch (Throwable e) {
                 log().error("initialize: Can't process threshold group " + groupName, e);
             }
         }

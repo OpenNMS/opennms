@@ -243,7 +243,7 @@ public class NotificationTask extends Thread {
         boolean outstanding = false;
         try {
             outstanding = getNotificationManager().noticeOutstanding(m_notifyId);
-        } catch (Exception e) {
+        } catch (Throwable e) {
             log().error("Unable to get response status on notice #" + m_notifyId, e);
         }
 
@@ -261,7 +261,7 @@ public class NotificationTask extends Thread {
                         cntct = getContactInfo(m_commands[i].getName());
                         try {
                             getNotificationManager().updateNoticeWithUserInfo(m_user.getUserId(), m_notifyId, m_commands[i].getName(), cntct, m_autoNotify);
-                        } catch (Exception e) {
+                        } catch (Throwable e) {
                             log().error("Could not insert notice info into database, aborting send notice", e);
                             continue;
                         }
@@ -377,7 +377,7 @@ public class NotificationTask extends Thread {
             } else if (m_params.containsKey(aSwitch)) {
                 value = m_params.get(aSwitch);
             }
-        } catch (Exception e) {
+        } catch (Throwable e) {
             log().error("unable to get value for parameter " + aSwitch);
         }
 

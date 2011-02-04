@@ -271,7 +271,7 @@ public class DefaultPollerFrontEnd implements PollerFrontEnd, InitializingBean, 
         public void pollService(final Integer polledServiceId) {
             try {
                 doPollService(polledServiceId);
-            } catch (Exception e) {
+            } catch (Throwable e) {
                 LogUtils.errorf(this, e, "Unexpected exception occurred while polling service ID %s.", polledServiceId);
                 setState(new FatalExceptionOccurred());
             }

@@ -100,7 +100,7 @@
 		event.setTime(EventConstants.formatToString(new java.util.Date()));
 		try {
 			Util.createEventProxy().send(event);
-		} catch (Exception e) {
+		} catch (Throwable e) {
 			throw new ServletException("Could not send event " + event.getUei(), e);
 		}
 	}

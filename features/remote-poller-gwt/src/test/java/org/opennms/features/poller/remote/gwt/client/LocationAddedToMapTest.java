@@ -102,7 +102,7 @@ public class LocationAddedToMapTest {
 
         public void placeMarker(GWTMarkerState markerState) {
             m_marker++;
-            //try { Thread.sleep(1); } catch (Exception e) {}
+            //try { Thread.sleep(1); } catch (Throwable e) {}
         }
         
         public int getMarkerCount() {

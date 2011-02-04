@@ -152,7 +152,7 @@ import javax.servlet.http.HttpServletResponse;
             getServletContext().setAttribute("roleManager", AppContext.getWebRoleManager());
             getServletContext().setAttribute("userManager", AppContext.getWebUserManager());
             getServletContext().setAttribute("groupManager", AppContext.getWebGroupManager());
-        } catch (Exception e) {
+        } catch (Throwable e) {
             throw new ServletException("Error initializing RolesServlet", e);
         }
     }

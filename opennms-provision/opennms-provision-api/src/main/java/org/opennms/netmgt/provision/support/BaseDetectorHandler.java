@@ -128,7 +128,7 @@ public class BaseDetectorHandler<Request, Response> extends IoHandlerAdapter {
                 session.close(false);
             }
             
-        }catch(Exception e){
+        }catch(Throwable e){
               if(!session.isClosing()){
                   session.close(true);
               }

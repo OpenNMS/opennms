@@ -105,7 +105,7 @@ public abstract class JMXMonitor extends AbstractServiceMonitor {
                     break;
                 }
             }
-        } catch (Exception e) {
+        } catch (Throwable e) {
             serviceStatus = logDown(Level.DEBUG, dsName+" Monitor - failed! " + ipv4Addr.getHostAddress());
         } finally {
             if (connection != null) {

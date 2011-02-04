@@ -165,7 +165,7 @@ public class SmsCommands implements CommandProvider, BundleContextAware
 
             Thread.sleep(2000);
 
-        } catch (Exception e) {
+        } catch (Throwable e) {
             intp.println("Exception Sending Message: ");
             intp.printStackTrace(e);
         } 
@@ -197,7 +197,7 @@ public class SmsCommands implements CommandProvider, BundleContextAware
         }
         try {
             m_service.sendUSSDRequest(req, gwId);
-        } catch (Exception e) {
+        } catch (Throwable e) {
             intp.println("Exception sending USSD request: " + e.getMessage());
             intp.printStackTrace(e);
         }
@@ -224,7 +224,7 @@ public class SmsCommands implements CommandProvider, BundleContextAware
             for(InboundMessage msg : msgList)
                 intp.println(msg);
 
-        }catch(Exception e){
+        }catch(Throwable e){
             intp.printStackTrace(e);
         }
 
@@ -294,7 +294,7 @@ public class SmsCommands implements CommandProvider, BundleContextAware
             printGatewayInfo(gateway, intp);
             m_port = port;
 
-        }catch(Exception e){
+        }catch(Throwable e){
             intp.printStackTrace(e);
         }
         return null;
@@ -332,7 +332,7 @@ public class SmsCommands implements CommandProvider, BundleContextAware
                 }
             }
         }
-        catch (Exception e) {
+        catch (Throwable e) {
             intp.printStackTrace(e);
         }
 
@@ -374,7 +374,7 @@ public class SmsCommands implements CommandProvider, BundleContextAware
 
             getBundleContext().registerService(GatewayGroup.class.getName(), gatewayGroup, properties);
         }
-        catch(Exception e) {
+        catch(Throwable e) {
             intp.printStackTrace(e);
         }
 
@@ -433,7 +433,7 @@ public class SmsCommands implements CommandProvider, BundleContextAware
             config.update(properties);
 
         } 
-        catch (Exception e) {
+        catch (Throwable e) {
             intp.printStackTrace(e);
         }
 

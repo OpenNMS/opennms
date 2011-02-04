@@ -68,7 +68,7 @@ public class RenameViewServlet extends HttpServlet {
             ViewFactory.init();
             ViewFactory viewFactory = ViewFactory.getInstance();
             viewFactory.renameView(viewName, newName);
-        } catch (Exception e) {
+        } catch (Throwable e) {
             throw new ServletException("Error renaming view " + viewName + " to " + newName, e);
         }
 

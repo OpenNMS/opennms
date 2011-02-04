@@ -99,7 +99,7 @@ public class LoadLabelMapController extends SimpleFormController {
             log.debug("Loading Label Map for user:" + user);
 
 			bw.write(ResponseAssembler.getLoadLabelMapResponse(manager.getNodeLabelToMaps(user)));
-		} catch (Exception e) {
+		} catch (Throwable e) {
 			log.error("Error in map's startup",e);
 			bw.write(ResponseAssembler.getMapErrorResponse(MapsConstants.LOADLABELMAP_ACTION));
 		} finally {

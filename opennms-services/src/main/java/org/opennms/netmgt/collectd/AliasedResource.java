@@ -95,7 +95,7 @@ public class AliasedResource extends SnmpCollectionResource {
             try {
                 return NodeLabel.retrieveLabel(getIfInfo().getNodeId()).getLabel();
             } 
-            catch (Exception e) {
+            catch (Throwable e) {
                 return "nodeid-" + Integer.toString(getIfInfo().getNodeId());
             }
         } else {

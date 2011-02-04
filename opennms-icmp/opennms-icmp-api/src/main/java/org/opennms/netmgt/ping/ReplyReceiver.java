@@ -329,7 +329,7 @@ public final class ReplyReceiver implements PausableFiber, Runnable {
                 }
                 process(m_portal.receive());
             }
-        } catch (Exception e) {
+        } catch (Throwable e) {
             if (log().isDebugEnabled()) {
                 log().debug("run: an exception occured processing the datagram, thread exiting");
             }

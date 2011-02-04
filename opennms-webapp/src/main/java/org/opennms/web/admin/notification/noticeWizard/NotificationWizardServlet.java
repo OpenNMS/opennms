@@ -134,12 +134,12 @@ public class NotificationWizardServlet extends HttpServlet {
          */
         try {
             NotifdConfigFactory.init();
-        } catch (Exception e) {
+        } catch (Throwable e) {
             throw new ServletException("Failed to initialize NotifdConfigFactory: " + e, e);
         }
         try {
             NotificationFactory.init();
-        } catch (Exception e) {
+        } catch (Throwable e) {
             throw new ServletException("Failed to initialize NotificationFactory: " + e, e);
         }
         
@@ -181,7 +181,7 @@ public class NotificationWizardServlet extends HttpServlet {
         if (userAction.equals("delete")) {
             try {
                 getNotificationFactory().removeNotification(request.getParameter("notice"));
-            } catch (Exception e) {
+            } catch (Throwable e) {
                 throw new ServletException("Couldn't save/reload notifications configuration file: " + e, e);
             }
 
@@ -195,7 +195,7 @@ public class NotificationWizardServlet extends HttpServlet {
         } else if (userAction.equals("on") || userAction.equals("off")) {
             try {
                 getNotificationFactory().updateStatus(request.getParameter("notice"), userAction);
-            } catch (Exception e) {
+            } catch (Throwable e) {
                 throw new ServletException("Couldn't save/reload notifications configuration file: " + e, e);
             }
             
@@ -353,7 +353,7 @@ public class NotificationWizardServlet extends HttpServlet {
         try {
             // replacing a path with a new name.
             getNotificationFactory().replaceNotification(oldName, newNotice);
-        } catch (Exception e) {
+        } catch (Throwable e) {
             throw new ServletException("Couldn't save/reload notification configuration file.", e);
         }
 
@@ -513,7 +513,7 @@ public class NotificationWizardServlet extends HttpServlet {
 
         try {
             oldNotice = getNotificationFactory().getNotification(request.getParameter("notice"));
-        } catch (Exception e) {
+        } catch (Throwable e) {
             throw new ServletException("couldn't get a copy of the notification to edit.", e);
         }
 

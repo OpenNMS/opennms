@@ -96,7 +96,7 @@ public class ReloadConfigController implements Controller {
 		try {
 		    manager.reloadConfig();
 			bw.write(ResponseAssembler.getActionOKMapResponse(MapsConstants.RELOAD_CONFIG_ACTION));
-		} catch (Exception e) {
+		} catch (Throwable e) {
 			log.error("Exception found when changing adminMode: ",e);
 			bw.write(ResponseAssembler.getMapErrorResponse(MapsConstants.RELOAD_CONFIG_ACTION));
 		} finally {

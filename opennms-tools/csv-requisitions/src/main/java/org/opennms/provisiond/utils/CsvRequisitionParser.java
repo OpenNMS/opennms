@@ -69,7 +69,7 @@ public class CsvRequisitionParser {
 			RequisitionData rd;
 			try {
 				rd = new RequisitionData(fields);
-			} catch (Exception e) {
+			} catch (Throwable e) {
 				System.err.println(e);
 				continue;
 			}

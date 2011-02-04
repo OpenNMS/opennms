@@ -40,7 +40,7 @@ public class GetNodesTest  {
 		String result = "";
 		try {
 		   result = basicHttpMethods.sendGetRequest(opennmsUrl+"/opennms/rest/nodes", "", username, password);
-	    } catch (Exception e) {
+	    } catch (Throwable e) {
 	    	fail("exception caught in basicHttpMethods: "+e);
 	    }
 		System.out.println("Returned from Test:'"+this.getClass().getName()+"' :"+result.replace("<", "\n<"));

@@ -244,7 +244,7 @@ final class Executor implements Runnable, PausableFiber {
                     log.debug("Script configuration reloaded");
                 }
 
-                catch (Exception ex) {
+                catch (Throwable ex) {
                     log.error("Unable to reload ScriptD configuration: ", ex);
                 }
             }
@@ -257,7 +257,7 @@ final class Executor implements Runnable, PausableFiber {
                 mapScripts = m_eventScriptMap.get(event.getUei());
             }
 
-            catch (Exception ex) {
+            catch (Throwable ex) {
             }
 
             if (attachedScripts.length > 0 || mapScripts != null || m_eventScripts.size() > 0) {

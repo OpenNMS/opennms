@@ -111,7 +111,7 @@ public class MapquestGeocoder implements Geocoder {
 			return new GWTLatLng(latitude, longitude);
 		} catch (GeocoderException e) {
 			throw e;
-		} catch (Exception e) {
+		} catch (Throwable e) {
 			throw new GeocoderException("unable to get lat/lng from MapQuest", e);
 		}
 	}

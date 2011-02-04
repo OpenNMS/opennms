@@ -392,7 +392,7 @@
                 }
             }
         }
-        catch(Exception e)
+        catch(Throwable e)
         {
             throw new ServletException("Couldn't open UserFactory", e);
         }
@@ -475,7 +475,7 @@
                  }
             }
         }
-        catch(Exception e)
+        catch(Throwable e)
         {
             throw new ServletException("Couldn't open GroupFactory", e);
         }

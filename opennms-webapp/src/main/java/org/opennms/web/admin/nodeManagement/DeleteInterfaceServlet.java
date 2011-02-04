@@ -94,7 +94,7 @@ public class DeleteInterfaceServlet extends HttpServlet {
     private void sendEvent(Event event) throws ServletException {
         try {
             Util.createEventProxy().send(event);
-        } catch (Exception e) {
+        } catch (Throwable e) {
             throw new ServletException("Could not send event " + event.getUei(), e);
         }
     }

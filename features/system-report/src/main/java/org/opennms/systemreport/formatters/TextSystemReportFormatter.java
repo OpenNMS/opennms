@@ -47,7 +47,7 @@ public class TextSystemReportFormatter extends AbstractSystemReportFormatter imp
                 }
                 getOutputStream().write(text.getBytes());
             }
-        } catch (Exception e) {
+        } catch (Throwable e) {
             LogUtils.errorf(this, e, "Error writing plugin data.");
         }
     }

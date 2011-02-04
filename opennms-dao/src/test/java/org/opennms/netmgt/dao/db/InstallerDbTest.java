@@ -2070,14 +2070,14 @@ public class InstallerDbTest extends TemporaryDatabaseTestCase {
         assertNoTablesHaveChanged();
     }
 
-    public void testUpdateIplikePgSql() throws Exception {
+    public void testUpdateIplikePgSql() throws Throwable {
         getInstallerDb().updatePlPgsql();
         getInstallerDb().setPostgresIpLikeLocation(null); // Ensure that we don't try to load the C version
         getInstallerDb().updateIplike();
         getInstallerDb().closeConnection();
     }
     
-    public void testCreateTableWithCheckConstraint() throws Exception {
+    public void testCreateTableWithCheckConstraint() throws Throwable {
     	final String cname="setfilter_type_valid";
     	final String checkexpression="(((type >= 0) AND (type <= 2)))";
         final String sql = "create table setFilter ( id integer, type integer, " +
@@ -2117,7 +2117,7 @@ public class InstallerDbTest extends TemporaryDatabaseTestCase {
         String partialSQL = null;
         try {
             partialSQL = getInstallerDb().getTableCreateFromSQL(tableName);
-        } catch (Exception e) {
+        } catch (Throwable e) {
             fail("Could not get SQL for table '" + tableName + "'", e);
         }
 
@@ -2134,7 +2134,7 @@ public class InstallerDbTest extends TemporaryDatabaseTestCase {
         String partialSQL = null;
         try {
             partialSQL = getInstallerDb().getTableCreateFromSQL(tableName);
-        } catch (Exception e) {
+        } catch (Throwable e) {
             fail("Could not get SQL for table '" + tableName + "'", e);
         }
 

@@ -77,7 +77,7 @@ public class NotificationDashlet extends Dashlet {
             try {
                 loading();
                 m_suveillanceService.getNotificationsForSet(surveillanceSet, this);
-            } catch (Exception e) {
+            } catch (Throwable e) {
                 onFailure(e);
             }
         }

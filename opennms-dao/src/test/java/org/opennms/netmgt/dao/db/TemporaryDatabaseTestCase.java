@@ -295,7 +295,7 @@ public class TemporaryDatabaseTestCase extends TestCase {
             public void run() {
                 try {
                     destroyTestDatabase();
-                } catch(Exception e) {
+                } catch(Throwable e) {
                     e.printStackTrace();
                 }
             }
@@ -388,7 +388,7 @@ public class TemporaryDatabaseTestCase extends TestCase {
 
         try {
             connection = getConnection();
-        } catch (Exception e) {
+        } catch (Throwable e) {
             fail("Could not get connection", e);
         }
         

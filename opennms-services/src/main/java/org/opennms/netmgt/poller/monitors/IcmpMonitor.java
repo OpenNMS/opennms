@@ -118,7 +118,7 @@ final public class IcmpMonitor extends AbstractServiceMonitor {
             long timeout = ParameterMap.getKeyedLong(parameters, "timeout", PingConstants.DEFAULT_TIMEOUT);
             
             rtt = Pinger.ping(host, timeout, retries);
-        } catch (Exception e) {
+        } catch (Throwable e) {
             log.debug("failed to ping " + host, e);
         }
         

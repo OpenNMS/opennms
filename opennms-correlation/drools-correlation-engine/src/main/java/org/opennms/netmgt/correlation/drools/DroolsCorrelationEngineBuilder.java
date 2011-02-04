@@ -323,7 +323,7 @@ public class DroolsCorrelationEngineBuilder extends PropertyEditorRegistrySuppor
             try {
                 engine.initialize();
                 return engine;
-            } catch (Exception e) {
+            } catch (Throwable e) {
                 throw new RuntimeException("Unable to initialize Drools engine "+getName(), e);
             }
         }

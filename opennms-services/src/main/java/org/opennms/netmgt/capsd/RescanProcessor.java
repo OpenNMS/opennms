@@ -801,7 +801,7 @@ public final class RescanProcessor implements Runnable {
         long speed = 0;
         try {
             speed = getInterfaceSpeed(ifte, ifxte);
-        } catch (Exception e) {
+        } catch (Throwable e) {
             log().warn("updateNonIpInterface: ifSpeed '" + ifte.getDisplayString(IfTableEntry.IF_SPEED) + "' for ifIndex " + ifIndex + " is invalid, inserting 0: " + e, e);
             speed = 0;
         }

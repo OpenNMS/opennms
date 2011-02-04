@@ -120,7 +120,7 @@ public class DefaultEndPointConfigurationDao extends AbstractCastorConfigDao<End
         }
         try {
             m_marshaller.marshal(getContainer().getObject(), file);
-        } catch (Exception e) {
+        } catch (Throwable e) {
             throw new DataAccessResourceFailureException("Could not marshal configuration file for " + getConfigResource() + ": " + e, e);
         }
     }
@@ -143,7 +143,7 @@ public class DefaultEndPointConfigurationDao extends AbstractCastorConfigDao<End
             log().info(createLoadedLogMessage(config, (endTime - startTime)));
 
             return config;
-        } catch (Exception e) {
+        } catch (Throwable e) {
             throw new JAXBDataAccessFailureException("Unable to unmarshal the endpoint configuration.", e);
         }
     }
@@ -171,7 +171,7 @@ public class DefaultEndPointConfigurationDao extends AbstractCastorConfigDao<End
             
             ValidationEventHandler handler = new DefaultValidationEventHandler();
             m_unmarshaller.setEventHandler(handler);
-        } catch (Exception e) {
+        } catch (Throwable e) {
             throw new IllegalStateException("Unable to create JAXB context.", e);
         }
 

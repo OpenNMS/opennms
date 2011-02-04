@@ -118,7 +118,7 @@ public class RefreshMapController implements Controller {
 			}else{
 				bw.write(ResponseAssembler.getRefreshResponse(map));
 			}
-		} catch (Exception e) {
+		} catch (Throwable e) {
 			log.error("Error while refreshing map. Action "+action,e);
 			bw.write(ResponseAssembler.getMapErrorResponse(action));
 		} finally {

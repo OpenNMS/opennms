@@ -79,7 +79,7 @@ public class JMXSecureConnectionFactory
                         SSLSocketFactory ssf = ctx.getSocketFactory();
                         env.put("jmx.remote.tls.socket.factory", ssf);
                     }
-                    catch (Exception e)
+                    catch (Throwable e)
                     {
                         log.error("Something bad occured: " + e.getMessage());
                         throw e;
@@ -120,7 +120,7 @@ public class JMXSecureConnectionFactory
                     break;
                 }
             }
-            catch (Exception e)
+            catch (Throwable e)
             {
                 log.error("Unable to get MBeanServerConnection: " + url);
             }

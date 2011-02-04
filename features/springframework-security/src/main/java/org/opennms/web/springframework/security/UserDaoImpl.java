@@ -164,7 +164,7 @@ public class UserDaoImpl implements UserDao, InitializingBean {
         
         try {
             GroupFactory.init();
-        } catch (Exception e) {
+        } catch (Throwable e) {
             throw new DataRetrievalFailureException("Error reading groups configuration file '" + m_groupsConfigurationFile + "': " + e.getMessage(), e);
         }
         GroupManager gm = GroupFactory.getInstance();
@@ -178,7 +178,7 @@ public class UserDaoImpl implements UserDao, InitializingBean {
                 List<String> users;
                 try {
                     users = gm.getGroup(groupname).getUserCollection();
-                } catch (Exception e) {
+                } catch (Throwable e) {
                     throw new DataRetrievalFailureException("Error reading groups configuration file '" + m_groupsConfigurationFile + "': " + e.getMessage(), e);
                 }
 

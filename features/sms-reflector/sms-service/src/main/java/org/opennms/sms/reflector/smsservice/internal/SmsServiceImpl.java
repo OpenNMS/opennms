@@ -213,7 +213,7 @@ public class SmsServiceImpl implements SmsService {
     public void start() {
         try {
             m_service.startService();
-        } catch (Exception e) {
+        } catch (Throwable e) {
             throw new RuntimeException(e);
         }
         

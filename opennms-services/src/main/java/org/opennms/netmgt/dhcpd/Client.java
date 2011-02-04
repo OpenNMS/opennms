@@ -170,7 +170,7 @@ final class Client extends Observable implements Runnable, Fiber {
                 } catch (IOException ioE) {
                     log.error("UnicastListener.run: io exception receiving response", ioE);
                     m_keepListening = false;
-                } catch (Exception E) {
+                } catch (Throwable E) {
                     log.error("UnicastListener.run: exception receiving response", E);
                     m_keepListening = false;
                 }

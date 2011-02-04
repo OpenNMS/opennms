@@ -291,7 +291,7 @@ public class Manager implements WebRoleManager, WebUserManager, WebGroupManager 
                     m_groupManager.saveRole(role);
                     m_role = role;
                 }
-            } catch (Exception e) {
+            } catch (Throwable e) {
                 throw new WebRolesException("Unable to save role "+getName()+". "+e.getMessage(), e);
             }
             
@@ -380,7 +380,7 @@ public class Manager implements WebRoleManager, WebUserManager, WebGroupManager 
     public void deleteRole(String roleName) {
         try {
             m_groupManager.deleteRole(roleName);
-        } catch (Exception e) {
+        } catch (Throwable e) {
             throw new WebRolesException("Error deleting role "+roleName+". "+e.getMessage(), e);
         }
     }
@@ -396,7 +396,7 @@ public class Manager implements WebRoleManager, WebUserManager, WebGroupManager 
         try {
             ManagedRole mgdRole = getManagedRole(webRole);
             mgdRole.save();
-        } catch (Exception e) {
+        } catch (Throwable e) {
             throw new WebRolesException("Error saving roles. "+e.getMessage(), e);
         }
     }

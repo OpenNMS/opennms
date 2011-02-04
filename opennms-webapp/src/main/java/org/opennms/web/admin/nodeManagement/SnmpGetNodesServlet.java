@@ -83,7 +83,7 @@ public class SnmpGetNodesServlet extends HttpServlet {
     public void init() throws ServletException {
         try {
             DataSourceFactory.init();
-        } catch (Exception e) {
+        } catch (Throwable e) {
         }
     }
 

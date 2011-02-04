@@ -44,7 +44,7 @@ public class XMLMarshalTest {
 
        try {
            modelImport.marshal( out);
-       } catch (Exception ex){
+       } catch (Throwable ex){
     	   System.out.println(ex);
        }
        System.out.println("returned value"+ out.toString().replace("<", "\n<"));

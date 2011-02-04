@@ -97,7 +97,7 @@ public class LoadNodesController implements Controller {
 		BufferedWriter bw = new BufferedWriter(new OutputStreamWriter(response.getOutputStream(), "UTF-8"));
 		try {
 			bw.write(ResponseAssembler.getLoadNodesResponse(manager.getElementInfo()));
-		} catch (Exception e) {
+		} catch (Throwable e) {
 			log.error("Error while loading visible maps for user:"+user,e);
 			bw.write(ResponseAssembler.getMapErrorResponse(MapsConstants.LOADNODES_ACTION));
 		} finally {

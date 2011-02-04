@@ -246,7 +246,7 @@ public class AnnotationBasedEventListenerAdapter implements StoppableEventListen
                     
                     // we found the correct handler to we are done
                     return;
-                } catch (Exception e) {
+                } catch (Throwable e) {
                     throw new UndeclaredThrowableException(e);
                 }
             }

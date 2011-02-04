@@ -710,7 +710,7 @@ final class PollerEventProcessor implements EventListener {
         try {
             getPollerConfig().update();
             getPoller().getPollOutagesConfig().update();
-		} catch (Exception e) {
+		} catch (Throwable e) {
 			LogUtils.errorf(this, e, "Failed to reload PollerConfigFactory");
 		}
         getPoller().refreshServicePackages();

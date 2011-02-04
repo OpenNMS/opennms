@@ -136,7 +136,7 @@ public class DeleteElementsController implements Controller {
 				}
 			} 
 			bw.write(ResponseAssembler.getDeleteElementsResponse(velemsids));
-		} catch (Exception e) {
+		} catch (Throwable e) {
 			log.error("Error while adding nodes for action: "+action,e);
 			bw.write(ResponseAssembler.getMapErrorResponse(action));
 		} finally {

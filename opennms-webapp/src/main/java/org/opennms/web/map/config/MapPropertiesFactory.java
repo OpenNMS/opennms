@@ -1004,7 +1004,7 @@ public class MapPropertiesFactory extends Object {
     	if(status==null){
     		try {
         		return getUnknownStatus().getId();
-    		} catch (Exception e) {
+    		} catch (Throwable e) {
     			throw new RuntimeException("Exception while getting unknown status "+e);
 			}
     	}

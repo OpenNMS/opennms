@@ -279,7 +279,7 @@ final class CollectableService implements ReadyRunnable {
             if (log().isDebugEnabled()) {
                 log().debug("sendEvent: Sent event " + uei + " for " + m_nodeId + "/" + getHostAddress() + "/" + getServiceName());
             }
-        } catch (Exception e) {
+        } catch (Throwable e) {
             log().error("Failed to send the event " + uei + " for interface " + getHostAddress() + ": " + e, e);
         }
     }

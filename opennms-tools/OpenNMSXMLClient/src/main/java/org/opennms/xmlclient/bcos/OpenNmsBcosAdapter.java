@@ -151,7 +151,7 @@ public class OpenNmsBcosAdapter implements AdapterIf {
 
 			log.debug("OpenNMSBcosAdapter add() Reply: "+ output.toString());
 
-		} catch (Exception e){
+		} catch (Throwable e){
 			log.error("OpenNMSBcosAdapter add() command error: ",e);
 			return false;
 		}
@@ -177,7 +177,7 @@ public class OpenNmsBcosAdapter implements AdapterIf {
 				log.error("OpenNMSBcosAdapter remove machine_ident= "+machine_ident+" failed ");
 				return false;
 			}
-		} catch (Exception e){
+		} catch (Throwable e){
 			log.error("OpenNMSBcosAdapter remove() command error: ",e);
 			return false;
 		}
@@ -200,7 +200,7 @@ public class OpenNmsBcosAdapter implements AdapterIf {
 				return false;
 			}
 
-		} catch (Exception e){
+		} catch (Throwable e){
 			log.error("OpenNMSBcosAdapter restart() command error: ",e);
 			return false;
 		}

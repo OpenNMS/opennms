@@ -72,7 +72,7 @@ public class ClientPropertiesLoader {
 				foreign_source= properties.getProperty("foreign_source");
 			} else log.error ("PropertiesLoader() 'foreign_source' property does not exist in '"+propertiesFilename+"' file. Using default value.");
 
-		} catch (Exception e) { 
+		} catch (Throwable e) { 
 			log.error("PropertiesLoader() unable to load '"+propertiesFilename+"' file from classpath or file path '"+path+"'. Using default properties. ");
 		} 
 		log.info("PropertiesLoader() using properties: foreign_source='"+foreign_source

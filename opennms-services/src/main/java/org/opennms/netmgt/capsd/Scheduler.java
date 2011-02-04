@@ -578,7 +578,7 @@ final class Scheduler implements Runnable, PausableFiber {
                                 if (db != null) {
                                     try {
                                         db.close();
-                                    } catch (Exception e) {
+                                    } catch (Throwable e) {
                                     }
                                 }
                             }

@@ -97,7 +97,7 @@ public class JmxDaemonStatusDaoTest extends TestCase {
 			// assert on status of a specific service
 			String status = service.getServiceStatus();
 			assertEquals("Unexpected State: ", "Started", status);
-		} catch (Exception e) {
+		} catch (Throwable e) {
 			e.printStackTrace();
 		}
 	}

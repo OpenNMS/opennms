@@ -188,7 +188,7 @@ public class Poller implements InitializingBean, PollObserver, ConfigurationChan
         try {
             unschedulePolls();
             schedulePolls();
-        } catch (Exception ex) {
+        } catch (Throwable ex) {
             log().fatal("Unable to schedule polls!", ex);
             throw new RuntimeException("Unable to schedule polls!");
         }
@@ -212,7 +212,7 @@ public class Poller implements InitializingBean, PollObserver, ConfigurationChan
                     unschedulePolls();
                 }
             }
-        } catch (Exception ex) {
+        } catch (Throwable ex) {
             log().fatal("Unable to schedule polls!", ex);
             throw new RuntimeException("Unable to schedule polls!");
         }

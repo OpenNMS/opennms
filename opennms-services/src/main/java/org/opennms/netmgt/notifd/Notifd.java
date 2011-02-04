@@ -162,7 +162,7 @@ public final class Notifd extends AbstractServiceDaemon {
         // start the event reader
         try {
             m_eventReader.init();
-        } catch (Exception e) {
+        } catch (Throwable e) {
             log().error("Failed to setup event receiver", e);
             throw new UndeclaredThrowableException(e);
         }
@@ -302,7 +302,7 @@ public final class Notifd extends AbstractServiceDaemon {
             for (NotifdQueueHandler curHandler : m_queueHandlers.values()) {
                 curHandler.stop();
             }
-        } catch (Exception e) {
+        } catch (Throwable e) {
         }
 
         if (m_eventReader != null) {

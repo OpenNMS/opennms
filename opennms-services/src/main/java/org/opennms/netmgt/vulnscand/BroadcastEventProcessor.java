@@ -161,7 +161,7 @@ final class BroadcastEventProcessor implements EventListener {
              * int newScanLevel, Date newLastScan, long newInterval))); } catch
              * (java.net.UnknownHostException ex) { log.error("onMessage: Could
              * not schedule invalid interface: \"" + event.getInterface() +
-             * "\"", ex); } catch(Exception ex) { log.error("onMessage: Failed
+             * "\"", ex); } catch(Throwable ex) { log.error("onMessage: Failed
              * to add interface \"" + event.getInterface() + "\" to suspect
              * queue", ex); }
              */

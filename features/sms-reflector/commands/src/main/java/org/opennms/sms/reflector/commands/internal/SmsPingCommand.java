@@ -30,7 +30,7 @@ public class SmsPingCommand implements Command {
             	out.println("Ping roundtrip time: " + latency);
             }
             
-        } catch (Exception e) {
+        } catch (Throwable e) {
         	err.println(e);
         }
 	}

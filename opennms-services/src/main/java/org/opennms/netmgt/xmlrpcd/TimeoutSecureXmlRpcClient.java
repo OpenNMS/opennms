@@ -107,10 +107,10 @@ public class TimeoutSecureXmlRpcClient
             TimeoutSecureXmlRpcClient client = new TimeoutSecureXmlRpcClient (url, timeout);
             try {
                 System.err.println (client.execute (method, v));
-            } catch (Exception ex) {
+            } catch (Throwable ex) {
                 System.err.println ("Error: "+ex.getMessage());
             }
-        } catch (Exception x) {
+        } catch (Throwable x) {
             System.err.println (x);
             System.err.println ("Usage: java " +
                                 TimeoutSecureXmlRpcClient.class.getName() +

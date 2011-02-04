@@ -98,7 +98,7 @@ public class CloseMapController implements Controller {
 			
 			manager.closeMap();
 			bw.write(ResponseAssembler.getActionOKMapResponse(MapsConstants.CLOSEMAP_ACTION));
-		} catch (Exception e) {
+		} catch (Throwable e) {
 			log.error(this.getClass().getName()+" Failure: "+e);
 			bw.write(ResponseAssembler.getMapErrorResponse(MapsConstants.CLOSEMAP_ACTION));
 		} finally {

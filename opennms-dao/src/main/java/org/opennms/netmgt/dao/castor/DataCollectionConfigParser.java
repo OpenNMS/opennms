@@ -228,7 +228,7 @@ public class DataCollectionConfigParser {
                 DatacollectionGroup group = CastorUtils.unmarshalWithTranslatedExceptions(DatacollectionGroup.class, in);
                 group.validate();
                 externalGroupsMap.put(group.getName(), group);
-            } catch (Exception e) {
+            } catch (Throwable e) {
                 throwException("Can't parse XML file " + file + "; nested exception: " + e.getMessage(), e);
             } finally {
                 IOUtils.closeQuietly(in);
@@ -345,7 +345,7 @@ public class DataCollectionConfigParser {
         return true;
     }
 
-    private void throwException(String msg, Exception e) {
+    private void throwException(String msg, Throwable e) {
         if (e == null) {
             log().error(msg);
             throw new DataAccessResourceFailureException(msg);

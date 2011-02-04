@@ -102,7 +102,7 @@ public class Statsd implements SpringServiceDaemon {
                     log().debug("handleRelodConfigEvent: reports rescheduled.");
                     ebldr = new EventBuilder(EventConstants.RELOAD_DAEMON_CONFIG_SUCCESSFUL_UEI, "Statsd");
                     ebldr.addParam(EventConstants.PARM_DAEMON_NAME, "Statsd");
-                } catch (Exception exception) {
+                } catch (Throwable exception) {
                     log().error("handleReloadConfigurationEvent: Error reloading configuration:"+exception, exception);
                     ebldr = new EventBuilder(EventConstants.RELOAD_DAEMON_CONFIG_FAILED_UEI, "Statsd");
                     ebldr.addParam(EventConstants.PARM_DAEMON_NAME, "Statsd");

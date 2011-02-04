@@ -63,7 +63,7 @@ public class SpikeHunter {
 		m_out = System.out;
 		try {
 			parseCmdLine(args);
-		} catch (Exception e) {
+		} catch (Throwable e) {
 			System.out.println("Error parsing command line arguments: " + e.getMessage());
 		}
 		try {

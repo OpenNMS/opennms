@@ -66,7 +66,7 @@ public class NewPasswordEntryServlet extends HttpServlet {
 		
 		try {
             UserFactory.init();
-        } catch (Exception e) {
+        } catch (Throwable e) {
             throw new ServletException("NewPasswordEntryServlet: Error initialising user factory." + e);
         }
         UserManager userFactory = UserFactory.getInstance();
@@ -77,7 +77,7 @@ public class NewPasswordEntryServlet extends HttpServlet {
                 User user = userFactory.getUser(userid);
                 userSession.setAttribute("user.newPassword.jsp", user);
             }
-            catch (Exception e) {
+            catch (Throwable e) {
                 throw new ServletException("Couldn't initialize UserFactory", e);
             }
             RequestDispatcher dispatcher = this.getServletContext().getRequestDispatcher("/account/selfService/newPassword.jsp");

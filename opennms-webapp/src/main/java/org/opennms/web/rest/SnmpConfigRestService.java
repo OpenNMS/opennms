@@ -142,7 +142,7 @@ public class SnmpConfigRestService extends OnmsRestService {
             //TODO: this shouldn't be a static call
             SnmpPeerFactory.saveCurrent();
             return Response.ok().build();
-        } catch (Exception e) {
+        } catch (Throwable e) {
             return Response.serverError().build();
         }
         
@@ -167,7 +167,7 @@ public class SnmpConfigRestService extends OnmsRestService {
             m_snmpPeerFactory.define(eventInfo);
             SnmpPeerFactory.saveCurrent();
             return Response.ok().build();
-        } catch (Exception e) {
+        } catch (Throwable e) {
             return Response.serverError().build();
         }
     }

@@ -79,7 +79,7 @@ public class NodeLabelChangeServlet extends HttpServlet {
     public void init() throws ServletException {
         try {
             this.proxy = Util.createEventProxy();
-        } catch (Exception e) {
+        } catch (Throwable e) {
             throw new ServletException("JMS Exception", e);
         }
     }
@@ -118,7 +118,7 @@ public class NodeLabelChangeServlet extends HttpServlet {
             response.sendRedirect(Util.calculateUrlBase(request) + "/element/node.jsp?node=" + nodeIdString);
         } catch (SQLException e) {
             throw new ServletException("Database exception", e);
-        } catch (Exception e) {
+        } catch (Throwable e) {
             throw new ServletException("Exception sending node label change event", e);
         }
     }

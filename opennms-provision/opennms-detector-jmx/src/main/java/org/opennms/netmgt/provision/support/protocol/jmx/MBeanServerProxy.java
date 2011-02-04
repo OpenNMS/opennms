@@ -80,7 +80,7 @@ public class MBeanServerProxy implements InvocationHandler {
         Method method = serverClass.getMethod(m.getName(),m.getParameterTypes());
        try {
            return method.invoke(this.remoteServer, args);
-       } catch (Exception e) {
+       } catch (Throwable e) {
            throw e;
        }
     }

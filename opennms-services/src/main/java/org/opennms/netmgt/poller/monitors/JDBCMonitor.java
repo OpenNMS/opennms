@@ -190,7 +190,7 @@ public class JDBCMonitor extends AbstractServiceMonitor {
 		try {
 			String driverClass = ParameterMap.getKeyedString(parameters, "driver", DBTools.DEFAULT_JDBC_DRIVER);
 			driver = (Driver)Class.forName(driverClass).newInstance();
-		} catch (Exception exp) {
+		} catch (Throwable exp) {
 			throw new RuntimeException("Unable to load driver class: "+exp.toString(), exp);
 		}
 

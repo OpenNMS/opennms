@@ -81,7 +81,7 @@ public class HttpNotificationStrategyTest extends OpenNMSTestCase {
         arguments.add(arg);
         
         ns.send(arguments);
-        } catch (Exception e) {
+        } catch (Throwable e) {
             e.printStackTrace();
             fail("Caught Exception:");
         }

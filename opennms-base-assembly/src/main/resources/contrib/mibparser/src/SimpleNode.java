@@ -273,7 +273,7 @@ public class SimpleNode
       oids.setNumericOid(baseNumericOID + ".1");
       oidNames.put("enterprises", oids);
     }
-    catch (Exception e) {
+    catch (Throwable e) {
       System.err.println("exception during oidNames init" + e.getMessage());
     }
   }

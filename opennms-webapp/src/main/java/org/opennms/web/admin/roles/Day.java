@@ -145,7 +145,7 @@ public class Day {
             }
             
             return entries.toArray(new CalendarEntry[entries.size()]);
-        } catch (Exception e) {
+        } catch (Throwable e) {
             throw new WebRolesException("Unable to get schedule entries: " + e.getMessage(), e);
         }
     }

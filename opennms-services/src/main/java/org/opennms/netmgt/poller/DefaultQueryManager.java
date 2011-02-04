@@ -431,7 +431,7 @@ public class DefaultQueryManager implements QueryManager {
                 Updater updater = new Updater(getDataSource(), sql);
                 updater.execute(values);
                 notUpdated = false;
-            } catch (Exception e) {
+            } catch (Throwable e) {
                 if (attempt > 1) {
                     log().fatal("openOutage: Second and final attempt failed opening outage for "+nodeId+":"+ipAddr+":"+svcName, e);
                 } else {
@@ -465,7 +465,7 @@ public class DefaultQueryManager implements QueryManager {
                 Updater updater = new Updater(getDataSource(), sql);
                 updater.execute(values);
                 notUpdated = false;
-            } catch (Exception e) {
+            } catch (Throwable e) {
                 if (attempt > 1) {
                     log().fatal("resolveOutage: Second and final attempt failed resolving outage for "+nodeId+":"+ipAddr+":"+svcName, e);
                 } else {
@@ -490,7 +490,7 @@ public class DefaultQueryManager implements QueryManager {
 
             Updater updater = new Updater(getDataSource(), sql);
             updater.execute(values);
-        } catch (Exception e) {
+        } catch (Throwable e) {
             log().fatal(" Error reparenting outage for "+oldNodeId+":"+ipAddr+" to "+newNodeId, e);
         }
         

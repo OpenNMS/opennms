@@ -258,7 +258,7 @@
                     buffer.append("<option VALUE=" + key + ">" + key + "</option>");
                  }
             }
-         } catch (Exception e)
+         } catch (Throwable e)
          {
             throw new ServletException("couldn't get destination path list.", e);
          }

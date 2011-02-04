@@ -161,7 +161,7 @@ public class OpenMapController implements Controller {
 			
 			bw.write(ResponseAssembler.getMapResponse(map));
 
-		} catch (Exception e) {
+		} catch (Throwable e) {
 			log.error("Error while opening map with id:"+mapIdStr+", for user:"+user,e);
 			bw.write(ResponseAssembler.getMapErrorResponse(MapsConstants.OPENMAP_ACTION));
 		} finally {

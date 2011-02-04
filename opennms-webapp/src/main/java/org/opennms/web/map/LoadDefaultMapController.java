@@ -100,7 +100,7 @@ public class LoadDefaultMapController implements Controller {
 		try {
 		    VMapInfo mapInfo  = manager.getDefaultMapsMenu(user);
 			bw.write(ResponseAssembler.getLoadDefaultMapResponse(mapInfo));
-		} catch (Exception e) {
+		} catch (Throwable e) {
 			log.error("Error while loading default map for user:"+user,e);
 			bw.write(ResponseAssembler.getMapErrorResponse(MapsConstants.LOADDEFAULTMAP_ACTION));
 		} finally {

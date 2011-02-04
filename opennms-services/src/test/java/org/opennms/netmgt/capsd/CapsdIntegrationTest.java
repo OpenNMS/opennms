@@ -55,7 +55,7 @@ public class CapsdIntegrationTest extends OpenNMSIntegrationTestCase {
    protected String[] getConfigLocations() {
        try {
         setupOpenNMSHomeDir();
-    } catch (Exception e) {
+    } catch (Throwable e) {
         // TODO Auto-generated catch block
         e.printStackTrace();
     }

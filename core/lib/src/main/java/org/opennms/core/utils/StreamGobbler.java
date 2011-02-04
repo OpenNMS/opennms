@@ -176,7 +176,7 @@ public class StreamGobbler extends Thread {
                 }
             }
 
-        } catch (Exception e) {
+        } catch (Throwable e) {
         	// if we're not passing the exception on, why bother?
         }
 

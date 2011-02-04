@@ -102,7 +102,7 @@ public class InventoryService implements InitializingBean {
                 return true;
             }
             return false;
-        }catch (Exception e){
+        }catch (Throwable e){
             return false;
         }
     }
@@ -142,7 +142,7 @@ public class InventoryService implements InitializingBean {
                 }
             }
 
-        }catch (Exception e){
+        }catch (Throwable e){
             return false;
         }
         return true;
@@ -698,7 +698,7 @@ public class InventoryService implements InitializingBean {
           }
           RWSClientApi.updateRWSRancidNode(m_cp, rn);
       }
-      catch (Exception e){
+      catch (Throwable e){
           log().debug("switchStatus has given exception on node "  + groupName+"/"+deviceName + " "+ e.getMessage() );
           return false;
       }
@@ -720,7 +720,7 @@ public class InventoryService implements InitializingBean {
             RancidNode rn = RWSClientApi.getRWSRancidNodeTLO(m_cp, groupName, deviceName);
             RWSClientApi.deleteRWSRancidNode(m_cp, rn);
         }
-        catch (Exception e){
+        catch (Throwable e){
             log().debug("deleteNodeOnRouterDb has given exception on node "  + groupName+"/"+deviceName + " "+ e.getMessage() );
             return false;
         }
@@ -752,7 +752,7 @@ public class InventoryService implements InitializingBean {
             }
             RWSClientApi.updateRWSRancidNode(m_cp, rn);
         }
-        catch (Exception e){
+        catch (Throwable e){
             log().debug("updateNodeOnRouterDb has given exception on node "  + groupName+"/"+deviceName + " "+ e.getMessage() );
             return false;
         }
@@ -784,7 +784,7 @@ public class InventoryService implements InitializingBean {
             }
             RWSClientApi.createRWSRancidNode(m_cp, rn);
         }
-        catch (Exception e){
+        catch (Throwable e){
             log().debug("createNodeOnRouterDb has given exception on node "  + groupName+"/"+deviceName + " "+ e.getMessage() );
             return false;
         }
@@ -826,7 +826,7 @@ public class InventoryService implements InitializingBean {
           RWSClientApi.createOrUpdateRWSAuthNode(m_cp,rna);
           log().debug("InventoryService ModelAndView updateClogin changes submitted");
         }
-        catch (Exception e){
+        catch (Throwable e){
             log().debug("updateClogin has given exception on node "  + deviceName + " "+ e.getMessage() );
             return false;
         }
@@ -848,7 +848,7 @@ public class InventoryService implements InitializingBean {
           RWSClientApi.deleteRWSAuthNode(m_cp,rna);
           log().debug("InventoryService ModelAndView updateClogin changes submitted");
         }
-        catch (Exception e){
+        catch (Throwable e){
             log().debug("updateClogin has given exception on node "  + deviceName + " "+ e.getMessage() );
             return false;
         }
@@ -870,7 +870,7 @@ public class InventoryService implements InitializingBean {
           RWSClientApi.deleteBucketItem(m_cp, bucket, filename);
           log().debug("InventoryService ModelAndView deleteBucketItem changes submitted");
         }
-        catch (Exception e){
+        catch (Throwable e){
             log().debug("deleteBucketItem has given exception on node "  + bucket + " "+ e.getMessage() );
             return false;
         }
@@ -889,7 +889,7 @@ public class InventoryService implements InitializingBean {
           RWSClientApi.deleteBucket(m_cp, bucket);
           log().debug("InventoryService ModelAndView deleteBucket changes submitted");
         }
-        catch (Exception e){
+        catch (Throwable e){
             log().debug("deleteBucket has given exception on node "  + bucket + " "+ e.getMessage() );
             return false;
         }
@@ -908,7 +908,7 @@ public class InventoryService implements InitializingBean {
           RWSClientApi.createBucket(m_cp, bucket);
           log().debug("InventoryService ModelAndView createBucket changes submitted");
         }
-        catch (Exception e){
+        catch (Throwable e){
             log().debug("createBucket has given exception on node "  + bucket + " "+ e.getMessage() );
             return false;
         }

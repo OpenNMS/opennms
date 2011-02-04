@@ -291,7 +291,7 @@ public class Column {
         } else {
         	try {
         		this.setSize(columnTypeSize(this.getType()));
-        	} catch (Exception e) {
+        	} catch (Throwable e) {
         		throw new Exception("Could not determine size for column " + getName() + ".  Chained: " + e.getMessage(), e);
         	}
         	

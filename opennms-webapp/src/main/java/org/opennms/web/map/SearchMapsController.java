@@ -165,7 +165,7 @@ public class SearchMapsController implements Controller {
                                          mapWidth, mapHeight,velems);
             log.debug("Got search map from manager "+map);
 			bw.write(ResponseAssembler.getMapResponse(map));
-		} catch (Exception e) {
+		} catch (Throwable e) {
 			log.error("Error while adding Maps: ",e);
 			bw.write(ResponseAssembler.getMapErrorResponse(MapsConstants.SEARCHMAPS_ACTION));
 		} finally {

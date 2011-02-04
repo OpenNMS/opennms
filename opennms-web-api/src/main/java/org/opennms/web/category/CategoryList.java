@@ -97,7 +97,7 @@ public class CategoryList {
     public CategoryList() throws ServletException {
         try {
             m_model = CategoryModel.getInstance();
-        } catch (Exception e) {
+        } catch (Throwable e) {
             log().error("failed to instantiate the category model: " + e, e);
             throw new ServletException("failed to instantiate the category model: " + e, e);
         }
@@ -115,7 +115,7 @@ public class CategoryList {
             } else {
                 log().debug("did not find display rules from viewsdisplay.xml");
             }
-        } catch (Exception e) {
+        } catch (Throwable e) {
             log().error("Couldn't open viewsdisplay factory on categories box: " + e, e);
         }
     }

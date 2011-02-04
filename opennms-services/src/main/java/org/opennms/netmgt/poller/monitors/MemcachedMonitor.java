@@ -161,7 +161,7 @@ final public class MemcachedMonitor extends AbstractServiceMonitor {
                                 if (statProps.containsKey(key)) {
                                     statProps.put(key, value);
                                 }
-                            } catch (Exception e) {
+                            } catch (Throwable e) {
                                 // ignore errors parsing
                             }
                         } else if (statEntry[0].equals("END")) {

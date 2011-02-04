@@ -169,7 +169,7 @@ public class OnmsAlarmOssjMapper {
 		try {
 			return alarmUpdateBehaviourStr[aub];
 		}
-		catch (Exception ex){
+		catch (Throwable ex){
 			return "getAlarmUpdateBehaviourForInt INVALID_VALUE:"+aub;
 		}
 	}
@@ -292,7 +292,7 @@ public class OnmsAlarmOssjMapper {
 								// TODO temp remove ?
 								try {
 									node =ossDao.findNodeByLabel(defaultUpdateNodeLabel);
-								} catch (Exception ex){
+								} catch (Throwable ex){
 									log.error(logheader+" alarmUpdateBehaviour.equals(USE_TYPE_INSTANCE) Problem looking up Node "+ex);
 								}
 
@@ -308,7 +308,7 @@ public class OnmsAlarmOssjMapper {
 									node.setId(new Integer(1));  // node id cannot be null
 									onmsAlarm.setNode(node); // 
 								}
-							} catch (Exception ex){
+							} catch (Throwable ex){
 								log.error(logheader+" alarmUpdateBehaviour.equals(USE_TYPE_INSTANCE) Problem looking up Node for alarm Set to default nodeID:1"+ex);
 							}
 
@@ -336,7 +336,7 @@ public class OnmsAlarmOssjMapper {
 									node.setId(new Integer(1));  // node id cannot be null
 									onmsAlarm.setNode(node); // 
 								}
-							} catch (Exception ex){
+							} catch (Throwable ex){
 								log.error(logheader+" alarmUpdateBehaviour.equals(USE_TYPE_INSTANCE) Problem looking up Node for alarm Set to default nodeID:1"+ex);
 							}
 						}		
@@ -381,7 +381,7 @@ public class OnmsAlarmOssjMapper {
 				}
 			}
 		}
-		catch(Exception e){
+		catch(Throwable e){
 			log.error(logheader+" Error : ", e);
 		}
 		return onmsAlarm;
@@ -463,7 +463,7 @@ public class OnmsAlarmOssjMapper {
 			}
 
 
-		} catch (Exception e ){
+		} catch (Throwable e ){
 			log.error(logheader+": Problem getting ACK time information", e);
 		}
 
@@ -477,7 +477,7 @@ public class OnmsAlarmOssjMapper {
 				_uei_no_html = matcher.replaceAll(" "); // remove any HTML tags from uei
 			}
 			alarmValueSpecification.setAlarmType((_openNMSalarm.getX733AlarmType()==null) ? javax.oss.fm.monitor.AlarmType.EQUIPMENT_ALARM :  _openNMSalarm.getX733AlarmType());
-		} catch (Exception e) {
+		} catch (Throwable e) {
 			log.error(logheader+": Problem getting  X733AlarmType or Uei", e);
 		}
 
@@ -528,7 +528,7 @@ public class OnmsAlarmOssjMapper {
 							+ managedObjectInstance +" ManagedObjectType:"+managedObjectType);
 				}
 			}
-			catch(Exception ex) {
+			catch(Throwable ex) {
 				log.error(logheader+": Problem getting node and asset information", ex);
 			}
 		} else { // is a received alarm
@@ -539,7 +539,7 @@ public class OnmsAlarmOssjMapper {
 				if (log.isDebugEnabled()) log.debug(logheader+": isQoSDrxAlarm=TRUE  OpenNMS type and instance set. Using from OnmsAlarm: ManagedObjectInstance: "
 						+ managedObjectInstance +" ManagedObjectType:"+managedObjectType);
 			} 
-			catch(Exception ex)	{
+			catch(Throwable ex)	{
 				log.error(logheader+": Problem managedObjectInstance or managedObjectType", ex);
 			}
 
@@ -559,7 +559,7 @@ public class OnmsAlarmOssjMapper {
 			alarmValueSpecification.setProbableCause((short)_openNMSalarm.getX733ProbableCause());
 
 		}
-		catch (Exception e) {
+		catch (Throwable e) {
 			log.error(logheader+": Problem getting severity or probable cause: ", e );
 		}
 
@@ -606,7 +606,7 @@ public class OnmsAlarmOssjMapper {
 				String x733ProbableCause;
 				try {
 					x733ProbableCause= OOSSProbableCause.getStringforEnum((short) _openNMSalarm.getX733ProbableCause());
-				}catch (Exception e){
+				}catch (Throwable e){
 					x733ProbableCause="X733 Probable Cause Incorrectly Defined";
 				}
 
@@ -628,7 +628,7 @@ public class OnmsAlarmOssjMapper {
 						"<asset.address2>" + assetAddress2 + "</asset.address2>" + "\n            "+  //TODO - was used for object instance
 						"<asset.description>" + assetDescription + "</asset.description>" + "\n");    //TODO - was used for object instancetype
 
-			} catch (Exception e){
+			} catch (Throwable e){
 				log.error(logheader+": Problem setting description, logmessage or operator instrctions: ", e );
 			}
 
@@ -647,7 +647,7 @@ public class OnmsAlarmOssjMapper {
 				if (null == _description ) _description = "NOT_SET";
 				alarmValueSpecification.setAdditionalText(_description);
 
-			} catch (Exception e){
+			} catch (Throwable e){
 				log.error(logheader+": Problem setting description, logmessage or operator instrctions: ", e );
 			}
 		}
@@ -660,7 +660,7 @@ public class OnmsAlarmOssjMapper {
 			ak.setAlarmPrimaryKey(Integer.toString(_openNMSalarm.getId()));
 			ak.setPrimaryKey(ak.getAlarmPrimaryKey());
 		}
-		catch (Exception e) {
+		catch (Throwable e) {
 			log.error(logheader+": Problem setting AlarmKey: ", e );
 		}
 

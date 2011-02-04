@@ -376,7 +376,7 @@ public abstract class AbstractSystemReportPlugin implements SystemReportPlugin {
                     Object value;
                     try {
                         value = method.invoke(o);
-                    } catch (Exception e) {
+                    } catch (Throwable e) {
                         value = e;
                     }
                     final String key = method.getName().replaceFirst("^get", "").replaceAll("([A-Z])", " $1").replaceFirst("^ ", "").replaceAll("\\bVm\\b", "VM");

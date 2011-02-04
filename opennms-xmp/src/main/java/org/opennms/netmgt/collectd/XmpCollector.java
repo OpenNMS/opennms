@@ -331,14 +331,14 @@ public class XmpCollector implements ServiceCollector {
 
         try {
             XmpCollectionFactory.init();
-        } catch (Exception e) {
+        } catch (Throwable e) {
             log().error("initialize: XmpCollectionFactory failed to initialize");
             throw new UndeclaredThrowableException(e);
         }
         
         try {
             XmpPeerFactory.init();
-        } catch (Exception e) {
+        } catch (Throwable e) {
             log().error("initialize: XmpPeerFactory failed to initialize");
             throw new UndeclaredThrowableException(e);
         }
@@ -348,7 +348,7 @@ public class XmpCollector implements ServiceCollector {
 
         try {
             XmpConfigFactory.init();
-        } catch (Exception e) {
+        } catch (Throwable e) {
             log().error("initialize: config factory failed to initialize");
             throw new UndeclaredThrowableException(e);
         }

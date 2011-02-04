@@ -118,7 +118,7 @@ public class MsgTrackerCommands implements CommandProvider
 
             intp.println("Response: "+ cb.getResponse());
 
-        } catch (Exception e) {
+        } catch (Throwable e) {
             intp.printStackTrace(e);
         }
         
@@ -151,7 +151,7 @@ public class MsgTrackerCommands implements CommandProvider
 
             intp.println("Response: "+ cb.getResponse());
 
-        } catch (Exception e) {
+        } catch (Throwable e) {
             intp.printStackTrace(e);
         }
     }

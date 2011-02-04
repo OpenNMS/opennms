@@ -98,7 +98,7 @@ public class ClearMapController implements Controller {
 		try {
 			manager.clearMap();
 			bw.write(ResponseAssembler.getActionOKMapResponse(MapsConstants.CLEAR_ACTION));
-		} catch (Exception e) {
+		} catch (Throwable e) {
 			log.error("Error while doing clear map ",e);
 			bw.write(ResponseAssembler.getMapErrorResponse(MapsConstants.CLEAR_ACTION));
 		} finally {

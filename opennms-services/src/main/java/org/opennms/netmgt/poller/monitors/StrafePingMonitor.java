@@ -162,7 +162,7 @@ final public class StrafePingMonitor extends AbstractServiceMonitor {
             returnval.put("response-time", CollectionMath.average(responseTimes));
 
             serviceStatus.setProperties(returnval);
-        } catch (Exception e) {
+        } catch (Throwable e) {
             log.debug("failed to ping " + host, e);
         }
 

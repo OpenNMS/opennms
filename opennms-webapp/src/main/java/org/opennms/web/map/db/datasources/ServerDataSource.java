@@ -118,7 +118,7 @@ public class ServerDataSource implements DataSourceInterface {
 					dbConnFactory.init(url,driver,user,password);
 					externalConn = dbConnFactory.getConnection();
 				}				
-			}catch(Exception s){
+			}catch(Throwable s){
 				log.error("Error while getting db Connection from Vault "+s);
 				throw new RuntimeException(s);
 			}
@@ -163,7 +163,7 @@ public class ServerDataSource implements DataSourceInterface {
 
 		try {
 			if (!isInitialized()) init();
-		} catch (Exception e) {
+		} catch (Throwable e) {
 			log.error("exiting: error found " + e);
 			return "-1";
 		}
@@ -252,7 +252,7 @@ public class ServerDataSource implements DataSourceInterface {
 
 		try {
 			if (!isInitialized()) init();
-		} catch (Exception e) {
+		} catch (Throwable e) {
 			log.error("exiting: error found " + e);
 			return result;
 		}

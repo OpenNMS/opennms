@@ -1064,7 +1064,7 @@ public final class EventUtil {
 		        if (stmt != null) {
 		            try {
 		                stmt.close();
-		            } catch (Exception e) {
+		            } catch (Throwable e) {
 		                // do nothing
 		            }
 		        }
@@ -1117,7 +1117,7 @@ public final class EventUtil {
 	            if (stmt != null) {
 	                try {
 	                    stmt.close();
-	                } catch (Exception e) {
+	                } catch (Throwable e) {
 	                    // do nothing
 	                }
 	            }
@@ -1200,7 +1200,7 @@ public final class EventUtil {
                         if (stmt != null) {
                             try {
                                 stmt.close();
-                            } catch (Exception e) {
+                            } catch (Throwable e) {
                                 // do nothing
                             }
                         }

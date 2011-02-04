@@ -163,7 +163,7 @@ public class NativeSocketTest {
 
                         printf("Received Response: %s from %s:%d\n", response, r.getAddress().getHostAddress(), r.getPort());
                     }
-                } catch (Exception e) {
+                } catch (Throwable e) {
                     e.printStackTrace();
                 }
             }

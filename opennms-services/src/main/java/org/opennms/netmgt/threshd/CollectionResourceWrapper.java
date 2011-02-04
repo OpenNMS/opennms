@@ -226,7 +226,7 @@ public class CollectionResourceWrapper {
                 return false;
             if(Integer.parseInt(m_ifindex) < 0)
                 return false;
-        } catch(Exception e) {
+        } catch(Throwable e) {
             return false;
         }
         return true;
@@ -322,7 +322,7 @@ public class CollectionResourceWrapper {
             if (value == null) { // Find value on saved string attributes                
                 value = ResourceTypeUtils.getStringProperty(resourceDirectory, ds);
             }
-        } catch (Exception e) {
+        } catch (Throwable e) {
             log().info("getLabelValue: Can't get value for attribute " + ds + " for resource " + m_resource + ". " + e, e);
         }
         return value;

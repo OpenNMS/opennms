@@ -48,7 +48,7 @@ public class JavaMailDeliveryService implements ReportDeliveryService {
         } catch (MessagingException e) {
             LogUtils.errorf(this, e, "Problem with Messaging %s", e.getMessage());
             throw new ReportDeliveryException("Caught MessagingException: " + e.getMessage());
-        } catch (Exception e) {
+        } catch (Throwable e) {
             LogUtils.errorf(this, e, "Unexpected exception: %s",e.getMessage());
             throw new ReportDeliveryException("Caught unexpected " + e.getClass().getName() + ": " + e.getMessage());
         }

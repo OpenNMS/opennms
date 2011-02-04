@@ -404,7 +404,7 @@ public class QoSDimpl2 extends AbstractServiceDaemon implements PausableFiber, E
 			//send alarm list rebuilt event to EJB via the connection manager thread.
 			alarmListConnectionManager.reset_list("openNMS just restarted - alarm list rebuilt. Time:"+new Date()); // send an alarm list rebuilt event
 		}
-		catch(Exception iae) {
+		catch(Throwable iae) {
 			log.error("Qosd.start(): Exception caught starting alarmListConnectionManager", iae);
 			throw new UndeclaredThrowableException(iae);
 		}
@@ -418,7 +418,7 @@ public class QoSDimpl2 extends AbstractServiceDaemon implements PausableFiber, E
 //			ossDao.updateNodeCaches();
 			log.info("Qosd.start(): Set up ossDao call back interface to QoSD for forwarding changes to alarm list");
 			ossDao.setQoSD(this);
-		} catch (Exception ex) {
+		} catch (Throwable ex) {
 			log.error("Qosd.start(): Exception caught setting callback interface from ossDao", ex);
 			throw new UndeclaredThrowableException(ex);
 		}
@@ -430,7 +430,7 @@ public class QoSDimpl2 extends AbstractServiceDaemon implements PausableFiber, E
 			openNMSEventHandlerThread.setOssDao(ossDao);
 			openNMSEventHandlerThread.init();
 			openNMSEventHandlerThread.start();
-		} catch (Exception ex) {
+		} catch (Throwable ex) {
 			log.error("Qosd.start(): Exception caught initialising OpenNMSEventHandlerThread", ex);
 			throw new UndeclaredThrowableException(ex);
 		}
@@ -470,20 +470,20 @@ public class QoSDimpl2 extends AbstractServiceDaemon implements PausableFiber, E
 
 		try {
 			unregisterListener();	//unregister the OpenNMS event listener
-		} catch(Exception ex) {
+		} catch(Throwable ex) {
 			log.error("stop() Error unregistering the OpenNMS event listener. Error:", ex);
 		}
 
 
 		try {
 			openNMSEventHandlerThread.kill();
-		} catch(Exception ex) {
+		} catch(Throwable ex) {
 			log.error("stop() Error killing openNMSEventHandlerThread. Error:", ex);
 		}
 
 		try {
 			alarmListConnectionManager.kill();	//kill the connection thread
-		} catch(Exception ex) {
+		} catch(Throwable ex) {
 			log.error("stop() Error killing alarmListConnectionManager. Error:", ex);
 		}
 
@@ -629,7 +629,7 @@ public class QoSDimpl2 extends AbstractServiceDaemon implements PausableFiber, E
 		try {
 			if (log.isDebugEnabled()) log.debug("sendAlarms() using ossDao to get current alarm list");
 			onmsAlarmUpdateList=ossDao.getAlarmCache();
-		} catch(Exception ex) {
+		} catch(Throwable ex) {
 			//problems contacting the PostgreSQL database
 			log.error("sendAlarms() Cannot retrieve alarms from ossDao.getAlarmCache()", ex);
 			throw new UndeclaredThrowableException(ex, "sendAlarms() Cannot retrieve alarms from ossDao.getAlarmCache()");
@@ -674,7 +674,7 @@ public class QoSDimpl2 extends AbstractServiceDaemon implements PausableFiber, E
 							// alarms which are ACKNOWLEDGED and CLEARED are included in this current alarm list
 							if (log.isDebugEnabled()) log.debug("sendAlarms() including ACKNOWLEDGED and CLEARED alarms in alarm in list");
 							ossjAlarmUpdateList.put(ossjAlarm.getAlarmKey(), ossjAlarm); 
-						} catch (Exception e) {
+						} catch (Throwable e) {
 							log.error("sendAlarms() error putting alarm in alarmList", e);
 						}
 
@@ -688,16 +688,16 @@ public class QoSDimpl2 extends AbstractServiceDaemon implements PausableFiber, E
 							else if (ossjAlarm.getPerceivedSeverity() != javax.oss.fm.monitor.PerceivedSeverity.CLEARED ){
 								ossjAlarmUpdateList.put(ossjAlarm.getAlarmKey(), ossjAlarm);	// put all uncleared acknowledged alarms in list			
 							}
-						} catch (Exception e) {
+						} catch (Throwable e) {
 							log.error("sendAlarms() error in alarmACKState or PercievedSeverity - check alarm definitons", e);
 						}*/
-					} catch (Exception ex) {
+					} catch (Throwable ex) {
 						log.error("sendAlarms() error trying to populate alarm - alarm disguarded - check alarm definitons", ex);
 					}
 				}
 			}
 		}
-		catch (Exception ex){
+		catch (Throwable ex){
 			log.error("Qosd.sendAlarms(): Problem when building alarm list:", ex);
 			throw new UndeclaredThrowableException(ex, "Qosd.sendAlarms(): Problem when building alarm list");
 		}
@@ -717,7 +717,7 @@ public class QoSDimpl2 extends AbstractServiceDaemon implements PausableFiber, E
 
 			alarmListConnectionManager.send(ossjAlarmUpdateList);
 		}
-		catch (Exception ex){
+		catch (Throwable ex){
 			log.error("Qosd.sendAlarms(): Problem when sending alarm list:", ex);
 			throw new UndeclaredThrowableException(ex,"Qosd.sendAlarms(): Problem when sending alarm list");
 		}
