@@ -90,6 +90,7 @@ public class DefaultReportStoreServiceTest {
         replay(m_reportCatalogDao);
         
         m_reportStoreService.save(reportCatalogEntry);
+        m_reportStoreService.flush();
         verify(m_reportCatalogDao);
         
     }
