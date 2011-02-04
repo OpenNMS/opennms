@@ -66,7 +66,7 @@ FROM(	SELECT
 		FROM
 			outages, service, events, node
 		WHERE
-			(iflostservice, ifregainedservice) OVERLAPS ('Thu Jan 20 00:00:00 EST 2011'::TIMESTAMP, 'Thu Jan 20 00:00:00 EST 2011'::TIMESTAMP + '7 days'::INTERVAL) AND
+			(iflostservice, ifregainedservice) OVERLAPS ('$P!{START_TIME}'::TIMESTAMP, '$P!{START_TIME}'::TIMESTAMP + '$P!{TIME_RANGE}'::INTERVAL) AND
 			outages.serviceid = service.serviceid  AND
 			service.servicename = 'ICMP' AND
 			outages.svclosteventid = events.eventid AND
