@@ -187,7 +187,7 @@ public class NewSuspectScanTest {
 
     }
 
-    @Test(timeout=30000)
+    @Test(timeout=60000)
     @Transactional
     @JUnitSnmpAgent(resource="classpath:snmpTestData3.properties")
     public void testScanNewSuspect() throws Exception {
@@ -203,6 +203,9 @@ public class NewSuspectScanTest {
 
         NewSuspectScan scan = m_provisioner.createNewSuspectScan(InetAddress.getByName("172.20.2.201"));
         runScan(scan);
+
+        // wait for NodeScan triggered by NodeAdded to complete
+        Thread.sleep(100000);
 
         //Verify distpoller count
         assertEquals(1, getDistPollerDao().countAll());
@@ -228,7 +231,7 @@ public class NewSuspectScanTest {
 
     }
     
-    @Test(timeout=30000)
+    @Test(timeout=60000)
     @Transactional
     public void testScanNewSuspectNoSnmp() throws Exception {
 
