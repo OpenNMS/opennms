@@ -117,7 +117,6 @@ public class DefaultReportStoreService implements ReportStoreService {
         OnmsCriteria onmsCrit = new OnmsCriteria(ReportCatalogEntry.class);
         onmsCrit.addOrder(Order.desc("date"));
         return m_reportCatalogDao.findMatching(onmsCrit);
-//        return m_reportCatalogDao.findAll();
     }
     
     /**
