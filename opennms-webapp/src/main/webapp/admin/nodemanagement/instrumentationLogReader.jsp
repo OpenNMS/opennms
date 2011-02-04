@@ -83,7 +83,7 @@ pageContext.setAttribute("OpennmsHome",opennmsHome);
 
 <c:choose>
 	<c:when test="${fileLength == 0}">
-		<script language="JavaScript">
+		<script type="text/javascript">
 			alert ("Instrumentation.log either does not exist or is empty. Check to see if you have it set to DEBUG in log4j.properties")
 		</script>
 	</c:when>
@@ -91,16 +91,16 @@ pageContext.setAttribute("OpennmsHome",opennmsHome);
 
 <br/>
 <p>
-StartTime: ${collector.startTime}
+Start Time: ${collector.startTime}
 </p>
 <p>
-EndTime: ${collector.endTime}
+End Time: ${collector.endTime}
 </p>
 <p>
 Duration: ${collector.formattedDuration}
 </p>
 <p>
-Total Services ${collector.serviceCount}
+Total Services: ${collector.serviceCount}
 </p>
 <p>
 Threads Used: ${collector.threadCount}
@@ -119,7 +119,7 @@ Threads Used: ${collector.threadCount}
 <th>Unsuccessful Percentage</th>
 <th>Average Unsuccessful Collection Time</th>
 </tr>
-<c:forEach  var="svcCollector" items="${collector.serviceCollectors}">
+<c:forEach var="svcCollector" items="${collector.serviceCollectors}">
 <c:choose>
     <c:when test="${svcCollector.successPercentage > 50}" >
         <tr class="Normal">
