@@ -228,7 +228,7 @@ public class DefaultManualProvisioningService implements ManualProvisioningServi
     
             final int ifaceCount = node.getInterfaceCount();
             final RequisitionInterface iface = createInterface(ipAddr, snmpPrimary);
-            node.insertInterface(iface);
+            node.putInterface(iface);
             // Assert.isTrue(node.getInterfaceCount() == (ifaceCount + 1), "Interface was not added correctly");
     
             m_pendingForeignSourceRepository.save(group);
