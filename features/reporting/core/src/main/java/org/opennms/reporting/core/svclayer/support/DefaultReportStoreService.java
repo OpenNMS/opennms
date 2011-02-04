@@ -156,8 +156,9 @@ public class DefaultReportStoreService implements ReportStoreService {
     }
 
     /** {@inheritDoc} */
-    public void save(ReportCatalogEntry reportCatalogEntry) {
+    public void save(final ReportCatalogEntry reportCatalogEntry) {
         m_reportCatalogDao.save(reportCatalogEntry);
+        m_reportCatalogDao.flush();
     }
 
     /** {@inheritDoc} */

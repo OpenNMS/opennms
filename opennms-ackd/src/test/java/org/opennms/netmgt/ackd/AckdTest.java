@@ -346,6 +346,7 @@ public class AckdTest {
         event.setEventDisplay("Y");
         event.setEventLogMsg("Testing node down event from AckdTest.");
         m_eventDao.save(event);
+        m_eventDao.flush();
         vo.m_eventID = event.getId();
         
         OnmsAlarm alarm = new OnmsAlarm();
@@ -365,6 +366,7 @@ public class AckdTest {
         alarm.setSeverity(OnmsSeverity.get(event.getEventSeverity()));
         alarm.setUei(event.getEventUei());
         m_alarmDao.save(alarm);
+        m_alarmDao.flush();
         vo.m_alarmId = alarm.getId();
         event.setAlarm(alarm);
         

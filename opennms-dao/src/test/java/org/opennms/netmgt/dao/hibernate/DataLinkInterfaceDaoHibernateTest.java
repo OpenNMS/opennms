@@ -31,10 +31,10 @@
 //
 package org.opennms.netmgt.dao.hibernate;
 
+import java.util.Date;
+
 import org.opennms.netmgt.dao.AbstractTransactionalDaoTestCase;
 import org.opennms.netmgt.model.DataLinkInterface;
-
-import java.util.Date;
 
 public class DataLinkInterfaceDaoHibernateTest extends AbstractTransactionalDaoTestCase {
     
@@ -42,6 +42,7 @@ public class DataLinkInterfaceDaoHibernateTest extends AbstractTransactionalDaoT
         // do nothing, just test that setUp() / tearDown() works
     }
 
+    @SuppressWarnings("deprecation")
     public void testSaveDataLinkInterface() {
         // Create a new data link interface and save it.
         DataLinkInterface dli = new DataLinkInterface(2, 2, 1, 1, "?", new Date());
