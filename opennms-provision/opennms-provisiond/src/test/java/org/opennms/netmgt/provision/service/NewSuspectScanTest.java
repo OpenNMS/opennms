@@ -187,7 +187,7 @@ public class NewSuspectScanTest {
 
     }
 
-    @Test(timeout=60000)
+    @Test(timeout=300000)
     @Transactional
     @JUnitSnmpAgent(resource="classpath:snmpTestData3.properties")
     public void testScanNewSuspect() throws Exception {
@@ -231,7 +231,7 @@ public class NewSuspectScanTest {
 
     }
     
-    @Test(timeout=60000)
+    @Test(timeout=300000)
     @Transactional
     public void testScanNewSuspectNoSnmp() throws Exception {
 
