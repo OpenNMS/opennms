@@ -788,15 +788,15 @@ public class Provisioner implements SpringServiceDaemon {
     public void handleDeleteService(Event event) {
         if (m_provisionService.isDiscoveryEnabled()) {
             try {
-                doDeleteService(event.getNodeid(), event.getInterface(), event.getService());
+                doDeleteService(event.getNodeid(), event.getInterface() == null ? null : InetAddress.getByName(event.getInterface()), event.getService());
             } catch (Throwable e) {
                 log().error("Unexpected exception processing event: " + event.getUei(), e);
             }
         }
     }
     
-    private void doDeleteService(long nodeId, String ipAddr, String service) {
-        m_provisionService.deleteService((int)nodeId, ipAddr, service);
+    private void doDeleteService(long nodeId, InetAddress addr, String service) {
+        m_provisionService.deleteService((int)nodeId, addr, service);
     }
 
     /**

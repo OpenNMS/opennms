@@ -29,6 +29,7 @@
  */
 package org.opennms.netmgt.provision.service;
 
+import java.net.InetAddress;
 import java.util.Date;
 import java.util.List;
 import java.util.Map;
@@ -189,11 +190,11 @@ public interface ProvisionService {
      * <p>deleteService</p>
      *
      * @param nodeId a {@link java.lang.Integer} object.
-     * @param ipAddr a {@link java.lang.String} object.
+     * @param addr a {@link java.lang.String} object.
      * @param service a {@link java.lang.String} object.
      */
     @Transactional
-    public abstract void deleteService(Integer nodeId, String ipAddr, String service);
+    public abstract void deleteService(Integer nodeId, InetAddress addr, String service);
 
 
     /**

@@ -47,7 +47,6 @@ import java.util.Set;
 
 import org.joda.time.DateTime;
 import org.joda.time.Duration;
-import org.opennms.core.utils.InetAddressUtils;
 import org.opennms.core.utils.ThreadCategory;
 import org.opennms.netmgt.dao.CategoryDao;
 import org.opennms.netmgt.dao.DistPollerDao;
@@ -218,8 +217,8 @@ public class DefaultProvisionService implements ProvisionService {
     
     /** {@inheritDoc} */
     @Transactional
-    public void deleteService(Integer nodeId, String ipAddr, String service) {
-        OnmsMonitoredService monSvc = m_monitoredServiceDao.get(nodeId, ipAddr, service);
+    public void deleteService(Integer nodeId, InetAddress addr, String service) {
+        OnmsMonitoredService monSvc = m_monitoredServiceDao.get(nodeId, addr, service);
         if (monSvc != null) {
             m_monitoredServiceDao.delete(monSvc);
             monSvc.visit(new DeleteEventVisitor(m_eventForwarder));
