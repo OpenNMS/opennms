@@ -103,8 +103,6 @@ import org.springframework.util.StringUtils;
  * @version $Id: $
  */
 public class Installer {
-    static final String s_version = "$Id$";
-
     static final String LIBRARY_PROPERTY_FILE = "libraries.properties";
 
     String m_opennms_home = null;
@@ -355,7 +353,7 @@ public class Installer {
      */
     public void printHeader() {
         m_out.println("==============================================================================");
-        m_out.println("OpenNMS Installer Version " + s_version);
+        m_out.println("OpenNMS Installer");
         m_out.println("==============================================================================");
         m_out.println("");
         m_out.println("Configures PostgreSQL tables, users, and other miscellaneous settings.");
