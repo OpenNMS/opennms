@@ -41,9 +41,14 @@ import java.io.IOException;
 import java.sql.Connection;
 import java.sql.DriverManager;
 import java.sql.SQLException;
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
 
 import org.exolab.castor.xml.MarshalException;
 import org.exolab.castor.xml.ValidationException;
+import org.opennms.core.utils.LogUtils;
 import org.opennms.netmgt.ConfigFileConstants;
 import org.opennms.netmgt.config.opennmsDataSources.DataSourceConfiguration;
 import org.opennms.netmgt.config.opennmsDataSources.JdbcDataSource;
@@ -65,26 +70,17 @@ import org.springframework.core.io.FileSystemResource;
  *
  * @author <a href="mailto:weave@oculan.com">Brian Weaver </a>
  * @author <a href="http://www.opennms.org/">OpenNMS </a>
- * @author <a href="mailto:weave@oculan.com">Brian Weaver </a>
- * @author <a href="http://www.opennms.org/">OpenNMS </a>
- * @version $Id: $
  */
 public class DatabaseChecker {
-    /**
-     * The cached database URL
-     */
-    private String m_driverUrl;
+    private static List<String> m_required = new ArrayList<String>();
+    private static List<String> m_optional = new ArrayList<String>();
+    private Map<String,JdbcDataSource> m_dataSources = new HashMap<String,JdbcDataSource>();
 
-    /**
-     * The cached database user
-     */
-    private String m_driverUser;
-
-    /**
-     * The cached database password.
-     */
-    private String m_driverPass;
-
+    static {
+        m_required.add("opennms");
+        m_optional.add("opennms-admin");
+    }
+    
     /**
      * Protected constructor
      *
@@ -100,17 +96,11 @@ public class DatabaseChecker {
      * @throws org.exolab.castor.xml.ValidationException if any.
      * @throws java.lang.ClassNotFoundException if any.
      */
-    protected DatabaseChecker(String configFile) throws IOException,
-						      MarshalException,
-						      ValidationException,
-						      ClassNotFoundException {
-        DataSourceConfiguration m_database = CastorUtils.unmarshal(DataSourceConfiguration.class, new FileSystemResource(configFile));
-        
-        for (JdbcDataSource jdbcDataSource : m_database.getJdbcDataSourceCollection()) {
-            m_driverUrl = jdbcDataSource.getUrl();
-            m_driverUser = jdbcDataSource.getUserName();
-            m_driverPass = jdbcDataSource.getPassword();
-            Class.forName(jdbcDataSource.getClassName());
+    protected DatabaseChecker(final String configFile) throws IOException, MarshalException, ValidationException, ClassNotFoundException {
+        final DataSourceConfiguration database = CastorUtils.unmarshal(DataSourceConfiguration.class, new FileSystemResource(configFile), false);
+
+        for (final JdbcDataSource dataSource : database.getJdbcDataSourceCollection()) {
+            m_dataSources.put(dataSource.getName(), dataSource);
         }
     }
 
@@ -134,13 +124,52 @@ public class DatabaseChecker {
     }
 
     /**
-     * <p>check</p>
+     * <p>Check whether the data sources in opennms-datasources.xml are valid.</p>
      *
-     * @throws java.sql.SQLException if any.
+     * @throws MissingDataSourceException A required data source was not found in opennms-datasources.xml.
+     * @throws InvalidDataSourceException A required data source could not be connected to.
      */
-    public void check() throws SQLException {
-    	Connection c = DriverManager.getConnection(m_driverUrl, m_driverUser, m_driverPass);
-    	c.close();
+    public void check() throws MissingDataSourceException, InvalidDataSourceException {
+
+        // First, check to make sure the required datasources are there.
+        boolean dataSourcesFound = true;
+        for (final String dataSource : m_required) {
+            if (!m_dataSources.containsKey(dataSource)) {
+                LogUtils.errorf(this, "Required data source '%s' is missing from opennms-datasources.xml", dataSource);
+                dataSourcesFound = false;
+            }
+        }
+        if (!dataSourcesFound) {
+            throw new MissingDataSourceException("OpenNMS is missing one or more data sources required for startup.");
+        }
+
+        // Then, check for the optional ones so we can warn about them going missing.
+        for (final String dataSource : m_optional) {
+            if (!m_dataSources.containsKey(dataSource)) {
+                LogUtils.infof(this, "Data source '%s' is missing from opennms-datasources.xml", dataSource);
+            }
+        }
+        
+        // Finally, try connecting to all data sources, and warn or error as appropriate.
+        for (final JdbcDataSource dataSource : m_dataSources.values()) {
+            final String name = dataSource.getName();
+            if (!m_required.contains(name) && !m_optional.contains(name)) {
+                LogUtils.warnf(this, "Unknown datasource '%s' was found.", name);
+            }
+            try {
+                final Connection connection = DriverManager.getConnection(dataSource.getUrl(), dataSource.getUserName(), dataSource.getPassword());
+                connection.close();
+            } catch (final SQLException e) {
+                final String errorMessage = "Unable to connect to data source '%s' with username '%s', check opennms-datasources.xml and your database permissions.";
+                if (m_required.contains(name)) {
+                    LogUtils.errorf(this, errorMessage, name, dataSource.getUserName());
+                    throw new InvalidDataSourceException("Data source '" + name + "' failed.", e);
+                } else {
+                    LogUtils.warnf(this, errorMessage, name, dataSource.getUserName());
+                }
+            }
+        }
+
     }
 
     /**
@@ -149,8 +178,8 @@ public class DatabaseChecker {
      * @param argv an array of {@link java.lang.String} objects.
      * @throws java.lang.Exception if any.
      */
-    public static void main(String[] argv) throws Exception {
-    	DatabaseChecker checker = new DatabaseChecker();
+    public static void main(final String[] argv) throws Exception {
+        final DatabaseChecker checker = new DatabaseChecker();
     	checker.check();
     }
 }

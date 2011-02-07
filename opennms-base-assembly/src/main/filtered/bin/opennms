@@ -241,7 +241,7 @@ doStart(){
 
 	$JAVA_CMD -Dopennms.home=$OPENNMS_HOME -jar $BOOTSTRAP check
 	if [ $? -ne 0 ]; then
-		echo "OpenNMS runs better if you start up the database first." >&2
+		echo "OpenNMS was unable to connect to the 'opennms' database configured in opennms-datasources.xml." >&2
 		return 1
 	fi
 
