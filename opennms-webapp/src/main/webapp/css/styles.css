@@ -145,8 +145,12 @@ td div.clip {
 }
 
 .normal {
-	font-size: 100%;
+	font-size: 70%;
 	margin: 5px;
+}
+
+.normal p{
+    font-size: 100%;
 }
 
 /* Layouts */
@@ -333,6 +337,7 @@ table.top td {
 
 table.normal {
 	width: auto;
+	font-size: 100%;
 }
 table.normal td {
 	border: none;
