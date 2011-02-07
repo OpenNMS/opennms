@@ -52,6 +52,8 @@ import org.opennms.netmgt.snmp.SnmpObjId;
 import org.opennms.netmgt.snmp.SnmpUtils;
 import org.opennms.netmgt.snmp.SnmpValue;
 
+import antlr.StringUtils;
+
 /**
  * This class is used to test if a particular process is listed
  * in the HOST-RESOURCES running software table.
@@ -59,13 +61,6 @@ import org.opennms.netmgt.snmp.SnmpValue;
  * @author <A HREF="mailto:tarus@opennms.org">Tarus Balog</A>
  * @author <A HREF="mailto:weave@oculan.com">Brian Weaver </A>
  * @author <A HREF="http://www.opennms.org">OpenNMS </A>
- * @author <A HREF="mailto:tarus@opennms.org">Tarus Balog</A>
- * @author <A HREF="mailto:weave@oculan.com">Brian Weaver </A>
- * @author <A HREF="http://www.opennms.org">OpenNMS </A>
- * @author <A HREF="mailto:tarus@opennms.org">Tarus Balog</A>
- * @author <A HREF="mailto:weave@oculan.com">Brian Weaver </A>
- * @author <A HREF="http://www.opennms.org">OpenNMS </A>
- * @version $Id: $
  */
 public class HostResourceSwRunPlugin extends AbstractPlugin {
 
@@ -157,16 +152,17 @@ public class HostResourceSwRunPlugin extends AbstractPlugin {
             for(SnmpInstId nameInstance : nameResults.keySet()) {
 
                 // See if the service name is in the list of running services
-                if (nameResults.get(nameInstance).toString().equals(serviceName) && !status) {
+                if (stripExtraQuotes(nameResults.get(nameInstance).toString()).equalsIgnoreCase(serviceName)) {
                     log().debug("poll: HostResourceSwRunMonitor poll succeeded, addr=" + ipaddr.getHostAddress() + " service name=" + serviceName + " value=" + nameResults.get(nameInstance));
-                        status = true;
+                    status = true;
+                    break;
                 }
             }
 
         } catch (NumberFormatException e) {
             log().warn("Number operator used on a non-number " + e.getMessage());
         } catch (IllegalArgumentException e) {
-            log().warn("Invalid Snmp Criteria: " + e.getMessage());
+            log().warn("Invalid SNMP Criteria: " + e.getMessage());
         } catch (Throwable t) {
             log().warn("Unexpected exception during SNMP poll of interface " + ipaddr.getHostAddress(), t);
         }
@@ -175,12 +171,21 @@ public class HostResourceSwRunPlugin extends AbstractPlugin {
         
     }
 
+    private static String stripExtraQuotes(String string) {
+        String retString = "";
+        if(string.startsWith("\"")){
+            String temp = StringUtils.stripFront(string, '"');
+            retString = StringUtils.stripBack(temp, '"');
+        }
+        return retString;
+    }
+
         /**
          * <p>log</p>
          *
          * @return a {@link org.opennms.core.utils.ThreadCategory} object.
          */
         public static ThreadCategory log() {
-                return ThreadCategory.getInstance(Win32ServicePlugin.class);
+                return ThreadCategory.getInstance(HostResourceSwRunPlugin.class);
         }
 }

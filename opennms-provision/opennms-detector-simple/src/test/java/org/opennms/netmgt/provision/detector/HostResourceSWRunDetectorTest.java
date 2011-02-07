@@ -104,4 +104,9 @@ public class HostResourceSWRunDetectorTest implements ApplicationContextAware {
         
     }
 
+    @Test
+    public void testLackOfCaseSensitivity() throws UnknownHostException{
+        m_detector.setServiceToDetect("Omnitek XR.exe");
+        assertTrue(m_detector.isServiceDetected(InetAddress.getByName(TEST_IP_ADDRESS), new NullDetectorMonitor()));
+    }
 }

@@ -132,16 +132,17 @@ public class HostResourceSWRunDetector extends SnmpDetector {
             for(SnmpInstId nameInstance : nameResults.keySet()) {
                 
                 // See if the service name is in the list of running services
-                if (stripExtraParens(nameResults.get(nameInstance).toString()).equals(serviceName) && !status) {
+                if (stripExtraQuotes(nameResults.get(nameInstance).toString()).equalsIgnoreCase(serviceName) && !status) {
                     log().debug("poll: HostResourceSwRunMonitor poll succeeded, addr=" + address.getHostAddress() + " service name=" + serviceName + " value=" + nameResults.get(nameInstance));
-                        status = true;
+                    status = true;
+                    break;
                 }
             }
 
         } catch (NumberFormatException e) {
             log().warn("Number operator used on a non-number " + e.getMessage());
         } catch (IllegalArgumentException e) {
-            log().warn("Invalid Snmp Criteria: " + e.getMessage());
+            log().warn("Invalid SNMP Criteria: " + e.getMessage());
         } catch (Throwable t) {
             log().warn("Unexpected exception during SNMP poll of interface " + address.getHostAddress(), t);
         }
@@ -150,7 +151,7 @@ public class HostResourceSWRunDetector extends SnmpDetector {
         
     }
 
-    private static String stripExtraParens(String string) {
+    private static String stripExtraQuotes(String string) {
         String retString = "";
         if(string.startsWith("\"")){
             String temp = StringUtils.stripFront(string, '"');

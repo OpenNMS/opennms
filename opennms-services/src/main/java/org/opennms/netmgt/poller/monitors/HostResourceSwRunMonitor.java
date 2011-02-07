@@ -59,6 +59,8 @@ import org.opennms.netmgt.snmp.SnmpObjId;
 import org.opennms.netmgt.snmp.SnmpUtils;
 import org.opennms.netmgt.snmp.SnmpValue;
 
+import antlr.StringUtils;
+
 /**
  * <P>
  * This class is designed to be used by the service poller framework to test the
@@ -220,7 +222,7 @@ public class HostResourceSwRunMonitor extends SnmpMonitorStrategy {
             for(SnmpInstId nameInstance : nameResults.keySet()) {
 
                 // See if the service name is in the list of running services
-                if (nameResults.get(nameInstance).toString().equals(serviceName)) {
+                if (stripExtraQuotes(nameResults.get(nameInstance).toString()).equalsIgnoreCase(serviceName)) {
                     log().debug("poll: HostResourceSwRunMonitor poll succeeded, addr=" + ipaddr.getHostAddress() + " service name=" + serviceName + " value=" + nameResults.get(nameInstance));
                     // Using the instance of the service, get its status and see if it meets the criteria
                     if (meetsCriteria(statusResults.get(nameInstance), "<=", runLevel)) {
@@ -240,7 +242,7 @@ public class HostResourceSwRunMonitor extends SnmpMonitorStrategy {
         } catch (NumberFormatException e) {
             status = logDown(Level.ERROR, "Number operator used on a non-number " + e.getMessage());
         } catch (IllegalArgumentException e) {
-            status = logDown(Level.ERROR, "Invalid Snmp Criteria: " + e.getMessage());
+            status = logDown(Level.ERROR, "Invalid SNMP Criteria: " + e.getMessage());
         } catch (Throwable t) {
             status = logDown(Level.WARN, "Unexpected exception during SNMP poll of interface " + ipaddr.getHostAddress(), t);
         }
@@ -249,6 +251,15 @@ public class HostResourceSwRunMonitor extends SnmpMonitorStrategy {
         // Otherwise, the service will be unavailable.
 
         return status;
+    }
+
+    private static String stripExtraQuotes(String string) {
+        String retString = "";
+        if(string.startsWith("\"")){
+            String temp = StringUtils.stripFront(string, '"');
+            retString = StringUtils.stripBack(temp, '"');
+        }
+        return retString;
     }
 
 }
