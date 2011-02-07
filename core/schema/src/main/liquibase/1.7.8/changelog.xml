@@ -6,6 +6,14 @@
 	xsi:schemaLocation="http://www.liquibase.org/xml/ns/dbchangelog/1.9
 		http://www.liquibase.org/xml/ns/dbchangelog/dbchangelog-1.9.xsd">
 
+    <changeSet author="rangerrick" id="1.7.8-remove-old-primary-key-if-necessary" failOnError="false">
+        <preConditions onFail="MARK_RAN">
+            <primaryKeyExists tableName="datalinkinterface" primaryKeyName="pk_datalinkinterface" />
+        </preConditions>
+        <dropPrimaryKey tableName="datalinkinterface" constraintName="pk_datalinkinterface" />
+        <addPrimaryKey tableName="datalinkinterface" columnNames="id" />
+    </changeSet>
+
 	<changeSet author="rangerrick" id="1.7.8-add-linkState">
 		<createTable tableName="linkstate">
 			<column name="id" type="integer" autoIncrement="true">
