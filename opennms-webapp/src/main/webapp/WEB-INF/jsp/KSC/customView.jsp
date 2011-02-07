@@ -117,7 +117,7 @@
                       <c:set var="resultSet" value="${resultSets[graphNum]}"/>
                       
                       <td class="normal" align="center">
-                        <table>
+                        <table class="normal">
                           <tr>
                             <th>
                               ${resultSet.title} <br/>
