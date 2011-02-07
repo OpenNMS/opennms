@@ -57,6 +57,8 @@ import org.opennms.netmgt.config.scriptd.Uei;
 import org.opennms.netmgt.xml.event.Event;
 import org.opennms.netmgt.xml.event.Parm;
 import org.opennms.netmgt.xml.event.Script;
+import org.opennms.netmgt.model.OnmsNode;
+import org.opennms.netmgt.dao.NodeDao;
 
 /**
  * This class is used as a thread for launching scripts to handle received
@@ -108,16 +110,23 @@ final class Executor implements Runnable, PausableFiber {
     private BSFManager m_mgr;
 
     /**
+     * The DAO object for fetching nodes
+     */
+    private NodeDao m_nodeDao;
+
+    /**
      * Constructs a new action daemon execution environment. The constructor
-     * takes two arguments that define the source of commands to be executed and
+     * takes three arguments that define the source of commands to be executed and
      * the maximum time that a command may run.
      * 
      * @param execQ
      *            The execution queue
      * @param config
      *            The <em>Scriptd</em> configuration.
+     * @param nodeDao
+     *            The <em>DAO</em> for fetching node information
      */
-    Executor(FifoQueue<Event> execQ, ScriptdConfigFactory config) {
+    Executor(FifoQueue<Event> execQ, ScriptdConfigFactory config, NodeDao nodeDao) {
         m_execQ = execQ;
         m_config = config;
 
@@ -127,6 +136,8 @@ final class Executor implements Runnable, PausableFiber {
         m_name = "Scriptd-Executor";
         m_mgr = null;
         m_status = START_PENDING;
+
+	m_nodeDao = nodeDao;
     }
 
     /**
@@ -265,8 +276,19 @@ final class Executor implements Runnable, PausableFiber {
 
                 m_mgr.registerBean("event", event);
 
+                // And the events node
+                OnmsNode node = null;
+
+                if (event.hasNodeid()) {
+                    Long nodeLong = event.getNodeid();
+                    Integer nodeInt = new Integer(nodeLong.intValue());
+                    node = m_nodeDao.get(nodeInt);
+                    m_mgr.registerBean("node", node);
+                }
+
                 // execute the scripts attached to the event
 
+                log.debug("Executing attached scripts");
                 if (attachedScripts.length > 0) {
                     for (int i = 0; i < attachedScripts.length; i++) {
                         try {
@@ -282,6 +304,7 @@ final class Executor implements Runnable, PausableFiber {
 
                 // execute the scripts mapped to the UEI
 
+                log.debug("Executing mapped scripts");
                 if (mapScripts != null) {
                     for (int i = 0; i < mapScripts.size(); i++) {
                         try {
@@ -297,6 +320,7 @@ final class Executor implements Runnable, PausableFiber {
 
                 // execute the scripts that are not mapped to any UEI
 
+                log.debug("Executing global scripts");
                 for (int i = 0; i < m_eventScripts.size(); i++) {
                     try {
                         EventScript script = (EventScript) m_eventScripts.get(i);
@@ -308,6 +332,9 @@ final class Executor implements Runnable, PausableFiber {
                     }
                 }
 
+		if (node != null)
+		    m_mgr.unregisterBean("node");
+		
                 m_mgr.unregisterBean("event");
 
                 log.debug("Finished executing scripts for: " + event.getUei());

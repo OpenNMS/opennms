@@ -34,7 +34,7 @@ function toggle(box, field)
 //  End -->
 </script>
 
-<form name="report" action="admin/support/systemReport.htm" method="post">
+<form name="report" action="admin/support/systemReport.htm" method="post" class="normal">
 
 <h3>Plugins &nbsp;&nbsp;&nbsp; <input type="checkbox" name="all" onclick="toggle(document.report.all, document.report.plugins)" checked /> All</h3>
 <p class="normal">Choose which plugins to enable:</p>
@@ -43,8 +43,8 @@ function toggle(box, field)
 </c:forEach>
 
 <h3>Report Type</h3>
-<p class="normal">Choose which report to use:</p>
-<p class="normal">
+<p>Choose which report to use:</p>
+<p>
 <select name="formatter">
 <c:forEach items="${report.formatters}" var="formatter">
  <c:choose>

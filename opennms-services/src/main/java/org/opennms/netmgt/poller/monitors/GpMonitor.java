@@ -146,6 +146,14 @@ final public class GpMonitor extends AbstractServiceMonitor {
         //
         String strBannerMatch = (String) parameters.get("banner");
 
+        // Script standard output
+        //
+        String scriptoutput = "";
+
+        // Script error output
+        //
+        String scripterror = "";
+
         // Get the address instance.
         //
         InetAddress ipv4Addr = (InetAddress) iface.getAddress();
@@ -180,9 +188,8 @@ final public class GpMonitor extends AbstractServiceMonitor {
                 double responseTime = tracker.elapsedTimeInMillis();
                 
                 if (exitStatus != 0) {
-                	
-                	serviceStatus = logDown(Level.DEBUG, script + " failed with exit code " + exitStatus);
-
+                        scriptoutput = er.getOutString();
+                        serviceStatus = logDown(Level.DEBUG, script + " failed with exit code " + exitStatus + ". Standard out: " + scriptoutput);
                 }
                 if (er.isMaxRunTimeExceeded()) {
                 	
@@ -190,9 +197,7 @@ final public class GpMonitor extends AbstractServiceMonitor {
 
                 } else {
                     if (exitStatus == 0) {
-                        String scriptoutput = "";
                         scriptoutput = er.getOutString();
-                        String scripterror = "";
                         scripterror = er.getErrString();
                         if (!scriptoutput.equals(""))
                             log.debug(script + " output  = " + scriptoutput);

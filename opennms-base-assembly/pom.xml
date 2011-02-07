@@ -55,6 +55,7 @@
         <configuration>
           <descriptors>
             <descriptor>src/assembly/daemon.xml</descriptor>
+            <descriptor>src/assembly/log4j.xml</descriptor>
           </descriptors>
         </configuration>
         <executions>

@@ -116,7 +116,7 @@
                     <c:if test="${graphNum < fn:length(resultSets)}">
                       <c:set var="resultSet" value="${resultSets[graphNum]}"/>
                       
-                      <td class="normal" align="center">
+                      <td align="center">
                         <table>
                           <tr>
                             <th>
