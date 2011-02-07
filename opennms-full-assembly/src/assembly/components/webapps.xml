@@ -105,7 +105,10 @@
       <useTransitiveDependencies>false</useTransitiveDependencies>
       <outputDirectory>webapps/opennms/WEB-INF</outputDirectory>
       <outputFileNameMapping></outputFileNameMapping>
-      <includes><include>org.opennms:opennms-webapp:tar.gz:web-inf:${project.version}</include></includes>
+      <includes>
+        <include>org.opennms:opennms-webapp:tar.gz:web-inf:${project.version}</include>
+        <include>org.opennms:opennms-base-assembly:tar.gz:log4j:${project.version}</include>
+       </includes>
     </dependencySet>
     <dependencySet>
       <unpack>true</unpack>
@@ -199,7 +202,10 @@
       <useTransitiveDependencies>false</useTransitiveDependencies>
       <outputDirectory>webapps/opennms-remoting/WEB-INF</outputDirectory>
       <outputFileNameMapping></outputFileNameMapping>
-      <includes><include>org.opennms:opennms-webapp:tar.gz:web-inf:${project.version}</include></includes>
+      <includes>
+        <include>org.opennms:opennms-webapp:tar.gz:web-inf:${project.version}</include>
+        <include>org.opennms:opennms-base-assembly:tar.gz:log4j:${project.version}</include>
+       </includes>
     </dependencySet>
     <dependencySet>
       <unpack>true</unpack>

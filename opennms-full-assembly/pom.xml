@@ -234,6 +234,13 @@
     </dependency>
     <dependency>
       <groupId>org.opennms</groupId>
+      <artifactId>opennms-base-assembly</artifactId>
+      <type>tar.gz</type>
+      <version>${project.version}</version>
+      <classifier>log4j</classifier>
+    </dependency>
+    <dependency>
+      <groupId>org.opennms</groupId>
       <artifactId>opennms-rxtx-assembly</artifactId>
       <version>${project.version}</version>
       <type>tar.gz</type>
