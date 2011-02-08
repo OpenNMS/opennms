@@ -57,8 +57,8 @@ public class DashletLoader extends Composite {
     public static final int ERROR = 2;
 
     SimplePanel m_panel = new SimplePanel();
-    Image m_progressIcon = new Image(GWT.getModuleBaseURL()+"images/progress.gif");
-    Image m_errorIcon = new Image(GWT.getModuleBaseURL()+"images/error.png");
+    Image m_progressIcon = new Image(GWT.getHostPageBaseURL()+"images/progress.gif");
+    Image m_errorIcon = new Image(GWT.getHostPageBaseURL()+"images/error.png");
     
     DashletLoader() {
         m_panel.addStyleName("dashletLoader");
