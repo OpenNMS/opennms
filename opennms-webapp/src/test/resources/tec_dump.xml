@@ -19,7 +19,7 @@
         <category name="UK"/>
         <category name="low"/>
 	</node>
-	<node node-label="djgregor" parent-node-label="apknd" foreign-id="4243">
+	<node node-label="djgregor" parent-node-label="apknd" foreign-id="4244">
 		<interface ip-addr="172.20.1.207" status="1" snmp-primary="S" descr="VPN interface">
 			<monitored-service service-name="ICMP"/>
 			<monitored-service service-name="HTTP"/>
