@@ -79,11 +79,14 @@ import org.opennms.netmgt.dao.support.ProxySnmpAgentConfigFactory;
 import org.opennms.netmgt.mock.EventAnticipator;
 import org.opennms.netmgt.mock.MockElement;
 import org.opennms.netmgt.mock.MockEventIpcManager;
+import org.opennms.netmgt.mock.MockEventUtil;
 import org.opennms.netmgt.mock.MockNetwork;
 import org.opennms.netmgt.mock.MockNode;
 import org.opennms.netmgt.mock.MockVisitorAdapter;
 import org.opennms.netmgt.model.OnmsAssetRecord;
+import org.opennms.netmgt.model.OnmsMonitoredService;
 import org.opennms.netmgt.model.OnmsNode;
+import org.opennms.netmgt.model.events.EventBuilder;
 import org.opennms.netmgt.provision.persist.ForeignSourceRepository;
 import org.opennms.netmgt.provision.persist.ForeignSourceRepositoryException;
 import org.opennms.netmgt.provision.persist.MockForeignSourceRepository;
@@ -540,6 +543,151 @@ public class ProvisionerTest implements MockSnmpAgentAware {
         
     }
     
+    @Test
+    public void testDeleteService() throws Exception {
+        
+        // This test assumes that discovery is disabled
+        assertFalse(m_provisionService.isDiscoveryEnabled());
+        
+        importFromResource("classpath:/deleteService.xml");
+        
+        //Verify distpoller count
+        assertEquals(1, getDistPollerDao().countAll());
+        
+        //Verify node count
+        assertEquals(1, getNodeDao().countAll());
+        
+        //Verify ipinterface count
+        assertEquals(4, getInterfaceDao().countAll());
+        
+        //Verify ifservices count
+        assertEquals(6, getMonitoredServiceDao().countAll());
+        
+        //Verify service count
+        assertEquals(2, getServiceTypeDao().countAll());
+        
+        
+        // Locate the service to be deleted
+        OnmsNode node = m_nodeDao.findByForeignId("deleteService", "4243");
+        assertNotNull(node);
+        int nodeid = node.getId();
+        
+        m_eventAnticipator.reset();
+        m_eventAnticipator.anticipateEvent(serviceDeleted(nodeid, "10.201.136.163", "HTTP"));
+        
+
+        m_mockEventIpcManager.sendEventToListeners(deleteService(nodeid, "10.201.136.163", "HTTP"));
+        
+        
+        // this only waits until all the anticipated events are received so it is fast unless there is a bug
+        m_eventAnticipator.waitForAnticipated(10000);
+        m_eventAnticipator.verifyAnticipated();
+
+        
+    }
+
+    @Test
+    public void testDeleteInterface() throws Exception {
+        
+        // This test assumes that discovery is disabled
+        assertFalse(m_provisionService.isDiscoveryEnabled());
+        
+
+        importFromResource("classpath:/deleteService.xml");
+        
+        //Verify distpoller count
+        assertEquals(1, getDistPollerDao().countAll());
+        
+        //Verify node count
+        assertEquals(1, getNodeDao().countAll());
+        
+        //Verify ipinterface count
+        assertEquals(4, getInterfaceDao().countAll());
+        
+        //Verify ifservices count
+        assertEquals(6, getMonitoredServiceDao().countAll());
+        
+        //Verify service count
+        assertEquals(2, getServiceTypeDao().countAll());
+        
+        
+        // Locate the service to be deleted
+        OnmsNode node = m_nodeDao.findByForeignId("deleteService", "4243");
+        assertNotNull(node);
+        int nodeid = node.getId();
+        String ipaddr = "10.201.136.163";
+        
+        m_eventAnticipator.reset();
+        m_eventAnticipator.anticipateEvent(serviceDeleted(nodeid, ipaddr, "ICMP"));
+        m_eventAnticipator.anticipateEvent(serviceDeleted(nodeid, ipaddr, "HTTP"));
+        m_eventAnticipator.anticipateEvent(interfaceDeleted(nodeid, ipaddr));
+
+        m_mockEventIpcManager.sendEventToListeners(deleteInterface(nodeid, ipaddr));
+        
+        // this only waits until all the anticipated events are received so it is fast unless there is a bug
+        m_eventAnticipator.waitForAnticipated(10000);
+        m_eventAnticipator.verifyAnticipated();
+
+        
+    }
+    
+    @Test
+    public void testDeleteNode() throws Exception {
+
+        // This test assumes that discovery is disabled
+        assertFalse(m_provisionService.isDiscoveryEnabled());
+        
+
+        importFromResource("classpath:/deleteService.xml");
+        
+        //Verify distpoller count
+        assertEquals(1, getDistPollerDao().countAll());
+        
+        //Verify node count
+        assertEquals(1, getNodeDao().countAll());
+        
+        //Verify ipinterface count
+        assertEquals(4, getInterfaceDao().countAll());
+        
+        //Verify ifservices count
+        assertEquals(6, getMonitoredServiceDao().countAll());
+        
+        //Verify service count
+        assertEquals(2, getServiceTypeDao().countAll());
+        
+        
+        // Locate the service to be deleted
+        OnmsNode node = m_nodeDao.findByForeignId("deleteService", "4243");
+        assertNotNull(node);
+        int nodeid = node.getId();
+        m_eventAnticipator.reset();
+
+        m_eventAnticipator.anticipateEvent(serviceDeleted(nodeid, "10.136.160.1", "ICMP"));
+        m_eventAnticipator.anticipateEvent(serviceDeleted(nodeid, "10.136.160.1", "HTTP"));
+        m_eventAnticipator.anticipateEvent(interfaceDeleted(nodeid, "10.136.160.1"));
+        
+        m_eventAnticipator.anticipateEvent(serviceDeleted(nodeid, "10.201.136.163", "ICMP"));
+        m_eventAnticipator.anticipateEvent(serviceDeleted(nodeid, "10.201.136.163", "HTTP"));
+        m_eventAnticipator.anticipateEvent(interfaceDeleted(nodeid, "10.201.136.163"));
+        
+        m_eventAnticipator.anticipateEvent(serviceDeleted(nodeid, "10.201.136.161", "ICMP"));
+        m_eventAnticipator.anticipateEvent(interfaceDeleted(nodeid, "10.201.136.161"));
+        
+        m_eventAnticipator.anticipateEvent(serviceDeleted(nodeid, "10.201.136.167", "ICMP"));
+        m_eventAnticipator.anticipateEvent(interfaceDeleted(nodeid, "10.201.136.167"));
+       
+        m_eventAnticipator.anticipateEvent(nodeDeleted(nodeid));
+
+        m_mockEventIpcManager.sendEventToListeners(deleteNode(nodeid));
+        
+        
+        // this only waits until all the anticipated events are received so it is fast unless there is a bug
+        m_eventAnticipator.waitForAnticipated(10000);
+        m_eventAnticipator.verifyAnticipated();
+
+        
+    }
+
     public void runScan(NodeScan scan) throws InterruptedException, ExecutionException {
         Task t = scan.createTask();
         t.schedule();
@@ -836,7 +984,49 @@ public class ProvisionerTest implements MockSnmpAgentAware {
 
     }
     
+    private Event nodeDeleted(int nodeid) {
+        EventBuilder bldr = new EventBuilder(EventConstants.NODE_DELETED_EVENT_UEI, "Test");
+        bldr.setNodeid(nodeid);
+        return bldr.getEvent();        
+    }
     
+    private Event deleteNode(int nodeid) {
+        EventBuilder bldr = new EventBuilder(EventConstants.DELETE_NODE_EVENT_UEI, "Test");
+        bldr.setNodeid(nodeid);
+        return bldr.getEvent();        
+    }
+    
+    private Event interfaceDeleted(int nodeid, String ipaddr) {
+        EventBuilder bldr = new EventBuilder(EventConstants.INTERFACE_DELETED_EVENT_UEI, "Test");
+        bldr.setNodeid(nodeid);
+        bldr.setInterface(ipaddr);
+        return bldr.getEvent();
+    }
+    
+    private Event deleteInterface(int nodeid, String ipaddr) {
+        EventBuilder bldr = new EventBuilder(EventConstants.DELETE_INTERFACE_EVENT_UEI, "Test");
+        bldr.setNodeid(nodeid);
+        bldr.setInterface(ipaddr);
+        return bldr.getEvent();
+    }
+    
+    private Event serviceDeleted(int nodeid, String ipaddr, String svc) {
+        EventBuilder bldr = new EventBuilder(EventConstants.SERVICE_DELETED_EVENT_UEI, "Test");
+        bldr.setNodeid(nodeid);
+        bldr.setInterface(ipaddr);
+        bldr.setService(svc);
+        return bldr.getEvent();
+    }
+    
+    private Event deleteService(int nodeid, String ipaddr, String svc) {
+        EventBuilder bldr = new EventBuilder(EventConstants.DELETE_SERVICE_EVENT_UEI, "Test");
+        bldr.setNodeid(nodeid);
+        bldr.setInterface(ipaddr);
+        bldr.setService(svc);
+        return bldr.getEvent();
+    }
+
+
     
     
     private OnmsNode createNode() {
