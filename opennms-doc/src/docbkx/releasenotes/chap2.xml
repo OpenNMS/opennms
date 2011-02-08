@@ -6,6 +6,76 @@
 
 	<!-- Start 1.8 -->
 
+	<section id="opennms-1.8.8">
+		<title>Changes in OpenNMS 1.8.8</title>
+
+		<section id="opennms-1.8.8-bug">
+			<title>Bug</title>
+
+			<itemizedlist>
+				<listitem><para>Liquibase: ERROR: there is no unique constraint matching given keys for referenced table &quot;datalinkinterface&quot; (Issue <ulink url='http://issues.opennms.org/browse/NMS-3465'>NMS-3465</ulink>)</para></listitem>
+				<listitem><para>webapps won&#39;t deploy with Tomcat in 1.7.7 and 1.7.8-SNAPSHOT (Issue <ulink url='http://issues.opennms.org/browse/NMS-3469'>NMS-3469</ulink>)</para></listitem>
+				<listitem><para>Can&#39;t proceed in Reports Database Run (Issue <ulink url='http://issues.opennms.org/browse/NMS-3717'>NMS-3717</ulink>)</para></listitem>
+				<listitem><para>Invoking rest method with orderBy triggers sql error (Issue <ulink url='http://issues.opennms.org/browse/NMS-3756'>NMS-3756</ulink>)</para></listitem>
+				<listitem><para>JRFontNotFoundException for Early-Morning-Report (Issue <ulink url='http://issues.opennms.org/browse/NMS-4102'>NMS-4102</ulink>)</para></listitem>
+				<listitem><para>On IE8/Win7 the date in the page banner is shown twice (Issue <ulink url='http://issues.opennms.org/browse/NMS-4146'>NMS-4146</ulink>)</para></listitem>
+				<listitem><para>&quot;View Node Link Detailed Info&quot; problem (Issue <ulink url='http://issues.opennms.org/browse/NMS-4243'>NMS-4243</ulink>)</para></listitem>
+				<listitem><para>Date offsets incorrectly applied when batch reports (Issue <ulink url='http://issues.opennms.org/browse/NMS-4253'>NMS-4253</ulink>)</para></listitem>
+				<listitem><para>calender report shows two month back outages (Issue <ulink url='http://issues.opennms.org/browse/NMS-4269'>NMS-4269</ulink>)</para></listitem>
+				<listitem><para>Upgrade from jetty 6.1.24 to 6.1.26 breaks AJP13-connections from apache 2.2.x (Issue <ulink url='http://issues.opennms.org/browse/NMS-4275'>NMS-4275</ulink>)</para></listitem>
+				<listitem><para>OpenJDK fails privatevoidcheckJvmName() check (Issue <ulink url='http://issues.opennms.org/browse/NMS-4277'>NMS-4277</ulink>)</para></listitem>
+				<listitem><para>Missing fonts when running newly commited reporting stuff in 1.8.7 (Issue <ulink url='http://issues.opennms.org/browse/NMS-4286'>NMS-4286</ulink>)</para></listitem>
+				<listitem><para>NPE when trying to generate reports from JRB datasources (Issue <ulink url='http://issues.opennms.org/browse/NMS-4287'>NMS-4287</ulink>)</para></listitem>
+				<listitem><para>Build failure - NtpDetector tests fail (Issue <ulink url='http://issues.opennms.org/browse/NMS-4292'>NMS-4292</ulink>)</para></listitem>
+				<listitem><para>Remove option C from SNMP Primary pick-list in provisioning groups editor (Issue <ulink url='http://issues.opennms.org/browse/NMS-4293'>NMS-4293</ulink>)</para></listitem>
+				<listitem><para>Node-Availability-Report failing - possibly due to a parameter that should be marked notForPrompting (Issue <ulink url='http://issues.opennms.org/browse/NMS-4294'>NMS-4294</ulink>)</para></listitem>
+				<listitem><para>JRobin VDEFs sometimes do not work (Issue <ulink url='http://issues.opennms.org/browse/NMS-4295'>NMS-4295</ulink>)</para></listitem>
+				<listitem><para>Provisiond discovers services on capsd provisioned nodes (Issue <ulink url='http://issues.opennms.org/browse/NMS-4297'>NMS-4297</ulink>)</para></listitem>
+				<listitem><para>Default categories for CIORPRTS (Issue <ulink url='http://issues.opennms.org/browse/NMS-4299'>NMS-4299</ulink>)</para></listitem>
+				<listitem><para>linkd UndeclaredThrowableException (Issue <ulink url='http://issues.opennms.org/browse/NMS-4303'>NMS-4303</ulink>)</para></listitem>
+				<listitem><para>&quot;View Node Ip Route Info&quot; link causes exception (Issue <ulink url='http://issues.opennms.org/browse/NMS-4305'>NMS-4305</ulink>)</para></listitem>
+				<listitem><para>Topo map error popup: Load Label Map failed (Issue <ulink url='http://issues.opennms.org/browse/NMS-4306'>NMS-4306</ulink>)</para></listitem>
+				<listitem><para>Provisioning Groups UI throws exception when trying to sync unmodified group (Issue <ulink url='http://issues.opennms.org/browse/NMS-4308'>NMS-4308</ulink>)</para></listitem>
+				<listitem><para>duplicate jars in packages (Issue <ulink url='http://issues.opennms.org/browse/NMS-4310'>NMS-4310</ulink>)</para></listitem>
+				<listitem><para>Asset adapter does not store Hex-STRINGs (Issue <ulink url='http://issues.opennms.org/browse/NMS-4312'>NMS-4312</ulink>)</para></listitem>
+				<listitem><para>Dashboard loading image tag missing (Issue <ulink url='http://issues.opennms.org/browse/NMS-4314'>NMS-4314</ulink>)</para></listitem>
+				<listitem><para>Serial Interface Utilization Report (Issue <ulink url='http://issues.opennms.org/browse/NMS-4315'>NMS-4315</ulink>)</para></listitem>
+				<listitem><para>[Build] Some changes needed to get a clean build in Eclipse (Issue <ulink url='http://issues.opennms.org/browse/NMS-4320'>NMS-4320</ulink>)</para></listitem>
+				<listitem><para>PSQLException - Configure SNMP Data Collection per Interface (Issue <ulink url='http://issues.opennms.org/browse/NMS-4321'>NMS-4321</ulink>)</para></listitem>
+				<listitem><para>Fonts Very Large on KSC Reports and Admin Surveillance Categories (Issue <ulink url='http://issues.opennms.org/browse/NMS-4322'>NMS-4322</ulink>)</para></listitem>
+				<listitem><para>Interface Page Broken in 1.8 Testing (Issue <ulink url='http://issues.opennms.org/browse/NMS-4323'>NMS-4323</ulink>)</para></listitem>
+				<listitem><para>Opennms cannot start up without Internet access (Issue <ulink url='http://issues.opennms.org/browse/NMS-4341'>NMS-4341</ulink>)</para></listitem>
+				<listitem><para>Make compile.pl / assemble.pl actually exit with maven exit code (Issue <ulink url='http://issues.opennms.org/browse/NMS-4349'>NMS-4349</ulink>)</para></listitem>
+				<listitem><para>generic values wrong for certain OIDs in Cisco2.events.xml (Issue <ulink url='http://issues.opennms.org/browse/NMS-4351'>NMS-4351</ulink>)</para></listitem>
+				<listitem><para>Package building fails on Ubuntu due to default shell usage (Issue <ulink url='http://issues.opennms.org/browse/NMS-4357'>NMS-4357</ulink>)</para></listitem>
+				<listitem><para>Exception raised when trying to view ip route info (Issue <ulink url='http://issues.opennms.org/browse/NMS-4362'>NMS-4362</ulink>)</para></listitem>
+				<listitem><para>Change the logmsg and description fields for events and alarms to text object. (Issue <ulink url='http://issues.opennms.org/browse/NMS-4369'>NMS-4369</ulink>)</para></listitem>
+				<listitem><para>OpenNMS will not start if unable to connect to the database as &quot;postgres&quot; (admin) user (Issue <ulink url='http://issues.opennms.org/browse/NMS-4378'>NMS-4378</ulink>)</para></listitem>
+				<listitem><para>Provisioner always punts on deleteService events when discovery not enabled (Issue <ulink url='http://issues.opennms.org/browse/NMS-4379'>NMS-4379</ulink>)</para></listitem>
+				<listitem><para>Make sure tests pass on bamboo (Issue <ulink url='http://issues.opennms.org/browse/NMS-4384'>NMS-4384</ulink>)</para></listitem>
+			</itemizedlist>
+		</section>
+		<section id="opennms-1.8.8-enhancement">
+			<title>Enhancement</title>
+
+			<itemizedlist>
+				<listitem><para>Upgrade JasperReports 3.6.0 to 3.7.4 (Issue <ulink url='http://issues.opennms.org/browse/NMS-4103'>NMS-4103</ulink>)</para></listitem>
+				<listitem><para>Sort saved database Reports and display more than 10 of them (Issue <ulink url='http://issues.opennms.org/browse/NMS-4201'>NMS-4201</ulink>)</para></listitem>
+				<listitem><para>dispatcher-servlet.xml should be listed as a &#39;config&#39; file for debian package install (Issue <ulink url='http://issues.opennms.org/browse/NMS-4296'>NMS-4296</ulink>)</para></listitem>
+				<listitem><para>reportd-configuration.xml, update quartz URL (Issue <ulink url='http://issues.opennms.org/browse/NMS-4318'>NMS-4318</ulink>)</para></listitem>
+				<listitem><para>Customize Subject on Emailed Batch Reports (Issue <ulink url='http://issues.opennms.org/browse/NMS-4331'>NMS-4331</ulink>)</para></listitem>
+				<listitem><para>Add a build script to clean everything (top-level and full assembly) (Issue <ulink url='http://issues.opennms.org/browse/NMS-4386'>NMS-4386</ulink>)</para></listitem>
+			</itemizedlist>
+		</section>
+		<section id="opennms-1.8.8-new feature">
+			<title>New Feature</title>
+
+			<itemizedlist>
+				<listitem><para>make it easier to open support tickets from the web UI (Issue <ulink url='http://issues.opennms.org/browse/NMS-4307'>NMS-4307</ulink>)</para></listitem>
+			</itemizedlist>
+		</section>
+	</section>
+
 	<section id="opennms-1.8.7">
 		<title>Changes in OpenNMS 1.8.7</title>
 
