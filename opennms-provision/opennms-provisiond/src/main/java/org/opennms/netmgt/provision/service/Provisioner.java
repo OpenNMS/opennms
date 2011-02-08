@@ -56,6 +56,7 @@ import org.opennms.netmgt.EventConstants;
 import org.opennms.netmgt.daemon.SpringServiceDaemon;
 import org.opennms.netmgt.dao.SnmpAgentConfigFactory;
 import org.opennms.netmgt.model.OnmsIpInterface;
+import org.opennms.netmgt.model.OnmsMonitoredService;
 import org.opennms.netmgt.model.OnmsNode;
 import org.opennms.netmgt.model.events.EventBuilder;
 import org.opennms.netmgt.model.events.EventForwarder;
@@ -746,12 +747,10 @@ public class Provisioner implements SpringServiceDaemon {
      */
     @EventHandler(uei=EventConstants.DELETE_INTERFACE_EVENT_UEI)
     public void handleDeleteInterface(Event event) {
-        if (m_provisionService.isDiscoveryEnabled()) {
-            try {
-                doDeleteInterface(event.getNodeid(), event.getInterface());
-            } catch (Throwable e) {
-                log().error("Unexpected exception processing event: " + event.getUei(), e);
-            }
+        try {
+            doDeleteInterface(event.getNodeid(), event.getInterface());
+        } catch (Throwable e) {
+            log().error("Unexpected exception processing event: " + event.getUei(), e);
         }
     }
     
@@ -766,12 +765,10 @@ public class Provisioner implements SpringServiceDaemon {
      */
     @EventHandler(uei=EventConstants.DELETE_NODE_EVENT_UEI)
     public void handleDeleteNode(Event event) {
-        if (m_provisionService.isDiscoveryEnabled()) {
-            try {
-                doDeleteNode(event.getNodeid());
-            } catch (Throwable e) {
-                log().error("Unexpected exception processing event: " + event.getUei(), e);
-            }
+        try {
+            doDeleteNode(event.getNodeid());
+        } catch (Throwable e) {
+            log().error("Unexpected exception processing event: " + event.getUei(), e);
         }
     }
     
@@ -786,12 +783,10 @@ public class Provisioner implements SpringServiceDaemon {
      */
     @EventHandler(uei=EventConstants.DELETE_SERVICE_EVENT_UEI)
     public void handleDeleteService(Event event) {
-        if (m_provisionService.isDiscoveryEnabled()) {
-            try {
-                doDeleteService(event.getNodeid(), event.getInterface() == null ? null : InetAddress.getByName(event.getInterface()), event.getService());
-            } catch (Throwable e) {
-                log().error("Unexpected exception processing event: " + event.getUei(), e);
-            }
+        try {
+	    doDeleteService(event.getNodeid(), event.getInterface() == null ? null : InetAddress.getByName(event.getInterface()), event.getService());
+        } catch (Throwable e) {
+            log().error("Unexpected exception processing event: " + event.getUei(), e);
         }
     }
     

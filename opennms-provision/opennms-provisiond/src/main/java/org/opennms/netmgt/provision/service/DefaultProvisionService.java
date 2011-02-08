@@ -193,7 +193,7 @@ public class DefaultProvisionService implements ProvisionService {
     public void deleteNode(Integer nodeId) {
         
         OnmsNode node = m_nodeDao.get(nodeId);
-        if (node != null) {
+        if (node != null && (isDiscoveryEnabled() || node.getForeignSource() != null)) {
     
             m_nodeDao.delete(node);
     
@@ -207,7 +207,7 @@ public class DefaultProvisionService implements ProvisionService {
     @Transactional
     public void deleteInterface(Integer nodeId, String ipAddr) {
         OnmsIpInterface iface = m_ipInterfaceDao.findByNodeIdAndIpAddress(nodeId, ipAddr);
-        if (iface != null) {
+        if (iface != null && (isDiscoveryEnabled() || iface.getNode().getForeignSource() != null)) {
             m_ipInterfaceDao.delete(iface);
             
             iface.visit(new DeleteEventVisitor(m_eventForwarder));
@@ -219,7 +219,7 @@ public class DefaultProvisionService implements ProvisionService {
     @Transactional
     public void deleteService(Integer nodeId, InetAddress addr, String service) {
         OnmsMonitoredService monSvc = m_monitoredServiceDao.get(nodeId, addr, service);
-        if (monSvc != null) {
+        if (monSvc != null && (isDiscoveryEnabled() || monSvc.getIpInterface().getNode().getForeignSource() != null)) {
             m_monitoredServiceDao.delete(monSvc);
             monSvc.visit(new DeleteEventVisitor(m_eventForwarder));
         }

@@ -1,0 +1,25 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<model-import xmlns="http://xmlns.opennms.org/xsd/config/model-import" date-stamp="2005-12-27T09:12:54" foreign-source="deleteService" >
+        <node node-label="apknd" parent-node-label="apknd" foreign-id="4243" >
+                <interface ip-addr="10.136.160.1" status="1" snmp-primary="P" descr="VPN interface">
+                        <monitored-service service-name="ICMP"/>
+                        <monitored-service service-name="HTTP"/>
+                </interface>
+                <interface ip-addr="10.201.136.163" status="1" snmp-primary="S" descr="Management interface">
+                        <monitored-service service-name="ICMP"/>
+                        <monitored-service service-name="HTTP"/>
+                </interface>
+                <interface ip-addr="10.201.136.161" status="1" snmp-primary="N" descr="Gateway interface">
+                        <monitored-service service-name="ICMP"/>
+                </interface>
+                <interface ip-addr="10.201.136.167" status="1" snmp-primary="N" descr="sample node">
+                        <monitored-service service-name="ICMP"/>
+                </interface>
+                <category name="AC" />
+                <category name="UK" />
+                <category name="low" />
+                <asset name="manufacturer" value="Dell" />
+                <asset name="operatingSystem" value="Windows Pi" />
+                <asset name="description" value="Large and/or In Charge" />
+        </node>
+</model-import>
