@@ -20,6 +20,7 @@ import javax.xml.bind.annotation.XmlRootElement;
 import javax.xml.bind.annotation.XmlTransient;
 import javax.xml.bind.annotation.XmlType;
 
+import org.apache.commons.lang.builder.ToStringBuilder;
 import org.opennms.core.utils.InetAddressUtils;
 
 
@@ -354,4 +355,17 @@ public class RequisitionInterface implements Comparable<RequisitionInterface> {
     public int compareTo(RequisitionInterface o) {
         return this.m_ipAddress.compareTo(o.getIpAddr());
     }
+    
+    public String toString() {
+    	return new ToStringBuilder(this)
+    		.append("monitored-services", m_monitoredServices)
+    		.append("categories", m_categories)
+    		.append("description", m_description)
+    		.append("ip-address", m_ipAddress)
+    		.append("is-managed", m_isManaged)
+    		.append("snmp-primary", m_snmpPrimary)
+    		.append("status", m_status)
+    		.toString();
+    }
+
 }

@@ -14,6 +14,8 @@ import javax.xml.bind.annotation.XmlAttribute;
 import javax.xml.bind.annotation.XmlRootElement;
 import javax.xml.bind.annotation.XmlType;
 
+import org.apache.commons.lang.builder.ToStringBuilder;
+
 /**
  * <p>RequisitionCategory class.</p>
  *
@@ -70,5 +72,11 @@ public class RequisitionCategory implements Comparable<RequisitionCategory> {
 
     public int compareTo(RequisitionCategory o) {
         return m_name.compareTo(o.getName());
+    }
+
+    public String toString() {
+    	return new ToStringBuilder(this)
+    		.append("name", m_name)
+    		.toString();
     }
 }

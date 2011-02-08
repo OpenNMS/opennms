@@ -169,13 +169,10 @@ public class RequisitionRestServiceTest extends AbstractSpringJerseyRestTestCase
         xml = sendRequest(GET, "/requisitions/test/nodes/4243/categories", 200);
         assertTrue(xml.contains("count=\"3\""));
 
+        // create a category on a node that is not in the requisition
         base = "/requisitions/test/nodes/4244/categories";
         // create a category
-        sendPost(base, "<category xmlns=\"http://xmlns.opennms.org/xsd/config/model-import\" name=\"New Category\" />");
-        // confirm that the category was created
-        xml = sendRequest(GET, "/requisitions/test/nodes/4244/categories", 200);
-        assertTrue(xml.contains("count=\"1\""));
-        assertTrue(xml.contains("name=\"New Category\""));
+        sendPost(base, "<category xmlns=\"http://xmlns.opennms.org/xsd/config/model-import\" name=\"New Category\" />", 304);
     }
     
     @Test

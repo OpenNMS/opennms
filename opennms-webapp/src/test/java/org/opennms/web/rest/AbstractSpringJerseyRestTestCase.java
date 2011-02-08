@@ -44,6 +44,7 @@ import java.io.InputStream;
 import java.io.UnsupportedEncodingException;
 import java.net.URLDecoder;
 import java.util.HashMap;
+import java.util.Iterator;
 import java.util.Map;
 
 import javax.servlet.Filter;
@@ -59,6 +60,7 @@ import javax.xml.bind.Unmarshaller;
 
 import org.junit.After;
 import org.junit.Before;
+import org.opennms.core.utils.LogUtils;
 import org.opennms.netmgt.config.DataSourceFactory;
 import org.opennms.netmgt.mock.MockDatabase;
 import org.opennms.test.DaoTestConfigBean;
@@ -200,11 +202,23 @@ public abstract class AbstractSpringJerseyRestTestCase {
         sendData(POST, MediaType.APPLICATION_XML, url, xml);
     }
 
+    protected void sendPost(String url, String xml, int statusCode) throws Exception {
+        sendData(POST, MediaType.APPLICATION_XML, url, xml, statusCode);
+    }
+
     protected void sendPut(String url, String formData) throws Exception {
         sendData(PUT, MediaType.APPLICATION_FORM_URLENCODED, url, formData);
     }
     
+    protected void sendPut(String url, String formData, int statusCode) throws Exception {
+        sendData(PUT, MediaType.APPLICATION_FORM_URLENCODED, url, formData, statusCode);
+    }
+    
     protected void sendData(String requestType, String contentType, String url, String data) throws Exception {
+    	sendData(requestType, contentType, url, data, 200);
+    }
+    
+    protected void sendData(String requestType, String contentType, String url, String data, int statusCode) throws Exception {
         MockHttpServletRequest request = createRequest(requestType, url);
         request.setContentType(contentType);
         
@@ -216,10 +230,34 @@ public abstract class AbstractSpringJerseyRestTestCase {
         
         MockHttpServletResponse response = createResponse();        
         dispatch(request, response);
-        assertEquals(response.getErrorMessage(), 200, response.getStatus());
+
+        LogUtils.debugf(this, "Received response: %s", stringifyResponse(response));
+        assertEquals(response.getErrorMessage(), statusCode, response.getStatus());
     }
 
-    protected static Map<String, String> parseParamData(String data) throws UnsupportedEncodingException {
+    private String stringifyResponse(final MockHttpServletResponse response) {
+    	final StringBuilder string = new StringBuilder();
+    	try {
+			string.append("HttpServletResponse[")
+				.append("status=").append(response.getStatus())
+				.append(",content=").append(response.getContentAsString())
+				.append(",headers=[");
+			boolean first = true;
+			for (final Iterator<String> i = response.getHeaderNames().iterator(); i.hasNext(); first = false) {
+				if (!first) {
+					string.append(",");
+				}
+				final String name = i.next();
+				string.append("name=").append(response.getHeader(name));
+			}
+			string.append("]").append("]");
+		} catch (UnsupportedEncodingException e) {
+			LogUtils.warnf(this, e, "Unable to get response content");
+		}
+    	return string.toString();
+	}
+
+	protected static Map<String, String> parseParamData(String data) throws UnsupportedEncodingException {
         Map<String, String> retVal = new HashMap<String, String>();
         for (String item : data.split("&")) {
             String[] kv = item.split("=");
@@ -232,8 +270,7 @@ public abstract class AbstractSpringJerseyRestTestCase {
         return retVal;
     }
 
-    @SuppressWarnings("unchecked")
-    protected String sendRequest(String requestType, String url, Map parameters, int expectedStatus) throws Exception {
+    protected String sendRequest(String requestType, String url, @SuppressWarnings("rawtypes") Map parameters, int expectedStatus) throws Exception {
         MockHttpServletRequest request = createRequest(requestType, url);
         request.setParameters(parameters);
         return sendRequest(request, expectedStatus);

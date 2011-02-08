@@ -14,6 +14,8 @@ import javax.xml.bind.annotation.XmlRootElement;
 import javax.xml.bind.annotation.XmlTransient;
 import javax.xml.bind.annotation.XmlType;
 
+import org.apache.commons.lang.builder.ToStringBuilder;
+
 
 /**
  * <p>RequisitionNode class.</p>
@@ -431,4 +433,17 @@ public class RequisitionNode {
         parentNodeLabel = value;
     }
 
+    public String toString() {
+    	return new ToStringBuilder(this)
+    		.append("interfaces", m_interfaces)
+    		.append("categories", m_categories)
+    		.append("assets", m_assets)
+    		.append("building", building)
+    		.append("city", city)
+    		.append("foreign-id", foreignId)
+    		.append("node-label", nodeLabel)
+    		.append("parent-foreign-id", parentForeignId)
+    		.append("parent-node-label", parentNodeLabel)
+    		.toString();
+    }
 }
