@@ -86,7 +86,7 @@ if (grep { $_ =~ /^-Droot.dir=/ } @ARGS) {
 $ENV{'MAVEN_OPTS'} = $MAVEN_OPTS;
 info("MAVEN_OPTS = $MAVEN_OPTS"); 
 
-sub handle_errors_and_exit {
+sub handle_errors {
 	my $exit = shift;
 	if ($exit == 0) {
 		info("finished successfully");
@@ -97,6 +97,11 @@ sub handle_errors_and_exit {
 	} else {
 		error("child exited with value " . ($exit >> 8));
 	}
+	return $exit;
+}
+
+sub handle_errors_and_exit {
+	my $exit = handle_errors(@_);
 	exit ($exit >> 8);
 }
 
