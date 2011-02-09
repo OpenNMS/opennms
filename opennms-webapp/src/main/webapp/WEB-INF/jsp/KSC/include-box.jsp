@@ -52,46 +52,6 @@
 <%@ taglib uri="http://java.sun.com/jsp/jstl/core" prefix="c" %>
 <%@ taglib uri="http://java.sun.com/jsp/jstl/functions" prefix="fn" %>
 
-<script type="text/javascript">
-  function resetKscBoxSelected() {
-    document.kscBoxReportList.report[0].selected = true;
-  }
-  
-  function validateKscBoxReportChosen() {
-    var report = -1;
-    
-    for (i = 0; i < document.kscBoxReportList.report.length; i++) {
-      // make sure something is checked before proceeding
-      if (document.kscBoxReportList.report[i].selected     
-          && document.kscBoxReportList.report[i].value != "") {
-        report = document.kscBoxReportList.report[i].value;
-        break;
-      }
-    }
-    
-    return report;
-  }
-  
-  function goKscBoxChange() {
-    var reportChosen = validateKscBoxReportChosen();
-    if (reportChosen != -1) {
-      document.kscBoxForm.report.value = reportChosen;
-      document.kscBoxForm.submit();
-      /*
-       * We reset the selection after submitting the form so if the user
-       * uses the back button to get back to this page, it will be set at
-       * the "choose a node" option.  Without this, they wouldn't be able
-       * to proceed forward to the same node because won't trigger the
-       * onChange action on the <select/> element.  We also do the submit
-       * in a separate form after we copy the chosen value over, just to
-       * ensure that no problems happen by resetting the selection
-       * immediately after calling submit().
-       */
-      resetKscBoxSelected();
-    }
-  }
-</script>
-
 <h3 class="o-box"><a href="KSC/index.htm">KSC Reports</a></h3>
 <div class="boxWrapper">
   <c:choose>
@@ -136,7 +96,7 @@
                 renderTo:'ksc-combo',
                 emptyText:"-- Choose A Report to View --",
                 width:220,
-                onSelect:chooseKSCBoxChange,
+                onSelect:chooseKSCBoxChange
             })
           });
 
@@ -145,9 +105,6 @@
       }
       </script>
       
-      <script type="text/javascript">
-        resetKscBoxSelected();
-      </script>
     </c:otherwise>
   </c:choose>
   <div id="ksc-combo"></div>
