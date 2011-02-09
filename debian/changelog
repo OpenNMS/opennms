@@ -1,3 +1,9 @@
+opennms (1.8.9-1) unstable; urgency=high
+
+  * New upstream release.  Includes a fix for the database check on startup.
+
+ -- OpenNMS Release Manager <opennms@opennms.org>  Wed, 09 Feb 2011 11:41:00 -0400
+
 opennms (1.8.8-1) unstable; urgency=medium
 
   * New upstream release.
