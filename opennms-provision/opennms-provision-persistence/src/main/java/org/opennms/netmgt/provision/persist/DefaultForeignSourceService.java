@@ -138,7 +138,7 @@ public class DefaultForeignSourceService implements ForeignSourceService {
         
         String propName = path.getPropertyName();
         String methodSuffix = Character.toUpperCase(propName.charAt(0))+propName.substring(1);
-        String methodName = "remove"+methodSuffix;
+        String methodName = "delete"+methodSuffix;
         
         try {
             MethodUtils.invokeMethod(parentObject, methodName, new Object[] { objToDelete });
