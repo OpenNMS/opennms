@@ -40,7 +40,6 @@ package org.opennms.netmgt.vmmgr;
 import java.io.IOException;
 import java.sql.Connection;
 import java.sql.DriverManager;
-import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
@@ -157,13 +156,14 @@ public class DatabaseChecker {
                 LogUtils.warnf(this, "Unknown datasource '%s' was found.", name);
             }
             try {
+                Class.forName(dataSource.getClassName());
                 final Connection connection = DriverManager.getConnection(dataSource.getUrl(), dataSource.getUserName(), dataSource.getPassword());
                 connection.close();
-            } catch (final SQLException e) {
+            } catch (final Throwable t) {
                 final String errorMessage = "Unable to connect to data source '%s' with username '%s', check opennms-datasources.xml and your database permissions.";
                 if (m_required.contains(name)) {
                     LogUtils.errorf(this, errorMessage, name, dataSource.getUserName());
-                    throw new InvalidDataSourceException("Data source '" + name + "' failed.", e);
+                    throw new InvalidDataSourceException("Data source '" + name + "' failed.", t);
                 } else {
                     LogUtils.warnf(this, errorMessage, name, dataSource.getUserName());
                 }
