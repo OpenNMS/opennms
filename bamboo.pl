@@ -17,7 +17,7 @@ if ($git eq "" or not -x $git) {
 	exit 1;
 }
 
-my @command = ($git, "clean", "-fdx");
+my @command = ($git, "clean", "-fdx", ".");
 info("running:", @command);
 handle_errors_and_exit_on_failure(system(@command));
 
