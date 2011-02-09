@@ -100,6 +100,13 @@ sub handle_errors {
 	return $exit;
 }
 
+sub handle_errors_and_exit_on_failure {
+	my $exit = handle_errors(@_);
+	if ($exit != 0) {
+		exit ($exit >> 8);
+	}
+}
+
 sub handle_errors_and_exit {
 	my $exit = handle_errors(@_);
 	exit ($exit >> 8);
