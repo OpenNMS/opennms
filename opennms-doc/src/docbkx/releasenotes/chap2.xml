@@ -6,6 +6,20 @@
 
 	<!-- Start 1.9 -->
 
+	<section id="opennms-1.9.5">
+		<title>Changes in OpenNMS 1.9.5</title>
+
+		<section id="opennms-1.9.5-bug">
+			<title>Bug</title>
+
+			<itemizedlist>
+				<listitem><para>Installer still has RCS-style $Id$ tag in banner (Issue <ulink url='http://issues.opennms.org/browse/NMS-3922'>NMS-3922</ulink>)</para></listitem>
+				<listitem><para>OpenNMS unable to connect to opennms database with opennms username (Issue <ulink url='http://issues.opennms.org/browse/NMS-4392'>NMS-4392</ulink>)</para></listitem>
+				<listitem><para>Clicking the Delete Icon next to a entity (node, interface, service) defined in the Edit provisioning group page causes exception (Issue <ulink url='http://issues.opennms.org/browse/NMS-4394'>NMS-4394</ulink>)</para></listitem>
+			</itemizedlist>
+		</section>
+	</section>
+
 	<section id="opennms-1.9.4">
 		<title>Changes in OpenNMS 1.9.4</title>
 
