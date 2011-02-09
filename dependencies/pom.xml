@@ -21,6 +21,7 @@
     <module>opennms-mina</module>
     <module>opennms-spring-test</module>
     <module>asterisk</module>
+    <module>dbpool</module>
     <module>dnsjava</module>
     <module>gwt</module>
     <module>icmp</module>
