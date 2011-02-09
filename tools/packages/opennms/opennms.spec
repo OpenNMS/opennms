@@ -386,6 +386,7 @@ find $RPM_BUILD_ROOT%{instprefix}/bin ! -type d | \
 find $RPM_BUILD_ROOT%{instprefix}/lib ! -type d | \
     sed -e "s|^$RPM_BUILD_ROOT|%attr(755,root,root) |" | \
     grep -v 'provisioning-adapter' | \
+    grep -v 'opennms-rancid-%{version}' | \
     sort >> %{_tmppath}/files.main
 find $RPM_BUILD_ROOT%{instprefix}/etc -type d | \
     sed -e "s,^$RPM_BUILD_ROOT,%dir ," | \
@@ -476,7 +477,7 @@ rm -rf $RPM_BUILD_ROOT
 %attr(664,root,root) %{instprefix}/etc/mapsadapter-configuration.xml
 
 %files plugin-provisioning-rancid
-%attr(664,root,root) %{instprefix}/lib/opennms-rancid*.jar
+%attr(664,root,root) %{instprefix}/lib/opennms-rancid-%{version}*.jar
 
 %files plugin-provisioning-snmp-asset
 %attr(664,root,root) %{instprefix}/lib/opennms-snmp-asset-provisioning-adapter*.jar
