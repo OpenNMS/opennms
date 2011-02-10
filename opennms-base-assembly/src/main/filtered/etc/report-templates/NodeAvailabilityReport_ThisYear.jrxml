@@ -109,8 +109,8 @@ FROM
 	FROM
 		(SELECT
 			outages.nodeid,
-			outages.iflostservice,
-			outages.ifregainedservice
+			least(('$P!{DS_START_TIME}'::TIMESTAMP + CAST( EXTRACT(DAY FROM '$P!{DS_TIME_RANGE}'::TIMESTAMP) || ' days' as interval )), outages.ifregainedservice) as ifregainedservice,
+			greatest('$P!{DS_START_TIME}'::TIMESTAMP,outages.iflostservice) as iflostservice
 		FROM
 			outages, service, events
 		WHERE

@@ -109,8 +109,8 @@ FROM
 	FROM
 		(SELECT
 			outages.nodeid,
-			outages.iflostservice,
-			outages.ifregainedservice
+			least(('$P!{DS_START_TIME}'::TIMESTAMP + CAST( EXTRACT(DAY FROM '$P!{DS_TIME_RANGE}'::TIMESTAMP) || ' days' as interval )), outages.ifregainedservice) as ifregainedservice,
+			greatest('$P!{DS_START_TIME}'::TIMESTAMP,outages.iflostservice) as iflostservice
 		FROM
 			outages, service, events
 		WHERE
@@ -252,8 +252,7 @@ new GregorianCalendar(new GregorianCalendar().get(Calendar.YEAR), new GregorianC
 	<queryString>
 		<![CDATA[SELECT
 	'$P!{START_TIME}'::TIMESTAMP AS start,
-	'$P!{START_TIME}'::TIMESTAMP + CAST( EXTRACT( DAY FROM '$P!{TIME_RANGE}'::TIMESTAMP ) - 1 || ' days' as interval) AS end
-]]>
+	'$P!{START_TIME}'::TIMESTAMP + CAST( EXTRACT( DAY FROM '$P!{TIME_RANGE}'::TIMESTAMP ) - 1 || ' days' as interval) AS end]]>
 	</queryString>
 	<field name="start" class="java.sql.Timestamp"/>
 	<field name="end" class="java.sql.Timestamp"/>
