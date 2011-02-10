@@ -57,7 +57,7 @@ BuildRoot:		%{_tmppath}/%{name}-%{version}-root
 
 Requires:		opennms-webui      >= %{version}-%{release}
 Requires:		opennms-core        = %{version}-%{release}
-Requires:		postgresql-server  >= 7.4
+Requires:		postgresql-server  >= 8.1
 
 # don't worry about buildrequires, the shell script will bomb quick  =)
 BuildRequires:		%{jdk}
