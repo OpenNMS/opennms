@@ -39,11 +39,7 @@ import java.math.BigInteger;
 import java.net.Inet4Address;
 import java.net.Inet6Address;
 import java.net.InetAddress;
-import java.net.NetworkInterface;
-import java.net.SocketException;
 import java.net.UnknownHostException;
-import java.util.Collections;
-import java.util.Enumeration;
 import java.util.List;
 
 /**
@@ -266,7 +262,9 @@ abstract public class InetAddressUtils {
         }
     
         InetAddress lowest = null;
-        byte[] lowestBytes = new byte[] { 0, 0, 0, 0 };
+        // Start with the highest conceivable IP address value
+        byte[] originalBytes = toIpAddrBytes("ffff:ffff:ffff:ffff:ffff:ffff:ffff:ffff");
+        byte[] lowestBytes = originalBytes;
         ByteArrayComparator comparator = new ByteArrayComparator();
         for (InetAddress temp : addresses) {
             byte[] tempBytes = temp.getAddress();
@@ -277,7 +275,7 @@ abstract public class InetAddressUtils {
             }
         }
     
-        return lowest;
+        return comparator.compare(originalBytes, lowestBytes) == 0 ? null : lowest;
     }
 
     public static BigInteger difference(String addr1, String addr2) {

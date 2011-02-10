@@ -36,7 +36,10 @@ import java.net.Inet4Address;
 import java.net.Inet6Address;
 import java.net.InetAddress;
 import java.net.UnknownHostException;
+import java.util.Arrays;
+import java.util.Collections;
 import java.util.Iterator;
+import java.util.List;
 
 import junit.framework.TestCase;
 
@@ -52,7 +55,7 @@ public class IPAddressRangeTest extends TestCase {
 
     private final IPAddress zero = new IPAddress("0.0.0.0");
     private final IPAddress one = new IPAddress("0.0.0.1");
-    
+
     private final IPAddress maxOneOctet = new IPAddress("0.0.0.255");
     private final IPAddress maxTwoOctet = new IPAddress("0.0.255.0");
     private final IPAddress maxThreeOctet = new IPAddress("0.255.0.0");
@@ -60,7 +63,7 @@ public class IPAddressRangeTest extends TestCase {
     private final IPAddress thirtyOneBitNumber = new IPAddress("127.255.255.255");
     private final IPAddress thirtyTwoBit = new IPAddress("128.0.0.0");
     private final IPAddress maxFourOctet = new IPAddress("255.0.0.0");
-    
+
     private final IPAddress maxIPv4 = new IPAddress("255.255.255.255");
     private final IPAddress maxIPv6 = new IPAddress("ffff:ffff:ffff:ffff:ffff:ffff:ffff:ffff");
     private final IPAddress maxIPv6MinusFive = new IPAddress("ffff:ffff:ffff:ffff:ffff:ffff:ffff:fffa");
@@ -177,7 +180,7 @@ public class IPAddressRangeTest extends TestCase {
     public void testSingletonRange() {
         assertEquals(BigInteger.ONE, singleton.size());
     }
-    
+
     public void testContains() {
         assertTrue(normal.contains(begin));
         assertTrue(normal.contains(begin.incr()));
@@ -202,6 +205,67 @@ public class IPAddressRangeTest extends TestCase {
         assertTrue(it.hasNext());
         assertEquals(addr2, it.next());
         assertFalse(it.hasNext());
+    }
+
+    public void testGetLowestInetAddress() throws UnknownHostException {
+        assertNull(InetAddressUtils.getLowestInetAddress(Collections.EMPTY_LIST));
+
+        List<InetAddress> ips;
+        ips = Arrays.asList(
+                            InetAddress.getByName("0.0.0.0")
+        );
+        assertEquals("0.0.0.0", InetAddressUtils.getLowestInetAddress(ips).getHostAddress());
+
+        ips = Arrays.asList(
+                            InetAddress.getByName("0.0.0.0"),
+                            InetAddress.getByName("abcd:ef00:0000:0000:0000:0000:0000:0001"),
+                            InetAddress.getByName("127.0.0.1")
+        );
+        assertEquals("0.0.0.0", InetAddressUtils.getLowestInetAddress(ips).getHostAddress());
+
+        ips = Arrays.asList(
+                            InetAddress.getByName("255.255.255.255"),
+                            InetAddress.getByName("abcd:ef00:0000:0000:0000:0000:0000:0001"),
+                            InetAddress.getByName("127.0.0.1")
+        );
+        assertEquals("127.0.0.1", InetAddressUtils.getLowestInetAddress(ips).getHostAddress());
+
+        ips = Arrays.asList(
+                            InetAddress.getByName("8000:0000:0000:0000:0000:0000:0000:0001"),
+                            InetAddress.getByName("ff00:0000:0000:0000:0000:0000:0000:0001"),
+                            InetAddress.getByName("8000:0000:0000:0000:0000:0000:0000:0001"),
+                            InetAddress.getByName("ff00:0000:0000:0000:0000:0000:0000:0001")
+        );
+        assertEquals("8000:0000:0000:0000:0000:0000:0000:0001", InetAddressUtils.toIpAddrString(InetAddressUtils.getLowestInetAddress(ips)));
+
+        ips = Arrays.asList(
+                            InetAddress.getByName("ff00:0000:0000:0000:0000:0000:0000:0001"),
+                            InetAddress.getByName("8000:0000:0000:0000:0000:0000:0000:0001"),
+                            InetAddress.getByName("ff00:0000:0000:0000:0000:0000:0000:0001"),
+                            InetAddress.getByName("8000:0000:0000:0000:0000:0000:0000:0001")
+        );
+        assertEquals("8000:0000:0000:0000:0000:0000:0000:0001", InetAddressUtils.toIpAddrString(InetAddressUtils.getLowestInetAddress(ips)));
+
+        // TODO: These tests produce strange results because it is unclear how this function should 
+        // compare IPv6 addresses that include scope IDs
+
+        ips = Arrays.asList(
+                            InetAddress.getByName("ff00:0000:0000:0000:0000:0000:0000:0001%5"),
+                            InetAddress.getByName("ff00:0000:0000:0000:0000:0000:0000:0001")
+        );
+        assertEquals("ff00:0000:0000:0000:0000:0000:0000:0001%5", InetAddressUtils.toIpAddrString(InetAddressUtils.getLowestInetAddress(ips)));
+
+        ips = Arrays.asList(
+                            InetAddress.getByName("ff00:0000:0000:0000:0000:0000:0000:0001"),
+                            InetAddress.getByName("ff00:0000:0000:0000:0000:0000:0000:0001%5")
+        );
+        assertEquals("ff00:0000:0000:0000:0000:0000:0000:0001", InetAddressUtils.toIpAddrString(InetAddressUtils.getLowestInetAddress(ips)));
+
+        ips = Arrays.asList(
+                            InetAddress.getByName("ff00:0000:0000:0000:0000:0000:0000:0001%6"),
+                            InetAddress.getByName("ff00:0000:0000:0000:0000:0000:0000:0001%5")
+        );
+        assertEquals("ff00:0000:0000:0000:0000:0000:0000:0001%6", InetAddressUtils.toIpAddrString(InetAddressUtils.getLowestInetAddress(ips)));
     }
 
 }
