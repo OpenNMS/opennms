@@ -202,7 +202,9 @@ abstract public class InetAddressUtils {
         }
     
         InetAddress lowest = null;
-        byte[] lowestBytes = new byte[] { 0, 0, 0, 0 };
+        // Start with the highest conceivable IP address value
+        byte[] originalBytes = toIpAddrBytes("ffff:ffff:ffff:ffff:ffff:ffff:ffff:ffff");
+        byte[] lowestBytes = originalBytes;
         ByteArrayComparator comparator = new ByteArrayComparator();
         for (InetAddress temp : addresses) {
             byte[] tempBytes = temp.getAddress();
@@ -213,7 +215,7 @@ abstract public class InetAddressUtils {
             }
         }
     
-        return lowest;
+        return comparator.compare(originalBytes, lowestBytes) == 0 ? null : lowest;
     }
 
     public static boolean isInetAddressInRange(final String addrString, final String beginString, final String endString) {
