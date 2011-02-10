@@ -7,7 +7,7 @@ Standards-Version: 3.7.3
 
 Package: opennms
 Architecture: all
-Depends: opennms-db (=${binary:Version}), opennms-server (=${binary:Version}), opennms-webapp-jetty (=${binary:Version}) | opennms-webapp-standalone (=${binary:Version})
+Depends: opennms-db (=${binary:Version}), opennms-server (=${binary:Version}), opennms-webapp-jetty (=${binary:Version})
 Suggests: opennms-doc
 Description: Enterprise-grade Open-source Network Management Platform (Full Install)
  OpenNMS is an enterprise-grade network management system written in Java.
@@ -84,34 +84,8 @@ Description: Enterprise-grade Open-source Network Management Platform (Jetty Web
  events (such as SNMP traps), and generates notices via email, pager, SMS, etc.
  .
  This package provides the Jetty version of the OpenNMS web UI, which runs
- embedded in the main OpenNMS daemon.  This is the recommended web UI, unless
- you have a specific need for the standalone web UI.  The default URL for this
+ embedded in the main OpenNMS daemon.  The default URL for this
  web UI is 'http://yourhost:8180/opennms/'
-
-Package: opennms-webapp-standalone
-Architecture: all
-Depends: opennms-common (=${binary:Version}), tomcat5.5 (>= 5.5.20), sun-java6-jdk | sun-java5-jdk | openjdk-6-jdk (>= 6b11-9.1), adduser
-Conflicts: opennms-webapp
-Replaces: opennms-webapp
-Suggests: jrrd, rrdtool, postgresql-client-8.4
-Description: Enterprise-grade Open-source Network Management Platform (Standalone Web UI)
- OpenNMS is an enterprise-grade network management system written in Java.
- .
- OpenNMS can monitor various network services to determine status and service
- level availability.  Data collection is performed using protocols such as SNMP
- to generate reports and alert on thresholds.  An extensible event management
- and notification system handles both internally and externally generated
- events (such as SNMP traps), and generates notices via email, pager, SMS, etc.
- .
- This package provides the standalone version of the OpenNMS web UI, which runs
- in Tomcat or another servlet container, independent of the main OpenNMS daemon.
- The default URL for this web UI is http://yourhost:8280/opennms/
- .
- If you are installing this on a separate machine from the opennms-server
- package, it is recommended that you share the files in /etc/opennms/ between
- the two machines (using NFS or something similar).  Otherwise, configuration
- changes made through the web UI will not actually take effect in the main
- OpenNMS daemon.
 
 Package: opennms-common
 Architecture: all
@@ -127,7 +101,7 @@ Description: Enterprise-grade Open-source Network Management Platform (Common Fi
  events (such as SNMP traps), and generates notices via email, pager, SMS, etc.
  .
  This package provides the common files required by both the main OpenNMS daemon
- and the standalone OpenNMS web UI.
+ and the OpenNMS web UI.
 
 Package: libopennms-java
 Architecture: all

@@ -58,7 +58,6 @@
 
 			<glossentry>
 				<glossterm>
-					<filename>$OPENNMS_HOME/webapps/opennms/</filename> and
 					<filename>$OPENNMS_HOME/jetty-webapps/opennms/</filename>
 				</glossterm>
 
@@ -123,14 +122,6 @@
 						<para>
 							<emphasis>opennms-webapp-jetty</emphasis>: The OpenNMS web
 							UI, designed to be started by the opennms-core engine.
-						</para>
-					</listitem>
-					
-					<listitem>
-						<para>
-							<emphasis>opennms-webapp-standalone</emphasis>: The OpenNMS
-							web UI, designed to be run in Tomcat or another suitable
-							servlet container.
 						</para>
 					</listitem>
 					
@@ -417,7 +408,6 @@ sudo apt-get -u install opennms</programlisting>
 				</listitem>
 				<listitem>
 					<para>Remove <filename><varname>$OPENNMS_HOME</varname>/lib</filename>,
-					<filename><varname>$OPENNMS_HOME</varname>/webapps/opennms/WEB-INF/lib</filename>, and
 					<filename><varname>$OPENNMS_HOME</varname>/jetty-webapps/opennms/WEB-INF/lib</filename>.</para>
 				</listitem>
 			</itemizedlist>

@@ -1,15 +1,6 @@
 <component>
   <dependencySets>
     <!-- ROOT webapp -->
-    <!-- don't do this for the opennms webapp, assume tomcat has a root
-    <dependencySet>
-      <unpack>true</unpack>
-      <useProjectArtifact>false</useProjectArtifact>
-      <useTransitiveDependencies>false</useTransitiveDependencies>
-      <outputDirectory>webapps/ROOT</outputDirectory>
-      <includes><include>org.opennms.features:root-webapp:war:${project.version}</include></includes>
-    </dependencySet>
-    -->
     <dependencySet>
       <unpack>true</unpack>
       <useProjectArtifact>false</useProjectArtifact>
@@ -19,13 +10,6 @@
     </dependencySet>
 
     <!-- OpenNMS webapp -->
-    <dependencySet>
-      <unpack>true</unpack>
-      <useProjectArtifact>false</useProjectArtifact>
-      <useTransitiveDependencies>false</useTransitiveDependencies>
-      <outputDirectory>webapps/opennms</outputDirectory>
-      <includes><include>org.opennms.assemblies:org.opennms.assemblies.webapp-full:war:${project.version}</include></includes>
-    </dependencySet>
     <dependencySet>
       <unpack>true</unpack>
       <unpackOptions>
@@ -85,30 +69,9 @@
       <unpackOptions><filtered>true</filtered></unpackOptions>
       <useProjectArtifact>false</useProjectArtifact>
       <useTransitiveDependencies>false</useTransitiveDependencies>
-      <outputDirectory>webapps/opennms/META-INF</outputDirectory>
-      <outputFileNameMapping></outputFileNameMapping>
-      <includes><include>org.opennms:opennms-webapp:tar.gz:meta-inf:${project.version}</include></includes>
-    </dependencySet>
-    <dependencySet>
-      <unpack>true</unpack>
-      <unpackOptions><filtered>true</filtered></unpackOptions>
-      <useProjectArtifact>false</useProjectArtifact>
-      <useTransitiveDependencies>false</useTransitiveDependencies>
       <outputDirectory>jetty-webapps/opennms/META-INF</outputDirectory>
       <outputFileNameMapping></outputFileNameMapping>
       <includes><include>org.opennms:opennms-webapp:tar.gz:meta-inf:${project.version}</include></includes>
-    </dependencySet>
-    <dependencySet>
-      <unpack>true</unpack>
-      <unpackOptions><filtered>true</filtered></unpackOptions>
-      <useProjectArtifact>false</useProjectArtifact>
-      <useTransitiveDependencies>false</useTransitiveDependencies>
-      <outputDirectory>webapps/opennms/WEB-INF</outputDirectory>
-      <outputFileNameMapping></outputFileNameMapping>
-      <includes>
-        <include>org.opennms:opennms-webapp:tar.gz:web-inf:${project.version}</include>
-        <include>org.opennms:opennms-base-assembly:tar.gz:log4j:${project.version}</include>
-       </includes>
     </dependencySet>
     <dependencySet>
       <unpack>true</unpack>
@@ -178,34 +141,8 @@
       <unpack>true</unpack>
       <useProjectArtifact>false</useProjectArtifact>
       <useTransitiveDependencies>false</useTransitiveDependencies>
-      <outputDirectory>webapps/opennms-remoting</outputDirectory>
-      <includes><include>org.opennms.assemblies:org.opennms.assemblies.http-remoting:war:${project.version}</include></includes>
-    </dependencySet>
-    <dependencySet>
-      <unpack>true</unpack>
-      <useProjectArtifact>false</useProjectArtifact>
-      <useTransitiveDependencies>false</useTransitiveDependencies>
       <outputDirectory>jetty-webapps/opennms-remoting/webstart</outputDirectory>
       <includes><include>org.opennms.features:org.opennms.features.remote-poller-jnlp:tar.gz:jnlp:${project.version}</include></includes>
-    </dependencySet>
-    <dependencySet>
-      <unpack>true</unpack>
-      <useProjectArtifact>false</useProjectArtifact>
-      <useTransitiveDependencies>false</useTransitiveDependencies>
-      <outputDirectory>webapps/opennms-remoting/webstart</outputDirectory>
-      <includes><include>org.opennms.features:org.opennms.features.remote-poller-jnlp:tar.gz:jnlp:${project.version}</include></includes>
-    </dependencySet>
-    <dependencySet>
-      <unpack>true</unpack>
-      <unpackOptions><filtered>true</filtered></unpackOptions>
-      <useProjectArtifact>false</useProjectArtifact>
-      <useTransitiveDependencies>false</useTransitiveDependencies>
-      <outputDirectory>webapps/opennms-remoting/WEB-INF</outputDirectory>
-      <outputFileNameMapping></outputFileNameMapping>
-      <includes>
-        <include>org.opennms:opennms-webapp:tar.gz:web-inf:${project.version}</include>
-        <include>org.opennms:opennms-base-assembly:tar.gz:log4j:${project.version}</include>
-       </includes>
     </dependencySet>
     <dependencySet>
       <unpack>true</unpack>

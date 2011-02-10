@@ -17,8 +17,6 @@
 %{!?sharedir:%define sharedir /var/opennms}
 # This is where the "logs" directory will link on RPM-based systems
 %{!?logdir:%define logdir /var/log/opennms}
-# Where the OpenNMS webapp lives
-%{!?webappsdir:%define webappsdir %instprefix/webapps}
 # Where the OpenNMS Jetty webapp lives
 %{!?jettydir:%define jettydir %instprefix/jetty-webapps}
 # The directory for the OpenNMS webapp
@@ -72,21 +70,8 @@ OpenNMS is an enterprise-grade network management platform.
 This package used to contain what is now in the "opennms-core" package.
 It now exists to give a reasonable default installation of OpenNMS.
 
-When you install this package, you will also need to install one of the
-opennms-webapp packages.  OpenNMS now provides 2 ways to install the
-web UI:
-
-* standalone
-
-  A standalone version of the web UI for OpenNMS, suitable for embedding inside
-  tomcat or another servlet container, or on a server separate from the OpenNMS
-  core server.
-
-* jetty
-
-  A version of the web UI for OpenNMS which uses a built-in, embedded version
-  of Jetty, which runs in the same JVM as OpenNMS.  This is the recommended
-  version unless you have specific needs otherwise.
+When you install this package, you will likely also need to install the
+webapp package.
 
 %{extrainfo}
 %{extrainfo2}
@@ -105,7 +90,7 @@ daemon responsible for discovery, polling, data collection, and
 notifications (ie, anything that is not part of the web UI).
 
 If you want to be able to view your data, you will need to install
-one of the opennms-webapp packages.
+the webapp package.
 
 The logs and data directories are relocatable.  By default, they are:
 
@@ -158,21 +143,6 @@ Obsoletes:	opennms-webapp < 1.3.11
 %description webapp-jetty
 The web UI for OpenNMS.  This is the Jetty version, which runs
 embedded in the main OpenNMS core process.
-
-%{extrainfo}
-%{extrainfo2}
-
-
-%package webapp-standalone
-Summary:	Standalone web interface for OpenNMS
-Group:		Applications/System
-Requires:	opennms-core = %{version}-%{release}
-Provides:	opennms-webui = %{version}-%{release}
-Obsoletes:	opennms-webapp < 1.3.11
-
-%description webapp-standalone
-The web UI for OpenNMS.  This is the standalone version, suitable for
-use with Tomcat or another servlet container.
 
 %{extrainfo}
 %{extrainfo2}
@@ -402,16 +372,6 @@ find $RPM_BUILD_ROOT%{jettydir} -type d | \
     sed -e "s,^$RPM_BUILD_ROOT,%dir ," | \
     sort >> %{_tmppath}/files.jetty
 
-# webapps
-find $RPM_BUILD_ROOT%{webappsdir} ! -type d | \
-    sed -e "s,^$RPM_BUILD_ROOT,," | \
-    grep -v '/WEB-INF/[^/]*\.xml$' | \
-    grep -v '/WEB-INF/[^/]*\.properties$' | \
-    sort > %{_tmppath}/files.webapp
-find $RPM_BUILD_ROOT%{webappsdir} -type d | \
-    sed -e "s,^$RPM_BUILD_ROOT,%dir ," | \
-    sort >> %{_tmppath}/files.webapp
-
 popd
 
 %clean
@@ -453,13 +413,6 @@ rm -rf $RPM_BUILD_ROOT
 %config %{jettydir}/opennms-remoting/WEB-INF/*.xml
 %config %{jettydir}/%{servletdir}/WEB-INF/*.properties
 %config %{jettydir}/opennms-remoting/WEB-INF/*.properties
-
-%files webapp-standalone -f %{_tmppath}/files.webapp
-%defattr(644 root root 755)
-%config %{webappsdir}/%{servletdir}/WEB-INF/*.xml
-%config %{webappsdir}/opennms-remoting/WEB-INF/*.xml
-%config %{webappsdir}/%{servletdir}/WEB-INF/*.properties
-%config %{webappsdir}/opennms-remoting/WEB-INF/*.properties
 
 %files plugins
 
