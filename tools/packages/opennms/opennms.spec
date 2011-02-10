@@ -600,4 +600,4 @@ fi
 
 %changelog
 * Thu Feb 10 2011 Benjamin Reed <ranger@opennms.org>
-- See http://opennms.git.sourceforge.net/git/gitweb.cgi?p=opennms/opennms;a=history;f=tools/packages/opennms/opennms.spec;hb=HEAD for the full commit log.
+- See http://opennms.git.sourceforge.net/git/gitweb.cgi?p=opennms/opennms;a=history;f=tools/packages/opennms/opennms.spec;hb=1.8 for the full commit log.
