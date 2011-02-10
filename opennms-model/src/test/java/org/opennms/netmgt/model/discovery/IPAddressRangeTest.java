@@ -193,6 +193,7 @@ public class IPAddressRangeTest extends TestCase {
         assertFalse(it.hasNext());
     }
 
+/*
     public void testGetLowestInetAddress() throws UnknownHostException {
         assertNull(InetAddressUtils.getLowestInetAddress(Collections.EMPTY_LIST));
 
@@ -253,5 +254,5 @@ public class IPAddressRangeTest extends TestCase {
         );
         assertEquals("ff00:0000:0000:0000:0000:0000:0000:0001%6", InetAddressUtils.toIpAddrString(InetAddressUtils.getLowestInetAddress(ips)));
     }
-
+*/
 }
