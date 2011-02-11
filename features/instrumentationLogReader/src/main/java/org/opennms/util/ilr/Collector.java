@@ -44,7 +44,7 @@ public class Collector {
 	}
 	public Date getStartTime() {
 		LogMessage firstValidLine = getFirstValidLogMessage();
-		return firstValidLine.getDate();	
+		return firstValidLine == null ? null : firstValidLine.getDate();	
 			
 	}
 	public LogMessage getFirstValidLogMessage (){
