@@ -65,17 +65,13 @@ import org.opennms.web.WebSecurityUtils;
  *
  * @author <A HREF="mailto:tarus@opennms.org">Tarus Balog </A>
  * @author <A HREF="http://www.opennms.org/">OpenNMS </A>
- * @author <A HREF="mailto:tarus@opennms.org">Tarus Balog </A>
- * @author <A HREF="http://www.opennms.org/">OpenNMS </A>
- * @version $Id: $
- * @since 1.8.1
  */
 public class SnmpGetInterfacesServlet extends HttpServlet {
-    private static final long serialVersionUID = 1L;
-    
+
+    private static final long serialVersionUID = -5538965497977581230L;
+
     private static final String INTERFACE_QUERY = "SELECT " +
         "snmpinterface.nodeid, " +
-        "snmpinterface.ipaddr, " +
         "snmpinterface.snmpifindex, " +
         "ipinterface.iphostname, " +
         "ipinterface.issnmpprimary, " +
@@ -147,16 +143,15 @@ public class SnmpGetInterfacesServlet extends HttpServlet {
                     SnmpManagedInterface newInterface = new SnmpManagedInterface();
                     nodeInterfaces.add(newInterface);
                     newInterface.setNodeid(interfaceSet.getInt(1));
-                    newInterface.setAddress(interfaceSet.getString(2));
-                    newInterface.setIfIndex(interfaceSet.getInt(3));
-                    newInterface.setIpHostname(interfaceSet.getString(4));
-                    newInterface.setStatus(interfaceSet.getString(5));
-                    newInterface.setIfDescr(interfaceSet.getString(6));
-                    newInterface.setIfType(interfaceSet.getInt(7));
-                    newInterface.setIfName(interfaceSet.getString(8));
-                    newInterface.setIfAlias(interfaceSet.getString(9));
-                    newInterface.setCollectFlag(interfaceSet.getString(10));
-                    newInterface.setSnmpInterfaceId(interfaceSet.getInt(11));
+                    newInterface.setIfIndex(interfaceSet.getInt(2));
+                    newInterface.setIpHostname(interfaceSet.getString(3));
+                    newInterface.setStatus(interfaceSet.getString(4));
+                    newInterface.setIfDescr(interfaceSet.getString(5));
+                    newInterface.setIfType(interfaceSet.getInt(6));
+                    newInterface.setIfName(interfaceSet.getString(7));
+                    newInterface.setIfAlias(interfaceSet.getString(8));
+                    newInterface.setCollectFlag(interfaceSet.getString(9));
+                    newInterface.setSnmpInterfaceId(interfaceSet.getInt(10));
                 }
             }
         } finally {

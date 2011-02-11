@@ -178,7 +178,6 @@
 	<%-- <table class="standardfirst">
 		<tr>
 			<td class="standardheader" width="5%" align="center">ifIndex</td>
-			<td class="standardheader" width="10%" align="center">IP Address</td>
 			<td class="standardheader" width="10%" align="center">IP Hostname</td>
 			<td class="standardheader" width="5%" align="center">ifType</td>
 			<td class="standardheader" width="10%" align="center">ifDescription</td>
@@ -265,10 +264,6 @@ public String buildTableRows(List<SnmpManagedInterface> interfaces, int intnodei
 			} else {
 				row.append("&nbsp;");
 			}
-			row.append("</td>\n");
-
-			row.append("<td class=\"standard\" width=\"10%\" align=\"center\">");
-			row.append(curInterface.getAddress());
 			row.append("</td>\n");
 
 			row.append("<td class=\"standard\" width=\"20%\" align=\"left\">");

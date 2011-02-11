@@ -21,14 +21,6 @@ OpenNMS.ux.EditorSNMPInterfaceGrid = Ext.extend(OpenNMS.ux.EditorPageableGrid, {
 	    		width:30,
 	    		align:"center"
 	    	},{
-	    		header:"IP Address",
-	    		dataIndex:"ipAddress",
-	    		sortable: true,
-	    		searchable: true,
-	    		hidden:false,
-	    		width:100,
-	    		align:"left"
-	    	},{
 	    		header:"SNMP ifType",
 	    		dataIndex:"ifType",
 	    		sortable: true,
@@ -134,7 +126,6 @@ OpenNMS.ux.EditorSNMPInterfaceGrid = Ext.extend(OpenNMS.ux.EditorPageableGrid, {
 					{name:"ifOperStatus", mapping:"ifOperStatus"},
 					{name:"ifSpeed", mapping:"ifSpeed"},
 					{name:"ifType", mapping:"ifType"},
-					{name:"ipAddress", mapping:"ipAddress"},
 					{name:"physAddr", mapping:"physAddr"},
 					{name:"collect", mapping:"@collectFlag"},
 					{name:'collectionEnabled', mapping:'@collect', type:'bool'}

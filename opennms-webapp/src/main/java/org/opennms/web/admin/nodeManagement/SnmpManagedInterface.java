@@ -52,20 +52,12 @@ import org.apache.commons.lang.builder.ToStringBuilder;
  * @author <a href="mailto:tarus@opennms.org">Tarus Balog</a>
  * @author <a href="mailto:ranger@opennms.org">Benjamin Reed</a>
  * @author <a href="http://www.opennms.org/">OpenNMS</a>
- * @author <a href="mailto:tarus@opennms.org">Tarus Balog</a>
- * @author <a href="mailto:ranger@opennms.org">Benjamin Reed</a>
- * @author <a href="http://www.opennms.org/">OpenNMS</a>
- * @author <a href="mailto:tarus@opennms.org">Tarus Balog</a>
- * @author <a href="mailto:ranger@opennms.org">Benjamin Reed</a>
- * @author <a href="http://www.opennms.org/">OpenNMS</a>
- * @version $Id: $
- * @since 1.8.1
  */
 public class SnmpManagedInterface implements Serializable, Comparable<SnmpManagedInterface> {
-    private static final long serialVersionUID = 1L;
+
+    private static final long serialVersionUID = 7080084239250489410L;
 
     protected int m_id;
-    protected String m_address;
     protected int m_nodeId;
     protected int m_ifIndex;
     protected String m_ipHostname;
@@ -91,23 +83,6 @@ public class SnmpManagedInterface implements Serializable, Comparable<SnmpManage
      */
     public int getSnmpInterfaceId() {
         return m_id;
-    }
-    /**
-     * <p>setAddress</p>
-     *
-     * @param newAddress a {@link java.lang.String} object.
-     */
-    public void setAddress(String newAddress) {
-        m_address = newAddress;
-    }
-
-    /**
-     * <p>getAddress</p>
-     *
-     * @return a {@link java.lang.String} object.
-     */
-    public String getAddress() {
-        return m_address;
     }
 
     /**
@@ -278,7 +253,6 @@ public class SnmpManagedInterface implements Serializable, Comparable<SnmpManage
         return new ToStringBuilder(this)
             .append("id", getSnmpInterfaceId())
             .append("ifIndex", getIfIndex())
-            .append("ipAddress", getAddress())
             .append("ipHostname", getIpHostname())
             .append("ifType", getIfType())
             .append("ifDescr", getIfDescr())
@@ -299,7 +273,6 @@ public class SnmpManagedInterface implements Serializable, Comparable<SnmpManage
         return new CompareToBuilder()
             .append(getSnmpInterfaceId(), obj.getSnmpInterfaceId())
             .append(getIfIndex(), obj.getIfIndex())
-            .append(getAddress(), obj.getAddress())
             .append(getIpHostname(), obj.getIpHostname())
             .append(getIfType(), obj.getIfType())
             .append(getIfDescr(), obj.getIfDescr())
@@ -318,7 +291,6 @@ public class SnmpManagedInterface implements Serializable, Comparable<SnmpManage
             return new EqualsBuilder()
                 .append(getSnmpInterfaceId(), other.getSnmpInterfaceId())
                 .append(getIfIndex(), other.getIfIndex())
-                .append(getAddress(), other.getAddress())
                 .append(getIpHostname(), other.getIpHostname())
                 .append(getIfType(), other.getIfType())
                 .append(getIfDescr(), other.getIfDescr())
@@ -337,7 +309,6 @@ public class SnmpManagedInterface implements Serializable, Comparable<SnmpManage
         return new HashCodeBuilder(617, 2677)
             .append(getSnmpInterfaceId())
             .append(getIfIndex())
-            .append(getAddress())
             .append(getIpHostname())
             .append(getIfType())
             .append(getIfDescr())

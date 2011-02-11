@@ -12,12 +12,12 @@ public interface NetworkElementFactoryInterface {
 	String getNodeLabel(int nodeId);
 
 	/**
-	 * Translate a node id into a human-readable ipaddress. Note these values
-	 * are not cached.
+	 * Find the IP address of the primary SNMP interface.
 	 *
-	 * @return A human-readable node name or null if the node id given does not
-	 *         specify a real node.
-	 * @param nodeId a int.
+	 * @return An IPv4 or IPv6 address in string format or null if the node has no primary
+	 * SNMP interface
+	 * 
+	 * @param nodeId an int.
 	 */
 	String getIpPrimaryAddress(int nodeId);
 

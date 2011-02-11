@@ -59,9 +59,11 @@ import org.opennms.core.utils.LogUtils;
 import org.opennms.netmgt.EventConstants;
 import org.opennms.netmgt.config.DataSourceFactory;
 import org.opennms.netmgt.config.NotificationFactory;
+import org.opennms.netmgt.config.modelimport.types.InterfaceSnmpPrimaryType;
 import org.opennms.netmgt.xml.event.Event;
 import org.opennms.web.WebSecurityUtils;
 import org.opennms.web.api.Util;
+import org.opennms.web.element.NetworkElementFactory;
 
 /**
  * A servlet that handles managing or unmanaging interfaces and services on a
@@ -69,10 +71,6 @@ import org.opennms.web.api.Util;
  *
  * @author <A HREF="mailto:tarus@opennms.org">Tarus Balog </A>
  * @author <A HREF="http://www.opennms.org/">OpenNMS </A>
- * @author <A HREF="mailto:tarus@opennms.org">Tarus Balog </A>
- * @author <A HREF="http://www.opennms.org/">OpenNMS </A>
- * @version $Id: $
- * @since 1.8.1
  */
 public class SnmpManageNodesServlet extends HttpServlet {
     private static final long serialVersionUID = 1604691299928314549L;
@@ -109,8 +107,9 @@ public class SnmpManageNodesServlet extends HttpServlet {
         String primeInt = null;
 
         for (SnmpManagedInterface testInterface : allInterfaces) {
-            if (testInterface.getNodeid() == currNodeId && "P".equals(testInterface.getStatus())) {
-                primeInt = testInterface.getAddress();
+            if (testInterface.getNodeid() == currNodeId && InterfaceSnmpPrimaryType.P.toString().equals(testInterface.getStatus())) {
+                // Get the IP address of the primary SNMP interface
+                primeInt = NetworkElementFactory.getInstance(this.getServletContext()).getIpPrimaryAddress(currNodeId);
             }
         }
 
