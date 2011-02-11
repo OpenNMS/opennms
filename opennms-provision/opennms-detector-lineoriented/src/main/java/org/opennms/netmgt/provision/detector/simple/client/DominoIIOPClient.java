@@ -34,10 +34,12 @@ import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.InputStreamReader;
 import java.net.InetAddress;
+import java.net.SocketException;
 import java.net.URL;
 import java.net.URLConnection;
 
 import org.apache.commons.io.IOUtils;
+import org.opennms.core.utils.LogUtils;
 
 /**
  * <p>DominoIIOPClient class.</p>
@@ -76,32 +78,36 @@ public class DominoIIOPClient extends LineOrientedClient {
     private boolean retrieveIORText(final String hostAddress, final int port, final int timeout) throws IOException {
         String IOR = "";
         final URL u = new URL("http://" + hostAddress + ":" + port + "/diiop_ior.txt");
-        final URLConnection conn = u.openConnection();
-        conn.setConnectTimeout(timeout);
-        conn.setReadTimeout(timeout);
-        InputStreamReader isr = null;
-        BufferedReader br = null;
         try {
-            isr = new InputStreamReader(conn.getInputStream());
-            br = new BufferedReader(isr);
-            boolean done = false;
-            while (!done) {
-                final String line = br.readLine();
-                if (line == null) {
-                    // end of stream
-                    done = true;
-                } else {
-                    IOR += line;
-                    if (IOR.startsWith("IOR:")) {
-                        // the IOR does not span a line, so we're done
-                        done = true;
-                    }
-                }
-            }
-        } finally {
-            IOUtils.closeQuietly(br);
-            IOUtils.closeQuietly(isr);
-        }
+			final URLConnection conn = u.openConnection();
+			conn.setConnectTimeout(timeout);
+			conn.setReadTimeout(timeout);
+			InputStreamReader isr = null;
+			BufferedReader br = null;
+			try {
+			    isr = new InputStreamReader(conn.getInputStream());
+			    br = new BufferedReader(isr);
+			    boolean done = false;
+			    while (!done) {
+			        final String line = br.readLine();
+			        if (line == null) {
+			            // end of stream
+			            done = true;
+			        } else {
+			            IOR += line;
+			            if (IOR.startsWith("IOR:")) {
+			                // the IOR does not span a line, so we're done
+			                done = true;
+			            }
+			        }
+			    }
+			} finally {
+			    IOUtils.closeQuietly(br);
+			    IOUtils.closeQuietly(isr);
+			}
+		} catch (final SocketException e) {
+			LogUtils.warnf(this, e, "Unable to connect to " + u);
+		}
         if (!IOR.startsWith("IOR:")) return false;
         
         return true;

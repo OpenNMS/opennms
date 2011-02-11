@@ -25,7 +25,8 @@ import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
 @RunWith(SpringJUnit4ClassRunner.class)
 @ContextConfiguration(locations={"classpath:/META-INF/opennms/detectors.xml"})
 public class HttpsDetectorTest implements ApplicationContextAware{
-    
+	private static final int SSL_PORT = 7142;
+
     private HttpsDetector m_detector;
     private SSLServer m_server;
     
@@ -202,6 +203,7 @@ public class HttpsDetectorTest implements ApplicationContextAware{
                 addResponseHandler(contains("GET"), shutdownServer(httpResponse));
             }
         };
+        server.setPort(SSL_PORT);
         server.init();
         server.startServer();
         
