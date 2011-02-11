@@ -51,7 +51,7 @@
 </jsp:include>
 
 <h3>Cron Expression</h3>
-  
+  <p>We use Quartz Scheduler, for information on cron syntax used in Quartz Scheduler there is a great tutorial <a href="http://www.quartz-scheduler.org/docs/tutorials/crontrigger.html" target="_blank">here</a></p>
 <form:form commandName="triggerDetails" cssClass="stdform">
 	
 	<p>
