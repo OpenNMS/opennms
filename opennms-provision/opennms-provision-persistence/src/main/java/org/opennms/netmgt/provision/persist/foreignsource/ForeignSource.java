@@ -56,7 +56,7 @@ import org.apache.commons.lang.builder.EqualsBuilder;
 import org.apache.commons.lang.builder.HashCodeBuilder;
 import org.apache.commons.lang.builder.ToStringBuilder;
 import org.joda.time.Duration;
-import org.opennms.core.utils.ThreadCategory;
+import org.opennms.core.utils.LogUtils;
 import org.opennms.netmgt.provision.persist.StringIntervalAdapter;
 
 /**
@@ -103,7 +103,7 @@ public class ForeignSource implements Serializable, Comparable<ForeignSource> {
      *
      * @param name a {@link java.lang.String} object.
      */
-    public ForeignSource(String name) {
+    public ForeignSource(final String name) {
         updateDateStamp();
         setName(name);
     }
@@ -139,7 +139,7 @@ public class ForeignSource implements Serializable, Comparable<ForeignSource> {
      *
      * @param scanInterval the scanInterval to set
      */
-    public void setScanInterval(Duration scanInterval) {
+    public void setScanInterval(final Duration scanInterval) {
         m_scanInterval = scanInterval;
     }
     /**
@@ -165,7 +165,7 @@ public class ForeignSource implements Serializable, Comparable<ForeignSource> {
      *
      * @param value the date stamp
      */
-    public void setDateStamp(XMLGregorianCalendar value) {
+    public void setDateStamp(final XMLGregorianCalendar value) {
         m_dateStamp = value;
     }
     /**
@@ -174,8 +174,8 @@ public class ForeignSource implements Serializable, Comparable<ForeignSource> {
     public void updateDateStamp() {
         try {
             m_dateStamp = DatatypeFactory.newInstance().newXMLGregorianCalendar(new GregorianCalendar());
-        } catch (DatatypeConfigurationException e) {
-            log().warn("unable to update datestamp", e);
+        } catch (final DatatypeConfigurationException e) {
+            LogUtils.warnf(this, e, "unable to update datestamp");
         }
     }
     /**
@@ -192,7 +192,7 @@ public class ForeignSource implements Serializable, Comparable<ForeignSource> {
      *
      * @param detectors the detectors to set
      */
-    public void setDetectors(List<PluginConfig> detectors) {
+    public void setDetectors(final List<PluginConfig> detectors) {
         m_detectors = detectors;
     }
     
@@ -211,7 +211,7 @@ public class ForeignSource implements Serializable, Comparable<ForeignSource> {
      *
      * @param policies a {@link java.util.List} object.
      */
-    public void setPolicies(List<PluginConfig> policies) {
+    public void setPolicies(final List<PluginConfig> policies) {
         m_policies = policies;
     }
     
@@ -220,7 +220,7 @@ public class ForeignSource implements Serializable, Comparable<ForeignSource> {
      *
      * @param detector a {@link org.opennms.netmgt.provision.persist.foreignsource.PluginConfig} object.
      */
-    public void addDetector(PluginConfig detector) {
+    public void addDetector(final PluginConfig detector) {
         m_detectors.add(detector);
     }
 
@@ -229,7 +229,7 @@ public class ForeignSource implements Serializable, Comparable<ForeignSource> {
      *
      * @param policy a {@link org.opennms.netmgt.provision.persist.foreignsource.PluginConfig} object.
      */
-    public void addPolicy(PluginConfig policy) {
+    public void addPolicy(final PluginConfig policy) {
         m_policies.add(policy);
     }
 
@@ -239,8 +239,8 @@ public class ForeignSource implements Serializable, Comparable<ForeignSource> {
      * @param detector a {@link java.lang.String} object.
      * @return a {@link org.opennms.netmgt.provision.persist.foreignsource.PluginConfig} object.
      */
-    public PluginConfig getDetector(String detector) {
-        for (PluginConfig pc : m_detectors) {
+    public PluginConfig getDetector(final String detector) {
+        for (final PluginConfig pc : m_detectors) {
             if (pc.getName().equals(detector)) {
                 return pc;
             }
@@ -254,7 +254,7 @@ public class ForeignSource implements Serializable, Comparable<ForeignSource> {
      *
      * @param detector a {@link org.opennms.netmgt.provision.persist.foreignsource.PluginConfig} object.
      */
-    public void removeDetectors(PluginConfig detector) {
+    public void deleteDetectors(final PluginConfig detector) {
         m_detectors.remove(detector);
     }
 
@@ -264,8 +264,8 @@ public class ForeignSource implements Serializable, Comparable<ForeignSource> {
      * @param policy a {@link java.lang.String} object.
      * @return a {@link org.opennms.netmgt.provision.persist.foreignsource.PluginConfig} object.
      */
-    public PluginConfig getPolicy(String policy) {
-        for (PluginConfig pc : m_policies) {
+    public PluginConfig getPolicy(final String policy) {
+        for (final PluginConfig pc : m_policies) {
             if (pc.getName().equals(policy)) {
                 return pc;
             }
@@ -279,7 +279,7 @@ public class ForeignSource implements Serializable, Comparable<ForeignSource> {
      *
      * @param policy a {@link org.opennms.netmgt.provision.persist.foreignsource.PluginConfig} object.
      */
-    public void removePolicies(PluginConfig policy) {
+    public void deletePolicies(final PluginConfig policy) {
         m_policies.remove(policy);
     }
     
@@ -298,12 +298,8 @@ public class ForeignSource implements Serializable, Comparable<ForeignSource> {
      * @param isDefault a boolean.
      */
     @XmlTransient
-    public void setDefault(boolean isDefault) {
+    public void setDefault(final boolean isDefault) {
         m_default = isDefault;
-    }
-
-    private ThreadCategory log() {
-        return ThreadCategory.getInstance(ForeignSource.class);
     }
 
     /** {@inheritDoc} */
@@ -323,7 +319,7 @@ public class ForeignSource implements Serializable, Comparable<ForeignSource> {
      * @param obj a {@link org.opennms.netmgt.provision.persist.foreignsource.ForeignSource} object.
      * @return a int.
      */
-    public int compareTo(ForeignSource obj) {
+    public int compareTo(final ForeignSource obj) {
         return new CompareToBuilder()
             .append(getName(), obj.getName())
             .append(getScanInterval(), obj.getScanInterval())
@@ -334,9 +330,9 @@ public class ForeignSource implements Serializable, Comparable<ForeignSource> {
     
     /** {@inheritDoc} */
     @Override
-    public boolean equals(Object obj) {
+    public boolean equals(final Object obj) {
         if (obj instanceof ForeignSource) {
-            ForeignSource other = (ForeignSource) obj;
+            final ForeignSource other = (ForeignSource) obj;
             return new EqualsBuilder()
                 .append(getName(), other.getName())
                 .append(getScanInterval(), other.getScanInterval())
