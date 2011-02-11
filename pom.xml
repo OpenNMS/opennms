@@ -1970,7 +1970,7 @@
       <dependency>
         <groupId>postgresql</groupId>
         <artifactId>postgresql</artifactId>
-        <version>8.4-701.jdbc3</version>
+        <version>9.0-801.jdbc3</version>
       </dependency>
       <dependency>
         <groupId>rome</groupId>
