@@ -49,7 +49,6 @@ import javax.ws.rs.core.MultivaluedMap;
 import javax.ws.rs.core.SecurityContext;
 import javax.ws.rs.core.UriInfo;
 
-import org.hibernate.FetchMode;
 import org.opennms.netmgt.dao.EventDao;
 import org.opennms.netmgt.model.OnmsCriteria;
 import org.opennms.netmgt.model.OnmsEvent;
@@ -205,8 +204,6 @@ public class EventRestService extends OnmsRestService {
         );
 	    addFiltersToCriteria(params, criteria, OnmsEvent.class);
 
-	    criteria.setFetchMode("node", FetchMode.JOIN);
-	    criteria.setFetchMode("alarm", FetchMode.JOIN);
 	    return getDistinctIdCriteria(OnmsEvent.class, criteria);
 	}
 }
