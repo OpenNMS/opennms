@@ -89,9 +89,11 @@ public class AlarmRestService extends OnmsRestService {
         OnmsAlarmCollection coll = new OnmsAlarmCollection(m_alarmDao.findMatching(getQueryFilters(m_uriInfo.getQueryParameters())));
 
         //For getting totalCount
-        OnmsCriteria crit = new OnmsCriteria(OnmsAlarm.class);
-        addFiltersToCriteria(m_uriInfo.getQueryParameters(), crit, OnmsAlarm.class);
-        coll.setTotalCount(m_alarmDao.countMatching(crit));
+        OnmsCriteria criteria = new OnmsCriteria(OnmsAlarm.class);
+        addFiltersToCriteria(m_uriInfo.getQueryParameters(), criteria, OnmsAlarm.class);
+        criteria.setFetchMode("firstEvent", FetchMode.JOIN);
+        criteria.setFetchMode("lastEvent", FetchMode.JOIN);
+        coll.setTotalCount(m_alarmDao.countMatching(criteria));
 
         return coll;
     }
