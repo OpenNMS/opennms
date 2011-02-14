@@ -31,32 +31,33 @@
 //
 package org.opennms.web.rest;
 
-import org.springframework.stereotype.Component;
-import org.springframework.context.annotation.Scope;
-import org.springframework.transaction.annotation.Transactional;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.beans.BeanWrapper;
-import org.springframework.beans.BeanWrapperImpl;
-import org.opennms.netmgt.dao.OnmsMapDao;
-import org.opennms.netmgt.model.OnmsCriteria;
-import org.opennms.netmgt.model.OnmsMapList;
-import org.opennms.netmgt.model.OnmsMap;
-import com.sun.jersey.spi.resource.PerRequest;
-import com.sun.jersey.api.core.ResourceContext;
-
-import javax.ws.rs.Path;
-import javax.ws.rs.Produces;
-import javax.ws.rs.GET;
-import javax.ws.rs.PathParam;
-import javax.ws.rs.POST;
 import javax.ws.rs.Consumes;
 import javax.ws.rs.DELETE;
+import javax.ws.rs.GET;
+import javax.ws.rs.POST;
 import javax.ws.rs.PUT;
+import javax.ws.rs.Path;
+import javax.ws.rs.PathParam;
+import javax.ws.rs.Produces;
 import javax.ws.rs.core.Context;
-import javax.ws.rs.core.UriInfo;
 import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.MultivaluedMap;
 import javax.ws.rs.core.Response;
+import javax.ws.rs.core.UriInfo;
+
+import org.opennms.netmgt.dao.OnmsMapDao;
+import org.opennms.netmgt.model.OnmsCriteria;
+import org.opennms.netmgt.model.OnmsMap;
+import org.opennms.netmgt.model.OnmsMapList;
+import org.springframework.beans.BeanWrapper;
+import org.springframework.beans.BeanWrapperImpl;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.context.annotation.Scope;
+import org.springframework.stereotype.Component;
+import org.springframework.transaction.annotation.Transactional;
+
+import com.sun.jersey.api.core.ResourceContext;
+import com.sun.jersey.spi.resource.PerRequest;
 
 @Component
 /**
@@ -157,7 +158,8 @@ public class OnmsMapRestService extends OnmsRestService {
         for(String key : params.keySet()) {
             if (wrapper.isWritableProperty(key)) {
                 String stringValue = params.getFirst(key);
-                Object value = wrapper.convertIfNecessary(stringValue, wrapper.getPropertyType(key));
+                @SuppressWarnings("unchecked")
+				Object value = wrapper.convertIfNecessary(stringValue, wrapper.getPropertyType(key));
                 wrapper.setPropertyValue(key, value);
             }
         }
@@ -182,6 +184,15 @@ public class OnmsMapRestService extends OnmsRestService {
 
     	setLimitOffset(params, criteria, LIMIT, false);
     	addOrdering(params, criteria, false);
+        // Set default ordering
+        addOrdering(
+                new MultivaluedMapImpl(
+                    new String[][] { 
+                        new String[] { "orderBy", "lastModifiedTime" }, 
+                        new String[] { "order", "desc" } 
+                    }
+                ), criteria, false
+            );
     	addFiltersToCriteria(params, criteria, OnmsMap.class);
 
         return getDistinctIdCriteria(OnmsMap.class, criteria);

@@ -48,7 +48,6 @@ import javax.ws.rs.core.MultivaluedMap;
 import javax.ws.rs.core.SecurityContext;
 import javax.ws.rs.core.UriInfo;
 
-import org.hibernate.criterion.Order;
 import org.opennms.netmgt.dao.AcknowledgmentDao;
 import org.opennms.netmgt.dao.AlarmDao;
 import org.opennms.netmgt.model.AckAction;
@@ -56,7 +55,6 @@ import org.opennms.netmgt.model.OnmsAcknowledgment;
 import org.opennms.netmgt.model.OnmsAcknowledgmentCollection;
 import org.opennms.netmgt.model.OnmsAlarm;
 import org.opennms.netmgt.model.OnmsCriteria;
-import org.opennms.netmgt.model.OnmsNotification;
 import org.opennms.netmgt.model.acknowledgments.AckService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Scope;

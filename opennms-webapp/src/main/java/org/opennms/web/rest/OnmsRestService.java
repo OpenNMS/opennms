@@ -233,7 +233,8 @@ public class OnmsRestService {
     			} else if ("notnull".equals(stringValue)) {
     				criteriaList.add(Restrictions.isNotNull(key));
     			} else {
-    				Object thisValue=wrapper.convertIfNecessary(stringValue, wrapper.getPropertyType(key));
+    				@SuppressWarnings("unchecked")
+					Object thisValue=wrapper.convertIfNecessary(stringValue, wrapper.getPropertyType(key));
     				switch(op) {
     		   		case EQ:
     		    		criteriaList.add(Restrictions.eq(key, thisValue));
@@ -418,7 +419,8 @@ public class OnmsRestService {
      * @param params a {@link org.opennms.web.rest.MultivaluedMapImpl} object.
      * @param req a {@link java.lang.Object} object.
      */
-    protected void setProperties(org.opennms.web.rest.MultivaluedMapImpl params, Object req) {
+    @SuppressWarnings("unchecked")
+	protected void setProperties(org.opennms.web.rest.MultivaluedMapImpl params, Object req) {
         BeanWrapper wrapper = new BeanWrapperImpl(req);
         wrapper.registerCustomEditor(XMLGregorianCalendar.class, new StringXmlCalendarPropertyEditor());
         for(String key : params.keySet()) {
