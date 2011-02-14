@@ -84,11 +84,21 @@ public class IPhoneRestServiceTest extends AbstractSpringJerseyRestTestCase {
 		
 		parameters.clear();
 		parameters.put("limit", "50");
+		parameters.put("orderBy", "lastEventTime");
 		parameters.put("node.id", "1");
 		xml = sendRequest(GET, "/events", parameters, 200);
 		assertTrue(xml.contains("totalCount=\"0\""));
 	}
 
+	@Test
+	public void testEventsForNodes() throws Exception {
+		Map<String, String> parameters = new HashMap<String, String>();
+//		parameters.put("limit", "50");
+		parameters.put("node.id", "1");
+		String xml = sendRequest(GET, "/events", parameters, 200);
+		assertTrue(xml.contains("totalCount=\"0\""));
+	}
+	
 	@Test
 	public void testOutages() throws Exception {
 		Map<String, Object> parameters = new HashMap<String, Object>();

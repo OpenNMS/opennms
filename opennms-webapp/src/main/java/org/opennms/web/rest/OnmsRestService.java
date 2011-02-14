@@ -189,7 +189,7 @@ public class OnmsRestService {
 
         if(paramsCopy.containsKey("node.id") && !matchType.equalsIgnoreCase("any")) {
             String nodeId = paramsCopy.getFirst("node.id");
-            Integer id = new Integer(nodeId);
+            Integer id = Integer.valueOf(nodeId);
             criteria.createCriteria("node").add(Restrictions.eq("id", id));
             paramsCopy.remove("node.id");
         }
