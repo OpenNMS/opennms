@@ -49,12 +49,11 @@ import javax.ws.rs.core.MultivaluedMap;
 import javax.ws.rs.core.SecurityContext;
 import javax.ws.rs.core.UriInfo;
 
-import org.hibernate.criterion.Order;
+import org.hibernate.FetchMode;
 import org.opennms.netmgt.dao.EventDao;
 import org.opennms.netmgt.model.OnmsCriteria;
 import org.opennms.netmgt.model.OnmsEvent;
 import org.opennms.netmgt.model.OnmsEventCollection;
-import org.opennms.netmgt.model.OnmsOutage;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Scope;
 import org.springframework.stereotype.Component;
@@ -152,8 +151,7 @@ public class EventRestService extends OnmsRestService {
 	Boolean ack) {
 		OnmsEvent event = m_eventDao.get(new Integer(eventId));
 		if (ack == null) {
-			throw new IllegalArgumentException(
-					"Must supply the 'ack' parameter, set to either 'true' or 'false'");
+			throw new IllegalArgumentException("Must supply the 'ack' parameter, set to either 'true' or 'false'");
 		}
 		processEventAck(event, ack);
 	}
@@ -191,15 +189,24 @@ public class EventRestService extends OnmsRestService {
 		m_eventDao.save(event);
 	}
 
-	private OnmsCriteria getQueryFilters(MultivaluedMap<String,String> params) {
+	private OnmsCriteria getQueryFilters(final MultivaluedMap<String,String> params) {
 	    OnmsCriteria criteria = new OnmsCriteria(OnmsEvent.class);
 
 	    setLimitOffset(params, criteria, DEFAULT_LIMIT, false);
 	    addOrdering(params, criteria, false);
-	    // Set default ordering
-	    criteria.addOrder(Order.desc("eventTime"));
+        // Set default ordering
+        addOrdering(
+            new MultivaluedMapImpl(
+                new String[][] { 
+                    new String[] { "orderBy", "eventTime" }, 
+                    new String[] { "order", "desc" } 
+                }
+            ), criteria, false
+        );
 	    addFiltersToCriteria(params, criteria, OnmsEvent.class);
 
-	    return getDistinctIdCriteria(OnmsOutage.class, criteria);
+	    criteria.setFetchMode("node", FetchMode.JOIN);
+	    criteria.setFetchMode("alarm", FetchMode.JOIN);
+	    return getDistinctIdCriteria(OnmsEvent.class, criteria);
 	}
 }

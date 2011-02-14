@@ -212,7 +212,10 @@ public class OnmsNode extends OnmsEntity implements Serializable,
     @XmlAttribute(name="id")
     @Transient
     public String getNodeId() {
-        return getId().toString();
+    	if (getId() != null) {
+    		return getId().toString();
+    	}
+    	return null;
     }
 
     /**
