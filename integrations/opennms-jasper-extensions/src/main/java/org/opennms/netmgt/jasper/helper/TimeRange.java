@@ -32,8 +32,8 @@
 
 package org.opennms.netmgt.jasper.helper;
 
-import java.sql.Timestamp;
 import java.util.Calendar;
+import java.util.Date;
 import java.util.GregorianCalendar;
 
 /**
@@ -48,30 +48,59 @@ public class TimeRange {
      * Implement last year, last month, this year, this month
      */
     private enum TIME_RANGE {
-        LAST_YEAR, LAST_MONTH, THIS_YEAR, THIS_MONTH
+        LAST_SEVEN_DAYS {
+            @Override
+            public Date getStartDate() {
+                return new Date(new GregorianCalendar(new GregorianCalendar().get(Calendar.YEAR), new GregorianCalendar().get(Calendar.MONTH), new GregorianCalendar().get(Calendar.DATE) - 7).getTimeInMillis());
+            }
+            
+        }, LAST_MONTH {
+            @Override
+            public Date getStartDate() {
+                return new Date(new GregorianCalendar(new GregorianCalendar().get(Calendar.YEAR), new GregorianCalendar().get(Calendar.MONTH) -1, 1).getTimeInMillis());
+            }
+            
+            @Override
+            public Date getEndDate() {
+                return new Date(new GregorianCalendar(new GregorianCalendar().get(Calendar.YEAR), new GregorianCalendar().get(Calendar.MONTH), 0, 23, 59, 59).getTimeInMillis());
+            }
+            
+        }, LAST_YEAR {
+            @Override
+            public Date getStartDate() {
+                return new Date(new GregorianCalendar(new GregorianCalendar().get(Calendar.YEAR) - 1, 0, 1).getTimeInMillis());
+            }
+            
+            @Override
+            public Date getEndDate() {
+                return new Date(new GregorianCalendar(new GregorianCalendar().get(Calendar.YEAR) - 1, 12, 0, 23, 59, 59).getTimeInMillis());
+            }
+            
+        },THIS_MONTH {
+            @Override
+            public Date getStartDate() {
+                return new Date(new GregorianCalendar(new GregorianCalendar().get(Calendar.YEAR), new GregorianCalendar().get(Calendar.MONTH), 1).getTimeInMillis());
+            }
+            
+        }, THIS_YEAR {
+            @Override
+            public Date getStartDate() {
+                return new Date(new GregorianCalendar(new GregorianCalendar().get(Calendar.YEAR), 0, 1).getTimeInMillis());
+            }
+            
+        };
+        
+        abstract public Date getStartDate();
+        public Date getEndDate() {
+            return new Date( new GregorianCalendar(new GregorianCalendar().get(Calendar.YEAR), new GregorianCalendar().get(Calendar.MONTH), new GregorianCalendar().get(Calendar.DATE) ).getTimeInMillis() );
+        };
     }
 
-    /**
-     * Today
-     */
-    private Calendar m_now;
-
-    /**
-     * Start date
-     */
-    private Calendar m_startDate;
-
-    /**
-     * End date
-     */
-    private Calendar m_endDate;
 
     /**
      * Constructor init now
      */
-    public TimeRange() {
-        this.m_now = GregorianCalendar.getInstance();
-    }
+    public TimeRange() {}
 
     /**
      * <p>
@@ -82,32 +111,20 @@ public class TimeRange {
      *            a {@link java.lang.String} object
      * @return a {@link java.sql.Timestamp} object
      */
-    public Timestamp getStartDate(String range) {
-        Timestamp ts = null;
+    public Date getStartDate(String range) {
+        Date date = null;
         if (TIME_RANGE.LAST_YEAR.name().equalsIgnoreCase(range)) {
-            this.m_startDate = new GregorianCalendar(
-                                                     this.m_now.get(Calendar.YEAR) - 1,
-                                                     0, 1);
-            ts = new Timestamp(this.m_startDate.getTimeInMillis());
+            date = TIME_RANGE.LAST_YEAR.getStartDate();
         } else if (TIME_RANGE.LAST_MONTH.name().equalsIgnoreCase(range)) {
-            this.m_startDate = new GregorianCalendar(
-                                                     this.m_now.get(Calendar.YEAR),
-                                                     this.m_now.get(Calendar.MONTH) - 1,
-                                                     1);
-            ts = new Timestamp(this.m_startDate.getTimeInMillis());
+            date = TIME_RANGE.LAST_MONTH.getStartDate();
         } else if (TIME_RANGE.THIS_YEAR.name().equalsIgnoreCase(range)) {
-            this.m_startDate = new GregorianCalendar(
-                                                     this.m_now.get(Calendar.YEAR),
-                                                     0, 1);
-            ts = new Timestamp(this.m_startDate.getTimeInMillis());
+            date = TIME_RANGE.THIS_YEAR.getStartDate();
         } else if (TIME_RANGE.THIS_MONTH.name().equalsIgnoreCase(range)) {
-            this.m_startDate = new GregorianCalendar(
-                                                     this.m_now.get(Calendar.YEAR),
-                                                     this.m_now.get(Calendar.MONTH),
-                                                     1);
-            ts = new Timestamp(this.m_startDate.getTimeInMillis());
+            date = TIME_RANGE.THIS_MONTH.getStartDate();
+        } else if (TIME_RANGE.LAST_SEVEN_DAYS.name().equalsIgnoreCase(range)) {
+            date = TIME_RANGE.LAST_SEVEN_DAYS.getStartDate();
         }
-        return ts;
+        return date;
     }
 
     /**
@@ -119,28 +136,21 @@ public class TimeRange {
      *            a {@link java.lang.String} object
      * @return a {@link java.sql.Timestamp} object
      */
-    public Timestamp getEndDate(String range) {
-        Timestamp ts = null;
+    public Date getEndDate(String range) {
+        Date date = null;
 
         if (TIME_RANGE.LAST_YEAR.name().equalsIgnoreCase(range)) {
-            this.m_endDate = new GregorianCalendar(
-                                                   this.m_now.get(Calendar.YEAR) - 1,
-                                                   12, 0, 23, 59, 59);
-            ts = new Timestamp(this.m_endDate.getTimeInMillis());
+            date = TIME_RANGE.LAST_YEAR.getEndDate();
         } else if (TIME_RANGE.LAST_MONTH.name().equalsIgnoreCase(range)) {
-            this.m_endDate = new GregorianCalendar(
-                                                   this.m_now.get(Calendar.YEAR),
-                                                   this.m_now.get(Calendar.MONTH),
-                                                   0, 23, 59, 59);
-            ts = new Timestamp(this.m_endDate.getTimeInMillis());
+            date = TIME_RANGE.LAST_MONTH.getEndDate();
         } else if (TIME_RANGE.THIS_YEAR.name().equalsIgnoreCase(range)) {
-            this.m_endDate = this.m_now;
-            ts = new Timestamp(this.m_endDate.getTimeInMillis());
+            date = TIME_RANGE.THIS_YEAR.getEndDate();
         } else if (TIME_RANGE.THIS_MONTH.name().equalsIgnoreCase(range)) {
-            this.m_endDate = this.m_now;
-            ts = new Timestamp(this.m_endDate.getTimeInMillis());
+            date = TIME_RANGE.THIS_MONTH.getEndDate();
+        } else if (TIME_RANGE.LAST_SEVEN_DAYS.name().equalsIgnoreCase(range)) {
+            date = TIME_RANGE.LAST_SEVEN_DAYS.getEndDate();
         }
 
-        return ts;
+        return date;
     }
 }
