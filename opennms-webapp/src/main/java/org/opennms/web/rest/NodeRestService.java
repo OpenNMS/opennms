@@ -106,9 +106,11 @@ public class NodeRestService extends OnmsRestService {
         OnmsNodeList coll = new OnmsNodeList(m_nodeDao.findMatching(getQueryFilters(m_uriInfo.getQueryParameters())));
 
         //For getting totalCount
-        OnmsCriteria crit = new OnmsCriteria(OnmsNode.class);
-        addFiltersToCriteria(m_uriInfo.getQueryParameters(), crit, OnmsNode.class);
-        coll.setTotalCount(m_nodeDao.countMatching(crit));
+        OnmsCriteria criteria = new OnmsCriteria(OnmsNode.class);
+        addFiltersToCriteria(m_uriInfo.getQueryParameters(), criteria, OnmsNode.class);
+        criteria.createAlias("snmpInterfaces", "snmpInterface", CriteriaSpecification.LEFT_JOIN);
+        criteria.createAlias("ipInterfaces", "ipInterface", CriteriaSpecification.LEFT_JOIN);
+        coll.setTotalCount(m_nodeDao.countMatching(criteria));
 
         return coll;
     }
