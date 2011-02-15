@@ -89,7 +89,7 @@ INVOKE_URL="http://127.0.0.1:8181/invoke?objectname=OpenNMS:Name=Manager"
 RUNAS="root"
 
 # Maximum file Descriptors + 1to be setted by ulimit -n
-MAXIMUM_FILE_DESCRIPTORS=10240
+MAXIMUM_FILE_DESCRIPTORS=20480
 
 # maximum size of stack segment (in kbytes) to be setted by ulimit -s
 MAXIMUM_SIZE_STACK_SEGMENT=8192
