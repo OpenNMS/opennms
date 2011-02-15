@@ -13,9 +13,11 @@ public class JRobinDataSource implements JRDataSource {
 
     private int m_currentRow = -1;
     private long[] m_timestamps;
+    private long m_step;
     private List<XPort> m_xports;
 
-    public JRobinDataSource(long[] timestamps, List<XPort> xports) {
+    public JRobinDataSource(long step, long[] timestamps, List<XPort> xports) {
+        m_step = step;
         m_timestamps = timestamps;
         m_xports = xports;
     }
@@ -28,6 +30,8 @@ public class JRobinDataSource implements JRDataSource {
     private Object computeFieldValue(JRField field) {
         if ("Timestamp".equalsIgnoreCase(getColumnName(field))) {
             return new Date(m_timestamps[m_currentRow] * 1000L);
+        } else if("Step".equalsIgnoreCase(getColumnName(field))) {
+            return m_step;
         }
         XPort xport = findXPortForField(getColumnName(field));
         return xport == null ? null : Double.valueOf(xport.values[m_currentRow]);
