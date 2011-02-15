@@ -274,8 +274,8 @@ public abstract class AbstractSpringJerseyRestTestCase {
         return retVal;
     }
 
-    protected String sendRequest(String requestType, String url, @SuppressWarnings("rawtypes") Map parameters, int expectedStatus) throws Exception {
-    	final MockHttpServletRequest request = createRequest(requestType, url);
+    protected String sendRequest(String requestType, String url, @SuppressWarnings("unchecked") Map parameters, int expectedStatus) throws Exception {
+        final MockHttpServletRequest request = createRequest(requestType, url);
         request.setParameters(parameters);
         request.setQueryString(getQueryString(parameters));
         return sendRequest(request, expectedStatus);
@@ -357,14 +357,14 @@ public abstract class AbstractSpringJerseyRestTestCase {
         MockHttpServletRequest request = createRequest(PUT, url);
         request.setContentType(MediaType.APPLICATION_XML);
         request.setContent(content);
-        MockHttpServletResponse response = createResponse();        
+        MockHttpServletResponse response = createResponse();
         dispatch(request, response);
         assertEquals(expectedStatus, response.getStatus());
         
     }
 
 	protected void createNode() throws Exception {
-	    String node = "<node label=\"TestMachine\">" +            
+	    String node = "<node label=\"TestMachine\">" +
 	    "<labelSource>H</labelSource>" +
 	    "<sysContact>The Owner</sysContact>" +
 	    "<sysDescription>" +
