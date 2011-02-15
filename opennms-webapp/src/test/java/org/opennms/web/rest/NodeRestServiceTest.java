@@ -18,10 +18,8 @@ import javax.xml.bind.Unmarshaller;
 import org.junit.Before;
 import org.junit.Test;
 import org.opennms.core.utils.LogUtils;
-import org.opennms.netmgt.model.OnmsIpInterface;
 import org.opennms.netmgt.model.OnmsNode;
 import org.opennms.netmgt.model.OnmsNodeList;
-import org.opennms.netmgt.model.OnmsSnmpInterface;
 import org.opennms.test.mock.MockLogAppender;
 import org.springframework.mock.web.MockHttpServletRequest;
 

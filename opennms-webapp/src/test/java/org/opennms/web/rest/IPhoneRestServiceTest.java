@@ -90,7 +90,7 @@ public class IPhoneRestServiceTest extends AbstractSpringJerseyRestTestCase {
 		parameters.clear();
 		parameters.put("orderBy", new String[] {"ifName", "ipAddress", "ifDesc"});
 		xml = sendRequest(GET, "/nodes/1/snmpinterfaces", parameters, 200);
-		assertTrue(xml.contains("192.168.1.1"));
+		assertTrue(xml.contains("Initial ifAlias value"));
 		
 		parameters.clear();
 		parameters.put("limit", "50");
