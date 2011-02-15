@@ -190,7 +190,7 @@ public class OnmsNode extends OnmsEntity implements Serializable,
      * @return a {@link java.lang.Integer} object.
      */
     @Id
-    @Column(name="nodeId")
+    @Column(name="nodeId", nullable=false)
     @SequenceGenerator(name="nodeSequence", sequenceName="nodeNxtId")
     @GeneratedValue(generator="nodeSequence")
     @XmlTransient
@@ -204,7 +204,7 @@ public class OnmsNode extends OnmsEntity implements Serializable,
      * @return a {@link java.lang.String} object.
      */
     @XmlID
-    @XmlAttribute(name="id")
+    @XmlAttribute(name="id", required=true)
     @Transient
     public String getNodeId() {
     	if (getId() != null) {
@@ -220,6 +220,15 @@ public class OnmsNode extends OnmsEntity implements Serializable,
      */
     public void setId(Integer nodeid) {
         m_id = nodeid;
+    }
+
+    /**
+     * <p>setNodeId</p>
+     *
+     * @param nodeid a {@link java.lang.String} object.
+     */
+    public void setNodeId(String nodeid) {
+        setId(Integer.valueOf(nodeid));
     }
 
     /**
