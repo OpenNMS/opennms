@@ -290,7 +290,7 @@
 <!-- New Importer Service Events -->
         <event>
                 <uei>uei.opennms.org/nodes/restartPollingInterface</uei>
-                <event-label>OpeNMS-defined node event: restartPollingInterface</event-label>
+                <event-label>OpenNMS-defined node event: restartPollingInterface</event-label>
                 <descr> 
                         &lt;p&gt;This event is an external command to restart polling 
                         all active services on a specified interface. The requeried 
