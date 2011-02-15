@@ -1,10 +1,15 @@
 package org.opennms.web.rest;
 
+import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertTrue;
 
 import java.util.Date;
 import java.util.HashMap;
 import java.util.Map;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
+
+import javax.ws.rs.core.MediaType;
 
 import org.junit.Test;
 import org.opennms.netmgt.dao.DatabasePopulator;
@@ -25,6 +30,20 @@ public class IPhoneRestServiceTest extends AbstractSpringJerseyRestTestCase {
 		dbp.populateDatabase();
 		m_distPollerDao = context.getBean("distPollerDao", DistPollerDao.class);
 		m_eventDao = context.getBean("eventDao", EventDao.class);
+	}
+
+	@Test
+	public void testAcknowlegement() throws Exception {
+	    final Pattern p = Pattern.compile("^.*<ackTime>(.*?)</ackTime>.*$", Pattern.DOTALL & Pattern.MULTILINE);
+	    sendData(POST, MediaType.APPLICATION_FORM_URLENCODED, "/acks", "alarmId=1&action=ack");
+	    String xml = sendRequest(GET, "/alarms/1", new HashMap<String,String>(), 200);
+	    Matcher m = p.matcher(xml);
+	    assertTrue(m.matches());
+	    assertTrue(m.group(1).length() > 0);
+        sendData(POST, MediaType.APPLICATION_FORM_URLENCODED, "/acks", "alarmId=1&action=unack");
+        xml = sendRequest(GET, "/alarms/1", new HashMap<String,String>(), 200);
+        m = p.matcher(xml);
+        assertFalse(m.matches());
 	}
 
 	@Test

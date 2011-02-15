@@ -230,6 +230,7 @@ public abstract class AbstractSpringJerseyRestTestCase {
 
         if(contentType.equals(MediaType.APPLICATION_FORM_URLENCODED)){
             request.setParameters(parseParamData(data));
+            request.setContent(data.getBytes());
         }else{
             request.setContent(data.getBytes());
         }
