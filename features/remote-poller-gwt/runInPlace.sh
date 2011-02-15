@@ -1,7 +1,11 @@
-#!/bin/sh
+#!/bin/bash
 
 if [ -z "$OPENNMS_ROOT" ]; then
 	OPENNMS_ROOT=`ls -d ../../target/opennms-*-SNAPSHOT 2>/dev/null | sort -u | tail -n 1`
+	if [ -z "$OPENNMS_ROOT" ]; then
+		echo "You must run './assemble.pl -Dbuild.profile=dir' at least once before doing runInPlace.sh!"
+		exit 1
+	fi
 	OPENNMS_ROOT=`cd $OPENNMS_ROOT; pwd`
 fi
 
