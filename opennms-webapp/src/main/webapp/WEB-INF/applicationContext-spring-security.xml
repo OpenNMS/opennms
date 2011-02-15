@@ -21,12 +21,12 @@
     <intercept-url pattern="/admin/**" access="ROLE_ADMIN" />
     <intercept-url pattern="/rtc/post/**" access="ROLE_RTC" />
     
-    <intercept-url pattern="/rest/**" method="DELETE" access="ROLE_ADMIN"/>
-    <intercept-url pattern="/rest/**" method="POST" access="ROLE_ADMIN"/>
-    <intercept-url pattern="/rest/**" method="PUT" access="ROLE_ADMIN"/>
-    <intercept-url pattern="/rest/**" method="GET" access="ROLE_USER"/>
-    <intercept-url pattern="/rest/**" method="HEAD" access="ROLE_USER"/>
-    <intercept-url pattern="/rest/**" method="OPTIONS" access="ROLE_USER"/>
+    <intercept-url pattern="/rest/**" method="DELETE" access="ROLE_REST,ROLE_ADMIN"/>
+    <intercept-url pattern="/rest/**" method="POST" access="ROLE_REST,ROLE_ADMIN"/>
+    <intercept-url pattern="/rest/**" method="PUT" access="ROLE_REST,ROLE_ADMIN"/>
+    <intercept-url pattern="/rest/**" method="GET" access="ROLE_REST,ROLE_ADMIN,ROLE_USER"/>
+    <intercept-url pattern="/rest/**" method="HEAD" access="ROLE_REST,ROLE_ADMIN,ROLE_USER"/>
+    <intercept-url pattern="/rest/**" method="OPTIONS" access="ROLE_REST,ROLE_ADMIN,ROLE_USER"/>
     
     <intercept-url pattern="/frontpage.htm" access="ROLE_USER,ROLE_DASHBOARD" />
     <intercept-url pattern="/dashboard.jsp" access="ROLE_USER,ROLE_DASHBOARD" />

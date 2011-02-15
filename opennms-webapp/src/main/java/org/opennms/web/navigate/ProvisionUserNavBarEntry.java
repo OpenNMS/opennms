@@ -50,7 +50,7 @@ public class ProvisionUserNavBarEntry extends LocationBasedNavBarEntry {
     /** {@inheritDoc} */
     @Override
     public DisplayStatus evaluate(HttpServletRequest request) {
-        if (request.isUserInRole(Authentication.ADMIN_ROLE) || request.isUserInRole(Authentication.ROLE_PROVISION)) {
+        if (request.isUserInRole(Authentication.ADMIN_ROLE) || request.isUserInRole(Authentication.PROVISION_ROLE)) {
             return super.evaluate(request);
         } else {
             return DisplayStatus.NO_DISPLAY;
