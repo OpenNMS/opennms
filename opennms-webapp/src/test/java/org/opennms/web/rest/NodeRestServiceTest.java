@@ -54,7 +54,8 @@ public class NodeRestServiceTest extends AbstractSpringJerseyRestTestCase {
         // Testing limit/offset
         xml = sendRequest(GET, url, parseParamData("limit=0&offset=3&orderBy=label"), 200);
         list = (OnmsNodeList)unmarshaller.unmarshal(new StringReader(xml));
-        assertEquals(1, list.getNodes().size());
+        // Not enough nodes in the DB, offset of 3 should return nothing
+        assertEquals(0, list.getNodes().size());
 
         // This filter should match
         xml = sendRequest(GET, url, parseParamData("comparator=like&label=%25Test%25"), 200);
