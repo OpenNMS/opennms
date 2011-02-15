@@ -42,11 +42,27 @@
 	<field name="IfHCOutOctets" class="java.lang.Double">
 		<fieldDescription><![CDATA[IfHCOutOctets]]></fieldDescription>
 	</field>
+	<field name="Step" class="java.lang.Long"/>
 	<variable name="received_SUM" class="java.lang.Double" calculation="Sum">
 		<variableExpression><![CDATA[$F{IfHCInOctets}]]></variableExpression>
 	</variable>
+	<variable name="RECEIVED_BYTES_TOTAL" class="java.lang.Double">
+		<variableExpression><![CDATA[$V{received_SUM} * $F{Step}]]></variableExpression>
+	</variable>
+	<variable name="RECEIVED_BITS_TOTAL" class="java.lang.Double">
+		<variableExpression><![CDATA[$V{RECEIVED_BYTES_TOTAL} * 8]]></variableExpression>
+	</variable>
 	<variable name="transmitted_SUM" class="java.lang.Double" calculation="Sum">
 		<variableExpression><![CDATA[$F{IfHCOutOctets}]]></variableExpression>
+	</variable>
+	<variable name="TRANSMITTED_BYTES_TOTAL" class="java.lang.Double">
+		<variableExpression><![CDATA[$V{transmitted_SUM} * $F{Step}]]></variableExpression>
+	</variable>
+	<variable name="TRANSMITTED_BITS_TOTAL" class="java.lang.Double">
+		<variableExpression><![CDATA[$V{TRANSMITTED_BYTES_TOTAL} * 8]]></variableExpression>
+	</variable>
+	<variable name="TOTAL_BYTES_IN_OUT" class="java.lang.Double">
+		<variableExpression><![CDATA[$V{RECEIVED_BYTES_TOTAL} + $V{TRANSMITTED_BYTES_TOTAL}]]></variableExpression>
 	</variable>
 	<filterExpression><![CDATA[!$F{IfHCInOctets}.isNaN() || !$F{IfHCOutOctets}.isNaN()]]></filterExpression>
 	<background>
@@ -75,12 +91,12 @@
 			<textField pattern="###0.00">
 				<reportElement style="Table_Body" x="36" y="16" width="150" height="16"/>
 				<textElement/>
-				<textFieldExpression class="java.lang.String"><![CDATA[$V{received_SUM} > 1048576 ? String.format("%10.2f", $V{received_SUM}/new Double("1048576.0")) + " MB" : String.format("%10.2f", $V{received_SUM}/new Double("1024.0")) + " KB"]]></textFieldExpression>
+				<textFieldExpression class="java.lang.String"><![CDATA[$V{RECEIVED_BYTES_TOTAL} > 1000000000 ? String.format("%10.2f", $V{RECEIVED_BYTES_TOTAL}/new Double("1000000000.0")) + " GB" : ($V{RECEIVED_BYTES_TOTAL} > 1000000 ? String.format("%10.2f", $V{RECEIVED_BYTES_TOTAL}/new Double("1000000.0")) + " MB" : String.format("%10.2f", $V{RECEIVED_BYTES_TOTAL}/new Double("1000.0")) + " KB")]]></textFieldExpression>
 			</textField>
 			<textField pattern="###0.00">
 				<reportElement style="Table_Body" x="186" y="16" width="150" height="16"/>
 				<textElement/>
-				<textFieldExpression class="java.lang.String"><![CDATA[$V{transmitted_SUM} > 1048576 ? String.format("%10.2f", $V{transmitted_SUM}/new Double("1048576.0")) + " MB" : String.format("%10.2f", $V{transmitted_SUM}/new Double("1024.0")) + " KB"]]></textFieldExpression>
+				<textFieldExpression class="java.lang.String"><![CDATA[$V{TRANSMITTED_BYTES_TOTAL} > 1000000000 ? String.format("%10.2f", $V{TRANSMITTED_BYTES_TOTAL}/new Double("1000000000.0")) + " GB" : ($V{TRANSMITTED_BITS_TOTAL} > 1000000 ? String.format("%10.2f", $V{TRANSMITTED_BYTES_TOTAL}/new Double("1000000.0")) + " MB" : String.format("%10.2f", $V{TRANSMITTED_BYTES_TOTAL}/new Double("1000.0")) + " KB")]]></textFieldExpression>
 			</textField>
 			<staticText>
 				<reportElement style="Table_Header" x="36" y="0" width="150" height="16"/>
@@ -100,7 +116,7 @@
 			<textField pattern="###0.00">
 				<reportElement style="Table_Body" x="336" y="16" width="150" height="16"/>
 				<textElement/>
-				<textFieldExpression class="java.lang.String"><![CDATA[($V{received_SUM} + $V{transmitted_SUM}) > 1048576 ? String.format("%10.2f", ($V{received_SUM} + $V{transmitted_SUM})/new Double("1048576.0")) + " MB" : String.format("%10.2f", ($V{received_SUM} + $V{transmitted_SUM})/new Double("1024.0")) + " KB"]]></textFieldExpression>
+				<textFieldExpression class="java.lang.String"><![CDATA[$V{TOTAL_BYTES_IN_OUT} > 1000000000 ? String.format("%10.2f", $V{TOTAL_BYTES_IN_OUT}/new Double("1000000000.0")) + " GB" : ($V{TOTAL_BYTES_IN_OUT} > 1000000 ? String.format("%10.2f", ($V{TOTAL_BYTES_IN_OUT})/new Double("1000000.0")) + " MB" : String.format("%10.2f", ($V{TOTAL_BYTES_IN_OUT})/new Double("1000.0")) + " KB")]]></textFieldExpression>
 			</textField>
 		</band>
 	</summary>

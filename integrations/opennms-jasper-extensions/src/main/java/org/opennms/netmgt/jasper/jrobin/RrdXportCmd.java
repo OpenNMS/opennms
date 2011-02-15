@@ -65,7 +65,7 @@ class RrdXportCmd extends RrdToolCmd implements RrdGraphConstants {
         for (XPort xport : xports) {
             xport.values = dproc.getValues(xport.name);
         }
-        return new JRobinDataSource(timestamps, xports);
+        return new JRobinDataSource(dproc.getStep(), timestamps, xports);
     }
 
     private void parseDef(String word) throws RrdException {
