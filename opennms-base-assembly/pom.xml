@@ -277,13 +277,51 @@
     </dependency>
     <dependency>
       <groupId>org.opennms.features</groupId>
-      <artifactId>org.opennms.features.jdbc-collector</artifactId>
+      <artifactId>org.opennms.features.system-report</artifactId>
       <scope>compile</scope>
     </dependency>
     <dependency>
       <groupId>org.opennms.features</groupId>
-      <artifactId>org.opennms.features.system-report</artifactId>
+      <artifactId>org.opennms.features.jdbc-collector</artifactId>
       <scope>compile</scope>
+    </dependency>
+
+    <!-- webapp dependencies -->
+    <dependency>
+      <groupId>org.opennms.features.reporting</groupId>
+      <artifactId>org.opennms.features.reporting.core</artifactId>
+    </dependency>
+    <dependency>
+      <groupId>org.opennms.features.reporting</groupId>
+      <artifactId>org.opennms.features.reporting.api</artifactId>
+    </dependency>
+    <dependency>
+      <groupId>org.opennms.features.reporting</groupId>
+      <artifactId>org.opennms.features.reporting.availability</artifactId>
+    </dependency>
+    <dependency>
+      <groupId>org.opennms.features.reporting</groupId>
+      <artifactId>org.opennms.features.reporting.jasper-reports</artifactId>
+    </dependency>
+    <dependency>
+      <groupId>org.apache.xmlgraphics</groupId>
+      <artifactId>batik-dom</artifactId>
+    </dependency>
+    <dependency>
+      <groupId>org.apache.xmlgraphics</groupId>
+      <artifactId>batik-svg-dom</artifactId>
+    </dependency>
+    <dependency>
+      <groupId>org.apache.xmlgraphics</groupId>
+      <artifactId>batik-transcoder</artifactId>
+    </dependency>
+    <dependency>
+      <groupId>org.apache.xmlgraphics</groupId>
+      <artifactId>batik-xml</artifactId>
+    </dependency>
+    <dependency>
+      <groupId>org.apache.xmlgraphics</groupId>
+      <artifactId>batik-util</artifactId>
     </dependency>
 
     <!-- dependencies for SMS monitors -->
@@ -333,12 +371,10 @@
     <dependency>
       <groupId>postgresql</groupId>
       <artifactId>postgresql</artifactId>
-      <scope>compile</scope>
     </dependency>
     <dependency>
       <groupId>org.opennms</groupId>
       <artifactId>opennms-qosdaemon</artifactId>
-      <scope>compile</scope>
     </dependency>
     <dependency>
       <groupId>axis</groupId>
@@ -352,8 +388,20 @@
       <groupId>commons-lang</groupId>
       <artifactId>commons-lang</artifactId>
     </dependency>
+    <dependency>
+      <groupId>taglibs</groupId>
+      <artifactId>standard</artifactId>
+    </dependency>
+    <dependency>
+      <groupId>org.opennms.features</groupId>
+      <artifactId>org.opennms.features.request-tracker</artifactId>
+    </dependency>
+    <dependency>
+      <groupId>org.opennms.dependencies</groupId>
+      <artifactId>jersey-dependencies</artifactId>
+		<type>pom</type>
+    </dependency>
 
-    <!--jasper-extensions-->
     <dependency>
       <groupId>org.opennms</groupId>
       <artifactId>jasper-extensions</artifactId>

@@ -176,273 +176,103 @@
     </profile>
   </profiles>
   <dependencies>
-    <!-- Sort dependencies by groupId then artifactId, but put dependencies with a groupId of org.opennms first. -->
+    <!-- indirect dependencies that belong in $OPENNMS_HOME/lib -->
+    <!-- these should all be <scope>provided</scope> and also included in opennms-base-assembly -->
     <dependency>
-      <groupId>org.opennms.dependencies</groupId>
-      <artifactId>spring-security-dependencies</artifactId>
+      <groupId>org.opennms</groupId>
+      <artifactId>opennms-web-dependencies</artifactId>
       <type>pom</type>
+      <scope>provided</scope>
     </dependency>
-    <!-- Rancid -->
     <dependency>
       <groupId>org.opennms.dependencies</groupId>
       <artifactId>rancid-dependencies</artifactId>
       <type>pom</type>
-    </dependency>
-    <dependency>
-      <groupId>org.opennms.dependencies</groupId>
-      <artifactId>dnsjava-dependencies</artifactId>
-      <type>pom</type>
-    </dependency>
-    <dependency>
-      <groupId>org.opennms.dependencies</groupId>
-      <artifactId>castor-dependencies</artifactId>
-      <type>pom</type>
-    </dependency>
-    <dependency>
-      <groupId>org.opennms</groupId>
-      <artifactId>opennms-config</artifactId>
-    </dependency>
-    <dependency>
-      <groupId>org.opennms</groupId>
-      <artifactId>opennms-dao</artifactId>
-    </dependency>
-    <!-- XXX the required test JARs should be moved into a separate project -->
-    <dependency>
-      <groupId>org.opennms</groupId>
-      <artifactId>opennms-dao</artifactId>
-      <type>test-jar</type>
-      <scope>test</scope>
-    </dependency>
-    <dependency>
-      <groupId>org.opennms.dependencies</groupId>
-      <artifactId>hibernate-dependencies</artifactId>
-      <type>pom</type>
-    </dependency>
-    <dependency>
-      <groupId>org.opennms</groupId>
-      <artifactId>opennms-javamail-api</artifactId>
-    </dependency>
-    <dependency>
-      <groupId>org.opennms</groupId>
-      <artifactId>opennms-model</artifactId>
-    </dependency>
-    <dependency>
-      <groupId>org.opennms</groupId>
-      <artifactId>opennms-provision-persistence</artifactId>
-    </dependency>
-    <dependency>
-      <groupId>org.opennms</groupId>
-      <artifactId>opennms-provision-persistence</artifactId>
-      <type>test-jar</type>
-      <scope>test</scope>
-    </dependency>
-    <dependency>
-      <groupId>org.opennms</groupId>
-      <artifactId>opennms-provisiond</artifactId>
-    </dependency>
-    <dependency>
-      <groupId>org.opennms</groupId>
-      <artifactId>opennms-reporting</artifactId>
-    </dependency>
-    <dependency>
-      <groupId>org.opennms</groupId>
-      <artifactId>opennms-rws</artifactId>
-    </dependency>
-    <dependency>
-      <groupId>org.opennms.features</groupId>
-      <artifactId>org.opennms.features.instrumentationLogReader</artifactId>
-      <version>1.0-SNAPSHOT</version>
-    </dependency>	
-    <dependency>
-      <groupId>org.opennms.features</groupId>
-      <artifactId>org.opennms.features.springframework-security</artifactId>
-    </dependency>
-    <dependency>
-      <groupId>org.opennms</groupId>
-      <artifactId>opennms-rrd-api</artifactId>
-    </dependency>
-    <dependency>
-      <groupId>org.opennms</groupId>
-      <artifactId>opennms-rrd-jrobin</artifactId>
-      <scope>runtime</scope>
-    </dependency>
-    <dependency>
-      <groupId>org.opennms</groupId>
-      <artifactId>opennms-rrdtool-api</artifactId>
-      <scope>runtime</scope>
-    </dependency>
-    <dependency>
-      <groupId>org.opennms</groupId>
-      <artifactId>opennms-web-api</artifactId>
-    </dependency>
-    <dependency>
-      <groupId>org.opennms</groupId>
-      <artifactId>opennms-services</artifactId>
-      <exclusions>
-        <exclusion>
-          <groupId>org.mortbay.jetty</groupId>
-          <artifactId>jetty</artifactId>
-        </exclusion>
-        <exclusion>
-          <groupId>org.mortbay.jetty</groupId>
-          <artifactId>jetty-util</artifactId>
-        </exclusion>
-        <exclusion>
-          <groupId>org.mortbay.jetty</groupId>
-          <artifactId>servlet-api</artifactId>
-        </exclusion>
-      </exclusions>
-    </dependency>
-    <dependency>
-      <groupId>org.opennms.dependencies</groupId>
-      <artifactId>spring-dependencies</artifactId>
-      <type>pom</type>
-    </dependency>
-    <dependency>
-      <groupId>org.opennms.dependencies</groupId>
-      <artifactId>spring-web-dependencies</artifactId>
-      <type>pom</type>
-    </dependency>
-    <dependency>
-      <groupId>org.opennms.dependencies</groupId>
-      <artifactId>jersey-dependencies</artifactId>
-      <type>pom</type>
-    </dependency>
-    <!-- XXX the required test JARs should be moved into a separate project -->
-    <dependency>
-      <groupId>org.opennms</groupId>
-      <artifactId>opennms-services</artifactId>
-      <type>test-jar</type>
-      <scope>test</scope>
-    </dependency>
-    <dependency>
-      <groupId>org.opennms.dependencies</groupId>
-      <artifactId>snmp-dependencies</artifactId>
-      <type>pom</type>
-    </dependency>
-    <dependency>
-      <groupId>org.opennms.dependencies</groupId>
-      <artifactId>javamail-dependencies</artifactId>
-      <type>pom</type>
-    </dependency>
-    <dependency>
-      <groupId>org.opennms</groupId>
-      <artifactId>opennms-test</artifactId>
-    </dependency>
-    <dependency>
-      <groupId>org.opennms</groupId>
-      <artifactId>opennms-util</artifactId>
+      <scope>provided</scope>
     </dependency>
     <dependency>
       <groupId>org.opennms.features.reporting</groupId>
       <artifactId>org.opennms.features.reporting.core</artifactId>
+      <scope>provided</scope>
     </dependency>
     <dependency>
       <groupId>org.opennms.features.reporting</groupId>
       <artifactId>org.opennms.features.reporting.api</artifactId>
+      <scope>provided</scope>
     </dependency>
     <dependency>
       <groupId>org.opennms.features.reporting</groupId>
       <artifactId>org.opennms.features.reporting.availability</artifactId>
+      <scope>provided</scope>
     </dependency>
     <dependency>
-      <groupId>org.opennms.features.reporting</groupId>
-      <artifactId>org.opennms.features.reporting.jasper-reports</artifactId>
+      <groupId>org.opennms.features</groupId>
+      <artifactId>org.opennms.features.request-tracker</artifactId>
+      <scope>provided</scope>
+    </dependency>
+    <dependency>
+      <groupId>org.opennms.features</groupId>
+      <artifactId>org.opennms.features.system-report</artifactId>
+      <scope>provided</scope>
     </dependency>
     <dependency>
       <groupId>org.apache.xmlgraphics</groupId>
       <artifactId>batik-dom</artifactId>
+      <scope>provided</scope>
     </dependency>
     <dependency>
       <groupId>org.apache.xmlgraphics</groupId>
       <artifactId>batik-svg-dom</artifactId>
+      <scope>provided</scope>
     </dependency>
     <dependency>
       <groupId>org.apache.xmlgraphics</groupId>
       <artifactId>batik-transcoder</artifactId>
+      <scope>provided</scope>
     </dependency>
     <dependency>
       <groupId>org.apache.xmlgraphics</groupId>
       <artifactId>batik-xml</artifactId>
+      <scope>provided</scope>
     </dependency>
     <dependency>
       <groupId>org.apache.xmlgraphics</groupId>
       <artifactId>batik-util</artifactId>
+      <scope>provided</scope>
     </dependency>
-    <!-- GWT Dependencies -->
+
+    <!-- direct dependencies that should be in WEB-INF/lib -->
     <dependency>
       <groupId>org.opennms.dependencies</groupId>
       <artifactId>gwt-dependencies</artifactId>
       <type>pom</type>
     </dependency>
     <dependency>
-      <groupId>commons-dbcp</groupId>
-      <artifactId>commons-dbcp</artifactId>
+      <groupId>org.extremecomponents</groupId>
+      <artifactId>extremecomponents</artifactId>
     </dependency>
     <dependency>
-      <groupId>commons-io</groupId>
-      <artifactId>commons-io</artifactId>
-    </dependency>
-    <dependency>
-      <groupId>commons-lang</groupId>
-      <artifactId>commons-lang</artifactId>
-    </dependency>
-    <dependency>
-      <groupId>httpunit</groupId>
-      <artifactId>httpunit</artifactId>
-      <scope>test</scope>
-    </dependency>
-    <dependency>
-      <groupId>jakarta-regexp</groupId>
-      <artifactId>jakarta-regexp</artifactId>
-      <scope>compile</scope>
-    </dependency>
-    <dependency>
-      <groupId>javax.servlet</groupId>
-      <artifactId>jstl</artifactId>
-      <scope>compile</scope>
-    </dependency>
-    <dependency>
-      <groupId>javax.servlet</groupId>
-      <artifactId>servlet-api</artifactId>
-    </dependency>
-    <dependency>
-      <groupId>jwebunit</groupId>
-      <artifactId>jwebunit</artifactId>
-      <scope>test</scope>
+      <groupId>com.google.collections</groupId>
+      <artifactId>google-collections</artifactId>
     </dependency>
     <dependency>
       <groupId>net.sf.opencsv</groupId>
       <artifactId>opencsv</artifactId>
     </dependency>
     <dependency>
+      <groupId>org.opennms.features</groupId>
+      <artifactId>org.opennms.features.instrumentationLogReader</artifactId>
+      <version>1.0-SNAPSHOT</version>
+    </dependency>   
+    <dependency>
       <groupId>net.sf.json-lib</groupId>
       <artifactId>json-lib</artifactId>
       <classifier>jdk15</classifier>
     </dependency>
     <dependency>
-	<groupId>ognl</groupId>
-	  <artifactId>ognl</artifactId>
-	  <version>2.6.9</version>
-	</dependency>
-    <dependency>
-      <groupId>org.opennms.tests</groupId>
-      <artifactId>org.opennms.tests.mock-elements</artifactId>
-      <scope>test</scope>
-    </dependency>
-    <dependency>
-      <groupId>org.easymock</groupId>
-      <artifactId>easymock</artifactId>
-      <scope>test</scope>
-    </dependency>
-    <dependency>
-      <groupId>org.extremecomponents</groupId>
-      <artifactId>extremecomponents</artifactId>
-    </dependency>
-    <dependency>
-      <groupId>org.opennms.dependencies</groupId>
-      <artifactId>quartz-dependencies</artifactId>
-      <type>pom</type>
+      <groupId>ognl</groupId>
+      <artifactId>ognl</artifactId>
+      <version>2.6.9</version>
     </dependency>
     <dependency>
       <groupId>org.tuckey</groupId>
@@ -452,11 +282,7 @@
       <groupId>poi</groupId>
       <artifactId>poi</artifactId>
     </dependency>
-    <dependency>
-      <groupId>postgresql</groupId>
-      <artifactId>postgresql</artifactId>
-      <scope>runtime</scope>
-    </dependency>
+    <!-- for RSS feeds -->
     <dependency>
       <groupId>rome</groupId>
       <artifactId>rome</artifactId>
@@ -465,14 +291,50 @@
       <groupId>struts</groupId>
       <artifactId>struts</artifactId>
     </dependency>
+
+    <!-- test dependencies -->
     <dependency>
-      <groupId>taglibs</groupId>
-      <artifactId>standard</artifactId>
-      <scope>compile</scope>
+      <groupId>org.opennms</groupId>
+      <artifactId>opennms-dao</artifactId>
+      <type>test-jar</type>
+      <scope>test</scope>
     </dependency>
     <dependency>
-      <groupId>xerces</groupId>
-      <artifactId>xercesImpl</artifactId>
+      <groupId>org.opennms</groupId>
+      <artifactId>opennms-services</artifactId>
+      <type>test-jar</type>
+      <scope>test</scope>
+    </dependency>
+    <dependency>
+      <groupId>org.opennms</groupId>
+      <artifactId>opennms-provision-persistence</artifactId>
+      <type>test-jar</type>
+      <scope>test</scope>
+    </dependency>
+    <dependency>
+      <groupId>org.opennms</groupId>
+      <artifactId>opennms-test</artifactId>
+      <scope>test</scope>
+    </dependency>
+    <dependency>
+      <groupId>httpunit</groupId>
+      <artifactId>httpunit</artifactId>
+      <scope>test</scope>
+    </dependency>
+    <dependency>
+      <groupId>jwebunit</groupId>
+      <artifactId>jwebunit</artifactId>
+      <scope>test</scope>
+    </dependency>
+    <dependency>
+      <groupId>org.opennms.tests</groupId>
+      <artifactId>org.opennms.tests.mock-elements</artifactId>
+      <scope>test</scope>
+    </dependency>
+    <dependency>
+      <groupId>org.easymock</groupId>
+      <artifactId>easymock</artifactId>
+      <scope>test</scope>
     </dependency>
     <dependency>
       <groupId>org.apache.directory.server</groupId>
@@ -492,18 +354,6 @@
       <version>3.1</version>
       <scope>test</scope>
     </dependency>
-    
-    <dependency>
-      <groupId>com.google.collections</groupId>
-      <artifactId>google-collections</artifactId>
-    </dependency>
-    <dependency>
-      <groupId>org.opennms.features</groupId>
-      <artifactId>org.opennms.features.system-report</artifactId>
-    </dependency>
-    <dependency>
-      <groupId>org.opennms.features</groupId>
-      <artifactId>org.opennms.features.request-tracker</artifactId>
-    </dependency>
+
   </dependencies>
 </project>
