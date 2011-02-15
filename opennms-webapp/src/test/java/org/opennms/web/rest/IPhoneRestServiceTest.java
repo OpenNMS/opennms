@@ -2,19 +2,29 @@ package org.opennms.web.rest;
 
 import static org.junit.Assert.assertTrue;
 
+import java.util.Date;
 import java.util.HashMap;
 import java.util.Map;
 
 import org.junit.Test;
 import org.opennms.netmgt.dao.DatabasePopulator;
+import org.opennms.netmgt.dao.DistPollerDao;
+import org.opennms.netmgt.dao.EventDao;
+import org.opennms.netmgt.model.OnmsEvent;
+import org.opennms.netmgt.model.OnmsNode;
 import org.springframework.web.context.WebApplicationContext;
 import org.springframework.web.context.support.WebApplicationContextUtils;
 
 public class IPhoneRestServiceTest extends AbstractSpringJerseyRestTestCase {
+	private EventDao m_eventDao;
+	private DistPollerDao m_distPollerDao;
+
 	protected void afterServletStart() {
 		final WebApplicationContext context = WebApplicationContextUtils.getWebApplicationContext(getServletContext());
 		DatabasePopulator dbp = context.getBean("databasePopulator", DatabasePopulator.class);
 		dbp.populateDatabase();
+		m_distPollerDao = context.getBean("distPollerDao", DistPollerDao.class);
+		m_eventDao = context.getBean("eventDao", EventDao.class);
 	}
 
 	@Test
@@ -84,19 +94,34 @@ public class IPhoneRestServiceTest extends AbstractSpringJerseyRestTestCase {
 		
 		parameters.clear();
 		parameters.put("limit", "50");
-		parameters.put("orderBy", "lastEventTime");
 		parameters.put("node.id", "1");
 		xml = sendRequest(GET, "/events", parameters, 200);
 		assertTrue(xml.contains("totalCount=\"0\""));
 	}
 
 	@Test
-	public void testEventsForNodes() throws Exception {
+	public void testEventsForNodeId() throws Exception {
+		OnmsNode node = new OnmsNode();
+		node.setId(1);
+
+        OnmsEvent event = new OnmsEvent();
+        event.setDistPoller(m_distPollerDao.get("localhost"));
+        event.setEventUei("uei.opennms.org/test");
+        event.setEventTime(new Date());
+        event.setEventSource("test");
+        event.setEventCreateTime(new Date());
+        event.setEventSeverity(1);
+        event.setEventLog("Y");
+        event.setEventDisplay("Y");
+        event.setNode(node);
+        m_eventDao.save(event);
+        
 		Map<String, String> parameters = new HashMap<String, String>();
-//		parameters.put("limit", "50");
+		parameters.put("limit", "50");
 		parameters.put("node.id", "1");
 		String xml = sendRequest(GET, "/events", parameters, 200);
-		assertTrue(xml.contains("totalCount=\"0\""));
+		assertTrue(xml.contains("totalCount=\"1\""));
+		assertTrue(xml.contains("uei.opennms.org/test"));
 	}
 	
 	@Test
