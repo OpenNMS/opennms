@@ -187,12 +187,14 @@ public class OnmsRestService {
 		    paramsCopy.remove("match");
 		}
 
+		/*
         if(paramsCopy.containsKey("node.id") && !matchType.equalsIgnoreCase("any")) {
             String nodeId = paramsCopy.getFirst("node.id");
             Integer id = Integer.valueOf(nodeId);
             criteria.createCriteria("node").add(Restrictions.eq("id", id));
             paramsCopy.remove("node.id");
         }
+        */
         
 		//By default, just do equals comparison
 		ComparisonOperation op=ComparisonOperation.EQ;
@@ -235,6 +237,10 @@ public class OnmsRestService {
     			} else {
     				@SuppressWarnings("unchecked")
 					Object thisValue=wrapper.convertIfNecessary(stringValue, wrapper.getPropertyType(key));
+    				if ("node.id".equals(key)) {
+    					thisValue = Integer.valueOf(stringValue);
+    				}
+    				LogUtils.warnf(this, "key = %s, propertyType = %s", key, wrapper.getPropertyType(key));
     				switch(op) {
     		   		case EQ:
     		    		criteriaList.add(Restrictions.eq(key, thisValue));
