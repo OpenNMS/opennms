@@ -66,9 +66,10 @@ import org.opennms.netmgt.provision.support.trustmanager.RelaxedX509TrustManager
  */
 public abstract class AsyncBasicDetector<Request, Response> extends AsyncAbstractDetector {
     
+    protected static final Charset CHARSET_UTF8 = Charset.forName("UTF-8");
     private BaseDetectorHandler<Request, Response> m_detectorHandler = new BaseDetectorHandler<Request, Response>();
     private IoFilterAdapter m_filterLogging;
-    private ProtocolCodecFilter m_protocolCodecFilter = new ProtocolCodecFilter( new TextLineCodecFactory( Charset.forName( "UTF-8" )));
+    private ProtocolCodecFilter m_protocolCodecFilter = new ProtocolCodecFilter(new TextLineCodecFactory(CHARSET_UTF8));
     private int m_idleTime = 1;
     private AsyncClientConversation<Request, Response> m_conversation = new AsyncClientConversation<Request, Response>();
     private boolean useSSLFilter = false;

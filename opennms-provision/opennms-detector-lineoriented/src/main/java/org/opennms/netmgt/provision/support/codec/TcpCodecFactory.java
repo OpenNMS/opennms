@@ -60,6 +60,7 @@ public class TcpCodecFactory implements ProtocolCodecFactory {
     
     /**
      * <p>Constructor for TcpCodecFactory.</p>
+     * FIXME: Why does this exist?  It drops the second argument.
      *
      * @param charset a {@link java.nio.charset.Charset} object.
      * @param delimit a {@link java.lang.String} object.
