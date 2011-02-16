@@ -43,7 +43,7 @@ import java.util.Set;
  */
 public class OnmsMonitoringLocationDefinition implements Serializable {
 
-    private static final long serialVersionUID = 2L;
+    private static final long serialVersionUID = 1389369619460044379L;
 
     private String m_area;
     private String m_name;

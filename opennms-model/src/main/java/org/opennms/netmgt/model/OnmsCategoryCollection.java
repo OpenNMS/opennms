@@ -4,6 +4,7 @@ import java.util.Collection;
 import java.util.LinkedList;
 import java.util.List;
 
+import javax.xml.bind.annotation.XmlAttribute;
 import javax.xml.bind.annotation.XmlElement;
 import javax.xml.bind.annotation.XmlRootElement;
 
@@ -53,4 +54,15 @@ public class OnmsCategoryCollection extends LinkedList<OnmsCategory> {
         clear();
         addAll(categories);
     }
+
+    /**
+     * <p>getCount</p>
+     *
+     * @return a {@link java.lang.Integer} object.
+     */
+    @XmlAttribute(name="count")
+    public Integer getCount() {
+        return this.size();
+    }
+
 }

@@ -31,6 +31,7 @@
 //
 package org.opennms.netmgt.model;
 
+import javax.xml.bind.annotation.XmlAttribute;
 import javax.xml.bind.annotation.XmlElement;
 import javax.xml.bind.annotation.XmlRootElement;
 import java.util.LinkedList;
@@ -82,4 +83,15 @@ public class OnmsMapElementList extends LinkedList<OnmsMapElement> {
         clear();
         addAll(mapElements);
     }
+
+    /**
+     * <p>getCount</p>
+     *
+     * @return a {@link java.lang.Integer} object.
+     */
+    @XmlAttribute(name="count")
+    public Integer getCount() {
+        return this.size();
+    }
+
 }

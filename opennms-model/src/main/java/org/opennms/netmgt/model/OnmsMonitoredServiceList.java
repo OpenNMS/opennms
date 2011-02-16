@@ -4,6 +4,7 @@ import java.util.Collection;
 import java.util.LinkedList;
 import java.util.List;
 
+import javax.xml.bind.annotation.XmlAttribute;
 import javax.xml.bind.annotation.XmlElement;
 import javax.xml.bind.annotation.XmlRootElement;
 
@@ -17,7 +18,7 @@ import javax.xml.bind.annotation.XmlRootElement;
 public class OnmsMonitoredServiceList extends LinkedList<OnmsMonitoredService> {
 
     private static final long serialVersionUID = 8031737923157780179L;
-    
+
     /**
      * <p>Constructor for OnmsMonitoredServiceList.</p>
      */
@@ -43,7 +44,7 @@ public class OnmsMonitoredServiceList extends LinkedList<OnmsMonitoredService> {
     public List<OnmsMonitoredService> getServices() {
         return this;
     }
-    
+
     /**
      * <p>setServices</p>
      *
@@ -54,4 +55,26 @@ public class OnmsMonitoredServiceList extends LinkedList<OnmsMonitoredService> {
         addAll(services);
     }
 
+    /**
+     * <p>getCount</p>
+     *
+     * @return a {@link java.lang.Integer} object.
+     */
+    @XmlAttribute(name="count")
+    public Integer getCount() {
+        return this.size();
+    }
+
+    /**
+     * <p>getTotalCount</p>
+     * 
+     * Note that this list is different than others: count always equals totalCount
+     * because we don't perform any limit/offset queries inside {$link OnmsMonitoredServiceResource}
+     *
+     * @return a int.
+     */
+    @XmlAttribute(name="totalCount")
+    public int getTotalCount() {
+        return this.size();
+    }
 }
