@@ -277,6 +277,59 @@
 
 	<!-- Start 1.8 -->
 
+	<section id="opennms-1.8.10">
+		<title>Changes in OpenNMS 1.8.10</title>
+
+		<section id="opennms-1.8.10-bug">
+			<title>Bug</title>
+
+			<itemizedlist>
+				<listitem><para>No row with the given identifier exists (Issue <ulink url='http://issues.opennms.org/browse/NMS-4046'>NMS-4046</ulink>)</para></listitem>
+				<listitem><para>database reports ui enhancement request (Issue <ulink url='http://issues.opennms.org/browse/NMS-4057'>NMS-4057</ulink>)</para></listitem>
+				<listitem><para>null pointer exception from Admin ? Instrumentation Log Reader jsp page (Issue <ulink url='http://issues.opennms.org/browse/NMS-4118'>NMS-4118</ulink>)</para></listitem>
+				<listitem><para>Calculations in new Jasper JRB Traffic-Reports are wrong (Issue <ulink url='http://issues.opennms.org/browse/NMS-4359'>NMS-4359</ulink>)</para></listitem>
+				<listitem><para>Javascript error in IE7 on 1.8.7 (Issue <ulink url='http://issues.opennms.org/browse/NMS-4368'>NMS-4368</ulink>)</para></listitem>
+				<listitem><para>Attempting to delete a service on a provisioned node produces an error (Issue <ulink url='http://issues.opennms.org/browse/NMS-4395'>NMS-4395</ulink>)</para></listitem>
+				<listitem><para>Unable to see Telnet/HTTP/OpenManage links in node.jsp (Issue <ulink url='http://issues.opennms.org/browse/NMS-4398'>NMS-4398</ulink>)</para></listitem>
+				<listitem><para>KSC reports editor broken in IE7 (Issue <ulink url='http://issues.opennms.org/browse/NMS-4406'>NMS-4406</ulink>)</para></listitem>
+				<listitem><para>OpenNMS not installing on RHEL6 x86_64 (Issue <ulink url='http://issues.opennms.org/browse/NMS-4409'>NMS-4409</ulink>)</para></listitem>
+				<listitem><para>Node Availability report query incorrect (Issue <ulink url='http://issues.opennms.org/browse/NMS-4410'>NMS-4410</ulink>)</para></listitem>
+				<listitem><para>REST calls for iPhone and iPad App broken (Issue <ulink url='http://issues.opennms.org/browse/NMS-4414'>NMS-4414</ulink>)</para></listitem>
+				<listitem><para>Deleting Foreign Source policy throws java.lang.NoSuchMethodException (Issue <ulink url='http://issues.opennms.org/browse/NMS-4415'>NMS-4415</ulink>)</para></listitem>
+				<listitem><para>Interface Availability report query incorrect (Issue <ulink url='http://issues.opennms.org/browse/NMS-4417'>NMS-4417</ulink>)</para></listitem>
+				<listitem><para>Need to update PostgreSQL JDBC JAR to 9.0 (Issue <ulink url='http://issues.opennms.org/browse/NMS-4420'>NMS-4420</ulink>)</para></listitem>
+				<listitem><para>Only role.admin users are able to use the iphone app (Issue <ulink url='http://issues.opennms.org/browse/NMS-4425'>NMS-4425</ulink>)</para></listitem>
+				<listitem><para>Acknowledging alarms results in an error (Issue <ulink url='http://issues.opennms.org/browse/NMS-4426'>NMS-4426</ulink>)</para></listitem>
+				<listitem><para>runInPlace.sh script gives unclear instructions (Issue <ulink url='http://issues.opennms.org/browse/NMS-4429'>NMS-4429</ulink>)</para></listitem>
+				<listitem><para>null pointer exception when attempting to enable snmp collection. (Issue <ulink url='http://issues.opennms.org/browse/NMS-4432'>NMS-4432</ulink>)</para></listitem>
+				<listitem><para>WebUI Broken When Deleting Parameters in Foreign Sources (Issue <ulink url='http://issues.opennms.org/browse/NMS-4438'>NMS-4438</ulink>)</para></listitem>
+			</itemizedlist>
+		</section>
+		<section id="opennms-1.8.10-enhancement">
+			<title>Enhancement</title>
+
+			<itemizedlist>
+				<listitem><para>JasperReport time range helper (Issue <ulink url='http://issues.opennms.org/browse/NMS-4319'>NMS-4319</ulink>)</para></listitem>
+				<listitem><para>Early Morning Report - Limit Top 20 events also to 24 hours (Issue <ulink url='http://issues.opennms.org/browse/NMS-4365'>NMS-4365</ulink>)</para></listitem>
+				<listitem>
+					<para>upgrade to JRobin 1.5.10 (Issue <ulink url='http://issues.opennms.org/browse/NMS-4431'>NMS-4431</ulink>)</para>
+					<para>
+						Note: JRobin 1.5.10 includes a new backend that can improve performance dramatically.  For safety's sake, it is disabled by
+						default, but users are encouraged on test systems to enable the new "MNIO" backend in rrd-configuration.properties and report
+						any issues, if found.
+					</para>
+				</listitem>
+			</itemizedlist>
+		</section>
+		<section id="opennms-1.8.10-task">
+			<title>Task</title>
+
+			<itemizedlist>
+				<listitem><para>Change event-label name &quot;OpeNMS&quot; for restartPollingInterface event in eventconf.xml (Issue <ulink url='http://issues.opennms.org/browse/NMS-4421'>NMS-4421</ulink>)</para></listitem>
+			</itemizedlist>
+		</section>
+	</section>
+
 	<section id="opennms-1.8.9">
 		<title>Changes in OpenNMS 1.8.9</title>
 
