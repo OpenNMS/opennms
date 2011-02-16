@@ -214,6 +214,9 @@ public class OnmsSnmpInterfaceResource extends OnmsRestService {
         if (node == null) {
             throwException(Status.BAD_REQUEST, "deleteSnmpInterface: can't find node " + nodeCriteria);
         }
+        if (ifIndex < 0) {
+            throwException(Status.BAD_REQUEST, "deleteSnmpInterface: invalid ifIndex specified for snmp interface on node " + node.getId() + ": " + ifIndex);
+        }
         OnmsSnmpInterface snmpInterface = node.getSnmpInterfaceWithIfIndex(ifIndex);
         if (snmpInterface == null) {
             throwException(Status.BAD_REQUEST, "deleteSnmpInterface: can't find snmp interface with ifIndex " + ifIndex + " for node " + nodeCriteria);
@@ -234,8 +237,15 @@ public class OnmsSnmpInterfaceResource extends OnmsRestService {
             // we've updated the collection flag so we need to send an event to redo collection
             EventBuilder bldr = new EventBuilder(EventConstants.REINITIALIZE_PRIMARY_SNMP_INTERFACE_EVENT_UEI, "OpenNMS.Webapp");
             bldr.setNode(node);
-            bldr.setInterface(node.getPrimaryInterface().getIpAddress());
-            e = bldr.getEvent();
+            // Bug NMS-4432 says that sometimes the primary SNMP interface is null
+            // so we need to check for that before we set the interface
+            OnmsIpInterface iface = node.getPrimaryInterface();
+            if (iface == null) {
+                log().warn("updateSnmpInterface: Cannot send " + EventConstants.REINITIALIZE_PRIMARY_SNMP_INTERFACE_EVENT_UEI + " event because node " + node.getId() + " has no primary SNMP interface");
+            } else {
+                bldr.setInterface(iface.getIpAddress());
+                e = bldr.getEvent();
+            }
         }
         log().debug("updateSnmpInterface: snmp interface " + snmpInterface + " updated");
         m_snmpInterfaceDao.saveOrUpdate(snmpInterface);
