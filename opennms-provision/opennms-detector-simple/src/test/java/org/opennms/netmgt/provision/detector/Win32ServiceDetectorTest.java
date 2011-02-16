@@ -37,6 +37,7 @@ import static org.junit.Assert.assertTrue;
 import java.net.InetAddress;
 import java.net.UnknownHostException;
 
+import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
@@ -81,6 +82,11 @@ public class Win32ServiceDetectorTest implements ApplicationContextAware{
         
     }
     
+    @After
+    public void tearDown() throws InterruptedException {
+        m_snmpAgent.shutDownAndWait();
+    }
+
     @Test
     public void testDetectorSuccessful() throws UnknownHostException{
         assertTrue(m_detector.isServiceDetected(InetAddress.getByName(TEST_IP_ADDRESS), new NullDetectorMonitor()));
