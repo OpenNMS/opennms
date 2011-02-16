@@ -77,7 +77,7 @@ public class Jsr160DetectorTest {
     
     @BeforeClass
     public static void beforeTest() throws RemoteException{
-        LocateRegistry.createRegistry(9999);
+        LocateRegistry.createRegistry(9123);
         m_beanServer = ManagementFactory.getPlatformMBeanServer();
     }
     
