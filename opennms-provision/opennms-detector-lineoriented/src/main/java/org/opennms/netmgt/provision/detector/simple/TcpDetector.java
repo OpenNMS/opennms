@@ -34,8 +34,6 @@
  */
 package org.opennms.netmgt.provision.detector.simple;
 
-import java.nio.charset.Charset;
-
 import org.apache.mina.filter.codec.ProtocolCodecFilter;
 import org.opennms.netmgt.provision.detector.simple.request.LineOrientedRequest;
 import org.opennms.netmgt.provision.detector.simple.response.LineOrientedResponse;
@@ -55,7 +53,6 @@ import org.springframework.stereotype.Component;
 @Scope("prototype")
 public class TcpDetector extends AsyncLineOrientedDetector {
 
-    private static final ProtocolCodecFilter PROTOCOL_CODEC_FILTER = new ProtocolCodecFilter ( new TcpCodecFactory ( Charset.forName("UTF-8" )));
     private static final String DEFAULT_SERVICE_NAME = "TCP";
     private static final int DEFAULT_PORT = 23;
     
@@ -66,7 +63,7 @@ public class TcpDetector extends AsyncLineOrientedDetector {
      */
     public TcpDetector() {
         super(DEFAULT_SERVICE_NAME, DEFAULT_PORT);
-        setProtocolCodecFilter(PROTOCOL_CODEC_FILTER);
+        setProtocolCodecFilter(new ProtocolCodecFilter(new TcpCodecFactory(CHARSET_UTF8)));
     }
     
     /**

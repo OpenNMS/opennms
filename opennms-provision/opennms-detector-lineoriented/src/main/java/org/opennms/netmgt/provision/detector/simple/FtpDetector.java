@@ -1,7 +1,5 @@
 package org.opennms.netmgt.provision.detector.simple;
 
-import java.nio.charset.Charset;
-
 import org.apache.mina.filter.codec.ProtocolCodecFilter;
 import org.opennms.netmgt.provision.support.codec.MultilineOrientedCodecFactory;
 import org.springframework.context.annotation.Scope;
@@ -43,7 +41,7 @@ public class FtpDetector extends AsyncMultilineDetector {
      */
     public void onInit() {
         //setup the correct codec for this Detector
-        setProtocolCodecFilter(new ProtocolCodecFilter( new MultilineOrientedCodecFactory( Charset.forName( "UTF-8"), getMultilineIndicator())));
+        setProtocolCodecFilter(new ProtocolCodecFilter(new MultilineOrientedCodecFactory(CHARSET_UTF8, getMultilineIndicator())));
         
         expectBanner(expectCodeRange(100, 600));
         send(request("quit"), expectCodeRange(100,600));
