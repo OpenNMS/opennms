@@ -64,9 +64,6 @@ import org.opennms.netmgt.provision.support.PluginWrapper;
  *
  * @author <a href="mailto:ranger@opennms.org">Benjamin Reed</a>
  * @author <a href="mailto:brozow@opennms.org">Matt Brozowski</a>
- * @author <a href="mailto:ranger@opennms.org">Benjamin Reed</a>
- * @author <a href="mailto:brozow@opennms.org">Matt Brozowski</a>
- * @version $Id: $
  */
 @XmlAccessorType(XmlAccessType.FIELD)
 @XmlRootElement(name="plugin")
@@ -221,7 +218,7 @@ public class PluginConfig implements Serializable, Comparable<PluginConfig> {
      *
      * @param p a {@link org.opennms.netmgt.provision.persist.foreignsource.PluginParameter} object.
      */
-    public void removeParameters(PluginParameter p) {
+    public void deleteParameters(PluginParameter p) {
         m_parameters.remove(p);
     }
 
