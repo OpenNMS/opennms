@@ -109,7 +109,7 @@ public class IPhoneRestServiceTest extends AbstractSpringJerseyRestTestCase {
 		parameters.clear();
 		parameters.put("orderBy", new String[] {"ifName", "ipAddress", "ifDesc"});
 		xml = sendRequest(GET, "/nodes/1/snmpinterfaces", parameters, 200);
-		assertTrue(xml.contains("<ifType>37</ifType><ipAddress>192.168.1.1</ipAddress>"));
+		assertTrue(xml.contains("Initial ifAlias value"));
 		
 		parameters.clear();
 		parameters.put("limit", "50");
@@ -123,7 +123,7 @@ public class IPhoneRestServiceTest extends AbstractSpringJerseyRestTestCase {
         Map<String, Object> parameters = new HashMap<String, Object>();
         parameters.put("orderBy", new String[] {"ifName", "ipAddress", "ifDesc"});
         String xml = sendRequest(GET, "/nodes/1/snmpinterfaces", parameters, 200);
-        assertTrue(xml.contains("<ifType>37</ifType><ipAddress>192.168.1.1</ipAddress>"));
+        assertTrue(xml.contains("Initial ifAlias value"));
 	}
 	
 	@Test
