@@ -59,7 +59,7 @@
 <%
 	boolean isAuthorizedUser = false;
 
-	if( request.isUserInRole(Authentication.ROLE_PROVISION) || request.isUserInRole(Authentication.ADMIN_ROLE) ){
+	if( request.isUserInRole(Authentication.PROVISION_ROLE) || request.isUserInRole(Authentication.ADMIN_ROLE) ){
 		isAuthorizedUser = true;
 	}
     String nodeIdString = request.getParameter("node");
@@ -259,7 +259,7 @@
             <td><%=getTextField( request, "text", "supportphone", asset.getSupportPhone(), "20", "64")%></td>
           </tr>
           
-          <% if((request.isUserInRole(Authentication.ROLE_PROVISION)) || (request.isUserInRole(Authentication.ADMIN_ROLE))){ %>
+          <% if((request.isUserInRole(Authentication.PROVISION_ROLE)) || (request.isUserInRole(Authentication.ADMIN_ROLE))){ %>
           <tr>
             <td colspan="6"><h3>Authentication</h3></td>
           </tr>
@@ -331,7 +331,7 @@
       
       <%!      	
       	private String getTextField(HttpServletRequest request, String type, String name, String value, String size, String maxLength){
-	    	  if(request.isUserInRole(Authentication.ROLE_PROVISION) || request.isUserInRole(Authentication.ADMIN_ROLE) ){
+	    	  if(request.isUserInRole(Authentication.PROVISION_ROLE) || request.isUserInRole(Authentication.ADMIN_ROLE) ){
 	    		  return String.format("<input type=\"%s\" name=\"%s\" value=\"%s\" size=\"%s\" maxlength=\"%s\"/>", type, name, value, size, maxLength);
 	    	  }else{
 	    	  	return String.format("<p>%s</p>", value);
@@ -339,7 +339,7 @@
       	}
       
 	    private String getTextArea(HttpServletRequest request, String name, String value){
-	    	  if(request.isUserInRole(Authentication.ROLE_PROVISION) || request.isUserInRole(Authentication.ADMIN_ROLE) ){
+	    	  if(request.isUserInRole(Authentication.PROVISION_ROLE) || request.isUserInRole(Authentication.ADMIN_ROLE) ){
 	    		  return String.format("<textarea name=\"%s\" cols=\"100\" rows=\"15\">%s</textarea>",  name, value);
 	    	  }else{
 	    	  	return String.format("<p>%s</p>", value);
