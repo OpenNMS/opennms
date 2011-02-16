@@ -447,13 +447,24 @@ public class InstallerDb {
             st = getConnection().createStatement();
             st.execute("SELECT IPLIKE('127.0.0.1', '*.*.*.*')");
             m_out.println("YES");
-            return true;
         } catch (SQLException selectException) {
             m_out.println("NO");
             return false;
         } finally {
             closeQuietly(st);
         }
+        try {
+            m_out.print("- checking if iplike supports IPv6... ");
+            st = getConnection().createStatement();
+            st.execute("SELECT IPLIKE('fe80:0000:5ab0:35ff:feee:cecd', 'fe80:*::cecd')");
+            m_out.println("YES");
+        } catch (SQLException selectException) {
+            m_out.println("NO");
+            return false;
+        } finally {
+            closeQuietly(st);
+        }
+        return true;
     }
     
     /**
