@@ -498,7 +498,7 @@ public class ThresholdController extends AbstractController implements Initializ
         ThresholdingConfigFactory configFactory=ThresholdingConfigFactory.getInstance();
         ModelAndView modelAndView;
         if(expressionIndexString==null) {
-            throw new ServletException("expressionIndex parameter required to delete a threshold");
+            throw new ServletException("expressionIndex parameter required to delete a threshold expression");
         }
         int expressionIndex=WebSecurityUtils.safeParseInt(expressionIndexString);
         Group group=configFactory.getGroup(groupName);
@@ -568,7 +568,7 @@ public class ThresholdController extends AbstractController implements Initializ
         Group group=configFactory.getGroup(groupName);
         String thresholdIndexString=request.getParameter("thresholdIndex");
         if(thresholdIndexString==null) {
-            throw new ServletException("thresholdIndex parameter required to delete a threshold");
+            throw new ServletException("thresholdIndex parameter required to modify or delete a threshold");
         }
         int thresholdIndex=WebSecurityUtils.safeParseInt(thresholdIndexString);
         Threshold threshold=group.getThreshold(thresholdIndex);
@@ -599,7 +599,7 @@ public class ThresholdController extends AbstractController implements Initializ
         
         //and got back to the editGroup page
         modelAndView=new ModelAndView("admin/thresholds/editGroup");
-        modelAndView.addObject("group",configFactory.getGroup(groupName));
+        modelAndView.addObject("group",group);
         return modelAndView;
     }
     
@@ -611,7 +611,7 @@ public class ThresholdController extends AbstractController implements Initializ
         Group group=configFactory.getGroup(groupName);
         String expressionIndexString=request.getParameter("expressionIndex");
         if(expressionIndexString==null) {
-            throw new ServletException("expressionIndex parameter required to delete a threshold");
+            throw new ServletException("expressionIndex parameter required to modify or delete a threshold expression");
         }
         int expressionIndex=WebSecurityUtils.safeParseInt(expressionIndexString);
         Expression expression=group.getExpression(expressionIndex);
