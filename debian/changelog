@@ -46,6 +46,12 @@ opennms (1.9.0-1) unstable; urgency=low
 
  -- Benjamin Reed <ranger@opennms.org>  Tue, 10 Aug 2010 11:42:00 -0500
 
+opennms (1.8.10-1) unstable; urgency=high
+
+  * New upstream release.  Includes a number of important bugfixes.
+
+ -- OpenNMS Release Manager <opennms@opennms.org>  Wed, 16 Feb 2011 14:14:00 -0400
+
 opennms (1.8.9-1) unstable; urgency=high
 
   * New upstream release.  Includes a fix for the database check on startup.
