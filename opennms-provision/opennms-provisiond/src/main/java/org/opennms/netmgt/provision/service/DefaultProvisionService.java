@@ -47,6 +47,7 @@ import java.util.Set;
 
 import org.joda.time.DateTime;
 import org.joda.time.Duration;
+import org.opennms.core.utils.LogUtils;
 import org.opennms.core.utils.ThreadCategory;
 import org.opennms.netmgt.dao.CategoryDao;
 import org.opennms.netmgt.dao.DistPollerDao;
@@ -822,8 +823,19 @@ public class DefaultProvisionService implements ProvisionService {
     
     /** {@inheritDoc} */
     @Transactional
-    public OnmsIpInterface setIsPrimaryFlag(Integer nodeId, String ipAddress) {
-        OnmsIpInterface svcIface = m_ipInterfaceDao.findByNodeIdAndIpAddress(nodeId, ipAddress);
+    public OnmsIpInterface setIsPrimaryFlag(final Integer nodeId, final String ipAddress) {
+        if (nodeId == null) {
+            LogUtils.debugf(this, "nodeId is null!");
+            return null;
+        } else if (ipAddress == null) {
+            LogUtils.debugf(this, "ipAddress is null!");
+            return null;
+        }
+        final OnmsIpInterface svcIface = m_ipInterfaceDao.findByNodeIdAndIpAddress(nodeId, ipAddress);
+        if (svcIface == null) {
+            LogUtils.infof(this, "unable to find IPInterface for nodeId=%s, ipAddress=%s", nodeId, ipAddress);
+            return null;
+        }
         OnmsIpInterface primaryIface = null;
         if (svcIface.isPrimary()) {
             primaryIface = svcIface;
