@@ -54,6 +54,7 @@ import java.util.Properties;
 import java.util.Set;
 
 import org.apache.log4j.Logger;
+import org.opennms.core.utils.LogUtils;
 
 /**
  * Provides queuing implementation of RrdStrategy.
@@ -137,7 +138,7 @@ public class QueuingRrdStrategy implements RrdStrategy<QueuingRrdStrategy.Operat
         this.m_configurationProperties = configurationParameters;
     }
 
-    RrdStrategy m_delegate;
+    RrdStrategy<Object, Object> m_delegate;
 
     static final int UPDATE = 0;
 
@@ -510,16 +511,19 @@ public class QueuingRrdStrategy implements RrdStrategy<QueuingRrdStrategy.Operat
 
         Object process(Object rrd) throws Exception {
             // open the file if we need to
-            if (rrd == null)
-                rrd = m_delegate.openFile(getFileName());
+            if (rrd == null) rrd = m_delegate.openFile(getFileName());
 
-            String update = (String) getData();
+            final String update = (String) getData();
 
             try {
                 // process the update
                 m_delegate.updateFile(rrd, "", update);
-            } catch (Throwable e) {
-                throw new Exception("Error processing update for file " + getFileName() + ": " + update, e);
+            } catch (final Throwable e) {
+                final String error = String.format("Error processing update for file %s: %s", getFileName(), update);
+                if (log().isDebugEnabled()) {
+                    log().debug(error, e);
+                }
+                throw new Exception(error, e);
             }
 
             // keep stats
@@ -938,7 +942,7 @@ public class QueuingRrdStrategy implements RrdStrategy<QueuingRrdStrategy.Operat
      *
      * @param delegate a {@link org.opennms.netmgt.rrd.RrdStrategy} object.
      */
-    public QueuingRrdStrategy(RrdStrategy delegate) {
+    public QueuingRrdStrategy(RrdStrategy<Object, Object> delegate) {
         m_delegate = delegate;
     }
 
@@ -947,7 +951,7 @@ public class QueuingRrdStrategy implements RrdStrategy<QueuingRrdStrategy.Operat
      *
      * @return a {@link org.opennms.netmgt.rrd.RrdStrategy} object.
      */
-    public RrdStrategy getDelegate() {
+    public RrdStrategy<Object, Object> getDelegate() {
         return m_delegate;
     }
 
