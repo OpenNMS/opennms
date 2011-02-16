@@ -52,14 +52,18 @@ public class SupportRtConfigDao extends ReadOnlyRtConfigDao {
     }
     
     public void setUsername(final String username) {
-        getProperties().setProperty("support.username", username);
+        setProperty("support.username", username);
     }
     
     public void setPassword(final String password) {
-        getProperties().setProperty("support.password", password);
+        final String propertyName = "support.password";
+        setProperty(propertyName, password);
     }
 
     public Long getQueueId() {
+        if (getProperties() == null) {
+            return null;
+        }
         try {
             return getProperties().getLong("support.queueId");
         } catch (final ConversionException e) {
@@ -68,19 +72,21 @@ public class SupportRtConfigDao extends ReadOnlyRtConfigDao {
     }
 
     public void setQueueId(final long queueId) {
-        getProperties().setProperty("support.queueId", queueId);
+        setProperty("support.queueId", Long.valueOf(queueId));
     }
 
     public String getBaseURL() {
-        return getProperties().getString(getPrefix() + ".baseURL", "https://mynms.opennms.com");
+        final String baseUrl = getPrefix() + ".baseURL";
+        final String defaultBaseUrl = "https://mynms.opennms.com";
+        return getStringProperty(baseUrl, defaultBaseUrl);
     }
-    
+
     public void setFtpBaseURL(final String url) {
-        getProperties().setProperty("support.ftpBaseURL", url);
+        setProperty("support.ftpBaseURL", url);
     }
 
     public String getFtpBaseURL() {
-        return getProperties().getString("support.ftpBaseURL", "ftp://ftp.opennms.org/incoming");
+        return getStringProperty("support.ftpBaseURL", "ftp://ftp.opennms.org/incoming");
     }
-
+    
 }
