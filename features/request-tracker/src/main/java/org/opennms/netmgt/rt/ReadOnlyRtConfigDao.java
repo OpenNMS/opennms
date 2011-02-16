@@ -111,5 +111,21 @@ public class ReadOnlyRtConfigDao implements RtConfigDao {
     protected void clearCache() {
         m_config = null;
     }
+
+    protected String getStringProperty(final String propertyName, final String defaultValue) {
+        if (getProperties() != null) {
+            return getProperties().getString(propertyName, defaultValue);
+        }
+        LogUtils.warnf(this, "getProperties() is null, returning the default value instead");
+        return defaultValue;
+    }
+
+    protected void setProperty(final String propertyName, final Object propertyValue) {
+        if (getProperties() == null) {
+            LogUtils.warnf(this, "Unable to set the %s property, getProperties() is null!", propertyName);
+            return;
+        }
+        getProperties().setProperty(propertyName, propertyValue);
+    }
 	
 }
