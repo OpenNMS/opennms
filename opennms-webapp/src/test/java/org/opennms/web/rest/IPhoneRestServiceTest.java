@@ -109,7 +109,7 @@ public class IPhoneRestServiceTest extends AbstractSpringJerseyRestTestCase {
 		parameters.clear();
 		parameters.put("orderBy", new String[] {"ifName", "ipAddress", "ifDesc"});
 		xml = sendRequest(GET, "/nodes/1/snmpinterfaces", parameters, 200);
-		assertTrue(xml.contains("Initial ifAlias value"));
+		assertTrue(xml.contains("<ifType>37</ifType><ipAddress>192.168.1.1</ipAddress>"));
 		
 		parameters.clear();
 		parameters.put("limit", "50");
@@ -118,6 +118,14 @@ public class IPhoneRestServiceTest extends AbstractSpringJerseyRestTestCase {
 		assertTrue(xml.contains("totalCount=\"0\""));
 	}
 
+	@Test
+	public void testSnmpInterfacesForNodeId() throws Exception {
+        Map<String, Object> parameters = new HashMap<String, Object>();
+        parameters.put("orderBy", new String[] {"ifName", "ipAddress", "ifDesc"});
+        String xml = sendRequest(GET, "/nodes/1/snmpinterfaces", parameters, 200);
+        assertTrue(xml.contains("<ifType>37</ifType><ipAddress>192.168.1.1</ipAddress>"));
+	}
+	
 	@Test
 	public void testEventsForNodeId() throws Exception {
 		OnmsNode node = new OnmsNode();
