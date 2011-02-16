@@ -33,10 +33,13 @@
 # keep RPM from making an empty debug package
 %define debug_package %{nil}
 # don't do a bunch of weird redhat post-stuff  :)
+%define _use_internal_dependency_generator 0
 %define __os_install_post %{nil}
 %define __find_requires %{nil}
 %define __perl_requires %{nil}
 %global _binaries_in_noarch_packages_terminate_build 0
+AutoReq: no
+AutoProv: no
 
 %define with_tests	0%{nil}
 %define with_docs	1%{nil}
