@@ -60,23 +60,26 @@ public class HostFileSystemStorageStrategyTest {
         // Initialize Mock SNMP Agent
         MockSnmpAgent snmpAgent = MockSnmpAgent.createAgentAndRun(new ClassPathResource("/mock-snmp-agent.properties"), "127.0.0.1/1161");
 
-        // Create Strategy
-        HostFileSystemStorageStrategy strategy = new HostFileSystemStorageStrategy();
-        strategy.setResourceTypeName("hrStorageIndex");
-        strategy.setStorageStrategyService(service);
-        
-        // Test Resource Name - root file system
-        String parentResource = "1";
-        String resourceName = strategy.getResourceNameFromIndex(parentResource, "1");
-        Assert.assertEquals("_root_fs", resourceName);
+        try {
+            // Create Strategy
+            HostFileSystemStorageStrategy strategy = new HostFileSystemStorageStrategy();
+            strategy.setResourceTypeName("hrStorageIndex");
+            strategy.setStorageStrategyService(service);
+            
+            // Test Resource Name - root file system
+            String parentResource = "1";
+            String resourceName = strategy.getResourceNameFromIndex(parentResource, "1");
+            Assert.assertEquals("_root_fs", resourceName);
+    
+            // Test Resource Name - root file system
+            Assert.assertEquals("Volumes-iDisk", strategy.getResourceNameFromIndex(parentResource, "8"));
+    
+            // Test RelativePath
+            Assert.assertEquals("1/hrStorageIndex/_root_fs", strategy.getRelativePathForAttribute(parentResource, resourceName, null));
+        } finally {
+            snmpAgent.shutDownAndWait();
+        }
 
-        // Test Resource Name - root file system
-        Assert.assertEquals("Volumes-iDisk", strategy.getResourceNameFromIndex(parentResource, "8"));
-
-        // Test RelativePath
-        Assert.assertEquals("1/hrStorageIndex/_root_fs", strategy.getRelativePathForAttribute(parentResource, resourceName, null));
-        
-        snmpAgent.shutDownAndWait();
         EasyMock.verify(service);
     }
 }

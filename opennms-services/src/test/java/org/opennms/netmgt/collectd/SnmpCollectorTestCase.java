@@ -131,10 +131,7 @@ public class SnmpCollectorTestCase extends OpenNMSTestCase {
     }
 
     protected void tearDown() throws Exception {
-    	m_mockAgent.shutDown();
-    	while(!m_mockAgent.isStopped()) {
-    		Thread.sleep(10);
-    	}
+        m_mockAgent.shutDownAndWait();
         super.tearDown();
     }
     

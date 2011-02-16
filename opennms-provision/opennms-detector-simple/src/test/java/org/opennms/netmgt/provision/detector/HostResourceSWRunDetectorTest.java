@@ -82,10 +82,8 @@ public class HostResourceSWRunDetectorTest implements ApplicationContextAware {
     }
     
     @After
-    public void tearDown(){
-        if(m_snmpAgent != null && m_snmpAgent.isRunning()){
-            m_snmpAgent.stop();
-        }
+    public void tearDown() throws InterruptedException {
+        m_snmpAgent.shutDownAndWait();
     }
     
     @Test
