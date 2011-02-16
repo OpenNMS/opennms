@@ -316,6 +316,15 @@ public class RequisitionNode {
     }
 
     /**
+     * <p>deleteAsset</p>
+     *
+     * @param asset a {@link org.opennms.netmgt.provision.persist.requisition.RequisitionAsset} object.
+     */
+    public void deleteAsset(RequisitionAsset asset) {
+        m_assets.remove(asset);
+    }
+
+    /**
      * <p>putAsset</p>
      *
      * @param asset a {@link org.opennms.netmgt.provision.persist.requisition.RequisitionAsset} object.
