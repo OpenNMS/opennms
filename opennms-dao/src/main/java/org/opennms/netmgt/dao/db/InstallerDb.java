@@ -446,6 +446,7 @@ public class InstallerDb {
             m_out.print("- checking if iplike is usable... ");
             st = getConnection().createStatement();
             st.execute("SELECT IPLIKE('127.0.0.1', '*.*.*.*')");
+//            st.execute("SELECT IPLIKE('fe80:0000:5ab0:35ff:feee:cecd', 'fe80:*::cecd')");
             m_out.println("YES");
             return true;
         } catch (SQLException selectException) {

@@ -205,6 +205,7 @@ public class Installer {
             m_migration.setChangeLog("changelog.xml");
         }
 
+        checkIPv6();
 
         /*
          * make sure we can load the ICMP library before we go any farther
@@ -295,6 +296,14 @@ public class Installer {
         m_out.println();
         m_out.println("Installer completed successfully!");
     }
+
+	private void checkIPv6() {
+		final IPv6Validator v6Validator = new IPv6Validator();
+        if (!v6Validator.isPlatformIPv6Ready()) {
+        	m_out.println("Your OS does not support IPv6.");
+        	System.exit(1);
+        }
+	}
 
     private void handleConfigurationChanges() {
         File etcDir = new File(m_opennms_home + File.separator + "etc");
