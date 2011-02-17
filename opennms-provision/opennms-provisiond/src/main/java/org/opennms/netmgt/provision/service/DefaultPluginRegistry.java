@@ -49,6 +49,7 @@ import org.opennms.netmgt.provision.SyncServiceDetector;
 import org.opennms.netmgt.provision.persist.foreignsource.PluginConfig;
 import org.springframework.beans.BeanWrapper;
 import org.springframework.beans.BeanWrapperImpl;
+import org.springframework.beans.BeansException;
 import org.springframework.beans.factory.BeanFactoryUtils;
 import org.springframework.beans.factory.InitializingBean;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -98,17 +99,30 @@ public class DefaultPluginRegistry implements PluginRegistry, InitializingBean {
         addAllExtensions(m_snmpInterfacePolicies, SnmpInterfacePolicy.class, OnmsPolicy.class);
     }
     
-    private void debug(String format, Object... args) {
-        ThreadCategory log = ThreadCategory.getInstance(getClass());
+    private static void debug(String format, Object... args) {
+        ThreadCategory log = ThreadCategory.getInstance(DefaultPluginRegistry.class);
         if (log.isDebugEnabled()) {
             log.debug(String.format(format, args));
         }
     }
     
-    private void info(String format, Object... args) {
-        ThreadCategory log = ThreadCategory.getInstance(getClass());
+    private static void info(String format, Object... args) {
+        ThreadCategory log = ThreadCategory.getInstance(DefaultPluginRegistry.class);
         if (log.isInfoEnabled()) {
             log.info(String.format(format, args));
+        }
+    }
+    
+    private static void error(String format, Object... args) {
+        error(null, format, args);
+    }
+    
+    private static void error(Throwable cause, String format, Object... args) {
+        ThreadCategory log = ThreadCategory.getInstance(DefaultPluginRegistry.class);
+        if (cause == null) {
+            log.error(String.format(format, args));
+        } else {
+            log.error(String.format(format, args), cause);
         }
     }
     
@@ -139,7 +153,11 @@ public class DefaultPluginRegistry implements PluginRegistry, InitializingBean {
 
         
         BeanWrapper wrapper = new BeanWrapperImpl(pluginInstance);
-        wrapper.setPropertyValues(parameters);
+        try {
+            wrapper.setPropertyValues(parameters);
+        } catch (BeansException e) {
+            error(e, "Could not set properties on report definition: %s", e.getMessage());
+        }
         
         return pluginInstance;
     }

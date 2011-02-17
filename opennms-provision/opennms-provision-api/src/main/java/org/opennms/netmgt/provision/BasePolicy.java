@@ -1,12 +1,17 @@
 package org.opennms.netmgt.provision;
 
+import java.net.InetAddress;
 import java.util.LinkedHashMap;
 import java.util.Map.Entry;
 
+import org.opennms.core.utils.InetAddressUtils;
 import org.opennms.core.utils.LogUtils;
+import org.opennms.core.utils.ThreadCategory;
 import org.opennms.netmgt.provision.annotations.Require;
 import org.springframework.beans.BeanWrapper;
 import org.springframework.beans.BeanWrapperImpl;
+import org.springframework.beans.BeansException;
+import org.springframework.beans.ConversionNotSupportedException;
 
 
 /**
@@ -186,8 +191,23 @@ public abstract class BasePolicy<T> {
     }
 
 
-    private String getPropertyValueAsString(final BeanWrapper bean, final String propertyName) {
-        return (String) bean.convertIfNecessary(bean.getPropertyValue(propertyName), String.class);
+    private static String getPropertyValueAsString(final BeanWrapper bean, final String propertyName) {
+        Object value = null;
+        try {
+            value = bean.getPropertyValue(propertyName);
+        } catch (BeansException e) {
+            ThreadCategory.getInstance(BasePolicy.class).warn("Could not find property \"" + propertyName + "\" on object of type " + bean.getWrappedClass().getName() + ", returning null", e);
+            return null;
+        }
+        try {
+            return bean.convertIfNecessary(value, String.class);
+        } catch (ConversionNotSupportedException e) {
+            if (value instanceof InetAddress) {
+                return InetAddressUtils.toIpAddrString(((InetAddress) value).getAddress());
+            } else {
+                throw e;
+            }
+        }
     }
 
 
