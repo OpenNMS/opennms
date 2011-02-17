@@ -75,6 +75,7 @@ if (defined $TESTS) {
 	debug("tests are not enabled, passing -Dmaven.test.skip.exec=true");
 	unshift(@ARGS, '-Dmaven.test.skip.exec=true');
 }
+unshift(@ARGS, '-Djava.awt.headless=true');
 
 if (grep { $_ =~ /^-Droot.dir=/ } @ARGS) {
 	debug("root.dir defined");
