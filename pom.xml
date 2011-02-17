@@ -359,7 +359,20 @@
       </plugin>
     </plugins>
   </pluginManagement>
-   <plugins>
+  <plugins>
+     <plugin>
+       <groupId>com.atlassian.bamboo.maven.sharing</groupId>
+       <artifactId>bamboo-artifact-sharing-maven-plugin</artifactId>
+       <version>3.0</version>
+       <executions>
+         <execution>
+           <id>sharing</id>
+           <goals>
+             <goal>share</goal>
+           </goals>
+         </execution>
+       </executions>
+     </plugin>
      <plugin>
        <groupId>org.apache.maven.plugins</groupId>
        <artifactId>maven-eclipse-plugin</artifactId>
