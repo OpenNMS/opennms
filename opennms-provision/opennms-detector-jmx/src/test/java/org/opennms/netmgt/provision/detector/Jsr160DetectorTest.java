@@ -87,7 +87,7 @@ public class Jsr160DetectorTest {
 
         assertNotNull(m_detector);
         
-        JMXServiceURL url = new JMXServiceURL("service:jmx:rmi:///jndi/rmi://localhost:9999/server");
+        JMXServiceURL url = new JMXServiceURL("service:jmx:rmi:///jndi/rmi://localhost:9123/server");
         
         m_connectorServer = JMXConnectorServerFactory.newJMXConnectorServer(url, null, m_beanServer);
         m_connectorServer.start();
@@ -101,7 +101,7 @@ public class Jsr160DetectorTest {
     @Test
     public void testDetectorSuccess() throws IOException, MalformedObjectNameException, NullPointerException, InstanceAlreadyExistsException, MBeanRegistrationException, NotCompliantMBeanException {
         
-        m_detector.setPort(9999);
+        m_detector.setPort(9123);
         m_detector.setUrlPath("/server");
         m_detector.onInit();
 
