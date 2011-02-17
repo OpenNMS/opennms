@@ -37,9 +37,11 @@ package org.opennms.netmgt.model;
 
 import java.util.Date;
 
+import org.opennms.core.utils.ThreadCategory;
 import org.opennms.netmgt.model.OnmsArpInterface.StatusType;
 import org.springframework.beans.BeanWrapper;
 import org.springframework.beans.BeanWrapperImpl;
+import org.springframework.beans.BeansException;
 
 /**
  * <p>NetworkBuilder class.</p>
@@ -354,7 +356,11 @@ public class NetworkBuilder {
      * @param value a {@link java.lang.String} object.
      */
     public void setAssetAttribute(String name, String value) {
-        m_assetBean.setPropertyValue(name, value);
+        try {
+            m_assetBean.setPropertyValue(name, value);
+        } catch (BeansException e) {
+            ThreadCategory.getInstance(this.getClass()).warn("Could not set property on asset: " + name, e);
+        }
     }
 
 }
