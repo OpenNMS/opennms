@@ -34,6 +34,7 @@ package org.opennms.netmgt.model.events;
 import java.util.Collection;
 import java.util.Date;
 
+import org.opennms.core.utils.ThreadCategory;
 import org.opennms.netmgt.EventConstants;
 import org.opennms.netmgt.model.OnmsIpInterface;
 import org.opennms.netmgt.model.OnmsMonitoredService;
@@ -48,6 +49,7 @@ import org.opennms.netmgt.xml.event.Snmp;
 import org.opennms.netmgt.xml.event.Value;
 import org.springframework.beans.BeanWrapper;
 import org.springframework.beans.BeanWrapperImpl;
+import org.springframework.beans.BeansException;
 import org.springframework.util.StringUtils;
 
 /**
@@ -447,7 +449,11 @@ public class EventBuilder {
      */
     public void setField(String name, String val) {
         BeanWrapper w = new BeanWrapperImpl(m_event);
-        w.setPropertyValue(name, val);
+        try {
+            w.setPropertyValue(name, val);
+        } catch (BeansException e) {
+            ThreadCategory.getInstance(this.getClass()).warn("Could not set field on event: " + name, e);
+        }
     }
     
     private void ensureLogmsg() {

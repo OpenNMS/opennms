@@ -59,6 +59,7 @@ import org.opennms.netmgt.model.OnmsIpInterface.PrimaryType;
 import org.opennms.netmgt.xml.event.Event;
 import org.springframework.beans.BeanWrapper;
 import org.springframework.beans.BeanWrapperImpl;
+import org.springframework.beans.BeansException;
 
 /**
  * <p>Abstract AbstractSaveOrUpdateOperation class.</p>
@@ -339,7 +340,11 @@ public abstract class AbstractSaveOrUpdateOperation extends AbstractImportOperat
     /** {@inheritDoc} */
     public void foundAsset(String name, String value) {
         BeanWrapper w = new BeanWrapperImpl(m_node.getAssetRecord());
-        w.setPropertyValue(name, value);
+        try {
+            w.setPropertyValue(name, value);
+        } catch (BeansException e) {
+            ThreadCategory.getInstance(this.getClass()).warn("Could not set property on asset: " + name, e);
+        }
     }
     
     private OnmsServiceType getServiceType(String serviceName) {

@@ -1270,6 +1270,7 @@ public class OnmsAssetRecord implements Serializable {
                 continue;
             }
             
+            // This should never fail since both of these objects are of the same type
             if (newBean.getPropertyValue(propertyName) != null) {
                 currentBean.setPropertyValue(propertyName, newBean.getPropertyValue(propertyName));
             }
