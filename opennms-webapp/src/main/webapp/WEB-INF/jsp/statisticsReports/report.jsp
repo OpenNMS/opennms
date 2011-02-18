@@ -93,7 +93,7 @@
 
 			<ec:exportPdf fileName="${model.report.description} (${model.report.startDate} - ${model.report.endDate}.pdf" tooltip="Export PDF"
 				headerColor="black" headerBackgroundColor="#b6c2da"
-				headerTitle="${model.report.description}, for period ${model.report.startDate} - ${model.report.endDate}" />
+				headerTitle="${model.report.description}, for period ${model.report.startDate} - ${model.report.endDate}" viewResolver="org.opennms.web.extremecomponent.view.resolver.OnmsPdfViewResolver"/>
 			<ec:exportXls fileName="${model.report.description} (${model.report.startDate} - ${model.report.endDate}.xls" tooltip="Export Excel" />
 
       
