@@ -47,8 +47,6 @@ import org.opennms.netmgt.config.common.Range;
  * @author <a href="mailto:david@opennms.org">David Hustace</a>
  */
 public class RangeComparator implements Comparator {
-    Category log = ThreadCategory.getInstance(getClass());
-
     public int compare(Object rng1, Object rng2) {
         long compared = 0;
         try {
@@ -56,7 +54,7 @@ public class RangeComparator implements Comparator {
             final long range2Begin = SnmpPeerFactory.toLong(InetAddress.getByName(((Range)rng2).getBegin()));
             compared = range1Begin - range2Begin;
         } catch (UnknownHostException e) {
-            log.error("compare: Exception sorting ranges.", e);
+            ThreadCategory.getInstance(getClass()).error("compare: Exception sorting ranges.", e);
             throw new IllegalArgumentException(e.getLocalizedMessage());
         }
         return (int)compared;

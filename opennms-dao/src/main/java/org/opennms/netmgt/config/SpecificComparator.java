@@ -48,7 +48,6 @@ import org.opennms.core.utils.ThreadCategory;
  *
  */
 public class SpecificComparator implements Comparator {
-    Category log = ThreadCategory.getInstance(getClass());
 
     /**
      * returns the difference of spec1 - spec2
@@ -60,7 +59,7 @@ public class SpecificComparator implements Comparator {
             final long specific2 = SnmpPeerFactory.toLong(InetAddress.getByName(((String)spec2)));
             compared = specific1 - specific2;
         } catch (UnknownHostException e) {
-            log.error("compare: Exception sorting ranges.", e);
+            ThreadCategory.getInstance(getClass()).error("compare: Exception sorting ranges.", e);
             throw new IllegalArgumentException(e.getLocalizedMessage());
         }
         return (int)compared;
