@@ -84,6 +84,18 @@ if (grep { $_ =~ /^-Droot.dir=/ } @ARGS) {
 	unshift(@ARGS, '-Droot.dir=' . $PREFIX);
 }
 
+if (-r $ENV{'HOME'} . "/.opennms-buildrc") {
+	if (open(FILEIN, $ENV{'HOME'} . "/.opennms-buildrc")) {
+		while (my $line = <FILEIN>) {
+			chomp($line);
+			if ($line !~ /^\s*$/ && $line !~ /^\s*\#/) {
+				unshift(@ARGS, $line);
+			}
+		}
+		close(FILEIN);
+	}
+}
+
 $ENV{'MAVEN_OPTS'} = $MAVEN_OPTS;
 info("MAVEN_OPTS = $MAVEN_OPTS"); 
 
