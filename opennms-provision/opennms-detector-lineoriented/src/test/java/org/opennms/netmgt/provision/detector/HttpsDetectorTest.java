@@ -79,6 +79,11 @@ public class HttpsDetectorTest implements ApplicationContextAware{
        if(m_server != null) {
            m_server.stopServer();
            m_server = null;
+           try {
+            Thread.sleep(100);
+        } catch (final InterruptedException e) {
+            Thread.currentThread().interrupt();
+        }
        }
     }
     
