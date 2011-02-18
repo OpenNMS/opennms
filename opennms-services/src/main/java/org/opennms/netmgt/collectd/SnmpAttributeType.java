@@ -242,7 +242,7 @@ public abstract class SnmpAttributeType implements AttributeDefinition,Collectio
      * @param res a {@link org.opennms.netmgt.snmp.SnmpResult} object.
      */
     public void storeResult(SnmpCollectionSet collectionSet, SNMPCollectorEntry entry, SnmpResult res) {
-        log().info("Setting attribute: "+this+".["+res.getInstance()+"] = '"+res.getValue()+"'");
+        log().debug("Setting attribute: "+this+".["+res.getInstance()+"] = '"+res.getValue()+"'");
         SnmpCollectionResource resource = null;
         if(this.getAlias().equals("ifAlias")) {
             resource = m_resourceType.findAliasedResource(res.getInstance(), res.getValue().toString());
