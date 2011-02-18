@@ -25,6 +25,7 @@ package org.opennms.reporting.jasperreports.svclayer;
 import java.io.OutputStream;
 import java.sql.Connection;
 import java.sql.SQLException;
+import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.Date;
@@ -373,7 +374,7 @@ public class JasperReportService implements ReportService {
                                               jasperReport.getParameters());
 
             outputFileName = new String(baseDir + "/"
-                    + jasperReport.getName() + ".jrprint");
+                    + jasperReport.getName() + new SimpleDateFormat("-MMddyyyy-HHmm").format(new Date()) + ".jrprint");
             log.debug("jrpcml output file: " + outputFileName);
             if (m_jasperReportConfigDao.getEngine(reportId).equals("jdbc")) {
                 Connection connection;
