@@ -136,7 +136,7 @@
     <extension>
       <groupId>org.apache.maven.wagon</groupId>
       <artifactId>wagon-ssh-external</artifactId>
-      <version>1.0-rc1-20080601</version>
+      <version>1.0-rc1-20080601-onms1</version>
     </extension>
   </extensions>
   <pluginManagement>
