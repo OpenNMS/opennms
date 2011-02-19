@@ -136,7 +136,7 @@
     <extension>
       <groupId>org.apache.maven.wagon</groupId>
       <artifactId>wagon-ssh-external</artifactId>
-      <version>1.0-rc1-SNAPSHOT</version>
+      <version>1.0-rc1-20080601</version>
     </extension>
   </extensions>
   <pluginManagement>
@@ -2066,12 +2066,6 @@
     </repository>
   </repositories>
   <pluginRepositories>
-    <pluginRepository>
-      <snapshots><enabled>true</enabled><updatePolicy>${updatePolicy}</updatePolicy></snapshots>
-      <releases><enabled>false</enabled><updatePolicy>${updatePolicy}</updatePolicy></releases>
-      <id>apache.snapshots</id>
-      <url>http://repository.apache.org/snapshots</url>
-    </pluginRepository>
     <pluginRepository>
       <snapshots><enabled>false</enabled><updatePolicy>${updatePolicy}</updatePolicy></snapshots>
       <releases><enabled>true</enabled><updatePolicy>${updatePolicy}</updatePolicy></releases>
