@@ -96,13 +96,18 @@ public class JRobinConverter {
         
         try {
             int count = 1;
-            for (final File groupRrd : scanFiles) {
-                System.out.println(new Date() + ": processing " + groupRrd + " (" + count + "/" + scanFiles.size() + ")");
-                final File temporaryRrd = createTempRrd(groupRrd);
+            for (final File rrdFile : scanFiles) {
+                System.out.println(new Date() + ": processing " + rrdFile + " (" + count + "/" + scanFiles.size() + ")");
+                final List<String> dsNames = JRobinConverter.getDsNames(rrdFile);
+                if (dsNames.size() == 1) {
+                    System.err.println(new Date() + ": warning, " + rrdFile + " only has one dsName, skipping");
+                    continue;
+                }
+                final File temporaryRrd = createTempRrd(rrdFile);
                 
-                JRobinConverter.consolidateRrdFile(groupRrd, temporaryRrd);
-                if (!moveFileSafely(temporaryRrd, groupRrd)) {
-                    System.err.println(new Date() + ": - unable to move " + temporaryRrd + " to " + groupRrd);
+                JRobinConverter.consolidateRrdFile(rrdFile, temporaryRrd);
+                if (!moveFileSafely(temporaryRrd, rrdFile)) {
+                    System.err.println(new Date() + ": - unable to move " + temporaryRrd + " to " + rrdFile);
                     System.exit(1);
                 }
             }
