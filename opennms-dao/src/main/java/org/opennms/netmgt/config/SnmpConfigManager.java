@@ -34,6 +34,10 @@
 
 package org.opennms.netmgt.config;
 
+import java.util.ArrayList;
+import java.util.Iterator;
+import java.util.List;
+
 import org.opennms.netmgt.config.snmp.Definition;
 import org.opennms.netmgt.config.snmp.SnmpConfig;
 
@@ -45,14 +49,46 @@ import org.opennms.netmgt.config.snmp.SnmpConfig;
 public class SnmpConfigManager {
 
     private SnmpConfig m_config;
+    private List<MergeableDefinition> m_definitions = new ArrayList<MergeableDefinition>();
+    
     
     public SnmpConfigManager(SnmpConfig config) {
         m_config = config;
+        for(Definition def : m_config.getDefinitionCollection()) {
+            m_definitions.add(new MergeableDefinition(def));
+        }
     }
 
     public SnmpConfig getConfig() {
         return m_config;
     }
+    
+    private List<MergeableDefinition> getDefinitions() {
+//        List<MergeableDefinition> definitions = new ArrayList<MergeableDefinition>();
+//        for(Definition def : m_config.getDefinitionCollection()) {
+//            definitions.add(new MergeableDefinition(def));
+//        }
+//        return definitions;
+        return m_definitions;
+        
+    }
+    
+    private void addDefinition(MergeableDefinition def) {
+        m_definitions.add(def);
+        getConfig().addDefinition(def.getConfigDef());
+    }
+
+    private void removeEmptyDefinitions() {
+        for(Iterator<MergeableDefinition> iter = getDefinitions().iterator(); iter.hasNext();) {
+            MergeableDefinition def = iter.next();
+            if (def.isEmpty()) {
+                getConfig().removeDefinition(def.getConfigDef());
+                iter.remove();
+            }
+        }
+    }
+
+
     
     /**
      * This is the exposed method for moving the data from a configureSNMP event
@@ -62,17 +98,27 @@ public class SnmpConfigManager {
      */
     public void mergeIntoConfig(final Definition eventDef)  {
         
+        MergeableDefinition eventDefinition = new MergeableDefinition(eventDef);
+        
         synchronized (m_config) {
-            MergeableDefinition matchingDef = findDefMatchingAttributes(eventDef);
-            if (matchingDef != null) {
-                matchingDef.mergeMatchingAttributeDef(eventDef);
+            // remove pass
+            purgeRangesFromDefinitions(eventDefinition);
+            
+            // add pass
+            MergeableDefinition matchingDef = findMatchingDefinition(eventDefinition);
+            if (matchingDef == null) {
+                addDefinition(eventDefinition);
             } else {
-                matchingDef = new MergeableDefinition(eventDef);
-                getConfig().addDefinition(matchingDef.getConfigDef());
+                matchingDef.mergeMatchingAttributeDef(eventDefinition);
             }
-            purgeOtherDefs(matchingDef, eventDef);
-            optimizeAllDefs();
+            
+            // optimize but.. we should stop needing this
+            //optimizeAllDefs();
         }        
+    }
+
+    private void purgeRangesFromDefinitions(MergeableDefinition eventDefinition) {
+        purgeOtherDefs(null, eventDefinition);
     }
     
     
@@ -83,22 +129,22 @@ public class SnmpConfigManager {
      * @param eventDef
      * @return
      */
-    protected MergeableDefinition findDefMatchingAttributes(final Definition eventDef) {
+    MergeableDefinition findDefMatchingAttributes(final Definition eventDef) {
         
-        synchronized (m_config) {
-            MergeableDefinition matchingDef = null;
-            for (Definition def : getConfig().getDefinitionCollection()) {
-                MergeableDefinition definition = new MergeableDefinition(def);
-
-                if (definition.equals(eventDef)) {
-                    matchingDef = new MergeableDefinition(def);
-                    break;
-                }
-            }
-            return matchingDef;
-        }        
+        MergeableDefinition newDef = new MergeableDefinition(eventDef);
+        return findMatchingDefinition(newDef);
     }
-    
+
+    private MergeableDefinition findMatchingDefinition(MergeableDefinition def) {
+
+        for(MergeableDefinition d : getDefinitions()) {
+            if (d.matches(def)) {
+                return d;
+            }
+        }
+        return null;
+    }
+
     /**
      * This method purges specifics and ranges from definitions that don't
      * match the attributes specified in the event (the updateDef)
@@ -106,31 +152,24 @@ public class SnmpConfigManager {
      * @param updatedDef
      * @param eventDef
      */
-    private void purgeOtherDefs(final MergeableDefinition updatedDef, final Definition eventDef) {
+    private void purgeOtherDefs(final MergeableDefinition updatedDef, MergeableDefinition eventDefinition) {
         
-        synchronized (m_config) {
-            MergeableDefinition eventDefinition = new MergeableDefinition(eventDef);
-            Definition[] defs = getConfig().getDefinition();
-            for (int i = 0; i < defs.length; i++) {
-                MergeableDefinition def = new MergeableDefinition(defs[i]);
+        for(MergeableDefinition def : getDefinitions()) {
 
-                //don't mess with current updated def
-                if (def.getConfigDef() == updatedDef.getConfigDef()) continue;
+            //don't mess with current updated def
+            if (updatedDef != null && def.getConfigDef() == updatedDef.getConfigDef()) continue;
 
-                if (eventDefinition.isSpecific()) {
-                    def.purgeSpecificFromDef(eventDefinition.getConfigDef().getSpecific(0));
-                } else {
-                    def.purgeRangeFromDef(eventDefinition.getConfigDef().getRange(0));
-                }
-                
-                //remove empty defintion
-                if (def.getConfigDef().getRangeCount() < 1 && def.getConfigDef().getSpecificCount() < 1) {
-                    getConfig().removeDefinition(def.getConfigDef());
-                }
-            }
+            def.removeRanges(eventDefinition);
+
         }
+        
+        removeEmptyDefinitions();
+        
+        
     }
-    
+
+
+
     /**
      * Optimize all definitions in the current configuration.
      *

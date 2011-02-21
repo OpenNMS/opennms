@@ -51,6 +51,9 @@ import java.net.InetAddress;
 import java.net.UnknownHostException;
 import java.util.ArrayList;
 import java.util.Iterator;
+import java.util.concurrent.locks.Lock;
+import java.util.concurrent.locks.ReadWriteLock;
+import java.util.concurrent.locks.ReentrantReadWriteLock;
 
 import org.apache.log4j.Category;
 import org.exolab.castor.xml.MarshalException;
@@ -93,6 +96,7 @@ public final class SnmpPeerFactory extends PeerFactory {
      * The config class loaded from the config file
      */
     private static SnmpConfig m_config;
+    private static ReadWriteLock m_readWriteLock = new ReentrantReadWriteLock();
 
     /**
      * This member is set to true if the configuration file has been loaded.
@@ -121,6 +125,14 @@ public final class SnmpPeerFactory extends PeerFactory {
     
     public SnmpPeerFactory(Reader rdr) throws IOException, MarshalException, ValidationException {
         m_config = (SnmpConfig) Unmarshaller.unmarshal(SnmpConfig.class, rdr);
+    }
+    
+    public static Lock getReadLock() {
+        return m_readWriteLock.readLock();
+    }
+    
+    public static Lock getWriteLock() {
+        return m_readWriteLock.writeLock();
     }
     
     /**
@@ -326,11 +338,16 @@ public final class SnmpPeerFactory extends PeerFactory {
         m_config.setDefinition(definitions);
     }
     
-    public synchronized SnmpAgentConfig getAgentConfig(InetAddress agentAddress) {
-        return getAgentConfig(agentAddress, VERSION_UNSPECIFIED);
+    public SnmpAgentConfig getAgentConfig(InetAddress agentAddress) {
+        getReadLock().lock();
+        try {
+            return getAgentConfig(agentAddress, VERSION_UNSPECIFIED);
+        } finally {
+            getReadLock().unlock();
+        }
     }
     
-    private synchronized SnmpAgentConfig getAgentConfig(InetAddress agentInetAddress, int requestedSnmpVersion) {
+    private SnmpAgentConfig getAgentConfig(InetAddress agentInetAddress, int requestedSnmpVersion) {
 
         if (m_config == null) {
             SnmpAgentConfig agentConfig = new SnmpAgentConfig(agentInetAddress);
@@ -675,11 +692,6 @@ public final class SnmpPeerFactory extends PeerFactory {
         return m_config;
     }
 
-    @SuppressWarnings("unused")
-    private static synchronized void setSnmpConfig(SnmpConfig m_config) {
-        SnmpPeerFactory.m_config = m_config;
-    }
-
     /**
      * display an IP as a dotted quad xxx.xxx.xxx.xxx
      */
@@ -703,9 +715,14 @@ public final class SnmpPeerFactory extends PeerFactory {
      * Puts a specific IP address with associated read-community string into
      * the currently loaded snmp-config.xml.
      */
-    public synchronized void define(SnmpEventInfo info) throws UnknownHostException {
-        SnmpConfigManager mgr = new SnmpConfigManager(getSnmpConfig());
-        mgr.mergeIntoConfig(info.createDef());
+    public void define(SnmpEventInfo info) throws UnknownHostException {
+        getWriteLock().lock();
+        try {
+            SnmpConfigManager mgr = new SnmpConfigManager(m_config);
+            mgr.mergeIntoConfig(info.createDef());
+        } finally {
+            getWriteLock().unlock();
+        }
     }
 
 
@@ -714,13 +731,18 @@ public final class SnmpPeerFactory extends PeerFactory {
      * 
      * @return Marshalled SnmpConfig 
      */
-    public static synchronized String marshallConfig() {
+    public static String marshallConfig() {
         String marshalledConfig = null;
         
         StringWriter writer = null;
         try {
             writer = new StringWriter();
-            Marshaller.marshal(m_config, writer);
+            getReadLock().lock();
+            try {
+                Marshaller.marshal(m_config, writer);
+            } finally {
+                getReadLock().unlock();
+            }
             marshalledConfig = writer.toString();
         } catch (MarshalException e) {
             log().error("marshallConfig: Error marshalling configuration", e);
