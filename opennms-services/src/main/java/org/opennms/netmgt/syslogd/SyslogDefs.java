@@ -1,7 +1,7 @@
 //
 // This file is part of the OpenNMS(R) Application.
 //
-// OpenNMS(R) is Copyright (C) 2006 The OpenNMS Group, Inc. All rights
+// OpenNMS(R) is Copyright (C) 2006-2011 The OpenNMS Group, Inc. All rights
 // reserved.
 // OpenNMS(R) is a derivative work, containing both original code, included
 // code and modified
@@ -11,8 +11,8 @@
 //
 // OpenNMS(R) is a registered trademark of The OpenNMS Group, Inc.
 //
-// Original code base Copyright (C) 1999-2001 Oculan Corp. All rights
-// reserved.
+// Modifications:
+// 2011 Feb 21: Add support for facilities 10-15 per RFC3164. - jeffg@opennms.org
 //
 // This program is free software; you can redistribute it and/or modify
 // it under the terms of the GNU General Public License as published by
@@ -126,9 +126,29 @@ public class SyslogDefs {
 
     /** Constant <code>LOG_CRON=9</code> */
     public static final int LOG_CRON = 9; /* clock daemon */
-
-    /* other codes through 15 reserved for system use */
-
+    
+    /**********************************************
+     * RFC3164 codifies facilities 10-15 as follows
+     **********************************************/
+    
+    /** Constant <code>LOG_AUTHPRIV</code> */
+    public static final int FACILITY_AUTHPRIV = 10; /* security / authorization (private) */
+    
+    /** Constant <code>LOG_FTP</code> */
+    public static final int FACILITY_FTP = 11; /* FTP daemon */
+    
+    /** Constant <code>LOG_NTP</code> */
+    public static final int FACILITY_NTP = 12; /* NTP subsystem */
+    
+    /** Constant <code>LOG_AUDIT</code> */
+    public static final int FACILITY_AUDIT = 13;
+    
+    /** Constant <code>LOG_ALERT</code> */
+    public static final int FACILITY_ALERT = 14;
+    
+    /** Constant <code>FACILITY_CLOCK</code> */
+    public static final int FACILITY_CLOCK = 15;
+    
     /** Constant <code>LOG_LOCAL0=16</code> */
     public static final int LOG_LOCAL0 = 16; /* reserved for local use */
 
@@ -372,7 +392,18 @@ public class SyslogDefs {
                 return "uucp";
             case SyslogDefs.LOG_CRON:
                 return "cron";
-
+            case SyslogDefs.FACILITY_AUTHPRIV:
+            	return "authpriv";
+            case SyslogDefs.FACILITY_FTP:
+            	return "ftp";
+            case SyslogDefs.FACILITY_NTP:
+            	return "ntp";
+            case SyslogDefs.FACILITY_AUDIT:
+            	return "audit";
+            case SyslogDefs.FACILITY_ALERT:
+            	return "alert";
+            case SyslogDefs.FACILITY_CLOCK:
+            	return "clock";
             case SyslogDefs.LOG_LOCAL0:
                 return "local0";
             case SyslogDefs.LOG_LOCAL1:
