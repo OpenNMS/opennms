@@ -100,7 +100,7 @@ public class JRobinConverter {
                 System.out.println(new Date() + ": processing " + rrdFile + " (" + count + "/" + scanFiles.size() + ")");
                 final List<String> dsNames = JRobinConverter.getDsNames(rrdFile);
                 if (dsNames.size() == 1) {
-                    System.err.println(new Date() + ": warning, " + rrdFile + " only has one dsName, skipping");
+                    System.err.println(new Date() + ": - " + rrdFile + " only has one dsName, skipping");
                     continue;
                 }
                 final File temporaryRrd = createTempRrd(rrdFile);
@@ -110,6 +110,7 @@ public class JRobinConverter {
                     System.err.println(new Date() + ": - unable to move " + temporaryRrd + " to " + rrdFile);
                     System.exit(1);
                 }
+                count++;
             }
         } catch (final Exception e) {
             System.err.println(new Date() + ": error while converting RRDs");
