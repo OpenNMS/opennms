@@ -24,7 +24,7 @@
         <configuration>
           <archive>
             <manifest>
-              <mainClass>org.opennms.tools.rrd.RrdConverter</mainClass>
+              <mainClass>org.opennms.tools.rrd.converter.JRobinConverter</mainClass>
             </manifest>
           </archive>
           <descriptorRefs>
@@ -38,6 +38,15 @@
     </plugins>
   </build>
   <dependencies>
+    <dependency>
+      <groupId>commons-collections</groupId>
+      <artifactId>commons-collections</artifactId>
+    </dependency>
+    <dependency>
+      <groupId>org.jrobin</groupId>
+      <artifactId>jrobin</artifactId>
+      <version>1.5.11-SNAPSHOT</version>
+    </dependency>
     <dependency>
       <groupId>org.opennms</groupId>
       <artifactId>opennms-rrd-api</artifactId>
@@ -54,6 +63,12 @@
       <groupId>org.opennms</groupId>
       <artifactId>opennms-rrdtool-api</artifactId>
       <scope>compile</scope>
+      <version>${project.version}</version>
+    </dependency>
+    <dependency>
+      <groupId>org.opennms</groupId>
+      <artifactId>opennms-test</artifactId>
+      <scope>test</scope>
       <version>${project.version}</version>
     </dependency>
   </dependencies>
