@@ -14,14 +14,19 @@ import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 import java.util.Properties;
+import java.util.Set;
 import java.util.TreeMap;
 
+import org.apache.commons.cli.CommandLine;
+import org.apache.commons.cli.CommandLineParser;
+import org.apache.commons.cli.GnuParser;
+import org.apache.commons.cli.HelpFormatter;
+import org.apache.commons.cli.Options;
+import org.apache.commons.cli.ParseException;
 import org.apache.log4j.PropertyConfigurator;
 import org.jrobin.core.ArcDef;
 import org.jrobin.core.Archive;
-import org.jrobin.core.Datasource;
 import org.jrobin.core.FetchData;
-import org.jrobin.core.FetchRequest;
 import org.jrobin.core.RrdDb;
 import org.jrobin.core.RrdDef;
 import org.jrobin.core.RrdException;
@@ -50,41 +55,70 @@ public class JRobinConverter {
 
     /**
      * @param args
+     * @throws ParseException 
+     * @throws ConverterException 
      */
-    public static void main(final String... args) {
+    public static void main(final String... args) throws ParseException, ConverterException {
         setupLogging();
         if (args.length == 0) {
-            System.err.println("no directory specified!");
+            System.err.println(new Date() + ": no directory specified!");
             System.exit(1);
         }
-        final File topDirectory = new File(args[0]);
+
+        final List<File> scanFiles = new ArrayList<File>();
+        
+        final Options options = new Options();
+        options.addOption("h", "help", false, "This help.");
+        options.addOption("s", "scan", true, "Scan a directory for storeByGroup RRDs.");
+        
+        final CommandLineParser parser = new GnuParser();
+        final CommandLine cmd = parser.parse(options, args);
+
+        if (cmd.hasOption("h")) {
+            new HelpFormatter().printHelp("jrobin-converter", options);
+            System.exit(1);
+        }
+        if (cmd.hasOption("s")) {
+            scanFiles.addAll(findGroupRrds(new File(cmd.getOptionValue("s"))));
+        } else {
+            for (final Object arg : cmd.getArgList()) {
+                final File f = new File((String)arg);
+                if (f.exists()) {
+                    scanFiles.add(f);
+                }
+            }
+        }
+
+        if (scanFiles.size() == 0) {
+            System.err.println(new Date() + ": error, no storeByGroup RRDs found!");
+            System.exit(1);
+        }
         
         try {
-            final List<File> groupRrds = findGroupRrds(topDirectory);
-
-            for (final File groupRrd : groupRrds) {
-                System.out.println("- processing " + groupRrd);
+            int count = 1;
+            for (final File groupRrd : scanFiles) {
+                System.out.println(new Date() + ": processing " + groupRrd + " (" + count + "/" + scanFiles.size() + ")");
                 final File temporaryRrd = createTempRrd(groupRrd);
                 
                 JRobinConverter.consolidateRrdFile(groupRrd, temporaryRrd);
                 if (!moveFileSafely(temporaryRrd, groupRrd)) {
-                    System.err.println("  - unable to move " + temporaryRrd + " to " + groupRrd);
+                    System.err.println(new Date() + ": - unable to move " + temporaryRrd + " to " + groupRrd);
                     System.exit(1);
                 }
             }
         } catch (final Exception e) {
-            System.err.println("error while converting RRDs");
+            System.err.println(new Date() + ": error while converting RRDs");
             e.printStackTrace();
         }
     }
 
-    public static List<File> getMatchingGroupRrds(final File rrdDir, final File rrdGroupFile) throws ConverterException {
-        if (rrdDir == null || rrdGroupFile == null) return Collections.emptyList();
+    public static List<File> getMatchingGroupRrds(final File rrdGroupFile) throws ConverterException {
+        if (rrdGroupFile == null) return Collections.emptyList();
 
         final List<String> dsNames = getDsNames(rrdGroupFile);
         final List<File> files = new ArrayList<File>();
         
-        for (final File f : rrdDir.listFiles()) {
+        for (final File f : rrdGroupFile.getAbsoluteFile().getParentFile().listFiles()) {
             for (final String dsName : dsNames) {
                 if (f.getName().equals(dsName + ".rrd") || f.getName().equals(dsName + ".jrb")) {
                     files.add(f);
@@ -97,7 +131,7 @@ public class JRobinConverter {
 
     public static List<String> getDsNames(final File rrdFile) throws ConverterException {
         try {
-            final RrdDb db = new RrdDb(rrdFile.getPath());
+            final RrdDb db = new RrdDb(rrdFile.getAbsolutePath(), true);
             return Arrays.asList(db.getDsNames());
         } catch (final Exception e) {
             LogUtils.debugf(JRobinConverter.class, e, "error reading file %s", rrdFile);
@@ -108,7 +142,7 @@ public class JRobinConverter {
     public static List<String> getRras(final File rrdFile) throws ConverterException {
         try {
             final List<String> rras = new ArrayList<String>();
-            final RrdDb db = new RrdDb(rrdFile.getPath());
+            final RrdDb db = new RrdDb(rrdFile.getAbsolutePath(), true);
             for (final ArcDef def : db.getRrdDef().getArcDefs()) {
                 rras.add(def.dump());
             }
@@ -119,46 +153,53 @@ public class JRobinConverter {
         }
     }
 
-    public static void consolidateRrdFile(final File groupFile, final File outputFile) throws IOException, RrdException, ConverterException, Exception {
-        final File rrdDir = groupFile.getParentFile();
-        final RrdDb groupRrd = new RrdDb(groupFile.getAbsolutePath());
+
+    public static Map<String, Integer> getDsIndexes(final RrdDb rrd) throws RrdException, IOException {
+        final Map<String,Integer> indexes = new HashMap<String,Integer>();
+        for (final String dsName : rrd.getDsNames()) {
+            indexes.put(dsName, rrd.getDsIndex(dsName));
+        }
+        return indexes;
+    }
+
+    public static void consolidateRrdFile(final File groupFile, final File outputFile) throws IOException, RrdException, ConverterException {
+        final RrdDb groupRrd = new RrdDb(groupFile, true);
 
         final Map<Long,Map<String,Double>> sampleMap = new TreeMap<Long,Map<String,Double>>();
-        final Map<Long,Double[]> sampleData = new TreeMap<Long,Double[]>();
-        final List<File> individualRrds = JRobinConverter.getMatchingGroupRrds(rrdDir, groupFile);
+        final List<File> individualRrds = JRobinConverter.getMatchingGroupRrds(groupFile);
+        LogUtils.debugf(JRobinConverter.class, "individual RRDs = %s", individualRrds);
 
-        final RrdDb outputRrd = new RrdDb(outputFile.getAbsolutePath());
+        final RrdDb outputRrd = new RrdDb(outputFile);
         final List<String> dsn = JRobinConverter.getDsNames(outputFile);
         LogUtils.debugf(JRobinConverter.class, "output DSNames = %s", dsn);
-        final Map<String,Integer> dsIndexes = new HashMap<String,Integer>();
-        for (final String dsName : dsn) {
-            dsIndexes.put(dsName, outputRrd.getDsIndex(dsName));
-        }
 
-        for (final File f : individualRrds) {
-            RrdDb inputRrd = new RrdDb(f.getAbsolutePath());
-            final List<String> dsNames = JRobinConverter.getDsNames(f);
+        final long endTime = groupRrd.getLastArchiveUpdateTime();
+        // 1 year
+        final long startTime = endTime - (60L * 60L * 24L * 365L);
+        for (final File individualRrdFile : individualRrds) {
+            final RrdDb inputRrd = new RrdDb(individualRrdFile, true);
+            final List<String> dsNames = JRobinConverter.getDsNames(individualRrdFile);
             LogUtils.debugf(JRobinConverter.class, "input DSNames = %s", dsNames);
+            if (dsNames.size() > 1) {
+                LogUtils.warnf(JRobinConverter.class, "%s: more than one dsname found!", individualRrdFile);
+            }
             final String dsName = dsNames.get(0);
+            final String dsType = groupRrd.getDatasource(dsName).getDsType();
 
-            final int groupDsCount = groupRrd.getDsCount();
-            final int groupDsIndex = groupRrd.getDsIndex(dsName);
-            final Datasource ds = groupRrd.getDatasource(dsName);
-            final String dsType = ds.getDsType();
-
-            collectSampleData(inputRrd, sampleData, groupDsCount, groupDsIndex, 300, dsName, sampleMap, dsType);
+            collectSampleData(inputRrd, 300, dsName, sampleMap, dsType, startTime, endTime);
+            inputRrd.close();
         }
 
         final List<String> dsNames = JRobinConverter.getDsNames(groupFile);
         for (int i = 0; i < dsNames.size(); i++) {
             final String dsName = dsNames.get(i);
-            final Datasource ds = groupRrd.getDatasource(dsName);
-            final String dsType = ds.getDsType();
-            collectSampleData(groupRrd, sampleData, dsNames.size(), i, 300, dsName, sampleMap, dsType);
+            final String dsType = groupRrd.getDatasource(dsName).getDsType();
+            collectSampleData(groupRrd, 300, dsName, sampleMap, dsType, startTime, endTime);
         }
         
         for (final long sampleTime : sampleMap.keySet()) {
             final Map<String, Double> entry = sampleMap.get(sampleTime);
+//            printSample(sampleTime, entry);
             final Sample s = outputRrd.createSample(sampleTime);
             final double[] values = new double[dsNames.size()];
             for (int i = 0; i < dsNames.size(); i++) {
@@ -169,60 +210,77 @@ public class JRobinConverter {
                 }
             }
             s.setValues(values);
-            LogUtils.debugf(JRobinConverter.class, "sample = %s", s);
             s.update();
-
-//            LogUtils.debugf(JRobinConverter.class, "sample = %s", sb.toString());
         }
         
         outputRrd.close();
     }
 
-    public static void collectSampleData(RrdDb inputRrd, Map<Long,Double[]> sampleData, final int groupDsCount, final int groupDsIndex, int groupDsStep, String dsName, Map<Long, Map<String, Double>> sampleMap, String dsType) throws Exception {
-        LogUtils.debugf(JRobinConverter.class, "inputRrd=%s, groupDsCount=%d, groupDsIndex=%d", inputRrd, groupDsCount, groupDsIndex);
+    @SuppressWarnings("unused")
+    private static void printSample(final long sampleTime, final Map<String, Double> entry) {
+        final StringBuffer sb = new StringBuffer();
+        sb.append(new Date(sampleTime * 1000L)).append(": ");
+        final Set<String> keys = entry.keySet();
+        for (final Iterator<String> it = keys.iterator(); it.hasNext(); ) {
+            final String key = it.next();
+            sb.append(key).append("=").append(entry.get(key));
+            if (it.hasNext()) sb.append(", ");
+        }
+        LogUtils.debugf(JRobinConverter.class, sb.toString());
+    }
+
+    public static void collectSampleData(final RrdDb inputRrd, final int groupDsStep, final String dsName, final Map<Long, Map<String, Double>> sampleMap, final String dsType, final long startTime, final long endTime) throws IOException, RrdException {
         long lastSampleTime = 0;
         for (int j = inputRrd.getArcCount() - 1; j >= 0; j--) {
             final Archive inputArchive = inputRrd.getArchive(j);
             if (!inputArchive.getConsolFun().equals("AVERAGE")) {
                 continue;
             }
-            LogUtils.debugf(JRobinConverter.class, "=== index %d, archive %d (%s) ===", groupDsIndex, j, inputRrd.getPath());
+            LogUtils.debugf(JRobinConverter.class, "dsName=%s, archive=%d, start=%s, end=%s, step=%d (%s)", dsName, j, new Date(startTime * 1000L), new Date(endTime * 1000L), groupDsStep, inputRrd);
 
-            final Long start = inputArchive.getStartTime();
-            Long current = start;
-            final FetchRequest fr = inputRrd.createFetchRequest(inputArchive.getConsolFun(), inputArchive.getStartTime(), inputRrd.getLastArchiveUpdateTime());
-            final FetchData fd = fr.fetchData();
-            Long step = fd.getStep();
-            LogUtils.debugf(JRobinConverter.class, "start time = %s, step = %d", new Date(start * 1000L), step);
-            double lastValue = Double.NaN;
+            Long current = startTime;
+            final FetchData fd = inputRrd.createFetchRequest(inputArchive.getConsolFun(), startTime, endTime).fetchData();
+            final Long step = fd.getStep();
+            LogUtils.debugf(JRobinConverter.class, "step = %d", step);
 
-            for (double sample : fd.getValues(dsName)) {
+            double lastValue = 0;
+            Long stepCount;
+
+            if (step > groupDsStep) {
+                LogUtils.debugf(JRobinConverter.class, "step %d > %d", step, groupDsStep);
+                if (step % groupDsStep == 0) {
+                    stepCount = (step / groupDsStep);
+                    LogUtils.debugf(JRobinConverter.class, "step is evenly divisible (%d / %d = %d)", step, groupDsStep, stepCount);
+                } else {
+                    LogUtils.errorf(JRobinConverter.class, "step is NOT evenly divisible");
+                    throw new UnsupportedOperationException("unable to convert data, step sizes are not even");
+                }
+            } else {
+                stepCount = 1L;
+            }
+
+            for (final double originalSample : fd.getValues(dsName)) {
+                double sample = originalSample;
                 if (current > lastSampleTime) {
-                    if (!Double.isNaN(sample)) {
-
-                        if (dsType.equals("COUNTER")) {
-                            if (!Double.isNaN(lastValue)) {
-                                sample = lastValue + (sample * inputRrd.getHeader().getStep());
+                    if (Double.isNaN(sample)) {
+                        current += step;
+                    } else {
+                        for (int i = 0; i < stepCount; i++) {
+                            if (dsType.equals("COUNTER")) {
+                                sample = lastValue + (originalSample * groupDsStep);
+                                lastValue = sample;
                             }
-                            lastValue = sample;
+                            Map<String,Double> dsEntries = sampleMap.get(current);
+                            if (dsEntries == null) {
+                                dsEntries = new TreeMap<String,Double>();
+                            }
+                            dsEntries.put(dsName, sample);
+                            sampleMap.put(current, dsEntries);
+                            lastSampleTime = current;
+                            current += groupDsStep;
                         }
-                        Map<String,Double> sl = sampleMap.get(current);
-                        if (sl == null) {
-                            sl = new TreeMap<String,Double>();
-                        }
-                        Double[] sampleList = sampleData.get(current);
-                        if (sampleList == null) {
-                            sampleList = new Double[groupDsCount];
-                            Arrays.fill(sampleList, Double.NaN);
-                        }
-                        sl.put(dsName, sample);
-                        sampleMap.put(current, sl);
-                        sampleList[groupDsIndex] = sample;
-                        sampleData.put(current, sampleList);
-                        lastSampleTime = current;
                     }
                 }
-                current += step;
             }
         }
     }
@@ -258,15 +316,13 @@ public class JRobinConverter {
         }
     }
 
-    public static File createTempRrd(final File rrdFile) throws Exception {
+    public static File createTempRrd(final File rrdFile) throws IOException, RrdException {
         final File outputFile = File.createTempFile("jrobin-", ".jrb");
-
-        final RrdDb oldRrd = new RrdDb(rrdFile.getAbsolutePath());
-
+        final RrdDb oldRrd = new RrdDb(rrdFile.getAbsolutePath(), true);
         final RrdDef rrdDef = oldRrd.getRrdDef();
-        rrdDef.setPath(outputFile.getPath());
+        rrdDef.setPath(outputFile.getAbsolutePath());
         rrdDef.setStartTime(0);
-        RrdDb newRrd = new RrdDb(rrdDef);
+        final RrdDb newRrd = new RrdDb(rrdDef);
         newRrd.close();
 
         return outputFile;
@@ -314,15 +370,15 @@ public class JRobinConverter {
     }
     
     public static void setupLogging() {
-        Properties logConfig = new Properties();
+        final Properties logConfig = new Properties();
 
-        String consoleAppender = ("CONSOLE");
+        final String consoleAppender = ("CONSOLE");
         
         logConfig.put("log4j.appender.CONSOLE", "org.apache.log4j.ConsoleAppender");
         logConfig.put("log4j.appender.CONSOLE.layout", "org.apache.log4j.PatternLayout");
         logConfig.put("log4j.appender.CONSOLE.layout.ConversionPattern", "%d %-5p [%t] %c: %m%n");
 
-        logConfig.put("log4j.rootCategory", ("DEBUG, CONSOLE"));
+        logConfig.put("log4j.rootCategory", ("INFO, CONSOLE"));
         logConfig.put("log4j.logger.org.apache.commons.httpclient.HttpMethodBase", "ERROR");
         logConfig.put("log4j.logger.org.exolab.castor", "INFO");
         logConfig.put("log4j.logger.org.snmp4j", "ERROR");
