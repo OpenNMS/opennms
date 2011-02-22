@@ -292,7 +292,7 @@ public class EditForeignSourceController extends SimpleFormController {
         try {
             BeanWrapper wrapper = new BeanWrapperImpl(Class.forName(clazz));
             for (PropertyDescriptor pd : wrapper.getPropertyDescriptors()) {
-                if (!pd.getName().equals("class")) {
+                if (!"class".equals(pd.getName())) {
                     parameters.add(pd.getName());
                 }
             }
