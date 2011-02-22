@@ -258,7 +258,7 @@ public class DaoWebEventRepository implements WebEventRepository {
     @Transactional
     public Event[] getMatchingEvents(EventCriteria criteria) {
         List<Event> events = new ArrayList<Event>();
-        log().debug("getMatchingEvents: try to get events fr Criteria: " + criteria.toString());
+        log().debug("getMatchingEvents: try to get events for Criteria: " + criteria.toString());
         List<OnmsEvent> onmsEvents = m_eventDao.findMatching(getOnmsCriteria(criteria));
 
         log().debug("getMatchingEvents: found " + onmsEvents.size() + " events");
