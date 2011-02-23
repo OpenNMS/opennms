@@ -11,29 +11,33 @@
     <plugins>
       <plugin>
         <inherited>false</inherited>
-        <artifactId>maven-assembly-plugin</artifactId> 
-        <version>2.2</version>
+        <artifactId>maven-shade-plugin</artifactId> 
+        <version>1.4</version>
         <executions>
           <execution>
             <phase>package</phase>
             <goals>
-              <goal>attached</goal>
+              <goal>shade</goal>
             </goals>
+            <configuration>
+              <!-- 
+              <filter>
+                <artifact>*:*</artifact>
+                <excludes>
+                  <exclude>META-INF/*.MF</exclude>
+                </excludes>
+              </filter>
+              -->
+              <shadedArtifactAttached>true</shadedArtifactAttached>
+              <shadedClassifierName>jar-with-dependencies</shadedClassifierName>
+              <transformers>
+                <transformer implementation="org.apache.maven.plugins.shade.resource.ManifestResourceTransformer">
+                  <mainClass>org.opennms.tools.rrd.converter.JRobinConverter</mainClass>
+                </transformer>
+              </transformers>
+            </configuration>
           </execution>
         </executions>
-        <configuration>
-          <archive>
-            <manifest>
-              <mainClass>org.opennms.tools.rrd.converter.JRobinConverter</mainClass>
-            </manifest>
-          </archive>
-          <descriptorRefs>
-            <descriptorRef>jar-with-dependencies</descriptorRef>
-          </descriptorRefs>
-          <!-- appendAssemblyId>false</appendAssemblyId -->
-          <tarLongFileMode>gnu</tarLongFileMode>
-           
-        </configuration>
       </plugin>
     </plugins>
   </build>
@@ -52,6 +56,12 @@
       <version>1.5.11-SNAPSHOT</version>
     </dependency>
     <dependency>
+      <groupId>org.opennms.core</groupId>
+      <artifactId>org.opennms.core.lib</artifactId>
+      <version>${project.version}</version>
+    </dependency>
+    <!-- 
+    <dependency>
       <groupId>org.opennms</groupId>
       <artifactId>opennms-rrd-api</artifactId>
       <scope>compile</scope>
@@ -69,6 +79,7 @@
       <scope>compile</scope>
       <version>${project.version}</version>
     </dependency>
+    -->
     <dependency>
       <groupId>org.opennms</groupId>
       <artifactId>opennms-test</artifactId>
