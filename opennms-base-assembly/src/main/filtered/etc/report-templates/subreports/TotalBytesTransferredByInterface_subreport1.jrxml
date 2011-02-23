@@ -18,7 +18,7 @@
 		<defaultValueExpression><![CDATA[$P{snmpifname} == null || "".equals($P{snmpifname}) ? $P{snmpifdescr} : $P{snmpifname}]]></defaultValueExpression>
 	</parameter>
 	<parameter name="interface" class="java.lang.String" isForPrompting="false">
-		<defaultValueExpression><![CDATA[$P{snmpphysaddr} == null || "".equals($P{snmpphysaddr}) ? $P{ifLabel}.replaceAll("[\\/ :| \\.]", "_") : $P{ifLabel}.replaceAll("[\\/ :| \\.]", "_") + "-" + $P{snmpphysaddr}]]></defaultValueExpression>
+		<defaultValueExpression><![CDATA[new org.opennms.netmgt.jasper.helper.JRobinDirectoryUtil().getInterfaceDirectory($P{snmpifname}, $P{snmpifdescr}, $P{snmpphysaddr})]]></defaultValueExpression>
 	</parameter>
 	<parameter name="inOctets" class="java.lang.String" isForPrompting="false">
 		<defaultValueExpression><![CDATA[new java.io.File("$P{rrdDir}/snmp/$P{nodeid}/$P{interface}/ifHCInOctets.jrb").exists() ? "ifHCInOctets" : "ifInOctets"]]></defaultValueExpression>
@@ -26,10 +26,16 @@
 	<parameter name="outOctets" class="java.lang.String" isForPrompting="false">
 		<defaultValueExpression><![CDATA[new java.io.File("$P{rrdDir}/snmp/$P{nodeid}/$P{interface}/ifHCOutOctets.jrb").exists() ? "ifHCOutOctets" : "ifOutOctets"]]></defaultValueExpression>
 	</parameter>
+	<parameter name="ifInOctets_PATH" class="java.lang.String" isForPrompting="false">
+		<defaultValueExpression><![CDATA[new org.opennms.netmgt.jasper.helper.JRobinDirectoryUtil().getIfInOctetsJrb($P{rrdDir}, String.valueOf($P{nodeid}), $P{interface})]]></defaultValueExpression>
+	</parameter>
+	<parameter name="ifOutOctets_PATH" class="java.lang.String" isForPrompting="false">
+		<defaultValueExpression><![CDATA[new org.opennms.netmgt.jasper.helper.JRobinDirectoryUtil().getIfOutOctetsJrb($P{rrdDir}, String.valueOf($P{nodeid}), $P{interface})]]></defaultValueExpression>
+	</parameter>
 	<queryString language="jrobin">
 		<![CDATA[--start $P{startDate} --end $P{endDate}
-		DEF:xx=$P{rrdDir}/snmp/$P{nodeid}/$P{interface}/$P{inOctets}.jrb:$P{inOctets}:AVERAGE
-		DEF:yy=$P{rrdDir}/snmp/$P{nodeid}/$P{interface}/$P{outOctets}.jrb:$P{outOctets}:AVERAGE
+		DEF:xx=$P{ifInOctets_PATH}:$P{inOctets}:AVERAGE
+		DEF:yy=$P{ifOutOctets_PATH}:$P{outOctets}:AVERAGE
 		XPORT:xx:IfHCInOctets
 		XPORT:yy:IfHCOutOctets]]>
 	</queryString>
