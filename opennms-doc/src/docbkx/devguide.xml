@@ -1,13 +1,12 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<!DOCTYPE article PUBLIC "-//OASIS//DTD DocBook XML V4.4//EN"
-"http://www.oasis-open.org/docbook/xml/4.4/docbookx.dtd" [
-	<!ENTITY bookinfo SYSTEM "devguide/bookinfo.xml">
-	<!ENTITY preface SYSTEM "common/preface.xml">
-	<!ENTITY chap1 SYSTEM "devguide/chap1.xml">
-	<!ENTITY chap2 SYSTEM "devguide/chap2.xml">
-	<!ENTITY chap3 SYSTEM "devguide/chap3.xml">
-	<!ENTITY chap4 SYSTEM "devguide/chap4.xml">
-]>
-<book id="book">
-	&bookinfo;&preface;&chap1;&chap2;&chap3;&chap4;
+<book version="5.0" xml:id="opennms-devguide" xmlns="http://docbook.org/ns/docbook"
+	xmlns:xlink="http://www.w3.org/1999/xlink" xmlns:xi="http://www.w3.org/2001/XInclude">
+
+
+	<xi:include href="devguide/bookinfo.xml" />
+	<xi:include href="common/preface.xml" />
+	<xi:include href="devguide/chap1.xml" />
+	<xi:include href="devguide/chap2.xml" />
+	<xi:include href="devguide/chap3.xml" />
+	<xi:include href="devguide/chap4.xml" />
 </book>
