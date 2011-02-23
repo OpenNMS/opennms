@@ -1,18 +1,16 @@
 <?xml version="1.0"?>
-<!DOCTYPE article PUBLIC "-//OASIS//DTD DocBook XML V4.4//EN"
-"http://www.oasis-open.org/docbook/xml/4.4/docbookx.dtd" [
-	<!ENTITY bookinfo SYSTEM "userguide/bookinfo.xml">
-	<!ENTITY preface SYSTEM "common/preface.xml">
-	<!ENTITY chap1 SYSTEM "userguide/chap1.xml">
-	<!ENTITY chap2 SYSTEM "userguide/chap2.xml">
-	<!ENTITY chap3 SYSTEM "userguide/chap3.xml">
-	<!ENTITY chap4 SYSTEM "userguide/chap4.xml">
-	<!ENTITY chap5 SYSTEM "userguide/chap5.xml">
-	<!ENTITY chap6 SYSTEM "userguide/chap6.xml">
-	<!ENTITY chap7 SYSTEM "userguide/chap7.xml">
-	<!ENTITY chap8 SYSTEM "userguide/chap8.xml">
-	<!ENTITY chap9 SYSTEM "userguide/chap9.xml">
-]>
-<book id="book">
-	&bookinfo;&preface;&chap1;&chap2;&chap3;&chap4;&chap5;&chap6;&chap7;&chap8;&chap9;
+<book version="5.0" xml:id="opennms-userguide" xmlns="http://docbook.org/ns/docbook"
+	xmlns:xlink="http://www.w3.org/1999/xlink" xmlns:xi="http://www.w3.org/2001/XInclude">
+
+	<xi:include href="userguide/bookinfo.xml" />
+	<xi:include href="common/preface.xml" />
+	<xi:include href="userguide/chap1.xml" />
+	<xi:include href="userguide/chap2.xml" />
+	<xi:include href="userguide/chap3.xml" />
+	<xi:include href="userguide/chap4.xml" />
+	<xi:include href="userguide/chap5.xml" />
+	<xi:include href="userguide/chap6.xml" />
+	<xi:include href="userguide/chap7.xml" />
+	<xi:include href="userguide/chap8.xml" />
+	<xi:include href="userguide/chap9.xml" />
 </book>
