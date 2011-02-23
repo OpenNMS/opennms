@@ -212,12 +212,12 @@ public class JRobinConverter {
 
     public void consolidateRrdFile(final File groupFile, final File outputFile) throws IOException, RrdException, ConverterException {
         final RrdDb groupRrd = new RrdDb(groupFile, true);
+        final RrdDb outputRrd = new RrdDb(outputFile);
 
-        final RrdDatabase data = new RrdDatabase(getDsNames(outputFile));
+        final RrdDatabase data = new RrdDatabase(outputRrd);
         final List<File> individualRrds = getMatchingGroupRrds(groupFile);
         LogUtils.debugf(JRobinConverter.class, "individual RRDs = %s", individualRrds);
 
-        final RrdDb outputRrd = new RrdDb(outputFile);
 
         final long endTime = groupRrd.getLastArchiveUpdateTime();
         // 1 year

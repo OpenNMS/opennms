@@ -28,11 +28,12 @@ import org.opennms.core.utils.LogUtils;
 import org.opennms.test.mock.MockLogAppender;
 
 public class JRobinConverterTest {
+    private static final double ACCEPTABLE_DOUBLE_DELTA = 0.000000000000003;
     JRobinConverter m_converter = null;
     File m_workDir = new File("target/rrd");
-    private static final long MILLIS_PER_HOUR = 3600L * 1000L;
-    private static final long MILLIS_PER_DAY = 24L * MILLIS_PER_HOUR;
-    private static final long MILLIS_PER_YEAR = 366L * MILLIS_PER_DAY;
+    private static final long SECONDS_PER_HOUR = 3600L;
+    private static final long SECONDS_PER_DAY = 24L * SECONDS_PER_HOUR;
+    private static final long SECONDS_PER_YEAR = 366L * SECONDS_PER_DAY;
     private long m_baseTime = 1298046000L;
     private final File m_mib2Interfaces = new File(m_workDir, "mib2-interfaces.rrd");
     private final File m_ifInOctets     = new File(m_workDir, "ifInOctets.rrd");
@@ -120,39 +121,34 @@ public class JRobinConverterTest {
             currentValue += 300;
         }
         
-        long start = ((m_baseTime * 1000L) - (MILLIS_PER_DAY * 56L));
-        Function bigSine = new Sin(start, 15, -10, MILLIS_PER_DAY * 7L);
-        Function smallSine = new Sin(start, 7, 5, MILLIS_PER_DAY * 2L);
-        Function moSuccessRate = new Cos(start, .5, .3, MILLIS_PER_DAY);
-        Function mtSuccessRate = new Cos(start, .5, -.2, 2*MILLIS_PER_DAY);
+        long start = (m_baseTime - (SECONDS_PER_DAY * 56L));
+        Function bigSine = new Sin(start, 15, -10, SECONDS_PER_DAY * 7L);
+        Function smallSine = new Sin(start, 7, 5, SECONDS_PER_DAY * 2L);
 
-        Function moAttempts = new Counter(0, bigSine);
-        Function moCompletes = new Counter(0, new Times(moSuccessRate, bigSine));
-        
-        Function mtAttempts = new Counter(0, smallSine);
-        Function mtCompletes = new Counter(0, new Times(mtSuccessRate, smallSine));
+        Function bigSineCounter = new Counter(0, bigSine);
+        Function smallSineCounter = new Counter(0, smallSine);
 
-        long timestamp = start - 300000;
-        for(; timestamp <= ((m_baseTime * 1000L) - (MILLIS_PER_DAY * 28L)); timestamp += 300000) {
-            Sample sample = sineSource.createSample(timestamp/1000L);
-            double value = moAttempts.evaluate(timestamp);
+        long timestamp = start - 300;
+        for(; timestamp <= (m_baseTime - (SECONDS_PER_DAY * 28L)); timestamp += 300) {
+            Sample sample = sineSource.createSample(timestamp);
+            double value = bigSineCounter.evaluate(timestamp);
             sample.setValue("a", value);
             sample.update();
         }
-        for(; timestamp <= (m_baseTime * 1000L); timestamp += 300000) {
-            Sample sample = sineFull.createSample(timestamp/1000L);
-            double value = mtAttempts.evaluate(timestamp);
+        for(; timestamp <= m_baseTime; timestamp += 300) {
+            Sample sample = sineFull.createSample(timestamp);
+            double value = smallSineCounter.evaluate(timestamp);
             sample.setValue("a", value);
             sample.update();
         }
 
-        final long end = (((m_baseTime * 1000L) / MILLIS_PER_DAY) * MILLIS_PER_DAY);
-        start = (end - MILLIS_PER_YEAR);
+        final long end = getMidnightInSeconds(m_baseTime);
+        start = (end - SECONDS_PER_YEAR);
         Function sequence = new AverageSequence(300, 10);
         Function sequenceCounter = new Counter(0, sequence);
-        timestamp = start - 300000;
-        for (; timestamp <= end; timestamp += 300000) {
-            Sample sample = variation.createSample(timestamp/1000L);
+        timestamp = start - 300;
+        for (; timestamp <= end; timestamp += 300) {
+            Sample sample = variation.createSample(timestamp);
             double value = sequenceCounter.evaluate(timestamp);
             sample.setValue("a", value);
 //            LogUtils.debugf(this, "sample = %s", sample);
@@ -166,6 +162,10 @@ public class JRobinConverterTest {
         sineFull.close();
         sineSource.close();
         variation.close();
+    }
+
+    protected long getMidnightInSeconds(final long seconds) {
+        return (((seconds) / SECONDS_PER_DAY) * SECONDS_PER_DAY);
     }
 
     private void initializeGroupRrd(final File rrd) throws RrdException, IOException {
@@ -282,14 +282,131 @@ public class JRobinConverterTest {
     }
     
     @Test
-    public void testRrdArchive() throws Exception {
+    public void testRrdArchiveZero() throws Exception {
         RrdDb rrd = new RrdDb(m_variation);
-        RrdArchive archive = new RrdArchive(rrd.getArchive(0), Arrays.asList(rrd.getDsNames()));
+        RrdDataSource archive = new RrdArchive(rrd.getArchive(0), Arrays.asList(rrd.getDsNames()));
+        final int expectedArchiveSize = 4032;
+        final int expectedArchiveStep = 300;
 
-        final List<RrdEntry> entries = archive.getData(300);
-        assertEquals(4032, entries.size());
-        for (final RrdEntry entry : entries) {
-            LogUtils.debugf(this, "entry = %s", entry);
+        final long end = getMidnightInSeconds(m_baseTime);
+        final long start = (end - ((expectedArchiveSize - 1) * expectedArchiveStep));
+
+        assertEquals(end, archive.getEndTime());
+        assertEquals(start, archive.getStartTime());
+        assertEquals(expectedArchiveStep, archive.getStep());
+
+        List<RrdEntry> entries = archive.getData(expectedArchiveStep);
+        assertEquals(expectedArchiveSize, entries.size());
+        assertEquals(start, entries.get(0).getTimestamp());
+        assertEquals(end, entries.get(expectedArchiveSize - 1).getTimestamp());
+        assertEquals(0.5833333333333334D, entries.get(0).getValue("a"), ACCEPTABLE_DOUBLE_DELTA);
+        assertEquals(0.5866666666666667D, entries.get(1).getValue("a"), ACCEPTABLE_DOUBLE_DELTA);
+        assertEquals(1.3833333333333334D, entries.get(expectedArchiveSize - 2).getValue("a"), ACCEPTABLE_DOUBLE_DELTA);
+        assertEquals(0.58D, entries.get(expectedArchiveSize - 1).getValue("a"), ACCEPTABLE_DOUBLE_DELTA);
+        assertTrue(Double.isNaN(entries.get(0).getValue("b")));
+
+        List<RrdEntry> halfEntries = archive.getData(expectedArchiveStep / 2);
+        assertEquals(expectedArchiveSize * 2, halfEntries.size());
+        assertEquals(start, halfEntries.get(0).getTimestamp());
+        assertEquals(end + (expectedArchiveStep / 2), halfEntries.get((expectedArchiveSize * 2) - 1).getTimestamp());
+        assertEquals(0.5833333333333334D, halfEntries.get(0).getValue("a"), ACCEPTABLE_DOUBLE_DELTA);
+        assertEquals(0.5833333333333334D, halfEntries.get(1).getValue("a"), ACCEPTABLE_DOUBLE_DELTA);
+        assertEquals(0.58D, halfEntries.get((expectedArchiveSize * 2) - 2).getValue("a"), ACCEPTABLE_DOUBLE_DELTA);
+        assertEquals(0.58D, halfEntries.get((expectedArchiveSize * 2) - 1).getValue("a"), ACCEPTABLE_DOUBLE_DELTA);
+        assertTrue(Double.isNaN(halfEntries.get(0).getValue("b")));
+        
+        for (int i = 0; i < halfEntries.size(); i++) {
+            final RrdEntry halfEntry = halfEntries.get(i);
+            final RrdEntry entry = entries.get(i/2);
+            assertEquals(halfEntry.getTimestamp(), entry.getTimestamp() + ((i % 2) * (expectedArchiveStep / 2)));
+            assertEquals(halfEntry.getValue("a"), entry.getValue("a"), ACCEPTABLE_DOUBLE_DELTA);
+            assertEquals(halfEntry.getValue("b"), entry.getValue("b"), ACCEPTABLE_DOUBLE_DELTA);
+        }
+    }
+
+    @Test
+    public void testRrdArchiveOne() throws Exception {
+        RrdDb rrd = new RrdDb(m_variation);
+        RrdDataSource archive = new RrdArchive(rrd.getArchive(1), Arrays.asList(rrd.getDsNames()));
+        final int expectedArchiveSize = 1488;
+        final int expectedArchiveStep = 3600;
+
+        final long end = getMidnightInSeconds(m_baseTime);
+        final long start = (end - ((expectedArchiveSize - 1) * expectedArchiveStep));
+
+        assertEquals(end, archive.getEndTime());
+        assertEquals(start, archive.getStartTime());
+        assertEquals(expectedArchiveStep, archive.getStep());
+
+        List<RrdEntry> entries = archive.getData(expectedArchiveStep);
+        assertEquals(expectedArchiveSize, entries.size());
+        assertEquals(start, entries.get(0).getTimestamp());
+        assertEquals(end, entries.get(expectedArchiveSize - 1).getTimestamp());
+        assertEquals(0.601111111111111D, entries.get(0).getValue("a"), ACCEPTABLE_DOUBLE_DELTA);
+        assertEquals(0.634444444444445D, entries.get(1).getValue("a"), ACCEPTABLE_DOUBLE_DELTA);
+        assertEquals(1.334444444444445D, entries.get(expectedArchiveSize - 2).getValue("a"), ACCEPTABLE_DOUBLE_DELTA);
+        assertEquals(1.301111111111111D, entries.get(expectedArchiveSize - 1).getValue("a"), ACCEPTABLE_DOUBLE_DELTA);
+        assertTrue(Double.isNaN(entries.get(0).getValue("b")));
+
+        List<RrdEntry> halfEntries = archive.getData(expectedArchiveStep / 2);
+        assertEquals(expectedArchiveSize * 2, halfEntries.size());
+        assertEquals(start, halfEntries.get(0).getTimestamp());
+        assertEquals(end + (expectedArchiveStep / 2), halfEntries.get((expectedArchiveSize * 2) - 1).getTimestamp());
+        assertEquals(0.601111111111111D, halfEntries.get(0).getValue("a"), ACCEPTABLE_DOUBLE_DELTA);
+        assertEquals(0.601111111111111D, halfEntries.get(1).getValue("a"), ACCEPTABLE_DOUBLE_DELTA);
+        assertEquals(1.301111111111111D, halfEntries.get((expectedArchiveSize * 2) - 2).getValue("a"), ACCEPTABLE_DOUBLE_DELTA);
+        assertEquals(1.301111111111111D, halfEntries.get((expectedArchiveSize * 2) - 1).getValue("a"), ACCEPTABLE_DOUBLE_DELTA);
+        assertTrue(Double.isNaN(halfEntries.get(0).getValue("b")));
+        
+        for (int i = 0; i < halfEntries.size(); i++) {
+            final RrdEntry halfEntry = halfEntries.get(i);
+            final RrdEntry entry = entries.get(i/2);
+            assertEquals(halfEntry.getTimestamp(), entry.getTimestamp() + ((i % 2) * (expectedArchiveStep / 2)));
+            assertEquals(halfEntry.getValue("a"), entry.getValue("a"), ACCEPTABLE_DOUBLE_DELTA);
+            assertEquals(halfEntry.getValue("b"), entry.getValue("b"), ACCEPTABLE_DOUBLE_DELTA);
+        }
+    }
+
+    @Test
+    public void testRrdArchiveTwo() throws Exception {
+        RrdDb rrd = new RrdDb(m_variation);
+        RrdDataSource archive = new RrdArchive(rrd.getArchive(2), Arrays.asList(rrd.getDsNames()));
+        final int expectedArchiveSize = 366;
+        final int expectedArchiveStep = 86400;
+
+        final long end = getMidnightInSeconds(m_baseTime);
+        final long start = (end - ((expectedArchiveSize - 1) * expectedArchiveStep));
+
+        assertEquals(end, archive.getEndTime());
+        assertEquals(start, archive.getStartTime());
+        assertEquals(expectedArchiveStep, archive.getStep());
+
+        List<RrdEntry> entries = archive.getData(expectedArchiveStep);
+        assertEquals(expectedArchiveSize, entries.size());
+        assertEquals(start, entries.get(0).getTimestamp());
+        assertEquals(end, entries.get(expectedArchiveSize - 1).getTimestamp());
+        assertEquals(0.981666666666667D, entries.get(0).getValue("a"), ACCEPTABLE_DOUBLE_DELTA);
+        assertEquals(0.981666666666667D, entries.get(1).getValue("a"), ACCEPTABLE_DOUBLE_DELTA);
+        assertEquals(0.981666666666667D, entries.get(expectedArchiveSize - 2).getValue("a"), ACCEPTABLE_DOUBLE_DELTA);
+        assertEquals(0.981666666666667D, entries.get(expectedArchiveSize - 1).getValue("a"), ACCEPTABLE_DOUBLE_DELTA);
+        assertTrue(Double.isNaN(entries.get(0).getValue("b")));
+
+        List<RrdEntry> halfEntries = archive.getData(expectedArchiveStep / 2);
+        assertEquals(expectedArchiveSize * 2, halfEntries.size());
+        assertEquals(start, halfEntries.get(0).getTimestamp());
+        assertEquals(end + (expectedArchiveStep / 2), halfEntries.get((expectedArchiveSize * 2) - 1).getTimestamp());
+        assertEquals(0.981666666666667D, halfEntries.get(0).getValue("a"), ACCEPTABLE_DOUBLE_DELTA);
+        assertEquals(0.981666666666667D, halfEntries.get(1).getValue("a"), ACCEPTABLE_DOUBLE_DELTA);
+        assertEquals(0.981666666666667D, halfEntries.get((expectedArchiveSize * 2) - 2).getValue("a"), ACCEPTABLE_DOUBLE_DELTA);
+        assertEquals(0.981666666666667D, halfEntries.get((expectedArchiveSize * 2) - 1).getValue("a"), ACCEPTABLE_DOUBLE_DELTA);
+        assertTrue(Double.isNaN(halfEntries.get(0).getValue("b")));
+        
+        for (int i = 0; i < halfEntries.size(); i++) {
+            final RrdEntry halfEntry = halfEntries.get(i);
+            final RrdEntry entry = entries.get(i/2);
+            assertEquals(halfEntry.getTimestamp(), entry.getTimestamp() + ((i % 2) * (expectedArchiveStep / 2)));
+            assertEquals(halfEntry.getValue("a"), entry.getValue("a"), ACCEPTABLE_DOUBLE_DELTA);
+            assertEquals(halfEntry.getValue("b"), entry.getValue("b"), ACCEPTABLE_DOUBLE_DELTA);
         }
     }
 
@@ -402,7 +519,7 @@ public class JRobinConverterTest {
         /*
         long[] timestamps = data.getTimestamps();
         for (int i = 0; i < timestamps.length; i++) {
-            LogUtils.debugf(this, "%s: %s = %f", rrd, new Date(timestamps[i] * 1000L), values[i]);
+            LogUtils.debugf(this, "%s: %s = %f", rrd, new Date(timestamps[i]), values[i]);
         }
         */
     }
@@ -502,7 +619,7 @@ public class JRobinConverterTest {
         }
 
         public double evaluate(long timestamp) {
-            long i = (timestamp % MILLIS_PER_DAY) / 300000;
+            long i = (timestamp % SECONDS_PER_DAY) / 300;
             long h = i / 12;
             final long j = i % 12;
             final double result = m_baseline + (m_variation * (h-12)) + (j - 6);
