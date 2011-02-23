@@ -156,7 +156,7 @@ public class RequisitionNode {
                 iterator.remove();
             }
         }
-        m_interfaces.add(iface);
+        m_interfaces.add(0, iface);
     }
 
     /**
@@ -262,7 +262,7 @@ public class RequisitionNode {
                 iterator.remove();
             }
         }
-        m_categories.add(category);
+        m_categories.add(0, category);
     }
 
     /**
@@ -361,7 +361,7 @@ public class RequisitionNode {
                 iterator.remove();
             }
         }
-        m_assets.add(asset);
+        m_assets.add(0, asset);
     }
 
     /**
