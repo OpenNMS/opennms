@@ -32,6 +32,8 @@
 				<listitem><para>runInPlace.sh script gives unclear instructions (Issue <ulink url='http://issues.opennms.org/browse/NMS-4429'>NMS-4429</ulink>)</para></listitem>
 				<listitem><para>null pointer exception when attempting to enable snmp collection. (Issue <ulink url='http://issues.opennms.org/browse/NMS-4432'>NMS-4432</ulink>)</para></listitem>
 				<listitem><para>WebUI Broken When Deleting Parameters in Foreign Sources (Issue <ulink url='http://issues.opennms.org/browse/NMS-4438'>NMS-4438</ulink>)</para></listitem>
+				<listitem><para>Provisioning WebUI: Adding multiple fields fails (Issue <ulink url='http://issues.opennms.org/browse/NMS-4466'>NMS-4466</ulink>)</para></listitem>
+				<listitem><para>WebUI: Foreign-Sources - only first policy has a delete button (Issue <ulink url='http://issues.opennms.org/browse/NMS-4467'>NMS-4467</ulink>)</para></listitem>
 			</itemizedlist>
 		</section>
 		<section id="opennms-1.8.10-enhancement">
