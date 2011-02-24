@@ -6,6 +6,7 @@ import static org.junit.Assert.assertTrue;
 
 import java.io.File;
 import java.io.IOException;
+import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Date;
 import java.util.List;
@@ -28,7 +29,7 @@ import org.opennms.core.utils.LogUtils;
 import org.opennms.test.mock.MockLogAppender;
 
 public class JRobinConverterTest {
-    private static final double ACCEPTABLE_DOUBLE_DELTA = 0.000000000000003;
+    private static final double ACCEPTABLE_DOUBLE_DELTA = 0.00000000001;
     JRobinConverter m_converter = null;
     File m_workDir = new File("target/rrd");
     private static final long SECONDS_PER_HOUR = 3600L;
@@ -58,69 +59,29 @@ public class JRobinConverterTest {
 
     @After
     public void tearDown() throws Exception {
-        m_mib2Interfaces.delete();
-        m_ifInOctets.delete();
-        m_ifOutOctets.delete();
+//        m_mib2Interfaces.delete();
+//        m_ifInOctets.delete();
+//        m_ifOutOctets.delete();
 //        m_sineFull.delete();
 //        m_sineSource.delete();
 //        m_variation.delete();
-        System.err.println("sineFull = " + m_sineFull.getAbsolutePath());
-        System.err.println("sineSource = " + m_sineSource.getAbsolutePath());
-        System.err.println("variation = " + m_variation.getAbsolutePath());
     }
     
     protected void createMockRrds() throws Exception {
         LogUtils.infof(this, "creating empty RRDs");
         
-        m_mib2Interfaces.delete();
-        m_ifInOctets.delete();
-        m_ifOutOctets.delete();
         m_sineFull.delete();
         m_sineSource.delete();
         m_variation.delete();
 
-        initializeRrdLike(new File("src/test/rrds/90020/Se0/mib2-interfaces.rrd"), m_mib2Interfaces);
-        initializeRrdLike(new File("src/test/rrds/90020/Se0/ifInOctets.rrd"), m_ifInOctets);
-        initializeRrdLike(new File("src/test/rrds/90020/Se0/ifOutOctets.rrd"), m_ifOutOctets);
-        
         initializeGroupRrd(m_sineFull);
         initializeSingleRrd(m_sineSource);
         initializeGroupRrd(m_variation);
 
-        RrdDb ifInOctets  = new RrdDb(m_ifInOctets);
-        RrdDb ifOutOctets = new RrdDb(m_ifOutOctets);
-        RrdDb mib2        = new RrdDb(m_mib2Interfaces);
         RrdDb sineFull    = new RrdDb(m_sineFull);
         RrdDb sineSource  = new RrdDb(m_sineSource);
         RrdDb variation   = new RrdDb(m_variation);
 
-        Archive archive = ifInOctets.getArchive(0);
-        Robin robin = archive.getRobin(0);
-        robin.setValues(2.0D);
-        archive = ifInOctets.getArchive(1);
-        robin = archive.getRobin(0);
-        robin.setValues(2.0D);
-        ifInOctets.getHeader().setLastUpdateTime(m_baseTime);
-        
-        archive = ifOutOctets.getArchive(0);
-        robin = archive.getRobin(0);
-        robin.setValues(4.0D);
-        archive = ifOutOctets.getArchive(1);
-        robin = archive.getRobin(0);
-        robin.setValues(4.0D);
-        ifOutOctets.getHeader().setLastUpdateTime(m_baseTime);
-
-        long currentValue = 3000;
-        mib2.getHeader().setLastUpdateTime(m_baseTime);
-        for (long i = (ifInOctets.getLastArchiveUpdateTime() + 300); i <= (ifInOctets.getLastArchiveUpdateTime() + 5100); i = i + 300) {
-            Sample sample = mib2.createSample(i);
-            sample.setValue("ifInOctets", currentValue);
-            sample.setValue("ifOutOctets", (currentValue * 2));
-            sample.update();
-            
-            currentValue += 300;
-        }
-        
         long start = (m_baseTime - (SECONDS_PER_DAY * 56L));
         Function bigSine = new Sin(start, 15, -10, SECONDS_PER_DAY * 7L);
         Function smallSine = new Sin(start, 7, 5, SECONDS_PER_DAY * 2L);
@@ -128,14 +89,14 @@ public class JRobinConverterTest {
         Function bigSineCounter = new Counter(0, bigSine);
         Function smallSineCounter = new Counter(0, smallSine);
 
-        long timestamp = start - 300;
-        for(; timestamp <= (m_baseTime - (SECONDS_PER_DAY * 28L)); timestamp += 300) {
+        long timestamp = start - 300L;
+        for(; timestamp <= (m_baseTime - (SECONDS_PER_DAY * 28L)); timestamp += 300L) {
             Sample sample = sineSource.createSample(timestamp);
             double value = bigSineCounter.evaluate(timestamp);
             sample.setValue("a", value);
             sample.update();
         }
-        for(; timestamp <= m_baseTime; timestamp += 300) {
+        for(; timestamp <= m_baseTime; timestamp += 300L) {
             Sample sample = sineFull.createSample(timestamp);
             double value = smallSineCounter.evaluate(timestamp);
             sample.setValue("a", value);
@@ -146,19 +107,14 @@ public class JRobinConverterTest {
         start = (end - SECONDS_PER_YEAR);
         Function sequence = new AverageSequence(300, 10);
         Function sequenceCounter = new Counter(0, sequence);
-        timestamp = start - 300;
-        for (; timestamp <= end; timestamp += 300) {
+        timestamp = start - 300L;
+        for (; timestamp <= end; timestamp += 300L) {
             Sample sample = variation.createSample(timestamp);
             double value = sequenceCounter.evaluate(timestamp);
             sample.setValue("a", value);
-//            LogUtils.debugf(this, "sample = %s", sample);
             sample.update();
         }
-        
-        ifInOctets.close();
-        ifOutOctets.close();
-        mib2.close();
-        
+
         sineFull.close();
         sineSource.close();
         variation.close();
@@ -191,16 +147,29 @@ public class JRobinConverterTest {
     }
     
     @Test
+    public void testCheckRawData() throws Exception {
+        RrdDb ifInOctets = new RrdDb(m_ifInOctets, true);
+        RrdDb ifOutOctets = new RrdDb(m_ifOutOctets, true);
+        RrdDb mib2 = new RrdDb(m_mib2Interfaces, true);
+        checkArchive(mib2, 4015, 4016, 2.0D, 0, 9, 8, "ifOutOctets");
+        checkArchive(ifInOctets, null, 2322, 2.0D, 0, 1, 0, "ifInOctets");
+        checkArchive(ifOutOctets, null, 4000, 4.0D, 0, 1, 0, "ifOutOctets");
+        mib2.close();
+        ifOutOctets.close();
+        ifInOctets.close();
+    }
+
+    @Test
     public void testGetDsNames() throws Exception {
-        final List<String> dsNames = m_converter.getDsNames(m_mib2Interfaces);
+        final List<String> dsNames = m_converter.getDsNames(m_sineFull);
         LogUtils.debugf(this, "dsNames = %s", dsNames);
-        assertTrue(dsNames.contains("ifInDiscards"));
-        assertEquals(9, dsNames.size());
+        assertTrue(dsNames.contains("a"));
+        assertEquals(2, dsNames.size());
     }
 
     @Test
     public void testGetRras() throws Exception {
-        final List<String> rras = m_converter.getRras(m_mib2Interfaces);
+        final List<String> rras = m_converter.getRras(m_sineFull);
         assertEquals(5, rras.size());
     }
 
@@ -216,57 +185,26 @@ public class JRobinConverterTest {
     }
 
     @Test
-    public void testCheckRawData() throws Exception {
-        RrdDb ifInOctets = new RrdDb(m_ifInOctets, true);
-        RrdDb ifOutOctets = new RrdDb(m_ifOutOctets, true);
-        RrdDb mib2 = new RrdDb(m_mib2Interfaces, true);
-        checkArchive(mib2, 4015, 4016, 2.0D, 0, 9, 8, "ifOutOctets");
-        checkArchive(ifInOctets, null, 2322, 2.0D, 0, 1, 0, "ifInOctets");
-        checkArchive(ifOutOctets, null, 4000, 4.0D, 0, 1, 0, "ifOutOctets");
-        mib2.close();
-        ifOutOctets.close();
-        ifInOctets.close();
+    public void testScanRrds() throws Exception {
+        final File topDirectory = new File("src/test/rrds");
+
+        List<File> rrds = m_converter.findRrds(topDirectory);
+        assertTrue(rrds.size() > 0);
+        assertTrue(rrds.contains(new File("src/test/rrds/90020/Se0/mib2-interfaces.rrd")));
+        assertTrue(rrds.contains(new File("src/test/rrds/90020/Se0/ifOutOctets.rrd")));
+        
+        rrds = m_converter.findGroupRrds(topDirectory);
+        assertTrue(rrds.size() > 0);
+        assertTrue(rrds.contains(new File("src/test/rrds/90020/Se0/mib2-interfaces.rrd")));
+        assertFalse(rrds.contains(new File("src/test/rrds/90020/Se0/ifOutOctets.rrd")));
     }
 
     @Test
     public void testGetMatchingRrds() throws Exception {
-        final List<File> matches = m_converter.getMatchingGroupRrds(m_mib2Interfaces);
-        assertEquals(2, matches.size());
+        final List<File> matches = m_converter.getMatchingGroupRrds(m_sineFull);
+        assertEquals(1, matches.size());
     }
     
-    @Test
-    public void testCombine() throws Exception {
-        final File newFile = m_converter.createTempRrd(m_mib2Interfaces);
-        try {
-            m_converter.consolidateRrdFile(m_mib2Interfaces, newFile);
-            RrdDb newRrd = new RrdDb(newFile.getPath(), true);
-            assertEquals(m_baseTime + 4800L, newRrd.getLastArchiveUpdateTime());
-            Archive archive = newRrd.getArchive(0);
-            Robin robin = archive.getRobin(newRrd.getDsIndex("ifInOctets"));
-            assertEquals(4032, robin.getSize());
-            assertEquals(Double.valueOf(2.0D), Double.valueOf(robin.getValue(robin.getSize() - 1)));
-
-            archive = newRrd.getArchive(1);
-            robin = archive.getRobin(newRrd.getDsIndex("ifOutOctets"));
-
-            final FetchData fd = newRrd.createFetchRequest("AVERAGE", archive.getStartTime(), archive.getEndTime()).fetchData();
-            final long[] timestamps = fd.getTimestamps();
-            double[] values = fd.getValues("ifOutOctets");
-            
-            LogUtils.warnf(this, "start time = %s", new Date(archive.getStartTime() * 1000L));
-            LogUtils.warnf(this, "end time = %s", new Date(archive.getEndTime() * 1000L));
-            assertEquals(1488, robin.getSize());
-            values = robin.getValues();
-            for (int i = values.length - 1; i >= 0; i--) {
-                LogUtils.debugf(this, "(1) %s = %d/%f", new Date(timestamps[i] * 1000L), i, values[i]);
-            }
-            assertFalse(Double.isNaN(robin.getValue(robin.getSize() - 20)));
-            assertEquals(Double.valueOf(4.0D), Double.valueOf(robin.getValue(robin.getSize() - 1)));
-        } finally {
-            newFile.delete();
-        }
-    }
-
     @Test
     public void testFetch() throws Exception {
         RrdDb rrd = new RrdDb(m_sineFull);
@@ -284,7 +222,7 @@ public class JRobinConverterTest {
     @Test
     public void testRrdArchiveZero() throws Exception {
         RrdDb rrd = new RrdDb(m_variation);
-        RrdDataSource archive = new RrdArchive(rrd.getArchive(0), Arrays.asList(rrd.getDsNames()));
+        BaseRrdDataSource archive = new RrdArchive(rrd.getArchive(0), Arrays.asList(rrd.getDsNames()));
         final int expectedArchiveSize = 4032;
         final int expectedArchiveStep = 300;
 
@@ -293,7 +231,11 @@ public class JRobinConverterTest {
 
         assertEquals(end, archive.getEndTime());
         assertEquals(start, archive.getStartTime());
-        assertEquals(expectedArchiveStep, archive.getStep());
+        assertEquals(expectedArchiveStep, archive.getNativeStep());
+
+        assertEquals(0.5833333333333334D, archive.getDataAt(start).getValue("a"), ACCEPTABLE_DOUBLE_DELTA);
+        assertEquals(0.5866666666666667D, archive.getDataAt(start + 300).getValue("a"), ACCEPTABLE_DOUBLE_DELTA);
+        assertEquals(0.58D, archive.getDataAt(end).getValue("a"), ACCEPTABLE_DOUBLE_DELTA);
 
         List<RrdEntry> entries = archive.getData(expectedArchiveStep);
         assertEquals(expectedArchiveSize, entries.size());
@@ -304,6 +246,10 @@ public class JRobinConverterTest {
         assertEquals(1.3833333333333334D, entries.get(expectedArchiveSize - 2).getValue("a"), ACCEPTABLE_DOUBLE_DELTA);
         assertEquals(0.58D, entries.get(expectedArchiveSize - 1).getValue("a"), ACCEPTABLE_DOUBLE_DELTA);
         assertTrue(Double.isNaN(entries.get(0).getValue("b")));
+
+        assertEquals(0.5833333333333334D, archive.getDataAt(start + 150).getValue("a"), ACCEPTABLE_DOUBLE_DELTA);
+        assertEquals(0.5866666666666667D, archive.getDataAt(start + 450).getValue("a"), ACCEPTABLE_DOUBLE_DELTA);
+        assertEquals(0.58D, archive.getDataAt(end + 150).getValue("a"), ACCEPTABLE_DOUBLE_DELTA);
 
         List<RrdEntry> halfEntries = archive.getData(expectedArchiveStep / 2);
         assertEquals(expectedArchiveSize * 2, halfEntries.size());
@@ -327,7 +273,7 @@ public class JRobinConverterTest {
     @Test
     public void testRrdArchiveOne() throws Exception {
         RrdDb rrd = new RrdDb(m_variation);
-        RrdDataSource archive = new RrdArchive(rrd.getArchive(1), Arrays.asList(rrd.getDsNames()));
+        TimeSeriesDataSource archive = new RrdArchive(rrd.getArchive(1), Arrays.asList(rrd.getDsNames()));
         final int expectedArchiveSize = 1488;
         final int expectedArchiveStep = 3600;
 
@@ -336,7 +282,7 @@ public class JRobinConverterTest {
 
         assertEquals(end, archive.getEndTime());
         assertEquals(start, archive.getStartTime());
-        assertEquals(expectedArchiveStep, archive.getStep());
+        assertEquals(expectedArchiveStep, archive.getNativeStep());
 
         List<RrdEntry> entries = archive.getData(expectedArchiveStep);
         assertEquals(expectedArchiveSize, entries.size());
@@ -370,7 +316,7 @@ public class JRobinConverterTest {
     @Test
     public void testRrdArchiveTwo() throws Exception {
         RrdDb rrd = new RrdDb(m_variation);
-        RrdDataSource archive = new RrdArchive(rrd.getArchive(2), Arrays.asList(rrd.getDsNames()));
+        TimeSeriesDataSource archive = new RrdArchive(rrd.getArchive(2), Arrays.asList(rrd.getDsNames()));
         final int expectedArchiveSize = 366;
         final int expectedArchiveStep = 86400;
 
@@ -379,7 +325,7 @@ public class JRobinConverterTest {
 
         assertEquals(end, archive.getEndTime());
         assertEquals(start, archive.getStartTime());
-        assertEquals(expectedArchiveStep, archive.getStep());
+        assertEquals(expectedArchiveStep, archive.getNativeStep());
 
         List<RrdEntry> entries = archive.getData(expectedArchiveStep);
         assertEquals(expectedArchiveSize, entries.size());
@@ -411,20 +357,97 @@ public class JRobinConverterTest {
     }
 
     @Test
-    public void testScanRrds() throws Exception {
-        final File topDirectory = new File("src/test/rrds");
+    public void testRrdDatabase() throws Exception {
+        RrdDb rrd = new RrdDb(m_variation);
+        RrdDatabase rrdDatabase = new RrdDatabase(rrd);
+        final int largestArchiveStep = 86400;
 
-        List<File> rrds = m_converter.findRrds(topDirectory);
-        assertTrue(rrds.size() > 0);
-        assertTrue(rrds.contains(new File("src/test/rrds/90020/Se0/mib2-interfaces.rrd")));
-        assertTrue(rrds.contains(new File("src/test/rrds/90020/Se0/ifOutOctets.rrd")));
-        
-        rrds = m_converter.findGroupRrds(topDirectory);
-        assertTrue(rrds.size() > 0);
-        assertTrue(rrds.contains(new File("src/test/rrds/90020/Se0/mib2-interfaces.rrd")));
-        assertFalse(rrds.contains(new File("src/test/rrds/90020/Se0/ifOutOctets.rrd")));
+        final long end = getMidnightInSeconds(m_baseTime);
+        final long start = (end - SECONDS_PER_YEAR + largestArchiveStep);
+                                                  // ^^^^^^^^^^^^^^^^^^ accounts for the extra step added to each RRA in setUp()
+
+        LogUtils.debugf(this, "start = %d, end = %d", start, end);
+
+        assertEquals(end, rrdDatabase.getEndTime());
+        assertEquals(start, rrdDatabase.getStartTime());
+        assertEquals(105120, rrdDatabase.getRows());
+
+        assertEquals(0.981666666666667D, rrdDatabase.getDataAt(start).getValue("a"), ACCEPTABLE_DOUBLE_DELTA);
+        assertEquals(0.981666666666667D, rrdDatabase.getDataAt(start + 300).getValue("a"), ACCEPTABLE_DOUBLE_DELTA);
+        assertEquals(0.601111111111111D, rrdDatabase.getDataAt(start + (300 * 87276)).getValue("a"), ACCEPTABLE_DOUBLE_DELTA);
+        assertEquals(1.301111111111111D, rrdDatabase.getDataAt(start + (300 * 101088)).getValue("a"), ACCEPTABLE_DOUBLE_DELTA);
+        assertEquals(0.58D, rrdDatabase.getDataAt(end).getValue("a"), ACCEPTABLE_DOUBLE_DELTA);
+
+        List<RrdEntry> entries = rrdDatabase.getData(300);
+
+        RrdEntry lastEntry = null;
+        for (int i = 0; i < entries.size(); i++) {
+            final RrdEntry entry = entries.get(i);
+            if (lastEntry != null) {
+                assertEquals(entry.getTimestamp(), lastEntry.getTimestamp() + 300);
+            }
+            lastEntry = entry;
+        }
+
+        assertEquals(0.981666666666667D, entries.get(0).getValue("a"), ACCEPTABLE_DOUBLE_DELTA);
+        assertEquals(0.981666666666667D, entries.get(87275).getValue("a"), ACCEPTABLE_DOUBLE_DELTA);
+        assertEquals(0.601111111111111D, entries.get(87276).getValue("a"), ACCEPTABLE_DOUBLE_DELTA);
+        assertEquals(1.301111111111111D, entries.get(101088).getValue("a"), ACCEPTABLE_DOUBLE_DELTA);
+        assertEquals(0.583333333333333D, entries.get(101089).getValue("a"), ACCEPTABLE_DOUBLE_DELTA);
     }
 
+    @Test
+    public void testAggregateRrdDatabase() throws Exception {
+        RrdDb source = new RrdDb(m_sineSource);
+        RrdDb full = new RrdDb(m_sineFull);
+  
+        RrdDatabase sourceDatabase = new RrdDatabase(source);
+        RrdDatabase fullDatabase = new RrdDatabase(full);
+        List<RrdDatabase> datasources = new ArrayList<RrdDatabase>();
+        datasources.add(sourceDatabase);
+        datasources.add(fullDatabase);
+
+        AggregateTimeSeriesDataSource aggregate = new AggregateTimeSeriesDataSource(datasources);
+        assertEquals(300, aggregate.getNativeStep());
+        assertEquals(1264006800, aggregate.getStartTime());
+        assertEquals(1298046000, aggregate.getEndTime());
+        assertEquals(113464, aggregate.getRows());
+
+        assertEquals(Double.NaN, aggregate.getDataAt(1264006800).getValue("a"), ACCEPTABLE_DOUBLE_DELTA);
+        assertEquals(0.049168976942D, aggregate.getDataAt(1293210000).getValue("a"), ACCEPTABLE_DOUBLE_DELTA);
+        assertEquals(0.071266671798D, aggregate.getDataAt(1294181400).getValue("a"), ACCEPTABLE_DOUBLE_DELTA);
+        assertEquals(0.050000000000D, aggregate.getDataAt(1295626800).getValue("a"), ACCEPTABLE_DOUBLE_DELTA);
+        assertEquals(0.024241692151D, aggregate.getDataAt(1295629200).getValue("a"), ACCEPTABLE_DOUBLE_DELTA);
+        assertEquals(0.023515134858D, aggregate.getDataAt(1296836700).getValue("a"), ACCEPTABLE_DOUBLE_DELTA);
+        assertEquals(0.023333333333D, aggregate.getDataAt(1298046000).getValue("a"), ACCEPTABLE_DOUBLE_DELTA);
+
+        List<RrdEntry> entries = aggregate.getData(300);
+        for (final RrdEntry entry : entries) {
+            if (!Double.isNaN(entry.getValue("a"))) {
+                LogUtils.debugf(this, "entry = %s", entry);
+            }
+        }
+    }
+    
+    @Test
+    public void testCombine() throws Exception {
+        final File newFile = m_converter.createTempRrd(m_sineFull);
+        try {
+            m_converter.consolidateRrdFile(m_sineFull, newFile);
+            RrdDb newRrd = new RrdDb(newFile.getPath(), true);
+            RrdDatabase rrdDatabase = new RrdDatabase(newRrd);
+
+            assertEquals(m_baseTime, newRrd.getLastArchiveUpdateTime());
+            Archive archive = newRrd.getArchive(0);
+            Robin robin = archive.getRobin(newRrd.getDsIndex("a"));
+            assertEquals(4032, robin.getSize());
+            assertEquals(Double.NaN, rrdDatabase.getDataAt(1293195600).getValue("a"), ACCEPTABLE_DOUBLE_DELTA);
+            assertEquals(0.049532528339D, rrdDatabase.getDataAt(1293210000).getValue("a"), ACCEPTABLE_DOUBLE_DELTA);
+            assertEquals(0.023333333333D, rrdDatabase.getDataAt(1298046000).getValue("a"), ACCEPTABLE_DOUBLE_DELTA);
+        } finally {
+//            newFile.delete();
+        }
+    }
 
     /**
      * Create a new temporary directory. Use something like
@@ -433,6 +456,7 @@ public class JRobinConverterTest {
      * @return  the new directory
      * @throws IOException if there is an error creating the temporary directory
      */
+    @SuppressWarnings("unused")
     private static File createTempDir() throws IOException
     {
         final File sysTempDir = new File(System.getProperty("java.io.tmpdir"));
@@ -477,16 +501,6 @@ public class JRobinConverterTest {
         }
 
         return fileOrDir.delete();
-    }
-
-    private static void initializeRrdLike(final File fromRrd, final File toRrd) throws Exception {
-        final RrdDb oldRrd = new RrdDb(fromRrd.getAbsolutePath(), true);
-
-        final RrdDef rrdDef = oldRrd.getRrdDef();
-        rrdDef.setPath(toRrd.getPath());
-        rrdDef.setStartTime(0);
-        final RrdDb newRrd = new RrdDb(rrdDef);
-        newRrd.close();
     }
 
     protected void checkArchive(RrdDb rrd, final Integer nanSample, final Integer numberSample, final Double numberValue, final Integer archiveIndex, final Integer numDses, final Integer dsIndex, String dsName) throws RrdException, IOException {

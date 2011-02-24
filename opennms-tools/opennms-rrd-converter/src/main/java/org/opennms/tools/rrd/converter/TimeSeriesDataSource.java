@@ -1,0 +1,65 @@
+package org.opennms.tools.rrd.converter;
+
+import java.io.IOException;
+import java.util.List;
+
+public interface TimeSeriesDataSource {
+
+    /**
+     * The beginning of the time span for this data source.
+     * @return The start time, in seconds.
+     * @throws IOException
+     */
+    long getStartTime() throws IOException;
+    
+    /**
+     * The end of the time span for this data source.
+     * @return The end time, in seconds.
+     * @throws IOException
+     */
+    long getEndTime() throws IOException;
+    
+    /**
+     * The resolution of this data source.
+     * @return The number of seconds per sample.
+     * @throws IOException
+     */
+    long getNativeStep() throws IOException;
+    
+    /**
+     * The number of samples in this data source.
+     * @return The number of samples.
+     * @throws IOException
+     */
+    long getRows() throws IOException;
+    
+    /**
+     * The names of the keys in this data source.
+     * @return The data source names.
+     * @throws IOException
+     */
+    List<String> getDsNames() throws IOException;
+
+    /**
+     * The data in this data source, given a timestamp.
+     * @param timestamp The time to retrieve data at.
+     * @return An {@link RrdEntry} object, with the relevant sample data.
+     * @throws IOException
+     */
+    RrdEntry getDataAt(long timestamp) throws IOException;
+
+    /**
+     * The data in this data source, given a step.
+     * @param The step size to return data in.  The native step must be evenly divisible by this number.
+     * @return A list of {@link RrdEntry} objects, with samples at the given step's resolution.
+     * @throws IOException
+     */
+    List<RrdEntry> getData(long step) throws IOException;
+
+    /**
+     * Close the data source.
+     * @throws IOException
+     */
+    void close() throws IOException;
+
+}

@@ -1,15 +1,33 @@
 package org.opennms.tools.rrd.converter;
 
-import java.io.IOException;
+import java.util.LinkedHashSet;
 import java.util.List;
 import java.util.Map;
+import java.util.Set;
 import java.util.TreeMap;
 
-import org.jrobin.core.RrdDb;
-import org.jrobin.core.RrdException;
-import org.jrobin.core.Sample;
+import org.apache.commons.lang.builder.ToStringBuilder;
+import org.opennms.core.utils.LogUtils;
 
 class RrdEntry {
+    public class DsValue {
+        final String m_key;
+        final Double m_value;
+        
+        public DsValue(final String key, final Double value) {
+            m_key = key;
+            m_value = value;
+        }
+        
+        public String getKey() {
+            return m_key;
+        }
+        
+        public Double getValue() {
+            return m_value;
+        }
+    }
+
     private TreeMap<String, Double> m_entryMap;
     private long m_timestamp;
     private List<String> m_dsNames;
@@ -20,16 +38,12 @@ class RrdEntry {
         m_dsNames = dsNames;
     }
     
-    public Map<String,Double> getMap() {
-        return m_entryMap;
-    }
-
-    public double getValue(final String dsName) {
+    public Double getValue(final String dsName) {
         return m_entryMap.get(dsName);
     }
 
     protected void setValue(final String dsName, final double sample) {
-        Map<String,Double> dsEntries = getMap();
+        Map<String,Double> dsEntries = m_entryMap;
         dsEntries.put(dsName, sample);
     }
 
@@ -37,17 +51,38 @@ class RrdEntry {
         return m_timestamp;
     }
 
-    protected void createSample(final RrdDb outputRrd) throws IOException, RrdException {
-        final Sample s = outputRrd.createSample(m_timestamp);
-        final double[] values = new double[m_dsNames.size()];
-        for (int i = 0; i < m_dsNames.size(); i++) {
-            final String string = m_dsNames.get(i);
-            if (string != null) {
-                final Double value = getMap().get(string);
-                if (value != null) values[i] = value;
-            }
+    public Set<DsValue> getEntries() {
+        final Set<DsValue> dsValues = new LinkedHashSet<DsValue>();
+        for (final String dsName : m_dsNames) {
+            final DsValue dsValue = new DsValue(dsName,m_entryMap.get(dsName));
+            dsValues.add(dsValue);
         }
-        s.setValues(values);
-        s.update();
+        return dsValues;
+    }
+    
+    public List<String> getDsNames() {
+        return m_dsNames;
+    }
+
+    public String toString() {
+        return new ToStringBuilder(this)
+            .append("timestamp", m_timestamp)
+            .append("entries", m_entryMap)
+            .toString();
+    }
+
+    public void coalesceWith(final RrdEntry otherEntry) {
+        for (final String key : m_dsNames) {
+            final Double myValue = m_entryMap.get(key);
+            final Double otherValue = otherEntry.getValue(key);
+            if (LogUtils.isTraceEnabled(this)) LogUtils.tracef(this, "key = %s, myValue = %s, otherValue = %s", key, myValue, otherValue);
+            setValue(key, coalesce(myValue, otherValue));
+        }
+    }
+    
+    protected Double coalesce(final Double a, final Double b) {
+        if (a != null && !Double.isNaN(a)) return a;
+        if (b == null) return Double.NaN;
+        return b;
     }
 }

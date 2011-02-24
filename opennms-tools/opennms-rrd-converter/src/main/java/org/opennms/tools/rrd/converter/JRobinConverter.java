@@ -14,7 +14,6 @@ import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 import java.util.Properties;
-import java.util.Set;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 
@@ -26,8 +25,6 @@ import org.apache.commons.cli.Options;
 import org.apache.commons.cli.ParseException;
 import org.apache.log4j.PropertyConfigurator;
 import org.jrobin.core.ArcDef;
-import org.jrobin.core.Archive;
-import org.jrobin.core.FetchData;
 import org.jrobin.core.RrdBackendFactory;
 import org.jrobin.core.RrdDb;
 import org.jrobin.core.RrdDef;
@@ -72,16 +69,6 @@ public class JRobinConverter {
                 e.printStackTrace();
             }
         }
-    }
-
-    private File m_groupFile;
-
-    public File getGroupFile() {
-        return m_groupFile;
-    }
-    
-    public void setGroupFile(final File rrd) {
-        m_groupFile = rrd;
     }
 
     /**
@@ -211,106 +198,27 @@ public class JRobinConverter {
     }
 
     public void consolidateRrdFile(final File groupFile, final File outputFile) throws IOException, RrdException, ConverterException {
-        final RrdDb groupRrd = new RrdDb(groupFile, true);
+        final List<RrdDatabase> rrds = new ArrayList<RrdDatabase>();
+        rrds.add(new RrdDatabase(groupFile, true));
+        for (final File individualFile : getMatchingGroupRrds(groupFile)) {
+            rrds.add(new RrdDatabase(individualFile, true));
+        }
+        LogUtils.debugf(this, "rrds = %s", rrds);
+        final TimeSeriesDataSource dataSource = new AggregateTimeSeriesDataSource(rrds);
+        LogUtils.debugf(this, "dataSource = %s", dataSource);
+
         final RrdDb outputRrd = new RrdDb(outputFile);
+        final RrdDatabaseWriter writer = new RrdDatabaseWriter(outputRrd);
 
-        final RrdDatabase data = new RrdDatabase(outputRrd);
-        final List<File> individualRrds = getMatchingGroupRrds(groupFile);
-        LogUtils.debugf(JRobinConverter.class, "individual RRDs = %s", individualRrds);
-
-
-        final long endTime = groupRrd.getLastArchiveUpdateTime();
+        final long endTime = dataSource.getEndTime();
         // 1 year
-        final long startTime = endTime - (60L * 60L * 24L * 365L);
-        for (final File individualRrdFile : individualRrds) {
-            final RrdDb inputRrd = new RrdDb(individualRrdFile, true);
-            final List<String> dsNames = getDsNames(individualRrdFile);
-            LogUtils.debugf(JRobinConverter.class, "input DSNames = %s", dsNames);
-            if (dsNames.size() > 1) {
-                LogUtils.warnf(JRobinConverter.class, "%s: more than one dsname found!", individualRrdFile);
-            }
-            final String dsName = dsNames.get(0);
-            final String dsType = groupRrd.getDatasource(dsName).getDsType();
-
-            collectSampleData(inputRrd, 300, dsName, dsType, startTime, endTime, data);
-            inputRrd.close();
+        final long startTime = endTime - (60L * 60L * 24L * 366L);
+        for (long time = startTime; time <= endTime; time += 300) {
+            final RrdEntry entry = dataSource.getDataAt(time);
+            writer.write(entry);
         }
-
-        final List<String> dsNames = getDsNames(groupFile);
-        for (int i = 0; i < dsNames.size(); i++) {
-            final String dsName = dsNames.get(i);
-            final String dsType = groupRrd.getDatasource(dsName).getDsType();
-            collectSampleData(groupRrd, 300, dsName, dsType, startTime, endTime, data);
-        }
-        
-        data.createSamples(outputRrd);
-        
+        dataSource.close();
         outputRrd.close();
-    }
-
-    @SuppressWarnings("unused")
-    private void printSample(final long sampleTime, final Map<String, Double> entry) {
-        final StringBuffer sb = new StringBuffer();
-        sb.append(new Date(sampleTime * 1000L)).append(": ");
-        final Set<String> keys = entry.keySet();
-        for (final Iterator<String> it = keys.iterator(); it.hasNext(); ) {
-            final String key = it.next();
-            sb.append(key).append("=").append(entry.get(key));
-            if (it.hasNext()) sb.append(", ");
-        }
-        LogUtils.debugf(JRobinConverter.class, sb.toString());
-    }
-
-    public void collectSampleData(final RrdDb inputRrd, final int groupDsStep, final String dsName, final String dsType, final long startTime, final long endTime, RrdDatabase rrdDatabase) throws IOException, RrdException {
-        long lastSampleTime = 0;
-        for (int j = inputRrd.getArcCount() - 1; j >= 0; j--) {
-            RrdArchive rrdArchive = new RrdArchive(inputRrd.getArchive(j), Arrays.asList(inputRrd.getDsNames()));
-            if (!rrdArchive.isAverage()) {
-                continue;
-            }
-            LogUtils.debugf(JRobinConverter.class, "dsName=%s, archive=%d, start=%s, end=%s, step=%d (%s)", dsName, j, new Date(startTime * 1000L), new Date(endTime * 1000L), groupDsStep, inputRrd);
-
-            Long current = startTime;
-            final FetchData fd = inputRrd.createFetchRequest(rrdArchive.getArchive().getConsolFun(), startTime, endTime).fetchData();
-            final Long step = fd.getStep();
-            LogUtils.debugf(JRobinConverter.class, "step = %d", step);
-
-            double lastValue = 0;
-            Long stepCount;
-
-            if (step > groupDsStep) {
-                LogUtils.debugf(JRobinConverter.class, "step %d > %d", step, groupDsStep);
-                if (step % groupDsStep == 0) {
-                    stepCount = (step / groupDsStep);
-                    LogUtils.debugf(JRobinConverter.class, "step is evenly divisible (%d / %d = %d)", step, groupDsStep, stepCount);
-                } else {
-                    LogUtils.errorf(JRobinConverter.class, "step is NOT evenly divisible");
-                    throw new UnsupportedOperationException("unable to convert data, step sizes are not even");
-                }
-            } else {
-                stepCount = 1L;
-            }
-
-            for (final double originalSample : fd.getValues(dsName)) {
-                double sample = originalSample;
-                if (current > lastSampleTime) {
-                    if (Double.isNaN(sample)) {
-                        current += step;
-                    } else {
-                        for (int i = 0; i < stepCount; i++) {
-                            if (dsType.equals("COUNTER")) {
-                                sample = lastValue + (originalSample * groupDsStep);
-                                lastValue = sample;
-                            }
-                            rrdDatabase.addSample(current, dsName, sample);
-                            
-                            lastSampleTime = current;
-                            current += groupDsStep;
-                        }
-                    }
-                }
-            }
-        }
     }
 
     public List<File> findRrds(final File topDirectory) {
@@ -349,6 +257,7 @@ public class JRobinConverter {
         final File directory = new File("target/rrd");
         directory.mkdirs();
         final File outputFile = new File(directory, "temp-" + rrdFile.getName());
+        LogUtils.debugf(this, "created temporary RRD: %s", outputFile);
         final RrdDb oldRrd = new RrdDb(rrdFile.getAbsolutePath(), true);
         final RrdDef rrdDef = oldRrd.getRrdDef();
         rrdDef.setPath(outputFile.getAbsolutePath());

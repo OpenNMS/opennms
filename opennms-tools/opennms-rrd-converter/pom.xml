@@ -51,6 +51,10 @@
       <artifactId>commons-collections</artifactId>
     </dependency>
     <dependency>
+      <groupId>commons-lang</groupId>
+      <artifactId>commons-lang</artifactId>
+    </dependency>
+    <dependency>
       <groupId>org.jrobin</groupId>
       <artifactId>jrobin</artifactId>
       <version>1.5.11-SNAPSHOT</version>
