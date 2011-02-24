@@ -24,7 +24,7 @@ public class RrdDatabaseWriter {
     
     public void write(final RrdEntry entry) throws IOException, RrdException {
         final Sample s = m_rrd.createSample(entry.getTimestamp());
-        final double[] values = new double[entry.getEntries().size()];
+        final double[] values = new double[entry.getDsNames().size()];
         int i = 0;
         for (final String dsName : entry.getDsNames()) {
             if (dsName != null) {
