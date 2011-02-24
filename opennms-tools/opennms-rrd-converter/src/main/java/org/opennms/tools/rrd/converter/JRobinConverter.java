@@ -93,7 +93,7 @@ public class JRobinConverter {
         options.addOption("f", "factory", true, "The JRobin factory to use.");
         options.addOption("s", "scan", true, "Scan a directory for storeByGroup RRDs.");
         options.addOption("t", "threads", true, "Number of threads to start.");
-        
+
         final CommandLineParser parser = new GnuParser();
         final CommandLine cmd = parser.parse(options, args);
 

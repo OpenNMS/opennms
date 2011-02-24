@@ -8,6 +8,7 @@ import java.io.File;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.Collections;
 import java.util.Date;
 import java.util.List;
 import java.util.Map;
@@ -170,7 +171,7 @@ public class JRobinConverterTest {
     @Test
     public void testGetRras() throws Exception {
         final List<String> rras = m_converter.getRras(m_sineFull);
-        assertEquals(5, rras.size());
+        assertEquals(3, rras.size());
     }
 
     @Test
@@ -359,7 +360,7 @@ public class JRobinConverterTest {
     @Test
     public void testRrdDatabase() throws Exception {
         RrdDb rrd = new RrdDb(m_variation);
-        RrdDatabase rrdDatabase = new RrdDatabase(rrd);
+        BaseRrdDataSource rrdDatabase = new RrdDatabase(rrd);
         final int largestArchiveStep = 86400;
 
         final long end = getMidnightInSeconds(m_baseTime);
@@ -407,7 +408,7 @@ public class JRobinConverterTest {
         datasources.add(sourceDatabase);
         datasources.add(fullDatabase);
 
-        AggregateTimeSeriesDataSource aggregate = new AggregateTimeSeriesDataSource(datasources);
+        BaseRrdDataSource aggregate = new AggregateTimeSeriesDataSource(datasources);
         assertEquals(300, aggregate.getNativeStep());
         assertEquals(1264006800, aggregate.getStartTime());
         assertEquals(1298046000, aggregate.getEndTime());
@@ -421,21 +422,80 @@ public class JRobinConverterTest {
         assertEquals(0.023515134858D, aggregate.getDataAt(1296836700).getValue("a"), ACCEPTABLE_DOUBLE_DELTA);
         assertEquals(0.023333333333D, aggregate.getDataAt(1298046000).getValue("a"), ACCEPTABLE_DOUBLE_DELTA);
 
-        List<RrdEntry> entries = aggregate.getData(300);
+        List<RrdEntry> entries = aggregate.getData(150);
         for (final RrdEntry entry : entries) {
             if (!Double.isNaN(entry.getValue("a"))) {
                 LogUtils.debugf(this, "entry = %s", entry);
             }
         }
+        assertEquals(entries.get(entries.size() - 1).getValue("a"), aggregate.getDataAt(aggregate.getEndTime() + 299).getValue("a"), ACCEPTABLE_DOUBLE_DELTA);
     }
     
+    @Test
+    public void testRrdDatabaseAndAggregateRrdDatabase() throws Exception {
+        long dbTime = 0;
+        long aggTime = 0;
+        for (int i = 0; i < 20; i++) {
+            RrdDb source = new RrdDb(m_sineSource);
+            RrdDatabase sourceDatabase = new RrdDatabase(source);
+    
+            BaseRrdDataSource aggregate = new AggregateTimeSeriesDataSource(Collections.singletonList(sourceDatabase));
+
+            long dbStart = System.nanoTime();
+            List<RrdEntry> rawEntries = sourceDatabase.getData(150);
+            dbTime += System.nanoTime() - dbStart;
+            
+            long aggStart = System.nanoTime();
+            List<RrdEntry> aggregateEntries = aggregate.getData(150);
+            aggTime += System.nanoTime() - aggStart;
+
+            assertEquals(aggregate.getEndTime() + 150, aggregateEntries.get(aggregateEntries.size() - 1).getTimestamp());
+            assertEquals(rawEntries.size(), aggregateEntries.size());
+        }
+        LogUtils.debugf(this, "dbTime = %d (%f)", dbTime, dbTime / 1000000.0 / 20.0);
+        LogUtils.debugf(this, "aggTime = %d (%f)", aggTime, aggTime / 1000000.0 / 20.0);
+    }
+
+    @Test
+    public void testRrdDatabaseAndAggregateRrdDatabaseGetDataAt() throws Exception {
+        long dbTime = 0;
+        long aggTime = 0;
+        for (int i = 0; i < 20; i++) {
+            RrdDb source = new RrdDb(m_sineSource);
+            RrdDatabase sourceDatabase = new RrdDatabase(source);
+    
+            BaseRrdDataSource aggregate = new AggregateTimeSeriesDataSource(Collections.singletonList(sourceDatabase));
+
+            long dbStart = System.nanoTime();
+            List<RrdEntry> rawEntries = getAllData(sourceDatabase);
+            dbTime += System.nanoTime() - dbStart;
+            
+            long aggStart = System.nanoTime();
+            List<RrdEntry> aggregateEntries = getAllData(aggregate);
+            aggTime += System.nanoTime() - aggStart;
+
+            assertEquals(aggregate.getEndTime() + 150, aggregateEntries.get(aggregateEntries.size() - 1).getTimestamp());
+            assertEquals(rawEntries.size(), aggregateEntries.size());
+        }
+        LogUtils.debugf(this, "dbTime = %d (%f)", dbTime, dbTime / 1000000.0 / 20.0);
+        LogUtils.debugf(this, "aggTime = %d (%f)", aggTime, aggTime / 1000000.0 / 20.0);
+    }
+
+    private List<RrdEntry> getAllData(TimeSeriesDataSource sourceDatabase) throws IOException {
+        final List<RrdEntry> entries = new ArrayList<RrdEntry>(sourceDatabase.getRows());
+        for (long time = sourceDatabase.getStartTime(); time < sourceDatabase.getEndTime() + sourceDatabase.getNativeStep(); time += 150) {
+            entries.add(sourceDatabase.getDataAt(time));
+        }
+        return entries;
+    }
+
     @Test
     public void testCombine() throws Exception {
         final File newFile = m_converter.createTempRrd(m_sineFull);
         try {
             m_converter.consolidateRrdFile(m_sineFull, newFile);
             RrdDb newRrd = new RrdDb(newFile.getPath(), true);
-            RrdDatabase rrdDatabase = new RrdDatabase(newRrd);
+            BaseRrdDataSource rrdDatabase = new RrdDatabase(newRrd);
 
             assertEquals(m_baseTime, newRrd.getLastArchiveUpdateTime());
             Archive archive = newRrd.getArchive(0);

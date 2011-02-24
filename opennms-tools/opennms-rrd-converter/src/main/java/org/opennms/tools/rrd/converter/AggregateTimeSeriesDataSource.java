@@ -5,15 +5,23 @@ import java.util.ArrayList;
 import java.util.List;
 
 import org.apache.commons.lang.builder.ToStringBuilder;
-import org.opennms.core.utils.LogUtils;
 import org.springframework.util.Assert;
 
-public class AggregateTimeSeriesDataSource implements TimeSeriesDataSource {
+public class AggregateTimeSeriesDataSource extends BaseRrdDataSource {
     private final List<? extends TimeSeriesDataSource> m_dataSources;
 
-    public AggregateTimeSeriesDataSource(final List<? extends TimeSeriesDataSource> dataSources) {
+    public AggregateTimeSeriesDataSource(final List<? extends TimeSeriesDataSource> dataSources) throws IOException {
         Assert.notNull(dataSources);
         m_dataSources = dataSources;
+        ArrayList<String> dsNames = new ArrayList<String>();
+        for (final TimeSeriesDataSource ds : m_dataSources) {
+            for (final String dsName : ds.getDsNames()) {
+                if (!dsNames.contains(dsName)) {
+                    dsNames.add(dsName);
+                }
+            }
+        }
+        setDsNames(dsNames);
     }
 
     public long getStartTime() throws IOException {
@@ -40,22 +48,6 @@ public class AggregateTimeSeriesDataSource implements TimeSeriesDataSource {
         return nativeStep;
     }
 
-    public long getRows() throws IOException {
-        return (getEndTime() - getStartTime()) / getNativeStep();
-    }
-
-    public List<String> getDsNames() throws IOException {
-        final List<String> dsNames = new ArrayList<String>();
-        for (final TimeSeriesDataSource ds : m_dataSources) {
-            for (final String dsName : ds.getDsNames()) {
-                if (!dsNames.contains(dsName)) {
-                    dsNames.add(dsName);
-                }
-            }
-        }
-        return dsNames;
-    }
-
     public RrdEntry getDataAt(final long timestamp) throws IOException {
         final RrdEntry entry = new RrdEntry(timestamp, getDsNames());
         for (final TimeSeriesDataSource ds : m_dataSources) {
@@ -63,18 +55,6 @@ public class AggregateTimeSeriesDataSource implements TimeSeriesDataSource {
             entry.coalesceWith(thisEntry);
         }
         return entry;
-    }
-
-    public List<RrdEntry> getData(final long step) throws IOException {
-        final List<RrdEntry> entries = new ArrayList<RrdEntry>();
-
-        final long rrdStartTime = getStartTime();
-        for (long time = rrdStartTime; time <= getEndTime(); time += step) {
-            entries.add(getDataAt(time));
-        }
-
-        LogUtils.debugf(this, "total entries: %d", entries.size());
-        return entries;
     }
 
     public void close() throws IOException {

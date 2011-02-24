@@ -32,14 +32,31 @@ public abstract class BaseRrdDataSource implements TimeSeriesDataSource {
         return m_dsNames.get(dsName);
     }
 
-    protected Integer getRowNumberForTimestamp(final long timestamp) throws IOException {
+    protected int getRowNumberForTimestamp(final long timestamp) throws IOException {
         final long arcStep = getNativeStep();
         final long offset = timestamp - getStartTime();
-        final Integer row = (int)(offset/arcStep);
-        final long offsetStep = offset % arcStep;
-        final long time = timestamp - offsetStep;
-        if (LogUtils.isTraceEnabled(this)) LogUtils.tracef(this, "timestamp = %d, aliased timestamp = %d, offset = %d, offsetStep = %d, row = %d", timestamp, time, offset, offsetStep, row);
+        final int row = (int)(offset/arcStep);
+//        final long offsetStep = offset % arcStep;
+//        final long time = timestamp - offsetStep;
+//        if (LogUtils.isTraceEnabled(this)) LogUtils.tracef(this, "timestamp = %d, aliased timestamp = %d, offset = %d, offsetStep = %d, row = %d", timestamp, time, offset, offsetStep, row);
         return row;
+    }
+
+    protected boolean isValidTimestamp(final long timestamp) throws IOException {
+        return getStartTime() <= timestamp && timestamp < getEndTime() + getNativeStep();
+    }
+
+    public List<RrdEntry> getData(final long step) throws IOException {
+        final List<RrdEntry> entries = new ArrayList<RrdEntry>(getRows());
+        for (long time = getStartTime(); time < getEndTime() + getNativeStep(); time += step) {
+            entries.add(getDataAt(time));
+        }
+        LogUtils.debugf(this, "total entries: %d", entries.size());
+        return entries;
+    }
+
+    public int getRows() throws IOException {
+        return (int)((getEndTime() - getStartTime()) / getNativeStep());
     }
 
     /*

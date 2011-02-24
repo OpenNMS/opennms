@@ -31,7 +31,7 @@ public interface TimeSeriesDataSource {
      * @return The number of samples.
      * @throws IOException
      */
-    long getRows() throws IOException;
+    int getRows() throws IOException;
     
     /**
      * The names of the keys in this data source.
