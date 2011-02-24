@@ -163,7 +163,6 @@ public class JRobinConverterTest {
         } finally {
 //            newFile.delete();
         }
-        System.err.println("newFile = " + newFile.getAbsolutePath());
     }
 
     @Test
@@ -599,11 +598,9 @@ public class JRobinConverterTest {
             m_factor = 2 * Math.PI / period;
         }
         
-        public double evaluate(long timestamp) {
-            long x = timestamp - m_startTime;
-            double ret = (m_amplitude * Math.sin(m_factor * x)) + m_offset;
-//            System.out.println("Sin("+ x + ") = " + ret);
-            return ret;
+        public double evaluate(final long timestamp) {
+            final long x = timestamp - m_startTime;
+            return (m_amplitude * Math.sin(m_factor * x)) + m_offset;
         }
     }
     
@@ -616,7 +613,7 @@ public class JRobinConverterTest {
         
         double m_factor;
         
-        Cos(long startTime, double offset, double amplitude, double period) {
+        Cos(final long startTime, final double offset, final double amplitude, final double period) {
             m_startTime = startTime;
             m_offset = offset;
             m_amplitude = amplitude;
@@ -625,11 +622,9 @@ public class JRobinConverterTest {
             m_factor = 2 * Math.PI / period;
         }
         
-        public double evaluate(long timestamp) {
-            long x = timestamp - m_startTime;
-            double ret = (m_amplitude * Math.cos(m_factor * x)) + m_offset;
-            System.out.println("Cos("+ x + ") = " + ret);
-            return ret;
+        public double evaluate(final long timestamp) {
+            final long x = timestamp - m_startTime;
+            return (m_amplitude * Math.cos(m_factor * x)) + m_offset;
         }
     }
     
@@ -637,12 +632,12 @@ public class JRobinConverterTest {
         Function m_a;
         Function m_b;
         
-        Times(Function a, Function b) {
+        Times(final Function a, final Function b) {
             m_a = a;
             m_b = b;
         }
 
-        public double evaluate(long timestamp) {
+        public double evaluate(final long timestamp) {
             return m_a.evaluate(timestamp)*m_b.evaluate(timestamp);
         }
     }
@@ -651,13 +646,13 @@ public class JRobinConverterTest {
         double m_prevValue;
         Function m_function;
         
-        Counter(double initialValue, Function function) {
+        Counter(final double initialValue, final Function function) {
             m_prevValue = initialValue;
             m_function = function;
         }
 
-        public double evaluate(long timestamp) {
-            double m_diff = m_function.evaluate(timestamp);
+        public double evaluate(final long timestamp) {
+            final double m_diff = m_function.evaluate(timestamp);
             m_prevValue += m_diff;
             return m_prevValue;
         }
@@ -668,18 +663,16 @@ public class JRobinConverterTest {
         private long m_baseline;
         private long m_variation;
 
-        public AverageSequence(long baseline, long variation) {
+        public AverageSequence(final long baseline, final long variation) {
             m_baseline = baseline;
             m_variation = variation;
         }
 
-        public double evaluate(long timestamp) {
-            long i = (timestamp % SECONDS_PER_DAY) / 300;
-            long h = i / 12;
+        public double evaluate(final long timestamp) {
+            final long i = (timestamp % SECONDS_PER_DAY) / 300;
+            final long h = i / 12;
             final long j = i % 12;
             final double result = m_baseline + (m_variation * (h-12)) + (j - 6);
-//            final double result = m_baseline + (m_variation * (h-12)) + (j - 6);
-//            LogUtils.debugf(this, "i = %d, h = %d, j = %d, result = %f", i, h, j, result);
             return result;
         }
         
