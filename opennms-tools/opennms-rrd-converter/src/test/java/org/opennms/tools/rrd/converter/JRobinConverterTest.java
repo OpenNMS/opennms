@@ -30,14 +30,15 @@ import org.junit.Test;
 public class JRobinConverterTest {
     private static final double ACCEPTABLE_DOUBLE_DELTA = 0.00000000001;
     JRobinConverter m_converter = null;
-    File m_workDir = new File("target/rrd");
     private static final long SECONDS_PER_HOUR = 3600L;
     private static final long SECONDS_PER_DAY = 24L * SECONDS_PER_HOUR;
     private static final long SECONDS_PER_YEAR = 366L * SECONDS_PER_DAY;
     private long m_baseTime = 1298046000L;
-    private final File m_sineFull       = new File(m_workDir, "sine.rrd");
-    private final File m_sineSource     = new File(m_workDir, "a.rrd");
-    private final File m_variation      = new File(m_workDir, "variation.rrd");
+    
+    File m_workDir = new File("target/rrd");
+    private final File m_sineFull   = new File(m_workDir, "sine.rrd");
+    private final File m_sineSource = new File(m_workDir, "a.rrd");
+    private final File m_variation  = new File(m_workDir, "variation.rrd");
     
     @BeforeClass
     public static void setFactory() throws RrdException {
@@ -47,16 +48,12 @@ public class JRobinConverterTest {
     @Before
     public void setUp() throws Exception {
         m_converter = new JRobinConverter();
-//        m_workDir = createTempDir();
         m_workDir.mkdirs();
         createMockRrds();
     }
 
     @After
     public void tearDown() throws Exception {
-//        m_mib2Interfaces.delete();
-//        m_ifInOctets.delete();
-//        m_ifOutOctets.delete();
 //        m_sineFull.delete();
 //        m_sineSource.delete();
 //        m_variation.delete();
@@ -203,7 +200,7 @@ public class JRobinConverterTest {
     @Test
     public void testRrdArchiveZero() throws Exception {
         RrdDb rrd = new RrdDb(m_variation);
-        BaseRrdDataSource archive = new RrdArchive(rrd.getArchive(0), Arrays.asList(rrd.getDsNames()));
+        TimeSeriesDataSource archive = new RrdArchive(rrd.getArchive(0), Arrays.asList(rrd.getDsNames()));
         final int expectedArchiveSize = 4032;
         final int expectedArchiveStep = 300;
 
@@ -213,11 +210,12 @@ public class JRobinConverterTest {
         assertEquals(end, archive.getEndTime());
         assertEquals(start, archive.getStartTime());
         assertEquals(expectedArchiveStep, archive.getNativeStep());
+        assertEquals(expectedArchiveSize, archive.getRows());
 
         assertEquals(0.5833333333333334D, archive.getDataAt(start).getValue("a"), ACCEPTABLE_DOUBLE_DELTA);
         assertEquals(0.5866666666666667D, archive.getDataAt(start + 300).getValue("a"), ACCEPTABLE_DOUBLE_DELTA);
         assertEquals(0.58D, archive.getDataAt(end).getValue("a"), ACCEPTABLE_DOUBLE_DELTA);
-
+        
         List<RrdEntry> entries = archive.getData(expectedArchiveStep);
         assertEquals(expectedArchiveSize, entries.size());
         assertEquals(start, entries.get(0).getTimestamp());
@@ -521,26 +519,6 @@ public class JRobinConverterTest {
         } else {
             throw new IOException("Failed to create temp dir named " + newTempDir.getAbsolutePath());
         }
-    }
-
-    /**
-     * Recursively delete file or directory
-     * @param fileOrDir
-     *          the file or dir to delete
-     * @return
-     *          true iff all files are successfully deleted
-     */
-    @SuppressWarnings("unused")
-    private static boolean recursiveDelete(final File fileOrDir) {
-        if(fileOrDir.isDirectory()) {
-            for(final File innerFile : fileOrDir.listFiles()) {
-                if(!recursiveDelete(innerFile)) {
-                    return false;
-                }
-            }
-        }
-
-        return fileOrDir.delete();
     }
 
     protected void checkArchive(RrdDb rrd, final Integer nanSample, final Integer numberSample, final Double numberValue, final Integer archiveIndex, final Integer numDses, final Integer dsIndex, String dsName) throws RrdException, IOException {

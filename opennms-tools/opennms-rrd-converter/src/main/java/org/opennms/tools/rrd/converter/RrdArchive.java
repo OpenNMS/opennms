@@ -4,6 +4,8 @@ import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
+import java.util.Map;
+import java.util.TreeMap;
 
 import org.apache.commons.lang.builder.CompareToBuilder;
 import org.apache.commons.lang.builder.ToStringBuilder;
@@ -18,6 +20,7 @@ public class RrdArchive extends BaseRrdDataSource implements Comparable<RrdArchi
     private final long m_endTime;
     private final int m_rows;
     private final String m_consolFun;
+    private final Map<Integer,RrdEntry> m_data;
 
     public RrdArchive(final Archive archive, final List<String> dsNames) throws IOException {
         super(dsNames);
@@ -27,6 +30,12 @@ public class RrdArchive extends BaseRrdDataSource implements Comparable<RrdArchi
         m_endTime = m_archive.getEndTime();
         m_rows = m_archive.getRows();
         m_consolFun = getArchive().getConsolFun();
+        
+        m_data = new TreeMap<Integer,RrdEntry>();
+        for (int row = 0; row < m_rows; row++) {
+            m_data.put(row, getRawDataForRowWithTimestamp(row, getStartTime() + (row * m_step)));
+        }
+
     }
 
     public Archive getArchive() {
@@ -49,6 +58,26 @@ public class RrdArchive extends BaseRrdDataSource implements Comparable<RrdArchi
     }
     
     private RrdEntry getDataForRowWithTimestamp(final int row, final long timestamp) throws IOException {
+//        return getRawDataForRowWithTimestamp(row, timestamp);
+        final RrdEntry rawEntry = m_data.get(row);
+        if (rawEntry == null) {
+            return new RrdEntry(timestamp, getDsNames());
+        }
+        if (timestamp == rawEntry.getTimestamp()) {
+            return rawEntry;
+        } else {
+            try {
+                final RrdEntry newEntry = (RrdEntry)rawEntry.clone();
+                newEntry.setTimestamp(timestamp);
+                return newEntry;
+            } catch (final CloneNotSupportedException e) {
+                LogUtils.warnf(this, e, "unable to clone entry: %s", rawEntry);
+                return new RrdEntry(timestamp, getDsNames());
+            }
+        }
+    }
+
+    private RrdEntry getRawDataForRowWithTimestamp(final int row, final long timestamp) throws IOException {
         final RrdEntry entry = new RrdEntry(timestamp, getDsNames());
         int i = 0;
         for (final String dsName : getDsNames()) {
