@@ -13,7 +13,6 @@ import java.util.HashMap;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
-import java.util.Properties;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 
@@ -23,13 +22,12 @@ import org.apache.commons.cli.GnuParser;
 import org.apache.commons.cli.HelpFormatter;
 import org.apache.commons.cli.Options;
 import org.apache.commons.cli.ParseException;
-import org.apache.log4j.PropertyConfigurator;
 import org.jrobin.core.ArcDef;
 import org.jrobin.core.RrdBackendFactory;
 import org.jrobin.core.RrdDb;
 import org.jrobin.core.RrdDef;
 import org.jrobin.core.RrdException;
-import org.opennms.core.utils.LogUtils;
+import org.opennms.tools.rrd.converter.LogUtils.Level;
 
 public class JRobinConverter {
     private static final class JRobinConsolidationRunnable implements Runnable {
@@ -50,17 +48,26 @@ public class JRobinConverter {
 
         public void run() {
             try {
-                System.out.println(new Date() + ": processing " + m_rrdFile + " (" + m_count + "/" + m_total + ")");
+                LogUtils.infof(this, "starting processing %s (%d/%d)", m_rrdFile, m_count, m_total);
                 final List<String> dsNames = m_converter.getDsNames(m_rrdFile);
                 if (dsNames.size() == 1) {
-                    System.err.println(new Date() + ": - " + m_rrdFile + " only has one dsName, skipping");
+                    LogUtils.warnf(this, "%s only has one dsName, skipping", m_rrdFile);
                     return;
                 }
                 final File temporaryRrd = m_converter.createTempRrd(m_rrdFile);
                 
                 m_converter.consolidateRrdFile(m_rrdFile, temporaryRrd);
+                final File backupRrdFile = new File(m_rrdFile.getAbsolutePath() + ".orig");
+                if (backupRrdFile.exists()) {
+                    LogUtils.errorf(this, "backup file %s already exists!", backupRrdFile);
+                    System.exit(1);
+                }
+                if (!m_rrdFile.renameTo(backupRrdFile)) {
+                    LogUtils.errorf(this, "unable to back up %s to %s", m_rrdFile, backupRrdFile);
+                    System.exit(1);
+                }
                 if (!m_converter.moveFileSafely(temporaryRrd, m_rrdFile)) {
-                    System.err.println(new Date() + ": - unable to move " + temporaryRrd + " to " + m_rrdFile);
+                    LogUtils.errorf(this, "unable to move %s to %s", temporaryRrd, m_rrdFile);
                     System.exit(1);
                 }
                 System.out.println(new Date() + ": finished processing " + m_rrdFile);
@@ -82,7 +89,6 @@ public class JRobinConverter {
     }
 
     public void execute(final String[] args) throws ParseException, ConverterException, RrdException {
-        setupLogging();
         if (args.length == 0) {
             System.err.println(new Date() + ": no directory specified!");
             System.exit(1);
@@ -91,12 +97,14 @@ public class JRobinConverter {
         final Options options = new Options();
         options.addOption("h", "help", false, "This help.");
         options.addOption("f", "factory", true, "The JRobin factory to use.");
+        options.addOption("l", "log", true, "The log level to use. (Default: INFO)");
         options.addOption("s", "scan", true, "Scan a directory for storeByGroup RRDs.");
         options.addOption("t", "threads", true, "Number of threads to start.");
 
         final CommandLineParser parser = new GnuParser();
         final CommandLine cmd = parser.parse(options, args);
 
+        LogUtils.setLevel(Level.valueOf(cmd.getOptionValue("l", "INFO")));
         RrdBackendFactory.setDefaultFactory(cmd.getOptionValue("f", "MNIO"));
 
         final List<File> rrds = Collections.synchronizedList(new ArrayList<File>());
@@ -303,30 +311,12 @@ public class JRobinConverter {
                 LogUtils.debugf(JRobinConverter.class, "failed to close stream %s", fos);
             }
         }
-        if (out.delete()) {
+        out.delete();
+        if (!out.exists()) {
             tempOut.renameTo(out);
             return in.delete();
         }
         return false;
     }
     
-    public void setupLogging() {
-        final Properties logConfig = new Properties();
-
-        final String consoleAppender = ("CONSOLE");
-        
-        logConfig.put("log4j.appender.CONSOLE", "org.apache.log4j.ConsoleAppender");
-        logConfig.put("log4j.appender.CONSOLE.layout", "org.apache.log4j.PatternLayout");
-        logConfig.put("log4j.appender.CONSOLE.layout.ConversionPattern", "%d %-5p [%t] %c: %m%n");
-
-        logConfig.put("log4j.rootCategory", ("INFO, CONSOLE"));
-        logConfig.put("log4j.logger.org.apache.commons.httpclient.HttpMethodBase", "ERROR");
-        logConfig.put("log4j.logger.org.exolab.castor", "INFO");
-        logConfig.put("log4j.logger.org.snmp4j", "ERROR");
-        logConfig.put("log4j.logger.org.snmp4j.agent", "ERROR");
-        logConfig.put("log4j.logger.org.hibernate.cfg.AnnotationBinder", ("ERROR," + consoleAppender));
-        
-        PropertyConfigurator.configure(logConfig);
-
-    }
 }

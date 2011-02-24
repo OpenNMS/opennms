@@ -47,10 +47,6 @@
       <artifactId>commons-cli</artifactId>
     </dependency>
     <dependency>
-      <groupId>commons-collections</groupId>
-      <artifactId>commons-collections</artifactId>
-    </dependency>
-    <dependency>
       <groupId>commons-lang</groupId>
       <artifactId>commons-lang</artifactId>
     </dependency>
@@ -58,37 +54,6 @@
       <groupId>org.jrobin</groupId>
       <artifactId>jrobin</artifactId>
       <version>1.5.11-SNAPSHOT</version>
-    </dependency>
-    <dependency>
-      <groupId>org.opennms.core</groupId>
-      <artifactId>org.opennms.core.lib</artifactId>
-      <version>${project.version}</version>
-    </dependency>
-    <!-- 
-    <dependency>
-      <groupId>org.opennms</groupId>
-      <artifactId>opennms-rrd-api</artifactId>
-      <scope>compile</scope>
-      <version>${project.version}</version>
-    </dependency>
-    <dependency>
-      <groupId>org.opennms</groupId>
-      <artifactId>opennms-rrd-jrobin</artifactId>
-      <scope>compile</scope>
-      <version>${project.version}</version>
-    </dependency>
-    <dependency>
-      <groupId>org.opennms</groupId>
-      <artifactId>opennms-rrdtool-api</artifactId>
-      <scope>compile</scope>
-      <version>${project.version}</version>
-    </dependency>
-    -->
-    <dependency>
-      <groupId>org.opennms</groupId>
-      <artifactId>opennms-test</artifactId>
-      <scope>test</scope>
-      <version>${project.version}</version>
     </dependency>
   </dependencies>
 </project>

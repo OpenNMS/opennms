@@ -9,8 +9,6 @@ import org.apache.commons.lang.builder.CompareToBuilder;
 import org.apache.commons.lang.builder.ToStringBuilder;
 import org.jrobin.core.Archive;
 import org.jrobin.core.Robin;
-import org.opennms.core.utils.LogUtils;
-import org.springframework.util.Assert;
 
 public class RrdArchive extends BaseRrdDataSource implements Comparable<RrdArchive> {
 
@@ -65,7 +63,7 @@ public class RrdArchive extends BaseRrdDataSource implements Comparable<RrdArchi
     public List<RrdEntry> getData(final long step) throws IOException {
         final List<RrdEntry> entries = new ArrayList<RrdEntry>(getRows());
         final long arcStep = m_archive.getArcStep();
-        Assert.isTrue(arcStep % step == 0, "archive step (" + arcStep + ") must be evenly divisible by step");
+        assertTrue(arcStep % step == 0, "archive step (" + arcStep + ") must be evenly divisible by step");
         final long repeat = arcStep / step;
         for (int row = 0; row < m_archive.getRows(); row++) {
             for (int repeatedRow = 0; repeatedRow < repeat; repeatedRow++) {
@@ -74,6 +72,12 @@ public class RrdArchive extends BaseRrdDataSource implements Comparable<RrdArchi
             }
         }
         return entries;
+    }
+
+    private void assertTrue(final boolean b, final String message) {
+        if (!b) {
+            throw new IllegalStateException(message);
+        }
     }
 
     public long getNativeStep() throws IOException {

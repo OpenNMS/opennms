@@ -5,13 +5,12 @@ import java.util.ArrayList;
 import java.util.List;
 
 import org.apache.commons.lang.builder.ToStringBuilder;
-import org.springframework.util.Assert;
 
 public class AggregateTimeSeriesDataSource extends BaseRrdDataSource {
     private final List<? extends TimeSeriesDataSource> m_dataSources;
 
     public AggregateTimeSeriesDataSource(final List<? extends TimeSeriesDataSource> dataSources) throws IOException {
-        Assert.notNull(dataSources);
+        assertNotNull(dataSources, "dataSources cannot be null!");
         m_dataSources = dataSources;
         ArrayList<String> dsNames = new ArrayList<String>();
         for (final TimeSeriesDataSource ds : m_dataSources) {
@@ -22,6 +21,12 @@ public class AggregateTimeSeriesDataSource extends BaseRrdDataSource {
             }
         }
         setDsNames(dsNames);
+    }
+
+    private void assertNotNull(final Object o, final String message) {
+        if (o == null) {
+            throw new IllegalStateException(message);
+        }
     }
 
     public long getStartTime() throws IOException {

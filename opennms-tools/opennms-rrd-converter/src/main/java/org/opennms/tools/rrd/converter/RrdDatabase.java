@@ -9,7 +9,6 @@ import java.util.TreeSet;
 import org.apache.commons.lang.builder.ToStringBuilder;
 import org.jrobin.core.RrdDb;
 import org.jrobin.core.RrdException;
-import org.opennms.core.utils.LogUtils;
 
 public class RrdDatabase extends BaseRrdDataSource {
     private final RrdDb m_rrd;

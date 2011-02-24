@@ -26,8 +26,6 @@ import org.junit.After;
 import org.junit.Before;
 import org.junit.BeforeClass;
 import org.junit.Test;
-import org.opennms.core.utils.LogUtils;
-import org.opennms.test.mock.MockLogAppender;
 
 public class JRobinConverterTest {
     private static final double ACCEPTABLE_DOUBLE_DELTA = 0.00000000001;
@@ -51,7 +49,6 @@ public class JRobinConverterTest {
 
     @Before
     public void setUp() throws Exception {
-        MockLogAppender.setupLogging();
         m_converter = new JRobinConverter();
 //        m_workDir = createTempDir();
         m_workDir.mkdirs();

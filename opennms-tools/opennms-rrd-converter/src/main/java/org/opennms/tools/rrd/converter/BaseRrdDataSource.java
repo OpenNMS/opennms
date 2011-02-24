@@ -6,8 +6,6 @@ import java.util.List;
 import java.util.Map;
 import java.util.TreeMap;
 
-import org.opennms.core.utils.LogUtils;
-
 public abstract class BaseRrdDataSource implements TimeSeriesDataSource {
     private Map<String,Integer> m_dsNames = new TreeMap<String,Integer>();
 

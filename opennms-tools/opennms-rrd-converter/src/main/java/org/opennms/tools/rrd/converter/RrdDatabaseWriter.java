@@ -9,7 +9,6 @@ import org.jrobin.core.Datasource;
 import org.jrobin.core.RrdDb;
 import org.jrobin.core.RrdException;
 import org.jrobin.core.Sample;
-import org.opennms.core.utils.LogUtils;
 
 public class RrdDatabaseWriter {
     private final RrdDb m_rrd;
