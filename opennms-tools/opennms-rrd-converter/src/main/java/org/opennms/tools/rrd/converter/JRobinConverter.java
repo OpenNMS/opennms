@@ -220,9 +220,7 @@ public class JRobinConverter {
         for (final File individualFile : getMatchingGroupRrds(groupFile)) {
             rrds.add(new RrdDatabase(individualFile, true));
         }
-        LogUtils.debugf(this, "rrds = %s", rrds);
         final TimeSeriesDataSource dataSource = new AggregateTimeSeriesDataSource(rrds);
-        LogUtils.debugf(this, "dataSource = %s", dataSource);
 
         final RrdDb outputRrd = new RrdDb(outputFile);
         final RrdDatabaseWriter writer = new RrdDatabaseWriter(outputRrd);
