@@ -7,7 +7,8 @@ import java.util.Map;
 import java.util.TreeMap;
 
 public abstract class BaseRrdDataSource implements TimeSeriesDataSource {
-    private Map<String,Integer> m_dsNames = new TreeMap<String,Integer>();
+    private Map<String,Integer> m_dsNameMapping = new TreeMap<String,Integer>();
+    private List<String> m_dsNames = new ArrayList<String>();
 
     public BaseRrdDataSource(final List<String> dsNames) {
         setDsNames(dsNames);
@@ -17,26 +18,24 @@ public abstract class BaseRrdDataSource implements TimeSeriesDataSource {
     }
 
     public void setDsNames(final List<String> dsNames) {
+        m_dsNames = dsNames;
         for (int i = 0; i < dsNames.size(); i++) {
-            m_dsNames.put(dsNames.get(i), i);
+            m_dsNameMapping.put(dsNames.get(i), i);
         }
     }
     
     public List<String> getDsNames() throws IOException {
-        return new ArrayList<String>(m_dsNames.keySet());
+        return m_dsNames;
     }
     
     protected Integer getDsIndex(final String dsName) {
-        return m_dsNames.get(dsName);
+        return m_dsNameMapping.get(dsName);
     }
 
     protected int getRowNumberForTimestamp(final long timestamp) throws IOException {
         final long arcStep = getNativeStep();
         final long offset = timestamp - getStartTime();
         final int row = (int)(offset/arcStep);
-//        final long offsetStep = offset % arcStep;
-//        final long time = timestamp - offsetStep;
-//        if (LogUtils.isTraceEnabled(this)) LogUtils.tracef(this, "timestamp = %d, aliased timestamp = %d, offset = %d, offsetStep = %d, row = %d", timestamp, time, offset, offsetStep, row);
         return row;
     }
 

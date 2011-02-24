@@ -35,9 +35,6 @@ public class JRobinConverterTest {
     private static final long SECONDS_PER_DAY = 24L * SECONDS_PER_HOUR;
     private static final long SECONDS_PER_YEAR = 366L * SECONDS_PER_DAY;
     private long m_baseTime = 1298046000L;
-    private final File m_mib2Interfaces = new File(m_workDir, "mib2-interfaces.rrd");
-    private final File m_ifInOctets     = new File(m_workDir, "ifInOctets.rrd");
-    private final File m_ifOutOctets    = new File(m_workDir, "ifOutOctets.rrd");
     private final File m_sineFull       = new File(m_workDir, "sine.rrd");
     private final File m_sineSource     = new File(m_workDir, "a.rrd");
     private final File m_variation      = new File(m_workDir, "variation.rrd");
@@ -142,19 +139,6 @@ public class JRobinConverterTest {
         rrdDef.addArchive("RRA:AVERAGE:0.5:12:8784");
         RrdDb  db = new RrdDb(rrdDef);
         db.close();
-    }
-    
-    @Test
-    public void testCheckRawData() throws Exception {
-        RrdDb ifInOctets = new RrdDb(m_ifInOctets, true);
-        RrdDb ifOutOctets = new RrdDb(m_ifOutOctets, true);
-        RrdDb mib2 = new RrdDb(m_mib2Interfaces, true);
-        checkArchive(mib2, 4015, 4016, 2.0D, 0, 9, 8, "ifOutOctets");
-        checkArchive(ifInOctets, null, 2322, 2.0D, 0, 1, 0, "ifInOctets");
-        checkArchive(ifOutOctets, null, 4000, 4.0D, 0, 1, 0, "ifOutOctets");
-        mib2.close();
-        ifOutOctets.close();
-        ifInOctets.close();
     }
 
     @Test

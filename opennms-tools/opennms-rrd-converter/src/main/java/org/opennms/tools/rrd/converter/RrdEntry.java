@@ -1,12 +1,11 @@
 package org.opennms.tools.rrd.converter;
 
 import java.util.List;
-import java.util.Map;
 import java.util.TreeMap;
 
 import org.apache.commons.lang.builder.ToStringBuilder;
 
-class RrdEntry {
+class RrdEntry implements Cloneable {
     private TreeMap<String, Double> m_entryMap;
     private long m_timestamp;
     private List<String> m_dsNames;
@@ -21,13 +20,16 @@ class RrdEntry {
         return m_entryMap.get(dsName);
     }
 
-    protected void setValue(final String dsName, final double sample) {
-        Map<String,Double> dsEntries = m_entryMap;
-        dsEntries.put(dsName, sample);
+    public void setValue(final String dsName, final double sample) {
+        m_entryMap.put(dsName, sample);
     }
 
     public long getTimestamp() {
         return m_timestamp;
+    }
+
+    public void setTimestamp(final long timestamp) {
+        m_timestamp = timestamp;
     }
 
     public List<String> getDsNames() {
@@ -43,6 +45,8 @@ class RrdEntry {
             final Double otherValue = otherEntry.getValue(key);
             if (isNumber(otherValue)) {
                 setValue(key, otherValue);
+            } else {
+                setValue(key, Double.NaN);
             }
         }
     }
@@ -51,6 +55,12 @@ class RrdEntry {
         return number != null && !Double.isNaN(number);
     }
 
+    @Override
+    public Object clone() throws CloneNotSupportedException {
+        return super.clone();
+    }
+    
+    @Override
     public String toString() {
         return new ToStringBuilder(this)
             .append("timestamp", m_timestamp)

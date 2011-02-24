@@ -30,6 +30,8 @@ import org.jrobin.core.RrdException;
 import org.opennms.tools.rrd.converter.LogUtils.Level;
 
 public class JRobinConverter {
+    private static final long ONE_YEAR_IN_SECONDS = 60L * 60L * 24L * 366L;
+
     private static final class JRobinConsolidationRunnable implements Runnable {
         private final File m_rrdFile;
         private static volatile Integer m_total = 0;
@@ -54,26 +56,31 @@ public class JRobinConverter {
                     LogUtils.warnf(this, "%s only has one dsName, skipping", m_rrdFile);
                     return;
                 }
-                final File temporaryRrd = m_converter.createTempRrd(m_rrdFile);
-                
-                m_converter.consolidateRrdFile(m_rrdFile, temporaryRrd);
+                final File outputRrdFile = m_converter.createTempRrd(m_rrdFile);
                 final File backupRrdFile = new File(m_rrdFile.getAbsolutePath() + ".orig");
+                final File finishedRrdFile = new File(m_rrdFile.getAbsolutePath() + ".finished");
                 if (backupRrdFile.exists()) {
                     LogUtils.errorf(this, "backup file %s already exists!", backupRrdFile);
                     System.exit(1);
                 }
-                if (!m_rrdFile.renameTo(backupRrdFile)) {
-                    LogUtils.errorf(this, "unable to back up %s to %s", m_rrdFile, backupRrdFile);
-                    System.exit(1);
-                }
-                if (!m_converter.moveFileSafely(temporaryRrd, m_rrdFile)) {
-                    LogUtils.errorf(this, "unable to move %s to %s", temporaryRrd, m_rrdFile);
-                    System.exit(1);
-                }
-                System.out.println(new Date() + ": finished processing " + m_rrdFile);
+
+                LogUtils.debugf(this, "using %s as temporary file", outputRrdFile);
+
+                m_converter.consolidateRrdFile(m_rrdFile, outputRrdFile);
+                renameFile(m_rrdFile, backupRrdFile);
+                renameFile(outputRrdFile, m_rrdFile);
+                renameFile(backupRrdFile, finishedRrdFile);
+                LogUtils.infof(this, "finished processing %s", m_rrdFile);
             } catch (final Exception e) {
-                System.err.println(new Date() + ": error while converting " + m_rrdFile);
-                e.printStackTrace();
+                LogUtils.debugf(this, e, "error while converting %s", m_rrdFile);
+            }
+        }
+
+        private void renameFile(final File source, final File target) {
+            LogUtils.debugf(this, "renaming %s to %s", source, target);
+            if (!source.renameTo(target)) {
+                LogUtils.errorf(this, "unable to rename %s to %s", source, target);
+                System.exit(1);
             }
         }
     }
@@ -222,7 +229,7 @@ public class JRobinConverter {
 
         final long endTime = dataSource.getEndTime();
         // 1 year
-        final long startTime = endTime - (60L * 60L * 24L * 366L);
+        final long startTime = endTime - ONE_YEAR_IN_SECONDS;
         for (long time = startTime; time <= endTime; time += 300) {
             final RrdEntry entry = dataSource.getDataAt(time);
             writer.write(entry);
@@ -263,9 +270,9 @@ public class JRobinConverter {
     }
 
     public File createTempRrd(final File rrdFile) throws IOException, RrdException {
-//        final File outputFile = new File("target/rrd", "temp-" + rrdFile.getName());
-        final File outputFile = File.createTempFile("jrobin-", ".jrb");
-        outputFile.getParentFile().mkdirs();
+        final File parentFile = rrdFile.getParentFile();
+        final File outputFile = new File(parentFile, rrdFile.getName() + ".temp");
+        parentFile.mkdirs();
         LogUtils.debugf(this, "created temporary RRD: %s", outputFile);
         final RrdDb oldRrd = new RrdDb(rrdFile.getAbsolutePath(), true);
         final RrdDef rrdDef = oldRrd.getRrdDef();
