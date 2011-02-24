@@ -1,10 +1,7 @@
 package org.opennms.netmgt.jasper.helper;
 
 import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertTrue;
 
-import java.io.File;
-import java.io.FileNotFoundException;
 import java.io.IOException;
 
 import org.junit.Before;
@@ -53,21 +50,4 @@ public class JRobinDirectoryUtilTest {
         assertEquals("me1-0002baaacffe", lookup.getInterfaceDirectory(snmpifname, snmpifdescr, snmpphysaddr));
     }
     
-    @Test
-    public void testGetInterfaceDirectoryLocalSystem() throws FileNotFoundException, IOException {
-        JRobinDirectoryUtil lookup = new JRobinDirectoryUtil();
-        
-        String rrdDir = "/Users/thedesloge/git/opennms/target/opennms-1.8.10-SNAPSHOT/share/rrd/snmp/";
-        String nodeid = "11";
-        String iFace = "eth0-00163e13f215";
-        
-        System.out.println(lookup.getIfInOctetsJrb(rrdDir, nodeid, iFace));
-        File f = new File(lookup.getIfInOctetsJrb(rrdDir, nodeid, iFace));
-        if(f.exists()) {
-            assertTrue(true);
-        }else {
-            assertTrue(false);
-        }
-        
-    }
 }
