@@ -87,7 +87,7 @@ public class RrdtoolDataSourceTest {
 		Assert.assertTrue(ds.next());
 
 		Date d1 = (Date) ds.getFieldValue(new RrdField("Timestamp", Date.class));
-		Assert.assertEquals("Sun Mar 23 18:25:00 VET 2008", d1.toString());
+        Assert.assertEquals(new Date(1206312900000L).toString(), d1.toString());
 
 		Double v1 = (Double) ds.getFieldValue(new RrdField("SampleData", Double.class));
 		Assert.assertEquals(new Double(19.86), v1);
@@ -95,7 +95,7 @@ public class RrdtoolDataSourceTest {
 		Assert.assertTrue(ds.next());
 
 		Date d2 = (Date) ds.getFieldValue(new RrdField("Timestamp", Date.class));
-		Assert.assertEquals("Sun Mar 23 18:30:00 VET 2008", d2.toString());
+        Assert.assertEquals(new Date(1206313200000L).toString(), d2.toString());
 
 		Double v2 = (Double) ds.getFieldValue(new RrdField("SampleData", Double.class));
 		Assert.assertEquals(new Double(Double.NaN), v2);
@@ -103,7 +103,7 @@ public class RrdtoolDataSourceTest {
 		Assert.assertTrue(ds.next());
 
 		Date d3 = (Date) ds.getFieldValue(new RrdField("Timestamp", Date.class));
-		Assert.assertEquals("Sun Mar 23 18:35:00 VET 2008", d3.toString());
+        Assert.assertEquals(new Date(1206313500000L).toString(), d3.toString());
 
 		Double v3 = (Double) ds.getFieldValue(new RrdField("SampleData", Double.class));
 		Assert.assertEquals(new Double(Double.NaN), v3);
@@ -111,7 +111,7 @@ public class RrdtoolDataSourceTest {
 		Assert.assertTrue(ds.next());
 
 		Date d4 = (Date) ds.getFieldValue(new RrdField("Timestamp", Date.class));
-		Assert.assertEquals("Sun Mar 23 18:40:00 VET 2008", d4.toString());
+        Assert.assertEquals(new Date(1206313800000L).toString(), d4.toString());
 
 		Double v4 = (Double) ds.getFieldValue(new RrdField("SampleData", Double.class));
 		Assert.assertEquals(new Double(26.00), v4);
@@ -120,12 +120,12 @@ public class RrdtoolDataSourceTest {
 			ds.next();
 
 		Date d13 = (Date) ds.getFieldValue(new RrdField("Timestamp", Date.class));
-		Assert.assertEquals("Sun Mar 23 19:25:00 VET 2008", d13.toString());
+        Assert.assertEquals(new Date(1206316500000L).toString(), d13.toString());
 
 		Double v13 = (Double) ds.getFieldValue(new RrdField("SampleData", Double.class));
 		Assert.assertEquals(new Double(50.00), v13);
 
 		Assert.assertFalse(ds.next());
 	}
-
+    
 }
