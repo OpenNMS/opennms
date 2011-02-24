@@ -2,6 +2,7 @@ package org.opennms.netmgt.jasper.helper;
 
 import static org.junit.Assert.assertEquals;
 
+import java.io.FileNotFoundException;
 import java.io.IOException;
 
 import org.junit.Before;
@@ -15,6 +16,7 @@ public class JRobinDirectoryUtilTest {
     @Before
     public void setup() {
         System.setProperty("org.opennms.rrd.storeByGroup", "true");
+        System.setProperty("org.opennms.rrd.strategyClass", "org.opennms.netmgt.rrd.jrobin.JRobinRrdStrategy");
     }
     
     @Test
@@ -28,6 +30,38 @@ public class JRobinDirectoryUtilTest {
         
         assertEquals("src/test/resources/share/rrd/9/me1-0002baaacffe/ifHCInOctets.jrb", lookup.getIfInOctetsJrb(RRD_DIRECTORY, NODE_ID, INTERFACE));
         assertEquals("src/test/resources/share/rrd/9/me1-0002baaacffe/ifHCOutOctets.jrb", lookup.getIfOutOctetsJrb(RRD_DIRECTORY, NODE_ID, INTERFACE));
+    }
+    
+    @Test
+    public void testJRobinDirectoryUtilRrdExtension() throws FileNotFoundException, IOException {
+        System.setProperty("org.opennms.rrd.strategyClass", "org.opennms.netmgt.rrd.jrobin.JniRrdStrategy");
+        JRobinDirectoryUtil lookupUtil = new JRobinDirectoryUtil();
+        
+        assertEquals("src/test/resources/share/rrd/9/me1-0002baaacffe/mib2-interfaces.rrd", lookupUtil.getIfInOctetsJrb(RRD_DIRECTORY, NODE_ID, INTERFACE));
+        assertEquals("src/test/resources/share/rrd/9/me1-0002baaacffe/mib2-interfaces.rrd", lookupUtil.getIfOutOctetsJrb( RRD_DIRECTORY, NODE_ID, INTERFACE));
+        
+        System.setProperty("org.opennms.rrd.storeByGroup", "false");
+        
+        assertEquals("src/test/resources/share/rrd/9/me1-0002baaacffe/ifHCInOctets.rrd", lookupUtil.getIfInOctetsJrb(RRD_DIRECTORY, NODE_ID, INTERFACE));
+        assertEquals("src/test/resources/share/rrd/9/me1-0002baaacffe/ifHCOutOctets.rrd", lookupUtil.getIfOutOctetsJrb(RRD_DIRECTORY, NODE_ID, INTERFACE));
+    }
+    
+    @Test
+    public void testJRobinDirectoryUtilCustomExtension() throws FileNotFoundException, IOException {
+        System.setProperty("org.opennms.rrd.fileExtension", ".jrb");
+        JRobinDirectoryUtil lookupUtil = new JRobinDirectoryUtil();
+        
+        assertEquals("src/test/resources/share/rrd/9/me1-0002baaacffe/mib2-interfaces.jrb", lookupUtil.getIfInOctetsJrb(RRD_DIRECTORY, NODE_ID, INTERFACE));
+        assertEquals("src/test/resources/share/rrd/9/me1-0002baaacffe/mib2-interfaces.jrb", lookupUtil.getIfOutOctetsJrb( RRD_DIRECTORY, NODE_ID, INTERFACE));
+        
+        System.setProperty("org.opennms.rrd.fileExtension", ".bogus");
+        assertEquals("src/test/resources/share/rrd/9/me1-0002baaacffe/mib2-interfaces.bogus", lookupUtil.getIfInOctetsJrb(RRD_DIRECTORY, NODE_ID, INTERFACE));
+        assertEquals("src/test/resources/share/rrd/9/me1-0002baaacffe/mib2-interfaces.bogus", lookupUtil.getIfOutOctetsJrb( RRD_DIRECTORY, NODE_ID, INTERFACE));
+        
+        System.setProperty("org.opennms.rrd.fileExtension", ".rrd");
+        assertEquals("src/test/resources/share/rrd/9/me1-0002baaacffe/mib2-interfaces.rrd", lookupUtil.getIfInOctetsJrb(RRD_DIRECTORY, NODE_ID, INTERFACE));
+        assertEquals("src/test/resources/share/rrd/9/me1-0002baaacffe/mib2-interfaces.rrd", lookupUtil.getIfOutOctetsJrb( RRD_DIRECTORY, NODE_ID, INTERFACE));
+        
     }
     
     @Test

@@ -15,14 +15,14 @@ public class JRobinDirectoryUtil {
     }
     
     public String getIfInOctetsJrb(String rrdDirectory, String nodeId,String iFace) throws FileNotFoundException, IOException {
-        return getOctetsJrbFile(rrdDirectory, nodeId, iFace, "ifHCInOctets.jrb", "ifInOctets.jrb");
+        return getOctetsFile(rrdDirectory, nodeId, iFace, "ifHCInOctets", "ifInOctets");
     }
     
     public String getIfOutOctetsJrb(String rrdDirectory, String nodeId,String iFace) throws FileNotFoundException, IOException {
-        return getOctetsJrbFile(rrdDirectory, nodeId, iFace, "ifHCOutOctets.jrb", "ifOutOctets.jrb");
+        return getOctetsFile(rrdDirectory, nodeId, iFace, "ifHCOutOctets", "ifOutOctets");
     }
 
-    private String getOctetsJrbFile(String rrdDirectory, String nodeId, String iFace, String ifHCFilename, String ifFilename) throws FileNotFoundException, IOException {
+    private String getOctetsFile(String rrdDirectory, String nodeId, String iFace, String ifHCFilename, String ifFilename) throws FileNotFoundException, IOException {
         StringBuffer directory = new StringBuffer();
         directory.append(rrdDirectory)
             .append(File.separator)
@@ -34,17 +34,31 @@ public class JRobinDirectoryUtil {
             appendStoreByGroup(directory);
         }else {
             
-            File ifOctets = new File(directory.toString() + "" + File.separator + ifHCFilename);
+            File ifOctets = new File(directory.toString() + "" + File.separator + ifHCFilename + getExtension());
             if(ifOctets.exists()) {
-                directory.append(File.separator).append(ifHCFilename);
+                directory.append(File.separator).append(ifHCFilename).append(getExtension());
             }else {
-                directory.append(File.separator).append(ifFilename);
+                directory.append(File.separator).append(ifFilename).append(getExtension());
             }
         }
         
         return  directory.toString();
     }
     
+    private String getExtension() {
+        if(JRProperties.getProperty("org.opennms.rrd.fileExtension") != null) {
+            return JRProperties.getProperty("org.opennms.rrd.fileExtension");
+        }else if(System.getProperty("org.opennms.rrd.fileExtension") != null) {
+            return System.getProperty("org.opennms.rrd.fileExtension");
+        }else {
+            if(System.getProperty("org.opennms.rrd.strategyClass") != null) {
+                return System.getProperty("org.opennms.rrd.strategyClass", "UnknownStrategy").endsWith("JRobinRrdStrategy") ? ".jrb" : ".rrd";
+            }
+            return ".jrb";
+        }
+        
+    }
+
     private void appendStoreByGroup(StringBuffer directory) throws FileNotFoundException, IOException {
         File f = new File(directory.toString() + "" + File.separator + "ds.properties");
         System.out.println("path to ds.properties: " + f.getAbsolutePath());
@@ -54,7 +68,7 @@ public class JRobinDirectoryUtil {
             prop.load(fis);
             fis.close();
             
-            directory.append(File.separator).append((String) prop.get("ifInOctets")).append(".jrb");
+            directory.append(File.separator).append((String) prop.get("ifInOctets")).append(getExtension());
         }
     }
 
