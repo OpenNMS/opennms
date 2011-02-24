@@ -253,10 +253,9 @@ public class JRobinConverter {
     }
 
     public File createTempRrd(final File rrdFile) throws IOException, RrdException {
-//        final File outputFile = File.createTempFile("jrobin-", ".jrb");
-        final File directory = new File("target/rrd");
-        directory.mkdirs();
-        final File outputFile = new File(directory, "temp-" + rrdFile.getName());
+//        final File outputFile = new File("target/rrd", "temp-" + rrdFile.getName());
+        final File outputFile = File.createTempFile("jrobin-", ".jrb");
+        outputFile.getParentFile().mkdirs();
         LogUtils.debugf(this, "created temporary RRD: %s", outputFile);
         final RrdDb oldRrd = new RrdDb(rrdFile.getAbsolutePath(), true);
         final RrdDef rrdDef = oldRrd.getRrdDef();
