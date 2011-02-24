@@ -91,6 +91,7 @@ public class JRobinConverter {
 
         final Options options = new Options();
         options.addOption("h", "help", false, "This help.");
+        options.addOption("f", "factory", true, "The JRobin factory to use.");
         options.addOption("s", "scan", true, "Scan a directory for storeByGroup RRDs.");
         options.addOption("t", "threads", true, "Number of threads to start.");
         
@@ -113,6 +114,7 @@ public class JRobinConverter {
                 }
             }
         }
+        RrdBackendFactory.setDefaultFactory(cmd.getOptionValue("f", "MNIO"));
         int threads = 5;
         if (cmd.hasOption("t")) {
             try {
