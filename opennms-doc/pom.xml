@@ -38,6 +38,7 @@
           <htmlStylesheet>common/html.css</htmlStylesheet>
           <xincludeSupported>true</xincludeSupported>
           <foCustomization>${basedir}/src/docbkx/common/fopdf.xsl</foCustomization>
+          <draftWatermarkImage>${basedir}/src/docbkx/images/draft.png</draftWatermarkImage>
           <entities>
             <entity>
               <name>version</name>
