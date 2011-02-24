@@ -83,7 +83,6 @@ public class JRobinConverter {
 
     public void execute(final String[] args) throws ParseException, ConverterException, RrdException {
         setupLogging();
-        RrdBackendFactory.setDefaultFactory("MNIO");
         if (args.length == 0) {
             System.err.println(new Date() + ": no directory specified!");
             System.exit(1);
@@ -97,6 +96,8 @@ public class JRobinConverter {
         
         final CommandLineParser parser = new GnuParser();
         final CommandLine cmd = parser.parse(options, args);
+
+        RrdBackendFactory.setDefaultFactory(cmd.getOptionValue("f", "MNIO"));
 
         final List<File> rrds = Collections.synchronizedList(new ArrayList<File>());
 
@@ -114,7 +115,6 @@ public class JRobinConverter {
                 }
             }
         }
-        RrdBackendFactory.setDefaultFactory(cmd.getOptionValue("f", "MNIO"));
         int threads = 5;
         if (cmd.hasOption("t")) {
             try {
