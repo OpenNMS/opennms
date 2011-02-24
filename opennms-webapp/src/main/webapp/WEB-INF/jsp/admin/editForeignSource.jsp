@@ -60,6 +60,7 @@
 	</h4>
 
 	<tree:tree root="${foreignSourceEditForm.formData}" childProperty="policies" var="policy" varStatus="policyIter">
+	   <c:set var="showDelete" value="true" scope="request" />
 		<tree:nodeForm>
 			<tree:field label="name" property="name" />
 			<tree:select label="class" property="pluginClass" fieldSize="${classFieldWidth}" items="${policyTypes}" />
