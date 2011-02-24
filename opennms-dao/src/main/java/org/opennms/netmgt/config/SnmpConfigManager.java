@@ -97,26 +97,24 @@ public class SnmpConfigManager {
      * @param config
      */
     public void mergeIntoConfig(final Definition eventDef)  {
-        
-        MergeableDefinition eventDefinition = new MergeableDefinition(eventDef);
-        
-        synchronized (m_config) {
-            // remove pass
-            purgeRangesFromDefinitions(eventDefinition);
-            
-            // add pass
-            MergeableDefinition matchingDef = findMatchingDefinition(eventDefinition);
-            if (matchingDef == null) {
-                addDefinition(eventDefinition);
-            } else {
-                matchingDef.mergeMatchingAttributeDef(eventDefinition);
-            }
-            
-            // optimize but.. we should stop needing this
-            //optimizeAllDefs();
-        }        
-    }
 
+        MergeableDefinition eventDefinition = new MergeableDefinition(eventDef);
+
+        // remove pass
+        purgeRangesFromDefinitions(eventDefinition);
+        
+        if (eventDefinition.isTrivial()) return;
+
+        // add pass
+        MergeableDefinition matchingDef = findMatchingDefinition(eventDefinition);
+        if (matchingDef == null) {
+            addDefinition(eventDefinition);
+        } else {
+            matchingDef.mergeMatchingAttributeDef(eventDefinition);
+        }
+
+    }
+    
     private void purgeRangesFromDefinitions(MergeableDefinition eventDefinition) {
         purgeOtherDefs(null, eventDefinition);
     }
@@ -175,18 +173,17 @@ public class SnmpConfigManager {
      *
      */
     public void optimizeAllDefs() {
-        synchronized (m_config) {
-            Definition[] defs = getConfig().getDefinition();
-            for (int i = 0; i < defs.length; i++) {
-                MergeableDefinition definition = new MergeableDefinition(defs[i]);
-                if (definition.getConfigDef().getSpecificCount() > 0) {
-                    definition.optimizeSpecifics();
-                }
-                if (definition.getConfigDef().getRangeCount() > 1) {
-                    definition.optimizeRanges();
-                }
+        // This needs to be called only by code holding the SnmpPeerFactory writeLock
+        Definition[] defs = getConfig().getDefinition();
+        for (int i = 0; i < defs.length; i++) {
+            MergeableDefinition definition = new MergeableDefinition(defs[i]);
+            if (definition.getConfigDef().getSpecificCount() > 0) {
+                definition.optimizeSpecifics();
             }
-            getConfig().setDefinition(defs);
+            if (definition.getConfigDef().getRangeCount() > 1) {
+                definition.optimizeRanges();
+            }
         }
+        getConfig().setDefinition(defs);
     }
 }

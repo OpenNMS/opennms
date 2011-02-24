@@ -532,7 +532,7 @@ final class MergeableDefinition {
     /**
      * Converts ranges in the wrapped defintion that have equal begin and end addresses.
      */
-    public void optimizeZeroLengthRanges() {
+    private void optimizeZeroLengthRanges() {
         Range[] ranges = getConfigDef().getRange();
         
         for (int i = 0; i < ranges.length; i++) {
@@ -588,13 +588,50 @@ final class MergeableDefinition {
                 && compareStrings(getConfigDef().getVersion(), other.getConfigDef().getVersion());
         return compares;
     }
+    
+    boolean isEmpty(String s) {
+        return s == null || "".equals(s.trim());
+    }
+    
+    boolean isTrivial() {
+        return isEmpty(getConfigDef().getReadCommunity()) 
+        && isEmpty(getConfigDef().getVersion())
+        && !getConfigDef().hasPort()
+        && !getConfigDef().hasRetry()
+        && !getConfigDef().hasTimeout();
+    }
+
 
     void removeRanges(MergeableDefinition eventDefinition) {
-        if (eventDefinition.isSpecific()) {
-            purgeSpecificFromDef(eventDefinition.getConfigDef().getSpecific(0));
-        } else {
-            purgeRangeFromDef(eventDefinition.getConfigDef().getRange(0));
+        ConfigRange[] eventRanges = eventDefinition.getConfigRanges().toArray();
+        
+        for(ConfigRange r : eventRanges) {
+            m_configRanges.remove(r);
         }
+        
+
+        ConfigRange[] currentRanges = m_configRanges.toArray();
+        
+        getConfigDef().removeAllRange();
+        getConfigDef().removeAllSpecific();
+        
+        for(ConfigRange r : currentRanges) {
+            if (r.isSpecific()) {
+                getConfigDef().addSpecific(r.getSpecificString());
+            } else {
+                Range xmlRange = new Range();
+                xmlRange.setBegin(r.getBegin());
+                xmlRange.setEnd(r.getEnd());
+                getConfigDef().addRange(xmlRange);
+            }
+            
+        }
+
+//        if (eventDefinition.isSpecific()) {
+//            purgeSpecificFromDef(eventDefinition.getConfigDef().getSpecific(0));
+//        } else {
+//            purgeRangeFromDef(eventDefinition.getConfigDef().getRange(0));
+//        }
     }
 
     boolean isEmpty() {

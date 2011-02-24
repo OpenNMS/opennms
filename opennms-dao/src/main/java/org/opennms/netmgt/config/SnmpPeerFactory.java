@@ -188,18 +188,22 @@ public final class SnmpPeerFactory extends PeerFactory {
      */
     public static synchronized void saveCurrent() throws Exception {
 
+        File configFile = ConfigFileConstants.getFile(ConfigFileConstants.SNMP_CONF_FILE_NAME);
+        saveToFile(configFile);
+        reload();
+    }
+
+    public static void saveToFile(File configFile) throws IOException {
         // Marshall to a string first, then write the string to the file. This
         // way the original config
         // isn't lost if the XML from the marshall is hosed.
         String marshalledConfig = marshallConfig();
         if (marshalledConfig != null) {
-            FileWriter fileWriter = new FileWriter(ConfigFileConstants.getFile(ConfigFileConstants.SNMP_CONF_FILE_NAME));
+            FileWriter fileWriter = new FileWriter(configFile);
             fileWriter.write(marshalledConfig);
             fileWriter.flush();
             fileWriter.close();
         }
-
-        reload();
     }
 
 
