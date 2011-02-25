@@ -16,6 +16,7 @@
 
   <modules>
     <module>opennms-rrd-stresser</module>
+    <module>opennms-rrd-converter</module>
     <module>groovy-tools</module>
   </modules>
 
