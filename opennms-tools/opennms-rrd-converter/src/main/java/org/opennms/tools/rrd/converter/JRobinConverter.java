@@ -10,11 +10,11 @@ import java.util.Arrays;
 import java.util.Collections;
 import java.util.Date;
 import java.util.HashMap;
-import java.util.HashSet;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
+import java.util.TreeSet;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 
@@ -119,7 +119,7 @@ public class JRobinConverter {
         LogUtils.setLevel(Level.valueOf(cmd.getOptionValue("l", "INFO")));
         RrdBackendFactory.setDefaultFactory(cmd.getOptionValue("f", "MNIO"));
 
-        final Set<File> rrds = Collections.synchronizedSet(new HashSet<File>());
+        final Set<File> rrds = Collections.synchronizedSet(new TreeSet<File>());
 
         if (cmd.hasOption("h")) {
             new HelpFormatter().printHelp("jrobin-converter", options);
@@ -129,7 +129,10 @@ public class JRobinConverter {
             LogUtils.infof(this, "No files or directories specified!  Exiting.");
             System.exit(0);
         }
+        int argCount = 0;
+        int total = cmd.getArgList().size();
         for (final Object arg : cmd.getArgList()) {
+            LogUtils.infof(this, "Scanning %s for storeByGroup data (%d/%d)", arg, ++argCount, total);
             final File f = new File((String)arg);
             if (f.exists()) {
                 if (f.isDirectory()) {
