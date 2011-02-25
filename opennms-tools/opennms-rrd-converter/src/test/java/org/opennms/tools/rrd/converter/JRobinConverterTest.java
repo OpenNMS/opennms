@@ -176,12 +176,12 @@ public class JRobinConverterTest {
         final File topDirectory = new File("src/test/rrds");
 
         List<File> rrds = m_converter.findRrds(topDirectory);
-        assertTrue(rrds.size() > 0);
+        assertEquals(14, rrds.size());
         assertTrue(rrds.contains(new File("src/test/rrds/90020/Se0/mib2-interfaces.rrd")));
         assertTrue(rrds.contains(new File("src/test/rrds/90020/Se0/ifOutOctets.rrd")));
         
         rrds = m_converter.findGroupRrds(topDirectory);
-        assertTrue(rrds.size() > 0);
+        assertEquals(1, rrds.size());
         assertTrue(rrds.contains(new File("src/test/rrds/90020/Se0/mib2-interfaces.rrd")));
         assertFalse(rrds.contains(new File("src/test/rrds/90020/Se0/ifOutOctets.rrd")));
     }
