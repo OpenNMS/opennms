@@ -10,9 +10,11 @@ import java.util.Arrays;
 import java.util.Collections;
 import java.util.Date;
 import java.util.HashMap;
+import java.util.HashSet;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
+import java.util.Set;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 
@@ -50,7 +52,7 @@ public class JRobinConverter {
 
         public void run() {
             try {
-                LogUtils.infof(this, "starting processing %s (%d/%d)", m_rrdFile, m_count, m_total);
+                LogUtils.infof(this, "Starting processing %s (%d/%d)", m_rrdFile, m_count, m_total);
                 final List<String> dsNames = m_converter.getDsNames(m_rrdFile);
                 if (dsNames.size() == 1) {
                     LogUtils.warnf(this, "%s only has one dsName, skipping", m_rrdFile);
@@ -59,27 +61,31 @@ public class JRobinConverter {
                 final File outputRrdFile = m_converter.createTempRrd(m_rrdFile);
                 final File backupRrdFile = new File(m_rrdFile.getAbsolutePath() + ".orig");
                 final File finishedRrdFile = new File(m_rrdFile.getAbsolutePath() + ".finished");
-                if (backupRrdFile.exists()) {
-                    LogUtils.errorf(this, "backup file %s already exists!", backupRrdFile);
-                    System.exit(1);
+                if (finishedRrdFile.exists()) {
+                    LogUtils.warnf(this, "File %s has already been converted, because %s exists!  Skipping.", m_rrdFile, finishedRrdFile);
+                    return;
                 }
 
-                LogUtils.debugf(this, "using %s as temporary file", outputRrdFile);
+                LogUtils.debugf(this, "Using %s as temporary file", outputRrdFile);
 
                 m_converter.consolidateRrdFile(m_rrdFile, outputRrdFile);
                 renameFile(m_rrdFile, backupRrdFile);
                 renameFile(outputRrdFile, m_rrdFile);
                 renameFile(backupRrdFile, finishedRrdFile);
-                LogUtils.infof(this, "finished processing %s", m_rrdFile);
+                LogUtils.infof(this, "Finished processing %s", m_rrdFile);
             } catch (final Exception e) {
-                LogUtils.debugf(this, e, "error while converting %s", m_rrdFile);
+                LogUtils.debugf(this, e, "Error while converting %s", m_rrdFile);
             }
         }
 
         private void renameFile(final File source, final File target) {
-            LogUtils.debugf(this, "renaming %s to %s", source, target);
+            LogUtils.debugf(this, "Renaming %s to %s", source, target);
+            if (target.exists()) {
+                LogUtils.errorf(this, "%s already exists!", target);
+                System.exit(1);
+            }
             if (!source.renameTo(target)) {
-                LogUtils.errorf(this, "unable to rename %s to %s", source, target);
+                LogUtils.errorf(this, "Unable to rename %s to %s", source, target);
                 System.exit(1);
             }
         }
@@ -105,7 +111,6 @@ public class JRobinConverter {
         options.addOption("h", "help", false, "This help.");
         options.addOption("f", "factory", true, "The JRobin factory to use.");
         options.addOption("l", "log", true, "The log level to use. (Default: INFO)");
-        options.addOption("s", "scan", true, "Scan a directory for storeByGroup RRDs.");
         options.addOption("t", "threads", true, "Number of threads to start.");
 
         final CommandLineParser parser = new GnuParser();
@@ -114,22 +119,27 @@ public class JRobinConverter {
         LogUtils.setLevel(Level.valueOf(cmd.getOptionValue("l", "INFO")));
         RrdBackendFactory.setDefaultFactory(cmd.getOptionValue("f", "MNIO"));
 
-        final List<File> rrds = Collections.synchronizedList(new ArrayList<File>());
+        final Set<File> rrds = Collections.synchronizedSet(new HashSet<File>());
 
         if (cmd.hasOption("h")) {
             new HelpFormatter().printHelp("jrobin-converter", options);
             System.exit(1);
         }
-        if (cmd.hasOption("s")) {
-            rrds.addAll(findGroupRrds(new File(cmd.getOptionValue("s"))));
-        } else {
-            for (final Object arg : cmd.getArgList()) {
-                final File f = new File((String)arg);
-                if (f.exists()) {
+        if (cmd.getArgList().size() == 0) {
+            LogUtils.infof(this, "No files or directories specified!  Exiting.");
+            System.exit(0);
+        }
+        for (final Object arg : cmd.getArgList()) {
+            final File f = new File((String)arg);
+            if (f.exists()) {
+                if (f.isDirectory()) {
+                    rrds.addAll(findGroupRrds(f));
+                } else {
                     rrds.add(f);
                 }
             }
         }
+
         int threads = 5;
         if (cmd.hasOption("t")) {
             try {
@@ -272,7 +282,7 @@ public class JRobinConverter {
         final File parentFile = rrdFile.getParentFile();
         final File outputFile = new File(parentFile, rrdFile.getName() + ".temp");
         parentFile.mkdirs();
-        LogUtils.debugf(this, "created temporary RRD: %s", outputFile);
+//        LogUtils.debugf(this, "created temporary RRD: %s", outputFile);
         final RrdDb oldRrd = new RrdDb(rrdFile.getAbsolutePath(), true);
         final RrdDef rrdDef = oldRrd.getRrdDef();
         rrdDef.setPath(outputFile.getAbsolutePath());

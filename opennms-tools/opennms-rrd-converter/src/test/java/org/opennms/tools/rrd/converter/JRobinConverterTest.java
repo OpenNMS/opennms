@@ -21,6 +21,11 @@ import org.jrobin.core.RrdBackendFactory;
 import org.jrobin.core.RrdDb;
 import org.jrobin.core.RrdDef;
 import org.jrobin.core.RrdException;
+import org.jrobin.core.RrdFileBackendFactory;
+import org.jrobin.core.RrdJRobin14FileBackend.LockMode;
+import org.jrobin.core.RrdJRobin14FileBackendFactory;
+import org.jrobin.core.RrdNioBackendFactory;
+import org.jrobin.core.RrdNioByteBufferBackendFactory;
 import org.jrobin.core.Sample;
 import org.junit.After;
 import org.junit.Before;
@@ -52,7 +57,6 @@ public class JRobinConverterTest {
     public void setUp() throws Exception {
         m_converter = new JRobinConverter();
         m_workDir.mkdirs();
-        createMockRrds();
     }
 
     @After
@@ -62,22 +66,63 @@ public class JRobinConverterTest {
         m_variation.delete();
         m_overlapping.delete();
     }
-    
-    protected void createMockRrds() throws Exception {
-        initializeRrd(m_sineFull, new String[] { "a", "b" }, new String[] { "1:4032", "12:1488", "288:366" });
+
+    private void createMockVariationRrds(final RrdBackendFactory factory) throws RrdException, IOException {
+        final long end = getMidnightInSeconds(m_baseTime);
         initializeRrd(m_variation, new String[] { "a", "b" }, new String[] { "1:4032", "12:1488", "288:366" });
-        initializeRrd(m_sineSource, new String[] { "a" }, new String[] { "1:8928", "12:8784" });
         initializeRrd(m_overlapping, new String[] { "c", "d", "a" }, new String[] { "1:4032", "12:1488", "288:366" });
 
-        RrdDb sineFull    = new RrdDb(m_sineFull);
-        RrdDb sineSource  = new RrdDb(m_sineSource);
-        RrdDb variation   = new RrdDb(m_variation);
-        RrdDb overlapping = new RrdDb(m_overlapping);
+        final RrdDb variation;
+        final RrdDb overlapping;
+        if (factory == null) {
+            variation   = new RrdDb(m_variation);
+            overlapping = new RrdDb(m_overlapping);
+        } else {
+            variation   = new RrdDb(m_variation.getAbsolutePath(), factory);
+            overlapping = new RrdDb(m_overlapping.getAbsolutePath(), factory);
+        }
 
-        long start = (m_baseTime - (SECONDS_PER_DAY * 56L));
+        final long start = (end - SECONDS_PER_YEAR);
+        final Function sequence = new AverageSequence(300, 10);
+        final Function sequenceCounter = new Counter(0, sequence);
+        final Function overlappingSequence = new AverageSequence(300, 20);
+        final Function overlappingCounter = new Counter(0, overlappingSequence);
+        long timestamp = start - 300L;
+        for (; timestamp <= end; timestamp += 300L) {
+            final Sample variationSample = variation.createSample(timestamp);
+            final double variationValue = sequenceCounter.evaluate(timestamp);
+            variationSample.setValue("a", variationValue);
+            variationSample.update();
+            
+            final Sample overlappingSample = overlapping.createSample(timestamp);
+            final double overlappingValue = overlappingCounter.evaluate(timestamp);
+            overlappingSample.setValue("d", Double.NaN);
+            if (((timestamp % 1200) / 300) < 2) {
+                overlappingSample.setValue("a", overlappingValue);
+            }
+            overlappingSample.setValue("c", overlappingValue);
+            overlappingSample.update();
+        }
+        
+        variation.close();
+        overlapping.close();
+    }
+
+    private void createMockSineRrds(final RrdBackendFactory factory) throws RrdException, IOException {
+        final long start = (m_baseTime - (SECONDS_PER_DAY * 56L));
+        initializeRrd(m_sineFull, new String[] { "a", "b" }, new String[] { "1:4032", "12:1488", "288:366" });
+        initializeRrd(m_sineSource, new String[] { "a" }, new String[] { "1:8928", "12:8784" });
+        final RrdDb sineFull;
+        final RrdDb sineSource;
+        if (factory == null) {
+            sineFull   = new RrdDb(m_sineFull);
+            sineSource = new RrdDb(m_sineSource);
+        } else {
+            sineFull   = new RrdDb(m_sineFull.getAbsolutePath(), factory);
+            sineSource = new RrdDb(m_sineSource.getAbsolutePath(), factory);
+        }
         Function bigSine = new Sin(start, 15, -10, SECONDS_PER_DAY * 7L);
         Function smallSine = new Sin(start, 7, 5, SECONDS_PER_DAY * 2L);
-
         Function bigSineCounter = new Counter(0, bigSine);
         Function smallSineCounter = new Counter(0, smallSine);
 
@@ -94,37 +139,11 @@ public class JRobinConverterTest {
             sample.setValue("a", value);
             sample.update();
         }
-
-        final long end = getMidnightInSeconds(m_baseTime);
-        start = (end - SECONDS_PER_YEAR);
-        Function sequence = new AverageSequence(300, 10);
-        Function sequenceCounter = new Counter(0, sequence);
-        Function overlappingSequence = new AverageSequence(300, 20);
-        Function overlappingCounter = new Counter(0, overlappingSequence);
-        timestamp = start - 300L;
-        for (; timestamp <= end; timestamp += 300L) {
-            Sample sample = variation.createSample(timestamp);
-            double value = sequenceCounter.evaluate(timestamp);
-            sample.setValue("a", value);
-            sample.update();
-            
-            sample = overlapping.createSample(timestamp);
-            value = overlappingCounter.evaluate(timestamp);
-            sample.setValue("d", Double.NaN);
-            if (((timestamp % 1200) / 300) < 2) {
-                sample.setValue("a", value);
-            }
-            sample.setValue("c", value);
-            sample.update();
-        }
-        
         sineFull.close();
         sineSource.close();
-        variation.close();
-        overlapping.close();
     }
 
-    protected long getMidnightInSeconds(final long seconds) {
+    private long getMidnightInSeconds(final long seconds) {
         return (((seconds) / SECONDS_PER_DAY) * SECONDS_PER_DAY);
     }
 
@@ -150,6 +169,7 @@ public class JRobinConverterTest {
 
     @Test
     public void testGetDsNames() throws Exception {
+        createMockSineRrds(null);
         final List<String> dsNames = m_converter.getDsNames(m_sineFull);
         assertTrue(dsNames.contains("a"));
         assertEquals(2, dsNames.size());
@@ -157,12 +177,44 @@ public class JRobinConverterTest {
 
     @Test
     public void testGetRras() throws Exception {
+        createMockSineRrds(null);
         final List<String> rras = m_converter.getRras(m_sineFull);
         assertEquals(3, rras.size());
     }
 
     @Test
+    public void testBackends() throws Exception {
+        final RrdBackendFactory[] factories = new RrdBackendFactory[] {
+                new RrdFileBackendFactory(),
+                new RrdNioBackendFactory(),
+                new RrdNioByteBufferBackendFactory(),
+                new RrdJRobin14FileBackendFactory(LockMode.EXCEPTION_IF_LOCKED),
+                new RrdJRobin14FileBackendFactory(LockMode.WAIT_IF_LOCKED),
+                new RrdJRobin14FileBackendFactory(LockMode.NO_LOCKS)
+        };
+
+        for (final RrdBackendFactory factory : factories) {
+//            LogUtils.infof(this, "starting with backend factory %s", factory);
+            m_sineFull.delete();
+            m_sineSource.delete();
+            long factoryStart = System.nanoTime();
+            createMockSineRrds(factory);
+            for (int i = 0; i < 10; i++) {
+                final File newFile = m_converter.createTempRrd(m_sineFull);
+                try {
+                    m_converter.consolidateRrdFile(m_sineSource, newFile);
+                } finally {
+                    newFile.delete();
+                }
+            }
+            long nanos = System.nanoTime() - factoryStart;
+            LogUtils.infof(this, "factory %s took %f seconds", factory, (nanos / 1000000000D));
+        }
+    }
+
+    @Test
     public void testSine() throws Exception {
+        createMockSineRrds(null);
         final File newFile = m_converter.createTempRrd(m_sineFull);
         try {
             m_converter.consolidateRrdFile(m_sineSource, newFile);
@@ -188,12 +240,14 @@ public class JRobinConverterTest {
 
     @Test
     public void testGetMatchingRrds() throws Exception {
+        createMockSineRrds(null);
         final List<File> matches = m_converter.getMatchingGroupRrds(m_sineFull);
         assertEquals(1, matches.size());
     }
     
     @Test
     public void testFetch() throws Exception {
+        createMockSineRrds(null);
         RrdDb rrd = new RrdDb(m_sineFull);
         final long endTime = rrd.getLastArchiveUpdateTime();
         final long startTime = endTime - (60L * 60L * 24L * 365L);
@@ -204,6 +258,7 @@ public class JRobinConverterTest {
     
     @Test
     public void testRrdArchiveZero() throws Exception {
+        createMockVariationRrds(null);
         RrdDb rrd = new RrdDb(m_variation);
         TimeSeriesDataSource archive = new RrdArchive(rrd.getArchive(0), Arrays.asList(rrd.getDsNames()));
         final int expectedArchiveSize = 4032;
@@ -256,6 +311,7 @@ public class JRobinConverterTest {
 
     @Test
     public void testRrdArchiveOne() throws Exception {
+        createMockVariationRrds(null);
         RrdDb rrd = new RrdDb(m_variation);
         TimeSeriesDataSource archive = new RrdArchive(rrd.getArchive(1), Arrays.asList(rrd.getDsNames()));
         final int expectedArchiveSize = 1488;
@@ -299,6 +355,7 @@ public class JRobinConverterTest {
 
     @Test
     public void testRrdArchiveTwo() throws Exception {
+        createMockVariationRrds(null);
         RrdDb rrd = new RrdDb(m_variation);
         TimeSeriesDataSource archive = new RrdArchive(rrd.getArchive(2), Arrays.asList(rrd.getDsNames()));
         final int expectedArchiveSize = 366;
@@ -342,6 +399,7 @@ public class JRobinConverterTest {
 
     @Test
     public void testRrdDatabase() throws Exception {
+        createMockVariationRrds(null);
         RrdDb rrd = new RrdDb(m_variation);
         TimeSeriesDataSource rrdDatabase = new RrdDatabase(rrd);
         final int largestArchiveStep = 86400;
@@ -380,6 +438,7 @@ public class JRobinConverterTest {
 
     @Test
     public void testAggregateRrdDatabase() throws Exception {
+        createMockSineRrds(null);
         RrdDb source = new RrdDb(m_sineSource);
         RrdDb full = new RrdDb(m_sineFull);
   
@@ -409,6 +468,7 @@ public class JRobinConverterTest {
     
     @Test
     public void testRrdDatabaseAndAggregateRrdDatabase() throws Exception {
+        createMockSineRrds(null);
         long dbTime = 0;
         long aggTime = 0;
         for (int i = 0; i < 20; i++) {
@@ -434,6 +494,7 @@ public class JRobinConverterTest {
 
     @Test
     public void testRrdDatabaseAndAggregateRrdDatabaseGetDataAt() throws Exception {
+        createMockSineRrds(null);
         long dbTime = 0;
         long aggTime = 0;
         for (int i = 0; i < 20; i++) {
@@ -459,6 +520,7 @@ public class JRobinConverterTest {
 
     @Test
     public void testAggregateWithOverlappingData() throws Exception {
+        createMockVariationRrds(null);
         RrdDatabase overlappingDatabase = new RrdDatabase(new RrdDb(m_overlapping, true));
         RrdDatabase variationDatabase = new RrdDatabase(new RrdDb(m_variation, true));
         List<RrdDatabase> datasources = new ArrayList<RrdDatabase>();
@@ -480,16 +542,9 @@ public class JRobinConverterTest {
         assertEquals(1.1033333333333D, aggregate.getDataAt(1297956900).getValue("a"), ACCEPTABLE_DOUBLE_DELTA);
     }
     
-    private List<RrdEntry> getAllData(TimeSeriesDataSource sourceDatabase) throws IOException {
-        final List<RrdEntry> entries = new ArrayList<RrdEntry>(sourceDatabase.getRows());
-        for (long time = sourceDatabase.getStartTime(); time < sourceDatabase.getEndTime() + sourceDatabase.getNativeStep(); time += 150) {
-            entries.add(sourceDatabase.getDataAt(time));
-        }
-        return entries;
-    }
-
     @Test
     public void testCombine() throws Exception {
+        createMockSineRrds(null);
         final File newFile = m_converter.createTempRrd(m_sineFull);
         try {
             m_converter.consolidateRrdFile(m_sineFull, newFile);
@@ -508,12 +563,12 @@ public class JRobinConverterTest {
         }
     }
 
-    protected void checkArchive(RrdDb rrd, final Integer nanSample, final Integer numberSample, final Double numberValue, final Integer archiveIndex, final Integer numDses, final Integer dsIndex, String dsName) throws RrdException, IOException {
+    protected void checkArchive(final RrdDb rrd, final Integer nanSample, final Integer numberSample, final Double numberValue, final Integer archiveIndex, final Integer numDses, final Integer dsIndex, String dsName) throws RrdException, IOException {
         LogUtils.debugf(this, "checking archive %s for consistency", rrd);
-        Archive archive = rrd.getArchive(archiveIndex);
-        Map<String,Integer> indexes = m_converter.getDsIndexes(rrd);
+        final Archive archive = rrd.getArchive(archiveIndex);
+        final Map<String,Integer> indexes = m_converter.getDsIndexes(rrd);
         assertEquals(numDses, Integer.valueOf(indexes.size()));
-        Robin robin = archive.getRobin(dsIndex);
+        final Robin robin = archive.getRobin(dsIndex);
         if (nanSample == null) {
             for (final double value : robin.getValues()) {
                 assertTrue(!Double.isNaN(value));
@@ -524,8 +579,8 @@ public class JRobinConverterTest {
         assertEquals(numberValue, Double.valueOf(robin.getValue(numberSample)));
 
         // Make sure FetchData matches
-        FetchData data = rrd.createFetchRequest("AVERAGE", archive.getStartTime(), archive.getEndTime()).fetchData();
-        double[] values = data.getValues(dsName);
+        final FetchData data = rrd.createFetchRequest("AVERAGE", archive.getStartTime(), archive.getEndTime()).fetchData();
+        final double[] values = data.getValues(dsName);
         if (nanSample == null) {
             for (final double value : values) {
                 assertTrue(!Double.isNaN(value));
@@ -535,6 +590,14 @@ public class JRobinConverterTest {
         }
         
         assertEquals(numberValue, Double.valueOf(values[numberSample]));
+    }
+
+    private List<RrdEntry> getAllData(final TimeSeriesDataSource sourceDatabase) throws IOException {
+        final List<RrdEntry> entries = new ArrayList<RrdEntry>(sourceDatabase.getRows());
+        for (long time = sourceDatabase.getStartTime(); time < sourceDatabase.getEndTime() + sourceDatabase.getNativeStep(); time += 150) {
+            entries.add(sourceDatabase.getDataAt(time));
+        }
+        return entries;
     }
 
     interface Function {
@@ -549,7 +612,7 @@ public class JRobinConverterTest {
         double m_period;
         double m_factor;
         
-        Sin(long startTime, double offset, double amplitude, double period) {
+        Sin(final long startTime, final double offset, final double amplitude, final double period) {
             m_startTime = startTime;
             m_offset = offset;
             m_amplitude = amplitude;
