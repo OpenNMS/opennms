@@ -97,7 +97,7 @@ public class DefaultManualProvisioningServiceTest extends TestCase {
         String groupName = "matt:";
         String pathToNode = "node[0]";
         String categoryName = "categoryName";
-
+        
         int initialCount = BeanUtils.getPathValue(m_testData, pathToNode+".categoryCount", int.class); 
         
         Requisition result = m_provisioningService.addCategoryToNode(groupName, pathToNode, categoryName);
@@ -105,7 +105,7 @@ public class DefaultManualProvisioningServiceTest extends TestCase {
         int newCount = BeanUtils.getPathValue(result, pathToNode+".categoryCount", int.class);
         
         assertEquals(initialCount+1, newCount);
-        RequisitionCategory newCategory = BeanUtils.getPathValue(result, pathToNode+".category[" + (newCount - 1) + "]", RequisitionCategory.class);
+        RequisitionCategory newCategory = BeanUtils.getPathValue(result, pathToNode+".category[0]", RequisitionCategory.class);
         assertNotNull(newCategory);
         assertEquals(categoryName, newCategory.getName());
     }
@@ -122,7 +122,7 @@ public class DefaultManualProvisioningServiceTest extends TestCase {
         int newCount = BeanUtils.getPathValue(result, pathToNode+".interfaceCount", int.class); 
         
         assertEquals(initialCount+1, newCount);
-        RequisitionInterface newIface = BeanUtils.getPathValue(result, pathToNode+".interface[" + (newCount - 1) + "]", RequisitionInterface.class);
+        RequisitionInterface newIface = BeanUtils.getPathValue(result, pathToNode+".interface[0]", RequisitionInterface.class);
         assertNotNull(newIface);
         assertEquals(ipAddr, newIface.getIpAddr());
     }
