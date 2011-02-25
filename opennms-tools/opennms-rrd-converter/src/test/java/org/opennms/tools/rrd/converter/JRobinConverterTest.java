@@ -9,12 +9,12 @@ import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collections;
-import java.util.Date;
 import java.util.List;
 import java.util.Map;
-import java.util.UUID;
 
+import org.jrobin.core.ArcDef;
 import org.jrobin.core.Archive;
+import org.jrobin.core.DsDef;
 import org.jrobin.core.FetchData;
 import org.jrobin.core.Robin;
 import org.jrobin.core.RrdBackendFactory;
@@ -26,6 +26,7 @@ import org.junit.After;
 import org.junit.Before;
 import org.junit.BeforeClass;
 import org.junit.Test;
+import org.opennms.tools.rrd.converter.LogUtils.Level;
 
 public class JRobinConverterTest {
     private static final double ACCEPTABLE_DOUBLE_DELTA = 0.00000000001;
@@ -36,13 +37,15 @@ public class JRobinConverterTest {
     private long m_baseTime = 1298046000L;
     
     File m_workDir = new File("target/rrd");
-    private final File m_sineFull   = new File(m_workDir, "sine.rrd");
-    private final File m_sineSource = new File(m_workDir, "a.rrd");
-    private final File m_variation  = new File(m_workDir, "variation.rrd");
+    private final File m_sineFull    = new File(m_workDir, "sine.rrd");
+    private final File m_sineSource  = new File(m_workDir, "a.rrd");
+    private final File m_variation   = new File(m_workDir, "variation.rrd");
+    private final File m_overlapping = new File(m_workDir, "overlapping.rrd");
     
     @BeforeClass
     public static void setFactory() throws RrdException {
         RrdBackendFactory.setDefaultFactory("MNIO");
+        LogUtils.setLevel(Level.DEBUG);
     }
 
     @Before
@@ -54,25 +57,22 @@ public class JRobinConverterTest {
 
     @After
     public void tearDown() throws Exception {
-//        m_sineFull.delete();
-//        m_sineSource.delete();
-//        m_variation.delete();
-    }
-    
-    protected void createMockRrds() throws Exception {
-        LogUtils.infof(this, "creating empty RRDs");
-        
         m_sineFull.delete();
         m_sineSource.delete();
         m_variation.delete();
-
-        initializeGroupRrd(m_sineFull);
-        initializeSingleRrd(m_sineSource);
-        initializeGroupRrd(m_variation);
+        m_overlapping.delete();
+    }
+    
+    protected void createMockRrds() throws Exception {
+        initializeRrd(m_sineFull, new String[] { "a", "b" }, new String[] { "1:4032", "12:1488", "288:366" });
+        initializeRrd(m_variation, new String[] { "a", "b" }, new String[] { "1:4032", "12:1488", "288:366" });
+        initializeRrd(m_sineSource, new String[] { "a" }, new String[] { "1:8928", "12:8784" });
+        initializeRrd(m_overlapping, new String[] { "c", "d", "a" }, new String[] { "1:4032", "12:1488", "288:366" });
 
         RrdDb sineFull    = new RrdDb(m_sineFull);
         RrdDb sineSource  = new RrdDb(m_sineSource);
         RrdDb variation   = new RrdDb(m_variation);
+        RrdDb overlapping = new RrdDb(m_overlapping);
 
         long start = (m_baseTime - (SECONDS_PER_DAY * 56L));
         Function bigSine = new Sin(start, 15, -10, SECONDS_PER_DAY * 7L);
@@ -99,49 +99,58 @@ public class JRobinConverterTest {
         start = (end - SECONDS_PER_YEAR);
         Function sequence = new AverageSequence(300, 10);
         Function sequenceCounter = new Counter(0, sequence);
+        Function overlappingSequence = new AverageSequence(300, 20);
+        Function overlappingCounter = new Counter(0, overlappingSequence);
         timestamp = start - 300L;
         for (; timestamp <= end; timestamp += 300L) {
             Sample sample = variation.createSample(timestamp);
             double value = sequenceCounter.evaluate(timestamp);
             sample.setValue("a", value);
             sample.update();
+            
+            sample = overlapping.createSample(timestamp);
+            value = overlappingCounter.evaluate(timestamp);
+            sample.setValue("d", Double.NaN);
+            if (((timestamp % 1200) / 300) < 2) {
+                sample.setValue("a", value);
+            }
+            sample.setValue("c", value);
+            sample.update();
         }
-
+        
         sineFull.close();
         sineSource.close();
         variation.close();
+        overlapping.close();
     }
 
     protected long getMidnightInSeconds(final long seconds) {
         return (((seconds) / SECONDS_PER_DAY) * SECONDS_PER_DAY);
     }
 
-    private void initializeGroupRrd(final File rrd) throws RrdException, IOException {
-        RrdDef rrdDef = new RrdDef(rrd.getAbsolutePath());
+    private void initializeRrd(final File fileName, final String[] dsNames, final String[] archives) throws RrdException, IOException {
+        final RrdDef rrdDef = new RrdDef(fileName.getAbsolutePath());
         rrdDef.setStartTime(0);
-        rrdDef.addDatasource("DS:a:COUNTER:600:0:U");
-        rrdDef.addDatasource("DS:b:COUNTER:600:0:U");
-        rrdDef.addArchive("RRA:AVERAGE:0.5:1:4032");
-        rrdDef.addArchive("RRA:AVERAGE:0.5:12:1488");
-        rrdDef.addArchive("RRA:AVERAGE:0.5:288:366");
-        RrdDb  db = new RrdDb(rrdDef);
-        db.close();
-    }
-
-    private void initializeSingleRrd(final File rrd) throws RrdException, IOException {
-        RrdDef rrdDef = new RrdDef(rrd.getAbsolutePath());
-        rrdDef.setStartTime(0);
-        rrdDef.addDatasource("DS:a:COUNTER:600:0:U");
-        rrdDef.addArchive("RRA:AVERAGE:0.5:1:8928");
-        rrdDef.addArchive("RRA:AVERAGE:0.5:12:8784");
-        RrdDb  db = new RrdDb(rrdDef);
+        final DsDef[] dsDefs = new DsDef[dsNames.length];
+        for (int i = 0; i < dsNames.length; i++) {
+            dsDefs[i] = new DsDef(dsNames[i], "COUNTER", 600, 0, Double.NaN);
+        }
+        rrdDef.addDatasource(dsDefs);
+        final ArcDef[] arcDefs = new ArcDef[archives.length];
+        for (int i = 0; i < archives.length; i++) {
+            String[] entry = archives[i].split(":");
+            Integer steps = Integer.valueOf(entry[0]);
+            Integer rows = Integer.valueOf(entry[1]);
+            arcDefs[i] = new ArcDef("AVERAGE", 0.5D, steps, rows);
+        }
+        rrdDef.addArchive(arcDefs);
+        final RrdDb db = new RrdDb(rrdDef);
         db.close();
     }
 
     @Test
     public void testGetDsNames() throws Exception {
         final List<String> dsNames = m_converter.getDsNames(m_sineFull);
-        LogUtils.debugf(this, "dsNames = %s", dsNames);
         assertTrue(dsNames.contains("a"));
         assertEquals(2, dsNames.size());
     }
@@ -158,7 +167,7 @@ public class JRobinConverterTest {
         try {
             m_converter.consolidateRrdFile(m_sineSource, newFile);
         } finally {
-//            newFile.delete();
+            newFile.delete();
         }
     }
 
@@ -190,11 +199,7 @@ public class JRobinConverterTest {
         final long startTime = endTime - (60L * 60L * 24L * 365L);
         final FetchData fd = rrd.createFetchRequest("AVERAGE", startTime, endTime, 300).fetchData();
         double[] values = fd.getValues("a");
-        long[] timestamps = fd.getTimestamps();
-        
-        for (int i = 0; i < timestamps.length; i++) {
-            LogUtils.debugf(this, "%s = %f", new Date(timestamps[i] * 1000L), values[i]);
-        }
+        assertEquals(367, values.length);
     }
     
     @Test
@@ -338,14 +343,12 @@ public class JRobinConverterTest {
     @Test
     public void testRrdDatabase() throws Exception {
         RrdDb rrd = new RrdDb(m_variation);
-        BaseRrdDataSource rrdDatabase = new RrdDatabase(rrd);
+        TimeSeriesDataSource rrdDatabase = new RrdDatabase(rrd);
         final int largestArchiveStep = 86400;
 
         final long end = getMidnightInSeconds(m_baseTime);
         final long start = (end - SECONDS_PER_YEAR + largestArchiveStep);
                                                   // ^^^^^^^^^^^^^^^^^^ accounts for the extra step added to each RRA in setUp()
-
-        LogUtils.debugf(this, "start = %d, end = %d", start, end);
 
         assertEquals(end, rrdDatabase.getEndTime());
         assertEquals(start, rrdDatabase.getStartTime());
@@ -386,7 +389,7 @@ public class JRobinConverterTest {
         datasources.add(sourceDatabase);
         datasources.add(fullDatabase);
 
-        BaseRrdDataSource aggregate = new AggregateTimeSeriesDataSource(datasources);
+        TimeSeriesDataSource aggregate = new AggregateTimeSeriesDataSource(datasources);
         assertEquals(300, aggregate.getNativeStep());
         assertEquals(1264006800, aggregate.getStartTime());
         assertEquals(1298046000, aggregate.getEndTime());
@@ -401,11 +404,6 @@ public class JRobinConverterTest {
         assertEquals(0.023333333333D, aggregate.getDataAt(1298046000).getValue("a"), ACCEPTABLE_DOUBLE_DELTA);
 
         List<RrdEntry> entries = aggregate.getData(150);
-        for (final RrdEntry entry : entries) {
-            if (!Double.isNaN(entry.getValue("a"))) {
-                LogUtils.debugf(this, "entry = %s", entry);
-            }
-        }
         assertEquals(entries.get(entries.size() - 1).getValue("a"), aggregate.getDataAt(aggregate.getEndTime() + 299).getValue("a"), ACCEPTABLE_DOUBLE_DELTA);
     }
     
@@ -417,7 +415,7 @@ public class JRobinConverterTest {
             RrdDb source = new RrdDb(m_sineSource);
             RrdDatabase sourceDatabase = new RrdDatabase(source);
     
-            BaseRrdDataSource aggregate = new AggregateTimeSeriesDataSource(Collections.singletonList(sourceDatabase));
+            TimeSeriesDataSource aggregate = new AggregateTimeSeriesDataSource(Collections.singletonList(sourceDatabase));
 
             long dbStart = System.nanoTime();
             List<RrdEntry> rawEntries = sourceDatabase.getData(150);
@@ -442,7 +440,7 @@ public class JRobinConverterTest {
             RrdDb source = new RrdDb(m_sineSource);
             RrdDatabase sourceDatabase = new RrdDatabase(source);
     
-            BaseRrdDataSource aggregate = new AggregateTimeSeriesDataSource(Collections.singletonList(sourceDatabase));
+            TimeSeriesDataSource aggregate = new AggregateTimeSeriesDataSource(Collections.singletonList(sourceDatabase));
 
             long dbStart = System.nanoTime();
             List<RrdEntry> rawEntries = getAllData(sourceDatabase);
@@ -459,6 +457,29 @@ public class JRobinConverterTest {
         LogUtils.debugf(this, "aggTime = %d (%f)", aggTime, aggTime / 1000000.0 / 20.0);
     }
 
+    @Test
+    public void testAggregateWithOverlappingData() throws Exception {
+        RrdDatabase overlappingDatabase = new RrdDatabase(new RrdDb(m_overlapping, true));
+        RrdDatabase variationDatabase = new RrdDatabase(new RrdDb(m_variation, true));
+        List<RrdDatabase> datasources = new ArrayList<RrdDatabase>();
+        datasources.add(overlappingDatabase);
+        datasources.add(variationDatabase);
+
+        TimeSeriesDataSource aggregate = new AggregateTimeSeriesDataSource(datasources);
+        final List<String> aggregateDsNames = Arrays.asList(new String[] { "c", "d", "a", "b" });
+
+        assertEquals(variationDatabase.getStartTime(), overlappingDatabase.getStartTime());
+        assertEquals(variationDatabase.getStartTime(), aggregate.getStartTime());
+        assertEquals(variationDatabase.getEndTime(), overlappingDatabase.getEndTime());
+        assertEquals(variationDatabase.getEndTime(), aggregate.getEndTime());
+        assertEquals(aggregateDsNames, aggregate.getDsNames());
+
+        assertEquals(1.0933333333333D, aggregate.getDataAt(1297956000).getValue("a"), ACCEPTABLE_DOUBLE_DELTA);
+        assertEquals(1.1966666666666D, aggregate.getDataAt(1297956300).getValue("a"), ACCEPTABLE_DOUBLE_DELTA);
+        assertEquals(1.1000000000000D, aggregate.getDataAt(1297956600).getValue("a"), ACCEPTABLE_DOUBLE_DELTA);
+        assertEquals(1.1033333333333D, aggregate.getDataAt(1297956900).getValue("a"), ACCEPTABLE_DOUBLE_DELTA);
+    }
+    
     private List<RrdEntry> getAllData(TimeSeriesDataSource sourceDatabase) throws IOException {
         final List<RrdEntry> entries = new ArrayList<RrdEntry>(sourceDatabase.getRows());
         for (long time = sourceDatabase.getStartTime(); time < sourceDatabase.getEndTime() + sourceDatabase.getNativeStep(); time += 150) {
@@ -473,7 +494,7 @@ public class JRobinConverterTest {
         try {
             m_converter.consolidateRrdFile(m_sineFull, newFile);
             RrdDb newRrd = new RrdDb(newFile.getPath(), true);
-            BaseRrdDataSource rrdDatabase = new RrdDatabase(newRrd);
+            TimeSeriesDataSource rrdDatabase = new RrdDatabase(newRrd);
 
             assertEquals(m_baseTime, newRrd.getLastArchiveUpdateTime());
             Archive archive = newRrd.getArchive(0);
@@ -483,41 +504,7 @@ public class JRobinConverterTest {
             assertEquals(0.049532528339D, rrdDatabase.getDataAt(1293210000).getValue("a"), ACCEPTABLE_DOUBLE_DELTA);
             assertEquals(0.023333333333D, rrdDatabase.getDataAt(1298046000).getValue("a"), ACCEPTABLE_DOUBLE_DELTA);
         } finally {
-//            newFile.delete();
-        }
-    }
-
-    /**
-     * Create a new temporary directory. Use something like
-     * {@link #recursiveDelete(File)} to clean this directory up since it isn't
-     * deleted automatically
-     * @return  the new directory
-     * @throws IOException if there is an error creating the temporary directory
-     */
-    @SuppressWarnings("unused")
-    private static File createTempDir() throws IOException
-    {
-        final File sysTempDir = new File(System.getProperty("java.io.tmpdir"));
-        File newTempDir;
-        final int maxAttempts = 9;
-        int attemptCount = 0;
-        do
-        {
-            attemptCount++;
-            if(attemptCount > maxAttempts) {
-                throw new IOException(
-                        "The highly improbable has occurred! Failed to " +
-                        "create a unique temporary directory after " +
-                        maxAttempts + " attempts.");
-            }
-            final String dirName = UUID.randomUUID().toString();
-            newTempDir = new File(sysTempDir, dirName);
-        } while(newTempDir.exists());
-
-        if (newTempDir.mkdirs()) {
-            return newTempDir;
-        } else {
-            throw new IOException("Failed to create temp dir named " + newTempDir.getAbsolutePath());
+            newFile.delete();
         }
     }
 
@@ -548,12 +535,6 @@ public class JRobinConverterTest {
         }
         
         assertEquals(numberValue, Double.valueOf(values[numberSample]));
-        /*
-        long[] timestamps = data.getTimestamps();
-        for (int i = 0; i < timestamps.length; i++) {
-            LogUtils.debugf(this, "%s: %s = %f", rrd, new Date(timestamps[i]), values[i]);
-        }
-        */
     }
 
     interface Function {

@@ -1,6 +1,5 @@
 package org.opennms.tools.rrd.converter;
 
-import java.io.File;
 import java.io.IOException;
 import java.util.Arrays;
 import java.util.SortedSet;
@@ -8,7 +7,6 @@ import java.util.TreeSet;
 
 import org.apache.commons.lang.builder.ToStringBuilder;
 import org.jrobin.core.RrdDb;
-import org.jrobin.core.RrdException;
 
 public class RrdDatabase extends BaseRrdDataSource {
     private final RrdDb m_rrd;
@@ -20,16 +18,6 @@ public class RrdDatabase extends BaseRrdDataSource {
     public RrdDatabase(final RrdDb rrd) throws IOException {
         super(Arrays.asList(rrd.getDsNames()));
         m_rrd = rrd;
-        m_archives = initializeArchives();
-        m_endTime = computeEndTime();
-        m_startTime = computeStartTime();
-        m_step = m_rrd.getHeader().getStep();
-    }
-
-    public RrdDatabase(File rrdFile, boolean readOnly) throws IOException, RrdException {
-        super();
-        m_rrd = new RrdDb(rrdFile, readOnly);
-        setDsNames(Arrays.asList(m_rrd.getDsNames()));
         m_archives = initializeArchives();
         m_endTime = computeEndTime();
         m_startTime = computeStartTime();

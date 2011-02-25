@@ -58,7 +58,6 @@ public class RrdArchive extends BaseRrdDataSource implements Comparable<RrdArchi
     }
     
     private RrdEntry getDataForRowWithTimestamp(final int row, final long timestamp) throws IOException {
-//        return getRawDataForRowWithTimestamp(row, timestamp);
         final RrdEntry rawEntry = m_data.get(row);
         if (rawEntry == null) {
             return new RrdEntry(timestamp, getDsNames());
@@ -79,11 +78,9 @@ public class RrdArchive extends BaseRrdDataSource implements Comparable<RrdArchi
 
     private RrdEntry getRawDataForRowWithTimestamp(final int row, final long timestamp) throws IOException {
         final RrdEntry entry = new RrdEntry(timestamp, getDsNames());
-        int i = 0;
         for (final String dsName : getDsNames()) {
             final double value = getValueForRow(row, dsName);
             entry.setValue(dsName, value);
-            i++;
         }
         return entry;
     }
@@ -136,6 +133,7 @@ public class RrdArchive extends BaseRrdDataSource implements Comparable<RrdArchi
     public String toString() {
         try {
             return new ToStringBuilder(this)
+                .append("dsNames", getDsNames())
                 .append("startTime", new Date(m_archive.getStartTime() * 1000L))
                 .append("endTime", new Date(m_archive.getEndTime() * 1000L))
                 .append("step", getNativeStep())

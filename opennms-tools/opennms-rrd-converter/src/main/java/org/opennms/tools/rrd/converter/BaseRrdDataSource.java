@@ -48,7 +48,6 @@ public abstract class BaseRrdDataSource implements TimeSeriesDataSource {
         for (long time = getStartTime(); time < getEndTime() + getNativeStep(); time += step) {
             entries.add(getDataAt(time));
         }
-        LogUtils.debugf(this, "total entries: %d", entries.size());
         return entries;
     }
 

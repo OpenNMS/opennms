@@ -216,9 +216,10 @@ public class JRobinConverter {
 
     public void consolidateRrdFile(final File groupFile, final File outputFile) throws IOException, RrdException, ConverterException {
         final List<RrdDatabase> rrds = new ArrayList<RrdDatabase>();
-        rrds.add(new RrdDatabase(groupFile, true));
+        rrds.add(new RrdDatabase(new RrdDb(groupFile, true)));
         for (final File individualFile : getMatchingGroupRrds(groupFile)) {
-            rrds.add(new RrdDatabase(individualFile, true));
+            final RrdDb individualRrd = new RrdDb(individualFile, true);
+            rrds.add(new RrdDatabase(individualRrd));
         }
         final TimeSeriesDataSource dataSource = new AggregateTimeSeriesDataSource(rrds);
 
