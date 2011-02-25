@@ -377,7 +377,7 @@ public class OnmsIpInterface extends OnmsEntity implements Serializable {
     @Transient
     @XmlAttribute(name="snmpPrimary")
     public String getPrimaryString() {
-        return m_isSnmpPrimary.toString();
+        return m_isSnmpPrimary == null? null : m_isSnmpPrimary.toString();
     }
     /**
      * <p>setPrimaryString</p>
