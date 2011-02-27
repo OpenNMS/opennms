@@ -17,6 +17,7 @@ import java.util.Set;
 import java.util.TreeSet;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
+import java.util.concurrent.atomic.AtomicInteger;
 
 import org.apache.commons.cli.CommandLine;
 import org.apache.commons.cli.CommandLineParser;
@@ -33,26 +34,22 @@ import org.opennms.tools.rrd.converter.LogUtils.Level;
 
 public class JRobinConverter {
     private static final long ONE_YEAR_IN_SECONDS = 60L * 60L * 24L * 366L;
+    private static final AtomicInteger m_count = new AtomicInteger(0);
+    private static final AtomicInteger m_total = new AtomicInteger(0);
 
     private static final class JRobinConsolidationRunnable implements Runnable {
         private final File m_rrdFile;
-        private static volatile Integer m_total = 0;
-        private volatile Integer m_count = 0;
         private final JRobinConverter m_converter;
 
-        private JRobinConsolidationRunnable(final File rrdFile, final int count, final JRobinConverter converter) {
+        private JRobinConsolidationRunnable(final File rrdFile, final JRobinConverter converter) {
             m_rrdFile = rrdFile;
-            m_count = count;
             m_converter = converter;
-        }
-
-        public static void setTotal(final int total) {
-            m_total = total;
         }
 
         public void run() {
             try {
-                LogUtils.infof(this, "Starting processing %s (%d/%d)", m_rrdFile, m_count, m_total);
+                final int count = m_count.incrementAndGet();
+                LogUtils.infof(this, "Starting processing %s (%d/%d)", m_rrdFile, count, m_total.get());
                 final List<String> dsNames = m_converter.getDsNames(m_rrdFile);
                 if (dsNames.size() == 1) {
                     LogUtils.warnf(this, "%s only has one dsName, skipping", m_rrdFile);
@@ -74,7 +71,7 @@ public class JRobinConverter {
                 renameFile(backupRrdFile, finishedRrdFile);
                 LogUtils.infof(this, "Finished processing %s", m_rrdFile);
             } catch (final Exception e) {
-                LogUtils.debugf(this, e, "Error while converting %s", m_rrdFile);
+                LogUtils.infof(this, e, "Error while converting %s", m_rrdFile);
             }
         }
 
@@ -103,7 +100,7 @@ public class JRobinConverter {
 
     public void execute(final String[] args) throws ParseException, ConverterException, RrdException {
         if (args.length == 0) {
-            System.err.println(new Date() + ": no directory specified!");
+            LogUtils.errorf(this, "no files or directories specified!");
             System.exit(1);
         }
 
@@ -122,59 +119,51 @@ public class JRobinConverter {
         final Set<File> rrds = Collections.synchronizedSet(new TreeSet<File>());
 
         if (cmd.hasOption("h")) {
-            new HelpFormatter().printHelp("jrobin-converter", options);
+            new HelpFormatter().printHelp("jrobin-converter [options] [file-or-directory1] [...file-or-directoryN]", options);
             System.exit(1);
         }
         if (cmd.getArgList().size() == 0) {
             LogUtils.infof(this, "No files or directories specified!  Exiting.");
             System.exit(0);
         }
-        int argCount = 0;
-        int total = cmd.getArgList().size();
-        for (final Object arg : cmd.getArgList()) {
-            LogUtils.infof(this, "Scanning %s for storeByGroup data (%d/%d)", arg, ++argCount, total);
-            final File f = new File((String)arg);
-            if (f.exists()) {
-                if (f.isDirectory()) {
-                    rrds.addAll(findGroupRrds(f));
-                } else {
-                    rrds.add(f);
-                }
-            }
-        }
 
         int threads = 5;
         if (cmd.hasOption("t")) {
             try {
-                Integer t = Integer.valueOf(cmd.getOptionValue("t"));
-                threads = t;
+                threads = Integer.valueOf(cmd.getOptionValue("t"));
             } catch (final NumberFormatException e) {
                 LogUtils.warnf(JRobinConverter.class, e, "failed to format -t %s to a number", cmd.getOptionValue("t"));
             }
         }
+        final ExecutorService executor = Executors.newFixedThreadPool(threads);
 
-        if (rrds.size() == 0) {
+        for (final Object arg : cmd.getArgList()) {
+            LogUtils.infof(this, "Scanning %s for storeByGroup data (%d RRDs found)", arg, m_total.get());
+            final File f = new File((String)arg);
+            if (f.exists()) {
+                if (f.isDirectory()) {
+                    rrds.addAll(findGroupRrds(f));
+                    for (final File rrdFile : findGroupRrds(f)) {
+                        consolidateRrd(executor, rrdFile);
+                    }
+                } else {
+                    consolidateRrd(executor, f);
+                }
+            }
+        }
+        LogUtils.infof(this, "Finished scanning for storeByGroup RRDs (%d RRDs found)", m_total.get());
+
+        if (m_total.get() == 0) {
             System.err.println(new Date() + ": error, no storeByGroup RRDs found!");
             System.exit(1);
         }
         
-        try {
-            final ExecutorService executor = Executors.newFixedThreadPool(threads);
-            JRobinConsolidationRunnable.setTotal(rrds.size());
-            int count = 1;
-            for (final File rrdFile : rrds) {
-                executor.execute(new JRobinConsolidationRunnable(rrdFile, count++, this));
-                try {
-                    Thread.sleep(10);
-                } catch (final InterruptedException e) {
-                    Thread.currentThread().interrupt();
-                }
-            }
-            executor.shutdown();
-        } catch (final Exception e) {
-            System.err.println(new Date() + ": error while converting RRDs");
-            e.printStackTrace();
-        }
+        executor.shutdown();
+    }
+
+    private void consolidateRrd(final ExecutorService executor, final File rrdFile) {
+        m_total.incrementAndGet();
+        executor.execute(new JRobinConsolidationRunnable(rrdFile, this));
     }
 
     public List<File> getMatchingGroupRrds(final File rrdGroupFile) throws ConverterException {
@@ -284,6 +273,7 @@ public class JRobinConverter {
     public File createTempRrd(final File rrdFile) throws IOException, RrdException {
         final File parentFile = rrdFile.getParentFile();
         final File outputFile = new File(parentFile, rrdFile.getName() + ".temp");
+        outputFile.delete(); // just in case there's an old one lying around
         parentFile.mkdirs();
 //        LogUtils.debugf(this, "created temporary RRD: %s", outputFile);
         final RrdDb oldRrd = new RrdDb(rrdFile.getAbsolutePath(), true);
