@@ -153,12 +153,9 @@ public class JRobinConverter {
         }
         LogUtils.infof(this, "Finished scanning for storeByGroup RRDs (%d RRDs found)", m_total.get());
 
-        if (m_total.get() == 0) {
-            System.err.println(new Date() + ": error, no storeByGroup RRDs found!");
-            System.exit(1);
-        }
-        
         executor.shutdown();
+
+        LogUtils.infof(this, "Conversion complete.");
     }
 
     private void consolidateRrd(final ExecutorService executor, final File rrdFile) {
