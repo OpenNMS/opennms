@@ -8,7 +8,6 @@ import java.nio.channels.FileChannel;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collections;
-import java.util.Date;
 import java.util.HashMap;
 import java.util.Iterator;
 import java.util.List;
@@ -33,6 +32,9 @@ import org.jrobin.core.RrdException;
 import org.opennms.tools.rrd.converter.LogUtils.Level;
 
 public class JRobinConverter {
+    private static final int DEFAULT_NUMBER_OF_THREADS = 5;
+    private static final String DEFAULT_JROBIN_FACTORY = "MNIO";
+    private static final String DEFAULT_LOG_LEVEL = "INFO";
     private static final long ONE_YEAR_IN_SECONDS = 60L * 60L * 24L * 366L;
     private static final AtomicInteger m_count = new AtomicInteger(0);
     private static final AtomicInteger m_total = new AtomicInteger(0);
@@ -106,15 +108,15 @@ public class JRobinConverter {
 
         final Options options = new Options();
         options.addOption("h", "help", false, "This help.");
-        options.addOption("f", "factory", true, "The JRobin factory to use.");
-        options.addOption("l", "log", true, "The log level to use. (Default: INFO)");
-        options.addOption("t", "threads", true, "Number of threads to start.");
+        options.addOption("f", "factory", true, "The JRobin factory to use. (Default: " + DEFAULT_JROBIN_FACTORY + ")");
+        options.addOption("l", "log", true, "The log level to use. (Default: " + DEFAULT_LOG_LEVEL + ")");
+        options.addOption("t", "threads", true, "Number of threads to start. (Default: " + DEFAULT_NUMBER_OF_THREADS + ")");
 
         final CommandLineParser parser = new GnuParser();
         final CommandLine cmd = parser.parse(options, args);
 
-        LogUtils.setLevel(Level.valueOf(cmd.getOptionValue("l", "INFO")));
-        RrdBackendFactory.setDefaultFactory(cmd.getOptionValue("f", "MNIO"));
+        LogUtils.setLevel(Level.valueOf(cmd.getOptionValue("l", DEFAULT_LOG_LEVEL)));
+        RrdBackendFactory.setDefaultFactory(cmd.getOptionValue("f", DEFAULT_JROBIN_FACTORY));
 
         final Set<File> rrds = Collections.synchronizedSet(new TreeSet<File>());
 
@@ -127,7 +129,7 @@ public class JRobinConverter {
             System.exit(0);
         }
 
-        int threads = 5;
+        int threads = DEFAULT_NUMBER_OF_THREADS;
         if (cmd.hasOption("t")) {
             try {
                 threads = Integer.valueOf(cmd.getOptionValue("t"));
