@@ -37,6 +37,7 @@ public class JRobinConverter {
     private static final String DEFAULT_LOG_LEVEL = "INFO";
     private static final long ONE_YEAR_IN_SECONDS = 60L * 60L * 24L * 366L;
     private static final AtomicInteger m_count = new AtomicInteger(0);
+    private static final AtomicInteger m_finished = new AtomicInteger(0);
     private static final AtomicInteger m_total = new AtomicInteger(0);
 
     private static final class JRobinConsolidationRunnable implements Runnable {
@@ -50,8 +51,9 @@ public class JRobinConverter {
 
         public void run() {
             try {
-                final int count = m_count.incrementAndGet();
-                LogUtils.infof(this, "Starting processing %s (%d/%d)", m_rrdFile, count, m_total.get());
+                synchronized(m_total) {
+                    LogUtils.infof(this, "Starting processing %s (%d/%d Started)", m_rrdFile, m_count.incrementAndGet(), m_total.get());
+                }
                 final List<String> dsNames = m_converter.getDsNames(m_rrdFile);
                 if (dsNames.size() == 1) {
                     LogUtils.warnf(this, "%s only has one dsName, skipping", m_rrdFile);
@@ -71,7 +73,7 @@ public class JRobinConverter {
                 renameFile(m_rrdFile, backupRrdFile);
                 renameFile(outputRrdFile, m_rrdFile);
                 renameFile(backupRrdFile, finishedRrdFile);
-                LogUtils.infof(this, "Finished processing %s", m_rrdFile);
+                LogUtils.infof(this, "Completed processing %s (%d/%d Complete)", m_rrdFile, m_finished.incrementAndGet(), m_total.get());
             } catch (final Exception e) {
                 LogUtils.infof(this, e, "Error while converting %s", m_rrdFile);
             }
@@ -140,7 +142,7 @@ public class JRobinConverter {
         final ExecutorService executor = Executors.newFixedThreadPool(threads);
 
         for (final Object arg : cmd.getArgList()) {
-            LogUtils.infof(this, "Scanning %s for storeByGroup data (%d RRDs found)", arg, m_total.get());
+            LogUtils.infof(this, "Scanning %s for storeByGroup data.", arg);
             final File f = new File((String)arg);
             if (f.exists()) {
                 if (f.isDirectory()) {
@@ -153,11 +155,9 @@ public class JRobinConverter {
                 }
             }
         }
-        LogUtils.infof(this, "Finished scanning for storeByGroup RRDs (%d RRDs found)", m_total.get());
+        LogUtils.infof(this, "Finished scanning for storeByGroup RRDs. (Total RRD count: %d)", m_total.get());
 
         executor.shutdown();
-
-        LogUtils.infof(this, "Conversion complete.");
     }
 
     private void consolidateRrd(final ExecutorService executor, final File rrdFile) {
