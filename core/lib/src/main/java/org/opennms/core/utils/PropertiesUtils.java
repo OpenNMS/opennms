@@ -39,6 +39,7 @@ package org.opennms.core.utils;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Map;
 import java.util.Properties;
 
 /**
@@ -66,10 +67,20 @@ public abstract class PropertiesUtils {
 		}
 	}
     
+    private static class MapBasedSymbolTable implements SymbolTable {
+        Map<String,String> m_map;
+        MapBasedSymbolTable(Map<String,String> properties) {
+            m_map = properties;
+        }
+        public String getSymbolValue(String symbol) {
+            return m_map.get(symbol);
+        }
+    }
+    
     /**
      * This recursively substitutes occurrences ${property.name} in initialString with the value of
      * the property property.name taken from the supplied properties object. If
-     * property.name is not defined in properties that the substitution is not done.
+     * property.name is not defined in properties then the substitution is not done.
      *
      * @param initialString the string to perform the substitutions in
      * @return The string with appropriate substitutions made.
@@ -80,6 +91,24 @@ public abstract class PropertiesUtils {
         for (Properties properties : propertiesArray) {
             if (properties != null)
                 workingString = substitute(workingString, new PropertyBasedSymbolTable(properties), PLACEHOLDER_PREFIX, PLACEHOLDER_SUFFIX, new ArrayList<String>());
+        }
+        return workingString;
+    }
+
+    /**
+     * This recursively substitutes occurrences ${property.name} in initialString with the value of
+     * the property property.name taken from the supplied {@link Map} object. If
+     * property.name is not defined in the map then the substitution is not done.
+     *
+     * @param initialString the string to perform the substitutions in
+     * @return The string with appropriate substitutions made.
+     * @param mapArray a {@link java.util.Map} object.
+     */
+    public static String substitute(String initialString, Map<String,String>... mapArray) {
+        String workingString = initialString;
+        for (Map<String,String> properties : mapArray) {
+            if (properties != null)
+                workingString = substitute(workingString, new MapBasedSymbolTable(properties), PLACEHOLDER_PREFIX, PLACEHOLDER_SUFFIX, new ArrayList<String>());
         }
         return workingString;
     }

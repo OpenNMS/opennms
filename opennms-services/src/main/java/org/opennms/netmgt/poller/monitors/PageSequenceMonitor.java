@@ -233,8 +233,8 @@ public class PageSequenceMonitor extends AbstractServiceMonitor {
     private static final int DEFAULT_RETRY = 0;
 
     public static class HttpPageSequence {
-        PageSequence m_sequence;
-        List<HttpPage> m_pages;
+        final PageSequence m_sequence;
+        final List<HttpPage> m_pages;
         Properties m_sequenceProperties;
         Map<String,String> m_parameters = new HashMap<String,String>();
 
@@ -305,8 +305,8 @@ public class PageSequenceMonitor extends AbstractServiceMonitor {
 
     public static class HttpResponseRange {
         private static final Pattern RANGE_PATTERN = Pattern.compile("([1-5][0-9][0-9])(?:-([1-5][0-9][0-9]))?");
-        private int m_begin;
-        private int m_end;
+        private final int m_begin;
+        private final int m_end;
 
         HttpResponseRange(String rangeSpec) {
             Matcher matcher = RANGE_PATTERN.matcher(rangeSpec);
@@ -679,9 +679,9 @@ public class PageSequenceMonitor extends AbstractServiceMonitor {
             return parms;
         }
 
-        private Map<String, String> m_parameterMap;
-        private HttpParams m_clientParams;
-        private HttpPageSequence m_pageSequence;
+        private final Map<String, String> m_parameterMap;
+        private final HttpParams m_clientParams;
+        private final HttpPageSequence m_pageSequence;
 
         PageSequenceMonitorParameters(Map<String, String> parameterMap) {
             m_parameterMap = parameterMap;
@@ -689,9 +689,11 @@ public class PageSequenceMonitor extends AbstractServiceMonitor {
             if (pageSequence == null) {
                 throw new IllegalArgumentException("page-sequence must be set in monitor parameters");
             }
+            // Perform parameter expansion on the page-sequence string
+            pageSequence = PropertiesUtils.substitute(pageSequence, m_parameterMap);
             PageSequence sequence = parsePageSequence(pageSequence);
             m_pageSequence = new HttpPageSequence(sequence);
-            m_pageSequence.setParameters(parameterMap);
+            m_pageSequence.setParameters(m_parameterMap);
 
             m_clientParams = createClientParams();
         }
