@@ -16,9 +16,9 @@
     </annotation>
     <complexType>
       <sequence>
-        <element ref="this:jdbc-data-source" minOccurs="1" maxOccurs="unbounded" >
-        </element>
+        <element ref="this:jdbc-data-source" minOccurs="1" maxOccurs="unbounded" />
       </sequence>
+		<attribute name="factory" type="string" use="optional" default="org.opennms.netmgt.config.C3P0ConnectionFactory" />
     </complexType>
   </element>
   <element name="jdbc-data-source" >

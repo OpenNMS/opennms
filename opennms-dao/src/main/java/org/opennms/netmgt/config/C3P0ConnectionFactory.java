@@ -41,7 +41,6 @@
 package org.opennms.netmgt.config;
 
 import java.beans.PropertyVetoException;
-import java.io.FileInputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.PrintWriter;
@@ -52,14 +51,11 @@ import java.util.Properties;
 
 import javax.sql.DataSource;
 
-import org.apache.commons.io.IOUtils;
 import org.exolab.castor.xml.MarshalException;
 import org.exolab.castor.xml.ValidationException;
-import org.opennms.core.utils.ThreadCategory;
-import org.opennms.netmgt.config.opennmsDataSources.DataSourceConfiguration;
+import org.opennms.core.utils.LogUtils;
 import org.opennms.netmgt.config.opennmsDataSources.JdbcDataSource;
 import org.opennms.netmgt.config.opennmsDataSources.Param;
-import org.opennms.netmgt.dao.castor.CastorUtils;
 
 import com.mchange.v2.c3p0.ComboPooledDataSource;
 
@@ -69,295 +65,89 @@ import com.mchange.v2.c3p0.ComboPooledDataSource;
  * @author ranger
  * @version $Id: $
  */
-public class C3P0ConnectionFactory implements ClosableDataSource {
+public class C3P0ConnectionFactory extends BaseConnectionFactory {
 
-    /*    private static final int DEFAULT_AQUIRE_INCREMENT = 5;
-    private static final int DEFAULT_RETRY_ATTEMPTS = 1;
-    private static final int DEFAULT_RETRY_DELAY = 0;  //TODO: need to learn this one
-    private static final boolean DEFAULT_AUTOCOMMIT_ON_CLOSE = false;
-    private static final boolean DEFAULT_BREAK_AFTER_ACQUIRE_FAILURE = false;
-    private static final int DEFAULT_CHECKOUT_TIMEOUT = 0;
-    private static final String DEFAULT_TESTER_CLASS_NAME = null;
-    private static final String DEFAULT_POOL_DESCRIPTION = "OpenNMS C3P0 Connection Pool";
-
-    private static final boolean DEFAULT_FORCE_IGNORE_UNRESOLVED_TRANSACTION = false;
-    private static final String DEFAULT_IDENTITY_TOKEN = null;
-    private static final int DEFAULT_IDLE_CONNECTION_TEST_PERIOD = 1800;
-    private static final int DEFAULT_INITIAL_POOL_SIZE = 25;
-    private static final int DEFAULT_LOGIN_TIMEOUT = 3000;
-    private static final PrintWriter DEFAULT_LOG_WRITER = null;
-    private static final int DEFAUT_MAX_IDLE_TIME = 1800;
-    private static final int DEFAULT_MAX_POOL_SIZE = 256;
-    private static final int DEFAULT_MAX_STATEMENTS = 0;
-    private static final int DEFAULT_MAX_STATEMENTS_PER_CONNECTION = 0;
-    private static final int DEFAULT_MIN_POOL_SIZE = 10;
-    private static final int DEFAULT_NUM_HELPER_THREADS = 0;
-    private static final String DEFAULT_PERFERRED_TEST_QUERY = null;
-    private static final int DEFAULT_PROPERTY_CYCLE = 0;
-    private static final boolean DEFAULT_SET_TEST_CONNECTION_ON_CHECKIN = false;
-    private static final boolean DEFAULT_SET_TEST_CONNECTION_ON_CHECKOUT = false;
-    private static final boolean DEFAULT_USES_TRADITIONAL_REFLECTIVE_PROXIES = false;
-     */    
     private ComboPooledDataSource m_pool;
 
-    /**
-     * <p>Constructor for C3P0ConnectionFactory.</p>
-     *
-     * @param stream a {@link java.io.InputStream} object.
-     * @param dsName a {@link java.lang.String} object.
-     * @throws org.exolab.castor.xml.MarshalException if any.
-     * @throws org.exolab.castor.xml.ValidationException if any.
-     * @throws java.beans.PropertyVetoException if any.
-     * @throws java.sql.SQLException if any.
-     */
-    protected C3P0ConnectionFactory(InputStream stream, String dsName) throws MarshalException, ValidationException, PropertyVetoException, SQLException {
-        log().info("C3P0ConnectionFactory: setting up data sources from input stream.");
-        JdbcDataSource ds = marshalDataSourceFromConfig(stream, dsName);
-        initializePool(ds);
+    public C3P0ConnectionFactory(final InputStream stream, final String dsName) throws MarshalException, ValidationException, PropertyVetoException, SQLException {
+    	super(stream, dsName);
     }
 
-    /**
-     * <p>Constructor for C3P0ConnectionFactory.</p>
-     *
-     * @param rdr a {@link java.io.Reader} object.
-     * @param dsName a {@link java.lang.String} object.
-     * @throws org.exolab.castor.xml.MarshalException if any.
-     * @throws org.exolab.castor.xml.ValidationException if any.
-     * @throws java.beans.PropertyVetoException if any.
-     * @throws java.sql.SQLException if any.
-     */
-    protected C3P0ConnectionFactory(Reader rdr, String dsName) throws MarshalException, ValidationException, PropertyVetoException, SQLException {
-        log().info("C3P0ConnectionFactory: setting up data sources from reader argument.");
-        JdbcDataSource ds = marshalDataSourceFromConfig(rdr, dsName);
-        initializePool(ds);
+    public C3P0ConnectionFactory(Reader rdr, String dsName) throws MarshalException, ValidationException, PropertyVetoException, SQLException {
+    	super(rdr, dsName);
     }
 
-    /**
-     * <p>Constructor for C3P0ConnectionFactory.</p>
-     *
-     * @param configFile a {@link java.lang.String} object.
-     * @param dsName a {@link java.lang.String} object.
-     * @throws java.io.IOException if any.
-     * @throws org.exolab.castor.xml.MarshalException if any.
-     * @throws org.exolab.castor.xml.ValidationException if any.
-     * @throws java.beans.PropertyVetoException if any.
-     * @throws java.sql.SQLException if any.
-     */
-    protected C3P0ConnectionFactory(String configFile, String dsName) throws IOException, MarshalException, ValidationException, PropertyVetoException, SQLException {
-        /*
-         * Set the system identifier for the source of the input stream.
-         * This is necessary so that any location information can
-         * positively identify the source of the error.
-         */
-        FileInputStream fileInputStream = new FileInputStream(configFile);
-        log().info("C3P0ConnectionFactory: setting up data sources from:"+configFile);
-        try {
-            JdbcDataSource ds = marshalDataSourceFromConfig(fileInputStream, dsName);
-            initializePool(ds);
-        } finally {
-            IOUtils.closeQuietly(fileInputStream);
-        }
+    public C3P0ConnectionFactory(final String configFile, final String dsName) throws IOException, MarshalException, ValidationException, PropertyVetoException, SQLException {
+    	super(configFile, dsName);
     }
 
-    /**
-     * <p>marshalDataSourceFromConfig</p>
-     *
-     * @param stream a {@link java.io.InputStream} object.
-     * @param dsName a {@link java.lang.String} object.
-     * @return a {@link org.opennms.netmgt.config.opennmsDataSources.JdbcDataSource} object.
-     * @throws org.exolab.castor.xml.MarshalException if any.
-     * @throws org.exolab.castor.xml.ValidationException if any.
-     */
-    public static JdbcDataSource marshalDataSourceFromConfig(final InputStream stream, String dsName) throws MarshalException, ValidationException {
-        DataSourceConfiguration dsc = CastorUtils.unmarshal(DataSourceConfiguration.class, stream);
-        return validateDataSourceConfiguration(dsName, dsc);
-    }
-
-    /**
-     * <p>marshalDataSourceFromConfig</p>
-     *
-     * @param rdr a {@link java.io.Reader} object.
-     * @param dsName a {@link java.lang.String} object.
-     * @return a {@link org.opennms.netmgt.config.opennmsDataSources.JdbcDataSource} object.
-     * @throws org.exolab.castor.xml.MarshalException if any.
-     * @throws org.exolab.castor.xml.ValidationException if any.
-     * @throws java.beans.PropertyVetoException if any.
-     * @throws java.sql.SQLException if any.
-     */
-    @SuppressWarnings("deprecation")
-    public static JdbcDataSource marshalDataSourceFromConfig(final Reader rdr, String dsName) throws MarshalException, ValidationException, PropertyVetoException, SQLException {
-        DataSourceConfiguration dsc = CastorUtils.unmarshal(DataSourceConfiguration.class, rdr);
-        return validateDataSourceConfiguration(dsName, dsc);
-    }
-
-    private static JdbcDataSource validateDataSourceConfiguration(String dsName, DataSourceConfiguration dsc) {
-        for (JdbcDataSource jdbcDs : dsc.getJdbcDataSourceCollection()) {
-            if (jdbcDs.getName().equals(dsName)) {
-                return jdbcDs;
-            }
-        }
-        
-        throw new IllegalArgumentException("C3P0ConnectionFactory: DataSource: "+dsName+" is not defined.");
-    }
-
-    private ThreadCategory log() {
-        return ThreadCategory.getInstance(getClass());
-    }
-
-    private void initializePool(JdbcDataSource ds) throws PropertyVetoException, SQLException {
+    protected void initializePool(final JdbcDataSource dataSource) throws SQLException {
         m_pool = new ComboPooledDataSource();
-        m_pool.setPassword(ds.getPassword());
-        m_pool.setUser(ds.getUserName());
-        m_pool.setJdbcUrl(ds.getUrl());
-        m_pool.setDriverClass(ds.getClassName());
+        m_pool.setPassword(dataSource.getPassword());
+        m_pool.setUser(dataSource.getUserName());
+        m_pool.setJdbcUrl(dataSource.getUrl());
+        try {
+			m_pool.setDriverClass(dataSource.getClassName());
+		} catch (final PropertyVetoException e) {
+			throw new SQLException("Unable to set driver class.", e);
+		}
 
-        Properties props = new Properties();
-        for (Param p : ds.getParamCollection()) {
-            props.put(p.getName(), p.getValue());
+		final Properties properties = new Properties();
+        for (final Param parameter : dataSource.getParamCollection()) {
+            properties.put(parameter.getName(), parameter.getValue());
         }
-        if (!props.isEmpty()) {
-            m_pool.setProperties(props);
+        if (!properties.isEmpty()) {
+            m_pool.setProperties(properties);
         }
     }
 
-    /**
-     * <p>getConnection</p>
-     *
-     * @return a {@link java.sql.Connection} object.
-     * @throws java.sql.SQLException if any.
-     */
     public Connection getConnection() throws SQLException {
         return m_pool.getConnection();
     }
 
-    /**
-     * <p>getPool</p>
-     *
-     * @return a {@link com.mchange.v2.c3p0.ComboPooledDataSource} object.
-     */
-    public ComboPooledDataSource getPool() {
-        return m_pool;
-    }
-
-    /**
-     * <p>setPool</p>
-     *
-     * @param pool a {@link com.mchange.v2.c3p0.ComboPooledDataSource} object.
-     */
-    public void setPool(ComboPooledDataSource pool) {
-        m_pool = pool;
-    }
-
-    /**
-     * <p>getUrl</p>
-     *
-     * @return a {@link java.lang.String} object.
-     */
     public String getUrl() {
         return m_pool.getJdbcUrl();
     }
 
-    /**
-     * <p>setUrl</p>
-     *
-     * @param url a {@link java.lang.String} object.
-     */
-    public void setUrl(String url) {
+    public void setUrl(final String url) {
         m_pool.setJdbcUrl(url);
     }
 
-    /**
-     * <p>getUser</p>
-     *
-     * @return a {@link java.lang.String} object.
-     */
     public String getUser() {
         return m_pool.getUser();
     }
 
-    /**
-     * <p>setUser</p>
-     *
-     * @param user a {@link java.lang.String} object.
-     */
-    public void setUser(String user) {
+    public void setUser(final String user) {
         m_pool.setUser(user);
     }
 
-    /**
-     * <p>getDataSource</p>
-     *
-     * @return a {@link javax.sql.DataSource} object.
-     */
     public DataSource getDataSource() {
         return m_pool;
     }
 
-    /** {@inheritDoc} */
-    public Connection getConnection(String username, String password) throws SQLException {
+    public Connection getConnection(final String username, final String password) throws SQLException {
         return m_pool.getConnection(username, password);
     }
 
-    /**
-     * <p>getLogWriter</p>
-     *
-     * @return a {@link java.io.PrintWriter} object.
-     * @throws java.sql.SQLException if any.
-     */
     public PrintWriter getLogWriter() throws SQLException {
         return m_pool.getLogWriter();
     }
 
-    /** {@inheritDoc} */
     public void setLogWriter(PrintWriter out) throws SQLException {
         m_pool.setLogWriter(out);
     }
 
-    /** {@inheritDoc} */
     public void setLoginTimeout(int seconds) throws SQLException {
         m_pool.setLoginTimeout(seconds);
     }
 
-    /**
-     * <p>getLoginTimeout</p>
-     *
-     * @return a int.
-     * @throws java.sql.SQLException if any.
-     */
     public int getLoginTimeout() throws SQLException {
         return m_pool.getLoginTimeout();
     }
 
-    /**
-     * <p>close</p>
-     *
-     * @throws java.sql.SQLException if any.
-     */
     public void close() throws SQLException {
-        log().info("Closing c3p0 pool");
+    	super.close();
+    	LogUtils.infof(this, "Closing C3P0 pool.");
         m_pool.close();
-    }
-
-    /**
-     * <p>unwrap</p>
-     *
-     * @param iface a {@link java.lang.Class} object.
-     * @param <T> a T object.
-     * @return a T object.
-     * @throws java.sql.SQLException if any.
-     */
-    public <T> T unwrap(Class<T> iface) throws SQLException {
-        return null;  //TODO
-    }
-
-    /**
-     * <p>isWrapperFor</p>
-     *
-     * @param iface a {@link java.lang.Class} object.
-     * @return a boolean.
-     * @throws java.sql.SQLException if any.
-     */
-    public boolean isWrapperFor(Class<?> iface) throws SQLException {
-        return false;  //TODO
     }
 }

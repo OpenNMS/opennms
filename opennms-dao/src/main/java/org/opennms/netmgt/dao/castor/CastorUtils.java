@@ -134,19 +134,6 @@ public class CastorUtils {
         }
     }
 
-
-    /**
-     * Create an Unmarshaller for a specific class and configure it with our
-     * default configuration details.  In particular, the Unmarshaller is set
-     * to not ignore extra attributes and elements.
-     * 
-     * @param clazz the class to unmarshal
-     * @return
-     */
-    private static <T> Unmarshaller createUnmarshaller(Class<T> clazz) {
-        return createUnmarshaller(clazz, PRESERVE_WHITESPACE);
-    }
-
     /**
      * Create an Unmarshaller for a specific class and configure it with our
      * default configuration details.  In particular, the Unmarshaller is set

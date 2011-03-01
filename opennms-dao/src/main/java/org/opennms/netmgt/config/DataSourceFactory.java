@@ -42,8 +42,10 @@ package org.opennms.netmgt.config;
 
 import java.beans.PropertyVetoException;
 import java.io.File;
+import java.io.FileInputStream;
 import java.io.IOException;
 import java.io.PrintWriter;
+import java.lang.reflect.Constructor;
 import java.sql.Connection;
 import java.sql.SQLException;
 import java.util.HashMap;
@@ -53,10 +55,13 @@ import java.util.Map;
 
 import javax.sql.DataSource;
 
+import org.apache.commons.io.IOUtils;
 import org.exolab.castor.xml.MarshalException;
 import org.exolab.castor.xml.ValidationException;
-import org.opennms.core.utils.ThreadCategory;
+import org.opennms.core.utils.LogUtils;
 import org.opennms.netmgt.ConfigFileConstants;
+import org.opennms.netmgt.config.opennmsDataSources.DataSourceConfiguration;
+import org.opennms.netmgt.dao.castor.CastorUtils;
 import org.springframework.jdbc.datasource.LazyConnectionDataSourceProxy;
 
 /**
@@ -74,13 +79,11 @@ import org.springframework.jdbc.datasource.LazyConnectionDataSourceProxy;
  *
  * @author <a href="mailto:weave@oculan.com">Brian Weaver </a>
  * @author <a href="http://www.opennms.org/">OpenNMS </a>
- * @author <a href="mailto:weave@oculan.com">Brian Weaver </a>
- * @author <a href="http://www.opennms.org/">OpenNMS </a>
- * @version $Id: $
  */
 public final class DataSourceFactory implements DataSource {
+	private static final Class<?> DEFAULT_FACTORY_CLASS = C3P0ConnectionFactory.class;
 
-    /**
+	/**
      * The singleton instance of this factory
      */
     private static DataSource m_singleton = null;
@@ -130,26 +133,53 @@ public final class DataSourceFactory implements DataSource {
             return;
         }
 
-        File cfgFile = ConfigFileConstants.getFile(ConfigFileConstants.OPENNMS_DATASOURCE_CONFIG_FILE_NAME);
-        final C3P0ConnectionFactory dataSource = new C3P0ConnectionFactory(cfgFile.getPath(), dsName);
-        
+        String factoryClass = null;
+        final File cfgFile = ConfigFileConstants.getFile(ConfigFileConstants.OPENNMS_DATASOURCE_CONFIG_FILE_NAME);
+    	FileInputStream fileInputStream = null;
+    	try {
+    		fileInputStream = new FileInputStream(cfgFile);
+    		final DataSourceConfiguration dsc = CastorUtils.unmarshal(DataSourceConfiguration.class, fileInputStream, CastorUtils.PRESERVE_WHITESPACE);
+    		factoryClass = dsc.getFactory();
+    	} finally {
+    		IOUtils.closeQuietly(fileInputStream);
+    	}
+
+    	final String configPath = cfgFile.getPath();
+    	ClosableDataSource dataSource = null;
+		final String defaultClassName = DEFAULT_FACTORY_CLASS.getName();
+    	try {
+    		final Class<?> clazz = Class.forName(factoryClass);
+    		final Constructor<?> constructor = clazz.getConstructor(new Class<?>[] { String.class, String.class });
+    		dataSource = (ClosableDataSource)constructor.newInstance(new Object[] { configPath, dsName });
+    	} catch (final Throwable t) {
+    		LogUtils.debugf(DataSourceFactory.class, t, "Unable to load %s, falling back to the default dataSource (%s)", factoryClass, defaultClassName);
+    		try {
+				final Constructor<?> constructor = ((Class<?>) DEFAULT_FACTORY_CLASS).getConstructor(new Class<?>[] { String.class, String.class });
+				dataSource = (ClosableDataSource)constructor.newInstance(new Object[] { configPath, dsName });
+			} catch (final Throwable cause) {
+				LogUtils.errorf(DataSourceFactory.class, cause, "Unable to load %s.", DEFAULT_FACTORY_CLASS.getName());
+				throw new SQLException("Unable to load " + defaultClassName + ".", cause);
+			}
+    	}
+
+    	final ClosableDataSource runnableDs = dataSource;
         m_closers.add(new Runnable() {
             public void run() {
                 try {
-                    dataSource.close();
-                } catch (Throwable e) {
-                    ThreadCategory.getInstance(DataSourceFactory.class).info("Unabled to close datasource " + dsName + ": " + e, e);
+                    runnableDs.close();
+                } catch (final Throwable cause) {
+                	LogUtils.infof(DataSourceFactory.class, cause, "Unable to close datasource %s.", dsName);
                 }
             }
         });
         
         // Springframework provided proxies that make working with transactions much easier
-        LazyConnectionDataSourceProxy lazyProxy = new LazyConnectionDataSourceProxy(dataSource);
+        final LazyConnectionDataSourceProxy lazyProxy = new LazyConnectionDataSourceProxy(dataSource);
         
         setInstance(dsName, lazyProxy);
     }
 
-    private static boolean isLoaded(String dsName) {
+    private static boolean isLoaded(final String dsName) {
         return m_dataSources.containsKey(dsName);			
     }
 
@@ -177,8 +207,8 @@ public final class DataSourceFactory implements DataSource {
      * @param name a {@link java.lang.String} object.
      * @return a {@link javax.sql.DataSource} object.
      */
-    public static synchronized DataSource getInstance(String name) {
-        DataSource dataSource = m_dataSources.get(name);
+    public static synchronized DataSource getInstance(final String name) {
+    	final DataSource dataSource = m_dataSources.get(name);
         if (dataSource == null) {
             throw new IllegalArgumentException("Unable to locate data source named " + name + ".  Does this need to be init'd?");
         }
@@ -209,7 +239,7 @@ public final class DataSourceFactory implements DataSource {
      * @return a {@link java.sql.Connection} object.
      * @throws java.sql.SQLException if any.
      */
-    public Connection getConnection(String dsName) throws SQLException {
+    public Connection getConnection(final String dsName) throws SQLException {
         return m_dataSources.get(dsName).getConnection();
     }
 
@@ -218,7 +248,7 @@ public final class DataSourceFactory implements DataSource {
      *
      * @param singleton a {@link javax.sql.DataSource} object.
      */
-    public static void setInstance(DataSource singleton) {
+    public static void setInstance(final DataSource singleton) {
         m_singleton=singleton;
         setInstance("opennms", singleton);
     }
@@ -229,7 +259,7 @@ public final class DataSourceFactory implements DataSource {
      * @param dsName a {@link java.lang.String} object.
      * @param singleton a {@link javax.sql.DataSource} object.
      */
-    public static void setInstance(String dsName, DataSource singleton) {
+    public static void setInstance(final String dsName, final DataSource singleton) {
         m_dataSources.put(dsName,singleton);
     }
 
@@ -248,12 +278,12 @@ public final class DataSourceFactory implements DataSource {
      * @param dsName a {@link java.lang.String} object.
      * @return a {@link javax.sql.DataSource} object.
      */
-    public static DataSource getDataSource(String dsName) {
+    public static DataSource getDataSource(final String dsName) {
         return m_dataSources.get(dsName);
     }
 
     /** {@inheritDoc} */
-    public Connection getConnection(String username, String password) throws SQLException {
+    public Connection getConnection(final String username, final String password) throws SQLException {
         return getConnection();
     }
 
@@ -274,12 +304,12 @@ public final class DataSourceFactory implements DataSource {
      * @return a {@link java.io.PrintWriter} object.
      * @throws java.sql.SQLException if any.
      */
-    public PrintWriter getLogWriter(String dsName) throws SQLException {
+    public PrintWriter getLogWriter(final String dsName) throws SQLException {
         return m_dataSources.get(dsName).getLogWriter();
     }
 
     /** {@inheritDoc} */
-    public void setLogWriter(PrintWriter out) throws SQLException {
+    public void setLogWriter(final PrintWriter out) throws SQLException {
         setLogWriter("opennms", out);
     }
 
@@ -290,12 +320,12 @@ public final class DataSourceFactory implements DataSource {
      * @param out a {@link java.io.PrintWriter} object.
      * @throws java.sql.SQLException if any.
      */
-    public void setLogWriter(String dsName, PrintWriter out) throws SQLException {
+    public void setLogWriter(final String dsName, final PrintWriter out) throws SQLException {
         m_dataSources.get(dsName).setLogWriter(out);
     }
 
     /** {@inheritDoc} */
-    public void setLoginTimeout(int seconds) throws SQLException {
+    public void setLoginTimeout(final int seconds) throws SQLException {
         setLoginTimeout("opennms", seconds);
     }
 
@@ -306,7 +336,7 @@ public final class DataSourceFactory implements DataSource {
      * @param seconds a int.
      * @throws java.sql.SQLException if any.
      */
-    public void setLoginTimeout(String dsName, int seconds) throws SQLException {
+    public void setLoginTimeout(final String dsName, final int seconds) throws SQLException {
         m_dataSources.get(dsName).setLoginTimeout(seconds);
     }
 
@@ -327,7 +357,7 @@ public final class DataSourceFactory implements DataSource {
      * @return a int.
      * @throws java.sql.SQLException if any.
      */
-    public int getLoginTimeout(String dsName) throws SQLException {
+    public int getLoginTimeout(final String dsName) throws SQLException {
         return m_dataSources.get(dsName).getLoginTimeout();
     }
 
@@ -368,7 +398,7 @@ public final class DataSourceFactory implements DataSource {
      * @return a T object.
      * @throws java.sql.SQLException if any.
      */
-    public <T> T unwrap(Class<T> iface) throws SQLException {
+    public <T> T unwrap(final Class<T> iface) throws SQLException {
         return null;  //TODO
     }
 
@@ -379,7 +409,7 @@ public final class DataSourceFactory implements DataSource {
      * @return a boolean.
      * @throws java.sql.SQLException if any.
      */
-    public boolean isWrapperFor(Class<?> iface) throws SQLException {
+    public boolean isWrapperFor(final Class<?> iface) throws SQLException {
         return false;  //TODO
     }
 }
