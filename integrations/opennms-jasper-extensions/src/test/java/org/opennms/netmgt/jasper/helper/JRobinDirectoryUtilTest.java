@@ -8,7 +8,7 @@ import org.junit.Before;
 import org.junit.Test;
 
 public class JRobinDirectoryUtilTest {
-    private static String RRD_DIRECTORY = "src/test/resources/share/rrd";
+    private static String RRD_DIRECTORY = "src/test/resources/share/rrd/snmp";
     private static String NODE_ID = "9";
     private static String INTERFACE = "me1-0002baaacffe";
     
@@ -21,13 +21,13 @@ public class JRobinDirectoryUtilTest {
     public void testJRobinDirectoryLookup() throws IOException {
         JRobinDirectoryUtil lookup = new JRobinDirectoryUtil();
         
-        assertEquals("src/test/resources/share/rrd/9/me1-0002baaacffe/mib2-interfaces.jrb", lookup.getIfInOctetsJrb(RRD_DIRECTORY, NODE_ID, INTERFACE));
-        assertEquals("src/test/resources/share/rrd/9/me1-0002baaacffe/mib2-interfaces.jrb", lookup.getIfOutOctetsJrb( RRD_DIRECTORY, NODE_ID, INTERFACE));
+        assertEquals("src/test/resources/share/rrd/snmp/9/me1-0002baaacffe/mib2-interfaces.jrb", lookup.getIfInOctetsJrb(RRD_DIRECTORY, NODE_ID, INTERFACE));
+        assertEquals("src/test/resources/share/rrd/snmp/9/me1-0002baaacffe/mib2-interfaces.jrb", lookup.getIfOutOctetsJrb( RRD_DIRECTORY, NODE_ID, INTERFACE));
         
         System.setProperty("org.opennms.rrd.storeByGroup", "false");
         
-        assertEquals("src/test/resources/share/rrd/9/me1-0002baaacffe/ifHCInOctets.jrb", lookup.getIfInOctetsJrb(RRD_DIRECTORY, NODE_ID, INTERFACE));
-        assertEquals("src/test/resources/share/rrd/9/me1-0002baaacffe/ifHCOutOctets.jrb", lookup.getIfOutOctetsJrb(RRD_DIRECTORY, NODE_ID, INTERFACE));
+        assertEquals("src/test/resources/share/rrd/snmp/9/me1-0002baaacffe/ifHCInOctets.jrb", lookup.getIfInOctetsJrb(RRD_DIRECTORY, NODE_ID, INTERFACE));
+        assertEquals("src/test/resources/share/rrd/snmp/9/me1-0002baaacffe/ifHCOutOctets.jrb", lookup.getIfOutOctetsJrb(RRD_DIRECTORY, NODE_ID, INTERFACE));
     }
     
     @Test
