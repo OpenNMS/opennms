@@ -81,7 +81,7 @@ new GregorianCalendar(new GregorianCalendar().get(Calendar.YEAR), new GregorianC
 )]]></defaultValueExpression>
 	</parameter>
 	<parameter name="rrdDir" class="java.lang.String" isForPrompting="false">
-		<defaultValueExpression><![CDATA["${install.dir}/share/rrd"]]></defaultValueExpression>
+		<defaultValueExpression><![CDATA["${install.dir}/share/rrd/snmp"]]></defaultValueExpression>
 	</parameter>
 	<parameter name="SUBREPORT_DIR" class="java.lang.String" isForPrompting="false">
 		<defaultValueExpression><![CDATA["${install.dir}/etc/report-templates/subreports/"]]></defaultValueExpression>

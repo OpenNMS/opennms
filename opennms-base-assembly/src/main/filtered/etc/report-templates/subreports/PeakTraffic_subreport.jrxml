@@ -17,13 +17,13 @@
 	</parameter>
 	<parameter name="snmpifalias" class="java.lang.String" isForPrompting="false"/>
 	<parameter name="snmpifname" class="java.lang.String" isForPrompting="false">
-		<defaultValueExpression><![CDATA["eth0"]]></defaultValueExpression>
+		<defaultValueExpression><![CDATA[""]]></defaultValueExpression>
 	</parameter>
 	<parameter name="snmpifdescr" class="java.lang.String" isForPrompting="false">
 		<defaultValueExpression><![CDATA["eth0"]]></defaultValueExpression>
 	</parameter>
 	<parameter name="snmpphysaddr" class="java.lang.String" isForPrompting="false">
-		<defaultValueExpression><![CDATA["00e08155403b"]]></defaultValueExpression>
+		<defaultValueExpression><![CDATA[""]]></defaultValueExpression>
 	</parameter>
 	<parameter name="nodeid" class="java.lang.Integer" isForPrompting="false">
 		<defaultValueExpression><![CDATA[Integer.valueOf(14)]]></defaultValueExpression>
