@@ -75,7 +75,7 @@ public class IpInterfaceDaoTest extends AbstractTransactionalDaoTestCase {
         List<OnmsIpInterface> ifaces = getIpInterfaceDao().findByServiceType("SNMP");
         Collections.sort(ifaces, new Comparator<OnmsIpInterface>() {
             public int compare(OnmsIpInterface o1, OnmsIpInterface o2) {
-                return new Integer(o1.getNode().getId()).compareTo(o2.getNode().getId());
+                return Integer.valueOf(o1.getNode().getId()).compareTo(o2.getNode().getId());
             }
         });
         
@@ -122,9 +122,9 @@ public class IpInterfaceDaoTest extends AbstractTransactionalDaoTestCase {
             System.out.println(entry.getKey() + ": " + entry.getValue());
         }
         
-        assertEquals("node ID for 192.168.1.1", new Integer(1), interfaceNodes.get(InetAddress.getByName("192.168.1.1")));
-        assertEquals("node ID for 192.168.1.2", new Integer(1), interfaceNodes.get(InetAddress.getByName("192.168.1.2")));
-        assertEquals("node ID for 192.168.2.1", new Integer(2), interfaceNodes.get(InetAddress.getByName("192.168.2.1")));
+        assertEquals("node ID for 192.168.1.1", Integer.valueOf(1), interfaceNodes.get(InetAddress.getByName("192.168.1.1")));
+        assertEquals("node ID for 192.168.1.2", Integer.valueOf(1), interfaceNodes.get(InetAddress.getByName("192.168.1.2")));
+        assertEquals("node ID for 192.168.2.1", Integer.valueOf(2), interfaceNodes.get(InetAddress.getByName("192.168.2.1")));
         assertFalse("node ID for *BOGUS*IP* should not have been found", interfaceNodes.containsKey("*BOGUS*IP*"));
     }
     

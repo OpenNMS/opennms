@@ -2055,7 +2055,7 @@ public class InstallerDbTest extends TemporaryDatabaseTestCase {
         getInstallerDb().createTables();
         
         assertEquals("x733ProbableCause for id = 1 should have its original value", 1, jdbcTemplate.queryForInt("SELECT x733ProbableCause FROM alarms WHERE id = 1"));
-        assertEquals("x733ProbableCause for id = 2 should have the DEFAULT value", new Integer(0), jdbcTemplate.queryForObject("SELECT x733ProbableCause FROM alarms WHERE id = 2", Integer.class));
+        assertEquals("x733ProbableCause for id = 2 should have the DEFAULT value", Integer.valueOf(0), jdbcTemplate.queryForObject("SELECT x733ProbableCause FROM alarms WHERE id = 2", Integer.class));
 
     }
     

@@ -38,6 +38,9 @@ import java.sql.Types;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
+import org.apache.commons.lang.builder.EqualsBuilder;
+import org.apache.commons.lang.builder.HashCodeBuilder;
+
 /**
  * <p>Column class.</p>
  *
@@ -56,28 +59,17 @@ public class Column {
     private String m_defaultValue = null;
 
     /** {@inheritDoc} */
-    public boolean equals(Object other_o) {
-        Column other = (Column) other_o;
+    public boolean equals(final Object obj) {
+    	if (obj == null || !(obj instanceof Column)) return false;
+    	final Column other = (Column) obj;
 
-        if ((m_name == null && other.getName() != null) || (m_name != null && other.getName() == null)) {
-            return false;
-        } else if (m_name != null && other.getName() != null && !m_name.equals(other.getName())) {
-            return false;
-        } else if ((m_type == null && other.getType() != null) || (m_type != null && other.getType() == null)) {
-            return false;
-        } else if (m_type != null && other.getType() != null && !m_type.equals(other.getType())) {
-            return false;
-        } else if (m_size != other.getSize()) {
-            return false;
-        } else if (m_notNull != other.isNotNull()) {
-            return false;
-        } else if ((m_defaultValue == null && other.getDefaultValue() != null) || (m_defaultValue != null && other.getDefaultValue() == null)) {
-            return false;
-        } else if (m_defaultValue != null && other.getDefaultValue() != null && !m_defaultValue.equals(other.getDefaultValue())) {
-            return false;
-        } else {
-            return true;
-        }
+		return new EqualsBuilder()
+    		.append(getName(), other.getName())
+    		.append(getType(), other.getType())
+    		.append(getSize(), other.getSize())
+    		.append(getDefaultValue(), other.getDefaultValue())
+    		.append(isNotNull(), other.isNotNull())
+    		.isEquals();
     }
 
     /**
@@ -86,7 +78,13 @@ public class Column {
      * @return a int.
      */
     public int hashCode() {
-        return m_name.hashCode() + m_type.hashCode() + Integer.valueOf(m_size).hashCode() + Boolean.valueOf(m_notNull).hashCode();
+    	return new HashCodeBuilder(67, 13)
+    		.append(getName())
+    		.append(getType())
+    		.append(getSize())
+    		.append(getDefaultValue())
+    		.append(isNotNull())
+    		.toHashCode();
     }
 
     /**

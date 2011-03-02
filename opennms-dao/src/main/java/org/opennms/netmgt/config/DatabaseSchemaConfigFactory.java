@@ -242,11 +242,12 @@ public final class DatabaseSchemaConfigFactory {
      * @return the database schema
      */
     public DatabaseSchema getDatabaseSchema() {
-        getReadLock().lock();
+        final Lock lock = getReadLock();
+		lock.lock();
         try {
             return m_config;
         } finally {
-            getReadLock().unlock();
+            lock.unlock();
         }
     }
 
@@ -356,11 +357,12 @@ public final class DatabaseSchemaConfigFactory {
      * @return the number of tables in the schema
      */
     public int getTableCount() {
-        getReadLock().lock();
+        final Lock lock = getReadLock();
+		lock.lock();
         try {
             return getDatabaseSchema().getTableCount();
         } finally {
-            getReadLock().unlock();
+            lock.unlock();
         }
     }
 

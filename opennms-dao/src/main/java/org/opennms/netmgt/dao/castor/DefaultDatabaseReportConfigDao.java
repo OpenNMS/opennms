@@ -74,7 +74,7 @@ public class DefaultDatabaseReportConfigDao extends AbstractCastorConfigDao<Data
         if(report != null){
             return report.getReportService();
         } else {
-        return new String();
+        return "";
         }
         
     }
@@ -87,7 +87,7 @@ public class DefaultDatabaseReportConfigDao extends AbstractCastorConfigDao<Data
         if(report != null){
             return report.getDisplayName();
         } else {
-        return new String();
+        	return "";
         }
         
     }

@@ -68,8 +68,7 @@ import org.springframework.util.StringUtils;
  * @author David Hustace
  * @version $Id: $
  */
-public class NodeDaoHibernate extends AbstractDaoHibernate<OnmsNode, Integer>
-        implements NodeDao {
+public class NodeDaoHibernate extends AbstractDaoHibernate<OnmsNode, Integer> implements NodeDao {
 
     /**
      * <p>Constructor for NodeDaoHibernate.</p>

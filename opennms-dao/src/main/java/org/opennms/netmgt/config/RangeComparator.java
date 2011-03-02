@@ -34,12 +34,13 @@
 
 package org.opennms.netmgt.config;
 
+import java.io.Serializable;
 import java.net.InetAddress;
 import java.net.UnknownHostException;
 import java.util.Comparator;
 
 import org.opennms.core.utils.ByteArrayComparator;
-import org.opennms.core.utils.ThreadCategory;
+import org.opennms.core.utils.LogUtils;
 import org.opennms.netmgt.config.common.Range;
 
 /**
@@ -48,19 +49,21 @@ import org.opennms.netmgt.config.common.Range;
  * @author <a href="mailto:david@opennms.org">David Hustace</a>
  * @version $Id: $
  */
-public class RangeComparator implements Comparator<Range> {
-    /**
+public class RangeComparator implements Comparator<Range>, Serializable {
+	private static final long serialVersionUID = -6090811413071744038L;
+
+	/**
      * <p>compare</p>
      *
      * @param rng1 a {@link org.opennms.netmgt.config.common.Range} object.
      * @param rng2 a {@link org.opennms.netmgt.config.common.Range} object.
      * @return a int.
      */
-    public int compare(Range rng1, Range rng2) {
+    public int compare(final Range rng1, final Range rng2) {
         try {
             return new ByteArrayComparator().compare(InetAddress.getByName(rng1.getBegin()).getAddress(), InetAddress.getByName(rng2.getBegin()).getAddress());
-        } catch (UnknownHostException e) {
-            ThreadCategory.getInstance(this.getClass()).error("compare: Exception sorting ranges.", e);
+        } catch (final UnknownHostException e) {
+        	LogUtils.errorf(this, e, "unknown host while attempting to sort ranges");
             throw new IllegalArgumentException(e.getLocalizedMessage());
         }
     }

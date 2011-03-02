@@ -37,6 +37,8 @@ package org.opennms.netmgt.config;
 import java.net.InetAddress;
 import java.net.UnknownHostException;
 
+import org.apache.commons.lang.builder.EqualsBuilder;
+import org.apache.commons.lang.builder.HashCodeBuilder;
 import org.opennms.core.utils.ThreadCategory;
 
 /**
@@ -75,6 +77,22 @@ public final class MergeableSpecific implements Comparable<String> {
      */
     public int compareTo(String specific) {
         return m_comparator.compare(m_specific, specific);
+    }
+    
+    public boolean equals(final Object o) {
+    	if (!(o instanceof MergeableSpecific)) return false;
+    	final MergeableSpecific that = (MergeableSpecific)o;
+    	return new EqualsBuilder()
+    		.append(this.getValue(), that.getValue())
+    		.append(this.getSpecific(), that.getSpecific())
+    		.isEquals();
+    }
+
+    public int hashCode() {
+    	return new HashCodeBuilder(7, 51)
+    		.append(getValue())
+    		.append(getSpecific())
+    		.toHashCode();
     }
     /**
      * <p>getSpecific</p>

@@ -33,6 +33,9 @@ package org.opennms.netmgt.dao.db;
 
 import java.util.List;
 
+import org.apache.commons.lang.builder.EqualsBuilder;
+import org.apache.commons.lang.builder.HashCodeBuilder;
+
 /**
  * <p>Table class.</p>
  *
@@ -57,7 +60,7 @@ public class Table {
 	 *
 	 * @param columns a {@link java.util.List} object.
 	 */
-	public void setColumns(List<Column> columns) {
+	public void setColumns(final List<Column> columns) {
 		m_columns = columns;
 	}
 	
@@ -74,7 +77,7 @@ public class Table {
 	 *
 	 * @param constraints a {@link java.util.List} object.
 	 */
-	public void setConstraints(List<Constraint> constraints) {
+	public void setConstraints(final List<Constraint> constraints) {
 		m_constraints = constraints;
 	}
 	
@@ -91,7 +94,7 @@ public class Table {
 	 *
 	 * @param name a {@link java.lang.String} object.
 	 */
-	public void setName(String name) {
+	public void setName(final String name) {
 		m_name = name.toLowerCase();
 	}
 	
@@ -101,11 +104,11 @@ public class Table {
 	 * @throws java.lang.Exception if any.
 	 */
 	public void setNotNullOnPrimaryKeyColumns() throws Exception {
-		for (Constraint constraint : getConstraints()) {
+		for (final Constraint constraint : getConstraints()) {
 			if (constraint.isPrimaryKeyConstraint()) {
-				for (String constrainedColumn : constraint.getColumns()) {
+				for (final String constrainedColumn : constraint.getColumns()) {
 					boolean foundColumn = false;
-					for (Column column : getColumns()) {
+					for (final Column column : getColumns()) {
 						if (constrainedColumn.equals(column.getName())) {
 							column.setNotNull(true);
 							foundColumn = true;
@@ -121,35 +124,25 @@ public class Table {
 	}
 	
 	/** {@inheritDoc} */
-	public boolean equals(Object o) {
+	public boolean equals(final Object o) {
 		if (o == null || !(o instanceof Table)) {
 			return false;
 			
 		}
-		Table other = (Table) o;
+		final Table other = (Table) o;
 
-		if ((m_name == null && other.getName() != null) || (m_name != null && other.getName() == null)) {
-            return false;
-        }
-        if (m_name != null && other.getName() != null && !m_name.equals(other.getName())) {
-            return false;
-        }
-
-        if ((m_columns == null && other.getColumns() != null) || (m_columns != null && other.getColumns() == null)) {
-            return false;
-        }
-        if (m_columns != null && other.getColumns() != null && !m_columns.equals(other.getColumns())) {
-            return false;
-        }
-        
-		if ((m_constraints == null && other.getConstraints() != null) || (m_constraints != null && other.getConstraints() == null)) {
-            return false;
-        }
-        if (m_constraints != null && other.getConstraints() != null && !m_constraints.equals(other.getConstraints())) {
-            return false;
-        }
-
-		return true;
+		return new EqualsBuilder()
+			.append(getColumns(), other.getColumns())
+			.append(getConstraints(), other.getConstraints())
+			.append(getName(), other.getName())
+			.isEquals();
 	}
 	
+	public int hashCode() {
+		return new HashCodeBuilder(3, 73)
+			.append(m_name)
+			.append(m_columns)
+			.append(m_constraints)
+			.toHashCode();
+	}
 }

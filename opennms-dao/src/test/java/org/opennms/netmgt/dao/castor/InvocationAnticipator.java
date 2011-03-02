@@ -68,7 +68,7 @@ public class InvocationAnticipator implements InvocationHandler {
         if (m_counts.get(method.getName()) != null) {
             currentCount = m_counts.get(method.getName()).intValue();
         }
-        m_counts.put(method.getName(), new Integer(currentCount+1));
+        m_counts.put(method.getName(), Integer.valueOf(currentCount+1));
 
         return m_handler.invoke(proxy, method, args);
     }
@@ -92,7 +92,7 @@ public class InvocationAnticipator implements InvocationHandler {
     }
 
     public void anticipateCalls(int count, String methodName) {
-       m_anticipatedCounts.put(methodName, new Integer(count));
+       m_anticipatedCounts.put(methodName, Integer.valueOf(count));
     }
     
     public void verify() {

@@ -801,7 +801,7 @@ public class InstallerDb {
             try {
                 m.put(Column.normalizeColumnType(rs.getString(2),
                                                  (rs.getInt(3) < 0)),
-                      new Integer(rs.getInt(1)));
+                      Integer.valueOf(rs.getInt(1)));
             } catch (Throwable e) {
                 // ignore
             }
@@ -1693,7 +1693,7 @@ public class InstallerDb {
             if ((current_row % 20) == 0) {
                 System.err.print("    - transforming data into the new "
                         + "table... "
-                        + (int) Math.floor((current_row * 100) / num_rows)
+                        + (int) Math.floor((current_row * 100.0) / num_rows)
                         + "%  [" + spin[(current_row / 20) % spin.length]
                         + "]\r");
             }

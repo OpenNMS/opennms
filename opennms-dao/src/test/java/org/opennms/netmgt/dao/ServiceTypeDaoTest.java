@@ -49,7 +49,7 @@ public class ServiceTypeDaoTest extends AbstractTransactionalDaoTestCase {
     	getServiceTypeDao().save(t);
     	
     	
-    	OnmsServiceType type = getServiceTypeDao().get(new Integer(1));
+    	OnmsServiceType type = getServiceTypeDao().get(1);
     	assertEquals("ICMP", type.getName());
     }
     

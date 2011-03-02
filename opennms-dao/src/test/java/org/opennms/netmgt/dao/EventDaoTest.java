@@ -55,7 +55,7 @@ public class EventDaoTest extends AbstractTransactionalDaoTestCase {
         event.setEventDisplay("Y");
         event.setEventLogGroup("event dao test log group");
         event.setEventLogMsg("event dao test log msg");
-        event.setEventSeverity(new Integer(7));
+        event.setEventSeverity(7);
         event.setEventSource("EventDaoTest");
         event.setEventTime(new Date());
         event.setEventUei("uei://org/opennms/test/EventDaoTest");

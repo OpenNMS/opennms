@@ -148,7 +148,7 @@ public class BottomNAttributeStatisticVisitor implements AttributeStatisticVisit
                 return diff;
             }
             
-            return new Integer(o1.getAttribute().hashCode()).compareTo(o2.getAttribute().hashCode());
+            return Integer.valueOf(o1.getAttribute().hashCode()).compareTo(o2.getAttribute().hashCode());
         }
     }
     

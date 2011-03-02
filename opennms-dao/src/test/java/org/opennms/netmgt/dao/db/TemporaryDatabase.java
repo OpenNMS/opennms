@@ -414,8 +414,8 @@ public class TemporaryDatabase implements DataSource {
         }
         System.err.println("Thread dump of " + threads.size() + " threads (" + daemons + " daemons):");
         Map<Thread, StackTraceElement[]> sortedThreads = new TreeMap<Thread, StackTraceElement[]>(new Comparator<Thread>() {
-            public int compare(Thread t1, Thread t2) {
-                return new Long(t1.getId()).compareTo(new Long(t2.getId()));
+            public int compare(final Thread t1, final Thread t2) {
+                return Long.valueOf(t1.getId()).compareTo(Long.valueOf(t2.getId()));
             }
         });
         sortedThreads.putAll(threads);

@@ -103,7 +103,7 @@ public class DefaultAckdConfigurationDao extends AbstractCastorConfigDao<AckdCon
     }
 
     private Boolean matcher(List<String> messageText, String expression) {
-        Boolean matches = new Boolean(false);
+        Boolean matches = Boolean.FALSE;
         Pattern p;
         
         if (expression.startsWith("~")) {

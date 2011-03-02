@@ -294,7 +294,7 @@ public final class DiscoveryConfigFactory {
             } else {
                 return addToSpecificsFromURL(specifics, fileURL.openStream(), timeout, retries);
             }
-        } catch (final Exception e) {
+        } catch (final IOException e) {
             LogUtils.errorf(DiscoveryConfigFactory.class, "Error reading URL: %s", url);
             return false;
         } finally {

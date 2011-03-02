@@ -71,7 +71,7 @@ public class AlarmDaoTest extends AbstractTransactionalDaoTestCase {
         alarm.setSeverityId(event.getEventSeverity());
         alarm.setFirstEventTime(event.getEventTime());
         alarm.setLastEvent(event);
-        alarm.setCounter(new Integer(1));
+        alarm.setCounter(1);
         alarm.setDistPoller(getDistPollerDao().load("localhost"));
         
         getAlarmDao().save(alarm);
@@ -116,7 +116,7 @@ public class AlarmDaoTest extends AbstractTransactionalDaoTestCase {
         alarm.setSeverityId(event.getEventSeverity());
         alarm.setFirstEventTime(event.getEventTime());
         alarm.setLastEvent(event);
-        alarm.setCounter(new Integer(1));
+        alarm.setCounter(1);
         alarm.setDistPoller(getDistPollerDao().load("localhost"));
         
         getAlarmDao().save(alarm);
@@ -148,7 +148,7 @@ public class AlarmDaoTest extends AbstractTransactionalDaoTestCase {
         alarm.setSeverityId(event.getEventSeverity());
         alarm.setFirstEventTime(event.getEventTime());
         alarm.setLastEvent(event);
-        alarm.setCounter(new Integer(1));
+        alarm.setCounter(1);
         
         ThrowableAnticipator ta = new ThrowableAnticipator();
         ta.anticipate(new DataIntegrityViolationException("not-null property references a null or transient value: org.opennms.netmgt.model.OnmsAlarm.distPoller; nested exception is org.hibernate.PropertyValueException: not-null property references a null or transient value: org.opennms.netmgt.model.OnmsAlarm.distPoller"));

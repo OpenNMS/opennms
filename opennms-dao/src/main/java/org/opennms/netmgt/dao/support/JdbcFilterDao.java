@@ -197,7 +197,7 @@ public class JdbcFilterDao implements FilterDao, InitializingBean {
             if (rset != null) {
                 // Iterate through the result and build the map
                 while (rset.next()) {
-                    resultMap.put(new Integer(rset.getInt(1)), rset.getString(2));
+                    resultMap.put(Integer.valueOf(rset.getInt(1)), rset.getString(2));
                 }
             }
         } catch (FilterParseException e) {
@@ -591,7 +591,7 @@ public class JdbcFilterDao implements FilterDao, InitializingBean {
      */
     private String parseRule(final List<Table> tables, final String rule) throws FilterParseException {
         if (rule != null && rule.length() > 0) {
-            String sqlRule = new String(rule);
+        	String sqlRule = rule;
             Matcher regex;
             List<String> extractedStrings = new ArrayList<String>();
             StringBuffer tempStringBuff;

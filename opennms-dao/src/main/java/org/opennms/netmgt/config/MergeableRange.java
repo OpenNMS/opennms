@@ -75,7 +75,7 @@ final class MergeableRange implements Comparable<Range> {
      * @param range a {@link org.opennms.netmgt.config.common.Range} object.
      * @return a int.
      */
-    public int compareTo(Range range) {
+    public int compareTo(final Range range) {
         return m_comparator.compare(getRange(), range);
     }
     

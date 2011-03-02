@@ -88,8 +88,8 @@ public class DataLinkInterfaceDaoHibernateTest extends AbstractTransactionalDaoT
             fail("No DataLinkInterface record with ID " + id + " was found, the only IDs are: " + ids.toString());
         }
         assertNotNull(dli);
-        assertEquals(new Integer(1), dli.getNodeId());
-        assertEquals(new Integer(1), dli.getIfIndex());
+        assertEquals(Integer.valueOf(1), dli.getNodeId());
+        assertEquals(Integer.valueOf(1), dli.getIfIndex());
     }
 
     public void testFindByNodeId() {

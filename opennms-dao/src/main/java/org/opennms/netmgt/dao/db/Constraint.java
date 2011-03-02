@@ -514,8 +514,9 @@ public class Constraint {
      * @param ignoreFdelType a boolean.
      * @return a boolean.
      */
-    public boolean equals(Object other_o, boolean ignoreFdelType) {
-        Constraint other = (Constraint) other_o;
+    public boolean equals(final Object other_o, boolean ignoreFdelType) {
+    	if (other_o == null || !(other_o instanceof Constraint)) return false;
+    	final Constraint other = (Constraint) other_o;
 
         if ((m_name == null && other.getName() != null) || (m_name != null && other.getName() == null)) {
             return false;
@@ -584,7 +585,7 @@ public class Constraint {
      * @return a int.
      */
     public int hashCode() {
-        return m_name.hashCode() + new Integer(m_type).hashCode() + m_columns.hashCode() + m_ftable.hashCode() + m_fcolumns.hashCode() + m_fdeltype.hashCode();
+        return m_name.hashCode() + Integer.valueOf(m_type).hashCode() + m_columns.hashCode() + m_ftable.hashCode() + m_fcolumns.hashCode() + m_fdeltype.hashCode();
     }
 
 
