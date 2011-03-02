@@ -72,7 +72,8 @@
 				<listitem><para>OpenNMS unable to connect to opennms database with opennms username (Issue <ulink url='http://issues.opennms.org/browse/NMS-4392'>NMS-4392</ulink>)</para></listitem>
 				<listitem><para>Delete Nodes Button is a no-op (Issue <ulink url='http://issues.opennms.org/browse/NMS-4393'>NMS-4393</ulink>)</para></listitem>
 				<listitem><para>Clicking the Delete Icon next to a entity (node, interface, service) defined in the Edit provisioning group page causes exception (Issue <ulink url='http://issues.opennms.org/browse/NMS-4394'>NMS-4394</ulink>)</para></listitem>
-				<listitem><para>Attempting to delete a service on a provisioned node produces an error (Issue <ulink url='http://issues.opennms.org/browse/NMS-4395'>NMS-4395</ulink>)</para></listitem>
+				<listitem><para>yum update from 1.8.7 to 1.8.8 is breaking opennms  (Issue <ulink url='http://issues.opennms.org/browse/NMS-4396'>NMS-4396</ulink>)</para></listitem>
+				<listitem><para>rancid provisioning adapter jar still included in opennms-core RPM (Issue <ulink url='http://issues.opennms.org/browse/NMS-4397'>NMS-4397</ulink>)</para></listitem>
 			</itemizedlist>
 		</section>
 	</section>
