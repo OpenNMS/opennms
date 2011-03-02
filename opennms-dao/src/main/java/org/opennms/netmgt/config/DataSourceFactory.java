@@ -60,6 +60,7 @@ import org.exolab.castor.xml.MarshalException;
 import org.exolab.castor.xml.ValidationException;
 import org.opennms.core.utils.LogUtils;
 import org.opennms.netmgt.ConfigFileConstants;
+import org.opennms.netmgt.config.opennmsDataSources.ConnectionPool;
 import org.opennms.netmgt.config.opennmsDataSources.DataSourceConfiguration;
 import org.opennms.netmgt.dao.castor.CastorUtils;
 import org.springframework.jdbc.datasource.LazyConnectionDataSourceProxy;
@@ -135,11 +136,16 @@ public final class DataSourceFactory implements DataSource {
 
         String factoryClass = null;
         final File cfgFile = ConfigFileConstants.getFile(ConfigFileConstants.OPENNMS_DATASOURCE_CONFIG_FILE_NAME);
+        DataSourceConfiguration dsc = null;
+        ConnectionPool connectionPool = null;
     	FileInputStream fileInputStream = null;
     	try {
     		fileInputStream = new FileInputStream(cfgFile);
-    		final DataSourceConfiguration dsc = CastorUtils.unmarshal(DataSourceConfiguration.class, fileInputStream, CastorUtils.PRESERVE_WHITESPACE);
-    		factoryClass = dsc.getFactory();
+    		dsc = CastorUtils.unmarshal(DataSourceConfiguration.class, fileInputStream, CastorUtils.PRESERVE_WHITESPACE);
+    		connectionPool = dsc.getConnectionPool();
+    		if (connectionPool != null) {
+        		factoryClass = connectionPool.getFactory();
+    		}
     	} finally {
     		IOUtils.closeQuietly(fileInputStream);
     	}
@@ -173,7 +179,15 @@ public final class DataSourceFactory implements DataSource {
             }
         });
         
-        // Springframework provided proxies that make working with transactions much easier
+    	if (connectionPool != null) {
+    		dataSource.setIdleTimeout(connectionPool.getIdleTimeout());
+    		dataSource.setLoginTimeout(connectionPool.getLoginTimeout());
+    		dataSource.setMinPool(connectionPool.getMinPool());
+    		dataSource.setMaxPool(connectionPool.getMaxPool());
+    		dataSource.setMaxSize(connectionPool.getMaxSize());
+    	}
+
+    	// Springframework provided proxies that make working with transactions much easier
         final LazyConnectionDataSourceProxy lazyProxy = new LazyConnectionDataSourceProxy(dataSource);
         
         setInstance(dsName, lazyProxy);

@@ -2,9 +2,15 @@
 <datasource-configuration xmlns:this="http://xmlns.opennms.org/xsd/config/opennms-datasources" 
   xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" 
   xsi:schemaLocation="http://xmlns.opennms.org/xsd/config/opennms-datasources 
-  http://www.opennms.org/xsd/config/opennms-datasources.xsd "
+  http://www.opennms.org/xsd/config/opennms-datasources.xsd ">
 
-  factory="org.opennms.netmgt.config.C3P0ConnectionFactory">
+  <connection-pool factory="org.opennms.netmgt.config.C3P0ConnectionFactory"
+    idleTimeout="600"
+    loginTimeout="3"
+    minPool="10"
+    maxPool="50"
+    maxSize="500" />
+
   <jdbc-data-source name="opennms" 
                     database-name="${install.database.name}" 
                     class-name="${install.database.driver}" 

@@ -150,4 +150,21 @@ public class C3P0ConnectionFactory extends BaseConnectionFactory {
     	LogUtils.infof(this, "Closing C3P0 pool.");
         m_pool.close();
     }
+
+	public void setIdleTimeout(final int idleTimeout) {
+		m_pool.setMaxIdleTime(idleTimeout);
+	}
+
+	public void setMinPool(final int minPool) {
+		LogUtils.warnf(this, "Because of a bug in C3P0, minPool should equal maxPool.  Ignoring.");
+	}
+
+	public void setMaxPool(final int maxPool) {
+		m_pool.setMinPoolSize(maxPool);
+		m_pool.setMaxPoolSize(maxPool);
+	}
+
+	public void setMaxSize(final int maxSize) {
+		LogUtils.warnf(this, "C3P0 has no equivalent to setMaxSize.  Ignoring.");
+	}
 }

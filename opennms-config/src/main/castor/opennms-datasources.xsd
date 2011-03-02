@@ -16,9 +16,35 @@
     </annotation>
     <complexType>
       <sequence>
+        <element ref="this:connection-pool" minOccurs="0" maxOccurs="1" />
         <element ref="this:jdbc-data-source" minOccurs="1" maxOccurs="unbounded" />
       </sequence>
-		<attribute name="factory" type="string" use="optional" default="org.opennms.netmgt.config.C3P0ConnectionFactory" />
+    </complexType>
+  </element>
+  <element name="connection-pool">
+    <annotation>
+      <documentation>Database connection pool configuration.</documentation>
+    </annotation>
+    <complexType>
+      <attribute name="factory" type="string" use="optional" default="org.opennms.netmgt.config.C3P0ConnectionFactory">
+        <annotation><documentation>The connection pool implementation to use.</documentation></annotation>
+      </attribute>
+      <attribute name="idleTimeout" type="int" use="optional" default="600">
+        <annotation><documentation>How long, in seconds, an idle connection is kept in the pool before it is removed.</documentation></annotation>
+      </attribute>
+      <attribute name="loginTimeout" type="int" use="optional" default="3">
+        <annotation><documentation>How long, in seconds, to attempt to make a connection to the database.</documentation></annotation>
+      </attribute>
+      <attribute name="minPool" type="int" use="optional" default="10">
+        <annotation><documentation>The minimum number of pooled connections to retain.</documentation></annotation>
+      </attribute>
+      <attribute name="maxPool" type="int" use="optional" default="50">
+        <annotation><documentation>The maximum number of pooled connections to retain.</documentation></annotation>
+      </attribute>
+      <attribute name="maxSize" type="int" use="optional" default="500">
+        <annotation><documentation>The maximum number of connections that can be created.</documentation></annotation>
+      </attribute>
+      
     </complexType>
   </element>
   <element name="jdbc-data-source" >

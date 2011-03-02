@@ -55,9 +55,7 @@ import org.apache.commons.io.IOUtils;
 import org.exolab.castor.xml.MarshalException;
 import org.exolab.castor.xml.ValidationException;
 import org.opennms.core.utils.LogUtils;
-import org.opennms.netmgt.config.opennmsDataSources.DataSourceConfiguration;
 import org.opennms.netmgt.config.opennmsDataSources.JdbcDataSource;
-import org.opennms.netmgt.dao.castor.CastorUtils;
 
 /**
  * <p>C3P0ConnectionFactory class.</p>
@@ -77,7 +75,7 @@ public abstract class BaseConnectionFactory implements ClosableDataSource {
      */
     protected BaseConnectionFactory(final InputStream stream, final String dsName) throws MarshalException, ValidationException, PropertyVetoException, SQLException {
         LogUtils.infof(this, "Setting up data source %s from input stream.", dsName);
-        final JdbcDataSource ds = marshalDataSourceFromConfig(stream, dsName);
+        final JdbcDataSource ds = ConnectionFactoryUtil.marshalDataSourceFromConfig(stream, dsName);
         initializePool(ds);
     }
 
@@ -91,7 +89,7 @@ public abstract class BaseConnectionFactory implements ClosableDataSource {
      */
     protected BaseConnectionFactory(final Reader rdr, final String dsName) throws MarshalException, ValidationException, PropertyVetoException, SQLException {
     	LogUtils.infof(this, "Setting up data source %s from reader.", dsName);
-    	final JdbcDataSource ds = marshalDataSourceFromConfig(rdr, dsName);
+    	final JdbcDataSource ds = ConnectionFactoryUtil.marshalDataSourceFromConfig(rdr, dsName);
         initializePool(ds);
     }
 
@@ -113,52 +111,11 @@ public abstract class BaseConnectionFactory implements ClosableDataSource {
     	final FileInputStream fileInputStream = new FileInputStream(configFile);
         LogUtils.infof(this, "Setting up data sources from %s.", configFile);
         try {
-        	final JdbcDataSource ds = marshalDataSourceFromConfig(fileInputStream, dsName);
+        	final JdbcDataSource ds = ConnectionFactoryUtil.marshalDataSourceFromConfig(fileInputStream, dsName);
         	initializePool(ds);
         } finally {
             IOUtils.closeQuietly(fileInputStream);
         }
-    }
-
-    /**
-     * <p>marshalDataSourceFromConfig</p>
-     *
-     * @param stream a {@link java.io.InputStream} object.
-     * @param dsName a {@link java.lang.String} object.
-     * @return a {@link org.opennms.netmgt.config.opennmsDataSources.JdbcDataSource} object.
-     * @throws org.exolab.castor.xml.MarshalException if any.
-     * @throws org.exolab.castor.xml.ValidationException if any.
-     */
-    public static JdbcDataSource marshalDataSourceFromConfig(final InputStream stream, final String dsName) throws MarshalException, ValidationException {
-    	final DataSourceConfiguration dsc = CastorUtils.unmarshal(DataSourceConfiguration.class, stream, CastorUtils.PRESERVE_WHITESPACE);
-        return validateDataSourceConfiguration(dsName, dsc);
-    }
-
-    /**
-     * <p>marshalDataSourceFromConfig</p>
-     *
-     * @param rdr a {@link java.io.Reader} object.
-     * @param dsName a {@link java.lang.String} object.
-     * @return a {@link org.opennms.netmgt.config.opennmsDataSources.JdbcDataSource} object.
-     * @throws org.exolab.castor.xml.MarshalException if any.
-     * @throws org.exolab.castor.xml.ValidationException if any.
-     * @throws java.beans.PropertyVetoException if any.
-     * @throws java.sql.SQLException if any.
-     */
-    @SuppressWarnings("deprecation")
-    public static JdbcDataSource marshalDataSourceFromConfig(final Reader rdr, String dsName) throws MarshalException, ValidationException, PropertyVetoException, SQLException {
-        DataSourceConfiguration dsc = CastorUtils.unmarshal(DataSourceConfiguration.class, rdr);
-        return validateDataSourceConfiguration(dsName, dsc);
-    }
-
-    private static JdbcDataSource validateDataSourceConfiguration(String dsName, DataSourceConfiguration dsc) {
-        for (JdbcDataSource jdbcDs : dsc.getJdbcDataSourceCollection()) {
-            if (jdbcDs.getName().equals(dsName)) {
-                return jdbcDs;
-            }
-        }
-        
-        throw new IllegalArgumentException("C3P0ConnectionFactory: DataSource: "+dsName+" is not defined.");
     }
 
     protected abstract void initializePool(final JdbcDataSource ds) throws SQLException;

@@ -80,7 +80,7 @@ import org.opennms.core.schema.Migration;
 import org.opennms.core.schema.Migrator;
 import org.opennms.core.utils.ProcessExec;
 import org.opennms.netmgt.ConfigFileConstants;
-import org.opennms.netmgt.config.BaseConnectionFactory;
+import org.opennms.netmgt.config.ConnectionFactoryUtil;
 import org.opennms.netmgt.config.opennmsDataSources.JdbcDataSource;
 import org.opennms.netmgt.dao.db.InstallerDb;
 import org.opennms.netmgt.dao.db.SimpleDataSource;
@@ -159,7 +159,7 @@ public class Installer {
      * @param argv an array of {@link java.lang.String} objects.
      * @throws java.lang.Exception if any.
      */
-    public void install(String[] argv) throws Exception {
+    public void install(final String[] argv) throws Exception {
         printHeader();
         loadProperties();
         parseArguments(argv);
@@ -175,12 +175,12 @@ public class Installer {
             File cfgFile = ConfigFileConstants.getFile(ConfigFileConstants.OPENNMS_DATASOURCE_CONFIG_FILE_NAME);
             
             Reader fr = new InputStreamReader(new FileInputStream(cfgFile), "UTF-8");
-            JdbcDataSource adminDsConfig = BaseConnectionFactory.marshalDataSourceFromConfig(fr, ADMIN_DATA_SOURCE_NAME);
+            JdbcDataSource adminDsConfig = ConnectionFactoryUtil.marshalDataSourceFromConfig(fr, ADMIN_DATA_SOURCE_NAME);
             DataSource adminDs = new SimpleDataSource(adminDsConfig);
             fr.close();
 
             fr = new InputStreamReader(new FileInputStream(cfgFile), "UTF-8");
-            JdbcDataSource dsConfig = BaseConnectionFactory.marshalDataSourceFromConfig(fr, OPENNMS_DATA_SOURCE_NAME);
+            JdbcDataSource dsConfig = ConnectionFactoryUtil.marshalDataSourceFromConfig(fr, OPENNMS_DATA_SOURCE_NAME);
             DataSource ds = new SimpleDataSource(dsConfig);
             fr.close();
 

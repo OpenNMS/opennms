@@ -44,10 +44,14 @@ import javax.sql.DataSource;
 public interface ClosableDataSource extends DataSource {
     
     /**
-     * <p>close</p>
+     * Close the datasource, if necessary.
      *
      * @throws java.sql.SQLException if any.
      */
     public void close() throws SQLException;
 
+    public void setIdleTimeout(final int idleTimeout);
+    public void setMinPool(final int minPool);
+    public void setMaxPool(final int maxPool);
+    public void setMaxSize(final int maxSize);
 }

@@ -54,7 +54,6 @@ import org.exolab.castor.xml.MarshalException;
 import org.exolab.castor.xml.ValidationException;
 import org.opennms.core.utils.LogUtils;
 import org.opennms.netmgt.config.opennmsDataSources.JdbcDataSource;
-import org.opennms.netmgt.config.opennmsDataSources.Param;
 
 import snaq.db.DBPoolDataSource;
 
@@ -81,48 +80,12 @@ public class DBPoolConnectionFactory extends BaseConnectionFactory {
     }
 
     protected void initializePool(final JdbcDataSource dataSource) throws SQLException {
-    	final DBPoolDataSource ds = new DBPoolDataSource();
-    	ds.setName(dataSource.getName());
-    	ds.setDriverClassName(dataSource.getClassName());
-    	ds.setUrl(dataSource.getUrl());
-    	ds.setUser(dataSource.getUserName());
-    	ds.setPassword(dataSource.getPassword());
-    	
-    	int idleTimeout = 600; // seconds
-    	int loginTimeout = 3; // seconds
-    	int minPool = 10;
-    	int maxPool = 50;
-    	int maxSize = maxPool * 50;
-    	for (final Param parameter : dataSource.getParamCollection()) {
-    		
-    		final String parameterName = parameter.getName();
-    		int value = 0;
-    		try {
-    			value = Integer.valueOf(parameter.getValue());
-    		} catch (final NumberFormatException e) {
-    			LogUtils.warnf(this, e, "%s is not a number: %s", parameter.getName(), parameter.getValue());
-    			continue;
-    		}
-			if (parameterName.equals("idleTimeout")) {
-				idleTimeout = value;
-    		} else if (parameterName.equals("loginTimeout")) {
-    			loginTimeout = value;
-    		} else if (parameterName.equals("minPool")) {
-    			minPool = value;
-    		} else if (parameterName.equals("maxPool")) {
-    			maxPool = value;
-    		} else if (parameterName.equals("maxSize")) {
-    			maxSize = value;
-    		}
-    	}
-
-    	ds.setIdleTimeout(idleTimeout);
-    	ds.setLoginTimeout(loginTimeout);
-    	ds.setMinPool(minPool);
-    	ds.setMaxPool(maxPool);
-    	ds.setMaxSize(maxSize);
-    	
-    	m_dataSource = ds;
+    	m_dataSource = new DBPoolDataSource();
+    	m_dataSource.setName(dataSource.getName());
+    	m_dataSource.setDriverClassName(dataSource.getClassName());
+    	m_dataSource.setUrl(dataSource.getUrl());
+    	m_dataSource.setUser(dataSource.getUserName());
+    	m_dataSource.setPassword(dataSource.getPassword());
     }
 
     public Connection getConnection() throws SQLException {
@@ -174,4 +137,20 @@ public class DBPoolConnectionFactory extends BaseConnectionFactory {
     	LogUtils.infof(this, "Closing DBPool pool.");
     	m_dataSource.release();
     }
+
+	public void setIdleTimeout(final int idleTimeout) {
+		m_dataSource.setIdleTimeout(idleTimeout);
+	}
+
+	public void setMinPool(final int minPool) {
+		m_dataSource.setMinPool(minPool);
+	}
+
+	public void setMaxPool(final int maxPool) {
+		m_dataSource.setMaxPool(maxPool);
+	}
+
+	public void setMaxSize(final int maxSize) {
+		m_dataSource.setMaxSize(maxSize);
+	}
 }
