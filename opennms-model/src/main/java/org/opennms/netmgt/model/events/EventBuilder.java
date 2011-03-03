@@ -81,7 +81,7 @@ public class EventBuilder {
      */
     public EventBuilder(String uei, String source, Date date) {
         m_event = new Event();
-        m_event.setUei(uei);
+        setUei(uei);
         setTime(date);
         setCreationTime(date);
         setSource(source);
@@ -100,22 +100,10 @@ public class EventBuilder {
      * <p>Constructor for EventBuilder.</p>
      *
      * @param event a {@link org.opennms.netmgt.xml.event.Event} object.
-     * @param source a {@link java.lang.String} object.
-     */
-    public EventBuilder(Event event, String source) {
-        this(event);
-        setSource(source);
-    }
-
-    /**
-     * <p>Constructor for EventBuilder.</p>
-     *
-     * @param event a {@link org.opennms.netmgt.xml.event.Event} object.
      * @param date a {@link java.util.Date} object.
      */
     public EventBuilder(Event event, Date date) {
     	m_event = event;
-    	setSource(event.getSource());
 	    setTime(date);
 	    setCreationTime(date);
 	}
@@ -128,6 +116,12 @@ public class EventBuilder {
 	public Event getEvent() {
         return m_event;
     }
+	
+    public EventBuilder setUei(String uei) {
+        m_event.setUei(uei);
+        return this;
+    }
+
 
     /**
      * <p>setTime</p>
@@ -177,10 +171,10 @@ public class EventBuilder {
     /**
      * <p>setNodeid</p>
      *
-     * @param nodeid a int.
+     * @param nodeid a long.
      * @return a {@link org.opennms.netmgt.model.events.EventBuilder} object.
      */
-    public EventBuilder setNodeid(int nodeid) {
+    public EventBuilder setNodeid(long nodeid) {
         m_event.setNodeid(nodeid);
         return this;
     }
@@ -208,6 +202,17 @@ public class EventBuilder {
     }
     
     /**
+     * <p>setInterface</p>
+     *
+     * @param ipAddress a {@link java.lang.String} object.
+     * @return a {@link org.opennms.netmgt.model.events.EventBuilder} object.
+     */
+    public EventBuilder setIfIndex(int ifIndex) {
+        m_event.setIfIndex(ifIndex);
+        return this;
+    }
+
+    /**
      * <p>setService</p>
      *
      * @param serviceName a {@link java.lang.String} object.
@@ -229,6 +234,41 @@ public class EventBuilder {
         if (parmName != null) {
             Value value = new Value();
             value.setContent(val);
+
+            Parm parm = new Parm();
+            parm.setParmName(parmName);
+            parm.setValue(value);
+        
+            addParam(parm);
+        }
+        
+        return this;
+    }
+    
+    public EventBuilder addParam(Parm parm) {
+        
+        if (m_event.getParms() == null) {
+            Parms parms = new Parms();
+            m_event.setParms(parms);
+        }
+
+        m_event.getParms().addParm(parm);
+
+
+        return this;
+    }
+    
+    /**
+     * <p>addParam</p>
+     *
+     * @param parmName a {@link java.lang.String} object.
+     * @param val a {@link java.lang.String} object.
+     * @return a {@link org.opennms.netmgt.model.events.EventBuilder} object.
+     */
+    public EventBuilder addParam(String parmName, boolean val) {
+        if (parmName != null) {
+            Value value = new Value();
+            value.setContent(val ? "true" : "false");
 
             Parm parm = new Parm();
             parm.setParmName(parmName);
@@ -392,6 +432,12 @@ public class EventBuilder {
 		}
 		
 	}
+	
+	public EventBuilder setCommunity(String community) {
+	    ensureSnmp();
+	    m_event.getSnmp().setCommunity(community);
+	    return this;
+	}
 
 	/**
 	 * <p>setEnterpriseId</p>
@@ -440,6 +486,14 @@ public class EventBuilder {
 		return this;
 		
 	}
+	
+    public EventBuilder setSnmpTimeStamp(long timeStamp) {
+        ensureSnmp();
+        m_event.getSnmp().setTimeStamp(timeStamp);
+        return this;
+    }
+
+
 
     /**
      * <p>setField</p>
@@ -507,5 +561,6 @@ public class EventBuilder {
         m_event.setParms(parms);
         return this;
     }
+
 
 }
