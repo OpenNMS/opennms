@@ -37,6 +37,7 @@ import java.net.UnknownHostException;
 
 import org.opennms.core.utils.ThreadCategory;
 import org.opennms.netmgt.EventConstants;
+import org.opennms.netmgt.model.events.EventBuilder;
 import org.opennms.netmgt.model.events.EventProxy;
 import org.opennms.netmgt.model.events.EventProxyException;
 import org.opennms.netmgt.xml.event.Event;
@@ -90,22 +91,17 @@ public class ForceRescanState {
      */
     public Event createForceResanEvent() {
         // create the event to be sent
-        Event newEvent = new Event();
+        EventBuilder bldr = new EventBuilder(EventConstants.FORCE_RESCAN_EVENT_UEI, "SnmpCollector");
         
-        newEvent.setUei(EventConstants.FORCE_RESCAN_EVENT_UEI);
+        bldr.setNodeid(m_agent.getNodeId());
+
+        bldr.setInterface(m_agent.getHostAddress());
         
-        newEvent.setSource("SnmpCollector");
+        bldr.setService(SnmpCollector.SERVICE_NAME);
         
-        newEvent.setInterface(m_agent.getHostAddress());
-        
-        newEvent.setService(SnmpCollector.SERVICE_NAME);
-        
-        newEvent.setHost(determineLocalHostName());
-        
-        newEvent.setTime(EventConstants.formatToString(new java.util.Date()));
-        
-        newEvent.setNodeid(m_agent.getNodeId());
-        return newEvent;
+        bldr.setHost(determineLocalHostName());
+
+        return bldr.getEvent();
     }
 
     String determineLocalHostName() {

@@ -40,16 +40,13 @@ import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
-import org.opennms.netmgt.EventConstants;
+import org.opennms.netmgt.model.events.EventBuilder;
 import org.opennms.netmgt.model.events.EventProxy;
-import org.opennms.netmgt.xml.event.Event;
 import org.opennms.web.api.Util;
 
 /**
  * A servlet that handles signaling that the poller config has been updated
  *
- * @author <A HREF="mailto:jason@opennms.org">Jason Johns </A>
- * @author <A HREF="http://www.opennms.org/">OpenNMS </A>
  * @author <A HREF="mailto:jason@opennms.org">Jason Johns </A>
  * @author <A HREF="http://www.opennms.org/">OpenNMS </A>
  * @version $Id: $
@@ -71,20 +68,17 @@ public class FinishPollerConfigServlet extends HttpServlet {
 
     /** {@inheritDoc} */
     public void doPost(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
-        Event newEvent = new Event();
-        newEvent.setUei("uei.opennms.org/internal/reloadPollerConfig");
-        newEvent.setSource("web ui");
-        newEvent.setTime(EventConstants.formatToString(new java.util.Date()));
+        EventBuilder bldr = new EventBuilder("uei.opennms.org/internal/reloadPollerConfig", "webUI");
 
         try {
             EventProxy eventProxy = Util.createEventProxy();
             if (eventProxy != null) {
-                eventProxy.send(newEvent);
+                eventProxy.send(bldr.getEvent());
             } else {
-                throw new ServletException("Event proxy object is null, unable to send event " + newEvent.getUei());
+                throw new ServletException("Event proxy object is null, unable to send event " + bldr.getEvent().getUei());
             }
         } catch (Throwable e) {
-            throw new ServletException("Could not send event " + newEvent.getUei(), e);
+            throw new ServletException("Could not send event " + bldr.getEvent().getUei(), e);
         }
 
         // forward the request for proper display

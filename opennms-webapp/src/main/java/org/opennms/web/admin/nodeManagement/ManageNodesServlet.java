@@ -64,6 +64,7 @@ import org.opennms.core.utils.DBUtils;
 import org.opennms.netmgt.EventConstants;
 import org.opennms.netmgt.config.DataSourceFactory;
 import org.opennms.netmgt.config.NotificationFactory;
+import org.opennms.netmgt.model.events.EventBuilder;
 import org.opennms.netmgt.xml.event.Event;
 import org.opennms.web.api.Util;
 
@@ -139,8 +140,8 @@ public class ManageNodesServlet extends HttpServlet {
         List<String> addToURL = new ArrayList<String>();
 
         // date to set on events sent out
-        String curDate = EventConstants.formatToString(new Date());
-
+        Date curDate = new Date();
+        
         List<String> unmanageInterfacesList = new ArrayList<String>();
         List<String> manageInterfacesList = new ArrayList<String>();
 
@@ -211,14 +212,12 @@ public class ManageNodesServlet extends HttpServlet {
                             this.log("DEBUG: executing manage service update for " + curInterface.getAddress() + " " + curService.getName());
                             stmt.executeUpdate();
                         } else if (!serviceList.contains(serviceKey) && curService.getStatus().equals("managed")) {
-                            Event newEvent = new Event();
-                            newEvent.setUei("uei.opennms.org/nodes/serviceUnmanaged");
-                            newEvent.setSource("web ui");
-                            newEvent.setNodeid(curInterface.getNodeid());
-                            newEvent.setInterface(curInterface.getAddress());
-                            newEvent.setService(curService.getName());
-                            newEvent.setTime(curDate);
-                            sendEvent(newEvent);
+                            EventBuilder bldr = new EventBuilder("uei.opennms.org/nodes/serviceUnmanaged", "web ui");
+                            bldr.setNodeid(curInterface.getNodeid());
+                            bldr.setInterface(curInterface.getAddress());
+                            bldr.setService(curService.getName());
+
+                            sendEvent(bldr.getEvent());
 
                             stmt.setString(1, "S");
                             stmt.setString(2, curInterface.getAddress());
@@ -312,12 +311,9 @@ public class ManageNodesServlet extends HttpServlet {
     /**
      */
     private void sendSCMRestartEvent() throws ServletException {
-        Event scmRestart = new Event();
-        scmRestart.setUei("uei.opennms.org/internal/restartSCM");
-        scmRestart.setSource("web ui");
-        scmRestart.setTime(EventConstants.formatToString(new Date()));
+        EventBuilder bldr = new EventBuilder("uei.opennms.org/internal/restartSCM", "web ui");
 
-        sendEvent(scmRestart);
+        sendEvent(bldr.getEvent());
     }
 
     /**

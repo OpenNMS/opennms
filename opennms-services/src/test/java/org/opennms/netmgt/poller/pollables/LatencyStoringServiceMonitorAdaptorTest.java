@@ -75,6 +75,7 @@ import org.opennms.netmgt.mock.MockDatabase;
 import org.opennms.netmgt.mock.MockEventIpcManager;
 import org.opennms.netmgt.mock.MockNetwork;
 import org.opennms.netmgt.model.PollStatus;
+import org.opennms.netmgt.model.events.EventBuilder;
 import org.opennms.netmgt.poller.MonitoredService;
 import org.opennms.netmgt.poller.ServiceMonitor;
 import org.opennms.netmgt.rrd.RrdDataSource;
@@ -189,12 +190,11 @@ public class LatencyStoringServiceMonitorAdaptorTest {
         DataSourceFactory.setInstance(db);
         Vault.setDataSource(db);
 
-        Event event = new Event();
-        event.setUei("uei.opennms.org/threshold/highThresholdExceeded");
-        event.setNodeid(1);
-        event.setInterface("127.0.0.1");
-        event.setService("ICMP");
-        anticipator.anticipateEvent(event);
+        EventBuilder bldr = new EventBuilder("uei.opennms.org/threshold/highThresholdExceeded", "LatencyStoringServiceMonitorAdaptorTest");
+        bldr.setNodeid(1);
+        bldr.setInterface("127.0.0.1");
+        bldr.setService("ICMP");
+        anticipator.anticipateEvent(bldr.getEvent());
         m_mocks.replayAll();
         LatencyStoringServiceMonitorAdaptor adaptor = new LatencyStoringServiceMonitorAdaptor(service, m_pollerConfig, pkg);
         adaptor.poll(svc, parameters);

@@ -41,6 +41,7 @@ import org.opennms.core.utils.ThreadCategory;
 import org.opennms.netmgt.EventConstants;
 import org.opennms.netmgt.config.threshd.Threshold;
 import org.opennms.netmgt.dao.support.RrdFileConstants;
+import org.opennms.netmgt.model.events.EventBuilder;
 import org.opennms.netmgt.poller.NetworkInterface;
 import org.opennms.netmgt.xml.event.Event;
 import org.opennms.netmgt.xml.event.Parm;
@@ -173,78 +174,27 @@ public class LatencyInterface {
 	    }
 	
 	    // create the event to be sent
-	    Event newEvent = new Event();
-	    newEvent.setUei(uei);
-	    newEvent.setNodeid((long) nodeId);
-	    newEvent.setInterface(ipAddr.getHostAddress());
-	    newEvent.setService(getServiceName());
+	    EventBuilder bldr = new EventBuilder(uei, "OpenNMS.Threshd:" + threshold.getDsName(), date);
+	    bldr.setNodeid(nodeId);
+	    bldr.setInterface(ipAddr.getHostAddress());
+	    bldr.setService(getServiceName());
 	
-	    // set the source of the event to the datasource name
-	    newEvent.setSource("OpenNMS.Threshd:" + threshold.getDsName());
 	
 	    // Set event host
 	    //
 	    try {
-	        newEvent.setHost(InetAddress.getLocalHost().getHostName());
+	        bldr.setHost(InetAddress.getLocalHost().getHostName());
 	    } catch (UnknownHostException uhE) {
-	        newEvent.setHost("unresolved.host");
+	        bldr.setHost("unresolved.host");
 	        log.warn("Failed to resolve local hostname", uhE);
 	    }
+	    
+	    bldr.addParam("ds", threshold.getDsName());
+	    bldr.addParam("value", dsValue);
+	    bldr.addParam("threshold", threshold.getValue());
+	    bldr.addParam("trigger", threshold.getTrigger());
+	    bldr.addParam("rearm", threshold.getRearm());
 	
-	    // Set event time
-	    newEvent.setTime(EventConstants.formatToString(date));
-	
-	    // Add appropriate parms
-	    //
-	    Parms eventParms = new Parms();
-	    Parm eventParm = null;
-	    Value parmValue = null;
-	
-	    // Add datasource name
-	    eventParm = new Parm();
-	    eventParm.setParmName("ds");
-	    parmValue = new Value();
-	    parmValue.setContent(threshold.getDsName());
-	    eventParm.setValue(parmValue);
-	    eventParms.addParm(eventParm);
-	
-	    // Add last known value of the datasource
-	    // fetched from its RRD file
-	    //
-	    eventParm = new Parm();
-	    eventParm.setParmName("value");
-	    parmValue = new Value();
-	    parmValue.setContent(Double.toString(dsValue));
-	    eventParm.setValue(parmValue);
-	    eventParms.addParm(eventParm);
-	
-	    // Add configured threshold value
-	    eventParm = new Parm();
-	    eventParm.setParmName("threshold");
-	    parmValue = new Value();
-	    parmValue.setContent(Double.toString(threshold.getValue()));
-	    eventParm.setValue(parmValue);
-	    eventParms.addParm(eventParm);
-	
-	    // Add configured trigger value
-	    eventParm = new Parm();
-	    eventParm.setParmName("trigger");
-	    parmValue = new Value();
-	    parmValue.setContent(Integer.toString(threshold.getTrigger()));
-	    eventParm.setValue(parmValue);
-	    eventParms.addParm(eventParm);
-	
-	    // Add configured rearm value
-	    eventParm = new Parm();
-	    eventParm.setParmName("rearm");
-	    parmValue = new Value();
-	    parmValue.setContent(Double.toString(threshold.getRearm()));
-	    eventParm.setValue(parmValue);
-	    eventParms.addParm(eventParm);
-	
-	    // Add Parms to the event
-	    newEvent.setParms(eventParms);
-	
-	    return newEvent;
+	    return bldr.getEvent();
 	}
 }

@@ -44,12 +44,14 @@ import java.util.Iterator;
 import java.util.List;
 
 import org.opennms.core.utils.LogUtils;
+import org.opennms.netmgt.EventConstants;
 import org.opennms.netmgt.config.LinkdConfig;
 import org.opennms.netmgt.config.SnmpPeerFactory;
 import org.opennms.netmgt.config.linkd.Package;
 import org.opennms.netmgt.daemon.AbstractServiceDaemon;
 import org.opennms.netmgt.linkd.scheduler.ReadyRunnable;
 import org.opennms.netmgt.linkd.scheduler.Scheduler;
+import org.opennms.netmgt.model.events.EventBuilder;
 import org.opennms.netmgt.model.events.EventForwarder;
 import org.opennms.netmgt.xml.event.Event;
 import org.springframework.util.Assert;
@@ -613,15 +615,13 @@ public class Linkd extends AbstractServiceDaemon {
 		else autodiscovery = m_linkdConfig.isAutoDiscoveryEnabled();
 		
 		if ( autodiscovery ) {
+		    
+		    EventBuilder bldr = new EventBuilder(EventConstants.NEW_SUSPECT_INTERFACE_EVENT_UEI, "linkd");
 				
-			Event event = new Event();
-			event.setSource("linkd");
-			event.setUei(org.opennms.netmgt.EventConstants.NEW_SUSPECT_INTERFACE_EVENT_UEI);
-			event.setHost(ipowner);
-			event.setInterface(ipaddress);
-			event.setTime(org.opennms.netmgt.EventConstants.formatToString(new java.util.Date()));
+		    bldr.setHost(ipowner);
+		    bldr.setInterface(ipaddress);
 
-			m_eventForwarder.sendNow(event);
+			m_eventForwarder.sendNow(bldr.getEvent());
 			
 			m_newSuspectEventsIpAddr.add(ipaddress);
 			

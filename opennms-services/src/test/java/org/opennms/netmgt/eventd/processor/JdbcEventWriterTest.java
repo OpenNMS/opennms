@@ -131,6 +131,7 @@ public class JdbcEventWriterTest extends PopulatedTemporaryDatabaseTestCase {
         int nodeId = jdbcTemplate.queryForInt("SELECT nodeId FROM node LIMIT 1");
         jdbcTemplate.update("INSERT into ipInterface (nodeId, ipAddr, ipHostname) VALUES (?, ?, ?)", nodeId, "192.168.1.1", "First Interface");
         
+        // don't convert to using event builder as this is testing eventd persist functionality and needs to try 'invalid' events
         Event event = new Event();
         
         Connection connection = getDataSource().getConnection();
@@ -146,6 +147,7 @@ public class JdbcEventWriterTest extends PopulatedTemporaryDatabaseTestCase {
         int nodeId = jdbcTemplate.queryForInt("SELECT nodeId FROM node LIMIT 1");
         jdbcTemplate.update("INSERT into ipInterface (nodeId, ipAddr, ipHostname) VALUES (?, ?, ?)", nodeId, "192.168.1.1", "First Interface");
         
+        // don't convert to using event builder as this is testing eventd persist functionality and needs to try 'invalid' events
         Event event = new Event();
         event.setHost("192.168.1.1");
         
@@ -162,6 +164,7 @@ public class JdbcEventWriterTest extends PopulatedTemporaryDatabaseTestCase {
         int nodeId = jdbcTemplate.queryForInt("SELECT nodeId FROM node LIMIT 1");
         jdbcTemplate.update("INSERT into ipInterface (nodeId, ipAddr, ipHostname) VALUES (?, ?, ?)", nodeId, "192.168.1.1", "First Interface");
 
+        // don't convert to using event builder as this is testing eventd persist functionality and needs to try 'invalid' events
         Event event = new Event();
         event.setNodeid(nodeId);
         event.setHost("192.168.1.1");

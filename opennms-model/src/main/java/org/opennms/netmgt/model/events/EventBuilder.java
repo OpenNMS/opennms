@@ -317,6 +317,17 @@ public class EventBuilder {
      * @param val a long.
      * @return a {@link org.opennms.netmgt.model.events.EventBuilder} object.
      */
+    public EventBuilder addParam(String parmName, double val) {
+        return addParam(parmName, Double.toString(val));
+    }
+    
+    /**
+     * <p>addParam</p>
+     *
+     * @param parmName a {@link java.lang.String} object.
+     * @param val a long.
+     * @return a {@link org.opennms.netmgt.model.events.EventBuilder} object.
+     */
     public EventBuilder addParam(String parmName, long val) {
         return addParam(parmName, Long.toString(val));
     }

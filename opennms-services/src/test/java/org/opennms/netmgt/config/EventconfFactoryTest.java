@@ -72,6 +72,7 @@ import java.util.Set;
 import org.junit.Before;
 import org.junit.Test;
 import org.opennms.netmgt.dao.castor.CastorUtils;
+import org.opennms.netmgt.model.events.EventBuilder;
 import org.opennms.netmgt.xml.eventconf.AlarmData;
 import org.opennms.netmgt.xml.eventconf.Event;
 import org.opennms.netmgt.xml.eventconf.Events;
@@ -131,20 +132,17 @@ public class EventconfFactoryTest {
     
     @Test
     public void testFindByEventUeiKnown() {
-        org.opennms.netmgt.xml.event.Event matchingEvent = new org.opennms.netmgt.xml.event.Event();
-        matchingEvent.setUei(knownUEI1);
+        EventBuilder bldr = new EventBuilder(knownUEI1, "testFindByEventUeiKnown");
 
-        Event eventConf = EventconfFactory.getInstance().findByEvent(matchingEvent);
+        Event eventConf = EventconfFactory.getInstance().findByEvent(bldr.getEvent());
         assertNotNull("returned event configuration for event with known UEI '" + knownUEI1 + "' should not be null", eventConf);
-        assertEquals("UEI", matchingEvent.getUei(), eventConf.getUei());
+        assertEquals("UEI", bldr.getEvent().getUei(), eventConf.getUei());
     }
 
     @Test
     public void testFindByEventUnknown() {
-        org.opennms.netmgt.xml.event.Event matchingEvent = new org.opennms.netmgt.xml.event.Event();
-        matchingEvent.setUei(unknownUEI1);
-
-        Event eventConf = EventconfFactory.getInstance().findByEvent(matchingEvent);
+        EventBuilder bldr = new EventBuilder(unknownUEI1, "testFindByEventUnknown");
+        Event eventConf = EventconfFactory.getInstance().findByEvent(bldr.getEvent());
         assertNull("returned event configuration for event with unknown UEI '" + unknownUEI1 + "' should be null", eventConf);
     }
 
