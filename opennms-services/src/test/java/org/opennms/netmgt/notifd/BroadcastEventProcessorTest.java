@@ -50,11 +50,8 @@ import org.junit.Test;
 import org.opennms.netmgt.config.notifications.Notification;
 import org.opennms.netmgt.mock.MockEventUtil;
 import org.opennms.netmgt.mock.MockService;
+import org.opennms.netmgt.model.events.EventBuilder;
 import org.opennms.netmgt.xml.event.Event;
-import org.opennms.netmgt.xml.event.Logmsg;
-import org.opennms.netmgt.xml.event.Parm;
-import org.opennms.netmgt.xml.event.Parms;
-import org.opennms.netmgt.xml.event.Value;
 
 public class BroadcastEventProcessorTest extends NotificationsTestCase {
 
@@ -107,68 +104,21 @@ public class BroadcastEventProcessorTest extends NotificationsTestCase {
             <alarm-data reduction-key="%uei%!%nodeid%!%parm[label]%" alarm-type="1" auto-clean="false" />
         </event>
          */
-        Event event = new Event();
-        event.setUei("uei.opennms.org/threshold/highThresholdExceeded");
-        event.setDescr("High threshold exceeded for %service% datasource %parm[ds]% on interface %interface%, parms: %parm[all]%");
-        Logmsg logmsg = new Logmsg();
-        logmsg.setContent("High threshold exceeded for %service% datasource %parm[ds]% on interface %interface%, parms: %parm[all]%");
-        logmsg.setNotify(true);
-        event.setLogmsg(logmsg);
-        event.setNodeid(0);
-        event.setInterface("0.0.0.0");
+        
+        EventBuilder bldr = new EventBuilder("uei.opennms.org/threshold/highThresholdExceeded", "testExpandNotifParms");
 
-        Parms parms = new Parms();
-
-        Parm parm = new Parm();
-        parm.setParmName("ds");
-        Value value = new Value();
-        value.setContent("dsk-usr-pcent");
-        parm.setValue(value);
-        parms.addParm(parm);
-
-        parm = new Parm();
-        parm.setParmName("value");
-        value = new Value();
-        value.setContent("Crap! There's only 15% free on the SAN and we need 20%! RUN AWAY!");
-        parm.setValue(value);
-        parms.addParm(parm);
-
-        parm = new Parm();
-        parm.setParmName("threshold");
-        value = new Value();
-        value.setContent("");
-        parm.setValue(value);
-        parms.addParm(parm);
-
-        parm = new Parm();
-        parm.setParmName("trigger");
-        value = new Value();
-        value.setContent("");
-        parm.setValue(value);
-        parms.addParm(parm);
-
-        parm = new Parm();
-        parm.setParmName("rearm");
-        value = new Value();
-        value.setContent("");
-        parm.setValue(value);
-        parms.addParm(parm);
-
-        parm = new Parm();
-        parm.setParmName("label");
-        value = new Value();
-        value.setContent("");
-        parm.setValue(value);
-        parms.addParm(parm);
-
-        parm = new Parm();
-        parm.setParmName("ifIndex");
-        value = new Value();
-        value.setContent("");
-        parm.setValue(value);
-        parms.addParm(parm);
-
-        event.setParms(parms);
+        bldr.setDescription("High threshold exceeded for %service% datasource %parm[ds]% on interface %interface%, parms: %parm[all]%");
+        bldr.setLogMessage("High threshold exceeded for %service% datasource %parm[ds]% on interface %interface%, parms: %parm[all]%");
+        bldr.setNodeid(0);
+        bldr.setInterface("0.0.0.0");
+        
+        bldr.addParam("ds", "dsk-usr-pcent");
+        bldr.addParam("value", "Crap! There's only 15% free on the SAN and we need 20%! RUN AWAY!");
+        bldr.addParam("threshold", "");
+        bldr.addParam("trigger", "");
+        bldr.addParam("rearm", "");
+        bldr.addParam("label", "");
+        bldr.addParam("ifIndex", "");
 
         /*
         List<String> names = m_notificationManager.getNotificationNames();
@@ -180,10 +130,10 @@ public class BroadcastEventProcessorTest extends NotificationsTestCase {
         Notification[] notifications = null;
         notifications = m_notificationManager.getNotifForEvent(null);
         assertNull(notifications);
-        notifications = m_notificationManager.getNotifForEvent(event);
+        notifications = m_notificationManager.getNotifForEvent(bldr.getEvent());
         assertNotNull(notifications);
         assertEquals(1, notifications.length);
-        Map<String,String> paramMap = BroadcastEventProcessor.buildParameterMap(notifications[0], event, 9999);
+        Map<String,String> paramMap = BroadcastEventProcessor.buildParameterMap(notifications[0], bldr.getEvent(), 9999);
         /*
         for (Map.Entry<String,String> entry : paramMap.entrySet()) {
             System.out.println(entry.getKey() + " => " + entry.getValue());

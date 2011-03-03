@@ -63,6 +63,7 @@ import org.opennms.core.utils.ThreadCategory;
 import org.opennms.netmgt.EventConstants;
 import org.opennms.netmgt.config.DataSourceFactory;
 import org.opennms.netmgt.dao.support.DefaultResourceDao;
+import org.opennms.netmgt.model.events.EventBuilder;
 import org.opennms.netmgt.xml.event.Event;
 import org.opennms.netmgt.xml.event.Parm;
 import org.opennms.netmgt.xml.event.Parms;
@@ -185,27 +186,12 @@ public class DeleteNodesServlet extends HttpServlet {
     }
 
     private void sendDeleteNodeEvent(int node) throws ServletException {
-        Event nodeDeleted = new Event();
-        nodeDeleted.setUei("uei.opennms.org/internal/capsd/deleteNode");
-        nodeDeleted.setSource("web ui");
-        nodeDeleted.setNodeid(node);
-        nodeDeleted.setTime(EventConstants.formatToString(new Date()));
+        EventBuilder bldr = new EventBuilder("uei.opennms.org/internal/capsd/deleteNode", "web ui");
+        bldr.setNodeid(node);
+        
+        bldr.addParam(EventConstants.PARM_TRANSACTION_NO, "webUI");
 
-        // Add appropriate parms
-        Parms eventParms = new Parms();
-
-        // Add Transaction ID
-        Parm eventParm = new Parm();
-        eventParm.setParmName(EventConstants.PARM_TRANSACTION_NO);
-        Value parmValue = new Value();
-        parmValue.setContent("webUI");
-        eventParm.setValue(parmValue);
-        eventParms.addParm(eventParm);
-
-        // Add Parms to the event
-        nodeDeleted.setParms(eventParms);
-
-        sendEvent(nodeDeleted);
+        sendEvent(bldr.getEvent());
     }
 
     private void sendEvent(Event event) throws ServletException {

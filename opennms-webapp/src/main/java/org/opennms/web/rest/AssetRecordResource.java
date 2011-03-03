@@ -14,9 +14,9 @@ import org.opennms.netmgt.EventConstants;
 import org.opennms.netmgt.dao.NodeDao;
 import org.opennms.netmgt.model.OnmsAssetRecord;
 import org.opennms.netmgt.model.OnmsNode;
+import org.opennms.netmgt.model.events.EventBuilder;
 import org.opennms.netmgt.model.events.EventProxy;
 import org.opennms.netmgt.model.events.EventProxyException;
-import org.opennms.netmgt.xml.event.Event;
 import org.springframework.beans.BeanWrapper;
 import org.springframework.beans.BeanWrapperImpl;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -109,12 +109,9 @@ public class AssetRecordResource extends OnmsRestService {
     
     
     private void sendEvent(String uei, int nodeId) throws EventProxyException {
-        Event e = new Event();
-        e.setUei(uei);
-        e.setNodeid(nodeId);
-        e.setSource(getClass().getName());
-        e.setTime(EventConstants.formatToString(new java.util.Date()));
-        m_eventProxy.send(e);
+        EventBuilder bldr = new EventBuilder(uei, getClass().getName());
+        bldr.setNodeid(nodeId);
+        m_eventProxy.send(bldr.getEvent());
     }
 
 }

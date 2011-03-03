@@ -41,11 +41,8 @@ import junit.framework.TestCase;
 
 import org.opennms.core.utils.InetAddressUtils;
 import org.opennms.netmgt.EventConstants;
+import org.opennms.netmgt.model.events.EventBuilder;
 import org.opennms.netmgt.snmp.SnmpAgentConfig;
-import org.opennms.netmgt.xml.event.Event;
-import org.opennms.netmgt.xml.event.Parm;
-import org.opennms.netmgt.xml.event.Parms;
-import org.opennms.netmgt.xml.event.Value;
 import org.opennms.test.ConfigurationTestUtils;
 import org.springframework.core.io.Resource;
 
@@ -86,10 +83,10 @@ public class ConfigureSnmpTest extends TestCase {
      * @throws UnknownHostException 
      */
     public void testCreateSnmpEventInfo() throws UnknownHostException {
-        Event event = createConfigureSnmpEvent("192.168.1.1", null);
-        addCommunityStringToEvent(event, "seemore");
+        EventBuilder bldr = createConfigureSnmpEventBuilder("192.168.1.1", null);
+        addCommunityStringToEvent(bldr, "seemore");
         
-        SnmpEventInfo info = new SnmpEventInfo(event);
+        SnmpEventInfo info = new SnmpEventInfo(bldr.getEvent());
         
         assertNotNull(info);
         assertEquals("192.168.1.1", info.getFirstIPAddress());
@@ -103,9 +100,9 @@ public class ConfigureSnmpTest extends TestCase {
      */
     public void testSnmpEventInfoClassWithSpecific() throws UnknownHostException {
         final String addr = "192.168.0.5";
-        Event event = createConfigureSnmpEvent(addr, null);
-        addCommunityStringToEvent(event, "abc");
-        SnmpEventInfo info = new SnmpEventInfo(event);
+        EventBuilder bldr = createConfigureSnmpEventBuilder(addr, null);
+        addCommunityStringToEvent(bldr, "abc");
+        SnmpEventInfo info = new SnmpEventInfo(bldr.getEvent());
         
         SnmpConfigManager.mergeIntoConfig(SnmpPeerFactory.getSnmpConfig(), info.createDef());
 
@@ -127,8 +124,8 @@ public class ConfigureSnmpTest extends TestCase {
         SnmpAgentConfig agent = SnmpPeerFactory.getInstance().getAgentConfig(InetAddress.getByName(addr1));
         assertEquals(SnmpAgentConfig.VERSION2C, agent.getVersion());
         
-        Event event = createConfigureSnmpEvent(addr1, addr2);
-        SnmpEventInfo info = new SnmpEventInfo(event);
+        EventBuilder bldr = createConfigureSnmpEventBuilder(addr1, addr2);
+        SnmpEventInfo info = new SnmpEventInfo(bldr.getEvent());
         info.setVersion("v2c");
         
         SnmpConfigManager.mergeIntoConfig(SnmpPeerFactory.getSnmpConfig(), info.createDef());
@@ -151,8 +148,8 @@ public class ConfigureSnmpTest extends TestCase {
         SnmpAgentConfig agent = SnmpPeerFactory.getInstance().getAgentConfig(InetAddress.getByName(addr1));
         assertEquals(SnmpAgentConfig.VERSION1, agent.getVersion());
         
-        Event event = createConfigureSnmpEvent(addr1, addr2);
-        SnmpEventInfo info = new SnmpEventInfo(event);
+        EventBuilder bldr = createConfigureSnmpEventBuilder(addr1, addr2);
+        SnmpEventInfo info = new SnmpEventInfo(bldr.getEvent());
         info.setCommunityString("opennmsrules");
         
         SnmpConfigManager.mergeIntoConfig(SnmpPeerFactory.getSnmpConfig(), info.createDef());
@@ -174,8 +171,8 @@ public class ConfigureSnmpTest extends TestCase {
         assertEquals(6, SnmpPeerFactory.getSnmpConfig().getDefinition(2).getSpecificCount());
         
         final String specificAddr = "10.1.1.7";
-        final Event event = createConfigureSnmpEvent(specificAddr, null);
-        final SnmpEventInfo info = new SnmpEventInfo(event);
+        final EventBuilder bldr = createConfigureSnmpEventBuilder(specificAddr, null);
+        final SnmpEventInfo info = new SnmpEventInfo(bldr.getEvent());
         info.setCommunityString("splice-test");
         info.setVersion("v2c");
         
@@ -201,8 +198,8 @@ public class ConfigureSnmpTest extends TestCase {
         assertEquals("10.1.1.11", SnmpPeerFactory.getSnmpConfig().getDefinition(3).getRange(0).getBegin());
         
         final String specificAddr = "10.1.1.7";
-        final Event event = createConfigureSnmpEvent(specificAddr, null);
-        final SnmpEventInfo info = new SnmpEventInfo(event);
+        final EventBuilder bldr = createConfigureSnmpEventBuilder(specificAddr, null);
+        final SnmpEventInfo info = new SnmpEventInfo(bldr.getEvent());
         info.setCommunityString("splice2-test");
 
         SnmpConfigManager.mergeIntoConfig(SnmpPeerFactory.getSnmpConfig(), info.createDef());
@@ -217,41 +214,18 @@ public class ConfigureSnmpTest extends TestCase {
         
     }
 
-    private Event createConfigureSnmpEvent(final String firstIp, final String lastIp) {
-        Event event = new Event();
-        event.setUei(EventConstants.CONFIGURE_SNMP_EVENT_UEI);
+    private EventBuilder createConfigureSnmpEventBuilder(final String firstIp, final String lastIp) {
         
-        Parm vParm = new Parm();
-        vParm.setParmName(EventConstants.PARM_FIRST_IP_ADDRESS);
-        Value value = new Value();
-        value.setContent(firstIp);
-        value.setType("String");
-        vParm.setValue(value);
-        
-        Parms parms = new Parms();
-        parms.addParm(vParm);
-        
-        vParm = new Parm();
-        vParm.setParmName(EventConstants.PARM_LAST_IP_ADDRESS);
-        value = new Value();
-        value.setContent(lastIp);
-        value.setType("String");
-        vParm.setValue(value);
-        parms.addParm(vParm);
+        EventBuilder bldr = new EventBuilder(EventConstants.CONFIGURE_SNMP_EVENT_UEI, "ConfigureSnmpTest");
 
-        event.setParms(parms);
-        return event;
+        bldr.addParam(EventConstants.PARM_FIRST_IP_ADDRESS, firstIp);
+        bldr.addParam(EventConstants.PARM_LAST_IP_ADDRESS, lastIp);
+        
+        return bldr;
     }
 
-    private void addCommunityStringToEvent(final Event event, final String commStr) {
-        Parms parms = event.getParms();
-        Parm vParm = new Parm();
-        vParm.setParmName(EventConstants.PARM_COMMUNITY_STRING);
-        Value value = new Value();
-        value.setContent(commStr);
-        value.setType("String");
-        vParm.setValue(value);
-        parms.addParm(vParm);
+    private void addCommunityStringToEvent(final EventBuilder bldr, final String commStr) {
+        bldr.addParam(EventConstants.PARM_COMMUNITY_STRING, commStr);
     }
 
 }

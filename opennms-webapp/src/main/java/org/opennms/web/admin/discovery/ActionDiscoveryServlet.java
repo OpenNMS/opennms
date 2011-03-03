@@ -54,6 +54,7 @@ import org.opennms.netmgt.config.discovery.ExcludeRange;
 import org.opennms.netmgt.config.discovery.IncludeRange;
 import org.opennms.netmgt.config.discovery.IncludeUrl;
 import org.opennms.netmgt.config.discovery.Specific;
+import org.opennms.netmgt.model.events.EventBuilder;
 import org.opennms.netmgt.model.events.EventProxy;
 import org.opennms.netmgt.xml.event.Event;
 import org.opennms.web.WebSecurityUtils;
@@ -250,14 +251,11 @@ public class ActionDiscoveryServlet extends HttpServlet {
     			log.error(me.getMessage());
     		}
 
-    		Event event = new Event();
-            event.setUei(EventConstants.DISCOVERYCONFIG_CHANGED_EVENT_UEI);
-            event.setSource("ActionDiscoveryServlet");
-            event.setHost("host");
-            event.setTime(EventConstants.formatToString(new java.util.Date()));
+    		EventBuilder bldr = new EventBuilder(EventConstants.DISCOVERYCONFIG_CHANGED_EVENT_UEI, "ActionDiscoveryServlet");
+    		bldr.setHost("host");
 
             try {
-            	proxy.send(event);
+            	proxy.send(bldr.getEvent());
             } catch (Throwable me) {
     			log.error(me.getMessage());
     		}

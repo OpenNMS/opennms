@@ -7,7 +7,7 @@ import java.util.Date;
 import java.util.Map;
 
 import org.opennms.core.utils.ThreadCategory;
-import org.opennms.netmgt.EventConstants;
+import org.opennms.netmgt.model.events.EventBuilder;
 import org.opennms.netmgt.xml.event.Event;
 import org.opennms.netmgt.xml.event.Parm;
 import org.opennms.netmgt.xml.event.Parms;
@@ -41,65 +41,55 @@ public abstract class AbstractThresholdEvaluatorState implements ThresholdEvalua
         if (dsLabelValue == null) dsLabelValue = UNKNOWN;
 
         // create the event to be sent
-        Event event = new Event();
-        event.setUei(uei);
-        event.setNodeid(resource.getNodeId());
-        event.setService(resource.getServiceName());
+        EventBuilder bldr = new EventBuilder(uei, "OpenNMS.Threshd." + getThresholdConfig().getDatasourceExpression(), date);
+
+        bldr.setNodeid(resource.getNodeId());
+        bldr.setService(resource.getServiceName());
 
         // As a suggestion from Bug2711. Host Address will contain Interface IP Address for Interface Resource
-        event.setInterface(resource.getHostAddress());            
-
-        Parms eventParms = new Parms();
+        bldr.setInterface(resource.getHostAddress());            
 
         if (resource.isAnInterfaceResource()) {
             // Update threshold label if it is unknown. This is useful because usually reduction-key is associated to label parameter
             if (UNKNOWN.equals(dsLabelValue))
                 dsLabelValue = resource.getIfLabel();
             // Set interface specific parameters
-            addEventParm(eventParms, "ifLabel", resource.getIfLabel());
-            addEventParm(eventParms, "ifIndex", resource.getIfIndex());
+            bldr.addParam("ifLabel", resource.getIfLabel());
+            bldr.addParam("ifIndex", resource.getIfIndex());
             String ipaddr = resource.getIfInfoValue("ipaddr");
-            if (ipaddr != null && !"0.0.0.0".equals(ipaddr))
-                addEventParm(eventParms, "ifIpAddress", ipaddr);
+            if (ipaddr != null && !"0.0.0.0".equals(ipaddr)) {
+                bldr.addParam("ifIpAddress", ipaddr);
+            }
         }
 
         // Set resource label
-        addEventParm(eventParms, "label", dsLabelValue);
-
-        // set the source of the event to the datasource name
-        event.setSource("OpenNMS.Threshd." + getThresholdConfig().getDatasourceExpression());
+        bldr.addParam("label", dsLabelValue);
 
         // Set event host
         try {
-            event.setHost(InetAddress.getLocalHost().getHostName());
+            bldr.setHost(InetAddress.getLocalHost().getHostName());
         } catch (UnknownHostException e) {
-            event.setHost("unresolved.host");
+            bldr.setHost("unresolved.host");
             log().warn("Failed to resolve local hostname: " + e, e);
         }
 
-        // Set event time
-        event.setTime(EventConstants.formatToString(date));
-
         // Add datasource name
-        addEventParm(eventParms, "ds", getThresholdConfig().getDatasourceExpression());
+        bldr.addParam("ds", getThresholdConfig().getDatasourceExpression());
         
         // Add last known value of the datasource fetched from its RRD file
-        addEventParm(eventParms, "value", formatValue(dsValue));
+        bldr.addParam("value", formatValue(dsValue));
 
         // Add the instance name of the resource in question
-        addEventParm(eventParms, "instance", resource.getInstance() != null ? resource.getInstance() : "null");
+        bldr.addParam("instance", resource.getInstance() != null ? resource.getInstance() : "null");
 
         // Add additional parameters
         if (additionalParams != null) {
             for (String p : additionalParams.keySet()) {
-                addEventParm(eventParms, p, additionalParams.get(p));
+                bldr.addParam(p, additionalParams.get(p));
             }
         }
 
-        // Add Parms to the event
-        event.setParms(eventParms);
-        
-        return event;
+        return bldr.getEvent();
     }
 
     /**
@@ -114,17 +104,6 @@ public abstract class AbstractThresholdEvaluatorState implements ThresholdEvalua
         return valueFormatter.format(value);
     }
 
-    private void addEventParm(Parms parms, String key, String value) {
-        if (value !=  null) {
-            Parm eventParm = new Parm();
-            eventParm.setParmName(key);
-            Value parmValue = new Value();
-            parmValue.setContent(value);
-            eventParm.setValue(parmValue);
-            parms.addParm(eventParm);
-        }
-    }
-    
     /**
      * <p>log</p>
      *

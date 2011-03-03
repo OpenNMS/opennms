@@ -720,17 +720,12 @@ public final class BroadcastEventProcessor implements EventListener {
      */
     private void sendNotifEvent(String uei, String logMessage, String description) {
         try {
-            Logmsg logMsg = new Logmsg();
-            logMsg.setContent(logMessage);
-
-            Event event = new Event();
-            event.setUei(uei);
-            event.setSource("notifd");
-            event.setLogmsg(logMsg);
-            event.setDescr(description);
-            event.setTime(EventConstants.formatToString(new java.util.Date()));
-
-            getEventManager().sendNow(event);
+            
+            EventBuilder bldr = new EventBuilder(uei, "notifd");
+            bldr.setLogMessage(logMessage);
+            bldr.setDescription(description);
+            
+            getEventManager().sendNow(bldr.getEvent());
         } catch (Throwable t) {
             log().error("Could not send event " + uei, t);
         }
@@ -1087,59 +1082,12 @@ public final class BroadcastEventProcessor implements EventListener {
             log().debug("nodeid = " + nodeid + ", nodeLabel = " + nodeLabel + ", noticeSupressed = " + noticeSupressed);
         }
         
-        Event newEvent = new Event();
-        newEvent.setUei(EventConstants.PATH_OUTAGE_EVENT_UEI);
-        newEvent.setSource("OpenNMS.notifd");
-        newEvent.setNodeid(nodeid);
-        newEvent.setTime(EventConstants.formatToString(new java.util.Date()));
-
-        // Add appropriate parms
-        Parms eventParms = new Parms();
-        Parm eventParm = null;
-        Value parmValue = null;
-
-        // Add node label
-        eventParm = new Parm();
-        eventParm.setParmName(EventConstants.PARM_NODE_LABEL);
-        parmValue = new Value();
-        if (nodeLabel == null) {
-            parmValue.setContent("");
-        } else {
-            parmValue.setContent(nodeLabel);
-        }
-        eventParm.setValue(parmValue);
-        eventParms.addParm(eventParm);
-
-        // Add critical path IP
-        eventParm = new Parm();
-        eventParm.setParmName(EventConstants.PARM_CRITICAL_PATH_IP);
-        parmValue = new Value();
-        parmValue.setContent(intfc);
-        eventParm.setValue(parmValue);
-        eventParms.addParm(eventParm);
-
-        // Add critical path Svc
-        eventParm = new Parm();
-        eventParm.setParmName(EventConstants.PARM_CRITICAL_PATH_SVC);
-        parmValue = new Value();
-        parmValue.setContent(svc);
-        eventParm.setValue(parmValue);
-        eventParms.addParm(eventParm);
-
-        // Add noticeSupressed
-        eventParm = new Parm();
-        eventParm.setParmName(EventConstants.PARM_CRITICAL_PATH_NOTICE_SUPRESSED);
-        parmValue = new Value();
-	if (noticeSupressed) {
-            parmValue.setContent("true");
-        } else {
-            parmValue.setContent("false");
-        }
-        eventParm.setValue(parmValue);
-        eventParms.addParm(eventParm);
-
-        // Add Parms to the event
-        newEvent.setParms(eventParms);
+        EventBuilder bldr = new EventBuilder(EventConstants.PATH_OUTAGE_EVENT_UEI, "OpenNMS.notifd");
+        bldr.setNodeid(nodeid);
+        bldr.addParam(EventConstants.PARM_NODE_LABEL, nodeLabel == null ? "" : nodeLabel);
+        bldr.addParam(EventConstants.PARM_CRITICAL_PATH_IP, intfc);
+        bldr.addParam(EventConstants.PARM_CRITICAL_PATH_SVC, svc);
+        bldr.addParam(EventConstants.PARM_CRITICAL_PATH_NOTICE_SUPRESSED, noticeSupressed);
 
         // Send the event
         if (log().isDebugEnabled()) {
@@ -1147,7 +1095,7 @@ public final class BroadcastEventProcessor implements EventListener {
         }
         
 	try {
-            EventIpcManagerFactory.getIpcManager().sendNow(newEvent);
+            EventIpcManagerFactory.getIpcManager().sendNow(bldr.getEvent());
         } catch (Throwable t) {
             log().warn("run: unexpected throwable exception caught during event send", t);
         }

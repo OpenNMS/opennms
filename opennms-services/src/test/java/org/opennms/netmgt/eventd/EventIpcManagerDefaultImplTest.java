@@ -42,6 +42,7 @@ import java.util.List;
 
 import junit.framework.TestCase;
 
+import org.opennms.netmgt.model.events.EventBuilder;
 import org.opennms.netmgt.model.events.EventListener;
 import org.opennms.netmgt.xml.event.Event;
 import org.opennms.netmgt.xml.event.Log;
@@ -126,11 +127,11 @@ public class EventIpcManagerDefaultImplTest extends TestCase {
     }
     
     public void testBroadcastWithNoListeners() throws Exception {
-        Event e = new Event();
+        EventBuilder bldr = new EventBuilder(null, "testBroadcastWithNoListeners");
 
         m_mocks.replayAll();
 
-        m_manager.broadcastNow(e);
+        m_manager.broadcastNow(bldr.getEvent());
         Thread.sleep(100);
         
         m_mocks.verifyAll();
@@ -176,17 +177,18 @@ public class EventIpcManagerDefaultImplTest extends TestCase {
     }
     
     public void testAddEventListenerAndBroadcast() throws Exception {
-        Event e = new Event();
+        EventBuilder bldr = new EventBuilder(null, "testAddEventListenerAndBroadcast");
+        Event event = bldr.getEvent();
 
         m_mocks.replayAll();
 
         m_manager.addEventListener(m_listener);
-        m_manager.broadcastNow(e);
+        m_manager.broadcastNow(event);
         Thread.sleep(100);
         
         m_mocks.verifyAll();
         
-        assertTrue("could not remove broadcasted event--did it make it?", m_listener.getEvents().remove(e));
+        assertTrue("could not remove broadcasted event--did it make it?", m_listener.getEvents().remove(event));
     }
 
     public void testAddEventListenerTwoArgumentListNullListener() throws Exception {
@@ -216,8 +218,8 @@ public class EventIpcManagerDefaultImplTest extends TestCase {
     }
     
     public void testAddEventListenerTwoArgumentStringAndBroadcast() throws Exception {
-        Event e = new Event();
-        e.setUei("uei.opennms.org/foo");
+        EventBuilder bldr = new EventBuilder("uei.opennms.org/foo", "testAddEventListenerTwoArgumentStringAndBroadcast");
+        Event e = bldr.getEvent();
         
         m_mocks.replayAll();
 
@@ -231,8 +233,9 @@ public class EventIpcManagerDefaultImplTest extends TestCase {
     }
     
     public void testAddEventListenerTwoArgumentStringWithUeiPartAndBroadcast() throws Exception {
-        Event e = new Event();
-        e.setUei("uei.opennms.org/foo");
+        EventBuilder bldr = new EventBuilder("uei.opennms.org/foo", "testAddEventListenerTwoArgumentStringWithUeiPartAndBroadcast");
+        Event e = bldr.getEvent();
+
         
         m_mocks.replayAll();
 
@@ -246,8 +249,8 @@ public class EventIpcManagerDefaultImplTest extends TestCase {
     }
     
     public void testAddEventListenerTwoArgumentStringWithUeiPartMultipleTrimAndBroadcast() throws Exception {
-        Event e = new Event();
-        e.setUei("uei.opennms.org/foo/bar");
+        EventBuilder bldr = new EventBuilder("uei.opennms.org/foo", "testAddEventListenerTwoArgumentStringWithUeiPartMultipleTrimAndBroadcast");
+        Event e = bldr.getEvent();
         
         m_mocks.replayAll();
 
@@ -261,8 +264,8 @@ public class EventIpcManagerDefaultImplTest extends TestCase {
     }
     
     public void testAddEventListenerTwoArgumentStringWithUeiPartTooLittleAndBroadcast() throws Exception {
-        Event e = new Event();
-        e.setUei("uei.opennms.org/foo");
+        EventBuilder bldr = new EventBuilder("uei.opennms.org/foo", "testAddEventListenerTwoArgumentStringWithUeiPartTooLittleAndBroadcast");
+        Event e = bldr.getEvent();
         
         m_mocks.replayAll();
 
@@ -274,8 +277,8 @@ public class EventIpcManagerDefaultImplTest extends TestCase {
     }
     
     public void testAddEventListenerTwoArgumentStringWithUeiPartTooMuchAndBroadcast() throws Exception {
-        Event e = new Event();
-        e.setUei("uei.opennms.org/foo");
+        EventBuilder bldr = new EventBuilder("uei.opennms.org/foo", "testAddEventListenerTwoArgumentStringWithUeiPartTooMuchAndBroadcast");
+        Event e = bldr.getEvent();
         
         m_mocks.replayAll();
 
@@ -287,8 +290,8 @@ public class EventIpcManagerDefaultImplTest extends TestCase {
     }
 
     public void testAddEventListenerWithUeiAndSubUeiMatchAndBroadcast() throws Exception {
-        Event e = new Event();
-        e.setUei("uei.opennms.org/foo");
+        EventBuilder bldr = new EventBuilder("uei.opennms.org/foo", "testAddEventListenerWithUeiAndSubUeiMatchAndBroadcast");
+        Event e = bldr.getEvent();
         
         m_mocks.replayAll();
 
@@ -394,8 +397,8 @@ public class EventIpcManagerDefaultImplTest extends TestCase {
     }
     
     public void testAddEventListenerThenAddEventListenerWithUeiAndBroadcast() throws Exception {
-        Event e = new Event();
-        e.setUei("uei.opennms.org/foo");
+        EventBuilder bldr = new EventBuilder("uei.opennms.org/foo", "testAddEventListenerThenAddEventListenerWithUeiAndBroadcast");
+        Event e = bldr.getEvent();
         
         m_mocks.replayAll();
 
@@ -410,8 +413,8 @@ public class EventIpcManagerDefaultImplTest extends TestCase {
     }
     
     public void testAddEventListenerWithUeiAndBroadcastThenAddEventListener() throws Exception {
-        Event e = new Event();
-        e.setUei("uei.opennms.org/foo");
+        EventBuilder bldr = new EventBuilder("uei.opennms.org/foo", "testAddEventListenerWithUeiAndBroadcastThenAddEventListener");
+        Event e = bldr.getEvent();
         
         m_mocks.replayAll();
 
@@ -442,13 +445,11 @@ public class EventIpcManagerDefaultImplTest extends TestCase {
      *    at java.lang.Thread.run(Thread.java:613)
      */
     public void testNoDateDate() throws InterruptedException {
-        Event e = new Event();
-        e.setUei("uei.opennms.org/nodes/nodeLostService");
-        e.setNodeid(1);
-        e.setSource("the one true event source");
-        e.setInterface("192.168.1.1");
-        e.setService("ICMP");
-
+        EventBuilder bldr = new EventBuilder("uei.opennms.org/nodes/nodeLostService", "the one true event source");
+        bldr.setNodeid(1);
+        bldr.setInterface("192.168.1.1");
+        bldr.setService("ICMP");
+        Event e = bldr.getEvent();
         m_mocks.replayAll();
 
         m_manager.broadcastNow(e);

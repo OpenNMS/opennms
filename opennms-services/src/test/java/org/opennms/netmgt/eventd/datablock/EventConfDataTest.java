@@ -59,10 +59,8 @@ import org.opennms.core.utils.Base64;
 import org.opennms.netmgt.config.DefaultEventConfDao;
 import org.opennms.netmgt.config.EventconfFactory;
 import org.opennms.netmgt.mock.EventConfWrapper;
-import org.opennms.netmgt.mock.EventWrapper;
 import org.opennms.netmgt.model.events.EventBuilder;
 import org.opennms.netmgt.xml.event.Event;
-import org.opennms.netmgt.xml.event.Snmp;
 import org.opennms.netmgt.xml.eventconf.Logmsg;
 import org.opennms.test.ConfigurationTestUtils;
 import org.opennms.test.mock.MockLogAppender;
@@ -270,72 +268,57 @@ public class EventConfDataTest {
                 "v1", ".1.3.6.1.4.1.14179.2.6.3", 6, 38, "192.168.2.1", varbinds);
     }
 
-    public Event createEvent(String uei) {
-        Event event = new Event();
-        event.setInterface("127.0.0.1");
-        event.setNodeid(0);
-        event.setUei(uei);
-        System.out.println("Event created: " + new EventWrapper(event));
-        return event;
-    }
+    private EventBuilder createEventBuilder(String version, String enterprise, int generic, int specific) {
+        EventBuilder bldr = new EventBuilder(null, "EventConfDataTest");
 
-    public Event createEvent(String version, String enterprise, int generic, int specific) {
-        Event event = new Event();
-
-        event.setInterface("127.0.0.1");
-        event.setNodeid(0);
-
-        Snmp snmp = new Snmp();
-        snmp.setVersion(version);
-        snmp.setId(enterprise);
-        snmp.setGeneric(generic);
-        snmp.setSpecific(specific);
-        event.setSnmp(snmp);
-
-        event.setSnmphost("127.0.0.1");
+        bldr.setInterface("127.0.0.1");
+        bldr.setNodeid(0);
+        bldr.setSnmpVersion(version);
+        bldr.setEnterpriseId(enterprise);
+        bldr.setGeneric(generic);
+        bldr.setSpecific(specific);
+        bldr.setSnmpHost("127.0.0.1");
 
         /* System.out.println("Event created: " + new EventWrapper(event)); */
 
-        return event;
+        return bldr;
     }
 
-    public Event createEvent(String version, String enterprise, int generic, int specific,
-            String snmphost) {
-        Event event = createEvent(version, enterprise, generic, specific);
+    public EventBuilder createEventBuilder(String version, String enterprise, int generic, int specific, String snmphost) {
+        EventBuilder bldr = createEventBuilder(version, enterprise, generic, specific);
 
-        event.setSnmphost(snmphost);
+        bldr.setSnmpHost(snmphost);
 
-        return event;
+        return bldr;
     }
 
-    private Event createEvent(String version, String enterprise, int generic, int specific, String snmphost, LinkedHashMap<String, String> varbinds) {
-        Event event = createEvent(version, enterprise, generic, specific, snmphost);
+    private EventBuilder createEventBuilder(String version, String enterprise, int generic, int specific, String snmphost, LinkedHashMap<String, String> varbinds) {
+        EventBuilder blder = createEventBuilder(version, enterprise, generic, specific, snmphost);
 
-        EventBuilder blder = new EventBuilder(event);
         for(Map.Entry<String, String> entry : varbinds.entrySet()) {
             blder.addParam(entry.getKey(), entry.getValue());
         }
 
-        return blder.getEvent();
+        return blder;
     }
 
 
     private void anticipateAndSend(String event, String version, String enterprise, int generic, int specific, String snmphost, LinkedHashMap<String, String> varbinds) {
-        Event snmp = createEvent(version, enterprise, generic, specific, snmphost, varbinds);
-        anticipateAndSend(event, snmp);
+        EventBuilder snmp = createEventBuilder(version, enterprise, generic, specific, snmphost, varbinds);
+        anticipateAndSend(event, snmp.getEvent());
     }
 
     public void anticipateAndSend(String event,
             String version, String enterprise, int generic, int specific) throws Exception {
-        Event snmp = createEvent(version, enterprise, generic, specific);
-        anticipateAndSend(event, snmp);
+        EventBuilder snmp = createEventBuilder(version, enterprise, generic, specific);
+        anticipateAndSend(event, snmp.getEvent());
     }
 
     public void anticipateAndSend(String event,
             String version, String enterprise, int generic, int specific, String snmphost)
     throws Exception {
-        Event snmp = createEvent(version, enterprise, generic, specific, snmphost);
-        anticipateAndSend(event, snmp);
+        EventBuilder snmp = createEventBuilder(version, enterprise, generic, specific, snmphost);
+        anticipateAndSend(event, snmp.getEvent());
     }
 
     public void anticipateAndSend(String event, Event snmp) {

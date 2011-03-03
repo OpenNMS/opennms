@@ -36,6 +36,7 @@ import java.util.Date;
 import org.opennms.netmgt.EventConstants;
 import org.opennms.netmgt.capsd.EventUtils;
 import org.opennms.netmgt.model.OnmsMonitoredService;
+import org.opennms.netmgt.model.events.EventBuilder;
 import org.opennms.netmgt.model.events.EventProxy;
 import org.opennms.netmgt.model.events.EventProxyException;
 import org.opennms.netmgt.xml.event.Event;
@@ -63,20 +64,16 @@ public class DefaultPollerService implements PollerService {
 	/** {@inheritDoc} */
 	public void poll(OnmsMonitoredService monSvc, int pollResultId) {
 		
-		
-		Event demandPollEvent = new Event();
-		demandPollEvent.setUei(EventConstants.DEMAND_POLL_SERVICE_EVENT_UEI);
-		demandPollEvent.setNodeid(monSvc.getNodeId());
-		demandPollEvent.setInterface(monSvc.getIpAddress());
-		demandPollEvent.setIfIndex(monSvc.getIfIndex());
-		demandPollEvent.setService(monSvc.getServiceType().getName());
-        demandPollEvent.setCreationTime(EventConstants.formatToString(new Date()));
-        demandPollEvent.setTime(demandPollEvent.getCreationTime());
-        demandPollEvent.setSource("PollerService");
-		
-		EventUtils.addParam(demandPollEvent, EventConstants.PARM_DEMAND_POLL_ID, pollResultId);
+		EventBuilder bldr = new EventBuilder(EventConstants.DEMAND_POLL_SERVICE_EVENT_UEI, "PollerService");
 
-		sendEvent(demandPollEvent);
+		bldr.setNodeid(monSvc.getNodeId());
+		bldr.setInterface(monSvc.getIpAddress());
+		bldr.setIfIndex(monSvc.getIfIndex());
+		bldr.setService(monSvc.getServiceType().getName());
+		
+		bldr.addParam(EventConstants.PARM_DEMAND_POLL_ID, pollResultId);
+
+		sendEvent(bldr.getEvent());
 	}
 
 	private void sendEvent(Event demandPollEvent) {

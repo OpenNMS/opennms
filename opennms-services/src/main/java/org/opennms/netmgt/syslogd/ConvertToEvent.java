@@ -48,7 +48,6 @@ import java.net.DatagramPacket;
 import java.net.InetAddress;
 import java.net.UnknownHostException;
 import java.util.ArrayList;
-import java.util.Date;
 import java.util.List;
 import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
@@ -60,7 +59,6 @@ import org.apache.commons.lang.builder.ToStringBuilder;
 import org.exolab.castor.xml.MarshalException;
 import org.exolab.castor.xml.ValidationException;
 import org.opennms.core.utils.LogUtils;
-import org.opennms.netmgt.EventConstants;
 import org.opennms.netmgt.config.SyslogdConfigFactory;
 import org.opennms.netmgt.config.syslogd.HideMatch;
 import org.opennms.netmgt.config.syslogd.HideMessage;
@@ -68,12 +66,9 @@ import org.opennms.netmgt.config.syslogd.ParameterAssignment;
 import org.opennms.netmgt.config.syslogd.UeiList;
 import org.opennms.netmgt.config.syslogd.UeiMatch;
 import org.opennms.netmgt.dao.castor.CastorUtils;
+import org.opennms.netmgt.model.events.EventBuilder;
 import org.opennms.netmgt.xml.event.Event;
 import org.opennms.netmgt.xml.event.Log;
-import org.opennms.netmgt.xml.event.Logmsg;
-import org.opennms.netmgt.xml.event.Parm;
-import org.opennms.netmgt.xml.event.Parms;
-import org.opennms.netmgt.xml.event.Value;
 
 /**
  * @author <a href="mailto:joed@opennms.org">Johan Edstrom</a>
@@ -225,15 +220,17 @@ final class ConvertToEvent {
             throw new MessageDiscardedException(String.format("Unable to parse '%s'", e.m_eventXML));
         }
         // Build a basic event out of the syslog message
+        final String priorityTxt = SyslogDefs.getPriorityName(message.getSeverity());
+        final String facilityTxt = SyslogDefs.getFacilityName(message.getFacility());
 
-        final Event event = new Event();
-        event.setSource("syslogd");
+        EventBuilder bldr = new EventBuilder("uei.opennms.org/syslogd/" + facilityTxt + "/" + priorityTxt, "syslogd");
+        bldr.setCreationTime(message.getDate());
 
         // Set event host
         try {
-            event.setHost(InetAddress.getLocalHost().getHostName());
+            bldr.setHost(InetAddress.getLocalHost().getHostName());
         } catch (UnknownHostException uhE) {
-            event.setHost("unresolved.host");
+            bldr.setHost("unresolved.host");
             LogUtils.warnf(ConvertToEvent.class, uhE, "Failed to resolve local hostname.");
         }
 
@@ -242,23 +239,14 @@ final class ConvertToEvent {
             // Set nodeId
             long nodeId = SyslogdIPMgr.getNodeId(hostAddress);
             if (nodeId != -1) {
-                event.setNodeid(nodeId);
+                bldr.setNodeid(nodeId);
             }
 
-            event.setInterface(hostAddress);
+            bldr.setInterface(hostAddress);
         }
+        
+        bldr.setLogDest("logndisplay");
 
-        event.setCreationTime(EventConstants.formatToString(message.getDate()));
-        event.setTime(EventConstants.formatToString(new Date()));
-        final Logmsg logmsg = new Logmsg();
-        logmsg.setDest("logndisplay");
-
-        final String priorityTxt = SyslogDefs.getPriorityName(message.getSeverity());
-        final String facilityTxt = SyslogDefs.getFacilityName(message.getFacility());
-
-        //Check for UEI matching or allow a simple standard one.
-
-        event.setUei("uei.opennms.org/syslogd/" + facilityTxt + "/" + priorityTxt);
 
         // We will also here find out if, the host needs to
         // be replaced, the message matched to a UEI, and
@@ -277,11 +265,6 @@ final class ConvertToEvent {
         * node to match against nodeId.
          */
 
-        // We will need these shortly
-        final Parms eventParms = new Parms();
-        Parm eventParm = null;
-        Value parmValue = null;
-        
         Pattern msgPat = null;
         Matcher msgMat = null;
 
@@ -295,11 +278,11 @@ final class ConvertToEvent {
         } else {
             for (final UeiMatch uei : ueiMatch) {
                 if (uei.getMatch().getType().equals("substr")) {
-                    if (matchSubstring(discardUei, event, fullText, uei)) {
+                    if (matchSubstring(discardUei, bldr, fullText, uei)) {
                 	    break;
                 	}
                 } else if (uei.getMatch().getType().equals("regex")) {
-                    if (matchRegex(message, uei, event, eventParms, discardUei)) {
+                    if (matchRegex(message, uei, bldr, discardUei)) {
                         break;
                     }
                 }
@@ -341,60 +324,23 @@ final class ConvertToEvent {
         }
 
         // Using parms provides configurability.
-        logmsg.setContent(message.getMessage());
-        event.setLogmsg(logmsg);
+        bldr.setLogMessage(message.getMessage());
 
-        // Add appropriate parms
-        eventParm = new Parm();
-        eventParm.setParmName("syslogmessage");
-        parmValue = new Value();
-        parmValue.setContent(message.getMessage());
-        eventParm.setValue(parmValue);
-        eventParms.addParm(eventParm);
-
-        eventParm = new Parm();
-        eventParm.setParmName("severity");
-        parmValue = new Value();
-        parmValue.setContent("" + priorityTxt);
-        eventParm.setValue(parmValue);
-        eventParms.addParm(eventParm);
-
-        eventParm = new Parm();
-        eventParm.setParmName("timestamp");
-        parmValue = new Value();
-        parmValue.setContent(message.getSyslogFormattedDate());
-        eventParm.setValue(parmValue);
-        eventParms.addParm(eventParm);
-
+        bldr.addParam("syslogmessage", message.getMessage());
+        bldr.addParam("severity", "" + priorityTxt);
+        bldr.addParam("timestamp", message.getSyslogFormattedDate());
+        
         if (message.getProcessName() != null) {
-            eventParm = new Parm();
-            eventParm.setParmName("process");
-            parmValue = new Value();
-            parmValue.setContent(message.getProcessName());
-            eventParm.setValue(parmValue);
-            eventParms.addParm(eventParm);
+            bldr.addParam("process", message.getProcessName());
         }
 
-        eventParm = new Parm();
-        eventParm.setParmName("service");
-        parmValue = new Value();
-        parmValue.setContent("" + facilityTxt);
-        eventParm.setValue(parmValue);
-        eventParms.addParm(eventParm);
+        bldr.addParam("service", "" + facilityTxt);
 
         if (message.getProcessId() != null) {
-            eventParm = new Parm();
-            eventParm.setParmName("processid");
-            parmValue = new Value();
-            parmValue.setContent(message.getProcessId().toString());
-            eventParm.setValue(parmValue);
-            eventParms.addParm(eventParm);
+            bldr.addParam("processid", message.getProcessId().toString());
         }
 
-        // Good thing(TM)
-        event.setParms(eventParms);
-
-        e.m_event = event;
+        e.m_event = bldr.getEvent();
         return e;
     }
 
@@ -412,7 +358,7 @@ final class ConvertToEvent {
         return msgPat;
     }
 
-    private static boolean matchSubstring(final String discardUei, final Event event, String message, final UeiMatch uei) throws MessageDiscardedException {
+    private static boolean matchSubstring(final String discardUei, final EventBuilder bldr, String message, final UeiMatch uei) throws MessageDiscardedException {
         boolean doIMatch = false;
         boolean traceEnabled = LogUtils.isTraceEnabled(ConvertToEvent.class);
         if (message.contains(uei.getMatch().getExpression())) {
@@ -422,7 +368,7 @@ final class ConvertToEvent {
             } else {
                 //We can pass a new UEI on this
         	    if (traceEnabled) LogUtils.tracef(ConvertToEvent.class, "Changed the UEI of a Syslogd event, based on substring match, to : %s", uei.getUei());
-                event.setUei(uei.getUei());
+                bldr.setUei(uei.getUei());
                 // I think we want to stop processing here so the first
                 // ueiMatch wins, right?
                 doIMatch = true;
@@ -433,7 +379,7 @@ final class ConvertToEvent {
         return doIMatch;
     }
 
-    private static boolean matchRegex(final SyslogMessage message, final UeiMatch uei, final Event event, final Parms eventParms, final String discardUei) throws MessageDiscardedException {
+    private static boolean matchRegex(final SyslogMessage message, final UeiMatch uei, final EventBuilder bldr, final String discardUei) throws MessageDiscardedException {
         boolean traceEnabled = LogUtils.isTraceEnabled(ConvertToEvent.class);
         final String expression = uei.getMatch().getExpression();
         final Pattern msgPat = getPattern(expression);
@@ -450,36 +396,23 @@ final class ConvertToEvent {
                 throw new MessageDiscardedException();
             }
 
-            Parm eventParm = null;
-            Value parmValue = null;
-
             // We matched a UEI
-            event.setUei(uei.getUei());
+            bldr.setUei(uei.getUei());
             if (msgMat.groupCount() > 0 && uei.getMatch().isDefaultParameterMapping()) {
                 if (traceEnabled) LogUtils.tracef(ConvertToEvent.class, "Doing default parameter mappings for this regex match.");
                 for (int groupNum = 1; groupNum <= msgMat.groupCount(); groupNum++) {
                     if (traceEnabled) LogUtils.tracef(ConvertToEvent.class, "Added parm 'group%d' with value '%s' to Syslogd event based on regex match group", groupNum, msgMat.group(groupNum));
-                    eventParm = new Parm();
-                    eventParm.setParmName("group"+groupNum);
-                    parmValue = new Value();
-                    parmValue.setContent(msgMat.group(groupNum));
-                    eventParm.setValue(parmValue);
-                    eventParms.addParm(eventParm);
+                    bldr.addParam("group"+groupNum, msgMat.group(groupNum));
                 }
             }
             if (msgMat.groupCount() > 0 && uei.getParameterAssignmentCount() > 0) {
                 if (traceEnabled) LogUtils.tracef(ConvertToEvent.class, "Doing user-specified parameter assignments for this regex match.");
                 for (ParameterAssignment assignment : uei.getParameterAssignmentCollection()) {
-                    eventParm = new Parm();
-                    eventParm.setParmName(assignment.getParameterName());
-                    parmValue = new Value();
-                    String vettedValue = msgMat.group(assignment.getMatchingGroup());
-                    if (vettedValue == null)
-                        vettedValue = "";
-                    parmValue.setContent(vettedValue);
-                    eventParm.setValue(parmValue);
-                    eventParms.addParm(eventParm);
-                    if (traceEnabled) LogUtils.tracef(ConvertToEvent.class, "Added parm '%s' with value '%s' to Syslogd event based on user-specified parameter assignment", eventParm.getParmName(), parmValue.getContent());
+                    String parmName = assignment.getParameterName();
+                    String parmValue = msgMat.group(assignment.getMatchingGroup());
+                    parmValue = parmValue == null ? "" : parmValue;
+                    bldr.addParam(parmName, parmValue);
+                    if (traceEnabled) LogUtils.tracef(ConvertToEvent.class, "Added parm '%s' with value '%s' to Syslogd event based on user-specified parameter assignment", parmName, parmValue);
                 }
             }
             // I think we want to stop processing here so the first

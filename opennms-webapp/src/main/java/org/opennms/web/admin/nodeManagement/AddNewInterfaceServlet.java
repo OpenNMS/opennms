@@ -56,6 +56,7 @@ import javax.servlet.http.HttpServletResponse;
 import org.opennms.core.utils.DBUtils;
 import org.opennms.netmgt.EventConstants;
 import org.opennms.netmgt.config.DataSourceFactory;
+import org.opennms.netmgt.model.events.EventBuilder;
 import org.opennms.netmgt.xml.event.Event;
 import org.opennms.web.api.Util;
 
@@ -120,23 +121,20 @@ public class AddNewInterfaceServlet extends HttpServlet {
     }
 
     private void createAndSendNewSuspectInterfaceEvent(String ipaddr) throws ServletException {
-        Event event = new Event();
-        event.setSource(EVENT_SOURCE_VALUE);
-        event.setUei(EventConstants.NEW_SUSPECT_INTERFACE_EVENT_UEI);
-        event.setInterface(ipaddr);
+        EventBuilder bldr = new EventBuilder(EventConstants.NEW_SUSPECT_INTERFACE_EVENT_UEI, EVENT_SOURCE_VALUE);
+        bldr.setInterface(ipaddr);
 
         try {
-            event.setHost(InetAddress.getLocalHost().getHostName());
+            bldr.setHost(InetAddress.getLocalHost().getHostName());
         } catch (UnknownHostException uhE) {
-            event.setHost("unresolved.host");
+            bldr.setHost("unresolved.host");
         }
 
-        event.setTime(EventConstants.formatToString(new java.util.Date()));
 
         try {
-            Util.createEventProxy().send(event);
+            Util.createEventProxy().send(bldr.getEvent());
         } catch (Throwable e) {
-            throw new ServletException("Could not send event " + event.getUei(), e);
+            throw new ServletException("Could not send event " + bldr.getEvent().getUei(), e);
         }
     }
 

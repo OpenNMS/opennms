@@ -65,8 +65,6 @@ import org.opennms.netmgt.mock.MockNode;
 import org.opennms.netmgt.model.OnmsNode;
 import org.opennms.netmgt.model.events.EventBuilder;
 import org.opennms.netmgt.xml.event.AlarmData;
-import org.opennms.netmgt.xml.event.Event;
-import org.opennms.netmgt.xml.event.Logmsg;
 import org.opennms.test.ThrowableAnticipator;
 import org.opennms.test.mock.MockUtil;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -268,13 +266,13 @@ public class AlarmdTest implements TemporaryDatabaseAware<MockDatabase> {
 
     @Test
     public void testNoLogmsg() throws Exception {
-        Event event = new Event();
-        event.setAlarmData(new AlarmData());
+        EventBuilder bldr = new EventBuilder("testNoLogmsg", "AlarmdTest");
+        bldr.setAlarmData(new AlarmData());
 
         ThrowableAnticipator ta = new ThrowableAnticipator();
         ta.anticipate(new IllegalArgumentException("Incoming event has an illegal dbid (0), aborting"));
         try {
-            m_alarmd.getPersister().persist(event);
+            m_alarmd.getPersister().persist(bldr.getEvent());
         } catch (Throwable t) {
             ta.throwableReceived(t);
         }
@@ -283,22 +281,22 @@ public class AlarmdTest implements TemporaryDatabaseAware<MockDatabase> {
 
     @Test
     public void testNoAlarmData() throws Exception {
-        Event event = new Event();
-        event.setLogmsg(new Logmsg());
+        EventBuilder bldr = new EventBuilder("testNoAlarmData", "AlarmdTest");
+        bldr.setLogMessage(null);
 
-        m_alarmd.getPersister().persist(event);
+        m_alarmd.getPersister().persist(bldr.getEvent());
     }
 
     @Test
     public void testNoDbid() throws Exception {
-        Event event = new Event();
-        event.setLogmsg(new Logmsg());
-        event.setAlarmData(new AlarmData());
+        EventBuilder bldr = new EventBuilder("testNoDbid", "AlarmdTest");
+        bldr.setLogMessage(null);
+        bldr.setAlarmData(new AlarmData());
 
         ThrowableAnticipator ta = new ThrowableAnticipator();
         ta.anticipate(new IllegalArgumentException("Incoming event has an illegal dbid (0), aborting"));
         try {
-            m_alarmd.getPersister().persist(event);
+            m_alarmd.getPersister().persist(bldr.getEvent());
         } catch (Throwable t) {
             ta.throwableReceived(t);
         }
