@@ -69,6 +69,13 @@ if (not defined $JAVA_HOME) {
 $ENV{'JAVA_HOME'} = $JAVA_HOME;
 info("JAVA_HOME = $JAVA_HOME") if (defined $JAVA_HOME and $JAVA_HOME ne "");
 
+$MAVEN_VERSION = `$MVN --version`;
+$MAVEN_VERSION =~ s/^.*Apache Maven ([\d\.]+).*?$/$1/gs;
+chomp($MAVEN_VERSION);
+if ($MAVEN_VERSION =~ /^[12]/) {
+	warning("Your maven version ($MAVEN_VERSION) is too old.  There are known bugs building with a version less than 3.0.  Expect trouble.");
+}
+
 if (defined $TESTS) {
 	debug("tests are enabled");
 } else {
