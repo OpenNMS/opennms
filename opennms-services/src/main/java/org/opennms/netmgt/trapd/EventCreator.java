@@ -37,14 +37,14 @@ package org.opennms.netmgt.trapd;
 
 import java.net.InetAddress;
 
+import org.opennms.core.utils.InetAddressUtils;
 import org.opennms.core.utils.ThreadCategory;
+import org.opennms.netmgt.model.events.EventBuilder;
 import org.opennms.netmgt.snmp.SnmpObjId;
 import org.opennms.netmgt.snmp.SnmpValue;
 import org.opennms.netmgt.snmp.TrapIdentity;
 import org.opennms.netmgt.snmp.TrapProcessor;
 import org.opennms.netmgt.xml.event.Event;
-import org.opennms.netmgt.xml.event.Parms;
-import org.opennms.netmgt.xml.event.Snmp;
 
 /**
  * <p>EventCreator class.</p>
@@ -54,74 +54,64 @@ import org.opennms.netmgt.xml.event.Snmp;
  */
 public class EventCreator implements TrapProcessor {
     
-    private Event m_event;
-    private Snmp m_snmpInfo;
-    private Parms m_parms;
+    private EventBuilder m_eventBuilder;
     private TrapdIpMgr m_trapdIpMgr;
 
     
     EventCreator(TrapdIpMgr trapdIpMgr) {
         m_trapdIpMgr = trapdIpMgr;
         
-        m_event = new Event();
-        m_event.setSource("trapd");
-        m_event.setTime(org.opennms.netmgt.EventConstants.formatToString(new java.util.Date()));
-
-        m_snmpInfo = new Snmp();
-        m_event.setSnmp(m_snmpInfo);
-
-        m_parms = new Parms();
-        m_event.setParms(m_parms);
+        m_eventBuilder = new EventBuilder(null, "trapd");
     }
     
     /** {@inheritDoc} */
     public void setCommunity(String community) {
-        m_snmpInfo.setCommunity(community);
+        m_eventBuilder.setCommunity(community);
     }
 
     /** {@inheritDoc} */
     public void setTimeStamp(long timeStamp) {
-        m_snmpInfo.setTimeStamp(timeStamp);
+        m_eventBuilder.setSnmpTimeStamp(timeStamp);
     }
 
     /** {@inheritDoc} */
     public void setVersion(String version) {
-        m_snmpInfo.setVersion(version);
+        m_eventBuilder.setSnmpVersion(version);
     }
 
     private void setGeneric(int generic) {
-        m_snmpInfo.setGeneric(generic);
+        m_eventBuilder.setGeneric(generic);
     }
 
     private void setSpecific(int specific) {
-        m_snmpInfo.setSpecific(specific);
+        m_eventBuilder.setSpecific(specific);
     }
 
     private void setEnterpriseId(String enterpriseId) {
-        m_snmpInfo.setId(enterpriseId);
+        m_eventBuilder.setEnterpriseId(enterpriseId);
     }
 
     /** {@inheritDoc} */
     public void setAgentAddress(InetAddress agentAddress) {
-        m_event.setHost(agentAddress.getHostAddress());
+        m_eventBuilder.setHost(InetAddressUtils.toIpAddrString(agentAddress));
     }
 
     /** {@inheritDoc} */
     public void processVarBind(SnmpObjId name, SnmpValue value) {
-        m_parms.addParm(SyntaxToEvent.processSyntax(name.toString(), value));
+        m_eventBuilder.addParam(SyntaxToEvent.processSyntax(name.toString(), value));
         if (EventConstants.OID_SNMP_IFINDEX.isPrefixOf(name)) {
-            m_event.setIfIndex(value.toInt());
+            m_eventBuilder.setIfIndex(value.toInt());
         }
     }
 
     /** {@inheritDoc} */
     public void setTrapAddress(InetAddress trapAddress) {
-        String trapInterface = trapAddress.getHostAddress();
-        m_event.setSnmphost(trapInterface);
-        m_event.setInterface(trapInterface);
-        long nodeId = m_trapdIpMgr.getNodeId(trapInterface);
+        String addr = InetAddressUtils.toIpAddrString(trapAddress);
+        m_eventBuilder.setSnmpHost(addr);
+        m_eventBuilder.setInterface(addr);
+        long nodeId = m_trapdIpMgr.getNodeId(addr);
         if (nodeId != -1) {
-            m_event.setNodeid(nodeId);
+            m_eventBuilder.setNodeid(nodeId);
         }
     }
 
@@ -138,7 +128,7 @@ public class EventCreator implements TrapProcessor {
     }
 
     Event getEvent() {
-        return m_event;
+        return m_eventBuilder.getEvent();
     }
     
     private ThreadCategory log() {
