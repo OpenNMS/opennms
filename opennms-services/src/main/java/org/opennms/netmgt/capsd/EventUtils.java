@@ -51,6 +51,7 @@ import java.util.List;
 import org.opennms.core.utils.ThreadCategory;
 import org.opennms.netmgt.EventConstants;
 import org.opennms.netmgt.eventd.EventIpcManagerFactory;
+import org.opennms.netmgt.model.events.EventBuilder;
 import org.opennms.netmgt.model.events.EventListener;
 import org.opennms.netmgt.utils.XmlrpcUtil;
 import org.opennms.netmgt.xml.event.Event;
@@ -213,32 +214,25 @@ public abstract class EventUtils {
      *         nodeId, ipaddr
      */
     public static Event createDeleteInterfaceEvent(String source, long nodeId, String ipAddr, int ifIndex, long txNo) {
-        Event newEvent = new Event();
-        newEvent.setUei(EventConstants.DELETE_INTERFACE_EVENT_UEI);
-        newEvent.setSource(source);
+        return createInterfaceEventBuilder(EventConstants.DELETE_INTERFACE_EVENT_UEI, source, nodeId, ipAddr, ifIndex, txNo).getEvent();
+    }
+
+    private static EventBuilder createInterfaceEventBuilder(String uei, String source, long nodeId, String ipAddr, int ifIndex, long txNo) {
+        EventBuilder bldr = new EventBuilder(uei, source);
+        
         if (ipAddr != null && ipAddr.length() != 0) {
-            newEvent.setInterface(ipAddr);
+            bldr.setInterface(ipAddr);
         }
-        newEvent.setNodeid(nodeId);
-        newEvent.setTime(EventConstants.formatToString(new java.util.Date()));
+        
+        bldr.setNodeid(nodeId);
+
         if (ifIndex != -1) {
-            newEvent.setIfIndex(ifIndex);
+            bldr.setIfIndex(ifIndex);
         }
 
-        // Add appropriate parms
-        Parms eventParms = new Parms();
+        bldr.addParam(EventConstants.PARM_TRANSACTION_NO, txNo);
 
-        Parm eventParm = new Parm();
-        eventParm.setParmName(EventConstants.PARM_TRANSACTION_NO);
-        Value parmValue = new Value();
-        parmValue.setContent(String.valueOf(txNo));
-        eventParm.setValue(parmValue);
-        eventParms.addParm(eventParm);
-
-        // Add Parms to the event
-        newEvent.setParms(eventParms);
-
-        return newEvent;
+        return bldr;
     }
 
     /**
@@ -253,26 +247,18 @@ public abstract class EventUtils {
      * @return an Event object representing a delete node event.
      */
     public static Event createDeleteNodeEvent(String source, long nodeId, long txNo) {
-        Event newEvent = new Event();
-        newEvent.setUei(EventConstants.DELETE_NODE_EVENT_UEI);
-        newEvent.setSource(source);
-        newEvent.setNodeid(nodeId);
-        newEvent.setTime(EventConstants.formatToString(new java.util.Date()));
+        return createNodeEventBuilder(EventConstants.DELETE_NODE_EVENT_UEI, source, nodeId, txNo).getEvent();
+    }
 
-        // Add appropriate parms
-        Parms eventParms = new Parms();
-
-        Parm eventParm = new Parm();
-        eventParm.setParmName(EventConstants.PARM_TRANSACTION_NO);
-        Value parmValue = new Value();
-        parmValue.setContent(String.valueOf(txNo));
-        eventParm.setValue(parmValue);
-        eventParms.addParm(eventParm);
-
-        // Add Parms to the event
-        newEvent.setParms(eventParms);
-
-        return newEvent;
+    private static EventBuilder createNodeEventBuilder(String uei, String source, long nodeId, long txNo) {
+        EventBuilder bldr = new EventBuilder(uei, source);
+        
+        bldr.setNodeid(nodeId);
+        
+        if (txNo >= 0) {
+            bldr.addParam(EventConstants.PARM_TRANSACTION_NO, txNo);
+        }
+        return bldr;
     }
 
     /**
@@ -287,26 +273,7 @@ public abstract class EventUtils {
      * @return an Event object representing a delete node event.
      */
     public static Event createAssetInfoChangedEvent(String source, long nodeId, long txNo) {
-        Event newEvent = new Event();
-        newEvent.setUei(EventConstants.ASSET_INFO_CHANGED_EVENT_UEI);
-        newEvent.setSource(source);
-        newEvent.setNodeid(nodeId);
-        newEvent.setTime(EventConstants.formatToString(new java.util.Date()));
-
-        // Add appropriate parms
-        Parms eventParms = new Parms();
-
-        Parm eventParm = new Parm();
-        eventParm.setParmName(EventConstants.PARM_TRANSACTION_NO);
-        Value parmValue = new Value();
-        parmValue.setContent(String.valueOf(txNo));
-        eventParm.setValue(parmValue);
-        eventParms.addParm(eventParm);
-
-        // Add Parms to the event
-        newEvent.setParms(eventParms);
-
-        return newEvent;
+        return createNodeEventBuilder(EventConstants.ASSET_INFO_CHANGED_EVENT_UEI, source, nodeId, txNo).getEvent();
     }
 
     /**
@@ -344,32 +311,7 @@ public abstract class EventUtils {
      *            an interfaceDeleted event for the given interface
      */
     public static Event createInterfaceDeletedEvent(String source, long nodeId, String ipAddr, int ifIndex, long txNo) {
-        Event newEvent = new Event();
-        newEvent.setUei(EventConstants.INTERFACE_DELETED_EVENT_UEI);
-        newEvent.setSource(source);
-        newEvent.setNodeid(nodeId);
-        if (ipAddr != null && ipAddr.length() != 0) {
-            newEvent.setInterface(ipAddr);
-        }
-        newEvent.setTime(EventConstants.formatToString(new java.util.Date()));
-        if (ifIndex != -1) {
-            newEvent.setIfIndex(ifIndex);
-        }
-
-        // Add appropriate parms
-        Parms eventParms = new Parms();
-
-        Parm eventParm = new Parm();
-        eventParm.setParmName(EventConstants.PARM_TRANSACTION_NO);
-        Value parmValue = new Value();
-        parmValue.setContent(String.valueOf(txNo));
-        eventParm.setValue(parmValue);
-        eventParms.addParm(eventParm);
-
-        // Add Parms to the event
-        newEvent.setParms(eventParms);
-
-        return newEvent;
+        return createInterfaceEventBuilder(EventConstants.INTERFACE_DELETED_EVENT_UEI, source, nodeId, ipAddr, ifIndex, txNo).getEvent();
     }
 
     /**
@@ -384,26 +326,7 @@ public abstract class EventUtils {
      * @return an Event representing a nodeDeleted event for the given node
      */
     public static Event createNodeDeletedEvent(String source, long nodeId, long txNo) {
-        Event newEvent = new Event();
-        newEvent.setUei(EventConstants.NODE_DELETED_EVENT_UEI);
-        newEvent.setSource(source);
-        newEvent.setNodeid(nodeId);
-        newEvent.setTime(EventConstants.formatToString(new java.util.Date()));
-
-        // Add appropriate parms
-        Parms eventParms = new Parms();
-
-        Parm eventParm = new Parm();
-        eventParm.setParmName(EventConstants.PARM_TRANSACTION_NO);
-        Value parmValue = new Value();
-        parmValue.setContent(String.valueOf(txNo));
-        eventParm.setValue(parmValue);
-        eventParms.addParm(eventParm);
-
-        // Add Parms to the event
-        newEvent.setParms(eventParms);
-
-        return newEvent;
+        return createNodeEventBuilder(EventConstants.NODE_DELETED_EVENT_UEI, source, nodeId, txNo).getEvent();
     }
 
     /**
@@ -424,28 +347,19 @@ public abstract class EventUtils {
      *         triple
      */
     public static Event createServiceDeletedEvent(String source, long nodeId, String ipAddr, String service, long txNo) {
-        Event newEvent = new Event();
-        newEvent.setUei(EventConstants.SERVICE_DELETED_EVENT_UEI);
-        newEvent.setSource(source);
-        newEvent.setNodeid(nodeId);
-        newEvent.setInterface(ipAddr);
-        newEvent.setService(service);
-        newEvent.setTime(EventConstants.formatToString(new java.util.Date()));
+        return createServiceEventBuilder(EventConstants.SERVICE_DELETED_EVENT_UEI, source, nodeId, ipAddr, service, txNo).getEvent();
+    }
 
-        // Add appropriate parms
-        Parms eventParms = new Parms();
+    private static EventBuilder createServiceEventBuilder(String uei, String source, long nodeId, String ipAddr, String service, long txNo) {
+        EventBuilder bldr = new EventBuilder(uei, source);
 
-        Parm eventParm = new Parm();
-        eventParm.setParmName(EventConstants.PARM_TRANSACTION_NO);
-        Value parmValue = new Value();
-        parmValue.setContent(String.valueOf(txNo));
-        eventParm.setValue(parmValue);
-        eventParms.addParm(eventParm);
+        bldr.setNodeid(nodeId);
+        bldr.setInterface(ipAddr);
+        bldr.setService(service);
+        
+        bldr.addParam(EventConstants.PARM_TRANSACTION_NO, txNo);
 
-        // Add Parms to the event
-        newEvent.setParms(eventParms);
-
-        return newEvent;
+        return bldr;
     }
 
     /**
@@ -653,41 +567,15 @@ public abstract class EventUtils {
      * @param labelSource a {@link java.lang.String} object.
      * @return a {@link org.opennms.netmgt.xml.event.Event} object.
      */
-    public static Event createNodeAddedEvent(String source, int nodeId,
-            String nodeLabel, String labelSource) {
-        ThreadCategory log = ThreadCategory.getInstance(EventUtils.class);
-		if (log.isDebugEnabled())
-            log.debug("createAndSendNodeAddedEvent:  nodeId  " + nodeId);
+    public static Event createNodeAddedEvent(String source, int nodeId, String nodeLabel, String labelSource) {
+		EventBuilder bldr = createNodeEventBuilder(EventConstants.NODE_ADDED_EVENT_UEI, source, nodeId, -1);
 
-        Event newEvent = new Event();
-        newEvent.setUei(EventConstants.NODE_ADDED_EVENT_UEI);
-        newEvent.setSource(source);
-        newEvent.setNodeid(nodeId);
-        newEvent.setHost(Capsd.getLocalHostAddress());
-        newEvent.setTime(EventConstants.formatToString(new java.util.Date()));
+        bldr.setHost(Capsd.getLocalHostAddress());
+        
+        bldr.setParam(EventConstants.PARM_NODE_LABEL, nodeLabel);
+        bldr.setParam(EventConstants.PARM_NODE_LABEL_SOURCE, labelSource);
 
-        // Add appropriate parms
-        Parms eventParms = new Parms();
-
-        Parm eventParm = new Parm();
-        eventParm.setParmName(EventConstants.PARM_NODE_LABEL);
-        Value parmValue = new Value();
-		parmValue.setContent(nodeLabel);
-        eventParm.setValue(parmValue);
-        eventParms.addParm(eventParm);
-
-        // Add node label source
-        eventParm = new Parm();
-        eventParm.setParmName(EventConstants.PARM_NODE_LABEL_SOURCE);
-        parmValue = new Value();
-		parmValue.setContent(labelSource);
-        eventParm.setValue(parmValue);
-        eventParms.addParm(eventParm);
-
-        // Add Parms to the event
-        newEvent.setParms(eventParms);
-
-        return newEvent;
+        return bldr.getEvent();
     }
 
     /**
@@ -713,35 +601,15 @@ public abstract class EventUtils {
 	 * @return a {@link org.opennms.netmgt.xml.event.Event} object.
 	 */
 	public static Event createNodeGainedInterfaceEvent(String source, int nodeId, InetAddress ifaddr) {
-		ThreadCategory log = ThreadCategory.getInstance(EventUtils.class);
-		if (log.isDebugEnabled())
-            log.debug("createAndSendNodeAddedEvent:  nodeId  " + nodeId);
+	    
+	    EventBuilder bldr = new EventBuilder(EventConstants.NODE_GAINED_INTERFACE_EVENT_UEI, source);
+	    bldr.setNodeid(nodeId);
+	    bldr.setHost(Capsd.getLocalHostAddress());
+	    bldr.setInterface(ifaddr.getHostAddress());
+	    
+	    bldr.addParam(EventConstants.PARM_IP_HOSTNAME, ifaddr.getHostName());
 
-        Event newEvent = new Event();
-        newEvent.setUei(EventConstants.NODE_GAINED_INTERFACE_EVENT_UEI);
-		newEvent.setSource(source);
-        newEvent.setNodeid(nodeId);
-        newEvent.setHost(Capsd.getLocalHostAddress());
-        newEvent.setInterface(ifaddr.getHostAddress());
-        newEvent.setTime(EventConstants.formatToString(new java.util.Date()));
-
-        // Add appropriate parms
-        Parms eventParms = new Parms();
-
-        // Add IP host name
-        Parm eventParm = new Parm();
-        eventParm.setParmName(EventConstants.PARM_IP_HOSTNAME);
-        Value parmValue = new Value();
-        parmValue.setContent(ifaddr.getHostName());
-        eventParm.setValue(parmValue);
-        eventParms.addParm(eventParm);
-
-        eventParms.addParm(eventParm);
-
-        // Add Parms to the event
-        newEvent.setParms(eventParms);
-
-        return newEvent;
+	    return bldr.getEvent();
 	}
 
     /**
@@ -760,39 +628,14 @@ public abstract class EventUtils {
      * @return a {@link org.opennms.netmgt.xml.event.Event} object.
      */
     public static Event createNodeDeletedEvent(String source, int nodeId, String hostName, String nodeLabel, long txNo) {
-        ThreadCategory log = ThreadCategory.getInstance(EventUtils.class);
-        if (log.isDebugEnabled())
-            log.debug("createAndSendNodeDeletedEvent:  processing deleteNode event for nodeid:  " + nodeId);
-
-        Event newEvent = new Event();
-        newEvent.setUei(EventConstants.NODE_DELETED_EVENT_UEI);
-        newEvent.setSource(source);
-        newEvent.setNodeid(nodeId);
-        newEvent.setHost(hostName);
-        newEvent.setTime(EventConstants.formatToString(new java.util.Date()));
-
-        // Add appropriate parms
-        Parms eventParms = new Parms();
-
-        Parm eventParm = new Parm();
-        eventParm.setParmName(EventConstants.PARM_NODE_LABEL);
-        Value parmValue = new Value();
-        parmValue.setContent(nodeLabel);
-        eventParm.setValue(parmValue);
-        eventParms.addParm(eventParm);
-
-        eventParm = new Parm();
-        eventParm.setParmName(EventConstants.PARM_TRANSACTION_NO);
-        parmValue = new Value();
-        parmValue.setContent(String.valueOf(txNo));
-        eventParm.setValue(parmValue);
-        eventParms.addParm(eventParm);
-
-        // Add Parms to the event
-        if ((nodeLabel != null) && ((String.valueOf(txNo)) != null))
-            newEvent.setParms(eventParms);
-
-        return newEvent;
+        
+        EventBuilder bldr = createNodeEventBuilder(EventConstants.NODE_DELETED_EVENT_UEI, source, nodeId, txNo);
+        
+        if (nodeLabel != null && !"".equals(nodeLabel.trim())) {
+            bldr.addParam(EventConstants.PARM_NODE_LABEL, nodeLabel);
+        }
+        
+        return bldr.getEvent();
     }
 
     /**
@@ -810,37 +653,15 @@ public abstract class EventUtils {
      * @return a {@link org.opennms.netmgt.xml.event.Event} object.
      */
     public static Event createAndSendDeleteNodeEvent(String source, String nodeLabel, String hostName, long txNo) {
-        ThreadCategory log = ThreadCategory.getInstance(EventUtils.class);
-        if (log.isDebugEnabled())
-            log.debug("createdAndSendDeleteNodeEvent: processing deleteInterface event... ");
+        
+        EventBuilder bldr = new EventBuilder(EventConstants.DELETE_NODE_EVENT_UEI, source);
 
-        Event newEvent = new Event();
-        newEvent.setUei(EventConstants.DELETE_NODE_EVENT_UEI);
-        newEvent.setSource(source);
-        newEvent.setHost(hostName);
-        newEvent.setTime(EventConstants.formatToString(new java.util.Date()));
+        bldr.setHost(hostName);
+        
+        bldr.addParam(EventConstants.PARM_NODE_LABEL, nodeLabel);
+        bldr.addParam(EventConstants.PARM_TRANSACTION_NO, txNo);
 
-        // Add appropriate parms
-        Parms eventParms = new Parms();
-
-        Parm eventParm = new Parm();
-        eventParm.setParmName(EventConstants.PARM_NODE_LABEL);
-        Value parmValue = new Value();
-        parmValue.setContent(nodeLabel);
-        eventParm.setValue(parmValue);
-        eventParms.addParm(eventParm);
-
-        eventParm = new Parm();
-        eventParm.setParmName(EventConstants.PARM_TRANSACTION_NO);
-        parmValue = new Value();
-        parmValue.setContent(String.valueOf(txNo));
-        eventParm.setValue(parmValue);
-        eventParms.addParm(eventParm);
-
-        // Add Parms to the event
-        newEvent.setParms(eventParms);
-
-        return newEvent;
+        return bldr.getEvent();
     }
 
     /**
@@ -854,18 +675,12 @@ public abstract class EventUtils {
      * @return a {@link org.opennms.netmgt.xml.event.Event} object.
      */
     public static Event createForceRescanEvent(String hostName, long nodeId) {
-        ThreadCategory log = ThreadCategory.getInstance(EventUtils.class);
-        if (log.isDebugEnabled())
-            log.debug("createdAndSendForceRescanEvent: processing forceRescan event... ");
 
-        Event newEvent = new Event();
-        newEvent.setUei(EventConstants.FORCE_RESCAN_EVENT_UEI);
-        newEvent.setSource("OpenNMS.Capsd");
-        newEvent.setNodeid(nodeId);
-        newEvent.setHost(hostName);
-        newEvent.setTime(EventConstants.formatToString(new java.util.Date()));
+        EventBuilder bldr = new EventBuilder(EventConstants.FORCE_RESCAN_EVENT_UEI, "OpenNMS.Capsd");
+        bldr.setNodeid(nodeId);
+        bldr.setHost(hostName);
 
-        return newEvent;
+        return bldr.getEvent();
     }
 
     /**
@@ -885,32 +700,10 @@ public abstract class EventUtils {
      * @return a {@link org.opennms.netmgt.xml.event.Event} object.
      */
     public static Event createAndSendInterfaceDeletedEvent(String source, int nodeId, String ipaddr, String hostName, long txNo) {
-        ThreadCategory log = ThreadCategory.getInstance(EventUtils.class);
-        if (log.isDebugEnabled())
-            log.debug("createAndSendInterfaceDeletedEvent:  processing deleteInterface event for interface: " + ipaddr + " at nodeid: " + nodeId);
-
-        Event newEvent = new Event();
-        newEvent.setUei(EventConstants.INTERFACE_DELETED_EVENT_UEI);
-        newEvent.setSource(source);
-        newEvent.setNodeid(nodeId);
-        newEvent.setInterface(ipaddr);
-        newEvent.setHost(hostName);
-        newEvent.setTime(EventConstants.formatToString(new java.util.Date()));
-
-        // Add appropriate parms
-        Parms eventParms = new Parms();
-
-        Parm eventParm = new Parm();
-        eventParm.setParmName(EventConstants.PARM_TRANSACTION_NO);
-        Value parmValue = new Value();
-        parmValue.setContent(String.valueOf(txNo));
-        eventParm.setValue(parmValue);
-        eventParms.addParm(eventParm);
-
-        // Add Parms to the event
-        newEvent.setParms(eventParms);
-
-        return newEvent;
+        
+        return createInterfaceEventBuilder(EventConstants.INTERFACE_DELETED_EVENT_UEI, source, nodeId, ipaddr, -1, txNo)
+            .setHost(hostName)
+            .getEvent();
     }
 
     /**
@@ -951,70 +744,26 @@ public abstract class EventUtils {
 	 * @return a {@link org.opennms.netmgt.xml.event.Event} object.
 	 */
 	public static Event createNodeGainedServiceEvent(String source, int nodeId, InetAddress ifaddr, String service, String nodeLabel, String labelSource, String sysName, String sysDescr) {
-		ThreadCategory log = ThreadCategory.getInstance(EventUtils.class);
-		if (log.isDebugEnabled())
-            log.debug("createAndSendNodeGainedServiceEvent:  nodeId/interface/service  " + nodeId + "/" + ifaddr.getHostAddress() + "/" + service);
 
-        Event newEvent = new Event();
-        newEvent.setUei(EventConstants.NODE_GAINED_SERVICE_EVENT_UEI);
-		newEvent.setSource(source);
-        newEvent.setNodeid(nodeId);
-        newEvent.setHost(Capsd.getLocalHostAddress());
-        newEvent.setInterface(ifaddr.getHostAddress());
-        newEvent.setService(service);
-        newEvent.setTime(EventConstants.formatToString(new java.util.Date()));
+	    EventBuilder bldr = createServiceEventBuilder(EventConstants.NODE_GAINED_SERVICE_EVENT_UEI, source, nodeId, ifaddr.getHostAddress(), service, -1);
 
-        // Add appropriate parms
-        Parms eventParms = new Parms();
-
-        // Add IP host name
-        Parm eventParm = new Parm();
-        eventParm.setParmName(EventConstants.PARM_IP_HOSTNAME);
-        Value parmValue = new Value();
-        parmValue.setContent(ifaddr.getHostName());
-        eventParm.setValue(parmValue);
-        eventParms.addParm(eventParm);
-
-        // Add Node Label
-        eventParm = new Parm();
-        eventParm.setParmName(EventConstants.PARM_NODE_LABEL);
-        parmValue = new Value();
-		parmValue.setContent(nodeLabel);
-        eventParm.setValue(parmValue);
-        eventParms.addParm(eventParm);
-
-        // Add Node Label source
-        eventParm = new Parm();
-        eventParm.setParmName(EventConstants.PARM_NODE_LABEL_SOURCE);
-        parmValue = new Value();
-        parmValue.setContent(labelSource);
-        eventParm.setValue(parmValue);
-        eventParms.addParm(eventParm);
-
+        bldr.setHost(Capsd.getLocalHostAddress());
+        
+        bldr.addParam(EventConstants.PARM_IP_HOSTNAME, ifaddr.getHostName());
+        bldr.addParam(EventConstants.PARM_NODE_LABEL, nodeLabel);
+        bldr.addParam(EventConstants.PARM_NODE_LABEL_SOURCE, labelSource);
+        
         // Add sysName if available
 		if (sysName != null) {
-            eventParm = new Parm();
-            eventParm.setParmName(EventConstants.PARM_NODE_SYSNAME);
-            parmValue = new Value();
-            parmValue.setContent(sysName);
-            eventParm.setValue(parmValue);
-            eventParms.addParm(eventParm);
+		    bldr.addParam(EventConstants.PARM_NODE_SYSNAME, sysName);
         }
 
         // Add sysDescr if available
 		if (sysDescr != null) {
-            eventParm = new Parm();
-            eventParm.setParmName(EventConstants.PARM_NODE_SYSDESCRIPTION);
-            parmValue = new Value();
-            parmValue.setContent(sysDescr);
-            eventParm.setValue(parmValue);
-            eventParms.addParm(eventParm);
+		    bldr.addParam(EventConstants.PARM_NODE_SYSDESCRIPTION, sysDescr);
         }
 
-        // Add Parms to the event
-        newEvent.setParms(eventParms);
-
-        return newEvent;
+        return bldr.getEvent();
 	}
 
     /**
@@ -1036,51 +785,16 @@ public abstract class EventUtils {
      * @return a {@link org.opennms.netmgt.xml.event.Event} object.
      */
     public static Event createAndSendDeleteServiceEvent(String source, DbNodeEntry nodeEntry, InetAddress ifaddr, String service, String hostName, long txNo) {
-        ThreadCategory log = ThreadCategory.getInstance(EventUtils.class);
-        if (log.isDebugEnabled())
-            log.debug("createAndSendDeleteServiceEvent:  nodeId/interface/service  " + nodeEntry.getNodeId() + "/" + ifaddr.getHostAddress() + "/" + service);
 
-        Event newEvent = new Event();
-        newEvent.setUei(EventConstants.DELETE_SERVICE_EVENT_UEI);
-        newEvent.setSource(source);
-        newEvent.setNodeid(nodeEntry.getNodeId());
-        newEvent.setHost(hostName);
-        newEvent.setInterface(ifaddr.getHostAddress());
-        newEvent.setService(service);
-        newEvent.setTime(EventConstants.formatToString(new java.util.Date()));
+        EventBuilder bldr = createServiceEventBuilder(EventConstants.DELETE_SERVICE_EVENT_UEI, source, nodeEntry.getNodeId(), ifaddr.getHostAddress(), service, txNo);
 
-        // Add appropriate parms
-        Parms eventParms = new Parms();
+        bldr.setHost(hostName);
+        
+        bldr.addParam(EventConstants.PARM_IP_HOSTNAME, ifaddr.getHostName());
+        bldr.addParam(EventConstants.PARM_NODE_LABEL, nodeEntry.getLabel());
+        bldr.addParam(EventConstants.PARM_NODE_LABEL_SOURCE, nodeEntry.getLabelSource());
 
-        // Add IP host name
-        Parm eventParm = new Parm();
-        eventParm.setParmName(EventConstants.PARM_IP_HOSTNAME);
-        Value parmValue = new Value();
-        parmValue.setContent(ifaddr.getHostName());
-        eventParm.setValue(parmValue);
-        eventParms.addParm(eventParm);
-
-        // Add Node Label
-        eventParm = new Parm();
-        eventParm.setParmName(EventConstants.PARM_NODE_LABEL);
-        parmValue = new Value();
-        parmValue.setContent(nodeEntry.getLabel());
-        eventParm.setValue(parmValue);
-        eventParms.addParm(eventParm);
-
-        // Add Node Label source
-        eventParm = new Parm();
-        eventParm.setParmName(EventConstants.PARM_NODE_LABEL_SOURCE);
-        parmValue = new Value();
-        char labelSource[] = new char[] { nodeEntry.getLabelSource() };
-        parmValue.setContent(new String(labelSource));
-        eventParm.setValue(parmValue);
-        eventParms.addParm(eventParm);
-
-        // Add Parms to the event
-        newEvent.setParms(eventParms);
-
-        return newEvent;
+        return bldr.getEvent();
     }
 
     /**
@@ -1100,38 +814,15 @@ public abstract class EventUtils {
      * @return a {@link org.opennms.netmgt.xml.event.Event} object.
      */
     public static Event createAddInterfaceEvent(String source, String nodeLabel, String ipaddr, String hostName, long txNo) {
-        ThreadCategory log = ThreadCategory.getInstance(EventUtils.class);
-        if (log.isDebugEnabled())
-            log.debug("createAndSendAddInterfaceEvent:  processing updateServer event for interface:  " + ipaddr + " on server: " + hostName);
 
-        Event newEvent = new Event();
-        newEvent.setUei(EventConstants.ADD_INTERFACE_EVENT_UEI);
-        newEvent.setSource(source);
-        newEvent.setInterface(ipaddr);
-        newEvent.setHost(hostName);
-        newEvent.setTime(EventConstants.formatToString(new java.util.Date()));
+        EventBuilder bldr = new EventBuilder(EventConstants.ADD_INTERFACE_EVENT_UEI, source);
+        bldr.setInterface(ipaddr);
+        bldr.setHost(hostName);
 
-        // Add appropriate parms
-        Parms eventParms = new Parms();
+        bldr.addParam(EventConstants.PARM_NODE_LABEL, nodeLabel);
+        bldr.addParam(EventConstants.PARM_TRANSACTION_NO, txNo);
 
-        Parm eventParm = new Parm();
-        eventParm.setParmName(EventConstants.PARM_NODE_LABEL);
-        Value parmValue = new Value();
-        parmValue.setContent(nodeLabel);
-        eventParm.setValue(parmValue);
-        eventParms.addParm(eventParm);
-
-        eventParm = new Parm();
-        eventParm.setParmName(EventConstants.PARM_TRANSACTION_NO);
-        parmValue = new Value();
-        parmValue.setContent(String.valueOf(txNo));
-        eventParm.setValue(parmValue);
-        eventParms.addParm(eventParm);
-
-        // Add Parms to the event
-        newEvent.setParms(eventParms);
-
-        return newEvent;
+        return bldr.getEvent();
     }
 
     /**
@@ -1151,38 +842,15 @@ public abstract class EventUtils {
      * @return a {@link org.opennms.netmgt.xml.event.Event} object.
      */
     public static Event createAndSendDeleteInterfaceEvent(String source, String nodeLabel, String ipaddr, String hostName, long txNo) {
-        ThreadCategory log = ThreadCategory.getInstance(EventUtils.class);
-        if (log.isDebugEnabled())
-            log.debug("createAndSendDeleteInterfaceEvent:  processing updateServer event for interface:  " + ipaddr + " on server: " + hostName);
 
-        Event newEvent = new Event();
-        newEvent.setUei(EventConstants.DELETE_INTERFACE_EVENT_UEI);
-        newEvent.setSource(source);
-        newEvent.setInterface(ipaddr);
-        newEvent.setHost(hostName);
-        newEvent.setTime(EventConstants.formatToString(new java.util.Date()));
+        EventBuilder bldr = new EventBuilder(EventConstants.DELETE_INTERFACE_EVENT_UEI, source);
+        bldr.setInterface(ipaddr);
+        bldr.setHost(hostName);
+        
+        bldr.addParam(EventConstants.PARM_NODE_LABEL, nodeLabel);
+        bldr.addParam(EventConstants.PARM_TRANSACTION_NO, txNo);
 
-        // Add appropriate parms
-        Parms eventParms = new Parms();
-
-        Parm eventParm = new Parm();
-        eventParm.setParmName(EventConstants.PARM_NODE_LABEL);
-        Value parmValue = new Value();
-        parmValue.setContent(nodeLabel);
-        eventParm.setValue(parmValue);
-        eventParms.addParm(eventParm);
-
-        eventParm = new Parm();
-        eventParm.setParmName(EventConstants.PARM_TRANSACTION_NO);
-        parmValue = new Value();
-        parmValue.setContent(String.valueOf(txNo));
-        eventParm.setValue(parmValue);
-        eventParms.addParm(eventParm);
-
-        // Add Parms to the event
-        newEvent.setParms(eventParms);
-
-        return newEvent;
+        return bldr.getEvent();
     }
 
     /**
@@ -1204,38 +872,15 @@ public abstract class EventUtils {
      * @return a {@link org.opennms.netmgt.xml.event.Event} object.
      */
     public static Event createChangeServiceEvent(String source, String ipaddr, String service, String action, String hostName, long txNo) {
-        ThreadCategory log = ThreadCategory.getInstance(EventUtils.class);
-        if (log.isDebugEnabled())
-            log.debug("createAndSendChangeServiceEvent:  processing updateService event for service:  " + service + " on interface: " + ipaddr);
 
-        Event newEvent = new Event();
-        newEvent.setUei(EventConstants.CHANGE_SERVICE_EVENT_UEI);
-        newEvent.setSource(source);
-        newEvent.setInterface(ipaddr);
-        newEvent.setService(service);
-        newEvent.setTime(EventConstants.formatToString(new java.util.Date()));
+        EventBuilder bldr = new EventBuilder(EventConstants.CHANGE_SERVICE_EVENT_UEI, source);
+        bldr.setInterface(ipaddr);
+        bldr.setService(service);
+        
+        bldr.addParam(EventConstants.PARM_ACTION, action);
+        bldr.addParam(EventConstants.PARM_TRANSACTION_NO, txNo);
 
-        // Add appropriate parms
-        Parms eventParms = new Parms();
-
-        Parm eventParm = new Parm();
-        eventParm.setParmName(EventConstants.PARM_ACTION);
-        Value parmValue = new Value();
-        parmValue.setContent(action);
-        eventParm.setValue(parmValue);
-        eventParms.addParm(eventParm);
-
-        eventParm = new Parm();
-        eventParm.setParmName(EventConstants.PARM_TRANSACTION_NO);
-        parmValue = new Value();
-        parmValue.setContent(String.valueOf(txNo));
-        eventParm.setValue(parmValue);
-        eventParms.addParm(eventParm);
-
-        // Add Parms to the event
-        newEvent.setParms(eventParms);
-
-        return newEvent;
+        return bldr.getEvent();
     }
 
     /**
@@ -1256,28 +901,9 @@ public abstract class EventUtils {
      *         nodeId, ipaddr
      */
     public static Event createDeleteServiceEvent(String source, long nodeId, String ipAddr, String service, long txNo) {
-        Event newEvent = new Event();
-        newEvent.setUei(EventConstants.DELETE_SERVICE_EVENT_UEI);
-        newEvent.setSource(source);
-        newEvent.setInterface(ipAddr);
-        newEvent.setNodeid(nodeId);
-        newEvent.setService(service);
-        newEvent.setTime(EventConstants.formatToString(new java.util.Date()));
-
-        // Add appropriate parms
-        Parms eventParms = new Parms();
-
-        Parm eventParm = new Parm();
-        eventParm.setParmName(EventConstants.PARM_TRANSACTION_NO);
-        Value parmValue = new Value();
-        parmValue.setContent(String.valueOf(txNo));
-        eventParm.setValue(parmValue);
-        eventParms.addParm(eventParm);
-
-        // Add Parms to the event
-        newEvent.setParms(eventParms);
-
-        return newEvent;
+        
+        return createServiceEventBuilder(EventConstants.DELETE_SERVICE_EVENT_UEI, source, nodeId, ipAddr, service, txNo).getEvent();
+        
     }
 
     /**
