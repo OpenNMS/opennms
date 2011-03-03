@@ -67,10 +67,6 @@ import org.springframework.web.servlet.mvc.AbstractController;
  *
  * @author <A HREF="mailto:larry@opennms.org">Lawrence Karnowski </A>
  * @author <A HREF="http://www.opennms.org/">OpenNMS </A>
- * @author <A HREF="mailto:larry@opennms.org">Lawrence Karnowski </A>
- * @author <A HREF="http://www.opennms.org/">OpenNMS </A>
- * @version $Id: $
- * @since 1.8.1
  */
 public class AlarmFilterController extends AbstractController implements InitializingBean {
     /** Constant <code>DEFAULT_MULTIPLE=0</code> */

@@ -41,6 +41,7 @@
 package org.opennms.web.alarm;
 
 import java.util.Calendar;
+import java.util.NoSuchElementException;
 import java.util.StringTokenizer;
 
 import javax.servlet.ServletContext;
@@ -102,8 +103,14 @@ public abstract class AlarmUtil extends Object {
         Filter filter = null;
 
         StringTokenizer tokens = new StringTokenizer(filterString, "=");
-        String type = tokens.nextToken();
-        String value = tokens.nextToken();
+        String type;
+        String value;
+        try {
+            type = tokens.nextToken();
+            value = tokens.nextToken();
+        } catch (NoSuchElementException e) {
+            throw new IllegalArgumentException("Could not tokenize filter string: " + filterString);
+        }
 
         if (type.equals(SeverityFilter.TYPE)) {
             filter = new SeverityFilter(OnmsSeverity.get(WebSecurityUtils.safeParseInt(value)));

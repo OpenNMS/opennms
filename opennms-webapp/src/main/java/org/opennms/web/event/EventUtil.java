@@ -40,6 +40,7 @@
 package org.opennms.web.event;
 
 import java.util.Calendar;
+import java.util.NoSuchElementException;
 import java.util.StringTokenizer;
 
 import javax.servlet.ServletContext;
@@ -92,8 +93,14 @@ public abstract class EventUtil {
         Filter filter = null;
 
         StringTokenizer tokens = new StringTokenizer(filterString, "=");
-        String type = tokens.nextToken();
-        String value = tokens.nextToken();
+        String type;
+        String value;
+        try {
+            type = tokens.nextToken();
+            value = tokens.nextToken();
+        } catch (NoSuchElementException e) {
+            throw new IllegalArgumentException("Could not tokenize filter string: " + filterString);
+        }
 
         if (type.equals(SeverityFilter.TYPE)) {
             filter = new SeverityFilter(WebSecurityUtils.safeParseInt(value));
