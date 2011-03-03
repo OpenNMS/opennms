@@ -76,6 +76,7 @@ import org.apache.http.client.methods.HttpPost;
 import org.apache.http.client.methods.HttpUriRequest;
 import org.apache.http.client.params.ClientPNames;
 import org.apache.http.client.params.CookiePolicy;
+import org.apache.http.client.utils.URIUtils;
 import org.apache.http.client.utils.URLEncodedUtils;
 import org.apache.http.impl.client.DefaultHttpClient;
 import org.apache.http.impl.client.DefaultHttpRequestRetryHandler;
@@ -547,21 +548,19 @@ public class HttpCollector implements ServiceCollector {
         List<NameValuePair> queryParams = buildRequestParameters(collectionSet);
         try {
             String query = URLEncodedUtils.format(queryParams, "UTF-8");
-            uriWithQueryString = new URI(
+            uriWithQueryString = URIUtils.createURI(
                                          uri.getScheme(), 
-                                         uri.getUserInfo(), 
                                          uri.getHost(), 
                                          uri.getPort(), 
                                          uri.getPath(), 
                                          query, 
                                          uri.getFragment()
             );
+            return new HttpGet(uriWithQueryString);
         } catch (URISyntaxException e) {
             log().warn(e.getMessage(), e);
             return new HttpGet(uri);
         }
-        HttpGet method = new HttpGet(uriWithQueryString);
-        return method;
     }
 
     private static List<NameValuePair> buildRequestParameters(final HttpCollectionSet collectionSet) {
@@ -580,8 +579,7 @@ public class HttpCollector implements ServiceCollector {
         substitutions.put("ipaddr", collectionSet.getAgent().getInetAddress().getHostAddress());
         substitutions.put("nodeid", Integer.toString(collectionSet.getAgent().getNodeId()));
 
-        return new URI(collectionSet.getUriDef().getUrl().getScheme(),
-                       collectionSet.getUriDef().getUrl().getUserInfo(),
+        return URIUtils.createURI(collectionSet.getUriDef().getUrl().getScheme(),
                        substituteKeywords(substitutions, collectionSet.getUriDef().getUrl().getHost(), "getHost"),
                        collectionSet.getUriDef().getUrl().getPort(),
                        substituteKeywords(substitutions, collectionSet.getUriDef().getUrl().getPath(), "getURL"),

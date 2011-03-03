@@ -83,6 +83,7 @@ import org.apache.http.client.methods.HttpPost;
 import org.apache.http.client.methods.HttpUriRequest;
 import org.apache.http.client.params.ClientPNames;
 import org.apache.http.client.params.CookiePolicy;
+import org.apache.http.client.utils.URIUtils;
 import org.apache.http.client.utils.URLEncodedUtils;
 import org.apache.http.conn.scheme.Scheme;
 import org.apache.http.conn.scheme.SchemeRegistry;
@@ -369,9 +370,8 @@ public class PageSequenceMonitor extends AbstractServiceMonitor {
             URI uriWithQueryString = null;
             try {
                 String query = URLEncodedUtils.format(parms, "UTF-8");
-                uriWithQueryString = new URI(
+                uriWithQueryString = URIUtils.createURI(
                                              uri.getScheme(), 
-                                             uri.getUserInfo(), 
                                              uri.getHost(), 
                                              uri.getPort(), 
                                              uri.getPath(),
@@ -380,10 +380,10 @@ public class PageSequenceMonitor extends AbstractServiceMonitor {
                                              query, 
                                              uri.getFragment()
                 );
+                this.setURI(uriWithQueryString);
             } catch (URISyntaxException e) {
-                ThreadCategory.getInstance(this.getClass()).warn(e.getMessage(), e);
+                ThreadCategory.getInstance("Cannot add query parameters to URI: " + this.getClass()).warn(e.getMessage(), e);
             }
-            this.setURI(uriWithQueryString);
         }
     }
 
@@ -576,7 +576,7 @@ public class PageSequenceMonitor extends AbstractServiceMonitor {
         private URI getURI(MonitoredService svc) throws URISyntaxException {
             Properties svcProps = getServiceProperties(svc);
             Properties seqProps = getSequenceProperties();
-            return new URI(getScheme(), getUserInfo(), getHost(seqProps, svcProps), getPort(), getPath(seqProps, svcProps), getQuery(seqProps, svcProps), getFragment(seqProps, svcProps));
+            return URIUtils.createURI(getScheme(), getHost(seqProps, svcProps), getPort(), getPath(seqProps, svcProps), getQuery(seqProps, svcProps), getFragment(seqProps, svcProps));
         }
 
         private String getFragment(Properties... p) {

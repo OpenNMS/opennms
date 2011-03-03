@@ -18,6 +18,7 @@ import org.apache.http.client.CredentialsProvider;
 import org.apache.http.client.methods.HttpGet;
 import org.apache.http.client.params.ClientPNames;
 import org.apache.http.client.protocol.ClientContext;
+import org.apache.http.client.utils.URIUtils;
 import org.apache.http.impl.auth.BasicScheme;
 import org.apache.http.impl.client.DefaultHttpClient;
 import org.apache.http.params.CoreConnectionPNames;
@@ -55,8 +56,7 @@ public class WebMonitor extends AbstractServiceMonitor {
         DefaultHttpClient httpClient = new DefaultHttpClient();
 
         try {
-            HttpGet getMethod = new HttpGet(new URI(
-                                                    null, 
+            HttpGet getMethod = new HttpGet(URIUtils.createURI(
                                                     null, 
                                                     svc.getAddress().getHostAddress(), 
                                                     ParameterMap.getKeyedInteger(map, "port", DEFAULT_PORT), 
