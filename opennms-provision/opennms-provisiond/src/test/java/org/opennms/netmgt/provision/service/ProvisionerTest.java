@@ -853,11 +853,10 @@ public class ProvisionerTest implements MockSnmpAgentAware {
         
         assertNotNull(m_nodeDao.get(1));
         
-        Event addedEvent = new Event();
-        addedEvent.setUei(EventConstants.NODE_ADDED_EVENT_UEI);
-        addedEvent.setNodeid(1);
+        EventBuilder bldr = new EventBuilder(EventConstants.NODE_ADDED_EVENT_UEI, "Tests");
+        bldr.setNodeid(1);
         
-        m_mockEventIpcManager.broadcastNow(addedEvent);
+        m_mockEventIpcManager.broadcastNow(bldr.getEvent());
         
         assertEquals(1, m_provisioner.getScheduleLength());
         
@@ -880,11 +879,10 @@ public class ProvisionerTest implements MockSnmpAgentAware {
         //m_provisioner.scheduleRescanForExistingNodes();
         assertEquals(10, m_provisioner.getScheduleLength());
         
-        Event addedEvent = new Event();
-        addedEvent.setUei(EventConstants.NODE_DELETED_EVENT_UEI);
-        addedEvent.setNodeid(2);
+        EventBuilder bldr = new EventBuilder(EventConstants.NODE_DELETED_EVENT_UEI, "Tests");
+        bldr.setNodeid(2);
         
-        m_mockEventIpcManager.broadcastNow(addedEvent);
+        m_mockEventIpcManager.broadcastNow(bldr.getEvent());
         
         assertEquals(9, m_provisioner.getScheduleLength());
     }
