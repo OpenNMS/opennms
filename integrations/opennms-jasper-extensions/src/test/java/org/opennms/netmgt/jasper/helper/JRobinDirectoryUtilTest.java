@@ -6,6 +6,7 @@ import java.io.FileNotFoundException;
 import java.io.IOException;
 
 import org.junit.Before;
+import org.junit.Ignore;
 import org.junit.Test;
 
 public class JRobinDirectoryUtilTest {
@@ -33,6 +34,7 @@ public class JRobinDirectoryUtilTest {
     }
     
     @Test
+    @Ignore
     public void testJRobinDirectoryUtilRrdExtension() throws FileNotFoundException, IOException {
         System.setProperty("org.opennms.rrd.strategyClass", "org.opennms.netmgt.rrd.jrobin.JniRrdStrategy");
         JRobinDirectoryUtil lookupUtil = new JRobinDirectoryUtil();
@@ -47,6 +49,7 @@ public class JRobinDirectoryUtilTest {
     }
     
     @Test
+    @Ignore
     public void testJRobinDirectoryUtilCustomExtension() throws FileNotFoundException, IOException {
         System.setProperty("org.opennms.rrd.fileExtension", ".jrb");
         JRobinDirectoryUtil lookupUtil = new JRobinDirectoryUtil();
