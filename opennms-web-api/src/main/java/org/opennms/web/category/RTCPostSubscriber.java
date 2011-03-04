@@ -42,12 +42,9 @@ import org.opennms.netmgt.EventConstants;
 import org.opennms.netmgt.config.ViewsDisplayFactory;
 import org.opennms.netmgt.config.viewsdisplay.Section;
 import org.opennms.netmgt.config.viewsdisplay.View;
+import org.opennms.netmgt.model.events.EventBuilder;
 import org.opennms.netmgt.model.events.EventProxy;
 import org.opennms.netmgt.model.events.EventProxyException;
-import org.opennms.netmgt.xml.event.Event;
-import org.opennms.netmgt.xml.event.Parm;
-import org.opennms.netmgt.xml.event.Parms;
-import org.opennms.netmgt.xml.event.Value;
 import org.opennms.web.api.Util;
 
 /**
@@ -96,49 +93,15 @@ public class RTCPostSubscriber extends Object {
             throw new IllegalArgumentException("Cannot take null parameters.");
         }
 
-        Event event = new Event();
-        event.setSource("RTCPostSubscriber");
-        event.setUei(EventConstants.RTC_SUBSCRIBE_EVENT_UEI);
-        event.setHost("host");
-        event.setTime(EventConstants.formatToString(new java.util.Date()));
+        EventBuilder bldr = new EventBuilder(EventConstants.RTC_SUBSCRIBE_EVENT_UEI, "RTCPostSubscriber");
+        bldr.setHost("host");
+        
+        bldr.addParam(EventConstants.PARM_URL, url);
+        bldr.addParam(EventConstants.PARM_USER, username);
+        bldr.addParam(EventConstants.PARM_PASSWD, password);
+        bldr.addParam(EventConstants.PARM_CAT_LABEL, categoryName);
 
-        Parms parms = new Parms();
-
-        // URL
-        Value value = new Value();
-        value.setContent(url);
-        Parm parm = new Parm();
-        parm.setParmName(EventConstants.PARM_URL);
-        parm.setValue(value);
-        parms.addParm(parm);
-
-        // User
-        value = new Value();
-        value.setContent(username);
-        parm = new Parm();
-        parm.setParmName(EventConstants.PARM_USER);
-        parm.setValue(value);
-        parms.addParm(parm);
-
-        // Password
-        value = new Value();
-        value.setContent(password);
-        parm = new Parm();
-        parm.setParmName(EventConstants.PARM_PASSWD);
-        parm.setValue(value);
-        parms.addParm(parm);
-
-        // category
-        value = new Value();
-        value.setContent(categoryName);
-        parm = new Parm();
-        parm.setParmName(EventConstants.PARM_CAT_LABEL);
-        parm.setValue(value);
-        parms.addParm(parm);
-
-        event.setParms(parms);
-
-        proxy.send(event);
+        proxy.send(bldr.getEvent());
 
         log.info("Subscription requested for " + username + " to " + url);
     }
@@ -156,24 +119,12 @@ public class RTCPostSubscriber extends Object {
             throw new IllegalArgumentException("Cannot take null parameters.");
         }
 
-        Event event = new Event();
-        event.setSource("RTCPostSubscriber");
-        event.setUei(EventConstants.RTC_UNSUBSCRIBE_EVENT_UEI);
-        event.setHost("host");
-        event.setTime(EventConstants.formatToString(new java.util.Date()));
+        EventBuilder bldr = new EventBuilder(EventConstants.RTC_UNSUBSCRIBE_EVENT_UEI, "RTCPostSubscriber");
+        bldr.setHost("host");
+        
+        bldr.addParam(EventConstants.PARM_URL, url);
 
-        // URL
-        Parms parms = new Parms();
-        Value value = new Value();
-        value.setContent(url);
-        Parm parm = new Parm();
-        parm.setParmName(EventConstants.PARM_URL);
-        parm.setValue(value);
-        parms.addParm(parm);
-
-        event.setParms(parms);
-
-        proxy.send(event);
+        proxy.send(bldr.getEvent());
 
         log.info("Unsubscription sent for " + url);
     }
