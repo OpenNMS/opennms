@@ -31,6 +31,8 @@
  */
 package org.opennms.netmgt.xmlrpcd;
 
+import static org.junit.Assert.assertNotNull;
+
 import java.io.IOException;
 import java.io.PrintWriter;
 import java.net.ConnectException;
@@ -49,7 +51,8 @@ import org.apache.commons.lang.builder.HashCodeBuilder;
 import org.apache.log4j.Logger;
 import org.apache.xmlrpc.WebServer;
 import org.apache.xmlrpc.XmlRpcHandler;
-import org.springframework.util.Assert;
+
+
 
 /**
  * <p>
@@ -73,8 +76,8 @@ public class XmlrpcAnticipator implements XmlRpcHandler {
         private Vector<Object> m_vector;
         
         public XmlrpcCall(String method, Vector<Object> vector) {
-            Assert.notNull("null method not allowed", method);
-            Assert.notNull(vector, "null vector not allowed");
+            assertNotNull("null method not allowed", method);
+            assertNotNull("null vector not allowed", vector);
 
             m_method = method;
             m_vector = vector;
@@ -275,15 +278,15 @@ public class XmlrpcAnticipator implements XmlRpcHandler {
         }
     }
     
-    /**
-     * @param event
-     * 
-     */
-    public void anticipateCall(String method, Vector<Object> params) {
+    public void anticipateCall(String method, Object... args) {
+        Vector<Object> params = new Vector<Object>();
+        for(Object arg: args) {
+            params.add(arg);
+        }
         m_anticipated.add(new XmlrpcCall(method, params));
     }
 
-    @SuppressWarnings("unchecked")
+    @SuppressWarnings({ "rawtypes", "unchecked" }) 
     public Object execute(String method, Vector vector) {
         if (m_webServer == null) {
             String message = "Hey!  We aren't initialized (anymore)!  "
@@ -312,7 +315,7 @@ public class XmlrpcAnticipator implements XmlRpcHandler {
         }
     }
 
-    public synchronized Collection getAnticipated() {
+    public synchronized Collection<XmlrpcCall> getAnticipated() {
         return Collections.unmodifiableCollection(m_anticipated);
     }
 

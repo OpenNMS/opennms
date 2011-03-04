@@ -31,11 +31,11 @@
  */
 package org.opennms.netmgt.xmlrpcd;
 
+import java.io.ByteArrayInputStream;
 import java.io.StringReader;
 import java.lang.reflect.UndeclaredThrowableException;
 import java.util.Date;
 import java.util.Hashtable;
-import java.util.Vector;
 
 import org.apache.log4j.Level;
 import org.apache.log4j.spi.LoggingEvent;
@@ -151,9 +151,9 @@ public class XmlrpcdTest extends OpenNMSTestCase {
             " </subscription>\n" +
             "</xmlrpcd-configuration>\n");
     
-    StringReader m_serverConfig = new StringReader(
-            "<local-server server-name=\"nms1\" verify-server=\"false\">\n" +
-            "</local-server>\n");
+    ByteArrayInputStream m_serverConfig = new ByteArrayInputStream(
+            ("<local-server server-name=\"nms1\" verify-server=\"false\">\n" +
+            "</local-server>\n").getBytes());
     
     protected void setUp() throws Exception {
         super.setUp();
@@ -198,7 +198,7 @@ public class XmlrpcdTest extends OpenNMSTestCase {
     }
 
     public void anticipateNotifyReceivedEvent(XmlrpcAnticipator anticipator) {
-        anticipator.anticipateCall("notifyReceivedEvent", createVector("0", "uei.opennms.org/internal/capsd/xmlrpcNotification", "test connection"));
+        anticipator.anticipateCall("notifyReceivedEvent", "0", "uei.opennms.org/internal/capsd/xmlrpcNotification", "test connection");
     }
 
     public void testDoNothing() {
@@ -218,17 +218,16 @@ public class XmlrpcdTest extends OpenNMSTestCase {
     }
     
     public void testQueueing() throws Exception {
-        String date = EventConstants.formatToString(new Date());
-
+        Date date = new Date();
         anticipateNotifyReceivedEvent(m_anticipator1);
         m_xmlrpcd.init();
         m_xmlrpcd.start();
 
-        m_anticipator1.anticipateCall("sendServiceDownEvent", createRouterVector(date));
+        anticipateRouterServiceCall(m_anticipator1, "sendServiceDownEvent", date);
 
         Event nodeOneEvent = new Event();
         nodeOneEvent.setUei("uei.opennms.org/nodes/nodeLostService");
-        nodeOneEvent.setTime(date);
+        nodeOneEvent.setTime(EventConstants.formatToString(date));
         nodeOneEvent.setNodeid(1);
         nodeOneEvent.setSource("the one true event source");
         nodeOneEvent.setInterface("192.168.1.1");
@@ -241,7 +240,7 @@ public class XmlrpcdTest extends OpenNMSTestCase {
 
         Event nodeTwoEvent = new Event();
         nodeTwoEvent.setUei("uei.opennms.org/nodes/nodeLostService");
-        nodeTwoEvent.setTime(date);
+        nodeTwoEvent.setTime(EventConstants.formatToString(date));
         nodeTwoEvent.setNodeid(2);
         nodeTwoEvent.setSource("the one true event source");
         nodeTwoEvent.setInterface("192.168.1.2");
@@ -259,7 +258,7 @@ public class XmlrpcdTest extends OpenNMSTestCase {
         m_anticipator1 = new XmlrpcAnticipator(m_port1, true);
         anticipateNotifyReceivedEvent(m_anticipator1);
 
-        m_anticipator1.anticipateCall("sendServiceDownEvent", createServerVector(date));
+        anticipateServerServiceCall(m_anticipator1, "sendServiceDownEvent", date);
         
         m_anticipator1.setupWebServer();
         
@@ -301,22 +300,29 @@ public class XmlrpcdTest extends OpenNMSTestCase {
         finishUp();
     }
 
+    private void anticipateServerServiceCall(XmlrpcAnticipator anticipator, String method, Date date) {
+        anticipator.anticipateCall(method, "Server", "192.168.1.2", "SNMP", "Not Available", "null", EventConstants.formatToString(date));
+    }
+
+    private void anticipateRouterServiceCall(XmlrpcAnticipator anticipator, String method, Date date) {
+        anticipator.anticipateCall(method, "Router", "192.168.1.1", "ICMP", "Not Available", "null", EventConstants.formatToString(date));
+    }
+
     public void testSerialFailover() throws Exception {
         XmlrpcdConfigFactory.setInstance(new XmlrpcdConfigFactory(m_configTwo));
         
-        String date = EventConstants.formatToString(new Date());
-
+        Date date = new Date();
         anticipateNotifyReceivedEvent(m_anticipator1);
         m_anticipator2 = new XmlrpcAnticipator(m_port2);
         anticipateNotifyReceivedEvent(m_anticipator2);
         m_xmlrpcd.init();
         m_xmlrpcd.start();
 
-        m_anticipator1.anticipateCall("sendServiceDownEvent", createRouterVector(date));
+        anticipateRouterServiceCall(m_anticipator1, "sendServiceDownEvent", date);
      
         Event nodeOneEvent = new Event();
         nodeOneEvent.setUei("uei.opennms.org/nodes/nodeLostService");
-        nodeOneEvent.setTime(date);
+        nodeOneEvent.setTime(EventConstants.formatToString(date));
         nodeOneEvent.setNodeid(1);
         nodeOneEvent.setSource("the one true event source");
         nodeOneEvent.setInterface("192.168.1.1");
@@ -328,11 +334,11 @@ public class XmlrpcdTest extends OpenNMSTestCase {
         m_anticipator1.verifyAnticipated();
         m_anticipator1.shutdown();
         
-        m_anticipator2.anticipateCall("sendServiceDownEvent", createServerVector(date));
+        anticipateServerServiceCall(m_anticipator2, "sendServiceDownEvent", date);
 
         Event nodeTwoEvent = new Event();
         nodeTwoEvent.setUei("uei.opennms.org/nodes/nodeLostService");
-        nodeTwoEvent.setTime(date);
+        nodeTwoEvent.setTime(EventConstants.formatToString(date));
         nodeTwoEvent.setNodeid(2);
         nodeTwoEvent.setSource("the one true event source");
         nodeTwoEvent.setInterface("192.168.1.2");
@@ -385,19 +391,18 @@ public class XmlrpcdTest extends OpenNMSTestCase {
     public void testSerialFailback() throws Exception {
         XmlrpcdConfigFactory.setInstance(new XmlrpcdConfigFactory(m_configTwo));
         
-        String date = EventConstants.formatToString(new Date());
-        
+        Date date = new Date();
         anticipateNotifyReceivedEvent(m_anticipator1);
         m_anticipator2 = new XmlrpcAnticipator(m_port2);
         anticipateNotifyReceivedEvent(m_anticipator2);
         m_xmlrpcd.init();
         m_xmlrpcd.start();
 
-        m_anticipator1.anticipateCall("sendServiceDownEvent", createRouterVector(date));
+        anticipateRouterServiceCall(m_anticipator1, "sendServiceDownEvent", date);
         
         Event nodeOneEvent = new Event();
         nodeOneEvent.setUei("uei.opennms.org/nodes/nodeLostService");
-        nodeOneEvent.setTime(date);
+        nodeOneEvent.setTime(EventConstants.formatToString(date));
         nodeOneEvent.setNodeid(1);
         nodeOneEvent.setSource("the one true event source");
         nodeOneEvent.setInterface("192.168.1.1");
@@ -409,11 +414,11 @@ public class XmlrpcdTest extends OpenNMSTestCase {
         m_anticipator1.verifyAnticipated();
         m_anticipator1.shutdown();
         
-        m_anticipator2.anticipateCall("sendServiceDownEvent", createServerVector(date));
+        anticipateServerServiceCall(m_anticipator2, "sendServiceDownEvent", date);
 
         Event nodeTwoEvent = new Event();
         nodeTwoEvent.setUei("uei.opennms.org/nodes/nodeLostService");
-        nodeTwoEvent.setTime(date);
+        nodeTwoEvent.setTime(EventConstants.formatToString(date));
         nodeTwoEvent.setNodeid(2);
         nodeTwoEvent.setSource("the one true event source");
         nodeTwoEvent.setInterface("192.168.1.2");
@@ -428,11 +433,11 @@ public class XmlrpcdTest extends OpenNMSTestCase {
         m_anticipator1 = new XmlrpcAnticipator(m_port1);
         anticipateNotifyReceivedEvent(m_anticipator1);
 
-        m_anticipator1.anticipateCall("sendServiceDownEvent", createFirewallVector(date));
+        m_anticipator1.anticipateCall("sendServiceDownEvent", "Firewall", "192.168.1.3", "Telnet", "Not Available", "null", EventConstants.formatToString(date));
 
         Event nodeThreeEvent = new Event();
         nodeThreeEvent.setUei("uei.opennms.org/nodes/nodeLostService");
-        nodeThreeEvent.setTime(date);
+        nodeThreeEvent.setTime(EventConstants.formatToString(date));
         nodeThreeEvent.setNodeid(3);
         nodeThreeEvent.setSource("the one true event source");
         nodeThreeEvent.setInterface("192.168.1.3");
@@ -487,27 +492,22 @@ public class XmlrpcdTest extends OpenNMSTestCase {
         finishUp();
     }
 
-    private Vector<Object> createFirewallVector(String date) {
-        return createVector("Firewall", "192.168.1.3", "Telnet", "Not Available", "null", date);
-    }
-
     public void testMultipleServersSameEvents() throws Exception {
         XmlrpcdConfigFactory.setInstance(new XmlrpcdConfigFactory(m_configParallelSame));
         
-        String date = EventConstants.formatToString(new Date());
-
+        Date date = new Date();
         anticipateNotifyReceivedEvent(m_anticipator1);
         m_anticipator2 = new XmlrpcAnticipator(m_port2);
         anticipateNotifyReceivedEvent(m_anticipator2);
         m_xmlrpcd.init();
         m_xmlrpcd.start();
 
-        m_anticipator1.anticipateCall("sendServiceDownEvent", createRouterVector(date));
-        m_anticipator2.anticipateCall("sendServiceDownEvent", createRouterVector(date));
+        anticipateRouterServiceCall(m_anticipator1, "sendServiceDownEvent", date);
+        anticipateRouterServiceCall(m_anticipator2, "sendServiceDownEvent", date);
 
         Event e = new Event();
         e.setUei("uei.opennms.org/nodes/nodeLostService");
-        e.setTime(date);
+        e.setTime(EventConstants.formatToString(date));
         e.setNodeid(1);
         e.setSource("the one true event source");
         e.setInterface("192.168.1.1");
@@ -524,30 +524,29 @@ public class XmlrpcdTest extends OpenNMSTestCase {
     public void testMultipleServersDifferentEvents() throws Exception {
         XmlrpcdConfigFactory.setInstance(new XmlrpcdConfigFactory(m_configParallelDifferent));
         
-        String date = EventConstants.formatToString(new Date());
-
+        Date date = new Date();
         anticipateNotifyReceivedEvent(m_anticipator1);
         m_anticipator2 = new XmlrpcAnticipator(m_port2);
         anticipateNotifyReceivedEvent(m_anticipator2);
         m_xmlrpcd.init();
         m_xmlrpcd.start();
 
-        m_anticipator1.anticipateCall("sendServiceDownEvent", createRouterVector(date));
+        anticipateRouterServiceCall(m_anticipator1, "sendServiceDownEvent", date);
 
         Event lostEvent = new Event();
         lostEvent.setUei("uei.opennms.org/nodes/nodeLostService");
-        lostEvent.setTime(date);
+        lostEvent.setTime(EventConstants.formatToString(date));
         lostEvent.setNodeid(1);
         lostEvent.setSource("the one true event source");
         lostEvent.setInterface("192.168.1.1");
         lostEvent.setService("ICMP");
         getEventIpcManager().sendNow(lostEvent);
 
-        m_anticipator2.anticipateCall("sendServiceUpEvent", createServerVector(date));
+        anticipateServerServiceCall(m_anticipator2, "sendServiceUpEvent", date);
 
         Event regainedEvent = new Event();
         regainedEvent.setUei("uei.opennms.org/nodes/nodeRegainedService");
-        regainedEvent.setTime(date);
+        regainedEvent.setTime(EventConstants.formatToString(date));
         regainedEvent.setNodeid(2);
         regainedEvent.setSource("the one true event source");
         regainedEvent.setInterface("192.168.1.2");
@@ -561,15 +560,10 @@ public class XmlrpcdTest extends OpenNMSTestCase {
         finishUp();
     }
 
-    private Vector<Object> createServerVector(String date) {
-        return createVector("Server", "192.168.1.2", "SNMP", "Not Available", "null", date);
-    }
-    
     public void testEventGeneric() throws Exception {
         XmlrpcdConfigFactory.setInstance(new XmlrpcdConfigFactory(m_configGeneric));
         
-        String date = EventConstants.formatToString(new Date());
-        
+        Date date = new Date();
         anticipateNotifyReceivedEvent(m_anticipator1);
         m_xmlrpcd.init();
         m_xmlrpcd.start();
@@ -577,7 +571,7 @@ public class XmlrpcdTest extends OpenNMSTestCase {
         Hashtable<String, String> t = new Hashtable<String, String>();
         t.put("source", "the one true event source");
         t.put("nodeId", "1");
-        t.put("time", date);
+        t.put("time", EventConstants.formatToString(date));
         t.put("interface", "192.168.1.1");
         t.put("nodeLabel", "Router");
         t.put("service", "ICMP");
@@ -589,11 +583,11 @@ public class XmlrpcdTest extends OpenNMSTestCase {
                 + "      impacted until this outage is resolved.</p>\n"
                 + "    ");
         t.put("severity", "Minor");
-        m_anticipator1.anticipateCall("sendEvent", createVector(t));
+        m_anticipator1.anticipateCall("sendEvent", t);
         
         Event e = new Event();
         e.setUei("uei.opennms.org/nodes/nodeLostService");
-        e.setTime(date);
+        e.setTime(EventConstants.formatToString(date));
         e.setNodeid(1);
         e.setSource("the one true event source");
         e.setInterface("192.168.1.1");
@@ -609,13 +603,12 @@ public class XmlrpcdTest extends OpenNMSTestCase {
     
     /** Unless we are in generic mode, we shouldn't be seeing general traps */ 
     public void testSendTrapSimpleNonGeneric() throws Exception {
-        long dateLong = System.currentTimeMillis();
-        String date = new Date(dateLong).toString();
+        Date date = new Date();
         String enterpriseId = ".1.3.6.4.1.1.1";
 
-        Event e = XmlRpcNotifierTest.makeBasicEvent(date);
-        e.setTime(EventConstants.formatToString(new Date(dateLong)));
-        e.setSnmp(XmlRpcNotifierTest.makeBasicTrapEventSnmp("public", 6, enterpriseId, 2, dateLong, "1"));
+        Event e = XmlRpcNotifierTest.makeBasicEvent(EventConstants.formatToString(date));
+        e.setTime(EventConstants.formatToString(date));
+        e.setSnmp(XmlRpcNotifierTest.makeBasicTrapEventSnmp("public", 6, enterpriseId, 2, date.getTime(), "1"));
         e.setSource("the one true source");
         e.setLogmsg(new Logmsg());
         getEventIpcManager().sendNow(e);
@@ -626,22 +619,21 @@ public class XmlrpcdTest extends OpenNMSTestCase {
 
         finishUp();
     }
-    
+
     public void testSendTrapSimple() throws Exception {
         XmlrpcdConfigFactory.setInstance(new XmlrpcdConfigFactory(m_configGeneric));
 
-        long dateLong = System.currentTimeMillis();
-        String date = EventConstants.formatToString(new Date(dateLong));
+        Date date = new Date();
         String enterpriseId = ".1.3.6.4.1.1.1";
         
         anticipateNotifyReceivedEvent(m_anticipator1);
         m_xmlrpcd.init();
         m_xmlrpcd.start();
 
-        Vector<Object> v = new Vector<Object>();
-        Hashtable<String, String> t = XmlRpcNotifierTest.makeBasicRpcTrapHashtable(v, date, "public", 6, enterpriseId, 2, dateLong, "1");
-        t.put("uei", "uei.opennms.org/default/trap");
-        t.put("source", "the one true source");
+        Hashtable<String, String> trapMap = XmlRpcNotifierTest.basicTrapMap(date, "public", enterpriseId, 6, 2, date.getTime(), "1");
+        
+        trapMap.put("uei", "uei.opennms.org/default/trap");
+        trapMap.put("source", "the one true source");
         /*
         t.put("description", "\n" + 
                 "      <p>This is the default event format used when an enterprise\n" +
@@ -649,13 +641,14 @@ public class XmlrpcdTest extends OpenNMSTestCase {
                 "      configured (i.e. no event definition exists).</p>\n" + 
                 "    ");
                 */
-        t.put("severity", "Normal");
-        m_anticipator1.anticipateCall("sendSnmpTrapEvent", v);
+        trapMap.put("severity", "Normal");
 
-        Event e = XmlRpcNotifierTest.makeBasicEvent(date);
+        m_anticipator1.anticipateCall("sendSnmpTrapEvent", trapMap);
+
+        Event e = XmlRpcNotifierTest.makeBasicEvent(EventConstants.formatToString(date));
         e.setUei("uei.opennms.org/default/trap");
-        e.setTime(EventConstants.formatToString(new Date(dateLong)));
-        e.setSnmp(XmlRpcNotifierTest.makeBasicTrapEventSnmp("public", 6, enterpriseId, 2, dateLong, "1"));
+        e.setTime(EventConstants.formatToString(date));
+        e.setSnmp(XmlRpcNotifierTest.makeBasicTrapEventSnmp("public", 6, enterpriseId, 2, date.getTime(), "1"));
         e.setSource("the one true source");
         e.setSeverity("Normal");
         e.setLogmsg(new Logmsg());
@@ -669,17 +662,16 @@ public class XmlrpcdTest extends OpenNMSTestCase {
     }
     
     public void testServiceDownEvent() throws Exception {
-        String date = EventConstants.formatToString(new Date());
-
+        Date date = new Date();
         anticipateNotifyReceivedEvent(m_anticipator1);
         m_xmlrpcd.init();
         m_xmlrpcd.start();
 
-        m_anticipator1.anticipateCall("sendServiceDownEvent", createRouterVector(date));
+        anticipateRouterServiceCall(m_anticipator1, "sendServiceDownEvent", date);
         
         Event e = new Event();
         e.setUei("uei.opennms.org/nodes/nodeLostService");
-        e.setTime(date);
+        e.setTime(EventConstants.formatToString(date));
         e.setNodeid(1);
         e.setSource("the one true event source");
         e.setInterface("192.168.1.1");
@@ -693,22 +685,17 @@ public class XmlrpcdTest extends OpenNMSTestCase {
         finishUp();
     }
 
-    private Vector<Object> createRouterVector(String date) {
-        return createVector("Router", "192.168.1.1", "ICMP", "Not Available", "null", date);
-    }
-    
     public void testServiceUpEvent() throws Exception {
-        String date = EventConstants.formatToString(new Date());
-
+        Date date = new Date();
         anticipateNotifyReceivedEvent(m_anticipator1);
         m_xmlrpcd.init();
         m_xmlrpcd.start();
 
-        m_anticipator1.anticipateCall("sendServiceUpEvent", createRouterVector(date));
+        anticipateRouterServiceCall(m_anticipator1, "sendServiceUpEvent", date);
         
         Event e = new Event();
         e.setUei("uei.opennms.org/nodes/nodeRegainedService");
-        e.setTime(date);
+        e.setTime(EventConstants.formatToString(date));
         e.setNodeid(1);
         e.setSource("the one true event source");
         e.setInterface("192.168.1.1");
@@ -721,19 +708,18 @@ public class XmlrpcdTest extends OpenNMSTestCase {
 
         finishUp();
     }
-    
-    public void testInterfaceDownEvent() throws Exception {
-        String date = EventConstants.formatToString(new Date());
 
+    public void testInterfaceDownEvent() throws Exception {
+        Date date = new Date();
         anticipateNotifyReceivedEvent(m_anticipator1);
         m_xmlrpcd.init();
         m_xmlrpcd.start();
 
-        m_anticipator1.anticipateCall("sendInterfaceDownEvent", createVector("Router", "192.168.1.1", "null", date));
+        m_anticipator1.anticipateCall("sendInterfaceDownEvent", "Router", "192.168.1.1", "null", EventConstants.formatToString(date));
         
         Event e = new Event();
         e.setUei("uei.opennms.org/nodes/interfaceDown");
-        e.setTime(date);
+        e.setTime(EventConstants.formatToString(date));
         e.setNodeid(1);
         e.setSource("the one true event source");
         e.setInterface("192.168.1.1");
@@ -747,17 +733,16 @@ public class XmlrpcdTest extends OpenNMSTestCase {
     }
     
     public void testInterfaceUpEvent() throws Exception {
-        String date = EventConstants.formatToString(new Date());
-
+        Date date = new Date();
         anticipateNotifyReceivedEvent(m_anticipator1);
         m_xmlrpcd.init();
         m_xmlrpcd.start();
 
-        m_anticipator1.anticipateCall("sendInterfaceUpEvent", createVector("Router", "192.168.1.1", "null", "null", date));
+        m_anticipator1.anticipateCall("sendInterfaceUpEvent", "Router", "192.168.1.1", "null", "null", EventConstants.formatToString(date));
         
         Event e = new Event();
         e.setUei("uei.opennms.org/nodes/interfaceUp");
-        e.setTime(date);
+        e.setTime(EventConstants.formatToString(date));
         e.setNodeid(1);
         e.setSource("the one true event source");
         e.setInterface("192.168.1.1");
@@ -771,17 +756,16 @@ public class XmlrpcdTest extends OpenNMSTestCase {
     }
     
     public void testNodeDownEvent() throws Exception {
-        String date = EventConstants.formatToString(new Date());
-
+        Date date = new Date();
         anticipateNotifyReceivedEvent(m_anticipator1);
         m_xmlrpcd.init();
         m_xmlrpcd.start();
 
-        m_anticipator1.anticipateCall("sendNodeDownEvent", createVector("Router", "bar", date));
+        m_anticipator1.anticipateCall("sendNodeDownEvent", "Router", "bar", EventConstants.formatToString(date));
         
         Event e = new Event();
         e.setUei("uei.opennms.org/nodes/nodeDown");
-        e.setTime(date);
+        e.setTime(EventConstants.formatToString(date));
         e.setNodeid(1);
         e.setHost("bar");
         e.setSource("the one true event source");
@@ -795,17 +779,16 @@ public class XmlrpcdTest extends OpenNMSTestCase {
     }
     
     public void testNodeUpEvent() throws Exception {
-        String date = EventConstants.formatToString(new Date());
-
+        Date date = new Date();
         anticipateNotifyReceivedEvent(m_anticipator1);
         m_xmlrpcd.init();
         m_xmlrpcd.start();
 
-        m_anticipator1.anticipateCall("sendNodeUpEvent", createVector("Router", "bar", date));
+        m_anticipator1.anticipateCall("sendNodeUpEvent", "Router", "bar", EventConstants.formatToString(date));
         
         Event e = new Event();
         e.setUei("uei.opennms.org/nodes/nodeUp");
-        e.setTime(date);
+        e.setTime(EventConstants.formatToString(date));
         e.setNodeid(1);
         e.setHost("bar");
         e.setSource("the one true event source");
@@ -863,12 +846,4 @@ public class XmlrpcdTest extends OpenNMSTestCase {
         finishUp();
     }
     
-    private Vector<Object> createVector(Object... objs) {
-        Vector<Object> v = new Vector<Object>(objs.length);
-        for (Object obj : objs) {
-            v.add(obj);
-        }
-        return v;
-    }
-
 }

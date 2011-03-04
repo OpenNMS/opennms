@@ -78,36 +78,6 @@ import org.springframework.util.Assert;
  * @author <a href="mailto:tarus@opennms.org">Tarus Balog</a>
  * @author <A HREF="mailto:jamesz@opennms.com">James Zuo</A>
  * @author <A HREF="http://www.opennms.org">OpenNMS.org</A>
- * @author <a href="mailto:brozow@opennms.org">Mathew Brozowski</a>
- * @author <a href="mailto:dj@opennms.org">DJ Gregor</a>
- * @author <a href="mailto:mhuot@opennms.org">Mike Huot</a>
- * @author <a href="mailto:tarus@opennms.org">Tarus Balog</a>
- * @author <A HREF="mailto:jamesz@opennms.com">James Zuo</A>
- * @author <A HREF="http://www.opennms.org">OpenNMS.org</A>
- * @author <a href="mailto:brozow@opennms.org">Mathew Brozowski</a>
- * @author <a href="mailto:dj@opennms.org">DJ Gregor</a>
- * @author <a href="mailto:mhuot@opennms.org">Mike Huot</a>
- * @author <a href="mailto:tarus@opennms.org">Tarus Balog</a>
- * @author <A HREF="mailto:jamesz@opennms.com">James Zuo</A>
- * @author <A HREF="http://www.opennms.org">OpenNMS.org</A>
- * @author <a href="mailto:brozow@opennms.org">Mathew Brozowski</a>
- * @author <a href="mailto:dj@opennms.org">DJ Gregor</a>
- * @author <a href="mailto:mhuot@opennms.org">Mike Huot</a>
- * @author <a href="mailto:tarus@opennms.org">Tarus Balog</a>
- * @author <A HREF="mailto:jamesz@opennms.com">James Zuo</A>
- * @author <A HREF="http://www.opennms.org">OpenNMS.org</A>
- * @author <a href="mailto:brozow@opennms.org">Mathew Brozowski</a>
- * @author <a href="mailto:dj@opennms.org">DJ Gregor</a>
- * @author <a href="mailto:mhuot@opennms.org">Mike Huot</a>
- * @author <a href="mailto:tarus@opennms.org">Tarus Balog</a>
- * @author <A HREF="mailto:jamesz@opennms.com">James Zuo</A>
- * @author <A HREF="http://www.opennms.org">OpenNMS.org</A>
- * @author <a href="mailto:brozow@opennms.org">Mathew Brozowski</a>
- * @author <a href="mailto:dj@opennms.org">DJ Gregor</a>
- * @author <a href="mailto:mhuot@opennms.org">Mike Huot</a>
- * @author <a href="mailto:tarus@opennms.org">Tarus Balog</a>
- * @author <A HREF="mailto:jamesz@opennms.com">James Zuo</A>
- * @author <A HREF="http://www.opennms.org">OpenNMS.org</A>
  * @version $Id: $
  */
 public final class XmlRpcNotifier {
