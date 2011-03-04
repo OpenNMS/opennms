@@ -102,6 +102,12 @@ public class XmlrpcAnticipatorTest extends TestCase {
         XmlRpcClient client = new XmlRpcClient("http://localhost:" + PORT);
         client.execute("howCheesyIsIt", v2);
         
+        try {
+			Thread.sleep(500);
+		} catch (InterruptedException e) {
+			Thread.currentThread().interrupt();
+		}
+
         m_anticipator.verifyAnticipated();
     }
     
@@ -121,6 +127,12 @@ public class XmlrpcAnticipatorTest extends TestCase {
         
         XmlRpcClient client = new XmlRpcClient("http://localhost:" + PORT);
         client.execute("howCheesyIsIt", v2);
+
+        try {
+			Thread.sleep(500);
+		} catch (InterruptedException e) {
+			Thread.currentThread().interrupt();
+		}
 
         boolean sawException = false;
         try {
@@ -154,6 +166,12 @@ public class XmlrpcAnticipatorTest extends TestCase {
         XmlRpcClient client = new XmlRpcClient("http://localhost:" + PORT);
         client.execute("howCheesyIsIt", v2);
         
+        try {
+			Thread.sleep(500);
+		} catch (InterruptedException e) {
+			Thread.currentThread().interrupt();
+		}
+
         m_anticipator.verifyAnticipated();
     }
 }
