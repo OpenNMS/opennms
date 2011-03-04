@@ -41,6 +41,7 @@ import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
 import org.opennms.netmgt.EventConstants;
+import org.opennms.netmgt.model.events.EventBuilder;
 import org.opennms.netmgt.model.events.EventProxy;
 import org.opennms.netmgt.model.events.EventProxyException;
 import org.opennms.netmgt.utils.NodeLabel;
@@ -132,54 +133,23 @@ public class NodeLabelChangeServlet extends HttpServlet {
      * @throws org.opennms.netmgt.model.events.EventProxyException if any.
      */
     protected void sendLabelChangeEvent(int nodeId, NodeLabel oldNodeLabel, NodeLabel newNodeLabel) throws EventProxyException {
-        Event outEvent = new Event();
-        outEvent.setSource("NodeLabelChangeServlet");
-        outEvent.setUei(EventConstants.NODE_LABEL_CHANGED_EVENT_UEI);
-        outEvent.setNodeid(nodeId);
-        outEvent.setHost("host");
-        outEvent.setTime(EventConstants.formatToString(new java.util.Date()));
+        
+        EventBuilder bldr = new EventBuilder(EventConstants.NODE_LABEL_CHANGED_EVENT_UEI, "NodeLabelChangeServlet");
 
-        Parms parms = new Parms();
+        bldr.setNodeid(nodeId);
+        bldr.setHost("host");
 
         if (oldNodeLabel != null) {
-            // old label
-            Value value = new Value();
-            value.setContent(oldNodeLabel.getLabel());
-            Parm parm = new Parm();
-            parm.setParmName(EventConstants.PARM_OLD_NODE_LABEL);
-            parm.setValue(value);
-            parms.addParm(parm);
-
-            // old label source
-            value = new Value();
-            value.setContent(String.valueOf(oldNodeLabel.getSource()));
-            parm = new Parm();
-            parm.setParmName(EventConstants.PARM_OLD_NODE_LABEL_SOURCE);
-            parm.setValue(value);
-            parms.addParm(parm);
+            bldr.addParam(EventConstants.PARM_OLD_NODE_LABEL, oldNodeLabel.getLabel());
+            bldr.addParam(EventConstants.PARM_OLD_NODE_LABEL_SOURCE,oldNodeLabel.getSource() );
         }
 
         if (newNodeLabel != null) {
-            // new label
-            Value value = new Value();
-            value.setContent(newNodeLabel.getLabel());
-            Parm parm = new Parm();
-            parm.setParmName(EventConstants.PARM_NEW_NODE_LABEL);
-            parm.setValue(value);
-            parms.addParm(parm);
-
-            // old label source
-            value = new Value();
-            value.setContent(String.valueOf(newNodeLabel.getSource()));
-            parm = new Parm();
-            parm.setParmName(EventConstants.PARM_NEW_NODE_LABEL_SOURCE);
-            parm.setValue(value);
-            parms.addParm(parm);
+            bldr.addParam(EventConstants.PARM_NEW_NODE_LABEL, newNodeLabel.getLabel());
+            bldr.addParam(EventConstants.PARM_NEW_NODE_LABEL_SOURCE, newNodeLabel.getSource());
         }
 
-        outEvent.setParms(parms);
-
-        this.proxy.send(outEvent);
+        this.proxy.send(bldr.getEvent());
     }
 
 }
