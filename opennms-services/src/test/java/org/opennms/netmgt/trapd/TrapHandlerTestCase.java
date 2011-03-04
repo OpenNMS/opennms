@@ -56,6 +56,7 @@ import org.opennms.core.utils.Base64;
 import org.opennms.netmgt.EventConstants;
 import org.opennms.netmgt.mock.EventAnticipator;
 import org.opennms.netmgt.mock.MockEventIpcManager;
+import org.opennms.netmgt.model.events.EventBuilder;
 import org.opennms.netmgt.snmp.SnmpInstId;
 import org.opennms.netmgt.snmp.SnmpObjId;
 import org.opennms.netmgt.snmp.SnmpTrapBuilder;
@@ -453,12 +454,11 @@ public class TrapHandlerTestCase {
     }
 
     public Event anticipateEvent(String uei, String ip, long nodeId) {
-        Event event = new Event();
-        event.setInterface(ip);
-        event.setNodeid(nodeId);
-        event.setUei(uei);
-        m_anticipator.anticipateEvent(event);
-        return event;
+        EventBuilder bldr = new EventBuilder(uei, "TrapHandlerTestCase");
+        bldr.setNodeid(nodeId);
+        bldr.setInterface(ip);
+        m_anticipator.anticipateEvent(bldr.getEvent());
+        return bldr.getEvent();
     }
 
     public Collection<Event> anticipateAndSend(boolean newSuspectOnTrap, boolean nodeKnown,

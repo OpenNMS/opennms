@@ -60,6 +60,7 @@ import org.opennms.core.queue.FifoQueueException;
 import org.opennms.core.utils.ThreadCategory;
 import org.opennms.netmgt.config.EventConfDao;
 import org.opennms.netmgt.eventd.EventIpcManager;
+import org.opennms.netmgt.model.events.EventBuilder;
 import org.opennms.netmgt.snmp.TrapNotification;
 import org.opennms.netmgt.xml.event.Event;
 import org.opennms.netmgt.xml.eventconf.Logmsg;
@@ -243,15 +244,12 @@ class TrapQueueProcessor implements Runnable, PausableFiber, InitializingBean {
      */
     private void sendNewSuspectEvent(String trapInterface) {
         // construct event with 'trapd' as source
-        Event event = new Event();
-        event.setSource("trapd");
-        event.setUei(org.opennms.netmgt.EventConstants.NEW_SUSPECT_INTERFACE_EVENT_UEI);
-        event.setHost(m_localAddr);
-        event.setInterface(trapInterface);
-        event.setTime(org.opennms.netmgt.EventConstants.formatToString(new java.util.Date()));
+        EventBuilder bldr = new EventBuilder(org.opennms.netmgt.EventConstants.NEW_SUSPECT_INTERFACE_EVENT_UEI, "trapd");
+        bldr.setInterface(trapInterface);
+        bldr.setHost(m_localAddr);
 
         // send the event to eventd
-        m_eventMgr.sendNow(event);
+        m_eventMgr.sendNow(bldr.getEvent());
     }
 
     /**
