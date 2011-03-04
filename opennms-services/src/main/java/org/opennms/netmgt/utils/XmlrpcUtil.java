@@ -32,6 +32,7 @@ import java.net.UnknownHostException;
 import org.opennms.core.utils.ThreadCategory;
 import org.opennms.netmgt.EventConstants;
 import org.opennms.netmgt.eventd.EventIpcManagerFactory;
+import org.opennms.netmgt.model.events.EventBuilder;
 import org.opennms.netmgt.xml.event.Event;
 import org.opennms.netmgt.xml.event.Parm;
 import org.opennms.netmgt.xml.event.Parms;
@@ -64,9 +65,7 @@ public final class XmlrpcUtil {
         if (log.isDebugEnabled())
             log.debug("createAndSendXmlrpcNotificationEvent:  txNo= " + txNo + "\n" + " uei = " + sourceUei + "\n" + " message = " + message + "\n" + " status = " + status);
 
-        Event newEvent = new Event();
-        newEvent.setUei(EventConstants.XMLRPC_NOTIFICATION_EVENT_UEI);
-        newEvent.setSource(generator);
+
 
         String hostAddress = null;
         try {
@@ -76,51 +75,16 @@ public final class XmlrpcUtil {
             log.warn("createAndSendXmlrpcNotificationEvent: Could not lookup the host name for " + " the local host machine, address set to localhost", uhE);
         }
 
-        newEvent.setHost(hostAddress);
-        newEvent.setTime(EventConstants.formatToString(new java.util.Date()));
-
-        // Add appropriate parms
-        Parms eventParms = new Parms();
-        Parm eventParm = null;
-        Value parmValue = null;
-
-        eventParm = new Parm();
-        eventParm.setParmName(EventConstants.PARM_TRANSACTION_NO);
-        parmValue = new Value();
-        parmValue.setContent(String.valueOf(txNo));
-        eventParm.setValue(parmValue);
-        eventParms.addParm(eventParm);
-
-        // Add source event uei
-        eventParm = new Parm();
-        eventParm.setParmName(EventConstants.PARM_SOURCE_EVENT_UEI);
-        parmValue = new Value();
-        parmValue.setContent(new String(sourceUei));
-        eventParm.setValue(parmValue);
-        eventParms.addParm(eventParm);
-
-        // Add message parameter
-        eventParm = new Parm();
-        eventParm.setParmName(EventConstants.PARM_SOURCE_EVENT_MESSAGE);
-        parmValue = new Value();
-        parmValue.setContent(message);
-        eventParm.setValue(parmValue);
-        eventParms.addParm(eventParm);
-
-        // Add status parameter
-        eventParm = new Parm();
-        eventParm.setParmName(EventConstants.PARM_SOURCE_EVENT_STATUS);
-        parmValue = new Value();
-        parmValue.setContent(String.valueOf(status));
-        eventParm.setValue(parmValue);
-        eventParms.addParm(eventParm);
-
-        // Add Parms to the event
-        newEvent.setParms(eventParms);
+        EventBuilder bldr = new EventBuilder(EventConstants.XMLRPC_NOTIFICATION_EVENT_UEI, generator);
+        bldr.setHost(hostAddress);
+        bldr.addParam(EventConstants.PARM_TRANSACTION_NO, txNo);
+        bldr.addParam(EventConstants.PARM_SOURCE_EVENT_UEI, sourceUei);
+        bldr.addParam(EventConstants.PARM_SOURCE_EVENT_MESSAGE, message);
+        bldr.addParam(EventConstants.PARM_SOURCE_EVENT_STATUS, status);
 
         // Send event to Eventd
         try {
-            EventIpcManagerFactory.getIpcManager().sendNow(newEvent);
+            EventIpcManagerFactory.getIpcManager().sendNow(bldr.getEvent());
 
             if (log.isDebugEnabled())
                 log.debug("createdAndSendXmlrpcNotificationEvent: successfully sent " + "XMLRPC notification event for txno: " + txNo + " / " + sourceUei + " " + status);
@@ -128,20 +92,16 @@ public final class XmlrpcUtil {
             log.warn("run: unexpected throwable exception caught during send to middleware", t);
 
             int failureFlag = 2;
-            eventParms.removeParm(eventParm);
 
-            // Add status parameter
-            eventParm = new Parm();
-            eventParm.setParmName(EventConstants.PARM_SOURCE_EVENT_STATUS);
-            parmValue = new Value();
-            parmValue.setContent(String.valueOf(failureFlag));
-            eventParm.setValue(parmValue);
-            eventParms.addParm(eventParm);
+            EventBuilder bldr2 = new EventBuilder(EventConstants.XMLRPC_NOTIFICATION_EVENT_UEI, generator);
+            bldr2.setHost(hostAddress);
+            bldr2.addParam(EventConstants.PARM_TRANSACTION_NO, txNo);
+            bldr2.addParam(EventConstants.PARM_SOURCE_EVENT_UEI, sourceUei);
+            bldr2.addParam(EventConstants.PARM_SOURCE_EVENT_MESSAGE, message);
+            bldr2.addParam(EventConstants.PARM_SOURCE_EVENT_STATUS, failureFlag);
 
-            // Add Parms to the event
-            newEvent.setParms(eventParms);
             try {
-                EventIpcManagerFactory.getIpcManager().sendNow(newEvent);
+                EventIpcManagerFactory.getIpcManager().sendNow(bldr2.getEvent());
 
                 if (log.isDebugEnabled())
                     log.debug("createdAndSendXmlrpcNotificationEvent: successfully sent " + "XMLRPC notification event for txno: " + txNo + " / " + sourceUei + " " + failureFlag);

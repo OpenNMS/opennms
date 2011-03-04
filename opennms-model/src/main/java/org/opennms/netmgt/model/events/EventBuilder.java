@@ -231,19 +231,32 @@ public class EventBuilder {
      * @return a {@link org.opennms.netmgt.model.events.EventBuilder} object.
      */
     public EventBuilder addParam(String parmName, String val) {
+        return addParam(parmName, val, null, null);
+    }
+    
+    public EventBuilder addParam(String parmName, String val, String type, String encoding) {
         if (parmName != null) {
             Value value = new Value();
             value.setContent(val);
-
+            
+            if (type != null) {
+                value.setType(type);
+            }
+            
+            if (encoding != null) {
+                value.setEncoding(encoding);
+            }
+            
             Parm parm = new Parm();
             parm.setParmName(parmName);
             parm.setValue(value);
-        
+            
             addParam(parm);
         }
         
         return this;
     }
+
     
     public EventBuilder addParam(Parm parm) {
         
@@ -563,15 +576,16 @@ public class EventBuilder {
     }
 
     /**
-     * <p>addParms</p>
+     * <p>setParms</p>
      *
      * @param parms a {@link org.opennms.netmgt.xml.event.Parms} object.
      * @return a {@link org.opennms.netmgt.model.events.EventBuilder} object.
      */
-    public EventBuilder addParms(final Parms parms) {
+    public EventBuilder setParms(final Parms parms) {
         m_event.setParms(parms);
         return this;
     }
+
 
 
 }

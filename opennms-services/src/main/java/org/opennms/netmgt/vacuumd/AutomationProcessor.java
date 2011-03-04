@@ -616,7 +616,7 @@ public class AutomationProcessor implements ReadyRunnable {
                 
                 try {
                     if (m_actionEvent.isAddAllParms() && resultHasColumn(triggerResultSet, "eventParms") ) {
-                        bldr.addParms(Parameter.decode(triggerResultSet.getString("eventParms")));
+                        bldr.setParms(Parameter.decode(triggerResultSet.getString("eventParms")));
                     }
                     buildEvent(bldr, symbols);
                 } catch (SQLExceptionHolder holder) {
