@@ -51,6 +51,7 @@ import org.opennms.netmgt.model.OnmsMonitoredService;
 import org.opennms.netmgt.model.OnmsMonitoredServiceList;
 import org.opennms.netmgt.model.OnmsNode;
 import org.opennms.netmgt.model.OnmsServiceType;
+import org.opennms.netmgt.model.events.EventBuilder;
 import org.opennms.netmgt.model.events.EventProxy;
 import org.opennms.netmgt.model.events.EventProxyException;
 import org.opennms.netmgt.model.events.EventUtils;
@@ -235,15 +236,14 @@ public class OnmsMonitoredServiceResource extends OnmsRestService {
         log().debug("deleteService: deleting service " + serviceName + " from node " + nodeCriteria);
         intf.getMonitoredServices().remove(service);
         m_ipInterfaceDao.saveOrUpdate(intf);
-        Event e = new Event();
-        e.setUei(EventConstants.SERVICE_DELETED_EVENT_UEI);
-        e.setNodeid(node.getId());
-        e.setInterface(ipAddress);
-        e.setService(serviceName);
-        e.setSource(getClass().getName());
-        e.setTime(EventConstants.formatToString(new java.util.Date()));
+        
+        EventBuilder bldr = new EventBuilder(EventConstants.SERVICE_DELETED_EVENT_UEI, getClass().getName());
+        bldr.setNodeid(node.getId());
+        bldr.setInterface(ipAddress);
+        bldr.setService(serviceName);
+
         try {
-            m_eventProxy.send(e);
+            m_eventProxy.send(bldr.getEvent());
         } catch (EventProxyException ex) {
             throwException(Status.BAD_REQUEST, ex.getMessage());
         }
