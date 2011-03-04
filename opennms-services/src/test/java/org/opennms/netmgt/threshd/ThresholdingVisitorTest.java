@@ -92,13 +92,12 @@ import org.opennms.netmgt.mock.MockNetwork;
 import org.opennms.netmgt.model.OnmsNode;
 import org.opennms.netmgt.model.OnmsSnmpInterface;
 import org.opennms.netmgt.model.RrdRepository;
+import org.opennms.netmgt.model.events.EventBuilder;
 import org.opennms.netmgt.snmp.SnmpInstId;
 import org.opennms.netmgt.snmp.SnmpUtils;
 import org.opennms.netmgt.snmp.SnmpValue;
 import org.opennms.netmgt.xml.event.Event;
 import org.opennms.netmgt.xml.event.Parm;
-import org.opennms.netmgt.xml.event.Parms;
-import org.opennms.netmgt.xml.event.Value;
 import org.opennms.test.mock.MockLogAppender;
 
 /**
@@ -1471,91 +1470,44 @@ public class ThresholdingVisitorTest {
     }
 
     private void addEvent(String uei, String ipaddr, String service, Integer trigger, Double threshold, Double rearm, Double value, String label, String instance, String ds, String ifLabel, String ifIndex) {
-        Event e = new Event();
-        e.setUei(uei);
-        e.setNodeid(1);
-        e.setInterface(ipaddr);
-        e.setService(service);
-        Parms parms = new Parms();
+        
+        EventBuilder bldr = new EventBuilder(uei, "ThresholdingVisitorTest");
+        bldr.setNodeid(1);
+        bldr.setInterface(ipaddr);
+        bldr.setService(service);
 
-        Parm p = new Parm();
-        p.setParmName("label");
-        Value v = new Value();
-        v.setContent(label);
-        p.setValue(v);
-        parms.addParm(p);
+        bldr.addParam("label", label);
 
         if (ifLabel != null) {
-            p = new Parm();
-            p.setParmName("ifLabel");
-            v = new Value();
-            v.setContent(ifLabel);
-            p.setValue(v);
-            parms.addParm(p);            
+            bldr.addParam("ifLabel", ifLabel);
         }
         
         if (ifIndex != null) {
-            p = new Parm();
-            p.setParmName("ifIndex");
-            v = new Value();
-            v.setContent(ifIndex);
-            p.setValue(v);
-            parms.addParm(p);   
+            bldr.addParam("ifIndex", ifIndex);
         }
-        
-        p = new Parm();
-        p.setParmName("ds");
-        v = new Value();
-        v.setContent(ds);
-        p.setValue(v);
-        parms.addParm(p);
+
+        bldr.addParam("ds", ds);
         
         if (value != null) {
-            p = new Parm();
-            p.setParmName("value");
-            v = new Value();
             String pattern = System.getProperty("org.opennms.threshd.value.decimalformat", "###.##"); // See Bug 3427
             DecimalFormat valueFormatter = new DecimalFormat(pattern);
-            v.setContent(valueFormatter.format(value));
-            p.setValue(v);
-            parms.addParm(p);
+            bldr.addParam("value", valueFormatter.format(value));
         }
 
-        p = new Parm();
-        p.setParmName("instance");
-        v = new Value();
-        v.setContent(instance);
-        p.setValue(v);
-        parms.addParm(p);
+        bldr.addParam("instance", instance);
 
-        p = new Parm();
-        p.setParmName("trigger");
-        v = new Value();
-        v.setContent(Integer.toString(trigger));
-        p.setValue(v);
-        parms.addParm(p);
+        bldr.addParam("trigger", trigger);
 
         if (threshold != null) {
-            p = new Parm();
-            p.setParmName("threshold");
-            v = new Value();
-            v.setContent(Double.toString(threshold));
-            p.setValue(v);
-            parms.addParm(p);
+            bldr.addParam("threshold", threshold);
         }
 
         if (rearm != null) {
-            p = new Parm();
-            p.setParmName("rearm");
-            v = new Value();
-            v.setContent(Double.toString(rearm));
-            p.setValue(v);
-            parms.addParm(p);
+            bldr.addParam("rearm", rearm);
         }
 
-        e.setParms(parms);
-        m_anticipator.anticipateEvent(e, true);
-        m_anticipatedEvents.add(e);
+        m_anticipator.anticipateEvent(bldr.getEvent(), true);
+        m_anticipatedEvents.add(bldr.getEvent());
     }
 
     private void verifyEvents(int remainEvents) {

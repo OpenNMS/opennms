@@ -49,6 +49,7 @@ import org.opennms.netmgt.config.PollOutagesConfigFactory;
 import org.opennms.netmgt.config.threshd.Package;
 import org.opennms.netmgt.config.threshd.Parameter;
 import org.opennms.netmgt.config.threshd.Service;
+import org.opennms.netmgt.model.events.EventBuilder;
 import org.opennms.netmgt.model.events.EventProxy;
 import org.opennms.netmgt.poller.InetNetworkInterface;
 import org.opennms.netmgt.scheduler.LegacyScheduler;
@@ -298,24 +299,21 @@ final class ThresholdableService extends InetNetworkInterface implements Thresho
      * uei Universal event identifier of event to generate.
      */
     private void sendEvent(String uei) {
-        final Event event = new Event();
-        event.setUei(uei);
-        event.setNodeid((long) m_nodeId);
-        event.setInterface(m_address.getHostAddress());
-        event.setService("SNMP");
-        event.setSource("OpenNMS.Threshd");
-        try {
-            event.setHost(InetAddress.getLocalHost().getHostAddress());
-        } catch (final UnknownHostException ex) {
-            event.setHost("unresolved.host");
-        }
 
-        event.setTime(EventConstants.formatToString(new java.util.Date()));
+        EventBuilder bldr = new EventBuilder(uei, "OpenNMS.Threshd");
+        bldr.setNodeid(m_nodeId);
+        bldr.setInterface(m_address.getHostAddress());
+        bldr.setService("SNMP");
+        try {
+            bldr.setHost(InetAddress.getLocalHost().getHostAddress());
+        } catch (final UnknownHostException ex) {
+            bldr.setHost("unresolved.host");
+        }
 
         // Send the event
         //
         try {
-            m_proxy.send(event);
+            m_proxy.send(bldr.getEvent());
         } catch (final Exception ex) {
             LogUtils.errorf(this, ex, "Failed to send the event %s for interface %s", uei, m_address.getHostAddress());
         }
