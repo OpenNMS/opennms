@@ -61,9 +61,9 @@ import org.opennms.netmgt.model.OnmsCriteria;
 import org.opennms.netmgt.model.OnmsIpInterface;
 import org.opennms.netmgt.model.OnmsIpInterfaceList;
 import org.opennms.netmgt.model.OnmsNode;
+import org.opennms.netmgt.model.events.EventBuilder;
 import org.opennms.netmgt.model.events.EventProxy;
 import org.opennms.netmgt.model.events.EventProxyException;
-import org.opennms.netmgt.xml.event.Event;
 import org.springframework.beans.BeanWrapper;
 import org.springframework.beans.BeanWrapperImpl;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -179,14 +179,14 @@ public class OnmsIpInterfaceResource extends OnmsRestService {
         log().debug("addIpInterface: adding interface " + ipInterface);
         node.addIpInterface(ipInterface);
         m_ipInterfaceDao.save(ipInterface);
-        Event e = new Event();
-        e.setUei(EventConstants.NODE_GAINED_INTERFACE_EVENT_UEI);
-        e.setNodeid(node.getId());
-        e.setInterface(ipInterface.getIpAddressAsString());
-        e.setSource(getClass().getName());
-        e.setTime(EventConstants.formatToString(new java.util.Date()));
+        
+        EventBuilder bldr = new EventBuilder(EventConstants.NODE_GAINED_INTERFACE_EVENT_UEI, getClass().getName());
+
+        bldr.setNodeid(node.getId());
+        bldr.setInterface(ipInterface.getIpAddressAsString());
+
         try {
-            m_eventProxy.send(e);
+            m_eventProxy.send(bldr.getEvent());
         } catch (EventProxyException ex) {
             throwException(Status.BAD_REQUEST, ex.getMessage());
         }
@@ -248,14 +248,14 @@ public class OnmsIpInterfaceResource extends OnmsRestService {
         log().debug("deleteIpInterface: deleting interface " + ipAddress + " from node " + nodeCriteria);
         node.getIpInterfaces().remove(intf);
         m_nodeDao.save(node);
-        Event e = new Event();
-        e.setUei(EventConstants.INTERFACE_DELETED_EVENT_UEI);
-        e.setNodeid(node.getId());
-        e.setInterface(ipAddress);
-        e.setSource(getClass().getName());
-        e.setTime(EventConstants.formatToString(new java.util.Date()));
+        
+        EventBuilder bldr = new EventBuilder(EventConstants.INTERFACE_DELETED_EVENT_UEI, getClass().getName());
+
+        bldr.setNodeid(node.getId());
+        bldr.setInterface(ipAddress);
+
         try {
-            m_eventProxy.send(e);
+            m_eventProxy.send(bldr.getEvent());
         } catch (EventProxyException ex) {
             throwException(Status.BAD_REQUEST, ex.getMessage());
         }

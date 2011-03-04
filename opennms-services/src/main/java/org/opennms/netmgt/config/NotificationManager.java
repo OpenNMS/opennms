@@ -1183,6 +1183,7 @@ public abstract class NotificationManager {
      * @return a populated Event object
      */
     public Event getEvent(final int eventid) {
+        // don't switch using event builder since this event is read from the database
         final Event event = new Event();
         Querier querier = new Querier(m_dataSource, "select * from events where eventid = ?", new RowProcessor() {
 
