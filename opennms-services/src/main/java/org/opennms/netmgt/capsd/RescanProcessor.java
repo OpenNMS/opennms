@@ -111,10 +111,8 @@ import org.opennms.netmgt.config.DataSourceFactory;
 import org.opennms.netmgt.config.PollerConfig;
 import org.opennms.netmgt.config.PollerConfigFactory;
 import org.opennms.netmgt.eventd.EventIpcManagerFactory;
+import org.opennms.netmgt.model.events.EventBuilder;
 import org.opennms.netmgt.xml.event.Event;
-import org.opennms.netmgt.xml.event.Parm;
-import org.opennms.netmgt.xml.event.Parms;
-import org.opennms.netmgt.xml.event.Value;
 
 /**
  * This class is designed to rescan all the managed interfaces for a specified
@@ -122,18 +120,7 @@ import org.opennms.netmgt.xml.event.Value;
  * events necessary to notify the other OpenNMS services. The constructor takes
  * an integer which is the node identifier of the node to be rescanned. .
  *
- * @author <a href="mailto:jamesz@opennms.org">James Zuo </a>
- * @author <a href="mailto:mike@opennms.org">Mike Davidson </a>
- * @author <a href="mailto:weave@oculan.com">Brian Weaver </a>
- * @author <a href="http://www.opennms.org/">OpenNMS </a>
- * @author <a href="mailto:jamesz@opennms.org">James Zuo </a>
- * @author <a href="mailto:mike@opennms.org">Mike Davidson </a>
- * @author <a href="mailto:weave@oculan.com">Brian Weaver </a>
- * @author <a href="http://www.opennms.org/">OpenNMS </a>
- * @author <a href="mailto:jamesz@opennms.org">James Zuo </a>
- * @author <a href="mailto:mike@opennms.org">Mike Davidson </a>
- * @author <a href="mailto:weave@oculan.com">Brian Weaver </a>
- * @author <a href="http://www.opennms.org/">OpenNMS </a>
+ * @author <a href="mailto:brozow@opennms.org">Matt Brozowski</a>
  * @author <a href="mailto:jamesz@opennms.org">James Zuo </a>
  * @author <a href="mailto:mike@opennms.org">Mike Davidson </a>
  * @author <a href="mailto:weave@oculan.com">Brian Weaver </a>
@@ -3286,6 +3273,21 @@ public final class RescanProcessor implements Runnable {
             createReinitializePrimarySnmpInterfaceEvent(nodeEntry.getNodeId(), primarySnmpIf);
         }
     }
+    
+    private EventBuilder eventBuilder(String uei) {
+        return new EventBuilder(uei, "OpenNMS.Capsd").setHost(Capsd.getLocalHostAddress());
+    }
+    
+    private EventBuilder nodeEventBuilder(String uei, long nodeId) {
+        return eventBuilder(uei).setNodeid(nodeId);
+    }
+
+    private EventBuilder interfaceEventBuilder(String uei, long nodeId, String ipAddr) {
+        return eventBuilder(uei).setNodeid(nodeId).setInterface(ipAddr);
+    }
+    private EventBuilder serviceEventBuilder(String uei, long nodeId, String ipAddr, String svc) {
+        return eventBuilder(uei).setNodeid(nodeId).setInterface(ipAddr).setService(svc);
+    }
 
     /**
      * This method is responsible for generating a nodeLabelChanged event and
@@ -3301,64 +3303,20 @@ public final class RescanProcessor implements Runnable {
             log().debug("createNodeLabelChangedEvent: nodeId: " + updatedEntry.getNodeId() + " oldLabel: '" + originalEntry.getLabel() + "' oldSource: '" + originalEntry.getLabelSource() + "' newLabel: '" + updatedEntry.getLabel() + "' newLabelSource: '" + updatedEntry.getLabelSource() + "'");
         }
 
-        Event newEvent = new Event();
-
-        newEvent.setUei(EventConstants.NODE_LABEL_CHANGED_EVENT_UEI);
-
-        newEvent.setSource("OpenNMS.Capsd");
-
-        newEvent.setNodeid(updatedEntry.getNodeId());
-
-        newEvent.setHost(Capsd.getLocalHostAddress());
-
-        newEvent.setTime(EventConstants.formatToString(new java.util.Date()));
-
-        // Add appropriate parms
-        Parms eventParms = new Parms();
-        Parm eventParm = null;
-        Value parmValue = null;
+        EventBuilder bldr = nodeEventBuilder(EventConstants.NODE_LABEL_CHANGED_EVENT_UEI, updatedEntry.getNodeId());
 
         if (originalEntry.getLabel() != null) {
-            // Add old node label
-            eventParm = new Parm();
-            eventParm.setParmName(EventConstants.PARM_OLD_NODE_LABEL);
-            parmValue = new Value();
-            parmValue.setContent(originalEntry.getLabel());
-            eventParm.setValue(parmValue);
-            eventParms.addParm(eventParm);
-
-            // Add old node label source
-            eventParm = new Parm();
-            eventParm.setParmName(EventConstants.PARM_OLD_NODE_LABEL_SOURCE);
-            parmValue = new Value();
-            parmValue.setContent(String.valueOf(originalEntry.getLabelSource()));
-            eventParm.setValue(parmValue);
-            eventParms.addParm(eventParm);
+            bldr.addParam(EventConstants.PARM_OLD_NODE_LABEL, originalEntry.getLabel());
+            bldr.addParam(EventConstants.PARM_OLD_NODE_LABEL_SOURCE, originalEntry.getLabelSource());
         }
 
         if (updatedEntry.getLabel() != null) {
-            // Add new node label
-            eventParm = new Parm();
-            eventParm.setParmName(EventConstants.PARM_NEW_NODE_LABEL);
-            parmValue = new Value();
-            parmValue.setContent(updatedEntry.getLabel());
-            eventParm.setValue(parmValue);
-            eventParms.addParm(eventParm);
-
-            // Add new node label source
-            eventParm = new Parm();
-            eventParm.setParmName(EventConstants.PARM_NEW_NODE_LABEL_SOURCE);
-            parmValue = new Value();
-            parmValue.setContent(String.valueOf(updatedEntry.getLabelSource()));
-            eventParm.setValue(parmValue);
-            eventParms.addParm(eventParm);
+            bldr.addParam(EventConstants.PARM_NEW_NODE_LABEL, updatedEntry.getLabel());
+            bldr.addParam(EventConstants.PARM_NEW_NODE_LABEL_SOURCE, updatedEntry.getLabelSource());
         }
 
-        // Add Parms to the event
-        newEvent.setParms(eventParms);
-
         // Add event to the list of events to be sent out.
-        m_eventList.add(newEvent);
+        m_eventList.add(bldr.getEvent());
 
         if (log().isDebugEnabled()) {
             log().debug("createNodeLabelChangedEvent: successfully created nodeLabelChanged event for nodeid: " + updatedEntry.getNodeId());
@@ -3379,114 +3337,50 @@ public final class RescanProcessor implements Runnable {
             log().debug("createNodeInfoChangedEvent: nodeId: " + updatedEntry.getNodeId());
         }
 
-        Event newEvent = new Event();
-
-        newEvent.setUei(EventConstants.NODE_INFO_CHANGED_EVENT_UEI);
-
-        newEvent.setSource("OpenNMS.Capsd");
-
-        newEvent.setNodeid(updatedEntry.getNodeId());
-
-        newEvent.setHost(Capsd.getLocalHostAddress());
-
-        newEvent.setTime(EventConstants.formatToString(new java.util.Date()));
-
-        // Add appropriate parms
-        Parms eventParms = new Parms();
-        Parm eventParm = null;
-        Value parmValue = null;
+        EventBuilder bldr = nodeEventBuilder(EventConstants.NODE_INFO_CHANGED_EVENT_UEI, updatedEntry.getNodeId());
 
         // SysOID
         if (updatedEntry.getSystemOID() != null) {
-            eventParm = new Parm();
-            eventParm.setParmName(EventConstants.PARM_NODE_SYSOID);
-            parmValue = new Value();
-            parmValue.setContent(updatedEntry.getSystemOID());
-            eventParm.setValue(parmValue);
-            eventParms.addParm(eventParm);
+            bldr.addParam(EventConstants.PARM_NODE_SYSOID, updatedEntry.getSystemOID());
         }
 
         // SysName
         if (updatedEntry.getSystemName() != null) {
-            eventParm = new Parm();
-            eventParm.setParmName(EventConstants.PARM_NODE_SYSNAME);
-            parmValue = new Value();
-            parmValue.setContent(updatedEntry.getSystemName());
-            eventParm.setValue(parmValue);
-            eventParms.addParm(eventParm);
+            bldr.addParam(EventConstants.PARM_NODE_SYSNAME, updatedEntry.getSystemName());
         }
 
         // SysDescription
         if (updatedEntry.getSystemDescription() != null) {
-            // Add new node label
-            eventParm = new Parm();
-            eventParm.setParmName(EventConstants.PARM_NODE_SYSDESCRIPTION);
-            parmValue = new Value();
-            parmValue.setContent(updatedEntry.getSystemDescription());
-            eventParm.setValue(parmValue);
-            eventParms.addParm(eventParm);
+            bldr.addParam(EventConstants.PARM_NODE_SYSDESCRIPTION, updatedEntry.getSystemDescription());
         }
 
         // SysLocation
         if (updatedEntry.getSystemLocation() != null) {
-            // Add new node label
-            eventParm = new Parm();
-            eventParm.setParmName(EventConstants.PARM_NODE_SYSLOCATION);
-            parmValue = new Value();
-            parmValue.setContent(updatedEntry.getSystemLocation());
-            eventParm.setValue(parmValue);
-            eventParms.addParm(eventParm);
+            bldr.addParam(EventConstants.PARM_NODE_SYSLOCATION, updatedEntry.getSystemLocation());
         }
 
         // SysContact
         if (updatedEntry.getSystemContact() != null) {
-            // Add new node label
-            eventParm = new Parm();
-            eventParm.setParmName(EventConstants.PARM_NODE_SYSCONTACT);
-            parmValue = new Value();
-            parmValue.setContent(updatedEntry.getSystemContact());
-            eventParm.setValue(parmValue);
-            eventParms.addParm(eventParm);
+            bldr.addParam(EventConstants.PARM_NODE_SYSCONTACT, updatedEntry.getSystemContact());
         }
 
         // NetBIOS name
         if (updatedEntry.getNetBIOSName() != null) {
-            // Add new node label
-            eventParm = new Parm();
-            eventParm.setParmName(EventConstants.PARM_NODE_NETBIOS_NAME);
-            parmValue = new Value();
-            parmValue.setContent(updatedEntry.getNetBIOSName());
-            eventParm.setValue(parmValue);
-            eventParms.addParm(eventParm);
+            bldr.addParam(EventConstants.PARM_NODE_NETBIOS_NAME, updatedEntry.getNetBIOSName());
         }
 
         // Domain name
         if (updatedEntry.getDomainName() != null) {
-            // Add new node label
-            eventParm = new Parm();
-            eventParm.setParmName(EventConstants.PARM_NODE_DOMAIN_NAME);
-            parmValue = new Value();
-            parmValue.setContent(updatedEntry.getDomainName());
-            eventParm.setValue(parmValue);
-            eventParms.addParm(eventParm);
+            bldr.addParam(EventConstants.PARM_NODE_DOMAIN_NAME, updatedEntry.getDomainName());
         }
 
         // Operating System
         if (updatedEntry.getOS() != null) {
-            // Add new node label
-            eventParm = new Parm();
-            eventParm.setParmName(EventConstants.PARM_NODE_OPERATING_SYSTEM);
-            parmValue = new Value();
-            parmValue.setContent(updatedEntry.getOS());
-            eventParm.setValue(parmValue);
-            eventParms.addParm(eventParm);
+            bldr.addParam(EventConstants.PARM_NODE_OPERATING_SYSTEM, updatedEntry.getOS());
         }
 
-        // Add Parms to the event
-        newEvent.setParms(eventParms);
-
         // / Add event to the list of events to be sent out.
-        m_eventList.add(newEvent);
+        m_eventList.add(bldr.getEvent());
 
         if (log().isDebugEnabled()) {
             log().debug("createNodeInfoChangedEvent: successfully created nodeInfoChanged event for nodeid: " + updatedEntry.getNodeId());
@@ -3519,52 +3413,18 @@ public final class RescanProcessor implements Runnable {
             log().debug("createPrimarySnmpInterfaceChangedEvent: nodeId: " + nodeId + "oldPrimarySnmpIf: '" + oldPrimaryAddr + "' newPrimarySnmpIf: '" + newPrimaryAddr + "'");
         }
 
-        Event newEvent = new Event();
-
-        newEvent.setUei(EventConstants.PRIMARY_SNMP_INTERFACE_CHANGED_EVENT_UEI);
-
-        newEvent.setSource("OpenNMS.Capsd");
-
-        newEvent.setNodeid(nodeId);
-
-        newEvent.setInterface(newPrimaryAddr);
-
-        newEvent.setHost(Capsd.getLocalHostAddress());
-
-        newEvent.setService("SNMP");
-
-        newEvent.setTime(EventConstants.formatToString(new java.util.Date()));
-
-        // Add appropriate parms
-        Parms eventParms = new Parms();
-        Parm eventParm = null;
-        Value parmValue = null;
+        EventBuilder bldr = serviceEventBuilder(EventConstants.PRIMARY_SNMP_INTERFACE_CHANGED_EVENT_UEI, nodeId, newPrimaryAddr, "SNMP");
 
         if (oldPrimaryAddr != null) {
-            // Add old node label
-            eventParm = new Parm();
-            eventParm.setParmName(EventConstants.PARM_OLD_PRIMARY_SNMP_ADDRESS);
-            parmValue = new Value();
-            parmValue.setContent(oldPrimaryAddr);
-            eventParm.setValue(parmValue);
-            eventParms.addParm(eventParm);
+            bldr.addParam(EventConstants.PARM_OLD_PRIMARY_SNMP_ADDRESS, oldPrimaryAddr);
         }
 
         if (newPrimaryAddr != null) {
-            // Add new node label
-            eventParm = new Parm();
-            eventParm.setParmName(EventConstants.PARM_NEW_PRIMARY_SNMP_ADDRESS);
-            parmValue = new Value();
-            parmValue.setContent(newPrimaryAddr);
-            eventParm.setValue(parmValue);
-            eventParms.addParm(eventParm);
+            bldr.addParam(EventConstants.PARM_NEW_PRIMARY_SNMP_ADDRESS, newPrimaryAddr);
         }
 
-        // Add Parms to the event
-        newEvent.setParms(eventParms);
-
         // Add event to the list of events to be sent out.
-        m_eventList.add(newEvent);
+        m_eventList.add(bldr.getEvent());
 
         if (log().isDebugEnabled()) {
             log().debug("createPrimarySnmpInterfaceChangedEvent: successfully created primarySnmpInterfaceChanged event for nodeid: " + nodeId);
@@ -3585,46 +3445,13 @@ public final class RescanProcessor implements Runnable {
             log().debug("createInterfaceIndexChangedEvent: nodeId: " + updatedEntry.getNodeId() + " oldIfIndex: " + originalEntry.getIfIndex() + " newIfIndex: " + updatedEntry.getIfIndex());
         }
 
-        Event newEvent = new Event();
+        EventBuilder bldr = interfaceEventBuilder(EventConstants.INTERFACE_INDEX_CHANGED_EVENT_UEI, updatedEntry.getNodeId(), updatedEntry.getIfAddress().getHostAddress());
 
-        newEvent.setUei(EventConstants.INTERFACE_INDEX_CHANGED_EVENT_UEI);
-
-        newEvent.setSource("OpenNMS.Capsd");
-
-        newEvent.setNodeid(updatedEntry.getNodeId());
-
-        newEvent.setHost(Capsd.getLocalHostAddress());
-
-        newEvent.setInterface(updatedEntry.getIfAddress().getHostAddress());
-
-        newEvent.setTime(EventConstants.formatToString(new java.util.Date()));
-
-        // Add appropriate parms
-        Parms eventParms = new Parms();
-        Parm eventParm = null;
-        Value parmValue = null;
-
-        // Add old interface index
-        eventParm = new Parm();
-        eventParm.setParmName(EventConstants.PARM_OLD_IFINDEX);
-        parmValue = new Value();
-        parmValue.setContent(String.valueOf(originalEntry.getIfIndex()));
-        eventParm.setValue(parmValue);
-        eventParms.addParm(eventParm);
-
-        // Add new interface index
-        eventParm = new Parm();
-        eventParm.setParmName(EventConstants.PARM_NEW_IFINDEX);
-        parmValue = new Value();
-        parmValue.setContent(String.valueOf(updatedEntry.getIfIndex()));
-        eventParm.setValue(parmValue);
-        eventParms.addParm(eventParm);
-
-        // Add Parms to the event
-        newEvent.setParms(eventParms);
+        bldr.addParam(EventConstants.PARM_OLD_IFINDEX, originalEntry.getIfIndex());
+        bldr.addParam(EventConstants.PARM_NEW_IFINDEX, updatedEntry.getIfIndex());
 
         // Add event to the list of events to be sent out.
-        m_eventList.add(newEvent);
+        m_eventList.add(bldr.getEvent());
 
         if (log().isDebugEnabled()) {
             log().debug("createInterfaceIndexChangedEvent: successfully created interfaceIndexChanged event for nodeid: " + updatedEntry.getNodeId());
@@ -3645,50 +3472,20 @@ public final class RescanProcessor implements Runnable {
             log().debug("createIpHostNameChangedEvent: nodeId: " + updatedEntry.getNodeId() + " oldHostName: " + originalEntry.getHostname() + " newHostName: " + updatedEntry.getHostname());
         }
 
-        Event newEvent = new Event();
-
-        newEvent.setUei(EventConstants.INTERFACE_IP_HOSTNAME_CHANGED_EVENT_UEI);
-
-        newEvent.setSource("OpenNMS.Capsd");
-
-        newEvent.setNodeid(updatedEntry.getNodeId());
-
-        newEvent.setHost(Capsd.getLocalHostAddress());
-
-        newEvent.setInterface(updatedEntry.getIfAddress().getHostAddress());
-
-        newEvent.setTime(EventConstants.formatToString(new java.util.Date()));
-
-        // Add appropriate parms
-        Parms eventParms = new Parms();
-        Parm eventParm = null;
-        Value parmValue = null;
-
+        EventBuilder bldr = interfaceEventBuilder(EventConstants.INTERFACE_IP_HOSTNAME_CHANGED_EVENT_UEI, updatedEntry.getNodeId(), updatedEntry.getIfAddress().getHostAddress());
+        
         // Add old IP Hostname
         if (originalEntry.getHostname() != null) {
-            eventParm = new Parm();
-            eventParm.setParmName(EventConstants.PARM_OLD_IP_HOSTNAME);
-            parmValue = new Value();
-            parmValue.setContent(originalEntry.getHostname());
-            eventParm.setValue(parmValue);
-            eventParms.addParm(eventParm);
+            bldr.addParam(EventConstants.PARM_OLD_IP_HOSTNAME, originalEntry.getHostname());
         }
 
         // Add new IP Hostname
         if (updatedEntry.getHostname() != null) {
-            eventParm = new Parm();
-            eventParm.setParmName(EventConstants.PARM_IP_HOSTNAME);
-            parmValue = new Value();
-            parmValue.setContent(updatedEntry.getHostname());
-            eventParm.setValue(parmValue);
-            eventParms.addParm(eventParm);
+            bldr.addParam(EventConstants.PARM_IP_HOSTNAME, updatedEntry.getHostname());
         }
 
-        // Add Parms to the event
-        newEvent.setParms(eventParms);
-
         // Add event to the list of events to be sent out.
-        m_eventList.add(newEvent);
+        m_eventList.add(bldr.getEvent());
 
         if (log().isDebugEnabled()) {
             log().debug("createIpHostNameChangedEvent: successfully created ipHostNameChanged event for nodeid: " + updatedEntry.getNodeId());
@@ -3711,93 +3508,36 @@ public final class RescanProcessor implements Runnable {
             log().debug("createInterfaceReparentedEvent: ifAddr: " + reparentedIf.getHostAddress() + " oldNodeId: " + oldNodeId + " newNodeId: " + newNode.getNodeId());
         }
 
-        Event newEvent = new Event();
-
-        newEvent.setUei(EventConstants.INTERFACE_REPARENTED_EVENT_UEI);
-
-        newEvent.setSource("OpenNMS.Capsd");
-
-        newEvent.setNodeid(newNode.getNodeId());
-
-        newEvent.setHost(Capsd.getLocalHostAddress());
-
-        newEvent.setInterface(reparentedIf.getHostAddress());
-
-        newEvent.setTime(EventConstants.formatToString(new java.util.Date()));
-
-        // Add appropriate parms
-        Parms eventParms = new Parms();
-        Parm eventParm = null;
-        Value parmValue = null;
+        
+        EventBuilder bldr = interfaceEventBuilder(EventConstants.INTERFACE_REPARENTED_EVENT_UEI, newNode.getNodeId(), reparentedIf.getHostAddress());
 
         // Add old node id
-        eventParm = new Parm();
-        eventParm.setParmName(EventConstants.PARM_OLD_NODEID);
-        parmValue = new Value();
-        parmValue.setContent(String.valueOf(oldNodeId));
-        eventParm.setValue(parmValue);
-        eventParms.addParm(eventParm);
+        bldr.addParam(EventConstants.PARM_OLD_NODEID, oldNodeId);
 
         // Add new node id
-        eventParm = new Parm();
-        eventParm.setParmName(EventConstants.PARM_NEW_NODEID);
-        parmValue = new Value();
-        parmValue.setContent(String.valueOf(newNode.getNodeId()));
-        eventParm.setValue(parmValue);
-        eventParms.addParm(eventParm);
+        bldr.addParam(EventConstants.PARM_NEW_NODEID, newNode.getNodeId());
 
         // Add ip host name
-        String hostname = reparentedIf.getHostName();
-
-        eventParm = new Parm();
-        eventParm.setParmName(EventConstants.PARM_IP_HOSTNAME);
-        parmValue = new Value();
-        parmValue.setContent(hostname);
-        eventParm.setValue(parmValue);
-        eventParms.addParm(eventParm);
+        bldr.addParam(EventConstants.PARM_IP_HOSTNAME, reparentedIf.getHostName());
 
         // Add node label and node label source
         if (newNode.getLabel() != null) {
-            eventParm = new Parm();
-            eventParm.setParmName(EventConstants.PARM_NODE_LABEL);
-            parmValue = new Value();
-            parmValue.setContent(newNode.getLabel());
-            eventParm.setValue(parmValue);
-            eventParms.addParm(eventParm);
-
-            eventParm = new Parm();
-            eventParm.setParmName(EventConstants.PARM_NODE_LABEL_SOURCE);
-            parmValue = new Value();
-            parmValue.setContent(String.valueOf(newNode.getLabelSource()));
-            eventParm.setValue(parmValue);
-            eventParms.addParm(eventParm);
+            bldr.addParam(EventConstants.PARM_NODE_LABEL, newNode.getLabel());
+            bldr.addParam(EventConstants.PARM_NODE_LABEL_SOURCE, newNode.getLabelSource());
         }
 
         // Add nodeSysName
         if (newNode.getSystemName() != null) {
-            eventParm = new Parm();
-            eventParm.setParmName(EventConstants.PARM_NODE_SYSNAME);
-            parmValue = new Value();
-            parmValue.setContent(newNode.getSystemName());
-            eventParm.setValue(parmValue);
-            eventParms.addParm(eventParm);
+            bldr.addParam(EventConstants.PARM_NODE_SYSNAME, newNode.getSystemName());
         }
 
         // Add nodeSysDescription
         if (newNode.getSystemDescription() != null) {
-            eventParm = new Parm();
-            eventParm.setParmName(EventConstants.PARM_NODE_SYSDESCRIPTION);
-            parmValue = new Value();
-            parmValue.setContent(newNode.getSystemDescription());
-            eventParm.setValue(parmValue);
-            eventParms.addParm(eventParm);
+            bldr.addParam(EventConstants.PARM_NODE_SYSDESCRIPTION, newNode.getSystemDescription());
         }
 
-        // Add Parms to the event
-        newEvent.setParms(eventParms);
-
         // Add event to the list of events to be sent out.
-        m_eventList.add(newEvent);
+        m_eventList.add(bldr.getEvent());
 
         if (log().isDebugEnabled()) {
             log().debug("createInterfaceReparentedEvent: successfully created interfaceReparented event for nodeid/interface: " + newNode.getNodeId() + "/" + reparentedIf.getHostAddress());
@@ -3816,20 +3556,10 @@ public final class RescanProcessor implements Runnable {
             log().debug("createDuplicateNodeDeletedEvent: delete nodeid: " + deletedNode.getNodeId());
         }
 
-        Event newEvent = new Event();
-
-        newEvent.setUei(EventConstants.DUP_NODE_DELETED_EVENT_UEI);
-
-        newEvent.setSource("OpenNMS.Capsd");
-
-        newEvent.setNodeid(deletedNode.getNodeId());
-
-        newEvent.setHost(Capsd.getLocalHostAddress());
-
-        newEvent.setTime(EventConstants.formatToString(new java.util.Date()));
+        EventBuilder bldr = nodeEventBuilder(EventConstants.DUP_NODE_DELETED_EVENT_UEI, deletedNode.getNodeId());
 
         // Add event to the list of events to be sent out.
-        m_eventList.add(newEvent);
+        m_eventList.add(bldr.getEvent());
 
         if (log().isDebugEnabled()) {
             log().debug("createDuplicateNodeDeletedEvent: successfully created duplicateNodeDeleted event for nodeid: " + deletedNode.getNodeId());
@@ -3848,53 +3578,16 @@ public final class RescanProcessor implements Runnable {
             log().debug("createNodeGainedInterfaceEvent: nodeId: " + ifEntry.getNodeId() + " interface: " + ifEntry.getIfAddress().getHostAddress());
         }
 
-        Event newEvent = new Event();
-
-        newEvent.setUei(EventConstants.NODE_GAINED_INTERFACE_EVENT_UEI);
-
-        newEvent.setSource("OpenNMS.Capsd");
-
-        newEvent.setNodeid(ifEntry.getNodeId());
-
-        newEvent.setHost(Capsd.getLocalHostAddress());
-
-        newEvent.setInterface(ifEntry.getIfAddress().getHostAddress());
-
-        newEvent.setTime(EventConstants.formatToString(new java.util.Date()));
-
-        // Add appropriate parms
-        Parms eventParms = new Parms();
-        Parm eventParm = null;
-        Value parmValue = null;
+        EventBuilder bldr = interfaceEventBuilder(EventConstants.NODE_GAINED_INTERFACE_EVENT_UEI, ifEntry.getNodeId(), ifEntry.getIfAddress().getHostAddress());
 
         // Add ip host name
-        String hostname = null;
-        if (ifEntry.getHostname() == null) {
-            hostname = "";
-        } else {
-            hostname = ifEntry.getHostname();
-        }
-
-        eventParm = new Parm();
-        eventParm.setParmName(EventConstants.PARM_IP_HOSTNAME);
-        parmValue = new Value();
-        parmValue.setContent(hostname);
-        eventParm.setValue(parmValue);
-        eventParms.addParm(eventParm);
+        bldr.addParam(EventConstants.PARM_IP_HOSTNAME, ifEntry.getHostname() == null ? "" : ifEntry.getHostname());
 
         // Add discovery method
-        eventParm = new Parm();
-        eventParm.setParmName(EventConstants.PARM_METHOD);
-        parmValue = new Value();
-        parmValue.setContent("icmp");
-        eventParm.setValue(parmValue);
-        eventParms.addParm(eventParm);
-
-        // Add Parms to the event
-        newEvent.setParms(eventParms);
+        bldr.addParam(EventConstants.PARM_METHOD, "icmp");
 
         // Add event to the list of events to be sent out.
-        m_eventList.add(newEvent);
+        m_eventList.add(bldr.getEvent());
 
         if (log().isDebugEnabled()) {
             log().debug("createNodeGainedInterfaceEvent: successfully created nodeGainedInterface event for nodeid: " + ifEntry.getNodeId());
@@ -3909,57 +3602,20 @@ public final class RescanProcessor implements Runnable {
      *            Entry of new interface.
      */
     private void createDuplicateIpAddressEvent(DbIpInterfaceEntry ifEntry) {
+
         if (log().isDebugEnabled()) {
             log().debug("createDuplicateIpAddressEvent: nodeId: " + ifEntry.getNodeId() + " interface: " + ifEntry.getIfAddress().getHostAddress());
         }
 
-        Event newEvent = new Event();
+        EventBuilder bldr = interfaceEventBuilder(EventConstants.DUPLICATE_IPINTERFACE_EVENT_UEI, ifEntry.getNodeId(), ifEntry.getIfAddress().getHostAddress());
 
-        newEvent.setUei(EventConstants.DUPLICATE_IPINTERFACE_EVENT_UEI);
-
-        newEvent.setSource("OpenNMS.Capsd");
-
-        newEvent.setNodeid(ifEntry.getNodeId());
-
-        newEvent.setHost(Capsd.getLocalHostAddress());
-
-        newEvent.setInterface(ifEntry.getIfAddress().getHostAddress());
-
-        newEvent.setTime(EventConstants.formatToString(new java.util.Date()));
-
-        // Add appropriate parms
-        Parms eventParms = new Parms();
-        Parm eventParm = null;
-        Value parmValue = null;
-
-        // Add ip host name
-        String hostname = null;
-        if (ifEntry.getHostname() == null) {
-            hostname = "";
-        } else {
-            hostname = ifEntry.getHostname();
-        }
-
-        eventParm = new Parm();
-        eventParm.setParmName(EventConstants.PARM_IP_HOSTNAME);
-        parmValue = new Value();
-        parmValue.setContent(hostname);
-        eventParm.setValue(parmValue);
-        eventParms.addParm(eventParm);
+        bldr.addParam(EventConstants.PARM_IP_HOSTNAME, ifEntry.getHostname() == null ? "" : ifEntry.getHostname());
 
         // Add discovery method
-        eventParm = new Parm();
-        eventParm.setParmName(EventConstants.PARM_METHOD);
-        parmValue = new Value();
-        parmValue.setContent("icmp");
-        eventParm.setValue(parmValue);
-        eventParms.addParm(eventParm);
-
-        // Add Parms to the event
-        newEvent.setParms(eventParms);
+        bldr.addParam(EventConstants.PARM_METHOD, "icmp");
 
         // Add event to the list of events to be sent out.
-        m_eventList.add(newEvent);
+        m_eventList.add(bldr.getEvent());
 
         if (log().isDebugEnabled()) {
             log().debug("createDuplicateIpAddressEvent: successfully created duplicateIpAddress event for nodeid: " + ifEntry.getNodeId());
@@ -3982,67 +3638,23 @@ public final class RescanProcessor implements Runnable {
             log().debug("createNodeGainedServiceEvent: nodeId: " + ifEntry.getNodeId() + " interface: " + ifEntry.getIfAddress().getHostAddress() + " service: " + svcName);
         }
 
-        Event newEvent = new Event();
-
-        newEvent.setUei(EventConstants.NODE_GAINED_SERVICE_EVENT_UEI);
-
-        newEvent.setSource("OpenNMS.Capsd");
-
-        newEvent.setNodeid(ifEntry.getNodeId());
-
-        newEvent.setHost(Capsd.getLocalHostAddress());
-
-        newEvent.setInterface(ifEntry.getIfAddress().getHostAddress());
-
-        newEvent.setService(svcName);
-
-        newEvent.setTime(EventConstants.formatToString(new java.util.Date()));
-
-        // Add appropriate parms
-        Parms eventParms = new Parms();
-        Parm eventParm = null;
-        Value parmValue = null;
+        EventBuilder bldr = serviceEventBuilder(EventConstants.NODE_GAINED_SERVICE_EVENT_UEI, ifEntry.getNodeId(), ifEntry.getIfAddress().getHostAddress(), svcName);
 
         // Add ip host name
-        String hostname = null;
-        if (ifEntry.getHostname() == null) {
-            hostname = "";
-        } else {
-            hostname = ifEntry.getHostname();
-        }
-
-        eventParm = new Parm();
-        eventParm.setParmName(EventConstants.PARM_IP_HOSTNAME);
-        parmValue = new Value();
-        parmValue.setContent(hostname);
-        eventParm.setValue(parmValue);
-        eventParms.addParm(eventParm);
+        bldr.addParam(EventConstants.PARM_IP_HOSTNAME, ifEntry.getHostname() == null ? "" : ifEntry.getHostname());
 
         // Add nodeSysName
         if (nodeEntry.getSystemName() != null) {
-            eventParm = new Parm();
-            eventParm.setParmName(EventConstants.PARM_NODE_SYSNAME);
-            parmValue = new Value();
-            parmValue.setContent(nodeEntry.getSystemName());
-            eventParm.setValue(parmValue);
-            eventParms.addParm(eventParm);
+            bldr.addParam(EventConstants.PARM_NODE_SYSNAME, nodeEntry.getSystemName());
         }
 
         // Add nodeSysDescription
         if (nodeEntry.getSystemDescription() != null) {
-            eventParm = new Parm();
-            eventParm.setParmName(EventConstants.PARM_NODE_SYSDESCRIPTION);
-            parmValue = new Value();
-            parmValue.setContent(nodeEntry.getSystemDescription());
-            eventParm.setValue(parmValue);
-            eventParms.addParm(eventParm);
+            bldr.addParam(EventConstants.PARM_NODE_SYSDESCRIPTION, nodeEntry.getSystemDescription());
         }
 
-        // Add Parms to the event
-        newEvent.setParms(eventParms);
-
         // Add event to the list of events to be sent out.
-        m_eventList.add(newEvent);
+        m_eventList.add(bldr.getEvent());
 
         if (log().isDebugEnabled()) {
             log().debug("createNodeGainedServiceEvent: successfully created nodeGainedService event for nodeid: " + ifEntry.getNodeId());
@@ -4061,67 +3673,24 @@ public final class RescanProcessor implements Runnable {
      *            Service name
      */
     private void createSuspendPollingServiceEvent(DbNodeEntry nodeEntry, DbIpInterfaceEntry ifEntry, String svcName) {
-        Event newEvent = new Event();
-
-        newEvent.setUei(EventConstants.SUSPEND_POLLING_SERVICE_EVENT_UEI);
-
-        newEvent.setSource("OpenNMS.Capsd");
-
-        newEvent.setNodeid(ifEntry.getNodeId());
-
-        newEvent.setHost(Capsd.getLocalHostAddress());
-
-        newEvent.setInterface(ifEntry.getIfAddress().getHostAddress());
-
-        newEvent.setService(svcName);
-
-        newEvent.setTime(EventConstants.formatToString(new java.util.Date()));
-
-        // Add appropriate parms
-        Parms eventParms = new Parms();
-        Parm eventParm = null;
-        Value parmValue = null;
+        
+        EventBuilder bldr = serviceEventBuilder(EventConstants.SUSPEND_POLLING_SERVICE_EVENT_UEI, ifEntry.getNodeId(), ifEntry.getIfAddress().getHostAddress(), svcName);
 
         // Add ip host name
-        String hostname = null;
-        if (ifEntry.getHostname() == null) {
-            hostname = ""; 
-        } else {
-            hostname = ifEntry.getHostname();
-        }
-
-        eventParm = new Parm();
-        eventParm.setParmName(EventConstants.PARM_IP_HOSTNAME);
-        parmValue = new Value();
-        parmValue.setContent(hostname);
-        eventParm.setValue(parmValue);
-        eventParms.addParm(eventParm);
-
+        bldr.addParam(EventConstants.PARM_IP_HOSTNAME, ifEntry.getHostname() == null ? "" : ifEntry.getHostname());
+        
         // Add nodeSysName
         if (nodeEntry.getSystemName() != null) {
-            eventParm = new Parm();
-            eventParm.setParmName(EventConstants.PARM_NODE_SYSNAME);
-            parmValue = new Value();
-            parmValue.setContent(nodeEntry.getSystemName());
-            eventParm.setValue(parmValue);
-            eventParms.addParm(eventParm);
+            bldr.addParam(EventConstants.PARM_NODE_SYSNAME, nodeEntry.getSystemName());
         }
 
         // Add nodeSysDescription
         if (nodeEntry.getSystemDescription() != null) {
-            eventParm = new Parm();
-            eventParm.setParmName(EventConstants.PARM_NODE_SYSDESCRIPTION);
-            parmValue = new Value();
-            parmValue.setContent(nodeEntry.getSystemDescription());
-            eventParm.setValue(parmValue);
-            eventParms.addParm(eventParm);
+            bldr.addParam(EventConstants.PARM_NODE_SYSDESCRIPTION, nodeEntry.getSystemDescription());
         }
 
-        // Add Parms to the event
-        newEvent.setParms(eventParms);
-
         // Add event to the list of events to be sent out.
-        m_eventList.add(newEvent);
+        m_eventList.add(bldr.getEvent());
 
         if (log().isDebugEnabled()) {
             log().debug("suspendPollingServiceEvent: Created suspendPollingService event for nodeid: " + ifEntry.getNodeId() + " interface: " + ifEntry.getIfAddress().getHostAddress() + " service: " + svcName);
@@ -4140,67 +3709,24 @@ public final class RescanProcessor implements Runnable {
      *            Service name
      */
     private void createResumePollingServiceEvent(DbNodeEntry nodeEntry, DbIpInterfaceEntry ifEntry, String svcName) {
-        Event newEvent = new Event();
-
-        newEvent.setUei(EventConstants.RESUME_POLLING_SERVICE_EVENT_UEI);
-
-        newEvent.setSource("OpenNMS.Capsd");
-
-        newEvent.setNodeid(ifEntry.getNodeId());
-
-        newEvent.setHost(Capsd.getLocalHostAddress());
-
-        newEvent.setInterface(ifEntry.getIfAddress().getHostAddress());
-
-        newEvent.setService(svcName);
-
-        newEvent.setTime(EventConstants.formatToString(new java.util.Date()));
-
-        // Add appropriate parms
-        Parms eventParms = new Parms();
-        Parm eventParm = null;
-        Value parmValue = null;
+        
+        EventBuilder bldr = serviceEventBuilder(EventConstants.RESUME_POLLING_SERVICE_EVENT_UEI, ifEntry.getNodeId(), ifEntry.getIfAddress().getHostAddress(), svcName);
 
         // Add ip host name
-        String hostname = null;
-        if (ifEntry.getHostname() == null) {
-            hostname = "";
-        } else {
-            hostname = ifEntry.getHostname();
-        }
-
-        eventParm = new Parm();
-        eventParm.setParmName(EventConstants.PARM_IP_HOSTNAME);
-        parmValue = new Value();
-        parmValue.setContent(hostname);
-        eventParm.setValue(parmValue);
-        eventParms.addParm(eventParm);
+        bldr.addParam(EventConstants.PARM_IP_HOSTNAME, ifEntry.getHostname() == null ? "" : ifEntry.getHostname());
 
         // Add nodeSysName
         if (nodeEntry.getSystemName() != null) {
-            eventParm = new Parm();
-            eventParm.setParmName(EventConstants.PARM_NODE_SYSNAME);
-            parmValue = new Value();
-            parmValue.setContent(nodeEntry.getSystemName());
-            eventParm.setValue(parmValue);
-            eventParms.addParm(eventParm);
+            bldr.addParam(EventConstants.PARM_NODE_SYSNAME, nodeEntry.getSystemName());
         }
 
         // Add nodeSysDescription
         if (nodeEntry.getSystemDescription() != null) {
-            eventParm = new Parm();
-            eventParm.setParmName(EventConstants.PARM_NODE_SYSDESCRIPTION);
-            parmValue = new Value();
-            parmValue.setContent(nodeEntry.getSystemDescription());
-            eventParm.setValue(parmValue);
-            eventParms.addParm(eventParm);
+            bldr.addParam(EventConstants.PARM_NODE_SYSDESCRIPTION, nodeEntry.getSystemDescription());
         }
 
-        // Add Parms to the event
-        newEvent.setParms(eventParms);
-
         // Add event to the list of events to be sent out.
-        m_eventList.add(newEvent);
+        m_eventList.add(bldr.getEvent());
 
         if (log().isDebugEnabled()) {
             log().debug("resumePollingServiceEvent: Created resumePollingService event for nodeid: " + ifEntry.getNodeId() + " interface: " + ifEntry.getIfAddress().getHostAddress() + " service: " + svcName);
@@ -4214,63 +3740,24 @@ public final class RescanProcessor implements Runnable {
      * @param nodeEntry Entry of node for which a conflict exits
      */
     private void createSnmpConflictsWithDbEvent(DbNodeEntry nodeEntry) {
-        Event newEvent = new Event();
-
-        newEvent.setUei(EventConstants.SNMP_CONFLICTS_WITH_DB_EVENT_UEI);
-
-        newEvent.setSource("OpenNMS.Capsd");
-
-        newEvent.setNodeid(nodeEntry.getNodeId());
-
-        newEvent.setHost(Capsd.getLocalHostAddress());
-
-        newEvent.setTime(EventConstants.formatToString(new java.util.Date()));
-
-        // Add appropriate parms
-        Parms eventParms = new Parms();
-        Parm eventParm = null;
-        Value parmValue = null;
+        
+        EventBuilder bldr = nodeEventBuilder(EventConstants.SNMP_CONFLICTS_WITH_DB_EVENT_UEI, nodeEntry.getNodeId());
 
         // Add node label
-        String hostname = null;
-        if (nodeEntry.getLabel() == null) {
-            hostname = "";
-        } else {
-            hostname = nodeEntry.getLabel();
-        }
-
-        eventParm = new Parm();
-        eventParm.setParmName(EventConstants.PARM_NODE_LABEL);
-        parmValue = new Value();
-        parmValue.setContent(hostname);
-        eventParm.setValue(parmValue);
-        eventParms.addParm(eventParm);
+        bldr.addParam(EventConstants.PARM_NODE_LABEL, nodeEntry.getLabel() == null ? "" : nodeEntry.getLabel());
 
         // Add nodeSysName
         if (nodeEntry.getSystemName() != null) {
-            eventParm = new Parm();
-            eventParm.setParmName(EventConstants.PARM_NODE_SYSNAME);
-            parmValue = new Value();
-            parmValue.setContent(nodeEntry.getSystemName());
-            eventParm.setValue(parmValue);
-            eventParms.addParm(eventParm);
+            bldr.addParam(EventConstants.PARM_NODE_SYSNAME, nodeEntry.getSystemName());
         }
 
         // Add nodeSysDescription
         if (nodeEntry.getSystemDescription() != null) {
-            eventParm = new Parm();
-            eventParm.setParmName(EventConstants.PARM_NODE_SYSDESCRIPTION);
-            parmValue = new Value();
-            parmValue.setContent(nodeEntry.getSystemDescription());
-            eventParm.setValue(parmValue);
-            eventParms.addParm(eventParm);
+            bldr.addParam(EventConstants.PARM_NODE_SYSDESCRIPTION, nodeEntry.getSystemDescription());
         }
 
-        // Add Parms to the event
-        newEvent.setParms(eventParms);
-
         // Add event to the list of events to be sent out.
-        m_eventList.add(newEvent);
+        m_eventList.add(bldr.getEvent());
 
         if (log().isDebugEnabled()) {
             log().debug("snmpConflictsWithDbEvent: Created snmpConflictsWithDbEvent for nodeid: " + nodeEntry.getNodeId());
@@ -4284,43 +3771,14 @@ public final class RescanProcessor implements Runnable {
      * @param nodeEntry Entry of node which was rescanned
      */
     private void createRescanCompletedEvent(DbNodeEntry nodeEntry) {
-        Event newEvent = new Event();
-
-        newEvent.setUei(EventConstants.RESCAN_COMPLETED_EVENT_UEI);
-
-        newEvent.setSource("OpenNMS.Capsd");
-
-        newEvent.setNodeid(nodeEntry.getNodeId());
-
-        newEvent.setHost(Capsd.getLocalHostAddress());
-
-        newEvent.setTime(EventConstants.formatToString(new java.util.Date()));
-
-        // Add appropriate parms
-        Parms eventParms = new Parms();
-        Parm eventParm = null;
-        Value parmValue = null;
+        
+        EventBuilder bldr = nodeEventBuilder(EventConstants.RESCAN_COMPLETED_EVENT_UEI, nodeEntry.getNodeId());
 
         // Add node label
-        String hostname = null;
-        if (nodeEntry.getLabel() == null) {
-            hostname = "";
-        } else {
-            hostname = nodeEntry.getLabel();
-        }
-
-        eventParm = new Parm();
-        eventParm.setParmName(EventConstants.PARM_NODE_LABEL);
-        parmValue = new Value();
-        parmValue.setContent(hostname);
-        eventParm.setValue(parmValue);
-        eventParms.addParm(eventParm);
-
-        // Add Parms to the event
-        newEvent.setParms(eventParms);
+        bldr.addParam(EventConstants.PARM_NODE_LABEL, nodeEntry.getLabel() == null ? "" : nodeEntry.getLabel());
 
         // Add event to the list of events to be sent out.
-        m_eventList.add(newEvent);
+        m_eventList.add(bldr.getEvent());
 
         if (log().isDebugEnabled()) {
             log().debug("rescanCompletedEvent: Created rescanCompletedEvent for nodeid: " + nodeEntry.getNodeId());
@@ -4338,23 +3796,11 @@ public final class RescanProcessor implements Runnable {
         if (log().isDebugEnabled()) {
             log().debug("createInterfaceSupportsSNMPEvent: nodeId: " + ifEntry.getNodeId() + " interface: " + ifEntry.getIfAddress().getHostAddress());
         }
-
-        Event newEvent = new Event();
-
-        newEvent.setUei(EventConstants.INTERFACE_SUPPORTS_SNMP_EVENT_UEI);
-
-        newEvent.setSource("OpenNMS.Capsd");
-
-        newEvent.setNodeid(ifEntry.getNodeId());
-
-        newEvent.setHost(Capsd.getLocalHostAddress());
-
-        newEvent.setInterface(ifEntry.getIfAddress().getHostAddress());
-
-        newEvent.setTime(EventConstants.formatToString(new java.util.Date()));
+        
+        EventBuilder bldr = interfaceEventBuilder(EventConstants.INTERFACE_SUPPORTS_SNMP_EVENT_UEI, ifEntry.getNodeId(), ifEntry.getIfAddress().getHostAddress());
 
         // Add event to the list of events to be sent out.
-        m_eventList.add(newEvent);
+        m_eventList.add(bldr.getEvent());
 
         if (log().isDebugEnabled()) {
             log().debug("interfaceSupportsSNMPEvent: successfully created interfaceSupportsSNMPEvent event for nodeid: " + ifEntry.getNodeId());
@@ -4375,22 +3821,10 @@ public final class RescanProcessor implements Runnable {
             log().debug("reinitializePrimarySnmpInterface: nodeId: " + nodeId + " interface: " + primarySnmpIf.getHostAddress());
         }
 
-        Event newEvent = new Event();
-
-        newEvent.setUei(EventConstants.REINITIALIZE_PRIMARY_SNMP_INTERFACE_EVENT_UEI);
-
-        newEvent.setSource("OpenNMS.Capsd");
-
-        newEvent.setNodeid(nodeId);
-
-        newEvent.setHost(Capsd.getLocalHostAddress());
-
-        newEvent.setInterface(primarySnmpIf.getHostAddress());
-
-        newEvent.setTime(EventConstants.formatToString(new java.util.Date()));
+        EventBuilder bldr = interfaceEventBuilder(EventConstants.REINITIALIZE_PRIMARY_SNMP_INTERFACE_EVENT_UEI, nodeId, primarySnmpIf.getHostAddress());
 
         // Add event to the list of events to be sent out.
-        m_eventList.add(newEvent);
+        m_eventList.add(bldr.getEvent());
 
         if (log().isDebugEnabled()) {
             log().debug("createReinitializePrimarySnmpInterfaceEvent: successfully created reinitializePrimarySnmpInterface event for interface: " + primarySnmpIf.getHostAddress());
