@@ -40,7 +40,6 @@ package org.opennms.netmgt.xmlrpcd;
 
 import java.net.MalformedURLException;
 import java.util.ArrayList;
-import java.util.Date;
 import java.util.Enumeration;
 import java.util.HashMap;
 import java.util.List;
@@ -60,7 +59,7 @@ import org.opennms.netmgt.config.poller.Parameter;
 import org.opennms.netmgt.config.poller.Rrd;
 import org.opennms.netmgt.config.poller.Service;
 import org.opennms.netmgt.eventd.EventIpcManager;
-import org.opennms.netmgt.xml.event.Event;
+import org.opennms.netmgt.model.events.EventBuilder;
 
 /**
  * <p>OpenNMSProvisioner class.</p>
@@ -390,12 +389,8 @@ public class OpenNMSProvisioner implements Provisioner {
             syncServices();
             m_pollerConfig.save();
 
-            Event event = new Event();
-            event.setUei(EventConstants.SCHEDOUTAGES_CHANGED_EVENT_UEI);
-            event.setCreationTime(EventConstants.formatToString(new Date()));
-            event.setTime(EventConstants.formatToString(new Date()));
-            event.setSource("OpenNMSProvisioner");
-            m_eventManager.sendNow(event);
+            EventBuilder bldr = new EventBuilder(EventConstants.SCHEDOUTAGES_CHANGED_EVENT_UEI, "OpenNMSProvisioner");
+            m_eventManager.sendNow(bldr.getEvent());
             
         } catch (Throwable e) {
             throw new RuntimeException("Error saving poller or capsd configuration: " + e, e);
