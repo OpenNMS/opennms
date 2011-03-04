@@ -43,12 +43,12 @@ import org.exolab.castor.xml.MarshalException;
 import org.exolab.castor.xml.Marshaller;
 import org.exolab.castor.xml.ValidationException;
 import org.opennms.core.utils.ThreadCategory;
-import org.opennms.netmgt.EventConstants;
 import org.opennms.netmgt.config.notifd.AutoAcknowledge;
 import org.opennms.netmgt.config.notifd.NotifdConfiguration;
 import org.opennms.netmgt.config.notifications.Notification;
 import org.opennms.netmgt.dao.castor.CastorUtils;
 import org.opennms.netmgt.eventd.EventIpcManagerFactory;
+import org.opennms.netmgt.model.events.EventBuilder;
 import org.opennms.netmgt.xml.event.Event;
 import org.opennms.netmgt.xml.event.Parm;
 import org.opennms.netmgt.xml.event.Parms;
@@ -204,14 +204,10 @@ public abstract class NotifdConfigManager {
      * @param uei a {@link java.lang.String} object.
      */
     protected void sendEvent(String uei) {
-        Event event = new Event();
-        event.setUei(uei);
-        event.setSource("NotifdConfigFactory");
-    
-        event.setTime(EventConstants.formatToString(new java.util.Date()));
+        EventBuilder bldr = new EventBuilder(uei, "NotifdConfigFactory");
     
         try {
-            EventIpcManagerFactory.getIpcManager().sendNow(event);
+            EventIpcManagerFactory.getIpcManager().sendNow(bldr.getEvent());
         } catch (Throwable t) {
         }
     }
