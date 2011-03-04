@@ -56,10 +56,10 @@ import javax.servlet.http.HttpSession;
 import org.opennms.core.resource.Vault;
 import org.opennms.core.utils.DBUtils;
 import org.opennms.core.utils.LogUtils;
-import org.opennms.netmgt.EventConstants;
 import org.opennms.netmgt.config.DataSourceFactory;
 import org.opennms.netmgt.config.NotificationFactory;
 import org.opennms.netmgt.config.modelimport.types.InterfaceSnmpPrimaryType;
+import org.opennms.netmgt.model.events.EventBuilder;
 import org.opennms.netmgt.xml.event.Event;
 import org.opennms.web.WebSecurityUtils;
 import org.opennms.web.api.Util;
@@ -161,14 +161,11 @@ public class SnmpManageNodesServlet extends HttpServlet {
     }
 
     private void sendSNMPRestartEvent(int nodeid, String primeInt) throws ServletException {
-        Event snmpRestart = new Event();
-        snmpRestart.setUei("uei.opennms.org/nodes/reinitializePrimarySnmpInterface");
-        snmpRestart.setNodeid(nodeid);
-        snmpRestart.setInterface(primeInt);
-        snmpRestart.setSource("web ui");
-        snmpRestart.setTime(EventConstants.formatToString(new java.util.Date()));
+        EventBuilder bldr = new EventBuilder("uei.opennms.org/nodes/reinitializePrimarySnmpInterface", "web ui");
+        bldr.setNodeid(nodeid);
+        bldr.setInterface(primeInt);
 
-        sendEvent(snmpRestart);
+        sendEvent(bldr.getEvent());
     }
 
     private void sendEvent(Event event) throws ServletException {
