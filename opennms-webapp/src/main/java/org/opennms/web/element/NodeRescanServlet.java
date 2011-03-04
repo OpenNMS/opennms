@@ -40,8 +40,8 @@ import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
 import org.opennms.netmgt.EventConstants;
+import org.opennms.netmgt.model.events.EventBuilder;
 import org.opennms.netmgt.model.events.EventProxy;
-import org.opennms.netmgt.xml.event.Event;
 import org.opennms.web.MissingParameterException;
 import org.opennms.web.WebSecurityUtils;
 import org.opennms.web.api.Util;
@@ -92,16 +92,12 @@ public class NodeRescanServlet extends HttpServlet {
         try {
             int nodeId = WebSecurityUtils.safeParseInt(nodeIdString);
 
-            // prepare the event
-            Event outEvent = new Event();
-            outEvent.setSource("NodeRescanServlet");
-            outEvent.setUei(EventConstants.FORCE_RESCAN_EVENT_UEI);
-            outEvent.setNodeid(nodeId);
-            outEvent.setHost("host");
-            outEvent.setTime(EventConstants.formatToString(new java.util.Date()));
+            EventBuilder bldr = new EventBuilder(EventConstants.FORCE_RESCAN_EVENT_UEI, "NodeRescanServlet");
+            bldr.setNodeid(nodeId);
+            bldr.setHost("host");
 
             // send the event
-            this.proxy.send(outEvent);
+            this.proxy.send(bldr.getEvent());
 
             // redirect the request for display
             response.sendRedirect(Util.calculateUrlBase(request) + "/" + returnUrl);
