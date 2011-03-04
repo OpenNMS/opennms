@@ -50,24 +50,12 @@ import org.apache.log4j.Logger;
 import org.opennms.netmgt.EventConstants;
 import org.opennms.netmgt.model.events.EventBuilder;
 import org.opennms.netmgt.model.events.EventProxy;
-import org.opennms.netmgt.xml.event.Event;
 import org.opennms.web.api.Util;
 
 /**
  * A servlet that handles configuring SNMP
  *
- * @author <a href="mailto:david@opennms.org">David Hustace</a>
- * @author <a href="mailto:tarus@opennms.org">Tarus Balog</a>
- * @author <A HREF="mailto:gturner@newedgenetworks.com">Gerald Turner </A>
- * @author <A HREF="http://www.opennms.org/">OpenNMS </A>
- * @author <a href="mailto:david@opennms.org">David Hustace</a>
- * @author <a href="mailto:tarus@opennms.org">Tarus Balog</a>
- * @author <A HREF="mailto:gturner@newedgenetworks.com">Gerald Turner </A>
- * @author <A HREF="http://www.opennms.org/">OpenNMS </A>
- * @author <a href="mailto:david@opennms.org">David Hustace</a>
- * @author <a href="mailto:tarus@opennms.org">Tarus Balog</a>
- * @author <A HREF="mailto:gturner@newedgenetworks.com">Gerald Turner </A>
- * @author <A HREF="http://www.opennms.org/">OpenNMS </A>
+ * @author <a href="mailto:brozow@opennms.org">Matt Brozowski</a>
  * @author <a href="mailto:david@opennms.org">David Hustace</a>
  * @author <a href="mailto:tarus@opennms.org">Tarus Balog</a>
  * @author <A HREF="mailto:gturner@newedgenetworks.com">Gerald Turner </A>
@@ -101,39 +89,35 @@ public class SnmpConfigServlet extends HttpServlet {
 
         
         
-        Event newEvent = new Event();
-        newEvent.setUei(EventConstants.CONFIGURE_SNMP_EVENT_UEI);
-        newEvent.setSource("web ui");
-        newEvent.setTime(EventConstants.formatToString(new java.util.Date()));
-        newEvent.setService("SNMP");
-        newEvent.setInterface(firstIPAddress);
+        EventBuilder bldr = new EventBuilder(EventConstants.CONFIGURE_SNMP_EVENT_UEI, "web ui");
+        bldr.setInterface(firstIPAddress);
+        bldr.setService("SNMP");
         
-        EventBuilder builder = new EventBuilder(newEvent);
-        builder.addParam(EventConstants.PARM_FIRST_IP_ADDRESS, firstIPAddress);
-        builder.addParam(EventConstants.PARM_LAST_IP_ADDRESS, lastIPAddress);
-        builder.addParam(EventConstants.PARM_COMMUNITY_STRING, communityString);
+        bldr.addParam(EventConstants.PARM_FIRST_IP_ADDRESS, firstIPAddress);
+        bldr.addParam(EventConstants.PARM_LAST_IP_ADDRESS, lastIPAddress);
+        bldr.addParam(EventConstants.PARM_COMMUNITY_STRING, communityString);
         
         if ( timeout.length() > 0) {
-        	builder.addParam(EventConstants.PARM_TIMEOUT, timeout);
+        	bldr.addParam(EventConstants.PARM_TIMEOUT, timeout);
         }
         if ( port.length() > 0 ) {
-        	builder.addParam(EventConstants.PARM_PORT, port);
+        	bldr.addParam(EventConstants.PARM_PORT, port);
         }
         if ( retryCount.length() > 0 ) {
-        	builder.addParam(EventConstants.PARM_RETRY_COUNT, retryCount);
+        	bldr.addParam(EventConstants.PARM_RETRY_COUNT, retryCount);
         }
         if ( version.length() > 0 ) {
-        	builder.addParam(EventConstants.PARM_VERSION, version);
+        	bldr.addParam(EventConstants.PARM_VERSION, version);
         }
         try {
         	EventProxy eventProxy = Util.createEventProxy();
         	if (eventProxy != null) {
-        		eventProxy.send(builder.getEvent());
+        		eventProxy.send(bldr.getEvent());
         	} else {
-        		throw new ServletException("Event proxy object is null, unable to send event " + newEvent.getUei());
+        		throw new ServletException("Event proxy object is null, unable to send event " + bldr.getEvent().getUei());
         	}
         } catch (Throwable e) {
-        	throw new ServletException("Could not send event " + newEvent.getUei(), e);
+        	throw new ServletException("Could not send event " + bldr.getEvent().getUei(), e);
         }
 
         // forward the request for proper display
