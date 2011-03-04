@@ -55,10 +55,7 @@ import org.opennms.core.utils.DBUtils;
 import org.opennms.core.utils.ThreadCategory;
 import org.opennms.netmgt.EventConstants;
 import org.opennms.netmgt.eventd.EventIpcManagerFactory;
-import org.opennms.netmgt.xml.event.Event;
-import org.opennms.netmgt.xml.event.Parm;
-import org.opennms.netmgt.xml.event.Parms;
-import org.opennms.netmgt.xml.event.Value;
+import org.opennms.netmgt.model.events.EventBuilder;
 
 /**
  * This class is designed to reparent interfaces in the database based on the
@@ -708,88 +705,29 @@ public final class ReparentViaSmb {
             ipHostName = "";
 
         // create the event to be sent
-        Event newEvent = new Event();
+        EventBuilder bldr = new EventBuilder(EventConstants.INTERFACE_REPARENTED_EVENT_UEI, "OpenNMS.Capsd");
 
-        newEvent.setUei(EventConstants.INTERFACE_REPARENTED_EVENT_UEI);
-
-        newEvent.setSource("OpenNMS.Capsd");
-
-        newEvent.setNodeid(newNodeId);
-
-        newEvent.setHost(Capsd.getLocalHostAddress());
-
-        newEvent.setInterface(ipAddr);
-
-        newEvent.setTime(EventConstants.formatToString(new java.util.Date()));
-
-        // Add appropriate parms
-        Parms eventParms = new Parms();
-        Parm eventParm = null;
-        Value parmValue = null;
-
-        // Add IP host name
-        eventParm = new Parm();
-        eventParm.setParmName(EventConstants.PARM_IP_HOSTNAME);
-        parmValue = new Value();
-        parmValue.setContent(ipHostName);
-        eventParm.setValue(parmValue);
-        eventParms.addParm(eventParm);
-
-        // Add old nodeid
-        eventParm = new Parm();
-        eventParm.setParmName(EventConstants.PARM_OLD_NODEID);
-        parmValue = new Value();
-        parmValue.setContent(String.valueOf(oldNodeId));
-        eventParm.setValue(parmValue);
-        eventParms.addParm(eventParm);
-
-        // Add new nodeid
-        eventParm = new Parm();
-        eventParm.setParmName(EventConstants.PARM_NEW_NODEID);
-        parmValue = new Value();
-        parmValue.setContent(String.valueOf(newNodeId));
-        eventParm.setValue(parmValue);
-        eventParms.addParm(eventParm);
-
-        // Add nodeLabel and nodeLabelSource
-        eventParm = new Parm();
-        eventParm.setParmName(EventConstants.PARM_NODE_LABEL);
-        parmValue = new Value();
-        parmValue.setContent(reparentNodeEntry.getLabel());
-        eventParm.setValue(parmValue);
-        eventParms.addParm(eventParm);
-
-        eventParm = new Parm();
-        eventParm.setParmName(EventConstants.PARM_NODE_LABEL_SOURCE);
-        parmValue = new Value();
-        parmValue.setContent(new String(new char[] { reparentNodeEntry.getLabelSource() }));
-        eventParm.setValue(parmValue);
-        eventParms.addParm(eventParm);
-
+        bldr.setNodeid(newNodeId);
+        bldr.setHost(Capsd.getLocalHostAddress());
+        bldr.setInterface(ipAddr);
+        
+        bldr.addParam(EventConstants.PARM_IP_HOSTNAME, ipHostName);
+        bldr.addParam(EventConstants.PARM_OLD_NODEID, oldNodeId);
+        bldr.addParam(EventConstants.PARM_NEW_NODEID, newNodeId);
+        bldr.addParam(EventConstants.PARM_NODE_LABEL, reparentNodeEntry.getLabel());
+        bldr.addParam(EventConstants.PARM_NODE_LABEL_SOURCE, reparentNodeEntry.getLabelSource());
+        
         if (reparentNodeEntry.getSystemName() != null) {
-            eventParm = new Parm();
-            eventParm.setParmName(EventConstants.PARM_NODE_SYSNAME);
-            parmValue = new Value();
-            parmValue.setContent(reparentNodeEntry.getSystemName());
-            eventParm.setValue(parmValue);
-            eventParms.addParm(eventParm);
+            bldr.addParam(EventConstants.PARM_NODE_SYSNAME, reparentNodeEntry.getSystemName());
         }
 
         if (reparentNodeEntry.getSystemDescription() != null) {
-            eventParm = new Parm();
-            eventParm.setParmName(EventConstants.PARM_NODE_SYSDESCRIPTION);
-            parmValue = new Value();
-            parmValue.setContent(reparentNodeEntry.getSystemDescription());
-            eventParm.setValue(parmValue);
-            eventParms.addParm(eventParm);
+            bldr.addParam(EventConstants.PARM_NODE_SYSDESCRIPTION, reparentNodeEntry.getSystemDescription());
         }
-
-        // Add Parms to the event
-        newEvent.setParms(eventParms);
 
         // Send event to Eventd
         try {
-            EventIpcManagerFactory.getIpcManager().sendNow(newEvent);
+            EventIpcManagerFactory.getIpcManager().sendNow(bldr.getEvent());
 
         } catch (Throwable t) {
             log.warn("run: unexpected throwable exception caught during send to middleware", t);
