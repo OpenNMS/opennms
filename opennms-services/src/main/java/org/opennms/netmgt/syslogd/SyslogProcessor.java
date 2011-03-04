@@ -44,11 +44,12 @@ import java.net.InetAddress;
 import java.net.UnknownHostException;
 
 import org.opennms.core.utils.ThreadCategory;
+import org.opennms.netmgt.EventConstants;
 import org.opennms.netmgt.config.SyslogdConfig;
 import org.opennms.netmgt.config.syslogd.HideMessage;
 import org.opennms.netmgt.config.syslogd.UeiList;
 import org.opennms.netmgt.eventd.EventIpcManagerFactory;
-import org.opennms.netmgt.xml.event.Event;
+import org.opennms.netmgt.model.events.EventBuilder;
 import org.opennms.netmgt.xml.event.Parm;
 
 /**
@@ -221,12 +222,9 @@ final class SyslogProcessor implements Runnable {
     }
 
     private void sendNewSuspectEvent(String trapInterface) {
-        Event event = new Event();
-        event.setSource("syslogd");
-        event.setUei(org.opennms.netmgt.EventConstants.NEW_SUSPECT_INTERFACE_EVENT_UEI);
-        event.setHost(m_localAddr);
-        event.setInterface(trapInterface);
-        event.setTime(org.opennms.netmgt.EventConstants.formatToString(new java.util.Date()));
-        EventIpcManagerFactory.getIpcManager().sendNow(event);
+        EventBuilder bldr = new EventBuilder(EventConstants.NEW_SUSPECT_INTERFACE_EVENT_UEI, "syslogd");
+        bldr.setInterface(trapInterface);
+        bldr.setHost(m_localAddr);
+        EventIpcManagerFactory.getIpcManager().sendNow(bldr.getEvent());
     }
 }

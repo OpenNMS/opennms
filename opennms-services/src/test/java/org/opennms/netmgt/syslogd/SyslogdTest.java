@@ -57,11 +57,9 @@ import org.opennms.netmgt.mock.EventAnticipator;
 import org.opennms.netmgt.mock.MockDatabase;
 import org.opennms.netmgt.mock.MockNetwork;
 import org.opennms.netmgt.mock.OpenNMSTestCase;
+import org.opennms.netmgt.model.events.EventBuilder;
 import org.opennms.netmgt.xml.event.Event;
-import org.opennms.netmgt.xml.event.Logmsg;
 import org.opennms.netmgt.xml.event.Parm;
-import org.opennms.netmgt.xml.event.Parms;
-import org.opennms.netmgt.xml.event.Value;
 import org.opennms.test.ConfigurationTestUtils;
 import org.opennms.test.DaoTestConfigBean;
 import org.opennms.test.mock.MockLogAppender;
@@ -126,18 +124,14 @@ public class SyslogdTest extends OpenNMSTestCase {
     private List<Event> doMessageTest(String testPDU, String expectedHost, String expectedUEI, String expectedLogMsg) throws UnknownHostException, InterruptedException {
         startSyslogdGracefully();
         
-        Event expectedEvent = new Event();
-        expectedEvent.setUei(expectedUEI);
-        expectedEvent.setSource("syslogd");
-        expectedEvent.setInterface(expectedHost);
-        Logmsg logmsg = new Logmsg();
-        logmsg.setDest("logndisplay");
-        logmsg.setContent(expectedLogMsg);
-        expectedEvent.setLogmsg(logmsg);
+        EventBuilder expectedEventBldr = new EventBuilder(expectedUEI, "syslogd");
+        expectedEventBldr.setInterface(expectedHost);
+        expectedEventBldr.setLogDest("logndisplay");
+        expectedEventBldr.setLogMessage(expectedLogMsg);
     
         EventAnticipator ea = new EventAnticipator();
         getEventIpcManager().addEventListener(ea);
-        ea.anticipateEvent(expectedEvent);
+        ea.anticipateEvent(expectedEventBldr.getEvent());
         
         SyslogClient sc = new SyslogClient(null, 10, SyslogClient.LOG_DEBUG);
         DatagramPacket pkt = sc.getPacket(SyslogClient.LOG_DEBUG, testPDU);
@@ -302,46 +296,19 @@ public class SyslogdTest extends OpenNMSTestCase {
         final String testUEI = "uei.opennms.org/tests/syslogd/regexParameterAssignmentTest/userSpecifiedOnly";
         final String testMsg = "Secretly replaced cmiskell's tea with 666 ferrets";
         final String[] testGroups = { "cmiskell's", "666", "ferrets" };
-        
-        Event e = new Event();
-        e.setUei(testUEI);
-        e.setSource("syslogd");
-        e.setInterface(localhost);
-        Logmsg logmsg = new Logmsg();
-        logmsg.setDest("logndisplay");
-        logmsg.setContent(testMsg);
-        e.setLogmsg(logmsg);
-        
-        Parms eventParms = new Parms();
-        Parm eventParm = null;
-        Value parmValue = null;
-        
-        eventParm = new Parm();
-        eventParm.setParmName("whoseBeverage");
-        parmValue = new Value();
-        parmValue.setContent(testGroups[0]);
-        eventParm.setValue(parmValue);
-        eventParms.addParm(eventParm);
-        
-        eventParm = new Parm();
-        eventParm.setParmName("count");
-        parmValue = new Value();
-        parmValue.setContent(testGroups[1]);
-        eventParm.setValue(parmValue);
-        eventParms.addParm(eventParm);
-        
-        eventParm = new Parm();
-        eventParm.setParmName("replacementItem");
-        parmValue = new Value();
-        parmValue.setContent(testGroups[2]);
-        eventParm.setValue(parmValue);
-        eventParms.addParm(eventParm);
 
-        e.setParms(eventParms);
+        EventBuilder expectedEventBldr = new EventBuilder(testUEI, "syslogd");
+        expectedEventBldr.setInterface(localhost);
+        expectedEventBldr.setLogDest("logndisplay");
+        expectedEventBldr.setLogMessage(testMsg);
+        
+        expectedEventBldr.addParam("whoseBeverage", testGroups[0]);
+        expectedEventBldr.addParam("count", testGroups[1]);
+        expectedEventBldr.addParam("replacementItem", testGroups[2]);
     
         EventAnticipator ea = new EventAnticipator();
         getEventIpcManager().addEventListener(ea);
-        ea.anticipateEvent(e);
+        ea.anticipateEvent(expectedEventBldr.getEvent());
         
         SyslogClient s = null;
         try {
