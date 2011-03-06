@@ -103,7 +103,7 @@ public class DaoWebEventRepository implements WebEventRepository {
                     criteria.addOrder(Order.desc("node.label"));
                     break;
                 case POLLER:
-                    criteria.addOrder(Order.desc("dispPoller"));
+                    criteria.addOrder(Order.desc("distPoller"));
                     break;
                 case SERVICE:
                     criteria.addOrder(Order.desc("serviceType.name"));
@@ -124,7 +124,7 @@ public class DaoWebEventRepository implements WebEventRepository {
                     criteria.addOrder(Order.asc("node.label"));
                     break;
                 case REVERSE_POLLER:
-                    criteria.addOrder(Order.asc("dispPoller"));
+                    criteria.addOrder(Order.asc("distPoller"));
                     break;
                 case REVERSE_SERVICE:
                     criteria.addOrder(Order.desc("serviceType.name"));
