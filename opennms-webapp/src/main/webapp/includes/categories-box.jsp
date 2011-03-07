@@ -69,7 +69,7 @@
 %>
 
 <%
-	Map categoryData = m_category_list.getCategoryData();
+	Map<String, List<Category>> categoryData = m_category_list.getCategoryData();
 
 	long earliestUpdate = m_category_list.getEarliestUpdate(categoryData);
 	boolean opennmsDisconnect =
@@ -89,8 +89,8 @@
 
 <table class="o-box">
 <%
-	for (Iterator i = categoryData.keySet().iterator(); i.hasNext(); ) {
-	    String sectionName = (String) i.next();
+	for (Iterator<String> i = categoryData.keySet().iterator(); i.hasNext(); ) {
+	    String sectionName = i.next();
 %>
 	<thead>
 		<tr>
@@ -100,10 +100,10 @@
 		</tr>
 	</thead>
 <%
- 	    List categories = (List) categoryData.get(sectionName);
+ 	    List<Category> categories = categoryData.get(sectionName);
 
-	    for (Iterator j = categories.iterator(); j.hasNext(); ) {
-		Category category = (Category) j.next();
+	    for (Iterator<Category> j = categories.iterator(); j.hasNext(); ) {
+		Category category = j.next();
 		String categoryName = category.getName();
 %>
 	<tr class="CellStatus">
@@ -132,5 +132,3 @@
 	}
 %>
 </table>
-
-
