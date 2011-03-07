@@ -4,6 +4,7 @@
   xsi:schemaLocation="http://xmlns.opennms.org/xsd/config/opennms-datasources 
   http://www.opennms.org/xsd/config/opennms-datasources.xsd ">
 
+  <!-- or, org.opennms.netmgt.config.DBPoolConnectionFactory -->
   <connection-pool factory="org.opennms.netmgt.config.C3P0ConnectionFactory"
     idleTimeout="600"
     loginTimeout="3"
