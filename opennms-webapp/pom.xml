@@ -317,16 +317,6 @@
       <scope>test</scope>
     </dependency>
     <dependency>
-      <groupId>httpunit</groupId>
-      <artifactId>httpunit</artifactId>
-      <scope>test</scope>
-    </dependency>
-    <dependency>
-      <groupId>jwebunit</groupId>
-      <artifactId>jwebunit</artifactId>
-      <scope>test</scope>
-    </dependency>
-    <dependency>
       <groupId>org.opennms.tests</groupId>
       <artifactId>org.opennms.tests.mock-elements</artifactId>
       <scope>test</scope>

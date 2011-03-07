@@ -1184,6 +1184,12 @@
         <type>pom</type>
       </dependency>
       <dependency>
+        <groupId>org.opennms.dependencies</groupId>
+        <artifactId>jdbc-pool-dependencies</artifactId>
+        <version>${project.version}</version>
+        <type>pom</type>
+      </dependency>
+      <dependency>
         <groupId>org.opennms</groupId>
         <artifactId>opennms-detector-datagram</artifactId>
         <version>${project.version}</version>
@@ -1781,11 +1787,6 @@
         <version>3.1.5</version>
       </dependency>
       <dependency>
-        <groupId>httpunit</groupId>
-        <artifactId>httpunit</artifactId>
-        <version>1.6.1</version>
-      </dependency>
-      <dependency>
         <groupId>jakarta-regexp</groupId>
         <artifactId>jakarta-regexp</artifactId>
         <version>1.4</version>
@@ -1904,9 +1905,9 @@
         <version>4.8.2</version>
       </dependency>
       <dependency>
-        <groupId>jwebunit</groupId>
-        <artifactId>jwebunit</artifactId>
-        <version>1.2</version>
+        <groupId>net.sourceforge.jwebunit</groupId>
+        <artifactId>jwebunit-htmlunit-plugin</artifactId>
+        <version>2.5</version>
       </dependency>
       <dependency>
         <groupId>log4j</groupId>

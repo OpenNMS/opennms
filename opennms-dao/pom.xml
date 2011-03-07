@@ -82,6 +82,11 @@
       <type>pom</type>
     </dependency>
     <dependency>
+      <groupId>org.opennms.dependencies</groupId>
+      <artifactId>jdbc-pool-dependencies</artifactId>
+      <type>pom</type>
+    </dependency>
+    <dependency>
       <groupId>org.opennms</groupId>
       <artifactId>opennms-config</artifactId>
     </dependency>

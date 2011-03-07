@@ -27,6 +27,7 @@
     <module>icmp</module>
     <module>javamail</module>
     <module>jcifs</module>
+    <module>jdbc-pool</module>
     <module>jdhcp</module>
     <module>jinterop</module>
     <module>jna</module>
