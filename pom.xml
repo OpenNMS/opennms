@@ -1184,6 +1184,12 @@
         <type>pom</type>
       </dependency>
       <dependency>
+        <groupId>org.opennms.dependencies</groupId>
+        <artifactId>jdbc-pool-dependencies</artifactId>
+        <version>${project.version}</version>
+        <type>pom</type>
+      </dependency>
+      <dependency>
         <groupId>org.opennms</groupId>
         <artifactId>opennms-detector-datagram</artifactId>
         <version>${project.version}</version>
