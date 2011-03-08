@@ -40,6 +40,7 @@ import java.util.Enumeration;
 
 import org.exolab.castor.xml.MarshalException;
 import org.exolab.castor.xml.ValidationException;
+import org.opennms.core.utils.ThreadCategory;
 import org.opennms.netmgt.xml.rtc.Node;
 
 /**
@@ -54,19 +55,16 @@ import org.opennms.netmgt.xml.rtc.Node;
  *
  * @author <a href="mailto:larry@opennms.org">Lawrence Karnowski </a>
  * @author <a href="http://www.opennms.org/">OpenNMS </a>
- * @author <a href="mailto:larry@opennms.org">Lawrence Karnowski </a>
- * @author <a href="http://www.opennms.org/">OpenNMS </a>
- * @version $Id: $
  */
 public class Category {
     /** The category definition (from the categories.xml file). */
-    protected org.opennms.netmgt.config.categories.Category m_categoryDef;
+    protected final org.opennms.netmgt.config.categories.Category m_categoryDef;
 
     /**
      * An update from the RTC about the service level availability for this
      * category.
      */
-    protected org.opennms.netmgt.xml.rtc.Category m_rtcCategory;
+    protected final org.opennms.netmgt.xml.rtc.Category m_rtcCategory;
 
     /**
      * The last time this category was updated. Note that with the current way
@@ -74,7 +72,7 @@ public class Category {
      * change because a new instance of this class is created for each RTC
      * update.
      */
-    protected Date m_lastUpdated;
+    protected final Date m_lastUpdated;
 
     /**
      * A cached value of the total number of services on nodes belonging to this
@@ -89,7 +87,7 @@ public class Category {
     protected Long m_serviceDownCount;
 
     /**
-     * A cached value of the ratio of services that are up on notes beloging to
+     * A cached value of the ratio of services that are up on notes belonging to
      * this category to all nodes belonging in this category.
      */
     protected Double m_servicePercentage;
@@ -103,6 +101,8 @@ public class Category {
     protected Category(String categoryName) {
         m_categoryDef = new org.opennms.netmgt.config.categories.Category();
         m_categoryDef.setLabel(categoryName);
+        m_rtcCategory = null;
+        m_lastUpdated = null;
     }
 
     /**
@@ -114,7 +114,7 @@ public class Category {
      * @param rtcCategory a {@link org.opennms.netmgt.xml.rtc.Category} object.
      * @param lastUpdated a {@link java.util.Date} object.
      */
-    protected Category(org.opennms.netmgt.config.categories.Category categoryDef, org.opennms.netmgt.xml.rtc.Category rtcCategory, Date lastUpdated) {
+    protected Category(final org.opennms.netmgt.config.categories.Category categoryDef, final org.opennms.netmgt.xml.rtc.Category rtcCategory, final Date lastUpdated) {
         if (categoryDef == null || rtcCategory == null || lastUpdated == null) {
             throw new IllegalArgumentException("Cannot take null parameters.");
         }
@@ -129,6 +129,7 @@ public class Category {
 
         m_serviceCount = null;
         m_serviceDownCount = null;
+        m_servicePercentage = null;
     }
 
     /**
@@ -204,11 +205,12 @@ public class Category {
     }
 
     /**
-     * Return the number of services contained within this category.
+     * Return the number of services contained within this category. This is
+     * synchronized because it updates several instance variables as it executes.
      *
      * @return a long.
      */
-    public long getServiceCount() {
+    private synchronized long getServiceCount() {
         if (m_serviceCount == null) {
             if (m_rtcCategory == null) {
                 m_serviceCount = new Long(0);
@@ -236,13 +238,18 @@ public class Category {
      *
      * @return a long.
      */
-    public long getServiceDownCount() {
+    public synchronized long getServiceDownCount() {
         if (m_serviceDownCount == null) {
             // This will initialize m_serviceDownCount
             getServiceCount();
         }
 
-        return m_serviceDownCount.longValue();
+        if (m_serviceDownCount == null) {
+            ThreadCategory.getInstance(this.getClass()).warn("Could not fetch service down count for category: " + m_rtcCategory.getCatlabel());
+            return 0;
+        } else {
+            return m_serviceDownCount.longValue();
+        }
     }
 
     /**
@@ -251,13 +258,18 @@ public class Category {
      *
      * @return a double.
      */
-    public double getServicePercentage() {
+    public synchronized double getServicePercentage() {
         if (m_servicePercentage == null) {
             // This will initialize m_servicePercentage
             getServiceCount();
         }
 
-        return m_servicePercentage.doubleValue();
+        if (m_servicePercentage == null) {
+            ThreadCategory.getInstance(this.getClass()).warn("Could not fetch service percentage for category: " + m_rtcCategory.getCatlabel());
+            return 0.0;
+        } else {
+            return m_servicePercentage.doubleValue();
+        }
     }
 
     /**
@@ -388,7 +400,7 @@ public class Category {
      * @param category a {@link org.opennms.netmgt.xml.rtc.Category} object.
      * @return an array of long.
      */
-    protected static long[] getServiceCounts(org.opennms.netmgt.xml.rtc.Category category) {
+    protected static long[] getServiceCounts(final org.opennms.netmgt.xml.rtc.Category category) {
         if (category == null) {
             throw new IllegalArgumentException("Cannot take null parameters.");
         }

@@ -94,11 +94,11 @@
     AclUtils.NodeAccessChecker accessChecker = AclUtils.getNodeAccessChecker(getServletContext());
 
     //put the nodes in a tree map to sort by name
-    TreeMap nodeMap = new TreeMap();    
-    Enumeration nodeEnum = category.enumerateNode();
+    TreeMap<String,Node> nodeMap = new TreeMap<String,Node>();
+    Enumeration<Node> nodeEnum = category.enumerateNode();
     
     while (nodeEnum.hasMoreElements()) {
-        Node node = (Node) nodeEnum.nextElement();
+        Node node = nodeEnum.nextElement();
         int nodeId = (int)node.getNodeid();
         String nodeLabel =
 		NetworkElementFactory.getInstance(getServletContext()).getNodeLabel(nodeId);
@@ -115,8 +115,8 @@
         }
     }
     
-    Set keySet = nodeMap.keySet();
-    Iterator nameIterator = keySet.iterator();
+    Set<String> keySet = nodeMap.keySet();
+    Iterator<String> nameIterator = keySet.iterator();
 %>
 
 
@@ -180,8 +180,8 @@
 	    int outagecnt = 0;
 
             while( nameIterator.hasNext() ) {
-                String nodeLabel = (String)nameIterator.next();
-                Node node = (Node)nodeMap.get(nodeLabel);
+                String nodeLabel = nameIterator.next();
+                Node node = nodeMap.get(nodeLabel);
                 
                 double value = node.getNodevalue();
         
