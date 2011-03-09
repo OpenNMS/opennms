@@ -35,8 +35,10 @@
 //
 package org.opennms.netmgt.dao;
 
+import java.net.InetAddress;
 import java.util.List;
 
+import org.opennms.core.utils.InetAddressUtils;
 import org.opennms.netmgt.model.OnmsMonitoredService;
 
 
@@ -57,12 +59,16 @@ public class MonitoredServiceDaoTest extends AbstractTransactionalDaoTestCase {
     }
     
     public void testGetByCompositeId() {
-    	OnmsMonitoredService monSvc = getMonitoredServiceDao().get(1, "192.168.1.1", "SNMP");
+    	OnmsMonitoredService monSvc = getMonitoredServiceDao().get(1, addr("192.168.1.1"), "SNMP");
     	assertNotNull(monSvc);
     	
-    	OnmsMonitoredService monSvc2 = getMonitoredServiceDao().get(1, "192.168.1.1", monSvc.getIfIndex(), monSvc.getServiceId());
+    	OnmsMonitoredService monSvc2 = getMonitoredServiceDao().get(1, addr("192.168.1.1"), monSvc.getIfIndex(), monSvc.getServiceId());
     	assertNotNull(monSvc2);
     	
+    }
+    
+    private InetAddress addr(String dottedNotation) {
+        return InetAddressUtils.getInetAddress(dottedNotation);
     }
 
 }

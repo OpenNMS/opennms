@@ -59,7 +59,7 @@ import org.springframework.util.StringUtils;
  * @version $Id: $
  */
 public class DefaultRrdDao implements RrdDao, InitializingBean {
-    private RrdStrategy m_rrdStrategy;
+    private RrdStrategy<?, ?> m_rrdStrategy;
     private File m_rrdBaseDirectory;
     private String m_rrdBinaryPath;
 
@@ -158,7 +158,7 @@ public class DefaultRrdDao implements RrdDao, InitializingBean {
      *
      * @return a {@link org.opennms.netmgt.rrd.RrdStrategy} object.
      */
-    public RrdStrategy getRrdStrategy() {
+    public RrdStrategy<?, ?> getRrdStrategy() {
         return m_rrdStrategy;
     }
 
@@ -167,7 +167,7 @@ public class DefaultRrdDao implements RrdDao, InitializingBean {
      *
      * @param rrdStrategy a {@link org.opennms.netmgt.rrd.RrdStrategy} object.
      */
-    public void setRrdStrategy(RrdStrategy rrdStrategy) {
+    public void setRrdStrategy(RrdStrategy<?, ?> rrdStrategy) {
         m_rrdStrategy = rrdStrategy;
     }
 
