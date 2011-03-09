@@ -2,6 +2,7 @@ package org.opennms.netmgt.correlation.drools;
 
 import static org.easymock.EasyMock.expect;
 
+import org.junit.Test;
 import org.opennms.netmgt.EventConstants;
 import org.opennms.netmgt.model.events.EventBuilder;
 import org.opennms.netmgt.xml.event.Event;
@@ -11,6 +12,7 @@ import org.opennms.test.mock.EasyMockUtils;
 public class NodeParentRulesTest extends CorrelationRulesTestCase {
     private EasyMockUtils m_mocks = new EasyMockUtils();
     
+    @Test
     public void testParentNodeDown() throws Exception {
         
         //anticipate(createRootCauseEvent(1, 1));
