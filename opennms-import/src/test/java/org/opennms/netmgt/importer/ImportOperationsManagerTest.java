@@ -40,6 +40,7 @@
 
 package org.opennms.netmgt.importer;
 
+import java.io.ByteArrayInputStream;
 import java.io.IOException;
 import java.io.StringReader;
 import java.util.Collection;
@@ -102,7 +103,6 @@ public class ImportOperationsManagerTest extends AbstractTransactionalTemporaryD
         };
     }
     
-    @SuppressWarnings("deprecation")
     @Override
     protected void onSetUpInTransactionIfEnabled() throws Exception {
         Properties p = new Properties();
@@ -117,7 +117,7 @@ public class ImportOperationsManagerTest extends AbstractTransactionalTemporaryD
         
         m_agent = MockSnmpAgent.createAgentAndRun(new ClassPathResource("org/opennms/netmgt/snmp/snmpTestData1.properties"), "127.0.0.1/1691");
 
-        SnmpPeerFactory spf = new SnmpPeerFactory(new StringReader("<?xml version=\"1.0\"?>\n" + 
+        SnmpPeerFactory spf = new SnmpPeerFactory(new ByteArrayInputStream(("<?xml version=\"1.0\"?>\n" + 
         		"<snmp-config port=\"1691\" retry=\"3\" timeout=\"800\"\n" + 
         		"             read-community=\"public\" \n" + 
         		"             version=\"v1\" \n" + 
@@ -125,7 +125,7 @@ public class ImportOperationsManagerTest extends AbstractTransactionalTemporaryD
         		"\n" + 
         		"</snmp-config>\n" + 
         		"\n" + 
-        		""));
+        		"").getBytes()));
         SnmpPeerFactory.setInstance(spf);
 
         super.onSetUpInTransactionIfEnabled();

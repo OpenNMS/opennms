@@ -77,10 +77,6 @@ public class IcmpMessenger implements Messenger<PingRequest, PingReply> {
         }
     }
 
-    private void errorf(String format, Object... args) {
-        log().error(String.format(format, args));
-    }
-
     void errorf(Throwable t, String format, Object... args) {
         log().error(String.format(format, args), t);
     }
