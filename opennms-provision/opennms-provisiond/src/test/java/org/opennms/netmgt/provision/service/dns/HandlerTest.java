@@ -82,7 +82,7 @@ public class HandlerTest {
         
         Assert.assertNotNull("input stream is null", is);
         
-        ModelImport mi = CastorUtils.unmarshalWithTranslatedExceptions(ModelImport.class, is, CastorUtils.PRESERVE_WHITESPACE);
+        ModelImport mi = CastorUtils.unmarshalWithTranslatedExceptions(ModelImport.class, is);
         
         Assert.assertTrue("Number of nodes in Model Import > 1", 1 == mi.getNodeCount());
         Assert.assertTrue("NodeLabel isn't localhost", "localhost".equals(mi.getNode(0).getNodeLabel()));

@@ -112,7 +112,7 @@ public abstract class AbstractCastorConfigDao<K, V> implements InitializingBean 
             log().debug("Loading " + m_description + " configuration from " + resource);
         }
 
-        V config = translateConfig(CastorUtils.unmarshalWithTranslatedExceptions(m_castorClass, resource, CastorUtils.PRESERVE_WHITESPACE));
+        V config = translateConfig(CastorUtils.unmarshalWithTranslatedExceptions(m_castorClass, resource));
         
         long endTime = System.currentTimeMillis();
         log().info(createLoadedLogMessage(config, (endTime - startTime)));

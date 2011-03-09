@@ -154,7 +154,7 @@ abstract public class RancidAdapterConfigManager implements RancidAdapterConfig 
     protected void reloadXML(final InputStream reader) throws MarshalException, ValidationException, IOException {
         getWriteLock().lock();
         try {
-            m_config = CastorUtils.unmarshal(RancidConfiguration.class, reader, CastorUtils.PRESERVE_WHITESPACE);
+            m_config = CastorUtils.unmarshal(RancidConfiguration.class, reader);
             createPolicyNamePkgMap();
             createUrlIpMap();
             createPackageIpListMap();

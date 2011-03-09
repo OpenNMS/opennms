@@ -147,7 +147,7 @@ public class DroolsCorrelationEngineBuilder extends PropertyEditorRegistrySuppor
     }
     
     private void readConfiguration() throws Exception {
-        EngineConfiguration configuration = CastorUtils.unmarshal(EngineConfiguration.class, m_configResource, CastorUtils.PRESERVE_WHITESPACE);
+        EngineConfiguration configuration = CastorUtils.unmarshal(EngineConfiguration.class, m_configResource);
 
         List<RuleSetConfiguration> ruleSets = new LinkedList<RuleSetConfiguration>();
         for (RuleSet ruleSet : configuration.getRuleSet()) {

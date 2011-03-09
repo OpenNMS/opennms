@@ -82,7 +82,7 @@ public final class ActiondConfigFactory {
      *                Thrown if the contents do not match the required schema.
      */
     private ActiondConfigFactory(final String configFile) throws IOException, MarshalException, ValidationException {
-        m_config = CastorUtils.unmarshal(ActiondConfiguration.class, new FileSystemResource(configFile), CastorUtils.PRESERVE_WHITESPACE);
+        m_config = CastorUtils.unmarshal(ActiondConfiguration.class, new FileSystemResource(configFile));
     }
 
     /**

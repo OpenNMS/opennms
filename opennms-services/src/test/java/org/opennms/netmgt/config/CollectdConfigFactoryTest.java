@@ -38,6 +38,7 @@ package org.opennms.netmgt.config;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNotNull;
 
+import java.io.InputStream;
 import java.io.Reader;
 
 import org.junit.Before;
@@ -71,11 +72,12 @@ public class CollectdConfigFactoryTest {
         
         FilterDaoFactory.getInstance();
 
-        Reader rdr = ConfigurationTestUtils.getReaderForResource(this, "collectd-testdata.xml");
+        InputStream in = ConfigurationTestUtils.getInputStreamForResource(this, "collectd-testdata.xml");
+        
         try {
-            m_factory = new CollectdConfigFactory(rdr, "localhost", false);
+            m_factory = new CollectdConfigFactory(in, "localhost", false);
         } finally {
-            rdr.close();
+            in.close();
         }
     }
 

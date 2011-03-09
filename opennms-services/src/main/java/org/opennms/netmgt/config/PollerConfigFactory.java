@@ -261,7 +261,7 @@ public final class PollerConfigFactory extends PollerConfigManager {
                 InputStream stream = null;
                 try {
                     stream = new FileInputStream(cfgFile);
-                    m_config = CastorUtils.unmarshal(PollerConfiguration.class, stream, CastorUtils.PRESERVE_WHITESPACE);
+                    m_config = CastorUtils.unmarshal(PollerConfiguration.class, stream);
                 } finally {
                     IOUtils.closeQuietly(stream);
                 }

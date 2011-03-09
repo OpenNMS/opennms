@@ -143,7 +143,7 @@ public class ConfigurationTestUtils extends Assert {
     }
 
     /**
-     * Use getInputStreamForResource instead.
+     * @deprecated Use getInputStreamForResource instead.
      *
      * @param obj a {@link java.lang.Object} object.
      * @param resource a {@link java.lang.String} object.

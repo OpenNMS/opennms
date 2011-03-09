@@ -120,7 +120,7 @@ public final class DiscoveryConfigFactory {
      *                Thrown if the contents do not match the required schema.
      */
     private DiscoveryConfigFactory(final String configFile) throws IOException, MarshalException, ValidationException {
-        m_config = CastorUtils.unmarshal(DiscoveryConfiguration.class, new FileSystemResource(configFile), CastorUtils.PRESERVE_WHITESPACE);
+        m_config = CastorUtils.unmarshal(DiscoveryConfiguration.class, new FileSystemResource(configFile));
     }
 
     public Lock getReadLock() {

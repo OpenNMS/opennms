@@ -99,7 +99,7 @@ public class MockCategoryFactory implements CatFactory {
     }
 	
 	public MockCategoryFactory(String config) throws MarshalException, ValidationException, IOException {
-        m_config = CastorUtils.unmarshal(Catinfo.class, new ByteArrayInputStream(config.getBytes()), CastorUtils.PRESERVE_WHITESPACE);
+        m_config = CastorUtils.unmarshal(Catinfo.class, new ByteArrayInputStream(config.getBytes()));
     }
 
     public Lock getReadLock() {

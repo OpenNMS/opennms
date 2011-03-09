@@ -114,7 +114,7 @@ public final class CategoryFactory implements CatFactory {
      * @throws org.exolab.castor.xml.ValidationException if any.
      */
     public CategoryFactory(final Resource resource) throws IOException, MarshalException, ValidationException {
-        m_config = CastorUtils.unmarshal(Catinfo.class, resource, CastorUtils.PRESERVE_WHITESPACE);
+        m_config = CastorUtils.unmarshal(Catinfo.class, resource);
     }
     
     public Lock getReadLock() {

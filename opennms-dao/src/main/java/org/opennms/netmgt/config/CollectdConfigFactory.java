@@ -135,27 +135,6 @@ public class CollectdConfigFactory {
     }
 
     /**
-     * Public constructor
-     *
-     * @exception java.io.IOException
-     *                Thrown if the specified config file cannot be read
-     * @exception org.exolab.castor.xml.MarshalException
-     *                Thrown if the file does not conform to the schema.
-     * @exception org.exolab.castor.xml.ValidationException
-     *                Thrown if the contents do not match the required schema.
-     * @param rdr a {@link java.io.Reader} object.
-     * @param localServer a {@link java.lang.String} object.
-     * @param verifyServer a boolean.
-     * @throws java.io.IOException if any.
-     * @throws org.exolab.castor.xml.MarshalException if any.
-     * @throws org.exolab.castor.xml.ValidationException if any.
-     */
-    public CollectdConfigFactory(Reader rdr, String localServer, boolean verifyServer) throws IOException, MarshalException, ValidationException {
-        CollectdConfiguration config = CastorUtils.unmarshal(CollectdConfiguration.class, rdr);
-        m_collectdConfig = new CollectdConfig(config, localServer, verifyServer);
-    }
-
-    /**
      * <p>Constructor for CollectdConfigFactory.</p>
      *
      * @param stream a {@link java.io.InputStream} object.
