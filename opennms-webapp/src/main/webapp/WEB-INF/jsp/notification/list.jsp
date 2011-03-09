@@ -52,6 +52,7 @@
                 org.opennms.web.springframework.security.Authentication,
 		java.util.*,
 		java.sql.SQLException,
+		java.io.UnsupportedEncodingException,
 		org.opennms.web.event.Event,
 		org.opennms.web.filter.Filter,
 		org.opennms.web.element.NetworkElementFactory,
@@ -77,7 +78,9 @@
     int noticeCount = request.getAttribute("noticeCount") == null ? -1 : (Integer)request.getAttribute("noticeCount");
     NoticeQueryParms parms = (NoticeQueryParms)request.getAttribute( "parms" );
 
+    @SuppressWarnings("unchecked")
     Map<Integer,String[]> nodeLabels = (Map<Integer,String[]>)request.getAttribute( "nodeLabels" );
+    @SuppressWarnings("unchecked")
     Map<Integer,Event> events = (Map<Integer,Event>)request.getAttribute( "events" );
 
     if( notices == null || parms == null || nodeLabels == null ) {
@@ -231,58 +234,65 @@
       </thead>
 
       <% for( int i=0; i < notices.length; i++ ) { 
-        Event event = events.get(notices[i].getEventId());
-        String eventSeverity = event.getSeverity().getLabel();
+    	final Notification notification = notices[i];
+    	if (notification == null) continue;
+        Event event = events.get(notification.getEventId());
+        String eventSeverity = "Unknown";
+        if (event != null) {
+          eventSeverity = event.getSeverity().getLabel();
+        }
         %>
         <tr class="<%=eventSeverity%>">
           <td class="divider noWrap" rowspan="2"><% if((parms.ackType == AcknowledgeType.UNACKNOWLEDGED ) && 
 		(request.isUserInRole( Authentication.ADMIN_ROLE ) || !request.isUserInRole( Authentication.READONLY_ROLE ))) { %>
-            <input type="checkbox" name="notices" value="<%=notices[i].getId()%>" />
+            <input type="checkbox" name="notices" value="<%=notification.getId()%>" />
           <% } %> 
-						<a href="notification/detail.jsp?notice=<%=notices[i].getId()%>"><%=notices[i].getId()%></a></td>
+						<a href="notification/detail.jsp?notice=<%=notification.getId()%>"><%=notification.getId()%></a></td>
           <td class="divider" rowspan="2">
-            <% if ( event.getEventDisplay() != null && event.getEventDisplay() ) { %>
-            <a href="event/detail.jsp?id=<%=notices[i].getEventId()%>"><%=notices[i].getEventId()%></a>
+            <% if ( event != null && event.getEventDisplay() != null && event.getEventDisplay() ) { %>
+            <a href="event/detail.jsp?id=<%=notification.getEventId()%>"><%=notification.getEventId()%></a>
             <% } %>
           </td>
           <td class="bright divider" rowspan="2"><%=eventSeverity%></td>
-          <td class="divider"><%=org.opennms.web.api.Util.formatDateToUIString(notices[i].getTimeSent())%></td>
-          <td class="divider"><% Filter responderFilter = new ResponderFilter(notices[i].getResponder()); %>      
-            <% if(notices[i].getResponder()!=null) {%>
-              <%=notices[i].getResponder()%>
+          <td class="divider"><%=org.opennms.web.api.Util.formatDateToUIString(notification.getTimeSent())%></td>
+          <td class="divider">
+          <% final String responder = notification.getResponder(); %>
+          <% if (responder != null) { %>
+            <% Filter responderFilter = new ResponderFilter(responder); %>      
+              <%= responder %>
               <% if( !parms.filters.contains( responderFilter )) { %>
                 <a href="<%=this.makeLink( parms, responderFilter, true)%>" class="filterLink" title="Show only notices with this responder">${addPositiveFilter}</a>
               <% } %>
             <% } %>
-          </td>
+            </td>
           <td class="divider">
-            <%if (notices[i].getTimeReplied()!=null) { %>
-              <%=org.opennms.web.api.Util.formatDateToUIString(notices[i].getTimeReplied())%>
+            <%if (notification.getTimeReplied()!=null) { %>
+              <%=org.opennms.web.api.Util.formatDateToUIString(notification.getTimeReplied())%>
             <% } %>
 					</td>
           <td class="divider">
-            <% if(notices[i].getNodeId() != 0 ) { %>
-              <% Filter nodeFilter = new NodeFilter(notices[i].getNodeId()); %>
-              <% String[] labels = nodeLabels.get(notices[i].getNodeId()); %>
-              <a href="element/node.jsp?node=<%=notices[i].getNodeId()%>" title="<%=labels[1]%>"><%=labels[0]%></a>
+            <% if(notification.getNodeId() != 0 ) { %>
+              <% Filter nodeFilter = new NodeFilter(notification.getNodeId()); %>
+              <% String[] labels = nodeLabels.get(notification.getNodeId()); %>
+              <a href="element/node.jsp?node=<%=notification.getNodeId()%>" title="<%=labels[1]%>"><%=labels[0]%></a>
               <% if( !parms.filters.contains(nodeFilter) ) { %>
 
                 <a href="<%=this.makeLink( parms, nodeFilter, true)%>" class="filterLink" title="Show only notices on this node">${addPositiveFilter}</a>
-                <a href="<%=this.makeLink( parms, new NegativeNodeFilter(notices[i].getNodeId(), getServletContext()), true)%>" class="filterLink" title="Do not show events for this node">${addNegativeFilter}</a>
+                <a href="<%=this.makeLink( parms, new NegativeNodeFilter(notification.getNodeId(), getServletContext()), true)%>" class="filterLink" title="Do not show events for this node">${addNegativeFilter}</a>
               <% } %>
             <% } %>
           </td>
           <td class="divider">
-            <% if(notices[i].getIpAddress() != null ) { %>
-              <% Filter intfFilter = new InterfaceFilter(notices[i].getIpAddress()); %>
-              <% if( notices[i].getNodeId() != 0 ) { %>
+            <% if(notification.getIpAddress() != null ) { %>
+              <% Filter intfFilter = new InterfaceFilter(notification.getIpAddress()); %>
+              <% if( notification.getNodeId() != 0 ) { %>
                 <c:url var="interfaceLink" value="element/interface.jsp">
-                  <c:param name="node" value="<%=String.valueOf(notices[i].getNodeId())%>"/>
-                  <c:param name="intf" value="<%=notices[i].getIpAddress()%>"/>
+                  <c:param name="node" value="<%=String.valueOf(notification.getNodeId())%>"/>
+                  <c:param name="intf" value="<%=notification.getIpAddress()%>"/>
                 </c:url>
-                <a href="<c:out value="${interfaceLink}"/>" title="More info on this interface"><%=notices[i].getIpAddress()%></a>
+                <a href="<c:out value="${interfaceLink}"/>" title="More info on this interface"><%=notification.getIpAddress()%></a>
               <% } else { %>
-                 <%=notices[i].getInterfaceId()%>
+                 <%=notification.getInterfaceId()%>
               <% } %>
               <% if( !parms.filters.contains(intfFilter) ) { %>
                 <a href="<%=this.makeLink( parms, intfFilter, true)%>" class="filterLink" title="Show only notices on this IP address">${addPositiveFilter}</a>
@@ -290,17 +300,17 @@
             <% } %>
           </td>
           <td class="divider">
-            <% if(notices[i].getServiceName() != null) { %>
-              <% Filter serviceFilter = new ServiceFilter(notices[i].getServiceId()); %>
-              <% if( notices[i].getNodeId() != 0 && notices[i].getIpAddress() != null ) { %>
+            <% if(notification.getServiceName() != null) { %>
+              <% Filter serviceFilter = new ServiceFilter(notification.getServiceId()); %>
+              <% if( notification.getNodeId() != 0 && notification.getIpAddress() != null ) { %>
                 <c:url var="serviceLink" value="element/service.jsp">
-                  <c:param name="node" value="<%=String.valueOf(notices[i].getNodeId())%>"/>
-                  <c:param name="intf" value="<%=notices[i].getIpAddress()%>"/>
-                  <c:param name="service" value="<%=String.valueOf(notices[i].getServiceId())%>"/>
+                  <c:param name="node" value="<%=String.valueOf(notification.getNodeId())%>"/>
+                  <c:param name="intf" value="<%=notification.getIpAddress()%>"/>
+                  <c:param name="service" value="<%=String.valueOf(notification.getServiceId())%>"/>
                 </c:url>
-                <a href="<c:out value="${serviceLink}"/>" title="More info on this service"><c:out value="<%=notices[i].getServiceName()%>"/></a>
+                <a href="<c:out value="${serviceLink}"/>" title="More info on this service"><c:out value="<%=notification.getServiceName()%>"/></a>
               <% } else { %>
-                <c:out value="<%=notices[i].getServiceName()%>"/>
+                <c:out value="<%=notification.getServiceName()%>"/>
               <% } %>
               <% if( !parms.filters.contains( serviceFilter )) { %>
                 <a href="<%=this.makeLink( parms, serviceFilter, true)%>" class="filterLink" title="Show only notices with this service type">${addPositiveFilter}</a>
@@ -309,7 +319,7 @@
           </td>
         </tr>
         <tr class="<%=eventSeverity%>">
-          <td colspan="6"><%=notices[i].getTextMessage()%></td> 
+          <td colspan="6"><%=notification.getTextMessage()%></td> 
         </tr>
       <% } /*end for*/%>
       </table>
@@ -392,7 +402,11 @@
         for( int i=0; i < filters.size(); i++ ) {
           buffer.append( "&amp;filter=" );
           String filterString = filters.get(i).getDescription();
-          buffer.append( java.net.URLEncoder.encode(filterString) );
+          try {
+            buffer.append( java.net.URLEncoder.encode(filterString, "UTF-8") );
+          } catch (final UnsupportedEncodingException e) {
+        	  // ignore
+          }
         }
       }      
 
