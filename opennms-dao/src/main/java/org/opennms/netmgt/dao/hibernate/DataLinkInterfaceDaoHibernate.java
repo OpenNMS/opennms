@@ -57,9 +57,9 @@ public class DataLinkInterfaceDaoHibernate extends AbstractDaoHibernate<DataLink
     /** {@inheritDoc} */
     @SuppressWarnings("unchecked")
     public Collection<DataLinkInterface> findAll(final Integer offset, final Integer limit) {
-        return (Collection<DataLinkInterface>)getHibernateTemplate().execute(new HibernateCallback() {
+        return getHibernateTemplate().execute(new HibernateCallback<Collection<DataLinkInterface>>() {
 
-            public Object doInHibernate(Session session) throws HibernateException, SQLException {
+            public Collection<DataLinkInterface> doInHibernate(Session session) throws HibernateException, SQLException {
                 return session.createCriteria(DataLinkInterface.class)
                 .setFirstResult(offset)
                 .setMaxResults(limit)

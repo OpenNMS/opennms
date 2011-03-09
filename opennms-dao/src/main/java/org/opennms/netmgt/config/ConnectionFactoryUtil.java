@@ -37,6 +37,7 @@ public class ConnectionFactoryUtil {
      * @throws org.exolab.castor.xml.ValidationException if any.
      * @throws java.beans.PropertyVetoException if any.
      * @throws java.sql.SQLException if any.
+     * @deprecated Use code for InputStream instead to avoid character set issues
      */
     public static JdbcDataSource marshalDataSourceFromConfig(final Reader rdr, final String dsName) throws MarshalException, ValidationException, PropertyVetoException, SQLException {
     	final DataSourceConfiguration dsc = CastorUtils.unmarshal(DataSourceConfiguration.class, rdr);

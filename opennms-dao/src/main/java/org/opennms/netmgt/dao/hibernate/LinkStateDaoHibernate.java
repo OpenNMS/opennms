@@ -26,9 +26,9 @@ public class LinkStateDaoHibernate extends AbstractDaoHibernate<OnmsLinkState, I
     /** {@inheritDoc} */
     @SuppressWarnings("unchecked")
     public Collection<OnmsLinkState> findAll(final Integer offset, final Integer limit) {
-        return (Collection<OnmsLinkState>)getHibernateTemplate().execute(new HibernateCallback() {
+        return getHibernateTemplate().execute(new HibernateCallback<Collection<OnmsLinkState>>() {
 
-            public Object doInHibernate(Session session) throws HibernateException, SQLException {
+            public Collection<OnmsLinkState> doInHibernate(Session session) throws HibernateException, SQLException {
                 return session.createCriteria(OnmsLinkState.class)
                 .setFirstResult(offset)
                 .setMaxResults(limit)

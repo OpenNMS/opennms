@@ -86,6 +86,8 @@ public abstract class BaseConnectionFactory implements ClosableDataSource {
      * @throws org.exolab.castor.xml.ValidationException if any.
      * @throws java.beans.PropertyVetoException if any.
      * @throws java.sql.SQLException if any.
+     * @deprecated Use code for InputStream instead to avoid character set issues
+     * 
      */
     protected BaseConnectionFactory(final Reader rdr, final String dsName) throws MarshalException, ValidationException, PropertyVetoException, SQLException {
     	LogUtils.infof(this, "Setting up data source %s from reader.", dsName);

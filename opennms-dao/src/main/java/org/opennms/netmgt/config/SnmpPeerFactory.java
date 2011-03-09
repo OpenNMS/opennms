@@ -148,6 +148,7 @@ public class SnmpPeerFactory extends PeerFactory implements SnmpAgentConfigFacto
      * @throws java.io.IOException if any.
      * @throws org.exolab.castor.xml.MarshalException if any.
      * @throws org.exolab.castor.xml.ValidationException if any.
+     * @deprecated Use code for InputStream instead to avoid character set issues
      */
     public SnmpPeerFactory(final Reader rdr) throws IOException, MarshalException, ValidationException {
         SnmpPeerFactory.getWriteLock().lock();

@@ -71,6 +71,10 @@ public class TomcatJdbcPoolConnectionFactory extends BaseConnectionFactory {
     	super(stream, dsName);
     }
 
+    /**
+     * @deprecated Use code for InputStream instead to avoid character set issues
+     * 
+     */
     public TomcatJdbcPoolConnectionFactory(Reader rdr, String dsName) throws MarshalException, ValidationException, PropertyVetoException, SQLException {
     	super(rdr, dsName);
     }

@@ -34,7 +34,6 @@
 package org.opennms.netmgt.dao.hibernate;
 
 import java.util.HashMap;
-import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 
@@ -72,12 +71,13 @@ public class AssetRecordDaoHibernate extends AbstractDaoHibernate<OnmsAssetRecor
      * @param foreignSource a {@link java.lang.String} object.
      * @return a {@link java.util.Map} object.
      */
-    @SuppressWarnings("unchecked")
     public Map<String, Integer> findImportedAssetNumbersToNodeIds(String foreignSource) {
-        List assetNumbers = getHibernateTemplate().find("select a.node.id, a.assetNumber from OnmsAssetRecord a where a.assetNumber like '"+foreignSource+"%'");
+
+        @SuppressWarnings("unchecked")
+        List<Object[]> assetNumbers = getHibernateTemplate().find("select a.node.id, a.assetNumber from OnmsAssetRecord a where a.assetNumber like '"+foreignSource+"%'");
+
         Map<String, Integer> assetNumberMap = new HashMap<String, Integer>();
-        for (Iterator it = assetNumbers.iterator(); it.hasNext();) {
-            Object[] an = (Object[]) it.next();
+        for (Object[] an : assetNumbers) {
             assetNumberMap.put((String)an[1], (Integer)an[0]);
         }
         return assetNumberMap;
