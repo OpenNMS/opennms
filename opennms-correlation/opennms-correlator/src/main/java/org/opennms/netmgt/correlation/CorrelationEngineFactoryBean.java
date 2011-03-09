@@ -76,7 +76,7 @@ public class CorrelationEngineFactoryBean implements FactoryBean<List<Correlatio
      *
      * @return a {@link java.lang.Class} object.
      */
-    public Class<? extends List> getObjectType() {
+    public Class<?> getObjectType() {
         return m_correlationEngines.getClass();
     }
 
