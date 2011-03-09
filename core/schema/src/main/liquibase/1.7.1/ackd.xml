@@ -1,10 +1,11 @@
 <?xml version="1.0" encoding="UTF-8"?>
  
 <databaseChangeLog
-	xmlns="http://www.liquibase.org/xml/ns/dbchangelog/1.9"
+	xmlns="http://www.liquibase.org/xml/ns/dbchangelog"
 	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
-	xsi:schemaLocation="http://www.liquibase.org/xml/ns/dbchangelog/1.9
-		http://www.liquibase.org/xml/ns/dbchangelog/dbchangelog-1.9.xsd">
+	xmlns:ext="http://www.liquibase.org/xml/ns/dbchangelog-ext"
+	xsi:schemaLocation="http://www.liquibase.org/xml/ns/dbchangelog http://www.liquibase.org/xml/ns/dbchangelog/dbchangelog-2.0.xsd
+		http://www.liquibase.org/xml/ns/dbchangelog-ext http://www.liquibase.org/xml/ns/dbchangelog/dbchangelog-ext.xsd">
 
 	<changeSet author="dhustace" id="1.7.1-ackd">
 		<preConditions onFail="MARK_RAN">
@@ -12,7 +13,7 @@
 		</preConditions>
 
 		<createTable tableName="acks">
-			<column name="id" type="integer" autoIncrement="true">
+			<column name="id" type="integer">
 				<constraints primaryKey="true" nullable="false" />
 			</column>
 			<column name="acktime" type="DATETIME" defaultValueDate="CURRENT_TIMESTAMP">
@@ -30,6 +31,9 @@
 			<column name="log" type="varchar(128)" />
 			<column name="refid" type="integer" />
 		</createTable>
+
+		<ext:addAutoIncrement tableName="acks" columnName="id" sequenceName="opennmsNxtId" />
+
 		<createIndex tableName="acks" indexName="ack_time_idx">
 			<column name="acktime" />
 		</createIndex>
@@ -40,10 +44,6 @@
 		<rollback>
 			<dropTable tableName="acks" />
 		</rollback>
-
-		<modifySql>
-			<replace replace=" serial " with=" integer DEFAULT nextval('opennmsNxtId') " />
-		</modifySql>
 
 	</changeSet>
 

@@ -1,10 +1,11 @@
 <?xml version="1.0" encoding="UTF-8"?>
  
 <databaseChangeLog
-	xmlns="http://www.liquibase.org/xml/ns/dbchangelog/1.9"
+	xmlns="http://www.liquibase.org/xml/ns/dbchangelog"
 	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
-	xsi:schemaLocation="http://www.liquibase.org/xml/ns/dbchangelog/1.9
-		http://www.liquibase.org/xml/ns/dbchangelog/dbchangelog-1.9.xsd">
+	xmlns:ext="http://www.liquibase.org/xml/ns/dbchangelog-ext"
+	xsi:schemaLocation="http://www.liquibase.org/xml/ns/dbchangelog http://www.liquibase.org/xml/ns/dbchangelog/dbchangelog-2.0.xsd
+		http://www.liquibase.org/xml/ns/dbchangelog-ext http://www.liquibase.org/xml/ns/dbchangelog/dbchangelog-ext.xsd">
 
 	<preConditions>
 		<or>
@@ -59,14 +60,5 @@
 	<include file="triggers/setIpInterfaceKeysOnUpdateTrigger.xml" />
 	<include file="triggers/setSnmpInterfaceKeysOnInsertTrigger.xml" />
 	<include file="triggers/setSnmpInterfaceKeysOnUpdateTrigger.xml" />
-
-	<!--
-	<changeSet id="grant-permissions" author="rangerrick" runOnChange="true" runAlways="true" context="grant">
-		<preConditions>
-			<dbms type="postgresql" />
-		</preConditions>
-		<sql>GRANT ALL PRIVILEGES ON DATABASE ${install.database.name} TO ${install.database.user}</sql>
-	</changeSet>
-	-->
 
 </databaseChangeLog>

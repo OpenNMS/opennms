@@ -1,22 +1,23 @@
 <?xml version="1.0" encoding="UTF-8"?>
  
 <databaseChangeLog
-	xmlns="http://www.liquibase.org/xml/ns/dbchangelog/1.9"
+	xmlns="http://www.liquibase.org/xml/ns/dbchangelog"
 	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
-	xsi:schemaLocation="http://www.liquibase.org/xml/ns/dbchangelog/1.9
-		http://www.liquibase.org/xml/ns/dbchangelog/dbchangelog-1.9.xsd">
+	xmlns:ext="http://www.liquibase.org/xml/ns/dbchangelog-ext"
+	xsi:schemaLocation="http://www.liquibase.org/xml/ns/dbchangelog http://www.liquibase.org/xml/ns/dbchangelog/dbchangelog-2.0.xsd
+		http://www.liquibase.org/xml/ns/dbchangelog-ext http://www.liquibase.org/xml/ns/dbchangelog/dbchangelog-ext.xsd">
 
-    <changeSet author="rangerrick" id="1.7.8-remove-old-primary-key-if-necessary" failOnError="false">
+    <changeSet author="rangerrick" id="1.7.8-remove-old-primary-key-if-necessary" failOnError="false" context="repair">
         <preConditions onFail="MARK_RAN">
-            <primaryKeyExists tableName="datalinkinterface" primaryKeyName="pk_datalinkinterface" />
+        	<foreignKeyConstraintExists foreignKeyName="pk_datalinkinterface" />
         </preConditions>
-        <dropPrimaryKey tableName="datalinkinterface" constraintName="pk_datalinkinterface" />
+        <dropForeignKeyConstraint baseTableName="datalinkinterface" constraintName="pk_datalinkinterface" />
         <addPrimaryKey tableName="datalinkinterface" columnNames="id" />
     </changeSet>
 
 	<changeSet author="rangerrick" id="1.7.8-add-linkState">
 		<createTable tableName="linkstate">
-			<column name="id" type="integer" autoIncrement="true">
+			<column name="id" type="integer">
 				<constraints nullable="false"  primaryKey="true" />
 			</column>
 			<column name="datalinkinterfaceid" type="integer">
@@ -24,6 +25,8 @@
 			</column>
 			<column name="linkstate" type="VARCHAR(24)" defaultValue="LINK_UP" />
 		</createTable>
+
+		<ext:addAutoIncrement tableName="linkstate" columnName="id" sequenceName="opennmsNxtId" />
 
 		<addForeignKeyConstraint constraintName="fk_linkstate_datalinkinterface_id" onDelete="CASCADE"
 			baseTableName="linkstate" baseColumnNames="datalinkinterfaceid"
@@ -34,16 +37,13 @@
 			<dropTable tableName="linkstate" />
 		</rollback>
 
-		<modifySql>
-			<replace replace=" serial " with=" integer DEFAULT nextval('opennmsNxtId') " />
-		</modifySql>
-
 	</changeSet>
 	
 	<changeSet author="thedesloge" id="1.7.8-update-linkstate">
-		<modifyColumn tableName="linkstate">
-    		<column name="linkstate" type="varchar(32)"/>
-		</modifyColumn>
+		<modifyDataType tableName="linkstate" columnName="linkstate" newDataType="varchar(32)" />
+		<rollback>
+			<modifyDataType tableName="linkstate" columnName="linkstate" newDataType="varchar(24)" />
+		</rollback>
 	</changeSet>
 
 </databaseChangeLog>

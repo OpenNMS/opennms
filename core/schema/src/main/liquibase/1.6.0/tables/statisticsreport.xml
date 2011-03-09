@@ -1,10 +1,11 @@
 <?xml version="1.0" encoding="UTF-8"?>
  
 <databaseChangeLog
-	xmlns="http://www.liquibase.org/xml/ns/dbchangelog/1.9"
+	xmlns="http://www.liquibase.org/xml/ns/dbchangelog"
 	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
-	xsi:schemaLocation="http://www.liquibase.org/xml/ns/dbchangelog/1.9
-		http://www.liquibase.org/xml/ns/dbchangelog/dbchangelog-1.9.xsd">
+	xmlns:ext="http://www.liquibase.org/xml/ns/dbchangelog-ext"
+	xsi:schemaLocation="http://www.liquibase.org/xml/ns/dbchangelog http://www.liquibase.org/xml/ns/dbchangelog/dbchangelog-2.0.xsd
+		http://www.liquibase.org/xml/ns/dbchangelog-ext http://www.liquibase.org/xml/ns/dbchangelog/dbchangelog-ext.xsd">
 
 	<changeSet author="rangerrick" id="1.6.0-statisticsreport">
 		<preConditions onFail="MARK_RAN">
@@ -14,7 +15,7 @@
 		<!-- This table contains a record of statistics reports -->
 		<createTable tableName="statisticsreport">
 
-			<column name="id" type="integer" autoIncrement="true">
+			<column name="id" type="integer">
 				<constraints nullable="false" primaryKey="true" primaryKeyName="pk_statisticsreport_id" />
 			</column>
 			<column name="startdate" type="DATETIME">
@@ -40,6 +41,8 @@
 			</column>
 		</createTable>
 
+		<ext:addAutoIncrement tableName="statisticsreport" columnName="id" sequenceName="opennmsNxtId" />
+
 		<createIndex tableName="statisticsreport" indexName="statisticsreport_startdate">
 			<column name="startdate" />
 		</createIndex>
@@ -49,10 +52,6 @@
 		<createIndex tableName="statisticsreport" indexName="statisticsreport_purgedate">
 			<column name="purgedate" />
 		</createIndex>
-
-		<modifySql>
-			<replace replace=" serial " with=" integer DEFAULT nextval('opennmsNxtId') " />
-		</modifySql>
 
 	</changeSet>
 

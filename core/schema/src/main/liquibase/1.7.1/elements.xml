@@ -1,10 +1,11 @@
 <?xml version="1.0" encoding="UTF-8"?>
  
 <databaseChangeLog
-	xmlns="http://www.liquibase.org/xml/ns/dbchangelog/1.9"
+	xmlns="http://www.liquibase.org/xml/ns/dbchangelog"
 	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
-	xsi:schemaLocation="http://www.liquibase.org/xml/ns/dbchangelog/1.9
-		http://www.liquibase.org/xml/ns/dbchangelog/dbchangelog-1.9.xsd">
+	xmlns:ext="http://www.liquibase.org/xml/ns/dbchangelog-ext"
+	xsi:schemaLocation="http://www.liquibase.org/xml/ns/dbchangelog http://www.liquibase.org/xml/ns/dbchangelog/dbchangelog-2.0.xsd
+		http://www.liquibase.org/xml/ns/dbchangelog-ext http://www.liquibase.org/xml/ns/dbchangelog/dbchangelog-ext.xsd">
 
 	<changeSet author="rssntn67" id="1.7.1-add-element-id">
 		<preConditions onFail="MARK_RAN">
@@ -13,19 +14,17 @@
 
 		<dropPrimaryKey tableName="element" constraintName="pk_element" />
 		<addColumn tableName="element">
-			<column name="id" type="integer" autoIncrement="true">
+			<column name="id" type="integer">
 				<constraints primaryKey="true" nullable="false" />
 			</column>
 		</addColumn>
+
+		<ext:addAutoIncrement tableName="element" columnName="id" sequenceName="opennmsNxtId" />
 
 		<rollback>
 			<dropPrimaryKey tableName="element" />
 			<dropColumn tableName="element" columnName="id" />
 		</rollback>
-
-		<modifySql>
-			<replace replace=" serial " with=" integer DEFAULT nextval('opennmsNxtId') " />
-		</modifySql>
 
 	</changeSet>
 
