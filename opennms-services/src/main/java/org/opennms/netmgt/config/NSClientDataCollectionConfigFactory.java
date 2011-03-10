@@ -202,8 +202,10 @@ public class NSClientDataCollectionConfigFactory {
          try {
              NsclientCollection collection = null;
              for (final NsclientCollection coll : m_config.getNsclientCollection()) {
-                 if (coll.getName().equalsIgnoreCase(collectionName)) collection = coll;
-                 break;
+                 if (coll.getName().equalsIgnoreCase(collectionName)) {
+                	 collection = coll;
+                     break;
+                 }
              }
              if (collection == null) {
                  throw new IllegalArgumentException("getNSClientCollection: collection name: "
