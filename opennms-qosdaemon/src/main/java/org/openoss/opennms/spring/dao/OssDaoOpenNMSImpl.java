@@ -56,8 +56,6 @@ import java.util.Enumeration;
  */
 public class OssDaoOpenNMSImpl implements OssDao {
 
-	private static final String LOG4J_CATEGORY = "OpenOSS.QoSDrx";
-
 	/** 
 	 * local store for OpenNMS alarm list indexed by OpenNMS AlarmID as Integer
 	 */

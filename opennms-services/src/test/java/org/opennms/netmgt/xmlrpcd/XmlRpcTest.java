@@ -91,11 +91,11 @@ public class XmlRpcTest  {
     }
 
     private Provisioner createRemoteProxy(String serverUrl) throws Exception {
-        XmlRpcProxyFactoryBean pfb = new XmlRpcProxyFactoryBean();
+        XmlRpcProxyFactoryBean<Provisioner> pfb = new XmlRpcProxyFactoryBean<Provisioner>();
         pfb.setServiceInterface(Provisioner.class);
         pfb.setServiceUrl(serverUrl);
         pfb.afterPropertiesSet();
-        return (Provisioner) pfb.getObject();
+        return pfb.getObject();
     }
 
     private void setUpWebServer() throws Exception {

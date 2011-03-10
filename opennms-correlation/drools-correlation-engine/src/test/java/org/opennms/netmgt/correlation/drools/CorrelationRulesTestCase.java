@@ -1,5 +1,8 @@
 package org.opennms.netmgt.correlation.drools;
 
+import static org.junit.Assert.assertEquals;
+
+import org.junit.runner.RunWith;
 import org.opennms.netmgt.EventConstants;
 import org.opennms.netmgt.correlation.CorrelationEngineRegistrar;
 import org.opennms.netmgt.mock.EventAnticipator;
@@ -7,38 +10,34 @@ import org.opennms.netmgt.mock.MockEventIpcManager;
 import org.opennms.netmgt.model.events.EventBuilder;
 import org.opennms.netmgt.xml.event.Event;
 import org.opennms.test.ConfigurationTestUtils;
-import org.springframework.test.AbstractDependencyInjectionSpringContextTests;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.test.context.ContextConfiguration;
+import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
 
-public class CorrelationRulesTestCase extends AbstractDependencyInjectionSpringContextTests {
+@RunWith(SpringJUnit4ClassRunner.class)
+@ContextConfiguration(locations={
+        "classpath:test-context.xml",
+        "classpath:META-INF/opennms/correlation-engine.xml"
+})
+public class CorrelationRulesTestCase {
 
+    @Autowired
     private MockEventIpcManager m_eventIpcMgr;
-    protected EventAnticipator m_anticipator;
     protected Integer m_anticipatedMemorySize = 0;
-    private CorrelationEngineRegistrar m_correlator;
     
+    @Autowired
+    private CorrelationEngineRegistrar m_correlator;
+
     protected CorrelationRulesTestCase() {
         ConfigurationTestUtils.setRelativeHomeDirectory("src/test/opennms-home");
     }
 
-    @Override
-    protected String[] getConfigLocations() {
-        return new String[] {
-                "classpath:test-context.xml",
-                "classpath:META-INF/opennms/correlation-engine.xml"
-        };
-    }
-    
     public void setCorrelationEngineRegistrar(CorrelationEngineRegistrar correlator) {
         m_correlator = correlator;
     }
 
-    public void setEventIpcMgr(MockEventIpcManager eventIpcManager) {
-        m_eventIpcMgr = eventIpcManager;
-        m_anticipator = m_eventIpcMgr.getEventAnticipator();
-    }
-
     protected void verify(DroolsCorrelationEngine engine) {
-    	m_anticipator.verifyAnticipated(0, 0, 0, 0, 0);
+    	getAnticipator().verifyAnticipated(0, 0, 0, 0, 0);
         if (m_anticipatedMemorySize != null) {
             assertEquals("Unexpected number of objects in working memory: "+engine.getMemoryObjects(), m_anticipatedMemorySize.intValue(), engine.getMemorySize());
         }
@@ -49,7 +48,7 @@ public class CorrelationRulesTestCase extends AbstractDependencyInjectionSpringC
     }
 
     protected void anticipate(Event event) {
-        m_anticipator.anticipateEvent(event);
+        getAnticipator().anticipateEvent(event);
     }
 
     protected Event createRemoteNodeLostServiceEvent(int nodeId, String ipAddr, String svcName, int locationMonitor) {
@@ -75,6 +74,13 @@ public class CorrelationRulesTestCase extends AbstractDependencyInjectionSpringC
             .setInterface("192.168.1.1")
             .setService("HTTP")
             .getEvent();
+    }
+
+    /**
+     * @return the anticipator
+     */
+    protected EventAnticipator getAnticipator() {
+        return m_eventIpcMgr.getEventAnticipator();
     }
 
 }

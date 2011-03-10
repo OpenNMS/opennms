@@ -51,8 +51,13 @@
         <exclusion><groupId>org.springframework</groupId><artifactId>spring-context</artifactId></exclusion>
         <exclusion><groupId>org.springframework</groupId><artifactId>spring-context-support</artifactId></exclusion>
         <exclusion><groupId>org.springframework</groupId><artifactId>spring-core</artifactId></exclusion>
+        <exclusion><groupId>commons-beanutils</groupId><artifactId>commons-beanutils</artifactId></exclusion>
       </exclusions>
     </dependency>
+    <dependency>
+      <groupId>commons-beanutils</groupId>
+      <artifactId>commons-beanutils</artifactId>
+	 </dependency>
 
     <dependency>
       <groupId>org.springframework.webflow</groupId>

@@ -153,6 +153,9 @@
         <artifactId>maven-bundle-plugin</artifactId>
         <version>1.4.3</version>
         <extensions>true</extensions>
+        <configuration>
+          <obrRepository>NONE</obrRepository>
+        </configuration>
       </plugin>
       <plugin>
         <groupId>org.codehaus.mojo</groupId>
@@ -314,12 +317,12 @@
         <version>2.1.1</version>
         <configuration>
           <archiveClasses>true</archiveClasses>
-          <outputFileNameMapping>@{artifactId}@-@{baseVersion}@@{dashClassifier?}@.@{extension}@</outputFileNameMapping>
+          <outputFileNameMapping>@{artifactId}@-@{baseVersion}@.@{extension}@</outputFileNameMapping>
           <archive>
             <manifest>
               <addClasspath>true</addClasspath>
               <classpathLayoutType>custom</classpathLayoutType>
-              <customClasspathLayout>WEB-INF/lib/@{artifact.groupIdPath}/@{artifact.artifactId}-@{artifact.baseVersion}@{dashClassifier?}.@{artifact.extension}</customClasspathLayout>
+              <customClasspathLayout>WEB-INF/lib/$${artifact.groupIdPath}/$${artifact.artifactId}-$${artifact.baseVersion}$${dashClassifier?}.$${artifact.extension}</customClasspathLayout>
             </manifest>
           </archive>
         </configuration>
@@ -425,8 +428,8 @@
         <artifactId>maven-compiler-plugin</artifactId>
         <version>2.3.2</version>
         <configuration>
-          <source>1.5</source>
-          <target>1.5</target>
+          <source>1.6</source>
+          <target>1.6</target>
           <encoding>UTF-8</encoding>
         </configuration>
       </plugin>
@@ -690,6 +693,7 @@
    <jettyVersion>6.1.24</jettyVersion>
    <jettyServletVersion>6.1.14</jettyServletVersion>
    <jasperreportsVersion>3.7.6</jasperreportsVersion>
+	<liquibaseVersion>2.0.1</liquibaseVersion>
   </properties>
 
   <profiles>
@@ -1670,8 +1674,13 @@
       </dependency>
       <dependency>
         <groupId>commons-beanutils</groupId>
+        <artifactId>commons-beanutils</artifactId>
+        <version>1.8.3</version>
+      </dependency>
+      <dependency>
+        <groupId>commons-beanutils</groupId>
         <artifactId>commons-beanutils-core</artifactId>
-        <version>1.8.0</version>
+        <version>1.8.3</version>
       </dependency>
       <dependency>
         <groupId>commons-chain</groupId>

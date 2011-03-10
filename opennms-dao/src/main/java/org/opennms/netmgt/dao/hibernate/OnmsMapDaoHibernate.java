@@ -28,9 +28,9 @@ public class OnmsMapDaoHibernate extends AbstractDaoHibernate<OnmsMap, Integer> 
     /** {@inheritDoc} */
     @SuppressWarnings("unchecked")
     public Collection<OnmsMap> findAll(final Integer offset, final Integer limit) {
-        return (Collection<OnmsMap>)getHibernateTemplate().execute(new HibernateCallback() {
+        return getHibernateTemplate().execute(new HibernateCallback<Collection<OnmsMap>>() {
 
-            public Object doInHibernate(Session session) throws HibernateException, SQLException {
+            public Collection<OnmsMap> doInHibernate(Session session) throws HibernateException, SQLException {
                 return session.createCriteria(OnmsMap.class)
                 .setFirstResult(offset)
                 .setMaxResults(limit)

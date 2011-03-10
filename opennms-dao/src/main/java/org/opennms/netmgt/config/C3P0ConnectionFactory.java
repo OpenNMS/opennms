@@ -73,6 +73,10 @@ public class C3P0ConnectionFactory extends BaseConnectionFactory {
     	super(stream, dsName);
     }
 
+    /**
+     * @deprecated Use code for InputStream instead to avoid character set issues
+     * 
+     */
     public C3P0ConnectionFactory(Reader rdr, String dsName) throws MarshalException, ValidationException, PropertyVetoException, SQLException {
     	super(rdr, dsName);
     }

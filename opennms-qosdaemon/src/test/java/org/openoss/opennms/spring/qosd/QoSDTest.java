@@ -86,7 +86,8 @@ import org.springframework.test.context.transaction.TransactionalTestExecutionLi
 @JUnitTemporaryDatabase
 public class QoSDTest {
 	//@Autowired
-	private QoSDrx m_qosdrx;
+	@SuppressWarnings("unused")
+    private QoSDrx m_qosdrx;
 
 	@Autowired
 	private QoSD m_qosd;

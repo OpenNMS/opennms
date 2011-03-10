@@ -290,24 +290,6 @@ public class LocationMonitorDaoHibernate extends AbstractDaoHibernate<OnmsLocati
     }
 
     /**
-     * <p>getMonitoringLocationsConfiguration</p>
-     *
-     * @return a {@link org.opennms.netmgt.config.monitoringLocations.MonitoringLocationsConfiguration} object.
-     */
-    private MonitoringLocationsConfiguration getMonitoringLocationsConfiguration() {
-        return m_monitoringLocationsConfiguration;
-    }
-
-    /**
-     * <p>setMonitoringLocationsConfiguration</p>
-     *
-     * @param monitoringLocationsConfiguration a {@link org.opennms.netmgt.config.monitoringLocations.MonitoringLocationsConfiguration} object.
-     */
-    private void setMonitoringLocationsConfiguration(final MonitoringLocationsConfiguration monitoringLocationsConfiguration) {
-        m_monitoringLocationsConfiguration = monitoringLocationsConfiguration;
-    }
-    
-    /**
      * <p>getMonitoringLocationConfigResource</p>
      *
      * @return a {@link org.springframework.core.io.Resource} object.
@@ -519,16 +501,17 @@ public class LocationMonitorDaoHibernate extends AbstractDaoHibernate<OnmsLocati
     /** {@inheritDoc} */
     public Collection<LocationMonitorIpInterface> findStatusChangesForNodeForUniqueMonitorAndInterface(final int nodeId) {
 
-		final List l = getHibernateTemplate().find(
+		@SuppressWarnings("unchecked")
+        final List<Object[]> l = getHibernateTemplate().find(
                         "select distinct status.locationMonitor, status.monitoredService.ipInterface from OnmsLocationSpecificStatus as status " +
                         "where status.monitoredService.ipInterface.node.id = ?",
                         nodeId
                         );
         
     	final HashSet<LocationMonitorIpInterface> ret = new HashSet<LocationMonitorIpInterface>();
-        for (final Object o : l) {
-            OnmsLocationMonitor mon = (OnmsLocationMonitor) ((Object[]) o)[0];
-            OnmsIpInterface ip = (OnmsIpInterface) ((Object[]) o)[1];
+        for (Object[] tuple : l) {
+            OnmsLocationMonitor mon = (OnmsLocationMonitor) tuple[0];
+            OnmsIpInterface ip = (OnmsIpInterface) tuple[1];
             ret.add(new LocationMonitorIpInterface(mon, ip));
         }
         

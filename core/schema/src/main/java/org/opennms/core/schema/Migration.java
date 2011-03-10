@@ -14,6 +14,7 @@ public class Migration {
     private String m_jdbcDriver = "org.postgresql.Driver";
     private String m_databaseHost;
     private String m_databaseName;
+    private String m_schemaName;
     private String m_databaseUser;
     private String m_databasePassword;
     private String m_adminUser;
@@ -89,6 +90,14 @@ public class Migration {
      */
     public void setDatabaseName(String databaseName) {
         m_databaseName = databaseName;
+    }
+
+    public String getSchemaName() {
+    	return m_schemaName;
+    }
+    
+    public void setSchemaName(final String schemaName) {
+    	m_schemaName = schemaName;
     }
 
     /**
@@ -184,6 +193,7 @@ public class Migration {
     public String toString() {
         return new ToStringBuilder(this)
             .append("database", getDatabaseName())
+            .append("schema", getSchemaName())
             .append("host", getDatabaseHost())
             .append("driver", getJdbcDriver())
             .append("url", getJdbcUrl())

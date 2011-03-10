@@ -186,7 +186,6 @@ public abstract class AbstractSaveOrUpdateOperation extends AbstractImportOperat
 	
 	private void updateSnmpDataForSnmpInterfaces() {
 	    if (m_collector != null && m_collector.hasIfTable()) {
-            String ipAddress = m_node.getPrimaryInterface().getIpAddressAsString();
 
             for(IfTableEntry entry : m_collector.getIfTable().getEntries()) {
 	            

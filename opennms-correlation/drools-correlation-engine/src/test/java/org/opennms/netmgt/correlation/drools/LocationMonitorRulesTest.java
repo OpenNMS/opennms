@@ -1,5 +1,6 @@
 package org.opennms.netmgt.correlation.drools;
 
+import org.junit.Test;
 import org.opennms.netmgt.model.events.EventBuilder;
 import org.opennms.netmgt.xml.event.Event;
 
@@ -9,6 +10,7 @@ public class LocationMonitorRulesTest extends CorrelationRulesTestCase {
     private static final String WS_RESOLVED_UEI = "uei.opennms.org/correlation/remote/wideSpreadOutageResolved";
     private static final String SERVICE_FLAPPING_UEI = "uei.opennms.org/correlation/serviceFlapping";
     
+    @Test
     public void testWideSpreadLocationMonitorOutage() throws Exception {
         
         DroolsCorrelationEngine engine = findEngineByName("locationMonitorRules");
@@ -50,7 +52,7 @@ public class LocationMonitorRulesTest extends CorrelationRulesTestCase {
     }
     
     
-	
+    @Test
     public void testSingleLocationMonitorOutage() throws Exception {
         
         DroolsCorrelationEngine engine = findEngineByName("locationMonitorRules");
@@ -77,7 +79,7 @@ public class LocationMonitorRulesTest extends CorrelationRulesTestCase {
         verify(engine);
     }
     
-    
+    @Test
     public void testDoubleLocationMonitorOutage() throws Exception {
         
         DroolsCorrelationEngine engine = findEngineByName("locationMonitorRules");
@@ -105,6 +107,7 @@ public class LocationMonitorRulesTest extends CorrelationRulesTestCase {
         verify(engine);
     }
     
+    @Test
     public void testFlappingMonitor() throws Exception {
         
         DroolsCorrelationEngine engine = findEngineByName("locationMonitorRules");
@@ -179,6 +182,7 @@ public class LocationMonitorRulesTest extends CorrelationRulesTestCase {
 
     }
     
+    @Test
     public void testDontFlapWhenOnlyTwoOutages() throws Exception {
         
         DroolsCorrelationEngine engine = findEngineByName("locationMonitorRules");

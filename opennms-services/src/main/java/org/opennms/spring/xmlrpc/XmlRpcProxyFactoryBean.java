@@ -43,22 +43,21 @@ import org.springframework.beans.factory.InitializingBean;
  *
  * @author <a href="mailto:brozow@opennms.org">Mathew Brozowski</a>
  * @author <a href="mailto:david@opennms.org">David Hustace</a>
- * @author <a href="mailto:brozow@opennms.org">Mathew Brozowski</a>
- * @author <a href="mailto:david@opennms.org">David Hustace</a>
  * @version $Id: $
  */
-public class XmlRpcProxyFactoryBean extends XmlRpcClientInterceptor implements FactoryBean, InitializingBean {
+public class XmlRpcProxyFactoryBean<T> extends XmlRpcClientInterceptor implements FactoryBean<T>, InitializingBean {
 
-    private Object serviceProxy;
+    private T serviceProxy;
 
     /**
      * <p>afterPropertiesSet</p>
      */
+    @SuppressWarnings("unchecked")
     public void afterPropertiesSet() {
         if (getServiceInterface() == null) {
             throw new IllegalArgumentException("serviceInterface is required");
         }
-        this.serviceProxy = ProxyFactory.getProxy(getServiceInterface(), this);
+        this.serviceProxy = (T) ProxyFactory.getProxy(getServiceInterface(), this);
     }
 
     /**
@@ -67,7 +66,7 @@ public class XmlRpcProxyFactoryBean extends XmlRpcClientInterceptor implements F
      * @return a {@link java.lang.Object} object.
      * @throws java.lang.Exception if any.
      */
-    public Object getObject() throws Exception {
+    public T getObject() throws Exception {
         return this.serviceProxy;
     }
     
@@ -77,7 +76,7 @@ public class XmlRpcProxyFactoryBean extends XmlRpcClientInterceptor implements F
      *
      * @return a {@link java.lang.Class} object.
      */
-    public Class getObjectType() {
+    public Class<?> getObjectType() {
         return (this.serviceProxy != null) ? this.serviceProxy.getClass() : getServiceInterface();
     }
 

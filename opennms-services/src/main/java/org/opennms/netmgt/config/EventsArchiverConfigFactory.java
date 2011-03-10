@@ -82,7 +82,7 @@ public final class EventsArchiverConfigFactory {
      *                Thrown if the contents do not match the required schema.
      */
     private EventsArchiverConfigFactory(String configFile) throws IOException, MarshalException, ValidationException {
-        m_config = CastorUtils.unmarshal(EventsArchiverConfiguration.class, new FileSystemResource(configFile), CastorUtils.PRESERVE_WHITESPACE);
+        m_config = CastorUtils.unmarshal(EventsArchiverConfiguration.class, new FileSystemResource(configFile));
     }
 
     /**

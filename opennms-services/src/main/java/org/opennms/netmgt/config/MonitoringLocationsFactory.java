@@ -130,14 +130,14 @@ public class MonitoringLocationsFactory {
 
     private void initialize(final InputStream stream) throws MarshalException, ValidationException {
         LogUtils.debugf(this, "initialize: initializing monitoring locations factory.");
-        m_config = CastorUtils.unmarshal(MonitoringLocationsConfiguration.class, stream, CastorUtils.PRESERVE_WHITESPACE);
+        m_config = CastorUtils.unmarshal(MonitoringLocationsConfiguration.class, stream);
         initializeDefsMap();
     }
 
     @Deprecated
     private void initialize(final Reader rdr) throws MarshalException, ValidationException {
         LogUtils.debugf(this, "initialize: initializing monitoring locations factory.");
-        m_config = CastorUtils.unmarshal(MonitoringLocationsConfiguration.class, rdr, CastorUtils.PRESERVE_WHITESPACE);
+        m_config = CastorUtils.unmarshal(MonitoringLocationsConfiguration.class, rdr);
         initializeDefsMap();
     }
 

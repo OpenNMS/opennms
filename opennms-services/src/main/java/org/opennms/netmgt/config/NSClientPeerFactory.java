@@ -93,7 +93,7 @@ public final class NSClientPeerFactory extends PeerFactory {
      *                Thrown if the contents do not match the required schema.
      */
     private NSClientPeerFactory(final String configFile) throws IOException, MarshalException, ValidationException {
-        m_config = CastorUtils.unmarshal(NsclientConfig.class, new FileSystemResource(configFile), CastorUtils.PRESERVE_WHITESPACE);
+        m_config = CastorUtils.unmarshal(NsclientConfig.class, new FileSystemResource(configFile));
     }
     
     /**
@@ -105,7 +105,7 @@ public final class NSClientPeerFactory extends PeerFactory {
      * @throws org.exolab.castor.xml.ValidationException if any.
      */
     public NSClientPeerFactory(final InputStream stream) throws IOException, MarshalException, ValidationException {
-        m_config = CastorUtils.unmarshal(NsclientConfig.class, stream, CastorUtils.PRESERVE_WHITESPACE);
+        m_config = CastorUtils.unmarshal(NsclientConfig.class, stream);
     }
     
     /**
@@ -118,7 +118,7 @@ public final class NSClientPeerFactory extends PeerFactory {
      */
     @Deprecated
     public NSClientPeerFactory(final Reader rdr) throws IOException, MarshalException, ValidationException {
-        m_config = CastorUtils.unmarshal(NsclientConfig.class, rdr, CastorUtils.PRESERVE_WHITESPACE);
+        m_config = CastorUtils.unmarshal(NsclientConfig.class, rdr);
     }
     
     public Lock getReadLock() {

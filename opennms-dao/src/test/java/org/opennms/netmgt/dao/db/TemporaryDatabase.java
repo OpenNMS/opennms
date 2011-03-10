@@ -167,14 +167,6 @@ public class TemporaryDatabase implements DataSource {
             m_installerDb.updatePlPgsql();
             m_installerDb.addStoredProcedures();
 
-            /*
-             * Here's an example of an iplike function that always returns true.
-             * CREATE OR REPLACE FUNCTION iplike(text, text) RETURNS bool AS ' BEGIN
-             * RETURN true; END; ' LANGUAGE 'plpgsql';
-             *
-             * Found this in BaseIntegrationTestCase.
-             */
-
             if (isSetupIpLike()) {
                 if (!m_installerDb.isIpLikeUsable()) {
                     m_installerDb.setupPlPgsqlIplike();

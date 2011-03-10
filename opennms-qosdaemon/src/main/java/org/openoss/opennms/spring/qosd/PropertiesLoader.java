@@ -44,7 +44,6 @@ public class PropertiesLoader {
 	private static PropertiesLoader instance = null;
 	private final HashMap<String,String> properties = new HashMap<String,String>();
 
-	@SuppressWarnings("unchecked")
     private PropertiesLoader() throws FileNotFoundException, IOException{
 
 		// Load the properties file using the filename given as the VM startup parameter (-DpropertiesFile)
@@ -58,7 +57,7 @@ public class PropertiesLoader {
 		inStream.close();
 
 		// Store the property values
-		for (Enumeration e = props.propertyNames(); e.hasMoreElements(); ){
+		for (Enumeration<?> e = props.propertyNames(); e.hasMoreElements(); ){
 			String key = (String)e.nextElement();
 			String value = props.getProperty(key);
 			properties.put(key, value);
@@ -108,8 +107,7 @@ public class PropertiesLoader {
 	 *
 	 * @return a {@link java.util.Set} object.
 	 */
-	@SuppressWarnings("unchecked")
-    public Set getPropertyNames()
+    public Set<String> getPropertyNames()
 	{
 		return properties.keySet();
 	}

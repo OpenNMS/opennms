@@ -83,7 +83,7 @@ public final class OutageManagerConfigFactory implements OutageManagerConfig {
      *                Thrown if the contents do not match the required schema.
      */
     private OutageManagerConfigFactory(final String configFile) throws IOException, MarshalException, ValidationException {
-        m_config = CastorUtils.unmarshal(OutageConfiguration.class, new FileSystemResource(configFile), CastorUtils.PRESERVE_WHITESPACE);
+        m_config = CastorUtils.unmarshal(OutageConfiguration.class, new FileSystemResource(configFile));
     }
 
     /**

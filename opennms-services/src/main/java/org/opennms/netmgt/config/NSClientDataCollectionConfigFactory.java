@@ -127,13 +127,13 @@ public class NSClientDataCollectionConfigFactory {
 
      private void initialize(final InputStream stream) throws MarshalException, ValidationException {
          LogUtils.debugf(this, "initialize: initializing NSCLient collection config factory.");
-         m_config = CastorUtils.unmarshal(NsclientDatacollectionConfig.class, stream, CastorUtils.PRESERVE_WHITESPACE);
+         m_config = CastorUtils.unmarshal(NsclientDatacollectionConfig.class, stream);
      }
 
      @Deprecated
      private void initialize(final Reader rdr) throws MarshalException, ValidationException {
          LogUtils.debugf(this, "initialize: initializing NSCLient collection config factory.");
-         m_config = CastorUtils.unmarshal(NsclientDatacollectionConfig.class, rdr, CastorUtils.PRESERVE_WHITESPACE);
+         m_config = CastorUtils.unmarshal(NsclientDatacollectionConfig.class, rdr);
      }
 
      /**
@@ -202,8 +202,10 @@ public class NSClientDataCollectionConfigFactory {
          try {
              NsclientCollection collection = null;
              for (final NsclientCollection coll : m_config.getNsclientCollection()) {
-                 if (coll.getName().equalsIgnoreCase(collectionName)) collection = coll;
-                 break;
+                 if (coll.getName().equalsIgnoreCase(collectionName)) {
+                	 collection = coll;
+                     break;
+                 }
              }
              if (collection == null) {
                  throw new IllegalArgumentException("getNSClientCollection: collection name: "

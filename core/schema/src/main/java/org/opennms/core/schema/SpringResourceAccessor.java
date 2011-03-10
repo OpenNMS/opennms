@@ -7,32 +7,26 @@ import java.net.URL;
 import java.util.Enumeration;
 import java.util.Vector;
 
-import liquibase.FileOpener;
+import liquibase.resource.ResourceAccessor;
 
 import org.springframework.core.io.DefaultResourceLoader;
 import org.springframework.core.io.Resource;
 import org.springframework.core.io.ResourceLoader;
 
-/**
- * <p>SpringFileOpener class.</p>
- *
- * @author ranger
- * @version $Id: $
- */
-public class SpringFileOpener implements FileOpener {
+public class SpringResourceAccessor implements ResourceAccessor {
     private ResourceLoader m_resourceLoader = new DefaultResourceLoader();
 
     /** {@inheritDoc} */
-    public InputStream getResourceAsStream(String file) throws IOException {
-        Resource resource = getResource(file);
-
+    public InputStream getResourceAsStream(final String file) throws IOException {
+    	final Resource resource = getResource(file);
         return resource.getInputStream();
     }
 
     /** {@inheritDoc} */
-    public Enumeration<URL> getResources(String packageName) throws IOException {
-        Vector<URL> tmp = new Vector<URL>();
+    public Enumeration<URL> getResources(final String packageName) throws IOException {
+    	final Vector<URL> tmp = new Vector<URL>();
         tmp.add(getResource(packageName).getURL());
+        System.err.println("getResources(" + packageName + ") returning: " + tmp);
         return tmp.elements();
     }
 
@@ -42,8 +36,8 @@ public class SpringFileOpener implements FileOpener {
      * @param file a {@link java.lang.String} object.
      * @return a {@link org.springframework.core.io.Resource} object.
      */
-    public Resource getResource(String file) {
-        File f = new File(file);
+    public Resource getResource(final String file) {
+    	final File f = new File(file);
         if (f.exists()) {
             return getResourceLoader().getResource(file);
         } else {
@@ -51,7 +45,7 @@ public class SpringFileOpener implements FileOpener {
         }
     }
 
-    private String adjustClasspath(String file) {
+    private String adjustClasspath(final String file) {
         return !isClasspathPrefixPresent(file) ? ResourceLoader.CLASSPATH_URL_PREFIX + file : file;
     }
 
@@ -61,7 +55,7 @@ public class SpringFileOpener implements FileOpener {
      * @param file a {@link java.lang.String} object.
      * @return a boolean.
      */
-    public boolean isClasspathPrefixPresent(String file) {
+    public boolean isClasspathPrefixPresent(final String file) {
         return file.startsWith(ResourceLoader.CLASSPATH_URL_PREFIX);
     }
 
@@ -79,7 +73,7 @@ public class SpringFileOpener implements FileOpener {
      *
      * @param resourceLoader a {@link org.springframework.core.io.ResourceLoader} object.
      */
-    public void setResourceLoader(ResourceLoader resourceLoader) {
+    public void setResourceLoader(final ResourceLoader resourceLoader) {
         m_resourceLoader = resourceLoader;
     }
 

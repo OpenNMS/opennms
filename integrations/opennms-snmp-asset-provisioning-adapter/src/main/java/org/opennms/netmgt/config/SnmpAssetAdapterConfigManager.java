@@ -116,7 +116,7 @@ public class SnmpAssetAdapterConfigManager implements SnmpAssetAdapterConfig {
 	protected void reloadXML(final long lastModified, final InputStream reader) throws MarshalException, ValidationException, IOException {
 	    getWriteLock().lock();
 	    try {
-    		m_config = CastorUtils.unmarshal(SnmpAssetAdapterConfiguration.class, reader, CastorUtils.PRESERVE_WHITESPACE);
+    		m_config = CastorUtils.unmarshal(SnmpAssetAdapterConfiguration.class, reader);
     		m_lastModified = lastModified;
 	    } finally {
 	        getWriteLock().unlock();

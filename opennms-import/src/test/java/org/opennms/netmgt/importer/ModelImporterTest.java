@@ -37,9 +37,8 @@
 //
 package org.opennms.netmgt.importer;
 
+import java.io.ByteArrayInputStream;
 import java.io.IOException;
-import java.io.Reader;
-import java.io.StringReader;
 
 import org.exolab.castor.xml.MarshalException;
 import org.exolab.castor.xml.ValidationException;
@@ -101,12 +100,12 @@ public class ModelImporterTest extends AbstractTransactionalTemporaryDatabaseSpr
     }
 
     private void initSnmpPeerFactory() throws IOException, MarshalException, ValidationException {
-        Reader rdr = new StringReader("<?xml version=\"1.0\"?>" +
+        ByteArrayInputStream rdr = new ByteArrayInputStream(("<?xml version=\"1.0\"?>" +
         		"<snmp-config port=\"9161\" retry=\"3\" timeout=\"800\" " +
         			"read-community=\"public\" " +
         			"version=\"v1\" " +
         			"max-vars-per-pdu=\"10\" proxy-host=\"127.0.0.1\">" +
-        		"</snmp-config>");
+        		"</snmp-config>").getBytes());
         
         SnmpPeerFactory.setInstance(new SnmpPeerFactory(rdr));
         

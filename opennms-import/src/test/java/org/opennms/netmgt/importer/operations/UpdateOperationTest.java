@@ -31,9 +31,8 @@
 //
 package org.opennms.netmgt.importer.operations;
 
+import java.io.ByteArrayInputStream;
 import java.io.IOException;
-import java.io.Reader;
-import java.io.StringReader;
 
 import junit.framework.TestCase;
 
@@ -57,14 +56,14 @@ public class UpdateOperationTest extends TestCase {
 	 */
 	public final void testScanForSnmpData() throws MarshalException, ValidationException, IOException {
 		
-		Reader rdr = new StringReader("<?xml version=\"1.0\"?>\n" + 
+		ByteArrayInputStream in = new ByteArrayInputStream(("<?xml version=\"1.0\"?>\n" + 
 				"<snmp-config port=\"161\" retry=\"3\" timeout=\"800\"\n" + 
 				"             read-community=\"public\" \n" + 
 				"                 version=\"v1\">\n" + 
 				"\n" + 
-				"</snmp-config>");
+				"</snmp-config>").getBytes());
 		
-		SnmpPeerFactory.setInstance(new SnmpPeerFactory(rdr));
+		SnmpPeerFactory.setInstance(new SnmpPeerFactory(in));
 		
 		
 		AbstractSaveOrUpdateOperation op = new UpdateOperation(new Integer(1), "imported:", "1", "node1", "theoffice", "pittsboro");

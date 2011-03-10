@@ -54,7 +54,6 @@ import java.io.FilenameFilter;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
-import java.io.PrintStream;
 import java.io.PrintWriter;
 import java.io.Reader;
 import java.net.DatagramPacket;
@@ -132,7 +131,6 @@ public class Installer {
 
     protected Options options = new Options();
     protected CommandLine m_commandLine;
-    private PrintStream m_out;
     private Migration m_migration = new Migration();
     private Migrator m_migrator = new Migrator();
 
@@ -150,7 +148,6 @@ public class Installer {
      * <p>Constructor for Installer.</p>
      */
     public Installer() {
-        setOutputStream(System.out);
     }
 
     /**
@@ -192,12 +189,14 @@ public class Installer {
             m_installerDb.setPostgresOpennmsPassword(dsConfig.getPassword());
             m_installerDb.setDataSource(ds);
             m_installerDb.setDatabaseName(dsConfig.getDatabaseName());
+            m_installerDb.setSchemaName(dsConfig.getSchemaName());
 
             m_migrator.setDataSource(ds);
             m_migrator.setAdminDataSource(adminDs);
             m_migrator.setValidateDatabaseVersion(!m_ignore_database_version);
 
             m_migration.setDatabaseName(dsConfig.getDatabaseName());
+            m_migration.setSchemaName(dsConfig.getSchemaName());
             m_migration.setAdminUser(adminDsConfig.getUserName());
             m_migration.setAdminPassword(adminDsConfig.getPassword());
             m_migration.setDatabaseUser(dsConfig.getUserName());
@@ -238,9 +237,12 @@ public class Installer {
         if (doDatabase) {
             m_migrator.validateDatabaseVersion();
 
-            m_out.println(String.format("* using '%s' as the PostgreSQL user for OpenNMS", m_migration.getAdminUser()));
-            m_out.println(String.format("* using '%s' as the PostgreSQL password for OpenNMS", m_migration.getAdminPassword()));
-            m_out.println(String.format("* using '%s' as the PostgreSQL database name for OpenNMS", m_migration.getDatabaseName()));
+            System.out.println(String.format("* using '%s' as the PostgreSQL user for OpenNMS", m_migration.getAdminUser()));
+            System.out.println(String.format("* using '%s' as the PostgreSQL password for OpenNMS", m_migration.getAdminPassword()));
+            System.out.println(String.format("* using '%s' as the PostgreSQL database name for OpenNMS", m_migration.getDatabaseName()));
+            if (m_migration.getSchemaName() != null) {
+            	System.out.println(String.format("* using '%s' as the PostgreSQL schema name for OpenNMS", m_migration.getSchemaName()));
+            }
         }
 
         if (m_update_database) {
@@ -256,12 +258,12 @@ public class Installer {
         if (m_update_database) {
             m_installerDb.databaseSetUser();
             m_installerDb.disconnect();
-            m_out.println("- Migrating/creating database:");
+            System.out.println("- Migrating/creating database:");
             m_migrator.migrate(m_migration);
         }
 
         if (m_update_unicode) {
-            m_out.println("WARNING: the -U option is deprecated, it does nothing now");
+            System.out.println("WARNING: the -U option is deprecated, it does nothing now");
         }
 
         if (m_do_vacuum) {
@@ -293,14 +295,14 @@ public class Installer {
             createConfiguredFile();
         }
 
-        m_out.println();
-        m_out.println("Installer completed successfully!");
+        System.out.println();
+        System.out.println("Installer completed successfully!");
     }
 
 	private void checkIPv6() {
 		final IPv6Validator v6Validator = new IPv6Validator();
         if (!v6Validator.isPlatformIPv6Ready()) {
-        	m_out.println("Your OS does not support IPv6.");
+        	System.out.println("Your OS does not support IPv6.");
         	System.exit(1);
         }
 	}
@@ -311,29 +313,29 @@ public class Installer {
         File[] files = etcDir.listFiles(getImportFileFilter());
 
         if (!importDir.exists()) {
-            m_out.print("- Creating imports directory (" + importDir.getAbsolutePath() + "... ");
+            System.out.print("- Creating imports directory (" + importDir.getAbsolutePath() + "... ");
             if (!importDir.mkdirs()) {
-                m_out.println("FAILED");
+                System.out.println("FAILED");
                 System.exit(1);
             }
-            m_out.println("OK");
+            System.out.println("OK");
         }
 
-        m_out.print("- Checking for old import files in " + etcDir.getAbsolutePath() + "... ");
+        System.out.print("- Checking for old import files in " + etcDir.getAbsolutePath() + "... ");
         if (files.length > 0) {
-            m_out.println("FOUND");
+            System.out.println("FOUND");
             for (File f : files) {
                 String newFileName = f.getName().replace("imports-", "");
                 File newFile = new File(importDir, newFileName);
-                m_out.print("  - moving " + f.getName() + " to " + importDir.getPath() + "... ");
+                System.out.print("  - moving " + f.getName() + " to " + importDir.getPath() + "... ");
                 if (f.renameTo(newFile)) {
-                    m_out.println("OK");
+                    System.out.println("OK");
                 } else {
-                    m_out.println("FAILED");
+                    System.out.println("FAILED");
                 }
             }
         } else {
-            m_out.println("DONE");
+            System.out.println("DONE");
         }
     }
 
@@ -361,12 +363,12 @@ public class Installer {
      * <p>printHeader</p>
      */
     public void printHeader() {
-        m_out.println("==============================================================================");
-        m_out.println("OpenNMS Installer");
-        m_out.println("==============================================================================");
-        m_out.println("");
-        m_out.println("Configures PostgreSQL tables, users, and other miscellaneous settings.");
-        m_out.println("");
+        System.out.println("==============================================================================");
+        System.out.println("OpenNMS Installer");
+        System.out.println("==============================================================================");
+        System.out.println("");
+        System.out.println("Configures PostgreSQL tables, users, and other miscellaneous settings.");
+        System.out.println("");
     }
 
     /**
@@ -399,7 +401,7 @@ public class Installer {
                 }
             }
         } catch(FileNotFoundException e) {
-            m_out.println("WARNING: unable to load " + m_etc_dir + File.separator + "opennms.properties");
+            System.out.println("WARNING: unable to load " + m_etc_dir + File.separator + "opennms.properties");
         }
         m_install_servletdir = fetchProperty("install.servlet.dir");
         m_import_dir = fetchProperty("importer.requisition.dir");
@@ -489,7 +491,8 @@ public class Installer {
                           "fix rows that violate the specified constraint (sets key column to NULL)");
         options.addOption("X", "drop-constraint", false,
                           "drop rows that match the constraint specified in -C, instead of fixing them");
-
+        options.addOption("e", "extended-repairs", false,
+                          "enable extended repairs of old schemas");
         // tomcat-related options
         options.addOption("y", "do-webapp", false,
                           "install web application (see '-w')");
@@ -546,6 +549,9 @@ public class Installer {
 //        m_force = m_commandLine.hasOption("c");
         m_fix_constraint = m_commandLine.hasOption("C");
         m_fix_constraint_name = m_commandLine.getOptionValue("C");
+        if (m_commandLine.hasOption("e")) {
+        	System.setProperty("opennms.contexts", "production,repair");
+        }
         m_update_database = m_commandLine.hasOption("d");
         m_remove_database = m_commandLine.hasOption("Z");
         m_do_full_vacuum = m_commandLine.hasOption("f");
@@ -561,6 +567,9 @@ public class Installer {
         m_do_vacuum = m_commandLine.hasOption("v");
         m_webappdir = m_commandLine.getOptionValue("w", m_webappdir);
         m_installerDb.setDebug(m_commandLine.hasOption("x"));
+        if (m_commandLine.hasOption("x")) {
+        	m_migrator.enableDebug();
+        }
         m_fix_constraint_remove_rows = m_commandLine.hasOption("X");
         m_install_webapp = m_commandLine.hasOption("y");
 
@@ -616,7 +625,7 @@ public class Installer {
                     + " to specify this file.");
         }
 
-        m_out.print("- using " + description + "... ");
+        System.out.print("- using " + description + "... ");
 
         f = new File(file);
 
@@ -640,7 +649,7 @@ public class Installer {
             }
         }
 
-        m_out.println(f.getAbsolutePath());
+        System.out.println(f.getAbsolutePath());
     }
 
     /**
@@ -651,7 +660,7 @@ public class Installer {
     public void checkWebappOldOpennmsDir() throws Exception {
         File f = new File(m_webappdir + File.separator + "opennms");
 
-        m_out.print("- Checking for old opennms webapp directory in "
+        System.out.print("- Checking for old opennms webapp directory in "
                 + f.getAbsolutePath() + "... ");
 
         if (f.exists()) {
@@ -660,7 +669,7 @@ public class Installer {
                     + "before continuing.");
         }
 
-        m_out.println("OK");
+        System.out.println("OK");
     }
 
     /**
@@ -675,11 +684,11 @@ public class Installer {
         File f = new File(m_webappdir + File.separator + ".."
                 + File.separator + "conf" + File.separator + "server.xml");
 
-        m_out.print("- Checking for old opennms context in "
+        System.out.print("- Checking for old opennms context in "
                 + f.getAbsolutePath() + "... ");
 
         if (!f.exists()) {
-            m_out.println("DID NOT CHECK (file does not exist)");
+            System.out.println("DID NOT CHECK (file does not exist)");
             return;
         }
 
@@ -699,7 +708,7 @@ public class Installer {
                                 ".  You must remove this context from server.xml and re-run the installer.");
         }
 
-        m_out.println("OK");
+        System.out.println("OK");
 
         return;
     }
@@ -710,14 +719,14 @@ public class Installer {
      * @throws java.lang.Exception if any.
      */
     public void installWebApp() throws Exception {
-        m_out.println("- Install OpenNMS webapp... ");
+        System.out.println("- Install OpenNMS webapp... ");
 
         copyFile(m_install_servletdir + File.separator + "META-INF"
                 + File.separator + "context.xml", m_webappdir
                 + File.separator + "opennms.xml", "web application context",
                  false);
 
-        m_out.println("- Installing OpenNMS webapp... DONE");
+        System.out.println("- Installing OpenNMS webapp... DONE");
     }
 
     /**
@@ -746,17 +755,17 @@ public class Installer {
                     + ") is not readable!");
         }
         if (destinationFile.exists()) {
-            m_out.print("  - " + destination + " exists, removing... ");
+            System.out.print("  - " + destination + " exists, removing... ");
             if (destinationFile.delete()) {
-                m_out.println("REMOVED");
+                System.out.println("REMOVED");
             } else {
-                m_out.println("FAILED");
+                System.out.println("FAILED");
                 throw new Exception("unable to delete existing file: "
                         + sourceFile);
             }
         }
 
-        m_out.print("  - copying " + source + " to " + destination + "... ");
+        System.out.print("  - copying " + source + " to " + destination + "... ");
         if (!destinationFile.getParentFile().exists()) {
             if (!destinationFile.getParentFile().mkdirs()) {
                 throw new Exception("unable to create directory: " + destinationFile.getParent());
@@ -781,7 +790,7 @@ public class Installer {
                 to.close();
             }
         }
-        m_out.println("DONE");
+        System.out.println("DONE");
     }
 
     /**
@@ -797,15 +806,15 @@ public class Installer {
             String description, boolean recursive) throws Exception {
 
         String[] cmd;
-        ProcessExec e = new ProcessExec(m_out, m_out);
+        ProcessExec e = new ProcessExec(System.out, System.out);
 
         if (new File(destination).exists()) {
-            m_out.print("  - " + destination + " exists, removing... ");
+            System.out.print("  - " + destination + " exists, removing... ");
             removeFile(destination, description, recursive);
-            m_out.println("REMOVED");
+            System.out.println("REMOVED");
         }
 
-        m_out.print("  - creating link to " + destination + "... ");
+        System.out.print("  - creating link to " + destination + "... ");
 
         cmd = new String[4];
         cmd[0] = "ln";
@@ -819,7 +828,7 @@ public class Installer {
                     + destination);
         }
 
-        m_out.println("DONE");
+        System.out.println("DONE");
     }
 
     /**
@@ -837,7 +846,7 @@ public class Installer {
         // XXX should we have the option to automatically try to determine
         // the tomcat user and chown the OpenNMS files to that user?
 
-        m_out.print("- setting tomcat4 user to 'root'... ");
+        System.out.print("- setting tomcat4 user to 'root'... ");
 
         BufferedReader r = new BufferedReader(new InputStreamReader(new FileInputStream(f), "UTF-8"));
         StringBuffer b = new StringBuffer();
@@ -862,7 +871,7 @@ public class Installer {
         w.print(b.toString());
         w.close();
 
-        m_out.println("DONE");
+        System.out.println("DONE");
     }
 
     /**
@@ -879,7 +888,7 @@ public class Installer {
             boolean recursive) throws IOException, InterruptedException,
             Exception {
         String[] cmd;
-        ProcessExec e = new ProcessExec(m_out, m_out);
+        ProcessExec e = new ProcessExec(System.out, System.out);
 
         if (recursive) {
             cmd = new String[3];
@@ -912,7 +921,7 @@ public class Installer {
     private void usage(Options options, CommandLine cmd, String error,
             Exception e) {
         HelpFormatter formatter = new HelpFormatter();
-        PrintWriter pw = new PrintWriter(m_out);
+        PrintWriter pw = new PrintWriter(System.out);
 
         if (error != null) {
             pw.println("An error occurred: " + error + "\n");
@@ -1050,7 +1059,7 @@ public class Installer {
             }
         }
 
-        m_out.println("- searching for " + libname + ":");
+        System.out.println("- searching for " + libname + ":");
         for (String dirname : searchPaths) {
             File entry = new File(dirname);
 
@@ -1074,9 +1083,9 @@ public class Installer {
 
             throw new Exception("Failed to load the required " + libname + " library that is required at runtime.  By default, we search the Java library path:" + buf.toString() + ".  For more information, see http://www.opennms.org/index.php/" + libname);
         } else {
-            m_out.println("- Failed to load the optional " + libname + " library.");
-            m_out.println("  - This error is not fatal, since " + libname + " is only required for optional features.");
-            m_out.println("  - For more information, see http://www.opennms.org/index.php/" + libname);
+            System.out.println("- Failed to load the optional " + libname + " library.");
+            System.out.println("  - This error is not fatal, since " + libname + " is only required for optional features.");
+            System.out.println("  - For more information, see http://www.opennms.org/index.php/" + libname);
         }
 
         return null;
@@ -1090,12 +1099,12 @@ public class Installer {
      */
     public boolean loadLibrary(final String path) {
         try {
-            m_out.print("  - trying to load " + path + ": ");
+            System.out.print("  - trying to load " + path + ": ");
             System.load(path);
-            m_out.println("OK");
+            System.out.println("OK");
             return true;
         } catch (final UnsatisfiedLinkError ule) {
-            m_out.println("NO");
+            System.out.println("NO");
         }
         return false;
     }
@@ -1126,7 +1135,7 @@ public class Installer {
             FileOutputStream os = new FileOutputStream(f);
             libraryProps.store(os, null);
         } catch (IOException e) {
-            m_out.println("unable to write to " + f.getPath());
+            System.out.println("unable to write to " + f.getPath());
             throw e;
         }
     }
@@ -1144,7 +1153,7 @@ public class Installer {
         try {
             m_socket = new IcmpSocket();
         } catch (UnsatisfiedLinkError e) {
-            m_out.println("UnsatisfiedLinkError while creating an "
+            System.out.println("UnsatisfiedLinkError while creating an "
                     + "IcmpSocket.  Most likely failed to load "
                     + "libjicmp.so.  Try setting the property "
                     + "'opennms.library.jicmp' to point at the "
@@ -1153,12 +1162,12 @@ public class Installer {
                     + "(e.g. 'java -Dopennms.library.jicmp=/some/path/libjicmp.so ...')");
             throw e;
         } catch (NoClassDefFoundError e) {
-            m_out.println("NoClassDefFoundError while creating an "
+            System.out.println("NoClassDefFoundError while creating an "
                     + "IcmpSocket.  Most likely failed to load "
                     + "libjicmp.so.");
             throw e;
         } catch (IOException e) {
-            m_out.println("IOException while creating an " + "IcmpSocket.");
+            System.out.println("IOException while creating an " + "IcmpSocket.");
             throw e;
         }
 
@@ -1166,13 +1175,13 @@ public class Installer {
         try {
             addr = java.net.InetAddress.getByName(host);
         } catch (java.net.UnknownHostException e) {
-            m_out.println("UnknownHostException when looking up " + host
+            System.out.println("UnknownHostException when looking up " + host
                     + ".");
             throw e;
 
         }
 
-        m_out.println("PING " + host + " (" + addr.getHostAddress()
+        System.out.println("PING " + host + " (" + addr.getHostAddress()
                 + "): 56 data bytes");
 
         short m_icmpId = 2;
@@ -1197,7 +1206,7 @@ public class Installer {
             try {
                 m_socket.send(sendPkt);
             } catch (IOException e) {
-                m_out.println("IOException received when sending packet.");
+                System.out.println("IOException received when sending packet.");
                 throw e;
             }
             try {
@@ -1216,15 +1225,5 @@ public class Installer {
      */
     public InstallerDb getInstallerDb() {
         return m_installerDb;
-    }
-
-    /**
-     * <p>setOutputStream</p>
-     *
-     * @param out a {@link java.io.PrintStream} object.
-     */
-    public void setOutputStream(PrintStream out) {
-        m_out = out;
-        m_installerDb.setOutputStream(m_out);
     }
 }

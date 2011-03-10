@@ -228,7 +228,6 @@ public final class VacuumdConfigFactory {
      * Returns a Collection of named events to that may have
      * been configured to be sent after an automation has run.
      *
-     * @deprecated Use {@link ActionEvent} objects instead. Access these objects with {@link #getActionEvents()}.
      * @return a {@link java.util.Collection} object.
      */
     public synchronized Collection<AutoEvent> getAutoEvents() {

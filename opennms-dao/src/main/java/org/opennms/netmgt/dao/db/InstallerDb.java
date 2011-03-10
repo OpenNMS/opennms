@@ -130,6 +130,8 @@ public class InstallerDb {
     
     private String m_databaseName = null;
     
+    private String m_schemaName = null;
+    
     private String m_pass = null;
     
     private String m_pg_iplike = null;
@@ -2122,7 +2124,7 @@ public class InstallerDb {
 
         Statement st = getAdminConnection().createStatement();
         ResultSet rs = st.executeQuery("SELECT datname from pg_database "
-                + "WHERE datname = '" + m_databaseName + "'");
+                + "WHERE datname = '" + getDatabaseName() + "'");
 
         exists = rs.next();
 
@@ -2141,10 +2143,10 @@ public class InstallerDb {
     public void databaseAddDB() throws Exception {
         assertUserSet();
 
-        m_out.print("- creating database '" + m_databaseName + "'... ");
+        m_out.print("- creating database '" + getDatabaseName() + "'... ");
         Statement st = getAdminConnection().createStatement();
-        st.execute("CREATE DATABASE \"" + m_databaseName + "\" WITH ENCODING='UNICODE'");
-        st.execute("GRANT ALL ON DATABASE \"" + m_databaseName + "\" TO \"" + m_user + "\"");
+        st.execute("CREATE DATABASE \"" + getDatabaseName() + "\" WITH ENCODING='UNICODE'");
+        st.execute("GRANT ALL ON DATABASE \"" + getDatabaseName() + "\" TO \"" + m_user + "\"");
         st.close();
         m_out.print("DONE");
     }
@@ -2157,9 +2159,9 @@ public class InstallerDb {
     public void databaseRemoveDB() throws SQLException {
         assertUserSet();
 
-        m_out.print("- removing database '" + m_databaseName + "'... ");
+        m_out.print("- removing database '" + getDatabaseName() + "'... ");
         Statement st = getAdminConnection().createStatement();
-        st.execute("DROP DATABASE \"" + m_databaseName + "\"");
+        st.execute("DROP DATABASE \"" + getDatabaseName() + "\"");
         st.close();
         m_out.print("DONE");
     }
@@ -2266,7 +2268,7 @@ public class InstallerDb {
     public void checkUnicode() throws Exception {
         assertUserSet();
 
-        m_out.print("- checking if database \"" + m_databaseName + "\" is unicode... ");
+        m_out.print("- checking if database \"" + getDatabaseName() + "\" is unicode... ");
 
         Statement st = null;
         ResultSet rs = null;
@@ -2276,7 +2278,7 @@ public class InstallerDb {
                 st = getAdminConnection().createStatement();
                 
                 try {
-                    rs = st.executeQuery("SELECT encoding FROM pg_database WHERE LOWER(datname)='" + m_databaseName.toLowerCase() + "'");
+                    rs = st.executeQuery("SELECT encoding FROM pg_database WHERE LOWER(datname)='" + getDatabaseName().toLowerCase() + "'");
                     if (rs.next()) {
                         if (rs.getInt(1) == 5 || rs.getInt(1) == 6) {
                             m_out.println("ALREADY UNICODE");
@@ -2739,10 +2741,18 @@ public class InstallerDb {
      *
      * @param name a {@link java.lang.String} object.
      */
-    public void setDatabaseName(String name) {
+    public void setDatabaseName(final String name) {
         m_databaseName = name;
     }
 
+    public String getSchemaName() {
+    	return m_schemaName;
+    }
+    
+    public void setSchemaName(final String name) {
+    	m_schemaName = name;
+    }
+    
     /**
      * <p>setNoRevert</p>
      *

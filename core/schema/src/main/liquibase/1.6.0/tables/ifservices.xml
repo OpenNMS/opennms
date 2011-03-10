@@ -1,10 +1,11 @@
 <?xml version="1.0" encoding="UTF-8"?>
  
 <databaseChangeLog
-	xmlns="http://www.liquibase.org/xml/ns/dbchangelog/1.9"
+	xmlns="http://www.liquibase.org/xml/ns/dbchangelog"
 	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
-	xsi:schemaLocation="http://www.liquibase.org/xml/ns/dbchangelog/1.9
-		http://www.liquibase.org/xml/ns/dbchangelog/dbchangelog-1.9.xsd">
+	xmlns:ext="http://www.liquibase.org/xml/ns/dbchangelog-ext"
+	xsi:schemaLocation="http://www.liquibase.org/xml/ns/dbchangelog http://www.liquibase.org/xml/ns/dbchangelog/dbchangelog-2.0.xsd
+		http://www.liquibase.org/xml/ns/dbchangelog-ext http://www.liquibase.org/xml/ns/dbchangelog/dbchangelog-ext.xsd">
 
 	<changeSet author="rangerrick" id="1.6.0-ifServices">
 		<preConditions onFail="MARK_RAN">
@@ -14,7 +15,7 @@
 		<!-- Contains a mapping of interfaces to services available on those interfaces
 			(e.g., FTP, SMTP, DNS, etc.) and recent polling status information. -->
 		<createTable tableName="ifservices">
-			<column name="id" type="integer" autoIncrement="true">
+			<column name="id" type="integer">
 				<constraints nullable="false" primaryKey="true" primaryKeyName="ifservices_pkey" />
 			</column>
 
@@ -74,6 +75,8 @@
 			</column>
 		</createTable>
 
+		<ext:addAutoIncrement tableName="ifservices" columnName="id" sequenceName="opennmsNxtId" />
+
 		<addForeignKeyConstraint constraintName="ipinterface_fkey" onDelete="CASCADE"
 			baseTableName="ifservices" baseColumnNames="ipinterfaceid"
 			referencedTableName="ipinterface" referencedColumnNames="id" />
@@ -111,10 +114,6 @@
 		<createIndex tableName="ifservices" indexName="ifservicves_ipinterfaceid_idx">
 			<column name="ipinterfaceid" />
 		</createIndex>
-
-		<modifySql>
-			<replace replace=" serial " with=" integer DEFAULT nextval('opennmsNxtId') " />
-		</modifySql>
 
 	</changeSet>
 

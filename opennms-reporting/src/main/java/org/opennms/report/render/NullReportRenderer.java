@@ -59,6 +59,7 @@ public class NullReportRenderer implements ReportRenderer {
     
     private String m_baseDir;
 
+    @SuppressWarnings("unused")
     private Resource m_xsltResource;
 
     /**

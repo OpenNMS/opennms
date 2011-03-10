@@ -69,7 +69,7 @@ import org.xml.sax.InputSource;
  */
 public class CastorUtils {
     private static final CastorExceptionTranslator CASTOR_EXCEPTION_TRANSLATOR = new CastorExceptionTranslator();
-    public static final boolean PRESERVE_WHITESPACE = false;
+    private static final boolean DEFAULT_PRESERVATION_BEHAVIOR = false;
 
     /** Private constructor since this class only has static methods (so far). */
     private CastorUtils() {
@@ -163,10 +163,10 @@ public class CastorUtils {
      *      Unmarshaller.unmarshal() call throws a org.exolab.castor.xml.MarshalException
      * @throws org.exolab.castor.xml.ValidationException if the underlying Castor
      *      Unmarshaller.unmarshal() call throws a org.exolab.castor.xml.ValidationException
-     * @deprecated Use the version which specifies whether to preserve whitespace when unmarshalling.
+     * @deprecated Use a Resource or InputStream-based method instead to avoid character set issues.
      */
     public static <T> T unmarshal(Class<T> clazz, Reader reader) throws MarshalException, ValidationException {
-        return unmarshal(clazz, reader, PRESERVE_WHITESPACE);
+        return unmarshal(clazz, reader, DEFAULT_PRESERVATION_BEHAVIOR);
     }
 
     /**
@@ -182,6 +182,7 @@ public class CastorUtils {
      *      Unmarshaller.unmarshal() call throws a org.exolab.castor.xml.MarshalException
      * @throws org.exolab.castor.xml.ValidationException if the underlying Castor
      *      Unmarshaller.unmarshal() call throws a org.exolab.castor.xml.ValidationException
+     * @deprecated Use a Resource or InputStream-based method instead to avoid character set issues.
      */
     @SuppressWarnings("unchecked")
     public static <T> T unmarshal(Class<T> clazz, Reader reader, boolean preserveWhitespace) throws MarshalException, ValidationException {
@@ -199,10 +200,9 @@ public class CastorUtils {
      *      Unmarshaller.unmarshal() call throws a org.exolab.castor.xml.MarshalException
      * @throws org.exolab.castor.xml.ValidationException if the underlying Castor
      *      Unmarshaller.unmarshal() call throws a org.exolab.castor.xml.ValidationException
-     * @deprecated Use the version which specifies whether to preserve whitespace when unmarshalling.
      */
     public static <T> T unmarshal(Class<T> clazz, InputStream in) throws MarshalException, ValidationException {
-        return unmarshal(clazz, new InputSource(in), PRESERVE_WHITESPACE);
+        return unmarshal(clazz, new InputSource(in), DEFAULT_PRESERVATION_BEHAVIOR);
     }
 
     /**
@@ -239,10 +239,9 @@ public class CastorUtils {
      * @throws org.exolab.castor.xml.ValidationException if the underlying Castor
      *      Unmarshaller.unmarshal() call throws a org.exolab.castor.xml.ValidationException
      * @throws java.io.IOException if the resource could not be opened
-     * @deprecated Use the version which specifies whether to preserve whitespace when unmarshalling.
      */
     public static <T> T unmarshal(Class<T> clazz, Resource resource) throws MarshalException, ValidationException, IOException {
-        return unmarshal(clazz, resource, PRESERVE_WHITESPACE);
+        return unmarshal(clazz, resource, DEFAULT_PRESERVATION_BEHAVIOR);
     }
 
     /**
@@ -297,7 +296,7 @@ public class CastorUtils {
      * @deprecated Use a Resource or InputStream-based method instead to avoid character set issues.
      */
     public static <T> T unmarshalWithTranslatedExceptions(Class<T> clazz, Reader reader) throws DataAccessException {
-        return unmarshalWithTranslatedExceptions(clazz, reader, PRESERVE_WHITESPACE);
+        return unmarshalWithTranslatedExceptions(clazz, reader, DEFAULT_PRESERVATION_BEHAVIOR);
     }
 
     /**
@@ -312,6 +311,7 @@ public class CastorUtils {
      *      Unmarshaller.unmarshal() call throws a MarshalException or
      *      ValidationException.  The underlying exception will be translated
      *      using CastorExceptionTranslator.
+     * @deprecated Use a Resource or InputStream-based method instead to avoid character set issues.
      */
     public static <T> T unmarshalWithTranslatedExceptions(Class<T> clazz, Reader reader, boolean preserveWhitespace) throws DataAccessException {
         try {
@@ -334,10 +334,9 @@ public class CastorUtils {
      *      Unmarshaller.unmarshal() call throws a MarshalException or
      *      ValidationException.  The underlying exception will be translated
      *      using CastorExceptionTranslator.
-     * @deprecated Use the version which specifies whether to preserve whitespace when unmarshalling.
      */
     public static <T> T unmarshalWithTranslatedExceptions(Class<T> clazz, InputStream in) throws DataAccessException {
-        return unmarshalWithTranslatedExceptions(clazz, in, PRESERVE_WHITESPACE);
+        return unmarshalWithTranslatedExceptions(clazz, in, DEFAULT_PRESERVATION_BEHAVIOR);
     }
 
     /**
@@ -376,10 +375,9 @@ public class CastorUtils {
      *      ValidationException.  The underlying exception will be translated
      *      using CastorExceptionTranslator and will include information about
      *      the resource from its {@link Resource#toString() toString()} method.
-     * @deprecated Use the version which specifies whether to preserve whitespace when unmarshalling.
      */
     public static <T> T unmarshalWithTranslatedExceptions(Class<T> clazz, Resource resource) {
-        return unmarshalWithTranslatedExceptions(clazz, resource, PRESERVE_WHITESPACE);
+        return unmarshalWithTranslatedExceptions(clazz, resource, DEFAULT_PRESERVATION_BEHAVIOR);
     }
 
     /**

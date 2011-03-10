@@ -141,7 +141,7 @@ public final class DataSourceFactory implements DataSource {
     	FileInputStream fileInputStream = null;
     	try {
     		fileInputStream = new FileInputStream(cfgFile);
-    		dsc = CastorUtils.unmarshal(DataSourceConfiguration.class, fileInputStream, CastorUtils.PRESERVE_WHITESPACE);
+    		dsc = CastorUtils.unmarshal(DataSourceConfiguration.class, fileInputStream);
     		connectionPool = dsc.getConnectionPool();
     		if (connectionPool != null) {
         		factoryClass = connectionPool.getFactory();

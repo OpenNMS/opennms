@@ -83,7 +83,7 @@ public class XmlRpcClientInterceptor extends UrlBasedRemoteAccessor implements M
     public Object invoke(MethodInvocation methodInvocation) throws Throwable {
         String methodName = methodInvocation.getMethod().getName();
         Object[] args = methodInvocation.getArguments();
-        Vector parms = new Vector(args == null ? Collections.EMPTY_LIST : Arrays.asList(args));
+        Vector<Object> parms = new Vector<Object>(args == null ? Collections.emptyList() : Arrays.asList(args));
         String serviceMethod = (serviceName == null ? methodName : serviceName+"."+methodName);
         try {
             return getClient().execute(serviceMethod, parms);

@@ -122,11 +122,11 @@ public class IpInterfaceDaoHibernate extends AbstractDaoHibernate<OnmsIpInterfac
         Map<InetAddress, Integer> map = new HashMap<InetAddress, Integer>();
         
         @SuppressWarnings("unchecked")
-        List l = getHibernateTemplate().find("select distinct ipInterface.ipAddress, ipInterface.node.id from OnmsIpInterface as ipInterface");
+        List<Object[]> l = getHibernateTemplate().find("select distinct ipInterface.ipAddress, ipInterface.node.id from OnmsIpInterface as ipInterface");
 
-        for (Object o : l) {
-            InetAddress ip = (InetAddress) ((Object[]) o)[0];
-            Integer nodeId = (Integer) ((Object[]) o)[1];
+        for (Object[] tuple : l) {
+            InetAddress ip = (InetAddress) tuple[0];
+            Integer nodeId = (Integer) tuple[1];
             map.put(ip, nodeId);
         }
         
