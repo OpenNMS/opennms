@@ -17,6 +17,30 @@
     <web.port>8080</web.port>
   </properties>
 
+  <profiles>
+    <profile>
+      <id>opennms-jetty</id>
+      <activation>
+	<property>
+	  <name>container</name>
+	  <value>opennms</value>
+	</property>
+      </activation>
+      <properties>
+        <provided.by.opennms>provided</provided.by.opennms>
+      </properties>
+    </profile>
+    <profile>
+      <id>standalone-jetty</id>
+      <activation>
+	<activeByDefault>true</activeByDefault>
+      </activation>
+      <properties>
+        <provided.by.opennms>compile</provided.by.opennms>
+      </properties>
+    </profile>
+  </profiles>
+
   <build>
     <!-- <outputDirectory>war/WEB-INF/classes</outputDirectory> -->
     <plugins>
@@ -63,12 +87,19 @@
     <dependency>
       <groupId>org.opennms.dependencies</groupId>
       <artifactId>jersey-dependencies</artifactId>
+      <scope>${provided.by.opennms}</scope>
       <type>pom</type>
     </dependency>
     <dependency>
       <groupId>org.opennms.dependencies</groupId>
       <artifactId>spring-web-dependencies</artifactId>
+      <scope>${provided.by.opennms}</scope>
       <type>pom</type>
+    </dependency>
+    <dependency>
+      <groupId>log4j</groupId>
+      <artifactId>log4j</artifactId>
+      <scope>${provided.by.opennms}</scope>
     </dependency>
   </dependencies>
 
