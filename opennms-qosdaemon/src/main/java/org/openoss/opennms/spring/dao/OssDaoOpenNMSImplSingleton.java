@@ -52,7 +52,8 @@ public class OssDaoOpenNMSImplSingleton {
 	private static AssetRecordDao assetRecordDao;
 	private static DataSource dataSource;
 	private static NodeDao nodeDao;
-	private static TransactionTemplate transTemplate;
+	@SuppressWarnings("unused")
+    private static TransactionTemplate transTemplate;
 
 	private static OssDao instance = null;
 
