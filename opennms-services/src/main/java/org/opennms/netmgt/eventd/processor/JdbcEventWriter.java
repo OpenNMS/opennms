@@ -55,6 +55,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 import org.opennms.core.utils.DBUtils;
+import org.opennms.core.utils.LogUtils;
 import org.opennms.netmgt.eventd.EventdConstants;
 import org.opennms.netmgt.eventd.db.AutoAction;
 import org.opennms.netmgt.eventd.db.OperatorAction;
@@ -96,9 +97,6 @@ import org.springframework.jdbc.core.simple.SimpleJdbcTemplate;
  * @see org.opennms.netmgt.model.events.Constants#NAME_VAL_DELIM
  * @author <A HREF="mailto:sowmya@opennms.org">Sowmya Nataraj </A>
  * @author <A HREF="http://www.opennms.org">OpenNMS.org </A>
- * @author <A HREF="mailto:sowmya@opennms.org">Sowmya Nataraj </A>
- * @author <A HREF="http://www.opennms.org">OpenNMS.org </A>
- * @version $Id: $
  */
 public final class JdbcEventWriter extends AbstractJdbcPersister implements EventProcessor, InitializingBean {
     /**
@@ -106,16 +104,14 @@ public final class JdbcEventWriter extends AbstractJdbcPersister implements Even
      *
      * The method that inserts the event into the database
      */
-    public void process(Header eventHeader, Event event) throws SQLException, DataAccessException {
+    public void process(final Header eventHeader, final Event event) throws SQLException, DataAccessException {
         if (!checkEventSanityAndDoWeProcess(event, "JdbcEventWriter")) {
             return;
         }
-            
-        if (log().isDebugEnabled()) {
-            log().debug("JdbcEventWriter: processing " + event.getUei() + " nodeid: " + event.getNodeid() + " ipaddr: " + event.getInterface() + " serviceid: " + event.getService());
-        }
 
-        Connection connection = getDataSource().getConnection();
+        LogUtils.debugf(this, "JdbcEventWriter: processing %s nodeid: %d ipaddr: %s serviceid: %s", event.getUei(), event.getNodeid(), event.getInterface(), event.getService());
+
+        final Connection connection = getDataSource().getConnection();
 
         try {
             connection.setAutoCommit(false);
@@ -124,21 +120,21 @@ public final class JdbcEventWriter extends AbstractJdbcPersister implements Even
                 insertEvent(eventHeader, event, connection);
 
                 connection.commit();
-            } catch (SQLException e) {
-                log().warn("JdbcEventWriter: Error inserting event into the datastore: " + e, e);
+            } catch (final SQLException e) {
+                LogUtils.warnf(this, e, "Error inserting event into the datastore.");
                 try {
                     connection.rollback();
-                } catch (Exception e2) {
-                    log().warn("JdbcEventWriter: Rollback of transaction failed: " + e2, e2);
+                } catch (final Exception e2) {
+                    LogUtils.warnf(this, e2, "Rollback of transaction failed.");
                 }
 
                 throw e;
-            } catch (DataAccessException e) {
-                log().warn("JdbcEventWriter: Error inserting event into the datastore: " + e, e);
+            } catch (final DataAccessException e) {
+                LogUtils.warnf(this, e, "Error inserting event into the datastore.");
                 try {
                     connection.rollback();
-                } catch (Exception e2) {
-                    log().warn("JdbcEventWriter: Rollback of transaction failed: " + e2, e2);
+                } catch (final Exception e2) {
+                    LogUtils.warnf(this, e2, "Rollback of transaction failed.");
                 }
 
                 throw e;
@@ -146,14 +142,12 @@ public final class JdbcEventWriter extends AbstractJdbcPersister implements Even
         } finally {
             try {
                 connection.close();
-            } catch (SQLException e) {
-                log().warn("JdbcEventWriter: SQLException while closing database connection: " + e, e);
+            } catch (final SQLException e) {
+                LogUtils.warnf(this, e, "SQLException while closing database connection.");
             }
         }
 
-        if (log().isDebugEnabled()) {
-            log().debug("JdbcEventWriter: EventWriter finished for : " + event.getUei());
-        }
+        LogUtils.debugf(this, "EventWriter finished for : %s", event.getUei());
     }
 
     /**
@@ -166,13 +160,11 @@ public final class JdbcEventWriter extends AbstractJdbcPersister implements Even
      *                Thrown if a required resource cannot be found in the
      *                properties file.
      */
-    private void insertEvent(Header eventHeader, Event event, Connection connection) throws SQLException {
+    private void insertEvent(final Header eventHeader, final Event event, final Connection connection) throws SQLException {
         // Execute the statement to get the next event id
-        int eventID = getNextId();
+        final int eventID = getNextId();
 
-        if (log().isDebugEnabled()) {
-            log().debug("EventWriter: DBID: " + eventID);
-        }
+        LogUtils.debugf(this, "DBID: %d", eventID);
 
         synchronized (event) {
             event.setDbid(eventID);
@@ -180,7 +172,7 @@ public final class JdbcEventWriter extends AbstractJdbcPersister implements Even
         final DBUtils d = new DBUtils(getClass());
 
         try {
-            PreparedStatement insStmt = connection.prepareStatement(EventdConstants.SQL_DB_INS_EVENT);
+            final PreparedStatement insStmt = connection.prepareStatement(EventdConstants.SQL_DB_INS_EVENT);
             d.watch(insStmt);
 
             // eventID
@@ -190,7 +182,7 @@ public final class JdbcEventWriter extends AbstractJdbcPersister implements Even
             insStmt.setString(2, Constants.format(event.getUei(), EVENT_UEI_FIELD_SIZE));
 
             // nodeID
-            int nodeid = (int) event.getNodeid();
+            final int nodeid = (int) event.getNodeid();
             set(insStmt, 3, event.hasNodeid() ? nodeid : -1);
 
             // eventTime
@@ -224,7 +216,7 @@ public final class JdbcEventWriter extends AbstractJdbcPersister implements Even
             // eventParms
 
             // Replace any null bytes with a space, otherwise postgres will complain about encoding in UNICODE 
-            String parametersString=(event.getParms() != null) ? Parameter.format(event.getParms()) : null;
+            final String parametersString=(event.getParms() != null) ? Parameter.format(event.getParms()) : null;
             set(insStmt, 11, Constants.format(parametersString, 0));
 
             // grab the ifIndex out of the parms if it is defined   
@@ -235,7 +227,7 @@ public final class JdbcEventWriter extends AbstractJdbcPersister implements Even
             }
 
             // eventCreateTime
-            Timestamp eventCreateTime = new Timestamp(System.currentTimeMillis());
+            final Timestamp eventCreateTime = new Timestamp(System.currentTimeMillis());
             insStmt.setTimestamp(12, eventCreateTime);
 
             // eventDescr
@@ -300,10 +292,10 @@ public final class JdbcEventWriter extends AbstractJdbcPersister implements Even
 
             // eventOperAction / eventOperActionMenuText
             if (event.getOperactionCount() > 0) {
-                List<Operaction> a = new ArrayList<Operaction>();
-                List<String> b = new ArrayList<String>();
+                final List<Operaction> a = new ArrayList<Operaction>();
+                final List<String> b = new ArrayList<String>();
 
-                for (Operaction eoa : event.getOperactionCollection()) {
+                for (final Operaction eoa : event.getOperactionCollection()) {
                     a.add(eoa);
                     b.add(eoa.getMenutext());
                 }
@@ -321,12 +313,7 @@ public final class JdbcEventWriter extends AbstractJdbcPersister implements Even
             // eventTroubleTicket / eventTroubleTicket state
             if (event.getTticket() != null) {
                 set(insStmt, 27, Constants.format(event.getTticket().getContent(), EVENT_TTICKET_FIELD_SIZE));
-                int ttstate = 0;
-                if (event.getTticket().getState().equals("on")) {
-                    ttstate = 1;
-                }
-
-                set(insStmt, 28, ttstate);
+                set(insStmt, 28, event.getTticket().getState().equals("on") ? 1 : 0);
             } else {
                 insStmt.setNull(27, Types.VARCHAR);
                 insStmt.setNull(28, Types.INTEGER);
@@ -366,9 +353,7 @@ public final class JdbcEventWriter extends AbstractJdbcPersister implements Even
             d.cleanUp();
         }
 
-        if (log().isDebugEnabled()) {
-            log().debug("SUCCESSFULLY added " + event.getUei() + " related  data into the EVENTS table");
-        }
+        LogUtils.debugf(this, "SUCCESSFULLY added %s related  data into the EVENTS table.", event.getUei());
     }
 
 
@@ -391,11 +376,11 @@ public final class JdbcEventWriter extends AbstractJdbcPersister implements Even
      */
     // FIXME: This uses JdbcTemplate and not the passed in connection
     // FIXME: This uses JdbcTemplate and not the passed in connection
-    String getHostName(int nodeId, String hostip, Connection connection) throws SQLException {
+    String getHostName(final int nodeId, final String hostip, final Connection connection) throws SQLException {
         try {
-            String hostname = new SimpleJdbcTemplate(getDataSource()).queryForObject(EventdConstants.SQL_DB_HOSTIP_TO_HOSTNAME, String.class, new Object[] { nodeId, hostip });
+            final String hostname = new SimpleJdbcTemplate(getDataSource()).queryForObject(EventdConstants.SQL_DB_HOSTIP_TO_HOSTNAME, String.class, new Object[] { nodeId, hostip });
             return (hostname != null) ? hostname : hostip;
-        } catch (EmptyResultDataAccessException e) {
+        } catch (final EmptyResultDataAccessException e) {
             return hostip;
         }
     }
@@ -405,15 +390,15 @@ public final class JdbcEventWriter extends AbstractJdbcPersister implements Even
      * @param log
      * @return
      */
-    private int getEventServiceId(Event event) {
+    private int getEventServiceId(final Event event) {
         if (event.getService() == null) {
             return -1;
         }
         
         try {
             return getServiceID(event.getService());
-        } catch (Throwable t) {
-            log().warn("EventWriter.add: Error converting service name \"" + event.getService() + "\" to an integer identifier, storing -1.  Error: " + t, t);
+        } catch (final Throwable t) {
+            LogUtils.warnf(this, t, "Error converting service name \"%s\" to an integer identifier, storing -1.", event.getService());
             return -1;
         }
     }
@@ -425,7 +410,7 @@ public final class JdbcEventWriter extends AbstractJdbcPersister implements Even
      * @param connection a {@link java.sql.Connection} object.
      * @return a {@link java.lang.String} object.
      */
-    protected String getEventHost(Event event, Connection connection) {
+    protected String getEventHost(final Event event, final Connection connection) {
         if (event.getHost() == null) {
             return null;
         }
@@ -437,8 +422,8 @@ public final class JdbcEventWriter extends AbstractJdbcPersister implements Even
         
         try {
             return getHostName((int) event.getNodeid(), event.getHost(), connection);
-        } catch (Throwable t) {
-            log().warn("EventWriter.add: Error converting host IP \"" + event.getHost() + "\" to a hostname, storing the IP.  Error: " + t, t);
+        } catch (final Throwable t) {
+            LogUtils.warnf(this, t, "Error converting host IP \"%s\" to a hostname, storing the IP.", event.getHost());
             return event.getHost();
         }
     }
