@@ -72,6 +72,7 @@ import org.opennms.netmgt.model.events.EventForwarder;
 import org.opennms.netmgt.model.events.UpdateEventVisitor;
 import org.opennms.netmgt.provision.IpInterfacePolicy;
 import org.opennms.netmgt.provision.NodePolicy;
+import org.opennms.netmgt.provision.NoAgentNodePolicy;
 import org.opennms.netmgt.provision.ServiceDetector;
 import org.opennms.netmgt.provision.SnmpInterfacePolicy;
 import org.opennms.netmgt.provision.persist.ForeignSourceRepository;
@@ -744,6 +745,11 @@ public class DefaultProvisionService implements ProvisionService {
     }
     
     /** {@inheritDoc} */
+    public List<NoAgentNodePolicy> getNoAgentNodePoliciesForForeignSource(String foreignSourceName) {
+        return getPluginsForForeignSource(NoAgentNodePolicy.class, foreignSourceName);
+    }
+    
+    /** {@inheritDoc} */
     public List<IpInterfacePolicy> getIpInterfacePoliciesForForeignSource(String foreignSourceName) {
         return getPluginsForForeignSource(IpInterfacePolicy.class, foreignSourceName);
     }
@@ -911,6 +917,14 @@ public class DefaultProvisionService implements ProvisionService {
         m_nodeDao.initialize(node);
         m_nodeDao.initialize(node.getCategories());
         m_nodeDao.initialize(node.getIpInterfaces());
+        return node;
+    }
+    
+    /** {@inheritDoc} */
+    @Transactional
+    public OnmsNode getDbNodeInitCat(Integer nodeId) {
+        OnmsNode node = m_nodeDao.get(nodeId);
+        m_nodeDao.initialize(node.getCategories());
         return node;
     }
 }
