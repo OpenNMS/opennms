@@ -92,16 +92,14 @@ public class NSClientDataCollectionConfigFactory {
       * @throws org.exolab.castor.xml.ValidationException if any.
       * @throws java.io.IOException if any.
       */
-     public NSClientDataCollectionConfigFactory(String configFile) throws MarshalException, ValidationException, IOException {
+     public NSClientDataCollectionConfigFactory(final String configFile) throws MarshalException, ValidationException, IOException {
          InputStream is = null;
          
          try {
              is = new FileInputStream(configFile);
              initialize(is);
          } finally {
-             if (is != null) {
-                 IOUtils.closeQuietly(is);
-             }
+             IOUtils.closeQuietly(is);
          }
      }
 
@@ -112,19 +110,20 @@ public class NSClientDataCollectionConfigFactory {
       * @throws org.exolab.castor.xml.MarshalException if any.
       * @throws org.exolab.castor.xml.ValidationException if any.
       */
-     public NSClientDataCollectionConfigFactory(Reader rdr) throws MarshalException, ValidationException {
+     @Deprecated
+     public NSClientDataCollectionConfigFactory(final Reader rdr) throws MarshalException, ValidationException {
          initialize(rdr);
      }
 
-     private void initialize(InputStream stream) throws MarshalException, ValidationException {
+     private void initialize(final InputStream stream) throws MarshalException, ValidationException {
          log().debug("initialize: initializing NSCLient collection config factory.");
-         m_config = CastorUtils.unmarshal(NsclientDatacollectionConfig.class, stream);
+         m_config = CastorUtils.unmarshal(NsclientDatacollectionConfig.class, stream, CastorUtils.PRESERVE_WHITESPACE);
      }
 
      @Deprecated
-     private void initialize(Reader rdr) throws MarshalException, ValidationException {
+     private void initialize(final Reader rdr) throws MarshalException, ValidationException {
          log().debug("initialize: initializing NSCLient collection config factory.");
-         m_config = CastorUtils.unmarshal(NsclientDatacollectionConfig.class, rdr);
+         m_config = CastorUtils.unmarshal(NsclientDatacollectionConfig.class, rdr, CastorUtils.PRESERVE_WHITESPACE);
      }
 
      /**
@@ -138,7 +137,7 @@ public class NSClientDataCollectionConfigFactory {
      public static synchronized void init() throws IOException, FileNotFoundException, MarshalException, ValidationException {
          
          if (m_instance == null) {
-             File cfgFile = ConfigFileConstants.getFile(ConfigFileConstants.NSCLIENT_COLLECTION_CONFIG_FILE_NAME);
+             final File cfgFile = ConfigFileConstants.getFile(ConfigFileConstants.NSCLIENT_COLLECTION_CONFIG_FILE_NAME);
              m_instance = new NSClientDataCollectionConfigFactory(cfgFile.getPath());
              m_lastModified = cfgFile.lastModified();
              m_loadedFromFile = true;
@@ -165,7 +164,7 @@ public class NSClientDataCollectionConfigFactory {
       *
       * @param instance a {@link org.opennms.netmgt.config.NSClientDataCollectionConfigFactory} object.
       */
-     public static synchronized void setInstance(NSClientDataCollectionConfigFactory instance) {
+     public static synchronized void setInstance(final NSClientDataCollectionConfigFactory instance) {
          m_instance = instance;
          m_loadedFromFile = false;
      }
@@ -194,7 +193,7 @@ public class NSClientDataCollectionConfigFactory {
       */
      protected void updateFromFile() throws IOException, MarshalException, ValidationException {
          if (m_loadedFromFile) {
-             File surveillanceViewsFile = ConfigFileConstants.getFile(ConfigFileConstants.NSCLIENT_COLLECTION_CONFIG_FILE_NAME);
+             final File surveillanceViewsFile = ConfigFileConstants.getFile(ConfigFileConstants.NSCLIENT_COLLECTION_CONFIG_FILE_NAME);
              if (m_lastModified != surveillanceViewsFile.lastModified()) {
                  this.reload();
              }
@@ -215,8 +214,8 @@ public class NSClientDataCollectionConfigFactory {
       *
       * @param m_config a {@link org.opennms.netmgt.config.nsclient.NsclientDatacollectionConfig} object.
       */
-     public synchronized static void setConfig(NsclientDatacollectionConfig m_config) {
-         NSClientDataCollectionConfigFactory.m_config = m_config;
+     public synchronized static void setConfig(final NsclientDatacollectionConfig m_config) {
+         m_config = m_config;
      }
 
      private ThreadCategory log() {
@@ -230,11 +229,12 @@ public class NSClientDataCollectionConfigFactory {
       * @return a {@link org.opennms.netmgt.config.nsclient.NsclientCollection} object.
       */
      public NsclientCollection getNSClientCollection(String collectionName) {
-        NsclientCollection[] collections = m_config.getNsclientCollection();
          NsclientCollection collection = null;
-         for (NsclientCollection coll : collections) {
-             if (coll.getName().equalsIgnoreCase(collectionName)) collection = coll;
-             break;
+         for (final NsclientCollection coll : m_config.getNsclientCollection()) {
+             if (coll.getName().equalsIgnoreCase(collectionName)) {
+                 collection = coll;
+                 break;
+             }
          }
          if (collection == null) {
              throw new IllegalArgumentException("getNSClientCollection: collection name: "
@@ -249,8 +249,8 @@ public class NSClientDataCollectionConfigFactory {
       * @param collectionName a {@link java.lang.String} object.
       * @return a {@link org.opennms.netmgt.model.RrdRepository} object.
       */
-     public RrdRepository getRrdRepository(String collectionName) {
-         RrdRepository repo = new RrdRepository();
+     public RrdRepository getRrdRepository(final String collectionName) {
+         final RrdRepository repo = new RrdRepository();
          repo.setRrdBaseDir(new File(getRrdPath()));
          repo.setRraList(getRRAList(collectionName));
          repo.setStep(getStep(collectionName));
@@ -278,13 +278,13 @@ public class NSClientDataCollectionConfigFactory {
       * @param cName a {@link java.lang.String} object.
       * @return a {@link java.util.List} object.
       */
-     public List<String> getRRAList(String cName) {
-         NsclientCollection collection = getNSClientCollection(cName);
-         if (collection != null)
+     public List<String> getRRAList(final String cName) {
+         final NsclientCollection collection = getNSClientCollection(cName);
+         if (collection != null) {
              return collection.getRrd().getRraCollection();
-         else
+         } else {
              return null;
-
+         }
      }
      
      /**
