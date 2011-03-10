@@ -90,6 +90,7 @@
         <exclude>javax.xml.bind:com.springsource.javax.xml.bind</exclude>
         <exclude>org.opennms:opennms-bootstrap</exclude>
         <exclude>org.opennms:opennms-install</exclude>
+        <exclude>org.opennms.features:org.opennms.features.system-report</exclude>
       </excludes>
     </dependencySet>
   </dependencySets>
