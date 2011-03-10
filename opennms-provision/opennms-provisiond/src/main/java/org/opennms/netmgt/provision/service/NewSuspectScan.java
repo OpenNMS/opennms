@@ -98,7 +98,7 @@ public class NewSuspectScan implements RunInBatch {
         if (node != null) {
 
             phase.getBuilder().addSequence(
-                    new NodeInfoScan(node, m_ipAddress, null, createScanProgress(), m_agentConfigFactory, m_provisionService),
+                    new NodeInfoScan(node, m_ipAddress, null, createScanProgress(), m_agentConfigFactory, m_provisionService, null),
                     new IpInterfaceScan(node.getId(), m_ipAddress, null, m_provisionService),
                     new NodeScan(node.getId(), null, null, m_provisionService, m_eventForwarder, m_agentConfigFactory, m_taskCoordinator)
             );

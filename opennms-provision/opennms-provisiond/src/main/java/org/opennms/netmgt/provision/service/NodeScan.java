@@ -61,6 +61,7 @@ import org.opennms.netmgt.model.OnmsSnmpInterface;
 import org.opennms.netmgt.model.events.EventBuilder;
 import org.opennms.netmgt.model.events.EventForwarder;
 import org.opennms.netmgt.provision.IpInterfacePolicy;
+import org.opennms.netmgt.provision.NoAgentNodePolicy;
 import org.opennms.netmgt.provision.SnmpInterfacePolicy;
 import org.opennms.netmgt.snmp.SnmpAgentConfig;
 import org.opennms.netmgt.snmp.SnmpUtils;
@@ -530,7 +531,7 @@ public class NodeScan implements RunInBatch {
 
         public void run(ContainerTask<?> parent) {
             parent.getBuilder().addSequence(
-                    new NodeInfoScan(getNode(),getAgentAddress(), getForeignSource(), this, getAgentConfigFactory(), getProvisionService()),
+                    new NodeInfoScan(getNode(),getAgentAddress(), getForeignSource(), this, getAgentConfigFactory(), getProvisionService(), getNodeId()),
                     new RunInBatch() {
                         public void run(BatchTask phase) {
                             detectPhysicalInterfaces(phase);
@@ -561,7 +562,31 @@ public class NodeScan implements RunInBatch {
         private NoAgentScan(Integer nodeId, OnmsNode node) {
             super(nodeId, node);
         }
+        
+        private void setNode(OnmsNode node) {
+            m_node = node;
+        }
+           
+        private void applyNoAgentNodePolicies(BatchTask phase) {
 
+            List<NoAgentNodePolicy> noAgentNodePolicies = getProvisionService().getNoAgentNodePoliciesForForeignSource(getForeignSource() == null ? "default" : getForeignSource());
+            
+            OnmsNode node = getNode();
+            for(NoAgentNodePolicy policy : noAgentNodePolicies) {
+                if (node != null) {
+                    node = policy.apply(node);
+                }
+            }
+            
+            if (node == null) {
+                String reason = "Aborted scan of node due to configured policy";
+                abort(reason);
+            } else {
+                setNode(node);
+            }
+            
+        }
+        
         void stampProvisionedInterfaces(BatchTask phase) {
             if (!isAborted()) { 
             
@@ -581,11 +606,22 @@ public class NodeScan implements RunInBatch {
             
             getProvisionService().deleteObsoleteInterfaces(getNodeId(), getScanStamp());
             
+        }
+        
+        private void doPersistNodeInfo(BatchTask phase) {
+            if (!isAborted()) {
+                getProvisionService().updateNodeAttributes(getNode());
+            }
             debugf(this, "Finished phase " + phase);
         }
 
         public void run(ContainerTask<?> parent) {
             parent.getBuilder().addSequence(
+                    new RunInBatch() {
+                        public void run(BatchTask phase) {
+                            applyNoAgentNodePolicies(phase);
+                        }
+                    },
                     new RunInBatch() {
                         public void run(BatchTask phase) {
                             stampProvisionedInterfaces(phase);
@@ -594,6 +630,11 @@ public class NodeScan implements RunInBatch {
                     new RunInBatch() {
                         public void run(BatchTask phase) {
                             deleteObsoleteResources(phase);
+                        }
+                    },
+                    new RunInBatch() {
+                        public void run(BatchTask phase) {
+                            doPersistNodeInfo(phase);
                         }
                     }
             );

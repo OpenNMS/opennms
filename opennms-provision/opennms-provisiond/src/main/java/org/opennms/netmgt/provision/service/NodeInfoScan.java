@@ -3,6 +3,8 @@
  */
 package org.opennms.netmgt.provision.service;
 
+import static org.opennms.core.utils.LogUtils.debugf;
+
 import java.net.InetAddress;
 import java.util.List;
 
@@ -23,17 +25,20 @@ final class NodeInfoScan implements RunInBatch {
     private final InetAddress m_agentAddress;
     private final String m_foreignSource;
     private OnmsNode m_node;
+    private Integer m_nodeId;
+    private boolean restoreCategories = false;
     private final ProvisionService m_provisionService;
     private final ScanProgress m_scanProgress;
     
 
-    NodeInfoScan(OnmsNode node, InetAddress agentAddress, String foreignSource, ScanProgress scanProgress, SnmpAgentConfigFactory agentConfigFactory, ProvisionService provisionService){
+    NodeInfoScan(OnmsNode node, InetAddress agentAddress, String foreignSource, ScanProgress scanProgress, SnmpAgentConfigFactory agentConfigFactory, ProvisionService provisionService, Integer nodeId){
         m_node = node;
         m_agentAddress = agentAddress;
         m_foreignSource = foreignSource;
         m_scanProgress = scanProgress;
         m_agentConfigFactory = agentConfigFactory;
         m_provisionService = provisionService;
+        m_nodeId = nodeId;
     }
 
     /** {@inheritDoc} */
@@ -79,6 +84,10 @@ final class NodeInfoScan implements RunInBatch {
     private OnmsNode getNode() {
         return m_node;
     }
+    
+    private Integer getNodeId() {
+        return m_nodeId;
+    }
 
     private void setNode(OnmsNode node) {
         m_node = node;
@@ -106,24 +115,36 @@ final class NodeInfoScan implements RunInBatch {
             } else {
         
                 systemGroup.updateSnmpDataForNode(getNode());
+            }
         
-                List<NodePolicy> nodePolicies = getProvisionService().getNodePoliciesForForeignSource(getEffectiveForeignSource());
-        
-                OnmsNode node = getNode();
-                for(NodePolicy policy : nodePolicies) {
-                    if (node != null) {
-                        node = policy.apply(node);
-                    }
+            List<NodePolicy> nodePolicies = getProvisionService().getNodePoliciesForForeignSource(getEffectiveForeignSource());
+            
+            OnmsNode node = null;
+            if (isAborted()) {
+                if (getNodeId() != null && nodePolicies.size() > 0) {
+                    restoreCategories = true;
+                    node = m_provisionService.getDbNodeInitCat(getNodeId());
+                    debugf(this, "collectNodeInfo: checking %d node policies for restoration of categories", nodePolicies.size());
                 }
+            } else {
+                node = getNode();
+            }
+            for(NodePolicy policy : nodePolicies) {
+                if (node != null) {
+                    node = policy.apply(node);
+                }
+            }
         
-                if (node == null) {
+            if (node == null) {
+                restoreCategories = false;
+                if (!isAborted()) {
                     String reason = "Aborted scan of node due to configured policy";
                     abort(reason);
-                } else {
-                    setNode(node);
                 }
-        
+            } else {
+                setNode(node);
             }
+        
         } catch (InterruptedException e) {
             abort("Aborting node scan : Scan thread interrupted!");
         }
@@ -134,7 +155,10 @@ final class NodeInfoScan implements RunInBatch {
     }
 
     private void doPersistNodeInfo() {
-        if (!isAborted()) {
+        if (restoreCategories) {
+            debugf(this, "doPersistNodeInfo: Restoring %d categories to DB", getNode().getCategories().size());
+        }
+        if (!isAborted() || restoreCategories) {
             getProvisionService().updateNodeAttributes(getNode());
         }
     }
