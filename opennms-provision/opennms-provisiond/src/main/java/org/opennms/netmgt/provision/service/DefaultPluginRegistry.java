@@ -113,10 +113,6 @@ public class DefaultPluginRegistry implements PluginRegistry, InitializingBean {
         }
     }
     
-    private static void error(String format, Object... args) {
-        error(null, format, args);
-    }
-    
     private static void error(Throwable cause, String format, Object... args) {
         ThreadCategory log = ThreadCategory.getInstance(DefaultPluginRegistry.class);
         if (cause == null) {
