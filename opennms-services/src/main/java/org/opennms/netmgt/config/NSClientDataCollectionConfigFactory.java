@@ -214,8 +214,8 @@ public class NSClientDataCollectionConfigFactory {
       *
       * @param m_config a {@link org.opennms.netmgt.config.nsclient.NsclientDatacollectionConfig} object.
       */
-     public synchronized static void setConfig(final NsclientDatacollectionConfig m_config) {
-         m_config = m_config;
+     public synchronized static void setConfig(final NsclientDatacollectionConfig config) {
+         m_config = config;
      }
 
      private ThreadCategory log() {
