@@ -46,6 +46,7 @@ package org.opennms.netmgt;
 
 import java.text.DateFormat;
 import java.text.ParseException;
+import java.text.SimpleDateFormat;
 import java.util.Date;
 import java.util.TimeZone;
 
@@ -1029,8 +1030,17 @@ public class EventConstants {
      */
     public static final String PARM_ENDPOINT2 = "endPoint2";
 
-   
+    private static final DateFormat getFormatter() {
+        final DateFormat formatter = DateFormat.getDateTimeInstance(DateFormat.FULL, DateFormat.FULL);
+        formatter.setLenient(true);
+        return formatter;
+    }
 
+    private static final DateFormat getCustomFormatter() {
+        final DateFormat formatter = new SimpleDateFormat("EEEEE, d MMMMM yyyy k:mm:ss 'o''clock' z");
+        formatter.setLenient(true);
+        return formatter;
+    }
 
     /**
      * An utility method to parse a string into a 'Date' instance. Note that the
@@ -1042,8 +1052,12 @@ public class EventConstants {
      * @return a {@link java.util.Date} object.
      * @throws java.text.ParseException if any.
      */
-    public static final Date parseToDate(String timeString) throws ParseException {
-	return DateFormat.getDateTimeInstance(DateFormat.FULL, DateFormat.FULL).parse(timeString);
+    public static final Date parseToDate(final String timeString) throws ParseException {
+        try {
+            return getCustomFormatter().parse(timeString);
+        } catch (final ParseException parseException) {
+            return getFormatter().parse(timeString);
+        }
     }
 
     /**
@@ -1054,11 +1068,10 @@ public class EventConstants {
      * @param date a {@link java.util.Date} object.
      * @return a {@link java.lang.String} object.
      */
-    public static final String formatToString(Date date) {
-	DateFormat df = DateFormat.getDateTimeInstance(DateFormat.FULL,
-						       DateFormat.FULL);
-	df.setTimeZone(TimeZone.getTimeZone("GMT"));
-	return df.format(date);
+    public static final String formatToString(final Date date) {
+        final DateFormat df = getFormatter();
+        df.setTimeZone(TimeZone.getTimeZone("GMT"));
+        return df.format(date);
     }
 
     /**
@@ -1073,7 +1086,9 @@ public class EventConstants {
      * @param date a {@link java.util.Date} object.
      * @return a {@link java.lang.String} object.
      */
-    public static final String formatToUIString(Date date) {
-        return DateFormat.getDateTimeInstance(DateFormat.SHORT, DateFormat.MEDIUM).format(date);
+    public static final String formatToUIString(final Date date) {
+        final DateFormat formatter = DateFormat.getDateTimeInstance(DateFormat.SHORT, DateFormat.MEDIUM);
+        formatter.setLenient(true);
+        return formatter.format(date);
     }
 }
