@@ -1,17 +1,17 @@
 package org.opennms.core.test;
 
-import org.mortbay.jetty.Connector;
-import org.mortbay.jetty.Server;
-import org.mortbay.jetty.handler.ContextHandler;
-import org.mortbay.jetty.handler.DefaultHandler;
-import org.mortbay.jetty.handler.HandlerList;
-import org.mortbay.jetty.handler.ResourceHandler;
-import org.mortbay.jetty.security.Constraint;
-import org.mortbay.jetty.security.ConstraintMapping;
-import org.mortbay.jetty.security.HashUserRealm;
-import org.mortbay.jetty.security.SecurityHandler;
-import org.mortbay.jetty.security.SslSocketConnector;
-import org.mortbay.jetty.webapp.WebAppContext;
+import org.eclipse.jetty.http.security.Constraint;
+import org.eclipse.jetty.security.ConstraintMapping;
+import org.eclipse.jetty.security.ConstraintSecurityHandler;
+import org.eclipse.jetty.security.HashLoginService;
+import org.eclipse.jetty.server.Connector;
+import org.eclipse.jetty.server.Server;
+import org.eclipse.jetty.server.handler.ContextHandler;
+import org.eclipse.jetty.server.handler.DefaultHandler;
+import org.eclipse.jetty.server.handler.HandlerList;
+import org.eclipse.jetty.server.handler.ResourceHandler;
+import org.eclipse.jetty.server.ssl.SslSocketConnector;
+import org.eclipse.jetty.webapp.WebAppContext;
 import org.opennms.core.test.annotations.JUnitHttpServer;
 import org.opennms.core.test.annotations.Webapp;
 import org.opennms.core.utils.LogUtils;
@@ -64,7 +64,7 @@ public class JUnitHttpServerExecutionListener extends OpenNMSAbstractTestExecuti
         if (config.basicAuth()) {
             // check for basic auth if we're configured to do so
             Constraint constraint = new Constraint();
-            constraint.setName(Constraint.__BASIC_AUTH);;
+            constraint.setName(Constraint.__BASIC_AUTH);
             constraint.setRoles(new String[]{"user","admin","moderator"});
             constraint.setAuthenticate(true);
 
@@ -72,10 +72,14 @@ public class JUnitHttpServerExecutionListener extends OpenNMSAbstractTestExecuti
             cm.setConstraint(constraint);
             cm.setPathSpec("/*");
 
-            SecurityHandler sh = new SecurityHandler();
-            sh.setUserRealm(new HashUserRealm("MyRealm",config.basicAuthFile()));
-            sh.setConstraintMappings(new ConstraintMapping[]{cm});
+            HashLoginService service = new HashLoginService("MyRealm", config.basicAuthFile());
+            service.setRefreshInterval(300000);
+            service.start();
 
+            ConstraintSecurityHandler sh = new ConstraintSecurityHandler();
+            sh.setLoginService(service);
+            sh.setRealmName("MyRealm");
+            sh.addConstraintMapping(cm);
             handlers.addHandler(sh);
         }
 
