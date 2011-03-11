@@ -1,0 +1,55 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE log4j:configuration SYSTEM "log4j.dtd">
+  <!-- Basic configuration to log to console terminal -->
+<log4j:configuration xmlns:log4j="http://jakarta.apache.org/log4j/">
+  <appender name="console" class="org.apache.log4j.ConsoleAppender">
+    <param name="Target" value="System.out" />
+    <layout class="org.apache.log4j.PatternLayout">
+      <param name="ConversionPattern" value="%-5p %c{1} - %m%n" />
+    </layout>
+  </appender>
+
+  <logger name="org.springframework.context.support.ClassPathXmlApplicationContext">
+    <level value="debug" />
+  </logger>
+
+<!--    <logger name="org.springframework">-->
+<!--    <level value="debug" />-->
+<!--  </logger>-->
+
+  <!-- sets logging level for openoss tests -->
+  <logger name="org.openoss.test.BaseTestNGTestClass">
+    <level value="debug" />
+  </logger>
+
+  <logger name="tipInterfaceTestLog">
+    <level value="debug" />
+  </logger>
+
+  <logger name="tipTestNGTestLog">
+    <level value="debug" />
+  </logger>
+
+  <logger name="org.apache.cxf.interceptor.LoggingInInterceptor">
+    <level value="debug" />
+  </logger>
+
+  <logger name="org.apache.cxf.interceptor.LoggingOutInterceptor">
+    <level value="debug" />
+  </logger>
+
+  <logger name="org.apache.cxf">
+    <level value="debug" />
+  </logger>
+
+
+  <root>
+    <priority value="info" /> <!-- <priority value="debug" />-->
+    <appender-ref ref="console" />
+  </root>
+
+  <!--
+    Note configuring log4j You can't have elements in arbitrary order The DTD states that you must have the following order... <renderer/> <appender/> <logger/>
+    <root/> <categoryFactory/>
+  -->
+</log4j:configuration>
