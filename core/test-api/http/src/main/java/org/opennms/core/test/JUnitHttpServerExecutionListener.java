@@ -1,6 +1,7 @@
 package org.opennms.core.test;
 
 import org.eclipse.jetty.http.security.Constraint;
+import org.eclipse.jetty.http.ssl.SslContextFactory;
 import org.eclipse.jetty.security.ConstraintMapping;
 import org.eclipse.jetty.security.ConstraintSecurityHandler;
 import org.eclipse.jetty.security.HashLoginService;
@@ -30,70 +31,75 @@ public class JUnitHttpServerExecutionListener extends OpenNMSAbstractTestExecuti
     
     /** {@inheritDoc} */
     @Override
-    public void beforeTestMethod(TestContext testContext) throws Exception {
+    public void beforeTestMethod(final TestContext testContext) throws Exception {
         super.beforeTestMethod(testContext);
         
-        JUnitHttpServer config = findTestAnnotation(JUnitHttpServer.class, testContext);
+        final JUnitHttpServer config = findTestAnnotation(JUnitHttpServer.class, testContext);
         
+        LogUtils.debugf(this, "config = %s", config);
         if (config == null)
             return;
 
         if (config.https()) {
             m_server = new Server();
-            SslSocketConnector connector = new SslSocketConnector();
+            final SslContextFactory factory = new SslContextFactory(config.keystore());
+            factory.setKeyStorePassword(config.keystorePassword());
+            factory.setKeyManagerPassword(config.keyPassword());
+            factory.setTrustStore(config.keystore());
+            factory.setTrustStorePassword(config.keystorePassword());
+
+            final SslSocketConnector connector = new SslSocketConnector(factory);
             connector.setPort(config.port());
-            connector.setKeystore(config.keystore());
-            connector.setPassword(config.keystorePassword());
-            connector.setKeyPassword(config.keyPassword());
-            connector.setTruststore(config.keystore());
-            connector.setTrustPassword(config.keystorePassword());
             m_server.setConnectors(new Connector[] { connector });
         } else {
             m_server = new Server(config.port());
         }
 
-        ContextHandler context = new ContextHandler();
+        final ContextHandler context = new ContextHandler();
         context.setContextPath("/");
         context.setWelcomeFiles(new String[]{"index.html"});
         context.setResourceBase(config.resource());
         context.setClassLoader(Thread.currentThread().getContextClassLoader());
         context.setVirtualHosts(config.vhosts());
 
-        HandlerList handlers = new HandlerList();
+        final HandlerList handlers = new HandlerList();
 
         if (config.basicAuth()) {
+        	LogUtils.debugf(this, "configuring basic auth");
+
             // check for basic auth if we're configured to do so
-            Constraint constraint = new Constraint();
+        	final Constraint constraint = new Constraint();
             constraint.setName(Constraint.__BASIC_AUTH);
             constraint.setRoles(new String[]{"user","admin","moderator"});
             constraint.setAuthenticate(true);
 
-            ConstraintMapping cm = new ConstraintMapping();
-            cm.setConstraint(constraint);
-            cm.setPathSpec("/*");
+            final ConstraintMapping constraintMapping = new ConstraintMapping();
+            constraintMapping.setConstraint(constraint);
+            constraintMapping.setPathSpec("/*");
 
-            HashLoginService service = new HashLoginService("MyRealm", config.basicAuthFile());
-            service.setRefreshInterval(300000);
-            service.start();
+            final HashLoginService loginService = new HashLoginService("MyRealm", config.basicAuthFile());
+            loginService.setRefreshInterval(300000);
+            loginService.start();
 
-            ConstraintSecurityHandler sh = new ConstraintSecurityHandler();
-            sh.setLoginService(service);
-            sh.setRealmName("MyRealm");
-            sh.addConstraintMapping(cm);
-            handlers.addHandler(sh);
+            final ConstraintSecurityHandler securityHandler = new ConstraintSecurityHandler();
+            securityHandler.setLoginService(loginService);
+            securityHandler.setRealmName("MyRealm");
+            securityHandler.addConstraintMapping(constraintMapping);
+
+            handlers.addHandler(securityHandler);
         }
 
-        Webapp[] webapps = config.webapps();
+        final Webapp[] webapps = config.webapps();
         if (webapps != null) {
-            for (Webapp webapp : webapps) {
-                WebAppContext wac = new WebAppContext();
+            for (final Webapp webapp : webapps) {
+                final WebAppContext wac = new WebAppContext();
                 wac.setWar(webapp.path());
                 wac.setContextPath(webapp.context());
                 handlers.addHandler(wac);
             }
         }
 
-        ResourceHandler rh = new ResourceHandler();
+        final ResourceHandler rh = new ResourceHandler();
         rh.setWelcomeFiles(new String[]{"index.html"});
         rh.setResourceBase(config.resource());
         handlers.addHandler(rh);
@@ -110,10 +116,10 @@ public class JUnitHttpServerExecutionListener extends OpenNMSAbstractTestExecuti
 
     /** {@inheritDoc} */
     @Override
-    public void afterTestMethod(TestContext testContext) throws Exception {
+    public void afterTestMethod(final TestContext testContext) throws Exception {
         super.afterTestMethod(testContext);
 
-        JUnitHttpServer config = findTestAnnotation(JUnitHttpServer.class, testContext);
+        final JUnitHttpServer config = findTestAnnotation(JUnitHttpServer.class, testContext);
         if (config == null)
             return;
         
