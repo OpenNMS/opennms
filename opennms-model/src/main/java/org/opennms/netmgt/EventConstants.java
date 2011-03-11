@@ -1030,19 +1030,39 @@ public class EventConstants {
      */
     public static final String PARM_ENDPOINT2 = "endPoint2";
 
-    private static final DateFormat FORMATTER = DateFormat.getDateTimeInstance(DateFormat.FULL, DateFormat.FULL);
-    private static final DateFormat CUSTOM_FORMATTER = new SimpleDateFormat("EEEEE, d MMMMM yyyy k:mm:ss 'o''clock' z");
-    private static final DateFormat SHORT_FORMATTER = DateFormat.getDateTimeInstance(DateFormat.SHORT, DateFormat.MEDIUM);
-    private static final DateFormat GMT_FORMATTER = DateFormat.getDateTimeInstance(DateFormat.FULL, DateFormat.FULL);
+    private static final ThreadLocal<DateFormat> FORMATTER_FULL = new ThreadLocal<DateFormat>() {
+    	protected synchronized DateFormat initialValue() {
+        	final DateFormat formatter = DateFormat.getDateTimeInstance(DateFormat.FULL, DateFormat.FULL);
+        	formatter.setLenient(true);
+        	return formatter;
+    	}
+    };
     
-    static {
-        FORMATTER.setLenient(true);
-        CUSTOM_FORMATTER.setLenient(true);
-        SHORT_FORMATTER.setLenient(true);
-        GMT_FORMATTER.setLenient(true);
-        GMT_FORMATTER.setTimeZone(TimeZone.getTimeZone("GMT"));
-    }
-    
+    private static final ThreadLocal<DateFormat> FORMATTER_GMT = new ThreadLocal<DateFormat>() {
+    	protected synchronized DateFormat initialValue() {
+        	final DateFormat formatter = DateFormat.getDateTimeInstance(DateFormat.FULL, DateFormat.FULL);
+        	formatter.setLenient(true);
+        	formatter.setTimeZone(TimeZone.getTimeZone("GMT"));
+        	return formatter;
+    	}
+    };
+
+    private static final ThreadLocal<DateFormat> FORMATTER_CUSTOM = new ThreadLocal<DateFormat>() {
+    	protected synchronized DateFormat initialValue() {
+        	final DateFormat formatter = new SimpleDateFormat("EEEEE, d MMMMM yyyy k:mm:ss 'o''clock' z");
+        	formatter.setLenient(true);
+        	return formatter;
+    	}
+    };
+
+    private static final ThreadLocal<DateFormat> FORMATTER_SHORT = new ThreadLocal<DateFormat>() {
+    	protected synchronized DateFormat initialValue() {
+        	final DateFormat formatter = DateFormat.getDateTimeInstance(DateFormat.SHORT, DateFormat.MEDIUM);
+        	formatter.setLenient(true);
+        	return formatter;
+    	}
+    };
+
     /**
      * An utility method to parse a string into a 'Date' instance. Note that the
      * string should be in the locale specific DateFormat.FULL style for both
@@ -1055,10 +1075,10 @@ public class EventConstants {
      */
     public static final Date parseToDate(final String timeString) throws ParseException {
         try {
-            return FORMATTER.parse(timeString);
+            return FORMATTER_FULL.get().parse(timeString);
         } catch (final ParseException parseException) {
             try {
-                return CUSTOM_FORMATTER.parse(timeString);
+                return FORMATTER_CUSTOM.get().parse(timeString);
             } catch (final ParseException subException) {
                 throw parseException;
             }
@@ -1074,7 +1094,7 @@ public class EventConstants {
      * @return a {@link java.lang.String} object.
      */
     public static final String formatToString(final Date date) {
-        return GMT_FORMATTER.format(date);
+    	return FORMATTER_GMT.get().format(date);
     }
 
     /**
@@ -1090,6 +1110,6 @@ public class EventConstants {
      * @return a {@link java.lang.String} object.
      */
     public static final String formatToUIString(final Date date) {
-        return SHORT_FORMATTER.format(date);
+		return FORMATTER_SHORT.get().format(date);
     }
 }

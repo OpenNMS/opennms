@@ -109,7 +109,7 @@ public final class JdbcEventWriter extends AbstractJdbcPersister implements Even
             return;
         }
 
-        LogUtils.debugf(this, "JdbcEventWriter: processing %s nodeid: %d ipaddr: %s serviceid: %s", event.getUei(), event.getNodeid(), event.getInterface(), event.getService());
+        LogUtils.debugf(this, "JdbcEventWriter: processing %s nodeid: %d ipaddr: %s serviceid: %s time: %s", event.getUei(), event.getNodeid(), event.getInterface(), event.getService(), event.getTime());
 
         final Connection connection = getDataSource().getConnection();
 

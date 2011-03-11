@@ -274,7 +274,7 @@ public class SyslogdLoadTest extends OpenNMSTestCase {
         System.err.println(String.format("total time: %d, wait time: %d, events per second: %8.4f", total, (end - mid), eventsPerSecond));
     }
 
-    private EventProxy createEventProxy() {
+    private EventProxy createEventProxy() throws UnknownHostException {
         /*
          * Rather than defaulting to localhost all the time, give an option in properties
          */
@@ -291,12 +291,7 @@ public class SyslogdLoadTest extends OpenNMSTestCase {
         }
 
         if (proxyAddr == null) {
-            try {
-                proxy = new TcpEventProxy();
-            } catch (UnknownHostException e) {
-                // XXX Ewwww!  We should just let the first UnknownException bubble up. 
-                throw new UndeclaredThrowableException(e);
-            }
+        	proxy = new TcpEventProxy();
         } else {
             proxy = new TcpEventProxy(new InetSocketAddress(proxyAddr, Integer.parseInt(proxyHostPort)), Integer.parseInt(proxyHostTimeout));
         }
