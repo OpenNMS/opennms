@@ -1,7 +1,14 @@
 #!/usr/bin/env groovy
 
+@GrabResolver(name='opennms-repo', root='http://maven.opennms.org/content/groups/opennms.org-release')
+
+@Grab(group='org.opennms.dependencies', module='spring-dependencies', type='pom', version='1.8.10')
 import org.springframework.util.*;
+
+@Grab(group='org.opennms', module='opennms-model', version='1.8.10')
 import org.opennms.netmgt.model.*;
+
+@Grab(group='org.opennms', module='opennms-services', version='1.8.10')
 import org.opennms.netmgt.poller.*;
 import org.opennms.netmgt.poller.monitors.*;
 
