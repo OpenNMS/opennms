@@ -109,20 +109,20 @@ public final class DefaultEventHandlerImpl implements InitializingBean, EventHan
                 return;
             }
 
-            for (Event event : events.getEventCollection()) {
+            for (final Event event : events.getEventCollection()) {
                 if (log().isDebugEnabled()) {
                     // Log the eui, source, and other important aspects
-                    String uuid = event.getUuid();
+                	final String uuid = event.getUuid();
                     log().debug("Event {");
                     log().debug("  uuid  = " + (uuid != null && uuid.length() > 0 ? uuid : "<not-set>"));
                     log().debug("  uei   = " + event.getUei());
                     log().debug("  src   = " + event.getSource());
                     log().debug("  iface = " + event.getInterface());
                     log().debug("  time  = " + event.getTime());
-                    Parm[] parms = (event.getParms() == null ? null : event.getParms().getParm());
+                    final Parm[] parms = (event.getParms() == null ? null : event.getParms().getParm());
                     if (parms != null) {
                         log().debug("  parms {");
-                        for (Parm parm : parms) {
+                        for (final Parm parm : parms) {
                             if ((parm.getParmName() != null) && (parm.getValue().getContent() != null)) {
                                 log().debug("    (" + parm.getParmName().trim() + ", " + parm.getValue().getContent().trim() + ")");
                             }
@@ -132,7 +132,7 @@ public final class DefaultEventHandlerImpl implements InitializingBean, EventHan
                     log().debug("}");
                 }
 
-                for (EventProcessor eventProcessor : m_eventProcessors) {
+                for (final EventProcessor eventProcessor : m_eventProcessors) {
                     try {
                         eventProcessor.process(m_eventLog.getHeader(), event);
                     } catch (SQLException e) {
