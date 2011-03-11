@@ -381,13 +381,13 @@ public class HttpMonitorTest {
     }
 
     @Test
-    @JUnitHttpServer(port=10342, https=true)
+    @JUnitHttpServer(port=10342, https=true, basicAuth=true)
     public void testBasicAuthenticationWithHttps() throws UnknownHostException {
         callTestBasicAuthenticationWithHttps(false);
     }
 
     @Test
-    @JUnitHttpServer(port=10342, https=true)
+    @JUnitHttpServer(port=10342, https=true, basicAuth=true)
     public void testBasicAuthenticationWithHttpsIPv6() throws UnknownHostException {
         callTestBasicAuthenticationWithHttps(true);
     }
@@ -433,9 +433,17 @@ public class HttpMonitorTest {
 
         status = monitor.poll(svc, m);
         MockUtil.println("Reason: "+status.getReason());
+        assertEquals(PollStatus.SERVICE_UNAVAILABLE, status.getStatusCode());
+        assertEquals("HTTP response value: 401. Expecting: 100-302./Ports: 10342", status.getReason());
+        
+        p.setKey("basic-authentication");
+        p.setValue("admin:istrator");
+        m.put(p.getKey(), p.getValue());
+
+        status = monitor.poll(svc, m);
+        MockUtil.println("Reason: "+status.getReason());
         assertEquals(PollStatus.SERVICE_AVAILABLE, status.getStatusCode());
         assertNull(status.getReason());
-
     }
 
     @Test

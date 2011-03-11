@@ -13,9 +13,9 @@ import org.apache.http.client.CredentialsProvider;
 import org.apache.http.client.HttpClient;
 import org.apache.http.client.methods.HttpGet;
 import org.apache.http.client.methods.HttpUriRequest;
-import org.apache.http.impl.client.BasicCredentialsProvider;
 import org.apache.http.impl.client.DefaultHttpClient;
 import org.apache.http.util.EntityUtils;
+import org.junit.BeforeClass;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.opennms.core.test.annotations.JUnitHttpServer;
@@ -30,6 +30,12 @@ import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
 })
 public class JUnitHttpServerTest {
 
+	@BeforeClass
+	public static void beforeClass() {
+		LogUtils.logToConsole();
+		LogUtils.enableDebugging();
+	}
+	
     @Test
     @JUnitHttpServer(port=9162)
     public void testServer() throws HttpException, IOException {
@@ -65,7 +71,6 @@ public class JUnitHttpServerTest {
         HttpUriRequest method = new HttpGet("http://localhost:9162/testContext/monkey");
         HttpResponse response = client.execute(method);
         String responseString = EntityUtils.toString(response.getEntity());
-        System.err.println("got response" + responseString);
         LogUtils.debugf(this, "got response:\n%s", responseString);
         assertEquals(200, response.getStatusLine().getStatusCode());
         assertTrue(responseString.contains("You are reading this from a servlet!"));
@@ -76,16 +81,15 @@ public class JUnitHttpServerTest {
             @Webapp(context="/testContext", path="src/test/resources/test-webapp")
     })
     public void testBasicAuthSuccess() throws Exception {
-        DefaultHttpClient client = new DefaultHttpClient();
-        HttpUriRequest method = new HttpGet("http://localhost:9162/testContext/monkey");
+    	final DefaultHttpClient client = new DefaultHttpClient();
+    	final HttpUriRequest method = new HttpGet("http://localhost:9162/testContext/monkey");
         
-        CredentialsProvider cp = client.getCredentialsProvider();
-        UsernamePasswordCredentials credentials = new UsernamePasswordCredentials("admin", "istrator");
+    	final CredentialsProvider cp = client.getCredentialsProvider();
+    	final UsernamePasswordCredentials credentials = new UsernamePasswordCredentials("admin", "istrator");
         cp.setCredentials(new AuthScope("localhost", 9162), credentials);
         
-        HttpResponse response = client.execute(method);
-        String responseString = EntityUtils.toString(response.getEntity());
-        System.err.println("got response " + responseString);
+        final HttpResponse response = client.execute(method);
+        final String responseString = EntityUtils.toString(response.getEntity());
         LogUtils.debugf(this, "got response:\n%s", responseString);
         assertEquals(200, response.getStatusLine().getStatusCode());
         assertTrue(responseString.contains("You are reading this from a servlet!"));
@@ -96,14 +100,14 @@ public class JUnitHttpServerTest {
             @Webapp(context="/testContext", path="src/test/resources/test-webapp")
     })
     public void testBasicAuthFailure() throws Exception {
-        DefaultHttpClient client = new DefaultHttpClient();
-        HttpUriRequest method = new HttpGet("http://localhost:9162/testContext/monkey");
+    	final DefaultHttpClient client = new DefaultHttpClient();
+    	final HttpUriRequest method = new HttpGet("http://localhost:9162/testContext/monkey");
         
-        CredentialsProvider cp = client.getCredentialsProvider();
+    	final CredentialsProvider cp = client.getCredentialsProvider();
         UsernamePasswordCredentials credentials = new UsernamePasswordCredentials("admin", "sucks");
         cp.setCredentials(new AuthScope("localhost", 9162), credentials);
         
-        HttpResponse response = client.execute(method);
+        final HttpResponse response = client.execute(method);
         assertEquals(401, response.getStatusLine().getStatusCode());
     }
 

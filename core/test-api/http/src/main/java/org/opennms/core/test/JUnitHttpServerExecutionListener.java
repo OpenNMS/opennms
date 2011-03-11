@@ -1,11 +1,17 @@
 package org.opennms.core.test;
 
+import java.util.Collections;
+import java.util.HashSet;
+import java.util.Set;
+
 import org.eclipse.jetty.http.security.Constraint;
 import org.eclipse.jetty.http.ssl.SslContextFactory;
 import org.eclipse.jetty.security.ConstraintMapping;
 import org.eclipse.jetty.security.ConstraintSecurityHandler;
 import org.eclipse.jetty.security.HashLoginService;
+import org.eclipse.jetty.security.authentication.BasicAuthenticator;
 import org.eclipse.jetty.server.Connector;
+import org.eclipse.jetty.server.Handler;
 import org.eclipse.jetty.server.Server;
 import org.eclipse.jetty.server.handler.ContextHandler;
 import org.eclipse.jetty.server.handler.DefaultHandler;
@@ -43,11 +49,12 @@ public class JUnitHttpServerExecutionListener extends OpenNMSAbstractTestExecuti
         if (config.https()) {
             m_server = new Server();
             final SslContextFactory factory = new SslContextFactory(config.keystore());
+            factory.setKeyStore(config.keystore());
             factory.setKeyStorePassword(config.keystorePassword());
             factory.setKeyManagerPassword(config.keyPassword());
             factory.setTrustStore(config.keystore());
             factory.setTrustStorePassword(config.keystorePassword());
-
+            
             final SslSocketConnector connector = new SslSocketConnector(factory);
             connector.setPort(config.port());
             m_server.setConnectors(new Connector[] { connector });
@@ -62,31 +69,43 @@ public class JUnitHttpServerExecutionListener extends OpenNMSAbstractTestExecuti
         context.setClassLoader(Thread.currentThread().getContextClassLoader());
         context.setVirtualHosts(config.vhosts());
 
+        Handler topLevelHandler = null;
         final HandlerList handlers = new HandlerList();
 
         if (config.basicAuth()) {
-        	LogUtils.debugf(this, "configuring basic auth");
-
             // check for basic auth if we're configured to do so
-        	final Constraint constraint = new Constraint();
-            constraint.setName(Constraint.__BASIC_AUTH);
-            constraint.setRoles(new String[]{"user","admin","moderator"});
-            constraint.setAuthenticate(true);
-
-            final ConstraintMapping constraintMapping = new ConstraintMapping();
-            constraintMapping.setConstraint(constraint);
-            constraintMapping.setPathSpec("/*");
+        	LogUtils.debugf(this, "configuring basic auth");
 
             final HashLoginService loginService = new HashLoginService("MyRealm", config.basicAuthFile());
             loginService.setRefreshInterval(300000);
-            loginService.start();
+            m_server.addBean(loginService);
 
-            final ConstraintSecurityHandler securityHandler = new ConstraintSecurityHandler();
-            securityHandler.setLoginService(loginService);
-            securityHandler.setRealmName("MyRealm");
-            securityHandler.addConstraintMapping(constraintMapping);
+            final ConstraintSecurityHandler security = new ConstraintSecurityHandler();
 
-            handlers.addHandler(securityHandler);
+            final Set<String> knownRoles = new HashSet<String>();
+            knownRoles.add("user");
+            knownRoles.add("admin");
+            knownRoles.add("moderator");
+
+            final Constraint constraint = new Constraint();
+            constraint.setName("auth");
+            constraint.setAuthenticate(true);
+            constraint.setRoles(knownRoles.toArray(new String[0]));
+
+            final ConstraintMapping mapping = new ConstraintMapping();
+            mapping.setPathSpec("/*");
+            mapping.setConstraint(constraint);
+
+            security.setConstraintMappings(Collections.singletonList(mapping), knownRoles);
+            security.setAuthenticator(new BasicAuthenticator());
+            security.setLoginService(loginService);
+            security.setStrict(false);
+            security.setRealmName("MyRealm");
+            
+            security.setHandler(context);
+            topLevelHandler = security;
+        } else {
+        	topLevelHandler = context;
         }
 
         final Webapp[] webapps = config.webapps();
@@ -108,7 +127,7 @@ public class JUnitHttpServerExecutionListener extends OpenNMSAbstractTestExecuti
         handlers.addHandler(new DefaultHandler());
 
         context.setHandler(handlers);
-        m_server.setHandler(context);
+        m_server.setHandler(topLevelHandler);
 
         LogUtils.debugf(this, "starting jetty on port %d", config.port());
         m_server.start();
