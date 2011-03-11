@@ -1,0 +1,23 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<jaxb:bindings version="1.0"
+  xmlns:jaxb="http://java.sun.com/xml/ns/jaxb"
+  xmlns:xs="http://www.w3.org/2001/XMLSchema"
+  xmlns:xjc="http://java.sun.com/xml/ns/jaxb/xjc"
+  jaxb:extensionBindingPrefixes="xjc" >
+
+<!-- Note this is not used at present
+   <jaxb:globalBindings>
+     <xjc:superClass name="org.openoss.xml.MarshallerXmlBaseClass"/>
+   </jaxb:globalBindings>
+-->
+
+</jaxb:bindings>
+
+<!-- example binding specific mapping classes - not used
+   <jaxb:globalBindings>
+     <xjc:superClass name="org.openoss.xml.MarshallerXmlBaseClass"/>
+     <xjc:javaType name="org.tmforum.tip.org.openoss.tip.test.TestEntity" xmlType="tns:TestEntity"
+        adapter="org.openoss.xml.TestEntityAdapter" />
+   </jaxb:globalBindings>
+
+-->

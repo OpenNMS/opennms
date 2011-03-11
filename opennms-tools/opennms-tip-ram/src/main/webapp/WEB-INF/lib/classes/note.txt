@@ -1,0 +1,2 @@
+This classes folder is not normally necessary in war files but
+it appears that a bug in OpenEJB means that it looks for classes here.

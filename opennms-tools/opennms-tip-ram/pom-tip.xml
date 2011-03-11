@@ -1,0 +1,571 @@
+<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd">
+
+  <!--*******************************************************************************************************-->
+  <!-- TIP_RAM_WSImplProject pom.xml                                                             -->
+  <!--*******************************************************************************************************-->
+  <!-- Documentation :                                                                                       -->
+  <!-- TODO: insert any project specific pom documentation here                                              -->
+  <!--                                                                                                       -->
+  <!-- Author: Craig Gallen                                                                                  -->
+  <!-- Date: November 9 2010                                                                                   -->
+  <!-- Version : 1.1.0.0                                                                                     -->
+  <!--*******************************************************************************************************-->
+  <!-- Project Change History                                                                                -->
+  <!-- Version 1.1.0.0 October 15 2010 - Initially created version for TIP_RAM                    -->
+  <!--*******************************************************************************************************-->
+  <!-- Note:                                                                                                 -->
+  <!--   This POM is derived from the Archetype pom defined in                                               -->
+  <!--     TIP_Project_Creator Version: 1.1.0-SNAPSHOT Date: October 15 2010                                 -->
+  <!--     Timestamp: 201010151227                                                                           -->
+  <!--     .../architype-projects/ImplProject/pom.xml                                                        -->
+  <!--     Copyright 2009 OpenNMS Group Inc. Licensed under the terms of the Apache 2 licence.               -->
+  <!--                                                                                                       -->
+  <!-- Architype Change History                                                                              -->
+  <!-- Version 0.3.0.3  October   15 2010 Craig Gallen - correcting build dependencies and process for RI    -->
+  <!-- Version 0.3.0.2  July      07 2010 Craig Gallen - replaced all tabs with spaces                       -->
+  <!-- Version 0.3.0.1  January   27 2010 Craig Gallen - changed name of project to ImplProject              -->
+  <!-- Version 0.3.0.0  November  26 2009 Craig Gallen - upgraded to version 0.3                             -->
+  <!-- Version 0.0.2.4  November  10 2009 Craig Gallen - changed from Junit to TestNG                        -->
+  <!-- Version 0.0.2.3  August    25 2009 Craig Gallen - Split impl and spec group add SoapImplGenSrcPackage -->
+  <!-- Version 0.0.2.0  August    04 2009 Craig Gallen - Updated dependencies. Removed parent rel path       -->
+  <!-- Version 0.0.1.2  August    03 2009 Craig Gallen - changed version numbering scheme                    -->
+  <!-- Version 0.0.1.0  June      12 2009 Craig Gallen - Initial Archetype Version                           -->
+  <!--*******************************************************************************************************-->
+
+  <modelVersion>4.0.0</modelVersion>
+
+  <parent>
+    <groupId>org.openoss.tip</groupId>
+    <artifactId>TIP_RAM_BaseProject</artifactId>
+    <version>0.2.0-SNAPSHOT</version>
+  </parent>
+
+  <artifactId>TIP_RAM_WSImplProject</artifactId>
+  <packaging>war</packaging>
+  <name>TIP_RAM_WSImplProject</name>
+
+  <build>
+    <!-- sets the name of the generated war file -->
+    <finalName>ResourceAlarmManagement</finalName>
+
+    <plugins>
+      <plugin>
+        <artifactId>maven-compiler-plugin</artifactId>
+      </plugin>
+
+      <plugin>
+        <groupId>org.codehaus.mojo</groupId>
+        <artifactId>build-helper-maven-plugin</artifactId>
+        <executions>
+          <execution>
+            <id>add-source</id>
+            <phase>process-sources</phase>
+            <goals>
+              <goal>add-source</goal>
+            </goals>
+            <configuration>
+              <sources>
+                <source>${project.build.directory}/generated-sources/src/main/java</source>
+              </sources>
+            </configuration>
+          </execution>
+          <!--          <execution>-->
+          <!--            <id>add-test-source</id>-->
+          <!--            <phase>process-sources</phase>-->
+          <!--            <goals>-->
+          <!--              <goal>add-test-source</goal>-->
+          <!--            </goals>-->
+          <!--            <configuration>-->
+          <!--              <sources>-->
+          <!--                <source>${project.build.directory}/generated-sources/src/test/java</source>-->
+          <!--              </sources>-->
+          <!--            </configuration>-->
+          <!--          </execution>-->
+        </executions>
+      </plugin>
+
+      <plugin>
+        <groupId>org.apache.maven.plugins</groupId>
+        <artifactId>maven-source-plugin</artifactId>
+        <executions>
+          <execution>
+            <id>attach-sources</id>
+            <phase>verify</phase>
+            <goals>
+              <goal>jar-no-fork</goal>
+              <goal>test-jar-no-fork</goal>
+            </goals>
+          </execution>
+        </executions>
+      </plugin>
+
+      <plugin>
+        <groupId>org.apache.maven.plugins</groupId>
+        <artifactId>maven-javadoc-plugin</artifactId>
+        <configuration>
+          <doctitle>API for ${project.name} ${project.version}</doctitle> <!-- Used by javadoc:javadoc goal -->
+          <windowtitle>API for ${project.name} ${project.version}</windowtitle> <!-- Used by javadoc:javadoc goal -->
+          <testDoctitle>Test API for ${project.name} ${project.version}</testDoctitle> <!-- Used by javadoc:test-javadoc goal -->
+          <testWindowtitle>Test API for ${project.name} ${project.version}</testWindowtitle> <!-- Used by javadoc:test-javadoc goal -->
+          <links>
+            <link>http://download.oracle.com/javase/1.5.0/docs/api/</link>
+            <link>http://openejb.apache.org/apidocs/</link>
+            <link>http://static.springsource.org/spring/docs/2.5.x/api/</link>
+            <link>http://testng.org/javadocs/</link>
+            <link>http://docs.jboss.org/hibernate/core/3.2/api/</link>
+            <link>http://docs.jboss.org/hibernate/entitymanager/3.4/api/</link>
+            <link>http://cxf.apache.org/javadoc/latest-2.1.x/</link>
+          </links>
+          <quiet>true</quiet>
+          <!-- <debug>true</debug> -->
+        </configuration>
+        <executions>
+          <execution>
+            <id>attach-javadocs</id>
+            <goals>
+              <goal>jar</goal>
+              <goal>test-jar</goal>
+            </goals>
+          </execution>
+        </executions>
+      </plugin>
+
+      <!--  This extracts properties from tigerstripemodel.properties for use in -->
+      <!--  this build. NOTE tigerstripemodel.properties must exist or the build -->
+      <!--  will fail                                                            -->
+      <!--      <plugin>-->
+      <!--        <groupId>org.codehaus.mojo</groupId>-->
+      <!--        <artifactId>properties-maven-plugin</artifactId>-->
+      <!--        <executions>-->
+      <!--          <execution>-->
+      <!--            <phase>process-sources</phase>-->
+      <!--            <goals>-->
+      <!--              <goal>read-project-properties</goal>-->
+      <!--            </goals>-->
+      <!--            <configuration>-->
+      <!--              <files>-->
+      <!--                <file>${project.build.directory}/generated-sources/src/main/resources/META-INF/tigerstripe/tigerstripemodel.properties</file>-->
+      <!--              </files>-->
+      <!--            </configuration>-->
+      <!--          </execution>-->
+      <!--        </executions>-->
+      <!--      </plugin>-->
+
+      <plugin>
+        <groupId>org.apache.maven.plugins</groupId>
+        <artifactId>maven-jar-plugin</artifactId>
+        <configuration>
+          <archive>
+            <manifestSections>
+              <manifestSection>
+                <name>Project Details</name>
+                <manifestEntries>
+                  <Specification-Title>${pom.name}</Specification-Title>
+                  <Specification-Version>${pom.version}</Specification-Version>
+                  <Specification-Vendor>${pom.organization.name}</Specification-Vendor>
+                  <url>${pom.url}</url>
+                </manifestEntries>
+              </manifestSection>
+              <!--              <manifestSection>-->
+              <!--                 this is populated from tigerstripemodel.properties using properties-maven-plugin -->
+              <!--                <name>Tigerstripe Model and Plugin details</name>-->
+              <!--                <manifestEntries>-->
+              <!--                  <tigerstripe-Feature-Version>${tigerstripe.feature.version}</tigerstripe-Feature-Version>-->
+              <!--                  <tigerstripe-Plugin-Id>${tigerstripe.plugin.id}</tigerstripe-Plugin-Id>-->
+              <!--                  <tigerstripe-Plugin-Version>${tigerstripe.plugin.version}</tigerstripe-Plugin-Version>-->
+              <!--                  <tigerstripe-Template-Name>${tigerstripe.templatename}</tigerstripe-Template-Name>-->
+              <!--                  <tigerstripe-Model-Name>${tigerstripe.model.name}</tigerstripe-Model-Name>-->
+              <!--                  <tigerstripe-Model-Version>${tigerstripe.model.version}</tigerstripe-Model-Version>-->
+              <!--                  <tigerstripe-Model-Provider>${tigerstripe.model.provider}</tigerstripe-Model-Provider>-->
+              <!--                  <tigerstripe-Model-Description>${tigerstripe.model.description}</tigerstripe-Model-Description>-->
+              <!--                </manifestEntries>-->
+              <!--              </manifestSection>-->
+            </manifestSections>
+          </archive>
+        </configuration>
+        <executions>
+          <execution>
+            <goals>
+              <!-- <goal>jar</goal>--> <!-- not needed as building war -->
+              <goal>test-jar</goal>
+            </goals>
+          </execution>
+        </executions>
+      </plugin>
+
+<!--      <plugin>-->
+<!--        <artifactId>maven-eclipse-plugin</artifactId>-->
+<!--        <configuration>-->
+<!--          <wtpversion>2.0</wtpversion>-->
+<!--        </configuration>-->
+<!--      </plugin>-->
+
+      <plugin>
+        <groupId>org.mortbay.jetty</groupId>
+        <artifactId>maven-jetty-plugin</artifactId>
+        <configuration>
+          <webApp>${project.build.directory}/${project.build.finalName}</webApp>
+          <contextPath>/RI</contextPath>
+          <connectors>
+            <connector implementation="org.mortbay.jetty.nio.SelectChannelConnector">
+              <port>9090</port>
+              <maxIdleTime>60000</maxIdleTime>
+            </connector>
+          </connectors>
+          <stopKey>foo</stopKey>
+          <stopPort>9999</stopPort>
+        </configuration>
+        <executions>
+          <execution>
+            <id>start-jetty</id>
+            <phase>pre-integration-test</phase>
+            <goals>
+              <goal>run-war</goal>
+            </goals>
+            <configuration>
+              <scanIntervalSeconds>0</scanIntervalSeconds>
+              <daemon>true</daemon> <!-- shuts down jetty at end of maven run -->
+            </configuration>
+          </execution>
+<!--          <execution>-->
+<!--            <id>stop-jetty</id>-->
+<!--            <phase>post-integration-test</phase>-->
+<!--            <goals>-->
+<!--              <goal>stop</goal>-->
+<!--            </goals>-->
+<!--          </execution>-->
+        </executions>
+      </plugin>
+
+      <plugin>
+        <groupId>org.apache.maven.plugins</groupId>
+        <artifactId>maven-surefire-plugin</artifactId>
+        <configuration>
+          <!-- <forkMode>pertest</forkMode>--> <!-- redirectTestOutputToFile works but is very slow -->
+          <redirectTestOutputToFile>false</redirectTestOutputToFile>
+          <!-- the build continues even when individual tests fail -->
+          <testFailureIgnore>true</testFailureIgnore>
+        </configuration>
+      </plugin>
+
+      <plugin>
+        <groupId>org.apache.maven.plugins</groupId>
+        <artifactId>maven-site-plugin</artifactId>
+        <configuration>
+          <!-- Staging site URL NOTE: This could be locally configured by users -->
+          <!-- and will be specified when a release management system is created -->
+          <!-- <stagingSiteURL>${stagingSiteBaseURL}/${project.groupId}/${project.name}/${project.version}</stagingSiteURL> -->
+        </configuration>
+      </plugin>
+
+    </plugins>
+
+    <resources>
+      <resource>
+        <directory>src/main/resources</directory>
+      </resource>
+      <resource>
+        <directory>${project.build.directory}/generated-sources/src/main/resources</directory>
+      </resource>
+    </resources>
+    <testResources>
+      <testResource>
+        <directory>src/test/resources</directory>
+      </testResource>
+      <!--      <testResource>-->
+      <!--        <directory>${project.build.directory}/generated-sources/src/test/resources</directory>-->
+      <!--      </testResource>-->
+    </testResources>
+
+  </build>
+
+  <dependencies>
+    <!-- Local Interface Project TIP_RAM Model Generated Dependencies -->
+    <dependency>
+      <groupId>org.tmforum.tip</groupId>
+      <artifactId>TIP_RAM_JvtSpecPackage</artifactId>
+      <version>${project.version}</version>
+      <scope>compile</scope>
+    </dependency>
+
+    <!-- NOTE - scope may need to be test? -->
+    <dependency>
+      <groupId>org.openoss.tip</groupId>
+      <artifactId>TIP_RAM_EjbImplGenSrcPackage</artifactId>
+      <version>${project.version}</version>
+      <scope>compile</scope>
+    </dependency>
+
+    <dependency>
+      <groupId>org.openoss.tip</groupId>
+      <artifactId>TIP_RAM_SoapImplGenSrcPackage</artifactId>
+      <version>${project.version}</version>
+      <scope>compile</scope>
+    </dependency>
+
+    <!-- External TIP dependencies -->
+
+    <!-- TIP Internal model dependencies -->
+    <!-- TIP Framework -->
+    <!-- TIP Platform -->
+    <dependency>
+      <groupId>org.tmforum.tip</groupId>
+      <artifactId>TIP_Generator_Internal_JvtSpecPackage</artifactId>
+      <scope>compile</scope>
+    </dependency>
+    <dependency>
+      <groupId>org.openoss.tip</groupId>
+      <artifactId>TIP_Generator_Internal_EjbImplGenSrcPackage</artifactId>
+      <scope>compile</scope>
+    </dependency>
+    <dependency>
+      <groupId>org.openoss.tip</groupId>
+      <artifactId>TIP_Generator_Internal_SoapImplGenSrcPackage</artifactId>
+      <scope>compile</scope>
+    </dependency>
+
+    <!-- TIP Common model dependencies -->
+    <!-- TIP Framework -->
+    <!-- TIP Platform -->
+    <dependency>
+      <groupId>org.tmforum.tip</groupId>
+      <artifactId>TIP_Common_JvtSpecPackage</artifactId>
+      <scope>compile</scope>
+    </dependency>
+    <dependency>
+      <groupId>org.openoss.tip</groupId>
+      <artifactId>TIP_Common_EjbImplGenSrcPackage</artifactId>
+      <scope>compile</scope>
+    </dependency>
+    <dependency>
+      <groupId>org.openoss.tip</groupId>
+      <artifactId>TIP_Common_SoapImplGenSrcPackage</artifactId>
+      <scope>compile</scope>
+    </dependency>
+
+    <!-- TIP Framework base interface specification dependencies  -->
+    <dependency>
+      <groupId>org.tmforum.tip</groupId>
+      <artifactId>TIP_JvtSpec_BaseInterfaces</artifactId>
+      <scope>compile</scope>
+    </dependency>
+
+    <!-- TIP Platform base implementation class dependencies  -->
+    <dependency>
+      <groupId>org.openoss.tip</groupId>
+      <artifactId>TIP_EjbImpl_BaseClasses</artifactId>
+      <scope>compile</scope>
+    </dependency>
+
+    <!-- External project dependencies -->
+
+    <!-- START SNIPPET: required ejb3-->
+    <dependency>
+      <groupId>org.apache.openejb</groupId>
+      <artifactId>openejb-core</artifactId>
+      <version>${openejb.version}</version>
+      <scope>compile</scope>
+    </dependency>
+    <dependency>
+      <groupId>org.apache.openejb</groupId>
+      <artifactId>openejb-spring</artifactId>
+      <version>${openejb.version}</version>
+      <scope>compile</scope>
+    </dependency>
+    <!-- needed if we are going to run open ejb embedded in jetty -->
+    <dependency>
+      <groupId>org.apache.openejb</groupId>
+      <artifactId>openejb-server</artifactId>
+      <version>${openejb.version}</version>
+      <scope>compile</scope>
+    </dependency>
+    <dependency>
+      <groupId>org.apache.openejb</groupId>
+      <artifactId>openejb-ejbd</artifactId>
+      <version>${openejb.version}</version>
+      <scope>compile</scope>
+    </dependency>
+    <dependency>
+      <groupId>org.apache.openejb</groupId>
+      <artifactId>openejb-telnet</artifactId>
+      <version>${openejb.version}</version>
+      <scope>compile</scope>
+    </dependency>
+    <dependency>
+      <groupId>org.springframework</groupId>
+      <artifactId>spring</artifactId>
+      <version>${org.springframework.version}</version>
+      <scope>compile</scope>
+    </dependency>
+    <!-- END SNIPPET: required -->
+
+    <!-- Libraries for OpenEJB, Spring and Hibernate -->
+    <dependency>
+      <groupId>org.apache.openejb</groupId>
+      <artifactId>javaee-api</artifactId>
+      <version>${openejb.javaee-api.version}</version>
+      <scope>compile</scope>
+    </dependency>
+
+    <dependency>
+      <groupId>org.testng</groupId>
+      <artifactId>testng</artifactId>
+      <scope>test</scope>
+      <classifier>jdk15</classifier>
+    </dependency>
+
+    <!-- START SNIPPET: optional -->
+    <dependency>
+      <groupId>org.hibernate</groupId>
+      <artifactId>hibernate</artifactId>
+      <version>${org.hibernate.version}</version>
+      <exclusions>
+        <exclusion>
+          <groupId>javax.transaction</groupId>
+          <artifactId>jta</artifactId>
+        </exclusion>
+      </exclusions>
+      <scope>compile</scope>
+      <!--<scope>test</scope> -->
+      <!-- Note scope is compile since hibernate criterion needed in implementation -->
+      <!-- This prevents us from being JPA implementation independent.              -->
+      <!-- Moving to JPA2 will remove this dependency                               -->
+    </dependency>
+    <dependency>
+      <groupId>org.hibernate</groupId>
+      <artifactId>hibernate-entitymanager</artifactId>
+      <version>${org.hibernate.entitymanager.version}</version>
+      <exclusions>
+        <exclusion>
+          <groupId>javax.persistence</groupId>
+          <artifactId>persistence-api</artifactId>
+        </exclusion>
+      </exclusions>
+      <scope>compile</scope>
+      <!-- <scope>test</scope>-->
+    </dependency>
+    <!-- END SNIPPET: optional -->
+
+    <!-- Depending on your requirements you may need more -->
+    <!-- or fewer modules from cxf                        -->
+    <dependency>
+      <groupId>org.apache.cxf</groupId>
+      <artifactId>cxf-rt-core</artifactId>
+      <version>${cxf.version}</version>
+    </dependency>
+    <dependency>
+      <groupId>org.apache.cxf</groupId>
+      <artifactId>cxf-rt-frontend-simple</artifactId>
+      <version>${cxf.version}</version>
+    </dependency>
+    <dependency>
+      <groupId>org.apache.cxf</groupId>
+      <artifactId>cxf-rt-frontend-jaxws</artifactId>
+      <version>${cxf.version}</version>
+    </dependency>
+    <dependency>
+      <groupId>org.apache.cxf</groupId>
+      <artifactId>cxf-rt-databinding-aegis</artifactId>
+      <version>${cxf.version}</version>
+    </dependency>
+    <dependency>
+      <groupId>org.apache.cxf</groupId>
+      <artifactId>cxf-rt-transports-local</artifactId>
+      <version>${cxf.version}</version>
+    </dependency>
+    <dependency>
+      <groupId>org.apache.cxf</groupId>
+      <artifactId>cxf-rt-transports-http</artifactId>
+      <version>${cxf.version}</version>
+    </dependency>
+    <dependency>
+      <groupId>org.apache.cxf</groupId>
+      <artifactId>cxf-rt-transports-http-jetty</artifactId>
+      <version>${cxf.version}</version>
+    </dependency>
+    <dependency>
+      <groupId>org.apache.cxf</groupId>
+      <artifactId>cxf-rt-transports-jms</artifactId>
+      <version>${cxf.version}</version>
+    </dependency>
+    <dependency>
+      <groupId>org.apache.cxf</groupId>
+      <artifactId>cxf-rt-management</artifactId>
+      <version>${cxf.version}</version>
+    </dependency>
+    <dependency>
+      <groupId>org.apache.cxf</groupId>
+      <artifactId>cxf-common-utilities</artifactId>
+      <version>${cxf.version}</version>
+    </dependency>
+    <dependency>
+      <groupId>org.mortbay.jetty</groupId>
+      <artifactId>jetty</artifactId>
+      <version>${jetty.version}</version>
+    </dependency>
+    <dependency>
+      <groupId>org.slf4j</groupId>
+      <artifactId>slf4j-api</artifactId>
+      <version>${slf4j.version}</version>
+    </dependency>
+    <dependency>
+      <groupId>org.slf4j</groupId>
+      <artifactId>slf4j-log4j12</artifactId>
+      <version>${slf4j.version}</version>
+    </dependency>
+  </dependencies>
+
+  <!-- NOTE This section should be adapted to suit the location of the project -->
+  <!--  <scm>-->
+  <!--    <connection>scm:svn:https://openoss.svn.sourceforge.net/svnroot/openoss/tip/sandbox/cgallen/codegen2/${project.name}</connection>-->
+  <!--    <developerConnection>scm:svn:https://openoss.svn.sourceforge.net/svnroot/openoss/tip/sandbox/cgallen/codegen2/${project.name}</developerConnection>-->
+  <!--    <tag>HEAD</tag>-->
+  <!--    <url>http://openoss.svn.sourceforge.net/viewvc/openoss/tip/sandbox/cgallen/codegen2/${project.name}</url>-->
+  <!--  </scm>-->
+
+  <distributionManagement>
+    <site>
+      <id>openoss-tip.site</id>
+      <name>${distMgmtSiteName}</name>
+      <url>${projectSiteUrl}/${site-subdirectory-name}/${project-site-name}/${project.version}/${project.name}</url>
+    </site>
+  </distributionManagement>
+
+  <reporting>
+    <plugins>
+      <plugin>
+        <groupId>org.apache.maven.plugins</groupId>
+        <artifactId>maven-project-info-reports-plugin</artifactId>
+        <version>${maven.project.info.reports.plugin.version}</version>
+        <reportSets>
+          <reportSet>
+            <reports>
+              <report>index</report>
+              <report>summary</report>
+              <report>mailing-list</report>
+              <report>issue-tracking</report>
+              <report>license</report>
+              <report>scm</report>
+              <report>cim</report>
+              <report>plugin-management</report>
+              <report>plugins</report>
+              <!--<report>dependencies</report> --> <!-- disable to prevent a long wait when generating sites -->
+              <report>dependency-convergence</report>
+              <report>dependency-management</report>
+              <report>project-team</report>
+            </reports>
+          </reportSet>
+        </reportSets>
+        <configuration>
+          <!-- this may prevent a long wait while external repositories are resolved -->
+          <dependencyLocationEnabled>false</dependencyLocationEnabled>
+        </configuration>
+      </plugin>
+      <plugin>
+        <groupId>org.apache.maven.plugins</groupId>
+        <artifactId>maven-javadoc-plugin</artifactId>
+      </plugin>
+    </plugins>
+  </reporting>
+
+</project>
