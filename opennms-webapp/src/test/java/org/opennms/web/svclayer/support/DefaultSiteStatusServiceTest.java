@@ -52,12 +52,12 @@ import org.opennms.netmgt.config.siteStatusViews.Rows;
 import org.opennms.netmgt.config.siteStatusViews.View;
 import org.opennms.netmgt.dao.CategoryDao;
 import org.opennms.netmgt.dao.NodeDao;
+import org.opennms.netmgt.dao.SiteStatusViewConfigDao;
 import org.opennms.netmgt.model.AggregateStatusDefinition;
 import org.opennms.netmgt.model.AggregateStatusView;
 import org.opennms.netmgt.model.OnmsCategory;
 import org.opennms.netmgt.model.OnmsNode;
 import org.opennms.web.svclayer.AggregateStatus;
-import org.opennms.web.svclayer.dao.SiteStatusViewConfigDao;
 
 public class DefaultSiteStatusServiceTest {
     

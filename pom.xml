@@ -105,6 +105,7 @@
     <module>opennms-ackd</module>
     <module>opennms-alarmd</module>
     <module>opennms-config-utils</module>
+    <module>opennms-config-tester</module>
     <module>opennms-dao</module>
     <module>opennms-daemon</module>
     <module>opennms-icmp</module>
@@ -1129,6 +1130,11 @@
       <dependency>
         <groupId>org.opennms</groupId>
         <artifactId>opennms-config</artifactId>
+        <version>${project.version}</version>
+      </dependency>
+      <dependency>
+        <groupId>org.opennms</groupId>
+        <artifactId>opennms-config-tester</artifactId>
         <version>${project.version}</version>
       </dependency>
       <dependency>

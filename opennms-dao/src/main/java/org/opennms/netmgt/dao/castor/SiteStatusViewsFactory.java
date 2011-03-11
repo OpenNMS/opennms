@@ -36,7 +36,7 @@
 // Tab Size = 8
 //
 
-package org.opennms.netmgt.config;
+package org.opennms.netmgt.dao.castor;
 
 import java.io.File;
 import java.io.FileInputStream;
@@ -54,7 +54,6 @@ import org.opennms.core.utils.ThreadCategory;
 import org.opennms.netmgt.ConfigFileConstants;
 import org.opennms.netmgt.config.siteStatusViews.SiteStatusViewConfiguration;
 import org.opennms.netmgt.config.siteStatusViews.View;
-import org.opennms.netmgt.dao.castor.CastorUtils;
 
 /**
  * <p>SiteStatusViewsFactory class.</p>
@@ -180,7 +179,7 @@ public class SiteStatusViewsFactory {
     /**
      * <p>setInstance</p>
      *
-     * @param instance a {@link org.opennms.netmgt.config.SiteStatusViewsFactory} object.
+     * @param instance a {@link org.opennms.netmgt.dao.castor.SiteStatusViewsFactory} object.
      */
     public static synchronized void setInstance(SiteStatusViewsFactory instance) {
         m_instance = instance;

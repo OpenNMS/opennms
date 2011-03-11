@@ -26,7 +26,7 @@
   </bean>
 
   <!-- Site Status beans -->
-  <bean id="siteStatusViewConfigDao" class="org.opennms.web.svclayer.dao.support.DefaultSiteStatusViewConfigDao" />
+  <bean id="siteStatusViewConfigDao" class="org.opennms.netmgt.dao.castor.DefaultSiteStatusViewConfigDao" />
   
   <bean id="siteStatusViewService" class="org.opennms.web.svclayer.support.DefaultSiteStatusViewService" >
   	<property name="nodeDao" ref="nodeDao" />

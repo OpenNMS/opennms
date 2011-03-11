@@ -32,7 +32,7 @@
  *      http://www.opennms.org/
  *      http://www.opennms.com/
  */
-package org.opennms.web.svclayer.dao.support;
+package org.opennms.netmgt.dao.castor;
 
 import java.io.FileNotFoundException;
 import java.io.IOException;
@@ -40,10 +40,9 @@ import java.util.Map;
 
 import org.exolab.castor.xml.MarshalException;
 import org.exolab.castor.xml.ValidationException;
-import org.opennms.netmgt.config.SiteStatusViewsFactory;
 import org.opennms.netmgt.config.siteStatusViews.View;
 import org.opennms.netmgt.config.siteStatusViews.Views;
-import org.opennms.web.svclayer.dao.SiteStatusViewConfigDao;
+import org.opennms.netmgt.dao.SiteStatusViewConfigDao;
 import org.springframework.dao.DataRetrievalFailureException;
 
 /**

@@ -50,6 +50,7 @@ import org.opennms.netmgt.config.siteStatusViews.Rows;
 import org.opennms.netmgt.config.siteStatusViews.View;
 import org.opennms.netmgt.dao.CategoryDao;
 import org.opennms.netmgt.dao.NodeDao;
+import org.opennms.netmgt.dao.SiteStatusViewConfigDao;
 import org.opennms.netmgt.model.AggregateStatusDefinition;
 import org.opennms.netmgt.model.AggregateStatusView;
 import org.opennms.netmgt.model.OnmsCategory;
@@ -57,7 +58,6 @@ import org.opennms.netmgt.model.OnmsNode;
 import org.opennms.web.api.Util;
 import org.opennms.web.svclayer.AggregateStatus;
 import org.opennms.web.svclayer.SiteStatusViewService;
-import org.opennms.web.svclayer.dao.SiteStatusViewConfigDao;
 import org.springframework.dao.DataRetrievalFailureException;
 import org.springframework.orm.ObjectRetrievalFailureException;
 
@@ -288,7 +288,7 @@ public class DefaultSiteStatusViewService implements SiteStatusViewService {
     /**
      * <p>setSiteStatusViewConfigDao</p>
      *
-     * @param dao a {@link org.opennms.web.svclayer.dao.SiteStatusViewConfigDao} object.
+     * @param dao a {@link org.opennms.netmgt.dao.SiteStatusViewConfigDao} object.
      */
     public void setSiteStatusViewConfigDao(SiteStatusViewConfigDao dao) {
         m_siteStatusViewConfigDao = dao;

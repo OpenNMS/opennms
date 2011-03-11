@@ -30,7 +30,7 @@
 //     http://www.opennms.com/
 //
 
-package org.opennms.netmgt.config;
+package org.opennms.netmgt.dao.castor;
 
 import java.io.IOException;
 
@@ -39,8 +39,7 @@ import junit.framework.TestCase;
 import org.exolab.castor.xml.MarshalException;
 import org.exolab.castor.xml.ValidationException;
 import org.opennms.netmgt.config.siteStatusViews.View;
-import org.opennms.netmgt.mock.MockDatabase;
-import org.opennms.netmgt.mock.MockNetwork;
+import org.opennms.netmgt.dao.castor.SiteStatusViewsFactory;
 
 public class SiteStatusViewsFactoryTest extends TestCase {
 	
@@ -48,13 +47,6 @@ public class SiteStatusViewsFactoryTest extends TestCase {
 
 	protected void setUp() throws Exception {
 		super.setUp();
-		
-		MockNetwork network = new MockNetwork();
-		
-		MockDatabase db = new MockDatabase();
-		db.populate(network);
-		
-		DataSourceFactory.setInstance(db);
 
 		m_factory = new SiteStatusViewsFactory(getClass().getResourceAsStream("/org/opennms/netmgt/config/site-status-views.testdata.xml"));
 	}
