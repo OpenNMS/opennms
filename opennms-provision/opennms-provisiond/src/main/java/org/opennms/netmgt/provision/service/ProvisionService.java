@@ -42,7 +42,6 @@ import org.opennms.netmgt.model.OnmsServiceType;
 import org.opennms.netmgt.model.OnmsSnmpInterface;
 import org.opennms.netmgt.provision.IpInterfacePolicy;
 import org.opennms.netmgt.provision.NodePolicy;
-import org.opennms.netmgt.provision.NoAgentNodePolicy;
 import org.opennms.netmgt.provision.ServiceDetector;
 import org.opennms.netmgt.provision.SnmpInterfacePolicy;
 import org.opennms.netmgt.provision.persist.ForeignSourceRepository;
@@ -317,14 +316,6 @@ public interface ProvisionService {
      * @return a {@link java.util.List} object.
      */
     public abstract List<NodePolicy> getNodePoliciesForForeignSource(String foreignSourceName);
-    
-    /**
-     * <p>getNoAgentNodePoliciesForForeignSource</p>
-     *
-     * @param foreignSourceName a {@link java.lang.String} object.
-     * @return a {@link java.util.List} object.
-     */
-    public abstract List<NoAgentNodePolicy> getNoAgentNodePoliciesForForeignSource(String foreignSourceName);
     
     /**
      * <p>getIpInterfacePoliciesForForeignSource</p>

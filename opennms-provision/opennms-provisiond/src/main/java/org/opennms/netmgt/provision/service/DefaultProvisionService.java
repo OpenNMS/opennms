@@ -73,7 +73,6 @@ import org.opennms.netmgt.model.events.EventForwarder;
 import org.opennms.netmgt.model.events.UpdateEventVisitor;
 import org.opennms.netmgt.provision.IpInterfacePolicy;
 import org.opennms.netmgt.provision.NodePolicy;
-import org.opennms.netmgt.provision.NoAgentNodePolicy;
 import org.opennms.netmgt.provision.ServiceDetector;
 import org.opennms.netmgt.provision.SnmpInterfacePolicy;
 import org.opennms.netmgt.provision.persist.ForeignSourceRepository;
@@ -743,11 +742,6 @@ public class DefaultProvisionService implements ProvisionService {
     /** {@inheritDoc} */
     public List<NodePolicy> getNodePoliciesForForeignSource(String foreignSourceName) {
         return getPluginsForForeignSource(NodePolicy.class, foreignSourceName);
-    }
-    
-    /** {@inheritDoc} */
-    public List<NoAgentNodePolicy> getNoAgentNodePoliciesForForeignSource(String foreignSourceName) {
-        return getPluginsForForeignSource(NoAgentNodePolicy.class, foreignSourceName);
     }
     
     /** {@inheritDoc} */

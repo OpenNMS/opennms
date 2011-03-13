@@ -61,7 +61,7 @@ import org.opennms.netmgt.model.OnmsSnmpInterface;
 import org.opennms.netmgt.model.events.EventBuilder;
 import org.opennms.netmgt.model.events.EventForwarder;
 import org.opennms.netmgt.provision.IpInterfacePolicy;
-import org.opennms.netmgt.provision.NoAgentNodePolicy;
+import org.opennms.netmgt.provision.NodePolicy;
 import org.opennms.netmgt.provision.SnmpInterfacePolicy;
 import org.opennms.netmgt.snmp.SnmpAgentConfig;
 import org.opennms.netmgt.snmp.SnmpUtils;
@@ -567,12 +567,12 @@ public class NodeScan implements RunInBatch {
             m_node = node;
         }
            
-        private void applyNoAgentNodePolicies(BatchTask phase) {
+        private void applyNodePolicies(BatchTask phase) {
 
-            List<NoAgentNodePolicy> noAgentNodePolicies = getProvisionService().getNoAgentNodePoliciesForForeignSource(getForeignSource() == null ? "default" : getForeignSource());
+            List<NodePolicy> nodePolicies = getProvisionService().getNodePoliciesForForeignSource(getForeignSource() == null ? "default" : getForeignSource());
             
             OnmsNode node = getNode();
-            for(NoAgentNodePolicy policy : noAgentNodePolicies) {
+            for(NodePolicy policy : nodePolicies) {
                 if (node != null) {
                     node = policy.apply(node);
                 }
@@ -619,7 +619,7 @@ public class NodeScan implements RunInBatch {
             parent.getBuilder().addSequence(
                     new RunInBatch() {
                         public void run(BatchTask phase) {
-                            applyNoAgentNodePolicies(phase);
+                            applyNodePolicies(phase);
                         }
                     },
                     new RunInBatch() {

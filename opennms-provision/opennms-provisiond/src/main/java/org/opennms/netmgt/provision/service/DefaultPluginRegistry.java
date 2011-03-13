@@ -42,7 +42,6 @@ import org.opennms.core.utils.ThreadCategory;
 import org.opennms.netmgt.provision.AsyncServiceDetector;
 import org.opennms.netmgt.provision.IpInterfacePolicy;
 import org.opennms.netmgt.provision.NodePolicy;
-import org.opennms.netmgt.provision.NoAgentNodePolicy;
 import org.opennms.netmgt.provision.OnmsPolicy;
 import org.opennms.netmgt.provision.ServiceDetector;
 import org.opennms.netmgt.provision.SnmpInterfacePolicy;
@@ -75,9 +74,6 @@ public class DefaultPluginRegistry implements PluginRegistry, InitializingBean {
     Set<NodePolicy> m_nodePolicies;
     
     @Autowired(required=false)
-    Set<NoAgentNodePolicy> m_noAgentNodePolicies;
-    
-    @Autowired(required=false)
     Set<IpInterfacePolicy> m_ipInterfacePolicies;
     
     @Autowired(required=false)
@@ -98,7 +94,6 @@ public class DefaultPluginRegistry implements PluginRegistry, InitializingBean {
         addAllExtensions(m_asyncDetectors, AsyncServiceDetector.class, ServiceDetector.class);
         addAllExtensions(m_syncDetectors, SyncServiceDetector.class, ServiceDetector.class);
         addAllExtensions(m_nodePolicies, NodePolicy.class, OnmsPolicy.class);
-        addAllExtensions(m_noAgentNodePolicies, NoAgentNodePolicy.class, OnmsPolicy.class);
         addAllExtensions(m_ipInterfacePolicies, IpInterfacePolicy.class, OnmsPolicy.class);
         addAllExtensions(m_snmpInterfacePolicies, SnmpInterfacePolicy.class, OnmsPolicy.class);
     }
