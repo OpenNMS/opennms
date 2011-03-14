@@ -110,7 +110,7 @@ public class MonitoredServiceDaoHibernate extends AbstractDaoHibernate<OnmsMonit
         Collection<OnmsMonitoredService> services = findActive();
         for (OnmsMonitoredService svc : services) {
             if ((matchingSvcs.contains(svc.getServiceName()) || matchingSvcs.isEmpty()) &&
-                matchingIps.contains(svc.getIpAddress())) {
+                matchingIps.contains(svc.getIpAddressAsString())) {
                 
                 matchingServices.add(svc);
             }

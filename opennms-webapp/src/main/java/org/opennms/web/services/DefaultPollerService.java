@@ -67,7 +67,7 @@ public class DefaultPollerService implements PollerService {
 		EventBuilder bldr = new EventBuilder(EventConstants.DEMAND_POLL_SERVICE_EVENT_UEI, "PollerService");
 
 		bldr.setNodeid(monSvc.getNodeId());
-		bldr.setInterface(monSvc.getIpAddress());
+		bldr.setInterface(monSvc.getIpAddressAsString());
 		bldr.setIfIndex(monSvc.getIfIndex());
 		bldr.setService(monSvc.getServiceType().getName());
 		

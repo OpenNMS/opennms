@@ -35,6 +35,8 @@
 //
 package org.opennms.netmgt.dao;
 
+import static org.opennms.core.utils.InetAddressUtils.addr;
+
 import java.net.Inet6Address;
 import java.net.InetAddress;
 import java.net.UnknownHostException;
@@ -88,7 +90,7 @@ public class IpInterfaceDaoTest extends AbstractTransactionalDaoTestCase {
         
         OnmsMonitoredService service = iface.getMonitoredServiceByServiceType("SNMP");
         assertNotNull(service);
-        assertEquals("192.168.1.1", service.getIpAddress());
+        assertEquals(addr("192.168.1.1"), service.getIpAddress());
     }
     
     public void testCountMatchingInerfaces() {

@@ -219,9 +219,9 @@ public class CollectdIntegrationTest extends TestCase {
     }
 
     private void createGetPackagesExpectation(OnmsMonitoredService svc) {
-        String rule = "ipaddr = '"+svc.getIpAddress()+"'";
+        String rule = "ipaddr = '"+svc.getIpAddressAsString()+"'";
         
-        EasyMock.expect(m_filterDao.getIPList(rule)).andReturn(Collections.singletonList(svc.getIpAddress()));
+        EasyMock.expect(m_filterDao.getIPList(rule)).andReturn(Collections.singletonList(svc.getIpAddressAsString()));
         
         final Package pkg = new Package();
         pkg.setName("testPackage");
@@ -256,6 +256,10 @@ public class CollectdIntegrationTest extends TestCase {
     public static class MockServiceCollector implements ServiceCollector {
         
         int m_collectCount = 0;
+        
+        public MockServiceCollector() {
+            System.err.println("Created a MockServiceCollector");
+        }
 
         public CollectionSet collect(CollectionAgent agent, EventProxy eproxy, Map<String, String> parameters) {
             m_collectCount++;

@@ -1112,7 +1112,7 @@ abstract public class PollerConfigManager implements PollerConfig {
                 return;
             }
             
-            final String rrdDir = rrdRepository+File.separatorChar+"distributed"+File.separatorChar+locationMonitor+File.separator+monSvc.getIpAddress();
+            final String rrdDir = rrdRepository+File.separatorChar+"distributed"+File.separatorChar+locationMonitor+File.separator+monSvc.getIpAddressAsString();
     
             try {
                 final File rrdFile = new File(rrdDir, dsName);

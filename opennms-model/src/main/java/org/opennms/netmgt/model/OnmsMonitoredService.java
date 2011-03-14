@@ -31,7 +31,11 @@
 
 package org.opennms.netmgt.model;
 
+import static org.opennms.core.utils.InetAddressUtils.toInteger;
+
 import java.io.Serializable;
+import java.math.BigInteger;
+import java.net.InetAddress;
 import java.util.Date;
 import java.util.LinkedHashSet;
 import java.util.Set;
@@ -159,7 +163,20 @@ Comparable<OnmsMonitoredService> {
      */
     @XmlTransient
     @Transient
-    public String getIpAddress() {
+    public InetAddress getIpAddress() {
+        return m_ipInterface.getIpAddress();
+    }
+
+    /**
+     * <p>getIpAddress</p>
+     *
+     * @return a {@link java.lang.String} object.
+     * 
+     * @deprecated
+     */
+    @XmlTransient
+    @Transient
+    public String getIpAddressAsString() {
         return m_ipInterface.getIpAddressAsString();
     }
 
@@ -352,7 +369,7 @@ Comparable<OnmsMonitoredService> {
      */
     public String toString() {
         return new ToStringCreator(this)
-        .append("ipAddr", getIpAddress())
+        .append("ipAddr", getIpAddressAsString())
         .append("ifindex", getIfIndex())
         .append("lastgood", getLastGood())
         .append("lastfail", getLastFail())
@@ -487,7 +504,9 @@ Comparable<OnmsMonitoredService> {
             return diff;
         }
 
-        diff = getIpAddress().compareToIgnoreCase(o.getIpAddress());
+        BigInteger a = toInteger(getIpAddress());
+        BigInteger b = toInteger(o.getIpAddress());
+        diff = a.compareTo(b);
         if (diff != 0) {
             return diff;
         }

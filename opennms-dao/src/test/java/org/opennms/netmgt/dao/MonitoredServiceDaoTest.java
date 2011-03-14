@@ -35,6 +35,8 @@
 //
 package org.opennms.netmgt.dao;
 
+import static org.opennms.core.utils.InetAddressUtils.addr;
+
 import java.net.InetAddress;
 import java.util.List;
 
@@ -50,7 +52,7 @@ public class MonitoredServiceDaoTest extends AbstractTransactionalDaoTestCase {
     	assertTrue(allSvcs.size() > 1);
     	
     	OnmsMonitoredService svc = allSvcs.iterator().next();
-    	assertEquals("192.168.1.1", svc.getIpAddress());
+    	assertEquals(addr("192.168.1.1"), svc.getIpAddress());
     	assertEquals(1, svc.getIfIndex().intValue());
     	assertEquals(1, svc.getIpInterface().getNode().getId().intValue());
     	assertEquals("M", svc.getIpInterface().getIsManaged());
@@ -67,8 +69,4 @@ public class MonitoredServiceDaoTest extends AbstractTransactionalDaoTestCase {
     	
     }
     
-    private InetAddress addr(String dottedNotation) {
-        return InetAddressUtils.getInetAddress(dottedNotation);
-    }
-
 }

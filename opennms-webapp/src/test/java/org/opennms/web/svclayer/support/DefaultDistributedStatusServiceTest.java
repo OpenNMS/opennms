@@ -37,8 +37,10 @@
  */
 package org.opennms.web.svclayer.support;
 
+import static org.opennms.core.utils.InetAddressUtils.addr;
 import static org.easymock.EasyMock.expect;
 
+import java.net.InetAddress;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
@@ -1059,13 +1061,17 @@ public class DefaultDistributedStatusServiceTest extends TestCase {
     }
 
     public OnmsMonitoredService findMonitoredService(Collection<OnmsMonitoredService> services, String interfaceIp, String serviceName) {
+        return findMonitoredService(services, addr(interfaceIp), serviceName);
+    }
+
+    private OnmsMonitoredService findMonitoredService(Collection<OnmsMonitoredService> services, InetAddress ipaddr, String serviceName) {
         for (OnmsMonitoredService service : services) {
-            if (interfaceIp.equals(service.getIpAddress()) && serviceName.equals(service.getServiceName())) {
+            if (ipaddr.equals(service.getIpAddress()) && serviceName.equals(service.getServiceName())) {
                 return service;
             }
         }
         
-        fail("Could not find service \"" + serviceName + "\" on interface \"" + interfaceIp + "\"");
+        fail("Could not find service \"" + serviceName + "\" on interface \"" + ipaddr + "\"");
         
         // This will never be reached due to the above fail()
         return null;

@@ -34,6 +34,8 @@
  */
 package org.opennms.web.svclayer.support;
 
+import static org.opennms.core.utils.InetAddressUtils.toInteger;
+
 import java.io.Serializable;
 import java.text.DecimalFormat;
 import java.util.ArrayList;
@@ -131,7 +133,7 @@ public class DefaultDistributedStatusService implements DistributedStatusService
                 return diff;
             }
 
-            diff = o1.getIpAddress().compareTo(o2.getIpAddress());
+            diff = toInteger(o1.getIpAddress()).compareTo(toInteger(o2.getIpAddress()));
             if (diff != 0) {
                 return diff;
             }

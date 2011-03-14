@@ -88,7 +88,7 @@ public class PollerServiceTest extends TestCase {
 				Event event = (Event)getCurrentArguments()[0];
 				assertEquals("Incorrect uei for demandPollService event", EventConstants.DEMAND_POLL_SERVICE_EVENT_UEI, event.getUei());
 				assertEquals("Incorrect nodeid for demandPollService event", monSvc.getNodeId().longValue(), event.getNodeid());
-				assertEquals("Incorrect ipadr for demandPollService event", monSvc.getIpAddress(), event.getInterface());
+				assertEquals("Incorrect ipadr for demandPollService event", monSvc.getIpAddressAsString(), event.getInterface());
 				assertEquals("Incorrect ifIndex for demandPollService event", monSvc.getIfIndex(), Integer.valueOf(event.getIfIndex()));
 				assertEquals("Incorrect service for demandPollService event", monSvc.getServiceType().getName(), event.getService());
 				EventUtils.requireParm(event, EventConstants.PARM_DEMAND_POLL_ID);

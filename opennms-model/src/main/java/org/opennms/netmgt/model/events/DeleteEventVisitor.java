@@ -61,7 +61,7 @@ public final class DeleteEventVisitor extends AbstractEntityVisitor {
 
 	/** {@inheritDoc} */
 	public void visitMonitoredServiceComplete(OnmsMonitoredService monSvc) {
-	    m_eventForwarder.sendNow(EventUtils.createServiceDeletedEvent(m_eventSource, monSvc.getNodeId(), monSvc.getIpAddress(), monSvc.getServiceType().getName()));
+	    m_eventForwarder.sendNow(EventUtils.createServiceDeletedEvent(m_eventSource, monSvc.getNodeId(), monSvc.getIpAddressAsString(), monSvc.getServiceType().getName()));
 	}
 
 	/** {@inheritDoc} */

@@ -32,6 +32,7 @@
 package org.opennms.netmgt.model;
 
 import java.io.Serializable;
+import java.net.InetAddress;
 import java.util.Date;
 
 import javax.persistence.Column;
@@ -323,8 +324,20 @@ public class OnmsOutage implements Serializable {
      */
     @Transient
     @XmlElement(name="ipAddress")
-    public String getIpAddress() {
-    	return getMonitoredService().getIpAddress();
+    public InetAddress getIpAddress() {
+        return getMonitoredService().getIpAddress();
+    }
+
+    /**
+     * <p>getIpAddressAsString</p>
+     *
+     * @return a {@link java.lang.String} object.
+     * @deprecated use getIpAddress
+     */
+    @Transient
+    @XmlElement(name="ipAddress")
+    public String getIpAddressAsString() {
+        return getMonitoredService().getIpAddressAsString();
     }
 
     /**
@@ -349,7 +362,7 @@ public class OnmsOutage implements Serializable {
             .append("ifRegainedService", getIfRegainedService())
             .append("suppressedBy", getSuppressedBy())
             .append("suppressTime", getSuppressTime())
-            .append("ipAddr", getIpAddress())
+            .append("ipAddr", getIpAddressAsString())
             .append("serviceid", getServiceId())
             .append("nodeid",getNodeId())
             .toString();

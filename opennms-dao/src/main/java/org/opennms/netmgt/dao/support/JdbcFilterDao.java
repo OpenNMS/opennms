@@ -35,7 +35,10 @@
  */
 package org.opennms.netmgt.dao.support;
 
+import static org.opennms.core.utils.InetAddressUtils.addr;
+
 import java.lang.reflect.UndeclaredThrowableException;
+import java.net.InetAddress;
 import java.sql.Connection;
 import java.sql.ResultSet;
 import java.sql.SQLException;
@@ -274,6 +277,64 @@ public class JdbcFilterDao implements FilterDao, InitializingBean {
         return ipServices;
     }
 
+    /** {@inheritDoc} */
+    public Map<InetAddress, Set<String>> getIPAddressServiceMap(String rule) throws FilterParseException {
+        Map<InetAddress, Set<String>> ipServices = new TreeMap<InetAddress, Set<String>>();
+        String sqlString;
+
+        if (log().isDebugEnabled()) {
+            log().debug("Filter: rule: " + rule);
+        }
+
+        // get the database connection
+        Connection conn = null;
+        DBUtils d = new DBUtils(getClass());
+        try {
+            conn = getDataSource().getConnection();
+            d.watch(conn);
+
+            // parse the rule and get the sql select statement
+            sqlString = getIPServiceMappingStatement(rule);
+            if (log().isDebugEnabled()) {
+                log().debug("Filter: SQL statement: " + sqlString);
+            }
+
+            // execute query
+            Statement stmt = conn.createStatement();
+            d.watch(stmt);
+            ResultSet rset = stmt.executeQuery(sqlString);
+            d.watch(rset);
+
+            // fill up the array list if the result set has values
+            if (rset != null) {
+                // Iterate through the result and build the array list
+                while (rset.next()) {
+                    InetAddress ipaddr = addr(rset.getString(1));
+
+                    if (!ipServices.containsKey(ipaddr)) {
+                        ipServices.put(ipaddr, new TreeSet<String>());
+                    }
+
+                    ipServices.get(ipaddr).add(rset.getString(2));
+                }
+            }
+
+        } catch (FilterParseException e) {
+            log().info("Filter Parse Exception occurred getting IP Service List: " + e, e);
+            throw new FilterParseException("Filter Parse Exception occurred getting IP Service List: " + e);
+        } catch (SQLException e) {
+            log().info("SQL Exception occurred getting IP Service List: " + e, e);
+            throw new FilterParseException("SQL Exception occurred getting IP Service List: " + e);
+        } catch (Throwable e) {
+            log().fatal("Exception getting database connection: " + e, e);
+            throw new UndeclaredThrowableException(e);
+        } finally {
+            d.cleanUp();
+        }
+
+        return ipServices;
+    }
+
     /**
      * {@inheritDoc}
      *
@@ -334,6 +395,66 @@ public class JdbcFilterDao implements FilterDao, InitializingBean {
         return resultList;
     }
 
+    /**
+     * {@inheritDoc}
+     *
+     * This method returns a list of all ip addresses that match the rule that
+     * is passed in.
+     * @exception FilterParseException
+     *                if a rule is syntactically incorrect or failed in
+     *                executing the SQL statement
+     */
+    public List<InetAddress> getIPAddressList(String rule) throws FilterParseException {
+        List<InetAddress> resultList = new ArrayList<InetAddress>();
+        String sqlString;
+
+        if (log().isDebugEnabled()) {
+            log().debug("Filter: rule: " + rule);
+        }
+
+        // get the database connection
+        Connection conn = null;
+        DBUtils d = new DBUtils(getClass());
+        try {
+            conn = getDataSource().getConnection();
+            d.watch(conn);
+
+            // parse the rule and get the sql select statement
+            sqlString = getSQLStatement(rule);
+            if (log().isDebugEnabled()) {
+                log().debug("Filter: SQL statement: \n" + sqlString);
+            }
+
+            // execute query and return the list of ip addresses
+            Statement stmt = conn.createStatement();
+            d.watch(stmt);
+            ResultSet rset = stmt.executeQuery(sqlString);
+            d.watch(rset);
+
+            // fill up the array list if the result set has values
+            if (rset != null) {
+                // Iterate through the result and build the array list
+                while (rset.next()) {
+                    String ipAddr = rset.getString(1);
+                    resultList.add(addr(ipAddr));
+                }
+            }
+
+        } catch (FilterParseException e) {
+            log().info("Filter Parse Exception occurred getting IP List: " + e, e);
+            throw new FilterParseException("Filter Parse Exception occurred getting IP List: " + e);
+        } catch (SQLException e) {
+            log().info("SQL Exception occurred getting IP List: " + e, e);
+            throw new FilterParseException("SQL Exception occurred getting IP List: " + e);
+        } catch (Throwable e) {
+            log().fatal("Exception getting database connection: " + e, e);
+            throw new UndeclaredThrowableException(e);
+        } finally {
+            d.cleanUp();
+        }
+
+        return resultList;
+    }
     /**
      * {@inheritDoc}
      *

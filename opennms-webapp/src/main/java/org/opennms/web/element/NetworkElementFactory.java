@@ -1015,7 +1015,7 @@ public class NetworkElementFactory implements InitializingBean, NetworkElementFa
         service.setId(monSvc.getId());
         service.setNodeId(monSvc.getNodeId());
         
-        service.setIpAddress(monSvc.getIpAddress());
+        service.setIpAddress(monSvc.getIpAddressAsString());
         service.setServiceId(monSvc.getServiceId());
         service.setServiceName(monSvc.getServiceName());
         if(monSvc.getLastGood() != null) {

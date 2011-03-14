@@ -431,7 +431,7 @@ public class EventBuilder {
     public EventBuilder setMonitoredService(OnmsMonitoredService monitoredService) {
         if (monitoredService != null) {
             m_event.setNodeid(monitoredService.getNodeId().longValue());
-            m_event.setInterface(monitoredService.getIpAddress());
+            m_event.setInterface(monitoredService.getIpAddressAsString());
             m_event.setService(monitoredService.getServiceName());
         }
         return this;
