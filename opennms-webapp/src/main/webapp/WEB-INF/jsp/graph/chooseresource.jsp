@@ -254,6 +254,6 @@
   </c:choose>
   <c:if test="${showFootnote1 == true}">
       <jsp:include page="/includes/footnote1.jsp" flush="false" />
- qq </c:if>
+  </c:if>
 
 <jsp:include page="/includes/footer.jsp" flush="false" />
