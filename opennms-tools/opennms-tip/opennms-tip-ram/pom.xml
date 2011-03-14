@@ -136,6 +136,13 @@
       <artifactId>log4j</artifactId>
       <scope>${provided.by.opennms}</scope>
     </dependency>
+    <dependency>
+    	<groupId>org.slf4j</groupId>
+    	<artifactId>jcl-over-slf4j</artifactId>
+    	<version>${slf4j.version}</version>
+    	<type>jar</type>
+    	<scope>compile</scope>
+    </dependency>
   </dependencies>
 
   <!-- special case, we need the stuff above as direct dependencies -->
