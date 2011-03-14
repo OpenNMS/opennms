@@ -239,7 +239,7 @@ There are two options for reporting this problem outside your own organization.
 
 <h5>OpenNMS Bug Tracker</h5>
 <p>
-If you have an account on the <a href="http://bugzilla.opennms.org/">OpenNMS bug tracker</a>,
+If you have an account on the <a href="http://issues.opennms.org/">OpenNMS issue tracker</a>,
 please consider reporting this problem. Bug reports help us make OpenNMS better, and are
 often the only way we become aware of problems. Please do search the tracker first to check
 that others have not already reported the problem that you have encountered.
