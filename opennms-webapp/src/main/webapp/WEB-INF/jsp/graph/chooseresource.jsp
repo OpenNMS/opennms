@@ -94,7 +94,6 @@
 </script>
 	
   <script type="text/javascript" src="js/opennms/ux/PageableGrid.js" ></script>
-  <script type="text/javascript" src="js/opennms/ux/DeleteBtnSelectionModel.js" ></script>
   <script type="text/javascript" src="js/opennms/ux/LocalPageableProxy.js" ></script>
   <script type="text/javascript" src="js/ChooseResourceView.js" ></script>
   <script type="text/javascript" >
