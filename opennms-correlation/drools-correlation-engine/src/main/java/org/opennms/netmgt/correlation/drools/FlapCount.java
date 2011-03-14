@@ -35,7 +35,7 @@
  */
 package org.opennms.netmgt.correlation.drools;
 
-import org.opennms.core.utils.ThreadCategory;
+import org.opennms.core.utils.LogUtils;
 import org.springframework.core.style.ToStringCreator;
 
 /**
@@ -61,7 +61,7 @@ public class FlapCount {
      * @param svcName a {@link java.lang.String} object.
      * @param locationMonitor a {@link java.lang.Integer} object.
      */
-    public FlapCount(Long nodeid, String ipAddr, String svcName, Integer locationMonitor) {
+    public FlapCount(final Long nodeid, final String ipAddr, final String svcName, final Integer locationMonitor) {
         m_nodeid = nodeid;
         m_ipAddr = ipAddr;
         m_svcName = svcName;
@@ -69,7 +69,7 @@ public class FlapCount {
         m_count = 1;
         m_alerted = false;
         
-        log().info("FlapCount.created : "+this);
+        LogUtils.debugf(this, "FlapCount created.");
     }
     
     /**
@@ -77,7 +77,7 @@ public class FlapCount {
      */
     public void increment() {
         m_count += 1;
-        log().info("FlapCount.increment : "+this);
+        LogUtils.debugf(this, "FlapCount incremented (%d).", m_count);
     }
     
     /**
@@ -85,7 +85,7 @@ public class FlapCount {
      */
     public void decrement() {
         m_count -= 1;
-        log().info("FlapCount.decrement : "+this);
+        LogUtils.debugf(this, "FlapCount decremented (%d).", m_count);
     }
 
     /**
@@ -102,7 +102,7 @@ public class FlapCount {
      *
      * @param count a {@link java.lang.Integer} object.
      */
-    public void setCount(Integer count) {
+    public void setCount(final Integer count) {
         m_count = count;
     }
 
@@ -120,7 +120,7 @@ public class FlapCount {
      *
      * @param ipAddr a {@link java.lang.String} object.
      */
-    public void setIpAddr(String ipAddr) {
+    public void setIpAddr(final String ipAddr) {
         m_ipAddr = ipAddr;
     }
 
@@ -138,7 +138,7 @@ public class FlapCount {
      *
      * @param nodeid a {@link java.lang.Long} object.
      */
-    public void setNodeid(Long nodeid) {
+    public void setNodeid(final Long nodeid) {
         m_nodeid = nodeid;
     }
 
@@ -156,7 +156,7 @@ public class FlapCount {
      *
      * @param svcName a {@link java.lang.String} object.
      */
-    public void setSvcName(String svcName) {
+    public void setSvcName(final String svcName) {
         m_svcName = svcName;
     }
 
@@ -174,7 +174,7 @@ public class FlapCount {
      *
      * @param alerted a boolean.
      */
-    public void setAlerted(boolean alerted) {
+    public void setAlerted(final boolean alerted) {
         m_alerted = alerted;
     }
 
@@ -192,7 +192,7 @@ public class FlapCount {
      *
      * @param locationMonitor a {@link java.lang.Integer} object.
      */
-    public void setLocationMonitor(Integer locationMonitor) {
+    public void setLocationMonitor(final Integer locationMonitor) {
         m_locationMonitor = locationMonitor;
     }
     
@@ -202,21 +202,12 @@ public class FlapCount {
      * @return a {@link java.lang.String} object.
      */
     public String toString() {
-        ToStringCreator creator = new ToStringCreator(this);
-        creator.append("nodeid", m_nodeid);
-        creator.append("ipAddr", m_ipAddr);
-        creator.append("svcName", m_svcName);
-        creator.append("locMon", m_locationMonitor);
-        creator.append("count", m_count);
-        return creator.toString();
-    }
-
-    /**
-     * <p>log</p>
-     *
-     * @return a {@link org.opennms.core.utils.ThreadCategory} object.
-     */
-    public ThreadCategory log() {
-        return ThreadCategory.getInstance(getClass());
+        return new ToStringCreator(this)
+        	.append("nodeid", m_nodeid)
+        	.append("ipAddr", m_ipAddr)
+        	.append("svcName", m_svcName)
+        	.append("locMon", m_locationMonitor)
+        	.append("count", m_count)
+        	.toString();
     }
 }

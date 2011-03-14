@@ -51,8 +51,8 @@ public class Correlator implements CorrelatorMBean {
 	 * <p>init</p>
 	 */
 	public void init() {
-		BeanFactoryLocator bfl = DefaultLocatorFactory.getInstance();
-        BeanFactoryReference bf = bfl.useBeanFactory("correlatorContext");
+		final BeanFactoryLocator bfl = DefaultLocatorFactory.getInstance();
+        final BeanFactoryReference bf = bfl.useBeanFactory("correlatorContext");
         m_correlator = (org.opennms.netmgt.correlation.Correlator) bf.getFactory().getBean("correlator");
     }
     

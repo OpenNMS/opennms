@@ -46,6 +46,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.Scanner;
 
+import org.apache.commons.lang.builder.ToStringBuilder;
 import org.drools.RuleBase;
 import org.drools.RuleBaseFactory;
 import org.drools.WorkingMemory;
@@ -79,10 +80,9 @@ public class CorrelationExample {
         final WorkingMemoryFileLogger logger = new WorkingMemoryFileLogger( workingMemory );
         logger.setFileName( "log/correlation" );
         
-        InputStream in = CorrelationExample.class.getResourceAsStream("simulation");
+        final InputStream in = CorrelationExample.class.getResourceAsStream("simulation");
         try {
-        	
-        	Simulation simulation = new Simulation();
+        	final Simulation simulation = new Simulation();
         	System.out.println("Loading Simulation");
         	simulation.load(in);
         	System.out.println("Executing Simulation");
@@ -96,7 +96,7 @@ public class CorrelationExample {
         logger.writeToDisk();
     }
     
-    private static void sleep(int delay) {
+    private static void sleep(final int delay) {
     	try { Thread.sleep(delay); } catch (InterruptedException e) {}
 		
 	}
@@ -104,15 +104,15 @@ public class CorrelationExample {
     public static class Simulation {
     	
     	public static class SimItem {
-    		int m_delay;
-    		EventBean m_event;
-    		
-    		public SimItem(int delay, EventBean event) {
+    		final int m_delay;
+    		final EventBean m_event;
+
+    		public SimItem(final int delay, final EventBean event) {
     			m_delay = delay;
     			m_event = event;
     		}
 
-			public void simulate(WorkingMemory memory) {
+			public void simulate(final WorkingMemory memory) {
 				sleep(m_delay);
     			System.out.println("Start simulation of "+this);
 				memory.insert(m_event);
@@ -122,14 +122,14 @@ public class CorrelationExample {
     		
     	}
     	
-    	Map<Integer, Node> m_nodes = new HashMap<Integer, Node>();
-    	List<SimItem> m_eventSequence = new LinkedList<SimItem>();
+    	final Map<Integer, Node> m_nodes = new HashMap<Integer, Node>();
+    	final List<SimItem> m_eventSequence = new LinkedList<SimItem>();
     	
-    	public void load(InputStream in) {
+    	public void load(final InputStream in) {
     		
-            Scanner scanner = new Scanner(in);
+    		final Scanner scanner = new Scanner(in);
             while(scanner.hasNext()) {
-            	String lineType = scanner.next();
+            	final String lineType = scanner.next();
             	if ("#".equals(lineType)) {
             		scanner.nextLine();
             	}
@@ -140,8 +140,8 @@ public class CorrelationExample {
             		 * Note: parent nodes need to be defined before their children
             		 * If the parentnodeid is missing then we assume that it has no parent
             		 */
-            		String nodeLabel = scanner.next();
-            		Integer nodeId = scanner.nextInt();
+            		final String nodeLabel = scanner.next();
+            		final Integer nodeId = scanner.nextInt();
             		assert m_nodes.get(nodeId) == null : "Already have a node with id "+nodeId;
 
             		Integer parentId = null;
@@ -151,9 +151,8 @@ public class CorrelationExample {
             		
             		assert (parentId == null || m_nodes.containsKey(parentId)) : "Reference to parentId "+parentId+" that is not yet defined";
             		
-            		Node parent = (parentId == null ? null : m_nodes.get(parentId));
-            		
-            		Node node = new Node(nodeId, nodeLabel, parent);
+            		final Node parent = (parentId == null ? null : m_nodes.get(parentId));
+            		final Node node = new Node(nodeId, nodeLabel, parent);
             		m_nodes.put(nodeId, node);
             		
             	} else if ("event".equals(lineType)) {
@@ -161,16 +160,14 @@ public class CorrelationExample {
             		 * expect line to be
             		 * event delay uei nodeid 
             		 */
-            		int delay = scanner.nextInt();
-            		String uei = scanner.next();
-            		Integer nodeId = scanner.nextInt();
-            		
+            		final int delay = scanner.nextInt();
+            		final String uei = scanner.next();
+            		final Integer nodeId = scanner.nextInt();
+
             		assert m_nodes.containsKey(nodeId) : "Invalid nodeId "+nodeId;
             		
-            		EventBean e = new EventBean(uei, m_nodes.get(nodeId));
-            		
-            		SimItem item = new SimItem(delay, e);
-            		
+            		final EventBean e = new EventBean(uei, m_nodes.get(nodeId));
+            		final SimItem item = new SimItem(delay, e);
             		m_eventSequence.add(item);
             		
             	}
@@ -179,8 +176,8 @@ public class CorrelationExample {
     	}
     	
     	
-    	public  void simulate(WorkingMemory memory) {
-    		for( SimItem item : m_eventSequence ) {
+    	public  void simulate(final WorkingMemory memory) {
+    		for (final SimItem item : m_eventSequence) {
     			item.simulate(memory);
     			System.out.println("Memory Size = " + getObjectCount(memory) );
     		}
@@ -193,7 +190,7 @@ public class CorrelationExample {
 		private Node m_cause;
 		private Node m_node;
     	
-		public Outage(Node node, EventBean problem) {
+		public Outage(final Node node, final EventBean problem) {
 			m_node = node;
     		m_problem = problem;
     	}
@@ -210,7 +207,7 @@ public class CorrelationExample {
 			return m_resolution;
 		}
 		
-		public void setResolution(EventBean resolution) {
+		public void setResolution(final EventBean resolution) {
 			m_resolution = resolution;
 		}
 		
@@ -218,12 +215,16 @@ public class CorrelationExample {
 			return m_cause;
 		}
 		
-		public void setCause(Node cause) {
+		public void setCause(final Node cause) {
 			m_cause = cause;
 		}
 		
 		public String toString() {
-			return "Outage[ problem=" + m_problem + " , cause=" + m_cause + " , resolution="+m_resolution+" ]";
+			return new ToStringBuilder(this)
+				.append("problem", m_problem)
+				.append("cause", m_cause)
+				.append("resolution", m_resolution)
+				.toString();
 		}
 		
     }
@@ -233,7 +234,7 @@ public class CorrelationExample {
         private Node m_parent;
         private String m_label;
 
-        public Node(Integer id, String label, Node parent) {
+        public Node(final Integer id, final String label, final Node parent) {
             m_id = id;
             m_label = label;
             m_parent = parent;
@@ -251,20 +252,19 @@ public class CorrelationExample {
             return m_label;
         }
         
-        public String toString( ) {
-            return 
-                "Node["
-                + " id="+m_id
-                + " , label="+m_label
-                + " ]"
-                ;
+        @Override
+        public String toString() {
+        	return new ToStringBuilder(this)
+        		.append("id", m_id)
+        		.append("label", m_label)
+        		.toString();
         }
     }
 	public static class EventBean {
 	    private String m_uei;
 	    private Node m_node;
 
-	    public EventBean(String uei, Node node) {
+	    public EventBean(final String uei, final Node node) {
 	        m_uei = uei;
 	        m_node = node;
 	    }
@@ -278,11 +278,10 @@ public class CorrelationExample {
 	    }
 
 	    public String toString() {
-	        return
-	        "Event["
-	               + " uei="+m_uei
-	               + " , node="+m_node
-	               + " ]";
+	    	return new ToStringBuilder(this)
+	    		.append("uei", m_uei)
+	    		.append("node", m_node)
+	    		.toString();
 	    }
 	}
 
@@ -293,11 +292,11 @@ public class CorrelationExample {
 		private Outage m_outage;
 		private boolean m_verified;
 		
-		public PossibleCause(Node node, Outage outage) {
+		public PossibleCause(final Node node, final Outage outage) {
 			this(node, outage, false);
 		}
 
-		public PossibleCause(Node node, Outage outage, boolean verified) {
+		public PossibleCause(final Node node, final Outage outage, final boolean verified) {
     		m_node = node;
     		m_outage = outage;
     		m_verified = verified;
@@ -315,12 +314,15 @@ public class CorrelationExample {
 			return m_verified;
 		}
 		
-		public void setVerified(boolean verified) {
+		public void setVerified(final boolean verified) {
 			m_verified = verified;
 		}
 		
 		public String toString() {
-			return "PossibleCause[ node=" + m_node + " , outage=" + m_outage + " ]";
+			return new ToStringBuilder(this)
+				.append("node", m_node)
+				.append("outage", m_outage)
+				.toString();
 		}
     }
 
@@ -332,13 +334,12 @@ public class CorrelationExample {
      * @param memory a {@link org.drools.WorkingMemory} object.
      * @return a int.
      */
-    public static int getObjectCount(WorkingMemory memory) {
-        int count = 0;
-        for(Iterator<?> it = memory.iterateObjects(); it.hasNext(); it.next()) {
+    public static int getObjectCount(final WorkingMemory memory) {
+    	int count = 0;
+        for(final Iterator<?> it = memory.iterateObjects(); it.hasNext(); it.next()) {
             count++;
         }
         return count;
     }
-    
 
 }

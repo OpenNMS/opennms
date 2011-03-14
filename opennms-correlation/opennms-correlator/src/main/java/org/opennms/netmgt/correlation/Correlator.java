@@ -40,7 +40,7 @@ package org.opennms.netmgt.correlation;
 import java.util.LinkedList;
 import java.util.List;
 
-import org.opennms.core.utils.ThreadCategory;
+import org.opennms.core.utils.LogUtils;
 import org.opennms.netmgt.daemon.AbstractServiceDaemon;
 import org.opennms.netmgt.eventd.EventIpcManager;
 import org.opennms.netmgt.model.events.EventListener;
@@ -57,7 +57,7 @@ public class Correlator extends AbstractServiceDaemon implements CorrelationEngi
 
 	private EventIpcManager m_eventIpcManager;
 	private List<CorrelationEngine> m_engines;
-	private List<EngineAdapter> m_adapters = new LinkedList<EngineAdapter>();
+	private final List<EngineAdapter> m_adapters = new LinkedList<EngineAdapter>();
     private boolean m_initialized = false;
 	
 	
@@ -65,7 +65,7 @@ public class Correlator extends AbstractServiceDaemon implements CorrelationEngi
 		
 		private final CorrelationEngine m_engine;
 
-		public EngineAdapter(CorrelationEngine engine) {
+		public EngineAdapter(final CorrelationEngine engine) {
 			m_engine = engine;
 			m_eventIpcManager.addEventListener(this, m_engine.getInterestingEvents());
 		}
@@ -74,7 +74,7 @@ public class Correlator extends AbstractServiceDaemon implements CorrelationEngi
 			return m_engine.getClass().getSimpleName();
 		}
 
-		public void onEvent(Event e) {
+		public void onEvent(final Event e) {
 			m_engine.correlate(e);
 		}
 		
@@ -93,10 +93,8 @@ public class Correlator extends AbstractServiceDaemon implements CorrelationEngi
 		Assert.notNull(m_eventIpcManager, "property eventIpcManager must be set");
 		Assert.notNull(m_engines, "property engines must be set");
         
-        log().info("m_engines.size = " + m_engines.size());
-		
-		for(CorrelationEngine engine : m_engines) {
-            log().info("Registering engine "+engine);
+		for(final CorrelationEngine engine : m_engines) {
+			LogUtils.infof(this, "Registering correlation engine: %s", engine);
 			m_adapters.add(new EngineAdapter(engine));
 		}
         
@@ -109,7 +107,7 @@ public class Correlator extends AbstractServiceDaemon implements CorrelationEngi
 	 *
 	 * @param engines a {@link java.util.List} object.
 	 */
-	public void setCorrelationEngines(List<CorrelationEngine> engines) {
+	public void setCorrelationEngines(final List<CorrelationEngine> engines) {
 		m_engines = engines;
 	}
 
@@ -118,7 +116,7 @@ public class Correlator extends AbstractServiceDaemon implements CorrelationEngi
 	 *
 	 * @param eventIpcManager a {@link org.opennms.netmgt.eventd.EventIpcManager} object.
 	 */
-	public void setEventIpcManager(EventIpcManager eventIpcManager) {
+	public void setEventIpcManager(final EventIpcManager eventIpcManager) {
 		m_eventIpcManager = eventIpcManager;
 	}
     
@@ -126,7 +124,7 @@ public class Correlator extends AbstractServiceDaemon implements CorrelationEngi
      * @see org.opennms.netmgt.correlation.CorrelationEngineRegistrar#addCorrelationEngine(org.opennms.netmgt.correlation.CorrelationEngine)
      */
     /** {@inheritDoc} */
-    public void addCorrelationEngine(CorrelationEngine engine) {
+    public void addCorrelationEngine(final CorrelationEngine engine) {
         m_engines.add(engine);
         if (m_initialized) {
             m_adapters.add(new EngineAdapter(engine));
@@ -134,8 +132,8 @@ public class Correlator extends AbstractServiceDaemon implements CorrelationEngi
     }
 
     /** {@inheritDoc} */
-    public CorrelationEngine findEngineByName(String name) {
-        for (CorrelationEngine engine : m_engines) {
+    public CorrelationEngine findEngineByName(final String name) {
+    	for (final CorrelationEngine engine : m_engines) {
             if (name.equals(engine.getName())) {
                 return engine;
             }
@@ -150,14 +148,5 @@ public class Correlator extends AbstractServiceDaemon implements CorrelationEngi
      */
     public List<CorrelationEngine> getEngines() {
         return m_engines;
-    }
-
-    /**
-     * <p>log</p>
-     *
-     * @return a {@link org.opennms.core.utils.ThreadCategory} object.
-     */
-    public ThreadCategory log() {
-        return ThreadCategory.getInstance(getClass());
     }
 }

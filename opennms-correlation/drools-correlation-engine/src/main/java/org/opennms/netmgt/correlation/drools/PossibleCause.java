@@ -51,7 +51,7 @@ public class PossibleCause extends Cause {
      * @param cause a {@link java.lang.Long} object.
      * @param symptom a {@link org.opennms.netmgt.xml.event.Event} object.
      */
-    public PossibleCause(Long cause, Event symptom) {
+    public PossibleCause(final Long cause, final Event symptom) {
         super(Type.POSSIBLE, cause, symptom);
     }
 

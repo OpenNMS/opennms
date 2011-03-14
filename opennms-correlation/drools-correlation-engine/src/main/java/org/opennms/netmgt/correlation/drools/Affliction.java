@@ -56,7 +56,7 @@ public class Affliction {
         WIDE_SPREAD
     }
     
-    List<Integer> m_reporters = new ArrayList<Integer>();
+    private List<Integer> m_reporters = new ArrayList<Integer>();
     private Type m_type  = Type.UNDECIDED;
     
     /**
@@ -67,7 +67,7 @@ public class Affliction {
      * @param svcName a {@link java.lang.String} object.
      * @param reporter a {@link java.lang.Integer} object.
      */
-    public Affliction(Long nodeId, String ipAddr, String svcName, Integer reporter) {
+    public Affliction(final Long nodeId, final String ipAddr, final String svcName, final Integer reporter) {
         m_nodeid = nodeId;
         m_ipAddr = ipAddr;
         m_svcName = svcName;
@@ -88,7 +88,7 @@ public class Affliction {
      *
      * @param ipAddr a {@link java.lang.String} object.
      */
-    public void setIpAddr(String ipAddr) {
+    public void setIpAddr(final String ipAddr) {
         m_ipAddr = ipAddr;
     }
 
@@ -106,7 +106,7 @@ public class Affliction {
      *
      * @param nodeid a {@link java.lang.Long} object.
      */
-    public void setNodeid(Long nodeid) {
+    public void setNodeid(final Long nodeid) {
         m_nodeid = nodeid;
     }
 
@@ -124,7 +124,7 @@ public class Affliction {
      *
      * @param reporters a {@link java.util.List} object.
      */
-    public void setReporters(List<Integer> reporters) {
+    public void setReporters(final List<Integer> reporters) {
         m_reporters = reporters;
     }
 
@@ -142,7 +142,7 @@ public class Affliction {
      *
      * @param svcName a {@link java.lang.String} object.
      */
-    public void setSvcName(String svcName) {
+    public void setSvcName(final String svcName) {
         m_svcName = svcName;
     }
     
@@ -160,7 +160,7 @@ public class Affliction {
      *
      * @param reporter a {@link java.lang.Integer} object.
      */
-    public void addReporter(Integer reporter) {
+    public void addReporter(final Integer reporter) {
         m_reporters.add( reporter );
     }
     
@@ -169,7 +169,7 @@ public class Affliction {
      *
      * @param reporter a {@link java.lang.Integer} object.
      */
-    public void removeReporter(Integer reporter) {
+    public void removeReporter(final Integer reporter) {
         m_reporters.remove(reporter);
     }
     
@@ -187,7 +187,7 @@ public class Affliction {
      *
      * @param type a {@link org.opennms.netmgt.correlation.drools.Affliction.Type} object.
      */
-    public void setType(Type type) {
+    public void setType(final Type type) {
         m_type = type;
     }
     
