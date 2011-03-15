@@ -75,8 +75,8 @@ public class BaseDetectorHandler<Request, Response> extends IoHandlerAdapter {
 
     /** {@inheritDoc} */
     public void sessionOpened(IoSession session) throws Exception {
-        if(!m_conversation.hasBanner() && m_conversation.getRequest() != null) {
-            Object request = m_conversation.getRequest();
+        if(!getConversation().hasBanner() && getConversation().getRequest() != null) {
+            Object request = getConversation().getRequest();
             session.write(request);
        }
     }
@@ -90,7 +90,7 @@ public class BaseDetectorHandler<Request, Response> extends IoHandlerAdapter {
 
     /** {@inheritDoc} */
     public void sessionIdle(IoSession session, IdleStatus status) throws Exception {
-        if(m_conversation.hasBanner() && status == IdleStatus.READER_IDLE) {
+        if(getConversation().hasBanner() && status == IdleStatus.READER_IDLE) {
             getFuture().setServiceDetected(false);
             session.close(true);
         }
@@ -109,13 +109,13 @@ public class BaseDetectorHandler<Request, Response> extends IoHandlerAdapter {
         try {
             LogUtils.debugf(this, "Client Receiving: %s\n", message.toString().trim());
             
-            if(m_conversation.hasExchanges() && m_conversation.validate((Response)message)) {
+            if(getConversation().hasExchanges() && getConversation().validate((Response)message)) {
                
-               Object request = m_conversation.getRequest();
+               Object request = getConversation().getRequest();
                
                 if(request != null) {
                    session.write(request);
-               }else if(request == null && m_conversation.isComplete()){
+               }else if(request == null && getConversation().isComplete()){
                    getFuture().setServiceDetected(true);
                    session.close(false);
                }else {
