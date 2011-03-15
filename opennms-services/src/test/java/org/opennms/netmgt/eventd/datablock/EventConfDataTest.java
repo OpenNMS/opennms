@@ -46,6 +46,7 @@ package org.opennms.netmgt.eventd.datablock;
 import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertTrue;
 import static org.junit.Assert.fail;
+import static org.opennms.core.utils.InetAddressUtils.addr;
 
 import java.util.Collections;
 import java.util.LinkedHashMap;
@@ -271,7 +272,7 @@ public class EventConfDataTest {
     private EventBuilder createEventBuilder(String version, String enterprise, int generic, int specific) {
         EventBuilder bldr = new EventBuilder(null, "EventConfDataTest");
 
-        bldr.setInterface("127.0.0.1");
+        bldr.setInterface(addr("127.0.0.1"));
         bldr.setNodeid(0);
         bldr.setSnmpVersion(version);
         bldr.setEnterpriseId(enterprise);

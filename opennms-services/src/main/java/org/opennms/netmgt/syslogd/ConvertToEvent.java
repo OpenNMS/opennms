@@ -41,6 +41,8 @@
 
 package org.opennms.netmgt.syslogd;
 
+import static org.opennms.core.utils.InetAddressUtils.addr;
+
 import java.io.ByteArrayInputStream;
 import java.io.UnsupportedEncodingException;
 import java.lang.reflect.Method;
@@ -242,7 +244,7 @@ final class ConvertToEvent {
                 bldr.setNodeid(nodeId);
             }
 
-            bldr.setInterface(hostAddress);
+            bldr.setInterface(addr(hostAddress));
         }
         
         bldr.setLogDest("logndisplay");

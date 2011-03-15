@@ -31,6 +31,7 @@
  */
 package org.opennms.netmgt.provision.service;
 
+import static org.opennms.core.utils.InetAddressUtils.addr;
 import static org.opennms.core.utils.LogUtils.debugf;
 import static org.opennms.core.utils.LogUtils.infof;
 import static org.opennms.core.utils.LogUtils.warnf;
@@ -370,7 +371,7 @@ public class NodeScan implements RunInBatch {
             if (!isAborted()) {
                 EventBuilder bldr = new EventBuilder(EventConstants.REINITIALIZE_PRIMARY_SNMP_INTERFACE_EVENT_UEI, "Provisiond");
                 bldr.setNodeid(getNodeId());
-                bldr.setInterface(getAgentAddress().getHostAddress());
+                bldr.setInterface(getAgentAddress());
                 getEventForwarder().sendNow(bldr.getEvent());
             }
         }

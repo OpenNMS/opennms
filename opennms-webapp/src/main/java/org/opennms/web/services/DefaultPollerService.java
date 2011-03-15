@@ -31,10 +31,8 @@
 //
 package org.opennms.web.services;
 
-import java.util.Date;
 
 import org.opennms.netmgt.EventConstants;
-import org.opennms.netmgt.capsd.EventUtils;
 import org.opennms.netmgt.model.OnmsMonitoredService;
 import org.opennms.netmgt.model.events.EventBuilder;
 import org.opennms.netmgt.model.events.EventProxy;
@@ -67,7 +65,7 @@ public class DefaultPollerService implements PollerService {
 		EventBuilder bldr = new EventBuilder(EventConstants.DEMAND_POLL_SERVICE_EVENT_UEI, "PollerService");
 
 		bldr.setNodeid(monSvc.getNodeId());
-		bldr.setInterface(monSvc.getIpAddressAsString());
+		bldr.setInterface(monSvc.getIpAddress());
 		bldr.setIfIndex(monSvc.getIfIndex());
 		bldr.setService(monSvc.getServiceType().getName());
 		

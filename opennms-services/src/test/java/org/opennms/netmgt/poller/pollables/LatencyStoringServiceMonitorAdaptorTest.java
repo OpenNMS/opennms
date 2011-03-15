@@ -41,6 +41,7 @@ import static org.easymock.EasyMock.anyInt;
 import static org.easymock.EasyMock.endsWith;
 import static org.easymock.EasyMock.expect;
 import static org.easymock.EasyMock.isA;
+import static org.opennms.core.utils.InetAddressUtils.addr;
 
 import java.net.InetAddress;
 import java.text.NumberFormat;
@@ -192,7 +193,7 @@ public class LatencyStoringServiceMonitorAdaptorTest {
 
         EventBuilder bldr = new EventBuilder("uei.opennms.org/threshold/highThresholdExceeded", "LatencyStoringServiceMonitorAdaptorTest");
         bldr.setNodeid(1);
-        bldr.setInterface("127.0.0.1");
+        bldr.setInterface(addr("127.0.0.1"));
         bldr.setService("ICMP");
         anticipator.anticipateEvent(bldr.getEvent());
         m_mocks.replayAll();

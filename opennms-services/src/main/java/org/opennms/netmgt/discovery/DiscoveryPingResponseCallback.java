@@ -35,6 +35,8 @@
  */
 package org.opennms.netmgt.discovery;
 
+import static org.opennms.core.utils.InetAddressUtils.addr;
+
 import java.net.InetAddress;
 import java.net.UnknownHostException;
 
@@ -57,7 +59,7 @@ public class DiscoveryPingResponseCallback implements PingResponseCallback {
     /** {@inheritDoc} */
     public void handleResponse(InetAddress address, ICMPEchoPacket packet) {
         EventBuilder eb = new EventBuilder(EventConstants.NEW_SUSPECT_INTERFACE_EVENT_UEI, EVENT_SOURCE_VALUE);
-        eb.setInterface(address.getHostAddress());
+        eb.setInterface(address);
 
         try {
             eb.setHost(InetAddress.getLocalHost().getHostName());

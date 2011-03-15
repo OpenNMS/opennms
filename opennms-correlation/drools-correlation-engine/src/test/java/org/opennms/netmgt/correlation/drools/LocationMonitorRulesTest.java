@@ -1,5 +1,7 @@
 package org.opennms.netmgt.correlation.drools;
 
+import static org.opennms.core.utils.InetAddressUtils.addr;
+
 import org.junit.Test;
 import org.opennms.netmgt.model.events.EventBuilder;
 import org.opennms.netmgt.xml.event.Event;
@@ -237,8 +239,7 @@ public class LocationMonitorRulesTest extends CorrelationRulesTestCase {
 
     private Event createWideSpreadOutageEvent() {
         return new EventBuilder(WS_OUTAGE_UEI, "Drools")
-		    .setNodeid(1)
-			.setInterface("192.168.1.1")
+        .setNodeid(1).setInterface(addr("192.168.1.1"))
 			.setService("HTTP")
             .getEvent();
     }
@@ -251,8 +252,7 @@ public class LocationMonitorRulesTest extends CorrelationRulesTestCase {
 
     private Event createWideSpreadOutageResolvedEvent() {
         EventBuilder bldr = new EventBuilder(WS_RESOLVED_UEI, "Drools");
-        bldr.setNodeid(1)
-            .setInterface("192.168.1.1")
+        bldr.setNodeid(1).setInterface(addr("192.168.1.1"))
             .setService("HTTP");
         
         Event event = bldr.getEvent();
@@ -265,8 +265,7 @@ public class LocationMonitorRulesTest extends CorrelationRulesTestCase {
 
     private Event createServiceFlappingEvent() {
         return new EventBuilder(SERVICE_FLAPPING_UEI, "Drools")
-            .setNodeid(1)
-            .setInterface("192.168.1.1")
+        .setNodeid(1).setInterface(addr("192.168.1.1"))
             .setService("HTTP")
             .getEvent();
     }

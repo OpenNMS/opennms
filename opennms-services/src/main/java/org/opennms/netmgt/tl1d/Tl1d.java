@@ -35,6 +35,8 @@
  */
 package org.opennms.netmgt.tl1d;
 
+import static org.opennms.core.utils.InetAddressUtils.addr;
+
 import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.List;
@@ -261,7 +263,7 @@ public class Tl1d extends AbstractServiceDaemon implements PausableFiber, Initia
 
         EventBuilder bldr = new EventBuilder(Tl1AutonomousMessage.UEI, "Tl1d");
         bldr.setHost(message.getHost());
-        bldr.setInterface(message.getHost()); //interface is the IP
+        bldr.setInterface(addr(message.getHost())); //interface is the IP
         bldr.setService("TL-1"); //Service it TL-1
         bldr.setSeverity(message.getId().getHighestSeverity());
         

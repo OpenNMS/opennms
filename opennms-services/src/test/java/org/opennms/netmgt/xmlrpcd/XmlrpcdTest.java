@@ -31,6 +31,8 @@
  */
 package org.opennms.netmgt.xmlrpcd;
 
+import static org.opennms.core.utils.InetAddressUtils.addr;
+
 import java.io.ByteArrayInputStream;
 import java.io.StringReader;
 import java.lang.reflect.UndeclaredThrowableException;
@@ -757,14 +759,14 @@ public class XmlrpcdTest extends OpenNMSTestCase {
     private Event ifEvent(String uei, int nodeid, String ipAddr, Date date) {
         EventBuilder bldr = new EventBuilder(uei, "the one true event source", date);
         bldr.setNodeid(nodeid);
-        bldr.setInterface(ipAddr);
+        bldr.setInterface(addr(ipAddr));
         return bldr.getEvent();
     }
     
     private Event svcEvent(String uei, int nodeid, String ipAddr, String svcName, Date date) {
         EventBuilder bldr = new EventBuilder(uei, "the one true event source", date);
         bldr.setNodeid(nodeid);
-        bldr.setInterface(ipAddr);
+        bldr.setInterface(addr(ipAddr));
         bldr.setService(svcName);
         return bldr.getEvent();
     }

@@ -77,6 +77,8 @@
 
 package org.opennms.netmgt.capsd;
 
+import static org.opennms.core.utils.InetAddressUtils.addr;
+
 import java.net.InetAddress;
 import java.net.UnknownHostException;
 import java.sql.Connection;
@@ -3283,10 +3285,10 @@ public final class RescanProcessor implements Runnable {
     }
 
     private EventBuilder interfaceEventBuilder(String uei, long nodeId, String ipAddr) {
-        return eventBuilder(uei).setNodeid(nodeId).setInterface(ipAddr);
+        return eventBuilder(uei).setNodeid(nodeId).setInterface(addr(ipAddr));
     }
     private EventBuilder serviceEventBuilder(String uei, long nodeId, String ipAddr, String svc) {
-        return eventBuilder(uei).setNodeid(nodeId).setInterface(ipAddr).setService(svc);
+        return eventBuilder(uei).setNodeid(nodeId).setInterface(addr(ipAddr)).setService(svc);
     }
 
     /**

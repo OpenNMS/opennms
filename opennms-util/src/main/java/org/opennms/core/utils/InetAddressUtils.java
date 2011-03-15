@@ -374,8 +374,8 @@ abstract public class InetAddressUtils {
         return ipAddrString == null ? null : getInetAddress(ipAddrString);
     }
     
-    public static String toString(InetAddress addr) {
-        return toIpAddrString(addr);
+    public static String str(InetAddress addr) {
+        return addr == null ? null : toIpAddrString(addr);
     }
 
     public static BigInteger toInteger(InetAddress ipAddress) {

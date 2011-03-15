@@ -40,6 +40,8 @@
 
 package org.opennms.netmgt.syslogd;
 
+import static org.opennms.core.utils.InetAddressUtils.addr;
+
 import java.net.InetAddress;
 import java.net.UnknownHostException;
 
@@ -223,7 +225,7 @@ final class SyslogProcessor implements Runnable {
 
     private void sendNewSuspectEvent(String trapInterface) {
         EventBuilder bldr = new EventBuilder(EventConstants.NEW_SUSPECT_INTERFACE_EVENT_UEI, "syslogd");
-        bldr.setInterface(trapInterface);
+        bldr.setInterface(addr(trapInterface));
         bldr.setHost(m_localAddr);
         EventIpcManagerFactory.getIpcManager().sendNow(bldr.getEvent());
     }

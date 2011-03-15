@@ -35,6 +35,8 @@
 //
 package org.opennms.netmgt.linkd;
 
+import static org.opennms.core.utils.InetAddressUtils.addr;
+
 import java.lang.reflect.UndeclaredThrowableException;
 import java.net.InetAddress;
 import java.sql.SQLException;
@@ -619,7 +621,7 @@ public class Linkd extends AbstractServiceDaemon {
 		    EventBuilder bldr = new EventBuilder(EventConstants.NEW_SUSPECT_INTERFACE_EVENT_UEI, "linkd");
 				
 		    bldr.setHost(ipowner);
-		    bldr.setInterface(ipaddress);
+		    bldr.setInterface(addr(ipaddress));
 
 			m_eventForwarder.sendNow(bldr.getEvent());
 			

@@ -36,6 +36,8 @@
  */
 package org.opennms.netmgt.eventd;
 
+import static org.opennms.core.utils.InetAddressUtils.addr;
+
 import java.lang.Thread.UncaughtExceptionHandler;
 import java.util.ArrayList;
 import java.util.List;
@@ -447,7 +449,7 @@ public class EventIpcManagerDefaultImplTest extends TestCase {
     public void testNoDateDate() throws InterruptedException {
         EventBuilder bldr = new EventBuilder("uei.opennms.org/nodes/nodeLostService", "the one true event source");
         bldr.setNodeid(1);
-        bldr.setInterface("192.168.1.1");
+        bldr.setInterface(addr("192.168.1.1"));
         bldr.setService("ICMP");
         Event e = bldr.getEvent();
         m_mocks.replayAll();

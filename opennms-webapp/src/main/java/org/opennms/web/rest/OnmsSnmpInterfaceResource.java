@@ -243,7 +243,7 @@ public class OnmsSnmpInterfaceResource extends OnmsRestService {
             if (iface == null) {
                 log().warn("updateSnmpInterface: Cannot send " + EventConstants.REINITIALIZE_PRIMARY_SNMP_INTERFACE_EVENT_UEI + " event because node " + node.getId() + " has no primary SNMP interface");
             } else {
-                bldr.setInterface(iface.getIpAddressAsString());
+                bldr.setInterface(iface.getIpAddress());
                 e = bldr.getEvent();
             }
         }

@@ -37,6 +37,8 @@
 
 package org.opennms.netmgt.mock;
 
+import static org.opennms.core.utils.InetAddressUtils.addr;
+
 import java.sql.Timestamp;
 import java.text.ParseException;
 import java.util.Collection;
@@ -425,7 +427,7 @@ public abstract class MockEventUtil {
      */
     public static EventBuilder createNewSuspectEventBuilder(String source, String uei, String ipAddr) {
         EventBuilder event = createEventBuilder(source, uei);
-        event.setInterface(ipAddr);
+        event.setInterface(addr(ipAddr));
         return event;
     }
     
@@ -441,7 +443,7 @@ public abstract class MockEventUtil {
     public static Event createBgpBkTnEvent(String source, MockNode node, String ipAddr, int peerState) {
         EventBuilder event = createEventBuilder(source, "http://uei.opennms.org/standards/rfc1657/traps/bgpBackwardTransition", node.getNodeId(), null, null, null);
         
-        event.setInterface("1.2.3.4");
+        event.setInterface(addr("1.2.3.4"));
         event.addParam(".1.3.6.1.2.1.15.3.1.7." + ipAddr, peerState);
         return event.getEvent();
     }
@@ -486,7 +488,7 @@ public abstract class MockEventUtil {
         
         EventBuilder event = createEventBuilder(source, uei);
         event.setNodeid(nodeId);
-        event.setInterface(ipAddr);
+        event.setInterface(addr(ipAddr));
         event.setService(svcName);
         
         if (reason != null) {

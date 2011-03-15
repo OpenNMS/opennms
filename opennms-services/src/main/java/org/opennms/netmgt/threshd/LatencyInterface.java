@@ -31,6 +31,8 @@
 //
 package org.opennms.netmgt.threshd;
 
+import static org.opennms.core.utils.InetAddressUtils.addr;
+
 import java.io.File;
 import java.net.InetAddress;
 import java.net.UnknownHostException;
@@ -176,7 +178,7 @@ public class LatencyInterface {
 	    // create the event to be sent
 	    EventBuilder bldr = new EventBuilder(uei, "OpenNMS.Threshd:" + threshold.getDsName(), date);
 	    bldr.setNodeid(nodeId);
-	    bldr.setInterface(ipAddr.getHostAddress());
+	    bldr.setInterface(ipAddr);
 	    bldr.setService(getServiceName());
 	
 	

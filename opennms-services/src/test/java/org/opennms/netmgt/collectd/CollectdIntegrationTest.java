@@ -31,6 +31,8 @@
  */
 package org.opennms.netmgt.collectd;
 
+import static org.opennms.core.utils.InetAddressUtils.addr;
+
 import java.io.File;
 import java.util.ArrayList;
 import java.util.Collection;
@@ -205,7 +207,7 @@ public class CollectdIntegrationTest extends TestCase {
         
         EventBuilder bldr = new EventBuilder(EventConstants.NODE_GAINED_SERVICE_EVENT_UEI, "Test");
         bldr.setNodeid(1);
-        bldr.setInterface("192.168.1.1");
+        bldr.setInterface(addr("192.168.1.1"));
         bldr.setService("SNMP");
 
         m_collectd.onEvent(bldr.getEvent());

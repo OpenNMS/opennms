@@ -31,6 +31,8 @@
 //
 package org.opennms.netmgt.poller;
 
+import static org.opennms.core.utils.InetAddressUtils.addr;
+
 import java.net.InetAddress;
 import java.net.UnknownHostException;
 import java.sql.SQLException;
@@ -232,7 +234,7 @@ public class DefaultPollContext implements PollContext, EventListener {
         EventBuilder bldr = new EventBuilder(uei, this.getName(), date);
         bldr.setNodeid(nodeId);
         if (address != null) {
-            bldr.setInterface(address.getHostAddress());
+            bldr.setInterface(address);
         }
         if (svcName != null) {
             bldr.setService(svcName);

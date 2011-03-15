@@ -1,6 +1,7 @@
 package org.opennms.netmgt.correlation.drools;
 
 import static org.junit.Assert.assertEquals;
+import static org.opennms.core.utils.InetAddressUtils.addr;
 
 import org.junit.runner.RunWith;
 import org.opennms.netmgt.EventConstants;
@@ -61,8 +62,7 @@ public class CorrelationRulesTestCase {
 
     protected Event createEvent(String uei, int nodeId, String ipAddr, String svcName, int locationMonitor) {
     	return new EventBuilder(uei, "test")
-            .setNodeid(nodeId)
-        	.setInterface(ipAddr)
+        .setNodeid(nodeId).setInterface(addr(ipAddr))
         	.setService(svcName)
         	.addParam(EventConstants.PARM_LOCATION_MONITOR_ID, locationMonitor)
             .getEvent();
@@ -70,8 +70,7 @@ public class CorrelationRulesTestCase {
 
     protected Event createServiceEvent(String uei, int nodeId, String ipAddr, String svcName) {
         return new EventBuilder(uei, "test")
-            .setNodeid(nodeId)
-            .setInterface("192.168.1.1")
+        .setNodeid(nodeId).setInterface(addr("192.168.1.1"))
             .setService("HTTP")
             .getEvent();
     }

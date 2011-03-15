@@ -40,6 +40,7 @@ package org.opennms.netmgt.trapd;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertTrue;
+import static org.opennms.core.utils.InetAddressUtils.addr;
 
 import java.net.InetAddress;
 import java.util.Collection;
@@ -456,7 +457,7 @@ public class TrapHandlerTestCase {
     public Event anticipateEvent(String uei, String ip, long nodeId) {
         EventBuilder bldr = new EventBuilder(uei, "TrapHandlerTestCase");
         bldr.setNodeid(nodeId);
-        bldr.setInterface(ip);
+        bldr.setInterface(addr(ip));
         m_anticipator.anticipateEvent(bldr.getEvent());
         return bldr.getEvent();
     }

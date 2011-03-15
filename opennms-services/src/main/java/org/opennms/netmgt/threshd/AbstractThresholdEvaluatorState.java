@@ -1,5 +1,7 @@
 package org.opennms.netmgt.threshd;
 
+import static org.opennms.core.utils.InetAddressUtils.addr;
+
 import java.net.InetAddress;
 import java.net.UnknownHostException;
 import java.text.DecimalFormat;
@@ -47,7 +49,7 @@ public abstract class AbstractThresholdEvaluatorState implements ThresholdEvalua
         bldr.setService(resource.getServiceName());
 
         // As a suggestion from Bug2711. Host Address will contain Interface IP Address for Interface Resource
-        bldr.setInterface(resource.getHostAddress());            
+        bldr.setInterface(addr(resource.getHostAddress()));            
 
         if (resource.isAnInterfaceResource()) {
             // Update threshold label if it is unknown. This is useful because usually reduction-key is associated to label parameter

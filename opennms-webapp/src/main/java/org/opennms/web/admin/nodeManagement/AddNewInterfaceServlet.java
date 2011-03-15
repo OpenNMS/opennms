@@ -39,6 +39,8 @@
 
 package org.opennms.web.admin.nodeManagement;
 
+import static org.opennms.core.utils.InetAddressUtils.addr;
+
 import java.io.IOException;
 import java.net.InetAddress;
 import java.net.UnknownHostException;
@@ -122,7 +124,7 @@ public class AddNewInterfaceServlet extends HttpServlet {
 
     private void createAndSendNewSuspectInterfaceEvent(String ipaddr) throws ServletException {
         EventBuilder bldr = new EventBuilder(EventConstants.NEW_SUSPECT_INTERFACE_EVENT_UEI, EVENT_SOURCE_VALUE);
-        bldr.setInterface(ipaddr);
+        bldr.setInterface(addr(ipaddr));
 
         try {
             bldr.setHost(InetAddress.getLocalHost().getHostName());

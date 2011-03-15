@@ -35,6 +35,8 @@
 //
 package org.opennms.netmgt.syslogd;
 
+import static org.opennms.core.utils.InetAddressUtils.addr;
+
 import java.io.InputStream;
 import java.lang.reflect.UndeclaredThrowableException;
 import java.net.BindException;
@@ -256,7 +258,7 @@ public class SyslogdLoadTest extends OpenNMSTestCase {
             String expectedUei = "uei.example.org/syslog/loadTest/foo" + eventNum;
             final EventBuilder eb = new EventBuilder(expectedUei, "SyslogdLoadTest");
 
-            Event thisEvent = eb.setInterface("127.0.0.1")
+            Event thisEvent = eb.setInterface(addr("127.0.0.1"))
                 .setLogDest("logndisplay")
                 .setLogMessage("A load test has been received as a Syslog Message")
                 .getEvent();

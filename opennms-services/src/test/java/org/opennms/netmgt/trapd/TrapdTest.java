@@ -37,6 +37,8 @@
 //
 package org.opennms.netmgt.trapd;
 
+import static org.opennms.core.utils.InetAddressUtils.addr;
+
 import java.io.InputStream;
 import java.net.InetAddress;
 
@@ -109,11 +111,11 @@ public class TrapdTest extends AbstractTransactionalTemporaryDatabaseSpringConte
         pdu.setAgentAddress(localAddr);
 
         EventBuilder defaultTrapBuilder = new EventBuilder("uei.opennms.org/default/trap", "trapd");
-        defaultTrapBuilder.setInterface(localhost);
+        defaultTrapBuilder.setInterface(addr(localhost));
         getMockEventIpcManager().getEventAnticipator().anticipateEvent(defaultTrapBuilder.getEvent());
         
         EventBuilder newSuspectBuilder = new EventBuilder("uei.opennms.org/internal/discovery/newSuspect", "trapd");
-        newSuspectBuilder.setInterface(localhost);
+        newSuspectBuilder.setInterface(addr(localhost));
         getMockEventIpcManager().getEventAnticipator().anticipateEvent(newSuspectBuilder.getEvent());
 
         pdu.send(localhost, m_port, "public");

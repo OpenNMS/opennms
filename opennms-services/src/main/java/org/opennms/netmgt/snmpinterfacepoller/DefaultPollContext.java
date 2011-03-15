@@ -34,6 +34,8 @@
 package org.opennms.netmgt.snmpinterfacepoller;
 
 
+import static org.opennms.core.utils.InetAddressUtils.addr;
+
 import java.util.Date;
 import java.util.List;
 
@@ -198,7 +200,7 @@ public class DefaultPollContext implements PollContext {
         EventBuilder bldr = new EventBuilder(uei, this.getName(), date);
         bldr.setNodeid(nodeId);
         if (address != null) {
-            bldr.setInterface(address);
+            bldr.setInterface(addr(address));
         }
         bldr.setService(getServiceName());
 
