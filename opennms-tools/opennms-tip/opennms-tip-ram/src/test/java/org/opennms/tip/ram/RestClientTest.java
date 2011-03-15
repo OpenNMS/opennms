@@ -64,7 +64,10 @@ public class RestClientTest {
         
         AlarmList alarms = m_resource.get(AlarmList.class);
         
-        System.err.println(alarms);
+        for (Alarm alarm:alarms) {
+            System.err.println(alarm);
+        }
+        //System.err.println(alarms);
         
     }
 
