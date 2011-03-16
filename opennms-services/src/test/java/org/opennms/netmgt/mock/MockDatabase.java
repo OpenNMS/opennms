@@ -37,6 +37,9 @@
 //
 package org.opennms.netmgt.mock;
 
+import static org.opennms.core.utils.InetAddressUtils.addr;
+import static org.opennms.core.utils.InetAddressUtils.str;
+
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.sql.Timestamp;
@@ -115,7 +118,7 @@ public class MockDatabase extends TemporaryDatabase implements EventWriter {
 
     public void writeInterface(MockInterface iface) {
         writeSnmpInterface(iface);
-		Object[] values = { new Integer(iface.getNodeId()), iface.getIpAddr(), iface.getIfIndex(), (iface.getIfIndex() == 1 ? "P" : "N"), "A" };
+		Object[] values = { new Integer(iface.getNodeId()), str(iface.getAddress()), iface.getIfIndex(), (iface.getIfIndex() == 1 ? "P" : "N"), "A" };
         update("insert into ipInterface (nodeID, ipAddr, ifIndex, isSnmpPrimary, isManaged) values (?, ?, ?, ?, ?);", values);
     }
 
@@ -134,7 +137,7 @@ public class MockDatabase extends TemporaryDatabase implements EventWriter {
         }
         
         String status = svc.getMgmtStatus().toDbString();
-        Object[] values = { new Integer(svc.getNodeId()), svc.getIpAddr(), new Integer(svc.getId()), status };
+        Object[] values = { new Integer(svc.getNodeId()), str(svc.getAddress()), new Integer(svc.getId()), status };
         update("insert into ifServices (nodeID, ipAddr, serviceID, status) values (?, ?, ?, ?);", values);
     }
     
@@ -206,7 +209,7 @@ public class MockDatabase extends TemporaryDatabase implements EventWriter {
                 getNextOutageId(), // outageID
                 new Integer(eventId),           // svcLostEventId
                 new Integer(svc.getNodeId()), // nodeId
-                svc.getIpAddr(),                // ipAddr
+                str(svc.getAddress()),                // ipAddr
                 new Integer(svc.getId()),       // serviceID
                 time, // ifLostService
                };
