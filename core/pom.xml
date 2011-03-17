@@ -24,6 +24,7 @@
   </build>
   <modules>
     <module>api</module>
+    <module>build</module>
     <module>lib</module>
     <module>runtime</module>
     <module>schema</module>
