@@ -244,6 +244,16 @@
         </dependencies>
       </plugin>
       <plugin>
+        <groupId>org.opennms.core.build</groupId>
+        <artifactId>castor-process-maven-plugin</artifactId>
+        <version>${project.version}</version>
+        <executions>
+          <execution>
+            <goals><goal>generate</goal></goals>
+          </execution>
+        </executions>
+      </plugin>
+      <plugin>
         <groupId>org.codehaus.mojo</groupId>
         <artifactId>gwt-maven-plugin</artifactId>
         <version>2.1.0-1</version>
