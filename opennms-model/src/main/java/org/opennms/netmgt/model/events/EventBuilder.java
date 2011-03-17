@@ -588,6 +588,21 @@ public class EventBuilder {
         return this;
     }
 
+	public EventBuilder setUuid(final String uuid) {
+		m_event.setUuid(uuid);
+		return this;
+	}
+
+	public EventBuilder setDistPoller(final String distPoller) {
+		m_event.setDistPoller(distPoller);
+		return this;
+	}
+
+	public EventBuilder setMasterStation(final String masterStation) {
+		m_event.setMasterStation(masterStation);
+		return this;
+	}
+
 
 
 }

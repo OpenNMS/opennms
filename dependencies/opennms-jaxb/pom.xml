@@ -10,7 +10,7 @@
   <packaging>pom</packaging>
   <name>OpenNMS JAXB Dependencies</name>
   <properties>
-    <jaxbVersion>2.1.7</jaxbVersion>
+    <jaxbVersion>2.2.0</jaxbVersion>
     <fastInfosetVersion>1.2.2</fastInfosetVersion>
   </properties>
   <dependencies>

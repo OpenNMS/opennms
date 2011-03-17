@@ -473,7 +473,7 @@
       <sequence>
         <element maxOccurs="unbounded" minOccurs="0" name="cuei" type="string">
           <annotation>
-            <documentation>A cancelling UEI for this event</documentation>
+            <documentation>A canceling UEI for this event</documentation>
           </annotation>
         </element>
 
@@ -667,7 +667,7 @@
           <restriction base="int">
             <minInclusive value="1"/>
           </restriction>
-        </simpleType>      
+        </simpleType>
       </attribute>
       <attribute name="clear-key" type="string" use="optional" />
       <attribute name="auto-clean" type="boolean" use="optional" default="false" />

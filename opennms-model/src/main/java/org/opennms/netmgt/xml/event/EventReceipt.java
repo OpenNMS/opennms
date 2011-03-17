@@ -1,0 +1,325 @@
+/*
+ * This class was automatically generated with 
+ * <a href="http://www.castor.org">Castor 1.1.2.1</a>, using an XML
+ * Schema.
+ * $Id$
+ */
+
+package org.opennms.netmgt.xml.event;
+
+  //---------------------------------/
+ //- Imported classes and packages -/
+//---------------------------------/
+
+import org.exolab.castor.xml.Marshaller;
+import org.exolab.castor.xml.Unmarshaller;
+
+/**
+ * Class EventReceipt.
+ * 
+ * @version $Revision$ $Date$
+ */
+
+@SuppressWarnings("all") public class EventReceipt implements java.io.Serializable {
+
+
+      //--------------------------/
+     //- Class/Member Variables -/
+    //--------------------------/
+
+    /**
+     * Field _uuidList.
+     */
+    private java.util.List<java.lang.String> _uuidList;
+
+
+      //----------------/
+     //- Constructors -/
+    //----------------/
+
+    public EventReceipt() {
+        super();
+        this._uuidList = new java.util.ArrayList<java.lang.String>();
+    }
+
+
+      //-----------/
+     //- Methods -/
+    //-----------/
+
+    /**
+     * 
+     * 
+     * @param vUuid
+     * @throws java.lang.IndexOutOfBoundsException if the index
+     * given is outside the bounds of the collection
+     */
+    public void addUuid(
+            final java.lang.String vUuid)
+    throws java.lang.IndexOutOfBoundsException {
+        this._uuidList.add(vUuid);
+    }
+
+    /**
+     * 
+     * 
+     * @param index
+     * @param vUuid
+     * @throws java.lang.IndexOutOfBoundsException if the index
+     * given is outside the bounds of the collection
+     */
+    public void addUuid(
+            final int index,
+            final java.lang.String vUuid)
+    throws java.lang.IndexOutOfBoundsException {
+        this._uuidList.add(index, vUuid);
+    }
+
+    /**
+     * Method enumerateUuid.
+     * 
+     * @return an Enumeration over all possible elements of this
+     * collection
+     */
+    public java.util.Enumeration<java.lang.String> enumerateUuid(
+    ) {
+        return java.util.Collections.enumeration(this._uuidList);
+    }
+
+    /**
+     * Method getUuid.
+     * 
+     * @param index
+     * @throws java.lang.IndexOutOfBoundsException if the index
+     * given is outside the bounds of the collection
+     * @return the value of the java.lang.String at the given index
+     */
+    public java.lang.String getUuid(
+            final int index)
+    throws java.lang.IndexOutOfBoundsException {
+        // check bounds for index
+        if (index < 0 || index >= this._uuidList.size()) {
+            throw new IndexOutOfBoundsException("getUuid: Index value '" + index + "' not in range [0.." + (this._uuidList.size() - 1) + "]");
+        }
+        
+        return (java.lang.String) _uuidList.get(index);
+    }
+
+    /**
+     * Method getUuid.Returns the contents of the collection in an
+     * Array.  <p>Note:  Just in case the collection contents are
+     * changing in another thread, we pass a 0-length Array of the
+     * correct type into the API call.  This way we <i>know</i>
+     * that the Array returned is of exactly the correct length.
+     * 
+     * @return this collection as an Array
+     */
+    public java.lang.String[] getUuid(
+    ) {
+        java.lang.String[] array = new java.lang.String[0];
+        return (java.lang.String[]) this._uuidList.toArray(array);
+    }
+
+    /**
+     * Method getUuidCollection.Returns a reference to '_uuidList'.
+     * No type checking is performed on any modifications to the
+     * Vector.
+     * 
+     * @return a reference to the Vector backing this class
+     */
+    public java.util.List<java.lang.String> getUuidCollection(
+    ) {
+        return this._uuidList;
+    }
+
+    /**
+     * Method getUuidCount.
+     * 
+     * @return the size of this collection
+     */
+    public int getUuidCount(
+    ) {
+        return this._uuidList.size();
+    }
+
+    /**
+     * Method isValid.
+     * 
+     * @return true if this object is valid according to the schema
+     */
+    public boolean isValid(
+    ) {
+        try {
+            validate();
+        } catch (org.exolab.castor.xml.ValidationException vex) {
+            return false;
+        }
+        return true;
+    }
+
+    /**
+     * Method iterateUuid.
+     * 
+     * @return an Iterator over all possible elements in this
+     * collection
+     */
+    public java.util.Iterator<java.lang.String> iterateUuid(
+    ) {
+        return this._uuidList.iterator();
+    }
+
+    /**
+     * 
+     * 
+     * @param out
+     * @throws org.exolab.castor.xml.MarshalException if object is
+     * null or if any SAXException is thrown during marshaling
+     * @throws org.exolab.castor.xml.ValidationException if this
+     * object is an invalid instance according to the schema
+     */
+    public void marshal(
+            final java.io.Writer out)
+    throws org.exolab.castor.xml.MarshalException, org.exolab.castor.xml.ValidationException {
+        Marshaller.marshal(this, out);
+    }
+
+    /**
+     * 
+     * 
+     * @param handler
+     * @throws java.io.IOException if an IOException occurs during
+     * marshaling
+     * @throws org.exolab.castor.xml.ValidationException if this
+     * object is an invalid instance according to the schema
+     * @throws org.exolab.castor.xml.MarshalException if object is
+     * null or if any SAXException is thrown during marshaling
+     */
+    public void marshal(
+            final org.xml.sax.ContentHandler handler)
+    throws java.io.IOException, org.exolab.castor.xml.MarshalException, org.exolab.castor.xml.ValidationException {
+        Marshaller.marshal(this, handler);
+    }
+
+    /**
+     */
+    public void removeAllUuid(
+    ) {
+        this._uuidList.clear();
+    }
+
+    /**
+     * Method removeUuid.
+     * 
+     * @param vUuid
+     * @return true if the object was removed from the collection.
+     */
+    public boolean removeUuid(
+            final java.lang.String vUuid) {
+        boolean removed = _uuidList.remove(vUuid);
+        return removed;
+    }
+
+    /**
+     * Method removeUuidAt.
+     * 
+     * @param index
+     * @return the element removed from the collection
+     */
+    public java.lang.String removeUuidAt(
+            final int index) {
+        java.lang.Object obj = this._uuidList.remove(index);
+        return (java.lang.String) obj;
+    }
+
+    /**
+     * 
+     * 
+     * @param index
+     * @param vUuid
+     * @throws java.lang.IndexOutOfBoundsException if the index
+     * given is outside the bounds of the collection
+     */
+    public void setUuid(
+            final int index,
+            final java.lang.String vUuid)
+    throws java.lang.IndexOutOfBoundsException {
+        // check bounds for index
+        if (index < 0 || index >= this._uuidList.size()) {
+            throw new IndexOutOfBoundsException("setUuid: Index value '" + index + "' not in range [0.." + (this._uuidList.size() - 1) + "]");
+        }
+        
+        this._uuidList.set(index, vUuid);
+    }
+
+    /**
+     * 
+     * 
+     * @param vUuidArray
+     */
+    public void setUuid(
+            final java.lang.String[] vUuidArray) {
+        //-- copy array
+        _uuidList.clear();
+        
+        for (int i = 0; i < vUuidArray.length; i++) {
+                this._uuidList.add(vUuidArray[i]);
+        }
+    }
+
+    /**
+     * Sets the value of '_uuidList' by copying the given Vector.
+     * All elements will be checked for type safety.
+     * 
+     * @param vUuidList the Vector to copy.
+     */
+    public void setUuid(
+            final java.util.List<java.lang.String> vUuidList) {
+        // copy vector
+        this._uuidList.clear();
+        
+        this._uuidList.addAll(vUuidList);
+    }
+
+    /**
+     * Sets the value of '_uuidList' by setting it to the given
+     * Vector. No type checking is performed.
+     * @deprecated
+     * 
+     * @param uuidList the Vector to set.
+     */
+    public void setUuidCollection(
+            final java.util.List<java.lang.String> uuidList) {
+        this._uuidList = uuidList;
+    }
+
+    /**
+     * Method unmarshal.
+     * 
+     * @param reader
+     * @throws org.exolab.castor.xml.MarshalException if object is
+     * null or if any SAXException is thrown during marshaling
+     * @throws org.exolab.castor.xml.ValidationException if this
+     * object is an invalid instance according to the schema
+     * @return the unmarshaled
+     * org.opennms.netmgt.xml.event.EventReceipt
+     */
+    public static org.opennms.netmgt.xml.event.EventReceipt unmarshal(
+            final java.io.Reader reader)
+    throws org.exolab.castor.xml.MarshalException, org.exolab.castor.xml.ValidationException {
+        return (org.opennms.netmgt.xml.event.EventReceipt) Unmarshaller.unmarshal(org.opennms.netmgt.xml.event.EventReceipt.class, reader);
+    }
+
+    /**
+     * 
+     * 
+     * @throws org.exolab.castor.xml.ValidationException if this
+     * object is an invalid instance according to the schema
+     */
+    public void validate(
+    )
+    throws org.exolab.castor.xml.ValidationException {
+        org.exolab.castor.xml.Validator validator = new org.exolab.castor.xml.Validator();
+        validator.validate(this);
+    }
+
+}
