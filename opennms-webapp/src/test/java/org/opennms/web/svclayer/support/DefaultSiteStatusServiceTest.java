@@ -32,17 +32,18 @@
 
 package org.opennms.web.svclayer.support;
 
+import static org.easymock.EasyMock.createMock;
+import static org.easymock.EasyMock.expect;
+import static org.easymock.EasyMock.replay;
+import static org.easymock.EasyMock.verify;
+import static org.junit.Assert.assertNotNull;
+
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collection;
 import java.util.HashSet;
 import java.util.LinkedHashSet;
-
-import static org.easymock.EasyMock.createMock;
-import static org.easymock.EasyMock.expect;
-import static org.easymock.EasyMock.replay;
-import static org.easymock.EasyMock.verify;
-import static org.junit.Assert.*;
+import java.util.List;
 
 import org.junit.Before;
 import org.junit.Test;
@@ -98,7 +99,7 @@ public class DefaultSiteStatusServiceTest {
         OnmsNode node = new OnmsNode();
         node.setId(1);
         node.getAssetRecord().setBuilding("HQ");
-        Collection<OnmsNode> nodes = new ArrayList<OnmsNode>();
+        List<OnmsNode> nodes = new ArrayList<OnmsNode>();
         nodes.add(node);
         
         for (AggregateStatusDefinition def : defs) {
@@ -163,7 +164,7 @@ public class DefaultSiteStatusServiceTest {
         aggregateSvc.setNodeDao(m_nodeDao);
         
         OnmsNode node = new OnmsNode();
-        Collection<OnmsNode> nodes = new ArrayList<OnmsNode>();
+        List<OnmsNode> nodes = new ArrayList<OnmsNode>();
         nodes.add(node);
         
         for (AggregateStatusDefinition def : defs) {

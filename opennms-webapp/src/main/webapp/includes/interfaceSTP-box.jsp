@@ -45,7 +45,7 @@
   that directs all URLs to be relative to the servlet context.
 --%>
 
-<%@page language="java" contentType="text/html" session="true" import="org.opennms.web.element.*" %>
+<%@page language="java" contentType="text/html" session="true" import="org.opennms.web.element.*,org.opennms.netmgt.model.OnmsNode" %>
 
 <%
     
@@ -90,7 +90,7 @@
 	<tr>
         <td>Stp Root</td>
 	<% if (stpifs[i].get_stprootnodeid() != 0) { 
-	Node node = NetworkElementFactory.getInstance(getServletContext()).getNode(stpifs[i].get_stprootnodeid());
+	OnmsNode node = NetworkElementFactory.getInstance(getServletContext()).getNode(stpifs[i].get_stprootnodeid());
 	%>
 	<td><a href="element/node.jsp?node=<%=stpifs[i].get_stprootnodeid()%>"><%=node.getLabel()%></a><br/>(<strong><%=stpifs[i].get_stpdesignatedroot()%></strong>)</td>
 	<% } else { %>
@@ -100,7 +100,7 @@
 	<tr>
         <td>Designated Bridge</td>
 	<% if (stpifs[i].get_stpbridgenodeid() != 0) { 
-	Node node = NetworkElementFactory.getInstance(getServletContext()).getNode(stpifs[i].get_stpbridgenodeid());
+	OnmsNode node = NetworkElementFactory.getInstance(getServletContext()).getNode(stpifs[i].get_stpbridgenodeid());
 	%>
 	<td><a href="element/node.jsp?node=<%=stpifs[i].get_stpbridgenodeid()%>"><%=node.getLabel()%></a><br/>(<strong><%=stpifs[i].get_stpdesignatedbridge()%></strong>)</td>
 	<% } else {%>

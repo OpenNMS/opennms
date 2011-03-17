@@ -7,6 +7,7 @@
         org.opennms.netmgt.config.poller.*,
         org.opennms.web.WebSecurityUtils,
         org.opennms.web.element.*,
+        org.opennms.netmgt.model.OnmsNode,
         org.opennms.netmgt.EventConstants,
         org.opennms.netmgt.xml.event.Event,
         org.opennms.netmgt.utils.*,
@@ -43,14 +44,14 @@ public static class AutocompleteRecord {
 }
 %>
 <%
-List<org.opennms.web.element.Node> items = Arrays.asList(NetworkElementFactory.getInstance(getServletContext()).getAllNodes());
+List<OnmsNode> items = NetworkElementFactory.getInstance(getServletContext()).getAllNodes();
 %>
 [
 <% 
 boolean printedFirst = false;
 int recordCounter = 1;
 final int recordLimit = 200;
-for (org.opennms.web.element.Node item : items) {
+for (OnmsNode item : items) {
 	String autocomplete = request.getParameter("term");
 	// Check to see if the item matches the search term
 	if (
@@ -58,7 +59,7 @@ for (org.opennms.web.element.Node item : items) {
 		"".equals(autocomplete) || 
 		item.getLabel().contains(autocomplete)
 	) {
-		String label = item.getLabel() + " (Node ID " + item.getNodeId() + ")";
+		String label = item.getLabel() + " (Node ID " + item.getId() + ")";
 		if (autocomplete != null && !"".equals(autocomplete)) {
 			label = label.replace(autocomplete, "<strong>" + autocomplete + "</strong>");
 		}
@@ -66,7 +67,7 @@ for (org.opennms.web.element.Node item : items) {
 		if (printedFirst) {
 			out.println(",");
 		}
-		out.println(JSONSerializer.toJSON(new AutocompleteRecord(label, item.getNodeId())));
+		out.println(JSONSerializer.toJSON(new AutocompleteRecord(label, item.getId())));
 		printedFirst = true;
 		// Don't print more than a certain number of records to limit the
 		// performance impact in the web browser

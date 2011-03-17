@@ -87,7 +87,7 @@ public class NodeDaoHibernate extends AbstractDaoHibernate<OnmsNode, Integer> im
     }
 
     /** {@inheritDoc} */
-    public Collection<OnmsNode> findNodes(final OnmsDistPoller distPoller) {
+    public List<OnmsNode> findNodes(final OnmsDistPoller distPoller) {
         return find("from OnmsNode where distPoller = ?", distPoller);
     }
 
@@ -113,19 +113,19 @@ public class NodeDaoHibernate extends AbstractDaoHibernate<OnmsNode, Integer> im
     }
 
     /** {@inheritDoc} */
-    public Collection<OnmsNode> findByLabel(String label) {
+    public List<OnmsNode> findByLabel(String label) {
         return find("from OnmsNode as n where n.label = ?", label);
     }
 
     /** {@inheritDoc} */
-    public Collection<OnmsNode> findAllByVarCharAssetColumn(
+    public List<OnmsNode> findAllByVarCharAssetColumn(
             String columnName, String columnValue) {
         return find("from OnmsNode as n where n.assetRecord." + columnName
                 + " = ?", columnValue);
     }
 
     /** {@inheritDoc} */
-    public Collection<OnmsNode> findAllByVarCharAssetColumnCategoryList(
+    public List<OnmsNode> findAllByVarCharAssetColumnCategoryList(
             String columnName, String columnValue,
             Collection<OnmsCategory> categories) {
     	
@@ -141,7 +141,7 @@ public class NodeDaoHibernate extends AbstractDaoHibernate<OnmsNode, Integer> im
     }
 
     /** {@inheritDoc} */
-    public Collection<OnmsNode> findByCategory(OnmsCategory category) {
+    public List<OnmsNode> findByCategory(OnmsCategory category) {
         return find("select distinct n from OnmsNode as n "
                     + "join n.categories c "
                     + "left join fetch n.assetRecord "
@@ -164,7 +164,7 @@ public class NodeDaoHibernate extends AbstractDaoHibernate<OnmsNode, Integer> im
         
 
     /** {@inheritDoc} */
-    public Collection<OnmsNode> findAllByCategoryList(
+    public List<OnmsNode> findAllByCategoryList(
             Collection<OnmsCategory> categories) {
         return find("select distinct n from OnmsNode as n "
                 + "join n.categories c " 
@@ -179,14 +179,14 @@ public class NodeDaoHibernate extends AbstractDaoHibernate<OnmsNode, Integer> im
     }
 
     /** {@inheritDoc} */
-    public Collection<OnmsNode> findAllByCategoryLists( final Collection<OnmsCategory> rowCategories, final Collection<OnmsCategory> columnCategories) {
+    public List<OnmsNode> findAllByCategoryLists( final Collection<OnmsCategory> rowCategories, final Collection<OnmsCategory> columnCategories) {
     	
-        return getHibernateTemplate().execute(new HibernateCallback<Collection<OnmsNode>>() {
+        return getHibernateTemplate().execute(new HibernateCallback<List<OnmsNode>>() {
 
             @SuppressWarnings("unchecked")
-            public Collection<OnmsNode> doInHibernate(Session session) throws HibernateException, SQLException {
+            public List<OnmsNode> doInHibernate(Session session) throws HibernateException, SQLException {
                 
-                return (Collection<OnmsNode>)session.createQuery("select distinct n from OnmsNode as n "
+                return (List<OnmsNode>)session.createQuery("select distinct n from OnmsNode as n "
                 + "join n.categories c1 "
                 + "join n.categories c2 "
                 + "left join fetch n.assetRecord "

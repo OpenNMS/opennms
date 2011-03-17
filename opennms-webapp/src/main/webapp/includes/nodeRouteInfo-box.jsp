@@ -34,7 +34,12 @@
   that directs all URLs to be relative to the servlet context.
 --%>
 
-<%@page language="java" contentType="text/html" session="true" import="org.opennms.web.WebSecurityUtils,org.opennms.web.element.*" %>
+<%@page language="java" contentType="text/html" session="true" import="
+  java.util.List,
+  org.opennms.web.WebSecurityUtils,
+  org.opennms.web.element.*,
+  org.opennms.netmgt.model.OnmsNode
+"%>
 
 
 <%
@@ -83,12 +88,12 @@
 	            <td align="left" ><%=iface.get_routemask()%></td>
 	            <% if (iface.get_routenexthop() != null) { %>
 		            <% 
-		            Node[] nodes = null;
+		            List<OnmsNode> nodes = null;
 		            if (!iface.get_routenexthop().equals("0.0.0.0")) {
 		                nodes = factory.getNodesWithIpLike(iface.get_routenexthop());
 		            }
-		            if (nodes != null && nodes.length > 0) { %>
-		                <td align="left" ><a href="element/node.jsp?node=<%=nodes[0].getNodeId()%>"><%=iface.get_routenexthop()%></a></td>
+		            if (nodes != null && nodes.size() > 0) { %>
+		                <td align="left" ><a href="element/node.jsp?node=<%=nodes.get(0).getNodeId()%>"><%=iface.get_routenexthop()%></a></td>
 		            <% } else { %>
 		                <td align="left" ><%=iface.get_routenexthop()%></td>
 		            <% } %>

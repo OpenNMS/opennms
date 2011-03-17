@@ -66,7 +66,7 @@ public interface NodeDao extends OnmsDao<OnmsNode, Integer> {
      * @param label a {@link java.lang.String} object.
      * @return a {@link java.util.Collection} object.
      */
-    Collection<OnmsNode> findByLabel(String label);
+    List<OnmsNode> findByLabel(String label);
     
     /**
      * <p>findNodes</p>
@@ -74,7 +74,7 @@ public interface NodeDao extends OnmsDao<OnmsNode, Integer> {
      * @param dp a {@link org.opennms.netmgt.model.OnmsDistPoller} object.
      * @return a {@link java.util.Collection} object.
      */
-    Collection<OnmsNode> findNodes(OnmsDistPoller dp);
+    List<OnmsNode> findNodes(OnmsDistPoller dp);
     
     /**
      * <p>getHierarchy</p>
@@ -99,7 +99,7 @@ public interface NodeDao extends OnmsDao<OnmsNode, Integer> {
      * @param columnValue a {@link java.lang.String} object.
      * @return a {@link java.util.Collection} object.
      */
-    Collection<OnmsNode> findAllByVarCharAssetColumn(String columnName, String columnValue);
+    List<OnmsNode> findAllByVarCharAssetColumn(String columnName, String columnValue);
     
     /**
      * <p>findAllByVarCharAssetColumnCategoryList</p>
@@ -109,7 +109,7 @@ public interface NodeDao extends OnmsDao<OnmsNode, Integer> {
      * @param categories a {@link java.util.Collection} object.
      * @return a {@link java.util.Collection} object.
      */
-    Collection<OnmsNode> findAllByVarCharAssetColumnCategoryList(String columnName, String columnValue,
+    List<OnmsNode> findAllByVarCharAssetColumnCategoryList(String columnName, String columnValue,
             Collection<OnmsCategory> categories);
     
     /**
@@ -118,7 +118,7 @@ public interface NodeDao extends OnmsDao<OnmsNode, Integer> {
      * @param category a {@link org.opennms.netmgt.model.OnmsCategory} object.
      * @return a {@link java.util.Collection} object.
      */
-    Collection<OnmsNode> findByCategory(OnmsCategory category);
+    List<OnmsNode> findByCategory(OnmsCategory category);
     
     /**
      * <p>findAllByCategoryList</p>
@@ -126,7 +126,7 @@ public interface NodeDao extends OnmsDao<OnmsNode, Integer> {
      * @param categories a {@link java.util.Collection} object.
      * @return a {@link java.util.Collection} object.
      */
-    Collection<OnmsNode> findAllByCategoryList(Collection<OnmsCategory> categories);
+    List<OnmsNode> findAllByCategoryList(Collection<OnmsCategory> categories);
 
     /**
      * <p>findAllByCategoryLists</p>
@@ -135,7 +135,7 @@ public interface NodeDao extends OnmsDao<OnmsNode, Integer> {
      * @param colCatNames a {@link java.util.Collection} object.
      * @return a {@link java.util.Collection} object.
      */
-    Collection<OnmsNode> findAllByCategoryLists(Collection<OnmsCategory> rowCatNames, Collection<OnmsCategory> colCatNames);
+    List<OnmsNode> findAllByCategoryLists(Collection<OnmsCategory> rowCatNames, Collection<OnmsCategory> colCatNames);
     
     /**
      * Returns a list of nodes ordered by label.

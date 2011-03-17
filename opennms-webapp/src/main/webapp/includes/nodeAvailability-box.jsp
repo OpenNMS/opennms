@@ -53,6 +53,7 @@
 	import="org.opennms.web.WebSecurityUtils,
 		org.opennms.web.category.*,
 		org.opennms.web.element.*,
+		org.opennms.netmgt.model.OnmsNode,
 		java.util.*,
         org.springframework.util.Assert,
         org.opennms.web.MissingParameterException
@@ -104,7 +105,7 @@
     int nodeId = WebSecurityUtils.safeParseInt(nodeIdString);
 
     //get the database node info
-    Node node_db = NetworkElementFactory.getInstance(getServletContext()).getNode(nodeId);
+    OnmsNode node_db = NetworkElementFactory.getInstance(getServletContext()).getNode(nodeId);
     if (node_db == null) {
         //handle this WAY better, very awful
         throw new ServletException("No such node in database");

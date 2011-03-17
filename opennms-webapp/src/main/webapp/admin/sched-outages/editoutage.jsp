@@ -7,6 +7,7 @@
         org.opennms.netmgt.config.poller.*,
         org.opennms.web.WebSecurityUtils,
         org.opennms.web.element.*,
+        org.opennms.netmgt.model.OnmsNode,
         org.opennms.netmgt.EventConstants,
         org.opennms.netmgt.xml.event.Event,
         org.opennms.netmgt.utils.*,
@@ -739,7 +740,7 @@ function updateOutageTypeDisplay(selectElement) {
 									org.opennms.netmgt.config.poller.Node node = outageNodes[i];
 									int nodeId = node.getId();
 									out.println("<input type=\"image\" src=\"images/redcross.gif\" name=\"deleteNode" + i + "\" />");
-									org.opennms.web.element.Node thisNode = NetworkElementFactory.getInstance(getServletContext()).getNode(nodeId);
+									OnmsNode thisNode = NetworkElementFactory.getInstance(getServletContext()).getNode(nodeId);
 									if (thisNode != null) {
 										out.println(thisNode.getLabel());
 									} else {

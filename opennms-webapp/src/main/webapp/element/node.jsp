@@ -56,7 +56,9 @@
 <%@page language="java"
 	contentType="text/html"
 	session="true"
-	import="org.opennms.web.element.*,
+	import="
+        org.opennms.web.element.*,
+        org.opennms.netmgt.model.OnmsNode,
 		java.util.*,
 		java.net.*,
         java.sql.SQLException,
@@ -110,7 +112,7 @@
 		m_resourceService = (ResourceService) webAppContext.getBean("resourceService", ResourceService.class);
     }
     
-    public static String getStatusStringWithDefault(Node node_db) {
+    public static String getStatusStringWithDefault(OnmsNode node_db) {
         String status = ElementUtil.getNodeStatusString(node_db);
         if (status != null) {
             return status;
@@ -153,8 +155,8 @@
 %>
 
 <%
-    Node node_db = ElementUtil.getNodeByParams(request, getServletContext());
-    int nodeId = node_db.getNodeId();
+    OnmsNode node_db = ElementUtil.getNodeByParams(request, getServletContext());
+    int nodeId = node_db.getId();
     
     Map<String, Object> nodeModel = new TreeMap<String, Object>();
     nodeModel.put("id", Integer.toString(nodeId));
@@ -348,28 +350,28 @@
   </c:if>
 
   <!-- SNMP box, if info available -->
-  <c:if test="${! empty model.node.nodeSysId}">
+  <c:if test="${! empty model.node.sysObjectId}">
     <h3 class="o-box">SNMP Attributes</h3>
     <table class="o-box">
       <tr>
         <th>Name</th>
-        <td>${model.node.nodeSysName}</td>
+        <td>${model.node.sysName}</td>
       </tr>
       <tr>
         <th>Object&nbsp;ID</th>
-        <td>${model.node.nodeSysId}</td>
+        <td>${model.node.sysObjectId}</td>
       </tr>
       <tr>
         <th>Location</th>
-        <td>${model.node.nodeSysLocn}</td>
+        <td>${model.node.sysLocation}</td>
       </tr>
       <tr>
         <th>Contact</th>
-        <td>${model.node.nodeSysContact}</td>
+        <td>${model.node.sysContact}</td>
       </tr>
       <tr>
         <th valign="top">Description</th>
-        <td valign="top">${model.node.nodeSysDescr}</td>
+        <td valign="top">${model.node.sysDescription}</td>
       </tr>
     </table>
   </c:if>

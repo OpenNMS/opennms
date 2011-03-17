@@ -54,9 +54,9 @@ import org.opennms.core.utils.ThreadCategory;
 import org.opennms.netmgt.config.CatFactory;
 import org.opennms.netmgt.config.CategoryFactory;
 import org.opennms.netmgt.filter.FilterDaoFactory;
+import org.opennms.netmgt.model.OnmsNode;
 import org.opennms.web.WebSecurityUtils;
 import org.opennms.web.element.NetworkElementFactory;
-import org.opennms.web.element.Node;
 import org.opennms.web.map.view.Manager;
 import org.opennms.web.map.view.VElement;
 import org.opennms.web.map.view.VMap;
@@ -150,10 +150,10 @@ public class AddNodesController extends AbstractController {
 			if (action.equals(MapsConstants.ADDNODES_BY_LABEL_ACTION)) {
 				log.debug("Adding nodes by label: "+ elems);
 				actionfound = true;
-				Node[] nodes = NetworkElementFactory.getInstance(getServletContext()).getAllNodes();
-				nodeids = new Integer[nodes.length];
-				for (int i = 0; i<nodes.length;i++) {
-					nodeids[i] = new Integer(nodes[i].getNodeId());
+				List<OnmsNode> nodes = NetworkElementFactory.getInstance(getServletContext()).getAllNodes();
+				nodeids = new Integer[nodes.size()];
+				for (int i = 0; i<nodes.size();i++) {
+					nodeids[i] = nodes.get(i).getId();
 				}
 			}	
 
