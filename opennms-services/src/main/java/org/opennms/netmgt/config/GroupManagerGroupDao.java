@@ -45,7 +45,7 @@ import org.opennms.netmgt.config.groups.Group;
 import org.opennms.netmgt.config.groups.Role;
 import org.opennms.netmgt.config.groups.Schedule;
 import org.opennms.netmgt.dao.CastorObjectRetrievalFailureException;
-import org.opennms.netmgt.dao.castor.CastorExceptionTranslator;
+import org.opennms.netmgt.dao.support.MarshallingExceptionTranslator;
 import org.springframework.beans.factory.InitializingBean;
 import org.springframework.dao.DataAccessException;
 import org.springframework.util.Assert;
@@ -308,7 +308,7 @@ public class GroupManagerGroupDao implements GroupDao, InitializingBean {
         m_groupManager = groupManager;
     }
     
-    public static class GroupManagerCastorExceptionTranslator extends CastorExceptionTranslator {
+    public static class GroupManagerCastorExceptionTranslator extends MarshallingExceptionTranslator {
         public DataAccessException translate(String task, Throwable e) {
             return new CastorObjectRetrievalFailureException("General error while " + task + ": " + e, e);
         }

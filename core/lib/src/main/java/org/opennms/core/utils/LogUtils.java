@@ -252,6 +252,10 @@ public class LogUtils {
 	    return getLogger(logee).isTraceEnabled();
 	}
 
+	public static boolean isDebugEnabled(final Object logee) {
+	    return getLogger(logee).isDebugEnabled();
+	}
+
 	private static Logger getLogger(final Object logee) {
        Logger log;
 	    synchronized(m_hot) {

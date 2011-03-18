@@ -56,7 +56,7 @@ import org.opennms.netmgt.config.monitoringLocations.Locations;
 import org.opennms.netmgt.config.monitoringLocations.MonitoringLocationsConfiguration;
 import org.opennms.netmgt.config.tags.Tag;
 import org.opennms.netmgt.config.tags.Tags;
-import org.opennms.netmgt.dao.CastorDataAccessFailureException;
+import org.opennms.netmgt.dao.MarshallingDataAccessFailureException;
 import org.opennms.netmgt.dao.LocationMonitorDao;
 import org.opennms.netmgt.dao.castor.CastorUtils;
 import org.opennms.netmgt.model.LocationMonitorIpInterface;
@@ -200,13 +200,13 @@ public class LocationMonitorDaoHibernate extends AbstractDaoHibernate<OnmsLocati
             xml = writer.toString();
             saveXml(xml);
         } catch (final MarshalException e) {
-            throw new CastorDataAccessFailureException("saveMonitoringConfig: couldn't marshal confg: \n"+
+            throw new MarshallingDataAccessFailureException("saveMonitoringConfig: couldn't marshal confg: \n"+
                    (xml != null ? xml : ""), e);
         } catch (final ValidationException e) {
-            throw new CastorDataAccessFailureException("saveMonitoringConfig: couldn't validate confg: \n"+
+            throw new MarshallingDataAccessFailureException("saveMonitoringConfig: couldn't validate confg: \n"+
                     (xml != null ? xml : ""), e);
         } catch (final IOException e) {
-            throw new CastorDataAccessFailureException("saveMonitoringConfig: couldn't write confg: \n"+
+            throw new MarshallingDataAccessFailureException("saveMonitoringConfig: couldn't write confg: \n"+
                     (xml != null ? xml : ""), e);
         }
     }

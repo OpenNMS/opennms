@@ -70,7 +70,7 @@ import org.opennms.netmgt.config.poller.Package;
 import org.opennms.netmgt.config.poller.Parameter;
 import org.opennms.netmgt.config.poller.PollerConfiguration;
 import org.opennms.netmgt.config.poller.Service;
-import org.opennms.netmgt.dao.CastorDataAccessFailureException;
+import org.opennms.netmgt.dao.MarshallingDataAccessFailureException;
 import org.opennms.netmgt.dao.CastorObjectRetrievalFailureException;
 import org.opennms.netmgt.dao.castor.CastorUtils;
 import org.opennms.netmgt.filter.FilterDaoFactory;
@@ -1058,7 +1058,7 @@ abstract public class PollerConfigManager implements PollerConfig {
     private Class<? extends ServiceMonitor> findServiceMonitorClass(final Monitor monitor) throws ClassNotFoundException {
         final Class<? extends ServiceMonitor> mc = Class.forName(monitor.getClassName()).asSubclass(ServiceMonitor.class);
         if (!ServiceMonitor.class.isAssignableFrom(mc)) {
-            throw new CastorDataAccessFailureException("The monitor for service: "+monitor.getService()+" class-name: "+monitor.getClassName()+" must implement ServiceMonitor");
+            throw new MarshallingDataAccessFailureException("The monitor for service: "+monitor.getService()+" class-name: "+monitor.getClassName()+" must implement ServiceMonitor");
         }
         return mc;
     }

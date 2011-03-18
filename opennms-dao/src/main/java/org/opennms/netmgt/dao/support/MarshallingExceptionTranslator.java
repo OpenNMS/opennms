@@ -33,14 +33,17 @@
  *      http://www.opennms.org/
  *      http://www.opennms.com/
  */
-package org.opennms.netmgt.dao.castor;
+package org.opennms.netmgt.dao.support;
 
 import java.io.IOException;
 
+import javax.xml.bind.JAXBException;
+
 import org.exolab.castor.xml.MarshalException;
 import org.exolab.castor.xml.ValidationException;
-import org.opennms.netmgt.dao.CastorDataAccessFailureException;
+import org.opennms.netmgt.dao.MarshallingDataAccessFailureException;
 import org.springframework.dao.DataAccessException;
+import org.xml.sax.SAXException;
 
 /**
  * This is modeled after the Spring SQLExceptionTrnaslator.
@@ -48,7 +51,7 @@ import org.springframework.dao.DataAccessException;
  * @author <a href="mailto:dj@opennms.org">DJ Gregor</a>
  * @version $Id: $
  */
-public class CastorExceptionTranslator {
+public class MarshallingExceptionTranslator {
     /**
      * <p>translate</p>
      *
@@ -56,8 +59,8 @@ public class CastorExceptionTranslator {
      * @param e a {@link java.io.IOException} object.
      * @return a {@link org.springframework.dao.DataAccessException} object.
      */
-    public DataAccessException translate(String task, IOException e) {
-        return new CastorDataAccessFailureException("Failed to perform IO while " + task + ": " + e, e);
+    public DataAccessException translate(final String task, final IOException e) {
+        return new MarshallingDataAccessFailureException("Failed to perform IO while " + task + ": " + e, e);
     }
     
     /**
@@ -67,8 +70,8 @@ public class CastorExceptionTranslator {
      * @param e a {@link org.exolab.castor.xml.ValidationException} object.
      * @return a {@link org.springframework.dao.DataAccessException} object.
      */
-    public DataAccessException translate(String task, ValidationException e) {
-        return new CastorDataAccessFailureException("Failed to validate XML file while " + task + ": " + e, e);
+    public DataAccessException translate(final String task, final ValidationException e) {
+        return new MarshallingDataAccessFailureException("Failed to validate XML file while " + task + ": " + e, e);
     }
     
     /**
@@ -78,7 +81,15 @@ public class CastorExceptionTranslator {
      * @param e a {@link org.exolab.castor.xml.MarshalException} object.
      * @return a {@link org.springframework.dao.DataAccessException} object.
      */
-    public DataAccessException translate(String task, MarshalException e) {
-        return new CastorDataAccessFailureException("Failed to marshal/unmarshal XML file while " + task + ": " + e, e);
+    public DataAccessException translate(final String task, final MarshalException e) {
+        return new MarshallingDataAccessFailureException("Failed to marshal/unmarshal XML file while " + task + ": " + e, e);
     }
+
+	public DataAccessException translate(final String task, final JAXBException e) {
+        return new MarshallingDataAccessFailureException("Failed to marshal/unmarshal XML file while " + task + ": " + e, e);
+	}
+
+	public DataAccessException translate(final String task, final SAXException e) {
+        return new MarshallingDataAccessFailureException("Failed to marshal/unmarshal XML file while " + task + ": " + e, e);
+	}
 }

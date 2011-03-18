@@ -57,6 +57,7 @@ import org.exolab.castor.xml.MarshalException;
 import org.exolab.castor.xml.Marshaller;
 import org.exolab.castor.xml.Unmarshaller;
 import org.exolab.castor.xml.ValidationException;
+import org.opennms.netmgt.dao.support.MarshallingExceptionTranslator;
 import org.springframework.core.io.Resource;
 import org.springframework.dao.DataAccessException;
 import org.xml.sax.InputSource;
@@ -68,7 +69,7 @@ import org.xml.sax.InputSource;
  * @version $Id: $
  */
 public class CastorUtils {
-    private static final CastorExceptionTranslator CASTOR_EXCEPTION_TRANSLATOR = new CastorExceptionTranslator();
+    private static final MarshallingExceptionTranslator CASTOR_EXCEPTION_TRANSLATOR = new MarshallingExceptionTranslator();
     private static final boolean DEFAULT_PRESERVATION_BEHAVIOR = false;
 
     /** Private constructor since this class only has static methods (so far). */
@@ -83,7 +84,7 @@ public class CastorUtils {
      * @throws org.springframework.dao.DataAccessException if the underlying Castor
      *      Marshaller.marshal() call throws a MarshalException or
      *      ValidationException.  The underlying exception will be translated
-     *      using CastorExceptionTranslator.
+     *      using MarshallingExceptionTranslator.
      */
     public static void marshalWithTranslatedExceptions(Object obj, Writer writer) throws DataAccessException {
         try {
@@ -110,7 +111,7 @@ public class CastorUtils {
      * @throws org.springframework.dao.DataAccessException if the underlying Castor
      *      Marshaller.marshal() call throws a MarshalException or
      *      ValidationException.  The underlying exception will be translated
-     *      using CastorExceptionTranslator.
+     *      using MarshallingExceptionTranslator.
      * @param resource a {@link org.springframework.core.io.Resource} object.
      */
     public static void marshalWithTranslatedExceptionsViaString(Object obj, Resource resource) throws DataAccessException {
@@ -292,7 +293,7 @@ public class CastorUtils {
      * @throws org.springframework.dao.DataAccessException if the underlying Castor
      *      Unmarshaller.unmarshal() call throws a MarshalException or
      *      ValidationException.  The underlying exception will be translated
-     *      using CastorExceptionTranslator.
+     *      using MarshallingExceptionTranslator.
      * @deprecated Use a Resource or InputStream-based method instead to avoid character set issues.
      */
     public static <T> T unmarshalWithTranslatedExceptions(Class<T> clazz, Reader reader) throws DataAccessException {
@@ -310,7 +311,7 @@ public class CastorUtils {
      * @throws org.springframework.dao.DataAccessException if the underlying Castor
      *      Unmarshaller.unmarshal() call throws a MarshalException or
      *      ValidationException.  The underlying exception will be translated
-     *      using CastorExceptionTranslator.
+     *      using MarshallingExceptionTranslator.
      * @deprecated Use a Resource or InputStream-based method instead to avoid character set issues.
      */
     public static <T> T unmarshalWithTranslatedExceptions(Class<T> clazz, Reader reader, boolean preserveWhitespace) throws DataAccessException {
@@ -333,7 +334,7 @@ public class CastorUtils {
      * @throws org.springframework.dao.DataAccessException if the underlying Castor
      *      Unmarshaller.unmarshal() call throws a MarshalException or
      *      ValidationException.  The underlying exception will be translated
-     *      using CastorExceptionTranslator.
+     *      using MarshallingExceptionTranslator.
      */
     public static <T> T unmarshalWithTranslatedExceptions(Class<T> clazz, InputStream in) throws DataAccessException {
         return unmarshalWithTranslatedExceptions(clazz, in, DEFAULT_PRESERVATION_BEHAVIOR);
@@ -350,7 +351,7 @@ public class CastorUtils {
      * @throws org.springframework.dao.DataAccessException if the underlying Castor
      *      Unmarshaller.unmarshal() call throws a MarshalException or
      *      ValidationException.  The underlying exception will be translated
-     *      using CastorExceptionTranslator.
+     *      using MarshallingExceptionTranslator.
      */
     public static <T> T unmarshalWithTranslatedExceptions(Class<T> clazz, InputStream in, boolean preserveWhitespace) throws DataAccessException {
         try {
@@ -373,7 +374,7 @@ public class CastorUtils {
      *      underlying Castor
      *      Unmarshaller.unmarshal() call throws a MarshalException or
      *      ValidationException.  The underlying exception will be translated
-     *      using CastorExceptionTranslator and will include information about
+     *      using MarshallingExceptionTranslator and will include information about
      *      the resource from its {@link Resource#toString() toString()} method.
      */
     public static <T> T unmarshalWithTranslatedExceptions(Class<T> clazz, Resource resource) {
@@ -391,7 +392,7 @@ public class CastorUtils {
      *      underlying Castor
      *      Unmarshaller.unmarshal() call throws a MarshalException or
      *      ValidationException.  The underlying exception will be translated
-     *      using CastorExceptionTranslator and will include information about
+     *      using MarshallingExceptionTranslator and will include information about
      *      the resource from its {@link Resource#toString() toString()} method.
      */
     public static <T> T unmarshalWithTranslatedExceptions(Class<T> clazz, Resource resource, boolean preserveWhitespace) {

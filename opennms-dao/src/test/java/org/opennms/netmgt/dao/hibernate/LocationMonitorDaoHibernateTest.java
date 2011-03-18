@@ -43,7 +43,7 @@ import java.util.Map;
 import java.util.Set;
 
 import org.opennms.netmgt.dao.AbstractTransactionalDaoTestCase;
-import org.opennms.netmgt.dao.CastorDataAccessFailureException;
+import org.opennms.netmgt.dao.MarshallingDataAccessFailureException;
 import org.opennms.netmgt.model.LocationMonitorIpInterface;
 import org.opennms.netmgt.model.OnmsLocationMonitor;
 import org.opennms.netmgt.model.OnmsLocationSpecificStatus;
@@ -112,7 +112,7 @@ public class LocationMonitorDaoHibernateTest extends AbstractTransactionalDaoTes
     
     public void testBogusConfig() {
         ThrowableAnticipator ta = new ThrowableAnticipator();
-        ta.anticipate(new CastorDataAccessFailureException(ThrowableAnticipator.IGNORE_MESSAGE));
+        ta.anticipate(new MarshallingDataAccessFailureException(ThrowableAnticipator.IGNORE_MESSAGE));
         try {
             getLocationMonitorDao().setMonitoringLocationConfigResource(new FileSystemResource("some bogus filename"));
         } catch (Throwable t) {

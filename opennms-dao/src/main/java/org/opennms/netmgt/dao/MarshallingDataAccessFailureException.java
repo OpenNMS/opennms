@@ -30,7 +30,7 @@
 //      http://www.opennms.com/
 //
 /**
- * <p>CastorDataAccessFailureException class.</p>
+ * <p>MarshallingDataAccessFailureException class.</p>
  *
  * @author ranger
  * @version $Id: $
@@ -38,25 +38,25 @@
 package org.opennms.netmgt.dao;
 
 import org.springframework.dao.DataAccessResourceFailureException;
-public class CastorDataAccessFailureException extends DataAccessResourceFailureException {
+public class MarshallingDataAccessFailureException extends DataAccessResourceFailureException {
     private static final long serialVersionUID = -5546624359373413751L;
     
     /**
-     * <p>Constructor for CastorDataAccessFailureException.</p>
+     * <p>Constructor for MarshallingDataAccessFailureException.</p>
      *
      * @param message a {@link java.lang.String} object.
      */
-    public CastorDataAccessFailureException(String message) {
+    public MarshallingDataAccessFailureException(String message) {
         super(message);
     }
     
     /**
-     * <p>Constructor for CastorDataAccessFailureException.</p>
+     * <p>Constructor for MarshallingDataAccessFailureException.</p>
      *
      * @param message a {@link java.lang.String} object.
      * @param throwable a {@link java.lang.Throwable} object.
      */
-    public CastorDataAccessFailureException(String message, Throwable throwable) {
+    public MarshallingDataAccessFailureException(String message, Throwable throwable) {
         super(message, throwable);
     }
 }

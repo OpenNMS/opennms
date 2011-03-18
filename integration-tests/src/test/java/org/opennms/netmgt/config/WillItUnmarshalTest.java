@@ -53,9 +53,7 @@ import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
 
-import javax.xml.bind.JAXBContext;
 import javax.xml.bind.JAXBException;
-import javax.xml.bind.Unmarshaller;
 
 import junit.framework.AssertionFailedError;
 
@@ -132,6 +130,7 @@ import org.opennms.netmgt.config.xmlrpcd.XmlrpcdConfiguration;
 import org.opennms.netmgt.config.xmpConfig.XmpConfig;
 import org.opennms.netmgt.config.xmpDataCollection.XmpDatacollectionConfig;
 import org.opennms.netmgt.dao.castor.CastorUtils;
+import org.opennms.netmgt.dao.jaxb.JaxbUtils;
 import org.opennms.netmgt.provision.persist.requisition.Requisition;
 import org.opennms.netmgt.xml.eventconf.Events;
 import org.opennms.test.ConfigurationTestUtils;
@@ -139,6 +138,7 @@ import org.opennms.test.mock.MockLogAppender;
 import org.springframework.core.io.FileSystemResource;
 import org.springframework.core.io.Resource;
 import org.springframework.util.StringUtils;
+import org.xml.sax.InputSource;
 
 /**
  * The name of this class is a tribute to
@@ -724,25 +724,27 @@ public class WillItUnmarshalTest {
         }
     }
 
-    private static <T>T unmarshalJaxb(String configFile, Class<T> clazz) throws JAXBException {
+    @SuppressWarnings("unused")
+	private static <T>T unmarshalJaxb(final Resource resource, final Class<T> clazz) throws JAXBException, IOException {
+    	final T obj = JaxbUtils.unmarshal(clazz, new InputSource(resource.getInputStream()));
+        assertNotNull("unmarshalled object should not be null after unmarshalling from " + resource, obj);
+        m_filesTested.add(resource.getURI().toString());
+        return obj;
+    }
+
+    private static <T>T unmarshalJaxb(final String configFile, final Class<T> clazz) throws JAXBException, IOException {
         return unmarshalJaxb(ConfigurationTestUtils.getFileForConfigFile(configFile), clazz, m_filesTested, configFile);
     }
 
-    private static <T>T unmarshalJaxbExample(String configFile, Class<T> clazz) throws JAXBException {
+    private static <T>T unmarshalJaxbExample(final String configFile, final Class<T> clazz) throws JAXBException, IOException {
         return unmarshalJaxb(ConfigurationTestUtils.getFileForConfigFile("examples/" + configFile), clazz, m_exampleFilesTested, configFile);
     }
 
-    @SuppressWarnings("unchecked")
-    private static <T>T unmarshalJaxb(File file, Class<T> clazz, Set<String> testedSet, String fileName) throws JAXBException {
-        JAXBContext context = JAXBContext.newInstance(clazz);
-        Unmarshaller um = context.createUnmarshaller();
-        um.setSchema(null);
-        T object = (T) um.unmarshal(file);
-
-        assertNotNull("unmarshalled object should not be null after unmarshalling from " + file.getAbsolutePath(), object);
+    private static <T> T unmarshalJaxb(final File file, final Class<T> clazz, final Set<String> testedSet, final String fileName) throws JAXBException, IOException {
+    	final T obj = JaxbUtils.unmarshal(clazz, file);
+        assertNotNull("unmarshalled object should not be null after unmarshalling from " + file.getAbsolutePath(), obj);
         testedSet.add(fileName);
-
-        return object;
+        return obj;
     }
 
     private static <T>T unmarshal(String configFile, Class<T> clazz) throws MarshalException, ValidationException, IOException {
