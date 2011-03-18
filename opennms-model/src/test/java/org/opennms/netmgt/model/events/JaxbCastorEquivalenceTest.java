@@ -14,6 +14,9 @@ import java.util.List;
 import javax.xml.bind.JAXBContext;
 import javax.xml.bind.Unmarshaller;
 import javax.xml.transform.sax.SAXSource;
+import javax.xml.transform.stream.StreamSource;
+import javax.xml.validation.Schema;
+import javax.xml.validation.SchemaFactory;
 
 import org.custommonkey.xmlunit.DetailedDiff;
 import org.custommonkey.xmlunit.Difference;
@@ -61,15 +64,11 @@ public class JaxbCastorEquivalenceTest {
 		
         StringWriter jaxbWriter = new StringWriter();
         final JAXBContext c = JAXBContext.newInstance("org.opennms.netmgt.xml.event");
-//        final JAXBContext c = JAXBContext.newInstance(AlarmData.class, Autoacknowledge.class, Autoaction.class, Correlation.class, Event.class, EventReceipt.class, Events.class, Forward.class, Header.class, Log.class, Logmsg.class, Mask.class, Maskelement.class, Operaction.class, Parm.class, Parms.class, Script.class, Snmp.class, Tticket.class, Value.class);
         final javax.xml.bind.Marshaller jaxbMarshaller = c.createMarshaller();
 
-        /*
-        String schemaLang = "http://www.w3.org/2001/XMLSchema";
-        SchemaFactory factory = SchemaFactory.newInstance(schemaLang);
-        Schema schema = factory.newSchema(new StreamSource("src/main/castor/event.xsd"));
-        jaxbMarshaller.setSchema(schema);
-        */
+        final SchemaFactory factory = SchemaFactory.newInstance("http://www.w3.org/2001/XMLSchema");
+        final Schema schema = factory.newSchema(new StreamSource("src/main/castor/event.xsd"));
+//        jaxbMarshaller.setSchema(schema);
 		jaxbMarshaller.marshal(event, jaxbWriter);
         final String jaxbXml = jaxbWriter.toString();
 		System.err.println("JAXB:   " + jaxbXml);
@@ -99,6 +98,7 @@ public class JaxbCastorEquivalenceTest {
 
         final Unmarshaller jaxbUnmarshaller = c.createUnmarshaller();
         jaxbUnmarshaller.setEventHandler(new javax.xml.bind.helpers.DefaultValidationEventHandler());
+//        jaxbUnmarshaller.setSchema(schema);
         XMLReader jaxbReader = XMLReaderFactory.createXMLReader();
         StringReader castorXmlReader = new StringReader(castorXml);
         final InputSource xmlSource = new InputSource(castorXmlReader);
