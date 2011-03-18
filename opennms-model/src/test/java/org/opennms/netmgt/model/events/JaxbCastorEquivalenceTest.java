@@ -5,6 +5,7 @@ import static org.junit.Assert.assertNotNull;
 import static org.opennms.core.utils.InetAddressUtils.addr;
 
 import java.io.IOException;
+import java.io.Reader;
 import java.io.StringReader;
 import java.io.StringWriter;
 import java.util.Date;
@@ -59,8 +60,8 @@ public class JaxbCastorEquivalenceTest {
 		final Event event = getFullEvent();
 		
         StringWriter jaxbWriter = new StringWriter();
-//        final JAXBContext c = JAXBContext.newInstance("org.opennms.netmgt.xml.event");
-        final JAXBContext c = JAXBContext.newInstance(AlarmData.class, Autoacknowledge.class, Autoaction.class, Correlation.class, Event.class, EventReceipt.class, Events.class, Forward.class, Header.class, Log.class, Logmsg.class, Mask.class, Maskelement.class, Operaction.class, Parm.class, Parms.class, Script.class, Snmp.class, Tticket.class, Value.class);
+        final JAXBContext c = JAXBContext.newInstance("org.opennms.netmgt.xml.event");
+//        final JAXBContext c = JAXBContext.newInstance(AlarmData.class, Autoacknowledge.class, Autoaction.class, Correlation.class, Event.class, EventReceipt.class, Events.class, Forward.class, Header.class, Log.class, Logmsg.class, Mask.class, Maskelement.class, Operaction.class, Parm.class, Parms.class, Script.class, Snmp.class, Tticket.class, Value.class);
         final javax.xml.bind.Marshaller jaxbMarshaller = c.createMarshaller();
 
         /*
@@ -87,20 +88,26 @@ public class JaxbCastorEquivalenceTest {
         
         assertXmlEquals(formattedCastorXml, jaxbXml);
 
+        org.exolab.castor.xml.Unmarshaller castorUnmarshaller = new org.exolab.castor.xml.Unmarshaller(Event.class);
+        castorUnmarshaller.setIgnoreExtraAttributes(false);
+        castorUnmarshaller.setIgnoreExtraElements(false);
+        castorUnmarshaller.setWhitespacePreserve(true);
+        final Reader jaxbStringReader = new StringReader(jaxbXml);
+        final InputSource jaxbInputSource = new InputSource(jaxbStringReader);
+        final Event jaxbEvent = (Event)castorUnmarshaller.unmarshal(jaxbInputSource);
+        System.err.println("event = " + jaxbEvent);
+
         final Unmarshaller jaxbUnmarshaller = c.createUnmarshaller();
-//        jaxbUnmarshaller.setEventHandler(new javax.xml.bind.helpers.DefaultValidationEventHandler());
+        jaxbUnmarshaller.setEventHandler(new javax.xml.bind.helpers.DefaultValidationEventHandler());
         XMLReader jaxbReader = XMLReaderFactory.createXMLReader();
-        StringReader castorXmlReader = new StringReader(formattedCastorXml);
+        StringReader castorXmlReader = new StringReader(castorXml);
         final InputSource xmlSource = new InputSource(castorXmlReader);
 
-        final Event castorEvent = (Event)jaxbUnmarshaller.unmarshal(xmlSource);
-        /*
-        final SimpleNamespaceFilter filter = new SimpleNamespaceFilter("http://xmlns.opennms.org/xsd/event", false);
+        final SimpleNamespaceFilter filter = new SimpleNamespaceFilter("http://xmlns.opennms.org/xsd/event", true);
         filter.setParent(jaxbReader);
 
-        final SAXSource source = new SAXSource(filter, new InputSource(castorXmlReader));
+        final SAXSource source = new SAXSource(filter, xmlSource);
         final Event castorEvent = (Event)jaxbUnmarshaller.unmarshal(source);
-        */
         assertNotNull(castorEvent);
 	}
 

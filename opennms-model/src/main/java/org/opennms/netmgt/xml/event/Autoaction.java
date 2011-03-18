@@ -17,6 +17,7 @@ import javax.xml.bind.annotation.XmlAttribute;
 import javax.xml.bind.annotation.XmlRootElement;
 import javax.xml.bind.annotation.XmlValue;
 
+import org.apache.commons.lang.builder.ToStringBuilder;
 import org.exolab.castor.xml.Marshaller;
 import org.exolab.castor.xml.Unmarshaller;
 
@@ -183,4 +184,10 @@ public class Autoaction {
         validator.validate(this);
     }
 
+    public String toString() {
+    	return new ToStringBuilder(this)
+    		.append("content", _content)
+    		.append("state", _state)
+    		.toString();
+    }
 }

@@ -16,6 +16,7 @@ import javax.xml.bind.annotation.XmlAccessorType;
 import javax.xml.bind.annotation.XmlAttribute;
 import javax.xml.bind.annotation.XmlRootElement;
 
+import org.apache.commons.lang.builder.ToStringBuilder;
 import org.exolab.castor.xml.Marshaller;
 import org.exolab.castor.xml.Unmarshaller;
 
@@ -25,7 +26,7 @@ import org.exolab.castor.xml.Unmarshaller;
  * @version $Revision$ $Date$
  */
 
-@XmlRootElement(name="event")
+@XmlRootElement(name="alarm-data")
 @XmlAccessorType(XmlAccessType.FIELD)
 public class AlarmData {
 
@@ -342,4 +343,14 @@ public class AlarmData {
         validator.validate(this);
     }
 
+    public String toString() {
+    	return new ToStringBuilder(this)
+    		.append("reduction-key", _reductionKey)
+    		.append("alarm-type", _alarmType)
+    		.append("clear-key", _clearKey)
+    		.append("auto-clean", _autoClean)
+    		.append("x733-alarm-type", _x733AlarmType)
+    		.append("x733-probable-cause", _x733ProbableCause)
+    		.toString();
+    }
 }

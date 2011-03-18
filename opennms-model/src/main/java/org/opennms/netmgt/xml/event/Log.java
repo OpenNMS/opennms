@@ -11,6 +11,12 @@ package org.opennms.netmgt.xml.event;
  //- Imported classes and packages -/
 //---------------------------------/
 
+import javax.xml.bind.annotation.XmlAccessType;
+import javax.xml.bind.annotation.XmlAccessorType;
+import javax.xml.bind.annotation.XmlElement;
+import javax.xml.bind.annotation.XmlRootElement;
+
+import org.apache.commons.lang.builder.ToStringBuilder;
 import org.exolab.castor.xml.Marshaller;
 import org.exolab.castor.xml.Unmarshaller;
 
@@ -20,7 +26,9 @@ import org.exolab.castor.xml.Unmarshaller;
  * @version $Revision$ $Date$
  */
 
-@SuppressWarnings("all") public class Log implements java.io.Serializable {
+@XmlRootElement(name="log")
+@XmlAccessorType(XmlAccessType.FIELD)
+public class Log {
 
 
       //--------------------------/
@@ -30,11 +38,13 @@ import org.exolab.castor.xml.Unmarshaller;
     /**
      * Field _header.
      */
+	@XmlElement(name="header", required=true)
     private org.opennms.netmgt.xml.event.Header _header;
 
     /**
      * Field _events.
      */
+	@XmlElement(name="events", required=true)
     private org.opennms.netmgt.xml.event.Events _events;
 
 
@@ -167,4 +177,10 @@ import org.exolab.castor.xml.Unmarshaller;
         validator.validate(this);
     }
 
+    public String toString() {
+    	return new ToStringBuilder(this)
+    		.append("header", _header)
+    		.append("events", _events)
+    		.toString();
+    }
 }

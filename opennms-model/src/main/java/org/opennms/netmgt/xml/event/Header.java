@@ -11,6 +11,12 @@ package org.opennms.netmgt.xml.event;
  //- Imported classes and packages -/
 //---------------------------------/
 
+import javax.xml.bind.annotation.XmlAccessType;
+import javax.xml.bind.annotation.XmlAccessorType;
+import javax.xml.bind.annotation.XmlElement;
+import javax.xml.bind.annotation.XmlRootElement;
+
+import org.apache.commons.lang.builder.ToStringBuilder;
 import org.exolab.castor.xml.Marshaller;
 import org.exolab.castor.xml.Unmarshaller;
 
@@ -20,7 +26,9 @@ import org.exolab.castor.xml.Unmarshaller;
  * @version $Revision$ $Date$
  */
 
-@SuppressWarnings("all") public class Header implements java.io.Serializable {
+@XmlRootElement(name="header")
+@XmlAccessorType(XmlAccessType.FIELD)
+public class Header {
 
 
       //--------------------------/
@@ -30,11 +38,13 @@ import org.exolab.castor.xml.Unmarshaller;
     /**
      * Field _ver.
      */
+	@XmlElement(name="ver")
     private java.lang.String _ver;
 
     /**
      * Field _dpName.
      */
+	@XmlElement(name="dpName")
     private java.lang.String _dpName;
 
     /**
@@ -44,11 +54,13 @@ import org.exolab.castor.xml.Unmarshaller;
      *  DateFormat.FULL style for the default locale. For example:
      *  "Monday, February 18, 2002 3:01:58 PM EST"
      */
+	@XmlElement(name="created")
     private java.lang.String _created;
 
     /**
      * Field _mstation.
      */
+	@XmlElement(name="mstation")
     private java.lang.String _mstation;
 
 
@@ -233,4 +245,12 @@ import org.exolab.castor.xml.Unmarshaller;
         validator.validate(this);
     }
 
+    public String toString() {
+    	return new ToStringBuilder(this)
+    		.append("ver", _ver)
+    		.append("dpName", _dpName)
+    		.append("created", _created)
+    		.append("mstation", _mstation)
+    		.toString();
+    }
 }

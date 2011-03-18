@@ -17,6 +17,7 @@ import javax.xml.bind.annotation.XmlAttribute;
 import javax.xml.bind.annotation.XmlElement;
 import javax.xml.bind.annotation.XmlRootElement;
 
+import org.apache.commons.lang.builder.ToStringBuilder;
 import org.exolab.castor.xml.Marshaller;
 import org.exolab.castor.xml.Unmarshaller;
 
@@ -475,4 +476,14 @@ public class Correlation {
         validator.validate(this);
     }
 
+    public String toString() {
+    	return new ToStringBuilder(this)
+    		.append("state", _state)
+    		.append("path", _path)
+    		.append("cuei", _cueiList)
+    		.append("cmin", _cmin)
+    		.append("cmax", _cmax)
+    		.append("ctime", _ctime)
+    		.toString();
+    }
 }

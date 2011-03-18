@@ -30,7 +30,7 @@ public class SimpleNamespaceFilter extends XMLFilterImpl {
     }
     @Override
     public void startElement(final String uri, final String localName, final String qName, final Attributes attributes) throws SAXException {
-    	LogUtils.debugf(this, "start: uri = %s, localName = %s, qName = %s, attributes = %s", uri, localName, qName, attributes);
+    	if (LogUtils.isTraceEnabled(this)) LogUtils.tracef(this, "start: uri = %s, localName = %s, qName = %s, attributes = %s", uri, localName, qName, attributes);
     	if (m_addNamespace) {
     		super.startElement(m_usedNamespaceUri, localName, qName, attributes);
     	}  else {
@@ -40,7 +40,7 @@ public class SimpleNamespaceFilter extends XMLFilterImpl {
 
     @Override
     public void endElement(final String uri, final String localName, final String qName) throws SAXException {
-    	LogUtils.debugf(this, "end:   uri = %s, localName = %s, qName = %s", uri, localName, qName);
+    	if (LogUtils.isTraceEnabled(this)) LogUtils.tracef(this, "end:   uri = %s, localName = %s, qName = %s", uri, localName, qName);
     	if(m_addNamespace) {
     		super.endElement(m_usedNamespaceUri, localName, qName);
     	} else {

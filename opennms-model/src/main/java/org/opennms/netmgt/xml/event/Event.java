@@ -17,6 +17,7 @@ import javax.xml.bind.annotation.XmlAttribute;
 import javax.xml.bind.annotation.XmlElement;
 import javax.xml.bind.annotation.XmlRootElement;
 
+import org.apache.commons.lang.builder.ToStringBuilder;
 import org.exolab.castor.xml.Marshaller;
 import org.exolab.castor.xml.Unmarshaller;
 
@@ -26,7 +27,7 @@ import org.exolab.castor.xml.Unmarshaller;
  * @version $Revision$ $Date$
  */
 
-@XmlRootElement(name="event", namespace="http://xmlns.opennms.org/xsd/event")
+@XmlRootElement(name="event")
 @XmlAccessorType(XmlAccessType.FIELD)
 public class Event {
 
@@ -2056,4 +2057,41 @@ public class Event {
         validator.validate(this);
     }
 
+    public String toString() {
+    	return new ToStringBuilder(this)
+    		.append("uuid", _uuid)
+    		.append("dbid", _dbid)
+    		.append("dist-poller", _distPoller)
+    		.append("creation-time", _creationTime)
+    		.append("master-station", _masterStation)
+    		.append("mask", _mask)
+    		.append("uei", _uei)
+    		.append("source", _source)
+    		.append("nodeid", _nodeid)
+    		.append("time", _time)
+    		.append("host", _host)
+    		.append("interface", _interface)
+    		.append("snmphost", _snmphost)
+    		.append("service", _service)
+    		.append("snmp", _snmp)
+    		.append("parms", _parms)
+    		.append("descr", _descr)
+    		.append("logmsg", _logmsg)
+    		.append("severity", _severity)
+    		.append("pathoutage", _pathoutage)
+    		.append("correlation", _correlation)
+    		.append("operinstruct", _operinstruct)
+    		.append("autoaction", _autoactionList)
+    		.append("operaction", _operactionList)
+    		.append("autoacknowledge", _autoacknowledge)
+    		.append("loggroup", _loggroupList)
+    		.append("tticket", _tticket)
+    		.append("forward", _forwardList)
+    		.append("script", _scriptList)
+    		.append("ifIndex", _ifIndex)
+    		.append("ifAlias", _ifAlias)
+    		.append("mouseovertext", _mouseovertext)
+    		.append("alarm-data", _alarmData)
+    		.toString();
+    }
 }
