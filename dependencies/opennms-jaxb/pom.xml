@@ -10,11 +10,10 @@
   <packaging>pom</packaging>
   <name>OpenNMS JAXB Dependencies</name>
   <properties>
-    <jaxbVersion>2.2.0</jaxbVersion>
+    <jaxbVersion>2.1.7</jaxbVersion>
     <fastInfosetVersion>1.2.2</fastInfosetVersion>
   </properties>
   <dependencies>
-    <!--
     <dependency>
       <groupId>javax.xml.bind</groupId>
       <artifactId>com.springsource.javax.xml.bind</artifactId>
@@ -35,7 +34,6 @@
       <artifactId>com.springsource.com.sun.xml.fastinfoset</artifactId>
       <version>${fastInfosetVersion}</version>
     </dependency>
-	 -->
   </dependencies>
   <repositories>
     <repository>

@@ -244,6 +244,7 @@ public class JaxbCastorEquivalenceTest {
 		return logmsg;
 	}
 
+	@SuppressWarnings("deprecation")
 	private Parms getFullParms() {
 		final Parms parms = new Parms();
 		final Parm parm = new Parm("foo", "bar");
