@@ -8,8 +8,11 @@
   <includeBaseDirectory>false</includeBaseDirectory>
   <fileSets>
     <fileSet>
-      <directory>target/xsds</directory>
+      <directory>src/main/castor</directory>
       <outputDirectory>xsds</outputDirectory>
+      <includes>
+        <include>*.xsd</include>
+      </includes>
     </fileSet>
   </fileSets>
 </assembly>
