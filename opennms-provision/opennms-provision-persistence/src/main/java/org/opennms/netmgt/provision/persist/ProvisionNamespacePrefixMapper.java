@@ -1,6 +1,6 @@
 package org.opennms.netmgt.provision.persist;
 
-import com.sun.xml.bind.marshaller.NamespacePrefixMapper;
+import com.sun.xml.internal.bind.marshaller.NamespacePrefixMapper;
 
 /**
  * <p>ProvisionNamespacePrefixMapper class.</p>
@@ -8,6 +8,7 @@ import com.sun.xml.bind.marshaller.NamespacePrefixMapper;
  * @author ranger
  * @version $Id: $
  */
+@SuppressWarnings("restriction")
 public class ProvisionNamespacePrefixMapper extends NamespacePrefixMapper {
     private String m_defaultNamespace;
 

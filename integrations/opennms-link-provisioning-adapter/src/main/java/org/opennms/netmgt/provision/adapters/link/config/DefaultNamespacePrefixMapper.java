@@ -1,6 +1,6 @@
 package org.opennms.netmgt.provision.adapters.link.config;
 
-import com.sun.xml.bind.marshaller.NamespacePrefixMapper;
+import com.sun.xml.internal.bind.marshaller.NamespacePrefixMapper;
 
 /**
  * <p>DefaultNamespacePrefixMapper class.</p>
@@ -8,6 +8,7 @@ import com.sun.xml.bind.marshaller.NamespacePrefixMapper;
  * @author ranger
  * @version $Id: $
  */
+@SuppressWarnings("restriction")
 public class DefaultNamespacePrefixMapper extends NamespacePrefixMapper {
     private String m_uri;
 
