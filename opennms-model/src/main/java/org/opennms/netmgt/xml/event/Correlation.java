@@ -11,6 +11,8 @@ package org.opennms.netmgt.xml.event;
  //- Imported classes and packages -/
 //---------------------------------/
 
+import java.io.Serializable;
+
 import javax.xml.bind.annotation.XmlAccessType;
 import javax.xml.bind.annotation.XmlAccessorType;
 import javax.xml.bind.annotation.XmlAttribute;
@@ -27,14 +29,14 @@ import org.apache.commons.lang.builder.ToStringBuilder;
 
 @XmlRootElement(name="correlation")
 @XmlAccessorType(XmlAccessType.FIELD)
-public class Correlation {
-
+public class Correlation implements Serializable {
+	private static final long serialVersionUID = 7883869597194555535L;
 
       //--------------------------/
      //- Class/Member Variables -/
     //--------------------------/
 
-    /**
+	/**
      * The state determines if event is
      *  correlated
      */

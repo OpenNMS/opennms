@@ -1155,8 +1155,7 @@ public final class EventUtil {
 	
 	            // Make an input stream from the byte array and read
 	            // a copy of the object back in.
-	            ObjectInputStream in = new ObjectInputStream(
-	                new ByteArrayInputStream(bos.toByteArray()));
+	            ObjectInputStream in = new ObjectInputStream(new ByteArrayInputStream(bos.toByteArray()));
 	            copy = (Event)in.readObject();
 	        }
 	        catch(IOException e) {

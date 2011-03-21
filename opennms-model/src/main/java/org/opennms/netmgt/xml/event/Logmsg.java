@@ -11,6 +11,8 @@ package org.opennms.netmgt.xml.event;
  //- Imported classes and packages -/
 //---------------------------------/
 
+import java.io.Serializable;
+
 import javax.xml.bind.annotation.XmlAccessType;
 import javax.xml.bind.annotation.XmlAccessorType;
 import javax.xml.bind.annotation.XmlAttribute;
@@ -36,14 +38,14 @@ import org.apache.commons.lang.builder.ToStringBuilder;
 
 @XmlRootElement(name="logmsg")
 @XmlAccessorType(XmlAccessType.FIELD)
-public class Logmsg {
-
+public class Logmsg implements Serializable {
+	private static final long serialVersionUID = 1L;
 
       //--------------------------/
      //- Class/Member Variables -/
     //--------------------------/
 
-    /**
+	/**
      * internal content storage
      */
 	@XmlValue

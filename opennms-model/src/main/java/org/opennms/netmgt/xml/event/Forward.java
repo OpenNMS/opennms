@@ -11,6 +11,8 @@ package org.opennms.netmgt.xml.event;
  //- Imported classes and packages -/
 //---------------------------------/
 
+import java.io.Serializable;
+
 import javax.xml.bind.annotation.XmlAccessType;
 import javax.xml.bind.annotation.XmlAccessorType;
 import javax.xml.bind.annotation.XmlAttribute;
@@ -30,14 +32,14 @@ import org.apache.commons.lang.builder.ToStringBuilder;
 
 @XmlRootElement(name="forward")
 @XmlAccessorType(XmlAccessType.FIELD)
-public class Forward {
-
+public class Forward implements Serializable {
+	private static final long serialVersionUID = -4795441559557516585L;
 
       //--------------------------/
      //- Class/Member Variables -/
     //--------------------------/
 
-    /**
+	/**
      * internal content storage
      */
 	@XmlValue

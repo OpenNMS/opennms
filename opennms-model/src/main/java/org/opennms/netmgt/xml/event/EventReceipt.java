@@ -11,6 +11,8 @@ package org.opennms.netmgt.xml.event;
  //- Imported classes and packages -/
 //---------------------------------/
 
+import java.io.Serializable;
+
 import javax.xml.bind.annotation.XmlAccessType;
 import javax.xml.bind.annotation.XmlAccessorType;
 import javax.xml.bind.annotation.XmlElement;
@@ -26,14 +28,14 @@ import org.apache.commons.lang.builder.ToStringBuilder;
 
 @XmlRootElement(name="event-receipt")
 @XmlAccessorType(XmlAccessType.FIELD)
-public class EventReceipt {
-
+public class EventReceipt implements Serializable {
+	private static final long serialVersionUID = -3104058231772479313L;
 
       //--------------------------/
      //- Class/Member Variables -/
     //--------------------------/
 
-    /**
+	/**
      * Field _uuidList.
      */
 	@XmlElement(name="uuid")

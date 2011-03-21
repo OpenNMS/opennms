@@ -11,6 +11,8 @@ package org.opennms.netmgt.xml.event;
  //- Imported classes and packages -/
 //---------------------------------/
 
+import java.io.Serializable;
+
 import javax.xml.bind.annotation.XmlAccessType;
 import javax.xml.bind.annotation.XmlAccessorType;
 import javax.xml.bind.annotation.XmlAttribute;
@@ -27,14 +29,14 @@ import org.apache.commons.lang.builder.ToStringBuilder;
 
 @XmlRootElement(name="event")
 @XmlAccessorType(XmlAccessType.FIELD)
-public class Event {
-
+public class Event implements Serializable {
+	private static final long serialVersionUID = 3928732070467015212L;
 
       //--------------------------/
      //- Class/Member Variables -/
     //--------------------------/
 
-    /**
+	/**
      * Field _uuid.
      */
 	@XmlAttribute(name="uuid")
@@ -1336,8 +1338,7 @@ public class Event {
      * @param index
      * @return the element removed from the collection
      */
-    public org.opennms.netmgt.xml.event.Script removeScriptAt(
-            final int index) {
+    public org.opennms.netmgt.xml.event.Script removeScriptAt(final int index) {
         java.lang.Object obj = this._scriptList.remove(index);
         return (org.opennms.netmgt.xml.event.Script) obj;
     }
@@ -1348,8 +1349,7 @@ public class Event {
      * 
      * @param alarmData the value of field 'alarmData'.
      */
-    public void setAlarmData(
-            final org.opennms.netmgt.xml.event.AlarmData alarmData) {
+    public void setAlarmData(final org.opennms.netmgt.xml.event.AlarmData alarmData) {
         this._alarmData = alarmData;
     }
 

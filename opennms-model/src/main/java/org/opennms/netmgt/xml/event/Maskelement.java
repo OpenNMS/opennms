@@ -11,6 +11,8 @@ package org.opennms.netmgt.xml.event;
  //- Imported classes and packages -/
 //---------------------------------/
 
+import java.io.Serializable;
+
 import javax.xml.bind.annotation.XmlAccessType;
 import javax.xml.bind.annotation.XmlAccessorType;
 import javax.xml.bind.annotation.XmlElement;
@@ -26,14 +28,14 @@ import org.apache.commons.lang.builder.ToStringBuilder;
 
 @XmlRootElement(name="maskelement")
 @XmlAccessorType(XmlAccessType.FIELD)
-public class Maskelement {
-
+public class Maskelement implements Serializable {
+	private static final long serialVersionUID = 6355834996920103487L;
 
       //--------------------------/
      //- Class/Member Variables -/
     //--------------------------/
 
-    /**
+	/**
      * The mask element name can only be one of those
      *  specified above
      */

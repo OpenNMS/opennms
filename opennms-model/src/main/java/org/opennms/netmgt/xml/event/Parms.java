@@ -11,6 +11,8 @@ package org.opennms.netmgt.xml.event;
  //- Imported classes and packages -/
 //---------------------------------/
 
+import java.io.Serializable;
+
 import javax.xml.bind.annotation.XmlAccessType;
 import javax.xml.bind.annotation.XmlAccessorType;
 import javax.xml.bind.annotation.XmlElement;
@@ -27,11 +29,11 @@ import org.apache.commons.lang.builder.ToStringBuilder;
 @XmlRootElement(name="parms")
 @XmlAccessorType(XmlAccessType.FIELD)
 @Deprecated
-public class Parms {
+public class Parms implements Serializable {
+	private static final long serialVersionUID = 1361348948961582446L;
 
-
-      //--------------------------/
-     //- Class/Member Variables -/
+	//--------------------------/
+	//- Class/Member Variables -/
     //--------------------------/
 
     /**

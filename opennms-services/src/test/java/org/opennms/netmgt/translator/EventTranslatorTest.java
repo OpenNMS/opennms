@@ -341,7 +341,7 @@ public class EventTranslatorTest {
 
     private void validateTranslatedEvent(Event event) {
 		assertEquals(m_translator.getName(), event.getSource());
-		assertEquals(Integer.valueOf(3), event.getNodeid());
+		assertEquals(Long.valueOf(3), event.getNodeid());
 		assertEquals("www.opennms.org", event.getHost());
         assertEquals("a generated event", event.getDescr());
         assertEquals("192.168.1.1", event.getInterface());
