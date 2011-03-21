@@ -82,7 +82,7 @@ import org.xml.sax.InputSource;
  */
 final class TcpStreamHandler implements Runnable {
     /**
-     * The registered list of event handlers. Each incomming event will be
+     * The registered list of event handlers. Each incoming event will be
      * passed to all event handlers. The event handlers <em>MUST NOT</em>
      * modify the passed event.
      */
@@ -196,14 +196,14 @@ final class TcpStreamHandler implements Runnable {
          * This linked list is used to exchange
          * instances of PipedOutputStreams. Whenever a
          * pipe output stream is recovered it must be
-         * signaed to inform the EOT thread of the
+         * signaled to inform the EOT thread of the
          * ability to write to the pipe. Also, when
          * the descriptor is close a EOFException is
          * passed on the list.
          */
         final LinkedList<Object> pipeXchange = new LinkedList<Object>();
         final TcpRecordHandler chunker = new TcpRecordHandler(m_connection, pipeXchange);
-        final Thread tchunker = new Thread(chunker, "TCPRecord Chuncker[" + m_connection.getInetAddress().getHostAddress() + ":" + m_connection.getPort() + "]");
+        final Thread tchunker = new Thread(chunker, "TCPRecord Chunker[" + m_connection.getInetAddress().getHostAddress() + ":" + m_connection.getPort() + "]");
         synchronized (tchunker) {
             tchunker.start();
             try {
@@ -363,7 +363,7 @@ final class TcpStreamHandler implements Runnable {
                              *  but don't die on these errors
                              */
                             try {
-                            	LogUtils.debugf(this, "handling event, uei = %s", event.getUei());
+                            	LogUtils.debugf(this, "handling event: %s", event);
 
                                 // shortcut and BOTH parts MUST execute!
                                 if (hdl.processEvent(event)) {

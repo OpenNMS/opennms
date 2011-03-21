@@ -17,8 +17,6 @@ import javax.xml.bind.annotation.XmlElement;
 import javax.xml.bind.annotation.XmlRootElement;
 
 import org.apache.commons.lang.builder.ToStringBuilder;
-import org.exolab.castor.xml.Marshaller;
-import org.exolab.castor.xml.Unmarshaller;
 
 /**
  * The mask element
@@ -173,21 +171,6 @@ public class Maskelement {
     }
 
     /**
-     * Method isValid.
-     * 
-     * @return true if this object is valid according to the schema
-     */
-    public boolean isValid(
-    ) {
-        try {
-            validate();
-        } catch (org.exolab.castor.xml.ValidationException vex) {
-            return false;
-        }
-        return true;
-    }
-
-    /**
      * Method iterateMevalue.
      * 
      * @return an Iterator over all possible elements in this
@@ -196,38 +179,6 @@ public class Maskelement {
     public java.util.Iterator<java.lang.String> iterateMevalue(
     ) {
         return this._mevalueList.iterator();
-    }
-
-    /**
-     * 
-     * 
-     * @param out
-     * @throws org.exolab.castor.xml.MarshalException if object is
-     * null or if any SAXException is thrown during marshaling
-     * @throws org.exolab.castor.xml.ValidationException if this
-     * object is an invalid instance according to the schema
-     */
-    public void marshal(
-            final java.io.Writer out)
-    throws org.exolab.castor.xml.MarshalException, org.exolab.castor.xml.ValidationException {
-        Marshaller.marshal(this, out);
-    }
-
-    /**
-     * 
-     * 
-     * @param handler
-     * @throws java.io.IOException if an IOException occurs during
-     * marshaling
-     * @throws org.exolab.castor.xml.ValidationException if this
-     * object is an invalid instance according to the schema
-     * @throws org.exolab.castor.xml.MarshalException if object is
-     * null or if any SAXException is thrown during marshaling
-     */
-    public void marshal(
-            final org.xml.sax.ContentHandler handler)
-    throws java.io.IOException, org.exolab.castor.xml.MarshalException, org.exolab.castor.xml.ValidationException {
-        Marshaller.marshal(this, handler);
     }
 
     /**
@@ -333,36 +284,6 @@ public class Maskelement {
     public void setMevalueCollection(
             final java.util.List<java.lang.String> mevalueList) {
         this._mevalueList = mevalueList;
-    }
-
-    /**
-     * Method unmarshal.
-     * 
-     * @param reader
-     * @throws org.exolab.castor.xml.MarshalException if object is
-     * null or if any SAXException is thrown during marshaling
-     * @throws org.exolab.castor.xml.ValidationException if this
-     * object is an invalid instance according to the schema
-     * @return the unmarshaled
-     * org.opennms.netmgt.xml.event.Maskelement
-     */
-    public static org.opennms.netmgt.xml.event.Maskelement unmarshal(
-            final java.io.Reader reader)
-    throws org.exolab.castor.xml.MarshalException, org.exolab.castor.xml.ValidationException {
-        return (org.opennms.netmgt.xml.event.Maskelement) Unmarshaller.unmarshal(org.opennms.netmgt.xml.event.Maskelement.class, reader);
-    }
-
-    /**
-     * 
-     * 
-     * @throws org.exolab.castor.xml.ValidationException if this
-     * object is an invalid instance according to the schema
-     */
-    public void validate(
-    )
-    throws org.exolab.castor.xml.ValidationException {
-        org.exolab.castor.xml.Validator validator = new org.exolab.castor.xml.Validator();
-        validator.validate(this);
     }
 
     public String toString() {

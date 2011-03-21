@@ -37,7 +37,8 @@
 
 package org.opennms.netmgt.eventd.adaptors.udp;
 
-import java.io.StringReader;
+import java.io.ByteArrayInputStream;
+import java.io.InputStream;
 import java.io.UnsupportedEncodingException;
 import java.net.DatagramPacket;
 import java.net.InetAddress;
@@ -46,9 +47,10 @@ import java.util.List;
 
 import org.exolab.castor.xml.MarshalException;
 import org.exolab.castor.xml.ValidationException;
-import org.opennms.netmgt.dao.castor.CastorUtils;
+import org.opennms.netmgt.dao.jaxb.JaxbUtils;
 import org.opennms.netmgt.xml.event.Event;
 import org.opennms.netmgt.xml.event.Log;
+import org.xml.sax.InputSource;
 
 /**
  * 
@@ -147,11 +149,10 @@ final class UdpReceivedEvent {
      * @throws org.exolab.castor.xml.MarshalException
      *             Thrown if the XML is malformed and cannot be converted.
      */
-    @SuppressWarnings("deprecation")
     Log unmarshal() throws ValidationException, MarshalException {
         if (m_log == null) {
-            StringReader rdr = new StringReader(m_eventXML);
-            m_log = CastorUtils.unmarshal(Log.class, rdr);
+        	final InputStream is = new ByteArrayInputStream(m_eventXML.getBytes());
+            m_log = JaxbUtils.unmarshal(Log.class, new InputSource(is));
         }
         return m_log;
     }

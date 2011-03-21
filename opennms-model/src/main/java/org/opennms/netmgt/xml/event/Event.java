@@ -18,8 +18,6 @@ import javax.xml.bind.annotation.XmlElement;
 import javax.xml.bind.annotation.XmlRootElement;
 
 import org.apache.commons.lang.builder.ToStringBuilder;
-import org.exolab.castor.xml.Marshaller;
-import org.exolab.castor.xml.Unmarshaller;
 
 /**
  * Class Event.
@@ -602,7 +600,7 @@ public class Event {
      */
     public Integer getDbid(
     ) {
-        return this._dbid;
+        return this._dbid == null? 0 : this._dbid;
     }
 
     /**
@@ -718,7 +716,7 @@ public class Event {
      */
     public Integer getIfIndex(
     ) {
-        return this._ifIndex;
+        return this._ifIndex == null? 0 : this._ifIndex;
     }
 
     /**
@@ -845,8 +843,7 @@ public class Event {
      * 
      * @return the value of field 'Nodeid'.
      */
-    public Long getNodeid(
-    ) {
+    public Long getNodeid() {
         return this._nodeid == null? -1 : this._nodeid;
     }
 
@@ -1136,21 +1133,6 @@ public class Event {
     }
 
     /**
-     * Method isValid.
-     * 
-     * @return true if this object is valid according to the schema
-     */
-    public boolean isValid(
-    ) {
-        try {
-            validate();
-        } catch (org.exolab.castor.xml.ValidationException vex) {
-            return false;
-        }
-        return true;
-    }
-
-    /**
      * Method iterateAutoaction.
      * 
      * @return an Iterator over all possible elements in this
@@ -1203,38 +1185,6 @@ public class Event {
     public java.util.Iterator<org.opennms.netmgt.xml.event.Script> iterateScript(
     ) {
         return this._scriptList.iterator();
-    }
-
-    /**
-     * 
-     * 
-     * @param out
-     * @throws org.exolab.castor.xml.MarshalException if object is
-     * null or if any SAXException is thrown during marshaling
-     * @throws org.exolab.castor.xml.ValidationException if this
-     * object is an invalid instance according to the schema
-     */
-    public void marshal(
-            final java.io.Writer out)
-    throws org.exolab.castor.xml.MarshalException, org.exolab.castor.xml.ValidationException {
-        Marshaller.marshal(this, out);
-    }
-
-    /**
-     * 
-     * 
-     * @param handler
-     * @throws java.io.IOException if an IOException occurs during
-     * marshaling
-     * @throws org.exolab.castor.xml.ValidationException if this
-     * object is an invalid instance according to the schema
-     * @throws org.exolab.castor.xml.MarshalException if object is
-     * null or if any SAXException is thrown during marshaling
-     */
-    public void marshal(
-            final org.xml.sax.ContentHandler handler)
-    throws java.io.IOException, org.exolab.castor.xml.MarshalException, org.exolab.castor.xml.ValidationException {
-        Marshaller.marshal(this, handler);
     }
 
     /**
@@ -2021,35 +1971,6 @@ public class Event {
     public void setUuid(
             final java.lang.String uuid) {
         this._uuid = uuid;
-    }
-
-    /**
-     * Method unmarshal.
-     * 
-     * @param reader
-     * @throws org.exolab.castor.xml.MarshalException if object is
-     * null or if any SAXException is thrown during marshaling
-     * @throws org.exolab.castor.xml.ValidationException if this
-     * object is an invalid instance according to the schema
-     * @return the unmarshaled org.opennms.netmgt.xml.event.Event
-     */
-    public static org.opennms.netmgt.xml.event.Event unmarshal(
-            final java.io.Reader reader)
-    throws org.exolab.castor.xml.MarshalException, org.exolab.castor.xml.ValidationException {
-        return (org.opennms.netmgt.xml.event.Event) Unmarshaller.unmarshal(org.opennms.netmgt.xml.event.Event.class, reader);
-    }
-
-    /**
-     * 
-     * 
-     * @throws org.exolab.castor.xml.ValidationException if this
-     * object is an invalid instance according to the schema
-     */
-    public void validate(
-    )
-    throws org.exolab.castor.xml.ValidationException {
-        org.exolab.castor.xml.Validator validator = new org.exolab.castor.xml.Validator();
-        validator.validate(this);
     }
 
     public String toString() {

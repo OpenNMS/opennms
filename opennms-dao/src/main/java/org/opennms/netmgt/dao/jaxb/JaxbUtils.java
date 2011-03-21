@@ -79,7 +79,7 @@ public class JaxbUtils {
 		
 		try {
 			final XMLReader xmlReader = XMLReaderFactory.createXMLReader();
-			final SimpleNamespaceFilter filter = new SimpleNamespaceFilter("", true);
+			final SimpleNamespaceFilter filter = new SimpleNamespaceFilter("", false);
 			filter.setParent(xmlReader);
 			
 			final SAXSource source = new SAXSource(xmlReader, inputSource);

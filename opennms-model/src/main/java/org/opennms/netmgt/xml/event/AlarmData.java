@@ -17,8 +17,6 @@ import javax.xml.bind.annotation.XmlAttribute;
 import javax.xml.bind.annotation.XmlRootElement;
 
 import org.apache.commons.lang.builder.ToStringBuilder;
-import org.exolab.castor.xml.Marshaller;
-import org.exolab.castor.xml.Unmarshaller;
 
 /**
  * This element is used for converting events into alarms.
@@ -111,9 +109,8 @@ public class AlarmData {
      * 
      * @return the value of field 'AlarmType'.
      */
-    public Integer getAlarmType(
-    ) {
-        return this._alarmType;
+    public Integer getAlarmType() {
+        return this._alarmType == null? 0 : this._alarmType;
     }
 
     /**
@@ -121,9 +118,8 @@ public class AlarmData {
      * 
      * @return the value of field 'AutoClean'.
      */
-    public Boolean getAutoClean(
-    ) {
-        return this._autoClean;
+    public Boolean getAutoClean() {
+        return this._autoClean == null? false : this._autoClean;
     }
 
     /**
@@ -131,8 +127,7 @@ public class AlarmData {
      * 
      * @return the value of field 'ClearKey'.
      */
-    public java.lang.String getClearKey(
-    ) {
+    public java.lang.String getClearKey() {
         return this._clearKey;
     }
 
@@ -161,9 +156,8 @@ public class AlarmData {
      * 
      * @return the value of field 'X733ProbableCause'.
      */
-    public Integer getX733ProbableCause(
-    ) {
-        return this._x733ProbableCause;
+    public Integer getX733ProbableCause() {
+        return this._x733ProbableCause == null ? 0 : this._x733ProbableCause;
     }
 
     /**
@@ -203,54 +197,7 @@ public class AlarmData {
      */
     public Boolean isAutoClean(
     ) {
-        return this._autoClean;
-    }
-
-    /**
-     * Method isValid.
-     * 
-     * @return true if this object is valid according to the schema
-     */
-    public boolean isValid(
-    ) {
-        try {
-            validate();
-        } catch (org.exolab.castor.xml.ValidationException vex) {
-            return false;
-        }
-        return true;
-    }
-
-    /**
-     * 
-     * 
-     * @param out
-     * @throws org.exolab.castor.xml.MarshalException if object is
-     * null or if any SAXException is thrown during marshaling
-     * @throws org.exolab.castor.xml.ValidationException if this
-     * object is an invalid instance according to the schema
-     */
-    public void marshal(
-            final java.io.Writer out)
-    throws org.exolab.castor.xml.MarshalException, org.exolab.castor.xml.ValidationException {
-        Marshaller.marshal(this, out);
-    }
-
-    /**
-     * 
-     * 
-     * @param handler
-     * @throws java.io.IOException if an IOException occurs during
-     * marshaling
-     * @throws org.exolab.castor.xml.ValidationException if this
-     * object is an invalid instance according to the schema
-     * @throws org.exolab.castor.xml.MarshalException if object is
-     * null or if any SAXException is thrown during marshaling
-     */
-    public void marshal(
-            final org.xml.sax.ContentHandler handler)
-    throws java.io.IOException, org.exolab.castor.xml.MarshalException, org.exolab.castor.xml.ValidationException {
-        Marshaller.marshal(this, handler);
+        return getAutoClean();
     }
 
     /**
@@ -312,35 +259,6 @@ public class AlarmData {
     public void setX733ProbableCause(
             final int x733ProbableCause) {
         this._x733ProbableCause = x733ProbableCause;
-    }
-
-    /**
-     * Method unmarshal.
-     * 
-     * @param reader
-     * @throws org.exolab.castor.xml.MarshalException if object is
-     * null or if any SAXException is thrown during marshaling
-     * @throws org.exolab.castor.xml.ValidationException if this
-     * object is an invalid instance according to the schema
-     * @return the unmarshaled org.opennms.netmgt.xml.event.AlarmDat
-     */
-    public static org.opennms.netmgt.xml.event.AlarmData unmarshal(
-            final java.io.Reader reader)
-    throws org.exolab.castor.xml.MarshalException, org.exolab.castor.xml.ValidationException {
-        return (org.opennms.netmgt.xml.event.AlarmData) Unmarshaller.unmarshal(org.opennms.netmgt.xml.event.AlarmData.class, reader);
-    }
-
-    /**
-     * 
-     * 
-     * @throws org.exolab.castor.xml.ValidationException if this
-     * object is an invalid instance according to the schema
-     */
-    public void validate(
-    )
-    throws org.exolab.castor.xml.ValidationException {
-        org.exolab.castor.xml.Validator validator = new org.exolab.castor.xml.Validator();
-        validator.validate(this);
     }
 
     public String toString() {

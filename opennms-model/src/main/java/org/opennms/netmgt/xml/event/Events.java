@@ -17,8 +17,6 @@ import javax.xml.bind.annotation.XmlElement;
 import javax.xml.bind.annotation.XmlRootElement;
 
 import org.apache.commons.lang.builder.ToStringBuilder;
-import org.exolab.castor.xml.Marshaller;
-import org.exolab.castor.xml.Unmarshaller;
 
 /**
  * Class Events.
@@ -104,8 +102,7 @@ public class Events {
      * @return the value of the org.opennms.netmgt.xml.event.Event
      * at the given index
      */
-    public org.opennms.netmgt.xml.event.Event getEvent(
-            final int index)
+    public org.opennms.netmgt.xml.event.Event getEvent(final int index)
     throws java.lang.IndexOutOfBoundsException {
         // check bounds for index
         if (index < 0 || index >= this._eventList.size()) {
@@ -153,21 +150,6 @@ public class Events {
     }
 
     /**
-     * Method isValid.
-     * 
-     * @return true if this object is valid according to the schema
-     */
-    public boolean isValid(
-    ) {
-        try {
-            validate();
-        } catch (org.exolab.castor.xml.ValidationException vex) {
-            return false;
-        }
-        return true;
-    }
-
-    /**
      * Method iterateEvent.
      * 
      * @return an Iterator over all possible elements in this
@@ -176,38 +158,6 @@ public class Events {
     public java.util.Iterator<org.opennms.netmgt.xml.event.Event> iterateEvent(
     ) {
         return this._eventList.iterator();
-    }
-
-    /**
-     * 
-     * 
-     * @param out
-     * @throws org.exolab.castor.xml.MarshalException if object is
-     * null or if any SAXException is thrown during marshaling
-     * @throws org.exolab.castor.xml.ValidationException if this
-     * object is an invalid instance according to the schema
-     */
-    public void marshal(
-            final java.io.Writer out)
-    throws org.exolab.castor.xml.MarshalException, org.exolab.castor.xml.ValidationException {
-        Marshaller.marshal(this, out);
-    }
-
-    /**
-     * 
-     * 
-     * @param handler
-     * @throws java.io.IOException if an IOException occurs during
-     * marshaling
-     * @throws org.exolab.castor.xml.ValidationException if this
-     * object is an invalid instance according to the schema
-     * @throws org.exolab.castor.xml.MarshalException if object is
-     * null or if any SAXException is thrown during marshaling
-     */
-    public void marshal(
-            final org.xml.sax.ContentHandler handler)
-    throws java.io.IOException, org.exolab.castor.xml.MarshalException, org.exolab.castor.xml.ValidationException {
-        Marshaller.marshal(this, handler);
     }
 
     /**
@@ -300,35 +250,6 @@ public class Events {
     public void setEventCollection(
             final java.util.List<org.opennms.netmgt.xml.event.Event> eventList) {
         this._eventList = eventList;
-    }
-
-    /**
-     * Method unmarshal.
-     * 
-     * @param reader
-     * @throws org.exolab.castor.xml.MarshalException if object is
-     * null or if any SAXException is thrown during marshaling
-     * @throws org.exolab.castor.xml.ValidationException if this
-     * object is an invalid instance according to the schema
-     * @return the unmarshaled org.opennms.netmgt.xml.event.Events
-     */
-    public static org.opennms.netmgt.xml.event.Events unmarshal(
-            final java.io.Reader reader)
-    throws org.exolab.castor.xml.MarshalException, org.exolab.castor.xml.ValidationException {
-        return (org.opennms.netmgt.xml.event.Events) Unmarshaller.unmarshal(org.opennms.netmgt.xml.event.Events.class, reader);
-    }
-
-    /**
-     * 
-     * 
-     * @throws org.exolab.castor.xml.ValidationException if this
-     * object is an invalid instance according to the schema
-     */
-    public void validate(
-    )
-    throws org.exolab.castor.xml.ValidationException {
-        org.exolab.castor.xml.Validator validator = new org.exolab.castor.xml.Validator();
-        validator.validate(this);
     }
 
     public String toString() {

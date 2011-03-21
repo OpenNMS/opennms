@@ -731,9 +731,13 @@ public class SnmpTrapHelper {
 
             trap.setAgentAddress(agentAddress);
 
-            trap.setGeneric(snmpInfo.getGeneric());
+            if (snmpInfo.hasGeneric()) {
+            	trap.setGeneric(snmpInfo.getGeneric());
+            }
 
-            trap.setSpecific(snmpInfo.getSpecific());
+            if (snmpInfo.hasSpecific()) {
+            	trap.setSpecific(snmpInfo.getSpecific());
+            }
 
             trap.setTimeStamp(snmpInfo.getTimeStamp());
 
@@ -869,7 +873,7 @@ public class SnmpTrapHelper {
 
             String oid;
 
-            if (snmpInfo.getGeneric() == ENTERPRISE_SPECIFIC) {
+            if (snmpInfo.getGeneric() == ENTERPRISE_SPECIFIC && snmpInfo.hasSpecific()) {
                 oid = snmpInfo.getId() + ".0." + snmpInfo.getSpecific();
             } else {
                 oid = SNMP_TRAPS + '.' + (snmpInfo.getGeneric() + 1);

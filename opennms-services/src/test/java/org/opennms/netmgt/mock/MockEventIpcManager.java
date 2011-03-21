@@ -61,7 +61,6 @@ import org.opennms.netmgt.model.events.EventListener;
 import org.opennms.netmgt.model.events.EventProxyException;
 import org.opennms.netmgt.xml.event.Event;
 import org.opennms.netmgt.xml.event.Log;
-import org.opennms.test.mock.MockUtil;
 import org.springframework.beans.factory.InitializingBean;
 import org.springframework.dao.DataAccessException;
 import org.springframework.util.Assert;

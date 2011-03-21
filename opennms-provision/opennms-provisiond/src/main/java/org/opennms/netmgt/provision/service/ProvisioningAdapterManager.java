@@ -103,7 +103,7 @@ public class ProvisioningAdapterManager implements InitializingBean {
         for (ProvisioningAdapter adapter : m_adapters) {
             log().info("handleNodeAddedEvent: Calling adapter:"+adapter.getName()+" for node: "+e.getNodeid());
             try {
-                adapter.addNode((int) e.getNodeid());
+                adapter.addNode(e.getNodeid().intValue());
             } catch (ProvisioningAdapterException pae) {
                 log().error("handleNodeAddedEvent: Adapter threw known exception: "+adapter.getName(), pae);
             } catch (Throwable t) {
@@ -122,7 +122,7 @@ public class ProvisioningAdapterManager implements InitializingBean {
         for (ProvisioningAdapter adapter : m_adapters) {
             log().info("handleNodeUpdatedEvent: Calling adapter:"+adapter.getName()+" for node: "+e.getNodeid());
             try {
-                adapter.updateNode((int) e.getNodeid());
+                adapter.updateNode(e.getNodeid().intValue());
             } catch (ProvisioningAdapterException pae) {
                 log().error("handleNodeUpdatedEvent: Adapter threw known exception: "+adapter.getName(), pae);
             } catch (Throwable t) {
@@ -141,7 +141,7 @@ public class ProvisioningAdapterManager implements InitializingBean {
         for (ProvisioningAdapter adapter : m_adapters) {
             log().info("handleNodeDeletedEvent: Calling adapter:"+adapter.getName()+" for node: "+e.getNodeid());
             try {
-                adapter.deleteNode((int) e.getNodeid());
+                adapter.deleteNode(e.getNodeid().intValue());
             } catch (ProvisioningAdapterException pae) {
                 log().error("handleNodeDeletedEvent: Adapter threw known exception: "+adapter.getName(), pae);
             } catch (Throwable t) {
@@ -163,7 +163,7 @@ public class ProvisioningAdapterManager implements InitializingBean {
         for (ProvisioningAdapter adapter : m_adapters) {
             log().info("handleScanCompletedEvent: Calling adapter:"+adapter.getName()+" for node: "+e.getNodeid());
             try {
-                adapter.updateNode((int) e.getNodeid());
+                adapter.updateNode(e.getNodeid().intValue());
             } catch (ProvisioningAdapterException pae) {
                 log().error("handleNodeScanCompletedEvent: Adapter threw known exception: "+adapter.getName(), pae);
             } catch (Throwable t) {
@@ -183,7 +183,7 @@ public class ProvisioningAdapterManager implements InitializingBean {
             log().info("handleNodeChangedEvent: Calling adapter:"+adapter.getName()+" for node: "+e.getNodeid());
             try {
                 if (e.getNodeid() != 0) {
-                    adapter.nodeConfigChanged((int) e.getNodeid());
+                    adapter.nodeConfigChanged(e.getNodeid().intValue());
                 } else {
                     log().warn("handleNodeChangedEvent: received configChanged event without nodeId: "+e);
                 }

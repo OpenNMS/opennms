@@ -47,13 +47,12 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
-import org.exolab.castor.xml.MarshalException;
-import org.exolab.castor.xml.Marshaller;
-import org.exolab.castor.xml.ValidationException;
 import org.opennms.core.utils.ThreadCategory;
+import org.opennms.netmgt.dao.jaxb.JaxbUtils;
 import org.opennms.netmgt.eventd.adaptors.EventHandler;
 import org.opennms.netmgt.xml.event.Event;
 import org.opennms.netmgt.xml.event.EventReceipt;
+import org.springframework.dao.DataAccessException;
 
 /**
  * This class implements the User Datagram Protocol (UDP) event receiver. When
@@ -205,10 +204,8 @@ final class UdpUuidSender implements Runnable {
 
                 StringWriter writer = new StringWriter();
                 try {
-                    Marshaller.marshal(receipt, writer);
-                } catch (ValidationException e) {
-                    log().warn("Failed to build event receipt for agent " + re.getSender().getHostAddress() + ":" + re.getPort() + ": " + e, e);
-                } catch (MarshalException e) {
+                    JaxbUtils.marshal(receipt, writer);
+                } catch (DataAccessException e) {
                     log().warn("Failed to build event receipt for agent " + re.getSender().getHostAddress() + ":" + re.getPort() + ": " + e, e);
                 }
 

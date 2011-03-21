@@ -49,13 +49,13 @@ import java.io.PipedOutputStream;
 import java.net.Socket;
 import java.util.List;
 
-import org.opennms.core.utils.ThreadCategory;
+import org.opennms.core.utils.LogUtils;
 
 /**
  * This class is used to do the initial read of data from the input stream and
  * break it up into records. Each record is written to a piped writer. This
  * means that the reader never gets too far ahead of the parse. It means more
- * threads for less memory useage. As always there is a tradeoff
+ * threads for less memory usage. As always there is a tradeoff.
  * 
  * @author <a href="mailto:weave@oculan.com">Brian Weaver </a>
  * @author <a href="http;//www.opennms.org">OpenNMS </a>
@@ -115,7 +115,7 @@ final class TcpRecordHandler implements Runnable {
          * @param handler
          *            The handler to fire events at.
          */
-        StateManager(int level, TcpRecordHandler handler) {
+        StateManager(final int level, final TcpRecordHandler handler) {
             m_level = level;
             m_handler = handler;
         }
@@ -131,15 +131,15 @@ final class TcpRecordHandler implements Runnable {
         /**
          * handle the next character, returns the next level
          */
-        int next(char ch) throws IOException {
+        int next(final char ch) throws IOException {
             onTransition(ch);
             return m_level;
         }
 
         /**
-         * Handle the transtion from character to character.
+         * Handle the transition from character to character.
          */
-        void onTransition(char ch) throws IOException {
+        void onTransition(final char ch) throws IOException {
             m_handler.forward(ch);
         }
     }
@@ -159,30 +159,29 @@ final class TcpRecordHandler implements Runnable {
      * Allocates a new stream
      */
     private void newStream() throws IOException {
-        log().debug("Opening new PipedOutputStream and adding it to the queue");
+        LogUtils.debugf(this, "Opening new PipedOutputStream and adding it to the queue");
 
         // create a new piped writer
-        PipedOutputStream pipeOut = new PipedOutputStream();
+        final PipedOutputStream pipeOut = new PipedOutputStream();
         try {
             synchronized (pipeOut) {
                 synchronized (m_xchange) {
                     m_xchange.add(pipeOut);
                     m_xchange.notify();
                 }
-                log().debug("Added pipe to the xchange list");
+                LogUtils.debugf(this, "Added pipe to the xchange list");
 
                 pipeOut.wait();
 
-                log().debug("Pipe Signaled");
+                LogUtils.debugf(this, "Pipe Signaled");
             }
-        } catch (InterruptedException e) {
-            if (log().isDebugEnabled()) {
-                log().debug("An I/O error occured: " + e, e);
-            }
+        } catch (final InterruptedException e) {
+        	LogUtils.debugf(this, e, "An I/O error occured.");
+        	Thread.currentThread().interrupt();
             throw new IOException("The thread was interrupted");
         }
 
-        log().debug("PipedOutputStream connected");
+        LogUtils.debugf(this, "PipedOutputStream connected");
 
         m_out = pipeOut;
     }
@@ -190,15 +189,14 @@ final class TcpRecordHandler implements Runnable {
     /**
      * forwards the characters to the attached pipe.
      */
-    private void forward(char ch) throws IOException {
+    private void forward(final char ch) throws IOException {
         try {
             if (m_out != null) {
                 m_out.write((int) ch);
             }
-        } catch (IOException e) {
-            if (log().isDebugEnabled()) {
-                log().debug("An I/O error occured: " + e, e);
-            }
+        } catch (final IOException e) {
+        	LogUtils.debugf(this, e, "An I/O error occured.");
+        	Thread.currentThread().interrupt();
             throw e;
         }
     }
@@ -211,7 +209,7 @@ final class TcpRecordHandler implements Runnable {
      * @param xchange
      *            The io exchange
      */
-    TcpRecordHandler(Socket s, List<Object> xchange) {
+    TcpRecordHandler(final Socket s, final List<Object> xchange) {
         m_stop = false;
         m_context = null;
         m_xchange = xchange;
@@ -219,7 +217,7 @@ final class TcpRecordHandler implements Runnable {
 
         // looks for '</([a-zA-Z0-9]+:)?log>'
         m_tokenizer = new StateManager[] { new StateManager(0, this) {
-            int next(char ch) throws IOException {
+            int next(final char ch) throws IOException {
                 onTransition(ch);
                 if (ch == '<') {
                     return 1;
@@ -227,7 +225,7 @@ final class TcpRecordHandler implements Runnable {
                 return m_level;
             }
         }, new StateManager(1, this) {
-            int next(char ch) throws IOException {
+            int next(final char ch) throws IOException {
                 onTransition(ch);
                 if (ch == '/') {
                     return 2;
@@ -235,7 +233,7 @@ final class TcpRecordHandler implements Runnable {
                 return 0;
             }
         }, new StateManager(2, this) {
-            int next(char ch) throws IOException {
+            int next(final char ch) throws IOException {
                 onTransition(ch);
                 if (ch == 'l') {
                     return 5;
@@ -245,7 +243,7 @@ final class TcpRecordHandler implements Runnable {
                 return 0;
             }
         }, new StateManager(3, this) {
-            int next(char ch) throws IOException {
+            int next(final char ch) throws IOException {
                 onTransition(ch);
                 if (ch == ':') {
                     return 4;
@@ -255,7 +253,7 @@ final class TcpRecordHandler implements Runnable {
                 return 0;
             }
         }, new StateManager(4, this) {
-            int next(char ch) throws IOException {
+            int next(final char ch) throws IOException {
                 onTransition(ch);
                 if (ch == 'l') {
                     return 5;
@@ -263,7 +261,7 @@ final class TcpRecordHandler implements Runnable {
                 return 0;
             }
         }, new StateManager(5, this) {
-            int next(char ch) throws IOException {
+            int next(final char ch) throws IOException {
                 onTransition(ch);
                 if (ch == 'o') {
                     return 6;
@@ -271,7 +269,7 @@ final class TcpRecordHandler implements Runnable {
                 return 0;
             }
         }, new StateManager(6, this) {
-            int next(char ch) throws IOException {
+            int next(final char ch) throws IOException {
                 onTransition(ch);
                 if (ch == 'g') {
                     return 7;
@@ -279,7 +277,7 @@ final class TcpRecordHandler implements Runnable {
                 return 0;
             }
         }, new StateManager(7, this) {
-            int next(char ch) throws IOException {
+            int next(final char ch) throws IOException {
                 onTransition(ch);
                 if (ch == '>') {
                     m_handler.closeStream();
@@ -292,7 +290,7 @@ final class TcpRecordHandler implements Runnable {
         // The state tree starts here!
         new StateManager(8, this) { // gobbles up white space after
             // record
-            int next(char ch) throws IOException {
+            int next(final char ch) throws IOException {
                 if (ch == '<') {
                     onTransition(ch);
                     return 1;
@@ -300,7 +298,7 @@ final class TcpRecordHandler implements Runnable {
                 return m_level;
             }
 
-            void onTransition(char ch) throws IOException {
+            void onTransition(final char ch) throws IOException {
                 m_handler.newStream();
                 super.onTransition(ch);
             }
@@ -324,22 +322,11 @@ final class TcpRecordHandler implements Runnable {
     void stop() throws InterruptedException {
         m_stop = true;
         if (m_context != null) {
-            if (log().isDebugEnabled()) {
-                log().debug("Interrupting thread " + m_context.getName());
-            }
-
+        	LogUtils.debugf(this, "Interrupting thread %s", m_context.getName());
             m_context.interrupt();
-
-            if (log().isDebugEnabled()) {
-                log().debug("Joining Thread " + m_context.getName());
-            }
-
+            LogUtils.debugf(this, "Joining Thread %s", m_context.getName());
             m_context.join();
-
-            if (log().isDebugEnabled()) {
-                log().debug("Thread " + m_context.getName() + " Joined");
-            }
-
+            LogUtils.debugf(this, "Thread %s Joined", m_context.getName());
         }
     }
 
@@ -358,11 +345,11 @@ final class TcpRecordHandler implements Runnable {
          * before doing any work on the socket
          */
         if (m_stop) {
-            log().debug("Stop flag set before thread startup, thread exiting");
+            LogUtils.debugf(this, "Stop flag set before thread startup, thread exiting");
 
             return;
-        } else if (log().isDebugEnabled()) {
-            log().debug("Thread started, remote is " + m_connection.getInetAddress().getHostAddress());
+        } else {
+            LogUtils.debugf(this, "Thread started, remote is %s", m_connection.getInetAddress().getHostAddress());
         }
 
         // get the input stream
@@ -370,15 +357,13 @@ final class TcpRecordHandler implements Runnable {
         try {
             m_connection.setSoTimeout(500); // needed in case connection closed!
             socketIn = new BufferedInputStream(m_connection.getInputStream());
-        } catch (IOException e) {
+        } catch (final IOException e) {
             if (!m_stop) {
-                log().warn("An I/O Exception occured: " + e, e);
+                LogUtils.warnf(this, e, "An I/O Exception occured.");
             }
             m_xchange.add(e);
 
-            if (log().isDebugEnabled()) {
-                log().debug("Thread exiting due to socket exception, stop flag = " + m_stop);
-            }
+            LogUtils.debugf(this, "Thread exiting due to socket exception, stop flag = %s", Boolean.valueOf(m_stop));
 
             return;
         }
@@ -389,7 +374,8 @@ final class TcpRecordHandler implements Runnable {
         while (moreInput) {
             // check to see if the thread is interrupted
             if (Thread.interrupted()) {
-                log().debug("Thread Interrupted");
+                LogUtils.debugf(this, "Thread Interrupted");
+                Thread.currentThread().interrupt();
                 break;
             }
 
@@ -400,17 +386,18 @@ final class TcpRecordHandler implements Runnable {
                     continue;
                 }
 
-            } catch (InterruptedIOException e) {
+            } catch (final InterruptedIOException e) {
                 // this was expected
+            	Thread.currentThread().interrupt();
                 continue;
-            } catch (EOFException e) {
+            } catch (final EOFException e) {
                 m_xchange.add(e);
                 moreInput = false;
                 continue;
-            } catch (IOException e) {
+            } catch (final IOException e) {
                 m_xchange.add(e);
                 if (!m_stop) {
-                    log().warn("An I/O error occured reading from the remote host: " + e, e);
+                    LogUtils.warnf(this, e, "An I/O error occured reading from the remote host.");
                 }
                 moreInput = false;
                 continue;
@@ -418,17 +405,17 @@ final class TcpRecordHandler implements Runnable {
 
             try {
                 level = m_tokenizer[level].next((char) ch);
-            } catch (IOException e) {
+            } catch (final IOException e) {
                 if (!m_stop) {
-                    log().warn("An I/O error occured writing to the processor stream: " + e, e);
-                    log().warn("Discarding the remainder of the event contents");
+                    LogUtils.warnf(this, e, "An I/O error occured writing to the processor stream.");
+                    LogUtils.warnf(this, "Discarding the remainder of the event contents");
                     try {
                         /*
                          * this will discard current stream
                          * and cause all forwards to be discarded.
                          */
                         closeStream();
-                    } catch (IOException e2) {
+                    } catch (final IOException e2) {
                     }
                 } else {
                     m_xchange.add(e);
@@ -442,19 +429,15 @@ final class TcpRecordHandler implements Runnable {
             if (m_out != null) {
                 m_out.close();
             }
-        } catch (IOException e) {
+        } catch (final IOException e) {
             if (!m_stop) {
-                log().warn("An I/O Error occured closing the processor stream: " + e, e);
+                LogUtils.warnf(this, e, "An I/O Error occured closing the processor stream.");
             }
         }
 
         m_xchange.add(new EOFException("No More Input"));
 
-        log().debug("Thread Terminated");
+        LogUtils.debugf(this, "Thread Terminated");
 
-    }
-
-    private ThreadCategory log() {
-        return ThreadCategory.getInstance(getClass());
     }
 }

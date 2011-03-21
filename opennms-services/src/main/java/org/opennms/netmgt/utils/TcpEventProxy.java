@@ -48,16 +48,16 @@ import java.io.InputStream;
 import java.io.InterruptedIOException;
 import java.io.OutputStreamWriter;
 import java.io.Writer;
-import java.nio.charset.Charset;
 import java.lang.reflect.UndeclaredThrowableException;
 import java.net.ConnectException;
 import java.net.InetAddress;
 import java.net.InetSocketAddress;
 import java.net.Socket;
 import java.net.UnknownHostException;
+import java.nio.charset.Charset;
 
-import org.exolab.castor.xml.Marshaller;
 import org.opennms.core.utils.ThreadCategory;
+import org.opennms.netmgt.dao.jaxb.JaxbUtils;
 import org.opennms.netmgt.model.events.EventProxy;
 import org.opennms.netmgt.model.events.EventProxyException;
 import org.opennms.netmgt.xml.event.Event;
@@ -146,8 +146,8 @@ public final class TcpEventProxy implements EventProxy {
         Connection connection = null;
         try {
             connection = new Connection();
-            Writer writer = connection.getWriter();
-            Marshaller.marshal(eventLog, writer);
+            final Writer writer = connection.getWriter();
+            JaxbUtils.marshal(eventLog, writer);
             writer.flush();
         } catch (ConnectException e) {
             throw new EventProxyException("Could not connect to event daemon " + m_address + " to send event: " + e.getMessage(), e);

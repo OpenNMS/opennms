@@ -52,7 +52,7 @@
     private void sendSNMPRestartEvent(int nodeid, String primeInt) throws ServletException {
         Event snmpRestart = new Event();
         snmpRestart.setUei("uei.opennms.org/nodes/reinitializePrimarySnmpInterface");
-        snmpRestart.setNodeid(nodeid);
+        snmpRestart.setNodeid(Long.valueOf(nodeid));
         snmpRestart.setInterface(primeInt);
         snmpRestart.setSource("web ui");
         snmpRestart.setTime(EventConstants.formatToString(new java.util.Date()));

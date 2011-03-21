@@ -250,7 +250,7 @@ public class SyslogdLoadTest extends OpenNMSTestCase {
         Events events = new Events();
         eventLog.setEvents(events);
         
-        int eventCount = 1000;
+        int eventCount = 1;
         m_eventCounter.setAnticipated(eventCount);
 
         for (int i = 0; i < eventCount; i++) {
@@ -262,6 +262,7 @@ public class SyslogdLoadTest extends OpenNMSTestCase {
                 .setLogDest("logndisplay")
                 .setLogMessage("A load test has been received as a Syslog Message")
                 .getEvent();
+//            LogUtils.debugf(this, "event = %s", thisEvent);
             events.addEvent(thisEvent);
         }
 

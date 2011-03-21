@@ -40,11 +40,10 @@ package org.opennms.netmgt.eventd.db;
 
 import java.io.StringWriter;
 
-import org.exolab.castor.xml.MarshalException;
-import org.exolab.castor.xml.Marshaller;
-import org.exolab.castor.xml.ValidationException;
 import org.opennms.core.utils.ThreadCategory;
+import org.opennms.netmgt.dao.jaxb.JaxbUtils;
 import org.opennms.netmgt.model.events.Constants;
+import org.springframework.dao.DataAccessException;
 
 /**
  * This is an utility class used to format the event correlation info - to be
@@ -53,10 +52,7 @@ import org.opennms.netmgt.model.events.Constants;
  *
  * @author <A HREF="mailto:sowmya@opennms.org">Sowmya Kumaraswamy </A>
  * @author <A HREF="http://www.opennms.org/">OpenNMS </A>
- * @author <A HREF="mailto:sowmya@opennms.org">Sowmya Kumaraswamy </A>
- * @author <A HREF="http://www.opennms.org/">OpenNMS </A>
  * @see org.opennms.netmgt.model.events.Constants#VALUE_TRUNCATE_INDICATOR
- * @version $Id: $
  */
 public class Correlation {
     /**
@@ -69,19 +65,16 @@ public class Correlation {
      *            to(usually the size of the column in the database)
      * @return the formatted event correlation
      */
-    public static String format(org.opennms.netmgt.xml.event.Correlation ec, int sz) {
+    public static String format(final org.opennms.netmgt.xml.event.Correlation ec, final int sz) {
         StringWriter out = new StringWriter();
         try {
-            Marshaller.marshal(ec, out);
-        } catch (MarshalException e) {
-            ThreadCategory.getInstance(Correlation.class).error("Failed to convert new event to XML", e);
-            return null;
-        } catch (ValidationException e) {
+            JaxbUtils.marshal(ec, out);
+        } catch (DataAccessException e) {
             ThreadCategory.getInstance(Correlation.class).error("Failed to convert new event to XML", e);
             return null;
         }
 
-        String outstr = out.getBuffer().toString();
+        String outstr = out.toString();
         if (outstr.length() >= sz) {
             StringBuffer buf = new StringBuffer(outstr);
 

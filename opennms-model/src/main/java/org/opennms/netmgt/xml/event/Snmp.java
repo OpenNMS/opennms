@@ -17,8 +17,6 @@ import javax.xml.bind.annotation.XmlElement;
 import javax.xml.bind.annotation.XmlRootElement;
 
 import org.apache.commons.lang.builder.ToStringBuilder;
-import org.exolab.castor.xml.Marshaller;
-import org.exolab.castor.xml.Unmarshaller;
 
 /**
  * The snmp information from the trap
@@ -132,7 +130,7 @@ public class Snmp {
      */
     public Integer getGeneric(
     ) {
-        return this._generic;
+        return this._generic == null? 0 : this._generic;
     }
 
     /**
@@ -165,7 +163,7 @@ public class Snmp {
      */
     public Integer getSpecific(
     ) {
-        return this._specific;
+        return this._specific == null? 0 : this._specific;
     }
 
     /**
@@ -176,7 +174,7 @@ public class Snmp {
      */
     public Long getTimeStamp(
     ) {
-        return this._timeStamp;
+        return this._timeStamp == null? 0 : this._timeStamp;
     }
 
     /**
@@ -218,53 +216,6 @@ public class Snmp {
     public boolean hasTimeStamp(
     ) {
         return this._timeStamp != null;
-    }
-
-    /**
-     * Method isValid.
-     * 
-     * @return true if this object is valid according to the schema
-     */
-    public boolean isValid(
-    ) {
-        try {
-            validate();
-        } catch (org.exolab.castor.xml.ValidationException vex) {
-            return false;
-        }
-        return true;
-    }
-
-    /**
-     * 
-     * 
-     * @param out
-     * @throws org.exolab.castor.xml.MarshalException if object is
-     * null or if any SAXException is thrown during marshaling
-     * @throws org.exolab.castor.xml.ValidationException if this
-     * object is an invalid instance according to the schema
-     */
-    public void marshal(
-            final java.io.Writer out)
-    throws org.exolab.castor.xml.MarshalException, org.exolab.castor.xml.ValidationException {
-        Marshaller.marshal(this, out);
-    }
-
-    /**
-     * 
-     * 
-     * @param handler
-     * @throws java.io.IOException if an IOException occurs during
-     * marshaling
-     * @throws org.exolab.castor.xml.ValidationException if this
-     * object is an invalid instance according to the schema
-     * @throws org.exolab.castor.xml.MarshalException if object is
-     * null or if any SAXException is thrown during marshaling
-     */
-    public void marshal(
-            final org.xml.sax.ContentHandler handler)
-    throws java.io.IOException, org.exolab.castor.xml.MarshalException, org.exolab.castor.xml.ValidationException {
-        Marshaller.marshal(this, handler);
     }
 
     /**
@@ -342,35 +293,6 @@ public class Snmp {
     public void setVersion(
             final java.lang.String version) {
         this._version = version;
-    }
-
-    /**
-     * Method unmarshal.
-     * 
-     * @param reader
-     * @throws org.exolab.castor.xml.MarshalException if object is
-     * null or if any SAXException is thrown during marshaling
-     * @throws org.exolab.castor.xml.ValidationException if this
-     * object is an invalid instance according to the schema
-     * @return the unmarshaled org.opennms.netmgt.xml.event.Snmp
-     */
-    public static org.opennms.netmgt.xml.event.Snmp unmarshal(
-            final java.io.Reader reader)
-    throws org.exolab.castor.xml.MarshalException, org.exolab.castor.xml.ValidationException {
-        return (org.opennms.netmgt.xml.event.Snmp) Unmarshaller.unmarshal(org.opennms.netmgt.xml.event.Snmp.class, reader);
-    }
-
-    /**
-     * 
-     * 
-     * @throws org.exolab.castor.xml.ValidationException if this
-     * object is an invalid instance according to the schema
-     */
-    public void validate(
-    )
-    throws org.exolab.castor.xml.ValidationException {
-        org.exolab.castor.xml.Validator validator = new org.exolab.castor.xml.Validator();
-        validator.validate(this);
     }
 
     public String toString() {
