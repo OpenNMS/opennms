@@ -95,7 +95,7 @@ public class PassiveServiceMonitor implements ServiceMonitor {
      */
     /** {@inheritDoc} */
     public PollStatus poll(MonitoredService svc, Map<String, Object> parameters) {
-        PollStatus status = PassiveStatusKeeper.getInstance().getStatus(svc.getNodeLabel(), svc.getIpAddr(), svc.getSvcName());
+    	PollStatus status = PassiveStatusKeeper.getInstance().getStatus(svc.getNodeLabel(), svc.getIpAddr(), svc.getSvcName());
         return status;
     }
 

@@ -167,7 +167,7 @@ public class MockEventIpcManager implements EventIpcManager, EventIpcBroadcaster
 
     private List<ListenerKeeper> m_listeners = new ArrayList<ListenerKeeper>();
 
-    private int m_pendingEvents;
+    private volatile int m_pendingEvents;
 
     private volatile int m_eventDelay = 20;
 
@@ -196,7 +196,7 @@ public class MockEventIpcManager implements EventIpcManager, EventIpcBroadcaster
     public void broadcastNow(final Event event) {
         MockUtil.println("Sending: " + new EventWrapper(event));
         final List<ListenerKeeper> listeners = new ArrayList<ListenerKeeper>(m_listeners);
-        for (ListenerKeeper k : listeners) {
+        for (final ListenerKeeper k : listeners) {
             k.sendEventIfAppropriate(event);
         }
     }
@@ -298,9 +298,10 @@ public class MockEventIpcManager implements EventIpcManager, EventIpcBroadcaster
         while (m_pendingEvents > 0) {
             MockUtil.println("Waiting for event processing: m_pendingEvents = "+m_pendingEvents);
             try {
-                wait();
+                wait(10000);
+            	break;
             } catch (final InterruptedException e) {
-                // Do nothing
+            	Thread.currentThread().interrupt();
             }
         }
     }
