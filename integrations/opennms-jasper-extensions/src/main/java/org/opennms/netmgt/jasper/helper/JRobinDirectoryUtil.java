@@ -61,7 +61,6 @@ public class JRobinDirectoryUtil {
 
     private void appendStoreByGroup(StringBuffer directory) throws FileNotFoundException, IOException {
         File f = new File(directory.toString() + "" + File.separator + "ds.properties");
-        System.out.println("path to ds.properties: " + f.getAbsolutePath());
         if(f.exists()) {
             Properties prop = new Properties();
             FileInputStream fis = new FileInputStream(f);
