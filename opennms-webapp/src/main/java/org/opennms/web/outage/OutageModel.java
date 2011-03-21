@@ -50,8 +50,8 @@ import java.util.HashMap;
 import java.util.List;
 
 import org.opennms.core.resource.Vault;
+import org.opennms.netmgt.model.OnmsNode;
 import org.opennms.netmgt.model.outage.OutageSummary;
-import org.opennms.web.element.Node;
 import org.springframework.util.StringUtils;
 
 /**
@@ -61,10 +61,6 @@ import org.springframework.util.StringUtils;
  *
  * @author <A HREF="mailto:larry@opennms.org">Lawrence Karnowski </A>
  * @author <A HREF="http://www.opennms.org">OpenNMS </A>
- * @author <A HREF="mailto:larry@opennms.org">Lawrence Karnowski </A>
- * @author <A HREF="http://www.opennms.org">OpenNMS </A>
- * @version $Id: $
- * @since 1.8.1
  */
 public class OutageModel extends Object {
     /**
@@ -244,15 +240,15 @@ public class OutageModel extends Object {
      * @return an array of {@link org.opennms.web.element.Node} objects.
      * @throws java.sql.SQLException if any.
      */
-    public Node[] filterNodesWithCurrentOutages(Node[] nodes) throws SQLException {
-        HashMap<Integer, Node> nodeMap = new HashMap<Integer, Node>(nodes.length);
-        for (Node n : nodes) {
-            nodeMap.put(n.getNodeId(), n);
+    public OnmsNode[] filterNodesWithCurrentOutages(List<OnmsNode> nodes) throws SQLException {
+        HashMap<Integer, OnmsNode> nodeMap = new HashMap<Integer, OnmsNode>(nodes.size());
+        for (OnmsNode n : nodes) {
+            nodeMap.put(n.getId(), n);
         }
         
         String nodeList = StringUtils.collectionToDelimitedString(nodeMap.keySet(), ", ");
         
-        List<Node> newNodes = new ArrayList<Node>();
+        List<OnmsNode> newNodes = new ArrayList<OnmsNode>();
         
         Connection conn = Vault.getDbConnection();
 
@@ -270,7 +266,7 @@ public class OutageModel extends Object {
             Vault.releaseDbConnection(conn);
         }
 
-        return newNodes.toArray(new Node[newNodes.size()]);
+        return newNodes.toArray(new OnmsNode[newNodes.size()]);
     }
 
     /**

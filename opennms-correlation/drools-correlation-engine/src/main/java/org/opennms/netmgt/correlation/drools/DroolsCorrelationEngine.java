@@ -52,7 +52,7 @@ import org.drools.WorkingMemory;
 import org.drools.compiler.DroolsParserException;
 import org.drools.compiler.PackageBuilder;
 import org.drools.compiler.PackageBuilderConfiguration;
-import org.opennms.core.utils.ThreadCategory;
+import org.opennms.core.utils.LogUtils;
 import org.opennms.netmgt.correlation.AbstractCorrelationEngine;
 import org.opennms.netmgt.xml.event.Event;
 import org.springframework.core.io.Resource;
@@ -73,21 +73,21 @@ public class DroolsCorrelationEngine extends AbstractCorrelationEngine {
     
     /** {@inheritDoc} */
     @Override
-    public synchronized void correlate(Event e) {
-        log().info("Begin correlation for Event " + e.getDbid() + " uei: " + e.getUei());
+    public synchronized void correlate(final Event e) {
+    	LogUtils.debugf(this, "Begin correlation for Event %d uei: %s", e.getDbid(), e.getUei());
         m_workingMemory.insert(e);
         m_workingMemory.fireAllRules();
-        log().info("End correlation for Event " + e.getDbid() + " uei: " + e.getUei());
+    	LogUtils.debugf(this, "End correlation for Event %d uei: %s", e.getDbid(), e.getUei());
     }
 
     /** {@inheritDoc} */
     @Override
-    protected synchronized void timerExpired(Integer timerId) {
-        log().info("Begin processing for Timer " + timerId);
+    protected synchronized void timerExpired(final Integer timerId) {
+    	LogUtils.infof(this, "Begin correlation for Timer %d", timerId);
         TimerExpired expiration  = new TimerExpired(timerId);
         m_workingMemory.insert(expiration);
         m_workingMemory.fireAllRules();
-        log().info("End processing for Timer " + timerId);
+    	LogUtils.debugf(this, "Begin correlation for Timer %d", timerId);
     }
 
     /** {@inheritDoc} */
@@ -101,7 +101,7 @@ public class DroolsCorrelationEngine extends AbstractCorrelationEngine {
      *
      * @param ueis a {@link java.util.List} object.
      */
-    public void setInterestingEvents(List<String> ueis) {
+    public void setInterestingEvents(final List<String> ueis) {
         m_interestingEvents = ueis;
     }
     
@@ -110,7 +110,7 @@ public class DroolsCorrelationEngine extends AbstractCorrelationEngine {
      *
      * @param rules a {@link java.util.List} object.
      */
-    public void setRulesResources(List<Resource> rules) {
+    public void setRulesResources(final List<Resource> rules) {
         m_rules = rules;
     }
     
@@ -119,7 +119,7 @@ public class DroolsCorrelationEngine extends AbstractCorrelationEngine {
      *
      * @param globals a {@link java.util.Map} object.
      */
-    public void setGlobals(Map<String, Object> globals) {
+    public void setGlobals(final Map<String, Object> globals) {
         m_globals = globals;
     }
 
@@ -129,28 +129,28 @@ public class DroolsCorrelationEngine extends AbstractCorrelationEngine {
      * @throws java.lang.Exception if any.
      */
     public void initialize() throws Exception {
-        Properties props = new Properties();
+    	final Properties props = new Properties();
         props.setProperty("drools.dialect.java.compiler.lnglevel", "1.5");
-        PackageBuilderConfiguration conf = new PackageBuilderConfiguration(props);
-        PackageBuilder builder = new PackageBuilder( conf );
+        final PackageBuilderConfiguration conf = new PackageBuilderConfiguration(props);
+        final PackageBuilder builder = new PackageBuilder( conf );
         
         loadRules(builder);
 
-        RuleBase ruleBase = RuleBaseFactory.newRuleBase();
+        final RuleBase ruleBase = RuleBaseFactory.newRuleBase();
         ruleBase.addPackage( builder.getPackage() );
 
         m_workingMemory = ruleBase.newStatefulSession();
         m_workingMemory.setGlobal("engine", this);
         
-        for (Map.Entry<String, Object> entry : m_globals.entrySet()) {
+        for (final Map.Entry<String, Object> entry : m_globals.entrySet()) {
             m_workingMemory.setGlobal(entry.getKey(), entry.getValue());
         }
 
     }
 
-    private void loadRules(PackageBuilder builder) throws DroolsParserException, IOException {
+    private void loadRules(final PackageBuilder builder) throws DroolsParserException, IOException {
         
-        for (Resource rulesFile : m_rules) {
+        for (final Resource rulesFile : m_rules) {
             Reader rdr = null;
             try {
                 rdr = new InputStreamReader( rulesFile.getInputStream(), "UTF-8" );
@@ -168,7 +168,7 @@ public class DroolsCorrelationEngine extends AbstractCorrelationEngine {
      */
     public int getMemorySize() {
         int count = 0;
-        for(Iterator<?> it = m_workingMemory.iterateObjects(); it.hasNext(); it.next()) {
+        for(final Iterator<?> it = m_workingMemory.iterateObjects(); it.hasNext(); it.next()) {
             count++;
         }
     	return count;
@@ -179,11 +179,10 @@ public class DroolsCorrelationEngine extends AbstractCorrelationEngine {
      *
      * @return a {@link java.util.List} object.
      */
-    @SuppressWarnings("unchecked")
     public List<Object> getMemoryObjects() {
-        List<Object> objects = new LinkedList<Object>();
-        for(Iterator<Object> it = m_workingMemory.iterateObjects(); it.hasNext(); it.next()) {
-            
+    	final List<Object> objects = new LinkedList<Object>();
+        for(Iterator<?> it = m_workingMemory.iterateObjects(); it.hasNext(); it.next()) {
+        	// FIXME: why are we not actually returning these?
         }
         return objects;
     }
@@ -193,7 +192,7 @@ public class DroolsCorrelationEngine extends AbstractCorrelationEngine {
      *
      * @param name a {@link java.lang.String} object.
      */
-    public void setName(String name) {
+    public void setName(final String name) {
         m_name = name;
     }
     
@@ -212,16 +211,7 @@ public class DroolsCorrelationEngine extends AbstractCorrelationEngine {
      * @param name a {@link java.lang.String} object.
      * @param value a {@link java.lang.Object} object.
      */
-    public void setGlobal(String name, Object value) {
+    public void setGlobal(final String name, final Object value) {
         m_workingMemory.setGlobal(name, value);
-    }
-    
-    /**
-     * <p>log</p>
-     *
-     * @return a {@link org.opennms.core.utils.ThreadCategory} object.
-     */
-    public ThreadCategory log() {
-        return ThreadCategory.getInstance(getClass());
     }
 }

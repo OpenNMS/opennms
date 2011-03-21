@@ -35,8 +35,12 @@
 //
 package org.opennms.netmgt.dao;
 
+import static org.opennms.core.utils.InetAddressUtils.addr;
+
+import java.net.InetAddress;
 import java.util.List;
 
+import org.opennms.core.utils.InetAddressUtils;
 import org.opennms.netmgt.model.OnmsMonitoredService;
 
 
@@ -48,7 +52,7 @@ public class MonitoredServiceDaoTest extends AbstractTransactionalDaoTestCase {
     	assertTrue(allSvcs.size() > 1);
     	
     	OnmsMonitoredService svc = allSvcs.iterator().next();
-    	assertEquals("192.168.1.1", svc.getIpAddress());
+    	assertEquals(addr("192.168.1.1"), svc.getIpAddress());
     	assertEquals(1, svc.getIfIndex().intValue());
     	assertEquals(1, svc.getIpInterface().getNode().getId().intValue());
     	assertEquals("M", svc.getIpInterface().getIsManaged());
@@ -57,12 +61,12 @@ public class MonitoredServiceDaoTest extends AbstractTransactionalDaoTestCase {
     }
     
     public void testGetByCompositeId() {
-    	OnmsMonitoredService monSvc = getMonitoredServiceDao().get(1, "192.168.1.1", "SNMP");
+    	OnmsMonitoredService monSvc = getMonitoredServiceDao().get(1, addr("192.168.1.1"), "SNMP");
     	assertNotNull(monSvc);
     	
-    	OnmsMonitoredService monSvc2 = getMonitoredServiceDao().get(1, "192.168.1.1", monSvc.getIfIndex(), monSvc.getServiceId());
+    	OnmsMonitoredService monSvc2 = getMonitoredServiceDao().get(1, addr("192.168.1.1"), monSvc.getIfIndex(), monSvc.getServiceId());
     	assertNotNull(monSvc2);
     	
     }
-
+    
 }

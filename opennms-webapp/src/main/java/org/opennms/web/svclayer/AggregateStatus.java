@@ -34,9 +34,11 @@
  */
 package org.opennms.web.svclayer;
 
+import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.LinkedHashSet;
+import java.util.List;
 import java.util.Set;
 
 import org.opennms.netmgt.model.AbstractEntityVisitor;
@@ -59,7 +61,7 @@ public class AggregateStatus implements SurveillanceStatus {
 
     private Integer m_totalEntityCount;
 
-    private Set<OnmsNode> m_downNodes;
+    private final List<OnmsNode> m_downNodes = new ArrayList<OnmsNode>();
 
     private String m_status;
 
@@ -110,12 +112,13 @@ public class AggregateStatus implements SurveillanceStatus {
      *
      * @return a {@link java.util.Set} object.
      */
-    public Set<OnmsNode> getDownNodes() {
-        return Collections.unmodifiableSet(m_downNodes);
+    public List<OnmsNode> getDownNodes() {
+        return Collections.unmodifiableList(m_downNodes);
     }
 
-    private void setDownNodes(Set<OnmsNode> downNodes) {
-        m_downNodes = downNodes;
+    private void setDownNodes(Collection<OnmsNode> downNodes) {
+        m_downNodes.clear();
+        m_downNodes.addAll(downNodes);
     }
 
     /**

@@ -44,6 +44,8 @@
  */
 package org.opennms.netmgt.capsd;
 
+import static org.opennms.core.utils.InetAddressUtils.addr;
+
 import java.net.InetAddress;
 import java.util.Enumeration;
 import java.util.List;
@@ -221,7 +223,7 @@ public abstract class EventUtils {
         EventBuilder bldr = new EventBuilder(uei, source);
         
         if (ipAddr != null && ipAddr.length() != 0) {
-            bldr.setInterface(ipAddr);
+            bldr.setInterface(addr(ipAddr));
         }
         
         bldr.setNodeid(nodeId);
@@ -354,7 +356,7 @@ public abstract class EventUtils {
         EventBuilder bldr = new EventBuilder(uei, source);
 
         bldr.setNodeid(nodeId);
-        bldr.setInterface(ipAddr);
+        bldr.setInterface(addr(ipAddr));
         bldr.setService(service);
         
         bldr.addParam(EventConstants.PARM_TRANSACTION_NO, txNo);
@@ -605,7 +607,7 @@ public abstract class EventUtils {
 	    EventBuilder bldr = new EventBuilder(EventConstants.NODE_GAINED_INTERFACE_EVENT_UEI, source);
 	    bldr.setNodeid(nodeId);
 	    bldr.setHost(Capsd.getLocalHostAddress());
-	    bldr.setInterface(ifaddr.getHostAddress());
+	    bldr.setInterface(ifaddr);
 	    
 	    bldr.addParam(EventConstants.PARM_IP_HOSTNAME, ifaddr.getHostName());
 
@@ -816,7 +818,7 @@ public abstract class EventUtils {
     public static Event createAddInterfaceEvent(String source, String nodeLabel, String ipaddr, String hostName, long txNo) {
 
         EventBuilder bldr = new EventBuilder(EventConstants.ADD_INTERFACE_EVENT_UEI, source);
-        bldr.setInterface(ipaddr);
+        bldr.setInterface(addr(ipaddr));
         bldr.setHost(hostName);
 
         bldr.addParam(EventConstants.PARM_NODE_LABEL, nodeLabel);
@@ -844,7 +846,7 @@ public abstract class EventUtils {
     public static Event createAndSendDeleteInterfaceEvent(String source, String nodeLabel, String ipaddr, String hostName, long txNo) {
 
         EventBuilder bldr = new EventBuilder(EventConstants.DELETE_INTERFACE_EVENT_UEI, source);
-        bldr.setInterface(ipaddr);
+        bldr.setInterface(addr(ipaddr));
         bldr.setHost(hostName);
         
         bldr.addParam(EventConstants.PARM_NODE_LABEL, nodeLabel);
@@ -874,7 +876,7 @@ public abstract class EventUtils {
     public static Event createChangeServiceEvent(String source, String ipaddr, String service, String action, String hostName, long txNo) {
 
         EventBuilder bldr = new EventBuilder(EventConstants.CHANGE_SERVICE_EVENT_UEI, source);
-        bldr.setInterface(ipaddr);
+        bldr.setInterface(addr(ipaddr));
         bldr.setService(service);
         
         bldr.addParam(EventConstants.PARM_ACTION, action);

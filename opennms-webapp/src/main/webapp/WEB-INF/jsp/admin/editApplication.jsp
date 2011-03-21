@@ -40,7 +40,7 @@ Application '${model.application.name}' has ${fn:length(model.sortedMemberServic
       <td class="normal">  
     <select name="toAdd" size="20" multiple>
 	  <c:forEach items="${model.monitoredServices}" var="service">
-	    <option value="${service.id}">${service.ipInterface.node.label} / ${service.ipAddress} / ${service.serviceName}</option>
+	    <option value="${service.id}">${service.ipInterface.node.label} / ${service.ipAddressAsString} / ${service.serviceName}</option>
 	  </c:forEach>
     </select>
       </td>
@@ -55,7 +55,7 @@ Application '${model.application.name}' has ${fn:length(model.sortedMemberServic
       <td class="normal">  
     <select name="toDelete" size="20" multiple>
 	  <c:forEach items="${model.sortedMemberServices}" var="service">
-	    <option value="${service.id}">${service.ipInterface.node.label} / ${service.ipAddress} / ${service.serviceName}</option>
+	    <option value="${service.id}">${service.ipInterface.node.label} / ${service.ipAddressAsString} / ${service.serviceName}</option>
 	  </c:forEach>
     </select>
       </td>

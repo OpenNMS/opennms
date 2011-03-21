@@ -282,7 +282,7 @@ public class DatabasePopulator {
                 getUserNotificationDao().save(userNotif2);
                 getUserNotificationDao().flush();
                 
-                OnmsMonitoredService svc = getMonitoredServiceDao().get(1, "192.168.1.1", "SNMP");
+                OnmsMonitoredService svc = getMonitoredServiceDao().get(1, InetAddressUtils.getInetAddress("192.168.1.1"), "SNMP");
                 OnmsOutage resolved = new OnmsOutage(new Date(), new Date(), event, event, svc, null, null);
                 getOutageDao().save(resolved);
                 getOutageDao().flush();

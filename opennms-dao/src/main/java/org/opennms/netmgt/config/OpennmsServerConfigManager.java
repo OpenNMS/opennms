@@ -63,7 +63,7 @@ public class OpennmsServerConfigManager {
      */
     @Deprecated
     protected OpennmsServerConfigManager(final Reader rdr) throws MarshalException, ValidationException {
-        m_config = CastorUtils.unmarshal(LocalServer.class, rdr, CastorUtils.PRESERVE_WHITESPACE);
+        m_config = CastorUtils.unmarshal(LocalServer.class, rdr);
     }
     
     /**
@@ -74,7 +74,7 @@ public class OpennmsServerConfigManager {
      * @throws org.exolab.castor.xml.ValidationException if any.
      */
     protected OpennmsServerConfigManager(final InputStream is) throws MarshalException, ValidationException {
-        m_config = CastorUtils.unmarshal(LocalServer.class, is, CastorUtils.PRESERVE_WHITESPACE);
+        m_config = CastorUtils.unmarshal(LocalServer.class, is);
     }
 
     /**

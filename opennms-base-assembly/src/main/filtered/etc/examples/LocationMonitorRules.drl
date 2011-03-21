@@ -3,6 +3,7 @@ package org.opennms.netmgt.correlation.drools;
 
 import java.util.Date;
 
+import org.opennms.core.utils.InetAddressUtils;
 import org.opennms.netmgt.correlation.drools.DroolsCorrelationEngine;
 import org.opennms.netmgt.xml.event.Event;
 import org.opennms.netmgt.model.events.EventBuilder;
@@ -132,7 +133,7 @@ end
 function void sendWideSpreadOutageEvent(DroolsCorrelationEngine engine, Long nodeId, String ipAddr, String svcName) {
 	EventBuilder bldr = new EventBuilder("uei.opennms.org/correlation/remote/wideSpreadOutage", "Drools")
 		.setNodeid(nodeId.intValue())
-		.setInterface(ipAddr)
+		.setInterface(InetAddressUtils.addr(ipAddr))
 		.setService(svcName);
 	engine.sendEvent(bldr.getEvent());
 }
@@ -140,7 +141,7 @@ function void sendWideSpreadOutageEvent(DroolsCorrelationEngine engine, Long nod
 function void sendWideSpreadOutageResolvedEvent(DroolsCorrelationEngine engine, Long nodeId, String ipAddr, String svcName) {
 	EventBuilder bldr = new EventBuilder("uei.opennms.org/correlation/remote/wideSpreadOutageResolved", "Drools")
 		.setNodeid(nodeId.intValue())
-		.setInterface(ipAddr)
+		.setInterface(InetAddressUtils.addr(ipAddr))
 		.setService(svcName);
 	engine.sendEvent(bldr.getEvent());
 
@@ -149,7 +150,7 @@ function void sendWideSpreadOutageResolvedEvent(DroolsCorrelationEngine engine, 
 function void sendServiceFlappingEvent(DroolsCorrelationEngine engine, Long nodeId, String ipAddr, String svcName, Integer locationMonitor) {
 	EventBuilder bldr = new EventBuilder("uei.opennms.org/correlation/serviceFlapping", "Drools")
 		.setNodeid(nodeId.intValue())
-		.setInterface(ipAddr)
+		.setInterface(InetAddressUtils.addr(ipAddr))
 		.setService(svcName)
 		.addParam(EventConstants.PARM_LOCATION_MONITOR_ID, locationMonitor);
 	engine.sendEvent(bldr.getEvent());

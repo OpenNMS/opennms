@@ -38,6 +38,7 @@ package org.opennms.netmgt.notifd;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertNull;
+import static org.opennms.core.utils.InetAddressUtils.addr;
 
 import java.util.Collections;
 import java.util.Date;
@@ -110,7 +111,7 @@ public class BroadcastEventProcessorTest extends NotificationsTestCase {
         bldr.setDescription("High threshold exceeded for %service% datasource %parm[ds]% on interface %interface%, parms: %parm[all]%");
         bldr.setLogMessage("High threshold exceeded for %service% datasource %parm[ds]% on interface %interface%, parms: %parm[all]%");
         bldr.setNodeid(0);
-        bldr.setInterface("0.0.0.0");
+        bldr.setInterface(addr("0.0.0.0"));
         
         bldr.addParam("ds", "dsk-usr-pcent");
         bldr.addParam("value", "Crap! There's only 15% free on the SAN and we need 20%! RUN AWAY!");

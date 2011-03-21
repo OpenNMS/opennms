@@ -35,6 +35,7 @@
  */
 package org.opennms.netmgt.dao;
 
+import java.net.InetAddress;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
@@ -77,8 +78,30 @@ public interface FilterDao {
      * @param rule a {@link java.lang.String} object.
      * @return a {@link java.util.Map} object.
      * @throws org.opennms.netmgt.filter.FilterParseException if any.
+     * 
+     * @deprecated use getIPAddressServiceMap instead
      */
     public Map<String, Set<String>> getIPServiceMap(String rule) throws FilterParseException;
+
+    /**
+     * <p>getIPServiceMap</p>
+     *
+     * @param rule a {@link java.lang.String} object.
+     * @return a {@link java.util.Map} object.
+     * @throws org.opennms.netmgt.filter.FilterParseException if any.
+     */
+    public Map<InetAddress, Set<String>> getIPAddressServiceMap(String rule) throws FilterParseException;
+
+    /**
+     * <p>getIPList</p>
+     *
+     * @param rule a {@link java.lang.String} object.
+     * @return a {@link java.util.List} object.
+     * @throws org.opennms.netmgt.filter.FilterParseException if any.
+     * 
+     * @deprecated use getIPAddressList instead
+     */
+    public List<String> getIPList(String rule) throws FilterParseException;
 
     /**
      * <p>getIPList</p>
@@ -87,7 +110,7 @@ public interface FilterDao {
      * @return a {@link java.util.List} object.
      * @throws org.opennms.netmgt.filter.FilterParseException if any.
      */
-    public List<String> getIPList(String rule) throws FilterParseException;
+    public List<InetAddress> getIPAddressList(String rule) throws FilterParseException;
 
     /**
      * <p>isValid</p>

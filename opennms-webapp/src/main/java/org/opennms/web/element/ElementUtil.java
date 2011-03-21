@@ -48,6 +48,7 @@ import javax.servlet.ServletContext;
 import javax.servlet.ServletException;
 import javax.servlet.http.HttpServletRequest;
 
+import org.opennms.netmgt.model.OnmsNode;
 import org.opennms.web.MissingParameterException;
 import org.springframework.util.Assert;
 
@@ -114,13 +115,13 @@ public abstract class ElementUtil {
     /**
      * Return the human-readable name for a node's status, may be null.
      *
-     * @param node a {@link org.opennms.web.element.Node} object.
+     * @param node a {@link OnmsNode} object.
      * @return a {@link java.lang.String} object.
      */
-    public static String getNodeStatusString(Node node) {
+    public static String getNodeStatusString(OnmsNode node) {
         Assert.notNull(node, "node argument cannot be null");
 
-        return getNodeStatusString(node.getNodeType());
+        return getNodeStatusString(node.getType().charAt(0));
     }
 
     /**
@@ -257,11 +258,11 @@ public abstract class ElementUtil {
      * <p>getNodeByParams</p>
      *
      * @param request a {@link javax.servlet.http.HttpServletRequest} object.
-     * @return a {@link org.opennms.web.element.Node} object.
+     * @return a {@link OnmsNode} object.
      * @throws javax.servlet.ServletException if any.
      * @throws java.sql.SQLException if any.
      */
-    public static Node getNodeByParams(HttpServletRequest request, ServletContext servletContext)
+    public static OnmsNode getNodeByParams(HttpServletRequest request, ServletContext servletContext)
             throws ServletException, SQLException {
         return getNodeByParams(request, "node", servletContext);
     }
@@ -271,11 +272,11 @@ public abstract class ElementUtil {
      *
      * @param request a {@link javax.servlet.http.HttpServletRequest} object.
      * @param nodeIdParam a {@link java.lang.String} object.
-     * @return a {@link org.opennms.web.element.Node} object.
+     * @return a {@link OnmsNode} object.
      * @throws javax.servlet.ServletException if any.
      * @throws java.sql.SQLException if any.
      */
-    public static Node getNodeByParams(HttpServletRequest request,
+    public static OnmsNode getNodeByParams(HttpServletRequest request,
             String nodeIdParam, ServletContext servletContext) throws ServletException, SQLException {
         if (request.getParameter(nodeIdParam) == null) {
             throw new MissingParameterException(nodeIdParam, new String[] { "node" });
@@ -293,7 +294,7 @@ public abstract class ElementUtil {
                     "node", "element/node.jsp", "node", "element/nodeList.htm");
         }
 
-        Node node = NetworkElementFactory.getInstance(servletContext).getNode(nodeId);
+        OnmsNode node = NetworkElementFactory.getInstance(servletContext).getNode(nodeId);
 
         if (node == null) {
             throw new ElementNotFoundException("No such node in database", "node", "element/node.jsp", "node", "element/nodeList.htm");

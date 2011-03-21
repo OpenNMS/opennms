@@ -38,13 +38,13 @@ import java.net.InetAddress;
 import java.util.Hashtable;
 import java.util.Properties;
 
-import org.mortbay.jetty.Connector;
-import org.mortbay.jetty.Server;
-import org.mortbay.jetty.ajp.Ajp13SocketConnector;
-import org.mortbay.jetty.handler.HandlerCollection;
-import org.mortbay.jetty.nio.SelectChannelConnector;
-import org.mortbay.jetty.security.SslSocketConnector;
-import org.mortbay.jetty.webapp.WebAppContext;
+import org.eclipse.jetty.ajp.Ajp13SocketConnector;
+import org.eclipse.jetty.server.Connector;
+import org.eclipse.jetty.server.Server;
+import org.eclipse.jetty.server.handler.HandlerCollection;
+import org.eclipse.jetty.server.nio.SelectChannelConnector;
+import org.eclipse.jetty.server.ssl.SslSocketConnector;
+import org.eclipse.jetty.webapp.WebAppContext;
 import org.opennms.netmgt.daemon.AbstractServiceDaemon;
 import org.opennms.netmgt.daemon.SpringServiceDaemon;
 import org.opennms.serviceregistration.ServiceRegistrationFactory;
@@ -55,9 +55,6 @@ import org.opennms.serviceregistration.ServiceRegistrationStrategy;
  *
  * @author <a href="mailto:brozow@opennms.org">Mathew Brozowski</a>
  * @author <a href="mailto:david@opennms.org">David Hustace</a>
- * @author <a href="mailto:brozow@opennms.org">Mathew Brozowski</a>
- * @author <a href="mailto:david@opennms.org">David Hustace</a>
- * @version $Id: $
  */
 public class JettyServer extends AbstractServiceDaemon implements SpringServiceDaemon {
     
@@ -95,11 +92,11 @@ public class JettyServer extends AbstractServiceDaemon implements SpringServiceD
 
         Integer ajp_port = Integer.getInteger("org.opennms.netmgt.jetty.ajp-port");
         if (ajp_port != null) {
-            connector = new Ajp13SocketConnector();
-            connector.setPort(ajp_port);
+            Ajp13SocketConnector ajpConnector = new Ajp13SocketConnector();
+            ajpConnector.setPort(ajp_port);
             // Apache AJP connector freaks out with anything larger
-            connector.setHeaderBufferSize(8096);
-            m_server.addConnector(connector);
+            ajpConnector.setHeaderBufferSize(8096);
+            m_server.addConnector(ajpConnector);
         }
         
         Integer https_port = Integer.getInteger("org.opennms.netmgt.jetty.https-port");
@@ -149,7 +146,7 @@ public class JettyServer extends AbstractServiceDaemon implements SpringServiceD
     /**
      * <p>addContext</p>
      *
-     * @param handlers a {@link org.mortbay.jetty.handler.HandlerCollection} object.
+     * @param handlers a {@link org.eclipse.jetty.server.handler.HandlerCollection} object.
      * @param name a {@link java.io.File} object.
      * @param contextPath a {@link java.lang.String} object.
      */
@@ -186,7 +183,7 @@ public class JettyServer extends AbstractServiceDaemon implements SpringServiceD
     /**
      * <p>excludeCipherSuites</p>
      *
-     * @param sslConnector a {@link org.mortbay.jetty.security.SslSocketConnector} object.
+     * @param sslConnector a {@link org.eclipse.jetty.server.security.SslSocketConnector} object.
      */
     protected void excludeCipherSuites(SslSocketConnector sslConnector) {
         String[] defaultExclSuites = {

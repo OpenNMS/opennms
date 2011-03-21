@@ -31,6 +31,9 @@
 //
 package org.opennms.netmgt.model.events;
 
+import static org.opennms.core.utils.InetAddressUtils.str;
+
+import java.net.InetAddress;
 import java.util.Collection;
 import java.util.Date;
 
@@ -196,11 +199,10 @@ public class EventBuilder {
      * @param ipAddress a {@link java.lang.String} object.
      * @return a {@link org.opennms.netmgt.model.events.EventBuilder} object.
      */
-    public EventBuilder setInterface(String ipAddress) {
-        m_event.setInterface(ipAddress);
+    public EventBuilder setInterface(InetAddress ipAddress) {
+        m_event.setInterface(str(ipAddress));
         return this;
     }
-    
     /**
      * <p>setInterface</p>
      *
@@ -417,7 +419,7 @@ public class EventBuilder {
             if (iface.getNode() != null) {
                 m_event.setNodeid(iface.getNode().getId().longValue());
             }
-            m_event.setInterface(iface.getIpAddressAsString());
+            m_event.setInterface(str(iface.getIpAddress()));
         }
         return this;
     }
@@ -431,7 +433,7 @@ public class EventBuilder {
     public EventBuilder setMonitoredService(OnmsMonitoredService monitoredService) {
         if (monitoredService != null) {
             m_event.setNodeid(monitoredService.getNodeId().longValue());
-            m_event.setInterface(monitoredService.getIpAddress());
+            m_event.setInterface(str(monitoredService.getIpAddress()));
             m_event.setService(monitoredService.getServiceName());
         }
         return this;

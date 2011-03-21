@@ -336,7 +336,6 @@ public class PageSequenceMonitorTest {
                 "    <parameter key=\"j_username\" value=\"${ltr1}${ltr2}${ltr3}${ltr4}\"/>\n" + 
                 "    <parameter key=\"j_password\" value=\"${ltr1}${ltr2}${ltr3}${ltr4}\"/>\n" + 
                 "  </page>\n" + 
-                "  <page virtual-host=\"localhost\" path=\"/opennms/\" port=\"10342\" successMatch=\"Log out\"/>\n" + 
                 "  <page virtual-host=\"localhost\" path=\"/opennms/events.html\" port=\"10342\" successMatch=\"Event Queries\" />\n" + 
                 "  <page virtual-host=\"localhost\" path=\"/opennms/j_spring_security_logout\" port=\"10342\" successMatch=\"Login with Username and Password\" />\n" + 
                 "</page-sequence>\n");

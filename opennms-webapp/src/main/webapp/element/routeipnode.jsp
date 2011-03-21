@@ -45,11 +45,16 @@
 	contentType="text/html"
 	session="true"
 	import="
+        java.net.*,
+        java.util.*,
+        org.opennms.core.utils.InetAddressUtils,
+        org.opennms.netmgt.model.OnmsNode,
 		org.opennms.web.WebSecurityUtils,
 		org.opennms.web.element.*,
-		java.util.*,
-		java.net.*,org.opennms.core.utils.InetAddressUtils,org.opennms.web.svclayer.ResourceService,org.springframework.web.context.WebApplicationContext,org.springframework.web.context.support.WebApplicationContextUtils"
-%>
+		org.opennms.web.svclayer.ResourceService,
+		org.springframework.web.context.WebApplicationContext,
+		org.springframework.web.context.support.WebApplicationContextUtils
+"%>
 
 <%@ taglib uri="http://java.sun.com/jsp/jstl/core" prefix="c" %>
 
@@ -58,14 +63,7 @@
     protected int httpServiceId;
     private ResourceService m_resourceService;
 
-	public static HashMap<Character, String> statusMap;
-
     public void init() throws ServletException {
-        statusMap = new HashMap<Character, String>();
-        statusMap.put( new Character('A'), "Active" );
-        statusMap.put( new Character(' '), "Unknown" );
-        statusMap.put( new Character('D'), "Deleted" );
-
         try {
             this.telnetServiceId = NetworkElementFactory.getInstance(getServletContext()).getServiceIdFromName("Telnet");
         }
@@ -83,10 +81,7 @@
             WebApplicationContext webAppContext = WebApplicationContextUtils.getRequiredWebApplicationContext(getServletContext());
 	    m_resourceService = (ResourceService) webAppContext.getBean("resourceService", ResourceService.class);
     }
-    
-    public String getStatusString( char c ) {
-        return statusMap.get(new Character(c));
-    }%>
+%>
 
 <%
     String nodeIdString = request.getParameter( "node" );
@@ -98,7 +93,7 @@
     int nodeId = WebSecurityUtils.safeParseInt( nodeIdString );
 
     //get the database node info
-    Node node_db = NetworkElementFactory.getInstance(getServletContext()).getNode( nodeId );
+    OnmsNode node_db = NetworkElementFactory.getInstance(getServletContext()).getNode( nodeId );
     if( node_db == null ) {
         //handle this WAY better, very awful
         throw new ServletException( "No such node in database" );
@@ -195,7 +190,7 @@
 
 	<div class="TwoColLeft">
             <!-- general info box -->
-						<h3>General (Status: <%=(this.getStatusString(node_db.getNodeType())!=null ? this.getStatusString(node_db.getNodeType()) : "Unknown")%>)</h3>
+						<h3>General (Status: <%=(node_db == null ? "Unknown" : ElementUtil.getNodeStatusString(node_db))%>)</h3>
 
 			<div class="boxWrapper">
 			     <ul class="plain">
@@ -213,7 +208,7 @@
 	</div>
 	<hr />
 <div>
-		<h3>Node Ip Routes</h3>
+		<h3>Node IP Routes</h3>
 			
          <!-- general Route info box -->
             <jsp:include page="/includes/nodeRouteInfo-box.jsp" flush="false" >

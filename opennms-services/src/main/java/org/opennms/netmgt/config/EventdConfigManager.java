@@ -75,7 +75,7 @@ public class EventdConfigManager {
      */
     @Deprecated
     protected EventdConfigManager(final Reader reader) throws MarshalException, ValidationException, IOException {
-        m_config = CastorUtils.unmarshal(EventdConfiguration.class, reader, CastorUtils.PRESERVE_WHITESPACE);
+        m_config = CastorUtils.unmarshal(EventdConfiguration.class, reader);
         reader.close();
 
     }
@@ -89,7 +89,7 @@ public class EventdConfigManager {
      * @throws java.io.IOException if any.
      */
     protected EventdConfigManager(final InputStream stream) throws MarshalException, ValidationException, IOException {
-        m_config = CastorUtils.unmarshal(EventdConfiguration.class, stream, CastorUtils.PRESERVE_WHITESPACE);
+        m_config = CastorUtils.unmarshal(EventdConfiguration.class, stream);
 
     }
     
@@ -105,7 +105,7 @@ public class EventdConfigManager {
         InputStream stream = null;
         try {
             stream = new FileInputStream(configFile);
-            m_config = CastorUtils.unmarshal(EventdConfiguration.class, stream, CastorUtils.PRESERVE_WHITESPACE);
+            m_config = CastorUtils.unmarshal(EventdConfiguration.class, stream);
         } finally {
             if (stream != null) {
                 IOUtils.closeQuietly(stream);

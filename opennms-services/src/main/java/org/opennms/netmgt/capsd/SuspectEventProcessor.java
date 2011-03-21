@@ -60,6 +60,9 @@
  */
 package org.opennms.netmgt.capsd;
 
+import static org.opennms.core.utils.InetAddressUtils.addr;
+import static org.opennms.core.utils.InetAddressUtils.str;
+
 import java.net.InetAddress;
 import java.net.UnknownHostException;
 import java.sql.Connection;
@@ -1796,37 +1799,31 @@ final class SuspectEventProcessor implements Runnable {
             InetAddress newPrimaryIf, InetAddress oldPrimaryIf) {
         
         
-        String oldPrimaryAddr = getHostAddress(oldPrimaryIf);
-
-        String newPrimaryAddr = getHostAddress(newPrimaryIf);
-
         if (log().isDebugEnabled())
             log().debug("createAndSendPrimarySnmpInterfaceChangedEvent: nodeId: "
                     + nodeId
                     + " oldPrimarySnmpIf: '"
-                    + oldPrimaryAddr
-                    + "' newPrimarySnmpIf: '" + newPrimaryAddr + "'");
+                    + str(oldPrimaryIf)
+                    + "' newPrimarySnmpIf: '" 
+                    + str(newPrimaryIf) 
+                    + "'");
 
         
         EventBuilder bldr = createEventBuilder(EventConstants.PRIMARY_SNMP_INTERFACE_CHANGED_EVENT_UEI);
         bldr.setNodeid(nodeId);
-        bldr.setInterface(newPrimaryAddr);
+        bldr.setInterface(newPrimaryIf);
         bldr.setService("SNMP");
         
-        if (oldPrimaryAddr != null) {
-            bldr.addParam(EventConstants.PARM_OLD_PRIMARY_SNMP_ADDRESS, oldPrimaryAddr);
+        if (str(oldPrimaryIf) != null) {
+            bldr.addParam(EventConstants.PARM_OLD_PRIMARY_SNMP_ADDRESS, str(oldPrimaryIf));
         }
         
-        if (newPrimaryAddr != null) {
-            bldr.addParam(EventConstants.PARM_NEW_PRIMARY_SNMP_ADDRESS, newPrimaryAddr);
+        if (str(newPrimaryIf) != null) {
+            bldr.addParam(EventConstants.PARM_NEW_PRIMARY_SNMP_ADDRESS, str(newPrimaryIf));
         }
 
         sendEvent(bldr.getEvent());
 
-    }
-
-    private String getHostAddress(InetAddress addr) {
-        return (addr == null ? null : addr.getHostAddress());
     }
 
     /**
@@ -1838,15 +1835,14 @@ final class SuspectEventProcessor implements Runnable {
      * @param primarySnmpIf
      *            Primary SNMP interface address.
      */
-    private void createAndSendReinitializePrimarySnmpInterfaceEvent(
-            int nodeId, InetAddress primarySnmpIf) {
+    private void createAndSendReinitializePrimarySnmpInterfaceEvent(int nodeId, InetAddress primarySnmpIf) {
         if (log().isDebugEnabled())
             log().debug("reinitializePrimarySnmpInterface: nodeId: " + nodeId
-                    + " interface: " + primarySnmpIf.getHostAddress());
+                    + " interface: " + str(primarySnmpIf));
 
         EventBuilder bldr = createEventBuilder(EventConstants.REINITIALIZE_PRIMARY_SNMP_INTERFACE_EVENT_UEI);
         bldr.setNodeid(nodeId);
-        bldr.setInterface(primarySnmpIf.getHostAddress());
+        bldr.setInterface(primarySnmpIf);
         
         sendEvent(bldr.getEvent());
 
@@ -1982,7 +1978,7 @@ final class SuspectEventProcessor implements Runnable {
         
         EventBuilder bldr = createEventBuilder(EventConstants.DUPLICATE_IPINTERFACE_EVENT_UEI);
         bldr.setNodeid(nodeId);
-        bldr.setInterface(ipAddr);
+        bldr.setInterface(addr(ipAddr));
         bldr.addParam(EventConstants.PARM_IP_HOSTNAME, getHostName(ipAddr));
         bldr.addParam(EventConstants.PARM_METHOD, "icmp");
         
@@ -2013,7 +2009,7 @@ final class SuspectEventProcessor implements Runnable {
         
         EventBuilder bldr = createEventBuilder(EventConstants.NODE_GAINED_INTERFACE_EVENT_UEI);
         bldr.setNodeid(nodeId);
-        bldr.setInterface(ipAddr.getHostAddress());
+        bldr.setInterface(ipAddr);
         bldr.addParam(EventConstants.PARM_IP_HOSTNAME, ipAddr.getHostName());
         bldr.addParam(EventConstants.PARM_METHOD, "icmp");
 
@@ -2035,12 +2031,11 @@ final class SuspectEventProcessor implements Runnable {
      *            Service qualifier (typically the port on which the service
      *            was found)
      */
-    private void createAndSendNodeGainedServiceEvent(DbNodeEntry nodeEntry,
-            InetAddress ipAddr, String svcName, String qualifier) {
+    private void createAndSendNodeGainedServiceEvent(DbNodeEntry nodeEntry, InetAddress ipAddr, String svcName, String qualifier) {
         
         EventBuilder bldr = createEventBuilder(EventConstants.NODE_GAINED_SERVICE_EVENT_UEI);
         bldr.setNodeid(nodeEntry.getNodeId());
-        bldr.setInterface(ipAddr.getHostAddress());
+        bldr.setInterface(ipAddr);
         bldr.setService(svcName);
         bldr.addParam(EventConstants.PARM_IP_HOSTNAME, ipAddr.getHostName());
         bldr.addParam(EventConstants.PARM_NODE_LABEL, nodeEntry.getLabel());
@@ -2074,7 +2069,7 @@ final class SuspectEventProcessor implements Runnable {
      */
     private void createAndSendSuspectScanCompletedEvent(InetAddress ipAddr) {
     	EventBuilder bldr = createEventBuilder(EventConstants.SUSPECT_SCAN_COMPLETED_EVENT_UEI);
-    	bldr.setInterface(ipAddr.getHostAddress());
+    	bldr.setInterface(ipAddr);
     	bldr.addParam(EventConstants.PARM_IP_HOSTNAME, ipAddr.getHostName());
     	sendEvent(bldr.getEvent());
     }

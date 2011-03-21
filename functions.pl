@@ -21,14 +21,16 @@ $VERBOSE    = undef;
 
 # path to maven executable
 $MVN = $ENV{'MVN'};
-if (not -x $MVN) {
+if (not defined $MVN or not -x $MVN) {
 	$MVN = $PREFIX . '/maven/bin/mvn';
 }
+
+delete $ENV{'M2_HOME'};
 
 # maven options
 $MAVEN_OPTS = $ENV{'MAVEN_OPTS'};
 if (not defined $MAVEN_OPTS or $MAVEN_OPTS eq '') {
-	$MAVEN_OPTS = '-XX:PermSize=512m -XX:MaxPermSize=1g -Xmx1g';
+	$MAVEN_OPTS = '-XX:PermSize=512m -XX:MaxPermSize=1g -Xmx1g -XX:ReservedCodeCacheSize=512m';
 }
 
 my $result = GetOptions(

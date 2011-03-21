@@ -5,6 +5,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.Set;
 
+import org.opennms.netmgt.model.OnmsNode;
 import org.springframework.transaction.support.TransactionTemplate;
 
 public interface NetworkElementFactoryInterface {
@@ -21,57 +22,57 @@ public interface NetworkElementFactoryInterface {
 	 */
 	String getIpPrimaryAddress(int nodeId);
 
-	Node getNode(int nodeId);
+	OnmsNode getNode(int nodeId);
 
 	/**
 	 * Returns all non-deleted nodes.
 	 *
-	 * @return an array of {@link org.opennms.web.element.Node} objects.
+	 * @return an array of {@link OnmsNode} objects.
 	 */
-	Node[] getAllNodes();
+	List<OnmsNode> getAllNodes();
 
 	/**
 	 * Returns all non-deleted nodes that have the given nodeLabel substring
 	 * somewhere in their nodeLabel.
 	 *
 	 * @param nodeLabel a {@link java.lang.String} object.
-	 * @return an array of {@link org.opennms.web.element.Node} objects.
+	 * @return an array of {@link OnmsNode} objects.
 	 */
-	Node[] getNodesLike(String nodeLabel);
+	List<OnmsNode> getNodesLike(String nodeLabel);
 
-	Node[] getNodesWithIpLike(String iplike);
+	List<OnmsNode> getNodesWithIpLike(String iplike);
 
 	/**
 	 * Returns all non-deleted nodes that have the given service.
 	 *
 	 * @param serviceId a int.
-	 * @return an array of {@link org.opennms.web.element.Node} objects.
+	 * @return an array of {@link OnmsNode} objects.
 	 */
-	Node[] getNodesWithService(int serviceId);
+	List<OnmsNode> getNodesWithService(int serviceId);
 
 	/**
 	 * Returns all non-deleted nodes that have the given mac.
 	 *
 	 * @param macAddr a {@link java.lang.String} object.
-	 * @return an array of {@link org.opennms.web.element.Node} objects.
+	 * @return an array of {@link OnmsNode} objects.
 	 */
-	Node[] getNodesWithPhysAddr(String macAddr);
+	List<OnmsNode> getNodesWithPhysAddr(String macAddr);
 
 	/**
 	 * Returns all non-deleted nodes with a MAC address like the rule given from AtInterface.
 	 *
 	 * @param macAddr a {@link java.lang.String} object.
-	 * @return an array of {@link org.opennms.web.element.Node} objects.
+	 * @return an array of {@link OnmsNode} objects.
 	 */
-	Node[] getNodesWithPhysAddrAtInterface(String macAddr);
+	List<OnmsNode> getNodesWithPhysAddrAtInterface(String macAddr);
 
 	/**
 	 * Returns all non-deleted nodes with a MAC address like the rule given from SnmpInterface.
 	 *
 	 * @param macAddr a {@link java.lang.String} object.
-	 * @return an array of {@link org.opennms.web.element.Node} objects.
+	 * @return an array of {@link OnmsNode} objects.
 	 */
-	Node[] getNodesWithPhysAddrFromSnmpInterface(String macAddr);
+	List<OnmsNode> getNodesWithPhysAddrFromSnmpInterface(String macAddr);
 
 	/**
 	 * Returns all non-deleted nodes that contain the given string in an ifAlias
@@ -82,7 +83,7 @@ public interface NetworkElementFactoryInterface {
 	 *               the nodes with a matching ifAlias on one or more interfaces
 	 * @param ifAlias a {@link java.lang.String} object.
 	 */
-	Node[] getNodesWithIfAlias(String ifAlias);
+	List<OnmsNode> getNodesWithIfAlias(String ifAlias);
 
 	/**
 	 * Resolve an IP address to a DNS hostname via the database. If no hostname
@@ -324,9 +325,9 @@ public interface NetworkElementFactoryInterface {
 	 * @param nodeLabel a {@link java.lang.String} object.
 	 * @param iplike a {@link java.lang.String} object.
 	 * @param serviceId a int.
-	 * @return an array of {@link org.opennms.web.element.Node} objects.
+	 * @return an array of {@link OnmsNode} objects.
 	 */
-	Node[] getNodesLikeAndIpLike(String nodeLabel,
+	List<OnmsNode> getNodesLikeAndIpLike(String nodeLabel,
 			String iplike, int serviceId);
 
 	/**
@@ -334,34 +335,34 @@ public interface NetworkElementFactoryInterface {
 	 *
 	 * @param nodeLabel a {@link java.lang.String} object.
 	 * @param serviceId a int.
-	 * @return an array of {@link org.opennms.web.element.Node} objects.
+	 * @return an array of {@link OnmsNode} objects.
 	 */
-	Node[] getNodesLike(String nodeLabel, int serviceId);
+	List<OnmsNode> getNodesLike(String nodeLabel, int serviceId);
 
 	/**
 	 * <p>getNodesWithIpLike</p>
 	 *
 	 * @param iplike a {@link java.lang.String} object.
 	 * @param serviceId a int.
-	 * @return an array of {@link org.opennms.web.element.Node} objects.
+	 * @return an array of {@link OnmsNode} objects.
 	 */
-	Node[] getNodesWithIpLike(String iplike, int serviceId);
+	List<OnmsNode> getNodesWithIpLike(String iplike, int serviceId);
 
 	/**
 	 * <p>getAllNodes</p>
 	 *
 	 * @param serviceId a int.
-	 * @return an array of {@link org.opennms.web.element.Node} objects.
+	 * @return an array of {@link OnmsNode} objects.
 	 */
-	Node[] getAllNodes(int serviceId);
+	List<OnmsNode> getAllNodes(int serviceId);
 
 	/**
 	 * <p>getNodesFromPhysaddr</p>
 	 *
 	 * @param atPhysAddr a {@link java.lang.String} object.
-	 * @return an array of {@link org.opennms.web.element.Node} objects.
+	 * @return an array of {@link OnmsNode} objects.
 	 */
-	Node[] getNodesFromPhysaddr(String atPhysAddr);
+	List<OnmsNode> getNodesFromPhysaddr(String atPhysAddr);
 
 	AtInterface getAtInterface(int nodeId, String ipAddr);
 
@@ -436,9 +437,9 @@ public interface NetworkElementFactoryInterface {
 	 * @param categoryDao a {@link org.opennms.netmgt.dao.CategoryDao} object.
 	 * @param categories1 an array of {@link java.lang.String} objects.
 	 * @param onlyNodesWithDownAggregateStatus a boolean.
-	 * @return an array of {@link org.opennms.web.element.Node} objects.
+	 * @return an array of {@link OnmsNode} objects.
 	 */
-	Node[] getNodesWithCategories(
+	List<OnmsNode> getNodesWithCategories(
 			TransactionTemplate transTemplate, final String[] categories1,
 			final boolean onlyNodesWithDownAggregateStatus);
 
@@ -449,9 +450,9 @@ public interface NetworkElementFactoryInterface {
 	 * @param categoryDao a {@link org.opennms.netmgt.dao.CategoryDao} object.
 	 * @param categories1 an array of {@link java.lang.String} objects.
 	 * @param onlyNodesWithDownAggregateStatus a boolean.
-	 * @return an array of {@link org.opennms.web.element.Node} objects.
+	 * @return an array of {@link OnmsNode} objects.
 	 */
-	Node[] getNodesWithCategories(String[] categories,
+	List<OnmsNode> getNodesWithCategories(String[] categories,
 			boolean onlyNodesWithDownAggregateStatus);
 
 	/**
@@ -463,9 +464,9 @@ public interface NetworkElementFactoryInterface {
 	 * @param categories1 an array of {@link java.lang.String} objects.
 	 * @param categories2 an array of {@link java.lang.String} objects.
 	 * @param onlyNodesWithDownAggregateStatus a boolean.
-	 * @return an array of {@link org.opennms.web.element.Node} objects.
+	 * @return an array of {@link OnmsNode} objects.
 	 */
-	Node[] getNodesWithCategories(
+	List<OnmsNode> getNodesWithCategories(
 			TransactionTemplate transTemplate, final String[] categories1,
 			final String[] categories2,
 			final boolean onlyNodesWithDownAggregateStatus);
@@ -478,9 +479,9 @@ public interface NetworkElementFactoryInterface {
 	 * @param categories1 an array of {@link java.lang.String} objects.
 	 * @param categories2 an array of {@link java.lang.String} objects.
 	 * @param onlyNodesWithDownAggregateStatus a boolean.
-	 * @return an array of {@link org.opennms.web.element.Node} objects.
+	 * @return an array of {@link OnmsNode} objects.
 	 */
-	Node[] getNodesWithCategories(String[] categories1,
+	List<OnmsNode> getNodesWithCategories(String[] categories1,
 			String[] categories2, boolean onlyNodesWithDownAggregateStatus);
 
     Set<Integer> getLinkedNodeIdOnNode(int safeParseInt) throws SQLException;

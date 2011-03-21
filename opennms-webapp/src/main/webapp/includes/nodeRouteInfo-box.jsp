@@ -34,7 +34,12 @@
   that directs all URLs to be relative to the servlet context.
 --%>
 
-<%@page language="java" contentType="text/html" session="true" import="org.opennms.web.WebSecurityUtils,org.opennms.web.element.*" %>
+<%@page language="java" contentType="text/html" session="true" import="
+  java.util.List,
+  org.opennms.web.WebSecurityUtils,
+  org.opennms.web.element.*,
+  org.opennms.netmgt.model.OnmsNode
+"%>
 
 
 <%
@@ -76,24 +81,31 @@
  </thead>
 
     <% for (int t = 0; t < iproutes.length; t++) { %>
-        <tr width="40%"> 
-            <td align="left" ><%=iproutes[t].get_routedest()%></td>
-            <td align="left" ><%=iproutes[t].get_routemask()%></td>
-            <% 
-            Node[] nodes = null;
-            if (!iproutes[t].get_routenexthop().equals("0.0.0.0")) {
-                nodes = factory.getNodesWithIpLike(iproutes[t].get_routenexthop());
-            }
-            if (nodes != null && nodes.length > 0) { %>
-                <td align="left" ><a href="element/node.jsp?node=<%=nodes[0].getNodeId()%>"><%=iproutes[t].get_routenexthop()%></a></td>
-            <% } else { %>
-                <td align="left" ><%=iproutes[t].get_routenexthop()%></td>
-            <% } %>
-            <td align="left" ><%=iproutes[t].get_ifindex()%></td>
-            <td align="left" ><%=iproutes[t].get_routemetric1()%></td>
-            <td align="left" ><%=IP_ROUTE_PROTO[iproutes[t].get_routeproto()]%></td>
-            <td align="left" ><%=IP_ROUTE_TYPE[iproutes[t].get_routetype()]%></td>
-        </tr>
+        <% IpRouteInterface iface = iproutes[t]; %>
+        <% if (iface != null) { %>
+	        <tr width="40%">
+	            <td align="left" ><%=iface.get_routedest()%></td>
+	            <td align="left" ><%=iface.get_routemask()%></td>
+	            <% if (iface.get_routenexthop() != null) { %>
+		            <% 
+		            List<OnmsNode> nodes = null;
+		            if (!iface.get_routenexthop().equals("0.0.0.0")) {
+		                nodes = factory.getNodesWithIpLike(iface.get_routenexthop());
+		            }
+		            if (nodes != null && nodes.size() > 0) { %>
+		                <td align="left" ><a href="element/node.jsp?node=<%=nodes.get(0).getNodeId()%>"><%=iface.get_routenexthop()%></a></td>
+		            <% } else { %>
+		                <td align="left" ><%=iface.get_routenexthop()%></td>
+		            <% } %>
+		        <% } else { %>
+		                <td align="left" >&nbsp;</td>
+		        <% } %>
+	            <td align="left" ><%=iface.get_ifindex()%></td>
+	            <td align="left" ><%=iface.get_routemetric1()%></td>
+	            <td align="left" ><%= IP_ROUTE_PROTO.length < iface.get_routeproto() ? IP_ROUTE_PROTO[iface.get_routeproto()] : "&nbsp;" %></td>
+	            <td align="left" ><%= IP_ROUTE_TYPE.length < iface.get_routetype() ? IP_ROUTE_TYPE[iface.get_routetype()] : "&nbsp;" %></td>
+	        </tr>
+	    <% } %>
     <% } %>
 <% } %>
 
@@ -103,7 +115,7 @@
   //from the book _SNMP, SNMPv2, SNMPv3, and RMON 1 and 2_  (3rd Ed)
   //by William Stallings
 
-  public static final String[] IP_ROUTE_TYPE= new String[] {
+  public static final String[] IP_ROUTE_TYPE = new String[] {
     "&nbsp;",         //0 (not supported)
     "Other",          //1
     "Invalid",        //2

@@ -117,6 +117,15 @@ public interface ProvisionService {
      */
     @Transactional
     public abstract OnmsNode updateNodeAttributes(OnmsNode node);
+   
+    /**
+     * <p>getDbNodeInitCat</p>
+     *
+     * @param nodeId a {@link java.lang.Integer} object.
+     * @return a {@link org.opennms.netmgt.model.OnmsNode} object.
+     */
+    @Transactional
+    public OnmsNode getDbNodeInitCat(Integer nodeId);
     
     /**
      * <p>updateIpInterfaceAttributes</p>

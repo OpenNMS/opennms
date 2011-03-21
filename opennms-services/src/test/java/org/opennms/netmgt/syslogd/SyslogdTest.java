@@ -39,6 +39,8 @@
 //
 package org.opennms.netmgt.syslogd;
 
+import static org.opennms.core.utils.InetAddressUtils.addr;
+
 import java.io.InputStream;
 import java.lang.reflect.UndeclaredThrowableException;
 import java.net.BindException;
@@ -125,7 +127,7 @@ public class SyslogdTest extends OpenNMSTestCase {
         startSyslogdGracefully();
         
         EventBuilder expectedEventBldr = new EventBuilder(expectedUEI, "syslogd");
-        expectedEventBldr.setInterface(expectedHost);
+        expectedEventBldr.setInterface(addr(expectedHost));
         expectedEventBldr.setLogDest("logndisplay");
         expectedEventBldr.setLogMessage(expectedLogMsg);
     
@@ -298,7 +300,7 @@ public class SyslogdTest extends OpenNMSTestCase {
         final String[] testGroups = { "cmiskell's", "666", "ferrets" };
 
         EventBuilder expectedEventBldr = new EventBuilder(testUEI, "syslogd");
-        expectedEventBldr.setInterface(localhost);
+        expectedEventBldr.setInterface(addr(localhost));
         expectedEventBldr.setLogDest("logndisplay");
         expectedEventBldr.setLogMessage(testMsg);
         

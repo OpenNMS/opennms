@@ -40,6 +40,8 @@
 
 package org.opennms.web.admin.nodeManagement;
 
+import static org.opennms.core.utils.InetAddressUtils.addr;
+
 import java.io.IOException;
 import java.sql.Connection;
 import java.sql.PreparedStatement;
@@ -163,7 +165,7 @@ public class SnmpManageNodesServlet extends HttpServlet {
     private void sendSNMPRestartEvent(int nodeid, String primeInt) throws ServletException {
         EventBuilder bldr = new EventBuilder("uei.opennms.org/nodes/reinitializePrimarySnmpInterface", "web ui");
         bldr.setNodeid(nodeid);
-        bldr.setInterface(primeInt);
+        bldr.setInterface(addr(primeInt));
 
         sendEvent(bldr.getEvent());
     }

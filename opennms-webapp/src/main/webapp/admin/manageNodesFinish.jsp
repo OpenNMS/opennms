@@ -45,6 +45,7 @@
 	session="true"
 	import="org.opennms.web.WebSecurityUtils,
 		org.opennms.web.element.*,
+		org.opennms.netmgt.model.OnmsNode,
 		org.opennms.web.MissingParameterException"
 %>
 
@@ -59,7 +60,7 @@
 
 <%
 
-	Node node = null;
+	OnmsNode node = null;
 	String nodeIdString = request.getParameter("node");
 	if (nodeIdString != null) {
 		try {
@@ -84,7 +85,7 @@
 
 <% if (node != null) { %>
 <p>
-  <a href="element/node.jsp?node=<%= node.getNodeId() %>">Back to Node.</a>
+  <a href="element/node.jsp?node=<%= node.getId() %>">Return to node page</a>
 </p>
 <% } %>
 

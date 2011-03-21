@@ -51,6 +51,8 @@
 
 package org.opennms.netmgt.trapd;
 
+import static org.opennms.core.utils.InetAddressUtils.addr;
+
 import java.net.InetAddress;
 import java.net.UnknownHostException;
 
@@ -245,7 +247,7 @@ class TrapQueueProcessor implements Runnable, PausableFiber, InitializingBean {
     private void sendNewSuspectEvent(String trapInterface) {
         // construct event with 'trapd' as source
         EventBuilder bldr = new EventBuilder(org.opennms.netmgt.EventConstants.NEW_SUSPECT_INTERFACE_EVENT_UEI, "trapd");
-        bldr.setInterface(trapInterface);
+        bldr.setInterface(addr(trapInterface));
         bldr.setHost(m_localAddr);
 
         // send the event to eventd

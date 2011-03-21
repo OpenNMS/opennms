@@ -88,12 +88,12 @@ public class XmlRpcTest {
         exporter.setWebServer(m_webServer);
 		exporter.afterPropertiesSet();
 
-		XmlRpcProxyFactoryBean pfb = new XmlRpcProxyFactoryBean();
+		XmlRpcProxyFactoryBean<ITestBean> pfb = new XmlRpcProxyFactoryBean<ITestBean>();
 		pfb.setServiceInterface(ITestBean.class);
 		pfb.setServiceUrl("http://localhost:9192/RPC2");
 		pfb.afterPropertiesSet();
 
-        ITestBean proxy = (ITestBean) pfb.getObject();
+        ITestBean proxy = pfb.getObject();
 		assertEquals("myname", proxy.getName());
 		assertEquals(99, proxy.getAge());
 		proxy.setAge(50);
@@ -113,12 +113,12 @@ public class XmlRpcTest {
         exporter.setWebServer(m_webServer);
         exporter.afterPropertiesSet();
 
-        XmlRpcProxyFactoryBean pfb = new XmlRpcProxyFactoryBean();
+        XmlRpcProxyFactoryBean<ITestBean> pfb = new XmlRpcProxyFactoryBean<ITestBean>();
         pfb.setServiceInterface(ITestBean.class);
         pfb.setServiceUrl("https://localhost:9192/RPC2");
         pfb.afterPropertiesSet();
 
-        ITestBean proxy = (ITestBean) pfb.getObject();
+        ITestBean proxy = pfb.getObject();
         assertEquals("myname", proxy.getName());
         assertEquals(99, proxy.getAge());
         proxy.setAge(50);
@@ -137,12 +137,12 @@ public class XmlRpcTest {
         exporter.setWebServer(m_webServer);
 		exporter.afterPropertiesSet();
 
-		XmlRpcProxyFactoryBean pfb = new XmlRpcProxyFactoryBean();
+		XmlRpcProxyFactoryBean<ITestBean> pfb = new XmlRpcProxyFactoryBean<ITestBean>();
 		pfb.setServiceInterface(ITestBean.class);
 		pfb.setServiceUrl("http://127.0.0.1:9191/RPC2"); // this is wrong (we hope) so we throw an exception
 		pfb.afterPropertiesSet();
 
-        ITestBean proxy = (ITestBean) pfb.getObject();
+        ITestBean proxy = pfb.getObject();
 		try {
 			proxy.setAge(50);
 			fail("Should have thrown RemoteAccessException");

@@ -1,10 +1,11 @@
 <?xml version="1.0" encoding="UTF-8"?>
  
 <databaseChangeLog
-	xmlns="http://www.liquibase.org/xml/ns/dbchangelog/1.9"
+	xmlns="http://www.liquibase.org/xml/ns/dbchangelog"
 	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
-	xsi:schemaLocation="http://www.liquibase.org/xml/ns/dbchangelog/1.9
-		http://www.liquibase.org/xml/ns/dbchangelog/dbchangelog-1.9.xsd">
+	xmlns:ext="http://www.liquibase.org/xml/ns/dbchangelog-ext"
+	xsi:schemaLocation="http://www.liquibase.org/xml/ns/dbchangelog http://www.liquibase.org/xml/ns/dbchangelog/dbchangelog-2.0.xsd
+		http://www.liquibase.org/xml/ns/dbchangelog-ext http://www.liquibase.org/xml/ns/dbchangelog/dbchangelog-ext.xsd">
 
 	<changeSet author="rangerrick" id="1.6.0-snmpInterface">
 		<preConditions onFail="MARK_RAN">
@@ -16,7 +17,7 @@
 		<createTable tableName="snmpinterface">
 
 			<!-- Unique identifier for this SNMP interface -->
-			<column name="id" type="integer" autoIncrement="true">
+			<column name="id" type="integer">
 				<constraints nullable="false" primaryKey="true" primaryKeyName="snmpinterface_pkey" />
 			</column>
 
@@ -66,6 +67,8 @@
 			<column name="snmpifalias" type="varchar(256)" />
 		</createTable>
 
+		<ext:addAutoIncrement tableName="snmpinterface" columnName="id" sequenceName="opennmsNxtId" />
+
 		<addForeignKeyConstraint constraintName="fk_nodeid2" onDelete="CASCADE"
 			baseTableName="snmpinterface" baseColumnNames="nodeid"
 			referencedTableName="node" referencedColumnNames="nodeid" />
@@ -80,10 +83,6 @@
 		<createIndex tableName="snmpinterface" indexName="snmpinterface_ipaddr_idx">
 			<column name="ipaddr" />
 		</createIndex>
-
-		<modifySql>
-			<replace replace=" serial " with=" integer DEFAULT nextval('opennmsNxtId') " />
-		</modifySql>
 
 	</changeSet>
 

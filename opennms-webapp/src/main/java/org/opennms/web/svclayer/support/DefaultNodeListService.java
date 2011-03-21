@@ -60,6 +60,7 @@ import org.opennms.netmgt.config.siteStatusViews.Rows;
 import org.opennms.netmgt.config.siteStatusViews.View;
 import org.opennms.netmgt.dao.CategoryDao;
 import org.opennms.netmgt.dao.NodeDao;
+import org.opennms.netmgt.dao.SiteStatusViewConfigDao;
 import org.opennms.netmgt.model.OnmsArpInterface;
 import org.opennms.netmgt.model.OnmsCriteria;
 import org.opennms.netmgt.model.OnmsIpInterface;
@@ -69,7 +70,6 @@ import org.opennms.netmgt.model.OnmsSnmpInterface;
 import org.opennms.web.command.NodeListCommand;
 import org.opennms.web.svclayer.AggregateStatus;
 import org.opennms.web.svclayer.NodeListService;
-import org.opennms.web.svclayer.dao.SiteStatusViewConfigDao;
 import org.opennms.web.svclayer.support.NodeListModel.NodeModel;
 import org.springframework.beans.factory.InitializingBean;
 import org.springframework.dao.DataRetrievalFailureException;
@@ -440,7 +440,7 @@ public class DefaultNodeListService implements NodeListService, InitializingBean
     /**
      * <p>getSiteStatusViewConfigDao</p>
      *
-     * @return a {@link org.opennms.web.svclayer.dao.SiteStatusViewConfigDao} object.
+     * @return a {@link org.opennms.netmgt.dao.SiteStatusViewConfigDao} object.
      */
     public SiteStatusViewConfigDao getSiteStatusViewConfigDao() {
         return m_siteStatusViewConfigDao;
@@ -449,7 +449,7 @@ public class DefaultNodeListService implements NodeListService, InitializingBean
     /**
      * <p>setSiteStatusViewConfigDao</p>
      *
-     * @param siteStatusViewConfigDao a {@link org.opennms.web.svclayer.dao.SiteStatusViewConfigDao} object.
+     * @param siteStatusViewConfigDao a {@link org.opennms.netmgt.dao.SiteStatusViewConfigDao} object.
      */
     public void setSiteStatusViewConfigDao(SiteStatusViewConfigDao siteStatusViewConfigDao) {
         m_siteStatusViewConfigDao = siteStatusViewConfigDao;

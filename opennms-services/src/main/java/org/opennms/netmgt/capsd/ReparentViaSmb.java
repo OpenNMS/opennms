@@ -40,6 +40,8 @@
 
 package org.opennms.netmgt.capsd;
 
+import static org.opennms.core.utils.InetAddressUtils.addr;
+
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
@@ -709,7 +711,7 @@ public final class ReparentViaSmb {
 
         bldr.setNodeid(newNodeId);
         bldr.setHost(Capsd.getLocalHostAddress());
-        bldr.setInterface(ipAddr);
+        bldr.setInterface(addr(ipAddr));
         
         bldr.addParam(EventConstants.PARM_IP_HOSTNAME, ipHostName);
         bldr.addParam(EventConstants.PARM_OLD_NODEID, oldNodeId);

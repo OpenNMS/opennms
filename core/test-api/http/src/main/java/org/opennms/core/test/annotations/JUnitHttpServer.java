@@ -30,7 +30,7 @@ public @interface JUnitHttpServer {
     /** whether or not to use basic auth **/
     boolean basicAuth() default false;
 
-    /** the basic auth property file (defaults to target/test-classes/realm.properties **/
+    /** the basic auth property file (defaults to target/test-classes/realm.properties) **/
     String basicAuthFile() default "target/test-classes/realm.properties";
 
     /** the location of the keystore if using HTTPS (defaults to target/test-classes/JUnitHttpServer.keystore) **/

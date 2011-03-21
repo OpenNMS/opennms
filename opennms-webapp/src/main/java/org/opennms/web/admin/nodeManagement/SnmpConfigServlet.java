@@ -38,6 +38,8 @@
 
 package org.opennms.web.admin.nodeManagement;
 
+import static org.opennms.core.utils.InetAddressUtils.addr;
+
 import java.io.IOException;
 
 import javax.servlet.RequestDispatcher;
@@ -90,7 +92,7 @@ public class SnmpConfigServlet extends HttpServlet {
         
         
         EventBuilder bldr = new EventBuilder(EventConstants.CONFIGURE_SNMP_EVENT_UEI, "web ui");
-        bldr.setInterface(firstIPAddress);
+        bldr.setInterface(addr(firstIPAddress));
         bldr.setService("SNMP");
         
         bldr.addParam(EventConstants.PARM_FIRST_IP_ADDRESS, firstIPAddress);

@@ -92,7 +92,7 @@ public class DroolsCorrelationEngineBuilder extends PropertyEditorRegistrySuppor
      * @param obj a {@link java.lang.Object} object.
      * @param name a {@link java.lang.String} object.
      */
-    public void assertSet(Object obj, String name) {
+    public void assertSet(final Object obj, final String name) {
         Assert.state(obj != null, name+" required for DroolsEngineFactoryBean");
     }
     
@@ -112,9 +112,9 @@ public class DroolsCorrelationEngineBuilder extends PropertyEditorRegistrySuppor
         readConfiguration();
     }
 
-    private void registerEngines(ApplicationContext appContext) {
+    private void registerEngines(final ApplicationContext appContext) {
         
-        for (RuleSetConfiguration ruleSet : m_ruleSets) {
+        for (final RuleSetConfiguration ruleSet : m_ruleSets) {
             m_correlator.addCorrelationEngine(ruleSet.constructEngine(appContext));
         }
     }
@@ -124,7 +124,7 @@ public class DroolsCorrelationEngineBuilder extends PropertyEditorRegistrySuppor
      *
      * @param eventIpcManager a {@link org.opennms.netmgt.eventd.EventIpcManager} object.
      */
-    public void setEventIpcManager(EventIpcManager eventIpcManager) {
+    public void setEventIpcManager(final EventIpcManager eventIpcManager) {
         m_eventIpcManager = eventIpcManager;
     }
 
@@ -133,7 +133,7 @@ public class DroolsCorrelationEngineBuilder extends PropertyEditorRegistrySuppor
      *
      * @param configResource a {@link org.springframework.core.io.Resource} object.
      */
-    public void setConfigurationResource(Resource configResource) {
+    public void setConfigurationResource(final Resource configResource) {
         m_configResource = configResource;
     }
     
@@ -142,15 +142,15 @@ public class DroolsCorrelationEngineBuilder extends PropertyEditorRegistrySuppor
      *
      * @param correlator a {@link org.opennms.netmgt.correlation.CorrelationEngineRegistrar} object.
      */
-    public void setCorrelationEngineRegistrar(CorrelationEngineRegistrar correlator) {
+    public void setCorrelationEngineRegistrar(final CorrelationEngineRegistrar correlator) {
         m_correlator = correlator;
     }
     
     private void readConfiguration() throws Exception {
-        EngineConfiguration configuration = CastorUtils.unmarshal(EngineConfiguration.class, m_configResource, CastorUtils.PRESERVE_WHITESPACE);
+    	final EngineConfiguration configuration = CastorUtils.unmarshal(EngineConfiguration.class, m_configResource);
 
-        List<RuleSetConfiguration> ruleSets = new LinkedList<RuleSetConfiguration>();
-        for (RuleSet ruleSet : configuration.getRuleSet()) {
+    	final List<RuleSetConfiguration> ruleSets = new LinkedList<RuleSetConfiguration>();
+        for (final RuleSet ruleSet : configuration.getRuleSet()) {
             ruleSets.add(new RuleSetConfiguration(ruleSet));
         }
 
@@ -161,7 +161,7 @@ public class DroolsCorrelationEngineBuilder extends PropertyEditorRegistrySuppor
         
         private String m_configFileLocation;
         
-        public ConfigFileApplicationContext(String configFileLocation, ApplicationContext parent) {
+        public ConfigFileApplicationContext(final String configFileLocation, final ApplicationContext parent) {
             super(parent);
             m_configFileLocation = configFileLocation;
             refresh();
@@ -176,7 +176,7 @@ public class DroolsCorrelationEngineBuilder extends PropertyEditorRegistrySuppor
         }
 
         @Override
-        protected Resource getResourceByPath(String path) {
+        protected Resource getResourceByPath(final String path) {
             return new FileSystemResource(path);
         }
         
@@ -185,12 +185,12 @@ public class DroolsCorrelationEngineBuilder extends PropertyEditorRegistrySuppor
     public static class ResourceConfiguration {
         private String m_resourcePath;
         
-        public ResourceConfiguration(String resourcePath) {
+        public ResourceConfiguration(final String resourcePath) {
             m_resourcePath = resourcePath;
         }
         
-        public Resource getResource(ResourceLoader loader) {
-            String finalName = PropertiesUtils.substitute( m_resourcePath, System.getProperties() );
+        public Resource getResource(final ResourceLoader loader) {
+        	final String finalName = PropertiesUtils.substitute( m_resourcePath, System.getProperties() );
             return loader.getResource( finalName );
 
         }
@@ -198,12 +198,12 @@ public class DroolsCorrelationEngineBuilder extends PropertyEditorRegistrySuppor
     
     public static class GlobalConfiguration extends PropertyEditorRegistrySupport {
 
-        private String m_name;
-        private String m_type;
-        private String m_value;
-        private String m_ref;
+        private final String m_name;
+        private final String m_type;
+        private final String m_value;
+        private final String m_ref;
         
-        public GlobalConfiguration(Global global) {
+        public GlobalConfiguration(final Global global) {
             registerDefaultEditors();
             m_name = global.getName();
             m_type = global.getType();
@@ -227,27 +227,26 @@ public class DroolsCorrelationEngineBuilder extends PropertyEditorRegistrySuppor
             return m_value;
         }
 
-        Object constructValue(ApplicationContext context) {
+        Object constructValue(final ApplicationContext context) {
             
-            String type = getType();
-            Class<?> typeClass = Object.class;
+        	final String type = getType();
+        	Class<?> typeClass = Object.class;
             if (type != null) {
-                PropertyEditor classEditor = getDefaultEditor(Class.class);
+            	final PropertyEditor classEditor = getDefaultEditor(Class.class);
                 classEditor.setAsText(type);
                 typeClass = (Class<?>)classEditor.getValue();
             }
         
-            String value = getValue();
+            final String value = getValue();
             if (value != null) {
-                PropertyEditor valueEditor = getDefaultEditor(typeClass);
+            	final PropertyEditor valueEditor = getDefaultEditor(typeClass);
                 valueEditor.setAsText(value);
                 return valueEditor.getValue();
             }
             
-            String ref = getRef();
+            final String ref = getRef();
             if (ref != null) {
-                Object bean = context.getBean(ref, typeClass);
-                return bean;
+            	return context.getBean(ref, typeClass);
             }
             
             throw new IllegalArgumentException("One of either the value or the ref must be specified");
@@ -257,26 +256,26 @@ public class DroolsCorrelationEngineBuilder extends PropertyEditorRegistrySuppor
     }
 
     public class RuleSetConfiguration {
-        private String m_name;
-        private String m_appContextLocation;
-        private List<String> m_interestingEvents;
-        private List<ResourceConfiguration> m_resourceConfigurations;
-        private List<GlobalConfiguration> m_globalConfig;
+        private final String m_name;
+        private final String m_appContextLocation;
+        private final List<String> m_interestingEvents;
+        private final List<ResourceConfiguration> m_resourceConfigurations;
+        private final List<GlobalConfiguration> m_globalConfig;
         
-        public RuleSetConfiguration(RuleSet ruleSet) {
+        public RuleSetConfiguration(final RuleSet ruleSet) {
 
             m_name = ruleSet.getName();
             m_interestingEvents = Arrays.asList(ruleSet.getEvent());
             
             m_resourceConfigurations = new LinkedList<ResourceConfiguration>();
-            for(String resourcePath : ruleSet.getRuleFile()) {
+            for(final String resourcePath : ruleSet.getRuleFile()) {
                 m_resourceConfigurations.add( new ResourceConfiguration( resourcePath ) );
             }
             
             m_appContextLocation = ruleSet.getAppContext();
             
             m_globalConfig = new LinkedList<GlobalConfiguration>();
-            for(Global global : ruleSet.getGlobal()) {
+            for(final Global global : ruleSet.getGlobal()) {
                 m_globalConfig.add(new GlobalConfiguration(global));
             }
             
@@ -287,10 +286,10 @@ public class DroolsCorrelationEngineBuilder extends PropertyEditorRegistrySuppor
             return m_name;
         }
 
-        public Map<String, Object> getGlobals(ApplicationContext context) {
-            Map<String, Object> globals = new HashMap<String, Object>();
+        public Map<String, Object> getGlobals(final ApplicationContext context) {
+        	final Map<String, Object> globals = new HashMap<String, Object>();
             
-            for (GlobalConfiguration globalConfig : m_globalConfig) {
+            for (final GlobalConfiguration globalConfig : m_globalConfig) {
                 globals.put(globalConfig.getName(), globalConfig.constructValue(context));
             }
             
@@ -301,19 +300,19 @@ public class DroolsCorrelationEngineBuilder extends PropertyEditorRegistrySuppor
             return m_interestingEvents;
         }
 
-        public List<Resource> getRuleResources(ResourceLoader resourceLoader) {
-            List<Resource> resources = new LinkedList<Resource>();
-            for (ResourceConfiguration resConfig : m_resourceConfigurations) {
+        public List<Resource> getRuleResources(final ResourceLoader resourceLoader) {
+        	final List<Resource> resources = new LinkedList<Resource>();
+            for (final ResourceConfiguration resConfig : m_resourceConfigurations) {
                 resources.add(resConfig.getResource(resourceLoader));
                 
             }
             return resources;
         }
-        CorrelationEngine constructEngine(ApplicationContext parent) {
-            ApplicationContext configContext = new ConfigFileApplicationContext(getConfigLocation(), parent);
+        
+        CorrelationEngine constructEngine(final ApplicationContext parent) {
+        	final ApplicationContext configContext = new ConfigFileApplicationContext(getConfigLocation(), parent);
             
-            
-            DroolsCorrelationEngine engine = new DroolsCorrelationEngine();
+        	final DroolsCorrelationEngine engine = new DroolsCorrelationEngine();
             engine.setName(getName());
             engine.setEventIpcManager(m_eventIpcManager);
             engine.setScheduler(new Timer(getName()+"-Timer"));
@@ -323,7 +322,7 @@ public class DroolsCorrelationEngineBuilder extends PropertyEditorRegistrySuppor
             try {
                 engine.initialize();
                 return engine;
-            } catch (Throwable e) {
+            } catch (final Throwable e) {
                 throw new RuntimeException("Unable to initialize Drools engine "+getName(), e);
             }
         }
@@ -334,9 +333,9 @@ public class DroolsCorrelationEngineBuilder extends PropertyEditorRegistrySuppor
     }
 
     /** {@inheritDoc} */
-    public void onApplicationEvent(ApplicationEvent appEvent) {
+    public void onApplicationEvent(final ApplicationEvent appEvent) {
         if (appEvent instanceof ContextRefreshedEvent) {
-            ApplicationContext appContext = ((ContextRefreshedEvent)appEvent).getApplicationContext();
+            final ApplicationContext appContext = ((ContextRefreshedEvent)appEvent).getApplicationContext();
             if (!(appContext instanceof ConfigFileApplicationContext)) {
                 registerEngines(appContext);
             }

@@ -6,8 +6,8 @@ import java.util.List;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
+import org.opennms.netmgt.model.OnmsNode;
 import org.opennms.web.element.ElementUtil;
-import org.opennms.web.element.Node;
 import org.opennms.web.filter.Filter;
 import org.opennms.web.outage.Outage;
 import org.opennms.web.outage.SortStyle;
@@ -35,14 +35,14 @@ public class NodeOutagesController extends AbstractController implements Initial
     /** {@inheritDoc} */
     @Override
     protected ModelAndView handleRequestInternal(HttpServletRequest request, HttpServletResponse response) throws Exception {
-        Node node = ElementUtil.getNodeByParams(request, getServletContext());
+        OnmsNode node = ElementUtil.getNodeByParams(request, getServletContext());
 
         Outage[] outages = new Outage[0];
 
-        if (node.getNodeId() > 0) {
+        if (node.getId() > 0) {
             List<Filter> filters = new ArrayList<Filter>();
 
-            filters.add(new NodeFilter(node.getNodeId(), getServletContext()));
+            filters.add(new NodeFilter(node.getId(), getServletContext()));
             filters.add(new RecentOutagesFilter());
 
             OutageCriteria criteria = new OutageCriteria(filters.toArray(new Filter[0]), SortStyle.ID, null, -1, -1);
@@ -50,7 +50,7 @@ public class NodeOutagesController extends AbstractController implements Initial
         }
 
         ModelAndView modelAndView = new ModelAndView(getSuccessView());
-        modelAndView.addObject("nodeId", node.getNodeId());
+        modelAndView.addObject("nodeId", node.getId());
         modelAndView.addObject("outages", outages);
         return modelAndView;
     }

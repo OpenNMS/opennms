@@ -41,6 +41,8 @@
 //
 package org.opennms.netmgt.config;
 
+import static org.opennms.core.utils.InetAddressUtils.addr;
+
 import java.io.IOException;
 
 import javax.sql.DataSource;
@@ -329,7 +331,7 @@ public class NotificationManagerTest extends AbstractTransactionalTemporaryDatab
         
         EventBuilder builder = new EventBuilder("uei.opennms.org/doNotCareAboutTheUei", "Test.Event");
         builder.setNodeid(nodeId);
-        builder.setInterface(intf);
+        builder.setInterface(addr(intf));
         builder.setService(svc);
 
         assertEquals(description, matches, m_notificationManager.nodeInterfaceServiceValid(notif, builder.getEvent()));

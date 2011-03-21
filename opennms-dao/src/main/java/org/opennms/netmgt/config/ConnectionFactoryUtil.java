@@ -23,7 +23,7 @@ public class ConnectionFactoryUtil {
      * @throws org.exolab.castor.xml.ValidationException if any.
      */
     public static JdbcDataSource marshalDataSourceFromConfig(final InputStream stream, final String dsName) throws MarshalException, ValidationException {
-    	final DataSourceConfiguration dsc = CastorUtils.unmarshal(DataSourceConfiguration.class, stream, CastorUtils.PRESERVE_WHITESPACE);
+    	final DataSourceConfiguration dsc = CastorUtils.unmarshal(DataSourceConfiguration.class, stream);
         return validateDataSourceConfiguration(dsName, dsc);
     }
 
@@ -37,9 +37,10 @@ public class ConnectionFactoryUtil {
      * @throws org.exolab.castor.xml.ValidationException if any.
      * @throws java.beans.PropertyVetoException if any.
      * @throws java.sql.SQLException if any.
+     * @deprecated Use code for InputStream instead to avoid character set issues
      */
     public static JdbcDataSource marshalDataSourceFromConfig(final Reader rdr, final String dsName) throws MarshalException, ValidationException, PropertyVetoException, SQLException {
-    	final DataSourceConfiguration dsc = CastorUtils.unmarshal(DataSourceConfiguration.class, rdr, CastorUtils.PRESERVE_WHITESPACE);
+    	final DataSourceConfiguration dsc = CastorUtils.unmarshal(DataSourceConfiguration.class, rdr);
         return validateDataSourceConfiguration(dsName, dsc);
     }
 

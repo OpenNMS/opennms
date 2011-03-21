@@ -38,6 +38,8 @@
 
 package org.opennms.web.rest;
 
+import static org.opennms.core.utils.InetAddressUtils.addr;
+
 import javax.ws.rs.Consumes;
 import javax.ws.rs.DELETE;
 import javax.ws.rs.GET;
@@ -183,7 +185,7 @@ public class OnmsIpInterfaceResource extends OnmsRestService {
         EventBuilder bldr = new EventBuilder(EventConstants.NODE_GAINED_INTERFACE_EVENT_UEI, getClass().getName());
 
         bldr.setNodeid(node.getId());
-        bldr.setInterface(ipInterface.getIpAddressAsString());
+        bldr.setInterface(ipInterface.getIpAddress());
 
         try {
             m_eventProxy.send(bldr.getEvent());
@@ -252,7 +254,7 @@ public class OnmsIpInterfaceResource extends OnmsRestService {
         EventBuilder bldr = new EventBuilder(EventConstants.INTERFACE_DELETED_EVENT_UEI, getClass().getName());
 
         bldr.setNodeid(node.getId());
-        bldr.setInterface(ipAddress);
+        bldr.setInterface(addr(ipAddress));
 
         try {
             m_eventProxy.send(bldr.getEvent());

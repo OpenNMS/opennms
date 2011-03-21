@@ -35,7 +35,6 @@ public class Reportd implements SpringServiceDaemon {
     private ReportdConfigurationDao m_reportConfigurationDao;
     
     private String reportDirectory;
-    private boolean reportPersist;
 
     /**
      * <p>start</p>
@@ -44,7 +43,7 @@ public class Reportd implements SpringServiceDaemon {
      */
     public void start() throws Exception {
           reportDirectory = m_reportConfigurationDao.getStorageDirectory();
-          reportPersist = m_reportConfigurationDao.getPersistFlag();
+
           m_reportScheduler.start();
     }
     
@@ -158,7 +157,6 @@ public class Reportd implements SpringServiceDaemon {
             try {
                 
                 reportDirectory = m_reportConfigurationDao.getStorageDirectory();
-                reportPersist = m_reportConfigurationDao.getPersistFlag();
                 
                 LogUtils.debugf(this,"handleReloadConfigEvent: lock acquired, unscheduling current reports...");
 

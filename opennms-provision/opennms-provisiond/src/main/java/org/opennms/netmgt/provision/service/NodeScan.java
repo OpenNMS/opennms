@@ -31,6 +31,7 @@
  */
 package org.opennms.netmgt.provision.service;
 
+import static org.opennms.core.utils.InetAddressUtils.addr;
 import static org.opennms.core.utils.LogUtils.debugf;
 import static org.opennms.core.utils.LogUtils.infof;
 import static org.opennms.core.utils.LogUtils.warnf;
@@ -61,6 +62,7 @@ import org.opennms.netmgt.model.OnmsSnmpInterface;
 import org.opennms.netmgt.model.events.EventBuilder;
 import org.opennms.netmgt.model.events.EventForwarder;
 import org.opennms.netmgt.provision.IpInterfacePolicy;
+import org.opennms.netmgt.provision.NodePolicy;
 import org.opennms.netmgt.provision.SnmpInterfacePolicy;
 import org.opennms.netmgt.snmp.SnmpAgentConfig;
 import org.opennms.netmgt.snmp.SnmpUtils;
@@ -369,7 +371,7 @@ public class NodeScan implements RunInBatch {
             if (!isAborted()) {
                 EventBuilder bldr = new EventBuilder(EventConstants.REINITIALIZE_PRIMARY_SNMP_INTERFACE_EVENT_UEI, "Provisiond");
                 bldr.setNodeid(getNodeId());
-                bldr.setInterface(getAgentAddress().getHostAddress());
+                bldr.setInterface(getAgentAddress());
                 getEventForwarder().sendNow(bldr.getEvent());
             }
         }
@@ -530,7 +532,7 @@ public class NodeScan implements RunInBatch {
 
         public void run(ContainerTask<?> parent) {
             parent.getBuilder().addSequence(
-                    new NodeInfoScan(getNode(),getAgentAddress(), getForeignSource(), this, getAgentConfigFactory(), getProvisionService()),
+                    new NodeInfoScan(getNode(),getAgentAddress(), getForeignSource(), this, getAgentConfigFactory(), getProvisionService(), getNodeId()),
                     new RunInBatch() {
                         public void run(BatchTask phase) {
                             detectPhysicalInterfaces(phase);
@@ -561,7 +563,31 @@ public class NodeScan implements RunInBatch {
         private NoAgentScan(Integer nodeId, OnmsNode node) {
             super(nodeId, node);
         }
+        
+        private void setNode(OnmsNode node) {
+            m_node = node;
+        }
+           
+        private void applyNodePolicies(BatchTask phase) {
 
+            List<NodePolicy> nodePolicies = getProvisionService().getNodePoliciesForForeignSource(getForeignSource() == null ? "default" : getForeignSource());
+            
+            OnmsNode node = getNode();
+            for(NodePolicy policy : nodePolicies) {
+                if (node != null) {
+                    node = policy.apply(node);
+                }
+            }
+            
+            if (node == null) {
+                String reason = "Aborted scan of node due to configured policy";
+                abort(reason);
+            } else {
+                setNode(node);
+            }
+            
+        }
+        
         void stampProvisionedInterfaces(BatchTask phase) {
             if (!isAborted()) { 
             
@@ -581,11 +607,22 @@ public class NodeScan implements RunInBatch {
             
             getProvisionService().deleteObsoleteInterfaces(getNodeId(), getScanStamp());
             
+        }
+        
+        private void doPersistNodeInfo(BatchTask phase) {
+            if (!isAborted()) {
+                getProvisionService().updateNodeAttributes(getNode());
+            }
             debugf(this, "Finished phase " + phase);
         }
 
         public void run(ContainerTask<?> parent) {
             parent.getBuilder().addSequence(
+                    new RunInBatch() {
+                        public void run(BatchTask phase) {
+                            applyNodePolicies(phase);
+                        }
+                    },
                     new RunInBatch() {
                         public void run(BatchTask phase) {
                             stampProvisionedInterfaces(phase);
@@ -594,6 +631,11 @@ public class NodeScan implements RunInBatch {
                     new RunInBatch() {
                         public void run(BatchTask phase) {
                             deleteObsoleteResources(phase);
+                        }
+                    },
+                    new RunInBatch() {
+                        public void run(BatchTask phase) {
+                            doPersistNodeInfo(phase);
                         }
                     }
             );

@@ -135,7 +135,7 @@ public class SnmpPeerFactory extends PeerFactory implements SnmpAgentConfigFacto
     public SnmpPeerFactory(final Resource resource) {
         SnmpPeerFactory.getWriteLock().lock();
         try {
-            m_config = CastorUtils.unmarshalWithTranslatedExceptions(SnmpConfig.class, resource, CastorUtils.PRESERVE_WHITESPACE);
+            m_config = CastorUtils.unmarshalWithTranslatedExceptions(SnmpConfig.class, resource);
         } finally {
             SnmpPeerFactory.getWriteLock().unlock();
         }
@@ -148,11 +148,12 @@ public class SnmpPeerFactory extends PeerFactory implements SnmpAgentConfigFacto
      * @throws java.io.IOException if any.
      * @throws org.exolab.castor.xml.MarshalException if any.
      * @throws org.exolab.castor.xml.ValidationException if any.
+     * @deprecated Use code for InputStream instead to avoid character set issues
      */
     public SnmpPeerFactory(final Reader rdr) throws IOException, MarshalException, ValidationException {
         SnmpPeerFactory.getWriteLock().lock();
         try {
-            m_config = CastorUtils.unmarshalWithTranslatedExceptions(SnmpConfig.class, rdr, CastorUtils.PRESERVE_WHITESPACE);
+            m_config = CastorUtils.unmarshalWithTranslatedExceptions(SnmpConfig.class, rdr);
         } finally {
             SnmpPeerFactory.getWriteLock().unlock();
         }
@@ -166,7 +167,7 @@ public class SnmpPeerFactory extends PeerFactory implements SnmpAgentConfigFacto
     public SnmpPeerFactory(final InputStream stream) {
         SnmpPeerFactory.getWriteLock().lock();
         try {
-            m_config = CastorUtils.unmarshalWithTranslatedExceptions(SnmpConfig.class, stream, CastorUtils.PRESERVE_WHITESPACE);
+            m_config = CastorUtils.unmarshalWithTranslatedExceptions(SnmpConfig.class, stream);
         } finally {
             SnmpPeerFactory.getWriteLock().unlock();
         }

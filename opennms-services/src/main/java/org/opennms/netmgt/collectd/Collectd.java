@@ -796,11 +796,6 @@ public class Collectd extends AbstractServiceDaemon implements
         try {
             info = new SnmpEventInfo(event);
             
-            if (info == null) {
-                log().error("configureSNMPHandler: event contained invalid parameters.  "+event);
-                return;
-            }
-
             if (StringUtils.isBlank(info.getFirstIPAddress())) {				
                 log().error("configureSNMPHandler: event contained invalid firstIpAddress.  "+event);
                 return;

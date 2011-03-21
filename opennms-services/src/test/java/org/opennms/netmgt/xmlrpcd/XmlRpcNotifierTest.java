@@ -33,6 +33,7 @@ package org.opennms.netmgt.xmlrpcd;
 
 import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertTrue;
+import static org.opennms.core.utils.InetAddressUtils.addr;
 
 import java.io.IOException;
 import java.util.Date;
@@ -407,7 +408,7 @@ public class XmlRpcNotifierTest  {
         m_anticipator.anticipateCall("sendEvent", eventMap);
 
         EventBuilder bldr = basicEventBuilder(date);
-        bldr.setInterface(s_interface);
+        bldr.setInterface(addr(s_interface));
         assertTrue("notifier sendEvent", m_notifier.sendEvent(bldr.getEvent()));
         
         finishUp();
@@ -665,8 +666,7 @@ public class XmlRpcNotifierTest  {
     }
 
     private EventBuilder serviceEventBuilder(Date date) {
-        return basicEventBuilder(date)
-            .setInterface(s_interface)
+        return basicEventBuilder(date).setInterface(addr(s_interface))
             .setService(s_service);
     }
     

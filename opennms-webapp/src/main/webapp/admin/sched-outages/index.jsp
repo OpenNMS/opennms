@@ -1,5 +1,18 @@
 <%@page language="java" contentType="text/html" session="true"
-	import="java.util.*,org.opennms.netmgt.config.*,org.opennms.netmgt.config.common.*,org.opennms.netmgt.config.poller.*,org.opennms.web.element.*,org.opennms.netmgt.EventConstants,org.opennms.netmgt.xml.event.Event,org.opennms.web.api.Util,java.net.*,java.io.*,org.opennms.netmgt.utils.*"%>
+	import="
+	java.util.*,
+	org.opennms.netmgt.config.*,
+	org.opennms.netmgt.config.common.*,
+	org.opennms.netmgt.config.poller.*,
+	org.opennms.web.element.*,
+	org.opennms.netmgt.model.OnmsNode,
+	org.opennms.netmgt.EventConstants,
+	org.opennms.netmgt.xml.event.Event,
+	org.opennms.web.api.Util,
+	java.net.*,
+	java.io.*,
+	org.opennms.netmgt.utils.*
+"%>
 
 <%!public void sendOutagesChangedEvent() throws ServletException {
 		Event event = new Event();
@@ -143,8 +156,8 @@
 		<%
 			org.opennms.netmgt.config.poller.Node[] nodeList = pollFactory.getNodeIds(outageName);
 				for (int j = 0; j < nodeList.length; j++) {
-					org.opennms.web.element.Node elementNode = NetworkElementFactory.getInstance(getServletContext()).getNode(nodeList[j].getId());
-		%> <%=elementNode == null || elementNode.getNodeType()=='D' ? "Node: Node Id " + nodeList[j].getId() + " Not Found" : "Node: " + elementNode.getLabel()%><br/>
+					OnmsNode elementNode = NetworkElementFactory.getInstance(getServletContext()).getNode(nodeList[j].getId());
+		%> <%=elementNode == null || elementNode.getType().charAt(0) == 'D' ? "Node: Node ID " + nodeList[j].getId() + " Not Found" : "Node: " + elementNode.getLabel()%><br/>
 		<%
 			}
 				org.opennms.netmgt.config.poller.Interface[] interfaceList = pollFactory.getInterfaces(outageName);

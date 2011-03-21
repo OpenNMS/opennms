@@ -98,7 +98,7 @@ public class TimeoutSecureXmlRpcClient
             String url = args[0];
             int timeout = Integer.parseInt(args[1]);
             String method = args[2];
-            Vector v = new Vector ();
+            Vector<Object> v = new Vector<Object>();
             for (int i=3; i<args.length; i++) try {
                 v.addElement (new Integer (Integer.parseInt (args[i])));
             } catch (NumberFormatException nfx) {

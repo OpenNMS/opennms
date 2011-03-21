@@ -120,7 +120,7 @@ public class AmiPeerFactory extends PeerFactory {
     private AmiPeerFactory(final String configFile) throws IOException, MarshalException, ValidationException {
         super();
         final InputStream cfgIn = new FileInputStream(configFile);
-        m_config = CastorUtils.unmarshal(AmiConfig.class, cfgIn, CastorUtils.PRESERVE_WHITESPACE);
+        m_config = CastorUtils.unmarshal(AmiConfig.class, cfgIn);
         IOUtils.closeQuietly(cfgIn);
     }
 

@@ -37,6 +37,8 @@
 
 package org.opennms.netmgt.threshd;
 
+import static org.opennms.core.utils.InetAddressUtils.addr;
+
 import java.net.InetAddress;
 import java.net.UnknownHostException;
 import java.util.Collections;
@@ -302,7 +304,7 @@ final class ThresholdableService extends InetNetworkInterface implements Thresho
 
         EventBuilder bldr = new EventBuilder(uei, "OpenNMS.Threshd");
         bldr.setNodeid(m_nodeId);
-        bldr.setInterface(m_address.getHostAddress());
+        bldr.setInterface(m_address);
         bldr.setService("SNMP");
         try {
             bldr.setHost(InetAddress.getLocalHost().getHostAddress());

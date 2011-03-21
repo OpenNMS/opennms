@@ -39,6 +39,8 @@
 
 package org.opennms.web.admin.nodeManagement;
 
+import static org.opennms.core.utils.InetAddressUtils.addr;
+
 import java.io.File;
 import java.io.FileOutputStream;
 import java.io.IOException;
@@ -214,7 +216,7 @@ public class ManageNodesServlet extends HttpServlet {
                         } else if (!serviceList.contains(serviceKey) && curService.getStatus().equals("managed")) {
                             EventBuilder bldr = new EventBuilder("uei.opennms.org/nodes/serviceUnmanaged", "web ui");
                             bldr.setNodeid(curInterface.getNodeid());
-                            bldr.setInterface(curInterface.getAddress());
+                            bldr.setInterface(addr(curInterface.getAddress()));
                             bldr.setService(curService.getName());
 
                             sendEvent(bldr.getEvent());

@@ -19,6 +19,10 @@
         <groupId>org.codehaus.mojo</groupId>
         <artifactId>castor-maven-plugin</artifactId>
       </plugin>
+      <plugin>
+        <groupId>org.opennms.core.build</groupId>
+        <artifactId>castor-process-maven-plugin</artifactId>
+      </plugin>
     </plugins>
   </build>
  

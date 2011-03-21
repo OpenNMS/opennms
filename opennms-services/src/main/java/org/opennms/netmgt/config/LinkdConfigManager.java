@@ -755,7 +755,7 @@ abstract public class LinkdConfigManager implements LinkdConfig {
     protected void reloadXML(final InputStream stream) throws MarshalException, ValidationException, IOException {
         getWriteLock().lock();
         try {
-            m_config = CastorUtils.unmarshal(LinkdConfiguration.class, stream, CastorUtils.PRESERVE_WHITESPACE);
+            m_config = CastorUtils.unmarshal(LinkdConfiguration.class, stream);
             updateUrlIpMap();
             updatePackageIpListMap();
             initializeVlanClassNames();

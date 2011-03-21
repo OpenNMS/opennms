@@ -369,4 +369,16 @@ abstract public class InetAddressUtils {
             }
         }
     }
+    
+    public static InetAddress addr(String ipAddrString) {
+        return ipAddrString == null ? null : getInetAddress(ipAddrString);
+    }
+    
+    public static String str(InetAddress addr) {
+        return addr == null ? null : toIpAddrString(addr);
+    }
+
+    public static BigInteger toInteger(InetAddress ipAddress) {
+        return new BigInteger(1, ipAddress.getAddress());
+    }
 }

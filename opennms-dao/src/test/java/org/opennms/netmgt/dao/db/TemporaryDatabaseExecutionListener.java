@@ -42,93 +42,95 @@ import org.springframework.test.context.support.AbstractTestExecutionListener;
 import org.springframework.test.context.support.DependencyInjectionTestExecutionListener;
 
 /**
- * This {@link TestExecutionListener} creates a temporary database and then registers it
- * as the default datasource inside {@link DataSourceFactory} by using 
- * {@link DataSourceFactory#setInstance(DataSource)}.
- *
+ * This {@link TestExecutionListener} creates a temporary database and then
+ * registers it as the default datasource inside {@link DataSourceFactory} by
+ * using {@link DataSourceFactory#setInstance(DataSource)}.
+ * 
  * @author <a href="mailto:brozow@opennms.org">Mathew Brozowski</a>
  */
-public class TemporaryDatabaseExecutionListener extends AbstractTestExecutionListener {
-    
-    private TemporaryDatabase m_database;
+public class TemporaryDatabaseExecutionListener extends
+		AbstractTestExecutionListener {
 
-    public void afterTestMethod(TestContext testContext) throws Exception {
-        try {
-        System.err.printf("TemporaryDatabaseExecutionListener.afterTestMethod(%s)\n", testContext);
-        
-        DataSource dataSource = DataSourceFactory.getInstance();
-        TemporaryDatabase tempDb = findTemporaryDatabase(dataSource);
-        if (tempDb != null) {
-            tempDb.drop();
-        }
-        } finally {
-        testContext.markApplicationContextDirty();
-        testContext.setAttribute(DependencyInjectionTestExecutionListener.REINJECT_DEPENDENCIES_ATTRIBUTE, Boolean.TRUE);
-        }
+	private TemporaryDatabase m_database;
 
-    }
-    
-    private TemporaryDatabase findTemporaryDatabase(DataSource dataSource) {
-        if (dataSource instanceof TemporaryDatabase) {
-            return (TemporaryDatabase) dataSource;
-        } else if (dataSource instanceof DelegatingDataSource) {
-            return findTemporaryDatabase(((DelegatingDataSource)dataSource).getTargetDataSource());
-        } else {
-            return null;
-        }
-        
-    }
+	public void afterTestMethod(final TestContext testContext) throws Exception {
+		try {
+			System.err.printf("TemporaryDatabaseExecutionListener.afterTestMethod(%s)\n", testContext);
 
-    private JUnitTemporaryDatabase findAnnotation(TestContext testContext) {
-        JUnitTemporaryDatabase jtd = null;
-        Method testMethod = testContext.getTestMethod();
-        if (testMethod != null) {
-            jtd = testMethod.getAnnotation(JUnitTemporaryDatabase.class);
-        }
-        if (jtd == null) {
-            Class<?> testClass = testContext.getTestClass();
-            jtd = testClass.getAnnotation(JUnitTemporaryDatabase.class);
-        }
-        return jtd;
-    }
-    
-    public void beforeTestMethod(TestContext testContext) throws Exception {
-        System.err.printf("TemporaryDatabaseExecutionListener.beforeTestMethod(%s)\n", testContext);
+			final DataSource dataSource = DataSourceFactory.getInstance();
+			final TemporaryDatabase tempDb = findTemporaryDatabase(dataSource);
+			if (tempDb != null) {
+				tempDb.drop();
+			}
+		} finally {
+			testContext.markApplicationContextDirty();
+			testContext.setAttribute(DependencyInjectionTestExecutionListener.REINJECT_DEPENDENCIES_ATTRIBUTE, Boolean.TRUE);
+		}
 
-        // FIXME: Is there a better way to inject the instance into the test class?
-        if (testContext.getTestInstance() instanceof TemporaryDatabaseAware) {
-            System.err.println("injecting TemporaryDatabase into TemporaryDatabaseAware test: " + testContext.getTestInstance().getClass().getSimpleName() + "." + testContext.getTestMethod().getName());
-            ((TemporaryDatabaseAware)testContext.getTestInstance()).setTemporaryDatabase(m_database);
-        }
-    }
+	}
 
-    public void prepareTestInstance(TestContext testContext) throws Exception {
-        System.err.printf("TemporaryDatabaseExecutionListener.prepareTestInstance(%s)\n", testContext);
-        JUnitTemporaryDatabase jtd = findAnnotation(testContext);
-        boolean useExisting = false;
-        if (jtd != null && jtd.useExistingDatabase() != null) {
-        	useExisting = !jtd.useExistingDatabase().equals("");
-        }
+	private TemporaryDatabase findTemporaryDatabase(final DataSource dataSource) {
+		if (dataSource instanceof TemporaryDatabase) {
+			return (TemporaryDatabase) dataSource;
+		} else if (dataSource instanceof DelegatingDataSource) {
+			return findTemporaryDatabase(((DelegatingDataSource) dataSource).getTargetDataSource());
+		} else {
+			return null;
+		}
 
-        String dbName = useExisting ? jtd.useExistingDatabase() : getDatabaseName(testContext);
-        m_database = (jtd == null ? new TemporaryDatabase(dbName, useExisting) : (jtd.tempDbClass()).getConstructor(String.class, Boolean.TYPE).newInstance(dbName, useExisting));
-        m_database.setPopulateSchema(jtd == null? true : (jtd.populate() && !useExisting));
-        try {
-            m_database.create();
-        } catch (Throwable e) {
-            System.err.printf("TemporaryDatabaseExecutionListener.prepareTestInstance: error while creating database: %s\n", e.getMessage());
-        }
-        
+	}
 
-        LazyConnectionDataSourceProxy proxy = new LazyConnectionDataSourceProxy(m_database);
-        
-        DataSourceFactory.setInstance(proxy);
-        System.err.printf("TemporaryDatabaseExecutionListener.prepareTestInstance(%s) prepared db %s\n", testContext, dbName);
-    }
+	private JUnitTemporaryDatabase findAnnotation(final TestContext testContext) {
+		JUnitTemporaryDatabase jtd = null;
+		final Method testMethod = testContext.getTestMethod();
+		if (testMethod != null) {
+			jtd = testMethod.getAnnotation(JUnitTemporaryDatabase.class);
+		}
+		if (jtd == null) {
+			final Class<?> testClass = testContext.getTestClass();
+			jtd = testClass.getAnnotation(JUnitTemporaryDatabase.class);
+		}
+		return jtd;
+	}
 
-    private String getDatabaseName(TestContext testContext) {
-        // Append the current object's hashcode to make this value truly unique
-        return String.format("opennms_test_%s_%s", System.currentTimeMillis(), this.hashCode());
-    }
+	@SuppressWarnings("unchecked")
+	public void beforeTestMethod(final TestContext testContext) throws Exception {
+		System.err.printf("TemporaryDatabaseExecutionListener.beforeTestMethod(%s)\n", testContext);
+
+		// FIXME: Is there a better way to inject the instance into the test class?
+		if (testContext.getTestInstance() instanceof TemporaryDatabaseAware) {
+			System.err.println("injecting TemporaryDatabase into TemporaryDatabaseAware test: "
+							+ testContext.getTestInstance().getClass().getSimpleName() + "."
+							+ testContext.getTestMethod().getName());
+			((TemporaryDatabaseAware) testContext.getTestInstance()).setTemporaryDatabase(m_database);
+		}
+	}
+
+	public void prepareTestInstance(final TestContext testContext) throws Exception {
+		System.err.printf("TemporaryDatabaseExecutionListener.prepareTestInstance(%s)\n", testContext);
+		final JUnitTemporaryDatabase jtd = findAnnotation(testContext);
+		boolean useExisting = false;
+		if (jtd != null && jtd.useExistingDatabase() != null) {
+			useExisting = !jtd.useExistingDatabase().equals("");
+		}
+
+		final String dbName = useExisting ? jtd.useExistingDatabase() : getDatabaseName(testContext);
+		m_database = (jtd == null ? new TemporaryDatabase(dbName, useExisting) : (jtd.tempDbClass()).getConstructor(String.class, Boolean.TYPE).newInstance(dbName, useExisting));
+		m_database.setPopulateSchema(jtd == null ? true : (jtd.populate() && !useExisting));
+		try {
+			m_database.create();
+		} catch (final Throwable e) {
+			System.err.printf("TemporaryDatabaseExecutionListener.prepareTestInstance: error while creating database: %s\n", e.getMessage());
+		}
+
+		final LazyConnectionDataSourceProxy proxy = new LazyConnectionDataSourceProxy(m_database);
+		DataSourceFactory.setInstance(proxy);
+		System.err.printf("TemporaryDatabaseExecutionListener.prepareTestInstance(%s) prepared db %s\n", testContext, dbName);
+	}
+
+	private String getDatabaseName(final TestContext testContext) {
+		// Append the current object's hashcode to make this value truly unique
+		return String.format("opennms_test_%s_%s", System.currentTimeMillis(), this.hashCode());
+	}
 
 }

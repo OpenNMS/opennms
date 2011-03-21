@@ -25,10 +25,6 @@ import org.springframework.test.context.support.DependencyInjectionTestExecution
 import org.springframework.test.context.support.DirtiesContextTestExecutionListener;
 import org.springframework.test.context.transaction.TransactionalTestExecutionListener;
 
-
-/**
- * Unit test for ModelImport application.
- */
 @RunWith(SpringJUnit4ClassRunner.class)
 @TestExecutionListeners({
     TemporaryDatabaseExecutionListener.class,

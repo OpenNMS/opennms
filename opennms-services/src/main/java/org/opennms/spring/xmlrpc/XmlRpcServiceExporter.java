@@ -151,7 +151,7 @@ public class XmlRpcServiceExporter extends RemoteExporter implements Initializin
     }
 
     /** {@inheritDoc} */
-    public Object execute(String method, Vector params) throws Exception {
+    public Object execute(String method, @SuppressWarnings("rawtypes") Vector params) throws Exception {
         
         log().debug("calling: "+method+'('+toArgList(params)+')');
         
@@ -169,11 +169,11 @@ public class XmlRpcServiceExporter extends RemoteExporter implements Initializin
         }
         
         else if (returnValue instanceof Map && !(returnValue instanceof Hashtable)) {
-            returnValue = new Hashtable((Map)returnValue);
+            returnValue = new Hashtable<Object, Object>((Map<?, ?>)returnValue);
         }
         
         else if (returnValue instanceof Collection && !(returnValue instanceof Vector)) {
-            returnValue = new Vector((Collection)returnValue);
+            returnValue = new Vector<Object>((Collection<?>)returnValue);
         }
         
         log().debug("returning from: "+method+'('+toArgList(params)+") result = "+returnValue);
@@ -201,7 +201,7 @@ public class XmlRpcServiceExporter extends RemoteExporter implements Initializin
 
     }
 
-    private String toArgList(Vector params) {
+    private String toArgList(@SuppressWarnings("rawtypes") Vector params) {
         StringBuffer sb = new StringBuffer();
         for(int i = 0; i < params.size(); i++) {
             if (i != 0) sb.append(", ");

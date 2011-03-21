@@ -547,6 +547,9 @@ public abstract class Util extends Object {
      * @see java.text.DateFormat
      * @param date a {@link java.util.Date} object.
      * @return a {@link java.lang.String} object.
+     * @deprecated We should use the <code>fmt:formatDate</code> taglib at the JSP level 
+     *   instead of converting {@link Date} instances into {@link String} instances inside 
+     *   the model code.
      */
     public static final String formatDateToUIString(Date date) {
         return DateFormat.getDateTimeInstance(DateFormat.SHORT, DateFormat.MEDIUM).format(date);

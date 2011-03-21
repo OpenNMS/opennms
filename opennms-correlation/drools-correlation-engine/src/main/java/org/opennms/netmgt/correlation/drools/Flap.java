@@ -62,7 +62,7 @@ public class Flap {
      * @param locationMonitor a {@link java.lang.Integer} object.
      * @param timerId a {@link java.lang.Integer} object.
      */
-    public Flap(Long nodeid, String ipAddr, String svcName, Integer locationMonitor, Integer timerId) {
+    public Flap(final Long nodeid, final String ipAddr, final String svcName, final Integer locationMonitor, final Integer timerId) {
         m_nodeid = nodeid;
         m_ipAddr = ipAddr;
         m_svcName = svcName;
@@ -85,7 +85,7 @@ public class Flap {
      *
      * @param end a {@link java.util.Date} object.
      */
-    public void setEndTime(Date end) {
+    public void setEndTime(final Date end) {
         m_endTime = end;
     }
     /**
@@ -101,7 +101,7 @@ public class Flap {
      *
      * @param ipAddr a {@link java.lang.String} object.
      */
-    public void setIpAddr(String ipAddr) {
+    public void setIpAddr(final String ipAddr) {
         m_ipAddr = ipAddr;
     }
     /**
@@ -117,7 +117,7 @@ public class Flap {
      *
      * @param locationMonitor a {@link java.lang.Integer} object.
      */
-    public void setLocationMonitor(Integer locationMonitor) {
+    public void setLocationMonitor(final Integer locationMonitor) {
         m_locationMonitor = locationMonitor;
     }
     /**
@@ -133,7 +133,7 @@ public class Flap {
      *
      * @param nodeid a {@link java.lang.Long} object.
      */
-    public void setNodeid(Long nodeid) {
+    public void setNodeid(final Long nodeid) {
         m_nodeid = nodeid;
     }
     /**
@@ -149,7 +149,7 @@ public class Flap {
      *
      * @param start a {@link java.util.Date} object.
      */
-    public void setStartTime(Date start) {
+    public void setStartTime(final Date start) {
         m_startTime = start;
     }
     /**
@@ -165,7 +165,7 @@ public class Flap {
      *
      * @param svcName a {@link java.lang.String} object.
      */
-    public void setSvcName(String svcName) {
+    public void setSvcName(final String svcName) {
         m_svcName = svcName;
     }
 
@@ -183,7 +183,7 @@ public class Flap {
      *
      * @param counted a boolean.
      */
-    public void setCounted(boolean counted) {
+    public void setCounted(final boolean counted) {
         m_counted = counted;
     }
 
@@ -201,7 +201,7 @@ public class Flap {
      *
      * @param timerId a {@link java.lang.Integer} object.
      */
-    public void setTimerId(Integer timerId) {
+    public void setTimerId(final Integer timerId) {
         m_timerId = timerId;
     }
     

@@ -175,28 +175,6 @@ public class OnmsAlarmOssjMapper {
 	}
 
 
-	/**
-	 * Used to convert alarmUpdateBehaviour string to a valid Integer
-	 * @param alarmUpdateBehaviour must be  
-	 * <code>"USE_TYPE_INSTANCE"</code>
-	 * or
-	 * <code>"SPECIFY_OUTSTATION"</code>
-	 */
-	private static Integer getAlarmUpdateBehaviourForString(String _alarmUpdateBehaviour){
-		Integer almUpdateBehaviour=null;
-		if (_alarmUpdateBehaviour==null) throw new IllegalArgumentException("getalarmUpdateBehaviourForString: Null value for alarmUpdateBehaviour");
-		if (_alarmUpdateBehaviour.equals("USE_TYPE_INSTANCE")) {
-			almUpdateBehaviour = USE_TYPE_INSTANCE;
-			return almUpdateBehaviour;
-		}
-		else if (_alarmUpdateBehaviour.equals("SPECIFY_OUTSTATION")) {
-			almUpdateBehaviour = SPECIFY_OUTSTATION;
-			return almUpdateBehaviour;
-		}
-		else throw new IllegalArgumentException("getalarmUpdateBehaviourForString: Unknown value for alarmUpdateBehaviour:"+_alarmUpdateBehaviour);
-	}
-
-
 	// ****************
 	// Business methods
 	// ****************

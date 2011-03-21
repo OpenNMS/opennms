@@ -32,6 +32,8 @@
 
 package org.opennms.netmgt.collectd;
 
+import static org.opennms.core.utils.InetAddressUtils.addr;
+
 import java.net.InetAddress;
 import java.net.UnknownHostException;
 
@@ -95,7 +97,7 @@ public class ForceRescanState {
         
         bldr.setNodeid(m_agent.getNodeId());
 
-        bldr.setInterface(m_agent.getHostAddress());
+        bldr.setInterface(m_agent.getInetAddress());
         
         bldr.setService(SnmpCollector.SERVICE_NAME);
         

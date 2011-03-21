@@ -1,10 +1,7 @@
 package org.opennms.netmgt.jasper.jrobin;
 
-import static org.junit.Assert.assertTrue;
-
 import java.io.File;
 import java.io.IOException;
-import java.util.Date;
 import java.util.HashMap;
 import java.util.Map;
 
@@ -15,28 +12,15 @@ import net.sf.jasperreports.engine.JasperFillManager;
 import net.sf.jasperreports.engine.JasperPrint;
 import net.sf.jasperreports.engine.JasperReport;
 
-import org.jrobin.core.RrdDb;
-import org.jrobin.core.RrdDef;
 import org.jrobin.core.RrdException;
-import org.jrobin.core.Sample;
 import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
-import org.opennms.netmgt.jasper.jrobin.SpecificationTest.Cos;
-import org.opennms.netmgt.jasper.jrobin.SpecificationTest.Counter;
-import org.opennms.netmgt.jasper.jrobin.SpecificationTest.Function;
-import org.opennms.netmgt.jasper.jrobin.SpecificationTest.Sin;
-import org.opennms.netmgt.jasper.jrobin.SpecificationTest.Times;
 
 
 public class MspTemplateTest {
-	private static final long MILLIS_PER_HOUR = 3600L * 1000L;
-    private static final long MILLIS_PER_DAY = 24L * MILLIS_PER_HOUR;
-    
     private JasperReport m_jasperReport;
     private JasperPrint m_jasperPrint;
-    private Date m_startDate;
-    private Date m_endDate;
     
     interface Function {
         double evaluate(long timestamp);

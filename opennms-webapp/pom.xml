@@ -51,6 +51,10 @@
         <groupId>org.codehaus.mojo</groupId>
         <artifactId>castor-maven-plugin</artifactId>
       </plugin>
+      <plugin>
+        <groupId>org.opennms.core.build</groupId>
+        <artifactId>castor-process-maven-plugin</artifactId>
+      </plugin>
 
       <!-- plugin to use to run webapp in an embedded tomcat -->
       <plugin>
@@ -65,7 +69,7 @@
       <!-- plugin to use to run webapp in an embedded jetty -->
       <plugin>
         <groupId>org.mortbay.jetty</groupId>
-        <artifactId>maven-jetty-plugin</artifactId>
+        <artifactId>jetty-maven-plugin</artifactId>
         <configuration>
           <scanIntervalSeconds>10</scanIntervalSeconds>
           <connectors>
@@ -157,7 +161,7 @@
         <plugins>
           <plugin>
             <groupId>org.mortbay.jetty</groupId>
-            <artifactId>maven-jetty-jspc-plugin</artifactId>
+            <artifactId>jetty-jspc-maven-plugin</artifactId>
             <executions>
               <execution>
                 <id>jspc</id>
@@ -183,6 +187,19 @@
       <artifactId>opennms-web-dependencies</artifactId>
       <type>pom</type>
       <scope>provided</scope>
+      <!-- 
+        We have to exclude this Java compiler from the classpath because it
+        conflicts with one bundled inside gwt-dev that is used when GWT compiles
+        code into Javascript.
+
+        http://code.google.com/p/google-web-toolkit/issues/detail?id=5290
+      -->
+      <exclusions>
+        <exclusion>
+          <groupId>org.eclipse.jdt.core.compiler</groupId>
+          <artifactId>ecj</artifactId>
+        </exclusion>
+      </exclusions>
     </dependency>
     <dependency>
       <groupId>org.opennms.dependencies</groupId>

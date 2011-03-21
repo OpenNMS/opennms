@@ -128,7 +128,7 @@ public class WmiPeerFactory extends PeerFactory {
      * @param configFile the path to the config file to load in.
      */
     private WmiPeerFactory(String configFile) throws IOException, MarshalException, ValidationException {
-        m_config = CastorUtils.unmarshal(WmiConfig.class, new FileSystemResource(configFile), CastorUtils.PRESERVE_WHITESPACE);
+        m_config = CastorUtils.unmarshal(WmiConfig.class, new FileSystemResource(configFile));
     }
 
     /**
@@ -139,7 +139,7 @@ public class WmiPeerFactory extends PeerFactory {
      * @throws org.exolab.castor.xml.ValidationException if any.
      */
     public WmiPeerFactory(InputStream stream) throws MarshalException, ValidationException {
-        m_config = CastorUtils.unmarshal(WmiConfig.class, stream, CastorUtils.PRESERVE_WHITESPACE);
+        m_config = CastorUtils.unmarshal(WmiConfig.class, stream);
     }
     
     /**

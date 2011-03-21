@@ -46,6 +46,7 @@
 	import="org.opennms.web.WebSecurityUtils,
 			org.opennms.web.asset.*,
 			org.opennms.web.element.*,
+			org.opennms.netmgt.model.OnmsNode,
             org.opennms.web.springframework.security.Authentication,
         	org.opennms.web.MissingParameterException
 	"
@@ -71,7 +72,7 @@
     int nodeId = WebSecurityUtils.safeParseInt( nodeIdString );
     String nodeLabel = NetworkElementFactory.getInstance(getServletContext()).getNodeLabel( nodeId );
     Asset asset = this.model.getAsset( nodeId );
-    Node node_db = NetworkElementFactory.getInstance(getServletContext()).getNode( nodeId );
+    OnmsNode node_db = NetworkElementFactory.getInstance(getServletContext()).getNode( nodeId );
     boolean isNew = false;
 
     if( asset == null ) {
@@ -96,25 +97,25 @@
 </p>
 
 <%-- Handle the SNMP information if any --%> 
-<% if( node_db.getNodeSysId() != null ) { %>
+<% if( node_db.getSysObjectId() != null ) { %>
   <table class="standard">
     <tr>
       <td class="standardheader"> System Id </td>
-      <td class="standard"> <%=node_db.getNodeSysId()%> </td>
+      <td class="standard"> <%=node_db.getSysObjectId()%> </td>
       <td class="standardheader"> System Name </td>
-      <td class="standard"> <%=node_db.getNodeSysName()%> </td>
+      <td class="standard"> <%=node_db.getSysName()%> </td>
     </tr>
 
     <tr>
       <td class="standardheader"> System Location </td>
-      <td class="standard"> <%=node_db.getNodeSysLocn()%> </td>
+      <td class="standard"> <%=node_db.getSysLocation()%> </td>
       <td class="standardheader"> System Contact </td>
-      <td class="standard"> <%=node_db.getNodeSysContact()%> </td>
+      <td class="standard"> <%=node_db.getSysContact()%> </td>
     </tr>
 
     <tr>
       <td class="standardheader"> System Description </td>
-      <td class="standard"> <%=node_db.getNodeSysDescr()%> </td>
+      <td class="standard"> <%=node_db.getSysDescription()%> </td>
       <td class="standard" colspan="2">&nbsp; </td>
    </tr>
   </table>

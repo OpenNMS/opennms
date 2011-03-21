@@ -35,6 +35,8 @@
 //
 package org.opennms.netmgt.syslogd;
 
+import static org.opennms.core.utils.InetAddressUtils.addr;
+
 import java.io.InputStream;
 import java.lang.reflect.UndeclaredThrowableException;
 import java.net.BindException;
@@ -256,7 +258,7 @@ public class SyslogdLoadTest extends OpenNMSTestCase {
             String expectedUei = "uei.example.org/syslog/loadTest/foo" + eventNum;
             final EventBuilder eb = new EventBuilder(expectedUei, "SyslogdLoadTest");
 
-            Event thisEvent = eb.setInterface("127.0.0.1")
+            Event thisEvent = eb.setInterface(addr("127.0.0.1"))
                 .setLogDest("logndisplay")
                 .setLogMessage("A load test has been received as a Syslog Message")
                 .getEvent();
@@ -274,7 +276,7 @@ public class SyslogdLoadTest extends OpenNMSTestCase {
         System.err.println(String.format("total time: %d, wait time: %d, events per second: %8.4f", total, (end - mid), eventsPerSecond));
     }
 
-    private EventProxy createEventProxy() {
+    private EventProxy createEventProxy() throws UnknownHostException {
         /*
          * Rather than defaulting to localhost all the time, give an option in properties
          */
@@ -291,12 +293,7 @@ public class SyslogdLoadTest extends OpenNMSTestCase {
         }
 
         if (proxyAddr == null) {
-            try {
-                proxy = new TcpEventProxy();
-            } catch (UnknownHostException e) {
-                // XXX Ewwww!  We should just let the first UnknownException bubble up. 
-                throw new UndeclaredThrowableException(e);
-            }
+        	proxy = new TcpEventProxy();
         } else {
             proxy = new TcpEventProxy(new InetSocketAddress(proxyAddr, Integer.parseInt(proxyHostPort)), Integer.parseInt(proxyHostTimeout));
         }

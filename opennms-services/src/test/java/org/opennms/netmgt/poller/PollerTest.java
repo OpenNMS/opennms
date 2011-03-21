@@ -179,8 +179,7 @@ public class PollerTest {
 		m_pollerConfig.addPackage("TestPkg2");
 		m_pollerConfig.addDowntime(1000L, 0L, -1L, false);
 		m_pollerConfig.setDefaultPollInterval(2000L);
-		m_pollerConfig.addService(m_network
-				.getService(2, "192.168.1.3", "HTTP"));
+		m_pollerConfig.addService(m_network.getService(2, "192.168.1.3", "HTTP"));
 
 		m_anticipator = new EventAnticipator();
 		m_outageAnticipator = new OutageAnticipator(m_db);
@@ -962,29 +961,46 @@ public class PollerTest {
 		m_pollerConfig.setNodeOutageProcessingEnabled(false);
 
 		startDaemons();
+
 		testSendNodeGainedService("SMTP", "HTTP");
 	}
 
     @Test
-	public void testSendNodeGainedServiceNodeOutages() {
-		m_pollerConfig.setNodeOutageProcessingEnabled(true);
+    public void testSendNodeGainedServiceNodeOutages() {
+        m_pollerConfig.setNodeOutageProcessingEnabled(true);
 
-		startDaemons();
-		testSendNodeGainedService("SMTP", "HTTP");
-	}
+        startDaemons();
+
+        testSendNodeGainedService("SMTP", "HTTP");
+    }
+
+    @Test
+    @Ignore("FIXME")
+    public void testSendIPv6NodeGainedServiceNodeOutages() {
+        m_pollerConfig.setNodeOutageProcessingEnabled(true);
+
+        startDaemons();
+        String[] svcNames = { "SMTP", "HTTP" };
+
+        testSendNodeGainedServices(99, "TestNode", "fe80:0000:0000:0000:0000:0000:0000:0087", svcNames);
+    }
 
 	public void testSendNodeGainedService(String... svcNames) {
-	    assertNotNull(svcNames);
+        testSendNodeGainedServices(99, "TestNode", "10.1.1.1", svcNames);
+	}
+
+    private void testSendNodeGainedServices(int nodeid, String nodeLabel, String ipAddr, String... svcNames) {
+        assertNotNull(svcNames);
 	    assertTrue(svcNames.length > 0);
 
-		MockNode node = m_network.addNode(99, "TestNode");
+        MockNode node = m_network.addNode(nodeid, nodeLabel);
 		m_db.writeNode(node);
-		MockInterface iface = m_network.addInterface(99, "10.1.1.1");
+        MockInterface iface = m_network.addInterface(nodeid, ipAddr);
 		m_db.writeInterface(iface);
 		
 		List<MockService> services = new ArrayList<MockService>();
 		for(String svcName : svcNames) {
-		    MockService svc = m_network.addService(99, "10.1.1.1", svcName);
+		    MockService svc = m_network.addService(nodeid, ipAddr, svcName);
 		    m_db.writeService(svc);
 		    m_pollerConfig.addService(svc);
 		    services.add(svc);
@@ -1013,8 +1029,7 @@ public class PollerTest {
 		svc1.bringDown();
 
 		verifyAnticipated(10000);
-
-	}
+    }
 
     @Test
 	public void testNodeGainedDynamicService() throws Exception {
@@ -1062,6 +1077,7 @@ public class PollerTest {
 				+ m_db.getServiceID("MyDNS").toString());
 
 		m_anticipator.reset();
+		
 		testSendNodeGainedService("MyDNS", "HTTP");
 
 	}

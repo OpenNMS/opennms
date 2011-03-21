@@ -51,6 +51,7 @@
 		org.springframework.web.context.WebApplicationContext,
 		org.springframework.web.context.support.WebApplicationContextUtils,
 		org.opennms.core.utils.InetAddressUtils,
+		org.opennms.netmgt.model.OnmsNode,
 		org.opennms.web.WebSecurityUtils,
 		org.opennms.web.element.*,
 		org.opennms.web.event.*,
@@ -116,7 +117,7 @@
     int nodeId = WebSecurityUtils.safeParseInt( nodeIdString );
 
     //get the database node info
-    Node node_db = factory.getNode( nodeId );
+    OnmsNode node_db = factory.getNode( nodeId );
     if( node_db == null ) {
 	throw new ElementNotFoundException("No such node in database", "node", "element/linkednode.jsp", "node", "element/nodeList.htm");
     }
@@ -328,7 +329,7 @@
 	  
 	<div class="TwoColLeft">
             <!-- general info box -->
-						<h3>General (Status: <%=(this.getStatusString(node_db.getNodeType())!=null ? this.getStatusString(node_db.getNodeType()) : "Unknown")%>)</h3>
+			<h3>General (Status: <%=(node_db == null ? "Unknown" : ElementUtil.getNodeStatusString(node_db))%>)</h3>
 			<% if( isRouteIP || isBridge ) { %>
 			<div class="boxWrapper">
 			     <ul class="plain">
@@ -725,11 +726,7 @@
 
 
 <%!
-    public String getStatusString( char c ) {
-        return ElementUtil.getNodeStatusString(c);
-    }
-    
-      public static final String[] OPER_ADMIN_STATUS = new String[] {
+  public static final String[] OPER_ADMIN_STATUS = new String[] {
     "&nbsp;",          //0 (not supported)
     "Up",              //1
     "Down",            //2
@@ -738,4 +735,5 @@
     "Dormant",         //5
     "NotPresent",      //6
     "LowerLayerDown"   //7
-  };%>
+  };
+%>

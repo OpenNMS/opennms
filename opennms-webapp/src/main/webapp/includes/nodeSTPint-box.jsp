@@ -45,7 +45,11 @@
   that directs all URLs to be relative to the servlet context.
 --%>
 
-<%@page language="java" contentType="text/html" session="true" import="org.opennms.web.WebSecurityUtils,org.opennms.web.element.*" %>
+<%@page language="java" contentType="text/html" session="true" import="
+  org.opennms.web.WebSecurityUtils,
+  org.opennms.web.element.*,
+  org.opennms.netmgt.model.OnmsNode
+"%>
 
 <%@taglib uri="http://java.sun.com/jsp/jstl/core" prefix="c" %>
 <%@taglib uri="http://java.sun.com/jsp/jstl/fmt" prefix="fmt" %>
@@ -103,7 +107,7 @@
                 <td><%=stpifs[i].getStatusString()%></td>
                 <td><%=stpifs[i].get_stpportpathcost()%></td>
 				<% if (stpifs[i].get_stprootnodeid() != 0) { 
-						Node node = NetworkElementFactory.getInstance(getServletContext()).getNode(stpifs[i].get_stprootnodeid());
+						OnmsNode node = NetworkElementFactory.getInstance(getServletContext()).getNode(stpifs[i].get_stprootnodeid());
 				%>
 				<td>
 				    <a href="element/node.jsp?node=<%=stpifs[i].get_stprootnodeid()%>"><c:out value="<%=node.getLabel()%>"/></a>
@@ -114,7 +118,7 @@
 				<td><%=stpifs[i].get_stpdesignatedroot()%></td>
 				<% } %>
 				<% if (stpifs[i].get_stpbridgenodeid() != 0) { 
-						Node node = NetworkElementFactory.getInstance(getServletContext()).getNode(stpifs[i].get_stpbridgenodeid());
+						OnmsNode node = NetworkElementFactory.getInstance(getServletContext()).getNode(stpifs[i].get_stpbridgenodeid());
 				%>
 				<td>
 				    <a href="element/node.jsp?node=<%=stpifs[i].get_stpbridgenodeid()%>"><c:out value="<%=node.getLabel()%>"/></a>

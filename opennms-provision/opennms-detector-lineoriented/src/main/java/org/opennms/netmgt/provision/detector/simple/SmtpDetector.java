@@ -30,8 +30,6 @@
  */
 package org.opennms.netmgt.provision.detector.simple;
 
-import java.nio.charset.Charset;
-
 import org.apache.mina.filter.codec.ProtocolCodecFilter;
 import org.opennms.netmgt.provision.support.codec.MultilineOrientedCodecFactory;
 import org.springframework.context.annotation.Scope;

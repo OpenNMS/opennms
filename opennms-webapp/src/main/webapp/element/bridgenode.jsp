@@ -45,6 +45,7 @@
 		session="true"
 		import="
 				org.opennms.web.element.*,
+				org.opennms.netmgt.model.OnmsNode,
 				org.opennms.web.WebSecurityUtils,
 				java.util.*,
 				java.net.*,
@@ -63,15 +64,7 @@
     protected int httpServiceId;
     private ResourceService m_resourceService;
     
-	public static HashMap<Character, String> statusMap;
-
-    
     public void init() throws ServletException {
-        statusMap = new HashMap<Character, String>();
-        statusMap.put( new Character('A'), "Active" );
-        statusMap.put( new Character(' '), "Unknown" );
-        statusMap.put( new Character('D'), "Deleted" );
-
         try {
             this.telnetServiceId = NetworkElementFactory.getInstance(getServletContext()).getServiceIdFromName("Telnet");
         }
@@ -89,10 +82,6 @@
         WebApplicationContext webAppContext = WebApplicationContextUtils.getRequiredWebApplicationContext(getServletContext());
 		m_resourceService = (ResourceService) webAppContext.getBean("resourceService", ResourceService.class);
     }
-        
-	public String getStatusString( char c ) {
-    	return statusMap.get(new Character(c));
-    }
 %>
 
 <%
@@ -105,7 +94,7 @@
     int nodeId = WebSecurityUtils.safeParseInt( nodeIdString );
 
     //get the database node info
-    Node node_db = NetworkElementFactory.getInstance(getServletContext()).getNode( nodeId );
+    OnmsNode node_db = NetworkElementFactory.getInstance(getServletContext()).getNode( nodeId );
     if( node_db == null ) {
         //handle this WAY better, very awful
         throw new ServletException( "No such node in database" );
@@ -200,7 +189,7 @@
 
 	<div class="TwoColLeft">
             <!-- general info box -->
-						<h3>General (Status: <%=(this.getStatusString(node_db.getNodeType())!=null ? this.getStatusString(node_db.getNodeType()) : "Unknown")%>)</h3>
+			<h3>General (Status: <%=(node_db == null ? "Unknown" : ElementUtil.getNodeStatusString(node_db))%>)</h3>
 
 			<div class="boxWrapper">
 			     <ul class="plain">

@@ -41,6 +41,7 @@
 	session="true"
 	import="org.opennms.web.WebSecurityUtils,
 		org.opennms.web.element.*,
+		org.opennms.netmgt.model.OnmsNode,
 		org.opennms.web.MissingParameterException
 	"
 %>
@@ -65,7 +66,7 @@
     }
         
     //get the database node info
-    Node node_db = NetworkElementFactory.getInstance(getServletContext()).getNode(nodeId);
+    OnmsNode node_db = NetworkElementFactory.getInstance(getServletContext()).getNode(nodeId);
     if (node_db == null) {
         throw new ServletException("No such node in database.");
     }

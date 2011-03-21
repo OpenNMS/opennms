@@ -61,7 +61,7 @@ public class EventParameter {
      *
      * @param event a {@link org.opennms.netmgt.xml.event.Event} object.
      */
-    public void setEvent(Event event) {
+    public void setEvent(final Event event) {
         m_event = event;
     }
     /**
@@ -77,7 +77,7 @@ public class EventParameter {
      *
      * @param name a {@link java.lang.String} object.
      */
-    public void setName(String name) {
+    public void setName(final String name) {
         m_name = name;
     }
     /**
@@ -93,7 +93,7 @@ public class EventParameter {
      *
      * @param value a {@link java.lang.Object} object.
      */
-    public void setValue(Object value) {
+    public void setValue(final Object value) {
         m_value = value;
     }
 }

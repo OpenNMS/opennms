@@ -31,6 +31,11 @@
 		</dependency>
 		<dependency>
 			<groupId>org.opennms.dependencies</groupId>
+			<artifactId>servlet-dependencies</artifactId>
+			<type>pom</type>
+		</dependency>
+		<dependency>
+			<groupId>org.opennms.dependencies</groupId>
 			<artifactId>spring-dependencies</artifactId>
 			<type>pom</type>
 		</dependency>
@@ -73,19 +78,6 @@
 			<version>2.3.4.726</version>
 		</dependency>
 		<dependency>
-			<groupId>javax.servlet</groupId>
-			<artifactId>jstl</artifactId>
-			<scope>runtime</scope>
-		</dependency>
-		<dependency>
-			<groupId>javax.servlet</groupId>
-			<artifactId>jsp-api</artifactId>
-		</dependency>
-		<dependency>
-			<groupId>javax.servlet</groupId>
-			<artifactId>servlet-api</artifactId>
-		</dependency>
-		<dependency>
 			<groupId>commons-codec</groupId>
 			<artifactId>commons-codec</artifactId>
 		</dependency>
@@ -117,7 +109,7 @@
 		<plugins>
 			<plugin>
 				<groupId>org.mortbay.jetty</groupId>
-				<artifactId>maven-jetty-plugin</artifactId>
+				<artifactId>jetty-maven-plugin</artifactId>
 				<configuration>
 					<stopPort>9966</stopPort>
 					<stopKey>foo</stopKey>

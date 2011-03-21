@@ -263,6 +263,7 @@ public class OnmsIpInterface extends OnmsEntity implements Serializable {
      * <p>getIpAddress</p>
      *
      * @return a {@link java.lang.String} object.
+     * @deprecated
      */
     @Transient
     public String getIpAddressAsString() {

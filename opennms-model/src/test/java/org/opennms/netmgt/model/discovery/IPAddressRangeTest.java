@@ -208,7 +208,7 @@ public class IPAddressRangeTest extends TestCase {
     }
 
     public void testGetLowestInetAddress() throws UnknownHostException {
-        assertNull(InetAddressUtils.getLowestInetAddress(Collections.EMPTY_LIST));
+        assertNull(InetAddressUtils.getLowestInetAddress(Collections.<InetAddress>emptyList()));
 
         List<InetAddress> ips;
         ips = Arrays.asList(

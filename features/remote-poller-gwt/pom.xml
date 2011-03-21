@@ -55,7 +55,6 @@
       <plugin>
         <groupId>org.mortbay.jetty</groupId>
         <artifactId>jetty-maven-plugin</artifactId>
-        <version>7.0.1.v20091125</version>
         <configuration>
           <scanIntervalSeconds>10</scanIntervalSeconds>
           <systemProperties>
@@ -181,6 +180,19 @@
       <artifactId>servlet-dependencies</artifactId>
       <type>pom</type>
       <scope>provided</scope>
+      <!-- 
+        We have to exclude this Java compiler from the classpath because it
+        conflicts with one bundled inside gwt-dev that is used when GWT compiles
+        code into Javascript.
+
+        http://code.google.com/p/google-web-toolkit/issues/detail?id=5290
+      -->
+      <exclusions>
+        <exclusion>
+          <groupId>org.eclipse.jdt.core.compiler</groupId>
+          <artifactId>ecj</artifactId>
+        </exclusion>
+      </exclusions>
     </dependency>
     <dependency>
       <groupId>org.opennms.features</groupId>

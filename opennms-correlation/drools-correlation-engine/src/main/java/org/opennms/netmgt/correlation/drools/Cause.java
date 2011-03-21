@@ -39,8 +39,8 @@ package org.opennms.netmgt.correlation.drools;
 import java.util.HashSet;
 import java.util.Set;
 
+import org.apache.commons.lang.builder.ToStringBuilder;
 import org.opennms.netmgt.xml.event.Event;
-import org.springframework.core.style.ToStringCreator;
 
 /**
  * <p>Cause class.</p>
@@ -60,7 +60,7 @@ public class Cause {
     private Long m_cause;
     private Event m_symptom;
     private Integer m_timerId;
-    private Set<Cause> m_impacted = new HashSet<Cause>();
+    private final Set<Cause> m_impacted = new HashSet<Cause>();
 
     /**
      * <p>Constructor for Cause.</p>
@@ -70,7 +70,7 @@ public class Cause {
      * @param symptom a {@link org.opennms.netmgt.xml.event.Event} object.
      * @param timerId a {@link java.lang.Integer} object.
      */
-    public Cause(Type type, Long cause, Event symptom, Integer timerId) {
+    public Cause(final Type type, final Long cause, final Event symptom, final Integer timerId) {
         m_type = type;
         m_cause = cause;
         m_symptom = symptom;
@@ -84,7 +84,7 @@ public class Cause {
      * @param cause a {@link java.lang.Long} object.
      * @param symptom a {@link org.opennms.netmgt.xml.event.Event} object.
      */
-    public Cause(Type type, Long cause, Event symptom) {
+    public Cause(final Type type, final Long cause, final Event symptom) {
         this(type, cause, symptom, null);
     }
     
@@ -102,7 +102,7 @@ public class Cause {
      *
      * @param type a {@link org.opennms.netmgt.correlation.drools.Cause.Type} object.
      */
-    public void setType(Type type) {
+    public void setType(final Type type) {
         m_type = type;
     }
 
@@ -120,7 +120,7 @@ public class Cause {
      *
      * @param causeNodeId a {@link java.lang.Long} object.
      */
-    public void setCause(Long causeNodeId) {
+    public void setCause(final Long causeNodeId) {
         m_cause = causeNodeId;
     }
 
@@ -138,7 +138,7 @@ public class Cause {
      *
      * @param symptomEvent a {@link org.opennms.netmgt.xml.event.Event} object.
      */
-    public void setSymptom(Event symptomEvent) {
+    public void setSymptom(final Event symptomEvent) {
         m_symptom = symptomEvent;
     }
     
@@ -156,7 +156,7 @@ public class Cause {
      *
      * @param cause a {@link org.opennms.netmgt.correlation.drools.Cause} object.
      */
-    public void addImpacted(Cause cause) {
+    public void addImpacted(final Cause cause) {
         m_impacted.add(cause);
     }
     
@@ -166,7 +166,7 @@ public class Cause {
      * @return a {@link java.lang.String} object.
      */
     public String toString() {
-        return new ToStringCreator(this)
+    	return new ToStringBuilder(this)
             .append("type", m_type)
             .append("cause", m_cause)
             .append("symptom", m_symptom)
@@ -188,7 +188,7 @@ public class Cause {
      *
      * @param timerId a {@link java.lang.Integer} object.
      */
-    public void setTimerId(Integer timerId) {
+    public void setTimerId(final Integer timerId) {
         m_timerId = timerId;
     }
 

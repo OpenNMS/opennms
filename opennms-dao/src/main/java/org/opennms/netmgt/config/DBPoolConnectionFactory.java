@@ -70,7 +70,9 @@ public class DBPoolConnectionFactory extends BaseConnectionFactory {
     public DBPoolConnectionFactory(final InputStream stream, final String dsName) throws MarshalException, ValidationException, PropertyVetoException, SQLException {
     	super(stream, dsName);
     }
-
+    /**
+     * @deprecated Use code for InputStream instead to avoid character set issues
+     */
     public DBPoolConnectionFactory(Reader rdr, String dsName) throws MarshalException, ValidationException, PropertyVetoException, SQLException {
     	super(rdr, dsName);
     }

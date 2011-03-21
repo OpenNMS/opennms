@@ -109,7 +109,7 @@ public class OutageDaoHibernate extends AbstractDaoHibernate<OnmsOutage, Integer
         final Collection<OnmsOutage> outages = currentOutages();
         for (final OnmsOutage outage : outages) {
             final OnmsMonitoredService svc = outage.getMonitoredService();
-            if ((matchingSvcs.contains(svc.getServiceName()) || matchingSvcs.isEmpty()) && matchingIps.contains(svc.getIpAddress())) {
+            if ((matchingSvcs.contains(svc.getServiceName()) || matchingSvcs.isEmpty()) && matchingIps.contains(svc.getIpAddressAsString())) {
                 matchingOutages.add(outage);
             }
 

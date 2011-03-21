@@ -163,8 +163,8 @@ public class DaoWebOutageRepository implements WebOutageRepository {
         if(onmsOutage != null){
             Outage outage = new Outage();    
             outage.outageId = onmsOutage.getId();
-            outage.ipAddress = onmsOutage.getIpAddress();
-            outage.hostname = onmsOutage.getIpAddress();
+            outage.ipAddress = onmsOutage.getIpAddressAsString();
+            outage.hostname = onmsOutage.getIpAddressAsString();
             outage.lostServiceEventId = onmsOutage.getServiceLostEvent() != null ? onmsOutage.getServiceLostEvent().getId() : 0;
             //outage.lostServiceNotificationAcknowledgedBy = 
             outage.lostServiceTime = onmsOutage.getIfLostService();

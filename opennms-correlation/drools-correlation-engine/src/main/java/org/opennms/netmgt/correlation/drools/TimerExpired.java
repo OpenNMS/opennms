@@ -45,7 +45,7 @@ public class TimerExpired {
     
     private Integer m_id;
     
-    TimerExpired(Integer id) {
+    TimerExpired(final Integer id) {
         m_id = id;
     }
     

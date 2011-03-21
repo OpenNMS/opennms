@@ -1,0 +1,117 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd">
+  <parent>
+    <groupId>org.opennms</groupId>
+    <artifactId>opennms-integrations</artifactId>
+    <version>1.9.7-SNAPSHOT</version>
+    <relativePath>../../integrations/pom.xml</relativePath>
+  </parent>
+
+  <modelVersion>4.0.0</modelVersion>
+  <groupId>org.opennms.integrations</groupId>
+  <artifactId>org.opennms.integrations.opennms-tip-ram</artifactId>
+  <packaging>war</packaging>
+  <name>OpenNMS Resource Alarm Interface</name>
+
+  <properties>
+    <web.port>8080</web.port>
+  </properties>
+
+  <profiles>
+    <profile>
+      <id>opennms-jetty</id>
+      <activation>
+  <property>
+    <name>container</name>
+    <value>opennms</value>
+  </property>
+      </activation>
+      <properties>
+        <provided.by.opennms>provided</provided.by.opennms>
+      </properties>
+    </profile>
+    <profile>
+      <id>standalone-jetty</id>
+      <activation>
+  <activeByDefault>true</activeByDefault>
+      </activation>
+      <properties>
+        <provided.by.opennms>compile</provided.by.opennms>
+      </properties>
+    </profile>
+  </profiles>
+
+  <build>
+    <!-- <outputDirectory>war/WEB-INF/classes</outputDirectory> -->
+    <plugins>
+      <plugin>
+        <groupId>org.apache.maven.plugins</groupId>
+        <artifactId>maven-war-plugin</artifactId>
+        <configuration>
+          <archiveClasses>true</archiveClasses>
+        </configuration>
+      </plugin>
+      <plugin>
+        <groupId>org.mortbay.jetty</groupId>
+        <artifactId>jetty-maven-plugin</artifactId>
+        <version>7.0.1.v20091125</version>
+        <configuration>
+          <scanIntervalSeconds>10</scanIntervalSeconds>
+          <systemProperties>
+            <systemProperty>
+              <name>log4j.configuration</name>
+              <value>file:${basedir}/runInPlace-log4j.properties</value>
+            </systemProperty>
+          </systemProperties>
+        </configuration>
+      </plugin>
+      <plugin>
+        <groupId>org.apache.maven.plugins</groupId>
+        <artifactId>maven-eclipse-plugin</artifactId>
+        <configuration>
+          <additionalBuildcommands>
+            <buildcommand>org.springframework.ide.eclipse.core.springbuilder</buildcommand>
+          </additionalBuildcommands>
+          <additionalProjectnatures>
+            <projectnature>org.springframework.ide.eclipse.core.springnature</projectnature>
+          </additionalProjectnatures>
+          <classpathContainers>
+            <classpathContainer>org.eclipse.jdt.launching.JRE_CONTAINER</classpathContainer>
+          </classpathContainers>
+        </configuration>
+      </plugin>
+    </plugins>
+  </build>
+
+  <dependencies>
+    <dependency>
+      <groupId>org.opennms.dependencies</groupId>
+      <artifactId>jersey-dependencies</artifactId>
+      <scope>${provided.by.opennms}</scope>
+      <type>pom</type>
+    </dependency>
+    <dependency>
+      <groupId>org.opennms.dependencies</groupId>
+      <artifactId>spring-web-dependencies</artifactId>
+      <scope>${provided.by.opennms}</scope>
+      <type>pom</type>
+    </dependency>
+    <dependency>
+      <groupId>log4j</groupId>
+      <artifactId>log4j</artifactId>
+      <scope>${provided.by.opennms}</scope>
+    </dependency>
+  </dependencies>
+
+  <!-- special case, we need the stuff above as direct dependencies -->
+  <repositories>
+    <repository>
+      <snapshots><enabled>false</enabled><updatePolicy>${updatePolicy}</updatePolicy></snapshots>
+      <releases><enabled>true</enabled><updatePolicy>${updatePolicy}</updatePolicy></releases>
+      <id>opennms-repo</id>
+      <name>OpenNMS Repository</name>
+      <url>http://maven.opennms.org/content/groups/opennms.org-release</url>
+    </repository>
+  </repositories>
+
+</project>

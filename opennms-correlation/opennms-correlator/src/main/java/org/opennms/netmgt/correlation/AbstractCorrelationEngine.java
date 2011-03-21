@@ -41,6 +41,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.Timer;
 import java.util.TimerTask;
+import java.util.concurrent.atomic.AtomicInteger;
 
 import org.opennms.netmgt.eventd.EventIpcManager;
 import org.opennms.netmgt.xml.event.Event;
@@ -53,10 +54,10 @@ import org.opennms.netmgt.xml.event.Event;
  */
 public abstract class AbstractCorrelationEngine implements CorrelationEngine {
 
-    private static int s_lastTimerId = 0;
+	private static final AtomicInteger s_lastTimerId = new AtomicInteger(0);
     private EventIpcManager m_eventIpcManager;
     private Timer m_scheduler;
-    private Map<Integer, TimerTask> m_pendingTasks = Collections.synchronizedMap(new HashMap<Integer, TimerTask>());
+    private final Map<Integer, TimerTask> m_pendingTasks = Collections.synchronizedMap(new HashMap<Integer, TimerTask>());
 
     /** {@inheritDoc} */
     abstract public void correlate(Event e);
@@ -73,7 +74,7 @@ public abstract class AbstractCorrelationEngine implements CorrelationEngine {
      *
      * @param eventIpcManager a {@link org.opennms.netmgt.eventd.EventIpcManager} object.
      */
-    public void setEventIpcManager(EventIpcManager eventIpcManager) {
+    public void setEventIpcManager(final EventIpcManager eventIpcManager) {
         m_eventIpcManager = eventIpcManager;
     }
     
@@ -82,7 +83,7 @@ public abstract class AbstractCorrelationEngine implements CorrelationEngine {
      *
      * @param e a {@link org.opennms.netmgt.xml.event.Event} object.
      */
-    public void sendEvent(Event e) {
+    public void sendEvent(final Event e) {
         m_eventIpcManager.sendNow(e);
     }
     
@@ -92,8 +93,8 @@ public abstract class AbstractCorrelationEngine implements CorrelationEngine {
      * @param millis a long.
      * @return a {@link java.lang.Integer} object.
      */
-    public Integer setTimer( long millis ) {
-        RuleTimerTask task = getTimerTask();
+    public Integer setTimer(final long millis) {
+    	final RuleTimerTask task = getTimerTask();
         m_scheduler.schedule(task, millis);
         return task.getId();
     }
@@ -104,7 +105,7 @@ public abstract class AbstractCorrelationEngine implements CorrelationEngine {
      * @return a {@link org.opennms.netmgt.correlation.AbstractCorrelationEngine.RuleTimerTask} object.
      */
     public RuleTimerTask getTimerTask() {
-        RuleTimerTask timerTask = new RuleTimerTask();
+    	final RuleTimerTask timerTask = new RuleTimerTask();
         m_pendingTasks.put(timerTask.getId(), timerTask);
         return timerTask;
     }
@@ -114,8 +115,8 @@ public abstract class AbstractCorrelationEngine implements CorrelationEngine {
      *
      * @param timerId a {@link java.lang.Integer} object.
      */
-    public void cancelTimer( Integer timerId ) {
-        TimerTask task = m_pendingTasks.remove(timerId);
+    public void cancelTimer(final Integer timerId) {
+    	final TimerTask task = m_pendingTasks.remove(timerId);
         if (task != null) {
             task.cancel();
         }
@@ -133,7 +134,7 @@ public abstract class AbstractCorrelationEngine implements CorrelationEngine {
      *
      * @param scheduler a {@link java.util.Timer} object.
      */
-    public void setScheduler(Timer scheduler) {
+    public void setScheduler(final Timer scheduler) {
         m_scheduler = scheduler;
     }
     
@@ -142,17 +143,17 @@ public abstract class AbstractCorrelationEngine implements CorrelationEngine {
      *
      * @param task a {@link org.opennms.netmgt.correlation.AbstractCorrelationEngine.RuleTimerTask} object.
      */
-    public void runTimer(RuleTimerTask task) {
+    public void runTimer(final RuleTimerTask task) {
         m_pendingTasks.remove(task.getId());
         timerExpired(task.getId());
     }
     
     private class RuleTimerTask extends TimerTask {
         
-        private Integer m_id;
+        private final Integer m_id;
         
         public RuleTimerTask() {
-            m_id = ++s_lastTimerId;
+            m_id = s_lastTimerId.incrementAndGet();
         }
         
         public Integer getId() {

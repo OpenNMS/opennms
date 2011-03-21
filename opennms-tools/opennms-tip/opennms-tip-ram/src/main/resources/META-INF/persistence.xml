@@ -1,0 +1,30 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<!-- START SNIPPET: code -->
+<persistence xmlns="http://java.sun.com/xml/ns/persistence" version="1.0">
+
+  <persistence-unit name="model-entity-persistance">
+    <provider>org.hibernate.ejb.HibernatePersistence</provider>
+  <!--    <jta-data-source>EntityDatabase</jta-data-source>-->
+  <!--    <non-jta-data-source>EntityDatabaseUnmanaged</non-jta-data-source>-->
+    <jar-file>../classes</jar-file>
+
+
+    <properties>
+      <property name="hibernate.dialect" value="org.hibernate.dialect.HSQLDialect"/>
+      <property name="hibernate.hbm2ddl.auto" value="create-drop"/>
+      <property name="hibernate.show_sql" value="true"/>
+      <!-- <property name="hibernate.format_sql" value="true"/>-->
+
+      <!-- Properties added for maven hibernate plugin to run outside of openEJB and generate DDL schema-->
+      <!-- Note that these will need changed when operating in real environment -->
+      <property name="hibernate.arhive.autodetection" value="class, hbm"/>
+      <property name="hibernate.connection.driver_class" value="org.hsqldb.jdbcDriver"/>
+      <property name="hibernate.connection.url" value="jdbc:hsqldb:mem:testdb"/>
+
+
+    </properties>
+  </persistence-unit>
+
+</persistence>
+<!-- END SNIPPET: code -->

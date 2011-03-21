@@ -246,7 +246,7 @@ public class HypericAckProcessorTest {
                     "http://127.0.0.1:7081/hqu/opennms/alertStatus/list.hqu"
             }) {
                 try {
-                    List<HypericAckProcessor.HypericAlertStatus> alerts = HypericAckProcessor.fetchHypericAlerts(url, Arrays.asList(new String[] { "1", "2", "3" }));
+                    HypericAckProcessor.fetchHypericAlerts(url, Arrays.asList(new String[] { "1", "2", "3" }));
                 } catch (JAXBException e) {
                     // Expected state
                     caughtAuthFailure = true;

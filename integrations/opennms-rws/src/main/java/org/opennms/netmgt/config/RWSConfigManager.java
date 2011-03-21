@@ -240,7 +240,7 @@ abstract public class RWSConfigManager implements RWSConfig {
     protected void reloadXML(final Reader reader) throws MarshalException, ValidationException, IOException {
         getWriteLock().lock();
         try {
-            m_config = CastorUtils.unmarshal(RwsConfiguration.class, reader, CastorUtils.PRESERVE_WHITESPACE);
+            m_config = CastorUtils.unmarshal(RwsConfiguration.class, reader);
         } finally {
             getWriteLock().unlock();
         }
@@ -257,7 +257,7 @@ abstract public class RWSConfigManager implements RWSConfig {
     protected void reloadXML(final InputStream stream) throws MarshalException, ValidationException, IOException {
         getWriteLock().lock();
         try {
-            m_config = CastorUtils.unmarshal(RwsConfiguration.class, stream, CastorUtils.PRESERVE_WHITESPACE);
+            m_config = CastorUtils.unmarshal(RwsConfiguration.class, stream);
         } finally {
             getWriteLock().unlock();
         }

@@ -41,6 +41,7 @@ import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertTrue;
+import static org.opennms.core.utils.InetAddressUtils.addr;
 
 import java.io.File;
 import java.net.MalformedURLException;
@@ -995,21 +996,21 @@ public class ProvisionerTest implements MockSnmpAgentAware {
     private Event interfaceDeleted(int nodeid, String ipaddr) {
         EventBuilder bldr = new EventBuilder(EventConstants.INTERFACE_DELETED_EVENT_UEI, "Test");
         bldr.setNodeid(nodeid);
-        bldr.setInterface(ipaddr);
+        bldr.setInterface(addr(ipaddr));
         return bldr.getEvent();
     }
     
     private Event deleteInterface(int nodeid, String ipaddr) {
         EventBuilder bldr = new EventBuilder(EventConstants.DELETE_INTERFACE_EVENT_UEI, "Test");
         bldr.setNodeid(nodeid);
-        bldr.setInterface(ipaddr);
+        bldr.setInterface(addr(ipaddr));
         return bldr.getEvent();
     }
     
     private Event serviceDeleted(int nodeid, String ipaddr, String svc) {
         EventBuilder bldr = new EventBuilder(EventConstants.SERVICE_DELETED_EVENT_UEI, "Test");
         bldr.setNodeid(nodeid);
-        bldr.setInterface(ipaddr);
+        bldr.setInterface(addr(ipaddr));
         bldr.setService(svc);
         return bldr.getEvent();
     }
@@ -1017,7 +1018,7 @@ public class ProvisionerTest implements MockSnmpAgentAware {
     private Event deleteService(int nodeid, String ipaddr, String svc) {
         EventBuilder bldr = new EventBuilder(EventConstants.DELETE_SERVICE_EVENT_UEI, "Test");
         bldr.setNodeid(nodeid);
-        bldr.setInterface(ipaddr);
+        bldr.setInterface(addr(ipaddr));
         bldr.setService(svc);
         return bldr.getEvent();
     }

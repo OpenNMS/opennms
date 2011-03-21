@@ -23,8 +23,10 @@
   </build>
   <dependencies>
     <dependency>
-      <groupId>javax.servlet</groupId>
-      <artifactId>servlet-api</artifactId>
+      <groupId>org.opennms.dependencies</groupId>
+      <artifactId>servlet-dependencies</artifactId>
+      <scope>provided</scope>
+      <type>pom</type>
     </dependency>
   </dependencies>
 </project>

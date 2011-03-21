@@ -1,0 +1,29 @@
+<schema xmlns="http://www.w3.org/2001/XMLSchema"
+	targetNamespace="http://xmlns.opennms.org/xsd/liquibase/ext"
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xmlns:this="http://xmlns.opennms.org/xsd/liquibase/ext"
+	xmlns:liquibase="http://www.liquibase.org/xml/ns/dbchangelog"
+	elementFormDefault="qualified"
+	xsi:schemaLocation="http://www.liquibase.org/xml/ns/dbchangelog http://www.liquibase.org/xml/ns/dbchangelog/dbchangelog-2.0.xsd
+		http://www.liquibase.org/xml/ns/dbchangelog-ext http://www.liquibase.org/xml/ns/dbchangelog/dbchangelog-ext.xsd
+	">
+	
+	<element name="setSequence">
+		<complexType>
+			<sequence>
+				<element minOccurs="1" maxOccurs="unbounded" ref="this:table" />
+			</sequence>
+			<attribute name="sequenceName" type="string" />
+			<attribute name="value" type="int" use="optional" />
+		</complexType>
+	</element>
+	
+	<element name="table">
+		<complexType>
+			<attribute name="name" type="string" />
+			<attribute name="schema" type="string" use="optional" />
+			<attribute name="column" type="string" />
+		</complexType>
+	</element>
+
+</schema>

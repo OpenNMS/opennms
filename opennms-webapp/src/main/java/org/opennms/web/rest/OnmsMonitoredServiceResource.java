@@ -29,6 +29,8 @@
  */
 package org.opennms.web.rest;
 
+import static org.opennms.core.utils.InetAddressUtils.addr;
+
 import javax.ws.rs.Consumes;
 import javax.ws.rs.DELETE;
 import javax.ws.rs.GET;
@@ -239,7 +241,7 @@ public class OnmsMonitoredServiceResource extends OnmsRestService {
         
         EventBuilder bldr = new EventBuilder(EventConstants.SERVICE_DELETED_EVENT_UEI, getClass().getName());
         bldr.setNodeid(node.getId());
-        bldr.setInterface(ipAddress);
+        bldr.setInterface(addr(ipAddress));
         bldr.setService(serviceName);
 
         try {

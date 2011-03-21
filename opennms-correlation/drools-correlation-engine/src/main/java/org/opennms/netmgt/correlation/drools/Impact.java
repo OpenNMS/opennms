@@ -51,7 +51,7 @@ public class Impact extends Cause {
      * @param cause a {@link java.lang.Long} object.
      * @param symptom a {@link org.opennms.netmgt.xml.event.Event} object.
      */
-    public Impact(Long cause, Event symptom) {
+    public Impact(final Long cause, final Event symptom) {
         super(Type.IMPACT, cause, symptom);
     }
 

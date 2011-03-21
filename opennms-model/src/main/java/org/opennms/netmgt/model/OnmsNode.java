@@ -818,10 +818,20 @@ public class OnmsNode extends OnmsEntity implements Serializable,
      * @return a {@link java.lang.String} object.
      */
     public String toString() {
-        return new ToStringCreator(this)
-            .append("id", getId())
-            .append("label", getLabel())
-            .toString();
+        ToStringCreator retval = new ToStringCreator(this);
+        retval.append("id", getId());
+        retval.append("label", getLabel());
+        retval.append("parent.id", getParent() == null ? "null" : getParent().getId());
+        retval.append("createTime", getCreateTime());
+        retval.append("distPoller", getDistPoller());
+        retval.append("sysObjectId", getSysObjectId());
+        retval.append("sysName", getSysName());
+        retval.append("sysDescription", getSysDescription());
+        retval.append("sysLocation", getSysLocation());
+        retval.append("sysContact", getSysContact());
+        retval.append("type", getType());
+        retval.append("operatingSystem", getOperatingSystem());
+        return retval.toString();
     }
 
 	/** {@inheritDoc} */
@@ -913,7 +923,20 @@ public class OnmsNode extends OnmsEntity implements Serializable,
      * @return a int.
      */
     public int compareTo(OnmsNode o) {
-        return getLabel().compareToIgnoreCase(o.getLabel());
+        String compareLabel = "";
+        Integer compareId = 0;
+
+        if (o != null) {
+            compareLabel = o.getLabel();
+            compareId = o.getId();
+        }
+
+        int returnval = this.getLabel().compareToIgnoreCase(compareLabel);
+        if (returnval == 0) {
+            return this.getId().compareTo(compareId);
+        } else {
+            return returnval;
+        }
     }
 
     /**

@@ -109,7 +109,7 @@ abstract public class PollerConfigManager implements PollerConfig {
     public PollerConfigManager(final Reader reader, final String localServer, final boolean verifyServer) throws MarshalException, ValidationException, IOException {
         m_localServer = localServer;
         m_verifyServer = verifyServer;
-        m_config = CastorUtils.unmarshal(PollerConfiguration.class, reader, CastorUtils.PRESERVE_WHITESPACE);
+        m_config = CastorUtils.unmarshal(PollerConfiguration.class, reader);
         setUpInternalData();
     }
 
@@ -125,7 +125,7 @@ abstract public class PollerConfigManager implements PollerConfig {
     public PollerConfigManager(final InputStream stream, final String localServer, final boolean verifyServer) throws MarshalException, ValidationException {
         m_localServer = localServer;
         m_verifyServer = verifyServer;
-        m_config = CastorUtils.unmarshal(PollerConfiguration.class, stream, CastorUtils.PRESERVE_WHITESPACE);
+        m_config = CastorUtils.unmarshal(PollerConfiguration.class, stream);
         setUpInternalData();
     }
 
@@ -1112,7 +1112,7 @@ abstract public class PollerConfigManager implements PollerConfig {
                 return;
             }
             
-            final String rrdDir = rrdRepository+File.separatorChar+"distributed"+File.separatorChar+locationMonitor+File.separator+monSvc.getIpAddress();
+            final String rrdDir = rrdRepository+File.separatorChar+"distributed"+File.separatorChar+locationMonitor+File.separator+monSvc.getIpAddressAsString();
     
             try {
                 final File rrdFile = new File(rrdDir, dsName);

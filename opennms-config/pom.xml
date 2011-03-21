@@ -14,31 +14,8 @@
         <artifactId>castor-maven-plugin</artifactId>
       </plugin>
       <plugin>
-        <groupId>org.codehaus.groovy.maven</groupId>
-        <artifactId>gmaven-plugin</artifactId>
-        <executions>
-          <execution>
-            <phase>generate-sources</phase>
-            <goals>
-              <goal>execute</goal>
-            </goals>
-            <configuration>
-              <source>${pom.basedir}/subst.groovy</source>
-            </configuration>
-          </execution>
-        </executions>
-        <dependencies>
-          <dependency>
-            <groupId>fast-md5</groupId>
-            <artifactId>fast-md5</artifactId>
-            <version>2.6.1</version>
-          </dependency>
-          <dependency>
-            <groupId>commons-io</groupId>
-            <artifactId>commons-io</artifactId>
-            <version>1.4</version>
-          </dependency>
-        </dependencies>
+        <groupId>org.opennms.core.build</groupId>
+        <artifactId>castor-process-maven-plugin</artifactId>
       </plugin>
       <plugin>
         <artifactId>maven-assembly-plugin</artifactId>

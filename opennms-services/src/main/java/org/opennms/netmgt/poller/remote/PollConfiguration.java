@@ -116,7 +116,7 @@ public class PollConfiguration {
 	 * @return a {@link java.lang.String} object.
 	 */
 	public String getId() {
-		return m_monitoredService.getNodeId()+":"+m_monitoredService.getIpAddress()+":"+m_monitoredService.getServiceName();
+		return m_monitoredService.getNodeId()+":"+m_monitoredService.getIpAddressAsString()+":"+m_monitoredService.getServiceName();
 	}
 
 }

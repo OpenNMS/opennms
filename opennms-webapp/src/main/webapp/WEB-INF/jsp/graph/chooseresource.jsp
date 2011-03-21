@@ -94,7 +94,6 @@
 </script>
 	
   <script type="text/javascript" src="js/opennms/ux/PageableGrid.js" ></script>
-  <script type="text/javascript" src="js/opennms/ux/DeleteBtnSelectionModel.js" ></script>
   <script type="text/javascript" src="js/opennms/ux/LocalPageableProxy.js" ></script>
   <script type="text/javascript" src="js/ChooseResourceView.js" ></script>
   <script type="text/javascript" >
@@ -255,6 +254,6 @@
   </c:choose>
   <c:if test="${showFootnote1 == true}">
       <jsp:include page="/includes/footnote1.jsp" flush="false" />
- qq </c:if>
+  </c:if>
 
 <jsp:include page="/includes/footer.jsp" flush="false" />

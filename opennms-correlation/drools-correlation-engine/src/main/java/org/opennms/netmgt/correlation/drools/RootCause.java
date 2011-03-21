@@ -51,7 +51,7 @@ public class RootCause extends Cause {
      * @param cause a {@link java.lang.Long} object.
      * @param symptom a {@link org.opennms.netmgt.xml.event.Event} object.
      */
-    public RootCause(Long cause, Event symptom) {
+    public RootCause(final Long cause, final Event symptom) {
         super(Type.ROOT, cause, symptom);
     }
 

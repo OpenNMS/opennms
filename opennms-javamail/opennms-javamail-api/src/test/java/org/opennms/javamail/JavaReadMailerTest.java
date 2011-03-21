@@ -212,8 +212,8 @@ public class JavaReadMailerTest {
         JavaReadMailer rm = createGoogleReadMailer(getUser(), getPassword());
         List<Message> msgs = rm.retrieveMessages();
         for (Message msg : msgs) {
-            List<String> text = JavaReadMailer.getText(msg);
-            List<String> text2 = JavaReadMailer.string2Lines("abc\nxyz");
+            JavaReadMailer.getText(msg);
+            JavaReadMailer.string2Lines("abc\nxyz");
         }
     }
 

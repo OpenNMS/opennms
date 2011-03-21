@@ -1,10 +1,11 @@
 <?xml version="1.0" encoding="UTF-8"?>
  
 <databaseChangeLog
-	xmlns="http://www.liquibase.org/xml/ns/dbchangelog/1.9"
+	xmlns="http://www.liquibase.org/xml/ns/dbchangelog"
 	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
-	xsi:schemaLocation="http://www.liquibase.org/xml/ns/dbchangelog/1.9
-		http://www.liquibase.org/xml/ns/dbchangelog/dbchangelog-1.9.xsd">
+	xmlns:ext="http://www.liquibase.org/xml/ns/dbchangelog-ext"
+	xsi:schemaLocation="http://www.liquibase.org/xml/ns/dbchangelog http://www.liquibase.org/xml/ns/dbchangelog/dbchangelog-2.0.xsd
+		http://www.liquibase.org/xml/ns/dbchangelog-ext http://www.liquibase.org/xml/ns/dbchangelog/dbchangelog-ext.xsd">
 
 	<changeSet author="rangerrick" id="1.6.0-ipInterface">
 		<preConditions onFail="MARK_RAN">
@@ -14,7 +15,7 @@
 		<!-- Contains information on interfaces which support TCP/IP as well as current status information. -->
 		<createTable tableName="ipinterface">
 			<!-- Unique identifier -->
-			<column name="id" type="integer" autoIncrement="true">
+			<column name="id" type="integer">
 				<constraints nullable="false" primaryKey="true" primaryKeyName="ipinterface_pkey" />
 			</column>
 
@@ -66,6 +67,8 @@
 			<column name="snmpinterfaceid" type="integer" />
 		</createTable>
 
+		<ext:addAutoIncrement tableName="ipinterface" columnName="id" sequenceName="opennmsNxtId" />
+
 		<addForeignKeyConstraint constraintName="snmpinterface_fkey2" onDelete="SET NULL"
 			baseTableName="ipinterface" baseColumnNames="snmpinterfaceid"
 			referencedTableName="snmpinterface" referencedColumnNames="id" />
@@ -74,8 +77,11 @@
 			baseTableName="ipinterface" baseColumnNames="nodeid"
 			referencedTableName="node" referencedColumnNames="nodeid" />
 
-		<sql>CREATE UNIQUE INDEX ipinterface_nodeid_ipaddr_notzero_idx ON ipinterface (nodeid, ipaddr) WHERE ipaddr != '0.0.0.0'</sql>
-
+		<ext:createIndex tableName="ipinterface" indexName="ipinterface_nodeid_ipaddr_notzero_idx" where="ipaddr != '0.0.0.0'" unique="true">
+			<column name="nodeid" />
+			<column name="ipaddr" />
+		</ext:createIndex>
+		
 		<createIndex tableName="ipinterface" indexName="ipinterface_nodeid_ipaddr_ismanaged_idx">
 			<column name="nodeid" />
 			<column name="ipaddr" />
@@ -97,10 +103,6 @@
 		<createIndex tableName="ipinterface" indexName="ipinterface_snmpinterfaceid_idx">
 			<column name="snmpinterfaceid" />
 		</createIndex>
-
-		<modifySql>
-			<replace replace=" serial " with=" integer DEFAULT nextval('opennmsNxtId') " />
-		</modifySql>
 
 	</changeSet>
 

@@ -10,7 +10,7 @@
   <packaging>pom</packaging>
   <name>OpenNMS Jersey Dependencies</name>
   <properties>
-    <jerseyVersion>1.0.3</jerseyVersion>
+    <jerseyVersion>1.5</jerseyVersion>
   </properties>
   <dependencies>
     <dependency>
@@ -62,6 +62,10 @@
         <exclusion>
           <groupId>commons-logging</groupId>
           <artifactId>commons-logging</artifactId>
+        </exclusion>
+        <exclusion>
+          <groupId>org.springframework</groupId>
+          <artifactId>spring-aop</artifactId>
         </exclusion>
         <exclusion>
           <groupId>org.springframework</groupId>

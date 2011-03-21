@@ -28,11 +28,9 @@ import org.springframework.test.context.support.DependencyInjectionTestExecution
 })
 @ContextConfiguration(locations="classpath:/applicationContext-client.xml")
 public class SimpleBackEndTest {
-	@SuppressWarnings("restriction")
 	@Resource(name="noAuthBean")
 	private SimpleBackEnd m_noAuthBackEnd;
 	
-	@SuppressWarnings("restriction")
 	@Resource(name="authBean")
 	private SimpleBackEnd m_authBackEnd;
 	
