@@ -161,7 +161,7 @@ public class JdbcEventWriterTest extends PopulatedTemporaryDatabaseTestCase {
     
     public void testGetEventHostWithOneMatch() throws Exception {
         jdbcTemplate.update("INSERT INTO node (nodeId, nodeCreateTime) VALUES (nextVal('nodeNxtId'), now())");
-        int nodeId = jdbcTemplate.queryForInt("SELECT nodeId FROM node LIMIT 1");
+        long nodeId = jdbcTemplate.queryForLong("SELECT nodeId FROM node LIMIT 1");
         jdbcTemplate.update("INSERT into ipInterface (nodeId, ipAddr, ipHostname) VALUES (?, ?, ?)", nodeId, "192.168.1.1", "First Interface");
 
         // don't convert to using event builder as this is testing eventd persist functionality and needs to try 'invalid' events

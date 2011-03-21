@@ -193,21 +193,21 @@ public class PollContextTest {
         Date date = new Date(1222222222000L);
         Event nodeEvent = m_pollContext.createEvent(EventConstants.NODE_DOWN_EVENT_UEI, 1, null, null, date, String.valueOf(PollStatus.SERVICE_UNAVAILABLE));
         assertEquals(EventConstants.NODE_DOWN_EVENT_UEI, nodeEvent.getUei());
-        assertEquals(1L, nodeEvent.getNodeid());
+        assertEquals(Long.valueOf(1), nodeEvent.getNodeid());
         assertNull(nodeEvent.getInterface());
         assertNull(nodeEvent.getService());
         assertEquals("Unexpected time for event",date.toString(), EventConstants.parseToDate(nodeEvent.getTime()).toString());
         
         Event ifEvent = m_pollContext.createEvent(EventConstants.INTERFACE_UP_EVENT_UEI, 1, InetAddress.getByName("192.168.1.1"), null, date, null);
         assertEquals(EventConstants.INTERFACE_UP_EVENT_UEI, ifEvent.getUei());
-        assertEquals(1L, ifEvent.getNodeid());
+        assertEquals(Long.valueOf(1), ifEvent.getNodeid());
         assertEquals("192.168.1.1", ifEvent.getInterface());
         assertNull(ifEvent.getService());
         assertEquals("Unexpected time for event", date.toString(), EventConstants.parseToDate(ifEvent.getTime()).toString());
         
         Event svcEvent = m_pollContext.createEvent(EventConstants.NODE_GAINED_SERVICE_EVENT_UEI, 1, InetAddress.getByName("192.168.1.1"), "ICMP", date, null);
         assertEquals(EventConstants.NODE_GAINED_SERVICE_EVENT_UEI, svcEvent.getUei());
-        assertEquals(1L, svcEvent.getNodeid());
+        assertEquals(Long.valueOf(1), svcEvent.getNodeid());
         assertEquals("192.168.1.1", svcEvent.getInterface());
         assertEquals("ICMP", svcEvent.getService());
         assertEquals("Unexpected time for event", date.toString(), EventConstants.parseToDate(svcEvent.getTime()).toString());

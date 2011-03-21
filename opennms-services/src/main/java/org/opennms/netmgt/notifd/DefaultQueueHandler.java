@@ -41,7 +41,7 @@ package org.opennms.netmgt.notifd;
 import java.util.List;
 import java.util.SortedMap;
 
-import org.opennms.core.utils.ThreadCategory;
+import org.opennms.core.utils.LogUtils;
 import org.opennms.core.utils.TimeConverter;
 
 /**
@@ -54,9 +54,6 @@ import org.opennms.core.utils.TimeConverter;
  *
  * @author <a href="mailto:jason@opennms.org">Jason Johns</a>
  * @author <a href="http://www.opennms.org/>OpenNMS</a>
- * @author <a href="mailto:jason@opennms.org">Jason Johns</a>
- * @author <a href="http://www.opennms.org/>OpenNMS</a>
- * @version $Id: $
  */
 public class DefaultQueueHandler implements NotifdQueueHandler {
     /**
@@ -87,17 +84,17 @@ public class DefaultQueueHandler implements NotifdQueueHandler {
     }
 
     /** {@inheritDoc} */
-    public void setQueueID(String queueID) {
+    public void setQueueID(final String queueID) {
         m_queueID = queueID;
     }
 
     /** {@inheritDoc} */
-    public synchronized void setNoticeQueue(NoticeQueue noticeQueue) {
+    public synchronized void setNoticeQueue(final NoticeQueue noticeQueue) {
         m_noticeQueue = noticeQueue;
     }
 
     /** {@inheritDoc} */
-    public void setInterval(String interval) {
+    public void setInterval(final String interval) {
         m_interval = TimeConverter.convertToMillis(interval);
     }
 
@@ -125,7 +122,8 @@ public class DefaultQueueHandler implements NotifdQueueHandler {
                     m_status = PAUSED;
                     try {
                         wait();
-                    } catch (InterruptedException ex) {
+                    } catch (final InterruptedException ex) {
+                    	Thread.currentThread().interrupt();
                         // exit
                         break;
                     }
@@ -143,7 +141,8 @@ public class DefaultQueueHandler implements NotifdQueueHandler {
                 // wait for the next iteration
                 try {
                     wait(m_interval);
-                } catch (InterruptedException ex) {
+                } catch (final InterruptedException ex) {
+                	Thread.currentThread().interrupt();
                     // exit
                     break;
                 }
@@ -161,32 +160,31 @@ public class DefaultQueueHandler implements NotifdQueueHandler {
      * <p>processQueue</p>
      */
     public void processQueue() {
-        ThreadCategory log = ThreadCategory.getInstance(getClass());
-
         if (m_noticeQueue != null) {
             synchronized(m_noticeQueue) {
                 try {
-                    Long now = new Long(System.currentTimeMillis());
-                    SortedMap<Long, List<NotificationTask>> readyNotices = m_noticeQueue.headMap(now);
+                	final Long now = System.currentTimeMillis();
+                	final SortedMap<Long, List<NotificationTask>> readyNotices = m_noticeQueue.headMap(now);
         
-                    for (List<NotificationTask> list : readyNotices.values()) {
-                        for (NotificationTask task : list) {
+                    for (final List<NotificationTask> list : readyNotices.values()) {
+                        for (final NotificationTask task : list) {
                             startTask(task);
                         }
                     }
                     readyNotices.clear();
         
-                    log.debug("current state of tree: ");
-                    log.debug("\n" + m_noticeQueue);
-                } catch (Throwable e) {
-                    log.error(e.getMessage(), e);
+                    if (LogUtils.isDebugEnabled(this) && m_noticeQueue != null && m_noticeQueue.size() > 0) {
+                    	LogUtils.debugf(this, "current state of tree: %s", m_noticeQueue);
+                    }
+                } catch (final Throwable e) {
+                    LogUtils.errorf(this, e, "failed to start notification task");
                     
                 }
             }
         }
     }
 
-	private void startTask(NotificationTask task) {
+	private void startTask(final NotificationTask task) {
 		if (!task.isStarted())
 			task.start();
 	}
@@ -205,7 +203,7 @@ public class DefaultQueueHandler implements NotifdQueueHandler {
     public synchronized void start() {
         m_status = STARTING;
 
-        Thread thread = new Thread(this, this.getClass().getSimpleName() + "-" + m_queueID);
+        final Thread thread = new Thread(this, this.getClass().getSimpleName() + "-" + m_queueID);
         thread.start();
     }
 

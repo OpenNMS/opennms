@@ -398,7 +398,7 @@ final class BroadcastEventProcessor implements EventListener {
 
         // Schedule the new service...
         //
-        m_threshd.scheduleService((int) event.getNodeid(), event.getInterface(), event.getService(), false);
+        m_threshd.scheduleService(event.getNodeid().intValue(), event.getInterface(), event.getService(), false);
     }
 
     /**
@@ -497,7 +497,7 @@ final class BroadcastEventProcessor implements EventListener {
 
         // Now we can schedule the new service...
         //
-        m_threshd.scheduleService((int) event.getNodeid(), event.getInterface(), event.getService(), false);
+        m_threshd.scheduleService(event.getNodeid().intValue(), event.getInterface(), event.getService(), false);
 
         if (log.isDebugEnabled())
             log.debug("primarySnmpInterfaceChangedHandler: processing of primarySnmpInterfaceChanged event for nodeid " + event.getNodeid() + " completed.");
@@ -619,7 +619,7 @@ final class BroadcastEventProcessor implements EventListener {
     private void nodeDeletedHandler(Event event) {
         ThreadCategory log = ThreadCategory.getInstance(getClass());
 
-        int nodeId = (int) event.getNodeid();
+        long nodeId = event.getNodeid();
 
         // Iterate over the collectable service list and mark any entries
         // which match the deleted nodeId for deletion.
@@ -665,7 +665,7 @@ final class BroadcastEventProcessor implements EventListener {
     private void interfaceDeletedHandler(Event event) {
         ThreadCategory log = ThreadCategory.getInstance(getClass());
 
-        int nodeId = (int) event.getNodeid();
+        long nodeId = event.getNodeid();
         String ipAddr = event.getInterface();
 
         // Iterate over the collectable services list and mark any entries
@@ -719,7 +719,7 @@ final class BroadcastEventProcessor implements EventListener {
         if (!event.getService().equals("SNMP"))
             return;
 
-        int nodeId = (int) event.getNodeid();
+        long nodeId = event.getNodeid();
         String ipAddr = event.getInterface();
         String svcName = event.getService();
 

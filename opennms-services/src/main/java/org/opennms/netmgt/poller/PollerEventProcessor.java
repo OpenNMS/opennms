@@ -208,18 +208,18 @@ final class PollerEventProcessor implements EventListener {
         // First make sure the service gained is in active state before trying to schedule
 
         String ipAddr = event.getInterface();
-        int nodeId = (int) event.getNodeid();
+        Long nodeId = event.getNodeid();
         String svcName = event.getService();
         
         String nodeLabel = EventUtils.getParm(event, EventConstants.PARM_NODE_LABEL);
         
         try {
-            nodeLabel = getPoller().getQueryManager().getNodeLabel(nodeId);
+            nodeLabel = getPoller().getQueryManager().getNodeLabel(nodeId.intValue());
         } catch (final Exception e) {
             LogUtils.errorf(this, e, "Unable to retrieve nodeLabel for node %d", nodeId);
         }
 
-        getPoller().scheduleService(nodeId, nodeLabel, ipAddr, svcName);
+        getPoller().scheduleService(nodeId.intValue(), nodeLabel, ipAddr, svcName);
         
     }
 
@@ -316,7 +316,7 @@ final class PollerEventProcessor implements EventListener {
      * the pollable services list
      */
     private void nodeRemovePollableServiceHandler(Event event) {
-        int nodeId = (int) event.getNodeid();
+        Long nodeId = event.getNodeid();
         String ipAddr = event.getInterface();
         String svcName = event.getService();
         
@@ -335,7 +335,7 @@ final class PollerEventProcessor implements EventListener {
         }
         
         
-        PollableService svc = getNetwork().getService(nodeId, address, svcName);
+        PollableService svc = getNetwork().getService(nodeId.intValue(), address, svcName);
         svc.delete();
 
     }
@@ -345,7 +345,7 @@ final class PollerEventProcessor implements EventListener {
      * nodeDeleted event from the Poller's pollable node map.
      */
     private void nodeDeletedHandler(Event event) {
-        int nodeId = (int) event.getNodeid();
+        Long nodeId = event.getNodeid();
         final String sourceUei = event.getUei();
 
         // Extract node label and transaction No. from the event parms
@@ -385,10 +385,10 @@ final class PollerEventProcessor implements EventListener {
             closeDate = new Date();
         }
         
-        getPoller().closeOutagesForNode(closeDate, event.getDbid(), nodeId);
+        getPoller().closeOutagesForNode(closeDate, event.getDbid(), nodeId.intValue());
 
         
-        PollableNode node = getNetwork().getNode(nodeId);
+        PollableNode node = getNetwork().getNode(nodeId.intValue());
         if (node == null) {
           LogUtils.errorf(this, "Nodeid %d does not exist in pollable node map, unable to delete node.", nodeId);
           if (isXmlRPCEnabled()) {
@@ -405,7 +405,7 @@ final class PollerEventProcessor implements EventListener {
      * 
      */
     private void interfaceDeletedHandler(Event event) {
-        int nodeId = (int) event.getNodeid();
+        Long nodeId = event.getNodeid();
         String sourceUei = event.getUei();
         String ipAddr = event.getInterface();
         
@@ -455,10 +455,10 @@ final class PollerEventProcessor implements EventListener {
             closeDate = new Date();
         }
         
-        getPoller().closeOutagesForInterface(closeDate, event.getDbid(), nodeId, ipAddr);
+        getPoller().closeOutagesForInterface(closeDate, event.getDbid(), nodeId.intValue(), ipAddr);
 
         
-        PollableInterface iface = getNetwork().getInterface(nodeId, addr);
+        PollableInterface iface = getNetwork().getInterface(nodeId.intValue(), addr);
         if (iface == null) {
           LogUtils.errorf(this, "Interface %d/%s does not exist in pollable node map, unable to delete node.", nodeId, event.getInterface());
           if (isXmlRPCEnabled()) {
@@ -478,7 +478,7 @@ final class PollerEventProcessor implements EventListener {
      * </p>
      */
     private void serviceDeletedHandler(Event event) {
-        int nodeId = (int) event.getNodeid();
+        Long nodeId = event.getNodeid();
         String ipAddr = event.getInterface();
         String service = event.getService();
         
@@ -497,9 +497,9 @@ final class PollerEventProcessor implements EventListener {
             closeDate = new Date();
         }
         
-        getPoller().closeOutagesForService(closeDate, event.getDbid(), nodeId, ipAddr, service);
+        getPoller().closeOutagesForService(closeDate, event.getDbid(), nodeId.intValue(), ipAddr, service);
         
-        PollableService svc = getNetwork().getService(nodeId, addr, service);
+        PollableService svc = getNetwork().getService(nodeId.intValue(), addr, service);
         if (svc == null) {
           LogUtils.errorf(this, "Interface %d/%s does not exist in pollable node map, unable to delete node.", nodeId, event.getInterface());
           return;
@@ -635,8 +635,8 @@ final class PollerEventProcessor implements EventListener {
     } // end onEvent()
     
     private void serviceReschedule(Event event)   {       
-       PollableNode pnode = getNetwork().getNode((int) event.getNodeid());
-       Integer nodeId = (int) event.getNodeid();
+       PollableNode pnode = getNetwork().getNode(event.getNodeid().intValue());
+       Long nodeId = event.getNodeid();
        String nodeLabel = pnode.getNodeLabel();
        
        //pnode.delete();
@@ -648,7 +648,7 @@ final class PollerEventProcessor implements EventListener {
            
        }*/
        
-       List<String[]> list = getPoller().getQueryManager().getNodeServices(nodeId);
+       List<String[]> list = getPoller().getQueryManager().getNodeServices(nodeId.intValue());
        
        for(String[] row : list){
            LogUtils.debugf(this," Removing the following from the list: %s:%s", row[0],row[1]);
@@ -669,9 +669,9 @@ final class PollerEventProcessor implements EventListener {
                closeDate = new Date();
            }
            
-           getPoller().closeOutagesForService(closeDate, event.getDbid(), nodeId, row[0], row[1]);
+           getPoller().closeOutagesForService(closeDate, event.getDbid(), nodeId.intValue(), row[0], row[1]);
            
-           PollableService svc = getNetwork().getService(nodeId,addr,row[1]);
+           PollableService svc = getNetwork().getService(nodeId.intValue(),addr,row[1]);
            
            if (svc != null) {
            
@@ -693,7 +693,7 @@ final class PollerEventProcessor implements EventListener {
        
        for(String[] row : list){
            LogUtils.debugf(this," Re-adding the following to the list: %s:%s", row[0],row[1]);
-           getPoller().scheduleService(nodeId,nodeLabel,row[0],row[1]);
+           getPoller().scheduleService(nodeId.intValue(),nodeLabel,row[0],row[1]);
        }
     }
 

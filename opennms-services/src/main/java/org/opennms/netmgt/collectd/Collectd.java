@@ -830,7 +830,7 @@ public class Collectd extends AbstractServiceDaemon implements
             return;
         }
 
-        int nodeId = (int) event.getNodeid();
+        Long nodeId = event.getNodeid();
 
         // Iterate over the collectable services list and mark any entries
         // which match the deleted nodeId/IP address pair for deletion
@@ -973,7 +973,7 @@ public class Collectd extends AbstractServiceDaemon implements
                         // this CollectableService.
                         CollectorUpdates updates = cSvc.getCollectorUpdates();
                         if (iface == null) {
-                        	iface = getIpInterface((int) event.getNodeid(), event.getInterface());
+                        	iface = getIpInterface(event.getNodeid().intValue(), event.getInterface());
                         }
 
                         // Now set the reparenting flag
@@ -1006,7 +1006,7 @@ public class Collectd extends AbstractServiceDaemon implements
 
         ThreadCategory log = log();
 
-        int nodeId = (int) event.getNodeid();
+        Long nodeId = event.getNodeid();
 
         // Iterate over the collectable service list and mark any entries
         // which match the deleted nodeId for deletion.
@@ -1127,7 +1127,7 @@ public class Collectd extends AbstractServiceDaemon implements
         
         getCollectorConfigDao().rebuildPackageIpListMap();
 
-        scheduleInterface((int) event.getNodeid(), event.getInterface(),
+        scheduleInterface(event.getNodeid().intValue(), event.getInterface(),
                           event.getService(), false);
     }
 
@@ -1264,7 +1264,7 @@ public class Collectd extends AbstractServiceDaemon implements
         EventUtils.checkNodeId(event);
         EventUtils.checkInterface(event);
 
-        int nodeid = (int) event.getNodeid();
+        Long nodeid = event.getNodeid();
         String ipAddress = event.getInterface();
 
         // Mark the primary SNMP interface for reinitialization in
@@ -1292,7 +1292,7 @@ public class Collectd extends AbstractServiceDaemon implements
                 if (addr.getHostAddress().equals(ipAddress)) {
                     synchronized (cSvc) {
                     	if (iface == null) {
-                            iface = getIpInterface(nodeid, ipAddress);
+                            iface = getIpInterface(nodeid.intValue(), ipAddress);
                     	}
                         // Got a match! Retrieve the CollectorUpdates object
                         // associated
@@ -1333,7 +1333,7 @@ public class Collectd extends AbstractServiceDaemon implements
         //if (!event.getService().equals("SNMP"))
         //    return;
 
-        int nodeId = (int) event.getNodeid();
+        Long nodeId = event.getNodeid();
         String ipAddr = event.getInterface();
         String svcName = event.getService();
 

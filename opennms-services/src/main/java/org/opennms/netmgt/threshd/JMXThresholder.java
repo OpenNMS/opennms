@@ -670,7 +670,7 @@ public abstract class JMXThresholder implements ServiceThresholder {
 
     private void completeEventListAndAddToEvents(Events events, List<Event> eventList, Integer nodeId, InetAddress primary, Map<String, String> ifDataMap) {
         for (Event event : eventList) {
-            event.setNodeid(nodeId);
+            event.setNodeid(nodeId.longValue());
             event.setService(serviceName());
 
             // Set event interface

@@ -111,7 +111,7 @@ public class AlarmData {
      * 
      * @return the value of field 'AlarmType'.
      */
-    public int getAlarmType(
+    public Integer getAlarmType(
     ) {
         return this._alarmType;
     }
@@ -121,7 +121,7 @@ public class AlarmData {
      * 
      * @return the value of field 'AutoClean'.
      */
-    public boolean getAutoClean(
+    public Boolean getAutoClean(
     ) {
         return this._autoClean;
     }
@@ -161,7 +161,7 @@ public class AlarmData {
      * 
      * @return the value of field 'X733ProbableCause'.
      */
-    public int getX733ProbableCause(
+    public Integer getX733ProbableCause(
     ) {
         return this._x733ProbableCause;
     }
@@ -201,7 +201,7 @@ public class AlarmData {
      * 
      * @return the value of field 'AutoClean'.
      */
-    public boolean isAutoClean(
+    public Boolean isAutoClean(
     ) {
         return this._autoClean;
     }

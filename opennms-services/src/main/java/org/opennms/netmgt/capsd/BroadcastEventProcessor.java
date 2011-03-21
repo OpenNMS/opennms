@@ -1558,7 +1558,7 @@ public class BroadcastEventProcessor implements InitializingBean {
         EventUtils.checkNodeId(event);
 
         // Remove the deleted node from the scheduler
-        m_scheduler.unscheduleNode((int) event.getNodeid());
+        m_scheduler.unscheduleNode(event.getNodeid().intValue());
     }
 
     /**
@@ -1574,10 +1574,10 @@ public class BroadcastEventProcessor implements InitializingBean {
         // If the event has a node identifier use it otherwise
         // will need to use the interface to lookup the node id
         // from the database
-        int nodeid = -1;
+    	Long nodeid = -1L;
 
         if (event.hasNodeid())
-            nodeid = (int) event.getNodeid();
+            nodeid = event.getNodeid();
         else {
             // Extract interface from the event and use it to
             // lookup the node identifier associated with the
@@ -1603,7 +1603,7 @@ public class BroadcastEventProcessor implements InitializingBean {
                 rs = stmt.executeQuery();
                 d.watch(rs);
                 if (rs.next()) {
-                    nodeid = rs.getInt(1);
+                    nodeid = rs.getLong(1);
                 }
             } catch (SQLException sqlE) {
                 log().error("handleForceRescan: Database error during nodeid retrieval for interface " + event.getInterface(), sqlE);
@@ -1613,19 +1613,19 @@ public class BroadcastEventProcessor implements InitializingBean {
 
         }
 
-        if (nodeid == -1) {
+        if (nodeid == null || nodeid == -1) {
             log().error("handleForceRescan: Nodeid retrieval for interface " + event.getInterface() + " failed.  Unable to perform rescan.");
             return;
         }
         
         // discard this forceRescan if one is already enqueued for the same node ID
-        if (RescanProcessor.isRescanQueuedForNode(nodeid)) {
+        if (RescanProcessor.isRescanQueuedForNode(nodeid.intValue())) {
             log().info("Ignoring forceRescan event for node " + nodeid + " because a forceRescan for that node already exists in the queue");
             return;
         }
         
         // Rescan the node.
-        m_scheduler.forceRescan(nodeid);
+        m_scheduler.forceRescan(nodeid.intValue());
     }
 
     /**
@@ -1666,7 +1666,7 @@ public class BroadcastEventProcessor implements InitializingBean {
 
         // Schedule the new node.
         try {
-            m_scheduler.scheduleNode((int) event.getNodeid());
+            m_scheduler.scheduleNode(event.getNodeid().intValue());
         } catch (SQLException sqlE) {
             log().error("onMessage: SQL exception while attempting to schedule node " + event.getNodeid(), sqlE);
         }
@@ -1684,7 +1684,7 @@ public class BroadcastEventProcessor implements InitializingBean {
         EventUtils.checkNodeId(event);
 
         // Remove the deleted node from the scheduler
-        m_scheduler.unscheduleNode((int) event.getNodeid());
+        m_scheduler.unscheduleNode(event.getNodeid().intValue());
     }
 
     /**

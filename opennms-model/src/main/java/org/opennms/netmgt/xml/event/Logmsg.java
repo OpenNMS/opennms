@@ -112,7 +112,7 @@ public class Logmsg {
      * 
      * @return the value of field 'Notify'.
      */
-    public boolean getNotify(
+    public Boolean getNotify(
     ) {
         return this._notify;
     }
@@ -132,7 +132,7 @@ public class Logmsg {
      * 
      * @return the value of field 'Notify'.
      */
-    public boolean isNotify(
+    public Boolean isNotify(
     ) {
         return this._notify;
     }

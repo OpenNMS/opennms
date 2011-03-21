@@ -1262,7 +1262,7 @@ public class PollerTest {
 			assertEquals(m_svc.getNodeId(), rs.getInt("nodeId"));
 			assertEquals(m_svc.getIpAddr(), rs.getString("ipAddr"));
 			assertEquals(m_svc.getId(), rs.getInt("serviceId"));
-			assertEquals(m_lostSvcEvent.getDbid(), rs.getInt("svcLostEventId"));
+			assertEquals(m_lostSvcEvent.getDbid(), Integer.valueOf(rs.getInt("svcLostEventId")));
 			assertEquals(m_lostSvcTime, rs.getTimestamp("ifLostService"));
 			assertEquals(getRegainedEventId(), rs
 					.getObject("svcRegainedEventId"));

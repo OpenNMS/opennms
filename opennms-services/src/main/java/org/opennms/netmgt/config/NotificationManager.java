@@ -1190,7 +1190,7 @@ public abstract class NotificationManager {
             public void processRow(ResultSet rs) throws SQLException {
                 event.setDbid(rs.getInt("eventid"));
                 event.setUei(rs.getString("eventuei"));
-                event.setNodeid(rs.getInt("nodeid"));
+                event.setNodeid(rs.getLong("nodeid"));
                 event.setTime(rs.getString("eventtime"));
                 event.setHost(rs.getString("eventhost"));
                 event.setInterface(rs.getString("ipaddr"));

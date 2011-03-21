@@ -130,7 +130,7 @@ public class Snmp {
      * 
      * @return the value of field 'Generic'.
      */
-    public int getGeneric(
+    public Integer getGeneric(
     ) {
         return this._generic;
     }
@@ -163,7 +163,7 @@ public class Snmp {
      * 
      * @return the value of field 'Specific'.
      */
-    public int getSpecific(
+    public Integer getSpecific(
     ) {
         return this._specific;
     }
@@ -174,7 +174,7 @@ public class Snmp {
      * 
      * @return the value of field 'TimeStamp'.
      */
-    public long getTimeStamp(
+    public Long getTimeStamp(
     ) {
         return this._timeStamp;
     }

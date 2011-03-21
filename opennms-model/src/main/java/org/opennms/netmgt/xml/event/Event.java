@@ -600,7 +600,7 @@ public class Event {
      * 
      * @return the value of field 'Dbid'.
      */
-    public int getDbid(
+    public Integer getDbid(
     ) {
         return this._dbid;
     }
@@ -716,7 +716,7 @@ public class Event {
      * 
      * @return the value of field 'IfIndex'.
      */
-    public int getIfIndex(
+    public Integer getIfIndex(
     ) {
         return this._ifIndex;
     }
@@ -845,9 +845,9 @@ public class Event {
      * 
      * @return the value of field 'Nodeid'.
      */
-    public long getNodeid(
+    public Long getNodeid(
     ) {
-        return this._nodeid;
+        return this._nodeid == null? -1 : this._nodeid;
     }
 
     /**
@@ -1761,8 +1761,7 @@ public class Event {
      * 
      * @param nodeid the value of field 'nodeid'.
      */
-    public void setNodeid(
-            final long nodeid) {
+    public void setNodeid(final Long nodeid) {
         this._nodeid = nodeid;
     }
 
@@ -1857,8 +1856,7 @@ public class Event {
      * 
      * @param pathoutage the value of field 'pathoutage'.
      */
-    public void setPathoutage(
-            final java.lang.String pathoutage) {
+    public void setPathoutage(final java.lang.String pathoutage) {
         this._pathoutage = pathoutage;
     }
 
@@ -1870,10 +1868,7 @@ public class Event {
      * @throws java.lang.IndexOutOfBoundsException if the index
      * given is outside the bounds of the collection
      */
-    public void setScript(
-            final int index,
-            final org.opennms.netmgt.xml.event.Script vScript)
-    throws java.lang.IndexOutOfBoundsException {
+    public void setScript(final int index, final org.opennms.netmgt.xml.event.Script vScript) throws java.lang.IndexOutOfBoundsException {
         // check bounds for index
         if (index < 0 || index >= this._scriptList.size()) {
             throw new IndexOutOfBoundsException("setScript: Index value '" + index + "' not in range [0.." + (this._scriptList.size() - 1) + "]");
