@@ -975,7 +975,6 @@ public class PollerTest {
     }
 
     @Test
-    @Ignore("FIXME")
     public void testSendIPv6NodeGainedServiceNodeOutages() {
         m_pollerConfig.setNodeOutageProcessingEnabled(true);
 
