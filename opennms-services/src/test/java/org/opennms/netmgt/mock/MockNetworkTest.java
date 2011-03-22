@@ -53,7 +53,6 @@ import org.opennms.netmgt.config.poller.Service;
 import org.opennms.netmgt.model.PollStatus;
 import org.opennms.netmgt.model.events.EventListener;
 import org.opennms.netmgt.poller.IfKey;
-import org.opennms.netmgt.poller.InetNetworkInterface;
 import org.opennms.netmgt.poller.MonitoredService;
 import org.opennms.netmgt.poller.QueryManager;
 import org.opennms.netmgt.poller.ServiceMonitor;
@@ -104,7 +103,7 @@ public class MockNetworkTest extends TestCase {
             return serviceCount;
         }
 
-        public void visitContainer(MockContainer c) {
+        public void visitContainer(MockContainer<?,?> c) {
             containerCount++;
         }
 
@@ -129,15 +128,6 @@ public class MockNetworkTest extends TestCase {
         }
     }
 
-    static class MockNetworkInterface extends InetNetworkInterface {
-        private static final long serialVersionUID = 1L;
-
-        public MockNetworkInterface(String addr) throws UnknownHostException {
-            super(InetAddress.getByName(addr));
-        }
-
-    }
-
     class StatusChecker extends MockVisitorAdapter {
         PollStatus m_expectedStatus;
 
@@ -159,6 +149,7 @@ public class MockNetworkTest extends TestCase {
             m_expectedStatus = status;
         }
 
+        @Override
         @SuppressWarnings("unchecked")
         public void visitService(MockService service) {
             m_serviceCount++;
@@ -203,6 +194,11 @@ public class MockNetworkTest extends TestCase {
         m_network.addService("ICMP");
         m_network.addService("HTTP");
         m_network.addInterface("192.168.1.2");
+        m_network.addNode(3, "IPv6Server");
+        m_network.addInterface("fe80:0000:0000:0000:0000:0000:0000:00ff");
+        m_network.addService("ICMP");
+        m_network.addService("HTTP");
+        m_network.addService("DNS");
         
         m_eventMgr = new MockEventIpcManager();
 
@@ -236,6 +232,11 @@ public class MockNetworkTest extends TestCase {
         MockInterface iface3 = m_network.getInterface(2, "192.168.1.3");
         assertEquals(server.getNodeId(), iface3.getNode().getNodeId());
         assertEquals(server, iface3.getNode());
+
+        MockNode ipv6 = m_network.getNode(3);
+        MockInterface iface4 = m_network.getInterface(3, "fe80:0000:0000:0000:0000:0000:0000:00ff");
+        assertEquals(ipv6.getNodeId(), iface4.getNode().getNodeId());
+        assertEquals(ipv6, iface4.getNode());
     }
 
     public void testCreateNodes() {
@@ -243,11 +244,17 @@ public class MockNetworkTest extends TestCase {
         MockNode router = m_network.getNode(1);
         assertEquals(1, router.getNodeId());
         assertEquals("Router", router.getLabel());
+        assertEquals(2, router.getMembers().size());
 
         MockNode server = m_network.getNode(2);
         assertEquals(2, server.getNodeId());
         assertEquals("Server", server.getLabel());
+        assertEquals(2, server.getMembers().size());
 
+        MockNode ipv6 = m_network.getNode(3);
+        assertEquals(3, ipv6.getNodeId());
+        assertEquals("IPv6Server", ipv6.getLabel());
+        assertEquals(1, ipv6.getMembers().size());
     }
 
     public void testCreateServices() {
@@ -389,9 +396,13 @@ public class MockNetworkTest extends TestCase {
 
     public void testLookupNotThere() {
         assertNotNull(m_network.getService(1, "192.168.1.1", "ICMP"));
+        assertNotNull(m_network.getService(3, "fe80:0000:0000:0000:0000:0000:0000:00ff", "ICMP"));
+        assertNotNull(m_network.getService(3, "fe80:0000:0000:0000:0000:0000:0000:00ff", "HTTP"));
+        assertNotNull(m_network.getService(3, "fe80:0000:0000:0000:0000:0000:0000:00ff", "DNS"));
         assertNull(m_network.getService(7, "192.168.1.1", "ICMP"));
         assertNull(m_network.getService(1, "192.168.1.175", "ICMP"));
         assertNull(m_network.getService(1, "192.168.1.1", "ICMG"));
+        assertNull(m_network.getService(3, "fe80:0000:0000:0000:0000:0000:0000:00ff", "DHCP"));
     }
 
     public void testPollerConfig() {
@@ -481,7 +492,7 @@ public class MockNetworkTest extends TestCase {
 
         List<IfKey> ifKeys = queryManager.getInterfacesWithService("HTTP");
         MockInterface httpIf = m_network.getInterface(2, "192.168.1.3");
-        assertEquals(1, ifKeys.size());
+        assertEquals(2, ifKeys.size());
         IfKey key = ifKeys.get(0);
         assertEquals(httpIf.getNode().getNodeId(), key.getNodeId());
         assertEquals(httpIf.getIpAddr(), key.getIpAddr());
@@ -590,11 +601,11 @@ public class MockNetworkTest extends TestCase {
         ElementCounter counter = new ElementCounter();
         m_network.visit(counter);
         assertEquals(1, counter.getNetworkCount());
-        assertEquals(2, counter.getNodeCount());
-        assertEquals(4, counter.getInterfaceCount());
-        assertEquals(6, counter.getServiceCount());
-        assertEquals(7, counter.getContainerCount());
-        assertEquals(13, counter.getElementCount());
+        assertEquals(3, counter.getNodeCount());
+        assertEquals(5, counter.getInterfaceCount());
+        assertEquals(9, counter.getServiceCount());
+        assertEquals(9, counter.getContainerCount());
+        assertEquals(18, counter.getElementCount());
     }
 
     public void testWaitForEvent() throws Throwable {

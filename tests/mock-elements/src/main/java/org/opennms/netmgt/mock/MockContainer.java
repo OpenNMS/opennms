@@ -55,7 +55,7 @@ import org.opennms.netmgt.model.PollStatus;
  * Preferences - Java - Code Style - Code Templates
  * @version $Id: $
  */
-abstract public class MockContainer<P extends MockContainer, C extends MockElement> extends MockElement {
+abstract public class MockContainer<P extends MockContainer<?,?>, C extends MockElement> extends MockElement {
 
     private Map<Object, C> m_members = new HashMap<Object, C>();
 

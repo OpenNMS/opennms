@@ -49,7 +49,7 @@ import org.opennms.netmgt.xml.event.Event;
  * @author brozow
  * @version $Id: $
  */
-public class MockNetwork extends MockContainer {
+public class MockNetwork extends MockContainer<MockContainer<?,?>,MockElement> {
 
     /**
      * <p>createDownEvent</p>
@@ -340,7 +340,7 @@ public class MockNetwork extends MockContainer {
      * @param element a {@link org.opennms.netmgt.mock.MockElement} object.
      */
     public synchronized void removeElement(MockElement element) {
-        MockContainer parent = element.getParent();
+        MockContainer<?,?> parent = element.getParent();
         parent.removeMember(element);
     }
 

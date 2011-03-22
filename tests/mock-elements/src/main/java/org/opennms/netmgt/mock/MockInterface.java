@@ -36,6 +36,7 @@ import java.net.InetAddress;
 import java.net.UnknownHostException;
 import java.util.List;
 
+import org.opennms.core.utils.InetAddressUtils;
 import org.opennms.netmgt.model.PollStatus;
 import org.opennms.netmgt.xml.event.Event;
 
@@ -50,10 +51,9 @@ import org.opennms.netmgt.xml.event.Event;
  */
 public class MockInterface extends MockContainer<MockNode,MockService> {
 
-    private String m_ipAddr;
 	private String m_ifAlias;
-    private InetAddress m_inetAddr;
-    private int m_ifIndex;
+    private final InetAddress m_inetAddr;
+    private final int m_ifIndex;
     
 
     /**
@@ -64,7 +64,6 @@ public class MockInterface extends MockContainer<MockNode,MockService> {
      */
     public MockInterface(MockNode node, String ipAddr) {
         super(node);
-        m_ipAddr = ipAddr;
         m_ifIndex = node.getNextIfIndex();
         try {
             m_inetAddr = InetAddress.getByName(ipAddr);
@@ -92,12 +91,12 @@ public class MockInterface extends MockContainer<MockNode,MockService> {
      * @return a {@link java.lang.String} object.
      */
     public String getIpAddr() {
-        return m_ipAddr;
+        return InetAddressUtils.toIpAddrString(m_inetAddr);
     }
 
     // impl
     Object getKey() {
-        return m_ipAddr;
+        return getIpAddr();
     }
 
     // model
@@ -208,7 +207,7 @@ public class MockInterface extends MockContainer<MockNode,MockService> {
      * @return a {@link java.lang.String} object.
      */
     public String toString() {
-        return "If[" + m_ipAddr + "]";
+        return "If[" + getIpAddr() + "]";
     }
 
     // impl

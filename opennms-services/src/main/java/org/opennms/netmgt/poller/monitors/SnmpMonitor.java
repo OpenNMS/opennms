@@ -75,13 +75,6 @@ import org.opennms.netmgt.snmp.SnmpValue;
  * @author <A HREF="mailto:tarus@opennms.org">Tarus Balog </A>
  * @author <A HREF="mailto:mike@opennms.org">Mike Davidson </A>
  * @author <A HREF="http://www.opennms.org/">OpenNMS </A>
- * @author <A HREF="mailto:tarus@opennms.org">Tarus Balog </A>
- * @author <A HREF="mailto:mike@opennms.org">Mike Davidson </A>
- * @author <A HREF="http://www.opennms.org/">OpenNMS </A>
- * @author <A HREF="mailto:tarus@opennms.org">Tarus Balog </A>
- * @author <A HREF="mailto:mike@opennms.org">Mike Davidson </A>
- * @author <A HREF="http://www.opennms.org/">OpenNMS </A>
- * @version $Id: $
  */
 
 //this does snmp and there relies on the snmp configuration so it is not distributable
@@ -173,7 +166,7 @@ public class SnmpMonitor extends SnmpMonitorStrategy {
         NetworkInterface<InetAddress> iface = svc.getNetInterface();
 
         PollStatus status = PollStatus.unavailable();
-        InetAddress ipaddr = (InetAddress) iface.getAddress();
+        InetAddress ipaddr = iface.getAddress();
 
         // Retrieve this interface's SNMP peer object
         //

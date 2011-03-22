@@ -48,14 +48,14 @@ import org.opennms.netmgt.xml.event.Event;
  */
 abstract public class MockElement {
 
-    MockContainer m_parent;
+    MockContainer<?,? extends MockElement> m_parent;
 
     /**
      * <p>Constructor for MockElement.</p>
      *
      * @param parent a {@link org.opennms.netmgt.mock.MockContainer} object.
      */
-    protected MockElement(MockContainer parent) {
+    protected MockElement(MockContainer<?,? extends MockElement> parent) {
         m_parent = parent;
     }
 
@@ -100,7 +100,7 @@ abstract public class MockElement {
      *
      * @return a {@link org.opennms.netmgt.mock.MockContainer} object.
      */
-    public MockContainer getParent() {
+    public MockContainer<?,? extends MockElement> getParent() {
         return m_parent;
     }
     
@@ -160,7 +160,7 @@ abstract public class MockElement {
     abstract public void resetPollCount();
 
     // model
-    void setParent(MockContainer parent) {
+    void setParent(MockContainer<?,? extends MockElement> parent) {
         m_parent = parent;
     }
 
