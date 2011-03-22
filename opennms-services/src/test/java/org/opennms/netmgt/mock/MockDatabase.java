@@ -49,6 +49,7 @@ import java.util.Date;
 import java.util.LinkedList;
 import java.util.List;
 
+import org.opennms.core.utils.InetAddressUtils;
 import org.opennms.netmgt.EventConstants;
 import org.opennms.netmgt.dao.db.TemporaryDatabase;
 import org.opennms.netmgt.model.OnmsSeverity;
@@ -264,7 +265,7 @@ public class MockDatabase extends TemporaryDatabase implements EventWriter {
                 convertEventTimeToTimeStamp(e.getTime()),
                 new Integer(OnmsSeverity.get(e.getSeverity()).getId()),
                 (e.hasNodeid() ? new Long(e.getNodeid()) : null),
-                e.getInterface(),
+                InetAddressUtils.str(e.getInterface()),
                 getServiceID(e.getService()),
                 "localhost",
                 "Y",
