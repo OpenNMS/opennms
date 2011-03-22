@@ -3,6 +3,7 @@ package org.opennms.netmgt.dao.jaxb;
 import java.io.File;
 import java.io.FileNotFoundException;
 import java.io.FileReader;
+import java.io.IOException;
 import java.io.Reader;
 import java.io.StringReader;
 import java.io.StringWriter;
@@ -20,6 +21,7 @@ import javax.xml.transform.sax.SAXSource;
 import org.apache.commons.io.IOUtils;
 import org.opennms.netmgt.dao.support.MarshallingExceptionTranslator;
 import org.opennms.netmgt.xml.SimpleNamespaceFilter;
+import org.springframework.core.io.Resource;
 import org.xml.sax.InputSource;
 import org.xml.sax.SAXException;
 import org.xml.sax.XMLReader;
@@ -74,6 +76,14 @@ public class JaxbUtils {
 		}
 	}
 
+	public static <T> T unmarshalWithTranslatedExceptions(final Class<T> clazz, final Resource resource) {
+		try {
+			return unmarshal(clazz, new InputSource(resource.getInputStream()));
+		} catch (final IOException e) {
+			throw EXCEPTION_TRANSLATOR.translate("getting a configuration resource from spring", e);
+		}
+	}
+	
 	public static <T> T unmarshal(final Class<T> clazz, final InputSource inputSource) {
 		final Unmarshaller um = getUnmarshallerFor(clazz);
 		
