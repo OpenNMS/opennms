@@ -70,7 +70,7 @@ public class MockMonitoredService implements MonitoredService {
     }
 
     public NetworkInterface<InetAddress> getNetInterface() {
-        return new InetNetworkInterface(getAddress());
+        return new InetNetworkInterface(m_inetAddr);
     }
 
     public InetAddress getAddress() {

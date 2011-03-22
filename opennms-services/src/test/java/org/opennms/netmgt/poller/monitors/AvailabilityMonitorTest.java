@@ -40,6 +40,7 @@ import java.util.Map;
 import junit.framework.TestCase;
 
 import org.opennms.netmgt.model.PollStatus;
+import org.opennms.netmgt.poller.InetNetworkInterface;
 import org.opennms.netmgt.poller.MonitoredService;
 import org.opennms.netmgt.poller.NetworkInterface;
 import org.opennms.netmgt.poller.ServiceMonitor;
@@ -71,9 +72,6 @@ public class AvailabilityMonitorTest extends TestCase {
         Map<String, Object> parameters = new HashMap<String, Object>();
         parameters.put("timeout", "3000");
         MonitoredService svc = new MonitoredService() {
-            protected InetAddress getNetworkAddress() {
-                return getAddress();
-            }
             public InetAddress getAddress() {
                 try {
                     return InetAddress.getByName("127.0.0.1");
@@ -85,20 +83,7 @@ public class AvailabilityMonitorTest extends TestCase {
                 return getAddress().getHostAddress();
             }
             public NetworkInterface<InetAddress> getNetInterface() {
-                return new NetworkInterface<InetAddress>() {
-                    public InetAddress getAddress() {
-                        return getNetworkAddress();
-                    }
-                    public Object getAttribute(String property) {
-                        return null;
-                    }
-                    public int getType() {
-                        return 0;
-                    }
-                    public Object setAttribute(String property, Object value) {
-                        return null;
-                    }
-                };
+                return new InetNetworkInterface(getAddress());
             }
             public int getNodeId() {
                 return 0;

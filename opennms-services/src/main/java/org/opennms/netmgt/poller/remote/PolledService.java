@@ -57,13 +57,13 @@ public class PolledService implements MonitoredService, Serializable, Comparable
     
     private static final long serialVersionUID = 2L;
 
-    private InetNetworkInterface m_netInterface;
-    private Map<String,Object> m_monitorConfiguration;
-    private OnmsPollModel m_pollModel;
-    private Integer m_serviceId;
-    private Integer m_nodeId;
-    private String m_nodeLabel;
-    private String m_svcName;
+    private final InetNetworkInterface m_netInterface;
+    private final Map<String,Object> m_monitorConfiguration;
+    private final OnmsPollModel m_pollModel;
+    private final Integer m_serviceId;
+    private final Integer m_nodeId;
+    private final String m_nodeLabel;
+    private final String m_svcName;
 	
 	/**
 	 * <p>Constructor for PolledService.</p>

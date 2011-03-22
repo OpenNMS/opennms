@@ -172,10 +172,10 @@ final public class SmtpMonitor extends AbstractServiceMonitor {
 
         // Get interface address from NetworkInterface
         //
-        InetAddress ipv4Addr = (InetAddress) iface.getAddress();
+        InetAddress ipAddr = iface.getAddress();
 
         if (log().isDebugEnabled())
-            log().debug("poll: address = " + ipv4Addr.getHostAddress() + ", port = " + port + ", " + tracker);
+            log().debug("poll: address = " + ipAddr.getHostAddress() + ", port = " + port + ", " + tracker);
 
         PollStatus serviceStatus = PollStatus.unavailable();
 
@@ -187,10 +187,10 @@ final public class SmtpMonitor extends AbstractServiceMonitor {
                 tracker.startAttempt();
 
                 socket = new Socket();
-                socket.connect(new InetSocketAddress(ipv4Addr, port), tracker.getConnectionTimeout());
+                socket.connect(new InetSocketAddress(ipAddr, port), tracker.getConnectionTimeout());
                 socket.setSoTimeout(tracker.getSoTimeout());
 
-                log().debug("SmtpMonitor: connected to host: " + ipv4Addr + " on port: " + port);
+                log().debug("SmtpMonitor: connected to host: " + ipAddr + " on port: " + port);
 
                 // We're connected, so upgrade status to unresponsive
                 serviceStatus = PollStatus.unresponsive();
@@ -327,16 +327,16 @@ final public class SmtpMonitor extends AbstractServiceMonitor {
                     serviceStatus = PollStatus.unavailable();
                 }
             } catch (NumberFormatException e) {
-            	serviceStatus = logDown(Level.DEBUG, "NumberFormatException while polling address " + ipv4Addr.getHostAddress(), e);
+            	serviceStatus = logDown(Level.DEBUG, "NumberFormatException while polling address " + ipAddr.getHostAddress(), e);
             } catch (NoRouteToHostException e) {
-            	serviceStatus = logDown(Level.DEBUG, "No route to host exception for address " + ipv4Addr.getHostAddress(), e);
+            	serviceStatus = logDown(Level.DEBUG, "No route to host exception for address " + ipAddr.getHostAddress(), e);
                 break; // Break out of for(;;)
             } catch (InterruptedIOException e) {
             	serviceStatus = logDown(Level.DEBUG, "Did not receive expected response within timeout " + tracker);
             } catch (ConnectException e) {
-            	serviceStatus = logDown(Level.DEBUG, "Unable to connect to address " + ipv4Addr.getHostAddress(), e);
+            	serviceStatus = logDown(Level.DEBUG, "Unable to connect to address " + ipAddr.getHostAddress(), e);
             } catch (IOException e) {
-            	serviceStatus = logDown(Level.DEBUG, "IOException while polling address " + ipv4Addr.getHostAddress(), e);
+            	serviceStatus = logDown(Level.DEBUG, "IOException while polling address " + ipAddr.getHostAddress(), e);
             } finally {
                 try {
                     // Close the socket

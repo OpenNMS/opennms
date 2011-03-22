@@ -44,7 +44,7 @@ package org.opennms.netmgt.mock;
 public class MockVisitorAdapter implements MockVisitor {
 
     /** {@inheritDoc} */
-    public void visitContainer(MockContainer n) {
+    public void visitContainer(MockContainer<?,?> n) {
     }
 
     /** {@inheritDoc} */

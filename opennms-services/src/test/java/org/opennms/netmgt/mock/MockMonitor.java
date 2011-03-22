@@ -34,10 +34,10 @@ package org.opennms.netmgt.mock;
 
 import java.util.Map;
 
+import org.opennms.core.utils.LogUtils;
 import org.opennms.netmgt.model.PollStatus;
 import org.opennms.netmgt.poller.MonitoredService;
 import org.opennms.netmgt.poller.ServiceMonitor;
-import org.opennms.test.mock.MockUtil;
 
 public class MockMonitor implements ServiceMonitor {
 
@@ -66,11 +66,11 @@ public class MockMonitor implements ServiceMonitor {
             String ipAddr = monSvc.getIpAddr();
             MockService svc = m_network.getService(nodeId, ipAddr, m_svcName);
             if (svc == null) {
-                MockUtil.println("Invalid Poll: " + ipAddr + "/" + m_svcName);
+                LogUtils.errorf(this, "Invalid Poll: %s/%s", ipAddr, m_svcName);
                 m_network.receivedInvalidPoll(ipAddr, m_svcName);
                 return PollStatus.unknown();
             } else {
-                MockUtil.println("Poll: [" + svc.getInterface().getNode().getLabel() + "/" + ipAddr + "/" + m_svcName + "]");
+                LogUtils.infof(this, "Poll: [%s/%s/%s]", svc.getInterface().getNode().getLabel(), ipAddr, m_svcName);
                 PollStatus pollStatus = svc.poll();
 				return PollStatus.get(pollStatus.getStatusCode(), pollStatus.getReason());
             }

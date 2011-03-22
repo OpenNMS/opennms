@@ -69,7 +69,7 @@ public class PollAnticipator {
             }
         };
 
-        // visit the elements and ensure that we anticpate polls on them
+        // visit the elements and ensure that we anticipate polls on them
         element.visit(anticipateSvcs);
     }
 
@@ -130,7 +130,7 @@ public class PollAnticipator {
     /**
      * Waits for millis milliseconds for the anticipated polls to come. If they
      * all come in before the timeout return an empty list. Otherwise return a
-     * readonly list of the services that were anticipated but not received.
+     * read-only list of the services that were anticipated but not received.
      *
      * @param millis a long.
      * @return a {@link java.util.Collection} object.

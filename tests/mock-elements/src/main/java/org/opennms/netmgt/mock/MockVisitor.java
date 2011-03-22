@@ -48,7 +48,7 @@ public interface MockVisitor {
      *
      * @param c a {@link org.opennms.netmgt.mock.MockContainer} object.
      */
-    public void visitContainer(MockContainer c);
+    public void visitContainer(MockContainer<?,?> c);
 
     /**
      * <p>visitElement</p>
