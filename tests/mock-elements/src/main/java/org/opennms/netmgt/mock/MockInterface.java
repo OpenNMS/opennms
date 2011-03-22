@@ -36,6 +36,7 @@ import java.net.InetAddress;
 import java.net.UnknownHostException;
 import java.util.List;
 
+import org.apache.commons.lang.builder.ToStringBuilder;
 import org.opennms.core.utils.InetAddressUtils;
 import org.opennms.netmgt.model.PollStatus;
 import org.opennms.netmgt.xml.event.Event;
@@ -207,7 +208,11 @@ public class MockInterface extends MockContainer<MockNode,MockService> {
      * @return a {@link java.lang.String} object.
      */
     public String toString() {
-        return "If[" + getIpAddr() + "]";
+    	return new ToStringBuilder(this)
+    		.append("ifAlias", m_ifAlias)
+    		.append("ifIndex", m_ifIndex)
+    		.append("m_inetAddr", m_inetAddr)
+    		.toString();
     }
 
     // impl

@@ -33,6 +33,7 @@
 package org.opennms.netmgt.mock;
 
 
+import org.apache.commons.lang.builder.ToStringBuilder;
 import org.opennms.netmgt.xml.event.Event;
 
 /**
@@ -147,8 +148,10 @@ public class MockNode extends MockContainer<MockNetwork,MockInterface> {
      * @return a {@link java.lang.String} object.
      */
     public String toString() {
-        return "Node[" + m_nodeid + "," + m_label + "]";
-
+    	return new ToStringBuilder(this)
+    		.append("id", m_nodeid)
+    		.append("label", m_label)
+    		.append("members", getMembers()).toString();
     }
 
     // impl

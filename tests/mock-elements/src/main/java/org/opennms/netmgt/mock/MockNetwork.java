@@ -37,10 +37,13 @@
 
 package org.opennms.netmgt.mock;
 
+import java.util.ArrayList;
 import java.util.Collections;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 
+import org.apache.commons.lang.builder.ToStringBuilder;
 import org.opennms.netmgt.xml.event.Event;
 
 /**
@@ -308,7 +311,17 @@ public class MockNetwork extends MockContainer<MockContainer<?,?>,MockElement> {
         return (iface == null ? null : iface.getService(svcName));
     }
 
-    // model
+	public List<MockService> getServices(int nodeId) {
+		final List<MockService> services = new ArrayList<MockService>();
+		for (final MockElement me : getMembers()) {
+			if (me instanceof MockService) {
+				services.add((MockService)me);
+			}
+		}
+		return services;
+	}
+
+	// model
     private int getServiceId(String svcName) {
         int serviceId;
         if (m_nameToIdMap.containsKey(svcName)) {
@@ -450,6 +463,13 @@ public class MockNetwork extends MockContainer<MockContainer<?,?>,MockElement> {
         return counter.getCount();
     }
 
+    public String toString() {
+    	return new ToStringBuilder(this)
+    		.append("critical-service", m_criticalService)
+    		.append("members", getMembers())
+    		.toString();
+    }
+    
     /**
      * <p>createStandardNetwork</p>
      */

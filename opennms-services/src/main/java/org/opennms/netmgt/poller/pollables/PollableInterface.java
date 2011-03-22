@@ -39,6 +39,7 @@ import java.net.InetAddress;
 import java.util.Date;
 import java.util.concurrent.Callable;
 
+import org.opennms.core.utils.InetAddressUtils;
 import org.opennms.netmgt.EventConstants;
 import org.opennms.netmgt.model.PollStatus;
 import org.opennms.netmgt.xml.event.Event;
@@ -101,7 +102,7 @@ public class PollableInterface extends PollableContainer {
      * @return a {@link java.lang.String} object.
      */
     public String getIpAddr() {
-        return m_addr.getHostAddress();
+        return InetAddressUtils.str(m_addr);
     }
     
     /**

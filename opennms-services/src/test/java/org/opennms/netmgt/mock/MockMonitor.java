@@ -32,6 +32,7 @@
 
 package org.opennms.netmgt.mock;
 
+import java.util.List;
 import java.util.Map;
 
 import org.opennms.core.utils.LogUtils;
@@ -65,6 +66,8 @@ public class MockMonitor implements ServiceMonitor {
             int nodeId = monSvc.getNodeId();
             String ipAddr = monSvc.getIpAddr();
             MockService svc = m_network.getService(nodeId, ipAddr, m_svcName);
+            final List<MockElement> elements = m_network.getMembers();
+            LogUtils.debugf(this, "elements = %s", elements);
             if (svc == null) {
                 LogUtils.errorf(this, "Invalid Poll: %s/%s", ipAddr, m_svcName);
                 m_network.receivedInvalidPoll(ipAddr, m_svcName);

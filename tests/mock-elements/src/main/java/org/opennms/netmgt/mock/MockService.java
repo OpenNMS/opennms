@@ -38,6 +38,7 @@ import java.net.InetAddress;
 import java.util.ArrayList;
 import java.util.List;
 
+import org.apache.commons.lang.builder.ToStringBuilder;
 import org.opennms.netmgt.model.PollStatus;
 import org.opennms.netmgt.poller.InetNetworkInterface;
 import org.opennms.netmgt.poller.MonitoredService;
@@ -307,7 +308,11 @@ public class MockService extends MockElement implements MonitoredService {
      * @return a {@link java.lang.String} object.
      */
     public String toString() {
-        return "Svc["+getNodeLabel()+"/"+getIpAddr()+"/"+getSvcName()+"]";
+    	return new ToStringBuilder(this)
+    		.append("nodeLabel", getNodeLabel())
+    		.append("ipAddr", getIpAddr())
+    		.append("service", getSvcName())
+    		.toString();
     }
 
     /**
