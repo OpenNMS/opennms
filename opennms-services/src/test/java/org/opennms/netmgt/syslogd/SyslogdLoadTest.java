@@ -250,7 +250,7 @@ public class SyslogdLoadTest extends OpenNMSTestCase {
         Events events = new Events();
         eventLog.setEvents(events);
         
-        int eventCount = 1;
+        int eventCount = 1000;
         m_eventCounter.setAnticipated(eventCount);
 
         for (int i = 0; i < eventCount; i++) {
