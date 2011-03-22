@@ -76,7 +76,7 @@ public class JaxbUtils {
 		}
 	}
 
-	public static <T> T unmarshalWithTranslatedExceptions(final Class<T> clazz, final Resource resource) {
+	public static <T> T unmarshal(final Class<T> clazz, final Resource resource) {
 		try {
 			return unmarshal(clazz, new InputSource(resource.getInputStream()));
 		} catch (final IOException e) {
