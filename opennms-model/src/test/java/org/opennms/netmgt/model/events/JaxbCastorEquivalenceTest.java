@@ -23,6 +23,7 @@ import org.custommonkey.xmlunit.Difference;
 import org.custommonkey.xmlunit.XMLUnit;
 import org.exolab.castor.xml.Marshaller;
 import org.junit.Before;
+import org.junit.Ignore;
 import org.junit.Test;
 import org.opennms.netmgt.xml.SimpleNamespaceFilter;
 import org.opennms.netmgt.xml.event.AlarmData;
@@ -57,6 +58,7 @@ public class JaxbCastorEquivalenceTest {
 	}
 
 	@Test
+	@Ignore("castor-specific things have been removed from the classes now")
 	public void marshalEvent() throws Exception {
 		final Event event = getFullEvent();
 
