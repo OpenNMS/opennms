@@ -40,6 +40,7 @@ import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
+import org.opennms.core.utils.InetAddressUtils;
 import org.opennms.mock.snmp.MockSnmpAgent;
 import org.opennms.netmgt.provision.DetectorMonitor;
 import org.opennms.netmgt.provision.ServiceDetector;
@@ -72,7 +73,7 @@ public class SnmpDetectorTest implements ApplicationContextAware {
     public void setUp() throws InterruptedException, UnknownHostException {
         MockLogAppender.setupLogging();
 
-        m_testIpAddress = InetAddress.getByName(TEST_IP_ADDRESS);
+        m_testIpAddress = InetAddressUtils.addr(TEST_IP_ADDRESS);
         m_detectorMonitor = new NullDetectorMonitor();
 
         if(m_detector == null) {

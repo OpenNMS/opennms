@@ -34,10 +34,11 @@
 package org.opennms.netmgt.poller.monitors;
 
 import static org.junit.Assert.assertEquals;
-import java.net.InetAddress;
+
 import java.net.UnknownHostException;
 import java.util.HashMap;
 
+import org.opennms.core.utils.InetAddressUtils;
 import org.opennms.netmgt.model.PollStatus;
 import org.opennms.netmgt.passive.PassiveStatusKeeper;
 import org.opennms.netmgt.passive.PassiveStatusKeeperTest;
@@ -69,7 +70,7 @@ public class PassiveServiceMonitorTest extends PassiveStatusKeeperTest {
     }
 
     private PollableService createMonitoredService(int nodeId, String nodeLabel, String ipAddr, String serviceName) throws UnknownHostException {
-        return new PollableService(new PollableInterface(new PollableNode(new PollableNetwork(new MockPollContext()), nodeId, nodeLabel), InetAddress.getByName(ipAddr)), serviceName);
+        return new PollableService(new PollableInterface(new PollableNode(new PollableNetwork(new MockPollContext()), nodeId, nodeLabel), InetAddressUtils.addr(ipAddr)), serviceName);
     }
 
 }

@@ -521,7 +521,7 @@ public abstract class Util extends Object {
         EventProxy proxy = null;
 
         try {
-            proxyAddr = InetAddress.getByName(proxyHostName);
+            proxyAddr = InetAddressUtils.addr(proxyHostName);
         } catch (UnknownHostException e) {
             proxyAddr = null;
         }

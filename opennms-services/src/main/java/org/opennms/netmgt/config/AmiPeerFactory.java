@@ -413,20 +413,16 @@ public class AmiPeerFactory extends PeerFactory {
                 // check the specifics first
                 for (String saddr : def.getSpecificCollection()) {
                     saddr = saddr.trim();
-                    try {
-                        final InetAddress addr = InetAddress.getByName(saddr);
-                        if (addr.equals(agentConfig.getAddress())) {
-                            setAmiAgentConfig(agentConfig, def);
-                            break DEFLOOP;
-                        }
-                    } catch (final UnknownHostException e) {
-                        LogUtils.warnf(this, e, "AmiPeerFactory: could not convert host %s to InetAddress", saddr);
+                    final InetAddress addr = InetAddressUtils.addr(saddr);
+                    if (addr.equals(agentConfig.getAddress())) {
+                        setAmiAgentConfig(agentConfig, def);
+                        break DEFLOOP;
                     }
                 }
     
                 // check the ranges
                 for (final Range rng : def.getRangeCollection()) {
-                    if (InetAddressUtils.isInetAddressInRange(agentConfig.getAddress().getHostAddress(), rng.getBegin(), rng.getEnd())) {
+                    if (InetAddressUtils.isInetAddressInRange(InetAddressUtils.str(agentConfig.getAddress()), rng.getBegin(), rng.getEnd())) {
                         setAmiAgentConfig(agentConfig, def );
                         break DEFLOOP;
                     }
@@ -434,7 +430,7 @@ public class AmiPeerFactory extends PeerFactory {
                 
                 // check the matching IP expressions
                 for (final String ipMatch : def.getIpMatchCollection()) {
-                    if (IPLike.matches(agentInetAddress.getHostAddress(), ipMatch)) {
+                    if (IPLike.matches(InetAddressUtils.str(agentInetAddress), ipMatch)) {
                         setAmiAgentConfig(agentConfig, def);
                         break DEFLOOP;
                     }

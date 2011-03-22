@@ -34,13 +34,13 @@ package org.opennms.netmgt.provision.detector;
 import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertTrue;
 
-import java.net.InetAddress;
 import java.net.UnknownHostException;
 
 import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
+import org.opennms.core.utils.InetAddressUtils;
 import org.opennms.mock.snmp.MockSnmpAgent;
 import org.opennms.netmgt.provision.detector.snmp.HostResourceSWRunDetector;
 import org.opennms.netmgt.provision.support.NullDetectorMonitor;
@@ -88,13 +88,13 @@ public class HostResourceSWRunDetectorTest implements ApplicationContextAware {
     
     @Test
     public void testDetectorFail() throws UnknownHostException{
-        assertFalse(m_detector.isServiceDetected(InetAddress.getByName(TEST_IP_ADDRESS), new NullDetectorMonitor()));
+        assertFalse(m_detector.isServiceDetected(InetAddressUtils.addr(TEST_IP_ADDRESS), new NullDetectorMonitor()));
     }
     
     @Test
     public void testDetectorSuccess() throws UnknownHostException{
         m_detector.setServiceToDetect("WindowServer");
-        assertTrue(m_detector.isServiceDetected(InetAddress.getByName(TEST_IP_ADDRESS), new NullDetectorMonitor()));
+        assertTrue(m_detector.isServiceDetected(InetAddressUtils.addr(TEST_IP_ADDRESS), new NullDetectorMonitor()));
     }
     
     public void setApplicationContext(ApplicationContext applicationContext) throws BeansException {
@@ -105,6 +105,6 @@ public class HostResourceSWRunDetectorTest implements ApplicationContextAware {
     @Test
     public void testLackOfCaseSensitivity() throws UnknownHostException{
         m_detector.setServiceToDetect("Omnitek XR.exe");
-        assertTrue(m_detector.isServiceDetected(InetAddress.getByName(TEST_IP_ADDRESS), new NullDetectorMonitor()));
+        assertTrue(m_detector.isServiceDetected(InetAddressUtils.addr(TEST_IP_ADDRESS), new NullDetectorMonitor()));
     }
 }

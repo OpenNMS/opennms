@@ -634,7 +634,7 @@ public class Collectd extends AbstractServiceDaemon implements
      */
     private boolean alreadyScheduled(OnmsIpInterface iface,
             CollectionSpecification spec) {
-        String ipAddress = iface.getIpAddressAsString();
+        String ipAddress = InetAddressUtils.str(iface.getIpAddress());
         String svcName = spec.getServiceName();
         String pkgName = spec.getPackageName();
         StringBuffer sb;
@@ -650,7 +650,7 @@ public class Collectd extends AbstractServiceDaemon implements
         synchronized (m_collectableServices) {
         	for (CollectableService cSvc : m_collectableServices) {
                 InetAddress addr = (InetAddress) cSvc.getAddress();
-                if (addr.getHostAddress().equals(ipAddress)
+                if (InetAddressUtils.str(addr).equals(ipAddress)
                         && cSvc.getPackageName().equals(pkgName)
                         && cSvc.getServiceName().equals(svcName)) {
                     isScheduled = true;
@@ -962,7 +962,7 @@ public class Collectd extends AbstractServiceDaemon implements
                 cSvc = iter.next();
 
                 InetAddress addr = (InetAddress) cSvc.getAddress();
-                if (addr.getHostAddress().equals(event.getInterface())) {
+                if (InetAddressUtils.str(addr).equals(event.getInterface())) {
                     synchronized (cSvc) {
                         // Got a match!
                         if (log.isDebugEnabled())
@@ -1208,7 +1208,8 @@ public class Collectd extends AbstractServiceDaemon implements
                     cSvc = liter.next();
 
                     InetAddress addr = (InetAddress) cSvc.getAddress();
-                    if (addr.getHostAddress().equals(oldPrimaryIfAddr)) {
+                    oldPrimaryIfAddr = InetAddressUtils.str(InetAddressUtils.addr(oldPrimaryIfAddr));
+                    if (InetAddressUtils.str(addr).equals(oldPrimaryIfAddr)) {
                         synchronized (cSvc) {
                             // Got a match! Retrieve the CollectorUpdates
                             // object
@@ -1287,10 +1288,10 @@ public class Collectd extends AbstractServiceDaemon implements
                 InetAddress addr = (InetAddress) cSvc.getAddress();
                 if (log.isDebugEnabled())
                     log.debug("Comparing CollectableService ip address = "
-                            + addr.getHostAddress()
+                            + InetAddressUtils.str(addr)
                             + " and event ip interface = "
                             + ipAddress);
-                if (addr.getHostAddress().equals(ipAddress)) {
+                if (InetAddressUtils.str(addr).equals(ipAddress)) {
                     synchronized (cSvc) {
                     	if (iface == null) {
                             iface = getIpInterface(nodeid.intValue(), ipAddress);

@@ -38,7 +38,6 @@ package org.opennms.netmgt.poller.monitors;
 import java.io.BufferedReader;
 import java.io.InputStreamReader;
 import java.lang.reflect.UndeclaredThrowableException;
-import java.net.InetAddress;
 import java.net.ServerSocket;
 import java.net.Socket;
 import java.net.UnknownHostException;
@@ -47,6 +46,7 @@ import java.util.Map;
 
 import junit.framework.TestCase;
 
+import org.opennms.core.utils.InetAddressUtils;
 import org.opennms.netmgt.mock.MockMonitoredService;
 import org.opennms.netmgt.model.PollStatus;
 
@@ -79,13 +79,13 @@ public class FtpMonitorTest extends TestCase {
 
     // Let's not depend on external systems if we don't have to
     public void SKIPtestMonitorOnOpennmsOrgFtpSuccess() throws Exception {
-        PollStatus status = m_monitor.poll(new MockMonitoredService(1, "Node One", InetAddress.getByName("ftp.opennms.org"), "FTP"), new HashMap<String,Object>());
+        PollStatus status = m_monitor.poll(new MockMonitoredService(1, "Node One", InetAddressUtils.addr("ftp.opennms.org"), "FTP"), new HashMap<String,Object>());
         assertTrue("status should be available (Up), but is: " + status, status.isAvailable());
     }
 
     // Let's not depend on external systems if we don't have to
     public void SKIPtestMonitorFailureOnRandomFtp() throws Exception {
-        PollStatus status = m_monitor.poll(new MockMonitoredService(1, "Node One", InetAddress.getByName("1.1.1.1"), "FTP"), new HashMap<String,Object>());
+        PollStatus status = m_monitor.poll(new MockMonitoredService(1, "Node One", InetAddressUtils.addr("1.1.1.1"), "FTP"), new HashMap<String,Object>());
         assertTrue("status should be unavailable (Down), but is: " + status, status.isUnavailable());
     }
 

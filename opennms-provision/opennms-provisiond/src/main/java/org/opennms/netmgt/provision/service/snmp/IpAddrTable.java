@@ -44,6 +44,7 @@ import java.util.LinkedHashSet;
 import java.util.Set;
 import java.util.TreeSet;
 
+import org.opennms.core.utils.InetAddressUtils;
 import org.opennms.core.utils.ThreadCategory;
 import org.opennms.netmgt.model.OnmsIpInterface;
 import org.opennms.netmgt.model.OnmsNode;
@@ -63,29 +64,7 @@ import org.opennms.netmgt.snmp.SnmpObjId;
  * @author <A HREF="mailto:jamesz@opennms.org">James Zuo </A>
  * @author <A HREF="mailto:sowmya@opennms.org">Sowmya </A>
  * @author <A HREF="mailto:weave@oculan.com">Weave </A>
- * @author <A HREF="http://www.opennms.org/">OpenNMS </A>
- * @author <A HREF="mailto:brozow@opennms.org">Matt Brozowski</A>
- * @author <A HREF="mailto:jamesz@opennms.org">James Zuo </A>
- * @author <A HREF="mailto:sowmya@opennms.org">Sowmya </A>
- * @author <A HREF="mailto:weave@oculan.com">Weave </A>
- * @author <A HREF="http://www.opennms.org/">OpenNMS </A>
- * @author <A HREF="mailto:brozow@opennms.org">Matt Brozowski</A>
- * @author <A HREF="mailto:jamesz@opennms.org">James Zuo </A>
- * @author <A HREF="mailto:sowmya@opennms.org">Sowmya </A>
- * @author <A HREF="mailto:weave@oculan.com">Weave </A>
- * @author <A HREF="http://www.opennms.org/">OpenNMS </A>
- * @author <A HREF="mailto:brozow@opennms.org">Matt Brozowski</A>
- * @author <A HREF="mailto:jamesz@opennms.org">James Zuo </A>
- * @author <A HREF="mailto:sowmya@opennms.org">Sowmya </A>
- * @author <A HREF="mailto:weave@oculan.com">Weave </A>
- * @author <A HREF="http://www.opennms.org/">OpenNMS </A>
- * @author <A HREF="mailto:brozow@opennms.org">Matt Brozowski</A>
- * @author <A HREF="mailto:jamesz@opennms.org">James Zuo </A>
- * @author <A HREF="mailto:sowmya@opennms.org">Sowmya </A>
- * @author <A HREF="mailto:weave@oculan.com">Weave </A>
- * @author <A HREF="http://www.opennms.org/">OpenNMS </A>
  * @see <A HREF="http://www.ietf.org/rfc/rfc1213.txt">RFC1213 </A>
- * @version $Id: $
  */
 public class IpAddrTable extends SnmpTable<IpAddrTableEntry> {
 
@@ -217,7 +196,7 @@ public class IpAddrTable extends SnmpTable<IpAddrTableEntry> {
      * @return a {@link org.opennms.netmgt.provision.service.snmp.IpAddrTableEntry} object.
      */
     public IpAddrTableEntry getEntry(InetAddress address) {
-        return getEntry(new SnmpInstId(address.getHostAddress()));
+        return getEntry(new SnmpInstId(InetAddressUtils.str(address)));
     }
 
     /**
@@ -236,7 +215,7 @@ public class IpAddrTable extends SnmpTable<IpAddrTableEntry> {
      */
     public void updateIpInterfaceData(OnmsNode node) {
         for(IpAddrTableEntry entry : getEntries()) {
-            updateIpInterfaceData(node, entry.getIpAdEntAddr().getHostAddress());
+            updateIpInterfaceData(node, InetAddressUtils.str(entry.getIpAdEntAddr()));
         }
     }
 
@@ -268,7 +247,7 @@ public class IpAddrTable extends SnmpTable<IpAddrTableEntry> {
 
             InetAddress mask = getNetMask(inetAddr);
             if (mask != null) {
-                snmpIf.setNetMask(mask.getHostAddress());
+                snmpIf.setNetMask(InetAddressUtils.str(mask));
             }
 
             snmpIf.setCollectionEnabled(true);

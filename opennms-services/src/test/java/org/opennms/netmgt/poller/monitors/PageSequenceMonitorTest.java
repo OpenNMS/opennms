@@ -54,6 +54,7 @@ import org.junit.runner.RunWith;
 import org.opennms.core.test.JUnitHttpServerExecutionListener;
 import org.opennms.core.test.annotations.JUnitHttpServer;
 import org.opennms.core.test.annotations.Webapp;
+import org.opennms.core.utils.InetAddressUtils;
 import org.opennms.netmgt.dao.db.OpenNMSConfigurationExecutionListener;
 import org.opennms.netmgt.mock.MockMonitoredService;
 import org.opennms.netmgt.model.PollStatus;
@@ -96,7 +97,7 @@ public class PageSequenceMonitorTest {
 	}
     
     protected MonitoredService getHttpService(String hostname) throws Exception {
-    	return getHttpService(hostname, InetAddress.getByName(hostname));
+    	return getHttpService(hostname, InetAddressUtils.addr(hostname));
     }
     
     protected MonitoredService getHttpService(String hostname, InetAddress inetAddress) throws Exception {
@@ -123,7 +124,7 @@ public class PageSequenceMonitorTest {
         setPageSequenceParam(null);
         m_params.put("timeout", "500");
         m_params.put("retries", "0");
-		PollStatus notLikely = m_monitor.poll(getHttpService("bogus", InetAddress.getByName("1.1.1.1")), m_params);
+		PollStatus notLikely = m_monitor.poll(getHttpService("bogus", InetAddressUtils.addr("1.1.1.1")), m_params);
 		assertTrue("should not be available", notLikely.isUnavailable());
     }
 

@@ -42,6 +42,7 @@ import java.util.*;
 import java.util.concurrent.CountDownLatch;
 
 import org.opennms.core.test.ConfigurationException;
+import org.opennms.core.utils.InetAddressUtils;
 import org.opennms.core.utils.LogUtils;
 import org.xbill.DNS.*;
 
@@ -224,7 +225,7 @@ public class DNSServer {
     final List<Stoppable> m_activeListeners = new ArrayList<Stoppable>();
 
     private static String addrport(final InetAddress addr, final int port) {
-        return addr.getHostAddress() + "#" + port;
+    	return InetAddressUtils.str(addr) + "#" + port;
     }
 
     public DNSServer(final String conffile) throws IOException, ZoneTransferException, ConfigurationException {

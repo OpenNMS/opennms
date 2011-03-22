@@ -57,6 +57,7 @@ import javax.management.ObjectName;
 import javax.management.openmbean.CompositeData;
 
 import org.opennms.core.utils.DBUtils;
+import org.opennms.core.utils.InetAddressUtils;
 import org.opennms.core.utils.LogUtils;
 import org.opennms.core.utils.ParameterMap;
 import org.opennms.netmgt.config.BeanInfo;
@@ -113,9 +114,6 @@ import org.opennms.protocols.jmx.connectors.ConnectionWrapper;
  *
  * @author <a href="mailto:mike@opennms.org">Mike Jamison</a>
  * @author <a href="http://www.opennms.org/">OpenNMS</a>
- * @author <a href="mailto:mike@opennms.org">Mike Jamison</a>
- * @author <a href="http://www.opennms.org/">OpenNMS</a>
- * @version $Id: $
  */
 public abstract class JMXCollector implements ServiceCollector {
 
@@ -247,7 +245,7 @@ public abstract class JMXCollector implements ServiceCollector {
         // Retrieve the name of the JMX data collector
         String collectionName = ParameterMap.getKeyedString(parameters, "collection", serviceName);
 
-        final String hostAddress = ipAddr.getHostAddress();
+        final String hostAddress = InetAddressUtils.str(ipAddr);
         LogUtils.debugf(this, "initialize: InetAddress=%s, collectionName=%s", hostAddress, collectionName);
 
         java.sql.Connection dbConn = null;
@@ -358,7 +356,7 @@ public abstract class JMXCollector implements ServiceCollector {
         
         ConnectionWrapper connection = null;
 
-        LogUtils.debugf(this, "collecting %s on node ID %d", ipaddr.getHostAddress(), nodeInfo.getNodeId());
+        LogUtils.debugf(this, "collecting %s on node ID %d", InetAddressUtils.str(ipaddr), nodeInfo.getNodeId());
 
         try {
             connection = getMBeanServerConnection(map, ipaddr);

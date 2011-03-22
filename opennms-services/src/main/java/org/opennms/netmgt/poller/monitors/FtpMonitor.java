@@ -60,6 +60,7 @@ import java.net.Socket;
 import java.util.Map;
 
 import org.apache.log4j.Level;
+import org.opennms.core.utils.InetAddressUtils;
 import org.opennms.core.utils.ParameterMap;
 import org.opennms.core.utils.TimeoutTracker;
 import org.opennms.netmgt.capsd.plugins.FtpResponse;
@@ -77,9 +78,6 @@ import org.opennms.netmgt.poller.NetworkInterfaceNotSupportedException;
  *
  * @author <A HREF="mailto:tarus@opennms.org">Tarus Balog </A>
  * @author <A HREF="http://www.opennms.org/">OpenNMS </A>
- * @author <A HREF="mailto:tarus@opennms.org">Tarus Balog </A>
- * @author <A HREF="http://www.opennms.org/">OpenNMS </A>
- * @version $Id: $
  */
 @Distributable
 final public class FtpMonitor extends AbstractServiceMonitor {
@@ -151,7 +149,7 @@ final public class FtpMonitor extends AbstractServiceMonitor {
         for (tracker.reset(); tracker.shouldRetry() && !serviceStatus.isAvailable(); tracker.nextAttempt()) {
 
             if (log().isDebugEnabled()) {
-                log().debug("FtpMonitor.poll: Polling interface: " + ipv4Addr.getHostAddress() + tracker);
+                log().debug("FtpMonitor.poll: Polling interface: " + InetAddressUtils.str(ipv4Addr) + tracker);
             }
 
             Socket socket = null;

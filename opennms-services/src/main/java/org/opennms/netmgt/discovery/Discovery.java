@@ -228,7 +228,7 @@ public class Discovery extends AbstractServiceDaemon {
     }
 
     private boolean isAlreadyDiscovered(InetAddress address) {
-        if (m_alreadyDiscovered.contains(address.getHostAddress())) {
+        if (m_alreadyDiscovered.contains(InetAddressUtils.str(address))) {
             return true;
         }
         return false;

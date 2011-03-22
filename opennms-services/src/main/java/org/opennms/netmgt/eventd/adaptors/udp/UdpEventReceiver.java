@@ -51,6 +51,7 @@ import javax.management.InstanceNotFoundException;
 import javax.management.MalformedObjectNameException;
 import javax.management.ObjectName;
 
+import org.opennms.core.utils.InetAddressUtils;
 import org.opennms.core.utils.ThreadCategory;
 import org.opennms.netmgt.eventd.adaptors.EventHandler;
 import org.opennms.netmgt.eventd.adaptors.EventHandlerMBeanProxy;
@@ -171,7 +172,7 @@ public final class UdpEventReceiver implements EventReceiver, UdpEventReceiverMB
         m_status = STARTING;
 
         try {
-            InetAddress address = "*".equals(m_ipAddress) ? null : InetAddress.getByName(m_ipAddress);
+            InetAddress address = "*".equals(m_ipAddress) ? null : InetAddressUtils.addr(m_ipAddress);
             m_dgSock = new DatagramSocket(m_dgPort, address);
 
             m_receiver = new UdpReceiver(m_dgSock, m_eventsIn);

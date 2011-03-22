@@ -51,6 +51,7 @@ import java.text.ParseException;
 import java.util.Date;
 
 import org.opennms.core.utils.DBUtils;
+import org.opennms.core.utils.InetAddressUtils;
 import org.opennms.core.utils.ThreadCategory;
 import org.opennms.netmgt.EventConstants;
 import org.opennms.netmgt.config.DataSourceFactory;
@@ -270,7 +271,7 @@ public final class DbIfServiceEntry {
 
             int ndx = 1;
             stmt.setLong(ndx++, m_nodeId);
-            stmt.setString(ndx++, m_ipAddr.getHostAddress());
+            stmt.setString(ndx++, InetAddressUtils.str(m_ipAddr));
             stmt.setInt(ndx++, m_serviceId);
 
             if ((m_changed & CHANGED_IFINDEX) == CHANGED_IFINDEX)
@@ -318,7 +319,7 @@ public final class DbIfServiceEntry {
                 delStmt = c.prepareStatement(delCmd);
                 d.watch(delStmt);
                 delStmt.setLong(1, m_nodeId);
-                delStmt.setString(2, m_ipAddr.getHostAddress());
+                delStmt.setString(2, InetAddressUtils.str(m_ipAddr));
                 delStmt.setInt(3, m_serviceId);
 
                 rc = delStmt.executeUpdate();
@@ -444,7 +445,7 @@ public final class DbIfServiceEntry {
             }
 
             stmt.setLong(ndx++, m_nodeId);
-            stmt.setString(ndx++, m_ipAddr.getHostAddress());
+            stmt.setString(ndx++, InetAddressUtils.str(m_ipAddr));
             stmt.setInt(ndx++, m_serviceId);
 
             // Run the insert
@@ -485,7 +486,7 @@ public final class DbIfServiceEntry {
             stmt = c.prepareStatement(SQL_LOAD_REC);
             d.watch(stmt);
             stmt.setLong(1, m_nodeId);
-            stmt.setString(2, m_ipAddr.getHostAddress());
+            stmt.setString(2, InetAddressUtils.str(m_ipAddr));
             stmt.setInt(3, m_serviceId);
 
             // Run the insert
@@ -1047,7 +1048,7 @@ public final class DbIfServiceEntry {
      */
     public static void main(String[] args) {
         try {
-            DbIfServiceEntry entry = DbIfServiceEntry.get(Integer.parseInt(args[0]), InetAddress.getByName(args[1]), Integer.parseInt(args[2]));
+            DbIfServiceEntry entry = DbIfServiceEntry.get(Integer.parseInt(args[0]), InetAddressUtils.addr(args[1]), Integer.parseInt(args[2]));
             System.out.println(entry.toString());
         } catch (Throwable t) {
             t.printStackTrace();

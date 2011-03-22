@@ -60,6 +60,8 @@ import org.exolab.castor.xml.MarshalException;
 import org.exolab.castor.xml.Marshaller;
 import org.exolab.castor.xml.ValidationException;
 import org.opennms.core.utils.DBUtils;
+import org.opennms.core.utils.InetAddressUtils;
+import org.opennms.core.utils.LogUtils;
 import org.opennms.core.utils.ThreadCategory;
 import org.opennms.netmgt.ConfigFileConstants;
 import org.opennms.netmgt.config.vulnscand.Excludes;
@@ -67,7 +69,6 @@ import org.opennms.netmgt.config.vulnscand.Range;
 import org.opennms.netmgt.config.vulnscand.ScanLevel;
 import org.opennms.netmgt.config.vulnscand.VulnscandConfiguration;
 import org.opennms.netmgt.dao.castor.CastorUtils;
-import org.opennms.protocols.ip.IPv4Address;
 import org.springframework.core.io.FileSystemResource;
 
 /**
@@ -81,20 +82,6 @@ import org.springframework.core.io.FileSystemResource;
  * @author <a href="mailto:seth@opennms.org">Seth Leger </a>
  * @author <a href="mailto:mike@opennms.org">Mike Davidson </a>
  * @author <a href="mailto:weave@oculan.com">Weave </a>
- * @author <a href="http://www.opennms.org/">OpenNMS </a>
- * @author <a href="mailto:seth@opennms.org">Seth Leger </a>
- * @author <a href="mailto:mike@opennms.org">Mike Davidson </a>
- * @author <a href="mailto:weave@oculan.com">Weave </a>
- * @author <a href="http://www.opennms.org/">OpenNMS </a>
- * @author <a href="mailto:seth@opennms.org">Seth Leger </a>
- * @author <a href="mailto:mike@opennms.org">Mike Davidson </a>
- * @author <a href="mailto:weave@oculan.com">Weave </a>
- * @author <a href="http://www.opennms.org/">OpenNMS </a>
- * @author <a href="mailto:seth@opennms.org">Seth Leger </a>
- * @author <a href="mailto:mike@opennms.org">Mike Davidson </a>
- * @author <a href="mailto:weave@oculan.com">Weave </a>
- * @author <a href="http://www.opennms.org/">OpenNMS </a>
- * @version $Id: $
  */
 public final class VulnscandConfigFactory {
     /**
@@ -304,7 +291,7 @@ public final class VulnscandConfigFactory {
         buf.append((int) ((address >>> 8) & 0xff)).append('.');
         buf.append((int) (address & 0xff));
 
-        return InetAddress.getByName(buf.toString());
+        return InetAddressUtils.addr(buf.toString());
     }
 
     /**
@@ -316,17 +303,16 @@ public final class VulnscandConfigFactory {
      * @throws java.sql.SQLException if any.
      */
     public static boolean isInterfaceInDB(Connection dbConn, InetAddress ifAddress) throws SQLException {
-        ThreadCategory log = ThreadCategory.getInstance(VulnscandConfigFactory.class);
-
         boolean result = false;
 
-        log.debug("isInterfaceInDB: attempting to lookup interface " + ifAddress.getHostAddress() + " in the database.");
+        final String hostAddress = InetAddressUtils.str(ifAddress);
+		LogUtils.debugf(VulnscandConfigFactory.class, "isInterfaceInDB: attempting to lookup interface %s in the database.", hostAddress);
 
         DBUtils d = new DBUtils(VulnscandConfigFactory.class);
         try {
             PreparedStatement s = dbConn.prepareStatement(RETRIEVE_IPADDR_SQL);
             d.watch(s);
-            s.setString(1, ifAddress.getHostAddress());
+            s.setString(1, hostAddress);
     
             ResultSet rs = s.executeQuery();
             d.watch(rs);
@@ -348,9 +334,8 @@ public final class VulnscandConfigFactory {
      * @throws java.sql.SQLException if any.
      */
     public static int getInterfaceDbNodeId(Connection dbConn, InetAddress ifAddress) throws SQLException {
-        ThreadCategory log = ThreadCategory.getInstance(VulnscandConfigFactory.class);
-
-        log.debug("getInterfaceDbNodeId: attempting to lookup interface " + ifAddress.getHostAddress() + " in the database.");
+        final String hostAddress = InetAddressUtils.str(ifAddress);
+		LogUtils.debugf(VulnscandConfigFactory.class, "getInterfaceDbNodeId: attempting to lookup interface %s in the database.", hostAddress);
 
         // Set connection as read-only
         //
@@ -361,7 +346,7 @@ public final class VulnscandConfigFactory {
         try {
             PreparedStatement s = dbConn.prepareStatement(RETRIEVE_IPADDR_NODEID_SQL);
             d.watch(s);
-            s.setString(1, ifAddress.getHostAddress());
+            s.setString(1, hostAddress);
     
             ResultSet rs = s.executeQuery();
             d.watch(rs);
@@ -404,7 +389,7 @@ public final class VulnscandConfigFactory {
      * @param specific a {@link java.net.InetAddress} object.
      */
     public void addSpecific(ScanLevel level, InetAddress specific) {
-        level.addSpecific(specific.getHostAddress());
+        level.addSpecific(InetAddressUtils.str(specific));
     }
 
     /**
@@ -427,8 +412,8 @@ public final class VulnscandConfigFactory {
      */
     public void addRange(ScanLevel level, InetAddress begin, InetAddress end) {
         Range addMe = new Range();
-        addMe.setBegin(begin.getHostAddress());
-        addMe.setEnd(end.getHostAddress());
+        addMe.setBegin(InetAddressUtils.str(begin));
+        addMe.setEnd(InetAddressUtils.str(end));
 
         level.addRange(addMe);
     }
@@ -450,7 +435,7 @@ public final class VulnscandConfigFactory {
      * @param specific a {@link java.net.InetAddress} object.
      */
     public void removeSpecific(ScanLevel level, InetAddress specific) {
-        level.removeSpecific(specific.getHostAddress());
+        level.removeSpecific(InetAddressUtils.str(specific));
     }
 
     /**
@@ -473,8 +458,8 @@ public final class VulnscandConfigFactory {
      */
     public void removeRange(ScanLevel level, InetAddress begin, InetAddress end) {
         Range removeMe = new Range();
-        removeMe.setBegin(begin.getHostAddress());
-        removeMe.setEnd(end.getHostAddress());
+        removeMe.setBegin(InetAddressUtils.str(begin));
+        removeMe.setEnd(InetAddressUtils.str(end));
 
         level.removeRange(removeMe);
     }
@@ -517,11 +502,11 @@ public final class VulnscandConfigFactory {
         Enumeration<String> specifics = level.enumerateSpecific();
         while (specifics.hasMoreElements()) {
             String current = specifics.nextElement();
-            try {
-                retval.add(InetAddress.getByName(current));
-            } catch (UnknownHostException uhE) {
-                ThreadCategory.getInstance().warn("Failed to convert address: " + current, uhE);
+            final InetAddress addr = InetAddressUtils.addr(current);
+            if (addr == null) {
+                ThreadCategory.getInstance().warn("Failed to convert address: " + current);
             }
+			retval.add(addr);
         }
 
         return retval;
@@ -561,7 +546,7 @@ public final class VulnscandConfigFactory {
                         String current = e.nextElement();
                         log.debug("excludes: Specific: " + current);
                         // try {
-                            //m_excludes.add(InetAddress.getByName(current));
+                            //m_excludes.add(InetAddressUtils.addr(current));
                             //JOHAN - The Scheduler expects a String
                             m_excludes.add(current);
                         //} catch (UnknownHostException uhE) {
@@ -582,8 +567,8 @@ public final class VulnscandConfigFactory {
      */
     public void removeExcludeRange(InetAddress begin, InetAddress end) {
         Range removeMe = new Range();
-        removeMe.setBegin(begin.getHostAddress());
-        removeMe.setEnd(end.getHostAddress());
+        removeMe.setBegin(InetAddressUtils.str(begin));
+        removeMe.setEnd(InetAddressUtils.str(end));
 
         m_config.getExcludes().removeRange(removeMe);
     }
@@ -594,7 +579,7 @@ public final class VulnscandConfigFactory {
      * @param specific a {@link java.net.InetAddress} object.
      */
     public void removeExcludeSpecific(InetAddress specific) {
-        m_config.getExcludes().removeSpecific(specific.getHostAddress());
+        m_config.getExcludes().removeSpecific(InetAddressUtils.str(specific));
     }
 
     /**
@@ -639,12 +624,7 @@ public final class VulnscandConfigFactory {
      * @return a {@link java.net.InetAddress} object.
      */
     public InetAddress getServerAddress() {
-        try {
-            return (InetAddress.getByName(m_config.getServerAddress()));
-        } catch (UnknownHostException ex) {
-            ThreadCategory.getInstance(VulnscandConfigFactory.class).error("Invalid server in config file", ex);
-            return null;
-        }
+        return (InetAddressUtils.addr(m_config.getServerAddress()));
     }
 
     /**

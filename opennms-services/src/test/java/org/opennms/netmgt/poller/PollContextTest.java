@@ -39,11 +39,11 @@ import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertNull;
 import static org.junit.Assert.assertTrue;
 
-import java.net.InetAddress;
 import java.util.Date;
 
 import org.junit.Before;
 import org.junit.Test;
+import org.opennms.core.utils.InetAddressUtils;
 import org.opennms.netmgt.EventConstants;
 import org.opennms.netmgt.mock.EventAnticipator;
 import org.opennms.netmgt.mock.MockDatabase;
@@ -139,7 +139,7 @@ public class PollContextTest {
         m_pollContext.setQueryManager(qm);
         
        m_pNetwork = new PollableNetwork(m_pollContext);
-       m_pSvc = m_pNetwork.createService(1, "Router", InetAddress.getByName("192.168.1.1"), "ICMP");
+       m_pSvc = m_pNetwork.createService(1, "Router", InetAddressUtils.addr("192.168.1.1"), "ICMP");
 
     }
 
@@ -198,14 +198,14 @@ public class PollContextTest {
         assertNull(nodeEvent.getService());
         assertEquals("Unexpected time for event",date.toString(), EventConstants.parseToDate(nodeEvent.getTime()).toString());
         
-        Event ifEvent = m_pollContext.createEvent(EventConstants.INTERFACE_UP_EVENT_UEI, 1, InetAddress.getByName("192.168.1.1"), null, date, null);
+        Event ifEvent = m_pollContext.createEvent(EventConstants.INTERFACE_UP_EVENT_UEI, 1, InetAddressUtils.addr("192.168.1.1"), null, date, null);
         assertEquals(EventConstants.INTERFACE_UP_EVENT_UEI, ifEvent.getUei());
         assertEquals(Long.valueOf(1), ifEvent.getNodeid());
         assertEquals("192.168.1.1", ifEvent.getInterface());
         assertNull(ifEvent.getService());
         assertEquals("Unexpected time for event", date.toString(), EventConstants.parseToDate(ifEvent.getTime()).toString());
         
-        Event svcEvent = m_pollContext.createEvent(EventConstants.NODE_GAINED_SERVICE_EVENT_UEI, 1, InetAddress.getByName("192.168.1.1"), "ICMP", date, null);
+        Event svcEvent = m_pollContext.createEvent(EventConstants.NODE_GAINED_SERVICE_EVENT_UEI, 1, InetAddressUtils.addr("192.168.1.1"), "ICMP", date, null);
         assertEquals(EventConstants.NODE_GAINED_SERVICE_EVENT_UEI, svcEvent.getUei());
         assertEquals(Long.valueOf(1), svcEvent.getNodeid());
         assertEquals("192.168.1.1", svcEvent.getInterface());

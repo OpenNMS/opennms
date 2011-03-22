@@ -13,6 +13,7 @@ import org.junit.Before;
 import org.junit.Ignore;
 import org.junit.Test;
 import org.junit.runner.RunWith;
+import org.opennms.core.utils.InetAddressUtils;
 import org.opennms.netmgt.dhcpd.Dhcpd;
 import org.opennms.netmgt.provision.detector.dhcp.DhcpDetector;
 import org.opennms.netmgt.provision.support.NullDetectorMonitor;
@@ -63,7 +64,7 @@ public class DhcpDetectorTest{
 	public void testDetectorSuccess() throws  IOException, MarshalException, ValidationException{
 	    m_detector.setTimeout(5000);
 	    m_detector.init();
-	    assertTrue(m_detector.isServiceDetected(InetAddress.getByName(DHCP_SERVER_IP), new NullDetectorMonitor()));
+	    assertTrue(m_detector.isServiceDetected(InetAddressUtils.addr(DHCP_SERVER_IP), new NullDetectorMonitor()));
 	    
 	}
 	
@@ -71,7 +72,7 @@ public class DhcpDetectorTest{
 	@Test
 	public void testJdhcp() throws IOException{
 	    DHCPSocket mySocket = new DHCPSocket(68);
-	    DHCPMessage messageOut = new DHCPMessage(InetAddress.getByName(DHCP_SERVER_IP)); 
+	    DHCPMessage messageOut = new DHCPMessage(InetAddressUtils.addr(DHCP_SERVER_IP)); 
 	    
 	    // fill DHCPMessage object 
         messageOut.setOp((byte) 1);    

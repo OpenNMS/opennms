@@ -309,10 +309,11 @@ public abstract class JMXThresholder implements ServiceThresholder {
             // Prepare & execute the SQL statement to get the 'nodeid',
             // 'ifIndex' and 'isSnmpPrimary' fields from the ipInterface table.
             PreparedStatement stmt = null;
-            try {
+            final String hostAddress = InetAddressUtils.str(ipAddr);
+			try {
                 stmt = dbConn.prepareStatement(SQL_GET_NODEID);
                 d.watch(stmt);
-                stmt.setString(1, ipAddr.getHostAddress()); // interface address
+                stmt.setString(1, hostAddress); // interface address
                 ResultSet rs = stmt.executeQuery();
                 d.watch(rs);
                 if (rs.next()) {
@@ -325,7 +326,7 @@ public abstract class JMXThresholder implements ServiceThresholder {
                 if (log().isDebugEnabled()) {
                     log().debug("initialize: SQL exception!!: " + e, e);
                 }
-                throw new RuntimeException("SQL exception while attempting to retrieve node id for interface " + ipAddr.getHostAddress() + ": " + e, e);
+                throw new RuntimeException("SQL exception while attempting to retrieve node id for interface " + hostAddress + ": " + e, e);
             }
 
             // RuntimeException is thrown if any of the following are true:
@@ -333,7 +334,7 @@ public abstract class JMXThresholder implements ServiceThresholder {
             // - primaryIfIndex is invalid
             // - Interface is not the primary SNMP interface for the node
             if (nodeId == -1) {
-                throw new RuntimeException("Unable to retrieve node id for interface " + ipAddr.getHostAddress());
+                throw new RuntimeException("Unable to retrieve node id for interface " + hostAddress);
             }
 
         } finally {
@@ -345,14 +346,15 @@ public abstract class JMXThresholder implements ServiceThresholder {
         iface.setAttribute(NODE_ID_KEY, new Integer(nodeId));
 
         // Debug
-        if (log().isDebugEnabled()) {
-            log().debug("initialize: dumping node thresholds defined for " + ipAddr.getHostAddress() + "/" + groupName + ":");
+        final String hostAddress = InetAddressUtils.str(ipAddr);
+		if (log().isDebugEnabled()) {
+            log().debug("initialize: dumping node thresholds defined for " + hostAddress + "/" + groupName + ":");
             Iterator<ThresholdEntity> iter = nodeMap.values().iterator();
             while (iter.hasNext()) {
                 log().debug(iter.next().toString());
             }
 
-            log().debug("initialize: dumping interface thresholds defined for " + ipAddr.getHostAddress() + "/" + groupName + ":");
+            log().debug("initialize: dumping interface thresholds defined for " + hostAddress + "/" + groupName + ":");
             iter = baseIfMap.values().iterator();
             while (iter.hasNext()) {
                 log().debug(iter.next().toString());
@@ -360,7 +362,7 @@ public abstract class JMXThresholder implements ServiceThresholder {
         }
 
         if (log().isDebugEnabled()) {
-            log().debug("initialize: initialization completed for " + ipAddr.getHostAddress());
+            log().debug("initialize: initialization completed for " + hostAddress);
         }
         
         return;
@@ -399,8 +401,9 @@ public abstract class JMXThresholder implements ServiceThresholder {
         String groupName = ParameterMap.getKeyedString(parameters, "thresholding-group", serviceName);
         int    interval  = ParameterMap.getKeyedInteger(parameters, "interval", DEFAULT_INTERVAL);
 
-        if (log.isDebugEnabled()) {
-            log.debug("check: service= " + serviceName.toUpperCase() + " address= " + primary.getHostAddress() + " thresholding-group=" + groupName + " interval=" + interval + "mS range =  " + range + " mS");
+        final String hostAddress = InetAddressUtils.str(primary);
+		if (log.isDebugEnabled()) {
+            log.debug("check: service= " + serviceName.toUpperCase() + " address= " + hostAddress + " thresholding-group=" + groupName + " interval=" + interval + "mS range =  " + range + " mS");
         }
 
         // RRD Repository attribute
@@ -427,7 +430,7 @@ public abstract class JMXThresholder implements ServiceThresholder {
         File nodeDirectory = new File(repository + File.separator + nodeId.toString() + File.separator + dsDir);
         //if (!RrdFileConstants.isValidRRDNodeDir(nodeDirectory)) {
         //    log.error("Node directory for " + nodeDirectory + " does not exist or is not a valid RRD node directory.");
-        //    log.error("Threshold checking failed for primary " + serviceName + " interface " + primary.getHostAddress());
+        //    log.error("Threshold checking failed for primary " + serviceName + " interface " + InetAddressUtils.str(primary));
         //}
 
         // Create empty Events object to hold any threshold
@@ -440,7 +443,7 @@ public abstract class JMXThresholder implements ServiceThresholder {
         try {
             checkNodeDir(nodeDirectory, nodeId, primary, range, interval, dateStamp, nodeMap, events);
         } catch (IllegalArgumentException e) {
-            log.info("check: Threshold checking failed for primary " + serviceName + " interface " + primary.getHostAddress() + ": " + e, e);
+            log.info("check: Threshold checking failed for primary " + serviceName + " interface " + hostAddress + ": " + e, e);
             return THRESHOLDING_FAILED;
         }
 
@@ -460,7 +463,7 @@ public abstract class JMXThresholder implements ServiceThresholder {
                     // Found interface directory...
                     checkIfDir(files[i], nodeId, primary, interval, range, dateStamp, baseIfMap, allIfMap, events);
                 } catch (IllegalArgumentException e) {
-                    log.info("check: Threshold checking failed for primary " + serviceName + " interface " + primary.getHostAddress() + ": " + e, e);
+                    log.info("check: Threshold checking failed for primary " + serviceName + " interface " + hostAddress + ": " + e, e);
                     return THRESHOLDING_FAILED;
                 }
             }

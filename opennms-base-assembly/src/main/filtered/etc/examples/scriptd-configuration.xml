@@ -120,7 +120,7 @@
                 if (t_interface != null) {
                         retParmVal = event.getInterface();
                         try {
-                                java.net.InetAddress inet = java.net.InetAddress.getByName(retParmVal);
+                                java.net.InetAddress inet = java.net.InetAddressUtils.addr(retParmVal);
                                 retParmVal = inet.getHostName();
                             } catch (java.net.UnknownHostException e) {
                             }

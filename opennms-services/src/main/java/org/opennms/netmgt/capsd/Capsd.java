@@ -45,6 +45,7 @@ import java.net.UnknownHostException;
 import java.util.HashSet;
 
 import org.opennms.core.concurrent.RunnableConsumerThreadPool;
+import org.opennms.core.utils.InetAddressUtils;
 import org.opennms.core.utils.ThreadCategory;
 import org.opennms.netmgt.config.CapsdConfig;
 import org.opennms.netmgt.daemon.AbstractServiceDaemon;
@@ -129,7 +130,7 @@ public class Capsd extends AbstractServiceDaemon {
 
     static {
         try {
-            m_address = InetAddress.getLocalHost().getHostAddress();
+            m_address = InetAddressUtils.str(InetAddress.getLocalHost());
         } catch (UnknownHostException uhE) {
             m_address = "localhost";
             ThreadCategory.getInstance(LOG4J_CATEGORY).warn("Could not lookup the host name for the local host machine, address set to localhost", uhE);
@@ -266,8 +267,8 @@ public class Capsd extends AbstractServiceDaemon {
         String prefix = ThreadCategory.getPrefix();
         try {
             ThreadCategory.setPrefix(getName());
-            InetAddress addr = InetAddress.getByName(ifAddr);
-            SuspectEventProcessor proc = m_suspectEventProcessorFactory.createSuspectEventProcessor(addr.getHostAddress());
+            InetAddress addr = InetAddressUtils.addr(ifAddr);
+            SuspectEventProcessor proc = m_suspectEventProcessorFactory.createSuspectEventProcessor(InetAddressUtils.str(addr));
             proc.run();
         } finally {
             ThreadCategory.setPrefix(prefix);

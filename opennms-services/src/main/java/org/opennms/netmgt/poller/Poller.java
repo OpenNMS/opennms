@@ -43,7 +43,6 @@ package org.opennms.netmgt.poller;
 
 import java.lang.reflect.UndeclaredThrowableException;
 import java.net.InetAddress;
-import java.net.UnknownHostException;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.sql.Timestamp;
@@ -53,6 +52,7 @@ import java.util.concurrent.atomic.AtomicInteger;
 
 import javax.sql.DataSource;
 
+import org.opennms.core.utils.InetAddressUtils;
 import org.opennms.core.utils.ThreadCategory;
 import org.opennms.netmgt.config.PollOutagesConfig;
 import org.opennms.netmgt.config.PollerConfig;
@@ -571,9 +571,8 @@ public class Poller extends AbstractServiceDaemon {
         }
         
         InetAddress addr;
-        try {
-            addr = InetAddress.getByName(ipAddr);
-        } catch (UnknownHostException e) {
+        addr = InetAddressUtils.addr(ipAddr);
+        if (addr == null) {
             log.error("Could not convert "+ipAddr+" as an InetAddress "+ipAddr);
             return false;
         }

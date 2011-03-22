@@ -43,7 +43,6 @@ import static org.easymock.EasyMock.isA;
 import static org.easymock.EasyMock.replay;
 
 import java.io.IOException;
-import java.net.InetAddress;
 import java.text.NumberFormat;
 import java.util.ArrayList;
 import java.util.List;
@@ -54,6 +53,7 @@ import junit.framework.TestCase;
 
 import org.exolab.castor.xml.MarshalException;
 import org.exolab.castor.xml.ValidationException;
+import org.opennms.core.utils.InetAddressUtils;
 import org.opennms.netmgt.config.poller.Package;
 import org.opennms.netmgt.config.poller.Parameter;
 import org.opennms.netmgt.config.poller.Rrd;
@@ -116,7 +116,7 @@ public class PollerConfigManagerTest extends TestCase {
         svcType.setName("HTTP");
         svc.setServiceType(svcType);
         OnmsIpInterface intf = new OnmsIpInterface();
-        intf.setIpAddress(InetAddress.getByName("1.2.3.4"));
+        intf.setIpAddress(InetAddressUtils.addr("1.2.3.4"));
         svc.setIpInterface(intf);
         
         Package pkg = new Package();

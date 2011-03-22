@@ -4,7 +4,6 @@ import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertTrue;
 
-import java.net.InetAddress;
 import java.net.UnknownHostException;
 import java.sql.Connection;
 import java.sql.DatabaseMetaData;
@@ -15,6 +14,7 @@ import javax.sql.DataSource;
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
+import org.opennms.core.utils.InetAddressUtils;
 import org.opennms.netmgt.dao.db.JUnitTemporaryDatabase;
 import org.opennms.netmgt.dao.db.OpenNMSConfigurationExecutionListener;
 import org.opennms.netmgt.dao.db.TemporaryDatabaseExecutionListener;
@@ -83,7 +83,7 @@ public class JDBCDetectorTest{
 		
 		m_detector.init();
 		
-		assertTrue("Service wasn't detected", m_detector.isServiceDetected(InetAddress.getByName("127.0.0.1"), new NullDetectorMonitor()));
+		assertTrue("Service wasn't detected", m_detector.isServiceDetected(InetAddressUtils.addr("127.0.0.1"), new NullDetectorMonitor()));
 	}
 	
 	@Test
@@ -91,7 +91,7 @@ public class JDBCDetectorTest{
 	    m_detector.setUser("wrongUser");
         m_detector.init();
         
-        assertFalse(m_detector.isServiceDetected(InetAddress.getByName("127.0.0.1"), new NullDetectorMonitor()));
+        assertFalse(m_detector.isServiceDetected(InetAddressUtils.addr("127.0.0.1"), new NullDetectorMonitor()));
     }
 	
 	@Test
@@ -99,7 +99,7 @@ public class JDBCDetectorTest{
         m_detector.setUrl("jdbc:postgres://bogus:5432/blank");
         m_detector.init();
         
-        assertFalse(m_detector.isServiceDetected(InetAddress.getByName("127.0.0.1"), new NullDetectorMonitor()));
+        assertFalse(m_detector.isServiceDetected(InetAddressUtils.addr("127.0.0.1"), new NullDetectorMonitor()));
     }
 	
 }

@@ -157,7 +157,7 @@ final class BroadcastEventProcessor implements EventListener {
              * // new poll event try { if (log.isDebugEnabled())
              * log.debug("onMessage: Adding interface to suspectInterface Q: " +
              * event.getInterface()); m_suspectQ.add(new NessusScan(new
-             * NessusScanConfiguration(InetAddress.getByName(event.getInterface()),
+             * NessusScanConfiguration(InetAddressUtils.addr(event.getInterface()),
              * int newScanLevel, Date newLastScan, long newInterval))); } catch
              * (java.net.UnknownHostException ex) { log.error("onMessage: Could
              * not schedule invalid interface: \"" + event.getInterface() +

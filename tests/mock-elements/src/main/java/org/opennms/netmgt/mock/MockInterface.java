@@ -33,7 +33,6 @@
 package org.opennms.netmgt.mock;
 
 import java.net.InetAddress;
-import java.net.UnknownHostException;
 import java.util.List;
 
 import org.apache.commons.lang.builder.ToStringBuilder;
@@ -66,10 +65,9 @@ public class MockInterface extends MockContainer<MockNode,MockService> {
     public MockInterface(MockNode node, String ipAddr) {
         super(node);
         m_ifIndex = node.getNextIfIndex();
-        try {
-            m_inetAddr = InetAddress.getByName(ipAddr);
-        } catch (UnknownHostException e) {
-            throw new IllegalArgumentException("unable to convert "+ipAddr+" to an InetAddress: "+e.getMessage());
+        m_inetAddr = InetAddressUtils.addr(ipAddr);
+        if (m_inetAddr == null) {
+            throw new IllegalArgumentException("unable to convert "+ipAddr+" to an InetAddress.");
         }
     }
 

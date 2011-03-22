@@ -31,10 +31,7 @@
 //
 package org.opennms.netmgt.poller;
 
-import static org.opennms.core.utils.InetAddressUtils.addr;
-
 import java.net.InetAddress;
-import java.net.UnknownHostException;
 import java.sql.SQLException;
 import java.util.Date;
 import java.util.HashMap;
@@ -43,6 +40,7 @@ import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
 
+import org.opennms.core.utils.InetAddressUtils;
 import org.opennms.core.utils.ThreadCategory;
 import org.opennms.netmgt.EventConstants;
 import org.opennms.netmgt.capsd.plugins.IcmpPlugin;
@@ -378,12 +376,9 @@ public class DefaultPollContext implements PollContext, EventListener {
     
         ThreadCategory log = log();
         log.debug("Test critical path IP " + criticalPath[0]);
-        try {
-            addr = InetAddress.getByName(criticalPath[0]);
-        } catch (UnknownHostException e) {
-            log.error(
-                        "failed to convert string address to InetAddress "
-                                + criticalPath[0]);
+        addr = InetAddressUtils.addr(criticalPath[0]);
+        if (addr == null) {
+            log.error("failed to convert string address to InetAddress " + criticalPath[0]);
             return true;
         }
         IcmpPlugin p = new IcmpPlugin();

@@ -45,6 +45,7 @@ import java.util.Collection;
 import java.util.Iterator;
 import java.util.List;
 
+import org.opennms.core.utils.InetAddressUtils;
 import org.opennms.core.utils.LogUtils;
 import org.opennms.netmgt.EventConstants;
 import org.opennms.netmgt.config.LinkdConfig;
@@ -237,7 +238,7 @@ public class Linkd extends AbstractServiceDaemon {
     public SnmpCollection createCollection(final String ipaddr) {
         SnmpCollection coll = null;
         try {
-            coll = new SnmpCollection(this, SnmpPeerFactory.getInstance().getAgentConfig(InetAddress.getByName(ipaddr)));
+            coll = new SnmpCollection(this, SnmpPeerFactory.getInstance().getAgentConfig(InetAddressUtils.addr(ipaddr)));
         } catch (final Throwable t) {
             LogUtils.errorf(this, t, "getSnmpCollection: Failed to load snmpcollection parameter from snmp configuration file");
         }
@@ -550,7 +551,7 @@ public class Linkd extends AbstractServiceDaemon {
 
 	void updateNodeSnmpCollection(SnmpCollection snmpcoll) {
 
-		LinkableNode node = removeNode(snmpcoll.getTarget().getHostAddress());
+		LinkableNode node = removeNode(InetAddressUtils.str(snmpcoll.getTarget()));
 		if (node == null) {
 		    LogUtils.errorf(this, "No node found for snmp collection: %s unscheduling!", snmpcoll.getInfo());
 			m_scheduler.unschedule(snmpcoll);

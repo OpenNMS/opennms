@@ -43,7 +43,6 @@
 package org.opennms.netmgt.poller;
 
 import java.net.InetAddress;
-import java.net.UnknownHostException;
 import java.text.ParseException;
 import java.util.ArrayList;
 import java.util.Date;
@@ -625,11 +624,9 @@ final class PollerEventProcessor implements EventListener {
            LogUtils.debugf(this," Removing the following from the list: %s:%s", row[0],row[1]);
            
            InetAddress addr;
-           
-           try {
-               addr = InetAddress.getByName(row[0]);
-           } catch (UnknownHostException e) {
-               LogUtils.warnf(this,"Rescheduler: Could not convert "+row[0]+" to an InetAddress", e);
+           addr = InetAddressUtils.addr(row[0]);
+           if (addr == null) {
+               LogUtils.warnf(this,"Rescheduler: Could not convert "+row[0]+" to an InetAddress");
                return;
            }
            

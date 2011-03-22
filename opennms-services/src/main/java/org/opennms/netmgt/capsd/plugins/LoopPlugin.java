@@ -37,6 +37,7 @@ import java.net.InetAddress;
 import java.util.Map;
 
 import org.opennms.core.utils.IPLike;
+import org.opennms.core.utils.InetAddressUtils;
 import org.opennms.core.utils.ParameterMap;
 import org.opennms.netmgt.capsd.Plugin;
 /**
@@ -80,7 +81,7 @@ public class LoopPlugin implements Plugin {
         }
         
         String ipMatch = getIpMatch(qualifiers);
-        if (IPLike.matches(address.getHostAddress(), ipMatch)) {
+        if (IPLike.matches(InetAddressUtils.str(address), ipMatch)) {
             return isSupported(qualifiers);
         } else {
             return false;

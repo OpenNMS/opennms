@@ -39,7 +39,6 @@
 package org.opennms.netmgt.capsd;
 
 import java.net.InetAddress;
-import java.net.UnknownHostException;
 import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
@@ -52,6 +51,7 @@ import java.util.Date;
 import java.util.List;
 
 import org.opennms.core.utils.DBUtils;
+import org.opennms.core.utils.InetAddressUtils;
 import org.opennms.core.utils.ThreadCategory;
 import org.opennms.netmgt.EventConstants;
 import org.opennms.netmgt.config.DataSourceFactory;
@@ -1719,12 +1719,8 @@ final class DbNodeEntry {
                     ifIndex = -1;
 
                 InetAddress addr = null;
-                try {
-                    addr = InetAddress.getByName(saddr);
-                } catch (UnknownHostException e) {
-                    log().warn("Failed to convert address " + saddr + " to InetAddress for node " + m_nodeId + ", ifIndex " + ifIndex, e);
-                    continue;
-                }
+                addr = InetAddressUtils.addr(saddr);
+                if (addr == null) continue;
 
                 DbIpInterfaceEntry entry = null;
                 if (ifIndex == -1)
@@ -1781,13 +1777,9 @@ final class DbNodeEntry {
                     ifIndex = -1;
 
                 InetAddress addr = null;
-                try {
-                    addr = InetAddress.getByName(saddr);
-                } catch (UnknownHostException e) {
-                    log().warn("Failed to convert address " + saddr + " to InetAddress for node " + m_nodeId + ", ifIndex " + ifIndex, e);
-                    continue;
-                }
-
+                addr = InetAddressUtils.addr(saddr);
+                if (addr == null) continue;
+                
                 DbIpInterfaceEntry entry = null;
                 if (ifIndex == -1)
                     entry = DbIpInterfaceEntry.get(db, m_nodeId, addr);
@@ -1856,12 +1848,7 @@ final class DbNodeEntry {
                 if (rset.wasNull())
                     ifIndex = -1;
 
-                try {
-                    InetAddress.getByName(saddr);
-                } catch (UnknownHostException e) {
-                    log().warn("Failed to convert address " + saddr + " to InetAddress for node " + m_nodeId + ", ifIndex " + ifIndex, e);
-                    continue;
-                }
+                if (InetAddressUtils.addr(saddr) == null) continue;
 
                 DbSnmpInterfaceEntry entry = null;
                 if (ifIndex != -1) {

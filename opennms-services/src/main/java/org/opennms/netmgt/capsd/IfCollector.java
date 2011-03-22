@@ -45,7 +45,6 @@ package org.opennms.netmgt.capsd;
 import java.lang.reflect.UndeclaredThrowableException;
 import java.net.InetAddress;
 import java.net.NoRouteToHostException;
-import java.net.UnknownHostException;
 import java.util.ArrayList;
 import java.util.HashSet;
 import java.util.Iterator;
@@ -54,6 +53,7 @@ import java.util.Map;
 import java.util.Set;
 import java.util.TreeMap;
 
+import org.opennms.core.utils.InetAddressUtils;
 import org.opennms.core.utils.ThreadCategory;
 import org.opennms.netmgt.capsd.snmp.IfTableEntry;
 import org.opennms.netmgt.config.CapsdConfigFactory;
@@ -179,7 +179,7 @@ public final class IfCollector implements Runnable {
      * 
      */
     private void probe(InetAddress target, List<SupportedProtocol> supports) {
-        String logAddr = target.getHostAddress();
+        String logAddr = InetAddressUtils.str(target);
 
         CapsdProtocolInfo[] plugins = m_pluginManager.getProtocolSpecification(target);
         
@@ -344,7 +344,7 @@ public final class IfCollector implements Runnable {
      */
     public void run() {
         if (log().isDebugEnabled()) {
-            log().debug("IfCollector.run: run method invoked to collect information for address " + m_target.getHostAddress());
+            log().debug("IfCollector.run: run method invoked to collect information for address " + InetAddressUtils.str(m_target));
         }
 
         // Now go throught the successful plugin checks
@@ -385,7 +385,7 @@ public final class IfCollector implements Runnable {
                 m_smbCollector.run();
             } catch (Throwable t) {
                 m_smbCollector = null;
-                log().warn("IfCollector.run: Caught an exception when collecting SMB information from target " + m_target.getHostAddress(), t);
+                log().warn("IfCollector.run: Caught an exception when collecting SMB information from target " + InetAddressUtils.str(m_target), t);
             }
 
             log().debug("IfCollector.run: SMB collection completed");
@@ -424,11 +424,7 @@ public final class IfCollector implements Runnable {
                         if (ipAddrs == null || ipAddrs.size() == 0) {
                             // Non IP interface
                             InetAddress nonIpAddr = null;
-                            try {
-                                nonIpAddr = InetAddress.getByName("0.0.0.0");
-                            } catch (UnknownHostException e) {
-                                log().info("IfCollector.run: Failed to create InetAddress for Non IP interface at ifIndex  " + ifIndex + " for original target " + m_target.getHostAddress(), e);
-                            }
+                            nonIpAddr = InetAddressUtils.addr("0.0.0.0");
 
                             if (ipAddrs == null) {
                                 ipAddrs = new ArrayList<InetAddress>();
@@ -461,17 +457,17 @@ public final class IfCollector implements Runnable {
                             // now will allow loopback as long as its IP Address
                             // doesn't
                             // start with 127
-                            if (subtarget.getHostAddress().startsWith("127")) {
+                            if (InetAddressUtils.str(subtarget).startsWith("127")) {
                                 // Skip if loopback
                                 if (log().isDebugEnabled()) {
-                                    log().debug("ifCollector.run: Loopback interface: " + subtarget.getHostAddress() + ", skipping...");
+                                    log().debug("ifCollector.run: Loopback interface: " + InetAddressUtils.str(subtarget) + ", skipping...");
                                 }
                                 continue;
                             }
 
                             // now check for non-IP interface
                             //
-                            if (subtarget.getHostAddress().equals("0.0.0.0")) {
+                            if (InetAddressUtils.str(subtarget).equals("0.0.0.0")) {
                                 // its a non-IP interface...add its ifIndex to
                                 // the non-IP interface list
                                 //
@@ -484,13 +480,13 @@ public final class IfCollector implements Runnable {
                             List<SupportedProtocol> probelist = new ArrayList<SupportedProtocol>();
                             if (log().isDebugEnabled()) {
                                 log().debug("----------------------------------------------------------------------------------------");
-                                log().debug("ifCollector.run: probing subtarget " + subtarget.getHostAddress());
+                                log().debug("ifCollector.run: probing subtarget " + InetAddressUtils.str(subtarget));
                             }
                             probe(subtarget, probelist);
                             m_previouslyProbed.add(subtarget);
 
                             if (log().isDebugEnabled()) {
-                                log().debug("ifCollector.run: adding subtarget " + subtarget.getHostAddress() + " # supported protocols: " + probelist.size());
+                                log().debug("ifCollector.run: adding subtarget " + InetAddressUtils.str(subtarget) + " # supported protocols: " + probelist.size());
                                 log().debug("----------------------------------------------------------------------------------------");
                             }
                             m_subTargets.put(subtarget, probelist);
@@ -519,10 +515,10 @@ public final class IfCollector implements Runnable {
                         // now will allow loopback as long as its IP Address
                         // doesn't
                         // start with 127
-                        if (subtarget.getHostAddress().startsWith("127")) {
+                        if (InetAddressUtils.str(subtarget).startsWith("127")) {
                             // Skip if loopback
                             if (log().isDebugEnabled()) {
-                                log().debug("ifCollector.run: Loopback interface: " + subtarget.getHostAddress() + ", skipping...");
+                                log().debug("ifCollector.run: Loopback interface: " + InetAddressUtils.str(subtarget) + ", skipping...");
                             }
                             continue;
                         }
@@ -533,13 +529,13 @@ public final class IfCollector implements Runnable {
                         List<SupportedProtocol> probelist = new ArrayList<SupportedProtocol>();
                         if (log().isDebugEnabled()) {
                             log().debug("----------------------------------------------------------------------------------------");
-                            log().debug("ifCollector.run: probing subtarget " + subtarget.getHostAddress());
+                            log().debug("ifCollector.run: probing subtarget " + InetAddressUtils.str(subtarget));
                         }
                         probe(subtarget, probelist);
                         m_previouslyProbed.add(subtarget);
                         
                         if (log().isDebugEnabled()) {
-                            log().debug("ifCollector.run: adding subtarget " + subtarget.getHostAddress() + " # supported protocols: " + probelist.size());
+                            log().debug("ifCollector.run: adding subtarget " + InetAddressUtils.str(subtarget) + " # supported protocols: " + probelist.size());
                             log().debug("----------------------------------------------------------------------------------------");
                         }
                         m_subTargets.put(subtarget, probelist);
@@ -548,14 +544,14 @@ public final class IfCollector implements Runnable {
             } // end try()
             catch (Throwable t) {
                 m_snmpCollector = null;
-                log().warn("IfCollector.run: Caught an exception when collecting SNMP information from target " + m_target.getHostAddress(), t);
+                log().warn("IfCollector.run: Caught an exception when collecting SNMP information from target " + InetAddressUtils.str(m_target), t);
             }
 
             log().debug("IfCollector.run: SNMP collection completed");
         } // end if(SNMP supported)
 
         if (log().isDebugEnabled()) {
-            log().debug("IfCollector.run: run method exiting after collecting information from address " + m_target.getHostAddress());
+            log().debug("IfCollector.run: run method exiting after collecting information from address " + InetAddressUtils.str(m_target));
         }
     }
 

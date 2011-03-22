@@ -33,7 +33,6 @@ package org.opennms.netmgt.provision.detector;
 import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertTrue;
 
-import java.net.InetAddress;
 import java.net.SocketException;
 import java.net.UnknownHostException;
 
@@ -45,6 +44,7 @@ import org.opennms.core.test.JUnitDNSServerExecutionListener;
 import org.opennms.core.test.annotations.DNSEntry;
 import org.opennms.core.test.annotations.DNSZone;
 import org.opennms.core.test.annotations.JUnitDNSServer;
+import org.opennms.core.utils.InetAddressUtils;
 import org.opennms.netmgt.provision.detector.datagram.DnsDetector;
 import org.opennms.netmgt.provision.support.NullDetectorMonitor;
 import org.opennms.test.mock.MockLogAppender;
@@ -91,7 +91,7 @@ public class DnsDetectorTest {
         m_detector.setLookup("www.google.com");
         m_detector.init();
         
-        assertTrue(m_detector.isServiceDetected(InetAddress.getByName("localhost"), new NullDetectorMonitor()));
+        assertTrue(m_detector.isServiceDetected(InetAddressUtils.addr("localhost"), new NullDetectorMonitor()));
     }
     
     @Test
@@ -100,7 +100,7 @@ public class DnsDetectorTest {
         m_detector.setLookup("www.google.com");
         m_detector.init();
         
-        assertFalse(m_detector.isServiceDetected(InetAddress.getByName("localhost"), new NullDetectorMonitor()));
+        assertFalse(m_detector.isServiceDetected(InetAddressUtils.addr("localhost"), new NullDetectorMonitor()));
 
     }
 }

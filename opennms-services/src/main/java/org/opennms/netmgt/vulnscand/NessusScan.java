@@ -54,6 +54,7 @@ import org.opennms.core.queue.FifoQueue;
 import org.opennms.core.queue.FifoQueueException;
 import org.opennms.core.queue.FifoQueueImpl;
 import org.opennms.core.utils.DBUtils;
+import org.opennms.core.utils.InetAddressUtils;
 import org.opennms.core.utils.ThreadCategory;
 import org.opennms.netmgt.config.DataSourceFactory;
 import org.opennms.netmgt.config.VulnscandConfigFactory;
@@ -263,7 +264,7 @@ class NessusScan implements Runnable {
             PreparedStatement stmt = conn.prepareStatement(SELECT_ALL_VULNERABILITIES);
             d.watch(stmt);
 
-            stmt.setString(1, config.targetAddress.getHostAddress());
+            stmt.setString(1, InetAddressUtils.str(config.targetAddress));
             ResultSet openVulnerabilitiesRS = stmt.executeQuery();
             d.watch(openVulnerabilitiesRS);
 
@@ -660,7 +661,7 @@ class NessusScan implements Runnable {
                     d.watch(stmt);
 
                     // ipaddr
-                    stmt.setString(1, config.targetAddress.getHostAddress());
+                    stmt.setString(1, InetAddressUtils.str(config.targetAddress));
 
                     // port
                     if (portvals.port > 0) {
@@ -727,7 +728,7 @@ class NessusScan implements Runnable {
                             stmt.setNull(2, Types.INTEGER);
 			}
 
-                        stmt.setString(3, config.targetAddress.getHostAddress());
+                        stmt.setString(3, InetAddressUtils.str(config.targetAddress));
                         // ADD SERVICE CORRELATION
                         // Punt this for now also... not necessary
                         // stmt.setInt(4, serviceId);
@@ -843,7 +844,7 @@ class NessusScan implements Runnable {
                     d.watch(stmt);
 
                     // ipaddr
-                    stmt.setString(1, config.targetAddress.getHostAddress());
+                    stmt.setString(1, InetAddressUtils.str(config.targetAddress));
 
                     // port
                     if (portvals.port > 0) {
@@ -909,7 +910,7 @@ class NessusScan implements Runnable {
                             stmt.setNull(2, Types.INTEGER);
                         }
 
-                        stmt.setString(3, config.targetAddress.getHostAddress());
+                        stmt.setString(3, InetAddressUtils.str(config.targetAddress));
                         // ADD SERVICE CORRELATION
                         // Punt this for now also... not necessary
                         // stmt.setInt(4, serviceId);

@@ -43,6 +43,7 @@ import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
+import org.opennms.core.utils.InetAddressUtils;
 import org.opennms.netmgt.provision.ServiceDetector;
 import org.opennms.netmgt.provision.detector.datagram.NtpDetector;
 import org.opennms.netmgt.provision.server.SimpleUDPServer;
@@ -102,7 +103,7 @@ public class NtpDetectorTest implements ApplicationContextAware {
         m_server.startServer();
         
         m_detector.setPort(m_server.getPort());
-        m_detector.setIpToValidate(m_server.getInetAddress().getHostAddress());
+        m_detector.setIpToValidate(InetAddressUtils.str(m_server.getInetAddress()));
         m_detector.init();
         assertTrue("Testing for NTP service, got false when true is supposed to be returned", m_detector.isServiceDetected(m_server.getInetAddress(), new NullDetectorMonitor()));
     }
@@ -113,7 +114,7 @@ public class NtpDetectorTest implements ApplicationContextAware {
         m_server.startServer();
         
         m_detector.setPort(2000);
-        m_detector.setIpToValidate(m_server.getInetAddress().getHostAddress());
+        m_detector.setIpToValidate(InetAddressUtils.str(m_server.getInetAddress()));
         m_detector.init();
         assertFalse(m_detector.isServiceDetected(m_server.getInetAddress(), new NullDetectorMonitor()));
     }

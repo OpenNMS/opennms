@@ -37,14 +37,14 @@
 
 package org.opennms.netmgt.capsd.plugins;
 
-import java.net.InetAddress;
 import java.net.UnknownHostException;
 import java.util.HashMap;
 import java.util.Map;
 
-import org.opennms.netmgt.capsd.Plugin;
-
 import junit.framework.TestCase;
+
+import org.opennms.core.utils.InetAddressUtils;
+import org.opennms.netmgt.capsd.Plugin;
 public class LoopPluginTest extends TestCase {
 
     protected void setUp() throws Exception {
@@ -68,7 +68,7 @@ public class LoopPluginTest extends TestCase {
      */
     public void testIsProtocolSupportedInetAddress() throws UnknownHostException {
         Plugin plugin = new LoopPlugin();
-        assertFalse(plugin.isProtocolSupported(InetAddress.getByName("127.0.0.1")));
+        assertFalse(plugin.isProtocolSupported(InetAddressUtils.addr("127.0.0.1")));
     }
 
     /*
@@ -79,8 +79,8 @@ public class LoopPluginTest extends TestCase {
         qualifiers.put("ip-match", "127.*.*.1-2");
         qualifiers.put("is-supported", "true");
         Plugin plugin = new LoopPlugin();
-        assertTrue(plugin.isProtocolSupported(InetAddress.getByName("127.0.0.1"), qualifiers));
-        assertFalse(plugin.isProtocolSupported(InetAddress.getByName("127.0.0.3"), qualifiers));
+        assertTrue(plugin.isProtocolSupported(InetAddressUtils.addr("127.0.0.1"), qualifiers));
+        assertFalse(plugin.isProtocolSupported(InetAddressUtils.addr("127.0.0.3"), qualifiers));
 
     }
 

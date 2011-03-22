@@ -54,6 +54,7 @@ import javax.sql.DataSource;
 import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
+import org.opennms.core.utils.InetAddressUtils;
 import org.opennms.netmgt.EventConstants;
 import org.opennms.netmgt.config.PollOutagesConfig;
 import org.opennms.netmgt.config.PollerConfig;
@@ -230,20 +231,20 @@ public class PollablesTest {
 
     private void assignPollableMembers(PollableNetwork pNetwork) throws UnknownHostException {
         pNode1 = pNetwork.getNode(1);
-        pDot1 = pNode1.getInterface(InetAddress.getByName("192.168.1.1"));
+        pDot1 = pNode1.getInterface(InetAddressUtils.addr("192.168.1.1"));
         pDot1Smtp = pDot1.getService("SMTP");
         pDot1Icmp = pDot1.getService("ICMP");
-        pDot2 = pNode1.getInterface(InetAddress.getByName("192.168.1.2"));
+        pDot2 = pNode1.getInterface(InetAddressUtils.addr("192.168.1.2"));
         pDot2Smtp = pDot2.getService("SMTP");
         pDot2Icmp = pDot2.getService("ICMP");
         
         pNode2 = pNetwork.getNode(2);
-        pDot3 = pNode2.getInterface(InetAddress.getByName("192.168.1.3"));
+        pDot3 = pNode2.getInterface(InetAddressUtils.addr("192.168.1.3"));
         pDot3Http = pDot3.getService("HTTP");
         pDot3Icmp = pDot3.getService("ICMP");
         
         pNode3 = pNetwork.getNode(3);
-        pDot4 = pNode3.getInterface(InetAddress.getByName("192.168.1.4"));
+        pDot4 = pNode3.getInterface(InetAddressUtils.addr("192.168.1.4"));
         pDot4Smtp = pDot4.getService("SMTP");
         pDot4Http = pDot4.getService("HTTP");
     }
@@ -332,7 +333,7 @@ public class PollablesTest {
     @Test
     public void testCreateInterface() throws UnknownHostException {
         int nodeId = 99;
-        InetAddress addr = InetAddress.getByName("192.168.1.99");
+        InetAddress addr = InetAddressUtils.addr("192.168.1.99");
 
         PollableInterface iface = m_network.createInterface(nodeId, "WebServer99", addr);
         assertNotNull("iface is null", iface);
@@ -352,7 +353,7 @@ public class PollablesTest {
     @Test
     public void testCreateService() throws Exception {
         int nodeId = 99;
-        InetAddress addr = InetAddress.getByName("192.168.1.99");
+        InetAddress addr = InetAddressUtils.addr("192.168.1.99");
         String svcName = "HTTP-99";
         
         PollableService svc = m_network.createService(nodeId, "WebServer99", addr, svcName);
@@ -2499,11 +2500,10 @@ public class PollablesTest {
 
     private InetAddress getInetAddress(String ipAddr) {
         InetAddress addr;
-        try {
-            addr = InetAddress.getByName(ipAddr);
-        } catch (UnknownHostException e) {
+        addr = InetAddressUtils.addr(ipAddr);
+        if (addr == null) {
             // in 'real life' I would just log this and contine with the others
-            throw new RuntimeException("Error converting "+ipAddr+" to an InetAddress", e);
+            throw new RuntimeException("Error converting "+ipAddr+" to an InetAddress");
         }
         return addr;
     }

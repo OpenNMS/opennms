@@ -49,6 +49,7 @@ import java.util.regex.Pattern;
 import org.apache.log4j.Level;
 import org.exolab.castor.xml.MarshalException;
 import org.exolab.castor.xml.ValidationException;
+import org.opennms.core.utils.InetAddressUtils;
 import org.opennms.core.utils.ParameterMap;
 import org.opennms.netmgt.config.SnmpPeerFactory;
 import org.opennms.netmgt.model.PollStatus;
@@ -168,7 +169,8 @@ final public class DiskUsageMonitor extends SnmpMonitorStrategy {
         //
         SnmpAgentConfig agentConfig = SnmpPeerFactory.getInstance().getAgentConfig(ipaddr);
         if (agentConfig == null) throw new RuntimeException("SnmpAgentConfig object not available for interface " + ipaddr);
-        log().debug("poll: setting SNMP peer attribute for interface " + ipaddr.getHostAddress());
+        final String hostAddress = InetAddressUtils.str(ipaddr);
+		log().debug("poll: setting SNMP peer attribute for interface " + hostAddress);
         
         agentConfig.setTimeout(ParameterMap.getKeyedInteger(parameters, "timeout", agentConfig.getTimeout()));
         agentConfig.setRetries(ParameterMap.getKeyedInteger(parameters, "retry", ParameterMap.getKeyedInteger(parameters, "retries", agentConfig.getRetries())));
@@ -208,12 +210,12 @@ final public class DiskUsageMonitor extends SnmpMonitorStrategy {
             Map<SnmpInstId, SnmpValue> flagResults = SnmpUtils.getOidValues(agentConfig, "DiskUsagePoller", hrStorageDescrSnmpObject);
             
             if(flagResults.size() == 0) {
-                log().debug("SNMP poll failed: no results, addr=" + ipaddr.getHostAddress() + " oid=" + hrStorageDescrSnmpObject);
+                log().debug("SNMP poll failed: no results, addr=" + hostAddress + " oid=" + hrStorageDescrSnmpObject);
                 return PollStatus.unavailable();
             }
 
             for (Map.Entry<SnmpInstId, SnmpValue> e : flagResults.entrySet()) { 
-                log().debug("poll: SNMPwalk poll succeeded, addr=" + ipaddr.getHostAddress() + " oid=" + hrStorageDescrSnmpObject + " instance=" + e.getKey() + " value=" + e.getValue());
+                log().debug("poll: SNMPwalk poll succeeded, addr=" + hostAddress + " oid=" + hrStorageDescrSnmpObject + " instance=" + e.getKey() + " value=" + e.getValue());
                 
                 if (isMatch(e.getValue().toString(), diskName, matchType)) {
                 	log().debug("DiskUsageMonitor.poll: found disk=" + diskName);
@@ -251,7 +253,7 @@ final public class DiskUsageMonitor extends SnmpMonitorStrategy {
         } catch (IllegalArgumentException e) {
             status = logDown(Level.ERROR, "Invalid Snmp Criteria: " + e.getMessage());
         } catch (Throwable t) {
-            status = logDown(Level.WARN, "Unexpected exception during SNMP poll of interface " + ipaddr.getHostAddress(), t);
+            status = logDown(Level.WARN, "Unexpected exception during SNMP poll of interface " + hostAddress, t);
         }
 
         return status;

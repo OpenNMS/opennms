@@ -52,7 +52,7 @@
  *
  * // Send message
  * DatagramSocket socket = new DatagramSocket();
- * InetAddress address = InetAddress.getByName("ntp.cais.rnp.br");
+ * InetAddress address = InetAddressUtils.addr("ntp.cais.rnp.br");
  * byte[] buf = new NtpMessage().toByteArray();
  * DatagramPacket packet = new DatagramPacket(buf, buf.length, address, 123);
  * socket.send(packet);

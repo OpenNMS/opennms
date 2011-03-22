@@ -35,6 +35,7 @@ import java.net.InetAddress;
 import java.util.Map;
 
 import org.apache.log4j.Level;
+import org.opennms.core.utils.InetAddressUtils;
 import org.opennms.core.utils.ParameterMap;
 import org.opennms.netmgt.model.PollStatus;
 import org.opennms.netmgt.poller.Distributable;
@@ -106,7 +107,7 @@ public abstract class JMXMonitor extends AbstractServiceMonitor {
                 }
             }
         } catch (Throwable e) {
-            serviceStatus = logDown(Level.DEBUG, dsName+" Monitor - failed! " + ipv4Addr.getHostAddress());
+            serviceStatus = logDown(Level.DEBUG, dsName+" Monitor - failed! " + InetAddressUtils.str(ipv4Addr));
         } finally {
             if (connection != null) {
                 connection.close();

@@ -38,13 +38,14 @@ package org.opennms.netmgt.capsd.plugins;
 import java.io.BufferedReader;
 import java.io.InputStreamReader;
 import java.lang.reflect.UndeclaredThrowableException;
-import java.net.InetAddress;
 import java.net.ServerSocket;
 import java.net.Socket;
 import java.util.HashMap;
 import java.util.Map;
 
 import junit.framework.TestCase;
+
+import org.opennms.core.utils.InetAddressUtils;
 
 public class FtpPluginTest extends TestCase {
     private FtpPlugin m_plugin = new FtpPlugin();
@@ -75,12 +76,12 @@ public class FtpPluginTest extends TestCase {
     
     // Let's not depend on external systems if we don't have to
     public void SKIPtestOpennmsOrgFtpSuccess() throws Exception {
-        assertTrue("Test for protocol FTP on ftp.opennms.org should have passed", m_plugin.isProtocolSupported(InetAddress.getByName("ftp.opennms.org")));
+        assertTrue("Test for protocol FTP on ftp.opennms.org should have passed", m_plugin.isProtocolSupported(InetAddressUtils.addr("ftp.opennms.org")));
     }
     
     // Let's not depend on external systems if we don't have to
     public void SKIPtestRandomFtpFailure() throws Exception {
-        assertFalse("Test for protocol FTP on 1.1.1.1 should have failed (on most networks, at least)", m_plugin.isProtocolSupported(InetAddress.getByName("1.1.1.1")));
+        assertFalse("Test for protocol FTP on 1.1.1.1 should have failed (on most networks, at least)", m_plugin.isProtocolSupported(InetAddressUtils.addr("1.1.1.1")));
     }
     
     public void testSuccess() throws Exception {

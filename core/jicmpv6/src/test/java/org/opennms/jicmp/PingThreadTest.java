@@ -29,7 +29,7 @@
  */
 package org.opennms.jicmp;
 
-import static org.junit.Assume.*;
+import static org.junit.Assume.assumeTrue;
 
 import java.net.InetAddress;
 

@@ -40,6 +40,7 @@ import java.util.Map;
 
 import jcifs.netbios.NbtAddress;
 
+import org.opennms.core.utils.InetAddressUtils;
 import org.opennms.core.utils.ThreadCategory;
 import org.opennms.netmgt.capsd.AbstractPlugin;
 
@@ -73,17 +74,17 @@ public final class SmbPlugin extends AbstractPlugin {
         ThreadCategory log = ThreadCategory.getInstance(getClass());
         boolean isAServer = false;
         try {
-            log.debug("host.getHostAddress(): " + host.getHostAddress());
-            NbtAddress nbtAddr = NbtAddress.getByName(host.getHostAddress());
+            log.debug("host.getHostAddress(): " + InetAddressUtils.str(host));
+            NbtAddress nbtAddr = NbtAddress.getByName(InetAddressUtils.str(host));
 
             // If the retrieved SMB name is equal to the IP address
             // of the host, the it is safe to assume that the interface
             // does not support SMB
             //
-            log.debug("nbtAddr.getHostNamer(): " + nbtAddr.getHostName());
-            if (nbtAddr.getHostName().equals(host.getHostAddress())) {
+            log.debug("nbtAddr.getHostName(): " + nbtAddr.getHostName());
+            if (nbtAddr.getHostName().equals(InetAddressUtils.str(host))) {
                 if (log.isDebugEnabled())
-                    log.debug("SmbPlugin: failed to retrieve SMB name for " + host.getHostAddress());
+                    log.debug("SmbPlugin: failed to retrieve SMB name for " + InetAddressUtils.str(host));
             } else {
                 isAServer = true;
             }
@@ -91,7 +92,7 @@ public final class SmbPlugin extends AbstractPlugin {
             if (log.isDebugEnabled())
                 log.debug("SmbPlugin: UnknownHostException: " + e.getMessage());
         } catch (Throwable t) {
-            log.error("SmbPlugin: An undeclared throwable exception was caught checking host " + host.getHostAddress(), t);
+            log.error("SmbPlugin: An undeclared throwable exception was caught checking host " + InetAddressUtils.str(host), t);
         }
 
         return isAServer;

@@ -58,6 +58,7 @@ import java.net.Socket;
 import java.util.Map;
 
 import org.apache.log4j.Level;
+import org.opennms.core.utils.InetAddressUtils;
 import org.opennms.core.utils.ParameterMap;
 import org.opennms.core.utils.TimeoutTracker;
 import org.opennms.netmgt.model.PollStatus;
@@ -142,8 +143,9 @@ final public class TcpMonitor extends AbstractServiceMonitor {
         //
         InetAddress ipv4Addr = (InetAddress) iface.getAddress();
 
-        if (log().isDebugEnabled())
-            log().debug("poll: address = " + ipv4Addr.getHostAddress() + ", port = " + port + ", " + tracker);
+        final String hostAddress = InetAddressUtils.str(ipv4Addr);
+		if (log().isDebugEnabled())
+            log().debug("poll: address = " + hostAddress + ", port = " + port + ", " + tracker);
 
         // Give it a whirl
         //
@@ -189,7 +191,7 @@ final public class TcpMonitor extends AbstractServiceMonitor {
                 } else
                     serviceStatus = PollStatus.unavailable("Banner: '"+response+"' does not contain match string '"+strBannerMatch+"'");
             } catch (NoRouteToHostException e) {
-            	serviceStatus = logDown(Level.WARN, "No route to host exception for address " + ipv4Addr.getHostAddress(), e);
+            	serviceStatus = logDown(Level.WARN, "No route to host exception for address " + hostAddress, e);
                 break; // Break out of for(;;)
             } catch (InterruptedIOException e) {
             	serviceStatus = logDown(Level.DEBUG, "did not connect to host with " + tracker);

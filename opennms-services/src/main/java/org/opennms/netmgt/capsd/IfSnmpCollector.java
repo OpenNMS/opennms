@@ -40,6 +40,7 @@ package org.opennms.netmgt.capsd;
 
 import java.net.InetAddress;
 
+import org.opennms.core.utils.InetAddressUtils;
 import org.opennms.core.utils.ThreadCategory;
 import org.opennms.netmgt.capsd.snmp.IfTable;
 import org.opennms.netmgt.capsd.snmp.IfXTable;
@@ -280,7 +281,7 @@ public final class IfSnmpCollector implements Runnable {
      * @return a int.
      */
     public int getIfIndex(InetAddress address) {
-        log().debug("getIfIndex: retrieving ifIndex for " + address.getHostAddress());
+        log().debug("getIfIndex: retrieving ifIndex for " + InetAddressUtils.str(address));
         if (!hasIpAddrTable()) {
             log().debug("getIfIndex: Illegal index, no table present.");
             throw new IndexOutOfBoundsException("Illegal Index, no table present");
@@ -440,16 +441,16 @@ public final class IfSnmpCollector implements Runnable {
         // Log any failures
         //
         if (!this.hasSystemGroup())
-            log().info("IfSnmpCollector: failed to collect System group for " + m_address.getHostAddress());
+            log().info("IfSnmpCollector: failed to collect System group for " + InetAddressUtils.str(m_address));
         if (!this.hasIfTable())
-            log().info("IfSnmpCollector: failed to collect ifTable for " + m_address.getHostAddress());
+            log().info("IfSnmpCollector: failed to collect ifTable for " + InetAddressUtils.str(m_address));
         if (!this.hasIpAddrTable())
-            log().info("IfSnmpCollector: failed to collect ipAddrTable for " + m_address.getHostAddress());
+            log().info("IfSnmpCollector: failed to collect ipAddrTable for " + InetAddressUtils.str(m_address));
         if (!this.hasIfXTable())
-            log().info("IfSnmpCollector: failed to collect ifXTable for " + m_address.getHostAddress());
+            log().info("IfSnmpCollector: failed to collect ifXTable for " + InetAddressUtils.str(m_address));
     }
 
-    private ThreadCategory log() {
+	private ThreadCategory log() {
         return ThreadCategory.getInstance(getClass()+"."+m_address);
     }
 }

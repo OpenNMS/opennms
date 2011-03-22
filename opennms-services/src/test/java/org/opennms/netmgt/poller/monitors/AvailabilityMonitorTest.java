@@ -33,12 +33,12 @@
 package org.opennms.netmgt.poller.monitors;
 
 import java.net.InetAddress;
-import java.net.UnknownHostException;
 import java.util.HashMap;
 import java.util.Map;
 
 import junit.framework.TestCase;
 
+import org.opennms.core.utils.InetAddressUtils;
 import org.opennms.netmgt.model.PollStatus;
 import org.opennms.netmgt.poller.InetNetworkInterface;
 import org.opennms.netmgt.poller.MonitoredService;
@@ -73,14 +73,14 @@ public class AvailabilityMonitorTest extends TestCase {
         parameters.put("timeout", "3000");
         MonitoredService svc = new MonitoredService() {
             public InetAddress getAddress() {
-                try {
-                    return InetAddress.getByName("127.0.0.1");
-                } catch (UnknownHostException e) {
-                    throw new IllegalStateException("Error getting localhost address", e);
+                final InetAddress addr = InetAddressUtils.addr("127.0.0.1");
+                if (addr == null) {
+                    throw new IllegalStateException("Error getting localhost address");
                 }
+                return addr;
             }
             public String getIpAddr() {
-                return getAddress().getHostAddress();
+                return InetAddressUtils.str(getAddress());
             }
             public NetworkInterface<InetAddress> getNetInterface() {
                 return new InetNetworkInterface(getAddress());

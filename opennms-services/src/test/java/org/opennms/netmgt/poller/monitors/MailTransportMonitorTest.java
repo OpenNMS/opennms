@@ -54,6 +54,7 @@ import java.util.Properties;
 import junit.framework.TestCase;
 
 import org.hibernate.lob.ReaderInputStream;
+import org.opennms.core.utils.InetAddressUtils;
 import org.opennms.netmgt.mock.MockMonitoredService;
 import org.opennms.netmgt.model.PollStatus;
 import org.opennms.netmgt.poller.MonitoredService;
@@ -208,7 +209,7 @@ public class MailTransportMonitorTest extends TestCase {
     }
         
     protected MonitoredService getMailService(String hostname) throws Exception {
-        return getMailService(hostname, InetAddress.getByName(hostname));
+        return getMailService(hostname, InetAddressUtils.addr(hostname));
     }
     
     protected MonitoredService getMailService(String hostname, InetAddress ip) throws Exception {

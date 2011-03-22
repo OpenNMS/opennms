@@ -37,6 +37,8 @@ package org.opennms.netmgt.model.discovery;
 import java.net.InetAddress;
 import java.net.UnknownHostException;
 
+import org.opennms.core.utils.InetAddressUtils;
+
 /**
  * <p>
  * This class is used to represent the polling information needed by the
@@ -89,9 +91,9 @@ public class IPPollAddress {
      */
     public IPPollAddress(String ipAddress, long timeout, int retries) throws UnknownHostException {
         // check if this is a valid IP address
-        InetAddress.getByName(ipAddress);
+        InetAddressUtils.addr(ipAddress);
 
-        m_address = InetAddress.getByName(ipAddress);
+        m_address = InetAddressUtils.addr(ipAddress);
         m_timeout = timeout;
         m_retries = retries;
     }

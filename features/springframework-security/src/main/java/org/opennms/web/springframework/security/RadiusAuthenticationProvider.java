@@ -34,7 +34,6 @@
 package org.opennms.web.springframework.security;
 
 import java.net.InetAddress;
-import java.net.UnknownHostException;
 import java.util.Iterator;
 
 import net.jradius.client.RadiusClient;
@@ -52,6 +51,7 @@ import net.jradius.packet.attribute.RadiusAttribute;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
+import org.opennms.core.utils.InetAddressUtils;
 import org.springframework.security.AuthenticationException;
 import org.springframework.security.AuthenticationServiceException;
 import org.springframework.security.BadCredentialsException;
@@ -202,10 +202,9 @@ public class RadiusAuthenticationProvider extends AbstractUserDetailsAuthenticat
         }
 
         InetAddress serverIP = null;
-        try {
-            serverIP = InetAddress.getByName(server);
-        } catch (UnknownHostException e) {
-            logger.error("Could not resolve radius server address "+server+" : "+e);
+        serverIP = InetAddressUtils.addr(server);
+        if (serverIP == null) {
+            logger.error("Could not resolve radius server address "+server);
             throw new AuthenticationServiceException(messages.getMessage("RadiusAuthenticationProvider.unknownServer",
                 "Could not resolve radius server address"));
         }
@@ -218,7 +217,7 @@ public class RadiusAuthenticationProvider extends AbstractUserDetailsAuthenticat
 
         RadiusPacket reply;
         try {
-            logger.debug("Sending AccessRequest message to "+serverIP.getHostAddress()+":"+port+" using "+authTypeClass.getAuthName()+" protocol with timeout = "+timeout+", retries = "+retries+", attributes:\n"+attributeList.toString());
+            logger.debug("Sending AccessRequest message to "+InetAddressUtils.str(serverIP)+":"+port+" using "+authTypeClass.getAuthName()+" protocol with timeout = "+timeout+", retries = "+retries+", attributes:\n"+attributeList.toString());
             reply = radiusClient.authenticate(request, authTypeClass, retries);
         } catch (RadiusException e) {
             logger.error("Error connecting to radius server "+server+" : "+e);
@@ -236,7 +235,7 @@ public class RadiusAuthenticationProvider extends AbstractUserDetailsAuthenticat
             throw new BadCredentialsException(messages.getMessage(
                 "AbstractUserDetailsAuthenticationProvider.badCredentials", "Bad credentials"));
         }
-        logger.debug("Received AccessAccept message from "+serverIP.getHostAddress()+":"+port+" for user "+username+" with attributes:\n"+reply.getAttributes().toString());
+        logger.debug("Received AccessAccept message from "+InetAddressUtils.str(serverIP)+":"+port+" for user "+username+" with attributes:\n"+reply.getAttributes().toString());
 
         String roles = null;
         if (!StringUtils.hasLength(rolesAttribute)) {

@@ -43,6 +43,7 @@ import javax.naming.Context;
 import javax.naming.InitialContext;
 import javax.naming.NamingException;
 
+import org.opennms.core.utils.InetAddressUtils;
 import org.opennms.core.utils.ParameterMap;
 import org.opennms.core.utils.ThreadCategory;
 import org.opennms.protocols.jmx.MBeanServerProxy;
@@ -145,11 +146,12 @@ public class JBossConnectionFactory {
         if (connectionType.equals("RMI")) {
             InitialContext  ctx  = null;
 
-            try {
+            final String hostAddress = InetAddressUtils.str(address);
+			try {
                 
                 Hashtable<String, String> props = new Hashtable<String, String>();
                 props.put(Context.INITIAL_CONTEXT_FACTORY, "org.jboss.naming.NamingContextFactory");
-                props.put(Context.PROVIDER_URL,            "jnp://" + address.getHostAddress() + ":" + port);
+                props.put(Context.PROVIDER_URL,            "jnp://" + hostAddress + ":" + port);
                 props.put(Context.URL_PKG_PREFIXES,        "org.jboss.naming:org.jnp.interfaces" );
                 props.put("jnp.sotimeout",                 timeout );
                 
@@ -159,7 +161,7 @@ public class JBossConnectionFactory {
                 wrapper = new JBossConnectionWrapper(MBeanServerProxy.buildServerProxy(rmiAdaptor));
      
             } catch (Throwable e) {
-                 log.debug("JBossConnectionFactory - unable to get MBeanServer using RMI on " + address.getHostAddress() + ":" + port);
+                 log.debug("JBossConnectionFactory - unable to get MBeanServer using RMI on " + hostAddress + ":" + port);
             } finally {
                 try {
                     if (ctx != null) {
@@ -174,11 +176,12 @@ public class JBossConnectionFactory {
             InitialContext ctx  = null;
             String invokerSuffix = null;
 
-            try {
+            final String hostAddress = InetAddressUtils.str(address);
+			try {
                 
                 Hashtable<String, String> props = new Hashtable<String, String>();
                 props.put(Context.INITIAL_CONTEXT_FACTORY, "org.jboss.naming.HttpNamingContextFactory");
-                props.put(Context.PROVIDER_URL,            "http://" + address.getHostAddress() + ":" + port + "/invoker/JNDIFactory");
+                props.put(Context.PROVIDER_URL,            "http://" + hostAddress + ":" + port + "/invoker/JNDIFactory");
                 props.put("jnp.sotimeout",                 timeout );
                 
                 ctx = new InitialContext(props);
@@ -187,7 +190,7 @@ public class JBossConnectionFactory {
                 wrapper = new JBossConnectionWrapper(MBeanServerProxy.buildServerProxy(rmiAdaptor));
                 
             } catch (Throwable e) {
-                log.debug("JBossConnectionFactory - unable to get MBeanServer using HTTP on " + address.getHostAddress() + invokerSuffix);
+                log.debug("JBossConnectionFactory - unable to get MBeanServer using HTTP on " + hostAddress + invokerSuffix);
            } finally {
                 try {
                     if (ctx != null)

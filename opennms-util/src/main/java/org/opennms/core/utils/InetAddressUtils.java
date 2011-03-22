@@ -374,6 +374,10 @@ abstract public class InetAddressUtils {
         return ipAddrString == null ? null : getInetAddress(ipAddrString);
     }
     
+    public static String normalize(String ipAddrString) {
+    	return str(addr(ipAddrString));
+    }
+    
     public static String str(InetAddress addr) {
         return addr == null ? null : toIpAddrString(addr);
     }

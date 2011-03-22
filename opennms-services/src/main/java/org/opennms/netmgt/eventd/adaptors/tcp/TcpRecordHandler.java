@@ -49,6 +49,7 @@ import java.io.PipedOutputStream;
 import java.net.Socket;
 import java.util.List;
 
+import org.opennms.core.utils.InetAddressUtils;
 import org.opennms.core.utils.LogUtils;
 
 /**
@@ -349,7 +350,7 @@ final class TcpRecordHandler implements Runnable {
 
             return;
         } else {
-            LogUtils.debugf(this, "Thread started, remote is %s", m_connection.getInetAddress().getHostAddress());
+            LogUtils.debugf(this, "Thread started, remote is %s", InetAddressUtils.str(m_connection.getInetAddress()));
         }
 
         // get the input stream

@@ -9,6 +9,7 @@ import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
+import org.opennms.core.utils.InetAddressUtils;
 import org.opennms.netmgt.provision.detector.icmp.IcmpDetector;
 import org.opennms.netmgt.provision.support.NullDetectorMonitor;
 import org.opennms.test.mock.MockLogAppender;
@@ -44,6 +45,6 @@ public class IcmpDetectorTest {
     @IfProfileValue(name="runPingTests", value="true")
     public void testDetectorFail() throws Exception {
         m_icmpDetector = new IcmpDetector();
-        assertFalse(m_icmpDetector.isServiceDetected(InetAddress.getByName("0.0.0.0"), new NullDetectorMonitor()));
+        assertFalse(m_icmpDetector.isServiceDetected(InetAddressUtils.addr("0.0.0.0"), new NullDetectorMonitor()));
     }
 }

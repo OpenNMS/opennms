@@ -35,13 +35,13 @@
 //
 package org.opennms.netmgt.poller.monitors;
 
-import java.net.InetAddress;
 import java.net.UnknownHostException;
 import java.util.HashMap;
 import java.util.Map;
 
 import junit.framework.TestCase;
 
+import org.opennms.core.utils.InetAddressUtils;
 import org.opennms.netmgt.mock.MockMonitoredService;
 import org.opennms.netmgt.model.PollStatus;
 import org.opennms.netmgt.poller.MonitoredService;
@@ -63,7 +63,7 @@ public class LoopMonitorTest extends TestCase {
     public void testPoll() throws UnknownHostException {
         
         ServiceMonitor sm = new LoopMonitor();
-        MonitoredService svc = new MockMonitoredService(1, "Router", InetAddress.getByName("127.0.0.1"), "LOOP");
+        MonitoredService svc = new MockMonitoredService(1, "Router", InetAddressUtils.addr("127.0.0.1"), "LOOP");
         Map<String, Object> parms = new HashMap<String, Object>();
 
         parms.put("ip-match", "127.0.0.1-2");

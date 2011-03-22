@@ -2,6 +2,7 @@ package org.opennms.netmgt.provision.detector.wmi;
 
 import java.net.InetAddress;
 
+import org.opennms.core.utils.InetAddressUtils;
 import org.opennms.netmgt.provision.DetectorMonitor;
 import org.opennms.netmgt.provision.support.AbstractDetector;
 import org.opennms.protocols.wmi.WmiException;
@@ -97,8 +98,7 @@ public class WmiDetector extends AbstractDetector {
         for (int attempts = 0; attempts <= retries && !isAServer; attempts++) {
             WmiManager mgr = null;
             try {
-                // Create the WMI Manager
-                mgr = new WmiManager(host.getHostAddress(), user,
+                mgr = new WmiManager(InetAddressUtils.str(host), user,
                         pass, domain, matchType);
 
                 // Connect to the WMI server.

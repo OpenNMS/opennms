@@ -53,6 +53,7 @@ import java.net.InetAddress;
 import java.net.Socket;
 import java.util.Map;
 
+import org.opennms.core.utils.InetAddressUtils;
 import org.opennms.core.utils.ThreadCategory;
 import org.opennms.netmgt.capsd.AbstractTcpPlugin;
 import org.opennms.netmgt.capsd.ConnectionConfig;
@@ -184,13 +185,13 @@ public final class DominoIIOPPlugin extends AbstractTcpPlugin {
         // do it the right way won't be able to connect anyway
         //
         try {
-            retrieveIORText(config.getInetAddress().getHostAddress(), config.getIorPort());
+            retrieveIORText(InetAddressUtils.str(config.getInetAddress()), config.getIorPort());
             return true;
         } catch (FileNotFoundException e) {
             return true;
         } catch (Throwable e) {
             if (log.isDebugEnabled())
-                log.debug("DominoIIOPMonitor: failed to get the corba IOR from " + config.getInetAddress().getHostAddress());
+                log.debug("DominoIIOPMonitor: failed to get the corba IOR from " + InetAddressUtils.str(config.getInetAddress()));
             return false;
         }
     }

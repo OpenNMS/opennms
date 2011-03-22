@@ -24,6 +24,7 @@ package org.opennms.mock.snmp;
 import java.lang.reflect.Method;
 import java.net.InetAddress;
 
+import org.opennms.core.utils.InetAddressUtils;
 import org.springframework.core.io.DefaultResourceLoader;
 import org.springframework.core.io.Resource;
 import org.springframework.core.io.ResourceLoader;
@@ -68,7 +69,7 @@ public class JUnitSnmpAgentExecutionListener extends
              * Linux: 127.0.0.1
              * Mac OS: primary external interface
              */
-            host = InetAddress.getLocalHost().getHostAddress();
+            host = InetAddressUtils.str(InetAddress.getLocalHost());
             //host = "127.0.0.1";
         }
         

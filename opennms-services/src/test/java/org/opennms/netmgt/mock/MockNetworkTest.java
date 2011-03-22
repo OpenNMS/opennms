@@ -36,7 +36,6 @@
 
 package org.opennms.netmgt.mock;
 
-import java.net.InetAddress;
 import java.net.UnknownHostException;
 import java.util.Collection;
 import java.util.Enumeration;
@@ -45,6 +44,7 @@ import java.util.List;
 
 import junit.framework.TestCase;
 
+import org.opennms.core.utils.InetAddressUtils;
 import org.opennms.netmgt.EventConstants;
 import org.opennms.netmgt.config.PollOutagesConfig;
 import org.opennms.netmgt.config.PollerConfig;
@@ -387,7 +387,7 @@ public class MockNetworkTest extends TestCase {
     @SuppressWarnings("unchecked")
     public void testInvalidPoll() throws UnknownHostException {
         m_network.resetInvalidPollCount();
-        MonitoredService svc = new MockMonitoredService(99, "InvalidNode", InetAddress.getByName("1.1.1.1"), "ICMP");
+        MonitoredService svc = new MockMonitoredService(99, "InvalidNode", InetAddressUtils.addr("1.1.1.1"), "ICMP");
         ServiceMonitor monitor = m_pollerConfig.getServiceMonitor("ICMP");
         monitor.poll(svc, new HashMap());
         assertEquals(1, m_network.getInvalidPollCount());

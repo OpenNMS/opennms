@@ -7,6 +7,7 @@ import java.net.UnknownHostException;
 import junit.framework.TestCase;
 
 import org.apache.commons.io.FileUtils;
+import org.opennms.core.utils.InetAddressUtils;
 import org.opennms.netmgt.config.SnmpPeerFactory;
 import org.opennms.netmgt.snmp.SnmpAgentConfig;
 import org.opennms.netmgt.snmp.SnmpConfiguration;
@@ -45,10 +46,10 @@ public class SnmpConfigDaoTest extends TestCase {
     private void assertConfig(String addr, int maxVarsPerPdu, int version, String community) throws UnknownHostException {
         assertNotNull(m_snmpConfigDao);
 
-        SnmpAgentConfig config = m_snmpConfigDao.getAgentConfig(InetAddress.getByName(addr));
+        SnmpAgentConfig config = m_snmpConfigDao.getAgentConfig(InetAddressUtils.addr(addr));
         assertNotNull(config);
         
-        assertEquals(addr, config.getAddress().getHostAddress());
+        assertEquals(addr, InetAddressUtils.str(config.getAddress()));
         assertEquals(maxVarsPerPdu, config.getMaxVarsPerPdu());
         assertEquals(version, config.getVersion());
         assertEquals(community, config.getReadCommunity());
@@ -83,7 +84,7 @@ public class SnmpConfigDaoTest extends TestCase {
         assertConfig("192.168.1.7", 27, 1, "myPublic");
 
         // update range config
-        SnmpAgentConfig agentConfig = m_snmpConfigDao.getAgentConfig(InetAddress.getByName("192.168.1.3"));
+        SnmpAgentConfig agentConfig = m_snmpConfigDao.getAgentConfig(InetAddressUtils.addr("192.168.1.3"));
         agentConfig.setVersion(2);
         agentConfig.setReadCommunity("newcommunity");
         

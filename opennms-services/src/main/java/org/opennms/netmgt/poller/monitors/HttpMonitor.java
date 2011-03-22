@@ -65,6 +65,7 @@ import java.util.TreeMap;
 import org.apache.commons.lang.StringUtils;
 import org.opennms.core.utils.Base64;
 import org.opennms.core.utils.IPLike;
+import org.opennms.core.utils.InetAddressUtils;
 import org.opennms.core.utils.ParameterMap;
 import org.opennms.core.utils.TimeoutTracker;
 import org.opennms.netmgt.model.PollStatus;
@@ -272,7 +273,7 @@ public class HttpMonitor extends AbstractServiceMonitor {
             if (res) {
                 virtualHost = ((InetAddress) iface.getAddress()).getCanonicalHostName();
             } else {
-                virtualHost = ((InetAddress) iface.getAddress()).getHostAddress();
+                virtualHost = InetAddressUtils.str(((InetAddress) iface.getAddress()));
             }
         }
         return virtualHost;

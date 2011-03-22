@@ -51,6 +51,7 @@ import java.util.Properties;
 import org.apache.log4j.Level;
 import org.exolab.castor.xml.MarshalException;
 import org.exolab.castor.xml.ValidationException;
+import org.opennms.core.utils.InetAddressUtils;
 import org.opennms.core.utils.ParameterMap;
 import org.opennms.core.utils.PropertiesUtils;
 import org.opennms.netmgt.config.SnmpPeerFactory;
@@ -172,7 +173,8 @@ public class SnmpMonitor extends SnmpMonitorStrategy {
         //
         SnmpAgentConfig agentConfig = SnmpPeerFactory.getInstance().getAgentConfig(ipaddr);
         if (agentConfig == null) throw new RuntimeException("SnmpAgentConfig object not available for interface " + ipaddr);
-        log().debug("poll: setting SNMP peer attribute for interface " + ipaddr.getHostAddress());
+        final String hostAddress = InetAddressUtils.str(ipaddr);
+		log().debug("poll: setting SNMP peer attribute for interface " + hostAddress);
 
         // Get configuration parameters
         //
@@ -203,7 +205,7 @@ public class SnmpMonitor extends SnmpMonitorStrategy {
         svcParams.setProperty("timeout", String.valueOf(agentConfig.getTimeout()));
         svcParams.setProperty("retry", String.valueOf(agentConfig.getRetries()));
         svcParams.setProperty("retries", svcParams.getProperty("retry"));
-        svcParams.setProperty("ipaddr", ipaddr.getHostAddress());
+        svcParams.setProperty("ipaddr", hostAddress);
         svcParams.setProperty("port", String.valueOf(agentConfig.getPort()));
 
         if (log().isDebugEnabled()) log().debug("poll: service= SNMP address= " + agentConfig);
@@ -228,7 +230,7 @@ public class SnmpMonitor extends SnmpMonitorStrategy {
                 for(SnmpValue result : results) {
 
                     if (result != null) {
-                        log().debug("poll: SNMPwalk poll succeeded, addr=" + ipaddr.getHostAddress() + " oid=" + oid + " value=" + result);
+                        log().debug("poll: SNMPwalk poll succeeded, addr=" + hostAddress + " oid=" + oid + " value=" + result);
                         if (meetsCriteria(result, operator, operand)) {
                             matchCount++;
                         }
@@ -250,7 +252,7 @@ public class SnmpMonitor extends SnmpMonitorStrategy {
                 for(SnmpValue result : results) {
                     svcParams.setProperty("observedValue", result.toString());
                     if (result != null) {
-                        log().debug("poll: SNMPwalk poll succeeded, addr=" + ipaddr.getHostAddress() + " oid=" + oid + " value=" + result);
+                        log().debug("poll: SNMPwalk poll succeeded, addr=" + hostAddress + " oid=" + oid + " value=" + result);
                         if (meetsCriteria(result, operator, operand)) {
                             status = PollStatus.available();
                             if ("false".equals(matchstr)) {
@@ -276,7 +278,7 @@ public class SnmpMonitor extends SnmpMonitorStrategy {
 
                 if (result != null) {
                     svcParams.setProperty("observedValue", result.toString());
-                    log().debug("poll: SNMP poll succeeded, addr=" + ipaddr.getHostAddress() + " oid=" + oid + " value=" + result);
+                    log().debug("poll: SNMP poll succeeded, addr=" + hostAddress + " oid=" + oid + " value=" + result);
                     
                     if (meetsCriteria(result, operator, operand)) {
                         status = PollStatus.available();
@@ -284,7 +286,7 @@ public class SnmpMonitor extends SnmpMonitorStrategy {
                         status = PollStatus.unavailable(PropertiesUtils.substitute(reasonTemplate, svcParams));
                     }
                 } else {
-                    status = logDown(Level.DEBUG, "SNMP poll failed, addr=" + ipaddr.getHostAddress() + " oid=" + oid);
+                    status = logDown(Level.DEBUG, "SNMP poll failed, addr=" + hostAddress + " oid=" + oid);
                 }
             }
 
@@ -293,7 +295,7 @@ public class SnmpMonitor extends SnmpMonitorStrategy {
         } catch (IllegalArgumentException e) {
             status = logDown(Level.ERROR, "Invalid Snmp Criteria: " + e.getMessage());
         } catch (Throwable t) {
-            status = logDown(Level.WARN, "Unexpected exception during SNMP poll of interface " + ipaddr.getHostAddress(), t);
+            status = logDown(Level.WARN, "Unexpected exception during SNMP poll of interface " + hostAddress, t);
         }
 
         return status;

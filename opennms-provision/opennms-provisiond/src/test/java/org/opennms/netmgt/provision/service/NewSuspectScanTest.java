@@ -40,7 +40,6 @@ package org.opennms.netmgt.provision.service;
 import static org.junit.Assert.assertEquals;
 
 import java.io.File;
-import java.net.InetAddress;
 import java.util.Properties;
 import java.util.concurrent.ExecutionException;
 
@@ -52,6 +51,7 @@ import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.opennms.core.concurrent.PausibleScheduledThreadPoolExecutor;
 import org.opennms.core.tasks.Task;
+import org.opennms.core.utils.InetAddressUtils;
 import org.opennms.mock.snmp.JUnitSnmpAgent;
 import org.opennms.mock.snmp.JUnitSnmpAgentExecutionListener;
 import org.opennms.netmgt.config.SnmpPeerFactory;
@@ -201,7 +201,7 @@ public class NewSuspectScanTest {
         assertEquals(0, getSnmpInterfaceDao().countAll());
 
 
-        NewSuspectScan scan = m_provisioner.createNewSuspectScan(InetAddress.getByName("172.20.2.201"));
+        NewSuspectScan scan = m_provisioner.createNewSuspectScan(InetAddressUtils.addr("172.20.2.201"));
         runScan(scan);
 
         // wait for NodeScan triggered by NodeAdded to complete
@@ -244,7 +244,7 @@ public class NewSuspectScanTest {
         assertEquals(0, getSnmpInterfaceDao().countAll());
         
         
-        NewSuspectScan scan = m_provisioner.createNewSuspectScan(InetAddress.getByName("172.20.2.201"));
+        NewSuspectScan scan = m_provisioner.createNewSuspectScan(InetAddressUtils.addr("172.20.2.201"));
         runScan(scan);
         
         //Verify distpoller count

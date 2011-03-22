@@ -144,7 +144,7 @@
     if( telnetServices != null && telnetServices.length > 0 ) {
         ArrayList<InetAddress> ips = new ArrayList<InetAddress>();
         for( int i=0; i < telnetServices.length; i++ ) {
-            ips.add(InetAddress.getByName(telnetServices[i].getIpAddress()));
+            ips.add(InetAddressUtils.addr(telnetServices[i].getIpAddress()));
         }
         
         InetAddress lowest = InetAddressUtils.getLowestInetAddress(ips);
@@ -161,7 +161,7 @@
     if( httpServices != null && httpServices.length > 0 ) {
         ArrayList<InetAddress> ips = new ArrayList<InetAddress>();
         for( int i=0; i < httpServices.length; i++ ) {
-            ips.add(InetAddress.getByName(httpServices[i].getIpAddress()));
+            ips.add(InetAddressUtils.addr(httpServices[i].getIpAddress()));
         }
 
         InetAddress lowest = InetAddressUtils.getLowestInetAddress(ips);
@@ -178,7 +178,7 @@
     if( dellServices != null && dellServices.length > 0 ) {
         ArrayList<InetAddress> ips = new ArrayList<InetAddress>();
         for( int i=0; i < dellServices.length; i++ ) {
-            ips.add(InetAddress.getByName(dellServices[i].getIpAddress()));
+            ips.add(InetAddressUtils.addr(dellServices[i].getIpAddress()));
         }
 
         InetAddress lowest = InetAddressUtils.getLowestInetAddress(ips);

@@ -52,6 +52,7 @@ import org.exolab.castor.xml.MarshalException;
 import org.exolab.castor.xml.ValidationException;
 import org.opennms.core.concurrent.RunnableConsumerThreadPool;
 import org.opennms.core.utils.DBUtils;
+import org.opennms.core.utils.InetAddressUtils;
 import org.opennms.core.utils.ThreadCategory;
 import org.opennms.netmgt.config.DataSourceFactory;
 import org.opennms.netmgt.config.VulnscandConfigFactory;
@@ -455,13 +456,9 @@ public class Vulnscand extends AbstractServiceDaemon {
 						//nextAddress = nextAddress + "/" + nextAddress;
 						log().debug("JOHAN LevelAddresses : " + nextAddress);
 					}
-					try {
-						// All we know right now is the IP.....
-						InetAddress frump = InetAddress.getByName(nextAddress);
-						addToKnownAddresses(frump, level);
-					} catch (UnknownHostException ex) {
-						log().error("Could not add invalid address to schedule: " + nextAddress, ex);
-					}
+					// All we know right now is the IP.....
+					InetAddress frump = InetAddressUtils.addr(nextAddress);
+					addToKnownAddresses(frump, level);
 				}
 			}
 		} else {

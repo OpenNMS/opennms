@@ -37,6 +37,7 @@ import java.net.InetAddress;
 import java.util.ArrayList;
 import java.util.Map;
 
+import org.opennms.core.utils.InetAddressUtils;
 import org.opennms.core.utils.LogUtils;
 import org.opennms.core.utils.ParameterMap;
 import org.opennms.core.utils.TimeoutTracker;
@@ -60,9 +61,6 @@ import org.opennms.protocols.wmi.WmiResult;
  *
  * @author <A HREF="mailto:matt.raykowski@gmail.com">Matt Raykowski</A>
  * @author <A HREF="http://www.opennms.org/">OpenNMS </A>
- * @author <A HREF="mailto:matt.raykowski@gmail.com">Matt Raykowski</A>
- * @author <A HREF="http://www.opennms.org/">OpenNMS </A>
- * @version $Id: $
  */
 
 @Distributable
@@ -152,7 +150,8 @@ public class WmiMonitor extends AbstractServiceMonitor {
 
         final TimeoutTracker tracker = new TimeoutTracker(parameters, agentConfig.getRetries(), agentConfig.getTimeout());
 
-        LogUtils.debugf(this, "poll: address = %s, user = %s, %s", ipv4Addr.getHostAddress(), agentConfig.getUsername(), tracker);
+        final String hostAddress = InetAddressUtils.str(ipv4Addr);
+		LogUtils.debugf(this, "poll: address = %s, user = %s, %s", hostAddress, agentConfig.getUsername(), tracker);
         
         WmiManager mgr = null;
         
@@ -164,7 +163,7 @@ public class WmiMonitor extends AbstractServiceMonitor {
 				LogUtils.debugf(this, "poll: creating WmiManager object.");
 
                 // Create a client, set up details and connect.
-				mgr = new WmiManager(ipv4Addr.getHostAddress(), agentConfig.getUsername(), agentConfig.getPassword(), agentConfig.getDomain(), matchType);
+				mgr = new WmiManager(hostAddress, agentConfig.getUsername(), agentConfig.getPassword(), agentConfig.getDomain(), matchType);
 
 				mgr.setTimeout(tracker.getSoTimeout());
 				mgr.init();

@@ -43,6 +43,7 @@ import javax.naming.Context;
 import javax.naming.InitialContext;
 import javax.naming.NamingException;
 
+import org.opennms.core.utils.InetAddressUtils;
 import org.opennms.core.utils.LogUtils;
 import org.opennms.core.utils.ParameterMap;
 import org.opennms.netmgt.provision.support.jmx.connectors.IsolatingClassLoader.InvalidContextClassLoaderException;
@@ -119,7 +120,7 @@ public class JBossConnectionFactory {
 
                     //"org.jboss.naming.NamingContextFactory"
                     props.put(Context.INITIAL_CONTEXT_FACTORY, "org.jnp.interfaces.NamingContextFactory");
-                    props.put(Context.PROVIDER_URL, "jnp://" + address.getHostAddress() + ":" + port);
+                    props.put(Context.PROVIDER_URL, "jnp://" + InetAddressUtils.str(address) + ":" + port);
                     props.put(Context.URL_PKG_PREFIXES, "org.jboss.naming:org.jnp.interfaces");
                     props.put("jnp.sotimeout", timeout);
 
@@ -147,7 +148,7 @@ public class JBossConnectionFactory {
 
                     Hashtable<String, String> props = new Hashtable<String, String>();
                     props.put(Context.INITIAL_CONTEXT_FACTORY, "org.jboss.naming.HttpNamingContextFactory");
-                    props.put(Context.PROVIDER_URL, "http://" + address.getHostAddress() + ":" + port + "/invoker/JNDIFactory");
+                    props.put(Context.PROVIDER_URL, "http://" + InetAddressUtils.str(address) + ":" + port + "/invoker/JNDIFactory");
                     props.put("jnp.sotimeout", timeout);
 
                     ctx = new InitialContext(props);
@@ -156,7 +157,7 @@ public class JBossConnectionFactory {
                     wrapper = new JBossConnectionWrapper(MBeanServerProxy.buildServerProxy(rmiAdaptor));
 
                 } catch (Throwable e) {
-                    //log.debug("JBossConnectionFactory - unable to get MBeanServer using HTTP on " + address.getHostAddress() + invokerSuffix);
+                    //log.debug("JBossConnectionFactory - unable to get MBeanServer using HTTP on " + InetAddressUtils.str(address) + invokerSuffix);
                 } finally {
                     try {
                         if (ctx != null) {

@@ -60,6 +60,7 @@ import java.util.List;
 
 import org.apache.commons.io.IOUtils;
 import org.opennms.core.fiber.Fiber;
+import org.opennms.core.utils.InetAddressUtils;
 import org.opennms.core.utils.LogUtils;
 import org.opennms.netmgt.dao.jaxb.JaxbUtils;
 import org.opennms.netmgt.eventd.adaptors.EventHandler;
@@ -203,7 +204,7 @@ final class TcpStreamHandler implements Runnable {
          */
         final LinkedList<Object> pipeXchange = new LinkedList<Object>();
         final TcpRecordHandler chunker = new TcpRecordHandler(m_connection, pipeXchange);
-        final Thread tchunker = new Thread(chunker, "TCPRecord Chunker[" + m_connection.getInetAddress().getHostAddress() + ":" + m_connection.getPort() + "]");
+        final Thread tchunker = new Thread(chunker, "TCPRecord Chunker[" + InetAddressUtils.str(m_connection.getInetAddress()) + ":" + m_connection.getPort() + "]");
         synchronized (tchunker) {
             tchunker.start();
             try {

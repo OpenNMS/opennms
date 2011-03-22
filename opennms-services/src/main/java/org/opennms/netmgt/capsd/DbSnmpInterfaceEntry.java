@@ -40,7 +40,6 @@
 package org.opennms.netmgt.capsd;
 
 import java.net.InetAddress;
-import java.net.UnknownHostException;
 import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
@@ -48,6 +47,7 @@ import java.sql.SQLException;
 import java.sql.Types;
 
 import org.opennms.core.utils.DBUtils;
+import org.opennms.core.utils.InetAddressUtils;
 import org.opennms.core.utils.ThreadCategory;
 import org.opennms.netmgt.config.DataSourceFactory;
 
@@ -231,7 +231,7 @@ public final class DbSnmpInterfaceEntry {
             stmt.setInt(ndx++, m_ifIndex);
 
             if ((m_changed & CHANGED_NETMASK) == CHANGED_NETMASK) {
-                stmt.setString(ndx++, m_netmask.getHostAddress());
+                stmt.setString(ndx++, InetAddressUtils.str(m_netmask));
             }
 
             if ((m_changed & CHANGED_PHYSADDR) == CHANGED_PHYSADDR) {
@@ -372,7 +372,7 @@ public final class DbSnmpInterfaceEntry {
                 if (m_netmask == null) {
                     stmt.setNull(ndx++, Types.VARCHAR);
                 } else {
-                    stmt.setString(ndx++, m_netmask.getHostAddress());
+                    stmt.setString(ndx++, InetAddressUtils.str(m_netmask));
                 }
             }
 
@@ -510,13 +510,7 @@ public final class DbSnmpInterfaceEntry {
             // get the netmask
             String str = rset.getString(ndx++);
             if (str != null && !rset.wasNull()) {
-                try {
-                    m_netmask = InetAddress.getByName(str);
-                } catch (UnknownHostException e) {
-                    log.warn("DbSnmpInterface.load: the netmask field was "
-                             + "malformed: nodeid = " + m_nodeId + ", netmask = "
-                             + str, e);
-                }
+            	m_netmask = InetAddressUtils.addr(str);
             }
 
             // get the physical address
@@ -1041,7 +1035,7 @@ public final class DbSnmpInterfaceEntry {
 
         buf.append("from database   = ").append(m_fromDb).append(sep);
         buf.append("node identifier = ").append(m_nodeId).append(sep);
-        buf.append("IP Netmask      = ").append(m_netmask.getHostAddress()).append(sep);
+        buf.append("IP Netmask      = ").append(InetAddressUtils.str(m_netmask)).append(sep);
         buf.append("MAC             = ").append(m_physAddr).append(sep);
         buf.append("ifIndex         = ").append(m_ifIndex).append(sep);
         buf.append("ifDescr         = ").append(m_ifDescription).append(sep);

@@ -314,7 +314,7 @@ final class BroadcastEventProcessor implements EventListener {
         synchronized (m_thresholdableServices) {
             for (ThresholdableService tSvc : m_thresholdableServices) {
                 InetAddress addr = (InetAddress) tSvc.getAddress();
-                if (addr.getHostAddress().equals(event.getInterface())) {
+                if (addr.equals(event.getInterface())) {
                     synchronized (tSvc) {
                         // Got a match! Retrieve the ThresholderUpdates object
                         // associated
@@ -373,7 +373,7 @@ final class BroadcastEventProcessor implements EventListener {
                     ThresholderUpdates updates = tSvc.getThresholderUpdates();
                     updates.markForReinitialization();
                     if (log.isDebugEnabled())
-                        log.debug("thresholdConfigurationChangedHandler: marking " + addr.getHostAddress() + " for reinitialization for service SNMP.");
+                        log.debug("thresholdConfigurationChangedHandler: marking " + InetAddressUtils.str(addr) + " for reinitialization for service SNMP.");
                 }
             }
         }
@@ -475,7 +475,8 @@ final class BroadcastEventProcessor implements EventListener {
                     tSvc = liter.next();
 
                     InetAddress addr = (InetAddress) tSvc.getAddress();
-                    if (addr.getHostAddress().equals(oldPrimaryIfAddr)) {
+                    oldPrimaryIfAddr = InetAddressUtils.normalize(oldPrimaryIfAddr);
+                    if (InetAddressUtils.str(addr).equals(oldPrimaryIfAddr)) {
                         synchronized (tSvc) {
                             // Got a match! Retrieve the ThresholderUpdates
                             // object associated
@@ -587,7 +588,7 @@ final class BroadcastEventProcessor implements EventListener {
                 tSvc = iter.next();
 
                 InetAddress addr = (InetAddress) tSvc.getAddress();
-                if (addr.getHostAddress().equals(event.getInterface())) {
+                if (addr.equals(event.getInterface())) {
                     synchronized (tSvc) {
                         // Got a match!
                         if (log.isDebugEnabled())

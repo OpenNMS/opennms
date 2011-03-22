@@ -37,6 +37,7 @@ import java.util.List;
 
 import org.easymock.EasyMock;
 import org.opennms.core.concurrent.BarrierSignaler;
+import org.opennms.core.utils.InetAddressUtils;
 import org.opennms.mock.snmp.MockSnmpAgent;
 import org.opennms.netmgt.collectd.AttributeVisitor;
 import org.opennms.netmgt.collectd.CollectionAgent;
@@ -111,7 +112,7 @@ public class SnmpCollectorTestCase extends OpenNMSTestCase {
         setStartEventd(false);
         super.setUp();
         
-        m_mockAgent = MockSnmpAgent.createAgentAndRun(new ClassPathResource("org/opennms/netmgt/snmp/snmpTestData1.properties"), myLocalHost().getHostAddress() + "/9161");
+        m_mockAgent = MockSnmpAgent.createAgentAndRun(new ClassPathResource("org/opennms/netmgt/snmp/snmpTestData1.properties"), InetAddressUtils.str(myLocalHost()) + "/9161");
         
         m_config = new MockDataCollectionConfig();
         DataCollectionConfigFactory.setInstance(m_config);

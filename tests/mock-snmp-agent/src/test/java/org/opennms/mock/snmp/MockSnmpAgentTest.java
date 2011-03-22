@@ -39,11 +39,11 @@
 package org.opennms.mock.snmp;
 
 import java.io.IOException;
-import java.net.InetAddress;
 import java.net.UnknownHostException;
 
 import junit.framework.TestCase;
 
+import org.opennms.core.utils.InetAddressUtils;
 import org.opennms.netmgt.snmp.SnmpAgentConfig;
 import org.opennms.netmgt.snmp.SnmpObjId;
 import org.opennms.netmgt.snmp.SnmpUtils;
@@ -225,7 +225,7 @@ public class MockSnmpAgentTest extends TestCase {
 
         CommunityTarget target = new CommunityTarget();
         target.setCommunity(new OctetString("public"));
-        target.setAddress(new UdpAddress(InetAddress.getByName("127.0.0.1"), 1691));
+        target.setAddress(new UdpAddress(InetAddressUtils.addr("127.0.0.1"), 1691));
         target.setVersion(SnmpConstants.version1);
 
         TransportMapping transport = null;
@@ -263,7 +263,7 @@ public class MockSnmpAgentTest extends TestCase {
 
         CommunityTarget target = new CommunityTarget();
         target.setCommunity(new OctetString("public"));
-        target.setAddress(new UdpAddress(InetAddress.getByName("127.0.0.1"), 1691));
+        target.setAddress(new UdpAddress(InetAddressUtils.addr("127.0.0.1"), 1691));
         target.setVersion(SnmpConstants.version2c);
 
         TransportMapping transport = null;
@@ -304,7 +304,7 @@ public class MockSnmpAgentTest extends TestCase {
         UserTarget target = new UserTarget();
         target.setSecurityLevel(SecurityLevel.AUTH_PRIV);
         target.setSecurityName(userId);
-        target.setAddress(new UdpAddress(InetAddress.getByName("127.0.0.1"), 1691));
+        target.setAddress(new UdpAddress(InetAddressUtils.addr("127.0.0.1"), 1691));
         target.setVersion(SnmpConstants.version3);
         target.setTimeout(5000);
         
@@ -343,7 +343,7 @@ public class MockSnmpAgentTest extends TestCase {
 
     private static SnmpAgentConfig getAgentConfig() throws UnknownHostException {
         SnmpAgentConfig config = new SnmpAgentConfig();
-        config.setAddress(InetAddress.getByName("127.0.0.1"));
+        config.setAddress(InetAddressUtils.addr("127.0.0.1"));
         config.setPort(1691);
         config.setVersion(SnmpAgentConfig.VERSION3);
         return config;

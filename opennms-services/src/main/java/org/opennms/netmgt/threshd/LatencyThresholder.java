@@ -51,6 +51,7 @@ import java.util.List;
 import java.util.Map;
 
 import org.opennms.core.utils.DBUtils;
+import org.opennms.core.utils.InetAddressUtils;
 import org.opennms.core.utils.ParameterMap;
 import org.opennms.core.utils.ThreadCategory;
 import org.opennms.netmgt.config.DataSourceFactory;
@@ -222,7 +223,8 @@ final class LatencyThresholder implements ServiceThresholder {
         //
         int nodeId = -1;
 
-        try {
+        final String hostAddress = InetAddressUtils.str(ipAddr);
+		try {
             // Prepare & execute the SQL statement to get the 'nodeid',
             // 'ifIndex' and 'isSnmpPrimary' fields from the ipInterface table.
             //
@@ -230,7 +232,7 @@ final class LatencyThresholder implements ServiceThresholder {
             try {
                 stmt = dbConn.prepareStatement(SQL_GET_NODEID);
                 d.watch(stmt);
-                stmt.setString(1, ipAddr.getHostAddress()); // interface address
+                stmt.setString(1, hostAddress); // interface address
                 ResultSet rs = stmt.executeQuery();
                 d.watch(rs);
                 if (rs.next()) {
@@ -241,14 +243,14 @@ final class LatencyThresholder implements ServiceThresholder {
             } catch (SQLException sqle) {
                 if (log().isDebugEnabled())
                     log().debug("initialize: SQL exception!!", sqle);
-                throw new RuntimeException("SQL exception while attempting to retrieve node id for interface " + ipAddr.getHostAddress());
+                throw new RuntimeException("SQL exception while attempting to retrieve node id for interface " + hostAddress);
             }
 
             if (log().isDebugEnabled())
-                log().debug("initialize: db retrieval info: nodeid = " + nodeId + ", address = " + ipAddr.getHostAddress());
+                log().debug("initialize: db retrieval info: nodeid = " + nodeId + ", address = " + hostAddress);
 
             if (nodeId == -1)
-                throw new RuntimeException("Unable to retrieve node id for interface " + ipAddr.getHostAddress());
+                throw new RuntimeException("Unable to retrieve node id for interface " + hostAddress);
         } finally {
             d.cleanUp();
         }
@@ -325,14 +327,14 @@ final class LatencyThresholder implements ServiceThresholder {
         // Debug
         //
         if (log().isDebugEnabled()) {
-            log().debug("initialize: dumping interface thresholds defined for " + ipAddr.getHostAddress() + "/" + groupName + ":");
+            log().debug("initialize: dumping interface thresholds defined for " + hostAddress + "/" + groupName + ":");
             Iterator<ThresholdEntity> iter = thresholdMap.values().iterator();
             while (iter.hasNext())
                 log().debug(iter.next().toString());
         }
 
         if (log().isDebugEnabled())
-            log().debug("initialize: initialization completed for " + ipAddr.getHostAddress());
+            log().debug("initialize: initialization completed for " + hostAddress);
         return;
     }
 
@@ -361,7 +363,7 @@ final class LatencyThresholder implements ServiceThresholder {
             //
             // NodeId attribute
             if (log().isDebugEnabled())
-                log().debug("check: service= " + m_svcName + " interface= " + latIface.getHostName() + " nodeId= " + latIface.getNodeId() + " thresholding-group=" + latParms.getGroupName() + " interval=" + latParms.getInterval() + "ms");
+                log().debug("check: service= " + m_svcName + " interface= " + latIface.getHostAddress() + " nodeId= " + latIface.getNodeId() + " thresholding-group=" + latParms.getGroupName() + " interval=" + latParms.getInterval() + "ms");
             
             // RRD Repository attribute
             //
@@ -427,7 +429,7 @@ final class LatencyThresholder implements ServiceThresholder {
 
         // Sanity Check
         if (latIface.getInetAddress() == null || thresholdMap == null) {
-            throw new ThresholdingException("check: Threshold checking failed for " + m_svcName + "/" + latIface.getHostName(), THRESHOLDING_FAILED);
+            throw new ThresholdingException("check: Threshold checking failed for " + m_svcName + "/" + latIface.getHostAddress(), THRESHOLDING_FAILED);
         }
         
         Events events = new Events();

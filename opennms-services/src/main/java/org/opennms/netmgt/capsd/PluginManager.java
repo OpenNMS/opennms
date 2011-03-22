@@ -38,7 +38,6 @@
 package org.opennms.netmgt.capsd;
 
 import java.net.InetAddress;
-import java.net.UnknownHostException;
 import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.List;
@@ -153,13 +152,9 @@ public class PluginManager implements InitializingBean {
                 Iterator<String> saddrIter = saddrs.iterator();
                 while (saddrIter.hasNext() && !found) {
                     String saddr = saddrIter.next();
-                    try {
-                        InetAddress taddr = InetAddress.getByName(saddr);
-                        if (taddr.equals(address)) {
-                            found = true;
-                        }
-                    } catch (UnknownHostException e) {
-                        log().warn("CapsdConfigFactory: failed to convert address " + saddr + " to InetAddress: " + e, e);
+                    InetAddress taddr = InetAddressUtils.addr(saddr);
+                    if (taddr.equals(address)) {
+                        found = true;
                     }
                 }
     
@@ -170,18 +165,16 @@ public class PluginManager implements InitializingBean {
                     Range rng = rangeIter.next();
     
                     InetAddress start = null;
-                    try {
-                        start = InetAddress.getByName(rng.getBegin());
-                    } catch (UnknownHostException e) {
-                        log().warn("CapsdConfigFactory: failed to convert address " + rng.getBegin() + " to InetAddress", e);
+                    start = InetAddressUtils.addr(rng.getBegin());
+                    if (start == null) {
+                        log().warn("CapsdConfigFactory: failed to convert address " + rng.getBegin() + " to InetAddress");
                         continue;
                     }
     
                     InetAddress stop = null;
-                    try {
-                        stop = InetAddress.getByName(rng.getEnd());
-                    } catch (UnknownHostException e) {
-                        log().warn("CapsdConfigFactory: failed to convert address " + rng.getEnd() + " to InetAddress", e);
+                    stop = InetAddressUtils.addr(rng.getEnd());
+                    if (stop == null) {
+                        log().warn("CapsdConfigFactory: failed to convert address " + rng.getEnd() + " to InetAddress");
                         continue;
                     }
     

@@ -36,6 +36,7 @@ import java.net.InetAddress;
 import java.util.Map;
 import java.util.regex.Pattern;
 
+import org.opennms.core.utils.InetAddressUtils;
 import org.opennms.netmgt.config.SnmpPeerFactory;
 import org.opennms.netmgt.provision.DetectorMonitor;
 import org.opennms.netmgt.snmp.SnmpAgentConfig;
@@ -184,7 +185,7 @@ public class DiskUsageDetector extends SnmpDetector {
             }
 
             for (Map.Entry<SnmpInstId, SnmpValue> e : descrResults.entrySet()) { 
-                log().debug("capsd: SNMPwalk succeeded, addr=" + address.getHostAddress() + " oid=" + hrStorageDescrSnmpObject + " instance=" + e.getKey() + " value=" + e.getValue());
+                log().debug("capsd: SNMPwalk succeeded, addr=" + InetAddressUtils.str(address) + " oid=" + hrStorageDescrSnmpObject + " instance=" + e.getKey() + " value=" + e.getValue());
               
                 if (isMatch(e.getValue().toString(), getDisk(), matchType)) {
                     log().debug("Found disk '" + getDisk() + "' (matching hrStorageDescr was '" + e.getValue().toString() + "'");

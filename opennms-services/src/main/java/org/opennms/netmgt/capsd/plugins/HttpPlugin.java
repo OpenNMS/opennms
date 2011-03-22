@@ -56,6 +56,7 @@ import java.util.Map;
 import java.util.StringTokenizer;
 import java.util.regex.Pattern;
 
+import org.opennms.core.utils.InetAddressUtils;
 import org.opennms.core.utils.ThreadCategory;
 import org.opennms.netmgt.capsd.AbstractTcpPlugin;
 import org.opennms.netmgt.capsd.ConnectionConfig;
@@ -289,10 +290,10 @@ public class HttpPlugin extends AbstractTcpPlugin {
                 }
             }
         } catch (SocketException e) {
-            log.debug(getPluginName() + ": a protocol error occurred talking to host " + config.getInetAddress().getHostAddress(), e);
+            log.debug(getPluginName() + ": a protocol error occurred talking to host " + InetAddressUtils.str(config.getInetAddress()), e);
             isAServer = false;
         } catch (NumberFormatException e) {
-            log.debug(getPluginName() + ": failed to parse response code from host " + config.getInetAddress().getHostAddress(), e);
+            log.debug(getPluginName() + ": failed to parse response code from host " + InetAddressUtils.str(config.getInetAddress()), e);
             isAServer = false;
         }
         return isAServer;

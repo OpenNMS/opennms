@@ -179,7 +179,7 @@ public class SnmpEventInfo {
         if (firstIPAddress == null) {
             m_firstIPAddress = null;
         } else {
-            m_firstIPAddress = firstIPAddress.getHostAddress();
+            m_firstIPAddress = InetAddressUtils.str(firstIPAddress);
         }
     }
     /**
@@ -212,7 +212,7 @@ public class SnmpEventInfo {
         if (lastIPAddress == null) {
             m_lastIPAddress = null;
         } else {
-            m_lastIPAddress = lastIPAddress.getHostAddress();
+            m_lastIPAddress = InetAddressUtils.str(lastIPAddress);
         }
     }
 

@@ -35,6 +35,7 @@ import java.net.InetAddress;
 
 import jcifs.netbios.NbtAddress;
 
+import org.opennms.core.utils.InetAddressUtils;
 import org.opennms.netmgt.provision.detector.simple.request.LineOrientedRequest;
 import org.opennms.netmgt.provision.detector.smb.response.NbtAddressResponse;
 import org.opennms.netmgt.provision.support.Client;
@@ -60,7 +61,7 @@ public class SmbClient implements Client<LineOrientedRequest, NbtAddressResponse
 
     /** {@inheritDoc} */
     public void connect(InetAddress address, int port, int timeout) throws IOException, Exception {
-       m_address = address.getHostAddress();
+       m_address = InetAddressUtils.str(address);
        m_nbtAddress = NbtAddress.getByName(m_address);
     }
 

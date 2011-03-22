@@ -35,16 +35,14 @@
 //
 package org.opennms.netmgt.provision.service.operations;
 
-import java.net.InetAddress;
-import java.net.UnknownHostException;
-
+import org.opennms.core.utils.InetAddressUtils;
 import org.opennms.netmgt.config.modelimport.types.InterfaceSnmpPrimaryType;
 import org.opennms.netmgt.model.OnmsCategory;
 import org.opennms.netmgt.model.OnmsIpInterface;
+import org.opennms.netmgt.model.OnmsIpInterface.PrimaryType;
 import org.opennms.netmgt.model.OnmsMonitoredService;
 import org.opennms.netmgt.model.OnmsNode;
 import org.opennms.netmgt.model.OnmsServiceType;
-import org.opennms.netmgt.model.OnmsIpInterface.PrimaryType;
 import org.opennms.netmgt.provision.service.ProvisionService;
 import org.springframework.beans.BeanWrapper;
 import org.springframework.beans.BeanWrapperImpl;
@@ -132,14 +130,7 @@ public abstract class SaveOrUpdateOperation extends ImportOperation {
         m_currentInterface.setIsSnmpPrimary(PrimaryType.get(snmpPrimary.toString()));
         
         if (InterfaceSnmpPrimaryType.P.equals(snmpPrimary)) {
-
-            try {
-                m_scanManager = new ScanManager(InetAddress.getByName(ipAddr));
-            } catch (UnknownHostException e) {
-                String msg = String.format("Unable to resolve address of snmpPrimary interface for node %s with address '%s'",m_node.getLabel(), ipAddr);
-                log().error(msg, e);
-            }
-
+                m_scanManager = new ScanManager(InetAddressUtils.addr(ipAddr));
         }
         
         //FIXME: verify this doesn't conflict with constructor.  The constructor already adds this

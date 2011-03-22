@@ -36,11 +36,11 @@
 package org.opennms.netmgt.importer.operations;
 
 import java.net.InetAddress;
-import java.net.UnknownHostException;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
+import org.opennms.core.utils.InetAddressUtils;
 import org.opennms.core.utils.ThreadCategory;
 import org.opennms.netmgt.capsd.IfSnmpCollector;
 import org.opennms.netmgt.capsd.snmp.IfTableEntry;
@@ -51,11 +51,11 @@ import org.opennms.netmgt.dao.NodeDao;
 import org.opennms.netmgt.dao.ServiceTypeDao;
 import org.opennms.netmgt.model.OnmsCategory;
 import org.opennms.netmgt.model.OnmsIpInterface;
+import org.opennms.netmgt.model.OnmsIpInterface.PrimaryType;
 import org.opennms.netmgt.model.OnmsMonitoredService;
 import org.opennms.netmgt.model.OnmsNode;
 import org.opennms.netmgt.model.OnmsServiceType;
 import org.opennms.netmgt.model.OnmsSnmpInterface;
-import org.opennms.netmgt.model.OnmsIpInterface.PrimaryType;
 import org.opennms.netmgt.xml.event.Event;
 import org.springframework.beans.BeanWrapper;
 import org.springframework.beans.BeanWrapperImpl;
@@ -131,11 +131,7 @@ public abstract class AbstractSaveOrUpdateOperation extends AbstractImportOperat
         //m_currentInterface.setIpStatus(status == 3 ? new Integer(3) : new Integer(1));
         
         if (InterfaceSnmpPrimaryType.P.equals(snmpPrimary)) {
-        	try {
-        		m_collector = new IfSnmpCollector(InetAddress.getByName(ipAddr));
-        	} catch (UnknownHostException e) {
-        		log().error("Unable to resolve address of snmpPrimary interface for node "+m_node.getLabel(), e);
-        	}
+        	m_collector = new IfSnmpCollector(InetAddressUtils.addr(ipAddr));
         }
         
         //FIXME: verify this doesn't conflict with constructor.  The constructor already adds this
@@ -296,7 +292,7 @@ public abstract class AbstractSaveOrUpdateOperation extends AbstractImportOperat
 	private String getNetMask(int ifIndex) {
 		InetAddress[] ifAddressAndMask = m_collector.getIfAddressAndMask(ifIndex);
 		if (ifAddressAndMask != null && ifAddressAndMask.length > 1 && ifAddressAndMask[1] != null) {
-            return ifAddressAndMask[1].getHostAddress();
+            return InetAddressUtils.str(ifAddressAndMask[1]);
         }
 		return null;
 	}
@@ -308,7 +304,7 @@ public abstract class AbstractSaveOrUpdateOperation extends AbstractImportOperat
 //
 //    	log().info("Resolving Hostname for "+ipIf.getIpAddress());
 //		try {
-//			InetAddress addr = InetAddress.getByName(ipIf.getIpAddress());
+//			InetAddress addr = InetAddressUtils.addr(ipIf.getIpAddress());
 //			ipIf.setIpHostName(addr.getHostName());
 //		} catch (Throwable e) {
 //			if (ipIf.getIpHostName() == null)

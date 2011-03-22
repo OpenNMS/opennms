@@ -39,7 +39,6 @@ package org.opennms.netmgt.provision.service;
 import java.net.InetAddress;
 import java.net.MalformedURLException;
 import java.net.URL;
-import java.net.UnknownHostException;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
@@ -567,13 +566,11 @@ public class Provisioner implements SpringServiceDaemon {
         Runnable r = new Runnable() {
             public void run() {
                 try {
-                    InetAddress addr = InetAddress.getByName(ip);
+                    InetAddress addr = InetAddressUtils.addr(ip);
                     NewSuspectScan scan = createNewSuspectScan(addr);
                     Task t = scan.createTask();
                     t.schedule();
                     t.waitFor();
-                } catch (UnknownHostException ex) {
-                    log().error("Unable to convert address "+ip+" from "+uei+" event to InetAddress", ex);
                 } catch (InterruptedException ex) {
                     log().error("Task interrupted waiting for new suspect scan of "+ip+" to finish", ex);
                 } catch (ExecutionException ex) {

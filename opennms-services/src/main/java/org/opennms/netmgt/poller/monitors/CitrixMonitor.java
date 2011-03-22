@@ -57,6 +57,7 @@ import java.net.Socket;
 import java.util.Map;
 
 import org.apache.log4j.Level;
+import org.opennms.core.utils.InetAddressUtils;
 import org.opennms.core.utils.ParameterMap;
 import org.opennms.core.utils.TimeoutTracker;
 import org.opennms.netmgt.model.PollStatus;
@@ -71,14 +72,6 @@ import org.opennms.netmgt.poller.MonitoredService;
  *
  * @author <A HREF="mailto:tarus@opennms.org">Tarus Balog </A>
  * @author <A HREF="mailto:jason@opennms.org">Jason </A>
- * @author <A HREF="http://www.opennms.org/">OpenNMS </A>
- * @author <A HREF="mailto:tarus@opennms.org">Tarus Balog </A>
- * @author <A HREF="mailto:jason@opennms.org">Jason </A>
- * @author <A HREF="http://www.opennms.org/">OpenNMS </A>
- * @author <A HREF="mailto:tarus@opennms.org">Tarus Balog </A>
- * @author <A HREF="mailto:jason@opennms.org">Jason </A>
- * @author <A HREF="http://www.opennms.org/">OpenNMS </A>
- * @version $Id: $
  */
 @Distributable
 final public class CitrixMonitor extends AbstractServiceMonitor {
@@ -125,7 +118,7 @@ final public class CitrixMonitor extends AbstractServiceMonitor {
         // Extract the address
         //
         InetAddress ipv4Addr = svc.getAddress();
-        String host = ipv4Addr.getHostAddress();
+        String host = InetAddressUtils.str(ipv4Addr);
 
         if (log().isDebugEnabled())
             log().debug("CitrixMonitor.poll: Polling interface: " + host + timeoutTracker);

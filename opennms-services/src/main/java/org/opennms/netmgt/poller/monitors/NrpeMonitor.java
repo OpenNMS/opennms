@@ -54,6 +54,7 @@ import javax.net.ssl.SSLSocket;
 import javax.net.ssl.SSLSocketFactory;
 import javax.net.ssl.TrustManager;
 
+import org.opennms.core.utils.InetAddressUtils;
 import org.opennms.core.utils.ParameterMap;
 import org.opennms.core.utils.ThreadCategory;
 import org.opennms.core.utils.TimeoutTracker;
@@ -76,21 +77,6 @@ import org.opennms.netmgt.utils.RelaxedX509TrustManager;
  * @author <A HREF="mailto:dgregor@interhack.com">DJ Gregor</A>
  * @author <A HREF="mailto:tarus@opennms.org">Tarus Balog </A>
  * @author <A HREF="mike@opennms.org">Mike </A>
- * @author <A HREF="http://www.opennms.org/">OpenNMS </A>
- * @author <A HREF="mailto:dgregor@interhack.com">DJ Gregor</A>
- * @author <A HREF="mailto:tarus@opennms.org">Tarus Balog </A>
- * @author <A HREF="mike@opennms.org">Mike </A>
- * @author <A HREF="http://www.opennms.org/">OpenNMS </A>
- * @author <A HREF="mailto:dgregor@interhack.com">DJ Gregor</A>
- * @author <A HREF="mailto:tarus@opennms.org">Tarus Balog </A>
- * @author <A HREF="mike@opennms.org">Mike </A>
- * @author <A HREF="http://www.opennms.org/">OpenNMS </A>
- * @author Weave
- * @author <A HREF="mailto:dgregor@interhack.com">DJ Gregor</A>
- * @author <A HREF="mailto:tarus@opennms.org">Tarus Balog </A>
- * @author <A HREF="mike@opennms.org">Mike </A>
- * @author <A HREF="http://www.opennms.org/">OpenNMS </A>
- * @version $Id: $
  */
 
 @Distributable
@@ -171,8 +157,9 @@ final public class NrpeMonitor extends AbstractServiceMonitor {
         //
         InetAddress ipv4Addr = (InetAddress) iface.getAddress();
 
-        if (log().isDebugEnabled()) {
-            log().debug("poll: address = " + ipv4Addr.getHostAddress() + ", port = " + port + ", " + tracker);
+        final String hostAddress = InetAddressUtils.str(ipv4Addr);
+		if (log().isDebugEnabled()) {
+            log().debug("poll: address = " + hostAddress + ", port = " + port + ", " + tracker);
         }
 
         // Give it a whirl
@@ -252,7 +239,7 @@ final public class NrpeMonitor extends AbstractServiceMonitor {
 						" and message: " + response.getBuffer();
                 }
             } catch (NoRouteToHostException e) {
-				reason = "No route to host exception for address " + ipv4Addr.getHostAddress();
+				reason = "No route to host exception for address " + hostAddress;
                 if (log().isEnabledFor(ThreadCategory.Level.WARN)) {
 	                e.fillInStackTrace();
                     log().warn("poll: " + reason, e);
@@ -335,7 +322,7 @@ final public class NrpeMonitor extends AbstractServiceMonitor {
         sslSF = sslContext.getSocketFactory();
         Socket wrappedSocket;
         InetAddress inetAddress = socket.getInetAddress();
-        String hostAddress = inetAddress.getHostAddress();
+        String hostAddress = InetAddressUtils.str(inetAddress);
         int port = socket.getPort();
         wrappedSocket = sslSF.createSocket(socket, hostAddress, port, true);
         SSLSocket sslSocket = (SSLSocket)wrappedSocket;

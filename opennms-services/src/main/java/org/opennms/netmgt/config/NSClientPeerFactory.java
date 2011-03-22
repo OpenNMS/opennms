@@ -254,21 +254,17 @@ public final class NSClientPeerFactory extends PeerFactory {
                 // check the specifics first
     
                 for (final String saddr : def.getSpecificCollection()) {
-                    try {
-                        final InetAddress addr = InetAddress.getByName(saddr);
-                        if (addr.equals(agentConfig.getAddress())) {
-                            setNSClientAgentConfig(agentConfig, def);
-                            break DEFLOOP;
-                        }
-                    } catch (final UnknownHostException e) {
-                        LogUtils.warnf(this, e, "NSClientPeerFactory: could not convert host %s to InetAddress", saddr);
+                    final InetAddress addr = InetAddressUtils.addr(saddr);
+                    if (addr.equals(agentConfig.getAddress())) {
+                        setNSClientAgentConfig(agentConfig, def);
+                        break DEFLOOP;
                     }
                 }
     
                 // check the ranges
                 //
                 for (final Range rng : def.getRangeCollection()) {
-                    if (InetAddressUtils.isInetAddressInRange(agentConfig.getAddress().getHostAddress(), rng.getBegin(), rng.getEnd())) {
+                    if (InetAddressUtils.isInetAddressInRange(InetAddressUtils.str(agentConfig.getAddress()), rng.getBegin(), rng.getEnd())) {
                         setNSClientAgentConfig(agentConfig, def);
                         break DEFLOOP;
                     }
@@ -276,7 +272,7 @@ public final class NSClientPeerFactory extends PeerFactory {
                 
                 // check the matching IP expressions
                 for (final String ipMatch : def.getIpMatchCollection()) {
-                    if (IPLike.matches(agentInetAddress.getHostAddress(), ipMatch)) {
+                    if (IPLike.matches(InetAddressUtils.str(agentInetAddress), ipMatch)) {
                         setNSClientAgentConfig(agentConfig, def);
                         break DEFLOOP;
                     }

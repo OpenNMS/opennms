@@ -42,6 +42,7 @@ import java.net.UnknownHostException;
 import java.util.List;
 
 import org.opennms.core.utils.Argument;
+import org.opennms.core.utils.InetAddressUtils;
 import org.opennms.core.utils.ThreadCategory;
 import org.opennms.netmgt.config.NotificationManager;
 
@@ -74,7 +75,7 @@ public class IrcCatNotificationStrategy implements NotificationStrategy {
     }
 
     private InetAddress getRemoteAddr() throws UnknownHostException {
-        return InetAddress.getByName(System.getProperty("irccat.host", "127.0.0.1"));
+        return InetAddressUtils.addr(System.getProperty("irccat.host", "127.0.0.1"));
     }
 
     private int getRemotePort() {

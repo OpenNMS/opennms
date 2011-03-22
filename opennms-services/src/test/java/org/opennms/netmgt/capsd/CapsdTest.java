@@ -43,6 +43,7 @@ package org.opennms.netmgt.capsd;
 import java.io.InputStream;
 
 import org.opennms.core.concurrent.RunnableConsumerThreadPool;
+import org.opennms.core.utils.InetAddressUtils;
 import org.opennms.mock.snmp.MockSnmpAgent;
 import org.opennms.netmgt.config.CapsdConfigFactory;
 import org.opennms.netmgt.config.CollectdConfigFactory;
@@ -67,7 +68,7 @@ public class CapsdTest extends OpenNMSTestCase {
 
     	super.setUp();
 
-        m_agent = MockSnmpAgent.createAgentAndRun(new ClassPathResource("org/opennms/netmgt/snmp/snmpTestData1.properties"), this.myLocalHost().getHostAddress() + "/9161");
+        m_agent = MockSnmpAgent.createAgentAndRun(new ClassPathResource("org/opennms/netmgt/snmp/snmpTestData1.properties"), InetAddressUtils.str(this.myLocalHost()) + "/9161");
 
         InputStream configStream = ConfigurationTestUtils.getInputStreamForConfigFile("database-schema.xml");
         DatabaseSchemaConfigFactory.setInstance(new DatabaseSchemaConfigFactory(configStream));
@@ -168,16 +169,17 @@ public class CapsdTest extends OpenNMSTestCase {
                 "       security-name=\"opennmsUser\" \n" + 
                 "       auth-passphrase=\"0p3nNMSv3\" \n" +
                 "       privacy-passphrase=\"0p3nNMSv3\" >\n" +
-                "       <specific>"+myLocalHost().getHostAddress()+"</specific>\n" +
+                "       <specific>"+InetAddressUtils.str(myLocalHost())+"</specific>\n" +
                 "   </definition>\n" + 
                 "\n" + 
-                "   <definition version=\"v2c\" port=\"9161\" read-community=\"public\" proxy-host=\""+myLocalHost().getHostAddress()+"\">\n" + 
+                "   <definition version=\"v2c\" port=\"9161\" read-community=\"public\" proxy-host=\""+InetAddressUtils.str(myLocalHost())+"\">\n" + 
                 "      <specific>172.20.1.201</specific>\n" +
                 "      <specific>172.20.1.204</specific>\n" +
                 "   </definition>\n" + 
                 "</snmp-config>";
     }
-     @Override
+
+	@Override
     protected void tearDown() throws Exception {
         m_agent.shutDownAndWait();
         super.tearDown();

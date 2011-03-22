@@ -29,7 +29,6 @@
 //
 package org.opennms.netmgt.dao.support;
 
-import java.net.InetAddress;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -37,11 +36,12 @@ import junit.framework.Assert;
 
 import org.easymock.EasyMock;
 import org.junit.Test;
+import org.opennms.core.utils.InetAddressUtils;
 import org.opennms.mock.snmp.MockSnmpAgent;
 import org.opennms.netmgt.config.StorageStrategyService;
+import org.opennms.netmgt.config.datacollection.Parameter;
 import org.opennms.netmgt.snmp.SnmpAgentConfig;
 import org.springframework.core.io.ClassPathResource;
-import org.opennms.netmgt.config.datacollection.Parameter;
 
 /**
  * @author <a href="mailto:jeffg@opennms.org">Jeff Gehlbach</a>
@@ -53,7 +53,7 @@ public class SiblingColumnStorageStrategyTest {
         // Create Mocks
         StorageStrategyService service = EasyMock.createMock(StorageStrategyService.class);
         SnmpAgentConfig agentConfig = new SnmpAgentConfig();
-        agentConfig.setAddress(InetAddress.getByName("127.0.0.1"));
+        agentConfig.setAddress(InetAddressUtils.addr("127.0.0.1"));
         agentConfig.setPort(1161);
         EasyMock.expect(service.getAgentConfig()).andReturn(agentConfig).anyTimes();
         EasyMock.replay(service);

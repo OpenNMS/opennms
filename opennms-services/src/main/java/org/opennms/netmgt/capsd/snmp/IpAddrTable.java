@@ -43,6 +43,7 @@ import java.net.InetAddress;
 import java.util.ArrayList;
 import java.util.List;
 
+import org.opennms.core.utils.InetAddressUtils;
 import org.opennms.core.utils.ThreadCategory;
 import org.opennms.netmgt.snmp.SnmpInstId;
 import org.opennms.netmgt.snmp.SnmpObjId;
@@ -59,29 +60,7 @@ import org.opennms.netmgt.snmp.SnmpObjId;
  * @author <A HREF="mailto:jamesz@opennms.org">James Zuo </A>
  * @author <A HREF="mailto:sowmya@opennms.org">Sowmya </A>
  * @author <A HREF="mailto:weave@oculan.com">Weave </A>
- * @author <A HREF="http://www.opennms.org/">OpenNMS </A>
- * @author <A HREF="mailto:brozow@opennms.org">Matt Brozowski</A>
- * @author <A HREF="mailto:jamesz@opennms.org">James Zuo </A>
- * @author <A HREF="mailto:sowmya@opennms.org">Sowmya </A>
- * @author <A HREF="mailto:weave@oculan.com">Weave </A>
- * @author <A HREF="http://www.opennms.org/">OpenNMS </A>
- * @author <A HREF="mailto:brozow@opennms.org">Matt Brozowski</A>
- * @author <A HREF="mailto:jamesz@opennms.org">James Zuo </A>
- * @author <A HREF="mailto:sowmya@opennms.org">Sowmya </A>
- * @author <A HREF="mailto:weave@oculan.com">Weave </A>
- * @author <A HREF="http://www.opennms.org/">OpenNMS </A>
- * @author <A HREF="mailto:brozow@opennms.org">Matt Brozowski</A>
- * @author <A HREF="mailto:jamesz@opennms.org">James Zuo </A>
- * @author <A HREF="mailto:sowmya@opennms.org">Sowmya </A>
- * @author <A HREF="mailto:weave@oculan.com">Weave </A>
- * @author <A HREF="http://www.opennms.org/">OpenNMS </A>
- * @author <A HREF="mailto:brozow@opennms.org">Matt Brozowski</A>
- * @author <A HREF="mailto:jamesz@opennms.org">James Zuo </A>
- * @author <A HREF="mailto:sowmya@opennms.org">Sowmya </A>
- * @author <A HREF="mailto:weave@oculan.com">Weave </A>
- * @author <A HREF="http://www.opennms.org/">OpenNMS </A>
  * @see <A HREF="http://www.ietf.org/rfc/rfc1213.txt">RFC1213 </A>
- * @version $Id: $
  */
 public class IpAddrTable extends SnmpTable<IpAddrTableEntry> {
 
@@ -152,12 +131,12 @@ public class IpAddrTable extends SnmpTable<IpAddrTableEntry> {
                 // extract the ifIndex
                 //
                 Integer ndx = entry.getIpAdEntIfIndex();
-                log().debug("getIfIndex: got a match for address " + address.getHostAddress() + " index: " + ndx);
+                log().debug("getIfIndex: got a match for address " + InetAddressUtils.str(address) + " index: " + ndx);
                 if (ndx != null)
                     return ndx.intValue();
             }
         }
-        log().debug("getIfIndex: no matching ipAddrTable entry for " + address.getHostAddress());
+        log().debug("getIfIndex: no matching ipAddrTable entry for " + InetAddressUtils.str(address));
         return -1;
     }
 

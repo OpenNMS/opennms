@@ -46,7 +46,9 @@ package org.opennms.netmgt.ping;
 
 import java.io.IOException;
 import java.net.DatagramPacket;
+import java.net.InetAddress;
 
+import org.opennms.core.utils.InetAddressUtils;
 import org.opennms.core.utils.LogUtils;
 import org.opennms.protocols.icmp.ICMPEchoPacket;
 import org.opennms.protocols.icmp.IcmpSocket;
@@ -86,7 +88,7 @@ public class Ping {
                                     / 1000;
                         System.out.println(ICMPEchoPacket.getNetworkSize()
                                            + " bytes from "
-                                           + pkt.getAddress().getHostAddress()
+                                           + InetAddressUtils.str(pkt.getAddress())
                                            + ": icmp_seq="
                                            + reply.getPacket().getTID()
                                            + ". time="
@@ -144,7 +146,7 @@ public class Ping {
     
     java.net.InetAddress addr = null;
         try {
-        addr = java.net.InetAddress.getByName(host);
+        addr = InetAddress.getByName(host);
         } catch (java.net.UnknownHostException e) {
             System.err.println("UnknownHostException when looking up "
                                + host + ".");
@@ -152,8 +154,7 @@ public class Ping {
             System.exit(1);
         }
     
-        System.out.println("PING " + host + " (" + addr.getHostAddress()
-                           + "): 56 data bytes");
+        System.out.println("PING " + host + " (" + InetAddressUtils.str(addr) + "): 56 data bytes");
     
     short m_icmpId = 2;
     

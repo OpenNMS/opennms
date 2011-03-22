@@ -58,6 +58,7 @@ import org.apache.log4j.Category;
 import org.apache.log4j.Logger;
 import org.exolab.castor.xml.MarshalException;
 import org.exolab.castor.xml.ValidationException;
+import org.opennms.core.utils.InetAddressUtils;
 import org.opennms.netmgt.config.DhcpdConfigFactory;
 import org.opennms.netmgt.daemon.AbstractServiceDaemon;
 import org.opennms.netmgt.utils.IpValidator;
@@ -198,7 +199,7 @@ public final class Dhcpd extends AbstractServiceDaemon implements Runnable, Obse
             if (log().isDebugEnabled()) {
                 log().debug("start: listening on TCP port " + dFactory.getPort() + " for incoming client requests.");
             }
-            m_server = new ServerSocket(dFactory.getPort(), 0, InetAddress.getByName("127.0.0.1"));
+            m_server = new ServerSocket(dFactory.getPort(), 0, InetAddressUtils.addr("127.0.0.1"));
         } catch (IOException ex) {
             if (ex instanceof java.net.BindException) {
                 managerLog().error("Failed to listen on DHCP port, perhaps something else is already listening?", ex);

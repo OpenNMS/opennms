@@ -2,7 +2,6 @@ package org.opennms.netmgt.capsd.plugins;
 
 import java.io.IOException;
 import java.net.InetAddress;
-import java.net.URI;
 import java.net.URISyntaxException;
 import java.util.Map;
 
@@ -27,6 +26,7 @@ import org.apache.http.params.CoreProtocolPNames;
 import org.apache.http.protocol.ExecutionContext;
 import org.apache.http.protocol.HttpContext;
 import org.apache.http.util.EntityUtils;
+import org.opennms.core.utils.InetAddressUtils;
 import org.opennms.core.utils.ParameterMap;
 import org.opennms.core.utils.ThreadCategory;
 import org.opennms.netmgt.capsd.AbstractPlugin;
@@ -71,7 +71,7 @@ public class WebPlugin extends AbstractPlugin {
         try {
             HttpGet getMethod = new HttpGet(URIUtils.createURI(
                                                     null, 
-                                                    address.getHostAddress(), 
+                                                    InetAddressUtils.str(address), 
                                                     ParameterMap.getKeyedInteger(map, "port", DEFAULT_PORT), 
                                                     ParameterMap.getKeyedString(map, "path", DEFAULT_PATH), 
                                                     null, 

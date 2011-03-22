@@ -43,6 +43,7 @@ import java.util.Map;
 import org.apache.log4j.Level;
 import org.exolab.castor.xml.MarshalException;
 import org.exolab.castor.xml.ValidationException;
+import org.opennms.core.utils.InetAddressUtils;
 import org.opennms.core.utils.ParameterMap;
 import org.opennms.netmgt.config.SnmpPeerFactory;
 import org.opennms.netmgt.model.PollStatus;
@@ -247,7 +248,8 @@ final public class CiscoIpSlaMonitor extends SnmpMonitorStrategy {
         //
         SnmpAgentConfig agentConfig = SnmpPeerFactory.getInstance().getAgentConfig(ipaddr);
         if (agentConfig == null) throw new RuntimeException("SnmpAgentConfig object not available for interface " + ipaddr);
-        log().debug("poll: setting SNMP peer attribute for interface " + ipaddr.getHostAddress());
+        final String hostAddress = InetAddressUtils.str(ipaddr);
+		log().debug("poll: setting SNMP peer attribute for interface " + hostAddress);
 
         // Get configuration parameters for tag to monitor
         String adminTag = ParameterMap.getKeyedString(parameters,"admin-tag", null);
@@ -387,7 +389,7 @@ final public class CiscoIpSlaMonitor extends SnmpMonitorStrategy {
         } catch (NullPointerException e) {
             status = logDown(Level.WARN,
                              "Unexpected error during SNMP poll of interface "
-                                     + ipaddr.getHostAddress(), e);
+                                     + hostAddress, e);
         } catch (NumberFormatException e) {
             status = logDown(Level.WARN,
                              "Number operator used on a non-number "
@@ -398,7 +400,7 @@ final public class CiscoIpSlaMonitor extends SnmpMonitorStrategy {
         } catch (Throwable t) {
             status = logDown(Level.WARN,
                              "Unexpected exception during SNMP poll of interface "
-                                     + ipaddr.getHostAddress(), t);
+                                     + hostAddress, t);
         }
 
         // Otherwise, the service will be unavailable.

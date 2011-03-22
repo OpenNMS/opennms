@@ -44,7 +44,6 @@
 package org.opennms.netmgt.capsd;
 
 import java.net.InetAddress;
-import java.net.UnknownHostException;
 import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
@@ -346,7 +345,7 @@ public class BroadcastEventProcessor implements InitializingBean {
 
                 // Node already exists. Add the ipaddess to the ipinterface
                 // table
-                InetAddress ifaddr = InetAddress.getByName(ipaddr);
+                InetAddress ifaddr = InetAddressUtils.addr(ipaddr);
                 int nodeId = rs.getInt(1);
                 String dpName = rs.getString(2);
 
@@ -363,8 +362,6 @@ public class BroadcastEventProcessor implements InitializingBean {
 
             }
             return eventsToSend;
-        } catch (UnknownHostException e) {
-            throw new FailedOperationException("unable to resolve host " + ipaddr + ": " + e.getMessage(), e);
         } finally {
             d.cleanUp();
         }        
@@ -406,23 +403,19 @@ public class BroadcastEventProcessor implements InitializingBean {
         eventsToSend.add(newEvent);
 
         if (ipaddr != null)
-            try {
-                if (log().isDebugEnabled())
-                    log().debug("addNode:  Add an IP Address " + ipaddr + " to the database");
+            if (log().isDebugEnabled())
+                log().debug("addNode:  Add an IP Address " + ipaddr + " to the database");
 
-                // add the ipaddess to the database
-                InetAddress ifaddress = InetAddress.getByName(ipaddr);
-                DbIpInterfaceEntry ipInterface = DbIpInterfaceEntry.create(node.getNodeId(), ifaddress);
-                ipInterface.setHostname(ifaddress.getHostName());
-                ipInterface.setManagedState(DbIpInterfaceEntry.STATE_MANAGED);
-                ipInterface.setPrimaryState(DbIpInterfaceEntry.SNMP_NOT_ELIGIBLE);
-                ipInterface.store(conn);
+            // add the ipaddess to the database
+            InetAddress ifaddress = InetAddressUtils.addr(ipaddr);
+            DbIpInterfaceEntry ipInterface = DbIpInterfaceEntry.create(node.getNodeId(), ifaddress);
+            ipInterface.setHostname(ifaddress.getHostName());
+            ipInterface.setManagedState(DbIpInterfaceEntry.STATE_MANAGED);
+            ipInterface.setPrimaryState(DbIpInterfaceEntry.SNMP_NOT_ELIGIBLE);
+            ipInterface.store(conn);
 
-                Event gainIfEvent = EventUtils.createNodeGainedInterfaceEvent(node, ifaddress);
-                eventsToSend.add(gainIfEvent);
-            } catch (UnknownHostException e) {
-                throw new FailedOperationException("unable to resolve host " + ipaddr + ": " + e.getMessage(), e);
-            }
+            Event gainIfEvent = EventUtils.createNodeGainedInterfaceEvent(node, ifaddress);
+            eventsToSend.add(gainIfEvent);
         return eventsToSend;
     }
 
@@ -555,7 +548,7 @@ public class BroadcastEventProcessor implements InitializingBean {
 
                 int nodeId = rs.getInt(1);
                 // insert service
-                DbIfServiceEntry service = DbIfServiceEntry.create(nodeId, InetAddress.getByName(ipaddr), serviceId);
+                DbIfServiceEntry service = DbIfServiceEntry.create(nodeId, InetAddressUtils.addr(ipaddr), serviceId);
                 service.setSource(DbIfServiceEntry.SOURCE_PLUGIN);
                 service.setStatus(DbIfServiceEntry.STATUS_ACTIVE);
                 service.setNotify(DbIfServiceEntry.NOTIFY_ON);
@@ -563,12 +556,10 @@ public class BroadcastEventProcessor implements InitializingBean {
 
                 // Create a nodeGainedService event to eventd.
                 DbNodeEntry nodeEntry = DbNodeEntry.get(nodeId);
-                Event newEvent = EventUtils.createNodeGainedServiceEvent(nodeEntry, InetAddress.getByName(ipaddr), serviceName, txNo);
+                Event newEvent = EventUtils.createNodeGainedServiceEvent(nodeEntry, InetAddressUtils.addr(ipaddr), serviceName, txNo);
                 eventsToSend.add(newEvent);
             }
             return eventsToSend;
-        } catch (UnknownHostException e) {
-            throw new FailedOperationException("Unable to resolve host: " + e.getMessage(), e);
         } finally {
             d.cleanUp();
         }        

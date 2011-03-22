@@ -41,6 +41,7 @@ import java.net.InetAddress;
 import java.util.Set;
 import java.util.TreeSet;
 
+import org.opennms.core.utils.InetAddressUtils;
 import org.opennms.core.utils.LogUtils;
 import org.opennms.core.utils.ThreadCategory;
 import org.opennms.netmgt.config.SnmpPeerFactory;
@@ -113,7 +114,7 @@ public class ScanManager {
 
     String getNetMask(int ifIndex) {
         InetAddress addr = getIpAddrTable().getNetMask(ifIndex);
-        return (addr == null ? null : addr.getHostAddress());
+        return InetAddressUtils.str(addr);
     }
 
     /**

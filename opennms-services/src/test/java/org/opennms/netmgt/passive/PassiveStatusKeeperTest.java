@@ -39,7 +39,6 @@ import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertTrue;
 
-import java.net.InetAddress;
 import java.net.UnknownHostException;
 import java.util.Map;
 
@@ -48,6 +47,7 @@ import org.exolab.castor.xml.ValidationException;
 import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
+import org.opennms.core.utils.InetAddressUtils;
 import org.opennms.netmgt.EventConstants;
 import org.opennms.netmgt.config.DataSourceFactory;
 import org.opennms.netmgt.mock.EventAnticipator;
@@ -254,7 +254,7 @@ public class PassiveStatusKeeperTest {
         
         assertTrue(ps.isDown());
         
-        MockMonitoredService svc = new MockMonitoredService(1, "Router", InetAddress.getByName("192.168.1.1"), "ICMP" );
+        MockMonitoredService svc = new MockMonitoredService(1, "Router", InetAddressUtils.addr("192.168.1.1"), "ICMP" );
         
         ServiceMonitor m = new PassiveServiceMonitor();
         m.initialize((Map<String,Object>)null);

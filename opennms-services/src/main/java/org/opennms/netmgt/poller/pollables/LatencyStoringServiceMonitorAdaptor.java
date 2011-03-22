@@ -51,6 +51,7 @@ import java.util.List;
 import java.util.Locale;
 import java.util.Map;
 
+import org.opennms.core.utils.InetAddressUtils;
 import org.opennms.core.utils.ParameterMap;
 import org.opennms.core.utils.ThreadCategory;
 import org.opennms.netmgt.config.PollerConfig;
@@ -71,9 +72,6 @@ import org.opennms.netmgt.xml.event.Event;
  *
  * @author <a href="mailto:brozow@opennms.org">Mathew Brozowski</a>
  * @author <a href="mailto:ranger@opennms.org">Ben Reed</a>
- * @author <a href="mailto:brozow@opennms.org">Mathew Brozowski</a>
- * @author <a href="mailto:ranger@opennms.org">Ben Reed</a>
- * @version $Id: $
  */
 public class LatencyStoringServiceMonitorAdaptor implements ServiceMonitor {
 
@@ -222,7 +220,8 @@ public class LatencyStoringServiceMonitorAdaptor implements ServiceMonitor {
             createRRD(repository, addr, rrdBaseName, dsList);
 
             // add interface address to RRD repository path
-            String path = repository + File.separator + addr.getHostAddress();
+            final String hostAddress = InetAddressUtils.str(addr);
+			String path = repository + File.separator + hostAddress;
 
             StringBuffer value = new StringBuffer();
             Iterator<String> i = entries.keySet().iterator();
@@ -243,7 +242,7 @@ public class LatencyStoringServiceMonitorAdaptor implements ServiceMonitor {
                     value.append(":");
                 }
             }
-            RrdUtils.updateRRD(addr.getHostAddress(), path, rrdBaseName, value.toString());
+            RrdUtils.updateRRD(hostAddress, path, rrdBaseName, value.toString());
 
         } catch (RrdException e) {
             if (log().isEnabledFor(ThreadCategory.Level.ERROR)) {
@@ -290,9 +289,10 @@ public class LatencyStoringServiceMonitorAdaptor implements ServiceMonitor {
         List<String> rraList = m_pollerConfig.getRRAList(m_pkg);
 
         // add interface address to RRD repository path
-        String path = repository + File.separator + addr.getHostAddress();
+        final String hostAddress = InetAddressUtils.str(addr);
+		String path = repository + File.separator + hostAddress;
 
-        return RrdUtils.createRRD(addr.getHostAddress(), path, rrdBaseName, m_pollerConfig.getStep(m_pkg), dsList, rraList);
+        return RrdUtils.createRRD(hostAddress, path, rrdBaseName, m_pollerConfig.getStep(m_pkg), dsList, rraList);
 
     }
 

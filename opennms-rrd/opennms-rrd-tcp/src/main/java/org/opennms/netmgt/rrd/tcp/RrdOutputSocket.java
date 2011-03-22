@@ -95,7 +95,7 @@ public class RrdOutputSocket {
     public void writeData() {
         Socket socket = null;
         try {
-            socket = new Socket(InetAddress.getByName(m_host), m_port);
+            socket = new Socket(InetAddressUtils.addr(m_host), m_port);
             OutputStream out = socket.getOutputStream();
             m_messages.build().writeTo(out);
             // out = new FileOutputStream(new File("/tmp/testdata.protobuf"));

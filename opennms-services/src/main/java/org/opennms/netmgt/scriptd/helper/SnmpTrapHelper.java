@@ -343,13 +343,11 @@ public class SnmpTrapHelper {
         public void addVarBind(SnmpTrapBuilder trap, String name, String encoding, String value) throws SnmpTrapHelperException {
 
             if (EventConstants.XML_ENCODING_TEXT.equals(encoding)) {
-                try {
-                    trap.addVarBind(SnmpObjId.get(name), SnmpUtils.getValueFactory().getIpAddress(InetAddress.getByName(value)));
-                }
-
-                catch (UnknownHostException e) {
+                final InetAddress addr = InetAddressUtils.addr(value);
+                if (addr == null) {
                     throw new SnmpTrapHelperException("Value " + value + "is invalid, or host unknown for SnmpIPAddress");
                 }
+				trap.addVarBind(SnmpObjId.get(name), SnmpUtils.getValueFactory().getIpAddress(addr));
             } else {
                 throw new SnmpTrapHelperException("Encoding " + encoding + "is invalid for SnmpIPAddress");
             }
@@ -599,7 +597,7 @@ public class SnmpTrapHelper {
 
         SnmpV1TrapBuilder trap = SnmpUtils.getV1TrapBuilder();
         trap.setEnterprise(SnmpObjId.get(entId));
-        trap.setAgentAddress(InetAddress.getByName(agentAddr));
+        trap.setAgentAddress(InetAddressUtils.addr(agentAddr));
         trap.setGeneric(generic);
         trap.setSpecific(specific);
         trap.setTimeStamp(timeStamp);
@@ -724,10 +722,9 @@ public class SnmpTrapHelper {
             trap.setEnterprise(SnmpObjId.get(snmpInfo.getId()));
 
             InetAddress agentAddress;
-            try {
-                agentAddress = InetAddress.getByName(event.getSnmphost());
-            } catch (UnknownHostException e) {
-                throw new SnmpTrapHelperException("Invalid ip address: "+e.getMessage(), e);
+            agentAddress = InetAddressUtils.addr(event.getSnmphost());
+            if (agentAddress == null) {
+                throw new SnmpTrapHelperException("Invalid ip address.");
             }
 
             trap.setAgentAddress(agentAddress);
@@ -782,10 +779,9 @@ public class SnmpTrapHelper {
             }
             
             InetAddress agentAddress;
-            try {
-                agentAddress = InetAddress.getByName(addr);
-            } catch (UnknownHostException e) {
-                throw new SnmpTrapHelperException("Invalid ip address: "+e.getMessage(), e);
+            agentAddress = InetAddressUtils.addr(addr);
+            if (agentAddress == null) {
+                throw new SnmpTrapHelperException("Invalid ip address.");
             }
 
             trap.setAgentAddress(agentAddress);

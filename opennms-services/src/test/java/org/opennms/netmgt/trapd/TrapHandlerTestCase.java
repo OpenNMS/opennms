@@ -54,6 +54,7 @@ import org.junit.BeforeClass;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.opennms.core.utils.Base64;
+import org.opennms.core.utils.InetAddressUtils;
 import org.opennms.netmgt.EventConstants;
 import org.opennms.netmgt.mock.EventAnticipator;
 import org.opennms.netmgt.mock.MockEventIpcManager;
@@ -122,7 +123,7 @@ public class TrapHandlerTestCase {
         m_anticipator = new EventAnticipator();
         m_eventMgr.setEventAnticipator(m_anticipator);
 
-        m_localhost = InetAddress.getByName(m_ip);
+        m_localhost = InetAddressUtils.addr(m_ip);
         
         m_trapdIpMgr.clearKnownIpsMap();
         m_trapdIpMgr.setNodeId(m_ip, m_nodeId);
@@ -552,8 +553,12 @@ public class TrapHandlerTestCase {
         pdu.setTimeStamp(0);
         pdu.setAgentAddress(m_localhost);
 
-        pdu.send(m_localhost.getHostAddress(), m_snmpTrapPort, "public");
+        pdu.send(getHostAddress(), m_snmpTrapPort, "public");
     }
+
+	private String getHostAddress() {
+		return InetAddressUtils.str(m_localhost);
+	}
 
     public void sendV1Trap(String enterprise, int generic, int specific, LinkedHashMap<String, SnmpValue> varbinds)
     throws Exception {
@@ -568,7 +573,7 @@ public class TrapHandlerTestCase {
             Map.Entry<String,SnmpValue> pairs = it.next();
             pdu.addVarBind(SnmpObjId.get(pairs.getKey()), pairs.getValue());
         }
-        pdu.send(m_localhost.getHostAddress(), m_snmpTrapPort, "public");
+        pdu.send(getHostAddress(), m_snmpTrapPort, "public");
     }
 
 
@@ -595,7 +600,7 @@ public class TrapHandlerTestCase {
                     SnmpUtils.getValueFactory().getObjectId(enterpriseId));
         }
 
-        pdu.send(m_localhost.getHostAddress(), m_snmpTrapPort, "public");
+        pdu.send(getHostAddress(), m_snmpTrapPort, "public");
     }
 
     public void sendV2Trap(String enterprise, int specific, LinkedHashMap<String, SnmpValue> varbinds) throws Exception {
@@ -624,7 +629,7 @@ public class TrapHandlerTestCase {
             pdu.addVarBind(SnmpObjId.get(entry.getKey()), entry.getValue());
         }
 
-        pdu.send(m_localhost.getHostAddress(), m_snmpTrapPort, "public");
+        pdu.send(getHostAddress(), m_snmpTrapPort, "public");
     }
 
 }

@@ -58,6 +58,7 @@ import java.util.Map;
 import java.util.StringTokenizer;
 
 import org.apache.log4j.Level;
+import org.opennms.core.utils.InetAddressUtils;
 import org.opennms.core.utils.ParameterMap;
 import org.opennms.core.utils.TimeoutTracker;
 import org.opennms.netmgt.model.PollStatus;
@@ -76,14 +77,6 @@ import org.opennms.netmgt.poller.NetworkInterfaceNotSupportedException;
  *
  * @author <A HREF="mailto:tarus@opennms.org">Tarus Balog </A>
  * @author <A HREF="mailto:mike@opennms.org">Mike </A>
- * @author <A HREF="http://www.opennms.org/">OpenNMS </A>
- * @author <A HREF="mailto:tarus@opennms.org">Tarus Balog </A>
- * @author <A HREF="mailto:mike@opennms.org">Mike </A>
- * @author <A HREF="http://www.opennms.org/">OpenNMS </A>
- * @author <A HREF="mailto:tarus@opennms.org">Tarus Balog </A>
- * @author <A HREF="mailto:mike@opennms.org">Mike </A>
- * @author <A HREF="http://www.opennms.org/">OpenNMS </A>
- * @version $Id: $
  */
 
 @Distributable
@@ -145,7 +138,8 @@ final public class Pop3Monitor extends AbstractServiceMonitor {
 
         for (tracker.reset(); tracker.shouldRetry() && !serviceStatus.isAvailable(); tracker.nextAttempt()) {
             Socket socket = null;
-            try {
+            final String hostAddress = InetAddressUtils.str(ipv4Addr);
+			try {
                 //
                 // create a connected socket
                 //
@@ -199,7 +193,7 @@ final public class Pop3Monitor extends AbstractServiceMonitor {
                 }
             } catch (NoRouteToHostException e) {
             	
-            	serviceStatus = logDown(Level.WARN, "No route to host exception for address " + ipv4Addr.getHostAddress(), e);
+            	serviceStatus = logDown(Level.WARN, "No route to host exception for address " + hostAddress, e);
                 
             } catch (InterruptedIOException e) {
             	
@@ -207,10 +201,10 @@ final public class Pop3Monitor extends AbstractServiceMonitor {
             	
             } catch (ConnectException e) {
             	
-            	serviceStatus = logDown(Level.DEBUG, "Connection exception for address " + ipv4Addr.getHostAddress(), e);
+            	serviceStatus = logDown(Level.DEBUG, "Connection exception for address " + hostAddress, e);
             } catch (IOException e) {
             	
-            	serviceStatus = logDown(Level.DEBUG, "IOException while polling address " + ipv4Addr.getHostAddress(), e);
+            	serviceStatus = logDown(Level.DEBUG, "IOException while polling address " + hostAddress, e);
             } finally {
                 try {
                     // Close the socket

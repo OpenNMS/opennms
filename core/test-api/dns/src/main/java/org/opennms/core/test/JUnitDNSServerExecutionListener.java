@@ -1,11 +1,10 @@
 package org.opennms.core.test;
 
-import java.net.InetAddress;
-
 import org.opennms.core.test.annotations.DNSEntry;
 import org.opennms.core.test.annotations.DNSZone;
 import org.opennms.core.test.annotations.JUnitDNSServer;
 import org.opennms.core.test.dns.DNSServer;
+import org.opennms.core.utils.InetAddressUtils;
 import org.opennms.core.utils.LogUtils;
 import org.springframework.test.context.TestContext;
 import org.springframework.test.context.TestExecutionListener;
@@ -53,8 +52,8 @@ public class JUnitDNSServerExecutionListener extends OpenNMSAbstractTestExecutio
                     new SOARecord(zoneName, DClass.IN, DEFAULT_TTL, zoneName, Name.fromString("admin." + name), 1, DEFAULT_TTL, DEFAULT_TTL, DEFAULT_TTL, DEFAULT_TTL),
                     new NSRecord(zoneName, DClass.IN, DEFAULT_TTL, Name.fromString("resolver1.opendns.com.")),
                     new NSRecord(zoneName, DClass.IN, DEFAULT_TTL, Name.fromString("resolver2.opendns.com.")),
-                    new ARecord(zoneName, DClass.IN, DEFAULT_TTL, InetAddress.getByName(dnsZone.v4address())),
-                    new AAAARecord(zoneName, DClass.IN, DEFAULT_TTL, InetAddress.getByName(dnsZone.v6address()))
+                    new ARecord(zoneName, DClass.IN, DEFAULT_TTL, InetAddressUtils.addr(dnsZone.v4address())),
+                    new AAAARecord(zoneName, DClass.IN, DEFAULT_TTL, InetAddressUtils.addr(dnsZone.v6address()))
             });
             LogUtils.debugf(this, "zone = %s", zone);
 
@@ -64,9 +63,9 @@ public class JUnitDNSServerExecutionListener extends OpenNMSAbstractTestExecutio
                 final Name recordName = Name.fromString(hostname, zoneName);
                 LogUtils.debugf(this, "name = %s", recordName);
                 if (entry.ipv6()) {
-                    zone.addRecord(new AAAARecord(recordName, DClass.IN, DEFAULT_TTL, InetAddress.getByName(entry.address())));
+                    zone.addRecord(new AAAARecord(recordName, DClass.IN, DEFAULT_TTL, InetAddressUtils.addr(entry.address())));
                 } else {
-                    zone.addRecord(new ARecord(recordName, DClass.IN, DEFAULT_TTL, InetAddress.getByName(entry.address())));
+                    zone.addRecord(new ARecord(recordName, DClass.IN, DEFAULT_TTL, InetAddressUtils.addr(entry.address())));
                 }
             }
 

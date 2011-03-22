@@ -35,6 +35,7 @@ import java.net.DatagramPacket;
 import java.net.InetAddress;
 import java.net.UnknownHostException;
 
+import org.opennms.core.utils.InetAddressUtils;
 import org.opennms.core.utils.LogUtils;
 import org.opennms.netmgt.provision.detector.datagram.client.NtpClient;
 import org.opennms.netmgt.provision.support.BasicDetector;
@@ -103,12 +104,7 @@ public class NtpDetector extends BasicDetector<NtpMessage, DatagramPacket> {
     }
     
     private InetAddress getAddress(){
-        try {
-            return InetAddress.getByName(getIpToValidate());
-        } catch (final UnknownHostException e) {
-            LogUtils.debugf(this, e, "Failed to get InetAddress from %s", getIpToValidate());
-            return null;
-        }
+    	return InetAddressUtils.addr(getIpToValidate());
     }
     
     /**

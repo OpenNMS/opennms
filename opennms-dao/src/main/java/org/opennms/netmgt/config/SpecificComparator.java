@@ -35,11 +35,11 @@
 package org.opennms.netmgt.config;
 
 import java.io.Serializable;
-import java.net.InetAddress;
 import java.net.UnknownHostException;
 import java.util.Comparator;
 
 import org.opennms.core.utils.ByteArrayComparator;
+import org.opennms.core.utils.InetAddressUtils;
 import org.opennms.core.utils.LogUtils;
 
 /**
@@ -59,12 +59,7 @@ public class SpecificComparator implements Comparator<String>, Serializable {
      * @return -1 for spec1 < spec2, 0 for spec1 == spec2, 1 for spec1 > spec2
      */
     public int compare(final String spec1, final String spec2) {
-        try {
-            return new ByteArrayComparator().compare(InetAddress.getByName(spec1).getAddress(), InetAddress.getByName(spec2).getAddress());
-        } catch (final UnknownHostException e) {
-        	LogUtils.errorf(this, e, "unknown host while attempting to sort ranges");
-            throw new IllegalArgumentException(e.getLocalizedMessage());
-        }
+    	return new ByteArrayComparator().compare(InetAddressUtils.addr(spec1).getAddress(), InetAddressUtils.addr(spec2).getAddress());
     }
 }
 

@@ -33,7 +33,6 @@ package org.opennms.netmgt.capsd.plugins;
 import static org.junit.Assert.assertTrue;
 
 import java.io.IOException;
-import java.net.InetAddress;
 
 import org.exolab.castor.xml.MarshalException;
 import org.exolab.castor.xml.ValidationException;
@@ -41,6 +40,7 @@ import org.junit.After;
 import org.junit.Before;
 import org.junit.Ignore;
 import org.junit.Test;
+import org.opennms.core.utils.InetAddressUtils;
 import org.opennms.netmgt.dhcpd.Dhcpd;
 
 
@@ -69,7 +69,7 @@ public class DhcpPluginTest {
     @Test
     public void testPlugin() throws MarshalException, ValidationException, IOException {
         DhcpPlugin plugin = new DhcpPlugin();
-        assertTrue(plugin.isProtocolSupported(InetAddress.getByName("172.20.1.1")));
+        assertTrue(plugin.isProtocolSupported(InetAddressUtils.addr("172.20.1.1")));
     }
     
 }

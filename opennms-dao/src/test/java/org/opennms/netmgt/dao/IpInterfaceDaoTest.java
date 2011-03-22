@@ -49,6 +49,7 @@ import java.util.Map;
 import java.util.Map.Entry;
 
 import org.hibernate.criterion.Restrictions;
+import org.opennms.core.utils.InetAddressUtils;
 import org.opennms.netmgt.model.OnmsCriteria;
 import org.opennms.netmgt.model.OnmsIpInterface;
 import org.opennms.netmgt.model.OnmsMonitoredService;
@@ -70,7 +71,7 @@ public class IpInterfaceDaoTest extends AbstractTransactionalDaoTestCase {
         
         assertEquals(2, count);
         assertEquals(2, iface.getMonitoredServices().size());
-        assertEquals("192.168.1.1", iface.getIpAddress().getHostAddress());
+        assertEquals("192.168.1.1", InetAddressUtils.str(iface.getIpAddress()));
     }
     
     public void testGetByService() {
@@ -86,7 +87,7 @@ public class IpInterfaceDaoTest extends AbstractTransactionalDaoTestCase {
         OnmsIpInterface iface = ifaces.iterator().next();
         assertEquals("node1", iface.getNode().getLabel());
         assertEquals(2, iface.getMonitoredServices().size());
-        assertEquals("192.168.1.1", iface.getIpAddress().getHostAddress());
+        assertEquals("192.168.1.1", InetAddressUtils.str(iface.getIpAddress()));
         
         OnmsMonitoredService service = iface.getMonitoredServiceByServiceType("SNMP");
         assertNotNull(service);
@@ -124,9 +125,9 @@ public class IpInterfaceDaoTest extends AbstractTransactionalDaoTestCase {
             System.out.println(entry.getKey() + ": " + entry.getValue());
         }
         
-        assertEquals("node ID for 192.168.1.1", Integer.valueOf(1), interfaceNodes.get(InetAddress.getByName("192.168.1.1")));
-        assertEquals("node ID for 192.168.1.2", Integer.valueOf(1), interfaceNodes.get(InetAddress.getByName("192.168.1.2")));
-        assertEquals("node ID for 192.168.2.1", Integer.valueOf(2), interfaceNodes.get(InetAddress.getByName("192.168.2.1")));
+        assertEquals("node ID for 192.168.1.1", Integer.valueOf(1), interfaceNodes.get(InetAddressUtils.addr("192.168.1.1")));
+        assertEquals("node ID for 192.168.1.2", Integer.valueOf(1), interfaceNodes.get(InetAddressUtils.addr("192.168.1.2")));
+        assertEquals("node ID for 192.168.2.1", Integer.valueOf(2), interfaceNodes.get(InetAddressUtils.addr("192.168.2.1")));
         assertFalse("node ID for *BOGUS*IP* should not have been found", interfaceNodes.containsKey("*BOGUS*IP*"));
     }
     

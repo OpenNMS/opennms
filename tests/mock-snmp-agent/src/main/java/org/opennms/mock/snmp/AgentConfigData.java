@@ -4,6 +4,7 @@ import java.net.InetAddress;
 import java.net.MalformedURLException;
 import java.net.UnknownHostException;
 
+import org.opennms.core.utils.InetAddressUtils;
 import org.springframework.core.io.FileSystemResource;
 import org.springframework.core.io.Resource;
 import org.springframework.core.io.UrlResource;
@@ -40,7 +41,7 @@ public class AgentConfigData {
         } else {
             m_moFile = new FileSystemResource(moFileSpec);
         }
-        m_listenAddr = InetAddress.getByName(listenAddr);
+        m_listenAddr = InetAddressUtils.addr(listenAddr);
         m_listenPort = listenPort;
     }
 

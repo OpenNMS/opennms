@@ -55,6 +55,7 @@ import java.net.Socket;
 import java.util.Map;
 import java.util.StringTokenizer;
 
+import org.opennms.core.utils.InetAddressUtils;
 import org.opennms.core.utils.ParameterMap;
 import org.opennms.core.utils.ThreadCategory;
 import org.opennms.netmgt.capsd.AbstractPlugin;
@@ -154,13 +155,13 @@ public final class Pop3Plugin extends AbstractPlugin {
             } catch (ConnectException cE) {
                 // Connection refused!! Continue to retry.
                 //
-                log.debug("Pop3Plugin: Connection refused to " + host.getHostAddress() + ":" + port);
+                log.debug("Pop3Plugin: Connection refused to " + InetAddressUtils.str(host) + ":" + port);
                 isAServer = false;
             } catch (NoRouteToHostException e) {
                 // No Route to host!!!
                 //
                 e.fillInStackTrace();
-                log.info("Pop3Plugin: No route to host " + host.getHostAddress() + " was available", e);
+                log.info("Pop3Plugin: No route to host " + InetAddressUtils.str(host) + " was available", e);
                 isAServer = false;
                 throw new UndeclaredThrowableException(e);
             } catch (InterruptedIOException e) {
@@ -169,10 +170,10 @@ public final class Pop3Plugin extends AbstractPlugin {
                 isAServer = false;
             } catch (IOException e) {
                 isAServer = false;
-                log.info("Pop3Plugin: An unexpected I/O exception occured contacting host " + host.getHostAddress(), e);
+                log.info("Pop3Plugin: An unexpected I/O exception occured contacting host " + InetAddressUtils.str(host), e);
             } catch (Throwable t) {
                 isAServer = false;
-                log.error("Pop3Plugin: An undeclared throwable exception was caught contacting host " + host.getHostAddress(), t);
+                log.error("Pop3Plugin: An undeclared throwable exception was caught contacting host " + InetAddressUtils.str(host), t);
             } finally {
                 try {
                     if (socket != null)

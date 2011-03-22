@@ -49,6 +49,7 @@ import javax.net.ssl.SSLContext;
 import javax.net.ssl.SSLSocketFactory;
 import javax.net.ssl.TrustManager;
 
+import org.opennms.core.utils.InetAddressUtils;
 import org.opennms.netmgt.capsd.ConnectionConfig;
 import org.opennms.netmgt.utils.RelaxedX509TrustManager;
 
@@ -116,7 +117,7 @@ public class HttpsPlugin extends HttpPlugin {
         SSLContext sslContext = SSLContext.getInstance("SSL");
         sslContext.init(null, tm, new java.security.SecureRandom());
         sslSF = sslContext.getSocketFactory();
-        sslSocket = sslSF.createSocket(socket, config.getInetAddress().getHostAddress(), config.getPort(), true);
+        sslSocket = sslSF.createSocket(socket, InetAddressUtils.str(config.getInetAddress()), config.getPort(), true);
         return sslSocket;
     }
 

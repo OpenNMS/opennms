@@ -51,6 +51,7 @@ import java.util.LinkedList;
 import java.util.List;
 
 import org.opennms.core.fiber.Fiber;
+import org.opennms.core.utils.InetAddressUtils;
 import org.opennms.core.utils.ThreadCategory;
 import org.opennms.netmgt.eventd.adaptors.EventHandler;
 
@@ -143,7 +144,7 @@ final class TcpServer implements Runnable {
      * @throws java.io.IOException if any.
      */
     public TcpServer(Fiber parent, List<EventHandler> handlers) throws IOException {
-        this(parent, handlers, TCP_PORT, InetAddress.getByName(DEFAULT_IP_ADDRESS));
+        this(parent, handlers, TCP_PORT, InetAddressUtils.addr(DEFAULT_IP_ADDRESS));
     }
 
     /**
@@ -333,7 +334,7 @@ final class TcpServer implements Runnable {
                 ioInterrupted = false; // reset the flag
 
                 // build a connection string for the thread identifier
-                StringBuffer connection = new StringBuffer(newbie.getInetAddress().getHostAddress());
+                StringBuffer connection = new StringBuffer(InetAddressUtils.str(newbie.getInetAddress()));
                 connection.append(":").append(newbie.getPort());
 
                 if (log().isDebugEnabled()) {

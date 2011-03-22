@@ -50,12 +50,12 @@ import java.io.OutputStreamWriter;
 import java.io.Writer;
 import java.lang.reflect.UndeclaredThrowableException;
 import java.net.ConnectException;
-import java.net.InetAddress;
 import java.net.InetSocketAddress;
 import java.net.Socket;
 import java.net.UnknownHostException;
 import java.nio.charset.Charset;
 
+import org.opennms.core.utils.InetAddressUtils;
 import org.opennms.core.utils.ThreadCategory;
 import org.opennms.netmgt.dao.jaxb.JaxbUtils;
 import org.opennms.netmgt.model.events.EventProxy;
@@ -93,7 +93,7 @@ public final class TcpEventProxy implements EventProxy {
      * @throws java.net.UnknownHostException if any.
      */
     public TcpEventProxy() throws UnknownHostException {
-        this(new InetSocketAddress(InetAddress.getByName("127.0.0.1"), DEFAULT_PORT));
+        this(new InetSocketAddress(InetAddressUtils.addr("127.0.0.1"), DEFAULT_PORT));
     }
 
     /**

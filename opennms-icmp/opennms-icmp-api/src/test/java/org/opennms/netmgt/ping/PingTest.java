@@ -41,6 +41,7 @@ import java.util.List;
 import junit.framework.TestCase;
 
 import org.opennms.core.utils.CollectionMath;
+import org.opennms.core.utils.InetAddressUtils;
 
 /**
  * 
@@ -84,8 +85,8 @@ public class PingTest extends TestCase {
         }
 
         super.setUp();
-        m_goodHost = InetAddress.getByName("www.google.com");
-        m_badHost  = InetAddress.getByName("1.1.1.1");
+        m_goodHost = InetAddressUtils.addr("www.google.com");
+        m_badHost  = InetAddressUtils.addr("1.1.1.1");
     }
 
     public void testSinglePing() throws Exception {

@@ -41,6 +41,7 @@ package org.opennms.netmgt.collectd;
 import java.net.InetAddress;
 import java.util.Collection;
 
+import org.opennms.core.utils.InetAddressUtils;
 import org.opennms.core.utils.ThreadCategory;
 import org.opennms.netmgt.snmp.AggregateTracker;
 import org.opennms.netmgt.snmp.SnmpResult;
@@ -58,12 +59,6 @@ import org.opennms.netmgt.snmp.SnmpResult;
  *
  * @author <A HREF="mailto:mike@opennms.org">Mike </A>
  * @author <A>Jon Whetzel </A>
- * @author <A HREF="http://www.opennms.org/">OpenNMS </A>
- * @author <A>Jon Whetzel </A>
- * @author <A HREF="mailto:mike@opennms.org">Mike </A>
- * @author <A>Jon Whetzel </A>
- * @author <A HREF="http://www.opennms.org/">OpenNMS </A>
- * @version 1.1.1.1
  */
 public class SnmpNodeCollector extends AggregateTracker {
     /**
@@ -92,7 +87,7 @@ public class SnmpNodeCollector extends AggregateTracker {
     public SnmpNodeCollector(InetAddress address, Collection<SnmpAttributeType> objList, SnmpCollectionSet collectionSet) {
         super(SnmpAttributeType.getCollectionTrackers(objList));
         
-        m_primaryIf = address.getHostAddress();
+        m_primaryIf = InetAddressUtils.str(address);
         m_collectionSet = collectionSet;
         m_collectorEntry = new SNMPCollectorEntry(objList, m_collectionSet);
 

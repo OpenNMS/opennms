@@ -34,6 +34,7 @@ package org.opennms.netmgt.provision.detector.snmp;
 import java.net.InetAddress;
 import java.util.Map;
 
+import org.opennms.core.utils.InetAddressUtils;
 import org.opennms.netmgt.provision.DetectorMonitor;
 import org.opennms.netmgt.snmp.SnmpAgentConfig;
 import org.opennms.netmgt.snmp.SnmpInstId;
@@ -115,7 +116,8 @@ public class HostResourceSWRunDetector extends SnmpDetector {
 
         // Establish SNMP session with interface
         //
-        try {
+        final String hostAddress = InetAddressUtils.str(address);
+		try {
             if (log().isDebugEnabled()) {
                 log().debug("HostResourceSwRunMonitor.poll: SnmpAgentConfig address: " +agentConfig);
             }
@@ -133,7 +135,7 @@ public class HostResourceSWRunDetector extends SnmpDetector {
                 
                 // See if the service name is in the list of running services
                 if (stripExtraQuotes(nameResults.get(nameInstance).toString()).equalsIgnoreCase(serviceName) && !status) {
-                    log().debug("poll: HostResourceSwRunMonitor poll succeeded, addr=" + address.getHostAddress() + " service name=" + serviceName + " value=" + nameResults.get(nameInstance));
+                    log().debug("poll: HostResourceSwRunMonitor poll succeeded, addr=" + hostAddress + " service name=" + serviceName + " value=" + nameResults.get(nameInstance));
                     status = true;
                     break;
                 }
@@ -144,7 +146,7 @@ public class HostResourceSWRunDetector extends SnmpDetector {
         } catch (IllegalArgumentException e) {
             log().warn("Invalid SNMP Criteria: " + e.getMessage());
         } catch (Throwable t) {
-            log().warn("Unexpected exception during SNMP poll of interface " + address.getHostAddress(), t);
+            log().warn("Unexpected exception during SNMP poll of interface " + hostAddress, t);
         }
 
         return status;

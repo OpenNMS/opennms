@@ -139,14 +139,14 @@ public final class ManageSnmpIntfServlet extends HttpServlet {
             if (snmpServices != null && snmpServices.length > 0) {
                 List<InetAddress> ips = new ArrayList<InetAddress>();
                 for (int i = 0; i < snmpServices.length; i++) {
-                    ips.add(InetAddress.getByName(snmpServices[i]
+                    ips.add(InetAddressUtils.addr(snmpServices[i]
                             .getIpAddress()));
                 }
 
                 InetAddress lowest = InetAddressUtils.getLowestInetAddress(ips);
 
                 if (lowest != null) {
-                    snmpIp = lowest.getHostAddress();
+                    snmpIp = InetAddressUtils.str(lowest);
                 }
             }
 

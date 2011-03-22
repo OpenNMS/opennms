@@ -38,7 +38,6 @@
 package org.opennms.netmgt.linkd;
 
 import java.net.InetAddress;
-import java.net.UnknownHostException;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.HashMap;
@@ -48,6 +47,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.Set;
 
+import org.opennms.core.utils.InetAddressUtils;
 import org.opennms.core.utils.LogUtils;
 import org.opennms.netmgt.config.LinkdConfig;
 import org.opennms.netmgt.config.SnmpPeerFactory;
@@ -266,24 +266,25 @@ public final class DiscoveryLink implements ReadyRunnable {
 					LogUtils.debugf(this, "run: found CDP ifindex %d", cdpIfIndex);
 
 					final InetAddress targetIpAddr = cdpIface.getCdpTargetIpAddr();
-					
-					if (!m_linkd.isInterfaceInPackage(targetIpAddr.getHostAddress(), getPackageName())) 
+					final String hostAddress = InetAddressUtils.str(targetIpAddr);
+
+					if (!m_linkd.isInterfaceInPackage(hostAddress, getPackageName())) 
 					{
-					    LogUtils.warnf(this, "run: ip address %s Not in package: %s.  Skipping.", targetIpAddr.getHostAddress(), getPackageName());
+					    LogUtils.warnf(this, "run: ip address %s Not in package: %s.  Skipping.", hostAddress, getPackageName());
 					    continue;
 					}
 
 					final int targetCdpNodeId = cdpIface.getCdpTargetNodeId();
 
 					if (targetCdpNodeId == -1) {
-					    LogUtils.warnf(this, "run: no node id found for ip address %s.  Skipping.", targetIpAddr.getHostAddress());
+					    LogUtils.warnf(this, "run: no node id found for ip address %s.  Skipping.", hostAddress);
 						continue;
 					}
 
 					LogUtils.debugf(this, "run: found nodeid/CDP target ipaddress: %d:%s", targetCdpNodeId, targetIpAddr);
 
 					if (targetCdpNodeId == curCdpNodeId) {
-					    LogUtils.debugf(this, "run: node id found for ip address %s is itself.  Skipping.", targetIpAddr.getHostAddress());
+					    LogUtils.debugf(this, "run: node id found for ip address %s is itself.  Skipping.", hostAddress);
 						continue;
 					}
 
@@ -614,9 +615,10 @@ public final class DiscoveryLink implements ReadyRunnable {
 					}
 					
 					final InetAddress nexthop = routeIface.getNextHop();
+					final String hostAddress = InetAddressUtils.str(nexthop);
 
-					if (nexthop.getHostAddress().equals("0.0.0.0")) {
-					    LogUtils.infof(this, "run: nexthop address is broadcast address %s. Skipping", nexthop.getHostAddress());
+					if (hostAddress.equals("0.0.0.0")) {
+					    LogUtils.infof(this, "run: nexthop address is broadcast address %s. Skipping", hostAddress);
 						// FIXME this should be further analyzed 
 						// working on routeDestNet you can find hosts that
 						// are directly connected with the destination network
@@ -627,12 +629,12 @@ public final class DiscoveryLink implements ReadyRunnable {
 					}
 
 					if (nexthop.isLoopbackAddress()) {
-					    LogUtils.infof(this, "run: nexthop address is localhost address %s. Skipping", nexthop.getHostAddress());
+					    LogUtils.infof(this, "run: nexthop address is localhost address %s. Skipping", hostAddress);
 						continue;
 					}
 
-					if (!m_linkd.isInterfaceInPackage(nexthop.getHostAddress(), getPackageName())) {
-					    LogUtils.infof(this, "run: nexthop address is not in package %s/%s. Skipping", nexthop.getHostAddress(), getPackageName());
+					if (!m_linkd.isInterfaceInPackage(hostAddress, getPackageName())) {
+					    LogUtils.infof(this, "run: nexthop address is not in package %s/%s. Skipping", hostAddress, getPackageName());
 						continue;
 					}
 
@@ -640,12 +642,12 @@ public final class DiscoveryLink implements ReadyRunnable {
 					final int nextHopNodeid = routeIface.getNextHopNodeid();
 
 					if (nextHopNodeid == -1) {
-					    LogUtils.infof(this, "run: no node id found for ip next hop address %s. Skipping", nexthop.getHostAddress());
+					    LogUtils.infof(this, "run: no node id found for ip next hop address %s. Skipping", hostAddress);
 						continue;
 					}
 
 					if (nextHopNodeid == curNodeId) {
-					    LogUtils.debugf(this, "run: node id found for ip next hop address %s is itself. Skipping", nexthop.getHostAddress());
+					    LogUtils.debugf(this, "run: node id found for ip next hop address %s is itself. Skipping", hostAddress);
 						continue;
 					}
 
@@ -1323,12 +1325,12 @@ public final class DiscoveryLink implements ReadyRunnable {
     				className = linkdConfig.getVlanClassName(curNode.getSysoid());
     			}
     
-    			try {
-    				agentConfig = SnmpPeerFactory.getInstance().getAgentConfig(InetAddress.getByName(curNode.getSnmpPrimaryIpAddr()));
-    			} catch (final UnknownHostException e) {
-    			    LogUtils.errorf(this, e, "parseBridgeNodes: Failed to load snmp parameter from snmp configuration file.");
+				final InetAddress addr = InetAddressUtils.addr(curNode.getSnmpPrimaryIpAddr());
+				if (addr == null) {
+    			    LogUtils.errorf(this, "parseBridgeNodes: Failed to load snmp parameter from snmp configuration file.");
     				return;
-    			}
+				}
+				agentConfig = SnmpPeerFactory.getInstance().getAgentConfig(addr);
     			
     			String community = agentConfig.getReadCommunity();
     			

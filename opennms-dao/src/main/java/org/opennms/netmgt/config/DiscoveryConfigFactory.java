@@ -513,17 +513,13 @@ public final class DiscoveryConfigFactory {
                 final byte[] laddr = address.getAddress();
         
                 for (final ExcludeRange range : excludeRange) {
-                    try {
-                        byte[] begin = InetAddress.getByName(range.getBegin()).getAddress();
-                        byte[] end = InetAddress.getByName(range.getEnd()).getAddress();
-                        ByteArrayComparator comparator = new ByteArrayComparator();
-                        int beginComp = comparator.compare(begin, laddr);
-                        int endComp = comparator.compare(laddr, end);
-                        if (beginComp <= 0 && endComp <= 0) {
-                            return true;
-                        }
-                    } catch (final UnknownHostException ex) {
-                        LogUtils.debugf(this, ex, "isExcluded: failed to convert exclusion address to InetAddress");
+                    byte[] begin = InetAddressUtils.addr(range.getBegin()).getAddress();
+                    byte[] end = InetAddressUtils.addr(range.getEnd()).getAddress();
+                    ByteArrayComparator comparator = new ByteArrayComparator();
+                    int beginComp = comparator.compare(begin, laddr);
+                    int endComp = comparator.compare(laddr, end);
+                    if (beginComp <= 0 && endComp <= 0) {
+                        return true;
                     }
                 }
             }

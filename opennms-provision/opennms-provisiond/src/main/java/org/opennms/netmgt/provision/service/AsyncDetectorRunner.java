@@ -34,6 +34,7 @@ import static org.opennms.core.utils.LogUtils.infof;
 import org.apache.mina.core.future.IoFutureListener;
 import org.opennms.core.tasks.Async;
 import org.opennms.core.tasks.Callback;
+import org.opennms.core.utils.InetAddressUtils;
 import org.opennms.netmgt.provision.AsyncServiceDetector;
 import org.opennms.netmgt.provision.DetectFuture;
 import org.opennms.netmgt.provision.support.NullDetectorMonitor;
@@ -57,18 +58,22 @@ class AsyncDetectorRunner implements Async<Boolean> {
     /** {@inheritDoc} */
     public void submit(Callback<Boolean> cb) {
         try {
-            infof(this, "Attemping to detect service %s on address %s", m_detector.getServiceName(), m_ifaceScan.getAddress().getHostAddress());
+            infof(this, "Attemping to detect service %s on address %s", m_detector.getServiceName(), getHostAddress());
             DetectFuture future = m_detector.isServiceDetected(m_ifaceScan.getAddress(), new NullDetectorMonitor());
             future.addListener(listener(cb));
         } catch (Throwable e) {
             cb.handleException(e);
         }
     }
+
+	private String getHostAddress() {
+		return InetAddressUtils.str(m_ifaceScan.getAddress());
+	}
     
     /** {@inheritDoc} */
     @Override
     public String toString() {
-        return String.format("Run detector %s on address %s", m_detector.getServiceName(), m_ifaceScan.getAddress().getHostAddress());
+        return String.format("Run detector %s on address %s", m_detector.getServiceName(), getHostAddress());
     }
 
     private IoFutureListener<DetectFuture> listener(final Callback<Boolean> cb) {

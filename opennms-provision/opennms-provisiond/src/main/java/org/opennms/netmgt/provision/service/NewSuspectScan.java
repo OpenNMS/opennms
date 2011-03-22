@@ -37,6 +37,7 @@ import org.opennms.core.tasks.BatchTask;
 import org.opennms.core.tasks.DefaultTaskCoordinator;
 import org.opennms.core.tasks.RunInBatch;
 import org.opennms.core.tasks.Task;
+import org.opennms.core.utils.InetAddressUtils;
 import org.opennms.core.utils.LogUtils;
 import org.opennms.netmgt.dao.SnmpAgentConfigFactory;
 import org.opennms.netmgt.model.OnmsNode;
@@ -93,7 +94,8 @@ public class NewSuspectScan implements RunInBatch {
      */
     protected void scanUndiscoveredNode(BatchTask phase) {
         
-        final OnmsNode node = m_provisionService.createUndiscoveredNode(m_ipAddress.getHostAddress());
+        final String hostAddress = InetAddressUtils.str(m_ipAddress);
+		final OnmsNode node = m_provisionService.createUndiscoveredNode(hostAddress);
         
         if (node != null) {
 

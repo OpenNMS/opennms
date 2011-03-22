@@ -47,6 +47,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.TreeMap;
 
+import org.opennms.core.utils.InetAddressUtils;
 import org.opennms.core.utils.ThreadCategory;
 import org.opennms.netmgt.snmp.AggregateTracker;
 import org.opennms.netmgt.snmp.SnmpInstId;
@@ -65,12 +66,6 @@ import org.opennms.netmgt.snmp.SnmpResult;
  *
  * @author <A HREF="mailto:mike@opennms.org">Mike </A>
  * @author <A>Jon Whetzel </A>
- * @author <A HREF="http://www.opennms.org/">OpenNMS </A>
- * @author <A>Jon Whetzel </A>
- * @author <A HREF="mailto:mike@opennms.org">Mike </A>
- * @author <A>Jon Whetzel </A>
- * @author <A HREF="http://www.opennms.org/">OpenNMS </A>
- * @version 1.1.1.1
  */
 public class SnmpIfCollector extends AggregateTracker {
     private Map<SnmpInstId, SNMPCollectorEntry> m_results = new TreeMap<SnmpInstId, SNMPCollectorEntry>();
@@ -127,7 +122,7 @@ public class SnmpIfCollector extends AggregateTracker {
         log().debug("List is "+objList);
         // Process parameters
         //
-        m_primaryIf = address.getHostAddress();
+        m_primaryIf = InetAddressUtils.str(address);
         m_objList = objList;
         m_collectionSet = collectionSet;
     }

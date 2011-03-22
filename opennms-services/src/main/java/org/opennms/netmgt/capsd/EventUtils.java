@@ -50,6 +50,7 @@ import java.net.InetAddress;
 import java.util.Enumeration;
 import java.util.List;
 
+import org.opennms.core.utils.InetAddressUtils;
 import org.opennms.core.utils.ThreadCategory;
 import org.opennms.netmgt.EventConstants;
 import org.opennms.netmgt.eventd.EventIpcManagerFactory;
@@ -747,7 +748,7 @@ public abstract class EventUtils {
 	 */
 	public static Event createNodeGainedServiceEvent(String source, int nodeId, InetAddress ifaddr, String service, String nodeLabel, String labelSource, String sysName, String sysDescr) {
 
-	    EventBuilder bldr = createServiceEventBuilder(EventConstants.NODE_GAINED_SERVICE_EVENT_UEI, source, nodeId, ifaddr.getHostAddress(), service, -1);
+	    EventBuilder bldr = createServiceEventBuilder(EventConstants.NODE_GAINED_SERVICE_EVENT_UEI, source, nodeId, InetAddressUtils.str(ifaddr), service, -1);
 
         bldr.setHost(Capsd.getLocalHostAddress());
         
@@ -788,7 +789,7 @@ public abstract class EventUtils {
      */
     public static Event createAndSendDeleteServiceEvent(String source, DbNodeEntry nodeEntry, InetAddress ifaddr, String service, String hostName, long txNo) {
 
-        EventBuilder bldr = createServiceEventBuilder(EventConstants.DELETE_SERVICE_EVENT_UEI, source, nodeEntry.getNodeId(), ifaddr.getHostAddress(), service, txNo);
+        EventBuilder bldr = createServiceEventBuilder(EventConstants.DELETE_SERVICE_EVENT_UEI, source, nodeEntry.getNodeId(), InetAddressUtils.str(ifaddr), service, txNo);
 
         bldr.setHost(hostName);
         

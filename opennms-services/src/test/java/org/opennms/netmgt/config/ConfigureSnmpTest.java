@@ -73,7 +73,7 @@ public class ConfigureSnmpTest extends TestCase {
      */
     public void testToIpAddrString() throws UnknownHostException {
         String addr = "192.168.1.1";
-        assertEquals(addr, InetAddressUtils.toIpAddrString(InetAddress.getByName(addr).getAddress()));
+        assertEquals(addr, InetAddressUtils.toIpAddrString(InetAddressUtils.addr(addr).getAddress()));
     }
 
     /**
@@ -106,8 +106,8 @@ public class ConfigureSnmpTest extends TestCase {
         
         SnmpConfigManager.mergeIntoConfig(SnmpPeerFactory.getSnmpConfig(), info.createDef());
 
-        SnmpAgentConfig agent = SnmpPeerFactory.getInstance().getAgentConfig(InetAddress.getByName(addr));
-        assertEquals(agent.getAddress().getHostAddress(), addr);
+        SnmpAgentConfig agent = SnmpPeerFactory.getInstance().getAgentConfig(InetAddressUtils.addr(addr));
+        assertEquals(InetAddressUtils.str(agent.getAddress()), addr);
         assertEquals("abc", agent.getReadCommunity());
     }
     
@@ -121,7 +121,7 @@ public class ConfigureSnmpTest extends TestCase {
         final String addr1 = "192.168.0.5";
         final String addr2 = "192.168.0.7";
         
-        SnmpAgentConfig agent = SnmpPeerFactory.getInstance().getAgentConfig(InetAddress.getByName(addr1));
+        SnmpAgentConfig agent = SnmpPeerFactory.getInstance().getAgentConfig(InetAddressUtils.addr(addr1));
         assertEquals(SnmpAgentConfig.VERSION2C, agent.getVersion());
         
         EventBuilder bldr = createConfigureSnmpEventBuilder(addr1, addr2);
@@ -130,8 +130,8 @@ public class ConfigureSnmpTest extends TestCase {
         
         SnmpConfigManager.mergeIntoConfig(SnmpPeerFactory.getSnmpConfig(), info.createDef());
         
-        agent = SnmpPeerFactory.getInstance().getAgentConfig(InetAddress.getByName(addr1));
-        assertEquals(agent.getAddress().getHostAddress(), addr1);
+        agent = SnmpPeerFactory.getInstance().getAgentConfig(InetAddressUtils.addr(addr1));
+        assertEquals(InetAddressUtils.str(agent.getAddress()), addr1);
         assertEquals(SnmpAgentConfig.VERSION2C, agent.getVersion());
         assertEquals(m_startingDefCount, SnmpPeerFactory.getSnmpConfig().getDefinitionCount());
     }
@@ -145,7 +145,7 @@ public class ConfigureSnmpTest extends TestCase {
         final String addr1 = "192.168.99.1";
         final String addr2 = "192.168.108.254";
         
-        SnmpAgentConfig agent = SnmpPeerFactory.getInstance().getAgentConfig(InetAddress.getByName(addr1));
+        SnmpAgentConfig agent = SnmpPeerFactory.getInstance().getAgentConfig(InetAddressUtils.addr(addr1));
         assertEquals(SnmpAgentConfig.VERSION1, agent.getVersion());
         
         EventBuilder bldr = createConfigureSnmpEventBuilder(addr1, addr2);
@@ -154,8 +154,8 @@ public class ConfigureSnmpTest extends TestCase {
         
         SnmpConfigManager.mergeIntoConfig(SnmpPeerFactory.getSnmpConfig(), info.createDef());
         
-        agent = SnmpPeerFactory.getInstance().getAgentConfig(InetAddress.getByName(addr1));
-        assertEquals(agent.getAddress().getHostAddress(), addr1);
+        agent = SnmpPeerFactory.getInstance().getAgentConfig(InetAddressUtils.addr(addr1));
+        assertEquals(InetAddressUtils.str(agent.getAddress()), addr1);
         assertEquals(SnmpAgentConfig.VERSION1, agent.getVersion());
         assertEquals(m_startingDefCount, SnmpPeerFactory.getSnmpConfig().getDefinitionCount());
     }
