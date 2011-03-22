@@ -64,7 +64,10 @@ import java.util.Map;
  * @author <A HREF="http://www.opennms.org/">OpenNMS </A>
  */
 public class InetNetworkInterface implements NetworkInterface<InetAddress>, Serializable {
-    private static final long serialVersionUID = 1L;
+    /**
+     * 
+     */
+    private static final long serialVersionUID = 6076361991057260210L;
 
     /**
      * The map of attributes for this interface.
@@ -77,7 +80,7 @@ public class InetNetworkInterface implements NetworkInterface<InetAddress>, Seri
     protected InetAddress m_address;
     
     /**
-     * <p>Constructor for IPv4NetworkInterface.</p>
+     * <p>Constructor for InetNetworkInterface.</p>
      *
      * @param address a {@link java.net.InetAddress} object.
      */
