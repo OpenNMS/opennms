@@ -846,7 +846,7 @@ public class Event implements Serializable {
      * @return the value of field 'Nodeid'.
      */
     public Long getNodeid() {
-        return this._nodeid == null? -1 : this._nodeid;
+        return this._nodeid == null? 0 : this._nodeid;
     }
 
     /**
