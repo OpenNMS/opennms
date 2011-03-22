@@ -38,15 +38,12 @@
 
 package org.opennms.netmgt.poller.monitors;
 
-import java.net.InetAddress;
 import java.util.Map;
 
 import org.apache.log4j.Level;
 import org.opennms.core.utils.ThreadCategory;
 import org.opennms.netmgt.model.PollStatus;
 import org.opennms.netmgt.poller.MonitoredService;
-import org.opennms.netmgt.poller.NetworkInterface;
-import org.opennms.netmgt.poller.NetworkInterfaceNotSupportedException;
 import org.opennms.netmgt.poller.ServiceMonitor;
 import org.springframework.util.ClassUtils;
 
