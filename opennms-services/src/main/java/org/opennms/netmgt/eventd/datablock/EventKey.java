@@ -43,6 +43,8 @@ import java.util.ArrayList;
 import java.util.LinkedHashMap;
 import java.util.Map;
 
+import org.opennms.core.utils.InetAddressUtils;
+
 /**
  * <pre>
  * The key for an event - it extends the Hashtable and basically is a
@@ -401,7 +403,7 @@ public class EventKey extends LinkedHashMap<String, Object> implements Serializa
         } else if (mename.equals(TAG_HOST)) {
             retParmVal = event.getHost();
         } else if (mename.equals(TAG_INTERFACE)) {
-            retParmVal = event.getInterface();
+            retParmVal = InetAddressUtils.str(event.getInterface());
         } else if (mename.equals(TAG_SNMPHOST)) {
             retParmVal = event.getSnmphost();
         } else if (mename.equals(TAG_SERVICE)) {

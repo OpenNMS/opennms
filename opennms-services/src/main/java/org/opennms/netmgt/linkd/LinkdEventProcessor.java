@@ -41,6 +41,7 @@
 
 package org.opennms.netmgt.linkd;
 
+import org.opennms.core.utils.InetAddressUtils;
 import org.opennms.netmgt.EventConstants;
 import org.opennms.netmgt.capsd.InsufficientInformationException;
 import org.opennms.netmgt.model.events.annotations.EventHandler;
@@ -99,7 +100,7 @@ public final class LinkdEventProcessor {
             ifIndex = event.getIfIndex();
         }
 
-        m_linkd.deleteInterface(event.getNodeid().intValue(), event.getInterface(), ifIndex);
+        m_linkd.deleteInterface(event.getNodeid().intValue(), InetAddressUtils.str(event.getInterface()), ifIndex);
         // set to status = D in all the rows in table
         // atinterface, iprouteinterface, datalinkinterface, stpinterface
     }

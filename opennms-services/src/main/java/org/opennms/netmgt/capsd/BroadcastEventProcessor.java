@@ -58,6 +58,7 @@ import java.util.Set;
 
 import org.opennms.core.queue.FifoQueue;
 import org.opennms.core.utils.DBUtils;
+import org.opennms.core.utils.InetAddressUtils;
 import org.opennms.core.utils.ThreadCategory;
 import org.opennms.netmgt.EventConstants;
 import org.opennms.netmgt.config.CapsdConfigFactory;
@@ -1192,7 +1193,7 @@ public class BroadcastEventProcessor implements InitializingBean {
             dbConn = getConnection();
             dbConn.setAutoCommit(false);
 
-            eventsToSend = doAddInterface(dbConn, nodeLabel, event.getInterface());
+            eventsToSend = doAddInterface(dbConn, nodeLabel, InetAddressUtils.str(event.getInterface()));
         } catch (SQLException sqlE) {
             log().error("addInterfaceHandler: SQLException during add node and ipaddress to the database.", sqlE);
             throw new FailedOperationException("Database error: " + sqlE.getMessage(), sqlE);
@@ -1244,7 +1245,7 @@ public class BroadcastEventProcessor implements InitializingBean {
             EventUtils.requireParm(event, EventConstants.PARM_TRANSACTION_NO);
         }
 
-        String ipaddr = event.getInterface();
+        String ipaddr = InetAddressUtils.str(event.getInterface());
         String nodeLabel = EventUtils.getParm(event, EventConstants.PARM_NODE_LABEL);
         long txNo = EventUtils.getLongParm(event, EventConstants.PARM_TRANSACTION_NO, -1L);
         log().debug("addNodeHandler:  processing addNode event for " + ipaddr);
@@ -1314,7 +1315,7 @@ public class BroadcastEventProcessor implements InitializingBean {
             dbConn = getConnection();
             dbConn.setAutoCommit(false);
 
-            eventsToSend = doChangeService(dbConn, event.getInterface(), event.getService(), action, txNo);
+            eventsToSend = doChangeService(dbConn, InetAddressUtils.str(event.getInterface()), event.getService(), action, txNo);
         } catch (SQLException sqlE) {
             log().error("SQLException during changeService on database.", sqlE);
             throw new FailedOperationException("exeption processing changeService: " + sqlE.getMessage(), sqlE);
@@ -1386,7 +1387,7 @@ public class BroadcastEventProcessor implements InitializingBean {
 
             String source = (event.getSource() == null ? "OpenNMS.Capsd" : event.getSource());
             
-            eventsToSend = doDeleteInterface(dbConn, source, event.getNodeid(), event.getInterface(), ifIndex, txNo);
+            eventsToSend = doDeleteInterface(dbConn, source, event.getNodeid(), InetAddressUtils.str(event.getInterface()), ifIndex, txNo);
 
         } catch (SQLException ex) {
             log().error("handleDeleteInterface:  Database error deleting interface on node " + event.getNodeid()
@@ -1515,7 +1516,7 @@ public class BroadcastEventProcessor implements InitializingBean {
             dbConn = getConnection();
             dbConn.setAutoCommit(false);
             String source = (event.getSource() == null ? "OpenNMS.Capsd" : event.getSource());
-            eventsToSend = doDeleteService(dbConn, source, event.getNodeid(), event.getInterface(), event.getService(), txNo);
+            eventsToSend = doDeleteService(dbConn, source, event.getNodeid(), InetAddressUtils.str(event.getInterface()), event.getService(), txNo);
         } catch (SQLException ex) {
             log().error("handleDeleteService:  Database error deleting service " + event.getService() + " on ipAddr " + event.getInterface() + " for node " + event.getNodeid(), ex);
             throw new FailedOperationException("database error: " + ex.getMessage(), ex);
@@ -1599,7 +1600,7 @@ public class BroadcastEventProcessor implements InitializingBean {
                 // Retrieve node id
                 stmt = dbc.prepareStatement(SQL_RETRIEVE_NODEID);
                 d.watch(stmt);
-                stmt.setString(1, event.getInterface());
+                stmt.setString(1, InetAddressUtils.str(event.getInterface()));
                 rs = stmt.executeQuery();
                 d.watch(rs);
                 if (rs.next()) {
@@ -1640,7 +1641,7 @@ public class BroadcastEventProcessor implements InitializingBean {
         EventUtils.checkInterface(event);
         
         // discard this newSuspect if one is already enqueued for the same IP address
-        if (SuspectEventProcessor.isScanQueuedForAddress(event.getInterface())) {
+        if (SuspectEventProcessor.isScanQueuedForAddress(InetAddressUtils.str(event.getInterface()))) {
         	log().info("Ignoring newSuspect event for interface " + event.getInterface() + " because a newSuspect scan for that interface already exists in the queue");
         	return;
         }
@@ -1648,7 +1649,7 @@ public class BroadcastEventProcessor implements InitializingBean {
         // new suspect event
         try {
             log().debug("onMessage: Adding interface to suspectInterface Q: " + event.getInterface());
-            m_suspectQ.add(m_suspectEventProcessorFactory.createSuspectEventProcessor(event.getInterface()));
+            m_suspectQ.add(m_suspectEventProcessorFactory.createSuspectEventProcessor(InetAddressUtils.str(event.getInterface())));
         } catch (Throwable ex) {
             log().error("onMessage: Failed to add interface to suspect queue", ex);
         }
@@ -1722,7 +1723,7 @@ public class BroadcastEventProcessor implements InitializingBean {
             dbConn = getConnection();
             dbConn.setAutoCommit(false);
 
-            eventsToSend = doUpdateServer(dbConn, nodeLabel, event.getInterface(), action, m_localServer, txNo);
+            eventsToSend = doUpdateServer(dbConn, nodeLabel, InetAddressUtils.str(event.getInterface()), action, m_localServer, txNo);
 
         } catch (SQLException sqlE) {
             log().error("SQLException during updateServer on database.", sqlE);
@@ -1792,7 +1793,7 @@ public class BroadcastEventProcessor implements InitializingBean {
             dbConn = getConnection();
             dbConn.setAutoCommit(false);
 
-            eventsToSend = doUpdateService(dbConn, nodeLabel, event.getInterface(), event.getService(), action, txNo);
+            eventsToSend = doUpdateService(dbConn, nodeLabel, InetAddressUtils.str(event.getInterface()), event.getService(), action, txNo);
 
         } catch (SQLException sqlE) {
             log().error("SQLException during handleUpdateService on database.", sqlE);

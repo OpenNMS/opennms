@@ -393,7 +393,8 @@ public final class EventUtil {
 	public static String getValueOfParm(String parm, Event event) {
         
 		String retParmVal = null;
-
+		final String ifString = InetAddressUtils.str(event.getInterface());
+		
 		if (parm.equals(TAG_UEI)) {
 			retParmVal = event.getUei();
 		}
@@ -462,7 +463,7 @@ public final class EventUtil {
 		} else if (parm.equals(TAG_HOST)) {
 			retParmVal = event.getHost();
 		} else if (parm.equals(TAG_INTERFACE)) {
-			retParmVal = event.getInterface();
+			retParmVal = ifString;
 		} else if (parm.equals(TAG_IFINDEX)) {
 	          if (event.hasIfIndex()) {
 	              retParmVal = Integer.toString(event.getIfIndex());
@@ -470,19 +471,13 @@ public final class EventUtil {
 	                retParmVal = "N/A";
 	            }
 		} else if (parm.equals(TAG_INTERFACE_RESOLVE)) {
-			retParmVal = event.getInterface();
-			try {
-				java.net.InetAddress inet = java.net.InetAddress
-						.getByName(retParmVal);
-				retParmVal = inet.getHostName();
-			} catch (java.net.UnknownHostException e) {
-			}
+			retParmVal = event.getInterface().getHostName();
 		} else if (parm.equals(TAG_IFALIAS)) {
 			String ifAlias = null;
 			if (event.getNodeid() > 0
 					&& event.getInterface() != null) {
 				try {
-					ifAlias = getIfAlias(event.getNodeid(), event.getInterface());
+					ifAlias = getIfAlias(event.getNodeid(), ifString);
 				} catch (SQLException sqlE) {
 					// do nothing
 					ThreadCategory.getInstance(EventUtil.class).info("ifAlias Unavailable for " + event.getNodeid() + ":" + event.getInterface(), sqlE);
@@ -491,7 +486,7 @@ public final class EventUtil {
 			if (ifAlias != null)
 				retParmVal = ifAlias;
 			else
-				retParmVal = event.getInterface();
+				retParmVal = ifString;
 		} else if (parm.equals(TAG_PERCENT_SIGN)) {
 			String pctSign = "%";
 			retParmVal = pctSign;

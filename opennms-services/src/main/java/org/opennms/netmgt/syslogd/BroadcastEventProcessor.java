@@ -40,6 +40,7 @@
 
 package org.opennms.netmgt.syslogd;
 
+import org.opennms.core.utils.InetAddressUtils;
 import org.opennms.core.utils.ThreadCategory;
 import org.opennms.netmgt.EventConstants;
 import org.opennms.netmgt.eventd.EventIpcManagerFactory;
@@ -104,7 +105,7 @@ final class BroadcastEventProcessor implements EventListener {
             // add to known nodes
             if (Long.toString(event.getNodeid()) != null
                     && event.getInterface() != null) {
-                SyslogdIPMgr.setNodeId(event.getInterface(),
+                SyslogdIPMgr.setNodeId(InetAddressUtils.str(event.getInterface()),
                                        event.getNodeid());
             }
             if (log.isDebugEnabled())
@@ -113,7 +114,7 @@ final class BroadcastEventProcessor implements EventListener {
         } else if (eventUei.equals(EventConstants.INTERFACE_DELETED_EVENT_UEI)) {
             // remove from known nodes
             if (event.getInterface() != null) {
-                SyslogdIPMgr.removeNodeId(event.getInterface());
+                SyslogdIPMgr.removeNodeId(InetAddressUtils.str(event.getInterface()));
             }
             if (log.isDebugEnabled())
                 log.debug("Removed " + event.getInterface()
@@ -122,7 +123,7 @@ final class BroadcastEventProcessor implements EventListener {
             // add to known nodes
             if (Long.toString(event.getNodeid()) != null
                     && event.getInterface() != null) {
-                SyslogdIPMgr.setNodeId(event.getInterface(),
+                SyslogdIPMgr.setNodeId(InetAddressUtils.str(event.getInterface()),
                                        event.getNodeid());
             }
             if (log.isDebugEnabled())

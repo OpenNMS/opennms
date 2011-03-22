@@ -35,6 +35,7 @@
  */
 package org.opennms.netmgt.xmlrpcd;
 
+import java.net.InetAddress;
 import java.util.Enumeration;
 
 import org.opennms.core.fiber.PausableFiber;
@@ -129,7 +130,7 @@ class EventQueueProcessor implements Runnable, PausableFiber {
             nodeId = event.getNodeid();
         }
 
-        String ipAddr = event.getInterface();
+        InetAddress ipAddr = event.getInterface();
         String service = event.getService();
         String eventTime = event.getTime();
 

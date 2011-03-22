@@ -40,6 +40,7 @@ import java.sql.SQLException;
 import javax.sql.DataSource;
 
 import org.apache.commons.lang.StringUtils;
+import org.opennms.core.utils.InetAddressUtils;
 import org.opennms.core.utils.LogUtils;
 import org.opennms.netmgt.EventConstants;
 import org.opennms.netmgt.config.SnmpEventInfo;
@@ -445,7 +446,7 @@ public class SnmpPoller extends AbstractServiceDaemon {
      */
     @EventHandler(uei = EventConstants.DELETE_INTERFACE_EVENT_UEI)
     public void deleteInterfaceHaldler(Event event){
-        getNetwork().delete(event.getInterface());
+        getNetwork().delete(InetAddressUtils.str(event.getInterface()));
     }
 
     /**
@@ -487,7 +488,7 @@ public class SnmpPoller extends AbstractServiceDaemon {
     public void serviceGainedHandler(Event event) {
         if (event.getService().equals(getPollerConfig().getService())) {
             getPollerConfig().rebuildPackageIpListMap();
-            scheduleNewSnmpInterface(event.getInterface());
+            scheduleNewSnmpInterface(InetAddressUtils.str(event.getInterface()));
         }
     }
 
@@ -502,7 +503,7 @@ public class SnmpPoller extends AbstractServiceDaemon {
         String[] criticalServices = getPollerConfig().getCriticalServiceIds();
         for (int i = 0; i< criticalServices.length ; i++) {
             if (criticalServices[i].equals(service)) {
-                getNetwork().suspend(event.getInterface());
+                getNetwork().suspend(InetAddressUtils.str(event.getInterface()));
             }
         }
     }
@@ -518,7 +519,7 @@ public class SnmpPoller extends AbstractServiceDaemon {
         String[] criticalServices = getPollerConfig().getCriticalServiceIds();
         for (int i = 0; i< criticalServices.length ; i++) {
             if (criticalServices[i].equals(service)) {
-                getNetwork().activate(event.getInterface());
+                getNetwork().activate(InetAddressUtils.str(event.getInterface()));
             }
         }
         
@@ -531,7 +532,7 @@ public class SnmpPoller extends AbstractServiceDaemon {
      */
     @EventHandler(uei = EventConstants.INTERFACE_UP_EVENT_UEI)
     public void interfaceUpHandler(Event event) {
-        getNetwork().activate(event.getInterface());
+        getNetwork().activate(InetAddressUtils.str(event.getInterface()));
     }
 
     /**
@@ -541,7 +542,7 @@ public class SnmpPoller extends AbstractServiceDaemon {
      */
     @EventHandler(uei = EventConstants.INTERFACE_DOWN_EVENT_UEI)
     public void interfaceDownHandler(Event event) {
-        getNetwork().suspend(event.getInterface());
+        getNetwork().suspend(InetAddressUtils.str(event.getInterface()));
     }
 
     /**

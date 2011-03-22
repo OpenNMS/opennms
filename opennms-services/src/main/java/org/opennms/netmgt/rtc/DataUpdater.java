@@ -41,6 +41,7 @@ package org.opennms.netmgt.rtc;
 import java.text.ParseException;
 import java.util.Enumeration;
 
+import org.opennms.core.utils.InetAddressUtils;
 import org.opennms.core.utils.ThreadCategory;
 import org.opennms.netmgt.EventConstants;
 import org.opennms.netmgt.xml.event.Event;
@@ -431,7 +432,7 @@ final class DataUpdater implements Runnable {
             nodeid = m_event.getNodeid();
         }
 
-        String ip = m_event.getInterface();
+        String ip = InetAddressUtils.str(m_event.getInterface());
 
         String svcName = m_event.getService();
 

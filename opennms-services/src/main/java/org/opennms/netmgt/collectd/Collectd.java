@@ -66,6 +66,7 @@ import java.util.Map;
 import java.util.Set;
 
 import org.apache.commons.lang.StringUtils;
+import org.opennms.core.utils.InetAddressUtils;
 import org.opennms.core.utils.ThreadCategory;
 import org.opennms.netmgt.ConfigFileConstants;
 import org.opennms.netmgt.EventConstants;
@@ -824,7 +825,7 @@ public class Collectd extends AbstractServiceDaemon implements
 
         ThreadCategory log = log();
         
-        String ipAddr = event.getInterface();
+        String ipAddr = InetAddressUtils.str(event.getInterface());
         if(EventUtils.isNonIpInterface(ipAddr) ) {
             log().debug("handleInterfaceDeleted: the deleted interface was a non-ip interface. Nothing to do here.");
             return;
@@ -973,7 +974,7 @@ public class Collectd extends AbstractServiceDaemon implements
                         // this CollectableService.
                         CollectorUpdates updates = cSvc.getCollectorUpdates();
                         if (iface == null) {
-                        	iface = getIpInterface(event.getNodeid().intValue(), event.getInterface());
+                        	iface = getIpInterface(event.getNodeid().intValue(), InetAddressUtils.str(event.getInterface()));
                         }
 
                         // Now set the reparenting flag
@@ -1127,7 +1128,7 @@ public class Collectd extends AbstractServiceDaemon implements
         
         getCollectorConfigDao().rebuildPackageIpListMap();
 
-        scheduleInterface(event.getNodeid().intValue(), event.getInterface(),
+        scheduleInterface(event.getNodeid().intValue(), InetAddressUtils.str(event.getInterface()),
                           event.getService(), false);
     }
 
@@ -1265,7 +1266,7 @@ public class Collectd extends AbstractServiceDaemon implements
         EventUtils.checkInterface(event);
 
         Long nodeid = event.getNodeid();
-        String ipAddress = event.getInterface();
+        String ipAddress = InetAddressUtils.str(event.getInterface());
 
         // Mark the primary SNMP interface for reinitialization in
         // order to update any modified attributes associated with
@@ -1334,7 +1335,7 @@ public class Collectd extends AbstractServiceDaemon implements
         //    return;
 
         Long nodeId = event.getNodeid();
-        String ipAddr = event.getInterface();
+        String ipAddr = InetAddressUtils.str(event.getInterface());
         String svcName = event.getService();
 
         // Iterate over the collectable services list and mark any entries

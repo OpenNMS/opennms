@@ -9,6 +9,7 @@ package org.opennms.netmgt.provision.adapters.link;
 
 import static org.opennms.core.utils.LogUtils.debugf;
 
+import org.opennms.core.utils.InetAddressUtils;
 import org.opennms.netmgt.EventConstants;
 import org.opennms.netmgt.model.DataLinkInterface;
 import org.opennms.netmgt.model.OnmsLinkState;
@@ -157,7 +158,7 @@ public class LinkEventCorrelator {
                 return;
             }
             int nodeId = Long.valueOf(e.getNodeid()).intValue();
-            if(isSnmpPrimary(nodeId, e.getInterface())){
+            if(isSnmpPrimary(nodeId, InetAddressUtils.str(e.getInterface()))){
                 linkDown(nodeId);
             }
             else {
@@ -185,7 +186,7 @@ public class LinkEventCorrelator {
                 return;
             }
             int nodeId = Long.valueOf(e.getNodeid()).intValue();
-            if(isSnmpPrimary(nodeId, e.getInterface())){
+            if(isSnmpPrimary(nodeId, InetAddressUtils.str(e.getInterface()))){
                 linkUp(nodeId);
             }
             else {
@@ -213,7 +214,7 @@ public class LinkEventCorrelator {
                 return;
             }
             int nodeId = Long.valueOf(e.getNodeid()).intValue();
-            if(isSnmpPrimary(nodeId, e.getInterface())){
+            if(isSnmpPrimary(nodeId, InetAddressUtils.str(e.getInterface()))){
                 endPointFound(nodeId);
             } else {
                 debugf(this, "Discarding Event %s since ip %s is node the primary interface of node %d", e.getUei(), e.getInterface(), e.getNodeid());
@@ -241,7 +242,7 @@ public class LinkEventCorrelator {
                 return;
             }
             int nodeId = Long.valueOf(e.getNodeid()).intValue();
-            if(isSnmpPrimary(nodeId, e.getInterface())){
+            if(isSnmpPrimary(nodeId, InetAddressUtils.str(e.getInterface()))){
                 linkDown(nodeId);
             }
             else {
@@ -273,7 +274,7 @@ public class LinkEventCorrelator {
                 return;
             }
             int nodeId = Long.valueOf(e.getNodeid()).intValue();
-            if(isSnmpPrimary(nodeId, e.getInterface())){
+            if(isSnmpPrimary(nodeId, InetAddressUtils.str(e.getInterface()))){
                 linkUp(nodeId);
             }
             else {
@@ -301,7 +302,7 @@ public class LinkEventCorrelator {
                 return;
             }
             int nodeId = Long.valueOf(e.getNodeid()).intValue();
-            if(isSnmpPrimary(nodeId, e.getInterface())){
+            if(isSnmpPrimary(nodeId, InetAddressUtils.str(e.getInterface()))){
                 linkUp(nodeId); 
             }
             else {
@@ -329,7 +330,7 @@ public class LinkEventCorrelator {
             }
             
             int nodeId = Long.valueOf(e.getNodeid()).intValue();
-            if(isSnmpPrimary(nodeId, e.getInterface())){
+            if(isSnmpPrimary(nodeId, InetAddressUtils.str(e.getInterface()))){
                 endPointDeleted(nodeId);
             }
             else {

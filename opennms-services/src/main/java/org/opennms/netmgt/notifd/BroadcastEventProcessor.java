@@ -61,6 +61,7 @@ import org.apache.regexp.RE;
 import org.apache.regexp.RESyntaxException;
 import org.exolab.castor.xml.MarshalException;
 import org.exolab.castor.xml.ValidationException;
+import org.opennms.core.utils.InetAddressUtils;
 import org.opennms.core.utils.ThreadCategory;
 import org.opennms.core.utils.TimeConverter;
 import org.opennms.netmgt.EventConstants;
@@ -462,7 +463,7 @@ public final class BroadcastEventProcessor implements EventListener {
      */
     private boolean continueWithNotice(Event event) {
         String nodeID = event.hasNodeid() ? String.valueOf(event.getNodeid()) : null;
-        String ipAddr = event.getInterface();
+        String ipAddr = InetAddressUtils.str(event.getInterface());
         String service = event.getService();
 
         boolean continueNotice = false;
@@ -549,7 +550,7 @@ public final class BroadcastEventProcessor implements EventListener {
                 }
 
                 long nodeid = event.getNodeid();
-                String ipaddr = event.getInterface();
+                String ipaddr = InetAddressUtils.str(event.getInterface());
                 if (notifications != null) {
                     for (Notification notification : notifications) {
                         int noticeId = 0;
@@ -754,7 +755,7 @@ public final class BroadcastEventProcessor implements EventListener {
         nullSafeExpandedPut(NotificationManager.PARAM_NUM_MSG, numericMessage, event, paramMap);
         nullSafeExpandedPut(NotificationManager.PARAM_SUBJECT, subjectLine, event, paramMap);
         paramMap.put(NotificationManager.PARAM_NODE, event.hasNodeid() ? String.valueOf(event.getNodeid()) : "");
-        paramMap.put(NotificationManager.PARAM_INTERFACE, event.getInterface());
+        paramMap.put(NotificationManager.PARAM_INTERFACE, InetAddressUtils.str(event.getInterface()));
         paramMap.put(NotificationManager.PARAM_SERVICE, event.getService());
         paramMap.put("eventID", String.valueOf(event.getDbid()));
         paramMap.put("eventUEI", event.getUei());

@@ -49,6 +49,7 @@ import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
 
+import org.opennms.core.utils.InetAddressUtils;
 import org.opennms.core.utils.LogUtils;
 import org.opennms.netmgt.EventConstants;
 import org.opennms.netmgt.capsd.EventUtils;
@@ -207,7 +208,7 @@ final class PollerEventProcessor implements EventListener {
 
         // First make sure the service gained is in active state before trying to schedule
 
-        String ipAddr = event.getInterface();
+        String ipAddr = InetAddressUtils.str(event.getInterface());
         Long nodeId = event.getNodeid();
         String svcName = event.getService();
         
@@ -240,7 +241,7 @@ final class PollerEventProcessor implements EventListener {
         if (event.getInterface() == null)
             return;
         
-        String ipAddr = event.getInterface();
+        InetAddress ipAddr = event.getInterface();
 
         // Extract the old and new nodeId's from the event parms
         String oldNodeIdStr = null;
@@ -292,7 +293,7 @@ final class PollerEventProcessor implements EventListener {
                 return;
             }
             
-            PollableInterface iface = oldNode.getInterface(InetAddress.getByName(ipAddr));
+            PollableInterface iface = oldNode.getInterface(ipAddr);
             if (iface == null) {
                 LogUtils.errorf(this, "interfaceReparentedHandler: Cannot locate interface with ipAddr %s to reparent.", ipAddr);
                 return;
@@ -304,9 +305,6 @@ final class PollerEventProcessor implements EventListener {
         } catch (final NumberFormatException nfe) {
             LogUtils.errorf(this, "interfaceReparentedHandler: failed converting old/new nodeid parm to integer, unable to process.");
             return;
-        } catch (final UnknownHostException e) {
-            LogUtils.errorf(this, "interfaceReparentedHandler: failed converting ipAddr %s to an inet address.", ipAddr);
-            return;
         } 
         
     }
@@ -317,25 +315,15 @@ final class PollerEventProcessor implements EventListener {
      */
     private void nodeRemovePollableServiceHandler(Event event) {
         Long nodeId = event.getNodeid();
-        String ipAddr = event.getInterface();
+        InetAddress ipAddr = event.getInterface();
         String svcName = event.getService();
         
-        InetAddress address;
-        try {
-            address = InetAddress.getByName(ipAddr);
-        } catch (final UnknownHostException e) {
-            LogUtils.errorf(this, "Unable to convert %s to an inet address.", ipAddr);
-            return;
-        }
-        
-
         if (svcName == null) {
             LogUtils.errorf(this, "nodeRemovePollableServiceHandler: service name is null, ignoring event");
             return;
         }
         
-        
-        PollableService svc = getNetwork().getService(nodeId.intValue(), address, svcName);
+        PollableService svc = getNetwork().getService(nodeId.intValue(), ipAddr, svcName);
         svc.delete();
 
     }
@@ -407,7 +395,7 @@ final class PollerEventProcessor implements EventListener {
     private void interfaceDeletedHandler(Event event) {
         Long nodeId = event.getNodeid();
         String sourceUei = event.getUei();
-        String ipAddr = event.getInterface();
+        InetAddress ipAddr = event.getInterface();
         
         // Extract node label and transaction No. from the event parms
         long txNo = -1L;
@@ -439,15 +427,6 @@ final class PollerEventProcessor implements EventListener {
             }
         }
         
-        InetAddress addr;
-        try {
-            addr = InetAddress.getByName(ipAddr);
-        } catch (final UnknownHostException e) {
-            LogUtils.errorf(this, e, "interfaceDeletedHandler: Could not convert interface %s to InetAddress", event.getInterface());
-            return;
-            
-        }
-        
         Date closeDate;
         try {
             closeDate = EventConstants.parseToDate(event.getTime());
@@ -455,10 +434,10 @@ final class PollerEventProcessor implements EventListener {
             closeDate = new Date();
         }
         
-        getPoller().closeOutagesForInterface(closeDate, event.getDbid(), nodeId.intValue(), ipAddr);
+        getPoller().closeOutagesForInterface(closeDate, event.getDbid(), nodeId.intValue(), InetAddressUtils.str(ipAddr));
 
         
-        PollableInterface iface = getNetwork().getInterface(nodeId.intValue(), addr);
+        PollableInterface iface = getNetwork().getInterface(nodeId.intValue(), ipAddr);
         if (iface == null) {
           LogUtils.errorf(this, "Interface %d/%s does not exist in pollable node map, unable to delete node.", nodeId, event.getInterface());
           if (isXmlRPCEnabled()) {
@@ -479,16 +458,8 @@ final class PollerEventProcessor implements EventListener {
      */
     private void serviceDeletedHandler(Event event) {
         Long nodeId = event.getNodeid();
-        String ipAddr = event.getInterface();
+        InetAddress ipAddr = event.getInterface();
         String service = event.getService();
-        
-        InetAddress addr;
-        try {
-            addr = InetAddress.getByName(ipAddr);
-        } catch (final UnknownHostException e) {
-            LogUtils.errorf(this, e, "serviceDeletedHandler: Could not convert %s to an InetAddress", ipAddr);
-            return;
-        }
         
         Date closeDate;
         try {
@@ -497,9 +468,9 @@ final class PollerEventProcessor implements EventListener {
             closeDate = new Date();
         }
         
-        getPoller().closeOutagesForService(closeDate, event.getDbid(), nodeId.intValue(), ipAddr, service);
+        getPoller().closeOutagesForService(closeDate, event.getDbid(), nodeId.intValue(), InetAddressUtils.str(ipAddr), service);
         
-        PollableService svc = getNetwork().getService(nodeId.intValue(), addr, service);
+        PollableService svc = getNetwork().getService(nodeId.intValue(), ipAddr, service);
         if (svc == null) {
           LogUtils.errorf(this, "Interface %d/%s does not exist in pollable node map, unable to delete node.", nodeId, event.getInterface());
           return;
@@ -569,7 +540,7 @@ final class PollerEventProcessor implements EventListener {
         } else if (event.getUei().equals(EventConstants.NODE_GAINED_SERVICE_EVENT_UEI)) {
             // If there is no interface then it cannot be processed
             //
-            if (event.getInterface() == null || event.getInterface().length() == 0) {
+            if (event.getInterface() == null) {
                 LogUtils.infof(this, "PollerEventProcessor: no interface found, discarding event");
             } else {
                 nodeGainedServiceHandler(event);
@@ -577,7 +548,7 @@ final class PollerEventProcessor implements EventListener {
         } else if (event.getUei().equals(EventConstants.RESUME_POLLING_SERVICE_EVENT_UEI)) {
             // If there is no interface then it cannot be processed
             //
-            if (event.getInterface() == null || event.getInterface().length() == 0) {
+            if (event.getInterface() == null) {
                 LogUtils.infof(this, "PollerEventProcessor: no interface found, cannot resume polling service, discarding event");
             } else {
                 nodeGainedServiceHandler(event);
@@ -585,7 +556,7 @@ final class PollerEventProcessor implements EventListener {
         } else if (event.getUei().equals(EventConstants.SUSPEND_POLLING_SERVICE_EVENT_UEI)) {
             // If there is no interface then it cannot be processed
             //
-            if (event.getInterface() == null || event.getInterface().length() == 0) {
+            if (event.getInterface() == null) {
                 LogUtils.infof(this, "PollerEventProcessor: no interface found, cannot suspend polling service, discarding event");
             } else {
                 nodeRemovePollableServiceHandler(event);
@@ -593,7 +564,7 @@ final class PollerEventProcessor implements EventListener {
         } else if (event.getUei().equals(EventConstants.INTERFACE_REPARENTED_EVENT_UEI)) {
             // If there is no interface then it cannot be processed
             //
-            if (event.getInterface() == null || event.getInterface().length() == 0) {
+            if (event.getInterface() == null) {
                 LogUtils.infof(this, "PollerEventProcessor: no interface found, discarding event");
             } else {
                 interfaceReparentedHandler(event);
@@ -607,7 +578,7 @@ final class PollerEventProcessor implements EventListener {
         } else if (event.getUei().equals(EventConstants.INTERFACE_DELETED_EVENT_UEI)) {
             // If there is no interface then it cannot be processed
             //
-            if (event.getNodeid() < 0 || event.getInterface() == null || event.getInterface().length() == 0) {
+            if (event.getNodeid() < 0 || event.getInterface() == null) {
                 LogUtils.infof(this, "PollerEventProcessor: invalid nodeid or no interface found, discarding event");
             } else {
                 interfaceDeletedHandler(event);
@@ -615,7 +586,7 @@ final class PollerEventProcessor implements EventListener {
         } else if (event.getUei().equals(EventConstants.SERVICE_DELETED_EVENT_UEI)) {
             // If there is no interface then it cannot be processed
             //
-            if ((event.getNodeid() < 0) || (event.getInterface() == null) || (event.getInterface().length() == 0) || (event.getService() == null)) {
+            if ((event.getNodeid() < 0) || (event.getInterface() == null) || (event.getService() == null)) {
                 LogUtils.infof(this, "PollerEventProcessor: invalid nodeid or no nodeinterface " + "or service found, discarding event");
             } else {
                 serviceDeletedHandler(event);

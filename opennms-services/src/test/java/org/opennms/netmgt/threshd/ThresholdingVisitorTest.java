@@ -56,6 +56,7 @@ import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
 import org.opennms.core.resource.Vault;
+import org.opennms.core.utils.InetAddressUtils;
 import org.opennms.core.utils.ThreadCategory;
 import org.opennms.netmgt.collectd.AliasedResource;
 import org.opennms.netmgt.collectd.AttributeGroupType;
@@ -177,7 +178,7 @@ public class ThresholdingVisitorTest {
 
                 int retVal = compareStrings(e1.getUei(), e2.getUei());
                 if (retVal == 0) {
-                    retVal = compareStrings(e1.getInterface(), e2.getInterface());
+                    retVal = InetAddressUtils.toInteger(e1.getInterface()).compareTo(InetAddressUtils.toInteger(e2.getInterface()));
                 }
                 if (retVal == 0) {
                     retVal = compareStrings(e1.getService(), e2.getService());

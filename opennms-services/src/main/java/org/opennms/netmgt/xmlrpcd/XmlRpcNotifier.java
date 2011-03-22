@@ -44,6 +44,7 @@ package org.opennms.netmgt.xmlrpcd;
 
 import java.io.IOException;
 import java.net.ConnectException;
+import java.net.InetAddress;
 import java.net.MalformedURLException;
 import java.sql.Connection;
 import java.sql.PreparedStatement;
@@ -54,8 +55,8 @@ import java.util.Vector;
 
 import org.apache.xmlrpc.XmlRpcClient;
 import org.apache.xmlrpc.XmlRpcException;
-/*import org.apache.xmlrpc.secure.SecureXmlRpcClient; */
 import org.opennms.core.utils.DBUtils;
+import org.opennms.core.utils.InetAddressUtils;
 import org.opennms.core.utils.ThreadCategory;
 import org.opennms.netmgt.EventConstants;
 import org.opennms.netmgt.config.DataSourceFactory;
@@ -482,9 +483,9 @@ public final class XmlRpcNotifier {
         table.put("uei", String.valueOf(event.getUei()));
         table.put("nodeId", Long.toString(event.getNodeid()));
 
-        String intf = event.getInterface();
+        InetAddress intf = event.getInterface();
         if (intf != null) {
-            table.put("interface", intf);
+            table.put("interface", InetAddressUtils.str(intf));
         }
 
         String service = event.getService();

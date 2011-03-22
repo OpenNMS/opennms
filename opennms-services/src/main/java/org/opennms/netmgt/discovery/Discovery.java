@@ -57,6 +57,7 @@ import java.util.concurrent.locks.Lock;
 import org.exolab.castor.xml.MarshalException;
 import org.exolab.castor.xml.ValidationException;
 import org.opennms.core.utils.DBUtils;
+import org.opennms.core.utils.InetAddressUtils;
 import org.opennms.netmgt.EventConstants;
 import org.opennms.netmgt.config.DataSourceFactory;
 import org.opennms.netmgt.config.DiscoveryConfigFactory;
@@ -453,7 +454,7 @@ public class Discovery extends AbstractServiceDaemon {
     @EventHandler(uei=EventConstants.NODE_GAINED_INTERFACE_EVENT_UEI)
     public void handleNodeGainedInterface(Event event) {
         // add to known nodes
-        m_alreadyDiscovered.add(event.getInterface());
+        m_alreadyDiscovered.add(InetAddressUtils.str(event.getInterface()));
 
         debugf("Added %s as discovered", event.getInterface());
     }

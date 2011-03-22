@@ -112,7 +112,7 @@ public abstract class EventUtils {
     static public void checkInterface(Event e) throws InsufficientInformationException {
         if (e == null) {
             throw new NullPointerException("e is null");
-        } else if (e.getInterface() == null || e.getInterface().length() == 0) {
+        } else if (e.getInterface() == null) {
             throw new InsufficientInformationException("ipaddr for event is unavailable");
         }
     }
@@ -144,7 +144,7 @@ public abstract class EventUtils {
     static public void checkInterfaceOrIfIndex(Event e) throws InsufficientInformationException {
         if (e == null) {
             throw new NullPointerException("event is null");
-        } else if (e.getInterface() == null || e.getInterface().length() == 0) {
+        } else if (e.getInterface() == null) {
             if (!e.hasIfIndex()) {
                 throw new InsufficientInformationException("Neither ipaddr nor ifIndex for the event is available");
             }

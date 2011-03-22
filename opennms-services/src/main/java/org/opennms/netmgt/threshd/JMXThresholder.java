@@ -55,8 +55,9 @@ import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 
-import org.opennms.core.utils.ParameterMap;
 import org.opennms.core.utils.DBUtils;
+import org.opennms.core.utils.InetAddressUtils;
+import org.opennms.core.utils.ParameterMap;
 import org.opennms.core.utils.ThreadCategory;
 import org.opennms.netmgt.config.DataSourceFactory;
 import org.opennms.netmgt.config.ThresholdingConfigFactory;
@@ -677,7 +678,7 @@ public abstract class JMXThresholder implements ServiceThresholder {
             if (ifDataMap == null || ifDataMap.get("ipaddr") == null) {
                 // Node level datasource
                 if (primary != null) {
-                    event.setInterface(primary.getHostAddress());
+                    event.setInterface(primary);
                 }
             } else {
                 /*
@@ -687,7 +688,7 @@ public abstract class JMXThresholder implements ServiceThresholder {
                  * address of "0.0.0.0".
                  */
                 String ifAddr = ifDataMap.get("ipaddr");
-                event.setInterface(ifAddr);
+                event.setInterface(InetAddressUtils.addr(ifAddr));
             }
             
             // Add appropriate parms

@@ -59,6 +59,7 @@ import java.net.UnknownHostException;
 import org.opennms.core.fiber.PausableFiber;
 import org.opennms.core.queue.FifoQueue;
 import org.opennms.core.queue.FifoQueueException;
+import org.opennms.core.utils.InetAddressUtils;
 import org.opennms.core.utils.ThreadCategory;
 import org.opennms.netmgt.config.EventConfDao;
 import org.opennms.netmgt.eventd.EventIpcManager;
@@ -203,7 +204,7 @@ class TrapQueueProcessor implements Runnable, PausableFiber, InitializingBean {
      * @param event a {@link org.opennms.netmgt.xml.event.Event} object.
      */
     public void processTrapEvent(Event event) {
-        String trapInterface = event.getInterface();
+        InetAddress trapInterface = event.getInterface();
 
         org.opennms.netmgt.xml.eventconf.Event econf = m_eventConfDao.findByEvent(event);
         if (econf == null || econf.getUei() == null) {
@@ -229,7 +230,7 @@ class TrapQueueProcessor implements Runnable, PausableFiber, InitializingBean {
         log().debug("Trap successfully converted and sent to eventd with UEI " + event.getUei());
 
         if (!event.hasNodeid() && m_newSuspect) {
-            sendNewSuspectEvent(trapInterface);
+            sendNewSuspectEvent(InetAddressUtils.str(trapInterface));
 
             if (log().isDebugEnabled()) {
                 log().debug("Sent newSuspectEvent for interface: " + trapInterface);

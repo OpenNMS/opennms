@@ -107,7 +107,7 @@ public class EventUtils {
             throw new NullPointerException("e is null");
         }
 
-        if (e.getInterface() == null || e.getInterface().length() == 0) {
+        if (e.getInterface() == null) {
             throw new InsufficientInformationException("ipaddr for event is unavailable");
         }
     }
@@ -139,7 +139,7 @@ public class EventUtils {
         if (e == null)
             throw new NullPointerException("e is null");
 
-        if (e.getInterface() == null || e.getInterface().length() == 0) {
+        if (e.getInterface() == null) {
             if (!e.hasIfIndex()) {
                 throw new InsufficientInformationException("Both ipaddr and ifIndex for event are unavailable");
             }

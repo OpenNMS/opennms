@@ -40,6 +40,7 @@ import java.net.UnknownHostException;
 import java.util.HashMap;
 
 import org.opennms.core.utils.Base64;
+import org.opennms.core.utils.InetAddressUtils;
 import org.opennms.netmgt.eventd.EventUtil;
 import org.opennms.netmgt.snmp.SnmpObjId;
 import org.opennms.netmgt.snmp.SnmpTrapBuilder;
@@ -1040,7 +1041,7 @@ public class SnmpTrapHelper {
         
         if ("v1".equalsIgnoreCase(trapVersion)) {
             trapBuilder = createV1Trap(".1.3.6.1.4.1.5813.1",   // OPENNMS-MIB::openNMS-traps
-                                       event.getInterface(),
+            	                       InetAddressUtils.str(event.getInterface()),
                                        ENTERPRISE_SPECIFIC,
                                        2,                       // OPENNMS-MIB::openNMS-tl1AutonomousMessageTrap
                                        trapTimeStamp);
@@ -1059,7 +1060,7 @@ public class SnmpTrapHelper {
         addVarBinding(trapBuilder, ".1.3.6.1.4.1.5813.20.1.10.0", // OPENNMS-MIB::openNMS-event-host
                       EventConstants.TYPE_SNMP_OCTET_STRING, event.getHost());
         addVarBinding(trapBuilder, ".1.3.6.1.4.1.5813.20.1.11.0", // OPENNMS-MIB::openNMS-event-interface
-                      EventConstants.TYPE_SNMP_OCTET_STRING, event.getInterface());
+                      EventConstants.TYPE_SNMP_OCTET_STRING, InetAddressUtils.str(event.getInterface()));
         addVarBinding(trapBuilder, ".1.3.6.1.4.1.5813.20.1.13.0", // OPENNMS-MIB::openNMS-event-service
                       EventConstants.TYPE_SNMP_OCTET_STRING, event.getService());
         addVarBinding(trapBuilder, ".1.3.6.1.4.1.5813.20.1.18.0", // OPENNMS-MIB::openNMS-event-severity
