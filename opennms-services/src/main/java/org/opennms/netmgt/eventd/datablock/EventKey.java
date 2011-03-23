@@ -62,9 +62,6 @@ import org.opennms.core.utils.InetAddressUtils;
  *
  * @author <A HREF="mailto:sowmya@opennms.org">Sowmya Nataraj </A>
  * @author <A HREF="http://www.opennms.org">OpenNMS.org </A>
- * @author <A HREF="mailto:sowmya@opennms.org">Sowmya Nataraj </A>
- * @author <A HREF="http://www.opennms.org">OpenNMS.org </A>
- * @version $Id: $
  */
 public class EventKey extends LinkedHashMap<String, Object> implements Serializable, Comparable<EventKey> {
     /**
@@ -403,7 +400,7 @@ public class EventKey extends LinkedHashMap<String, Object> implements Serializa
         } else if (mename.equals(TAG_HOST)) {
             retParmVal = event.getHost();
         } else if (mename.equals(TAG_INTERFACE)) {
-            retParmVal = InetAddressUtils.str(event.getInterface());
+            retParmVal = event.getInterfaceAsString();
         } else if (mename.equals(TAG_SNMPHOST)) {
             retParmVal = event.getSnmphost();
         } else if (mename.equals(TAG_SERVICE)) {

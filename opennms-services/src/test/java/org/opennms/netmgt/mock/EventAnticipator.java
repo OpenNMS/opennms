@@ -249,7 +249,7 @@ public class EventAnticipator implements EventListener {
 
         for (final Event event : events) {
             b.append(prefix);
-            b.append(event.getUei() + " / " + event.getNodeid() + " / " + event.getInterface() + " / " + event.getService());
+            b.append(event.getUei() + " / " + event.getNodeid() + " / " + event.getInterfaceAsString() + " / " + event.getService());
             b.append("\n");
         }
 

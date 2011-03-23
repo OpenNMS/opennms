@@ -45,6 +45,7 @@ import java.io.ByteArrayOutputStream;
 import java.io.IOException;
 import java.io.ObjectInputStream;
 import java.io.ObjectOutputStream;
+import java.net.InetAddress;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.sql.Statement;
@@ -393,7 +394,7 @@ public final class EventUtil {
 	public static String getValueOfParm(String parm, Event event) {
         
 		String retParmVal = null;
-		final String ifString = InetAddressUtils.str(event.getInterface());
+		final String ifString = event.getInterfaceAsString();
 		
 		if (parm.equals(TAG_UEI)) {
 			retParmVal = event.getUei();
@@ -471,7 +472,8 @@ public final class EventUtil {
 	                retParmVal = "N/A";
 	            }
 		} else if (parm.equals(TAG_INTERFACE_RESOLVE)) {
-			retParmVal = event.getInterface().getHostName();
+			InetAddress addr = event.getInterface();
+			if (addr != null) retParmVal = addr.getHostName();
 		} else if (parm.equals(TAG_IFALIAS)) {
 			String ifAlias = null;
 			if (event.getNodeid() > 0
@@ -480,7 +482,7 @@ public final class EventUtil {
 					ifAlias = getIfAlias(event.getNodeid(), ifString);
 				} catch (SQLException sqlE) {
 					// do nothing
-					ThreadCategory.getInstance(EventUtil.class).info("ifAlias Unavailable for " + event.getNodeid() + ":" + event.getInterface(), sqlE);
+					ThreadCategory.getInstance(EventUtil.class).info("ifAlias Unavailable for " + event.getNodeid() + ":" + event.getInterfaceAsString(), sqlE);
 				}
 			}
 			if (ifAlias != null)

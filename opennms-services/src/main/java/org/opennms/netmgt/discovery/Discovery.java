@@ -392,9 +392,9 @@ public class Discovery extends AbstractServiceDaemon {
     private boolean isReloadConfigEventTarget(Event event) {
         boolean isTarget = false;
         
-        List<Parm> parmCollection = event.getParms().getParmCollection();
+        final List<Parm> parmCollection = event.getParms().getParmCollection();
 
-        for (Parm parm : parmCollection) {
+        for (final Parm parm : parmCollection) {
             if (EventConstants.PARM_DAEMON_NAME.equals(parm.getParmName()) && "Discovery".equalsIgnoreCase(parm.getValue().getContent())) {
                 isTarget = true;
                 break;
@@ -411,12 +411,13 @@ public class Discovery extends AbstractServiceDaemon {
      * @param event a {@link org.opennms.netmgt.xml.event.Event} object.
      */
     @EventHandler(uei=EventConstants.INTERFACE_DELETED_EVENT_UEI)
-    public void handleInterfaceDeleted(Event event) {
+    public void handleInterfaceDeleted(final Event event) {
         if(event.getInterface() != null) {
             // remove from known nodes
-            m_alreadyDiscovered.remove(event.getInterface());
+            final String iface = event.getInterfaceAsString();
+			m_alreadyDiscovered.remove(iface);
 
-            debugf("Removed %s from known node list", event.getInterface());
+            debugf("Removed %s from known node list", iface);
         }
     }
 
@@ -454,9 +455,10 @@ public class Discovery extends AbstractServiceDaemon {
     @EventHandler(uei=EventConstants.NODE_GAINED_INTERFACE_EVENT_UEI)
     public void handleNodeGainedInterface(Event event) {
         // add to known nodes
-        m_alreadyDiscovered.add(InetAddressUtils.str(event.getInterface()));
+        final String iface = event.getInterfaceAsString();
+		m_alreadyDiscovered.add(iface);
 
-        debugf("Added %s as discovered", event.getInterface());
+        debugf("Added %s as discovered", iface);
     }
 
 }

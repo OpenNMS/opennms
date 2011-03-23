@@ -50,7 +50,7 @@ public class LinkEventCorrelator {
      * @param e a {@link org.opennms.netmgt.xml.event.Event} object.
      */
     public void logEvent(Event e) {
-        debugf(this, "Correlating Event %s/%d/%s/%s", e.getUei(), e.getNodeid(), e.getInterface(), e.getService());
+        debugf(this, "Correlating Event %s/%d/%s/%s", e.getUei(), e.getNodeid(), e.getInterfaceAsString(), e.getService());
     }
     
     /**
@@ -110,7 +110,7 @@ public class LinkEventCorrelator {
                 linkDown(nodeId); 
             }
             else {
-                debugf(this, "Discarding Event %s since ip %s is node the primary interface of node %d", e.getUei(), e.getInterface(), e.getNodeid());
+                debugf(this, "Discarding Event %s since ip %s is node the primary interface of node %d", e.getUei(), e.getInterfaceAsString(), e.getNodeid());
             }
         }catch(Throwable t) {
             debugf(this, t, "Caught a throwable in handleInterfaceDown");
@@ -134,7 +134,7 @@ public class LinkEventCorrelator {
                 linkUp(nodeId); 
             }
             else {
-                debugf(this, "Discarding Event %s since ip %s is not the primary interface of node %d", e.getUei(), e.getInterface(), e.getNodeid());
+                debugf(this, "Discarding Event %s since ip %s is not the primary interface of node %d", e.getUei(), e.getInterfaceAsString(), e.getNodeid());
             }
         }catch(Throwable t) {
             debugf(this, t, "Caught a throwable in handleInterfaceUp");
@@ -158,11 +158,11 @@ public class LinkEventCorrelator {
                 return;
             }
             int nodeId = Long.valueOf(e.getNodeid()).intValue();
-            if(isSnmpPrimary(nodeId, InetAddressUtils.str(e.getInterface()))){
+            if(isSnmpPrimary(nodeId, e.getInterfaceAsString())){
                 linkDown(nodeId);
             }
             else {
-                debugf(this, "Discarding Event %s since ip %s is node the primary interface of node %d", e.getUei(), e.getInterface(), e.getNodeid());
+                debugf(this, "Discarding Event %s since ip %s is node the primary interface of node %d", e.getUei(), e.getInterfaceAsString(), e.getNodeid());
             }
         }catch(Throwable t) {
             debugf(this, t, "Caught a throwable handleServiceUnresponsive");
@@ -186,11 +186,11 @@ public class LinkEventCorrelator {
                 return;
             }
             int nodeId = Long.valueOf(e.getNodeid()).intValue();
-            if(isSnmpPrimary(nodeId, InetAddressUtils.str(e.getInterface()))){
+            if(isSnmpPrimary(nodeId, e.getInterfaceAsString())){
                 linkUp(nodeId);
             }
             else {
-                debugf(this, "Discarding Event %s since ip %s is node the primary interface of node %d", e.getUei(), e.getInterface(), e.getNodeid());
+                debugf(this, "Discarding Event %s since ip %s is node the primary interface of node %d", e.getUei(), e.getInterfaceAsString(), e.getNodeid());
             }
         }catch(Throwable t) {
             debugf(this, t, "Caught a throwable in handleServiceResponsive");
@@ -214,10 +214,10 @@ public class LinkEventCorrelator {
                 return;
             }
             int nodeId = Long.valueOf(e.getNodeid()).intValue();
-            if(isSnmpPrimary(nodeId, InetAddressUtils.str(e.getInterface()))){
+            if(isSnmpPrimary(nodeId, e.getInterfaceAsString())){
                 endPointFound(nodeId);
             } else {
-                debugf(this, "Discarding Event %s since ip %s is node the primary interface of node %d", e.getUei(), e.getInterface(), e.getNodeid());
+                debugf(this, "Discarding Event %s since ip %s is node the primary interface of node %d", e.getUei(), e.getInterfaceAsString(), e.getNodeid());
             }
        }catch(Throwable t) {
            debugf(this, t, "Caught a throwable in handleNodeGained");
@@ -242,11 +242,11 @@ public class LinkEventCorrelator {
                 return;
             }
             int nodeId = Long.valueOf(e.getNodeid()).intValue();
-            if(isSnmpPrimary(nodeId, InetAddressUtils.str(e.getInterface()))){
+            if(isSnmpPrimary(nodeId, e.getInterfaceAsString())){
                 linkDown(nodeId);
             }
             else {
-                debugf(this, "Discarding Event %s since ip %s is node the primary interface of node %d", e.getUei(), e.getInterface(), e.getNodeid());
+                debugf(this, "Discarding Event %s since ip %s is node the primary interface of node %d", e.getUei(), e.getInterfaceAsString(), e.getNodeid());
             }
         
             
@@ -274,11 +274,11 @@ public class LinkEventCorrelator {
                 return;
             }
             int nodeId = Long.valueOf(e.getNodeid()).intValue();
-            if(isSnmpPrimary(nodeId, InetAddressUtils.str(e.getInterface()))){
+            if(isSnmpPrimary(nodeId, e.getInterfaceAsString())){
                 linkUp(nodeId);
             }
             else {
-                debugf(this, "Discarding Event %s since ip %s is node the primary interface of node %d", e.getUei(), e.getInterface(), e.getNodeid());
+                debugf(this, "Discarding Event %s since ip %s is node the primary interface of node %d", e.getUei(), e.getInterfaceAsString(), e.getNodeid());
             }
         }catch(Throwable t) {
             debugf(this, t, "Caught a throwable in handleNodeRegainedService!");
@@ -302,11 +302,11 @@ public class LinkEventCorrelator {
                 return;
             }
             int nodeId = Long.valueOf(e.getNodeid()).intValue();
-            if(isSnmpPrimary(nodeId, InetAddressUtils.str(e.getInterface()))){
+            if(isSnmpPrimary(nodeId, e.getInterfaceAsString())){
                 linkUp(nodeId); 
             }
             else {
-                debugf(this, "Discarding Event %s since ip %s is not the primary interface of node %d", e.getUei(), e.getInterface(), e.getNodeid());
+                debugf(this, "Discarding Event %s since ip %s is not the primary interface of node %d", e.getUei(), e.getInterfaceAsString(), e.getNodeid());
             }
        }catch(Throwable t) {
            debugf(this, t, "Caught a throwable in handleServiceUnmanaged!");
@@ -330,11 +330,11 @@ public class LinkEventCorrelator {
             }
             
             int nodeId = Long.valueOf(e.getNodeid()).intValue();
-            if(isSnmpPrimary(nodeId, InetAddressUtils.str(e.getInterface()))){
+            if(isSnmpPrimary(nodeId, e.getInterfaceAsString())){
                 endPointDeleted(nodeId);
             }
             else {
-                debugf(this, "Discarding Event %s since ip %s is not the primary interface of node %d", e.getUei(), e.getInterface(), e.getNodeid());
+                debugf(this, "Discarding Event %s since ip %s is not the primary interface of node %d", e.getUei(), e.getInterfaceAsString(), e.getNodeid());
             }
        }catch(Throwable t) {
            debugf(this, t, "Caught a throwable in handleServiceDeleted");

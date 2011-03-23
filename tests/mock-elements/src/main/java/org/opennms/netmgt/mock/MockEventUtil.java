@@ -649,7 +649,7 @@ public abstract class MockEventUtil {
         if (prefix == null) {
             prefix = "Event";
         }
-        ThreadCategory.getInstance(MockEventUtil.class).info(prefix + ": " + event.getUei() + "/" + event.getNodeid() + "/" + event.getInterface() + "/" + event.getService());
+        ThreadCategory.getInstance(MockEventUtil.class).info(prefix + ": " + event.getUei() + "/" + event.getNodeid() + "/" + event.getInterfaceAsString() + "/" + event.getService());
     }
 
     /**

@@ -307,16 +307,16 @@ public final class XmlRpcNotifier {
         Assert.notNull(event, "event object must not be null");
         
         // FIXME: This is unused and is intended for Spring xmlrpc integration
-        //Object o = m_recipient.sendServiceDownEvent(getLabelForEventNode(event), event.getInterface(), event.getService(), "Not Available", getEventHost(event), event.getTime());
+        //Object o = m_recipient.sendServiceDownEvent(getLabelForEventNode(event), event.getInterfaceAsString(), event.getService(), "Not Available", getEventHost(event), event.getTime());
         
         // Create the request parameters list
         Vector<Object> params = new Vector<Object>();
-        params.addElement(String.valueOf(getLabelForEventNode(event)));
-        params.addElement(String.valueOf(event.getInterface()));
-        params.addElement(String.valueOf(event.getService()));
-        params.addElement(String.valueOf("Not Available"));
-        params.addElement(String.valueOf(getEventHost(event)));
-        params.addElement(String.valueOf(event.getTime()));
+        params.addElement(getLabelForEventNode(event));
+        params.addElement(event.getInterfaceAsString());
+        params.addElement(event.getService());
+        params.addElement("Not Available");
+        params.addElement(getEventHost(event));
+        params.addElement(event.getTime());
         
         return sendXmlrpcRequest(XMLRPC_SERVICE_DOWN_COMMAND, params);
     }
@@ -337,16 +337,16 @@ public final class XmlRpcNotifier {
         Assert.notNull(event, "event object must not be null");
 
         // FIXME: This is unused and is intended for Spring xmlrpc integration
-        //Object o = m_recipient.sendServiceUpEvent(getLabelForEventNode(event), event.getInterface(), event.getService(), "Not Available", getEventHost(event), event.getTime());
+        //Object o = m_recipient.sendServiceUpEvent(getLabelForEventNode(event), event.getInterfaceAsString(), event.getService(), "Not Available", getEventHost(event), event.getTime());
 
         // Create the request parameters list
         Vector<Object> params = new Vector<Object>();
-        params.addElement(String.valueOf(getLabelForEventNode(event)));
-        params.addElement(String.valueOf(event.getInterface()));
-        params.addElement(String.valueOf(event.getService()));
-        params.addElement(String.valueOf("Not Available"));
-        params.addElement(String.valueOf(getEventHost(event)));
-        params.addElement(String.valueOf(event.getTime()));
+        params.addElement(getLabelForEventNode(event));
+        params.addElement(event.getInterfaceAsString());
+        params.addElement(event.getService());
+        params.addElement("Not Available");
+        params.addElement(getEventHost(event));
+        params.addElement(event.getTime());
         
         return sendXmlrpcRequest(XMLRPC_SERVICE_UP_COMMAND, params);
     }
@@ -363,14 +363,14 @@ public final class XmlRpcNotifier {
         Assert.notNull(event, "event object must not be null");
 
         // FIXME: This is unused and is intended for Spring xmlrpc integration
-        //Object o = m_recipient.sendInterfaceDownEvent(getLabelForEventNode(event), event.getInterface(), getEventHost(event), event.getTime());
+        //Object o = m_recipient.sendInterfaceDownEvent(getLabelForEventNode(event), event.getInterfaceAsString(), getEventHost(event), event.getTime());
         
         // Create the request parameters list
         Vector<Object> params = new Vector<Object>();
-        params.addElement(String.valueOf(getLabelForEventNode(event)));
-        params.addElement(String.valueOf(event.getInterface()));
-        params.addElement(String.valueOf(getEventHost(event)));
-        params.addElement(String.valueOf(event.getTime()));
+        params.addElement(getLabelForEventNode(event));
+        params.addElement(event.getInterfaceAsString());
+        params.addElement(getEventHost(event));
+        params.addElement(event.getTime());
 
         return sendXmlrpcRequest(XMLRPC_INTERFACE_DOWN_COMMAND, params);
     }
@@ -387,15 +387,15 @@ public final class XmlRpcNotifier {
         Assert.notNull(event, "event object must not be null");
 
         // FIXME: This is unused and is intended for Spring xmlrpc integration
-        //Object o = m_recipient.sendInterfaceUpEvent(getLabelForEventNode(event), event.getInterface(), getEventHost(event), event.getTime());
+        //Object o = m_recipient.sendInterfaceUpEvent(getLabelForEventNode(event), event.getInterfaceAsString(), getEventHost(event), event.getTime());
         
         // Create the request parameters list
         Vector<Object> params = new Vector<Object>();
-        params.addElement(String.valueOf(getLabelForEventNode(event)));
-        params.addElement(String.valueOf(event.getInterface()));
-        params.addElement(String.valueOf(event.getHost()));
-        params.addElement(String.valueOf(getEventHost(event)));
-        params.addElement(String.valueOf(event.getTime()));
+        params.addElement(getLabelForEventNode(event));
+        params.addElement(event.getInterfaceAsString());
+        params.addElement(event.getHost());
+        params.addElement(getEventHost(event));
+        params.addElement(event.getTime());
         
         return sendXmlrpcRequest(XMLRPC_INTERFACE_UP_COMMAND, params);
     }
@@ -415,9 +415,9 @@ public final class XmlRpcNotifier {
         
         // Create the request parameters list
         Vector<Object> params = new Vector<Object>();
-        params.addElement(String.valueOf(getLabelForEventNode(event)));
-        params.addElement(String.valueOf(getEventHost(event)));
-        params.addElement(String.valueOf(event.getTime()));
+        params.addElement(getLabelForEventNode(event));
+        params.addElement(getEventHost(event));
+        params.addElement(event.getTime());
         
         return sendXmlrpcRequest(XMLRPC_NODE_DOWN_COMMAND, params);
     }
@@ -485,7 +485,7 @@ public final class XmlRpcNotifier {
 
         InetAddress intf = event.getInterface();
         if (intf != null) {
-            table.put("interface", InetAddressUtils.str(intf));
+            table.put("interface", event.getInterfaceAsString());
         }
 
         String service = event.getService();

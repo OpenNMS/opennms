@@ -392,7 +392,7 @@ public abstract class EventUtils {
             b.append(" Host: " + event.getHost() + "\n");
         }
         if (event.getInterface() != null) {
-            b.append(" Interface: " + event.getInterface() + "\n");
+            b.append(" Interface: " + event.getInterfaceAsString() + "\n");
         }
         if (event.getLoggroupCount() > 0) {
             b.append(" Loggroup:");

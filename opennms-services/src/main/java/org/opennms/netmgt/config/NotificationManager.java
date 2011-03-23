@@ -333,8 +333,7 @@ public abstract class NotificationManager {
          *  If the event doesn't have a nodeId, interface, or service,
          *  return true since there is nothing on which to filter.
          */
-        if (event.getNodeid() == 0 && event.getInterface() == null &&
-                event.getService() == null) {
+        if (event.getNodeid() == 0 && event.getInterface() == null && event.getService() == null) {
             if ("MATCH-ANY-UEI".equals(notif.getUei())) {
                if ("ipaddr != '0.0.0.0'".equals(notif.getRule().toLowerCase()) || "ipaddr iplike *.*.*.*".equals(notif.getRule().toLowerCase())) {
                    return true;
@@ -351,8 +350,8 @@ public abstract class NotificationManager {
         }
         
         if (event.getInterface() != null
-                && !"0.0.0.0".equals(event.getInterface())) {
-            constraints.append(" & (ipAddr == '" + event.getInterface() + "')");
+                && !"0.0.0.0".equals(event.getInterfaceAsString())) {
+            constraints.append(" & (ipAddr == '" + event.getInterfaceAsString() + "')");
             if (event.getService() != null) {
                 constraints.append(" & (serviceName == '" + event.getService() + "')");
             }
@@ -518,7 +517,7 @@ public abstract class NotificationManager {
                 }
     
                 if (matchList[i].equals("interfaceid")) {
-                    statement.setString(i + 2, InetAddressUtils.str(event.getInterface()));
+                    statement.setString(i + 2, event.getInterfaceAsString());
                 }
     
                 if (matchList[i].equals("serviceid")) {

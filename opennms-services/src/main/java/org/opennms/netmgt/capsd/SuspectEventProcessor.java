@@ -1955,7 +1955,7 @@ final class SuspectEventProcessor implements Runnable {
     private String toString(Event e) {
         StringBuilder buf = new StringBuilder();
         buf.append("Event uei: ").append(e.getUei());
-        buf.append(" For ").append(e.getNodeid()).append('/').append(e.getInterface()).append('/').append(e.getService());
+        buf.append(" For ").append(e.getNodeid()).append('/').append(e.getInterfaceAsString()).append('/').append(e.getService());
         return buf.toString();
     }
 

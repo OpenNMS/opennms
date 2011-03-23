@@ -45,7 +45,6 @@ import static org.opennms.core.utils.InetAddressUtils.addr;
 import java.net.InetAddress;
 import java.net.UnknownHostException;
 
-import org.opennms.core.utils.InetAddressUtils;
 import org.opennms.core.utils.ThreadCategory;
 import org.opennms.netmgt.EventConstants;
 import org.opennms.netmgt.config.SyslogdConfig;
@@ -177,7 +176,7 @@ final class SyslogProcessor implements Runnable {
                                 : "<not-set>"));
                         log.trace("  uei   = " + o.getEvent().getUei());
                         log.trace("  src   = " + o.getEvent().getSource());
-                        log.trace("  iface = " + o.getEvent().getInterface());
+                        log.trace("  iface = " + o.getEvent().getInterfaceAsString());
                         log.trace("  time  = " + o.getEvent().getTime());
                         log.trace("  Msg   = "
                                 + o.getEvent().getLogmsg().getContent());
@@ -206,9 +205,9 @@ final class SyslogProcessor implements Runnable {
 
                     if (m_NewSuspectOnMessage && !o.getEvent().hasNodeid()) {
                         if (isTracing) {
-                            log.trace("Syslogd: Found a new suspect " + o.getEvent().getInterface());
+                            log.trace("Syslogd: Found a new suspect " + o.getEvent().getInterfaceAsString());
                         }
-                        sendNewSuspectEvent(InetAddressUtils.str(o.getEvent().getInterface()));
+                        sendNewSuspectEvent(o.getEvent().getInterfaceAsString());
                     }
 
                 } catch (Throwable t) {

@@ -158,18 +158,17 @@ public final class BroadcastEventProcessor implements EventListener, Initializin
                 log.warn("Not " + action + "ing interface to known node list: "
                     + "interface is null");
             } else {
-                m_trapdIpMgr.setNodeId(InetAddressUtils.str(event.getInterface()), event.getNodeid());
+                m_trapdIpMgr.setNodeId(event.getInterfaceAsString(), event.getNodeid());
                 if (log.isDebugEnabled()) {
                     log.debug("Successfully " + action + "ed "
-                              + event.getInterface() + " to known node list");
+                              + event.getInterfaceAsString() + " to known node list");
                 }
             }
         } else if (eventUei.equals(EventConstants.INTERFACE_DELETED_EVENT_UEI)) {
             if (event.getInterface() != null) {
-                m_trapdIpMgr.removeNodeId(InetAddressUtils.str(event.getInterface()));
+                m_trapdIpMgr.removeNodeId(event.getInterfaceAsString());
                 if (log.isDebugEnabled()) {
-                    log.debug("Removed " + event.getInterface()
-                        + " from known node list");
+                    log.debug("Removed " + event.getInterfaceAsString() + " from known node list");
                 }
             }
         } else {

@@ -183,12 +183,17 @@ public class OnmsNode extends OnmsEntity implements Serializable,
      *
      * @param distPoller a {@link org.opennms.netmgt.model.OnmsDistPoller} object.
      */
-    public OnmsNode(OnmsDistPoller distPoller) {
+    public OnmsNode(final OnmsDistPoller distPoller) {
         m_distPoller = distPoller;
         m_assetRecord = new OnmsAssetRecord();
         m_assetRecord.setNode(this);
     }
 
+    public OnmsNode(final OnmsDistPoller distPoller, final String label) {
+    	this(distPoller);
+    	setLabel(label);
+    }
+    
     /**
      * Unique identifier for node.
      *

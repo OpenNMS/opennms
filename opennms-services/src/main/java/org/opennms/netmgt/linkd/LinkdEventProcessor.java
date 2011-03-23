@@ -100,7 +100,7 @@ public final class LinkdEventProcessor {
             ifIndex = event.getIfIndex();
         }
 
-        m_linkd.deleteInterface(event.getNodeid().intValue(), InetAddressUtils.str(event.getInterface()), ifIndex);
+        m_linkd.deleteInterface(event.getNodeid().intValue(), event.getInterfaceAsString(), ifIndex);
         // set to status = D in all the rows in table
         // atinterface, iprouteinterface, datalinkinterface, stpinterface
     }

@@ -40,15 +40,14 @@
 
 package org.opennms.netmgt.syslogd;
 
-import org.opennms.core.utils.InetAddressUtils;
+import java.util.ArrayList;
+import java.util.List;
+
 import org.opennms.core.utils.ThreadCategory;
 import org.opennms.netmgt.EventConstants;
 import org.opennms.netmgt.eventd.EventIpcManagerFactory;
 import org.opennms.netmgt.model.events.EventListener;
 import org.opennms.netmgt.xml.event.Event;
-
-import java.util.ArrayList;
-import java.util.List;
 
 /**
  * @author <a href="mailto:joed@opennms.org">Johan Edstrom</a>
@@ -103,32 +102,28 @@ final class BroadcastEventProcessor implements EventListener {
 
         if (eventUei.equals(EventConstants.NODE_GAINED_INTERFACE_EVENT_UEI)) {
             // add to known nodes
-            if (Long.toString(event.getNodeid()) != null
-                    && event.getInterface() != null) {
-                SyslogdIPMgr.setNodeId(InetAddressUtils.str(event.getInterface()),
-                                       event.getNodeid());
+            if (Long.toString(event.getNodeid()) != null && event.getInterface() != null) {
+                SyslogdIPMgr.setNodeId(event.getInterfaceAsString(), event.getNodeid());
             }
-            if (log.isDebugEnabled())
-                log.debug("Added " + event.getInterface()
-                        + " to known node list");
+            if (log.isDebugEnabled()) {
+                log.debug("Added " + event.getInterfaceAsString() + " to known node list");
+            }
         } else if (eventUei.equals(EventConstants.INTERFACE_DELETED_EVENT_UEI)) {
             // remove from known nodes
             if (event.getInterface() != null) {
-                SyslogdIPMgr.removeNodeId(InetAddressUtils.str(event.getInterface()));
+                SyslogdIPMgr.removeNodeId(event.getInterfaceAsString());
             }
-            if (log.isDebugEnabled())
-                log.debug("Removed " + event.getInterface()
-                        + " from known node list");
+            if (log.isDebugEnabled()) {
+                log.debug("Removed " + event.getInterfaceAsString() + " from known node list");
+            }
         } else if (eventUei.equals(EventConstants.INTERFACE_REPARENTED_EVENT_UEI)) {
             // add to known nodes
-            if (Long.toString(event.getNodeid()) != null
-                    && event.getInterface() != null) {
-                SyslogdIPMgr.setNodeId(InetAddressUtils.str(event.getInterface()),
-                                       event.getNodeid());
+            if (Long.toString(event.getNodeid()) != null && event.getInterface() != null) {
+                SyslogdIPMgr.setNodeId(event.getInterfaceAsString(), event.getNodeid());
             }
-            if (log.isDebugEnabled())
-                log.debug("Reparented " + event.getInterface()
-                        + " to known node list");
+            if (log.isDebugEnabled()) {
+                log.debug("Reparented " + event.getInterfaceAsString() + " to known node list");
+            }
         }
     }
 

@@ -110,7 +110,7 @@ public final class JdbcEventWriter extends AbstractJdbcPersister implements Even
             return;
         }
 
-        LogUtils.debugf(this, "JdbcEventWriter: processing %s nodeid: %d ipaddr: %s serviceid: %s time: %s", event.getUei(), event.getNodeid(), event.getInterface(), event.getService(), event.getTime());
+        LogUtils.debugf(this, "JdbcEventWriter: processing %s nodeid: %d ipaddr: %s serviceid: %s time: %s", event.getUei(), event.getNodeid(), event.getInterfaceAsString(), event.getService(), event.getTime());
 
         final Connection connection = getDataSource().getConnection();
 
@@ -196,7 +196,7 @@ public final class JdbcEventWriter extends AbstractJdbcPersister implements Even
             set(insStmt, 5, Constants.format(hostname, EVENT_HOST_FIELD_SIZE));
 
             // ipAddr
-            set(insStmt, 6, Constants.format(InetAddressUtils.str(event.getInterface()), EVENT_INTERFACE_FIELD_SIZE));
+            set(insStmt, 6, Constants.format(event.getInterfaceAsString(), EVENT_INTERFACE_FIELD_SIZE));
 
             // eventDpName
             insStmt.setString(7, (eventHeader != null) ? Constants.format(eventHeader.getDpName(), EVENT_DPNAME_FIELD_SIZE) : "undefined");

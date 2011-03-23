@@ -56,11 +56,22 @@ import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.opennms.mock.snmp.JUnitSnmpAgentExecutionListener;
 import org.opennms.netmgt.config.notifications.Notification;
+import org.opennms.netmgt.dao.CategoryDao;
+import org.opennms.netmgt.dao.IpInterfaceDao;
+import org.opennms.netmgt.dao.MonitoredServiceDao;
+import org.opennms.netmgt.dao.NodeDao;
+import org.opennms.netmgt.dao.ServiceTypeDao;
 import org.opennms.netmgt.dao.db.JUnitTemporaryDatabase;
 import org.opennms.netmgt.dao.db.OpenNMSConfigurationExecutionListener;
 import org.opennms.netmgt.dao.db.TemporaryDatabaseExecutionListener;
 import org.opennms.netmgt.filter.FilterDaoFactory;
 import org.opennms.netmgt.filter.FilterParseException;
+import org.opennms.netmgt.model.OnmsCategory;
+import org.opennms.netmgt.model.OnmsDistPoller;
+import org.opennms.netmgt.model.OnmsIpInterface;
+import org.opennms.netmgt.model.OnmsMonitoredService;
+import org.opennms.netmgt.model.OnmsNode;
+import org.opennms.netmgt.model.OnmsServiceType;
 import org.opennms.netmgt.model.events.EventBuilder;
 import org.opennms.netmgt.notifd.mock.MockNotifdConfigManager;
 import org.opennms.test.ConfigurationTestUtils;
@@ -91,6 +102,21 @@ public class NotificationManagerTest {
 	@Autowired
 	private DataSource m_dataSource;
 
+	@Autowired
+	private NodeDao m_nodeDao;
+
+	@Autowired
+	private IpInterfaceDao m_ipInterfaceDao;
+	
+	@Autowired
+	private MonitoredServiceDao m_serviceDao;
+
+	@Autowired
+	private ServiceTypeDao m_serviceTypeDao;
+	
+	@Autowired
+	private CategoryDao m_categoryDao;
+
     private NotificationManagerImpl m_notificationManager;
     private NotifdConfigManager m_configManager;
 
@@ -103,65 +129,78 @@ public class NotificationManagerTest {
     	
         m_configManager = new MockNotifdConfigManager(ConfigurationTestUtils.getConfigForResourceWithReplacements(this, "notifd-configuration.xml"));
         m_notificationManager = new NotificationManagerImpl(m_configManager, m_dataSource);
-    }
-    /*
-    @Override
-    protected void onSetUpInTransactionIfEnabled() throws Exception {
-        super.onSetUpInTransactionIfEnabled();
-
-         // Make sure we get a new FilterDaoFactory every time because our
-         // DataSource changes every test.
-        FilterDaoFactory.setInstance(null);
-        FilterDaoFactory.getInstance();
         
-        m_configManager = new MockNotifdConfigManager(ConfigurationTestUtils.getConfigForResourceWithReplacements(this, "notifd-configuration.xml"));
-        m_notificationManager = new NotificationManagerImpl(m_configManager, getDataSource());
+        final OnmsDistPoller distPoller = new OnmsDistPoller("localhost", "127.0.0.1");
+        OnmsNode node;
+        OnmsIpInterface ipInterface;
+        OnmsMonitoredService service;
+        OnmsServiceType serviceType;
+        OnmsCategory category;
+
+        OnmsCategory category1 = new OnmsCategory("CategoryOne");
+        m_categoryDao.save(category1);
+        OnmsCategory category2 = new OnmsCategory("CategoryTwo");
+        m_categoryDao.save(category2);
+        OnmsCategory category3 = new OnmsCategory("CategoryThree");
+        m_categoryDao.save(category3);
+        OnmsCategory category4 = new OnmsCategory("CategoryFour");
+        m_categoryDao.save(category4);
+        m_categoryDao.flush();
+
+        // node 1
+        serviceType = new OnmsServiceType("HTTP");
+        m_serviceTypeDao.save(serviceType);
+
+		node = new OnmsNode(distPoller, "node 1");
+		node.addCategory(category1);
+		node.addCategory(category2);
+		node.addCategory(category3);
+		
+		ipInterface = new OnmsIpInterface("192.168.1.1", node);
+        service = new OnmsMonitoredService(ipInterface, serviceType);
+		m_nodeDao.save(node);
+
+        // node 2
+        node = new OnmsNode(distPoller, "node 2");
+		node.addCategory(category1);
+		node.addCategory(category2);
+		node.addCategory(category4);
+		m_nodeDao.save(node);
         
-        JdbcTemplate template = getJdbcTemplate();
-        assertNotNull("getJdbcTemplate() should not return null", template);
-        assertNotNull("getJdbcTemplate().getJdbcOperations() should not return null", getSimpleJdbcTemplate().getJdbcOperations());
+        ipInterface = new OnmsIpInterface("192.168.1.1", node);
+        m_ipInterfaceDao.save(ipInterface);
+        service = new OnmsMonitoredService(ipInterface, serviceType);
+        m_serviceDao.save(service);
+        
+        ipInterface = new OnmsIpInterface("0.0.0.0", node);
+        m_ipInterfaceDao.save(ipInterface);
+        
+        // node 3
+        node = new OnmsNode(distPoller, "node 3");
+        m_nodeDao.save(node);
+        
+        ipInterface = new OnmsIpInterface("192.168.1.2", node);
+        m_ipInterfaceDao.save(ipInterface);
+        service = new OnmsMonitoredService(ipInterface, serviceType);
+        m_serviceDao.save(service);
+        
+        // node 4 has an interface, but no services
+        node = new OnmsNode(distPoller, "node 4");
+        m_nodeDao.save(node);
 
-        template.update("INSERT INTO service ( serviceId, serviceName ) VALUES ( 1, 'HTTP' )");
+        ipInterface = new OnmsIpInterface("192.168.1.3", node);
+        m_ipInterfaceDao.save(ipInterface);
+        
+        // node 5 has no interfaces
+        node = new OnmsNode(distPoller, "node 5");
+        m_nodeDao.save(node);
 
-        template.update("INSERT INTO node ( nodeId, nodeCreateTime, nodeLabel ) VALUES ( 1, now(), 'node 1' )");
-        template.update("INSERT INTO ipInterface ( nodeId, ipAddr ) VALUES ( 1, '192.168.1.1' )");
-        template.update("INSERT INTO ifServices ( nodeId, ipAddr, serviceId ) VALUES ( 1, '192.168.1.1', 1 )");
-
-        template.update("INSERT INTO node ( nodeId, nodeCreateTime, nodeLabel ) VALUES ( 2, now(), 'node 2' )");
-        template.update("INSERT INTO ipInterface ( nodeId, ipAddr ) VALUES ( 2, '192.168.1.1' )");
-        template.update("INSERT INTO ipInterface ( nodeId, ipAddr ) VALUES ( 2, '0.0.0.0' )");
-        template.update("INSERT INTO ifServices ( nodeId, ipAddr, serviceId ) VALUES ( 2, '192.168.1.1', 1 )");
-
-        template.update("INSERT INTO node ( nodeId, nodeCreateTime, nodeLabel ) VALUES ( 3, now(), 'node 3' )");
-        template.update("INSERT INTO ipInterface ( nodeId, ipAddr ) VALUES ( 3, '192.168.1.2' )");
-        template.update("INSERT INTO ifServices ( nodeId, ipAddr, serviceId ) VALUES ( 3, '192.168.1.2', 1 )");
-
-        // Node 4 has an interface, but no services
-        template.update("INSERT INTO node ( nodeId, nodeCreateTime, nodeLabel ) VALUES ( 4, now(), 'node 4' )");
-        template.update("INSERT INTO ipInterface ( nodeId, ipAddr ) VALUES ( 4, '192.168.1.3' )");
-
-        // Node 5 has no interfaces
-        template.update("INSERT INTO node ( nodeId, nodeCreateTime, nodeLabel ) VALUES ( 5, now(), 'node 5' )");
-
-        template.update("INSERT INTO categories ( categoryId, categoryName ) VALUES ( 1, 'CategoryOne' )");
-        template.update("INSERT INTO categories ( categoryId, categoryName ) VALUES ( 2, 'CategoryTwo' )");
-        template.update("INSERT INTO categories ( categoryId, categoryName ) VALUES ( 3, 'CategoryThree' )");
-        template.update("INSERT INTO categories ( categoryId, categoryName ) VALUES ( 4, 'CategoryFour' )");
-
-        template.update("INSERT INTO category_node ( categoryId, nodeId ) VALUES ( 1, 1 )");
-        template.update("INSERT INTO category_node ( categoryId, nodeId ) VALUES ( 2, 1 )");
-        template.update("INSERT INTO category_node ( categoryId, nodeId ) VALUES ( 3, 1 )");
-
-        template.update("INSERT INTO category_node ( categoryId, nodeId ) VALUES ( 1, 2 )");
-        template.update("INSERT INTO category_node ( categoryId, nodeId ) VALUES ( 2, 2 )");
-        // Not a member of the third category, but is a member of the fourth
-        template.update("INSERT INTO category_node ( categoryId, nodeId ) VALUES ( 4, 2 )");
-
-        setComplete();
-        endTransaction();
-        startNewTransaction();
+        m_nodeDao.flush();
+        m_ipInterfaceDao.flush();
+        m_serviceDao.flush();
+        m_serviceTypeDao.flush();
+        m_categoryDao.flush();
     }
-*/
     
     @Test
     public void testNoElement() {
@@ -175,6 +214,7 @@ public class NotificationManagerTest {
      * This should match because even though the node is not set in the event,
      * the IP address is in the database on *some* node.
      */
+    @Test
     public void testNoNodeIdWithIpAddr() {
         doTestNodeInterfaceServiceWithRule("node/interface/service match",
                                            0, "192.168.1.1", null,
@@ -187,6 +227,7 @@ public class NotificationManagerTest {
      * when it gets a trap from a device with an IP that isn't in the
      * database.  This shouldn't send an event.
      */
+    @Test
     public void testNoNodeIdWithIpAddrNotInDb() {
         doTestNodeInterfaceServiceWithRule("node/interface/service match",
                                            0, "192.168.1.2", null,
@@ -198,6 +239,7 @@ public class NotificationManagerTest {
      * This should match because even though the node is not set in the event,
      * the IP address and service is in the database on *some* node.
      */
+    @Test
     public void testNoNodeIdWithService() {
         doTestNodeInterfaceServiceWithRule("node/interface/service match",
                                            0, null, "HTTP",
@@ -206,6 +248,7 @@ public class NotificationManagerTest {
     }
 
     // FIXME... do we really want to return true if the rule is wrong?????
+    @Test
     public void testRuleBogus() {
         try {
             doTestNodeInterfaceServiceWithRule("node/interface/service match",
@@ -218,6 +261,7 @@ public class NotificationManagerTest {
         }
     }
     
+    @Test
     public void testIplikeAllStars() {
         doTestNodeInterfaceServiceWithRule("node/interface/service match",
                                            1, "192.168.1.1", "HTTP",
@@ -225,6 +269,7 @@ public class NotificationManagerTest {
                                            true);
     }
 
+    @Test
     public void testNodeOnlyMatch() {
         doTestNodeInterfaceServiceWithRule("node/interface/service match",
                                            1, null, null,
@@ -232,6 +277,7 @@ public class NotificationManagerTest {
                                            true);
     }
     
+    @Test
     public void testNodeOnlyMatchZeroesIpAddr() {
         doTestNodeInterfaceServiceWithRule("node/interface/service match",
                                            1, "0.0.0.0", null,
@@ -239,6 +285,7 @@ public class NotificationManagerTest {
                                            true);
     }
     
+    @Test
     public void testNodeOnlyNoMatch() {
         doTestNodeInterfaceServiceWithRule("node/interface/service match",
                                            3, null, null,
@@ -246,6 +293,7 @@ public class NotificationManagerTest {
                                            false);
     }
     
+    @Test
     public void testWrongNodeId() throws InterruptedException {
         doTestNodeInterfaceServiceWithRule("node/interface/service match",
                                            2, "192.168.1.1", "HTTP",
@@ -253,6 +301,7 @@ public class NotificationManagerTest {
                                            false);
     }
     
+    @Test
     public void testIpAddrSpecificPass() throws InterruptedException {
         doTestNodeInterfaceServiceWithRule("node/interface/service match",
                                            1, "192.168.1.1", null,
@@ -260,6 +309,7 @@ public class NotificationManagerTest {
                                            true);
     }
     
+    @Test
     public void testIpAddrSpecificFail() {
         doTestNodeInterfaceServiceWithRule("node/interface/service match",
                                            1, "192.168.1.1", null,
@@ -268,6 +318,7 @@ public class NotificationManagerTest {
     }
     
 
+    @Test
     public void testIpAddrServiceSpecificPass() throws InterruptedException {
         doTestNodeInterfaceServiceWithRule("node/interface/service match",
                                            1, "192.168.1.1", "HTTP",
@@ -275,6 +326,7 @@ public class NotificationManagerTest {
                                            true);
     }
     
+    @Test
     public void testIpAddrServiceSpecificFail() {
         doTestNodeInterfaceServiceWithRule("node/interface/service match",
                                            1, "192.168.1.1", "HTTP",
@@ -282,6 +334,7 @@ public class NotificationManagerTest {
                                            false);
     }
     
+    @Test
     public void testIpAddrServiceSpecificWrongService() {
         doTestNodeInterfaceServiceWithRule("node/interface/service match",
                                            1, "192.168.1.1", "ICMP",
@@ -289,6 +342,7 @@ public class NotificationManagerTest {
                                            false);
     }
 
+    @Test
     public void testIpAddrServiceSpecificWrongIP() {
         doTestNodeInterfaceServiceWithRule("node/interface/service match",
                                            1, "192.168.1.2", "HTTP",
@@ -296,6 +350,7 @@ public class NotificationManagerTest {
                                            false);
     }
     
+    @Test
     public void testMultipleCategories() {
         doTestNodeInterfaceServiceWithRule("node/interface/service match",
                                            1, "192.168.1.1", "HTTP",
@@ -303,6 +358,7 @@ public class NotificationManagerTest {
                                            true);
     }
     
+    @Test
     public void testMultipleCategoriesNotMember() throws InterruptedException {
         doTestNodeInterfaceServiceWithRule("node/interface/service match",
                                            2, "192.168.1.1", "HTTP",
@@ -310,6 +366,7 @@ public class NotificationManagerTest {
                                            false);
     }
 
+    @Test
     public void testIpAddrMatchWithNoServiceOnInterface() {
         doTestNodeInterfaceServiceWithRule("node/interface/service match",
                                            4, null, null,
@@ -323,6 +380,7 @@ public class NotificationManagerTest {
      * every query, even if we don't ask for it to be joined and if
      * it isn't referenced in the filter query.  Sucky, huh?
      */
+    @Test
     public void testNodeMatchWithNoInterfacesOnNode() {
         doTestNodeInterfaceServiceWithRule("node/interface/service match",
                                            5, null, null,
@@ -336,6 +394,7 @@ public class NotificationManagerTest {
      * parens.  This isn't a problem when the outermost logic expression in
      * the user's filter (if any) is an AND, but it is if it's an OR.
      */
+    @Test
     public void testRuleWithOrNoMatch() {
         /*
          * Note: the nodeLabel for nodeId=3/ipAddr=192.168.1.2 is 'node 3'

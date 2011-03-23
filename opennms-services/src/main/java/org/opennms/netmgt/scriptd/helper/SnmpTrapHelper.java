@@ -61,9 +61,6 @@ import org.opennms.netmgt.xml.event.Value;
  *
  * @author <a href="mailto:jim.doble@tavve.com">Jim Doble </a>
  * @author <a href="http://www.opennms.org/">OpenNMS.org </a>
- * @author <a href="mailto:jim.doble@tavve.com">Jim Doble </a>
- * @author <a href="http://www.opennms.org/">OpenNMS.org </a>
- * @version $Id: $
  */
 public class SnmpTrapHelper {
 
@@ -1035,9 +1032,10 @@ public class SnmpTrapHelper {
         // What to do about timestamp? Hard-wiring to zero for now.
         long trapTimeStamp = 0;
         
-        if ("v1".equalsIgnoreCase(trapVersion)) {
+        final String iface = event.getInterfaceAsString();
+		if ("v1".equalsIgnoreCase(trapVersion)) {
             trapBuilder = createV1Trap(".1.3.6.1.4.1.5813.1",   // OPENNMS-MIB::openNMS-traps
-            	                       InetAddressUtils.str(event.getInterface()),
+            	                       iface,
                                        ENTERPRISE_SPECIFIC,
                                        2,                       // OPENNMS-MIB::openNMS-tl1AutonomousMessageTrap
                                        trapTimeStamp);
@@ -1056,7 +1054,7 @@ public class SnmpTrapHelper {
         addVarBinding(trapBuilder, ".1.3.6.1.4.1.5813.20.1.10.0", // OPENNMS-MIB::openNMS-event-host
                       EventConstants.TYPE_SNMP_OCTET_STRING, event.getHost());
         addVarBinding(trapBuilder, ".1.3.6.1.4.1.5813.20.1.11.0", // OPENNMS-MIB::openNMS-event-interface
-                      EventConstants.TYPE_SNMP_OCTET_STRING, InetAddressUtils.str(event.getInterface()));
+                      EventConstants.TYPE_SNMP_OCTET_STRING, iface);
         addVarBinding(trapBuilder, ".1.3.6.1.4.1.5813.20.1.13.0", // OPENNMS-MIB::openNMS-event-service
                       EventConstants.TYPE_SNMP_OCTET_STRING, event.getService());
         addVarBinding(trapBuilder, ".1.3.6.1.4.1.5813.20.1.18.0", // OPENNMS-MIB::openNMS-event-severity

@@ -207,7 +207,7 @@ final class PollerEventProcessor implements EventListener {
 
         // First make sure the service gained is in active state before trying to schedule
 
-        String ipAddr = InetAddressUtils.str(event.getInterface());
+        String ipAddr = event.getInterfaceAsString();
         Long nodeId = event.getNodeid();
         String svcName = event.getService();
         
@@ -234,7 +234,7 @@ final class PollerEventProcessor implements EventListener {
      * 
      */
     private void interfaceReparentedHandler(Event event) { 
-        LogUtils.debugf(this, "interfaceReparentedHandler: processing interfaceReparented event for %s", event.getInterface());
+        LogUtils.debugf(this, "interfaceReparentedHandler: processing interfaceReparented event for %s", event.getInterfaceAsString());
 
         // Verify that the event has an interface associated with it
         if (event.getInterface() == null)
@@ -438,7 +438,7 @@ final class PollerEventProcessor implements EventListener {
         
         PollableInterface iface = getNetwork().getInterface(nodeId.intValue(), ipAddr);
         if (iface == null) {
-          LogUtils.errorf(this, "Interface %d/%s does not exist in pollable node map, unable to delete node.", nodeId, event.getInterface());
+          LogUtils.errorf(this, "Interface %d/%s does not exist in pollable node map, unable to delete node.", nodeId, event.getInterfaceAsString());
           if (isXmlRPCEnabled()) {
               int status = EventConstants.XMLRPC_NOTIFY_FAILURE;
               XmlrpcUtil.createAndSendXmlrpcNotificationEvent(txNo, sourceUei, "Interface does not exist in pollable node map.", status, "OpenNMS.Poller");
@@ -471,7 +471,7 @@ final class PollerEventProcessor implements EventListener {
         
         PollableService svc = getNetwork().getService(nodeId.intValue(), ipAddr, service);
         if (svc == null) {
-          LogUtils.errorf(this, "Interface %d/%s does not exist in pollable node map, unable to delete node.", nodeId, event.getInterface());
+          LogUtils.errorf(this, "Interface %d/%s does not exist in pollable node map, unable to delete node.", nodeId, event.getInterfaceAsString());
           return;
         }
         

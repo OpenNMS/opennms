@@ -825,7 +825,7 @@ public class Collectd extends AbstractServiceDaemon implements
 
         ThreadCategory log = log();
         
-        String ipAddr = InetAddressUtils.str(event.getInterface());
+        String ipAddr = event.getInterfaceAsString();
         if(EventUtils.isNonIpInterface(ipAddr) ) {
             log().debug("handleInterfaceDeleted: the deleted interface was a non-ip interface. Nothing to do here.");
             return;
@@ -899,7 +899,7 @@ public class Collectd extends AbstractServiceDaemon implements
         ThreadCategory log = log();
         if (log.isDebugEnabled())
             log.debug("interfaceReparentedHandler:  processing interfaceReparented event for "
-                    + event.getInterface());
+                    + event.getInterfaceAsString());
 
         // Verify that the event has an interface associated with it
         if (event.getInterface() == null)
@@ -962,26 +962,26 @@ public class Collectd extends AbstractServiceDaemon implements
                 cSvc = iter.next();
 
                 InetAddress addr = (InetAddress) cSvc.getAddress();
-                if (InetAddressUtils.str(addr).equals(event.getInterface())) {
+                if (InetAddressUtils.str(addr).equals(event.getInterfaceAsString())) {
                     synchronized (cSvc) {
                         // Got a match!
                         if (log.isDebugEnabled())
                             log.debug("interfaceReparentedHandler: got a CollectableService match for "
-                                    + event.getInterface());
+                                    + event.getInterfaceAsString());
 
                         // Retrieve the CollectorUpdates object associated
                         // with
                         // this CollectableService.
                         CollectorUpdates updates = cSvc.getCollectorUpdates();
                         if (iface == null) {
-                        	iface = getIpInterface(event.getNodeid().intValue(), InetAddressUtils.str(event.getInterface()));
+                        	iface = getIpInterface(event.getNodeid().intValue(), event.getInterfaceAsString());
                         }
 
                         // Now set the reparenting flag
                         updates.markForReparenting(oldNodeIdStr, newNodeIdStr, iface);
                         if (log.isDebugEnabled())
                             log.debug("interfaceReparentedHandler: marking "
-                                    + event.getInterface()
+                                    + event.getInterfaceAsString()
                                     + " for reparenting for service SNMP.");
                     }
                 }
@@ -990,7 +990,7 @@ public class Collectd extends AbstractServiceDaemon implements
 
         if (log.isDebugEnabled())
             log.debug("interfaceReparentedHandler: processing of interfaceReparented event for interface "
-                    + event.getInterface() + " completed.");
+                    + event.getInterfaceAsString() + " completed.");
     }
 
     /**
@@ -1128,7 +1128,7 @@ public class Collectd extends AbstractServiceDaemon implements
         
         getCollectorConfigDao().rebuildPackageIpListMap();
 
-        scheduleInterface(event.getNodeid().intValue(), InetAddressUtils.str(event.getInterface()),
+        scheduleInterface(event.getNodeid().intValue(), event.getInterfaceAsString(),
                           event.getService(), false);
     }
 
@@ -1267,7 +1267,7 @@ public class Collectd extends AbstractServiceDaemon implements
         EventUtils.checkInterface(event);
 
         Long nodeid = event.getNodeid();
-        String ipAddress = InetAddressUtils.str(event.getInterface());
+        String ipAddress = event.getInterfaceAsString();
 
         // Mark the primary SNMP interface for reinitialization in
         // order to update any modified attributes associated with
@@ -1336,7 +1336,7 @@ public class Collectd extends AbstractServiceDaemon implements
         //    return;
 
         Long nodeId = event.getNodeid();
-        String ipAddr = InetAddressUtils.str(event.getInterface());
+        String ipAddr = event.getInterfaceAsString();
         String svcName = event.getService();
 
         // Iterate over the collectable services list and mark any entries
