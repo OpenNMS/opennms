@@ -98,7 +98,7 @@ public class DefaultRrdDao implements RrdDao, InitializingBean {
                 "-",
                 "--start=" + (startTimeInMillis / 1000),
                 "--end=" + (endTimeInMillis / 1000),
-                "DEF:ds=\"" + RrdFileConstants.escapeForGraphing(rrdAttribute.getRrdRelativePath()) + ":" + attribute.getName() + ":" + rraConsolidationFunction + "\"",
+                "DEF:ds=" + RrdFileConstants.escapeForGraphing(rrdAttribute.getRrdRelativePath()) + ":" + attribute.getName() + ":" + rraConsolidationFunction,
         };
         
         String[] printDefs = new String[printFunctions.length];
