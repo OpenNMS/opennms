@@ -36,7 +36,6 @@
 package org.opennms.netmgt.config;
 
 import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertTrue;
 
 import java.io.InputStream;
 import java.net.URL;
@@ -60,23 +59,15 @@ public class DiscoveryConfigFactoryTest {
         final long timeout = 100;
         final int retries = 1;
         DiscoveryConfigFactory.addToSpecificsFromURL(specifics, in.toString(), timeout, retries);
-        assertEquals(7, specifics.size());
+        assertEquals(8, specifics.size());
         assertEquals("127.0.0.1", InetAddressUtils.str(specifics.get(0).getAddress()));
         assertEquals("10.1.1.1", InetAddressUtils.str(specifics.get(1).getAddress()));
         assertEquals("10.2.1.1", InetAddressUtils.str(specifics.get(2).getAddress()));
         assertEquals("8.8.8.8", InetAddressUtils.str(specifics.get(3).getAddress()));
-        assertTrue(
-            "fe80:0:0:0:ffff:eeee:dddd:cccc".equals(InetAddressUtils.str(specifics.get(4).getAddress())) ||
-            "fe80:0:0:0:ffff:eeee:dddd:cccc%0".equals(InetAddressUtils.str(specifics.get(4).getAddress()))
-        );
-        assertTrue(
-            "0:0:0:0:0:0:0:1".equals(InetAddressUtils.str(specifics.get(5).getAddress())) ||
-            "0:0:0:0:0:0:0:1%0".equals(InetAddressUtils.str(specifics.get(5).getAddress()))
-        );
-        assertTrue(
-            "fe80:0:0:0:ffff:eeee:dddd:cccd".equals(InetAddressUtils.str(specifics.get(6).getAddress())) ||
-            "fe80:0:0:0:ffff:eeee:dddd:cccd%0".equals(InetAddressUtils.str(specifics.get(6).getAddress()))
-        );
+        assertEquals("fe80:0000:0000:0000:ffff:eeee:dddd:cccc", InetAddressUtils.str(specifics.get(4).getAddress()));
+        assertEquals("0000:0000:0000:0000:0000:0000:0000:0001", InetAddressUtils.str(specifics.get(5).getAddress()));
+        assertEquals("fe80:0000:0000:0000:ffff:eeee:dddd:cccd", InetAddressUtils.str(specifics.get(6).getAddress()));
+        assertEquals("fe80:0000:0000:0000:ffff:eeee:dddd:cccc", InetAddressUtils.str(specifics.get(7).getAddress()));
     }
     
     @Test
@@ -88,22 +79,14 @@ public class DiscoveryConfigFactoryTest {
         final long timeout = 100;
         final int retries = 1;
         DiscoveryConfigFactory.addToSpecificsFromURL(specifics, in, timeout, retries);
-        assertEquals(7, specifics.size());
+        assertEquals(8, specifics.size());
         assertEquals("127.0.0.1", InetAddressUtils.str(specifics.get(0).getAddress()));
         assertEquals("10.1.1.1", InetAddressUtils.str(specifics.get(1).getAddress()));
         assertEquals("10.2.1.1", InetAddressUtils.str(specifics.get(2).getAddress()));
         assertEquals("8.8.8.8", InetAddressUtils.str(specifics.get(3).getAddress()));
-        assertTrue(
-            "fe80:0:0:0:ffff:eeee:dddd:cccc".equals(InetAddressUtils.str(specifics.get(4).getAddress())) ||
-            "fe80:0:0:0:ffff:eeee:dddd:cccc%0".equals(InetAddressUtils.str(specifics.get(4).getAddress()))
-        );
-        assertTrue(
-            "0:0:0:0:0:0:0:1".equals(InetAddressUtils.str(specifics.get(5).getAddress())) ||
-            "0:0:0:0:0:0:0:1%0".equals(InetAddressUtils.str(specifics.get(5).getAddress()))
-        );
-        assertTrue(
-            "fe80:0:0:0:ffff:eeee:dddd:cccd".equals(InetAddressUtils.str(specifics.get(6).getAddress())) ||
-            "fe80:0:0:0:ffff:eeee:dddd:cccd%0".equals(InetAddressUtils.str(specifics.get(6).getAddress()))
-        );
+        assertEquals("fe80:0000:0000:0000:ffff:eeee:dddd:cccc", InetAddressUtils.str(specifics.get(4).getAddress()));
+        assertEquals("0000:0000:0000:0000:0000:0000:0000:0001", InetAddressUtils.str(specifics.get(5).getAddress()));
+        assertEquals("fe80:0000:0000:0000:ffff:eeee:dddd:cccd", InetAddressUtils.str(specifics.get(6).getAddress()));
+        assertEquals("fe80:0000:0000:0000:ffff:eeee:dddd:cccc", InetAddressUtils.str(specifics.get(7).getAddress()));
     }
 }

@@ -37,6 +37,7 @@ package org.opennms.netmgt.model.discovery;
 import java.net.InetAddress;
 import java.net.UnknownHostException;
 
+import org.apache.commons.lang.builder.ToStringBuilder;
 import org.opennms.core.utils.InetAddressUtils;
 
 /**
@@ -49,13 +50,6 @@ import org.opennms.core.utils.InetAddressUtils;
  * @author <A HREF="mailto:sowmya@opennms.org">Sowmya </A>
  * @author <A HREF="mailto:weave@oculan.com">Brian Weaver </A>
  * @author <A HREF="http://www.opennms.org/">OpenNMS </A>
- * @author <A HREF="mailto:sowmya@opennms.org">Sowmya </A>
- * @author <A HREF="mailto:weave@oculan.com">Brian Weaver </A>
- * @author <A HREF="http://www.opennms.org/">OpenNMS </A>
- * @author <A HREF="mailto:sowmya@opennms.org">Sowmya </A>
- * @author <A HREF="mailto:weave@oculan.com">Brian Weaver </A>
- * @author <A HREF="http://www.opennms.org/">OpenNMS </A>
- * @version $Id: $
  */
 public class IPPollAddress {
     /**
@@ -170,5 +164,13 @@ public class IPPollAddress {
         }
 
         return bRet;
+    }
+    
+    public String toString() {
+    	return new ToStringBuilder(this)
+    		.append("address", m_address)
+    		.append("retries", m_retries)
+    		.append("timeout", m_timeout)
+    		.toString();
     }
 }
