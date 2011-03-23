@@ -83,7 +83,7 @@ class Server implements Runnable {
                 }
             }
             
-        } catch (Throwable e) {
+        } catch (Exception e) {
             m_exception.set(e);
         } finally {
             if (socket != null) socket.close();
