@@ -104,6 +104,15 @@ public class OnmsIpInterface extends OnmsEntity implements Serializable {
         public void setCharCode(char collType) {
             m_collType = collType;
         }
+
+        /**
+         * Hibernate objects should not have any specific hashCode() implementation
+         * since it should always give the same object for the same row anyways.
+         */
+        @Override
+        public int hashCode() {
+        	return super.hashCode();
+        }
         
         @Override
         public boolean equals(Object o) {

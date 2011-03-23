@@ -57,6 +57,7 @@ import java.util.List;
 import java.util.Map;
 
 import org.apache.log4j.Level;
+import org.opennms.core.utils.InetAddressUtils;
 import org.opennms.core.utils.ParameterMap;
 import org.opennms.core.utils.TimeoutTracker;
 import org.opennms.netmgt.model.PollStatus;
@@ -76,9 +77,6 @@ import org.opennms.protocols.dns.DNSAddressRequest;
  *
  * @author <A HREF="mailto:tarus@opennms.org">Tarus Balog </A>
  * @author <A HREF="http://www.opennms.org/">OpenNMS </A>
- * @author <A HREF="mailto:tarus@opennms.org">Tarus Balog </A>
- * @author <A HREF="http://www.opennms.org/">OpenNMS </A>
- * @version $Id: $
  */
 @Distributable
 final public class DnsMonitor extends AbstractServiceMonitor {
@@ -139,12 +137,9 @@ final public class DnsMonitor extends AbstractServiceMonitor {
         String lookup = ParameterMap.getKeyedString(parameters, "lookup", null);
         if (lookup == null || lookup.length() == 0) {
             // Get hostname of local machine for future DNS lookups
-            //
             try {
-                lookup = InetAddress.getLocalHost().getHostName();
-            } catch (UnknownHostException ukE) {
-                // Recast the exception as a Service Monitor Exception
-                //
+            	lookup = InetAddressUtils.str(InetAddress.getLocalHost());
+            } catch (final UnknownHostException ukE) {
                 ukE.fillInStackTrace();
                 throw new UndeclaredThrowableException(ukE);
             }
@@ -152,15 +147,15 @@ final public class DnsMonitor extends AbstractServiceMonitor {
         
         // get the address and DNS address request
         //
-        InetAddress ipv4Addr = (InetAddress) iface.getAddress();
+        InetAddress addr = iface.getAddress();
         DNSAddressRequest request = new DNSAddressRequest(lookup);
 
         // List of fatal response codes?
         //
-        int[] fatalCodes = ParameterMap.getKeyedIntegerArray(parameters, "fatal-response-codes", DEFAULT_FATAL_RESP_CODES);
+        final int[] fatalCodes = ParameterMap.getKeyedIntegerArray(parameters, "fatal-response-codes", DEFAULT_FATAL_RESP_CODES);
         if (fatalCodes != DEFAULT_FATAL_RESP_CODES) {
-            List<Integer> codeList = new ArrayList<Integer>();
-            for (int code : fatalCodes) {
+            final List<Integer> codeList = new ArrayList<Integer>();
+            for (final int code : fatalCodes) {
                 codeList.add(code);
             }
             request.setFatalResponseCodes(codeList);
@@ -177,7 +172,7 @@ final public class DnsMonitor extends AbstractServiceMonitor {
                     // Send DNS request
                     //
                     byte[] data = request.buildRequest();
-                    DatagramPacket outgoing = new DatagramPacket(data, data.length, ipv4Addr, port);
+                    DatagramPacket outgoing = new DatagramPacket(data, data.length, addr, port);
                     
                     byte[] buffer = new byte[512];
                     DatagramPacket incoming = new DatagramPacket(buffer, buffer.length);
@@ -201,22 +196,22 @@ final public class DnsMonitor extends AbstractServiceMonitor {
                     // No response received, retry without marking the poll failed. If we get this condition over and over until 
                     // the retries are exhausted, it will leave serviceStatus null and we'll get the log message at the bottom 
                 } catch (NoRouteToHostException e) {
-                    serviceStatus = logDown(Level.WARN, "No route to host exception for address: " + ipv4Addr, e);
+                    serviceStatus = logDown(Level.WARN, "No route to host exception for address: " + addr, e);
                 } catch (ConnectException e) {
-                    serviceStatus = logDown(Level.WARN, "Connection exception for address: " + ipv4Addr, e);
+                    serviceStatus = logDown(Level.WARN, "Connection exception for address: " + addr, e);
                 } catch (IOException ex) {
-                    serviceStatus = logDown(Level.WARN, "IOException while polling address: " + ipv4Addr + " " + ex.getMessage(), ex);
+                    serviceStatus = logDown(Level.WARN, "IOException while polling address: " + addr + " " + ex.getMessage(), ex);
                 }
             }
         } catch (IOException ex) {
-            serviceStatus = logDown(Level.DEBUG, "Failed to create Datagram Socket for : " + ipv4Addr, ex);
+            serviceStatus = logDown(Level.DEBUG, "Failed to create Datagram Socket for : " + addr, ex);
         } finally {
             if (socket != null)
                 socket.close();
         }
 
         if (serviceStatus == null) {
-            serviceStatus = logDown(Level.DEBUG, "Never received valid DNS response for address: " + ipv4Addr);
+            serviceStatus = logDown(Level.DEBUG, "Never received valid DNS response for address: " + addr);
         }
         
         // 

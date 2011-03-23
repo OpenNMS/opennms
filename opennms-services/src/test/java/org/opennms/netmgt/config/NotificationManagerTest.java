@@ -41,6 +41,7 @@
 //
 package org.opennms.netmgt.config;
 
+import static org.junit.Assert.assertEquals;
 import static org.opennms.core.utils.InetAddressUtils.addr;
 
 import java.io.IOException;
@@ -49,43 +50,67 @@ import javax.sql.DataSource;
 
 import org.exolab.castor.xml.MarshalException;
 import org.exolab.castor.xml.ValidationException;
+import org.junit.Assert;
+import org.junit.Before;
+import org.junit.Test;
+import org.junit.runner.RunWith;
+import org.opennms.mock.snmp.JUnitSnmpAgentExecutionListener;
 import org.opennms.netmgt.config.notifications.Notification;
-import org.opennms.netmgt.dao.db.AbstractTransactionalTemporaryDatabaseSpringContextTests;
+import org.opennms.netmgt.dao.db.JUnitTemporaryDatabase;
+import org.opennms.netmgt.dao.db.OpenNMSConfigurationExecutionListener;
+import org.opennms.netmgt.dao.db.TemporaryDatabaseExecutionListener;
 import org.opennms.netmgt.filter.FilterDaoFactory;
 import org.opennms.netmgt.filter.FilterParseException;
 import org.opennms.netmgt.model.events.EventBuilder;
 import org.opennms.netmgt.notifd.mock.MockNotifdConfigManager;
 import org.opennms.test.ConfigurationTestUtils;
-import org.opennms.test.DaoTestConfigBean;
-import org.springframework.jdbc.core.JdbcTemplate;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.test.context.ContextConfiguration;
+import org.springframework.test.context.TestExecutionListeners;
+import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
+import org.springframework.test.context.support.DependencyInjectionTestExecutionListener;
+import org.springframework.test.context.support.DirtiesContextTestExecutionListener;
+import org.springframework.test.context.transaction.TransactionalTestExecutionListener;
 
-public class NotificationManagerTest extends AbstractTransactionalTemporaryDatabaseSpringContextTests {
+@RunWith(SpringJUnit4ClassRunner.class)
+@TestExecutionListeners({
+    OpenNMSConfigurationExecutionListener.class,
+    TemporaryDatabaseExecutionListener.class,
+    JUnitSnmpAgentExecutionListener.class,
+    DependencyInjectionTestExecutionListener.class,
+    DirtiesContextTestExecutionListener.class,
+    TransactionalTestExecutionListener.class
+})
+@ContextConfiguration(locations={
+        "classpath:/META-INF/opennms/applicationContext-dao.xml",
+        "classpath:/META-INF/opennms/applicationContext-setupIpLike-enabled.xml",
+        "classpath*:/META-INF/opennms/component-dao.xml"
+})
+@JUnitTemporaryDatabase()
+public class NotificationManagerTest {
+	@Autowired
+	private DataSource m_dataSource;
+
     private NotificationManagerImpl m_notificationManager;
     private NotifdConfigManager m_configManager;
-    
-    @Override
-    protected void setUpConfiguration() {
-        DaoTestConfigBean bean = new DaoTestConfigBean();
-        bean.afterPropertiesSet();
-    }
 
-    @Override
-    protected String[] getConfigLocations() {
-        return new String[] {
-            "classpath:/META-INF/opennms/applicationContext-dao.xml",
-            "classpath*:/META-INF/opennms/component-dao.xml",
-            "classpath:/META-INF/opennms/applicationContext-setupIpLike-enabled.xml"
-        };
+    @Before
+    public void setUp() throws Exception {
+    	// Make sure we get a new FilterDaoFactory every time because our
+        // DataSource changes every test.
+    	FilterDaoFactory.setInstance(null);
+    	FilterDaoFactory.getInstance();
+    	
+        m_configManager = new MockNotifdConfigManager(ConfigurationTestUtils.getConfigForResourceWithReplacements(this, "notifd-configuration.xml"));
+        m_notificationManager = new NotificationManagerImpl(m_configManager, m_dataSource);
     }
-    
+    /*
     @Override
     protected void onSetUpInTransactionIfEnabled() throws Exception {
         super.onSetUpInTransactionIfEnabled();
 
-        /*
-         * Make sure we get a new FilterDaoFactory every time because our
-         * DataSource changes every test.
-         */
+         // Make sure we get a new FilterDaoFactory every time because our
+         // DataSource changes every test.
         FilterDaoFactory.setInstance(null);
         FilterDaoFactory.getInstance();
         
@@ -136,11 +161,9 @@ public class NotificationManagerTest extends AbstractTransactionalTemporaryDatab
         endTransaction();
         startNewTransaction();
     }
+*/
     
-    public void testSetUp() {
-        // That's all, folks!
-    }
-
+    @Test
     public void testNoElement() {
         doTestNodeInterfaceServiceWithRule("node/interface/service match",
                                            0, null, null,
@@ -189,7 +212,7 @@ public class NotificationManagerTest extends AbstractTransactionalTemporaryDatab
                                                1, "192.168.1.1", "HTTP",
                                                "(aklsdfjweklj89jaikj)",
                                                false);
-            fail("Expected exception to be thrown!");
+            Assert.fail("Expected exception to be thrown!");
         } catch (FilterParseException e) {
             // I expected this
         }

@@ -114,7 +114,7 @@ public class IpInterfaceDaoTest extends AbstractTransactionalDaoTestCase {
         assertTrue(iface.getIpAddress() instanceof Inet6Address);
         Inet6Address v6address = (Inet6Address)iface.getIpAddress();
         assertEquals(5, v6address.getScopeId());
-        assertEquals("fe80:0000:0000:0000:aaaa:bbbb:cccc:dddd%5", iface.getIpAddressAsString());
+        assertEquals("fe80:0000:0000:0000:aaaa:bbbb:cccc:dddd%5", InetAddressUtils.str(iface.getIpAddress()));
     }
 
     public void testGetInterfacesForNodes() throws UnknownHostException {

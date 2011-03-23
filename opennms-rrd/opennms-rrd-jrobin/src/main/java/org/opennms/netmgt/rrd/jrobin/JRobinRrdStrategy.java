@@ -45,6 +45,9 @@ import java.awt.Color;
 import java.io.File;
 import java.io.IOException;
 import java.io.InputStream;
+import java.io.Reader;
+import java.io.StreamTokenizer;
+import java.io.StringReader;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.LinkedHashMap;
@@ -52,6 +55,9 @@ import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
 import java.util.Properties;
+import java.util.StringTokenizer;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 
 import org.jrobin.core.FetchData;
 import org.jrobin.core.RrdDb;
@@ -560,9 +566,9 @@ public class JRobinRrdStrategy implements RrdStrategy<RrdDef,RrdDb> {
             
             } else if (arg.startsWith("DEF:")) {
                 String definition = arg.substring("DEF:".length());
-                String[] def = definition.split(":");
+                String[] def = splitDef(definition);
                 String[] ds = def[0].split("=");
-                File dsFile = new File(workDir, ds[1]);
+                File dsFile = new File(workDir, ds[1].replace("\\", ""));
                 graphDef.datasource(ds[0], dsFile.getAbsolutePath(), def[1], def[2]);
                 List<String> defBits = new ArrayList<String>();
                 defBits.add(dsFile.getAbsolutePath());
@@ -663,6 +669,10 @@ public class JRobinRrdStrategy implements RrdStrategy<RrdDef,RrdDb> {
         log().debug("large font = " + graphDef.getLargeFont() + ", small font = " + graphDef.getSmallFont());
         return graphDef;
     }
+
+	private String[] splitDef(final String definition) {
+		return definition.split("(?<!\\\\):");
+	}
 
 	private void processRrdFontArgument(RrdGraphDef graphDef, String argParm) {
 		/*

@@ -52,10 +52,11 @@ import java.util.Map;
 
 import org.apache.regexp.RE;
 import org.apache.regexp.RESyntaxException;
-import org.opennms.core.utils.ThreadCategory;
+import org.opennms.core.utils.LogUtils;
 import org.opennms.netmgt.dao.GraphDao;
 import org.opennms.netmgt.dao.ResourceDao;
 import org.opennms.netmgt.dao.RrdDao;
+import org.opennms.netmgt.dao.support.RrdFileConstants;
 import org.opennms.netmgt.model.AdhocGraphType;
 import org.opennms.netmgt.model.OnmsResource;
 import org.opennms.netmgt.model.PrefabGraph;
@@ -123,12 +124,10 @@ public class DefaultRrdGraphService implements RrdGraphService, InitializingBean
 
         InputStream tempIn = null;
         try {
-            log().debug("Executing RRD command in directory '" + workDir
-                        + "': " + command);
-
+            LogUtils.debugf(this, "Executing RRD command in directory '%s': %s", workDir, command);
             tempIn = m_rrdDao.createGraph(command, workDir);
-        } catch (DataAccessException e) {
-            log().warn(e.getMessage());
+        } catch (final DataAccessException e) {
+        	LogUtils.warnf(this, e, "Exception while creating graph.");
             if (debug) {
                 throw e;
             } else {
@@ -154,9 +153,7 @@ public class DefaultRrdGraphService implements RrdGraphService, InitializingBean
     }
 
     /** {@inheritDoc} */
-    public InputStream getPrefabGraph(String resourceId,
-            String report, long start,
-            long end) {
+    public InputStream getPrefabGraph(String resourceId, String report, long start, long end) {
         Assert.notNull(resourceId, "resourceId argument cannot be null");
         Assert.notNull(report, "report argument cannot be null");
         Assert.isTrue(end > start, "end time must be after start time");
@@ -258,10 +255,8 @@ public class DefaultRrdGraphService implements RrdGraphService, InitializingBean
             buf.append(line);
         }
 
-        log().debug("formatting: " + buf + ", bogus-rrd, " + starttime + ", "
-                    + endtime + ", " + graphtitle);
-        return MessageFormat.format(buf.toString(), "bogus-rrd",
-                                    starttime, endtime, graphtitle);
+        LogUtils.debugf(this, "formatting: %s, bogus-rrd, %s, %s, %s", buf, starttime, endtime, graphtitle);
+        return MessageFormat.format(buf.toString(), "bogus-rrd", starttime, endtime, graphtitle);
     }
 
     private static String[] getRrdNames(OnmsResource resource, String[] dsNames) {
@@ -275,7 +270,7 @@ public class DefaultRrdGraphService implements RrdGraphService, InitializingBean
                 throw new IllegalArgumentException("RRD attribute '" + dsNames[i] + "' is not available on resource '" + resource.getId() + "'.  Available RRD attributes: " + StringUtils.collectionToDelimitedString(attributes.keySet(), ", "));
             }
 
-            rrds[i] = attribute.getRrdRelativePath(); 
+            rrds[i] = RrdFileConstants.escapeForGraphing(attribute.getRrdRelativePath());
         }
 
         return rrds;
@@ -341,8 +336,7 @@ public class DefaultRrdGraphService implements RrdGraphService, InitializingBean
         
         for (int i = 0; i < rrds.length; i++) {
             String key = "{rrd" + (i + 1) + "}";
-            translationMap.put(RE.simplePatternToFullRegularExpression(key),
-                    rrds[i]);
+            translationMap.put(RE.simplePatternToFullRegularExpression(key), rrds[i]);
         }
         
         translationMap.put(RE.simplePatternToFullRegularExpression("{startTime}"), startTimeString);
@@ -353,7 +347,7 @@ public class DefaultRrdGraphService implements RrdGraphService, InitializingBean
             translationMap.putAll(getTranslationsForAttributes(graph.getResource().getExternalValueAttributes(), prefabGraph.getExternalValues(), "external value attribute"));
             translationMap.putAll(getTranslationsForAttributes(graph.getResource().getStringPropertyAttributes(), prefabGraph.getPropertiesValues(), "string property attribute"));
         } catch (RuntimeException e) {
-            log().error("Invalid attributes were found on resource '" + graph.getResource().getId() + "'");
+            LogUtils.errorf(this, "Invalid attributes were found on resource '%s'", graph.getResource().getId());
             throw e;
         }
         
@@ -371,10 +365,6 @@ public class DefaultRrdGraphService implements RrdGraphService, InitializingBean
         }
         
         return command;
-    }
-
-    private static ThreadCategory log() {
-        return ThreadCategory.getInstance(DefaultRrdGraphService.class);
     }
 
     /**

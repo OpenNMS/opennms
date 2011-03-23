@@ -35,6 +35,8 @@ package org.opennms.netmgt.dao.support;
 import java.io.File;
 import java.io.FileFilter;
 import java.io.FilenameFilter;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 
 import org.opennms.netmgt.rrd.RrdUtils;
 
@@ -43,25 +45,24 @@ import org.opennms.netmgt.rrd.RrdUtils;
  *
  * @author <a href="mailto:mike@opennms.org">Mike Davidson </a>
  * @author <a href="mailto:larry@opennms.org">Lawrence Karnowski </a>
- * @author <a href="mailto:mike@opennms.org">Mike Davidson </a>
- * @author <a href="mailto:larry@opennms.org">Lawrence Karnowski </a>
- * @version $Id: $
  */
 public class RrdFileConstants extends Object {
 
-    /** The longest an RRD filename can be, currently 1024 characters. */
+    private static final Pattern IPV6_INVALID_CHARACTERS_PATTERN = Pattern.compile("([\\:\\%])");
+
+	/** The longest an RRD filename can be, currently 1024 characters. */
     public static final int MAX_RRD_FILENAME_LENGTH = 1024;
 
     /** Convenience filter that matches only RRD files. */
     public static final FilenameFilter RRD_FILENAME_FILTER = new FilenameFilter() {
-        public boolean accept(File file, String name) {
+        public boolean accept(final File file, final String name) {
             return name.endsWith(getRrdSuffix());
         }
     };
 
     /** Convenience filter that matches directories with RRD files in them. */
     public static final FileFilter INTERFACE_DIRECTORY_FILTER = new FileFilter() {
-        public boolean accept(File file) {
+        public boolean accept(final File file) {
             return isValidRRDInterfaceDir(file);
         }
     };
@@ -82,7 +83,7 @@ public class RrdFileConstants extends Object {
      * @param file a {@link java.io.File} object.
      * @return a boolean.
      */
-    public static final boolean isValidRRDNodeDir(File file) {
+    public static final boolean isValidRRDNodeDir(final File file) {
         if (!file.isDirectory()) {
             return false;
         }
@@ -90,19 +91,19 @@ public class RrdFileConstants extends Object {
         try {
             // if the directory name is an integer
             Integer.parseInt(file.getName());
-        } catch (Throwable e) {
+        } catch (final Throwable e) {
             return false;
         }
 
         // if the node dir contains RRDs, then it is queryable
-        File[] nodeRRDs = file.listFiles(RRD_FILENAME_FILTER);
+        final File[] nodeRRDs = file.listFiles(RRD_FILENAME_FILTER);
         if (nodeRRDs != null && nodeRRDs.length > 0) {
             return true;
         }
 
         // if the node dir contains queryable interface directories, then
         // it is queryable
-        File[] intfDirs = file.listFiles(INTERFACE_DIRECTORY_FILTER);
+        final File[] intfDirs = file.listFiles(INTERFACE_DIRECTORY_FILTER);
         if (intfDirs != null && intfDirs.length > 0) {
             return true;
         }
@@ -115,7 +116,7 @@ public class RrdFileConstants extends Object {
      * contain directories that contain RRD files.
      */
     public static final FileFilter DOMAIN_DIRECTORY_FILTER = new FileFilter() {
-        public boolean accept(File file) {
+        public boolean accept(final File file) {
             return isValidRRDDomainDir(file);
         }
     };
@@ -126,7 +127,7 @@ public class RrdFileConstants extends Object {
      * @param file a {@link java.io.File} object.
      * @return a boolean.
      */
-    public static final boolean isValidRRDDomainDir(File file) {
+    public static final boolean isValidRRDDomainDir(final File file) {
         if (!file.isDirectory()) {
             return false;
         }
@@ -134,11 +135,11 @@ public class RrdFileConstants extends Object {
         try {
             // if the directory name is an integer
             Integer.parseInt(file.getName());
-        } catch (Throwable e) {
+        } catch (final Throwable e) {
         
             // if the domain dir contains queryable interface directories, then
             // it is queryable
-            File[] intfDirs = file.listFiles(INTERFACE_DIRECTORY_FILTER);
+            final File[] intfDirs = file.listFiles(INTERFACE_DIRECTORY_FILTER);
             if (intfDirs != null && intfDirs.length > 0) {
                 return true;
             }
@@ -153,12 +154,12 @@ public class RrdFileConstants extends Object {
      * @param file a {@link java.io.File} object.
      * @return a boolean.
      */
-    public static final boolean isValidRRDInterfaceDir(File file) {
+    public static final boolean isValidRRDInterfaceDir(final File file) {
         if (!file.isDirectory()) {
             return false;
         }
 
-        File[] intfRRDs = file.listFiles(RRD_FILENAME_FILTER);
+        final File[] intfRRDs = file.listFiles(RRD_FILENAME_FILTER);
 
         if (intfRRDs != null && intfRRDs.length > 0) {
             return true;
@@ -174,13 +175,13 @@ public class RrdFileConstants extends Object {
      * @param file a {@link java.io.File} object.
      * @return a boolean.
      */
-    public static final boolean isValidRRDLatencyDir(File file) {
+    public static final boolean isValidRRDLatencyDir(final File file) {
         if (!file.isDirectory()) {
             return false;
         }
 
         // if the directory contains RRDs, then it is queryable
-        File[] nodeRRDs = file.listFiles(RRD_FILENAME_FILTER);
+        final File[] nodeRRDs = file.listFiles(RRD_FILENAME_FILTER);
         if (nodeRRDs != null && nodeRRDs.length > 0) {
             return true;
         }
@@ -202,12 +203,12 @@ public class RrdFileConstants extends Object {
      * @param rrd a {@link java.lang.String} object.
      * @return a boolean.
      */
-    public static boolean isValidRRDName(String rrd) {
+    public static boolean isValidRRDName(final String rrd) {
         if (rrd == null) {
             throw new IllegalArgumentException("Cannot take null parameters.");
         }
 
-        int length = rrd.length();
+        final int length = rrd.length();
 
         if (length > MAX_RRD_FILENAME_LENGTH) {
             return false;
@@ -219,7 +220,7 @@ public class RrdFileConstants extends Object {
         }
 
         for (int i = 0; i < length; i++) {
-            char c = rrd.charAt(i);
+        	final char c = rrd.charAt(i);
 
             if (!(('A' <= c && c <= 'Z') || ('a' <= c && c <= 'z') || ('0' <= c && c <= '9') || (c == '_') || (c == '.') || (c == '-') || (c == '/'))) {
                 return false;
@@ -236,19 +237,19 @@ public class RrdFileConstants extends Object {
      * @param rrd a {@link java.lang.String} object.
      * @return a {@link java.lang.String} object.
      */
-    public static String convertToValidRrdName(String rrd) {
+    public static String convertToValidRrdName(final String rrd) {
         if (rrd == null) {
             throw new IllegalArgumentException("Cannot take null parameters.");
         }
 
-        StringBuffer buffer = new StringBuffer(rrd);
+        final StringBuffer buffer = new StringBuffer(rrd);
 
         // truncate after the max length
         if (rrd.length() > MAX_RRD_FILENAME_LENGTH) {
             buffer.setLength(MAX_RRD_FILENAME_LENGTH - 1);
         }
 
-        int length = buffer.length();
+        final int length = buffer.length();
 
         for (int i = 0; i < length; i++) {
             char c = buffer.charAt(i);
@@ -261,6 +262,11 @@ public class RrdFileConstants extends Object {
         return buffer.toString();
     }
 
+    public static String escapeForGraphing(final String path) {
+    	final Matcher matcher = IPV6_INVALID_CHARACTERS_PATTERN.matcher(path);
+    	return matcher.replaceAll("\\\\$1");
+    }
+    
     /**
      * <p>getRrdSuffix</p>
      *
