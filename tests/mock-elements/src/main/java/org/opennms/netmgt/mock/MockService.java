@@ -87,9 +87,9 @@ public class MockService extends MockElement implements MonitoredService {
     
     private PollStatus m_pollStatus;
 
-    private int m_serviceId;
+    private final int m_serviceId;
 
-    private String m_svcName;
+    private final String m_svcName;
     
     private SvcMgmtStatus m_mgmtStatus = SvcMgmtStatus.ACTIVE;
 
