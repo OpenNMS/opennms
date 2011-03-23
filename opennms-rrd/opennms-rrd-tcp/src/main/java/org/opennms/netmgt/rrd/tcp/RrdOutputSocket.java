@@ -42,6 +42,7 @@ import java.net.Socket;
 import java.util.ArrayList;
 import java.util.List;
 
+import org.opennms.core.utils.InetAddressUtils;
 import org.opennms.core.utils.ThreadCategory;
 import org.opennms.netmgt.rrd.tcp.PerformanceDataProtos.PerformanceDataReading;
 
