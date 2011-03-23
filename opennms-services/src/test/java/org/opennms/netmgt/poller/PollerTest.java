@@ -599,7 +599,7 @@ public class PollerTest {
 
 		sleep(2000);
 
-		// move the reparted interface and send a reparented event
+		// move the reparented interface and send a reparented event
 		dotTwo.moveTo(node2);
 		m_db.reparentInterface(dotTwo.getIpAddr(), node1.getNodeId(), node2
 				.getNodeId());
@@ -1021,7 +1021,16 @@ public class PollerTest {
 
 		anticipator.anticipateAllServices(svc1);
 
-		assertEquals(0, anticipator.waitForAnticipated(10000).size());
+        StringBuffer didNotOccur = new StringBuffer();
+		for (MockService service : anticipator.waitForAnticipated(10000)) {
+		    didNotOccur.append(service.toString());
+		}
+        StringBuffer unanticipatedStuff = new StringBuffer();
+        for (MockService service : anticipator.unanticipatedPolls()) {
+            unanticipatedStuff.append(service.toString());
+        }
+		
+		assertEquals(unanticipatedStuff.toString(), "", didNotOccur.toString());
 
 		anticipateDown(svc1);
 
@@ -1137,13 +1146,13 @@ public class PollerTest {
 		verifyAnticipated(millis, true);
 	}
 
-	private void verifyAnticipated(long millis, boolean checkUnanticapted) {
+	private void verifyAnticipated(long millis, boolean checkUnanticipated) {
 		// make sure the down events are received
 		MockEventUtil.printEvents("Events we're still waiting for: ", m_anticipator
 				.waitForAnticipated(millis));
 		assertTrue("Expected events not forthcoming", m_anticipator
 				.waitForAnticipated(0).isEmpty());
-		if (checkUnanticapted) {
+		if (checkUnanticipated) {
 			sleep(2000);
 			MockEventUtil.printEvents("Unanticipated: ", m_anticipator
 					.unanticipatedEvents());
