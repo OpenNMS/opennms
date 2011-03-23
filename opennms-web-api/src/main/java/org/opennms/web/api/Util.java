@@ -51,6 +51,7 @@ import java.util.TreeMap;
 import javax.servlet.http.HttpServletRequest;
 
 import org.opennms.core.resource.Vault;
+import org.opennms.core.utils.InetAddressUtils;
 import org.opennms.netmgt.model.events.EventProxy;
 import org.opennms.netmgt.utils.TcpEventProxy;
 import org.opennms.web.WebSecurityUtils;
@@ -520,11 +521,7 @@ public abstract class Util extends Object {
         InetAddress proxyAddr = null;
         EventProxy proxy = null;
 
-        try {
-            proxyAddr = InetAddressUtils.addr(proxyHostName);
-        } catch (UnknownHostException e) {
-            proxyAddr = null;
-        }
+        proxyAddr = InetAddressUtils.addr(proxyHostName);
 
         if (proxyAddr == null) {
             try {
