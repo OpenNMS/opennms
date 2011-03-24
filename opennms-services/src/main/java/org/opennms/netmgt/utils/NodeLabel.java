@@ -38,6 +38,7 @@
 
 package org.opennms.netmgt.utils;
 
+import java.net.InetAddress;
 import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
@@ -49,9 +50,9 @@ import java.util.List;
 import org.opennms.core.resource.Vault;
 import org.opennms.core.utils.ByteArrayComparator;
 import org.opennms.core.utils.DBUtils;
+import org.opennms.core.utils.InetAddressUtils;
 import org.opennms.core.utils.ThreadCategory;
 import org.opennms.netmgt.PropertyConstants;
-import org.opennms.protocols.ip.IPv4Address;
 
 /**
  * <P>
@@ -74,9 +75,6 @@ import org.opennms.protocols.ip.IPv4Address;
  *
  * @author <A HREF="mike@opennms.org">Mike </A>
  * @author <A HREF="http://www.opennms.org/">OpenNMS </A>
- * @author <A HREF="mike@opennms.org">Mike </A>
- * @author <A HREF="http://www.opennms.org/">OpenNMS </A>
- * @version $Id: $
  */
 public class NodeLabel {
     /**
@@ -492,7 +490,7 @@ public class NodeLabel {
             method = DEFAULT_SELECT_METHOD;
         }
 
-        List<IPv4Address> ipv4AddrList = new ArrayList<IPv4Address>();
+        List<InetAddress> ipv4AddrList = new ArrayList<InetAddress>();
         List<String> ipHostNameList = new ArrayList<String>();
 
         // Issue SQL query to retrieve all managed interface IP addresses from 'ipinterface' table
@@ -511,7 +509,7 @@ public class NodeLabel {
             d.cleanUp();
         }
 
-        IPv4Address primaryAddr = selectPrimaryAddress(ipv4AddrList, method);
+        InetAddress primaryAddr = selectPrimaryAddress(ipv4AddrList, method);
 
         // Make sure we found a primary address!!!
         // If no primary address was found it means that this node has no
@@ -604,7 +602,7 @@ public class NodeLabel {
      * @param rs
      *            Database result set
      * @param ipv4AddrList
-     *            List of IPv4Address objects representing the node's interfaces
+     *            List of InetAddress objects representing the node's interfaces
      * @param ipHostNameList
      *            List of IP host names associated with the node's interfaces.
      * 
@@ -612,13 +610,13 @@ public class NodeLabel {
      *             if there is any problem processing the information in the
      *             result set.
      */
-    private static void loadAddressList(ResultSet rs, List<IPv4Address> ipv4AddrList, List<String> ipHostNameList) throws SQLException {
+    private static void loadAddressList(ResultSet rs, List<InetAddress> ipv4AddrList, List<String> ipHostNameList) throws SQLException {
         ThreadCategory log = log();
 
         // Process result set, store retrieved addresses/host names in lists
         while (rs.next()) {
-            IPv4Address ipv4Addr = new IPv4Address(rs.getString(1));
-            ipv4AddrList.add(ipv4Addr);
+            InetAddress inetAddr = InetAddressUtils.getInetAddress(rs.getString(1));
+            ipv4AddrList.add(inetAddr);
             String hostName = rs.getString(2);
 
             // As a hack to get around the fact that the 'iphostname' field
@@ -627,13 +625,13 @@ public class NodeLabel {
             // are equivalent. The hostname is only added if they are different.
             // If the are the same, an empty string is added to the host name
             // list.
-            if (hostName == null || hostName.equals(ipv4Addr.toString()))
+            if (hostName == null || hostName.equals(inetAddr.toString()))
                 ipHostNameList.add("");
             else
                 ipHostNameList.add(hostName);
 
             if (log.isDebugEnabled())
-                log.debug("NodeLabel.computeLabel: adding address " + ipv4Addr.toString() + " with hostname: " + hostName);
+                log.debug("NodeLabel.computeLabel: adding address " + inetAddr.toString() + " with hostname: " + hostName);
         }
     }
 
@@ -647,25 +645,25 @@ public class NodeLabel {
      *            String (either "min" or "max") which indicates how the primary
      *            interface is to be selected.
      * 
-     * @return The IPv4Address object from the address list which has been
+     * @return The InetAddress object from the address list which has been
      *         selected as the primary interface.
      */
-    private static IPv4Address selectPrimaryAddress(List<IPv4Address> ipv4AddrList, String method) {
+    private static InetAddress selectPrimaryAddress(List<InetAddress> ipv4AddrList, String method) {
         // Determine which interface is the primary interface
         // (ie, the interface whose IP address when converted to an
         // integer is the smallest or largest depending upon the
         // configured selection method.)
-        IPv4Address primaryAddr = null;
+        InetAddress primaryAddr = null;
 
-        Iterator<IPv4Address> iter = ipv4AddrList.iterator();
+        Iterator<InetAddress> iter = ipv4AddrList.iterator();
         while (iter.hasNext()) {
             if (primaryAddr == null) {
                 primaryAddr = iter.next();
             } else {
-                IPv4Address currentAddr = iter.next();
+                InetAddress currentAddr = iter.next();
 
-                byte[] current = currentAddr.getAddressBytes();
-                byte[] primary = primaryAddr.getAddressBytes();
+                byte[] current = currentAddr.getAddress();
+                byte[] primary = primaryAddr.getAddress();
 
                 if (method.equals(SELECT_METHOD_MIN)) {
                     // Smallest address wins
