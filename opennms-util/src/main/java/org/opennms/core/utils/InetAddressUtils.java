@@ -39,7 +39,11 @@ import java.math.BigInteger;
 import java.net.Inet4Address;
 import java.net.Inet6Address;
 import java.net.InetAddress;
+import java.net.NetworkInterface;
+import java.net.SocketException;
 import java.net.UnknownHostException;
+import java.util.Collections;
+import java.util.Enumeration;
 import java.util.List;
 
 /**
@@ -92,7 +96,6 @@ abstract public class InetAddressUtils {
     public static InetAddress getLinkLocalAddress(AddressType type, int scope) {
         try {
             return findLinkLocalAddress(NetworkInterface.getNetworkInterfaces(), type, scope);
-
         } catch (SocketException e) {
             ThreadCategory.getInstance(InetAddressUtils.class).warn("SocketException thrown while iterating over network interfaces: " + e.getMessage(), e);
             LogUtils.errorf(InetAddressUtils.class, "getLinkLocalAddress: Returning null");
@@ -156,7 +159,7 @@ abstract public class InetAddressUtils {
         } catch (UnknownHostException e) {
             throw new IllegalArgumentException("Invalid IPAddress "+ipAddrOctets+" with length "+ipAddrOctets.length);
         }
-        
+
     }
 
     /**
@@ -260,7 +263,7 @@ abstract public class InetAddressUtils {
         if (addresses == null) {
             throw new IllegalArgumentException("Cannot take null parameters.");
         }
-    
+
         InetAddress lowest = null;
         // Start with the highest conceivable IP address value
         byte[] originalBytes = toIpAddrBytes("ffff:ffff:ffff:ffff:ffff:ffff:ffff:ffff");
@@ -268,18 +271,22 @@ abstract public class InetAddressUtils {
         ByteArrayComparator comparator = new ByteArrayComparator();
         for (InetAddress temp : addresses) {
             byte[] tempBytes = temp.getAddress();
-    
+
             if (comparator.compare(tempBytes, lowestBytes) < 0) {
                 lowestBytes = tempBytes;
                 lowest = temp;
             }
         }
-    
+
         return comparator.compare(originalBytes, lowestBytes) == 0 ? null : lowest;
     }
 
     public static BigInteger difference(String addr1, String addr2) {
-        return new BigInteger(getInetAddress(addr1).getAddress()).subtract(new BigInteger(getInetAddress(addr2).getAddress()));
+        return difference(getInetAddress(addr1), getInetAddress(addr2));
+    }
+
+    public static BigInteger difference(InetAddress addr1, InetAddress addr2) {
+        return new BigInteger(addr1.getAddress()).subtract(new BigInteger(addr2.getAddress()));
     }
 
     public static boolean isInetAddressInRange(final String addrString, final String beginString, final String endString) {
@@ -297,6 +304,23 @@ abstract public class InetAddressUtils {
             return true;
         } else { 
             return false;
+        }
+    }
+
+    public static boolean inSameScope(InetAddress addr1, InetAddress addr2) {
+        if (addr1 instanceof Inet4Address) {
+            if (addr2 instanceof Inet4Address) {
+                return true;
+            } else {
+                return false;
+            }
+        } else {
+            if (addr2 instanceof Inet4Address) {
+                return false;
+            } else {
+                // Compare the IPv6 scope IDs
+                return new Integer(((Inet6Address)addr1).getScopeId()).compareTo(((Inet6Address)addr2).getScopeId()) == 0;
+            }
         }
     }
 
@@ -369,11 +393,11 @@ abstract public class InetAddressUtils {
             }
         }
     }
-    
+
     public static InetAddress addr(String ipAddrString) {
         return ipAddrString == null ? null : getInetAddress(ipAddrString);
     }
-    
+
     public static String str(InetAddress addr) {
         return addr == null ? null : toIpAddrString(addr);
     }
