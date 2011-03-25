@@ -376,8 +376,12 @@ public class BaseImporter implements ImportOperationFactory {
 					log().info("Setting parent of node: "+dbNode+" to: "+parent);
 					dbNode.setParent(parent);
 					log().info("Setting criticalInterface of node: "+dbNode+" to: "+critIface);
-					final String ipAddress = InetAddressUtils.str(critIface.getIpAddress());
-					dbNode.setPathElement(critIface == null ? null : new PathElement(ipAddress, "ICMP"));
+					if (critIface == null) {
+						dbNode.setPathElement(null);
+					} else {
+						final String ipAddress = InetAddressUtils.str(critIface.getIpAddress());
+						dbNode.setPathElement(new PathElement(ipAddress, "ICMP"));
+					}
 					getNodeDao().update(dbNode);
 				}
 
