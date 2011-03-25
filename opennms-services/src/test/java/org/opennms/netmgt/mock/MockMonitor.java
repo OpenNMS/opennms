@@ -66,7 +66,7 @@ public class MockMonitor implements ServiceMonitor {
             String ipAddr = monSvc.getIpAddr();
             MockService svc = m_network.getService(nodeId, ipAddr, m_svcName);
             if (svc == null) {
-                LogUtils.errorf(this, "Invalid Poll: %s/%s", ipAddr, m_svcName);
+                LogUtils.infof(this, "Invalid Poll: %s/%s", ipAddr, m_svcName);
                 m_network.receivedInvalidPoll(ipAddr, m_svcName);
                 return PollStatus.unknown();
             } else {

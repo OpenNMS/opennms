@@ -1,0 +1,163 @@
+<?xml version="1.0"?>
+<page-sequence>
+  <page virtual-host="${virtualHost}" path="/opennms/j_spring_security_check"  response-range="300-399" port="${port}" method="POST">
+    <parameter key="j_username" value="${adminUsername}"/>
+    <parameter key="j_password" value="${adminPassword}"/>
+  </page>
+  <page virtual-host="${virtualHost}" path="/opennms/index.jsp" port="${port}" response-range="200"/>
+  <page virtual-host="${virtualHost}" path="/opennms/alarm/index.jsp" port="${port}" response-range="200"/>
+
+  <!-- Valid query params: display, sortby, acktype, filter, limit, multiple -->
+  <page virtual-host="${virtualHost}" path="/opennms/alarm/list.htm" port="${port}" response-range="200"/>
+  <page virtual-host="${virtualHost}" path="/opennms/alarm/list.htm" query="display=long" port="${port}" response-range="200"/>
+  <!-- Test all of the sorting options -->
+  <page virtual-host="${virtualHost}" path="/opennms/alarm/list.htm" query="sortby=severity" port="${port}" response-range="200"/>
+  <page virtual-host="${virtualHost}" path="/opennms/alarm/list.htm" query="sortby=lasteventtime" port="${port}" response-range="200"/>
+  <page virtual-host="${virtualHost}" path="/opennms/alarm/list.htm" query="sortby=firsteventtime" port="${port}" response-range="200"/>
+  <page virtual-host="${virtualHost}" path="/opennms/alarm/list.htm" query="sortby=node" port="${port}" response-range="200"/>
+  <page virtual-host="${virtualHost}" path="/opennms/alarm/list.htm" query="sortby=interface" port="${port}" response-range="200"/>
+  <page virtual-host="${virtualHost}" path="/opennms/alarm/list.htm" query="sortby=service" port="${port}" response-range="200"/>
+  <page virtual-host="${virtualHost}" path="/opennms/alarm/list.htm" query="sortby=poller" port="${port}" response-range="200"/>
+  <page virtual-host="${virtualHost}" path="/opennms/alarm/list.htm" query="sortby=id" port="${port}" response-range="200"/>
+  <page virtual-host="${virtualHost}" path="/opennms/alarm/list.htm" query="sortby=count" port="${port}" response-range="200"/>
+  <page virtual-host="${virtualHost}" path="/opennms/alarm/list.htm" query="sortby_rev=severity" port="${port}" response-range="200"/>
+  <page virtual-host="${virtualHost}" path="/opennms/alarm/list.htm" query="sortby=rev_lasteventtime" port="${port}" response-range="200"/>
+  <page virtual-host="${virtualHost}" path="/opennms/alarm/list.htm" query="sortby=rev_firsteventtime" port="${port}" response-range="200"/>
+  <page virtual-host="${virtualHost}" path="/opennms/alarm/list.htm" query="sortby=rev_node" port="${port}" response-range="200"/>
+  <page virtual-host="${virtualHost}" path="/opennms/alarm/list.htm" query="sortby=rev_interface" port="${port}" response-range="200"/>
+  <page virtual-host="${virtualHost}" path="/opennms/alarm/list.htm" query="sortby=rev_service" port="${port}" response-range="200"/>
+  <page virtual-host="${virtualHost}" path="/opennms/alarm/list.htm" query="sortby=rev_poller" port="${port}" response-range="200"/>
+  <page virtual-host="${virtualHost}" path="/opennms/alarm/list.htm" query="sortby=rev_id" port="${port}" response-range="200"/>
+  <page virtual-host="${virtualHost}" path="/opennms/alarm/list.htm" query="sortby=rev_count" port="${port}" response-range="200"/>
+  <!-- Invalid sorting should just be ignored -->
+  <page virtual-host="${virtualHost}" path="/opennms/alarm/list.htm" query="sortby=jackson" port="${port}" response-range="200"/>
+
+  <!-- Test all of the acktype options -->
+  <page virtual-host="${virtualHost}" path="/opennms/alarm/list.htm" query="acktype=ack" port="${port}" response-range="200"/>
+  <page virtual-host="${virtualHost}" path="/opennms/alarm/list.htm" query="acktype=unack" port="${port}" response-range="200"/>
+  <page virtual-host="${virtualHost}" path="/opennms/alarm/list.htm" query="acktype=both" port="${port}" response-range="200"/>
+  <!-- Invalid acktypes should just be ignored -->
+  <page virtual-host="${virtualHost}" path="/opennms/alarm/list.htm" query="acktype=jackson" port="${port}" response-range="200"/>
+
+  <!-- 
+    Hmm there are like, 1 million possibilities here.
+    Find them all inside the org.opennms.web.alarm.filter package.
+  -->
+  <page virtual-host="${virtualHost}" path="/opennms/alarm/list.htm" query="filter=acknowledgedBy%3Dadmin" port="${port}" response-range="200"/>
+  <page virtual-host="${virtualHost}" path="/opennms/alarm/list.htm" query="filter=acknowledgedByNot%3Dadmin" port="${port}" response-range="200"/>
+  <page virtual-host="${virtualHost}" path="/opennms/alarm/list.htm" query="filter=afterfirsteventtime%3D1200000000000" port="${port}" response-range="200"/>
+  <page virtual-host="${virtualHost}" path="/opennms/alarm/list.htm" query="filter=afterlasteventtime%3D1200000000000" port="${port}" response-range="200"/>
+  <page virtual-host="${virtualHost}" path="/opennms/alarm/list.htm" query="filter=alarmId%3D1" port="${port}" response-range="200"/>
+  <page virtual-host="${virtualHost}" path="/opennms/alarm/list.htm" query="filter=alarmIdList%3D1%2C2%2C3" port="${port}" response-range="200"/>
+  <page virtual-host="${virtualHost}" path="/opennms/alarm/list.htm" query="filter=alarmTypeFilter%3D1" port="${port}" response-range="200"/>
+  <page virtual-host="${virtualHost}" path="/opennms/alarm/list.htm" query="filter=alarmTypeFilter%3D2" port="${port}" response-range="200"/>
+  <page virtual-host="${virtualHost}" path="/opennms/alarm/list.htm" query="filter=beforefirsteventtime%3D1200000000000" port="${port}" response-range="200"/>
+  <page virtual-host="${virtualHost}" path="/opennms/alarm/list.htm" query="filter=beforelasteventtime%3D1200000000000" port="${port}" response-range="200"/>
+  <page virtual-host="${virtualHost}" path="/opennms/alarm/list.htm" query="filter=descsub%3Dsubstring" port="${port}" response-range="200"/>
+  <page virtual-host="${virtualHost}" path="/opennms/alarm/list.htm" query="filter=exactUei%3Duei%2Eopennms%2Eorg%2Fnodes%2FnodeDown" port="${port}" response-range="200"/>
+  <page virtual-host="${virtualHost}" path="/opennms/alarm/list.htm" query="filter=exactUeiNot%3Duei%2Eopennms%2Eorg%2Fnodes%2FnodeDown" port="${port}" response-range="200"/>
+  <page virtual-host="${virtualHost}" path="/opennms/alarm/list.htm" query="filter=interface%3D0.0.0.0" port="${port}" response-range="200"/>
+  <page virtual-host="${virtualHost}" path="/opennms/alarm/list.htm" query="filter=interfacenot%3D0.0.0.0" port="${port}" response-range="200"/>
+  <!-- *.*.*.* -->
+  <page virtual-host="${virtualHost}" path="/opennms/alarm/list.htm" query="filter=iplike%3D%2A%2E%2A%2E%2A%2E%2A" port="${port}" response-range="200"/>
+  <!-- *:*:*:*:*:*:*:* -->
+  <page virtual-host="${virtualHost}" path="/opennms/alarm/list.htm" query="filter=iplike%3D%2A%3A%2A%3A%2A%3A%2A%3A%2A%3A%2A%3A%2A%3A%2A" port="${port}" response-range="200"/>
+  <!-- *:*:*:*:*:*:*:*%1 -->
+  <page virtual-host="${virtualHost}" path="/opennms/alarm/list.htm" query="filter=iplike%3D%2A%3A%2A%3A%2A%3A%2A%3A%2A%3A%2A%3A%2A%3A%2A%251" port="${port}" response-range="200"/>
+  <page virtual-host="${virtualHost}" path="/opennms/alarm/list.htm" query="filter=msgmatchany%3Dsubstring" port="${port}" response-range="200"/>
+  <page virtual-host="${virtualHost}" path="/opennms/alarm/list.htm" query="filter=msgsub%3Dsubstring" port="${port}" response-range="200"/>
+  <page virtual-host="${virtualHost}" path="/opennms/alarm/list.htm" query="filter=node%3D1" port="${port}" response-range="200"/>
+  <page virtual-host="${virtualHost}" path="/opennms/alarm/list.htm" query="filter=nodenot%3D1" port="${port}" response-range="200"/>
+  <page virtual-host="${virtualHost}" path="/opennms/alarm/list.htm" query="filter=nodenamelike%3Dsome_string" port="${port}" response-range="200"/>
+  <page virtual-host="${virtualHost}" path="/opennms/alarm/list.htm" query="filter=partialUei%3Dcisco" port="${port}" response-range="200"/>
+  <page virtual-host="${virtualHost}" path="/opennms/alarm/list.htm" query="filter=partialUeiNot%3Dcisco" port="${port}" response-range="200"/>
+  <page virtual-host="${virtualHost}" path="/opennms/alarm/list.htm" query="filter=service%3D1" port="${port}" response-range="200"/>
+  <page virtual-host="${virtualHost}" path="/opennms/alarm/list.htm" query="filter=servicenot%3D1" port="${port}" response-range="200"/>
+  <page virtual-host="${virtualHost}" path="/opennms/alarm/list.htm" query="filter=severity%3D1" port="${port}" response-range="200"/>
+  <page virtual-host="${virtualHost}" path="/opennms/alarm/list.htm" query="filter=severitynot%3D1" port="${port}" response-range="200"/>
+
+  <page virtual-host="${virtualHost}" path="/opennms/alarm/advsearch.jsp" port="${port}" response-range="200"/>
+
+  <page virtual-host="${virtualHost}" path="/opennms/asset/index.jsp" port="${port}" response-range="200"/>
+  <page virtual-host="${virtualHost}" path="/opennms/asset/nodelist.jsp" query="column=address1&amp;searchvalue=" port="${port}" response-range="200"/>
+
+  <page virtual-host="${virtualHost}" path="/opennms/charts/index.jsp" port="${port}" response-range="200"/>
+
+  <page virtual-host="${virtualHost}" path="/opennms/dashboard.jsp" port="${port}" response-range="200"/>
+
+  <page virtual-host="${virtualHost}" path="/opennms/element/index.jsp" port="${port}" response-range="200"/>
+  <page virtual-host="${virtualHost}" path="/opennms/element/nodeList.htm" port="${port}" response-range="200"/>
+
+  <page virtual-host="${virtualHost}" path="/opennms/event/advsearch.jsp" port="${port}" response-range="200"/>
+  <page virtual-host="${virtualHost}" path="/opennms/event/index.jsp" port="${port}" response-range="200"/>
+  <page virtual-host="${virtualHost}" path="/opennms/event/list" port="${port}" response-range="200"/>
+
+  <!-- Valid query params: display, sortby, acktype, filter, limit, multiple -->
+  <page virtual-host="${virtualHost}" path="/opennms/event/list" port="${port}" response-range="200"/>
+  <page virtual-host="${virtualHost}" path="/opennms/event/list" query="display=long" port="${port}" response-range="200"/>
+  <!-- Test all of the sorting options -->
+  <page virtual-host="${virtualHost}" path="/opennms/event/list" query="sortby=severity" port="${port}" response-range="200"/>
+  <page virtual-host="${virtualHost}" path="/opennms/event/list" query="sortby=time" port="${port}" response-range="200"/>
+  <page virtual-host="${virtualHost}" path="/opennms/event/list" query="sortby=node" port="${port}" response-range="200"/>
+  <page virtual-host="${virtualHost}" path="/opennms/event/list" query="sortby=interface" port="${port}" response-range="200"/>
+  <page virtual-host="${virtualHost}" path="/opennms/event/list" query="sortby=service" port="${port}" response-range="200"/>
+  <page virtual-host="${virtualHost}" path="/opennms/event/list" query="sortby=poller" port="${port}" response-range="200"/>
+  <page virtual-host="${virtualHost}" path="/opennms/event/list" query="sortby=id" port="${port}" response-range="200"/>
+  <page virtual-host="${virtualHost}" path="/opennms/event/list" query="sortby_rev=severity" port="${port}" response-range="200"/>
+  <page virtual-host="${virtualHost}" path="/opennms/event/list" query="sortby=rev_time" port="${port}" response-range="200"/>
+  <page virtual-host="${virtualHost}" path="/opennms/event/list" query="sortby=rev_node" port="${port}" response-range="200"/>
+  <page virtual-host="${virtualHost}" path="/opennms/event/list" query="sortby=rev_interface" port="${port}" response-range="200"/>
+  <page virtual-host="${virtualHost}" path="/opennms/event/list" query="sortby=rev_service" port="${port}" response-range="200"/>
+  <page virtual-host="${virtualHost}" path="/opennms/event/list" query="sortby=rev_poller" port="${port}" response-range="200"/>
+  <page virtual-host="${virtualHost}" path="/opennms/event/list" query="sortby=rev_id" port="${port}" response-range="200"/>
+  <!-- Invalid sorting should just be ignored -->
+  <page virtual-host="${virtualHost}" path="/opennms/event/list" query="sortby=jackson" port="${port}" response-range="200"/>
+
+  <!-- Test all of the acktype options -->
+  <page virtual-host="${virtualHost}" path="/opennms/event/list" query="acktype=ack" port="${port}" response-range="200"/>
+  <page virtual-host="${virtualHost}" path="/opennms/event/list" query="acktype=unack" port="${port}" response-range="200"/>
+  <page virtual-host="${virtualHost}" path="/opennms/event/list" query="acktype=both" port="${port}" response-range="200"/>
+  <!-- Invalid acktypes should just be ignored -->
+  <page virtual-host="${virtualHost}" path="/opennms/event/list" query="acktype=jackson" port="${port}" response-range="200"/>
+
+  <page virtual-host="${virtualHost}" path="/opennms/event/list" query="filter=acknowledgedBy%3Dadmin" port="${port}" response-range="200"/>
+  <page virtual-host="${virtualHost}" path="/opennms/event/list" query="filter=acknowledgedByNot%3Dadmin" port="${port}" response-range="200"/>
+  <page virtual-host="${virtualHost}" path="/opennms/event/list" query="filter=afterdate%3D1200000000000" port="${port}" response-range="200"/>
+  <page virtual-host="${virtualHost}" path="/opennms/event/list" query="filter=alarm%3D1" port="${port}" response-range="200"/>
+  <page virtual-host="${virtualHost}" path="/opennms/event/list" query="filter=beforedate%3D1200000000000" port="${port}" response-range="200"/>
+  <page virtual-host="${virtualHost}" path="/opennms/event/list" query="filter=descsub%3Dsubstring" port="${port}" response-range="200"/>
+  <page virtual-host="${virtualHost}" path="/opennms/event/list" query="filter=eventDisplay%3Dlogndisplayy" port="${port}" response-range="200"/>
+  <page virtual-host="${virtualHost}" path="/opennms/event/list" query="filter=exactUei%3Duei%2Eopennms%2Eorg%2Fnodes%2FnodeDown" port="${port}" response-range="200"/>
+  <page virtual-host="${virtualHost}" path="/opennms/event/list" query="filter=exactUeiNot%3Duei%2Eopennms%2Eorg%2Fnodes%2FnodeDown" port="${port}" response-range="200"/>
+  <page virtual-host="${virtualHost}" path="/opennms/event/list" query="filter=interface%3D0.0.0.0" port="${port}" response-range="200"/>
+  <page virtual-host="${virtualHost}" path="/opennms/event/list" query="filter=interfacenot%3D0.0.0.0" port="${port}" response-range="200"/>
+  <!-- *.*.*.* -->
+  <page virtual-host="${virtualHost}" path="/opennms/event/list" query="filter=iplike%3D%2A%2E%2A%2E%2A%2E%2A" port="${port}" response-range="200"/>
+  <!-- *:*:*:*:*:*:*:* -->
+  <page virtual-host="${virtualHost}" path="/opennms/event/list" query="filter=iplike%3D%2A%3A%2A%3A%2A%3A%2A%3A%2A%3A%2A%3A%2A%3A%2A" port="${port}" response-range="200"/>
+  <!-- *:*:*:*:*:*:*:*%1 -->
+  <page virtual-host="${virtualHost}" path="/opennms/event/list" query="filter=iplike%3D%2A%3A%2A%3A%2A%3A%2A%3A%2A%3A%2A%3A%2A%3A%2A%251" port="${port}" response-range="200"/>
+  <page virtual-host="${virtualHost}" path="/opennms/event/list" query="filter=msgmatchany%3Dsubstring" port="${port}" response-range="200"/>
+  <page virtual-host="${virtualHost}" path="/opennms/event/list" query="filter=msgsub%3Dsubstring" port="${port}" response-range="200"/>
+  <page virtual-host="${virtualHost}" path="/opennms/event/list" query="filter=node%3D1" port="${port}" response-range="200"/>
+  <page virtual-host="${virtualHost}" path="/opennms/event/list" query="filter=nodenot%3D1" port="${port}" response-range="200"/>
+  <page virtual-host="${virtualHost}" path="/opennms/event/list" query="filter=nodenamelike%3Dsome_string" port="${port}" response-range="200"/>
+  <page virtual-host="${virtualHost}" path="/opennms/event/list" query="filter=partialUei%3Dcisco" port="${port}" response-range="200"/>
+  <page virtual-host="${virtualHost}" path="/opennms/event/list" query="filter=partialUeiNot%3Dcisco" port="${port}" response-range="200"/>
+  <page virtual-host="${virtualHost}" path="/opennms/event/list" query="filter=service%3D1" port="${port}" response-range="200"/>
+  <page virtual-host="${virtualHost}" path="/opennms/event/list" query="filter=servicenot%3D1" port="${port}" response-range="200"/>
+  <page virtual-host="${virtualHost}" path="/opennms/event/list" query="filter=severity%3D1" port="${port}" response-range="200"/>
+  <page virtual-host="${virtualHost}" path="/opennms/event/list" query="filter=severitynot%3D1" port="${port}" response-range="200"/>
+
+  <page virtual-host="${virtualHost}" path="/opennms/notification/browse" query="acktype=unack" port="${port}" response-range="200"/>
+  <page virtual-host="${virtualHost}" path="/opennms/notification/browse" query="acktype=ack" port="${port}" response-range="200"/>
+
+  <page virtual-host="${virtualHost}" path="/opennms/outage/index.jsp" port="${port}" response-range="200"/>
+  <page virtual-host="${virtualHost}" path="/opennms/outage/list.htm" port="${port}" response-range="200"/>
+  <page virtual-host="${virtualHost}" path="/opennms/outage/list.htm" query="outtype=current" port="${port}" response-range="200"/>
+  <page virtual-host="${virtualHost}" path="/opennms/outage/list.htm" query="outtype=both" port="${port}" response-range="200"/>
+
+  <page virtual-host="${virtualHost}" path="/opennms/pathOutage/index.jsp" port="${port}" response-range="200"/>
+
+  <page virtual-host="${virtualHost}" path="/opennms/rest/nodes/" port="${port}" response-range="200"/>
+</page-sequence>
