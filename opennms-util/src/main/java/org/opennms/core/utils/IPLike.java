@@ -1,5 +1,7 @@
 package org.opennms.core.utils;
 
+import java.net.InetAddress;
+
 /**
  * <p>IPLike class.</p>
  *
@@ -9,21 +11,25 @@ package org.opennms.core.utils;
 public abstract class IPLike {
 
     private interface RangeMatcher {
-        boolean match(String value, String range);
+        boolean match(final String value, final String range);
     }
 
     private static class HexRangeMatcher implements RangeMatcher {
-        public boolean match(String value, String range) {
+        public boolean match(final String value, final String range) {
             return matchRangeHex(value, range);
         }
     }
 
     private static class DecimalRangeMatcher implements RangeMatcher {
-        public boolean match(String value, String range) {
+        public boolean match(final String value, final String range) {
             return matchRange(value, range);
         }
     }
 
+    public static boolean matches(final InetAddress address, final String pattern) {
+    	return matches(InetAddressUtils.str(address), pattern);
+    }
+    
     /**
      * <p>matches</p>
      *
@@ -39,9 +45,9 @@ public abstract class IPLike {
 
         if (address.indexOf(':') >= 0) {
             // First try and match the scope identifier
-            String[] patternAndScope = pattern.split("%");
+            final String[] patternAndScope = pattern.split("%");
             pattern = patternAndScope[0];
-            String[] addressAndScope = address.split("%");
+            final String[] addressAndScope = address.split("%");
             address = addressAndScope[0];
             if (patternAndScope.length < 2) {
                 // Do nothing; there was no pattern specified for the scope identifier
@@ -85,7 +91,7 @@ public abstract class IPLike {
         return true;
     }
 
-    public static boolean matchNumericListOrRange(String value, String patterns) {
+    public static boolean matchNumericListOrRange(final String value, final String patterns) {
         return matchNumericListOrRange(value, patterns, new DecimalRangeMatcher());
     }
 
@@ -100,10 +106,9 @@ public abstract class IPLike {
      * @param patterns a {@link java.lang.String} object.
      * @return a boolean.
      */
-    public static boolean matchNumericListOrRange(String value, String patterns, RangeMatcher matcher) {
-
-        String patternList[] = patterns.split(",", 0);
-        for (String element : patternList) {
+    public static boolean matchNumericListOrRange(final String value, final String patterns, final RangeMatcher matcher) {
+    	final String patternList[] = patterns.split(",", 0);
+        for (final String element : patternList) {
             if (matcher.match(value, element)) {
                 return true;
             }
@@ -118,8 +123,8 @@ public abstract class IPLike {
      * @param pattern a {@link java.lang.String} object.
      * @return a boolean.
      */
-    public static boolean matchRange(String value, String pattern) {
-        int dashCount = countChar('-', pattern);
+    public static boolean matchRange(final String value, final String pattern) {
+    	final int dashCount = countChar('-', pattern);
 
         if ("*".equals(pattern)) {
             return true;
@@ -128,10 +133,10 @@ public abstract class IPLike {
         } else if (dashCount > 1) {
             return false;
         } else if (dashCount == 1) {
-            String ar[] = pattern.split("-");
-            long rangeBegin = Long.parseLong(ar[0]);
-            long rangeEnd = Long.parseLong(ar[1]);
-            long ip = Long.parseLong(value);
+            final String ar[] = pattern.split("-");
+            final long rangeBegin = Long.parseLong(ar[0]);
+            final long rangeEnd = Long.parseLong(ar[1]);
+            final long ip = Long.parseLong(value);
             return (ip >= rangeBegin && ip <= rangeEnd);
         }
         return false;
@@ -144,8 +149,8 @@ public abstract class IPLike {
      * @param pattern a {@link java.lang.String} object.
      * @return a boolean.
      */
-    public static boolean matchRangeHex(String value, String pattern) {
-        int dashCount = countChar('-', pattern);
+    public static boolean matchRangeHex(final String value, final String pattern) {
+    	final int dashCount = countChar('-', pattern);
 
         if ("*".equals(pattern)) {
             return true;
@@ -155,10 +160,10 @@ public abstract class IPLike {
         } else if (dashCount > 1) {
             return false;
         } else if (dashCount == 1) {
-            String ar[] = pattern.split("-");
-            long rangeBegin = Long.parseLong(ar[0], 16);
-            long rangeEnd = Long.parseLong(ar[1], 16);
-            long ip = Long.parseLong(value, 16);
+        	final String ar[] = pattern.split("-");
+            final long rangeBegin = Long.parseLong(ar[0], 16);
+            final long rangeEnd = Long.parseLong(ar[1], 16);
+            final long ip = Long.parseLong(value, 16);
             return (ip >= rangeBegin && ip <= rangeEnd);
         }
         return false;
@@ -171,7 +176,7 @@ public abstract class IPLike {
      * @param stingIn a {@link java.lang.String} object.
      * @return a int.
      */
-    public static int countChar(char charIn, String stingIn) {
+    public static int countChar(final char charIn, final String stingIn) {
 
         int charCount = 0;
         int charIndex = 0;

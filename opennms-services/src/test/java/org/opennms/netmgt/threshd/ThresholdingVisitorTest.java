@@ -178,7 +178,7 @@ public class ThresholdingVisitorTest {
 
                 int retVal = compareStrings(e1.getUei(), e2.getUei());
                 if (retVal == 0) {
-                    retVal = InetAddressUtils.toInteger(e1.getInterface()).compareTo(InetAddressUtils.toInteger(e2.getInterface()));
+                    retVal = InetAddressUtils.toInteger(e1.getInterfaceAddress()).compareTo(InetAddressUtils.toInteger(e2.getInterfaceAddress()));
                 }
                 if (retVal == 0) {
                     retVal = compareStrings(e1.getService(), e2.getService());

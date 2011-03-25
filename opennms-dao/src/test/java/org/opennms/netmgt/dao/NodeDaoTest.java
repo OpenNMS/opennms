@@ -54,6 +54,7 @@ import org.apache.commons.beanutils.BeanUtils;
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
+import org.opennms.core.utils.InetAddressUtils;
 import org.opennms.netmgt.dao.db.JUnitTemporaryDatabase;
 import org.opennms.netmgt.dao.db.OpenNMSConfigurationExecutionListener;
 import org.opennms.netmgt.dao.db.TemporaryDatabaseExecutionListener;
@@ -275,7 +276,7 @@ public class NodeDaoTest  {
         validateNode(n);
 
         for (OnmsIpInterface ip : n.getIpInterfaces()) {
-            ip.getIpAddressAsString();
+            ip.getIpAddress();
             for (OnmsMonitoredService service : ip.getMonitoredServices()) {
                 service.getServiceName();
             }
@@ -284,7 +285,7 @@ public class NodeDaoTest  {
         // Test for bug 1594
         for (OnmsSnmpInterface snmp : n.getSnmpInterfaces()) {
             for (OnmsIpInterface ip : snmp.getIpInterfaces()) {
-                ip.getIpAddressAsString();
+                ip.getIpAddress();
             }
         }
     }
@@ -403,7 +404,7 @@ public class NodeDaoTest  {
         for (Object o : n.getIpInterfaces()) {
 			OnmsIpInterface iface = (OnmsIpInterface)o;
 			assertNotNull(iface);
-			assertNotNull(iface.getIpAddressAsString());
+			assertNotNull(InetAddressUtils.str(iface.getIpAddress()));
 		}
         
         assertNodeEquals(getNode1(), n);

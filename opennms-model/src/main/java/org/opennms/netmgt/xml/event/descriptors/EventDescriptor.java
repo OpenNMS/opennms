@@ -564,7 +564,7 @@ import org.opennms.netmgt.xml.event.Event;
                 throws IllegalStateException
             {
                 Event target = (Event) object;
-                return InetAddressUtils.str(target.getInterface());
+                return target.getInterface();
             }
             @Override
             public void setValue( java.lang.Object object, java.lang.Object value) 
@@ -572,7 +572,7 @@ import org.opennms.netmgt.xml.event.Event;
             {
                 try {
                     Event target = (Event) object;
-                    target.setInterface( InetAddressUtils.addr((java.lang.String) value));
+                    target.setInterface((java.lang.String) value);
                 } catch (java.lang.Exception ex) {
                     throw new IllegalStateException(ex.toString());
                 }

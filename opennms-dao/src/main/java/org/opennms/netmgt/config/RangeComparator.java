@@ -35,6 +35,7 @@
 package org.opennms.netmgt.config;
 
 import java.io.Serializable;
+import java.net.InetAddress;
 import java.util.Comparator;
 
 import org.opennms.core.utils.ByteArrayComparator;
@@ -58,6 +59,8 @@ public class RangeComparator implements Comparator<Range>, Serializable {
      * @return a int.
      */
     public int compare(final Range rng1, final Range rng2) {
-    	return new ByteArrayComparator().compare(InetAddressUtils.addr(rng1.getBegin()).getAddress(), InetAddressUtils.addr(rng2.getBegin()).getAddress());
+    	final InetAddress addr1 = InetAddressUtils.addr(rng1.getBegin());
+		final InetAddress addr2 = InetAddressUtils.addr(rng2.getBegin());
+		return new ByteArrayComparator().compare(addr1 == null? null : addr1.getAddress(), addr2 == null? null : addr2.getAddress());
     }
 }

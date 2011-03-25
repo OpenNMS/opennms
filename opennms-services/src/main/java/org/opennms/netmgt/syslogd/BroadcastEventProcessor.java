@@ -103,26 +103,26 @@ final class BroadcastEventProcessor implements EventListener {
         if (eventUei.equals(EventConstants.NODE_GAINED_INTERFACE_EVENT_UEI)) {
             // add to known nodes
             if (Long.toString(event.getNodeid()) != null && event.getInterface() != null) {
-                SyslogdIPMgr.setNodeId(event.getInterfaceAsString(), event.getNodeid());
+                SyslogdIPMgr.setNodeId(event.getInterface(), event.getNodeid());
             }
             if (log.isDebugEnabled()) {
-                log.debug("Added " + event.getInterfaceAsString() + " to known node list");
+                log.debug("Added " + event.getInterface() + " to known node list");
             }
         } else if (eventUei.equals(EventConstants.INTERFACE_DELETED_EVENT_UEI)) {
             // remove from known nodes
             if (event.getInterface() != null) {
-                SyslogdIPMgr.removeNodeId(event.getInterfaceAsString());
+                SyslogdIPMgr.removeNodeId(event.getInterface());
             }
             if (log.isDebugEnabled()) {
-                log.debug("Removed " + event.getInterfaceAsString() + " from known node list");
+                log.debug("Removed " + event.getInterface() + " from known node list");
             }
         } else if (eventUei.equals(EventConstants.INTERFACE_REPARENTED_EVENT_UEI)) {
             // add to known nodes
             if (Long.toString(event.getNodeid()) != null && event.getInterface() != null) {
-                SyslogdIPMgr.setNodeId(event.getInterfaceAsString(), event.getNodeid());
+                SyslogdIPMgr.setNodeId(event.getInterface(), event.getNodeid());
             }
             if (log.isDebugEnabled()) {
-                log.debug("Reparented " + event.getInterfaceAsString() + " to known node list");
+                log.debug("Reparented " + event.getInterface() + " to known node list");
             }
         }
     }

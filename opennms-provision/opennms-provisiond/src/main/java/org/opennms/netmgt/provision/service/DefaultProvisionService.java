@@ -241,8 +241,8 @@ public class DefaultProvisionService implements ProvisionService {
             scannedIface.setSnmpInterface(updateSnmpInterfaceAttributes(nodeId, scannedIface.getSnmpInterface()));
         }
         
-        OnmsIpInterface dbIface = m_ipInterfaceDao.findByNodeIdAndIpAddress(nodeId, scannedIface.getIpAddressAsString());
-        debug("Updating interface attributes for %s for node %d with ip %s", dbIface, nodeId, scannedIface.getIpAddressAsString());
+        OnmsIpInterface dbIface = m_ipInterfaceDao.findByNodeIdAndIpAddress(nodeId, InetAddressUtils.str(scannedIface.getIpAddress()));
+        debug("Updating interface attributes for %s for node %d with ip %s", dbIface, nodeId, InetAddressUtils.str(scannedIface.getIpAddress()));
         if (dbIface != null) {
             if(dbIface.isManaged() && !scannedIface.isManaged()){
                 Set<OnmsMonitoredService> monSvcs = dbIface.getMonitoredServices();
@@ -538,7 +538,7 @@ public class DefaultProvisionService implements ProvisionService {
     	}
     	
         info("Setting criticalInterface of node: %s to: %s", node, critIface);
-    	node.setPathElement(critIface == null ? null : new PathElement(critIface.getIpAddressAsString(), "ICMP"));
+    	node.setPathElement(critIface == null ? null : new PathElement(InetAddressUtils.str(critIface.getIpAddress()), "ICMP"));
 
     }
     

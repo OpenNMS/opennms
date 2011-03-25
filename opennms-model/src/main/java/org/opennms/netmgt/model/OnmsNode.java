@@ -1181,8 +1181,8 @@ public class OnmsNode extends OnmsEntity implements Serializable,
             EventBuilder bldr = new EventBuilder(EventConstants.PRIMARY_SNMP_INTERFACE_CHANGED_EVENT_UEI, "Provisiond");
             bldr.setIpInterface(scannedPrimaryIf);
             bldr.setService("SNMP");
-            bldr.addParam(EventConstants.PARM_OLD_PRIMARY_SNMP_ADDRESS, oldPrimaryInterface.getIpAddressAsString());
-            bldr.addParam(EventConstants.PARM_NEW_PRIMARY_SNMP_ADDRESS, scannedPrimaryIf.getIpAddressAsString());
+            bldr.addParam(EventConstants.PARM_OLD_PRIMARY_SNMP_ADDRESS, InetAddressUtils.str(oldPrimaryInterface.getIpAddress()));
+            bldr.addParam(EventConstants.PARM_NEW_PRIMARY_SNMP_ADDRESS, InetAddressUtils.str(scannedPrimaryIf.getIpAddress()));
             
             eventForwarder.sendNow(bldr.getEvent());
         }

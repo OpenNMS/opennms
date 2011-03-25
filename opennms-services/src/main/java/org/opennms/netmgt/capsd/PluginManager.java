@@ -153,7 +153,7 @@ public class PluginManager implements InitializingBean {
                 while (saddrIter.hasNext() && !found) {
                     String saddr = saddrIter.next();
                     InetAddress taddr = InetAddressUtils.addr(saddr);
-                    if (taddr.equals(address)) {
+                    if (taddr != null && taddr.equals(address)) {
                         found = true;
                     }
                 }

@@ -209,7 +209,8 @@ public class MockInterface extends MockContainer<MockNode,MockService> {
     	return new ToStringBuilder(this)
     		.append("ifAlias", m_ifAlias)
     		.append("ifIndex", m_ifIndex)
-    		.append("m_inetAddr", m_inetAddr)
+    		.append("inetAddr", InetAddressUtils.str(m_inetAddr))
+    		.append("members", getMembers())
     		.toString();
     }
 

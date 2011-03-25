@@ -198,7 +198,7 @@ public class EventBuilder {
      * @return a {@link org.opennms.netmgt.model.events.EventBuilder} object.
      */
     public EventBuilder setInterface(final InetAddress ipAddress) {
-        m_event.setInterface(ipAddress);
+        m_event.setInterfaceAddress(ipAddress);
         return this;
     }
     /**
@@ -417,7 +417,7 @@ public class EventBuilder {
             if (iface.getNode() != null) {
                 m_event.setNodeid(iface.getNode().getId().longValue());
             }
-            m_event.setInterface(iface.getIpAddress());
+            m_event.setInterfaceAddress(iface.getIpAddress());
         }
         return this;
     }
@@ -431,7 +431,7 @@ public class EventBuilder {
     public EventBuilder setMonitoredService(final OnmsMonitoredService monitoredService) {
         if (monitoredService != null) {
             m_event.setNodeid(monitoredService.getNodeId().longValue());
-            m_event.setInterface(monitoredService.getIpAddress());
+            m_event.setInterfaceAddress(monitoredService.getIpAddress());
             m_event.setService(monitoredService.getServiceName());
         }
         return this;

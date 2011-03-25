@@ -463,7 +463,7 @@ final class LatencyThresholder implements ServiceThresholder {
     private void completeEventListAndAddToEvents(Events events, List<Event> eventList, LatencyInterface latIface) throws ThresholdingException {
         for (Event event : eventList) {
             event.setNodeid((long) latIface.getNodeId());
-            event.setInterface(latIface.getInetAddress());
+            event.setInterfaceAddress(latIface.getInetAddress());
             event.setService(latIface.getServiceName());
 
             events.addEvent(event);

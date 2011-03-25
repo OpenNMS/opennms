@@ -43,6 +43,7 @@ package org.opennms.netmgt.importer.operations;
 
 import java.util.List;
 
+import org.opennms.core.utils.InetAddressUtils;
 import org.opennms.netmgt.capsd.EventUtils;
 import org.opennms.netmgt.model.AbstractEntityVisitor;
 import org.opennms.netmgt.model.OnmsIpInterface;
@@ -58,12 +59,12 @@ public final class DeleteEventVisitor extends AbstractEntityVisitor {
 
 	/** {@inheritDoc} */
 	public void visitMonitoredServiceComplete(OnmsMonitoredService monSvc) {
-		m_events.add(EventUtils.createServiceDeletedEvent("ModelImporter", monSvc.getNodeId().longValue(), monSvc.getIpAddressAsString(), monSvc.getServiceType().getName(), -1L));
+		m_events.add(EventUtils.createServiceDeletedEvent("ModelImporter", monSvc.getNodeId().longValue(), InetAddressUtils.str(monSvc.getIpAddress()), monSvc.getServiceType().getName(), -1L));
 	}
 
 	/** {@inheritDoc} */
 	public void visitIpInterfaceComplete(OnmsIpInterface iface) {
-		m_events.add(EventUtils.createInterfaceDeletedEvent("ModelImporter", iface.getNode().getId().longValue(), iface.getIpAddressAsString(), -1L));
+		m_events.add(EventUtils.createInterfaceDeletedEvent("ModelImporter", iface.getNode().getId().longValue(), InetAddressUtils.str(iface.getIpAddress()), -1L));
 	}
 
 	/** {@inheritDoc} */

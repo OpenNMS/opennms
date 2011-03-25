@@ -1,7 +1,6 @@
 package org.opennms.netmgt.dao;
 
 import java.io.File;
-import java.net.InetAddress;
 import java.net.UnknownHostException;
 
 import junit.framework.TestCase;

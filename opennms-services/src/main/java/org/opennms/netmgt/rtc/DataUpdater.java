@@ -432,7 +432,7 @@ final class DataUpdater implements Runnable {
             nodeid = m_event.getNodeid();
         }
 
-        String ip = m_event.getInterfaceAsString();
+        String ip = m_event.getInterface();
 
         String svcName = m_event.getService();
 

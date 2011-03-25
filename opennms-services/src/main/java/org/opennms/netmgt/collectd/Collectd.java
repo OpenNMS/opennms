@@ -51,6 +51,8 @@
 
 package org.opennms.netmgt.collectd;
 
+import static org.opennms.core.utils.InetAddressUtils.str;
+
 import java.net.InetAddress;
 import java.sql.SQLException;
 import java.util.ArrayList;
@@ -66,7 +68,7 @@ import java.util.Map;
 import java.util.Set;
 
 import org.apache.commons.lang.StringUtils;
-import org.opennms.core.utils.InetAddressUtils;
+import org.opennms.core.utils.LogUtils;
 import org.opennms.core.utils.ThreadCategory;
 import org.opennms.netmgt.ConfigFileConstants;
 import org.opennms.netmgt.EventConstants;
@@ -447,7 +449,13 @@ public class Collectd extends AbstractServiceDaemon implements
 
     private void scheduleInterface(OnmsIpInterface iface, String svcName, boolean existing) {
         
-        instrumentation().beginScheduleInterface(iface.getNode().getId(), iface.getIpAddressAsString(), svcName);
+        final String ipAddress = str(iface.getIpAddress());
+        if (ipAddress == null) {
+        	LogUtils.warnf(this, "Unable to schedule interface %s, could not determine IP address.", iface);
+        	return;
+        }
+
+		instrumentation().beginScheduleInterface(iface.getNode().getId(), ipAddress, svcName);
         try {
         
         Collection<CollectionSpecification> matchingSpecs = getSpecificationsForInterface(iface, svcName);
@@ -551,7 +559,7 @@ public class Collectd extends AbstractServiceDaemon implements
         } // end while more specifications  exist
         
         } finally {
-            instrumentation().endScheduleInterface(iface.getNode().getId(), iface.getIpAddressAsString(), svcName);
+            instrumentation().endScheduleInterface(iface.getNode().getId(), ipAddress, svcName);
         }
     }
 
@@ -591,7 +599,8 @@ public class Collectd extends AbstractServiceDaemon implements
             }
 
             // Is the interface in the package?
-            if (!wpkg.interfaceInPackage(iface.getIpAddressAsString())) {
+            final String ipAddress = str(iface.getIpAddress());
+			if (!wpkg.interfaceInPackage(ipAddress)) {
                 if (log().isDebugEnabled()) {
                     StringBuffer sb = new StringBuffer();
                     sb.append("getSpecificationsForInterface: address/service: ");
@@ -632,9 +641,14 @@ public class Collectd extends AbstractServiceDaemon implements
      * @param svcName
      *            TODO
      */
-    private boolean alreadyScheduled(OnmsIpInterface iface,
-            CollectionSpecification spec) {
-        String ipAddress = InetAddressUtils.str(iface.getIpAddress());
+    private boolean alreadyScheduled(OnmsIpInterface iface, CollectionSpecification spec) {
+        String ipAddress = str(iface.getIpAddress());
+        
+        if (ipAddress == null) {
+        	LogUtils.warnf(this, "Cannot determine if interface %s is already scheduled.  Unable to look up IP address.", iface);
+        	return false;
+        }
+
         String svcName = spec.getServiceName();
         String pkgName = spec.getPackageName();
         StringBuffer sb;
@@ -650,7 +664,7 @@ public class Collectd extends AbstractServiceDaemon implements
         synchronized (m_collectableServices) {
         	for (CollectableService cSvc : m_collectableServices) {
                 InetAddress addr = (InetAddress) cSvc.getAddress();
-                if (InetAddressUtils.str(addr).equals(ipAddress)
+                if (str(addr).equals(ipAddress)
                         && cSvc.getPackageName().equals(pkgName)
                         && cSvc.getServiceName().equals(svcName)) {
                     isScheduled = true;
@@ -825,7 +839,7 @@ public class Collectd extends AbstractServiceDaemon implements
 
         ThreadCategory log = log();
         
-        String ipAddr = event.getInterfaceAsString();
+        String ipAddr = event.getInterface();
         if(EventUtils.isNonIpInterface(ipAddr) ) {
             log().debug("handleInterfaceDeleted: the deleted interface was a non-ip interface. Nothing to do here.");
             return;
@@ -844,8 +858,7 @@ public class Collectd extends AbstractServiceDaemon implements
                 // Only interested in entries with matching nodeId and IP
                 // address
                 InetAddress addr = (InetAddress) cSvc.getAddress();
-                if (!(cSvc.getNodeId() == nodeId && addr.getHostName().equals(
-                                                                              ipAddr)))
+                if (!(cSvc.getNodeId() == nodeId && addr.getHostName().equals(ipAddr)))
                     continue;
 
                 synchronized (cSvc) {
@@ -899,7 +912,7 @@ public class Collectd extends AbstractServiceDaemon implements
         ThreadCategory log = log();
         if (log.isDebugEnabled())
             log.debug("interfaceReparentedHandler:  processing interfaceReparented event for "
-                    + event.getInterfaceAsString());
+                    + event.getInterface());
 
         // Verify that the event has an interface associated with it
         if (event.getInterface() == null)
@@ -962,26 +975,26 @@ public class Collectd extends AbstractServiceDaemon implements
                 cSvc = iter.next();
 
                 InetAddress addr = (InetAddress) cSvc.getAddress();
-                if (InetAddressUtils.str(addr).equals(event.getInterfaceAsString())) {
+				if (addr.equals(event.getInterfaceAddress())) {
                     synchronized (cSvc) {
                         // Got a match!
                         if (log.isDebugEnabled())
                             log.debug("interfaceReparentedHandler: got a CollectableService match for "
-                                    + event.getInterfaceAsString());
+                                    + event.getInterface());
 
                         // Retrieve the CollectorUpdates object associated
                         // with
                         // this CollectableService.
                         CollectorUpdates updates = cSvc.getCollectorUpdates();
                         if (iface == null) {
-                        	iface = getIpInterface(event.getNodeid().intValue(), event.getInterfaceAsString());
+                        	iface = getIpInterface(event.getNodeid().intValue(), event.getInterface());
                         }
 
                         // Now set the reparenting flag
                         updates.markForReparenting(oldNodeIdStr, newNodeIdStr, iface);
                         if (log.isDebugEnabled())
                             log.debug("interfaceReparentedHandler: marking "
-                                    + event.getInterfaceAsString()
+                                    + event.getInterface()
                                     + " for reparenting for service SNMP.");
                     }
                 }
@@ -990,7 +1003,7 @@ public class Collectd extends AbstractServiceDaemon implements
 
         if (log.isDebugEnabled())
             log.debug("interfaceReparentedHandler: processing of interfaceReparented event for interface "
-                    + event.getInterfaceAsString() + " completed.");
+                    + event.getInterface() + " completed.");
     }
 
     /**
@@ -1128,7 +1141,7 @@ public class Collectd extends AbstractServiceDaemon implements
         
         getCollectorConfigDao().rebuildPackageIpListMap();
 
-        scheduleInterface(event.getNodeid().intValue(), event.getInterfaceAsString(),
+        scheduleInterface(event.getNodeid().intValue(), event.getInterface(),
                           event.getService(), false);
     }
 
@@ -1207,9 +1220,9 @@ public class Collectd extends AbstractServiceDaemon implements
                 while (liter.hasNext()) {
                     cSvc = liter.next();
 
-                    InetAddress addr = (InetAddress) cSvc.getAddress();
-                    oldPrimaryIfAddr = InetAddressUtils.str(InetAddressUtils.addr(oldPrimaryIfAddr));
-                    if (InetAddressUtils.str(addr).equals(oldPrimaryIfAddr)) {
+                    final InetAddress addr = (InetAddress) cSvc.getAddress();
+                    final String addrString = str(addr);
+					if (addrString != null && addrString.equals(oldPrimaryIfAddr)) {
                         synchronized (cSvc) {
                             // Got a match! Retrieve the CollectorUpdates
                             // object
@@ -1267,7 +1280,7 @@ public class Collectd extends AbstractServiceDaemon implements
         EventUtils.checkInterface(event);
 
         Long nodeid = event.getNodeid();
-        String ipAddress = event.getInterfaceAsString();
+        String ipAddress = event.getInterface();
 
         // Mark the primary SNMP interface for reinitialization in
         // order to update any modified attributes associated with
@@ -1285,13 +1298,14 @@ public class Collectd extends AbstractServiceDaemon implements
             while (iter.hasNext()) {
                 CollectableService cSvc = iter.next();
         
-                InetAddress addr = (InetAddress) cSvc.getAddress();
-                if (log.isDebugEnabled())
+                final InetAddress addr = (InetAddress) cSvc.getAddress();
+                final String addrString = str(addr);
+				if (log.isDebugEnabled())
                     log.debug("Comparing CollectableService ip address = "
-                            + InetAddressUtils.str(addr)
+                            + addrString
                             + " and event ip interface = "
                             + ipAddress);
-                if (InetAddressUtils.str(addr).equals(ipAddress)) {
+                if (addrString != null && addrString.equals(ipAddress)) {
                     synchronized (cSvc) {
                     	if (iface == null) {
                             iface = getIpInterface(nodeid.intValue(), ipAddress);
@@ -1336,7 +1350,7 @@ public class Collectd extends AbstractServiceDaemon implements
         //    return;
 
         Long nodeId = event.getNodeid();
-        String ipAddr = event.getInterfaceAsString();
+        String ipAddr = event.getInterface();
         String svcName = event.getService();
 
         // Iterate over the collectable services list and mark any entries

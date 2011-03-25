@@ -483,8 +483,8 @@ public class DefaultQueryManager implements QueryManager {
             String sql = "update outages set nodeId = ? where nodeId = ? and ipaddr = ?";
             
             Object[] values = {
-                    new Integer(newNodeId),
-                    new Integer(oldNodeId),
+                    Integer.valueOf(newNodeId),
+                    Integer.valueOf(oldNodeId),
                     ipAddr,
                 };
 

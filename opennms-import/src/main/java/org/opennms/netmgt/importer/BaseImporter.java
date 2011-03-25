@@ -41,6 +41,7 @@ import java.util.Collection;
 import java.util.HashMap;
 import java.util.Map;
 
+import org.opennms.core.utils.InetAddressUtils;
 import org.opennms.core.utils.ThreadCategory;
 import org.opennms.netmgt.config.modelimport.Node;
 import org.opennms.netmgt.dao.AssetRecordDao;
@@ -375,7 +376,8 @@ public class BaseImporter implements ImportOperationFactory {
 					log().info("Setting parent of node: "+dbNode+" to: "+parent);
 					dbNode.setParent(parent);
 					log().info("Setting criticalInterface of node: "+dbNode+" to: "+critIface);
-					dbNode.setPathElement(critIface == null ? null : new PathElement(critIface.getIpAddressAsString(), "ICMP"));
+					final String ipAddress = InetAddressUtils.str(critIface.getIpAddress());
+					dbNode.setPathElement(critIface == null ? null : new PathElement(ipAddress, "ICMP"));
 					getNodeDao().update(dbNode);
 				}
 

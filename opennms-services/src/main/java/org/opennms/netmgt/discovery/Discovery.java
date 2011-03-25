@@ -414,7 +414,7 @@ public class Discovery extends AbstractServiceDaemon {
     public void handleInterfaceDeleted(final Event event) {
         if(event.getInterface() != null) {
             // remove from known nodes
-            final String iface = event.getInterfaceAsString();
+            final String iface = event.getInterface();
 			m_alreadyDiscovered.remove(iface);
 
             debugf("Removed %s from known node list", iface);
@@ -455,7 +455,7 @@ public class Discovery extends AbstractServiceDaemon {
     @EventHandler(uei=EventConstants.NODE_GAINED_INTERFACE_EVENT_UEI)
     public void handleNodeGainedInterface(Event event) {
         // add to known nodes
-        final String iface = event.getInterfaceAsString();
+        final String iface = event.getInterface();
 		m_alreadyDiscovered.add(iface);
 
         debugf("Added %s as discovered", iface);

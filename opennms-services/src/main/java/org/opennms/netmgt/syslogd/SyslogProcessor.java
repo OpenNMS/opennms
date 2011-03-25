@@ -176,7 +176,7 @@ final class SyslogProcessor implements Runnable {
                                 : "<not-set>"));
                         log.trace("  uei   = " + o.getEvent().getUei());
                         log.trace("  src   = " + o.getEvent().getSource());
-                        log.trace("  iface = " + o.getEvent().getInterfaceAsString());
+                        log.trace("  iface = " + o.getEvent().getInterface());
                         log.trace("  time  = " + o.getEvent().getTime());
                         log.trace("  Msg   = "
                                 + o.getEvent().getLogmsg().getContent());
@@ -205,9 +205,9 @@ final class SyslogProcessor implements Runnable {
 
                     if (m_NewSuspectOnMessage && !o.getEvent().hasNodeid()) {
                         if (isTracing) {
-                            log.trace("Syslogd: Found a new suspect " + o.getEvent().getInterfaceAsString());
+                            log.trace("Syslogd: Found a new suspect " + o.getEvent().getInterface());
                         }
-                        sendNewSuspectEvent(o.getEvent().getInterfaceAsString());
+                        sendNewSuspectEvent(o.getEvent().getInterface());
                     }
 
                 } catch (Throwable t) {

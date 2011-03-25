@@ -88,8 +88,11 @@ public class IPInterfaceTableTracker extends TableTracker {
                 // instance for ipAddr Table it ipAddr
                 SnmpInstId inst = getInstance();
                 if (inst != null) {
-                	String ipAddr = inst.toString();
-                	return InetAddressUtils.normalize(ipAddr);
+                	final String addr = InetAddressUtils.normalize(inst.toString());
+                	if (addr == null) {
+                		throw new IllegalArgumentException("cannot convert "+inst+" to an InetAddress");
+                	}
+					return addr;
                 }
             }
             return null;

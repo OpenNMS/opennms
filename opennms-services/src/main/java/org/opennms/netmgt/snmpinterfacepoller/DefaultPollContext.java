@@ -38,16 +38,19 @@ import static org.opennms.core.utils.InetAddressUtils.addr;
 
 import java.util.Date;
 import java.util.List;
+import java.util.Set;
 
 import javax.sql.DataSource;
 
 import org.hibernate.criterion.Restrictions;
+import org.opennms.core.utils.InetAddressUtils;
 import org.opennms.core.utils.ThreadCategory;
 
 import org.opennms.netmgt.EventConstants;
 import org.opennms.netmgt.dao.SnmpInterfaceDao;
 import org.opennms.netmgt.eventd.EventIpcManager;
 import org.opennms.netmgt.model.OnmsCriteria;
+import org.opennms.netmgt.model.OnmsIpInterface;
 import org.opennms.netmgt.model.OnmsSnmpInterface;
 import org.opennms.netmgt.model.events.EventBuilder;
 import org.opennms.netmgt.snmpinterfacepoller.pollable.PollContext;
@@ -209,8 +212,8 @@ public class DefaultPollContext implements PollContext {
 
         bldr.addParam(EventConstants.PARM_SNMP_INTERFACE_IFINDEX, snmpinterface.getIfIndex().toString());
         // TODO: This doesn't handle cases where there are multiple addresses on the same ifindex
-        bldr.addParam(EventConstants.PARM_SNMP_INTERFACE_IP, 
-                      snmpinterface.getIpInterfaces().size() > 0 ? snmpinterface.getIpInterfaces().iterator().next().getIpAddressAsString() : null
+        final Set<OnmsIpInterface> ipInterfaces = snmpinterface.getIpInterfaces();
+		bldr.addParam(EventConstants.PARM_SNMP_INTERFACE_IP, ipInterfaces.size() > 0 ? InetAddressUtils.str(ipInterfaces.iterator().next().getIpAddress()) : null
         );
         if (snmpinterface.getIfName() != null) bldr.addParam(EventConstants.PARM_SNMP_INTERFACE_NAME, snmpinterface.getIfName());
         if (snmpinterface.getIfDescr() != null) bldr.addParam(EventConstants.PARM_SNMP_INTERFACE_DESC, snmpinterface.getIfDescr());

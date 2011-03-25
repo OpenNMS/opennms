@@ -44,6 +44,7 @@ import java.util.List;
 import java.util.Map;
 
 import org.apache.commons.lang.builder.ToStringBuilder;
+import org.opennms.core.utils.LogUtils;
 import org.opennms.netmgt.xml.event.Event;
 
 /**
@@ -307,7 +308,8 @@ public class MockNetwork extends MockContainer<MockContainer<?,?>,MockElement> {
      * @return a {@link org.opennms.netmgt.mock.MockService} object.
      */
     public MockService getService(int nodeid, String ipAddr, String svcName) {
-        MockInterface iface = getInterface(nodeid, ipAddr);
+    	final MockInterface iface = getInterface(nodeid, ipAddr);
+        LogUtils.debugf(this, "getService(%d, %s, %s) = %s", nodeid, ipAddr, svcName, iface);
         return (iface == null ? null : iface.getService(svcName));
     }
 

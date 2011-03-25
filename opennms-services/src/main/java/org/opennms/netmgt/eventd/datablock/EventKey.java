@@ -400,7 +400,7 @@ public class EventKey extends LinkedHashMap<String, Object> implements Serializa
         } else if (mename.equals(TAG_HOST)) {
             retParmVal = event.getHost();
         } else if (mename.equals(TAG_INTERFACE)) {
-            retParmVal = event.getInterfaceAsString();
+            retParmVal = event.getInterface();
         } else if (mename.equals(TAG_SNMPHOST)) {
             retParmVal = event.getSnmphost();
         } else if (mename.equals(TAG_SERVICE)) {

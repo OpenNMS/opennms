@@ -60,7 +60,6 @@ import org.exolab.castor.xml.MarshalException;
 import org.exolab.castor.xml.Marshaller;
 import org.exolab.castor.xml.ValidationException;
 import org.opennms.core.utils.DBUtils;
-import org.opennms.core.utils.InetAddressUtils;
 import org.opennms.core.utils.ThreadCategory;
 import org.opennms.netmgt.EventConstants;
 import org.opennms.netmgt.config.common.Header;
@@ -350,8 +349,8 @@ public abstract class NotificationManager {
         }
         
         if (event.getInterface() != null
-                && !"0.0.0.0".equals(event.getInterfaceAsString())) {
-            constraints.append(" & (ipAddr == '" + event.getInterfaceAsString() + "')");
+                && !"0.0.0.0".equals(event.getInterface())) {
+            constraints.append(" & (ipAddr == '" + event.getInterface() + "')");
             if (event.getService() != null) {
                 constraints.append(" & (serviceName == '" + event.getService() + "')");
             }
@@ -517,7 +516,7 @@ public abstract class NotificationManager {
                 }
     
                 if (matchList[i].equals("interfaceid")) {
-                    statement.setString(i + 2, event.getInterfaceAsString());
+                    statement.setString(i + 2, event.getInterface());
                 }
     
                 if (matchList[i].equals("serviceid")) {
@@ -1193,7 +1192,7 @@ public abstract class NotificationManager {
                 event.setNodeid(rs.getLong("nodeid"));
                 event.setTime(rs.getString("eventtime"));
                 event.setHost(rs.getString("eventhost"));
-                event.setInterface(InetAddressUtils.addr(rs.getString("ipaddr")));
+                event.setInterface(rs.getString("ipaddr"));
                 event.setSnmphost(rs.getString("eventsnmphost"));
                 event.setService(getServiceName(rs.getInt("serviceid")));
                 event.setCreationTime(rs.getString("eventcreatetime"));

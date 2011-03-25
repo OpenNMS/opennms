@@ -35,12 +35,11 @@
 package org.opennms.netmgt.config;
 
 import java.io.Serializable;
-import java.net.UnknownHostException;
+import java.net.InetAddress;
 import java.util.Comparator;
 
 import org.opennms.core.utils.ByteArrayComparator;
 import org.opennms.core.utils.InetAddressUtils;
-import org.opennms.core.utils.LogUtils;
 
 /**
  * This class is used to compare Specific object from the config SNMP package.
@@ -59,7 +58,9 @@ public class SpecificComparator implements Comparator<String>, Serializable {
      * @return -1 for spec1 < spec2, 0 for spec1 == spec2, 1 for spec1 > spec2
      */
     public int compare(final String spec1, final String spec2) {
-    	return new ByteArrayComparator().compare(InetAddressUtils.addr(spec1).getAddress(), InetAddressUtils.addr(spec2).getAddress());
+    	final InetAddress addr1 = InetAddressUtils.addr(spec1);
+		final InetAddress addr2 = InetAddressUtils.addr(spec2);
+		return new ByteArrayComparator().compare(addr1 == null? null : addr1.getAddress(), addr2 == null? null : addr2.getAddress());
     }
 }
 

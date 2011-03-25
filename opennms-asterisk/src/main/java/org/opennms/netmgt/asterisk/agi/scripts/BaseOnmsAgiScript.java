@@ -162,7 +162,12 @@ public abstract class BaseOnmsAgiScript extends BaseAgiScript {
      * @throws org.asteriskjava.fastagi.AgiException if any.
      */
     protected char sayIpAddressInterruptible(String addrString) throws AgiException {
-    	return sayIpAddressInterruptible(InetAddressUtils.addr(addrString));
+    	
+    	final InetAddress addr = InetAddressUtils.addr(addrString);
+    	if (addr == null) {
+    		return 0x0;
+    	}
+		return sayIpAddressInterruptible(addr);
     }
     
     /**

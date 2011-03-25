@@ -51,6 +51,7 @@ import org.apache.commons.lang.builder.HashCodeBuilder;
 import org.apache.log4j.Logger;
 import org.apache.xmlrpc.WebServer;
 import org.apache.xmlrpc.XmlRpcHandler;
+import org.opennms.core.utils.LogUtils;
 
 
 
@@ -159,9 +160,9 @@ public class XmlrpcAnticipator implements XmlRpcHandler {
         }
     }
 
-    private List<XmlrpcCall> m_anticipated = new ArrayList<XmlrpcCall>();
+    private List<XmlrpcCall> m_anticipated = Collections.synchronizedList(new ArrayList<XmlrpcCall>());
 
-    private List<XmlrpcCall> m_unanticipated = new ArrayList<XmlrpcCall>();
+    private List<XmlrpcCall> m_unanticipated = Collections.synchronizedList(new ArrayList<XmlrpcCall>());
     
     private WebServer m_webServer = null;
     
@@ -175,10 +176,10 @@ public class XmlrpcAnticipator implements XmlRpcHandler {
 
     private static final String CHECK_METHOD_NAME = "XmlrpcAnticipatorCheck";
 
-    public XmlrpcAnticipator(int port, boolean delayWebServer) throws IOException {
+    public XmlrpcAnticipator(final int port, final boolean delayWebServer) throws IOException {
         m_port = port;
         if (!delayWebServer) {
-            setupWebServer();
+        	setupWebServer();
         }
     }
 
@@ -225,7 +226,7 @@ public class XmlrpcAnticipator implements XmlRpcHandler {
             try {
                 Thread.sleep(10);
             } catch (InterruptedException e) {
-                // do nothing
+            	Thread.currentThread().interrupt();
             }
             
             try {
@@ -233,8 +234,8 @@ public class XmlrpcAnticipator implements XmlRpcHandler {
                 keepRunning = false;
                 
                 sendCheckCall(s);
-            } catch (ConnectException e) {
-                // do nothing
+            } catch (final ConnectException e) {
+            	LogUtils.debugf(this, e, "connection exception received");
             } finally {
                 if (s != null) {
                     s.close();
@@ -261,7 +262,7 @@ public class XmlrpcAnticipator implements XmlRpcHandler {
             try {
                 Thread.sleep(100);
             } catch (InterruptedException e) {
-                // do nothing
+            	Thread.currentThread().interrupt();
             }
             
             try {
@@ -352,11 +353,10 @@ public class XmlrpcAnticipator implements XmlRpcHandler {
         }
     }
 
-    private static String listCalls(String prefix,
-            Collection<XmlrpcCall> calls) {
+    private static synchronized String listCalls(String prefix, Collection<XmlrpcCall> calls) {
         StringBuffer b = new StringBuffer();
 
-        for (Iterator<XmlrpcCall> it = calls.iterator(); it.hasNext();) {
+        for (final Iterator<XmlrpcCall> it = calls.iterator(); it.hasNext();) {
             XmlrpcCall call = it.next();
             b.append(prefix);
             b.append(call);
@@ -369,7 +369,7 @@ public class XmlrpcAnticipator implements XmlRpcHandler {
     protected void finalize() {
         try {
             shutdown();
-        } catch (IOException e) {
+        } catch (final IOException e) {
             System.err.println("IOException received while shutting down WebServer in finalize()");
             e.printStackTrace();
         }

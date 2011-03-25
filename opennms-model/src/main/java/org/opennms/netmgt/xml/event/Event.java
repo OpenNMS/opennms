@@ -4,6 +4,9 @@
 
 package org.opennms.netmgt.xml.event;
 
+import static org.opennms.core.utils.InetAddressUtils.addr;
+import static org.opennms.core.utils.InetAddressUtils.str;
+
 import java.io.Serializable;
 import java.net.InetAddress;
 import java.util.ArrayList;
@@ -21,7 +24,6 @@ import javax.xml.bind.annotation.XmlTransient;
 import javax.xml.bind.annotation.adapters.XmlJavaTypeAdapter;
 
 import org.apache.commons.lang.builder.ToStringBuilder;
-import org.opennms.core.utils.InetAddressUtils;
 import org.opennms.core.xml.bind.InetAddressXmlAdapter;
 
 @XmlRootElement(name = "event")
@@ -107,8 +109,11 @@ public class Event implements Serializable {
 	 */
 	@XmlElement(name = "interface")
 	@XmlJavaTypeAdapter(InetAddressXmlAdapter.class)
-	private InetAddress _interface;
+	private InetAddress _interfaceAddress;
 
+	@XmlTransient
+	private transient String _interfaceString;
+	
 	/**
 	 * The snmp host of the trap
 	 */
@@ -640,14 +645,17 @@ public class Event implements Serializable {
 	 * 
 	 * @return the value of field 'Interface'.
 	 */
-	public InetAddress getInterface() {
-		return this._interface;
+	public String getInterface() {
+		if (this._interfaceString == null) {
+			this._interfaceString = str(this._interfaceAddress);
+		}
+		return this._interfaceString;
 	}
 
 	// just to be sure
 	@XmlTransient
-	public String getInterfaceAsString() {
-		return InetAddressUtils.str(getInterface());
+	public InetAddress getInterfaceAddress() {
+		return this._interfaceAddress;
 	}
 
 	/**
@@ -1408,8 +1416,14 @@ public class Event implements Serializable {
 	 * @param _interface
 	 * @param interface the value of field 'interface'.
 	 */
-	public void setInterface(final InetAddress _interface) {
-		this._interface = _interface;
+	public void setInterface(final String _interface) {
+		this._interfaceAddress = addr(_interface);
+		this._interfaceString = null;
+	}
+
+	public void setInterfaceAddress(final InetAddress _interface) {
+		this._interfaceAddress = _interface;
+		this._interfaceString = null;
 	}
 
 	/**
@@ -1782,7 +1796,7 @@ public class Event implements Serializable {
 				.append("master-station", _masterStation).append("mask", _mask)
 				.append("uei", _uei).append("source", _source)
 				.append("nodeid", _nodeid).append("time", _time)
-				.append("host", _host).append("interface", _interface)
+				.append("host", _host).append("interface", _interfaceAddress)
 				.append("snmphost", _snmphost).append("service", _service)
 				.append("snmp", _snmp).append("parms", _parms)
 				.append("descr", _descr).append("logmsg", _logmsg)

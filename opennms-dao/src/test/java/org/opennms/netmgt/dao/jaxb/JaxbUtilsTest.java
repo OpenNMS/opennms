@@ -66,6 +66,7 @@ public class JaxbUtilsTest {
 	public void testUnmarshalEvent() throws Exception {
 		final Event event = JaxbUtils.unmarshal(Event.class, m_xmlWithNamespace);
 		assertEquals("1234", event.getUuid());
+		assertEquals("192.168.0.1", event.getInterface());
 	}
 
 	@Test

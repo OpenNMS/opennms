@@ -369,7 +369,7 @@ public class SnmpPeerFactory extends PeerFactory implements SnmpAgentConfigFacto
                 // check the specifics first
                 for (final String saddr : def.getSpecificCollection()) {
                     final InetAddress addr = InetAddressUtils.addr(saddr);
-                    if (addr.equals(agentConfig.getAddress())) {
+                    if (addr != null && addr.equals(agentConfig.getAddress())) {
                         setSnmpAgentConfig(agentConfig, def, requestedSnmpVersion);
                         break DEFLOOP;
                     }
@@ -386,7 +386,7 @@ public class SnmpPeerFactory extends PeerFactory implements SnmpAgentConfigFacto
 
                 // check the matching ip expressions
                 for (final String ipMatch : def.getIpMatchCollection()) {
-                    if (IPLike.matches(InetAddressUtils.str(agentInetAddress), ipMatch)) {
+                    if (IPLike.matches(agentInetAddress, ipMatch)) {
                         setSnmpAgentConfig(agentConfig, def, requestedSnmpVersion);
                         break DEFLOOP;
                     }
@@ -450,8 +450,7 @@ public class SnmpPeerFactory extends PeerFactory implements SnmpAgentConfigFacto
 
 	private InetAddress determineProxyHost(final Definition def) {
         InetAddress inetAddr = null;
-        final String address = def.getProxyHost() == null ? 
-                (m_config.getProxyHost() == null ? null : m_config.getProxyHost()) : def.getProxyHost();
+        final String address = def.getProxyHost() == null ? (m_config.getProxyHost() == null ? null : m_config.getProxyHost()) : def.getProxyHost();
         if (address != null) {
         	inetAddr =  InetAddressUtils.addr(address);
         }

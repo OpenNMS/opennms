@@ -45,6 +45,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.Set;
 
+import org.opennms.core.utils.InetAddressUtils;
 import org.opennms.netmgt.model.OnmsIpInterface;
 import org.opennms.netmgt.model.OnmsMonitoredService;
 import org.opennms.netmgt.model.OnmsNode;
@@ -165,7 +166,7 @@ public class UpdateOperation extends AbstractSaveOrUpdateOperation {
         }
 
         private OnmsIpInterface getImportedVersion(OnmsIpInterface iface) {
-            return m_ipAddrToImportIfs.get(iface.getIpAddressAsString());
+            return m_ipAddrToImportIfs.get(InetAddressUtils.str(iface.getIpAddress()));
         }
 
         private Collection<OnmsIpInterface> getNewInterfaces() {
@@ -173,7 +174,7 @@ public class UpdateOperation extends AbstractSaveOrUpdateOperation {
         }
 
         private void markAsProcessed(OnmsIpInterface iface) {
-            m_ipAddrToImportIfs.remove(iface.getIpAddressAsString());
+            m_ipAddrToImportIfs.remove(InetAddressUtils.str(iface.getIpAddress()));
         }
 
         private void update(OnmsIpInterface imported, OnmsIpInterface iface, List<Event> events) {

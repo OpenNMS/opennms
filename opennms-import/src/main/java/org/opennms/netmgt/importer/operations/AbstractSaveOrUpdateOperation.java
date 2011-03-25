@@ -41,6 +41,7 @@ import java.util.List;
 import java.util.Map;
 
 import org.opennms.core.utils.InetAddressUtils;
+import org.opennms.core.utils.LogUtils;
 import org.opennms.core.utils.ThreadCategory;
 import org.opennms.netmgt.capsd.IfSnmpCollector;
 import org.opennms.netmgt.capsd.snmp.IfTableEntry;
@@ -89,7 +90,7 @@ public abstract class AbstractSaveOrUpdateOperation extends AbstractImportOperat
      * @param building a {@link java.lang.String} object.
      * @param city a {@link java.lang.String} object.
      */
-    public AbstractSaveOrUpdateOperation(String foreignSource, String foreignId, String nodeLabel, String building, String city) {
+    public AbstractSaveOrUpdateOperation(final String foreignSource, final String foreignId, final String nodeLabel, final String building, final String city) {
 		this(null, foreignSource, foreignId, nodeLabel, building, city);
 	}
 
@@ -103,7 +104,7 @@ public abstract class AbstractSaveOrUpdateOperation extends AbstractImportOperat
 	 * @param building a {@link java.lang.String} object.
 	 * @param city a {@link java.lang.String} object.
 	 */
-	public AbstractSaveOrUpdateOperation(Integer nodeId, String foreignSource, String foreignId, String nodeLabel, String building, String city) {
+	public AbstractSaveOrUpdateOperation(final Integer nodeId, final String foreignSource, final String foreignId, final String nodeLabel, final String building, final String city) {
         m_node = new OnmsNode();
         m_node.setId(nodeId);
 		m_node.setLabel(nodeLabel);
@@ -116,7 +117,7 @@ public abstract class AbstractSaveOrUpdateOperation extends AbstractImportOperat
 	}
 
 	/** {@inheritDoc} */
-	public void foundInterface(String ipAddr, Object descr, InterfaceSnmpPrimaryType snmpPrimary, boolean managed, int status) {
+	public void foundInterface(final String ipAddr, final Object descr, final InterfaceSnmpPrimaryType snmpPrimary, final boolean managed, final int status) {
 		
 		if ("".equals(ipAddr)) {
 			log().error("Found interface on node "+m_node.getLabel()+" with an empty ipaddr! Ignoring!");
@@ -131,7 +132,11 @@ public abstract class AbstractSaveOrUpdateOperation extends AbstractImportOperat
         //m_currentInterface.setIpStatus(status == 3 ? new Integer(3) : new Integer(1));
         
         if (InterfaceSnmpPrimaryType.P.equals(snmpPrimary)) {
-        	m_collector = new IfSnmpCollector(InetAddressUtils.addr(ipAddr));
+        	final InetAddress addr = InetAddressUtils.addr(ipAddr);
+        	if (addr == null) {
+        		LogUtils.errorf(this, "Unable to resolve address of snmpPrimary interface for node %s", m_node.getLabel());
+        	}
+    		m_collector = new IfSnmpCollector(addr);
         }
         
         //FIXME: verify this doesn't conflict with constructor.  The constructor already adds this
@@ -244,10 +249,10 @@ public abstract class AbstractSaveOrUpdateOperation extends AbstractImportOperat
             return;
         }
 
-    	String ipAddr = ipIf.getIpAddressAsString();
-    	log().debug("Creating SNMP info for interface "+ipAddr);
+    	final InetAddress inetAddr = ipIf.getIpAddress();
+    	final String ipAddr = InetAddressUtils.str(inetAddr);
 
-    	InetAddress inetAddr = ipIf.getIpAddress();
+    	log().debug("Creating SNMP info for interface "+ipAddr);
 
     	int ifIndex = m_collector.getIfIndex(inetAddr);
     	if (ifIndex == -1) {
@@ -297,8 +302,9 @@ public abstract class AbstractSaveOrUpdateOperation extends AbstractImportOperat
 		return null;
 	}
 
-	private void resolveIpHostname(OnmsIpInterface ipIf) {
-		ipIf.setIpHostName(ipIf.getIpAddressAsString());
+	private void resolveIpHostname(final OnmsIpInterface ipIf) {
+		final String ipAddress = InetAddressUtils.str(ipIf.getIpAddress());
+		ipIf.setIpHostName(ipAddress);
 //
 //     DON'T DO THIS SINCE DNS DOESN'T RELIABLY AVOID HANGING
 //
@@ -423,8 +429,9 @@ public abstract class AbstractSaveOrUpdateOperation extends AbstractImportOperat
      */
     protected Map<String, OnmsIpInterface> getIpAddrToInterfaceMap(OnmsNode imported) {
         Map<String, OnmsIpInterface> ipAddrToIface = new HashMap<String, OnmsIpInterface>();
-        for (OnmsIpInterface iface : imported.getIpInterfaces()) {
-            ipAddrToIface.put(iface.getIpAddressAsString(), iface);
+        for (final OnmsIpInterface iface : imported.getIpInterfaces()) {
+            final String ipAddress = InetAddressUtils.str(iface.getIpAddress());
+			ipAddrToIface.put(ipAddress, iface);
         }
         return ipAddrToIface;
     }

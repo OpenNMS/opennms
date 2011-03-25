@@ -1032,7 +1032,7 @@ public class SnmpTrapHelper {
         // What to do about timestamp? Hard-wiring to zero for now.
         long trapTimeStamp = 0;
         
-        final String iface = event.getInterfaceAsString();
+        final String iface = event.getInterface();
 		if ("v1".equalsIgnoreCase(trapVersion)) {
             trapBuilder = createV1Trap(".1.3.6.1.4.1.5813.1",   // OPENNMS-MIB::openNMS-traps
             	                       iface,

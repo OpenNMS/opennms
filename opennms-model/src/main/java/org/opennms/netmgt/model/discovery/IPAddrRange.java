@@ -288,7 +288,7 @@ public final class IPAddrRange implements Iterable<InetAddress> {
      *         range. 'false' otherwise.
      */
     boolean contains(String ipAddr) throws java.net.UnknownHostException {
-        return contains(InetAddressUtils.addr(ipAddr));
+    	return InetAddressUtils.isInetAddressInRange(ipAddr, m_begin, m_end);
     }
 
     /**

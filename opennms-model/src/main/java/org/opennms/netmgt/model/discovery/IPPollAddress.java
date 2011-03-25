@@ -38,7 +38,6 @@ import java.net.InetAddress;
 import java.net.UnknownHostException;
 
 import org.apache.commons.lang.builder.ToStringBuilder;
-import org.opennms.core.utils.InetAddressUtils;
 
 /**
  * <p>
@@ -73,7 +72,7 @@ public class IPPollAddress {
      * </P>
      *
      * @param ipAddress
-     *            The Dotted Decimal IPv4 Address.
+     *            The IP Address.
      * @param timeout
      *            The timeout between retries in 1/1000th of a second.
      * @param retries
@@ -83,11 +82,8 @@ public class IPPollAddress {
      *                resolved.
      * @throws java.net.UnknownHostException if any.
      */
-    public IPPollAddress(String ipAddress, long timeout, int retries) throws UnknownHostException {
-        // check if this is a valid IP address
-        InetAddressUtils.addr(ipAddress);
-
-        m_address = InetAddressUtils.addr(ipAddress);
+    public IPPollAddress(final String ipAddress, final long timeout, final int retries) throws UnknownHostException {
+        m_address = InetAddress.getByName(ipAddress);
         m_timeout = timeout;
         m_retries = retries;
     }
@@ -105,7 +101,7 @@ public class IPPollAddress {
      *            The number of times to attempt to contact the address.
      * 
      */
-    IPPollAddress(InetAddress ipAddress, long timeout, int retries) {
+    IPPollAddress(final InetAddress ipAddress, final long timeout, final int retries) {
         m_address = ipAddress;
         m_timeout = timeout;
         m_retries = retries;
@@ -148,11 +144,10 @@ public class IPPollAddress {
      * equal in address, timeout, and the number of retries.
      * </P>
      *
-     * @return True if the objects are logically equal. False is returned
-     *         otherwise.
+     * @return True if the objects are logically equal. False is returned otherwise.
      * @param pollAddr a {@link org.opennms.netmgt.model.discovery.IPPollAddress} object.
      */
-    public boolean equals(IPPollAddress pollAddr) {
+    public boolean equals(final IPPollAddress pollAddr) {
         boolean bRet = false;
 
         if (pollAddr != null) {

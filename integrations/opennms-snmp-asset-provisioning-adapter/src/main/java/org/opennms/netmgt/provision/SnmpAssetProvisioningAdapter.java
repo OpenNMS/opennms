@@ -45,6 +45,7 @@ import java.util.Properties;
 import java.util.Set;
 import java.util.concurrent.TimeUnit;
 
+import org.opennms.core.utils.InetAddressUtils;
 import org.opennms.core.utils.LogUtils;
 import org.opennms.core.utils.PropertiesUtils;
 import org.opennms.core.utils.ThreadCategory;
@@ -393,7 +394,7 @@ public class SnmpAssetProvisioningAdapter extends SimplerQueuedProvisioningAdapt
 			final Set<OnmsIpInterface> ipInterfaces = node.getIpInterfaces();
 			for (final OnmsIpInterface onmsIpInterface : ipInterfaces) {
 				log().debug("getIpForNode: trying Interface with id: " + onmsIpInterface.getId());
-				if (onmsIpInterface.getIpAddressAsString() != null) 
+				if (InetAddressUtils.str(onmsIpInterface.getIpAddress()) != null) 
 					ipaddr = onmsIpInterface.getIpAddress();
 				else 
 					log().debug("getIpForNode: found null ip address on Interface with id: " + onmsIpInterface.getId());
@@ -401,7 +402,7 @@ public class SnmpAssetProvisioningAdapter extends SimplerQueuedProvisioningAdapt
 			}
 		} else {        
 			log().debug("getIpForNode: found Snmp Primary Interface");
-			if (primaryInterface.getIpAddressAsString() != null )
+			if (InetAddressUtils.str(primaryInterface.getIpAddress()) != null )
 				ipaddr = primaryInterface.getIpAddress();
 			else 
 				log().debug("getIpForNode: found null ip address on Primary Interface");

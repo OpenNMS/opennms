@@ -41,6 +41,7 @@ package org.opennms.netmgt.poller;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertNotNull;
+import static org.junit.Assert.assertNull;
 import static org.junit.Assert.assertTrue;
 
 import java.io.InputStream;
@@ -52,6 +53,7 @@ import java.util.Collection;
 import java.util.List;
 import java.util.Properties;
 
+import org.apache.log4j.Level;
 import org.junit.After;
 import org.junit.Before;
 import org.junit.Ignore;
@@ -118,6 +120,8 @@ public class PollerTest {
 
 	private OutageAnticipator m_outageAnticipator;
 
+	private Level m_assertLevel;
+
 	//private DemandPollDao m_demandPollDao;
 
 	//
@@ -126,7 +130,8 @@ public class PollerTest {
 
 	@Before
 	public void setUp() throws Exception {
-        
+        m_assertLevel = Level.WARN;
+
 		// System.setProperty("mock.logLevel", "DEBUG");
 		// System.setProperty("mock.debug", "true");
 		MockUtil.println("------------ Begin Test  --------------------------");
@@ -227,7 +232,9 @@ public class PollerTest {
 		m_eventMgr.finishProcessingEvents();
 		stopDaemons();
 		sleep(200);
-		MockLogAppender.assertNoWarningsOrGreater();
+		if (m_assertLevel != null) {
+			MockLogAppender.assertNotGreaterOrEqual(m_assertLevel);
+		}
 		DataSourceFactory.setInstance(null);
 		m_db.drop();
 		MockUtil.println("------------ End Test  --------------------------");
@@ -578,18 +585,24 @@ public class PollerTest {
 
 	// interfaceReparented: EventConstants.INTERFACE_REPARENTED_EVENT_UEI
     @Test
-	public void testInterfaceReparented() {
+	public void testInterfaceReparented() throws Exception {
+    	m_assertLevel = null;
 
 		m_pollerConfig.setNodeOutageProcessingEnabled(true);
 
 		MockNode node1 = m_network.getNode(1);
 		MockNode node2 = m_network.getNode(2);
 
+		assertNotNull("Node 1 should have 192.168.1.1", node1.getInterface("192.168.1.1"));
+		assertNotNull("Node 1 should have 192.168.1.2", node1.getInterface("192.168.1.2"));
+		
+		assertNull("Node 2 should not yet have 192.168.1.2", node2.getInterface("192.168.1.2"));
+		assertNotNull("Node 2 should have 192.168.1.3", node2.getInterface("192.168.1.3"));
+
 		MockInterface dotTwo = m_network.getInterface(1, "192.168.1.2");
 		MockInterface dotThree = m_network.getInterface(2, "192.168.1.3");
 
-		Event reparentEvent = MockEventUtil.createReparentEvent("Test",
-				"192.168.1.2", 1, 2);
+		Event reparentEvent = MockEventUtil.createReparentEvent("Test", "192.168.1.2", 1, 2);
 
 		// we are going to reparent to node 2 so when we bring down its only
 		// current interface we expect an interface down not the whole node.
@@ -597,21 +610,25 @@ public class PollerTest {
 
 		startDaemons();
 
-		sleep(2000);
+		final int waitTime = 2000;
+		final int verifyTime = 2000;
+
+		sleep(waitTime);
 
 		// move the reparented interface and send a reparented event
 		dotTwo.moveTo(node2);
-		m_db.reparentInterface(dotTwo.getIpAddr(), node1.getNodeId(), node2
-				.getNodeId());
+		m_db.reparentInterface(dotTwo.getIpAddr(), node1.getNodeId(), node2.getNodeId());
 
 		// send the reparent event to the daemons
 		m_eventMgr.sendEventToListeners(reparentEvent);
+
+		sleep(waitTime);
 
 		// now bring down the other interface on the new node
 		// System.err.println("Bring Down:"+node2Iface);
 		dotThree.bringDown();
 
-		verifyAnticipated(2000);
+		verifyAnticipated(verifyTime);
 
 		resetAnticipated();
 		anticipateDown(node2);
@@ -619,10 +636,18 @@ public class PollerTest {
 		// System.err.println("Bring Down:"+reparentedIface);
 		dotTwo.bringDown();
 
-		// sleep(5000);
+		sleep(waitTime);
 
-		verifyAnticipated(2000);
+		verifyAnticipated(verifyTime);
 
+		node1 = m_network.getNode(1);
+		node2 = m_network.getNode(2);
+
+		assertNotNull("Node 1 should still have 192.168.1.1", node1.getInterface("192.168.1.1"));
+		assertNull("Node 1 should no longer have 192.168.1.2", node1.getInterface("192.168.1.2"));
+		
+		assertNotNull("Node 2 should now have 192.168.1.2", node2.getInterface("192.168.1.2"));
+		assertNotNull("Node 2 should still have 192.168.1.3", node2.getInterface("192.168.1.3"));
 	}
 
 	// test to see that node lost/regained service events come in
@@ -1138,7 +1163,8 @@ public class PollerTest {
 	private void sleep(long millis) {
 		try {
 			Thread.sleep(millis);
-		} catch (InterruptedException e) {
+		} catch (final InterruptedException e) {
+			Thread.currentThread().interrupt();
 		}
 	}
 
@@ -1148,26 +1174,18 @@ public class PollerTest {
 
 	private void verifyAnticipated(long millis, boolean checkUnanticipated) {
 		// make sure the down events are received
-		MockEventUtil.printEvents("Events we're still waiting for: ", m_anticipator
-				.waitForAnticipated(millis));
-		assertTrue("Expected events not forthcoming", m_anticipator
-				.waitForAnticipated(0).isEmpty());
+		MockEventUtil.printEvents("Events we're still waiting for: ", m_anticipator.waitForAnticipated(millis));
+		assertTrue("Expected events not forthcoming", m_anticipator.waitForAnticipated(0).isEmpty());
 		if (checkUnanticipated) {
 			sleep(2000);
-			MockEventUtil.printEvents("Unanticipated: ", m_anticipator
-					.unanticipatedEvents());
-			assertEquals("Received unexpected events", 0, m_anticipator
-					.unanticipatedEvents().size());
+			MockEventUtil.printEvents("Unanticipated: ", m_anticipator.unanticipatedEvents());
+			assertEquals("Received unexpected events", 0, m_anticipator.unanticipatedEvents().size());
 		}
 		sleep(1000);
 		m_eventMgr.finishProcessingEvents();
-		assertEquals("Wrong number of outages opened", m_outageAnticipator
-				.getExpectedOpens(), m_outageAnticipator.getActualOpens());
-		assertEquals("Wrong number of outages in outage table",
-				m_outageAnticipator.getExpectedOutages(), m_outageAnticipator
-						.getActualOutages());
-		assertTrue("Created outages don't match the expected outages",
-				m_outageAnticipator.checkAnticipated());
+		assertEquals("Wrong number of outages opened", m_outageAnticipator.getExpectedOpens(), m_outageAnticipator.getActualOpens());
+		assertEquals("Wrong number of outages in outage table", m_outageAnticipator.getExpectedOutages(), m_outageAnticipator.getActualOutages());
+		assertTrue("Created outages don't match the expected outages", m_outageAnticipator.checkAnticipated());
 	}
 
 	private void anticipateUp(MockElement element) {

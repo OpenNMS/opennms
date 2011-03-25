@@ -44,12 +44,14 @@ import java.util.LinkedList;
 import java.util.List;
 import java.util.Set;
 
+import org.opennms.core.utils.InetAddressUtils;
 import org.opennms.core.utils.LazySet;
 import org.opennms.core.utils.ThreadCategory;
 import org.opennms.netmgt.dao.LocationMonitorDao;
 import org.opennms.netmgt.dao.ResourceDao;
 import org.opennms.netmgt.model.LocationMonitorIpInterface;
 import org.opennms.netmgt.model.OnmsAttribute;
+import org.opennms.netmgt.model.OnmsIpInterface;
 import org.opennms.netmgt.model.OnmsResource;
 import org.opennms.netmgt.model.OnmsResourceType;
 import org.springframework.dao.DataAccessException;
@@ -113,7 +115,8 @@ public class DistributedStatusResourceType implements OnmsResourceType {
         for (LocationMonitorIpInterface status : statuses) {
             String definitionName = status.getLocationMonitor().getDefinitionName();
             int id = status.getLocationMonitor().getId();
-            String ipAddr = status.getIpInterface().getIpAddressAsString();
+            final OnmsIpInterface ipInterface = status.getIpInterface();
+			String ipAddr = InetAddressUtils.str(ipInterface.getIpAddress());
             
             File iface = getInterfaceDirectory(id, ipAddr);
             

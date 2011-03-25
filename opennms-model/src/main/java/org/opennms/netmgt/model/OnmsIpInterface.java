@@ -503,7 +503,7 @@ public class OnmsIpInterface extends OnmsEntity implements Serializable {
      */
     public String toString() {
         return new ToStringCreator(this)
-        .append("ipaddr", getIpAddressAsString())
+        .append("ipaddr", InetAddressUtils.str(getIpAddress()))
         //.append("ifindex", getIfIndex())
         .append("iphostname", getIpHostName())
         .append("ismanaged", getIsManaged())

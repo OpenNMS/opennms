@@ -34,6 +34,8 @@
 
 package org.opennms.netmgt.config;
 
+import java.net.InetAddress;
+
 import org.apache.commons.lang.builder.EqualsBuilder;
 import org.apache.commons.lang.builder.HashCodeBuilder;
 import org.opennms.core.utils.InetAddressUtils;
@@ -55,9 +57,13 @@ public final class MergeableSpecific implements Comparable<String> {
      *
      * @param specific a {@link java.lang.String} object.
      */
-    public MergeableSpecific(String specific) {
+    public MergeableSpecific(final String specific) {
         m_specific = specific;
-        m_value = InetAddressUtils.addr(specific).getAddress();
+        final InetAddress addr = InetAddressUtils.addr(specific);
+        if (addr == null) {
+        	throw new IllegalArgumentException("Unable to get InetAddress for " + specific);
+        }
+		m_value = addr.getAddress();
     }
     
     /**

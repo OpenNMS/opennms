@@ -394,7 +394,7 @@ public final class EventUtil {
 	public static String getValueOfParm(String parm, Event event) {
         
 		String retParmVal = null;
-		final String ifString = event.getInterfaceAsString();
+		final String ifString = event.getInterface();
 		
 		if (parm.equals(TAG_UEI)) {
 			retParmVal = event.getUei();
@@ -472,7 +472,7 @@ public final class EventUtil {
 	                retParmVal = "N/A";
 	            }
 		} else if (parm.equals(TAG_INTERFACE_RESOLVE)) {
-			InetAddress addr = event.getInterface();
+			InetAddress addr = event.getInterfaceAddress();
 			if (addr != null) retParmVal = addr.getHostName();
 		} else if (parm.equals(TAG_IFALIAS)) {
 			String ifAlias = null;
@@ -482,7 +482,7 @@ public final class EventUtil {
 					ifAlias = getIfAlias(event.getNodeid(), ifString);
 				} catch (SQLException sqlE) {
 					// do nothing
-					ThreadCategory.getInstance(EventUtil.class).info("ifAlias Unavailable for " + event.getNodeid() + ":" + event.getInterfaceAsString(), sqlE);
+					ThreadCategory.getInstance(EventUtil.class).info("ifAlias Unavailable for " + event.getNodeid() + ":" + event.getInterface(), sqlE);
 				}
 			}
 			if (ifAlias != null)

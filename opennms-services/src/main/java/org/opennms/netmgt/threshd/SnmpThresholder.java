@@ -54,7 +54,6 @@ import java.util.Set;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
-import org.opennms.core.utils.InetAddressUtils;
 import org.opennms.core.utils.ThreadCategory;
 import org.opennms.netmgt.config.ThresholdingConfigFactory;
 import org.opennms.netmgt.config.threshd.Basethresholddef;
@@ -629,7 +628,7 @@ public final class SnmpThresholder implements ServiceThresholder {
             if (ifDataMap == null || ifDataMap.get("ipaddr") == null) {
                 // Node level datasource
                 if (snmpIface.getInetAddress() != null) {
-                    event.setInterface(snmpIface.getInetAddress());
+                    event.setInterfaceAddress(snmpIface.getInetAddress());
                 }
             } else {
                 /*
@@ -639,7 +638,7 @@ public final class SnmpThresholder implements ServiceThresholder {
                  * address of "0.0.0.0".
                  */
                 String ifAddr = ifDataMap.get("ipaddr");
-                event.setInterface(InetAddressUtils.addr(ifAddr));
+                event.setInterface(ifAddr);
             }
         
             // Add appropriate parms

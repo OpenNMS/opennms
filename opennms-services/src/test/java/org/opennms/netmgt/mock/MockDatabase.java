@@ -265,7 +265,7 @@ public class MockDatabase extends TemporaryDatabase implements EventWriter {
                 convertEventTimeToTimeStamp(e.getTime()),
                 new Integer(OnmsSeverity.get(e.getSeverity()).getId()),
                 (e.hasNodeid() ? new Long(e.getNodeid()) : null),
-                e.getInterfaceAsString(),
+                e.getInterface(),
                 getServiceID(e.getService()),
                 "localhost",
                 "Y",

@@ -207,7 +207,7 @@ final class PollerEventProcessor implements EventListener {
 
         // First make sure the service gained is in active state before trying to schedule
 
-        String ipAddr = event.getInterfaceAsString();
+        String ipAddr = event.getInterface();
         Long nodeId = event.getNodeid();
         String svcName = event.getService();
         
@@ -234,13 +234,13 @@ final class PollerEventProcessor implements EventListener {
      * 
      */
     private void interfaceReparentedHandler(Event event) { 
-        LogUtils.debugf(this, "interfaceReparentedHandler: processing interfaceReparented event for %s", event.getInterfaceAsString());
+        LogUtils.debugf(this, "interfaceReparentedHandler: processing interfaceReparented event for %s", event.getInterface());
 
         // Verify that the event has an interface associated with it
-        if (event.getInterface() == null)
+        if (event.getInterfaceAddress() == null)
             return;
         
-        InetAddress ipAddr = event.getInterface();
+        InetAddress ipAddr = event.getInterfaceAddress();
 
         // Extract the old and new nodeId's from the event parms
         String oldNodeIdStr = null;
@@ -314,7 +314,7 @@ final class PollerEventProcessor implements EventListener {
      */
     private void nodeRemovePollableServiceHandler(Event event) {
         Long nodeId = event.getNodeid();
-        InetAddress ipAddr = event.getInterface();
+        InetAddress ipAddr = event.getInterfaceAddress();
         String svcName = event.getService();
         
         if (svcName == null) {
@@ -394,7 +394,7 @@ final class PollerEventProcessor implements EventListener {
     private void interfaceDeletedHandler(Event event) {
         Long nodeId = event.getNodeid();
         String sourceUei = event.getUei();
-        InetAddress ipAddr = event.getInterface();
+        InetAddress ipAddr = event.getInterfaceAddress();
         
         // Extract node label and transaction No. from the event parms
         long txNo = -1L;
@@ -438,7 +438,7 @@ final class PollerEventProcessor implements EventListener {
         
         PollableInterface iface = getNetwork().getInterface(nodeId.intValue(), ipAddr);
         if (iface == null) {
-          LogUtils.errorf(this, "Interface %d/%s does not exist in pollable node map, unable to delete node.", nodeId, event.getInterfaceAsString());
+          LogUtils.errorf(this, "Interface %d/%s does not exist in pollable node map, unable to delete node.", nodeId, event.getInterface());
           if (isXmlRPCEnabled()) {
               int status = EventConstants.XMLRPC_NOTIFY_FAILURE;
               XmlrpcUtil.createAndSendXmlrpcNotificationEvent(txNo, sourceUei, "Interface does not exist in pollable node map.", status, "OpenNMS.Poller");
@@ -457,7 +457,7 @@ final class PollerEventProcessor implements EventListener {
      */
     private void serviceDeletedHandler(Event event) {
         Long nodeId = event.getNodeid();
-        InetAddress ipAddr = event.getInterface();
+        InetAddress ipAddr = event.getInterfaceAddress();
         String service = event.getService();
         
         Date closeDate;
@@ -471,7 +471,7 @@ final class PollerEventProcessor implements EventListener {
         
         PollableService svc = getNetwork().getService(nodeId.intValue(), ipAddr, service);
         if (svc == null) {
-          LogUtils.errorf(this, "Interface %d/%s does not exist in pollable node map, unable to delete node.", nodeId, event.getInterfaceAsString());
+          LogUtils.errorf(this, "Interface %d/%s does not exist in pollable node map, unable to delete node.", nodeId, event.getInterface());
           return;
         }
         

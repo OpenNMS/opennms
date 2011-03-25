@@ -344,7 +344,7 @@ public class EventTranslatorTest {
 		assertEquals(Long.valueOf(3), event.getNodeid());
 		assertEquals("www.opennms.org", event.getHost());
         assertEquals("a generated event", event.getDescr());
-        assertEquals("192.168.1.1", event.getInterfaceAsString());
+        assertEquals("192.168.1.1", event.getInterface());
         assertEquals("Switch", EventUtils.getParm(event, "nodeLabel"));
         assertEquals("PSV", event.getService());
         assertEquals("Down", EventUtils.getParm(event, "passiveStatus"));

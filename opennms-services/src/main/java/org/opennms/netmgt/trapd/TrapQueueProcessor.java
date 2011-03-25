@@ -203,10 +203,10 @@ class TrapQueueProcessor implements Runnable, PausableFiber, InitializingBean {
      *
      * @param event a {@link org.opennms.netmgt.xml.event.Event} object.
      */
-    public void processTrapEvent(Event event) {
-        InetAddress trapInterface = event.getInterface();
+    public void processTrapEvent(final Event event) {
+    	final InetAddress trapInterface = event.getInterfaceAddress();
 
-        org.opennms.netmgt.xml.eventconf.Event econf = m_eventConfDao.findByEvent(event);
+    	final org.opennms.netmgt.xml.eventconf.Event econf = m_eventConfDao.findByEvent(event);
         if (econf == null || econf.getUei() == null) {
             event.setUei("uei.opennms.org/default/trap");
         } else {
@@ -214,9 +214,9 @@ class TrapQueueProcessor implements Runnable, PausableFiber, InitializingBean {
         }
 
         if (econf != null) {
-            Logmsg logmsg = econf.getLogmsg();
+        	final Logmsg logmsg = econf.getLogmsg();
             if (logmsg != null) {
-                String dest = logmsg.getDest();
+                final String dest = logmsg.getDest();
                 if ("discardtraps".equals(dest)) {
                     log().debug("Trap discarded due to matching event having logmsg dest == discardtraps");
                     return;

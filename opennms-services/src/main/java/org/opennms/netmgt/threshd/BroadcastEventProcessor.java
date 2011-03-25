@@ -323,7 +323,7 @@ final class BroadcastEventProcessor implements EventListener {
                         // Now set the reinitialization flag
                         updates.markForReinitialization();
                         if (log.isDebugEnabled())
-                            log.debug("markServicesForReinit: marking " + event.getInterfaceAsString() + " for reinitialization for service SNMP.");
+                            log.debug("markServicesForReinit: marking " + event.getInterface() + " for reinitialization for service SNMP.");
                     }
                 }
             }
@@ -399,7 +399,7 @@ final class BroadcastEventProcessor implements EventListener {
 
         // Schedule the new service...
         //
-        m_threshd.scheduleService(event.getNodeid().intValue(), event.getInterfaceAsString(), event.getService(), false);
+        m_threshd.scheduleService(event.getNodeid().intValue(), event.getInterface(), event.getService(), false);
     }
 
     /**
@@ -499,7 +499,7 @@ final class BroadcastEventProcessor implements EventListener {
 
         // Now we can schedule the new service...
         //
-        m_threshd.scheduleService(event.getNodeid().intValue(), event.getInterfaceAsString(), event.getService(), false);
+        m_threshd.scheduleService(event.getNodeid().intValue(), event.getInterface(), event.getService(), false);
 
         if (log.isDebugEnabled())
             log.debug("primarySnmpInterfaceChangedHandler: processing of primarySnmpInterfaceChanged event for nodeid " + event.getNodeid() + " completed.");
@@ -523,7 +523,7 @@ final class BroadcastEventProcessor implements EventListener {
     private void interfaceReparentedHandler(Event event) {
         ThreadCategory log = ThreadCategory.getInstance(getClass());
         if (log.isDebugEnabled())
-            log.debug("interfaceReparentedHandler:  processing interfaceReparented event for " + event.getInterfaceAsString());
+            log.debug("interfaceReparentedHandler:  processing interfaceReparented event for " + event.getInterface());
 
         // Verify that the event has an interface associated with it
         if (event.getInterface() == null)
@@ -592,7 +592,7 @@ final class BroadcastEventProcessor implements EventListener {
                     synchronized (tSvc) {
                         // Got a match!
                         if (log.isDebugEnabled())
-                            log.debug("interfaceReparentedHandler: got a ThresholdableService match for " + event.getInterfaceAsString());
+                            log.debug("interfaceReparentedHandler: got a ThresholdableService match for " + event.getInterface());
 
                         // Retrieve the ThresholderUpdates object associated
                         // with this ThresholdableService.
@@ -601,14 +601,14 @@ final class BroadcastEventProcessor implements EventListener {
                         // Now set the reparenting flag
                         updates.markForReparenting(oldNodeIdStr, newNodeIdStr);
                         if (log.isDebugEnabled())
-                            log.debug("interfaceReparentedHandler: marking " + event.getInterfaceAsString() + " for reparenting for service SNMP.");
+                            log.debug("interfaceReparentedHandler: marking " + event.getInterface() + " for reparenting for service SNMP.");
                     }
                 }
             }
         }
 
         if (log.isDebugEnabled())
-            log.debug("interfaceReparentedHandler: processing of interfaceReparented event for interface " + event.getInterfaceAsString() + " completed.");
+            log.debug("interfaceReparentedHandler: processing of interfaceReparented event for interface " + event.getInterface() + " completed.");
     }
 
     /**
@@ -668,7 +668,7 @@ final class BroadcastEventProcessor implements EventListener {
         ThreadCategory log = ThreadCategory.getInstance(getClass());
 
         long nodeId = event.getNodeid();
-        InetAddress ipAddr = event.getInterface();
+        InetAddress ipAddr = event.getInterfaceAddress();
 
         // Iterate over the collectable services list and mark any entries
         // which match the deleted nodeId/IP address pair for deletion
@@ -722,7 +722,7 @@ final class BroadcastEventProcessor implements EventListener {
             return;
 
         long nodeId = event.getNodeid();
-        InetAddress ipAddr = event.getInterface();
+        InetAddress ipAddr = event.getInterfaceAddress();
         String svcName = event.getService();
 
         // Iterate over the collectable services list and mark any entries

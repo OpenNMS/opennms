@@ -340,7 +340,7 @@ public final class BroadcastEventProcessor implements EventListener {
                 if (curAck.getUei().equals(event.getUei())) {
                     try {
                         if (log().isDebugEnabled()) {
-                            log().debug("Acknowledging event " + curAck.getAcknowledge() + " " + event.getNodeid() + ":" + event.getInterfaceAsString() + ":" + event.getService());
+                            log().debug("Acknowledging event " + curAck.getAcknowledge() + " " + event.getNodeid() + ":" + event.getInterface() + ":" + event.getService());
                         }
                         
                         Collection<Integer> notifIDs = getNotificationManager().acknowledgeNotice(event, curAck.getAcknowledge(), curAck.getMatch());
@@ -463,7 +463,7 @@ public final class BroadcastEventProcessor implements EventListener {
      */
     private boolean continueWithNotice(Event event) {
         String nodeID = event.hasNodeid() ? String.valueOf(event.getNodeid()) : null;
-        String ipAddr = event.getInterfaceAsString();
+        String ipAddr = event.getInterface();
         String service = event.getService();
 
         boolean continueNotice = false;
@@ -550,7 +550,7 @@ public final class BroadcastEventProcessor implements EventListener {
                 }
 
                 long nodeid = event.getNodeid();
-                String ipaddr = event.getInterfaceAsString();
+                String ipaddr = event.getInterface();
                 if (notifications != null) {
                     for (Notification notification : notifications) {
                         int noticeId = 0;
@@ -755,7 +755,7 @@ public final class BroadcastEventProcessor implements EventListener {
         nullSafeExpandedPut(NotificationManager.PARAM_NUM_MSG, numericMessage, event, paramMap);
         nullSafeExpandedPut(NotificationManager.PARAM_SUBJECT, subjectLine, event, paramMap);
         paramMap.put(NotificationManager.PARAM_NODE, event.hasNodeid() ? String.valueOf(event.getNodeid()) : "");
-        paramMap.put(NotificationManager.PARAM_INTERFACE, event.getInterfaceAsString());
+        paramMap.put(NotificationManager.PARAM_INTERFACE, event.getInterface());
         paramMap.put(NotificationManager.PARAM_SERVICE, event.getService());
         paramMap.put("eventID", String.valueOf(event.getDbid()));
         paramMap.put("eventUEI", event.getUei());

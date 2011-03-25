@@ -78,6 +78,7 @@
 package org.opennms.netmgt.capsd;
 
 import static org.opennms.core.utils.InetAddressUtils.addr;
+import static org.opennms.core.utils.InetAddressUtils.str;
 
 import java.net.InetAddress;
 import java.sql.Connection;
@@ -96,7 +97,6 @@ import java.util.Map;
 import java.util.Set;
 
 import org.opennms.core.utils.DBUtils;
-import org.opennms.core.utils.InetAddressUtils;
 import org.opennms.core.utils.ThreadCategory;
 import org.opennms.netmgt.ConfigFileConstants;
 import org.opennms.netmgt.EventConstants;
@@ -130,7 +130,9 @@ import org.opennms.netmgt.xml.event.Event;
  * @version $Id: $
  */
 public final class RescanProcessor implements Runnable {
-    /**
+    private static final InetAddress ZERO_ZERO_ZERO_ZERO = addr("0.0.0.0");
+
+	/**
      * SQL statement for retrieving the 'nodetype' field of the node table for
      * the specified nodeid. Used to determine if the node is active ('A') or
      * been marked as deleted ('D')..
@@ -320,7 +322,8 @@ public final class RescanProcessor implements Runnable {
              * node. At any rate if it exists use it, if not use the
              * first collector which supports SNMP.
              */
-            IfCollector primaryIfc = collectorMap.get(InetAddressUtils.str(currPrimarySnmpIf));
+            final String addr = str(currPrimarySnmpIf);
+			IfCollector primaryIfc = addr == null? null : collectorMap.get(addr);
             if (primaryIfc == null) {
                 for (IfCollector tmp : collectorMap.values()) {
                     if (tmp.getSnmpCollector() != null) {
@@ -604,7 +607,7 @@ public final class RescanProcessor implements Runnable {
 
         // Construct InetAddress object for "0.0.0.0" address
         InetAddress ifAddr = null;
-        ifAddr = InetAddressUtils.addr("0.0.0.0");
+        ifAddr = ZERO_ZERO_ZERO_ZERO;
         if (ifAddr == null) return;
         
         updateSnmpInfoForNonIpInterface(dbc, node, ifIndex, snmpc, ifAddr);
@@ -864,14 +867,15 @@ public final class RescanProcessor implements Runnable {
          * Special case: Need to skip interface reparenting for '0.0.0.0'
          * interfaces as well as loopback interfaces ('127.*.*.*').
          */
-        if (log().isDebugEnabled()) {
+        final String ifaddrString = str(ifaddr);
+		if (log().isDebugEnabled()) {
             log().debug("updateInterface: updating interface "
-                      + InetAddressUtils.str(ifaddr) + "(targetIf="
-                      + InetAddressUtils.str(target) + ")");
+                      + ifaddrString + "(targetIf="
+                      + str(target) + ")");
             if (doesSnmp) {
                 log().debug("updateInterface: the snmp collection passed in is "
                           + "collected via"
-                          + (snmpc ==  null ? "No SnmpCollection passed in (snmpc == null)" : InetAddressUtils.str(snmpc.getCollectorTargetAddress())));
+                          + (snmpc ==  null ? "No SnmpCollection passed in (snmpc == null)" : str(snmpc.getCollectorTargetAddress())));
             }
         }
 
@@ -887,7 +891,7 @@ public final class RescanProcessor implements Runnable {
             ifIndex = snmpc.getIfIndex(ifaddr);
             if (log().isDebugEnabled()) {
                 log().debug("updateInterface: interface = "
-                          + InetAddressUtils.str(ifaddr) + " ifIndex = " + ifIndex
+                          + ifaddrString + " ifIndex = " + ifIndex
                           + ". Checking for this address on other nodes.");
             }
 
@@ -910,18 +914,17 @@ public final class RescanProcessor implements Runnable {
                 log().error("updateInterface: null ipAddrTable in the snmp "
                           + "collection");
             } else {
-                if (InetAddressUtils.str(ifaddr).equals("0.0.0.0")
-                        || InetAddressUtils.str(ifaddr).startsWith("127.")) {
+                if (ifaddrString.equals("0.0.0.0") || ifaddrString.startsWith("127.")) {
                     if (log().isDebugEnabled()) {
                         log().debug("updateInterface: Skipping address from "
                                   + "snmpc ipAddrTable "
-                                  + InetAddressUtils.str(ifaddr));
+                                  + ifaddrString);
                     }
                 } else {
                     if (log().isDebugEnabled()) {
                         log().debug("updateInterface: Checking address from "
                                   + "snmpc ipAddrTable "
-                                  + InetAddressUtils.str(ifaddr));
+                                  + ifaddrString);
                     }
                     
                     PreparedStatement stmt = null;
@@ -929,7 +932,7 @@ public final class RescanProcessor implements Runnable {
                     try {
                         stmt = dbc.prepareStatement(SQL_DB_RETRIEVE_OTHER_NODES);
                         d.watch(stmt);
-                        stmt.setString(1, InetAddressUtils.str(ifaddr));
+                        stmt.setString(1, ifaddrString);
                         stmt.setInt(2, node.getNodeId());
                         
                         ResultSet rs = stmt.executeQuery();
@@ -938,7 +941,7 @@ public final class RescanProcessor implements Runnable {
                             int existingNodeId = rs.getInt(1);
                             if (log().isDebugEnabled()) {
                                 log().debug("updateInterface: ckecking for "
-                                          + InetAddressUtils.str(ifaddr)
+                                          + ifaddrString
                                           + " on existing nodeid  "
                                           + existingNodeId);
                             }
@@ -969,14 +972,15 @@ public final class RescanProcessor implements Runnable {
                                     int index = snmpc.getIfIndex(addr);
                                     
                                     // Skip non-IP or loopback interfaces
-                                    if (InetAddressUtils.str(addr).equals("0.0.0.0") || InetAddressUtils.str(addr).startsWith("127.")) {
+                                    final String addrString = str(addr);
+									if (addrString == null || addrString.equals("0.0.0.0") || addrString.startsWith("127.")) {
                                         continue;
                                     }
                                     
                                     if (log().isDebugEnabled()) {
                                         log().debug("updateInterface: "
                                                   + "reparenting interface "
-                                                  + InetAddressUtils.str(addr)
+                                                  + addrString
                                                   + " under node: "
                                                   + node.getNodeId()
                                                   + " from existing node: "
@@ -991,7 +995,7 @@ public final class RescanProcessor implements Runnable {
                                 
                                 if (log().isDebugEnabled()) {
                                     log().debug("updateInterface: interface "
-                                              + InetAddressUtils.str(ifaddr)
+                                              + ifaddrString
                                               + " is added to node: "
                                               + node.getNodeId()
                                               + " by reparenting from existing "
@@ -1008,7 +1012,7 @@ public final class RescanProcessor implements Runnable {
                     }
                     
                     catch (SQLException e) {
-                        log().error("SQLException while updating interface: " + InetAddressUtils.str(ifaddr) + " on nodeid: " + node.getNodeId());
+                        log().error("SQLException while updating interface: " + ifaddrString + " on nodeid: " + node.getNodeId());
                         throw e;
                     } finally {
                         d.cleanUp();
@@ -1144,7 +1148,7 @@ public final class RescanProcessor implements Runnable {
         try {
             stmt = dbc.prepareStatement(SQL_DB_RETRIEVE_DUPLICATE_NODEIDS);
             d.watch(stmt);
-            stmt.setString(1, InetAddressUtils.str(ifaddr));
+            stmt.setString(1, str(ifaddr));
             stmt.setInt(2, nodeId);
 
             ResultSet rs = stmt.executeQuery();
@@ -1154,7 +1158,7 @@ public final class RescanProcessor implements Runnable {
             }
             return duplicate;
         } catch (SQLException sqlE) {
-            log().error("isDuplicateInterface: SQLException while updating interface: " + InetAddressUtils.str(ifaddr) + " on nodeid: " + nodeId);
+            log().error("isDuplicateInterface: SQLException while updating interface: " + str(ifaddr) + " on nodeid: " + nodeId);
             throw sqlE;
         } finally {
             d.cleanUp();
@@ -1274,18 +1278,16 @@ public final class RescanProcessor implements Runnable {
              * polling status rechecked, and ismanaged updated if necessary
              */
             boolean ipToBePolled = false;
-            log().debug("updateInterfaceInfo: rebuilding PackageIpListMap for "
-                      + "new interface " + InetAddressUtils.str(ifaddr));
+            final String ifaddrString = str(ifaddr);
+			log().debug("updateInterfaceInfo: rebuilding PackageIpListMap for "
+                      + "new interface " + ifaddrString);
             PollerConfigFactory.getInstance().rebuildPackageIpListMap();
-            org.opennms.netmgt.config.poller.Package ipPkg =
-                pollerCfgFactory.getFirstPackageMatch(InetAddressUtils.str(ifaddr));
+            org.opennms.netmgt.config.poller.Package ipPkg = ifaddrString == null? null : pollerCfgFactory.getFirstPackageMatch(ifaddrString);
             if (ipPkg != null) {
                 ipToBePolled = true;
             }
             if (log().isDebugEnabled()) {
-                log().debug("updateInterfaceInfo: interface "
-                          + InetAddressUtils.str(ifaddr) + " to be polled: "
-                          + ipToBePolled);
+                log().debug("updateInterfaceInfo: interface " + ifaddrString + " to be polled: " + ipToBePolled);
             }
             if (ipToBePolled) {
                 final DBUtils d = new DBUtils(getClass());
@@ -1294,12 +1296,12 @@ public final class RescanProcessor implements Runnable {
                     d.watch(stmt);
                     stmt.setString(1, new String(new char[] { DbIpInterfaceEntry.STATE_MANAGED }));
                     stmt.setLong(2, dbIpIfEntry.getNodeId());
-                    stmt.setString(3, InetAddressUtils.str(ifaddr));
+                    stmt.setString(3, ifaddrString);
                     stmt.executeUpdate();
                     if (log().isDebugEnabled()) {
                         log().debug("updateInterfaceInfo: updated managed state "
                                   + "for new interface "
-                                  + InetAddressUtils.str(ifaddr) + " on node "
+                                  + ifaddrString + " on node "
                                   + dbIpIfEntry.getNodeId() + " to managed");
                     }
                 } finally {
@@ -1324,21 +1326,21 @@ public final class RescanProcessor implements Runnable {
         int ifIndex = -1;
         
         DbIpInterfaceEntry currIpIfEntry;
-        if (doesSnmp) {
+        final String ifaddrString = str(ifaddr);
+		if (doesSnmp) {
             if (snmpc != null && snmpc.hasIpAddrTable()) {
                 ifIndex = snmpc.getIfIndex(ifaddr);
             }
             if (ifIndex == -1) {
                 if (log().isDebugEnabled()) {
                     log().debug("updateInterfaceInfo: interface "
-                              + InetAddressUtils.str(ifaddr)
+                              + ifaddrString
                               + " has no valid ifIndex. Assuming this is a "
                               + "lame SNMP host with no ipAddrTable");
                 }
                 ifIndex = CapsdConfig.LAME_SNMP_HOST_IFINDEX;
             }
-            currIpIfEntry = DbIpInterfaceEntry.create(node.getNodeId(), ifaddr,
-                                                      ifIndex);
+            currIpIfEntry = DbIpInterfaceEntry.create(node.getNodeId(), ifaddr, ifIndex);
         } else {
             currIpIfEntry = DbIpInterfaceEntry.create(node.getNodeId(), ifaddr);
         }
@@ -1366,7 +1368,7 @@ public final class RescanProcessor implements Runnable {
             currIpIfEntry.setManagedState(DbIpInterfaceEntry.STATE_UNMANAGED);
         } else {
             boolean ipToBePolled = false;
-            ipPkg = pollerCfgFactory.getFirstPackageMatch(InetAddressUtils.str(ifaddr));
+            ipPkg = ifaddrString == null? null : pollerCfgFactory.getFirstPackageMatch(ifaddrString);
             if (ipPkg != null) {
                 ipToBePolled = true;
             }
@@ -1379,7 +1381,7 @@ public final class RescanProcessor implements Runnable {
 
             if (log().isDebugEnabled()) {
                 log().debug("updateInterfaceInfo: interface "
-                          + InetAddressUtils.str(ifaddr) + " to be polled = "
+                          + ifaddrString + " to be polled = "
                           + ipToBePolled);
             }
         }
@@ -1405,7 +1407,7 @@ public final class RescanProcessor implements Runnable {
             } else {
                 // No ifIndex found
                 log().debug("updateInterfaceInfo:  No ifIndex found for "
-                          + InetAddressUtils.str(ifaddr)
+                          + ifaddrString
                           + ". Not eligible for primary SNMP interface");
             }
             currIpIfEntry.setPrimaryState(DbIpInterfaceEntry.SNMP_NOT_ELIGIBLE);
@@ -1486,13 +1488,16 @@ public final class RescanProcessor implements Runnable {
                 DbIfServiceEntry ifSvcEntry = DbIfServiceEntry.create(node.getNodeId(), ifaddr, sid.intValue());
 
                 // now fill in the entry
-                if (cFactory.isAddressUnmanaged(ifaddr)) {
+                final String ifaddrString = str(ifaddr);
+				if (cFactory.isAddressUnmanaged(ifaddr)) {
                     ifSvcEntry.setStatus(DbIfServiceEntry.STATUS_UNMANAGED);
                 } else {
-                    ipPkg = pollerCfgFactory.getFirstPackageMatch(InetAddressUtils.str(ifaddr));
-                    if (isServicePolledLocally(InetAddressUtils.str(ifaddr), p.getProtocolName(), ipPkg)) {
+                    ipPkg = ifaddrString == null? null : pollerCfgFactory.getFirstPackageMatch(ifaddrString);
+                    if (ipPkg == null) {
+                    	ifSvcEntry.setStatus(DbIfServiceEntry.STATUS_NOT_POLLED);
+                    } else if (isServicePolledLocally(ifaddrString, p.getProtocolName(), ipPkg)) {
                         ifSvcEntry.setStatus(DbIfServiceEntry.STATUS_ACTIVE);
-                    } else if (isServicePolled(InetAddressUtils.str(ifaddr), p.getProtocolName(), ipPkg)) {
+                    } else if (isServicePolled(ifaddrString, p.getProtocolName(), ipPkg)) {
                         ifSvcEntry.setStatus(DbIpInterfaceEntry.STATE_REMOTE);
                     } else {
                         ifSvcEntry.setStatus(DbIfServiceEntry.STATUS_NOT_POLLED);
@@ -1525,7 +1530,7 @@ public final class RescanProcessor implements Runnable {
                 ifSvcEntry.store();
 
                 if (log().isDebugEnabled()) {
-                    log().debug("updateIfServices: update service: " + p.getProtocolName() + " for interface:" + InetAddressUtils.str(ifaddr) + " on node:" + node.getNodeId());
+                    log().debug("updateIfServices: update service: " + p.getProtocolName() + " for interface:" + ifaddrString + " on node:" + node.getNodeId());
                 }
 
                 // Generate nodeGainedService event
@@ -1597,7 +1602,8 @@ public final class RescanProcessor implements Runnable {
         org.opennms.netmgt.config.poller.Package ipPkg = null;
 
         boolean ipToBePolled = false;
-        ipPkg = pollerCfgFactory.getFirstPackageMatch(InetAddressUtils.str(ifaddr));
+        final String ifaddrString = str(ifaddr);
+        ipPkg = ifaddrString == null? null : pollerCfgFactory.getFirstPackageMatch(ifaddrString);
         if (ipPkg != null) {
             ipToBePolled = true;
         }
@@ -1649,7 +1655,7 @@ public final class RescanProcessor implements Runnable {
                 boolean svcToBePolled = false;
                 if (ipToBePolled) {
                     if (ipPkg == null) {
-                        ipPkg = pollerCfgFactory.getFirstPackageMatch(InetAddressUtils.str(ifaddr));
+                        ipPkg = pollerCfgFactory.getFirstPackageMatch(ifaddrString);
                     }
                     if (ipPkg != null) {
                         if (log().isDebugEnabled()) {
@@ -1658,9 +1664,9 @@ public final class RescanProcessor implements Runnable {
                         svcToBePolled = pollerCfgFactory.isPolled(sn, ipPkg);
                         if (!svcToBePolled) {
                             if (log().isDebugEnabled()) {
-                                log().debug("updateServicesOnForcedRescan: Is service to be polled for ifaddr = " + InetAddressUtils.str(ifaddr) + ", service = " + sn);
+                                log().debug("updateServicesOnForcedRescan: Is service to be polled for ifaddr = " + ifaddrString + ", service = " + sn);
                             }
-                            svcToBePolled = pollerCfgFactory.isPolled(InetAddressUtils.str(ifaddr), sn);
+                            svcToBePolled = pollerCfgFactory.isPolled(ifaddrString, sn);
                         }
                         if (!svcToBePolled) {
                             log().debug("updateServicesOnForcedRescan: Service not to be polled");
@@ -1811,7 +1817,7 @@ public final class RescanProcessor implements Runnable {
                     && ifIndex == CapsdConfig.LAME_SNMP_HOST_IFINDEX) {
                  if (log().isDebugEnabled()) {
                     log().debug("updateSnmpInfo: interface "
-                              + InetAddressUtils.str(snmpc.getCollectorTargetAddress())
+                              + str(snmpc.getCollectorTargetAddress())
                               + " appears to be a lame SNMP host");
                  }
             } else if (ifte != null) {
@@ -1836,9 +1842,9 @@ public final class RescanProcessor implements Runnable {
                     if (aaddrs[1] != null) {
                         if (log().isDebugEnabled()) {
                             log().debug("updateSnmpInfo: interface "
-                                        + InetAddressUtils.str(aaddrs[0])
+                                        + str(aaddrs[0])
                                         + " has netmask: "
-                                        + InetAddressUtils.str(aaddrs[1]));
+                                        + str(aaddrs[1]));
                         }
                         currSnmpIfEntry.setNetmask(aaddrs[1]);
                     }
@@ -2029,7 +2035,7 @@ public final class RescanProcessor implements Runnable {
      *             if a database error occurs during reparenting.
      */
     private void reparentInterface(Connection dbc, InetAddress ifAddr, int ifIndex, int newNodeId, int oldNodeId) throws SQLException {
-        String ipaddr = InetAddressUtils.str(ifAddr);
+        String ipaddr = str(ifAddr);
         final DBUtils d = new DBUtils(getClass());
 
         try {
@@ -2257,7 +2263,7 @@ public final class RescanProcessor implements Runnable {
             if (addresses.contains(ifaddr) == false) {
                 if (SuspectEventProcessor.supportsSnmp(ifc.getSupportedProtocols()) && SuspectEventProcessor.hasIfIndex(ifaddr, snmpc) && SuspectEventProcessor.getIfType(ifaddr, snmpc) == 24) {
                     if (log().isDebugEnabled()) {
-                        log().debug("buildLBSnmpAddressList: adding target interface " + InetAddressUtils.str(ifaddr) + " temporarily marked as primary!");
+                        log().debug("buildLBSnmpAddressList: adding target interface " + str(ifaddr) + " temporarily marked as primary!");
                     }
                     addresses.add(ifaddr);
                 }
@@ -2271,7 +2277,7 @@ public final class RescanProcessor implements Runnable {
                     if (addresses.contains(xifaddr) == false) {
                         if (SuspectEventProcessor.supportsSnmp(subTargets.get(xifaddr)) && SuspectEventProcessor.hasIfIndex(xifaddr, snmpc) && SuspectEventProcessor.getIfType(xifaddr, snmpc) == 24) {
                             if (log().isDebugEnabled()) {
-                                log().debug("buildLBSnmpAddressList: adding subtarget interface " + InetAddressUtils.str(xifaddr) + " temporarily marked as primary!");
+                                log().debug("buildLBSnmpAddressList: adding subtarget interface " + str(xifaddr) + " temporarily marked as primary!");
                             }
                             addresses.add(xifaddr);
                         }
@@ -2322,7 +2328,7 @@ public final class RescanProcessor implements Runnable {
             if (addresses.contains(ifaddr) == false) {
                 if (SuspectEventProcessor.supportsSnmp(ifc.getSupportedProtocols()) && SuspectEventProcessor.hasIfIndex(ifaddr, snmpc)) {
                     if (log().isDebugEnabled()) {
-                        log().debug("buildSnmpAddressList: adding target interface " + InetAddressUtils.str(ifaddr) + " temporarily marked as primary!");
+                        log().debug("buildSnmpAddressList: adding target interface " + str(ifaddr) + " temporarily marked as primary!");
                     }
                     addresses.add(ifaddr);
                 }
@@ -2337,7 +2343,7 @@ public final class RescanProcessor implements Runnable {
                     if (addresses.contains(xifaddr) == false) {
                         if (SuspectEventProcessor.supportsSnmp(subTargets.get(xifaddr)) && SuspectEventProcessor.hasIfIndex(xifaddr, snmpc)) {
                             if (log().isDebugEnabled()) {
-                                log().debug("buildSnmpAddressList: adding subtarget interface " + InetAddressUtils.str(xifaddr) + " temporarily marked as primary!");
+                                log().debug("buildSnmpAddressList: adding subtarget interface " + str(xifaddr) + " temporarily marked as primary!");
                             }
                             addresses.add(xifaddr);
                         }
@@ -2390,7 +2396,7 @@ public final class RescanProcessor implements Runnable {
 
         if (log().isDebugEnabled()) {
             if (primaryIf != null) {
-                log().debug("determinePrimaryIpInterface: selected primary interface: " + InetAddressUtils.str(primaryIf));
+                log().debug("determinePrimaryIpInterface: selected primary interface: " + str(primaryIf));
             } else {
                 log().debug("determinePrimaryIpInterface: no primary interface found");
             }
@@ -2444,7 +2450,7 @@ public final class RescanProcessor implements Runnable {
                 log().error("setNodeLabelAndSmbInfo: failed to find primary interface...");
             } else {
                 String hostName = primaryIf.getHostName();
-                if (!hostName.equals(InetAddressUtils.str(primaryIf))) {
+                if (!hostName.equals(str(primaryIf))) {
                     labelSet = true;
 
                     currNodeEntry.setLabel(hostName);
@@ -2538,7 +2544,8 @@ public final class RescanProcessor implements Runnable {
              * the node. At any rate if it exists use it, if not use the
              * first collector which supports SNMP.
              */
-            IfCollector ifc = collectorMap.get(InetAddressUtils.str(currPrimarySnmpIf));
+            final String currPrimarySnmpAddress = str(currPrimarySnmpIf);
+			IfCollector ifc = currPrimarySnmpAddress == null? null : collectorMap.get(currPrimarySnmpAddress);
             if (ifc == null) {
                 Collection<IfCollector> collectors = collectorMap.values();
                 Iterator<IfCollector> iter = collectors.iterator();
@@ -2552,7 +2559,7 @@ public final class RescanProcessor implements Runnable {
 
             // Sanity check
             if (ifc == null || ifc.getSnmpCollector() == null) {
-                log().warn("setNodeLabelAndSmbInfo: primary SNMP interface set to " + InetAddressUtils.str(currPrimarySnmpIf) + " but no SNMP collector found.");
+                log().warn("setNodeLabelAndSmbInfo: primary SNMP interface set to " + currPrimarySnmpAddress + " but no SNMP collector found.");
             } else {
                 IfSnmpCollector snmpc = ifc.getSnmpCollector();
                 SystemGroup sysgrp = snmpc.getSystemGroup();
@@ -2572,7 +2579,7 @@ public final class RescanProcessor implements Runnable {
              * to the IP address of the primary interface.
              */
             if (primaryIf != null) {
-                currNodeEntry.setLabel(InetAddressUtils.str(primaryIf));
+                currNodeEntry.setLabel(str(primaryIf));
                 currNodeEntry.setLabelSource(DbNodeEntry.LABEL_SOURCE_ADDRESS);
             } else {
                 /*
@@ -2671,25 +2678,27 @@ public final class RescanProcessor implements Runnable {
          * Loop through the interface table entries until there are no more
          * entries or we've found a match
          */
-        for (DbIpInterfaceEntry dbInterface : dbInterfaces) {
+        for (final DbIpInterfaceEntry dbInterface : dbInterfaces) {
             InetAddress ipaddr = dbInterface.getIfAddress();
             
             // Skip non-IP or loopback interfaces
-            if (InetAddressUtils.str(ipaddr).equals("0.0.0.0") || InetAddressUtils.str(ipaddr).startsWith("127.")) {
+            final String ipaddrString = str(ipaddr);
+			if (ipaddrString == null || ipaddrString.equals("0.0.0.0") || ipaddrString.startsWith("127.")) {
                 continue;
             }
 
             boolean found = false;
-            for (InetAddress addr : ipAddrList) {
+            for (final InetAddress addr : ipAddrList) {
                 // Skip non-IP or loopback interfaces
-                if (InetAddressUtils.str(addr).equals("0.0.0.0") || InetAddressUtils.str(addr).startsWith("127.")) {
+                final String addrString = str(addr);
+				if (addrString == null || addrString.equals("0.0.0.0") || addrString.startsWith("127.")) {
                     continue;
                 }
 
-                if (InetAddressUtils.str(ipaddr).equals(InetAddressUtils.str(addr))) {
+                if (ipaddrString.equals(addrString)) {
                     found = true;
                     if (log().isDebugEnabled()) {
-                        log().debug("areDbInterfacesInSnmpCollection: found match for ipaddress: " + InetAddressUtils.str(ipaddr));
+                        log().debug("areDbInterfacesInSnmpCollection: found match for ipaddress: " + ipaddrString);
                     }
                     break;
                 }
@@ -2697,7 +2706,7 @@ public final class RescanProcessor implements Runnable {
             
             if (!found) {
                 if (log().isDebugEnabled()) {
-                    log().debug("areDbInterfacesInSnmpCollection: ipaddress : " + InetAddressUtils.str(ipaddr) + " not in the snmp collection. Snmp collection may not be usable.");
+                    log().debug("areDbInterfacesInSnmpCollection: ipaddress : " + ipaddrString + " not in the snmp collection. Snmp collection may not be usable.");
                 }
                 return false;
             }
@@ -2763,19 +2772,25 @@ public final class RescanProcessor implements Runnable {
              */
             for (int i = 0; i < dbInterfaces.length; i++) {
                 log().info("run: Running collector for interface "+i+" of "+dbInterfaces.length);
-                InetAddress ifaddr = dbInterfaces[i].getIfAddress();
+                final InetAddress ifaddr = dbInterfaces[i].getIfAddress();
+                final String ifaddrString = str(ifaddr);
 
                 /*
                  * collect the information from the interface.
                  * NOTE: skip '127.*.*.*' and '0.0.0.0' addresses.
                  */
-                if (!scannableInterface(dbInterfaces, ifaddr)) {
-                    log().debug("run: skipping scan of address: "+InetAddressUtils.str(ifaddr));
+				if (!scannableInterface(dbInterfaces, ifaddr)) {
+                    log().debug("run: skipping scan of address: "+ifaddrString);
                     continue;
                 }
 
+				if (ifaddrString == null) {
+					log().debug("run: unable to scan inet address: " + ifaddr);
+					continue;
+				}
+				
                 if (log().isDebugEnabled()) {
-                    log().debug("running collection for " + InetAddressUtils.str(ifaddr));
+                    log().debug("running collection for " + ifaddrString);
                 }
 
                 IfCollector collector = new IfCollector(m_pluginManager, ifaddr, true, probedAddrs);
@@ -2788,12 +2803,12 @@ public final class RescanProcessor implements Runnable {
                 if (snmpc != null && snmpc.hasIpAddrTable()
                         && snmpc.getIfIndex(snmpc.getCollectorTargetAddress()) != -1) {
                     if (areDbInterfacesInSnmpCollection(dbInterfaces, snmpc)) {
-                        collectorMap.put(InetAddressUtils.str(ifaddr), collector);
+                        collectorMap.put(ifaddrString, collector);
                         gotSnmpCollection = true;
                         if (log().isDebugEnabled()) {
                             log().debug("SNMP data collected via "
-                                      + InetAddressUtils.str(ifaddr));
-                            log().debug("Adding " + InetAddressUtils.str(ifaddr)
+                                      + ifaddrString);
+                            log().debug("Adding " + ifaddrString
                                       + " to collectorMap for node: "
                                       + getNodeId());
                         }
@@ -2801,13 +2816,13 @@ public final class RescanProcessor implements Runnable {
                         break;
                     } else if (ipAddTable == null) {
                         snmpcAgree = true;
-                        collectorMap.put(InetAddressUtils.str(ifaddr), collector);
+                        collectorMap.put(ifaddrString, collector);
                         ipAddTable = snmpc.getIpAddrTable();
                         prevAddrList = ipAddTable.getIpAddresses();
 
                         if (log().isDebugEnabled()) {
                             log().debug("SNMP data collected via "
-                                      + InetAddressUtils.str(ifaddr)
+                                      + ifaddrString
                                       + " does not agree with database.  "
                                       + "Tentatively adding to the "
                                       + "collectorMap and continuing");
@@ -2857,7 +2872,7 @@ public final class RescanProcessor implements Runnable {
                     if (snmpcAgree == false) {
                         if (log().isDebugEnabled()) {
                             log().debug("SNMP data collected via "
-                                      + InetAddressUtils.str(ifaddr)
+                                      + ifaddrString
                                       + " does not agree with database or with "
                                       + "other interface(s) on this node.");
                         }
@@ -2867,9 +2882,9 @@ public final class RescanProcessor implements Runnable {
                      * Build a non-SNMP collectorMap, skipping 127.*.*.*
                      * and 0.0.0.0
                      */
-                    nonSnmpCollectorMap.put(InetAddressUtils.str(ifaddr), collector);
+                    nonSnmpCollectorMap.put(ifaddrString, collector);
                     if (log().isDebugEnabled()) {
-                        log().debug("Adding " + InetAddressUtils.str(ifaddr)
+                        log().debug("Adding " + ifaddrString
                                   + " to nonSnmpCollectorMap for node: "
                                   + getNodeId());
                     }
@@ -3019,9 +3034,12 @@ public final class RescanProcessor implements Runnable {
      * @return a boolean.
      */
     protected static boolean scannableInterface(final DbIpInterfaceEntry[] dbInterfaces, final InetAddress ifaddr) {
-        boolean localHostAddress = (InetAddressUtils.str(ifaddr).startsWith("127") && dbInterfaces.length > 1);
-        boolean nonIpAddress = InetAddressUtils.str(ifaddr).equals("0.0.0.0");
-        boolean scannable = !localHostAddress && !nonIpAddress;
+        final String ifaddrString = str(ifaddr);
+        if (ifaddrString == null) return false;
+
+        final boolean localHostAddress = (ifaddrString.startsWith("127") && dbInterfaces.length > 1);
+        final boolean nonIpAddress = ifaddrString.equals("0.0.0.0");
+        final boolean scannable = !localHostAddress && !nonIpAddress;
         return scannable;
     }
 
@@ -3029,18 +3047,23 @@ public final class RescanProcessor implements Runnable {
         return m_nodeId;
     }
 
-    private boolean scanPrimarySnmpInterface(DbIpInterfaceEntry oldPrimarySnmpInterface,
-            Map<String, IfCollector> collectorMap,
-            Set<InetAddress> probedAddrs) {
+    private boolean scanPrimarySnmpInterface(DbIpInterfaceEntry oldPrimarySnmpInterface, Map<String, IfCollector> collectorMap, Set<InetAddress> probedAddrs) {
         boolean gotSnmpCollection = false;
 
         /*
          * Run collector for DB primary snmp interface and add result
          * to a collector map.
          */
-        InetAddress ifaddr = oldPrimarySnmpInterface.getIfAddress();
-        if (log().isDebugEnabled()) {
-            log().debug("running collection for DB primary snmp interface " + InetAddressUtils.str(ifaddr));
+        final InetAddress ifaddr = oldPrimarySnmpInterface.getIfAddress();
+        final String ifaddrString = str(ifaddr);
+
+        if (ifaddrString == null) {
+        	log().info("old primary snmp interface has an invalid address: " + ifaddr);
+        	return false;
+        }
+
+		if (log().isDebugEnabled()) {
+            log().debug("running collection for DB primary snmp interface " + ifaddrString);
         }
         IfCollector collector = new IfCollector(m_pluginManager, ifaddr, true, probedAddrs);
         collector.run();
@@ -3049,9 +3072,9 @@ public final class RescanProcessor implements Runnable {
             log().debug("SNMP Collector from DB primary snmp interface is null");
         } else {
             gotSnmpCollection = true;
-            collectorMap.put(InetAddressUtils.str(ifaddr), collector);
+            collectorMap.put(ifaddrString, collector);
             if (log().isDebugEnabled()) {
-                log().debug("SNMP data collected from DB primary snmp interface" + InetAddressUtils.str(ifaddr));
+                log().debug("SNMP data collected from DB primary snmp interface" + ifaddrString);
             }
             if (!snmpc.hasIfTable()) {
                 log().debug("SNMP Collector has no IfTable");
@@ -3093,15 +3116,16 @@ public final class RescanProcessor implements Runnable {
         Iterator<InetAddress> iter = snmpAddresses.iterator();
         while(iter.hasNext()) {
             InetAddress addr = iter.next();
-            if (CollectdConfigFactory.getInstance().isServiceCollectionEnabled(InetAddressUtils.str(addr), "SNMP")) {
+            final String addrString = str(addr);
+			if (CollectdConfigFactory.getInstance().isServiceCollectionEnabled(addrString, "SNMP")) {
                 final DBUtils d = new DBUtils(getClass());
                 try {
                     PreparedStatement stmt = dbc.prepareStatement("UPDATE ipInterface SET isSnmpPrimary='S' WHERE nodeId=? AND ipAddr=? AND isManaged!='D'");
                     d.watch(stmt);
                     stmt.setInt(1, dbNodeEntry.getNodeId());
-                    stmt.setString(2, InetAddressUtils.str(addr));
+                    stmt.setString(2, addrString);
                     stmt.executeUpdate();
-                    log().debug("updatePrimarySnmpInterface: updated " + InetAddressUtils.str(addr) + " to secondary.");
+                    log().debug("updatePrimarySnmpInterface: updated " + addrString + " to secondary.");
                 } finally {
                     d.cleanUp();
                 }
@@ -3246,7 +3270,7 @@ public final class RescanProcessor implements Runnable {
              */
             if (primarySnmpIf != null && !oldPriIf.equals(primarySnmpIf)) {
                 if (log().isDebugEnabled()) {
-                    log().debug("generateSnmpDataCollectionEvents: primary SNMP interface has changed.  Was: " + InetAddressUtils.str(oldPriIf) + " Is: " + InetAddressUtils.str(primarySnmpIf));
+                    log().debug("generateSnmpDataCollectionEvents: primary SNMP interface has changed.  Was: " + str(oldPriIf) + " Is: " + str(primarySnmpIf));
                 }
                 createPrimarySnmpInterfaceChangedEvent(nodeEntry.getNodeId(), primarySnmpIf, oldPriIf);
                 reInit = false;
@@ -3265,7 +3289,7 @@ public final class RescanProcessor implements Runnable {
          */
         if (reInit && (m_ifIndexOnNodeChangedFlag || m_snmpIfTableChangedFlag)) {
             if (log().isDebugEnabled()) {
-                log().debug("generateSnmpDataCollectionEvents: Generating reinitializeSnmpInterface event for interface " + InetAddressUtils.str(primarySnmpIf));
+                log().debug("generateSnmpDataCollectionEvents: Generating reinitializeSnmpInterface event for interface " + str(primarySnmpIf));
             }
             createReinitializePrimarySnmpInterfaceEvent(nodeEntry.getNodeId(), primarySnmpIf);
         }
@@ -3395,22 +3419,22 @@ public final class RescanProcessor implements Runnable {
      * @param oldPrimaryIf
      *            old primary SNMP interface address
      */
-    private void createPrimarySnmpInterfaceChangedEvent(int nodeId, InetAddress newPrimaryIf, InetAddress oldPrimaryIf) {
+    private void createPrimarySnmpInterfaceChangedEvent(final int nodeId, final InetAddress newPrimaryIf, final InetAddress oldPrimaryIf) {
         String oldPrimaryAddr = null;
         if (oldPrimaryIf != null) {
-            oldPrimaryAddr = InetAddressUtils.str(oldPrimaryIf);
+            oldPrimaryAddr = str(oldPrimaryIf);
         }
 
         String newPrimaryAddr = null;
         if (newPrimaryIf != null) {
-            newPrimaryAddr = InetAddressUtils.str(newPrimaryIf);
+            newPrimaryAddr = str(newPrimaryIf);
         }
 
         if (log().isDebugEnabled()) {
             log().debug("createPrimarySnmpInterfaceChangedEvent: nodeId: " + nodeId + "oldPrimarySnmpIf: '" + oldPrimaryAddr + "' newPrimarySnmpIf: '" + newPrimaryAddr + "'");
         }
 
-        EventBuilder bldr = serviceEventBuilder(EventConstants.PRIMARY_SNMP_INTERFACE_CHANGED_EVENT_UEI, nodeId, newPrimaryAddr, "SNMP");
+        final EventBuilder bldr = serviceEventBuilder(EventConstants.PRIMARY_SNMP_INTERFACE_CHANGED_EVENT_UEI, nodeId, newPrimaryAddr, "SNMP");
 
         if (oldPrimaryAddr != null) {
             bldr.addParam(EventConstants.PARM_OLD_PRIMARY_SNMP_ADDRESS, oldPrimaryAddr);
@@ -3437,12 +3461,12 @@ public final class RescanProcessor implements Runnable {
      * @param originalEntry
      *            original IP interface database entry
      */
-    private void createInterfaceIndexChangedEvent(DbIpInterfaceEntry updatedEntry, DbIpInterfaceEntry originalEntry) {
+    private void createInterfaceIndexChangedEvent(final DbIpInterfaceEntry updatedEntry, final DbIpInterfaceEntry originalEntry) {
         if (log().isDebugEnabled()) {
             log().debug("createInterfaceIndexChangedEvent: nodeId: " + updatedEntry.getNodeId() + " oldIfIndex: " + originalEntry.getIfIndex() + " newIfIndex: " + updatedEntry.getIfIndex());
         }
 
-        EventBuilder bldr = interfaceEventBuilder(EventConstants.INTERFACE_INDEX_CHANGED_EVENT_UEI, updatedEntry.getNodeId(), InetAddressUtils.str(updatedEntry.getIfAddress()));
+        EventBuilder bldr = interfaceEventBuilder(EventConstants.INTERFACE_INDEX_CHANGED_EVENT_UEI, updatedEntry.getNodeId(), str(updatedEntry.getIfAddress()));
 
         bldr.addParam(EventConstants.PARM_OLD_IFINDEX, originalEntry.getIfIndex());
         bldr.addParam(EventConstants.PARM_NEW_IFINDEX, updatedEntry.getIfIndex());
@@ -3464,12 +3488,12 @@ public final class RescanProcessor implements Runnable {
      * @param originalEntry
      *            original IP interface database entry
      */
-    private void createIpHostNameChangedEvent(DbIpInterfaceEntry updatedEntry, DbIpInterfaceEntry originalEntry) {
+    private void createIpHostNameChangedEvent(final DbIpInterfaceEntry updatedEntry, final DbIpInterfaceEntry originalEntry) {
         if (log().isDebugEnabled()) {
             log().debug("createIpHostNameChangedEvent: nodeId: " + updatedEntry.getNodeId() + " oldHostName: " + originalEntry.getHostname() + " newHostName: " + updatedEntry.getHostname());
         }
 
-        EventBuilder bldr = interfaceEventBuilder(EventConstants.INTERFACE_IP_HOSTNAME_CHANGED_EVENT_UEI, updatedEntry.getNodeId(), InetAddressUtils.str(updatedEntry.getIfAddress()));
+        EventBuilder bldr = interfaceEventBuilder(EventConstants.INTERFACE_IP_HOSTNAME_CHANGED_EVENT_UEI, updatedEntry.getNodeId(), str(updatedEntry.getIfAddress()));
         
         // Add old IP Hostname
         if (originalEntry.getHostname() != null) {
@@ -3500,13 +3524,14 @@ public final class RescanProcessor implements Runnable {
      * @param reparentedIf
      *            Reparented interface
      */
-    private void createInterfaceReparentedEvent(DbNodeEntry newNode, int oldNodeId, InetAddress reparentedIf) {
-        if (log().isDebugEnabled()) {
-            log().debug("createInterfaceReparentedEvent: ifAddr: " + InetAddressUtils.str(reparentedIf) + " oldNodeId: " + oldNodeId + " newNodeId: " + newNode.getNodeId());
+    private void createInterfaceReparentedEvent(final DbNodeEntry newNode, final int oldNodeId, final InetAddress reparentedIf) {
+        final String reparentedAddress = str(reparentedIf);
+		if (log().isDebugEnabled()) {
+            log().debug("createInterfaceReparentedEvent: ifAddr: " + reparentedAddress + " oldNodeId: " + oldNodeId + " newNodeId: " + newNode.getNodeId());
         }
 
         
-        EventBuilder bldr = interfaceEventBuilder(EventConstants.INTERFACE_REPARENTED_EVENT_UEI, newNode.getNodeId(), InetAddressUtils.str(reparentedIf));
+        EventBuilder bldr = interfaceEventBuilder(EventConstants.INTERFACE_REPARENTED_EVENT_UEI, newNode.getNodeId(), reparentedAddress);
 
         // Add old node id
         bldr.addParam(EventConstants.PARM_OLD_NODEID, oldNodeId);
@@ -3537,7 +3562,7 @@ public final class RescanProcessor implements Runnable {
         m_eventList.add(bldr.getEvent());
 
         if (log().isDebugEnabled()) {
-            log().debug("createInterfaceReparentedEvent: successfully created interfaceReparented event for nodeid/interface: " + newNode.getNodeId() + "/" + InetAddressUtils.str(reparentedIf));
+            log().debug("createInterfaceReparentedEvent: successfully created interfaceReparented event for nodeid/interface: " + newNode.getNodeId() + "/" + reparentedAddress);
         }
     }
 
@@ -3571,11 +3596,12 @@ public final class RescanProcessor implements Runnable {
      *            Entry of new interface.
      */
     private void createNodeGainedInterfaceEvent(DbIpInterfaceEntry ifEntry) {
-        if (log().isDebugEnabled()) {
-            log().debug("createNodeGainedInterfaceEvent: nodeId: " + ifEntry.getNodeId() + " interface: " + InetAddressUtils.str(ifEntry.getIfAddress()));
+        final String ifAddress = str(ifEntry.getIfAddress());
+		if (log().isDebugEnabled()) {
+            log().debug("createNodeGainedInterfaceEvent: nodeId: " + ifEntry.getNodeId() + " interface: " + ifAddress);
         }
 
-        EventBuilder bldr = interfaceEventBuilder(EventConstants.NODE_GAINED_INTERFACE_EVENT_UEI, ifEntry.getNodeId(), InetAddressUtils.str(ifEntry.getIfAddress()));
+        EventBuilder bldr = interfaceEventBuilder(EventConstants.NODE_GAINED_INTERFACE_EVENT_UEI, ifEntry.getNodeId(), ifAddress);
 
         // Add ip host name
         bldr.addParam(EventConstants.PARM_IP_HOSTNAME, ifEntry.getHostname() == null ? "" : ifEntry.getHostname());
@@ -3598,13 +3624,14 @@ public final class RescanProcessor implements Runnable {
      * @param ifEntry
      *            Entry of new interface.
      */
-    private void createDuplicateIpAddressEvent(DbIpInterfaceEntry ifEntry) {
+    private void createDuplicateIpAddressEvent(final DbIpInterfaceEntry ifEntry) {
+        final String ifAddress = str(ifEntry.getIfAddress());
 
         if (log().isDebugEnabled()) {
-            log().debug("createDuplicateIpAddressEvent: nodeId: " + ifEntry.getNodeId() + " interface: " + InetAddressUtils.str(ifEntry.getIfAddress()));
+            log().debug("createDuplicateIpAddressEvent: nodeId: " + ifEntry.getNodeId() + " interface: " + ifAddress);
         }
 
-        EventBuilder bldr = interfaceEventBuilder(EventConstants.DUPLICATE_IPINTERFACE_EVENT_UEI, ifEntry.getNodeId(), InetAddressUtils.str(ifEntry.getIfAddress()));
+        EventBuilder bldr = interfaceEventBuilder(EventConstants.DUPLICATE_IPINTERFACE_EVENT_UEI, ifEntry.getNodeId(), ifAddress);
 
         bldr.addParam(EventConstants.PARM_IP_HOSTNAME, ifEntry.getHostname() == null ? "" : ifEntry.getHostname());
 
@@ -3630,12 +3657,14 @@ public final class RescanProcessor implements Runnable {
      * @param svcName
      *            Service name
      */
-    private void createNodeGainedServiceEvent(DbNodeEntry nodeEntry, DbIpInterfaceEntry ifEntry, String svcName) {
+    private void createNodeGainedServiceEvent(final DbNodeEntry nodeEntry, final DbIpInterfaceEntry ifEntry, final String svcName) {
+        final String ifAddress = str(ifEntry.getIfAddress());
+
         if (log().isDebugEnabled()) {
-            log().debug("createNodeGainedServiceEvent: nodeId: " + ifEntry.getNodeId() + " interface: " + InetAddressUtils.str(ifEntry.getIfAddress()) + " service: " + svcName);
+            log().debug("createNodeGainedServiceEvent: nodeId: " + ifEntry.getNodeId() + " interface: " + ifAddress + " service: " + svcName);
         }
 
-        EventBuilder bldr = serviceEventBuilder(EventConstants.NODE_GAINED_SERVICE_EVENT_UEI, ifEntry.getNodeId(), InetAddressUtils.str(ifEntry.getIfAddress()), svcName);
+        EventBuilder bldr = serviceEventBuilder(EventConstants.NODE_GAINED_SERVICE_EVENT_UEI, ifEntry.getNodeId(), ifAddress, svcName);
 
         // Add ip host name
         bldr.addParam(EventConstants.PARM_IP_HOSTNAME, ifEntry.getHostname() == null ? "" : ifEntry.getHostname());
@@ -3669,9 +3698,10 @@ public final class RescanProcessor implements Runnable {
      * @param svcName
      *            Service name
      */
-    private void createSuspendPollingServiceEvent(DbNodeEntry nodeEntry, DbIpInterfaceEntry ifEntry, String svcName) {
-        
-        EventBuilder bldr = serviceEventBuilder(EventConstants.SUSPEND_POLLING_SERVICE_EVENT_UEI, ifEntry.getNodeId(), InetAddressUtils.str(ifEntry.getIfAddress()), svcName);
+    private void createSuspendPollingServiceEvent(final DbNodeEntry nodeEntry, final DbIpInterfaceEntry ifEntry, final String svcName) {
+        final String ifAddress = str(ifEntry.getIfAddress());
+
+        final EventBuilder bldr = serviceEventBuilder(EventConstants.SUSPEND_POLLING_SERVICE_EVENT_UEI, ifEntry.getNodeId(), ifAddress, svcName);
 
         // Add ip host name
         bldr.addParam(EventConstants.PARM_IP_HOSTNAME, ifEntry.getHostname() == null ? "" : ifEntry.getHostname());
@@ -3690,7 +3720,7 @@ public final class RescanProcessor implements Runnable {
         m_eventList.add(bldr.getEvent());
 
         if (log().isDebugEnabled()) {
-            log().debug("suspendPollingServiceEvent: Created suspendPollingService event for nodeid: " + ifEntry.getNodeId() + " interface: " + InetAddressUtils.str(ifEntry.getIfAddress()) + " service: " + svcName);
+            log().debug("suspendPollingServiceEvent: Created suspendPollingService event for nodeid: " + ifEntry.getNodeId() + " interface: " + ifAddress + " service: " + svcName);
         }
     }
 
@@ -3705,9 +3735,10 @@ public final class RescanProcessor implements Runnable {
      * @param svcName
      *            Service name
      */
-    private void createResumePollingServiceEvent(DbNodeEntry nodeEntry, DbIpInterfaceEntry ifEntry, String svcName) {
+    private void createResumePollingServiceEvent(final DbNodeEntry nodeEntry, final DbIpInterfaceEntry ifEntry, final String svcName) {
+        final String ifAddress = str(ifEntry.getIfAddress());
         
-        EventBuilder bldr = serviceEventBuilder(EventConstants.RESUME_POLLING_SERVICE_EVENT_UEI, ifEntry.getNodeId(), InetAddressUtils.str(ifEntry.getIfAddress()), svcName);
+        final EventBuilder bldr = serviceEventBuilder(EventConstants.RESUME_POLLING_SERVICE_EVENT_UEI, ifEntry.getNodeId(), ifAddress, svcName);
 
         // Add ip host name
         bldr.addParam(EventConstants.PARM_IP_HOSTNAME, ifEntry.getHostname() == null ? "" : ifEntry.getHostname());
@@ -3726,7 +3757,7 @@ public final class RescanProcessor implements Runnable {
         m_eventList.add(bldr.getEvent());
 
         if (log().isDebugEnabled()) {
-            log().debug("resumePollingServiceEvent: Created resumePollingService event for nodeid: " + ifEntry.getNodeId() + " interface: " + InetAddressUtils.str(ifEntry.getIfAddress()) + " service: " + svcName);
+            log().debug("resumePollingServiceEvent: Created resumePollingService event for nodeid: " + ifEntry.getNodeId() + " interface: " + ifAddress + " service: " + svcName);
         }
     }
 
@@ -3789,12 +3820,14 @@ public final class RescanProcessor implements Runnable {
      * @param ifEntry
      *            Entry of interface which has gained a service
      */
-    private void createInterfaceSupportsSNMPEvent(DbIpInterfaceEntry ifEntry) {
+    private void createInterfaceSupportsSNMPEvent(final DbIpInterfaceEntry ifEntry) {
+        final String ifAddress = str(ifEntry.getIfAddress());
+
         if (log().isDebugEnabled()) {
-            log().debug("createInterfaceSupportsSNMPEvent: nodeId: " + ifEntry.getNodeId() + " interface: " + InetAddressUtils.str(ifEntry.getIfAddress()));
+            log().debug("createInterfaceSupportsSNMPEvent: nodeId: " + ifEntry.getNodeId() + " interface: " + ifAddress);
         }
         
-        EventBuilder bldr = interfaceEventBuilder(EventConstants.INTERFACE_SUPPORTS_SNMP_EVENT_UEI, ifEntry.getNodeId(), InetAddressUtils.str(ifEntry.getIfAddress()));
+        final EventBuilder bldr = interfaceEventBuilder(EventConstants.INTERFACE_SUPPORTS_SNMP_EVENT_UEI, ifEntry.getNodeId(), ifAddress);
 
         // Add event to the list of events to be sent out.
         m_eventList.add(bldr.getEvent());
@@ -3813,18 +3846,20 @@ public final class RescanProcessor implements Runnable {
      * @param primarySnmpIf
      *            Primary SNMP interface address.
      */
-    private void createReinitializePrimarySnmpInterfaceEvent(int nodeId, InetAddress primarySnmpIf) {
-        if (log().isDebugEnabled()) {
-            log().debug("reinitializePrimarySnmpInterface: nodeId: " + nodeId + " interface: " + InetAddressUtils.str(primarySnmpIf));
+    private void createReinitializePrimarySnmpInterfaceEvent(final int nodeId, final InetAddress primarySnmpIf) {
+        final String primaryAddress = str(primarySnmpIf);
+        
+		if (log().isDebugEnabled()) {
+            log().debug("reinitializePrimarySnmpInterface: nodeId: " + nodeId + " interface: " + primaryAddress);
         }
 
-        EventBuilder bldr = interfaceEventBuilder(EventConstants.REINITIALIZE_PRIMARY_SNMP_INTERFACE_EVENT_UEI, nodeId, InetAddressUtils.str(primarySnmpIf));
+        EventBuilder bldr = interfaceEventBuilder(EventConstants.REINITIALIZE_PRIMARY_SNMP_INTERFACE_EVENT_UEI, nodeId, primaryAddress);
 
         // Add event to the list of events to be sent out.
         m_eventList.add(bldr.getEvent());
 
         if (log().isDebugEnabled()) {
-            log().debug("createReinitializePrimarySnmpInterfaceEvent: successfully created reinitializePrimarySnmpInterface event for interface: " + InetAddressUtils.str(primarySnmpIf));
+            log().debug("createReinitializePrimarySnmpInterfaceEvent: successfully created reinitializePrimarySnmpInterface event for interface: " + primaryAddress);
         }
     }
     

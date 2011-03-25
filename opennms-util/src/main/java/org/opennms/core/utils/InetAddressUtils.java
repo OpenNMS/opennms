@@ -214,7 +214,13 @@ abstract public class InetAddressUtils {
         return new BigInteger(getInetAddress(addr1).getAddress()).subtract(new BigInteger(getInetAddress(addr2).getAddress()));
     }
 
-    public static boolean isInetAddressInRange(final String addrString, final String beginString, final String endString) {
+	public static boolean isInetAddressInRange(final byte[] laddr, final String beginString, final String endString) {
+        final byte[] begin = InetAddressUtils.toIpAddrBytes(beginString);
+        final byte[] end = InetAddressUtils.toIpAddrBytes(endString);
+        return isInetAddressInRange(laddr, begin, end);
+	}
+
+	public static boolean isInetAddressInRange(final String addrString, final String beginString, final String endString) {
         final ByteArrayComparator comparator = new ByteArrayComparator();
         final byte[] addr = InetAddressUtils.toIpAddrBytes(addrString);
         final byte[] begin = InetAddressUtils.toIpAddrBytes(beginString);
@@ -246,6 +252,10 @@ abstract public class InetAddressUtils {
             return false;
         }
     }
+
+	public static boolean isInetAddressInRange(final String ipAddr, final byte[] begin, final byte[] end) {
+		return isInetAddressInRange(InetAddressUtils.toIpAddrBytes(ipAddr), begin, end);
+	}
 
     public static InetAddress convertBigIntegerIntoInetAddress(final BigInteger i) throws UnknownHostException {
         if (i.compareTo(BigInteger.ZERO) < 0) {

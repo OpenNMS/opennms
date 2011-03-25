@@ -379,8 +379,8 @@ public class DefaultNodeListService implements NodeListService, InitializingBean
                 	}
                 } else {
                     for (OnmsIpInterface intf : node.getIpInterfaces()) {
-                        if (!"D".equals(intf.getIsManaged()) && !"0.0.0.0".equals(intf.getIpAddressAsString())) {
-                            displayInterfaces.add(intf);
+                        if (!"D".equals(intf.getIsManaged()) && !"0.0.0.0".equals(InetAddressUtils.str(intf.getIpAddress()))) {
+                        	displayInterfaces.add(intf);
                         }
                     }
                 }
@@ -470,17 +470,19 @@ public class DefaultNodeListService implements NodeListService, InitializingBean
     public static class IpInterfaceComparator implements Comparator<OnmsIpInterface>, Serializable {
         private static final long serialVersionUID = 1L;
 
-        public int compare(OnmsIpInterface o1, OnmsIpInterface o2) {
+        public int compare(final OnmsIpInterface o1, final OnmsIpInterface o2) {
             int diff;
 
             // Sort by IP first if the IPs are non-0.0.0.0
-            if (!"0.0.0.0".equals(o1.getIpAddressAsString()) && !"0.0.0.0".equals(o2.getIpAddressAsString())) {
-                return new ByteArrayComparator().compare(InetAddressUtils.toIpAddrBytes(o1.getIpAddressAsString()), InetAddressUtils.toIpAddrBytes(o2.getIpAddressAsString()));
+            final String o1ip = InetAddressUtils.str(o1.getIpAddress());
+			final String o2ip = InetAddressUtils.str(o2.getIpAddress());
+			if (!"0.0.0.0".equals(o1ip) && !"0.0.0.0".equals(o2ip)) {
+                return new ByteArrayComparator().compare(InetAddressUtils.toIpAddrBytes(o1ip), InetAddressUtils.toIpAddrBytes(o2ip));
             } else {
                 // Sort IPs that are non-0.0.0.0 so they are first
-                if (!"0.0.0.0".equals(o1.getIpAddressAsString())) {
+                if (!"0.0.0.0".equals(o1ip)) {
                     return -1;
-                } else if (!"0.0.0.0".equals(o2.getIpAddressAsString())) {
+                } else if (!"0.0.0.0".equals(o2ip)) {
                     return 1;
                 }
             }

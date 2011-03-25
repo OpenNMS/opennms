@@ -33,7 +33,6 @@ package org.opennms.netmgt.provision.detector.datagram;
 
 import java.net.DatagramPacket;
 import java.net.InetAddress;
-import java.net.UnknownHostException;
 
 import org.opennms.core.utils.InetAddressUtils;
 import org.opennms.core.utils.LogUtils;
@@ -103,8 +102,12 @@ public class NtpDetector extends BasicDetector<NtpMessage, DatagramPacket> {
         };
     }
     
-    private InetAddress getAddress(){
-    	return InetAddressUtils.addr(getIpToValidate());
+    private InetAddress getAddress() {
+    	final InetAddress addr = InetAddressUtils.addr(getIpToValidate());
+    	if (addr == null) {
+    		LogUtils.debugf(this, "Failed to get InetAddress from %s", getIpToValidate());
+    	}
+    	return addr;
     }
     
     /**

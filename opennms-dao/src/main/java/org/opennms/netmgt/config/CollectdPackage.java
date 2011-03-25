@@ -183,6 +183,8 @@ public class CollectdPackage {
 	}
 
 	boolean interfaceInFilter(String iface) {
+		if (iface == null) return false;
+
 		boolean filterPassed = false;
 	
 		// get list of IPs in this package
@@ -235,7 +237,7 @@ public class CollectdPackage {
 	 * @return True if the interface is included in the package, false
 	 *         otherwise.
 	 */
-	public boolean interfaceInPackage(String iface) {
+	public boolean interfaceInPackage(final String iface) {
 		boolean filterPassed = interfaceInFilter(iface);
 	
 		if (!filterPassed)

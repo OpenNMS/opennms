@@ -313,7 +313,7 @@ public class XmlrpcdTest extends OpenNMSTestCase {
         Event nodeOneEvent = svcEvent("uei.opennms.org/nodes/nodeLostService", 1, "192.168.1.1", "ICMP", date);
         getEventIpcManager().sendNow(nodeOneEvent);
 
-        Thread.sleep(1000);
+        Thread.sleep(2000);
         
         m_anticipator1.verifyAnticipated();
         m_anticipator1.shutdown();
@@ -323,7 +323,7 @@ public class XmlrpcdTest extends OpenNMSTestCase {
         Event nodeTwoEvent = svcEvent("uei.opennms.org/nodes/nodeLostService", 2, "192.168.1.2", "SNMP", date);
         getEventIpcManager().sendNow(nodeTwoEvent);
         
-        Thread.sleep(1000);
+        Thread.sleep(2000);
 
         m_xmlrpcd.stop();
         Thread.sleep(2000);

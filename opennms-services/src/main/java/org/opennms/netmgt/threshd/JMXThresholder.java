@@ -681,7 +681,7 @@ public abstract class JMXThresholder implements ServiceThresholder {
             if (ifDataMap == null || ifDataMap.get("ipaddr") == null) {
                 // Node level datasource
                 if (primary != null) {
-                    event.setInterface(primary);
+                    event.setInterfaceAddress(primary);
                 }
             } else {
                 /*
@@ -691,7 +691,7 @@ public abstract class JMXThresholder implements ServiceThresholder {
                  * address of "0.0.0.0".
                  */
                 String ifAddr = ifDataMap.get("ipaddr");
-                event.setInterface(InetAddressUtils.addr(ifAddr));
+                event.setInterfaceAddress(InetAddressUtils.addr(ifAddr));
             }
             
             // Add appropriate parms
