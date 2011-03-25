@@ -223,6 +223,8 @@ final class KnownIPMgr {
      * This implementation only works with objects of type
      * {@link java.net.InetAddress InetAddress}.
      * 
+     * @deprecated This comparator will not work properly with IPv6 addresses
+     * 
      * @author <a href="mailto:weave@oculan.com">Brian Weaver </a>
      * @author <a href="http://www.opennms.org/">OpenNMS </a>
      * 

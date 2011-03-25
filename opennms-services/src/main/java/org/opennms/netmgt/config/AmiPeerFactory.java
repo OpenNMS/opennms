@@ -43,6 +43,7 @@ import java.io.InputStream;
 import java.io.OutputStreamWriter;
 import java.io.StringWriter;
 import java.io.Writer;
+import java.math.BigInteger;
 import java.net.InetAddress;
 import java.net.UnknownHostException;
 import java.util.ArrayList;
@@ -57,6 +58,7 @@ import org.exolab.castor.xml.MarshalException;
 import org.exolab.castor.xml.Marshaller;
 import org.exolab.castor.xml.ValidationException;
 import org.opennms.core.utils.IPLike;
+import org.opennms.core.utils.InetAddressComparator;
 import org.opennms.core.utils.InetAddressUtils;
 import org.opennms.core.utils.LogUtils;
 import org.opennms.netmgt.ConfigFileConstants;
@@ -65,7 +67,6 @@ import org.opennms.netmgt.config.ami.Definition;
 import org.opennms.netmgt.config.common.Range;
 import org.opennms.netmgt.dao.castor.CastorUtils;
 import org.opennms.protocols.ami.AmiAgentConfig;
-import org.opennms.protocols.ip.IPv4Address;
 
 /**
  * This class is the main repository for AMI configuration information used by
@@ -81,9 +82,6 @@ import org.opennms.protocols.ip.IPv4Address;
  *
  * @author <a href="mailto:jeffg@opennms.org">Jeff Gehlbach</a>
  * @author <a href="http://www.opennms.org/">OpenNMS </a>
- * @author <a href="mailto:jeffg@opennms.org">Jeff Gehlbach</a>
- * @author <a href="http://www.opennms.org/">OpenNMS </a>
- * @version $Id: $
  */
 public class AmiPeerFactory extends PeerFactory {
     private final ReadWriteLock m_globalLock = new ReentrantReadWriteLock();
@@ -249,7 +247,7 @@ public class AmiPeerFactory extends PeerFactory {
      *
      * @throws UnknownHostException
      */
-    private void optimize() throws UnknownHostException {
+    void optimize() throws UnknownHostException {
         getWriteLock().lock();
         
         try {
@@ -278,38 +276,36 @@ public class AmiPeerFactory extends PeerFactory {
             // readability and then combine them into fewer elements where possible
             for (final Definition definition : m_config.getDefinitionCollection()) {
                 // Sort specifics
-                final TreeMap<Integer,String> specificsMap = new TreeMap<Integer,String>();
+                final TreeMap<InetAddress,String> specificsMap = new TreeMap<InetAddress,String>(new InetAddressComparator());
                 for (final String specific : definition.getSpecificCollection()) {
-                    specificsMap.put(new Integer(new IPv4Address(specific).getAddress()), specific.trim());
+                    specificsMap.put(InetAddressUtils.getInetAddress(specific), specific.trim());
                 }
     
                 // Sort ranges
-                final TreeMap<Integer,Range> rangesMap = new TreeMap<Integer,Range>();
+                final TreeMap<InetAddress,Range> rangesMap = new TreeMap<InetAddress,Range>(new InetAddressComparator());
                 for (final Range range : definition.getRangeCollection()) {
-                    rangesMap.put(new IPv4Address(range.getBegin()).getAddress(), range);
+                    rangesMap.put(InetAddressUtils.getInetAddress(range.getBegin()), range);
                 }
     
                 // Combine consecutive specifics into ranges
-                Integer priorSpecific = null;
+                InetAddress priorSpecific = null;
                 Range addedRange = null;
-                for (final Integer specific : specificsMap.keySet()) {
+                for (final InetAddress specific : specificsMap.keySet()) {
                     if (priorSpecific == null) {
                         priorSpecific = specific;
                         continue;
                     }
     
-                    final int specificInt = specific.intValue();
-                    final int priorSpecificInt = priorSpecific.intValue();
-    
-                    if (specificInt == priorSpecificInt + 1) {
+                    if (BigInteger.ONE.equals(InetAddressUtils.difference(specific, priorSpecific)) &&
+                            InetAddressUtils.inSameScope(specific, priorSpecific)) {
                         if (addedRange == null) {
                             addedRange = new Range();
-                            addedRange.setBegin(IPv4Address.addressToString(priorSpecificInt));
+                            addedRange.setBegin(InetAddressUtils.toIpAddrString(priorSpecific));
                             rangesMap.put(priorSpecific, addedRange);
                             specificsMap.remove(priorSpecific);
                         }
     
-                        addedRange.setEnd(IPv4Address.addressToString(specificInt));
+                        addedRange.setEnd(InetAddressUtils.toIpAddrString(specific));
                         specificsMap.remove(specific);
                     }
                     else {
@@ -320,37 +316,43 @@ public class AmiPeerFactory extends PeerFactory {
                 }
     
                 // Move specifics to ranges
-                for (final Integer specific : new ArrayList<Integer>(specificsMap.keySet())) {
-                    final int specificInt = specific.intValue();
-                    for (final Integer begin : new ArrayList<Integer>(rangesMap.keySet())) {
-                        final int beginInt = begin.intValue();
+                for (final InetAddress specific : new ArrayList<InetAddress>(specificsMap.keySet())) {
+                    for (final InetAddress begin : new ArrayList<InetAddress>(rangesMap.keySet())) {
+                        
+                        if (!InetAddressUtils.inSameScope(begin, specific)) {
+                            continue;
+                        }
     
-                        if (specificInt < beginInt - 1) {
+                        if (InetAddressUtils.toInteger(begin).subtract(BigInteger.ONE).compareTo(InetAddressUtils.toInteger(specific)) > 0) {
                             continue;
                         }
     
                         final Range range = rangesMap.get(begin);
     
-                        final int endInt = new IPv4Address(range.getEnd()).getAddress();
+                        final InetAddress end = InetAddressUtils.getInetAddress(range.getEnd());
     
-                        if (specificInt > endInt + 1)
+                        if (InetAddressUtils.toInteger(end).add(BigInteger.ONE).compareTo(InetAddressUtils.toInteger(specific)) < 0) {
                             continue;
+                        }
     
-                        if (specificInt >= beginInt && specificInt <= endInt) {
+                        if (
+                            InetAddressUtils.toInteger(specific).compareTo(InetAddressUtils.toInteger(begin)) >= 0 &&
+                            InetAddressUtils.toInteger(specific).compareTo(InetAddressUtils.toInteger(end)) <= 0
+                        ) {
                             specificsMap.remove(specific);
                             break;
                         }
     
-                        if (specificInt == beginInt - 1) {
+                        if (InetAddressUtils.toInteger(begin).subtract(BigInteger.ONE).equals(InetAddressUtils.toInteger(specific))) {
                             rangesMap.remove(begin);
                             rangesMap.put(specific, range);
-                            range.setBegin(IPv4Address.addressToString(specificInt));
+                            range.setBegin(InetAddressUtils.toIpAddrString(specific));
                             specificsMap.remove(specific);
                             break;
                         }
     
-                        if (specificInt == endInt + 1) {
-                            range.setEnd(IPv4Address.addressToString(specificInt));
+                        if (InetAddressUtils.toInteger(end).add(BigInteger.ONE).equals(InetAddressUtils.toInteger(specific))) {
+                            range.setEnd(InetAddressUtils.toIpAddrString(specific));
                             specificsMap.remove(specific);
                             break;
                         }
@@ -359,18 +361,19 @@ public class AmiPeerFactory extends PeerFactory {
     
                 // Combine consecutive ranges
                 Range priorRange = null;
-                int priorBegin = 0;
-                int priorEnd = 0;
-                for (final Iterator<Integer> rangesIterator = rangesMap.keySet().iterator(); rangesIterator.hasNext();) {
-                    final Integer rangeKey = rangesIterator.next();
-                    final Range range = rangesMap.get(rangeKey);
-                    final int begin = rangeKey.intValue();
-                    final int end = new IPv4Address(range.getEnd()).getAddress();
+                InetAddress priorBegin = null;
+                InetAddress priorEnd = null;
+                for (final Iterator<InetAddress> rangesIterator = rangesMap.keySet().iterator(); rangesIterator.hasNext();) {
+                    final InetAddress beginAddress = rangesIterator.next();
+                    final Range range = rangesMap.get(beginAddress);
+                    final InetAddress endAddress = InetAddressUtils.getInetAddress(range.getEnd());
     
                     if (priorRange != null) {
-                        if (begin - priorEnd <= 1) {
-                            priorRange.setBegin(IPv4Address.addressToString (Math.min(priorBegin, begin)));
-                            priorRange.setEnd(IPv4Address.addressToString (Math.max(priorEnd, end)));
+                        if (InetAddressUtils.inSameScope(beginAddress, priorEnd) && InetAddressUtils.difference(beginAddress, priorEnd).compareTo(BigInteger.ONE) <= 0) {
+                            priorBegin = new InetAddressComparator().compare(priorBegin, beginAddress) < 0 ? priorBegin : beginAddress;
+                            priorRange.setBegin(InetAddressUtils.toIpAddrString(priorBegin));
+                            priorEnd = new InetAddressComparator().compare(priorEnd, endAddress) > 0 ? priorEnd : endAddress;
+                            priorRange.setEnd(InetAddressUtils.toIpAddrString(priorEnd));
     
                             rangesIterator.remove();
                             continue;
@@ -378,8 +381,8 @@ public class AmiPeerFactory extends PeerFactory {
                     }
     
                     priorRange = range;
-                    priorBegin = begin;
-                    priorEnd = end;
+                    priorBegin = beginAddress;
+                    priorEnd = endAddress;
                 }
     
                 // Update changes made to sorted maps

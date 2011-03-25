@@ -21,6 +21,7 @@ import java.io.OutputStreamWriter;
 import java.io.Reader;
 import java.io.StringWriter;
 import java.io.Writer;
+import java.math.BigInteger;
 import java.net.InetAddress;
 import java.net.UnknownHostException;
 import java.util.ArrayList;
@@ -34,6 +35,7 @@ import org.exolab.castor.xml.MarshalException;
 import org.exolab.castor.xml.Marshaller;
 import org.exolab.castor.xml.ValidationException;
 import org.opennms.core.utils.IPLike;
+import org.opennms.core.utils.InetAddressComparator;
 import org.opennms.core.utils.InetAddressUtils;
 import org.opennms.core.utils.LogUtils;
 import org.opennms.netmgt.ConfigFileConstants;
@@ -42,7 +44,6 @@ import org.opennms.netmgt.config.nsclient.Definition;
 import org.opennms.netmgt.config.nsclient.NsclientConfig;
 import org.opennms.netmgt.dao.castor.CastorUtils;
 import org.opennms.netmgt.poller.nsclient.NSClientAgentConfig;
-import org.opennms.protocols.ip.IPv4Address;
 import org.springframework.core.io.FileSystemResource;
 
 /**
@@ -66,7 +67,7 @@ public final class NSClientPeerFactory extends PeerFactory {
     private final ReadWriteLock m_globalLock = new ReentrantReadWriteLock();
     private final Lock m_readLock = m_globalLock.readLock();
     private final Lock m_writeLock = m_globalLock.writeLock();
-    
+
     /**
      * The singleton instance of this factory
      */
@@ -95,7 +96,7 @@ public final class NSClientPeerFactory extends PeerFactory {
     private NSClientPeerFactory(final String configFile) throws IOException, MarshalException, ValidationException {
         m_config = CastorUtils.unmarshal(NsclientConfig.class, new FileSystemResource(configFile));
     }
-    
+
     /**
      * <p>Constructor for NSClientPeerFactory.</p>
      *
@@ -107,7 +108,7 @@ public final class NSClientPeerFactory extends PeerFactory {
     public NSClientPeerFactory(final InputStream stream) throws IOException, MarshalException, ValidationException {
         m_config = CastorUtils.unmarshal(NsclientConfig.class, stream);
     }
-    
+
     /**
      * <p>Constructor for NSClientPeerFactory.</p>
      *
@@ -120,11 +121,11 @@ public final class NSClientPeerFactory extends PeerFactory {
     public NSClientPeerFactory(final Reader rdr) throws IOException, MarshalException, ValidationException {
         m_config = CastorUtils.unmarshal(NsclientConfig.class, rdr);
     }
-    
+
     public Lock getReadLock() {
         return m_readLock;
     }
-    
+
     public Lock getWriteLock() {
         return m_writeLock;
     }
@@ -177,16 +178,23 @@ public final class NSClientPeerFactory extends PeerFactory {
     }
 
     /**
+     * Package-private access. Should only be used for unit testing.
+     */
+    NsclientConfig getConfig() {
+        return m_config;
+    }
+
+    /**
      * Saves the current settings to disk
      *
      * @throws java.lang.Exception if any.
      */
     public void saveCurrent() throws Exception {
         getWriteLock().lock();
-        
+
         try {
             optimize();
-    
+
             // Marshall to a string first, then write the string to the file. This
             // way the original config
             // isn't lost if the XML from the marshall is hosed.
@@ -198,7 +206,7 @@ public final class NSClientPeerFactory extends PeerFactory {
                 fileWriter.flush();
                 fileWriter.close();
             }
-    
+
             reload();
         } finally {
             getWriteLock().unlock();
@@ -219,7 +227,7 @@ public final class NSClientPeerFactory extends PeerFactory {
 
         return m_singleton;
     }
-    
+
     /**
      * <p>setInstance</p>
      *
@@ -238,21 +246,21 @@ public final class NSClientPeerFactory extends PeerFactory {
      */
     public NSClientAgentConfig getAgentConfig(final InetAddress agentInetAddress) {
         getReadLock().lock();
-        
+
         try {
             if (m_config == null) {
                 return new NSClientAgentConfig(agentInetAddress);
             }
-            
+
             final NSClientAgentConfig agentConfig = new NSClientAgentConfig(agentInetAddress);
-            
+
             //Now set the defaults from the m_config
             setNSClientAgentConfig(agentConfig, new Definition());
-    
+
             // Attempt to locate the node
             DEFLOOP: for (final Definition def : m_config.getDefinitionCollection()) {
                 // check the specifics first
-    
+
                 for (final String saddr : def.getSpecificCollection()) {
                     final InetAddress addr = InetAddressUtils.addr(saddr);
                     if (addr.equals(agentConfig.getAddress())) {
@@ -260,7 +268,7 @@ public final class NSClientPeerFactory extends PeerFactory {
                         break DEFLOOP;
                     }
                 }
-    
+
                 // check the ranges
                 //
                 for (final Range rng : def.getRangeCollection()) {
@@ -269,7 +277,7 @@ public final class NSClientPeerFactory extends PeerFactory {
                         break DEFLOOP;
                     }
                 }
-                
+
                 // check the matching IP expressions
                 for (final String ipMatch : def.getIpMatchCollection()) {
                     if (IPLike.matches(InetAddressUtils.str(agentInetAddress), ipMatch)) {
@@ -277,156 +285,167 @@ public final class NSClientPeerFactory extends PeerFactory {
                         break DEFLOOP;
                     }
                 }
-                
+
             } // end DEFLOOP
-    
+
             if (agentConfig == null) {
                 setNSClientAgentConfig(agentConfig, new Definition());
             }
-    
+
             return agentConfig;
         } finally {
             getReadLock().unlock();
         }
     }
-    
+
     /**
      * Combine specific and range elements so that NSClientPeerFactory has to spend
      * less time iterating all these elements.
      * TODO This really should be pulled up into PeerFactory somehow, but I'm not sure how (given that "Definition" is different for both
      * Snmp and NSClient.  Maybe some sort of visitor methodology would work.  The basic logic should be fine as it's all IP address manipulation
      */
-    private void optimize() throws UnknownHostException {
-        // First pass: Remove empty definition elements
-        for (final Iterator<Definition> definitionsIterator = m_config.getDefinitionCollection().iterator(); definitionsIterator.hasNext();) {
-            final Definition definition = definitionsIterator.next();
-            if (definition.getSpecificCount() == 0 && definition.getRangeCount() == 0) {
-                LogUtils.debugf(this, "optimize: Removing empty definition element");
-                definitionsIterator.remove();
-            }
-        }
+    void optimize() throws UnknownHostException {
+        getWriteLock().lock();
 
-        // Second pass: Replace single IP range elements with specific elements
-        for (final Definition definition : m_config.getDefinitionCollection()) {
-            for (final Iterator<Range> rangesIterator = definition.getRangeCollection().iterator(); rangesIterator.hasNext();) {
-                final Range range = rangesIterator.next();
-                if (range.getBegin().equals(range.getEnd())) {
-                    definition.addSpecific(range.getBegin());
-                    rangesIterator.remove();
-                }
-            }
-        }
-
-        // Third pass: Sort specific and range elements for improved XML
-        // readability and then combine them into fewer elements where possible
-        for (final Definition definition : m_config.getDefinitionCollection()) {
-            // Sort specifics
-            final TreeMap<Integer, String> specificsMap = new TreeMap<Integer, String>();
-            for (final String specific : definition.getSpecificCollection()) {
-                specificsMap.put(Integer.valueOf(new IPv4Address(specific).getAddress()), specific.trim());
-            }
-
-            // Sort ranges
-            final TreeMap<Integer, Range> rangesMap = new TreeMap<Integer, Range>();
-            for (final Range range : definition.getRangeCollection()) {
-                rangesMap.put(new IPv4Address(range.getBegin()).getAddress(), range);
-            }
-
-            // Combine consecutive specifics into ranges
-            Integer priorSpecific = null;
-            Range addedRange = null;
-            for (final Integer specific : specificsMap.keySet()) {
-                if (priorSpecific == null) {
-                    priorSpecific = specific;
-                    continue;
-                }
-
-                final int specificInt = specific.intValue();
-                final int priorSpecificInt = priorSpecific.intValue();
-
-                if (specificInt == priorSpecificInt + 1) {
-                    if (addedRange == null) {
-                        addedRange = new Range();
-                        addedRange.setBegin
-                             (IPv4Address.addressToString(priorSpecificInt));
-                        rangesMap.put(priorSpecific, addedRange);
-                        specificsMap.remove(priorSpecific);
-                    }
-
-                    addedRange.setEnd(IPv4Address.addressToString(specificInt));
-                    specificsMap.remove(specific);
-                }
-                else {
-                    addedRange = null;
-                }
-
-                priorSpecific = specific;
-            }
-
-            // Move specifics to ranges
-            for (final Integer specific : specificsMap.keySet()) {
-                for (final Integer begin : rangesMap.keySet()) {
-                    if (specific < begin - 1) {
-                        continue;
-                    }
-
-                    final Range range = rangesMap.get(begin);
-
-                    int endInt = new IPv4Address(range.getEnd()).getAddress();
-
-                    if (specific > endInt + 1) {
-                        continue;
-                    }
-
-                    if (specific >= begin && specific <= endInt) {
-                        specificsMap.remove(specific);
-                        break;
-                    }
-
-                    if (specific == begin - 1) {
-                        rangesMap.remove(begin);
-                        rangesMap.put(specific, range);
-                        range.setBegin(IPv4Address.addressToString(specific));
-                        specificsMap.remove(specific);
-                        break;
-                    }
-
-                    if (specific == endInt + 1) {
-                        range.setEnd(IPv4Address.addressToString(specific));
-                        specificsMap.remove(specific);
-                        break;
-                    }
+        try {
+            // First pass: Remove empty definition elements
+            for (final Iterator<Definition> definitionsIterator = m_config.getDefinitionCollection().iterator(); definitionsIterator.hasNext();) {
+                final Definition definition = definitionsIterator.next();
+                if (definition.getSpecificCount() == 0 && definition.getRangeCount() == 0) {
+                    LogUtils.debugf(this, "optimize: Removing empty definition element");
+                    definitionsIterator.remove();
                 }
             }
 
-            // Combine consecutive ranges
-            Range priorRange = null;
-            int priorBegin = 0;
-            int priorEnd = 0;
-            for (final Iterator<Integer> rangesIterator = rangesMap.keySet().iterator(); rangesIterator.hasNext();) {
-                final Integer begin = rangesIterator.next();
-
-                final Range range = rangesMap.get(begin);
-
-                final int end = new IPv4Address(range.getEnd()).getAddress();
-
-                if (priorRange != null) {
-                    if (begin - priorEnd <= 1) {
-                        priorRange.setBegin(IPv4Address.addressToString(Math.min(priorBegin, begin)));
-                        priorRange.setEnd(IPv4Address.addressToString(Math.max(priorEnd, end)));
+            // Second pass: Replace single IP range elements with specific elements
+            for (final Definition definition : m_config.getDefinitionCollection()) {
+                for (final Iterator<Range> rangesIterator = definition.getRangeCollection().iterator(); rangesIterator.hasNext();) {
+                    final Range range = rangesIterator.next();
+                    if (range.getBegin().equals(range.getEnd())) {
+                        definition.addSpecific(range.getBegin());
                         rangesIterator.remove();
+                    }
+                }
+            }
+
+            // Third pass: Sort specific and range elements for improved XML
+            // readability and then combine them into fewer elements where possible
+            for (final Definition definition : m_config.getDefinitionCollection()) {
+                // Sort specifics
+                final TreeMap<InetAddress,String> specificsMap = new TreeMap<InetAddress,String>(new InetAddressComparator());
+                for (final String specific : definition.getSpecificCollection()) {
+                    specificsMap.put(InetAddressUtils.getInetAddress(specific), specific.trim());
+                }
+
+                // Sort ranges
+                final TreeMap<InetAddress,Range> rangesMap = new TreeMap<InetAddress,Range>(new InetAddressComparator());
+                for (final Range range : definition.getRangeCollection()) {
+                    rangesMap.put(InetAddressUtils.getInetAddress(range.getBegin()), range);
+                }
+
+                // Combine consecutive specifics into ranges
+                InetAddress priorSpecific = null;
+                Range addedRange = null;
+                for (final InetAddress specific : specificsMap.keySet()) {
+                    if (priorSpecific == null) {
+                        priorSpecific = specific;
                         continue;
+                    }
+
+                    if (BigInteger.ONE.equals(InetAddressUtils.difference(specific, priorSpecific)) &&
+                            InetAddressUtils.inSameScope(specific, priorSpecific)) {
+                        if (addedRange == null) {
+                            addedRange = new Range();
+                            addedRange.setBegin(InetAddressUtils.toIpAddrString(priorSpecific));
+                            rangesMap.put(priorSpecific, addedRange);
+                            specificsMap.remove(priorSpecific);
+                        }
+
+                        addedRange.setEnd(InetAddressUtils.toIpAddrString(specific));
+                        specificsMap.remove(specific);
+                    }
+                    else {
+                        addedRange = null;
+                    }
+
+                    priorSpecific = specific;
+                }
+
+                // Move specifics to ranges
+                for (final InetAddress specific : new ArrayList<InetAddress>(specificsMap.keySet())) {
+                    for (final InetAddress begin : new ArrayList<InetAddress>(rangesMap.keySet())) {
+                        if (!InetAddressUtils.inSameScope(begin, specific)) {
+                            continue;
+                        }
+
+                        if (InetAddressUtils.toInteger(begin).subtract(BigInteger.ONE).compareTo(InetAddressUtils.toInteger(specific)) > 0) {
+                            continue;
+                        }
+
+                        final Range range = rangesMap.get(begin);
+
+                        final InetAddress end = InetAddressUtils.getInetAddress(range.getEnd());
+
+                        if (InetAddressUtils.toInteger(end).add(BigInteger.ONE).compareTo(InetAddressUtils.toInteger(specific)) < 0) {
+                            continue;
+                        }
+
+                        if (
+                                InetAddressUtils.toInteger(specific).compareTo(InetAddressUtils.toInteger(begin)) >= 0 &&
+                                InetAddressUtils.toInteger(specific).compareTo(InetAddressUtils.toInteger(end)) <= 0
+                        ) {
+                            specificsMap.remove(specific);
+                            break;
+                        }
+
+                        if (InetAddressUtils.toInteger(begin).subtract(BigInteger.ONE).equals(InetAddressUtils.toInteger(specific))) {
+                            rangesMap.remove(begin);
+                            rangesMap.put(specific, range);
+                            range.setBegin(InetAddressUtils.toIpAddrString(specific));
+                            specificsMap.remove(specific);
+                            break;
+                        }
+
+                        if (InetAddressUtils.toInteger(end).add(BigInteger.ONE).equals(InetAddressUtils.toInteger(specific))) {
+                            range.setEnd(InetAddressUtils.toIpAddrString(specific));
+                            specificsMap.remove(specific);
+                            break;
+                        }
                     }
                 }
 
-                priorRange = range;
-                priorBegin = begin;
-                priorEnd = end;
-            }
+                // Combine consecutive ranges
+                Range priorRange = null;
+                InetAddress priorBegin = null;
+                InetAddress priorEnd = null;
+                for (final Iterator<InetAddress> rangesIterator = rangesMap.keySet().iterator(); rangesIterator.hasNext();) {
+                    final InetAddress beginAddress = rangesIterator.next();
+                    final Range range = rangesMap.get(beginAddress);
+                    final InetAddress endAddress = InetAddressUtils.getInetAddress(range.getEnd());
 
-            // Update changes made to sorted maps
-            definition.setSpecific(new ArrayList<String>(specificsMap.values()));
-            definition.setRange(new ArrayList<Range>(rangesMap.values()));
+                    if (priorRange != null) {
+                        if (InetAddressUtils.inSameScope(beginAddress, priorEnd) && InetAddressUtils.difference(beginAddress, priorEnd).compareTo(BigInteger.ONE) <= 0) {
+                            priorBegin = new InetAddressComparator().compare(priorBegin, beginAddress) < 0 ? priorBegin : beginAddress;
+                            priorRange.setBegin(InetAddressUtils.toIpAddrString(priorBegin));
+                            priorEnd = new InetAddressComparator().compare(priorEnd, endAddress) > 0 ? priorEnd : endAddress;
+                            priorRange.setEnd(InetAddressUtils.toIpAddrString(priorEnd));
+
+                            rangesIterator.remove();
+                            continue;
+                        }
+                    }
+
+                    priorRange = range;
+                    priorBegin = beginAddress;
+                    priorEnd = endAddress;
+                }
+
+                // Update changes made to sorted maps
+                definition.setSpecific(new ArrayList<String>(specificsMap.values()));
+                definition.setRange(new ArrayList<Range>(rangesMap.values()));
+            }
+        } finally {
+            getWriteLock().unlock();
         }
     }
 
@@ -434,7 +453,7 @@ public final class NSClientPeerFactory extends PeerFactory {
         setCommonAttributes(agentConfig, def);
         agentConfig.setPassword(determinePassword(def));       
     }
-    
+
     /**
      * This is a helper method to set all the common attributes in the agentConfig.
      * 
@@ -448,7 +467,7 @@ public final class NSClientPeerFactory extends PeerFactory {
         agentConfig.setTimeout((int)determineTimeout(def));
     }
 
-     /**
+    /**
      * Helper method to search the nsclient configuration for the appropriate password
      * @param def
      * @return

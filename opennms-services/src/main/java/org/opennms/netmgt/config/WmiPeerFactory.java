@@ -39,8 +39,10 @@ import java.io.OutputStreamWriter;
 import java.io.Reader;
 import java.io.StringWriter;
 import java.io.Writer;
+import java.math.BigInteger;
 import java.net.InetAddress;
 import java.net.UnknownHostException;
+import java.util.ArrayList;
 import java.util.Enumeration;
 import java.util.Iterator;
 import java.util.TreeMap;
@@ -49,6 +51,7 @@ import org.exolab.castor.xml.MarshalException;
 import org.exolab.castor.xml.Marshaller;
 import org.exolab.castor.xml.ValidationException;
 import org.opennms.core.utils.IPLike;
+import org.opennms.core.utils.InetAddressComparator;
 import org.opennms.core.utils.InetAddressUtils;
 import org.opennms.core.utils.ThreadCategory;
 import org.opennms.netmgt.ConfigFileConstants;
@@ -56,7 +59,6 @@ import org.opennms.netmgt.config.common.Range;
 import org.opennms.netmgt.config.wmi.Definition;
 import org.opennms.netmgt.config.wmi.WmiConfig;
 import org.opennms.netmgt.dao.castor.CastorUtils;
-import org.opennms.protocols.ip.IPv4Address;
 import org.opennms.protocols.wmi.WmiAgentConfig;
 import org.springframework.core.io.FileSystemResource;
 
@@ -92,7 +94,7 @@ public class WmiPeerFactory extends PeerFactory {
      * This member is set to true if the configuration file has been loaded.
      */
     private static boolean m_loaded = false;
-    
+
     /**
      * Private constructor
      * 
@@ -119,7 +121,7 @@ public class WmiPeerFactory extends PeerFactory {
     public WmiPeerFactory(InputStream stream) throws MarshalException, ValidationException {
         m_config = CastorUtils.unmarshal(WmiConfig.class, stream);
     }
-    
+
     /**
      * <p>Constructor for WmiPeerFactory.</p>
      *
@@ -132,7 +134,7 @@ public class WmiPeerFactory extends PeerFactory {
     public WmiPeerFactory(Reader rdr) throws IOException, MarshalException, ValidationException {
         m_config = CastorUtils.unmarshal(WmiConfig.class, rdr);
     }
-    
+
     /**
      * Load the config from the default config file and create the singleton
      * instance of this factory.
@@ -188,6 +190,13 @@ public class WmiPeerFactory extends PeerFactory {
     }
 
     /**
+     * Package-private access. Should only be used for unit testing.
+     */
+    WmiConfig getConfig() {
+        return m_config;
+    }
+
+    /**
      * Saves the current settings to disk
      *
      * @throws java.lang.Exception if saving settings to disk fails.
@@ -218,12 +227,12 @@ public class WmiPeerFactory extends PeerFactory {
      *
      * @throws UnknownHostException
      */
-    private static void optimize() throws UnknownHostException {
+    static void optimize() throws UnknownHostException {
         ThreadCategory log = log();
 
         // First pass: Remove empty definition elements
         for (Iterator<Definition> definitionsIterator = m_config.getDefinitionCollection().iterator();
-             definitionsIterator.hasNext();) {
+        definitionsIterator.hasNext();) {
             Definition definition = definitionsIterator.next();
             if (definition.getSpecificCount() == 0 && definition.getRangeCount() == 0) {
                 if (log.isDebugEnabled())
@@ -251,39 +260,36 @@ public class WmiPeerFactory extends PeerFactory {
             Definition definition = defIterator.next();
 
             // Sort specifics
-            TreeMap<Integer,String> specificsMap = new TreeMap<Integer,String>();
+            final TreeMap<InetAddress,String> specificsMap = new TreeMap<InetAddress,String>(new InetAddressComparator());
             for (String specific : definition.getSpecificCollection()) {
-                specific = specific.trim();
-                specificsMap.put(new Integer(new IPv4Address(specific).getAddress()), specific);
+                specificsMap.put(InetAddressUtils.getInetAddress(specific), specific.trim());
             }
 
             // Sort ranges
-            TreeMap<Integer,Range> rangesMap = new TreeMap<Integer,Range>();
+            final TreeMap<InetAddress,Range> rangesMap = new TreeMap<InetAddress,Range>(new InetAddressComparator());
             for (Range range : definition.getRangeCollection()) {
-                rangesMap.put(new IPv4Address(range.getBegin()).getAddress(), range);
+                rangesMap.put(InetAddressUtils.getInetAddress(range.getBegin()), range);
             }
 
             // Combine consecutive specifics into ranges
-            Integer priorSpecific = null;
+            InetAddress priorSpecific = null;
             Range addedRange = null;
-            for (Integer specific : specificsMap.keySet()) {
+            for (final InetAddress specific : specificsMap.keySet()) {
                 if (priorSpecific == null) {
                     priorSpecific = specific;
                     continue;
                 }
 
-                int specificInt = specific.intValue();
-                int priorSpecificInt = priorSpecific.intValue();
-
-                if (specificInt == priorSpecificInt + 1) {
+                if (BigInteger.ONE.equals(InetAddressUtils.difference(specific, priorSpecific)) &&
+                        InetAddressUtils.inSameScope(specific, priorSpecific)) {
                     if (addedRange == null) {
                         addedRange = new Range();
-                        addedRange.setBegin(IPv4Address.addressToString(priorSpecificInt));
+                        addedRange.setBegin(InetAddressUtils.toIpAddrString(priorSpecific));
                         rangesMap.put(priorSpecific, addedRange);
                         specificsMap.remove(priorSpecific);
                     }
 
-                    addedRange.setEnd(IPv4Address.addressToString(specificInt));
+                    addedRange.setEnd(InetAddressUtils.toIpAddrString(specific));
                     specificsMap.remove(specific);
                 }
                 else {
@@ -294,38 +300,42 @@ public class WmiPeerFactory extends PeerFactory {
             }
 
             // Move specifics to ranges
-            for (Iterator<Integer> specIterator = specificsMap.keySet().iterator(); specIterator.hasNext(); ) {
-                Integer specific = specIterator.next();
-                int specificInt = specific.intValue();
-                for (Iterator<Integer> rangeIterator = rangesMap.keySet().iterator(); rangeIterator.hasNext();) {
-                    Integer begin = rangeIterator.next();
-                    int beginInt = begin.intValue();
-
-                    if (specificInt < beginInt - 1)
+            for (final InetAddress specific : new ArrayList<InetAddress>(specificsMap.keySet())) {
+                for (final InetAddress begin : new ArrayList<InetAddress>(rangesMap.keySet())) {
+                    if (!InetAddressUtils.inSameScope(begin, specific)) {
                         continue;
+                    }
+
+                    if (InetAddressUtils.toInteger(begin).subtract(BigInteger.ONE).compareTo(InetAddressUtils.toInteger(specific)) > 0) {
+                        continue;
+                    }
 
                     Range range = rangesMap.get(begin);
 
-                    int endInt = new IPv4Address(range.getEnd()).getAddress();
+                    final InetAddress end = InetAddressUtils.getInetAddress(range.getEnd());
 
-                    if (specificInt > endInt + 1)
+                    if (InetAddressUtils.toInteger(end).add(BigInteger.ONE).compareTo(InetAddressUtils.toInteger(specific)) < 0) {
                         continue;
+                    }
 
-                    if (specificInt >= beginInt && specificInt <= endInt) {
+                    if (
+                            InetAddressUtils.toInteger(specific).compareTo(InetAddressUtils.toInteger(begin)) >= 0 &&
+                            InetAddressUtils.toInteger(specific).compareTo(InetAddressUtils.toInteger(end)) <= 0
+                    ) {
                         specificsMap.remove(specific);
                         break;
                     }
 
-                    if (specificInt == beginInt - 1) {
+                    if (InetAddressUtils.toInteger(begin).subtract(BigInteger.ONE).equals(InetAddressUtils.toInteger(specific))) {
                         rangesMap.remove(begin);
                         rangesMap.put(specific, range);
-                        range.setBegin(IPv4Address.addressToString(specificInt));
+                        range.setBegin(InetAddressUtils.toIpAddrString(specific));
                         specificsMap.remove(specific);
                         break;
                     }
 
-                    if (specificInt == endInt + 1) {
-                        range.setEnd(IPv4Address.addressToString(specificInt));
+                    if (InetAddressUtils.toInteger(end).add(BigInteger.ONE).equals(InetAddressUtils.toInteger(specific))) {
+                        range.setEnd(InetAddressUtils.toIpAddrString(specific));
                         specificsMap.remove(specific);
                         break;
                     }
@@ -334,20 +344,19 @@ public class WmiPeerFactory extends PeerFactory {
 
             // Combine consecutive ranges
             Range priorRange = null;
-            int priorBegin = 0;
-            int priorEnd = 0;
-            for (Iterator<Integer> rangesIterator = rangesMap.keySet().iterator(); rangesIterator.hasNext();) {
-                Integer rangeKey = rangesIterator.next();
-
-                Range range = rangesMap.get(rangeKey);
-
-                int begin = rangeKey.intValue();
-                int end = new IPv4Address(range.getEnd()).getAddress();
+            InetAddress priorBegin = null;
+            InetAddress priorEnd = null;
+            for (final Iterator<InetAddress> rangesIterator = rangesMap.keySet().iterator(); rangesIterator.hasNext();) {
+                final InetAddress beginAddress = rangesIterator.next();
+                final Range range = rangesMap.get(beginAddress);
+                final InetAddress endAddress = InetAddressUtils.getInetAddress(range.getEnd());
 
                 if (priorRange != null) {
-                    if (begin - priorEnd <= 1) {
-                        priorRange.setBegin(IPv4Address.addressToString(Math.min(priorBegin, begin)));
-                        priorRange.setEnd(IPv4Address.addressToString(Math.max(priorEnd, end)));
+                    if (InetAddressUtils.inSameScope(beginAddress, priorEnd) && InetAddressUtils.difference(beginAddress, priorEnd).compareTo(BigInteger.ONE) <= 0) {
+                        priorBegin = new InetAddressComparator().compare(priorBegin, beginAddress) < 0 ? priorBegin : beginAddress;
+                        priorRange.setBegin(InetAddressUtils.toIpAddrString(priorBegin));
+                        priorEnd = new InetAddressComparator().compare(priorEnd, endAddress) > 0 ? priorEnd : endAddress;
+                        priorRange.setEnd(InetAddressUtils.toIpAddrString(priorEnd));
 
                         rangesIterator.remove();
                         continue;
@@ -355,8 +364,8 @@ public class WmiPeerFactory extends PeerFactory {
                 }
 
                 priorRange = range;
-                priorBegin = begin;
-                priorEnd = end;
+                priorBegin = beginAddress;
+                priorEnd = endAddress;
             }
 
             // Update changes made to sorted maps
@@ -378,7 +387,7 @@ public class WmiPeerFactory extends PeerFactory {
 
         return m_singleton;
     }
-    
+
     /**
      * <p>setInstance</p>
      *
@@ -400,9 +409,9 @@ public class WmiPeerFactory extends PeerFactory {
         if (m_config == null) {
             return new WmiAgentConfig(agentInetAddress);
         }
-        
+
         WmiAgentConfig agentConfig = new WmiAgentConfig(agentInetAddress);
-        
+
         //Now set the defaults from the m_config
         setWmiAgentConfig(agentConfig, new Definition());
 
@@ -428,7 +437,7 @@ public class WmiPeerFactory extends PeerFactory {
                     break DEFLOOP;
                 }
             }
-            
+
             // check the matching IP expressions
             //
             for (String ipMatch : def.getIpMatchCollection()) {
@@ -437,7 +446,7 @@ public class WmiPeerFactory extends PeerFactory {
                     break DEFLOOP;
                 }
             }
-            
+
         } // end DEFLOOP
 
         if (agentConfig == null) {
@@ -449,12 +458,12 @@ public class WmiPeerFactory extends PeerFactory {
         return agentConfig;
 
     }
-    
+
     private void setWmiAgentConfig(WmiAgentConfig agentConfig, Definition def) {
         setCommonAttributes(agentConfig, def);
         agentConfig.setPassword(determinePassword(def));       
     }
-    
+
     /**
      * This is a helper method to set all the common attributes in the agentConfig.
      * 
@@ -487,7 +496,7 @@ public class WmiPeerFactory extends PeerFactory {
         return (def.getDomain() == null ? (m_config.getDomain() == null ? WmiAgentConfig.DEFAULT_DOMAIN :m_config.getDomain()) : def.getDomain());
     }
 
-     /**
+    /**
      * Helper method to search the wmi-config for the appropriate password
      * @param def
      * @return a string containing the password. will return the default if none is set.

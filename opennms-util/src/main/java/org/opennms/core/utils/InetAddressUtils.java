@@ -89,7 +89,7 @@ abstract public class InetAddressUtils {
         } catch (final UnknownHostException e) {
             throw new IllegalArgumentException("Invalid IPAddress " + ipAddrOctets + " with length " + ipAddrOctets.length);
         }
-        
+
     }
 
     /**
@@ -192,26 +192,30 @@ abstract public class InetAddressUtils {
         if (addresses == null) {
             throw new IllegalArgumentException("Cannot take null parameters.");
         }
-    
+
         InetAddress lowest = null;
         // Start with the highest conceivable IP address value
         final byte[] originalBytes = toIpAddrBytes("ffff:ffff:ffff:ffff:ffff:ffff:ffff:ffff");
         byte[] lowestBytes = originalBytes;
         final ByteArrayComparator comparator = new ByteArrayComparator();
         for (final InetAddress temp : addresses) {
-        	final byte[] tempBytes = temp.getAddress();
-    
+            byte[] tempBytes = temp.getAddress();
+
             if (comparator.compare(tempBytes, lowestBytes) < 0) {
                 lowestBytes = tempBytes;
                 lowest = temp;
             }
         }
-    
+
         return comparator.compare(originalBytes, lowestBytes) == 0 ? null : lowest;
     }
 
     public static BigInteger difference(final String addr1, final String addr2) {
-        return new BigInteger(getInetAddress(addr1).getAddress()).subtract(new BigInteger(getInetAddress(addr2).getAddress()));
+        return difference(getInetAddress(addr1), getInetAddress(addr2));
+    }
+
+    public static BigInteger difference(final InetAddress addr1, final InetAddress addr2) {
+        return new BigInteger(addr1.getAddress()).subtract(new BigInteger(addr2.getAddress()));
     }
 
 	public static boolean isInetAddressInRange(final byte[] laddr, final String beginString, final String endString) {
@@ -235,6 +239,23 @@ abstract public class InetAddressUtils {
             return true;
         } else { 
             return false;
+        }
+    }
+
+    public static boolean inSameScope(final InetAddress addr1, final InetAddress addr2) {
+        if (addr1 instanceof Inet4Address) {
+            if (addr2 instanceof Inet4Address) {
+                return true;
+            } else {
+                return false;
+            }
+        } else {
+            if (addr2 instanceof Inet4Address) {
+                return false;
+            } else {
+                // Compare the IPv6 scope IDs
+                return new Integer(((Inet6Address)addr1).getScopeId()).compareTo(((Inet6Address)addr2).getScopeId()) == 0;
+            }
         }
     }
 
