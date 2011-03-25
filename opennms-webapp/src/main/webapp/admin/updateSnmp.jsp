@@ -54,7 +54,7 @@
         Event snmpRestart = new Event();
         snmpRestart.setUei("uei.opennms.org/nodes/reinitializePrimarySnmpInterface");
         snmpRestart.setNodeid(Long.valueOf(nodeid));
-        snmpRestart.setInterface(InetAddressUtils.addr(primeInt));
+        snmpRestart.setInterface(primeInt);
         snmpRestart.setSource("web ui");
         snmpRestart.setTime(EventConstants.formatToString(new java.util.Date()));
 
