@@ -18,11 +18,13 @@
 /* package org.apache.xmlrpc; */
 package org.opennms.netmgt.xmlrpcd;
 
+import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
-import java.io.IOException;
 import java.net.URL;
+
 import org.apache.xmlrpc.DefaultXmlRpcTransport;
+import org.opennms.core.utils.LogUtils;
 
 /**
  * TimeoutSecureXmlRpcTransport adds a read timeout to the url connection.
@@ -30,9 +32,8 @@ import org.apache.xmlrpc.DefaultXmlRpcTransport;
  * @author ranger
  * @version $Id: $
  */
-public class TimeoutSecureXmlRpcTransport extends DefaultXmlRpcTransport
-{
-    protected int timeout = 0;
+public class TimeoutSecureXmlRpcTransport extends DefaultXmlRpcTransport {
+    protected int m_timeout = 0;
 
     /**
      * Create a new TimeoutSecureXmlRpcTransport with the specified URL and
@@ -43,10 +44,9 @@ public class TimeoutSecureXmlRpcTransport extends DefaultXmlRpcTransport
      * @param auth the Base64 encoded HTTP Basic authentication value.
      * @param timeout a int.
      */
-    public TimeoutSecureXmlRpcTransport(URL url, String auth, int timeout)
-    {
+    public TimeoutSecureXmlRpcTransport(final URL url, final String auth, final int timeout) {
         super(url, auth);
-        this.timeout = timeout;
+        this.m_timeout = timeout;
     }
 
     /**
@@ -55,10 +55,9 @@ public class TimeoutSecureXmlRpcTransport extends DefaultXmlRpcTransport
      * @param url the url to POST XML-RPC requests to.
      * @param timeout a int.
      */
-    public TimeoutSecureXmlRpcTransport(URL url, int timeout)
-    {
+    public TimeoutSecureXmlRpcTransport(final URL url, final int timeout) {
         super(url, null);
-        this.timeout = timeout;
+        this.m_timeout = timeout;
     }
 
     /**
@@ -71,24 +70,20 @@ public class TimeoutSecureXmlRpcTransport extends DefaultXmlRpcTransport
      * @return a {@link java.io.InputStream} object.
      * @throws java.io.IOException if any.
      */
-    public InputStream sendXmlRpc(byte [] request)
-    throws IOException
-    {
+    public InputStream sendXmlRpc(final byte [] request) throws IOException {
         con = url.openConnection();
-        System.err.println("Setting read timeout to 60000");
-        con.setReadTimeout(timeout);
+        LogUtils.debugf(this, "Setting read timeout to %d", m_timeout);
+        con.setReadTimeout(m_timeout);
         con.setDoInput(true);
         con.setDoOutput(true);
         con.setUseCaches(false);
         con.setAllowUserInteraction(false);
-        con.setRequestProperty("Content-Length",
-        Integer.toString(request.length));
+        con.setRequestProperty("Content-Length", Integer.toString(request.length));
         con.setRequestProperty("Content-Type", "text/xml");
-        if (auth != null)
-        {
+        if (auth != null) {
             con.setRequestProperty("Authorization", "Basic " + auth);
         }
-        OutputStream out = con.getOutputStream();
+        final OutputStream out = con.getOutputStream();
         out.write(request);
         out.flush();
         out.close();

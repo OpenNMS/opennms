@@ -46,6 +46,7 @@ import org.exolab.castor.xml.MarshalException;
 import org.exolab.castor.xml.ValidationException;
 import org.opennms.core.queue.FifoQueue;
 import org.opennms.core.queue.FifoQueueImpl;
+import org.opennms.core.utils.LogUtils;
 import org.opennms.netmgt.config.OpennmsServerConfigFactory;
 import org.opennms.netmgt.config.XmlrpcdConfigFactory;
 import org.opennms.netmgt.daemon.AbstractServiceDaemon;
@@ -63,28 +64,6 @@ import org.opennms.netmgt.config.xmlrpcd.ExternalServers;
  * @author <a href="mailto:david@opennms.org">David Hustace</a>
  * @author <a href="mailto:tarus@opennms.org">Tarus Balog</a>
  * @author <A HREF="mailto:jamesz@opennms.com">James Zuo </A>
- * @author <A HREF="http://www.opennms.org">OpenNMS.org </A>
- * @author <a href="mailto:brozow@opennms.org">Mathew Brozowski</a>
- * @author <a href="mailto:david@opennms.org">David Hustace</a>
- * @author <a href="mailto:tarus@opennms.org">Tarus Balog</a>
- * @author <A HREF="mailto:jamesz@opennms.com">James Zuo </A>
- * @author <A HREF="http://www.opennms.org">OpenNMS.org </A>
- * @author <a href="mailto:brozow@opennms.org">Mathew Brozowski</a>
- * @author <a href="mailto:david@opennms.org">David Hustace</a>
- * @author <a href="mailto:tarus@opennms.org">Tarus Balog</a>
- * @author <A HREF="mailto:jamesz@opennms.com">James Zuo </A>
- * @author <A HREF="http://www.opennms.org">OpenNMS.org </A>
- * @author <a href="mailto:brozow@opennms.org">Mathew Brozowski</a>
- * @author <a href="mailto:david@opennms.org">David Hustace</a>
- * @author <a href="mailto:tarus@opennms.org">Tarus Balog</a>
- * @author <A HREF="mailto:jamesz@opennms.com">James Zuo </A>
- * @author <A HREF="http://www.opennms.org">OpenNMS.org </A>
- * @author <a href="mailto:brozow@opennms.org">Mathew Brozowski</a>
- * @author <a href="mailto:david@opennms.org">David Hustace</a>
- * @author <a href="mailto:tarus@opennms.org">Tarus Balog</a>
- * @author <A HREF="mailto:jamesz@opennms.com">James Zuo </A>
- * @author <A HREF="http://www.opennms.org">OpenNMS.org </A>
- * @version $Id: $
  */
 public class Xmlrpcd extends AbstractServiceDaemon {
     /**
@@ -128,13 +107,13 @@ public class Xmlrpcd extends AbstractServiceDaemon {
     protected void onInit() {
 
 
-        log().debug("start: Creating the xmlrpc event queue processor");
+        LogUtils.debugf(this, "start: Creating the xmlrpc event queue processor");
 
         // set up the event queue processor
         try {
-            log().debug("start: Initializing the xmlrpcd config factory");
+            LogUtils.debugf(this, "start: Initializing the xmlrpcd config factory");
 
-            boolean verifyServer = getServerConfig().verifyServer();
+            final boolean verifyServer = getServerConfig().verifyServer();
             String localServer = null;
 
             if (verifyServer) {
@@ -142,33 +121,31 @@ public class Xmlrpcd extends AbstractServiceDaemon {
             }
 
             // create a BroadcastEventProcessor per server 
-            Enumeration<ExternalServers> servers = getConfig().getExternalServerEnumeration();
+            final Enumeration<ExternalServers> servers = getConfig().getExternalServerEnumeration();
             int i = 0;
             while (servers.hasMoreElements()) {
-                ExternalServers server = servers.nextElement();
-                XmlrpcServer[] xServers = server.getXmlrpcServer();
-                FifoQueue<Event> q = new FifoQueueImpl<Event>();
+            	final ExternalServers server = servers.nextElement();
+                final XmlrpcServer[] xServers = server.getXmlrpcServer();
+                final FifoQueue<Event> q = new FifoQueueImpl<Event>();
                 m_eventlogQs.add(q);
-                m_eventReceivers.add(new BroadcastEventProcessor(
-                            Integer.toString(i), q, getConfig().getMaxQueueSize(), 
-                                    getConfig().getEventList(server)));
+                m_eventReceivers.add(new BroadcastEventProcessor(Integer.toString(i), q, getConfig().getMaxQueueSize(), getConfig().getEventList(server)));
 
                 // create an EventQueueProcessor per server 
                 m_processors.add( new EventQueueProcessor(q, xServers, server.getRetries(), server.getElapseTime(), verifyServer, localServer, getConfig().getMaxQueueSize()) );
                 i++;
             }
 
-        } catch (MarshalException e) {
-            log().error("Failed to load configuration", e);
+        } catch (final MarshalException e) {
+            LogUtils.errorf(this, e, "Failed to load configuration");
             throw new UndeclaredThrowableException(e);
-        } catch (ValidationException e) {
-            log().error("Failed to load configuration", e);
+        } catch (final ValidationException e) {
+            LogUtils.errorf(this, e, "Failed to load configuration");
             throw new UndeclaredThrowableException(e);
-        } catch (IOException e) {
-            log().error("Failed to load configuration", e);
+        } catch (final IOException e) {
+            LogUtils.errorf(this, e, "Failed to load configuration");
             throw new UndeclaredThrowableException(e);
-        } catch (Throwable t) {
-            log().error("Failed to load configuration", t);
+        } catch (final Throwable t) {
+            LogUtils.errorf(this, t, "Failed to load configuration");
             throw new UndeclaredThrowableException(t);
         }
     }
@@ -205,7 +182,7 @@ public class Xmlrpcd extends AbstractServiceDaemon {
      *
      * @param config a {@link org.opennms.netmgt.config.XmlrpcdConfigFactory} object.
      */
-    public void setConfig(XmlrpcdConfigFactory config) {
+    public void setConfig(final XmlrpcdConfigFactory config) {
         m_config = config;
     }
     
@@ -241,7 +218,7 @@ public class Xmlrpcd extends AbstractServiceDaemon {
      *
      * @param serverConfig a {@link org.opennms.netmgt.config.OpennmsServerConfigFactory} object.
      */
-    public void setServerConfig(OpennmsServerConfigFactory serverConfig) {
+    public void setServerConfig(final OpennmsServerConfigFactory serverConfig) {
         m_serverConfig = serverConfig;
     }
 
@@ -249,39 +226,39 @@ public class Xmlrpcd extends AbstractServiceDaemon {
      * <p>onStart</p>
      */
     protected void onStart() {
-        log().debug("start: Initializing the xmlrpcd config factory");
+        LogUtils.debugf(this, "start: Initializing the xmlrpcd config factory");
         
-        for (EventQueueProcessor proc : m_processors) {
-            proc.start();
+        for (final EventQueueProcessor proc : m_processors) {
+        	proc.start();
         }
 
-        log().debug("start: xmlrpcd ready to process events");
+        LogUtils.debugf(this, "start: xmlrpcd ready to process events");
     }
 
     /**
      * <p>onPause</p>
      */
     protected void onPause() {
-        log().debug("Calling pause on processor");
+        LogUtils.debugf(this, "pause: Calling pause on processor");
 
-        for (EventQueueProcessor proc : m_processors) {
+        for (final EventQueueProcessor proc : m_processors) {
             proc.pause();
         }
 
-        log().debug("Processor paused");
+        LogUtils.debugf(this, "pause: Processor paused");
     }
     
     /**
      * <p>onResume</p>
      */
     protected void onResume() {
-        log().debug("Calling resume on processor");
+        LogUtils.debugf(this, "resume: Calling resume on processor");
 
-        for (EventQueueProcessor proc : m_processors) {
+        for (final EventQueueProcessor proc : m_processors) {
             proc.resume();
         }
 
-        log().debug("Processor resumed");
+        LogUtils.debugf(this, "resume: Processor resumed");
     }
 
     /**
@@ -289,14 +266,16 @@ public class Xmlrpcd extends AbstractServiceDaemon {
      */
     protected void onStop() {
         // shutdown and wait on the background processing thread to exit.
-        log().debug("exit: closing communication paths.");
+    	// LogUtils.debugf(this, "exit: closing communication paths.");
 
-        log().debug("stop: Stopping queue processor.");
+        LogUtils.debugf(this, "stop: Calling stop on processor");
 
         // interrupt the processor daemon thread
-        for (EventQueueProcessor proc : m_processors) {
+        for (final EventQueueProcessor proc : m_processors) {
             proc.stop();
         }
+        
+        LogUtils.debugf(this, "stop: Processor stopped");
     }
 
     /**

@@ -82,7 +82,7 @@ final class BroadcastEventProcessor implements EventListener {
     /**
      * Create message selector to set to the subscription
      */
-    BroadcastEventProcessor(String nameSuffix, FifoQueue<Event> eventQ, int maxQSize, List<SubscribedEvent> eventList) {
+    BroadcastEventProcessor(final String nameSuffix, final FifoQueue<Event> eventQ, final int maxQSize, final List<SubscribedEvent> eventList) {
         m_nameSuffix = nameSuffix;
 
         // Create the selector for the ueis this service is interested in

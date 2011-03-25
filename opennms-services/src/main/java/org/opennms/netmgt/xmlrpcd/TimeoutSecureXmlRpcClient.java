@@ -23,7 +23,6 @@ import java.util.Vector;
 
 import org.apache.xmlrpc.XmlRpcClient;
 import org.apache.xmlrpc.secure.SecurityTool;
-import org.opennms.netmgt.xmlrpcd.TimeoutSecureXmlRpcTransportFactory;
 
 /**
  * This class was copied from org.apache.xmlrpc.secure.SecureXmlRpcClient with
@@ -43,7 +42,7 @@ public class TimeoutSecureXmlRpcClient
      * @param url a {@link java.net.URL} object.
      * @param timeout a int.
      */
-    public TimeoutSecureXmlRpcClient (URL url, int timeout) {
+    public TimeoutSecureXmlRpcClient (final URL url, final int timeout) {
         super(url, new TimeoutSecureXmlRpcTransportFactory(url, timeout));
         this.timeout = timeout;
     }
@@ -56,7 +55,7 @@ public class TimeoutSecureXmlRpcClient
      * @param timeout a int.
      * @throws java.net.MalformedURLException if any.
      */
-    public TimeoutSecureXmlRpcClient (String url, int timeout) throws MalformedURLException {
+    public TimeoutSecureXmlRpcClient(final String url, final int timeout) throws MalformedURLException {
         super(new URL(url), new TimeoutSecureXmlRpcTransportFactory(new URL(url), timeout));
         this.timeout = timeout;
     }
@@ -70,8 +69,7 @@ public class TimeoutSecureXmlRpcClient
      * @param timeout a int.
      * @throws java.net.MalformedURLException if any.
      */
-    public TimeoutSecureXmlRpcClient (String hostname, int port, int timeout) throws MalformedURLException 
-    {
+    public TimeoutSecureXmlRpcClient (final String hostname, final int port, final int timeout) throws MalformedURLException {
         this("https://" + hostname + ':' + port + "/RPC2", timeout);
     }
     
@@ -80,8 +78,7 @@ public class TimeoutSecureXmlRpcClient
       *
       * @throws java.lang.Exception if any.
       */
-     public void setup() throws Exception
-     {
+     public void setup() throws Exception {
          SecurityTool.setup();    
      }
 
@@ -91,8 +88,7 @@ public class TimeoutSecureXmlRpcClient
      * @param args an array of {@link java.lang.String} objects.
      * @throws java.lang.Exception if any.
      */
-    public static void main (String args[]) throws Exception
-    {
+    public static void main (final String args[]) throws Exception {
         // XmlRpc.setDebug (true);
         try {
             String url = args[0];
