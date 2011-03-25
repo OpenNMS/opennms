@@ -49,6 +49,7 @@ import org.junit.Before;
 import org.junit.Ignore;
 import org.junit.Test;
 import org.junit.runner.RunWith;
+import org.opennms.core.utils.InetAddressUtils;
 import org.opennms.test.ThrowableAnticipator;
 import org.opennms.test.mock.MockLogAppender;
 import org.springframework.core.io.ClassPathResource;
@@ -271,14 +272,10 @@ public class JavaMailerTest {
         JavaMailer jm = new JavaMailer();
 
         jm.setFrom(TEST_ADDRESS);
-        jm.setMessageText(subject + ": " + getLocalHost());
+        jm.setMessageText(subject + ": " + InetAddressUtils.getLocalHostAddress());
         jm.setSubject("Testing JavaMailer");
         jm.setTo(TEST_ADDRESS);
 
         return jm;
-    }
-
-    private InetAddress getLocalHost() throws UnknownHostException {
-        return InetAddress.getLocalHost();
     }
 }

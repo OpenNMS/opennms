@@ -35,24 +35,73 @@
  */
 package org.opennms.netmgt.dao;
 
+import static org.junit.Assert.*;
+
 import java.util.Date;
 
+import org.junit.Before;
 import org.junit.Test;
+import org.junit.runner.RunWith;
+import org.opennms.netmgt.dao.db.OpenNMSConfigurationExecutionListener;
+import org.opennms.netmgt.dao.db.TemporaryDatabaseExecutionListener;
 import org.opennms.netmgt.model.AckAction;
 import org.opennms.netmgt.model.AckType;
 import org.opennms.netmgt.model.OnmsAcknowledgment;
 import org.opennms.netmgt.model.OnmsAlarm;
 import org.opennms.netmgt.model.OnmsEvent;
 import org.opennms.netmgt.model.OnmsNode;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.test.context.ContextConfiguration;
+import org.springframework.test.context.TestExecutionListeners;
+import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
+import org.springframework.test.context.support.DependencyInjectionTestExecutionListener;
+import org.springframework.test.context.support.DirtiesContextTestExecutionListener;
+import org.springframework.test.context.transaction.TransactionalTestExecutionListener;
 
 /**
  * Tests for Acknowledgment DAO
  * @author <a href="mailto:david@opennms.org">David Hustace</a>
  *
  */
-public class AcknowledgmentDaoTest extends AbstractTransactionalDaoTestCase {
+@RunWith(SpringJUnit4ClassRunner.class)
+@TestExecutionListeners({
+    OpenNMSConfigurationExecutionListener.class,
+    TemporaryDatabaseExecutionListener.class,
+    DependencyInjectionTestExecutionListener.class,
+    DirtiesContextTestExecutionListener.class,
+    TransactionalTestExecutionListener.class
+})
+@ContextConfiguration(locations={
+        "classpath:/META-INF/opennms/applicationContext-dao.xml",
+        "classpath:/META-INF/opennms/applicationContext-databasePopulator.xml",
+        "classpath:/META-INF/opennms/applicationContext-setupIpLike-enabled.xml",
+        "classpath*:/META-INF/opennms/component-dao.xml"
+})
+public class AcknowledgmentDaoTest {
+	@Autowired
+    private AcknowledgmentDao m_acknowledgmentDao;
+	
+	@Autowired
+	private DistPollerDao m_distPollerDao;
 
-    @Test
+	@Autowired
+	private AlarmDao m_alarmDao;
+
+	@Autowired
+	private NodeDao m_nodeDao;
+
+	@Autowired
+	private EventDao m_eventDao;
+
+	@Autowired
+	private DatabasePopulator m_databasePopulator;
+	
+	@Before
+	public void setUp() {
+		m_databasePopulator.populateDatabase();
+	}
+
+	@Test
     public void testSaveUnspecified() {
         OnmsAcknowledgment ack = new OnmsAcknowledgment();
         ack.setAckTime(new Date());
@@ -72,20 +121,24 @@ public class AcknowledgmentDaoTest extends AbstractTransactionalDaoTestCase {
         
     }
 
-    @Test
+    private AcknowledgmentDao getAcknowledgmentDao() {
+    	return m_acknowledgmentDao;
+	}
+
+	@Test
     public void testSaveWithAlarm() {
         OnmsEvent event = new OnmsEvent();
         event.setEventLog("Y");
         event.setEventDisplay("Y");
         event.setEventCreateTime(new Date());
-        event.setDistPoller(getDistPollerDao().load("localhost"));
+        event.setDistPoller(m_distPollerDao.load("localhost"));
         event.setEventTime(new Date());
         event.setEventSeverity(new Integer(7));
         event.setEventUei("uei://org/opennms/test/EventDaoTest");
         event.setEventSource("test");
-        getEventDao().save(event);
+        m_eventDao.save(event);
         
-        OnmsNode node = getNodeDao().findAll().iterator().next();
+        OnmsNode node = m_nodeDao.findAll().iterator().next();
 
         OnmsAlarm alarm = new OnmsAlarm();
         
@@ -95,12 +148,12 @@ public class AcknowledgmentDaoTest extends AbstractTransactionalDaoTestCase {
         alarm.setFirstEventTime(event.getEventTime());
         alarm.setLastEvent(event);
         alarm.setCounter(new Integer(1));
-        alarm.setDistPoller(getDistPollerDao().load("localhost"));
+        alarm.setDistPoller(m_distPollerDao.load("localhost"));
         alarm.setAlarmAckTime(new Date());
         alarm.setAlarmAckUser("not-admin");
         
-        getAlarmDao().save(alarm);
-        getAlarmDao().flush();
+        m_alarmDao.save(alarm);
+        m_alarmDao.flush();
         
         OnmsAcknowledgment ack = new OnmsAcknowledgment(alarm);
         getAcknowledgmentDao().save(ack);
@@ -108,28 +161,9 @@ public class AcknowledgmentDaoTest extends AbstractTransactionalDaoTestCase {
         ack = null;
         
         OnmsAcknowledgment ack2 = getAcknowledgmentDao().get(ackId);
-        OnmsAlarm alarm2 = getAlarmDao().get(ack2.getRefId());
+        OnmsAlarm alarm2 = m_alarmDao.get(ack2.getRefId());
         
         assertEquals(ack2.getAckUser(), alarm2.getAlarmAckUser());
         assertEquals(ack2.getAckTime(), alarm2.getAlarmAckTime());
-        
     }
-
-    /*
-    @Test
-    public void testAcknowledgmentDaoHibernate() {
-        fail("Not yet implemented");
-    }
-
-    @Test
-    public void testFindAcknowledgables() {
-        fail("Not yet implemented");
-    }
-
-    @Test
-    public void testUpdateAckable() {
-        fail("Not yet implemented");
-    }
-    */
-
 }

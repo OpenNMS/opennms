@@ -118,7 +118,7 @@ public class DatabasePopulator {
     public void populateDatabase() {
         m_transTemplate.execute(new TransactionCallback<Object>() {
             public Object doInTransaction(final TransactionStatus status) {
-            	final OnmsDistPoller distPoller = getDistPoller("localhost", "127.0.0.1");
+            	final OnmsDistPoller distPoller = getDistPoller(InetAddressUtils.getLocalHostName(), InetAddressUtils.getLocalHostAddressAsString());
                 
             	final OnmsCategory ac = getCategory("DEV_AC");
             	final OnmsCategory mid = getCategory("IMP_mid");
@@ -356,10 +356,11 @@ public class DatabasePopulator {
     private OnmsCategory getCategory(final String categoryName) {
     	final OnmsCategory cat = getCategoryDao().findByName(categoryName);
         if (cat == null) {
-            OnmsCategory newCat = new OnmsCategory(categoryName);
+        	final OnmsCategory newCat = new OnmsCategory(categoryName);
             newCat.getAuthorizedGroups().add(categoryName+"Group");
             getCategoryDao().save(newCat);
             getCategoryDao().flush();
+            return newCat;
         }
         return cat;
     }
@@ -370,6 +371,7 @@ public class DatabasePopulator {
             final OnmsDistPoller newDp = new OnmsDistPoller(localhost, localhostIp);
             getDistPollerDao().save(newDp);
             getDistPollerDao().flush();
+            return newDp;
         }
         return distPoller;
     }
@@ -380,6 +382,7 @@ public class DatabasePopulator {
             final OnmsServiceType newService = new OnmsServiceType(name);
             getServiceTypeDao().save(newService);
             getServiceTypeDao().flush();
+            return newService;
         }
         return serviceType;
     }

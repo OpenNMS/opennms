@@ -41,6 +41,7 @@ import org.opennms.netmgt.dao.hibernate.LocationMonitorDaoHibernate;
 import org.opennms.netmgt.model.OnmsNode;
 import org.opennms.test.DaoTestConfigBean;
 
+@Deprecated
 public class AbstractTransactionalDaoTestCase extends AbstractTransactionalTemporaryDatabaseSpringContextTests {
 
     private DistPollerDao m_distPollerDao;

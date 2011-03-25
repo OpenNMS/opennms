@@ -36,7 +36,6 @@
 package org.opennms.netmgt.provision;
 
 import java.net.InetAddress;
-import java.net.UnknownHostException;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
@@ -382,13 +381,7 @@ public class SnmpAssetProvisioningAdapter extends SimplerQueuedProvisioningAdapt
 	private InetAddress getIpForNode(final OnmsNode node) {
 		LogUtils.debugf(this, "getIpForNode: node: %s Foreign Source: %s", node.getNodeId(), node.getForeignSource());
 		final OnmsIpInterface primaryInterface = node.getPrimaryInterface();
-		InetAddress ipaddr = null;
-		try { 
-			ipaddr = InetAddress.getLocalHost();
-		} catch (final UnknownHostException e) {
-			// Can this even happen?
-			log().error("Could not fetch localhost address", e);
-		}
+		InetAddress ipaddr = InetAddressUtils.getLocalHostAddress();
 		if (primaryInterface == null) {
 			log().debug("getIpForNode: found null Snmp Primary Interface, getting interfaces");
 			final Set<OnmsIpInterface> ipInterfaces = node.getIpInterfaces();

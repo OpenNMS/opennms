@@ -57,7 +57,30 @@ abstract public class InetAddressUtils {
         IPv6
     }
 
-    public static String incr(final String address) throws UnknownHostException {
+	public static InetAddress getLocalHostAddress() {
+		try {
+			return InetAddress.getLocalHost();
+		} catch (final UnknownHostException e) {
+            LogUtils.warnf(InetAddressUtils.class, e, "getLocalHostAddress: Could not lookup the host address for the local host machine, address set to '127.0.0.1'.");
+			return addr("127.0.0.1");
+		}
+	}
+	
+	public static String getLocalHostAddressAsString() {
+        final String localhost = str(getLocalHostAddress());
+		return localhost == null? "127.0.0.1" : localhost;
+	}
+
+	public static String getLocalHostName() {
+        final InetAddress localHostAddress = getLocalHostAddress();
+        if (localHostAddress == null) {
+            LogUtils.warnf(InetAddressUtils.class, "getLocalHostName: Could not lookup the host name for the local host machine, name set to 'localhost'.");
+            return "localhost";
+        }
+        return localHostAddress.getHostName();
+	}
+	
+	public static String incr(final String address) throws UnknownHostException {
         return InetAddressUtils.toIpAddrString(incr(InetAddressUtils.toIpAddrBytes(address)));
     }
 

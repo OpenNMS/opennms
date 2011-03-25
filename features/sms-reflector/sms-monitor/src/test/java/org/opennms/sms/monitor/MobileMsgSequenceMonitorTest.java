@@ -6,13 +6,13 @@ import static org.junit.Assert.assertTrue;
 import java.io.File;
 import java.io.IOException;
 import java.net.InetAddress;
-import java.net.UnknownHostException;
 import java.util.HashMap;
 import java.util.Map;
 
 import org.apache.commons.io.FileUtils;
 import org.junit.Before;
 import org.junit.Test;
+import org.opennms.core.utils.InetAddressUtils;
 import org.opennms.netmgt.model.PollStatus;
 import org.opennms.netmgt.poller.InetNetworkInterface;
 import org.opennms.netmgt.poller.MonitoredService;
@@ -27,12 +27,7 @@ public class MobileMsgSequenceMonitorTest {
 	public void setUp() {
 		m_service = new MonitoredService() {
 			public InetAddress getAddress() {
-				try {
-					return InetAddress.getLocalHost();
-				} catch (UnknownHostException e) {
-					e.printStackTrace();
-					return null;
-				}
+				return InetAddressUtils.getLocalHostAddress();
 			}
 
 			public String getIpAddr() {
