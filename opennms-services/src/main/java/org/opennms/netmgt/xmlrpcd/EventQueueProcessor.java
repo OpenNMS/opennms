@@ -42,12 +42,12 @@ import org.opennms.core.queue.FifoQueue;
 import org.opennms.core.queue.FifoQueueException;
 import org.opennms.core.utils.ThreadCategory;
 import org.opennms.netmgt.EventConstants;
-import org.opennms.netmgt.config.XmlrpcdConfigFactory;
 import org.opennms.netmgt.config.xmlrpcd.XmlrpcServer;
 import org.opennms.netmgt.xml.event.Event;
 import org.opennms.netmgt.xml.event.Parm;
 import org.opennms.netmgt.xml.event.Parms;
 import org.opennms.netmgt.xml.event.Value;
+import org.opennms.netmgt.config.XmlrpcdConfigFactory;
 
 /**
  * The EventQueueProcessor processes the events recieved by xmlrpcd and sends
@@ -129,9 +129,9 @@ class EventQueueProcessor implements Runnable, PausableFiber {
             nodeId = event.getNodeid();
         }
 
-        final String ipAddr = event.getInterface();
-        final String service = event.getService();
-        final String eventTime = event.getTime();
+        String ipAddr = event.getInterface();
+        String service = event.getService();
+        String eventTime = event.getTime();
 
         if (log().isDebugEnabled()) {
             log().debug("Event\nuei\t\t" + uei + "\neventid\t\t" + eventId + "\nnodeid\t\t" + nodeId + "\nipaddr\t\t" + ipAddr + "\nservice\t\t" + service + "\neventtime\t" + (eventTime != null ? eventTime : "<null>"));

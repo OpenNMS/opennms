@@ -63,6 +63,28 @@ import org.opennms.netmgt.config.xmlrpcd.ExternalServers;
  * @author <a href="mailto:david@opennms.org">David Hustace</a>
  * @author <a href="mailto:tarus@opennms.org">Tarus Balog</a>
  * @author <A HREF="mailto:jamesz@opennms.com">James Zuo </A>
+ * @author <A HREF="http://www.opennms.org">OpenNMS.org </A>
+ * @author <a href="mailto:brozow@opennms.org">Mathew Brozowski</a>
+ * @author <a href="mailto:david@opennms.org">David Hustace</a>
+ * @author <a href="mailto:tarus@opennms.org">Tarus Balog</a>
+ * @author <A HREF="mailto:jamesz@opennms.com">James Zuo </A>
+ * @author <A HREF="http://www.opennms.org">OpenNMS.org </A>
+ * @author <a href="mailto:brozow@opennms.org">Mathew Brozowski</a>
+ * @author <a href="mailto:david@opennms.org">David Hustace</a>
+ * @author <a href="mailto:tarus@opennms.org">Tarus Balog</a>
+ * @author <A HREF="mailto:jamesz@opennms.com">James Zuo </A>
+ * @author <A HREF="http://www.opennms.org">OpenNMS.org </A>
+ * @author <a href="mailto:brozow@opennms.org">Mathew Brozowski</a>
+ * @author <a href="mailto:david@opennms.org">David Hustace</a>
+ * @author <a href="mailto:tarus@opennms.org">Tarus Balog</a>
+ * @author <A HREF="mailto:jamesz@opennms.com">James Zuo </A>
+ * @author <A HREF="http://www.opennms.org">OpenNMS.org </A>
+ * @author <a href="mailto:brozow@opennms.org">Mathew Brozowski</a>
+ * @author <a href="mailto:david@opennms.org">David Hustace</a>
+ * @author <a href="mailto:tarus@opennms.org">Tarus Balog</a>
+ * @author <A HREF="mailto:jamesz@opennms.com">James Zuo </A>
+ * @author <A HREF="http://www.opennms.org">OpenNMS.org </A>
+ * @version $Id: $
  */
 public class Xmlrpcd extends AbstractServiceDaemon {
     /**
