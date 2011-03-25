@@ -118,7 +118,7 @@ public class DatabasePopulator {
     public void populateDatabase() {
         m_transTemplate.execute(new TransactionCallback<Object>() {
             public Object doInTransaction(final TransactionStatus status) {
-            	final OnmsDistPoller distPoller = getDistPoller(InetAddressUtils.getLocalHostName(), InetAddressUtils.getLocalHostAddressAsString());
+            	final OnmsDistPoller distPoller = getDistPoller("localhost", "127.0.0.1");
                 
             	final OnmsCategory ac = getCategory("DEV_AC");
             	final OnmsCategory mid = getCategory("IMP_mid");

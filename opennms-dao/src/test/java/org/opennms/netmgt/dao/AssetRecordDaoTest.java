@@ -37,47 +37,96 @@
 
 package org.opennms.netmgt.dao;
 
+import static org.junit.Assert.assertEquals;
+
 import java.util.Collection;
 
+import org.junit.Before;
+import org.junit.Test;
+import org.junit.runner.RunWith;
+import org.opennms.netmgt.dao.db.JUnitTemporaryDatabase;
+import org.opennms.netmgt.dao.db.OpenNMSConfigurationExecutionListener;
+import org.opennms.netmgt.dao.db.TemporaryDatabaseExecutionListener;
 import org.opennms.netmgt.model.OnmsAssetRecord;
 import org.opennms.netmgt.model.OnmsNode;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.test.context.ContextConfiguration;
+import org.springframework.test.context.TestExecutionListeners;
+import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
+import org.springframework.test.context.support.DependencyInjectionTestExecutionListener;
+import org.springframework.test.context.support.DirtiesContextTestExecutionListener;
+import org.springframework.test.context.transaction.TransactionalTestExecutionListener;
 
-public class AssetRecordDaoTest extends AbstractTransactionalDaoTestCase {
+@RunWith(SpringJUnit4ClassRunner.class)
+@TestExecutionListeners({
+    OpenNMSConfigurationExecutionListener.class,
+    TemporaryDatabaseExecutionListener.class,
+    DependencyInjectionTestExecutionListener.class,
+    DirtiesContextTestExecutionListener.class,
+    TransactionalTestExecutionListener.class
+})
+@ContextConfiguration(locations={
+        "classpath:/META-INF/opennms/applicationContext-dao.xml",
+        "classpath:/META-INF/opennms/applicationContext-databasePopulator.xml",
+        "classpath:/META-INF/opennms/applicationContext-setupIpLike-enabled.xml",
+        "classpath*:/META-INF/opennms/component-dao.xml"
+})
+@JUnitTemporaryDatabase()
+public class AssetRecordDaoTest {
     
+	@Autowired
+	private DistPollerDao m_distPollerDao;
+	
+	@Autowired
+	private NodeDao m_nodeDao;
+
+	@Autowired
+	private AssetRecordDao m_assetRecordDao;
+
+	@Autowired
+	private DatabasePopulator m_databasePopulator;
+	
+	@Before
+	public void setUp() {
+		m_databasePopulator.populateDatabase();
+	}
+
+	@Test
     public void testCreateAndGets() {
-        OnmsNode onmsNode = new OnmsNode(getDistPollerDao().load("localhost"));
+        OnmsNode onmsNode = new OnmsNode(m_distPollerDao.load("localhost"));
         onmsNode.setLabel("myNode");
-        getNodeDao().save(onmsNode);
+        m_nodeDao.save(onmsNode);
         OnmsAssetRecord assetRecord = onmsNode.getAssetRecord();
         assetRecord.setAssetNumber("imported-id: 7");
-        getAssetRecordDao().update(assetRecord);
-        getAssetRecordDao().flush();
+        m_assetRecordDao.update(assetRecord);
+        m_assetRecordDao.flush();
 
         //Test findAll method
-        Collection<OnmsAssetRecord> assetRecords = getAssetRecordDao().findAll();
+        Collection<OnmsAssetRecord> assetRecords = m_assetRecordDao.findAll();
         assertEquals(7, assetRecords.size());
         
         //Test countAll method
-        assertEquals(7, getAssetRecordDao().countAll());
+        assertEquals(7, m_assetRecordDao.countAll());
 
     }
 
-    public void testAddUserName() {
-        OnmsNode onmsNode = new OnmsNode(getDistPollerDao().load("localhost"));
+    @Test
+	public void testAddUserName() {
+        OnmsNode onmsNode = new OnmsNode(m_distPollerDao.load("localhost"));
         onmsNode.setLabel("myNode");
-        getNodeDao().save(onmsNode);
+        m_nodeDao.save(onmsNode);
         OnmsAssetRecord assetRecord = onmsNode.getAssetRecord();
         assetRecord.setAssetNumber("imported-id: 7");
         assetRecord.setUsername("antonio");
         assetRecord.setPassword("password");
         assetRecord.setEnable("cisco");
         assetRecord.setConnection(OnmsAssetRecord.TELNET_CONNECTION);
-        getAssetRecordDao().update(assetRecord);
-        getAssetRecordDao().flush();
+        m_assetRecordDao.update(assetRecord);
+        m_assetRecordDao.flush();
 
         //Test findAll method
         int id = assetRecord.getId();
-        OnmsAssetRecord assetRecordFromDb = getAssetRecordDao().get(id);
+        OnmsAssetRecord assetRecordFromDb = m_assetRecordDao.get(id);
         assertEquals(assetRecord.getUsername(), assetRecordFromDb.getUsername());
         assertEquals(assetRecord.getPassword(), assetRecordFromDb.getPassword());
         assertEquals(assetRecord.getEnable(), assetRecordFromDb.getEnable());
@@ -85,22 +134,23 @@ public class AssetRecordDaoTest extends AbstractTransactionalDaoTestCase {
 
     }
     
+	@Test
     public void testAddAutoenable() {
-        OnmsNode onmsNode = new OnmsNode(getDistPollerDao().load("localhost"));
+        OnmsNode onmsNode = new OnmsNode(m_distPollerDao.load("localhost"));
         onmsNode.setLabel("myNode");
-        getNodeDao().save(onmsNode);
+        m_nodeDao.save(onmsNode);
         OnmsAssetRecord assetRecord = onmsNode.getAssetRecord();
         assetRecord.setAssetNumber("imported-id: 7");
         assetRecord.setUsername("antonio");
         assetRecord.setPassword("password");
         assetRecord.setAutoenable(OnmsAssetRecord.AUTOENABLED);
         assetRecord.setConnection(OnmsAssetRecord.TELNET_CONNECTION);
-        getAssetRecordDao().update(assetRecord);
-        getAssetRecordDao().flush();
+        m_assetRecordDao.update(assetRecord);
+        m_assetRecordDao.flush();
 
         //Test findAll method
         int id = assetRecord.getId();
-        OnmsAssetRecord assetRecordFromDb = getAssetRecordDao().get(id);
+        OnmsAssetRecord assetRecordFromDb = m_assetRecordDao.get(id);
         assertEquals(assetRecord.getUsername(), assetRecordFromDb.getUsername());
         assertEquals(assetRecord.getPassword(), assetRecordFromDb.getPassword());
         assertEquals(assetRecord.getAutoenable(), assetRecordFromDb.getAutoenable());
