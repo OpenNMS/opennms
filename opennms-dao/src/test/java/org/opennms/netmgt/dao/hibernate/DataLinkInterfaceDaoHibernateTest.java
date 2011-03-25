@@ -31,34 +31,73 @@
 //
 package org.opennms.netmgt.dao.hibernate;
 
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertNotNull;
+import static org.junit.Assert.assertSame;
+import static org.junit.Assert.fail;
+
 import java.util.Date;
 import java.util.List;
 
-import org.opennms.netmgt.dao.AbstractTransactionalDaoTestCase;
+import org.junit.Before;
+import org.junit.Test;
+import org.junit.runner.RunWith;
+import org.opennms.netmgt.dao.DataLinkInterfaceDao;
+import org.opennms.netmgt.dao.DatabasePopulator;
+import org.opennms.netmgt.dao.db.JUnitTemporaryDatabase;
+import org.opennms.netmgt.dao.db.OpenNMSConfigurationExecutionListener;
+import org.opennms.netmgt.dao.db.TemporaryDatabaseExecutionListener;
 import org.opennms.netmgt.model.DataLinkInterface;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.test.context.ContextConfiguration;
+import org.springframework.test.context.TestExecutionListeners;
+import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
+import org.springframework.test.context.support.DependencyInjectionTestExecutionListener;
+import org.springframework.test.context.support.DirtiesContextTestExecutionListener;
+import org.springframework.test.context.transaction.TransactionalTestExecutionListener;
+import org.springframework.transaction.annotation.Transactional;
 
-public class DataLinkInterfaceDaoHibernateTest extends AbstractTransactionalDaoTestCase {
+@RunWith(SpringJUnit4ClassRunner.class)
+@TestExecutionListeners({
+    OpenNMSConfigurationExecutionListener.class,
+    TemporaryDatabaseExecutionListener.class,
+    DependencyInjectionTestExecutionListener.class,
+    DirtiesContextTestExecutionListener.class,
+    TransactionalTestExecutionListener.class
+})
+@ContextConfiguration(locations={
+        "classpath:/META-INF/opennms/applicationContext-dao.xml",
+        "classpath:/META-INF/opennms/applicationContext-databasePopulator.xml",
+        "classpath:/META-INF/opennms/applicationContext-setupIpLike-enabled.xml",
+        "classpath*:/META-INF/opennms/component-dao.xml"
+})
+@JUnitTemporaryDatabase()
+public class DataLinkInterfaceDaoHibernateTest {
     
-    public void testInitialize() {
-        // do nothing, just test that setUp() / tearDown() works
-    }
+	@Autowired
+    private DataLinkInterfaceDao m_dataLinkInterfaceDao;
 
-    @SuppressWarnings("deprecation")
+	@Autowired
+	private DatabasePopulator m_databasePopulator;
+	
+	@Before
+	public void setUp() {
+		m_databasePopulator.populateDatabase();
+	}
+
+    @Test
+    @Transactional
     public void testSaveDataLinkInterface() {
         // Create a new data link interface and save it.
         DataLinkInterface dli = new DataLinkInterface(2, 2, 1, 1, "?", new Date());
         dli.setLinkTypeId(101);
-//        Thread.sleep(300000);
-        getDataLinkInterfaceDao().save(dli);
-        getDataLinkInterfaceDao().flush();
-    	getDataLinkInterfaceDao().clear();
+        m_dataLinkInterfaceDao.save(dli);
+        m_dataLinkInterfaceDao.flush();
 
-        // Now pull it back up and make sure it saved.
-        Object [] args = { dli.getId() };
-        assertEquals(1, getJdbcTemplate().queryForInt("select count(*) from datalinkinterface where id = ?", args));
+        assertNotNull(m_dataLinkInterfaceDao.get(dli.getId()));
 
-        DataLinkInterface dli2 = getDataLinkInterfaceDao().findById(dli.getId());
-    	assertNotSame(dli, dli2);
+        DataLinkInterface dli2 = m_dataLinkInterfaceDao.findById(dli.getId());
+    	assertSame(dli, dli2);
         assertEquals(dli.getId(), dli2.getId());
         assertEquals(dli.getNodeId(), dli2.getNodeId());
         assertEquals(dli.getIfIndex(), dli2.getIfIndex());
@@ -69,15 +108,17 @@ public class DataLinkInterfaceDaoHibernateTest extends AbstractTransactionalDaoT
         assertEquals(dli.getLastPollTime(), dli2.getLastPollTime());
     }
 
+    @Test
+    @Transactional
     public void testFindById() throws Exception {
         // Note: This ID is based upon the creation order in DatabasePopulator - if you change
         // the DatabasePopulator by adding additional new objects that use the onmsNxtId sequence
         // before the creation of this object then this ID may change and this test will fail.
         //
         int id = 64;
-        DataLinkInterface dli = getDataLinkInterfaceDao().findById(id);
+        DataLinkInterface dli = m_dataLinkInterfaceDao.findById(id);
         if (dli == null) {
-            List<DataLinkInterface> dlis = getDataLinkInterfaceDao().findAll();
+            List<DataLinkInterface> dlis = m_dataLinkInterfaceDao.findAll();
             StringBuffer ids = new StringBuffer();
             for (DataLinkInterface current : dlis) {
                 if (ids.length() > 0) {
@@ -90,13 +131,5 @@ public class DataLinkInterfaceDaoHibernateTest extends AbstractTransactionalDaoT
         assertNotNull(dli);
         assertEquals(Integer.valueOf(1), dli.getNodeId());
         assertEquals(Integer.valueOf(1), dli.getIfIndex());
-    }
-
-    public void testFindByNodeId() {
-
-    }
-
-    public void testFindByParentNodeId() {
-
     }
 }
