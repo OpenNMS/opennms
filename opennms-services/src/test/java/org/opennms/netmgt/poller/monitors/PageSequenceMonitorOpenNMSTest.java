@@ -49,18 +49,14 @@ import java.util.Map;
 
 import org.junit.After;
 import org.junit.Before;
+import org.junit.Ignore;
 import org.junit.Test;
 import org.junit.runner.RunWith;
-import org.opennms.core.test.JUnitHttpServerExecutionListener;
-import org.opennms.core.test.annotations.JUnitHttpServer;
-import org.opennms.core.test.annotations.Webapp;
-import org.opennms.netmgt.dao.db.OpenNMSConfigurationExecutionListener;
 import org.opennms.netmgt.mock.MockMonitoredService;
 import org.opennms.netmgt.model.PollStatus;
 import org.opennms.netmgt.poller.MonitoredService;
 import org.opennms.test.mock.MockLogAppender;
 import org.springframework.test.context.ContextConfiguration;
-import org.springframework.test.context.TestExecutionListeners;
 import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
 
 /**
@@ -114,6 +110,7 @@ public class PageSequenceMonitorOpenNMSTest /* implements SystemReportPlugin */ 
     }
 
     @Test
+    @Ignore
     // @JUnitHttpServer(port=10342, webapps=@Webapp(context="/opennms", path="src/test/resources/loginTestWar"))
     public void testOpenNMSUserInterface() throws Exception {
 
