@@ -111,7 +111,6 @@ public class Event implements Serializable {
 	@XmlJavaTypeAdapter(InetAddressXmlAdapter.class)
 	private InetAddress _interfaceAddress;
 
-	@XmlTransient
 	private transient String _interfaceString;
 	
 	/**
