@@ -43,7 +43,7 @@ import java.util.List;
 
 import org.opennms.core.queue.FifoQueue;
 import org.opennms.core.queue.FifoQueueException;
-import org.opennms.core.utils.ThreadCategory;
+import org.opennms.core.utils.LogUtils;
 import org.opennms.netmgt.config.xmlrpcd.SubscribedEvent;
 import org.opennms.netmgt.eventd.EventIpcManagerFactory;
 import org.opennms.netmgt.model.events.EventListener;
@@ -86,9 +86,9 @@ final class BroadcastEventProcessor implements EventListener {
         m_nameSuffix = nameSuffix;
 
         // Create the selector for the ueis this service is interested in
-        List<String> ueiList = new ArrayList<String>();
+        final List<String> ueiList = new ArrayList<String>();
 
-        for (SubscribedEvent event : eventList) {
+        for (final SubscribedEvent event : eventList) {
             ueiList.add(event.getUei());
         }
 
@@ -115,45 +115,37 @@ final class BroadcastEventProcessor implements EventListener {
      * available for processing. Each message is examined for its Universal
      * Event Identifier and the appropriate action is taking based on each UEI.
      */
-    public void onEvent(Event event) {
-        String eventUei = event.getUei();
+    public void onEvent(final Event event) {
+    	final String eventUei = event.getUei();
         if (eventUei == null) {
             return;
         }
 
-        if (log().isDebugEnabled()) {
-            log().debug("Received event: " + eventUei);
-        }
+        LogUtils.debugf(this, "Received event: %s", eventUei);
 
         try {
             if (m_events.contains(eventUei)) {
                 if (m_eventQ.size() >= m_maxQSize) {
                     m_eventQ.remove(1000);
 
-                    if (log().isDebugEnabled()) {
-                        log().debug("Event " + eventUei + " removed from event queue");
-                    }
+                    LogUtils.debugf(this, "Event %s removed from event queue", eventUei);
                 }
 
                 m_eventQ.add(event);
 
-                if (log().isDebugEnabled())
-                    log().debug("Event " + eventUei + " added to event queue");
+                LogUtils.debugf(this, "Event %s added to event queue", eventUei);
             }
-        } catch (InterruptedException ex) {
-            log().error("Failed to process event", ex);
+        } catch (final InterruptedException ex) {
+        	LogUtils.errorf(this, ex, "Failed to process event");
+            Thread.currentThread().interrupt();
             return;
-        } catch (FifoQueueException ex) {
-            log().error("Failed to process event", ex);
+        } catch (final FifoQueueException ex) {
+            LogUtils.errorf(this, ex, "Failed to process event");
             return;
-        } catch (Throwable t) {
-            log().error("Failed to process event", t);
+        } catch (final Throwable t) {
+            LogUtils.errorf(this, t, "Failed to process event");
             return;
         }
-    }
-
-    private ThreadCategory log() {
-        return ThreadCategory.getInstance(getClass());
     }
 
     /**
