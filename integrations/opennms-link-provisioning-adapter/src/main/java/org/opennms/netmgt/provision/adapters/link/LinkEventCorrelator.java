@@ -9,6 +9,7 @@ package org.opennms.netmgt.provision.adapters.link;
 
 import static org.opennms.core.utils.LogUtils.debugf;
 
+import org.opennms.core.utils.InetAddressUtils;
 import org.opennms.netmgt.EventConstants;
 import org.opennms.netmgt.model.DataLinkInterface;
 import org.opennms.netmgt.model.OnmsLinkState;

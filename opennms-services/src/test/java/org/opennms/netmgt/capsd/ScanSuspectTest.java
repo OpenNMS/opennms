@@ -48,6 +48,7 @@ import java.net.UnknownHostException;
 import org.exolab.castor.xml.MarshalException;
 import org.exolab.castor.xml.ValidationException;
 import org.opennms.core.concurrent.RunnableConsumerThreadPool;
+import org.opennms.core.utils.InetAddressUtils;
 import org.opennms.mock.snmp.MockSnmpAgent;
 import org.opennms.netmgt.config.CapsdConfigFactory;
 import org.opennms.netmgt.config.CollectdConfigFactory;
@@ -71,7 +72,7 @@ public class ScanSuspectTest extends OpenNMSTestCase {
     	System.setProperty("opennms.db.nextNodeId", "select max(nodeId) + 1 from node");
     	super.setUp();
 
-        m_agent = MockSnmpAgent.createAgentAndRun(new ClassPathResource("org/opennms/netmgt/snmp/stonegate.properties"), this.myLocalHost().getHostAddress() + "/9161");
+        m_agent = MockSnmpAgent.createAgentAndRun(new ClassPathResource("org/opennms/netmgt/snmp/stonegate.properties"), InetAddressUtils.str(this.myLocalHost()) + "/9161");
 
         InputStream configStream = ConfigurationTestUtils.getInputStreamForResource(this, "/org/opennms/netmgt/capsd/capsd-configuration.xml");
         DefaultCapsdConfigManager capsdConfig = new DefaultCapsdConfigManager(configStream);
@@ -141,7 +142,7 @@ public class ScanSuspectTest extends OpenNMSTestCase {
 
     }
 
-    @Override
+	@Override
     public String getSnmpConfig() {
         return "<?xml version=\"1.0\"?>\n" + 
                 "<snmp-config "+ 
@@ -155,10 +156,10 @@ public class ScanSuspectTest extends OpenNMSTestCase {
                 "       security-name=\"opennmsUser\" \n" + 
                 "       auth-passphrase=\"0p3nNMSv3\" \n" +
                 "       privacy-passphrase=\"0p3nNMSv3\" >\n" +
-	    "       <specific>"+myLocalHost().getHostAddress()+"</specific>\n" +
+	    "       <specific>"+InetAddressUtils.str(myLocalHost())+"</specific>\n" +
                 "   </definition>\n" + 
                 "\n" + 
-	    "   <definition version=\"v2c\" port=\"9161\" read-community=\"public\" proxy-host=\""+myLocalHost().getHostAddress()+"\">\n" + 
+	    "   <definition version=\"v2c\" port=\"9161\" read-community=\"public\" proxy-host=\""+InetAddressUtils.str(myLocalHost())+"\">\n" + 
                 "<specific>149.134.45.45</specific>\n" +
                 "<specific>172.16.201.2</specific>\n" +
                 "<specific>172.17.1.230</specific>\n" +
@@ -200,7 +201,7 @@ public class ScanSuspectTest extends OpenNMSTestCase {
     
     public final void testStartStop() throws MarshalException, ValidationException, IOException {
         m_capsd.start();
-        m_capsd.scanSuspectInterface(this.myLocalHost().getHostAddress());
+        m_capsd.scanSuspectInterface(InetAddressUtils.str(this.myLocalHost()));
         m_capsd.stop();
     }
     

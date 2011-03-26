@@ -129,7 +129,7 @@
         
         List<InetAddress> ips = new ArrayList<InetAddress>();
         for (Service service : services) {
-            ips.add(InetAddress.getByName(service.getIpAddress()));
+            ips.add(InetAddressUtils.addr(service.getIpAddress()));
         }
 
         InetAddress lowest = InetAddressUtils.getLowestInetAddress(ips);

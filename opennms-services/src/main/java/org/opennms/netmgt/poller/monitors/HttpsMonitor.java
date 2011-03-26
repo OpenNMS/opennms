@@ -56,6 +56,7 @@ import javax.net.ssl.SSLContext;
 import javax.net.ssl.SSLSocketFactory;
 import javax.net.ssl.TrustManager;
 
+import org.opennms.core.utils.InetAddressUtils;
 import org.opennms.core.utils.ParameterMap;
 import org.opennms.netmgt.poller.Distributable;
 import org.opennms.netmgt.utils.RelaxedX509TrustManager;
@@ -66,23 +67,9 @@ import org.opennms.netmgt.utils.RelaxedX509TrustManager;
  * the ServiceMonitor interface that allows it to be used along with other
  * plug-ins by the service poller framework.
  *
- * @author <A HREF="http://www.opennms.org/">OpenNMS </A>
  * @author <a href="mailto:david@opennms.org">David Hustace </a>
  * @author <A HREF="mailto:tarus@opennms.org">Tarus Balog </A>
  * @author <A HREF="mailto:jason@opennms.org">Jason </A>
- * @author <A HREF="http://www.opennms.org/">OpenNMS </A>
- * @author <a href="mailto:david@opennms.org">David Hustace </a>
- * @author <A HREF="mailto:tarus@opennms.org">Tarus Balog </A>
- * @author <A HREF="mailto:jason@opennms.org">Jason </A>
- * @author <A HREF="http://www.opennms.org/">OpenNMS </A>
- * @author <a href="mailto:david@opennms.org">David Hustace </a>
- * @author <A HREF="mailto:tarus@opennms.org">Tarus Balog </A>
- * @author <A HREF="mailto:jason@opennms.org">Jason </A>
- * @author <A HREF="http://www.opennms.org/">OpenNMS </A>
- * @author <a href="mailto:david@opennms.org">David Hustace </a>
- * @author <A HREF="mailto:tarus@opennms.org">Tarus Balog </A>
- * @author <A HREF="mailto:jason@opennms.org">Jason </A>
- * @version $Id: $
  */
 @Distributable
 final public class HttpsMonitor extends HttpMonitor {
@@ -115,7 +102,7 @@ final public class HttpsMonitor extends HttpMonitor {
         sslSF = sslContext.getSocketFactory();
         Socket wrappedSocket;
         InetAddress inetAddress = socket.getInetAddress();
-        String hostAddress = inetAddress.getHostAddress();
+        String hostAddress = InetAddressUtils.str(inetAddress);
         int port = socket.getPort();
         wrappedSocket = sslSF.createSocket(socket, hostAddress, port, true);
         return wrappedSocket;

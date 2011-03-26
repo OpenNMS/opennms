@@ -57,6 +57,7 @@ import java.io.InputStreamReader;
 import java.io.PrintWriter;
 import java.io.Reader;
 import java.net.DatagramPacket;
+import java.net.InetAddress;
 import java.nio.channels.FileChannel;
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -77,6 +78,7 @@ import org.apache.log4j.Level;
 import org.apache.log4j.Logger;
 import org.opennms.core.schema.Migration;
 import org.opennms.core.schema.Migrator;
+import org.opennms.core.utils.InetAddressUtils;
 import org.opennms.core.utils.ProcessExec;
 import org.opennms.netmgt.ConfigFileConstants;
 import org.opennms.netmgt.config.ConnectionFactoryUtil;
@@ -1173,7 +1175,7 @@ public class Installer {
 
         java.net.InetAddress addr = null;
         try {
-            addr = java.net.InetAddress.getByName(host);
+            addr = InetAddress.getByName(host);
         } catch (java.net.UnknownHostException e) {
             System.out.println("UnknownHostException when looking up " + host
                     + ".");
@@ -1181,8 +1183,7 @@ public class Installer {
 
         }
 
-        System.out.println("PING " + host + " (" + addr.getHostAddress()
-                + "): 56 data bytes");
+        System.out.println("PING " + host + " (" + InetAddressUtils.str(addr) + "): 56 data bytes");
 
         short m_icmpId = 2;
 

@@ -54,6 +54,7 @@ import java.net.NoRouteToHostException;
 import java.net.Socket;
 import java.util.Map;
 
+import org.opennms.core.utils.InetAddressUtils;
 import org.opennms.core.utils.ParameterMap;
 import org.opennms.core.utils.ThreadCategory;
 import org.opennms.netmgt.capsd.AbstractPlugin;
@@ -153,20 +154,20 @@ public final class MSExchangePlugin extends AbstractPlugin {
             } catch (ConnectException e) {
                 // Connection refused!! Continue to retry.
                 //
-                log.debug("isServer: Connection refused to " + host.getHostAddress() + ":" + port);
+                log.debug("isServer: Connection refused to " + InetAddressUtils.str(host) + ":" + port);
             } catch (NoRouteToHostException e) {
                 // No Route to host!!!
                 //
                 e.fillInStackTrace();
-                log.info("isServer: Failed to connect to host " + host.getHostAddress() + ", no route to host", e);
+                log.info("isServer: Failed to connect to host " + InetAddressUtils.str(host) + ", no route to host", e);
                 throw new UndeclaredThrowableException(e);
             } catch (InterruptedIOException e) {
                 // ignore this
                 log.debug("MSExchangePlugin: did not connect to host within timeout: " + timeout + " attempt: " + attempts);
             } catch (IOException e) {
-                log.info("isServer: Unexpected I/O exception occured with host " + host.getHostAddress() + " on port " + port, e);
+                log.info("isServer: Unexpected I/O exception occured with host " + InetAddressUtils.str(host) + " on port " + port, e);
             } catch (Throwable t) {
-                log.error("isServer: Undeclared throwable caught communicating with host " + host.getHostAddress() + " on port " + port, t);
+                log.error("isServer: Undeclared throwable caught communicating with host " + InetAddressUtils.str(host) + " on port " + port, t);
             } finally {
                 try {
                     if (socket != null) {

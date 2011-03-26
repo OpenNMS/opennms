@@ -41,7 +41,6 @@ package org.opennms.netmgt.threshd;
 
 import java.lang.reflect.UndeclaredThrowableException;
 import java.net.InetAddress;
-import java.net.UnknownHostException;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.util.Collections;
@@ -52,6 +51,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.TreeMap;
 
+import org.opennms.core.utils.InetAddressUtils;
 import org.opennms.core.utils.ThreadCategory;
 import org.opennms.netmgt.config.DataSourceFactory;
 import org.opennms.netmgt.config.ThreshdConfigManager;
@@ -459,7 +459,7 @@ public final class Threshd extends AbstractServiceDaemon {
                 // interface,
                 // service and package pairing
                 //
-                tSvc = new ThresholdableService(this, nodeId, InetAddress.getByName(ipAddress), svcName, pkg);
+                tSvc = new ThresholdableService(this, nodeId, InetAddressUtils.addr(ipAddress), svcName, pkg);
 
                 // Initialize the thresholder with the service.
                 //
@@ -485,8 +485,6 @@ public final class Threshd extends AbstractServiceDaemon {
 
                 if (log().isDebugEnabled())
                     log().debug("scheduleService: " + nodeId + "/" + ipAddress + " scheduled for " + svcName + " threshold checking");
-            } catch (UnknownHostException ex) {
-                log().error("scheduleService: Failed to schedule interface " + ipAddress + " for service " + svcName + ", illegal address", ex);
             } catch (RuntimeException rE) {
                 log().warn("scheduleService: Unable to schedule " + ipAddress + " for service " + svcName + ", reason: " + rE.getMessage(), rE);
             } catch (Throwable t) {
@@ -503,7 +501,7 @@ public final class Threshd extends AbstractServiceDaemon {
         synchronized (m_thresholdableServices) {
             for  (ThresholdableService tSvc : m_thresholdableServices) {
                 InetAddress addr = (InetAddress) tSvc.getAddress();
-                if (addr.getHostAddress().equals(ipAddress) && tSvc.getPackageName().equals(pkgName)) {
+                if (InetAddressUtils.str(addr).equals(InetAddressUtils.normalize(ipAddress)) && tSvc.getPackageName().equals(pkgName)) {
                     return true;
                 }
             }

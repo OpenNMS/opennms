@@ -54,6 +54,7 @@ import java.net.Socket;
 import java.util.Map;
 
 import org.apache.log4j.Level;
+import org.opennms.core.utils.InetAddressUtils;
 import org.opennms.core.utils.ParameterMap;
 import org.opennms.core.utils.ThreadCategory;
 import org.opennms.core.utils.TimeoutTracker;
@@ -74,20 +75,6 @@ import org.opennms.netmgt.poller.NetworkInterfaceNotSupportedException;
  * @author <A HREF="mailto:tarus@opennms.org">Tarus Balog </A>
  * @author <A HREF="mike@opennms.org">Mike </A>
  * @author <A HREF="weave@oculan.com">Weave </A>
- * @author <A HREF="http://www.opennms.org/">OpenNMS </A>
- * @author <A HREF="mailto:tarus@opennms.org">Tarus Balog </A>
- * @author <A HREF="mike@opennms.org">Mike </A>
- * @author <A HREF="weave@oculan.com">Weave </A>
- * @author <A HREF="http://www.opennms.org/">OpenNMS </A>
- * @author <A HREF="mailto:tarus@opennms.org">Tarus Balog </A>
- * @author <A HREF="mike@opennms.org">Mike </A>
- * @author <A HREF="weave@oculan.com">Weave </A>
- * @author <A HREF="http://www.opennms.org/">OpenNMS </A>
- * @author <A HREF="mailto:tarus@opennms.org">Tarus Balog </A>
- * @author <A HREF="mike@opennms.org">Mike </A>
- * @author <A HREF="weave@oculan.com">Weave </A>
- * @author <A HREF="http://www.opennms.org/">OpenNMS </A>
- * @version $Id: $
  */
 @Distributable
 final public class DominoIIOPMonitor extends AbstractServiceMonitor {
@@ -151,8 +138,9 @@ final public class DominoIIOPMonitor extends AbstractServiceMonitor {
         //
         InetAddress ipv4Addr = (InetAddress) iface.getAddress();
 
-        if (log.isDebugEnabled())
-            log.debug("poll: address = " + ipv4Addr.getHostAddress() + ", port = " + port + ", "+tracker);
+        final String hostAddress = InetAddressUtils.str(ipv4Addr);
+		if (log.isDebugEnabled())
+            log.debug("poll: address = " + hostAddress + ", port = " + port + ", "+tracker);
 
 
         // Lets first try to the the IOR via HTTP, if we can't get that then any
@@ -160,7 +148,7 @@ final public class DominoIIOPMonitor extends AbstractServiceMonitor {
         // do it the right way won't be able to connect anyway
         //
         try {
-            retrieveIORText(ipv4Addr.getHostAddress(), IORport);
+            retrieveIORText(hostAddress, IORport);
         } catch (Throwable e) {
             return logDown(Level.DEBUG, "failed to get the corba IOR from " + ipv4Addr, e);
         }
@@ -187,7 +175,7 @@ final public class DominoIIOPMonitor extends AbstractServiceMonitor {
                 return PollStatus.up(tracker.elapsedTimeInMillis());
                 
             } catch (NoRouteToHostException e) {
-                status = logDown(Level.WARN, " No route to host exception for address " + ipv4Addr.getHostAddress(), e);
+                status = logDown(Level.WARN, " No route to host exception for address " + hostAddress, e);
             } catch (InterruptedIOException e) {
                 status = logDown(Level.DEBUG, "did not connect to host with " + tracker);
             } catch (ConnectException e) {

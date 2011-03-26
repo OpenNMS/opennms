@@ -35,15 +35,15 @@
 package org.opennms.netmgt.protocols;
 
 import java.net.InetAddress;
-import java.net.UnknownHostException;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.Map;
 
+import junit.framework.TestCase;
+
+import org.opennms.core.utils.InetAddressUtils;
 import org.opennms.core.utils.TimeoutTracker;
 import org.opennms.netmgt.protocols.ssh.Ssh;
-
-import junit.framework.TestCase;
 
 /**
  * 
@@ -70,12 +70,8 @@ public class SshTest extends TestCase {
         ssh.setPort(PORT);
         ssh.setTimeout(TIMEOUT);
 
-        try {
-            good = InetAddress.getByName(GOOD_HOST);
-            bad  = InetAddress.getByName(BAD_HOST);
-        } catch (UnknownHostException e) {
-            throw e;
-        }
+        good = InetAddressUtils.addr(GOOD_HOST);
+        bad  = InetAddressUtils.addr(BAD_HOST);
     }
     
     public void testSshGood() throws Exception {

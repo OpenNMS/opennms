@@ -78,7 +78,6 @@ import org.springframework.core.io.FileSystemResource;
  * @author <a href="mailto:weave@oculan.com">Weave </a>
  * @author <a href="mailto:gturner@newedgenetworks.com">Gerald Turner </a>
  * @author <a href="mailto:matt.raykowski@gmail.com">Matt Raykowski</a>
- * @author <a href="http://www.opennms.org/">OpenNMS </a>
  */
 public class WmiPeerFactory extends PeerFactory {
     /**
@@ -424,21 +423,16 @@ public class WmiPeerFactory extends PeerFactory {
 
             // check the specifics first
             for (String saddr : def.getSpecificCollection()) {
-                try {
-                    InetAddress addr = InetAddress.getByName(saddr);
-                    if (addr.equals(agentConfig.getAddress())) {
-                        setWmiAgentConfig(agentConfig, def);
-                        break DEFLOOP;
-                    }
-                } catch (UnknownHostException e) {
-                    ThreadCategory log = ThreadCategory.getInstance(getClass());
-                    log.warn("WmiPeerFactory: could not convert host " + saddr + " to InetAddress", e);
+                InetAddress addr = InetAddressUtils.addr(saddr);
+                if (addr.equals(agentConfig.getAddress())) {
+                    setWmiAgentConfig(agentConfig, def);
+                    break DEFLOOP;
                 }
             }
 
             // check the ranges
             for (Range rng : def.getRangeCollection()) {
-                if (InetAddressUtils.isInetAddressInRange(agentConfig.getAddress().getHostAddress(), rng.getBegin(), rng.getEnd())) {
+                if (InetAddressUtils.isInetAddressInRange(InetAddressUtils.str(agentConfig.getAddress()), rng.getBegin(), rng.getEnd())) {
                     setWmiAgentConfig(agentConfig, def );
                     break DEFLOOP;
                 }
@@ -447,7 +441,7 @@ public class WmiPeerFactory extends PeerFactory {
             // check the matching IP expressions
             //
             for (String ipMatch : def.getIpMatchCollection()) {
-                if (IPLike.matches(agentInetAddress.getHostAddress(), ipMatch)) {
+                if (IPLike.matches(InetAddressUtils.str(agentInetAddress), ipMatch)) {
                     setWmiAgentConfig(agentConfig, def);
                     break DEFLOOP;
                 }

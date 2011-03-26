@@ -61,6 +61,7 @@ import java.util.StringTokenizer;
 import org.apache.log4j.Level;
 import org.apache.regexp.RE;
 import org.apache.regexp.RESyntaxException;
+import org.opennms.core.utils.InetAddressUtils;
 import org.opennms.core.utils.ParameterMap;
 import org.opennms.core.utils.ThreadCategory;
 import org.opennms.core.utils.TimeoutTracker;
@@ -80,9 +81,6 @@ import org.opennms.netmgt.poller.NetworkInterfaceNotSupportedException;
  *
  * @author <A HREF="mailto:tarus@opennms.org">Tarus Balog </A>
  * @author <A HREF="http://www.opennms.org/">OpenNMS </A>
- * @author <A HREF="mailto:tarus@opennms.org">Tarus Balog </A>
- * @author <A HREF="http://www.opennms.org/">OpenNMS </A>
- * @version $Id: $
  */
 
 @Distributable
@@ -174,8 +172,9 @@ final public class SmtpMonitor extends AbstractServiceMonitor {
         //
         InetAddress ipAddr = iface.getAddress();
 
-        if (log().isDebugEnabled())
-            log().debug("poll: address = " + ipAddr.getHostAddress() + ", port = " + port + ", " + tracker);
+        final String hostAddress = InetAddressUtils.str(ipAddr);
+		if (log().isDebugEnabled())
+            log().debug("poll: address = " + hostAddress + ", port = " + port + ", " + tracker);
 
         PollStatus serviceStatus = PollStatus.unavailable();
 
@@ -327,16 +326,16 @@ final public class SmtpMonitor extends AbstractServiceMonitor {
                     serviceStatus = PollStatus.unavailable();
                 }
             } catch (NumberFormatException e) {
-            	serviceStatus = logDown(Level.DEBUG, "NumberFormatException while polling address " + ipAddr.getHostAddress(), e);
+            	serviceStatus = logDown(Level.DEBUG, "NumberFormatException while polling address " + hostAddress, e);
             } catch (NoRouteToHostException e) {
-            	serviceStatus = logDown(Level.DEBUG, "No route to host exception for address " + ipAddr.getHostAddress(), e);
+            	serviceStatus = logDown(Level.DEBUG, "No route to host exception for address " + hostAddress, e);
                 break; // Break out of for(;;)
             } catch (InterruptedIOException e) {
             	serviceStatus = logDown(Level.DEBUG, "Did not receive expected response within timeout " + tracker);
             } catch (ConnectException e) {
-            	serviceStatus = logDown(Level.DEBUG, "Unable to connect to address " + ipAddr.getHostAddress(), e);
+            	serviceStatus = logDown(Level.DEBUG, "Unable to connect to address " + hostAddress, e);
             } catch (IOException e) {
-            	serviceStatus = logDown(Level.DEBUG, "IOException while polling address " + ipAddr.getHostAddress(), e);
+            	serviceStatus = logDown(Level.DEBUG, "IOException while polling address " + hostAddress, e);
             } finally {
                 try {
                     // Close the socket

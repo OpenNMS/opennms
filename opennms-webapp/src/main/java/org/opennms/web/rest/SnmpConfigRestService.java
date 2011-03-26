@@ -38,7 +38,6 @@
 package org.opennms.web.rest;
 
 import java.net.InetAddress;
-import java.net.UnknownHostException;
 
 import javax.ws.rs.Consumes;
 import javax.ws.rs.GET;
@@ -50,6 +49,7 @@ import javax.ws.rs.WebApplicationException;
 import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.Response;
 
+import org.opennms.core.utils.InetAddressUtils;
 import org.opennms.netmgt.config.SnmpEventInfo;
 import org.opennms.netmgt.config.SnmpPeerFactory;
 import org.opennms.netmgt.snmp.SnmpAgentConfig;
@@ -117,12 +117,12 @@ public class SnmpConfigRestService extends OnmsRestService {
     @Produces({MediaType.APPLICATION_XML, MediaType.APPLICATION_JSON})
     @Path("{ipAddr}")
     public SnmpInfo getSnmpInfo(@PathParam("ipAddr") String ipAddr) {
-        try {
-            SnmpAgentConfig config = m_snmpPeerFactory.getAgentConfig(InetAddress.getByName(ipAddr));
-            return new SnmpInfo(config);
-        } catch (UnknownHostException e) {
+        final InetAddress addr = InetAddressUtils.addr(ipAddr);
+        if (addr == null) {
             throw new WebApplicationException(Response.serverError().build());
         }
+		SnmpAgentConfig config = m_snmpPeerFactory.getAgentConfig(addr);
+        return new SnmpInfo(config);
     }
 
     /**

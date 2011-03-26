@@ -33,6 +33,7 @@ package org.opennms.netmgt.capsd.plugins;
 import java.net.InetAddress;
 import java.util.Map;
 
+import org.opennms.core.utils.InetAddressUtils;
 import org.opennms.core.utils.ThreadCategory;
 import org.opennms.netmgt.capsd.AbstractPlugin;
 import org.opennms.protocols.jmx.connectors.ConnectionWrapper;
@@ -115,7 +116,7 @@ public abstract class JMXPlugin extends AbstractPlugin {
                 res = true;
             }
         } catch (Throwable e) {
-            log.debug(getProtocolName(map) + " - isProtocolSupported - failed! " + address.getHostAddress());
+            log.debug(getProtocolName(map) + " - isProtocolSupported - failed! " + InetAddressUtils.str(address));
         } finally {
             if (connection != null) {
                 connection.close();

@@ -40,7 +40,6 @@
 package org.opennms.netmgt.capsd;
 
 import java.net.InetAddress;
-import java.net.UnknownHostException;
 import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
@@ -52,6 +51,7 @@ import java.util.List;
 import java.util.Map;
 
 import org.opennms.core.utils.DBUtils;
+import org.opennms.core.utils.InetAddressUtils;
 import org.opennms.core.utils.ThreadCategory;
 import org.opennms.netmgt.ConfigFileConstants;
 import org.opennms.netmgt.config.CapsdConfig;
@@ -689,9 +689,8 @@ public class JdbcCapsdDbSyncer implements InitializingBean, CapsdDbSyncer {
     
                 // Convert to InetAddress object
                 InetAddress ifAddress = null;
-                try {
-                    ifAddress = InetAddress.getByName(ipaddress);
-                } catch (UnknownHostException uhE) {
+                ifAddress = InetAddressUtils.addr(ipaddress);
+            	if (ifAddress == null) {
                     log().warn("Failed converting ip address " + ipaddress + " to InetAddress.");
                     continue;
                 }
@@ -1025,14 +1024,10 @@ public class JdbcCapsdDbSyncer implements InitializingBean, CapsdDbSyncer {
                     continue;
                 }
     
-                try {
-                    InetAddress addr = InetAddress.getByName(lwIf.getAddress());
-                    addressList.add(addr);
-                    if (lwIf.getIfType() == LightWeightIfEntry.LOOPBACK_IFTYPE) {
-                        lbAddressList.add(addr);
-                    }
-                } catch (UnknownHostException uhe) {
-                    log().warn("Unknown host exception for " + lwIf.getAddress(), uhe);
+                InetAddress addr = InetAddressUtils.addr(lwIf.getAddress());
+                addressList.add(addr);
+                if (lwIf.getIfType() == LightWeightIfEntry.LOOPBACK_IFTYPE) {
+                    lbAddressList.add(addr);
                 }
             }
     
@@ -1079,7 +1074,7 @@ public class JdbcCapsdDbSyncer implements InitializingBean, CapsdDbSyncer {
             for (LightWeightIfEntry lwIf : ifEntries) {
                 if (lwIf.getIfIndex() == LightWeightIfEntry.NULL_IFINDEX) {
                     lwIf.setSnmpPrimaryState(DbIpInterfaceEntry.SNMP_NOT_ELIGIBLE);
-                } else if (primarySnmpIf == null || !lwIf.getAddress().equals(primarySnmpIf.getHostAddress())) {
+                } else if (primarySnmpIf == null || !lwIf.getAddress().equals(InetAddressUtils.str(primarySnmpIf))) {
                     if (getCollectdConfig().isServiceCollectionEnabled(lwIf.getAddress(), "SNMP")) {
                         lwIf.setSnmpPrimaryState(DbIpInterfaceEntry.SNMP_SECONDARY);
                     } else {
@@ -1213,7 +1208,7 @@ public class JdbcCapsdDbSyncer implements InitializingBean, CapsdDbSyncer {
      */
     public int getInterfaceDbNodeId(Connection dbConn, InetAddress ifAddress, int ifIndex) throws SQLException {
         if (log().isDebugEnabled()) {
-            log().debug("getInterfaceDbNodeId: attempting to lookup interface " + ifAddress.getHostAddress() + "/ifindex: " + ifIndex + " in the database.");
+            log().debug("getInterfaceDbNodeId: attempting to lookup interface " + InetAddressUtils.str(ifAddress) + "/ifindex: " + ifIndex + " in the database.");
         }
     
         // Set connection as read-only
@@ -1230,7 +1225,7 @@ public class JdbcCapsdDbSyncer implements InitializingBean, CapsdDbSyncer {
         try {
             PreparedStatement s = dbConn.prepareStatement(qs.toString());
             d.watch(s);
-            s.setString(1, ifAddress.getHostAddress());
+            s.setString(1, InetAddressUtils.str(ifAddress));
     
             if (ifIndex != -1) {
                 s.setInt(2, ifIndex);
@@ -1249,7 +1244,7 @@ public class JdbcCapsdDbSyncer implements InitializingBean, CapsdDbSyncer {
     }
 
 
-    /* (non-Javadoc)
+	/* (non-Javadoc)
      * @see org.opennms.netmgt.capsd.CapsdDbSyncerI#isInterfaceInDB(java.sql.Connection, java.net.InetAddress)
      */
     /** {@inheritDoc} */
@@ -1268,7 +1263,7 @@ public class JdbcCapsdDbSyncer implements InitializingBean, CapsdDbSyncer {
         boolean result = false;
     
         if (log().isDebugEnabled()) {
-            log().debug("isInterfaceInDB: attempting to lookup interface " + ifAddress.getHostAddress() + " in the database.");
+            log().debug("isInterfaceInDB: attempting to lookup interface " + InetAddressUtils.str(ifAddress) + " in the database.");
         }
     
         // Set connection as read-only
@@ -1281,7 +1276,7 @@ public class JdbcCapsdDbSyncer implements InitializingBean, CapsdDbSyncer {
         try {
             PreparedStatement s = dbConn.prepareStatement(RETRIEVE_IPADDR_SQL);
             d.watch(s);
-            s.setString(1, ifAddress.getHostAddress());
+            s.setString(1, InetAddressUtils.str(ifAddress));
     
             rs = s.executeQuery();
             d.watch(rs);

@@ -43,7 +43,6 @@ package org.opennms.netmgt.syslogd;
 
 import static org.opennms.core.utils.InetAddressUtils.addr;
 
-import java.io.ByteArrayInputStream;
 import java.io.UnsupportedEncodingException;
 import java.lang.reflect.Method;
 import java.net.DatagramPacket;
@@ -67,7 +66,7 @@ import org.opennms.netmgt.config.syslogd.HideMessage;
 import org.opennms.netmgt.config.syslogd.ParameterAssignment;
 import org.opennms.netmgt.config.syslogd.UeiList;
 import org.opennms.netmgt.config.syslogd.UeiMatch;
-import org.opennms.netmgt.dao.castor.CastorUtils;
+import org.opennms.netmgt.dao.jaxb.JaxbUtils;
 import org.opennms.netmgt.model.events.EventBuilder;
 import org.opennms.netmgt.xml.event.Event;
 import org.opennms.netmgt.xml.event.Log;
@@ -78,11 +77,7 @@ import org.opennms.netmgt.xml.event.Log;
  * @author <a href="mailto:dj@opennms.org">DJ Gregor</a>
  * @author <a href="mailto:mhuot@opennms.org">Mike Huot</a>
  * @author <a href="mailto:weave@oculan.com">Brian Weaver </a>
- * @author <a href="http://www.oculan.com">Oculan Corporation </a>
  */
-
-// This routine do the majority of the Syslogd's work
-// Improvements most likely are to be made.
 
 // This routine do the majority of the Syslogd's work
 // Improvements most likely are to be made.
@@ -436,10 +431,9 @@ final class ConvertToEvent {
      * @throws org.exolab.castor.xml.MarshalException
      *          Thrown if the XML is malformed and cannot be converted.
      */
-    @SuppressWarnings("deprecation")
     Log unmarshal() throws ValidationException, MarshalException {
         if (m_log == null) {
-            m_log = CastorUtils.unmarshal(Log.class, new ByteArrayInputStream(this.m_eventXML.getBytes()));
+        	m_log = JaxbUtils.unmarshal(Log.class, m_eventXML);
         }
         return m_log;
     }

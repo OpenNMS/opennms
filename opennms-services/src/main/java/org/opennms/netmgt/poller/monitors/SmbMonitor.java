@@ -44,6 +44,8 @@ import java.util.Map;
 import jcifs.netbios.NbtAddress;
 
 import org.apache.log4j.Level;
+import org.jivesoftware.smack.util.DNSUtil.HostAddress;
+import org.opennms.core.utils.InetAddressUtils;
 import org.opennms.netmgt.model.PollStatus;
 import org.opennms.netmgt.poller.Distributable;
 import org.opennms.netmgt.poller.DistributionContext;
@@ -61,14 +63,6 @@ import org.opennms.netmgt.poller.NetworkInterfaceNotSupportedException;
  *
  * @author <A HREF="mailto:tarus@opennms.org">Tarus Balog </A>
  * @author <A HREF="mailto:mike@opennms.org">Mike </A>
- * @author <A HREF="http://www.opennms.org/">OpenNMS </A>
- * @author <A HREF="mailto:tarus@opennms.org">Tarus Balog </A>
- * @author <A HREF="mailto:mike@opennms.org">Mike </A>
- * @author <A HREF="http://www.opennms.org/">OpenNMS </A>
- * @author <A HREF="mailto:tarus@opennms.org">Tarus Balog </A>
- * @author <A HREF="mailto:mike@opennms.org">Mike </A>
- * @author <A HREF="http://www.opennms.org/">OpenNMS </A>
- * @version $Id: $
  */
 
 // I this thise needs a jcifs.properties file so we can't distribute it now
@@ -136,14 +130,15 @@ final public class SmbMonitor extends AbstractServiceMonitor {
         /*
          * This try block was updated to reflect the behavior of the plugin.
          */
+        final String hostAddress = InetAddressUtils.str(ipv4Addr);
         try {
-            nbtAddr = NbtAddress.getByName(ipv4Addr.getHostAddress());
+			nbtAddr = NbtAddress.getByName(hostAddress);
             
-            if (!nbtAddr.getHostName().equals(ipv4Addr.getHostAddress()))
+            if (!nbtAddr.getHostName().equals(hostAddress))
                 serviceStatus = PollStatus.available();
 
         } catch (UnknownHostException uhE) {
-        	serviceStatus = logDown(Level.DEBUG, "Unknown host exception generated for " + ipv4Addr.toString() + ", reason: " + uhE.getLocalizedMessage());
+        	serviceStatus = logDown(Level.DEBUG, "Unknown host exception generated for " + hostAddress + ", reason: " + uhE.getLocalizedMessage());
         } catch (RuntimeException rE) {
         	serviceStatus = logDown(Level.ERROR, "Unexpected runtime exception", rE);
         } catch (Throwable e) {

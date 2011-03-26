@@ -45,6 +45,7 @@ import java.io.ByteArrayOutputStream;
 import java.io.IOException;
 import java.io.ObjectInputStream;
 import java.io.ObjectOutputStream;
+import java.net.InetAddress;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.sql.Statement;
@@ -393,7 +394,8 @@ public final class EventUtil {
 	public static String getValueOfParm(String parm, Event event) {
         
 		String retParmVal = null;
-
+		final String ifString = event.getInterface();
+		
 		if (parm.equals(TAG_UEI)) {
 			retParmVal = event.getUei();
 		}
@@ -462,7 +464,7 @@ public final class EventUtil {
 		} else if (parm.equals(TAG_HOST)) {
 			retParmVal = event.getHost();
 		} else if (parm.equals(TAG_INTERFACE)) {
-			retParmVal = event.getInterface();
+			retParmVal = ifString;
 		} else if (parm.equals(TAG_IFINDEX)) {
 	          if (event.hasIfIndex()) {
 	              retParmVal = Integer.toString(event.getIfIndex());
@@ -470,19 +472,14 @@ public final class EventUtil {
 	                retParmVal = "N/A";
 	            }
 		} else if (parm.equals(TAG_INTERFACE_RESOLVE)) {
-			retParmVal = event.getInterface();
-			try {
-				java.net.InetAddress inet = java.net.InetAddress
-						.getByName(retParmVal);
-				retParmVal = inet.getHostName();
-			} catch (java.net.UnknownHostException e) {
-			}
+			InetAddress addr = event.getInterfaceAddress();
+			if (addr != null) retParmVal = addr.getHostName();
 		} else if (parm.equals(TAG_IFALIAS)) {
 			String ifAlias = null;
 			if (event.getNodeid() > 0
 					&& event.getInterface() != null) {
 				try {
-					ifAlias = getIfAlias(event.getNodeid(), event.getInterface());
+					ifAlias = getIfAlias(event.getNodeid(), ifString);
 				} catch (SQLException sqlE) {
 					// do nothing
 					ThreadCategory.getInstance(EventUtil.class).info("ifAlias Unavailable for " + event.getNodeid() + ":" + event.getInterface(), sqlE);
@@ -491,7 +488,7 @@ public final class EventUtil {
 			if (ifAlias != null)
 				retParmVal = ifAlias;
 			else
-				retParmVal = event.getInterface();
+				retParmVal = ifString;
 		} else if (parm.equals(TAG_PERCENT_SIGN)) {
 			String pctSign = "%";
 			retParmVal = pctSign;
@@ -1155,8 +1152,7 @@ public final class EventUtil {
 	
 	            // Make an input stream from the byte array and read
 	            // a copy of the object back in.
-	            ObjectInputStream in = new ObjectInputStream(
-	                new ByteArrayInputStream(bos.toByteArray()));
+	            ObjectInputStream in = new ObjectInputStream(new ByteArrayInputStream(bos.toByteArray()));
 	            copy = (Event)in.readObject();
 	        }
 	        catch(IOException e) {

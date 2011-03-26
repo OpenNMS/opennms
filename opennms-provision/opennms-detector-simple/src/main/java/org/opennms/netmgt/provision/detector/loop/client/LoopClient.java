@@ -34,6 +34,7 @@ package org.opennms.netmgt.provision.detector.loop.client;
 import java.io.IOException;
 import java.net.InetAddress;
 
+import org.opennms.core.utils.InetAddressUtils;
 import org.opennms.netmgt.provision.detector.loop.response.LoopResponse;
 import org.opennms.netmgt.provision.detector.simple.request.LineOrientedRequest;
 import org.opennms.netmgt.provision.support.Client;
@@ -58,7 +59,7 @@ public class LoopClient implements Client<LineOrientedRequest, LoopResponse> {
 
     /** {@inheritDoc} */
     public void connect(InetAddress address, int port, int timeout) throws IOException, Exception {
-        m_address = address.getHostAddress();
+        m_address = InetAddressUtils.str(address);
     }
 
     /**

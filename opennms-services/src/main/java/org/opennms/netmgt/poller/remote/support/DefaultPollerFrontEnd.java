@@ -50,6 +50,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.Properties;
 
+import org.opennms.core.utils.InetAddressUtils;
 import org.opennms.core.utils.LogUtils;
 import org.opennms.netmgt.model.OnmsMonitoringLocationDefinition;
 import org.opennms.netmgt.model.PollStatus;
@@ -545,7 +546,7 @@ public class DefaultPollerFrontEnd implements PollerFrontEnd, InitializingBean, 
 
         try {
             final InetAddress us = InetAddress.getLocalHost();
-            details.put("org.opennms.netmgt.poller.remote.hostAddress", us.getHostAddress());
+            details.put("org.opennms.netmgt.poller.remote.hostAddress", InetAddressUtils.str(us));
             details.put("org.opennms.netmgt.poller.remote.hostName", us.getHostName());
         } catch (final UnknownHostException e) {
             LogUtils.tracef(this, e, "Unable to determine localhost.");

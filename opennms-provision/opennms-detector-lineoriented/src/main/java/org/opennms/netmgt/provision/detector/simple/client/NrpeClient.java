@@ -42,6 +42,7 @@ import javax.net.ssl.SSLSocket;
 import javax.net.ssl.SSLSocketFactory;
 import javax.net.ssl.TrustManager;
 
+import org.opennms.core.utils.InetAddressUtils;
 import org.opennms.core.utils.LogUtils;
 import org.opennms.netmgt.provision.detector.simple.request.NrpeRequest;
 import org.opennms.netmgt.provision.support.Client;
@@ -105,7 +106,7 @@ public class NrpeClient implements Client<NrpeRequest, NrpePacket> {
         socket.connect(new InetSocketAddress(address, port), timeout);
         socket.setSoTimeout(timeout);
         try {
-            return wrapSocket(socket, address.getHostAddress(), port);
+            return wrapSocket(socket, InetAddressUtils.str(address), port);
         } catch (final Exception e) {
             LogUtils.debugf(this, e, "an error occurred while SSL-wrapping a socket (%s:%d)", address, port);
             return null;

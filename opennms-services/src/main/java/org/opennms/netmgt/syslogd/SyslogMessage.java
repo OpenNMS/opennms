@@ -1,14 +1,13 @@
 package org.opennms.netmgt.syslogd;
 
 import java.net.InetAddress;
-import java.net.UnknownHostException;
 import java.text.DateFormat;
 import java.text.SimpleDateFormat;
 import java.util.Date;
 import java.util.TimeZone;
 
 import org.apache.commons.lang.builder.ToStringBuilder;
-import org.opennms.core.utils.LogUtils;
+import org.opennms.core.utils.InetAddressUtils;
 
 public class SyslogMessage {
     // Priorities.
@@ -130,12 +129,8 @@ public class SyslogMessage {
 
     public String getHostAddress() {
         if (m_hostname != null) {
-            try {
-                final InetAddress address = InetAddress.getByName(m_hostname);
-                return address.getHostAddress().replace("/", "");
-            } catch (final UnknownHostException e) {
-                LogUtils.warnf(ConvertToEvent.class, e, "Could not parse the hostname: %s", m_hostname);
-            }
+            final InetAddress address = InetAddressUtils.addr(m_hostname);
+            return InetAddressUtils.str(address).replace("/", "");
         }
         return null;
     }

@@ -46,6 +46,7 @@ import java.net.InetAddress;
 import java.net.UnknownHostException;
 import java.util.List;
 
+import org.opennms.core.utils.InetAddressUtils;
 import org.opennms.mock.snmp.MockSnmpAgent;
 import org.opennms.netmgt.capsd.snmp.IfTable;
 import org.opennms.netmgt.capsd.snmp.IfXTable;
@@ -87,15 +88,15 @@ public class IfSnmpCollectorTestCase extends OpenNMSTestCase {
         super.setUp();
 
         String hostName = System.getProperty(HOST_PROPERTY, DEFAULT_HOST);
-        m_addr = InetAddress.getByName(hostName);
+        m_addr = InetAddressUtils.addr(hostName);
         m_ifSnmpc = new IfSnmpCollector(m_addr);
 
-        m_agent = MockSnmpAgent.createAgentAndRun(new ClassPathResource("org/opennms/netmgt/snmp/snmpTestData1.properties"), m_addr.getHostAddress() + "/" + PORT);
+        m_agent = MockSnmpAgent.createAgentAndRun(new ClassPathResource("org/opennms/netmgt/snmp/snmpTestData1.properties"), InetAddressUtils.str(m_addr) + "/" + PORT);
         
         runCollection();
     }
 
-    @Override
+	@Override
     protected void tearDown() throws Exception {
         m_agent.shutDownAndWait();
 
@@ -152,11 +153,11 @@ public class IfSnmpCollectorTestCase extends OpenNMSTestCase {
         
         assertNotNull("ipAddrTable should not be null", ipAddrTable);
         assertFalse("ipAddrTable collection should not hahve failed", ipAddrTable.failed());
-        assertEquals("ipAddrTable ifIndex of 127.0.0.1", 1, ipAddrTable.getIfIndex(InetAddress.getByName(DEFAULT_HOST)));
+        assertEquals("ipAddrTable ifIndex of 127.0.0.1", 1, ipAddrTable.getIfIndex(InetAddressUtils.addr(DEFAULT_HOST)));
         
         List<InetAddress> addresses = ipAddrTable.getIpAddresses();
-        assertTrue("ipAddrTable should contain 172.20.1.201", addresses.contains(InetAddress.getByName("172.20.1.201")));
-        assertTrue("ipAddrTable should contain 127.0.0.1 like any good IP stack should", addresses.contains(InetAddress.getByName(DEFAULT_HOST)));
+        assertTrue("ipAddrTable should contain 172.20.1.201", addresses.contains(InetAddressUtils.addr("172.20.1.201")));
+        assertTrue("ipAddrTable should contain 127.0.0.1 like any good IP stack should", addresses.contains(InetAddressUtils.addr(DEFAULT_HOST)));
     }
 
     public final void testHasIfXTable() {
@@ -178,8 +179,8 @@ public class IfSnmpCollectorTestCase extends OpenNMSTestCase {
     public final void testGetIfAddressAndMask() {
         InetAddress addrMask[] = m_ifSnmpc.getIfAddressAndMask(1);
         assertNotNull("address mask should not be null", addrMask);
-        assertEquals("localhost address", DEFAULT_HOST, addrMask[0].getHostAddress());
-        assertEquals("localhost mask... mmm... class A.... yummy", "255.0.0.0", addrMask[1].getHostAddress());
+        assertEquals("localhost address", DEFAULT_HOST, InetAddressUtils.str(addrMask[0]));
+        assertEquals("localhost mask... mmm... class A.... yummy", "255.0.0.0", InetAddressUtils.str(addrMask[1]));
     }
 
     public final void testGetAdminStatus() {
@@ -193,7 +194,7 @@ public class IfSnmpCollectorTestCase extends OpenNMSTestCase {
     }
 
     public final void testGetIfIndex() throws UnknownHostException {
-        int ifIndex = m_ifSnmpc.getIfIndex(InetAddress.getByName("172.20.1.201"));
+        int ifIndex = m_ifSnmpc.getIfIndex(InetAddressUtils.addr("172.20.1.201"));
         assertEquals("ifIndex", 5, ifIndex);
     }
 

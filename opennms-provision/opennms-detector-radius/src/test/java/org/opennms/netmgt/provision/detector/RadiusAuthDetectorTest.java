@@ -2,12 +2,12 @@ package org.opennms.netmgt.provision.detector;
 
 import static org.junit.Assert.assertFalse;
 
-import java.net.InetAddress;
 import java.net.UnknownHostException;
 
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
+import org.opennms.core.utils.InetAddressUtils;
 import org.opennms.netmgt.provision.detector.radius.RadiusAuthDetector;
 import org.opennms.netmgt.provision.support.NullDetectorMonitor;
 import org.opennms.test.mock.MockLogAppender;
@@ -34,7 +34,7 @@ public class RadiusAuthDetectorTest implements ApplicationContextAware{
 	public void testDetectorFail() throws UnknownHostException{
 	    m_detector.onInit();
 	    m_detector.setTimeout(1);
-		assertFalse(m_detector.isServiceDetected(InetAddress.getByName("192.168.1.100"), new NullDetectorMonitor()));
+		assertFalse(m_detector.isServiceDetected(InetAddressUtils.addr("192.168.1.100"), new NullDetectorMonitor()));
 	}
 
     public void setApplicationContext(ApplicationContext applicationContext) throws BeansException {

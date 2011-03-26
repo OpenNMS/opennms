@@ -45,14 +45,15 @@
 	import="org.opennms.netmgt.EventConstants,
 		org.opennms.netmgt.xml.event.Event,
 		org.opennms.web.*,
-		org.opennms.web.api.Util"
+		org.opennms.web.api.Util,
+		org.opennms.core.utils.InetAddressUtils"
 %>
 
 <%!
     private void sendSNMPRestartEvent(int nodeid, String primeInt) throws ServletException {
         Event snmpRestart = new Event();
         snmpRestart.setUei("uei.opennms.org/nodes/reinitializePrimarySnmpInterface");
-        snmpRestart.setNodeid(nodeid);
+        snmpRestart.setNodeid(Long.valueOf(nodeid));
         snmpRestart.setInterface(primeInt);
         snmpRestart.setSource("web ui");
         snmpRestart.setTime(EventConstants.formatToString(new java.util.Date()));

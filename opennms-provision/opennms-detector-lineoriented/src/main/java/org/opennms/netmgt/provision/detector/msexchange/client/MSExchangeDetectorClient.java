@@ -39,6 +39,7 @@ import java.net.InetSocketAddress;
 import java.net.Socket;
 
 import org.apache.commons.io.IOUtils;
+import org.opennms.core.utils.InetAddressUtils;
 import org.opennms.core.utils.LogUtils;
 import org.opennms.netmgt.provision.detector.msexchange.response.MSExchangeResponse;
 import org.opennms.netmgt.provision.detector.simple.request.LineOrientedRequest;
@@ -96,7 +97,7 @@ public class MSExchangeDetectorClient implements Client<LineOrientedRequest, MSE
                 return banner;
                 
             }catch(final Exception e) {
-                LogUtils.warnf(this, e, "An error occurred while connecting to %s:%d", address.getHostAddress(), port);
+                LogUtils.warnf(this, e, "An error occurred while connecting to %s:%d", InetAddressUtils.str(address), port);
                 IOUtils.closeQuietly(lineRdr);
                 IOUtils.closeQuietly(isr);
                 if(socket != null) {

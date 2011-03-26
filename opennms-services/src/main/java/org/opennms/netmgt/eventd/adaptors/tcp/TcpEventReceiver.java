@@ -51,6 +51,7 @@ import javax.management.InstanceNotFoundException;
 import javax.management.MalformedObjectNameException;
 import javax.management.ObjectName;
 
+import org.opennms.core.utils.InetAddressUtils;
 import org.opennms.core.utils.ThreadCategory;
 import org.opennms.netmgt.eventd.adaptors.EventHandler;
 import org.opennms.netmgt.eventd.adaptors.EventHandlerMBeanProxy;
@@ -170,7 +171,7 @@ public final class TcpEventReceiver implements EventReceiver, TcpEventReceiverMB
 
         m_status = STARTING;
         try {
-            InetAddress address = "*".equals(m_ipAddress) ? null : InetAddress.getByName(m_ipAddress);
+            InetAddress address = "*".equals(m_ipAddress) ? null : InetAddressUtils.addr(m_ipAddress);
             m_server = new TcpServer(this, m_eventHandlers, m_tcpPort, address);
             if (m_logPrefix != null) {
                 m_server.setLogPrefix(m_logPrefix);

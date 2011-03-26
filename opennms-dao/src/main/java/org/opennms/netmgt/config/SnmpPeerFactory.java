@@ -48,7 +48,6 @@ import java.io.Reader;
 import java.io.StringWriter;
 import java.io.Writer;
 import java.net.InetAddress;
-import java.net.UnknownHostException;
 import java.util.concurrent.locks.Lock;
 import java.util.concurrent.locks.ReadWriteLock;
 import java.util.concurrent.locks.ReentrantReadWriteLock;
@@ -369,21 +368,17 @@ public class SnmpPeerFactory extends PeerFactory implements SnmpAgentConfigFacto
             DEFLOOP: for (final Definition def : m_config.getDefinitionCollection()) {
                 // check the specifics first
                 for (final String saddr : def.getSpecificCollection()) {
-                    try {
-                        final InetAddress addr = InetAddress.getByName(saddr);
-                        if (addr.equals(agentConfig.getAddress())) {
-                            setSnmpAgentConfig(agentConfig, def, requestedSnmpVersion);
-                            break DEFLOOP;
-                        }
-                    } catch (final UnknownHostException e) {
-                        LogUtils.warnf(this, e, "SnmpPeerFactory: could not convert host %s to InetAddress", saddr);
+                    final InetAddress addr = InetAddressUtils.addr(saddr);
+                    if (addr != null && addr.equals(agentConfig.getAddress())) {
+                        setSnmpAgentConfig(agentConfig, def, requestedSnmpVersion);
+                        break DEFLOOP;
                     }
                 }
 
                 // check the ranges
                 //
                 for (final Range rng : def.getRangeCollection()) {
-                    if (InetAddressUtils.isInetAddressInRange(agentConfig.getAddress().getHostAddress(), rng.getBegin(), rng.getEnd())) {
+                    if (InetAddressUtils.isInetAddressInRange(InetAddressUtils.str(agentConfig.getAddress()), rng.getBegin(), rng.getEnd())) {
                         setSnmpAgentConfig(agentConfig, def, requestedSnmpVersion);
                         break DEFLOOP;
                     }
@@ -391,7 +386,7 @@ public class SnmpPeerFactory extends PeerFactory implements SnmpAgentConfigFacto
 
                 // check the matching ip expressions
                 for (final String ipMatch : def.getIpMatchCollection()) {
-                    if (IPLike.matches(agentInetAddress.getHostAddress(), ipMatch)) {
+                    if (IPLike.matches(agentInetAddress, ipMatch)) {
                         setSnmpAgentConfig(agentConfig, def, requestedSnmpVersion);
                         break DEFLOOP;
                     }
@@ -455,14 +450,9 @@ public class SnmpPeerFactory extends PeerFactory implements SnmpAgentConfigFacto
 
 	private InetAddress determineProxyHost(final Definition def) {
         InetAddress inetAddr = null;
-        final String address = def.getProxyHost() == null ? 
-                (m_config.getProxyHost() == null ? null : m_config.getProxyHost()) : def.getProxyHost();
+        final String address = def.getProxyHost() == null ? (m_config.getProxyHost() == null ? null : m_config.getProxyHost()) : def.getProxyHost();
         if (address != null) {
-            try {
-                inetAddr =  InetAddress.getByName(address);
-            } catch (final UnknownHostException e) {
-                LogUtils.errorf(this, e, "determineProxyHost: Problem converting proxy host string to InetAddress");
-            }
+        	inetAddr =  InetAddressUtils.addr(address);
         }
         return inetAddr;
     }

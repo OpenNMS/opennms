@@ -46,10 +46,10 @@ import java.net.DatagramPacket;
 import java.net.DatagramSocket;
 import java.net.InetAddress;
 import java.net.Socket;
-import java.net.UnknownHostException;
 import java.util.Observable;
 
 import org.opennms.core.fiber.Fiber;
+import org.opennms.core.utils.InetAddressUtils;
 import org.opennms.core.utils.ThreadCategory;
 
 import edu.bucknell.net.JDHCP.DHCPMessage;
@@ -76,11 +76,7 @@ final class Client extends Observable implements Runnable, Fiber {
     private boolean m_keepListening;
 
     static {
-        try {
-            NULL_ADDR = InetAddress.getByName("0.0.0.0");
-        } catch (UnknownHostException uhE) {
-            throw new RuntimeException(uhE.getMessage());
-        }
+    	NULL_ADDR = InetAddressUtils.addr("0.0.0.0");
     }
 
     /**

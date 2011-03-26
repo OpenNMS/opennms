@@ -50,6 +50,7 @@ import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.opennms.core.test.JUnitHttpServerExecutionListener;
 import org.opennms.core.test.annotations.JUnitHttpServer;
+import org.opennms.core.utils.InetAddressUtils;
 import org.opennms.netmgt.dao.IpInterfaceDao;
 import org.opennms.netmgt.dao.NodeDao;
 import org.opennms.netmgt.dao.ServiceTypeDao;
@@ -148,7 +149,7 @@ public class HttpCollectorTest {
         if (m_nodeDao.findByLabel("testnode").size() == 0) {
             NetworkBuilder builder = new NetworkBuilder(m_distPoller);
             builder.addNode("testnode");
-            builder.addInterface(InetAddress.getByName(m_testHostName).getHostAddress()).setIsManaged("M").setIsSnmpPrimary("P");
+            builder.addInterface(InetAddressUtils.normalize(m_testHostName)).setIsManaged("M").setIsSnmpPrimary("P");
             builder.addService(getServiceType("ICMP"));
             builder.addService(getServiceType("HTTP"));
             if (m_nodeDao == null) {

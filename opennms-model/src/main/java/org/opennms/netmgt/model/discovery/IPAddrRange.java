@@ -218,7 +218,7 @@ public final class IPAddrRange implements Iterable<InetAddress> {
      * @param toIP
      *            The ending address, resolved by InetAddress.
      * 
-     * @see java.net.InetAddress#getByName(java.lang.String)
+     * @see java.net.InetAddressUtils.addr(java.lang.String)
      * 
      * @exception java.net.UnknownHostException
      *                Thrown by the InetAddress class if the hostname cannot be
@@ -226,7 +226,7 @@ public final class IPAddrRange implements Iterable<InetAddress> {
      * 
      */
     IPAddrRange(String fromIP, String toIP) throws java.net.UnknownHostException {
-        this(InetAddress.getByName(fromIP), InetAddress.getByName(toIP));
+        this(InetAddressUtils.addr(fromIP), InetAddressUtils.addr(toIP));
     }
 
     /**
@@ -254,7 +254,7 @@ public final class IPAddrRange implements Iterable<InetAddress> {
         byte[] to = end.getAddress();
 
         if (new ByteArrayComparator().compare(from, to) > 0) {
-            ThreadCategory.getInstance(this.getClass()).warn("The beginning of the address range is greater than the end of the address range (" +  start.getHostAddress() + " - " + end.getHostAddress() + "), swapping values to create a valid IP address range");
+            ThreadCategory.getInstance(this.getClass()).warn("The beginning of the address range is greater than the end of the address range (" +  InetAddressUtils.str(start) + " - " + InetAddressUtils.str(end) + "), swapping values to create a valid IP address range");
             m_end = from;
             m_begin = to;
         } else {
@@ -288,7 +288,7 @@ public final class IPAddrRange implements Iterable<InetAddress> {
      *         range. 'false' otherwise.
      */
     boolean contains(String ipAddr) throws java.net.UnknownHostException {
-        return contains(InetAddress.getByName(ipAddr));
+    	return InetAddressUtils.isInetAddressInRange(ipAddr, m_begin, m_end);
     }
 
     /**

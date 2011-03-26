@@ -41,6 +41,7 @@ import org.opennms.core.tasks.BatchTask;
 import org.opennms.core.tasks.Callback;
 import org.opennms.core.tasks.RunInBatch;
 import org.opennms.core.tasks.Task;
+import org.opennms.core.utils.InetAddressUtils;
 import org.opennms.netmgt.provision.AsyncServiceDetector;
 import org.opennms.netmgt.provision.ServiceDetector;
 import org.opennms.netmgt.provision.SyncServiceDetector;
@@ -129,7 +130,8 @@ public class IpInterfaceScan implements RunInBatch {
     public Callback<Boolean> servicePersister(final BatchTask currentPhase, final String serviceName) {
         return new Callback<Boolean>() {
             public void complete(Boolean serviceDetected) {
-                infof(this, "Attempted to detect service %s on address %s: %s", serviceName, getAddress().getHostAddress(), serviceDetected);
+                final String hostAddress = InetAddressUtils.str(getAddress());
+				infof(this, "Attempted to detect service %s on address %s: %s", serviceName, hostAddress, serviceDetected);
                 if (serviceDetected) {
 
                     currentPhase.getBuilder().addSequence(
@@ -146,7 +148,7 @@ public class IpInterfaceScan implements RunInBatch {
                             new RunInBatch() {
 
                                 public void run(BatchTask batch) {
-                                    getProvisionService().addMonitoredService(getNodeId(), getAddress().getHostAddress(), serviceName);
+                                    getProvisionService().addMonitoredService(getNodeId(), hostAddress, serviceName);
                                 }
                             });
 
@@ -157,7 +159,7 @@ public class IpInterfaceScan implements RunInBatch {
             }
 
             public void handleException(Throwable t) {
-                infof(this, t, "Exception occurred while trying to detect service %s on address %s", serviceName, getAddress().getHostAddress());
+                infof(this, t, "Exception occurred while trying to detect service %s on address %s", serviceName, InetAddressUtils.str(getAddress()));
             }
         };
     }
@@ -166,7 +168,7 @@ public class IpInterfaceScan implements RunInBatch {
         return new Runnable() {
             public void run() {
                 try {
-                    infof(this, "Attemping to detect service %s on address %s", detector.getServiceName(), getAddress().getHostAddress());
+                    infof(this, "Attemping to detect service %s on address %s", detector.getServiceName(), InetAddressUtils.str(getAddress()));
                     cb.complete(detector.isServiceDetected(getAddress(), new NullDetectorMonitor()));
                 } catch (Throwable t) {
                     cb.handleException(t);
@@ -177,7 +179,7 @@ public class IpInterfaceScan implements RunInBatch {
 
             @Override
             public String toString() {
-                return String.format("Run detector %s on address %s", detector.getServiceName(), getAddress().getHostAddress());
+                return String.format("Run detector %s on address %s", detector.getServiceName(), InetAddressUtils.str(getAddress()));
             }
 
         };
@@ -208,7 +210,7 @@ public class IpInterfaceScan implements RunInBatch {
 
         Collection<ServiceDetector> detectors = getProvisionService().getDetectorsForForeignSource(getForeignSource() == null ? "default" : getForeignSource());
 
-        debugf(this, "detectServices for %d : %s: found %d detectors", getNodeId(), getAddress().getHostAddress(), detectors.size());
+        debugf(this, "detectServices for %d : %s: found %d detectors", getNodeId(), InetAddressUtils.str(getAddress()), detectors.size());
 
         for (ServiceDetector detector : detectors) {
             currentPhase.add(createDetectorTask(currentPhase, detector));
@@ -217,7 +219,7 @@ public class IpInterfaceScan implements RunInBatch {
     }
 
     private void setupAgentInfo(BatchTask currentphase) {
-        getProvisionService().setIsPrimaryFlag(getNodeId(), getAddress().getHostAddress());
+        getProvisionService().setIsPrimaryFlag(getNodeId(), InetAddressUtils.str(getAddress()));
     }
 
 }

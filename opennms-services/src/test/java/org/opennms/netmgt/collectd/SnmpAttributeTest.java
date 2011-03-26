@@ -40,7 +40,6 @@ import static org.easymock.EasyMock.expect;
 import static org.easymock.EasyMock.isA;
 import static org.easymock.EasyMock.matches;
 
-import java.net.InetAddress;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.HashMap;
@@ -48,6 +47,7 @@ import java.util.List;
 
 import junit.framework.TestCase;
 
+import org.opennms.core.utils.InetAddressUtils;
 import org.opennms.netmgt.config.MibObject;
 import org.opennms.netmgt.dao.IpInterfaceDao;
 import org.opennms.netmgt.dao.support.RrdTestUtils;
@@ -100,7 +100,7 @@ public class SnmpAttributeTest extends TestCase {
         OnmsIpInterface ipInterface = new OnmsIpInterface();
         ipInterface.setId(1);
         ipInterface.setNode(node);
-        ipInterface.setIpAddress(InetAddress.getByName("192.168.1.1"));
+        ipInterface.setIpAddress(InetAddressUtils.addr("192.168.1.1"));
         
         expect(m_ipInterfaceDao.load(1)).andReturn(ipInterface).times(3);
 

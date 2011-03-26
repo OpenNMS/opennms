@@ -34,13 +34,13 @@ package org.opennms.netmgt.provision.detector;
 import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertTrue;
 
-import java.net.InetAddress;
 import java.net.UnknownHostException;
 
 import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
+import org.opennms.core.utils.InetAddressUtils;
 import org.opennms.mock.snmp.MockSnmpAgent;
 import org.opennms.netmgt.provision.detector.snmp.DiskUsageDetector;
 import org.opennms.netmgt.provision.support.NullDetectorMonitor;
@@ -88,13 +88,13 @@ public class DiskUsageDetectorTest implements ApplicationContextAware {
     
     @Test
     public void testDetectorSuccessful() throws UnknownHostException{
-        assertTrue(m_detector.isServiceDetected(InetAddress.getByName(TEST_IP_ADDRESS), new NullDetectorMonitor()));
+        assertTrue(m_detector.isServiceDetected(InetAddressUtils.addr(TEST_IP_ADDRESS), new NullDetectorMonitor()));
     }
     
     @Test
     public void testDetectorFail() throws UnknownHostException{
         m_detector.setDisk("No disk by this name");
-       assertFalse(m_detector.isServiceDetected(InetAddress.getByName(TEST_IP_ADDRESS), new NullDetectorMonitor()));
+       assertFalse(m_detector.isServiceDetected(InetAddressUtils.addr(TEST_IP_ADDRESS), new NullDetectorMonitor()));
     }
     
     public void setApplicationContext(ApplicationContext applicationContext) throws BeansException {

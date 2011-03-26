@@ -42,6 +42,7 @@ import static org.opennms.core.utils.InetAddressUtils.addr;
 import java.io.InputStream;
 import java.net.InetAddress;
 
+import org.opennms.core.utils.InetAddressUtils;
 import org.opennms.netmgt.config.TrapdConfigFactory;
 import org.opennms.netmgt.dao.db.AbstractTransactionalTemporaryDatabaseSpringContextTests;
 import org.opennms.netmgt.mock.MockEventIpcManager;
@@ -101,7 +102,7 @@ public class TrapdTest extends AbstractTransactionalTemporaryDatabaseSpringConte
 
     public void testSnmpV1TrapSend() throws Exception {
         String localhost = "127.0.0.1";
-        InetAddress localAddr = InetAddress.getByName(localhost);
+        InetAddress localAddr = InetAddressUtils.addr(localhost);
 
         SnmpV1TrapBuilder pdu = SnmpUtils.getV1TrapBuilder();
         pdu.setEnterprise(SnmpObjId.get(".1.3.6.1.4.1.5813"));

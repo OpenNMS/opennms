@@ -39,6 +39,7 @@ package org.opennms.netmgt.linkd;
 
 import java.net.InetAddress;
 
+import org.opennms.core.utils.InetAddressUtils;
 import org.opennms.core.utils.LogUtils;
 import org.opennms.netmgt.linkd.snmp.Dot1dBaseGroup;
 import org.opennms.netmgt.linkd.snmp.Dot1dBasePortTable;
@@ -340,22 +341,23 @@ final class SnmpVlanCollection implements ReadyRunnable {
 
 			// Log any failures
 			//
+			final String hostAddress = InetAddressUtils.str(m_address);
 			if (!this.hasDot1dBase())
-			    LogUtils.infof(this, "run: failed to collect Dot1dBase for %s Community: %s", m_address.getHostAddress(), m_agentConfig.getReadCommunity());
+			    LogUtils.infof(this, "run: failed to collect Dot1dBase for %s Community: %s", hostAddress, m_agentConfig.getReadCommunity());
 			if (!this.hasDot1dBasePortTable())
-                LogUtils.infof(this, "run: failed to collect Dot1dBasePortTable for %s Community: %s", m_address.getHostAddress(), m_agentConfig.getReadCommunity());
+                LogUtils.infof(this, "run: failed to collect Dot1dBasePortTable for %s Community: %s", hostAddress, m_agentConfig.getReadCommunity());
 			if (!this.hasDot1dStp())
-                LogUtils.infof(this, "run: failed to collect Dot1dStp for %s Community: %s", m_address.getHostAddress(), m_agentConfig.getReadCommunity());
+                LogUtils.infof(this, "run: failed to collect Dot1dStp for %s Community: %s", hostAddress, m_agentConfig.getReadCommunity());
 			if (!this.hasDot1dStpPortTable())
-                LogUtils.infof(this, "run: failed to collect Dot1dStpPortTable for %s Community: %s", m_address.getHostAddress(), m_agentConfig.getReadCommunity());
+                LogUtils.infof(this, "run: failed to collect Dot1dStpPortTable for %s Community: %s", hostAddress, m_agentConfig.getReadCommunity());
 			if (!this.hasDot1dTpFdbTable())
-                LogUtils.infof(this, "run: failed to collect Dot1dTpFdbTable for %s Community: %s", m_address.getHostAddress(), m_agentConfig.getReadCommunity());
+                LogUtils.infof(this, "run: failed to collect Dot1dTpFdbTable for %s Community: %s", hostAddress, m_agentConfig.getReadCommunity());
 			
 			//if not found macaddresses forwarding table find it in Qbridge
 			//ExtremeNetwork works.....
 			
 			if (m_dot1dtpFdbtable.getEntries().isEmpty() && collectBridgeForwardingTable) {
-			    LogUtils.infof(this, "run: Trying to collect QbridgeDot1dTpFdbTable for %s Community: %s", m_address.getHostAddress(), m_agentConfig.getReadCommunity());
+			    LogUtils.infof(this, "run: Trying to collect QbridgeDot1dTpFdbTable for %s Community: %s", hostAddress, m_agentConfig.getReadCommunity());
 				m_qdot1dtpFdbtable = new QBridgeDot1dTpFdbTable(m_address);
 		        walker = 
 		        	SnmpUtils.createWalker(m_agentConfig, "qBridgedot1dTpFdbTable ", 
@@ -372,7 +374,7 @@ final class SnmpVlanCollection implements ReadyRunnable {
 		        }
 			}
 			if (!this.hasQBridgeDot1dTpFdbTable()) {
-			    LogUtils.infof(this, "run: failed to collect QBridgeDot1dTpFdbTable for %s Community: %s", m_address.getHostAddress(), m_agentConfig.getReadCommunity());
+			    LogUtils.infof(this, "run: failed to collect QBridgeDot1dTpFdbTable for %s Community: %s", hostAddress, m_agentConfig.getReadCommunity());
 			}
 	}
 

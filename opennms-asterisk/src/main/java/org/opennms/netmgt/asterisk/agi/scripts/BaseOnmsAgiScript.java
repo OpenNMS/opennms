@@ -4,10 +4,10 @@
 package org.opennms.netmgt.asterisk.agi.scripts;
 
 import java.net.InetAddress;
-import java.net.UnknownHostException;
 
 import org.asteriskjava.fastagi.AgiException;
 import org.asteriskjava.fastagi.BaseAgiScript;
+import org.opennms.core.utils.InetAddressUtils;
 import org.opennms.core.utils.ThreadCategory;
 
 /**
@@ -142,6 +142,7 @@ public abstract class BaseOnmsAgiScript extends BaseAgiScript {
      */
     protected char sayIpAddressInterruptible(InetAddress addr) throws AgiException {
         char pressed;
+        // FIXME: this needs to be IPv6-compatible
         for (String octet : addr.getHostAddress().split("\\.")) {
             pressed = sayDigitsInterruptible(octet);
             if (pressed != 0x0)
@@ -161,15 +162,12 @@ public abstract class BaseOnmsAgiScript extends BaseAgiScript {
      * @throws org.asteriskjava.fastagi.AgiException if any.
      */
     protected char sayIpAddressInterruptible(String addrString) throws AgiException {
-        try {
-            return sayIpAddressInterruptible(InetAddress.getByName(addrString));
-        } catch (UnknownHostException uhe) {
-            try {
-                return sayIpAddressInterruptible(InetAddress.getByName("0.0.0.0"));
-            } catch (UnknownHostException e) {
-                return 0x0;
-            }
-        }
+    	
+    	final InetAddress addr = InetAddressUtils.addr(addrString);
+    	if (addr == null) {
+    		return 0x0;
+    	}
+		return sayIpAddressInterruptible(addr);
     }
     
     /**

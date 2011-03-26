@@ -35,6 +35,8 @@ import java.net.InetAddress;
 import java.net.Socket;
 import java.net.UnknownHostException;
 
+import org.opennms.core.utils.InetAddressUtils;
+
 import com.novell.ldap.LDAPConnection;
 import com.novell.ldap.LDAPSocketFactory;
 
@@ -70,7 +72,7 @@ public class LdapDetectorClient extends LineOrientedClient {
     public void connect(final InetAddress address, final int port, final int timeout) throws IOException, Exception {
         super.connect(address, port, timeout);
         final LDAPConnection lc = new LDAPConnection(new TimeoutLDAPSocket(timeout));
-        lc.connect(address.getHostAddress(), port);
+        lc.connect(InetAddressUtils.str(address), port);
 
     }
 

@@ -49,6 +49,7 @@ import java.util.Date;
 import java.util.LinkedList;
 import java.util.List;
 
+import org.opennms.core.utils.InetAddressUtils;
 import org.opennms.netmgt.EventConstants;
 import org.opennms.netmgt.dao.db.TemporaryDatabase;
 import org.opennms.netmgt.model.OnmsSeverity;

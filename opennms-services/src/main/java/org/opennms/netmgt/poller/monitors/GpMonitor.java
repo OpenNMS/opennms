@@ -44,6 +44,7 @@ import java.net.InetAddress;
 import java.util.Map;
 
 import org.apache.log4j.Level;
+import org.opennms.core.utils.InetAddressUtils;
 import org.opennms.core.utils.ParameterMap;
 import org.opennms.core.utils.ThreadCategory;
 import org.opennms.core.utils.TimeoutTracker;
@@ -64,22 +65,7 @@ import org.opennms.netmgt.utils.ExecRunner;
  *
  * @author <A HREF="mailto:tarus@opennms.org">Tarus Balog </A>
  * @author <A HREF="mike@opennms.org">Mike </A>
- * @author <A HREF="http://www.opennms.org/">OpenNMS </A>
  * @author <A HREF="mailto:ayres@net.orst.edu">Bill Ayres </A>
- * @author <A HREF="mailto:tarus@opennms.org">Tarus Balog </A>
- * @author <A HREF="mike@opennms.org">Mike </A>
- * @author <A HREF="http://www.opennms.org/">OpenNMS </A>
- * @author <A HREF="mailto:ayres@net.orst.edu">Bill Ayres </A>
- * @author Weave
- * @author <A HREF="mailto:tarus@opennms.org">Tarus Balog </A>
- * @author <A HREF="mike@opennms.org">Mike </A>
- * @author <A HREF="http://www.opennms.org/">OpenNMS </A>
- * @author <A HREF="mailto:ayres@net.orst.edu">Bill Ayres </A>
- * @author <A HREF="mailto:tarus@opennms.org">Tarus Balog </A>
- * @author <A HREF="mike@opennms.org">Mike </A>
- * @author <A HREF="http://www.opennms.org/">OpenNMS </A>
- * @author <A HREF="mailto:ayres@net.orst.edu">Bill Ayres </A>
- * @version $Id: $
  */
 
 // this is marked not distributable because it relieds on the dhcpd deamon of opennms
@@ -158,8 +144,9 @@ final public class GpMonitor extends AbstractServiceMonitor {
         //
         InetAddress ipv4Addr = (InetAddress) iface.getAddress();
 
-        if (log.isDebugEnabled())
-            log.debug("poll: address = " + ipv4Addr.getHostAddress() + ", script = " + script + ", arguments = " + args + ", " + tracker);
+        final String hostAddress = InetAddressUtils.str(ipv4Addr);
+		if (log.isDebugEnabled())
+            log.debug("poll: address = " + hostAddress + ", script = " + script + ", arguments = " + args + ", " + tracker);
 
         // Give it a whirl
         //
@@ -181,9 +168,9 @@ final public class GpMonitor extends AbstractServiceMonitor {
                 ExecRunner er = new ExecRunner();
                 er.setMaxRunTimeSecs(timeoutInSeconds);
                 if (args == null)
-                    exitStatus = er.exec(script + " " + hoption + " " + ipv4Addr.getHostAddress() + " " + toption + " " + timeoutInSeconds);
+                    exitStatus = er.exec(script + " " + hoption + " " + hostAddress + " " + toption + " " + timeoutInSeconds);
                 else
-                    exitStatus = er.exec(script + " " + hoption + " " + ipv4Addr.getHostAddress() + " " + toption + " " + timeoutInSeconds + " " + args);
+                    exitStatus = er.exec(script + " " + hoption + " " + hostAddress + " " + toption + " " + timeoutInSeconds + " " + args);
                 
                 double responseTime = tracker.elapsedTimeInMillis();
                 
@@ -237,7 +224,7 @@ final public class GpMonitor extends AbstractServiceMonitor {
         //
         // return the status of the service
         //
-        log.debug("poll: GP - serviceStatus= " + serviceStatus + "  " + ipv4Addr.getHostAddress());
+        log.debug("poll: GP - serviceStatus= " + serviceStatus + "  " + hostAddress);
         return serviceStatus;
     }
     

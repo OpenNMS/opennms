@@ -39,7 +39,7 @@ public abstract class AbstractJaxbConfigDao<K, V> implements InitializingBean {
             log().debug("Loading " + m_description + " configuration from " + resource);
         }
 
-        V config = translateConfig(JaxbUtils.unmarshalWithTranslatedExceptions(m_jaxbClass, resource));
+        V config = translateConfig(JaxbUtils.unmarshal(m_jaxbClass, resource));
         
         long endTime = System.currentTimeMillis();
         log().info(createLoadedLogMessage(config, (endTime - startTime)));

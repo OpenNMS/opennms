@@ -193,7 +193,7 @@ public class NetworkElementFactory implements InitializingBean, NetworkElementFa
         
         if(ifaces.size() > 0) {
             OnmsIpInterface iface = ifaces.get(0);
-            return iface.getIpAddressAsString();
+            return InetAddressUtils.str(iface.getIpAddress());
         }else{
             return null;
         }
@@ -928,7 +928,7 @@ public class NetworkElementFactory implements InitializingBean, NetworkElementFa
         service.setId(monSvc.getId());
         service.setNodeId(monSvc.getNodeId());
         
-        service.setIpAddress(monSvc.getIpAddressAsString());
+        service.setIpAddress(InetAddressUtils.str(monSvc.getIpAddress()));
         service.setServiceId(monSvc.getServiceId());
         service.setServiceName(monSvc.getServiceName());
         if(monSvc.getLastGood() != null) {
@@ -2398,7 +2398,7 @@ public class NetworkElementFactory implements InitializingBean, NetworkElementFa
                 intf.m_ifIndex = ipIface.getIfIndex();
             }
             intf.m_ipHostName = ipIface.getIpHostName();
-            intf.m_ipAddr = ipIface.getIpAddressAsString();
+            intf.m_ipAddr = InetAddressUtils.str(ipIface.getIpAddress());
             intf.m_isManaged = ipIface.getIsManaged().charAt(0);
             if(ipIface.getIpLastCapsdPoll() != null) {
                 intf.m_ipLastCapsdPoll = Util.formatDateToUIString(ipIface.getIpLastCapsdPoll());

@@ -55,6 +55,7 @@ import org.apache.commons.io.IOUtils;
 import org.exolab.castor.xml.MarshalException;
 import org.exolab.castor.xml.Marshaller;
 import org.exolab.castor.xml.ValidationException;
+import org.opennms.core.utils.InetAddressUtils;
 import org.opennms.core.utils.PropertiesUtils;
 import org.opennms.mock.snmp.MockSnmpAgent;
 import org.opennms.netmgt.config.snmp.Definition;
@@ -230,7 +231,7 @@ public abstract class OpenNMSIntegrationTestCase extends AbstractTransactionalDa
     
     protected String getLocalHostAddress() {
         try {
-            return InetAddress.getLocalHost().getHostAddress();
+            return InetAddressUtils.str(InetAddress.getLocalHost());
         } catch (UnknownHostException e) {
             e.printStackTrace();
             fail("Exception getting localhost");

@@ -36,6 +36,7 @@ package org.opennms.netmgt.capsd.plugins;
 import java.net.InetAddress;
 import java.util.Map;
 
+import org.opennms.core.utils.InetAddressUtils;
 import org.opennms.netmgt.capsd.Plugin;
 import org.opennms.sms.phonebook.Phonebook;
 import org.opennms.sms.phonebook.PhonebookException;
@@ -79,7 +80,7 @@ public class SmsPlugin implements Plugin {
     public boolean isProtocolSupported(InetAddress address, Map<String, Object> qualifiers) {
 
         try {
-            m_smsDirectory.getTargetForAddress(address.getHostAddress());
+            m_smsDirectory.getTargetForAddress(InetAddressUtils.str(address));
             return true;
         } catch (PhonebookException e) {
             return false;

@@ -26,6 +26,7 @@ import org.apache.http.params.CoreProtocolPNames;
 import org.apache.http.protocol.ExecutionContext;
 import org.apache.http.protocol.HttpContext;
 import org.apache.http.util.EntityUtils;
+import org.opennms.core.utils.InetAddressUtils;
 import org.opennms.core.utils.ParameterMap;
 import org.opennms.netmgt.model.PollStatus;
 import org.opennms.netmgt.poller.Distributable;
@@ -50,15 +51,15 @@ public class WebMonitor extends AbstractServiceMonitor {
 
     /** {@inheritDoc} */
     @Override
-    @SuppressWarnings("unchecked")
     public PollStatus poll(MonitoredService svc, Map map) {
         PollStatus pollStatus = PollStatus.unresponsive();
         DefaultHttpClient httpClient = new DefaultHttpClient();
 
         try {
-            HttpGet getMethod = new HttpGet(URIUtils.createURI(
+            final String hostAddress = InetAddressUtils.str(svc.getAddress());
+			HttpGet getMethod = new HttpGet(URIUtils.createURI(
                                                     null, 
-                                                    svc.getAddress().getHostAddress(), 
+                                                    hostAddress, 
                                                     ParameterMap.getKeyedInteger(map, "port", DEFAULT_PORT), 
                                                     ParameterMap.getKeyedString(map, "path", DEFAULT_PATH), 
                                                     null, 

@@ -46,6 +46,7 @@ import java.util.List;
 import java.util.ListIterator;
 import java.util.Map;
 
+import org.opennms.core.utils.InetAddressUtils;
 import org.opennms.core.utils.ThreadCategory;
 import org.opennms.netmgt.EventConstants;
 import org.opennms.netmgt.config.ThresholdingConfigFactory;
@@ -213,7 +214,7 @@ final class BroadcastEventProcessor implements EventListener {
         } else if (event.getUei().equals(EventConstants.NODE_GAINED_SERVICE_EVENT_UEI)) {
             // If there is no interface then it cannot be processed
             //
-            if (event.getInterface() == null || event.getInterface().length() == 0) {
+            if (event.getInterface() == null) {
                 log.info("no interface found, discarding event");
             } else {
                 nodeGainedServiceHandler(event);
@@ -221,7 +222,7 @@ final class BroadcastEventProcessor implements EventListener {
         } else if (event.getUei().equals(EventConstants.PRIMARY_SNMP_INTERFACE_CHANGED_EVENT_UEI)) {
             // If there is no interface then it cannot be processed
             //
-            if (event.getInterface() == null || event.getInterface().length() == 0) {
+            if (event.getInterface() == null) {
                 log.info("no interface found, discarding event");
             } else {
                 primarySnmpInterfaceChangedHandler(event);
@@ -229,7 +230,7 @@ final class BroadcastEventProcessor implements EventListener {
         } else if (event.getUei().equals(EventConstants.REINITIALIZE_PRIMARY_SNMP_INTERFACE_EVENT_UEI)) {
             // If there is no interface then it cannot be processed
             //
-            if (event.getInterface() == null || event.getInterface().length() == 0) {
+            if (event.getInterface() == null) {
                 log.info("no interface found, discarding event");
             } else {
                 reinitializePrimarySnmpInterfaceHandler(event);
@@ -237,7 +238,7 @@ final class BroadcastEventProcessor implements EventListener {
         } else if (event.getUei().equals(EventConstants.INTERFACE_REPARENTED_EVENT_UEI)) {
             // If there is no interface then it cannot be processed
             //
-            if (event.getInterface() == null || event.getInterface().length() == 0) {
+            if (event.getInterface() == null) {
                 log.info("no interface found, discarding event");
             } else {
                 interfaceReparentedHandler(event);
@@ -249,7 +250,7 @@ final class BroadcastEventProcessor implements EventListener {
         } else if (event.getUei().equals(EventConstants.INTERFACE_DELETED_EVENT_UEI)) {
             // If there is no interface then it cannot be processed
             //
-            if (event.getInterface() == null || event.getInterface().length() == 0) {
+            if (event.getInterface() == null) {
                 log.info("no interface found, discarding event");
             } else {
                 interfaceDeletedHandler(event);
@@ -257,7 +258,7 @@ final class BroadcastEventProcessor implements EventListener {
         } else if (event.getUei().equals(EventConstants.SERVICE_DELETED_EVENT_UEI)) {
             // If there is no interface then it cannot be processed
             //
-            if (event.getInterface() == null || event.getInterface().length() == 0) {
+            if (event.getInterface() == null) {
                 log.info("no interface found, discarding event");
             } else if (event.getService() == null || event.getService().length() == 0) {
                 // If there is no service then it cannot be processed
@@ -313,7 +314,7 @@ final class BroadcastEventProcessor implements EventListener {
         synchronized (m_thresholdableServices) {
             for (ThresholdableService tSvc : m_thresholdableServices) {
                 InetAddress addr = (InetAddress) tSvc.getAddress();
-                if (addr.getHostAddress().equals(event.getInterface())) {
+                if (addr.equals(event.getInterface())) {
                     synchronized (tSvc) {
                         // Got a match! Retrieve the ThresholderUpdates object
                         // associated
@@ -372,7 +373,7 @@ final class BroadcastEventProcessor implements EventListener {
                     ThresholderUpdates updates = tSvc.getThresholderUpdates();
                     updates.markForReinitialization();
                     if (log.isDebugEnabled())
-                        log.debug("thresholdConfigurationChangedHandler: marking " + addr.getHostAddress() + " for reinitialization for service SNMP.");
+                        log.debug("thresholdConfigurationChangedHandler: marking " + InetAddressUtils.str(addr) + " for reinitialization for service SNMP.");
                 }
             }
         }
@@ -398,7 +399,7 @@ final class BroadcastEventProcessor implements EventListener {
 
         // Schedule the new service...
         //
-        m_threshd.scheduleService((int) event.getNodeid(), event.getInterface(), event.getService(), false);
+        m_threshd.scheduleService(event.getNodeid().intValue(), event.getInterface(), event.getService(), false);
     }
 
     /**
@@ -474,7 +475,8 @@ final class BroadcastEventProcessor implements EventListener {
                     tSvc = liter.next();
 
                     InetAddress addr = (InetAddress) tSvc.getAddress();
-                    if (addr.getHostAddress().equals(oldPrimaryIfAddr)) {
+                    oldPrimaryIfAddr = InetAddressUtils.normalize(oldPrimaryIfAddr);
+                    if (InetAddressUtils.str(addr).equals(oldPrimaryIfAddr)) {
                         synchronized (tSvc) {
                             // Got a match! Retrieve the ThresholderUpdates
                             // object associated
@@ -497,7 +499,7 @@ final class BroadcastEventProcessor implements EventListener {
 
         // Now we can schedule the new service...
         //
-        m_threshd.scheduleService((int) event.getNodeid(), event.getInterface(), event.getService(), false);
+        m_threshd.scheduleService(event.getNodeid().intValue(), event.getInterface(), event.getService(), false);
 
         if (log.isDebugEnabled())
             log.debug("primarySnmpInterfaceChangedHandler: processing of primarySnmpInterfaceChanged event for nodeid " + event.getNodeid() + " completed.");
@@ -586,7 +588,7 @@ final class BroadcastEventProcessor implements EventListener {
                 tSvc = iter.next();
 
                 InetAddress addr = (InetAddress) tSvc.getAddress();
-                if (addr.getHostAddress().equals(event.getInterface())) {
+                if (addr.equals(event.getInterface())) {
                     synchronized (tSvc) {
                         // Got a match!
                         if (log.isDebugEnabled())
@@ -619,7 +621,7 @@ final class BroadcastEventProcessor implements EventListener {
     private void nodeDeletedHandler(Event event) {
         ThreadCategory log = ThreadCategory.getInstance(getClass());
 
-        int nodeId = (int) event.getNodeid();
+        long nodeId = event.getNodeid();
 
         // Iterate over the collectable service list and mark any entries
         // which match the deleted nodeId for deletion.
@@ -665,8 +667,8 @@ final class BroadcastEventProcessor implements EventListener {
     private void interfaceDeletedHandler(Event event) {
         ThreadCategory log = ThreadCategory.getInstance(getClass());
 
-        int nodeId = (int) event.getNodeid();
-        String ipAddr = event.getInterface();
+        long nodeId = event.getNodeid();
+        InetAddress ipAddr = event.getInterfaceAddress();
 
         // Iterate over the collectable services list and mark any entries
         // which match the deleted nodeId/IP address pair for deletion
@@ -679,7 +681,7 @@ final class BroadcastEventProcessor implements EventListener {
                 // Only interested in entries with matching nodeId and IP
                 // address
                 InetAddress addr = (InetAddress) tSvc.getAddress();
-                if (!(tSvc.getNodeId() == nodeId && addr.getHostName().equals(ipAddr)))
+                if (!(tSvc.getNodeId() == nodeId && addr.equals(ipAddr)))
                     continue;
 
                 synchronized (tSvc) {
@@ -719,8 +721,8 @@ final class BroadcastEventProcessor implements EventListener {
         if (!event.getService().equals("SNMP"))
             return;
 
-        int nodeId = (int) event.getNodeid();
-        String ipAddr = event.getInterface();
+        long nodeId = event.getNodeid();
+        InetAddress ipAddr = event.getInterfaceAddress();
         String svcName = event.getService();
 
         // Iterate over the collectable services list and mark any entries
@@ -735,7 +737,7 @@ final class BroadcastEventProcessor implements EventListener {
                 // Only interested in entries with matching nodeId, IP address
                 // and service
                 InetAddress addr = (InetAddress) tSvc.getAddress();
-                if (!(tSvc.getNodeId() == nodeId && addr.getHostName().equals(ipAddr)) && tSvc.getServiceName().equals(svcName))
+                if (!(tSvc.getNodeId() == nodeId && addr.equals(ipAddr)) && tSvc.getServiceName().equals(svcName))
                     continue;
 
                 synchronized (tSvc) {

@@ -39,6 +39,7 @@ import java.net.ConnectException;
 import java.net.InetAddress;
 import java.net.NoRouteToHostException;
 
+import org.opennms.core.utils.InetAddressUtils;
 import org.opennms.core.utils.LogUtils;
 import org.opennms.netmgt.provision.DetectorMonitor;
 import org.opennms.netmgt.provision.SyncServiceDetector;
@@ -86,7 +87,7 @@ public abstract class BasicDetector<Request, Response> extends AbstractDetector 
     
     /** {@inheritDoc} */
     public boolean isServiceDetected(InetAddress address, DetectorMonitor detectorMonitor) {
-        String ipAddr = address.getHostAddress();
+        String ipAddr = InetAddressUtils.str(address);
         int port = getPort();
         int retries = getRetries();
         int timeout = getTimeout();

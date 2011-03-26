@@ -8,6 +8,7 @@ import java.util.Collection;
 import java.util.Date;
 
 import org.hibernate.criterion.Restrictions;
+import org.opennms.core.utils.InetAddressUtils;
 import org.opennms.netmgt.dao.DataLinkInterfaceDao;
 import org.opennms.netmgt.dao.LinkStateDao;
 import org.opennms.netmgt.dao.MonitoredServiceDao;
@@ -205,7 +206,7 @@ public class DefaultNodeLinkService implements NodeLinkService {
         OnmsIpInterface primaryInterface = node.getPrimaryInterface();
         
         if(node != null && primaryInterface != null) {
-            return primaryInterface.getIpAddressAsString();
+            return InetAddressUtils.str(primaryInterface.getIpAddress());
         }
         
         return null;

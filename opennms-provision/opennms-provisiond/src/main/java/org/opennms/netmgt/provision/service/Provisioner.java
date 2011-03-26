@@ -39,7 +39,6 @@ package org.opennms.netmgt.provision.service;
 import java.net.InetAddress;
 import java.net.MalformedURLException;
 import java.net.URL;
-import java.net.UnknownHostException;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
@@ -51,6 +50,7 @@ import java.util.concurrent.ScheduledFuture;
 
 import org.opennms.core.tasks.DefaultTaskCoordinator;
 import org.opennms.core.tasks.Task;
+import org.opennms.core.utils.InetAddressUtils;
 import org.opennms.core.utils.ThreadCategory;
 import org.opennms.netmgt.EventConstants;
 import org.opennms.netmgt.daemon.SpringServiceDaemon;
@@ -566,13 +566,15 @@ public class Provisioner implements SpringServiceDaemon {
         Runnable r = new Runnable() {
             public void run() {
                 try {
-                    InetAddress addr = InetAddress.getByName(ip);
+                    InetAddress addr = InetAddressUtils.addr(ip);
+                    if (addr == null) {
+                    	log().error("Unable to convert " + ip + " to an InetAddress.");
+                    	return;
+                    }
                     NewSuspectScan scan = createNewSuspectScan(addr);
                     Task t = scan.createTask();
                     t.schedule();
                     t.waitFor();
-                } catch (UnknownHostException ex) {
-                    log().error("Unable to convert address "+ip+" from "+uei+" event to InetAddress", ex);
                 } catch (InterruptedException ex) {
                     log().error("Task interrupted waiting for new suspect scan of "+ip+" to finish", ex);
                 } catch (ExecutionException ex) {
@@ -783,7 +785,7 @@ public class Provisioner implements SpringServiceDaemon {
     @EventHandler(uei=EventConstants.DELETE_SERVICE_EVENT_UEI)
     public void handleDeleteService(Event event) {
         try {
-	    doDeleteService(event.getNodeid(), event.getInterface() == null ? null : InetAddress.getByName(event.getInterface()), event.getService());
+	    doDeleteService(event.getNodeid(), event.getInterfaceAddress() == null ? null : event.getInterfaceAddress(), event.getService());
         } catch (Throwable e) {
             log().error("Unexpected exception processing event: " + event.getUei(), e);
         }

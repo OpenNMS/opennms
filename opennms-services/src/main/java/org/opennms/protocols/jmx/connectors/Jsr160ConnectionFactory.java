@@ -38,6 +38,7 @@ import javax.management.remote.JMXConnector;
 import javax.management.remote.JMXConnectorFactory;
 import javax.management.remote.JMXServiceURL;
 
+import org.opennms.core.utils.InetAddressUtils;
 import org.opennms.core.utils.ParameterMap;
 import org.opennms.core.utils.ThreadCategory;
 
@@ -65,12 +66,12 @@ public class Jsr160ConnectionFactory {
         String protocol = ParameterMap.getKeyedString( propertiesMap, "protocol", "rmi");
         String urlPath =  ParameterMap.getKeyedString( propertiesMap, "urlPath",  "/jmxrmi");
         
-        log.debug("JMX: " + factory + " - service:" + protocol + "//" + address.getHostAddress() + ":" + port + urlPath);
+        log.debug("JMX: " + factory + " - service:" + protocol + "//" + InetAddressUtils.str(address) + ":" + port + urlPath);
 
         if (factory == null || factory.equals("STANDARD")) {
             try {
                 
-                url = new JMXServiceURL("service:jmx:" + protocol + ":///jndi/"+protocol+"://" + address.getHostAddress() + ":" + port + urlPath);
+                url = new JMXServiceURL("service:jmx:" + protocol + ":///jndi/"+protocol+"://" + InetAddressUtils.str(address) + ":" + port + urlPath);
                 
                 // Connect a JSR 160 JMXConnector to the server side
                 JMXConnector connector = JMXConnectorFactory.connect(url);
@@ -98,7 +99,7 @@ public class Jsr160ConnectionFactory {
                 // Create an RMI connector client and
                 // connect it to the RMI connector server
                 //
-                url = new JMXServiceURL("service:jmx:" + protocol + ":///jndi/"+protocol+"://" + address.getHostAddress() + ":" + port + urlPath);
+                url = new JMXServiceURL("service:jmx:" + protocol + ":///jndi/"+protocol+"://" + InetAddressUtils.str(address) + ":" + port + urlPath);
                 
                 // Connect a JSR 160 JMXConnector to the server side
                 JMXConnector connector = JMXConnectorFactory.newJMXConnector(url, null);
@@ -141,7 +142,7 @@ public class Jsr160ConnectionFactory {
                 // Create an RMI connector client and
                 // connect it to the RMI connector server
                 //
-                JMXServiceURL url = new JMXServiceURL(protocol, address.getHostAddress(), port, urlPath);
+                JMXServiceURL url = new JMXServiceURL(protocol, InetAddressUtils.str(address), port, urlPath);
                 
                 // Connect a JSR 160 JMXConnector to the server side
                 JMXConnector connector = JMXConnectorFactory.newJMXConnector(url, null);
@@ -185,7 +186,7 @@ public class Jsr160ConnectionFactory {
                 // Create an RMI connector client and
                 // connect it to the RMI connector server
                 //
-                JMXServiceURL url = new JMXServiceURL(protocol, address.getHostAddress(), port, urlPath);
+                JMXServiceURL url = new JMXServiceURL(protocol, InetAddressUtils.str(address), port, urlPath);
                 
                 // Connect a JSR 160 JMXConnector to the server side
                 JMXConnector connector = JMXConnectorFactory.newJMXConnector(url, null);

@@ -43,7 +43,7 @@ public abstract class Pinger implements Runnable {
 
     private NativeDatagramSocket m_pingSocket;
     private Thread m_thread;
-    protected AtomicReference<Exception> m_exception = new AtomicReference<Exception>(null);
+    protected AtomicReference<Throwable> m_throwable = new AtomicReference<Throwable>(null);
     protected Metric m_metric = new Metric();
     private volatile boolean m_stopped = false;
     

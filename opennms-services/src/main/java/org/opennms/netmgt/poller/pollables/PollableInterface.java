@@ -102,7 +102,7 @@ public class PollableInterface extends PollableContainer {
      * @return a {@link java.lang.String} object.
      */
     public String getIpAddr() {
-        return InetAddressUtils.toIpAddrString(m_addr);
+        return InetAddressUtils.str(m_addr);
     }
     
     /**

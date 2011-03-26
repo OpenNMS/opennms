@@ -18,10 +18,11 @@
 package org.opennms.netmgt.xmlrpcd;
 
 import java.net.URL;
-import org.apache.xmlrpc.XmlRpcTransport;
-import org.apache.xmlrpc.XmlRpcClientException;
+
 import org.apache.xmlrpc.DefaultXmlRpcTransport;
 import org.apache.xmlrpc.DefaultXmlRpcTransportFactory;
+import org.apache.xmlrpc.XmlRpcClientException;
+import org.apache.xmlrpc.XmlRpcTransport;
 
 /**
  * Derived from DefaultXmlRpcTransportFactory.
@@ -40,8 +41,7 @@ public class TimeoutSecureXmlRpcTransportFactory extends DefaultXmlRpcTransportF
      * @param url a {@link java.net.URL} object.
      * @param timeout a int.
      */
-    public TimeoutSecureXmlRpcTransportFactory(URL url, int timeout)
-    {
+    public TimeoutSecureXmlRpcTransportFactory(final URL url, final int timeout) {
         super(url);
         this.timeout = timeout;
     }
@@ -54,8 +54,7 @@ public class TimeoutSecureXmlRpcTransportFactory extends DefaultXmlRpcTransportF
      * @param auth a {@link java.lang.String} object.
      * @param timeout a int.
      */
-    public TimeoutSecureXmlRpcTransportFactory(URL url, String auth, int timeout)
-    {
+    public TimeoutSecureXmlRpcTransportFactory(final URL url, final String auth, final int timeout) {
         this(url, timeout);
         this.auth = auth;
     }
@@ -66,11 +65,8 @@ public class TimeoutSecureXmlRpcTransportFactory extends DefaultXmlRpcTransportF
      * @return a {@link org.apache.xmlrpc.XmlRpcTransport} object.
      * @throws org.apache.xmlrpc.XmlRpcClientException if any.
      */
-    public XmlRpcTransport createTransport() 
-    throws XmlRpcClientException
-    {
-        if ("https".equals(url.getProtocol()))
-        {
+    public XmlRpcTransport createTransport() throws XmlRpcClientException {
+        if ("https".equals(url.getProtocol())) {
             if (timeout > 0) 
             {
                 throw new XmlRpcClientException("Timeouts not supported under https.", null);

@@ -40,6 +40,7 @@ import java.net.InetAddress;
 import java.util.LinkedHashSet;
 import java.util.Set;
 
+import org.opennms.core.utils.InetAddressUtils;
 import org.opennms.core.utils.LogUtils;
 import org.opennms.netmgt.config.SnmpPeerFactory;
 import org.opennms.netmgt.dao.IpInterfaceDao;
@@ -120,7 +121,7 @@ public class DefaultCollectionAgent extends InetNetworkInterface implements Coll
      * @return a {@link java.lang.String} object.
      */
     public String getHostAddress() {
-        return getInetAddress().getHostAddress();
+        return InetAddressUtils.str(getInetAddress());
     }
 
     /* (non-Javadoc)

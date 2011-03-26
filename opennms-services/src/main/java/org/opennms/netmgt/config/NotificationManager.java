@@ -332,8 +332,7 @@ public abstract class NotificationManager {
          *  If the event doesn't have a nodeId, interface, or service,
          *  return true since there is nothing on which to filter.
          */
-        if (event.getNodeid() == 0 && event.getInterface() == null &&
-                event.getService() == null) {
+        if (event.getNodeid() == 0 && event.getInterface() == null && event.getService() == null) {
             if ("MATCH-ANY-UEI".equals(notif.getUei())) {
                if ("ipaddr != '0.0.0.0'".equals(notif.getRule().toLowerCase()) || "ipaddr iplike *.*.*.*".equals(notif.getRule().toLowerCase())) {
                    return true;
@@ -1190,7 +1189,7 @@ public abstract class NotificationManager {
             public void processRow(ResultSet rs) throws SQLException {
                 event.setDbid(rs.getInt("eventid"));
                 event.setUei(rs.getString("eventuei"));
-                event.setNodeid(rs.getInt("nodeid"));
+                event.setNodeid(rs.getLong("nodeid"));
                 event.setTime(rs.getString("eventtime"));
                 event.setHost(rs.getString("eventhost"));
                 event.setInterface(rs.getString("ipaddr"));

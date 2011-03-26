@@ -38,30 +38,84 @@
  */
 package org.opennms.netmgt.dao;
 
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertNull;
+
 import java.util.Date;
 
+import org.junit.Before;
+import org.junit.Test;
+import org.junit.runner.RunWith;
+import org.opennms.netmgt.dao.db.JUnitTemporaryDatabase;
+import org.opennms.netmgt.dao.db.OpenNMSConfigurationExecutionListener;
+import org.opennms.netmgt.dao.db.TemporaryDatabaseExecutionListener;
 import org.opennms.netmgt.model.OnmsAlarm;
 import org.opennms.netmgt.model.OnmsEvent;
 import org.opennms.netmgt.model.OnmsNode;
 import org.opennms.netmgt.model.OnmsSeverity;
 import org.opennms.test.ThrowableAnticipator;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.dao.DataIntegrityViolationException;
+import org.springframework.test.context.ContextConfiguration;
+import org.springframework.test.context.TestExecutionListeners;
+import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
+import org.springframework.test.context.support.DependencyInjectionTestExecutionListener;
+import org.springframework.test.context.support.DirtiesContextTestExecutionListener;
+import org.springframework.test.context.transaction.TransactionalTestExecutionListener;
+import org.springframework.transaction.annotation.Transactional;
 
-public class AlarmDaoTest extends AbstractTransactionalDaoTestCase {
+@RunWith(SpringJUnit4ClassRunner.class)
+@TestExecutionListeners({
+    OpenNMSConfigurationExecutionListener.class,
+    TemporaryDatabaseExecutionListener.class,
+    DependencyInjectionTestExecutionListener.class,
+    DirtiesContextTestExecutionListener.class,
+    TransactionalTestExecutionListener.class
+})
+@ContextConfiguration(locations={
+        "classpath:/META-INF/opennms/applicationContext-dao.xml",
+        "classpath:/META-INF/opennms/applicationContext-databasePopulator.xml",
+        "classpath:/META-INF/opennms/applicationContext-setupIpLike-enabled.xml",
+        "classpath*:/META-INF/opennms/component-dao.xml"
+})
+@JUnitTemporaryDatabase()
+public class AlarmDaoTest {
     
-    public void testActions() {
+	@Autowired
+    private DistPollerDao m_distPollerDao;
+	
+	@Autowired
+	private EventDao m_eventDao;
+
+	@Autowired
+	private NodeDao m_nodeDao;
+
+	@Autowired
+	private AlarmDao m_alarmDao;
+
+	@Autowired
+	private DatabasePopulator m_databasePopulator;
+	
+	@Before
+	public void setUp() {
+		m_databasePopulator.populateDatabase();
+	}
+
+	@Test
+	@Transactional
+	public void testActions() {
         OnmsEvent event = new OnmsEvent();
         event.setEventLog("Y");
         event.setEventDisplay("Y");
         event.setEventCreateTime(new Date());
-        event.setDistPoller(getDistPollerDao().load("localhost"));
+        event.setDistPoller(m_distPollerDao.load("localhost"));
         event.setEventTime(new Date());
-        event.setEventSeverity(new Integer(6));
+        event.setEventSeverity(Integer.valueOf(6));
         event.setEventUei("uei://org/opennms/test/EventDaoTest");
         event.setEventSource("test");
-        getEventDao().save(event);
+        m_eventDao.save(event);
         
-        OnmsNode node = getNodeDao().findAll().iterator().next();
+        OnmsNode node = m_nodeDao.findAll().iterator().next();
 
         OnmsAlarm alarm = new OnmsAlarm();
         
@@ -72,11 +126,11 @@ public class AlarmDaoTest extends AbstractTransactionalDaoTestCase {
         alarm.setFirstEventTime(event.getEventTime());
         alarm.setLastEvent(event);
         alarm.setCounter(1);
-        alarm.setDistPoller(getDistPollerDao().load("localhost"));
+        alarm.setDistPoller(m_distPollerDao.load("localhost"));
         
-        getAlarmDao().save(alarm);
+        m_alarmDao.save(alarm);
         
-        OnmsAlarm newAlarm = getAlarmDao().load(alarm.getId());
+        OnmsAlarm newAlarm = m_alarmDao.load(alarm.getId());
         assertEquals("uei://org/opennms/test/EventDaoTest", newAlarm.getUei());
         assertEquals(alarm.getLastEvent().getId(), newAlarm.getLastEvent().getId());
         
@@ -95,19 +149,21 @@ public class AlarmDaoTest extends AbstractTransactionalDaoTestCase {
     }
     
     
-    public void testSave() {
+    @Test
+	@Transactional
+	public void testSave() {
         OnmsEvent event = new OnmsEvent();
         event.setEventLog("Y");
         event.setEventDisplay("Y");
         event.setEventCreateTime(new Date());
-        event.setDistPoller(getDistPollerDao().load("localhost"));
+        event.setDistPoller(m_distPollerDao.load("localhost"));
         event.setEventTime(new Date());
         event.setEventSeverity(new Integer(7));
         event.setEventUei("uei://org/opennms/test/EventDaoTest");
         event.setEventSource("test");
-        getEventDao().save(event);
+        m_eventDao.save(event);
         
-        OnmsNode node = getNodeDao().findAll().iterator().next();
+        OnmsNode node = m_nodeDao.findAll().iterator().next();
 
         OnmsAlarm alarm = new OnmsAlarm();
         
@@ -117,29 +173,31 @@ public class AlarmDaoTest extends AbstractTransactionalDaoTestCase {
         alarm.setFirstEventTime(event.getEventTime());
         alarm.setLastEvent(event);
         alarm.setCounter(1);
-        alarm.setDistPoller(getDistPollerDao().load("localhost"));
+        alarm.setDistPoller(m_distPollerDao.load("localhost"));
         
-        getAlarmDao().save(alarm);
+        m_alarmDao.save(alarm);
         // It works we're so smart! hehe
         
-        OnmsAlarm newAlarm = getAlarmDao().load(alarm.getId());
+        OnmsAlarm newAlarm = m_alarmDao.load(alarm.getId());
         assertEquals("uei://org/opennms/test/EventDaoTest", newAlarm.getUei());
         assertEquals(alarm.getLastEvent().getId(), newAlarm.getLastEvent().getId());
     }
     
+	@Test
+	@Transactional
     public void testWithoutDistPoller() {
         OnmsEvent event = new OnmsEvent();
         event.setEventLog("Y");
         event.setEventDisplay("Y");
         event.setEventCreateTime(new Date());
-        event.setDistPoller(getDistPollerDao().load("localhost"));
+        event.setDistPoller(m_distPollerDao.load("localhost"));
         event.setEventTime(new Date());
         event.setEventSeverity(new Integer(7));
         event.setEventUei("uei://org/opennms/test/EventDaoTest");
         event.setEventSource("test");
-        getEventDao().save(event);
+        m_eventDao.save(event);
         
-        OnmsNode node = getNodeDao().findAll().iterator().next();
+        OnmsNode node = m_nodeDao.findAll().iterator().next();
 
         OnmsAlarm alarm = new OnmsAlarm();
         
@@ -154,7 +212,7 @@ public class AlarmDaoTest extends AbstractTransactionalDaoTestCase {
         ta.anticipate(new DataIntegrityViolationException("not-null property references a null or transient value: org.opennms.netmgt.model.OnmsAlarm.distPoller; nested exception is org.hibernate.PropertyValueException: not-null property references a null or transient value: org.opennms.netmgt.model.OnmsAlarm.distPoller"));
         
         try {
-            getAlarmDao().save(alarm);
+            m_alarmDao.save(alarm);
         } catch (Throwable t) {
             ta.throwableReceived(t);
         }

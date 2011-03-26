@@ -35,6 +35,10 @@
 //
 package org.opennms.netmgt.dao;
 
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertFalse;
+import static org.junit.Assert.assertNotNull;
+import static org.junit.Assert.assertTrue;
 import static org.opennms.core.utils.InetAddressUtils.addr;
 
 import java.net.Inet6Address;
@@ -49,15 +53,56 @@ import java.util.Map;
 import java.util.Map.Entry;
 
 import org.hibernate.criterion.Restrictions;
+import org.junit.Before;
+import org.junit.Test;
+import org.junit.runner.RunWith;
+import org.opennms.core.utils.InetAddressUtils;
+import org.opennms.netmgt.dao.db.JUnitTemporaryDatabase;
+import org.opennms.netmgt.dao.db.OpenNMSConfigurationExecutionListener;
+import org.opennms.netmgt.dao.db.TemporaryDatabaseExecutionListener;
 import org.opennms.netmgt.model.OnmsCriteria;
 import org.opennms.netmgt.model.OnmsIpInterface;
 import org.opennms.netmgt.model.OnmsMonitoredService;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.test.context.ContextConfiguration;
+import org.springframework.test.context.TestExecutionListeners;
+import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
+import org.springframework.test.context.support.DependencyInjectionTestExecutionListener;
+import org.springframework.test.context.support.DirtiesContextTestExecutionListener;
+import org.springframework.test.context.transaction.TransactionalTestExecutionListener;
+import org.springframework.transaction.annotation.Transactional;
 
+@RunWith(SpringJUnit4ClassRunner.class)
+@TestExecutionListeners({
+    OpenNMSConfigurationExecutionListener.class,
+    TemporaryDatabaseExecutionListener.class,
+    DependencyInjectionTestExecutionListener.class,
+    DirtiesContextTestExecutionListener.class,
+    TransactionalTestExecutionListener.class
+})
+@ContextConfiguration(locations={
+        "classpath:/META-INF/opennms/applicationContext-dao.xml",
+        "classpath:/META-INF/opennms/applicationContext-databasePopulator.xml",
+        "classpath:/META-INF/opennms/applicationContext-setupIpLike-enabled.xml",
+        "classpath*:/META-INF/opennms/component-dao.xml"
+})
+@JUnitTemporaryDatabase()
+public class IpInterfaceDaoTest {
+	@Autowired
+	private IpInterfaceDao m_ipInterfaceDao;
+	
+	@Autowired
+	private DatabasePopulator m_databasePopulator;
+	
+	@Before
+	public void setUp() {
+		m_databasePopulator.populateDatabase();
+	}
 
-public class IpInterfaceDaoTest extends AbstractTransactionalDaoTestCase {
-
+	@Test
+	@Transactional
     public void testGetByIpAddress() {
-        Collection<OnmsIpInterface> ifaces = getIpInterfaceDao().findByIpAddress("192.168.1.1");
+        Collection<OnmsIpInterface> ifaces = m_ipInterfaceDao.findByIpAddress("192.168.1.1");
         assertEquals(1, ifaces.size());
         OnmsIpInterface iface = ifaces.iterator().next();
         assertEquals("node1", iface.getNode().getLabel());
@@ -70,11 +115,13 @@ public class IpInterfaceDaoTest extends AbstractTransactionalDaoTestCase {
         
         assertEquals(2, count);
         assertEquals(2, iface.getMonitoredServices().size());
-        assertEquals("192.168.1.1", iface.getIpAddress().getHostAddress());
+        assertEquals("192.168.1.1", InetAddressUtils.str(iface.getIpAddress()));
     }
     
+	@Test
+	@Transactional
     public void testGetByService() {
-        List<OnmsIpInterface> ifaces = getIpInterfaceDao().findByServiceType("SNMP");
+        List<OnmsIpInterface> ifaces = m_ipInterfaceDao.findByServiceType("SNMP");
         Collections.sort(ifaces, new Comparator<OnmsIpInterface>() {
             public int compare(OnmsIpInterface o1, OnmsIpInterface o2) {
                 return Integer.valueOf(o1.getNode().getId()).compareTo(o2.getNode().getId());
@@ -86,47 +133,53 @@ public class IpInterfaceDaoTest extends AbstractTransactionalDaoTestCase {
         OnmsIpInterface iface = ifaces.iterator().next();
         assertEquals("node1", iface.getNode().getLabel());
         assertEquals(2, iface.getMonitoredServices().size());
-        assertEquals("192.168.1.1", iface.getIpAddress().getHostAddress());
+        assertEquals("192.168.1.1", InetAddressUtils.str(iface.getIpAddress()));
         
         OnmsMonitoredService service = iface.getMonitoredServiceByServiceType("SNMP");
         assertNotNull(service);
         assertEquals(addr("192.168.1.1"), service.getIpAddress());
     }
     
+	@Test
+	@Transactional
     public void testCountMatchingInerfaces() {
         OnmsCriteria crit = new OnmsCriteria(OnmsIpInterface.class);
         crit.add(Restrictions.like("ipAddress", "192.168.1.%"));
-        assertEquals(3, getIpInterfaceDao().countMatching(crit));
+        assertEquals(3, m_ipInterfaceDao.countMatching(crit));
         
         crit = new OnmsCriteria(OnmsIpInterface.class);
         crit.add(Restrictions.like("ipAddress", "fe80:%dddd\\%5"));
-        assertEquals(1, getIpInterfaceDao().countMatching(crit));
+        assertEquals(1, m_ipInterfaceDao.countMatching(crit));
     }
 
+	@Test
+	@Transactional
     public void testGetIPv6Interfaces() {
         OnmsCriteria crit = new OnmsCriteria(OnmsIpInterface.class);
         crit.add(Restrictions.like("ipAddress", "fe80:%dddd\\%5"));
-        List<OnmsIpInterface> ifaces = getIpInterfaceDao().findMatching(crit);
+        List<OnmsIpInterface> ifaces = m_ipInterfaceDao.findMatching(crit);
         assertEquals(1, ifaces.size());
         
         OnmsIpInterface iface = ifaces.get(0);
         assertTrue(iface.getIpAddress() instanceof Inet6Address);
         Inet6Address v6address = (Inet6Address)iface.getIpAddress();
         assertEquals(5, v6address.getScopeId());
-        assertEquals("fe80:0000:0000:0000:aaaa:bbbb:cccc:dddd%5", iface.getIpAddressAsString());
+        assertEquals("fe80:0000:0000:0000:aaaa:bbbb:cccc:dddd%5", InetAddressUtils.str(iface.getIpAddress()));
     }
 
+	@Test
+	@Transactional
     public void testGetInterfacesForNodes() throws UnknownHostException {
-        Map<InetAddress, Integer> interfaceNodes = getIpInterfaceDao().getInterfacesForNodes();
+        Map<InetAddress, Integer> interfaceNodes = m_ipInterfaceDao.getInterfacesForNodes();
         assertNotNull("interfaceNodes", interfaceNodes);
         
         for (Entry<InetAddress, Integer> entry : interfaceNodes.entrySet()) {
             System.out.println(entry.getKey() + ": " + entry.getValue());
         }
         
-        assertEquals("node ID for 192.168.1.1", Integer.valueOf(1), interfaceNodes.get(InetAddress.getByName("192.168.1.1")));
-        assertEquals("node ID for 192.168.1.2", Integer.valueOf(1), interfaceNodes.get(InetAddress.getByName("192.168.1.2")));
-        assertEquals("node ID for 192.168.2.1", Integer.valueOf(2), interfaceNodes.get(InetAddress.getByName("192.168.2.1")));
+        assertEquals("node ID for 192.168.1.1", Integer.valueOf(1), interfaceNodes.get(InetAddressUtils.addr("192.168.1.1")));
+        assertEquals("node ID for 192.168.1.2", Integer.valueOf(1), interfaceNodes.get(InetAddressUtils.addr("192.168.1.2")));
+        assertEquals("node ID for 192.168.2.1", Integer.valueOf(2), interfaceNodes.get(InetAddressUtils.addr("192.168.2.1")));
         assertFalse("node ID for *BOGUS*IP* should not have been found", interfaceNodes.containsKey("*BOGUS*IP*"));
     }
     

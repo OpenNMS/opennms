@@ -41,6 +41,7 @@ import java.util.List;
 
 import org.exolab.castor.xml.MarshalException;
 import org.exolab.castor.xml.ValidationException;
+import org.opennms.core.utils.InetAddressUtils;
 import org.opennms.core.utils.ThreadCategory;
 import org.opennms.netmgt.eventd.adaptors.EventHandler;
 import org.opennms.netmgt.xml.event.Event;
@@ -167,15 +168,15 @@ final class UdpProcessor implements Runnable {
             Event[] events = null;
             try {
                 if (log().isDebugEnabled()) {
-                    log().debug("Event from " + re.getSender().getHostAddress() + ":" + re.getPort());
+                    log().debug("Event from " + InetAddressUtils.str(re.getSender()) + ":" + re.getPort());
                     log().debug("Unmarshalling Event text {" + System.getProperty("line.separator") + re.getXmlData() + System.getProperty("line.separator") + "}");
                 }
                 events = re.unmarshal().getEvents().getEvent();
             } catch (MarshalException e) {
-                log().warn("Failed to unmarshal the event from " + re.getSender().getHostAddress() + ":" + re.getPort() + ": " + e, e);
+                log().warn("Failed to unmarshal the event from " + InetAddressUtils.str(re.getSender()) + ":" + re.getPort() + ": " + e, e);
                 continue;
             } catch (ValidationException e) {
-                log().warn("Failed to validate the event from " + re.getSender().getHostAddress() + ":" + re.getPort() + ": " + e, e);
+                log().warn("Failed to validate the event from " + InetAddressUtils.str(re.getSender()) + ":" + re.getPort() + ": " + e, e);
                 continue;
             }
 

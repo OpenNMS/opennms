@@ -34,6 +34,7 @@ package org.opennms.netmgt.poller.monitors;
 import java.net.InetAddress;
 import java.util.Map;
 
+import org.opennms.core.utils.InetAddressUtils;
 import org.opennms.core.utils.ParameterMap;
 import org.opennms.core.utils.ThreadCategory;
 import org.opennms.core.utils.TimeoutTracker;
@@ -55,10 +56,6 @@ import org.opennms.netmgt.poller.nsclient.NsclientPacket;
  * with other plug-ins by the service poller framework.
  *
  * @author <A HREF="mailto:matt.raykowski@gmail.com">Matt Raykowski</A>
- * @author <A HREF="http://www.opennms.org/">OpenNMS </A>
- * @author <A HREF="mailto:matt.raykowski@gmail.com">Matt Raykowski</A>
- * @author <A HREF="http://www.opennms.org/">OpenNMS </A>
- * @version $Id: $
  */
 
 @Distributable
@@ -134,8 +131,7 @@ public class NsclientMonitor extends AbstractServiceMonitor {
                 tracker.startAttempt();
 
                 // Create a client, set up details and connect.
-                NsclientManager client = new NsclientManager(
-                                                             ipv4Addr.getHostAddress(),
+                NsclientManager client = new NsclientManager(InetAddressUtils.str(ipv4Addr),
                                                              port, password);
                 client.setTimeout(tracker.getSoTimeout());
                 client.setPassword(password);

@@ -48,7 +48,7 @@ import org.opennms.netmgt.xml.event.Event;
  */
 abstract public class MockElement {
 
-    MockContainer<?,? extends MockElement> m_parent;
+	private volatile MockContainer<?,? extends MockElement> m_parent;
 
     /**
      * <p>Constructor for MockElement.</p>
@@ -140,7 +140,8 @@ abstract public class MockElement {
      *
      * @param newParent a {@link org.opennms.netmgt.mock.MockContainer} object.
      */
-    public void moveTo(MockContainer newParent) {
+    @SuppressWarnings({ "rawtypes", "unchecked" })
+	public void moveTo(MockContainer newParent) {
         m_parent.removeMember(this);
         newParent.addMember(this);
     }

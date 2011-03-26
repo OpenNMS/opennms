@@ -33,10 +33,13 @@ package org.opennms.netmgt.collectd;
 
 import java.io.File;
 import java.io.IOException;
-import java.net.InetAddress;
 import java.util.Collections;
 import java.util.HashMap;
+
+import junit.framework.TestCase;
+
 import org.easymock.EasyMock;
+import org.opennms.core.utils.InetAddressUtils;
 import org.opennms.netmgt.config.MibObject;
 import org.opennms.netmgt.dao.IpInterfaceDao;
 import org.opennms.netmgt.mock.MockDataCollectionConfig;
@@ -49,8 +52,6 @@ import org.opennms.test.FileAnticipator;
 import org.opennms.test.mock.MockLogAppender;
 import org.opennms.test.mock.MockUtil;
 import org.springframework.transaction.PlatformTransactionManager;
-
-import junit.framework.TestCase;
 
 /**
  * JUnit TestCase for PersistOperationBuilder.
@@ -78,7 +79,7 @@ public class PersistOperationBuilderTest extends TestCase {
         m_node = new OnmsNode();
         m_node.setId(1);
         m_intf.setNode(m_node);
-        m_intf.setIpAddress(InetAddress.getByName("1.1.1.1"));
+        m_intf.setIpAddress(InetAddressUtils.addr("1.1.1.1"));
         m_intf.setId(27);
         
         m_ifDao = EasyMock.createMock(IpInterfaceDao.class);

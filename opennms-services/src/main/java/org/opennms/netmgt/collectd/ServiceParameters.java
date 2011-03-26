@@ -37,9 +37,9 @@
 package org.opennms.netmgt.collectd;
 
 import java.net.InetAddress;
-import java.net.UnknownHostException;
 import java.util.Map;
 
+import org.opennms.core.utils.InetAddressUtils;
 import org.opennms.core.utils.ParameterMap;
 import org.opennms.core.utils.ThreadCategory;
 import org.opennms.netmgt.snmp.SnmpAgentConfig;
@@ -192,14 +192,14 @@ public class ServiceParameters {
 
     InetAddress getSnmpProxyFor(InetAddress current) {
         String address = ParameterMap.getKeyedString(getParameters(), "proxy-host", null);
+        InetAddress addr = null;
         if (address != null) {
-            try {
-                return InetAddress.getByName(address);
-            } catch (UnknownHostException e) {
-                log().error("determineProxyHost: Problem converting proxy host string to InetAddress", e);
+        	addr = InetAddressUtils.addr(address);
+        	if (addr == null) {
+        		log().error("determineProxyHost: Problem converting proxy host string to InetAddress");
             }
         }
-        return current;
+        return addr == null? current : addr;
     }
 
     int getSnmpVersion(int current) {

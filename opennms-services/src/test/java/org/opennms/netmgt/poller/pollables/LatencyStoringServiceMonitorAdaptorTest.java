@@ -59,11 +59,9 @@ import org.junit.Assert;
 import org.junit.Before;
 import org.junit.Test;
 import org.opennms.core.resource.Vault;
+import org.opennms.core.utils.InetAddressUtils;
 import org.opennms.netmgt.config.DataSourceFactory;
 import org.opennms.netmgt.config.PollerConfig;
-import org.opennms.test.mock.EasyMockUtils;
-import org.opennms.test.mock.MockLogAppender;
-
 import org.opennms.netmgt.config.poller.Package;
 import org.opennms.netmgt.config.poller.Rrd;
 import org.opennms.netmgt.dao.FilterDao;
@@ -82,7 +80,8 @@ import org.opennms.netmgt.poller.ServiceMonitor;
 import org.opennms.netmgt.rrd.RrdDataSource;
 import org.opennms.netmgt.rrd.RrdStrategy;
 import org.opennms.netmgt.rrd.RrdUtils;
-import org.opennms.netmgt.xml.event.Event;
+import org.opennms.test.mock.EasyMockUtils;
+import org.opennms.test.mock.MockLogAppender;
 
 public class LatencyStoringServiceMonitorAdaptorTest {
     private EasyMockUtils m_mocks = new EasyMockUtils();
@@ -146,7 +145,7 @@ public class LatencyStoringServiceMonitorAdaptorTest {
         MonitoredService svc = m_mocks.createMock(MonitoredService.class);
         expect(svc.getNodeId()).andReturn(1);
         expect(svc.getIpAddr()).andReturn("127.0.0.1");
-        expect(svc.getAddress()).andReturn(InetAddress.getByName("127.0.0.1"));
+        expect(svc.getAddress()).andReturn(InetAddressUtils.addr("127.0.0.1"));
         expect(svc.getSvcName()).andReturn("ICMP");
 
         ServiceMonitor service = m_mocks.createMock(ServiceMonitor.class);

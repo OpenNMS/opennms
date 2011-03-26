@@ -151,22 +151,22 @@ public abstract class AbstractTcpPlugin extends AbstractPlugin {
             } catch (ConnectException cE) {
                 // Connection refused!! Continue to retry.
                 //
-                log.debug(getPluginName() + ": connection refused to " + config.getInetAddress().getHostAddress() + ":" + config.getPort());
+                log.debug(getPluginName() + ": connection refused to " + config.getInetAddress() + ":" + config.getPort());
                 isAServer = false;
             } catch (NoRouteToHostException e) {
                 // No route to host!! No need to perform retries.
                 e.fillInStackTrace();
-                log.info(getPluginName() + ": Unable to test host " + config.getInetAddress().getHostAddress() + ", no route available", e);
+                log.info(getPluginName() + ": Unable to test host " + config.getInetAddress() + ", no route available", e);
                 isAServer = false;
                 throw new UndeclaredThrowableException(e);
             } catch (InterruptedIOException e) {
                 log.debug(getPluginName() + ": did not connect to host within timeout: " + timeout + " attempt: " + attempts);
                 isAServer = false;
             } catch (IOException e) {
-                log.info(getPluginName() + ": Error communicating with host " + config.getInetAddress().getHostAddress(), e);
+                log.info(getPluginName() + ": Error communicating with host " + config.getInetAddress(), e);
                 isAServer = false;
             } catch (Throwable t) {
-                log.warn(getPluginName() + ": Undeclared throwable exception caught contacting host " + config.getInetAddress().getHostAddress(), t);
+                log.warn(getPluginName() + ": Undeclared throwable exception caught contacting host " + config.getInetAddress(), t);
                 isAServer = false;
             } finally {
                 if (socket != null)

@@ -39,6 +39,7 @@ import java.net.UnknownHostException;
 import java.util.Date;
 import java.util.Map;
 
+import org.opennms.core.utils.InetAddressUtils;
 import org.opennms.core.utils.ThreadCategory;
 import org.opennms.netmgt.EventConstants;
 import org.opennms.netmgt.config.threshd.Threshold;
@@ -111,7 +112,7 @@ public class LatencyInterface {
 	    if (tmp != null)
 	        nodeId = tmp.intValue();
 	    if (nodeId == -1) {
-	        throw new ThresholdingException("Threshold checking failed for " + getServiceName() + "/" + getInetAddress().getHostAddress() + ", missing nodeId.", LatencyThresholder.THRESHOLDING_FAILED);
+	        throw new ThresholdingException("Threshold checking failed for " + getServiceName() + "/" + getHostAddress() + ", missing nodeId.", LatencyThresholder.THRESHOLDING_FAILED);
 	    }
 	    return nodeId;
 	}
@@ -121,8 +122,8 @@ public class LatencyInterface {
 	 *
 	 * @return a {@link java.lang.String} object.
 	 */
-	public String getHostName() {
-		return getInetAddress().getHostAddress();
+	public String getHostAddress() {
+		return InetAddressUtils.str(getInetAddress());
 	}
 
 	File getLatencyDir() throws ThresholdingException {
@@ -131,11 +132,11 @@ public class LatencyInterface {
 	        log().debug("check: rrd repository=" + repository);
 	    // Get File object representing the
 	    // '/opt/OpenNMS/share/rrd/<svc_name>/<ipAddress>/' directory
-	    File latencyDir = new File(repository + File.separator + getHostName());
+	    File latencyDir = new File(repository + File.separator + getHostAddress());
 	    if (!latencyDir.exists()) {
-	        throw new ThresholdingException("Latency directory for " + getServiceName() + "/" + getHostName() + " does not exist. Threshold checking failed for " + getHostName(), LatencyThresholder.THRESHOLDING_FAILED);
+	        throw new ThresholdingException("Latency directory for " + getServiceName() + "/" + getHostAddress() + " does not exist. Threshold checking failed for " + getHostAddress(), LatencyThresholder.THRESHOLDING_FAILED);
 	    } else if (!RrdFileConstants.isValidRRDLatencyDir(latencyDir)) {
-	        throw new ThresholdingException("Latency directory for " + getServiceName() + "/" + getHostName() + " is not a valid RRD latency directory. Threshold checking failed for " + getHostName(), LatencyThresholder.THRESHOLDING_FAILED);
+	        throw new ThresholdingException("Latency directory for " + getServiceName() + "/" + getHostAddress() + " is not a valid RRD latency directory. Threshold checking failed for " + getHostAddress(), LatencyThresholder.THRESHOLDING_FAILED);
 	    }
 	    return latencyDir;
 	}

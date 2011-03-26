@@ -41,6 +41,7 @@ package org.opennms.netmgt.dao.support;
 import java.io.File;
 import java.io.InputStream;
 
+import org.opennms.core.utils.LogUtils;
 import org.opennms.netmgt.dao.RrdDao;
 import org.opennms.netmgt.model.OnmsAttribute;
 import org.opennms.netmgt.model.RrdGraphAttribute;
@@ -97,7 +98,7 @@ public class DefaultRrdDao implements RrdDao, InitializingBean {
                 "-",
                 "--start=" + (startTimeInMillis / 1000),
                 "--end=" + (endTimeInMillis / 1000),
-                "DEF:ds=" + rrdAttribute.getRrdRelativePath() + ":" + attribute.getName() + ":" + rraConsolidationFunction,
+                "DEF:ds=" + RrdFileConstants.escapeForGraphing(rrdAttribute.getRrdRelativePath()) + ":" + attribute.getName() + ":" + rraConsolidationFunction,
         };
         
         String[] printDefs = new String[printFunctions.length];
@@ -107,6 +108,7 @@ public class DefaultRrdDao implements RrdDao, InitializingBean {
         
         String commandString = StringUtils.arrayToDelimitedString(command, " ") + ' ' + StringUtils.arrayToDelimitedString(printDefs, " ");
 
+        LogUtils.debugf(this, "commandString: %s", commandString);
         RrdGraphDetails graphDetails;
         try {
             graphDetails = m_rrdStrategy.createGraphReturnDetails(commandString, m_rrdBaseDirectory);

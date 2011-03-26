@@ -50,6 +50,7 @@ import java.util.concurrent.TimeUnit;
 import javax.sql.DataSource;
 
 import org.apache.commons.lang.builder.HashCodeBuilder;
+import org.opennms.core.utils.LogUtils;
 import org.opennms.netmgt.config.EventConfDao;
 import org.opennms.netmgt.config.EventdConfigManager;
 import org.opennms.netmgt.eventd.EventIpcBroadcaster;
@@ -60,7 +61,6 @@ import org.opennms.netmgt.model.events.EventListener;
 import org.opennms.netmgt.model.events.EventProxyException;
 import org.opennms.netmgt.xml.event.Event;
 import org.opennms.netmgt.xml.event.Log;
-import org.opennms.test.mock.MockUtil;
 import org.springframework.beans.factory.InitializingBean;
 import org.springframework.dao.DataAccessException;
 import org.springframework.util.Assert;
@@ -68,9 +68,8 @@ import org.springframework.util.Assert;
 public class MockEventIpcManager implements EventIpcManager, EventIpcBroadcaster, InitializingBean {
 
     static class ListenerKeeper {
-        EventListener m_listener;
-
-        Set<String> m_ueiList;
+    	final EventListener m_listener;
+    	final Set<String> m_ueiList;
 
         ListenerKeeper(final EventListener listener, final Set<String> ueiList) {
             m_listener = listener;
@@ -194,9 +193,9 @@ public class MockEventIpcManager implements EventIpcManager, EventIpcBroadcaster
     }
 
     public void broadcastNow(final Event event) {
-        MockUtil.println("Sending: " + new EventWrapper(event));
+        LogUtils.debugf(this, "Sending: %s", new EventWrapper(event));
         final List<ListenerKeeper> listeners = new ArrayList<ListenerKeeper>(m_listeners);
-        for (ListenerKeeper k : listeners) {
+        for (final ListenerKeeper k : listeners) {
             k.sendEventIfAppropriate(event);
         }
     }
@@ -251,8 +250,8 @@ public class MockEventIpcManager implements EventIpcManager, EventIpcBroadcaster
         expander.setEventConfDao(new EmptyEventConfDao());
         expander.expandEvent(event);
         m_pendingEvents++;
-        MockUtil.println("StartEvent processing: m_pendingEvents = "+m_pendingEvents);
-        MockUtil.println("Received: "+ new EventWrapper(event));
+        LogUtils.debugf(this, "StartEvent processing (%d remaining)", m_pendingEvents);
+        LogUtils.debugf(this, "Received: ", new EventWrapper(event));
         m_anticipator.eventReceived(event);
 
         final Runnable r = new Runnable() {
@@ -264,7 +263,7 @@ public class MockEventIpcManager implements EventIpcManager, EventIpcBroadcaster
                 } finally {
                     synchronized(MockEventIpcManager.this) {
                         m_pendingEvents--;
-                        MockUtil.println("Finished processing event m_pendingEvents = "+m_pendingEvents);
+                        LogUtils.debugf(this, "Finished processing event (%d remaining)", m_pendingEvents);
                         MockEventIpcManager.this.notifyAll();
                     }
                 }
@@ -296,7 +295,7 @@ public class MockEventIpcManager implements EventIpcManager, EventIpcBroadcaster
      */
     public synchronized void finishProcessingEvents() {
         while (m_pendingEvents > 0) {
-            MockUtil.println("Waiting for event processing: m_pendingEvents = "+m_pendingEvents);
+            LogUtils.debugf(this, "Waiting for event processing: (%d remaining)", m_pendingEvents);
             try {
                 wait();
             } catch (final InterruptedException e) {

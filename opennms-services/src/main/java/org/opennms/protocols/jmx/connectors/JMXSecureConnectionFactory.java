@@ -19,6 +19,7 @@ import javax.net.ssl.TrustManager;
 import javax.net.ssl.TrustManagerFactory;
 import javax.net.ssl.X509TrustManager;
 
+import org.opennms.core.utils.InetAddressUtils;
 import org.opennms.core.utils.ParameterMap;
 import org.opennms.core.utils.ThreadCategory;
 
@@ -51,7 +52,7 @@ public class JMXSecureConnectionFactory
         String urlPath = ParameterMap.getKeyedString(propertiesMap, "urlPath", "");
         String sunCacao = ParameterMap.getKeyedString(propertiesMap, "sunCacao", "false");
 
-        log.debug("JMX: " + factory + " - service:" + protocol + "//" + address.getHostAddress() + ":" + port + urlPath);
+        log.debug("JMX: " + factory + " - service:" + protocol + "//" + InetAddressUtils.str(address) + ":" + port + urlPath);
 
         if (factory.equals("SASL"))
         {
@@ -97,7 +98,7 @@ public class JMXSecureConnectionFactory
                     // Create an JMXMP connector client and
                     // connect it to the JMXMP connector server
                     //
-                    url = new JMXServiceURL(protocol, address.getHostAddress(), port, urlPath);
+                    url = new JMXServiceURL(protocol, InetAddressUtils.str(address), port, urlPath);
 
                     JMXConnector connector = JMXConnectorFactory.newJMXConnector(url, null);
 

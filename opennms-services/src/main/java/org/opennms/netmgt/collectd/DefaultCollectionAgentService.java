@@ -44,6 +44,7 @@ import java.util.LinkedHashSet;
 import java.util.Properties;
 import java.util.Set;
 
+import org.opennms.core.utils.InetAddressUtils;
 import org.opennms.core.utils.ThreadCategory;
 import org.opennms.netmgt.config.SnmpPeerFactory;
 import org.opennms.netmgt.dao.IpInterfaceDao;
@@ -125,7 +126,7 @@ public class DefaultCollectionAgentService implements CollectionAgentService {
      * @return a {@link java.lang.String} object.
      */
     public String getHostAddress() {
-        return getInetAddress().getHostAddress();
+        return InetAddressUtils.str(getInetAddress());
     }
 
      /* (non-Javadoc)

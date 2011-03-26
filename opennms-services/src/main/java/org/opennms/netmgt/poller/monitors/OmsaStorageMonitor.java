@@ -47,6 +47,7 @@ import java.util.Map;
 import org.apache.log4j.Level;
 import org.exolab.castor.xml.MarshalException;
 import org.exolab.castor.xml.ValidationException;
+import org.opennms.core.utils.InetAddressUtils;
 import org.opennms.core.utils.ParameterMap;
 import org.opennms.netmgt.config.SnmpPeerFactory;
 import org.opennms.netmgt.model.PollStatus;
@@ -130,7 +131,8 @@ final public class OmsaStorageMonitor extends SnmpMonitorStrategy {
         
         if (log().isDebugEnabled()) log().debug("poll: service= SNMP address= " + agentConfig);
         
-        try {
+        final String hostAddress = InetAddressUtils.str(ipaddr);
+		try {
             if (log().isDebugEnabled()) {
                 log().debug("OMSAStorageMonitor.poll: SnmpAgentConfig address: " +agentConfig);
             }
@@ -138,7 +140,7 @@ final public class OmsaStorageMonitor extends SnmpMonitorStrategy {
             SnmpValue virtualDiskRollUpStatus = SnmpUtils.get(agentConfig, virtualDiskRollUpStatusSnmpObject);
             
             if(virtualDiskRollUpStatus == null || virtualDiskRollUpStatus.isNull()) {
-                log().debug("SNMP poll failed: no results, addr=" + ipaddr.getHostAddress() + " oid=" + virtualDiskRollUpStatusSnmpObject);
+                log().debug("SNMP poll failed: no results, addr=" + hostAddress + " oid=" + virtualDiskRollUpStatusSnmpObject);
                 return PollStatus.unavailable();
             }
 
@@ -194,7 +196,7 @@ final public class OmsaStorageMonitor extends SnmpMonitorStrategy {
         } catch (IllegalArgumentException e) {
             status = logDown(Level.ERROR, "Invalid Snmp Criteria: " + e.getMessage());
         } catch (Throwable t) {
-            status = logDown(Level.WARN, "Unexpected exception during SNMP poll of interface " + ipaddr.getHostAddress(), t);
+            status = logDown(Level.WARN, "Unexpected exception during SNMP poll of interface " + hostAddress, t);
         }
 
         return status;
@@ -205,7 +207,7 @@ final public class OmsaStorageMonitor extends SnmpMonitorStrategy {
         //
         SnmpAgentConfig agentConfig = SnmpPeerFactory.getInstance().getAgentConfig(ipaddr);
         if (agentConfig == null) throw new RuntimeException("SnmpAgentConfig object not available for interface " + ipaddr);
-        log().debug("poll: setting SNMP peer attribute for interface " + ipaddr.getHostAddress());
+        log().debug("poll: setting SNMP peer attribute for interface " + InetAddressUtils.str(ipaddr));
         agentConfig.setTimeout(ParameterMap.getKeyedInteger(parameters, "timeout", agentConfig.getTimeout()));
         agentConfig.setRetries(ParameterMap.getKeyedInteger(parameters, "retry", ParameterMap.getKeyedInteger(parameters, "retries", agentConfig.getRetries())));
         agentConfig.setPort(ParameterMap.getKeyedInteger(parameters, "port", agentConfig.getPort()));

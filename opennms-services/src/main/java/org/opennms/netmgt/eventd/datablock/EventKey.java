@@ -43,6 +43,8 @@ import java.util.ArrayList;
 import java.util.LinkedHashMap;
 import java.util.Map;
 
+import org.opennms.core.utils.InetAddressUtils;
+
 /**
  * <pre>
  * The key for an event - it extends the Hashtable and basically is a
@@ -60,9 +62,6 @@ import java.util.Map;
  *
  * @author <A HREF="mailto:sowmya@opennms.org">Sowmya Nataraj </A>
  * @author <A HREF="http://www.opennms.org">OpenNMS.org </A>
- * @author <A HREF="mailto:sowmya@opennms.org">Sowmya Nataraj </A>
- * @author <A HREF="http://www.opennms.org">OpenNMS.org </A>
- * @version $Id: $
  */
 public class EventKey extends LinkedHashMap<String, Object> implements Serializable, Comparable<EventKey> {
     /**

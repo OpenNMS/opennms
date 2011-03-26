@@ -49,6 +49,7 @@ import java.util.Set;
 import java.util.regex.Pattern;
 
 import org.opennms.core.utils.AlphaNumeric;
+import org.opennms.core.utils.InetAddressUtils;
 import org.opennms.core.utils.LazySet;
 import org.opennms.core.utils.SIUtils;
 import org.opennms.netmgt.dao.NodeDao;
@@ -206,7 +207,7 @@ public class InterfaceSnmpResourceType implements OnmsResourceType {
                 }
                 // Append all of the IP addresses on this ifindex
                 for (OnmsIpInterface ipif : snmpInterface.getIpInterfaces()) {
-                    String ipaddr = ipif.getIpAddressAsString();
+                    String ipaddr = InetAddressUtils.str(ipif.getIpAddress());
                     if (!"0.0.0.0".equals(ipaddr)) {
                         if (parenString.length() > 0) {
                             parenString.append(", ");

@@ -52,6 +52,7 @@ import java.net.Socket;
 import java.net.UnknownHostException;
 import java.util.Map;
 
+import org.opennms.core.utils.InetAddressUtils;
 import org.opennms.core.utils.ParameterMap;
 import org.opennms.core.utils.TimeoutTracker;
 import org.opennms.netmgt.model.PollStatus;
@@ -72,9 +73,6 @@ import com.novell.ldap.LDAPSocketFactory;
  *
  * @author <A HREF="jason@opennms.org">Jason </A>
  * @author <A HREF="http://www.opennms.org/">OpenNMS </A>
- * @author <A HREF="jason@opennms.org">Jason </A>
- * @author <A HREF="http://www.opennms.org/">OpenNMS </A>
- * @version $Id: $
  */
 
 @Distributable
@@ -152,7 +150,7 @@ final public class LdapMonitor extends AbstractServiceMonitor {
         Object addressObject = iface.getAddress();
         String address = null;
         if (addressObject instanceof InetAddress)
-            address = ((InetAddress) addressObject).getHostAddress();
+            address = InetAddressUtils.str(((InetAddress) addressObject));
         else if (addressObject instanceof String)
             address = (String) addressObject;
 

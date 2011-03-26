@@ -105,7 +105,7 @@ public class OpenNMSTestCase extends TestCase {
     public String getSnmpConfig() throws IOException {
         return ConfigurationTestUtils.getConfigForResourceWithReplacements(this, "/org/opennms/netmgt/mock/snmp-config.xml",
                 new String[] { "@myVersion@", myVersion() },
-                new String[] { "@myLocalHost@", myLocalHost().getHostAddress() }
+                new String[] { "@myLocalHost@", InetAddressUtils.str(myLocalHost()) }
                 );
     }
 
@@ -119,7 +119,7 @@ public class OpenNMSTestCase extends TestCase {
     protected InetAddress myLocalHost() {
         
 //        try {
-//            return InetAddress.getLocalHost().getHostAddress();
+//            return InetAddressUtils.str(InetAddress.getLocalHost());
 //        } catch (UnknownHostException e) {
 //            e.printStackTrace();
 //            fail("Exception getting localhost");

@@ -35,10 +35,7 @@
 //
 package org.opennms.netmgt.daemon;
 
-import java.net.InetAddress;
-import java.net.UnknownHostException;
-
-import org.opennms.core.utils.ThreadCategory;
+import org.opennms.core.utils.InetAddressUtils;
 
 /**
  * <p>DaemonUtils class.</p>
@@ -59,12 +56,7 @@ public class DaemonUtils {
      * @return a {@link java.lang.String} object.
      */
     public static String getLocalHostAddress() {
-        try {
-            return InetAddress.getLocalHost().getHostAddress();
-        } catch (UnknownHostException e) {
-            ThreadCategory.getInstance(DaemonUtils.class).warn("getLocalHostAddress: Could not lookup the host address for the local host machine, address set to 127.0.0.1: " + e, e);
-            return "127.0.0.1";
-        }
+    	return InetAddressUtils.getLocalHostAddressAsString();
     }
     
     /**
@@ -73,14 +65,7 @@ public class DaemonUtils {
      * @return a {@link java.lang.String} object.
      */
     public static String getLocalHostName() {
-        String localhost;
-        try {
-            localhost = InetAddress.getLocalHost().getHostName();
-        } catch (UnknownHostException e) {
-            ThreadCategory.getInstance(DaemonUtils.class).warn("getLocalHostName: Could not lookup the host name for the local host machine, name set to 'localhost': " + e, e);
-            localhost = "localhost";
-        }
-        return localhost;
+    	return InetAddressUtils.getLocalHostName();
     }
 
 

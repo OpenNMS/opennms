@@ -53,6 +53,7 @@ import java.util.Map;
 import java.util.TreeMap;
 
 import org.opennms.core.utils.DBUtils;
+import org.opennms.core.utils.InetAddressUtils;
 import org.opennms.core.utils.ThreadCategory;
 import org.opennms.netmgt.EventConstants;
 import org.opennms.netmgt.config.DataSourceFactory;
@@ -206,7 +207,7 @@ final class KnownIPMgr {
                 PreparedStatement stmt = db.prepareStatement(KnownIPMgr.IP_UPDATE_TIME_SQL);
                 d.watch(stmt);
                 stmt.setTimestamp(1, m_lastCheck);
-                stmt.setString(2, m_interface.getHostAddress());
+                stmt.setString(2, InetAddressUtils.str(m_interface));
                 stmt.setInt(3, m_nodeid);
 
                 stmt.executeUpdate();
@@ -318,10 +319,9 @@ final class KnownIPMgr {
                     //
                     String ipstr = rs.getString(1);
                     InetAddress addr = null;
-                    try {
-                        addr = InetAddress.getByName(ipstr);
-                    } catch (UnknownHostException uhE) {
-                        log.warn("KnownIPMgr: failed to convert address " + ipstr, uhE);
+                    addr = InetAddressUtils.addr(ipstr);
+                    if (addr == null) {
+                        log.warn("KnownIPMgr: failed to convert address " + ipstr);
                         continue;
                     }
 
@@ -377,7 +377,7 @@ final class KnownIPMgr {
      * 
      */
     static boolean isKnown(String ipAddr) throws UnknownHostException {
-        return isKnown(InetAddress.getByName(ipAddr));
+        return isKnown(InetAddressUtils.addr(ipAddr));
     }
 
     /**
@@ -404,7 +404,7 @@ final class KnownIPMgr {
      *             Thrown if the address cannot be converted.
      */
     static boolean addKnown(String addr) throws UnknownHostException {
-        return addKnown(InetAddress.getByName(addr));
+        return addKnown(InetAddressUtils.addr(addr));
     }
 
     /**

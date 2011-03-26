@@ -42,6 +42,7 @@ import java.util.Iterator;
 import java.util.LinkedList;
 import java.util.List;
 
+import org.opennms.core.utils.InetAddressUtils;
 import org.opennms.netmgt.EventConstants;
 import org.opennms.netmgt.eventd.EventIpcManager;
 import org.opennms.netmgt.mock.MockDatabase;
@@ -119,7 +120,7 @@ public class MockPollContext implements PollContext, EventListener {
     
 
     public Event createEvent(String uei, int nodeId, InetAddress address, String svcName, Date date, String reason) {
-        EventBuilder e = MockEventUtil.createEventBuilder("Test", uei, nodeId, (address == null ? null : address.getHostAddress()), svcName, reason);
+        EventBuilder e = MockEventUtil.createEventBuilder("Test", uei, nodeId, (address == null ? null : InetAddressUtils.str(address)), svcName, reason);
         e.setCreationTime(date);
         e.setTime(date);
         return e.getEvent();

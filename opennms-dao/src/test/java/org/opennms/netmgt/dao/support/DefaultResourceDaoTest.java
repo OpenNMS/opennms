@@ -42,7 +42,6 @@ import static org.easymock.EasyMock.expect;
 import java.io.File;
 import java.io.IOException;
 import java.io.InputStream;
-import java.net.InetAddress;
 import java.net.UnknownHostException;
 import java.util.ArrayList;
 import java.util.Collection;
@@ -55,6 +54,7 @@ import junit.framework.TestCase;
 
 import org.exolab.castor.xml.MarshalException;
 import org.exolab.castor.xml.ValidationException;
+import org.opennms.core.utils.InetAddressUtils;
 import org.opennms.netmgt.config.CollectdConfigFactory;
 import org.opennms.netmgt.config.DataCollectionConfig;
 import org.opennms.netmgt.config.datacollection.ResourceType;
@@ -562,7 +562,7 @@ public class DefaultResourceDaoTest extends TestCase {
 
     private OnmsIpInterface createIpInterface() throws UnknownHostException {
         OnmsIpInterface ip = new OnmsIpInterface();
-        ip.setIpAddress(InetAddress.getByName("192.168.1.1"));
+        ip.setIpAddress(InetAddressUtils.addr("192.168.1.1"));
         return ip;
     }
 

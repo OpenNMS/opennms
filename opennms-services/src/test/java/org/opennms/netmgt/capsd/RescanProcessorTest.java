@@ -41,6 +41,7 @@ import java.util.HashSet;
 
 import junit.framework.TestCase;
 
+import org.opennms.core.utils.InetAddressUtils;
 import org.opennms.netmgt.capsd.snmp.IfTableEntry;
 import org.opennms.netmgt.snmp.SnmpInstId;
 import org.opennms.netmgt.snmp.SnmpObjId;
@@ -74,13 +75,13 @@ public class RescanProcessorTest extends TestCase {
     }
     
     public void testScannableInterface() throws UnknownHostException {
-        InetAddress ifaddr1 = InetAddress.getByName("127.0.0.1");
+        InetAddress ifaddr1 = InetAddressUtils.addr("127.0.0.1");
         DbIpInterfaceEntry[] dbInterfaces = new DbIpInterfaceEntry[1];
         DbIpInterfaceEntry entry1 = DbIpInterfaceEntry.create(1, ifaddr1, 1);
         dbInterfaces[0] = entry1;
         assertTrue("Should scan 127.0.0.1 if it is the only interface in the list", RescanProcessor.scannableInterface(dbInterfaces, ifaddr1));
         dbInterfaces = new DbIpInterfaceEntry[2];
-        InetAddress ifaddr2 = InetAddress.getByName("10.0.0.1");
+        InetAddress ifaddr2 = InetAddressUtils.addr("10.0.0.1");
         DbIpInterfaceEntry entry2 = DbIpInterfaceEntry.create(2, ifaddr2, 1);
         dbInterfaces[0] = entry1;
         dbInterfaces[1] = entry2;

@@ -628,7 +628,7 @@ public final class SnmpThresholder implements ServiceThresholder {
             if (ifDataMap == null || ifDataMap.get("ipaddr") == null) {
                 // Node level datasource
                 if (snmpIface.getInetAddress() != null) {
-                    event.setInterface(snmpIface.getInetAddress().getHostAddress());
+                    event.setInterfaceAddress(snmpIface.getInetAddress());
                 }
             } else {
                 /*

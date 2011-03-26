@@ -80,7 +80,7 @@ public class CapsdConfigManagerTest extends TestCase {
         ta.verifyAnticipated();
 
         // This last assert here would fail if the constructor didn't throw an exception
-//        ProtocolInfo[] plugins = m_factory.getProtocolSpecification(InetAddress.getByName("127.0.0.1"));
+//        ProtocolInfo[] plugins = m_factory.getProtocolSpecification(InetAddressUtils.addr("127.0.0.1"));
 //
 //        assertNotNull("plugin list", plugins);
 //        assertEquals("plugin list size", 1, plugins.length);

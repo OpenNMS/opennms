@@ -83,7 +83,6 @@ public class EventWrapper {
      * @return a {@link java.lang.String} object.
      */
     public String toString() {
-        Event event = m_event;
-    		return EventUtils.toString(event);
+    	return EventUtils.toString(m_event);
     }
 }

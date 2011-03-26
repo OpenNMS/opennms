@@ -34,7 +34,6 @@ import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertTrue;
 
-import java.net.InetAddress;
 import java.net.UnknownHostException;
 
 import org.junit.After;
@@ -42,6 +41,7 @@ import org.junit.Before;
 import org.junit.Ignore;
 import org.junit.Test;
 import org.junit.runner.RunWith;
+import org.opennms.core.utils.InetAddressUtils;
 import org.opennms.mock.snmp.JUnitSnmpAgent;
 import org.opennms.mock.snmp.JUnitSnmpAgentExecutionListener;
 import org.opennms.mock.snmp.MockSnmpAgent;
@@ -86,7 +86,7 @@ public class LinkMonitoringSnmpTest implements MockSnmpAgentAware {
         
         if(m_agentConfig == null) {
             m_agentConfig = new SnmpAgentConfig();
-            m_agentConfig.setAddress(InetAddress.getLocalHost());
+            m_agentConfig.setAddress(InetAddressUtils.getLocalHostAddress());
             m_agentConfig.setPort(9161);
             m_agentConfig.setReadCommunity("public");
         }
@@ -114,7 +114,7 @@ public class LinkMonitoringSnmpTest implements MockSnmpAgentAware {
     }
 
     private EndPointImpl getEndPoint(String sysOid) throws UnknownHostException {
-        EndPointImpl endPoint = new EndPointImpl(InetAddress.getLocalHost(), m_agentConfig);
+        EndPointImpl endPoint = new EndPointImpl(InetAddressUtils.getLocalHostAddress(), m_agentConfig);
         endPoint.setSysOid(sysOid);
         return endPoint;
     }

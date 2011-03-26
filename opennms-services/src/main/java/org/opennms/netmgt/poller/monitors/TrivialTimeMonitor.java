@@ -53,6 +53,7 @@ import java.util.LinkedHashMap;
 import java.util.Map;
 
 import org.apache.log4j.Level;
+import org.opennms.core.utils.InetAddressUtils;
 import org.opennms.core.utils.ParameterMap;
 import org.opennms.core.utils.TimeoutTracker;
 import org.opennms.netmgt.model.PollStatus;
@@ -69,9 +70,6 @@ import org.opennms.netmgt.poller.NetworkInterfaceNotSupportedException;
  *
  * @author <A HREF="mailto:jeffg@opennms.org">Jeff Gehlbach</A>
  * @author <A HREF="http://www.opennms.org/">OpenNMS </A>
- * @author <A HREF="mailto:jeffg@opennms.org">Jeff Gehlbach</A>
- * @author <A HREF="http://www.opennms.org/">OpenNMS </A>
- * @version $Id: $
  */
 
 @Distributable
@@ -150,7 +148,7 @@ final public class TrivialTimeMonitor extends AbstractServiceMonitor {
         InetAddress ipv4Addr = (InetAddress) iface.getAddress();
 
         if (log().isDebugEnabled())
-            log().debug("poll: address = " + ipv4Addr.getHostAddress() + ", port = " + port + ", " + tracker);
+            log().debug("poll: address = " + InetAddressUtils.str(ipv4Addr) + ", port = " + port + ", " + tracker);
         
         // Get the permissible amount of skew.
         //
@@ -258,7 +256,7 @@ final public class TrivialTimeMonitor extends AbstractServiceMonitor {
                 gotTime = true;
                 serviceStatus = qualifyTime(remoteTime, localTime, allowedSkew, serviceStatus, tracker.elapsedTimeInMillis(), persistSkew);
             } catch (NoRouteToHostException e) {
-                serviceStatus = logDown(Level.WARN, "No route to host exception for address " + ipv4Addr.getHostAddress(), e);
+                serviceStatus = logDown(Level.WARN, "No route to host exception for address " + InetAddressUtils.str(ipv4Addr), e);
             } catch (InterruptedIOException e) {
                 serviceStatus = logDown(Level.DEBUG, "did not connect to host with " + tracker);
             } catch (ConnectException e) {
@@ -300,7 +298,8 @@ final public class TrivialTimeMonitor extends AbstractServiceMonitor {
         boolean gotTime = false;
         for (tracker.reset(); tracker.shouldRetry() && !gotTime; tracker.nextAttempt()) {
             DatagramSocket socket = null;
-            try {
+            final String hostAddress = InetAddressUtils.str(ipv4Addr);
+			try {
     
                 tracker.startAttempt();
     
@@ -341,9 +340,9 @@ final public class TrivialTimeMonitor extends AbstractServiceMonitor {
                 gotTime = true;
                 serviceStatus = qualifyTime(remoteTime, localTime, allowedSkew, serviceStatus, tracker.elapsedTimeInMillis(), persistSkew);
             } catch (PortUnreachableException e) {
-                serviceStatus = logDown(Level.DEBUG, "Port unreachable exception for address " + ipv4Addr.getHostAddress(), e);
+                serviceStatus = logDown(Level.DEBUG, "Port unreachable exception for address " + hostAddress, e);
             } catch (NoRouteToHostException e) {
-                serviceStatus = logDown(Level.WARN, "No route to host exception for address " + ipv4Addr.getHostAddress(), e);
+                serviceStatus = logDown(Level.WARN, "No route to host exception for address " + hostAddress, e);
             } catch (InterruptedIOException e) {
                 serviceStatus = logDown(Level.DEBUG, "did not connect to host with " + tracker);
             } catch (IOException e) {

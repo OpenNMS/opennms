@@ -49,6 +49,7 @@ import java.util.concurrent.locks.ReentrantReadWriteLock;
 
 import org.exolab.castor.xml.MarshalException;
 import org.exolab.castor.xml.ValidationException;
+import org.opennms.core.utils.InetAddressUtils;
 import org.opennms.core.utils.LogUtils;
 import org.opennms.netmgt.ConfigFileConstants;
 import org.opennms.netmgt.config.snmpAsset.adapter.AssetField;
@@ -173,7 +174,7 @@ public class SnmpAssetAdapterConfigManager implements SnmpAssetAdapterConfig {
     		if (sysoid == null) {
     			// If the sysoid is null, we won't be able to fetch any SNMP attributes;
     			// return an empty list.
-    		    LogUtils.debugf(this, "getAssetFieldsForAddress: SNMP sysoid was null for address %s, returning empty list", address.getHostAddress());
+    		    LogUtils.debugf(this, "getAssetFieldsForAddress: SNMP sysoid was null for address %s, returning empty list", InetAddressUtils.str(address));
     			return new AssetField[0];
     		}
     
@@ -194,7 +195,7 @@ public class SnmpAssetAdapterConfigManager implements SnmpAssetAdapterConfig {
     			}
     		}
     		if (retval.size() == 0) {
-    			LogUtils.debugf(this, "getAssetFieldsForAddress: Zero AssetField matches returned for %s with sysoid: %s", address.getHostAddress(), sysoid);
+    			LogUtils.debugf(this, "getAssetFieldsForAddress: Zero AssetField matches returned for %s with sysoid: %s", InetAddressUtils.str(address), sysoid);
     		}
     		return retval.toArray(new AssetField[0]);
 	    } finally {

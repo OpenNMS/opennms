@@ -56,6 +56,7 @@ import java.util.List;
 import java.util.Map.Entry;
 
 import org.opennms.core.utils.DBUtils;
+import org.opennms.core.utils.InetAddressUtils;
 import org.opennms.core.utils.LogUtils;
 import org.opennms.netmgt.capsd.snmp.SnmpTableEntry;
 import org.opennms.netmgt.linkd.snmp.CdpCacheTableEntry;
@@ -343,16 +344,17 @@ public class DbEventWriter implements QueryManager {
                     }
     
                     InetAddress ipaddress = ent.getIpNetToMediaNetAddress();
+                    final String hostAddress = InetAddressUtils.str(ipaddress);
     
-                    if (ipaddress == null || ipaddress.isLoopbackAddress() || ipaddress.getHostAddress().equals("0.0.0.0")) {
-                        LogUtils.warnf(this, "store: ipNetToMedia invalid ip " + ipaddress.getHostAddress());
+                    if (ipaddress == null || ipaddress.isLoopbackAddress() || hostAddress.equals("0.0.0.0")) {
+                        LogUtils.warnf(this, "store: ipNetToMedia invalid ip " + hostAddress);
                         continue;
                     }
     
                     String physAddr = ent.getIpNetToMediaPhysAddress();
     
-                    if (physAddr == null || physAddr.equals("000000000000") || physAddr.equalsIgnoreCase("ffffffffffff")) {
-                        LogUtils.warnf(this, "store: ipNetToMedia invalid mac address " + physAddr + " for ip " + ipaddress.getHostAddress());
+					if (physAddr == null || physAddr.equals("000000000000") || physAddr.equalsIgnoreCase("ffffffffffff")) {
+                        LogUtils.warnf(this, "store: ipNetToMedia invalid mac address " + physAddr + " for ip " + hostAddress);
                         continue;
                     }
                     
@@ -371,10 +373,10 @@ public class DbEventWriter implements QueryManager {
                     atInterfaces.add(at);
     
                     // Save in DB
-                    DbAtInterfaceEntry atInterfaceEntry = DbAtInterfaceEntry.get(dbConn, at.getNodeId(), ipaddress.getHostAddress());
+                    DbAtInterfaceEntry atInterfaceEntry = DbAtInterfaceEntry.get(dbConn, at.getNodeId(), hostAddress);
     
                     if (atInterfaceEntry == null) {
-                        atInterfaceEntry = DbAtInterfaceEntry.create(at.getNodeId(), ipaddress.getHostAddress());
+                        atInterfaceEntry = DbAtInterfaceEntry.create(at.getNodeId(), hostAddress);
                     }
     
                     // update object
@@ -405,13 +407,14 @@ public class DbEventWriter implements QueryManager {
                     }
     
                     InetAddress cdpTargetIpAddr = cdpEntry.getCdpCacheAddress();
-    
-                    if (cdpTargetIpAddr == null || cdpTargetIpAddr.isLoopbackAddress() || cdpTargetIpAddr.getHostAddress().equals("0.0.0.0")) {
+                    final String hostAddress = InetAddressUtils.str(cdpTargetIpAddr);
+
+                    if (cdpTargetIpAddr == null || cdpTargetIpAddr.isLoopbackAddress() || hostAddress.equals("0.0.0.0")) {
                         LogUtils.warnf(this, "cdp Ip Address is not valid " + cdpTargetIpAddr);
                         continue;
                     }
     
-                    LogUtils.debugf(this, "cdp ip address found " + cdpTargetIpAddr.getHostAddress());
+                    LogUtils.debugf(this, "cdp ip address found " + hostAddress);
     
                     int cdpIfIndex = cdpEntry.getCdpCacheIfIndex();
     
@@ -530,7 +533,7 @@ public class DbEventWriter implements QueryManager {
                             LogUtils.warnf(this, "store: interface has wrong or null snmpiftype " + snmpiftype + " . Skipping saving to discoverylink. ");
                         } else if (nexthop.isLoopbackAddress()) {
                             LogUtils.infof(this, "storeSnmpCollection: next hop loopbackaddress found. Skipping saving 	to discoverylink.");
-                        } else if (nexthop.getHostAddress().equals("0.0.0.0")) {
+                        } else if (InetAddressUtils.str(nexthop).equals("0.0.0.0")) {
                             LogUtils.infof(this, "storeSnmpCollection: next hop broadcast address found. Skipping saving to discoverylink.");
                         } else if (nexthop.isMulticastAddress()) {
                             LogUtils.infof(this, "storeSnmpCollection: next hop multicast address found. Skipping saving to discoverylink.");
@@ -559,14 +562,15 @@ public class DbEventWriter implements QueryManager {
                         Integer routetype = ent.getInt32(IpRouteCollectorEntry.IP_ROUTE_TYPE);
                         Integer routeproto = ent.getInt32(IpRouteCollectorEntry.IP_ROUTE_PROTO);
 
-                        DbIpRouteInterfaceEntry iprouteInterfaceEntry = DbIpRouteInterfaceEntry.get(dbConn, node.getNodeId(), routedest.getHostAddress());
+                        final String hostAddress = InetAddressUtils.str(routedest);
+						DbIpRouteInterfaceEntry iprouteInterfaceEntry = DbIpRouteInterfaceEntry.get(dbConn, node.getNodeId(), hostAddress);
                         if (iprouteInterfaceEntry == null) {
                             // Create a new entry
-                            iprouteInterfaceEntry = DbIpRouteInterfaceEntry.create(node.getNodeId(), routedest.getHostAddress());
+                            iprouteInterfaceEntry = DbIpRouteInterfaceEntry.create(node.getNodeId(), hostAddress);
                         }
                         // update object
-                        iprouteInterfaceEntry.updateRouteMask(routemask.getHostAddress());
-                        iprouteInterfaceEntry.updateRouteNextHop(nexthop.getHostAddress());
+                        iprouteInterfaceEntry.updateRouteMask(InetAddressUtils.str(routemask));
+                        iprouteInterfaceEntry.updateRouteNextHop(InetAddressUtils.str(nexthop));
                         iprouteInterfaceEntry.updateIfIndex(ifindex);
     
                         // okay to autobox these since we're checking for null
@@ -1060,7 +1064,8 @@ public class DbEventWriter implements QueryManager {
 
     private int getNodeidFromIp(Connection dbConn, InetAddress ipaddr) throws SQLException {
 
-        if (ipaddr.isLoopbackAddress() || ipaddr.getHostAddress().equals("0.0.0.0")) return -1;
+        final String hostAddress = InetAddressUtils.str(ipaddr);
+		if (ipaddr.isLoopbackAddress() || hostAddress.equals("0.0.0.0")) return -1;
 
         int nodeid = -1;
 
@@ -1069,9 +1074,9 @@ public class DbEventWriter implements QueryManager {
             PreparedStatement stmt = null;
             stmt = dbConn.prepareStatement(SQL_GET_NODEID);
             d.watch(stmt);
-            stmt.setString(1, ipaddr.getHostAddress());
+            stmt.setString(1, hostAddress);
     
-            LogUtils.debugf(this, "getNodeidFromIp: executing query " + SQL_GET_NODEID + " with ip address=" + ipaddr.getHostAddress());
+            LogUtils.debugf(this, "getNodeidFromIp: executing query " + SQL_GET_NODEID + " with ip address=" + hostAddress);
     
             ResultSet rs = stmt.executeQuery();
             d.watch(rs);
@@ -1099,7 +1104,8 @@ public class DbEventWriter implements QueryManager {
     }
 
     private RouterInterface getNodeidMaskFromIp(Connection dbConn, InetAddress ipaddr) throws SQLException {
-        if (ipaddr.isLoopbackAddress() || ipaddr.getHostAddress().equals("0.0.0.0")) return null;
+        final String hostAddress = InetAddressUtils.str(ipaddr);
+		if (ipaddr.isLoopbackAddress() || hostAddress.equals("0.0.0.0")) return null;
 
         int nodeid = -1;
         int ifindex = -1;
@@ -1111,9 +1117,9 @@ public class DbEventWriter implements QueryManager {
         try {
             stmt = dbConn.prepareStatement(SQL_GET_NODEID__IFINDEX_MASK);
             d.watch(stmt);
-            stmt.setString(1, ipaddr.getHostAddress());
+            stmt.setString(1, hostAddress);
     
-            LogUtils.debugf(this, "getNodeidMaskFromIp: executing query " + SQL_GET_NODEID__IFINDEX_MASK + " with ip address=" + ipaddr.getHostAddress());
+            LogUtils.debugf(this, "getNodeidMaskFromIp: executing query " + SQL_GET_NODEID__IFINDEX_MASK + " with ip address=" + hostAddress);
     
             ResultSet rs = stmt.executeQuery();
             d.watch(rs);
@@ -1153,7 +1159,8 @@ public class DbEventWriter implements QueryManager {
     }
 
     private RouterInterface getNodeFromIp(Connection dbConn, InetAddress ipaddr) throws SQLException {
-        if (ipaddr.isLoopbackAddress() || ipaddr.getHostAddress().equals("0.0.0.0")) return null;
+        final String hostAddress = InetAddressUtils.str(ipaddr);
+		if (ipaddr.isLoopbackAddress() || hostAddress.equals("0.0.0.0")) return null;
 
         int nodeid = -1;
         int ifindex = -1;
@@ -1164,9 +1171,9 @@ public class DbEventWriter implements QueryManager {
         try {
             stmt = dbConn.prepareStatement(SQL_GET_NODEID);
             d.watch(stmt);
-            stmt.setString(1, ipaddr.getHostAddress());
+            stmt.setString(1, hostAddress);
     
-            LogUtils.debugf(this, "getNodeFromIp: executing query " + SQL_GET_NODEID + " with ip address=" + ipaddr.getHostAddress());
+            LogUtils.debugf(this, "getNodeFromIp: executing query " + SQL_GET_NODEID + " with ip address=" + hostAddress);
     
             ResultSet rs = stmt.executeQuery();
             d.watch(rs);
@@ -1195,7 +1202,8 @@ public class DbEventWriter implements QueryManager {
 
     private AtInterface getNodeidIfindexFromIp(Connection dbConn, InetAddress ipaddr) throws SQLException {
 
-        if (ipaddr.isLoopbackAddress() || ipaddr.getHostAddress().equals("0.0.0.0")) return null;
+        final String hostAddress = InetAddressUtils.str(ipaddr);
+		if (ipaddr.isLoopbackAddress() || hostAddress.equals("0.0.0.0")) return null;
 
         int atnodeid = -1;
         int atifindex = -1;
@@ -1206,9 +1214,9 @@ public class DbEventWriter implements QueryManager {
             PreparedStatement stmt = dbConn.prepareStatement(SQL_GET_NODEID_IFINDEX_IPINT);
             d.watch(stmt);
     
-            stmt.setString(1, ipaddr.getHostAddress());
+            stmt.setString(1, hostAddress);
     
-            LogUtils.debugf(this, "getNodeidIfindexFromIp: executing SQL Statement " + SQL_GET_NODEID_IFINDEX_IPINT + " with ip address=" + ipaddr.getHostAddress());
+            LogUtils.debugf(this, "getNodeidIfindexFromIp: executing SQL Statement " + SQL_GET_NODEID_IFINDEX_IPINT + " with ip address=" + hostAddress);
             ResultSet rs = stmt.executeQuery();
             d.watch(rs);
     
@@ -1219,7 +1227,7 @@ public class DbEventWriter implements QueryManager {
             atnodeid = rs.getInt("nodeid");
             if (rs.wasNull()) { return null; }
             // save info for DiscoveryLink
-            ati = new AtInterface(atnodeid, ipaddr.getHostAddress());
+            ati = new AtInterface(atnodeid, hostAddress);
     
             // get ifindex if exists
             atifindex = rs.getInt("ifindex");
@@ -1320,7 +1328,7 @@ public class DbEventWriter implements QueryManager {
     }
 
     private void sendNewSuspectEvent(InetAddress ipaddress, InetAddress ipowner, String name) {
-        m_linkd.sendNewSuspectEvent(ipaddress.getHostAddress(), ipowner.getHostAddress(), name);
+        m_linkd.sendNewSuspectEvent(InetAddressUtils.str(ipaddress), InetAddressUtils.str(ipowner), name);
     }
 
     /** {@inheritDoc} */

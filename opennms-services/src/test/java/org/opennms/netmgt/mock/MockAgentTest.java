@@ -125,7 +125,7 @@ public class MockAgentTest extends TestCase {
         snmp.listen();
         
         Address addr = new UdpAddress(InetAddress.getLocalHost(), 9161);
-        //Address addr = new UdpAddress(InetAddress.getByName("192.168.0.100"), 161);
+        //Address addr = new UdpAddress(InetAddressUtils.addr("192.168.0.100"), 161);
         Target target = new CommunityTarget(addr, new OctetString("public"));
         target.setVersion(SnmpConstants.version1);
         target.setTimeout(3000);
@@ -152,7 +152,7 @@ public class MockAgentTest extends TestCase {
         snmp.listen();
         
         Address addr = new UdpAddress(InetAddress.getLocalHost(), 9161);
-        //Address addr = new UdpAddress(InetAddress.getByName("192.168.0.100"), 161);
+        //Address addr = new UdpAddress(InetAddressUtils.addr("192.168.0.100"), 161);
         Target target = new CommunityTarget(addr, new OctetString("public"));
         target.setVersion(SnmpConstants.version1);
         target.setTimeout(3000);

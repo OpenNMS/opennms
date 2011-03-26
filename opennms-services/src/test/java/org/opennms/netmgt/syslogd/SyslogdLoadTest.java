@@ -52,6 +52,7 @@ import org.apache.commons.io.IOUtils;
 import org.apache.log4j.Level;
 import org.exolab.castor.xml.MarshalException;
 import org.exolab.castor.xml.ValidationException;
+import org.opennms.core.utils.InetAddressUtils;
 import org.opennms.core.utils.LogUtils;
 import org.opennms.netmgt.config.SyslogdConfigFactory;
 import org.opennms.netmgt.config.syslogd.HideMessage;
@@ -262,6 +263,7 @@ public class SyslogdLoadTest extends OpenNMSTestCase {
                 .setLogDest("logndisplay")
                 .setLogMessage("A load test has been received as a Syslog Message")
                 .getEvent();
+//            LogUtils.debugf(this, "event = %s", thisEvent);
             events.addEvent(thisEvent);
         }
 
@@ -286,11 +288,7 @@ public class SyslogdLoadTest extends OpenNMSTestCase {
         InetAddress proxyAddr = null;
         EventProxy proxy = null;
 
-        try {
-            proxyAddr = InetAddress.getByName(proxyHostName);
-        } catch (UnknownHostException e) {
-            proxyAddr = null;
-        }
+        proxyAddr = InetAddressUtils.addr(proxyHostName);
 
         if (proxyAddr == null) {
         	proxy = new TcpEventProxy();

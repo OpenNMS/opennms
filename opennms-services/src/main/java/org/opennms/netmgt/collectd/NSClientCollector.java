@@ -23,6 +23,7 @@ import java.util.Map;
 
 import org.exolab.castor.xml.MarshalException;
 import org.exolab.castor.xml.ValidationException;
+import org.opennms.core.utils.InetAddressUtils;
 import org.opennms.core.utils.ThreadCategory;
 import org.opennms.netmgt.config.DataCollectionConfigFactory;
 import org.opennms.netmgt.config.DataSourceFactory;
@@ -411,7 +412,7 @@ public class NSClientCollector implements ServiceCollector {
         private HashMap<String, NSClientGroupState> m_groupStates = new HashMap<String, NSClientGroupState>();
 
         public NSClientAgentState(InetAddress address, Map<String, String> parameters) {
-            m_address = address.getHostAddress();
+            m_address = InetAddressUtils.str(address);
             m_agentConfig = NSClientPeerFactory.getInstance().getAgentConfig(address);
             m_manager = new NsclientManager(m_address);
             m_manager.setPassword(m_agentConfig.getPassword());

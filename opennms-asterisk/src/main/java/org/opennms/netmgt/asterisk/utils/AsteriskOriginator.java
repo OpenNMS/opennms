@@ -48,6 +48,7 @@ import org.asteriskjava.manager.action.OriginateAction;
 import org.asteriskjava.manager.response.ManagerResponse;
 import org.exolab.castor.xml.MarshalException;
 import org.exolab.castor.xml.ValidationException;
+import org.opennms.core.utils.InetAddressUtils;
 import org.opennms.core.utils.PropertiesUtils;
 import org.opennms.core.utils.ThreadCategory;
 import org.opennms.netmgt.config.AmiPeerFactory;
@@ -139,7 +140,7 @@ public class AsteriskOriginator {
         
         AmiAgentConfig agentConfig = AmiPeerFactory.getInstance().getAgentConfig(m_amiHost);
         // Now create and configure the manager connection
-        ManagerConnectionFactory mcf = new ManagerConnectionFactory(m_amiHost.getHostAddress(), agentConfig.getPort(), agentConfig.getUsername(), agentConfig.getPassword());
+        ManagerConnectionFactory mcf = new ManagerConnectionFactory(InetAddressUtils.str(m_amiHost), agentConfig.getPort(), agentConfig.getUsername(), agentConfig.getPassword());
         if (agentConfig.getUseTls()) {
             m_managerConnection = (DefaultManagerConnection)mcf.createSecureManagerConnection();
         } else {
@@ -180,7 +181,7 @@ public class AsteriskOriginator {
          */
         m_debug = PropertiesUtils.getProperty(m_amiProps, "org.opennms.asterisk.originate.debug", DEFAULT_ORIGINATOR_DEBUG);
         m_responseTimeout = PropertiesUtils.getProperty(m_amiProps, "org.opennms.asterisk.originate.responsetimeout", DEFAULT_RESPONSE_TIMEOUT);
-        m_amiHost = InetAddress.getByName(PropertiesUtils.getProperty(m_amiProps, "org.opennms.asterisk.originate.amiHost", DEFAULT_AMI_HOST));
+        m_amiHost = InetAddressUtils.addr(PropertiesUtils.getProperty(m_amiProps, "org.opennms.asterisk.originate.amiHost", DEFAULT_AMI_HOST));
         m_legAChannelPattern = PropertiesUtils.getProperty(m_amiProps, "org.opennms.asterisk.originate.legachannel", DEFAULT_LEGA_CHANNEL_PATTERN);
         m_callerId = PropertiesUtils.getProperty(m_amiProps, "org.opennms.asterisk.originate.legacallerid", DEFAULT_LEGA_CALLER_ID);
         m_dialTimeout = PropertiesUtils.getProperty(m_amiProps, "org.opennms.asterisk.originate.legadialtimeout", DEFAULT_LEGA_TIMEOUT);
@@ -341,7 +342,7 @@ public class AsteriskOriginator {
      * @return Returns the AMI host.
      */
     public String getAmiHost() {
-        return m_amiHost.getHostAddress();
+        return InetAddressUtils.str(m_amiHost);
     }
 
     /**
@@ -351,7 +352,7 @@ public class AsteriskOriginator {
      * @throws java.net.UnknownHostException if any.
      */
     public void setAmiHost(String amiHost) throws UnknownHostException {
-        m_amiHost = InetAddress.getByName(amiHost);
+        m_amiHost = InetAddressUtils.addr(amiHost);
     }
 
     /**

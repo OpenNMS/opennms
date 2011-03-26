@@ -29,8 +29,10 @@
  */
 package org.opennms.jicmp.ip;
 
-import static org.junit.Assert.*;
-import static org.hamcrest.CoreMatchers.*;
+import static org.hamcrest.CoreMatchers.equalTo;
+import static org.hamcrest.CoreMatchers.is;
+import static org.hamcrest.CoreMatchers.sameInstance;
+import static org.junit.Assert.assertThat;
 
 import java.net.InetAddress;
 import java.nio.ByteBuffer;

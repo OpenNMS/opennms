@@ -51,19 +51,6 @@ import org.opennms.core.utils.ThreadCategory;
   * @author <a href="mailto:dj@opennms.org">DJ Gregor</a>
   * @author <a href="mailto:joed@opennms.org">Johan Edstrom</a>
   * @author <a href="mailto:mhuot@opennms.org">Mike Huot</a>
-  * @author <a href="mailto:brozow@opennms.org">Mathew Brozowski</a>
-  * @author <a href="mailto:dj@opennms.org">DJ Gregor</a>
-  * @author <a href="mailto:joed@opennms.org">Johan Edstrom</a>
-  * @author <a href="mailto:mhuot@opennms.org">Mike Huot</a>
-  * @author <a href="mailto:brozow@opennms.org">Mathew Brozowski</a>
-  * @author <a href="mailto:dj@opennms.org">DJ Gregor</a>
-  * @author <a href="mailto:joed@opennms.org">Johan Edstrom</a>
-  * @author <a href="mailto:mhuot@opennms.org">Mike Huot</a>
-  * @author <a href="mailto:brozow@opennms.org">Mathew Brozowski</a>
-  * @author <a href="mailto:dj@opennms.org">DJ Gregor</a>
-  * @author <a href="mailto:joed@opennms.org">Johan Edstrom</a>
-  * @author <a href="mailto:mhuot@opennms.org">Mike Huot</a>
-  * @version $Id: $
   */
  public class QueueManager {
 
@@ -88,7 +75,7 @@ import org.opennms.core.utils.ThreadCategory;
         } catch (FifoQueueException e) {
             // log.debug("Caught an exception adding to queue");
         } catch (InterruptedException e) {
-            // Error handling by ignoring the problem.
+        	Thread.currentThread().interrupt();
         }
         // wake up getByteFromQueue() if it has invoked wait().
         notify();
@@ -122,6 +109,7 @@ import org.opennms.core.utils.ThreadCategory;
             log.debug("FifoQueue exception " + e);
         } catch (InterruptedException e) {
             log.debug("Interrupted exception " + e);
+            Thread.currentThread().interrupt();
         }
 
         // wake up putByteInQueue() if it has invoked wait().

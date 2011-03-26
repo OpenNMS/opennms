@@ -73,9 +73,6 @@ import org.springframework.util.Assert;
  *
  * @author <a href="mailto:matt@opennms.org">Matt Brozowski </a>
  * @author <a href="http://www.opennms.org/">OpenNMS </a>
- * @author <a href="mailto:matt@opennms.org">Matt Brozowski </a>
- * @author <a href="http://www.opennms.org/">OpenNMS </a>
- * @version $Id: $
  */
 @EventListener(name="Capsd:BroadcastEventProcessor")
 public class BroadcastEventProcessor implements InitializingBean {
@@ -345,7 +342,12 @@ public class BroadcastEventProcessor implements InitializingBean {
 
                 // Node already exists. Add the ipaddess to the ipinterface
                 // table
-                InetAddress ifaddr = InetAddress.getByName(ipaddr);
+                InetAddress ifaddr;
+				try {
+					ifaddr = InetAddress.getByName(ipaddr);
+				} catch (final UnknownHostException e) {
+					throw new FailedOperationException("unable to resolve host " + ipaddr + ": " + e.getMessage(), e);
+				}
                 int nodeId = rs.getInt(1);
                 String dpName = rs.getString(2);
 
@@ -362,8 +364,6 @@ public class BroadcastEventProcessor implements InitializingBean {
 
             }
             return eventsToSend;
-        } catch (UnknownHostException e) {
-            throw new FailedOperationException("unable to resolve host " + ipaddr + ": " + e.getMessage(), e);
         } finally {
             d.cleanUp();
         }        
@@ -405,23 +405,24 @@ public class BroadcastEventProcessor implements InitializingBean {
         eventsToSend.add(newEvent);
 
         if (ipaddr != null)
-            try {
-                if (log().isDebugEnabled())
-                    log().debug("addNode:  Add an IP Address " + ipaddr + " to the database");
+            if (log().isDebugEnabled())
+                log().debug("addNode:  Add an IP Address " + ipaddr + " to the database");
 
-                // add the ipaddess to the database
-                InetAddress ifaddress = InetAddress.getByName(ipaddr);
-                DbIpInterfaceEntry ipInterface = DbIpInterfaceEntry.create(node.getNodeId(), ifaddress);
-                ipInterface.setHostname(ifaddress.getHostName());
-                ipInterface.setManagedState(DbIpInterfaceEntry.STATE_MANAGED);
-                ipInterface.setPrimaryState(DbIpInterfaceEntry.SNMP_NOT_ELIGIBLE);
-                ipInterface.store(conn);
+            // add the ipaddess to the database
+            InetAddress ifaddress;
+			try {
+				ifaddress = InetAddress.getByName(ipaddr);
+			} catch (final UnknownHostException e) {
+				throw new FailedOperationException("unable to resolve host " + ipaddr + ": " + e.getMessage(), e);
+			}
+            DbIpInterfaceEntry ipInterface = DbIpInterfaceEntry.create(node.getNodeId(), ifaddress);
+            ipInterface.setHostname(ifaddress.getHostName());
+            ipInterface.setManagedState(DbIpInterfaceEntry.STATE_MANAGED);
+            ipInterface.setPrimaryState(DbIpInterfaceEntry.SNMP_NOT_ELIGIBLE);
+            ipInterface.store(conn);
 
-                Event gainIfEvent = EventUtils.createNodeGainedInterfaceEvent(node, ifaddress);
-                eventsToSend.add(gainIfEvent);
-            } catch (UnknownHostException e) {
-                throw new FailedOperationException("unable to resolve host " + ipaddr + ": " + e.getMessage(), e);
-            }
+            Event gainIfEvent = EventUtils.createNodeGainedInterfaceEvent(node, ifaddress);
+            eventsToSend.add(gainIfEvent);
         return eventsToSend;
     }
 
@@ -552,9 +553,15 @@ public class BroadcastEventProcessor implements InitializingBean {
                     log().debug("changeServiceHandler: add service " + serviceName + " to interface: " + ipaddr);
                 }
 
-                int nodeId = rs.getInt(1);
+                InetAddress inetAddr;
+				try {
+					inetAddr = InetAddress.getByName(ipaddr);
+				} catch (final UnknownHostException e) {
+					throw new FailedOperationException("unable to resolve host " + ipaddr + ": " + e.getMessage(), e);
+				}
+                final int nodeId = rs.getInt(1);
                 // insert service
-                DbIfServiceEntry service = DbIfServiceEntry.create(nodeId, InetAddress.getByName(ipaddr), serviceId);
+				DbIfServiceEntry service = DbIfServiceEntry.create(nodeId, inetAddr, serviceId);
                 service.setSource(DbIfServiceEntry.SOURCE_PLUGIN);
                 service.setStatus(DbIfServiceEntry.STATUS_ACTIVE);
                 service.setNotify(DbIfServiceEntry.NOTIFY_ON);
@@ -562,12 +569,10 @@ public class BroadcastEventProcessor implements InitializingBean {
 
                 // Create a nodeGainedService event to eventd.
                 DbNodeEntry nodeEntry = DbNodeEntry.get(nodeId);
-                Event newEvent = EventUtils.createNodeGainedServiceEvent(nodeEntry, InetAddress.getByName(ipaddr), serviceName, txNo);
+                Event newEvent = EventUtils.createNodeGainedServiceEvent(nodeEntry, inetAddr, serviceName, txNo);
                 eventsToSend.add(newEvent);
             }
             return eventsToSend;
-        } catch (UnknownHostException e) {
-            throw new FailedOperationException("Unable to resolve host: " + e.getMessage(), e);
         } finally {
             d.cleanUp();
         }        
@@ -1558,7 +1563,7 @@ public class BroadcastEventProcessor implements InitializingBean {
         EventUtils.checkNodeId(event);
 
         // Remove the deleted node from the scheduler
-        m_scheduler.unscheduleNode((int) event.getNodeid());
+        m_scheduler.unscheduleNode(event.getNodeid().intValue());
     }
 
     /**
@@ -1574,10 +1579,10 @@ public class BroadcastEventProcessor implements InitializingBean {
         // If the event has a node identifier use it otherwise
         // will need to use the interface to lookup the node id
         // from the database
-        int nodeid = -1;
+    	Long nodeid = -1L;
 
         if (event.hasNodeid())
-            nodeid = (int) event.getNodeid();
+            nodeid = event.getNodeid();
         else {
             // Extract interface from the event and use it to
             // lookup the node identifier associated with the
@@ -1603,7 +1608,7 @@ public class BroadcastEventProcessor implements InitializingBean {
                 rs = stmt.executeQuery();
                 d.watch(rs);
                 if (rs.next()) {
-                    nodeid = rs.getInt(1);
+                    nodeid = rs.getLong(1);
                 }
             } catch (SQLException sqlE) {
                 log().error("handleForceRescan: Database error during nodeid retrieval for interface " + event.getInterface(), sqlE);
@@ -1613,19 +1618,19 @@ public class BroadcastEventProcessor implements InitializingBean {
 
         }
 
-        if (nodeid == -1) {
+        if (nodeid == null || nodeid == -1) {
             log().error("handleForceRescan: Nodeid retrieval for interface " + event.getInterface() + " failed.  Unable to perform rescan.");
             return;
         }
         
         // discard this forceRescan if one is already enqueued for the same node ID
-        if (RescanProcessor.isRescanQueuedForNode(nodeid)) {
+        if (RescanProcessor.isRescanQueuedForNode(nodeid.intValue())) {
             log().info("Ignoring forceRescan event for node " + nodeid + " because a forceRescan for that node already exists in the queue");
             return;
         }
         
         // Rescan the node.
-        m_scheduler.forceRescan(nodeid);
+        m_scheduler.forceRescan(nodeid.intValue());
     }
 
     /**
@@ -1666,7 +1671,7 @@ public class BroadcastEventProcessor implements InitializingBean {
 
         // Schedule the new node.
         try {
-            m_scheduler.scheduleNode((int) event.getNodeid());
+            m_scheduler.scheduleNode(event.getNodeid().intValue());
         } catch (SQLException sqlE) {
             log().error("onMessage: SQL exception while attempting to schedule node " + event.getNodeid(), sqlE);
         }
@@ -1684,7 +1689,7 @@ public class BroadcastEventProcessor implements InitializingBean {
         EventUtils.checkNodeId(event);
 
         // Remove the deleted node from the scheduler
-        m_scheduler.unscheduleNode((int) event.getNodeid());
+        m_scheduler.unscheduleNode(event.getNodeid().intValue());
     }
 
     /**

@@ -63,6 +63,7 @@ import javax.xml.bind.annotation.XmlRootElement;
 import javax.xml.bind.annotation.XmlTransient;
 
 import org.hibernate.annotations.Where;
+import org.opennms.core.utils.InetAddressUtils;
 import org.springframework.core.style.ToStringCreator;
 
 /**
@@ -369,7 +370,7 @@ Comparable<OnmsMonitoredService> {
      */
     public String toString() {
         return new ToStringCreator(this)
-        .append("ipAddr", getIpAddressAsString())
+        .append("ipAddr", InetAddressUtils.str(getIpAddress()))
         .append("ifindex", getIfIndex())
         .append("lastgood", getLastGood())
         .append("lastfail", getLastFail())

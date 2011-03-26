@@ -34,14 +34,15 @@ package org.opennms.netmgt.capsd.plugins;
 import java.net.InetAddress;
 import java.util.Map;
 
+import org.opennms.core.utils.InetAddressUtils;
 import org.opennms.core.utils.ParameterMap;
 import org.opennms.core.utils.ThreadCategory;
 import org.opennms.netmgt.capsd.AbstractPlugin;
 import org.opennms.netmgt.poller.nsclient.NSClientAgentConfig;
-import org.opennms.netmgt.poller.nsclient.NsclientManager;
-import org.opennms.netmgt.poller.nsclient.NsclientException;
-import org.opennms.netmgt.poller.nsclient.NsclientPacket;
 import org.opennms.netmgt.poller.nsclient.NsclientCheckParams;
+import org.opennms.netmgt.poller.nsclient.NsclientException;
+import org.opennms.netmgt.poller.nsclient.NsclientManager;
+import org.opennms.netmgt.poller.nsclient.NsclientPacket;
 
 /**
  * <P>
@@ -210,7 +211,7 @@ public class NsclientPlugin extends AbstractPlugin {
         NsclientPacket response = null;
         for (int attempts = 0; attempts <= retries && !isAServer; attempts++) {
             try {
-                NsclientManager client = new NsclientManager(host.getHostAddress(), port, password);
+                NsclientManager client = new NsclientManager(InetAddressUtils.str(host), port, password);
 
                 client.setTimeout(timeout);
                 client.init();

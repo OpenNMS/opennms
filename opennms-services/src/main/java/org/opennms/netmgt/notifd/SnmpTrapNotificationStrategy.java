@@ -43,6 +43,7 @@ import java.util.Iterator;
 import java.util.List;
 
 import org.opennms.core.utils.Argument;
+import org.opennms.core.utils.InetAddressUtils;
 import org.opennms.core.utils.ThreadCategory;
 import org.opennms.netmgt.snmp.SnmpInstId;
 import org.opennms.netmgt.snmp.SnmpObjId;
@@ -120,7 +121,7 @@ public class SnmpTrapNotificationStrategy implements NotificationStrategy {
         pdu.setAgentAddress(agentAddress);
         pdu.addVarBind(SnmpObjId.get(".1.3.6.1.4.1.5813.20.1"), SnmpUtils.getValueFactory().getOctetString(getVarbind().getBytes()));
         
-        pdu.send(agentAddress.getHostAddress(), getPort(), getCommunity());
+        pdu.send(InetAddressUtils.str(agentAddress), getPort(), getCommunity());
     }
 
     /**
@@ -152,7 +153,7 @@ public class SnmpTrapNotificationStrategy implements NotificationStrategy {
         }
         pdu.addVarBind(SnmpObjId.get(".1.3.6.1.4.1.5813.20.1"), SnmpUtils.getValueFactory().getOctetString(getVarbind().getBytes()));
 
-        pdu.send(getHostInetAddress().getHostAddress(), getPort(), getCommunity());
+        pdu.send(InetAddressUtils.str(getHostInetAddress()), getPort(), getCommunity());
     }
 
     /**
@@ -170,7 +171,7 @@ public class SnmpTrapNotificationStrategy implements NotificationStrategy {
         } else {
             log().debug("getHostInetAddress: trapHost argument: "+switchValue);
         }
-        return InetAddress.getByName(switchValue);
+        return InetAddressUtils.addr(switchValue);
     }
 
     /**

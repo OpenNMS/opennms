@@ -52,6 +52,7 @@ import java.util.Map;
 
 import org.apache.commons.io.IOUtils;
 import org.apache.log4j.Level;
+import org.opennms.core.utils.InetAddressUtils;
 import org.opennms.netmgt.config.DataSourceFactory;
 import org.opennms.netmgt.config.SyslogdConfig;
 import org.opennms.netmgt.config.SyslogdConfigFactory;
@@ -221,25 +222,26 @@ public class SyslogdTest extends OpenNMSTestCase {
     
     public void testSubstrUEIRewrite() throws Exception {
         doMessageTest("2007-01-01 localhost A CRISCO message",
-                      myLocalHost().getHostAddress(), "uei.opennms.org/tests/syslogd/substrUeiRewriteTest",
+                      InetAddressUtils.str(myLocalHost()), "uei.opennms.org/tests/syslogd/substrUeiRewriteTest",
                       "A CRISCO message");
     }
-    public void testRegexUEIRewrite() throws Exception {
+
+	public void testRegexUEIRewrite() throws Exception {
 //        MockLogAppender.setupLogging(true, "TRACE");
         doMessageTest("2007-01-01 localhost foo: 100 out of 666 tests failed for bar",
-                      myLocalHost().getHostAddress(), "uei.opennms.org/tests/syslogd/regexUeiRewriteTest",
+                      InetAddressUtils.str(myLocalHost()), "uei.opennms.org/tests/syslogd/regexUeiRewriteTest",
                       "100 out of 666 tests failed for bar");
     }
     
     public void testSubstrTESTTestThatRemovesATESTString() throws Exception {
         doMessageTest("2007-01-01 localhost A CRISCO message that is also a TESTHIDING message -- hide me!",
-                      myLocalHost().getHostAddress(), "uei.opennms.org/tests/syslogd/substrUeiRewriteTest",
+                      InetAddressUtils.str(myLocalHost()), "uei.opennms.org/tests/syslogd/substrUeiRewriteTest",
                       ConvertToEvent.HIDDEN_MESSAGE);
     }
     
     public void testRegexTESTTestThatRemovesADoubleSecretString() throws Exception {
         doMessageTest("2007-01-01 localhost foo: 100 out of 666 tests failed for doubleSecret",
-                      myLocalHost().getHostAddress(), "uei.opennms.org/tests/syslogd/regexUeiRewriteTest",
+                      InetAddressUtils.str(myLocalHost()), "uei.opennms.org/tests/syslogd/regexUeiRewriteTest",
                       ConvertToEvent.HIDDEN_MESSAGE);
     }
     
@@ -287,13 +289,13 @@ public class SyslogdTest extends OpenNMSTestCase {
         expectedParms.put("group3", testGroups[2]);
         expectedParms.put("replacementItem", testGroups[2]);
         
-        doMessageTest(testPDU, myLocalHost().getHostAddress(), expectedUEI, expectedLogMsg, expectedParms);
+        doMessageTest(testPDU, InetAddressUtils.str(myLocalHost()), expectedUEI, expectedLogMsg, expectedParms);
     }
 
     public void testRegexUEIWithOnlyUserSpecifiedParameterAssignments() throws InterruptedException {
         startSyslogdGracefully();
         
-        String localhost = myLocalHost().getHostAddress();
+        String localhost = InetAddressUtils.str(myLocalHost());
         final String testPDU = "2007-01-01 127.0.0.1 tea: Secretly replaced cmiskell's tea with 666 ferrets";
         final String testUEI = "uei.opennms.org/tests/syslogd/regexParameterAssignmentTest/userSpecifiedOnly";
         final String testMsg = "Secretly replaced cmiskell's tea with 666 ferrets";

@@ -40,6 +40,7 @@ package org.opennms.netmgt.trapd;
 import java.util.ArrayList;
 import java.util.List;
 
+import org.opennms.core.utils.InetAddressUtils;
 import org.opennms.core.utils.ThreadCategory;
 import org.opennms.netmgt.EventConstants;
 import org.opennms.netmgt.eventd.EventIpcManager;
@@ -167,8 +168,7 @@ public final class BroadcastEventProcessor implements EventListener, Initializin
             if (event.getInterface() != null) {
                 m_trapdIpMgr.removeNodeId(event.getInterface());
                 if (log.isDebugEnabled()) {
-                    log.debug("Removed " + event.getInterface()
-                        + " from known node list");
+                    log.debug("Removed " + event.getInterface() + " from known node list");
                 }
             }
         } else {

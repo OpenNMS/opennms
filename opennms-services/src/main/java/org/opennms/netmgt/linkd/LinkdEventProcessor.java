@@ -41,6 +41,7 @@
 
 package org.opennms.netmgt.linkd;
 
+import org.opennms.core.utils.InetAddressUtils;
 import org.opennms.netmgt.EventConstants;
 import org.opennms.netmgt.capsd.InsufficientInformationException;
 import org.opennms.netmgt.model.events.annotations.EventHandler;
@@ -79,7 +80,7 @@ public final class LinkdEventProcessor {
         EventUtils.checkNodeId(event);
 
         // Remove the deleted node from the scheduler if it's an SNMP node
-        m_linkd.deleteNode((int)event.getNodeid());
+        m_linkd.deleteNode(event.getNodeid().intValue());
         // set to status = D in all the rows in table
         // atinterface, iprouteinterface, datalinkinterface, stpnode, stpinterface
     }
@@ -99,7 +100,7 @@ public final class LinkdEventProcessor {
             ifIndex = event.getIfIndex();
         }
 
-        m_linkd.deleteInterface((int)event.getNodeid(), event.getInterface(), ifIndex);
+        m_linkd.deleteInterface(event.getNodeid().intValue(), event.getInterface(), ifIndex);
         // set to status = D in all the rows in table
         // atinterface, iprouteinterface, datalinkinterface, stpinterface
     }
@@ -114,7 +115,7 @@ public final class LinkdEventProcessor {
 
         EventUtils.checkNodeId(event);
 
-        m_linkd.scheduleNodeCollection((int)event.getNodeid());
+        m_linkd.scheduleNodeCollection(event.getNodeid().intValue());
     }
 
     /**
@@ -128,7 +129,7 @@ public final class LinkdEventProcessor {
         EventUtils.checkNodeId(event);
 
         // Remove the deleted node from the scheduler
-        m_linkd.suspendNodeCollection((int)event.getNodeid());
+        m_linkd.suspendNodeCollection(event.getNodeid().intValue());
         // set to status = N in all the rows in table
         // atinterface, iprouteinterface, datalinkinterface,
     }
@@ -143,6 +144,6 @@ public final class LinkdEventProcessor {
 
         EventUtils.checkNodeId(event);
 
-        m_linkd.wakeUpNodeCollection((int)event.getNodeid());
+        m_linkd.wakeUpNodeCollection(event.getNodeid().intValue());
     }
 } // end class

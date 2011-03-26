@@ -57,6 +57,7 @@ import java.util.Map;
 
 import org.apache.regexp.RE;
 import org.apache.regexp.RESyntaxException;
+import org.opennms.core.utils.InetAddressUtils;
 import org.opennms.core.utils.ParameterMap;
 import org.opennms.core.utils.ThreadCategory;
 import org.opennms.netmgt.capsd.AbstractPlugin;
@@ -159,13 +160,13 @@ public final class TcpPlugin extends AbstractPlugin {
             } catch (ConnectException e) {
                 // Connection refused!! Continue to retry.
                 //
-                log.debug("TcpPlugin: Connection refused to " + host.getHostAddress() + ":" + port);
+                log.debug("TcpPlugin: Connection refused to " + InetAddressUtils.str(host) + ":" + port);
                 isAServer = false;
             } catch (NoRouteToHostException e) {
                 // No Route to host!!!
                 //
                 e.fillInStackTrace();
-                log.info("TcpPlugin: Could not connect to host " + host.getHostAddress() + ", no route to host", e);
+                log.info("TcpPlugin: Could not connect to host " + InetAddressUtils.str(host) + ", no route to host", e);
                 isAServer = false;
                 throw new UndeclaredThrowableException(e);
             } catch (InterruptedIOException e) {
@@ -174,11 +175,11 @@ public final class TcpPlugin extends AbstractPlugin {
                 log.debug("TcpPlugin: did not connect to host within timeout: " + timeout + " attempt: " + attempts);
                 isAServer = false;
             } catch (IOException e) {
-                log.info("TcpPlugin: An expected I/O exception occured connecting to host " + host.getHostAddress() + " on port " + port, e);
+                log.info("TcpPlugin: An expected I/O exception occured connecting to host " + InetAddressUtils.str(host) + " on port " + port, e);
                 isAServer = false;
             } catch (Throwable t) {
                 isAServer = false;
-                log.warn("TcpPlugin: An undeclared throwable exception was caught connecting to host " + host.getHostAddress() + " on port " + port, t);
+                log.warn("TcpPlugin: An undeclared throwable exception was caught connecting to host " + InetAddressUtils.str(host) + " on port " + port, t);
             } finally {
                 try {
                     if (socket != null)

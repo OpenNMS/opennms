@@ -39,7 +39,7 @@ import org.exolab.castor.xml.ValidationException;
 import org.opennms.netmgt.config.SnmpEventInfo;
 import org.opennms.netmgt.config.SnmpPeerFactory;
 import org.opennms.netmgt.config.snmp.SnmpConfig;
-import org.opennms.netmgt.dao.castor.CastorExceptionTranslator;
+import org.opennms.netmgt.dao.support.MarshallingExceptionTranslator;
 import org.opennms.netmgt.snmp.SnmpAgentConfig;
 import org.opennms.netmgt.snmp.SnmpConfiguration;
 import org.springframework.beans.factory.InitializingBean;
@@ -52,7 +52,7 @@ import org.springframework.beans.factory.InitializingBean;
  */
 public class FactoryBasedSnmpConfigDao implements SnmpConfigDao, InitializingBean {
     
-    private static final CastorExceptionTranslator TRANSLATOR = new CastorExceptionTranslator();
+    private static final MarshallingExceptionTranslator TRANSLATOR = new MarshallingExceptionTranslator();
     
     private SnmpPeerFactory getSnmpPeerFactory() {
         return SnmpPeerFactory.getInstance();

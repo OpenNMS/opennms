@@ -44,6 +44,7 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
+import org.opennms.core.utils.InetAddressUtils;
 import org.opennms.netmgt.model.OnmsIpInterface;
 import org.opennms.netmgt.model.OnmsMonitoredService;
 import org.opennms.netmgt.model.OnmsOutage;
@@ -55,13 +56,6 @@ import org.opennms.netmgt.model.OnmsServiceType;
  * @author <a href="mailto:joed@opennms.org">Johan Edstrom</a>
  * @author <a href="mailto:brozow@opennms.org">Mathew Brozowski</a>
  * @author <a href="mailto:dj@opennms.org">DJ Gregor</a>
- * @author <a href="mailto:joed@opennms.org">Johan Edstrom</a>
- * @author <a href="mailto:brozow@opennms.org">Mathew Brozowski</a>
- * @author <a href="mailto:dj@opennms.org">DJ Gregor</a>
- * @author <a href="mailto:joed@opennms.org">Johan Edstrom</a>
- * @author <a href="mailto:brozow@opennms.org">Mathew Brozowski</a>
- * @author <a href="mailto:dj@opennms.org">DJ Gregor</a>
- * @version $Id: $
  * @since 1.8.1
  */
 public class OutageListBuilder {
@@ -90,7 +84,7 @@ public class OutageListBuilder {
             outagerow.put("outageid", outage.getId());
             outagerow.put("node", ipInterface.getNode().getLabel());
             outagerow.put("nodeid", monitoredService.getNodeId());
-            outagerow.put("ipaddr", ipInterface.getIpAddressAsString());
+            outagerow.put("ipaddr", InetAddressUtils.str(ipInterface.getIpAddress()));
             outagerow.put("interfaceid", ipInterface.getId());
             outagerow.put("ifserviceid", monitoredService.getId());
             outagerow.put("service", serviceType.getName());

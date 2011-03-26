@@ -107,7 +107,7 @@
     if (telnetServices != null && telnetServices.length > 0) {
         ArrayList<InetAddress> ips = new ArrayList<InetAddress>();
         for (Service service : telnetServices) {
-            ips.add(InetAddress.getByName(service.getIpAddress()));
+            ips.add(InetAddressUtils.addr(service.getIpAddress()));
         }
         
         InetAddress lowest = InetAddressUtils.getLowestInetAddress(ips);
@@ -124,7 +124,7 @@
     if (httpServices != null && httpServices.length > 0) {
         ArrayList<InetAddress> ips = new ArrayList<InetAddress>();
         for (Service service : httpServices) {
-            ips.add(InetAddress.getByName(service.getIpAddress()));
+            ips.add(InetAddressUtils.addr(service.getIpAddress()));
         }
 
         InetAddress lowest = InetAddressUtils.getLowestInetAddress(ips);

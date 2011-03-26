@@ -41,6 +41,7 @@ import java.util.ArrayList;
 import java.util.Collection;
 import java.util.List;
 
+import org.opennms.core.utils.InetAddressUtils;
 import org.opennms.netmgt.config.categories.Category;
 import org.opennms.netmgt.config.viewsdisplay.Section;
 import org.opennms.netmgt.config.viewsdisplay.View;
@@ -121,11 +122,11 @@ public class DefaultCategoryStatusService implements CategoryStatusService {
 			OnmsServiceType serviceType = monitoredService.getServiceType();
 			OnmsIpInterface ipInterface = monitoredService.getIpInterface();
 
-			
+			final String ipAddress = InetAddressUtils.str(ipInterface.getIpAddress());
 			categoryBuilder.addOutageService(
 					monitoredService.getNodeId(), 
-					ipInterface.getIpAddressAsString(), 
-					ipInterface.getIpAddressAsString(), 
+					ipAddress, 
+					ipAddress, 
 					ipInterface.getNode().getLabel(), 
 					serviceType.getName());
 		

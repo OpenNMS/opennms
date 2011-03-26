@@ -34,6 +34,7 @@ package org.opennms.netmgt.provision.detector.generic.client;
 import java.io.IOException;
 import java.net.InetAddress;
 
+import org.opennms.core.utils.InetAddressUtils;
 import org.opennms.netmgt.provision.detector.generic.request.GpRequest;
 import org.opennms.netmgt.provision.detector.generic.response.GpResponse;
 import org.opennms.netmgt.provision.detector.generic.support.ExecRunner;
@@ -71,11 +72,12 @@ public class GpClient implements Client<GpRequest, GpResponse> {
         
         m_execRunner = new ExecRunner();
         m_execRunner.setMaxRunTimeSecs(convertToSeconds(timeout));
-        final String script = "" + getScript() + " " + getHoption() + " " + address.getHostAddress() + " " + getToption() + " " + convertToSeconds(timeout);
+        final String hostAddress = InetAddressUtils.str(address);
+		final String script = "" + getScript() + " " + getHoption() + " " + hostAddress + " " + getToption() + " " + convertToSeconds(timeout);
         if (getArgs() == null)
             setExitStatus(m_execRunner.exec(script));
         else
-            setExitStatus(m_execRunner.exec(getScript() + " " + getHoption() + " " + address.getHostAddress() + " " + getToption() + " " + convertToSeconds(timeout) + " " + getArgs()));
+            setExitStatus(m_execRunner.exec(getScript() + " " + getHoption() + " " + hostAddress + " " + getToption() + " " + convertToSeconds(timeout) + " " + getArgs()));
         
         if (m_execRunner.isMaxRunTimeExceeded()) {
             

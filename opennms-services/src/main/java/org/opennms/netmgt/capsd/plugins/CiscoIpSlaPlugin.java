@@ -44,6 +44,7 @@ import org.opennms.netmgt.snmp.SnmpObjId;
 import org.opennms.netmgt.snmp.SnmpInstId;
 import org.opennms.netmgt.snmp.SnmpUtils;
 import org.opennms.netmgt.snmp.SnmpValue;
+import org.opennms.core.utils.InetAddressUtils;
 import org.opennms.core.utils.ParameterMap;
 import org.opennms.core.utils.ThreadCategory;
 
@@ -248,7 +249,7 @@ public class CiscoIpSlaPlugin extends SnmpPlugin {
         } catch (Throwable t) {
             log().warn(
                        "Unexpected exception during SNMP poll of interface "
-                               + ipaddr.getHostAddress(), t);
+                               + InetAddressUtils.str(ipaddr), t);
         }
         return status;
     }

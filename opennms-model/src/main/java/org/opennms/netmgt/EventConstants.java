@@ -1074,6 +1074,9 @@ public class EventConstants {
      * @throws java.text.ParseException if any.
      */
     public static final Date parseToDate(final String timeString) throws ParseException {
+    	if (timeString == null) {
+    		throw new ParseException("time was null!", -1);
+    	}
         try {
             return FORMATTER_FULL.get().parse(timeString);
         } catch (final ParseException parseException) {

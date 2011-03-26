@@ -2,14 +2,14 @@ package org.opennms.netmgt.dao.jaxb;
 
 import java.io.InputStream;
 
-import org.opennms.netmgt.dao.JAXBDataAccessFailureException;
+import junit.framework.TestCase;
+
+import org.opennms.netmgt.dao.MarshallingDataAccessFailureException;
 import org.opennms.test.ConfigurationTestUtils;
 import org.opennms.test.ThrowableAnticipator;
 import org.springframework.core.io.FileSystemResource;
 import org.springframework.core.io.InputStreamResource;
 import org.springframework.core.io.Resource;
-
-import junit.framework.TestCase;
 
 public class JdbcDataCollectionConfigDaoJaxbTest extends TestCase {
     
@@ -33,7 +33,7 @@ public class JdbcDataCollectionConfigDaoJaxbTest extends TestCase {
         dao.setConfigResource(resource);
         
         ThrowableAnticipator ta = new ThrowableAnticipator();
-        ta.anticipate(new JAXBDataAccessFailureException(ThrowableAnticipator.IGNORE_MESSAGE));
+        ta.anticipate(new MarshallingDataAccessFailureException(ThrowableAnticipator.IGNORE_MESSAGE));
         
         try {
             dao.afterPropertiesSet();

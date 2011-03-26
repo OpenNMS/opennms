@@ -46,6 +46,7 @@ import java.util.Map;
 
 import org.apache.regexp.RE;
 import org.apache.regexp.RESyntaxException;
+import org.opennms.core.utils.InetAddressUtils;
 import org.opennms.core.utils.ParameterMap;
 import org.opennms.core.utils.ThreadCategory;
 import org.opennms.netmgt.capsd.AbstractPlugin;
@@ -118,7 +119,7 @@ public final class GpPlugin extends AbstractPlugin {
 
         boolean isAServer = false;
 
-        log.debug("poll: address = " + host.getHostAddress() + ", script = " + script + ", arguments = " + args + ", timeout(seconds) = " + timeout + ", retry = " + retry);
+        log.debug("poll: address = " + InetAddressUtils.str(host) + ", script = " + script + ", arguments = " + args + ", timeout(seconds) = " + timeout + ", retry = " + retry);
 
         for (int attempts = 0; attempts <= retry && !isAServer; attempts++) {
             try {
@@ -126,9 +127,9 @@ public final class GpPlugin extends AbstractPlugin {
                 ExecRunner er = new ExecRunner();
                 er.setMaxRunTimeSecs(timeout);
                 if (args == null)
-                    exitStatus = er.exec(script + " " + hoption + " " + host.getHostAddress() + " " + toption + " " + timeout);
+                    exitStatus = er.exec(script + " " + hoption + " " + InetAddressUtils.str(host) + " " + toption + " " + timeout);
                 else
-                    exitStatus = er.exec(script + " " + hoption + " " + host.getHostAddress() + " " + toption + " " + timeout + " " + args);
+                    exitStatus = er.exec(script + " " + hoption + " " + InetAddressUtils.str(host) + " " + toption + " " + timeout + " " + args);
                 if (exitStatus != 0) {
                     log.debug(script + " failed with exit code " + exitStatus);
                     isAServer = false;
@@ -181,7 +182,7 @@ public final class GpPlugin extends AbstractPlugin {
         //
         // return the status of the server
         //
-        log.debug("poll: GP - isAServer = " + isAServer + "  " + host.getHostAddress());
+        log.debug("poll: GP - isAServer = " + isAServer + "  " + InetAddressUtils.str(host));
         return isAServer;
     }
 

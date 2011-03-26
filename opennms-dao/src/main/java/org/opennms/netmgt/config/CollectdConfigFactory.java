@@ -287,7 +287,7 @@ public class CollectdConfigFactory {
      * @return true if Collectd config contains a package which includes the
      *         specified interface and has the specified service enabled.
      */
-    public boolean isServiceCollectionEnabled(String ipAddr, String svcName) {
+    public boolean isServiceCollectionEnabled(final String ipAddr, final String svcName) {
         return m_collectdConfig.isServiceCollectionEnabled(ipAddr, svcName);
     }
 

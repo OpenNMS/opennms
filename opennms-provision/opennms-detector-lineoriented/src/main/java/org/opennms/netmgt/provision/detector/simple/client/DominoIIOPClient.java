@@ -39,6 +39,7 @@ import java.net.URL;
 import java.net.URLConnection;
 
 import org.apache.commons.io.IOUtils;
+import org.opennms.core.utils.InetAddressUtils;
 import org.opennms.core.utils.LogUtils;
 
 /**
@@ -67,7 +68,7 @@ public class DominoIIOPClient extends LineOrientedClient {
      * @throws IOException 
      */
     private boolean preconnect(final InetAddress host, final int port, final int timeout) throws IOException {
-        return retrieveIORText(host.getHostAddress(), port, timeout);
+        return retrieveIORText(InetAddressUtils.str(host), port, timeout);
     }
 
     /**

@@ -58,6 +58,7 @@ import java.util.StringTokenizer;
 
 import org.apache.regexp.RE;
 import org.apache.regexp.RESyntaxException;
+import org.opennms.core.utils.InetAddressUtils;
 import org.opennms.core.utils.ParameterMap;
 import org.opennms.core.utils.ThreadCategory;
 import org.opennms.netmgt.capsd.AbstractPlugin;
@@ -172,7 +173,7 @@ public final class SmtpPlugin extends AbstractPlugin {
                 } while (result != null && result.length() > 0 && MULTILINE_RESULT.match(result));
 
                 if (result == null || result.length() == 0) {
-                    log.info("Received truncated response from SMTP server " + host.getHostAddress());
+                    log.info("Received truncated response from SMTP server " + InetAddressUtils.str(host));
                     continue;
                 }
 
@@ -209,7 +210,7 @@ public final class SmtpPlugin extends AbstractPlugin {
                     } while (result != null && result.length() > 0 && MULTILINE_RESULT.match(result));
 
                     if (result == null || result.length() == 0) {
-                        log.info("Received truncated response from SMTP server " + host.getHostAddress());
+                        log.info("Received truncated response from SMTP server " + InetAddressUtils.str(host));
                         continue;
                     }
 
@@ -245,7 +246,7 @@ public final class SmtpPlugin extends AbstractPlugin {
                         } while (result != null && result.length() > 0 && MULTILINE_RESULT.match(result));
 
                         if (result == null || result.length() == 0) {
-                            log.info("Received truncated response from SMTP server " + host.getHostAddress());
+                            log.info("Received truncated response from SMTP server " + InetAddressUtils.str(host));
                             continue;
                         }
 
@@ -257,27 +258,27 @@ public final class SmtpPlugin extends AbstractPlugin {
                     }
                 }
             } catch (NumberFormatException e) {
-                log.info("SmtpPlugin: received invalid result code from server " + host.getHostAddress(), e);
+                log.info("SmtpPlugin: received invalid result code from server " + InetAddressUtils.str(host), e);
                 isAServer = false;
             } catch (ConnectException cE) {
                 // Connection refused!! Continue to retry.
                 //
-                log.debug("SmtpPlugin: connection refused to " + host.getHostAddress() + ":" + port);
+                log.debug("SmtpPlugin: connection refused to " + InetAddressUtils.str(host) + ":" + port);
                 isAServer = false;
             } catch (NoRouteToHostException e) {
                 // No route to host!! No need to perform retries.
                 e.fillInStackTrace();
-                log.info("SmtpPlugin: Unable to test host " + host.getHostAddress() + ", no route available", e);
+                log.info("SmtpPlugin: Unable to test host " + InetAddressUtils.str(host) + ", no route available", e);
                 isAServer = false;
                 throw new UndeclaredThrowableException(e);
             } catch (InterruptedIOException e) {
                 log.debug("SmtpPlugin: did not connect to host within timeout: " + timeout + " attempt: " + attempts);
                 isAServer = false;
             } catch (IOException e) {
-                log.info("SmtpPlugin: Error communicating with host " + host.getHostAddress(), e);
+                log.info("SmtpPlugin: Error communicating with host " + InetAddressUtils.str(host), e);
                 isAServer = false;
             } catch (Throwable t) {
-                log.warn("SmtpPlugin: Undeclared throwable exception caught contacting host " + host.getHostAddress(), t);
+                log.warn("SmtpPlugin: Undeclared throwable exception caught contacting host " + InetAddressUtils.str(host), t);
                 isAServer = false;
             } finally {
                 try {

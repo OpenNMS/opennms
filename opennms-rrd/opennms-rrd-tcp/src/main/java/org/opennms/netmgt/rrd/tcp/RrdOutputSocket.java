@@ -42,6 +42,7 @@ import java.net.Socket;
 import java.util.ArrayList;
 import java.util.List;
 
+import org.opennms.core.utils.InetAddressUtils;
 import org.opennms.core.utils.ThreadCategory;
 import org.opennms.netmgt.rrd.tcp.PerformanceDataProtos.PerformanceDataReading;
 
@@ -95,7 +96,7 @@ public class RrdOutputSocket {
     public void writeData() {
         Socket socket = null;
         try {
-            socket = new Socket(InetAddress.getByName(m_host), m_port);
+            socket = new Socket(InetAddressUtils.addr(m_host), m_port);
             OutputStream out = socket.getOutputStream();
             m_messages.build().writeTo(out);
             // out = new FileOutputStream(new File("/tmp/testdata.protobuf"));

@@ -50,6 +50,7 @@ import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
+import org.opennms.core.utils.InetAddressUtils;
 import org.opennms.mock.snmp.JUnitSnmpAgent;
 import org.opennms.mock.snmp.JUnitSnmpAgentExecutionListener;
 import org.opennms.mock.snmp.MockSnmpAgent;
@@ -138,7 +139,7 @@ public class SnmpCollectorMinMaxValTest implements MockSnmpAgentAware {
         
         RrdUtils.setStrategy(RrdUtils.getSpecificStrategy(StrategyName.basicRrdStrategy));
 
-        m_testHostName = InetAddress.getLocalHost().getHostAddress();
+        m_testHostName = InetAddressUtils.str(InetAddress.getLocalHost());
 
         OnmsIpInterface iface = null;
         OnmsNode testNode = null;

@@ -58,20 +58,6 @@ import org.opennms.core.utils.ThreadCategory;
  * @author <a href="mailto:mike@opennms.org">Mike Davidson </a>
  * @author <a href="mailto:larry@opennms.org">Lawrence Karnowski </a>
  * @author <a href="mailto:seth@opennms.org">Seth Leger </a>
- * @author <a href="http://www.opennms.org">OpenNMS </a>
- * @author <a href="mailto:mike@opennms.org">Mike Davidson </a>
- * @author <a href="mailto:larry@opennms.org">Lawrence Karnowski </a>
- * @author <a href="mailto:seth@opennms.org">Seth Leger </a>
- * @author <a href="http://www.opennms.org">OpenNMS </a>
- * @author <a href="mailto:mike@opennms.org">Mike Davidson </a>
- * @author <a href="mailto:larry@opennms.org">Lawrence Karnowski </a>
- * @author <a href="mailto:seth@opennms.org">Seth Leger </a>
- * @author <a href="http://www.opennms.org">OpenNMS </a>
- * @author <a href="mailto:mike@opennms.org">Mike Davidson </a>
- * @author <a href="mailto:larry@opennms.org">Lawrence Karnowski </a>
- * @author <a href="mailto:seth@opennms.org">Seth Leger </a>
- * @author <a href="http://www.opennms.org">OpenNMS </a>
- * @version $Id: $
  */
 public class IfLabel extends Object {
 
@@ -212,7 +198,7 @@ public class IfLabel extends Object {
             throw new IllegalArgumentException("Cannot take null parameters.");
         }
 
-        String inetAddr = org.opennms.core.utils.InetAddressUtils.getInetAddress(ipAddr).getHostAddress();
+        String inetAddr = org.opennms.core.utils.InetAddressUtils.normalize(ipAddr);
         
         class LabelHolder {
             private String m_label;
@@ -269,7 +255,7 @@ public class IfLabel extends Object {
             throw new IllegalArgumentException("Cannot take null parameters.");
         }
 
-        String inetAddr = org.opennms.core.utils.InetAddressUtils.getInetAddress(ipAddr).getHostAddress();
+        String inetAddr = org.opennms.core.utils.InetAddressUtils.normalize(ipAddr);
 
         if (ifIndex == -1) {
         	return getIfLabel(nodeId, inetAddr);

@@ -48,6 +48,7 @@ import java.util.Map;
 import org.apache.log4j.Level;
 import org.exolab.castor.xml.MarshalException;
 import org.exolab.castor.xml.ValidationException;
+import org.opennms.core.utils.InetAddressUtils;
 import org.opennms.core.utils.ParameterMap;
 import org.opennms.netmgt.config.SnmpPeerFactory;
 import org.opennms.netmgt.model.PollStatus;
@@ -71,9 +72,6 @@ import org.opennms.netmgt.snmp.SnmpValue;
  *
  * @author <A HREF="mailto:tarus@opennms.org">Tarus Balog </A>
  * @author <A HREF="http://www.opennms.org/">OpenNMS </A>
- * @author <A HREF="mailto:tarus@opennms.org">Tarus Balog </A>
- * @author <A HREF="http://www.opennms.org/">OpenNMS </A>
- * @version $Id: $
  */
 
 //this does snmp and there relies on the snmp configuration so it is not distributable
@@ -175,7 +173,8 @@ final public class PercMonitor extends SnmpMonitorStrategy {
         //
         SnmpAgentConfig agentConfig = SnmpPeerFactory.getInstance().getAgentConfig(ipaddr);
         if (agentConfig == null) throw new RuntimeException("SnmpAgentConfig object not available for interface " + ipaddr);
-        log().debug("poll: setting SNMP peer attribute for interface " + ipaddr.getHostAddress());
+        final String hostAddress = InetAddressUtils.str(ipaddr);
+		log().debug("poll: setting SNMP peer attribute for interface " + hostAddress);
 
         // Get configuration parameters
         //
@@ -244,7 +243,7 @@ final public class PercMonitor extends SnmpMonitorStrategy {
         } catch (IllegalArgumentException e) {
             status = logDown(Level.ERROR, "Invalid Snmp Criteria: " + e.getMessage());
         } catch (Throwable t) {
-            status = logDown(Level.WARN, "Unexpected exception during SNMP poll of interface " + ipaddr.getHostAddress(), t);
+            status = logDown(Level.WARN, "Unexpected exception during SNMP poll of interface " + hostAddress, t);
         }
 
         return status;

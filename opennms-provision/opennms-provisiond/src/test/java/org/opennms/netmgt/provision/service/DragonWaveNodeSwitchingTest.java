@@ -3,7 +3,6 @@ package org.opennms.netmgt.provision.service;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertTrue;
 
-import java.net.InetAddress;
 import java.net.UnknownHostException;
 import java.util.Arrays;
 import java.util.Properties;
@@ -15,6 +14,7 @@ import org.junit.BeforeClass;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.opennms.core.tasks.Task;
+import org.opennms.core.utils.InetAddressUtils;
 import org.opennms.mock.snmp.JUnitSnmpAgent;
 import org.opennms.mock.snmp.JUnitSnmpAgentExecutionListener;
 import org.opennms.mock.snmp.MockSnmpAgent;
@@ -160,7 +160,7 @@ public class DragonWaveNodeSwitchingTest implements MockSnmpAgentAware {
     }
 
     private SnmpValue getSnmpValue(String host, String oid) throws UnknownHostException {
-        return SnmpUtils.get(m_snmpPeerFactory.getAgentConfig(InetAddress.getByName(host)), SnmpObjId.get(oid));
+        return SnmpUtils.get(m_snmpPeerFactory.getAgentConfig(InetAddressUtils.addr(host)), SnmpObjId.get(oid));
     }
 
     @Test

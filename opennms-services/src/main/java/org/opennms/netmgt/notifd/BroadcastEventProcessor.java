@@ -61,6 +61,7 @@ import org.apache.regexp.RE;
 import org.apache.regexp.RESyntaxException;
 import org.exolab.castor.xml.MarshalException;
 import org.exolab.castor.xml.ValidationException;
+import org.opennms.core.utils.InetAddressUtils;
 import org.opennms.core.utils.ThreadCategory;
 import org.opennms.core.utils.TimeConverter;
 import org.opennms.netmgt.EventConstants;
@@ -291,7 +292,7 @@ public final class BroadcastEventProcessor implements EventListener {
      */
     private boolean checkCriticalPath(Event event, boolean notifsOn) {
         boolean isPathOk = true;
-        long nodeid = event.getNodeid();
+        Long nodeid = event.getNodeid();
 
         try {
             // If this is a nodeDown event, see if the critical path was down
@@ -313,7 +314,7 @@ public final class BroadcastEventProcessor implements EventListener {
                     if (notifsOn && mapsToNotice && continueWithNotice(event) && notifications != null) {
                         noticeSupressed = true;
                     }
-                    createPathOutageEvent(nodeid, EventUtils.getParm(event, EventConstants.PARM_NODE_LABEL), cip, csvc, noticeSupressed);
+                    createPathOutageEvent(nodeid.intValue(), EventUtils.getParm(event, EventConstants.PARM_NODE_LABEL), cip, csvc, noticeSupressed);
                 }
             }
         } catch (MarshalException e) {
@@ -1077,7 +1078,7 @@ public final class BroadcastEventProcessor implements EventListener {
      *
      * @param nodeEntry Entry of node which was rescanned
      */
-    private void createPathOutageEvent(long nodeid, String nodeLabel, String intfc, String svc, boolean noticeSupressed) {
+    private void createPathOutageEvent(int nodeid, String nodeLabel, String intfc, String svc, boolean noticeSupressed) {
         if (log().isDebugEnabled()) {
             log().debug("nodeid = " + nodeid + ", nodeLabel = " + nodeLabel + ", noticeSupressed = " + noticeSupressed);
         }

@@ -48,7 +48,6 @@ import java.io.StringWriter;
 import java.net.InetAddress;
 import java.net.MalformedURLException;
 import java.net.URL;
-import java.net.UnknownHostException;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Iterator;
@@ -59,6 +58,7 @@ import org.exolab.castor.xml.MarshalException;
 import org.exolab.castor.xml.Marshaller;
 import org.exolab.castor.xml.ValidationException;
 import org.opennms.core.utils.ByteArrayComparator;
+import org.opennms.core.utils.InetAddressUtils;
 import org.opennms.core.utils.ThreadCategory;
 import org.opennms.netmgt.config.capsd.CapsdConfiguration;
 import org.opennms.netmgt.config.capsd.IpManagement;
@@ -290,10 +290,9 @@ public abstract class CapsdConfigManager implements CapsdConfig {
             IpManagement mgt = ipIter.next();
             for (String saddr : getSpecifics(mgt)) {
                 InetAddress addr;
-                try {
-                    addr = InetAddress.getByName(saddr);
-                } catch (UnknownHostException e) {
-                    log().info("Failed to convert specific address '" + saddr + "' to an InetAddress: " + e, e);
+                addr = InetAddressUtils.addr(saddr);
+                if (addr == null) {
+                    log().info("Failed to convert specific address '" + saddr + "' to an InetAddress.");
                     continue;
                 }
                 
@@ -315,18 +314,16 @@ public abstract class CapsdConfigManager implements CapsdConfig {
                 Range range = rangeIter.next();
 
                 InetAddress saddr;
-                try {
-                    saddr = InetAddress.getByName(range.getBegin());
-                } catch (UnknownHostException e) {
-                    log().info("Failed to convert begin address '" + range.getBegin() + "' to an InetAddress: " + e, e);
+                saddr = InetAddressUtils.addr(range.getBegin());
+                if (saddr == null) {
+                    log().info("Failed to convert begin address '" + range.getBegin() + "' to an InetAddress.");
                     continue;
                 }
 
                 InetAddress eaddr;
-                try {
-                    eaddr = InetAddress.getByName(range.getEnd());
-                } catch (UnknownHostException e) {
-                    log().info("Failed to convert end address '" + range.getEnd() + "' to an InetAddress: " + e, e);
+                eaddr = InetAddressUtils.addr(range.getEnd());
+                if (eaddr == null) {
+                    log().info("Failed to convert end address '" + range.getEnd() + "' to an InetAddress.");
                     continue;
                 }
 
@@ -356,10 +353,9 @@ public abstract class CapsdConfigManager implements CapsdConfig {
                  */
                 for (String saddr : m_urlMap.get(url)) {
                     InetAddress addr;
-                    try {
-                        addr = InetAddress.getByName(saddr);
-                    } catch (UnknownHostException e) {
-                        log().info("Failed to convert address '" + saddr + "' from include URL '" + url + "' to an InetAddress: " + e, e);
+                    addr = InetAddressUtils.addr(saddr);
+                    if (addr == null) {
+                        log().info("Failed to convert address '" + saddr + "' from include URL '" + url + "' to an InetAddress.");
                         continue;
                     }
 
@@ -591,7 +587,7 @@ public abstract class CapsdConfigManager implements CapsdConfig {
 		CollectdConfigFactory factory = CollectdConfigFactory.getInstance();
 	
 		if (oldPrimary == null && strict) {
-			if (factory.isServiceCollectionEnabled(currentIf.getHostAddress(), svcName)) {
+			if (factory.isServiceCollectionEnabled(InetAddressUtils.str(currentIf), svcName)) {
 				return currentIf;
             } else {
 				return oldPrimary;
@@ -612,8 +608,7 @@ public abstract class CapsdConfigManager implements CapsdConfig {
 				 * interface only if the current interface is managed!
                  */
 				if (strict) {
-					if (factory.isServiceCollectionEnabled(currentIf.getHostAddress(),
-							svcName)) {
+					if (factory.isServiceCollectionEnabled(InetAddressUtils.str(currentIf), svcName)) {
 						newPrimary = currentIf;
                     }
 				} else {
@@ -628,7 +623,7 @@ public abstract class CapsdConfigManager implements CapsdConfig {
 				 * interface only if the current interface is managed!
                  */
 				if (strict) {
-					if (factory.isServiceCollectionEnabled(currentIf.getHostAddress(),
+					if (factory.isServiceCollectionEnabled(InetAddressUtils.str(currentIf),
 							svcName)) {
 						newPrimary = currentIf;
                     }
@@ -668,7 +663,7 @@ public abstract class CapsdConfigManager implements CapsdConfig {
 		for (InetAddress ipAddr : addressList) {
 			if (log().isDebugEnabled()) {
 				log().debug("determinePrimarySnmpIf: checking interface "
-						+ ipAddr.getHostAddress());
+						+ InetAddressUtils.str(ipAddr));
             }
 			primaryIf = compareAndSelectPrimaryCollectionInterface("SNMP", ipAddr, primaryIf, method, strict);
 		}
@@ -676,7 +671,7 @@ public abstract class CapsdConfigManager implements CapsdConfig {
 		if (log().isDebugEnabled()) {
 			if (primaryIf != null) {
 				log().debug("determinePrimarySnmpInterface: candidate primary SNMP interface: "
-								+ primaryIf.getHostAddress());
+								+ InetAddressUtils.str(primaryIf));
             } else {
 				log().debug("determinePrimarySnmpInterface: no candidate primary SNMP interface found");
             }

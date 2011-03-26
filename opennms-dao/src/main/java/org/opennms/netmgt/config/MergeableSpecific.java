@@ -35,11 +35,10 @@
 package org.opennms.netmgt.config;
 
 import java.net.InetAddress;
-import java.net.UnknownHostException;
 
 import org.apache.commons.lang.builder.EqualsBuilder;
 import org.apache.commons.lang.builder.HashCodeBuilder;
-import org.opennms.core.utils.ThreadCategory;
+import org.opennms.core.utils.InetAddressUtils;
 
 /**
  * This class is used as a wrapper object for the generated Specific class in the
@@ -58,15 +57,13 @@ public final class MergeableSpecific implements Comparable<String> {
      *
      * @param specific a {@link java.lang.String} object.
      */
-    public MergeableSpecific(String specific) {
+    public MergeableSpecific(final String specific) {
         m_specific = specific;
-        try {
-            m_value = InetAddress.getByName(specific).getAddress();
-        } catch (UnknownHostException e) {
-            ThreadCategory log = ThreadCategory.getInstance(getClass());
-            log.error("ComparableSpecific(): Exception in construction.", e);
-            throw new IllegalArgumentException(e.getLocalizedMessage());
+        final InetAddress addr = InetAddressUtils.addr(specific);
+        if (addr == null) {
+        	throw new IllegalArgumentException("Unable to get InetAddress for " + specific);
         }
+		m_value = addr.getAddress();
     }
     
     /**

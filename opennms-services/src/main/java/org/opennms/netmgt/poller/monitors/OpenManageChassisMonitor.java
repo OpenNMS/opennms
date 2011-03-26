@@ -35,6 +35,7 @@ import org.opennms.netmgt.snmp.SnmpAgentConfig;
 import org.opennms.netmgt.snmp.SnmpObjId;
 import org.opennms.netmgt.snmp.SnmpUtils;
 import org.opennms.netmgt.snmp.SnmpValue;
+import org.opennms.core.utils.InetAddressUtils;
 import org.opennms.core.utils.ParameterMap;
 
 /**
@@ -45,10 +46,6 @@ import org.opennms.core.utils.ParameterMap;
  * </p>
  *
  * @author <A HREF="mailto:r.trommer@open-factory.org">Ronny Trommer</A>
- * @author <A HREF="http://www.opennms.org">OpenNMS</A>
- * @author <A HREF="mailto:r.trommer@open-factory.org">Ronny Trommer</A>
- * @author <A HREF="http://www.opennms.org">OpenNMS</A>
- * @version $Id: $
  */
 
 // this does snmp and there relies on the snmp configuration so it is not
@@ -189,7 +186,8 @@ final public class OpenManageChassisMonitor extends SnmpMonitorStrategy {
         SnmpAgentConfig agentConfig = SnmpPeerFactory.getInstance().getAgentConfig(ipaddr);
         if (agentConfig == null)
             throw new RuntimeException("SnmpAgentConfig object not available for interface " + ipaddr);
-        log().debug("poll: setting SNMP peer attribute for interface " + ipaddr.getHostAddress());
+        final String hostAddress = InetAddressUtils.str(ipaddr);
+		log().debug("poll: setting SNMP peer attribute for interface " + hostAddress);
 
         // set timeout and retries on SNMP peer object
         //
@@ -290,13 +288,13 @@ final public class OpenManageChassisMonitor extends SnmpMonitorStrategy {
             status = PollStatus.unavailable(returnValue);
 
         } catch (NullPointerException e) {
-            status = logDown(Level.WARN, "Unexpected error during SNMP poll of interface " + ipaddr.getHostAddress(), e);
+            status = logDown(Level.WARN, "Unexpected error during SNMP poll of interface " + hostAddress, e);
         } catch (NumberFormatException e) {
             status = logDown(Level.WARN, "Number operator used on a non-number " + e.getMessage());
         } catch (IllegalArgumentException e) {
             status = logDown(Level.WARN, "Invalid Snmp Criteria: " + e.getMessage());
         } catch (Throwable t) {
-            status = logDown(Level.WARN, "Unexpected exception during SNMP poll of interface " + ipaddr.getHostAddress(), t);
+            status = logDown(Level.WARN, "Unexpected exception during SNMP poll of interface " + hostAddress, t);
         }
 
         // If matchAll is set to true, then the status is set to available

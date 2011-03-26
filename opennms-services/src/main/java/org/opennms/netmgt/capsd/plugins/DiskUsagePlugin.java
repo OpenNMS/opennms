@@ -53,6 +53,7 @@ import org.opennms.netmgt.snmp.SnmpInstId;
 import org.opennms.netmgt.snmp.SnmpObjId;
 import org.opennms.netmgt.snmp.SnmpUtils;
 import org.opennms.netmgt.snmp.SnmpValue;
+import org.opennms.core.utils.InetAddressUtils;
 import org.opennms.core.utils.ParameterMap;
 import org.opennms.core.utils.ThreadCategory;
 
@@ -207,7 +208,7 @@ public final class DiskUsagePlugin extends AbstractPlugin {
                 }
 
                 for (Map.Entry<SnmpInstId, SnmpValue> e : descrResults.entrySet()) { 
-                    log().debug("capsd: SNMPwalk succeeded, addr=" + address.getHostAddress() + " oid=" + hrStorageDescrSnmpObject + " instance=" + e.getKey() + " value=" + e.getValue());
+                    log().debug("capsd: SNMPwalk succeeded, addr=" + InetAddressUtils.str(address) + " oid=" + hrStorageDescrSnmpObject + " instance=" + e.getKey() + " value=" + e.getValue());
                   
                     if (isMatch(e.getValue().toString(), disk, matchType)) {
                     	log().debug("Found disk '" + disk + "' (matching hrStorageDescr was '" + e.getValue().toString() + "'");

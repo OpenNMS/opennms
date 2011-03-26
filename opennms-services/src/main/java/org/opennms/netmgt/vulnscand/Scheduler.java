@@ -42,6 +42,7 @@ import java.util.LinkedHashMap;
 import org.opennms.core.fiber.PausableFiber;
 import org.opennms.core.queue.FifoQueue;
 import org.opennms.core.queue.FifoQueueException;
+import org.opennms.core.utils.InetAddressUtils;
 import org.opennms.core.utils.ThreadCategory;
 
 /**
@@ -140,7 +141,7 @@ final class Scheduler implements Runnable, PausableFiber {
         buf.append((int) ((address >>> 16) & 0xff)).append('.');
         buf.append((int) ((address >>> 8) & 0xff)).append('.');
         buf.append((int) (address & 0xff));
-        return InetAddress.getByName(buf.toString());
+        return InetAddressUtils.addr(buf.toString());
     }
 
     /**

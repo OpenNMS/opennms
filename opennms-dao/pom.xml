@@ -130,6 +130,14 @@
       <artifactId>opennms-test</artifactId>
       <scope>test</scope>
     </dependency>
+    <!-- for validating marshalled events -->
+    <dependency>
+      <groupId>org.opennms</groupId>
+      <artifactId>opennms-model</artifactId>
+      <classifier>xsds</classifier>
+      <version>${project.version}</version>
+      <scope>test</scope>
+    </dependency>
     <dependency>
       <groupId>org.opennms</groupId>
       <artifactId>opennms-util</artifactId>
@@ -175,6 +183,7 @@
     <dependency>
       <groupId>org.easymock</groupId>
       <artifactId>easymock</artifactId>
+      <scope>test</scope>
     </dependency>
     <dependency>
       <groupId>oro</groupId>

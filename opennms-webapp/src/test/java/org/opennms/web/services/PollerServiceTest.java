@@ -40,6 +40,7 @@ import static org.easymock.EasyMock.verify;
 import junit.framework.TestCase;
 
 import org.easymock.IAnswer;
+import org.opennms.core.utils.InetAddressUtils;
 import org.opennms.netmgt.EventConstants;
 import org.opennms.netmgt.capsd.EventUtils;
 import org.opennms.netmgt.model.OnmsIpInterface;
@@ -87,8 +88,8 @@ public class PollerServiceTest extends TestCase {
 			public Object answer() throws Throwable {
 				Event event = (Event)getCurrentArguments()[0];
 				assertEquals("Incorrect uei for demandPollService event", EventConstants.DEMAND_POLL_SERVICE_EVENT_UEI, event.getUei());
-				assertEquals("Incorrect nodeid for demandPollService event", monSvc.getNodeId().longValue(), event.getNodeid());
-				assertEquals("Incorrect ipadr for demandPollService event", monSvc.getIpAddressAsString(), event.getInterface());
+				assertEquals("Incorrect nodeid for demandPollService event", monSvc.getNodeId().longValue(), event.getNodeid().longValue());
+				assertEquals("Incorrect ipadr for demandPollService event", InetAddressUtils.str(monSvc.getIpAddress()), event.getInterface());
 				assertEquals("Incorrect ifIndex for demandPollService event", monSvc.getIfIndex(), Integer.valueOf(event.getIfIndex()));
 				assertEquals("Incorrect service for demandPollService event", monSvc.getServiceType().getName(), event.getService());
 				EventUtils.requireParm(event, EventConstants.PARM_DEMAND_POLL_ID);

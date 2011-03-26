@@ -88,6 +88,7 @@ import org.apache.http.params.HttpParams;
 import org.apache.http.util.EntityUtils;
 import org.exolab.castor.xml.MarshalException;
 import org.exolab.castor.xml.ValidationException;
+import org.opennms.core.utils.InetAddressUtils;
 import org.opennms.core.utils.ParameterMap;
 import org.opennms.core.utils.ThreadCategory;
 import org.opennms.netmgt.config.DataSourceFactory;
@@ -576,7 +577,7 @@ public class HttpCollector implements ServiceCollector {
 
     private static URI buildUri(final HttpCollectionSet collectionSet) throws URISyntaxException {
         HashMap<String,String> substitutions = new HashMap<String,String>();
-        substitutions.put("ipaddr", collectionSet.getAgent().getInetAddress().getHostAddress());
+        substitutions.put("ipaddr", InetAddressUtils.str(collectionSet.getAgent().getInetAddress()));
         substitutions.put("nodeid", Integer.toString(collectionSet.getAgent().getNodeId()));
 
         return URIUtils.createURI(collectionSet.getUriDef().getUrl().getScheme(),

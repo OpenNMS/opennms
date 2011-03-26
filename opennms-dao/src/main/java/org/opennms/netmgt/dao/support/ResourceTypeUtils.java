@@ -102,8 +102,7 @@ public class ResourceTypeUtils {
         }
     }
 
-    private static void loadRrdAttributes(File rrdDirectory,
-            String relativePath, Set<OnmsAttribute> attributes) {
+    private static void loadRrdAttributes(File rrdDirectory, String relativePath, Set<OnmsAttribute> attributes) {
         int suffixLength = RrdFileConstants.getRrdSuffix().length();
         File resourceDir = new File(rrdDirectory, relativePath);
         File[] files = resourceDir.listFiles(RrdFileConstants.RRD_FILENAME_FILTER);
@@ -112,7 +111,7 @@ public class ResourceTypeUtils {
             return;
         }
         
-        for (File file : files) {
+        for (final File file : files) {
             String fileName = file.getName();
             if (isStoreByGroup() && !isResponseTime(relativePath)) {
                 String groupName = fileName.substring(0, fileName.length() - suffixLength);
@@ -120,12 +119,12 @@ public class ResourceTypeUtils {
                 for (Object o : props.keySet()) {
                     String dsName = (String)o;
                     if (props.getProperty(dsName).equals(groupName)) {
-                        attributes.add(new RrdGraphAttribute(dsName, relativePath, file.getName()));
+                        attributes.add(new RrdGraphAttribute(dsName, relativePath, fileName));
                     }
                 }
             } else {
                 String dsName = fileName.substring(0, fileName.length() - suffixLength);
-                attributes.add(new RrdGraphAttribute(dsName, relativePath, file.getName()));
+                attributes.add(new RrdGraphAttribute(dsName, relativePath, fileName));
             }
         }
     }

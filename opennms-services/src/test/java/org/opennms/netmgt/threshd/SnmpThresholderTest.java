@@ -40,7 +40,6 @@ import static org.junit.Assert.assertNull;
 
 import java.io.File;
 import java.io.FileOutputStream;
-import java.net.InetAddress;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Date;
@@ -56,6 +55,7 @@ import org.jrobin.core.Sample;
 import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
+import org.opennms.core.utils.InetAddressUtils;
 import org.opennms.netmgt.config.ThresholdingConfigFactory;
 import org.opennms.netmgt.config.threshd.Basethresholddef;
 import org.opennms.netmgt.rrd.RrdUtils;
@@ -107,7 +107,7 @@ public class SnmpThresholderTest {
         m_ifInfoGetter = m_mocks.createMock(IfInfoGetter.class);
         m_snmpThresholder.setIfInfoGetter(m_ifInfoGetter);
         
-        m_iface = new ThresholderTestCase.ThresholdNetworkInterfaceImpl(nodeId, InetAddress.getByName(ipAddress));
+        m_iface = new ThresholderTestCase.ThresholdNetworkInterfaceImpl(nodeId, InetAddressUtils.addr(ipAddress));
         m_params = new HashMap<String, String>();
         m_params.put("thresholding-group", "default-snmp");
         m_thresholdInterface = new SnmpThresholdNetworkInterface(m_thresholdsDao, m_iface, m_params);

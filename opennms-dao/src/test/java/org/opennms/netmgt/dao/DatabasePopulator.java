@@ -117,16 +117,16 @@ public class DatabasePopulator {
 
     public void populateDatabase() {
         m_transTemplate.execute(new TransactionCallback<Object>() {
-            public Object doInTransaction(TransactionStatus status) {
-                OnmsDistPoller distPoller = getDistPoller("localhost", "127.0.0.1");
+            public Object doInTransaction(final TransactionStatus status) {
+            	final OnmsDistPoller distPoller = getDistPoller("localhost", "127.0.0.1");
                 
-                OnmsCategory ac = getCategory("DEV_AC");
-                OnmsCategory mid = getCategory("IMP_mid");
-                OnmsCategory ops = getCategory("OPS_Online");
+            	final OnmsCategory ac = getCategory("DEV_AC");
+            	final OnmsCategory mid = getCategory("IMP_mid");
+            	final OnmsCategory ops = getCategory("OPS_Online");
                 
-                OnmsCategory catRouter = getCategory("Routers");
-                OnmsCategory catSwitches = getCategory("Switches");
-                OnmsCategory catServers = getCategory("Servers");
+            	final OnmsCategory catRouter = getCategory("Routers");
+            	final OnmsCategory catSwitches = getCategory("Switches");
+            	final OnmsCategory catServers = getCategory("Servers");
                 getCategory("Production");
                 getCategory("Test");
                 getCategory("Development");
@@ -135,7 +135,7 @@ public class DatabasePopulator {
                 getServiceType("SNMP");
                 getServiceType("HTTP");
                 
-                NetworkBuilder builder = new NetworkBuilder(distPoller);
+                final NetworkBuilder builder = new NetworkBuilder(distPoller);
                 
                 setNode1(builder.addNode("node1").setForeignSource("imported:").setForeignId("1").getNode());
                 Assert.assertNotNull("newly built node 1 should not be null", getNode1());
@@ -176,7 +176,7 @@ public class DatabasePopulator {
                 getNodeDao().save(builder.getCurrentNode());
                 getNodeDao().flush();
                 
-                OnmsNode node1 = getNodeDao().get(1);
+                final OnmsNode node1 = getNodeDao().get(1);
                 
                 builder.addNode("node2").setForeignSource("imported:").setForeignId("2");
                 builder.addCategory(mid);
@@ -249,7 +249,7 @@ public class DatabasePopulator {
                 getNodeDao().save(builder.getCurrentNode());
                 getNodeDao().flush();
                 
-                OnmsEvent event = new OnmsEvent();
+                final OnmsEvent event = new OnmsEvent();
                 event.setDistPoller(distPoller);
                 event.setEventUei("uei.opennms.org/test");
                 event.setEventTime(new Date());
@@ -261,7 +261,7 @@ public class DatabasePopulator {
                 getEventDao().save(event);
                 getEventDao().flush();
                 
-                OnmsNotification notif = new OnmsNotification();
+                final OnmsNotification notif = new OnmsNotification();
                 notif.setEvent(event);
                 notif.setTextMsg("This is a test notification");
                 notif.setIpAddress(InetAddressUtils.getInetAddress("192.168.1.1"));
@@ -270,33 +270,33 @@ public class DatabasePopulator {
                 getNotificationDao().save(notif);
                 getNotificationDao().flush();
                 
-                OnmsUserNotification userNotif = new OnmsUserNotification();
+                final OnmsUserNotification userNotif = new OnmsUserNotification();
                 userNotif.setUserId("TestUser");
                 userNotif.setNotification(notif);
                 getUserNotificationDao().save(userNotif);
                 getUserNotificationDao().flush();
                 
-                OnmsUserNotification userNotif2 = new OnmsUserNotification();
+                final OnmsUserNotification userNotif2 = new OnmsUserNotification();
                 userNotif2.setUserId("TestUser2");
                 userNotif2.setNotification(notif);
                 getUserNotificationDao().save(userNotif2);
                 getUserNotificationDao().flush();
                 
-                OnmsMonitoredService svc = getMonitoredServiceDao().get(1, InetAddressUtils.getInetAddress("192.168.1.1"), "SNMP");
-                OnmsOutage resolved = new OnmsOutage(new Date(), new Date(), event, event, svc, null, null);
+                final OnmsMonitoredService svc = getMonitoredServiceDao().get(1, InetAddressUtils.addr("192.168.1.1"), "SNMP");
+                final OnmsOutage resolved = new OnmsOutage(new Date(), new Date(), event, event, svc, null, null);
                 getOutageDao().save(resolved);
                 getOutageDao().flush();
                 
-                OnmsOutage unresolved = new OnmsOutage(new Date(), event, svc);
+                final OnmsOutage unresolved = new OnmsOutage(new Date(), event, svc);
                 getOutageDao().save(unresolved);
                 getOutageDao().flush();
                 
-                OnmsCategory category = new OnmsCategory();
+                final OnmsCategory category = new OnmsCategory();
                 category.setName("some category");
                 getCategoryDao().save(category);
                 getCategoryDao().flush();
                 
-                OnmsAlarm alarm = new OnmsAlarm();
+                final OnmsAlarm alarm = new OnmsAlarm();
                 alarm.setDistPoller(getDistPollerDao().load("localhost"));
                 alarm.setUei(event.getEventUei());
                 alarm.setAlarmType(1);
@@ -311,7 +311,7 @@ public class DatabasePopulator {
                 getAlarmDao().save(alarm);
                 getAlarmDao().flush();
                 
-                OnmsMap map = new OnmsMap("DB_Pop_Test_Map", "admin");
+                final OnmsMap map = new OnmsMap("DB_Pop_Test_Map", "admin");
                 map.setBackground("fake_background.jpg");
                 map.setAccessMode(OnmsMap.ACCESS_MODE_ADMIN);
                 map.setType(OnmsMap.USER_GENERATED_MAP);
@@ -319,7 +319,7 @@ public class DatabasePopulator {
                 getOnmsMapDao().save(map);
                 getOnmsMapDao().flush();
                 
-                OnmsMapElement mapElement = new OnmsMapElement(map, 1,
+                final OnmsMapElement mapElement = new OnmsMapElement(map, 1,
                         OnmsMapElement.NODE_TYPE,
                         "Test Node",
                         OnmsMapElement.defaultNodeIcon,
@@ -328,19 +328,19 @@ public class DatabasePopulator {
                 getOnmsMapElementDao().save(mapElement);
                 getOnmsMapElementDao().flush();
                 
-                DataLinkInterface dli = new DataLinkInterface(1, 1, 1, 1, "A", new Date());
+                final DataLinkInterface dli = new DataLinkInterface(1, 1, 1, 1, "A", new Date());
                 getDataLinkInterfaceDao().save(dli);
                 getDataLinkInterfaceDao().flush();
                 
-                DataLinkInterface dli2 = new DataLinkInterface(1, 2, 1, 1, "A", new Date());
+                final DataLinkInterface dli2 = new DataLinkInterface(1, 2, 1, 1, "A", new Date());
                 getDataLinkInterfaceDao().save(dli2);
                 getDataLinkInterfaceDao().flush();
                 
-                DataLinkInterface dli3 = new DataLinkInterface(2, 1, 1, 1, "A", new Date());
+                final DataLinkInterface dli3 = new DataLinkInterface(2, 1, 1, 1, "A", new Date());
                 getDataLinkInterfaceDao().save(dli3);
                 getDataLinkInterfaceDao().flush();
                 
-                OnmsAcknowledgment ack = new OnmsAcknowledgment();
+                final OnmsAcknowledgment ack = new OnmsAcknowledgment();
                 ack.setAckTime(new Date());
                 ack.setAckType(AckType.UNSPECIFIED);
                 ack.setAckAction(AckAction.UNSPECIFIED);
@@ -353,33 +353,36 @@ public class DatabasePopulator {
         });
     }
 
-    private OnmsCategory getCategory(String categoryName) {
-        OnmsCategory cat = getCategoryDao().findByName(categoryName);
+    private OnmsCategory getCategory(final String categoryName) {
+    	final OnmsCategory cat = getCategoryDao().findByName(categoryName);
         if (cat == null) {
-            cat = new OnmsCategory(categoryName);
-            cat.getAuthorizedGroups().add(categoryName+"Group");
-            getCategoryDao().save(cat);
+        	final OnmsCategory newCat = new OnmsCategory(categoryName);
+            newCat.getAuthorizedGroups().add(categoryName+"Group");
+            getCategoryDao().save(newCat);
             getCategoryDao().flush();
+            return newCat;
         }
         return cat;
     }
 
-    private OnmsDistPoller getDistPoller(String localhost, String localhostIp) {
-        OnmsDistPoller distPoller = getDistPollerDao().get(localhost);
+    private OnmsDistPoller getDistPoller(final String localhost, final String localhostIp) {
+    	final OnmsDistPoller distPoller = getDistPollerDao().get(localhost);
         if (distPoller == null) {
-            distPoller = new OnmsDistPoller(localhost, localhostIp);
-            getDistPollerDao().save(distPoller);
+            final OnmsDistPoller newDp = new OnmsDistPoller(localhost, localhostIp);
+            getDistPollerDao().save(newDp);
             getDistPollerDao().flush();
+            return newDp;
         }
         return distPoller;
     }
 
-    private OnmsServiceType getServiceType(String name) {
-        OnmsServiceType serviceType = getServiceTypeDao().findByName(name);
+    private OnmsServiceType getServiceType(final String name) {
+    	final OnmsServiceType serviceType = getServiceTypeDao().findByName(name);
         if (serviceType == null) {
-            serviceType = new OnmsServiceType(name);
-            getServiceTypeDao().save(serviceType);
+            final OnmsServiceType newService = new OnmsServiceType(name);
+            getServiceTypeDao().save(newService);
             getServiceTypeDao().flush();
+            return newService;
         }
         return serviceType;
     }
@@ -390,7 +393,7 @@ public class DatabasePopulator {
     }
 
 
-    public void setAlarmDao(AlarmDao alarmDao) {
+    public void setAlarmDao(final AlarmDao alarmDao) {
         m_alarmDao = alarmDao;
     }
 
@@ -400,7 +403,7 @@ public class DatabasePopulator {
     }
 
 
-    public void setAssetRecordDao(AssetRecordDao assetRecordDao) {
+    public void setAssetRecordDao(final AssetRecordDao assetRecordDao) {
         m_assetRecordDao = assetRecordDao;
     }
 
@@ -410,7 +413,7 @@ public class DatabasePopulator {
     }
 
 
-    public void setCategoryDao(CategoryDao categoryDao) {
+    public void setCategoryDao(final CategoryDao categoryDao) {
         m_categoryDao = categoryDao;
     }
 
@@ -420,7 +423,7 @@ public class DatabasePopulator {
     }
 
 
-    public void setDistPollerDao(DistPollerDao distPollerDao) {
+    public void setDistPollerDao(final DistPollerDao distPollerDao) {
         m_distPollerDao = distPollerDao;
     }
 
@@ -430,7 +433,7 @@ public class DatabasePopulator {
     }
 
 
-    public void setEventDao(EventDao eventDao) {
+    public void setEventDao(final EventDao eventDao) {
         m_eventDao = eventDao;
     }
 
@@ -440,7 +443,7 @@ public class DatabasePopulator {
     }
 
 
-    public void setIpInterfaceDao(IpInterfaceDao ipInterfaceDao) {
+    public void setIpInterfaceDao(final IpInterfaceDao ipInterfaceDao) {
         m_ipInterfaceDao = ipInterfaceDao;
     }
 
@@ -450,7 +453,7 @@ public class DatabasePopulator {
     }
 
 
-    public void setMonitoredServiceDao(MonitoredServiceDao monitoredServiceDao) {
+    public void setMonitoredServiceDao(final MonitoredServiceDao monitoredServiceDao) {
         m_monitoredServiceDao = monitoredServiceDao;
     }
 
@@ -460,7 +463,7 @@ public class DatabasePopulator {
     }
 
 
-    public void setNodeDao(NodeDao nodeDao) {
+    public void setNodeDao(final NodeDao nodeDao) {
         m_nodeDao = nodeDao;
     }
 
@@ -470,7 +473,7 @@ public class DatabasePopulator {
     }
 
 
-    public void setNotificationDao(NotificationDao notificationDao) {
+    public void setNotificationDao(final NotificationDao notificationDao) {
         m_notificationDao = notificationDao;
     }
 
@@ -480,7 +483,7 @@ public class DatabasePopulator {
     }
 
 
-    public void setOutageDao(OutageDao outageDao) {
+    public void setOutageDao(final OutageDao outageDao) {
         m_outageDao = outageDao;
     }
 
@@ -490,7 +493,7 @@ public class DatabasePopulator {
     }
 
 
-    public void setServiceTypeDao(ServiceTypeDao serviceTypeDao) {
+    public void setServiceTypeDao(final ServiceTypeDao serviceTypeDao) {
         m_serviceTypeDao = serviceTypeDao;
     }
 
@@ -500,7 +503,7 @@ public class DatabasePopulator {
     }
 
 
-    public void setSnmpInterfaceDao(SnmpInterfaceDao snmpInterfaceDao) {
+    public void setSnmpInterfaceDao(final SnmpInterfaceDao snmpInterfaceDao) {
         m_snmpInterfaceDao = snmpInterfaceDao;
     }
 
@@ -510,7 +513,7 @@ public class DatabasePopulator {
     }
 
 
-    public void setUserNotificationDao(UserNotificationDao userNotificationDao) {
+    public void setUserNotificationDao(final UserNotificationDao userNotificationDao) {
         m_userNotificationDao = userNotificationDao;
     }
     
@@ -518,7 +521,7 @@ public class DatabasePopulator {
         return m_node1;
     }
     
-    private void setNode1(OnmsNode node1) {
+    private void setNode1(final OnmsNode node1) {
         m_node1 = node1;
     }
 
@@ -526,7 +529,7 @@ public class DatabasePopulator {
         return m_locationMonitorDao;
     }
 
-    public void setLocationMonitorDao(LocationMonitorDaoHibernate locationMonitorDao) {
+    public void setLocationMonitorDao(final LocationMonitorDaoHibernate locationMonitorDao) {
         m_locationMonitorDao = locationMonitorDao;
     }
 
@@ -534,7 +537,7 @@ public class DatabasePopulator {
         return m_onmsMapDao;
     }
 
-    public void setOnmsMapDao(OnmsMapDao onmsMapDao) {
+    public void setOnmsMapDao(final OnmsMapDao onmsMapDao) {
         this.m_onmsMapDao = onmsMapDao;
     }
 
@@ -542,7 +545,7 @@ public class DatabasePopulator {
         return m_onmsMapElementDao;
     }
 
-    public void setOnmsMapElementDao(OnmsMapElementDao onmsMapElementDao) {
+    public void setOnmsMapElementDao(final OnmsMapElementDao onmsMapElementDao) {
         this.m_onmsMapElementDao = onmsMapElementDao;
     }
 
@@ -550,7 +553,7 @@ public class DatabasePopulator {
         return m_dataLinkInterfaceDao;
     }
 
-    public void setDataLinkInterfaceDao(DataLinkInterfaceDao dataLinkInterfaceDao) {
+    public void setDataLinkInterfaceDao(final DataLinkInterfaceDao dataLinkInterfaceDao) {
         this.m_dataLinkInterfaceDao = dataLinkInterfaceDao;
     }
     
@@ -558,7 +561,7 @@ public class DatabasePopulator {
         return m_acknowledgmentDao;
     }
 
-    public void setAcknowledgmentDao(AcknowledgmentDao acknowledgmentDao) {
+    public void setAcknowledgmentDao(final AcknowledgmentDao acknowledgmentDao) {
         m_acknowledgmentDao = acknowledgmentDao;
     }
 
@@ -566,7 +569,7 @@ public class DatabasePopulator {
         return m_transTemplate;
     }
 
-    public void setTransactionTemplate(TransactionTemplate transactionTemplate) {
+    public void setTransactionTemplate(final TransactionTemplate transactionTemplate) {
         m_transTemplate = transactionTemplate;
     }
 }

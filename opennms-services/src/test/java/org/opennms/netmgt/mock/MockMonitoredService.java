@@ -34,6 +34,7 @@ package org.opennms.netmgt.mock;
 import java.net.InetAddress;
 import java.net.UnknownHostException;
 
+import org.opennms.core.utils.InetAddressUtils;
 import org.opennms.netmgt.poller.InetNetworkInterface;
 import org.opennms.netmgt.poller.MonitoredService;
 import org.opennms.netmgt.poller.NetworkInterface;
@@ -50,7 +51,7 @@ public class MockMonitoredService implements MonitoredService {
         m_nodeLabel = nodeLabel;
         m_inetAddr = inetAddress;
         m_svcName = svcName;
-        m_ipAddr = m_inetAddr.getHostAddress();
+        m_ipAddr = InetAddressUtils.str(m_inetAddr);
     }
 
     public String getSvcName() {

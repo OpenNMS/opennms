@@ -13,7 +13,7 @@
 //
 // Modifications:
 //
-// 2008 Feb 04: Use InetAddress.getByName("127.0.0.1") to connect to the DHCP
+// 2008 Feb 04: Use InetAddressUtils.addr("127.0.0.1") to connect to the DHCP
 // server within OpenNMS. Fixes bug #2243. - dj@opennms.org
 // 2005 Jan 28: Added extended capabilities to
 // allow detection of servers on
@@ -57,6 +57,7 @@ import java.net.Socket;
 import java.net.UnknownHostException;
 import java.util.StringTokenizer;
 
+import org.opennms.core.utils.InetAddressUtils;
 import org.opennms.core.utils.ThreadCategory;
 import org.opennms.netmgt.config.DhcpdConfigFactory;
 import org.opennms.netmgt.utils.IpValidator;
@@ -145,7 +146,7 @@ final class Poller {
      * @return A disconnection message.
      */
     private static Message getDisconnectRequest() throws UnknownHostException {
-        return new Message(InetAddress.getByName("0.0.0.0"), new DHCPMessage());
+        return new Message(InetAddressUtils.addr("0.0.0.0"), new DHCPMessage());
     }
 
     /**
@@ -234,7 +235,7 @@ final class Poller {
             if (log.isDebugEnabled()) {
                 log.debug("Poller.ctor: opening socket connection with DHCP client daemon on port " + dcf.getPort());
             }
-            m_connection = new Socket(InetAddress.getByName("127.0.0.1"), dcf.getPort());
+            m_connection = new Socket(InetAddressUtils.addr("127.0.0.1"), dcf.getPort());
 
             if (log.isDebugEnabled()) {
                 log.debug("Poller.ctor: setting socket timeout to " + timeout);
@@ -403,7 +404,7 @@ final class Poller {
                 int rt = retries;
                 while (rt >= 0 && !isDhcpServer) {
                     if (log.isDebugEnabled()) {
-                        log.debug("isServer: sending DHCP " + typeName[i] + " query to host " + host.getHostAddress() + " with Xid: " + ping.getMessage().getXid());
+                        log.debug("isServer: sending DHCP " + typeName[i] + " query to host " + InetAddressUtils.str(host) + " with Xid: " + ping.getMessage().getXid());
                     }
                     
                     long start = System.currentTimeMillis();
@@ -423,7 +424,7 @@ final class Poller {
 
                             // DEBUG only
                             if (log.isDebugEnabled()) {
-                                log.debug("isServer: got a DHCP response from host " + resp.getAddress().getHostAddress() + " with Xid: " + resp.getMessage().getXid());
+                                log.debug("isServer: got a DHCP response from host " + InetAddressUtils.str(resp.getAddress()) + " with Xid: " + resp.getMessage().getXid());
                             }
 
                             if (host.equals(resp.getAddress()) && ping.getMessage().getXid() == resp.getMessage().getXid()) {

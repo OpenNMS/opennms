@@ -42,6 +42,7 @@ import java.util.Map;
 import org.apache.commons.lang.builder.CompareToBuilder;
 import org.apache.commons.lang.builder.EqualsBuilder;
 import org.apache.commons.lang.builder.HashCodeBuilder;
+import org.opennms.core.utils.InetAddressUtils;
 import org.opennms.netmgt.model.OnmsMonitoredService;
 import org.opennms.netmgt.poller.InetNetworkInterface;
 import org.opennms.netmgt.poller.MonitoredService;
@@ -106,7 +107,7 @@ public class PolledService implements MonitoredService, Serializable, Comparable
      * @return a {@link java.lang.String} object.
      */
     public String getIpAddr() {
-        return m_netInterface.getAddress().getHostAddress();
+        return InetAddressUtils.str(m_netInterface.getAddress());
     }
 
     /**

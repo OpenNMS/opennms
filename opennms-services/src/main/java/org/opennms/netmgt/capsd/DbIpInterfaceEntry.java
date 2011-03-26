@@ -53,6 +53,7 @@ import java.util.Date;
 import java.util.List;
 
 import org.opennms.core.utils.DBUtils;
+import org.opennms.core.utils.InetAddressUtils;
 import org.opennms.core.utils.ThreadCategory;
 import org.opennms.netmgt.EventConstants;
 import org.opennms.netmgt.config.DataSourceFactory;
@@ -265,7 +266,7 @@ public final class DbIpInterfaceEntry {
             names = null;
             int ndx = 1;
             stmt.setLong(ndx++, m_nodeId);
-            stmt.setString(ndx++, m_ipAddr.getHostAddress());
+            stmt.setString(ndx++, InetAddressUtils.str(m_ipAddr));
             if ((m_changed & CHANGED_IFINDEX) == CHANGED_IFINDEX) {
                 stmt.setInt(ndx++, m_ifIndex);
             }
@@ -414,7 +415,7 @@ public final class DbIpInterfaceEntry {
                 }
             }
             stmt.setLong(ndx++, m_nodeId);
-            stmt.setString(ndx++, m_ipAddr.getHostAddress());
+            stmt.setString(ndx++, InetAddressUtils.str(m_ipAddr));
             if (m_useIfIndexAsKey) {
                 if (m_ifIndex == -1) {
                     stmt.setNull(ndx++, Types.INTEGER);
@@ -459,13 +460,13 @@ public final class DbIpInterfaceEntry {
                 stmt = c.prepareStatement(SQL_LOAD_REC_IFINDEX);
                 d.watch(stmt);
                 stmt.setLong(1, m_nodeId);
-                stmt.setString(2, m_ipAddr.getHostAddress());
+                stmt.setString(2, InetAddressUtils.str(m_ipAddr));
                 stmt.setInt(3, m_ifIndex);
             } else {
                 stmt = c.prepareStatement(SQL_LOAD_REC);
                 d.watch(stmt);
                 stmt.setLong(1, m_nodeId);
-                stmt.setString(2, m_ipAddr.getHostAddress());
+                stmt.setString(2, InetAddressUtils.str(m_ipAddr));
             }
 
             // Execute the query
@@ -933,7 +934,7 @@ public final class DbIpInterfaceEntry {
             stmt = db.prepareStatement(SQL_LOAD_IFSVC_LIST);
             d.watch(stmt);
             stmt.setLong(1, m_nodeId);
-            stmt.setString(2, m_ipAddr.getHostAddress());
+            stmt.setString(2, InetAddressUtils.str(m_ipAddr));
 
             rset = stmt.executeQuery();
             d.watch(rset);
@@ -1127,7 +1128,7 @@ public final class DbIpInterfaceEntry {
 
         buf.append("from database      = ").append(m_fromDb).append(sep);
         buf.append("node identifier    = ").append(m_nodeId).append(sep);
-        buf.append("IP Address         = ").append(m_ipAddr.getHostAddress()).append(sep);
+        buf.append("IP Address         = ").append(InetAddressUtils.str(m_ipAddr)).append(sep);
         buf.append("interface index    = ").append(m_ifIndex).append(sep);
         buf.append("last poll time     = ").append(m_lastPoll).append(sep);
         buf.append("hostname           = ").append(m_hostname).append(sep);
@@ -1145,7 +1146,7 @@ public final class DbIpInterfaceEntry {
      */
     public static void main(String[] args) {
         try {
-            DbIpInterfaceEntry entry = DbIpInterfaceEntry.get(Integer.parseInt(args[0]), InetAddress.getByName(args[1]));
+            DbIpInterfaceEntry entry = DbIpInterfaceEntry.get(Integer.parseInt(args[0]), InetAddressUtils.addr(args[1]));
             System.out.println(entry.toString());
 
             DbIfServiceEntry[] services = entry.getServices();

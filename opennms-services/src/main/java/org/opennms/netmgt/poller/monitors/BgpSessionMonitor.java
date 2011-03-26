@@ -53,6 +53,7 @@ import java.util.Map;
 import org.apache.log4j.Level;
 import org.exolab.castor.xml.MarshalException;
 import org.exolab.castor.xml.ValidationException;
+import org.opennms.core.utils.InetAddressUtils;
 import org.opennms.core.utils.ParameterMap;
 import org.opennms.netmgt.config.SnmpPeerFactory;
 import org.opennms.netmgt.model.PollStatus;
@@ -228,7 +229,8 @@ final public class BgpSessionMonitor extends SnmpMonitorStrategy {
         //
         SnmpAgentConfig agentConfig = SnmpPeerFactory.getInstance().getAgentConfig(ipaddr);
         if (agentConfig == null) throw new RuntimeException("SnmpAgentConfig object not available for interface " + ipaddr);
-        log().debug("poll: setting SNMP peer attribute for interface " + ipaddr.getHostAddress());
+        final String hostAddress = InetAddressUtils.str(ipaddr);
+		log().debug("poll: setting SNMP peer attribute for interface " + hostAddress);
 
         // Get configuration parameters
         //
@@ -340,13 +342,13 @@ final public class BgpSessionMonitor extends SnmpMonitorStrategy {
             status = PollStatus.unavailable(returnValue);
                 
         } catch (NullPointerException e) {
-            status = logDown(Level.WARN, "Unexpected error during SNMP poll of interface " + ipaddr.getHostAddress(), e);
+            status = logDown(Level.WARN, "Unexpected error during SNMP poll of interface " + hostAddress, e);
         } catch (NumberFormatException e) {
             status = logDown(Level.WARN, "Number operator used on a non-number " + e.getMessage());
         } catch (IllegalArgumentException e) {
             status = logDown(Level.WARN, "Invalid Snmp Criteria: " + e.getMessage());
         } catch (Throwable t) {
-            status = logDown(Level.WARN, "Unexpected exception during SNMP poll of interface " + ipaddr.getHostAddress(), t);
+            status = logDown(Level.WARN, "Unexpected exception during SNMP poll of interface " + hostAddress, t);
         }
 
         // If matchAll is set to true, then the status is set to available above with a single match.

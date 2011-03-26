@@ -41,6 +41,7 @@ import javax.net.ssl.SSLContext;
 import javax.net.ssl.SSLSocketFactory;
 import javax.net.ssl.TrustManager;
 
+import org.opennms.core.utils.InetAddressUtils;
 import org.opennms.core.utils.LogUtils;
 import org.opennms.netmgt.provision.detector.simple.request.LineOrientedRequest;
 import org.opennms.netmgt.provision.detector.simple.response.MultilineOrientedResponse;
@@ -78,7 +79,7 @@ public class SSLClient extends MultilineOrientedClient implements Client<LineOri
         socket.connect(new InetSocketAddress(address, port), timeout);
         socket.setSoTimeout(timeout);
         try {
-            return wrapSocket(socket, address.getHostAddress(), port);
+            return wrapSocket(socket, InetAddressUtils.str(address), port);
         } catch (final Exception e) {
             LogUtils.debugf(this, e, "Unable to wrap socket in SSL.");
             return null;

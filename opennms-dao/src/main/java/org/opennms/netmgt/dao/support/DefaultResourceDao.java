@@ -56,6 +56,7 @@ import java.util.Set;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
+import org.opennms.core.utils.InetAddressUtils;
 import org.opennms.core.utils.IntSet;
 import org.opennms.core.utils.ThreadCategory;
 import org.opennms.netmgt.config.CollectdConfigFactory;
@@ -464,10 +465,8 @@ public class DefaultResourceDao implements ResourceDao, InitializingBean {
         List<OnmsResource> resources = new LinkedList<OnmsResource>();
 
         IntSet snmpNodes = findSnmpNodeDirectories(); 
-        Set<String> responseTimeInterfaces =
-            findChildrenMatchingFilter(new File(getRrdDirectory(), RESPONSE_DIRECTORY), RrdFileConstants.INTERFACE_DIRECTORY_FILTER);
-        Set<String> distributedResponseTimeInterfaces =
-            findChildrenChildrenMatchingFilter(new File(new File(getRrdDirectory(), RESPONSE_DIRECTORY), "distributed"), RrdFileConstants.INTERFACE_DIRECTORY_FILTER);
+        Set<String> responseTimeInterfaces = findChildrenMatchingFilter(new File(getRrdDirectory(), RESPONSE_DIRECTORY), RrdFileConstants.INTERFACE_DIRECTORY_FILTER);
+        Set<String> distributedResponseTimeInterfaces = findChildrenChildrenMatchingFilter(new File(new File(getRrdDirectory(), RESPONSE_DIRECTORY), "distributed"), RrdFileConstants.INTERFACE_DIRECTORY_FILTER);
 
         List<OnmsNode> nodes = m_nodeDao.findAll();
         IntSet nodesFound = new IntSet();
@@ -480,8 +479,9 @@ public class DefaultResourceDao implements ResourceDao, InitializingBean {
             if (snmpNodes.contains(node.getId())) {
                 found = true;
             } else if (responseTimeInterfaces.size() > 0 || distributedResponseTimeInterfaces.size() > 0) {
-                for (OnmsIpInterface ip : node.getIpInterfaces()) {
-                    if (responseTimeInterfaces.contains(ip.getIpAddressAsString()) || distributedResponseTimeInterfaces.contains(ip.getIpAddressAsString())) {
+                for (final OnmsIpInterface ip : node.getIpInterfaces()) {
+                    final String addr = InetAddressUtils.str(ip.getIpAddress());
+					if (responseTimeInterfaces.contains(addr) || distributedResponseTimeInterfaces.contains(addr)) {
                         found = true;
                         break;
                     }
@@ -704,8 +704,9 @@ public class DefaultResourceDao implements ResourceDao, InitializingBean {
     public OnmsResource getResourceForIpInterface(OnmsIpInterface ipInterface) {
         Assert.notNull(ipInterface, "ipInterface argument must not be null");
         Assert.notNull(ipInterface.getNode(), "getNode() on ipInterface must not return null");
-        
-        return getChildResourceForNode(ipInterface.getNode(), "responseTime", ipInterface.getIpAddressAsString());
+
+        final String ipAddress = InetAddressUtils.str(ipInterface.getIpAddress());
+		return getChildResourceForNode(ipInterface.getNode(), "responseTime", ipAddress);
     }
 
     /**
@@ -717,7 +718,8 @@ public class DefaultResourceDao implements ResourceDao, InitializingBean {
         Assert.notNull(locMon, "locMon argument must not be null");
         Assert.notNull(ipInterface.getNode(), "getNode() on ipInterface must not return null");
         
-        return getChildResourceForNode(ipInterface.getNode(), "distributedStatus", locMon.getId() + File.separator + ipInterface.getIpAddressAsString());
+        final String ipAddress = InetAddressUtils.str(ipInterface.getIpAddress());
+		return getChildResourceForNode(ipInterface.getNode(), "distributedStatus", locMon.getId() + File.separator + ipAddress);
     }
     
     /**

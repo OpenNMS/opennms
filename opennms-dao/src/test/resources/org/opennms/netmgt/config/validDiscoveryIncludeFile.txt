@@ -7,3 +7,4 @@ fe80:0000:0000:0000:ffff:eeee:dddd:cccc # Crikey, IPv6!
 fe80:0000:0000:0000:ffff:eeee:dddd:cccd
 # This row is all comments
   # This row has some whitespace and then a comment
+fe80:0:0:0:ffff:eeee:dddd:cccc

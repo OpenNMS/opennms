@@ -55,6 +55,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 import org.opennms.core.utils.DBUtils;
+import org.opennms.core.utils.InetAddressUtils;
 import org.opennms.core.utils.LogUtils;
 import org.opennms.netmgt.eventd.EventdConstants;
 import org.opennms.netmgt.eventd.db.AutoAction;
@@ -182,8 +183,8 @@ public final class JdbcEventWriter extends AbstractJdbcPersister implements Even
             insStmt.setString(2, Constants.format(event.getUei(), EVENT_UEI_FIELD_SIZE));
 
             // nodeID
-            final int nodeid = (int) event.getNodeid();
-            set(insStmt, 3, event.hasNodeid() ? nodeid : -1);
+            final Long nodeid = event.getNodeid();
+            set(insStmt, 3, event.hasNodeid() ? nodeid.intValue() : -1);
 
             // eventTime
             insStmt.setTimestamp(4, getEventTime(event));
@@ -421,7 +422,7 @@ public final class JdbcEventWriter extends AbstractJdbcPersister implements Even
         }
         
         try {
-            return getHostName((int) event.getNodeid(), event.getHost(), connection);
+            return getHostName(event.getNodeid().intValue(), event.getHost(), connection);
         } catch (final Throwable t) {
             LogUtils.warnf(this, t, "Error converting host IP \"%s\" to a hostname, storing the IP.", event.getHost());
             return event.getHost();

@@ -41,6 +41,7 @@ import java.net.UnknownHostException;
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
+import org.opennms.core.utils.InetAddressUtils;
 import org.opennms.netmgt.provision.ServiceDetector;
 import org.opennms.netmgt.provision.detector.loop.LoopDetector;
 import org.opennms.netmgt.provision.support.NullDetectorMonitor;
@@ -67,7 +68,7 @@ public class LoopDetectorTest implements ApplicationContextAware {
     
     @Test
     public void testDetectorSuccess() throws UnknownHostException{
-        m_detector.setIpMatch(InetAddress.getLocalHost().getHostAddress());
+        m_detector.setIpMatch(InetAddressUtils.str(InetAddress.getLocalHost()));
         m_detector.init();
         assertTrue("Service detection for loopDetector failed.", m_detector.isServiceDetected(InetAddress.getLocalHost(), new NullDetectorMonitor()));
     }

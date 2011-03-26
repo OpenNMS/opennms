@@ -47,13 +47,13 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
-import org.exolab.castor.xml.MarshalException;
-import org.exolab.castor.xml.Marshaller;
-import org.exolab.castor.xml.ValidationException;
+import org.opennms.core.utils.InetAddressUtils;
 import org.opennms.core.utils.ThreadCategory;
+import org.opennms.netmgt.dao.jaxb.JaxbUtils;
 import org.opennms.netmgt.eventd.adaptors.EventHandler;
 import org.opennms.netmgt.xml.event.Event;
 import org.opennms.netmgt.xml.event.EventReceipt;
+import org.springframework.dao.DataAccessException;
 
 /**
  * This class implements the User Datagram Protocol (UDP) event receiver. When
@@ -205,11 +205,9 @@ final class UdpUuidSender implements Runnable {
 
                 StringWriter writer = new StringWriter();
                 try {
-                    Marshaller.marshal(receipt, writer);
-                } catch (ValidationException e) {
-                    log().warn("Failed to build event receipt for agent " + re.getSender().getHostAddress() + ":" + re.getPort() + ": " + e, e);
-                } catch (MarshalException e) {
-                    log().warn("Failed to build event receipt for agent " + re.getSender().getHostAddress() + ":" + re.getPort() + ": " + e, e);
+                    JaxbUtils.marshal(receipt, writer);
+                } catch (DataAccessException e) {
+                    log().warn("Failed to build event receipt for agent " + InetAddressUtils.str(re.getSender()) + ":" + re.getPort() + ": " + e, e);
                 }
 
                 String xml = writer.getBuffer().toString();
@@ -218,7 +216,7 @@ final class UdpUuidSender implements Runnable {
                     DatagramPacket pkt = new DatagramPacket(xml_bytes, xml_bytes.length, re.getSender(), re.getPort());
 
                     if (isTracing) {
-                        log().debug("Transmitting receipt to destination " + re.getSender().getHostAddress() + ":" + re.getPort());
+                        log().debug("Transmitting receipt to destination " + InetAddressUtils.str(re.getSender()) + ":" + re.getPort());
                     }
 
                     m_dgSock.send(pkt);
@@ -241,7 +239,7 @@ final class UdpUuidSender implements Runnable {
                 } catch (UnsupportedEncodingException e) {
                     log().warn("Failed to convert XML to byte array: " + e, e);
                 } catch (IOException e) {
-                    log().warn("Failed to send packet to host" + re.getSender().getHostAddress() + ":" + re.getPort() + ": " + e, e);
+                    log().warn("Failed to send packet to host" + InetAddressUtils.str(re.getSender()) + ":" + re.getPort() + ": " + e, e);
                 }
             }
             

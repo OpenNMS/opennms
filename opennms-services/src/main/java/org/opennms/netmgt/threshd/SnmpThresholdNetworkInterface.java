@@ -44,6 +44,7 @@ import java.util.HashMap;
 import java.util.Map;
 import java.util.Set;
 
+import org.opennms.core.utils.InetAddressUtils;
 import org.opennms.netmgt.poller.NetworkInterface;
 public class SnmpThresholdNetworkInterface {
     private ThresholdNetworkInterface m_networkInterface;
@@ -142,7 +143,7 @@ public class SnmpThresholdNetworkInterface {
      * @return a {@link java.lang.String} object.
      */
     public String getIpAddress() {
-        return getInetAddress().getHostAddress();
+        return InetAddressUtils.str(getInetAddress());
     }
 
     /**

@@ -51,6 +51,8 @@
 
 package org.opennms.netmgt.collectd;
 
+import static org.opennms.core.utils.InetAddressUtils.str;
+
 import java.net.InetAddress;
 import java.sql.SQLException;
 import java.util.ArrayList;
@@ -66,6 +68,7 @@ import java.util.Map;
 import java.util.Set;
 
 import org.apache.commons.lang.StringUtils;
+import org.opennms.core.utils.LogUtils;
 import org.opennms.core.utils.ThreadCategory;
 import org.opennms.netmgt.ConfigFileConstants;
 import org.opennms.netmgt.EventConstants;
@@ -446,7 +449,13 @@ public class Collectd extends AbstractServiceDaemon implements
 
     private void scheduleInterface(OnmsIpInterface iface, String svcName, boolean existing) {
         
-        instrumentation().beginScheduleInterface(iface.getNode().getId(), iface.getIpAddressAsString(), svcName);
+        final String ipAddress = str(iface.getIpAddress());
+        if (ipAddress == null) {
+        	LogUtils.warnf(this, "Unable to schedule interface %s, could not determine IP address.", iface);
+        	return;
+        }
+
+		instrumentation().beginScheduleInterface(iface.getNode().getId(), ipAddress, svcName);
         try {
         
         Collection<CollectionSpecification> matchingSpecs = getSpecificationsForInterface(iface, svcName);
@@ -550,7 +559,7 @@ public class Collectd extends AbstractServiceDaemon implements
         } // end while more specifications  exist
         
         } finally {
-            instrumentation().endScheduleInterface(iface.getNode().getId(), iface.getIpAddressAsString(), svcName);
+            instrumentation().endScheduleInterface(iface.getNode().getId(), ipAddress, svcName);
         }
     }
 
@@ -590,7 +599,8 @@ public class Collectd extends AbstractServiceDaemon implements
             }
 
             // Is the interface in the package?
-            if (!wpkg.interfaceInPackage(iface.getIpAddressAsString())) {
+            final String ipAddress = str(iface.getIpAddress());
+			if (!wpkg.interfaceInPackage(ipAddress)) {
                 if (log().isDebugEnabled()) {
                     StringBuffer sb = new StringBuffer();
                     sb.append("getSpecificationsForInterface: address/service: ");
@@ -631,9 +641,14 @@ public class Collectd extends AbstractServiceDaemon implements
      * @param svcName
      *            TODO
      */
-    private boolean alreadyScheduled(OnmsIpInterface iface,
-            CollectionSpecification spec) {
-        String ipAddress = iface.getIpAddressAsString();
+    private boolean alreadyScheduled(OnmsIpInterface iface, CollectionSpecification spec) {
+        String ipAddress = str(iface.getIpAddress());
+        
+        if (ipAddress == null) {
+        	LogUtils.warnf(this, "Cannot determine if interface %s is already scheduled.  Unable to look up IP address.", iface);
+        	return false;
+        }
+
         String svcName = spec.getServiceName();
         String pkgName = spec.getPackageName();
         StringBuffer sb;
@@ -649,7 +664,7 @@ public class Collectd extends AbstractServiceDaemon implements
         synchronized (m_collectableServices) {
         	for (CollectableService cSvc : m_collectableServices) {
                 InetAddress addr = (InetAddress) cSvc.getAddress();
-                if (addr.getHostAddress().equals(ipAddress)
+                if (str(addr).equals(ipAddress)
                         && cSvc.getPackageName().equals(pkgName)
                         && cSvc.getServiceName().equals(svcName)) {
                     isScheduled = true;
@@ -830,7 +845,7 @@ public class Collectd extends AbstractServiceDaemon implements
             return;
         }
 
-        int nodeId = (int) event.getNodeid();
+        Long nodeId = event.getNodeid();
 
         // Iterate over the collectable services list and mark any entries
         // which match the deleted nodeId/IP address pair for deletion
@@ -843,8 +858,7 @@ public class Collectd extends AbstractServiceDaemon implements
                 // Only interested in entries with matching nodeId and IP
                 // address
                 InetAddress addr = (InetAddress) cSvc.getAddress();
-                if (!(cSvc.getNodeId() == nodeId && addr.getHostName().equals(
-                                                                              ipAddr)))
+                if (!(cSvc.getNodeId() == nodeId && addr.getHostName().equals(ipAddr)))
                     continue;
 
                 synchronized (cSvc) {
@@ -961,7 +975,7 @@ public class Collectd extends AbstractServiceDaemon implements
                 cSvc = iter.next();
 
                 InetAddress addr = (InetAddress) cSvc.getAddress();
-                if (addr.getHostAddress().equals(event.getInterface())) {
+				if (addr.equals(event.getInterfaceAddress())) {
                     synchronized (cSvc) {
                         // Got a match!
                         if (log.isDebugEnabled())
@@ -973,7 +987,7 @@ public class Collectd extends AbstractServiceDaemon implements
                         // this CollectableService.
                         CollectorUpdates updates = cSvc.getCollectorUpdates();
                         if (iface == null) {
-                        	iface = getIpInterface((int) event.getNodeid(), event.getInterface());
+                        	iface = getIpInterface(event.getNodeid().intValue(), event.getInterface());
                         }
 
                         // Now set the reparenting flag
@@ -1006,7 +1020,7 @@ public class Collectd extends AbstractServiceDaemon implements
 
         ThreadCategory log = log();
 
-        int nodeId = (int) event.getNodeid();
+        Long nodeId = event.getNodeid();
 
         // Iterate over the collectable service list and mark any entries
         // which match the deleted nodeId for deletion.
@@ -1127,7 +1141,7 @@ public class Collectd extends AbstractServiceDaemon implements
         
         getCollectorConfigDao().rebuildPackageIpListMap();
 
-        scheduleInterface((int) event.getNodeid(), event.getInterface(),
+        scheduleInterface(event.getNodeid().intValue(), event.getInterface(),
                           event.getService(), false);
     }
 
@@ -1206,8 +1220,9 @@ public class Collectd extends AbstractServiceDaemon implements
                 while (liter.hasNext()) {
                     cSvc = liter.next();
 
-                    InetAddress addr = (InetAddress) cSvc.getAddress();
-                    if (addr.getHostAddress().equals(oldPrimaryIfAddr)) {
+                    final InetAddress addr = (InetAddress) cSvc.getAddress();
+                    final String addrString = str(addr);
+					if (addrString != null && addrString.equals(oldPrimaryIfAddr)) {
                         synchronized (cSvc) {
                             // Got a match! Retrieve the CollectorUpdates
                             // object
@@ -1264,7 +1279,7 @@ public class Collectd extends AbstractServiceDaemon implements
         EventUtils.checkNodeId(event);
         EventUtils.checkInterface(event);
 
-        int nodeid = (int) event.getNodeid();
+        Long nodeid = event.getNodeid();
         String ipAddress = event.getInterface();
 
         // Mark the primary SNMP interface for reinitialization in
@@ -1283,16 +1298,17 @@ public class Collectd extends AbstractServiceDaemon implements
             while (iter.hasNext()) {
                 CollectableService cSvc = iter.next();
         
-                InetAddress addr = (InetAddress) cSvc.getAddress();
-                if (log.isDebugEnabled())
+                final InetAddress addr = (InetAddress) cSvc.getAddress();
+                final String addrString = str(addr);
+				if (log.isDebugEnabled())
                     log.debug("Comparing CollectableService ip address = "
-                            + addr.getHostAddress()
+                            + addrString
                             + " and event ip interface = "
                             + ipAddress);
-                if (addr.getHostAddress().equals(ipAddress)) {
+                if (addrString != null && addrString.equals(ipAddress)) {
                     synchronized (cSvc) {
                     	if (iface == null) {
-                            iface = getIpInterface(nodeid, ipAddress);
+                            iface = getIpInterface(nodeid.intValue(), ipAddress);
                     	}
                         // Got a match! Retrieve the CollectorUpdates object
                         // associated
@@ -1333,7 +1349,7 @@ public class Collectd extends AbstractServiceDaemon implements
         //if (!event.getService().equals("SNMP"))
         //    return;
 
-        int nodeId = (int) event.getNodeid();
+        Long nodeId = event.getNodeid();
         String ipAddr = event.getInterface();
         String svcName = event.getService();
 

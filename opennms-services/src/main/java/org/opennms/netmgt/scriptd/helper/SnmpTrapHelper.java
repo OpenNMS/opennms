@@ -40,6 +40,7 @@ import java.net.UnknownHostException;
 import java.util.HashMap;
 
 import org.opennms.core.utils.Base64;
+import org.opennms.core.utils.InetAddressUtils;
 import org.opennms.netmgt.eventd.EventUtil;
 import org.opennms.netmgt.snmp.SnmpObjId;
 import org.opennms.netmgt.snmp.SnmpTrapBuilder;
@@ -60,9 +61,6 @@ import org.opennms.netmgt.xml.event.Value;
  *
  * @author <a href="mailto:jim.doble@tavve.com">Jim Doble </a>
  * @author <a href="http://www.opennms.org/">OpenNMS.org </a>
- * @author <a href="mailto:jim.doble@tavve.com">Jim Doble </a>
- * @author <a href="http://www.opennms.org/">OpenNMS.org </a>
- * @version $Id: $
  */
 public class SnmpTrapHelper {
 
@@ -342,13 +340,11 @@ public class SnmpTrapHelper {
         public void addVarBind(SnmpTrapBuilder trap, String name, String encoding, String value) throws SnmpTrapHelperException {
 
             if (EventConstants.XML_ENCODING_TEXT.equals(encoding)) {
-                try {
-                    trap.addVarBind(SnmpObjId.get(name), SnmpUtils.getValueFactory().getIpAddress(InetAddress.getByName(value)));
-                }
-
-                catch (UnknownHostException e) {
+                final InetAddress addr = InetAddressUtils.addr(value);
+                if (addr == null) {
                     throw new SnmpTrapHelperException("Value " + value + "is invalid, or host unknown for SnmpIPAddress");
                 }
+				trap.addVarBind(SnmpObjId.get(name), SnmpUtils.getValueFactory().getIpAddress(addr));
             } else {
                 throw new SnmpTrapHelperException("Encoding " + encoding + "is invalid for SnmpIPAddress");
             }
@@ -598,7 +594,7 @@ public class SnmpTrapHelper {
 
         SnmpV1TrapBuilder trap = SnmpUtils.getV1TrapBuilder();
         trap.setEnterprise(SnmpObjId.get(entId));
-        trap.setAgentAddress(InetAddress.getByName(agentAddr));
+        trap.setAgentAddress(InetAddressUtils.addr(agentAddr));
         trap.setGeneric(generic);
         trap.setSpecific(specific);
         trap.setTimeStamp(timeStamp);
@@ -723,17 +719,20 @@ public class SnmpTrapHelper {
             trap.setEnterprise(SnmpObjId.get(snmpInfo.getId()));
 
             InetAddress agentAddress;
-            try {
-                agentAddress = InetAddress.getByName(event.getSnmphost());
-            } catch (UnknownHostException e) {
-                throw new SnmpTrapHelperException("Invalid ip address: "+e.getMessage(), e);
+            agentAddress = InetAddressUtils.addr(event.getSnmphost());
+            if (agentAddress == null) {
+                throw new SnmpTrapHelperException("Invalid ip address.");
             }
 
             trap.setAgentAddress(agentAddress);
 
-            trap.setGeneric(snmpInfo.getGeneric());
+            if (snmpInfo.hasGeneric()) {
+            	trap.setGeneric(snmpInfo.getGeneric());
+            }
 
-            trap.setSpecific(snmpInfo.getSpecific());
+            if (snmpInfo.hasSpecific()) {
+            	trap.setSpecific(snmpInfo.getSpecific());
+            }
 
             trap.setTimeStamp(snmpInfo.getTimeStamp());
 
@@ -777,10 +776,9 @@ public class SnmpTrapHelper {
             }
             
             InetAddress agentAddress;
-            try {
-                agentAddress = InetAddress.getByName(addr);
-            } catch (UnknownHostException e) {
-                throw new SnmpTrapHelperException("Invalid ip address: "+e.getMessage(), e);
+            agentAddress = InetAddressUtils.addr(addr);
+            if (agentAddress == null) {
+                throw new SnmpTrapHelperException("Invalid ip address.");
             }
 
             trap.setAgentAddress(agentAddress);
@@ -869,7 +867,7 @@ public class SnmpTrapHelper {
 
             String oid;
 
-            if (snmpInfo.getGeneric() == ENTERPRISE_SPECIFIC) {
+            if (snmpInfo.getGeneric() == ENTERPRISE_SPECIFIC && snmpInfo.hasSpecific()) {
                 oid = snmpInfo.getId() + ".0." + snmpInfo.getSpecific();
             } else {
                 oid = SNMP_TRAPS + '.' + (snmpInfo.getGeneric() + 1);
@@ -1034,9 +1032,10 @@ public class SnmpTrapHelper {
         // What to do about timestamp? Hard-wiring to zero for now.
         long trapTimeStamp = 0;
         
-        if ("v1".equalsIgnoreCase(trapVersion)) {
+        final String iface = event.getInterface();
+		if ("v1".equalsIgnoreCase(trapVersion)) {
             trapBuilder = createV1Trap(".1.3.6.1.4.1.5813.1",   // OPENNMS-MIB::openNMS-traps
-                                       event.getInterface(),
+            	                       iface,
                                        ENTERPRISE_SPECIFIC,
                                        2,                       // OPENNMS-MIB::openNMS-tl1AutonomousMessageTrap
                                        trapTimeStamp);
@@ -1055,7 +1054,7 @@ public class SnmpTrapHelper {
         addVarBinding(trapBuilder, ".1.3.6.1.4.1.5813.20.1.10.0", // OPENNMS-MIB::openNMS-event-host
                       EventConstants.TYPE_SNMP_OCTET_STRING, event.getHost());
         addVarBinding(trapBuilder, ".1.3.6.1.4.1.5813.20.1.11.0", // OPENNMS-MIB::openNMS-event-interface
-                      EventConstants.TYPE_SNMP_OCTET_STRING, event.getInterface());
+                      EventConstants.TYPE_SNMP_OCTET_STRING, iface);
         addVarBinding(trapBuilder, ".1.3.6.1.4.1.5813.20.1.13.0", // OPENNMS-MIB::openNMS-event-service
                       EventConstants.TYPE_SNMP_OCTET_STRING, event.getService());
         addVarBinding(trapBuilder, ".1.3.6.1.4.1.5813.20.1.18.0", // OPENNMS-MIB::openNMS-event-severity

@@ -53,6 +53,7 @@ import junit.framework.TestCase;
 
 import org.exolab.castor.xml.MarshalException;
 import org.exolab.castor.xml.ValidationException;
+import org.opennms.core.utils.InetAddressUtils;
 import org.opennms.netmgt.config.DataSourceFactory;
 import org.opennms.netmgt.config.ThresholdingConfigFactory;
 import org.opennms.netmgt.mock.EventAnticipator;
@@ -120,7 +121,7 @@ public class ThresholderTestCase extends TestCase {
 		File f = createFile(dir, fileName);
 		m_fileName = f.getAbsolutePath();
 		m_step = 300000;
-		m_iface = new ThresholdNetworkInterfaceImpl(nodeId, InetAddress.getByName(ipAddress));
+		m_iface = new ThresholdNetworkInterfaceImpl(nodeId, InetAddressUtils.addr(ipAddress));
 		m_serviceParameters = new HashMap<Object, Object>();
 		m_serviceParameters.put("svcName", serviceName);
 		m_parameters = new HashMap<Object, Object>();

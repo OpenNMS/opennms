@@ -94,8 +94,8 @@ public class V4Pinger extends Pinger {
             }
     
     
-        } catch(Exception e) {
-            m_exception.set(e);
+        } catch(Throwable e) {
+            m_throwable.set(e);
             e.printStackTrace();
         }
     }

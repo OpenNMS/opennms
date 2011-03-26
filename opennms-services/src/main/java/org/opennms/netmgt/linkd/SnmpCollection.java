@@ -42,6 +42,7 @@ import java.net.InetAddress;
 import java.util.HashMap;
 import java.util.Map;
 
+import org.opennms.core.utils.InetAddressUtils;
 import org.opennms.core.utils.LogUtils;
 import org.opennms.netmgt.capsd.snmp.SnmpTable;
 import org.opennms.netmgt.capsd.snmp.SnmpTableEntry;
@@ -349,8 +350,9 @@ public final class SnmpCollection implements ReadyRunnable {
     public void run() {
 		
 
+		final String hostAddress = InetAddressUtils.str(m_address);
 		if (suspendCollection) {
-		    LogUtils.debugf(this, "SnmpCollection.run: address: %s Suspended!", m_address.getHostAddress());
+		    LogUtils.debugf(this, "SnmpCollection.run: address: %s Suspended!", hostAddress);
 		} else {
 
 			m_ipNetToMedia = new IpNetToMediaTable(m_address);
@@ -469,13 +471,13 @@ public final class SnmpCollection implements ReadyRunnable {
 			// Log any failures
 			//
 			if (!this.hasIpNetToMediaTable())
-			    LogUtils.infof(this, "SnmpCollection.run: failed to collect ipNetToMediaTable for %s", m_address.getHostAddress());
+			    LogUtils.infof(this, "SnmpCollection.run: failed to collect ipNetToMediaTable for %s", hostAddress);
 			if (!this.hasRouteTable())
-                LogUtils.infof(this, "SnmpCollection.run: failed to collect ipRouteTable for %s", m_address.getHostAddress());
+                LogUtils.infof(this, "SnmpCollection.run: failed to collect ipRouteTable for %s", hostAddress);
 			if (!this.hasCdpCacheTable())
-                LogUtils.infof(this, "SnmpCollection.run: failed to collect dpCacheTable for %s", m_address.getHostAddress());
+                LogUtils.infof(this, "SnmpCollection.run: failed to collect dpCacheTable for %s", hostAddress);
 			if (collectVlanTable && !this.hasVlanTable())
-                LogUtils.infof(this, "SnmpCollection.run: failed to collect Vlan for %s", m_address.getHostAddress());
+                LogUtils.infof(this, "SnmpCollection.run: failed to collect Vlan for %s", hostAddress);
 			// Schedule snmp vlan collection only on VLAN.
 			// If it has not vlan collection no data download is done.
 			

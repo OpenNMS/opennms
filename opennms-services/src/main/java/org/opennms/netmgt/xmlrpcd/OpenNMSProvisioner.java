@@ -46,7 +46,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.Properties;
 
-import org.opennms.core.utils.ThreadCategory;
+import org.opennms.core.utils.LogUtils;
 import org.opennms.netmgt.EventConstants;
 import org.opennms.netmgt.capsd.CapsdDbSyncer;
 import org.opennms.netmgt.config.CapsdConfig;
@@ -68,19 +68,6 @@ import org.opennms.netmgt.model.events.EventBuilder;
  * @author <a href="mailto:david@opennms.org">David Hustace</a>
  * @author <a href="mailto:dj@opennms.org">DJ Gregor</a>
  * @author <a href="mailto:mhuot@opennms.org">Mike Huot</a>
- * @author <a href="mailto:brozow@opennms.org">Mathew Brozowski</a>
- * @author <a href="mailto:david@opennms.org">David Hustace</a>
- * @author <a href="mailto:dj@opennms.org">DJ Gregor</a>
- * @author <a href="mailto:mhuot@opennms.org">Mike Huot</a>
- * @author <a href="mailto:brozow@opennms.org">Mathew Brozowski</a>
- * @author <a href="mailto:david@opennms.org">David Hustace</a>
- * @author <a href="mailto:dj@opennms.org">DJ Gregor</a>
- * @author <a href="mailto:mhuot@opennms.org">Mike Huot</a>
- * @author <a href="mailto:brozow@opennms.org">Mathew Brozowski</a>
- * @author <a href="mailto:david@opennms.org">David Hustace</a>
- * @author <a href="mailto:dj@opennms.org">DJ Gregor</a>
- * @author <a href="mailto:mhuot@opennms.org">Mike Huot</a>
- * @version $Id: $
  */
 public class OpenNMSProvisioner implements Provisioner {
     
@@ -115,205 +102,87 @@ public class OpenNMSProvisioner implements Provisioner {
     private CapsdDbSyncer m_capsdDbSyncer;
 
 
+    private void checkRetries(final int retries) {
+        if (retries < 0) throw new IllegalArgumentException("Illegal retries "+retries+". Must be >= 0");
+    }
 
-//    def _checkRetries(self, retries):
-//        # Check if the retries value is valid
-//        if not isinstance(retries, int):
-//            self.Fault(FAULT_DATA_INVALID)
-//        if retries < 0: #or retries > 3:
-//            self.Fault(FAULT_DATA_INVALID)
-    
-    private void checkRetries(int retries) {
-        if (retries < 0)
-            throw new IllegalArgumentException("Illegal retries "+retries+". Must be >= 0");
-        
-        
-    }
-//    def _checkTimeout(self, timeout):
-//        # Check if the timeout value is valid
-//        if not isinstance(timeout, int):
-//            self.Fault(FAULT_DATA_INVALID)
-//        if timeout < sectomilis(1): #or timeout > mintomilis(60):
-//            self.Fault(FAULT_DATA_INVALID)
-    
-    private void checkTimeout(int timeout) {
-        if (timeout <= 0)
-            throw new IllegalArgumentException("Illegal timeout "+timeout+". Must be > 0");
+    private void checkTimeout(final int timeout) {
+        if (timeout <= 0) throw new IllegalArgumentException("Illegal timeout "+timeout+". Must be > 0");
     }
     
-//    def _checkInterval(self, interval):
-//        # Check if the interval value is valid
-//        if not isinstance(interval, int):
-//            self.Fault(FAULT_DATA_INVALID)
-//        if interval < mintomilis(1): #or interval > mintomilis(60):
-//            self.Fault(FAULT_DATA_INVALID)
-    
-    private void checkInterval(int interval) {
-        if (interval <= 0)
-            throw new IllegalArgumentException("Illegal interval "+interval+". Must be > 0");
+    private void checkInterval(final int interval) {
+        if (interval <= 0) throw new IllegalArgumentException("Illegal interval "+interval+". Must be > 0");
     }
     
-//    def _checkDowntimeInterval(self, interval):
-//        self._checkInterval(interval)
-    
-    private void checkDowntimeInterval(int interval) {
+    private void checkDowntimeInterval(final int interval) {
         checkInterval(interval);
     }
     
-//    def _checkDowntimeDuration(self, duration):
-//        self._checkInterval(duration)
-
-    private void checkDowntimeDuration(int duration) {
+    private void checkDowntimeDuration(final int duration) {
         checkInterval(duration);
     }
     
-//    def _checkPort(self, port):
-//        if not isinstance(port, int):
-//            self.Fault(FAULT_DATA_INVALID)
-//        if port < 1 or port > 65535:
-//            self.Fault(FAULT_DATA_INVALID)
-    
-    private void checkPort(int port) {
-        if (port < 1 || port > 65535) 
-            throw new IllegalArgumentException("Illegal port "+port+". Must be between 1 and 65535 (inclusive)");
-        
+    private void checkPort(final int port) {
+        if (port < 1 || port > 65535) throw new IllegalArgumentException("Illegal port "+port+". Must be between 1 and 65535 (inclusive)");
     }
     
-//    def _checkHostname(self, hostname):
-//        if not isinstance(hostname, basestring):
-//            self.Fault(FAULT_DATA_INVALID)
-//        if len(hostname) > 512:
-//            self.Fault(FAULT_DATA_INVALID)
-
-    private void checkHostname(String hostname) {
-        if (hostname == null)
-            throw new NullPointerException("hostname must not be null");
-
-        if (hostname.length() > 512)
-            throw new IllegalArgumentException("Illegal hostname "+hostname+". Hostnames must not be longer than 512 characters");
+    private void checkHostname(final String hostname) {
+        if (hostname == null) throw new NullPointerException("hostname must not be null");
+        if (hostname.length() > 512) throw new IllegalArgumentException("Illegal hostname "+hostname+". Hostnames must not be longer than 512 characters");
     }
     
-//    def _checkURL(self, url):
-//        if not isinstance(url, basestring):
-//            self.Fault(FAULT_DATA_INVALID)
-//        if len(url) > 512:
-//            self.Fault(FAULT_DATA_INVALID)
-//        if len(url) == 0:
-//            self.Fault(FAULT_DATA_INVALID)
-//        # Check for a protocol
-//        if (len(url) > 0) and (url.find('://') < 1): # No protocol given
-//            self.Fault(FAULT_URL_INVALID)
-
-    private void checkUrl(String url) {
-        if (url == null)
-            throw new NullPointerException("url must not be null");
-        
-        if (url.length() == 0)
-            throw new IllegalArgumentException("Illegal url \'\'.  Must not be zero length");
-        
-        if (url.length() > 512)
-            throw new IllegalArgumentException("Illegal url "+url+". Must be less than 512 chars");
+    private void checkUrl(final String url) {
+        if (url == null) throw new NullPointerException("url must not be null");
+        if (url.length() == 0) throw new IllegalArgumentException("Illegal url \'\'.  Must not be zero length");
+        if (url.length() > 512) throw new IllegalArgumentException("Illegal url "+url+". Must be no more than 512 chars");
     }
     
-//    def _checkContentCheck(self, check):
-//        if not isinstance(check, basestring):
-//            self.Fault(FAULT_DATA_INVALID)
-//        if len(check) > 128:
-//            self.Fault(FAULT_DATA_INVALID)
-
-    private void checkContentCheck(String check) {
-        if (check != null && check.length() > 128)
-            throw new IllegalArgumentException("Illegal contentCheck "+check+". Must be less than 128 chars.");
+    private void checkContentCheck(final String check) {
+        if (check != null && check.length() > 128) throw new IllegalArgumentException("Illegal contentCheck "+check+". Must be no more than 128 chars.");
     }
     
-//    def _checkResponseCode(self, code):
-//        if not isinstance(code, int):
-//            self.Fault(FAULT_DATA_INVALID)
-//        if code < 100 or code > 599:
-//            self.Fault(FAULT_DATA_INVALID)
-    
-    private void checkResponseRange(String response) {
-        if (response == null || response.equals(""))
-            return;
+    private void checkResponseRange(final String response) {
+        if (response == null || response.equals("")) return;
         
         if (response.indexOf('-') < 0) {
         	checkResponseCode(response);
-        }
-        else {
-        	int dash = response.indexOf('-');
-        	String startCode = response.substring(0, dash).trim();
-        	if ("".equals(startCode))
-        		throw new IllegalArgumentException("Illegal Start code. Expected range format is <startCode>-<endCode>.");
+        } else {
+        	final int dash = response.indexOf('-');
+        	final String startCode = response.substring(0, dash).trim();
+        	if ("".equals(startCode)) throw new IllegalArgumentException("Illegal Start code. Expected range format is <startCode>-<endCode>.");
         	checkResponseCode(startCode);
 
-        	if (dash+1 > response.length()-1)
-        		throw new IllegalArgumentException("Illegal End code. Expected range format is <startcode>-<endcode>");
-        	String endCode = response.substring(dash+1);
+        	if (dash+1 > response.length()-1) throw new IllegalArgumentException("Illegal End code. Expected range format is <startcode>-<endcode>");
+        	final String endCode = response.substring(dash+1);
         	checkResponseCode(endCode);
         }
     }
     
-    private void checkResponseCode(String response) {
-        if (response == null || response.equals(""))
-            return;
+    private void checkResponseCode(final String response) {
+        if (response == null || response.equals("")) return;
             
-        int code = Integer.parseInt(response);
-        if (code < 100 || code > 599)
-            throw new IllegalArgumentException("Illegal response code "+code+". Must be between 100 and 599");
-    }
-//    def _checkUsername(self, name):
-//        if not isinstance(name, basestring):
-//            self.Fault(FAULT_DATA_INVALID)
-//        if len(name) > 64:
-//            self.Fault(FAULT_DATA_INVALID)
-    
-    private void checkUsername(String username) {
-        if (username == null)
-            throw new NullPointerException("username is null");
-        if (username.length() > 64)
-            throw new IllegalArgumentException("Illegal username "+username+". username must be less than 64 characters");
+        final int code = Integer.parseInt(response);
+        if (code < 100 || code > 599) throw new IllegalArgumentException("Illegal response code "+code+". Must be between 100 and 599");
     }
     
-//    def _checkPassword(self, pw):
-//        if not isinstance(pw, basestring):
-//            self.Fault(FAULT_DATA_INVALID)
-//        if len(pw) > 64:
-//            self.Fault(FAULT_DATA_INVALID)
-        
-    private void checkPassword(String pw) {
-        if (pw == null)
-            throw new NullPointerException("password is null");
-        if (pw.length() > 64)
-            throw new IllegalArgumentException("Illegal password "+pw+". password must be less than 64 charachters");
+    private void checkUsername(final String username) {
+        if (username == null) throw new NullPointerException("username is null");
+        if (username.length() > 64) throw new IllegalArgumentException("Illegal username "+username+". username must be no more than than 64 characters");
     }
     
-//    def _checkDriver(self, driver):
-//        if not isinstance(driver, basestring):
-//            self.Fault(FAULT_DATA_INVALID)
-//        if len(driver) > 128:
-//            self.Fault(FAULT_DATA_INVALID)
-//        if driver == '':
-//            self.Fault(FAULT_DATA_INVALID)
-
-    private void checkDriver(String driver) {
-        if (driver == null)
-            throw new NullPointerException("driver is null");
-        if (driver.length() == 0)
-            throw new IllegalArgumentException("Illegal driver.  Must not be zero length");
-        if (driver.length() > 128)
-            throw new IllegalArgumentException("Illegal driver "+driver+". Driver length must be less than 128 characters");
+    private void checkPassword(final String pw) {
+        if (pw == null) throw new NullPointerException("password is null");
+        if (pw.length() > 64) throw new IllegalArgumentException("Illegal password "+pw+". password must be no more than than 64 charachters");
+    }
+    
+    private void checkDriver(final String driver) {
+        if (driver == null) throw new NullPointerException("driver is null");
+        if (driver.length() == 0) throw new IllegalArgumentException("Illegal driver.  Must not be zero length");
+        if (driver.length() > 128) throw new IllegalArgumentException("Illegal driver "+driver+". Driver length must be no more than than 128 characters");
             
     }
     
-//    def _validateSchedule(self, retries, timeout, interval,
-//                          downtime_interval, downtime_duration):
-//        self._checkRetries(retries)
-//        self._checkTimeout(timeout)
-//        self._checkInterval(interval)
-//        self._checkDowntimeInterval(downtime_interval)
-//        self._checkDowntimeDuration(downtime_duration)
-    
-    private void validateSchedule(int retries, int timeout, int interval, int downTimeInterval, int downTimeDuration) {
+    private void validateSchedule(final int retries, final int timeout, final int interval, final int downTimeInterval, final int downTimeDuration) {
         checkRetries(retries);
         checkTimeout(timeout);
         checkInterval(interval);
@@ -324,30 +193,20 @@ public class OpenNMSProvisioner implements Provisioner {
 
 
     /** {@inheritDoc} */
-    public boolean addServiceICMP(String serviceId, int retry, int timeout, int interval, int downTimeInterval, int downTimeDuration) {
-//        System.err.println("Called OpenNMSProvisioner.addServiceICMP("+
-//                           serviceId+", "+
-//                           retries+", "+
-//                           timeout+", "+
-//                           interval+", "+
-//                           downTimeInterval+", "+
-//                           downTimeDuration+
-//                           ")");
+    public boolean addServiceICMP(final String serviceId, final int retry, final int timeout, final int interval, final int downTimeInterval, final int downTimeDuration) {
         validateSchedule(retry, timeout, interval, downTimeInterval, downTimeDuration);
-        
         return addService(serviceId, retry, timeout, interval, downTimeInterval, downTimeDuration, ICMP_MONITOR, ICMP_PLUGIN);
     }
     
-    private boolean addService(String serviceId, int retries, int timeout, int interval, int downTimeInterval, int downTimeDuration, String monitor, String plugin) {
+    private boolean addService(final String serviceId, final int retries, final int timeout, final int interval, final int downTimeInterval, final int downTimeDuration, final String monitor, final String plugin) {
         return addService(serviceId, retries, timeout, interval, downTimeInterval, downTimeDuration, monitor, plugin, new Parm[0]);
     }
     
-    private boolean addService(String serviceId, int retries, int timeout, int interval, int downTimeInterval, int downTimeDuration, String monitor, String plugin, Parm[] entries) {
-        String pkgName = serviceId;
+    private boolean addService(final String serviceId, final int retries, final int timeout, final int interval, final int downTimeInterval, final int downTimeDuration, final String monitor, final String plugin, final Parm[] entries) {
+    	final String pkgName = serviceId;
+    	final Package pkg = getPackage(pkgName, interval, downTimeInterval, downTimeDuration);
 
-        Package pkg = getPackage(pkgName, interval, downTimeInterval, downTimeDuration);
-
-        Properties parms = new Properties();
+    	final Properties parms = new Properties();
         parms.setProperty("retry", ""+retries);
         parms.setProperty("timeout", ""+timeout);
         
@@ -357,18 +216,19 @@ public class OpenNMSProvisioner implements Provisioner {
 
         addServiceToPackage(pkg, serviceId, interval, parms);
 
-        if (m_pollerConfig.getPackage(pkg.getName()) == null)
+        if (m_pollerConfig.getPackage(pkg.getName()) == null) {
             m_pollerConfig.addPackage(pkg);
+        }
         
         if (m_pollerConfig.getServiceMonitor(serviceId) == null) {
-            log().debug("Adding a new monitor for "+serviceId);
+            LogUtils.debugf(this, "Adding a new monitor for %s", serviceId);
             m_pollerConfig.addMonitor(serviceId, monitor);
         } else {
-            log().debug("No need to add a new monitor for "+serviceId);
+            LogUtils.debugf(this, "No need to add a new monitor for %s", serviceId);
         }
         
         if (m_capsdConfig.getProtocolPlugin(serviceId) == null) {
-            ProtocolPlugin pPlugin = new ProtocolPlugin();
+        	final ProtocolPlugin pPlugin = new ProtocolPlugin();
             pPlugin.setProtocol(serviceId);
             pPlugin.setClassName(plugin);
             pPlugin.setScan("off");
@@ -378,21 +238,14 @@ public class OpenNMSProvisioner implements Provisioner {
         saveConfigs();
         return true;
     }
-    
-    private ThreadCategory log() {
-        return ThreadCategory.getInstance(getClass());
-    }
-    
     private void saveConfigs() {
         try {
             m_capsdConfig.save();
             syncServices();
             m_pollerConfig.save();
 
-            EventBuilder bldr = new EventBuilder(EventConstants.SCHEDOUTAGES_CHANGED_EVENT_UEI, "OpenNMSProvisioner");
-            m_eventManager.sendNow(bldr.getEvent());
-            
-        } catch (Throwable e) {
+            m_eventManager.sendNow(new EventBuilder(EventConstants.SCHEDOUTAGES_CHANGED_EVENT_UEI, "OpenNMSProvisioner").getEvent());
+        } catch (final Throwable e) {
             throw new RuntimeException("Error saving poller or capsd configuration: " + e, e);
         }
     }
@@ -401,23 +254,23 @@ public class OpenNMSProvisioner implements Provisioner {
         getCapsdDbSyncer().syncServicesTable();
     }
     
-    private void addServiceToPackage(Package pkg, String serviceId, int interval, Properties parms) {
-        Service svc = m_pollerConfig.getServiceInPackage(serviceId, pkg);
+    private void addServiceToPackage(final Package pkg, final String serviceId, final int interval, final Properties parms) {
+    	Service svc = m_pollerConfig.getServiceInPackage(serviceId, pkg);
         if (svc == null) {
             svc = new Service();
             svc.setName(serviceId);
             pkg.addService(svc);
         }
         svc.setInterval(interval);
-        Enumeration<?> keys = parms.propertyNames();
+        final Enumeration<?> keys = parms.propertyNames();
         while(keys.hasMoreElements()) {
-            String key = (String)keys.nextElement();
-            String value = parms.getProperty(key);
+            final String key = (String)keys.nextElement();
+            final String value = parms.getProperty(key);
             setParameter(svc, key, value);
         }
     }
-    private void setParameter(Service svc, String key, String value) {
-        Parameter parm = findParamterWithKey(svc, key);
+    private void setParameter(final Service svc, final String key, final String value) {
+    	Parameter parm = findParamterWithKey(svc, key);
         if (parm == null) {
             parm = new Parameter();
             svc.addParameter(parm);
@@ -433,27 +286,27 @@ public class OpenNMSProvisioner implements Provisioner {
      * @param key a {@link java.lang.String} object.
      * @return a {@link org.opennms.netmgt.config.poller.Parameter} object.
      */
-    public Parameter findParamterWithKey(Service svc, String key) {
-        Enumeration<Parameter> e = svc.enumerateParameter();
+    public Parameter findParamterWithKey(final Service svc, final String key) {
+    	final Enumeration<Parameter> e = svc.enumerateParameter();
         while(e.hasMoreElements()) {
-            Parameter parameter = (Parameter)e.nextElement();
+            final Parameter parameter = (Parameter)e.nextElement();
             if (key.equals(parameter.getKey())) {
                 return parameter;
             }
         }
         return null;
     }
-    private Package getPackage(String pkgName, int interval, int downTimeInterval, int downTimeDuration) {
-        Package pkg = m_pollerConfig.getPackage(pkgName);
+    private Package getPackage(final String pkgName, final int interval, final int downTimeInterval, final int downTimeDuration) {
+    	Package pkg = m_pollerConfig.getPackage(pkgName);
         if (pkg == null) {
             pkg = new Package();
             pkg.setName(pkgName);
             
-            Filter filter = new Filter();
+            final Filter filter = new Filter();
             filter.setContent("IPADDR IPLIKE *.*.*.*");
             pkg.setFilter(filter);
             
-            Rrd rrd = new Rrd();
+            final Rrd rrd = new Rrd();
             rrd.setStep(300);
             rrd.addRra("RRA:AVERAGE:0.5:1:2016");
             rrd.addRra("RRA:AVERAGE:0.5:12:4464");
@@ -462,11 +315,13 @@ public class OpenNMSProvisioner implements Provisioner {
             pkg.setRrd(rrd);
             
         }
-        Downtime dt = new Downtime();
+
+        final Downtime dt = new Downtime();
         dt.setBegin(0);
         dt.setEnd(downTimeDuration);
         dt.setInterval(downTimeInterval);
-        Downtime dt2 = new Downtime();
+
+        final Downtime dt2 = new Downtime();
         dt2.setBegin(downTimeDuration);
         dt2.setInterval(interval);
         pkg.setDowntime(new Downtime[] { dt, dt2 });
@@ -474,22 +329,12 @@ public class OpenNMSProvisioner implements Provisioner {
     }
 
     /** {@inheritDoc} */
-    public boolean addServiceDNS(String serviceId, int retry, int timeout, int interval, int downTimeInterval, int downTimeDuration, int port, String lookup) {
-//        System.err.println("Called OpenNMSProvisioner.addServiceDNS("+
-//                           serviceId+", "+
-//                           retries+", "+
-//                           timeout+", "+
-//                           interval+", "+
-//                           downTimeInterval+", "+
-//                           downTimeDuration+", "+
-//                           port+", "+
-//                           hostname+
-//                           ")");
+    public boolean addServiceDNS(final String serviceId, final int retry, final int timeout, final int interval, final int downTimeInterval, final int downTimeDuration, final int port, final String lookup) {
         validateSchedule(retry, timeout, interval, downTimeInterval, downTimeDuration);
         checkPort(port);
         checkHostname(lookup);
 
-        Parm[] parm = new Parm[] {
+        final Parm[] parm = new Parm[] {
                 new Parm("port", port),
                 new Parm("lookup", lookup),
         };
@@ -498,22 +343,12 @@ public class OpenNMSProvisioner implements Provisioner {
     }
 
     /** {@inheritDoc} */
-    public boolean addServiceTCP(String serviceId, int retry, int timeout, int interval, int downTimeInterval, int downTimeDuration, int port, String banner) {
-//        System.err.println("Called OpenNMSProvisioner.addServiceTCP("+
-//                           serviceId+", "+
-//                           retries+", "+
-//                           timeout+", "+
-//                           interval+", "+
-//                           downTimeInterval+", "+
-//                           downTimeDuration+", "+
-//                           port+", "+
-//                           contentCheck+
-//                           ")");
+    public boolean addServiceTCP(final String serviceId, final int retry, final int timeout, final int interval, final int downTimeInterval, final int downTimeDuration, final int port, final String banner) {
         validateSchedule(retry, timeout, interval, downTimeInterval, downTimeDuration);
         checkPort(port);
         checkContentCheck(banner);
         
-        Parm[] parm = new Parm[] {
+        final Parm[] parm = new Parm[] {
                 new Parm("port", port),
                 new Parm("banner", banner),
         };
@@ -522,7 +357,7 @@ public class OpenNMSProvisioner implements Provisioner {
     }
 
     /** {@inheritDoc} */
-    public boolean addServiceHTTP(String serviceId, int retry, int timeout, int interval, int downTimeInterval, int downTimeDuration, String hostName, int port, String response, String responseText, String url, String user, String passwd, String agent) throws MalformedURLException {
+    public boolean addServiceHTTP(final String serviceId, final int retry, final int timeout, final int interval, final int downTimeInterval, final int downTimeDuration, final String hostName, final int port, final String response, final String responseText, final String url, final String user, final String passwd, final String agent) throws MalformedURLException {
         validateSchedule(retry, timeout, interval, downTimeInterval, downTimeDuration);
         checkHostname(hostName);
         checkUsername(user);
@@ -532,15 +367,12 @@ public class OpenNMSProvisioner implements Provisioner {
         checkContentCheck(responseText);
         checkUrl(url);
         
-        List<Parm> parmList = new ArrayList<Parm>();
-        
-        if ("".equals(response)) { 
-            response = null;
-        }
+        final List<Parm> parmList = new ArrayList<Parm>();
+        final String responseString = "".equals(response)? null : response;
         
         parmList.add(new Parm("port", port));
-        if (response != null) { 
-            parmList.add(new Parm("response", response));
+        if (responseString != null) { 
+            parmList.add(new Parm("response", responseString));
         }
         parmList.add(new Parm("response text", responseText));
         parmList.add(new Parm("url", url));
@@ -561,7 +393,7 @@ public class OpenNMSProvisioner implements Provisioner {
     }
 
     /** {@inheritDoc} */
-    public boolean addServiceHTTPS(String serviceId, int retry, int timeout, int interval, int downTimeInterval, int downTimeDuration, String hostName, int port, String response, String responseText, String url, String user, String passwd, String agent) throws MalformedURLException {
+    public boolean addServiceHTTPS(final String serviceId, final int retry, final int timeout, final int interval, final int downTimeInterval, final int downTimeDuration, final String hostName, final int port, final String response, final String responseText, final String url, final String user, final String passwd, final String agent) throws MalformedURLException {
         validateSchedule(retry, timeout, interval, downTimeInterval, downTimeDuration);
         checkHostname(hostName);
         checkUsername(user);
@@ -571,14 +403,12 @@ public class OpenNMSProvisioner implements Provisioner {
         checkContentCheck(responseText);
         checkUrl(url);
         
-        if ("".equals(response)) { 
-            response = null;
-        }
+        final List<Parm> parmList = new ArrayList<Parm>();
+        final String responseString = "".equals(response)? null : response;
 
-        List<Parm> parmList = new ArrayList<Parm>();
         parmList.add(new Parm("port", port));
-        if (response != null) { 
-            parmList.add(new Parm("response", response));
+        if (responseString != null) { 
+            parmList.add(new Parm("response", responseString));
         }
         parmList.add(new Parm("response text", responseText));
         parmList.add(new Parm("url", url));
@@ -599,26 +429,14 @@ public class OpenNMSProvisioner implements Provisioner {
     }
 
     /** {@inheritDoc} */
-    public boolean addServiceDatabase(String serviceId, int retry, int timeout, int interval, int downTimeInterval, int downTimeDuration, String user, String password, String driver, String url)   {
-//        System.err.println("Called OpenNMSProvisioner.addServiceDatabase("+
-//                           serviceId+", "+
-//                           retries+", "+
-//                           timeout+", "+
-//                           interval+", "+
-//                           downTimeInterval+", "+
-//                           downTimeDuration+", "+
-//                           username+", "+
-//                           password+", "+
-//                           driver+", "+
-//                           url+
-//                           ")");
+    public boolean addServiceDatabase(final String serviceId, final int retry, final int timeout, final int interval, final int downTimeInterval, final int downTimeDuration, final String user, final String password, final String driver, final String url)   {
         validateSchedule(retry, timeout, interval, downTimeInterval, downTimeDuration);
         checkUsername(user);
         checkPassword(password);
         checkDriver(driver);
         checkUrl(url);
         
-        Parm[] parm = new Parm[] {
+        final Parm[] parm = new Parm[] {
                 new Parm("driver", driver),
                 new Parm("url", url),
                 new Parm("user", user),
@@ -629,7 +447,7 @@ public class OpenNMSProvisioner implements Provisioner {
     }
     
     /** {@inheritDoc} */
-    public Map<String, Object> getServiceConfiguration(String pkgName, String serviceId) {
+    public Map<String, Object> getServiceConfiguration(final String pkgName, final String serviceId) {
         if (pkgName == null) {
             throw new NullPointerException("pkgName is null");
         }
@@ -637,24 +455,24 @@ public class OpenNMSProvisioner implements Provisioner {
             throw new NullPointerException("serviceId is null");
         }
 
-        Package pkg = m_pollerConfig.getPackage(pkgName);
+        final Package pkg = m_pollerConfig.getPackage(pkgName);
         if (pkg == null) {
             throw new IllegalArgumentException(pkgName+" is not a valid poller package name");
         }
         
-        Service svc = m_pollerConfig.getServiceInPackage(serviceId, pkg);
+        final Service svc = m_pollerConfig.getServiceInPackage(serviceId, pkg);
         if (svc == null) {
             throw new IllegalArgumentException("Could not find service "+serviceId+" in package "+pkgName);
         }
         
-        Map<String, Object> m = new HashMap<String, Object>();
+        final Map<String, Object> m = new HashMap<String, Object>();
         m.put("serviceid", serviceId);
         m.put("interval", new Integer((int)svc.getInterval()));
         
         for(int i = 0; i < svc.getParameterCount(); i++) {
-            Parameter param = svc.getParameter(i);
+        	final Parameter param = svc.getParameter(i);
             String key = param.getKey();
-            String valStr = param.getValue();
+            final String valStr = param.getValue();
             Object val = valStr;
             if ("retry".equals(key)) {
                 key = "retries";
@@ -680,8 +498,8 @@ public class OpenNMSProvisioner implements Provisioner {
                 if (colon < 0) {
                     continue;
                 }
-                String user = valStr.substring(0, colon);
-                String passwd = valStr.substring(colon+1);
+                final String user = valStr.substring(0, colon);
+                final String passwd = valStr.substring(colon+1);
                 m.put("user", user);
                 m.put("password", passwd);
                 continue;
@@ -691,8 +509,8 @@ public class OpenNMSProvisioner implements Provisioner {
         }
         
         for(int i = 0; i < pkg.getDowntimeCount(); i++) {
-            Downtime dt = pkg.getDowntime(i);
-            String suffix = (i == 0 ? "" : ""+i);
+            final Downtime dt = pkg.getDowntime(i);
+            final String suffix = (i == 0 ? "" : ""+i);
             if ((dt.hasEnd()) || (dt.getDelete() != null && !"false".equals(dt.getDelete()))) {
                 m.put("downtime_interval"+suffix, new Integer((int)dt.getInterval()));
                 int duration = (!dt.hasEnd() ? Integer.MAX_VALUE : (int)(dt.getEnd() - dt.getBegin()));
@@ -708,7 +526,7 @@ public class OpenNMSProvisioner implements Provisioner {
      *
      * @param capsdConfig a {@link org.opennms.netmgt.config.CapsdConfig} object.
      */
-    public void setCapsdConfig(CapsdConfig capsdConfig) {
+    public void setCapsdConfig(final CapsdConfig capsdConfig) {
         m_capsdConfig = capsdConfig;
     }
     /**
@@ -716,7 +534,7 @@ public class OpenNMSProvisioner implements Provisioner {
      *
      * @param pollerConfig a {@link org.opennms.netmgt.config.PollerConfig} object.
      */
-    public void setPollerConfig(PollerConfig pollerConfig) {
+    public void setPollerConfig(final PollerConfig pollerConfig) {
         m_pollerConfig = pollerConfig;
     }
     /**
@@ -724,7 +542,7 @@ public class OpenNMSProvisioner implements Provisioner {
      *
      * @param eventManager a {@link org.opennms.netmgt.eventd.EventIpcManager} object.
      */
-    public void setEventManager(EventIpcManager eventManager) {
+    public void setEventManager(final EventIpcManager eventManager) {
         m_eventManager = eventManager;
     }
     
@@ -737,7 +555,7 @@ public class OpenNMSProvisioner implements Provisioner {
      *
      * @param capsdDbSyncer a {@link org.opennms.netmgt.capsd.CapsdDbSyncer} object.
      */
-    public void setCapsdDbSyncer(CapsdDbSyncer capsdDbSyncer) {
+    public void setCapsdDbSyncer(final CapsdDbSyncer capsdDbSyncer) {
         m_capsdDbSyncer = capsdDbSyncer;
     }
 

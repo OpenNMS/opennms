@@ -129,6 +129,36 @@ public class JRobinRrdStrategyTest {
     }
     
     @Test
+    public void testDefWithEscapedCharacters() throws Exception {
+        long end = System.currentTimeMillis() / 1000;
+        long start = end - (24 * 60 * 60);
+        final String[] command = new String[] {
+                "--start=" + (start - 300),
+                "--end=" + (end + 300),
+                "DEF:baz=response/fe80\\:0000\\:0000\\:0000\\:0000\\:0000\\:0000\\:0000\\%5/dns.jrb:bar:AVERAGE",
+                "VDEF:avg=baz,AVERAGE",
+                "VDEF:min=baz,MIN",
+                "VDEF:max=baz,MAX",
+                "VDEF:tot=baz,TOTAL",
+                "VDEF:nfp=baz,95,PERCENT",
+                "PRINT:avg:AVERAGE:\"%le\"",
+                "PRINT:min:AVERAGE:\"%le\"",
+                "PRINT:max:AVERAGE:\"%le\"",
+                "PRINT:tot:AVERAGE:\"%le\"",
+                "PRINT:nfp:AVERAGE:\"%le\""
+        };
+
+        Throwable t = null;
+        try {
+        	((JRobinRrdStrategy)m_strategy).createGraphDef(new File(""), command);
+        } catch (final org.jrobin.core.RrdException e) {
+        	t = e;
+        }
+        assertNotNull(t);
+    	assertTrue(t.getMessage().contains("Could not open /response/fe80:0000:0000:0000:0000:0000:0000:0000%5/dns.jrb"));
+    }
+    
+    @Test
     public void testCreate() throws Exception {
         File rrdFile = createRrdFile();
         

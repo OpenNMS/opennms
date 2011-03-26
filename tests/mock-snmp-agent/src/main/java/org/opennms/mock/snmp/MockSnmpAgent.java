@@ -51,6 +51,7 @@ import org.apache.commons.cli.CommandLineParser;
 import org.apache.commons.cli.Options;
 import org.apache.commons.cli.ParseException;
 import org.apache.commons.cli.PosixParser;
+import org.opennms.core.utils.InetAddressUtils;
 import org.opennms.core.utils.LogUtils;
 import org.snmp4j.MessageDispatcherImpl;
 import org.snmp4j.TransportMapping;
@@ -208,7 +209,7 @@ public class MockSnmpAgent extends BaseAgent implements Runnable {
             System.err.println("Could not parse configuration.");
             System.exit(1);
         }
-        String listenSpec = agentConfig.getListenAddr().getHostAddress() + "/" + agentConfig.getListenPort();
+        String listenSpec = InetAddressUtils.str(agentConfig.getListenAddr()) + "/" + agentConfig.getListenPort();
     	
        	try {
        	    MockSnmpAgent.createAgentAndRun(agentConfig.getMoFile(), listenSpec);

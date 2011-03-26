@@ -33,7 +33,6 @@ package org.opennms.netmgt.provision.service;
 
 
 import java.net.InetAddress;
-import java.net.UnknownHostException;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Collections;
@@ -47,6 +46,7 @@ import java.util.Set;
 
 import org.joda.time.DateTime;
 import org.joda.time.Duration;
+import org.opennms.core.utils.InetAddressUtils;
 import org.opennms.core.utils.LogUtils;
 import org.opennms.core.utils.ThreadCategory;
 import org.opennms.netmgt.dao.CategoryDao;
@@ -61,12 +61,12 @@ import org.opennms.netmgt.model.EntityVisitor;
 import org.opennms.netmgt.model.OnmsCategory;
 import org.opennms.netmgt.model.OnmsDistPoller;
 import org.opennms.netmgt.model.OnmsIpInterface;
+import org.opennms.netmgt.model.OnmsIpInterface.PrimaryType;
 import org.opennms.netmgt.model.OnmsMonitoredService;
 import org.opennms.netmgt.model.OnmsNode;
 import org.opennms.netmgt.model.OnmsServiceType;
 import org.opennms.netmgt.model.OnmsSnmpInterface;
 import org.opennms.netmgt.model.PathElement;
-import org.opennms.netmgt.model.OnmsIpInterface.PrimaryType;
 import org.opennms.netmgt.model.events.AddEventVisitor;
 import org.opennms.netmgt.model.events.DeleteEventVisitor;
 import org.opennms.netmgt.model.events.EventForwarder;
@@ -241,8 +241,8 @@ public class DefaultProvisionService implements ProvisionService {
             scannedIface.setSnmpInterface(updateSnmpInterfaceAttributes(nodeId, scannedIface.getSnmpInterface()));
         }
         
-        OnmsIpInterface dbIface = m_ipInterfaceDao.findByNodeIdAndIpAddress(nodeId, scannedIface.getIpAddressAsString());
-        debug("Updating interface attributes for %s for node %d with ip %s", dbIface, nodeId, scannedIface.getIpAddressAsString());
+        OnmsIpInterface dbIface = m_ipInterfaceDao.findByNodeIdAndIpAddress(nodeId, InetAddressUtils.str(scannedIface.getIpAddress()));
+        debug("Updating interface attributes for %s for node %d with ip %s", dbIface, nodeId, InetAddressUtils.str(scannedIface.getIpAddress()));
         if (dbIface != null) {
             if(dbIface.isManaged() && !scannedIface.isManaged()){
                 Set<OnmsMonitoredService> monSvcs = dbIface.getMonitoredServices();
@@ -538,7 +538,7 @@ public class DefaultProvisionService implements ProvisionService {
     	}
     	
         info("Setting criticalInterface of node: %s to: %s", node, critIface);
-    	node.setPathElement(critIface == null ? null : new PathElement(critIface.getIpAddressAsString(), "ICMP"));
+    	node.setPathElement(critIface == null ? null : new PathElement(InetAddressUtils.str(critIface.getIpAddress()), "ICMP"));
 
     }
     
@@ -909,11 +909,7 @@ public class DefaultProvisionService implements ProvisionService {
     }
     
     private String getHostnameForIp(String address) {
-        try {
-            return InetAddress.getByName(address).getCanonicalHostName();
-        } catch (UnknownHostException e) {
-            return null;
-        }
+    	return InetAddressUtils.addr(address).getCanonicalHostName();
     }
 
     /** {@inheritDoc} */

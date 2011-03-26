@@ -46,6 +46,7 @@ import java.util.Map;
 import org.apache.log4j.Level;
 import org.exolab.castor.xml.MarshalException;
 import org.exolab.castor.xml.ValidationException;
+import org.opennms.core.utils.InetAddressUtils;
 import org.opennms.core.utils.ParameterMap;
 import org.opennms.netmgt.config.SnmpPeerFactory;
 import org.opennms.netmgt.model.PollStatus;
@@ -71,9 +72,6 @@ import antlr.StringUtils;
  *
  * @author <A HREF="mailto:tarus@opennms.org">Tarus Balog </A>
  * @author <A HREF="http://www.opennms.org/">OpenNMS </A>
- * @author <A HREF="mailto:tarus@opennms.org">Tarus Balog </A>
- * @author <A HREF="http://www.opennms.org/">OpenNMS </A>
- * @version $Id: $
  */
 
 //this does snmp and there relies on the snmp configuration so it is not distributable
@@ -172,7 +170,8 @@ public class HostResourceSwRunMonitor extends SnmpMonitorStrategy {
         //
         SnmpAgentConfig agentConfig = SnmpPeerFactory.getInstance().getAgentConfig(ipaddr);
         if (agentConfig == null) throw new RuntimeException("SnmpAgentConfig object not available for interface " + ipaddr);
-        log().debug("poll: setting SNMP peer attribute for interface " + ipaddr.getHostAddress());
+        final String hostAddress = InetAddressUtils.str(ipaddr);
+		log().debug("poll: setting SNMP peer attribute for interface " + hostAddress);
 
         // Get configuration parameters
         //
@@ -223,7 +222,7 @@ public class HostResourceSwRunMonitor extends SnmpMonitorStrategy {
 
                 // See if the service name is in the list of running services
                 if (stripExtraQuotes(nameResults.get(nameInstance).toString()).equalsIgnoreCase(serviceName)) {
-                    log().debug("poll: HostResourceSwRunMonitor poll succeeded, addr=" + ipaddr.getHostAddress() + " service name=" + serviceName + " value=" + nameResults.get(nameInstance));
+                    log().debug("poll: HostResourceSwRunMonitor poll succeeded, addr=" + hostAddress + " service name=" + serviceName + " value=" + nameResults.get(nameInstance));
                     // Using the instance of the service, get its status and see if it meets the criteria
                     if (meetsCriteria(statusResults.get(nameInstance), "<=", runLevel)) {
                         status = PollStatus.available();
@@ -233,7 +232,7 @@ public class HostResourceSwRunMonitor extends SnmpMonitorStrategy {
                         }
                     // if we get here, that means the meetsCriteria test failed. 
                     } else {
-                        status = logDown(Level.DEBUG, "HostResourceSwRunMonitor poll failed, addr=" + ipaddr.getHostAddress() + " service name= " + serviceName + " status= " + statusResults.get(nameInstance) );
+                        status = logDown(Level.DEBUG, "HostResourceSwRunMonitor poll failed, addr=" + hostAddress + " service name= " + serviceName + " status= " + statusResults.get(nameInstance) );
                         return status;
                     }
                 }
@@ -244,7 +243,7 @@ public class HostResourceSwRunMonitor extends SnmpMonitorStrategy {
         } catch (IllegalArgumentException e) {
             status = logDown(Level.ERROR, "Invalid SNMP Criteria: " + e.getMessage());
         } catch (Throwable t) {
-            status = logDown(Level.WARN, "Unexpected exception during SNMP poll of interface " + ipaddr.getHostAddress(), t);
+            status = logDown(Level.WARN, "Unexpected exception during SNMP poll of interface " + hostAddress, t);
         }
 
         // If matchAll is set to true, then the status is set to available above with a single match.

@@ -195,11 +195,9 @@ public class CollectdConfig {
      * @return true if Collectd config contains a package which includes the
      *         specified interface and has the specified service enabled.
      */
-    public boolean isServiceCollectionEnabled(String ipAddr, String svcName) {
-        boolean result = false;
-
-        for (Iterator<CollectdPackage> it = getPackages().iterator(); it.hasNext();) {
-            CollectdPackage wpkg = it.next();
+    public boolean isServiceCollectionEnabled(final String ipAddr, final String svcName) {
+        for (final Iterator<CollectdPackage> it = getPackages().iterator(); it.hasNext();) {
+        	final CollectdPackage wpkg = it.next();
 
             // Does the package include the interface?
             //
@@ -209,12 +207,12 @@ public class CollectdConfig {
                 //
                 if (wpkg.serviceInPackageAndEnabled(svcName)) {
                     // Thats all we need to know...
-                    result = true;
+                	return true;
                 }
             }
         }
 
-        return result;
+        return false;
     }
 
 }
