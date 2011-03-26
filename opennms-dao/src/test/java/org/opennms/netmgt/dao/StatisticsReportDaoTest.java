@@ -37,9 +37,22 @@ package org.opennms.netmgt.dao;
 
 import java.util.Date;
 
+import org.junit.Test;
+import org.junit.runner.RunWith;
+import org.opennms.netmgt.dao.db.JUnitTemporaryDatabase;
+import org.opennms.netmgt.dao.db.OpenNMSConfigurationExecutionListener;
+import org.opennms.netmgt.dao.db.TemporaryDatabaseExecutionListener;
 import org.opennms.netmgt.model.ResourceReference;
 import org.opennms.netmgt.model.StatisticsReport;
 import org.opennms.netmgt.model.StatisticsReportData;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.test.context.ContextConfiguration;
+import org.springframework.test.context.TestExecutionListeners;
+import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
+import org.springframework.test.context.support.DependencyInjectionTestExecutionListener;
+import org.springframework.test.context.support.DirtiesContextTestExecutionListener;
+import org.springframework.test.context.transaction.TransactionalTestExecutionListener;
+import org.springframework.transaction.annotation.Transactional;
 
 
 /**
@@ -48,11 +61,30 @@ import org.opennms.netmgt.model.StatisticsReportData;
  * @author <a href="mailto:dj@opennms.org">DJ Gregor</a>
  * @see StatisticsReportDao
  */
-public class StatisticsReportDaoTest extends AbstractTransactionalDaoTestCase {
+@RunWith(SpringJUnit4ClassRunner.class)
+@TestExecutionListeners({
+    OpenNMSConfigurationExecutionListener.class,
+    TemporaryDatabaseExecutionListener.class,
+    DependencyInjectionTestExecutionListener.class,
+    DirtiesContextTestExecutionListener.class,
+    TransactionalTestExecutionListener.class
+})
+@ContextConfiguration(locations={
+        "classpath:/META-INF/opennms/applicationContext-dao.xml",
+        "classpath:/META-INF/opennms/applicationContext-databasePopulator.xml",
+        "classpath:/META-INF/opennms/applicationContext-setupIpLike-enabled.xml",
+        "classpath*:/META-INF/opennms/component-dao.xml"
+})
+@JUnitTemporaryDatabase()
+public class StatisticsReportDaoTest {
+	@Autowired
     private StatisticsReportDao m_statisticsReportDao;
-    private StatisticsReportDataDao m_statisticsReportDataDao;
+	
+	@Autowired
     private ResourceReferenceDao m_resourceReferenceDao;
-    
+
+	@Test
+	@Transactional
     public void testSave() throws Exception {
         StatisticsReport report = new StatisticsReport();
         report.setName("A Mighty Fine Report");
@@ -63,7 +95,7 @@ public class StatisticsReportDaoTest extends AbstractTransactionalDaoTestCase {
         report.setJobCompletedDate(new Date());
         report.setPurgeDate(new Date());
         
-        {
+		{
             ResourceReference resource = new ResourceReference();
             resource.setResourceId("foo");
             m_resourceReferenceDao.save(resource);
@@ -90,36 +122,5 @@ public class StatisticsReportDaoTest extends AbstractTransactionalDaoTestCase {
         }
         
         m_statisticsReportDao.save(report);
-        
-        setComplete();
-        endTransaction();
-    }
-    
-    public StatisticsReportDao getStatisticsReportDao() {
-        return m_statisticsReportDao;
-    }
-
-    public void setStatisticsReportDao(StatisticsReportDao statisticsReportDao) {
-        m_statisticsReportDao = statisticsReportDao;
-    }
-
-
-    public StatisticsReportDataDao getStatisticsReportDataDao() {
-        return m_statisticsReportDataDao;
-    }
-
-
-    public void setStatisticsReportDataDao(StatisticsReportDataDao statisticsReportDataDao) {
-        m_statisticsReportDataDao = statisticsReportDataDao;
-    }
-
-
-    public ResourceReferenceDao getResourceReferenceDao() {
-        return m_resourceReferenceDao;
-    }
-
-
-    public void setResourceReferenceDao(ResourceReferenceDao resourceReferenceDao) {
-        m_resourceReferenceDao = resourceReferenceDao;
     }
 }

@@ -35,24 +35,55 @@
 //
 package org.opennms.netmgt.dao;
 
-import org.opennms.netmgt.model.OnmsServiceType;
+import static org.junit.Assert.assertEquals;
 
-public class ServiceTypeDaoTest extends AbstractTransactionalDaoTestCase {
-    @Override
-    public void onSetUpInTransactionIfEnabled() {
-        setPopulate(false);
-        super.onSetUpInTransactionIfEnabled();
-    }
-    
+import org.junit.Test;
+import org.junit.runner.RunWith;
+import org.opennms.netmgt.dao.db.JUnitTemporaryDatabase;
+import org.opennms.netmgt.dao.db.OpenNMSConfigurationExecutionListener;
+import org.opennms.netmgt.dao.db.TemporaryDatabaseExecutionListener;
+import org.opennms.netmgt.model.OnmsServiceType;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.test.context.ContextConfiguration;
+import org.springframework.test.context.TestExecutionListeners;
+import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
+import org.springframework.test.context.support.DependencyInjectionTestExecutionListener;
+import org.springframework.test.context.support.DirtiesContextTestExecutionListener;
+import org.springframework.test.context.transaction.TransactionalTestExecutionListener;
+import org.springframework.transaction.annotation.Transactional;
+
+@RunWith(SpringJUnit4ClassRunner.class)
+@TestExecutionListeners({
+    OpenNMSConfigurationExecutionListener.class,
+    TemporaryDatabaseExecutionListener.class,
+    DependencyInjectionTestExecutionListener.class,
+    DirtiesContextTestExecutionListener.class,
+    TransactionalTestExecutionListener.class
+})
+@ContextConfiguration(locations={
+        "classpath:/META-INF/opennms/applicationContext-dao.xml",
+        "classpath:/META-INF/opennms/applicationContext-databasePopulator.xml",
+        "classpath:/META-INF/opennms/applicationContext-setupIpLike-enabled.xml",
+        "classpath*:/META-INF/opennms/component-dao.xml"
+})
+@JUnitTemporaryDatabase()
+public class ServiceTypeDaoTest {
+	@Autowired
+	private ServiceTypeDao m_serviceTypeDao;
+
+	@Test
+	@Transactional
     public void testLazyLoad() {
     	OnmsServiceType t = new OnmsServiceType("ICMP");
-    	getServiceTypeDao().save(t);
+    	m_serviceTypeDao.save(t);
     	
     	
-    	OnmsServiceType type = getServiceTypeDao().get(1);
+    	OnmsServiceType type = m_serviceTypeDao.get(1);
     	assertEquals("ICMP", type.getName());
     }
-    
+
+	@Test
+	@Transactional
     public void testSave() {
         String name = "ICMP";
         tweakSvcType(name);
@@ -62,14 +93,14 @@ public class ServiceTypeDaoTest extends AbstractTransactionalDaoTestCase {
     }
 
     private void tweakSvcType(String name) {
-        OnmsServiceType svcType = getServiceTypeDao().findByName(name);
+        OnmsServiceType svcType = m_serviceTypeDao.findByName(name);
         if (svcType == null)
-            getServiceTypeDao().save(new OnmsServiceType(name));
+            m_serviceTypeDao.save(new OnmsServiceType(name));
         else {
             svcType.setName(svcType.getName()+'-'+svcType.getId());
-            getServiceTypeDao().update(svcType);
+            m_serviceTypeDao.update(svcType);
         }
-        getServiceTypeDao().clear();
+        m_serviceTypeDao.clear();
     }
 
 }

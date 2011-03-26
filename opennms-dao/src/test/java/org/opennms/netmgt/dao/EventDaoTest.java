@@ -35,19 +35,69 @@
 //
 package org.opennms.netmgt.dao;
 
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertNotNull;
+
 import java.util.Date;
 
+import org.junit.Before;
+import org.junit.Test;
+import org.junit.runner.RunWith;
+import org.opennms.netmgt.dao.db.JUnitTemporaryDatabase;
+import org.opennms.netmgt.dao.db.OpenNMSConfigurationExecutionListener;
+import org.opennms.netmgt.dao.db.TemporaryDatabaseExecutionListener;
 import org.opennms.netmgt.model.OnmsAlarm;
 import org.opennms.netmgt.model.OnmsEvent;
 import org.opennms.netmgt.model.OnmsIpInterface;
 import org.opennms.netmgt.model.OnmsMonitoredService;
 import org.opennms.netmgt.model.OnmsNode;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.test.context.ContextConfiguration;
+import org.springframework.test.context.TestExecutionListeners;
+import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
+import org.springframework.test.context.support.DependencyInjectionTestExecutionListener;
+import org.springframework.test.context.support.DirtiesContextTestExecutionListener;
+import org.springframework.test.context.transaction.TransactionalTestExecutionListener;
+import org.springframework.transaction.annotation.Transactional;
 
-public class EventDaoTest extends AbstractTransactionalDaoTestCase {
+@RunWith(SpringJUnit4ClassRunner.class)
+@TestExecutionListeners({
+    OpenNMSConfigurationExecutionListener.class,
+    TemporaryDatabaseExecutionListener.class,
+    DependencyInjectionTestExecutionListener.class,
+    DirtiesContextTestExecutionListener.class,
+    TransactionalTestExecutionListener.class
+})
+@ContextConfiguration(locations={
+        "classpath:/META-INF/opennms/applicationContext-dao.xml",
+        "classpath:/META-INF/opennms/applicationContext-databasePopulator.xml",
+        "classpath:/META-INF/opennms/applicationContext-setupIpLike-enabled.xml",
+        "classpath*:/META-INF/opennms/component-dao.xml"
+})
+@JUnitTemporaryDatabase()
+public class EventDaoTest {
+    @Autowired
+	private DistPollerDao m_distPollerDao;
     
+    @Autowired
+	private EventDao m_eventDao;
+
+    @Autowired
+	private NodeDao m_nodeDao;
+
+	@Autowired
+	private DatabasePopulator m_databasePopulator;
+	
+	@Before
+	public void setUp() {
+		m_databasePopulator.populateDatabase();
+	}
+
+	@Test
+	@Transactional
     public void testSave() {
         OnmsEvent event = new OnmsEvent();
-        event.setDistPoller(getDistPollerDao().load("localhost"));
+        event.setDistPoller(m_distPollerDao.load("localhost"));
         event.setEventCreateTime(new Date());
         event.setEventDescr("event dao test");
         event.setEventHost("localhost");
@@ -59,7 +109,7 @@ public class EventDaoTest extends AbstractTransactionalDaoTestCase {
         event.setEventSource("EventDaoTest");
         event.setEventTime(new Date());
         event.setEventUei("uei://org/opennms/test/EventDaoTest");
-        OnmsNode node = (OnmsNode) getNodeDao().findAll().iterator().next();
+        OnmsNode node = (OnmsNode) m_nodeDao.findAll().iterator().next();
         OnmsIpInterface iface = (OnmsIpInterface)node.getIpInterfaces().iterator().next();
         OnmsMonitoredService service = (OnmsMonitoredService)iface.getMonitoredServices().iterator().next();
         event.setNode(node);
@@ -67,9 +117,9 @@ public class EventDaoTest extends AbstractTransactionalDaoTestCase {
         OnmsAlarm alarm = new OnmsAlarm();
 	    event.setAlarm(alarm);
         event.setIpAddr(iface.getIpAddress());
-        getEventDao().save(event);
+        m_eventDao.save(event);
        
-        OnmsEvent newEvent = getEventDao().load(event.getId());
+        OnmsEvent newEvent = m_eventDao.load(event.getId());
         assertEquals("uei://org/opennms/test/EventDaoTest", newEvent.getEventUei());
         assertNotNull(newEvent.getServiceType());
         assertEquals(service.getNodeId(), newEvent.getNode().getId());

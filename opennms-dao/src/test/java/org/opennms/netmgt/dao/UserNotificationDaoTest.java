@@ -35,8 +35,17 @@
 //
 package org.opennms.netmgt.dao;
 
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertNotNull;
+
 import java.util.Date;
 
+import org.junit.Before;
+import org.junit.Test;
+import org.junit.runner.RunWith;
+import org.opennms.netmgt.dao.db.JUnitTemporaryDatabase;
+import org.opennms.netmgt.dao.db.OpenNMSConfigurationExecutionListener;
+import org.opennms.netmgt.dao.db.TemporaryDatabaseExecutionListener;
 import org.opennms.netmgt.model.OnmsAlarm;
 import org.opennms.netmgt.model.OnmsEvent;
 import org.opennms.netmgt.model.OnmsIpInterface;
@@ -44,11 +53,60 @@ import org.opennms.netmgt.model.OnmsMonitoredService;
 import org.opennms.netmgt.model.OnmsNode;
 import org.opennms.netmgt.model.OnmsNotification;
 import org.opennms.netmgt.model.OnmsUserNotification;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.test.context.ContextConfiguration;
+import org.springframework.test.context.TestExecutionListeners;
+import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
+import org.springframework.test.context.support.DependencyInjectionTestExecutionListener;
+import org.springframework.test.context.support.DirtiesContextTestExecutionListener;
+import org.springframework.test.context.transaction.TransactionalTestExecutionListener;
+import org.springframework.transaction.annotation.Transactional;
 
-public class UserNotificationDaoTest extends AbstractTransactionalDaoTestCase {
+@RunWith(SpringJUnit4ClassRunner.class)
+@TestExecutionListeners({
+    OpenNMSConfigurationExecutionListener.class,
+    TemporaryDatabaseExecutionListener.class,
+    DependencyInjectionTestExecutionListener.class,
+    DirtiesContextTestExecutionListener.class,
+    TransactionalTestExecutionListener.class
+})
+@ContextConfiguration(locations={
+        "classpath:/META-INF/opennms/applicationContext-dao.xml",
+        "classpath:/META-INF/opennms/applicationContext-databasePopulator.xml",
+        "classpath:/META-INF/opennms/applicationContext-setupIpLike-enabled.xml",
+        "classpath*:/META-INF/opennms/component-dao.xml"
+})
+@JUnitTemporaryDatabase()
+public class UserNotificationDaoTest {
+	
+	@Autowired
+	private DistPollerDao m_distPollerDao;
+	
+	@Autowired
+	private NodeDao m_nodeDao;
+
+	@Autowired
+	private UserNotificationDao m_userNotificationDao;
+
+	@Autowired
+	private NotificationDao m_notificationDao;
+
+	@Autowired
+	private EventDao m_eventDao;
+
+	@Autowired
+	private DatabasePopulator m_databasePopulator;
+	
+	@Before
+	public void setUp() {
+		m_databasePopulator.populateDatabase();
+	}
+
+	@Test
+	@Transactional
     public void testSaveUserNotification() {
         OnmsEvent event = new OnmsEvent();
-        event.setDistPoller(getDistPollerDao().load("localhost"));
+        event.setDistPoller(m_distPollerDao.load("localhost"));
         event.setEventCreateTime(new Date());
         event.setEventDescr("event dao test");
         event.setEventHost("localhost");
@@ -63,23 +121,23 @@ public class UserNotificationDaoTest extends AbstractTransactionalDaoTestCase {
         OnmsAlarm alarm = new OnmsAlarm();
         event.setAlarm(alarm);
 
-        OnmsNode node = (OnmsNode) getNodeDao().findAll().iterator().next();
+        OnmsNode node = (OnmsNode) m_nodeDao.findAll().iterator().next();
         OnmsIpInterface iface = (OnmsIpInterface)node.getIpInterfaces().iterator().next();
         OnmsMonitoredService service = (OnmsMonitoredService)iface.getMonitoredServices().iterator().next();
         event.setNode(node);
 	    event.setServiceType(service.getServiceType());
         event.setIpAddr(iface.getIpAddress());
-        getEventDao().save(event);
-        OnmsEvent newEvent = getEventDao().load(event.getId());
+        m_eventDao.save(event);
+        OnmsEvent newEvent = m_eventDao.load(event.getId());
         assertEquals("uei://org/opennms/test/UserNotificationDaoTest", newEvent.getEventUei());
         
         
         OnmsNotification notification = new OnmsNotification();
         notification.setEvent(newEvent);
         notification.setTextMsg("Tests are fun!");
-        getNotificationDao().save(notification);
+        m_notificationDao.save(notification);
        
-        OnmsNotification newNotification = getNotificationDao().load(notification.getNotifyId());
+        OnmsNotification newNotification = m_notificationDao.load(notification.getNotifyId());
         assertEquals("uei://org/opennms/test/UserNotificationDaoTest", newNotification.getEvent().getEventUei());
         
         OnmsUserNotification userNotif = new OnmsUserNotification();
@@ -88,12 +146,9 @@ public class UserNotificationDaoTest extends AbstractTransactionalDaoTestCase {
         userNotif.setUserId("OpenNMS User");
         userNotif.setMedia("E-mail");
         userNotif.setContactInfo("test@opennms.org");
-        getUserNotificationDao().save(userNotif);
+        m_userNotificationDao.save(userNotif);
         
         assertNotNull(userNotif.getNotification());
         assertEquals(userNotif.getUserId(), "OpenNMS User");
-//        assertNotNull(newEvent.getServiceType());
-//        assertEquals(service.getNodeId(), newEvent.getNode().getId());
-//        assertEquals(event.getIpAddr(), newEvent.getIpAddr());
     }
 }

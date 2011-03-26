@@ -35,13 +35,49 @@
  */
 package org.opennms.netmgt.dao.hibernate;
 
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertNotNull;
+import static org.junit.Assert.assertNull;
+
 import java.util.Date;
 
-import org.opennms.netmgt.dao.AbstractTransactionalDaoTestCase;
+import org.junit.Test;
+import org.junit.runner.RunWith;
+import org.opennms.netmgt.dao.ReportCatalogDao;
+import org.opennms.netmgt.dao.db.JUnitTemporaryDatabase;
+import org.opennms.netmgt.dao.db.OpenNMSConfigurationExecutionListener;
+import org.opennms.netmgt.dao.db.TemporaryDatabaseExecutionListener;
 import org.opennms.netmgt.model.ReportCatalogEntry;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.test.context.ContextConfiguration;
+import org.springframework.test.context.TestExecutionListeners;
+import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
+import org.springframework.test.context.support.DependencyInjectionTestExecutionListener;
+import org.springframework.test.context.support.DirtiesContextTestExecutionListener;
+import org.springframework.test.context.transaction.TransactionalTestExecutionListener;
+import org.springframework.transaction.annotation.Transactional;
 
-public class ReportCatalogDaoHibernateTest extends AbstractTransactionalDaoTestCase {
-    
+@RunWith(SpringJUnit4ClassRunner.class)
+@TestExecutionListeners({
+    OpenNMSConfigurationExecutionListener.class,
+    TemporaryDatabaseExecutionListener.class,
+    DependencyInjectionTestExecutionListener.class,
+    DirtiesContextTestExecutionListener.class,
+    TransactionalTestExecutionListener.class
+})
+@ContextConfiguration(locations={
+        "classpath:/META-INF/opennms/applicationContext-dao.xml",
+        "classpath:/META-INF/opennms/applicationContext-databasePopulator.xml",
+        "classpath:/META-INF/opennms/applicationContext-setupIpLike-enabled.xml",
+        "classpath*:/META-INF/opennms/component-dao.xml"
+})
+@JUnitTemporaryDatabase()
+public class ReportCatalogDaoHibernateTest {
+    @Autowired
+	private ReportCatalogDao m_reportCatalogDao;
+
+	@Test
+	@Transactional
     public void testSave() {
         
         Date date = new Date();
@@ -50,11 +86,11 @@ public class ReportCatalogDaoHibernateTest extends AbstractTransactionalDaoTestC
         catalogEntry.setLocation("location_1");
         catalogEntry.setTitle("title_1");
         catalogEntry.setDate(date);
-        getReportCatalogDao().save(catalogEntry);
+        m_reportCatalogDao.save(catalogEntry);
         
         Integer id = catalogEntry.getId();
         
-        ReportCatalogEntry retrievedEntry = getReportCatalogDao().get(id);
+        ReportCatalogEntry retrievedEntry = m_reportCatalogDao.get(id);
         
         assertEquals(catalogEntry.getReportId(),retrievedEntry.getReportId());
         assertEquals(catalogEntry.getTitle(), retrievedEntry.getTitle());
@@ -64,6 +100,8 @@ public class ReportCatalogDaoHibernateTest extends AbstractTransactionalDaoTestC
         
     }
     
+	@Test
+	@Transactional
     public void testDelete() {
         
         Date date = new Date();
@@ -72,12 +110,12 @@ public class ReportCatalogDaoHibernateTest extends AbstractTransactionalDaoTestC
         catalogEntry.setLocation("location_2");
         catalogEntry.setTitle("title_2");
         catalogEntry.setDate(date);
-        getReportCatalogDao().save(catalogEntry);
+        m_reportCatalogDao.save(catalogEntry);
         
         Integer id = catalogEntry.getId();
-        assertNotNull(getReportCatalogDao().get(id));
-        getReportCatalogDao().delete(id);
-        assertNull(getReportCatalogDao().get(id));
+        assertNotNull(m_reportCatalogDao.get(id));
+        m_reportCatalogDao.delete(id);
+        assertNull(m_reportCatalogDao.get(id));
         
     }
 

@@ -35,10 +35,21 @@
 //
 package org.opennms.netmgt.dao.hibernate;
 
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertFalse;
+import static org.junit.Assert.assertNotNull;
+import static org.junit.Assert.assertTrue;
+
 import java.util.Collection;
 
 import org.hibernate.SessionFactory;
-import org.opennms.netmgt.dao.AbstractTransactionalDaoTestCase;
+import org.junit.Before;
+import org.junit.Test;
+import org.junit.runner.RunWith;
+import org.opennms.netmgt.dao.DatabasePopulator;
+import org.opennms.netmgt.dao.db.JUnitTemporaryDatabase;
+import org.opennms.netmgt.dao.db.OpenNMSConfigurationExecutionListener;
+import org.opennms.netmgt.dao.db.TemporaryDatabaseExecutionListener;
 import org.opennms.netmgt.model.OnmsAlarm;
 import org.opennms.netmgt.model.OnmsAssetRecord;
 import org.opennms.netmgt.model.OnmsCategory;
@@ -52,18 +63,43 @@ import org.opennms.netmgt.model.OnmsOutage;
 import org.opennms.netmgt.model.OnmsServiceType;
 import org.opennms.netmgt.model.OnmsSnmpInterface;
 import org.opennms.netmgt.model.OnmsUserNotification;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.orm.hibernate3.HibernateTemplate;
+import org.springframework.test.context.ContextConfiguration;
+import org.springframework.test.context.TestExecutionListeners;
+import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
+import org.springframework.test.context.support.DependencyInjectionTestExecutionListener;
+import org.springframework.test.context.support.DirtiesContextTestExecutionListener;
+import org.springframework.test.context.transaction.TransactionalTestExecutionListener;
+import org.springframework.transaction.annotation.Transactional;
 
-public class AnnotationTest extends AbstractTransactionalDaoTestCase {
-	
+@RunWith(SpringJUnit4ClassRunner.class)
+@TestExecutionListeners({
+    OpenNMSConfigurationExecutionListener.class,
+    TemporaryDatabaseExecutionListener.class,
+    DependencyInjectionTestExecutionListener.class,
+    DirtiesContextTestExecutionListener.class,
+    TransactionalTestExecutionListener.class
+})
+@ContextConfiguration(locations={
+        "classpath:/META-INF/opennms/applicationContext-dao.xml",
+        "classpath:/META-INF/opennms/applicationContext-databasePopulator.xml",
+        "classpath:/META-INF/opennms/applicationContext-setupIpLike-enabled.xml",
+        "classpath*:/META-INF/opennms/component-dao.xml"
+})
+@JUnitTemporaryDatabase()
+public class AnnotationTest {
+	@Autowired
 	private SessionFactory m_sessionFactory;
         
-            
-	public void setSessionFactory(SessionFactory sessionFactory) {
-		m_sessionFactory = sessionFactory;
+	@Autowired
+	private DatabasePopulator m_databasePopulator;
+	
+	@Before
+	public void setUp() {
+		m_databasePopulator.populateDatabase();
 	}
-	
-	
+
 	public interface Checker<T> {
 		public void checkCollection(Collection<T> collection);
 		public void check(T entity);
@@ -86,6 +122,8 @@ public class AnnotationTest extends AbstractTransactionalDaoTestCase {
 		}
 	}
 
+	@Test
+	@Transactional
 	public void testDistPoller() {
 		assertLoadAll(OnmsDistPoller.class, new EmptyChecker<OnmsDistPoller>() {
 
@@ -96,6 +134,8 @@ public class AnnotationTest extends AbstractTransactionalDaoTestCase {
 		});
 	}
 	
+	@Test
+	@Transactional
 	public void testAssetRecord() {
 		assertLoadAll(OnmsAssetRecord.class, new EmptyChecker<OnmsAssetRecord>() {
 
@@ -107,6 +147,8 @@ public class AnnotationTest extends AbstractTransactionalDaoTestCase {
 		});
 	}
 	
+	@Test
+	@Transactional
 	public void testNode() {
 		assertLoadAll(OnmsNode.class, new EmptyChecker<OnmsNode>() {
 
@@ -127,11 +169,13 @@ public class AnnotationTest extends AbstractTransactionalDaoTestCase {
 		
 	}
 
+	@Test
+	@Transactional
 	public void testIpInterfaces() {
 		assertLoadAll(OnmsIpInterface.class, new EmptyChecker<OnmsIpInterface>() {
 
 			public void check(OnmsIpInterface entity) {
-				assertNotNull("ip address should not be null", entity.getIpAddressAsString());
+				assertNotNull("ip address should not be null", entity.getIpAddress());
 				assertNotNull("node should not be null", entity.getNode());
 				assertNotNull("node label should not be null", entity.getNode().getLabel());
 				assertNotNull("monitored services list should not be null", entity.getMonitoredServices());
@@ -141,6 +185,8 @@ public class AnnotationTest extends AbstractTransactionalDaoTestCase {
 		});
 	}
 	
+	@Test
+	@Transactional
 	public void testSnmpInterfaces() {
 		assertLoadAll(OnmsSnmpInterface.class, new EmptyChecker<OnmsSnmpInterface>() {
 
@@ -156,6 +202,8 @@ public class AnnotationTest extends AbstractTransactionalDaoTestCase {
 		});
 	}
 	
+	@Test
+	@Transactional
 	public void testCategories() {
 		assertLoadAll(OnmsCategory.class, new EmptyChecker<OnmsCategory>() {
 
@@ -166,6 +214,8 @@ public class AnnotationTest extends AbstractTransactionalDaoTestCase {
 		});
 	}
 	
+	@Test
+	@Transactional
 	public void testMonitoredServices() {
 		assertLoadAll(OnmsMonitoredService.class, new EmptyChecker<OnmsMonitoredService>() {
 
@@ -182,6 +232,8 @@ public class AnnotationTest extends AbstractTransactionalDaoTestCase {
 		});
 	}
 	
+	@Test
+	@Transactional
 	public void testServiceTypes() {
 		assertLoadAll(OnmsServiceType.class, new EmptyChecker<OnmsServiceType>() {
 
@@ -193,6 +245,8 @@ public class AnnotationTest extends AbstractTransactionalDaoTestCase {
 		});
 	}
 	
+	@Test
+	@Transactional
     public void testOutages() {
 		assertLoadAll(OnmsOutage.class, new EmptyChecker<OnmsOutage>() {
 
@@ -212,6 +266,8 @@ public class AnnotationTest extends AbstractTransactionalDaoTestCase {
 		});
 	}
 	
+	@Test
+	@Transactional
 	public void testEvents() {
 		assertLoadAll(OnmsEvent.class, new EmptyChecker<OnmsEvent>() {
 
@@ -232,6 +288,8 @@ public class AnnotationTest extends AbstractTransactionalDaoTestCase {
 		});
 	}
 	
+	@Test
+	@Transactional
     public void testAlarms() {
 		assertLoadAll(OnmsAlarm.class, new EmptyChecker<OnmsAlarm>() {
 
@@ -245,10 +303,14 @@ public class AnnotationTest extends AbstractTransactionalDaoTestCase {
 		});
 	}
 	
+	@Test
+	@Transactional
 	public void testNotifacations() {
 		assertLoadAll(OnmsNotification.class, new NullChecker<OnmsNotification>());
 	}
 	
+	@Test
+	@Transactional
 	public void testUsersNotified() {
 		assertLoadAll(OnmsUserNotification.class, new NullChecker<OnmsUserNotification>());
 	}

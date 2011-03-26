@@ -35,11 +35,46 @@
 //
 package org.opennms.netmgt.dao;
 
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertNotNull;
+import static org.junit.Assert.assertNull;
+
 import java.util.Date;
 
+import org.junit.Test;
+import org.junit.runner.RunWith;
+import org.opennms.netmgt.dao.db.JUnitTemporaryDatabase;
+import org.opennms.netmgt.dao.db.OpenNMSConfigurationExecutionListener;
+import org.opennms.netmgt.dao.db.TemporaryDatabaseExecutionListener;
 import org.opennms.netmgt.model.OnmsDistPoller;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.test.context.ContextConfiguration;
+import org.springframework.test.context.TestExecutionListeners;
+import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
+import org.springframework.test.context.support.DependencyInjectionTestExecutionListener;
+import org.springframework.test.context.support.DirtiesContextTestExecutionListener;
+import org.springframework.test.context.transaction.TransactionalTestExecutionListener;
 
-public class DistPollerDaoTest extends AbstractTransactionalDaoTestCase {
+@RunWith(SpringJUnit4ClassRunner.class)
+@TestExecutionListeners({
+    OpenNMSConfigurationExecutionListener.class,
+    TemporaryDatabaseExecutionListener.class,
+    DependencyInjectionTestExecutionListener.class,
+    DirtiesContextTestExecutionListener.class,
+    TransactionalTestExecutionListener.class
+})
+@ContextConfiguration(locations={
+        "classpath:/META-INF/opennms/applicationContext-dao.xml",
+        "classpath:/META-INF/opennms/applicationContext-databasePopulator.xml",
+        "classpath:/META-INF/opennms/applicationContext-setupIpLike-enabled.xml",
+        "classpath*:/META-INF/opennms/component-dao.xml"
+})
+@JUnitTemporaryDatabase()
+public class DistPollerDaoTest {
+	@Autowired
+	private DistPollerDao m_distPollerDao;
+	
+	@Test
 	public void testCreate() {
         OnmsDistPoller distPoller = new OnmsDistPoller("otherpoller", "192.168.7.7");   
         distPoller.setLastEventPull(new Date(1000000));
@@ -47,6 +82,7 @@ public class DistPollerDaoTest extends AbstractTransactionalDaoTestCase {
         
     }
     
+	@Test
     public void testGet() {
         assertNull(getDistPollerDao().get("otherpoller"));
         
@@ -57,6 +93,10 @@ public class DistPollerDaoTest extends AbstractTransactionalDaoTestCase {
         assertEquals(new Date(1000000), distPoller.getLastEventPull());
         
     }
+
+	private DistPollerDao getDistPollerDao() {
+		return m_distPollerDao;
+	}
 
 
 }

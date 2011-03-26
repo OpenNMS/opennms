@@ -1,29 +1,63 @@
 package org.opennms.netmgt.dao.hibernate;
 
-import org.opennms.netmgt.dao.AbstractTransactionalDaoTestCase;
-import org.opennms.netmgt.model.DataLinkInterface;
-import org.opennms.netmgt.model.OnmsMap;
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertNotNull;
+import static org.junit.Assert.assertNotSame;
+import static org.junit.Assert.assertNull;
+import static org.junit.Assert.fail;
 
 import java.util.Collection;
 import java.util.List;
 
-public class OnmsMapDaoHibernateTest  extends AbstractTransactionalDaoTestCase {
-    public void testInitialize() {
-        // do nothing, just test that setUp() / tearDown() works
-    }
+import org.junit.Test;
+import org.junit.runner.RunWith;
+import org.opennms.netmgt.dao.DatabasePopulator;
+import org.opennms.netmgt.dao.OnmsMapDao;
+import org.opennms.netmgt.dao.db.JUnitTemporaryDatabase;
+import org.opennms.netmgt.dao.db.OpenNMSConfigurationExecutionListener;
+import org.opennms.netmgt.dao.db.TemporaryDatabaseExecutionListener;
+import org.opennms.netmgt.model.OnmsMap;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.test.context.ContextConfiguration;
+import org.springframework.test.context.TestExecutionListeners;
+import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
+import org.springframework.test.context.support.DependencyInjectionTestExecutionListener;
+import org.springframework.test.context.support.DirtiesContextTestExecutionListener;
+import org.springframework.test.context.transaction.TransactionalTestExecutionListener;
+import org.springframework.transaction.annotation.Transactional;
 
+@RunWith(SpringJUnit4ClassRunner.class)
+@TestExecutionListeners({
+    OpenNMSConfigurationExecutionListener.class,
+    TemporaryDatabaseExecutionListener.class,
+    DependencyInjectionTestExecutionListener.class,
+    DirtiesContextTestExecutionListener.class,
+    TransactionalTestExecutionListener.class
+})
+@ContextConfiguration(locations={
+        "classpath:/META-INF/opennms/applicationContext-dao.xml",
+        "classpath:/META-INF/opennms/applicationContext-databasePopulator.xml",
+        "classpath:/META-INF/opennms/applicationContext-setupIpLike-enabled.xml",
+        "classpath*:/META-INF/opennms/component-dao.xml"
+})
+@JUnitTemporaryDatabase()
+public class OnmsMapDaoHibernateTest {
+	@Autowired
+	private OnmsMapDao m_onmsMapDao;
+
+	@Autowired
+	private DatabasePopulator m_databasePopulator;
+	
+	@Test
+	@Transactional
     public void testSaveOnmsMap() {
         // Create a new map and save it.
         OnmsMap map = new OnmsMap("onmsMapDaoHibernateTestMap", "admin");
-        getOnmsMapDao().save(map);
-        getOnmsMapDao().flush();
-    	getOnmsMapDao().clear();
+        m_onmsMapDao.save(map);
+        m_onmsMapDao.flush();
+    	m_onmsMapDao.clear();
 
-        // Now pull it back up and make sure it saved.
-        Object [] args = { map.getId() };
-        assertEquals(1, getJdbcTemplate().queryForInt("select count(*) from map where mapId = ?", args));
-
-        OnmsMap map2 = getOnmsMapDao().findMapById(map.getId());
+        OnmsMap map2 = m_onmsMapDao.findMapById(map.getId());
     	assertNotSame(map, map2);
         assertEquals(map.getName(), map2.getName());
         assertEquals(map.getOwner(), map2.getOwner());
@@ -33,18 +67,16 @@ public class OnmsMapDaoHibernateTest  extends AbstractTransactionalDaoTestCase {
         assertEquals(map.getCreateTime(), map2.getCreateTime());
     }
 
+	@Test
+	@Transactional
     public void testSaveOnmsMap2() {
         // Create a new map and save it.
         OnmsMap map = new OnmsMap("onmsMapDaoHibernateTestMap2", "admin",969,726);
-        getOnmsMapDao().save(map);
-        getOnmsMapDao().flush();
-        getOnmsMapDao().clear();
+        m_onmsMapDao.save(map);
+        m_onmsMapDao.flush();
+        m_onmsMapDao.clear();
 
-        // Now pull it back up and make sure it saved.
-        Object [] args = { map.getId() };
-        assertEquals(1, getJdbcTemplate().queryForInt("select count(*) from map where mapId = ?", args));
-
-        OnmsMap map2 = getOnmsMapDao().findMapById(map.getId());
+        OnmsMap map2 = m_onmsMapDao.findMapById(map.getId());
         assertNotSame(map, map2);
         assertEquals(map.getName(), map2.getName());
         assertEquals(map.getOwner(), map2.getOwner());
@@ -58,18 +90,16 @@ public class OnmsMapDaoHibernateTest  extends AbstractTransactionalDaoTestCase {
 
     }
 
+	@Test
+	@Transactional
     public void testSaveOnmsMap3() {
         // Create a new map and save it.
         OnmsMap map = new OnmsMap("onmsMapDaoHibernateTestMap3", "admin",OnmsMap.ACCESS_MODE_GROUP, 969,726);
-        getOnmsMapDao().save(map);
-        getOnmsMapDao().flush();
-        getOnmsMapDao().clear();
+        m_onmsMapDao.save(map);
+        m_onmsMapDao.flush();
+        m_onmsMapDao.clear();
 
-        // Now pull it back up and make sure it saved.
-        Object [] args = { map.getId() };
-        assertEquals(1, getJdbcTemplate().queryForInt("select count(*) from map where mapId = ?", args));
-
-        OnmsMap map2 = getOnmsMapDao().findMapById(map.getId());
+        OnmsMap map2 = m_onmsMapDao.findMapById(map.getId());
         assertNotSame(map, map2);
         assertEquals(map.getName(), map2.getName());
         assertEquals(map.getOwner(), map2.getOwner().trim());
@@ -82,18 +112,16 @@ public class OnmsMapDaoHibernateTest  extends AbstractTransactionalDaoTestCase {
         assertEquals(map.getHeight(), map2.getHeight());
     }
 
+	@Test
+	@Transactional
     public void testSaveOnmsMap4() {
         // Create a new map and save it.
         OnmsMap map = new OnmsMap("onmsMapDaoHibernateTestMap4", "users","11aabb","admin",OnmsMap.ACCESS_MODE_GROUP, OnmsMap.USER_GENERATED_MAP,800,600);
-        getOnmsMapDao().save(map);
-        getOnmsMapDao().flush();
-        getOnmsMapDao().clear();
+        m_onmsMapDao.save(map);
+        m_onmsMapDao.flush();
+        m_onmsMapDao.clear();
 
-        // Now pull it back up and make sure it saved.
-        Object [] args = { map.getId() };
-        assertEquals(1, getJdbcTemplate().queryForInt("select count(*) from map where mapId = ?", args));
-
-        OnmsMap map2 = getOnmsMapDao().findMapById(map.getId());
+        OnmsMap map2 = m_onmsMapDao.findMapById(map.getId());
         assertNotSame(map, map2);
         assertEquals(map.getName(), map2.getName());
         assertEquals(map.getOwner(), map2.getOwner());
@@ -106,18 +134,16 @@ public class OnmsMapDaoHibernateTest  extends AbstractTransactionalDaoTestCase {
         assertEquals(map.getHeight(), map2.getHeight());
     }
 
+	@Test
+	@Transactional
     public void testSaveOnmsMap5() {
         // Create a new map and save it.
         OnmsMap map = new OnmsMap("onmsMapDaoHibernateTestMap5", "users","11aabb","admin",OnmsMap.ACCESS_MODE_GROUP, OnmsMap.AUTOMATICALLY_GENERATED_MAP,800,600);
-        getOnmsMapDao().save(map);
-        getOnmsMapDao().flush();
-        getOnmsMapDao().clear();
+        m_onmsMapDao.save(map);
+        m_onmsMapDao.flush();
+        m_onmsMapDao.clear();
 
-        // Now pull it back up and make sure it saved.
-        Object [] args = { map.getId() };
-        assertEquals(1, getJdbcTemplate().queryForInt("select count(*) from map where mapId = ?", args));
-
-        OnmsMap map2 = getOnmsMapDao().findMapById(map.getId());
+        OnmsMap map2 = m_onmsMapDao.findMapById(map.getId());
         assertNotSame(map, map2);
         assertEquals(map.getName(), map2.getName());
         assertEquals(map.getOwner(), map2.getOwner());
@@ -130,26 +156,23 @@ public class OnmsMapDaoHibernateTest  extends AbstractTransactionalDaoTestCase {
         assertEquals(map.getHeight(), map2.getHeight());
     }
 
-
+	@Test
+	@Transactional
     public void testSaveOnmsMap6() {
         // Create a new map and save it.
         OnmsMap map = new OnmsMap("onmsMapDaoHibernateTestMap6", "users","11aabb","admin",OnmsMap.ACCESS_MODE_GROUP, OnmsMap.AUTOMATICALLY_GENERATED_MAP,800,600);
-        getOnmsMapDao().save(map);
-        getOnmsMapDao().flush();
-        getOnmsMapDao().clear();
+        m_onmsMapDao.save(map);
+        m_onmsMapDao.flush();
+        m_onmsMapDao.clear();
 
-        // Now pull it back up and make sure it saved.
-        Object [] args = { map.getId() };
-        assertEquals(1, getJdbcTemplate().queryForInt("select count(*) from map where mapId = ?", args));
-
-        OnmsMap map2 = getOnmsMapDao().findMapById(map.getId());
+        OnmsMap map2 = m_onmsMapDao.findMapById(map.getId());
         
         map2.setType(OnmsMap.AUTOMATIC_SAVED_MAP);
-        getOnmsMapDao().save(map2);
-        getOnmsMapDao().flush();
-        getOnmsMapDao().clear();
+        m_onmsMapDao.save(map2);
+        m_onmsMapDao.flush();
+        m_onmsMapDao.clear();
        
-        OnmsMap map3 = getOnmsMapDao().findMapById(map.getId());
+        OnmsMap map3 = m_onmsMapDao.findMapById(map.getId());
         assertNotSame(map2, map3);
         assertEquals(map2.getName(), map3.getName());
         assertEquals(map2.getOwner(), map3.getOwner());
@@ -162,15 +185,19 @@ public class OnmsMapDaoHibernateTest  extends AbstractTransactionalDaoTestCase {
         assertEquals(map2.getHeight(), map3.getHeight());
     }
 
+	@Test
+	@Transactional
     public void testFindById() {
+		m_databasePopulator.populateDatabase();
+		
         // Note: This ID is based upon the creation order in DatabasePopulator - if you change
         // the DatabasePopulator by adding additional new objects that use the onmsNxtId sequence
         // before the creation of this object then this ID may change and this test will fail.
         //
         int id = 62;
-        OnmsMap map = getOnmsMapDao().findMapById(id);
+        OnmsMap map = m_onmsMapDao.findMapById(id);
         if (map == null) {
-            List<OnmsMap> maps = getOnmsMapDao().findAll();
+            List<OnmsMap> maps = m_onmsMapDao.findAll();
             StringBuffer ids = new StringBuffer();
             for (OnmsMap current : maps) {
                 if (ids.length() > 0) {
@@ -187,8 +214,12 @@ public class OnmsMapDaoHibernateTest  extends AbstractTransactionalDaoTestCase {
         assertEquals(OnmsMap.USER_GENERATED_MAP, map.getType());
     }
 
+	@Test
+	@Transactional
     public void testFindMapsByName() {
-        Collection<OnmsMap> maps = getOnmsMapDao().findMapsByName("DB_Pop_Test_Map");
+		m_databasePopulator.populateDatabase();
+		
+        Collection<OnmsMap> maps = m_onmsMapDao.findMapsByName("DB_Pop_Test_Map");
 
         assertEquals(1, maps.size());
         OnmsMap map = maps.iterator().next();
@@ -198,8 +229,12 @@ public class OnmsMapDaoHibernateTest  extends AbstractTransactionalDaoTestCase {
         assertEquals(OnmsMap.USER_GENERATED_MAP, map.getType());
     }
 
+	@Test
+	@Transactional
     public void testFindMapsByNameAndTypeOk() {
-        Collection<OnmsMap> maps = getOnmsMapDao().findMapsByNameAndType("DB_Pop_Test_Map",OnmsMap.USER_GENERATED_MAP);
+		m_databasePopulator.populateDatabase();
+		
+        Collection<OnmsMap> maps = m_onmsMapDao.findMapsByNameAndType("DB_Pop_Test_Map",OnmsMap.USER_GENERATED_MAP);
 
         assertEquals(1, maps.size());
         OnmsMap map = maps.iterator().next();
@@ -209,15 +244,23 @@ public class OnmsMapDaoHibernateTest  extends AbstractTransactionalDaoTestCase {
         assertEquals(OnmsMap.USER_GENERATED_MAP, map.getType());
     }
 
+	@Test
+	@Transactional
     public void testFindMapsByNameAndTypeKo() {
-        Collection<OnmsMap> maps = getOnmsMapDao().findMapsByNameAndType("DB_Pop_Test_Map",OnmsMap.AUTOMATICALLY_GENERATED_MAP);
+		m_databasePopulator.populateDatabase();
+		
+        Collection<OnmsMap> maps = m_onmsMapDao.findMapsByNameAndType("DB_Pop_Test_Map",OnmsMap.AUTOMATICALLY_GENERATED_MAP);
 
         assertEquals(0, maps.size());
     }
 
 
+	@Test
+	@Transactional
     public void testFindMapsLike() {
-        Collection<OnmsMap> maps = getOnmsMapDao().findMapsLike("Pop_Test");
+		m_databasePopulator.populateDatabase();
+		
+        Collection<OnmsMap> maps = m_onmsMapDao.findMapsLike("Pop_Test");
 
         assertEquals(1, maps.size());
         OnmsMap map = maps.iterator().next();
@@ -227,35 +270,55 @@ public class OnmsMapDaoHibernateTest  extends AbstractTransactionalDaoTestCase {
         assertEquals(OnmsMap.USER_GENERATED_MAP, map.getType());
     }
 
+	@Test
+	@Transactional
     public void testFindMapsByType() {
-        Collection<OnmsMap> maps = getOnmsMapDao().findMapsByType("X");
+		m_databasePopulator.populateDatabase();
+		
+        Collection<OnmsMap> maps = m_onmsMapDao.findMapsByType("X");
         assertEquals(0, maps.size());
     }
 
+	@Test
+	@Transactional
     public void testFindAutoMaps() {
-        Collection<OnmsMap> maps = getOnmsMapDao().findAutoMaps();
+		m_databasePopulator.populateDatabase();
+		
+        Collection<OnmsMap> maps = m_onmsMapDao.findAutoMaps();
         assertEquals(0, maps.size());
     }
 
+	@Test
+	@Transactional
     public void testFindSaveMaps() {
-        Collection<OnmsMap> maps = getOnmsMapDao().findSaveMaps();
+		m_databasePopulator.populateDatabase();
+		
+        Collection<OnmsMap> maps = m_onmsMapDao.findSaveMaps();
         assertEquals(0, maps.size());
     }
 
+	@Test
+	@Transactional
     public void testFindUserMaps() {
-        Collection<OnmsMap> maps = getOnmsMapDao().findUserMaps();
+		m_databasePopulator.populateDatabase();
+		
+        Collection<OnmsMap> maps = m_onmsMapDao.findUserMaps();
         assertEquals(1, maps.size());
     }
 
+	@Test
+	@Transactional
     public void testDeleteOnmsMap() {
+		m_databasePopulator.populateDatabase();
+		
         // Note: This ID is based upon the creation order in DatabasePopulator - if you change
         // the DatabasePopulator by adding additional new objects that use the onmsNxtId sequence
         // before the creation of this object then this ID may change and this test will fail.
         //
         int id = 62;
-        OnmsMap map = getOnmsMapDao().findMapById(id);
+        OnmsMap map = m_onmsMapDao.findMapById(id);
         if (map == null) {
-            List<OnmsMap> maps = getOnmsMapDao().findAll();
+            List<OnmsMap> maps = m_onmsMapDao.findAll();
             StringBuffer ids = new StringBuffer();
             for (OnmsMap current : maps) {
                 if (ids.length() > 0) {
@@ -267,13 +330,17 @@ public class OnmsMapDaoHibernateTest  extends AbstractTransactionalDaoTestCase {
         }
 
         assertNotNull(map);
-        getOnmsMapDao().delete(map);
+        m_onmsMapDao.delete(map);
 
-        assertNull(getOnmsMapDao().findMapById(61));
+        assertNull(m_onmsMapDao.findMapById(61));
     }
 
+	@Test
+	@Transactional
     public void testFindMapByOwner() {
-        Collection<OnmsMap> maps = getOnmsMapDao().findMapsByOwner("admin");
+		m_databasePopulator.populateDatabase();
+		
+        Collection<OnmsMap> maps = m_onmsMapDao.findMapsByOwner("admin");
         assertEquals(1, maps.size());
         OnmsMap map = maps.iterator().next();
         assertEquals("DB_Pop_Test_Map", map.getName());
@@ -282,8 +349,12 @@ public class OnmsMapDaoHibernateTest  extends AbstractTransactionalDaoTestCase {
         assertEquals(OnmsMap.USER_GENERATED_MAP, map.getType());
     }
     
+	@Test
+	@Transactional
     public void testFindMapbyGroup() {
-        Collection<OnmsMap> maps = getOnmsMapDao().findMapsByGroup("admin");
+		m_databasePopulator.populateDatabase();
+		
+        Collection<OnmsMap> maps = m_onmsMapDao.findMapsByGroup("admin");
         assertEquals(1, maps.size());
         OnmsMap map = maps.iterator().next();
         assertEquals("DB_Pop_Test_Map", map.getName());
@@ -292,32 +363,43 @@ public class OnmsMapDaoHibernateTest  extends AbstractTransactionalDaoTestCase {
         assertEquals(OnmsMap.USER_GENERATED_MAP, map.getType());        
     }
 
+	@Test
+	@Transactional
     public void testFindMapbyGroup1() {
-        Collection<OnmsMap> maps = getOnmsMapDao().findMapsByGroup("");
+		m_databasePopulator.populateDatabase();
+		
+        Collection<OnmsMap> maps = m_onmsMapDao.findMapsByGroup("");
         assertEquals(0, maps.size());
     }
 
     
-    
+	@Test
+	@Transactional
     public void testFindVisibleMapByGroup() {
+		m_databasePopulator.populateDatabase();
+		
         // create a new map
         OnmsMap map = new OnmsMap("onmsMapDaoHibernateTestVisibleMap", "admin",OnmsMap.ACCESS_MODE_GROUP, 969,726);
         map.setMapGroup("testGroup");
-        getOnmsMapDao().save(map);
-        getOnmsMapDao().flush();
-        getOnmsMapDao().clear();
-        Collection<OnmsMap> maps = getOnmsMapDao().findVisibleMapsByGroup("testGroup");
+        m_onmsMapDao.save(map);
+        m_onmsMapDao.flush();
+        m_onmsMapDao.clear();
+        Collection<OnmsMap> maps = m_onmsMapDao.findVisibleMapsByGroup("testGroup");
         assertEquals(2, maps.size());
     }
 
+	@Test
+	@Transactional
     public void testFindVisibleMapByGroup2() {
+		m_databasePopulator.populateDatabase();
+		
         // create a new map
         OnmsMap map = new OnmsMap("onmsMapDaoHibernateTestVisibleMap", "admin",OnmsMap.ACCESS_MODE_GROUP, 969,726);
         map.setMapGroup("testGroup");
-        getOnmsMapDao().save(map);
-        getOnmsMapDao().flush();
-        getOnmsMapDao().clear();
-        Collection<OnmsMap> maps = getOnmsMapDao().findVisibleMapsByGroup("wrongGroup");
+        m_onmsMapDao.save(map);
+        m_onmsMapDao.flush();
+        m_onmsMapDao.clear();
+        Collection<OnmsMap> maps = m_onmsMapDao.findVisibleMapsByGroup("wrongGroup");
         assertEquals(1, maps.size());
     }
 

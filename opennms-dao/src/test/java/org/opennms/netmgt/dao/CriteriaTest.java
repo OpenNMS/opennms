@@ -35,19 +35,63 @@
 //
 package org.opennms.netmgt.dao;
 
+import static org.junit.Assert.assertEquals;
+
 import java.util.Collection;
 
 import org.hibernate.criterion.Restrictions;
+import org.junit.Before;
+import org.junit.Test;
+import org.junit.runner.RunWith;
+import org.opennms.netmgt.dao.db.JUnitTemporaryDatabase;
+import org.opennms.netmgt.dao.db.OpenNMSConfigurationExecutionListener;
+import org.opennms.netmgt.dao.db.TemporaryDatabaseExecutionListener;
 import org.opennms.netmgt.model.OnmsCriteria;
 import org.opennms.netmgt.model.OnmsNode;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.test.context.ContextConfiguration;
+import org.springframework.test.context.TestExecutionListeners;
+import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
+import org.springframework.test.context.support.DependencyInjectionTestExecutionListener;
+import org.springframework.test.context.support.DirtiesContextTestExecutionListener;
+import org.springframework.test.context.transaction.TransactionalTestExecutionListener;
+import org.springframework.transaction.annotation.Transactional;
 
-public class CriteriaTest extends AbstractTransactionalDaoTestCase {
+@RunWith(SpringJUnit4ClassRunner.class)
+@TestExecutionListeners({
+    OpenNMSConfigurationExecutionListener.class,
+    TemporaryDatabaseExecutionListener.class,
+    DependencyInjectionTestExecutionListener.class,
+    DirtiesContextTestExecutionListener.class,
+    TransactionalTestExecutionListener.class
+})
+@ContextConfiguration(locations={
+        "classpath:/META-INF/opennms/applicationContext-dao.xml",
+        "classpath:/META-INF/opennms/applicationContext-databasePopulator.xml",
+        "classpath:/META-INF/opennms/applicationContext-setupIpLike-enabled.xml",
+        "classpath*:/META-INF/opennms/component-dao.xml"
+})
+@JUnitTemporaryDatabase()
+public class CriteriaTest {
 
-    public void testSimple() {
+	@Autowired
+    private NodeDao m_nodeDao;
+
+	@Autowired
+	private DatabasePopulator m_databasePopulator;
+	
+	@Before
+	public void setUp() {
+		m_databasePopulator.populateDatabase();
+	}
+
+	@Test
+	@Transactional
+	public void testSimple() {
         OnmsCriteria crit = new OnmsCriteria(OnmsNode.class);
         crit.add(Restrictions.eq("label", "node1"));
         
-        Collection<OnmsNode> matching = getNodeDao().findMatching(crit);
+        Collection<OnmsNode> matching = m_nodeDao.findMatching(crit);
         
         assertEquals("Expect a single node with label node1", 1, matching.size());
         
@@ -56,13 +100,15 @@ public class CriteriaTest extends AbstractTransactionalDaoTestCase {
         assertEquals(4, node.getIpInterfaces().size());
     }
     
-    public void testComplicated() {
+    @Test
+	@Transactional
+	public void testComplicated() {
         OnmsCriteria crit = 
             new OnmsCriteria(OnmsNode.class)
             .createAlias("ipInterfaces", "iface")
             .add(Restrictions.eq("iface.ipAddress", "192.168.2.1"));
         
-        Collection<OnmsNode> matching = getNodeDao().findMatching(crit);
+        Collection<OnmsNode> matching = m_nodeDao.findMatching(crit);
         
         assertEquals("Expect a single node with an interface 192.168.2.1", 1, matching.size());
         

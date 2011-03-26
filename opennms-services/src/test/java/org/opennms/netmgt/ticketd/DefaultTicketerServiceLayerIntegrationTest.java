@@ -34,109 +34,124 @@
  */
 package org.opennms.netmgt.ticketd;
 
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.List;
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertNotNull;
+import static org.junit.Assert.assertNull;
 
+import org.junit.Before;
+import org.junit.BeforeClass;
+import org.junit.Test;
+import org.junit.runner.RunWith;
 import org.opennms.api.integration.ticketing.Plugin;
 import org.opennms.api.integration.ticketing.Ticket;
-import org.opennms.netmgt.dao.AbstractTransactionalDaoTestCase;
+import org.opennms.netmgt.dao.AlarmDao;
+import org.opennms.netmgt.dao.DatabasePopulator;
+import org.opennms.netmgt.dao.db.JUnitTemporaryDatabase;
+import org.opennms.netmgt.dao.db.OpenNMSConfigurationExecutionListener;
+import org.opennms.netmgt.dao.db.TemporaryDatabaseExecutionListener;
 import org.opennms.netmgt.model.OnmsAlarm;
 import org.opennms.netmgt.model.TroubleTicketState;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.test.context.ContextConfiguration;
+import org.springframework.test.context.TestExecutionListeners;
+import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
+import org.springframework.test.context.support.DependencyInjectionTestExecutionListener;
+import org.springframework.test.context.support.DirtiesContextTestExecutionListener;
+import org.springframework.test.context.transaction.TransactionalTestExecutionListener;
+import org.springframework.transaction.annotation.Transactional;
 
 /**
  * 
  * @author <a href="mailto:brozow@opennms.org">Mathew Brozowski</a>
  */
-public class DefaultTicketerServiceLayerIntegrationTest extends
-        AbstractTransactionalDaoTestCase {
+@RunWith(SpringJUnit4ClassRunner.class)
+@TestExecutionListeners({ OpenNMSConfigurationExecutionListener.class,
+		TemporaryDatabaseExecutionListener.class,
+		DependencyInjectionTestExecutionListener.class,
+		DirtiesContextTestExecutionListener.class,
+		TransactionalTestExecutionListener.class })
+@ContextConfiguration(locations = {
+		"classpath:/META-INF/opennms/applicationContext-dao.xml",
+		"classpath:/META-INF/opennms/applicationContext-daemon.xml",
+        "classpath:/META-INF/opennms/applicationContext-databasePopulator.xml",
+        "classpath:/META-INF/opennms/applicationContext-setupIpLike-enabled.xml",
+		"classpath:/META-INF/opennms/mockEventIpcManager.xml",
+		"classpath:/META-INF/opennms/applicationContext-troubleTicketer.xml",
+		"classpath:/org/opennms/netmgt/ticketd/applicationContext-configOverride.xml" })
+@JUnitTemporaryDatabase()
+public class DefaultTicketerServiceLayerIntegrationTest {
+	@Autowired
+	private TicketerServiceLayer m_ticketerServiceLayer;
 
-    private TicketerServiceLayer m_ticketerServiceLayer;
-    private TestTicketerPlugin m_ticketerPlugin;
-    
-    
-    @Override
-    protected void setUpConfiguration() {
-        
-        super.setUpConfiguration();
+	@Autowired
+	private TestTicketerPlugin m_ticketerPlugin;
+	
+	@Autowired
+	private AlarmDao m_alarmDao;
 
-        System.setProperty("opennms.ticketer.plugin", TestTicketerPlugin.class.getName());
-        
-    }
+	@Autowired
+	private DatabasePopulator m_databasePopulator;
+	
+	@BeforeClass
+	public static void setUpConfiguration() {
+		System.setProperty("opennms.ticketer.plugin", TestTicketerPlugin.class.getName());
+	}
 
-    @Override
-    protected String[] getConfigLocations() {
-        
-        String[] configs = new String[] {
-            "classpath:/META-INF/opennms/applicationContext-daemon.xml",
-            "classpath:/META-INF/opennms/mockEventIpcManager.xml",
-            "classpath:/META-INF/opennms/applicationContext-troubleTicketer.xml",
-            "classpath:/org/opennms/netmgt/ticketd/applicationContext-configOverride.xml",
-        };
-        
-        List<String> configLocation = new ArrayList<String>();
-        
-        configLocation.addAll(Arrays.asList(super.getConfigLocations()));
-        configLocation.addAll(Arrays.asList(configs));
-        
-        return configLocation.toArray(new String[configLocation.size()]);
-    }
-    
-    public void setTicketerPlugin(TestTicketerPlugin ticketerPlugin) {
-        m_ticketerPlugin = ticketerPlugin;
-    }
-    
-    public void setTicketerServiceLayer(TicketerServiceLayer ticketerServiceLayer) {
-        m_ticketerServiceLayer = ticketerServiceLayer;
-    }
-    
-    public void testWire() {
-        assertNotNull(m_ticketerServiceLayer);
-        assertNotNull(m_ticketerPlugin);
-        
-        final int alarmId = 1;
-        
-        OnmsAlarm alarm = getAlarmDao().get(alarmId);
-        assertNull(alarm.getTTicketState());
-        assertNull(alarm.getTTicketId());
-        
-        m_ticketerServiceLayer.createTicketForAlarm(alarmId);
-        
-        getAlarmDao().flush();
-        
-        alarm = getAlarmDao().get(alarmId);
-        assertEquals(TroubleTicketState.OPEN, alarm.getTTicketState());
-        assertNotNull(alarm.getTTicketId());
-        assertEquals("testId", alarm.getTTicketId());
-        
-        m_ticketerServiceLayer.updateTicketForAlarm(alarm.getId(), alarm.getTTicketId());
+	@Before
+	public void setUp() {
+		m_databasePopulator.populateDatabase();
+	}
 
-        getAlarmDao().flush();
+	@Test
+	@Transactional
+	public void testWire() {
+		assertNotNull(m_ticketerServiceLayer);
+		assertNotNull(m_ticketerPlugin);
 
-        alarm = getAlarmDao().get(alarmId);
-        assertEquals(TroubleTicketState.OPEN, alarm.getTTicketState());
-        
-        m_ticketerServiceLayer.closeTicketForAlarm(alarmId, alarm.getTTicketId());
-        
-        getAlarmDao().flush();
+		OnmsAlarm alarm = m_alarmDao.findAll().get(0);
+		assertNull(alarm.getTTicketState());
+		assertNull(alarm.getTTicketId());
 
-        alarm = getAlarmDao().get(alarmId);
-        assertEquals(TroubleTicketState.CLOSED, alarm.getTTicketState());
-        
-    }
-    
-    public static class TestTicketerPlugin implements Plugin {
-        
-        public Ticket get(String ticketId) {
-            Ticket ticket = new Ticket();
-            ticket.setId(ticketId);
-            return ticket;
-        }
+		final int alarmId = alarm.getId();
 
-        public void saveOrUpdate(Ticket ticket) {
-            ticket.setId("testId");
-        }
-        
-    }
+		m_ticketerServiceLayer.createTicketForAlarm(alarmId);
+
+		m_alarmDao.flush();
+
+		alarm = m_alarmDao.get(alarmId);
+		assertEquals(TroubleTicketState.OPEN, alarm.getTTicketState());
+		assertNotNull(alarm.getTTicketId());
+		assertEquals("testId", alarm.getTTicketId());
+
+		m_ticketerServiceLayer.updateTicketForAlarm(alarm.getId(), alarm.getTTicketId());
+
+		m_alarmDao.flush();
+
+		alarm = m_alarmDao.get(alarmId);
+		assertEquals(TroubleTicketState.OPEN, alarm.getTTicketState());
+
+		m_ticketerServiceLayer.closeTicketForAlarm(alarmId,
+				alarm.getTTicketId());
+
+		m_alarmDao.flush();
+
+		alarm = m_alarmDao.get(alarmId);
+		assertEquals(TroubleTicketState.CLOSED, alarm.getTTicketState());
+
+	}
+
+	public static class TestTicketerPlugin implements Plugin {
+
+		public Ticket get(String ticketId) {
+			Ticket ticket = new Ticket();
+			ticket.setId(ticketId);
+			return ticket;
+		}
+
+		public void saveOrUpdate(Ticket ticket) {
+			ticket.setId("testId");
+		}
+
+	}
 
 }
