@@ -13,12 +13,21 @@ import org.opennms.netmgt.xml.event.Event;
 public interface EventFilter {
 
 	/**
-	 * Method to decide if the event 
-	 * match the filter
+	 * Method to decide if the filter
+	 * must be applied
 	 * 
 	 * @param event
 	 * @return
 	 */
-	boolean filter(Event event);
+	boolean match(Event event);
+
+	/**
+	 * Method to decide if the event 
+	 * should be filtered or not
+	 * 
+	 * @param event
+	 * @return
+	 */
+	boolean filter();
 
 }
