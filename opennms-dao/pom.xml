@@ -143,12 +143,6 @@
       <artifactId>opennms-util</artifactId>
     </dependency>
    
-    <!--  This is needed for the IPv4Address class - should probably move that -->
-    <dependency>
-      <groupId>org.opennms</groupId>
-      <artifactId>opennms-icmp-api</artifactId>
-    </dependency>
-
     <!-- Non-OpenNMS dependencies, sorted by groupId, artifactId -->
     <dependency>
       <groupId>commons-beanutils</groupId>
