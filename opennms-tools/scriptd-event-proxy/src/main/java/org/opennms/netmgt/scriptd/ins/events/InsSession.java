@@ -5,21 +5,20 @@ import java.io.IOException;
 import java.io.InputStreamReader;
 import java.io.PrintStream;
 import java.io.StringWriter;
+import java.net.InetAddress;
 import java.net.Socket;
-import java.text.DateFormat;
 import java.util.ArrayList;
-import java.util.Iterator;
+import java.util.Date;
 import java.util.List;
-import java.util.TimeZone;
 
-import org.exolab.castor.xml.MarshalException;
-import org.exolab.castor.xml.ValidationException;
+import org.apache.commons.io.IOUtils;
 import org.hibernate.ObjectNotFoundException;
 import org.hibernate.criterion.Restrictions;
 import org.opennms.core.utils.BeanUtils;
-import org.opennms.core.utils.InetAddressUtils;
-import org.opennms.core.utils.ThreadCategory;
+import org.opennms.core.utils.LogUtils;
+import org.opennms.netmgt.EventConstants;
 import org.opennms.netmgt.dao.EventDao;
+import org.opennms.netmgt.dao.jaxb.JaxbUtils;
 import org.opennms.netmgt.model.OnmsAlarm;
 import org.opennms.netmgt.model.OnmsCriteria;
 import org.opennms.netmgt.model.OnmsEvent;
@@ -84,55 +83,50 @@ class InsSession extends InsAbstractSession {
 	}
 
 	public void run() {
-        ThreadCategory log = getLog();
 		input = "";
 
+		InputStreamReader isr = null;
+		BufferedReader in = null;
+		
 		try {
 			// Get input from the client
-			BufferedReader in = new BufferedReader(new InputStreamReader(server
-					.getInputStream()));
+			isr = new InputStreamReader(server.getInputStream());
+			in = new BufferedReader(isr);
 
 			readingFromClient: while ((line = in.readLine()) != null) {
 				input = input + "\n" + line;
-				log.debug("Client wrote: " + line + " from "
-						+ server.getInetAddress());
+				LogUtils.debugf(this, "Client wrote: %s from %s", line, server.getInetAddress());
 
 				if (status == STARTING_SESSION_STATUS) {
 					if (line.equalsIgnoreCase(START_AUTHENTICATION_REQUEST)) {
-						if (sharedAuthAsciiString != null) {
-							// authorization required
+						if (getSharedASCIIString() != null) {
+							LogUtils.debugf(this, "Starting authentication, sending %s to the client", AUTH_REQUIRED_ACK);
 							streamToClient.println(AUTH_REQUIRED_ACK);
-							log.debug("Starting authentication, sending "
-									+ AUTH_REQUIRED_ACK + " to the client");
 							status = AUTHENTICATING_STATUS;
 						} else {
-							// authorization not required
+							LogUtils.debugf(this, "Starting authentication, sending %s to the client", AUTH_NOT_REQUIRED_ACK);
 							streamToClient.println(AUTH_NOT_REQUIRED_ACK);
-							log.debug("Starting authentication, sending "
-									+ AUTH_NOT_REQUIRED_ACK + " to the client");
 							status = AUTHENTICATED_STATUS;
 						}
 						continue readingFromClient;
 					} else {
-						// security reset (a malicious user may use DOS attack
-						// before authentication)
-						log.warn("Wrong client request");
+						// security reset (a malicious user may use DOS attack before authentication)
+						LogUtils.warnf(this, "Wrong client request");
 						break readingFromClient;
 					}
 				}
 
 				if (status == AUTHENTICATING_STATUS) {
-					if (sharedAuthAsciiString != null) {
+					if (getSharedASCIIString() != null) {
 						// authentication required (security check)
-						if (line.equals(sharedAuthAsciiString)) {
+						if (line.equals(getSharedASCIIString())) {
 							status = AUTHENTICATED_STATUS;
-							log.debug("Authentication success!");
+							LogUtils.debugf(this, "Authentication success!");
 							streamToClient.println(AUTHENTICATION_SUCCESS);
 							continue readingFromClient;
 						} else {
 							streamToClient.println(RESET_SIGNAL);
-							log
-									.warn("Authentication failure! Resetting session.");
+							LogUtils.warnf(this, "Authentication failure! Resetting session.");
 							break readingFromClient;
 						}
 					}
@@ -140,18 +134,18 @@ class InsSession extends InsAbstractSession {
 
 				if (status == AUTHENTICATED_STATUS || status == DATAFLOW_STATUS) {
 					if (line.equalsIgnoreCase(LIST_CURRENT_ALARM_REQUEST)) {
-				        log.debug("Fetching Events from Database");
+				        LogUtils.debugf(this, "Fetching Events from Database");
 					    getEventsByCriteria();
 						status = DATAFLOW_STATUS;
 						synchronized (streamToClient) {
 							 streamToClient.println(ACTIVE_ALARM_BEGIN);
-	                         StringWriter sw = getOutput();
+	                         final StringWriter sw = getOutput();
   		                     if (sw != null) {
-   		                        log.info("String Writer:" + sw.getBuffer().toString()); 
-		                        streamToClient.print(sw.toString());
+   		                        final String output = sw.toString();
+								LogUtils.infof(this, "String Writer: %s", output); 
+		                        streamToClient.print(output);
 		                     } else {
-		                        log.error("String Writer is null");
-//			                      break readingFromClient;
+		                        LogUtils.errorf(this, "String Writer is null");
 		                     }
                              streamToClient.println(ACTIVE_ALARM_END);
                              continue readingFromClient;
@@ -159,23 +153,23 @@ class InsSession extends InsAbstractSession {
 						}
 					} else {
 						if (line.equalsIgnoreCase(STOP_ALARM_REQUEST)) {
-							log.debug("Closing session due client request.");
+							LogUtils.debugf(this, "Closing session due client request.");
 							break readingFromClient;
 						} else {
-							log.warn("Wrong client request");
+							LogUtils.warnf(this, "Wrong client request");
 							continue readingFromClient;
 						}
 					}
 				}
 			}
 
-			log.debug("Overall message from " + server.getInetAddress()
-					+ " is:" + input);
-			log.debug("\nClosing session with " + server.getInetAddress()
-					+ "...\n\n");
+			LogUtils.debugf(this, "Closing session.  Overall message from %s is: %s", server.getInetAddress(), input);
 			server.close();
-		} catch (IOException ioe) {
-			log.warn("IOException on socket listen: " + ioe, ioe);
+		} catch (final IOException ioe) {
+			LogUtils.warnf(this, ioe, "Error while listening to socket.");
+		} finally {
+			IOUtils.closeQuietly(in);
+			IOUtils.closeQuietly(isr);
 		}
 	}
 
@@ -187,127 +181,127 @@ class InsSession extends InsAbstractSession {
 	}
 
 	private StringWriter getOutput() {
-        ThreadCategory log = getLog();
-        log.debug("Sending alarms to the client");
-        StringWriter sw = new StringWriter();
-        List<Event> events = getEvents();
-        if (events != null && events.size() > 0) {
-            Iterator<Event> ite = events.iterator();
-            while (ite.hasNext()) {
-                Event xmlEvent = ite.next();
-                try {
-                    log.info("Marshal Event with id: " + xmlEvent.getDbid()); 
-                    xmlEvent.marshal(sw);
-                    log.info("Flushing Event with id: " + xmlEvent.getDbid()); 
-                    sw.flush();
-                } catch (MarshalException e) {
-                    log.error("Marshall Exception: " + e);
-                } catch (ValidationException e) {
-                    log.error("Validation Exception: " + e);
-                }
+		LogUtils.debugf(this, "Sending alarms to the client");
+
+		final StringWriter sw = new StringWriter();
+		final List<Event> events = getEvents();
+        if (events != null) {
+        	for (final Event xmlEvent : events) {
+        		LogUtils.infof(this, "Marshal Event with id: %s", xmlEvent.getDbid()); 
+                JaxbUtils.marshal(xmlEvent, sw);
+                LogUtils.debugf(this, "Flushing Event with id: %s", xmlEvent.getDbid()); 
+                sw.flush();
             }
         }
         return sw;
 
 	}
 
-	private Event getXMLEvent(OnmsEvent ev) {
-        ThreadCategory log = getLog();
-        log.info("Working on XML Event for id: " + ev.getId()); 
-        log.debug("Setting Event id: " + ev.getId()); 
-        Event e = new Event();
-        e.setDbid(ev.getId());
+	private Event getXMLEvent(final OnmsEvent ev) {
+		final Integer id = ev.getId();
+
+		LogUtils.infof(this, "Working on XML Event for id: %s", id); 
+		LogUtils.debugf(this, "Setting Event id: %s", id); 
+		final Event e = new Event();
+        e.setDbid(id);
 
         //UEI
-        if (ev.getEventUei() != null ) {
-            log.debug("Setting Event uei: " + ev.getEventUei()); 
-            e.setUei(ev.getEventUei());
+        final String uei = ev.getEventUei();
+		if (uei != null) {
+            LogUtils.debugf(this, "Setting Event uei: %s", uei); 
+            e.setUei(uei);
         } else {
-            log.warn("No Event uei found: skipping event....");
+        	LogUtils.warnf(this, "No Event uei found: skipping event....");
             return null;
         }
 
         // Source
-        if (ev.getEventSource() != null ) {
-            log.debug("Setting Event source: " + ev.getEventSource()); 
-            e.setSource(ev.getEventSource());
+        final String source = ev.getEventSource();
+		if (source != null) {
+        	LogUtils.debugf(this, "Setting Event source: %s", source); 
+            e.setSource(source);
         } else {
-            log.info("No Event source found."); 
+        	LogUtils.infof(this, "No Event source found."); 
         }
 
         //nodeid
-        if (ev.getNode() != null) {
-            log.debug("Setting Event nodeid: " + ev.getNode().getId()); 
-            e.setNodeid(ev.getNode().getId());
+        final Integer nodeid = ev.getNode().getId();
+		if (ev.getNode() != null && nodeid != null) {
+            LogUtils.debugf(this, "Setting Event nodeid: %s", nodeid); 
+            e.setNodeid(nodeid.longValue());
         } else {
-            log.info("No Event node found."); 
+            LogUtils.infof(this, "No Event node found."); 
         }
 
-
         // timestamp
-        if (ev.getEventTime() != null) {
-            log.debug("Setting event date timestamp to GMT");
-            DateFormat dateFormat = DateFormat.getDateTimeInstance(DateFormat.FULL, DateFormat.FULL);
-            dateFormat.setTimeZone(TimeZone.getTimeZone("GMT"));
-            log.debug("Setting Event Time: " + ev.getEventTime()); 
-            e.setTime(dateFormat.format(ev.getEventTime()));
+        final Date time = ev.getEventTime();
+		if (time != null) {
+            LogUtils.debugf(this, "Setting event date timestamp to (GMT): %s", time);
+            e.setTime(EventConstants.formatToString(time));
         } else {
-            log.info("No Event time found."); 
+        	LogUtils.infof(this, "No Event time found."); 
         }
         
         // host
-        if (ev.getEventHost() != null) {
-            log.debug("Setting Event Host: " + ev.getEventHost());
-            e.setHost(ev.getEventHost());
+        final String host = ev.getEventHost();
+		if (host != null) {
+            LogUtils.debugf(this, "Setting Event Host: %s", host);
+            e.setHost(host);
         } else {
-            log.info("No Event host found.");
+        	LogUtils.infof(this, "No Event host found.");
         }
         
         // interface
-        if (ev.getIpAddr() != null) {
-            log.debug("Setting Event Interface/ipaddress: " + ev.getIpAddr());
-            e.setInterface(InetAddressUtils.toIpAddrString(ev.getIpAddr()));
+        final InetAddress ipAddr = ev.getIpAddr();
+		if (ipAddr != null) {
+            LogUtils.debugf(this, "Setting Event Interface/ipaddress: %s", ipAddr);
+            e.setInterfaceAddress(ipAddr);
         } else {
-            log.info("No Event ip address found.");
+            LogUtils.infof(this, "No Event ip address found.");
         }
         
         // Service Name
         if (ev.getServiceType() != null) {
-            log.debug("Setting Event Service Name: " + ev.getServiceType().getName());
-            e.setService(ev.getServiceType().getName());
+            final String serviceName = ev.getServiceType().getName();
+			LogUtils.debugf(this, "Setting Event Service Name: %s", serviceName);
+            e.setService(serviceName);
         } else {
-            log.info("No Event service name found.");
+        	LogUtils.infof(this, "No Event service name found.");
         }
 
         // Description
-        if (ev.getEventDescr() != null ) {
-            log.debug("Setting Event Description");
-            e.setDescr(ev.getEventDescr());
+        final String descr = ev.getEventDescr();
+		if (descr != null ) {
+            LogUtils.debugf(this, "Setting Event Description: %s", descr);
+            e.setDescr(descr);
         } else {
-            log.info("No Event ip address found.");
+            LogUtils.infof(this, "No Event ip address found.");
         }
         
         // Log message
-        if (ev.getEventLogMsg() != null) {
-            Logmsg msg = new Logmsg();
-            log.debug("Setting Event Log Message");
-            msg.setContent(ev.getEventLogMsg());
+        final String logmsg = ev.getEventLogMsg();
+		if (logmsg != null) {
+        	final Logmsg msg = new Logmsg();
+            LogUtils.debugf(this, "Setting Event Log Message: %s", logmsg);
+            msg.setContent(logmsg);
             e.setLogmsg(msg);
         } else {
-            log.info("No Event log Message found.");
+            LogUtils.infof(this, "No Event log Message found.");
         }
 
         // severity
-        if (ev.getEventSeverity() != null) {
-            log.debug("Setting Event Severity");
-            e.setSeverity(OnmsSeverity.get(ev.getEventSeverity()).getLabel());
+        final Integer severity = ev.getEventSeverity();
+		if (severity != null) {
+            LogUtils.debugf(this, "Setting Event Severity: %s", severity);
+            e.setSeverity(OnmsSeverity.get(severity).getLabel());
         } else {
-            log.info("No Event severity found.");
+            LogUtils.infof(this, "No Event severity found.");
         }
 
-          if (ev.getIfIndex() != null && ev.getIfIndex() > 0 ) {
-              e.setIfIndex(ev.getIfIndex());
-              e.setIfAlias(getIfAlias(ev.getNode().getId(),ev.getIfIndex()));
+          final Integer ifIndex = ev.getIfIndex();
+		if (ifIndex != null && ifIndex > 0 ) {
+              e.setIfIndex(ifIndex);
+              e.setIfAlias(getIfAlias(nodeid,ifIndex));
           } else {
               e.setIfIndex(-1);
               e.setIfAlias("-1");
@@ -315,73 +309,60 @@ class InsSession extends InsAbstractSession {
 
         
         // operator Instruction
-        if (ev.getEventOperInstruct() != null) {
-            log.debug("Setting Event Operator Instruction");
-            e.setOperinstruct(ev.getEventOperInstruct());
+        final String operInstruct = ev.getEventOperInstruct();
+		if (operInstruct != null) {
+            LogUtils.debugf(this, "Setting Event Operator Instruction: %s", operInstruct);
+            e.setOperinstruct(operInstruct);
         } else {
-            log.info("No Event operator Instruction found.");
+            LogUtils.infof(this, "No Event operator Instruction found.");
         }
 
         // parms
-        if (ev.getEventParms() != null ) {
-            log.debug("Setting Event Parms: " + ev.getEventParms());
-            Parms parms = Parameter.decode(ev.getEventParms());
-            if (parms != null ) e.setParms(parms);
+        final String eventParms = ev.getEventParms();
+		if (eventParms != null) {
+        	LogUtils.debugf(this, "Setting Event Parms: %s", eventParms);
+        	final Parms parms = Parameter.decode(eventParms);
+            if (parms != null) e.setParms(parms);
         } else {
-            log.info("No Event parms found.");
+            LogUtils.infof(this, "No Event parms found.");
         }
 
-        AlarmData ad = new AlarmData();
-        OnmsAlarm onmsAlarm = ev
-                .getAlarm();
+		final AlarmData ad = new AlarmData();
+		final OnmsAlarm onmsAlarm = ev.getAlarm();
         try {
             if (onmsAlarm != null) {
-                ad
-                        .setReductionKey(onmsAlarm
-                                .getReductionKey());
-                ad
-                        .setAlarmType(onmsAlarm
-                                .getAlarmType());
-                ad
-                        .setClearKey(onmsAlarm
-                                .getClearKey());
-                e
-                        .setAlarmData(ad);
+                ad.setReductionKey(onmsAlarm.getReductionKey());
+                ad.setAlarmType(onmsAlarm.getAlarmType());
+                ad.setClearKey(onmsAlarm.getClearKey());
+                e.setAlarmData(ad);
             }
-        } catch (ObjectNotFoundException e1) {
-            log
-                    .warn("correlated alarm data not found "
-                            + e1);
+        } catch (final ObjectNotFoundException e1) {
+            LogUtils.warnf(this, e1, "Correlated alarm data not found.");
         }
-        log
-        .info("return Event with id: " + ev.getId()); 
+        LogUtils.infof(this, "Returning event with id: %s", id);
         return e;
     }
 	
-	@SuppressWarnings("unchecked")
     private void getEventsByCriteria() {
-        ThreadCategory log = getLog();
-        log.debug("Entering getEventsByCriteria.....");
-        log.debug("clearing events");
-        clearEvents();
-        BeanFactoryReference bf = BeanUtils.getBeanFactory("daoContext");
+    	LogUtils.debugf(this, "clearing events");
+
+    	clearEvents();
+    	final BeanFactoryReference bf = BeanUtils.getBeanFactory("daoContext");
         final EventDao eventDao = BeanUtils.getBean(bf,"eventDao", EventDao.class);
-        TransactionTemplate transTemplate = BeanUtils.getBean(bf, "transactionTemplate",TransactionTemplate.class);
+        final TransactionTemplate transTemplate = BeanUtils.getBean(bf, "transactionTemplate",TransactionTemplate.class);
         try {
-                transTemplate.execute(new TransactionCallback() {
+                transTemplate.execute(new TransactionCallback<Object>() {
                 public Object doInTransaction(final TransactionStatus status) {
-                    ThreadCategory log = getLog();
-                    log.debug("entering transaction call back: selection with criteria: " + criteriaRestriction);
+                	LogUtils.debugf(this, "Entering transaction call back: selection with criteria: %s", criteriaRestriction);
                     final OnmsCriteria criteria = new OnmsCriteria(OnmsEvent.class);
                     criteria.add(Restrictions.sqlRestriction(criteriaRestriction));
-                    List<OnmsEvent> events = eventDao.findMatching(criteria);
-                    log.info("Found "+ events.size() + " event/s (with criteria): " + criteriaRestriction);
-                    if (events != null && events.size()>0) {
-                        Iterator<OnmsEvent> ite = events.iterator();
-                        while (ite.hasNext()) {
-                            Event xmlEvent = getXMLEvent(ite.next());
-                            if (xmlEvent != null) addEvent(xmlEvent);
-                        }
+                    
+                    final List<OnmsEvent> events = eventDao.findMatching(criteria);
+                    LogUtils.infof(this, "Found %d event(s) with criteria: %s", events.size(), criteriaRestriction);
+                    
+                    for (final OnmsEvent onmsEvent : events) {
+                    	final Event xmlEvent = getXMLEvent(onmsEvent);
+                        if (xmlEvent != null) addEvent(xmlEvent);
                     }
                     return new Object();
                 }
@@ -389,12 +370,12 @@ class InsSession extends InsAbstractSession {
             });
         
         } catch (final RuntimeException e) {
-            log.error("Error while getting events ",e);
+            LogUtils.errorf(this, e, "Error while getting events.");
         }
         
     }
 	
-	private void addEvent(Event event) {
+	private void addEvent(final Event event) {
 	    m_events.add(event);	    
 	}
 	

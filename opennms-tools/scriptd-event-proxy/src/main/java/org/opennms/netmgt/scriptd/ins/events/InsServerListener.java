@@ -9,7 +9,8 @@ import java.util.HashSet;
 import java.util.Iterator;
 import java.util.Set;
 
-import org.opennms.core.utils.ThreadCategory;
+import org.opennms.core.utils.LogUtils;
+import org.opennms.netmgt.dao.jaxb.JaxbUtils;
 import org.opennms.netmgt.xml.event.Event;
 
 
@@ -23,92 +24,89 @@ import org.opennms.netmgt.xml.event.Event;
  */
 
 public class InsServerListener extends InsServerAbstractListener {
-	
-	private ServerSocket listener;
-	
-	private Set<InsSession> activeSessions=new HashSet<InsSession>();
+	private ServerSocket m_listener;
+	private final Set<InsSession> m_activeSessions = new HashSet<InsSession>();
 
 	/**
 	 * listens for incoming connection on defined port (default is 8154)
 	 */
 	public void run() {
-	    ThreadCategory log = getLog();
-		if(criteriaRestriction ==null)
+		if(criteriaRestriction == null) {
 			throw new IllegalStateException("The property criteriaRestriction cannot be null!");
-		log.info("InsServerListener started: listening on port "+listeningPort);
+		}
+		LogUtils.infof(this, "InsServerListener started: listening on port %d", listeningPort);
 		try {
-			listener = new ServerSocket(listeningPort);
+			m_listener = new ServerSocket(listeningPort);
 			Socket server;
 
 			while (true) {
 				// when accepts an incoming connection, create an InsSession for
 				// alarms exchange
-				server = listener.accept();
-				InsSession session = new InsSession(server);
+				server = m_listener.accept();
+				final InsSession session = new InsSession(server);
+
 				//only if the sharedASCIIString is valorized, requires authentication
-				if(sharedAuthAsciiString!=null)
-					session.setSharedASCIIString(sharedAuthAsciiString);
+				if(getSharedASCIIString() != null) {
+					session.setSharedASCIIString(getSharedASCIIString());
+				}
 				session.setCriteriaRestriction(criteriaRestriction);
 				session.start();
-				activeSessions.add(session);
+				m_activeSessions.add(session);
 			}
-		} catch (IOException ioe) {
-			log.info("Socket closed." );
+		} catch (final IOException ioe) {
+			LogUtils.infof(this, "Socket closed." );
 		}
 	}
 
 	@Override
 	/**
-	 * Stops the listener
+	 * Stops the m_listener
 	 */
 	public void interrupt() {
-        ThreadCategory log = getLog();
 		try {
-			listener.close();
-		} catch (IOException e) {
-		    log.error("Gor Error closing listener: " + e.getLocalizedMessage());
+			m_listener.close();
+		} catch (final IOException e) {
+		    LogUtils.errorf(this, e, "Error while closing listener.");
 		}
 		super.interrupt();
-        log.info("InsServerListener Interrupted!");
+		LogUtils.infof(this, "InsServerListener Interrupted!");
 	}
 	
-	private synchronized void cleanActiveSessions(){
-        ThreadCategory log = getLog();
-		synchronized (activeSessions){
-			Iterator<InsSession> it = activeSessions.iterator();
-			while(it.hasNext()){
-				InsSession insSession = it.next();
-				if(insSession==null || !insSession.isAlive()){
-					log.debug("removing "+insSession);
+	private synchronized void cleanActiveSessions() {
+		synchronized (m_activeSessions) {
+			final Iterator<InsSession> it = m_activeSessions.iterator();
+			while(it.hasNext()) {
+				final InsSession insSession = it.next();
+				if (insSession == null || !insSession.isAlive()) {
+					LogUtils.debugf(this, "removing session %s", insSession);
 					it.remove();
 				}
 			}
 		}
-		log.debug("active sessions are: "+activeSessions);
+		LogUtils.debugf(this, "active sessions are: %s", m_activeSessions);
 	}
 
 	/**
 	 * Flushes the event in input to all active sessions with clients
 	 * @param event
 	 */
-	public void flushEvent(Event event){
-	      ThreadCategory log = getLog();
-	      log.debug("Flushing uei: "+event.getUei());
-	      log.debug("Flushing ifindex: " + event.getIfIndex());
-	      log.debug("Flushing ifAlias: " + event.getIfAlias());
+	public void flushEvent(final Event event) {
+		LogUtils.debugf(this, "Flushing uei: %s", event.getUei());
+		LogUtils.debugf(this, "Flushing ifindex: %s", event.getIfIndex());
+		LogUtils.debugf(this, "Flushing ifAlias: %s", event.getIfAlias());
 	      
-		synchronized (activeSessions){
+		synchronized (m_activeSessions) {
 			cleanActiveSessions();
-			Iterator<InsSession> it = activeSessions.iterator();
-			while(it.hasNext()){			
-				InsSession insSession = it.next();
-				PrintStream ps = insSession.getStreamToClient();
+			final Iterator<InsSession> it = m_activeSessions.iterator();
+			while (it.hasNext()) {
+				final InsSession insSession = it.next();
+				final PrintStream ps = insSession.getStreamToClient();
 				synchronized (ps) {
-					if(ps!=null){
+					if(ps!=null) {
 						try {
-							event.marshal(new PrintWriter(ps));
-						} catch (Throwable e) {
-							log.error("Error while sending current event to client"+e);
+							JaxbUtils.marshal(event, new PrintWriter(ps));
+						} catch (final Throwable e) {
+							LogUtils.errorf(this, e, "Error while sending current event to client");
 						}
 					}	
 				}
@@ -117,12 +115,12 @@ public class InsServerListener extends InsServerAbstractListener {
 		}
 	}
 
-	public static void main(String[] args) {
-		InsServerListener isl = new InsServerListener();
+	public static void main(final String[] args) {
+		final InsServerListener isl = new InsServerListener();
 		isl.setListeningPort(8155);
-		//optional (if not setted, no authentication is required)
+		//optional (if not set, no authentication is required)
 		isl.setSharedASCIIString("1234567890");
-		
+
 		isl.setCriteriaRestriction("eventuei is not null");
 		//required properties
 		

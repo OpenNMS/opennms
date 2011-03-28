@@ -4,6 +4,7 @@ import java.util.List;
 
 import org.hibernate.criterion.Restrictions;
 import org.opennms.core.utils.BeanUtils;
+import org.opennms.core.utils.LogUtils;
 import org.opennms.core.utils.ThreadCategory;
 import org.opennms.netmgt.dao.SnmpInterfaceDao;
 import org.opennms.netmgt.model.OnmsCriteria;
@@ -17,82 +18,70 @@ public abstract class InsAbstractSession extends Thread {
 
     private String m_criteria;
     
-    private ThreadCategory log;
 	/**
 	 * the shared string for client authentication
 	 * If the shared string is not set, then server doesn't require authentication 
 	 */
-	public String sharedAuthAsciiString = null;
+	private String m_sharedAuthAsciiString = null;
 	
 	/**
 	 * the criteria for getting active alarms
 	 */
 	public String criteriaRestriction = "";
 	
-	public void setSharedASCIIString(String sharedASCIIString) {
-		this.sharedAuthAsciiString = sharedASCIIString;
+	public void setSharedASCIIString(final String sharedASCIIString) {
+		this.m_sharedAuthAsciiString = sharedASCIIString;
 	}
 	
 	public String getSharedASCIIString() {
-		return sharedAuthAsciiString;
+		return m_sharedAuthAsciiString;
 	}
 
 	public String getCriteriaRestriction() {
 		return criteriaRestriction;
 	}
 
-	public void setCriteriaRestriction(String criteriaRestriction) {
-	    getLog().debug("Setting the criteria restriction for active alarm list: " + criteriaRestriction);
+	public void setCriteriaRestriction(final String criteriaRestriction) {
+	    LogUtils.debugf(this, "Setting the criteria restriction for active alarm list: %s", criteriaRestriction);
 		this.criteriaRestriction = criteriaRestriction;
 	}
 
     public InsAbstractSession() {
         super();
         ThreadCategory.setPrefix("OpenNMS.InsProxy");
-        log=ThreadCategory.getInstance(this.getClass());
-        log.debug("InsAbstract Session Constructor: loaded");
+        LogUtils.debugf(this, "InsAbstract Session Constructor: loaded");
     }
 
-    public ThreadCategory getLog() {
-        return log;
-    }
-    
-    public void setLog(ThreadCategory log) {
-        this.log = log;
-    }
-	
-	
     private String getCriteria() {
         return m_criteria;
     }
 
-    private void setCriteria(String criteria) {
+    private void setCriteria(final String criteria) {
         m_criteria = criteria;
     }
     
-    @SuppressWarnings("unchecked")
-    protected String getIfAlias(int nodeid, int ifindex) {
+    protected String getIfAlias(final int nodeid, final int ifindex) {
 
-        log.debug("getting ifalias for nodeid: " +nodeid + " and ifindex: " + ifindex);
+        LogUtils.debugf(this, "getting ifalias for nodeid: %d and ifindex: %d", nodeid, ifindex);
 
         setCriteria("nodeid = " + nodeid + " AND snmpifindex = " + ifindex);
         BeanFactoryReference bf = BeanUtils.getBeanFactory("daoContext");
         final SnmpInterfaceDao snmpInterfaceDao = BeanUtils.getBean(bf,"snmpInterfaceDao", SnmpInterfaceDao.class);
-        TransactionTemplate transTemplate = BeanUtils.getBean(bf, "transactionTemplate",TransactionTemplate.class);
-        List<OnmsSnmpInterface> iface = (List<OnmsSnmpInterface>) transTemplate.execute(
-                   new TransactionCallback() {
-                        public Object doInTransaction(final TransactionStatus status) {
+        final TransactionTemplate transTemplate = BeanUtils.getBean(bf, "transactionTemplate",TransactionTemplate.class);
+        final List<OnmsSnmpInterface> iface = transTemplate.execute(
+                   new TransactionCallback<List<OnmsSnmpInterface>>() {
+                        public List<OnmsSnmpInterface> doInTransaction(final TransactionStatus status) {
                             final OnmsCriteria onmsCriteria = new OnmsCriteria(OnmsSnmpInterface.class);
                             onmsCriteria.add(Restrictions.sqlRestriction(getCriteria()));
                             return snmpInterfaceDao.findMatching(onmsCriteria);
                         }
                    }
         );
-        log.debug("interfaces found: " + iface.size());
+        LogUtils.debugf(this, "interfaces found: %d", iface.size());
 
         if (iface.size() == 0) return "-1";
-        String ifAlias = iface.get(0).getIfAlias();
-        log.debug("ifalias found: " + ifAlias);
+        final String ifAlias = iface.get(0).getIfAlias();
+        LogUtils.debugf(this, "ifalias found: %s", ifAlias);
         
         return ifAlias;
     }
