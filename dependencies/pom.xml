@@ -24,7 +24,6 @@
     <module>dbpool</module>
     <module>dnsjava</module>
     <module>gwt</module>
-    <module>icmp</module>
     <module>javamail</module>
     <module>jcifs</module>
     <module>jdbc-pool</module>

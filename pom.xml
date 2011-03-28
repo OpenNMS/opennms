@@ -1026,12 +1026,6 @@
       </dependency>
       <dependency>
         <groupId>org.opennms.dependencies</groupId>
-        <artifactId>icmp-dependencies</artifactId>
-        <version>${project.version}</version>
-        <type>pom</type>
-      </dependency>
-      <dependency>
-        <groupId>org.opennms.dependencies</groupId>
         <artifactId>liquibase-dependencies</artifactId>
         <version>${project.version}</version>
         <type>pom</type>
@@ -1269,7 +1263,7 @@
       </dependency>
       <dependency>
         <groupId>org.opennms</groupId>
-        <artifactId>opennms-icmp-api</artifactId>
+        <artifactId>opennms-icmp-jicmp</artifactId>
         <version>${project.version}</version>
       </dependency>
       <dependency>

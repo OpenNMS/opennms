@@ -171,7 +171,7 @@
     </dependency>
     <dependency>
       <groupId>org.opennms</groupId>
-      <artifactId>opennms-icmp-api</artifactId>
+      <artifactId>opennms-icmp-jicmp</artifactId>
       <scope>compile</scope>
     </dependency>
     <dependency>
