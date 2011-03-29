@@ -38,15 +38,19 @@ public class ConfigTester implements ApplicationContextAware {
 		m_context = context;
 	}
 
-	public void testConfig(String name) {
-		checkConfigNameValid(name);
+	public void testConfig(String name, boolean ignoreUnknown) {
+		checkConfigNameValid(name, ignoreUnknown);
 		
 		m_context.getBean(m_configs.get(name));
 	}
 
-	private void checkConfigNameValid(String name) {
+	private void checkConfigNameValid(String name, boolean ignoreUnknown) {
 		if (!m_configs.containsKey(name)) {
-			throw new IllegalArgumentException("config '" + name + "' is not a known config name");
+			if (ignoreUnknown) {
+				System.err.println("Unknown configuration: " + name + "... skipping.");
+			} else {
+				throw new IllegalArgumentException("config '" + name + "' is not a known config name");
+			}
 		}
 	}
 
@@ -62,10 +66,11 @@ public class ConfigTester implements ApplicationContextAware {
 		final CommandLineParser parser = new PosixParser();
 
 		final Options options = new Options();
-		options.addOption("h", "help",          false, "print this help and exit");
-		options.addOption("a", "all",         	false, "check all supported configuration files");
-		options.addOption("l", "list",   		false, "list supported configuration files and exit");
-		options.addOption("v", "verbose", 		false, "list each configuration file as it is tested");
+		options.addOption("h", "help",           false, "print this help and exit");
+		options.addOption("a", "all",         	 false, "check all supported configuration files");
+		options.addOption("l", "list",   		 false, "list supported configuration files and exit");
+		options.addOption("v", "verbose", 		 false, "list each configuration file as it is tested");
+		options.addOption("i", "ignore-unknown", false, "ignore unknown configuration files and continue processing");
 
 		final CommandLine line;
 		try {
@@ -77,6 +82,8 @@ public class ConfigTester implements ApplicationContextAware {
 			
 			return; // not reached; here to eliminate warning on line being uninitialized
 		}
+
+		final boolean ignoreUnknown = line.hasOption("i");
 
 		if ((line.hasOption('l') || line.hasOption('h') || line.hasOption('a'))) {
 			if (line.getArgList().size() > 0) {
@@ -106,22 +113,22 @@ public class ConfigTester implements ApplicationContextAware {
 			 formatter.printHelp("config-tester -a\nOR: config-tester [config files]\nOR: config-tester -l\nOR: config-tester -h", options);
 		} else if (line.hasOption('a')) {
 			for (String configFile : tester.getConfigs().keySet()) {
-				tester.testConfig(configFile, verbose);
+				tester.testConfig(configFile, verbose, ignoreUnknown);
 			}
 		} else {
 			for (String configFile : line.getArgs()) {
-				tester.testConfig(configFile, verbose);
+				tester.testConfig(configFile, verbose, ignoreUnknown);
 			}
 		}
 	}
 
-	private void testConfig(String configFile, boolean verbose) {
+	private void testConfig(String configFile, boolean verbose, boolean ignoreUnknown) {
 		if (verbose) {
 			System.out.print("Testing " + configFile + " ... ");
 		}
 		
 		long start = System.currentTimeMillis();
-		testConfig(configFile);
+		testConfig(configFile, ignoreUnknown);
 		long end = System.currentTimeMillis();
 		
 		if (verbose) {
