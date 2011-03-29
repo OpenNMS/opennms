@@ -51,45 +51,29 @@
   <jsp:param name="location" value="admin" />
   <jsp:param name="breadcrumb" value="<a href='admin/index.jsp'>Admin</a>" />
   <jsp:param name="breadcrumb" value="Configure SNMP by IP" />
+  <jsp:param name="script" value="<script type='text/javascript' src='js/ipv6/ipv6.js'></script>" />
+  <jsp:param name="script" value="<script type='text/javascript' src='js/ipv6/lib/jsbn.js'></script>" />
+  <jsp:param name="script" value="<script type='text/javascript' src='js/ipv6/lib/jsbn2.js'></script>" />
+  <jsp:param name="script" value="<script type='text/javascript' src='js/ipv6/lib/sprintf.js'></script>" />
 </jsp:include>
 
 <script type="text/javascript">
-        function verifyIpAddress (prompt, ipValue) {
-                var errorMsg = new String("");
-
-                var ipPattern = /^(\d{1,3})\.(\d{1,3})\.(\d{1,3})\.(\d{1,3})$/;
-                var ipArray = ipValue.match(ipPattern); 
-
-                if (ipValue == "0.0.0.0")
-                        errorMsg = prompt + ': ' + ipValue + ' is a special IP address and cannot be used here.';
-                else if (ipValue == "255.255.255.255")
-                        errorMsg = prompt + ': ' + ipValue + ' is a special IP address and cannot be used here.';
-                if (ipArray == null)
-                        errorMsg = prompt + ': ' + ipValue + ' is not a valid IP address.';
-                else {
-                        for (i = 0; i < 4; i++) {
-                                thisSegment = ipArray[i];
-                                if (thisSegment > 255) {
-                                        errorMsg = prompt + ': ' + ipValue + ' is not a valid IP address.';
-                                        break;
-                                }
-                        }
-                }
-                
-                return errorMsg;
-        }
-    
         function verifySnmpConfig()
         {
                 var errorMsg = new String("");
                 var ipValue = new String("");
 
                 ipValue = new String(document.snmpConfigForm.firstIPAddress.value);
-                errorMsg = verifyIpAddress("First IP Address", ipValue);
+
+                if (!isValidIPAddress(ipValue)) {
+                    errorMsg = ipValue + " is not a valid IP address!";
+                }
                 if (errorMsg == ""){
                         ipValue = new String(document.snmpConfigForm.lastIPAddress.value);
                         if (ipValue != ""){
-                                errorMsg = verifyIpAddress("Last IP Address", ipValue);
+                            if (!isValidIPAddress(ipValue)) {
+                                errorMsg = ipValue + " is not a valid IP address!";
+                            }
                         }
                 }
 

@@ -50,6 +50,7 @@ import javax.servlet.http.HttpServletResponse;
 
 import org.opennms.core.resource.Vault;
 import org.opennms.core.utils.DBUtils;
+import org.opennms.core.utils.InetAddressUtils;
 import org.opennms.web.WebSecurityUtils;
 
 /**
@@ -68,10 +69,10 @@ public class SetCriticalPathServlet extends HttpServlet {
     /** {@inheritDoc} */
     public void doPost(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
         String nodeString = request.getParameter("node");
-        String criticalIp = request.getParameter("criticalIp");
+        String criticalIp = InetAddressUtils.normalize(request.getParameter("criticalIp"));
         String criticalSvc = request.getParameter("criticalSvc");
-	String task = request.getParameter("task");
-	int node = -1;
+        String task = request.getParameter("task");
+        int node = -1;
         try {
             node = WebSecurityUtils.safeParseInt(nodeString);
         } catch (NumberFormatException numE)  {

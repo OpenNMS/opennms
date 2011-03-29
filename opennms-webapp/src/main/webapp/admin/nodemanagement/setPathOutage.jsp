@@ -79,6 +79,10 @@
   <jsp:param name="location" value="Node Management" />
   <jsp:param name="breadcrumb" value="<a href='admin/index.jsp'>Admin</a>" />
   <jsp:param name="breadcrumb" value="Configure Path Outage" />
+  <jsp:param name="script" value="<script type='text/javascript' src='js/ipv6/ipv6.js'></script>" />
+  <jsp:param name="script" value="<script type='text/javascript' src='js/ipv6/lib/jsbn.js'></script>" />
+  <jsp:param name="script" value="<script type='text/javascript' src='js/ipv6/lib/jsbn2.js'></script>" />
+  <jsp:param name="script" value="<script type='text/javascript' src='js/ipv6/lib/sprintf.js'></script>" />
 </jsp:include>
 
 <style type="text/css">
@@ -93,25 +97,9 @@ LABEL
     var prompt = new String("IP Address");
     var errorMsg = new String("");
     var ipValue = new String(document.setCriticalPath.criticalIp.value);
-    var ipPattern = /^(\d{1,3})\.(\d{1,3})\.(\d{1,3})\.(\d{1,3})$/;
-    var ipArray = ipValue.match(ipPattern);
-    if (ipValue == "0.0.0.0")
-        errorMsg = prompt + ': ' + ipValue + ' is a special IP address and cannot be used here.';
-    else if (ipValue == "255.255.255.255")
-        errorMsg = prompt + ': ' + ipValue + ' is a special IP address and cannot be used here.';
-    if (ipArray == null)
-        errorMsg = prompt + ': ' + ipValue + ' is not a valid IP address.';
-    else {
-        for (i = 1; i < 5; i++) {
-            thisSegment = ipArray[i];
-            if (thisSegment > 255) {
-                errorMsg = prompt + ': ' + ipValue + ' is not a valid IP address.';
-                break;
-            }
-        }
-    }
-    if (errorMsg != ""){
-        alert (errorMsg);
+
+    if (!isValidIPAddress(ipValue)) {
+        alert (ipValue + " is not a valid IP address!");
         document.setCriticalPath.action="admin/nodemanagement/setPathOutage.jsp?node=<%=nodeId%>&task=Enter a valid IP address";
         return false;
     } else {
