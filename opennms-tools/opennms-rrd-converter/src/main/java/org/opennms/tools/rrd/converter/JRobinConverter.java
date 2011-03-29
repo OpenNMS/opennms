@@ -89,6 +89,7 @@ public class JRobinConverter {
                 LogUtils.errorf(this, "Unable to rename %s to %s", source, target);
                 System.exit(1);
             }
+            source.delete();
         }
     }
 
@@ -167,8 +168,15 @@ public class JRobinConverter {
 
     public List<File> getMatchingGroupRrds(final File rrdGroupFile) throws ConverterException {
         if (rrdGroupFile == null) return Collections.emptyList();
+        final List<String> dsNames;
 
-        final List<String> dsNames = getDsNames(rrdGroupFile);
+        try {
+            dsNames = getDsNames(rrdGroupFile);
+        } catch (final ConverterException e) {
+            LogUtils.debugf(this, "Unable to get dsNames for %s", rrdGroupFile);
+            return Collections.emptyList();
+        }
+
         final List<File> files = new ArrayList<File>();
         
         for (final File f : rrdGroupFile.getAbsoluteFile().getParentFile().listFiles()) {
@@ -249,9 +257,13 @@ public class JRobinConverter {
         findRrds(topDirectory, files);
         for (final Iterator<File> it = files.iterator(); it.hasNext(); ) {
             final File file = it.next();
-            final List<String> dsNames = getDsNames(file);
-            if (dsNames.size() < 2) {
-                it.remove();
+            try {
+                final List<String> dsNames = getDsNames(file);
+                if (dsNames.size() < 2) {
+                    it.remove();
+                }
+            } catch (final ConverterException e) {
+                LogUtils.debugf(this, e, "Unable to get dsNames from %s", file);
             }
         }
         return files;
