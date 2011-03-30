@@ -48,9 +48,6 @@ import org.opennms.netmgt.icmp.ICMPEchoPacket;
  *
  * @author <a href="mailto:ranger@opennms.org">Ben Reed</a>
  * @author <a href="mailto:brozow@opennms.org">Mathew Brozowski</a>
- * @author <a href="mailto:ranger@opennms.org">Ben Reed</a>
- * @author <a href="mailto:brozow@opennms.org">Mathew Brozowski</a>
- * @version $Id: $
  */
 public class SinglePingResponseCallback implements PingResponseCallback {
     private BarrierSignaler bs = new BarrierSignaler(1);

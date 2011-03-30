@@ -48,7 +48,7 @@ import com.sun.jna.Platform;
  *
  * @author brozow
  */
-public class V4Pinger extends Pinger<Inet4Address> {
+public class V4Pinger extends AbstractPinger<Inet4Address> {
 
     public V4Pinger() throws Exception {
         super(NativeDatagramSocket.create(NativeDatagramSocket.PF_INET, Platform.isMac() ? NativeDatagramSocket.SOCK_DGRAM : NativeDatagramSocket.SOCK_RAW, NativeDatagramSocket.IPPROTO_ICMP));

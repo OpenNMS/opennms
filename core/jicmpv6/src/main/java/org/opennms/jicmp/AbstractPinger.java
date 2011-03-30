@@ -39,7 +39,7 @@ import org.opennms.jicmp.jna.NativeDatagramSocket;
  *
  * @author brozow
  */
-public abstract class Pinger<T extends InetAddress> implements Runnable {
+public abstract class AbstractPinger<T extends InetAddress> implements Runnable {
 
     private NativeDatagramSocket m_pingSocket;
     private Thread m_thread;
@@ -47,7 +47,7 @@ public abstract class Pinger<T extends InetAddress> implements Runnable {
     protected final Metric m_metric = new Metric();
     private volatile boolean m_stopped = false;
     
-    protected Pinger(NativeDatagramSocket pingSocket) {
+    protected AbstractPinger(NativeDatagramSocket pingSocket) {
         m_pingSocket = pingSocket;
     }
 

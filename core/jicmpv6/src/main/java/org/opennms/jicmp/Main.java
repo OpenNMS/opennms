@@ -54,7 +54,7 @@ public class Main {
 
         InetAddress host = InetAddress.getByName(hostname);
         
-        Pinger listener = host instanceof Inet4Address ? new V4Pinger() : new V6Pinger();
+        AbstractPinger listener = host instanceof Inet4Address ? new V4Pinger() : new V6Pinger();
         listener.start();
         
         listener.ping(host, 12345, 10, 1000);
