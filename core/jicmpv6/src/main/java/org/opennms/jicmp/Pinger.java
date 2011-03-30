@@ -39,12 +39,12 @@ import org.opennms.jicmp.jna.NativeDatagramSocket;
  *
  * @author brozow
  */
-public abstract class Pinger implements Runnable {
+public abstract class Pinger<T extends InetAddress> implements Runnable {
 
     private NativeDatagramSocket m_pingSocket;
     private Thread m_thread;
-    protected AtomicReference<Throwable> m_throwable = new AtomicReference<Throwable>(null);
-    protected Metric m_metric = new Metric();
+    protected final AtomicReference<Throwable> m_throwable = new AtomicReference<Throwable>(null);
+    protected final Metric m_metric = new Metric();
     private volatile boolean m_stopped = false;
     
     protected Pinger(NativeDatagramSocket pingSocket) {
@@ -90,7 +90,7 @@ public abstract class Pinger implements Runnable {
     protected void printf(String fmt, Object... args) {
         System.err.print(String.format(fmt, args));
     }
-    
-    abstract public void ping(InetAddress addr, int id, int count, int interval) throws InterruptedException;
+
+    abstract public void ping(T addr, int id, int count, int interval) throws InterruptedException;
 
 }

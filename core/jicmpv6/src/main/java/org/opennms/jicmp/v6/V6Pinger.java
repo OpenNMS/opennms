@@ -29,6 +29,7 @@
  */
 package org.opennms.jicmp.v6;
 
+import java.net.Inet6Address;
 import java.net.InetAddress;
 import java.nio.ByteBuffer;
 import java.util.concurrent.TimeUnit;
@@ -47,7 +48,7 @@ import com.sun.jna.Platform;
  *
  * @author brozow
  */
-public class V6Pinger extends Pinger {
+public class V6Pinger extends Pinger<Inet6Address> {
 
     public V6Pinger() throws Exception {
         super(NativeDatagramSocket.create(NativeDatagramSocket.PF_INET6, Platform.isMac() ? NativeDatagramSocket.SOCK_DGRAM : NativeDatagramSocket.SOCK_RAW, NativeDatagramSocket.IPPROTO_ICMPV6));
@@ -104,7 +105,7 @@ public class V6Pinger extends Pinger {
         return datagram.getContent();
     }
     
-    public void ping(InetAddress addr, int id, int count, int interval) throws InterruptedException {
+    public void ping(Inet6Address addr, int id, int count, int interval) throws InterruptedException {
         NativeDatagramSocket socket = getPingSocket();
         for(int i = 0; i <= count; i++) {
             PingRequest request = new PingRequest(id, i);

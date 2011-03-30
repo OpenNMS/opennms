@@ -35,12 +35,12 @@ import java.util.concurrent.TimeUnit;
 import org.opennms.jicmp.ipv6.ICMPv6EchoPacket;
 import org.opennms.jicmp.ipv6.ICMPv6Packet;
 
-class PingReply extends ICMPv6EchoPacket {
+class PingReply extends ICMPv6EchoPacket implements org.opennms.netmgt.icmp.ICMPEchoPacket {
     
     // The below long is equivalent to the next line and is more efficient than
     // manipulation as a string
     // Charset.forName("US-ASCII").encode("OpenNMS!").getLong(0);
-    public static final long COOKIE = 0x4F70656E4E4D5321L; 
+    public static final long COOKIE = 0x4F70656E4E4D5321L;
     
     private long m_receivedTimeNanos;
 
@@ -71,7 +71,5 @@ class PingReply extends ICMPv6EchoPacket {
     long elapsedTimeNanos() {
         return getReceivedTimeNanos() - getSentTimeNanos();
     }
-
-    
 
 }

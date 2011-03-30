@@ -29,14 +29,15 @@
  */
 package org.opennms.jicmp;
 
+import java.net.Inet4Address;
 import java.net.InetAddress;
 import java.nio.ByteBuffer;
 import java.util.concurrent.TimeUnit;
 
 import org.opennms.jicmp.ip.ICMPEchoPacket;
 import org.opennms.jicmp.ip.ICMPPacket;
-import org.opennms.jicmp.ip.ICMPPacket.Type;
 import org.opennms.jicmp.ip.IPPacket;
+import org.opennms.jicmp.ip.ICMPPacket.Type;
 import org.opennms.jicmp.jna.NativeDatagramPacket;
 import org.opennms.jicmp.jna.NativeDatagramSocket;
 
@@ -47,7 +48,7 @@ import com.sun.jna.Platform;
  *
  * @author brozow
  */
-public class V4Pinger extends Pinger {
+public class V4Pinger extends Pinger<Inet4Address> {
 
     public V4Pinger() throws Exception {
         super(NativeDatagramSocket.create(NativeDatagramSocket.PF_INET, Platform.isMac() ? NativeDatagramSocket.SOCK_DGRAM : NativeDatagramSocket.SOCK_RAW, NativeDatagramSocket.IPPROTO_ICMP));
@@ -104,7 +105,7 @@ public class V4Pinger extends Pinger {
         return new IPPacket(datagram.getContent()).getPayload();
     }
     
-    public void ping(InetAddress addr, int id, int count, int interval) throws InterruptedException {
+    public void ping(Inet4Address addr, int id, int count, int interval) throws InterruptedException {
         NativeDatagramSocket socket = getPingSocket();
         for(int i = 0; i <= count; i++) {
             PingRequest request = new PingRequest(id, i);

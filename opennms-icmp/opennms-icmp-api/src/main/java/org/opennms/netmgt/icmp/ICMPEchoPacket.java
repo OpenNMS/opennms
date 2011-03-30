@@ -35,17 +35,19 @@
  */
  package org.opennms.netmgt.icmp;
 
+import java.util.concurrent.TimeUnit;
+
 public interface ICMPEchoPacket {
 
-	long getReceivedTime();
+	long getReceivedTimeNanos();
 
-	long getSentTime();
+	long getSentTimeNanos();
 
-	int getSequenceId();
+	int getSequenceNumber();
 
-	long getPingRTT();
+	long elapsedTime(TimeUnit timeUnit);
 
 	byte[] toBytes();
 
-	long getTID();
+	long getIdentifier();
 }

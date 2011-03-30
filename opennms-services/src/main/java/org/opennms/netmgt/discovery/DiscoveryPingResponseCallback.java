@@ -66,7 +66,7 @@ public class DiscoveryPingResponseCallback implements PingResponseCallback {
             log().warn("Failed to resolve local hostname", uhE);
         }
 
-        eb.addParam("RTT", packet.getReceivedTime() - packet.getSentTime());
+        eb.addParam("RTT", packet.getReceivedTimeNanos() - packet.getSentTimeNanos());
 
         try {
             EventIpcManagerFactory.getIpcManager().sendNow(eb.getEvent());

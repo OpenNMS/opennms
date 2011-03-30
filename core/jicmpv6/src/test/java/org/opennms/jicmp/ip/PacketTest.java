@@ -112,7 +112,7 @@ public class PacketTest {
         assertThat(icmpPacket.getChecksum(), is(equalTo(icmpPacket.computeChecksum())));
         
         ICMPEchoPacket echoReply = new ICMPEchoPacket(icmpPacket);
-        assertThat(echoReply.getIdentifier(), is(equalTo(43260)));
+        assertThat(echoReply.getIdentifier(), is(equalTo(43260L)));
         assertThat(echoReply.getSequenceNumber(), is(equalTo(250)));
         
         ByteBuffer content = echoReply.getContentBuffer();

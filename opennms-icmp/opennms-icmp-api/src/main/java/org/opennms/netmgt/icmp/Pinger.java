@@ -110,9 +110,6 @@ import java.util.List;
  *
  * @author <a href="mailto:ranger@opennms.org">Ben Reed</a>
  * @author <a href="mailto:brozow@opennms.org">Mathew Brozowski</a>
- * @author <a href="mailto:ranger@opennms.org">Ben Reed</a>
- * @author <a href="mailto:brozow@opennms.org">Mathew Brozowski</a>
- * @version $Id: $
  */
 public interface Pinger {
     /**

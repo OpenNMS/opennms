@@ -38,6 +38,7 @@ package org.opennms.netmgt.ping;
 import java.net.InetAddress;
 import java.util.Arrays;
 import java.util.List;
+import java.util.concurrent.TimeUnit;
 
 import org.opennms.core.concurrent.BarrierSignaler;
 import org.opennms.netmgt.icmp.PingResponseCallback;
@@ -65,19 +66,19 @@ public class ParallelPingResponseCallback implements PingResponseCallback {
 
     /** {@inheritDoc} */
     public void handleError(InetAddress address, ICMPEchoPacket packet, Throwable t) {
-        m_responseTimes[packet.getSequenceId()] = null;
+        m_responseTimes[packet.getSequenceNumber()] = null;
         bs.signalAll();
     }
 
     /** {@inheritDoc} */
     public void handleResponse(InetAddress address, ICMPEchoPacket packet) {
-        m_responseTimes[packet.getSequenceId()] = packet.getPingRTT();
+        m_responseTimes[packet.getSequenceNumber()] = packet.elapsedTime(TimeUnit.NANOSECONDS);
         bs.signalAll();
     }
 
     /** {@inheritDoc} */
     public void handleTimeout(InetAddress address, ICMPEchoPacket packet) {
-        m_responseTimes[packet.getSequenceId()] = null;
+        m_responseTimes[packet.getSequenceNumber()] = null;
         bs.signalAll();
     }
 

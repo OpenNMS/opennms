@@ -185,10 +185,7 @@ public class Pinger implements org.opennms.netmgt.icmp.Pinger {
 	 * @throws java.lang.Exception if any.
 	 */
 	public Long ping(InetAddress host) throws Exception {
-        SinglePingResponseCallback cb = new SinglePingResponseCallback(host);
-        ping(host, DEFAULT_TIMEOUT, DEFAULT_RETRIES, (short)1, cb);
-        cb.waitFor();
-        return cb.getResponseTime();
+        return ping(host, DEFAULT_TIMEOUT, DEFAULT_RETRIES);
 	}
 
 	/**

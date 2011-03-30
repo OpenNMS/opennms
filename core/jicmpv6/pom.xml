@@ -30,6 +30,10 @@
       <artifactId>jna-dependencies</artifactId>
       <type>pom</type>
     </dependency>
+    <dependency>
+      <groupId>org.opennms</groupId>
+      <artifactId>opennms-icmp-api</artifactId>
+    </dependency>
   </dependencies>
 </project>
   

@@ -35,6 +35,8 @@
  */
 package org.opennms.netmgt.ping;
 
+import java.util.concurrent.TimeUnit;
+
 import org.opennms.protocols.icmp.ICMPEchoPacket;
 
 public class JICMPEchoPacket implements org.opennms.netmgt.icmp.ICMPEchoPacket {
@@ -46,22 +48,22 @@ public class JICMPEchoPacket implements org.opennms.netmgt.icmp.ICMPEchoPacket {
     }
 
     @Override
-    public long getReceivedTime() {
+    public long getReceivedTimeNanos() {
         return m_delegate.getReceivedTime();
     }
 
     @Override
-    public long getSentTime() {
+    public long getSentTimeNanos() {
         return m_delegate.getSentTime();
     }
 
     @Override
-    public long getPingRTT() {
-        return m_delegate.getPingRTT();
+    public long elapsedTime(TimeUnit unit) {
+        return unit.convert(m_delegate.getPingRTT(), TimeUnit.NANOSECONDS);
     }
 
     @Override
-    public int getSequenceId() {
+    public int getSequenceNumber() {
         return m_delegate.getSequenceId();
     }
 
@@ -71,7 +73,7 @@ public class JICMPEchoPacket implements org.opennms.netmgt.icmp.ICMPEchoPacket {
     }
 
     @Override
-    public long getTID() {
+    public long getIdentifier() {
         return m_delegate.getTID();
     }
 }
