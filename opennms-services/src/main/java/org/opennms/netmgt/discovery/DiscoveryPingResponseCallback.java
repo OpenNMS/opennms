@@ -35,17 +35,15 @@
  */
 package org.opennms.netmgt.discovery;
 
-import static org.opennms.core.utils.InetAddressUtils.addr;
-
 import java.net.InetAddress;
 import java.net.UnknownHostException;
 
 import org.opennms.core.utils.ThreadCategory;
 import org.opennms.netmgt.EventConstants;
 import org.opennms.netmgt.eventd.EventIpcManagerFactory;
+import org.opennms.netmgt.icmp.ICMPEchoPacket;
+import org.opennms.netmgt.icmp.PingResponseCallback;
 import org.opennms.netmgt.model.events.EventBuilder;
-import org.opennms.netmgt.ping.PingResponseCallback;
-import org.opennms.protocols.icmp.ICMPEchoPacket;
 
 /**
  * <p>DiscoveryPingResponseCallback class.</p>

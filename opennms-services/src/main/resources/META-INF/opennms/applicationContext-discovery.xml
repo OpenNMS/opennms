@@ -19,6 +19,7 @@
   <bean id="daemon" class="org.opennms.netmgt.discovery.Discovery">
     <property name="discoveryFactory" ref="discoveryFactory" />
     <property name="eventForwarder" ref="eventForwarder"/>
+    <property name="pinger" ref="pinger"/>
   </bean>
   
 </beans>

@@ -11,7 +11,7 @@ import static org.opennms.core.utils.LogUtils.debugf;
 
 import java.net.InetAddress;
 
-import org.opennms.netmgt.ping.Pinger;
+import org.opennms.netmgt.icmp.PingerFactory;
 import org.opennms.netmgt.snmp.SnmpAgentConfig;
 import org.opennms.netmgt.snmp.SnmpObjId;
 import org.opennms.netmgt.snmp.SnmpUtils;
@@ -87,7 +87,7 @@ public class EndPointImpl implements EndPoint {
      */
     public boolean ping() {
         try {
-            Long result = Pinger.ping(getAddress());
+            Long result = PingerFactory.getInstance().ping(getAddress());
             if (result != null) {
                 return true;
             }

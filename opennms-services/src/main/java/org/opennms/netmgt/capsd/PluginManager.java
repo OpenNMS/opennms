@@ -96,7 +96,7 @@ public class PluginManager implements InitializingBean {
                     Class<?> cplugin = Class.forName(plugin.getClassName());
                     Object oplugin = cplugin.newInstance();
                     if (!(oplugin instanceof Plugin)) {
-                        throw new ValidationException("CapsdConfigFactory: successfully to load plugin for protocol " + plugin.getProtocol() + ", class-name = " + plugin.getClassName() + ", however the class is not an instance of " + Plugin.class.getName());
+                        throw new ValidationException("CapsdConfigFactory: successfully loaded plugin class for protocol " + plugin.getProtocol() + ", class-name = " + plugin.getClassName() + ", however the class is not an instance of " + Plugin.class.getName());
                     }
                     
                     Plugin p = (Plugin) oplugin;
@@ -249,7 +249,7 @@ public class PluginManager implements InitializingBean {
         return lprotos.toArray(result);
     }
 
-    private void addProperties(List<Property> properties, Map<String, Object> params) {
+    private static void addProperties(List<Property> properties, Map<String, Object> params) {
         for (Property property : properties) {
             params.put(property.getKey(), property.getValue());
         }

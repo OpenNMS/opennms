@@ -33,18 +33,11 @@
  *      http://www.opennms.org/
  *      http://www.opennms.com/
  */
-package org.opennms.netmgt.ping;
-
-import static org.opennms.netmgt.icmp.PingConstants.DEFAULT_RETRIES;
-import static org.opennms.netmgt.icmp.PingConstants.DEFAULT_TIMEOUT;
+package org.opennms.netmgt.icmp;
 
 import java.io.IOException;
 import java.net.InetAddress;
 import java.util.List;
-
-import org.opennms.netmgt.icmp.PingResponseCallback;
-import org.opennms.protocols.rt.IDBasedRequestLocator;
-import org.opennms.protocols.rt.RequestTracker;
 
 /**
  * 
@@ -117,25 +110,11 @@ import org.opennms.protocols.rt.RequestTracker;
  *
  * @author <a href="mailto:ranger@opennms.org">Ben Reed</a>
  * @author <a href="mailto:brozow@opennms.org">Mathew Brozowski</a>
+ * @author <a href="mailto:ranger@opennms.org">Ben Reed</a>
+ * @author <a href="mailto:brozow@opennms.org">Mathew Brozowski</a>
+ * @version $Id: $
  */
-public class Pinger implements org.opennms.netmgt.icmp.Pinger {
-    
-    
-    private RequestTracker<PingRequest, PingReply> s_pingTracker;
-    
-    public Pinger() {}
-
-	/**
-	 * Initializes this singleton
-	 *
-	 * @throws java.io.IOException if any.
-	 */
-	public synchronized void initialize() throws IOException {
-	    if (s_pingTracker != null) return;
-	    s_pingTracker = new RequestTracker<PingRequest, PingReply>("ICMP", new IcmpMessenger(), new IDBasedRequestLocator<PingRequestId, PingRequest, PingReply>());
-	    s_pingTracker.start();
-	}
-
+public interface Pinger {
     /**
      * <p>ping</p>
      *
@@ -146,10 +125,7 @@ public class Pinger implements org.opennms.netmgt.icmp.Pinger {
      * @param cb a {@link org.opennms.netmgt.ping.PingResponseCallback} object.
      * @throws java.lang.Exception if any.
      */
-    public void ping(InetAddress host, long timeout, int retries, short sequenceId, PingResponseCallback cb) throws Exception {
-        initialize();
-        s_pingTracker.sendRequest(new PingRequest(host, sequenceId, timeout, retries, cb));
-	}
+    public void ping(InetAddress host, long timeout, int retries, short sequenceId, PingResponseCallback cb) throws Exception;
 
     /**
      * This method is used to ping a remote host to test for ICMP support. If
@@ -167,12 +143,7 @@ public class Pinger implements org.opennms.netmgt.icmp.Pinger {
      * @throws IOException if any.
      * @throws java.lang.Exception if any.
      */
-    public Long ping(InetAddress host, long timeout, int retries) throws Exception {
-        SinglePingResponseCallback cb = new SinglePingResponseCallback(host);
-        ping(host, timeout, retries, (short)1, cb);
-        cb.waitFor();
-        return cb.getResponseTime();
-    }
+    public Long ping(InetAddress host, long timeout, int retries) throws Exception;
     
 
 	/**
@@ -184,12 +155,7 @@ public class Pinger implements org.opennms.netmgt.icmp.Pinger {
 	 * @throws InterruptedException if any.
 	 * @throws java.lang.Exception if any.
 	 */
-	public Long ping(InetAddress host) throws Exception {
-        SinglePingResponseCallback cb = new SinglePingResponseCallback(host);
-        ping(host, DEFAULT_TIMEOUT, DEFAULT_RETRIES, (short)1, cb);
-        cb.waitFor();
-        return cb.getResponseTime();
-	}
+	public Long ping(InetAddress host) throws Exception;
 
 	/**
 	 * <p>parallelPing</p>
@@ -201,22 +167,5 @@ public class Pinger implements org.opennms.netmgt.icmp.Pinger {
 	 * @return a {@link java.util.List} object.
 	 * @throws java.lang.Exception if any.
 	 */
-	public List<Number> parallelPing(InetAddress host, int count, long timeout, long pingInterval) throws Exception {
-	    initialize();
-	    ParallelPingResponseCallback cb = new ParallelPingResponseCallback(count);
-        
-        if (timeout == 0) {
-            timeout = DEFAULT_TIMEOUT;
-        }
-        
-        for (int i = 0; i < count; i++) {
-            PingRequest request = new PingRequest(host, (short) i, timeout, 0, cb);
-            s_pingTracker.sendRequest(request);
-            Thread.sleep(pingInterval);
-        }
-        
-        cb.waitFor();
-        return cb.getResponseTimes();
-	}
-
+	public List<Number> parallelPing(InetAddress host, int count, long timeout, long pingInterval) throws Exception;
 }

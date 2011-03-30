@@ -67,7 +67,7 @@
     </bean>
         
     
-  <!-- Need to get the custructor args in place first 
+  <!-- Need to get the constructor args in place first 
     <bean name="capsdAnnotatedEventHandler" class="org.opennms.netmgt.capsd.BroadcastEventProcessor">
     </bean>
    -->    

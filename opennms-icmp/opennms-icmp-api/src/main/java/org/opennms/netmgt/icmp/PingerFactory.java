@@ -10,10 +10,7 @@
 //
 // Modifications:
 //
-// 2007 Apr 06: Add a reset method for unit tests and clean up a bit. - dj@opennms.org
-// 2007 Mar 21: Added assertions. - dj@opennms.org
-//
-// Copyright (C) 1999-2001 Oculan Corp.  All rights reserved.
+// Copyright (C) 1999-2011 The OpenNMS Group, Inc.  All rights reserved.
 //
 // This program is free software; you can redistribute it and/or modify
 // it under the terms of the GNU General Public License as published by
@@ -37,46 +34,40 @@
 // Tab Size = 8
 //
 
-package org.opennms.netmgt.eventd;
+package org.opennms.netmgt.icmp;
 
 import org.springframework.util.Assert;
 
 /**
- * <p>EventIpcManagerFactory class.</p>
+ * <p>Pinger class.</p>
  *
- * @author <A HREF="mailto:sowmya@opennms.org">Sowmya Nataraj </A>
+ * @author <A HREF="mailto:sowmya@opennms.org">Sowmya Nataraj</A>
  * @author <A HREF="http://www.opennms.org">OpenNMS.org </A>
  */
-public abstract class EventIpcManagerFactory {
+public abstract class PingerFactory {
 	/**
-     * The EventIpcManager instance.
+     * The {@link Pinger} instance.
      */
-    private static EventIpcManager m_ipcManager;
+    private static Pinger m_pinger;
 
     /**
-     * Create the singleton instance of this factory
-     */
-    public static synchronized void init() {
-    }
-
-    /**
-     * Returns an implementation of the default EventIpcManager class
+     * Returns an implementation of the default {@link Pinger} class
      *
-     * @return a {@link org.opennms.netmgt.eventd.EventIpcManager} object.
+     * @return a {@link Pinger} object.
      */
-    public static EventIpcManager getIpcManager() {
-        Assert.state(m_ipcManager != null, "this factory has not been initialized");
-        return m_ipcManager;
+    public static Pinger getInstance() {
+        Assert.state(m_pinger != null, "this factory has not been initialized");
+        return m_pinger;
     }
 
     /**
      * <p>setIpcManager</p>
      *
-     * @param ipcManager a {@link org.opennms.netmgt.eventd.EventIpcManager} object.
+     * @param pinger a {@link Pinger} object.
      */
-    public static void setIpcManager(EventIpcManager ipcManager) {
-        Assert.notNull(ipcManager, "argument ipcManager must not be null");
-        m_ipcManager = ipcManager;
+    public static void setInstance(Pinger pinger) {
+        Assert.notNull(pinger, "property pinger must not be null");
+        m_pinger = pinger;
     }
     
     /**
@@ -84,7 +75,6 @@ public abstract class EventIpcManagerFactory {
      * every test.
      */
     protected static void reset() {
-        m_ipcManager = null;
+        m_pinger = null;
     }
-
 }

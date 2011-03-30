@@ -10,9 +10,9 @@
  *
  * Modifications:
  * 
- * Created August 22, 2007
+ * Created March 29, 2011
  *
- * Copyright (C) 2007 The OpenNMS Group, Inc.  All rights reserved.
+ * Copyright (C) 2011 The OpenNMS Group, Inc.  All rights reserved.
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -35,39 +35,43 @@
  */
 package org.opennms.netmgt.ping;
 
-import java.net.InetAddress;
-
 import org.opennms.protocols.icmp.ICMPEchoPacket;
 
-/**
- * <p>PingResponseCallback interface.</p>
- *
- * @author <a href="mailto:ranger@opennms.org">Ben Reed</a>
- * @version $Id: $
- */
-public interface PingResponseCallback {
+public class JICMPEchoPacket implements org.opennms.netmgt.icmp.ICMPEchoPacket {
 
-	/**
-	 * <p>handleResponse</p>
-	 *
-	 * @param address a {@link java.net.InetAddress} object.
-	 * @param packet a {@link org.opennms.protocols.icmp.ICMPEchoPacket} object.
-	 */
-	public void handleResponse(InetAddress address, ICMPEchoPacket packet);
-	/**
-	 * <p>handleTimeout</p>
-	 *
-	 * @param address a {@link java.net.InetAddress} object.
-	 * @param packet a {@link org.opennms.protocols.icmp.ICMPEchoPacket} object.
-	 */
-	public void handleTimeout(InetAddress address, ICMPEchoPacket packet);
-    /**
-     * <p>handleError</p>
-     *
-     * @param address a {@link java.net.InetAddress} object.
-     * @param packet a {@link org.opennms.protocols.icmp.ICMPEchoPacket} object.
-     * @param t a {@link java.lang.Throwable} object.
-     */
-    public void handleError(InetAddress address, ICMPEchoPacket packet, Throwable t);
+    private final ICMPEchoPacket m_delegate;
 
+    public JICMPEchoPacket(ICMPEchoPacket packet) {
+        m_delegate = packet;
+    }
+
+    @Override
+    public long getReceivedTime() {
+        return m_delegate.getReceivedTime();
+    }
+
+    @Override
+    public long getSentTime() {
+        return m_delegate.getSentTime();
+    }
+
+    @Override
+    public long getPingRTT() {
+        return m_delegate.getPingRTT();
+    }
+
+    @Override
+    public int getSequenceId() {
+        return m_delegate.getSequenceId();
+    }
+
+    @Override
+    public byte[] toBytes() {
+        return m_delegate.toBytes();
+    }
+
+    @Override
+    public long getTID() {
+        return m_delegate.getTID();
+    }
 }

@@ -42,7 +42,8 @@ import java.util.concurrent.TimeUnit;
 import java.util.concurrent.atomic.AtomicBoolean;
 
 import org.opennms.core.utils.ThreadCategory;
-import org.opennms.protocols.icmp.ICMPEchoPacket;
+import org.opennms.netmgt.icmp.PingResponseCallback;
+import org.opennms.netmgt.icmp.ICMPEchoPacket;
 import org.opennms.protocols.icmp.IcmpSocket;
 import org.opennms.protocols.rt.Request;
 
@@ -238,11 +239,11 @@ final public class PingRequest implements Request<PingRequestId, PingRequest, Pi
      */
     public void createRequestPacket() {
         m_expiration = System.currentTimeMillis() + m_timeout;
-        ICMPEchoPacket iPkt = new ICMPEchoPacket(getTid());
+        org.opennms.protocols.icmp.ICMPEchoPacket iPkt = new org.opennms.protocols.icmp.ICMPEchoPacket(getTid());
         iPkt.setIdentity(FILTER_ID);
         iPkt.setSequenceId(getSequenceId());
         iPkt.computeChecksum();
-        m_request = iPkt;
+        m_request = new JICMPEchoPacket(iPkt);
     }
     
     /**
@@ -253,7 +254,7 @@ final public class PingRequest implements Request<PingRequestId, PingRequest, Pi
      */
     public boolean processResponse(PingReply reply) {
         try {
-            processResponse(reply.getPacket());
+            processResponse(new JICMPEchoPacket(reply.getPacket()));
         } finally {
             setProcessed(true);
         }

@@ -42,6 +42,7 @@ import junit.framework.TestCase;
 
 import org.opennms.core.utils.CollectionMath;
 import org.opennms.core.utils.InetAddressUtils;
+import org.opennms.netmgt.icmp.PingConstants;
 
 /**
  * 
@@ -90,22 +91,22 @@ public class PingTest extends TestCase {
     }
 
     public void testSinglePing() throws Exception {
-        assertTrue(Pinger.ping(m_goodHost) > 0);
+        assertTrue(new Pinger().ping(m_goodHost) > 0);
     }
 
     public void testSinglePingFailure() throws Exception {
-        assertNull(Pinger.ping(m_badHost));
+        assertNull(new Pinger().ping(m_badHost));
     }
 
     public void testParallelPing() throws Exception {
-        List<Number> items = Pinger.parallelPing(m_goodHost, 20, PingConstants.DEFAULT_TIMEOUT, 50);
+        List<Number> items = new Pinger().parallelPing(m_goodHost, 20, PingConstants.DEFAULT_TIMEOUT, 50);
         Thread.sleep(1000);
         printResponse(items);
         assertTrue(CollectionMath.countNotNull(items) > 0);
     }
 
     public void testParallelPingFailure() throws Exception {
-        List<Number> items = Pinger.parallelPing(m_badHost, 20, PingConstants.DEFAULT_TIMEOUT, 50);
+        List<Number> items = new Pinger().parallelPing(m_badHost, 20, PingConstants.DEFAULT_TIMEOUT, 50);
         Thread.sleep(PingConstants.DEFAULT_TIMEOUT + 100);
         printResponse(items);
         assertTrue(CollectionMath.countNotNull(items) == 0);

@@ -49,9 +49,9 @@ import java.util.Map;
 
 import org.opennms.core.utils.ParameterMap;
 import org.opennms.core.utils.ThreadCategory;
+import org.opennms.netmgt.icmp.PingConstants;
+import org.opennms.netmgt.icmp.PingerFactory;
 import org.opennms.netmgt.model.PollStatus;
-import org.opennms.netmgt.ping.PingConstants;
-import org.opennms.netmgt.ping.Pinger;
 import org.opennms.netmgt.poller.Distributable;
 import org.opennms.netmgt.poller.DistributionContext;
 import org.opennms.netmgt.poller.MonitoredService;
@@ -68,9 +68,6 @@ import org.opennms.netmgt.poller.NetworkInterfaceNotSupportedException;
  *
  * @author <A HREF="mailto:tarus@opennms.org">Tarus Balog</A>
  * @author <A HREF="http://www.opennms.org/">OpenNMS</A>
- * @author <A HREF="mailto:tarus@opennms.org">Tarus Balog</A>
- * @author <A HREF="http://www.opennms.org/">OpenNMS</A>
- * @version $Id: $
  */
 
 // this is marked not distributable because it relies on a shared library
@@ -117,7 +114,7 @@ final public class IcmpMonitor extends AbstractServiceMonitor {
             int retries = ParameterMap.getKeyedInteger(parameters, "retry", PingConstants.DEFAULT_RETRIES);
             long timeout = ParameterMap.getKeyedLong(parameters, "timeout", PingConstants.DEFAULT_TIMEOUT);
             
-            rtt = Pinger.ping(host, timeout, retries);
+            rtt = PingerFactory.getInstance().ping(host, timeout, retries);
         } catch (Throwable e) {
             log.debug("failed to ping " + host, e);
         }

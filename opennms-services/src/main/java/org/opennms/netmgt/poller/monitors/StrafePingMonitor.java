@@ -46,9 +46,9 @@ import java.util.Map;
 import org.opennms.core.utils.CollectionMath;
 import org.opennms.core.utils.ParameterMap;
 import org.opennms.core.utils.ThreadCategory;
+import org.opennms.netmgt.icmp.PingConstants;
+import org.opennms.netmgt.icmp.PingerFactory;
 import org.opennms.netmgt.model.PollStatus;
-import org.opennms.netmgt.ping.PingConstants;
-import org.opennms.netmgt.ping.Pinger;
 import org.opennms.netmgt.poller.Distributable;
 import org.opennms.netmgt.poller.DistributionContext;
 import org.opennms.netmgt.poller.MonitoredService;
@@ -66,13 +66,6 @@ import org.opennms.netmgt.poller.NetworkInterfaceNotSupportedException;
  * @author <A HREF="mailto:tarus@opennms.org">Tarus Balog</A>
  * @author <A HREF="mailto:ranger@opennms.org">Benjamin Reed</A>
  * @author <A HREF="http://www.opennms.org/">OpenNMS</A>
- * @author <A HREF="mailto:tarus@opennms.org">Tarus Balog</A>
- * @author <A HREF="mailto:ranger@opennms.org">Benjamin Reed</A>
- * @author <A HREF="http://www.opennms.org/">OpenNMS</A>
- * @author <A HREF="mailto:tarus@opennms.org">Tarus Balog</A>
- * @author <A HREF="mailto:ranger@opennms.org">Benjamin Reed</A>
- * @author <A HREF="http://www.opennms.org/">OpenNMS</A>
- * @version $Id: $
  */
 
 // this is marked not distributable because it relies on a shared library
@@ -126,7 +119,7 @@ final public class StrafePingMonitor extends AbstractServiceMonitor {
             long pingInterval = ParameterMap.getKeyedLong(parameters, "wait-interval", DEFAULT_PING_INTERVAL);
             int failurePingCount = ParameterMap.getKeyedInteger(parameters, "failure-ping-count", DEFAULT_FAILURE_PING_COUNT);
             
-            responseTimes = new ArrayList<Number>(Pinger.parallelPing(host, count, timeout, pingInterval));
+            responseTimes = new ArrayList<Number>(PingerFactory.getInstance().parallelPing(host, count, timeout, pingInterval));
 
             if (CollectionMath.countNull(responseTimes) >= failurePingCount) {
             	if (log().isDebugEnabled()) {

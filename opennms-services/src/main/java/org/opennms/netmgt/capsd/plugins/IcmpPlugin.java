@@ -40,8 +40,8 @@ import java.util.Map;
 import org.opennms.core.utils.ParameterMap;
 import org.opennms.core.utils.ThreadCategory;
 import org.opennms.netmgt.capsd.AbstractPlugin;
-import org.opennms.netmgt.ping.PingConstants;
-import org.opennms.netmgt.ping.Pinger;
+import org.opennms.netmgt.icmp.PingConstants;
+import org.opennms.netmgt.icmp.PingerFactory;
 
 /**
  * This class provides Capsd with the ability to check for ICMP support on new
@@ -51,9 +51,6 @@ import org.opennms.netmgt.ping.Pinger;
  *
  * @author <A HREF="mailto:weave@oculan.com">Weave </a>
  * @author <A HREF="http://www.opennms.org/">OpenNMS </A>
- * @author <A HREF="mailto:weave@oculan.com">Weave </a>
- * @author <A HREF="http://www.opennms.org/">OpenNMS </A>
- * @version $Id: $
  */
 public final class IcmpPlugin extends AbstractPlugin {
     /**
@@ -79,7 +76,7 @@ public final class IcmpPlugin extends AbstractPlugin {
      */
     public boolean isProtocolSupported(InetAddress address) {
 		try {
-	    	Long retval = Pinger.ping(address);
+	    	Long retval = PingerFactory.getInstance().ping(address);
 	    	if (retval != null) {
 	    		return true;
 	    	}
@@ -111,7 +108,7 @@ public final class IcmpPlugin extends AbstractPlugin {
     			retries = PingConstants.DEFAULT_RETRIES;
     			timeout = PingConstants.DEFAULT_TIMEOUT;
     		}
-    		Long retval = Pinger.ping(address, timeout, retries);
+    		Long retval = PingerFactory.getInstance().ping(address, timeout, retries);
     		if (retval != null) {
     			return true;
     		}

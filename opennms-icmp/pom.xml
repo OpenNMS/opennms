@@ -9,6 +9,7 @@
   <packaging>pom</packaging>
   <name>OpenNMS ICMP Library</name>
   <modules>
+    <module>opennms-icmp-api</module>
     <module>opennms-icmp-jicmp</module>
   </modules>
 </project>

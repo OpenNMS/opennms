@@ -39,7 +39,8 @@ import java.net.InetAddress;
 
 import org.opennms.core.concurrent.BarrierSignaler;
 import org.opennms.core.utils.ThreadCategory;
-import org.opennms.protocols.icmp.ICMPEchoPacket;
+import org.opennms.netmgt.icmp.PingResponseCallback;
+import org.opennms.netmgt.icmp.ICMPEchoPacket;
 
 /**
  * <p>SinglePingResponseCallback class.</p>

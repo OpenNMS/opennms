@@ -40,7 +40,8 @@ import java.util.Arrays;
 import java.util.List;
 
 import org.opennms.core.concurrent.BarrierSignaler;
-import org.opennms.protocols.icmp.ICMPEchoPacket;
+import org.opennms.netmgt.icmp.PingResponseCallback;
+import org.opennms.netmgt.icmp.ICMPEchoPacket;
 
 /**
  * <p>ParallelPingResponseCallback class.</p>

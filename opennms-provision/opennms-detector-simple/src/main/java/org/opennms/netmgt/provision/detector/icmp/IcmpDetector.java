@@ -33,8 +33,8 @@ package org.opennms.netmgt.provision.detector.icmp;
 import java.net.InetAddress;
 
 import org.opennms.core.utils.LogUtils;
-import org.opennms.netmgt.ping.PingConstants;
-import org.opennms.netmgt.ping.Pinger;
+import org.opennms.netmgt.icmp.PingConstants;
+import org.opennms.netmgt.icmp.PingerFactory;
 import org.opennms.netmgt.provision.DetectorMonitor;
 import org.opennms.netmgt.provision.support.AbstractDetector;
 import org.springframework.context.annotation.Scope;
@@ -74,7 +74,7 @@ public class IcmpDetector extends AbstractDetector {
         boolean found = false;
         try {
             for(int i = 0; i < getRetries() && !found; i++) {
-                Long retval = Pinger.ping(address, getTimeout(), getRetries());
+                Long retval = PingerFactory.getInstance().ping(address, getTimeout(), getRetries());
                 
                 LogUtils.debugf(this, "isServiceDetected: Response time for address: %s is: %d.", address, retval);
                 

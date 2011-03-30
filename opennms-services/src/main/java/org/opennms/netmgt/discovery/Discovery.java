@@ -63,12 +63,12 @@ import org.opennms.netmgt.config.DataSourceFactory;
 import org.opennms.netmgt.config.DiscoveryConfigFactory;
 import org.opennms.netmgt.daemon.AbstractServiceDaemon;
 import org.opennms.netmgt.eventd.EventIpcManagerFactory;
+import org.opennms.netmgt.icmp.Pinger;
 import org.opennms.netmgt.model.discovery.IPPollAddress;
 import org.opennms.netmgt.model.events.EventBuilder;
 import org.opennms.netmgt.model.events.EventForwarder;
 import org.opennms.netmgt.model.events.annotations.EventHandler;
 import org.opennms.netmgt.model.events.annotations.EventListener;
-import org.opennms.netmgt.ping.Pinger;
 import org.opennms.netmgt.xml.event.Event;
 import org.opennms.netmgt.xml.event.Parm;
 import org.springframework.util.Assert;
@@ -113,6 +113,8 @@ public class Discovery extends AbstractServiceDaemon {
     
     private volatile EventForwarder m_eventForwarder;
 
+    private Pinger m_pinger;
+
     /**
      * <p>setEventForwarder</p>
      *
@@ -120,6 +122,15 @@ public class Discovery extends AbstractServiceDaemon {
      */
     public void setEventForwarder(EventForwarder eventForwarder) {
         m_eventForwarder = eventForwarder;
+    }
+
+    /**
+     * <p>setPinger</p>
+     *
+     * @param pinger a {@link Pinger} object.
+     */
+    public void setPinger(Pinger pinger) {
+        m_pinger = pinger;
     }
 
     /**
@@ -219,7 +230,7 @@ public class Discovery extends AbstractServiceDaemon {
         if (address != null) {
             if (!isAlreadyDiscovered(address)) {
                 try {
-                    Pinger.ping(address, pollAddress.getTimeout(), pollAddress.getRetries(), (short) 1, cb);
+                    m_pinger.ping(address, pollAddress.getTimeout(), pollAddress.getRetries(), (short) 1, cb);
                 } catch (Throwable e) {
                     debugf(e, "error pinging %s", address.getAddress());
                 }
