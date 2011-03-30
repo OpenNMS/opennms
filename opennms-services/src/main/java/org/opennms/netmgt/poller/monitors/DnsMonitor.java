@@ -44,16 +44,9 @@
 package org.opennms.netmgt.poller.monitors;
 
 import java.io.IOException;
-import java.io.InterruptedIOException;
 import java.lang.reflect.UndeclaredThrowableException;
-import java.net.ConnectException;
-import java.net.DatagramPacket;
-import java.net.DatagramSocket;
 import java.net.InetAddress;
-import java.net.NoRouteToHostException;
 import java.net.UnknownHostException;
-import java.util.ArrayList;
-import java.util.List;
 import java.util.Map;
 
 import org.apache.log4j.Level;
@@ -65,7 +58,8 @@ import org.opennms.netmgt.poller.Distributable;
 import org.opennms.netmgt.poller.MonitoredService;
 import org.opennms.netmgt.poller.NetworkInterface;
 import org.opennms.netmgt.poller.NetworkInterfaceNotSupportedException;
-import org.opennms.protocols.dns.DNSAddressRequest;
+import org.xbill.DNS.Lookup;
+import org.xbill.DNS.SimpleResolver;
 
 /**
  * <P>
@@ -148,67 +142,9 @@ final public class DnsMonitor extends AbstractServiceMonitor {
         // get the address and DNS address request
         //
         InetAddress addr = iface.getAddress();
-        DNSAddressRequest request = new DNSAddressRequest(lookup);
-
-        // List of fatal response codes?
-        //
-        final int[] fatalCodes = ParameterMap.getKeyedIntegerArray(parameters, "fatal-response-codes", DEFAULT_FATAL_RESP_CODES);
-        if (fatalCodes != DEFAULT_FATAL_RESP_CODES) {
-            final List<Integer> codeList = new ArrayList<Integer>();
-            for (final int code : fatalCodes) {
-                codeList.add(code);
-            }
-            request.setFatalResponseCodes(codeList);
-        }
         
         PollStatus serviceStatus = null;
-        DatagramSocket socket = null;
-        try {
-            socket = new DatagramSocket();
-            socket.setSoTimeout(timeoutTracker.getSoTimeout()); // will force the InterruptedIOException
-
-            for (timeoutTracker.reset(); timeoutTracker.shouldRetry() && (serviceStatus == null || !serviceStatus.isAvailable()); timeoutTracker.nextAttempt()) {
-                try {
-                    // Send DNS request
-                    //
-                    byte[] data = request.buildRequest();
-                    DatagramPacket outgoing = new DatagramPacket(data, data.length, addr, port);
-                    
-                    byte[] buffer = new byte[512];
-                    DatagramPacket incoming = new DatagramPacket(buffer, buffer.length);
-
-                    timeoutTracker.startAttempt();
-
-                    socket.send(outgoing);
-
-                    // Get DNS Response
-                    socket.receive(incoming);
-
-                    double responseTime = timeoutTracker.elapsedTimeInMillis();
-
-                    // Validate DNS Response
-                    // IOException thrown if packet does not decode as expected.
-                    request.verifyResponse(incoming.getData(), incoming.getLength());
-                    
-                    serviceStatus = logUp(Level.DEBUG, responseTime, "valid DNS request received, responseTime= " + responseTime + "ms");
-
-                } catch (InterruptedIOException ex) {
-                    // No response received, retry without marking the poll failed. If we get this condition over and over until 
-                    // the retries are exhausted, it will leave serviceStatus null and we'll get the log message at the bottom 
-                } catch (NoRouteToHostException e) {
-                    serviceStatus = logDown(Level.WARN, "No route to host exception for address: " + addr, e);
-                } catch (ConnectException e) {
-                    serviceStatus = logDown(Level.WARN, "Connection exception for address: " + addr, e);
-                } catch (IOException ex) {
-                    serviceStatus = logDown(Level.WARN, "IOException while polling address: " + addr + " " + ex.getMessage(), ex);
-                }
-            }
-        } catch (IOException ex) {
-            serviceStatus = logDown(Level.DEBUG, "Failed to create Datagram Socket for : " + addr, ex);
-        } finally {
-            if (socket != null)
-                socket.close();
-        }
+        serviceStatus = pollDNS(timeoutTracker, port, addr, lookup);
 
         if (serviceStatus == null) {
             serviceStatus = logDown(Level.DEBUG, "Never received valid DNS response for address: " + addr);
@@ -220,5 +156,44 @@ final public class DnsMonitor extends AbstractServiceMonitor {
         //
         return serviceStatus;
     }
+
+    private PollStatus pollDNS(TimeoutTracker timeoutTracker, int port, InetAddress addr, String lookup) {
+            for (timeoutTracker.reset(); timeoutTracker.shouldRetry(); timeoutTracker.nextAttempt()) {
+                try {
+                    timeoutTracker.startAttempt();
+                    
+                    Lookup l = new Lookup(lookup);
+                    SimpleResolver resolver = new SimpleResolver(addr.getHostAddress());
+                    resolver.setPort(port);
+                    double timeout = timeoutTracker.getSoTimeout()/1000;
+                    resolver.setTimeout((timeout < 1 ? 1 : (int) timeout));
+                    l.setResolver(resolver);
+                    l.run();
+
+                    double responseTime = timeoutTracker.elapsedTimeInMillis();
+                    if(l.getResult() == Lookup.SUCCESSFUL) {
+                        return logUp(Level.DEBUG, responseTime, "valid DNS request received, responseTime= " + responseTime + "ms");
+                    }else if(l.getResult() == Lookup.HOST_NOT_FOUND) {
+                        System.err.println(l.getErrorString());
+                        return logUp(Level.DEBUG, responseTime, "host not found on DNS, responseTime= " + responseTime + "ms");
+                    }else if(l.getResult() == Lookup.TRY_AGAIN) {
+                        if(!timeoutTracker.shouldRetry()) {
+                            return logDown(Level.DEBUG, "Never received valid DNS response for address: " + addr);
+                        }
+                    }else if(l.getResult() == Lookup.TYPE_NOT_FOUND) {
+
+                    }else if(l.getResult() == Lookup.UNRECOVERABLE) {
+                        System.err.println(l.getErrorString());
+                        return logDown(Level.DEBUG, "Never received valid DNS response for address: " + addr);
+                    }
+
+                } catch (IOException ex) {
+                    return logDown(Level.WARN, "IOException while polling address: " + addr + " " + ex.getMessage(), ex);
+                }
+            }
+       
+        return logDown(Level.DEBUG, "Never received valid DNS response for address: " + addr);
+    }
+
     
 }
