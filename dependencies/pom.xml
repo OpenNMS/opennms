@@ -29,6 +29,7 @@
     <module>jdbc-pool</module>
     <module>jdhcp</module>
     <module>jinterop</module>
+    <module>jmdns</module>
     <module>jna</module>
     <module>jnlp</module>
     <module>jradius</module>
@@ -39,7 +40,6 @@
     <module>rancid</module>
     <!-- <module>rrd4j</module> -->
     <module>rxtx</module>
-    <module>service-registration</module>
     <module>servlet</module>
     <module>snmp</module>
     <module>snmp-agent</module>

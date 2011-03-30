@@ -6,16 +6,17 @@
   </parent>
   <modelVersion>4.0.0</modelVersion>
   <groupId>org.opennms.dependencies</groupId>
-  <artifactId>service-registration-dependencies</artifactId>
+  <artifactId>jmdns-dependencies</artifactId>
   <packaging>pom</packaging>
-  <name>OpenNMS Service Registration Dependencies</name>
+  <name>OpenNMS JMDNS Dependencies</name>
   <dependencies>
     <dependency>
-      <groupId>org.opennms.lib</groupId>
-      <artifactId>org.opennms.lib.service-registration</artifactId>
-      <version>2.0.0</version>
+      <groupId>javax.jmdns</groupId>
+      <artifactId>jmdns</artifactId>
+      <version>3.4.0</version>
     </dependency>
   </dependencies>
+  <!--
   <repositories>
     <repository>
       <snapshots><enabled>false</enabled><updatePolicy>${updatePolicy}</updatePolicy></snapshots>
@@ -25,4 +26,5 @@
       <url>http://maven.opennms.org/content/groups/opennms.org-release</url>
     </repository>
   </repositories>
+  -->
 </project>

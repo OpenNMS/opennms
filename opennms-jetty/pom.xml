@@ -28,9 +28,8 @@
       <type>pom</type>
     </dependency>
     <dependency>
-      <groupId>org.opennms.dependencies</groupId>
-      <artifactId>service-registration-dependencies</artifactId>
-      <type>pom</type>
+      <groupId>org.opennms.features</groupId>
+      <artifactId>org.opennms.features.mdns</artifactId>
     </dependency>
     <dependency>
       <groupId>org.eclipse.jetty</groupId>

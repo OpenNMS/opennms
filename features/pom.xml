@@ -13,6 +13,7 @@
     <module>acl</module>
     <module>jdbc-collector</module>
     <module>instrumentationLogReader</module>
+    <module>mdns</module>
     <module>poller</module>
     <module>provisioning</module>
     <module>root-webapp</module>
