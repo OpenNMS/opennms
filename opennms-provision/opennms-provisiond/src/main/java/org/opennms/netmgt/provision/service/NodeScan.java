@@ -37,8 +37,10 @@ import static org.opennms.core.utils.LogUtils.warnf;
 
 import java.net.InetAddress;
 import java.util.Date;
+import java.util.HashMap;
 import java.util.HashSet;
 import java.util.List;
+import java.util.Map;
 import java.util.Set;
 import java.util.concurrent.ExecutionException;
 import java.util.concurrent.ScheduledExecutorService;
@@ -84,7 +86,6 @@ public class NodeScan implements RunInBatch {
     private SnmpAgentConfigFactory m_agentConfigFactory;
     private DefaultTaskCoordinator m_taskCoordinator;
 
-    
     //NOTE TO SELF: This is referenced from the AgentScan inner class
     private boolean m_aborted = false;
     
@@ -111,6 +112,7 @@ public class NodeScan implements RunInBatch {
         m_eventForwarder = eventForwarder;
         m_agentConfigFactory = agentConfigFactory;
         m_taskCoordinator = taskCoordinator;
+
     }
     
     /**
@@ -335,11 +337,13 @@ public class NodeScan implements RunInBatch {
 
         private InetAddress m_agentAddress;
         private String m_agentType;
-        
+        private Map<Integer,String> m_nodeMap;
+
         public AgentScan(Integer nodeId, OnmsNode node, InetAddress agentAddress, String agentType) {
             super(nodeId, node);
             m_agentAddress = agentAddress;
             m_agentType = agentType;
+            m_nodeMap = new HashMap<Integer,String>();
         }
         
         public InetAddress getAgentAddress() {
@@ -409,6 +413,8 @@ public class NodeScan implements RunInBatch {
                     public void processIPInterfaceRow(IPInterfaceRow row) {
                     	LogUtils.debugf(this, "Processing row with ipAddr %s", row.getIpAddress());
                         if (!row.getIpAddress().startsWith("127.0.0")) {
+                        	if (row.getIpAddress() != null)
+                        		storeIfIndexIpAddress(row.getIfIndex(), row.getIpAddress());
 
                             // mark any provisioned interface as scanned
                             provisionedIps.remove(row.getIpAddress());
@@ -471,6 +477,24 @@ public class NodeScan implements RunInBatch {
         
             }
         }
+        
+    	public void storeIfIndexIpAddress(Integer ifIndex,
+    			String ipAddress) {
+    		debugf(this, "storeIfIndexIpAddress ifIndex %s" , ifIndex);
+    		debugf(this, "storeIfIndexIpAddress ipAddr %s" , ipAddress);
+    		m_nodeMap.put(ifIndex, ipAddress);
+    		
+    	}
+
+    	public String getIpAddress(Integer ifIndex) {
+    		debugf(this, "getIpAddress ifIndex %s" , ifIndex);
+    		return m_nodeMap.get(ifIndex);
+    	}
+    	
+    	public void cleanIfIndexIpAddressMap(Integer nodeId) {
+    		if (m_nodeMap != null)
+    			m_nodeMap.remove(nodeId);
+    	}
 
         public void detectPhysicalInterfaces(final BatchTask currentPhase) {
             if (isAborted()) { return; }
@@ -482,6 +506,10 @@ public class NodeScan implements RunInBatch {
                 public void processPhysicalInterfaceRow(PhysicalInterfaceRow row) {
                 	LogUtils.debugf(this, "Processing row for ifIndex %s", row.getIfIndex());
                     OnmsSnmpInterface snmpIface = row.createInterfaceFromRow();
+                    String ipAddress = getIpAddress(row.getIfIndex());
+                    if (ipAddress != null ) {
+                    	snmpIface.setIpAddress(ipAddress);
+                    }
                     snmpIface.setLastCapsdPoll(getScanStamp());
                     
                     List<SnmpInterfacePolicy> policies = getProvisionService().getSnmpInterfacePoliciesForForeignSource(getForeignSource() == null ? "default" : getForeignSource());
@@ -533,12 +561,12 @@ public class NodeScan implements RunInBatch {
                     new NodeInfoScan(getNode(),getAgentAddress(), getForeignSource(), this, getAgentConfigFactory(), getProvisionService()),
                     new RunInBatch() {
                         public void run(BatchTask phase) {
-                            detectPhysicalInterfaces(phase);
+                            detectIpInterfaces(phase);
                         }
                     },
                     new RunInBatch() {
                         public void run(BatchTask phase) {
-                            detectIpInterfaces(phase);
+                            detectPhysicalInterfaces(phase);
                         }
                     },
                     new RunInBatch() {
