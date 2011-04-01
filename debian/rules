@@ -73,7 +73,7 @@ install: build
 	mv debian/temp/lib/opennms-dns-provisioning-adapter*.jar         debian/opennms-plugin-provisioning-dns/usr/share/java/opennms/
 	mv debian/temp/lib/opennms-link-provisioning-adapter*.jar        debian/opennms-plugin-provisioning-link/usr/share/java/opennms/
 	mv debian/temp/lib/opennms-map-provisioning-adapter*.jar         debian/opennms-plugin-provisioning-map/usr/share/java/opennms/
-	mv debian/temp/lib/opennms-rancid*.jar                           debian/opennms-plugin-provisioning-rancid/usr/share/java/opennms/
+	mv debian/temp/lib/opennms-rancid-provisioning-adapter*.jar      debian/opennms-plugin-provisioning-rancid/usr/share/java/opennms/
 	mv debian/temp/lib/opennms-snmp-asset-provisioning-adapter*.jar  debian/opennms-plugin-provisioning-snmp-asset/usr/share/java/opennms/
 	mv debian/temp/etc/link-adapter-configuration.xml                debian/opennms-plugin-provisioning-link/etc/opennms/
 	mv debian/temp/etc/endpoint-configuration.xml                    debian/opennms-plugin-provisioning-link/etc/opennms/
