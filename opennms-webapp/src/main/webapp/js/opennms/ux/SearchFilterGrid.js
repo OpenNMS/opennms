@@ -20,7 +20,7 @@ OpenNMS.ux.SearchFilterGrid = Ext.extend(Ext.Container, {
 			cls:'x-btn-text-icon',
 			iconCls:'search-criteria-icon',
 			scope: this,
-			handler: this.showSearchPanel,
+			handler: this.showSearchPanel
 		});
 		
 		if (this.grid !== undefined && this.grid.title !== undefined) {
