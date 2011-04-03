@@ -360,12 +360,21 @@ abstract public class InetAddressUtils {
         return ipAddrString == null ? null : getInetAddress(ipAddrString);
     }
     
+    // FIXME: do we lose 
     public static String normalize(final String ipAddrString) {
-    	return str(addr(ipAddrString));
+    	return ipAddrString == null? null : toIpAddrString(addr(ipAddrString));
     }
     
 	public static InetAddress normalize(final InetAddress addr) {
-		return addr(str(addr));
+		// to normalize, we need to run through the byte[] version of toIpAddrString, but that will lose the scope ID
+		// we save it off to set it back when we're done
+		if (addr == null) return null;
+		if (addr instanceof Inet6Address) {
+			final int id = ((Inet6Address)addr).getScopeId();
+			return (Inet6Address)addr(toIpAddrString(addr.getAddress()) + "%" + id);
+		} else {
+			return addr(toIpAddrString(addr.getAddress()));
+		}
 	}
 
 	public static String str(final InetAddress addr) {

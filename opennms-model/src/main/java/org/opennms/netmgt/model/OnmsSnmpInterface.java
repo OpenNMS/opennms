@@ -191,7 +191,7 @@ public class OnmsSnmpInterface extends OnmsEntity implements Serializable {
     public void setNetMask(String snmpipadentnetmask) {
         m_netMask = snmpipadentnetmask;
     }
-
+    
     /**
      * <p>getPhysAddr</p>
      *

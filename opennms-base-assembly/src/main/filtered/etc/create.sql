@@ -380,7 +380,7 @@ create unique index node_foreign_unique_idx on node(foreignSource, foreignId);
 create table snmpInterface (
     id				INTEGER DEFAULT nextval('opennmsNxtId') NOT NULL,
 	nodeID			integer not null,
-	snmpIpAdEntNetMask	varchar(16),
+	snmpIpAdEntNetMask	varchar(45),
 	snmpPhysAddr		varchar(32),
 	snmpIfIndex		integer not null,
 	snmpIfDescr		varchar(256),

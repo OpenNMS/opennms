@@ -31,7 +31,6 @@
  */
 package org.opennms.netmgt.provision.service;
 
-import static org.opennms.core.utils.InetAddressUtils.addr;
 import static org.opennms.core.utils.LogUtils.debugf;
 import static org.opennms.core.utils.LogUtils.infof;
 import static org.opennms.core.utils.LogUtils.warnf;
@@ -392,28 +391,30 @@ public class NodeScan implements RunInBatch {
         }
 
         public void detectIpInterfaces(final BatchTask currentPhase) {
+        	LogUtils.debugf(this, "detecting IP interfaces (phase = %s)", currentPhase);
             if (!isAborted()) { 
-                SnmpAgentConfig agentConfig = getAgentConfigFactory().getAgentConfig(getAgentAddress());
+            	LogUtils.debugf(this, "we are not aborted");
+            	final SnmpAgentConfig agentConfig = getAgentConfigFactory().getAgentConfig(getAgentAddress());
                 Assert.notNull(getAgentConfigFactory(), "agentConfigFactory was not injected");
 
                 // mark all provisioned interfaces as 'in need of scanning' so we can mark them
                 // as scanned during ipAddrTable processing
                 final Set<InetAddress> provisionedIps = new HashSet<InetAddress>();
                 if (getForeignSource() != null) {
-                    for(OnmsIpInterface provisioned : getNode().getIpInterfaces()) {
+                    for(final OnmsIpInterface provisioned : getNode().getIpInterfaces()) {
                         provisionedIps.add(provisioned.getIpAddress());
                     }
                 }
 
-
                 final IPInterfaceTableTracker ipIfTracker = new IPInterfaceTableTracker() {
                     @Override
-                    public void processIPInterfaceRow(IPInterfaceRow row) {
-                    	LogUtils.debugf(this, "Processing row with ipAddr %s", row.getIpAddress());
-                        if (!row.getIpAddress().startsWith("127.0.0")) {
+                    public void processIPInterfaceRow(final IPInterfaceRow row) {
+                    	final String ipAddress = row.getIpAddress();
+						LogUtils.debugf(this, "Processing row with ipAddr %s", ipAddress);
+                		if (!ipAddress.startsWith("127.0.0.") && !ipAddress.equals("0000:0000:0000:0000:0000:0000:0000:0001")) {
 
                             // mark any provisioned interface as scanned
-                            provisionedIps.remove(row.getIpAddress());
+                            provisionedIps.remove(ipAddress);
 
                             // save the interface
                             OnmsIpInterface iface = row.createInterfaceFromRow();
@@ -422,9 +423,8 @@ public class NodeScan implements RunInBatch {
                             // add call to the ip interface is managed policies
                             iface.setIsManaged("M");
 
-                            List<IpInterfacePolicy> policies = getProvisionService().getIpInterfacePoliciesForForeignSource(getForeignSource() == null ? "default" : getForeignSource());
-        
-                            for(IpInterfacePolicy policy : policies) {
+                            final List<IpInterfacePolicy> policies = getProvisionService().getIpInterfacePoliciesForForeignSource(getForeignSource() == null ? "default" : getForeignSource());
+                            for(final IpInterfacePolicy policy : policies) {
                                 if (iface != null) {
                                     iface = policy.apply(iface);
                                 }
@@ -437,18 +437,46 @@ public class NodeScan implements RunInBatch {
                         }
                     }
                 };
+
+                final IPAddressTableTracker ipAddressTracker = new IPAddressTableTracker() {
+                	@Override
+                	public void processIPAddressRow(final IPAddressRow row) {
+                		final String ipAddress = row.getIpAddress();
+						LogUtils.debugf(this, "Processing row with ipAddr %s", ipAddress);
+                		
+                		if (!ipAddress.startsWith("127.0.0.") && !ipAddress.equals("0000:0000:0000:0000:0000:0000:0000:0001")) {
+	                        // mark any provisioned interface as scanned
+	                        provisionedIps.remove(ipAddress);
+	
+	                        OnmsIpInterface iface = row.createInterfaceFromRow();
+	                        iface.setIpLastCapsdPoll(getScanStamp());
+	                        iface.setIsManaged("M");
+	
+                            final List<IpInterfacePolicy> policies = getProvisionService().getIpInterfacePoliciesForForeignSource(getForeignSource() == null ? "default" : getForeignSource());
+                            for(final IpInterfacePolicy policy : policies) {
+                                if (iface != null) {
+                                    iface = policy.apply(iface);
+                                }
+                            }
         
-                SnmpWalker walker = SnmpUtils.createWalker(agentConfig, "ipAddrTable", ipIfTracker);
+                            if (iface != null) {
+                                currentPhase.add(ipUpdater(currentPhase, iface), "write");
+                            }
+                		}
+                	}
+                };
+
+                final SnmpWalker walker = SnmpUtils.createWalker(agentConfig, "ipAddressTables", ipAddressTracker, ipIfTracker);
                 walker.start();
         
                 try {
                     walker.waitFor();
         
                     if (walker.timedOut()) {
-                        abort("Aborting node scan : Agent timed out while scanning the ipAddrTable");
+                        abort("Aborting node scan : Agent timed out while scanning the IP address tables");
                     }
                     else if (walker.failed()) {
-                        abort("Aborting node scan : Agent failed while scanning the ipAddrTable : " + walker.getErrorMessage());
+                        abort("Aborting node scan : Agent failed while scanning the IP address tables : " + walker.getErrorMessage());
                     }
                     else {
         
@@ -468,7 +496,7 @@ public class NodeScan implements RunInBatch {
         
                     }
                 } catch (InterruptedException e) {
-                    abort("Aborting node scan : Scan thread failed while waiting for ipAddrTable");
+                    abort("Aborting node scan : Scan thread failed while waiting for the IP address tables");
                 }
         
             }
@@ -738,10 +766,10 @@ public class NodeScan implements RunInBatch {
         if (!isAborted()) {
             OnmsIpInterface primaryIface = m_provisionService.getPrimaryInterfaceForNode(getNode());
             if (primaryIface != null && primaryIface.getMonitoredServiceByServiceType("SNMP") != null) {
-                LogUtils.debugf(this, "SNMPSNMPSNMP Found primary interface and SNMP service!!");
+                LogUtils.debugf(this, "Found primary interface and SNMP service!");
                 onAgentFound(currentPhase, primaryIface);
             } else {
-                LogUtils.debugf(this, "SNMPSNMPSNMP Failed to find primary interface and SNMP service!!");
+                LogUtils.debugf(this, "Failed to find primary interface and SNMP service!");
             }
         }
     }

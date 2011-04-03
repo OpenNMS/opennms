@@ -67,18 +67,7 @@ import org.opennms.netmgt.snmp.AbstractSnmpStore;
  * @author <A HREF="mailto:sowmya@opennms.org">Sowmya </A>
  * @author <A HREF="mailto:weave@oculan.com">Weave </A>
  * @author <A>Jon Whetzel </A>
- * @author <A HREF="http://www.opennms.org/">OpenNMS </A>
- * @author <A HREF="mailto:sowmya@opennms.org">Sowmya </A>
- * @author <A HREF="mailto:weave@oculan.com">Weave </A>
- * @author <A>Jon Whetzel </A>
- * @author <A HREF="http://www.opennms.org/">OpenNMS </A>
- * @author <A>Jon Whetzel </A>
- * @author <A HREF="mailto:sowmya@opennms.org">Sowmya </A>
- * @author <A HREF="mailto:weave@oculan.com">Weave </A>
- * @author <A>Jon Whetzel </A>
- * @author <A HREF="http://www.opennms.org/">OpenNMS </A>
  * @see <A HREF="http://www.ietf.org/rfc/rfc1213.txt">RFC1213 </A>
- * @version $Id: $
  */
 public final class IfTableEntry extends SnmpTableEntry {
     //

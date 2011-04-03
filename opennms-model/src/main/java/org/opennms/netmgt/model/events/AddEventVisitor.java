@@ -105,9 +105,12 @@ public class AddEventVisitor extends AbstractEntityVisitor {
      * @param monSvc a {@link org.opennms.netmgt.model.OnmsMonitoredService} object.
      * @return a {@link org.opennms.netmgt.xml.event.Event} object.
      */
-    protected Event createNodeGainedServiceEvent(OnmsMonitoredService monSvc) {
-        OnmsIpInterface iface = monSvc.getIpInterface();
-		OnmsNode node = iface.getNode();
+    protected Event createNodeGainedServiceEvent(final OnmsMonitoredService monSvc) {
+    	final OnmsIpInterface iface = monSvc.getIpInterface();
+		final OnmsNode node = iface.getNode();
+		LogUtils.debugf(this, "ipinterface = %s", iface);
+		LogUtils.debugf(this, "snmpinterface = %s", iface.getSnmpInterface());
+		LogUtils.debugf(this, "node = %s", node);
 		return EventUtils.createNodeGainedServiceEvent(m_eventSource, monSvc.getNodeId(), iface.getIpAddress(), monSvc.getServiceType().getName(), node.getLabel(), node.getLabelSource(), node.getSysName(), node.getSysDescription());
     }
 	
