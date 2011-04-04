@@ -55,15 +55,23 @@ class PingReply extends ICMPEchoPacket implements org.opennms.netmgt.icmp.ICMPEc
            and that the cookie matches */
         return content.limit() >= 16 && COOKIE == content.getLong(0);
     }
-    
+
+    @Override
+    public boolean isEchoReply() {
+    	return Type.EchoReply.equals(getType());
+    }
+
+    @Override
     public long getSentTimeNanos() {
         return getContentBuffer().getLong(8);
     }
     
+    @Override
     public long getReceivedTimeNanos() {
         return m_receivedTimeNanos;
     }
     
+    @Override
     public long elapsedTime(TimeUnit unit) {
         return unit.convert(elapsedTimeNanos(), TimeUnit.NANOSECONDS);
     }

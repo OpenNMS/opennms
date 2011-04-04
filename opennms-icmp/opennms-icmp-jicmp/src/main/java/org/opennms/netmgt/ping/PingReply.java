@@ -43,7 +43,7 @@ package org.opennms.netmgt.ping;
 import java.net.DatagramPacket;
 import java.net.InetAddress;
 
-import org.opennms.protocols.icmp.ICMPEchoPacket;
+import org.opennms.netmgt.icmp.ICMPEchoPacket;
 import org.opennms.protocols.rt.ResponseWithId;
 
 /**
@@ -98,12 +98,13 @@ public final class PingReply implements ResponseWithId<PingRequestId> {
     }
 
     /**
-     * Returns the identity of the packet.
+     * Returns the identity of the packet. Since this is an unsigned short, we must
+     * return the value as an int.
      *
      * @return a short.
      */
-    public final short getIdentity() {
-        return m_packet.getIdentity();
+    public final long getIdentity() {
+        return m_packet.getIdentifier();
     }
 
     /**
@@ -157,18 +158,18 @@ public final class PingReply implements ResponseWithId<PingRequestId> {
     public static PingReply create(DatagramPacket packet) {
         // Check the packet length
         //
-        if (packet.getData().length != ICMPEchoPacket.getNetworkSize()) {
+        if (packet.getData().length != org.opennms.protocols.icmp.ICMPEchoPacket.getNetworkSize()) {
             throw new IllegalArgumentException("The packet is not the correct network size");
         }
 
         // Construct a new packet
         //
-        ICMPEchoPacket pkt = new ICMPEchoPacket(packet.getData());
+        org.opennms.protocols.icmp.ICMPEchoPacket pkt = new org.opennms.protocols.icmp.ICMPEchoPacket(packet.getData());
         if (pkt.getReceivedTime() == 0)
             pkt.setReceivedTime();
 
         // Construct and return the new reply
         //
-        return new PingReply(packet.getAddress(), pkt);
+        return new PingReply(packet.getAddress(), new JICMPEchoPacket(pkt));
     }
 }

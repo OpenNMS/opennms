@@ -48,22 +48,30 @@ class PingReply extends ICMPv6EchoPacket implements org.opennms.netmgt.icmp.ICMP
         super(icmpPacket);
         m_receivedTimeNanos = receivedTimeNanos;
     }
-    
+
     public boolean isValid() {
         ByteBuffer content = getContentBuffer();
         /* we ensure the length can contain 2 longs (cookie and sent time)
            and that the cookie matches */
         return content.limit() >= 16 && COOKIE == content.getLong(0);
     }
-    
+
+    @Override
+    public boolean isEchoReply() {
+    	return Type.EchoReply.equals(getType());
+    }
+
+    @Override
     public long getSentTimeNanos() {
         return getContentBuffer().getLong(8);
     }
     
+    @Override
     public long getReceivedTimeNanos() {
         return m_receivedTimeNanos;
     }
     
+    @Override
     public long elapsedTime(TimeUnit unit) {
         return unit.convert(elapsedTimeNanos(), TimeUnit.NANOSECONDS);
     }
@@ -71,5 +79,4 @@ class PingReply extends ICMPv6EchoPacket implements org.opennms.netmgt.icmp.ICMP
     long elapsedTimeNanos() {
         return getReceivedTimeNanos() - getSentTimeNanos();
     }
-
 }

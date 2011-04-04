@@ -107,7 +107,7 @@ final public class PingRequest implements Request<PingRequestId, PingRequest, Pi
     private AtomicBoolean m_processed = new AtomicBoolean(false);
     
 
-    PingRequest(InetAddress addr, long tid, short sequenceId, long timeout, int retries, ThreadCategory logger, PingResponseCallback cb) {
+    PingRequest(InetAddress addr, long tid, int sequenceId, long timeout, int retries, ThreadCategory logger, PingResponseCallback cb) {
         m_id = new PingRequestId(addr, tid, sequenceId);
         m_retries    = retries;
         m_timeout    = timeout;
@@ -151,7 +151,7 @@ final public class PingRequest implements Request<PingRequestId, PingRequest, Pi
      *
      * @return a short.
      */
-    public short getSequenceId() {
+    public int getSequenceId() {
         return m_id.getSequenceId();
     }
 
@@ -241,7 +241,7 @@ final public class PingRequest implements Request<PingRequestId, PingRequest, Pi
         m_expiration = System.currentTimeMillis() + m_timeout;
         org.opennms.protocols.icmp.ICMPEchoPacket iPkt = new org.opennms.protocols.icmp.ICMPEchoPacket(getTid());
         iPkt.setIdentity(FILTER_ID);
-        iPkt.setSequenceId(getSequenceId());
+        iPkt.setSequenceId((short) getSequenceId());
         iPkt.computeChecksum();
         m_request = new JICMPEchoPacket(iPkt);
     }
@@ -254,7 +254,7 @@ final public class PingRequest implements Request<PingRequestId, PingRequest, Pi
      */
     public boolean processResponse(PingReply reply) {
         try {
-            processResponse(new JICMPEchoPacket(reply.getPacket()));
+            processResponse(reply.getPacket());
         } finally {
             setProcessed(true);
         }

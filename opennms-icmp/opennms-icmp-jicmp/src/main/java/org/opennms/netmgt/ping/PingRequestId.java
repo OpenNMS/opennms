@@ -42,7 +42,7 @@ import java.net.InetAddress;
 public class PingRequestId {
     InetAddress m_addr;
     long m_tid;
-    short m_seqId;
+    int m_seqId;
 
     /**
      * <p>Constructor for PingRequestId.</p>
@@ -51,7 +51,7 @@ public class PingRequestId {
      * @param tid a long.
      * @param seqId a short.
      */
-    public PingRequestId(InetAddress addr, long tid, short seqId) {
+    public PingRequestId(InetAddress addr, long tid, int seqId) {
         m_addr = addr;
         m_tid = tid;
         m_seqId = seqId;
@@ -63,7 +63,7 @@ public class PingRequestId {
      * @param reply a {@link org.opennms.netmgt.ping.PingReply} object.
      */
     public PingRequestId(PingReply reply) {
-        this(reply.getAddress(), reply.getPacket().getTID(), reply.getPacket().getSequenceId());
+        this(reply.getAddress(), reply.getPacket().getIdentifier(), reply.getPacket().getSequenceNumber());
     }
 
     /**
@@ -89,7 +89,7 @@ public class PingRequestId {
      *
      * @return a short.
      */
-    public short getSequenceId() {
+    public int getSequenceId() {
         return m_seqId;
     }
 

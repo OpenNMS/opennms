@@ -47,6 +47,7 @@ package org.opennms.netmgt.ping;
 import java.io.IOException;
 import java.net.DatagramPacket;
 import java.net.InetAddress;
+import java.util.concurrent.TimeUnit;
 
 import org.opennms.core.utils.InetAddressUtils;
 import org.opennms.core.utils.LogUtils;
@@ -84,13 +85,12 @@ public class Ping {
             
                     if (reply.isEchoReply()
                         && reply.getIdentity() == m_icmpId) {
-                        float rtt = ((float) reply.getPacket().getPingRTT())
-                                    / 1000;
+                        float rtt = reply.getPacket().elapsedTime(TimeUnit.MILLISECONDS);
                         System.out.println(ICMPEchoPacket.getNetworkSize()
                                            + " bytes from "
                                            + InetAddressUtils.str(pkt.getAddress())
                                            + ": icmp_seq="
-                                           + reply.getPacket().getTID()
+                                           + reply.getPacket().getIdentifier()
                                            + ". time="
                                            + rtt + " ms");
                     }

@@ -61,7 +61,7 @@ public class ICMPEchoPacket extends ICMPPacket {
         return m_packetData.limit();
     }
 
-    public long getIdentifier() {
+    public int getIdentifier() {
         return getUnsignedShort(4);
     }
     

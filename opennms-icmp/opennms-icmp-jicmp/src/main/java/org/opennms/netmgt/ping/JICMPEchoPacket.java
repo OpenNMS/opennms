@@ -73,7 +73,12 @@ public class JICMPEchoPacket implements org.opennms.netmgt.icmp.ICMPEchoPacket {
     }
 
     @Override
-    public long getIdentifier() {
-        return m_delegate.getTID();
+    public int getIdentifier() {
+        return (int)m_delegate.getTID();
+    }
+
+    @Override
+    public boolean isEchoReply() {
+        return m_delegate.isEchoReply();
     }
 }

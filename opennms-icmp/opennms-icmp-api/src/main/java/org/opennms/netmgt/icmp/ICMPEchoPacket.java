@@ -49,5 +49,7 @@ public interface ICMPEchoPacket {
 
 	byte[] toBytes();
 
-	long getIdentifier();
+	int getIdentifier();
+
+	boolean isEchoReply();
 }

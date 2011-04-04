@@ -57,7 +57,7 @@ public class ICMPv6EchoPacket extends ICMPv6Packet {
         return getContentBuffer().array();
     }
     
-    public long getIdentifier() {
+    public int getIdentifier() {
         return getUnsignedShort(4);
     }
     
