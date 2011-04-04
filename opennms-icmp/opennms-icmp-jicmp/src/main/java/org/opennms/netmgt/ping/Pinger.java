@@ -42,7 +42,9 @@ import java.io.IOException;
 import java.net.InetAddress;
 import java.util.List;
 
+import org.opennms.netmgt.icmp.ParallelPingResponseCallback;
 import org.opennms.netmgt.icmp.PingResponseCallback;
+import org.opennms.netmgt.icmp.SinglePingResponseCallback;
 import org.opennms.protocols.rt.IDBasedRequestLocator;
 import org.opennms.protocols.rt.RequestTracker;
 

@@ -33,7 +33,7 @@
  *      http://www.opennms.org/
  *      http://www.opennms.com/
  */
-package org.opennms.netmgt.ping;
+package org.opennms.netmgt.icmp;
 
 import java.net.InetAddress;
 import java.util.concurrent.TimeUnit;

@@ -105,7 +105,7 @@ public class V6Pinger extends AbstractPinger<Inet6Address> {
         return datagram.getContent();
     }
     
-    public void ping(Inet6Address addr, int id, int count, int interval) throws InterruptedException {
+    public long ping(Inet6Address addr, int id, long count, long interval) throws InterruptedException {
         NativeDatagramSocket socket = getPingSocket();
         for(int i = 0; i <= count; i++) {
             PingRequest request = new PingRequest(id, i);
@@ -115,7 +115,7 @@ public class V6Pinger extends AbstractPinger<Inet6Address> {
         
         //round-trip cnt/min/avg/max/stddev = 10/0.053/0.137/0.233/0.038 ms
         printf("round-trip %s ms\n", m_metric.getSummary(TimeUnit.MILLISECONDS));
-
+        return (long)m_metric.getAverage();
     }
 
 }

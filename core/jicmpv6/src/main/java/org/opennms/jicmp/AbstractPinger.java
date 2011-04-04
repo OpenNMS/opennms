@@ -91,6 +91,6 @@ public abstract class AbstractPinger<T extends InetAddress> implements Runnable 
         System.err.print(String.format(fmt, args));
     }
 
-    abstract public void ping(T addr, int id, int count, int interval) throws InterruptedException;
+    abstract public long ping(T addr, int id, long count, long interval) throws InterruptedException;
 
 }

@@ -29,10 +29,7 @@
  */
 package org.opennms.jicmp;
 
-import java.net.Inet4Address;
 import java.net.InetAddress;
-
-import org.opennms.jicmp.v6.V6Pinger;
 
 
 /**
@@ -47,19 +44,6 @@ public class Main {
             System.err.println("java -jar jna-jicmp-VERSION.jar <hostname or ip address>");
             System.exit(1);
         }
-        new Main().ping(args[0]);
+        new Pinger().ping(InetAddress.getByName(args[0]));
     }
-    
-    public void ping(String hostname) throws Exception {
-
-        InetAddress host = InetAddress.getByName(hostname);
-        
-        AbstractPinger listener = host instanceof Inet4Address ? new V4Pinger() : new V6Pinger();
-        listener.start();
-        
-        listener.ping(host, 12345, 10, 1000);
-        
-        listener.stop();
-    }
-    
 }

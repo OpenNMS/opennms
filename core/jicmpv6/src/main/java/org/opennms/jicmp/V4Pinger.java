@@ -105,7 +105,7 @@ public class V4Pinger extends AbstractPinger<Inet4Address> {
         return new IPPacket(datagram.getContent()).getPayload();
     }
     
-    public void ping(Inet4Address addr, int id, int count, int interval) throws InterruptedException {
+    public long ping(Inet4Address addr, int id, long count, long interval) throws InterruptedException {
         NativeDatagramSocket socket = getPingSocket();
         for(int i = 0; i <= count; i++) {
             PingRequest request = new PingRequest(id, i);
@@ -115,7 +115,7 @@ public class V4Pinger extends AbstractPinger<Inet4Address> {
         
         //round-trip cnt/min/avg/max/stddev = 10/0.053/0.137/0.233/0.038 ms
         printf("round-trip %s ms\n", m_metric.getSummary(TimeUnit.MILLISECONDS));
-
+        return (long)m_metric.getAverage();
     }
 
 }
