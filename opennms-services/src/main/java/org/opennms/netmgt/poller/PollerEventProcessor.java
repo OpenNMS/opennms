@@ -194,24 +194,14 @@ final class PollerEventProcessor implements EventListener {
      *            The event to process.
      * 
      */
-    private void nodeGainedServiceHandler(Event event) {
-        // Is this the result of a resumePollingService event?
-        @SuppressWarnings("unused")
-        String whichEvent = "Unexpected Event: " + event.getUei() + ": ";
-        if (event.getUei().equals(EventConstants.NODE_GAINED_SERVICE_EVENT_UEI)) {
-            whichEvent = "nodeGainedService: ";
-        } else if (event.getUei().equals(EventConstants.RESUME_POLLING_SERVICE_EVENT_UEI)) {
-            whichEvent = "resumePollingService: ";
-        }
-        
-
+    private void nodeGainedServiceHandler(final Event event) {
         // First make sure the service gained is in active state before trying to schedule
 
-        String ipAddr = event.getInterface();
-        Long nodeId = event.getNodeid();
-        String svcName = event.getService();
+    	final String ipAddr = event.getInterface();
+    	final Long nodeId = event.getNodeid();
+    	final String svcName = event.getService();
         
-        String nodeLabel = EventUtils.getParm(event, EventConstants.PARM_NODE_LABEL);
+    	String nodeLabel = EventUtils.getParm(event, EventConstants.PARM_NODE_LABEL);
         
         try {
             nodeLabel = getPoller().getQueryManager().getNodeLabel(nodeId.intValue());
@@ -538,7 +528,6 @@ final class PollerEventProcessor implements EventListener {
             LogUtils.infof(this, "PollerEventProcessor: no database node id found, discarding event");
         } else if (event.getUei().equals(EventConstants.NODE_GAINED_SERVICE_EVENT_UEI)) {
             // If there is no interface then it cannot be processed
-            //
             if (event.getInterface() == null) {
                 LogUtils.infof(this, "PollerEventProcessor: no interface found, discarding event");
             } else {
@@ -546,7 +535,6 @@ final class PollerEventProcessor implements EventListener {
             }
         } else if (event.getUei().equals(EventConstants.RESUME_POLLING_SERVICE_EVENT_UEI)) {
             // If there is no interface then it cannot be processed
-            //
             if (event.getInterface() == null) {
                 LogUtils.infof(this, "PollerEventProcessor: no interface found, cannot resume polling service, discarding event");
             } else {
@@ -554,7 +542,6 @@ final class PollerEventProcessor implements EventListener {
             }
         } else if (event.getUei().equals(EventConstants.SUSPEND_POLLING_SERVICE_EVENT_UEI)) {
             // If there is no interface then it cannot be processed
-            //
             if (event.getInterface() == null) {
                 LogUtils.infof(this, "PollerEventProcessor: no interface found, cannot suspend polling service, discarding event");
             } else {
@@ -562,7 +549,6 @@ final class PollerEventProcessor implements EventListener {
             }
         } else if (event.getUei().equals(EventConstants.INTERFACE_REPARENTED_EVENT_UEI)) {
             // If there is no interface then it cannot be processed
-            //
             if (event.getInterface() == null) {
                 LogUtils.infof(this, "PollerEventProcessor: no interface found, discarding event");
             } else {
@@ -576,7 +562,6 @@ final class PollerEventProcessor implements EventListener {
             nodeDeletedHandler(event);
         } else if (event.getUei().equals(EventConstants.INTERFACE_DELETED_EVENT_UEI)) {
             // If there is no interface then it cannot be processed
-            //
             if (event.getNodeid() < 0 || event.getInterface() == null) {
                 LogUtils.infof(this, "PollerEventProcessor: invalid nodeid or no interface found, discarding event");
             } else {
@@ -584,7 +569,6 @@ final class PollerEventProcessor implements EventListener {
             }
         } else if (event.getUei().equals(EventConstants.SERVICE_DELETED_EVENT_UEI)) {
             // If there is no interface then it cannot be processed
-            //
             if ((event.getNodeid() < 0) || (event.getInterface() == null) || (event.getService() == null)) {
                 LogUtils.infof(this, "PollerEventProcessor: invalid nodeid or no nodeinterface " + "or service found, discarding event");
             } else {

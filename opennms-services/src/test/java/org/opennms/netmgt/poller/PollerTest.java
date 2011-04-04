@@ -163,6 +163,8 @@ public class PollerTest {
 		m_network.addNode(4, "DownNode");
 		m_network.addInterface("192.168.1.6");
 		m_network.addService("SNMP");
+//		m_network.addInterface("fe80:0000:0000:0000:0231:f982:0123:4567");
+//		m_network.addService("SNMP");
 
 		m_db = new MockDatabase();
 		m_db.populate(m_network);
@@ -278,12 +280,9 @@ public class PollerTest {
 		// NODE processing = true;
 		m_pollerConfig.setNodeOutageProcessingEnabled(true);
 		MockNode node = m_network.getNode(2);
-		MockService icmpService = m_network
-				.getService(2, "192.168.1.3", "ICMP");
-		MockService smtpService = m_network
-				.getService(2, "192.168.1.3", "SMTP");
-		MockService snmpService = m_network
-				.getService(2, "192.168.1.3", "SNMP");
+		MockService icmpService = m_network.getService(2, "192.168.1.3", "ICMP");
+		MockService smtpService = m_network.getService(2, "192.168.1.3", "SMTP");
+		MockService snmpService = m_network.getService(2, "192.168.1.3", "SNMP");
 
 		// start the poller
 		startDaemons();
@@ -473,9 +472,7 @@ public class PollerTest {
 		long start = System.currentTimeMillis();
 
 		MockInterface iface = m_network.getInterface(1, "192.168.1.2");
-		m_pollerConfig.addScheduledOutage(m_pollerConfig
-				.getPackage("TestPackage"), "TestOutage", start, start + 5000,
-				iface.getIpAddr());
+		m_pollerConfig.addScheduledOutage(m_pollerConfig.getPackage("TestPackage"), "TestOutage", start, start + 5000, iface.getIpAddr());
 		MockUtil.println("Begin Outage");
 		startDaemons();
 
@@ -517,8 +514,7 @@ public class PollerTest {
 		// now ensure that no invalid polls have occurred
 		sleep(3000);
 
-		assertEquals("Received a poll for an element that doesn't exist", 0,
-				m_network.getInvalidPollCount());
+		assertEquals("Received a poll for an element that doesn't exist", 0, m_network.getInvalidPollCount());
 
 	}
 
@@ -1000,13 +996,20 @@ public class PollerTest {
     }
 
     @Test
+	public void testSendIPv6NodeGainedService() {
+		m_pollerConfig.setNodeOutageProcessingEnabled(false);
+
+		startDaemons();
+
+        testSendNodeGainedServices(99, "TestNode", "fe80:0000:0000:0000:0231:f982:0123:4567", new String[] { "SMTP", "HTTP" });
+	}
+
+    @Test
     public void testSendIPv6NodeGainedServiceNodeOutages() {
         m_pollerConfig.setNodeOutageProcessingEnabled(true);
 
         startDaemons();
-        String[] svcNames = { "SMTP", "HTTP" };
-
-        testSendNodeGainedServices(99, "TestNode", "fe80:0000:0000:0000:0000:0000:0000:0087", svcNames);
+        testSendNodeGainedServices(99, "TestNode", "fe80:0000:0000:0000:0231:f982:0123:4567", new String[] { "SMTP", "HTTP" });
     }
 
 	public void testSendNodeGainedService(String... svcNames) {

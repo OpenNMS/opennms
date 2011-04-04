@@ -53,6 +53,7 @@ import java.util.concurrent.atomic.AtomicInteger;
 import javax.sql.DataSource;
 
 import org.opennms.core.utils.InetAddressUtils;
+import org.opennms.core.utils.LogUtils;
 import org.opennms.core.utils.ThreadCategory;
 import org.opennms.netmgt.config.PollOutagesConfig;
 import org.opennms.netmgt.config.PollerConfig;
@@ -470,7 +471,7 @@ public class Poller extends AbstractServiceDaemon {
      * @param svcName a {@link java.lang.String} object.
      */
     public void scheduleService(final int nodeId, final String nodeLabel, final String ipAddr, final String svcName) {
-        final ThreadCategory log = ThreadCategory.getInstance(getClass());
+        final String normalizedAddress = InetAddressUtils.normalize(ipAddr);
         try {
             /*
              * Do this here so that we can use the treeLock for this node as we
@@ -485,21 +486,21 @@ public class Poller extends AbstractServiceDaemon {
             }
 
             final PollableNode svcNode = node;
-            Runnable r = new Runnable() {
+            final Runnable r = new Runnable() {
                 public void run() {
-                    int matchCount = scheduleMatchingServices("ifServices.nodeId = "+nodeId+" AND ifServices.ipAddr = '"+ipAddr+"' AND service.serviceName = '"+svcName+"'");
+					final int matchCount = scheduleMatchingServices("ifServices.nodeId = "+nodeId+" AND ifServices.ipAddr = '"+normalizedAddress+"' AND service.serviceName = '"+svcName+"'");
                     if (matchCount > 0) {
                         svcNode.recalculateStatus();
                         svcNode.processStatusChange(new Date());
                     } else {
-                        log.warn("Attempt to schedule service "+nodeId+"/"+ipAddr+"/"+svcName+" found no active service");
+                        LogUtils.warnf(this, "Attempt to schedule service %d/%s/%s found no active service", nodeId, normalizedAddress, svcName);
                     }
                 }
             };
             node.withTreeLock(r);
 
-        } catch (Throwable e) {
-            log.error("Unable to schedule service "+nodeId+"/"+ipAddr+"/"+svcName, e);
+        } catch (final Throwable e) {
+        	LogUtils.errorf(this, e, "Unable to schedule service %d/%s/%s", nodeId, normalizedAddress, svcName);
         }
     }
     
