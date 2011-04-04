@@ -34,9 +34,17 @@
 
 package org.opennms.netmgt.provision.service.snmp;
 
+import static org.opennms.core.utils.InetAddressUtils.getInetAddress;
+import static org.opennms.core.utils.InetAddressUtils.str;
+
 import java.net.InetAddress;
 
 import org.opennms.core.utils.InetAddressUtils;
+import org.opennms.core.utils.LogUtils;
+import org.opennms.netmgt.provision.service.IPAddressTableTracker;
+import org.opennms.netmgt.snmp.SnmpObjId;
+import org.opennms.netmgt.snmp.SnmpResult;
+import org.opennms.netmgt.snmp.SnmpValue;
 
 /**
  * <P>
@@ -59,20 +67,14 @@ import org.opennms.core.utils.InetAddressUtils;
  * @see IpAddrTable
  * @see <A HREF="http://www.ietf.org/rfc/rfc1213.txt">RFC1213 </A>
  */
-public final class IpAddrTableEntry extends SnmpTableEntry {
+public final class IpAddressTableEntry extends SnmpTableEntry {
     // Lookup strings for specific table entries
     //
-    /** Constant <code>IP_ADDR_ENT_ADDR="ipAdEntAddr"</code> */
-    public final static String IP_ADDR_ENT_ADDR = "ipAdEntAddr";
-
-    /** Constant <code>IP_ADDR_IF_INDEX="ipAdEntIfIndex"</code> */
-    public final static String IP_ADDR_IF_INDEX = "ipAdEntIfIndex";
+    /** Constant <code>IP_ADDRESS_IF_INDEX="ipAdEntIfIndex"</code> */
+    public final static String IP_ADDRESS_IF_INDEX = "ipAddressIfIndex";
 
     /** Constant <code>IP_ADDR_ENT_NETMASK="ipAdEntNetMask"</code> */
-    public final static String IP_ADDR_ENT_NETMASK = "ipAdEntNetMask";
-
-    /** Constant <code>IP_ADDR_ENT_BCASTADDR="ipAdEntBcastAddr"</code> */
-    public final static String IP_ADDR_ENT_BCASTADDR = "ipAdEntBcastAddr";
+    public final static String IP_ADDR_ENT_NETMASK = "ipAddressPrefix";
 
     /** Constant <code>ms_elemList</code> */
     public static NamedSnmpVar[] ms_elemList = null;
@@ -88,15 +90,11 @@ public final class IpAddrTableEntry extends SnmpTableEntry {
         // ipAdEntReasmMaxSize variable because we aren't currently using
         // it and not all agents implement it which causes the collection
         // of the ipAddrTable to fail
-        IpAddrTableEntry.ms_elemList = new NamedSnmpVar[4];
+        IpAddressTableEntry.ms_elemList = new NamedSnmpVar[2];
         int ndx = 0;
 
-        ms_elemList[ndx++] = new NamedSnmpVar(NamedSnmpVar.SNMPIPADDRESS, IP_ADDR_ENT_ADDR, ".1.3.6.1.2.1.4.20.1.1", 1);
-        ms_elemList[ndx++] = new NamedSnmpVar(NamedSnmpVar.SNMPINT32, IP_ADDR_IF_INDEX, ".1.3.6.1.2.1.4.20.1.2", 2);
-        ms_elemList[ndx++] = new NamedSnmpVar(NamedSnmpVar.SNMPIPADDRESS, IP_ADDR_ENT_NETMASK, ".1.3.6.1.2.1.4.20.1.3", 3);
-        ms_elemList[ndx++] = new NamedSnmpVar(NamedSnmpVar.SNMPINT32, IP_ADDR_ENT_BCASTADDR, ".1.3.6.1.2.1.4.20.1.4", 4);
-        // ms_elemList[ndx++] = new NamedSnmpVar(NamedSnmpVar.SNMPINT32,
-        // IP_ADDR_ENT_REASM_MAXSIZE, ".1.3.6.1.2.1.4.20.1.5", 5);
+        ms_elemList[ndx++] = new NamedSnmpVar(NamedSnmpVar.SNMPOBJECTID, IP_ADDRESS_IF_INDEX, ".1.3.6.1.2.1.4.34.1.3", 1);
+        ms_elemList[ndx++] = new NamedSnmpVar(NamedSnmpVar.SNMPOBJECTID, IP_ADDR_ENT_NETMASK, ".1.3.6.1.2.1.4.34.1.5", 2);
     }
 
     /**
@@ -105,9 +103,9 @@ public final class IpAddrTableEntry extends SnmpTableEntry {
      * Address table in the MIB forest.
      * </P>
      */
-    public static final String TABLE_OID = ".1.3.6.1.2.1.4.20.1"; // start of
-                                                                    // table
-                                                                    // (GETNEXT)
+    public static final String TABLE_OID = "..1.3.6.1.2.1.4.34.1";
+
+    private InetAddress m_inetAddress = null;
 
     /**
      * <P>
@@ -122,7 +120,7 @@ public final class IpAddrTableEntry extends SnmpTableEntry {
      * </EM> modifier can be applied to the created object.
      * </P>
      */
-    public IpAddrTableEntry() {
+    public IpAddressTableEntry() {
         super(ms_elemList);
     }
 
@@ -131,8 +129,9 @@ public final class IpAddrTableEntry extends SnmpTableEntry {
      *
      * @return a {@link java.net.InetAddress} object.
      */
-    public InetAddress getIpAdEntAddr() {
-        return getIPAddress(IpAddrTableEntry.IP_ADDR_ENT_ADDR);
+    public InetAddress getIpAddress() {
+    	// LogUtils.debugf(this, "getIpAddress: ipAddress = %s", InetAddressUtils.str(m_inetAddress));
+    	return m_inetAddress;
     }
 
     /**
@@ -140,8 +139,10 @@ public final class IpAddrTableEntry extends SnmpTableEntry {
      *
      * @return a {@link java.lang.Integer} object.
      */
-    public Integer getIpAdEntIfIndex() {
-        return getInt32(IpAddrTableEntry.IP_ADDR_IF_INDEX);
+    public Integer getIpAddressIfIndex() {
+    	// final SnmpValue value = getValue(IP_ADDRESS_IF_INDEX);
+    	// LogUtils.debugf(this, "getIpAddressIfIndex: value = %s", value.toDisplayString());
+        return getInt32(IpAddressTableEntry.IP_ADDRESS_IF_INDEX);
     }
 
     /**
@@ -149,18 +150,41 @@ public final class IpAddrTableEntry extends SnmpTableEntry {
      *
      * @return a {@link java.net.InetAddress} object.
      */
-    public String getIpAdEntNetMask() {
-        return InetAddressUtils.str(getIPAddress(IpAddrTableEntry.IP_ADDR_ENT_NETMASK));
+    public String getIpAddressNetMask() {
+    	final SnmpValue value = getValue(IP_ADDR_ENT_NETMASK);
+    	// LogUtils.debugf(this, "getIpAddressNetMask: value = %s", value.toDisplayString());
+    	final SnmpObjId netmaskRef = value.toSnmpObjId().getInstance(IPAddressTableTracker.IP_ADDRESS_PREFIX_ORIGIN_INDEX);
+    	
+    	final int[] rawIds = netmaskRef.getIds();
+    	final int addressType = rawIds[1];
+    	final int addressLength = rawIds[2];
+    	final InetAddress address = getInetAddress(rawIds, 3, addressLength);
+    	final int mask = rawIds[rawIds.length - 1];
+
+		if (addressType == IPAddressTableTracker.TYPE_IPV4 || addressType == IPAddressTableTracker.TYPE_IPV6) {
+			final String netmask = str(address) + "/" + mask;
+			// LogUtils.debugf(this, "getIpAddressNetMask: returning %s", netmask);
+			return netmask;
+    	} else {
+    		LogUtils.warnf(this, "unknown address type, expected 1 (IPv4) or 2 (IPv6), but got %d", addressType);
+    		return null;
+    	}
     }
     
     /**
-     * <p>getIpAdEntBcastAddr</p>
-     *
-     * @return a {@link java.net.InetAddress} object.
+     * This is a hack, we get the IP address from the instance information.  :P
      */
-    public InetAddress getIpAdEntBcastAddr() {
-        return getIPAddress(IpAddrTableEntry.IP_ADDR_ENT_BCASTADDR);
-    }
+    public void storeResult(final SnmpResult result) {
+    	// LogUtils.debugf(this, "storeResult: %s", result);
 
-    
+    	final int[] instanceIds = result.getInstance().getIds();
+    	final int addressType = instanceIds[1];
+		if (addressType == IPAddressTableTracker.TYPE_IPV4 || addressType == IPAddressTableTracker.TYPE_IPV6) {
+			m_inetAddress = InetAddressUtils.getInetAddress(instanceIds, 2, addressType);
+		} else {
+			LogUtils.warnf(this, "Unable to determine IP address type (%d)", addressType);
+		}
+
+    	super.storeResult(result);
+    }
 }

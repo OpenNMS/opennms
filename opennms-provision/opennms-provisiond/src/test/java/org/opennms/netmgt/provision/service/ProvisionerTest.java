@@ -530,15 +530,57 @@ public class ProvisionerTest implements MockSnmpAgentAware {
 
         //Verify snmpInterface count
         assertEquals("Unexpected number of SNMP interfaces found: " + getSnmpInterfaceDao().findAll(), 6, getSnmpInterfaceDao().countAll());
-        
-        
-        // Node Delete
-        importFromResource("classpath:/nonodes.xml");
+    }
 
+    // fail if we take more than five minutes
+    @Test(timeout=300000)
+    @Transactional
+    @JUnitSnmpAgent(resource="classpath:snmpwalk-v6only.properties")
+    public void testPopulateWithIpv6OnlySnmpAndNodeScan() throws Exception {
+        importFromResource("classpath:/requisition_then_scanv6only.xml");
+
+        //Verify distpoller count
+        assertEquals(1, getDistPollerDao().countAll());
+        
         //Verify node count
-        assertEquals(0, getNodeDao().countAll());
+        assertEquals(1, getNodeDao().countAll());
+        
+        //Verify ipinterface count
+        assertEquals(1, getInterfaceDao().countAll());
+        
+        //Verify ifservices count
+        assertEquals(1, getMonitoredServiceDao().countAll());
+        
+        //Verify service count
+        assertEquals(1, getServiceTypeDao().countAll());
+
+        //Verify snmpInterface count
+        assertEquals(1, getSnmpInterfaceDao().countAll());
         
         
+        List<OnmsNode> nodes = getNodeDao().findAll();
+        OnmsNode node = nodes.get(0);
+
+        NodeScan scan = m_provisioner.createNodeScan(node.getId(), node.getForeignSource(), node.getForeignId());
+        runScan(scan);
+        
+        //Verify distpoller count
+        assertEquals(1, getDistPollerDao().countAll());
+        
+        //Verify node count
+        assertEquals(1, getNodeDao().countAll());
+        
+        //Verify ipinterface count
+        assertEquals("Unexpected number of IP interfaces found: " + getInterfaceDao().findAll(), 3, getInterfaceDao().countAll());
+        
+        //Verify ifservices count - discover snmp service on other if
+        assertEquals("Unexpected number of services found: "+getMonitoredServiceDao().findAll(), 3, getMonitoredServiceDao().countAll());
+        
+        //Verify service count
+        assertEquals("Unexpected number of service types found: " + getServiceTypeDao().findAll(), 1, getServiceTypeDao().countAll());
+
+        //Verify snmpInterface count
+        assertEquals("Unexpected number of SNMP interfaces found: " + getSnmpInterfaceDao().findAll(), 6, getSnmpInterfaceDao().countAll());
     }
 
     // fail if we take more than five minutes

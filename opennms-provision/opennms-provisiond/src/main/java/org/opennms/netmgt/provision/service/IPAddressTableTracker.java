@@ -69,8 +69,8 @@ public class IPAddressTableTracker extends TableTracker {
     public static final SnmpObjId IP_ADDRESS_LAST_CHANGED_INDEX = SnmpObjId.get(IP_ADDRESS_TABLE_ENTRY, "9");
     public static final SnmpObjId IP_ADDRESS_ROW_STATUS_INDEX = SnmpObjId.get(IP_ADDRESS_TABLE_ENTRY, "10");
     public static final SnmpObjId IP_ADDRESS_STORAGE_TYPE_INDEX = SnmpObjId.get(IP_ADDRESS_TABLE_ENTRY, "11");
-	public static final int TYPE_IPV4 = 4;
-	public static final int TYPE_IPV6 = 16;
+	public static final int TYPE_IPV4 = 1;
+	public static final int TYPE_IPV6 = 2;
 
     private static SnmpObjId[] s_tableColumns = new SnmpObjId[] {
         IP_ADDRESS_IF_INDEX,
@@ -93,9 +93,10 @@ public class IPAddressTableTracker extends TableTracker {
         	final SnmpResult result = getResult(IP_ADDRESS_IF_INDEX);
         	final int[] instanceIds = result.getInstance().getIds();
         	
-        	final int addressType = instanceIds[1];
+        	final int addressType = instanceIds[0];
+        	final int addressLength = instanceIds[1];
 			if (addressType == TYPE_IPV4 || addressType == TYPE_IPV6) {
-				final InetAddress address = getAddress(instanceIds, 2, addressType);
+				final InetAddress address = getInetAddress(instanceIds, 2, addressLength);
 				return str(address);
 			}
             return null;
@@ -107,28 +108,20 @@ public class IPAddressTableTracker extends TableTracker {
         	final SnmpObjId netmaskRef = value.toSnmpObjId().getInstance(IP_ADDRESS_PREFIX_ORIGIN_INDEX);
         	
         	final int[] rawIds = netmaskRef.getIds();
-        	final int typeId = rawIds[2];
-        	final InetAddress address = getAddress(rawIds, 3, typeId);
+        	final int addressType = rawIds[1];
+        	final int addressLength = rawIds[2];
+        	final InetAddress address = getInetAddress(rawIds, 3, addressLength);
         	final int mask = rawIds[rawIds.length - 1];
 
-			if (typeId == TYPE_IPV4 || typeId == TYPE_IPV6) {
+			if (addressType == TYPE_IPV4 || addressType == TYPE_IPV6) {
 				return str(address) + "/" + mask;
         	} else {
-        		LogUtils.warnf(this, "unknown address type, expected 4 (IPv4) or 16 (IPv6), but got %d", typeId);
+        		LogUtils.warnf(this, "unknown address type, expected 1 (IPv4) or 2 (IPv6), but got %d", addressType);
         		return null;
         	}
         }
 
-		private InetAddress getAddress(final int[] ids, final int offset, final int length) {
-			final byte[] addressBytes = new byte[length];
-        	for (int i = 0; i < addressBytes.length; i++) {
-        		addressBytes[i] = Integer.valueOf(ids[i + offset]).byteValue();
-        	}
-        	final InetAddress address = getInetAddress(addressBytes);
-			return address;
-		}
-
-        public OnmsIpInterface createInterfaceFromRow() {
+		public OnmsIpInterface createInterfaceFromRow() {
             
         	final Integer ifIndex = getIfIndex();
         	final String ipAddr = getIpAddress();

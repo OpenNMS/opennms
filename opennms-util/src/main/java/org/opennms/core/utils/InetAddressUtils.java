@@ -106,6 +106,20 @@ abstract public class InetAddressUtils {
      * @param ipAddrOctets an array of byte.
      * @return a {@link java.net.InetAddress} object.
      */
+    public static InetAddress getInetAddress(final int[] octets, final int offset, final int length) {
+		final byte[] addressBytes = new byte[length];
+    	for (int i = 0; i < addressBytes.length; i++) {
+    		addressBytes[i] = Integer.valueOf(octets[i + offset]).byteValue();
+    	}
+    	return getInetAddress(addressBytes);
+    }
+
+    /**
+     * <p>getInetAddress</p>
+     *
+     * @param ipAddrOctets an array of byte.
+     * @return a {@link java.net.InetAddress} object.
+     */
     public static InetAddress getInetAddress(final byte[] ipAddrOctets) {
         try {
             return InetAddress.getByAddress(ipAddrOctets);
@@ -384,4 +398,26 @@ abstract public class InetAddressUtils {
     public static BigInteger toInteger(final InetAddress ipAddress) {
         return new BigInteger(1, ipAddress.getAddress());
     }
+
+    public static String toOid(final InetAddress addr) {
+    	if (addr == null) return null;
+
+    	if (addr instanceof Inet4Address) {
+			return str(addr);
+		} else if (addr instanceof Inet6Address) {
+			// This is horribly inefficient, I'm sure, but good enough for now.
+			byte[] buf = addr.getAddress();
+			final StringBuilder sb = new StringBuilder();
+			for (int i = 0; i < buf.length; i++) {
+				sb.append(buf[i] & 0xff);
+				if (i != (buf.length - 1)) {
+					sb.append(".");
+				}
+			}
+			return sb.toString();
+		} else {
+			LogUtils.debugf(InetAddressUtils.class, "don't know how to handle %s", addr);
+			return null;
+		}
+	}
 }

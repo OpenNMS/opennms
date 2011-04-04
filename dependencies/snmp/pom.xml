@@ -81,6 +81,7 @@
       <artifactId>org.opennms.lib.snmp.snmp4j</artifactId>
       <version>${opennmsSnmpApiVersion}</version>
       <exclusions>
+        <exclusion><groupId>org.snmp4j</groupId><artifactId>snmp4j</artifactId></exclusion>
         <exclusion><groupId>org.opennms.core</groupId><artifactId>org.opennms.core.lib</artifactId></exclusion>
         <exclusion><groupId>org.opennms</groupId><artifactId>opennms-util</artifactId></exclusion>
         <exclusion><groupId>org.opennms.dependencies</groupId><artifactId>hibernate-dependencies</artifactId></exclusion>

@@ -200,17 +200,12 @@ public final class IfTable extends SnmpTable<IfTableEntry> {
             snmpIf = new OnmsSnmpInterface(node, ifIndex);
         }
         
-        updateSnmpInterfaceData(ifIndex, snmpIf);
-    }
-
-    private void updateSnmpInterfaceData(Integer ifIndex,
-            OnmsSnmpInterface snmpIf) {
         // IfTable Attributes
-        snmpIf.setIfType(getIfType(ifIndex));
-        snmpIf.setIfAdminStatus(getAdminStatus(ifIndex));
-        snmpIf.setIfDescr(getIfDescr(ifIndex));
-        snmpIf.setIfSpeed(getIfSpeed(ifIndex));
-        snmpIf.setPhysAddr(getPhysAddr(ifIndex));
+		snmpIf.setIfType(getIfType(ifIndex));
+		snmpIf.setIfAdminStatus(getAdminStatus(ifIndex));
+		snmpIf.setIfDescr(getIfDescr(ifIndex));
+		snmpIf.setIfSpeed(getIfSpeed(ifIndex));
+		snmpIf.setPhysAddr(getPhysAddr(ifIndex));
     }
 
     /**
@@ -219,8 +214,8 @@ public final class IfTable extends SnmpTable<IfTableEntry> {
      * @return a {@link java.util.Set} object.
      */
     public Set<Integer> getIfIndices() {
-        Set<Integer> ifIndices = new LinkedHashSet<Integer>();
-        for(SnmpInstId inst : getInstances()) {
+    	final Set<Integer> ifIndices = new LinkedHashSet<Integer>();
+        for(final SnmpInstId inst : getInstances()) {
             ifIndices.add(inst.toInt());
         }
         return ifIndices;
