@@ -594,7 +594,7 @@ public class PageSequenceMonitor extends IPv4Monitor {
         }
 
         public int getRetries() {
-            return getIntParm("retry", PageSequenceMonitor.DEFAULT_RETRY);
+            return getIntParm("retries", PageSequenceMonitor.DEFAULT_RETRY);
         }
 
         public int getTimeout() {
