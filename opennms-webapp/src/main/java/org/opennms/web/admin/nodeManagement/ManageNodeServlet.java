@@ -61,10 +61,10 @@ import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import javax.servlet.http.HttpSession;
 
+import org.apache.commons.io.IOUtils;
 import org.opennms.core.resource.Vault;
 import org.opennms.core.utils.DBUtils;
 import org.opennms.core.utils.ThreadCategory;
-import org.opennms.netmgt.EventConstants;
 import org.opennms.netmgt.config.DataSourceFactory;
 import org.opennms.netmgt.config.NotificationFactory;
 import org.opennms.netmgt.model.events.EventBuilder;
@@ -77,9 +77,6 @@ import org.opennms.web.api.Util;
  *
  * @author <A HREF="mailto:jason@opennms.org">Jason Johns </A>
  * @author <A HREF="http://www.opennms.org/">OpenNMS </A>
- * @author <A HREF="mailto:jason@opennms.org">Jason Johns </A>
- * @author <A HREF="http://www.opennms.org/">OpenNMS </A>
- * @version $Id: $
  * @since 1.8.1
  */
 public class ManageNodeServlet extends HttpServlet {
@@ -97,17 +94,8 @@ public class ManageNodeServlet extends HttpServlet {
 
     private static final String INCLUDE_FILE_NAME = "include";
 
-    /** Constant <code>GAINED_SERVICE_UEI="uei.opennms.org/nodes/nodeGainedService"</code> */
-    public static final String GAINED_SERVICE_UEI = "uei.opennms.org/nodes/nodeGainedService";
-
-    /** Constant <code>GAINED_INTERFACE_UEI="uei.opennms.org/nodes/nodeGainedInterfa"{trunked}</code> */
-    public static final String GAINED_INTERFACE_UEI = "uei.opennms.org/nodes/nodeGainedInterface";
-
     /** Constant <code>NOTICE_NAME="Email-Reporting"</code> */
     public static final String NOTICE_NAME = "Email-Reporting";
-
-    // FIXME: Should this be deleted?
-    //private static final String NOTICE_COMMAND = "/opt/OpenNMS/bin/notify.sh ";
 
     /**
      * <p>init</p>
@@ -191,10 +179,10 @@ public class ManageNodeServlet extends HttpServlet {
                         unmanageInterfacesList.add(curInterface.getAddress());
                     }
 
-                    List interfaceServices = curInterface.getServices();
+                    List<ManagedService> interfaceServices = curInterface.getServices();
 
                     for (int k = 0; k < interfaceServices.size(); k++) {
-                        ManagedService curService = (ManagedService) interfaceServices.get(k);
+                        ManagedService curService = interfaceServices.get(k);
                         String serviceKey = intKey + "-" + curService.getId();
 
                         if (serviceList.contains(serviceKey) && curService.getStatus().equals("unmanaged")) {
@@ -291,7 +279,7 @@ public class ManageNodeServlet extends HttpServlet {
 
     /**
      */
-    private void unmanageInterfaces(List interfaces, Connection connection) throws SQLException {
+    private void unmanageInterfaces(List<String> interfaces, Connection connection) throws SQLException {
         StringBuffer query = new StringBuffer("UPDATE ipinterface SET isManaged = ");
         query.append("'F'").append(" WHERE ipaddr IN (");
 
@@ -321,27 +309,28 @@ public class ManageNodeServlet extends HttpServlet {
      */
     // FIXME: This is totally the wrong place to be doing this.
     // FIXME: This is totally the wrong place to be doing this.
-    private void writeURLFile(List interfaceList) throws ServletException {
+    private void writeURLFile(List<String> interfaceList) throws ServletException {
         String path = System.getProperty("opennms.home") + File.separator + "etc" + File.separator;
 
-        if (path != null) {
-            String fileName = path + INCLUDE_FILE_NAME;
+        String fileName = path + INCLUDE_FILE_NAME;
 
-            try {
-                Writer fileWriter = new OutputStreamWriter(new FileOutputStream(fileName), "UTF-8");
+        FileOutputStream fos = null;
+        Writer fileWriter = null;
+        try {
+        	fos = new FileOutputStream(fileName);
+            fileWriter = new OutputStreamWriter(fos, "UTF-8");
 
-                for (int i = 0; i < interfaceList.size(); i++) {
-                    fileWriter.write(interfaceList.get(i) + System.getProperty("line.separator"));
-                }
-
-                // write out the file and close
-                fileWriter.flush();
-                fileWriter.close();
-            } catch (IOException e) {
-                throw new ServletException("Error writing the include url file " + fileName + ": " + e.getMessage(), e);
+            for (int i = 0; i < interfaceList.size(); i++) {
+                fileWriter.write(interfaceList.get(i) + System.getProperty("line.separator"));
             }
-        } else {
-            throw new ServletException("The path to the package URL include directory is null.");
+
+            // write out the file and close
+            fileWriter.flush();
+        } catch (final IOException e) {
+            throw new ServletException("Error writing the include url file " + fileName + ": " + e.getMessage(), e);
+        } finally {
+        	IOUtils.closeQuietly(fileWriter);
+        	IOUtils.closeQuietly(fos);
         }
     }
 
