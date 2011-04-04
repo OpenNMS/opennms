@@ -737,7 +737,7 @@ public class PageSequenceMonitor extends AbstractServiceMonitor {
         }
 
         public int getRetries() {
-            return getIntParm("retries", PageSequenceMonitor.DEFAULT_RETRY);
+            return getIntParm("retry", PageSequenceMonitor.DEFAULT_RETRY);
         }
 
         public int getTimeout() {
