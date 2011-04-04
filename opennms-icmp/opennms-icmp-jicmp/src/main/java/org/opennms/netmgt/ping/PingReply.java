@@ -40,7 +40,6 @@
 
 package org.opennms.netmgt.ping;
 
-import java.net.DatagramPacket;
 import java.net.InetAddress;
 
 import org.opennms.netmgt.icmp.ICMPEchoPacket;
@@ -132,44 +131,5 @@ public final class PingReply implements ResponseWithId<PingRequestId> {
      */
     public PingRequestId getRequestId() {
         return new PingRequestId(this);
-    }
-
-    /**
-     * <p>
-     * Creates a new instance of the class using the passed datagram as the data
-     * source. The address and ping packet are extracted from the datagram and
-     * returned as a new instance of the class. In addition to extracting the
-     * packet, the packet's received time is updated to the current time.
-     * </p>
-     *
-     * <p>
-     * If the received datagram is not an echo reply or an incorrect length then
-     * an exception is generated to alert the caller.
-     * </p>
-     *
-     * @param packet
-     *            The packet with the ICMP datagram.
-     * @throws java.lang.IllegalArgumentException
-     *             Throw if the datagram is not the correct length or type.
-     * @throws java.lang.IndexOutOfBoundsException
-     *             Thrown if the datagram does not contain sufficent data.
-     * @return a {@link org.opennms.netmgt.ping.PingReply} object.
-     */
-    public static PingReply create(DatagramPacket packet) {
-        // Check the packet length
-        //
-        if (packet.getData().length != org.opennms.protocols.icmp.ICMPEchoPacket.getNetworkSize()) {
-            throw new IllegalArgumentException("The packet is not the correct network size");
-        }
-
-        // Construct a new packet
-        //
-        org.opennms.protocols.icmp.ICMPEchoPacket pkt = new org.opennms.protocols.icmp.ICMPEchoPacket(packet.getData());
-        if (pkt.getReceivedTime() == 0)
-            pkt.setReceivedTime();
-
-        // Construct and return the new reply
-        //
-        return new PingReply(packet.getAddress(), new JICMPEchoPacket(pkt));
     }
 }

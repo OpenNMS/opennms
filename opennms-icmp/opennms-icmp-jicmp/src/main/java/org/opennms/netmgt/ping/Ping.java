@@ -77,7 +77,7 @@ public class Ping {
                     DatagramPacket pkt = m_socket.receive();
                     org.opennms.netmgt.ping.PingReply reply;
                     try {
-                        reply = org.opennms.netmgt.ping.PingReply.create(pkt);
+                        reply = org.opennms.netmgt.ping.IcmpMessenger.createPingReply(pkt);
                     } catch (Throwable t) {
                         // do nothing but skip this packet
                         continue;

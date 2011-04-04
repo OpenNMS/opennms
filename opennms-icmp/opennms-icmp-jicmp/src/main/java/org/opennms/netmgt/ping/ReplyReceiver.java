@@ -170,7 +170,7 @@ public final class ReplyReceiver implements PausableFiber, Runnable {
         if (!doIt) {
             PingReply reply = null;
             try {
-                reply = PingReply.create(pkt); // create a reply
+                reply = IcmpMessenger.createPingReply(pkt); // create a reply
             } catch (IllegalArgumentException iaE) {
                 // Throw by Reply.create if the packet
                 // is not of type Packet
