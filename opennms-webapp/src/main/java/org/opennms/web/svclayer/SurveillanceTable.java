@@ -269,7 +269,7 @@ public class SurveillanceTable {
      *
      * @return a {@link java.util.List} object.
      */
-    public List getRowHeaderList() {
+    public List<String> getRowHeaderList() {
         return asLinkedList(m_rowHeaders);
     }
 
@@ -297,7 +297,7 @@ public class SurveillanceTable {
      *
      * @return a {@link java.util.List} object.
      */
-    public List getColumnHeaderList() {
+    public List<String> getColumnHeaderList() {
         return asLinkedList(m_columnHeaders);
     }
 
@@ -328,7 +328,7 @@ public class SurveillanceTable {
         return m_statusTable;
     }
     
-    private List asLinkedList(String[] headers) {
+    private List<String> asLinkedList(String[] headers) {
         List<String> headerList = new LinkedList<String>();
         for (int i = 0; i < m_rowHeaders.length; i++) {
             headerList.add(headers[i]);

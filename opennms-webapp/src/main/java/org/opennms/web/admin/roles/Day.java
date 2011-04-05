@@ -138,8 +138,8 @@ public class Day {
             
             OwnedIntervalSequence schedEntries = m_groupManager.getRoleScheduleEntries(m_role.getName(), getTime(0,0), getTime(24,0));
             
-            for (Iterator it = schedEntries.iterator(); it.hasNext();) {
-                OwnedInterval schedEntry = (OwnedInterval) it.next();
+            for (Iterator<OwnedInterval> it = schedEntries.iterator(); it.hasNext();) {
+                OwnedInterval schedEntry = it.next();
                 CalendarEntry entry = new CalendarEntry(schedEntry.getStart(), schedEntry.getEnd(), ownerString(schedEntry.getOwners()), schedEntry.getOwners());
                 entries.add(entry);
             }

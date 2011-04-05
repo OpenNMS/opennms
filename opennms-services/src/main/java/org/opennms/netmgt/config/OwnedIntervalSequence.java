@@ -47,7 +47,7 @@ import java.util.List;
  * @author ranger
  * @version $Id: $
  */
-public class OwnedIntervalSequence extends TimeIntervalSequence {
+public class OwnedIntervalSequence extends AbstractTimeIntervalSequence<OwnedInterval> {
 
     /**
      * <p>Constructor for OwnedIntervalSequence.</p>
@@ -66,10 +66,8 @@ public class OwnedIntervalSequence extends TimeIntervalSequence {
     }
 
     /** {@inheritDoc} */
-    protected Collection<OwnedInterval> combineIntervals(TimeInterval currInt, TimeInterval newInt) {
-        OwnedInterval currInterval = (OwnedInterval) currInt;
-        OwnedInterval newInterval = (OwnedInterval) newInt;
-        
+    @Override
+    protected Collection<OwnedInterval> combineIntervals(OwnedInterval currInterval, OwnedInterval newInterval) {
         List<OwnedInterval> newIntervals = new ArrayList<OwnedInterval>(3);
         
         // Time Intervals stored locally so we can add them in order
@@ -133,20 +131,20 @@ public class OwnedIntervalSequence extends TimeIntervalSequence {
     }
 
     /** {@inheritDoc} */
-    protected TimeInterval createInterval(Date start, Date end) {
+    @Override
+    protected OwnedInterval createInterval(Date start, Date end) {
         return new OwnedInterval(start, end);
     }
 
     /** {@inheritDoc} */
-    protected TimeIntervalSequence createTail(TimeInterval interval) {
+    @Override
+    protected OwnedIntervalSequence createTail(OwnedInterval interval) {
         return new OwnedIntervalSequence((OwnedInterval) interval);
     }
 
     /** {@inheritDoc} */
-    protected Collection<OwnedInterval> separateIntervals(TimeInterval origInt, TimeInterval removedInt) {
-        OwnedInterval origInterval = (OwnedInterval) origInt;
-        OwnedInterval removedInterval = (OwnedInterval) removedInt;
-        
+    @Override
+    protected Collection<OwnedInterval> separateIntervals(OwnedInterval origInterval, OwnedInterval removedInterval) {
         // if the original is owned and no owners will be removed keep in intact
         List<Owner> reducedOwners = new ArrayList<Owner>(origInterval.getOwners());
         reducedOwners.removeAll(removedInterval.getOwners());

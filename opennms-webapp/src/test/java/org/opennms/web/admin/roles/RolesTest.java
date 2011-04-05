@@ -44,10 +44,9 @@ import java.util.Iterator;
 import org.opennms.netmgt.config.GroupFactory;
 import org.opennms.netmgt.config.GroupManager;
 import org.opennms.netmgt.config.IntervalTestCase;
+import org.opennms.netmgt.config.OwnedInterval;
 import org.opennms.netmgt.config.OwnedIntervalSequence;
 import org.opennms.netmgt.config.Owner;
-import org.opennms.netmgt.config.TimeInterval;
-import org.opennms.netmgt.config.TimeIntervalSequence;
 import org.opennms.netmgt.config.UserFactory;
 import org.opennms.netmgt.config.UserManager;
 import org.opennms.netmgt.config.groups.Group;
@@ -149,13 +148,13 @@ public class RolesTest extends IntervalTestCase {
         Owner brozow = new Owner("oncall", "brozow", 1, 1);
         Owner admin = new Owner("oncall", "admin", 1, 1);
         Owner david = new Owner("oncall", "david", 1, 1);
-        TimeIntervalSequence before = new TimeIntervalSequence();
+        OwnedIntervalSequence before = new OwnedIntervalSequence();
         before.addInterval(owned(david, aug(18, 0, 9)));
         before.addInterval(owned(admin, aug(18, 9, 17)));
         before.addInterval(owned(david, aug(18, 17, 23)));
         before.addInterval(owned(brozow, aug(18, 23, 24)));
 
-        TimeInterval[] expected = {
+        OwnedInterval[] expected = {
                 owned(david, aug(18, 0, 9)),
                 owned(admin, aug(18, 9, 17)),
                 owned(david, aug(18, 17, 23)),

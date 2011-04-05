@@ -117,10 +117,10 @@ public class IntervalTestCase extends TestCase {
         return aug(day, 0, 24);
     }
 
-    protected void assertTimeIntervalSequence(TimeInterval[] intervals, TimeIntervalSequence seq) {
+    protected <T extends TimeInterval> void assertTimeIntervalSequence(T[] intervals, AbstractTimeIntervalSequence<T> seq) {
         int count  = 0;
-        for (Iterator<? extends TimeInterval> iter = seq.iterator(); iter.hasNext();) {
-            TimeInterval interval = iter.next();
+        for (Iterator<T> iter = seq.iterator(); iter.hasNext();) {
+            T interval = iter.next();
             assertInterval(intervals[count], interval);
             count++;
         }
