@@ -67,6 +67,7 @@ import org.opennms.mock.snmp.MockSnmpAgentAware;
 import org.opennms.netmgt.EventConstants;
 import org.opennms.netmgt.config.SnmpPeerFactory;
 import org.opennms.netmgt.dao.AssetRecordDao;
+import org.opennms.netmgt.dao.DatabasePopulator;
 import org.opennms.netmgt.dao.DistPollerDao;
 import org.opennms.netmgt.dao.IpInterfaceDao;
 import org.opennms.netmgt.dao.MonitoredServiceDao;
@@ -136,6 +137,7 @@ import org.springframework.transaction.annotation.Transactional;
         "classpath:/META-INF/opennms/applicationContext-provisiond.xml",
         "classpath*:/META-INF/opennms/component-dao.xml",
         "classpath*:/META-INF/opennms/detectors.xml",
+        "classpath:/META-INF/opennms/applicationContext-databasePopulator.xml",
         "classpath:/importerServiceTest.xml"
 })
 @JUnitTemporaryDatabase()
@@ -182,6 +184,9 @@ public class ProvisionerTest implements MockSnmpAgentAware {
     
     @Autowired
     private SnmpPeerFactory m_snmpPeerFactory;
+    
+    @Autowired
+    private DatabasePopulator m_dbPopulator;
     
     private EventAnticipator m_eventAnticipator;
 
@@ -970,6 +975,32 @@ public class ProvisionerTest implements MockSnmpAgentAware {
         
         m_provisioner.scheduleRescanForExistingNodes();
         assertEquals(10, m_provisioner.getScheduleLength());
+    }
+
+    @Test(timeout=300000)
+    @Transactional
+    public void testProvisionerRescanWorkingWithDiscoveredNodesDiscoveryDisabled() throws Exception{
+        System.setProperty("org.opennms.provisiond.enableDiscovery", "false");
+        // populator creates 4 provisioned nodes and 2 discovered nodes
+        m_dbPopulator.populateDatabase();
+
+        importFromResource("classpath:/tec_dump.xml.smalltest");
+        
+        m_provisioner.scheduleRescanForExistingNodes();
+        assertEquals(14, m_provisioner.getScheduleLength());
+    }
+
+    @Test(timeout=300000)
+    @Transactional
+    public void testProvisionerRescanWorkingWithDiscoveredNodesDiscoveryEnabled() throws Exception{
+        System.setProperty("org.opennms.provisiond.enableDiscovery", "true");
+        // populator creates 4 provisioned nodes and 2 discovered nodes
+        m_dbPopulator.populateDatabase();
+
+        importFromResource("classpath:/tec_dump.xml.smalltest");
+        
+        m_provisioner.scheduleRescanForExistingNodes();
+        assertEquals(16, m_provisioner.getScheduleLength());
     }
 
     @Test(timeout=300000)
