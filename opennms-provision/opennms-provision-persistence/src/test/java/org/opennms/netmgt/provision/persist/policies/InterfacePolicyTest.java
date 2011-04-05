@@ -2,6 +2,9 @@ package org.opennms.netmgt.provision.persist.policies;
 
 import static org.junit.Assert.assertEquals;
 
+import static org.opennms.core.utils.InetAddressUtils.str;
+
+import java.net.InetAddress;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -74,7 +77,9 @@ public class InterfacePolicyTest {
             if (o != null) {
                 matchedInterfaces.add(o);
             }
-            if (iface.getIpAddressAsString().startsWith("10.")) {
+            InetAddress addr = iface.getIpAddress();
+            
+            if (str(addr).startsWith("10.")) {
                 populatedInterfaces.add(iface);
             }
         }

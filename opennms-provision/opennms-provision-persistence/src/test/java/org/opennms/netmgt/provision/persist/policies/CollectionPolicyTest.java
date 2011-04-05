@@ -4,7 +4,9 @@ import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertTrue;
+import static org.opennms.core.utils.InetAddressUtils.addr;
 
+import java.net.InetAddress;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -72,7 +74,7 @@ public class CollectionPolicyTest {
         MatchingSnmpInterfacePolicy p = createPolicy();
         p.setIfDescr("~^ATM.*");
 
-        matchPolicy(m_interfaces, p, "192.168.1.1");
+        matchPolicy(m_interfaces, p, addr("192.168.1.1"));
     }
 
     private MatchingSnmpInterfacePolicy createPolicy() {
@@ -87,7 +89,7 @@ public class CollectionPolicyTest {
         MatchingSnmpInterfacePolicy p = createPolicy();
         p.setIfName("eth0");
 
-        matchPolicy(m_interfaces, p, "192.168.1.2");
+        matchPolicy(m_interfaces, p, addr("192.168.1.2"));
     }
 
     @Test
@@ -96,7 +98,7 @@ public class CollectionPolicyTest {
         MatchingSnmpInterfacePolicy p = createPolicy();
         p.setIfType("6");
 
-        matchPolicy(m_interfaces, p, "192.168.1.2");
+        matchPolicy(m_interfaces, p, addr("192.168.1.2"));
     }
     
     @Test
@@ -130,7 +132,7 @@ public class CollectionPolicyTest {
         
     }
 
-    private static void matchPolicy(List<OnmsSnmpInterface> interfaces, MatchingSnmpInterfacePolicy p, String matchingIp) {
+    private static void matchPolicy(List<OnmsSnmpInterface> interfaces, MatchingSnmpInterfacePolicy p, InetAddress matchingIp) {
         OnmsSnmpInterface o;
         List<OnmsSnmpInterface> populatedInterfaces = new ArrayList<OnmsSnmpInterface>();
         List<OnmsSnmpInterface> matchedInterfaces = new ArrayList<OnmsSnmpInterface>();
@@ -142,7 +144,7 @@ public class CollectionPolicyTest {
                 matchedInterfaces.add(o);
             }
             for (OnmsIpInterface ipif : iface.getIpInterfaces()) {
-                if (ipif.getIpAddressAsString().equalsIgnoreCase(matchingIp)) {
+                if (ipif.getIpAddress().equals(matchingIp)) {
                     populatedInterfaces.add(iface);
                 }
             }
