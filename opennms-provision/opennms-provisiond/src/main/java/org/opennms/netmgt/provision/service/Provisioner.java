@@ -657,7 +657,8 @@ public class Provisioner implements SpringServiceDaemon {
     private boolean isReloadConfigEventTarget(Event event) {
         boolean isTarget = false;
         
-        List<Parm> parmCollection = event.getParms().getParmCollection();
+        List<Parm> parmCollection = event.getParmCollection();
+        
 
         for (Parm parm : parmCollection) {
             if (EventConstants.PARM_DAEMON_NAME.equals(parm.getParmName()) && "Provisiond".equalsIgnoreCase(parm.getValue().getContent())) {
@@ -669,7 +670,7 @@ public class Provisioner implements SpringServiceDaemon {
         log().debug("isReloadConfigEventTarget: Provisiond was target of reload event: "+isTarget);
         return isTarget;
     }
-    
+
     /**
      * <p>handleAddInterface</p>
      *

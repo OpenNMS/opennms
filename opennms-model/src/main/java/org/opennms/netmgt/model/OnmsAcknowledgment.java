@@ -120,7 +120,7 @@ public class OnmsAcknowledgment {
      */
     public OnmsAcknowledgment(final Event e) throws ParseException {
         this(DateFormat.getDateInstance(DateFormat.FULL).parse(e.getTime()), "admin");
-        Collection<Parm> parms = e.getParms().getParmCollection();
+        Collection<Parm> parms = e.getParmCollection();
         
         if (parms.size() <= 2) {
             throw new IllegalArgumentException("Event:"+e.getUei()+" has invalid paramenter list, requires ackType and refId.");

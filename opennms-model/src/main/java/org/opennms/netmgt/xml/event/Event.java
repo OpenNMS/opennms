@@ -828,6 +828,14 @@ public class Event implements Serializable {
 	public Parms getParms() {
 		return this._parms;
 	}
+	
+	/**
+	 * Returns the Collection of parms for this event
+	 */
+    public List<Parm> getParmCollection() {
+        return getParms() == null ? Collections.<Parm>emptyList() : getParms().getParmCollection();
+    }
+
 
 	/**
 	 * Returns the value of field 'pathoutage'. The field 'pathoutage' has the
@@ -1825,4 +1833,5 @@ public class Event implements Serializable {
 			.append("alarm-data", _alarmData)
 			.toString();
 	}
+
 }

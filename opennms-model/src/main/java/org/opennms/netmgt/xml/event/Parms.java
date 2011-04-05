@@ -136,6 +136,9 @@ public class Parms implements Serializable {
      * No type checking is performed on any modifications to the
      * Vector.
      * 
+     * @deprecated This entire class has been deprecated. Use Event.getParmCollection instead
+     * 
+     * 
      * @return a reference to the Vector backing this class
      */
     public java.util.List<org.opennms.netmgt.xml.event.Parm> getParmCollection(
