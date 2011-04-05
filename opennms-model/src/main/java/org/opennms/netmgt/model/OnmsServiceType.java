@@ -108,7 +108,7 @@ public class OnmsServiceType implements Serializable {
      *
      * @return a {@link java.lang.String} object.
      */
-    @Column(name="serviceName", nullable=false, unique=true, length=32)
+    @Column(name="serviceName", nullable=false, unique=true, length=255)
     public String getName() {
         return m_name;
     }
