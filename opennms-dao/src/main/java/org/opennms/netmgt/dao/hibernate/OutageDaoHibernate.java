@@ -35,6 +35,7 @@
 //
 package org.opennms.netmgt.dao.hibernate;
 
+import java.net.InetAddress;
 import java.sql.SQLException;
 import java.util.Collection;
 import java.util.HashSet;
@@ -102,14 +103,14 @@ public class OutageDaoHibernate extends AbstractDaoHibernate<OnmsOutage, Integer
 
     /** {@inheritDoc} */
     public Collection<OnmsOutage> matchingCurrentOutages(final ServiceSelector selector) {
-        final Set<String> matchingIps = new HashSet<String>(FilterDaoFactory.getInstance().getIPList(selector.getFilterRule()));
+        final Set<InetAddress> matchingAddrs = new HashSet<InetAddress>(FilterDaoFactory.getInstance().getIPAddressList(selector.getFilterRule()));
         final Set<String> matchingSvcs = new HashSet<String>(selector.getServiceNames());
 
         final List<OnmsOutage> matchingOutages = new LinkedList<OnmsOutage>();
         final Collection<OnmsOutage> outages = currentOutages();
         for (final OnmsOutage outage : outages) {
             final OnmsMonitoredService svc = outage.getMonitoredService();
-            if ((matchingSvcs.contains(svc.getServiceName()) || matchingSvcs.isEmpty()) && matchingIps.contains(svc.getIpAddressAsString())) {
+            if ((matchingSvcs.contains(svc.getServiceName()) || matchingSvcs.isEmpty()) && matchingAddrs.contains(svc.getIpAddress())) {
                 matchingOutages.add(outage);
             }
 

@@ -103,14 +103,14 @@ public class MonitoredServiceDaoHibernate extends AbstractDaoHibernate<OnmsMonit
 
     /** {@inheritDoc} */
     public List<OnmsMonitoredService> findMatchingServices(ServiceSelector selector) {
-        Set<String> matchingIps = new HashSet<String>(FilterDaoFactory.getInstance().getIPList(selector.getFilterRule()));
+        Set<InetAddress> matchingAddrs = new HashSet<InetAddress>(FilterDaoFactory.getInstance().getIPAddressList(selector.getFilterRule()));
         Set<String> matchingSvcs = new HashSet<String>(selector.getServiceNames());
         
         List<OnmsMonitoredService> matchingServices = new LinkedList<OnmsMonitoredService>();
         Collection<OnmsMonitoredService> services = findActive();
         for (OnmsMonitoredService svc : services) {
             if ((matchingSvcs.contains(svc.getServiceName()) || matchingSvcs.isEmpty()) &&
-                matchingIps.contains(svc.getIpAddressAsString())) {
+                matchingAddrs.contains(svc.getIpAddress())) {
                 
                 matchingServices.add(svc);
             }
