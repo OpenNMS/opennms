@@ -424,10 +424,10 @@ public class DNSServer {
             if (response.findRRset(name, rrset.getType(), s)) return;
         }
         if ((flags & FLAG_SIGONLY) == 0) {
-            @SuppressWarnings("rawtypes")
-            final Iterator it = rrset.rrs();
+            @SuppressWarnings("unchecked")
+            final Iterator<Record> it = rrset.rrs();
             while (it.hasNext()) {
-                final Record r = (Record) it.next();
+                final Record r = it.next();
                 if (r.getName().isWild() && !name.isWild()) {
                     response.addRecord(r.withName(name), section);
                 } else {
@@ -436,10 +436,10 @@ public class DNSServer {
             }
         }
         if ((flags & (FLAG_SIGONLY | FLAG_DNSSECOK)) != 0) {
-            @SuppressWarnings("rawtypes")
-            final Iterator it = rrset.sigs();
+            @SuppressWarnings("unchecked")
+            final Iterator<Record> it = rrset.sigs();
             while (it.hasNext()) {
-                final Record r = (Record) it.next();
+                final Record r = it.next();
                 if (r.getName().isWild() && !name.isWild()) {
                     response.addRecord(r.withName(name), section);
                 } else {
@@ -462,10 +462,10 @@ public class DNSServer {
         final SetResponse sr = cache.lookupRecords(name, Type.NS, Credibility.HINT);
         if (!sr.isDelegation()) return;
         final RRset nsRecords = sr.getNS();
-        @SuppressWarnings("rawtypes")
-        final Iterator it = nsRecords.rrs();
+        @SuppressWarnings("unchecked")
+        final Iterator<Record> it = nsRecords.rrs();
         while (it.hasNext()) {
-            final Record r = (Record) it.next();
+            final Record r = it.next();
             response.addRecord(r, Section.AUTHORITY);
         }
     }
@@ -566,13 +566,13 @@ public class DNSServer {
         boolean first = true;
         if (zone == null)
             return errorMessage(query, Rcode.REFUSED);
-        @SuppressWarnings("rawtypes")
-        final Iterator it = zone.AXFR();
+        @SuppressWarnings("unchecked")
+        final Iterator<RRset> it = zone.AXFR();
         try {
             final DataOutputStream dataOut = new DataOutputStream(s.getOutputStream());
             int id = query.getHeader().getID();
             while (it.hasNext()) {
-                final RRset rrset = (RRset) it.next();
+                final RRset rrset = it.next();
                 final Message response = new Message(id);
                 final Header header = response.getHeader();
                 header.setFlag(Flags.QR);
