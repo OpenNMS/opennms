@@ -5,7 +5,7 @@
   xsi:schemaLocation="http://www.liquibase.org/xml/ns/dbchangelog/2.0
          http://www.liquibase.org/xml/ns/dbchangelog/dbchangelog-2.0.xsd">
  
-  <changeSet id="1.8.11-service-servicename-length" author="David Schlenk &lt;david.schlenk@spanlink.com&gt; and Benjamin Reed &lt;ranger@opennms.org&gt;">
+  <changeSet id="1.8.11-service-servicename-length" author="David Schlenk &lt;david.schlenk@spanlink.com&gt;">
     <modifyDataType tableName="service" columnName="servicename" newDataType="varchar(255)" />
     <modifyDataType tableName="servicemap" columnName="servicemapname" newDataType="varchar(255)" />
     <modifyDataType tableName="pathoutage" columnName="criticalpathservicename" newDataType="varchar(255)" />
