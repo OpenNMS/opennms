@@ -1,0 +1,44 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<databaseChangeLog
+  xmlns="http://www.liquibase.org/xml/ns/dbchangelog/1.9"
+  xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+  xsi:schemaLocation="http://www.liquibase.org/xml/ns/dbchangelog/1.9
+         http://www.liquibase.org/xml/ns/dbchangelog/dbchangelog-1.9.xsd">
+ 
+    <changeSet id="1.8.11-service-servicename-length" author="David Schlenk &lt;david.schlenk@spanlink.com&gt; and Benjamin Reed &lt;ranger@opennms.org&gt;">
+		<modifyColumn tableName="service">
+			<column name="servicename" type="varchar(255)">
+				<constraints nullable="false" />
+			</column>
+		</modifyColumn>
+		<modifyColumn tableName="servicemap">
+			<column name="servicemapname" type="varchar(255)">
+				<constraints nullable="false" />
+			</column>
+		</modifyColumn>
+		<modifyColumn tableName="pathoutage">
+			<column name="criticalpathservicename" type="varchar(255)">
+				<constraints nullable="false" />
+			</column>
+		</modifyColumn>
+
+		<rollback>
+			<modifyColumn tableName="service">
+				<column name="servicename" type="varchar(32)">
+					<constraints nullable="false" />
+				</column>
+			</modifyColumn>
+			<modifyColumn tableName="servicemap">
+				<column name="servicemapname" type="varchar(32)">
+					<constraints nullable="false" />
+				</column>
+			</modifyColumn>
+			<modifyColumn tableName="pathoutage">
+				<column name="criticalpathservicename" type="varchar(32)">
+					<constraints nullable="false" />
+				</column>
+			</modifyColumn>
+		</rollback>
+    </changeSet>
+ 
+</databaseChangeLog>

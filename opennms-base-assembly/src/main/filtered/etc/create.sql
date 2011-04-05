@@ -218,7 +218,7 @@ create index server_name_idx on serverMap(serverName);
 
 create table serviceMap (
 	ipAddr			varchar(16) not null,
-	serviceMapName		varchar(32) not null
+	serviceMapName		varchar(255) not null
 );
 create index servicemap_name_idx on serviceMap(serviceMapName);
 create index serviceMap_ipaddr_idx on serviceMap(ipAddr);
@@ -484,7 +484,7 @@ create index ipinterface_snmpInterfaceId_idx on ipInterface (snmpInterfaceId);
 
 create table service (
 	serviceID		integer not null,
-	serviceName		varchar(32) not null,
+	serviceName		varchar(255) not null,
 
 	constraint pk_serviceID primary key (serviceID)
 );
@@ -1240,7 +1240,7 @@ CREATE UNIQUE INDEX catenode_unique_idx on category_node(categoryId, nodeId);
 create table pathOutage (
 	nodeID			integer,
 	criticalPathIp		varchar(16) not null,
-	criticalPathServiceName	varchar(32),
+	criticalPathServiceName	varchar(255),
 
 	constraint fk_nodeID8 foreign key (nodeID) references node ON DELETE CASCADE
 );
