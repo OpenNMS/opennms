@@ -43,6 +43,8 @@ import java.net.InetAddress;
 import java.util.List;
 
 import org.opennms.netmgt.icmp.ParallelPingResponseCallback;
+import org.opennms.netmgt.icmp.PingReply;
+import org.opennms.netmgt.icmp.PingRequestId;
 import org.opennms.netmgt.icmp.PingResponseCallback;
 import org.opennms.netmgt.icmp.SinglePingResponseCallback;
 import org.opennms.protocols.rt.IDBasedRequestLocator;

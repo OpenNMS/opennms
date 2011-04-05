@@ -51,6 +51,7 @@ import java.util.concurrent.TimeUnit;
 
 import org.opennms.core.utils.InetAddressUtils;
 import org.opennms.core.utils.LogUtils;
+import org.opennms.netmgt.icmp.PingReply;
 import org.opennms.protocols.icmp.ICMPEchoPacket;
 import org.opennms.protocols.icmp.IcmpSocket;
 
@@ -75,7 +76,7 @@ public class Ping {
             try {
                 while (true) {
                     DatagramPacket pkt = m_socket.receive();
-                    org.opennms.netmgt.ping.PingReply reply;
+                    PingReply reply;
                     try {
                         reply = org.opennms.netmgt.ping.IcmpMessenger.createPingReply(pkt);
                     } catch (Throwable t) {

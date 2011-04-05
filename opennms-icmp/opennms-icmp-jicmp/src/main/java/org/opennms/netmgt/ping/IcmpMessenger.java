@@ -36,6 +36,7 @@ import java.net.DatagramPacket;
 import java.util.Queue;
 
 import org.apache.log4j.Logger;
+import org.opennms.netmgt.icmp.PingReply;
 import org.opennms.protocols.icmp.ICMPEchoPacket;
 import org.opennms.protocols.icmp.IcmpSocket;
 import org.opennms.protocols.rt.Messenger;

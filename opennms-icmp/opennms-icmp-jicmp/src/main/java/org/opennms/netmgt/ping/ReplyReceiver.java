@@ -48,12 +48,13 @@ import org.opennms.core.fiber.PausableFiber;
 import org.opennms.core.queue.FifoQueue;
 import org.opennms.core.queue.FifoQueueException;
 import org.opennms.core.utils.ThreadCategory;
+import org.opennms.netmgt.icmp.PingReply;
 import org.opennms.protocols.icmp.ICMPEchoPacket;
 import org.opennms.protocols.icmp.IcmpSocket;
 
 /**
  * <p>
- * This class is designed to be a single point of reciept for all ICMP messages
+ * This class is designed to be a single point of receipt for all ICMP messages
  * received by an {@link org.opennms.protocols.icmp.IcmpSocket IcmpSocket}
  * instance. The class implements the
  * {@link org.opennms.core.fiber.PausableFiber PausableFiber}interface as a
@@ -61,10 +62,10 @@ import org.opennms.protocols.icmp.IcmpSocket;
  * </p>
  *
  * <p>
- * Once the receiver is started it will process all recieved datagrams and
+ * Once the receiver is started it will process all received datagrams and
  * filter them based upon their ICMP code and the filter identifier used to
- * construct the reciever. All ICMP messages, except for Echo Replies, are
- * discared by the reciever. In addition, only those echo replies that have
+ * construct the receiver. All ICMP messages, except for Echo Replies, are
+ * discarded by the receiver. In addition, only those echo replies that have
  * their identifier set to the passed filter identifier are also discarded.
  * </p>
  *
@@ -77,13 +78,6 @@ import org.opennms.protocols.icmp.IcmpSocket;
  * @author <A HREF="sowmya@opennms.org">Sowmya </A>
  * @author <A HREF="weave@oculan.com">Brian Weaver </A>
  * @author <A HREF="http://www.opennms.org/">OpenNMS </A>
- * @author <A HREF="sowmya@opennms.org">Sowmya </A>
- * @author <A HREF="weave@oculan.com">Brian Weaver </A>
- * @author <A HREF="http://www.opennms.org/">OpenNMS </A>
- * @author <A HREF="sowmya@opennms.org">Sowmya </A>
- * @author <A HREF="weave@oculan.com">Brian Weaver </A>
- * @author <A HREF="http://www.opennms.org/">OpenNMS </A>
- * @version $Id: $
  */
 public final class ReplyReceiver implements PausableFiber, Runnable {
     /**

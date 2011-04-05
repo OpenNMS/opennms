@@ -42,8 +42,10 @@ import java.util.concurrent.TimeUnit;
 import java.util.concurrent.atomic.AtomicBoolean;
 
 import org.opennms.core.utils.ThreadCategory;
-import org.opennms.netmgt.icmp.PingResponseCallback;
 import org.opennms.netmgt.icmp.ICMPEchoPacket;
+import org.opennms.netmgt.icmp.PingReply;
+import org.opennms.netmgt.icmp.PingRequestId;
+import org.opennms.netmgt.icmp.PingResponseCallback;
 import org.opennms.protocols.icmp.IcmpSocket;
 import org.opennms.protocols.rt.Request;
 
