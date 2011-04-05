@@ -31,11 +31,14 @@
  */
 package org.opennms.netmgt.ping;
 
+import static org.opennms.netmgt.ping.PingRequest.FILTER_ID;
+
 import java.io.IOException;
 import java.net.DatagramPacket;
 import java.util.Queue;
 
-import org.apache.log4j.Logger;
+import org.opennms.core.utils.LogUtils;
+import org.opennms.netmgt.icmp.PingRequest;
 import org.opennms.netmgt.icmp.PingReply;
 import org.opennms.protocols.icmp.ICMPEchoPacket;
 import org.opennms.protocols.icmp.IcmpSocket;
@@ -47,7 +50,7 @@ import org.opennms.protocols.rt.Messenger;
  * @author brozow
  * @version $Id: $
  */
-public class IcmpMessenger implements Messenger<PingRequest, PingReply> {
+public class IcmpMessenger implements Messenger<PingRequest<IcmpSocket>, PingReply> {
     
     IcmpSocket m_socket;
     
@@ -60,48 +63,25 @@ public class IcmpMessenger implements Messenger<PingRequest, PingReply> {
         m_socket = new IcmpSocket();
     }
 
-    /**
-     * <p>getIcmpSocket</p>
-     *
-     * @return a {@link org.opennms.protocols.icmp.IcmpSocket} object.
-     */
-    public IcmpSocket getIcmpSocket() {
-        return m_socket;
-    }
-    
-    private Logger log() {
-        return Logger.getLogger(getClass());
-    }
-    
-    void debugf(String format, Object... args) {
-        if (log().isDebugEnabled()) {
-            log().debug(String.format(format, args));
-        }
-    }
-
-    void errorf(Throwable t, String format, Object... args) {
-        log().error(String.format(format, args), t);
-    }
-
     void processPackets(Queue<PingReply> pendingReplies) {
         while (true) {
             try {
-                DatagramPacket packet = getIcmpSocket().receive();
+                DatagramPacket packet = m_socket.receive();
         
                 PingReply reply = IcmpMessenger.createPingReply(packet);
                 
-                if (reply.isEchoReply() && reply.getIdentity() == PingRequest.FILTER_ID) {
-                    debugf("Found an echo packet addr = %s, port = %d, length = %d, created reply %s", packet.getAddress(), packet.getPort(), packet.getLength(), reply);
+                if (reply.isEchoReply() && reply.getIdentity() == FILTER_ID) {
+                    LogUtils.debugf(this, "Found an echo packet addr = %s, port = %d, length = %d, created reply %s", packet.getAddress(), packet.getPort(), packet.getLength(), reply);
                     pendingReplies.offer(reply);
                 }
             } catch (IOException e) {
-                errorf(e, "I/O Error occurred reading from ICMP Socket");
+                LogUtils.errorf(this, e, "I/O Error occurred reading from ICMP Socket");
             } catch (IllegalArgumentException e) {
                 // this is not an EchoReply so ignore it
             } catch (IndexOutOfBoundsException e) {
                 // this packet is not a valid EchoReply ignore it
-            } catch (Throwable t) {
-                errorf(t, "Unexpect Exception processing reply packet!");
+            } catch (Throwable e) {
+                LogUtils.errorf(this, e, "Unexpected Exception processing reply packet!");
             }
             
         }
@@ -112,11 +92,13 @@ public class IcmpMessenger implements Messenger<PingRequest, PingReply> {
      *
      * @param request a {@link org.opennms.netmgt.ping.PingRequest} object.
      */
-    public void sendRequest(PingRequest request) {
-        request.sendRequest(getIcmpSocket());
+    @Override
+    public void sendRequest(PingRequest<IcmpSocket> request) {
+        request.send(m_socket, request.getId().getAddress());
     }
 
     /** {@inheritDoc} */
+    @Override
     public void start(final Queue<PingReply> replyQueue) {
         Thread socketReader = new Thread("ICMP-Socket-Reader") {
 
@@ -124,7 +106,7 @@ public class IcmpMessenger implements Messenger<PingRequest, PingReply> {
                 try {
                     processPackets(replyQueue);
                 } catch (Throwable t) {
-                    errorf(t, "Unexpected exception on Thread %s!", this);
+                    LogUtils.errorf(this, t, "Unexpected exception on Thread %s!", this);
                 }
             }
         };
@@ -149,7 +131,7 @@ public class IcmpMessenger implements Messenger<PingRequest, PingReply> {
      * @throws java.lang.IllegalArgumentException
      *             Throw if the datagram is not the correct length or type.
      * @throws java.lang.IndexOutOfBoundsException
-     *             Thrown if the datagram does not contain sufficent data.
+     *             Thrown if the datagram does not contain sufficient data.
      * @return a {@link org.opennms.netmgt.ping.PingReply} object.
      */
     public static PingReply createPingReply(DatagramPacket packet) {
@@ -169,7 +151,4 @@ public class IcmpMessenger implements Messenger<PingRequest, PingReply> {
         //
         return new PingReply(packet.getAddress(), new JICMPEchoPacket(pkt));
     }
-
-
-
 }
