@@ -39,6 +39,7 @@ import java.util.Hashtable;
 import java.util.Properties;
 
 import org.eclipse.jetty.ajp.Ajp13SocketConnector;
+import org.eclipse.jetty.http.ssl.SslContextFactory;
 import org.eclipse.jetty.server.Connector;
 import org.eclipse.jetty.server.Server;
 import org.eclipse.jetty.server.handler.HandlerCollection;
@@ -101,13 +102,21 @@ public class JettyServer extends AbstractServiceDaemon implements SpringServiceD
         
         Integer https_port = Integer.getInteger("org.opennms.netmgt.jetty.https-port");
         if (https_port != null) {
-        	SslSocketConnector sslConnector = new SslSocketConnector();
-        	sslConnector.setPort(https_port);
-        	excludeCipherSuites(sslConnector);
-    		sslConnector.setKeystore(System.getProperty("org.opennms.netmgt.jetty.https-keystore", homeDir+File.separator+"etc"+File.separator+"examples"+File.separator+"jetty.keystore"));
-    		sslConnector.setPassword(System.getProperty("org.opennms.netmgt.jetty.https-keystorepassword", "changeit"));
-    		sslConnector.setKeyPassword(System.getProperty("org.opennms.netmgt.jetty.https-keypassword", "changeit"));
-    		String httpsHost = System.getProperty("org.opennms.netmgt.jetty.https-host");
+            
+            String keyStorePath = System.getProperty("org.opennms.netmgt.jetty.https-keystore", homeDir+File.separator+"etc"+File.separator+"examples"+File.separator+"jetty.keystore");
+            String keyStorePassword = System.getProperty("org.opennms.netmgt.jetty.https-keystorepassword", "changeit");
+            String keyManagerPassword = System.getProperty("org.opennms.netmgt.jetty.https-keypassword", "changeit");
+
+            SslContextFactory contextFactory = new SslContextFactory(keyStorePath);
+            contextFactory.setKeyStorePassword(keyStorePassword);
+            contextFactory.setKeyManagerPassword(keyManagerPassword);
+
+        	excludeCipherSuites(contextFactory, https_port);
+
+            SslSocketConnector sslConnector = new SslSocketConnector(contextFactory);
+            sslConnector.setPort(https_port);
+
+        	String httpsHost = System.getProperty("org.opennms.netmgt.jetty.https-host");
     		if (httpsHost != null) {
     			sslConnector.setHost(httpsHost);
     		}
@@ -182,10 +191,11 @@ public class JettyServer extends AbstractServiceDaemon implements SpringServiceD
 
     /**
      * <p>excludeCipherSuites</p>
-     *
+     * @param contextFactory 
+     * @param https_port 
      * @param sslConnector a {@link org.eclipse.jetty.server.security.SslSocketConnector} object.
      */
-    protected void excludeCipherSuites(SslSocketConnector sslConnector) {
+    protected void excludeCipherSuites(SslContextFactory contextFactory, Integer port) {
         String[] defaultExclSuites = {
                 "SSL_DHE_DSS_WITH_DES_CBC_SHA",
                 "SSL_DHE_RSA_EXPORT_WITH_DES40_CBC_SHA",
@@ -210,9 +220,10 @@ public class JettyServer extends AbstractServiceDaemon implements SpringServiceD
             log().warn("Excluding " + exclSuites.length + " user-specified SSL/TLS cipher suites");
         }
         
-        sslConnector.setExcludeCipherSuites(exclSuites);
+        contextFactory.setExcludeCipherSuites(exclSuites);
+        
         for (String suite : exclSuites) {
-            log().info("Excluded SSL/TLS cipher suite " + suite + " for connector on port " + sslConnector.getPort());
+            log().info("Excluded SSL/TLS cipher suite " + suite + " for connector on port " + port);
         }
     }
 
