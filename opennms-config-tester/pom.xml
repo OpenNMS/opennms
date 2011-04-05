@@ -65,7 +65,7 @@
     </dependency>
     <dependency>
     	<groupId>org.opennms</groupId>
-    	<artifactId>opennms-rancid</artifactId>
+    	<artifactId>opennms-rancid-provisioning-adapter</artifactId>
     	<version>${project.parent.version}</version>
     	<scope>compile</scope>
     </dependency>
