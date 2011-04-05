@@ -15,7 +15,6 @@ import javax.ws.rs.core.MultivaluedMap;
 import javax.ws.rs.core.SecurityContext;
 import javax.ws.rs.core.UriInfo;
 
-import org.hibernate.criterion.Order;
 import org.opennms.netmgt.dao.NotificationDao;
 import org.opennms.netmgt.model.OnmsCriteria;
 import org.opennms.netmgt.model.OnmsNotification;
@@ -58,7 +57,7 @@ public class NotificationRestService extends OnmsRestService {
     @Produces({MediaType.APPLICATION_XML, MediaType.APPLICATION_JSON})
     @Path("{notifId}")
     @Transactional
-    public OnmsNotification getNotification(@PathParam("eventId") String notifId) {
+    public OnmsNotification getNotification(@PathParam("notifId") String notifId) {
     	OnmsNotification result= m_notifDao.get(new Integer(notifId));
     	return result;
     }

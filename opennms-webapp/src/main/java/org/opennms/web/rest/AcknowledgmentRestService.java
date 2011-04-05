@@ -50,11 +50,13 @@ import javax.ws.rs.core.UriInfo;
 
 import org.opennms.netmgt.dao.AcknowledgmentDao;
 import org.opennms.netmgt.dao.AlarmDao;
+import org.opennms.netmgt.dao.NotificationDao;
 import org.opennms.netmgt.model.AckAction;
 import org.opennms.netmgt.model.OnmsAcknowledgment;
 import org.opennms.netmgt.model.OnmsAcknowledgmentCollection;
 import org.opennms.netmgt.model.OnmsAlarm;
 import org.opennms.netmgt.model.OnmsCriteria;
+import org.opennms.netmgt.model.OnmsNotification;
 import org.opennms.netmgt.model.acknowledgments.AckService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Scope;
@@ -81,6 +83,9 @@ public class AcknowledgmentRestService extends OnmsRestService {
     
     @Autowired
     private AlarmDao m_alarmDao;
+    
+    @Autowired
+    private NotificationDao m_notificationDao;
     
     @Autowired
     private AckService m_ackSvc;
@@ -138,7 +143,6 @@ public class AcknowledgmentRestService extends OnmsRestService {
         return coll;
     }
 
-//    @PUT
     /**
      * <p>acknowledgeAlarm</p>
      *
@@ -149,9 +153,19 @@ public class AcknowledgmentRestService extends OnmsRestService {
     @POST
     @Consumes(MediaType.APPLICATION_FORM_URLENCODED)
     @Transactional
-    public OnmsAcknowledgment acknowledgeAlarm(@FormParam("alarmId") String alarmId, @FormParam("action") String action) {
-        OnmsAlarm alarm = m_alarmDao.get(Integer.valueOf(alarmId));
-        OnmsAcknowledgment ack = new OnmsAcknowledgment(alarm);
+    public OnmsAcknowledgment acknowledge(@FormParam("alarmId") String alarmId, @FormParam("notifId") String notifId, @FormParam("action") String action) {
+    	OnmsAcknowledgment ack = null;
+    	if (alarmId == null && notifId == null) {
+    		throw new IllegalArgumentException("You must supply either an alarmId or notifId!");
+    	} else if (alarmId != null && notifId != null) {
+    		throw new IllegalArgumentException("You cannot supply both an alarmId and a notifId!");
+    	} else if (alarmId != null) {
+    		final OnmsAlarm alarm = m_alarmDao.get(Integer.valueOf(alarmId));
+            ack = new OnmsAcknowledgment(alarm);
+    	} else if (notifId != null) {
+    		final OnmsNotification notification = m_notificationDao.get(Integer.valueOf(notifId));
+    		ack = new OnmsAcknowledgment(notification);
+    	}
         
         if (action == null) {
             action = "ack";
