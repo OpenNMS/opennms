@@ -98,6 +98,7 @@ import org.opennms.netmgt.provision.persist.OnmsNodeRequisition;
 import org.opennms.netmgt.provision.persist.OnmsServiceCategoryRequisition;
 import org.opennms.netmgt.provision.persist.RequisitionVisitor;
 import org.opennms.netmgt.provision.persist.foreignsource.ForeignSource;
+import org.opennms.netmgt.provision.persist.foreignsource.PluginConfig;
 import org.opennms.netmgt.provision.persist.policies.NodeCategorySettingPolicy;
 import org.opennms.netmgt.provision.persist.requisition.Requisition;
 import org.opennms.netmgt.xml.event.Event;
@@ -136,6 +137,7 @@ import org.springframework.transaction.annotation.Transactional;
         "classpath:/META-INF/opennms/applicationContext-setupIpLike-enabled.xml",
         "classpath:/META-INF/opennms/applicationContext-provisiond.xml",
         "classpath*:/META-INF/opennms/component-dao.xml",
+        "classpath*:/META-INF/opennms/provisiond-extensions.xml",
         "classpath*:/META-INF/opennms/detectors.xml",
         "classpath:/META-INF/opennms/applicationContext-databasePopulator.xml",
         "classpath:/importerServiceTest.xml"
@@ -231,6 +233,12 @@ public class ProvisionerTest implements MockSnmpAgentAware {
         m_foreignSource.setName("imported:");
         m_foreignSource.setScanInterval(Duration.standardDays(1));
         
+        PluginConfig policy = new PluginConfig("setCategory", NodeCategorySettingPolicy.class.getName());
+        policy.addParameter("category", "TestCategory");
+        policy.addParameter("label", "localhost");
+        
+        m_foreignSource.addPolicy(policy);
+        
         m_foreignSourceRepository = new MockForeignSourceRepository();
         m_foreignSourceRepository.save(m_foreignSource);
         
@@ -308,6 +316,7 @@ public class ProvisionerTest implements MockSnmpAgentAware {
     @Test(timeout=300000)
     @Transactional
     public void testNonSnmpImportAndScan() throws Exception {
+                
         importFromResource("classpath:/import_localhost.xml");
         
         List<OnmsNode> nodes = getNodeDao().findAll();
@@ -316,6 +325,10 @@ public class ProvisionerTest implements MockSnmpAgentAware {
         NodeScan scan = m_provisioner.createNodeScan(node.getId(), node.getForeignSource(), node.getForeignId());
         
         runScan(scan);
+        
+        OnmsNode scannedNode = getNodeDao().findAll().get(0);
+        assertEquals("TestCategory", scannedNode.getCategories().iterator().next().getName());
+                
     }
     
     
