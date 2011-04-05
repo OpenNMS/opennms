@@ -357,7 +357,7 @@ doStop() {
 	doStatus
 	if [ $? -eq 3 ]; then
 		echo "Trying to stop OpenNMS but it's already stopped." >&2
-		return 7   # LSB says: 7 - program is not running
+		return 0   # LSB says: stopping when stopped is successful
 	fi
 
 	pid=`getPid`
