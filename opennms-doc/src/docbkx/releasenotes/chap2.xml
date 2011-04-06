@@ -6,6 +6,70 @@
 
 	<!-- Start 1.9 -->
 
+	<section id="opennms-1.9.7">
+		<title>Changes in OpenNMS 1.9.7</title>
+
+		<section id="opennms-1.9.7-bug">
+			<title>Bug</title>
+
+			<itemizedlist>
+				<listitem><para>NullPointerExceptions in node IP route information (Issue <ulink url='http://issues.opennms.org/browse/NMS-2482'>NMS-2482</ulink>)</para></listitem>
+				<listitem><para>[syslogd] OpenNMS&#39;s syslogd implementation does not handle all syslog facilities (Issue <ulink url='http://issues.opennms.org/browse/NMS-2640'>NMS-2640</ulink>)</para></listitem>
+				<listitem><para>correlator service unable to start : java.lang.NoSuchMethodError org.eclipse.jdt.internal.compiler.CompilationResult.getProblems() (Issue <ulink url='http://issues.opennms.org/browse/NMS-2847'>NMS-2847</ulink>)</para></listitem>
+				<listitem><para>statistics report pdf creation does not work (Issue <ulink url='http://issues.opennms.org/browse/NMS-3855'>NMS-3855</ulink>)</para></listitem>
+				<listitem><para>Provisiond Deleting IpAddr On Nodes After Rescan (Issue <ulink url='http://issues.opennms.org/browse/NMS-3997'>NMS-3997</ulink>)</para></listitem>
+				<listitem><para>Provisiond - simple TCP detector fails to detect services (Issue <ulink url='http://issues.opennms.org/browse/NMS-4033'>NMS-4033</ulink>)</para></listitem>
+				<listitem><para>provisioning node with NodeCategorySettingPolicy policy in foreign source does not work if node has no SNMP available (Issue <ulink url='http://issues.opennms.org/browse/NMS-4039'>NMS-4039</ulink>)</para></listitem>
+				<listitem><para>stored report data in non-unique named files (Issue <ulink url='http://issues.opennms.org/browse/NMS-4058'>NMS-4058</ulink>)</para></listitem>
+				<listitem><para>Need to be able to acknowledge notifications through the ReST service (Issue <ulink url='http://issues.opennms.org/browse/NMS-4069'>NMS-4069</ulink>)</para></listitem>
+				<listitem><para>send-event.pl timestamp is not parsed correctly (Issue <ulink url='http://issues.opennms.org/browse/NMS-4148'>NMS-4148</ulink>)</para></listitem>
+				<listitem><para>Rescans Not Happening for Default Nodes (Issue <ulink url='http://issues.opennms.org/browse/NMS-4168'>NMS-4168</ulink>)</para></listitem>
+				<listitem><para>Memcached graph definitions left out of default configuration (Issue <ulink url='http://issues.opennms.org/browse/NMS-4208'>NMS-4208</ulink>)</para></listitem>
+				<listitem><para>Exception when Provisioning an ipv6 address on a node with SNMP Enabled (Issue <ulink url='http://issues.opennms.org/browse/NMS-4251'>NMS-4251</ulink>)</para></listitem>
+				<listitem><para>Null pointer exception when listing outstanding notifications (Issue <ulink url='http://issues.opennms.org/browse/NMS-4352'>NMS-4352</ulink>)</para></listitem>
+				<listitem><para>Documentation can&#39;t be build off-line (Issue <ulink url='http://issues.opennms.org/browse/NMS-4416'>NMS-4416</ulink>)</para></listitem>
+				<listitem><para>interface.jsp gives NPE (Issue <ulink url='http://issues.opennms.org/browse/NMS-4469'>NMS-4469</ulink>)</para></listitem>
+				<listitem><para>PageSequenceMonitor double-URL-encodes query parameters (Issue <ulink url='http://issues.opennms.org/browse/NMS-4484'>NMS-4484</ulink>)</para></listitem>
+				<listitem><para>Poller not responding to nodeGainedService events when event interface is an ipv6 address (Issue <ulink url='http://issues.opennms.org/browse/NMS-4488'>NMS-4488</ulink>)</para></listitem>
+				<listitem><para>jdbc-datacollection-config.xml has hard coded path for rrdRepository (Issue <ulink url='http://issues.opennms.org/browse/NMS-4491'>NMS-4491</ulink>)</para></listitem>
+				<listitem><para>Don&#39;t require all code to pass the PRESERVE_WHITESPACE constant to CastorUtils (Issue <ulink url='http://issues.opennms.org/browse/NMS-4495'>NMS-4495</ulink>)</para></listitem>
+				<listitem><para>NSClient data collection only reads the first &lt;nsclient-collection&gt; tag (Issue <ulink url='http://issues.opennms.org/browse/NMS-4499'>NMS-4499</ulink>)</para></listitem>
+				<listitem><para>Someone left two q&#39;s in the file ./WEB-INF/jsp/graph/chooseresource.jsp (Issue <ulink url='http://issues.opennms.org/browse/NMS-4527'>NMS-4527</ulink>)</para></listitem>
+				<listitem><para>XSD definitions don&#39;t need to be anchored (Issue <ulink url='http://issues.opennms.org/browse/NMS-4547'>NMS-4547</ulink>)</para></listitem>
+				<listitem><para>IP validation in web UI doesn&#39;t handle IPv6 (Issue <ulink url='http://issues.opennms.org/browse/NMS-4555'>NMS-4555</ulink>)</para></listitem>
+				<listitem><para>Physical Interface Page Doesn&#39;t load on IE (Issue <ulink url='http://issues.opennms.org/browse/NMS-4575'>NMS-4575</ulink>)</para></listitem>
+				<listitem><para>Debian init script not LSB compatible (Issue <ulink url='http://issues.opennms.org/browse/NMS-4578'>NMS-4578</ulink>)</para></listitem>
+				<listitem><para>The attribute &quot;totalCount&quot; for OnmsNodeList is not well calculated (Issue <ulink url='http://issues.opennms.org/browse/NMS-4580'>NMS-4580</ulink>)</para></listitem>
+			</itemizedlist>
+		</section>
+		<section id="opennms-1.9.7-enhancement">
+			<title>Enhancement</title>
+
+			<itemizedlist>
+				<listitem><para>Debian Startup Script hides important Debian Specific Error Output (Issue <ulink url='http://issues.opennms.org/browse/NMS-3411'>NMS-3411</ulink>)</para></listitem>
+				<listitem><para>Remove c3p0 dependencies from installer code so we can change the DB connection pooling implementation (Issue <ulink url='http://issues.opennms.org/browse/NMS-4388'>NMS-4388</ulink>)</para></listitem>
+				<listitem><para>Increase servicename in table service in the core schema to accomodate services with names longer than 32 characters (Issue <ulink url='http://issues.opennms.org/browse/NMS-4477'>NMS-4477</ulink>)</para></listitem>
+				<listitem><para>All Event creation should use the EventBuilder (Issue <ulink url='http://issues.opennms.org/browse/NMS-4489'>NMS-4489</ulink>)</para></listitem>
+				<listitem><para>Get rid of PostgreSQL-specific calls in installation/upgrade tools. (Upgrade to Liquibase 2.0) (Issue <ulink url='http://issues.opennms.org/browse/NMS-4496'>NMS-4496</ulink>)</para></listitem>
+				<listitem><para>OnmsMonitoredService getIpAddress returns a String rather than an InetAddress (Issue <ulink url='http://issues.opennms.org/browse/NMS-4507'>NMS-4507</ulink>)</para></listitem>
+				<listitem><para>OnmsOutage does not following the same getIpInterface pattern as OnmsIpInterface (Issue <ulink url='http://issues.opennms.org/browse/NMS-4508'>NMS-4508</ulink>)</para></listitem>
+				<listitem><para>Convert Event XML to JAXB (Issue <ulink url='http://issues.opennms.org/browse/NMS-4535'>NMS-4535</ulink>)</para></listitem>
+				<listitem><para>New events for traps from Sun/Oracle ILOM cards (Issue <ulink url='http://issues.opennms.org/browse/NMS-4541'>NMS-4541</ulink>)</para></listitem>
+				<listitem><para>Trap events for Comtech EF Data CDM-625 satellite modems (Issue <ulink url='http://issues.opennms.org/browse/NMS-4554'>NMS-4554</ulink>)</para></listitem>
+				<listitem><para>provisiond needs to be able to scan the new ipAddress table, in addition to the (deprecated) ipAddr table, and handle IPv6 addresses (Issue <ulink url='http://issues.opennms.org/browse/NMS-4577'>NMS-4577</ulink>)</para></listitem>
+				<listitem><para>[patch] add new asset fields for hardware configuration data (Issue <ulink url='http://issues.opennms.org/browse/NMS-4579'>NMS-4579</ulink>)</para></listitem>
+			</itemizedlist>
+		</section>
+		<section id="opennms-1.9.7-new feature">
+			<title>New Feature</title>
+
+			<itemizedlist>
+				<listitem><para>OpenNMS needs a way to do in-depth configuration testing without starting the daemon (Issue <ulink url='http://issues.opennms.org/browse/NMS-4336'>NMS-4336</ulink>)</para></listitem>
+				<listitem><para>create a tool for migrating RRDs (Issue <ulink url='http://issues.opennms.org/browse/NMS-4450'>NMS-4450</ulink>)</para></listitem>
+			</itemizedlist>
+		</section>
+	</section>
+
 	<section id="opennms-1.9.6">
 		<title>Changes in OpenNMS 1.9.6</title>
 
