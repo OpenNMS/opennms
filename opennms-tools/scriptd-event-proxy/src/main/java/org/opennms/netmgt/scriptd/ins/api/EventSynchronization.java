@@ -1,4 +1,9 @@
 package org.opennms.netmgt.scriptd.ins.api;
+
+import java.util.List;
+
+import org.opennms.netmgt.xml.event.Event;
+
 /**
  * Interface to use for triggering
  * a generic event synchronization
@@ -16,7 +21,7 @@ public interface EventSynchronization {
 	 * 
 	 * @param eventForwarder
 	 */
-	void addEventForwarder(EventForwarder eventForwarder);
+//	void addEventForwarder(EventForwarder eventForwarder);
 	
 	/**
 	 * Criteria to be used to get the sync events
@@ -28,6 +33,6 @@ public interface EventSynchronization {
 	/**
 	 * Calling this method get the synchronization
 	 */
-	void sync();
+	List<Event> sync();
 
 }

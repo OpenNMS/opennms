@@ -16,6 +16,6 @@ public interface EventForwarder {
 	
 	void addEventFilter(EventFilter filter);	
 
-	void flushEvent(Event event);
+//	void flushEvent(Event event);
 
 }
