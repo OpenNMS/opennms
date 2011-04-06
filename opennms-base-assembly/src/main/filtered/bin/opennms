@@ -162,16 +162,16 @@ checkXmlFiles(){
 		find "$OPENNMS_HOME/etc" -type f -name \*.xml | while read "FILE"; do
 			"$XMLLINT" "$FILE" >/dev/null 2>&1
 			if [ $? != 0 ]; then
-				echo "ERROR: XML validation failed: $FILE"
-				echo "	   run '$XMLLINT $FILE' for details"
+				echo "ERROR: XML validation failed: $FILE" >&2
+				echo "	   run '$XMLLINT $FILE' for details" >&2
 			fi
 		done >"$TEMPFILE"
 		cat "$TEMPFILE"
 		FAILCOUNT=`cat "$TEMPFILE" | grep -c 'XML validation failed'`
 		rm "$TEMPFILE"
 		if [ $FAILCOUNT -gt 0 ]; then
-			echo "Validation failed on $FAILCOUNT XML files.  Exiting."
-			exit 1
+			echo "Validation failed on $FAILCOUNT XML files.  Exiting." >&2
+			return 6	# From LSB: 6 - program is not configured
 		fi
 	fi
 		 
@@ -189,7 +189,7 @@ checkRpmFiles(){
 
 	for EXTENSION in rpmnew rpmsave dpkg-dist; do
 		if [ `find $CHECKDIRS -name \*.$EXTENSION | wc -l` -gt 0 ]; then
-			cat <<END
+			cat <<END >&2
 
 WARNING!  You have files that end in .$EXTENSION in your
 OPENNMS_HOME ($OPENNMS_HOME) directory.
@@ -252,19 +252,19 @@ doStart(){
 	# be found at http://www.bluemarsh.com
 	###########################################################################
 	if [ $TEST -gt 0 ]; then
-		echo "- enabling JPDA debugging on port 8001"
+		echo "- enabling JPDA debugging on port 8001" >&2
 		JPDA="-Xdebug -Xnoagent -Djava.compiler=none -Xrunjdwp:transport=dt_socket,server=y,address=8001,suspend=n"
 	fi
 
 	# See: http://www.khelekore.org/jmp/tijmp/
 	if [ $TPROFILE -gt 0 ]; then
-		echo "- enabling TIJMP Profiling"
+		echo "- enabling TIJMP Profiling" >&2
 		JPDA="-Dtijmp.jar=/usr/share/java/tijmp-0.6.jar -agentlib:tijmp ${JPDA}"
 	fi
 
 	# See: http://oprofile.sourceforge.net/doc/setup-jit.html
 	if [ $OPROFILE -gt 0 ]; then
-		echo "- enabling OProfile support"
+		echo "- enabling OProfile support" >&2
 		JPDA="-agentpath:/usr/lib/oprofile/libjvmti_oprofile.so ${JPDA}"
 	fi
 
@@ -325,7 +325,7 @@ doPause(){
 			$JAVA_CMD $APP_VM_PARMS -jar $BOOTSTRAP $APP_PARMS_CONTROLLER $APP_PARMS_BEFORE "$@" $APP_PARMS_AFTER
 		fi
 	else
-		echo "OpenNMS is not running."
+		echo "OpenNMS is not running." >&2
 	fi
 }
 
@@ -337,7 +337,7 @@ doResume(){
 			$JAVA_CMD $APP_VM_PARMS -jar $BOOTSTRAP $APP_PARMS_CONTROLLER $APP_PARMS_BEFORE "$@" $APP_PARMS_AFTER
 		fi
 	else
-		echo "OpenNMS is not running."
+		echo "OpenNMS is not running." >&2
 	fi
 }
 
@@ -350,7 +350,7 @@ doCheck() {
 	echo "OpenNMS is not running... Restarting" >&2
 	$OPENNMS_HOME/bin/opennms start
 
-	exit 1
+	exit 0
 }
 
 doStop() {
@@ -716,7 +716,7 @@ case "$COMMAND" in
 
 	configtest)
 		$opennms_echo "Validating XML files: \c"
-		checkXmlFiles
+		checkXmlFiles || exit $?
 		echo "PASSED"
 		;;
 
@@ -740,7 +740,7 @@ case "$COMMAND" in
 		echo ""
 		echo "ERROR: unknown command \"$COMMAND\""
 		show_help
-		exit 1
+		exit 2
 		;;
 esac
 
