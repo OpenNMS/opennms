@@ -438,11 +438,13 @@ public class CollectdTest extends TestCase {
             return s_delegate.collect(agent, eproxy, parameters);
         }
 
-        public void initialize(Map<String,String> parameters) {
+        @SuppressWarnings("unchecked")
+        public void initialize(Map parameters) {
             s_delegate.initialize(parameters);
         }
 
-        public void initialize(CollectionAgent agent, Map<String,String> parameters) {
+        @SuppressWarnings("unchecked")
+        public void initialize(CollectionAgent agent, Map parameters) {
             s_delegate.initialize(agent, parameters);
         }
 

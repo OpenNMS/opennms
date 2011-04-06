@@ -53,7 +53,6 @@ import java.util.regex.Pattern;
 import javax.sql.DataSource;
 
 import org.opennms.core.utils.DBUtils;
-import org.opennms.core.utils.LogUtils;
 import org.opennms.core.utils.ThreadCategory;
 import org.opennms.netmgt.config.DatabaseSchemaConfigFactory;
 import org.opennms.netmgt.config.filter.Table;
@@ -288,12 +287,9 @@ public class JdbcFilterDao implements FilterDao, InitializingBean {
         List<String> resultList = new ArrayList<String>();
         String sqlString;
 
-        if (!rule.contains("isManaged")) {
-            LogUtils.debugf(this, "filter rule does not filter out deleted interfaces, adding ipInterfaces.isManaged != 'D' to rule");
-            rule += " AND ipInterface.isManaged!='D'";
+        if (log().isDebugEnabled()) {
+            log().debug("Filter: rule: " + rule);
         }
-
-        LogUtils.debugf(this, "Filter: rule: %s", rule);
 
         // get the database connection
         Connection conn = null;

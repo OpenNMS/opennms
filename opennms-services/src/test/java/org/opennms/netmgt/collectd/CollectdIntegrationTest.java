@@ -221,7 +221,7 @@ public class CollectdIntegrationTest extends TestCase {
     }
 
     private void createGetPackagesExpectation(OnmsMonitoredService svc) {
-        String rule = "ipaddr = '"+svc.getIpAddress();
+        String rule = "ipaddr = '"+svc.getIpAddress()+"'";
         
         EasyMock.expect(m_filterDao.getIPList(rule)).andReturn(Collections.singletonList(svc.getIpAddress()));
         
