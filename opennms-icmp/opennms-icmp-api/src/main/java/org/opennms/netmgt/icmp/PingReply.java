@@ -118,7 +118,7 @@ public final class PingReply implements ResponseWithId<PingRequestId> {
     /**
      * Returns the ICMP packet for the reply.
      *
-     * @return a {@link org.opennms.protocols.icmp.ICMPEchoPacket} object.
+     * @return a {@link org.opennms.netmgt.icmp.ICMPEchoPacket} object.
      */
     public final ICMPEchoPacket getPacket() {
         return m_packet;
@@ -127,7 +127,7 @@ public final class PingReply implements ResponseWithId<PingRequestId> {
     /**
      * <p>getRequestId</p>
      *
-     * @return a {@link org.opennms.netmgt.ping.PingRequestId} object.
+     * @return a {@link org.opennms.netmgt.icmp.PingRequestId} object.
      */
     public PingRequestId getRequestId() {
         return new PingRequestId(this);

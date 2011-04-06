@@ -31,15 +31,15 @@
  */
 package org.opennms.netmgt.ping;
 
-import static org.opennms.netmgt.ping.PingRequest.FILTER_ID;
+import static org.opennms.netmgt.icmp.AbstractPingRequest.FILTER_ID;
 
 import java.io.IOException;
 import java.net.DatagramPacket;
 import java.util.Queue;
 
 import org.opennms.core.utils.LogUtils;
-import org.opennms.netmgt.icmp.PingRequest;
 import org.opennms.netmgt.icmp.PingReply;
+import org.opennms.netmgt.icmp.PingRequest;
 import org.opennms.protocols.icmp.ICMPEchoPacket;
 import org.opennms.protocols.icmp.IcmpSocket;
 import org.opennms.protocols.rt.Messenger;
