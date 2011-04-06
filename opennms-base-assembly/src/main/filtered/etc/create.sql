@@ -1163,7 +1163,7 @@ create table assets (
         inputpower		varchar(6),
         additionalhardware		varchar(64),
         admin		varchar(32),
-        snmpcommunity		varchar(32)
+        snmpcommunity		varchar(32),
         
     constraint pk_assetID primary key (id),
 	constraint fk_nodeID5 foreign key (nodeID) references node ON DELETE CASCADE
