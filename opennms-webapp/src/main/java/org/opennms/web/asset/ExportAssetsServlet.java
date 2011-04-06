@@ -138,7 +138,21 @@ public class ExportAssetsServlet extends HttpServlet {
                 "Enable",
                 "Connection",
                 "Auto Enable",
-                "Comments"
+                "Comments",
+		"Cpu",
+		"Ram",
+		"Storage Controller",
+		"HDD 1",
+		"HDD 2",
+		"HDD 3",
+		"HDD 4",
+		"HDD 5",
+		"HDD 6",
+		"Number of power supplies",
+		"Inputpower",
+		"Additional hardware",
+		"Admin",
+		"SNMP Community"
         };
         
         out.writeNext(header);
@@ -192,6 +206,20 @@ public class ExportAssetsServlet extends HttpServlet {
             entries.add(asset.getConnection());
             entries.add(asset.getAutoenable());
             entries.add(asset.getComments());
+            entries.add(asset.getCpu());
+            entries.add(asset.getRam());
+            entries.add(asset.getStoragectrl());
+            entries.add(asset.getHdd1());
+            entries.add(asset.getHdd2());
+            entries.add(asset.getHdd3());
+            entries.add(asset.getHdd4());
+            entries.add(asset.getHdd5());
+            entries.add(asset.getHdd6());
+            entries.add(asset.getNumpowersupplies());
+            entries.add(asset.getInputpower());
+            entries.add(asset.getAdditionalhardware());
+            entries.add(asset.getAdmin());
+            entries.add(asset.getSnmpcommunity());
             
             out.writeNext(entries.toArray(new String[0]));
         }

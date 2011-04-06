@@ -1150,6 +1150,20 @@ create table assets (
         comment         text,
         managedObjectInstance varchar(512),
         managedObjectType varchar(512),
+        cpu		varchar(32),
+        ram		varchar(10),
+        storagectrl	varchar(32),
+        hdd1		varchar(32),
+        hdd2		varchar(32),
+        hdd3		varchar(32),
+        hdd4		varchar(32),
+        hdd5		varchar(32),
+        hdd6		varchar(32),
+        numpowersupplies		varchar(1),
+        inputpower		varchar(6),
+        additionalhardware		varchar(64),
+        admin		varchar(32),
+        snmpcommunity		varchar(32)
         
     constraint pk_assetID primary key (id),
 	constraint fk_nodeID5 foreign key (nodeID) references node ON DELETE CASCADE

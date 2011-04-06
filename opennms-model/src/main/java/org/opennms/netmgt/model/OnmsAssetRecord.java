@@ -217,6 +217,48 @@ public class OnmsAssetRecord implements Serializable {
     /** identifier field */
     private String m_comment;
 
+    /** identifier field */
+    private String m_cpu;
+
+    /** identifier field */
+    private String m_ram;
+
+    /** identifier field */
+    private String m_storagectrl;
+
+    /** identifier field */
+    private String m_hdd1;
+
+    /** identifier field */
+    private String m_hdd2;
+
+    /** identifier field */
+    private String m_hdd3;
+
+    /** identifier field */
+    private String m_hdd4;
+
+    /** identifier field */
+    private String m_hdd5;
+
+    /** identifier field */
+    private String m_hdd6;
+
+    /** identifier field */
+    private String m_numpowersupplies;
+
+    /** identifier field */
+    private String m_inputpower;
+
+    /** identifier field */
+    private String m_additionalhardware;
+
+    /** identifier field */
+    private String m_admin;
+
+    /** identifier field */
+    private String m_snmpcommunity;
+
     /** persistent field */
     private OnmsNode m_node;
 
@@ -1159,10 +1201,273 @@ public class OnmsAssetRecord implements Serializable {
      * @param autoenable a {@link java.lang.String} object.
      */
     public void setAutoenable(String autoenable) {
-        if (autoenable != null && autoenable.equals(AUTOENABLED))
             m_autoenable = autoenable;
-        else 
-            m_autoenable = autoenable;
+    }
+
+    /**
+     * <p>getCpu</p>
+     *
+     * @return a {@link java.lang.String} object.
+     */
+    @Column(name="cpu", length=1)
+    public String getCpu() {
+        return m_cpu;
+    }
+
+    /**
+     * <p>setCpu</p>
+     *
+     * @param cpu a {@link java.lang.String} object.
+     */
+    public void setCpu(String cpu) {
+            m_cpu = cpu;
+    }
+
+    /**
+     * <p>getRam</p>
+     *
+     * @return a {@link java.lang.String} object.
+     */
+    @Column(name="ram", length=1)
+    public String getRam() {
+        return m_ram;
+    }
+
+    /**
+     * <p>setRam</p>
+     *
+     * @param ram a {@link java.lang.String} object.
+     */
+    public void setRam(String ram) {
+            m_ram = ram;
+    }
+
+    /**
+     * <p>getSnmpcommunity</p>
+     *
+     * @return a {@link java.lang.String} object.
+     */
+    @Column(name="snmpcommunity", length=1)
+    public String getSnmpcommunity() {
+        return m_snmpcommunity;
+    }
+
+    /**
+     * <p>setSnmpcommunity</p>
+     *
+     * @param snmpcommunity a {@link java.lang.String} object.
+     */
+    public void setSnmpcommunity(String snmpcommunity) {
+            m_snmpcommunity = snmpcommunity;
+    }
+
+    /**
+     * <p>getAdmin</p>
+     *
+     * @return a {@link java.lang.String} object.
+     */
+    @Column(name="admin", length=1)
+    public String getAdmin() {
+        return m_admin;
+    }
+
+    /**
+     * <p>setAdmin</p>
+     *
+     * @param admin a {@link java.lang.String} object.
+     */
+    public void setAdmin(String admin) {
+            m_admin = admin;
+    }
+
+    /**
+     * <p>getAdditionalhardware</p>
+     *
+     * @return a {@link java.lang.String} object.
+     */
+    @Column(name="additionalhardware", length=1)
+    public String getAdditionalhardware() {
+        return m_additionalhardware;
+    }
+
+    /**
+     * <p>setAdditionalhardware</p>
+     *
+     * @param additionalhardware a {@link java.lang.String} object.
+     */
+    public void setAdditionalhardware(String additionalhardware) {
+            m_additionalhardware = additionalhardware;
+    }
+
+    /**
+     * <p>getInputpower</p>
+     *
+     * @return a {@link java.lang.String} object.
+     */
+    @Column(name="inputpower", length=1)
+    public String getInputpower() {
+        return m_inputpower;
+    }
+
+    /**
+     * <p>setInputpower</p>
+     *
+     * @param inputpower a {@link java.lang.String} object.
+     */
+    public void setInputpower(String inputpower) {
+            m_inputpower = inputpower;
+    }
+
+    /**
+     * <p>getNumpowersupplies</p>
+     *
+     * @return a {@link java.lang.String} object.
+     */
+    @Column(name="numpowersupplies", length=1)
+    public String getNumpowersupplies() {
+        return m_numpowersupplies;
+    }
+
+    /**
+     * <p>setNumpowersupplies</p>
+     *
+     * @param numpowersupplies a {@link java.lang.String} object.
+     */
+    public void setNumpowersupplies(String numpowersupplies) {
+            m_numpowersupplies = numpowersupplies;
+    }
+
+    /**
+     * <p>getHdd6</p>
+     *
+     * @return a {@link java.lang.String} object.
+     */
+    @Column(name="hdd6", length=1)
+    public String getHdd6() {
+        return m_hdd6;
+    }
+
+    /**
+     * <p>setHdd6</p>
+     *
+     * @param hdd6 a {@link java.lang.String} object.
+     */
+    public void setHdd6(String hdd6) {
+            m_hdd6 = hdd6;
+    }
+
+    /**
+     * <p>getHdd5</p>
+     *
+     * @return a {@link java.lang.String} object.
+     */
+    @Column(name="hdd5", length=1)
+    public String getHdd5() {
+        return m_hdd5;
+    }
+
+    /**
+     * <p>setHdd5</p>
+     *
+     * @param hdd5 a {@link java.lang.String} object.
+     */
+    public void setHdd5(String hdd5) {
+            m_hdd5 = hdd5;
+    }
+
+    /**
+     * <p>getHdd4</p>
+     *
+     * @return a {@link java.lang.String} object.
+     */
+    @Column(name="hdd4", length=1)
+    public String getHdd4() {
+        return m_hdd4;
+    }
+
+    /**
+     * <p>setHdd4</p>
+     *
+     * @param hdd4 a {@link java.lang.String} object.
+     */
+    public void setHdd4(String hdd4) {
+            m_hdd4 = hdd4;
+    }
+
+    /**
+     * <p>getHdd3</p>
+     *
+     * @return a {@link java.lang.String} object.
+     */
+    @Column(name="hdd3", length=1)
+    public String getHdd3() {
+        return m_hdd3;
+    }
+
+    /**
+     * <p>setHdd3</p>
+     *
+     * @param hdd3 a {@link java.lang.String} object.
+     */
+    public void setHdd3(String hdd3) {
+            m_hdd3 = hdd3;
+    }
+
+    /**
+     * <p>getHdd2</p>
+     *
+     * @return a {@link java.lang.String} object.
+     */
+    @Column(name="hdd2", length=1)
+    public String getHdd2() {
+        return m_hdd2;
+    }
+
+    /**
+     * <p>setHdd2</p>
+     *
+     * @param hdd2 a {@link java.lang.String} object.
+     */
+    public void setHdd2(String hdd2) {
+            m_hdd2 = hdd2;
+    }
+
+    /**
+     * <p>getHdd1</p>
+     *
+     * @return a {@link java.lang.String} object.
+     */
+    @Column(name="hdd1", length=1)
+    public String getHdd1() {
+        return m_hdd1;
+    }
+
+    /**
+     * <p>setHdd1</p>
+     *
+     * @param hdd1 a {@link java.lang.String} object.
+     */
+    public void setHdd1(String hdd1) {
+            m_hdd1 = hdd1;
+    }
+
+    /**
+     * <p>getStoragectrl</p>
+     *
+     * @return a {@link java.lang.String} object.
+     */
+    @Column(name="storagectrl", length=1)
+    public String getStoragectrl() {
+        return m_storagectrl;
+    }
+
+    /**
+     * <p>setStoragectrl</p>
+     *
+     * @param storagectrl a {@link java.lang.String} object.
+     */
+    public void setStoragectrl(String storagectrl) {
+            m_storagectrl = storagectrl;
     }
 
     /** {@inheritDoc} */
@@ -1213,6 +1518,20 @@ public class OnmsAssetRecord implements Serializable {
             .append("pollercategory", getPollerCategory())
             .append("thresholdcategory", getThresholdCategory())
             .append("comment", getComment())
+            .append("cpu", getCpu())
+            .append("ram", getRam())
+            .append("storagectrl", getStoragectrl())
+            .append("hdd1", getHdd1())
+            .append("hdd2", getHdd2())
+            .append("hdd3", getHdd3())
+            .append("hdd4", getHdd4())
+            .append("hdd5", getHdd5())
+            .append("hdd6", getHdd6())
+            .append("numpowersupplies", getNumpowersupplies())
+            .append("inputpower", getInputpower())
+            .append("additionalhardware", getAdditionalhardware())
+            .append("admin", getAdmin())
+            .append("snmpcommunity", getSnmpcommunity())
             .toString();
     }
 

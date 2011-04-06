@@ -179,6 +179,288 @@ public class Asset extends Object {
 
     protected String autoenable ="";
     
+    protected String cpu ="";
+    
+    protected String ram ="";
+
+    protected String storagectrl ="";
+    
+    protected String hdd1 ="";
+
+    protected String hdd2 ="";
+
+    protected String hdd3 ="";
+
+    protected String hdd4 ="";
+
+    protected String hdd5 ="";
+
+    protected String hdd6 ="";
+
+    protected String numpowersupplies ="";
+
+    protected String inputpower ="";
+
+    protected String additionalhardware ="";
+
+    protected String admin ="";
+
+    protected String snmpcommunity ="";
+
+    /**
+     * <p>Getter for the field <code>snmpcommunity</code>.</p>
+     *
+     * @return a {@link java.lang.String} object.
+     */
+    public String getSnmpcommunity() {
+        return snmpcommunity;
+    }
+
+    /**
+     * <p>Setter for the field <code>snmpcommunity</code>.</p>
+     *
+     * @param snmpcommunity a {@link java.lang.String} object.
+     */
+    public void setSnmpcommunity(String snmpcommunity) {
+        if (snmpcommunity != null) {
+            this.snmpcommunity = snmpcommunity;
+        } else {
+            this.snmpcommunity = "";
+        }        
+      }
+    /**
+     * <p>Getter for the field <code>admin</code>.</p>
+     *
+     * @return a {@link java.lang.String} object.
+     */
+    public String getAdmin() {
+        return admin;
+    }
+
+    /**
+     * <p>Setter for the field <code>admin</code>.</p>
+     *
+     * @param admin a {@link java.lang.String} object.
+     */
+    public void setAdmin(String admin) {
+        if (admin != null) {
+            this.admin = admin;
+        } else {
+            this.admin = "";
+        }        
+      }
+    /**
+     * <p>Getter for the field <code>additionalhardware</code>.</p>
+     *
+     * @return a {@link java.lang.String} object.
+     */
+    public String getAdditionalhardware() {
+        return additionalhardware;
+    }
+
+    /**
+     * <p>Setter for the field <code>additionalhardware</code>.</p>
+     *
+     * @param additionalhardware a {@link java.lang.String} object.
+     */
+    public void setAdditionalhardware(String additionalhardware) {
+        if (additionalhardware != null) {
+            this.additionalhardware = additionalhardware;
+        } else {
+            this.additionalhardware = "";
+        }        
+      }
+    /**
+     * <p>Getter for the field <code>inputpower</code>.</p>
+     *
+     * @return a {@link java.lang.String} object.
+     */
+    public String getInputpower() {
+        return inputpower;
+    }
+
+    /**
+     * <p>Setter for the field <code>inputpower</code>.</p>
+     *
+     * @param inputpower a {@link java.lang.String} object.
+     */
+    public void setInputpower(String inputpower) {
+        if (inputpower != null) {
+            this.inputpower = inputpower;
+        } else {
+            this.inputpower = "";
+        }        
+      }
+    /**
+     * <p>Getter for the field <code>numpowersupplies</code>.</p>
+     *
+     * @return a {@link java.lang.String} object.
+     */
+    public String getNumpowersupplies() {
+        return numpowersupplies;
+    }
+
+    /**
+     * <p>Setter for the field <code>numpowersupplies</code>.</p>
+     *
+     * @param numpowersupplies a {@link java.lang.String} object.
+     */
+    public void setNumpowersupplies(String numpowersupplies) {
+        if (numpowersupplies != null) {
+            this.numpowersupplies = numpowersupplies;
+        } else {
+            this.numpowersupplies = "";
+        }        
+      }
+    /**
+     * <p>Getter for the field <code>hdd6</code>.</p>
+     *
+     * @return a {@link java.lang.String} object.
+     */
+    public String getHdd6() {
+        return hdd6;
+    }
+
+    /**
+     * <p>Setter for the field <code>hdd6</code>.</p>
+     *
+     * @param hdd6 a {@link java.lang.String} object.
+     */
+    public void setHdd6(String hdd6) {
+        if (hdd6 != null) {
+            this.hdd6 = hdd6;
+        } else {
+            this.hdd6 = "";
+        }        
+      }
+    /**
+     * <p>Getter for the field <code>hdd5</code>.</p>
+     *
+     * @return a {@link java.lang.String} object.
+     */
+    public String getHdd5() {
+        return hdd5;
+    }
+
+    /**
+     * <p>Setter for the field <code>hdd5</code>.</p>
+     *
+     * @param hdd5 a {@link java.lang.String} object.
+     */
+    public void setHdd5(String hdd5) {
+        if (hdd5 != null) {
+            this.hdd5 = hdd5;
+        } else {
+            this.hdd5 = "";
+        }        
+      }
+    /**
+     * <p>Getter for the field <code>hdd4</code>.</p>
+     *
+     * @return a {@link java.lang.String} object.
+     */
+    public String getHdd4() {
+        return hdd4;
+    }
+
+    /**
+     * <p>Setter for the field <code>hdd4</code>.</p>
+     *
+     * @param hdd4 a {@link java.lang.String} object.
+     */
+    public void setHdd4(String hdd4) {
+        if (hdd4 != null) {
+            this.hdd4 = hdd4;
+        } else {
+            this.hdd4 = "";
+        }        
+      }
+    /**
+     * <p>Getter for the field <code>hdd3</code>.</p>
+     *
+     * @return a {@link java.lang.String} object.
+     */
+    public String getHdd3() {
+        return hdd3;
+    }
+
+    /**
+     * <p>Setter for the field <code>hdd3</code>.</p>
+     *
+     * @param hdd3 a {@link java.lang.String} object.
+     */
+    public void setHdd3(String hdd3) {
+        if (hdd3 != null) {
+            this.hdd3 = hdd3;
+        } else {
+            this.hdd3 = "";
+        }        
+      }
+    /**
+     * <p>Getter for the field <code>hdd2</code>.</p>
+     *
+     * @return a {@link java.lang.String} object.
+     */
+    public String getHdd2() {
+        return hdd2;
+    }
+
+    /**
+     * <p>Setter for the field <code>hdd2</code>.</p>
+     *
+     * @param hdd2 a {@link java.lang.String} object.
+     */
+    public void setHdd2(String hdd2) {
+        if (hdd2 != null) {
+            this.hdd2 = hdd2;
+        } else {
+            this.hdd2 = "";
+        }        
+      }
+    /**
+     * <p>Getter for the field <code>hdd1</code>.</p>
+     *
+     * @return a {@link java.lang.String} object.
+     */
+    public String getHdd1() {
+        return hdd1;
+    }
+
+    /**
+     * <p>Setter for the field <code>hdd1</code>.</p>
+     *
+     * @param hdd1 a {@link java.lang.String} object.
+     */
+    public void setHdd1(String hdd1) {
+        if (hdd1 != null) {
+            this.hdd1 = hdd1;
+        } else {
+            this.hdd1 = "";
+        }        
+      }
+
+    /**
+     * <p>Getter for the field <code>storagectrl</code>.</p>
+     *
+     * @return a {@link java.lang.String} object.
+     */
+    public String getStoragectrl() {
+        return storagectrl;
+    }
+
+    /**
+     * <p>Setter for the field <code>storagectrl</code>.</p>
+     *
+     * @param storagectrl a {@link java.lang.String} object.
+     */
+    public void setStoragectrl(String storagectrl) {
+        if (storagectrl != null) {
+            this.storagectrl = storagectrl;
+        } else {
+            this.storagectrl = "";
+        }        
+      }
+    
     /**
      * <p>Setter for the field <code>nodeId</code>.</p>
      *
@@ -1158,6 +1440,50 @@ public class Asset extends Object {
             this.autoenable = autoenable;
         } else {
             this.autoenable = "";
+        }        
+      }
+
+    /**
+     * <p>Getter for the field <code>cpu</code>.</p>
+     *
+     * @return a {@link java.lang.String} object.
+     */
+    public String getCpu() {
+        return cpu;
+    }
+
+    /**
+     * <p>Setter for the field <code>cpu</code>.</p>
+     *
+     * @param cpu a {@link java.lang.String} object.
+     */
+    public void setCpu(String cpu) {
+        if (cpu != null) {
+            this.cpu = cpu;
+        } else {
+            this.cpu = "";
+        }        
+      }
+
+    /**
+     * <p>Getter for the field <code>ram</code>.</p>
+     *
+     * @return a {@link java.lang.String} object.
+     */
+    public String getRam() {
+        return ram;
+    }
+
+    /**
+     * <p>Setter for the field <code>ram</code>.</p>
+     *
+     * @param ram a {@link java.lang.String} object.
+     */
+    public void setRam(String ram) {
+        if (ram != null) {
+            this.ram = ram;
+        } else {
+            this.ram = "";
         }        
       }
 

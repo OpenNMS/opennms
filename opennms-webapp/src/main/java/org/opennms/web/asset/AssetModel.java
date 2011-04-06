@@ -141,7 +141,7 @@ public class AssetModel extends Object {
             Connection conn = Vault.getDbConnection();
             d.watch(conn);
 
-            PreparedStatement stmt = conn.prepareStatement("INSERT INTO ASSETS (nodeID,category,manufacturer,vendor,modelNumber,serialNumber,description,circuitId,assetNumber,operatingSystem,rack,slot,port,region,division,department,address1,address2,city,state,zip,building,floor,room,vendorPhone,vendorFax,userLastModified,lastModifiedDate,dateInstalled,lease,leaseExpires,supportPhone,maintContract,vendorAssetNumber,maintContractExpires,displayCategory,notifyCategory,pollerCategory,thresholdCategory,comment,username,password,enable,connection,autoenable) values(?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?)");
+            PreparedStatement stmt = conn.prepareStatement("INSERT INTO ASSETS (nodeID,category,manufacturer,vendor,modelNumber,serialNumber,description,circuitId,assetNumber,operatingSystem,rack,slot,port,region,division,department,address1,address2,city,state,zip,building,floor,room,vendorPhone,vendorFax,userLastModified,lastModifiedDate,dateInstalled,lease,leaseExpires,supportPhone,maintContract,vendorAssetNumber,maintContractExpires,displayCategory,notifyCategory,pollerCategory,thresholdCategory,comment,username,password,enable,connection,autoenable,cpu,ram,storagectrl,hdd1,hdd2,hdd3,hdd4,hdd5,hdd6,numpowersupplies,inputpower,additionalhardware,admin,snmpcommunity) values(?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?)");
             d.watch(stmt);
             stmt.setInt(1, asset.nodeId);
             stmt.setString(2, asset.category);
@@ -188,6 +188,20 @@ public class AssetModel extends Object {
             stmt.setString(43, asset.enable);
             stmt.setString(44, asset.connection);
             stmt.setString(45, asset.autoenable);
+            stmt.setString(46, asset.cpu);
+            stmt.setString(47, asset.ram);
+            stmt.setString(48, asset.storagectrl);
+            stmt.setString(49, asset.hdd1);
+            stmt.setString(50, asset.hdd2);
+            stmt.setString(51, asset.hdd3);
+            stmt.setString(52, asset.hdd4);
+            stmt.setString(53, asset.hdd5);
+            stmt.setString(54, asset.hdd6);
+            stmt.setString(55, asset.numpowersupplies);
+            stmt.setString(56, asset.inputpower);
+            stmt.setString(57, asset.additionalhardware);
+            stmt.setString(58, asset.admin);
+            stmt.setString(59, asset.snmpcommunity);
 
             stmt.execute();
         } finally {
@@ -209,7 +223,7 @@ public class AssetModel extends Object {
             Connection conn = Vault.getDbConnection();
             d.watch(conn);
 
-            PreparedStatement stmt = conn.prepareStatement("UPDATE ASSETS SET category=?,manufacturer=?,vendor=?,modelNumber=?,serialNumber=?,description=?,circuitId=?,assetNumber=?,operatingSystem=?,rack=?,slot=?,port=?,region=?,division=?,department=?,address1=?,address2=?,city=?,state=?,zip=?,building=?,floor=?,room=?,vendorPhone=?,vendorFax=?,userLastModified=?,lastModifiedDate=?,dateInstalled=?,lease=?,leaseExpires=?,supportPhone=?,maintContract=?,vendorAssetNumber=?,maintContractExpires=?,displayCategory=?,notifyCategory=?,pollerCategory=?,thresholdCategory=?,comment=?, username=?, password=?,enable=?,connection=?,autoenable=? WHERE nodeid=?");
+            PreparedStatement stmt = conn.prepareStatement("UPDATE ASSETS SET category=?,manufacturer=?,vendor=?,modelNumber=?,serialNumber=?,description=?,circuitId=?,assetNumber=?,operatingSystem=?,rack=?,slot=?,port=?,region=?,division=?,department=?,address1=?,address2=?,city=?,state=?,zip=?,building=?,floor=?,room=?,vendorPhone=?,vendorFax=?,userLastModified=?,lastModifiedDate=?,dateInstalled=?,lease=?,leaseExpires=?,supportPhone=?,maintContract=?,vendorAssetNumber=?,maintContractExpires=?,displayCategory=?,notifyCategory=?,pollerCategory=?,thresholdCategory=?,comment=?, username=?, password=?,enable=?,connection=?,autoenable=?,cpu=?,ram=?,storagectrl=?,hdd1=?,hdd2=?,hdd3=?,hdd4=?,hdd5=?,hdd6=?,numpowersupplies=?,inputpower=?,additionalhardware=?,admin=?,snmpcommunity=? WHERE nodeid=?");
             d.watch(stmt);
             stmt.setString(1, asset.category);
             stmt.setString(2, asset.manufacturer);
@@ -255,7 +269,21 @@ public class AssetModel extends Object {
             stmt.setString(42, asset.enable);
             stmt.setString(43, asset.connection);
             stmt.setString(44, asset.autoenable);
-            stmt.setInt(45, asset.nodeId);
+            stmt.setString(45, asset.cpu);
+            stmt.setString(46, asset.ram);
+            stmt.setString(47, asset.storagectrl);
+            stmt.setString(48, asset.hdd1);
+            stmt.setString(49, asset.hdd2);
+            stmt.setString(50, asset.hdd3);
+            stmt.setString(51, asset.hdd4);
+            stmt.setString(52, asset.hdd5);
+            stmt.setString(53, asset.hdd6);
+            stmt.setString(54, asset.numpowersupplies);
+            stmt.setString(55, asset.inputpower);
+            stmt.setString(56, asset.additionalhardware);
+            stmt.setString(57, asset.admin);
+            stmt.setString(58, asset.snmpcommunity);
+            stmt.setInt(59, asset.nodeId);
 
             stmt.execute();
         } finally {
@@ -382,6 +410,20 @@ public class AssetModel extends Object {
             asset.setEnable(rs.getString("enable"));
             asset.setConnection(rs.getString("connection"));
             asset.setAutoenable(rs.getString("autoenable"));
+            asset.setCpu(rs.getString("cpu"));
+            asset.setRam(rs.getString("ram"));
+            asset.setStoragectrl(rs.getString("storagectrl"));
+            asset.setHdd1(rs.getString("hdd1"));
+            asset.setHdd2(rs.getString("hdd2"));
+            asset.setHdd3(rs.getString("hdd3"));
+            asset.setHdd4(rs.getString("hdd4"));
+            asset.setHdd5(rs.getString("hdd5"));
+            asset.setHdd6(rs.getString("hdd6"));
+            asset.setNumpowersupplies(rs.getString("numpowersupplies"));
+            asset.setInputpower(rs.getString("inputpower"));
+            asset.setAdditionalhardware(rs.getString("additionalhardware"));
+            asset.setAdmin(rs.getString("admin"));
+            asset.setSnmpcommunity(rs.getString("snmpcommunity"));
 
             // Convert from java.sql.Timestamp to java.util.Date, since it looks more pretty or something
             asset.lastModifiedDate = new Date(rs.getTimestamp("lastModifiedDate").getTime());
@@ -461,6 +503,20 @@ public class AssetModel extends Object {
         new String[] { "Password", "password" },
         new String[] { "Enable Password", "enable" },
         new String[] { "Connection type", "connection" },
-        new String[] { "Auto Enable", "autoenable" }        
+        new String[] { "Auto Enable", "autoenable" },
+        new String[] { "Cpu", "cpu" },        
+        new String[] { "Ram", "ram" },
+        new String[] { "Storage Controller", "storagectrl" },
+        new String[] { "HDD 1", "hdd1" },
+        new String[] { "HDD 2", "hdd2" },
+        new String[] { "HDD 3", "hdd3" },
+        new String[] { "HDD 4", "hdd4" },
+        new String[] { "HDD 5", "hdd5" },
+        new String[] { "HDD 6", "hdd6" },
+        new String[] { "Number of power supplies", "numpowersupplies" },
+        new String[] { "Inputpower", "inputpower" },
+        new String[] { "Additional hardware", "additionalhardware" },
+        new String[] { "Admin", "admin" },
+        new String[] { "SNMP community", "snmpcommunity" }        
     };
 }

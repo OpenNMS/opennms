@@ -190,6 +190,20 @@ public class ModifyAssetServlet extends HttpServlet {
         asset.setEnable(getRequestParameter(request, "enable"));
         asset.setConnection(getRequestParameter(request, "connection"));
         asset.setAutoenable(getRequestParameter(request, "autoenable"));
+        asset.setCpu(getRequestParameter(request, "cpu"));
+        asset.setRam(getRequestParameter(request, "ram"));
+        asset.setStoragectrl(getRequestParameter(request, "storagectrl"));
+        asset.setHdd1(getRequestParameter(request, "hdd1"));
+        asset.setHdd2(getRequestParameter(request, "hdd2"));
+        asset.setHdd3(getRequestParameter(request, "hdd3"));
+        asset.setHdd4(getRequestParameter(request, "hdd4"));
+        asset.setHdd5(getRequestParameter(request, "hdd5"));
+        asset.setHdd6(getRequestParameter(request, "hdd6"));
+        asset.setNumpowersupplies(getRequestParameter(request, "numpowersupplies"));
+        asset.setInputpower(getRequestParameter(request, "inputpower"));
+        asset.setAdditionalhardware(getRequestParameter(request, "additionalhardware"));
+        asset.setAdmin(getRequestParameter(request, "admin"));
+        asset.setSnmpcommunity(getRequestParameter(request, "snmpcommunity"));
 
         asset.setUserLastModified(request.getRemoteUser());
         asset.setLastModifiedDate(new Date());
