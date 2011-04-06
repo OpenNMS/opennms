@@ -52,8 +52,6 @@ import javax.xml.datatype.DatatypeFactory;
 import javax.xml.datatype.XMLGregorianCalendar;
 
 import org.apache.commons.lang.builder.CompareToBuilder;
-import org.apache.commons.lang.builder.EqualsBuilder;
-import org.apache.commons.lang.builder.HashCodeBuilder;
 import org.apache.commons.lang.builder.ToStringBuilder;
 import org.joda.time.Duration;
 import org.opennms.core.utils.LogUtils;
@@ -196,6 +194,15 @@ public class ForeignSource implements Serializable, Comparable<ForeignSource> {
         m_detectors = detectors;
     }
     
+    @XmlTransient
+    public List<String> getDetectorNames() {
+        List<String> names = new ArrayList<String>(m_detectors.size());
+        for(PluginConfig detector : m_detectors) {
+            names.add(detector.getName());
+        }
+        return names;
+    }
+    
     /**
      * <p>getPolicies</p>
      *
@@ -322,35 +329,7 @@ public class ForeignSource implements Serializable, Comparable<ForeignSource> {
     public int compareTo(final ForeignSource obj) {
         return new CompareToBuilder()
             .append(getName(), obj.getName())
-            .append(getScanInterval(), obj.getScanInterval())
-            .append(getDetectors().toArray(OF_PLUGIN_CONFIGS), obj.getDetectors().toArray(OF_PLUGIN_CONFIGS))
-            .append(getPolicies().toArray(OF_PLUGIN_CONFIGS), obj.getPolicies().toArray(OF_PLUGIN_CONFIGS))
             .toComparison();
     }
     
-    /** {@inheritDoc} */
-    @Override
-    public boolean equals(final Object obj) {
-        if (obj instanceof ForeignSource) {
-            final ForeignSource other = (ForeignSource) obj;
-            return new EqualsBuilder()
-                .append(getName(), other.getName())
-                .append(getScanInterval(), other.getScanInterval())
-                .append(getDetectors().toArray(OF_PLUGIN_CONFIGS), other.getDetectors().toArray(OF_PLUGIN_CONFIGS))
-                .append(getPolicies().toArray(OF_PLUGIN_CONFIGS), other.getPolicies().toArray(OF_PLUGIN_CONFIGS))
-                .isEquals();
-        }
-        return false;
-    }
-
-    /** {@inheritDoc} */
-    @Override
-    public int hashCode() {
-        return new HashCodeBuilder(443, 1061)
-            .append(getName())
-            .append(getScanInterval())
-            .append(getDetectors().toArray(OF_PLUGIN_CONFIGS))
-            .append(getPolicies().toArray(OF_PLUGIN_CONFIGS))
-            .toHashCode();
-      }
 }

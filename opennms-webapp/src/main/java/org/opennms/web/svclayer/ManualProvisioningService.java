@@ -72,6 +72,14 @@ public interface ManualProvisioningService {
     Requisition createProvisioningGroup(String name);
 
     /**
+     * <p>getServiceTypeNames</p>
+     *
+     * @param groupName finds the services that are defined in the foreignsource for this group
+     * @return a {@link java.util.Collection} object.
+     */
+    Collection<String> getServiceTypeNames(String groupName);
+
+    /**
      * <p>saveProvisioningGroup</p>
      *
      * @param groupName a {@link java.lang.String} object.
@@ -187,12 +195,5 @@ public interface ManualProvisioningService {
      * @return a {@link java.util.Collection} object.
      */
     Collection<String> getAssetFieldNames();
-
-    /**
-     * <p>getServiceTypeNames</p>
-     *
-     * @return a {@link java.util.Collection} object.
-     */
-    Collection<String> getServiceTypeNames();
 
 }

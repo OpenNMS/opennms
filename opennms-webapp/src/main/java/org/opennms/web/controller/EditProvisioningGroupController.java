@@ -289,9 +289,15 @@ public class EditProvisioningGroupController extends SimpleFormController {
         }
         map.put("snmpPrimaryChoices", choices);
         
+        String groupName = request.getParameter("groupName");
+        if (groupName != null) {
+            map.put("services",  m_provisioningService.getServiceTypeNames(groupName));
+        }
+        
         map.put("categories", m_provisioningService.getNodeCategoryNames());
         map.put("assetFields", m_provisioningService.getAssetFieldNames());
-        map.put("services",  m_provisioningService.getServiceTypeNames());
+        
+        
         
         
         return map;
