@@ -51,6 +51,8 @@ import javax.ws.rs.core.UriInfo;
 import javax.ws.rs.core.Response.Status;
 
 import org.hibernate.criterion.CriteriaSpecification;
+import org.hibernate.criterion.Projections;
+import org.hibernate.criterion.Subqueries;
 import org.opennms.netmgt.EventConstants;
 import org.opennms.netmgt.dao.NodeDao;
 import org.opennms.netmgt.model.OnmsCriteria;
@@ -110,7 +112,16 @@ public class NodeRestService extends OnmsRestService {
         addFiltersToCriteria(m_uriInfo.getQueryParameters(), criteria, OnmsNode.class);
         criteria.createAlias("snmpInterfaces", "snmpInterface", CriteriaSpecification.LEFT_JOIN);
         criteria.createAlias("ipInterfaces", "ipInterface", CriteriaSpecification.LEFT_JOIN);
-        coll.setTotalCount(m_nodeDao.countMatching(criteria));
+        criteria.setProjection(
+                Projections.distinct(
+                        Projections.projectionList().add(
+                                Projections.alias( Projections.property("id"), "id" )
+                        )
+                )
+        );
+        OnmsCriteria rootCriteria = new OnmsCriteria(OnmsNode.class);
+        rootCriteria.add(Subqueries.propertyIn("id", criteria.getDetachedCriteria()));
+        coll.setTotalCount(m_nodeDao.countMatching(rootCriteria));
 
         return coll;
     }
