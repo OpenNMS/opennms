@@ -8,8 +8,19 @@ cd "$TOPDIR"
 if [ -n "$1" ]; then
 	RELEASE_MAJOR="$1"
 	shift
-else
+fi
+
+if [ -z "$RELEASE_MAJOR" ]; then
 	RELEASE_MAJOR=0
+fi
+
+if [ -n "$1" ]; then
+	RELEASE_MICRO="$1"
+	shift
+fi
+
+if [ -z "$RELEASE_MICRO" ]; then
+	RELEASE_MICRO=1
 fi
 
 EXTRA_INFO=""
@@ -29,7 +40,7 @@ fi
 
 if [ $RELEASE_MAJOR = 0 ]; then
 	RELEASE_MINOR=`date '+%Y%m%d'`
-	RELEASE=$RELEASE_MAJOR.$RELEASE_MINOR.1
+	RELEASE=$RELEASE_MAJOR.$RELEASE_MINOR.$RELEASE_MICRO
 else
 	RELEASE=$RELEASE_MAJOR
 fi
