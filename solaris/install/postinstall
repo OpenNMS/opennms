@@ -27,4 +27,4 @@ fi
 
 /usr/bin/su $INSTUSER -c "$BASEDIR/bin/install -dis" || exit 1
 
-/usr/sbin/svcadm enable $FMRI || exit 1
+echo "NOTE: You must run '/usr/sbin/svcadm enable $FMRI' to enable OpenNMS on startup."
