@@ -353,6 +353,10 @@ public class JdbcFilterDao implements FilterDao, InitializingBean {
 
             // parse the rule and get the sql select statement
             sqlString = getSQLStatement(rule);
+
+            if (!sqlString.contains("isManaged")) {
+            	sqlString += " AND ipInterface.isManaged!='D'";
+            }
             LogUtils.debugf(this, "Filter: SQL statement: %s", sqlString);
 
             // execute query and return the list of ip addresses
@@ -409,6 +413,11 @@ public class JdbcFilterDao implements FilterDao, InitializingBean {
 
             // parse the rule and get the sql select statement
             sqlString = getSQLStatement(rule);
+            
+            if (!sqlString.contains("isManaged")) {
+            	sqlString += " AND ipInterface.isManaged!='D'";
+            }
+
             LogUtils.debugf(this, "Filter: SQL statement: %s", sqlString);
 
             // execute query and return the list of ip addresses
