@@ -8,6 +8,8 @@ import java.util.Properties;
 
 import net.sf.jasperreports.engine.util.JRProperties;
 
+import org.opennms.core.utils.AlphaNumeric;
+
 public class JRobinDirectoryUtil {
     
     public boolean isStoreByGroup() {
@@ -60,21 +62,35 @@ public class JRobinDirectoryUtil {
 
     public String getInterfaceDirectory(String snmpifname, String snmpifdescr, String snmpphysaddr) {
         
-        String ifLabel = "";
-        if(snmpifname == null || "".equals(snmpifname)) {
-            ifLabel = snmpifdescr;
-        }else {
-            ifLabel = snmpifname;
-        }
+        String name = computeNameForRRD(snmpifname, snmpifdescr);
+        String physAddrForRRD = computePhysAddrForRRD(snmpphysaddr);
         
-        String dir = "";
-        if(snmpphysaddr == null || "".equals(snmpphysaddr)) {
-            dir = ifLabel.replaceAll("[\\/ :| \\.]", "_");
-        }else {
-            dir = ifLabel.replaceAll("[\\/ :| \\.]", "_") + "-" + snmpphysaddr;
+        return (physAddrForRRD == null ? name : name + '-' + physAddrForRRD);
+    }
+
+    private String computePhysAddrForRRD(String snmpphysaddr) {
+        String physAddrForRRD = null;
+
+        if (snmpphysaddr != null) {
+            String parsedPhysAddr = AlphaNumeric.parseAndTrim(snmpphysaddr);
+            if (parsedPhysAddr.length() == 12) {
+                physAddrForRRD = parsedPhysAddr;
+            } 
         }
-        
-        return dir;
+       
+        return physAddrForRRD;
+    }
+
+    private String computeNameForRRD(String snmpifname, String snmpifdescr) {
+        String label = null;
+        if (snmpifname != null) {
+            label = AlphaNumeric.parseAndReplace(snmpifname, '_');
+        } else if (snmpifdescr != null) {
+            label = AlphaNumeric.parseAndReplace(snmpifdescr, '_');
+        } else {
+            label = "no_ifLabel";
+        }
+        return label;
     }
 
 }
