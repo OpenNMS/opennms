@@ -76,6 +76,19 @@ public class JRobinDirectoryUtilTest {
     }
     
     @Test
+    public void testGetInterfaceDirectoryNoSnmpPhysAddr() {
+        JRobinDirectoryUtil lookup = new JRobinDirectoryUtil();
+        
+        String snmpphysaddr = null;
+        String snmpifname = "me1";
+        String snmpifdescr = "me1";
+        assertEquals("me1", lookup.getInterfaceDirectory(snmpifname, snmpifdescr, snmpphysaddr));
+        
+        snmpifdescr = null;
+        assertEquals("me1", lookup.getInterfaceDirectory(snmpifname, snmpifdescr, snmpphysaddr));
+    }
+    
+    @Test
     public void testGetInterfaceDirectoryNoSnmpIfName() {
         JRobinDirectoryUtil lookup = new JRobinDirectoryUtil();
         
