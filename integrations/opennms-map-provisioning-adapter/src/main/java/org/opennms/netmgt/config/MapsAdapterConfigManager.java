@@ -36,8 +36,11 @@
 //
 package org.opennms.netmgt.config;
 
+import static org.opennms.core.utils.InetAddressUtils.*;
+
 import java.io.IOException;
 import java.io.InputStream;
+import java.net.InetAddress;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Enumeration;
@@ -52,7 +55,6 @@ import java.util.concurrent.locks.ReentrantReadWriteLock;
 import org.exolab.castor.xml.MarshalException;
 import org.exolab.castor.xml.ValidationException;
 import org.opennms.core.utils.ByteArrayComparator;
-import org.opennms.core.utils.InetAddressUtils;
 import org.opennms.core.utils.IpListFromUrl;
 import org.opennms.core.utils.LogUtils;
 import org.opennms.netmgt.config.map.adapter.Celement;
@@ -120,7 +122,7 @@ abstract public class MapsAdapterConfigManager implements MapsAdapterConfig {
      * A mapping of the configured package to a list of IPs selected via filter
      * rules, so as to avoid database access.
      */
-    private Map<Package, List<String>> m_pkgIpMap;
+    private Map<Package, List<InetAddress>> m_pkgIpMap;
 
     /**
      * A mapping of the configured sub-maps to a list of maps
@@ -293,7 +295,7 @@ abstract public class MapsAdapterConfigManager implements MapsAdapterConfig {
     private void createPackageIpListMap() {
         getWriteLock().lock();
         try {
-            m_pkgIpMap = new HashMap<Package, List<String>>();
+            m_pkgIpMap = new HashMap<Package, List<InetAddress>>();
             
             for(final Package pkg : packages()) {
         
@@ -301,7 +303,7 @@ abstract public class MapsAdapterConfigManager implements MapsAdapterConfig {
                 // database and populate the package, IP list map.
                 //
                 try {
-                    final List<String> ipList = getIpList(pkg);
+                    final List<InetAddress> ipList = getIpList(pkg);
                     LogUtils.debugf(this, "createPackageIpMap: package %s: ipList size = %d", pkg.getName(), ipList.size());
         
                     if (ipList.size() > 0) {
@@ -317,7 +319,7 @@ abstract public class MapsAdapterConfigManager implements MapsAdapterConfig {
         }
     }
     
-    private List<String> getIpList(final Package pkg) {
+    private List<InetAddress> getIpList(final Package pkg) {
         final StringBuffer filterRules = new StringBuffer(pkg.getFilter().getContent());
         if (m_verifyServer) {
             filterRules.append(" & (serverName == ");
@@ -328,7 +330,7 @@ abstract public class MapsAdapterConfigManager implements MapsAdapterConfig {
         }
         final String rules = filterRules.toString();
         LogUtils.debugf(this, "createPackageIpMap: package is %s. filter rules are %s", pkg.getName(), rules);
-        return FilterDaoFactory.getInstance().getIPList(rules);
+        return FilterDaoFactory.getInstance().getActiveIPAddressList(rules);
     }
     
     /**
@@ -352,9 +354,9 @@ abstract public class MapsAdapterConfigManager implements MapsAdapterConfig {
         boolean filterPassed = false;
     
         // get list of IPs in this package
-        final List<String> ipList = m_pkgIpMap.get(pkg);
+        final List<InetAddress> ipList = m_pkgIpMap.get(pkg);
         if (ipList != null && ipList.size() > 0) {
-            filterPassed = ipList.contains(iface);
+            filterPassed = ipList.contains(addr(iface));
         }
     
         LogUtils.debugf(this, "interfaceInPackage: Interface %s passed filter for package %s?: %s", iface, pkg.getName(), String.valueOf(filterPassed));
@@ -375,16 +377,16 @@ abstract public class MapsAdapterConfigManager implements MapsAdapterConfig {
         has_range_include = pkg.getIncludeRangeCount() == 0 && pkg.getSpecificCount() == 0;
         
         for (IncludeRange rng : pkg.getIncludeRangeCollection()) {
-            if (InetAddressUtils.isInetAddressInRange(iface, rng.getBegin(), rng.getEnd())) {
+            if (isInetAddressInRange(iface, rng.getBegin(), rng.getEnd())) {
                 has_range_include = true;
                 break;
             }
         }
     
-        byte[] addr = InetAddressUtils.toIpAddrBytes(iface);
+        byte[] addr = toIpAddrBytes(iface);
 
         for (String spec : pkg.getSpecificCollection()) {
-            byte[] speca = InetAddressUtils.toIpAddrBytes(spec);
+            byte[] speca = toIpAddrBytes(spec);
             if (new ByteArrayComparator().compare(speca, addr) == 0) {
                 has_specific = true;
                 break;
@@ -397,7 +399,7 @@ abstract public class MapsAdapterConfigManager implements MapsAdapterConfig {
         }
     
         for (ExcludeRange rng : pkg.getExcludeRangeCollection()) {
-            if (InetAddressUtils.isInetAddressInRange(iface, rng.getBegin(), rng.getEnd())) {
+            if (isInetAddressInRange(iface, rng.getBegin(), rng.getEnd())) {
                 has_range_exclude = true;
                 break;
             }

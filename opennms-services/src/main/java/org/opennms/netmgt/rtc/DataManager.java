@@ -48,6 +48,7 @@ package org.opennms.netmgt.rtc;
 import java.beans.PropertyVetoException;
 import java.io.IOException;
 import java.lang.reflect.UndeclaredThrowableException;
+import java.net.InetAddress;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.sql.Timestamp;
@@ -64,6 +65,8 @@ import java.util.Map;
 import java.util.Set;
 
 import javax.sql.DataSource;
+
+import static org.opennms.core.utils.InetAddressUtils.*;
 
 import org.exolab.castor.xml.MarshalException;
 import org.exolab.castor.xml.ValidationException;
@@ -100,15 +103,12 @@ import org.xml.sax.SAXException;
  *
  * @author <A HREF="mailto:sowmya@opennms.org">Sowmya Nataraj </A>
  * @author <A HREF="http://www.opennms.org">OpenNMS.org </A>
- * @author <A HREF="mailto:sowmya@opennms.org">Sowmya Nataraj </A>
- * @author <A HREF="http://www.opennms.org">OpenNMS.org </A>
- * @version $Id: $
  */
 public class DataManager extends Object {
     private class RTCNodeProcessor implements RowCallbackHandler {
 		RTCNodeKey m_currentKey = null;
 
-		Map<String,Set<String>> m_categoryIpLists = new HashMap<String,Set<String>>();
+		Map<String,Set<InetAddress>> m_categoryIpLists = new HashMap<String,Set<InetAddress>>();
 
 		public void processRow(ResultSet rs) throws SQLException {
 			RTCNodeKey key = new RTCNodeKey(rs.getLong("nodeid"), rs.getString("ipaddr"), rs.getString("servicename"));
@@ -152,12 +152,12 @@ public class DataManager extends Object {
 		}
 
 		private boolean catContainsIp(RTCCategory cat, String ip) {
-			Set<String> ips = catGetIpAddrs(cat);
-			return ips.contains(ip);
+			Set<InetAddress> ips = catGetIpAddrs(cat);
+			return ips.contains(addr(ip));
 		}
 
-		private Set<String> catGetIpAddrs(RTCCategory cat) {
-			Set<String> ips = m_categoryIpLists.get(cat.getLabel());
+		private Set<InetAddress> catGetIpAddrs(RTCCategory cat) {
+			Set<InetAddress> ips = m_categoryIpLists.get(cat.getLabel());
 			if (ips == null) {
 				ips = catConstructIpAddrs(cat);
 				m_categoryIpLists.put(cat.getLabel(), ips);
@@ -165,18 +165,18 @@ public class DataManager extends Object {
 			return ips;
 		}
 
-		private Set<String> catConstructIpAddrs(RTCCategory cat) {
+		private Set<InetAddress> catConstructIpAddrs(RTCCategory cat) {
 			String filterRule = cat.getEffectiveRule();
 			try {
 				if (log().isDebugEnabled())
 					log().debug("Category: " + cat.getLabel() + "\t" + filterRule);
 		
-				List<String> ips = FilterDaoFactory.getInstance().getIPList(filterRule);
+				List<InetAddress> ips = FilterDaoFactory.getInstance().getActiveIPAddressList(filterRule);
 				
 		        if (log().isDebugEnabled())
 		            log().debug("Number of IPs satisfying rule: " + ips.size());
 		
-		        return new HashSet<String>(ips);
+		        return new HashSet<InetAddress>(ips);
 		        
 			} catch (FilterParseException e) {
 				log().error("Unable to parse filter rule "+filterRule+" ignoring category "+cat.getLabel(), e);

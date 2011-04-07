@@ -35,10 +35,15 @@
  */
 package org.opennms.netmgt.config;
 
+import static org.opennms.core.utils.InetAddressUtils.addr;
+import static org.opennms.core.utils.InetAddressUtils.isInetAddressInRange;
+import static org.opennms.core.utils.InetAddressUtils.toIpAddrBytes;
+
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.Reader;
 import java.io.StringWriter;
+import java.net.InetAddress;
 import java.util.ArrayList;
 import java.util.Enumeration;
 import java.util.HashMap;
@@ -52,7 +57,6 @@ import org.exolab.castor.xml.MarshalException;
 import org.exolab.castor.xml.Marshaller;
 import org.exolab.castor.xml.ValidationException;
 import org.opennms.core.utils.ByteArrayComparator;
-import org.opennms.core.utils.InetAddressUtils;
 import org.opennms.core.utils.IpListFromUrl;
 import org.opennms.core.utils.LogUtils;
 import org.opennms.netmgt.config.linkd.ExcludeRange;
@@ -96,7 +100,7 @@ abstract public class LinkdConfigManager implements LinkdConfig {
      * A mapping of the configured package to a list of IPs selected via filter
      * rules, so as to avoid redundant database access.
      */
-    private static Map<org.opennms.netmgt.config.linkd.Package, List<String>> m_pkgIpMap = new HashMap<org.opennms.netmgt.config.linkd.Package, List<String>>();
+    private static Map<org.opennms.netmgt.config.linkd.Package, List<InetAddress>> m_pkgIpMap = new HashMap<org.opennms.netmgt.config.linkd.Package, List<InetAddress>>();
 
 	/**
 	 * The HashMap that associates the OIDS masks to class name for Vlans
@@ -187,14 +191,15 @@ abstract public class LinkdConfigManager implements LinkdConfig {
      */
     public boolean isInterfaceInPackage(final String iface, final org.opennms.netmgt.config.linkd.Package pkg) {
         boolean filterPassed = false;
+        final InetAddress ifaceAddr = addr(iface);
     
         getReadLock().lock();
         
         try {
             // get list of IPs in this package
-            final List<String> ipList = m_pkgIpMap.get(pkg);
+            final List<InetAddress> ipList = m_pkgIpMap.get(pkg);
             if (ipList != null && ipList.size() > 0) {
-                filterPassed = ipList.contains(iface);
+				filterPassed = ipList.contains(ifaceAddr);
             }
         
             LogUtils.debugf(this, "interfaceInPackage: Interface %s passed filter for package %s?: %s", iface, pkg.getName(), (filterPassed? "True":"False"));
@@ -220,7 +225,7 @@ abstract public class LinkdConfigManager implements LinkdConfig {
  
         getReadLock().lock();
         try {
-            byte[] addr = InetAddressUtils.toIpAddrBytes(iface);
+            byte[] addr = toIpAddrBytes(iface);
     
             // if there are NO include ranges then treat act as if the user include
             // the range 0.0.0.0 - 255.255.255.255
@@ -228,7 +233,7 @@ abstract public class LinkdConfigManager implements LinkdConfig {
     
             // Specific wins; if we find one, return immediately.
             for (final String spec : pkg.getSpecificCollection()) {
-                final byte[] speca = InetAddressUtils.toIpAddrBytes(spec);
+                final byte[] speca = toIpAddrBytes(spec);
                 if (new ByteArrayComparator().compare(addr, speca) == 0) {
                     has_specific = true;
                     break;
@@ -244,7 +249,7 @@ abstract public class LinkdConfigManager implements LinkdConfig {
     
             if (!has_range_include) {
                 for (final IncludeRange rng : pkg.getIncludeRangeCollection()) {
-                    if (InetAddressUtils.isInetAddressInRange(iface, rng.getBegin(), rng.getEnd())) {
+                    if (isInetAddressInRange(iface, rng.getBegin(), rng.getEnd())) {
                         has_range_include = true;
                         break;
                     }
@@ -252,7 +257,7 @@ abstract public class LinkdConfigManager implements LinkdConfig {
             }
     
             for (final ExcludeRange rng : pkg.getExcludeRangeCollection()) {
-                if (InetAddressUtils.isInetAddressInRange(iface, rng.getBegin(), rng.getEnd())) {
+                if (isInetAddressInRange(iface, rng.getBegin(), rng.getEnd())) {
                     has_range_exclude = true;
                     break;
                 }
@@ -309,7 +314,7 @@ abstract public class LinkdConfigManager implements LinkdConfig {
     }
     
     /** {@inheritDoc} */
-    public List<String> getIpList(final Package pkg) {
+    public List<InetAddress> getIpList(final Package pkg) {
         getReadLock().lock();
         
         try {
@@ -321,7 +326,7 @@ abstract public class LinkdConfigManager implements LinkdConfig {
             final StringBuffer filterRules = new StringBuffer(filter.getContent());
     
             LogUtils.debugf(this, "createPackageIpMap: package is %s. filter rules are: %s", pkg.getName(), filterRules.toString());
-            return FilterDaoFactory.getInstance().getIPList(filterRules.toString());
+            return FilterDaoFactory.getInstance().getActiveIPAddressList(filterRules.toString());
         } finally {
             getReadLock().unlock();
         }
@@ -447,7 +452,7 @@ abstract public class LinkdConfigManager implements LinkdConfig {
                 // database and populate the package, IP list map.
                 //
                 try {
-                    final List<String> ipList = getIpList(pkg);
+                    final List<InetAddress> ipList = getIpList(pkg);
                     LogUtils.tracef(this, "createPackageIpMap: package %s: ipList size = %d", pkg.getName(), ipList.size());
     
                     if (ipList != null && ipList.size() > 0) {

@@ -36,11 +36,15 @@
 //
 package org.opennms.netmgt.config;
 
+import static org.opennms.core.utils.InetAddressUtils.addr;
+import static org.opennms.core.utils.InetAddressUtils.toIpAddrBytes;
+
 import java.io.File;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.Reader;
 import java.io.StringWriter;
+import java.net.InetAddress;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collection;
@@ -60,7 +64,6 @@ import org.exolab.castor.xml.MarshalException;
 import org.exolab.castor.xml.Marshaller;
 import org.exolab.castor.xml.ValidationException;
 import org.opennms.core.utils.ByteArrayComparator;
-import org.opennms.core.utils.InetAddressUtils;
 import org.opennms.core.utils.IpListFromUrl;
 import org.opennms.core.utils.LogUtils;
 import org.opennms.netmgt.config.poller.ExcludeRange;
@@ -176,7 +179,7 @@ abstract public class PollerConfigManager implements PollerConfig {
      * A mapping of the configured package to a list of IPs selected via filter
      * rules, so as to avoid repetitive database access.
      */
-    private Map<Package, List<String>> m_pkgIpMap;
+    private Map<Package, List<InetAddress>> m_pkgIpMap;
     /**
      * A mapp of service names to service monitors. Constructed based on data in
      * the configuration file.
@@ -450,7 +453,7 @@ abstract public class PollerConfigManager implements PollerConfig {
         getWriteLock().lock();
         
         try {
-            m_pkgIpMap = new HashMap<Package, List<String>>();
+            m_pkgIpMap = new HashMap<Package, List<InetAddress>>();
             
             for(final Package pkg : packages()) {
         
@@ -458,7 +461,7 @@ abstract public class PollerConfigManager implements PollerConfig {
                 // database and populate the package, IP list map.
                 //
                 try {
-                    List<String> ipList = getIpList(pkg);
+                    List<InetAddress> ipList = getIpList(pkg);
                     LogUtils.debugf(this, "createPackageIpMap: package %s: ipList size = %d", pkg.getName(), ipList.size());
         
                     if (ipList.size() > 0) {
@@ -475,7 +478,7 @@ abstract public class PollerConfigManager implements PollerConfig {
     }
 
     /** {@inheritDoc} */
-    public List<String> getIpList(final Package pkg) {
+    public List<InetAddress> getIpList(final Package pkg) {
         getReadLock().lock();
         try {
             final StringBuffer filterRules = new StringBuffer(pkg.getFilter().getContent());
@@ -487,7 +490,7 @@ abstract public class PollerConfigManager implements PollerConfig {
                 filterRules.append(")");
             }
             LogUtils.debugf(this, "createPackageIpMap: package is %s. filter rules are %s", pkg.getName(), filterRules.toString());
-            return FilterDaoFactory.getInstance().getIPList(filterRules.toString());
+            return FilterDaoFactory.getInstance().getActiveIPAddressList(filterRules.toString());
         } finally {
             getReadLock().unlock();
         }
@@ -517,11 +520,12 @@ abstract public class PollerConfigManager implements PollerConfig {
      */
     public boolean isInterfaceInPackage(final String iface, final Package pkg) {
         boolean filterPassed = false;
+        final InetAddress ifaceAddr = addr(iface);
     
         // get list of IPs in this package
-        final List<String> ipList = m_pkgIpMap.get(pkg);
+        final List<InetAddress> ipList = m_pkgIpMap.get(pkg);
         if (ipList != null && ipList.size() > 0) {
-            filterPassed = ipList.contains(iface);
+			filterPassed = ipList.contains(ifaceAddr);
         }
 
         LogUtils.debugf(this, "interfaceInPackage: Interface %s passed filter for package %s?: %s", iface, pkg.getName(), Boolean.valueOf(filterPassed));
@@ -540,12 +544,12 @@ abstract public class PollerConfigManager implements PollerConfig {
         // the range of all valid addresses (0.0.0.0 - 255.255.255.255, ::1 - ffff:ffff:ffff:ffff:ffff:ffff:ffff:ffff)
         has_range_include = pkg.getIncludeRangeCount() == 0 && pkg.getSpecificCount() == 0;
         
-        final byte[] addr = InetAddressUtils.toIpAddrBytes(iface);
+        final byte[] addr = toIpAddrBytes(iface);
 
         for (final IncludeRange rng : pkg.getIncludeRangeCollection()) {
-            int comparison = new ByteArrayComparator().compare(addr, InetAddressUtils.toIpAddrBytes(rng.getBegin()));
+            int comparison = new ByteArrayComparator().compare(addr, toIpAddrBytes(rng.getBegin()));
             if (comparison > 0) {
-                int endComparison = new ByteArrayComparator().compare(addr, InetAddressUtils.toIpAddrBytes(rng.getEnd()));
+                int endComparison = new ByteArrayComparator().compare(addr, toIpAddrBytes(rng.getEnd()));
                 if (endComparison <= 0) {
                     has_range_include = true;
                     break;
@@ -557,7 +561,7 @@ abstract public class PollerConfigManager implements PollerConfig {
         }
 
         for (final String spec : pkg.getSpecificCollection()) {
-            if (new ByteArrayComparator().compare(addr, InetAddressUtils.toIpAddrBytes(spec)) == 0) {
+            if (new ByteArrayComparator().compare(addr, toIpAddrBytes(spec)) == 0) {
                 has_specific = true;
                 break;
             }
@@ -572,9 +576,9 @@ abstract public class PollerConfigManager implements PollerConfig {
 
         if (!has_specific) {
             for (final ExcludeRange rng : pkg.getExcludeRangeCollection()) {
-                int comparison = new ByteArrayComparator().compare(addr, InetAddressUtils.toIpAddrBytes(rng.getBegin()));
+                int comparison = new ByteArrayComparator().compare(addr, toIpAddrBytes(rng.getBegin()));
                 if (comparison > 0) {
-                    int endComparison = new ByteArrayComparator().compare(addr, InetAddressUtils.toIpAddrBytes(rng.getEnd()));
+                    int endComparison = new ByteArrayComparator().compare(addr, toIpAddrBytes(rng.getEnd()));
                     if (endComparison <= 0) {
                         has_range_exclude = true;
                         break;

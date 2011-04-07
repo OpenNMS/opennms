@@ -37,6 +37,7 @@
 package org.opennms.netmgt.config;
 
 import java.io.IOException;
+import java.net.InetAddress;
 import java.util.Collection;
 import java.util.Enumeration;
 import java.util.List;
@@ -142,7 +143,7 @@ public interface PollerConfig {
      * @param pkg a {@link org.opennms.netmgt.config.poller.Package} object.
      * @return a {@link java.util.List} object.
      */
-    public abstract List<String> getIpList(Package pkg);
+    public abstract List<InetAddress> getIpList(Package pkg);
     /**
      * This method is used to determine if the named interface is included in
      * the passed package definition. If the interface belongs to the package

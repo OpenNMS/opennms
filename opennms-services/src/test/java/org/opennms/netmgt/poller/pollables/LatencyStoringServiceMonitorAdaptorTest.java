@@ -139,7 +139,7 @@ public class LatencyStoringServiceMonitorAdaptorTest {
         parameters.put("thresholding-enabled", "true");
         
         FilterDao filterDao = m_mocks.createMock(FilterDao.class);
-        expect(filterDao.getIPList((String)EasyMock.anyObject())).andReturn(Collections.singletonList("127.0.0.1")).anyTimes();
+        expect(filterDao.getActiveIPAddressList((String)EasyMock.anyObject())).andReturn(Collections.singletonList(addr("127.0.0.1"))).anyTimes();
         FilterDaoFactory.setInstance(filterDao);
         
         MonitoredService svc = m_mocks.createMock(MonitoredService.class);

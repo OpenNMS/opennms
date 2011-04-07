@@ -38,6 +38,7 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.io.Reader;
 import java.io.StringWriter;
+import java.net.InetAddress;
 import java.util.Enumeration;
 import java.util.HashMap;
 import java.util.List;
@@ -47,7 +48,7 @@ import org.exolab.castor.xml.MarshalException;
 import org.exolab.castor.xml.Marshaller;
 import org.exolab.castor.xml.ValidationException;
 import org.opennms.core.utils.ByteArrayComparator;
-import org.opennms.core.utils.InetAddressUtils;
+import static org.opennms.core.utils.InetAddressUtils.*;
 import org.opennms.core.utils.IpListFromUrl;
 import org.opennms.core.utils.ThreadCategory;
 import org.opennms.netmgt.config.threshd.ExcludeRange;
@@ -79,7 +80,7 @@ public abstract class ThreshdConfigManager {
      * A mapping of the configured package to a list of IPs selected via filter
      * rules, so as to avoid repetitive database access.
      */
-    private Map<Package, List<String>> m_pkgIpMap;
+    private Map<Package, List<InetAddress>> m_pkgIpMap;
     /**
      * A boolean flag to indicate If a filter rule against the local OpenNMS
      * server has to be used.
@@ -161,7 +162,7 @@ public abstract class ThreshdConfigManager {
     protected void createPackageIpListMap() {
         ThreadCategory log = ThreadCategory.getInstance(this.getClass());
     
-        m_pkgIpMap = new HashMap<Package, List<String>>();
+        m_pkgIpMap = new HashMap<Package, List<InetAddress>>();
     
         Enumeration<org.opennms.netmgt.config.threshd.Package> pkgEnum = m_config.enumeratePackage();
         while (pkgEnum.hasMoreElements()) {
@@ -185,7 +186,7 @@ public abstract class ThreshdConfigManager {
                 if (log.isDebugEnabled())
                     log.debug("createPackageIpMap: package is " + pkg.getName() + ". filer rules are  " + filterRules.toString());
     
-                List<String> ipList = FilterDaoFactory.getInstance().getIPList(filterRules.toString());
+                List<InetAddress> ipList = FilterDaoFactory.getInstance().getActiveIPAddressList(filterRules.toString());
                 if (ipList.size() > 0) {
                     m_pkgIpMap.put(pkg, ipList);
                 }
@@ -329,12 +330,13 @@ public abstract class ThreshdConfigManager {
     public synchronized boolean interfaceInPackage(String iface, org.opennms.netmgt.config.threshd.Package pkg) {
         ThreadCategory log = ThreadCategory.getInstance(this.getClass());
     
+        final InetAddress ifaceAddr = addr(iface);
         boolean filterPassed = false;
     
         // get list of IPs in this package
-        java.util.List<String> ipList = m_pkgIpMap.get(pkg);
+        java.util.List<InetAddress> ipList = m_pkgIpMap.get(pkg);
         if (ipList != null && ipList.size() > 0) {
-            filterPassed = ipList.contains(iface);
+			filterPassed = ipList.contains(ifaceAddr);
         }
     
         if (log.isDebugEnabled())
@@ -354,16 +356,16 @@ public abstract class ThreshdConfigManager {
         has_range_include = pkg.getIncludeRangeCount() == 0 && pkg.getSpecificCount() == 0;
     
         for (IncludeRange rng : pkg.getIncludeRangeCollection()) {
-            if (InetAddressUtils.isInetAddressInRange(iface, rng.getBegin(), rng.getEnd())) {
+            if (isInetAddressInRange(iface, rng.getBegin(), rng.getEnd())) {
                 has_range_include = true;
                 break;
             }
         }
 
-        byte[] addr = InetAddressUtils.toIpAddrBytes(iface);
+        byte[] addr = toIpAddrBytes(iface);
 
         for (String spec : pkg.getSpecificCollection()) {
-            byte[] speca = InetAddressUtils.toIpAddrBytes(spec);
+            byte[] speca = toIpAddrBytes(spec);
             if (new ByteArrayComparator().compare(speca, addr) == 0) {
                 has_specific = true;
                 break;
@@ -376,7 +378,7 @@ public abstract class ThreshdConfigManager {
         }
     
         for (ExcludeRange rng : pkg.getExcludeRangeCollection()) {
-            if (InetAddressUtils.isInetAddressInRange(iface, rng.getBegin(), rng.getEnd())) {
+            if (isInetAddressInRange(iface, rng.getBegin(), rng.getEnd())) {
                 has_range_exclude = true;
                 break;
             }

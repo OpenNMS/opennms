@@ -46,10 +46,12 @@ import java.util.Set;
 
 import org.opennms.netmgt.config.DatabaseSchemaConfigFactory;
 import org.opennms.netmgt.dao.DatabasePopulator;
+import org.opennms.netmgt.dao.IpInterfaceDao;
 import org.opennms.netmgt.dao.NodeDao;
 import org.opennms.netmgt.dao.db.AbstractTransactionalTemporaryDatabaseSpringContextTests;
 import org.opennms.netmgt.model.AbstractEntityVisitor;
 import org.opennms.netmgt.model.EntityVisitor;
+import org.opennms.netmgt.model.OnmsIpInterface;
 import org.opennms.netmgt.model.OnmsNode;
 import org.opennms.test.ConfigurationTestUtils;
 import org.opennms.test.DaoTestConfigBean;
@@ -61,9 +63,10 @@ import org.opennms.test.ThrowableAnticipator;
  */
 public class JdbcFilterDaoTest extends AbstractTransactionalTemporaryDatabaseSpringContextTests {
     private NodeDao m_nodeDao;
+    private IpInterfaceDao m_interfaceDao;
     private JdbcFilterDao m_dao;
     private DatabasePopulator m_populator;
-    
+
     @Override
     protected void setUpConfiguration() {
         DaoTestConfigBean daoTestConfig = new DaoTestConfigBean();
@@ -194,6 +197,26 @@ public class JdbcFilterDaoTest extends AbstractTransactionalTemporaryDatabaseSpr
         assertEquals("list size", 0, list.size());
     }
 
+	public void testGetActiveIPListWithDeletedNode() throws Exception {
+        List<String> list = m_dao.getIPList("ipaddr == '192.168.1.1'");
+        final List<OnmsIpInterface> ifaces = m_interfaceDao.findByIpAddress("192.168.1.1");
+        
+        assertEquals("should be 1 interface", 1, ifaces.size());
+
+		OnmsIpInterface iface = ifaces.get(0);
+    	iface.setIsManaged("D");
+    	m_interfaceDao.save(iface);
+    	m_interfaceDao.flush();
+
+        setComplete();
+        endTransaction();
+        startNewTransaction();
+
+        list = m_dao.getActiveIPList("ipaddr == '192.168.1.1'");
+        assertNotNull("returned list should not be null", list);
+        assertEquals("no nodes should be returned, since the only one has been deleted", 0, list.size());
+    }
+
     public void testIsValid() throws Exception {
         assertFalse("There is nothing in the database, so isValid shouldn't match non-empty rules", m_dao.isValid("1.1.1.1", "ipaddr == '1.1.1.1'"));
     }
@@ -235,6 +258,14 @@ public class JdbcFilterDaoTest extends AbstractTransactionalTemporaryDatabaseSpr
 
     public void setNodeDao(NodeDao nodeDao) {
         m_nodeDao = nodeDao;
+    }
+    
+    public IpInterfaceDao getIpInterfaceDao() {
+    	return m_interfaceDao;
+    }
+
+    public void setIpInterfaceDao(IpInterfaceDao interfaceDao) {
+    	m_interfaceDao = interfaceDao;
     }
 
     public DatabasePopulator getPopulator() {

@@ -38,7 +38,7 @@ public class LinkPattern {
      * @param pattern a {@link java.lang.String} object.
      * @param template a {@link java.lang.String} object.
      */
-    public LinkPattern(String pattern, String template) {
+    public LinkPattern(final String pattern, final String template) {
         setPattern(pattern);
         setTemplate(template);
     }
@@ -58,9 +58,11 @@ public class LinkPattern {
      *
      * @param pattern a {@link java.lang.String} object.
      */
-    public void setPattern(String pattern) {
-        m_compiledPattern = Pattern.compile(pattern, Pattern.CANON_EQ | Pattern.DOTALL);
-        m_pattern = pattern;
+    public void setPattern(final String pattern) {
+    	if (pattern != null) {
+    		m_compiledPattern = Pattern.compile(pattern, Pattern.CANON_EQ | Pattern.DOTALL);
+    		m_pattern = pattern;
+    	}
     }
 
     /**
@@ -78,7 +80,7 @@ public class LinkPattern {
      *
      * @param template a {@link java.lang.String} object.
      */
-    public void setTemplate(String template) {
+    public void setTemplate(final String template) {
         m_template = template;
     }
     
@@ -88,9 +90,10 @@ public class LinkPattern {
      * @param endPoint a {@link java.lang.String} object.
      * @return a {@link java.lang.String} object.
      */
-    public String resolveTemplate(String endPoint) {
-        Matcher m = m_compiledPattern.matcher(endPoint);
+    public String resolveTemplate(final String endPoint) {
+    	if (endPoint == null || m_compiledPattern == null) return null;
 
+    	final Matcher m = m_compiledPattern.matcher(endPoint);
         if (m.matches()) {
             return m.replaceAll(m_template);
         }

@@ -40,6 +40,7 @@
 package org.opennms.netmgt.mock;
 
 import java.io.IOException;
+import java.net.InetAddress;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Collection;
@@ -470,7 +471,7 @@ public class MockPollerConfig extends PollOutagesConfigManager implements Poller
     public void releaseAllServiceMonitors() {
     }
 
-    public List<String> getIpList(final Package pkg) {
+    public List<InetAddress> getIpList(final Package pkg) {
         return Collections.emptyList();
     }
 

@@ -39,12 +39,16 @@
 
 package org.opennms.netmgt.collectd;
 
+import static org.opennms.core.utils.InetAddressUtils.addr;
+import static org.opennms.core.utils.InetAddressUtils.str;
+
 import static org.easymock.EasyMock.eq;
 import static org.easymock.EasyMock.expect;
 import static org.easymock.EasyMock.expectLastCall;
 import static org.easymock.EasyMock.isA;
 
 import java.io.File;
+import java.net.InetAddress;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Collections;
@@ -163,14 +167,14 @@ public class CollectdTest extends TestCase {
 //        DataSourceFactory.setInstance(m_db);
 
         m_filterDao = EasyMock.createMock(FilterDao.class);
-        List<String> allIps = new ArrayList<String>();
-        allIps.add("192.168.1.1");
-        allIps.add("192.168.1.2");
-        allIps.add("192.168.1.3");
-        allIps.add("192.168.1.4");
-        allIps.add("192.168.1.5");
-        expect(m_filterDao.getIPList("IPADDR IPLIKE *.*.*.*")).andReturn(allIps).atLeastOnce();
-        expect(m_filterDao.getIPList("IPADDR IPLIKE 1.1.1.1")).andReturn(new ArrayList<String>(0)).atLeastOnce();
+        List<InetAddress> allIps = new ArrayList<InetAddress>();
+        allIps.add(addr("192.168.1.1"));
+        allIps.add(addr("192.168.1.2"));
+        allIps.add(addr("192.168.1.3"));
+        allIps.add(addr("192.168.1.4"));
+        allIps.add(addr("192.168.1.5"));
+        expect(m_filterDao.getActiveIPAddressList("IPADDR IPLIKE *.*.*.*")).andReturn(allIps).atLeastOnce();
+        expect(m_filterDao.getActiveIPAddressList("IPADDR IPLIKE 1.1.1.1")).andReturn(new ArrayList<InetAddress>(0)).atLeastOnce();
         EasyMock.replay(m_filterDao);
         FilterDaoFactory.setInstance(m_filterDao);
 

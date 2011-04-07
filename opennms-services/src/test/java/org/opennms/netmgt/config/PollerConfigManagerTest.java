@@ -43,6 +43,7 @@ import static org.easymock.EasyMock.isA;
 import static org.easymock.EasyMock.replay;
 
 import java.io.IOException;
+import java.net.InetAddress;
 import java.text.NumberFormat;
 import java.util.ArrayList;
 import java.util.List;
@@ -82,7 +83,7 @@ public class PollerConfigManagerTest extends TestCase {
         MockLogAppender.setupLogging();
         
         FilterDao filterDao = createMock(FilterDao.class);
-        expect(filterDao.getIPList(isA(String.class))).andReturn(new ArrayList<String>(0)).anyTimes();
+        expect(filterDao.getActiveIPAddressList(isA(String.class))).andReturn(new ArrayList<InetAddress>(0)).anyTimes();
         replay(filterDao);
         FilterDaoFactory.setInstance(filterDao);
         

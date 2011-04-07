@@ -37,13 +37,17 @@
  */
 package org.opennms.netmgt.config;
 
+import static org.opennms.core.utils.InetAddressUtils.addr;
+import static org.opennms.core.utils.InetAddressUtils.isInetAddressInRange;
+import static org.opennms.core.utils.InetAddressUtils.toIpAddrBytes;
+
+import java.net.InetAddress;
 import java.util.Enumeration;
 import java.util.Iterator;
 import java.util.LinkedList;
 import java.util.List;
 
 import org.opennms.core.utils.ByteArrayComparator;
-import org.opennms.core.utils.InetAddressUtils;
 import org.opennms.core.utils.ThreadCategory;
 import org.opennms.netmgt.config.collectd.ExcludeRange;
 import org.opennms.netmgt.config.collectd.IncludeRange;
@@ -52,7 +56,7 @@ import org.opennms.netmgt.config.collectd.Service;
 import org.opennms.netmgt.filter.FilterDaoFactory;
 public class CollectdPackage {
 	private Package m_pkg;
-	private List<String> m_ipList;
+	private List<InetAddress> m_ipList;
 	private List<IncludeURL> m_includeURLs;
 	
 	
@@ -119,7 +123,7 @@ public class CollectdPackage {
 
 	protected boolean hasSpecific(byte[] addr) {
 	    for (String espec : getPackage().getSpecific()) {
-	        if (new ByteArrayComparator().compare(InetAddressUtils.toIpAddrBytes(espec), addr) == 0) {
+	        if (new ByteArrayComparator().compare(toIpAddrBytes(espec), addr) == 0) {
 	            return true;
 	        }
 	    }
@@ -139,7 +143,7 @@ public class CollectdPackage {
 		}
 
 		for (IncludeRange rng : pkg.getIncludeRange()) {
-		    if (InetAddressUtils.isInetAddressInRange(addr, rng.getBegin(), rng.getEnd())) {
+		    if (isInetAddressInRange(addr, rng.getBegin(), rng.getEnd())) {
 		        return true;
 		    }
 		}
@@ -157,7 +161,7 @@ public class CollectdPackage {
 
 	protected boolean hasExcludeRange(String addr, boolean has_specific) {
 	    for (ExcludeRange rng : getPackage().getExcludeRange()) {
-	        if (InetAddressUtils.isInetAddressInRange(addr, rng.getBegin(), rng.getEnd())) {
+	        if (isInetAddressInRange(addr, rng.getBegin(), rng.getEnd())) {
 	            return true;
 	        }
 	    }
@@ -169,7 +173,7 @@ public class CollectdPackage {
 	 *
 	 * @param ipList a {@link java.util.List} object.
 	 */
-	public void putIpList(List<String> ipList) {
+	public void putIpList(List<InetAddress> ipList) {
 		m_ipList = ipList;
 	}
 
@@ -178,19 +182,20 @@ public class CollectdPackage {
 	 *
 	 * @return a {@link java.util.List} object.
 	 */
-	public List<String> getIpList() {
+	public List<InetAddress> getIpList() {
 		return m_ipList;
 	}
 
 	boolean interfaceInFilter(String iface) {
 		if (iface == null) return false;
+		final InetAddress ifaceAddress = addr(iface);
 
 		boolean filterPassed = false;
 	
 		// get list of IPs in this package
-		List<String> ipList = getIpList();
+		List<InetAddress> ipList = getIpList();
 		if (ipList != null && ipList.size() > 0) {
-			filterPassed = ipList.contains(iface);
+			filterPassed = ipList.contains(ifaceAddress);
 		} else {
 			log().debug("interfaceInFilter: ipList contains no data");
 		}
@@ -248,7 +253,7 @@ public class CollectdPackage {
 		// that it is in the include range and is not excluded
 		//
 	
-		byte[] addr = InetAddressUtils.toIpAddrBytes(iface);
+		byte[] addr = toIpAddrBytes(iface);
 	
 		boolean has_range_include = hasIncludeRange(iface);
 		boolean has_specific = hasSpecific(addr);
@@ -297,7 +302,7 @@ public class CollectdPackage {
 			log().debug("createPackageIpMap: package is " + pkg.getName()
 					+ ". filer rules are  " + filterRules);
 		try {
-            List<String> ipList = FilterDaoFactory.getInstance().getIPList(filterRules);
+            List<InetAddress> ipList = FilterDaoFactory.getInstance().getActiveIPAddressList(filterRules);
 			if (ipList.size() > 0) {
 				putIpList(ipList);
 			}

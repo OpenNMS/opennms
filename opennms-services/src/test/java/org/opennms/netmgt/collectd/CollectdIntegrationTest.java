@@ -32,6 +32,7 @@
 package org.opennms.netmgt.collectd;
 
 import static org.opennms.core.utils.InetAddressUtils.addr;
+import static org.opennms.core.utils.InetAddressUtils.str;
 
 import java.io.File;
 import java.util.ArrayList;
@@ -45,7 +46,6 @@ import junit.framework.TestCase;
 
 import org.easymock.EasyMock;
 import org.easymock.IAnswer;
-import org.opennms.core.utils.ThreadCategory;
 import org.opennms.netmgt.EventConstants;
 import org.opennms.netmgt.capsd.InsufficientInformationException;
 import org.opennms.netmgt.config.CollectdPackage;
@@ -66,13 +66,12 @@ import org.opennms.netmgt.filter.FilterDaoFactory;
 import org.opennms.netmgt.mock.MockEventIpcManager;
 import org.opennms.netmgt.mock.MockTransactionTemplate;
 import org.opennms.netmgt.model.NetworkBuilder;
-import org.opennms.netmgt.model.OnmsIpInterface;
-import org.opennms.netmgt.model.OnmsMonitoredService;
-import org.opennms.netmgt.model.OnmsNode;
-import org.opennms.netmgt.model.OnmsServiceType;
-import org.opennms.netmgt.model.RrdRepository;
 import org.opennms.netmgt.model.NetworkBuilder.InterfaceBuilder;
 import org.opennms.netmgt.model.NetworkBuilder.NodeBuilder;
+import org.opennms.netmgt.model.OnmsIpInterface;
+import org.opennms.netmgt.model.OnmsMonitoredService;
+import org.opennms.netmgt.model.OnmsServiceType;
+import org.opennms.netmgt.model.RrdRepository;
 import org.opennms.netmgt.model.events.EventBuilder;
 import org.opennms.netmgt.model.events.EventProxy;
 import org.opennms.test.mock.EasyMockUtils;
@@ -221,9 +220,9 @@ public class CollectdIntegrationTest extends TestCase {
     }
 
     private void createGetPackagesExpectation(OnmsMonitoredService svc) {
-        String rule = "ipaddr = '"+svc.getIpAddressAsString()+"'";
+        String rule = "ipaddr = '"+ str(svc.getIpAddress())+"'";
         
-        EasyMock.expect(m_filterDao.getIPList(rule)).andReturn(Collections.singletonList(svc.getIpAddressAsString()));
+        EasyMock.expect(m_filterDao.getActiveIPAddressList(rule)).andReturn(Collections.singletonList(svc.getIpAddress()));
         
         final Package pkg = new Package();
         pkg.setName("testPackage");
@@ -287,8 +286,7 @@ public class CollectdIntegrationTest extends TestCase {
             return m_collectCount;
         }
 
-        @SuppressWarnings("unchecked")
-        public void initialize(Map parameters) {
+        public void initialize(@SuppressWarnings("rawtypes") Map parameters) {
             // This fails because collectd does NOT actually passed in configured monitor parameters
             // since no collectors actually use them (except this one)
 //            String testKey = (String)parameters.get(TEST_KEY_PARM_NAME);
@@ -296,8 +294,7 @@ public class CollectdIntegrationTest extends TestCase {
 //            CollectdIntegrationTest.setServiceCollectorInTest(testKey, this);
         }
 
-        @SuppressWarnings("unchecked")
-        public void initialize(CollectionAgent agent, Map parameters) {
+        public void initialize(CollectionAgent agent, @SuppressWarnings("rawtypes") Map parameters) {
             String testKey = (String)parameters.get(TEST_KEY_PARM_NAME);
             assertNotNull(testKey);
             CollectdIntegrationTest.setServiceCollectorInTest(testKey, this);

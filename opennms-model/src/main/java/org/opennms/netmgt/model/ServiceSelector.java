@@ -43,9 +43,6 @@ import java.util.List;
  *
  * @author <a href="mailto:brozow@opennms.org">Mathew Brozowski</a>
  * @author <a href="mailto:jason.aras@fastsearch.com">Jason Ayers</a>
- * @author <a href="mailto:brozow@opennms.org">Mathew Brozowski</a>
- * @author <a href="mailto:jason.aras@fastsearch.com">Jason Ayers</a>
- * @version $Id: $
  */
 public class ServiceSelector {
 	private String m_filterRule;

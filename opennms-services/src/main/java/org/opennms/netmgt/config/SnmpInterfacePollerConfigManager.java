@@ -40,6 +40,7 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.io.Reader;
 import java.io.StringWriter;
+import java.net.InetAddress;
 import java.util.ArrayList;
 import java.util.Enumeration;
 import java.util.HashMap;
@@ -51,7 +52,7 @@ import org.exolab.castor.xml.MarshalException;
 import org.exolab.castor.xml.Marshaller;
 import org.exolab.castor.xml.ValidationException;
 import org.opennms.core.utils.ByteArrayComparator;
-import org.opennms.core.utils.InetAddressUtils;
+import static org.opennms.core.utils.InetAddressUtils.*;
 import org.opennms.core.utils.IpListFromUrl;
 import org.opennms.core.utils.ThreadCategory;
 import org.opennms.netmgt.config.snmpinterfacepoller.CriticalService;
@@ -139,7 +140,7 @@ abstract public class SnmpInterfacePollerConfigManager implements SnmpInterfaceP
      * A mapping of the configured package to a list of IPs selected via filter
      * rules, so as to avoid repetitive database access.
      */
-    private Map<Package, List<String>> m_pkgIpMap;
+    private Map<Package, List<InetAddress>> m_pkgIpMap;
 
 
     private Map<String,Map<String,Interface>> m_pkgIntMap;
@@ -320,7 +321,7 @@ abstract public class SnmpInterfacePollerConfigManager implements SnmpInterfaceP
      * from the database.
      */
     private void createPackageIpListMap() {
-        m_pkgIpMap = new HashMap<Package, List<String>>();
+        m_pkgIpMap = new HashMap<Package, List<InetAddress>>();
         m_pkgIntMap = new HashMap<String, Map<String, Interface>>();
         
         for(Package pkg : packages()) {
@@ -334,7 +335,7 @@ abstract public class SnmpInterfacePollerConfigManager implements SnmpInterfaceP
             // database and populate the package, IP list map.
             //
             try {
-                List<String> ipList = getIpList(pkg);
+                List<InetAddress> ipList = getIpList(pkg);
                 if (log().isDebugEnabled())
                     log().debug("createPackageIpMap: package " + pkg.getName() + ": ipList size =  " + ipList.size());
     
@@ -356,7 +357,7 @@ abstract public class SnmpInterfacePollerConfigManager implements SnmpInterfaceP
      * @param pkg a {@link org.opennms.netmgt.config.snmpinterfacepoller.Package} object.
      * @return a {@link java.util.List} object.
      */
-    public List<String> getIpList(Package pkg) {
+    public List<InetAddress> getIpList(Package pkg) {
         StringBuffer filterRules = new StringBuffer(pkg.getFilter().getContent());
         if (m_verifyServer) {
             filterRules.append(" & (serverName == ");
@@ -367,7 +368,7 @@ abstract public class SnmpInterfacePollerConfigManager implements SnmpInterfaceP
         }
         if (log().isDebugEnabled())
             log().debug("createPackageIpMap: package is " + pkg.getName() + ". filer rules are  " + filterRules.toString());
-        List<String> ipList = FilterDaoFactory.getInstance().getIPList(filterRules.toString());
+        List<InetAddress> ipList = FilterDaoFactory.getInstance().getActiveIPAddressList(filterRules.toString());
         return ipList;
     }
 
@@ -403,14 +404,15 @@ abstract public class SnmpInterfacePollerConfigManager implements SnmpInterfaceP
      *         otherwise.
      */
     public synchronized boolean interfaceInPackage(String iface, Package pkg) {
+        final InetAddress ifaceAddr = addr(iface);
         ThreadCategory log = log();
     
         boolean filterPassed = false;
     
         // get list of IPs in this package
-        List<String> ipList = m_pkgIpMap.get(pkg);
+        List<InetAddress> ipList = m_pkgIpMap.get(pkg);
         if (ipList != null && ipList.size() > 0) {
-            filterPassed = ipList.contains(iface);
+			filterPassed = ipList.contains(ifaceAddr);
         }
     
         if (log.isDebugEnabled())
@@ -432,16 +434,16 @@ abstract public class SnmpInterfacePollerConfigManager implements SnmpInterfaceP
         has_range_include = pkg.getIncludeRangeCount() == 0 && pkg.getSpecificCount() == 0;
         
         for (IncludeRange rng : pkg.getIncludeRangeCollection()) {
-            if (InetAddressUtils.isInetAddressInRange(iface, rng.getBegin(), rng.getEnd())) {
+            if (isInetAddressInRange(iface, rng.getBegin(), rng.getEnd())) {
                 has_range_include = true;
                 break;
             }
         }
 
-        byte[] addr = InetAddressUtils.toIpAddrBytes(iface);
+        byte[] addr = toIpAddrBytes(iface);
 
         for (String spec : pkg.getSpecificCollection()) {
-            byte[] speca = InetAddressUtils.toIpAddrBytes(spec);
+            byte[] speca = toIpAddrBytes(spec);
             if (new ByteArrayComparator().compare(speca, addr) == 0) {
                 has_specific = true;
                 break;
@@ -454,7 +456,7 @@ abstract public class SnmpInterfacePollerConfigManager implements SnmpInterfaceP
         }
     
         for (ExcludeRange rng : pkg.getExcludeRangeCollection()) {
-            if (InetAddressUtils.isInetAddressInRange(iface, rng.getBegin(), rng.getEnd())) {
+            if (isInetAddressInRange(iface, rng.getBegin(), rng.getEnd())) {
                 has_range_exclude = true;
                 break;
             }

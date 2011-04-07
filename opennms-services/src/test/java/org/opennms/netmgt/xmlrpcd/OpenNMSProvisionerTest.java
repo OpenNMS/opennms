@@ -46,6 +46,7 @@ import static org.junit.Assert.fail;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.StringReader;
+import java.net.InetAddress;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
@@ -220,8 +221,8 @@ public class OpenNMSProvisionerTest {
             m_xml = xml;
         }
 
-        public List<String> getIpList(Package pkg) {
-            return new ArrayList<String>(0);
+        public List<InetAddress> getIpList(Package pkg) {
+            return new ArrayList<InetAddress>(0);
         }
 
         public String getXml() {

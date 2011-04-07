@@ -93,10 +93,21 @@ public interface FilterDao {
     public Map<InetAddress, Set<String>> getIPAddressServiceMap(String rule) throws FilterParseException;
 
     /**
-     * <p>getIPList</p>
+     * Get the (non-deleted) IP addresses that match the specified rule.
      *
-     * @param rule a {@link java.lang.String} object.
-     * @return a {@link java.util.List} object.
+     * @param rule the filter rule
+     * @return a {@link java.util.List} of IP address strings.
+     * @throws org.opennms.netmgt.filter.FilterParseException if any.
+     * 
+     * @deprecated use getActiveIPAddressList instead
+     */
+    public List<String> getActiveIPList(String rule) throws FilterParseException;
+
+    /**
+     * Get the IP addresses (including deleted) that match the specified rule.
+     *
+     * @param rule the filter rule
+     * @return a {@link java.util.List} of IP address strings.
      * @throws org.opennms.netmgt.filter.FilterParseException if any.
      * 
      * @deprecated use getIPAddressList instead
@@ -104,11 +115,20 @@ public interface FilterDao {
     public List<String> getIPList(String rule) throws FilterParseException;
 
     /**
-     * <p>getIPList</p>
+     * Get the (non-deleted) IP addresses that match the specified rule.
      *
-     * @param rule a {@link java.lang.String} object.
-     * @return a {@link java.util.List} object.
-     * @throws org.opennms.netmgt.filter.FilterParseException if any.
+     * @param rule the filter rule
+     * @return a {@link java.util.List} of IP addresses.
+     * @throws org.opennms.netmgt.filter.FilterParseException if a rule is syntactically incorrect or failed in executing the SQL statement.
+     */
+    public List<InetAddress> getActiveIPAddressList(String rule) throws FilterParseException;
+
+    /**
+     * Get the IP addresses (including deleted) that match the specified rule.
+     *
+     * @param rule the filter rule
+     * @return a {@link java.util.List} of IP addresses.
+     * @throws org.opennms.netmgt.filter.FilterParseException if a rule is syntactically incorrect or failed in executing the SQL statement.
      */
     public List<InetAddress> getIPAddressList(String rule) throws FilterParseException;
 

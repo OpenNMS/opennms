@@ -42,6 +42,7 @@ import static org.easymock.EasyMock.expect;
 import java.io.File;
 import java.io.IOException;
 import java.io.InputStream;
+import java.net.InetAddress;
 import java.net.UnknownHostException;
 import java.util.ArrayList;
 import java.util.Collection;
@@ -101,7 +102,7 @@ public class DefaultResourceDaoTest extends TestCase {
         
         FilterDaoFactory.setInstance(m_filterDao);
         
-        expect(m_filterDao.getIPList("IPADDR IPLIKE *.*.*.*")).andReturn(new ArrayList<String>(0)).anyTimes();
+        expect(m_filterDao.getActiveIPAddressList("IPADDR IPLIKE *.*.*.*")).andReturn(new ArrayList<InetAddress>(0)).anyTimes();
         
         m_easyMockUtils.replayAll();
         setUpCollectdConfigFactory();

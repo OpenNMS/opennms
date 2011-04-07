@@ -37,9 +37,12 @@
  */
 package org.opennms.reporting.availability.svclayer;
 
+import static org.opennms.core.utils.InetAddressUtils.str;
+
 import java.beans.PropertyVetoException;
 import java.io.IOException;
 import java.lang.reflect.UndeclaredThrowableException;
+import java.net.InetAddress;
 import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
@@ -127,7 +130,7 @@ public class LegacyAvailabilityDataService implements
         try {
             m_commonRule = m_catFactory.getEffectiveRule(categoryName);
             
-            List<String> nodeIPs = FilterDaoFactory.getInstance().getIPList(m_commonRule);
+            List<InetAddress> nodeIPs = FilterDaoFactory.getInstance().getActiveIPAddressList(m_commonRule);
     
             if (log.isDebugEnabled()) {
                 log.debug("Number of IPs satisfying rule: " + nodeIPs.size());
@@ -156,14 +159,14 @@ public class LegacyAvailabilityDataService implements
              * For each of these IP addresses, get the details from the
              * ifServices and services tables.
              */
-            Iterator<String> ipIter = nodeIPs.iterator();
+            Iterator<InetAddress> ipIter = nodeIPs.iterator();
             String ip = null;
             ResultSet ipRS = null;
             try {
                 // Prepared statement to get node info for an IP
                 ipInfoGetStmt = m_availConn.prepareStatement(AvailabilityConstants.DB_GET_INFO_FOR_IP);
                 while (ipIter.hasNext()) {
-                    ip = (String) ipIter.next();
+                    ip = str(ipIter.next());
                     log.debug("ecexuting " + AvailabilityConstants.DB_GET_INFO_FOR_IP + " for " + ip);
         
                     // get node info for this ip

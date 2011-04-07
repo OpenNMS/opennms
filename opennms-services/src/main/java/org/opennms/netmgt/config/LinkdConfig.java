@@ -37,6 +37,7 @@
 package org.opennms.netmgt.config;
 
 import java.io.IOException;
+import java.net.InetAddress;
 import java.util.Enumeration;
 import java.util.List;
 import java.util.concurrent.locks.Lock;
@@ -65,7 +66,7 @@ public interface LinkdConfig {
      * @param pkg a {@link org.opennms.netmgt.config.linkd.Package} object.
      * @return a {@link java.util.List} object.
      */
-    List<String> getIpList(Package pkg);
+    List<InetAddress> getIpList(Package pkg);
     /**
      * This method is used to determine if the named interface is included in
      * the passed package definition. If the interface belongs to the package

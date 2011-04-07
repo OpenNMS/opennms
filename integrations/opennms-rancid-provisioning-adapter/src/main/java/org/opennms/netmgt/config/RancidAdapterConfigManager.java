@@ -36,8 +36,13 @@
 //
 package org.opennms.netmgt.config;
 
+import static org.opennms.core.utils.InetAddressUtils.addr;
+import static org.opennms.core.utils.InetAddressUtils.isInetAddressInRange;
+import static org.opennms.core.utils.InetAddressUtils.toIpAddrBytes;
+
 import java.io.IOException;
 import java.io.InputStream;
+import java.net.InetAddress;
 import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.Enumeration;
@@ -54,7 +59,6 @@ import java.util.concurrent.locks.ReentrantReadWriteLock;
 import org.exolab.castor.xml.MarshalException;
 import org.exolab.castor.xml.ValidationException;
 import org.opennms.core.utils.ByteArrayComparator;
-import org.opennms.core.utils.InetAddressUtils;
 import org.opennms.core.utils.IpListFromUrl;
 import org.opennms.core.utils.LogUtils;
 import org.opennms.netmgt.config.rancid.adapter.ExcludeRange;
@@ -105,7 +109,7 @@ abstract public class RancidAdapterConfigManager implements RancidAdapterConfig 
      * A mapping of the configured package to a list of IPs selected via filter
      * rules, so as to avoid database access.
      */
-    private Map<Package, List<String>> m_pkgIpMap;
+    private Map<Package, List<InetAddress>> m_pkgIpMap;
     
     /**
      * A mapping between policyManage Name and Package
@@ -207,7 +211,7 @@ abstract public class RancidAdapterConfigManager implements RancidAdapterConfig 
     private void createPackageIpListMap() {
         getWriteLock().lock();
         try {
-            m_pkgIpMap = new HashMap<Package, List<String>>();
+            m_pkgIpMap = new HashMap<Package, List<InetAddress>>();
             
             if (hasPolicies()) {
                 for (final Package pkg: packages() ) {
@@ -215,7 +219,7 @@ abstract public class RancidAdapterConfigManager implements RancidAdapterConfig 
                     // database and populate the package, IP list map.
                     //
                     try {
-                        final List<String> ipList = getIpList(pkg);
+                        final List<InetAddress> ipList = getIpList(pkg);
                         LogUtils.debugf(this, "createPackageIpMap: package %s: ipList size = %d", pkg.getName(), ipList.size());
             
                         if (ipList.size() > 0) {
@@ -232,7 +236,7 @@ abstract public class RancidAdapterConfigManager implements RancidAdapterConfig 
         }
     }
     
-    private List<String> getIpList(final Package pkg) {
+    private List<InetAddress> getIpList(final Package pkg) {
         final StringBuffer filterRules = new StringBuffer(pkg.getFilter().getContent());
         if (m_verifyServer) {
             filterRules.append(" & (serverName == ");
@@ -242,7 +246,7 @@ abstract public class RancidAdapterConfigManager implements RancidAdapterConfig 
             filterRules.append(")");
         }
         LogUtils.debugf(this, "createPackageIpMap: package is %s. filter rules are %s", pkg.getName(), filterRules.toString());
-        return FilterDaoFactory.getInstance().getIPList(filterRules.toString());
+        return FilterDaoFactory.getInstance().getActiveIPAddressList(filterRules.toString());
     }
     
     /**
@@ -267,11 +271,12 @@ abstract public class RancidAdapterConfigManager implements RancidAdapterConfig 
      */
     private boolean interfaceInPackage(final String iface, final Package pkg) {
         boolean filterPassed = false;
+        final InetAddress ifaceAddr = addr(iface);
     
         // get list of IPs in this package
-        final List<String> ipList = m_pkgIpMap.get(pkg);
+        final List<InetAddress> ipList = m_pkgIpMap.get(pkg);
         if (ipList != null && ipList.size() > 0) {
-            filterPassed = ipList.contains(iface);
+			filterPassed = ipList.contains(ifaceAddr);
         }
     
         LogUtils.debugf(this, "interfaceInPackage: Interface %s passed filter for package %s?: %s", iface, pkg.getName(), Boolean.valueOf(filterPassed));
@@ -291,16 +296,16 @@ abstract public class RancidAdapterConfigManager implements RancidAdapterConfig 
         has_range_include = pkg.getIncludeRangeCount() == 0 && pkg.getSpecificCount() == 0;
         
         for (IncludeRange rng : pkg.getIncludeRange()) {
-            if (InetAddressUtils.isInetAddressInRange(iface, rng.getBegin(), rng.getEnd())) {
+            if (isInetAddressInRange(iface, rng.getBegin(), rng.getEnd())) {
                 has_range_include = true;
                 break;
             }
         }
 
-        byte[] addr = InetAddressUtils.toIpAddrBytes(iface);
+        byte[] addr = toIpAddrBytes(iface);
 
         for (String spec : pkg.getSpecific()) {
-            byte[] speca = InetAddressUtils.toIpAddrBytes(spec);
+            byte[] speca = toIpAddrBytes(spec);
             if (new ByteArrayComparator().compare(speca, addr) == 0) {
                 has_specific = true;
                 break;
@@ -313,7 +318,7 @@ abstract public class RancidAdapterConfigManager implements RancidAdapterConfig 
         }
     
         for (ExcludeRange rng : pkg.getExcludeRangeCollection()) {
-            if (InetAddressUtils.isInetAddressInRange(iface, rng.getBegin(), rng.getEnd())) {
+            if (isInetAddressInRange(iface, rng.getBegin(), rng.getEnd())) {
                 has_range_exclude = true;
                 break;
             }
