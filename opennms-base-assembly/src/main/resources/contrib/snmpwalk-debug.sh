@@ -49,7 +49,7 @@ if [ ! -x "$SNMPWALK" ]; then
 	fi
 fi
 
-for table in system interfaces ipaddr ifxtable "$@"; do
+for table in system interfaces ipaddr ifxtable ipaddresstable "$@"; do
 	echo "walking $table..." >&2
 	echo "# table $table"
 	if ! $SNMPWALK -OUne -v2c -c "$community" "$host" "$table"; then
