@@ -60,6 +60,7 @@ import javax.xml.bind.annotation.XmlRootElement;
 import javax.xml.bind.annotation.XmlTransient;
 
 import org.opennms.core.utils.AlphaNumeric;
+import org.opennms.core.utils.RrdLabelUtils;
 import org.opennms.core.utils.ThreadCategory;
 import org.springframework.core.style.ToStringCreator;
 
@@ -670,9 +671,7 @@ public class OnmsSnmpInterface extends OnmsEntity implements Serializable {
      * @return a {@link java.lang.String} object.
      */
     public String computeLabelForRRD() {
-        String name = computeNameForRRD();
-        String physAddrForRRD = computePhysAddrForRRD();
-        return (physAddrForRRD == null ? name : name + '-' + physAddrForRRD);
+        return RrdLabelUtils.computeLabelForRRD(getIfName(), getIfDescr(), getPhysAddr());
     }
 
     /**
