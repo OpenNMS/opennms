@@ -101,6 +101,11 @@ import org.opennms.netmgt.snmp.SnmpValue;
 import org.opennms.netmgt.xml.event.Event;
 import org.opennms.netmgt.xml.event.Parm;
 import org.opennms.test.mock.MockLogAppender;
+import org.springframework.transaction.PlatformTransactionManager;
+import org.springframework.transaction.TransactionDefinition;
+import org.springframework.transaction.TransactionException;
+import org.springframework.transaction.TransactionStatus;
+import org.springframework.transaction.support.TransactionTemplate;
 
 /**
  * @author <a href="mailto:agalue@opennms.org">Alejandro Galue</a>
@@ -108,7 +113,25 @@ import org.opennms.test.mock.MockLogAppender;
  */
 public class ThresholdingVisitorTest {
 
-    Level m_defaultErrorLevelToCheck;
+    public class MockPlatformTransactionManager implements
+			PlatformTransactionManager {
+
+		@Override
+		public TransactionStatus getTransaction(TransactionDefinition definition) throws TransactionException {
+			return null;
+		}
+
+		@Override
+		public void commit(TransactionStatus status) throws TransactionException {
+		}
+
+		@Override
+		public void rollback(TransactionStatus status) throws TransactionException {
+		}
+
+	}
+
+	Level m_defaultErrorLevelToCheck;
     FilterDao m_filterDao;
     EventAnticipator m_anticipator;
     List<Event> m_anticipatedEvents;
@@ -888,11 +911,15 @@ public class ThresholdingVisitorTest {
 
         // Initialize Filter DAO
 
+        MockPlatformTransactionManager ptm = new MockPlatformTransactionManager();
+        TransactionTemplate transactionTemplate = new TransactionTemplate(ptm);
+
         System.setProperty("opennms.home", "src/test/resources");
         DatabaseSchemaConfigFactory.init();
         JdbcFilterDao jdbcFilterDao = new JdbcFilterDao();
         jdbcFilterDao.setDataSource(db);
         jdbcFilterDao.setDatabaseSchemaConfigFactory(DatabaseSchemaConfigFactory.getInstance());
+        jdbcFilterDao.setTransactionTemplate(transactionTemplate);
         jdbcFilterDao.afterPropertiesSet();
         FilterDaoFactory.setInstance(jdbcFilterDao);
 

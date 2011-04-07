@@ -157,7 +157,7 @@ public class OutageDaoTest {
         OnmsNode node = new OnmsNode(m_distPollerDao.load("localhost"));
         m_nodeDao.save(node);
         insertEntitiesAndOutage("172.16.1.1", "ICMP", node);
-        
+
         ServiceSelector selector = new ServiceSelector("ipAddr IPLIKE 172.16.1.1", Arrays.asList(new String[] { "ICMP" }));
     	Collection<OnmsOutage> outages = m_outageDao.matchingCurrentOutages(selector);
     	assertEquals("outage count", 1, outages.size());
@@ -170,11 +170,6 @@ public class OutageDaoTest {
         m_nodeDao.save(node);
         insertEntitiesAndOutage("172.16.1.1", "ICMP", node);
         
-        /*
-         * We need to flush and finish the transaction because JdbcFilterDao
-         * gets its own connection from the DataSource and won't see our data
-         * otherwise.
-         */
         ServiceSelector selector = new ServiceSelector("ipAddr IPLIKE 172.16.1.1", new ArrayList<String>(0));
     	Collection<OnmsOutage> outages = m_outageDao.matchingCurrentOutages(selector);
     	assertEquals(1, outages.size());
@@ -259,6 +254,10 @@ public class OutageDaoTest {
 
         OnmsOutage outage = getOutage(monitoredService, event);
         
+        m_nodeDao.flush();
+        m_outageDao.flush();
+        
+
         return outage;
     }
 

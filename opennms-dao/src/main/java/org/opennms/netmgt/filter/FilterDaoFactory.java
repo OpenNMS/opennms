@@ -50,8 +50,8 @@ import org.springframework.dao.DataAccessResourceFailureException;
 public class FilterDaoFactory {
     private static FilterDao m_filterDao;
 
-    // Only static methods, so don't let the constructor be called
-    private FilterDaoFactory() {
+    public FilterDaoFactory(final FilterDao filterDao) {
+    	m_filterDao = filterDao;
     }
 
     /**
@@ -72,7 +72,7 @@ public class FilterDaoFactory {
      *
      * @param filterDao a {@link org.opennms.netmgt.dao.FilterDao} object.
      */
-    public static void setInstance(FilterDao filterDao) {
+    public static void setInstance(final FilterDao filterDao) {
         m_filterDao = filterDao;
     }
 
@@ -84,18 +84,18 @@ public class FilterDaoFactory {
             return;
         }
         
-        JdbcFilterDao jdbcFilterDao = new JdbcFilterDao();
+        final JdbcFilterDao jdbcFilterDao = new JdbcFilterDao();
         
         try {
             DataSourceFactory.init();
-        } catch (Throwable e) {
+        } catch (final Throwable e) {
             throw new DataAccessResourceFailureException("Could not initialize DataSourceFactory: " + e, e);
         }
         jdbcFilterDao.setDataSource(DataSourceFactory.getInstance());
         
         try {
             DatabaseSchemaConfigFactory.init();
-        } catch (Throwable e) {
+        } catch (final Throwable e) {
             throw new DataAccessResourceFailureException("Could not initialize DatabaseSchemaConfigFactory: " + e, e);
         }
         jdbcFilterDao.setDatabaseSchemaConfigFactory(DatabaseSchemaConfigFactory.getInstance());
