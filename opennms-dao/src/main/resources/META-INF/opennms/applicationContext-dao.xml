@@ -244,13 +244,8 @@
     <property name="dataSource" ref="dataSource" />
     <property name="databaseSchemaConfigFactory" ref="databaseSchemaConfigFactory" />
     <property name="nodeDao" ref="nodeDao" />
-    <property name="transactionTemplate" ref="transactionTemplate" />
   </bean>
 
-  <bean id="filterDaoFactory" class="org.opennms.netmgt.filter.FilterDaoFactory">
-    <constructor-arg index="0" ref="filterDao" />
-  </bean>
-  
   <bean id="collectdConfig-init" class="org.springframework.beans.factory.config.MethodInvokingFactoryBean">
     <property name="staticMethod"><value>org.opennms.netmgt.config.CollectdConfigFactory.init</value></property>
   </bean>

@@ -56,7 +56,6 @@ import org.opennms.netmgt.model.OnmsNode;
 import org.opennms.test.ConfigurationTestUtils;
 import org.opennms.test.DaoTestConfigBean;
 import org.opennms.test.ThrowableAnticipator;
-import org.springframework.transaction.support.TransactionTemplate;
 
 /**
  * 
@@ -67,7 +66,6 @@ public class JdbcFilterDaoTest extends AbstractTransactionalTemporaryDatabaseSpr
     private IpInterfaceDao m_interfaceDao;
     private JdbcFilterDao m_dao;
     private DatabasePopulator m_populator;
-	private TransactionTemplate m_transactionTemplate;
 
     @Override
     protected void setUpConfiguration() {
@@ -99,18 +97,20 @@ public class JdbcFilterDaoTest extends AbstractTransactionalTemporaryDatabaseSpr
         InputStream is = ConfigurationTestUtils.getInputStreamForConfigFile("database-schema.xml");
         m_dao.setDatabaseSchemaConfigFactory(new DatabaseSchemaConfigFactory(is));
         is.close();
-        m_dao.setTransactionTemplate(getTransactionTemplate());
         m_dao.afterPropertiesSet();
+    }
+
+    public void testInstantiate() {
+        new JdbcFilterDao();
     }
 
     public void testAfterPropertiesSetValid() throws Exception {
         JdbcFilterDao dao = new JdbcFilterDao();
         dao.setDataSource(getDataSource());
-        dao.setNodeDao(getNodeDao());
+        dao.setNodeDao(m_nodeDao);
         InputStream is = ConfigurationTestUtils.getInputStreamForConfigFile("database-schema.xml");
         dao.setDatabaseSchemaConfigFactory(new DatabaseSchemaConfigFactory(is));
         is.close();
-        dao.setTransactionTemplate(getTransactionTemplate());
         dao.afterPropertiesSet();
     }
 
@@ -120,7 +120,6 @@ public class JdbcFilterDaoTest extends AbstractTransactionalTemporaryDatabaseSpr
         InputStream is = ConfigurationTestUtils.getInputStreamForConfigFile("database-schema.xml");
         dao.setDatabaseSchemaConfigFactory(new DatabaseSchemaConfigFactory(is));
         is.close();
-        dao.setTransactionTemplate(getTransactionTemplate());
 
         // The nodeDao isn't required because this ends up getting used outside of a Spring context quite a bit
         dao.afterPropertiesSet();
@@ -149,7 +148,6 @@ public class JdbcFilterDaoTest extends AbstractTransactionalTemporaryDatabaseSpr
         InputStream is = ConfigurationTestUtils.getInputStreamForConfigFile("database-schema.xml");
         dao.setDatabaseSchemaConfigFactory(new DatabaseSchemaConfigFactory(is));
         is.close();
-        dao.setTransactionTemplate(getTransactionTemplate());
 
         dao.afterPropertiesSet();
 
@@ -171,7 +169,6 @@ public class JdbcFilterDaoTest extends AbstractTransactionalTemporaryDatabaseSpr
 
         JdbcFilterDao dao = new JdbcFilterDao();
         dao.setDataSource(getDataSource());
-        dao.setTransactionTemplate(getTransactionTemplate());
 
         ta.anticipate(new IllegalStateException("property databaseSchemaConfigFactory cannot be null"));
         try {
@@ -279,11 +276,4 @@ public class JdbcFilterDaoTest extends AbstractTransactionalTemporaryDatabaseSpr
         m_populator = populator;
     }
 
-    public TransactionTemplate getTransactionTemplate() {
-    	return m_transactionTemplate;
-    }
-    
-    public void setTransactionTemplate(final TransactionTemplate transactionTemplate) {
-    	m_transactionTemplate = transactionTemplate;
-    }
 }

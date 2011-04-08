@@ -35,7 +35,6 @@ import static org.opennms.core.utils.InetAddressUtils.addr;
 import static org.opennms.core.utils.InetAddressUtils.str;
 
 import java.io.File;
-import java.net.InetAddress;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Collections;
@@ -163,11 +162,6 @@ public class CollectdIntegrationTest extends TestCase {
         ifaceBlder.addSnmpInterface(1);
         OnmsMonitoredService svc = netBuilder.addService(snmp);
         
-        final List<InetAddress> addresses = new ArrayList<InetAddress>();
-        addresses.add(addr("192.168.1.1"));
-        
-        EasyMock.expect(m_filterDao.getActiveIPAddressList("IPADDR IPLIKE *.*.*.*")).andReturn(addresses);
-
         List<OnmsIpInterface> initialIfs = Collections.emptyList();
         EasyMock.expect(m_ifaceDao.findByServiceType(snmp.getName())).andReturn(initialIfs).anyTimes();
         
