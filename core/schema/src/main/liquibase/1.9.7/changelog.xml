@@ -8,9 +8,9 @@
 		http://www.liquibase.org/xml/ns/dbchangelog-ext http://www.liquibase.org/xml/ns/dbchangelog/dbchangelog-ext.xsd">
 
   <changeSet author="rangerrick" id="1.9.7-expand-netmask-field">
-    <modifyDataType tableName="snmpinterface" columnName="netmask" newDataType="varchar(45)" />
+    <modifyDataType tableName="snmpinterface" columnName="snmpipadentnetmask" newDataType="varchar(45)" />
     <rollback>
-      <modifyDataType tableName="snmpinterface" columnName="netmask" newDataType="varchar(16)" />
+      <modifyDataType tableName="snmpinterface" columnName="snmpipadentnetmask" newDataType="varchar(16)" />
     </rollback>
   </changeSet>
 
