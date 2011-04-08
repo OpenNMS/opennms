@@ -56,11 +56,11 @@ final public class PingRequest extends AbstractPingRequest<IcmpSocket> {
         super(addr, tid, sequenceId, timeout, retries, logger, cb);
     }
     
-    PingRequest(InetAddress addr, long tid, short sequenceId, long timeout, int retries, PingResponseCallback cb) {
+    PingRequest(InetAddress addr, long tid, int sequenceId, long timeout, int retries, PingResponseCallback cb) {
         this(addr, tid, sequenceId, timeout, retries, ThreadCategory.getInstance(PingRequest.class), cb);
     }
     
-    PingRequest(InetAddress addr, short sequenceId, long timeout, int retries, PingResponseCallback cb) {
+    PingRequest(InetAddress addr, int sequenceId, long timeout, int retries, PingResponseCallback cb) {
         this(addr, s_nextTid++, sequenceId, timeout, retries, cb);
     }
     

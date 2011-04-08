@@ -58,8 +58,9 @@ public class JICMPEchoPacket implements org.opennms.netmgt.icmp.ICMPEchoPacket {
     }
 
     @Override
-    public long elapsedTime(TimeUnit unit) {
-        return unit.convert(m_delegate.getPingRTT(), TimeUnit.NANOSECONDS);
+    public float elapsedTime(TimeUnit unit) {
+        // {@link org.opennms.protocols.icmp.ICMPEchoPacket.getPingRTT()} returns microseconds.
+        return unit.convert(m_delegate.getPingRTT(), TimeUnit.MICROSECONDS);
     }
 
     @Override
@@ -70,6 +71,11 @@ public class JICMPEchoPacket implements org.opennms.netmgt.icmp.ICMPEchoPacket {
     @Override
     public byte[] toBytes() {
         return m_delegate.toBytes();
+    }
+
+    @Override
+    public long getIdentity() {
+        return m_delegate.getIdentity();
     }
 
     @Override

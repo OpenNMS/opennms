@@ -53,7 +53,12 @@ public class SinglePingResponseCallback implements PingResponseCallback {
     private BarrierSignaler bs = new BarrierSignaler(1);
     @SuppressWarnings("unused")
     private Throwable error = null;
+
+    /**
+     * Value of round-trip-time for the ping in microseconds.
+     */
     private Long responseTime = null;
+
     private InetAddress m_host;
 
     /**
@@ -67,8 +72,8 @@ public class SinglePingResponseCallback implements PingResponseCallback {
 
     /** {@inheritDoc} */
     public void handleResponse(InetAddress address, ICMPEchoPacket packet) {
-        info("got response for address " + address + ", thread " + packet.getIdentifier() + ", seq " + packet.getSequenceNumber() + " with a responseTime "+packet.elapsedTime(TimeUnit.NANOSECONDS));
-        responseTime = packet.elapsedTime(TimeUnit.NANOSECONDS);
+        info("got response for address " + address + ", thread " + packet.getIdentifier() + ", seq " + packet.getSequenceNumber() + " with a responseTime "+packet.elapsedTime(TimeUnit.MILLISECONDS)+"ms");
+        responseTime = (long)Math.round(packet.elapsedTime(TimeUnit.MICROSECONDS));
         bs.signalAll();
     }
 
