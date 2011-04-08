@@ -10,7 +10,7 @@
 			<ref bean="capsdConfig"/>
 		</property>
 		<property name="eventManager">
-			<ref bean="eventManager"/>
+			<ref bean="eventIpcManager"/>
 		</property>
 
 	</bean>
