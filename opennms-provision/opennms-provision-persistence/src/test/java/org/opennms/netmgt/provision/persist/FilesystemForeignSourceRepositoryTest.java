@@ -9,7 +9,6 @@ import java.util.List;
 import java.util.Set;
 import java.util.UUID;
 
-import org.apache.commons.lang.builder.EqualsBuilder;
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
@@ -84,12 +83,10 @@ public class FilesystemForeignSourceRepositoryTest {
         // check that the foreign source matches
         final ForeignSource newForeignSource = m_foreignSourceRepository.getForeignSource(m_defaultForeignSourceName);
         
-        final EqualsBuilder eb = new EqualsBuilder()
-        	.append(foreignSource.getName(), newForeignSource.getName())
-        	.append(foreignSource.getDateStampAsDate(), newForeignSource.getDateStampAsDate())
-        	.append(foreignSource.getDetectorNames(), newForeignSource.getDetectorNames())
-        	.append(foreignSource.getScanInterval(), newForeignSource.getScanInterval());
-        assertTrue("get() must return the same foreign source", eb.isEquals());
+        assertEquals(foreignSource.getName(), newForeignSource.getName());
+        assertEquals(foreignSource.getDateStampAsDate(), newForeignSource.getDateStampAsDate());
+        assertEquals(foreignSource.getDetectorNames(), newForeignSource.getDetectorNames());
+        assertEquals(foreignSource.getScanInterval(), newForeignSource.getScanInterval());
     }
 
     @Test

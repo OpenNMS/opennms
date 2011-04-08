@@ -101,7 +101,10 @@ public class FusedForeignSourceRepositoryTest {
         Requisition activeReq = m_repository.importResourceRequisition(new UrlResource(m_pending.getRequisitionURL("test")));
         ForeignSource activeSource = m_active.getForeignSource("test");
         // and the foreign source should be the same as the one we made earlier, only this time it's active
-        assertEquals("active foreign source should match pending foreign source", activeSource, pendingSource);
+        
+        assertEquals(activeSource.getName(), pendingSource.getName());
+        assertEquals(activeSource.getDetectorNames(), pendingSource.getDetectorNames());
+        assertEquals(activeSource.getScanInterval(), pendingSource.getScanInterval());
         assertEquals("the requisitions should match too", activeReq, pendingReq);
         
         /*
