@@ -56,9 +56,6 @@ import org.exolab.castor.xml.ValidationException;
 import org.opennms.core.utils.InetAddressUtils;
 import org.opennms.netmgt.config.DataSourceFactory;
 import org.opennms.netmgt.config.ThresholdingConfigFactory;
-import org.opennms.netmgt.dao.FilterDao;
-import org.opennms.netmgt.dao.support.JdbcFilterDao;
-import org.opennms.netmgt.filter.FilterDaoFactory;
 import org.opennms.netmgt.mock.EventAnticipator;
 import org.opennms.netmgt.mock.MockDatabase;
 import org.opennms.netmgt.mock.MockEventIpcManager;
@@ -75,10 +72,6 @@ import org.opennms.netmgt.xml.event.Log;
 import org.opennms.test.mock.EasyMockUtils;
 import org.springframework.core.io.ClassPathResource;
 import org.springframework.core.io.Resource;
-import org.springframework.jdbc.datasource.DataSourceTransactionManager;
-import org.springframework.jdbc.datasource.TransactionAwareDataSourceProxy;
-import org.springframework.transaction.PlatformTransactionManager;
-import org.springframework.transaction.support.TransactionTemplate;
 
 public class ThresholderTestCase extends TestCase {
 
@@ -185,16 +178,7 @@ public class ThresholderTestCase extends TestCase {
 		m_network.addService("HTTP");
 		MockDatabase db = new MockDatabase();
 		db.populate(m_network);
-
-        final TransactionAwareDataSourceProxy proxy = new TransactionAwareDataSourceProxy(db);
-		DataSourceFactory.setInstance(proxy);
-
-		PlatformTransactionManager mgr = new DataSourceTransactionManager(proxy);
-        
-        FilterDao dao = FilterDaoFactory.getInstance();
-        if (dao instanceof JdbcFilterDao) {
-        	((JdbcFilterDao)dao).setTransactionTemplate(new TransactionTemplate(mgr));
-        }
+		DataSourceFactory.setInstance(db);
 	}
 
 	protected void ensureExceededAfterFetches(String dsName, int count) {

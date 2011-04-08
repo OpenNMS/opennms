@@ -61,7 +61,7 @@ public class FilterDaoFactory {
      */
     public static FilterDao getInstance() {
         if (m_filterDao == null) {
-        	init();
+            init();
         }
         
         return m_filterDao;
