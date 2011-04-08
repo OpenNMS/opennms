@@ -15,7 +15,6 @@ use vars qw(
 );
 $HELP       = undef;
 $JAVA_HOME  = undef;
-$TESTS      = undef;
 $VERBOSE    = undef;
 @ARGS       = ();
 
