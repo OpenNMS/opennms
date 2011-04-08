@@ -41,10 +41,6 @@ import java.util.concurrent.TimeUnit;
 import java.util.concurrent.atomic.AtomicBoolean;
 
 import org.opennms.core.utils.ThreadCategory;
-import org.opennms.netmgt.icmp.ICMPEchoPacket;
-import org.opennms.netmgt.icmp.PingReply;
-import org.opennms.netmgt.icmp.PingRequestId;
-import org.opennms.netmgt.icmp.PingResponseCallback;
 
 /**
  * This class is used to encapsulate a ping request. A request consist of
@@ -103,15 +99,15 @@ public abstract class AbstractPingRequest<SocketT> implements org.opennms.netmgt
         m_retries    = retries;
         m_timeout    = timeout;
         m_log        = logger;
-        // Wrap the callback in a callback that will reset the logging suffix after the callback has executed
+        // Wrap the callback in another callback that will reset the logging suffix after the callback has executed
         m_callback   = new LogPrefixPreservingPingResponseCallback(cb);
     }
     
-    protected AbstractPingRequest(InetAddress addr, long tid, short sequenceId, long timeout, int retries, PingResponseCallback cb) {
+    protected AbstractPingRequest(InetAddress addr, long tid, int sequenceId, long timeout, int retries, PingResponseCallback cb) {
         this(addr, tid, sequenceId, timeout, retries, ThreadCategory.getInstance(AbstractPingRequest.class), cb);
     }
     
-    protected AbstractPingRequest(InetAddress addr, short sequenceId, long timeout, int retries, PingResponseCallback cb) {
+    protected AbstractPingRequest(InetAddress addr, int sequenceId, long timeout, int retries, PingResponseCallback cb) {
         this(addr, s_nextTid++, sequenceId, timeout, retries, cb);
     }
     
@@ -172,7 +168,7 @@ public abstract class AbstractPingRequest<SocketT> implements org.opennms.netmgt
         }
     }
     
-    public abstract AbstractPingRequest<SocketT> constructNewRequest(InetAddress inetAddress, long l, int i, long timeout, int j, ThreadCategory log, PingResponseCallback callback);
+    public abstract AbstractPingRequest<SocketT> constructNewRequest(InetAddress inetAddress, long tid, int sequenceId, long timeout, int retries, ThreadCategory log, PingResponseCallback callback);
     
     /**
      * <p>isExpired</p>

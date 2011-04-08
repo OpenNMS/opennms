@@ -45,11 +45,13 @@ public interface ICMPEchoPacket {
 
 	int getSequenceNumber();
 
-	long elapsedTime(TimeUnit timeUnit);
+	float elapsedTime(TimeUnit timeUnit);
 
 	byte[] toBytes();
 
 	int getIdentifier();
 
 	boolean isEchoReply();
+
+	long getIdentity();
 }

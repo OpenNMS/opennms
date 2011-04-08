@@ -52,6 +52,9 @@ import org.opennms.netmgt.icmp.ICMPEchoPacket;
  */
 public class ParallelPingResponseCallback implements PingResponseCallback {
     BarrierSignaler bs;
+    /**
+     * Value of round-trip-time for the ping packets in microseconds.
+     */
     Number[] m_responseTimes;
 
     /**
@@ -72,7 +75,7 @@ public class ParallelPingResponseCallback implements PingResponseCallback {
 
     /** {@inheritDoc} */
     public void handleResponse(InetAddress address, ICMPEchoPacket packet) {
-        m_responseTimes[packet.getSequenceNumber()] = packet.elapsedTime(TimeUnit.NANOSECONDS);
+        m_responseTimes[packet.getSequenceNumber()] = packet.elapsedTime(TimeUnit.MICROSECONDS);
         bs.signalAll();
     }
 

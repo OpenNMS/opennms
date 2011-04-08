@@ -42,8 +42,8 @@ import org.opennms.netmgt.icmp.ICMPEchoPacket;
 import org.opennms.netmgt.icmp.PingResponseCallback;
 
 class LogPrefixPreservingPingResponseCallback implements PingResponseCallback {
-    private PingResponseCallback m_cb;
-    private String m_prefix = ThreadCategory.getPrefix();
+    private final PingResponseCallback m_cb;
+    private final String m_prefix = ThreadCategory.getPrefix();
     
     public LogPrefixPreservingPingResponseCallback(PingResponseCallback cb) {
         m_cb = cb;

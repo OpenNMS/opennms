@@ -33,6 +33,7 @@ package org.opennms.netmgt.icmp;
 
 import java.net.InetAddress;
 
+import org.opennms.core.utils.ThreadCategory;
 import org.opennms.protocols.rt.Request;
 
 /**
@@ -43,5 +44,9 @@ public interface PingRequest<SocketT> extends Request<PingRequestId, PingRequest
 	public void send(SocketT icmpSocket, InetAddress addr);
 	
 	public PingRequestId getId();
+
+	PingRequest<SocketT> constructNewRequest(InetAddress inetAddress, long tid,
+			int sequenceId, long timeout, int retries, ThreadCategory log,
+			PingResponseCallback callback);
 
 }

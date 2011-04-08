@@ -72,13 +72,16 @@ class PingReply extends ICMPEchoPacket implements org.opennms.netmgt.icmp.ICMPEc
     }
     
     @Override
-    public long elapsedTime(TimeUnit unit) {
+    public float elapsedTime(TimeUnit unit) {
         return unit.convert(elapsedTimeNanos(), TimeUnit.NANOSECONDS);
     }
 
     long elapsedTimeNanos() {
         return getReceivedTimeNanos() - getSentTimeNanos();
     }
-    
 
+    @Override
+    public long getIdentity() {
+    	return getIdentifier();
+    }
 }

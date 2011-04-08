@@ -103,7 +103,7 @@ public final class PingReply implements ResponseWithId<PingRequestId> {
      * @return a short.
      */
     public final long getIdentity() {
-        return m_packet.getIdentifier();
+        return m_packet.getIdentity();
     }
 
     /**
