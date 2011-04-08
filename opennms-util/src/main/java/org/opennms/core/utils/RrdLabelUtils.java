@@ -4,9 +4,9 @@ public class RrdLabelUtils {
     
     public static String computeNameForRRD(String ifname, String ifdescr) {
         String label = null;
-        if (ifname != null) {
+        if (ifname != null && !ifname.equals("")) {
             label = AlphaNumeric.parseAndReplace(ifname, '_');
-        } else if (ifdescr != null) {
+        } else if (ifdescr != null && !ifdescr.equals("")) {
             label = AlphaNumeric.parseAndReplace(ifdescr, '_');
         }
         return label;
@@ -16,7 +16,7 @@ public class RrdLabelUtils {
     public static String computePhysAddrForRRD(String physaddr) {
         String physAddrForRRD = null;
 
-        if (physaddr != null) {
+        if (physaddr != null && !physaddr.equals("")) {
             String parsedPhysAddr = AlphaNumeric.parseAndTrim(physaddr);
             if (parsedPhysAddr.length() == 12) {
                 physAddrForRRD = parsedPhysAddr;
