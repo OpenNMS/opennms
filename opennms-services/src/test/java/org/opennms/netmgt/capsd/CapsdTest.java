@@ -47,6 +47,7 @@ import org.opennms.core.utils.InetAddressUtils;
 import org.opennms.mock.snmp.MockSnmpAgent;
 import org.opennms.netmgt.config.CapsdConfigFactory;
 import org.opennms.netmgt.config.CollectdConfigFactory;
+import org.opennms.netmgt.config.DataSourceFactory;
 import org.opennms.netmgt.config.DatabaseSchemaConfigFactory;
 import org.opennms.netmgt.config.DefaultCapsdConfigManager;
 import org.opennms.netmgt.config.OpennmsServerConfigFactory;
@@ -57,6 +58,8 @@ import org.opennms.netmgt.model.events.AnnotationBasedEventListenerAdapter;
 import org.opennms.test.ConfigurationTestUtils;
 import org.springframework.core.io.ClassPathResource;
 import org.springframework.jdbc.core.JdbcTemplate;
+
+import twitter4j.examples.GetDirectMessages;
 
 public class CapsdTest extends OpenNMSTestCase {
     private static final int FOREIGN_NODEID = 77;
@@ -93,7 +96,7 @@ public class CapsdTest extends OpenNMSTestCase {
         CollectdConfigFactory.setInstance(new CollectdConfigFactory(configStream, onmsSvrConfig.getServerName(), onmsSvrConfig.verifyServer()));
         configStream.close();
         
-        JdbcTemplate jdbcTemplate = new JdbcTemplate(m_db);
+        JdbcTemplate jdbcTemplate = new JdbcTemplate(DataSourceFactory.getDataSource());
         
         JdbcCapsdDbSyncer syncer = new JdbcCapsdDbSyncer();
         syncer.setJdbcTemplate(jdbcTemplate);
@@ -192,12 +195,12 @@ public class CapsdTest extends OpenNMSTestCase {
         m_capsd.init();
         m_capsd.start();
         
-        m_capsd.rescanInterfaceParent(77);
+        m_capsd.rescanInterfaceParent(FOREIGN_NODEID);
         
         Thread.sleep(10000);
         
         m_capsd.stop();
-        
+
         assertEquals("after scanning should be 3 interfaces", 3, m_db.countRows("select * from ipinterface where nodeid = ?", FOREIGN_NODEID));
     }
     
@@ -210,7 +213,7 @@ public class CapsdTest extends OpenNMSTestCase {
         m_capsd.init();
         m_capsd.start();
         
-        m_capsd.rescanInterfaceParent(77);
+        m_capsd.rescanInterfaceParent(FOREIGN_NODEID);
         
         Thread.sleep(10000);
         

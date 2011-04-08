@@ -141,7 +141,7 @@ public class JdbcFilterDao implements FilterDao, InitializingBean {
     public void afterPropertiesSet() {
         Assert.state(m_dataSource != null, "property dataSource cannot be null");
         Assert.state(m_databaseSchemaConfigFactory != null, "property databaseSchemaConfigFactory cannot be null");
-        Assert.state(m_transactionTemplate != null, "property transactionTemplate cannot be null");
+//        Assert.state(m_transactionTemplate != null, "property transactionTemplate cannot be null");
     }
 
     /**

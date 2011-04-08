@@ -63,6 +63,8 @@ import org.opennms.netmgt.config.DataSourceFactory;
 import org.opennms.netmgt.config.DefaultEventConfDao;
 import org.opennms.netmgt.config.EventconfFactory;
 import org.opennms.netmgt.config.SnmpPeerFactory;
+import org.opennms.netmgt.dao.FilterDao;
+import org.opennms.netmgt.dao.support.JdbcFilterDao;
 import org.opennms.netmgt.eventd.BroadcastEventProcessor;
 import org.opennms.netmgt.eventd.DefaultEventHandlerImpl;
 import org.opennms.netmgt.eventd.EventIpcManager;
@@ -79,6 +81,7 @@ import org.opennms.netmgt.eventd.processor.EventExpander;
 import org.opennms.netmgt.eventd.processor.EventIpcBroadcastProcessor;
 import org.opennms.netmgt.eventd.processor.EventProcessor;
 import org.opennms.netmgt.eventd.processor.JdbcEventWriter;
+import org.opennms.netmgt.filter.FilterDaoFactory;
 import org.opennms.netmgt.model.events.EventProxy;
 import org.opennms.netmgt.snmp.SnmpAgentConfig;
 import org.opennms.netmgt.snmp.SnmpUtils;
@@ -89,7 +92,9 @@ import org.springframework.core.io.ByteArrayResource;
 import org.springframework.core.io.FileSystemResource;
 import org.springframework.jdbc.core.simple.SimpleJdbcTemplate;
 import org.springframework.jdbc.datasource.DataSourceTransactionManager;
+import org.springframework.jdbc.datasource.TransactionAwareDataSourceProxy;
 import org.springframework.transaction.PlatformTransactionManager;
+import org.springframework.transaction.support.TransactionTemplate;
 
 public class OpenNMSTestCase extends TestCase {
     protected static MockDatabase m_db;
@@ -245,8 +250,17 @@ public class OpenNMSTestCase extends TestCase {
         
         }
         
+        // wrap the factory in a transaction proxy
+        DataSourceFactory.setInstance(new TransactionAwareDataSourceProxy(DataSourceFactory.getInstance()));
+
         m_transMgr = new DataSourceTransactionManager(DataSourceFactory.getInstance());
 
+        // HAAAAACK!
+        FilterDao dao = FilterDaoFactory.getInstance();
+        if (dao instanceof JdbcFilterDao) {
+        	((JdbcFilterDao)dao).setTransactionTemplate(new TransactionTemplate(m_transMgr));
+        }
+        
     }
 
     protected void populateDatabase() throws Exception {

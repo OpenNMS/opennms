@@ -50,12 +50,19 @@ import org.opennms.netmgt.config.poller.Package;
 import org.opennms.netmgt.config.poller.PollerConfiguration;
 import org.opennms.netmgt.config.poller.Rrd;
 import org.opennms.netmgt.config.poller.Service;
+import org.opennms.netmgt.dao.FilterDao;
 import org.opennms.netmgt.dao.castor.CastorUtils;
+import org.opennms.netmgt.dao.support.JdbcFilterDao;
+import org.opennms.netmgt.filter.FilterDaoFactory;
 import org.opennms.netmgt.mock.MockDatabase;
 import org.opennms.netmgt.mock.MockNetwork;
 import org.opennms.test.mock.MockLogAppender;
 import org.springframework.core.io.ClassPathResource;
 import org.springframework.core.io.Resource;
+import org.springframework.jdbc.datasource.DataSourceTransactionManager;
+import org.springframework.jdbc.datasource.TransactionAwareDataSourceProxy;
+import org.springframework.transaction.PlatformTransactionManager;
+import org.springframework.transaction.support.TransactionTemplate;
 
 public class PollerConfigFactoryTest extends TestCase {
 
@@ -132,7 +139,16 @@ public class PollerConfigFactoryTest extends TestCase {
         
         MockDatabase db = new MockDatabase();
         db.populate(network);
-        DataSourceFactory.setInstance(db);
+
+        final TransactionAwareDataSourceProxy proxy = new TransactionAwareDataSourceProxy(db);
+		DataSourceFactory.setInstance(proxy);
+
+		PlatformTransactionManager mgr = new DataSourceTransactionManager(proxy);
+        
+        FilterDao dao = FilterDaoFactory.getInstance();
+        if (dao instanceof JdbcFilterDao) {
+        	((JdbcFilterDao)dao).setTransactionTemplate(new TransactionTemplate(mgr));
+        }
         
     }
 

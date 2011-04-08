@@ -68,7 +68,10 @@ import org.opennms.netmgt.config.PollerConfigManager;
 import org.opennms.netmgt.config.poller.Package;
 import org.opennms.netmgt.config.poller.PollerConfiguration;
 import org.opennms.netmgt.config.poller.Service;
+import org.opennms.netmgt.dao.FilterDao;
 import org.opennms.netmgt.dao.castor.CastorUtils;
+import org.opennms.netmgt.dao.support.JdbcFilterDao;
+import org.opennms.netmgt.filter.FilterDaoFactory;
 import org.opennms.netmgt.mock.MockDatabase;
 import org.opennms.netmgt.mock.MockEventIpcManager;
 import org.opennms.netmgt.mock.MockEventUtil;
@@ -79,6 +82,10 @@ import org.opennms.test.ConfigurationTestUtils;
 import org.opennms.test.mock.EasyMockUtils;
 import org.opennms.test.mock.MockLogAppender;
 import org.springframework.jdbc.core.JdbcTemplate;
+import org.springframework.jdbc.datasource.DataSourceTransactionManager;
+import org.springframework.jdbc.datasource.TransactionAwareDataSourceProxy;
+import org.springframework.transaction.PlatformTransactionManager;
+import org.springframework.transaction.support.TransactionTemplate;
 
 public class OpenNMSProvisionerTest {
 
@@ -149,7 +156,16 @@ public class OpenNMSProvisionerTest {
     public void setUp() throws Exception {
         MockLogAppender.setupLogging();
         MockDatabase db = new MockDatabase();
-        DataSourceFactory.setInstance(db);
+
+        final TransactionAwareDataSourceProxy proxy = new TransactionAwareDataSourceProxy(db);
+		DataSourceFactory.setInstance(proxy);
+
+		PlatformTransactionManager mgr = new DataSourceTransactionManager(proxy);
+        
+        FilterDao dao = FilterDaoFactory.getInstance();
+        if (dao instanceof JdbcFilterDao) {
+        	((JdbcFilterDao)dao).setTransactionTemplate(new TransactionTemplate(mgr));
+        }
 
         RrdUtils.setStrategy(m_strategy);
         

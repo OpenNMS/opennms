@@ -39,6 +39,8 @@ package org.opennms.netmgt.collectd;
 import java.io.IOException;
 import java.io.InputStream;
 
+import javax.transaction.TransactionManager;
+
 import junit.framework.TestCase;
 
 import org.exolab.castor.xml.MarshalException;
@@ -50,13 +52,20 @@ import org.opennms.netmgt.config.DatabaseSchemaConfigFactory;
 import org.opennms.netmgt.config.JMXDataCollectionConfigFactory;
 import org.opennms.netmgt.config.SnmpPeerFactory;
 import org.opennms.netmgt.dao.CollectorConfigDao;
+import org.opennms.netmgt.dao.FilterDao;
 import org.opennms.netmgt.dao.castor.DefaultDataCollectionConfigDao;
+import org.opennms.netmgt.dao.support.JdbcFilterDao;
 import org.opennms.netmgt.dao.support.RrdTestUtils;
+import org.opennms.netmgt.filter.FilterDaoFactory;
 import org.opennms.netmgt.mock.MockDatabase;
 import org.opennms.test.ConfigurationTestUtils;
 import org.opennms.test.mock.MockLogAppender;
 import org.opennms.test.mock.MockUtil;
 import org.springframework.core.io.InputStreamResource;
+import org.springframework.jdbc.datasource.DataSourceTransactionManager;
+import org.springframework.jdbc.datasource.TransactionAwareDataSourceProxy;
+import org.springframework.transaction.PlatformTransactionManager;
+import org.springframework.transaction.support.TransactionTemplate;
 
 public class CollectorConfigDaoImplTest extends TestCase {
     @Override
@@ -68,8 +77,15 @@ public class CollectorConfigDaoImplTest extends TestCase {
         MockDatabase m_db = new MockDatabase();
         //        m_db.populate(m_network);
 
-        DataSourceFactory.setInstance(m_db);
+        final TransactionAwareDataSourceProxy proxy = new TransactionAwareDataSourceProxy(m_db);
+		DataSourceFactory.setInstance(proxy);
 
+		PlatformTransactionManager mgr = new DataSourceTransactionManager(proxy);
+        
+        FilterDao dao = FilterDaoFactory.getInstance();
+        if (dao instanceof JdbcFilterDao) {
+        	((JdbcFilterDao)dao).setTransactionTemplate(new TransactionTemplate(mgr));
+        }
     }
 
     @Override
