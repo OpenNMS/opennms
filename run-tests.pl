@@ -73,9 +73,19 @@ for my $module (@ARGS) {
 		if (keys(%deps) == 0) {
 			info("no dependencies found, skipping compile");
 		} else {
-			my @command = ($MVN, "--projects", join(",", sort(keys(%deps))), '-Dmaven.test.skip.exec=true', @other_args, 'install');
-			info("running:", @command);
-			handle_errors_and_exit_on_failure(system(@command));
+			if ($module =~ /assembl/) {
+				my @command = ($MVN, '-Dmaven.test.skip.exec=true', @other_args, 'install');
+				info("running:", @command);
+				handle_errors_and_exit_on_failure(system(@command));
+				chdir($PREFIX . "/opennms-full-assembly");
+				my @command = ($MVN, '-Dmaven.test.skip.exec=true', @other_args, 'install');
+				info("running:", @command);
+				handle_errors_and_exit_on_failure(system(@command));
+			} else {
+				my @command = ($MVN, '--projects', join(',', sort(keys(%deps))), '-Dmaven.test.skip.exec=true', @other_args, 'install');
+				info("running:", @command);
+				handle_errors_and_exit_on_failure(system(@command));
+			}
 		}
 
 		chdir($moduledir);
