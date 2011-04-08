@@ -356,7 +356,7 @@ public class JdbcFilterDao implements FilterDao, InitializingBean {
             sqlString = getSQLStatement(rule);
             if (filterDeleted) {
             	if (!sqlString.contains("isManaged")) {
-            		sqlString += " AND ipInterface.isManaged != 'D'";
+            		sqlString += " AND (ipInterface.isManaged != 'D' or ipInterface.isManaged IS NULL)";
             	}
             }
 
@@ -426,16 +426,13 @@ public class JdbcFilterDao implements FilterDao, InitializingBean {
 
             if (filterDeleted) {
             	if (!sqlString.contains("isManaged")) {
-            		sqlString += " AND ipInterface.isManaged != 'D'";
+            		sqlString += " AND (ipInterface.isManaged != 'D' or ipInterface.isManaged IS NULL)";
             	}
             }
 
             conn = getDataSource().getConnection();
             d.watch(conn);
 
-            if (!sqlString.contains("isManaged")) {
-            	sqlString += " AND ipInterface.isManaged!='D'";
-            }
             LogUtils.debugf(this, "Filter.getIPAddressList(%s): SQL statement: %s", rule, sqlString);
 
             // execute query and return the list of ip addresses
