@@ -1,46 +1,15 @@
-#!/bin/bash
-
-PWD_CMD=`which pwd 2>&1 | grep -v "no pwd in" | grep -v "shell built-in command"`
-[ -z "$PWD_COMMAND" ] && [ -x /bin/pwd ] && PWD_CMD="/bin/pwd"
-
-if [ `expr "$0" : '\(.\)'` = "/" ]; then
-	PREFIX=`dirname $0` export PREFIX
-else
-	if [ `expr "$0" : '\(..\)'` = ".." ]; then
-		cd `dirname $0`
-		PREFIX=`$PWD_CMD` export PREFIX
-		cd -
-	elif [ `expr "$0" : '\(.\)'` = "." ] || [ `expr "$0" : '\(.\)'` = "/" ]; then
-		PREFIX=`$PWD_CMD` export PREFIX
-	else
-		PREFIX=`$PWD_CMD`"/"`dirname $0` export PREFIX
-	fi
-fi
+#!/bin/sh
 
 OPENNMS_HOME="${install.dir}"
-LOG4J_CONFIG="events.archiver.properties"
 
-# load libraries
-for script in pid_process arg_process build_classpath check_tools \
-	find_jarfile handle_properties java_lint \
-	ld_path version_compare; do
-	source $OPENNMS_HOME/lib/scripts/${script}.sh
-done
-
-for file in $OPENNMS_HOME/lib/scripts/platform_*.sh; do
-	source $file
-done
-
-add_ld_path "$OPENNMS_HOME/lib"
-
-JAVA_CMD="$JAVA_HOME/bin/java"
-APP_CLASSPATH=`build_classpath dir:$OPENNMS_HOME/lib/updates \
-	jardir:$OPENNMS_HOME/lib/updates "cp:$CLASSPATH_OVERRIDE" \
-	dir:$OPENNMS_HOME/etc jardir:$OPENNMS_HOME/lib "cp:$CLASSPATH"`
-APP_VM_PARMS="-Dopennms.home=$OPENNMS_HOME -Dlog4j.configuration=$LOG4J_CONFIG"
-APP_CLASS="org.opennms.netmgt.archive.EventsArchiver"
-
-if [ -z "$NOEXECUTE" ]; then
-	$JAVA_CMD -classpath $APP_CLASSPATH $APP_VM_PARMS $APP_CLASS "$@"
+if [ -f "$OPENNMS_HOME/etc/opennms.conf" ]; then
+	. "$OPENNMS_HOME/etc/opennms.conf"
 fi
+
+for FILE in $OPENNMS_HOME/lib/*.jar; do
+	CP="$FILE:$CP"
+done
+
+exec ${install.bin.dir}/runjava -r -- \
+	$ADDITIONAL_MANAGER_OPTIONS -Dopennms.home="$OPENNMS_HOME" -cp "$CP" "$@"
 
