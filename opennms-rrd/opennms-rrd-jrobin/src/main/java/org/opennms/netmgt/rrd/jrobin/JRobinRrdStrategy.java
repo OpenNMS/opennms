@@ -45,19 +45,14 @@ import java.awt.Color;
 import java.io.File;
 import java.io.IOException;
 import java.io.InputStream;
-import java.io.Reader;
-import java.io.StreamTokenizer;
-import java.io.StringReader;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Collection;
 import java.util.LinkedHashMap;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
 import java.util.Properties;
-import java.util.StringTokenizer;
-import java.util.regex.Matcher;
-import java.util.regex.Pattern;
 
 import org.jrobin.core.FetchData;
 import org.jrobin.core.RrdDb;
@@ -133,14 +128,14 @@ public class JRobinRrdStrategy implements RrdStrategy<RrdDef,RrdDb> {
     }
 
     /** {@inheritDoc} */
-    public void setConfigurationProperties(Properties configurationParameters) {
+    public void setConfigurationProperties(final Properties configurationParameters) {
         m_configurationProperties = configurationParameters;
         if(!s_initialized) {
             String factory = null;
             if (m_configurationProperties == null) {
-                factory = "FILE";
+                factory = DEFAULT_BACKEND_FACTORY;
             } else {
-                factory = (String)m_configurationProperties.get("org.jrobin.core.RrdBackendFactory");
+                factory = (String)m_configurationProperties.get(BACKEND_FACTORY_PROPERTY);
             }
             try {
                 RrdDb.setDefaultFactory(factory);
@@ -403,7 +398,7 @@ public class JRobinRrdStrategy implements RrdStrategy<RrdDef,RrdDb> {
      * @return a {@link org.jrobin.graph.RrdGraphDef} object.
      * @throws org.jrobin.core.RrdException if any.
      */
-    protected RrdGraphDef createGraphDef(final File workDir, final String[] commandArray) throws RrdException {
+    protected RrdGraphDef createGraphDef(final File workDir, final String[] inputArray) throws RrdException {
         RrdGraphDef graphDef = new RrdGraphDef();
         graphDef.setImageFormat("PNG");
         long start = 0;
@@ -416,6 +411,12 @@ public class JRobinRrdStrategy implements RrdStrategy<RrdDef,RrdDb> {
         Map<String,List<String>> defs = new LinkedHashMap<String,List<String>>();
         // Map<String,List<String>> cdefs = new HashMap<String,List<String>>();
         
+        final String[] commandArray;
+        if (inputArray[0].contains("rrdtool") && inputArray[1].equals("graph") && inputArray[2].equals("-")) {
+        	commandArray = Arrays.copyOfRange(inputArray, 3, inputArray.length);
+        } else {
+        	commandArray = inputArray;
+        }
         for (int i = 0; i < commandArray.length; i++) {
             String arg = commandArray[i];
             if (arg.startsWith("--start=")) {
