@@ -63,4 +63,14 @@ public class JRobinDirectoryUtilTest {
         assertEquals("me1-0002baaacffe", lookup.getInterfaceDirectory(snmpifname, snmpifdescr, snmpphysaddr));
     }
     
+    @Test
+    public void testGetInterfaceDirectoryATM() {
+        JRobinDirectoryUtil lookup = new JRobinDirectoryUtil();
+        
+        String snmpphysaddr = "00e0817xxxxx";
+        String snmpifname = "";
+        String snmpifdescr = "eth0";
+        assertEquals("eth0-00e0817xxxxx", lookup.getInterfaceDirectory(snmpifname, snmpifdescr, snmpphysaddr));
+    }
+    
 }
