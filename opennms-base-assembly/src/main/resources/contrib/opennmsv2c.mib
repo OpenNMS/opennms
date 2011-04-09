@@ -7,6 +7,7 @@
 --                             host information regarding alarms and synchronization
 -- Version 1.0.2 - 2011-03-31: Added OpenNMS-alarmTrap, openNMS-heartbeatTrap
 --                             openNMS-startSyncTrap, openNMS-endSyncTrap, openNMS-syncRequestTrap
+-- Version 1.0.3 - 2011-04-02: Removed all the OpenNMS prefixes
 --
 
 
