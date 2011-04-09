@@ -37,7 +37,7 @@ IMPORTS
 	::= { enterprises 5813 }
 
 traps	OBJECT IDENTIFIER
-	::= { openNMS 3 }
+	::= { openNMS 1 }
 
 groups 	OBJECT IDENTIFIER
 	::= { openNMS 4 }
