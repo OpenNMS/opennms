@@ -29,6 +29,6 @@ public interface EventFilter {
 	 * the filtered Event
 	 * that can be null
 	 */
-	Event filter();
+	Event filter(Event event);
 
 }
