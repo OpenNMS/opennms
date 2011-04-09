@@ -645,7 +645,7 @@ public class SnmpTrapHelper {
      *                any reason.
      * @throws org.opennms.netmgt.scriptd.helper.SnmpTrapHelperException if any.
      */
-    public SnmpTrapBuilder createV3Trap(String trapOid, String sysUpTime) throws SnmpTrapHelperException {
+    public SnmpV3TrapBuilder createV3Trap(String trapOid, String sysUpTime) throws SnmpTrapHelperException {
 
         SnmpV3TrapBuilder packet = SnmpUtils.getV3TrapBuilder();
 
@@ -654,7 +654,6 @@ public class SnmpTrapHelper {
 
         return packet;
     }
-
 
     /**
      * Create a new variable binding and add it to the specified SNMP V1 trap.
