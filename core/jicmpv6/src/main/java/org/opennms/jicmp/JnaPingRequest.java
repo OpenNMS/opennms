@@ -33,16 +33,17 @@
  *      http://www.opennms.org/
  *      http://www.opennms.com/
  */
-package org.opennms.netmgt.ping;
+package org.opennms.jicmp;
 
-import java.net.DatagramPacket;
+import java.net.Inet4Address;
+import java.net.Inet6Address;
 import java.net.InetAddress;
 
 import org.opennms.core.utils.ThreadCategory;
+import org.opennms.jicmp.jna.NativeDatagramSocket;
+import org.opennms.jicmp.v6.V6Pinger;
 import org.opennms.netmgt.icmp.AbstractPingRequest;
-import org.opennms.netmgt.icmp.ICMPEchoPacket;
 import org.opennms.netmgt.icmp.PingResponseCallback;
-import org.opennms.protocols.icmp.IcmpSocket;
 
 /**
  * This class is used to encapsulate a ping request. A request consist of
@@ -51,17 +52,21 @@ import org.opennms.protocols.icmp.IcmpSocket;
  * @author <a href="mailto:ranger@opennms.org">Ben Reed</a>
  * @author <a href="mailto:brozow@opennms.org">Mathew Brozowski</a>
  */
-final public class PingRequest extends AbstractPingRequest<IcmpSocket> {
-    public PingRequest(InetAddress addr, long tid, int sequenceId, long timeout, int retries, ThreadCategory logger, PingResponseCallback cb) {
+final public class JnaPingRequest extends AbstractPingRequest<NativeDatagramSocket> {
+    private final V4Pinger v4;
+    private final V6Pinger v6;
+    public JnaPingRequest(V4Pinger v4, V6Pinger v6, InetAddress addr, long tid, int sequenceId, long timeout, int retries, ThreadCategory logger, PingResponseCallback cb) {
         super(addr, tid, sequenceId, timeout, retries, logger, cb);
+        this.v4 = v4;
+        this.v6 = v6;
     }
-    
-    public PingRequest(InetAddress addr, long tid, int sequenceId, long timeout, int retries, PingResponseCallback cb) {
-        this(addr, tid, sequenceId, timeout, retries, ThreadCategory.getInstance(PingRequest.class), cb);
+
+    JnaPingRequest(V4Pinger v4, V6Pinger v6, InetAddress addr, long tid, int sequenceId, long timeout, int retries, PingResponseCallback cb) {
+        this(v4, v6, addr, tid, sequenceId, timeout, retries, ThreadCategory.getInstance(JnaPingRequest.class), cb);
     }
-    
-    PingRequest(InetAddress addr, int sequenceId, long timeout, int retries, PingResponseCallback cb) {
-        this(addr, s_nextTid++, sequenceId, timeout, retries, cb);
+
+    JnaPingRequest(V4Pinger v4, V6Pinger v6, InetAddress addr, int sequenceId, long timeout, int retries, PingResponseCallback cb) {
+        this(v4, v6, addr, s_nextTid++, sequenceId, timeout, retries, cb);
     }
     
     /**
@@ -69,30 +74,19 @@ final public class PingRequest extends AbstractPingRequest<IcmpSocket> {
      *
      * @param icmpSocket a {@link org.opennms.protocols.icmp.IcmpSocket} object.
      */
-    public void send(IcmpSocket icmpSocket, InetAddress addr) {
+    public void send(NativeDatagramSocket icmpSocket, InetAddress addr) {
         try {
-            m_request = createRequestPacket();
+            m_log.debug(System.currentTimeMillis()+": Sending Ping Request: " + this);
 
-            m_log.debug(System.currentTimeMillis()+": Sending Ping Request: "+this);
-            byte[] data = m_request.toBytes();
-            icmpSocket.send(new DatagramPacket(data, data.length, m_id.getAddress(), 0));
+            if (addr instanceof Inet4Address) {
+        		v4.ping((Inet4Address)addr, m_id.getSequenceId(), 1, m_timeout);
+        	} else if (addr instanceof Inet6Address) {
+        		v6.ping((Inet6Address)addr, m_id.getSequenceId(), 1, m_timeout);
+        	}
         } catch (Throwable t) {
             m_callback.handleError(m_id.getAddress(), m_request, t);
         }
     }
-
-    /**
-     * <p>createRequestPacket</p>
-     */
-    private ICMPEchoPacket createRequestPacket() {
-        m_expiration = System.currentTimeMillis() + m_timeout;
-        org.opennms.protocols.icmp.ICMPEchoPacket iPkt = new org.opennms.protocols.icmp.ICMPEchoPacket(m_id.getTid());
-        iPkt.setIdentity(FILTER_ID);
-        iPkt.setSequenceId((short) m_id.getSequenceId());
-        iPkt.computeChecksum();
-        return new JICMPEchoPacket(iPkt);
-    }
-    
 
     /**
      * <p>toString</p>
@@ -113,7 +107,7 @@ final public class PingRequest extends AbstractPingRequest<IcmpSocket> {
     }
 
     @Override
-    public PingRequest constructNewRequest(InetAddress inetAddress, long tid, int sequenceId, long timeout, int retries, ThreadCategory log, PingResponseCallback callback) {
-        return new PingRequest(inetAddress, tid, sequenceId, timeout, retries, log, callback);
+    public JnaPingRequest constructNewRequest(InetAddress inetAddress, long tid, int sequenceId, long timeout, int retries, ThreadCategory log, PingResponseCallback callback) {
+        return new JnaPingRequest(v4, v6, inetAddress, tid, sequenceId, timeout, retries, log, callback);
     }
 }

@@ -52,7 +52,6 @@ import org.opennms.core.utils.ThreadCategory;
 public abstract class AbstractPingRequest<SocketT> implements org.opennms.netmgt.icmp.PingRequest<SocketT> {
     /** Constant <code>FILTER_ID=(short) (new java.util.Random(System.currentTimeMillis())).nextInt()</code> */
     public static final short FILTER_ID = (short) (new java.util.Random(System.currentTimeMillis())).nextInt();
-    protected static final short DEFAULT_SEQUENCE_ID = 1;
     protected static long s_nextTid = 1;
 
     /**
@@ -111,11 +110,6 @@ public abstract class AbstractPingRequest<SocketT> implements org.opennms.netmgt
         this(addr, s_nextTid++, sequenceId, timeout, retries, cb);
     }
     
-    protected AbstractPingRequest(InetAddress addr, long timeout, int retries, PingResponseCallback cb) {
-        this(addr, DEFAULT_SEQUENCE_ID, timeout, retries, cb);
-    }
-    
-
     /**
      * Send this PingRequest through the given icmpSocket
      *

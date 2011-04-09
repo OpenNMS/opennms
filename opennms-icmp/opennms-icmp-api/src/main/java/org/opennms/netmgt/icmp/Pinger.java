@@ -122,7 +122,7 @@ public interface Pinger {
      * @param cb a {@link org.opennms.netmgt.ping.PingResponseCallback} object.
      * @throws java.lang.Exception if any.
      */
-    public void ping(InetAddress host, long timeout, int retries, short sequenceId, PingResponseCallback cb) throws Exception;
+    public void ping(InetAddress host, long timeout, int retries, int sequenceId, PingResponseCallback cb) throws Exception;
 
     /**
      * This method is used to ping a remote host to test for ICMP support. If

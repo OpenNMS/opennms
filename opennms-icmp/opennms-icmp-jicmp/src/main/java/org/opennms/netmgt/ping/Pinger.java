@@ -152,7 +152,7 @@ public class Pinger implements org.opennms.netmgt.icmp.Pinger {
      * @param cb a {@link org.opennms.netmgt.ping.PingResponseCallback} object.
      * @throws java.lang.Exception if any.
      */
-    public void ping(InetAddress host, long timeout, int retries, short sequenceId, PingResponseCallback cb) throws Exception {
+    public void ping(InetAddress host, long timeout, int retries, int sequenceId, PingResponseCallback cb) throws Exception {
         initialize();
         s_pingTracker.sendRequest(new org.opennms.netmgt.ping.PingRequest(host, sequenceId, timeout, retries, cb));
 	}

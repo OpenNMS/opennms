@@ -64,8 +64,7 @@ class PingRequest extends ICMPEchoPacket {
         return super.toDatagramPacket(destinationAddress);
     }
 
-    void send(NativeDatagramSocket socket, InetAddress addr) {
+    public void send(NativeDatagramSocket socket, InetAddress addr) {
         socket.send(toDatagramPacket(addr));
     }
-    
 }
