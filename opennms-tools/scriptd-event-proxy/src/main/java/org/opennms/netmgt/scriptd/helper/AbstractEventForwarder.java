@@ -14,7 +14,8 @@ public abstract class AbstractEventForwarder implements EventForwarder {
 			if (filter.match(event))
 				event = filter.filter(event);
 		}
-		event = expand(event);
+		if (event != null )
+			event = expand(event);
 		return event;
 	}
 
