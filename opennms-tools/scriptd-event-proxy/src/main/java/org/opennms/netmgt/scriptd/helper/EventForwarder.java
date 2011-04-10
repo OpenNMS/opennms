@@ -12,10 +12,26 @@ import org.opennms.netmgt.xml.event.Event;
  */
 public interface EventForwarder {
 
+	/**
+	 * The list of eventFilter
+	 */
 	List<EventFilter> m_filters = new ArrayList<EventFilter>();
 	
+	/**
+	 * Method to add an EventFilter
+	 * to filter forwarding
+	 * @param filter
+	 */
 	void addEventFilter(EventFilter filter);	
 
+	/**
+	 * 
+	 * Method used to flush Event
+	 * 
+	 * @param event
+	 * @return event
+	 * 
+	 */
 	Event flushEvent(Event event);
 
 }

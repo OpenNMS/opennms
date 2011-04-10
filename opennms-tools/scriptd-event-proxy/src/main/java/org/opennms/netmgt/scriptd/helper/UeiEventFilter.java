@@ -1,6 +1,5 @@
 package org.opennms.netmgt.scriptd.helper;
 
-import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
 import org.opennms.netmgt.xml.event.Event;
