@@ -37,6 +37,7 @@
 				<listitem><para>Someone left two q&#39;s in the file ./WEB-INF/jsp/graph/chooseresource.jsp (Issue <ulink url='http://issues.opennms.org/browse/NMS-4527'>NMS-4527</ulink>)</para></listitem>
 				<listitem><para>XSD definitions don&#39;t need to be anchored (Issue <ulink url='http://issues.opennms.org/browse/NMS-4547'>NMS-4547</ulink>)</para></listitem>
 				<listitem><para>IP validation in web UI doesn&#39;t handle IPv6 (Issue <ulink url='http://issues.opennms.org/browse/NMS-4555'>NMS-4555</ulink>)</para></listitem>
+				<listitem><para>Report Issue - Average and Peak Traffic rates for Nodes by Interface (Issue <ulink url='http://issues.opennms.org/browse/NMS-4565'>NMS-4565</ulink>)</para></listitem>
 				<listitem><para>Physical Interface Page Doesn&#39;t load on IE (Issue <ulink url='http://issues.opennms.org/browse/NMS-4575'>NMS-4575</ulink>)</para></listitem>
 				<listitem><para>Debian init script not LSB compatible (Issue <ulink url='http://issues.opennms.org/browse/NMS-4578'>NMS-4578</ulink>)</para></listitem>
 				<listitem><para>The attribute &quot;totalCount&quot; for OnmsNodeList is not well calculated (Issue <ulink url='http://issues.opennms.org/browse/NMS-4580'>NMS-4580</ulink>)</para></listitem>
