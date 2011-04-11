@@ -6,6 +6,55 @@
 
 	<!-- Start 1.8 -->
 
+	<section id="opennms-1.8.11">
+		<title>Changes in OpenNMS 1.8.11</title>
+
+		<section id="opennms-1.8.11-bug">
+			<title>Bug</title>
+
+			<itemizedlist>
+				<listitem><para>NullPointerExceptions in node IP route information (Issue <ulink url='http://issues.opennms.org/browse/NMS-2482'>NMS-2482</ulink>)</para></listitem>
+				<listitem><para>[syslogd] OpenNMS&#39;s syslogd implementation does not handle all syslog facilities (Issue <ulink url='http://issues.opennms.org/browse/NMS-2640'>NMS-2640</ulink>)</para></listitem>
+				<listitem><para>statistics report pdf creation does not work (Issue <ulink url='http://issues.opennms.org/browse/NMS-3855'>NMS-3855</ulink>)</para></listitem>
+				<listitem><para>Provisiond Deleting IpAddr On Nodes After Rescan (Issue <ulink url='http://issues.opennms.org/browse/NMS-3997'>NMS-3997</ulink>)</para></listitem>
+				<listitem><para>Provisiond - simple TCP detector fails to detect services (Issue <ulink url='http://issues.opennms.org/browse/NMS-4033'>NMS-4033</ulink>)</para></listitem>
+				<listitem><para>provisioning node with NodeCategorySettingPolicy policy in foreign source does not work if node has no SNMP available (Issue <ulink url='http://issues.opennms.org/browse/NMS-4039'>NMS-4039</ulink>)</para></listitem>
+				<listitem><para>stored report data in non-unique named files (Issue <ulink url='http://issues.opennms.org/browse/NMS-4058'>NMS-4058</ulink>)</para></listitem>
+				<listitem><para>Need to be able to acknowledge notifications through the ReST service (Issue <ulink url='http://issues.opennms.org/browse/NMS-4069'>NMS-4069</ulink>)</para></listitem>
+				<listitem><para>send-event.pl timestamp is not parsed correctly (Issue <ulink url='http://issues.opennms.org/browse/NMS-4148'>NMS-4148</ulink>)</para></listitem>
+				<listitem><para>Rescans Not Happening for Default Nodes (Issue <ulink url='http://issues.opennms.org/browse/NMS-4168'>NMS-4168</ulink>)</para></listitem>
+				<listitem><para>Memcached graph definitions left out of default configuration (Issue <ulink url='http://issues.opennms.org/browse/NMS-4208'>NMS-4208</ulink>)</para></listitem>
+				<listitem><para>Null pointer exception when listing outstanding notifications (Issue <ulink url='http://issues.opennms.org/browse/NMS-4352'>NMS-4352</ulink>)</para></listitem>
+				<listitem><para>Documentation can&#39;t be build off-line (Issue <ulink url='http://issues.opennms.org/browse/NMS-4416'>NMS-4416</ulink>)</para></listitem>
+				<listitem><para>interface.jsp gives NPE (Issue <ulink url='http://issues.opennms.org/browse/NMS-4469'>NMS-4469</ulink>)</para></listitem>
+				<listitem><para>jdbc-datacollection-config.xml has hard coded path for rrdRepository (Issue <ulink url='http://issues.opennms.org/browse/NMS-4491'>NMS-4491</ulink>)</para></listitem>
+				<listitem><para>NSClient data collection only reads the first &lt;nsclient-collection&gt; tag (Issue <ulink url='http://issues.opennms.org/browse/NMS-4499'>NMS-4499</ulink>)</para></listitem>
+				<listitem><para>XSD definitions don&#39;t need to be anchored (Issue <ulink url='http://issues.opennms.org/browse/NMS-4547'>NMS-4547</ulink>)</para></listitem>
+				<listitem><para>Report Issue - Average and Peak Traffic rates for Nodes by Interface (Issue <ulink url='http://issues.opennms.org/browse/NMS-4565'>NMS-4565</ulink>)</para></listitem>
+				<listitem><para>Physical Interface Page Doesn&#39;t load on IE (Issue <ulink url='http://issues.opennms.org/browse/NMS-4575'>NMS-4575</ulink>)</para></listitem>
+				<listitem><para>Debian init script not LSB compatible (Issue <ulink url='http://issues.opennms.org/browse/NMS-4578'>NMS-4578</ulink>)</para></listitem>
+				<listitem><para>The attribute &quot;totalCount&quot; for OnmsNodeList is not well calculated (Issue <ulink url='http://issues.opennms.org/browse/NMS-4580'>NMS-4580</ulink>)</para></listitem>
+			</itemizedlist>
+		</section>
+		<section id="opennms-1.8.11-enhancement">
+			<title>Enhancement</title>
+
+			<itemizedlist>
+				<listitem><para>Debian Startup Script hides important Debian Specific Error Output (Issue <ulink url='http://issues.opennms.org/browse/NMS-3411'>NMS-3411</ulink>)</para></listitem>
+				<listitem><para>Increase servicename in table service in the core schema to accomodate services with names longer than 32 characters (Issue <ulink url='http://issues.opennms.org/browse/NMS-4477'>NMS-4477</ulink>)</para></listitem>
+				<listitem><para>New events for traps from Sun/Oracle ILOM cards (Issue <ulink url='http://issues.opennms.org/browse/NMS-4541'>NMS-4541</ulink>)</para></listitem>
+				<listitem><para>Trap events for Comtech EF Data CDM-625 satellite modems (Issue <ulink url='http://issues.opennms.org/browse/NMS-4554'>NMS-4554</ulink>)</para></listitem>
+			</itemizedlist>
+		</section>
+		<section id="opennms-1.8.11-new feature">
+			<title>New Feature</title>
+
+			<itemizedlist>
+				<listitem><para>create a tool for migrating RRDs (Issue <ulink url='http://issues.opennms.org/browse/NMS-4450'>NMS-4450</ulink>)</para></listitem>
+			</itemizedlist>
+		</section>
+	</section>
+
 	<section id="opennms-1.8.10">
 		<title>Changes in OpenNMS 1.8.10</title>
 
