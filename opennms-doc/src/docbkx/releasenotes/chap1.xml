@@ -6,6 +6,19 @@
 
 	<!-- Start 1.9 -->
 
+	<section id="introduction-1.9.7">
+		<title>Release 1.9.7</title>
+
+		<para>
+			Release 1.9.7 is the latest in a series of development releases of OpenNMS.  This
+			represents what will eventually become OpenNMS 1.10.0 when it is declared
+			feature-complete and stable.
+		</para>
+		<para>
+				  The codename for 1.9.7 is <emphasis>Naqara</emphasis>
+		</para>
+	</section>
+
 	<section id="introduction-1.9.6">
 		<title>Release 1.9.6</title>
 
@@ -106,6 +119,21 @@
 	</section>
 
 	<!-- Start 1.8 -->
+
+	<section id="introduction-1.8.11">
+		<title>Release 1.8.10</title>
+
+		<para>
+			Release 1.8.10 is the latest in the 1.8 series of production-ready OpenNMS releases.
+		</para>
+		<para>
+			Since 1.8.10, <ulink url="http://issues.opennms.org/secure/IssueNavigator.jspa?reset=true&amp;jqlQuery=project+%3D+NMS+AND+fixVersion+%3D+%221.8.11%22">a
+			number of important bug fixes and a few enhancements</ulink> were added.
+		</para>
+		<para>
+			The codename for 1.8.11 is <emphasis>Bald Eagle</emphasis>
+		</para>
+	</section>
 
 	<section id="introduction-1.8.10">
 		<title>Release 1.8.10</title>
