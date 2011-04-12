@@ -35,6 +35,7 @@ import java.nio.ByteBuffer;
 import java.util.concurrent.TimeUnit;
 
 import org.opennms.jicmp.AbstractPinger;
+import org.opennms.jicmp.PingReplyListener;
 import org.opennms.jicmp.ipv6.ICMPv6EchoPacket;
 import org.opennms.jicmp.ipv6.ICMPv6Packet;
 import org.opennms.jicmp.ipv6.ICMPv6Packet.Type;
@@ -90,6 +91,9 @@ public class V6Pinger extends AbstractPinger<Inet6Address> {
                                 echoReply.getSequenceNumber(),
                                 echoReply.elapsedTimeNanos()/1000000.0
                         );
+                        for (PingReplyListener listener : m_listeners) {
+                            listener.onPingReply(datagram.getAddress(), echoReply);
+                        }
                     }
                 }
             }

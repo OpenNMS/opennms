@@ -30,6 +30,8 @@
 package org.opennms.jicmp;
 
 import java.net.InetAddress;
+import java.util.ArrayList;
+import java.util.List;
 import java.util.concurrent.atomic.AtomicReference;
 
 import org.opennms.jicmp.jna.NativeDatagramSocket;
@@ -46,6 +48,7 @@ public abstract class AbstractPinger<T extends InetAddress> implements Runnable 
     protected final AtomicReference<Throwable> m_throwable = new AtomicReference<Throwable>(null);
     protected final Metric m_metric = new Metric();
     private volatile boolean m_stopped = false;
+    protected final List<PingReplyListener> m_listeners = new ArrayList<PingReplyListener>();
     
     protected AbstractPinger(NativeDatagramSocket pingSocket) {
         m_pingSocket = pingSocket;
@@ -93,4 +96,7 @@ public abstract class AbstractPinger<T extends InetAddress> implements Runnable 
 
     abstract public long ping(T addr, int id, long count, long interval) throws InterruptedException;
 
+    public void addPingReplyListener(PingReplyListener listener) {
+        m_listeners.add(listener);
+    }
 }

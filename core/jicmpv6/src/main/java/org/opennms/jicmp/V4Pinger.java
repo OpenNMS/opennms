@@ -90,6 +90,9 @@ public class V4Pinger extends AbstractPinger<Inet4Address> {
                                 echoReply.getSequenceNumber(),
                                 echoReply.elapsedTime(TimeUnit.MILLISECONDS)
                         );
+                        for (PingReplyListener listener : m_listeners) {
+                            listener.onPingReply(datagram.getAddress(), echoReply);
+                        }
                     }
                 }
             }

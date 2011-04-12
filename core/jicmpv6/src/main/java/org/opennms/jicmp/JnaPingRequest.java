@@ -80,11 +80,11 @@ final public class JnaPingRequest extends AbstractPingRequest<NativeDatagramSock
 
             if (addr instanceof Inet4Address) {
                 m_expiration = System.currentTimeMillis() + m_timeout;
-        		v4.ping((Inet4Address)addr, m_id.getSequenceId(), 1, 0);
-        	} else if (addr instanceof Inet6Address) {
+                v4.ping((Inet4Address)addr, m_id.getSequenceId(), 1, 0);
+            } else if (addr instanceof Inet6Address) {
                 m_expiration = System.currentTimeMillis() + m_timeout;
-        		v6.ping((Inet6Address)addr, m_id.getSequenceId(), 1, 0);
-        	}
+                v6.ping((Inet6Address)addr, m_id.getSequenceId(), 1, 0);
+            }
         } catch (Throwable t) {
             m_callback.handleError(m_id.getAddress(), m_request, t);
         }
