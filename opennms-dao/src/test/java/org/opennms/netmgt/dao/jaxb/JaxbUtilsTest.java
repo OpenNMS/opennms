@@ -29,6 +29,7 @@ import org.opennms.test.mock.MockLogAppender;
 public class JaxbUtilsTest {
     private static final String m_xmlWithNamespace = "<?xml version=\"1.0\" encoding=\"UTF-8\" standalone=\"yes\"?><event uuid=\"1234\" xmlns=\"http://xmlns.opennms.org/xsd/event\"><dbid>37</dbid><dist-poller>localhost</dist-poller><creation-time>Friday, March 18, 2011 1:34:13 PM GMT</creation-time><master-station>chief</master-station><mask><maskelement><mename>generic</mename><mevalue>6</mevalue></maskelement></mask><uei>uei.opennms.org/test</uei><source>JaxbCastorEquivalenceTest</source><nodeid>1</nodeid><time>Friday, March 18, 2011 1:34:13 PM GMT</time><host>funkytown</host><interface>192.168.0.1</interface><snmphost>192.168.0.1</snmphost><service>ICMP</service><snmp><id>.1.3.6.15</id><idtext>I am a banana!</idtext><version>v2c</version><specific>0</specific><generic>6</generic><community>public</community><time-stamp>1300455253196</time-stamp></snmp><parms><parm><parmName>foo</parmName><value encoding=\"text\" type=\"string\">bar</value></parm></parms><descr>This is a test thingy.</descr><logmsg dest=\"logndisplay\" notify=\"true\">this is a log message</logmsg><severity>Indeterminate</severity><pathoutage>monkeys</pathoutage><correlation path=\"pathOutage\" state=\"on\"><cuei>uei.opennms.org/funky-stuff</cuei><cmin>1</cmin><cmax>17</cmax><ctime>yesterday</ctime></correlation><operinstruct>run away</operinstruct><autoaction state=\"off\">content</autoaction><operaction menutext=\"this is in the menu!\" state=\"on\">totally actiony</operaction><autoacknowledge state=\"off\">content</autoacknowledge><loggroup>foo</loggroup><loggroup>bar</loggroup><tticket state=\"on\">tticket stuff</tticket><forward mechanism=\"snmptcp\" state=\"on\">I like shoes.</forward><script language=\"zombo\">the unattainable is within reach, at zombo.com</script><ifIndex>53</ifIndex><ifAlias>giggetE</ifAlias><mouseovertext>click here to buy now!!!!1!1!</mouseovertext><alarm-data x733-probable-cause=\"27\" x733-alarm-type=\"TimeDomainViolation\" auto-clean=\"true\" clear-key=\"car\" alarm-type=\"19\" reduction-key=\"bus\"/></event>";
     private static final String m_logXml = "<?xml version=\"1.0\" encoding=\"UTF-8\" standalone=\"yes\"?><log xmlns=\"http://xmlns.opennms.org/xsd/event\"><events><event><creation-time>Monday, March 21, 2011 8:34:21 PM GMT</creation-time><uei>uei.opennms.org/test</uei><source>JaxbUtilsTest</source><time>Monday, March 21, 2011 8:34:21 PM GMT</time><descr>test</descr></event><event><creation-time>Monday, March 21, 2011 8:34:21 PM GMT</creation-time><uei>uei.opennms.org/test</uei><source>JaxbUtilsTest</source><time>Monday, March 21, 2011 8:34:21 PM GMT</time><descr>test 2</descr></event></events></log>";
+    private static final String m_logXmlWithoutNamespace = "<?xml version=\"1.0\" encoding=\"UTF-8\" standalone=\"yes\"?><log><events><event><creation-time>Monday, March 21, 2011 8:34:21 PM GMT</creation-time><uei>uei.opennms.org/test</uei><source>JaxbUtilsTest</source><time>Monday, March 21, 2011 8:34:21 PM GMT</time><descr>test</descr></event><event><creation-time>Monday, March 21, 2011 8:34:21 PM GMT</creation-time><uei>uei.opennms.org/test</uei><source>JaxbUtilsTest</source><time>Monday, March 21, 2011 8:34:21 PM GMT</time><descr>test 2</descr></event></events></log>";
 
 	@Before
 	public void setUp() {
@@ -55,8 +56,11 @@ public class JaxbUtilsTest {
 
         final SchemaFactory factory = SchemaFactory.newInstance("http://www.w3.org/2001/XMLSchema");
         final InputStream is = this.getClass().getResourceAsStream("/xsds/event.xsd");
-        Assume.assumeNotNull(is); // if this is null, it's because Eclipse can be confused by "classifier" test dependencies like opennms-model-*-xsds
+        // if this is null, it's because Eclipse can be confused by "classifier" test dependencies like opennms-model-*-xsds
+        // it only works if opennms-model is *not* pulled into eclipse (go figure)
+        Assume.assumeNotNull(is);
         
+        LogUtils.debugf(this, "Hooray!  We have an XSD!");
         final Schema schema = factory.newSchema(new StreamSource(is));
         final Validator v = schema.newValidator();
         v.validate(new StreamSource(new StringReader(xml)));
@@ -65,6 +69,7 @@ public class JaxbUtilsTest {
 	@Test
 	public void testUnmarshalEvent() throws Exception {
 		final Event event = JaxbUtils.unmarshal(Event.class, m_xmlWithNamespace);
+		LogUtils.debugf(this, "event = %s", event);
 		assertEquals("1234", event.getUuid());
 		assertEquals("192.168.0.1", event.getInterface());
 	}
@@ -107,11 +112,59 @@ public class JaxbUtilsTest {
 		LogUtils.debugf(this, "castor log = %s", log2);
 	}
 	
+	@Test
+	public void testUnmarshalLogNoNamespace() throws Exception {
+		final Log log = JaxbUtils.unmarshal(Log.class, m_logXmlWithoutNamespace);
+		assertNotNull(log.getEvents());
+		assertEquals(2, log.getEvents().getEventCount());
+		assertEquals("JaxbUtilsTest", log.getEvents().getEvent(0).getSource());
+		
+		final InputStream is = new ByteArrayInputStream(m_logXmlWithoutNamespace.getBytes());
+		final Log log2 = CastorUtils.unmarshal(Log.class, is);
+		is.close();
+		
+		assertNotNull(log2.getEvents());
+		assertEquals(2, log2.getEvents().getEventCount());
+		assertEquals("JaxbUtilsTest", log2.getEvents().getEvent(0).getSource());
+		assertNotNull(log2.getEvents().getEvent(0).getTime());
+		LogUtils.debugf(this, "castor log = %s", log2);
+	}
+	
 	private Event getEvent() {
 		final EventBuilder eb = new EventBuilder("uei.opennms.org/test", "JaxbUtilsTest");
 		final Event e = eb
 			.setDescription("test")
 			.getEvent();
 		return e;
+	}
+	
+	@Test
+	public void testSendEventXml() throws Exception {
+		final String text = "<log>\n" + 
+				" <events>\n" + 
+				"  <event >\n" + 
+				"   <uei>uei.opennms.org/internal/capsd/addNode</uei>\n" + 
+				"   <source>perl_send_event</source>\n" + 
+				"   <time>Tuesday, 12 April 2011 18:05:00 o'clock GMT</time>\n" + 
+				"   <host></host>\n" + 
+				"   <interface>10.0.0.1</interface>\n" + 
+				"   <parms>\n" + 
+				"    <parm>\n" + 
+				"     <parmName><![CDATA[txno]]></parmName>\n" + 
+				"     <value type=\"string\" encoding=\"text\"><![CDATA[1]]></value>\n" + 
+				"    </parm>\n" + 
+				"    <parm>\n" + 
+				"     <parmName><![CDATA[nodelabel]]></parmName>\n" + 
+				"     <value type=\"string\" encoding=\"text\"><![CDATA[test10]]></value>\n" + 
+				"    </parm>\n" + 
+				"   </parms>\n" + 
+				"  </event>\n" + 
+				" </events>\n" + 
+				"</log>\n";
+		
+		final Log log = JaxbUtils.unmarshal(Log.class, text);
+		assertNotNull(log);
+		assertNotNull(log.getEvents());
+		assertEquals(1, log.getEvents().getEvent().length);
 	}
 }

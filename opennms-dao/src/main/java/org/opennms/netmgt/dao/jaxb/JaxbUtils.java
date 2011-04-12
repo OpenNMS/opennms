@@ -16,14 +16,19 @@ import javax.xml.bind.JAXBElement;
 import javax.xml.bind.JAXBException;
 import javax.xml.bind.Marshaller;
 import javax.xml.bind.Unmarshaller;
+import javax.xml.bind.ValidationEvent;
+import javax.xml.bind.ValidationEventHandler;
+import javax.xml.bind.annotation.XmlSchema;
 import javax.xml.transform.sax.SAXSource;
 
 import org.apache.commons.io.IOUtils;
+import org.opennms.core.utils.LogUtils;
 import org.opennms.netmgt.dao.support.MarshallingExceptionTranslator;
 import org.opennms.netmgt.xml.SimpleNamespaceFilter;
 import org.springframework.core.io.Resource;
 import org.xml.sax.InputSource;
 import org.xml.sax.SAXException;
+import org.xml.sax.XMLFilter;
 import org.xml.sax.XMLReader;
 import org.xml.sax.helpers.XMLReaderFactory;
 
@@ -86,15 +91,37 @@ public class JaxbUtils {
 	
 	public static <T> T unmarshal(final Class<T> clazz, final InputSource inputSource) {
 		final Unmarshaller um = getUnmarshallerFor(clazz);
-		
+
+		LogUtils.debugf(JaxbUtils.class, "unmarshalling class %s from input source %s with unmarshaller %s", clazz.getSimpleName(), inputSource, um);
 		try {
+			XMLFilter filter = null;
+			final XmlSchema schema = clazz.getPackage().getAnnotation(XmlSchema.class);
+			if (schema != null) {
+				final String namespace = schema.namespace();
+				if (namespace != null && !"".equals(namespace)) {
+					LogUtils.debugf(JaxbUtils.class, "found namespace %s for class %s", namespace, clazz);
+					filter = new SimpleNamespaceFilter(namespace, true);
+				}
+			}
+			if (filter == null) {
+				filter = new SimpleNamespaceFilter("", false);
+			}
+
 			final XMLReader xmlReader = XMLReaderFactory.createXMLReader();
-			final SimpleNamespaceFilter filter = new SimpleNamespaceFilter("", false);
 			filter.setParent(xmlReader);
+
+			um.setEventHandler(new ValidationEventHandler() {
+				
+				@Override
+				public boolean handleEvent(final ValidationEvent event) {
+					LogUtils.debugf(this, event.getLinkedException(), "event = %s", event);
+					return false;
+				}
+			});
 			
-			final SAXSource source = new SAXSource(xmlReader, inputSource);
-			final JAXBElement<T> obj = um.unmarshal(source, clazz);
-			return obj.getValue();
+			final SAXSource source = new SAXSource(filter, inputSource);
+			final JAXBElement<T> element = um.unmarshal(source, clazz);
+			return element.getValue();
 		} catch (final SAXException e) {
 			throw EXCEPTION_TRANSLATOR.translate("creating an XML reader object", e);
 		} catch (final JAXBException e) {
@@ -111,12 +138,12 @@ public class JaxbUtils {
 			m_marshallers.set(marshallers);
 		}
 		if (marshallers.containsKey(clazz)) {
+			LogUtils.debugf(JaxbUtils.class, "found unmarshaller for %s", clazz);
 			return marshallers.get(clazz);
 		}
+		LogUtils.debugf(JaxbUtils.class, "creating unmarshaller for %s", clazz);
 
-//		final String packageName = clazz.getPackage().getName();
 		try {
-//			final JAXBContext context = JAXBContext.newInstance(packageName);
 			final JAXBContext context = JAXBContext.newInstance(clazz);
 			final Marshaller marshaller = context.createMarshaller();
 			marshallers.put(clazz, marshaller);
@@ -128,19 +155,19 @@ public class JaxbUtils {
 
 	private static Unmarshaller getUnmarshallerFor(final Object obj) {
 		final Class<?> clazz = (Class<?>)(obj instanceof Class? obj : obj.getClass());
-		
+
 		Map<Class<?>, Unmarshaller> unmarshallers = m_unMarshallers.get();
 		if (unmarshallers == null) {
 			unmarshallers = new HashMap<Class<?>, Unmarshaller>();
 			m_unMarshallers.set(unmarshallers);
 		}
 		if (unmarshallers.containsKey(clazz)) {
+			LogUtils.debugf(JaxbUtils.class, "found unmarshaller for %s", clazz);
 			return unmarshallers.get(clazz);
 		}
+		LogUtils.debugf(JaxbUtils.class, "creating unmarshaller for %s", clazz);
 
-//		final String packageName = clazz.getPackage().getName();
 		try {
-//			final JAXBContext context = JAXBContext.newInstance(packageName);
 			final JAXBContext context = JAXBContext.newInstance(clazz);
 			final Unmarshaller unmarshaller = context.createUnmarshaller();
 			unmarshallers.put(clazz, unmarshaller);
