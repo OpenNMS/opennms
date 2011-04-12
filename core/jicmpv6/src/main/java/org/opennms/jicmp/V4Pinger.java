@@ -62,7 +62,7 @@ public class V4Pinger extends AbstractPinger<Inet4Address> {
             packet.setType(Type.EchoRequest);
             packet.getContentBuffer().putLong(System.nanoTime());
             packet.getContentBuffer().putLong(System.nanoTime());
-            getPingSocket().send(packet.toDatagramPacket(InetAddress.getByName("127.0.0.1")));
+            getPingSocket().send(packet.toDatagramPacket(InetAddress.getLocalHost()));
         }
     }
     
@@ -82,13 +82,13 @@ public class V4Pinger extends AbstractPinger<Inet4Address> {
                     if (first) {
                         first = false;
                     } else {
-                        m_metric.update(echoReply.elapsedTimeNanos());
+                        m_metric.update(Math.round(echoReply.elapsedTime(TimeUnit.NANOSECONDS)));
                         // 64 bytes from 127.0.0.1: icmp_seq=0 time=0.069 ms
                         printf("%d bytes from %s: icmp_seq=%d time=%.3f ms\n", 
                                 echoReply.getPacketLength(),
                                 datagram.getAddress().getHostAddress(),
                                 echoReply.getSequenceNumber(),
-                                echoReply.elapsedTimeNanos()/1000000.0
+                                echoReply.elapsedTime(TimeUnit.MILLISECONDS)
                         );
                     }
                 }

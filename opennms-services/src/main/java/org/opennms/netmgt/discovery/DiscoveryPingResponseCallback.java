@@ -42,6 +42,7 @@ import org.opennms.core.utils.ThreadCategory;
 import org.opennms.netmgt.EventConstants;
 import org.opennms.netmgt.eventd.EventIpcManagerFactory;
 import org.opennms.netmgt.icmp.ICMPEchoPacket;
+import org.opennms.netmgt.icmp.PingRequestId;
 import org.opennms.netmgt.icmp.PingResponseCallback;
 import org.opennms.netmgt.model.events.EventBuilder;
 
@@ -81,7 +82,7 @@ public class DiscoveryPingResponseCallback implements PingResponseCallback {
     }
 
     /** {@inheritDoc} */
-    public void handleTimeout(InetAddress address, ICMPEchoPacket packet) {
+    public void handleTimeout(InetAddress address, PingRequestId id) {
         log().debug("request timed out: " + address);
     }
 

@@ -86,12 +86,14 @@ public class PingTest extends TestCase {
         }
 
         super.setUp();
-        m_goodHost = InetAddressUtils.addr("www.google.com");
-        m_badHost  = InetAddressUtils.addr("1.1.1.1");
+        m_goodHost = InetAddress.getLocalHost();
+        m_badHost  = InetAddressUtils.addr("0.0.0.0");
     }
 
     public void testSinglePing() throws Exception {
-        assertTrue(new Pinger().ping(m_goodHost) > 0);
+        Long rtt = new Pinger().ping(m_goodHost);
+        assertNotNull("No RTT value returned from ping, looks like the ping failed", rtt);
+        assertTrue(rtt > 0);
     }
 
     public void testSinglePingFailure() throws Exception {
@@ -102,14 +104,14 @@ public class PingTest extends TestCase {
         List<Number> items = new Pinger().parallelPing(m_goodHost, 20, PingConstants.DEFAULT_TIMEOUT, 50);
         Thread.sleep(1000);
         printResponse(items);
-        assertTrue(CollectionMath.countNotNull(items) > 0);
+        assertTrue("Collection contained all null values, all parallel pings failed", CollectionMath.countNotNull(items) > 0);
     }
 
     public void testParallelPingFailure() throws Exception {
         List<Number> items = new Pinger().parallelPing(m_badHost, 20, PingConstants.DEFAULT_TIMEOUT, 50);
         Thread.sleep(PingConstants.DEFAULT_TIMEOUT + 100);
         printResponse(items);
-        assertTrue(CollectionMath.countNotNull(items) == 0);
+        assertTrue("Collection contained some numeric values when all parallel pings should have failed", CollectionMath.countNotNull(items) == 0);
     }
     
     private void printResponse(List<Number> items) {

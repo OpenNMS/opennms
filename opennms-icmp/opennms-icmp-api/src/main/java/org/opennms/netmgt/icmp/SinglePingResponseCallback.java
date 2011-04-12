@@ -82,8 +82,9 @@ public class SinglePingResponseCallback implements PingResponseCallback {
     }
 
     /** {@inheritDoc} */
-    public void handleTimeout(InetAddress address, ICMPEchoPacket packet) {
-        info("timed out pinging address " + address + ", thread " + packet.getIdentifier() + ", seq " + packet.getSequenceNumber());
+    public void handleTimeout(InetAddress address, PingRequestId id) {
+        assert(id != null);
+        info("timed out pinging address " + address + ", thread " + id.getTid() + ", seq " + id.getSequenceId());
         bs.signalAll();
     }
 

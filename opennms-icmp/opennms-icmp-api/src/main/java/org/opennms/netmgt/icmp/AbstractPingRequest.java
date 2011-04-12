@@ -153,7 +153,7 @@ public abstract class AbstractPingRequest<SocketT> implements org.opennms.netmgt
                     m_log.debug(System.currentTimeMillis()+": Retrying Ping Request "+returnval);
                 } else {
                     m_log.debug(System.currentTimeMillis()+": Ping Request Timed out "+this);
-                    m_callback.handleTimeout(m_id.getAddress(), m_request);
+                    m_callback.handleTimeout(m_id.getAddress(), m_id);
                 }
             }
             return returnval;

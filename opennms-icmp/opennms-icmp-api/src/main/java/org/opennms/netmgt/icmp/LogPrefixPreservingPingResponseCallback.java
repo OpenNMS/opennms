@@ -69,11 +69,11 @@ class LogPrefixPreservingPingResponseCallback implements PingResponseCallback {
         }
     }
 
-    public void handleTimeout(InetAddress address, ICMPEchoPacket packet) {
+    public void handleTimeout(InetAddress address, PingRequestId id) {
         String oldPrefix = ThreadCategory.getPrefix();
         try {
             ThreadCategory.setPrefix(m_prefix);
-            m_cb.handleTimeout(address, packet);
+            m_cb.handleTimeout(address, id);
         } finally {
             ThreadCategory.setPrefix(oldPrefix);
         }

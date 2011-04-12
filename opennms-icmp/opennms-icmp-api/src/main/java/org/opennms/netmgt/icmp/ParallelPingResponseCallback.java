@@ -80,8 +80,8 @@ public class ParallelPingResponseCallback implements PingResponseCallback {
     }
 
     /** {@inheritDoc} */
-    public void handleTimeout(InetAddress address, ICMPEchoPacket packet) {
-        m_responseTimes[packet.getSequenceNumber()] = null;
+    public void handleTimeout(InetAddress address, PingRequestId id) {
+        m_responseTimes[id.getSequenceId()] = null;
         bs.signalAll();
     }
 
