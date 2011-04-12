@@ -38,6 +38,7 @@ import org.aspectj.lang.ProceedingJoinPoint;
 import org.aspectj.lang.annotation.Around;
 import org.aspectj.lang.annotation.Aspect;
 import org.aspectj.lang.annotation.Pointcut;
+import org.opennms.core.utils.LogUtils;
 import org.opennms.core.utils.ThreadCategory;
 import org.opennms.netmgt.EventConstants;
 import org.opennms.netmgt.utils.XmlrpcUtil;
@@ -80,6 +81,8 @@ public class XmlRpcEventHandlerNotifier {
      */
     @Around("capsdEventHandler() && args(event)")
     public void onEvent(ProceedingJoinPoint pjp, Event event) throws Throwable {
+    	LogUtils.debugf(this, "onEvent(%s)", event);
+
         notifyEventReceived(event);
         
         try {
@@ -100,6 +103,8 @@ public class XmlRpcEventHandlerNotifier {
      * <p>Constructor for XmlRpcEventHandlerNotifier.</p>
      */
     public XmlRpcEventHandlerNotifier() {
+    	LogUtils.debugf(this, "initialized XML-RPC event handler notifier");
+    	
         m_notifySet = new HashSet<String>();
         
         m_notifySet.add(EventConstants.ADD_NODE_EVENT_UEI);

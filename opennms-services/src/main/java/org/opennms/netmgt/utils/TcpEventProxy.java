@@ -72,9 +72,6 @@ import org.opennms.netmgt.xml.event.Log;
  *
  * @author <A HREF="mailto:sowmya@opennms.org">Sowmya Kumaraswamy </A>
  * @author <A HREF="http://www.opennms.org/">OpenNMS </A>
- * @author <A HREF="mailto:sowmya@opennms.org">Sowmya Kumaraswamy </A>
- * @author <A HREF="http://www.opennms.org/">OpenNMS </A>
- * @version $Id: $
  */
 public final class TcpEventProxy implements EventProxy {
     /** Constant <code>DEFAULT_PORT=5817</code> */

@@ -263,7 +263,7 @@ final class TcpStreamHandler implements Runnable {
             Log eLog = null;
             boolean doCleanup = false;
             try {
-                eLog = JaxbUtils.unmarshal(Log.class, new InputSource(stream));
+            	eLog = JaxbUtils.unmarshal(Log.class, new InputSource(stream));
                 LogUtils.debugf(this, "Event record converted");
             } catch (final Exception e) {
                 LogUtils.errorf(this, e, "Could not unmarshall the XML record.");

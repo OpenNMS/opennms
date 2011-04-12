@@ -394,10 +394,7 @@ public abstract class EventUtils {
      * @return the value of the parameter as a long
      */
     public static long getLongParm(Event e, String parmName, long defaultValue) {
-        return org.opennms.netmgt.model.events.EventUtils.getLongParm(
-                                                                      e,
-                                                                      parmName,
-                                                                      defaultValue);
+        return org.opennms.netmgt.model.events.EventUtils.getLongParm(e, parmName, defaultValue);
     }
 
     /**
