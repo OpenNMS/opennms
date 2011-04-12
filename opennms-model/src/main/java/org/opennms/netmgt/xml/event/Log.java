@@ -38,7 +38,7 @@ public class Log implements Serializable {
     /**
      * Field _header.
      */
-	@XmlElement(name="header", required=true)
+	@XmlElement(name="header", required=false)
     private org.opennms.netmgt.xml.event.Header _header;
 
     /**
