@@ -6,17 +6,18 @@ import org.xml.sax.SAXException;
 import org.xml.sax.helpers.XMLFilterImpl;
 
 public class SimpleNamespaceFilter extends XMLFilterImpl {
-    private String m_usedNamespaceUri;
+    private String m_namespaceUri;
     private boolean m_addNamespace = false;
     private boolean m_addedNamespace = false;
 
     public SimpleNamespaceFilter(final String namespaceUri, final boolean addNamespace) {
         super();
 
+        LogUtils.debugf(this, "SimpleNamespaceFilter initalized with namespace %s (%s)", namespaceUri, Boolean.valueOf(addNamespace));
         if (addNamespace) {
-            this.m_usedNamespaceUri = namespaceUri;
+            this.m_namespaceUri = namespaceUri.intern();
         } else { 
-            this.m_usedNamespaceUri = "";
+            this.m_namespaceUri = "".intern();
         }
         this.m_addNamespace = addNamespace;
     }
@@ -30,26 +31,29 @@ public class SimpleNamespaceFilter extends XMLFilterImpl {
     }
     @Override
     public void startElement(final String uri, final String localName, final String qName, final Attributes attributes) throws SAXException {
-    	if (LogUtils.isTraceEnabled(this)) LogUtils.tracef(this, "start: uri = %s, localName = %s, qName = %s, attributes = %s", uri, localName, qName, attributes);
     	if (m_addNamespace) {
-    		super.startElement(m_usedNamespaceUri, localName, qName, attributes);
+        	if (LogUtils.isTraceEnabled(this)) LogUtils.tracef(this, "start: uri = %s, new uri = %s, localName = %s, qName = %s, attributes = %s", uri, m_namespaceUri, localName, qName, attributes);
+    		super.startElement(m_namespaceUri, localName, qName, attributes);
     	}  else {
+        	if (LogUtils.isTraceEnabled(this)) LogUtils.tracef(this, "start: uri = %s, new uri = %s, localName = %s, qName = %s, attributes = %s", uri, uri, localName, qName, attributes);
     		super.startElement(uri, localName, qName, attributes);
     	}
     }
 
     @Override
     public void endElement(final String uri, final String localName, final String qName) throws SAXException {
-    	if (LogUtils.isTraceEnabled(this)) LogUtils.tracef(this, "end:   uri = %s, localName = %s, qName = %s", uri, localName, qName);
     	if(m_addNamespace) {
-    		super.endElement(m_usedNamespaceUri, localName, qName);
+        	if (LogUtils.isTraceEnabled(this)) LogUtils.tracef(this, "end:   uri = %s, new uri = %s, localName = %s, qName = %s", uri, m_namespaceUri, localName, qName);
+    		super.endElement(m_namespaceUri, localName, qName);
     	} else {
+        	if (LogUtils.isTraceEnabled(this)) LogUtils.tracef(this, "end:   uri = %s, new uri = %s, localName = %s, qName = %s", uri, uri, localName, qName);
     		super.endElement(uri, localName, qName);
     	}
     }
 
     @Override
     public void startPrefixMapping(final String prefix, final String url) throws SAXException {
+    	if (LogUtils.isTraceEnabled(this)) LogUtils.tracef(this, "startPrefixMapping: prefix = %s, url = %s", prefix, url);
         if (m_addNamespace) {
             this.startControlledPrefixMapping();
         } else {
@@ -59,9 +63,10 @@ public class SimpleNamespaceFilter extends XMLFilterImpl {
     }
 
     private void startControlledPrefixMapping() throws SAXException {
+    	if (LogUtils.isTraceEnabled(this)) LogUtils.tracef(this, "startControlledPrefixMapping");
         if (m_addNamespace && !m_addedNamespace) {
             //We should add namespace since it is set and has not yet been done.
-            super.startPrefixMapping("", m_usedNamespaceUri);
+            super.startPrefixMapping("".intern(), m_namespaceUri);
 
             //Make sure we don't do it twice
             m_addedNamespace = true;

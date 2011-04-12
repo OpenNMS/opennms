@@ -28,6 +28,7 @@ public class ObjectFactory {
      * 
      */
     public ObjectFactory() {
+    	LogUtils.debugf(this, "ObjectFactory initialized");
     }
 
     /**
