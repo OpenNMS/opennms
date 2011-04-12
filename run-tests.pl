@@ -67,7 +67,7 @@ for my $module (@ARGS) {
 				}
 			}
 		}
-		close(MVNRUN) or die "unable to close $MVN dependency:list filehandle!: $!";
+		close(MVNRUN);
 		chdir($PREFIX);
 
 		if (keys(%deps) == 0) {
