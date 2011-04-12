@@ -40,7 +40,7 @@ for my $module (@ARGS) {
 	}
 	my $moduledir = $PREFIX . "/" . $module;
 	if (-d $moduledir) {
-		my %deps = ();
+		my %deps = ('org.opennms:opennms' => 1);
 		my $in_module_list = 0;
 		chdir($moduledir);
 		open(MVNRUN, "$MVN dependency:list |") or die "unable to run $MVN dependency:list in $moduledir: $!";
