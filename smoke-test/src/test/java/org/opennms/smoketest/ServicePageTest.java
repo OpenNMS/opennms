@@ -29,24 +29,20 @@
  */
 package org.opennms.smoketest;
 
-import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertTrue;
-import static org.junit.Assert.fail;
 
-import java.util.List;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
+import net.sourceforge.jwebunit.htmlunit.HtmlUnitTestingEngineImpl;
+import net.sourceforge.jwebunit.junit.WebTester;
+
 import org.apache.log4j.BasicConfigurator;
 import org.junit.Before;
+import org.junit.Ignore;
 import org.junit.Test;
 
 import com.gargoylesoftware.htmlunit.ThreadedRefreshHandler;
-import com.gargoylesoftware.htmlunit.WaitingRefreshHandler;
-
-import net.sourceforge.jwebunit.api.IElement;
-import net.sourceforge.jwebunit.htmlunit.HtmlUnitTestingEngineImpl;
-import net.sourceforge.jwebunit.junit.WebTester;
 
 
 /**
@@ -78,6 +74,7 @@ public class ServicePageTest {
     }
     
     @Test
+    @Ignore
     public void provisionIPv6AddressAndVerifyElementPages() throws Exception {
         login();
         
@@ -100,6 +97,86 @@ public class ServicePageTest {
         logout();
     }
     
+    @Test
+    public void addUser() throws Exception{
+        login();
+        
+        String userName = "JWebUnitUser";
+        String password = "JWebUnitPassword";
+        
+        createUser(userName, password);
+    }
+    
+    @Test
+    public void addUserToGroup() throws Exception{
+        login();
+        
+        String userName = "JWebUnitUser2";
+        String password = "JWebUnitPassword2";
+        String groupName = "JWebUnitGroup";
+        
+        createUser(userName, password);
+        
+        createGroup(groupName);
+        
+        addUserToGroup(groupName, userName);
+        
+    }
+    
+    private void addUserToGroup(String groupName, String userName) throws InterruptedException {
+        web.gotoPage("admin/userGroupView/groups/list.htm");
+        web.clickElementByXPath("//a[@href=\"javascript:modifyGroup('JWebUnitGroup')\"]");
+        
+        web.assertFormElementPresent("modifyGroup");
+        web.selectOption("availableUsers", userName);
+        web.clickElementByXPath("//input[@onclick=\"addUsers()\"]");
+        Thread.sleep(1000);
+        
+        web.clickButtonWithText("Finish");
+        
+        web.clickLinkWithExactText(groupName);
+        
+        web.assertTextPresent(userName);
+        
+    }
+
+    private void createGroup(String groupName) throws InterruptedException {
+        //Add group
+        web.gotoPage("admin/userGroupView/groups/list.htm");
+        web.clickElementByXPath("//a[@href=\"javascript:addNewGroup()\"]");
+        
+        
+        web.assertFormPresent("newGroupForm");
+        web.assertFormElementPresent("groupName");
+        web.assertFormElementPresent("groupComment");
+        web.setTextField("groupName", groupName);
+        web.setTextField("groupComment", "JWebUnit Group");
+        web.clickButtonWithText("OK");
+        
+        web.clickButtonWithText("Finish");
+    }
+    
+
+    private void createUser(String userName, String password) throws InterruptedException {
+        web.gotoPage("admin/userGroupView/users/list.jsp");
+        web.clickLinkWithExactText("Add New User");
+        web.assertFormPresent("newUserForm");
+        web.assertFormElementPresent("userID");
+        web.assertFormElementPresent("pass1");
+        web.assertFormElementPresent("pass2");
+        
+        web.setTextField("userID", userName);
+        web.setTextField("pass1", password);
+        web.setTextField("pass2", password);
+        web.clickButtonWithText("OK");
+        
+        
+        web.clickButtonWithText("Finish");
+        
+        web.assertLinkPresent("users(" + userName + ").doDetails");
+        
+    }
+
     private void verifyElementPages(String groupName) {
         web.gotoPage("element/nodeList.htm?listInterfaces=true&nodename=localNode-"+groupName);
         
