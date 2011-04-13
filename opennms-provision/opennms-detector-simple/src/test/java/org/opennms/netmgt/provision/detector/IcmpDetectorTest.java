@@ -10,6 +10,7 @@ import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.opennms.core.utils.InetAddressUtils;
+import org.opennms.netmgt.icmp.PingerFactory;
 import org.opennms.netmgt.provision.detector.icmp.IcmpDetector;
 import org.opennms.netmgt.provision.support.NullDetectorMonitor;
 import org.opennms.test.mock.MockLogAppender;
@@ -25,7 +26,7 @@ public class IcmpDetectorTest {
     
     
     @Before
-    public void setUp() {
+    public void setUp() throws Exception {
         MockLogAppender.setupLogging();
     }
     
@@ -33,18 +34,36 @@ public class IcmpDetectorTest {
     public void tearDown() {
         
     }
-    
+
+    @Test
+    @IfProfileValue(name="runPingTests", value="true")
+    public void testDetectorSuccessJni() throws Exception {
+        PingerFactory.setInstance(new org.opennms.netmgt.ping.Pinger());
+        m_icmpDetector = new IcmpDetector();
+        assertTrue("ICMP could not be detected on localhost", m_icmpDetector.isServiceDetected(InetAddress.getLocalHost(), new NullDetectorMonitor()));
+    }
+
+    @Test
+    @IfProfileValue(name="runPingTests", value="true")
+    public void testDetectorFailJni() throws Exception {
+        PingerFactory.setInstance(new org.opennms.netmgt.ping.Pinger());
+        m_icmpDetector = new IcmpDetector();
+        assertFalse("ICMP was incorrectly identified on 0.0.0.0", m_icmpDetector.isServiceDetected(InetAddressUtils.addr("0.0.0.0"), new NullDetectorMonitor()));
+    }
+
     @Test
     @IfProfileValue(name="runPingTests", value="true")
     public void testDetectorSuccess() throws Exception {
+        PingerFactory.setInstance(new org.opennms.jicmp.Pinger());
         m_icmpDetector = new IcmpDetector();
-        assertTrue(m_icmpDetector.isServiceDetected(InetAddress.getLocalHost(), new NullDetectorMonitor()));
+        assertTrue("ICMP could not be detected on localhost", m_icmpDetector.isServiceDetected(InetAddress.getLocalHost(), new NullDetectorMonitor()));
     }
-    
+
     @Test
     @IfProfileValue(name="runPingTests", value="true")
     public void testDetectorFail() throws Exception {
+        PingerFactory.setInstance(new org.opennms.jicmp.Pinger());
         m_icmpDetector = new IcmpDetector();
-        assertFalse(m_icmpDetector.isServiceDetected(InetAddressUtils.addr("0.0.0.0"), new NullDetectorMonitor()));
+        assertFalse("ICMP was incorrectly identified on 0.0.0.0", m_icmpDetector.isServiceDetected(InetAddressUtils.addr("0.0.0.0"), new NullDetectorMonitor()));
     }
 }

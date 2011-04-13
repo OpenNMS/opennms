@@ -17,6 +17,12 @@
   		<groupId>org.opennms</groupId>
   		<artifactId>opennms-icmp-api</artifactId>
   	</dependency>
+	<dependency>
+		<groupId>org.opennms.core</groupId>
+		<artifactId>org.opennms.core.jicmpv6</artifactId>
+		<scope>test</scope>
+	</dependency>
+
   	<dependency>
       <groupId>org.opennms.dependencies</groupId>
       <artifactId>jcifs-dependencies</artifactId>
