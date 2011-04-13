@@ -29,17 +29,14 @@
  */
 package org.opennms.smoketest;
 
-import static org.junit.Assert.assertTrue;
 
-import java.util.regex.Matcher;
-import java.util.regex.Pattern;
 
+import net.sourceforge.jwebunit.exception.ExpectedJavascriptAlertException;
 import net.sourceforge.jwebunit.htmlunit.HtmlUnitTestingEngineImpl;
-import net.sourceforge.jwebunit.junit.WebTester;
+import net.sourceforge.jwebunit.util.TestingEngineRegistry;
 
 import org.apache.log4j.BasicConfigurator;
 import org.junit.Before;
-import org.junit.Ignore;
 import org.junit.Test;
 
 import com.gargoylesoftware.htmlunit.ThreadedRefreshHandler;
@@ -52,321 +49,153 @@ import com.gargoylesoftware.htmlunit.ThreadedRefreshHandler;
  */
 public class ServicePageTest {
     private static final String IP6_LOCAL_HOST = "0000:0000:0000:0000:0000:0000:0000:0001";
-    WebTester web;
+    OpenNMSWebTester web;
     
     @Before
-    public void setUp() {
+    public void setUp() throws ExpectedJavascriptAlertException {
         
         BasicConfigurator.configure();
         
-        web = new WebTester();
+        web = new OpenNMSWebTester();
         web.setBaseUrl("http://localhost:8980/opennms");
         //web.setBaseUrl("http://demo.opennms.org/opennms");
         
+        web.setTestingEngineKey(TestingEngineRegistry.TESTING_ENGINE_HTMLUNIT);
         if (web.getTestingEngine() instanceof HtmlUnitTestingEngineImpl) {
             HtmlUnitTestingEngineImpl engine = (HtmlUnitTestingEngineImpl)web.getTestingEngine();
             engine.setRefreshHandler(new ThreadedRefreshHandler());
         }
     }
     
-    private interface Setter {
-        public void setField(String prefix);
-    }
-    
     @Test
-    @Ignore
     public void provisionIPv6AddressAndVerifyElementPages() throws Exception {
-        login();
+        web.login();
         
         String groupName = "JWebUnitServicePageTest";
 
-        createProvisiongGroup(groupName);
+        web.createProvisiongGroup(groupName);
 
-        add8980DetectorToForeignSource(groupName);
+        web.add8980DetectorToForeignSource(groupName);
         
-        addIPv6LocalhostToGroup(groupName);
+        web.addIPv6LocalhostToGroup(groupName, "localNode-" + groupName);
         
-        synchronizeGroup(groupName);
+        web.synchronizeGroup(groupName);
         
-        verifyElementPages(groupName);
+        verifyServiceManagedOnInterface("localNode-" + groupName, groupName, IP6_LOCAL_HOST);
         
-        deleteProvisionedNodes(groupName);
+        web.deleteProvisionedNodes(groupName);
         
-        deleteProvisioningGroup(groupName);
+        web.deleteProvisioningGroup(groupName);
         
-        logout();
+        web.logout();
     }
     
     @Test
     public void addUser() throws Exception{
-        login();
+        web.login();
         
         String userName = "JWebUnitUser";
         String password = "JWebUnitPassword";
         
-        createUser(userName, password);
+        web.createUser(userName, password);
+        web.logout();
     }
     
     @Test
     public void addUserToGroup() throws Exception{
-        login();
+        web.login();
         
-        String userName = "JWebUnitUser2";
-        String password = "JWebUnitPassword2";
+        String userName = "user";
         String groupName = "JWebUnitGroup";
         
-        createUser(userName, password);
+        web.createGroup(groupName);
         
-        createGroup(groupName);
+        web.addUserToGroup(groupName, userName);
         
-        addUserToGroup(groupName, userName);
+        web.logout();
         
     }
     
-    private void addUserToGroup(String groupName, String userName) throws InterruptedException {
-        web.gotoPage("admin/userGroupView/groups/list.htm");
-        web.clickElementByXPath("//a[@href=\"javascript:modifyGroup('JWebUnitGroup')\"]");
+    @Test
+    public void testAllTopLevelLinks() {
+        web.login();
+        web.assertTextPresent("Home");
         
-        web.assertFormElementPresent("modifyGroup");
-        web.selectOption("availableUsers", userName);
-        web.clickElementByXPath("//input[@onclick=\"addUsers()\"]");
-        Thread.sleep(1000);
+        web.clickLinkWithExactText("Node List");
+        web.assertTextPresent("Nodes");
         
-        web.clickButtonWithText("Finish");
+        web.clickLinkWithText("Search", 0);
+        web.assertTextPresent("Search for Nodes");
         
-        web.clickLinkWithExactText(groupName);
+        web.clickLinkWithExactText("Outages");
+        web.assertTextPresent("Outages and Service Level Availability");
         
-        web.assertTextPresent(userName);
+        web.clickLinkWithExactText("Path Outages");
+        web.assertTextPresent("All path outages");
         
-    }
-
-    private void createGroup(String groupName) throws InterruptedException {
-        //Add group
-        web.gotoPage("admin/userGroupView/groups/list.htm");
-        web.clickElementByXPath("//a[@href=\"javascript:addNewGroup()\"]");
+        web.clickLinkWithExactText("Dashboard");
+        web.assertElementPresent("surveillanceView");
         
+        web.clickLinkWithExactText("Events");
+        web.assertTextPresent("Outstanding and acknowledged events");
         
-        web.assertFormPresent("newGroupForm");
-        web.assertFormElementPresent("groupName");
-        web.assertFormElementPresent("groupComment");
-        web.setTextField("groupName", groupName);
-        web.setTextField("groupComment", "JWebUnit Group");
-        web.clickButtonWithText("OK");
+        web.clickLinkWithExactText("Alarms");
+        web.assertTextPresent("Outstanding and acknowledged alarms");
         
-        web.clickButtonWithText("Finish");
+        web.clickLinkWithExactText("Notifications");
+        web.assertTextPresent("Outstanding and Acknowledged Notices");
+        
+        web.clickLinkWithExactText("Assets");
+        web.assertTextPresent("Search Asset Information");
+        
+        web.clickLinkWithExactText("Reports");
+        web.assertTextPresent("Database Reports");
+        
+        web.clickLinkWithExactText("Charts");
+        web.assertElementPresent("include-charts");
+        
+        web.clickLinkWithExactText("Surveillance");
+        web.assertElementPresent("content");
+        
+        web.clickLinkWithExactText("Distributed Status");
+        web.assertTextPresent("Distributed Status Summary");
+        
+        web.clickLinkWithExactText("Map");
+        web.assertTextPresent("Network Topology Maps");
+        
+        web.clickLinkWithExactText("Add Node");
+        web.assertTextPresent("Node Quick-Add");
+        
+        web.clickLinkWithExactText("Admin");
+        web.assertTextPresent("OpenNMS System");
+        
+        web.clickLinkWithExactText("Support");
+        web.assertTextPresent("Commercial Support");
     }
     
 
-    private void createUser(String userName, String password) throws InterruptedException {
-        web.gotoPage("admin/userGroupView/users/list.jsp");
-        web.clickLinkWithExactText("Add New User");
-        web.assertFormPresent("newUserForm");
-        web.assertFormElementPresent("userID");
-        web.assertFormElementPresent("pass1");
-        web.assertFormElementPresent("pass2");
-        
-        web.setTextField("userID", userName);
-        web.setTextField("pass1", password);
-        web.setTextField("pass2", password);
-        web.clickButtonWithText("OK");
-        
-        
-        web.clickButtonWithText("Finish");
-        
-        web.assertLinkPresent("users(" + userName + ").doDetails");
-        
-    }
 
-    private void verifyElementPages(String groupName) {
-        web.gotoPage("element/nodeList.htm?listInterfaces=true&nodename=localNode-"+groupName);
+    private void verifyServiceManagedOnInterface(String node, String foreignSource, String iface) {
+        web.gotoPage("element/nodeList.htm?listInterfaces=true&nodename="+ node);
         
-        web.assertTextPresent("Node: localNode-"+groupName);
-        web.assertTextPresent("Foreign Source: " + groupName);
+        web.assertTextPresent("Node: " + node);
+        web.assertTextPresent("Foreign Source: " + foreignSource);
         
-        web.clickLinkWithExactText(IP6_LOCAL_HOST);
+        web.clickLinkWithExactText(iface);
         
-        web.assertTextPresent("Interface: "+IP6_LOCAL_HOST);
-        web.assertTextPresent("localNode-"+groupName);
+        web.assertTextPresent("Interface: "+iface);
+        web.assertTextPresent(node);
         
         web.clickLinkWithExactText("HTTP-8980");
 
-        web.assertTextPresent("HTTP-8980 service on " +IP6_LOCAL_HOST);
+        web.assertTextPresent("HTTP-8980 service on " +iface);
         
         web.assertTableEquals("", new String[][] { 
-                { "Node", "localNode-"+groupName },
-                { "Interface", IP6_LOCAL_HOST },
+                { "Node", node },
+                { "Interface", iface },
                 { "Polling Status", "Managed" }
         });
         
     }
-
-    private void synchronizeGroup(String groupName) throws InterruptedException {
-        // go the managing provisiong group page
-        web.gotoPage("admin/provisioningGroups.htm");
-        
-        // click the synchronize button for the group
-        web.clickElementByXPath("//input[contains(@onclick, '" + groupName + "') and @value='Synchronize']");
-        
-        // wait until nodes define and nodes in database match
-        waitForGroupToSynchronize(groupName);
-        
-    }
-
-    private void waitForGroupToSynchronize(String groupName) throws InterruptedException {
-
-        Pattern re = Pattern.compile("(\\d+) nodes defined,\\s+(\\d+) nodes in database", Pattern.DOTALL);
-        int defined;
-        int database;
-
-        do {
-            // wait just a bit to give them time to synch
-            Thread.sleep(100);
-            
-            // reload the provisioning groups page
-            web.gotoPage("admin/provisioningGroups.htm");
-            
-            // find the 'nodes define, nodes in database' text for this group
-            String synchStatus = web.getElementTextByXPath("//span[preceding-sibling::a[contains(@href, 'editRequisition') and contains(@href, '" + groupName + "')]]");
-            
-            // pull the numbers out
-            Matcher m = re.matcher(synchStatus);
-            assertTrue(m.find());
-            defined = Integer.valueOf(m.group(1));
-            database = Integer.valueOf(m.group(2));
-            
-            // repeat until the numbers match
-        } while (defined != database);
-    }
-
-    private void addIPv6LocalhostToGroup(String groupName) throws InterruptedException {
-        // go to the provisioning groups page
-        web.gotoPage("admin/provisioningGroups.htm");
-        
-        // click the Edit link for the this provisioning group
-        web.clickElementByXPath("//a[contains(@href, 'editRequisition(\"" + groupName + "\")')]");
-        
-        // add a node
-        web.clickButtonWithText("Add Node");
-
-        // set the nodeLabel to 'localNode' and save
-        String addedNode = setTreeFieldsAndSave("nodeEditForm", text("nodeLabel", "localNode-" + groupName));
-        
-        // add an interface
-        web.clickElementByXPath("//a[contains(@href, '" + addedNode + "') and text() = '[Add Interface]']");
-        
-        // set the ipAddr to ::1 and set snmpPrimary to 'P' and save
-        setTreeFieldsAndSave("nodeEditForm", text("ipAddr", "::1"), option("snmpPrimary", "P"));
-        
-        // we are done editting the foreign source
-        web.clickButtonWithText("Done");
-    }
-
-    private void add8980DetectorToForeignSource(String groupName) throws InterruptedException {
-        // go to the provisioning groups page
-        web.gotoPage("admin/provisioningGroups.htm");
-        
-        // the the Eidt link for editing the foreign source for this provision group
-        web.clickElementByXPath("//a[contains(@href, 'editForeignSource(\"" + groupName + "\")')]");
-
-        // add a detector
-        web.clickButtonWithText("Add Detector");
-        
-        // set the name to 'HTTP-8980' and use the HttpDectector and save
-        String detectorNode = setTreeFieldsAndSave("foreignSourceEditForm", text("name", "HTTP-8980"), option("pluginClass", "org.opennms.netmgt.provision.detector.simple.HttpDetector"));
-
-        // now add a parameter to that dectector by click its Add Parameter link
-        web.clickElementByXPath("//a[contains(@href, '" + detectorNode + "') and text() = '[Add Parameter]']");
-
-        // set the port parameter to have the value '8980' and save
-        setTreeFieldsAndSave("foreignSourceEditForm", option("key", "port"), text("value", "8980"));
-
-        // click done we are finished adding the detector
-        web.clickButtonWithText("Done");
-    }
-    
-    private String setTreeFieldsAndSave(String formName, Setter... setters) throws InterruptedException {
-        
-        Thread.sleep(1000);
-
-        String currentNode = web.getElementAttributeByXPath("//input[@name='currentNode']", "value");
-        String prefix = currentNode.replace(formName+".", "") + ".";
-
-        for(Setter setter : setters) {
-            setter.setField(prefix);
-        }
-
-        web.clickElementByXPath("//input[contains(@onclick, '" + currentNode + "') and @value='Save']");
-        return currentNode;
-    }
-    
-    private Setter text(final String suffix, final String value) {
-        return new Setter() {
-
-            public void setField(String prefix) {
-                web.setTextField(prefix + suffix, value);
-            }
-            
-        };
-    }
-    
-    private Setter option(final String suffix, final String value) {
-        return new Setter() {
-
-            public void setField(String prefix) {
-                web.selectOptionByValue(prefix+suffix, value);
-            }
-            
-        };
-    }
-    
-    private void deleteProvisioningGroup(String groupName) {
-        // provisioning groups page
-        web.gotoPage("admin/provisioningGroups.htm");
-        
-        // click the Delete Group button for the group
-        web.clickElementByXPath("//input[contains(@onclick, '" + groupName + "') and @value='Delete Group']");
-        
-        // make sure the group is gone
-        web.assertTextNotPresent(groupName);
-    }
-
-    private void deleteProvisionedNodes(String groupName) throws InterruptedException {
-        // provisioning group page
-        web.gotoPage("admin/provisioningGroups.htm");
-
-        // when the 'are you sure' dialog pops out.. answer yes
-        web.setExpectedJavaScriptConfirm("Are you sure you want to delete all the nodes from group " + groupName + "? This CANNOT be undone.", true);
-
-        // now click the delete nodes button (this pops up the dialog)
-        web.clickElementByXPath("//input[contains(@onclick, '" + groupName + "') and @value='Delete Nodes']");
-
-        // now synchronize the group to the database nodes are removed
-        synchronizeGroup(groupName);
-    }
-
-    private void createProvisiongGroup(String groupName) {
-        web.gotoPage("admin/provisioningGroups.htm");
-        web.setWorkingForm("takeAction");
-        web.setTextField("groupName", groupName);
-        web.assertTextFieldEquals("groupName", groupName);
-        web.clickButtonWithText("Add New Group");
-    }
-
-    private void login() {
-        web.beginAt("/");
-        web.assertElementPresentByXPath("//input[@name='j_username']");
-        web.assertElementPresentByXPath("//input[@name='j_password']");
-        web.setTextField("j_username", "admin");
-        web.setTextField("j_password", "admin");
-        web.submit();
-        web.assertTextPresent("Log out");
-    }
-    
-    private void logout() {
-        web.gotoPage("index.jsp");
-        web.clickLinkWithExactText("Log out");
-        web.assertTextPresent("You have been logged out.");
-    }
-    
 
 }
