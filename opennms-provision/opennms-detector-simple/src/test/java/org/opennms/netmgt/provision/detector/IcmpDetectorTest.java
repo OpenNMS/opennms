@@ -48,7 +48,7 @@ public class IcmpDetectorTest {
     public void testDetectorFailJni() throws Exception {
         PingerFactory.setInstance(new org.opennms.netmgt.ping.Pinger());
         m_icmpDetector = new IcmpDetector();
-        assertFalse("ICMP was incorrectly identified on 0.0.0.0", m_icmpDetector.isServiceDetected(InetAddressUtils.addr("0.0.0.0"), new NullDetectorMonitor()));
+        assertFalse("ICMP was incorrectly identified on " + InetAddressUtils.UNPINGABLE_ADDRESS.getHostAddress(), m_icmpDetector.isServiceDetected(InetAddressUtils.UNPINGABLE_ADDRESS, new NullDetectorMonitor()));
     }
 
     @Test
@@ -64,6 +64,6 @@ public class IcmpDetectorTest {
     public void testDetectorFail() throws Exception {
         PingerFactory.setInstance(new org.opennms.jicmp.Pinger());
         m_icmpDetector = new IcmpDetector();
-        assertFalse("ICMP was incorrectly identified on 0.0.0.0", m_icmpDetector.isServiceDetected(InetAddressUtils.addr("0.0.0.0"), new NullDetectorMonitor()));
+        assertFalse("ICMP was incorrectly identified on " + InetAddressUtils.UNPINGABLE_ADDRESS.getHostAddress(), m_icmpDetector.isServiceDetected(InetAddressUtils.UNPINGABLE_ADDRESS, new NullDetectorMonitor()));
     }
 }
