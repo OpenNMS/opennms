@@ -43,7 +43,7 @@ import junit.framework.TestCase;
 import org.opennms.core.utils.CollectionMath;
 import org.opennms.core.utils.InetAddressUtils;
 import org.opennms.netmgt.icmp.PingConstants;
-import org.opennms.jicmp.Pinger;
+//import org.opennms.jicmp.Pinger;
 
 /**
  * 
