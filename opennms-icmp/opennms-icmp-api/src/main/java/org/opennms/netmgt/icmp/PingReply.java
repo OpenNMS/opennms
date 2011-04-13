@@ -42,7 +42,6 @@ package org.opennms.netmgt.icmp;
 
 import java.net.InetAddress;
 
-import org.opennms.netmgt.icmp.ICMPEchoPacket;
 import org.opennms.protocols.rt.ResponseWithId;
 
 /**
@@ -131,5 +130,17 @@ public final class PingReply implements ResponseWithId<PingRequestId> {
      */
     public PingRequestId getRequestId() {
         return new PingRequestId(this);
+    }
+    
+    @Override
+    public String toString() {
+        StringBuilder buf = new StringBuilder();
+        buf.append(super.toString());
+        buf.append('[');
+        buf.append("Address = ").append(getAddress());
+        buf.append(", ");
+        buf.append("PingRequestId = ").append(getRequestId().toString());
+        buf.append(']');
+        return buf.toString();
     }
 }

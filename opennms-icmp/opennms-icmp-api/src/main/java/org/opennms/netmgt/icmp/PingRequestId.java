@@ -33,6 +33,8 @@ package org.opennms.netmgt.icmp;
 
 import java.net.InetAddress;
 
+import org.opennms.core.utils.InetAddressComparator;
+
 /**
  * <p>PingRequestId class.</p>
  *
@@ -98,7 +100,7 @@ public class PingRequestId {
     public boolean equals(Object obj) {
         if (obj instanceof PingRequestId) {
             PingRequestId id = (PingRequestId)obj;
-            return getAddress().equals(id.getAddress()) && getTid() == id.getTid() && getSequenceId() == id.getSequenceId();
+            return (new InetAddressComparator().compare(getAddress(), id.getAddress()) == 0) && getTid() == id.getTid() && getSequenceId() == id.getSequenceId();
         }
         return false;
     }
