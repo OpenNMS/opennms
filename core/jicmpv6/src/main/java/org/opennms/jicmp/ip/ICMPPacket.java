@@ -143,6 +143,10 @@ public class ICMPPacket {
         
     }
     
+    /**
+     * @param index The byte offset into the packet where the bytes will
+     * be inserted
+     */
     public void setBytes(int index, byte[] b) {
         ByteBuffer payload = m_packetData;
         int oldPos = payload.position();
@@ -159,10 +163,19 @@ public class ICMPPacket {
                          ((b0 & 0xff) << 0));
     }
 
+    /**
+     * @param index The byte offset into the packet where the value
+     * can be found
+     */
     public int getUnsignedShort(int index) {
         return m_packetData.getShort(index) & 0xffff;
     }
 
+    /**
+     * @param index The byte offset into the packet where the value
+     * can be found
+     * @param us Unsigned short value to insert into the buffer
+     */
     public void setUnsignedShort(int index, int us) {
         m_packetData.putShort(index, ((short)(us & 0xffff)));
     }
