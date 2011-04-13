@@ -51,8 +51,20 @@ import java.util.List;
 abstract public class InetAddressUtils {
 
     private static final BigInteger BIG_ONE = BigInteger.valueOf(1);
+    public static final InetAddress UNPINGABLE_ADDRESS;
 
-	public static enum AddressType {
+    static {
+        try {
+            // This address (169.254.254.254) is within the link-local IPv4 range
+            // so it should almost never be pingable unless the network has an
+            // oddball link-local IPv4 setup.
+            UNPINGABLE_ADDRESS = InetAddress.getByAddress(new byte[] {(byte)169, (byte)254, (byte)254, (byte)254});
+        } catch (UnknownHostException e) {
+            throw new IllegalStateException(e);
+        }
+    }
+
+    public static enum AddressType {
         IPv4,
         IPv6
     }
