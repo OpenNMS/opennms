@@ -52,11 +52,18 @@ if ($help)     { print get_help(); exit; }
 # parm array is numerically referenced in OpenNMS' templates
 @PARMS = reverse map { parse_parm($_) } @PARMS;
 
-chomp (my $hostname = `hostname`);
+chomp (my $hostname = `hostname -f`);
+
+## we'll try turning the hostname into an IP and back, to see if we can get a canonical FQDN
 my @addr = gethostbyname($hostname);
+$HOSTNAME = gethostbyaddr($addr[4], $addr[2]);
+
+if (not defined $HOSTNAME or $HOSTNAME eq "") {
+	# if we can't look it back up by the IP address, just use what `hostname` printed
+	$HOSTNAME = $hostname;
+}
 
 $SOURCE   = 'perl_send_event';
-$HOSTNAME = gethostbyaddr($addr[4], 2);
 $UEI      = $ARGV[0];
 $HOST_TO  = $ARGV[1];
 $PORT_TO  = 5817;
