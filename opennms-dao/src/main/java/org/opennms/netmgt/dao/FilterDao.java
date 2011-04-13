@@ -78,41 +78,8 @@ public interface FilterDao {
      * @param rule a {@link java.lang.String} object.
      * @return a {@link java.util.Map} object.
      * @throws org.opennms.netmgt.filter.FilterParseException if any.
-     * 
-     * @deprecated use getIPAddressServiceMap instead
-     */
-    public Map<String, Set<String>> getIPServiceMap(String rule) throws FilterParseException;
-
-    /**
-     * <p>getIPServiceMap</p>
-     *
-     * @param rule a {@link java.lang.String} object.
-     * @return a {@link java.util.Map} object.
-     * @throws org.opennms.netmgt.filter.FilterParseException if any.
      */
     public Map<InetAddress, Set<String>> getIPAddressServiceMap(String rule) throws FilterParseException;
-
-    /**
-     * Get the (non-deleted) IP addresses that match the specified rule.
-     *
-     * @param rule the filter rule
-     * @return a {@link java.util.List} of IP address strings.
-     * @throws org.opennms.netmgt.filter.FilterParseException if any.
-     * 
-     * @deprecated use getActiveIPAddressList instead
-     */
-    public List<String> getActiveIPList(String rule) throws FilterParseException;
-
-    /**
-     * Get the IP addresses (including deleted) that match the specified rule.
-     *
-     * @param rule the filter rule
-     * @return a {@link java.util.List} of IP address strings.
-     * @throws org.opennms.netmgt.filter.FilterParseException if any.
-     * 
-     * @deprecated use getIPAddressList instead
-     */
-    public List<String> getIPList(String rule) throws FilterParseException;
 
     /**
      * Get the (non-deleted) IP addresses that match the specified rule.

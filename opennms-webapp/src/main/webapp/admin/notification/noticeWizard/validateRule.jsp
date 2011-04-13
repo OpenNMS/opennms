@@ -44,6 +44,8 @@
 	contentType="text/html"
 	session="true"
 	import="java.util.*,
+		java.net.InetAddress,
+		org.opennms.core.utils.InetAddressUtils,
 		org.opennms.web.admin.notification.noticeWizard.*,
 		org.opennms.web.api.Util,
         org.opennms.netmgt.filter.FilterDaoFactory,
@@ -142,16 +144,13 @@
       throws FilterParseException
   {
           StringBuffer buffer = new StringBuffer();
-          //Filter filter = new Filter();
-          //return filter.getIPServiceMap(rule);
-          
           // TODO: BUG 2009: Also list node names for each IP address that is selected by the
           // filter?
           
-          Map<String, Set<String>> interfaces = FilterDaoFactory.getInstance().getIPServiceMap(rule);
+          final Map<InetAddress, Set<String>> interfaces = FilterDaoFactory.getInstance().getIPAddressServiceMap(rule);
           
-          for (String key : interfaces.keySet()) {
-              buffer.append("<tr><td width=\"50%\" valign=\"top\">").append(key).append("</td>");
+          for (final InetAddress key : interfaces.keySet()) {
+              buffer.append("<tr><td width=\"50%\" valign=\"top\">").append(InetAddressUtils.str(key)).append("</td>");
               buffer.append("<td width=\"50%\">");
               
               if (serviceList.length!=0 || notServiceList.length!=0) {

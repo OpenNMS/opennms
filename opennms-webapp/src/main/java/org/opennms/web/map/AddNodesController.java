@@ -42,6 +42,7 @@ package org.opennms.web.map;
 import java.io.BufferedWriter;
 import java.io.IOException;
 import java.io.OutputStreamWriter;
+import java.net.InetAddress;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Set;
@@ -49,6 +50,7 @@ import java.util.Set;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
+import org.opennms.core.utils.InetAddressUtils;
 import org.opennms.core.utils.LogUtils;
 import org.opennms.core.utils.ThreadCategory;
 import org.opennms.netmgt.config.CatFactory;
@@ -132,12 +134,12 @@ public class AddNodesController extends AbstractController {
 				cf.getReadLock().lock();
 				try {
     				final String rule = cf.getEffectiveRule(categoryName);
-    				final List<String> nodeIPs = FilterDaoFactory.getInstance().getIPList(rule);
+    				final List<InetAddress> nodeIPs = FilterDaoFactory.getInstance().getIPAddressList(rule);
     				LogUtils.debugf(this, "ips found: %s", nodeIPs.toString());
     				nodeids = new Integer[nodeIPs.size()];
     				for (int i = 0; i<nodeIPs.size();i++) {
-    					final String nodeIp = (String)nodeIPs.get(i);
-    					final List<Integer> ids = NetworkElementFactory.getInstance(getServletContext()).getNodeIdsWithIpLike(nodeIp);
+    					final InetAddress nodeIp = nodeIPs.get(i);
+    					final List<Integer> ids = NetworkElementFactory.getInstance(getServletContext()).getNodeIdsWithIpLike(InetAddressUtils.str(nodeIp));
     					LogUtils.debugf(this, "Ids by ipaddress %s: %s", nodeIp, ids.toString());
     					nodeids[i] = ids.get(0);
                }

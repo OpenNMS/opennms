@@ -39,6 +39,7 @@
 package org.opennms.netmgt.dao.support;
 
 import java.io.InputStream;
+import java.net.InetAddress;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
@@ -185,20 +186,20 @@ public class JdbcFilterDaoTest extends AbstractTransactionalTemporaryDatabaseSpr
         assertEquals("map size", 0, map.size());
     }
 
-    public void testGetIPServiceMap() throws Exception {
-        Map<String, Set<String>> map = m_dao.getIPServiceMap("ipaddr == '1.1.1.1'");
+    public void testGetIPAddressServiceMap() throws Exception {
+        Map<InetAddress, Set<String>> map = m_dao.getIPAddressServiceMap("ipaddr == '1.1.1.1'");
         assertNotNull("returned map should not be null", map);
         assertEquals("map size", 0, map.size());
     }
 
-    public void testGetIPList() throws Exception {
-        List<String> list = m_dao.getIPList("ipaddr == '1.1.1.1'");
+    public void testGetIPAddressList() throws Exception {
+        List<InetAddress> list = m_dao.getIPAddressList("ipaddr == '1.1.1.1'");
         assertNotNull("returned list should not be null", list);
         assertEquals("list size", 0, list.size());
     }
 
 	public void testGetActiveIPListWithDeletedNode() throws Exception {
-        List<String> list = m_dao.getIPList("ipaddr == '192.168.1.1'");
+        List<InetAddress> list = m_dao.getIPAddressList("ipaddr == '192.168.1.1'");
         final List<OnmsIpInterface> ifaces = m_interfaceDao.findByIpAddress("192.168.1.1");
         
         assertEquals("should be 1 interface", 1, ifaces.size());
@@ -212,7 +213,7 @@ public class JdbcFilterDaoTest extends AbstractTransactionalTemporaryDatabaseSpr
         endTransaction();
         startNewTransaction();
 
-        list = m_dao.getActiveIPList("ipaddr == '192.168.1.1'");
+        list = m_dao.getActiveIPAddressList("ipaddr == '192.168.1.1'");
         assertNotNull("returned list should not be null", list);
         assertEquals("no nodes should be returned, since the only one has been deleted", 0, list.size());
     }
