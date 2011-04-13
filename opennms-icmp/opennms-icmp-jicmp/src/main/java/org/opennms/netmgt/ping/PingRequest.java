@@ -75,6 +75,7 @@ final public class PingRequest extends AbstractPingRequest<IcmpSocket> {
 
             m_log.debug(System.currentTimeMillis()+": Sending Ping Request: "+this);
             byte[] data = m_request.toBytes();
+            m_expiration = System.currentTimeMillis() + m_timeout;
             icmpSocket.send(new DatagramPacket(data, data.length, m_id.getAddress(), 0));
         } catch (Throwable t) {
             m_callback.handleError(m_id.getAddress(), m_request, t);
@@ -85,7 +86,6 @@ final public class PingRequest extends AbstractPingRequest<IcmpSocket> {
      * <p>createRequestPacket</p>
      */
     private ICMPEchoPacket createRequestPacket() {
-        m_expiration = System.currentTimeMillis() + m_timeout;
         org.opennms.protocols.icmp.ICMPEchoPacket iPkt = new org.opennms.protocols.icmp.ICMPEchoPacket(m_id.getTid());
         iPkt.setIdentity(FILTER_ID);
         iPkt.setSequenceId((short) m_id.getSequenceId());
