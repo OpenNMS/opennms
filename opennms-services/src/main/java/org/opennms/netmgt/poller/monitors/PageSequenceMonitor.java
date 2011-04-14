@@ -611,6 +611,28 @@ public class PageSequenceMonitor extends IPv4Monitor {
             return client;
         }
     }
+    
+    public class SequenceTracker{
+        int m_retry;
+        int m_attempt;
+        
+        public SequenceTracker(Map<String, Object> parameterMap, int defaultRetry) {
+            m_retry = ParameterMap.getKeyedInteger(parameterMap, "sequence-retry", defaultRetry);
+        }
+
+        public void reset() {
+            m_attempt = 0;
+        }
+
+        public boolean shouldRetry() {
+            return m_attempt <= m_retry;
+        }
+
+        public void nextAttempt() {
+            m_attempt++;
+        }
+        
+    }
 
     /** {@inheritDoc} */
     public PollStatus poll(final MonitoredService svc, final Map<String, Object> parameterMap) {
@@ -618,37 +640,42 @@ public class PageSequenceMonitor extends IPv4Monitor {
         PollStatus serviceStatus = PollStatus.unavailable("");
         
         Map<String,Number> responseTimes = new LinkedHashMap<String,Number>();
-
-        try {
-            PageSequenceMonitorParameters parms = PageSequenceMonitorParameters.get(parameterMap);
-
-            client = parms.createHttpClient();
-
-            long startTime = System.nanoTime();
-            responseTimes.put("response-time", Double.NaN);
-            parms.getPageSequence().execute(client, svc, responseTimes);
-
-            long endTime = System.nanoTime();
-            double responseTime = (endTime - startTime) / 1000000.0;
-            serviceStatus = PollStatus.available();
-            responseTimes.put("response-time", responseTime);
-            serviceStatus.setProperties(responseTimes);
-
-            return serviceStatus;
-        } catch (PageSequenceMonitorException e) {
-            serviceStatus = PollStatus.unavailable(e.getMessage());
-            serviceStatus.setProperties(responseTimes);
-            return serviceStatus;
-        } catch (IllegalArgumentException e) {
-            log().error("Invalid parameters to monitor: " + e, e);
-            serviceStatus = PollStatus.unavailable("Invalid parameter to monitor: " + e.getMessage() + ".  See log for details.");
-            serviceStatus.setProperties(responseTimes);
-            return serviceStatus;
-        } finally {
-            if (client != null) {
-                client.getHttpConnectionManager().closeIdleConnections(0);
+        
+        SequenceTracker tracker = new SequenceTracker(parameterMap, DEFAULT_RETRY);
+        
+        for(tracker.reset(); tracker.shouldRetry() && !serviceStatus.isAvailable(); tracker.nextAttempt()) {
+            try {
+                PageSequenceMonitorParameters parms = PageSequenceMonitorParameters.get(parameterMap);
+    
+                client = parms.createHttpClient();
+    
+                long startTime = System.nanoTime();
+                responseTimes.put("response-time", Double.NaN);
+                parms.getPageSequence().execute(client, svc, responseTimes);
+    
+                long endTime = System.nanoTime();
+                double responseTime = (endTime - startTime) / 1000000.0;
+                serviceStatus = PollStatus.available();
+                responseTimes.put("response-time", responseTime);
+                serviceStatus.setProperties(responseTimes);
+    
+                //return serviceStatus;
+            } catch (PageSequenceMonitorException e) {
+                serviceStatus = PollStatus.unavailable(e.getMessage());
+                serviceStatus.setProperties(responseTimes);
+                //return serviceStatus;
+            } catch (IllegalArgumentException e) {
+                log().error("Invalid parameters to monitor: " + e, e);
+                serviceStatus = PollStatus.unavailable("Invalid parameter to monitor: " + e.getMessage() + ".  See log for details.");
+                serviceStatus.setProperties(responseTimes);
+                //return serviceStatus;
+            } finally {
+                if (client != null) {
+                    client.getHttpConnectionManager().closeIdleConnections(0);
+                }
             }
         }
+        return serviceStatus;
     }
 
 }
