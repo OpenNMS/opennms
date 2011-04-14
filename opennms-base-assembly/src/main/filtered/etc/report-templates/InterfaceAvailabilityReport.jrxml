@@ -72,7 +72,7 @@
 	<parameter name="COMPANY_LOGO" class="java.lang.String" isForPrompting="false">
 		<defaultValueExpression><![CDATA["${install.dir}/etc/report-templates/assets/images/company-logo.png"]]></defaultValueExpression>
 	</parameter>
-	<parameter name="SURVEILLANCE_CATEGORY" class="java.lang.String">
+	<parameter name="SURVEILLANCE_CATEGORY" class="java.lang.String" isForPrompting="false">
 		<parameterDescription><![CDATA[Surveillance Category]]></parameterDescription>
 		<defaultValueExpression><![CDATA["Routers"]]></defaultValueExpression>
 	</parameter>

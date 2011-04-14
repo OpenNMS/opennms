@@ -53,6 +53,7 @@
 		</box>
 	</style>
 	<parameter name="DS_SURVEILLANCE_CATEGORY" class="java.lang.String" isForPrompting="false">
+		<parameterDescription><![CDATA[Surveillance Category]]></parameterDescription>
 		<defaultValueExpression><![CDATA["%"]]></defaultValueExpression>
 	</parameter>
 	<parameter name="DS_AVAILABILITY_WARNING" class="java.lang.Double" isForPrompting="false"/>
@@ -169,7 +170,7 @@ FROM
 			(category_node.categoryid = categories.categoryid)
 		WHERE
 			nodetype = 'A' AND
-			categories.categoryname like 'Routers')
+			categories.categoryname like $P{DS_SURVEILLANCE_CATEGORY})
 		AS
 			active_nodes
 	ON

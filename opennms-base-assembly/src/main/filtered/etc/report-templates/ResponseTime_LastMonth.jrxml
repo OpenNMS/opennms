@@ -121,7 +121,8 @@ ON
 	(categories.categoryid = category_node.categoryid)
 WHERE
 	ifservices.status = 'A' AND
-	service.servicename = 'ICMP'
+	service.servicename = 'ICMP' AND
+	categories.categoryname = $P{SURVEILLANCE_CATEGORY}
 ORDER BY
 	categories.categoryname,
 	node.nodelabel,
