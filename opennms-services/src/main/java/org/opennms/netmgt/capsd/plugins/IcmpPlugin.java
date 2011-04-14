@@ -82,7 +82,7 @@ public final class IcmpPlugin extends AbstractPlugin {
 	    	}
 		} catch (Throwable e) {
 	        ThreadCategory log = ThreadCategory.getInstance(this.getClass());
-			log.warn("Pinger failed to ping " + address, e);
+			log.warn("JniPinger failed to ping " + address, e);
 		}
 		return false;
     }
@@ -114,7 +114,7 @@ public final class IcmpPlugin extends AbstractPlugin {
     		}
     	} catch (Throwable e) {
 	        ThreadCategory log = ThreadCategory.getInstance(this.getClass());
-			log.warn("Pinger failed to ping " + address, e);
+			log.warn("JniPinger failed to ping " + address, e);
         }
     	
     	return false;

@@ -44,6 +44,6 @@ public class Main {
             System.err.println("java -jar jna-jicmp-VERSION.jar <hostname or ip address>");
             System.exit(1);
         }
-        new Pinger().ping(InetAddress.getByName(args[0]));
+        new JnaPinger().ping(InetAddress.getByName(args[0]));
     }
 }

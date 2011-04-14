@@ -8,7 +8,11 @@
     http://www.springframework.org/schema/tx http://www.springframework.org/schema/tx/spring-tx-2.5.xsd
   "
 >
-  <bean id="pinger" class="org.opennms.netmgt.ping.Pinger"/>
+
+  <bean class="org.springframework.beans.factory.config.PropertyPlaceholderConfigurer" />
+  
+  <bean id="pinger" class="${org.opennms.icmp.pingerClass}" />
+
   <bean id="pingerFactory-setInstance" class="org.springframework.beans.factory.config.MethodInvokingFactoryBean">
     <property name="staticMethod"><value>org.opennms.netmgt.icmp.PingerFactory.setInstance</value></property>
     <property name="arguments">

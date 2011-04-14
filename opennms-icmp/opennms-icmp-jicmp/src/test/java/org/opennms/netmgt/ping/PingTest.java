@@ -92,24 +92,24 @@ public class PingTest extends TestCase {
     }
 
     public void testSinglePing() throws Exception {
-        Long rtt = new Pinger().ping(m_goodHost);
+        Long rtt = new JniPinger().ping(m_goodHost);
         assertNotNull("No RTT value returned from ping, looks like the ping failed", rtt);
         assertTrue(rtt > 0);
     }
 
     public void testSinglePingFailure() throws Exception {
-        assertNull(new Pinger().ping(m_badHost));
+        assertNull(new JniPinger().ping(m_badHost));
     }
 
     public void testParallelPing() throws Exception {
-        List<Number> items = new Pinger().parallelPing(m_goodHost, 20, PingConstants.DEFAULT_TIMEOUT, 50);
+        List<Number> items = new JniPinger().parallelPing(m_goodHost, 20, PingConstants.DEFAULT_TIMEOUT, 50);
         Thread.sleep(1000);
         printResponse(items);
         assertTrue("Collection contained all null values, all parallel pings failed", CollectionMath.countNotNull(items) > 0);
     }
 
     public void testParallelPingFailure() throws Exception {
-        List<Number> items = new Pinger().parallelPing(m_badHost, 20, PingConstants.DEFAULT_TIMEOUT, 50);
+        List<Number> items = new JniPinger().parallelPing(m_badHost, 20, PingConstants.DEFAULT_TIMEOUT, 50);
         Thread.sleep(PingConstants.DEFAULT_TIMEOUT + 100);
         printResponse(items);
         assertTrue("Collection contained some numeric values when all parallel pings should have failed", CollectionMath.countNotNull(items) == 0);

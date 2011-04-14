@@ -36,6 +36,7 @@
 
 package org.opennms.netmgt.icmp;
 
+import org.opennms.core.utils.LogUtils;
 import org.springframework.util.Assert;
 
 /**
@@ -67,6 +68,7 @@ public abstract class PingerFactory {
      */
     public static void setInstance(Pinger pinger) {
         Assert.notNull(pinger, "property pinger must not be null");
+        LogUtils.debugf(PingerFactory.class, "setting instance of pinger to %s", pinger.getClass().getName());
         m_pinger = pinger;
     }
     

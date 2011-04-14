@@ -37,7 +37,7 @@ import java.util.concurrent.atomic.AtomicReference;
 import org.opennms.jicmp.jna.NativeDatagramSocket;
 
 /**
- * Pinger
+ * JnaPinger
  *
  * @author brozow
  */

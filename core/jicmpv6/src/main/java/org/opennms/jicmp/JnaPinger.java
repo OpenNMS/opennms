@@ -53,14 +53,14 @@ import org.opennms.protocols.rt.RequestTracker;
  *
  * @author brozow
  */
-public class Pinger implements org.opennms.netmgt.icmp.Pinger {
+public class JnaPinger implements org.opennms.netmgt.icmp.Pinger {
 
 	private final V4Pinger v4Pinger;
 	private final V6Pinger v6Pinger;
 
 	private RequestTracker<PingRequest<NativeDatagramSocket>, PingReply> s_pingTracker;
 
-	public Pinger() throws Exception {
+	public JnaPinger() throws Exception {
 		v4Pinger = new V4Pinger();
 		v6Pinger = new V6Pinger();
 	}

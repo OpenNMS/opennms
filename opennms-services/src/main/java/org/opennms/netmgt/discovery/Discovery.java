@@ -127,7 +127,7 @@ public class Discovery extends AbstractServiceDaemon {
     /**
      * <p>setPinger</p>
      *
-     * @param pinger a {@link Pinger} object.
+     * @param pinger a {@link JniPinger} object.
      */
     public void setPinger(Pinger pinger) {
         m_pinger = pinger;

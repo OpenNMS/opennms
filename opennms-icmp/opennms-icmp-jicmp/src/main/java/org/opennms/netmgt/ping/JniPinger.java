@@ -54,7 +54,7 @@ import org.opennms.protocols.rt.RequestTracker;
 
 /**
  * 
- * Pinger Design
+ * JniPinger Design
  * 
  * The pinger has four components that are all static
  * 
@@ -119,17 +119,17 @@ import org.opennms.protocols.rt.RequestTracker;
  */
 
 /**
- * <p>Pinger class.</p>
+ * <p>JniPinger class.</p>
  *
  * @author <a href="mailto:ranger@opennms.org">Ben Reed</a>
  * @author <a href="mailto:brozow@opennms.org">Mathew Brozowski</a>
  */
-public class Pinger implements org.opennms.netmgt.icmp.Pinger {
+public class JniPinger implements org.opennms.netmgt.icmp.Pinger {
     
     
     private RequestTracker<PingRequest<IcmpSocket>, PingReply> s_pingTracker;
     
-    public Pinger() {}
+    public JniPinger() {}
 
 	/**
 	 * Initializes this singleton
