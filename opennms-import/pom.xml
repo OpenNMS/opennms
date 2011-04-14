@@ -123,5 +123,10 @@
       <artifactId>postgresql</artifactId>
       <scope>test</scope>
     </dependency>
+    <dependency>
+      <groupId>org.opennms.core</groupId>
+      <artifactId>org.opennms.core.jicmpv6</artifactId>
+      <scope>test</scope>
+    </dependency>
   </dependencies>
 </project>
