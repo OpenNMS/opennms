@@ -42,8 +42,9 @@ import junit.framework.TestCase;
 
 import org.opennms.core.utils.CollectionMath;
 import org.opennms.core.utils.InetAddressUtils;
+import org.opennms.jicmp.JnaPinger;
 import org.opennms.netmgt.icmp.PingConstants;
-//import org.opennms.jicmp.Pinger;
+import org.opennms.netmgt.icmp.Pinger;
 
 /**
  * 
@@ -91,25 +92,60 @@ public class PingTest extends TestCase {
         m_badHost  = InetAddressUtils.UNPINGABLE_ADDRESS;
     }
 
-    public void testSinglePing() throws Exception {
-        Long rtt = new JniPinger().ping(m_goodHost);
+    public void testSinglePingJni() throws Exception {
+        singlePing(new JniPinger());
+    }
+
+    public void testSinglePingJna() throws Exception {
+        singlePing(new JnaPinger());
+    }
+
+    protected void singlePing(Pinger pinger) throws Exception {
+        Long rtt = pinger.ping(m_goodHost);
         assertNotNull("No RTT value returned from ping, looks like the ping failed", rtt);
         assertTrue(rtt > 0);
     }
 
-    public void testSinglePingFailure() throws Exception {
-        assertNull(new JniPinger().ping(m_badHost));
+    public void testSinglePingFailureJni() throws Exception {
+        singlePingFailure(new JniPinger());
     }
 
-    public void testParallelPing() throws Exception {
-        List<Number> items = new JniPinger().parallelPing(m_goodHost, 20, PingConstants.DEFAULT_TIMEOUT, 50);
+    public void testSinglePingFailureJna() throws Exception {
+        singlePingFailure(new JnaPinger());
+    }
+
+    protected void singlePingFailure(Pinger pinger) throws Exception {
+        assertNull(pinger.ping(m_badHost));
+    }
+
+    public void testParallelPingJni() throws Exception {
+        parallelPing(new JniPinger());
+    }
+
+    public void testParallelPingJna() throws Exception {
+        parallelPing(new JnaPinger());
+    }
+
+    protected void parallelPing(Pinger pinger) throws Exception {
+        List<Number> items = pinger.parallelPing(m_goodHost, 20, PingConstants.DEFAULT_TIMEOUT, 50);
         Thread.sleep(1000);
         printResponse(items);
         assertTrue("Collection contained all null values, all parallel pings failed", CollectionMath.countNotNull(items) > 0);
+        for (Number item : items) {
+            assertNotNull("Found a null reponse time in the response", item);
+        }
     }
 
-    public void testParallelPingFailure() throws Exception {
-        List<Number> items = new JniPinger().parallelPing(m_badHost, 20, PingConstants.DEFAULT_TIMEOUT, 50);
+    public void testParallelPingFailureJni() throws Exception {
+        parallelPingFailure(new JniPinger());
+    }
+
+    public void testParallelPingFailureJna() throws Exception {
+        parallelPingFailure(new JnaPinger());
+    }
+
+    protected void parallelPingFailure(Pinger pinger) throws Exception {
+        List<Number> items = pinger.parallelPing(m_badHost, 20, PingConstants.DEFAULT_TIMEOUT, 50);
         Thread.sleep(PingConstants.DEFAULT_TIMEOUT + 100);
         printResponse(items);
         assertTrue("Collection contained some numeric values when all parallel pings should have failed", CollectionMath.countNotNull(items) == 0);
