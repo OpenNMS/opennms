@@ -35,6 +35,7 @@
 //
 package org.opennms.netmgt.syslogd;
 
+import static org.junit.Assert.assertEquals;
 import static org.opennms.core.utils.InetAddressUtils.addr;
 
 import java.io.InputStream;
@@ -52,14 +53,23 @@ import org.apache.commons.io.IOUtils;
 import org.apache.log4j.Level;
 import org.exolab.castor.xml.MarshalException;
 import org.exolab.castor.xml.ValidationException;
+import org.junit.After;
+import org.junit.Before;
+import org.junit.Test;
+import org.junit.runner.RunWith;
 import org.opennms.core.utils.InetAddressUtils;
 import org.opennms.core.utils.LogUtils;
+import org.opennms.mock.snmp.JUnitSnmpAgentExecutionListener;
 import org.opennms.netmgt.config.SyslogdConfigFactory;
 import org.opennms.netmgt.config.syslogd.HideMessage;
 import org.opennms.netmgt.config.syslogd.Match;
 import org.opennms.netmgt.config.syslogd.UeiList;
 import org.opennms.netmgt.config.syslogd.UeiMatch;
-import org.opennms.netmgt.mock.OpenNMSTestCase;
+import org.opennms.netmgt.dao.db.JUnitTemporaryDatabase;
+import org.opennms.netmgt.dao.db.OpenNMSConfigurationExecutionListener;
+import org.opennms.netmgt.dao.db.TemporaryDatabaseExecutionListener;
+import org.opennms.netmgt.eventd.Eventd;
+import org.opennms.netmgt.mock.MockEventIpcManager;
 import org.opennms.netmgt.model.events.EventBuilder;
 import org.opennms.netmgt.model.events.EventListener;
 import org.opennms.netmgt.model.events.EventProxy;
@@ -68,13 +78,38 @@ import org.opennms.netmgt.xml.event.Event;
 import org.opennms.netmgt.xml.event.Events;
 import org.opennms.netmgt.xml.event.Log;
 import org.opennms.test.ConfigurationTestUtils;
-import org.opennms.test.DaoTestConfigBean;
 import org.opennms.test.mock.MockLogAppender;
-import org.opennms.test.mock.MockUtil;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.test.context.ContextConfiguration;
+import org.springframework.test.context.TestExecutionListeners;
+import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
+import org.springframework.test.context.support.DependencyInjectionTestExecutionListener;
+import org.springframework.test.context.support.DirtiesContextTestExecutionListener;
+import org.springframework.test.context.transaction.TransactionalTestExecutionListener;
+import org.springframework.transaction.annotation.Transactional;
 
-public class SyslogdLoadTest extends OpenNMSTestCase {
+@RunWith(SpringJUnit4ClassRunner.class)
+@TestExecutionListeners({
+    OpenNMSConfigurationExecutionListener.class,
+    TemporaryDatabaseExecutionListener.class,
+    JUnitSnmpAgentExecutionListener.class,
+    DependencyInjectionTestExecutionListener.class,
+    DirtiesContextTestExecutionListener.class,
+    TransactionalTestExecutionListener.class
+})
+@ContextConfiguration(locations={
+        "classpath:/META-INF/opennms/applicationContext-dao.xml",
+        "classpath:/META-INF/opennms/applicationContext-commonConfigs.xml",
+        "classpath:/META-INF/opennms/applicationContext-daemon.xml",
+        "classpath:/META-INF/opennms/applicationContext-setupIpLike-enabled.xml",
+        "classpath:/META-INF/opennms/mockEventIpcManager.xml",
+        "classpath:/META-INF/opennms/applicationContext-databasePopulator.xml",
+        "classpath:/META-INF/opennms/applicationContext-eventDaemon.xml",
+        "classpath:/syslogdTest.xml"
+})
+@JUnitTemporaryDatabase()
+public class SyslogdLoadTest {
 
-    private Syslogd m_syslogd;
     private EventCounter m_eventCounter;
     private final String m_matchPattern = "^.*\\s(19|20)\\d\\d([-/.])(0[1-9]|1[012])\\2(0[1-9]|[12][0-9]|3[01])(\\s+)(\\S+)(\\s)(\\S.+)";
     private final int m_hostGroup = 6;
@@ -82,6 +117,14 @@ public class SyslogdLoadTest extends OpenNMSTestCase {
     private HideMessage m_HideMessages = new HideMessage();
     private String m_discardUei = "DISCARD-MATCHING-MESSAGES";
     private UeiList m_UeiList = new UeiList();
+
+    @Autowired
+    private MockEventIpcManager m_eventIpcManager;
+
+    @Autowired
+    private Eventd m_eventd;
+    
+    private Syslogd m_syslogd;
 
     public SyslogdLoadTest() {
         UeiMatch ueiMatch;
@@ -101,32 +144,21 @@ public class SyslogdLoadTest extends OpenNMSTestCase {
         }
     }
 
-    protected void setUp() throws Exception {
-        this.setStartEventd(true);
-        super.setUp();
-
-        DaoTestConfigBean daoTestConfig = new DaoTestConfigBean();
-        daoTestConfig.setRelativeHomeDirectory("src/test/resources");
-        daoTestConfig.afterPropertiesSet();
+    @Before
+    public void setUp() throws Exception {
+    	MockLogAppender.setupLogging(true, "WARN");
 
         loadSyslogConfiguration("/etc/syslogd-loadtest-configuration.xml");
 
         m_eventCounter = new EventCounter();
-        this.getEventIpcManager().addEventListener(m_eventCounter);
+        this.m_eventIpcManager.addEventListener(m_eventCounter);
     }
 
-    @Override
-    protected void tearDown() throws Exception {
-        MockUtil.println("------------ End Test " + getName() + " --------------------------");
+    @After
+    public void tearDown() throws Exception {
         if (m_syslogd != null) {
             m_syslogd.stop();
         }
-        super.tearDown();
-    }
-
-    @Override
-    public void runTest() throws Throwable {
-        super.runTest();
         MockLogAppender.assertNotGreaterOrEqual(Level.FATAL);
     }
 
@@ -159,6 +191,8 @@ public class SyslogdLoadTest extends OpenNMSTestCase {
         }
     }
 
+    @Test
+    @Transactional
     public void testDefaultSyslogd() throws Exception {
         startSyslogdGracefully();
 
@@ -192,6 +226,8 @@ public class SyslogdLoadTest extends OpenNMSTestCase {
         System.err.println(String.format("total time: %d, wait time: %d, events per second: %8.4f", total, (end - mid), eventsPerSecond));
     }
 
+    @Test
+    @Transactional
     public void testRfcSyslog() throws Exception {
         loadSyslogConfiguration("/etc/syslogd-rfc-configuration.xml");
 
@@ -218,6 +254,8 @@ public class SyslogdLoadTest extends OpenNMSTestCase {
         assertEquals(1, m_eventCounter.getCount());
     }
 
+    @Test
+    @Transactional
     public void testNGSyslog() throws Exception {
         loadSyslogConfiguration("/etc/syslogd-syslogng-configuration.xml");
 
@@ -244,14 +282,18 @@ public class SyslogdLoadTest extends OpenNMSTestCase {
         assertEquals(1, m_eventCounter.getCount());
     }
 
+    @Test
+    @Transactional
     public void testEventd() throws Exception {
+    	m_eventd.start();
+
         EventProxy ep = this.createEventProxy();
 
         Log eventLog = new Log();
         Events events = new Events();
         eventLog.setEvents(events);
         
-        int eventCount = 1000;
+        int eventCount = 10000;
         m_eventCounter.setAnticipated(eventCount);
 
         for (int i = 0; i < eventCount; i++) {
@@ -270,9 +312,12 @@ public class SyslogdLoadTest extends OpenNMSTestCase {
         long start = System.currentTimeMillis();
         ep.send(eventLog);
         long mid = System.currentTimeMillis();
+        // wait up to 2 minutes for the events to come through
         m_eventCounter.waitForFinish(120000);
         long end = System.currentTimeMillis();
-        
+
+        m_eventd.stop();
+
         final long total = (end - start);
         final double eventsPerSecond = (eventCount * 1000.0 / total);
         System.err.println(String.format("total time: %d, wait time: %d, events per second: %8.4f", total, (end - mid), eventsPerSecond));
