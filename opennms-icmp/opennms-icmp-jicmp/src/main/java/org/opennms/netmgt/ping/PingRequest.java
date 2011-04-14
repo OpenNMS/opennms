@@ -61,7 +61,7 @@ final public class PingRequest extends AbstractPingRequest<IcmpSocket> {
     }
     
     PingRequest(InetAddress addr, int sequenceId, long timeout, int retries, PingResponseCallback cb) {
-        this(addr, s_nextTid++, sequenceId, timeout, retries, cb);
+        this(addr, getNextTID(), sequenceId, timeout, retries, cb);
     }
     
     /**

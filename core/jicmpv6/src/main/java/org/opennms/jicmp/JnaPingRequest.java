@@ -66,7 +66,7 @@ final public class JnaPingRequest extends AbstractPingRequest<NativeDatagramSock
     }
 
     JnaPingRequest(V4Pinger v4, V6Pinger v6, InetAddress addr, int sequenceId, long timeout, int retries, PingResponseCallback cb) {
-        this(v4, v6, addr, s_nextTid++, sequenceId, timeout, retries, cb);
+        this(v4, v6, addr, getNextTID(), sequenceId, timeout, retries, cb);
     }
     
     /**
@@ -80,10 +80,10 @@ final public class JnaPingRequest extends AbstractPingRequest<NativeDatagramSock
 
             if (addr instanceof Inet4Address) {
                 m_expiration = System.currentTimeMillis() + m_timeout;
-                v4.ping((Inet4Address)addr, (int)m_id.getTid(), 1, 0);
+                v4.ping((Inet4Address)addr, (int)m_id.getTid(), m_id.getSequenceId(), 1, 0);
             } else if (addr instanceof Inet6Address) {
                 m_expiration = System.currentTimeMillis() + m_timeout;
-                v6.ping((Inet6Address)addr, (int)m_id.getTid(), 1, 0);
+                v6.ping((Inet6Address)addr, (int)m_id.getTid(), m_id.getSequenceId(), 1, 0);
             }
         } catch (Throwable t) {
             m_callback.handleError(m_id.getAddress(), m_request, t);

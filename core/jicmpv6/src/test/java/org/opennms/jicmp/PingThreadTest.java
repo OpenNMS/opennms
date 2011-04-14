@@ -65,7 +65,7 @@ public class PingThreadTest {
         try {
         listener.start();
         
-        listener.ping((Inet4Address)InetAddress.getByName("127.0.0.1"), 1000, pingCount, 1000);
+        listener.ping((Inet4Address)InetAddress.getByName("127.0.0.1"), 1000, 0, pingCount, 1000);
         
         } finally {
             listener.stop();
@@ -110,7 +110,7 @@ public class PingThreadTest {
             public void run() {
                 try {
                     Thread.sleep(id/10);
-                    listener.ping((Inet4Address)InetAddress.getByName("127.0.0.1"), id, count, 1000);
+                    listener.ping((Inet4Address)InetAddress.getByName("127.0.0.1"), id, 0, count, 1000);
                 } catch(Throwable e) {
                     e.printStackTrace();
                 }

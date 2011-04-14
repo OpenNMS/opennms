@@ -103,7 +103,7 @@ public class PingTest extends TestCase {
     protected void singlePing(Pinger pinger) throws Exception {
         Long rtt = pinger.ping(m_goodHost);
         assertNotNull("No RTT value returned from ping, looks like the ping failed", rtt);
-        assertTrue(rtt > 0);
+        assertTrue("Negative RTT value returned from ping", rtt > 0);
     }
 
     public void testSinglePingFailureJni() throws Exception {
@@ -133,6 +133,7 @@ public class PingTest extends TestCase {
         assertTrue("Collection contained all null values, all parallel pings failed", CollectionMath.countNotNull(items) > 0);
         for (Number item : items) {
             assertNotNull("Found a null reponse time in the response", item);
+            assertTrue("Negative RTT value returned from ping", item.floatValue() > 0);
         }
     }
 

@@ -146,8 +146,9 @@ public class JnaPinger implements org.opennms.netmgt.icmp.Pinger {
 			timeout = DEFAULT_TIMEOUT;
 		}
 
+		int tid = (int)JnaPingRequest.getNextTID();
 		for (int i = 0; i < count; i++) {
-			PingRequest<NativeDatagramSocket> request = new JnaPingRequest(v4Pinger, v6Pinger, host, i, timeout, 0, cb);
+			PingRequest<NativeDatagramSocket> request = new JnaPingRequest(v4Pinger, v6Pinger, host, tid, i, timeout, 0, cb);
 			s_pingTracker.sendRequest(request);
 			Thread.sleep(pingInterval);
 		}

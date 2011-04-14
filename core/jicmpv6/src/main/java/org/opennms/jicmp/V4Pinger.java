@@ -69,7 +69,6 @@ public class V4Pinger extends AbstractPinger<Inet4Address> {
     public void run() {
         try {
             NativeDatagramPacket datagram = new NativeDatagramPacket(65535);
-            boolean first = true;
             while (!isFinished()) {
                 getPingSocket().receive(datagram);
                 long received = System.nanoTime();
@@ -78,26 +77,19 @@ public class V4Pinger extends AbstractPinger<Inet4Address> {
                 PingReply echoReply = icmpPacket.getType() == Type.EchoReply ? new PingReply(icmpPacket, received) : null;
             
                 if (echoReply != null && echoReply.isValid()) {
-                    // skip the first one since it includes class loading time etc.
-                    if (first) {
-                        first = false;
-                    } else {
-                        m_metric.update(Math.round(echoReply.elapsedTime(TimeUnit.NANOSECONDS)));
-                        // 64 bytes from 127.0.0.1: icmp_seq=0 time=0.069 ms
-                        printf("%d bytes from %s: icmp_seq=%d time=%.3f ms\n", 
-                                echoReply.getPacketLength(),
-                                datagram.getAddress().getHostAddress(),
-                                echoReply.getSequenceNumber(),
-                                echoReply.elapsedTime(TimeUnit.MILLISECONDS)
-                        );
-                        for (PingReplyListener listener : m_listeners) {
-                            listener.onPingReply(datagram.getAddress(), echoReply);
-                        }
+                    // 64 bytes from 127.0.0.1: icmp_seq=0 time=0.069 ms
+                    printf("%d bytes from %s: tid=%d icmp_seq=%d time=%.3f ms\n", 
+                        echoReply.getPacketLength(),
+                        datagram.getAddress().getHostAddress(),
+                        echoReply.getIdentifier(),
+                        echoReply.getSequenceNumber(),
+                        echoReply.elapsedTime(TimeUnit.MILLISECONDS)
+                    );
+                    for (PingReplyListener listener : m_listeners) {
+                        listener.onPingReply(datagram.getAddress(), echoReply);
                     }
                 }
             }
-    
-    
         } catch(Throwable e) {
             m_throwable.set(e);
             e.printStackTrace();
@@ -108,17 +100,12 @@ public class V4Pinger extends AbstractPinger<Inet4Address> {
         return new IPPacket(datagram.getContent()).getPayload();
     }
     
-    public long ping(Inet4Address addr, int id, long count, long interval) throws InterruptedException {
+    public void ping(Inet4Address addr, int id, int sequenceNumber, long count, long interval) throws InterruptedException {
         NativeDatagramSocket socket = getPingSocket();
-        for(int i = 0; i <= count; i++) {
+        for(int i = sequenceNumber; i < sequenceNumber + count; i++) {
             PingRequest request = new PingRequest(id, i);
             request.send(socket, addr);
             Thread.sleep(interval);
         }
-        
-        //round-trip cnt/min/avg/max/stddev = 10/0.053/0.137/0.233/0.038 ms
-        printf("round-trip %s ms\n", m_metric.getSummary(TimeUnit.MILLISECONDS));
-        return (long)m_metric.getAverage();
     }
-
 }
