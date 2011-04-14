@@ -931,6 +931,7 @@ public class DefaultProvisionService implements ProvisionService {
     public OnmsNode getDbNodeInitCat(Integer nodeId) {
         OnmsNode node = m_nodeDao.get(nodeId);
         m_nodeDao.initialize(node.getCategories());
+        m_nodeDao.initialize(node.getDistPoller());
         return node;
     }
 }
