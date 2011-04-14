@@ -121,6 +121,31 @@ import org.opennms.netmgt.poller.MonitoredService;
  */
 @Distributable
 public class PageSequenceMonitor extends AbstractServiceMonitor {
+    
+    protected class SequenceTracker{
+        int m_retry;
+        int m_attempt;
+        
+        public SequenceTracker(Map<String, Object> parameterMap, int defaultSequenceRetry) {
+            m_retry = ParameterMap.getKeyedInteger(parameterMap, "sequence-retry", defaultSequenceRetry);
+        }
+
+        public void reset() {
+            m_attempt = 0;
+        }
+
+        public boolean shouldRetry() {
+            return m_attempt <= m_retry;
+        }
+
+        public void nextAttempt() {
+            m_attempt++;
+        }
+        
+    }
+    
+    private static final int DEFAULT_SEQUENCE_RETRY = 0;
+    
     // Make sure that the {@link EmptyKeyRelaxedTrustSSLContext} algorithm
     // is available to JSSE
     static {
@@ -763,37 +788,39 @@ public class PageSequenceMonitor extends AbstractServiceMonitor {
         PollStatus serviceStatus = PollStatus.unavailable("Poll not completed yet");
 
         Map<String,Number> responseTimes = new LinkedHashMap<String,Number>();
-
-        try {
-            PageSequenceMonitorParameters parms = PageSequenceMonitorParameters.get(parameterMap);
-
-            client = parms.createHttpClient();
-
-            long startTime = System.nanoTime();
-            responseTimes.put("response-time", Double.NaN);
-            parms.getPageSequence().execute(client, svc, responseTimes);
-
-            long endTime = System.nanoTime();
-            double responseTime = (endTime - startTime) / 1000000.0;
-            serviceStatus = PollStatus.available();
-            responseTimes.put("response-time", responseTime);
-            serviceStatus.setProperties(responseTimes);
-
-            return serviceStatus;
-        } catch (PageSequenceMonitorException e) {
-            serviceStatus = PollStatus.unavailable(e.getMessage());
-            serviceStatus.setProperties(responseTimes);
-            return serviceStatus;
-        } catch (IllegalArgumentException e) {
-            log().error("Invalid parameters to monitor: " + e.getMessage(), e);
-            serviceStatus = PollStatus.unavailable("Invalid parameter to monitor: " + e.getMessage() + ".  See log for details.");
-            serviceStatus.setProperties(responseTimes);
-            return serviceStatus;
-        } finally {
-            // Do we need to do any cleanup?
-            //if (client != null) {
-            //    client.getHttpConnectionManager().closeIdleConnections(0);
-            //}
+        
+        SequenceTracker tracker = new SequenceTracker(parameterMap, DEFAULT_SEQUENCE_RETRY);
+        for(tracker.reset(); tracker.shouldRetry() && !serviceStatus.isAvailable(); tracker.nextAttempt() ) {
+            try {
+                PageSequenceMonitorParameters parms = PageSequenceMonitorParameters.get(parameterMap);
+    
+                client = parms.createHttpClient();
+    
+                long startTime = System.nanoTime();
+                responseTimes.put("response-time", Double.NaN);
+                parms.getPageSequence().execute(client, svc, responseTimes);
+    
+                long endTime = System.nanoTime();
+                double responseTime = (endTime - startTime) / 1000000.0;
+                serviceStatus = PollStatus.available();
+                responseTimes.put("response-time", responseTime);
+                serviceStatus.setProperties(responseTimes);
+    
+            } catch (PageSequenceMonitorException e) {
+                serviceStatus = PollStatus.unavailable(e.getMessage());
+                serviceStatus.setProperties(responseTimes);
+            } catch (IllegalArgumentException e) {
+                log().error("Invalid parameters to monitor: " + e.getMessage(), e);
+                serviceStatus = PollStatus.unavailable("Invalid parameter to monitor: " + e.getMessage() + ".  See log for details.");
+                serviceStatus.setProperties(responseTimes);
+            } finally {
+                // Do we need to do any cleanup?
+                //if (client != null) {
+                //    client.getHttpConnectionManager().closeIdleConnections(0);
+                //}
+            }
         }
+        
+        return serviceStatus;
     }
 }
