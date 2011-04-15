@@ -291,36 +291,24 @@ public class MailTransportMonitor extends IPv4Monitor {
                   .append(subject).toString());
 
                 boolean found = false;
-                
                 for (int i = 1; i <= mailMessages.length; i++) {
                     Message mailMessage = mailFolder.getMessage(i);
                     log().debug("searchMailSubject: retrieved message subject:"+mailMessage.getSubject());
                     
-                    if (!found) {
+                    if (!found && mailMessage.match(searchTerm)) {
+                        found = true;
+                        log().debug("searchMailSubject: message with subject: '"+subject+"' found.");
                         
-                    	if (mailMessage.match(searchTerm)) {
-                    		found = true;
-                    		log().debug("searchMailSubject: message with subject: '"+subject+"' found.");
-
-                    		if (mailParms.isEnd2EndTestInProgress() || mailParms.getReadTest().isDeleteAllMail()) {
-                    			mailMessage.setFlag(Flag.DELETED, true);
-                    			log().debug("searchMailSubject: flagging message: "+subject+" for deletion for end2end test.");
-                    		}
-                    	} else {
-                    	    if (mailParms.getReadTest().isDeleteAllMail()) {
-                                mailMessage.setFlag(Flag.DELETED, true);
-                                log().debug("searchMailSubject: Not found and delete all mail flag is set, flagging non-matching message for deletion: "+mailMessage.getSubject());
-                    	    }
-                    	}
-                    	
+                        if (mailParms.isEnd2EndTestInProgress()) {
+                            mailMessage.setFlag(Flag.DELETED, true);
+                            log().debug("searchMailSubject: flagging message: "+subject+" for deletion for end2end test.");
+                        }
+                    }
+                    
+                    if (found && !mailParms.getReadTest().isDeleteAllMail()) {
+                        break;
                     } else {
-
-                    	if (mailParms.getReadTest().isDeleteAllMail()) {
-                    	    log().debug("searchMailSubject: Cleaning mailfolder due to the delete all mail flag being set, flagging non-matching message for deletion: "+mailMessage.getSubject());
-                    	    mailMessage.setFlag(Flag.DELETED, true);
-                    	} else {
-                    		break;
-                    	}
+                        mailMessage.setFlag(Flag.DELETED, true);
                     }
                 }
                 
@@ -393,10 +381,9 @@ public class MailTransportMonitor extends IPv4Monitor {
      * @throws MessagingException
      */
     private Folder retrieveMailFolder(final MailTransportParameters mailParms, final Store mailStore) throws MessagingException {
-    	mailStore.connect();
-        //mailStore.connect(mailParms.getReadTestHost(), mailParms.getReadTestPort(), mailParms.getReadTestUserName(), mailParms.getReadTestPassword());
-        //Folder mailFolder = mailStore.getDefaultFolder();
-        Folder mailFolder = mailStore.getFolder(mailParms.getReadTestFolder());
+        mailStore.connect(mailParms.getReadTestHost(), mailParms.getReadTestPort(), mailParms.getReadTestUserName(), mailParms.getReadTestPassword());
+        Folder mailFolder = mailStore.getDefaultFolder();
+        mailFolder = mailFolder.getFolder(mailParms.getReadTestFolder());
         return mailFolder;
     }
 
