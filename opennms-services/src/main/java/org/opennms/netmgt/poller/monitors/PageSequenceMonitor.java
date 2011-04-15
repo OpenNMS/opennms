@@ -102,6 +102,7 @@ import org.opennms.core.utils.MatchTable;
 import org.opennms.core.utils.ParameterMap;
 import org.opennms.core.utils.PropertiesUtils;
 import org.opennms.core.utils.ThreadCategory;
+import org.opennms.core.utils.TimeoutTracker;
 import org.opennms.netmgt.config.pagesequence.Page;
 import org.opennms.netmgt.config.pagesequence.PageSequence;
 import org.opennms.netmgt.config.pagesequence.Parameter;
@@ -123,24 +124,32 @@ import org.opennms.netmgt.poller.MonitoredService;
 public class PageSequenceMonitor extends AbstractServiceMonitor {
     
     protected class SequenceTracker{
-        int m_retry;
-        int m_attempt;
         
-        public SequenceTracker(Map<String, Object> parameterMap, int defaultSequenceRetry) {
-            m_retry = ParameterMap.getKeyedInteger(parameterMap, "sequence-retry", defaultSequenceRetry);
+        TimeoutTracker m_tracker;
+        public SequenceTracker(Map<String, Object> parameterMap, int defaultSequenceRetry, int defaultTimeout) {
+            Map<String, Object> parameters = new HashMap<String, Object>();
+            parameters.put("retry", ParameterMap.getKeyedInteger(parameterMap, "sequence-retry", defaultSequenceRetry));
+            parameters.put("timeout", ParameterMap.getKeyedInteger(parameterMap, "timeout", defaultTimeout));
+            parameters.put("strict-timeout", ParameterMap.getKeyedBoolean(parameterMap, "strict-timeout", false));
+            m_tracker = new TimeoutTracker(parameters, defaultSequenceRetry, defaultTimeout);
         }
-
         public void reset() {
-            m_attempt = 0;
+            m_tracker.reset();
         }
-
         public boolean shouldRetry() {
-            return m_attempt <= m_retry;
+            return m_tracker.shouldRetry();
+        }
+        public void nextAttempt() {
+            m_tracker.nextAttempt();
+        }
+        public void startAttempt() {
+            m_tracker.startAttempt();
+        }
+        public double elapsedTimeInMillis() {
+            return m_tracker.elapsedTimeInMillis();
         }
 
-        public void nextAttempt() {
-            m_attempt++;
-        }
+        
         
     }
     
@@ -789,19 +798,18 @@ public class PageSequenceMonitor extends AbstractServiceMonitor {
 
         Map<String,Number> responseTimes = new LinkedHashMap<String,Number>();
         
-        SequenceTracker tracker = new SequenceTracker(parameterMap, DEFAULT_SEQUENCE_RETRY);
+        SequenceTracker tracker = new SequenceTracker(parameterMap, DEFAULT_SEQUENCE_RETRY, DEFAULT_TIMEOUT);
         for(tracker.reset(); tracker.shouldRetry() && !serviceStatus.isAvailable(); tracker.nextAttempt() ) {
             try {
                 PageSequenceMonitorParameters parms = PageSequenceMonitorParameters.get(parameterMap);
     
                 client = parms.createHttpClient();
-    
-                long startTime = System.nanoTime();
+                
+                tracker.startAttempt();
                 responseTimes.put("response-time", Double.NaN);
                 parms.getPageSequence().execute(client, svc, responseTimes);
     
-                long endTime = System.nanoTime();
-                double responseTime = (endTime - startTime) / 1000000.0;
+                double responseTime = tracker.elapsedTimeInMillis();
                 serviceStatus = PollStatus.available();
                 responseTimes.put("response-time", responseTime);
                 serviceStatus.setProperties(responseTimes);
