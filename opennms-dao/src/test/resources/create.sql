@@ -1,5 +1,14 @@
 --# create.sql -- SQL to build the initial tables for the OpenNMS Project
 --#
+--# Modifications:
+--# 2009 Sep 29: Added linkTypeId field in datalinkinterface table
+--# 2009 Mar 27: Added Users, Groups tables
+--# 2009 Jan 28: Added Acks tables - david@opennms.org
+--# 2007 Apr 10: Added statistics report tables - dj@opennms.org
+--# 2006 Apr 17: Added pathOutage table
+--# 2005 Mar 11: Added alarms table
+--# 2004 Aug 30: See create.sql.changes
+--#
 --# Copyright (C) 2005-2006 The OpenNMS Group, Inc., Inc.  All rights reserved.
 --# Parts Copyright (C) 1999-2001 Oculan Corp.  All rights reserved.
 --#
@@ -22,14 +31,6 @@
 --#      http://www.opennms.org/
 --#      http://www.sortova.com/
 --#
---# Modified: 2006-04-17
---# Note: Added pathOutage table
---#
---# Modified: 2005-03-11
---# Note: Added alarms table
---#
---# Modified: 2004-08-30
---# Note: See create.sql.changes
 
 drop table category_node cascade;
 drop table categories cascade;
@@ -53,10 +54,6 @@ drop table pathOutage cascade;
 drop table demandPolls cascade;
 drop table pollResults cascade;
 drop table reportLocator cascade;
-drop table category_statusdef cascade;
-drop table statusview_statusdef cascade;
-drop table aggregate_status_definitions cascade;
-drop table aggregate_status_views cascade;
 drop table atinterface cascade;
 drop table stpnode cascade;
 drop table stpinterface cascade;
@@ -65,6 +62,18 @@ drop table datalinkinterface cascade;
 drop table inventory cascade;
 drop table element cascade;
 drop table map cascade;
+drop table location_monitors cascade;
+drop table location_specific_status_changes cascade;
+drop table vlan cascade;
+drop table statisticsReportData cascade;
+drop table resourceReference cascade;
+drop table statisticsReport cascade;
+drop table acks cascade;
+drop table users cascade;
+drop table groups cascade;
+drop table group_user cascade;
+drop table category_user cascade;
+drop table category_group cascade;
 
 drop sequence catNxtId;
 drop sequence nodeNxtId;
@@ -78,6 +87,7 @@ drop sequence demandPollNxtId;
 drop sequence pollResultNxtId;
 drop sequence vulnNxtId;
 drop sequence reportNxtId;
+drop sequence reportCatalogNxtId;
 drop sequence mapNxtId;
 drop sequence opennmsNxtId;  --# should be used for all sequences, eventually
 
@@ -98,7 +108,11 @@ drop table qrtz_calendars;
 
 --# End quartz persistence
 
+CREATE FUNCTION plpgsql_call_handler () 
+    RETURNS OPAQUE AS '$libdir/plpgsql.so' LANGUAGE 'c';
 
+CREATE TRUSTED PROCEDURAL LANGUAGE 'plpgsql' 
+    HANDLER plpgsql_call_handler LANCOMPILER 'PL/pgSQL';
 
 --##################################################################
 --# The following commands set up automatic sequencing functionality
@@ -169,6 +183,10 @@ create sequence demandPollNxtId minvalue 1;
 --# install: pollResultNxtId id   pollResults
 create sequence pollResultNxtId minvalue 1;
 
+--# Sequence for the mapID column in the map table
+--#          sequence,   column, table
+--# install: mapNxtId mapid map
+create sequence mapNxtId minvalue 1;
 
 --########################################################################
 --# serverMap table - Contains a list of IP Addresses mapped to
@@ -182,7 +200,7 @@ create sequence pollResultNxtId minvalue 1;
 --########################################################################
 
 create table serverMap (
-	ipAddr			varchar(16) not null,
+	ipAddr			text not null,
 	serverName		varchar(64) not null );
 
 create index server_name_idx on serverMap(serverName);
@@ -199,8 +217,8 @@ create index server_name_idx on serverMap(serverName);
 --########################################################################
 
 create table serviceMap (
-	ipAddr			varchar(16) not null,
-	serviceMapName		varchar(32) not null
+	ipAddr			text not null,
+	serviceMapName		varchar(255) not null
 );
 create index servicemap_name_idx on serviceMap(serviceMapName);
 create index serviceMap_ipaddr_idx on serviceMap(ipAddr);
@@ -230,7 +248,7 @@ create index serviceMap_ipaddr_idx on serviceMap(ipAddr);
 
 create table distPoller (
 	dpName			varchar(12) not null,
-	dpIP			varchar(16) not null,
+	dpIP			text not null,
 	dpComment		varchar(256),
 	dpDiscLimit		numeric(5,2),
 	dpLastNodePull		timestamp with time zone,
@@ -277,6 +295,10 @@ create table distPoller (
 --# nodeDomainName   : NetBIOS damain name associated with the node.
 --# operatingSystem  : Operating system running on the node.
 --# lastCapsdPoll    : Date and time of last Capsd scan.
+--# foreignSource    : When importing nodes this contains the source of the
+--#                       nodes, null otherwise
+--# foriegnId        : When importing nodes this contains the id of the node
+--#                       as known to the foriegn source, null otherwise
 --########################################################################
 
 create table node (
@@ -292,10 +314,12 @@ create table node (
 	nodeSysContact	varchar(256),
 	nodeLabel	varchar(256),
 	nodeLabelSource	char(1),
-        nodeNetBIOSName varchar(16),
+	nodeNetBIOSName varchar(16),
 	nodeDomainName  varchar(16),
 	operatingSystem varchar(64),
 	lastCapsdPoll   timestamp with time zone,
+	foreignSource	varchar(64),
+	foreignId       varchar(64),
 
 	constraint pk_nodeID primary key (nodeID),
 	constraint fk_dpName foreign key (dpName) references distPoller
@@ -303,6 +327,8 @@ create table node (
 
 create index node_id_type_idx on node(nodeID, nodeType);
 create index node_label_idx on node(nodeLabel);
+create index node_dpname_idx on node(dpName);
+create unique index node_foreign_unique_idx on node(foreignSource, foreignId);
 
 --#########################################################################
 --# snmpInterface Table - Augments the ipInterface table with information
@@ -312,13 +338,14 @@ create index node_label_idx on node(nodeLabel);
 --# This table provides the following information:
 --#
 --#  nodeID             : Unique identifier for node to which this if belongs
---#  ipAddr             : IP Address associated with this interface
 --#  snmpIpAdEntNetMask : SNMP MIB-2 ipAddrTable.ipAddrEntry.ipAdEntNetMask
 --#                       Value is interface's subnet mask
 --#  snmpPhysAddr       : SNMP MIB-2 ifTable.ifEntry.ifPhysAddress
 --#                       Value is interface's MAC Address
 --#  snmpIfIndex        : SNMP MIB-2 ifTable.ifEntry.ifIndex
---#                       Value is interface's arbitrarily assigned index.
+--#                       Value is interface's arbitrarily assigned index,
+--#                       or -100 if we can query the agent, but we can't find
+--#                       this IP address in the ifTable.
 --#  snmpIfDescr        : SNMP MIB-2 ifTable.ifEntry.ifDescr
 --#                       Value is interface's manufacturer/product name/version
 --#  snmpIfType         : SNMP MIB-2 ifTable.ifEntry.ifType
@@ -335,6 +362,13 @@ create index node_label_idx on node(nodeLabel);
 --#                       1 = Up, 2 = Down, 3 = Testing
 --#  snmpIfAlias		: SNMP MIB-2 ifXTable.ifXEntry.ifAlias
 --#			  Value is interface's device alias
+--#  snmpCollect        : 'C' means collect 'N' means don't collect
+--#                     : 'UC' means collect 'UN' means don't collect (user override)
+--#                       This has been moved from the isSnmpPrimary field in the
+--#                         ipinterface table
+--#  snmpLastCapsdPoll  : Date and time of last poll by capsd or provisiond
+--#  snmpPoll           : 'P' means polled 'N' means not polled (interface admin and oper status)
+--#  snmpLastSnmpPoll   : Date and time of last snmp poll 
 --#
 --# NOTE:  Although not marked as "not null" the snmpIfIndex field
 --#        should never be null.  This table is considered to be uniquely
@@ -346,25 +380,27 @@ create index node_label_idx on node(nodeLabel);
 create table snmpInterface (
     id				INTEGER DEFAULT nextval('opennmsNxtId') NOT NULL,
 	nodeID			integer not null,
-	ipAddr			varchar(16) not null,
-	snmpIpAdEntNetMask	varchar(16),
-	snmpPhysAddr		char(12),
-	snmpIfIndex		integer,
+	snmpIpAdEntNetMask	varchar(45),
+	snmpPhysAddr		varchar(32),
+	snmpIfIndex		integer not null,
 	snmpIfDescr		varchar(256),
 	snmpIfType		integer,
-	snmpIfName		varchar(32),
+	snmpIfName		varchar(96),
 	snmpIfSpeed		bigint,
 	snmpIfAdminStatus	integer,
 	snmpIfOperStatus	integer,
 	snmpIfAlias		varchar(256),
+    snmpLastCapsdPoll timestamp with time zone,
+    snmpCollect     varchar(2) default 'N',
+    snmpPoll     varchar(1) default 'N',
+    snmpLastSnmpPoll timestamp with time zone,
 
     CONSTRAINT snmpinterface_pkey primary key (id),
 	constraint fk_nodeID2 foreign key (nodeID) references node ON DELETE CASCADE
 );
 
-create index snmpinterface_nodeid_ifindex_idx on snmpinterface(nodeID, snmpIfIndex);
---create index snmpinterface_nodeid_idx on snmpinterface(nodeID);
-create index snmpinterface_ipaddr_idx on snmpinterface(ipaddr);
+create unique index snmpinterface_nodeid_ifindex_unique_idx on snmpinterface(nodeID, snmpIfIndex);
+create index snmpinterface_nodeid_idx on snmpinterface(nodeID);
 
 --########################################################################
 --# ipInterface Table - Contains information on interfaces which support
@@ -376,7 +412,9 @@ create index snmpinterface_ipaddr_idx on snmpinterface(ipaddr);
 --#  nodeID          : Unique identifier of the node that "owns" this interface
 --#  ipAddr          : IP Address associated with this interface
 --#  ifIndex	     : SNMP index of interface, used to uniquely identify
---# 		       unnumbered interfaces.
+--# 		           unnumbered interfaces, or null if there is no mapping to
+--#                    snmpInterface table.  Can be -100 if old code added an
+--#                    snmpInterface table entry but no SNMP data could be gathered.
 --#
 --# NOTE: The combination of nodeID, ipAddr, and ifIndex must be unique,
 --# and this must be enforced programmatically.
@@ -387,44 +425,49 @@ create index snmpinterface_ipaddr_idx on snmpinterface(ipaddr);
 --#                     'A' - Alias
 --#                     'D' - Deleted
 --#                     'U' - Unmanaged
---#			'F' - Forced Unmanaged (via the user interface)
+--#                     'F' - Forced Unmanaged (via the user interface)
 --#                     'N' - Not polled as part of any package
+--#                     'X' - Remotely Monitored only
 --#  ipStatus        : If interface supports SNMP this field will
 --#                    hold a numeric representation of interface's
 --#                    operational status (same as 'snmpIfOperStatus'
 --#                    field in the snmpInterface table).
 --#                      1 = Up, 2 = Down, 3 = Testing
---#  ipLastCapsdPoll : Date and time of last poll by capsd
+--#  ipLastCapsdPoll : Date and time of last poll by capsd or provisiond
 --#  isSnmpPrimary   : Character used as a boolean flag
 --#                      'P' - Primary SNMP
 --#                      'S' - Secondary SNMP
 --#                      'N' - Not eligible (does not support SNMP or
 --#                               or has no ifIndex)
+--#                     NOTE: 'C' is no longer a valid value for isSnmpPrimary
+--#                       this has moved to the snmpinterface table
 --#
 --########################################################################
 
 create table ipInterface (
     id              INTEGER DEFAULT nextval('opennmsNxtId') NOT NULL,
-	nodeID			integer,
-	ipAddr			varchar(16) not null,
+	nodeID			integer not null,
+	ipAddr			text not null,
 	ifIndex			integer,
 	ipHostname		varchar(256),
 	isManaged		char(1),
 	ipStatus		integer,
-	ipLastCapsdPoll timestamp with time zone,
+    ipLastCapsdPoll timestamp with time zone,
 	isSnmpPrimary   char(1),
 	snmpInterfaceId	integer,
 
 	CONSTRAINT ipinterface_pkey PRIMARY KEY (id),
-	CONSTRAINT snmpinterface_fkey1 FOREIGN KEY (snmpInterfaceId) REFERENCES snmpInterface (id),
+	CONSTRAINT snmpinterface_fkey2 FOREIGN KEY (snmpInterfaceId) REFERENCES snmpInterface (id) ON DELETE SET NULL,
 	constraint fk_nodeID1 foreign key (nodeID) references node ON DELETE CASCADE
 );
 
+create unique index ipinterface_nodeid_ipaddr_notzero_idx on ipInterface (nodeID, ipAddr) WHERE ipAddr != '0.0.0.0';
 create index ipinterface_nodeid_ipaddr_ismanaged_idx on ipInterface (nodeID, ipAddr, isManaged);
 create index ipinterface_ipaddr_ismanaged_idx on ipInterface (ipAddr, isManaged);
 create index ipinterface_ipaddr_idx on ipInterface (ipAddr);
 create index ipinterface_nodeid_ismanaged_idx on ipInterface (ipAddr);
---create index ipinterface_nodeid_idx on ipInterface (nodeID);
+create index ipinterface_nodeid_idx on ipInterface (nodeID);
+create index ipinterface_snmpInterfaceId_idx on ipInterface (snmpInterfaceId);
 
 --########################################################################
 --# service Table - Contains a name<->number mapping for services
@@ -438,7 +481,7 @@ create index ipinterface_nodeid_ismanaged_idx on ipInterface (ipAddr);
 
 create table service (
 	serviceID		integer not null,
-	serviceName		varchar(32) not null,
+	serviceName		varchar(255) not null,
 
 	constraint pk_serviceID primary key (serviceID)
 );
@@ -452,12 +495,12 @@ create table service (
 --#
 --#  nodeID    : Unique integer identifier for node
 --#  ipAddr    : IP Address of node's interface
---#  ifIndex   : SNMP ifIndex, if available
+--#  ifIndex   : SNMP ifIndex, if available, null otherwise
 --#  serviceID : Unique integer identifier of service/poller package
 --#  lastGood  : Date and time of last successful poll by this poller package
 --#  lastFail  : Date and time of last failed poll by this poller package
 --#  qualifier : Service qualifier.  May be used to distinguish two
---#		 services which have the same serviceID.  For example, in the
+--#		         services which have the same serviceID.  For example, in the
 --#              case of the HTTP service a qualifier might be the specific
 --#              port on which the HTTP server was found.
 --#  status    : Flag indicating the status of the service.
@@ -467,6 +510,7 @@ create table service (
 --#                'F' - Forced unmanaged (via user interface)
 --#                'N' - Not polled as part of any of the packages that the
 --#                      interface belongs to
+--#                'X' - service is remotely monitored only
 --#  source    : Flag indicating how the service was detected.
 --#                'P' - Plugin
 --#                'F' - Forced (via CapsdPluginBehavior.conf)
@@ -477,10 +521,10 @@ create table service (
 
 create table ifServices (
     id				integer default nextval('opennmsNxtId') NOT NULL,
-	nodeID			integer,
-	ipAddr			varchar(16) not null,
+	nodeID			integer not null,
+	ipAddr			text not null,
 	ifIndex			integer,
-	serviceID		integer,
+	serviceID		integer not null,
 	lastGood		timestamp with time zone,
 	lastFail		timestamp with time zone,
 	qualifier		char(16),
@@ -495,12 +539,13 @@ create table ifServices (
 	constraint fk_serviceID1 foreign key (serviceID) references service ON DELETE CASCADE
 );
 
-create index ifservices_nodeid_ipaddr_svc on ifservices(nodeID, ipAddr, serviceId);
+create unique index ifservices_nodeid_ipaddr_svc_unique on ifservices(nodeID, ipAddr, serviceId);
 create index ifservices_nodeid_ipaddr_status on ifservices(nodeID, ipAddr, status);
 create index ifservices_nodeid_status on ifservices(nodeid, status);
---create index ifservices_nodeid_idx on ifservices(nodeID);
---create index ifservices_serviceid_idx on ifservices(serviceID);
+create index ifservices_nodeid_idx on ifservices(nodeID);
+create index ifservices_serviceid_idx on ifservices(serviceID);
 create index ifservices_nodeid_serviceid_idx on ifservices(nodeID, serviceID);
+create index ifservicves_ipInterfaceId_idx on ifservices(ipInterfaceId);
 
 --##################################################################
 --# events Table -- This table provides information on the events
@@ -528,13 +573,14 @@ create index ifservices_nodeid_serviceid_idx on ifservices(nodeID, serviceID);
 --#			  event
 --#  eventParms		: The <parms> element from the Event Data Stream DTD
 --#  nodeID             : Unique integer identifier for node
+--#  ifindex		: The <ifindex> element from the Event Data Stream DTD
 --#  ipAddr             : IP Address of node's interface
 --#  serviceID          : Unique integer identifier of service/poller package
 --#  eventDescr		: Free-form textual description of the event
 --#  eventLogmsg	: The log message for the event
 --#  eventSeverity	: Severity of event
 --#			   1 = Indeterminate
---#			   2 = Cleared (unimplemented at this time)
+--#			   2 = Cleared (implementation is now in alarms)
 --#			   3 = Normal
 --#			   4 = Warning
 --#			   5 = Minor
@@ -603,7 +649,7 @@ create table events (
 	eventTime		timestamp with time zone not null,
 	eventHost		varchar(256),
 	eventSource		varchar(128) not null,
-	ipAddr			varchar(16),
+	ipAddr			text,
 	eventDpName		varchar(12) not null,
 	eventSnmphost		varchar(256),
 	serviceID		integer,
@@ -628,12 +674,12 @@ create table events (
 	eventMouseOverText	varchar(64),
 	eventLog		char(1) not null,
 	eventDisplay		char(1) not null,
+    ifIndex             integer,
 	eventAckUser		varchar(256),
 	eventAckTime		timestamp with time zone,
 	alarmID			integer,
 
-	constraint pk_eventID primary key (eventID),
-	constraint fk_nodeID6 foreign key (nodeID) references node ON DELETE CASCADE
+	constraint pk_eventID primary key (eventID)
 );
 
 create index events_uei_idx on events(eventUei);
@@ -647,6 +693,7 @@ create index events_display_idx on events(eventDisplay);
 create index events_ackuser_idx on events(eventAckUser);
 create index events_acktime_idx on events(eventAckTime);
 create index events_alarmid_idx on events(alarmID);
+create index events_nodeid_display_ackuser on events(nodeid, eventdisplay, eventackuser);
 
 --########################################################################
 --#
@@ -674,30 +721,32 @@ create table outages (
 	outageID		integer not null,
 	svcLostEventID		integer,
 	svcRegainedEventID	integer,
-	nodeID			integer,
-	ipAddr			varchar(16) not null,
-	serviceID		integer,
+	nodeID			integer not null,
+	ipAddr			text not null,
+	serviceID		integer not null,
 	ifLostService		timestamp with time zone not null,
 	ifRegainedService	timestamp with time zone,
 	suppressTime    	timestamp with time zone,
 	suppressedBy		varchar(256),
-	ifServiceId		INTEGER,
+	ifServiceId		INTEGER not null,
 
 	constraint pk_outageID primary key (outageID),
 	constraint fk_eventID1 foreign key (svcLostEventID) references events (eventID) ON DELETE CASCADE,
 	constraint fk_eventID2 foreign key (svcRegainedEventID) references events (eventID) ON DELETE CASCADE,
 	constraint fk_nodeID4 foreign key (nodeID) references node (nodeID) ON DELETE CASCADE,
 	constraint fk_serviceID2 foreign key (serviceID) references service (serviceID) ON DELETE CASCADE,
-	CONSTRAINT ifServices_fkey1 FOREIGN KEY (ifServiceId) REFERENCES ifServices (id) ON DELETE CASCADE
+	CONSTRAINT ifServices_fkey1 FOREIGN KEY (nodeId, ipAddr, serviceId) REFERENCES ifServices (nodeId, ipAddr, serviceId) ON DELETE CASCADE ON UPDATE CASCADE,
+	CONSTRAINT ifServices_fkey2 FOREIGN KEY (ifServiceId) REFERENCES ifServices (id) ON DELETE CASCADE
 );
 
 create index outages_nodeid_ipaddr_svc_idx on outages(nodeID, ipAddr, serviceId);
---create index outages_svclostid_idx on outages(svcLostEventID);
---create index outages_svcregainedid_idx on outages(svcRegainedEventID);
---create index outages_nodeid_idx on outages(nodeID);
---create index outages_serviceid_idx on outages(serviceID);
+create index outages_svclostid_idx on outages(svcLostEventID);
+create index outages_svcregainedid_idx on outages(svcRegainedEventID);
+create index outages_nodeid_idx on outages(nodeID);
+create index outages_serviceid_idx on outages(serviceID);
 create index outages_ipaddr_idx on outages(ipaddr);
 create index outages_regainedservice_idx on outages(ifRegainedService);
+create index outages_ifServivceId_idx on outages(ifServiceId);
 
 --########################################################################
 --#
@@ -733,7 +782,7 @@ create index outages_regainedservice_idx on outages(ifRegainedService);
 create table vulnerabilities (
 	vulnerabilityID		integer not null,
 	nodeID			integer,
-	ipAddr			varchar(16),
+	ipAddr			text,
 	serviceID		integer,
 	creationTime		timestamp with time zone not null,
 	lastAttemptTime		timestamp with time zone not null,
@@ -746,7 +795,7 @@ create table vulnerabilities (
 	descr			text,
 	port			integer,
 	protocol		varchar(32),
-	cveEntry		varchar(14),
+	cveEntry		varchar(255),
 
 	constraint pk_vulnerabilityID primary key (vulnerabilityID)
 );
@@ -793,7 +842,7 @@ create table vulnPlugins (
         summary                 varchar(256),
         family                  varchar(32),
         version                 varchar(32),
-        cveEntry                varchar(14),
+        cveEntry                varchar(255),
         md5                     varchar(32)
 );
 
@@ -841,12 +890,14 @@ create table notifications (
        queueID		varchar(256),
        eventID      integer,
        eventUEI     varchar(256) not null,
+       notifConfigName	varchar(63),
 
        constraint pk_notifyID primary key (notifyID),
        constraint fk_nodeID7 foreign key (nodeID) references node (nodeID) ON DELETE CASCADE,
        constraint fk_eventID3 foreign key (eventID) references events (eventID) ON DELETE CASCADE
 );
 
+create index notifications_nodeid_idx on notifications(nodeid);
 create index notifications_ipaddr_idx on notifications(interfaceID);
 create index notifications_serviceid_idx on notifications(serviceID);
 create index notifications_eventid_idx on notifications(eventID);
@@ -910,6 +961,7 @@ create index userid_notifyid_idx on usersNotified(userID, notifyID);
 --# lastEventTime: timestamp of the last event matching this alarm
 --# description : description from the event
 --# logMsg      : the logmsg from the event
+--# ifIndex      : the ifindex from the event
 --# operInstruct: the operator instructions from the event
 --# tticketID   : helpdesk integration field
 --# tticketState: helpdesk integration field
@@ -923,43 +975,77 @@ create index userid_notifyid_idx on usersNotified(userID, notifyID);
 --########################################################################
 
 create table alarms (
-	alarmID				INTEGER, CONSTRAINT pk_alarmID PRIMARY KEY (alarmID),
-	eventUei				VARCHAR(256) NOT NULL,
-	dpName				VARCHAR(12) NOT NULL,
-    nodeID                  INTEGER, CONSTRAINT fk_alarms_nodeid FOREIGN KEY (nodeID) REFERENCES node (nodeID) ON DELETE CASCADE,
-	ipaddr				VARCHAR(16),
-	serviceID			INTEGER,
-	reductionKey			VARCHAR(256),
-	alarmType			INTEGER,
-    counter              INTEGER NOT NULL,
-	severity				INTEGER NOT NULL,
-	lastEventID			INTEGER, CONSTRAINT fk_eventIDak2 FOREIGN KEY (lastEventID)  REFERENCES events (eventID) ON DELETE CASCADE,
-	firstEventTime		timestamp with time zone NOT NULL,
-	lastEventTime		timestamp with time zone NOT NULL,
-	description			text,
-	logMsg				text,
-	operInstruct			VARCHAR(1024),
-	tticketID			VARCHAR(128),
-	tticketState			INTEGER,
-	mouseOverText		VARCHAR(64),
-	suppressedUntil		timestamp with time zone,
-	suppressedUser		VARCHAR(256),
-	suppressedTime		timestamp with time zone,
-	alarmAckUser			VARCHAR(256),
-	alarmAckTime			timestamp with time zone,
-	managedObjectInstance	VARCHAR(512),
-	managedObjectType		VARCHAR(512),
-	applicationDN			VARCHAR(512),
-	ossPrimaryKey			VARCHAR(512)
+	alarmID                 INTEGER, CONSTRAINT pk_alarmID PRIMARY KEY (alarmID),
+	eventUei                VARCHAR(256) NOT NULL,
+	dpName                  VARCHAR(12) NOT NULL,
+	nodeID                  INTEGER, CONSTRAINT fk_alarms_nodeid FOREIGN KEY (nodeID) REFERENCES node (nodeID) ON DELETE CASCADE,
+	ipaddr                  VARCHAR(39),
+	serviceID               INTEGER,
+	reductionKey            VARCHAR(256),
+	alarmType               INTEGER,
+    counter                 INTEGER NOT NULL,
+	severity                INTEGER NOT NULL,
+	lastEventID             INTEGER, CONSTRAINT fk_eventIDak2 FOREIGN KEY (lastEventID)  REFERENCES events (eventID) ON DELETE CASCADE,
+	firstEventTime          timestamp with time zone,
+	lastEventTime           timestamp with time zone,
+	firstAutomationTime     timestamp with time zone,
+	lastAutomationTime      timestamp with time zone,
+	description             text,
+	logMsg                  text,
+	operInstruct            VARCHAR(1024),
+	tticketID               VARCHAR(128),
+	tticketState            INTEGER,
+	mouseOverText           VARCHAR(64),
+	suppressedUntil         timestamp with time zone,
+	suppressedUser          VARCHAR(256),
+	suppressedTime          timestamp with time zone,
+	alarmAckUser            VARCHAR(256),
+	alarmAckTime            timestamp with time zone,
+	managedObjectInstance   VARCHAR(512),
+	managedObjectType       VARCHAR(512),
+	applicationDN           VARCHAR(512),
+	ossPrimaryKey           VARCHAR(512),
+	x733AlarmType           VARCHAR(31),
+	x733ProbableCause       INTEGER default 0 not null,
+	qosAlarmState           VARCHAR(31),
+    ifIndex                 integer,
+    clearKey				VARCHAR(256),
+    eventParms              text
 	
 );
 
 CREATE INDEX alarm_uei_idx ON alarms(eventUei);
 CREATE INDEX alarm_nodeid_idx ON alarms(nodeID);
 CREATE UNIQUE INDEX alarm_reductionkey_idx ON alarms(reductionKey);
+CREATE INDEX alarm_clearkey_idx ON alarms(clearKey);
 CREATE INDEX alarm_reduction2_idx ON alarms(alarmID, eventUei, dpName, nodeID, serviceID, reductionKey);
 CREATE INDEX alarm_app_dn ON alarms(applicationDN);
 CREATE INDEX alarm_oss_primary_key ON alarms(ossPrimaryKey);
+CREATE INDEX alarm_eventid_idx ON alarms(lastEventID);
+CREATE INDEX alarm_lasteventtime_idx on alarms(lasteventtime);
+CREATE INDEX alarm_firstautomationtime_idx on alarms(firstautomationtime);
+CREATE INDEX alarm_lastautomationtime_idx on alarms(lastautomationtime);
+
+--########################################################################
+--#
+--# Use this table to add additional custom data about an alarm... somewhat
+--# usefull with automations and will be viewable/editable in the alarm
+--# details WebUI page.
+--#
+--# This table contains the following fields:
+--# alarmID     : The id created from the alarmsNxtId sequence.
+--# attribute   : The custom attribute name
+--# attributeValue : The custom attribute value
+--########################################################################
+
+CREATE TABLE alarm_attributes (
+    alarmID         INTEGER, CONSTRAINT fk_alarmID1 FOREIGN KEY (alarmID) REFERENCES alarms (alarmID) ON DELETE CASCADE,
+    attributeName   VARCHAR(63),
+    attributeValue  VARCHAR(255)
+);
+
+CREATE INDEX alarm_attributes_idx ON alarm_attributes(alarmID);
+CREATE UNIQUE INDEX alarm_attributes_aan_idx ON alarm_attributes(alarmID, attributeName);
 
 --# This constraint not understood by installer
 --#        CONSTRAINT pk_usersNotified PRIMARY KEY (userID,notifyID) );
@@ -997,6 +1083,13 @@ CREATE INDEX alarm_oss_primary_key ON alarms(ossPrimaryKey);
 --# room             : The room where this asset resides.
 --# vendorPhone      : A contact number for the vendor.
 --# vendorFax        : A fax number for the vendor.
+--# vendorAssetNumber: The vendor asset number.
+--# username		 : A Username to access the node
+--# password		 : The password to access the node
+--# enable			 : The privilege password to access the node
+--# autoenable		 : If username has privileged access
+--#                    - 'A' autoenable true
+--# connection		 : Connection protocol used to access the node (telnet, ssh, rsh, ...)
 --# userCreated      : The username who created this record.
 --# userLastModified : The last user who modified this record.
 --# lastModifiedDate : The last time this record was modified.
@@ -1009,7 +1102,7 @@ CREATE INDEX alarm_oss_primary_key ON alarms(ossPrimaryKey);
 --########################################################################
 
 create table assets (
-	    id				INTEGER DEFAULT nextval('opennmsNxtId') NOT NULL,
+        id              INTEGER DEFAULT nextval('opennmsNxtId') NOT NULL,
         nodeID          integer,
         category        varchar(64) not null,
         manufacturer    varchar(64),
@@ -1037,6 +1130,11 @@ create table assets (
         vendorPhone     varchar(64),
         vendorFax       varchar(64),
         vendorAssetNumber varchar(64),
+        username		varchar(32),
+        password		varchar(32),
+        enable			varchar(32),
+        autoenable		char(1),
+        connection		varchar(32),
         userLastModified char(20) not null,
         lastModifiedDate timestamp with time zone not null,
         dateInstalled   varchar(64),
@@ -1049,9 +1147,23 @@ create table assets (
         notifyCategory   varchar(64),
         pollerCategory   varchar(64),
         thresholdCategory   varchar(64),
-        comment         varchar(1024),
+        comment         text,
         managedObjectInstance varchar(512),
         managedObjectType varchar(512),
+        cpu		varchar(32),
+        ram		varchar(10),
+        storagectrl	varchar(32),
+        hdd1		varchar(32),
+        hdd2		varchar(32),
+        hdd3		varchar(32),
+        hdd4		varchar(32),
+        hdd5		varchar(32),
+        hdd6		varchar(32),
+        numpowersupplies		varchar(1),
+        inputpower		varchar(6),
+        additionalhardware		varchar(64),
+        admin		varchar(32),
+        snmpcommunity		varchar(32),
         
     constraint pk_assetID primary key (id),
 	constraint fk_nodeID5 foreign key (nodeID) references node ON DELETE CASCADE
@@ -1081,6 +1193,23 @@ create table categories (
 
 CREATE UNIQUE INDEX category_idx ON categories(categoryName);
 
+--##################################################################
+--# The following command adds an initial set of categories if there
+--# are no categories in the category table
+--##################################################################
+--# criteria: SELECT count(*) = 0 from categories
+insert into categories values (nextVal('catNxtId'), 'Routers', null);
+--# criteria: SELECT count(*) = 0 from categories
+insert into categories values (nextVal('catNxtId'), 'Switches', null);
+--# criteria: SELECT count(*) = 0 from categories
+insert into categories values (nextVal('catNxtId'), 'Servers', null);
+--# criteria: SELECT count(*) = 0 from categories
+insert into categories values (nextVal('catNxtId'), 'Production', null);
+--# criteria: SELECT count(*) = 0 from categories
+insert into categories values (nextVal('catNxtId'), 'Test', null);
+--# criteria: SELECT count(*) = 0 from categories
+insert into categories values (nextVal('catNxtId'), 'Development', null);
+
 --########################################################################
 --# category_node table - Many-to-Many mapping table of categories to nodes
 --#
@@ -1100,102 +1229,7 @@ create table category_node (
 
 CREATE INDEX catid_idx on category_node(categoryId);
 CREATE INDEX catnode_idx on category_node(nodeId);
-
---########################################################################
---#
---# aggregate_status_views table - parent table for defining a view of aggregate statuses
---#
---# This table contains the following columns:
---#
---#  id			 : The view id.
---#  name		 : Unique name of this view.
---#  tableName   : Name of the table containing the column for which a where clause will
---#                be assigned to select nodes from the node table (typical implementation
---#                is the assets table.
---#  columnName  : Column to be used in the where clause for the selection of nodes for which
---#                to represent the aggregated status based on categories listed in a status def.
---#  columnValue : The value used in the where clause described above.
---#
---########################################################################
-
-CREATE TABLE aggregate_status_views (
-	id					INTEGER NOT NULL,
-	name				VARCHAR(64) NOT NULL,
-	tableName			VARCHAR(64),
-	columnName			VARCHAR(64),
-	columnValue			VARCHAR(128),
-	
-	CONSTRAINT asv_pkey PRIMARY KEY (id)
-);
-CREATE UNIQUE INDEX status_view_name_idx ON aggregate_status_views(name);
-
-
---########################################################################
---#
---#  aggregate_status_definitions table - table for persisting the name of
---#      a status definition and used as a parent table for relating the
---#      categories to be used in the aggregated status.  Also joined with
---#      the aggregate_status_views table for determining the which status
---#      defs to be shown in a view.
---#
---#  This table contains the following columns:
---#
---#  id           : The status def id.
---#  name         : The unique name give a status def.
---#
---########################################################################
-
-CREATE TABLE aggregate_status_definitions (
-	id					INTEGER NOT NULL,
-	name				VARCHAR(64) NOT NULL,
-	
-	CONSTRAINT asd_pkey PRIMARY KEY (id)
-);
-CREATE UNIQUE INDEX status_def_name_idx ON aggregate_status_definitions(name);
-
-
---########################################################################
---#
---#  category_statusdef - table for defining many-to-many relations from a
---#    category to a status def.  A category can be assigned to one or more
---#    status defs and a status def can be assigned one or more categories.
---#
---#  This table contains the following columns:
---#
---#  categoryId  : The id of a category from the categories table.
---#  statusDefId : The id of a status definition.
---#
---########################################################################
-
-CREATE TABLE category_statusdef (
-	categoryId			INTEGER NOT NULL,
-	statusDefId			INTEGER NOT NULL,
-	
-	CONSTRAINT categoryid_fkey FOREIGN KEY (categoryId) REFERENCES categories (categoryId) ON DELETE CASCADE,
-	CONSTRAINT statusdef_fkey FOREIGN KEY (statusDefId) REFERENCES aggregate_status_definitions (id) ON DELETE CASCADE
-);
-
---########################################################################
---#
---#  statusview_statusdef - table for defining many-to-many relations from a
---#    status def to a status view.  A status def can be assigned to one or
---#    more status views and a status view can be assigned on or more status
---#    defs.
---#
---#  This table contains the following columns:
---#
---#  statusViewId  : The id of a status view.
---#  statusDefId   : The id of a status def.
---#
---########################################################################
-
-CREATE TABLE statusview_statusdef (
-	statusViewId		INTEGER NOT NULL,
-	statusDefId			INTEGER NOT NULL,
-	
-	CONSTRAINT statusviewid_fkey FOREIGN KEY (statusViewId) REFERENCES aggregate_status_views (id) ON DELETE CASCADE,
-	CONSTRAINT statusdefid_fkey FOREIGN KEY (statusDefId) REFERENCES aggregate_status_definitions (id) ON DELETE CASCADE
-);
+CREATE UNIQUE INDEX catenode_unique_idx on category_node(categoryId, nodeId);
 
 --########################################################################
 --# pathOutage Table - Contains the critical path IP address and service
@@ -1217,12 +1251,12 @@ CREATE TABLE statusview_statusdef (
 create table pathOutage (
 	nodeID			integer,
 	criticalPathIp		varchar(16) not null,
-	criticalPathServiceName	varchar(32),
+	criticalPathServiceName	varchar(255),
 
 	constraint fk_nodeID8 foreign key (nodeID) references node ON DELETE CASCADE
 );
 
-create index pathoutage_nodeid_idx on pathOutage(nodeID);
+create unique index pathoutage_nodeid on pathOutage(nodeID);
 create index pathoutage_criticalpathip on pathOutage(criticalPathIp);
 create index pathoutage_criticalpathservicename_idx on pathOutage(criticalPathServiceName);
 
@@ -1269,7 +1303,7 @@ create table pollResults (
 	id			integer,
 	pollId      integer,
 	nodeId		integer,
-	ipAddr		varchar(16),
+	ipAddr		text,
 	ifIndex		integer,
 	serviceId	integer,
 	statusCode	integer,
@@ -1284,27 +1318,146 @@ create table pollResults (
 create index pollresults_poll_id on pollResults(pollId);
 create index pollresults_service on pollResults(nodeId, ipAddr, ifIndex, serviceId);
 
+--#####################################################
+--# locaation_monitors Table - contains a list of monitors in remote
+--#                            locations
+--#
+--# This table contains the following information:
+--#
+--#  id          : surrogate key generated by sequence 
+--#  name        : name of the location monitor
+--#  definitionName : used to reference XML configuration
+--#
+--#
+--#####################################################
+
+CREATE TABLE location_monitors (
+    id INTEGER,
+    status VARCHAR(31) NOT NULL,
+    lastCheckInTime timestamp with time zone,
+    definitionName VARCHAR(31) NOT NULL,
+    
+    CONSTRAINT location_monitors_pkey PRIMARY KEY (id)
+);
+
+CREATE TABLE location_monitor_details (
+    locationMonitorId INTEGER NOT NULL,
+    property VARCHAR(255) NOT NULL,
+    propertyValue VARCHAR(255),
+    
+    CONSTRAINT location_monitor_fkey1 FOREIGN KEY (locationMonitorId) REFERENCES location_monitors (id) ON DELETE CASCADE
+);
+
+create index location_monitor_details_id on location_monitor_details(locationMonitorId);
+create unique index location_monitor_details_id_property on location_monitor_details(locationMonitorId, property);
+
+
+--#############################################################################
+--# location_specific_status_changes Table - contains a list status
+--#      changed reported for a service by a monitor in a remote
+--#      location.
+--#
+--# This table contains the following information:
+--#
+--#  id                : surrogate key generated by a sequence
+--#  locationMonitorId : foreign key referencing a specific
+--#                      monitor in a remote location
+--#  serviceId         : foreign key referencing a specific monitored services
+--#  statusTime        : time of reported status from remote location monitor 
+--#  reason            : description of status change
+--#  responseTime      : data for latency reporting
+--#
+--#############################################################################
+CREATE TABLE location_specific_status_changes (
+    id INTEGER,
+    locationMonitorId INTEGER NOT NULL,
+    ifServiceId INTEGER NOT NULL,
+    statusCode INTEGER NOT NULL,
+    statusTime timestamp with time zone NOT NULL,
+    statusReason VARCHAR(255),
+    responseTime DOUBLE PRECISION,
+
+    CONSTRAINT location_specific_status_changes_pkey PRIMARY KEY (id),
+    CONSTRAINT location_monitor_fkey2 FOREIGN KEY (locationMonitorId) REFERENCES location_monitors (id) ON DELETE CASCADE,
+    CONSTRAINT ifservices_fkey4 FOREIGN KEY (ifServiceId) REFERENCES ifservices (id) ON DELETE CASCADE
+);
+
+create index location_specific_status_changes_ifserviceid on location_specific_status_changes(ifserviceid);
+create index location_specific_status_changes_locationmonitorid on location_specific_status_changes(locationmonitorid);
+create index location_specific_status_changes_locationmonitorid_ifserviceid on location_specific_status_changes(locationmonitorid, ifserviceid);
+create index location_specific_status_changes_locationmonitorid_loc_if_time on location_specific_status_changes(locationmonitorid, ifserviceid, statustime);
+create index location_specific_status_changes_statustime on location_specific_status_changes(statustime);
+
+
+
+--########################################################################
+--# applications table - Contains list of applications for services
+--#
+--# This table contains the following fields:
+--#
+--# id           : The application id
+--# name         : Textual name of a application
+--########################################################################
+
+create table applications (
+	id			integer,
+	name			varchar(32) not null,
+
+	constraint applications_pkey primary key (id)
+);
+
+CREATE UNIQUE INDEX applications_name_idx ON applications(name);
+
+--########################################################################
+--# application_service_map table - Many-to-Many mapping table of
+--# applications to ifServices
+--#
+--# This table contains the following fields:
+--#
+--# appId           : The application id from applications table
+--# ifServiceId     : The id from the ifServices table.
+--########################################################################
+
+create table application_service_map (
+	appId		integer,
+	ifServiceId	integer,
+
+	constraint applicationid_fkey1 foreign key (appId) references applications (id) ON DELETE CASCADE,
+	constraint ifservices_fkey3 foreign key (ifServiceId) references ifServices (id) ON DELETE CASCADE
+);
+
+CREATE INDEX appid_idx on application_service_map(appid);
+CREATE INDEX ifserviceid_idx on application_service_map(ifserviceid);
+CREATE UNIQUE INDEX appid_ifserviceid_idex on application_service_map(appid,ifserviceid);
+
 
 --##################################################################
 --# The following command adds the initial loopback poller entry to
 --# the 'distPoller' table.
 --##################################################################
+--# criteria: SELECT count(*) = 0 from distPoller where dpName = 'localhost'
 insert into distPoller (dpName, dpIP, dpComment, dpDiscLimit, dpLastNodePull, dpLastEventPull, dpLastPackagePush, dpAdminState, dpRunState) values ('localhost', '127.0.0.1', 'This is the default poller.', 0.10, null, null, null, 1, 1);
 
 --########################################################################
 --#
 --# next are Italian Adventures 2 specific tables
 --# author rssntn67@yahoo.it
+--#
 --# 10/08/04
 --# creato il file e le tabelle
 --# rev. rssntn67@yahoo.it
+--#
 --# 18/08/04 
 --# eliminato createtime dalle tabelle
 --# sufficiente il createtime della tabella node
+--#
 --# 11/07/05
 --# modificata la tabella stpnode aggiunto campo vlanname
 --# definita primary key
 --# per la tabella atinterface, 
+--# Modified: 2007-01-09
+--# Note: Added vlan table, Modified Stpnode Table
+--#
 --#
 --########################################################################
 
@@ -1335,23 +1488,68 @@ insert into distPoller (dpName, dpIP, dpComment, dpDiscLimit, dpLastNodePull, dp
 --########################################################################
 
 create table atinterface (
+    id			integer default nextval('opennmsNxtId') not null,
 	nodeid		integer not null,
-	ipAddr		varchar(16) not null,
-	atPhysAddr	varchar(12) not null,
+	ipAddr		text not null,
+	atPhysAddr	varchar(32) not null,
 	status		char(1) not null,
 	sourceNodeid	integer not null,
 	ifindex		integer not null,
 	lastPollTime	timestamp not null,
-    
-	constraint fk_ia_nodeID1 foreign key (nodeid) references node
+    constraint pk_atinterface primary key (nodeid,ipAddr,atPhysAddr),
+	constraint fk_ia_nodeID1 foreign key (nodeid) references node on delete cascade
 );
 
---# this doesn't wor with installer 
---#alter table atinterface add constraint pk_atinterface primary key (nodeid,ipAddr,atPhysAddr);
 
-create index atinterface_nodeid_idx on atinterface USING HASH(nodeid) ;
+
+create index atinterface_nodeid_idx on atinterface(nodeid);
 create index atinterface_node_ipaddr_idx on atinterface(nodeid,ipaddr);
 create index atinterface_atphysaddr_idx on atinterface(atphysaddr);
+
+--########################################################################
+--#
+--# vlan table  --   This table maintains a record of generic vlan table
+--#					
+--# This table provides the following information:
+--#
+--#  nodeid   	              : Unique integer identifier of the node
+--#  vlanid                   : The vlan identifier to be referred to in a unique fashion.
+--#  vlanname                 : the name the vlan 
+--#  vlantype           	  : Indicates what type of vlan is this:
+--#						        '1' ethernet
+--#						        '2' FDDI
+--#						        '3' TokenRing
+--#                             '4' FDDINet
+--#                             '5' TRNet
+--#                             '6' Deprecated
+--#  vlanstatus               : An indication of what is the Vlan Status: 
+--#						        '1' operational
+--#						        '2' suspendid
+--#						        '3' mtuTooBigForDevice
+--#						        '4' mtuTooBigForTrunk
+--#  status            : Flag indicating the status of the entry.
+--#                      'A' - Active
+--#                      'N' - Not Active
+--#                      'D' - Deleted
+--#                      'K' - Unknown
+--#  lastPollTime             : The last time when this information was retrived
+--#
+--########################################################################
+
+create table vlan (
+    nodeid		 integer not null,
+    vlanid	     integer not null,
+    vlanname     varchar(64) not null,
+    vlantype     integer,
+    vlanstatus   integer,
+    status		 char(1) not null,
+    lastPollTime timestamp not null,
+    constraint pk_vlan primary key (nodeid,vlanid),
+	constraint fk_ia_nodeID8 foreign key (nodeid) references node on delete cascade
+);
+
+create index vlan_vlanname_idx on vlan(vlanname);
+
 
 --########################################################################
 --#
@@ -1412,14 +1610,11 @@ create table stpnode (
     lastPollTime             timestamp not null,
     basevlan                 integer not null,
     basevlanname			 varchar(32),
-
-	constraint fk_ia_nodeID2 foreign key (nodeid) references node
+    constraint pk_stpnode primary key (nodeid,basevlan),
+	constraint fk_ia_nodeID2 foreign key (nodeid) references node on delete cascade
 );
 
---# this doesn't wor with installer 
---#alter table stpnode add constraint pk_stpnode primary key (nodeid,basevlan);
-
-create index stpnode_nodeIdBaseVlan_idx on stpnode(nodeid,basevlan);
+create index stpnode_nodeid_idx on stpnode(nodeid);
 create index stpnode_baseBridgeAddress_idx on stpnode(baseBridgeAddress);
 create index stpnode_stpdesignatedroot_idx on stpnode(stpdesignatedroot);
 
@@ -1483,13 +1678,10 @@ create table stpinterface (
     lastPollTime         timestamp not null,
     stpvlan                 integer not null,
 
-	constraint fk_ia_nodeID3 foreign key (nodeid) references node
+    constraint pk_stpinterface primary key (nodeid,bridgeport,stpvlan),
+	constraint fk_ia_nodeID3 foreign key (nodeid) references node on delete cascade
 );
 
---# this doesn't wor with installer 
---#alter table stpinterface add constraint pk_stpinterface primary key (nodeid,bridgeport,stpvlan);
-
-create index stpinterface_node_bridgeport_stpvlan on stpinterface(nodeid,bridgeport,stpvlan);
 create index stpinterface_node_ifindex_idx on stpinterface(nodeid,ifindex);
 create index stpinterface_node_idx on stpinterface(nodeid);
 create index stpinterface_stpvlan_idx on stpinterface(stpvlan);
@@ -1573,13 +1765,11 @@ create table iprouteinterface (
     status		    char(1) not null,
     lastPollTime            timestamp not null,
 
-	constraint fk_ia_nodeID4 foreign key (nodeid) references node
+	constraint pk_iprouteinterface primary key (nodeid,routedest),
+	constraint fk_ia_nodeID4 foreign key (nodeid) references node on delete cascade
 );
 
---# this doesn't wor with installer 
---#alter table iprouteinterface add constraint pk_iprouteinterface primary key (nodeid,routedest);
-
-create index iprouteinterface_node_routedest_idx on iprouteinterface(nodeid,routedest);
+create index iprouteinterface_nodeid_idx on iprouteinterface(nodeid);
 create index iprouteinterface_node_ifdex_idx on iprouteinterface(nodeid,routeifindex);
 create index iprouteinterface_rnh_idx on iprouteinterface(routenexthop);
 
@@ -1587,7 +1777,6 @@ create index iprouteinterface_rnh_idx on iprouteinterface(routenexthop);
 --#
 --# dataLinkInterface table -- This table maintains a record of data link info 
 --#                            among  the interfaces. 
---#                            Data is calculated using info from other tables
 --#
 --# This table provides the following information:
 --#
@@ -1600,29 +1789,69 @@ create index iprouteinterface_rnh_idx on iprouteinterface(routenexthop);
 --#                      'A' - Active
 --#                      'N' - Not Active
 --#                      'D' - Deleted
---#                      'K' - Unknown
+--#                      'U' - Unknown
+--#                      'G' - Good
+--#                      'B' - Bad
+--#                      'X' - Admin Down
+--#  linkTypeId        : An Integer (corresponding at iftype for cables links) indicating the type  
 --#  lastPollTime      : The last time when this information was retrived
 --#
 --########################################################################
 
 create table datalinkinterface (
-    nodeid	     integer not null,
+    id               integer default nextval('opennmsNxtId') not null,
+    nodeid	         integer not null,
     ifindex          integer not null,
     nodeparentid     integer not null,
 	parentIfIndex    integer not null,
-    status	     char(1) not null,
-    lastPollTime timestamp not null,
+    status	         char(1) not null,
+    linkTypeId       integer,
+    lastPollTime     timestamp not null,
 
-	constraint fk_ia_nodeID5 foreign key (nodeid) references node,
-	constraint fk_ia_nodeID6 foreign key (nodeparentid) references node (nodeid)
+    constraint pk_datalinkinterface primary key (id),
+	constraint fk_ia_nodeID5 foreign key (nodeid) references node on delete cascade,
+	constraint fk_ia_nodeID6 foreign key (nodeparentid) references node (nodeid) ON DELETE CASCADE
 );
---# this doesn't work with installer 
---#alter table datalinkinterface add constraint pk_datalinkinterface primary key (nodeid,ifindex);
 
+create index dlint_id_idx on datalinkinterface(id);
 create index dlint_node_idx on datalinkinterface(nodeid);
-create index dlint_node_ifindex_idx on datalinkinterface(nodeid,ifindex);
 create index dlint_nodeparent_idx on datalinkinterface(nodeparentid);
 create index dlint_nodeparent_paifindex_idx on datalinkinterface(nodeparentid,parentifindex);
+
+--########################################################################
+--#
+--# linkState table -- This table maintains the state of the link. 
+--#
+--# This table provides the following information:
+--#
+--#  nodeid            : Unique integer identifier for the linked node 
+--#  IfIndex           : SNMP index of interface connected to the link on the node, 
+--#                      is -1 if it doesn't support SNMP.
+--#  nodeparentid      : Unique integer identifier for linking node
+--#  parentIfIndex     : SNMP index of interface linked on the parent node.
+--#  status            : Flag indicating the status of the entry.
+--#                      'A' - Active
+--#                      'N' - Not Active
+--#                      'D' - Deleted
+--#                      'U' - Unknown
+--#                      'G' - Good
+--#                      'B' - Bad
+--#                      'X' - Admin Down
+--#  linkTypeId        : An Integer (corresponding at iftype for cables links) indicating the type  
+--#  lastPollTime      : The last time when this information was retrived
+--#
+--########################################################################
+
+create table linkstate (
+    id                      integer default nextval('opennmsNxtId') not null,
+    datalinkinterfaceid     integer not null, 
+    linkstate               varchar(30) default 'LINK_UP' not null,
+
+    constraint pk_linkstate primary key (id),
+    constraint fk_linkstate_datalinkinterface_id foreign key (datalinkinterfaceid) references datalinkinterface (id) on delete cascade
+);
+
+create unique index linkstate_datalinkinterfaceid_index on linkstate (datalinkinterfaceid);
 
 --########################################################################
 --#
@@ -1652,10 +1881,11 @@ create table inventory (
         pathtofile varchar(256) not null,
 	    status char(1) not null,
 
-		constraint fk_ia_nodeID7 foreign key (nodeID)	references node
+		constraint fk_ia_nodeID7 foreign key (nodeID) references node on delete cascade
         );
 
 create index inventory_nodeid_name_idx on inventory(nodeid,name);
+create index inventory_nodeid_idx on inventory(nodeid);
 create index inventory_lastpolltime_idx on inventory(lastpolltime);
 create index inventory_status_idx on inventory(status);
 
@@ -1669,8 +1899,9 @@ create index inventory_status_idx on inventory(status);
 --#  mapName           : Identifier of the map
 --#  mapBackGround     : bakground image assocated with map
 --#  mapOwner          : user who has the ownership of the map (also the user that created the map)
+--#  mapGroup          : group who has the access to the map
 --#  mapCreateTime     : The time the map was created
---#  mapAccess         : a 6 character sequence rwrwrw to access the map owner/group/all permission
+--#  mapAccess         : a 2/4 character sequence rw,ro, rwro to access the map owner/group/all permission
 --#  userLastModifies  : the user who last modified the map
 --#  lastModifiedTime  : The last time the map was modified
 --#  mapScale          : A float scale factor for the map
@@ -1679,16 +1910,18 @@ create index inventory_status_idx on inventory(status);
 --#  mapType           : Flag indicating the type of the map.
 --#                      'A' - Map generated automatically
 --#                      'U' - Map generated by user
+--#                      'S' - Map Static means that is an Automatic map Saved by a user
 --#                      'D' - Map deleted // FOR FUTURE USE
 --#  mapWidth		   : Width of the map
 --#  mapHeight		   : Height of the map
 --########################################################################
 
 create table map (
-    mapId	   		 integer not null,
-    mapName	   		 varchar(40) not null,
+    mapId	   		 integer default nextval('opennmsNxtId') not null,
+    mapName	   		 varchar(63) not null,
     mapBackGround	 varchar(256),
     mapOwner   		 varchar(64) not null,
+    mapGroup   		 varchar(64),
     mapCreateTime	 timestamp not null,
     mapAccess		 char(6) not null,
     userLastModifies varchar(64) not null,
@@ -1710,7 +1943,7 @@ create table map (
 --# This table provides the following information:
 --#
 --#  mapId             : Identifier of the parent map
---#  elementId         : Identifier of the elemen map
+--#  elementId         : Identifier of the element map
 --#  elemenType        : Flag indicating the type of the element.
 --#                      'M' - Element is a Map 
 --#                      'N' - Element is a Node
@@ -1722,6 +1955,7 @@ create table map (
 --########################################################################
 
 create table element (
+    id               integer default nextval('opennmsNxtId') not null,
     mapId	   		 integer not null,
     elementId		 integer not null,
 	elementType      char(1) not null,
@@ -1730,19 +1964,15 @@ create table element (
     elementX         integer,
 	elementY         integer,
 	
+	constraint pk_element primary key (mapId,elementId,elementType),
 	constraint fk_mapID foreign key (mapId) references map on delete cascade
 );
 
 create index element_mapid_elementid on element(mapId,elementId);
 
 --# These don't work with installer
---#alter table element add	constraint pk_element primary key (mapId,elementId);
---#alter table element add constraint elementid check (elementid <> 0);
 
---# Sequence for the eventID column in the events table
---#          sequence,   column, table
---# install: mapNxtId mapid map
-create sequence mapNxtId minvalue 1;
+--#alter table element add constraint elementid check (elementid <> 0);
 
 --########################################################################
 --#
@@ -1775,6 +2005,177 @@ create table reportLocator (
 --#          sequence,   column, table
 --# install: reportNxtId reportId reportLocator
 create sequence reportNxtId minvalue 1;
+
+--########################################################################
+--#
+--# reportcatalog table     -- report catalog data
+--#                            reports and their location on disk
+--#					
+--# This table provides the following information:
+--#
+--#  id                	: Unique integer identifier for the report
+--#  reportId			: Name of the report category
+--#  title				: display title
+--#  date				: when the report was run
+--#  location			: where on disk we put the report
+--#
+--########################################################################
+
+create table reportCatalog (
+    id			 		integer not null,
+    reportId			varchar(256) not null,
+    title				varchar(256) not null,
+	date				timestamp with time zone not null,
+    location			varchar(256) not null
+);
+
+--# Sequence for the reportId column in the reportLocator table
+--#          sequence,   column, table
+--# install: reportCatalogNxtId id reportCatalog
+create sequence reportCatalogNxtId minvalue 1;
+
+
+--########################################################################
+--#
+--# statisticsReport table -- This table contains a record of statistics
+--#                           reports
+--#					
+--# This table provides the following information:
+--#
+--#  id                	: Unique integer identifier for the report
+--#  startDate          : The beginning date for the report (data starting
+--#                       at this time stamp is included)
+--#  endDate            : The end date for the report (data up to,
+--#                       but not including this time stamp is included)
+--#  name               : Report name this references a report definition
+--#                       in statsd-configuration.xml
+--#  description        : User-friendly description for this report
+--#  jobStartedDate     : The date when this report run started
+--#  jobCompletedDate   : The date when this report run completed
+--#  purgeDate          : The date at which this report can be purged
+--#
+--########################################################################
+
+create table statisticsReport (
+	id					integer default nextval('opennmsNxtId') not null,
+	startDate			timestamp with time zone not null,
+	endDate				timestamp with time zone not null,
+	name				varchar(63) not null,
+	description			varchar(255) not null,
+	jobStartedDate		timestamp with time zone not null,
+	jobCompletedDate	timestamp with time zone not null,
+	purgeDate			timestamp with time zone not null,
+
+	constraint pk_statisticsReport_id primary key (id)
+);
+
+create index statisticsReport_startDate on statisticsReport(startDate);
+create index statisticsReport_name on statisticsReport(name);
+create index statisticsReport_purgeDate on statisticsReport(purgeDate);
+
+
+--########################################################################
+--#
+--# resourceReference table -- This table is a lookup table for string
+--#                            resourceIds. This will help keep the relatively
+--#                            long (tens of characters) string resource IDs
+--#                            out of the statistics table.
+--#					
+--# This table provides the following information:
+--#
+--#  id                	: Unique integer identifier for the resource
+--#  resourceId         : String resource ID for this resource
+--#
+--########################################################################
+
+create table resourceReference (
+	id					integer default nextval('opennmsNxtId') not null,
+	resourceId			varchar(255) not null,
+
+	constraint pk_resourceReference_id primary key (id)
+);
+
+create unique index resourceReference_resourceId on resourceReference (resourceId);
+
+
+--########################################################################
+--#
+--# statisticsReportData table -- This table contains individual data points
+--#                               (aggregated or not) for statistics reports.
+--#					
+--# This table provides the following information:
+--#
+--#  id                	: Unique integer identifier for the data
+--#  reportId           : Integer ID for the report that created this data
+--#  resourceId         : Integer ID for this resource related to this data
+--#  value              : Float containing the value for this data point
+--#
+--########################################################################
+
+create table statisticsReportData (
+	id					integer default nextval('opennmsNxtId') not null,
+	reportId			integer not null,
+	resourceId			integer not null,
+	value				float8 not null,
+	
+	constraint pk_statsData_id primary key (id),
+	constraint fk_statsData_reportId foreign key (reportId) references statisticsReport (id) on delete cascade,
+	constraint fk_statsData_resourceId foreign key (resourceId) references resourceReference (id) on delete cascade
+);
+
+create unique index statsData_unique on statisticsReportData(reportId, resourceId);
+
+
+--# Begin Acknowledgment persistence table structure
+
+--########################################################################
+--#
+--# acks table -- This table contains each acknowledgment
+--# 
+--#  id                 : Unique ID
+--#  ackTime            : Time of the Acknowledgment
+--#  ackUser            : User ID of the Acknowledgment
+--#  ackType            : Enum of Acknowlegable Types in the system (i.e
+--#                     : notifications/alarms
+--#  ackAction          : Enum of Acknowlegable Actions in the system (i.e.
+--#                     : ack,unack,clear,escalate
+--#  refId              : Acknowledgable's ID
+--########################################################################
+
+CREATE TABLE acks (
+    id        integer default nextval('opennmsnxtid') not null,
+    ackTime   timestamp with time zone not null default now(),
+    ackUser   varchar(64) not null default 'admin',
+    ackType   integer not null default 1,
+    ackAction integer not null default 1,
+    log       varchar(128),
+    refId     integer,
+    
+    constraint pk_acks_id primary key (id)
+);
+
+create index ack_time_idx on acks(ackTime);
+create index ack_user_idx on acks(ackUser);
+
+--########################################################################
+--#
+--#  categories to groups mapping table -- This table used for maintaining a many-to-many
+--#     relationship between categories and groups
+--# 
+--#  categoryId       : References foreign key in the groups table
+--#  groupId          : References foreign key in the users table
+--########################################################################
+
+create table category_group (
+    categoryId  integer not null,
+    groupId     varchar(16) not null,
+
+    constraint categoryid_fkey2 foreign key (categoryId) references categories ON DELETE CASCADE
+);
+
+CREATE INDEX catid_idx3 on category_group(categoryId);
+CREATE INDEX catgroup_idx on category_group(groupId);
+CREATE UNIQUE INDEX catgroup_unique_idx on category_group(categoryId, groupId);
 
 --# Begin Quartz persistence tables
 
@@ -1822,6 +2223,7 @@ CREATE TABLE qrtz_triggers
     CALENDAR_NAME VARCHAR(80),
     MISFIRE_INSTR SMALLINT,
     JOB_DATA BYTEA,
+    PRIORITY INTEGER,
 
     constraint pk_qrtz_triggers PRIMARY KEY (TRIGGER_NAME,TRIGGER_GROUP),
     constraint fk_qrtz_triggers FOREIGN KEY (JOB_NAME,JOB_GROUP)
@@ -1905,6 +2307,7 @@ CREATE TABLE qrtz_fired_triggers
     JOB_GROUP VARCHAR(80),
     IS_STATEFUL BOOL,
     REQUESTS_RECOVERY BOOL,
+    PRIORITY INTEGER,
     constraint pk_qrtz_fired_triggers PRIMARY KEY (ENTRY_ID)
 );
 
@@ -1923,11 +2326,19 @@ CREATE TABLE qrtz_locks
     constraint pk_qrtz_locks PRIMARY KEY (LOCK_NAME)
 );
 
-
-INSERT INTO qrtz_locks values('TRIGGER_ACCESS');
-INSERT INTO qrtz_locks values('JOB_ACCESS');
-INSERT INTO qrtz_locks values('CALENDAR_ACCESS');
-INSERT INTO qrtz_locks values('STATE_ACCESS');
-INSERT INTO qrtz_locks values('MISFIRE_ACCESS');
+--##################################################################
+--# The following command should populate the qrtz_locks table
+--# are no categories in the category table
+--##################################################################
+--# criteria: SELECT count(*) = 0 from qrtz_locks
+insert into qrtz_locks values('TRIGGER_ACCESS');
+--# criteria: SELECT count(*) = 0 from qrtz_locks
+insert into qrtz_locks values('JOB_ACCESS');
+--# criteria: SELECT count(*) = 0 from qrtz_locks
+insert into qrtz_locks values('CALENDAR_ACCESS');
+--# criteria: SELECT count(*) = 0 from qrtz_locks
+insert into qrtz_locks values('STATE_ACCESS');
+--# criteria: SELECT count(*) = 0 from qrtz_locks
+insert into qrtz_locks values('MISFIRE_ACCESS');
 
 --# End Quartz persistence tables
