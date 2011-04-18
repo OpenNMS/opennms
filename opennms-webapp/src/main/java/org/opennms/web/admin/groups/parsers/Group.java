@@ -77,7 +77,7 @@ public class Group implements Cloneable {
     private PropertyChangeSupport m_propChange;
 
     /**
-     * Default constructor, intializes the users list
+     * Default constructor, initializes the users list
      */
     public Group() {
         m_propChange = new PropertyChangeSupport(this);
