@@ -20,9 +20,7 @@ import org.springframework.core.io.Resource;
  * One thing to note -- if you are importing/saving a requisition to the fused foreign
  * source repository, any pending changes to the foreign source will be promoted to the
  * deployed repository as well.
- *
- * @author ranger
- * @version $Id: $
+ * </p>
  */
 public class FusedForeignSourceRepository extends AbstractForeignSourceRepository implements ForeignSourceRepository {
     @Autowired

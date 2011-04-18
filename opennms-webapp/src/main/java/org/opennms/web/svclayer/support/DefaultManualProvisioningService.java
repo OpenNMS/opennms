@@ -61,6 +61,7 @@ import org.opennms.netmgt.model.events.EventBuilder;
 import org.opennms.netmgt.model.events.EventProxy;
 import org.opennms.netmgt.model.events.EventProxyException;
 import org.opennms.netmgt.provision.persist.ForeignSourceRepository;
+import org.opennms.netmgt.provision.persist.foreignsource.ForeignSource;
 import org.opennms.netmgt.provision.persist.requisition.Requisition;
 import org.opennms.netmgt.provision.persist.requisition.RequisitionAsset;
 import org.opennms.netmgt.provision.persist.requisition.RequisitionCategory;
@@ -516,7 +517,10 @@ public class DefaultManualProvisioningService implements ManualProvisioningServi
     public Collection<String> getServiceTypeNames(String groupName) {
         m_readLock.lock();
         try {
-            return m_deployedForeignSourceRepository.getForeignSource(groupName).getDetectorNames();
+        	final ForeignSource pendingForeignSource = m_pendingForeignSourceRepository.getForeignSource(groupName);
+            final ForeignSource deployedForeignSource = m_deployedForeignSourceRepository.getForeignSource(groupName);
+            
+            return (pendingForeignSource.isDefault())? deployedForeignSource.getDetectorNames() : pendingForeignSource.getDetectorNames();
         } finally {
             m_readLock.unlock();
         }
