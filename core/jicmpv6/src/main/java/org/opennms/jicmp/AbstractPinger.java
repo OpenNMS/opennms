@@ -90,10 +90,6 @@ public abstract class AbstractPinger<T extends InetAddress> implements Runnable 
         }
     }
 
-    protected void printf(String fmt, Object... args) {
-        System.err.print(String.format(fmt, args));
-    }
-
     abstract public void ping(T addr, int id, int sequenceNumber, long count, long interval) throws InterruptedException;
 
     public void addPingReplyListener(PingReplyListener listener) {

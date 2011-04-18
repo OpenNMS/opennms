@@ -268,9 +268,9 @@ public class NodeDaoHibernate extends AbstractDaoHibernate<OnmsNode, Integer> im
                             private static final long serialVersionUID = 1L;
 
                             public Object transformTuple(Object[] tuple, String[] aliases) {
-                                System.err.println("tuple length = " + tuple.length);
+                                logger.debug("tuple length = " + tuple.length);
                                 for (int i = 0; i < tuple.length; i++) {
-                                    System.err.println(i + ": " + tuple[i] + " (" + tuple[i].getClass() + ")");
+                                    logger.debug(i + ": " + tuple[i] + " (" + tuple[i].getClass() + ")");
                                 }
                                 return new SimpleSurveillanceStatus((Number)tuple[0], (Number)tuple[1], (Number)tuple[2]);
                             }
