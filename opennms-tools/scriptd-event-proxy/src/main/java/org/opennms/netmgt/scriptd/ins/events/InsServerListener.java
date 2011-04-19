@@ -92,27 +92,28 @@ public class InsServerListener extends InsServerAbstractListener {
 	 * @param event
 	 */
 	public void flushEvent(Event event){
-	      ThreadCategory log = getLog();
-	      log.debug("Flushing uei: "+event.getUei());
-	      log.debug("Flushing ifindex: " + event.getIfIndex());
-	      log.debug("Flushing ifAlias: " + event.getIfAlias());
+	   ThreadCategory log = getLog();
+	   log.debug("Flushing uei: "+event.getUei());
+	   log.debug("Flushing ifindex: " + event.getIfIndex());
+	   log.debug("Flushing ifAlias: " + event.getIfAlias());
 	      
-		synchronized (activeSessions){
+		synchronized (activeSessions) {
 			cleanActiveSessions();
 			Iterator<InsSession> it = activeSessions.iterator();
-			while(it.hasNext()){			
+			while (it.hasNext()) {
 				InsSession insSession = it.next();
 				PrintStream ps = insSession.getStreamToClient();
 				synchronized (ps) {
-					if(ps!=null){
+					if (ps != null) {
 						try {
 							event.marshal(new PrintWriter(ps));
 						} catch (Exception e) {
-							log.error("Error while sending current event to client"+e);
+							log.error("Error while sending current event to client"
+									+ e);
 						}
-					}	
+					}
 				}
-				
+
 			}
 		}
 	}
