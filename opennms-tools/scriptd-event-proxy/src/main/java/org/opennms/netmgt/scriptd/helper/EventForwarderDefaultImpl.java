@@ -5,12 +5,14 @@ import org.opennms.netmgt.xml.event.Event;
 public class EventForwarderDefaultImpl extends AbstractEventForwarder implements
 		EventForwarder {
 
-	@Override
-	/**
-	 * This method add a new parm to the
-	 */
-	protected Event expand(Event event) {
-		return event;
+	public Event flushEvent(Event event) {
+		return super.flushEvent(event);
 	}
+
+	public Event flushSyncEvent(Event event) {
+		return super.flushEvent(event);
+	}
+	
+	
 
 }

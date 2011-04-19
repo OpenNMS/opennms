@@ -1,37 +1,41 @@
 package org.opennms.netmgt.scriptd.helper;
 
-import java.util.ArrayList;
-import java.util.List;
-
 import org.opennms.netmgt.xml.event.Event;
+
 /**
  * Interface to forward events.
  * 
  * @author antonio
  *
  */
-public interface EventForwarder {
 
-	/**
-	 * The list of eventFilter
-	 */
-	List<EventFilter> m_filters = new ArrayList<EventFilter>();
+public interface EventForwarder {
 	
 	/**
-	 * Method to add an EventFilter
-	 * to filter forwarding
+	 * Method to add a policy rule
+	 * to match event to be forwarded or dropped
 	 * @param filter
 	 */
-	void addEventFilter(EventFilter filter);	
+	void setEventPolicyRule(EventPolicyRule filter);	
 
 	/**
 	 * 
 	 * Method used to flush Event
 	 * 
 	 * @param event
-	 * @return event
+	 * @return the event flushed
 	 * 
 	 */
-	Event flushEvent(Event event);
+	 Event flushEvent(Event event);
+
+	/**
+	 * 
+	 * Method used to flush Event
+	 * 
+	 * @param event
+	 * @return the event flushed
+	 * 
+	 */
+	 Event flushSyncEvent(Event event);
 
 }

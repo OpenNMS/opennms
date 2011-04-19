@@ -14,6 +14,15 @@ import org.opennms.netmgt.xml.event.Event;
 public interface EventSynchronization {
 
 	/**
+	 * This method just add an event forwarder
+	 * to forward sync events
+	 * 
+	 * @param forwarder
+	 */
+
+	void addEventForwarder(EventForwarder forwarder);
+	
+	/**
 	 * Criteria to be used to get the sync events
 	 * 
 	 * @param criteria
@@ -28,6 +37,14 @@ public interface EventSynchronization {
 	 * Events 
 	 * 
 	 */
-	List<Event> sync();
+	List<Event> getEvents();
+
+	/**
+	 * 
+	 * this method sync
+	 * Events 
+	 * 
+	 */
+	void sync();
 
 }

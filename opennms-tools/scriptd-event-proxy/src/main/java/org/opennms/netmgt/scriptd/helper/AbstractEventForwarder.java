@@ -4,21 +4,13 @@ import org.opennms.netmgt.xml.event.Event;
 
 public abstract class AbstractEventForwarder implements EventForwarder {
 
-	public void addEventFilter(EventFilter filter) {
-		m_filters.add(filter);
-
+	EventPolicyRule m_filter;
+	public void setEventPolicyRule(EventPolicyRule filter) {
+		m_filter = filter;
 	}
 
 	public Event flushEvent(Event event) {
-		for (EventFilter filter: m_filters) {
-			if (filter.match(event))
-				event = filter.filter(event);
-		}
-		if (event != null )
-			event = expand(event);
-		return event;
+		return m_filter.filter(event);
 	}
-
-	protected abstract Event expand(Event event);
 
 }

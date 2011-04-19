@@ -4,22 +4,19 @@ import java.util.regex.Pattern;
 
 import org.opennms.netmgt.xml.event.Event;
 
-public class UeiEventFilter implements EventFilter {
+public class UeiEventMatch implements EventMatch {
 
 	private String ueimatch;
-	private boolean allow;
 	
-	public UeiEventFilter(boolean allow) {
+	public UeiEventMatch() {
 		super();
 		this.ueimatch = null;
-		this.allow = allow;
 	}
 	
 	
-	public UeiEventFilter(String ueimatch, boolean allow) {
+	public UeiEventMatch(String ueimatch) {
 		super();
 		this.ueimatch = ueimatch;
-		this.allow = allow;
 	}
 
 	
@@ -37,13 +34,6 @@ public class UeiEventFilter implements EventFilter {
 	private boolean rematch(String text, String regex) {
 		Pattern p = Pattern.compile(regex);
 		return p.matcher(text).matches();
-	}
-
-
-	public Event filter(Event event) {
-		if (allow)
-			return event;
-		return null;
 	}
 
 }
