@@ -182,11 +182,11 @@ public class CollectdPackage {
 	 *
 	 * @return a {@link java.util.List} object.
 	 */
-	public List<InetAddress> getIpList() {
+	protected List<InetAddress> getIpList() {
 		return m_ipList;
 	}
 
-	boolean interfaceInFilter(String iface) {
+	protected boolean interfaceInFilter(String iface) {
 		if (iface == null) return false;
 		final InetAddress ifaceAddress = addr(iface);
 
@@ -207,7 +207,7 @@ public class CollectdPackage {
 		return filterPassed;
 	}
 
-	ThreadCategory log() {
+	protected ThreadCategory log() {
 		return ThreadCategory.getInstance(getClass());
 	}
 
