@@ -41,8 +41,8 @@ import java.util.Set;
 import org.junit.After;
 import org.junit.Assert;
 import org.junit.Before;
+import org.junit.Ignore;
 import org.junit.Test;
-
 import org.opennms.netmgt.config.MibObject;
 import org.opennms.netmgt.config.datacollection.DatacollectionConfig;
 import org.opennms.netmgt.config.datacollection.Group;
@@ -85,12 +85,23 @@ public class DefaultDataCollectionConfigDaoTest {
         DefaultDataCollectionConfigDao oldDao = instantiateDao("examples/old-datacollection-config.xml", false);
         executeTests(oldDao);
     }
-    
+
     @Test
     public void testCompareOldAndNewStyles() throws Exception {
         DefaultDataCollectionConfigDao newDao = instantiateDao("datacollection-config.xml", true);
         DefaultDataCollectionConfigDao oldDao = instantiateDao("examples/old-datacollection-config.xml", false);
         compareContent(oldDao.getContainer().getObject(), newDao.getContainer().getObject());
+    }
+
+    /**
+     * Use this test to test speed improvements for the data collection config parsing code.
+     */
+    @Test
+    @Ignore
+    public void testLoadTimeOfDao() throws Exception {
+        for (int i = 0; i < 100; i++) {
+            instantiateDao("datacollection-config.xml", true);
+        }
     }
 
     private void executeTests(DefaultDataCollectionConfigDao dao) {

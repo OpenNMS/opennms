@@ -37,8 +37,8 @@
  */
 package org.opennms.web.svclayer.support;
 
-import static org.opennms.core.utils.InetAddressUtils.addr;
 import static org.easymock.EasyMock.expect;
+import static org.opennms.core.utils.InetAddressUtils.addr;
 
 import java.net.InetAddress;
 import java.text.ParseException;
@@ -51,6 +51,8 @@ import java.util.HashSet;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.ListIterator;
+import java.util.Set;
+import java.util.TreeSet;
 
 import junit.framework.AssertionFailedError;
 import junit.framework.TestCase;
@@ -108,9 +110,9 @@ public class DefaultDistributedStatusServiceTest extends TestCase {
 
     private String m_ip;
 
-    private List<OnmsMonitoredService> m_applicationServices1;
+    private Set<OnmsMonitoredService> m_applicationServices1;
 
-    private List<OnmsMonitoredService> m_applicationServices2;
+    private Set<OnmsMonitoredService> m_applicationServices2;
     
     private static final SimpleDateFormat s_dbDate = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss.mmm");
     
@@ -177,12 +179,12 @@ public class DefaultDistributedStatusServiceTest extends TestCase {
         m_services.add(new OnmsMonitoredService(new OnmsIpInterface(m_ip, m_node), new OnmsServiceType("HTTPS")));
 
         // Can't shuffle since these since they are sets
-        m_applicationServices1 = new ArrayList<OnmsMonitoredService>();
+        m_applicationServices1 = new TreeSet<OnmsMonitoredService>();
         m_applicationServices1.add(findMonitoredService(m_services, m_ip, "HTTP"));
         m_applicationServices1.add(findMonitoredService(m_services, m_ip, "HTTPS"));
 //        m_application1.setMemberServices(applicationServices1);
         
-        m_applicationServices2 = new ArrayList<OnmsMonitoredService>();
+        m_applicationServices2 = new TreeSet<OnmsMonitoredService>();
         m_applicationServices2.add(findMonitoredService(m_services, m_ip, "HTTPS"));
 //        m_application2.setMemberServices(applicationServices2);
 

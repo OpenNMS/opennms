@@ -35,6 +35,7 @@ package org.opennms.netmgt.dao;
 
 import java.net.InetAddress;
 import java.util.List;
+import java.util.Set;
 
 import org.opennms.netmgt.model.OnmsApplication;
 import org.opennms.netmgt.model.OnmsMonitoredService;
@@ -117,7 +118,7 @@ public interface MonitoredServiceDao extends OnmsDao<OnmsMonitoredService, Integ
      * @param application a {@link org.opennms.netmgt.model.OnmsApplication} object.
      * @return a {@link java.util.Collection} object.
      */
-    List<OnmsMonitoredService> findByApplication(OnmsApplication application);
+    Set<OnmsMonitoredService> findByApplication(OnmsApplication application);
     
     /**
      * <p>getPrimaryService</p>

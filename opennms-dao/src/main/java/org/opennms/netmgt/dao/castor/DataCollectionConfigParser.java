@@ -37,6 +37,7 @@ import java.io.FilenameFilter;
 import java.io.IOException;
 import java.io.InputStream;
 import java.util.Collection;
+import java.util.Collections;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.List;
@@ -47,7 +48,9 @@ import java.util.regex.Pattern;
 import java.util.regex.PatternSyntaxException;
 
 import org.apache.commons.io.IOUtils;
-
+import org.exolab.castor.xml.ValidationContext;
+import org.exolab.castor.xml.Validator;
+import org.opennms.core.concurrent.BarrierSignaler;
 import org.opennms.core.utils.ThreadCategory;
 import org.opennms.netmgt.config.datacollection.DatacollectionGroup;
 import org.opennms.netmgt.config.datacollection.Group;
@@ -57,7 +60,7 @@ import org.opennms.netmgt.config.datacollection.ResourceType;
 import org.opennms.netmgt.config.datacollection.SnmpCollection;
 import org.opennms.netmgt.config.datacollection.SystemDef;
 import org.opennms.netmgt.config.datacollection.Systems;
-
+import org.opennms.netmgt.config.datacollection.descriptors.DatacollectionGroupDescriptor;
 import org.springframework.dao.DataAccessResourceFailureException;
 
 /**
@@ -76,7 +79,7 @@ public class DataCollectionConfigParser {
     
     public DataCollectionConfigParser(String configDirectory) {
         this.configDirectory = configDirectory;
-        this.externalGroupsMap = new HashMap<String, DatacollectionGroup>();
+        this.externalGroupsMap = Collections.synchronizedMap(new HashMap<String, DatacollectionGroup>());
     }
     
     protected Map<String,DatacollectionGroup> getExternalGroupMap() {
@@ -216,23 +219,48 @@ public class DataCollectionConfigParser {
         });
         
         // Parse configuration files (populate external groups map)
-        for (File file : listOfFiles) {
-            InputStream in = null;
-            try {
-                in = new FileInputStream(file);
-            } catch (IOException e) {
-                throwException("Could not get an input stream for resource '" + file + "'; nested exception: " + e.getMessage(), e);
-            }
-            try {
-                log().debug("parseExternalResources: parsing " + file);
-                DatacollectionGroup group = CastorUtils.unmarshalWithTranslatedExceptions(DatacollectionGroup.class, in);
-                group.validate();
-                externalGroupsMap.put(group.getName(), group);
-            } catch (Throwable e) {
-                throwException("Can't parse XML file " + file + "; nested exception: " + e.getMessage(), e);
-            } finally {
-                IOUtils.closeQuietly(in);
-            }
+        final BarrierSignaler bs = new BarrierSignaler(listOfFiles.length);
+        // Get a single validator that we can reuse for each unmarshalled object
+        final Validator validator = new DatacollectionGroupDescriptor();
+        // Get a single validation context that we can reuse for each unmarshalled object
+        final ValidationContext validationContext = new ValidationContext();
+        int i = 0;
+        for (final File file : listOfFiles) {
+            Thread thread = new Thread("DataCollectionConfigParser-Thread-" + i++) {
+                public void run() {
+                    InputStream in = null;
+                    try {
+                        in = new FileInputStream(file);
+                    } catch (IOException e) {
+                        throwException("Could not get an input stream for resource '" + file + "'; nested exception: " + e.getMessage(), e);
+                    }
+                    try {
+                        log().debug("parseExternalResources: parsing " + file);
+                        DatacollectionGroup group = CastorUtils.unmarshalWithTranslatedExceptions(DatacollectionGroup.class, in);
+                        // Synchronize around the validation context in case it is not thread-safe.
+                        // The validators themselves are thread-safe since they have no local fields.
+                        synchronized(validationContext) {
+                            validator.validate(group, validationContext);
+                        }
+                        // Synchronize around the map that holds the results
+                        synchronized(externalGroupsMap) {
+                            externalGroupsMap.put(group.getName(), group);
+                        }
+                    } catch (Throwable e) {
+                        throwException("Can't parse XML file " + file + "; nested exception: " + e.getMessage(), e);
+                    } finally {
+                        IOUtils.closeQuietly(in);
+                        bs.signalAll();
+                    }
+                }
+            };
+            thread.start();
+        }
+
+        try {
+            bs.waitFor();
+        } catch (InterruptedException e) {
+            throwException("Exception while waiting for XML parsing threads to complete: " + e.getMessage(), e);
         }
     }
 
