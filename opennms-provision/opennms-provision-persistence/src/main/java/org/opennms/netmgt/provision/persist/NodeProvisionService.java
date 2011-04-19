@@ -78,5 +78,5 @@ public interface NodeProvisionService {
             String[] categories,
             String snmpCommunity, String snmpVersion,
             String deviceUsername, String devicePassword, String enablePassword,
-            String accessMethd, String autoEnable) throws Exception;
+            String accessMethd, String autoEnable, String noSNMP) throws Exception;
 }

@@ -143,6 +143,10 @@
 
 				<td colspan="2">&nbsp;</td>
 			</tr>
+			<tr>
+			    <td><label for="noSNMP">No SNMP:</label></td>
+			    <td><input id="noSNMP" type="checkbox" name="noSNMP" value="true" selected="false" /></td>
+			</tr>
 		</table>
 	</div>
 
@@ -217,7 +221,8 @@
 		<em>SNMP Parameters</em> are optional and apply only to the node being
 		provisioned. If no values are specified here, OpenNMS' system-wide SNMP
 		configuration will be used to determine the appropriate values for the IP
-		address entered in the <em>Basic Attributes</em> section. Configuring SNMPv3
+		address entered in the <em>Basic Attributes</em> section. If the node does not
+		support SNMP, the "No SNMP" box should be checked. Configuring SNMPv3
 		parameters via the web UI is not supported; contact your OpenNMS administrator
 		if this node requires SNMPv3 parameters that differ from those in the
 		system-wide configuration.
