@@ -1,10 +1,19 @@
 <%@ tag dynamic-attributes="attrMap" %>
-<%@ attribute name="selected" required="false" type="java.lang.Object" %>
 <%@ taglib prefix="c" uri="http://java.sun.com/jsp/jstl/core" %>
 
-<option ${selected ? 'selected="selected"' : ""}
-  <c:forEach var="attr" items="${attrMap}">${attr.key}="${attr.value}"</c:forEach>
+<option
+  <c:forEach var="attr" items="${attrMap}">
+    <c:choose>
+      <c:when test="${attr.key=='selected'}">
+        <c:if test="${attr.value == true}">
+          selected="selected"
+        </c:if>
+      </c:when>
+      <c:otherwise>
+        ${attr.key}="${attr.value}"
+      </c:otherwise>
+    </c:choose>
+  </c:forEach>
 >
 <jsp:doBody/>
 </option>
-

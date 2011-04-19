@@ -1,10 +1,17 @@
 <%@ tag dynamic-attributes="attrMap" %>
-<%@ attribute name="disabled" required="false" type="java.lang.Object" %>
 <%@ taglib prefix="c" uri="http://java.sun.com/jsp/jstl/core" %>
 
-<input ${disabled ? 'disabled="disabled"' : ""}
-  <c:forEach var="attr" items="${attrMap}">${attr.key}="${attr.value}" </c:forEach>
+<input
+  <c:forEach var="attr" items="${attrMap}">
+    <c:choose>
+      <c:when test="${attr.key=='disabled'}">
+        <c:if test="${attr.value == true}">
+          disabled="disabled"
+        </c:if>
+      </c:when>
+      <c:otherwise>
+        ${attr.key}="${attr.value}"
+      </c:otherwise>
+    </c:choose>
+  </c:forEach>
 >
-
-
-
