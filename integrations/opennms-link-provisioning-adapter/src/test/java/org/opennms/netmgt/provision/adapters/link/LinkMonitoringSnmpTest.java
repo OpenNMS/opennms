@@ -85,8 +85,7 @@ public class LinkMonitoringSnmpTest implements MockSnmpAgentAware {
     public void setup() throws InterruptedException, UnknownHostException {
         
         if(m_agentConfig == null) {
-            m_agentConfig = new SnmpAgentConfig();
-            m_agentConfig.setAddress(InetAddressUtils.getLocalHostAddress());
+            m_agentConfig = new SnmpAgentConfig(InetAddressUtils.getLocalHostAddress());
             m_agentConfig.setPort(9161);
             m_agentConfig.setReadCommunity("public");
         }

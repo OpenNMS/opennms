@@ -342,8 +342,7 @@ public class MockSnmpAgentTest extends TestCase {
     }
 
     private static SnmpAgentConfig getAgentConfig() throws UnknownHostException {
-        SnmpAgentConfig config = new SnmpAgentConfig();
-        config.setAddress(InetAddressUtils.addr("127.0.0.1"));
+        SnmpAgentConfig config = new SnmpAgentConfig(InetAddressUtils.addr("127.0.0.1"));
         config.setPort(1691);
         config.setVersion(SnmpAgentConfig.VERSION3);
         return config;

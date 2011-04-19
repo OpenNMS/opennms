@@ -50,8 +50,7 @@ public class HostFileSystemStorageStrategyTest {
     public void testStrategy() throws Exception {
         // Create Mocks
         StorageStrategyService service = EasyMock.createMock(StorageStrategyService.class);
-        SnmpAgentConfig agentConfig = new SnmpAgentConfig();
-        agentConfig.setAddress(InetAddressUtils.addr("127.0.0.1"));
+        SnmpAgentConfig agentConfig = new SnmpAgentConfig(InetAddressUtils.addr("127.0.0.1"));
         agentConfig.setPort(1161);
         EasyMock.expect(service.getAgentConfig()).andReturn(agentConfig).anyTimes();
         EasyMock.replay(service);
