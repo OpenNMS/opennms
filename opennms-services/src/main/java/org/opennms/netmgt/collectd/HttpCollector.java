@@ -548,13 +548,21 @@ public class HttpCollector implements ServiceCollector {
         URI uriWithQueryString = null;
         List<NameValuePair> queryParams = buildRequestParameters(collectionSet);
         try {
-            String query = URLEncodedUtils.format(queryParams, "UTF-8");
+            StringBuffer query = new StringBuffer();
+            query.append(URLEncodedUtils.format(queryParams, "UTF-8"));
+            if (uri.getQuery() != null && uri.getQuery().length() > 0) {
+                if (query.length() > 0) {
+                    query.append("&");
+                }
+                query.append(uri.getQuery());
+            }
+            
             uriWithQueryString = URIUtils.createURI(
                                          uri.getScheme(), 
                                          uri.getHost(), 
                                          uri.getPort(), 
                                          uri.getPath(), 
-                                         query, 
+                                         query.length() > 0 ? query.toString() : null, 
                                          uri.getFragment()
             );
             return new HttpGet(uriWithQueryString);
