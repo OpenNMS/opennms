@@ -27,7 +27,7 @@
  *     http://www.opennms.org/
  *     http://www.opennms.com/
  */
-package org.opennms.jicmp.v6;
+package org.opennms.jicmp;
 
 import java.nio.ByteBuffer;
 import java.util.concurrent.TimeUnit;
@@ -35,7 +35,7 @@ import java.util.concurrent.TimeUnit;
 import org.opennms.jicmp.ipv6.ICMPv6EchoPacket;
 import org.opennms.jicmp.ipv6.ICMPv6Packet;
 
-class PingReply extends ICMPv6EchoPacket implements org.opennms.netmgt.icmp.ICMPEchoPacket {
+class V6PingReply extends ICMPv6EchoPacket implements org.opennms.netmgt.icmp.ICMPEchoPacket {
     
     // The below long is equivalent to the next line and is more efficient than
     // manipulation as a string
@@ -44,7 +44,7 @@ class PingReply extends ICMPv6EchoPacket implements org.opennms.netmgt.icmp.ICMP
     
     private long m_receivedTimeNanos;
 
-    public PingReply(ICMPv6Packet icmpPacket, long receivedTimeNanos) {
+    public V6PingReply(ICMPv6Packet icmpPacket, long receivedTimeNanos) {
         super(icmpPacket);
         m_receivedTimeNanos = receivedTimeNanos;
     }

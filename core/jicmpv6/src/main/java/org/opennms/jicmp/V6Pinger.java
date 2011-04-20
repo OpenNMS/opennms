@@ -27,7 +27,7 @@
  *     http://www.opennms.org/
  *     http://www.opennms.com/
  */
-package org.opennms.jicmp.v6;
+package org.opennms.jicmp;
 
 import java.net.Inet6Address;
 import java.net.InetAddress;
@@ -35,8 +35,6 @@ import java.nio.ByteBuffer;
 import java.util.concurrent.TimeUnit;
 
 import org.opennms.core.utils.LogUtils;
-import org.opennms.jicmp.AbstractPinger;
-import org.opennms.jicmp.PingReplyListener;
 import org.opennms.jicmp.ipv6.ICMPv6EchoPacket;
 import org.opennms.jicmp.ipv6.ICMPv6Packet;
 import org.opennms.jicmp.ipv6.ICMPv6Packet.Type;
@@ -76,7 +74,7 @@ public class V6Pinger extends AbstractPinger<Inet6Address> {
                 long received = System.nanoTime();
     
                 ICMPv6Packet icmpPacket = new ICMPv6Packet(getIPPayload(datagram));
-                PingReply echoReply = icmpPacket.getType() == Type.EchoReply ? new PingReply(icmpPacket, received) : null;
+                V6PingReply echoReply = icmpPacket.getType() == Type.EchoReply ? new V6PingReply(icmpPacket, received) : null;
             
                 if (echoReply != null && echoReply.isValid()) {
                     // 64 bytes from 127.0.0.1: icmp_seq=0 time=0.069 ms
@@ -105,7 +103,7 @@ public class V6Pinger extends AbstractPinger<Inet6Address> {
     public void ping(Inet6Address addr, int id, int sequenceNumber, long count, long interval) throws InterruptedException {
         NativeDatagramSocket socket = getPingSocket();
         for(int i = sequenceNumber; i < sequenceNumber + count; i++) {
-            PingRequest request = new PingRequest(id, i);
+            V6PingRequest request = new V6PingRequest(id, i);
             request.send(socket, addr);
             Thread.sleep(interval);
         }

@@ -33,7 +33,6 @@ import java.net.InetAddress;
 import java.util.Queue;
 
 import org.opennms.jicmp.jna.NativeDatagramSocket;
-import org.opennms.jicmp.v6.V6Pinger;
 import org.opennms.netmgt.icmp.ICMPEchoPacket;
 import org.opennms.netmgt.icmp.PingReply;
 import org.opennms.netmgt.icmp.PingRequest;

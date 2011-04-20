@@ -41,7 +41,6 @@ import java.net.InetAddress;
 
 import org.opennms.core.utils.ThreadCategory;
 import org.opennms.jicmp.jna.NativeDatagramSocket;
-import org.opennms.jicmp.v6.V6Pinger;
 import org.opennms.netmgt.icmp.AbstractPingRequest;
 import org.opennms.netmgt.icmp.PingResponseCallback;
 
