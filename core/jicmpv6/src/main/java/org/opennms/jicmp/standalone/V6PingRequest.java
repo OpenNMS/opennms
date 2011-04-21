@@ -27,24 +27,24 @@
  *     http://www.opennms.org/
  *     http://www.opennms.com/
  */
-package org.opennms.jicmp;
+package org.opennms.jicmp.standalone;
 
 import java.net.InetAddress;
 import java.nio.ByteBuffer;
 
-import org.opennms.jicmp.ip.ICMPEchoPacket;
+import org.opennms.jicmp.ipv6.ICMPv6EchoPacket;
 import org.opennms.jicmp.jna.NativeDatagramPacket;
 import org.opennms.jicmp.jna.NativeDatagramSocket;
 
-class PingRequest extends ICMPEchoPacket {
+class V6PingRequest extends ICMPv6EchoPacket {
     
-    public PingRequest() {
+    public V6PingRequest() {
         super(64);
         setType(Type.EchoRequest);
         setCode(0);
     }
     
-    public PingRequest(int id, int seqNum) {
+    public V6PingRequest(int id, int seqNum) {
         super(64);
         setType(Type.EchoRequest);
         setCode(0);
@@ -59,7 +59,7 @@ class PingRequest extends ICMPEchoPacket {
     @Override
     public NativeDatagramPacket toDatagramPacket(InetAddress destinationAddress) {
         ByteBuffer contentBuffer = getContentBuffer();
-        contentBuffer.putLong(PingReply.COOKIE);
+        contentBuffer.putLong(V6PingReply.COOKIE);
         contentBuffer.putLong(System.nanoTime());
         return super.toDatagramPacket(destinationAddress);
     }

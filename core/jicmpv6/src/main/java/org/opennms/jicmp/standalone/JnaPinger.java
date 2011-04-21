@@ -27,14 +27,12 @@
  *     http://www.opennms.org/
  *     http://www.opennms.com/
  */
-package org.opennms.jicmp;
+package org.opennms.jicmp.standalone;
 
 import static org.opennms.netmgt.icmp.PingConstants.DEFAULT_RETRIES;
 import static org.opennms.netmgt.icmp.PingConstants.DEFAULT_TIMEOUT;
 
 import java.io.IOException;
-import java.net.Inet4Address;
-import java.net.Inet6Address;
 import java.net.InetAddress;
 import java.util.List;
 
@@ -56,8 +54,8 @@ import org.opennms.protocols.rt.RequestTracker;
  */
 public class JnaPinger implements org.opennms.netmgt.icmp.Pinger {
 
-	private final AbstractPinger<Inet4Address> v4Pinger;
-	private final AbstractPinger<Inet6Address> v6Pinger;
+	private final V4Pinger v4Pinger;
+	private final V6Pinger v6Pinger;
 
 	private RequestTracker<PingRequest<NativeDatagramSocket>, PingReply> s_pingTracker;
 

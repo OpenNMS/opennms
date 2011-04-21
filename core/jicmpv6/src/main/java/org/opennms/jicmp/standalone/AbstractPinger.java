@@ -27,14 +27,13 @@
  *     http://www.opennms.org/
  *     http://www.opennms.com/
  */
-package org.opennms.jicmp;
+package org.opennms.jicmp.standalone;
 
 import java.net.InetAddress;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.concurrent.atomic.AtomicReference;
 
-import org.opennms.netmgt.icmp.ICMPEchoPacket;
 import org.opennms.jicmp.jna.NativeDatagramSocket;
 
 /**
@@ -46,9 +45,10 @@ public abstract class AbstractPinger<T extends InetAddress> implements Runnable 
 
     private NativeDatagramSocket m_pingSocket;
     private Thread m_thread;
-    private final AtomicReference<Throwable> m_throwable = new AtomicReference<Throwable>(null);
+    protected final AtomicReference<Throwable> m_throwable = new AtomicReference<Throwable>(null);
+    protected final Metric m_metric = new Metric();
     private volatile boolean m_stopped = false;
-    private final List<PingReplyListener> m_listeners = new ArrayList<PingReplyListener>();
+    protected final List<PingReplyListener> m_listeners = new ArrayList<PingReplyListener>();
     
     protected AbstractPinger(NativeDatagramSocket pingSocket) {
         m_pingSocket = pingSocket;
@@ -59,6 +59,10 @@ public abstract class AbstractPinger<T extends InetAddress> implements Runnable 
      */
     protected NativeDatagramSocket getPingSocket() {
         return m_pingSocket;
+    }
+
+    public int getCount() {
+        return m_metric.getCount();
     }
 
     public boolean isFinished() {
@@ -90,15 +94,5 @@ public abstract class AbstractPinger<T extends InetAddress> implements Runnable 
 
     public void addPingReplyListener(PingReplyListener listener) {
         m_listeners.add(listener);
-    }
-
-    protected void notifyPingListeners(InetAddress address, ICMPEchoPacket echoReply) {
-        for (PingReplyListener listener : m_listeners) {
-            listener.onPingReply(address, echoReply);
-        }
-    }
-
-    protected void setThrowable(Throwable e) {
-        m_throwable.set(e);
     }
 }

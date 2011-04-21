@@ -33,7 +33,7 @@
  *      http://www.opennms.org/
  *      http://www.opennms.com/
  */
-package org.opennms.jicmp;
+package org.opennms.jicmp.standalone;
 
 import java.net.Inet4Address;
 import java.net.Inet6Address;
@@ -52,19 +52,19 @@ import org.opennms.netmgt.icmp.PingResponseCallback;
  * @author <a href="mailto:brozow@opennms.org">Mathew Brozowski</a>
  */
 final public class JnaPingRequest extends AbstractPingRequest<NativeDatagramSocket> {
-    private final AbstractPinger<Inet4Address> v4;
-    private final AbstractPinger<Inet6Address> v6;
-    public JnaPingRequest(AbstractPinger<Inet4Address> v4, AbstractPinger<Inet6Address> v6, InetAddress addr, long tid, int sequenceId, long timeout, int retries, ThreadCategory logger, PingResponseCallback cb) {
+    private final V4Pinger v4;
+    private final V6Pinger v6;
+    public JnaPingRequest(V4Pinger v4, V6Pinger v6, InetAddress addr, long tid, int sequenceId, long timeout, int retries, ThreadCategory logger, PingResponseCallback cb) {
         super(addr, tid, sequenceId, timeout, retries, logger, cb);
         this.v4 = v4;
         this.v6 = v6;
     }
 
-    JnaPingRequest(AbstractPinger<Inet4Address> v4, AbstractPinger<Inet6Address> v6, InetAddress addr, long tid, int sequenceId, long timeout, int retries, PingResponseCallback cb) {
+    JnaPingRequest(V4Pinger v4, V6Pinger v6, InetAddress addr, long tid, int sequenceId, long timeout, int retries, PingResponseCallback cb) {
         this(v4, v6, addr, tid, sequenceId, timeout, retries, ThreadCategory.getInstance(JnaPingRequest.class), cb);
     }
 
-    JnaPingRequest(AbstractPinger<Inet4Address> v4, AbstractPinger<Inet6Address> v6, InetAddress addr, int sequenceId, long timeout, int retries, PingResponseCallback cb) {
+    JnaPingRequest(V4Pinger v4, V6Pinger v6, InetAddress addr, int sequenceId, long timeout, int retries, PingResponseCallback cb) {
         this(v4, v6, addr, getNextTID(), sequenceId, timeout, retries, cb);
     }
     

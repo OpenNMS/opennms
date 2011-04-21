@@ -1,7 +1,7 @@
 /*
  * This file is part of the OpenNMS(R) Application.
  *
- * OpenNMS(R) is Copyright (C) 2010 The OpenNMS Group, Inc.  All rights reserved.
+ * OpenNMS(R) is Copyright (C) 2011 The OpenNMS Group, Inc.  All rights reserved.
  * OpenNMS(R) is a derivative work, containing both original code, included code and modified
  * code that was published under the GNU General Public License. Copyrights for modified
  * and included code are below.
@@ -29,42 +29,42 @@
  */
 package org.opennms.jicmp;
 
-import java.net.Inet4Address;
-import java.net.Inet6Address;
 import java.net.InetAddress;
-import java.util.Queue;
+import java.nio.ByteBuffer;
 
+import org.opennms.jicmp.ip.ICMPEchoPacket;
+import org.opennms.jicmp.jna.NativeDatagramPacket;
 import org.opennms.jicmp.jna.NativeDatagramSocket;
-import org.opennms.netmgt.icmp.ICMPEchoPacket;
-import org.opennms.netmgt.icmp.PingReply;
-import org.opennms.netmgt.icmp.PingRequest;
-import org.opennms.protocols.rt.Messenger;
 
+class V4PingRequest extends ICMPEchoPacket {
+    
+    public V4PingRequest() {
+        super(64);
+        setType(Type.EchoRequest);
+        setCode(0);
+    }
+    
+    public V4PingRequest(int id, int seqNum) {
+        super(64);
+        setType(Type.EchoRequest);
+        setCode(0);
+        setIdentifier(id);
+        setSequenceNumber(seqNum);
+        ByteBuffer buf = getContentBuffer();
+        for(int b = 0; b < 56; b++) {
+            buf.put((byte)b);
+        }
+    }
 
-/**
- * @author brozow
- */
-public class PingMessenger implements Messenger<PingRequest<NativeDatagramSocket>, PingReply>, PingReplyListener {
+    @Override
+    public NativeDatagramPacket toDatagramPacket(InetAddress destinationAddress) {
+        ByteBuffer contentBuffer = getContentBuffer();
+        contentBuffer.putLong(V4PingReply.COOKIE);
+        contentBuffer.putLong(System.nanoTime());
+        return super.toDatagramPacket(destinationAddress);
+    }
 
-	private Queue<PingReply> pendingReplies = null;
-
-	public PingMessenger(AbstractPinger<Inet4Address> v4, AbstractPinger<Inet6Address> v6) {
-		v4.addPingReplyListener(this);
-		v6.addPingReplyListener(this);
-	}
-
-	@Override
-	public void sendRequest(PingRequest<NativeDatagramSocket> request) {
-		// Don't need to send a socket here, the sockets are managed by the V4Pinger and V6Pinger classes
-		request.send(null, request.getId().getAddress());
-	}
-
-	@Override
-	public void start(Queue<PingReply> replyQueue) {
-		pendingReplies = replyQueue;
-	}
-
-	public void onPingReply(InetAddress address, ICMPEchoPacket packet) {
-		pendingReplies.offer(new PingReply(address, packet));
-	}
+    public void send(NativeDatagramSocket socket, InetAddress addr) {
+        socket.send(toDatagramPacket(addr));
+    }
 }

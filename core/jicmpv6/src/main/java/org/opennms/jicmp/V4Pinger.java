@@ -75,24 +75,23 @@ public class V4Pinger extends AbstractPinger<Inet4Address> {
                 long received = System.nanoTime();
     
                 ICMPPacket icmpPacket = new ICMPPacket(getIPPayload(datagram));
-                PingReply echoReply = icmpPacket.getType() == Type.EchoReply ? new PingReply(icmpPacket, received) : null;
+                V4PingReply echoReply = icmpPacket.getType() == Type.EchoReply ? new V4PingReply(icmpPacket, received) : null;
             
                 if (echoReply != null && echoReply.isValid()) {
                     // 64 bytes from 127.0.0.1: icmp_seq=0 time=0.069 ms
+                    InetAddress address = datagram.getAddress();
                     LogUtils.debugf(this, "%d bytes from %s: tid=%d icmp_seq=%d time=%.3f ms\n", 
                         echoReply.getPacketLength(),
-                        datagram.getAddress().getHostAddress(),
+                        address.getHostAddress(),
                         echoReply.getIdentifier(),
                         echoReply.getSequenceNumber(),
                         echoReply.elapsedTime(TimeUnit.MILLISECONDS)
                     );
-                    for (PingReplyListener listener : m_listeners) {
-                        listener.onPingReply(datagram.getAddress(), echoReply);
-                    }
+                    notifyPingListeners(address, echoReply);
                 }
             }
         } catch(Throwable e) {
-            m_throwable.set(e);
+            setThrowable(e);
             e.printStackTrace();
         }
     }
@@ -104,7 +103,7 @@ public class V4Pinger extends AbstractPinger<Inet4Address> {
     public void ping(Inet4Address addr, int id, int sequenceNumber, long count, long interval) throws InterruptedException {
         NativeDatagramSocket socket = getPingSocket();
         for(int i = sequenceNumber; i < sequenceNumber + count; i++) {
-            PingRequest request = new PingRequest(id, i);
+            V4PingRequest request = new V4PingRequest(id, i);
             request.send(socket, addr);
             Thread.sleep(interval);
         }

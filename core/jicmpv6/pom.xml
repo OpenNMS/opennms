@@ -17,7 +17,7 @@
             <index>true</index>
             <manifest>
               <addClasspath>true</addClasspath>
-              <mainClass>org.opennms.jicmp.Main</mainClass>
+              <mainClass>org.opennms.jicmp.standalone.Main</mainClass>
             </manifest>
           </archive>
         </configuration>

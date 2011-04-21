@@ -27,7 +27,7 @@
  *     http://www.opennms.org/
  *     http://www.opennms.com/
  */
-package org.opennms.jicmp;
+package org.opennms.jicmp.standalone;
 
 import java.nio.ByteBuffer;
 import java.util.concurrent.TimeUnit;

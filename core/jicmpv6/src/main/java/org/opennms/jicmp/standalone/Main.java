@@ -27,44 +27,23 @@
  *     http://www.opennms.org/
  *     http://www.opennms.com/
  */
-package org.opennms.jicmp;
+package org.opennms.jicmp.standalone;
 
-import java.net.Inet4Address;
-import java.net.Inet6Address;
 import java.net.InetAddress;
-import java.util.Queue;
-
-import org.opennms.jicmp.jna.NativeDatagramSocket;
-import org.opennms.netmgt.icmp.ICMPEchoPacket;
-import org.opennms.netmgt.icmp.PingReply;
-import org.opennms.netmgt.icmp.PingRequest;
-import org.opennms.protocols.rt.Messenger;
 
 
 /**
+ * Main
+ *
  * @author brozow
  */
-public class PingMessenger implements Messenger<PingRequest<NativeDatagramSocket>, PingReply>, PingReplyListener {
-
-	private Queue<PingReply> pendingReplies = null;
-
-	public PingMessenger(AbstractPinger<Inet4Address> v4, AbstractPinger<Inet6Address> v6) {
-		v4.addPingReplyListener(this);
-		v6.addPingReplyListener(this);
-	}
-
-	@Override
-	public void sendRequest(PingRequest<NativeDatagramSocket> request) {
-		// Don't need to send a socket here, the sockets are managed by the V4Pinger and V6Pinger classes
-		request.send(null, request.getId().getAddress());
-	}
-
-	@Override
-	public void start(Queue<PingReply> replyQueue) {
-		pendingReplies = replyQueue;
-	}
-
-	public void onPingReply(InetAddress address, ICMPEchoPacket packet) {
-		pendingReplies.offer(new PingReply(address, packet));
-	}
+public class Main {
+    
+    public static void main(String[] args) throws Exception {
+        if (args.length < 1) {
+            System.err.println("java -jar jna-jicmp-VERSION.jar <hostname or ip address>");
+            System.exit(1);
+        }
+        new JnaPinger().ping(InetAddress.getByName(args[0]));
+    }
 }

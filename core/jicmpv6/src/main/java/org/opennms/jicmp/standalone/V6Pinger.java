@@ -27,7 +27,7 @@
  *     http://www.opennms.org/
  *     http://www.opennms.com/
  */
-package org.opennms.jicmp;
+package org.opennms.jicmp.standalone;
 
 import java.net.Inet6Address;
 import java.net.InetAddress;
@@ -78,19 +78,20 @@ public class V6Pinger extends AbstractPinger<Inet6Address> {
             
                 if (echoReply != null && echoReply.isValid()) {
                     // 64 bytes from 127.0.0.1: icmp_seq=0 time=0.069 ms
-                    InetAddress address = datagram.getAddress();
                     LogUtils.debugf(this, "%d bytes from %s: tid=%d icmp_seq=%d time=%.3f ms\n", 
                         echoReply.getPacketLength(),
-                        address.getHostAddress(),
+                        datagram.getAddress().getHostAddress(),
                         echoReply.getIdentifier(),
                         echoReply.getSequenceNumber(),
                         echoReply.elapsedTime(TimeUnit.MILLISECONDS)
                     );
-                    notifyPingListeners(address, echoReply);
+                    for (PingReplyListener listener : m_listeners) {
+                        listener.onPingReply(datagram.getAddress(), echoReply);
+                    }
                 }
             }
         } catch(Throwable e) {
-            setThrowable(e);
+            m_throwable.set(e);
             e.printStackTrace();
         }
     }
