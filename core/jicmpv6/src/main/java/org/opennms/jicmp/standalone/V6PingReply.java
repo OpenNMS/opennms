@@ -35,7 +35,7 @@ import java.util.concurrent.TimeUnit;
 import org.opennms.jicmp.ipv6.ICMPv6EchoPacket;
 import org.opennms.jicmp.ipv6.ICMPv6Packet;
 
-class V6PingReply extends ICMPv6EchoPacket implements org.opennms.netmgt.icmp.ICMPEchoPacket {
+class V6PingReply extends ICMPv6EchoPacket implements org.opennms.netmgt.icmp.EchoPacket {
     
     // The below long is equivalent to the next line and is more efficient than
     // manipulation as a string

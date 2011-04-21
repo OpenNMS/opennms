@@ -66,7 +66,7 @@ public abstract class AbstractPingRequest<SocketT> implements org.opennms.netmgt
 	/**
 	 * the request packet
 	 */
-	protected ICMPEchoPacket m_request = null;
+	protected EchoPacket m_request = null;
 	
     /**
      * The callback to use when this object is ready to do something
@@ -133,7 +133,7 @@ public abstract class AbstractPingRequest<SocketT> implements org.opennms.netmgt
         return true;
     }
 
-    private void processResponse(ICMPEchoPacket packet) {
+    private void processResponse(EchoPacket packet) {
         m_log.debug(System.currentTimeMillis()+": Ping Response Received "+this);
         m_callback.handleResponse(m_id.getAddress(), packet);
     }

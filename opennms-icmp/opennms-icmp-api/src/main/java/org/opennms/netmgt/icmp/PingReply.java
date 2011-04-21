@@ -47,7 +47,7 @@ import org.opennms.protocols.rt.ResponseWithId;
 /**
  * <p>
  * This class is use to encapsulate an ICMP reply that conforms to the
- * {@link ICMPEchoPacket packet}class. The reply must be of type ICMP Echo Reply and be
+ * {@link EchoPacket packet}class. The reply must be of type ICMP Echo Reply and be
  * the correct length.
  * </p>
  *
@@ -70,7 +70,7 @@ public final class PingReply implements ResponseWithId<PingRequestId> {
     /**
      * The received packet.
      */
-    private final ICMPEchoPacket m_packet;
+    private final EchoPacket m_packet;
 
     /**
      * Constructs a new reply with the passed address and packet as the contents
@@ -81,7 +81,7 @@ public final class PingReply implements ResponseWithId<PingRequestId> {
      * @param pkt
      *            The received packet.
      */
-    public PingReply(InetAddress addr, ICMPEchoPacket pkt) {
+    public PingReply(InetAddress addr, EchoPacket pkt) {
         m_packet = pkt;
         m_address = addr;
     }
@@ -117,9 +117,9 @@ public final class PingReply implements ResponseWithId<PingRequestId> {
     /**
      * Returns the ICMP packet for the reply.
      *
-     * @return a {@link org.opennms.netmgt.icmp.ICMPEchoPacket} object.
+     * @return a {@link org.opennms.netmgt.icmp.EchoPacket} object.
      */
-    public final ICMPEchoPacket getPacket() {
+    public final EchoPacket getPacket() {
         return m_packet;
     }
     

@@ -33,7 +33,7 @@ import java.net.InetAddress;
 import java.util.Queue;
 
 import org.opennms.jicmp.jna.NativeDatagramSocket;
-import org.opennms.netmgt.icmp.ICMPEchoPacket;
+import org.opennms.netmgt.icmp.EchoPacket;
 import org.opennms.netmgt.icmp.PingReply;
 import org.opennms.netmgt.icmp.PingRequest;
 import org.opennms.protocols.rt.Messenger;
@@ -62,7 +62,7 @@ public class PingMessenger implements Messenger<PingRequest<NativeDatagramSocket
 		pendingReplies = replyQueue;
 	}
 
-	public void onPingReply(InetAddress address, ICMPEchoPacket packet) {
+	public void onPingReply(InetAddress address, EchoPacket packet) {
 		pendingReplies.offer(new PingReply(address, packet));
 	}
 }

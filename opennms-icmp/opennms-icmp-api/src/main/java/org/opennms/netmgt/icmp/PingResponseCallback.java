@@ -49,9 +49,9 @@ public interface PingResponseCallback {
 	 * <p>handleResponse</p>
 	 *
 	 * @param address a {@link java.net.InetAddress} object.
-	 * @param packet a {@link org.opennms.netmgt.icmp.ICMPEchoPacket} object.
+	 * @param packet a {@link org.opennms.netmgt.icmp.EchoPacket} object.
 	 */
-	public void handleResponse(InetAddress address, ICMPEchoPacket packet);
+	public void handleResponse(InetAddress address, EchoPacket packet);
 	/**
 	 * <p>handleTimeout</p>
 	 *
@@ -63,9 +63,9 @@ public interface PingResponseCallback {
      * <p>handleError</p>
      *
      * @param address a {@link java.net.InetAddress} object.
-     * @param packet a {@link org.opennms.netmgt.icmp.ICMPEchoPacket} object.
+     * @param packet a {@link org.opennms.netmgt.icmp.EchoPacket} object.
      * @param t a {@link java.lang.Throwable} object.
      */
-    public void handleError(InetAddress address, ICMPEchoPacket packet, Throwable t);
+    public void handleError(InetAddress address, EchoPacket packet, Throwable t);
 
 }

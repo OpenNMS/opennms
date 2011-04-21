@@ -42,7 +42,7 @@ import java.util.concurrent.TimeUnit;
 
 import org.opennms.core.concurrent.BarrierSignaler;
 import org.opennms.netmgt.icmp.PingResponseCallback;
-import org.opennms.netmgt.icmp.ICMPEchoPacket;
+import org.opennms.netmgt.icmp.EchoPacket;
 
 /**
  * <p>ParallelPingResponseCallback class.</p>
@@ -68,13 +68,13 @@ public class ParallelPingResponseCallback implements PingResponseCallback {
     }
 
     /** {@inheritDoc} */
-    public void handleError(InetAddress address, ICMPEchoPacket packet, Throwable t) {
+    public void handleError(InetAddress address, EchoPacket packet, Throwable t) {
         m_responseTimes[packet.getSequenceNumber()] = null;
         bs.signalAll();
     }
 
     /** {@inheritDoc} */
-    public void handleResponse(InetAddress address, ICMPEchoPacket packet) {
+    public void handleResponse(InetAddress address, EchoPacket packet) {
         m_responseTimes[packet.getSequenceNumber()] = packet.elapsedTime(TimeUnit.MICROSECONDS);
         bs.signalAll();
     }

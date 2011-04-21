@@ -40,7 +40,7 @@ import java.net.InetAddress;
 
 import org.opennms.core.utils.ThreadCategory;
 import org.opennms.netmgt.icmp.AbstractPingRequest;
-import org.opennms.netmgt.icmp.ICMPEchoPacket;
+import org.opennms.netmgt.icmp.EchoPacket;
 import org.opennms.netmgt.icmp.PingResponseCallback;
 import org.opennms.protocols.icmp.IcmpSocket;
 
@@ -85,7 +85,7 @@ final public class PingRequest extends AbstractPingRequest<IcmpSocket> {
     /**
      * <p>createRequestPacket</p>
      */
-    private ICMPEchoPacket createRequestPacket() {
+    private EchoPacket createRequestPacket() {
         org.opennms.protocols.icmp.ICMPEchoPacket iPkt = new org.opennms.protocols.icmp.ICMPEchoPacket(m_id.getTid());
         iPkt.setIdentity(FILTER_ID);
         iPkt.setSequenceId((short) m_id.getSequenceId());

@@ -41,7 +41,7 @@ import java.net.UnknownHostException;
 import org.opennms.core.utils.ThreadCategory;
 import org.opennms.netmgt.EventConstants;
 import org.opennms.netmgt.eventd.EventIpcManagerFactory;
-import org.opennms.netmgt.icmp.ICMPEchoPacket;
+import org.opennms.netmgt.icmp.EchoPacket;
 import org.opennms.netmgt.icmp.PingRequestId;
 import org.opennms.netmgt.icmp.PingResponseCallback;
 import org.opennms.netmgt.model.events.EventBuilder;
@@ -56,7 +56,7 @@ public class DiscoveryPingResponseCallback implements PingResponseCallback {
     final static String EVENT_SOURCE_VALUE = "OpenNMS.Discovery";
 
     /** {@inheritDoc} */
-    public void handleResponse(InetAddress address, ICMPEchoPacket packet) {
+    public void handleResponse(InetAddress address, EchoPacket packet) {
         EventBuilder eb = new EventBuilder(EventConstants.NEW_SUSPECT_INTERFACE_EVENT_UEI, EVENT_SOURCE_VALUE);
         eb.setInterface(address);
 
@@ -87,7 +87,7 @@ public class DiscoveryPingResponseCallback implements PingResponseCallback {
     }
 
     /** {@inheritDoc} */
-    public void handleError(InetAddress address, ICMPEchoPacket packet, Throwable t) {
+    public void handleError(InetAddress address, EchoPacket packet, Throwable t) {
         log().debug("an error occurred pinging " + address, t);
     }
 

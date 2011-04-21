@@ -34,7 +34,7 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.concurrent.atomic.AtomicReference;
 
-import org.opennms.netmgt.icmp.ICMPEchoPacket;
+import org.opennms.netmgt.icmp.EchoPacket;
 import org.opennms.jicmp.jna.NativeDatagramSocket;
 
 /**
@@ -92,7 +92,7 @@ public abstract class AbstractPinger<T extends InetAddress> implements Runnable 
         m_listeners.add(listener);
     }
 
-    protected void notifyPingListeners(InetAddress address, ICMPEchoPacket echoReply) {
+    protected void notifyPingListeners(InetAddress address, EchoPacket echoReply) {
         for (PingReplyListener listener : m_listeners) {
             listener.onPingReply(address, echoReply);
         }

@@ -37,7 +37,7 @@
 
 import java.util.concurrent.TimeUnit;
 
-public interface ICMPEchoPacket {
+public interface EchoPacket {
 
 	long getReceivedTimeNanos();
 

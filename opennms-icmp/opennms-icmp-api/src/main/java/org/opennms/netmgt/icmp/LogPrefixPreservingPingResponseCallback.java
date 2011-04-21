@@ -38,7 +38,7 @@ package org.opennms.netmgt.icmp;
 import java.net.InetAddress;
 
 import org.opennms.core.utils.ThreadCategory;
-import org.opennms.netmgt.icmp.ICMPEchoPacket;
+import org.opennms.netmgt.icmp.EchoPacket;
 import org.opennms.netmgt.icmp.PingResponseCallback;
 
 class LogPrefixPreservingPingResponseCallback implements PingResponseCallback {
@@ -49,7 +49,7 @@ class LogPrefixPreservingPingResponseCallback implements PingResponseCallback {
         m_cb = cb;
     }
 
-    public void handleError(InetAddress address, ICMPEchoPacket packet, Throwable t) {
+    public void handleError(InetAddress address, EchoPacket packet, Throwable t) {
         String oldPrefix = ThreadCategory.getPrefix();
         try {
             ThreadCategory.setPrefix(m_prefix);
@@ -59,7 +59,7 @@ class LogPrefixPreservingPingResponseCallback implements PingResponseCallback {
         }
     }
 
-    public void handleResponse(InetAddress address, ICMPEchoPacket packet) {
+    public void handleResponse(InetAddress address, EchoPacket packet) {
         String oldPrefix = ThreadCategory.getPrefix();
         try {
             ThreadCategory.setPrefix(m_prefix);

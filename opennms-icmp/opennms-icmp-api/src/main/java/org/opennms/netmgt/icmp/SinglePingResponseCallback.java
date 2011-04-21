@@ -41,7 +41,7 @@ import java.util.concurrent.TimeUnit;
 import org.opennms.core.concurrent.BarrierSignaler;
 import org.opennms.core.utils.ThreadCategory;
 import org.opennms.netmgt.icmp.PingResponseCallback;
-import org.opennms.netmgt.icmp.ICMPEchoPacket;
+import org.opennms.netmgt.icmp.EchoPacket;
 
 /**
  * <p>SinglePingResponseCallback class.</p>
@@ -71,7 +71,7 @@ public class SinglePingResponseCallback implements PingResponseCallback {
     }
 
     /** {@inheritDoc} */
-    public void handleResponse(InetAddress address, ICMPEchoPacket packet) {
+    public void handleResponse(InetAddress address, EchoPacket packet) {
         info("got response for address " + address + ", thread " + packet.getIdentifier() + ", seq " + packet.getSequenceNumber() + " with a responseTime "+packet.elapsedTime(TimeUnit.MILLISECONDS)+"ms");
         responseTime = (long)Math.round(packet.elapsedTime(TimeUnit.MICROSECONDS));
         bs.signalAll();
@@ -89,7 +89,7 @@ public class SinglePingResponseCallback implements PingResponseCallback {
     }
 
     /** {@inheritDoc} */
-    public void handleError(InetAddress address, ICMPEchoPacket pr, Throwable t) {
+    public void handleError(InetAddress address, EchoPacket pr, Throwable t) {
         info("an error occurred pinging " + address, t);
         error = t;
         bs.signalAll();

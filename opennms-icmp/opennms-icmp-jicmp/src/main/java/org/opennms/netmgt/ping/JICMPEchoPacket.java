@@ -39,7 +39,7 @@ import java.util.concurrent.TimeUnit;
 
 import org.opennms.protocols.icmp.ICMPEchoPacket;
 
-public class JICMPEchoPacket implements org.opennms.netmgt.icmp.ICMPEchoPacket {
+public class JICMPEchoPacket implements org.opennms.netmgt.icmp.EchoPacket {
 
     private final ICMPEchoPacket m_delegate;
 
