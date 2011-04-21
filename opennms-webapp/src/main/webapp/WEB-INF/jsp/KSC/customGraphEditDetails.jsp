@@ -44,14 +44,16 @@
 <%@ taglib uri="http://java.sun.com/jsp/jstl/core" prefix="c" %>
 <%@ taglib uri="http://java.sun.com/jsp/jstl/functions" prefix="fn" %>
 
+<% final String baseHref = org.opennms.web.api.Util.calculateUrlBase( request ); %>
+
 <jsp:include page="/includes/header.jsp" flush="false" >
   <jsp:param name="title" value="Key SNMP Customized Performance Reports" />
   <jsp:param name="headTitle" value="Performance " />
   <jsp:param name="headTitle" value="Reports" />
   <jsp:param name="headTitle" value="KSC" />
   <jsp:param name="location" value="KSC Reports" />
-  <jsp:param name="breadcrumb" value="<a href='report/index.jsp'>Reports</a>" />
-  <jsp:param name="breadcrumb" value="<a href='KSC/index.htm'>KSC Reports</a>" />
+  <jsp:param name="breadcrumb" value="<a href='<%= baseHref %>report/index.jsp'>Reports</a>" />
+  <jsp:param name="breadcrumb" value="<a href='<%= baseHref %>KSC/index.htm'>KSC Reports</a>" />
   <jsp:param name="breadcrumb" value="Custom Graph" />
 </jsp:include>
 
@@ -140,7 +142,7 @@
                             </td>
               
                             <td class="normal" align="left">
-                              <c:url var="graphUrl" value="graph/graph.png">
+                              <c:url var="graphUrl" value="${baseHref}graph/graph.png">
                                 <c:param name="resourceId" value="${resultSet.resource.id}"/>
                                 <c:param name="report" value="${resultSet.prefabGraph.name}"/>
                                 <c:param name="start" value="${resultSet.start.time}"/>
@@ -157,7 +159,7 @@
       <h3>Choose graph options</h3>
       <div class="boxWrapper">
 
-      <form name="customize_graph" method="get" action="KSC/formProcGraph.htm" >
+      <form name="customize_graph" method="get" action="<%= baseHref %>KSC/formProcGraph.htm" >
         <input type="hidden" name="<%=FormProcGraphController.Parameters.action%>" value="none" />
 
                     <table class="normal">

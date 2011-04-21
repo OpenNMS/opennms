@@ -54,6 +54,7 @@
     HttpServletRequest req = new XssRequestWrapper(request);
     String match = req.getParameter("match");
     pageContext.setAttribute("match", match);
+    final String baseHref = org.opennms.web.api.Util.calculateUrlBase( request );
 %>
 
 <jsp:include page="/includes/header.jsp" flush="false" >
@@ -61,15 +62,15 @@
   <jsp:param name="headTitle" value="Performance" />
   <jsp:param name="headTitle" value="Reports" />
   <jsp:param name="headTitle" value="KSC" />
-  <jsp:param name="breadcrumb" value="<a href='report/index.jsp'>Reports</a>" />
+  <jsp:param name="breadcrumb" value="<a href='<%= baseHref %>report/index.jsp'>Reports</a>" />
   <jsp:param name="breadcrumb" value="KSC Reports" />
   <jsp:param name="enableExtJS" value="true"/>
 </jsp:include>
 
-<script type="text/javascript" src="js/opennms/ux/PageableGrid.js" ></script>
-<script type="text/javascript" src="js/opennms/ux/ResourcesPageableGrid.js" ></script>
-<script type="text/javascript" src="js/opennms/ux/LocalPageableProxy.js" ></script>
-<script type="text/javascript" src="js/KSCIndexView.js" ></script>
+<script type="text/javascript" src="<%= baseHref %>js/opennms/ux/PageableGrid.js" ></script>
+<script type="text/javascript" src="<%= baseHref %>js/opennms/ux/ResourcesPageableGrid.js" ></script>
+<script type="text/javascript" src="<%= baseHref %>js/opennms/ux/LocalPageableProxy.js" ></script>
+<script type="text/javascript" src="<%= baseHref %>js/KSCIndexView.js" ></script>
 
 <!-- A script for validating Node ID Selection Form before submittal -->
 <script type="text/javascript" >
@@ -118,12 +119,7 @@
 				                             ]};
 		
 		Ext.onReady(function(){
-			// IE likes page-relative links, everything else does base-HREF-relative links
-			if (Ext.isIE) {
-				customizedReportsInitView("custom-resources", customData, "formProcMain.htm?report_action={action}");
-			} else {
-				customizedReportsInitView("custom-resources", customData, "KSC/formProcMain.htm?report_action={action}");
-			}
+				customizedReportsInitView("custom-resources", customData, "<%= baseHref %>KSC/formProcMain.htm?report_action={action}");
 		})
 	</script>
 	<div id="custom-resources"></div>
@@ -152,12 +148,7 @@
 												</c:forEach>
       	                                  	]};
         	Ext.onReady(function(){
-				// IE likes page-relative links, everything else does base-HREF-relative links
-				if (Ext.isIE) {
-					nodeSNMPReportsInitView("snmp-reports", nodeData, "customView.htm?type={type}&report={id}")
-				} else {
-					nodeSNMPReportsInitView("snmp-reports", nodeData, "KSC/customView.htm?type={type}&report={id}")
-				}
+					nodeSNMPReportsInitView("snmp-reports", nodeData, "<%= baseHref %>KSC/customView.htm?type={type}&report={id}")
             });
       </script>
       <div id="snmp-reports"></div>
@@ -193,17 +184,12 @@
           <script type="text/javascript">
           	Ext.onReady(function(){
 				/*
-				// IE likes page-relative links, everything else does base-HREF-relative links
-				if (Ext.isIE) {
-					domainGridInitView("domain-reports", domainData, "customView.htm");
-				} else {
-					domainGridInitView("domain-reports", domainData, "KSC/customView.htm");
-				}
+					domainGridInitView("domain-reports", domainData, "<%= baseHref %>KSC/customView.htm");
 				*/
             });
           </script>
           <div id="domain-reports"></div>
-          <form method="get" name="choose_domain" action="KSC/customView.htm" onsubmit="return validateDomain();">
+          <form method="get" name="choose_domain" action="<%= baseHref %>KSC/customView.htm" onsubmit="return validateDomain();">
             <input type="hidden" name="<%=CustomViewController.Parameters.type%>" value="domain">
 
                   <select style="width: 100%;" name="<%=CustomViewController.Parameters.domain%>" size="10">
