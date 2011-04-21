@@ -13,9 +13,6 @@
     This module is used to provide a single artifact that the opennms project
     can depend on to use Google Web Toolkit
   </description>
-  <properties>
-    <gwtVersion>2.1.1</gwtVersion>
-  </properties>
 
   <dependencies>
     <dependency>
