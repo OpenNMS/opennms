@@ -56,7 +56,7 @@ for my $module (@ARGS) {
 
 		# then, we deploy
 		chdir($moduledir);
-		@command = ($MVN, @other_args, 'deploy');
+		@command = ($MVN, '-Dmaven.test.skip.exec=true', @other_args, 'deploy');
 		info("running:", @command);
 		handle_errors_and_exit_on_failure(system(@command));
 	} else {
