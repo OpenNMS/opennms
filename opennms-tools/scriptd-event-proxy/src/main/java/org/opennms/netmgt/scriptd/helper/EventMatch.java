@@ -17,7 +17,7 @@ public interface EventMatch {
 	 * Method to decide if the Event matches
 	 * 
 	 * @param event
-	 * @return
+	 * @return true if the event match
 	 */
 	public boolean match(Event event);
 
