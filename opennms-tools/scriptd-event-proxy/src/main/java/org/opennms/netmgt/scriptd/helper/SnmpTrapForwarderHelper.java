@@ -3,6 +3,7 @@ package org.opennms.netmgt.scriptd.helper;
 import java.net.UnknownHostException;
 
 import org.opennms.netmgt.snmp.SnmpTrapBuilder;
+import org.opennms.netmgt.snmp.SnmpV2TrapBuilder;
 import org.opennms.netmgt.snmp.SnmpV3TrapBuilder;
 import org.opennms.netmgt.xml.event.Event;
 
@@ -14,7 +15,10 @@ public abstract class SnmpTrapForwarderHelper extends AbstractEventForwarder imp
 	String ip;
 	String community;
 	int port;
-	
+
+	int timeout;
+	int retries;
+
 	int securityLevel;
 	String securityname;
 	String authPassPhrase;
@@ -23,12 +27,28 @@ public abstract class SnmpTrapForwarderHelper extends AbstractEventForwarder imp
 	String privprotocol;
 	SnmpTrapHelper snmpTrapHelper;
 
-	public SnmpTrapHelper getSnmptrapHelper() {
+	public SnmpTrapHelper getSnmpTrapHelper() {
 		return snmpTrapHelper;
 	}
 
-	public void setSnmptrapHelper(SnmpTrapHelper snmpTrapHelper) {
+	public void setSnmpTrapHelper(SnmpTrapHelper snmpTrapHelper) {
 		this.snmpTrapHelper = snmpTrapHelper;
+	}
+
+	public int getTimeout() {
+		return timeout;
+	}
+
+	public void setTimeout(int timeout) {
+		this.timeout = timeout;
+	}
+
+	public int getRetries() {
+		return retries;
+	}
+
+	public void setRetries(int retries) {
+		this.retries = retries;
 	}
 
 	public SnmpTrapForwarderHelper(String source_ip, String ip, int port, String community,SnmpTrapHelper snmpTrapHelper) {
@@ -46,6 +66,14 @@ public abstract class SnmpTrapForwarderHelper extends AbstractEventForwarder imp
 		this.snmpTrapHelper = snmpTrapHelper;
 	}
 
+	public SnmpTrapForwarderHelper(String ip, int port, String community, int timeout, int retries, SnmpTrapHelper snmpTrapHelper) {
+		this.ip = ip;
+		this.port=port;
+		this.community=community;
+		this.snmpTrapHelper = snmpTrapHelper;
+		this.timeout = timeout;
+		this.retries = retries;
+	}
 	
 	public SnmpTrapForwarderHelper(String ip, int port, int securityLevel,
 			String securityname, String authPassPhrase, String authProtocol,
@@ -61,6 +89,23 @@ public abstract class SnmpTrapForwarderHelper extends AbstractEventForwarder imp
 		this.privprotocol = privprotocol;
 		this.snmpTrapHelper = snmpTrapHelper;
 
+	}
+
+	public SnmpTrapForwarderHelper(String ip, int port, int securityLevel,
+			String securityname, String authPassPhrase, String authProtocol,
+			String privPassPhrase, String privprotocol, int timeout, int retries, SnmpTrapHelper snmpTrapHelper) {
+		super();
+		this.ip = ip;
+		this.port = port;
+		this.securityLevel = securityLevel;
+		this.securityname = securityname;
+		this.authPassPhrase = authPassPhrase;
+		this.authProtocol = authProtocol;
+		this.privPassPhrase = privPassPhrase;
+		this.privprotocol = privprotocol;
+		this.snmpTrapHelper = snmpTrapHelper;
+		this.timeout = timeout;
+		this.retries = retries;
 	}
 
 	public void sendV1AlarmTrap( Event event, boolean sync) throws UnknownHostException {
@@ -96,6 +141,30 @@ public abstract class SnmpTrapForwarderHelper extends AbstractEventForwarder imp
 		}
 	}
 
+	public void sendV2AlarmInform( Event event, boolean sync) throws UnknownHostException, SnmpTrapHelperException {
+		long trapTimeStamp = 0;
+		SnmpTrapBuilder trap = snmpTrapHelper.createV2Inform(".1.3.6.1.4.1.5813.1.3",Long.toString(trapTimeStamp));
+		trap=buildAlarmTrap(event, sync, trap);
+		SnmpV2TrapBuilder inform = (SnmpV2TrapBuilder) trap;
+        try {
+			inform.sendInform(getIp(), getPort(), getTimeout(), getRetries(), getCommunity());
+		} catch (Exception e) {
+			e.printStackTrace();
+		}
+	}
+
+	public void sendV3AlarmInform( Event event, boolean sync) throws UnknownHostException, SnmpTrapHelperException {
+		long trapTimeStamp = 0;
+		SnmpTrapBuilder trap = snmpTrapHelper.createV3Inform(".1.3.6.1.4.1.5813.1.3",Long.toString(trapTimeStamp));
+		trap=buildAlarmTrap(event, sync, trap);
+		SnmpV3TrapBuilder inform = (SnmpV3TrapBuilder) trap;
+		try {
+			inform.sendInform(getIp(), getPort(), getTimeout(), getRetries(),getSecurityLevel(), getSecurityname(), getAuthPassPhrase(), getAuthProtocol(), getPrivPassPhrase(), getPrivprotocol());
+		} catch (Exception e) {
+			e.printStackTrace();
+		}
+	}
+
 	public void sendV1EventTrap( Event event) throws UnknownHostException {
 		SnmpTrapBuilder trap = snmpTrapHelper.createV1Trap(".1.3.6.1.4.1.5813.1",getSource_ip(), 6, 1, 0);
 		trap = buildEventTrap(event, trap);
@@ -124,6 +193,30 @@ public abstract class SnmpTrapForwarderHelper extends AbstractEventForwarder imp
 		SnmpV3TrapBuilder v3trap = (SnmpV3TrapBuilder) trap;
 		try {
 			v3trap.send(getIp(), getPort(), getSecurityLevel(), getSecurityname(), getAuthPassPhrase(), getAuthProtocol(), getPrivPassPhrase(), getPrivprotocol());
+		} catch (Exception e) {
+			e.printStackTrace();
+		}
+	}
+
+	public void sendV2EventInform( Event event) throws UnknownHostException, SnmpTrapHelperException {
+		long trapTimeStamp = 0;
+		SnmpTrapBuilder trap = snmpTrapHelper.createV2Inform(".1.3.6.1.4.1.5813.1.3",Long.toString(trapTimeStamp));
+		trap=buildEventTrap(event,trap);
+		SnmpV2TrapBuilder inform = (SnmpV2TrapBuilder) trap;
+        try {
+			inform.sendInform(getIp(), getPort(), getTimeout(), getRetries(), getCommunity());
+		} catch (Exception e) {
+			e.printStackTrace();
+		}
+	}
+
+	public void sendV3EventInform( Event event) throws UnknownHostException, SnmpTrapHelperException {
+		long trapTimeStamp = 0;
+		SnmpTrapBuilder trap = snmpTrapHelper.createV3Inform(".1.3.6.1.4.1.5813.1.3",Long.toString(trapTimeStamp));
+		trap=buildEventTrap(event,trap);
+		SnmpV3TrapBuilder inform = (SnmpV3TrapBuilder) trap;
+		try {
+			inform.sendInform(getIp(), getPort(), getTimeout(), getRetries(),getSecurityLevel(), getSecurityname(), getAuthPassPhrase(), getAuthProtocol(), getPrivPassPhrase(), getPrivprotocol());
 		} catch (Exception e) {
 			e.printStackTrace();
 		}
