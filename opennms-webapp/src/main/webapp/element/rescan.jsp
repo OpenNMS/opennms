@@ -113,7 +113,7 @@
           <input type="hidden" name="returnUrl" value="<%=returnUrl%>" />             
 
           <input type="submit" value="Rescan" />
-          <input type="button" value="Cancel" onClick="window.open('<%=Util.calculateUrlBase(request) + "/" + returnUrl%>', '_self')" />             
+          <input type="button" value="Cancel" onClick="window.open('<%=Util.calculateUrlBase(request) + returnUrl%>', '_self')" />             
         </p>
       </form>
   </div>
