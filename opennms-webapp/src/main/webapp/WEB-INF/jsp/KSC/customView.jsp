@@ -49,13 +49,15 @@
 <%@ taglib uri="http://java.sun.com/jsp/jstl/core" prefix="c" %>
 <%@ taglib uri="http://java.sun.com/jsp/jstl/functions" prefix="fn" %>
 
+<% final String baseHref = org.opennms.web.api.Util.calculateUrlBase( request ); %>
+
 <jsp:include page="/includes/header.jsp" flush="false" >
   <jsp:param name="title" value="Key SNMP Customized Performance Reports" />
   <jsp:param name="headTitle" value="Performance" />
   <jsp:param name="headTitle" value="Reports" />
   <jsp:param name="headTitle" value="KSC" />
-  <jsp:param name="breadcrumb" value="<a href='report/index.jsp'>Reports</a>" />
-  <jsp:param name="breadcrumb" value="<a href='KSC/index.htm'>KSC Reports</a>" />
+  <jsp:param name="breadcrumb" value="<a href='<%= baseHref %>report/index.jsp'>Reports</a>" />
+  <jsp:param name="breadcrumb" value="<a href='<%= baseHref %>KSC/index.htm'>KSC Reports</a>" />
   <jsp:param name="breadcrumb" value="Custom View" />
 </jsp:include>
 
@@ -93,7 +95,7 @@
   <c:otherwise>
     <h3>Custom View: ${title}</h3>
     <div class="boxWrapper">
-    <form name="view_form" method="get" action="KSC/formProcView.htm">
+    <form name="view_form" method="get" action="<%= baseHref %>KSC/formProcView.htm">
       <input type="hidden" name="<%=FormProcViewController.Parameters.type%>" value="${reportType}" >
       <input type="hidden" name="<%=FormProcViewController.Parameters.action%>" value="none">
       <c:if test="${!empty report}">
@@ -157,7 +159,7 @@
                                 </c:otherwise>
                               </c:choose>
                               
-                              <c:url var="detailUrl" value="graph/results.htm">
+                              <c:url var="detailUrl" value="${baseHref}graph/results.htm">
                                 <c:param name="resourceId" value="${resultSet.resource.id}"/>
                                 <c:param name="reports" value="all"/>
                                 <c:param name="start" value="${resultSet.start.time}"/>
@@ -169,7 +171,7 @@
                           </tr>
                         </table>
   
-                        <c:url var="zoomUrl" value="graph/results.htm">
+                        <c:url var="zoomUrl" value="${baseHref}graph/results.htm">
                           <c:param name="resourceId" value="${resultSet.resource.id}"/>
                           <c:param name="reports" value="${resultSet.prefabGraph.name}"/>
                           <c:param name="start" value="${resultSet.start.time}"/>
@@ -177,7 +179,7 @@
                           <c:param name="zoom" value="true"/>
                         </c:url>
   
-                        <c:url var="graphUrl" value="graph/graph.png">
+                        <c:url var="graphUrl" value="${baseHref}graph/graph.png">
                           <c:param name="resourceId" value="${resultSet.resource.id}"/>
                           <c:param name="report" value="${resultSet.prefabGraph.name}"/>
                           <c:param name="start" value="${resultSet.start.time}"/>

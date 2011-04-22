@@ -66,11 +66,7 @@ function customResourceViewInit(elementId, dataArray, destURL){
 	
 	function viewChildResource(){
 		if(resourcesGrid.getSelectionModel().getSelected() != undefined){
-			if (Ext.isIE) {
-				window.location = "customGraphChooseResource.htm?selectedResourceId=&resourceId=" + resourcesGrid.getSelectionModel().getSelected().data.id;
-			} else {
-				window.location = "KSC/customGraphChooseResource.htm?selectedResourceId=&resourceId=" + resourcesGrid.getSelectionModel().getSelected().data.id;
-			}
+				window.location = getBaseHref() + "customGraphChooseResource.htm?selectedResourceId=&resourceId=" + resourcesGrid.getSelectionModel().getSelected().data.id;
 		}else{
 			alert("Please Select a Resource");
 		}
@@ -78,16 +74,24 @@ function customResourceViewInit(elementId, dataArray, destURL){
 	
 	function chooseChildResource(){
 		if(resourcesGrid.getSelectionModel().getSelected() != undefined){
-			if (Ext.isIE) {
-				window.location = "customGraphEditDetails.htm?resourceId=" + resourcesGrid.getSelectionModel().getSelected().data.id;
-			} else {
-				window.location = "KSC/customGraphEditDetails.htm?resourceId=" + resourcesGrid.getSelectionModel().getSelected().data.id;
-			}
+				window.location = getBaseHref() + "customGraphEditDetails.htm?resourceId=" + resourcesGrid.getSelectionModel().getSelected().data.id;
 		}else{
 			alert("Please Select a Resource");
 		}
 	};
 	
+	function getBaseHref() {
+		var base = (document.getElementsByTagName ('BASE')[0] && document.getElementsByTagName('BASE')[0].href);
+		if (!base) {
+			if (Ext.isIE) {
+				base = "";
+			} else {
+				base = "KSC/";
+			}
+		}
+		return base;
+	}
+
 	function getResourceIds(){
 		if(graphStore.getCount() > 0){
 			var query = new Array();
