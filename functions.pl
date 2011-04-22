@@ -135,12 +135,12 @@ sub get_dependencies {
 	);
 
 	my $moduledir = $PREFIX . "/" . $directory;
-	#my %deps = ('org.opennms:opennms' => 1);
-	my %deps = ();
+	my $deps = { 'org.opennms:opennms' => 1 };
+	my $versions = {};
 	my $cwd = getcwd;
 
 	if (-d $moduledir) {
-		my $last_module_name = undef;
+		my $current_module_name = undef;
 		my $in_module = undef;
 
 		chdir($moduledir);
@@ -159,15 +159,39 @@ sub get_dependencies {
 							next LIST;
 						}
 					}
-					my ($dep) = $line =~ /^\s*([^\:]*\:[^\:]*)/;
-					push(@{$deps{$last_module_name}}, $dep);
+					$line =~ s/^\s*//;
+					$line =~ s/\s*$//;
+					my @maven_info = split(/\:/, $line);
+					my $dep = $maven_info[0] . ":" . $maven_info[1];
+					push(@{$deps->{$current_module_name}}, $dep);
+
+					# next unless ($maven_info[2] eq "jar" or $maven_info[2] eq "pom");
+
+					# do some extra checking of versions
+					my $version = $maven_info[3];
+					$version = $maven_info[4] if ($version eq "xsds");
+					$version = $maven_info[4] if ($version eq "tests");
+					if (exists $versions->{$dep}) {
+						$old_version = $versions->{$dep}->{'version'};
+						$old_module  = $versions->{$dep}->{'module'};
+						next if ($old_module eq $current_module_name);
+
+						if ($old_version ne $version) {
+							warning("$current_module_name wants $dep version $version, but $old_module wants version $old_version");
+						}
+					}
+					$versions->{$dep} = {
+						'version' => $version,
+						'module' => $current_module_name,
+					};
+
 				}
 			} else {
 				if ($line =~ /--- maven-dependency-plugin.*? \@ (\S+)/) {
-					$last_module_name = $1;
+					$current_module_name = $1;
 				}
 				if ($line =~ /The following files have been resolved/) {
-					$in_module = $last_module_name;
+					$in_module = $current_module_name;
 				}
 			}
 		}
@@ -175,7 +199,7 @@ sub get_dependencies {
 		chdir($cwd);
 	}
 
-	return \%deps;
+	return $deps;
 }
 
 sub handle_errors {
