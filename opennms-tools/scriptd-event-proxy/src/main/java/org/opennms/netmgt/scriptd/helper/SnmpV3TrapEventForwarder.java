@@ -9,27 +9,25 @@ public class SnmpV3TrapEventForwarder extends SnmpTrapForwarderHelper implements
 
 	public SnmpV3TrapEventForwarder(String ip, int port, int securityLevel,
 			String securityname, String authPassPhrase, String authProtocol,
-			String privPassPhrase, String privprotocol) {
-		super(ip,port,securityLevel,securityname,authPassPhrase,authProtocol,privPassPhrase,privprotocol);
+			String privPassPhrase, String privprotocol, SnmpTrapHelper snmpTrapHelper ) {
+		super(ip,port,securityLevel,securityname,authPassPhrase,authProtocol,privPassPhrase,privprotocol,snmpTrapHelper);
 	}
 
-	public Event flushEvent(Event event) {
-		event =	super.flushEvent(event);
-		if (event == null)
-			return null;
-		try {
-			sendV3EventTrap(event);
-		} catch (UnknownHostException e) {
-			e.printStackTrace();
-		} catch (SnmpTrapHelperException e) {
-			e.printStackTrace();
-		}
-		return event;
-		
+	public void flushEvent(Event event) {
+		event =	super.filter(event);
+		if (event != null) {
+			try {
+				sendV3EventTrap(event);
+			} catch (UnknownHostException e) {
+				e.printStackTrace();
+			} catch (SnmpTrapHelperException e) {
+				e.printStackTrace();
+			}
+		}		
 	}
 
-	public Event flushSyncEvent(Event event) {
-		return flushEvent(event);
+	public void flushSyncEvent(Event event) {
+		flushEvent(event);
 	}
 
 	

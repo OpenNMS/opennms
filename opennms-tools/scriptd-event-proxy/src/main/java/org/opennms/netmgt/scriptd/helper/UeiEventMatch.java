@@ -35,5 +35,4 @@ public class UeiEventMatch implements EventMatch {
 		Pattern p = Pattern.compile(regex);
 		return p.matcher(text).matches();
 	}
-
 }

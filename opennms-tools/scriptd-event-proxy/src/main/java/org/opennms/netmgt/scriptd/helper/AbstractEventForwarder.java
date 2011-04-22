@@ -9,7 +9,7 @@ public abstract class AbstractEventForwarder implements EventForwarder {
 		m_filter = filter;
 	}
 
-	public Event flushEvent(Event event) {
+	public Event filter(Event event) {
 		return m_filter.filter(event);
 	}
 

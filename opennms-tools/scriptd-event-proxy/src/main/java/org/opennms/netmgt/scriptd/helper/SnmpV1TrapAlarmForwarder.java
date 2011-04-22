@@ -8,33 +8,30 @@ public class SnmpV1TrapAlarmForwarder extends SnmpTrapForwarderHelper implements
 		EventForwarder {
 
 
-	public SnmpV1TrapAlarmForwarder(String source_ip, String ip, int port, String community) {
-		super(source_ip, ip, port, community);
+	public SnmpV1TrapAlarmForwarder(String source_ip, String ip, int port, String community, SnmpTrapHelper snmpTrapHelper) {
+		super(source_ip, ip, port, community, snmpTrapHelper);
 	}
 
-	public Event flushEvent(Event event) {
-		event =	super.flushEvent(event);
-		if (event == null)
-			return null;
+	public void flushEvent(Event event) {
+		event =	super.filter(event);
+		if (event != null) {
 		try {
 			sendV1AlarmTrap(event, false);
 		} catch (UnknownHostException e) {
 			e.printStackTrace();
 		}
-		return event;
-		
+		}		
 	}
 
-	public Event flushSyncEvent(Event event) {
-		event =	super.flushEvent(event);
-		if (event == null)
-			return null;
+	public void flushSyncEvent(Event event) {
+		event =	super.filter(event);
+		if (event != null) {
 		try {
 			sendV1AlarmTrap(event, true);
 		} catch (UnknownHostException e) {
 			e.printStackTrace();
 		}
-		return event;
+		}
 	}
 
 	

@@ -7,25 +7,23 @@ import org.opennms.netmgt.xml.event.Event;
 public class SnmpV1TrapEventForwarder extends SnmpTrapForwarderHelper implements
 		EventForwarder {	
 
-	public SnmpV1TrapEventForwarder(String ip, int port, String community) {
-		super(ip, port, community);
+	public SnmpV1TrapEventForwarder(String source_ip, String ip, int port, String community, SnmpTrapHelper snmpTrapHelper) {
+		super(source_ip,ip, port, community, snmpTrapHelper);
 	}
 
-	public Event flushEvent(Event event) {
-		event =	super.flushEvent(event);
-		if (event == null)
-			return null;
+	public void flushEvent(Event event) {
+		event =	super.filter(event);
+		if (event != null) {
 		try {
 			sendV1EventTrap(event);
 		} catch (UnknownHostException e) {
 			e.printStackTrace();
 		}
-		return event;
-		
+		}		
 	}
 
-	public Event flushSyncEvent(Event event) {
-		return flushEvent(event);
+	public void flushSyncEvent(Event event) {
+		flushEvent(event);
 	}
 
 	

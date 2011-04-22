@@ -1,7 +1,5 @@
 package org.opennms.netmgt.scriptd.helper;
 
-import java.util.Map;
-
 import org.opennms.netmgt.xml.event.Event;
 
 public abstract class AbstractEventPolicyRule implements EventPolicyRule {

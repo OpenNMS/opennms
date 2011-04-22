@@ -19,6 +19,6 @@ public interface EventMatch {
 	 * @param event
 	 * @return
 	 */
-	boolean match(Event event);
+	public boolean match(Event event);
 
 }

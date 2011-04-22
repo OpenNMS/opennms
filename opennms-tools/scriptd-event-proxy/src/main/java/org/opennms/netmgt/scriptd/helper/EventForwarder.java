@@ -16,26 +16,24 @@ public interface EventForwarder {
 	 * to match event to be forwarded or dropped
 	 * @param filter
 	 */
-	void setEventPolicyRule(EventPolicyRule filter);	
+	public void setEventPolicyRule(EventPolicyRule filter);	
 
 	/**
 	 * 
 	 * Method used to flush Event
 	 * 
 	 * @param event
-	 * @return the event flushed
 	 * 
 	 */
-	 Event flushEvent(Event event);
+	 public void flushEvent(Event event);
 
 	/**
 	 * 
-	 * Method used to flush Event
+	 * Method used to flush Sync Event
 	 * 
 	 * @param event
-	 * @return the event flushed
 	 * 
 	 */
-	 Event flushSyncEvent(Event event);
+	 public void flushSyncEvent(Event event);
 
 }

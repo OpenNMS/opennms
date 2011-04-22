@@ -8,14 +8,13 @@ public class SnmpV2TrapAlarmForwarder extends SnmpTrapForwarderHelper implements
 		EventForwarder {
 
 
-	public SnmpV2TrapAlarmForwarder(String ip, int port, String community) {
-		super(ip, port, community);
+	public SnmpV2TrapAlarmForwarder(String ip, int port, String community, SnmpTrapHelper snmpTrapHelper) {
+		super(ip, port, community, snmpTrapHelper);
 	}
 
-	public Event flushEvent(Event event) {
-		event =	super.flushEvent(event);
-		if (event == null)
-			return null;
+	public void flushEvent(Event event) {
+		event =	super.filter(event);
+		if (event != null){
 		try {
 			sendV2AlarmTrap(event, false);
 		} catch (UnknownHostException e) {
@@ -23,14 +22,12 @@ public class SnmpV2TrapAlarmForwarder extends SnmpTrapForwarderHelper implements
 		} catch (SnmpTrapHelperException e) {
 			e.printStackTrace();
 		}
-		return event;
-		
+		}		
 	}
 
-	public Event flushSyncEvent(Event event) {
-		event =	super.flushEvent(event);
-		if (event == null)
-			return null;
+	public void flushSyncEvent(Event event) {
+		event =	super.filter(event);
+		if (event != null) {
 		try {
 			sendV2AlarmTrap(event, true);
 		} catch (UnknownHostException e) {
@@ -38,7 +35,7 @@ public class SnmpV2TrapAlarmForwarder extends SnmpTrapForwarderHelper implements
 		} catch (SnmpTrapHelperException e) {
 			e.printStackTrace();
 		}
-		return event;
+		}
 	}
 
 	

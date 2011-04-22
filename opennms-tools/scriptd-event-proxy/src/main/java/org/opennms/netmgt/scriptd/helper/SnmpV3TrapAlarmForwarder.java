@@ -10,14 +10,13 @@ public class SnmpV3TrapAlarmForwarder extends SnmpTrapForwarderHelper implements
 
 	public SnmpV3TrapAlarmForwarder(String ip, int port, int securityLevel,
 			String securityname, String authPassPhrase, String authProtocol,
-			String privPassPhrase, String privprotocol) {
-		super(ip,port,securityLevel,securityname,authPassPhrase,authProtocol,privPassPhrase,privprotocol);
+			String privPassPhrase, String privprotocol, SnmpTrapHelper snmpTrapHelper) {
+		super(ip,port,securityLevel,securityname,authPassPhrase,authProtocol,privPassPhrase,privprotocol,snmpTrapHelper);
 	}
 
-	public Event flushEvent(Event event) {
-		event =	super.flushEvent(event);
-		if (event == null)
-			return null;
+	public void flushEvent(Event event) {
+		event =	super.filter(event);
+		if (event != null) {
 		try {
 			sendV3AlarmTrap(event, false);
 		} catch (UnknownHostException e) {
@@ -25,14 +24,12 @@ public class SnmpV3TrapAlarmForwarder extends SnmpTrapForwarderHelper implements
 		} catch (SnmpTrapHelperException e) {
 			e.printStackTrace();
 		}
-		return event;
-		
+		}
 	}
 
-	public Event flushSyncEvent(Event event) {
-		event =	super.flushEvent(event);
-		if (event == null)
-			return null;
+	public void flushSyncEvent(Event event) {
+		event =	super.filter(event);
+		if (event != null) {
 		try {
 			sendV3AlarmTrap(event, true);
 		} catch (UnknownHostException e) {
@@ -40,8 +37,6 @@ public class SnmpV3TrapAlarmForwarder extends SnmpTrapForwarderHelper implements
 		} catch (SnmpTrapHelperException e) {
 			e.printStackTrace();
 		}
-		return event;
+		}
 	}
-
-	
 }
