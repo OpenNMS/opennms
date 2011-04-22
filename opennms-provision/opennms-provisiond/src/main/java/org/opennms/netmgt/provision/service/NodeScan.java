@@ -413,9 +413,9 @@ public class NodeScan implements RunInBatch {
                     @Override
                     public void processIPInterfaceRow(IPInterfaceRow row) {
                     	LogUtils.debugf(this, "Processing row with ipAddr %s", row.getIpAddress());
+                    	if (row.getIpAddress() != null)
+                    		storeIfIndexIpAddress(row.getIfIndex(), row.getIpAddress());
                         if (!row.getIpAddress().startsWith("127.0.0")) {
-                        	if (row.getIpAddress() != null)
-                        		storeIfIndexIpAddress(row.getIfIndex(), row.getIpAddress());
 
                             // mark any provisioned interface as scanned
                             provisionedIps.remove(row.getIpAddress());
