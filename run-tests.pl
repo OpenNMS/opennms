@@ -35,9 +35,9 @@ for my $module (@ARGS) {
 		my %realdeps = ('org.opennms:opennms' => 1);
 	
 		for my $project (keys %$deps) {
-			info("project = $project");
+			debug("project = $project");
 			for my $dep (@{$deps->{$project}}) {
-				info("dep = $dep");
+				debug("dep = $dep");
 				$realdeps{$dep}++;
 			}
 		}
