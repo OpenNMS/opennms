@@ -2,14 +2,14 @@ package org.opennms.netmgt.scriptd.helper;
 
 import org.opennms.netmgt.xml.event.Event;
 
-public class AlarmEventMatch extends UeiEventMatch implements EventMatch {
+public class UeiAlarmMatch extends UeiEventMatch implements EventMatch {
 	
 	
-	public AlarmEventMatch() {
+	public UeiAlarmMatch() {
 		super();
 	}
 
-	public AlarmEventMatch(String ueimatch) {
+	public UeiAlarmMatch(String ueimatch) {
 		super(ueimatch);
 	}
 
