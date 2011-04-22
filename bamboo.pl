@@ -14,10 +14,12 @@ if (not defined $GIT) {
 	exit 1;
 }
 
-my @command = ($GIT, "clean", "-fdx", ".");
-info("running:", @command);
-handle_errors_and_exit_on_failure(system(@command));
+clean_git();
 
 @command = ($MVN, @ARGS);
 info("running:", @command);
-handle_errors_and_exit(system(@command));
+handle_errors_and_exit_on_failure(system(@command));
+
+clean_git();
+
+exit 0;

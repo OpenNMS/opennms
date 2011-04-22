@@ -110,6 +110,12 @@ if (-r $ENV{'HOME'} . "/.opennms-buildrc") {
 $ENV{'MAVEN_OPTS'} = $MAVEN_OPTS;
 info("MAVEN_OPTS = $MAVEN_OPTS"); 
 
+sub clean_git {
+	my @command = ($GIT, "clean", "-fdx", ".");
+	info("running:", @command);
+	handle_errors_and_exit_on_failure(system(@command));
+}
+
 sub get_dependencies {
 	my $directory = shift;
 
