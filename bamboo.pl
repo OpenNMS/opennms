@@ -21,6 +21,13 @@ my @command = ($git, "clean", "-fdx", ".");
 info("running:", @command);
 handle_errors_and_exit_on_failure(system(@command));
 
+my $hostname = `/bin/hostname`;
+chomp($hostname);
+
+if ($hostname eq "nen") {
+	unshift(@ARGS, "-DaltDeploymentRepository=opennms-snapshot::default::file:///var/www/sites/opennms.org/site/repo/snapshots");
+}
+
 @command = ($MVN, @ARGS);
 info("running:", @command);
 handle_errors_and_exit(system(@command));
