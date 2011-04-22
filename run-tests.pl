@@ -66,6 +66,4 @@ for my $module (@ARGS) {
 	}
 }
 
-clean_git();
-
 exit 0;
