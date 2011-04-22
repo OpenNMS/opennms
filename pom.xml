@@ -92,7 +92,6 @@
     <module>dependencies</module>
     <module>core</module>
     <module>features</module>
-    <module>opennms-assemblies</module>
     <module>integrations</module>
     <module>tests</module>
     <module>integration-tests</module>

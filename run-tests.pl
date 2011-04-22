@@ -16,13 +16,11 @@ if (not defined $GIT) {
 	exit 1;
 }
 
-my @command = ($GIT, "clean", "-fdx", ".");
-info("running:", @command);
-handle_errors_and_exit_on_failure(system(@command));
-
-my @other_args = ();
+clean_git();
 
 for my $module (@ARGS) {
+	my @other_args = ();
+
 	if ($module =~ /^-/) {
 		push(@other_args, $module);
 		next;
@@ -67,5 +65,7 @@ for my $module (@ARGS) {
 		exit 1;
 	}
 }
+
+clean_git();
 
 exit 0;
