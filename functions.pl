@@ -1,9 +1,11 @@
 #!/usr/bin/env perl
 
+use Cwd;
 use File::Spec;
 use Getopt::Long qw(:config permute bundling pass_through);
 
 use vars qw(
+	$GIT
 	$HELP
 	$JAVA_HOME
 	$MVN
@@ -17,6 +19,14 @@ $HELP       = undef;
 $JAVA_HOME  = undef;
 $VERBOSE    = undef;
 @ARGS       = ();
+
+# path to git executable
+$GIT = `which git 2>/dev/null`;
+chomp($GIT);
+if ($GIT eq "" or ! -x "$GIT") {
+	warning("Unable to locate git.");
+	$GIT = undef;
+}
 
 # path to maven executable
 $MVN = $ENV{'MVN'};
@@ -106,6 +116,61 @@ if (-r $ENV{'HOME'} . "/.opennms-buildrc") {
 
 $ENV{'MAVEN_OPTS'} = $MAVEN_OPTS;
 info("MAVEN_OPTS = $MAVEN_OPTS"); 
+
+sub get_dependencies {
+	my $directory = shift;
+
+	my @SKIP = qw(
+		org\.opennms\:jicmp-api
+		org\.opennms\:jrrd-api
+		org\.opennms\:rancid-api
+		org\.opennms\.lib
+		org\.opennms\.smslib\:smslib
+	);
+
+	my $moduledir = $PREFIX . "/" . $directory;
+	#my %deps = ('org.opennms:opennms' => 1);
+	my %deps = ();
+	my $cwd = getcwd;
+
+	if (-d $moduledir) {
+		my $last_module_name = undef;
+		my $in_module = undef;
+
+		chdir($moduledir);
+		open(MVNRUN, "$MVN dependency:list |") or die "unable to run $MVN dependency:list in $moduledir: $!";
+		LIST: while (my $line = <MVNRUN>) {
+			chomp($line);
+			$line =~ s/^\[[^\]]*\]\s*//;
+			if (defined $in_module) {
+				if ($line =~ /^$/) {
+					$in_module = undef;
+				} elsif ($line !~ /opennms/) {
+					# skip non-opennms dependencies
+				} else {
+					for my $skip (@SKIP) {
+						if ($line =~ /$skip/) {
+							next LIST;
+						}
+					}
+					my ($dep) = $line =~ /^\s*([^\:]*\:[^\:]*)/;
+					push(@{$deps{$last_module_name}}, $dep);
+				}
+			} else {
+				if ($line =~ /--- maven-dependency-plugin.*? \@ (\S+)/) {
+					$last_module_name = $1;
+				}
+				if ($line =~ /The following files have been resolved/) {
+					$in_module = $last_module_name;
+				}
+			}
+		}
+		close(MVNRUN);
+		chdir($cwd);
+	}
+
+	return \%deps;
+}
 
 sub handle_errors {
 	my $exit = shift;

@@ -20,9 +20,17 @@ my @command = ($GIT, "clean", "-fdx", ".");
 info("running:", @command);
 handle_errors_and_exit_on_failure(system(@command));
 
-my @other_args = ();
 
 for my $module (@ARGS) {
+	my @other_args = ();
+
+	my $hostname = `hostname 2>/dev/null`;
+	chomp($hostname);
+	if ($hostname eq "nen") {
+		# special case, on nen we use the local repo
+		push(@other_args, "-DaltDeploymentRepository=opennms-snapshot::default::file:///var/www/sites/opennms.org/site/repo/snapshots");
+	}
+
 	if ($module =~ /^-/) {
 		push(@other_args, $module);
 		next;
@@ -44,22 +52,14 @@ for my $module (@ARGS) {
 
 		chdir($PREFIX);
 
-		if ($module =~ /assembl/) {
-			my @command = ($MVN, '-Dmaven.test.skip.exec=true', @other_args, 'install');
-			info("running:", @command);
-			handle_errors_and_exit_on_failure(system(@command));
-			chdir($PREFIX . "/opennms-full-assembly");
-			my @command = ($MVN, '-Dmaven.test.skip.exec=true', @other_args, 'install');
-			info("running:", @command);
-			handle_errors_and_exit_on_failure(system(@command));
-		} else {
-			my @command = ($MVN, '--projects', join(',', sort(keys(%realdeps))), '-Dmaven.test.skip.exec=true', @other_args, 'install');
-			info("running:", @command);
-			handle_errors_and_exit_on_failure(system(@command));
-		}
+		# first, we install the deps
+		my @command = ($MVN, '--projects', join(',', sort(keys(%realdeps))), '-Dmaven.test.skip.exec=true', @other_args, 'install');
+		info("running:", @command);
+		handle_errors_and_exit_on_failure(system(@command));
 
+		# then, we deploy
 		chdir($moduledir);
-		my @command = ($MVN, @other_args, 'install');
+		@command = ($MVN, @other_args, 'deploy');
 		info("running:", @command);
 		handle_errors_and_exit_on_failure(system(@command));
 	} else {
