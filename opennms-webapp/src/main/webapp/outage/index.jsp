@@ -53,10 +53,22 @@
   <jsp:param name="breadcrumb" value="Outages" />  
 </jsp:include>
 
+<script type="text/javascript">
+function validateId() {
+  var outageId = document.outageIdForm.id.value;
+  if (outageId.length > 1 && parseInt(outageId).toString() == outageId) {
+    return true;
+  } else {
+    alert("Please enter a valid outage ID.");
+    return false;
+  }
+}
+</script>
+
   <div class="TwoColLeft">
       <h3>Outage Menu</h3>    
 		<div class="boxWrapper">
-        <form method="get" action="outage/detail.htm" >
+        <form name="outageIdForm" method="get" action="outage/detail.htm" onsubmit="return validateId();">
           <p align="right">Outage ID:
 				<input type="text" name="id" />
 				<input type="submit" value="Get details" /></p>
