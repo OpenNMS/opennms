@@ -157,13 +157,21 @@ public class CustomViewController extends AbstractController implements Initiali
             List<OnmsResource> resources = getKscReportService().getResourcesFromGraphs(graphCollection);
             for (int i = 0; i < graphCollection.size(); i++) {
                 Graph graph = graphCollection.get(i);
-                OnmsResource resource = resources.get(i);
+                OnmsResource resource = null;
+                try {
+                    resource = resources.get(i);
+                }catch(IndexOutOfBoundsException e) {
+                    log().debug("Resource List Index Out Of Bounds Caught ", e);
+                }
+                
                 resourceMap.put(graph.toString(), resource);
                 if (resource == null) {
                     log().debug("Could not get resource for graph " + graph + " in report " + report.getTitle());
                 } else {
                     prefabGraphs.addAll(Arrays.asList(getResourceService().findPrefabGraphsForResource(resource)));
                 }
+                
+                
             }
       
             // Get default graph type from first element of graph_options

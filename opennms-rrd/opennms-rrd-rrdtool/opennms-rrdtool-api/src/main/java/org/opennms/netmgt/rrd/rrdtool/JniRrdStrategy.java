@@ -487,6 +487,9 @@ public class JniRrdStrategy implements RrdStrategy<String,StringBuffer> {
         // Creating Temp PNG File
         File pngFile = File.createTempFile("opennms.rrdtool.", ".png");
         command = command.replaceFirst("graph - ", "graph " + pngFile.getAbsolutePath() + " ");
+        if (log().isDebugEnabled()) {
+            log().debug("createGraphReturnDetails: Issuing RRD command: " + command);
+        }
 
         int width;
         int height;

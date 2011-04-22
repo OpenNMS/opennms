@@ -107,7 +107,8 @@ public class NodeProvisioningController extends AbstractController implements
                 request.getParameter("devicePassword"),
                 request.getParameter("enablePassword"),
                 request.getParameter("accessMethod"),
-                request.getParameter("autoEnable")
+                request.getParameter("autoEnable"),
+                request.getParameter("noSNMP")
                 )) {
                 redirectParms = "success=true&foreignSource=" + foreignSource;
             }

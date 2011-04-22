@@ -94,13 +94,13 @@ public class DefaultNodeProvisionService implements NodeProvisionService {
     public boolean provisionNode(final String user, String foreignSource, String foreignId, String nodeLabel, String ipAddress,
             String[] categories, String snmpCommunity, String snmpVersion,
             String deviceUsername, String devicePassword, String enablePassword,
-            String accessMethod, String autoEnable) throws NodeProvisionException {
+            String accessMethod, String autoEnable, String noSNMP) throws NodeProvisionException {
 
         if (log().isDebugEnabled()) {
             log().debug(String.format("adding SNMP community %s (%s)", snmpCommunity, snmpVersion));
         }
         // Set the SNMP community name (if necessary)
-        if (snmpCommunity != null && !snmpCommunity.equals("") && snmpVersion != null && !snmpVersion.equals("")) {
+        if (noSNMP == null &&  snmpCommunity != null && !snmpCommunity.equals("") && snmpVersion != null && !snmpVersion.equals("")) {
             try {
                 SnmpEventInfo info = new SnmpEventInfo();
                 info.setCommunityString(snmpCommunity);
@@ -122,7 +122,9 @@ public class DefaultNodeProvisionService implements NodeProvisionService {
         reqIface.setStatus(1);
 
         reqIface.putMonitoredService(new RequisitionMonitoredService("ICMP"));
-        reqIface.putMonitoredService(new RequisitionMonitoredService("SNMP"));
+        if(noSNMP == null) {
+            reqIface.putMonitoredService(new RequisitionMonitoredService("SNMP"));
+        }
         
         RequisitionNode reqNode = new RequisitionNode();
         reqNode.setNodeLabel(nodeLabel);
