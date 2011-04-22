@@ -1,0 +1,47 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<databaseChangeLog
+	xmlns="http://www.liquibase.org/xml/ns/dbchangelog"
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xmlns:ext="http://www.liquibase.org/xml/ns/dbchangelog-ext"
+	xsi:schemaLocation="http://www.liquibase.org/xml/ns/dbchangelog http://www.liquibase.org/xml/ns/dbchangelog/dbchangelog-2.0.xsd
+		http://www.liquibase.org/xml/ns/dbchangelog-ext http://www.liquibase.org/xml/ns/dbchangelog/dbchangelog-ext.xsd">
+
+  <changeSet author="rangerrick" id="1.9.8-NMS-4597-add-not-null-application-service-map">
+    <delete tableName="application_service_map">
+      <where>appid IS NULL OR ifserviceid IS NULL</where>
+    </delete>
+    <addNotNullConstraint tableName="application_service_map" columnName="appid" columnDataType="integer" />
+    <addNotNullConstraint tableName="application_service_map" columnName="ifserviceid" columnDataType="integer" />
+
+    <rollback>
+      <dropNotNullConstraint tableName="application_service_map" columnName="appid" columnDataType="integer" />
+      <dropNotNullConstraint tableName="application_service_map" columnName="ifserviceid" columnDataType="integer" />
+    </rollback>
+  </changeSet>
+
+  <changeSet author="rangerrick" id="1.9.8-NMS-4597-add-not-null-category-node">
+    <delete tableName="category_node">
+      <where>categoryid IS NULL OR nodeid IS NULL</where>
+    </delete>
+    <addNotNullConstraint tableName="category_node" columnName="categoryid" columnDataType="integer" />
+    <addNotNullConstraint tableName="category_node" columnName="nodeid" columnDataType="integer" />
+
+    <rollback>
+      <dropNotNullConstraint tableName="category_node" columnName="categoryid" columnDataType="integer" />
+      <dropNotNullConstraint tableName="category_node" columnName="nodeid" columnDataType="integer" />
+    </rollback>
+  </changeSet>
+
+  <changeSet author="rangerrick" id="1.9.8-NMS-4597-add-not-null-pathoutage">
+    <delete tableName="pathoutage">
+      <where>nodeid IS NULL</where>
+    </delete>
+    <addNotNullConstraint tableName="pathoutage" columnName="nodeid" columnDataType="integer" />
+
+    <rollback>
+      <dropNotNullConstraint tableName="pathoutage" columnName="nodeid" columnDataType="integer" />
+    </rollback>
+  </changeSet>
+
+</databaseChangeLog>
