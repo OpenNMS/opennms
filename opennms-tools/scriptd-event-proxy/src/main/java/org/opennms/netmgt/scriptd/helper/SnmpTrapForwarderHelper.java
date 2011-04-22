@@ -200,7 +200,7 @@ public abstract class SnmpTrapForwarderHelper extends AbstractEventForwarder imp
 
 	public void sendV2EventInform( Event event) throws UnknownHostException, SnmpTrapHelperException {
 		long trapTimeStamp = 0;
-		SnmpTrapBuilder trap = snmpTrapHelper.createV2Inform(".1.3.6.1.4.1.5813.1.3",Long.toString(trapTimeStamp));
+		SnmpTrapBuilder trap = snmpTrapHelper.createV2Inform(".1.3.6.1.4.1.5813.1.1",Long.toString(trapTimeStamp));
 		trap=buildEventTrap(event,trap,null);
 		SnmpV2TrapBuilder inform = (SnmpV2TrapBuilder) trap;
         try {
@@ -212,7 +212,7 @@ public abstract class SnmpTrapForwarderHelper extends AbstractEventForwarder imp
 
 	public void sendV3EventInform( Event event) throws UnknownHostException, SnmpTrapHelperException {
 		long trapTimeStamp = 0;
-		SnmpTrapBuilder trap = snmpTrapHelper.createV3Inform(".1.3.6.1.4.1.5813.1.3",Long.toString(trapTimeStamp));
+		SnmpTrapBuilder trap = snmpTrapHelper.createV3Inform(".1.3.6.1.4.1.5813.1.1",Long.toString(trapTimeStamp));
 		trap=buildEventTrap(event,trap,null);
 		SnmpV3TrapBuilder inform = (SnmpV3TrapBuilder) trap;
 		try {
@@ -233,6 +233,7 @@ public abstract class SnmpTrapForwarderHelper extends AbstractEventForwarder imp
             		 snmpTrapHelper.addVarBinding(trap, ".1.3.6.1.4.1.5813.20.3.1.0", "OctetString", "text", event.getAlarmData().getReductionKey());     
             	 }
              } else {
+    			 trap = buildEventTrap(event, trap, null);
                  snmpTrapHelper.addVarBinding(trap, ".1.3.6.1.4.1.5813.20.3.1.0", "OctetString", "text", "null");            	 
              }
              if (sync)
