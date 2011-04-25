@@ -18,6 +18,10 @@ if (not defined $GIT) {
 
 clean_git();
 
+my @command = ($MVN, '-Dmaven.test.skip.exec=true', '-N', 'install');
+info("running:", @command);
+handle_errors_and_exit_on_failure(system(@command));
+
 for my $module (@ARGS) {
 	my @other_args = ();
 
