@@ -87,7 +87,7 @@ public class EndPointImpl implements EndPoint {
      */
     public boolean ping() {
         try {
-            Long result = PingerFactory.getInstance().ping(getAddress());
+            Number result = PingerFactory.getInstance().ping(getAddress());
             if (result != null) {
                 return true;
             }
