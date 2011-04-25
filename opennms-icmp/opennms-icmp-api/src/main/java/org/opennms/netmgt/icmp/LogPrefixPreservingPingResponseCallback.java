@@ -49,31 +49,31 @@ class LogPrefixPreservingPingResponseCallback implements PingResponseCallback {
         m_cb = cb;
     }
 
-    public void handleError(InetAddress address, EchoPacket packet, Throwable t) {
+    public void handleError(InetAddress address, EchoPacket request, Throwable t) {
         String oldPrefix = ThreadCategory.getPrefix();
         try {
             ThreadCategory.setPrefix(m_prefix);
-            m_cb.handleError(address, packet, t);
+            m_cb.handleError(address, request, t);
         } finally {
             ThreadCategory.setPrefix(oldPrefix);
         }
     }
 
-    public void handleResponse(InetAddress address, EchoPacket packet) {
+    public void handleResponse(InetAddress address, EchoPacket response) {
         String oldPrefix = ThreadCategory.getPrefix();
         try {
             ThreadCategory.setPrefix(m_prefix);
-            m_cb.handleResponse(address, packet);
+            m_cb.handleResponse(address, response);
         } finally {
             ThreadCategory.setPrefix(oldPrefix);
         }
     }
 
-    public void handleTimeout(InetAddress address, PingRequestId id) {
+    public void handleTimeout(InetAddress address, EchoPacket request) {
         String oldPrefix = ThreadCategory.getPrefix();
         try {
             ThreadCategory.setPrefix(m_prefix);
-            m_cb.handleTimeout(address, id);
+            m_cb.handleTimeout(address, request);
         } finally {
             ThreadCategory.setPrefix(oldPrefix);
         }

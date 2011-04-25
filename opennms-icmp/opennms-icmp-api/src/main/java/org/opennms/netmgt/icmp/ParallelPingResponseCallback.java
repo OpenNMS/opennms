@@ -68,20 +68,20 @@ public class ParallelPingResponseCallback implements PingResponseCallback {
     }
 
     /** {@inheritDoc} */
-    public void handleError(InetAddress address, EchoPacket packet, Throwable t) {
-        m_responseTimes[packet.getSequenceNumber()] = null;
+    public void handleError(InetAddress address, EchoPacket request, Throwable t) {
+        m_responseTimes[request.getSequenceNumber()] = null;
         bs.signalAll();
     }
 
     /** {@inheritDoc} */
-    public void handleResponse(InetAddress address, EchoPacket packet) {
-        m_responseTimes[packet.getSequenceNumber()] = packet.elapsedTime(TimeUnit.MICROSECONDS);
+    public void handleResponse(InetAddress address, EchoPacket response) {
+        m_responseTimes[response.getSequenceNumber()] = response.elapsedTime(TimeUnit.MICROSECONDS);
         bs.signalAll();
     }
 
     /** {@inheritDoc} */
-    public void handleTimeout(InetAddress address, PingRequestId id) {
-        m_responseTimes[id.getSequenceId()] = null;
+    public void handleTimeout(InetAddress address, EchoPacket request) {
+        m_responseTimes[request.getSequenceNumber()] = null;
         bs.signalAll();
     }
 

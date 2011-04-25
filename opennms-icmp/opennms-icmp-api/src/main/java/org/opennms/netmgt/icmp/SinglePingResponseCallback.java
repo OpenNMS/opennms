@@ -51,8 +51,6 @@ import org.opennms.netmgt.icmp.EchoPacket;
  */
 public class SinglePingResponseCallback implements PingResponseCallback {
     private BarrierSignaler bs = new BarrierSignaler(1);
-    @SuppressWarnings("unused")
-    private Throwable error = null;
 
     /**
      * Value of round-trip-time for the ping in microseconds.
@@ -71,9 +69,9 @@ public class SinglePingResponseCallback implements PingResponseCallback {
     }
 
     /** {@inheritDoc} */
-    public void handleResponse(InetAddress address, EchoPacket packet) {
-        info("got response for address " + address + ", thread " + packet.getIdentifier() + ", seq " + packet.getSequenceNumber() + " with a responseTime "+packet.elapsedTime(TimeUnit.MILLISECONDS)+"ms");
-        responseTime = (long)Math.round(packet.elapsedTime(TimeUnit.MICROSECONDS));
+    public void handleResponse(InetAddress address, EchoPacket response) {
+        info("got response for address " + address + ", thread " + response.getIdentifier() + ", seq " + response.getSequenceNumber() + " with a responseTime "+response.elapsedTime(TimeUnit.MILLISECONDS)+"ms");
+        responseTime = (long)Math.round(response.elapsedTime(TimeUnit.MICROSECONDS));
         bs.signalAll();
     }
 
@@ -82,16 +80,15 @@ public class SinglePingResponseCallback implements PingResponseCallback {
     }
 
     /** {@inheritDoc} */
-    public void handleTimeout(InetAddress address, PingRequestId id) {
-        assert(id != null);
-        info("timed out pinging address " + address + ", thread " + id.getTid() + ", seq " + id.getSequenceId());
+    public void handleTimeout(InetAddress address, EchoPacket request) {
+        assert(request != null);
+        info("timed out pinging address " + address + ", thread " + request.getIdentifier() + ", seq " + request.getSequenceNumber());
         bs.signalAll();
     }
 
     /** {@inheritDoc} */
-    public void handleError(InetAddress address, EchoPacket pr, Throwable t) {
+    public void handleError(InetAddress address, EchoPacket request, Throwable t) {
         info("an error occurred pinging " + address, t);
-        error = t;
         bs.signalAll();
     }
 
