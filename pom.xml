@@ -92,7 +92,6 @@
     <module>dependencies</module>
     <module>core</module>
     <module>features</module>
-    <module>opennms-assemblies</module>
     <module>integrations</module>
     <module>tests</module>
     <module>integration-tests</module>
@@ -257,6 +256,18 @@
         <groupId>org.codehaus.mojo</groupId>
         <artifactId>gwt-maven-plugin</artifactId>
         <version>2.1.0-1</version>
+        <dependencies>
+          <dependency>
+            <groupId>com.google.gwt</groupId>
+            <artifactId>gwt-user</artifactId>
+            <version>${gwtVersion}</version>
+          </dependency>
+          <dependency>
+            <groupId>com.google.gwt</groupId>
+            <artifactId>gwt-dev</artifactId>
+            <version>${gwtVersion}</version>
+          </dependency>
+        </dependencies>
         <executions>
           <execution>
             <goals>
@@ -696,14 +707,15 @@
    <updatePolicy>daily</updatePolicy>
 
    <!-- dependency versions -->
+   <gmavenVersion>1.0</gmavenVersion>
+	<gwtVersion>2.1.1</gwtVersion>
+   <jasperreportsVersion>3.7.6</jasperreportsVersion>
+   <jettyVersion>7.3.1.v20110307</jettyVersion>
+	<liquibaseVersion>2.0.1</liquibaseVersion>
    <log4jVersion>1.2.15</log4jVersion>
    <minaVersion>2.0.2</minaVersion>
    <oroVersion>2.0.8</oroVersion>
    <xercesVersion>2.9.1</xercesVersion>
-   <gmavenVersion>1.0</gmavenVersion>
-   <jettyVersion>7.3.1.v20110307</jettyVersion>
-   <jasperreportsVersion>3.7.6</jasperreportsVersion>
-	<liquibaseVersion>2.0.1</liquibaseVersion>
   </properties>
 
   <profiles>
@@ -1744,12 +1756,12 @@
       <dependency>
         <groupId>org.apache.httpcomponents</groupId>
         <artifactId>httpcore</artifactId>
-        <version>4.0.1</version>
+        <version>4.1</version>
       </dependency>
       <dependency>
         <groupId>org.apache.httpcomponents</groupId>
         <artifactId>httpclient</artifactId>
-        <version>4.0.1</version>
+        <version>4.1.1</version>
       </dependency>
       <dependency>
         <groupId>commons-io</groupId>

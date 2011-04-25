@@ -451,6 +451,9 @@ public class NsclientManager {
         m_ByteArrayOutStream.reset();
 
         try {
+        	if (!request.endsWith("\n")) {
+        		request += "\n";
+        	}
             m_Socket.getOutputStream().write(request.getBytes());
             m_Socket.getOutputStream().flush();
             int read = m_BufInStream.read(buffer);

@@ -1,9 +1,11 @@
 #!/usr/bin/env perl
 
+use Cwd;
 use File::Spec;
 use Getopt::Long qw(:config permute bundling pass_through);
 
 use vars qw(
+	$GIT
 	$HELP
 	$JAVA_HOME
 	$MVN
@@ -17,6 +19,14 @@ $HELP       = undef;
 $JAVA_HOME  = undef;
 $VERBOSE    = undef;
 @ARGS       = ();
+
+# path to git executable
+$GIT = `which git 2>/dev/null`;
+chomp($GIT);
+if ($GIT eq "" or ! -x "$GIT") {
+	warning("Unable to locate git.");
+	$GIT = undef;
+}
 
 # path to maven executable
 $MVN = $ENV{'MVN'};
@@ -106,6 +116,91 @@ if (-r $ENV{'HOME'} . "/.opennms-buildrc") {
 
 $ENV{'MAVEN_OPTS'} = $MAVEN_OPTS;
 info("MAVEN_OPTS = $MAVEN_OPTS"); 
+
+sub clean_git {
+	my @command = ($GIT, "clean", "-fdx", ".");
+	info("running:", @command);
+	handle_errors_and_exit_on_failure(system(@command));
+}
+
+sub get_dependencies {
+	my $directory = shift;
+
+	my @SKIP = qw(
+		org\.opennms\:jicmp-api
+		org\.opennms\:jrrd-api
+		org\.opennms\:rancid-api
+		org\.opennms\.lib
+		org\.opennms\.smslib\:smslib
+	);
+
+	my $moduledir = $PREFIX . "/" . $directory;
+	my $deps = { 'org.opennms:opennms' => 1 };
+	my $versions = {};
+	my $cwd = getcwd;
+
+	if (-d $moduledir) {
+		my $current_module_name = undef;
+		my $in_module = undef;
+
+		chdir($moduledir);
+		open(MVNRUN, "$MVN dependency:list |") or die "unable to run $MVN dependency:list in $moduledir: $!";
+		LIST: while (my $line = <MVNRUN>) {
+			chomp($line);
+			$line =~ s/^\[[^\]]*\]\s*//;
+			if (defined $in_module) {
+				if ($line =~ /^$/) {
+					$in_module = undef;
+				} elsif ($line !~ /opennms/) {
+					# skip non-opennms dependencies
+				} else {
+					for my $skip (@SKIP) {
+						if ($line =~ /$skip/) {
+							next LIST;
+						}
+					}
+					$line =~ s/^\s*//;
+					$line =~ s/\s*$//;
+					my @maven_info = split(/\:/, $line);
+					my $dep = $maven_info[0] . ":" . $maven_info[1];
+					push(@{$deps->{$current_module_name}}, $dep);
+
+					# next unless ($maven_info[2] eq "jar" or $maven_info[2] eq "pom");
+
+					# do some extra checking of versions
+					my $version = $maven_info[3];
+					$version = $maven_info[4] if ($version eq "xsds");
+					$version = $maven_info[4] if ($version eq "tests");
+					if (exists $versions->{$dep}) {
+						$old_version = $versions->{$dep}->{'version'};
+						$old_module  = $versions->{$dep}->{'module'};
+						next if ($old_module eq $current_module_name);
+
+						if ($old_version ne $version) {
+							warning("$current_module_name wants $dep version $version, but $old_module wants version $old_version");
+						}
+					}
+					$versions->{$dep} = {
+						'version' => $version,
+						'module' => $current_module_name,
+					};
+
+				}
+			} else {
+				if ($line =~ /--- maven-dependency-plugin.*? \@ (\S+)/) {
+					$current_module_name = $1;
+				}
+				if ($line =~ /The following files have been resolved/) {
+					$in_module = $current_module_name;
+				}
+			}
+		}
+		close(MVNRUN);
+		chdir($cwd);
+	}
+
+	return $deps;
+}
 
 sub handle_errors {
 	my $exit = shift;

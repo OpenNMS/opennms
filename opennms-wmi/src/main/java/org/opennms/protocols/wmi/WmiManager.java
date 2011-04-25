@@ -380,7 +380,7 @@ public class WmiManager {
 		 * - all: all objects must match, one or more.
 		 * - none: no objects must match
 		 * - one: only one object must match
-		 * - some: more than one object but not all objects must match.
+		 * - some: one or more objects but not all objects must match.
 		 */
         if (m_MatchType.equals("all") && matches == total && matches > 0) {
 			wmiResult.setResultCode(WmiResult.RES_STATE_OK);
@@ -388,7 +388,7 @@ public class WmiManager {
 			wmiResult.setResultCode(WmiResult.RES_STATE_OK);
 		} else if (m_MatchType.equals("one") && matches == 1) {
 			wmiResult.setResultCode(WmiResult.RES_STATE_OK);
-		} else if (m_MatchType.equals("some") && matches > 1) {
+		} else if (m_MatchType.equals("some") && matches >= 1) {
 			// we want to match more than one but not all.
 			if (matches != total) {
 				wmiResult.setResultCode(WmiResult.RES_STATE_OK);

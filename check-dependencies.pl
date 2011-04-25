@@ -6,7 +6,9 @@ use File::Basename qw(dirname);
 # include script functions
 use vars qw(
 	$PREFIX
+	$TESTS
 );
+$TESTS = 1;
 $PREFIX = abs_path(dirname($0));
 require($PREFIX . "/functions.pl");
 
@@ -14,12 +16,6 @@ if (not defined $GIT) {
 	exit 1;
 }
 
-clean_git();
-
-@command = ($MVN, @ARGS);
-info("running:", @command);
-handle_errors_and_exit_on_failure(system(@command));
-
-clean_git();
+get_dependencies('.');
 
 exit 0;

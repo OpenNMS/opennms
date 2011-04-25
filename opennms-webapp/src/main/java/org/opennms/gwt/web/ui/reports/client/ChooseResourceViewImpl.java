@@ -3,6 +3,7 @@ package org.opennms.gwt.web.ui.reports.client;
 import java.util.List;
 
 import com.google.gwt.core.client.GWT;
+import com.google.gwt.dom.client.Document;
 import com.google.gwt.dom.client.Element;
 import com.google.gwt.dom.client.NodeList;
 import com.google.gwt.dom.client.Style.BorderStyle;
@@ -16,7 +17,6 @@ import com.google.gwt.user.cellview.client.SimplePager;
 import com.google.gwt.user.cellview.client.SimplePager.TextLocation;
 import com.google.gwt.user.cellview.client.TextColumn;
 import com.google.gwt.user.client.Window;
-import com.google.gwt.user.client.Window.Location;
 import com.google.gwt.user.client.Window.Navigator;
 import com.google.gwt.user.client.ui.Button;
 import com.google.gwt.user.client.ui.Composite;
@@ -181,30 +181,41 @@ public class ChooseResourceViewImpl extends Composite implements ChooseResourceV
     protected void handleViewChildResourceClicked(ClickEvent event) {
         SingleSelectionModel<ResourceListItem> selectionModel = (SingleSelectionModel<ResourceListItem>) getCellTable().getSelectionModel();
         if(selectionModel.getSelectedObject() != null){
-            if (Navigator.getUserAgent().contains("msie")) {
-                m_presenter.navigateToUrl("customGraphChooseResource.htm?selectedResourceId=&resourceId=" + selectionModel.getSelectedObject().getId());
-            } else {
-                m_presenter.navigateToUrl("KSC/customGraphChooseResource.htm?selectedResourceId=&resourceId=" + selectionModel.getSelectedObject().getId());
-            }
+                navigateTo("customGraphChooseResource.htm?selectedResourceId=&resourceId=" + selectionModel.getSelectedObject().getId());
         }else{
             Window.alert("Please Select a Resource");
         }
     }
-    
+
     @UiHandler("m_chooseChildResourceBtn")
     protected void handleChooseChildResourceClicked(ClickEvent event) {
         SingleSelectionModel<ResourceListItem> selectionModel = (SingleSelectionModel<ResourceListItem>) getCellTable().getSelectionModel();
         if(selectionModel.getSelectedObject() != null){
-            if (Navigator.getUserAgent().contains("msie")) {
-                Location.assign("customGraphEditDetails.htm?resourceId=" + selectionModel.getSelectedObject().getId()); 
-            } else {
-                Location.assign("KSC/customGraphEditDetails.htm?resourceId=" + selectionModel.getSelectedObject().getId());
-            }
+                navigateTo("customGraphEditDetails.htm?resourceId=" + selectionModel.getSelectedObject().getId()); 
         }else {
             Window.alert("Please Select a Resource");
         }
     }
 
+	private void navigateTo(String url) {
+		m_presenter.navigateToUrl(getBaseHref() + url);
+	}
+    
+    private String getBaseHref() {
+    	final NodeList<Element> elements = Document.get().getElementsByTagName("base");
+    	if (elements != null && elements.getLength() > 0) {
+    		final String href = elements.getItem(0).getAttribute("href");
+    		if (href != null) {
+    			return href + "KSC/";
+    		}
+    	}
+    	if (Navigator.getUserAgent().contains("msie")) {
+    		return "";
+    	} else {
+    		return "KSC/";
+    	}
+    }
+    
     public Widget asWidget() {
         return this.getWidget();
     }
