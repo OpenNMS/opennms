@@ -38,9 +38,9 @@ package org.opennms.netmgt.icmp;
 import java.net.InetAddress;
 import java.util.Arrays;
 import java.util.List;
+import java.util.concurrent.CountDownLatch;
 import java.util.concurrent.TimeUnit;
 
-import org.opennms.core.concurrent.BarrierSignaler;
 import org.opennms.netmgt.icmp.PingResponseCallback;
 import org.opennms.netmgt.icmp.EchoPacket;
 
@@ -51,7 +51,7 @@ import org.opennms.netmgt.icmp.EchoPacket;
  * @version $Id: $
  */
 public class ParallelPingResponseCallback implements PingResponseCallback {
-    BarrierSignaler bs;
+    CountDownLatch m_latch;
     /**
      * Value of round-trip-time for the ping packets in microseconds.
      */
@@ -63,26 +63,26 @@ public class ParallelPingResponseCallback implements PingResponseCallback {
      * @param count a int.
      */
     public ParallelPingResponseCallback(int count) {
-        bs = new BarrierSignaler(count);
+        m_latch = new CountDownLatch(count);
         m_responseTimes = new Number[count];
     }
 
     /** {@inheritDoc} */
     public void handleError(InetAddress address, EchoPacket request, Throwable t) {
         m_responseTimes[request.getSequenceNumber()] = null;
-        bs.signalAll();
+        m_latch.countDown();
     }
 
     /** {@inheritDoc} */
     public void handleResponse(InetAddress address, EchoPacket response) {
         m_responseTimes[response.getSequenceNumber()] = response.elapsedTime(TimeUnit.MICROSECONDS);
-        bs.signalAll();
+        m_latch.countDown();
     }
 
     /** {@inheritDoc} */
     public void handleTimeout(InetAddress address, EchoPacket request) {
         m_responseTimes[request.getSequenceNumber()] = null;
-        bs.signalAll();
+        m_latch.countDown();
     }
 
     /**
@@ -91,7 +91,7 @@ public class ParallelPingResponseCallback implements PingResponseCallback {
      * @throws java.lang.InterruptedException if any.
      */
     public void waitFor() throws InterruptedException {
-        bs.waitFor();
+        m_latch.await();
     }
     
     /**
