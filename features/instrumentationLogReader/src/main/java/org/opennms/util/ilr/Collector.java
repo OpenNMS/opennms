@@ -55,9 +55,10 @@ public class Collector {
 	}
 	public Date getEndTime() {
 		LogMessage logMessage = getLastValidLogMessage();
-		return logMessage.getDate();
+		return logMessage == null ? null : logMessage.getDate();
 	}
 	public long getDuration() {
+		if (this.getEndTime() == null || this.getStartTime() == null) return 0L;
 		return this.getEndTime().getTime()-this.getStartTime().getTime();
 	}
 	public String getFormattedDuration() {
