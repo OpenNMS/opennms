@@ -39,9 +39,9 @@ import java.net.DatagramPacket;
 import java.net.InetAddress;
 
 import org.opennms.core.utils.ThreadCategory;
-import org.opennms.netmgt.icmp.AbstractPingRequest;
 import org.opennms.netmgt.icmp.EchoPacket;
 import org.opennms.netmgt.icmp.PingResponseCallback;
+import org.opennms.netmgt.icmp.spi.AbstractPingRequest;
 import org.opennms.protocols.icmp.IcmpSocket;
 
 /**

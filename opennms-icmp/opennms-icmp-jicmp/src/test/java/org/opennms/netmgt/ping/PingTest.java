@@ -101,9 +101,9 @@ public class PingTest extends TestCase {
     }
 
     protected void singlePing(Pinger pinger) throws Exception {
-        Long rtt = pinger.ping(m_goodHost);
+        Number rtt = pinger.ping(m_goodHost);
         assertNotNull("No RTT value returned from ping, looks like the ping failed", rtt);
-        assertTrue("Negative RTT value returned from ping", rtt > 0);
+        assertTrue("Negative RTT value returned from ping", rtt.doubleValue() > 0);
     }
 
     public void testSinglePingFailureJni() throws Exception {

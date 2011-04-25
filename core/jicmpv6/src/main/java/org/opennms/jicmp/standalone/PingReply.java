@@ -73,8 +73,9 @@ class PingReply extends ICMPEchoPacket implements EchoPacket {
     }
     
     @Override
-    public float elapsedTime(TimeUnit unit) {
-        return unit.convert(elapsedTimeNanos(), TimeUnit.NANOSECONDS);
+    public double elapsedTime(TimeUnit unit) {
+        double nanosPerUnit = TimeUnit.NANOSECONDS.convert(1, unit);
+        return elapsedTimeNanos() / nanosPerUnit;
     }
 
     protected long elapsedTimeNanos() {

@@ -140,19 +140,19 @@ public interface Pinger {
      * @throws IOException if any.
      * @throws java.lang.Exception if any.
      */
-    public Long ping(InetAddress host, long timeout, int retries) throws Exception;
+    public Number ping(InetAddress host, long timeout, int retries) throws Exception;
     
 
 	/**
 	 * Ping a remote host, using the default number of retries and timeouts.
 	 *
 	 * @param host the host to ping
-	 * @return the round-trip time of the packet
+	 * @return the round-trip time of the packet in microseconds or null if no reply
 	 * @throws IOException if any.
 	 * @throws InterruptedException if any.
 	 * @throws java.lang.Exception if any.
 	 */
-	public Long ping(InetAddress host) throws Exception;
+	public Number ping(InetAddress host) throws Exception;
 
 	/**
 	 * <p>parallelPing</p>
@@ -161,7 +161,7 @@ public interface Pinger {
 	 * @param count a int.
 	 * @param timeout a long.
 	 * @param pingInterval a long.
-	 * @return a {@link java.util.List} object.
+	 * @return a {@link java.util.List} object represening the round trip time in microseconds of each packet
 	 * @throws java.lang.Exception if any.
 	 */
 	public List<Number> parallelPing(InetAddress host, int count, long timeout, long pingInterval) throws Exception;

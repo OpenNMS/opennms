@@ -31,15 +31,15 @@
  */
 package org.opennms.netmgt.ping;
 
-import static org.opennms.netmgt.icmp.AbstractPingRequest.FILTER_ID;
+import static org.opennms.netmgt.icmp.spi.AbstractPingRequest.FILTER_ID;
 
 import java.io.IOException;
 import java.net.DatagramPacket;
 import java.util.Queue;
 
 import org.opennms.core.utils.LogUtils;
-import org.opennms.netmgt.icmp.PingReply;
-import org.opennms.netmgt.icmp.PingRequest;
+import org.opennms.netmgt.icmp.spi.PingReply;
+import org.opennms.netmgt.icmp.spi.PingRequest;
 import org.opennms.protocols.icmp.ICMPEchoPacket;
 import org.opennms.protocols.icmp.IcmpSocket;
 import org.opennms.protocols.rt.Messenger;
@@ -132,7 +132,7 @@ public class IcmpMessenger implements Messenger<PingRequest<IcmpSocket>, PingRep
      *             Throw if the datagram is not the correct length or type.
      * @throws java.lang.IndexOutOfBoundsException
      *             Thrown if the datagram does not contain sufficient data.
-     * @return a {@link org.opennms.netmgt.ping.PingReply} object.
+     * @return a {@link org.opennms.netmgt.icmp.spi.PingReply} object.
      */
     public static PingReply createPingReply(DatagramPacket packet) {
         // Check the packet length

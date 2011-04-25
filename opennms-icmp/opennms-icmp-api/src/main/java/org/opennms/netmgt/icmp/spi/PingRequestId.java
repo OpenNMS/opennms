@@ -29,7 +29,7 @@
  *     http://www.opennms.org/
  *     http://www.opennms.com/
  */
-package org.opennms.netmgt.icmp;
+package org.opennms.netmgt.icmp.spi;
 
 import java.net.InetAddress;
 
@@ -62,7 +62,7 @@ public class PingRequestId {
     /**
      * <p>Constructor for PingRequestId.</p>
      *
-     * @param reply a {@link org.opennms.netmgt.ping.PingReply} object.
+     * @param reply a {@link org.opennms.netmgt.icmp.spi.ping.PingReply} object.
      */
     public PingRequestId(PingReply reply) {
         this(reply.getAddress(), reply.getPacket().getIdentifier(), reply.getPacket().getSequenceNumber());

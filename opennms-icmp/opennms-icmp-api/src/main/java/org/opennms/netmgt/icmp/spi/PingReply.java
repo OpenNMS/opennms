@@ -38,10 +38,11 @@
 //
 // Reply.java,v 1.1.1.1 2001/11/11 17:34:37 ben Exp
 
-package org.opennms.netmgt.icmp;
+package org.opennms.netmgt.icmp.spi;
 
 import java.net.InetAddress;
 
+import org.opennms.netmgt.icmp.EchoPacket;
 import org.opennms.protocols.rt.ResponseWithId;
 
 /**
@@ -126,7 +127,7 @@ public final class PingReply implements ResponseWithId<PingRequestId> {
     /**
      * <p>getRequestId</p>
      *
-     * @return a {@link org.opennms.netmgt.icmp.PingRequestId} object.
+     * @return a {@link org.opennms.netmgt.icmp.spi.PingRequestId} object.
      */
     public PingRequestId getRequestId() {
         return new PingRequestId(this);

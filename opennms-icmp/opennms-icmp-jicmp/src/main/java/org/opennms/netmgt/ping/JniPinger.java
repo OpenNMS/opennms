@@ -42,12 +42,12 @@ import java.io.IOException;
 import java.net.InetAddress;
 import java.util.List;
 
-import org.opennms.netmgt.icmp.ParallelPingResponseCallback;
-import org.opennms.netmgt.icmp.PingReply;
-import org.opennms.netmgt.icmp.PingRequest;
-import org.opennms.netmgt.icmp.PingRequestId;
 import org.opennms.netmgt.icmp.PingResponseCallback;
-import org.opennms.netmgt.icmp.SinglePingResponseCallback;
+import org.opennms.netmgt.icmp.spi.ParallelPingResponseCallback;
+import org.opennms.netmgt.icmp.spi.PingReply;
+import org.opennms.netmgt.icmp.spi.PingRequest;
+import org.opennms.netmgt.icmp.spi.PingRequestId;
+import org.opennms.netmgt.icmp.spi.SinglePingResponseCallback;
 import org.opennms.protocols.icmp.IcmpSocket;
 import org.opennms.protocols.rt.IDBasedRequestLocator;
 import org.opennms.protocols.rt.RequestTracker;
@@ -173,7 +173,7 @@ public class JniPinger implements org.opennms.netmgt.icmp.Pinger {
      * @throws IOException if any.
      * @throws java.lang.Exception if any.
      */
-    public Long ping(InetAddress host, long timeout, int retries) throws Exception {
+    public Number ping(InetAddress host, long timeout, int retries) throws Exception {
         SinglePingResponseCallback cb = new SinglePingResponseCallback(host);
         ping(host, timeout, retries, (short)1, cb);
         cb.waitFor();
@@ -190,7 +190,7 @@ public class JniPinger implements org.opennms.netmgt.icmp.Pinger {
 	 * @throws InterruptedException if any.
 	 * @throws java.lang.Exception if any.
 	 */
-	public Long ping(InetAddress host) throws Exception {
+	public Number ping(InetAddress host) throws Exception {
         return ping(host, DEFAULT_TIMEOUT, DEFAULT_RETRIES);
 	}
 

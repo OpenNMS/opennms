@@ -33,7 +33,7 @@
  *      http://www.opennms.org/
  *      http://www.opennms.com/
  */
-package org.opennms.netmgt.icmp;
+package org.opennms.netmgt.icmp.spi;
 
 import java.net.InetAddress;
 import java.util.concurrent.CountDownLatch;

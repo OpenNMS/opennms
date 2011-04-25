@@ -56,11 +56,16 @@ public class JICMPEchoPacket implements org.opennms.netmgt.icmp.EchoPacket {
     public long getSentTimeNanos() {
         return m_delegate.getSentTime();
     }
+    
+    public long elapsedTimeNanos() {
+        return m_delegate.getPingRTT() * 1000;
+    }
 
     @Override
-    public float elapsedTime(TimeUnit unit) {
+    public double elapsedTime(TimeUnit unit) {
         // {@link org.opennms.protocols.icmp.ICMPEchoPacket.getPingRTT()} returns microseconds.
-        return unit.convert(m_delegate.getPingRTT(), TimeUnit.MICROSECONDS);
+        double nanosPerUnit = TimeUnit.NANOSECONDS.convert(1, unit);
+        return elapsedTimeNanos() / nanosPerUnit;
     }
 
     @Override

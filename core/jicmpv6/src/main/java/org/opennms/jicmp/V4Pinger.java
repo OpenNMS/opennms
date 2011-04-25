@@ -32,7 +32,6 @@ package org.opennms.jicmp;
 import java.net.Inet4Address;
 import java.net.InetAddress;
 import java.nio.ByteBuffer;
-import java.util.concurrent.TimeUnit;
 
 import org.opennms.core.utils.LogUtils;
 import org.opennms.jicmp.ip.ICMPEchoPacket;
@@ -85,7 +84,8 @@ public class V4Pinger extends AbstractPinger<Inet4Address> {
                         address.getHostAddress(),
                         echoReply.getIdentifier(),
                         echoReply.getSequenceNumber(),
-                        echoReply.elapsedTime(TimeUnit.MILLISECONDS)
+                        // note we divide here so we get a fractional value (elapsedTime truncates)
+                        echoReply.elapsedTimeNanos() / NANOS_PER_MILLI
                     );
                     notifyPingListeners(address, echoReply);
                 }

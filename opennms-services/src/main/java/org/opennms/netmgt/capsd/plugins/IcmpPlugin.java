@@ -76,7 +76,7 @@ public final class IcmpPlugin extends AbstractPlugin {
      */
     public boolean isProtocolSupported(InetAddress address) {
 		try {
-	    	Long retval = PingerFactory.getInstance().ping(address);
+	    	Number retval = PingerFactory.getInstance().ping(address);
 	    	if (retval != null) {
 	    		return true;
 	    	}
@@ -108,7 +108,7 @@ public final class IcmpPlugin extends AbstractPlugin {
     			retries = PingConstants.DEFAULT_RETRIES;
     			timeout = PingConstants.DEFAULT_TIMEOUT;
     		}
-    		Long retval = PingerFactory.getInstance().ping(address, timeout, retries);
+    		Number retval = PingerFactory.getInstance().ping(address, timeout, retries);
     		if (retval != null) {
     			return true;
     		}

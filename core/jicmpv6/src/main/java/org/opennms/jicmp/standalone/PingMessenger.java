@@ -34,8 +34,8 @@ import java.util.Queue;
 
 import org.opennms.jicmp.jna.NativeDatagramSocket;
 import org.opennms.netmgt.icmp.EchoPacket;
-import org.opennms.netmgt.icmp.PingReply;
-import org.opennms.netmgt.icmp.PingRequest;
+import org.opennms.netmgt.icmp.spi.PingReply;
+import org.opennms.netmgt.icmp.spi.PingRequest;
 import org.opennms.protocols.rt.Messenger;
 
 

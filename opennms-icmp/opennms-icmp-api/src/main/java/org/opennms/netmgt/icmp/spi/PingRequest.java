@@ -29,11 +29,12 @@
  *     http://www.opennms.org/
  *     http://www.opennms.com/
  */
-package org.opennms.netmgt.icmp;
+package org.opennms.netmgt.icmp.spi;
 
 import java.net.InetAddress;
 
 import org.opennms.core.utils.ThreadCategory;
+import org.opennms.netmgt.icmp.PingResponseCallback;
 import org.opennms.protocols.rt.Request;
 
 /**

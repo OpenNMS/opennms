@@ -43,6 +43,8 @@ import org.opennms.jicmp.jna.NativeDatagramSocket;
  * @author brozow
  */
 public abstract class AbstractPinger<T extends InetAddress> implements Runnable {
+    
+    public static final double NANOS_PER_MILLI = 1000000.0;
 
     private NativeDatagramSocket m_pingSocket;
     private Thread m_thread;

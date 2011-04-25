@@ -33,7 +33,7 @@
  *      http://www.opennms.org/
  *      http://www.opennms.com/
  */
-package org.opennms.netmgt.icmp;
+package org.opennms.netmgt.icmp.spi;
 
 import java.net.InetAddress;
 import java.util.concurrent.Delayed;
@@ -41,6 +41,8 @@ import java.util.concurrent.TimeUnit;
 import java.util.concurrent.atomic.AtomicBoolean;
 
 import org.opennms.core.utils.ThreadCategory;
+import org.opennms.netmgt.icmp.EchoPacket;
+import org.opennms.netmgt.icmp.PingResponseCallback;
 
 /**
  * This class is used to encapsulate a ping request. A request consist of
@@ -49,7 +51,7 @@ import org.opennms.core.utils.ThreadCategory;
  * @author <a href="mailto:ranger@opennms.org">Ben Reed</a>
  * @author <a href="mailto:brozow@opennms.org">Mathew Brozowski</a>
  */
-public abstract class AbstractPingRequest<SocketT> implements org.opennms.netmgt.icmp.PingRequest<SocketT> {
+public abstract class AbstractPingRequest<SocketT> implements PingRequest<SocketT> {
     /** Constant <code>FILTER_ID=(short) (new java.util.Random(System.currentTimeMillis())).nextInt()</code> */
     public static final short FILTER_ID = (short) (new java.util.Random(System.currentTimeMillis())).nextInt();
     private static long s_nextTid = 1;
@@ -120,7 +122,7 @@ public abstract class AbstractPingRequest<SocketT> implements org.opennms.netmgt
     /**
      * <p>processResponse</p>
      *
-     * @param reply a {@link org.opennms.netmgt.ping.PingReply} object.
+     * @param reply a {@link org.opennms.netmgt.icmp.spi.ping.PingReply} object.
      * @return a boolean.
      */
     @Override
@@ -215,7 +217,7 @@ public abstract class AbstractPingRequest<SocketT> implements org.opennms.netmgt
     /**
      * <p>getId</p>
      *
-     * @return a {@link org.opennms.netmgt.ping.PingRequestId} object.
+     * @return a {@link org.opennms.netmgt.icmp.spi.ping.PingRequestId} object.
      */
     @Override
     public PingRequestId getId() {

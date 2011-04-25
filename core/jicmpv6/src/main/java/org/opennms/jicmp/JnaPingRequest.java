@@ -41,8 +41,8 @@ import java.net.InetAddress;
 
 import org.opennms.core.utils.ThreadCategory;
 import org.opennms.jicmp.jna.NativeDatagramSocket;
-import org.opennms.netmgt.icmp.AbstractPingRequest;
 import org.opennms.netmgt.icmp.PingResponseCallback;
+import org.opennms.netmgt.icmp.spi.AbstractPingRequest;
 
 /**
  * This class is used to encapsulate a ping request. A request consist of

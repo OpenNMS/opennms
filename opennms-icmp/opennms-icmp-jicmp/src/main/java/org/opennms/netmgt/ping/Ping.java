@@ -51,7 +51,7 @@ import java.util.concurrent.TimeUnit;
 
 import org.opennms.core.utils.InetAddressUtils;
 import org.opennms.core.utils.LogUtils;
-import org.opennms.netmgt.icmp.PingReply;
+import org.opennms.netmgt.icmp.spi.PingReply;
 import org.opennms.protocols.icmp.ICMPEchoPacket;
 import org.opennms.protocols.icmp.IcmpSocket;
 
@@ -86,7 +86,7 @@ public class Ping {
             
                     if (reply.isEchoReply()
                         && reply.getIdentity() == m_icmpId) {
-                        float rtt = reply.getPacket().elapsedTime(TimeUnit.MILLISECONDS);
+                        double rtt = reply.getPacket().elapsedTime(TimeUnit.MILLISECONDS);
                         System.out.println(ICMPEchoPacket.getNetworkSize()
                                            + " bytes from "
                                            + InetAddressUtils.str(pkt.getAddress())

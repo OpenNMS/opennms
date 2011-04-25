@@ -45,7 +45,11 @@ public interface EchoPacket {
 
 	int getSequenceNumber();
 
-	float elapsedTime(TimeUnit timeUnit);
+	/**
+	 * Returns the round trip time in the requested TimeUnit 
+	 * (note that a fractional value will be returned if necessary)
+	 */
+	double elapsedTime(TimeUnit timeUnit);
 
 	byte[] toBytes();
 

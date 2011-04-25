@@ -74,7 +74,7 @@ public class IcmpDetector extends AbstractDetector {
         boolean found = false;
         try {
             for(int i = 0; i < getRetries() && !found; i++) {
-                Long retval = PingerFactory.getInstance().ping(address, getTimeout(), getRetries());
+                Number retval = PingerFactory.getInstance().ping(address, getTimeout(), getRetries());
                 
                 LogUtils.debugf(this, "isServiceDetected: Response time for address: %s is: %d.", address, retval);
                 
