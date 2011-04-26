@@ -20,8 +20,4 @@ clean_git();
 info("running:", @command);
 handle_errors_and_exit_on_failure(system(@command));
 
-if (not $TESTS) {
-	clean_git();
-}
-
 exit 0;
