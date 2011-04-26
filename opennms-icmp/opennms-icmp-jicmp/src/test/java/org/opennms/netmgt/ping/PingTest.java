@@ -110,23 +110,27 @@ public class PingTest extends TestCase {
     }
     
     private class TestPingResponseCallback implements PingResponseCallback {
-        public final CountDownLatch m_latch = new CountDownLatch(1);
-        public InetAddress m_address;
-        public EchoPacket m_packet;
-        public Throwable m_throwable;
-        public boolean m_timeout = false;
+        private final CountDownLatch m_latch = new CountDownLatch(1);
+        private InetAddress m_address;
+        private EchoPacket m_packet;
+        private Throwable m_throwable;
+        private boolean m_timeout = false;
+        
         @Override
         public void handleResponse(InetAddress address, EchoPacket response) {
             m_address = address;
             m_packet = response;
             m_latch.countDown();
         }
+        
         @Override
         public void handleTimeout(InetAddress address, EchoPacket request) {
             m_timeout = true;
             m_address = address;
             m_packet = request;
-            m_latch.countDown();        }
+            m_latch.countDown();
+        }
+        
         @Override
         public void handleError(InetAddress address, EchoPacket request, Throwable t) {
             m_address = address;
@@ -139,15 +143,44 @@ public class PingTest extends TestCase {
             m_latch.await();
         }
         
+        /**
+         * @return the address
+         */
+        public InetAddress getAddress() {
+            return m_address;
+        }
+        
+        /**
+         * @return the packet
+         */
+        public EchoPacket getPacket() {
+            return m_packet;
+        }
+        
+        /**
+         * @return the throwable
+         */
+        public Throwable getThrowable() {
+            return m_throwable;
+        }
+        
+        /**
+         * @return the timeout
+         */
+        public boolean isTimeout() {
+            return m_timeout;
+        }
+        
     };
 
     protected void pingCallbackTimeout(Pinger pinger) throws Exception {
         TestPingResponseCallback cb = new TestPingResponseCallback();
         pinger.ping(m_badHost, PingConstants.DEFAULT_TIMEOUT, PingConstants.DEFAULT_RETRIES, 1, cb);
         cb.await();
-        assertTrue(cb.m_timeout);
-        assertNotNull(cb.m_packet);
-        assertNotNull(cb.m_address);
+        assertTrue(cb.isTimeout());
+        assertNull(cb.getThrowable());
+        assertNotNull(cb.getPacket());
+        assertNotNull(cb.getAddress());
         
     }
 
