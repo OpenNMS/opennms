@@ -9,10 +9,12 @@ import org.springframework.core.io.Resource;
 
 public class TextSystemReportFormatter extends AbstractSystemReportFormatter implements SystemReportFormatter {
 
+    @Override
     public String getName() {
         return "text";
     }
 
+    @Override
     public String getDescription() {
         return "simple human-readable indented text";
     }
@@ -29,6 +31,7 @@ public class TextSystemReportFormatter extends AbstractSystemReportFormatter imp
         return true;
     }
 
+    @Override
     public void write(final SystemReportPlugin plugin) {
         if (!hasDisplayable(plugin)) return;
         LogUtils.debugf(this, "write(%s)", plugin.getName());
