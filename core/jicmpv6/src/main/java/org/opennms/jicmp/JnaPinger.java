@@ -39,12 +39,12 @@ import java.net.InetAddress;
 import java.util.List;
 
 import org.opennms.jicmp.jna.NativeDatagramSocket;
+import org.opennms.netmgt.icmp.ParallelPingResponseCallback;
 import org.opennms.netmgt.icmp.PingResponseCallback;
-import org.opennms.netmgt.icmp.spi.ParallelPingResponseCallback;
+import org.opennms.netmgt.icmp.SinglePingResponseCallback;
 import org.opennms.netmgt.icmp.spi.PingReply;
 import org.opennms.netmgt.icmp.spi.IPingRequest;
 import org.opennms.netmgt.icmp.spi.PingRequestId;
-import org.opennms.netmgt.icmp.spi.SinglePingResponseCallback;
 import org.opennms.protocols.rt.IDBasedRequestLocator;
 import org.opennms.protocols.rt.RequestTracker;
 

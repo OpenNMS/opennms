@@ -42,9 +42,9 @@ import java.util.concurrent.atomic.AtomicBoolean;
 
 import org.opennms.core.utils.ThreadCategory;
 import org.opennms.netmgt.icmp.EchoPacket;
+import org.opennms.netmgt.icmp.LogPrefixPreservingPingResponseCallback;
 import org.opennms.netmgt.icmp.PingResponseCallback;
 import org.opennms.netmgt.icmp.spi.IPingRequest;
-import org.opennms.netmgt.icmp.spi.LogPrefixPreservingPingResponseCallback;
 import org.opennms.netmgt.icmp.spi.PingReply;
 import org.opennms.netmgt.icmp.spi.PingRequestId;
 

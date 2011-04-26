@@ -43,10 +43,8 @@ import java.util.concurrent.atomic.AtomicBoolean;
 
 import org.opennms.core.utils.ThreadCategory;
 import org.opennms.netmgt.icmp.EchoPacket;
+import org.opennms.netmgt.icmp.LogPrefixPreservingPingResponseCallback;
 import org.opennms.netmgt.icmp.PingResponseCallback;
-import org.opennms.netmgt.icmp.spi.LogPrefixPreservingPingResponseCallback;
-import org.opennms.netmgt.icmp.spi.PingReply;
-import org.opennms.netmgt.icmp.spi.PingRequestId;
 import org.opennms.protocols.icmp.IcmpSocket;
 import org.opennms.protocols.rt.Request;
 
@@ -57,7 +55,7 @@ import org.opennms.protocols.rt.Request;
  * @author <a href="mailto:ranger@opennms.org">Ben Reed</a>
  * @author <a href="mailto:brozow@opennms.org">Mathew Brozowski</a>
  */
-public class JniPingRequest implements Request<PingRequestId, JniPingRequest, PingReply> {
+public class JniPingRequest implements Request<JniPingRequestId, JniPingRequest, JniPingReply> {
     /** Constant <code>FILTER_ID=(short) (new java.util.Random(System.currentTimeMillis())).nextInt()</code> */
     public static final short FILTER_ID = (short) (new java.util.Random(System.currentTimeMillis())).nextInt();
     private static long s_nextTid = 1;
@@ -69,7 +67,7 @@ public class JniPingRequest implements Request<PingRequestId, JniPingRequest, Pi
     /**
      * The id representing the packet
      */
-    protected final PingRequestId m_id;
+    protected final JniPingRequestId m_id;
 
 	/**
 	 * the request packet
@@ -106,7 +104,7 @@ public class JniPingRequest implements Request<PingRequestId, JniPingRequest, Pi
     
 
     public JniPingRequest(InetAddress addr, long tid, int sequenceId, long timeout, int retries, ThreadCategory logger, PingResponseCallback cb) {
-        m_id = new PingRequestId(addr, tid, sequenceId);
+        m_id = new JniPingRequestId(addr, tid, sequenceId);
         m_retries    = retries;
         m_timeout    = timeout;
         m_log        = logger;
@@ -126,10 +124,10 @@ public class JniPingRequest implements Request<PingRequestId, JniPingRequest, Pi
     /**
      * <p>processResponse</p>
      *
-     * @param reply a {@link org.opennms.netmgt.icmp.spi.ping.PingReply} object.
+     * @param reply a {@link org.opennms.netmgt.icmp.spi.JniPingReply.PingReply} object.
      * @return a boolean.
      */
-    public boolean processResponse(PingReply reply) {
+    public boolean processResponse(JniPingReply reply) {
         try {
             processResponse(reply.getPacket());
         } finally {
@@ -215,9 +213,9 @@ public class JniPingRequest implements Request<PingRequestId, JniPingRequest, Pi
     /**
      * <p>getId</p>
      *
-     * @return a {@link org.opennms.netmgt.icmp.spi.ping.PingRequestId} object.
+     * @return a {@link org.opennms.netmgt.icmp.spi.JniPingRequestId.PingRequestId} object.
      */
-    public PingRequestId getId() {
+    public JniPingRequestId getId() {
         return m_id;
     }
 

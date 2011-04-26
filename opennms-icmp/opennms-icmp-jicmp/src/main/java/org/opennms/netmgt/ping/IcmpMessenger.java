@@ -36,7 +36,6 @@ import java.net.DatagramPacket;
 import java.util.Queue;
 
 import org.opennms.core.utils.LogUtils;
-import org.opennms.netmgt.icmp.spi.PingReply;
 import org.opennms.protocols.icmp.ICMPEchoPacket;
 import org.opennms.protocols.icmp.IcmpSocket;
 import org.opennms.protocols.rt.Messenger;
@@ -47,7 +46,7 @@ import org.opennms.protocols.rt.Messenger;
  * @author brozow
  * @version $Id: $
  */
-public class IcmpMessenger implements Messenger<JniPingRequest, PingReply> {
+public class IcmpMessenger implements Messenger<JniPingRequest, JniPingReply> {
     
     IcmpSocket m_socket;
     
@@ -60,12 +59,12 @@ public class IcmpMessenger implements Messenger<JniPingRequest, PingReply> {
         m_socket = new IcmpSocket();
     }
 
-    void processPackets(Queue<PingReply> pendingReplies) {
+    void processPackets(Queue<JniPingReply> pendingReplies) {
         while (true) {
             try {
                 DatagramPacket packet = m_socket.receive();
         
-                PingReply reply = IcmpMessenger.createPingReply(packet);
+                JniPingReply reply = IcmpMessenger.createPingReply(packet);
                 
                 if (reply.isEchoReply() && reply.getIdentity() == JniPingRequest.FILTER_ID) {
                     LogUtils.debugf(this, "Found an echo packet addr = %s, port = %d, length = %d, created reply %s", packet.getAddress(), packet.getPort(), packet.getLength(), reply);
@@ -96,7 +95,7 @@ public class IcmpMessenger implements Messenger<JniPingRequest, PingReply> {
 
     /** {@inheritDoc} */
     @Override
-    public void start(final Queue<PingReply> replyQueue) {
+    public void start(final Queue<JniPingReply> replyQueue) {
         Thread socketReader = new Thread("ICMP-Socket-Reader") {
 
             public void run() {
@@ -131,7 +130,7 @@ public class IcmpMessenger implements Messenger<JniPingRequest, PingReply> {
      *             Thrown if the datagram does not contain sufficient data.
      * @return a {@link org.opennms.netmgt.icmp.spi.PingReply} object.
      */
-    public static PingReply createPingReply(DatagramPacket packet) {
+    public static JniPingReply createPingReply(DatagramPacket packet) {
         // Check the packet length
         //
         if (packet.getData().length != ICMPEchoPacket.getNetworkSize()) {
@@ -146,6 +145,6 @@ public class IcmpMessenger implements Messenger<JniPingRequest, PingReply> {
     
         // Construct and return the new reply
         //
-        return new PingReply(packet.getAddress(), new JICMPEchoPacket(pkt));
+        return new JniPingReply(packet.getAddress(), new JICMPEchoPacket(pkt));
     }
 }

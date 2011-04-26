@@ -51,7 +51,6 @@ import java.util.concurrent.TimeUnit;
 
 import org.opennms.core.utils.InetAddressUtils;
 import org.opennms.core.utils.LogUtils;
-import org.opennms.netmgt.icmp.spi.PingReply;
 import org.opennms.protocols.icmp.ICMPEchoPacket;
 import org.opennms.protocols.icmp.IcmpSocket;
 
@@ -76,9 +75,9 @@ public class Ping {
             try {
                 while (true) {
                     DatagramPacket pkt = m_socket.receive();
-                    PingReply reply;
+                    JniPingReply reply;
                     try {
-                        reply = org.opennms.netmgt.ping.IcmpMessenger.createPingReply(pkt);
+                        reply = IcmpMessenger.createPingReply(pkt);
                     } catch (Throwable t) {
                         // do nothing but skip this packet
                         continue;
@@ -165,8 +164,7 @@ public class Ping {
     
         for (long m_fiberId = 0; true; m_fiberId++) {
     	    // build a packet
-            org.opennms.protocols.icmp.ICMPEchoPacket pingPkt =
-                new org.opennms.protocols.icmp.ICMPEchoPacket(m_fiberId);
+            ICMPEchoPacket pingPkt = new ICMPEchoPacket(m_fiberId);
             pingPkt.setIdentity(m_icmpId);
             pingPkt.computeChecksum();
     

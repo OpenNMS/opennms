@@ -42,12 +42,10 @@ import java.io.IOException;
 import java.net.InetAddress;
 import java.util.List;
 
+import org.opennms.netmgt.icmp.ParallelPingResponseCallback;
 import org.opennms.netmgt.icmp.PingResponseCallback;
 import org.opennms.netmgt.icmp.Pinger;
-import org.opennms.netmgt.icmp.spi.ParallelPingResponseCallback;
-import org.opennms.netmgt.icmp.spi.PingReply;
-import org.opennms.netmgt.icmp.spi.PingRequestId;
-import org.opennms.netmgt.icmp.spi.SinglePingResponseCallback;
+import org.opennms.netmgt.icmp.SinglePingResponseCallback;
 import org.opennms.protocols.rt.IDBasedRequestLocator;
 import org.opennms.protocols.rt.RequestTracker;
 
@@ -126,7 +124,7 @@ import org.opennms.protocols.rt.RequestTracker;
 public class JniPinger implements Pinger {
     
     
-    private RequestTracker<JniPingRequest, PingReply> s_pingTracker;
+    private RequestTracker<JniPingRequest, JniPingReply> s_pingTracker;
     
     public JniPinger() {}
 
@@ -137,7 +135,7 @@ public class JniPinger implements Pinger {
 	 */
 	public synchronized void initialize() throws IOException {
 	    if (s_pingTracker != null) return;
-	    s_pingTracker = new RequestTracker<JniPingRequest, PingReply>("ICMP", new IcmpMessenger(), new IDBasedRequestLocator<PingRequestId, JniPingRequest, PingReply>());
+	    s_pingTracker = new RequestTracker<JniPingRequest, JniPingReply>("ICMP", new IcmpMessenger(), new IDBasedRequestLocator<JniPingRequestId, JniPingRequest, JniPingReply>());
 	    s_pingTracker.start();
 	}
 
