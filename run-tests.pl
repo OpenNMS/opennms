@@ -22,9 +22,8 @@ my @command = ($MVN, '-Dmaven.test.skip.exec=true', '-N', 'install');
 info("running:", @command);
 handle_errors_and_exit_on_failure(system(@command));
 
+my @other_args = ();
 for my $module (@ARGS) {
-	my @other_args = ();
-
 	if ($module =~ /^-/) {
 		push(@other_args, $module);
 		next;
