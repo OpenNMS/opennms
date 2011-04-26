@@ -41,33 +41,34 @@ import org.opennms.protocols.icmp.IcmpSocket;
 import org.opennms.protocols.rt.Messenger;
 
 /**
- * IcmpMessenger
+ * JniIcmpMessenger
  *
  * @author brozow
  * @version $Id: $
  */
-public class IcmpMessenger implements Messenger<JniPingRequest, JniPingReply> {
+public class JniIcmpMessenger implements Messenger<JniPingRequest, JniPingResponse> {
     
     IcmpSocket m_socket;
     
     /**
-     * <p>Constructor for IcmpMessenger.</p>
+     * <p>Constructor for JniIcmpMessenger.</p>
      *
      * @throws java.io.IOException if any.
      */
-    public IcmpMessenger() throws IOException {
+    public JniIcmpMessenger() throws IOException {
         m_socket = new IcmpSocket();
     }
 
-    void processPackets(Queue<JniPingReply> pendingReplies) {
+    void processPackets(Queue<JniPingResponse> pendingReplies) {
         while (true) {
             try {
                 DatagramPacket packet = m_socket.receive();
         
-                JniPingReply reply = IcmpMessenger.createPingReply(packet);
+                JniPingResponse reply = JniIcmpMessenger.createPingResponse(packet);
                 
                 if (reply.isEchoReply() && reply.getIdentity() == JniPingRequest.FILTER_ID) {
-                    LogUtils.debugf(this, "Found an echo packet addr = %s, port = %d, length = %d, created reply %s", packet.getAddress(), packet.getPort(), packet.getLength(), reply);
+                    // Remove this so we don't send a lot of time in this method when we should be processing packets
+                    // LogUtils.debugf(this, "Found an echo packet addr = %s, port = %d, length = %d, created reply %s", packet.getAddress(), packet.getPort(), packet.getLength(), reply);
                     pendingReplies.offer(reply);
                 }
             } catch (IOException e) {
@@ -95,12 +96,12 @@ public class IcmpMessenger implements Messenger<JniPingRequest, JniPingReply> {
 
     /** {@inheritDoc} */
     @Override
-    public void start(final Queue<JniPingReply> replyQueue) {
+    public void start(final Queue<JniPingResponse> responseQueue) {
         Thread socketReader = new Thread("JNI-ICMP-Socket-Reader") {
 
             public void run() {
                 try {
-                    processPackets(replyQueue);
+                    processPackets(responseQueue);
                 } catch (Throwable t) {
                     LogUtils.errorf(this, t, "Unexpected exception on Thread %s!", this);
                 }
@@ -130,7 +131,7 @@ public class IcmpMessenger implements Messenger<JniPingRequest, JniPingReply> {
      *             Thrown if the datagram does not contain sufficient data.
      * @return a {@link org.opennms.netmgt.icmp.spi.PingReply} object.
      */
-    public static JniPingReply createPingReply(DatagramPacket packet) {
+    public static JniPingResponse createPingResponse(DatagramPacket packet) {
         // Check the packet length
         //
         if (packet.getData().length != ICMPEchoPacket.getNetworkSize()) {
@@ -145,6 +146,6 @@ public class IcmpMessenger implements Messenger<JniPingRequest, JniPingReply> {
     
         // Construct and return the new reply
         //
-        return new JniPingReply(packet.getAddress(), new JICMPEchoPacket(pkt));
+        return new JniPingResponse(packet.getAddress(), pkt);
     }
 }

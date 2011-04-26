@@ -41,8 +41,10 @@
 package org.opennms.netmgt.ping;
 
 import java.net.InetAddress;
+import java.util.concurrent.TimeUnit;
 
 import org.opennms.netmgt.icmp.EchoPacket;
+import org.opennms.protocols.icmp.ICMPEchoPacket;
 import org.opennms.protocols.rt.ResponseWithId;
 
 /**
@@ -58,20 +60,17 @@ import org.opennms.protocols.rt.ResponseWithId;
  * non-mutable values for the instance.
  * </p>
  *
- * @author <a href="mailto:weave@oculan.com">Brian Weaver </a>
- * @author <a href="mailto:sowmya@opennms.org">Sowmya </a>
- * @author <a href="http://www.opennms.org">OpenNMS </a>
  */
-public final class JniPingReply implements ResponseWithId<JniPingRequestId> {
+public final class JniPingResponse implements ResponseWithId<JniPingRequestId>, EchoPacket {
     /**
      * The sender's address.
      */
     private final InetAddress m_address;
-
+    
     /**
      * The received packet.
      */
-    private final EchoPacket m_packet;
+    private final ICMPEchoPacket m_packet;
 
     /**
      * Constructs a new reply with the passed address and packet as the contents
@@ -82,48 +81,29 @@ public final class JniPingReply implements ResponseWithId<JniPingRequestId> {
      * @param pkt
      *            The received packet.
      */
-    public JniPingReply(InetAddress addr, EchoPacket pkt) {
+    public JniPingResponse(InetAddress addr, ICMPEchoPacket pkt) {
         m_packet = pkt;
         m_address = addr;
     }
 
     /**
-     * Returns true if the recovered packet is an echo reply.
+     * Returns the ICMP packet for the reply.
      *
-     * @return a boolean.
+     * @return a {@link org.opennms.protocols.icmp.ICMPEchoPacket} object.
      */
-    public boolean isEchoReply() {
-        return m_packet.isEchoReply();
+    private ICMPEchoPacket getPacket() {
+        return m_packet;
     }
-
-    /**
-     * Returns the identity of the packet. Since this is an unsigned short, we must
-     * return the value as an int.
-     *
-     * @return a short.
-     */
-    public final long getIdentity() {
-        return m_packet.getIdentity();
-    }
-
+    
     /**
      * Returns the internet address of the host that sent the reply.
      *
      * @return a {@link java.net.InetAddress} object.
      */
-    public final InetAddress getAddress() {
+    public InetAddress getAddress() {
         return m_address;
     }
 
-    /**
-     * Returns the ICMP packet for the reply.
-     *
-     * @return a {@link org.opennms.netmgt.icmp.EchoPacket} object.
-     */
-    public final EchoPacket getPacket() {
-        return m_packet;
-    }
-    
     /**
      * <p>getRequestId</p>
      *
@@ -133,6 +113,29 @@ public final class JniPingReply implements ResponseWithId<JniPingRequestId> {
         return new JniPingRequestId(this);
     }
     
+
+
+    /**
+     * Returns true if the recovered packet is an echo reply.
+     *
+     * @return a boolean.
+     */
+    @Override
+    public boolean isEchoReply() {
+        return getPacket().isEchoReply();
+    }
+
+    /**
+     * Returns the identity of the packet. Since this is an unsigned short, we must
+     * return the value as an int.
+     *
+     * @return a short.
+     */
+    @Override
+    public final long getIdentity() {
+        return getPacket().getIdentity();
+    }
+
     @Override
     public String toString() {
         StringBuilder buf = new StringBuilder();
@@ -143,5 +146,32 @@ public final class JniPingReply implements ResponseWithId<JniPingRequestId> {
         buf.append("JniPingRequestId = ").append(getRequestId().toString());
         buf.append(']');
         return buf.toString();
+    }
+
+    @Override
+    public long getReceivedTimeNanos() {
+        return getPacket().getReceivedTime();
+    }
+
+    @Override
+    public long getSentTimeNanos() {
+        return getPacket().getSentTime();
+    }
+
+    @Override
+    public int getSequenceNumber() {
+        return getPacket().getSequenceId();
+    }
+
+    @Override
+    public double elapsedTime(TimeUnit timeUnit) {
+        // {@link org.opennms.protocols.icmp.ICMPEchoPacket.getPingRTT()} returns microseconds.
+        double nanosPerUnit = TimeUnit.NANOSECONDS.convert(1, timeUnit);
+        return (getPacket().getPingRTT() * 1000) / nanosPerUnit;
+    }
+
+    @Override
+    public int getIdentifier() {
+        return (int)getPacket().getTID();
     }
 }

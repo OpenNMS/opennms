@@ -53,10 +53,6 @@ public class ICMPEchoPacket extends ICMPPacket {
         return content.slice();
     }
     
-    public byte[] toBytes() {
-        return getContentBuffer().array();
-    }
-    
     public int getPacketLength() {
         return m_packetData.limit();
     }

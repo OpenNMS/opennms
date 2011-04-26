@@ -75,9 +75,9 @@ public class Ping {
             try {
                 while (true) {
                     DatagramPacket pkt = m_socket.receive();
-                    JniPingReply reply;
+                    JniPingResponse reply;
                     try {
-                        reply = IcmpMessenger.createPingReply(pkt);
+                        reply = JniIcmpMessenger.createPingResponse(pkt);
                     } catch (Throwable t) {
                         // do nothing but skip this packet
                         continue;
@@ -85,12 +85,12 @@ public class Ping {
             
                     if (reply.isEchoReply()
                         && reply.getIdentity() == m_icmpId) {
-                        double rtt = reply.getPacket().elapsedTime(TimeUnit.MILLISECONDS);
+                        double rtt = reply.elapsedTime(TimeUnit.MILLISECONDS);
                         System.out.println(ICMPEchoPacket.getNetworkSize()
                                            + " bytes from "
                                            + InetAddressUtils.str(pkt.getAddress())
                                            + ": icmp_seq="
-                                           + reply.getPacket().getIdentifier()
+                                           + reply.getIdentifier()
                                            + ". time="
                                            + rtt + " ms");
                     }

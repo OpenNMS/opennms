@@ -62,10 +62,10 @@ public class JniPingRequestId {
     /**
      * <p>Constructor for JniPingRequestId.</p>
      *
-     * @param reply a {@link org.opennms.netmgt.icmp.spi.JniPingReply.PingReply} object.
+     * @param reply a {@link org.opennms.netmgt.icmp.spi.JniPingResponse.PingReply} object.
      */
-    public JniPingRequestId(JniPingReply reply) {
-        this(reply.getAddress(), reply.getPacket().getIdentifier(), reply.getPacket().getSequenceNumber());
+    public JniPingRequestId(JniPingResponse reply) {
+        this(reply.getAddress(), reply.getIdentifier(), reply.getSequenceNumber());
     }
 
     /**

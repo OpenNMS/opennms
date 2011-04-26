@@ -44,6 +44,7 @@ import java.util.concurrent.atomic.AtomicBoolean;
 import org.opennms.core.utils.ThreadCategory;
 import org.opennms.netmgt.icmp.EchoPacket;
 import org.opennms.netmgt.icmp.PingResponseCallback;
+import org.opennms.protocols.icmp.ICMPEchoPacket;
 import org.opennms.protocols.icmp.IcmpSocket;
 import org.opennms.protocols.rt.Request;
 
@@ -54,7 +55,7 @@ import org.opennms.protocols.rt.Request;
  * @author <a href="mailto:ranger@opennms.org">Ben Reed</a>
  * @author <a href="mailto:brozow@opennms.org">Mathew Brozowski</a>
  */
-public class JniPingRequest implements Request<JniPingRequestId, JniPingRequest, JniPingReply> {
+public class JniPingRequest implements Request<JniPingRequestId, JniPingRequest, JniPingResponse>, EchoPacket {
     /** Constant <code>FILTER_ID=(short) (new java.util.Random(System.currentTimeMillis())).nextInt()</code> */
     public static final short FILTER_ID = (short) (new java.util.Random(System.currentTimeMillis())).nextInt();
     private static long s_nextTid = 1;
@@ -68,11 +69,11 @@ public class JniPingRequest implements Request<JniPingRequestId, JniPingRequest,
      */
     protected final JniPingRequestId m_id;
 
-	/**
-	 * the request packet
-	 */
-	protected EchoPacket m_request = null;
-	
+    /**
+     * the request packet
+     */
+    private ICMPEchoPacket m_requestPacket = null;
+
     /**
      * The callback to use when this object is ready to do something
      */
@@ -107,7 +108,6 @@ public class JniPingRequest implements Request<JniPingRequestId, JniPingRequest,
         m_retries    = retries;
         m_timeout    = timeout;
         m_log        = logger;
-        // Wrap the callback in another callback that will reset the logging suffix after the callback has executed
         m_callback   = cb;
     }
     
@@ -123,23 +123,18 @@ public class JniPingRequest implements Request<JniPingRequestId, JniPingRequest,
     /**
      * <p>processResponse</p>
      *
-     * @param reply a {@link org.opennms.netmgt.icmp.spi.JniPingReply.PingReply} object.
+     * @param reply a {@link org.opennms.netmgt.icmp.spi.JniPingResponse.PingReply} object.
      * @return a boolean.
      */
-    public boolean processResponse(JniPingReply reply) {
+    public boolean processResponse(JniPingResponse reply) {
         try {
-            processResponse(reply.getPacket());
+            m_log.debug(System.currentTimeMillis()+": Ping Response Received "+this);
+            m_callback.handleResponse(m_id.getAddress(), reply);
         } finally {
             setProcessed(true);
         }
         return true;
     }
-
-    private void processResponse(EchoPacket packet) {
-        m_log.debug(System.currentTimeMillis()+": Ping Response Received "+this);
-        m_callback.handleResponse(m_id.getAddress(), packet);
-    }
-
     /**
      * <p>processTimeout</p>
      *
@@ -154,7 +149,7 @@ public class JniPingRequest implements Request<JniPingRequestId, JniPingRequest,
                     m_log.debug(System.currentTimeMillis()+": Retrying Ping Request "+returnval);
                 } else {
                     m_log.debug(System.currentTimeMillis()+": Ping Request Timed out "+this);
-                    m_callback.handleTimeout(m_id.getAddress(), m_request);
+                    m_callback.handleTimeout(m_id.getAddress(), this);
                 }
             }
             return returnval;
@@ -220,7 +215,7 @@ public class JniPingRequest implements Request<JniPingRequestId, JniPingRequest,
 
     public void processError(Throwable t) {
         try {
-            m_callback.handleError(m_id.getAddress(), m_request, t);
+            m_callback.handleError(m_id.getAddress(), this, t);
         } finally {
             setProcessed(true);
         }
@@ -246,25 +241,64 @@ public class JniPingRequest implements Request<JniPingRequestId, JniPingRequest,
      */
     public void send(IcmpSocket icmpSocket) {
         try {
-            m_request = createRequestPacket();
+            m_requestPacket = createRequestPacket();
     
             m_log.debug(System.currentTimeMillis()+": Sending Ping Request: "+this);
-            byte[] data = m_request.toBytes();
+            byte[] data = m_requestPacket.toBytes();
             m_expiration = System.currentTimeMillis() + m_timeout;
             icmpSocket.send(new DatagramPacket(data, data.length, m_id.getAddress(), 0));
+
         } catch (Throwable t) {
-            m_callback.handleError(m_id.getAddress(), m_request, t);
+            m_callback.handleError(m_id.getAddress(), this, t);
         }
     }
 
-    /**
-     * <p>createRequestPacket</p>
-     */
-    private EchoPacket createRequestPacket() {
-        org.opennms.protocols.icmp.ICMPEchoPacket iPkt = new org.opennms.protocols.icmp.ICMPEchoPacket(m_id.getTid());
+    private ICMPEchoPacket getRequestPacket() {
+        return m_requestPacket;
+    }
+
+    private ICMPEchoPacket createRequestPacket() {
+        ICMPEchoPacket iPkt = new ICMPEchoPacket(m_id.getTid());
         iPkt.setIdentity(FILTER_ID);
         iPkt.setSequenceId((short) m_id.getSequenceId());
         iPkt.computeChecksum();
-        return new JICMPEchoPacket(iPkt);
+        return iPkt;
+    }
+
+    @Override
+    public long getReceivedTimeNanos() {
+        return getRequestPacket().getReceivedTime();
+    }
+
+    @Override
+    public long getSentTimeNanos() {
+        return getRequestPacket().getSentTime();
+    }
+
+    @Override
+    public int getSequenceNumber() {
+        return getRequestPacket().getSequenceId();
+    }
+
+    @Override
+    public double elapsedTime(TimeUnit timeUnit) {
+        // {@link org.opennms.protocols.icmp.ICMPEchoPacket.getPingRTT()} returns microseconds.
+        double nanosPerUnit = TimeUnit.NANOSECONDS.convert(1, timeUnit);
+        return (getRequestPacket().getPingRTT() * 1000) / nanosPerUnit;
+    }
+
+    @Override
+    public int getIdentifier() {
+        return (int)getRequestPacket().getTID();
+    }
+
+    @Override
+    public boolean isEchoReply() {
+        return getRequestPacket().isEchoReply();
+    }
+
+    @Override
+    public long getIdentity() {
+        return getRequestPacket().getIdentity();
     }
 }

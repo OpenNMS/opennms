@@ -51,8 +51,6 @@ public interface EchoPacket {
 	 */
 	double elapsedTime(TimeUnit timeUnit);
 
-	byte[] toBytes();
-
 	int getIdentifier();
 
 	boolean isEchoReply();

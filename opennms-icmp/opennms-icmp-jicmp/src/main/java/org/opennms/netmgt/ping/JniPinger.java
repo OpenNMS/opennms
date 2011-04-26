@@ -125,7 +125,7 @@ import org.opennms.protocols.rt.RequestTracker;
 public class JniPinger implements Pinger {
     
     
-    private RequestTracker<JniPingRequest, JniPingReply> s_pingTracker;
+    private RequestTracker<JniPingRequest, JniPingResponse> s_pingTracker;
     
     public JniPinger() {}
 
@@ -136,7 +136,7 @@ public class JniPinger implements Pinger {
 	 */
 	public synchronized void initialize() throws IOException {
 	    if (s_pingTracker != null) return;
-	    s_pingTracker = new RequestTracker<JniPingRequest, JniPingReply>("JNI-ICMP", new IcmpMessenger(), new IDBasedRequestLocator<JniPingRequestId, JniPingRequest, JniPingReply>());
+	    s_pingTracker = new RequestTracker<JniPingRequest, JniPingResponse>("JNI-ICMP", new JniIcmpMessenger(), new IDBasedRequestLocator<JniPingRequestId, JniPingRequest, JniPingResponse>());
 	    s_pingTracker.start();
 	}
 
