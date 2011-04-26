@@ -40,13 +40,13 @@ import org.opennms.protocols.rt.Request;
 /**
  * 
  */
-public interface PingRequest<SocketT> extends Request<PingRequestId, PingRequest<SocketT>, PingReply>{
+public interface IPingRequest<SocketT> extends Request<PingRequestId, IPingRequest<SocketT>, PingReply>{
 
 	public void send(SocketT icmpSocket, InetAddress addr);
 	
 	public PingRequestId getId();
 
-	PingRequest<SocketT> constructNewRequest(InetAddress inetAddress, long tid,
+	IPingRequest<SocketT> constructNewRequest(InetAddress inetAddress, long tid,
 			int sequenceId, long timeout, int retries, ThreadCategory log,
 			PingResponseCallback callback);
 

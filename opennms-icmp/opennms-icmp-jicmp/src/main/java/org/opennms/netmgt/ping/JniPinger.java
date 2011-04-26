@@ -43,12 +43,11 @@ import java.net.InetAddress;
 import java.util.List;
 
 import org.opennms.netmgt.icmp.PingResponseCallback;
+import org.opennms.netmgt.icmp.Pinger;
 import org.opennms.netmgt.icmp.spi.ParallelPingResponseCallback;
 import org.opennms.netmgt.icmp.spi.PingReply;
-import org.opennms.netmgt.icmp.spi.PingRequest;
 import org.opennms.netmgt.icmp.spi.PingRequestId;
 import org.opennms.netmgt.icmp.spi.SinglePingResponseCallback;
-import org.opennms.protocols.icmp.IcmpSocket;
 import org.opennms.protocols.rt.IDBasedRequestLocator;
 import org.opennms.protocols.rt.RequestTracker;
 
@@ -124,10 +123,10 @@ import org.opennms.protocols.rt.RequestTracker;
  * @author <a href="mailto:ranger@opennms.org">Ben Reed</a>
  * @author <a href="mailto:brozow@opennms.org">Mathew Brozowski</a>
  */
-public class JniPinger implements org.opennms.netmgt.icmp.Pinger {
+public class JniPinger implements Pinger {
     
     
-    private RequestTracker<PingRequest<IcmpSocket>, PingReply> s_pingTracker;
+    private RequestTracker<JniPingRequest, PingReply> s_pingTracker;
     
     public JniPinger() {}
 
@@ -138,7 +137,7 @@ public class JniPinger implements org.opennms.netmgt.icmp.Pinger {
 	 */
 	public synchronized void initialize() throws IOException {
 	    if (s_pingTracker != null) return;
-	    s_pingTracker = new RequestTracker<PingRequest<IcmpSocket>, PingReply>("ICMP", new IcmpMessenger(), new IDBasedRequestLocator<PingRequestId, PingRequest<IcmpSocket>, PingReply>());
+	    s_pingTracker = new RequestTracker<JniPingRequest, PingReply>("ICMP", new IcmpMessenger(), new IDBasedRequestLocator<PingRequestId, JniPingRequest, PingReply>());
 	    s_pingTracker.start();
 	}
 
@@ -154,7 +153,7 @@ public class JniPinger implements org.opennms.netmgt.icmp.Pinger {
      */
     public void ping(InetAddress host, long timeout, int retries, int sequenceId, PingResponseCallback cb) throws Exception {
         initialize();
-        s_pingTracker.sendRequest(new org.opennms.netmgt.ping.PingRequest(host, sequenceId, timeout, retries, cb));
+        s_pingTracker.sendRequest(new JniPingRequest(host, sequenceId, timeout, retries, cb));
 	}
 
     /**
@@ -213,7 +212,7 @@ public class JniPinger implements org.opennms.netmgt.icmp.Pinger {
         }
         
         for (int i = 0; i < count; i++) {
-            PingRequest<IcmpSocket> request = new org.opennms.netmgt.ping.PingRequest(host, (short) i, timeout, 0, cb);
+            JniPingRequest request = new JniPingRequest(host, (short) i, timeout, 0, cb);
             s_pingTracker.sendRequest(request);
             Thread.sleep(pingInterval);
         }

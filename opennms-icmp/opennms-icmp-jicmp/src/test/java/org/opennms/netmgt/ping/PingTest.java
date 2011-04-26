@@ -37,13 +37,16 @@ package org.opennms.netmgt.ping;
 
 import java.net.InetAddress;
 import java.util.List;
+import java.util.concurrent.CountDownLatch;
 
 import junit.framework.TestCase;
 
 import org.opennms.core.utils.CollectionMath;
 import org.opennms.core.utils.InetAddressUtils;
 import org.opennms.jicmp.JnaPinger;
+import org.opennms.netmgt.icmp.EchoPacket;
 import org.opennms.netmgt.icmp.PingConstants;
+import org.opennms.netmgt.icmp.PingResponseCallback;
 import org.opennms.netmgt.icmp.Pinger;
 
 /**
@@ -104,6 +107,56 @@ public class PingTest extends TestCase {
         Number rtt = pinger.ping(m_goodHost);
         assertNotNull("No RTT value returned from ping, looks like the ping failed", rtt);
         assertTrue("Negative RTT value returned from ping", rtt.doubleValue() > 0);
+    }
+    
+    private class TestPingResponseCallback implements PingResponseCallback {
+        public final CountDownLatch m_latch = new CountDownLatch(1);
+        public InetAddress m_address;
+        public EchoPacket m_packet;
+        public Throwable m_throwable;
+        public boolean m_timeout = false;
+        @Override
+        public void handleResponse(InetAddress address, EchoPacket response) {
+            m_address = address;
+            m_packet = response;
+            m_latch.countDown();
+        }
+        @Override
+        public void handleTimeout(InetAddress address, EchoPacket request) {
+            m_timeout = true;
+            m_address = address;
+            m_packet = request;
+            m_latch.countDown();        }
+        @Override
+        public void handleError(InetAddress address, EchoPacket request, Throwable t) {
+            m_address = address;
+            m_packet = request;
+            m_throwable = t;
+            m_latch.countDown();
+        }
+        
+        public void await() throws InterruptedException {
+            m_latch.await();
+        }
+        
+    };
+
+    protected void pingCallbackTimeout(Pinger pinger) throws Exception {
+        TestPingResponseCallback cb = new TestPingResponseCallback();
+        pinger.ping(m_badHost, PingConstants.DEFAULT_TIMEOUT, PingConstants.DEFAULT_RETRIES, 1, cb);
+        cb.await();
+        assertTrue(cb.m_timeout);
+        assertNotNull(cb.m_packet);
+        assertNotNull(cb.m_address);
+        
+    }
+
+    public void testPingCallbackTimeoutJni() throws Exception {
+        pingCallbackTimeout(new JniPinger());
+    }
+
+    public void testPingCallbackTimeoutJna() throws Exception {
+        pingCallbackTimeout(new JnaPinger());
     }
 
     public void testSinglePingFailureJni() throws Exception {

@@ -75,6 +75,7 @@ final public class JnaPingRequest extends AbstractPingRequest<NativeDatagramSock
      */
     public void send(NativeDatagramSocket icmpSocket, InetAddress addr) {
         try {
+            //throw new IllegalStateException("The m_request field should be set here!!!");
             m_log.debug(System.currentTimeMillis()+": Sending Ping Request: " + this);
 
             if (addr instanceof Inet4Address) {

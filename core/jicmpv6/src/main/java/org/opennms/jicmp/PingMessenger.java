@@ -37,14 +37,14 @@ import java.util.Queue;
 import org.opennms.jicmp.jna.NativeDatagramSocket;
 import org.opennms.netmgt.icmp.EchoPacket;
 import org.opennms.netmgt.icmp.spi.PingReply;
-import org.opennms.netmgt.icmp.spi.PingRequest;
+import org.opennms.netmgt.icmp.spi.IPingRequest;
 import org.opennms.protocols.rt.Messenger;
 
 
 /**
  * @author brozow
  */
-public class PingMessenger implements Messenger<PingRequest<NativeDatagramSocket>, PingReply>, PingReplyListener {
+public class PingMessenger implements Messenger<IPingRequest<NativeDatagramSocket>, PingReply>, PingReplyListener {
 
 	private Queue<PingReply> pendingReplies = null;
 
@@ -54,7 +54,7 @@ public class PingMessenger implements Messenger<PingRequest<NativeDatagramSocket
 	}
 
 	@Override
-	public void sendRequest(PingRequest<NativeDatagramSocket> request) {
+	public void sendRequest(IPingRequest<NativeDatagramSocket> request) {
 		// Don't need to send a socket here, the sockets are managed by the V4Pinger and V6Pinger classes
 		request.send(null, request.getId().getAddress());
 	}

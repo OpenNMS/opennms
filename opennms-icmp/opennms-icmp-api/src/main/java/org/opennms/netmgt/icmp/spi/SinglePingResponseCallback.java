@@ -70,9 +70,12 @@ public class SinglePingResponseCallback implements PingResponseCallback {
 
     /** {@inheritDoc} */
     public void handleResponse(InetAddress address, EchoPacket response) {
-        info("got response for address " + address + ", thread " + response.getIdentifier() + ", seq " + response.getSequenceNumber() + " with a responseTime "+response.elapsedTime(TimeUnit.MILLISECONDS)+"ms");
-        m_responseTime = (long)Math.round(response.elapsedTime(TimeUnit.MICROSECONDS));
-        m_latch.countDown();
+        try {
+            info("got response for address " + address + ", thread " + response.getIdentifier() + ", seq " + response.getSequenceNumber() + " with a responseTime "+response.elapsedTime(TimeUnit.MILLISECONDS)+"ms");
+            m_responseTime = (long)Math.round(response.elapsedTime(TimeUnit.MICROSECONDS));
+        } finally {
+            m_latch.countDown();
+        }
     }
 
     private ThreadCategory log() {
@@ -81,15 +84,21 @@ public class SinglePingResponseCallback implements PingResponseCallback {
 
     /** {@inheritDoc} */
     public void handleTimeout(InetAddress address, EchoPacket request) {
-        assert(request != null);
-        info("timed out pinging address " + address + ", thread " + request.getIdentifier() + ", seq " + request.getSequenceNumber());
-        m_latch.countDown();
+        try {
+            assert(request != null);
+            info("timed out pinging address " + address + ", thread " + request.getIdentifier() + ", seq " + request.getSequenceNumber());
+        } finally {
+            m_latch.countDown();
+        }
     }
 
     /** {@inheritDoc} */
     public void handleError(InetAddress address, EchoPacket request, Throwable t) {
-        info("an error occurred pinging " + address, t);
-        m_latch.countDown();
+        try {
+            info("an error occurred pinging " + address, t);
+        } finally {
+            m_latch.countDown();
+        }
     }
 
     /**

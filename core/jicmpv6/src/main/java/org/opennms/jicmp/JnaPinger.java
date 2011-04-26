@@ -42,7 +42,7 @@ import org.opennms.jicmp.jna.NativeDatagramSocket;
 import org.opennms.netmgt.icmp.PingResponseCallback;
 import org.opennms.netmgt.icmp.spi.ParallelPingResponseCallback;
 import org.opennms.netmgt.icmp.spi.PingReply;
-import org.opennms.netmgt.icmp.spi.PingRequest;
+import org.opennms.netmgt.icmp.spi.IPingRequest;
 import org.opennms.netmgt.icmp.spi.PingRequestId;
 import org.opennms.netmgt.icmp.spi.SinglePingResponseCallback;
 import org.opennms.protocols.rt.IDBasedRequestLocator;
@@ -59,7 +59,7 @@ public class JnaPinger implements org.opennms.netmgt.icmp.Pinger {
 	private final AbstractPinger<Inet4Address> v4Pinger;
 	private final AbstractPinger<Inet6Address> v6Pinger;
 
-	private RequestTracker<PingRequest<NativeDatagramSocket>, PingReply> s_pingTracker;
+	private RequestTracker<IPingRequest<NativeDatagramSocket>, PingReply> s_pingTracker;
 
 	public JnaPinger() throws Exception {
 		v4Pinger = new V4Pinger();
@@ -74,7 +74,7 @@ public class JnaPinger implements org.opennms.netmgt.icmp.Pinger {
 		if (s_pingTracker != null) return;
 		v4Pinger.start();
 		v6Pinger.start();
-		s_pingTracker = new RequestTracker<PingRequest<NativeDatagramSocket>, PingReply>("ICMP", new PingMessenger(v4Pinger, v6Pinger), new IDBasedRequestLocator<PingRequestId, PingRequest<NativeDatagramSocket>, PingReply>());
+		s_pingTracker = new RequestTracker<IPingRequest<NativeDatagramSocket>, PingReply>("ICMP", new PingMessenger(v4Pinger, v6Pinger), new IDBasedRequestLocator<PingRequestId, IPingRequest<NativeDatagramSocket>, PingReply>());
 		s_pingTracker.start();
 	}
 
@@ -149,7 +149,7 @@ public class JnaPinger implements org.opennms.netmgt.icmp.Pinger {
 
 		int tid = (int)JnaPingRequest.getNextTID();
 		for (int i = 0; i < count; i++) {
-			PingRequest<NativeDatagramSocket> request = new JnaPingRequest(v4Pinger, v6Pinger, host, tid, i, timeout, 0, cb);
+			IPingRequest<NativeDatagramSocket> request = new JnaPingRequest(v4Pinger, v6Pinger, host, tid, i, timeout, 0, cb);
 			s_pingTracker.sendRequest(request);
 			Thread.sleep(pingInterval);
 		}

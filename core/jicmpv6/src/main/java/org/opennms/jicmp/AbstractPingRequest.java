@@ -33,7 +33,7 @@
  *      http://www.opennms.org/
  *      http://www.opennms.com/
  */
-package org.opennms.netmgt.icmp.spi;
+package org.opennms.jicmp;
 
 import java.net.InetAddress;
 import java.util.concurrent.Delayed;
@@ -43,6 +43,10 @@ import java.util.concurrent.atomic.AtomicBoolean;
 import org.opennms.core.utils.ThreadCategory;
 import org.opennms.netmgt.icmp.EchoPacket;
 import org.opennms.netmgt.icmp.PingResponseCallback;
+import org.opennms.netmgt.icmp.spi.IPingRequest;
+import org.opennms.netmgt.icmp.spi.LogPrefixPreservingPingResponseCallback;
+import org.opennms.netmgt.icmp.spi.PingReply;
+import org.opennms.netmgt.icmp.spi.PingRequestId;
 
 /**
  * This class is used to encapsulate a ping request. A request consist of
@@ -53,7 +57,7 @@ import org.opennms.netmgt.icmp.PingResponseCallback;
  */
 public abstract class AbstractPingRequest<SocketT> implements IPingRequest<SocketT> {
     /** Constant <code>FILTER_ID=(short) (new java.util.Random(System.currentTimeMillis())).nextInt()</code> */
-    //public static final short FILTER_ID = (short) (new java.util.Random(System.currentTimeMillis())).nextInt();
+    public static final short FILTER_ID = (short) (new java.util.Random(System.currentTimeMillis())).nextInt();
     private static long s_nextTid = 1;
 
     public static final long getNextTID() {

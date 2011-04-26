@@ -31,15 +31,12 @@
  */
 package org.opennms.netmgt.ping;
 
-import static org.opennms.netmgt.icmp.spi.AbstractPingRequest.FILTER_ID;
-
 import java.io.IOException;
 import java.net.DatagramPacket;
 import java.util.Queue;
 
 import org.opennms.core.utils.LogUtils;
 import org.opennms.netmgt.icmp.spi.PingReply;
-import org.opennms.netmgt.icmp.spi.PingRequest;
 import org.opennms.protocols.icmp.ICMPEchoPacket;
 import org.opennms.protocols.icmp.IcmpSocket;
 import org.opennms.protocols.rt.Messenger;
@@ -50,7 +47,7 @@ import org.opennms.protocols.rt.Messenger;
  * @author brozow
  * @version $Id: $
  */
-public class IcmpMessenger implements Messenger<PingRequest<IcmpSocket>, PingReply> {
+public class IcmpMessenger implements Messenger<JniPingRequest, PingReply> {
     
     IcmpSocket m_socket;
     
@@ -70,7 +67,7 @@ public class IcmpMessenger implements Messenger<PingRequest<IcmpSocket>, PingRep
         
                 PingReply reply = IcmpMessenger.createPingReply(packet);
                 
-                if (reply.isEchoReply() && reply.getIdentity() == FILTER_ID) {
+                if (reply.isEchoReply() && reply.getIdentity() == JniPingRequest.FILTER_ID) {
                     LogUtils.debugf(this, "Found an echo packet addr = %s, port = %d, length = %d, created reply %s", packet.getAddress(), packet.getPort(), packet.getLength(), reply);
                     pendingReplies.offer(reply);
                 }
@@ -90,11 +87,11 @@ public class IcmpMessenger implements Messenger<PingRequest<IcmpSocket>, PingRep
     /**
      * <p>sendRequest</p>
      *
-     * @param request a {@link org.opennms.netmgt.ping.PingRequest} object.
+     * @param request a {@link org.opennms.netmgt.ping.JniPingRequest} object.
      */
     @Override
-    public void sendRequest(PingRequest<IcmpSocket> request) {
-        request.send(m_socket, request.getId().getAddress());
+    public void sendRequest(JniPingRequest request) {
+        request.send(m_socket);
     }
 
     /** {@inheritDoc} */
