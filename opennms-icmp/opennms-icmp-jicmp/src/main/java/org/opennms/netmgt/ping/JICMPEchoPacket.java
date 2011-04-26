@@ -37,9 +37,10 @@ package org.opennms.netmgt.ping;
 
 import java.util.concurrent.TimeUnit;
 
+import org.opennms.netmgt.icmp.EchoPacket;
 import org.opennms.protocols.icmp.ICMPEchoPacket;
 
-public class JICMPEchoPacket implements org.opennms.netmgt.icmp.EchoPacket {
+public class JICMPEchoPacket implements EchoPacket {
 
     private final ICMPEchoPacket m_delegate;
 

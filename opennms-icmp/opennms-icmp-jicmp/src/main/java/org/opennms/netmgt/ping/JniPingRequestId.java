@@ -124,7 +124,7 @@ public class JniPingRequestId {
      */
     public String toString() {
         StringBuilder buf = new StringBuilder();
-        buf.append(super.toString());
+        buf.append(this.getClass().getSimpleName());
         buf.append('[');
         buf.append("addr = ").append(m_addr);
         buf.append(", ");

@@ -96,7 +96,7 @@ public class IcmpMessenger implements Messenger<JniPingRequest, JniPingReply> {
     /** {@inheritDoc} */
     @Override
     public void start(final Queue<JniPingReply> replyQueue) {
-        Thread socketReader = new Thread("ICMP-Socket-Reader") {
+        Thread socketReader = new Thread("JNI-ICMP-Socket-Reader") {
 
             public void run() {
                 try {

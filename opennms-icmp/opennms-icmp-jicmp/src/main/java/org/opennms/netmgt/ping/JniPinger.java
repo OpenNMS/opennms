@@ -42,6 +42,7 @@ import java.io.IOException;
 import java.net.InetAddress;
 import java.util.List;
 
+import org.opennms.netmgt.icmp.LogPrefixPreservingPingResponseCallback;
 import org.opennms.netmgt.icmp.ParallelPingResponseCallback;
 import org.opennms.netmgt.icmp.PingResponseCallback;
 import org.opennms.netmgt.icmp.Pinger;
@@ -135,7 +136,7 @@ public class JniPinger implements Pinger {
 	 */
 	public synchronized void initialize() throws IOException {
 	    if (s_pingTracker != null) return;
-	    s_pingTracker = new RequestTracker<JniPingRequest, JniPingReply>("ICMP", new IcmpMessenger(), new IDBasedRequestLocator<JniPingRequestId, JniPingRequest, JniPingReply>());
+	    s_pingTracker = new RequestTracker<JniPingRequest, JniPingReply>("JNI-ICMP", new IcmpMessenger(), new IDBasedRequestLocator<JniPingRequestId, JniPingRequest, JniPingReply>());
 	    s_pingTracker.start();
 	}
 
@@ -151,7 +152,7 @@ public class JniPinger implements Pinger {
      */
     public void ping(InetAddress host, long timeout, int retries, int sequenceId, PingResponseCallback cb) throws Exception {
         initialize();
-        s_pingTracker.sendRequest(new JniPingRequest(host, sequenceId, timeout, retries, cb));
+        s_pingTracker.sendRequest(new JniPingRequest(host, sequenceId, timeout, retries, new LogPrefixPreservingPingResponseCallback(cb)));
 	}
 
     /**

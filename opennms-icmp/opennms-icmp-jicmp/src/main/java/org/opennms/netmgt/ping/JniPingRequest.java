@@ -109,7 +109,7 @@ public class JniPingRequest implements Request<JniPingRequestId, JniPingRequest,
         m_timeout    = timeout;
         m_log        = logger;
         // Wrap the callback in another callback that will reset the logging suffix after the callback has executed
-        m_callback   = new LogPrefixPreservingPingResponseCallback(cb);
+        m_callback   = cb;
     }
     
     public JniPingRequest(InetAddress addr, long tid, int sequenceId, long timeout, int retries, PingResponseCallback cb) {
@@ -151,7 +151,7 @@ public class JniPingRequest implements Request<JniPingRequestId, JniPingRequest,
             JniPingRequest returnval = null;
             if (this.isExpired()) {
                 if (m_retries > 0) {
-                    returnval = constructNewRequest(m_id.getAddress(), m_id.getTid(), m_id.getSequenceId(), m_timeout, m_retries - 1, m_log, m_callback);
+                    returnval = new JniPingRequest(m_id.getAddress(), m_id.getTid(), m_id.getSequenceId(), m_timeout, (m_retries - 1), m_log, m_callback);
                     m_log.debug(System.currentTimeMillis()+": Retrying Ping Request "+returnval);
                 } else {
                     m_log.debug(System.currentTimeMillis()+": Ping Request Timed out "+this);
@@ -267,9 +267,5 @@ public class JniPingRequest implements Request<JniPingRequestId, JniPingRequest,
         iPkt.setSequenceId((short) m_id.getSequenceId());
         iPkt.computeChecksum();
         return new JICMPEchoPacket(iPkt);
-    }
-
-    public JniPingRequest constructNewRequest(InetAddress inetAddress, long tid, int sequenceId, long timeout, int retries, ThreadCategory log, PingResponseCallback callback) {
-        return new JniPingRequest(inetAddress, tid, sequenceId, timeout, retries, log, callback);
     }
 }

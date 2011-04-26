@@ -74,7 +74,7 @@ public class JnaPinger implements org.opennms.netmgt.icmp.Pinger {
 		if (s_pingTracker != null) return;
 		v4Pinger.start();
 		v6Pinger.start();
-		s_pingTracker = new RequestTracker<IPingRequest<NativeDatagramSocket>, PingReply>("ICMP", new PingMessenger(v4Pinger, v6Pinger), new IDBasedRequestLocator<PingRequestId, IPingRequest<NativeDatagramSocket>, PingReply>());
+		s_pingTracker = new RequestTracker<IPingRequest<NativeDatagramSocket>, PingReply>("JNA-ICMP", new PingMessenger(v4Pinger, v6Pinger), new IDBasedRequestLocator<PingRequestId, IPingRequest<NativeDatagramSocket>, PingReply>());
 		s_pingTracker.start();
 	}
 
