@@ -33,15 +33,13 @@
  *      http://www.opennms.org/
  *      http://www.opennms.com/
  */
-package org.opennms.netmgt.icmp.spi;
+package org.opennms.netmgt.icmp;
 
 import java.net.InetAddress;
 import java.util.concurrent.CountDownLatch;
 import java.util.concurrent.TimeUnit;
 
 import org.opennms.core.utils.ThreadCategory;
-import org.opennms.netmgt.icmp.PingResponseCallback;
-import org.opennms.netmgt.icmp.EchoPacket;
 
 /**
  * <p>SinglePingResponseCallback class.</p>

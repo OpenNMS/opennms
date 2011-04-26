@@ -33,13 +33,11 @@
  *      http://www.opennms.org/
  *      http://www.opennms.com/
  */
-package org.opennms.netmgt.icmp.spi;
+package org.opennms.netmgt.icmp;
 
 import java.net.InetAddress;
 
 import org.opennms.core.utils.ThreadCategory;
-import org.opennms.netmgt.icmp.EchoPacket;
-import org.opennms.netmgt.icmp.PingResponseCallback;
 
 public class LogPrefixPreservingPingResponseCallback implements PingResponseCallback {
     private final PingResponseCallback m_cb;
