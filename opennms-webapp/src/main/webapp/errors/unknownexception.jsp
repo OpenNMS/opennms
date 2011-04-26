@@ -101,7 +101,19 @@ if (exception != null) {
   } else if (exception.getCause() != null) {
     exception = exception.getCause();
   }
-  stBuilder.append(exception.getClass().getName()).append("\n");
+  stBuilder.append(exception.getClass().getName());
+  /*
+  NOTE: While this may look like a good idea, we want to omit the message
+  to avoid transmitting sensitive information like file paths and other internal
+  information on the error page. If the user needs more precise information,
+  they can look at the webapp logs for the complete stack trace.
+
+  String message = exception.getMessage();
+  if (message != null && message.length() > 0) {
+    stBuilder.append(": ").append(exception.getMessage());
+  }
+  */
+  stBuilder.append("\n");
   for (StackTraceElement ste : exception.getStackTrace()) {
     stBuilder.append("\tat ").append(ste.toString()).append("\n");
   }
