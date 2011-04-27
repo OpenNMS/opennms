@@ -710,7 +710,7 @@
    <gmavenVersion>1.0</gmavenVersion>
 	<gwtVersion>2.1.1</gwtVersion>
    <jasperreportsVersion>3.7.6</jasperreportsVersion>
-   <jettyVersion>7.3.1.v20110307</jettyVersion>
+	<jettyVersion>7.4.0.v20110414</jettyVersion>
 	<liquibaseVersion>2.0.1</liquibaseVersion>
    <log4jVersion>1.2.15</log4jVersion>
    <minaVersion>2.0.2</minaVersion>
