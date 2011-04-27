@@ -2,7 +2,6 @@
 <schema targetNamespace="http://xmlns.opennms.org/xsd/config/xmp"
         xmlns="http://www.w3.org/2001/XMLSchema"
         xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
-        xmlns:typ="http://xmlns.opennms.org/xsd/types"
         xmlns:ns2="http://www.w3.org/1999/xhtml"
         xmlns:ns="http://www.w3.org/2001/XMLSchema"
         xmlns:hfp="http://www.w3.org/2001/XMLSchema-hasFacetAndProperty">
@@ -10,8 +9,6 @@
     <documentation>XML Schema for the xmp-config.xml configuration file.
     Version: $Id: xmp-config.xsd 21 2008-07-22 20:21:56Z rdk $</documentation>
   </annotation>
-
-  <import namespace="http://xmlns.opennms.org/xsd/types" schemaLocation="types.xsd"/>
 
   <element name="xmp-config">
     <annotation>

@@ -3,7 +3,6 @@
         session="true"
         import="java.util.*,
         org.opennms.netmgt.config.*,
-        org.opennms.netmgt.config.common.*,
         org.opennms.netmgt.config.poller.*,
         org.opennms.web.WebSecurityUtils,
         org.opennms.web.element.*,
@@ -425,7 +424,7 @@ Could not find an outage to edit because no outage name parameter was specified 
 				theOutage.addInterface(matchAnyInterface);
 			} else if (request.getParameter("addOutage") != null && theOutage.getType() != null) {
 				if (theOutage.getType().equalsIgnoreCase("specific")) {
-					Time newTime = new Time();
+					org.opennms.netmgt.config.poller.Time newTime = new org.opennms.netmgt.config.poller.Time();
 	
 					StringBuffer timeBuffer = new StringBuffer(17);
 					timeBuffer.append(request.getParameter("chooseStartDay"));
@@ -457,7 +456,7 @@ Could not find an outage to edit because no outage name parameter was specified 
 	
 					theOutage.addTime(newTime);
 				} else {
-					Time newTime = new Time();
+					org.opennms.netmgt.config.poller.Time newTime = new org.opennms.netmgt.config.poller.Time();
 	
 					if (theOutage.getType().equalsIgnoreCase("monthly")) {
 						newTime.setDay(request.getParameter("chooseDayOfMonth"));
@@ -856,9 +855,9 @@ function updateOutageTypeDisplay(selectElement) {
 		<label>Time:</label>
 			<table class="normal">
 				<%
-					Time[] outageTimes = theOutage.getTime();
+				org.opennms.netmgt.config.poller.Time[] outageTimes = theOutage.getTime();
 					for (int i = 0; i < outageTimes.length; i++) {
-						Time thisTime = outageTimes[i];
+						org.opennms.netmgt.config.poller.Time thisTime = outageTimes[i];
 				%>
 				<tr>
 					<td> <input type="image" src="images/redcross.gif" name="deleteTime<%=i%>" /> </td>

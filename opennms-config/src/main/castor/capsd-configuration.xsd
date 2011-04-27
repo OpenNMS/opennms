@@ -2,7 +2,6 @@
 <schema targetNamespace="http://xmlns.opennms.org/xsd/config/capsd"
         xmlns="http://www.w3.org/2001/XMLSchema"
         xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
-        xmlns:typ="http://xmlns.opennms.org/xsd/types"
         xmlns:this="http://xmlns.opennms.org/xsd/config/capsd"
         xmlns:ns2="http://www.w3.org/1999/xhtml"
         xmlns:ns="http://www.w3.org/2001/XMLSchema"
@@ -12,7 +11,25 @@
     file. Version: $Id$.</documentation>
   </annotation>
 
-  <import namespace="http://xmlns.opennms.org/xsd/types" schemaLocation="types.xsd"/>
+  <element name="range">
+    <annotation>
+      <documentation>IP Address Range</documentation>
+    </annotation>
+
+    <complexType>
+      <attribute name="begin" type="string" use="required">
+        <annotation>
+          <documentation>Starting IP address of the range.</documentation>
+        </annotation>
+      </attribute>
+
+      <attribute name="end" type="string" use="required">
+        <annotation>
+          <documentation>Ending IP address of the range.</documentation>
+        </annotation>
+      </attribute>
+    </complexType>
+  </element>
 
   <element name="capsd-configuration">
     <annotation>
@@ -225,7 +242,7 @@
           </annotation>
         </element>
 
-        <element maxOccurs="unbounded" minOccurs="0" ref="typ:range">
+        <element maxOccurs="unbounded" minOccurs="0" ref="this:range">
           <annotation>
             <appinfo>IP address range to which the protocol configuration
             applies.</appinfo>
@@ -371,7 +388,7 @@
           </annotation>
         </element>
 
-        <element maxOccurs="unbounded" minOccurs="0" ref="typ:range">
+        <element maxOccurs="unbounded" minOccurs="0" ref="this:range">
           <annotation>
             <documentation>IP address range</documentation>
           </annotation>

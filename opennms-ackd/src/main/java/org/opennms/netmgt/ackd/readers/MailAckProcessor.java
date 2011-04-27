@@ -56,7 +56,7 @@ import org.opennms.core.utils.ThreadCategory;
 import org.opennms.javamail.JavaMailerException;
 import org.opennms.javamail.JavaReadMailer;
 import org.opennms.netmgt.config.ackd.Parameter;
-import org.opennms.netmgt.config.common.ReadmailConfig;
+import org.opennms.netmgt.config.javamail.ReadmailConfig;
 import org.opennms.netmgt.dao.AckdConfigurationDao;
 import org.opennms.netmgt.dao.JavaMailConfigurationDao;
 import org.opennms.netmgt.model.AckAction;
@@ -380,7 +380,7 @@ class MailAckProcessor implements AckProcessor {
     /**
      * <p>determineMailReaderConfig</p>
      *
-     * @return a {@link org.opennms.netmgt.config.common.ReadmailConfig} object.
+     * @return a {@link org.opennms.netmgt.config.javamail.ReadmailConfig} object.
      */
     public ReadmailConfig determineMailReaderConfig() {
     	

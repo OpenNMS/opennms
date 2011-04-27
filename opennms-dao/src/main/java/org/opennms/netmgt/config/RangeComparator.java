@@ -40,7 +40,7 @@ import java.util.Comparator;
 
 import org.opennms.core.utils.ByteArrayComparator;
 import org.opennms.core.utils.InetAddressUtils;
-import org.opennms.netmgt.config.common.Range;
+import org.opennms.netmgt.config.snmp.Range;
 
 /**
  * Use this class to compare two castor generated Range objects from the SnmpConfig class.

@@ -37,11 +37,11 @@ import java.util.concurrent.locks.Lock;
 import java.util.concurrent.locks.ReadWriteLock;
 import java.util.concurrent.locks.ReentrantReadWriteLock;
 
-import org.opennms.netmgt.config.common.Time;
 import org.opennms.netmgt.config.poller.Interface;
 import org.opennms.netmgt.config.poller.Node;
 import org.opennms.netmgt.config.poller.Outage;
 import org.opennms.netmgt.config.poller.Outages;
+import org.opennms.netmgt.config.poller.Time;
 import org.opennms.netmgt.dao.castor.AbstractCastorConfigDao;
 import org.springframework.dao.DataAccessException;
 import org.springframework.util.Assert;
@@ -131,7 +131,7 @@ abstract public class PollOutagesConfigManager extends AbstractCastorConfigDao<O
         getReadLock().lock();
         try {
             for (final Outage out : getConfig().getOutageCollection()) {
-                if (out.getName().equals(name)) {
+                if (BasicScheduleUtils.getBasicOutageSchedule(out).getName().equals(name)) {
                     return out;
                 }
             }
@@ -196,7 +196,7 @@ abstract public class PollOutagesConfigManager extends AbstractCastorConfigDao<O
      *
      * @param linterface
      *            the interface to be looked up
-     * @param out
+     * @param getOutageSchedule(out)
      *            the outage
      * @return the interface is part of the specified outage
      */
@@ -243,12 +243,12 @@ abstract public class PollOutagesConfigManager extends AbstractCastorConfigDao<O
      *
      * @param cal
      *            the calendar to lookup
-     * @param outage
+     * @param getOutageSchedule(outage)
      *            the outage
      * @return true if time is in outage
      */
     public boolean isTimeInOutage(final Calendar cal, final Outage outage) {
-        return BasicScheduleUtils.isTimeInSchedule(cal, outage);
+        return BasicScheduleUtils.isTimeInSchedule(cal, BasicScheduleUtils.getBasicOutageSchedule(outage));
 
     }
 
@@ -264,7 +264,7 @@ abstract public class PollOutagesConfigManager extends AbstractCastorConfigDao<O
     /**
      * Return if current time is part of specified outage.
      *
-     * @param out
+     * @param getOutageSchedule(out)
      *            the outage
      * @return true if current time is in outage
      */
@@ -275,7 +275,7 @@ abstract public class PollOutagesConfigManager extends AbstractCastorConfigDao<O
     /**
      * <p>addOutage</p>
      *
-     * @param newOutage a {@link org.opennms.netmgt.config.poller.Outage} object.
+     * @param getOutageSchedule(newOutage) a {@link org.opennms.netmgt.config.poller.Outage} object.
      */
     public void addOutage(final Outage newOutage) {
         getConfig().addOutage(newOutage);
@@ -293,7 +293,7 @@ abstract public class PollOutagesConfigManager extends AbstractCastorConfigDao<O
     /**
      * <p>removeOutage</p>
      *
-     * @param outageToRemove a {@link org.opennms.netmgt.config.poller.Outage} object.
+     * @param getOutageSchedule(outageToRemove) a {@link org.opennms.netmgt.config.poller.Outage} object.
      */
     public void removeOutage(final Outage outageToRemove) {
         getConfig().removeOutage(outageToRemove);
@@ -302,8 +302,8 @@ abstract public class PollOutagesConfigManager extends AbstractCastorConfigDao<O
     /**
      * <p>replaceOutage</p>
      *
-     * @param oldOutage a {@link org.opennms.netmgt.config.poller.Outage} object.
-     * @param newOutage a {@link org.opennms.netmgt.config.poller.Outage} object.
+     * @param getOutageSchedule(oldOutage) a {@link org.opennms.netmgt.config.poller.Outage} object.
+     * @param getOutageSchedule(newOutage) a {@link org.opennms.netmgt.config.poller.Outage} object.
      */
     public void replaceOutage(final Outage oldOutage, final Outage newOutage) {
         int count = getConfig().getOutageCount();
@@ -330,7 +330,7 @@ abstract public class PollOutagesConfigManager extends AbstractCastorConfigDao<O
      */
     public Node[] getNodeIds(final String name) {
         final Outage out = getOutage(name);
-        if (out == null) return null;
+        if (BasicScheduleUtils.getBasicOutageSchedule(out) == null) return null;
         return out.getNode();
     }
 
@@ -366,15 +366,15 @@ abstract public class PollOutagesConfigManager extends AbstractCastorConfigDao<O
      * FIXME: This code is almost identical to isTimeInOutage... We need to fix
      * it
      *
-     * @param out a {@link org.opennms.netmgt.config.poller.Outage} object.
+     * @param getOutageSchedule(out) a {@link org.opennms.netmgt.config.poller.Outage} object.
      * @return a {@link java.util.Calendar} object.
      */
     public static Calendar getEndOfOutage(final Outage out) {
         // FIXME: We need one that takes the time as a parm.  This makes it more testable
-        return BasicScheduleUtils.getEndOfSchedule(out);
+        return BasicScheduleUtils.getEndOfSchedule(BasicScheduleUtils.getBasicOutageSchedule(out));
     }
 
-    /**
+	/**
      * <p>
      * Return if nodeid is part of specified outage
      * </p>
@@ -382,7 +382,7 @@ abstract public class PollOutagesConfigManager extends AbstractCastorConfigDao<O
      * @param lnodeid
      *            the nodeid to be looked up
      * @return the node iis part of the specified outage
-     * @param out a {@link org.opennms.netmgt.config.poller.Outage} object.
+     * @param getOutageSchedule(out) a {@link org.opennms.netmgt.config.poller.Outage} object.
      */
     public boolean isNodeIdInOutage(final long lnodeid, final Outage out) {
         if (out == null) return false;

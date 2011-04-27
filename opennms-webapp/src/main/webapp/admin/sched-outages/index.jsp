@@ -2,7 +2,6 @@
 	import="
 	java.util.*,
 	org.opennms.netmgt.config.*,
-	org.opennms.netmgt.config.common.*,
 	org.opennms.netmgt.config.poller.*,
 	org.opennms.web.element.*,
 	org.opennms.netmgt.model.OnmsNode,
@@ -197,9 +196,9 @@
 		</td>
 		<td noWrap>
 		<%
-			Time[] outageTimes = pollFactory.getOutageTimes(outageName);
+			org.opennms.netmgt.config.poller.Time[] outageTimes = pollFactory.getOutageTimes(outageName);
 				for (int j = 0; j < outageTimes.length; j++) {
-					Time thisOutageTime = outageTimes[j];
+					org.opennms.netmgt.config.poller.Time thisOutageTime = outageTimes[j];
 					String rawDay = thisOutageTime.getDay();
 					String day = rawDay;
 					if ("daily".equals(pollFactory.getOutageType(outageName)))

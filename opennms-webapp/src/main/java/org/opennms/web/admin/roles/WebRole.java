@@ -40,8 +40,8 @@ import java.util.Collection;
 import java.util.Date;
 import java.util.List;
 
-import org.opennms.netmgt.config.common.Time;
 import org.opennms.netmgt.config.groups.Schedule;
+import org.opennms.netmgt.config.groups.Time;
 
 /**
  * <p>Abstract WebRole class.</p>

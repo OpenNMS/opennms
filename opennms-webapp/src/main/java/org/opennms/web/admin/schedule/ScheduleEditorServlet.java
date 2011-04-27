@@ -56,7 +56,7 @@ import javax.servlet.http.HttpServletResponse;
 import org.exolab.castor.xml.MarshalException;
 import org.exolab.castor.xml.Marshaller;
 import org.exolab.castor.xml.ValidationException;
-import org.opennms.netmgt.config.common.BasicSchedule;
+import org.opennms.netmgt.config.poller.BasicSchedule;
 import org.opennms.netmgt.config.poller.Outage;
 import org.opennms.netmgt.config.poller.Outages;
 import org.opennms.netmgt.dao.castor.CastorUtils;

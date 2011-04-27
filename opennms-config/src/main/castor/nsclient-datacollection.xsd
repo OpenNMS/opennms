@@ -2,7 +2,6 @@
 <schema
 	targetNamespace="http://xmlns.opennms.org/xsd/config/nsclient-datacollection"
 	xmlns="http://www.w3.org/2001/XMLSchema"
-	xmlns:typ="http://xmlns.opennms.org/xsd/types"
 	xmlns:ns="http://xmlns.opennms.org/xsd/config/nsclient-datacollection">
 
 	<annotation>
@@ -11,7 +10,6 @@
 			file
 		</documentation>
 	</annotation>
-	<import namespace="http://xmlns.opennms.org/xsd/types" schemaLocation="types.xsd" />
 
 	<element name="nsclient-datacollection-config">
 		<complexType>
@@ -35,7 +33,7 @@
 		</annotation>
 		<complexType>
 			<sequence>
-				<element ref="typ:rrd" minOccurs="1" maxOccurs="1" />
+				<element ref="ns:rrd" minOccurs="1" maxOccurs="1" />
 				<element ref="ns:wpms" minOccurs="1" maxOccurs="1" />
 			</sequence>
 			<!-- collector name -->
@@ -124,5 +122,33 @@
 			<attribute name="minval" type="string" use="optional" />
 		</complexType>
 	</element>
+
+  <element name="rrd">
+    <annotation>
+      <documentation>RRD parms</documentation>
+    </annotation>
+
+    <complexType>
+      <sequence>
+        <element maxOccurs="unbounded" minOccurs="1" name="rra">
+          <annotation>
+            <documentation>Round Robin Archive definitions</documentation>
+          </annotation>
+
+          <simpleType>
+            <restriction base="string">
+              <pattern value="RRA:(AVERAGE|MIN|MAX|LAST):.*"/>
+            </restriction>
+          </simpleType>
+        </element>
+      </sequence>
+
+      <attribute name="step" type="int" use="required">
+        <annotation>
+          <documentation>step size for the RRD</documentation>
+        </annotation>
+      </attribute>
+    </complexType>
+  </element>
 
 </schema>

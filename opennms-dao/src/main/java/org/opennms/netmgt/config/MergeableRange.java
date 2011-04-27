@@ -40,7 +40,7 @@ import java.net.UnknownHostException;
 import org.opennms.core.utils.ByteArrayComparator;
 import org.opennms.core.utils.InetAddressUtils;
 import org.opennms.core.utils.ThreadCategory;
-import org.opennms.netmgt.config.common.Range;
+import org.opennms.netmgt.config.snmp.Range;
 
 /**
  * This class wraps the castor generated Range class found in the SnmpConfig class.

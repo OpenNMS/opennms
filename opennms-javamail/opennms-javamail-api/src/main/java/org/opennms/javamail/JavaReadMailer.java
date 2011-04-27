@@ -52,8 +52,8 @@ import javax.mail.internet.MimeMultipart;
 import javax.mail.search.SearchTerm;
 
 import org.apache.commons.lang.StringUtils;
-import org.opennms.netmgt.config.common.JavamailProperty;
-import org.opennms.netmgt.config.common.ReadmailConfig;
+import org.opennms.netmgt.config.javamail.JavamailProperty;
+import org.opennms.netmgt.config.javamail.ReadmailConfig;
 
 
 /*
@@ -109,7 +109,7 @@ public class JavaReadMailer extends JavaMailer2 {
     /**
      * <p>Constructor for JavaReadMailer.</p>
      *
-     * @param config a {@link org.opennms.netmgt.config.common.ReadmailConfig} object.
+     * @param config a {@link org.opennms.netmgt.config.javamail.ReadmailConfig} object.
      * @param closeOnDelete a {@link java.lang.Boolean} object.
      * @throws org.opennms.javamail.JavaMailerException if any.
      */

@@ -37,9 +37,9 @@ package org.opennms.netmgt.dao;
 
 import java.util.List;
 
-import org.opennms.netmgt.config.common.End2endMailConfig;
-import org.opennms.netmgt.config.common.ReadmailConfig;
-import org.opennms.netmgt.config.common.SendmailConfig;
+import org.opennms.netmgt.config.javamail.End2endMailConfig;
+import org.opennms.netmgt.config.javamail.ReadmailConfig;
+import org.opennms.netmgt.config.javamail.SendmailConfig;
 import org.springframework.dao.DataAccessResourceFailureException;
 
 
@@ -54,7 +54,7 @@ public interface JavaMailConfigurationDao {
     /**
      * <p>getDefaultSendmailConfig</p>
      *
-     * @return a {@link org.opennms.netmgt.config.common.SendmailConfig} object.
+     * @return a {@link org.opennms.netmgt.config.javamail.SendmailConfig} object.
      */
     SendmailConfig getDefaultSendmailConfig();
     
@@ -62,7 +62,7 @@ public interface JavaMailConfigurationDao {
      * <p>getSendMailConfig</p>
      *
      * @param name a {@link java.lang.String} object.
-     * @return a {@link org.opennms.netmgt.config.common.SendmailConfig} object.
+     * @return a {@link org.opennms.netmgt.config.javamail.SendmailConfig} object.
      */
     SendmailConfig getSendMailConfig(String name);
     
@@ -76,7 +76,7 @@ public interface JavaMailConfigurationDao {
     /**
      * <p>getDefaultReadmailConfig</p>
      *
-     * @return a {@link org.opennms.netmgt.config.common.ReadmailConfig} object.
+     * @return a {@link org.opennms.netmgt.config.javamail.ReadmailConfig} object.
      */
     ReadmailConfig getDefaultReadmailConfig();
     
@@ -84,7 +84,7 @@ public interface JavaMailConfigurationDao {
      * <p>getReadMailConfig</p>
      *
      * @param name a {@link java.lang.String} object.
-     * @return a {@link org.opennms.netmgt.config.common.ReadmailConfig} object.
+     * @return a {@link org.opennms.netmgt.config.javamail.ReadmailConfig} object.
      */
     ReadmailConfig getReadMailConfig(String name);
     
@@ -99,7 +99,7 @@ public interface JavaMailConfigurationDao {
      * <p>getEnd2EndConfig</p>
      *
      * @param name a {@link java.lang.String} object.
-     * @return a {@link org.opennms.netmgt.config.common.End2endMailConfig} object.
+     * @return a {@link org.opennms.netmgt.config.javamail.End2endMailConfig} object.
      */
     End2endMailConfig getEnd2EndConfig(String name);
     

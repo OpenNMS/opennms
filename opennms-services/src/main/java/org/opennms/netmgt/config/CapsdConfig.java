@@ -46,8 +46,8 @@ import org.opennms.netmgt.config.capsd.CapsdConfiguration;
 import org.opennms.netmgt.config.capsd.Property;
 import org.opennms.netmgt.config.capsd.ProtocolConfiguration;
 import org.opennms.netmgt.config.capsd.ProtocolPlugin;
+import org.opennms.netmgt.config.capsd.Range;
 import org.opennms.netmgt.config.capsd.SmbAuth;
-import org.opennms.netmgt.config.common.Range;
 
 /**
  * <p>CapsdConfig interface.</p>

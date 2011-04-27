@@ -64,7 +64,7 @@ import org.opennms.core.utils.LogUtils;
 import org.opennms.netmgt.ConfigFileConstants;
 import org.opennms.netmgt.config.ami.AmiConfig;
 import org.opennms.netmgt.config.ami.Definition;
-import org.opennms.netmgt.config.common.Range;
+import org.opennms.netmgt.config.ami.Range;
 import org.opennms.netmgt.dao.castor.CastorUtils;
 import org.opennms.protocols.ami.AmiAgentConfig;
 

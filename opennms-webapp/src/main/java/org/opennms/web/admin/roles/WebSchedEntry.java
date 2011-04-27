@@ -34,9 +34,9 @@ package org.opennms.web.admin.roles;
 import java.text.SimpleDateFormat;
 import java.util.Date;
 
-import org.opennms.netmgt.config.common.Time;
 import org.opennms.netmgt.config.groups.Role;
 import org.opennms.netmgt.config.groups.Schedule;
+import org.opennms.netmgt.config.groups.Time;
 
 /**
  * <p>WebSchedEntry class.</p>

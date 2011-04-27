@@ -33,10 +33,10 @@ package org.opennms.netmgt.dao.castor;
 
 import java.util.List;
 
-import org.opennms.netmgt.config.common.End2endMailConfig;
-import org.opennms.netmgt.config.common.JavamailConfiguration;
-import org.opennms.netmgt.config.common.ReadmailConfig;
-import org.opennms.netmgt.config.common.SendmailConfig;
+import org.opennms.netmgt.config.javamail.End2endMailConfig;
+import org.opennms.netmgt.config.javamail.JavamailConfiguration;
+import org.opennms.netmgt.config.javamail.ReadmailConfig;
+import org.opennms.netmgt.config.javamail.SendmailConfig;
 import org.opennms.netmgt.dao.JavaMailConfigurationDao;
 import org.springframework.dao.DataAccessResourceFailureException;
 
@@ -74,7 +74,7 @@ public class DefaultJavamailConfigurationDao extends AbstractCastorConfigDao<Jav
     /**
      * <p>getDefaultReadmailConfig</p>
      *
-     * @return a {@link org.opennms.netmgt.config.common.ReadmailConfig} object.
+     * @return a {@link org.opennms.netmgt.config.javamail.ReadmailConfig} object.
      */
     public ReadmailConfig getDefaultReadmailConfig() {
         String name = getContainer().getObject().getDefaultReadConfigName();
@@ -106,7 +106,7 @@ public class DefaultJavamailConfigurationDao extends AbstractCastorConfigDao<Jav
     /**
      * <p>getDefaultSendmailConfig</p>
      *
-     * @return a {@link org.opennms.netmgt.config.common.SendmailConfig} object.
+     * @return a {@link org.opennms.netmgt.config.javamail.SendmailConfig} object.
      */
     public SendmailConfig getDefaultSendmailConfig() {
         String name = getContainer().getObject().getDefaultSendConfigName();

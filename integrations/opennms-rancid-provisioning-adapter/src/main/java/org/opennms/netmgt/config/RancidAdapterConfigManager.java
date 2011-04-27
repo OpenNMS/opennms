@@ -476,8 +476,7 @@ abstract public class RancidAdapterConfigManager implements RancidAdapterConfig 
      * @return true if time is in outage
      */
     private boolean isTimeInSchedule(final Calendar cal, final Schedule schedule) {
-        return BasicScheduleUtils.isTimeInSchedule(cal, schedule);
-
+        return BasicScheduleUtils.isTimeInSchedule(cal, BasicScheduleUtils.getRancidSchedule(schedule));
     }
 
 

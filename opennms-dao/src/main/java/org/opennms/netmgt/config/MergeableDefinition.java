@@ -44,11 +44,11 @@ import java.util.ListIterator;
 
 import org.opennms.core.utils.InetAddressUtils;
 import org.opennms.core.utils.ThreadCategory;
-import org.opennms.netmgt.config.common.Range;
 import org.opennms.netmgt.config.snmp.Definition;
+import org.opennms.netmgt.config.snmp.Range;
 
 /**
- * This is a wrapper class for the Definition class from the config pacakge.  Has the logic for 
+ * This is a wrapper class for the Definition class from the config package.  Has the logic for 
  * comparing definitions, sorting child elements, etc.
  * 
  * @author <a href="mailto:david@opennms.org>David Hustace</a>
@@ -57,7 +57,7 @@ import org.opennms.netmgt.config.snmp.Definition;
 final class MergeableDefinition {
 
     /**
-     * This field should remaing encapsulated for there is
+     * This field should remaining encapsulated for there is
      * synchronization in the getter.
      * 
      */

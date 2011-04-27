@@ -53,7 +53,7 @@ import org.opennms.netmgt.config.CapsdProtocolInfo.Action;
 import org.opennms.netmgt.config.capsd.Property;
 import org.opennms.netmgt.config.capsd.ProtocolConfiguration;
 import org.opennms.netmgt.config.capsd.ProtocolPlugin;
-import org.opennms.netmgt.config.common.Range;
+import org.opennms.netmgt.config.capsd.Range;
 import org.springframework.beans.factory.InitializingBean;
 import org.springframework.util.Assert;
 
