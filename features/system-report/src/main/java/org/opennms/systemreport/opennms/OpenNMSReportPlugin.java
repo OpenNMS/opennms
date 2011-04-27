@@ -36,7 +36,7 @@ public class OpenNMSReportPlugin extends AbstractSystemReportPlugin {
     }
 
     public String getDescription() {
-        return "OpenNMS Core, Version, and Basic Configuration";
+        return "OpenNMS core information, version, and basic configuration";
     }
 
     public int getPriority() {

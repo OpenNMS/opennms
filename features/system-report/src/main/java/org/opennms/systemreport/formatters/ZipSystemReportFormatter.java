@@ -38,7 +38,7 @@ public class ZipSystemReportFormatter extends AbstractSystemReportFormatter impl
     }
 
     public String getDescription() {
-        return "compressed file of all resources";
+        return "Compressed file of all resources (full output)";
     }
 
     public String getContentType() {

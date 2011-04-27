@@ -14,11 +14,11 @@ public class TopReportPlugin extends AbstractSystemReportPlugin {
     }
 
     public String getDescription() {
-        return "Output of the 'top' Command";
+        return "Output of the 'top' command (full output only)";
     }
 
     public int getPriority() {
-        return 5;
+        return 11;
     }
 
     public TreeMap<String, Resource> getEntries() {

@@ -72,14 +72,14 @@ public class OSReportPlugin extends AbstractSystemReportPlugin {
                 map.put("Distribution " + entry.getKey(), getResource(entry.getValue()));
             }
         } else if (solaris.exists()) {
-            map.put("Distribution Os", getResource("Solaris"));
+            map.put("Distribution OS", getResource("Solaris"));
             final String solarisText = slurp(solaris);
             final Map<String,String> distMap = splitMultilineString("=", solarisText);
             for (final Map.Entry<String,String> entry : distMap.entrySet()) {
                 map.put("Distribution " + entry.getKey().toLowerCase().replaceFirst("^.", entry.getKey().substring(0, 1).toUpperCase()), getResource(entry.getValue()));
             }
-            if (map.containsKey("Distribution Os")) {
-                map.put("Distribution", map.remove("Distribution Os"));
+            if (map.containsKey("Distribution OS")) {
+                map.put("Distribution", map.remove("Distribution OS"));
             }
             File isainfo = new File("/usr/bin/isainfo");
             if (isainfo.exists()) {
@@ -101,7 +101,7 @@ public class OSReportPlugin extends AbstractSystemReportPlugin {
         if (map.containsKey("Distribution Distributor ID")) {
             map.put("Distribution", map.remove("Distribution Distributor ID"));
         }
-        if (map.containsKey("Distribution Descrption")) {
+        if (map.containsKey("Distribution Description")) {
             map.put("Description", map.remove("Distribution Description"));
         }
 

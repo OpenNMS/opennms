@@ -27,7 +27,7 @@ public class FtpSystemReportFormatter extends AbstractSystemReportFormatter impl
     }
 
     public String getDescription() {
-        return "FTP to the URL specified in the output option (eg, ftp://ftp.example.com/incoming/my-file.zip)";
+        return "FTP to the URL specified in the output option (eg. ftp://username:password@ftp.example.com/incoming/my-file.zip) (full output)";
     }
 
     public String getContentType() {

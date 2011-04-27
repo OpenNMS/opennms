@@ -17,7 +17,7 @@ public class JavaReportPlugin extends AbstractSystemReportPlugin {
     }
 
     public String getDescription() {
-        return "Java and JVM";
+        return "Java and JVM information";
     }
 
     public int getPriority() {

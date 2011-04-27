@@ -16,7 +16,7 @@ public class FullTextSystemReportFormatter extends AbstractSystemReportFormatter
 
     @Override
     public String getDescription() {
-        return "human-readable text (including large resources like logs)";
+        return "Human-readable text (full output)";
     }
 
     public String getContentType() {

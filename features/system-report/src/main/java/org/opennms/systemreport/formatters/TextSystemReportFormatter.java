@@ -16,7 +16,7 @@ public class TextSystemReportFormatter extends AbstractSystemReportFormatter imp
 
     @Override
     public String getDescription() {
-        return "simple human-readable indented text";
+        return "Simple human-readable indented text";
     }
     
     public String getContentType() {
