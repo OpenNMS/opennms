@@ -1,66 +1,50 @@
-/*
- * This class was automatically generated with 
- * <a href="http://www.castor.org">Castor 1.1.2.1</a>, using an XML
- * Schema.
- * $Id$
+/**
+ * This class was original generated with Castor, but is no longer.
  */
-
 package org.opennms.netmgt.config.snmp;
 
-  //---------------------------------/
- //- Imported classes and packages -/
-//---------------------------------/
+import java.io.IOException;
+import java.io.Reader;
+import java.io.Serializable;
+import java.io.Writer;
+import java.util.ArrayList;
+import java.util.Collections;
+import java.util.List;
 
+import org.exolab.castor.xml.MarshalException;
 import org.exolab.castor.xml.Marshaller;
 import org.exolab.castor.xml.Unmarshaller;
+import org.exolab.castor.xml.ValidationException;
+import org.exolab.castor.xml.Validator;
+import org.xml.sax.ContentHandler;
 
 /**
- * Top-level element for the snmp-config.xml configuration
- *  file.
- * 
- * @version $Revision$ $Date$
+ * Top-level element for the snmp-config.xml configuration file.
  */
 
-@SuppressWarnings("all") public class SnmpConfig extends org.opennms.netmgt.config.snmp.Configuration 
-implements java.io.Serializable
-{
+public class SnmpConfig extends Configuration implements Serializable {
+	private static final long serialVersionUID = 3139857316489386441L;
 
+	private static final Definition[] EMPTY_DEFINITION = new Definition[0];
 
-      //--------------------------/
-     //- Class/Member Variables -/
-    //--------------------------/
-
-    /**
-     * Maps IP addresses to specific SNMP parmeters
-     *  (retries, timeouts...)
+	/**
+     * Maps IP addresses to specific SNMP parameters (retries, timeouts...)
      */
-    private java.util.List<org.opennms.netmgt.config.snmp.Definition> _definitionList;
-
-
-      //----------------/
-     //- Constructors -/
-    //----------------/
+    private List<Definition> _definitionList;
 
     public SnmpConfig() {
         super();
-        this._definitionList = new java.util.ArrayList<org.opennms.netmgt.config.snmp.Definition>();
+        this._definitionList = new ArrayList<Definition>();
     }
-
-
-      //-----------/
-     //- Methods -/
-    //-----------/
 
     /**
      * 
      * 
      * @param vDefinition
-     * @throws java.lang.IndexOutOfBoundsException if the index
+     * @throws IndexOutOfBoundsException if the index
      * given is outside the bounds of the collection
      */
-    public void addDefinition(
-            final org.opennms.netmgt.config.snmp.Definition vDefinition)
-    throws java.lang.IndexOutOfBoundsException {
+    public void addDefinition(final Definition vDefinition) throws IndexOutOfBoundsException {
         this._definitionList.add(vDefinition);
     }
 
@@ -69,13 +53,10 @@ implements java.io.Serializable
      * 
      * @param index
      * @param vDefinition
-     * @throws java.lang.IndexOutOfBoundsException if the index
+     * @throws IndexOutOfBoundsException if the index
      * given is outside the bounds of the collection
      */
-    public void addDefinition(
-            final int index,
-            final org.opennms.netmgt.config.snmp.Definition vDefinition)
-    throws java.lang.IndexOutOfBoundsException {
+    public void addDefinition(final int index, final Definition vDefinition) throws IndexOutOfBoundsException {
         this._definitionList.add(index, vDefinition);
     }
 
@@ -85,36 +66,34 @@ implements java.io.Serializable
      * @return an Enumeration over all possible elements of this
      * collection
      */
-    public java.util.Enumeration<org.opennms.netmgt.config.snmp.Definition> enumerateDefinition(
-    ) {
-        return java.util.Collections.enumeration(this._definitionList);
+    public java.util.Enumeration<Definition> enumerateDefinition() {
+        return Collections.enumeration(this._definitionList);
     }
 
     /**
-     * Overrides the java.lang.Object.equals method.
+     * Overrides the Object.equals method.
      * 
      * @param obj
      * @return true if the objects are equal.
      */
     @Override()
-    public boolean equals(
-            final java.lang.Object obj) {
-        if ( this == obj )
-            return true;
-        
-        if (super.equals(obj)==false)
-            return false;
+    public boolean equals(final Object obj) {
+        if (this == obj) return true;
+        if (super.equals(obj)==false) return false;
         
         if (obj instanceof SnmpConfig) {
         
-            SnmpConfig temp = (SnmpConfig)obj;
+        	final SnmpConfig temp = (SnmpConfig)obj;
             if (this._definitionList != null) {
-                if (temp._definitionList == null) return false;
-                else if (!(this._definitionList.equals(temp._definitionList))) 
+                if (temp._definitionList == null) {
+                	return false;
+                } else if (!(this._definitionList.equals(temp._definitionList))) {
                     return false;
+                }
             }
-            else if (temp._definitionList != null)
+            else if (temp._definitionList != null) {
                 return false;
+            }
             return true;
         }
         return false;
@@ -124,20 +103,17 @@ implements java.io.Serializable
      * Method getDefinition.
      * 
      * @param index
-     * @throws java.lang.IndexOutOfBoundsException if the index
+     * @throws IndexOutOfBoundsException if the index
      * given is outside the bounds of the collection
      * @return the value of the
-     * org.opennms.netmgt.config.snmp.Definition at the given index
+     * Definition at the given index
      */
-    public org.opennms.netmgt.config.snmp.Definition getDefinition(
-            final int index)
-    throws java.lang.IndexOutOfBoundsException {
-        // check bounds for index
+    public Definition getDefinition(final int index) throws IndexOutOfBoundsException {
         if (index < 0 || index >= this._definitionList.size()) {
             throw new IndexOutOfBoundsException("getDefinition: Index value '" + index + "' not in range [0.." + (this._definitionList.size() - 1) + "]");
         }
         
-        return (org.opennms.netmgt.config.snmp.Definition) _definitionList.get(index);
+        return _definitionList.get(index);
     }
 
     /**
@@ -149,10 +125,8 @@ implements java.io.Serializable
      * 
      * @return this collection as an Array
      */
-    public org.opennms.netmgt.config.snmp.Definition[] getDefinition(
-    ) {
-        org.opennms.netmgt.config.snmp.Definition[] array = new org.opennms.netmgt.config.snmp.Definition[0];
-        return (org.opennms.netmgt.config.snmp.Definition[]) this._definitionList.toArray(array);
+    public Definition[] getDefinition() {
+        return this._definitionList.toArray(EMPTY_DEFINITION);
     }
 
     /**
@@ -162,8 +136,7 @@ implements java.io.Serializable
      * 
      * @return a reference to the Vector backing this class
      */
-    public java.util.List<org.opennms.netmgt.config.snmp.Definition> getDefinitionCollection(
-    ) {
+    public List<Definition> getDefinitionCollection() {
         return this._definitionList;
     }
 
@@ -172,26 +145,23 @@ implements java.io.Serializable
      * 
      * @return the size of this collection
      */
-    public int getDefinitionCount(
-    ) {
+    public int getDefinitionCount() {
         return this._definitionList.size();
     }
 
     /**
-     * Overrides the java.lang.Object.hashCode method.
+     * Overrides the Object.hashCode method.
      * <p>
      * The following steps came from <b>Effective Java Programming
      * Language Guide</b> by Joshua Bloch, Chapter 3
      * 
      * @return a hash code value for the object.
      */
-    public int hashCode(
-    ) {
-        int result = 17;
+    public int hashCode() {
+    	final int result = 17;
         
-        long tmp;
         if (_definitionList != null) {
-           result = 37 * result + _definitionList.hashCode();
+        	return 37 * result + _definitionList.hashCode();
         }
         
         return result;
@@ -202,11 +172,10 @@ implements java.io.Serializable
      * 
      * @return true if this object is valid according to the schema
      */
-    public boolean isValid(
-    ) {
+    public boolean isValid() {
         try {
             validate();
-        } catch (org.exolab.castor.xml.ValidationException vex) {
+        } catch (final ValidationException vex) {
             return false;
         }
         return true;
@@ -218,8 +187,7 @@ implements java.io.Serializable
      * @return an Iterator over all possible elements in this
      * collection
      */
-    public java.util.Iterator<org.opennms.netmgt.config.snmp.Definition> iterateDefinition(
-    ) {
+    public java.util.Iterator<Definition> iterateDefinition() {
         return this._definitionList.iterator();
     }
 
@@ -227,14 +195,12 @@ implements java.io.Serializable
      * 
      * 
      * @param out
-     * @throws org.exolab.castor.xml.MarshalException if object is
+     * @throws MarshalException if object is
      * null or if any SAXException is thrown during marshaling
-     * @throws org.exolab.castor.xml.ValidationException if this
+     * @throws ValidationException if this
      * object is an invalid instance according to the schema
      */
-    public void marshal(
-            final java.io.Writer out)
-    throws org.exolab.castor.xml.MarshalException, org.exolab.castor.xml.ValidationException {
+    public void marshal(final Writer out) throws MarshalException, ValidationException {
         Marshaller.marshal(this, out);
     }
 
@@ -242,16 +208,14 @@ implements java.io.Serializable
      * 
      * 
      * @param handler
-     * @throws java.io.IOException if an IOException occurs during
+     * @throws IOException if an IOException occurs during
      * marshaling
-     * @throws org.exolab.castor.xml.ValidationException if this
+     * @throws ValidationException if this
      * object is an invalid instance according to the schema
-     * @throws org.exolab.castor.xml.MarshalException if object is
+     * @throws MarshalException if object is
      * null or if any SAXException is thrown during marshaling
      */
-    public void marshal(
-            final org.xml.sax.ContentHandler handler)
-    throws java.io.IOException, org.exolab.castor.xml.MarshalException, org.exolab.castor.xml.ValidationException {
+    public void marshal(final ContentHandler handler) throws IOException, MarshalException, ValidationException {
         Marshaller.marshal(this, handler);
     }
 
@@ -268,10 +232,8 @@ implements java.io.Serializable
      * @param vDefinition
      * @return true if the object was removed from the collection.
      */
-    public boolean removeDefinition(
-            final org.opennms.netmgt.config.snmp.Definition vDefinition) {
-        boolean removed = _definitionList.remove(vDefinition);
-        return removed;
+    public boolean removeDefinition(final Definition vDefinition) {
+        return _definitionList.remove(vDefinition);
     }
 
     /**
@@ -280,10 +242,8 @@ implements java.io.Serializable
      * @param index
      * @return the element removed from the collection
      */
-    public org.opennms.netmgt.config.snmp.Definition removeDefinitionAt(
-            final int index) {
-        java.lang.Object obj = this._definitionList.remove(index);
-        return (org.opennms.netmgt.config.snmp.Definition) obj;
+    public Definition removeDefinitionAt(final int index) {
+        return this._definitionList.remove(index);
     }
 
     /**
@@ -291,14 +251,10 @@ implements java.io.Serializable
      * 
      * @param index
      * @param vDefinition
-     * @throws java.lang.IndexOutOfBoundsException if the index
+     * @throws IndexOutOfBoundsException if the index
      * given is outside the bounds of the collection
      */
-    public void setDefinition(
-            final int index,
-            final org.opennms.netmgt.config.snmp.Definition vDefinition)
-    throws java.lang.IndexOutOfBoundsException {
-        // check bounds for index
+    public void setDefinition(final int index, final Definition vDefinition) throws IndexOutOfBoundsException {
         if (index < 0 || index >= this._definitionList.size()) {
             throw new IndexOutOfBoundsException("setDefinition: Index value '" + index + "' not in range [0.." + (this._definitionList.size() - 1) + "]");
         }
@@ -311,9 +267,7 @@ implements java.io.Serializable
      * 
      * @param vDefinitionArray
      */
-    public void setDefinition(
-            final org.opennms.netmgt.config.snmp.Definition[] vDefinitionArray) {
-        //-- copy array
+    public void setDefinition(final Definition[] vDefinitionArray) {
         _definitionList.clear();
         
         for (int i = 0; i < vDefinitionArray.length; i++) {
@@ -327,9 +281,7 @@ implements java.io.Serializable
      * 
      * @param vDefinitionList the Vector to copy.
      */
-    public void setDefinition(
-            final java.util.List<org.opennms.netmgt.config.snmp.Definition> vDefinitionList) {
-        // copy vector
+    public void setDefinition(final List<Definition> vDefinitionList) {
         this._definitionList.clear();
         
         this._definitionList.addAll(vDefinitionList);
@@ -342,8 +294,7 @@ implements java.io.Serializable
      * 
      * @param definitionList the Vector to set.
      */
-    public void setDefinitionCollection(
-            final java.util.List<org.opennms.netmgt.config.snmp.Definition> definitionList) {
+    public void setDefinitionCollection(final List<Definition> definitionList) {
         this._definitionList = definitionList;
     }
 
@@ -351,30 +302,25 @@ implements java.io.Serializable
      * Method unmarshal.
      * 
      * @param reader
-     * @throws org.exolab.castor.xml.MarshalException if object is
+     * @throws MarshalException if object is
      * null or if any SAXException is thrown during marshaling
-     * @throws org.exolab.castor.xml.ValidationException if this
+     * @throws ValidationException if this
      * object is an invalid instance according to the schema
      * @return the unmarshaled
-     * org.opennms.netmgt.config.snmp.Configuration
+     * Configuration
      */
-    public static org.opennms.netmgt.config.snmp.Configuration unmarshal(
-            final java.io.Reader reader)
-    throws org.exolab.castor.xml.MarshalException, org.exolab.castor.xml.ValidationException {
-        return (org.opennms.netmgt.config.snmp.Configuration) Unmarshaller.unmarshal(org.opennms.netmgt.config.snmp.SnmpConfig.class, reader);
+    public static Configuration unmarshal(final Reader reader) throws MarshalException, ValidationException {
+        return (Configuration) Unmarshaller.unmarshal(org.opennms.netmgt.config.snmp.SnmpConfig.class, reader);
     }
 
     /**
      * 
      * 
-     * @throws org.exolab.castor.xml.ValidationException if this
+     * @throws ValidationException if this
      * object is an invalid instance according to the schema
      */
-    public void validate(
-    )
-    throws org.exolab.castor.xml.ValidationException {
-        org.exolab.castor.xml.Validator validator = new org.exolab.castor.xml.Validator();
-        validator.validate(this);
+    public void validate() throws ValidationException {
+        new Validator().validate(this);
     }
 
 }
