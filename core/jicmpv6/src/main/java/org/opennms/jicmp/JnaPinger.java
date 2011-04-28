@@ -50,8 +50,10 @@ import org.opennms.protocols.rt.RequestTracker;
  * @author brozow
  */
 public class JnaPinger implements Pinger {
+    
+    private final int m_pingerId = (int) (Math.random() * Short.MAX_VALUE);
 
-	private RequestTracker<JnaPingRequest, JnaPingReply> m_pingTracker;
+    private RequestTracker<JnaPingRequest, JnaPingReply> m_pingTracker;
     private JnaIcmpMessenger m_messenger;
 
 	/**
@@ -61,7 +63,7 @@ public class JnaPinger implements Pinger {
 	public synchronized void initialize() throws Exception {
 		if (m_pingTracker != null) return;
 		m_messenger = new JnaIcmpMessenger();
-        m_pingTracker = new RequestTracker<JnaPingRequest, JnaPingReply>("JNA-ICMP", m_messenger, new IDBasedRequestLocator<JnaPingRequestId, JnaPingRequest, JnaPingReply>());
+        m_pingTracker = new RequestTracker<JnaPingRequest, JnaPingReply>("JNA-ICMP-"+m_pingerId, m_messenger, new IDBasedRequestLocator<JnaPingRequestId, JnaPingRequest, JnaPingReply>());
 		m_pingTracker.start();
 	}
 
@@ -77,7 +79,7 @@ public class JnaPinger implements Pinger {
 	 */
 	public void ping(InetAddress host, long timeout, int retries, int sequenceId, PingResponseCallback cb) throws Exception {
 		initialize();
-		m_pingTracker.sendRequest(new JnaPingRequest(host, sequenceId, timeout, retries, cb));
+		m_pingTracker.sendRequest(new JnaPingRequest(host, m_pingerId, sequenceId, timeout, retries, cb));
 	}
 
 	/**
@@ -135,9 +137,9 @@ public class JnaPinger implements Pinger {
 			timeout = DEFAULT_TIMEOUT;
 		}
 
-		int tid = (int)JnaPingRequest.getNextTID();
-		for (int i = 0; i < count; i++) {
-		    JnaPingRequest request = new JnaPingRequest(host, tid, i, timeout, 0, cb);
+		long threadId = JnaPingRequest.getNextTID();
+		for (int seqNum = 0; seqNum < count; seqNum++) {
+		    JnaPingRequest request = new JnaPingRequest(host, m_pingerId, seqNum, threadId, timeout, 0, cb);
 			m_pingTracker.sendRequest(request);
 			Thread.sleep(pingInterval);
 		}
@@ -146,36 +148,4 @@ public class JnaPinger implements Pinger {
 		return cb.getResponseTimes();
 	}
 
-	/*
-	/**
-	 * TODO: Add support for retries via RequestTracker
-	 * TODO: Add proper timeout support
-	 * TODO: Add async callback support to AbstractPinger classes
-	 * /
-	@Override
-	public void ping(InetAddress host, long timeout, int retries, short sequenceId, PingResponseCallback cb) throws Exception {
-		AbstractPinger listener = host instanceof Inet4Address ? new V4Pinger() : new V6Pinger();
-		listener.start();
-
-		long rtt = listener.ping(host, sequenceId, 1, timeout);
-
-		listener.stop();
-	}
-
-	/**
-	 * TODO: Add support for retries via RequestTracker
-	 * TODO: Add proper timeout support
-	 * /
-	@Override
-	public Long ping(InetAddress host, long timeout, int retries) throws Exception {
-
-		AbstractPinger listener = host instanceof Inet4Address ? new V4Pinger() : new V6Pinger();
-		listener.start();
-
-		long rtt = listener.ping(host, 12345, 1, timeout);
-
-		listener.stop();
-		return rtt;
-	}
-	 */
 }

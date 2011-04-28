@@ -103,7 +103,7 @@ public final class JnaPingReply implements ResponseWithId<JnaPingRequestId> {
      * @return a short.
      */
     public final long getIdentity() {
-        return m_packet.getIdentity();
+        return m_packet.getThreadId();
     }
 
     /**

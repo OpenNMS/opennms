@@ -83,7 +83,7 @@ class PingReply extends ICMPEchoPacket implements EchoPacket {
     }
 
     @Override
-    public long getIdentity() {
+    public long getThreadId() {
     	return getIdentifier();
     }
 }

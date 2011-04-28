@@ -83,7 +83,7 @@ class V6PingReply extends ICMPv6EchoPacket implements EchoPacket {
     }
 
     @Override
-    public long getIdentity() {
+    public long getThreadId() {
     	return getIdentifier();
     }
 }

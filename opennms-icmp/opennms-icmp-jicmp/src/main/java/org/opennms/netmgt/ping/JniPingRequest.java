@@ -61,18 +61,16 @@ import org.opennms.protocols.rt.Request;
 public class JniPingRequest implements Request<JniPingRequestId, JniPingRequest, JniPingResponse>, EchoPacket {
 
 
-    public static final short FILTER_ID = (short) (new java.util.Random(System.currentTimeMillis())).nextInt();
-
     private static long s_nextTid = 1;
 
-    private static final long getNextTID() {
+    public static final long getNextTID() {
         return s_nextTid++;
     }
 
     /**
      * The id representing the packet
      */
-    protected final JniPingRequestId m_id;
+    private final JniPingRequestId m_id;
 
     /**
      * the request packet
@@ -82,46 +80,50 @@ public class JniPingRequest implements Request<JniPingRequestId, JniPingRequest,
     /**
      * The callback to use when this object is ready to do something
      */
-    protected final PingResponseCallback m_callback;
+    private final PingResponseCallback m_callback;
     
     /**
      * How many retries
      */
-    protected final int m_retries;
+    private final int m_retries;
     
     /**
      * how long to wait for a response
      */
-    protected final long m_timeout;
+    private final long m_timeout;
     
     /**
      * The expiration time of this request
      */
-    protected long m_expiration = -1L;
+    private long m_expiration = -1L;
     
     /**
      * The thread logger associated with this request.
      */
-    protected final ThreadCategory m_log;
+    private final ThreadCategory m_log;
     
     
-    protected final AtomicBoolean m_processed = new AtomicBoolean(false);
+    private final AtomicBoolean m_processed = new AtomicBoolean(false);
     
 
-    public JniPingRequest(InetAddress addr, long tid, int sequenceId, long timeout, int retries, ThreadCategory logger, PingResponseCallback cb) {
-        m_id = new JniPingRequestId(addr, tid, sequenceId);
-        m_retries    = retries;
-        m_timeout    = timeout;
-        m_log        = logger;
-        m_callback   = cb;
+    public JniPingRequest(JniPingRequestId id, long timeout, int retries, ThreadCategory log, PingResponseCallback callback) {
+        m_id = id;
+        m_timeout = timeout;
+        m_retries = retries;
+        m_log = log;
+        m_callback = callback;
     }
     
-    public JniPingRequest(InetAddress addr, long tid, int sequenceId, long timeout, int retries, PingResponseCallback cb) {
-        this(addr, tid, sequenceId, timeout, retries, ThreadCategory.getInstance(JniPingRequest.class), cb);
+    public JniPingRequest(InetAddress addr, int identifier, int sequenceNumber, long threadId, long timeout, int retries, ThreadCategory logger, PingResponseCallback cb) {
+        this(new JniPingRequestId(addr, identifier, sequenceNumber, threadId), timeout, retries, logger, cb);
     }
     
-    public JniPingRequest(InetAddress addr, int sequenceId, long timeout, int retries, PingResponseCallback cb) {
-        this(addr, getNextTID(), sequenceId, timeout, retries, cb);
+    public JniPingRequest(InetAddress addr, int identifier, int sequenceNumber, long threadId, long timeout, int retries, PingResponseCallback cb) {
+        this(addr, identifier, sequenceNumber, threadId, timeout, retries, ThreadCategory.getInstance(JniPingRequest.class), cb);
+    }
+
+    public JniPingRequest(InetAddress addr, int identifier, int sequenceNumber, long timeout, int retries, PingResponseCallback cb) {
+        this(addr, identifier, sequenceNumber, getNextTID(), timeout, retries, cb);
     }
 
 
@@ -150,7 +152,7 @@ public class JniPingRequest implements Request<JniPingRequestId, JniPingRequest,
             JniPingRequest returnval = null;
             if (this.isExpired()) {
                 if (m_retries > 0) {
-                    returnval = new JniPingRequest(m_id.getAddress(), m_id.getTid(), m_id.getSequenceId(), m_timeout, (m_retries - 1), m_log, m_callback);
+                    returnval = new JniPingRequest(m_id, m_timeout, (m_retries - 1), m_log, m_callback);
                     m_log.debug(System.currentTimeMillis()+": Retrying Ping Request "+returnval);
                 } else {
                     m_log.debug(System.currentTimeMillis()+": Ping Request Timed out "+this);
@@ -277,13 +279,32 @@ public class JniPingRequest implements Request<JniPingRequestId, JniPingRequest,
     }
 
     private ICMPEchoPacket createRequestPacket() {
-        ICMPEchoPacket iPkt = new ICMPEchoPacket(m_id.getTid());
-        iPkt.setIdentity(FILTER_ID);
-        iPkt.setSequenceId((short) m_id.getSequenceId());
+        ICMPEchoPacket iPkt = new ICMPEchoPacket(m_id.getThreadId());
+        iPkt.setIdentity((short)m_id.getIdentifier());
+        iPkt.setSequenceId((short) m_id.getSequenceNumber());
         iPkt.computeChecksum();
         return iPkt;
     }
 
+    @Override
+    public boolean isEchoReply() {
+        return getRequestPacket().isEchoReply();
+    }
+
+    @Override
+    public int getIdentifier() {
+        return getRequestPacket().getIdentity();
+    }
+
+    @Override
+    public int getSequenceNumber() {
+        return getRequestPacket().getSequenceId();
+    }
+
+    @Override
+    public long getThreadId() {
+        return getRequestPacket().getTID();
+    }
     @Override
     public long getReceivedTimeNanos() {
         return getRequestPacket().getReceivedTime();
@@ -295,29 +316,10 @@ public class JniPingRequest implements Request<JniPingRequestId, JniPingRequest,
     }
 
     @Override
-    public int getSequenceNumber() {
-        return getRequestPacket().getSequenceId();
-    }
-
-    @Override
     public double elapsedTime(TimeUnit timeUnit) {
         // {@link org.opennms.protocols.icmp.ICMPEchoPacket.getPingRTT()} returns microseconds.
         double nanosPerUnit = TimeUnit.NANOSECONDS.convert(1, timeUnit);
         return (getRequestPacket().getPingRTT() * 1000) / nanosPerUnit;
     }
 
-    @Override
-    public int getIdentifier() {
-        return (int)getRequestPacket().getTID();
-    }
-
-    @Override
-    public boolean isEchoReply() {
-        return getRequestPacket().isEchoReply();
-    }
-
-    @Override
-    public long getIdentity() {
-        return getRequestPacket().getIdentity();
-    }
 }

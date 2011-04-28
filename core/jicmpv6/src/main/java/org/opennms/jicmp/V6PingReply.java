@@ -38,11 +38,6 @@ import org.opennms.netmgt.icmp.EchoPacket;
 
 class V6PingReply extends ICMPv6EchoPacket implements EchoPacket {
     
-    // The below long is equivalent to the next line and is more efficient than
-    // manipulation as a string
-    // Charset.forName("US-ASCII").encode("OpenNMS!").getLong(0);
-    public static final long COOKIE = 0x4F70656E4E4D5321L;
-    
     private long m_receivedTimeNanos;
 
     public V6PingReply(ICMPv6Packet icmpPacket, long receivedTimeNanos) {
@@ -54,7 +49,7 @@ class V6PingReply extends ICMPv6EchoPacket implements EchoPacket {
         ByteBuffer content = getContentBuffer();
         /* we ensure the length can contain 2 longs (cookie and sent time)
            and that the cookie matches */
-        return content.limit() >= 16 && COOKIE == content.getLong(0);
+        return content.limit() >= 16 && V6PingRequest.COOKIE == content.getLong(0);
     }
 
     @Override
@@ -83,7 +78,7 @@ class V6PingReply extends ICMPv6EchoPacket implements EchoPacket {
     }
 
     @Override
-    public long getIdentity() {
+    public long getThreadId() {
     	return getIdentifier();
     }
 }

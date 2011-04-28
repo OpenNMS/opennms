@@ -105,10 +105,10 @@ public class V4Pinger extends AbstractPinger<Inet4Address> {
         return new IPPacket(datagram.getContent()).getPayload();
     }
     
-    public void ping(Inet4Address addr, int id, int sequenceNumber, long count, long interval) throws InterruptedException {
+    public void ping(Inet4Address addr, int identifier, int sequenceNumber, long threadId, long count, long interval) throws InterruptedException {
         NativeDatagramSocket socket = getPingSocket();
         for(int i = sequenceNumber; i < sequenceNumber + count; i++) {
-            V4PingRequest request = new V4PingRequest(id, i);
+            V4PingRequest request = new V4PingRequest(identifier, i, threadId);
             request.send(socket, addr);
             Thread.sleep(interval);
         }

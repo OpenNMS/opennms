@@ -39,11 +39,17 @@ import java.util.concurrent.TimeUnit;
 
 public interface EchoPacket {
 
-	long getReceivedTimeNanos();
+    boolean isEchoReply();
 
-	long getSentTimeNanos();
+    int getIdentifier();
 
 	int getSequenceNumber();
+
+    long getThreadId();
+
+    long getReceivedTimeNanos();
+
+    long getSentTimeNanos();
 
 	/**
 	 * Returns the round trip time in the requested TimeUnit 
@@ -51,9 +57,5 @@ public interface EchoPacket {
 	 */
 	double elapsedTime(TimeUnit timeUnit);
 
-	int getIdentifier();
 
-	boolean isEchoReply();
-
-	long getIdentity();
 }

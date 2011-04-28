@@ -38,11 +38,6 @@ import org.opennms.netmgt.icmp.EchoPacket;
 
 class V4PingReply extends ICMPEchoPacket implements EchoPacket {
     
-    // The below long is equivalent to the next line and is more efficient than
-    // manipulation as a string
-    // Charset.forName("US-ASCII").encode("OpenNMS!").getLong(0);
-    public static final long COOKIE = 0x4F70656E4E4D5321L; 
-    
     private long m_receivedTimeNanos;
 
     public V4PingReply(ICMPPacket icmpPacket, long receivedTimeNanos) {
@@ -54,7 +49,7 @@ class V4PingReply extends ICMPEchoPacket implements EchoPacket {
         ByteBuffer content = getContentBuffer();
         /* we ensure the length can contain 2 longs (cookie and sent time)
            and that the cookie matches */
-        return content.limit() >= 16 && COOKIE == content.getLong(0);
+        return content.limit() >= V4PingRequest.DATA_LENGTH && V4PingRequest.COOKIE == content.getLong(V4PingRequest.OFFSET_COOKIE);
     }
 
     @Override
@@ -63,8 +58,25 @@ class V4PingReply extends ICMPEchoPacket implements EchoPacket {
     }
 
     @Override
+    public int getIdentifier() {
+        // this is here just for EchoPacket interface completeness
+        return super.getIdentifier();
+    }
+    
+    @Override
+    public int getSequenceNumber() {
+        // this is here just for EchoPacket interface completeness
+        return super.getSequenceNumber();
+    }
+
+    @Override
+    public long getThreadId() {
+        return getContentBuffer().getLong(V4PingRequest.OFFSET_THREAD_ID);
+    }
+
+    @Override
     public long getSentTimeNanos() {
-        return getContentBuffer().getLong(8);
+        return getContentBuffer().getLong(V4PingRequest.OFFSET_TIMESTAMP);
     }
     
     @Override
@@ -82,8 +94,4 @@ class V4PingReply extends ICMPEchoPacket implements EchoPacket {
         return getReceivedTimeNanos() - getSentTimeNanos();
     }
 
-    @Override
-    public long getIdentity() {
-    	return getIdentifier();
-    }
 }

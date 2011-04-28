@@ -124,6 +124,7 @@ import org.opennms.protocols.rt.RequestTracker;
  */
 public class JniPinger implements Pinger {
     
+    private final int m_pingerId = (int) (Math.random() * Short.MAX_VALUE);
     
     private RequestTracker<JniPingRequest, JniPingResponse> s_pingTracker;
     
@@ -136,7 +137,7 @@ public class JniPinger implements Pinger {
 	 */
 	public synchronized void initialize() throws IOException {
 	    if (s_pingTracker != null) return;
-	    s_pingTracker = new RequestTracker<JniPingRequest, JniPingResponse>("JNI-ICMP", new JniIcmpMessenger(), new IDBasedRequestLocator<JniPingRequestId, JniPingRequest, JniPingResponse>());
+	    s_pingTracker = new RequestTracker<JniPingRequest, JniPingResponse>("JNI-ICMP-"+m_pingerId, new JniIcmpMessenger(), new IDBasedRequestLocator<JniPingRequestId, JniPingRequest, JniPingResponse>());
 	    s_pingTracker.start();
 	}
 
@@ -152,7 +153,7 @@ public class JniPinger implements Pinger {
      */
     public void ping(InetAddress host, long timeout, int retries, int sequenceId, PingResponseCallback cb) throws Exception {
         initialize();
-        s_pingTracker.sendRequest(new JniPingRequest(host, sequenceId, timeout, retries, new LogPrefixPreservingPingResponseCallback(cb)));
+        s_pingTracker.sendRequest(new JniPingRequest(host, m_pingerId, sequenceId, timeout, retries, new LogPrefixPreservingPingResponseCallback(cb)));
 	}
 
     /**
@@ -211,8 +212,9 @@ public class JniPinger implements Pinger {
             timeout = DEFAULT_TIMEOUT;
         }
         
-        for (int i = 0; i < count; i++) {
-            JniPingRequest request = new JniPingRequest(host, (short) i, timeout, 0, cb);
+        long threadId = JniPingRequest.getNextTID();
+        for (int seqNum = 0; seqNum < count; seqNum++) {
+            JniPingRequest request = new JniPingRequest(host, m_pingerId, seqNum, threadId, timeout, 0, cb);
             s_pingTracker.sendRequest(request);
             Thread.sleep(pingInterval);
         }

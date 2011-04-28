@@ -43,20 +43,22 @@ import org.opennms.core.utils.InetAddressComparator;
  */
 public class JniPingRequestId {
     InetAddress m_addr;
-    long m_tid;
-    int m_seqId;
+    int m_identifier;
+    int m_sequenceNumber;
+    long m_threadId;
 
     /**
      * <p>Constructor for JniPingRequestId.</p>
      *
      * @param addr a {@link java.net.InetAddress} object.
-     * @param tid a long.
-     * @param seqId a short.
+     * @param sequenceNumber a short.
+     * @param threadId a long.
      */
-    public JniPingRequestId(InetAddress addr, long tid, int seqId) {
+    public JniPingRequestId(InetAddress addr, int identifier, int sequenceNumber, long threadId) {
         m_addr = addr;
-        m_tid = tid;
-        m_seqId = seqId;
+        m_identifier = identifier;
+        m_sequenceNumber = sequenceNumber;
+        m_threadId = threadId;
     }
     
     /**
@@ -65,7 +67,7 @@ public class JniPingRequestId {
      * @param reply a {@link org.opennms.netmgt.icmp.spi.JniPingResponse.PingReply} object.
      */
     public JniPingRequestId(JniPingResponse reply) {
-        this(reply.getAddress(), reply.getIdentifier(), reply.getSequenceNumber());
+        this(reply.getAddress(), reply.getIdentifier(), reply.getSequenceNumber(), reply.getThreadId());
     }
 
     /**
@@ -76,23 +78,27 @@ public class JniPingRequestId {
     public InetAddress getAddress() {
         return m_addr;
     }
+    
+    public int getIdentifier() {
+        return m_identifier;
+    }
+
+    /**
+     * <p>getSequenceId</p>
+     *
+     * @return a int.
+     */
+    public int getSequenceNumber() {
+        return m_sequenceNumber;
+    }
 
     /**
      * <p>getTid</p>
      *
      * @return a long.
      */
-    public long getTid() {
-        return m_tid;
-    }
-
-    /**
-     * <p>getSequenceId</p>
-     *
-     * @return a short.
-     */
-    public int getSequenceId() {
-        return m_seqId;
+    public long getThreadId() {
+        return m_threadId;
     }
 
     /** {@inheritDoc} */
@@ -100,7 +106,10 @@ public class JniPingRequestId {
     public boolean equals(Object obj) {
         if (obj instanceof JniPingRequestId) {
             JniPingRequestId id = (JniPingRequestId)obj;
-            return (new InetAddressComparator().compare(getAddress(), id.getAddress()) == 0) && getTid() == id.getTid() && getSequenceId() == id.getSequenceId();
+            return (new InetAddressComparator().compare(getAddress(), id.getAddress()) == 0)
+                && getIdentifier() == id.getIdentifier()
+                && getSequenceNumber() == id.getSequenceNumber()
+                && getThreadId() == id.getThreadId(); 
         }
         return false;
     }
@@ -110,9 +119,10 @@ public class JniPingRequestId {
     public int hashCode() {
         int hash = 1;
         hash = hash * 31 + m_addr.hashCode();
-        hash = hash * 31 + (int)(m_tid >>> 32);
-        hash = hash * 31 + (int)(m_tid);
-        hash = hash * 31 + m_seqId;
+        hash = hash * 31 + m_identifier;
+        hash = hash * 31 + m_sequenceNumber;
+        hash = hash * 31 + (int)(m_threadId >>> 32);
+        hash = hash * 31 + (int)(m_threadId);
         return hash;
     }
 
@@ -124,13 +134,15 @@ public class JniPingRequestId {
      */
     public String toString() {
         StringBuilder buf = new StringBuilder();
-        buf.append(this.getClass().getSimpleName());
+        buf.append(getClass().getSimpleName());
         buf.append('[');
         buf.append("addr = ").append(m_addr);
         buf.append(", ");
-        buf.append("tid = ").append(m_tid);
+        buf.append("ident = ").append(m_identifier);
         buf.append(", ");
-        buf.append("seqId = ").append(m_seqId);
+        buf.append("seqNum = ").append(m_sequenceNumber);
+        buf.append(", ");
+        buf.append("tId = ").append(m_threadId);
         buf.append(']');
         return buf.toString();
     }

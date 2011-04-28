@@ -66,11 +66,11 @@ public class JniIcmpMessenger implements Messenger<JniPingRequest, JniPingRespon
         
                 JniPingResponse reply = JniIcmpMessenger.createPingResponse(packet);
                 
-                if (reply.isEchoReply() && reply.getIdentity() == JniPingRequest.FILTER_ID) {
+//                if (reply.isEchoReply() && reply.getIdentifier() == JniPingRequest.FILTER_ID) {
                     // Remove this so we don't send a lot of time in this method when we should be processing packets
                     // LogUtils.debugf(this, "Found an echo packet addr = %s, port = %d, length = %d, created reply %s", packet.getAddress(), packet.getPort(), packet.getLength(), reply);
                     pendingReplies.offer(reply);
-                }
+//                }
             } catch (IOException e) {
                 LogUtils.errorf(this, e, "I/O Error occurred reading from ICMP Socket");
             } catch (IllegalArgumentException e) {

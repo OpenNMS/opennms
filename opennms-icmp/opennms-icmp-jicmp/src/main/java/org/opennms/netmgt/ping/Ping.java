@@ -84,7 +84,7 @@ public class Ping {
                     }
             
                     if (reply.isEchoReply()
-                        && reply.getIdentity() == m_icmpId) {
+                        && reply.getThreadId() == m_icmpId) {
                         double rtt = reply.elapsedTime(TimeUnit.MILLISECONDS);
                         System.out.println(ICMPEchoPacket.getNetworkSize()
                                            + " bytes from "

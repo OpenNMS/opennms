@@ -112,8 +112,6 @@ public final class JniPingResponse implements ResponseWithId<JniPingRequestId>, 
     public JniPingRequestId getRequestId() {
         return new JniPingRequestId(this);
     }
-    
-
 
     /**
      * Returns true if the recovered packet is an echo reply.
@@ -125,15 +123,37 @@ public final class JniPingResponse implements ResponseWithId<JniPingRequestId>, 
         return getPacket().isEchoReply();
     }
 
-    /**
-     * Returns the identity of the packet. Since this is an unsigned short, we must
-     * return the value as an int.
-     *
-     * @return a short.
-     */
+
     @Override
-    public final long getIdentity() {
+    public int getIdentifier() {
         return getPacket().getIdentity();
+    }
+
+    @Override
+    public int getSequenceNumber() {
+        return getPacket().getSequenceId();
+    }
+
+    @Override
+    public long getThreadId() {
+        return getPacket().getTID();
+    }
+
+    @Override
+    public long getSentTimeNanos() {
+        return getPacket().getSentTime();
+    }
+
+    @Override
+    public long getReceivedTimeNanos() {
+        return getPacket().getReceivedTime();
+    }
+
+    @Override
+    public double elapsedTime(TimeUnit timeUnit) {
+        // {@link org.opennms.protocols.icmp.ICMPEchoPacket.getPingRTT()} returns microseconds.
+        double nanosPerUnit = TimeUnit.NANOSECONDS.convert(1, timeUnit);
+        return (getPacket().getPingRTT() * 1000) / nanosPerUnit;
     }
 
     @Override
@@ -148,30 +168,4 @@ public final class JniPingResponse implements ResponseWithId<JniPingRequestId>, 
         return buf.toString();
     }
 
-    @Override
-    public long getReceivedTimeNanos() {
-        return getPacket().getReceivedTime();
-    }
-
-    @Override
-    public long getSentTimeNanos() {
-        return getPacket().getSentTime();
-    }
-
-    @Override
-    public int getSequenceNumber() {
-        return getPacket().getSequenceId();
-    }
-
-    @Override
-    public double elapsedTime(TimeUnit timeUnit) {
-        // {@link org.opennms.protocols.icmp.ICMPEchoPacket.getPingRTT()} returns microseconds.
-        double nanosPerUnit = TimeUnit.NANOSECONDS.convert(1, timeUnit);
-        return (getPacket().getPingRTT() * 1000) / nanosPerUnit;
-    }
-
-    @Override
-    public int getIdentifier() {
-        return (int)getPacket().getTID();
-    }
 }

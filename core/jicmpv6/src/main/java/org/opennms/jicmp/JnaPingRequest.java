@@ -55,9 +55,8 @@ import org.opennms.protocols.rt.Request;
  * @author <a href="mailto:ranger@opennms.org">Ben Reed</a>
  * @author <a href="mailto:brozow@opennms.org">Mathew Brozowski</a>
  */
-public class JnaPingRequest implements Request<JnaPingRequestId, JnaPingRequest, JnaPingReply>  {
-    /** Constant <code>FILTER_ID=(short) (new java.util.Random(System.currentTimeMillis())).nextInt()</code> */
-    public static final short FILTER_ID = (short) (new java.util.Random(System.currentTimeMillis())).nextInt();
+public class JnaPingRequest implements Request<JnaPingRequestId, JnaPingRequest, JnaPingReply> {
+
     private static long s_nextTid = 1;
 
     public static final long getNextTID() {
@@ -101,23 +100,21 @@ public class JnaPingRequest implements Request<JnaPingRequestId, JnaPingRequest,
     
     
 	private final AtomicBoolean m_processed = new AtomicBoolean(false);
-    
-
-    public JnaPingRequest(InetAddress addr, long tid, int sequenceId,  long timeout, int retries, ThreadCategory logger, PingResponseCallback cb) {
-        m_id = new JnaPingRequestId(addr, tid, sequenceId);
-        m_retries    = retries;
-        m_timeout    = timeout;
-        m_log        = logger;
-        // Wrap the callback in another callback that will reset the logging suffix after the callback has executed
-        m_callback   = new LogPrefixPreservingPingResponseCallback(cb);
+	
+    public JnaPingRequest(JnaPingRequestId id, long timeout, int retries, ThreadCategory log, PingResponseCallback cb) {
+        m_id = id;
+        m_retries = retries;
+        m_timeout = timeout;
+        m_log = log;
+        m_callback = new LogPrefixPreservingPingResponseCallback(cb);
+    }
+	
+    public JnaPingRequest(InetAddress addr, int identifier, int sequenceId, long threadId, long timeout, int retries, PingResponseCallback cb) {
+        this(new JnaPingRequestId(addr, identifier, sequenceId, threadId), timeout, retries, ThreadCategory.getInstance(JnaPingRequest.class), cb);
     }
     
-    public JnaPingRequest(InetAddress addr, long tid, int sequenceId, long timeout, int retries, PingResponseCallback cb) {
-        this(addr, tid, sequenceId, timeout, retries, ThreadCategory.getInstance(JnaPingRequest.class), cb);
-    }
-    
-    public JnaPingRequest(InetAddress addr, int sequenceId, long timeout, int retries, PingResponseCallback cb) {
-        this(addr, getNextTID(), sequenceId, timeout, retries, cb);
+    public JnaPingRequest(InetAddress addr, int identifier, int sequenceId, long timeout, int retries, PingResponseCallback cb) {
+        this(addr, identifier, sequenceId, getNextTID(), timeout, retries, cb);
     }
         
     /**
@@ -137,7 +134,7 @@ public class JnaPingRequest implements Request<JnaPingRequestId, JnaPingRequest,
 
     private void processResponse(EchoPacket packet) {
         m_log.debug(System.currentTimeMillis()+": Ping Response Received "+this);
-        m_callback.handleResponse(m_id.getAddress(), packet);
+        m_callback.handleResponse(getAddress(), packet);
     }
 
     /**
@@ -150,11 +147,11 @@ public class JnaPingRequest implements Request<JnaPingRequestId, JnaPingRequest,
             JnaPingRequest returnval = null;
             if (this.isExpired()) {
                 if (m_retries > 0) {
-                    returnval = new JnaPingRequest(m_id.getAddress(), m_id.getTid(), m_id.getSequenceId(), m_timeout, (m_retries - 1), m_log, m_callback);
+                    returnval = new JnaPingRequest(m_id, m_timeout, (m_retries - 1), m_log, m_callback);
                     m_log.debug(System.currentTimeMillis()+": Retrying Ping Request "+returnval);
                 } else {
                     m_log.debug(System.currentTimeMillis()+": Ping Request Timed out "+this);
-                    m_callback.handleTimeout(m_id.getAddress(), m_request);
+                    m_callback.handleTimeout(getAddress(), m_request);
                 }
             }
             return returnval;
@@ -203,7 +200,7 @@ public class JnaPingRequest implements Request<JnaPingRequestId, JnaPingRequest,
     /** {@inheritDoc} */
     public void processError(Throwable t) {
         try {
-            m_callback.handleError(m_id.getAddress(), m_request, t);
+            m_callback.handleError(getAddress(), m_request, t);
         } finally {
             setProcessed(true);
         }
@@ -227,12 +224,16 @@ public class JnaPingRequest implements Request<JnaPingRequestId, JnaPingRequest,
      * @param icmpSocket a {@link org.opennms.protocols.icmp.IcmpSocket} object.
      */
     public void send(V4Pinger v4, V6Pinger v6) {
-        InetAddress addr = m_id.getAddress();
+        InetAddress addr = getAddress();
         if (addr instanceof Inet4Address) {
             send(v4, (Inet4Address)addr);
         } else if (addr instanceof Inet6Address) {
             send(v6, (Inet6Address)addr);
         }
+    }
+
+    public InetAddress getAddress() {
+        return m_id.getAddress();
     }
 
     public void send(V6Pinger v6, Inet6Address addr6) {
@@ -241,9 +242,9 @@ public class JnaPingRequest implements Request<JnaPingRequestId, JnaPingRequest,
             m_log.debug(System.currentTimeMillis()+": Sending Ping Request: " + this);
         
             m_expiration = System.currentTimeMillis() + m_timeout;
-            v6.ping(addr6, (int)m_id.getTid(), m_id.getSequenceId(), 1, 0);
+            v6.ping(addr6, m_id.getIdentifier(), m_id.getSequenceNumber(), m_id.getThreadId(), 1, 0);
         } catch (Throwable t) {
-            m_callback.handleError(m_id.getAddress(), m_request, t);
+            m_callback.handleError(getAddress(), m_request, t);
         }
     }
 
@@ -252,9 +253,9 @@ public class JnaPingRequest implements Request<JnaPingRequestId, JnaPingRequest,
             //throw new IllegalStateException("The m_request field should be set here!!!");
             m_log.debug(System.currentTimeMillis()+": Sending Ping Request: " + this);
             m_expiration = System.currentTimeMillis() + m_timeout;
-            v4.ping(addr4, (int)m_id.getTid(), m_id.getSequenceId(), 1, 0);
+            v4.ping(addr4, m_id.getIdentifier(), m_id.getSequenceNumber(), m_id.getThreadId(), 1, 0);
         } catch (Throwable t) {
-            m_callback.handleError(m_id.getAddress(), m_request, t);
+            m_callback.handleError(getAddress(), m_request, t);
         }
     }
 
