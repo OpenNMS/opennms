@@ -65,9 +65,9 @@ public class NegativeServiceFilter extends NotEqualOrNullFilter<Integer> {
      *
      * @return a {@link java.lang.String} object.
      */
+    //@Override
     public String getTextDescription(ServletContext servletContext) {
-        String serviceName = Integer.toString(getServiceId());
-        serviceName = NetworkElementFactory.getInstance(servletContext).getServiceNameFromId(getServiceId());
+        String serviceName = NetworkElementFactory.getInstance(servletContext).getServiceNameFromId(getServiceId());
 
         return ("service is not " + serviceName);
     }
@@ -77,6 +77,7 @@ public class NegativeServiceFilter extends NotEqualOrNullFilter<Integer> {
      *
      * @return a {@link java.lang.String} object.
      */
+    @Override
     public String toString() {
         return ("<WebEventRepository.NegativeServiceFilter: " + this.getDescription() + ">");
     }
@@ -91,6 +92,7 @@ public class NegativeServiceFilter extends NotEqualOrNullFilter<Integer> {
     }
 
     /** {@inheritDoc} */
+    @Override
     public boolean equals(Object obj) {
         return (this.toString().equals(obj.toString()));
     }

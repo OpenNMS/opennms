@@ -708,7 +708,7 @@ function updateOutageTypeDisplay(selectElement) {
 		<label>Nodes and Interfaces:</label>
 			<table class="normal" border="0">
 				<tr>
-					<th valign="top">Nodes</th>
+					<th valign="top">Node Labels</th>
 					<th valign="top">Interfaces</th>
 				</tr>
 				<tr>

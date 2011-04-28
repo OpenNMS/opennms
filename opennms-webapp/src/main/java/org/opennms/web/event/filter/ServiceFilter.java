@@ -63,11 +63,11 @@ public class ServiceFilter extends EqualsFilter<Integer> {
      *
      * @return a {@link java.lang.String} object.
      */
+    //@Override
     public String getTextDescription(ServletContext servletContext) {
-        String serviceName = Integer.toString(getServiceId());
-        serviceName = NetworkElementFactory.getInstance(servletContext).getServiceNameFromId(getServiceId());
+        String serviceName = NetworkElementFactory.getInstance(servletContext).getServiceNameFromId(getServiceId());
 
-        return (TYPE + "=" + serviceName);
+        return (TYPE + " is " + serviceName);
     }
 
     /**
@@ -75,6 +75,7 @@ public class ServiceFilter extends EqualsFilter<Integer> {
      *
      * @return a {@link java.lang.String} object.
      */
+    @Override
     public String toString() {
         return ("<WebEventRepository.ServiceFilter: " + this.getDescription() + ">");
     }
@@ -89,6 +90,7 @@ public class ServiceFilter extends EqualsFilter<Integer> {
     }
 
     /** {@inheritDoc} */
+    @Override
     public boolean equals(Object obj) {
         return (this.toString().equals(obj.toString()));
     }

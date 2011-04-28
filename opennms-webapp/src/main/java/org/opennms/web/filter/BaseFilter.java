@@ -170,6 +170,7 @@ public abstract class BaseFilter<T> implements Filter {
      *
      * @return a {@link java.lang.String} object.
      */
+    @Override
     public String toString() {
         return new ToStringBuilder(this)
             .append("description", getDescription())

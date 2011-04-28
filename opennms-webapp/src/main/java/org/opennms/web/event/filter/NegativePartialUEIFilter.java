@@ -59,6 +59,7 @@ public class NegativePartialUEIFilter extends NoSubstringFilter {
      *
      * @return a {@link java.lang.String} object.
      */
+    @Override
     public String getTextDescription() {
         return ("partial UEI not like " + getValue());
     }
@@ -68,6 +69,7 @@ public class NegativePartialUEIFilter extends NoSubstringFilter {
      *
      * @return a {@link java.lang.String} object.
      */
+    @Override
     public String toString() {
         return ("<WebEventRepository.NegativePartialUEIFilter: " + this.getDescription() + ">");
     }
@@ -82,6 +84,7 @@ public class NegativePartialUEIFilter extends NoSubstringFilter {
     }
 
     /** {@inheritDoc} */
+    @Override
     public boolean equals(Object obj) {
         return (this.toString().equals(obj.toString()));
     }

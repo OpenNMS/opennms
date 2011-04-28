@@ -58,6 +58,7 @@ public class AlarmIDFilter extends EqualsFilter<Integer> {
      *
      * @return a {@link java.lang.String} object.
      */
+    @Override
     public String getTextDescription() {
         return ("event reduced by alarmID: " + getValue());
     }
@@ -67,6 +68,7 @@ public class AlarmIDFilter extends EqualsFilter<Integer> {
      *
      * @return a {@link java.lang.String} object.
      */
+    @Override
     public String toString() {
         return ("<WebEventRepository.AlarmIDFilter: " + this.getDescription() + ">");
     }
@@ -81,6 +83,7 @@ public class AlarmIDFilter extends EqualsFilter<Integer> {
     }
 
     /** {@inheritDoc} */
+    @Override
     public boolean equals(Object obj) {
         return (this.toString().equals(obj.toString()));
     }
