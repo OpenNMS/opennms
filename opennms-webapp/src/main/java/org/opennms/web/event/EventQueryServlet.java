@@ -136,7 +136,7 @@ public class EventQueryServlet extends HttpServlet {
         // convenient syntax for ServiceFilter
         String service = WebSecurityUtils.sanitizeString(request.getParameter("service"));
         if (service != null && !service.equalsIgnoreCase("any")) {
-            filterArray.add(new ServiceFilter(WebSecurityUtils.safeParseInt(service)));
+            filterArray.add(new ServiceFilter(WebSecurityUtils.safeParseInt(service), this.getServletContext()));
         }
 
         // convenient syntax for IPLikeFilter

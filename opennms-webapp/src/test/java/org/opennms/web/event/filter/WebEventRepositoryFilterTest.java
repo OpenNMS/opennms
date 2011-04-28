@@ -404,7 +404,7 @@ public class WebEventRepositoryFilterTest {
     
     @Test
     public void testNegativeServiceFilter(){
-        NegativeServiceFilter filter = new NegativeServiceFilter(1);
+        NegativeServiceFilter filter = new NegativeServiceFilter(1, m_appContext);
         
         Event[] events = getMatchingDaoEvents(filter);
         assertEquals(1, events.length);
@@ -412,7 +412,7 @@ public class WebEventRepositoryFilterTest {
         events = getMatchingJdbcEvents(filter);
         assertEquals(1, events.length);
         
-        filter = new NegativeServiceFilter(2);
+        filter = new NegativeServiceFilter(2, m_appContext);
         
         events = getMatchingDaoEvents(filter);
         assertEquals(2, events.length);
@@ -503,7 +503,7 @@ public class WebEventRepositoryFilterTest {
     
     @Test
     public void testServiceFilter(){
-        ServiceFilter filter = new ServiceFilter(2);
+        ServiceFilter filter = new ServiceFilter(2, m_appContext);
         
         Event[] events = getMatchingDaoEvents(filter);
         assertEquals(0, events.length);
@@ -511,7 +511,7 @@ public class WebEventRepositoryFilterTest {
         events = getMatchingJdbcEvents(filter);
         assertEquals(0, events.length);
         
-        filter = new ServiceFilter(1);
+        filter = new ServiceFilter(1, m_appContext);
         
         events = getMatchingDaoEvents(filter);
         assertEquals(1, events.length);

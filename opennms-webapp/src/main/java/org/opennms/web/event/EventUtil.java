@@ -111,7 +111,7 @@ public abstract class EventUtil {
         } else if (type.equals(InterfaceFilter.TYPE)) {
             filter = new InterfaceFilter(value);
         } else if (type.equals(ServiceFilter.TYPE)) {
-            filter = new ServiceFilter(WebSecurityUtils.safeParseInt(value));
+            filter = new ServiceFilter(WebSecurityUtils.safeParseInt(value), servletContext);
         } else if (type.equals(IfIndexFilter.TYPE)) {
             filter = new IfIndexFilter(WebSecurityUtils.safeParseInt(value));
         } else if (type.equals(PartialUEIFilter.TYPE)) {
@@ -127,7 +127,7 @@ public abstract class EventUtil {
         } else if (type.equals(NegativeInterfaceFilter.TYPE)) {
             filter = new NegativeInterfaceFilter(value);
         } else if (type.equals(NegativeServiceFilter.TYPE)) {
-            filter = new NegativeServiceFilter(WebSecurityUtils.safeParseInt(value));
+            filter = new NegativeServiceFilter(WebSecurityUtils.safeParseInt(value), servletContext);
         } else if (type.equals(NegativePartialUEIFilter.TYPE)) {
             filter = new NegativePartialUEIFilter(value);
         } else if (type.equals(NegativeExactUEIFilter.TYPE)) {
