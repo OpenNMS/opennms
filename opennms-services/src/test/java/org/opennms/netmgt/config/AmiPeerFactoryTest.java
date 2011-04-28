@@ -43,8 +43,8 @@ import junit.framework.TestCase;
 
 import org.exolab.castor.xml.MarshalException;
 import org.exolab.castor.xml.ValidationException;
+import org.opennms.core.xml.CastorUtils;
 import org.opennms.netmgt.config.ami.AmiConfig;
-import org.opennms.netmgt.dao.castor.CastorUtils;
 
 /**
  * JUnit tests for the configureSNMP event handling and optimization of

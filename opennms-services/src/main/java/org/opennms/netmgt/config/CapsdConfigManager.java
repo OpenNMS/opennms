@@ -60,6 +60,7 @@ import org.exolab.castor.xml.ValidationException;
 import org.opennms.core.utils.ByteArrayComparator;
 import org.opennms.core.utils.InetAddressUtils;
 import org.opennms.core.utils.ThreadCategory;
+import org.opennms.core.xml.CastorUtils;
 import org.opennms.netmgt.config.capsd.CapsdConfiguration;
 import org.opennms.netmgt.config.capsd.IpManagement;
 import org.opennms.netmgt.config.capsd.Property;
@@ -68,7 +69,6 @@ import org.opennms.netmgt.config.capsd.ProtocolPlugin;
 import org.opennms.netmgt.config.capsd.Range;
 import org.opennms.netmgt.config.capsd.SmbAuth;
 import org.opennms.netmgt.config.capsd.SmbConfig;
-import org.opennms.netmgt.dao.castor.CastorUtils;
 
 /**
  * <p>Abstract CapsdConfigManager class.</p>

@@ -51,22 +51,22 @@ import org.exolab.castor.xml.Marshaller;
 import org.exolab.castor.xml.ValidationException;
 import org.hibernate.HibernateException;
 import org.hibernate.Session;
+import org.opennms.core.xml.CastorUtils;
+import org.opennms.core.xml.MarshallingResourceFailureException;
 import org.opennms.netmgt.config.monitoringLocations.LocationDef;
 import org.opennms.netmgt.config.monitoringLocations.Locations;
 import org.opennms.netmgt.config.monitoringLocations.MonitoringLocationsConfiguration;
 import org.opennms.netmgt.config.tags.Tag;
 import org.opennms.netmgt.config.tags.Tags;
-import org.opennms.netmgt.dao.MarshallingDataAccessFailureException;
 import org.opennms.netmgt.dao.LocationMonitorDao;
-import org.opennms.netmgt.dao.castor.CastorUtils;
 import org.opennms.netmgt.model.LocationMonitorIpInterface;
 import org.opennms.netmgt.model.OnmsApplication;
 import org.opennms.netmgt.model.OnmsIpInterface;
 import org.opennms.netmgt.model.OnmsLocationMonitor;
+import org.opennms.netmgt.model.OnmsLocationMonitor.MonitorStatus;
 import org.opennms.netmgt.model.OnmsLocationSpecificStatus;
 import org.opennms.netmgt.model.OnmsMonitoredService;
 import org.opennms.netmgt.model.OnmsMonitoringLocationDefinition;
-import org.opennms.netmgt.model.OnmsLocationMonitor.MonitorStatus;
 import org.springframework.core.io.Resource;
 import org.springframework.orm.hibernate3.HibernateCallback;
 
@@ -200,13 +200,13 @@ public class LocationMonitorDaoHibernate extends AbstractDaoHibernate<OnmsLocati
             xml = writer.toString();
             saveXml(xml);
         } catch (final MarshalException e) {
-            throw new MarshallingDataAccessFailureException("saveMonitoringConfig: couldn't marshal confg: \n"+
+            throw new MarshallingResourceFailureException("saveMonitoringConfig: couldn't marshal confg: \n"+
                    (xml != null ? xml : ""), e);
         } catch (final ValidationException e) {
-            throw new MarshallingDataAccessFailureException("saveMonitoringConfig: couldn't validate confg: \n"+
+            throw new MarshallingResourceFailureException("saveMonitoringConfig: couldn't validate confg: \n"+
                     (xml != null ? xml : ""), e);
         } catch (final IOException e) {
-            throw new MarshallingDataAccessFailureException("saveMonitoringConfig: couldn't write confg: \n"+
+            throw new MarshallingResourceFailureException("saveMonitoringConfig: couldn't write confg: \n"+
                     (xml != null ? xml : ""), e);
         }
     }

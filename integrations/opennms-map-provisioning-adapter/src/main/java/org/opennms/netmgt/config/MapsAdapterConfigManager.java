@@ -57,6 +57,7 @@ import org.exolab.castor.xml.ValidationException;
 import org.opennms.core.utils.ByteArrayComparator;
 import org.opennms.core.utils.IpListFromUrl;
 import org.opennms.core.utils.LogUtils;
+import org.opennms.core.xml.CastorUtils;
 import org.opennms.netmgt.config.map.adapter.Celement;
 import org.opennms.netmgt.config.map.adapter.Cmap;
 import org.opennms.netmgt.config.map.adapter.Csubmap;
@@ -64,7 +65,6 @@ import org.opennms.netmgt.config.map.adapter.ExcludeRange;
 import org.opennms.netmgt.config.map.adapter.IncludeRange;
 import org.opennms.netmgt.config.map.adapter.MapsAdapterConfiguration;
 import org.opennms.netmgt.config.map.adapter.Package;
-import org.opennms.netmgt.dao.castor.CastorUtils;
 import org.opennms.netmgt.filter.FilterDaoFactory;
 
 /**

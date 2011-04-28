@@ -1,6 +1,7 @@
 package org.opennms.netmgt.dao.jaxb;
 
 import org.opennms.core.utils.ThreadCategory;
+import org.opennms.core.xml.JaxbUtils;
 import org.opennms.netmgt.dao.support.FileReloadCallback;
 import org.opennms.netmgt.dao.support.FileReloadContainer;
 import org.springframework.beans.factory.InitializingBean;

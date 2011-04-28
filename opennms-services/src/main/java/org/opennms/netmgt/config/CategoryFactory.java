@@ -49,12 +49,12 @@ import java.util.concurrent.locks.ReentrantReadWriteLock;
 
 import org.exolab.castor.xml.MarshalException;
 import org.exolab.castor.xml.ValidationException;
+import org.opennms.core.xml.CastorUtils;
 import org.opennms.netmgt.ConfigFileConstants;
 import org.opennms.netmgt.config.categories.Categories;
 import org.opennms.netmgt.config.categories.Category;
 import org.opennms.netmgt.config.categories.Categorygroup;
 import org.opennms.netmgt.config.categories.Catinfo;
-import org.opennms.netmgt.dao.castor.CastorUtils;
 import org.springframework.core.io.FileSystemResource;
 import org.springframework.core.io.Resource;
 

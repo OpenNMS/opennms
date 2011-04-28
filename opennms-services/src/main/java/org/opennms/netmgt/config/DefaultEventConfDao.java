@@ -64,8 +64,8 @@ import java.util.Map.Entry;
 
 import org.apache.commons.io.IOUtils;
 import org.opennms.core.utils.LogUtils;
+import org.opennms.core.xml.CastorUtils;
 import org.opennms.netmgt.dao.castor.AbstractCastorConfigDao;
-import org.opennms.netmgt.dao.castor.CastorUtils;
 import org.opennms.netmgt.xml.eventconf.Event;
 import org.opennms.netmgt.xml.eventconf.Events;
 import org.springframework.beans.factory.InitializingBean;

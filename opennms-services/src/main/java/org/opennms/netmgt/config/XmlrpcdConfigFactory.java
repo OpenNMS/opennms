@@ -53,12 +53,12 @@ import org.apache.commons.io.IOUtils;
 import org.exolab.castor.xml.MarshalException;
 import org.exolab.castor.xml.ValidationException;
 import org.opennms.core.utils.ThreadCategory;
+import org.opennms.core.xml.CastorUtils;
 import org.opennms.netmgt.ConfigFileConstants;
 import org.opennms.netmgt.config.xmlrpcd.ExternalServers;
 import org.opennms.netmgt.config.xmlrpcd.SubscribedEvent;
 import org.opennms.netmgt.config.xmlrpcd.Subscription;
 import org.opennms.netmgt.config.xmlrpcd.XmlrpcdConfiguration;
-import org.opennms.netmgt.dao.castor.CastorUtils;
 
 /**
  * This is the singleton class used to load the configuration for the OpenNMS

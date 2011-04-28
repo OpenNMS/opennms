@@ -41,11 +41,11 @@ import java.util.Date;
 import java.util.List;
 import java.util.Map;
 
+import org.opennms.core.xml.MarshallingExceptionTranslator;
 import org.opennms.netmgt.config.groups.Group;
 import org.opennms.netmgt.config.groups.Role;
 import org.opennms.netmgt.config.groups.Schedule;
 import org.opennms.netmgt.dao.CastorObjectRetrievalFailureException;
-import org.opennms.netmgt.dao.support.MarshallingExceptionTranslator;
 import org.springframework.beans.factory.InitializingBean;
 import org.springframework.dao.DataAccessException;
 import org.springframework.util.Assert;

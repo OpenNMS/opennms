@@ -52,10 +52,10 @@ import java.util.Map;
 
 import org.exolab.castor.xml.MarshalException;
 import org.exolab.castor.xml.ValidationException;
+import org.opennms.core.xml.CastorUtils;
 import org.opennms.netmgt.ConfigFileConstants;
 import org.opennms.netmgt.config.kscReports.Report;
 import org.opennms.netmgt.config.kscReports.ReportsList;
-import org.opennms.netmgt.dao.castor.CastorUtils;
 import org.springframework.core.io.FileSystemResource;
 import org.springframework.util.Assert;
 

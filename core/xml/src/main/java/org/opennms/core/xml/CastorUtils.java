@@ -40,7 +40,7 @@
  *      http://www.opennms.org/
  *      http://www.opennms.com/
  */
-package org.opennms.netmgt.dao.castor;
+package org.opennms.core.xml;
 
 import java.io.File;
 import java.io.FileOutputStream;
@@ -57,7 +57,6 @@ import org.exolab.castor.xml.MarshalException;
 import org.exolab.castor.xml.Marshaller;
 import org.exolab.castor.xml.Unmarshaller;
 import org.exolab.castor.xml.ValidationException;
-import org.opennms.netmgt.dao.support.MarshallingExceptionTranslator;
 import org.springframework.core.io.Resource;
 import org.springframework.dao.DataAccessException;
 import org.xml.sax.InputSource;

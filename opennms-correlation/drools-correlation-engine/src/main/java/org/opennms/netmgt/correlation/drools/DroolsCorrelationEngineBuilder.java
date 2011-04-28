@@ -44,12 +44,12 @@ import java.util.Map;
 import java.util.Timer;
 
 import org.opennms.core.utils.PropertiesUtils;
+import org.opennms.core.xml.CastorUtils;
 import org.opennms.netmgt.correlation.CorrelationEngine;
 import org.opennms.netmgt.correlation.CorrelationEngineRegistrar;
 import org.opennms.netmgt.correlation.drools.config.EngineConfiguration;
 import org.opennms.netmgt.correlation.drools.config.Global;
 import org.opennms.netmgt.correlation.drools.config.RuleSet;
-import org.opennms.netmgt.dao.castor.CastorUtils;
 import org.opennms.netmgt.eventd.EventIpcManager;
 import org.springframework.beans.PropertyEditorRegistrySupport;
 import org.springframework.beans.factory.InitializingBean;

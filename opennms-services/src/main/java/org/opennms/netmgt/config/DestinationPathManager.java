@@ -51,12 +51,12 @@ import java.util.TreeMap;
 import org.exolab.castor.xml.MarshalException;
 import org.exolab.castor.xml.Marshaller;
 import org.exolab.castor.xml.ValidationException;
+import org.opennms.core.xml.CastorUtils;
 import org.opennms.netmgt.EventConstants;
 import org.opennms.netmgt.config.destinationPaths.DestinationPaths;
 import org.opennms.netmgt.config.destinationPaths.Header;
 import org.opennms.netmgt.config.destinationPaths.Path;
 import org.opennms.netmgt.config.destinationPaths.Target;
-import org.opennms.netmgt.dao.castor.CastorUtils;
 
 /**
  * <p>Abstract DestinationPathManager class.</p>

@@ -63,12 +63,12 @@ import org.opennms.core.utils.DBUtils;
 import org.opennms.core.utils.InetAddressUtils;
 import org.opennms.core.utils.LogUtils;
 import org.opennms.core.utils.ThreadCategory;
+import org.opennms.core.xml.CastorUtils;
 import org.opennms.netmgt.ConfigFileConstants;
 import org.opennms.netmgt.config.vulnscand.Excludes;
 import org.opennms.netmgt.config.vulnscand.Range;
 import org.opennms.netmgt.config.vulnscand.ScanLevel;
 import org.opennms.netmgt.config.vulnscand.VulnscandConfiguration;
-import org.opennms.netmgt.dao.castor.CastorUtils;
 import org.springframework.core.io.FileSystemResource;
 
 /**

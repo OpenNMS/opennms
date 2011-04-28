@@ -1,4 +1,4 @@
-package org.opennms.netmgt.xml;
+package org.opennms.core.xml;
 
 import org.opennms.core.utils.LogUtils;
 import org.xml.sax.Attributes;

@@ -1,4 +1,4 @@
-package org.opennms.netmgt.dao.jaxb;
+package org.opennms.core.xml;
 
 import java.io.File;
 import java.io.FileNotFoundException;
@@ -23,8 +23,6 @@ import javax.xml.transform.sax.SAXSource;
 
 import org.apache.commons.io.IOUtils;
 import org.opennms.core.utils.LogUtils;
-import org.opennms.netmgt.dao.support.MarshallingExceptionTranslator;
-import org.opennms.netmgt.xml.SimpleNamespaceFilter;
 import org.springframework.core.io.Resource;
 import org.xml.sax.InputSource;
 import org.xml.sax.SAXException;

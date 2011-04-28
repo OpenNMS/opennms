@@ -33,6 +33,7 @@
     <module>tasks</module>
     <!--<module>web</module>-->
     <module>doc</module>
+    <module>xml</module>
     <module>test-api</module>
   </modules>
 </project>

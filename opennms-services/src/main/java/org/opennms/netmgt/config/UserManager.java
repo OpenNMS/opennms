@@ -59,6 +59,7 @@ import java.util.Map;
 import org.exolab.castor.xml.MarshalException;
 import org.exolab.castor.xml.Marshaller;
 import org.exolab.castor.xml.ValidationException;
+import org.opennms.core.xml.CastorUtils;
 import org.opennms.netmgt.EventConstants;
 import org.opennms.netmgt.config.users.Contact;
 import org.opennms.netmgt.config.users.DutySchedule;
@@ -66,7 +67,6 @@ import org.opennms.netmgt.config.users.Header;
 import org.opennms.netmgt.config.users.User;
 import org.opennms.netmgt.config.users.Userinfo;
 import org.opennms.netmgt.config.users.Users;
-import org.opennms.netmgt.dao.castor.CastorUtils;
 
 /**
  * <p>Abstract UserManager class.</p>

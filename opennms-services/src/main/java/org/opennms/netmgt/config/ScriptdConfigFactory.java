@@ -40,6 +40,7 @@ import java.io.IOException;
 
 import org.exolab.castor.xml.MarshalException;
 import org.exolab.castor.xml.ValidationException;
+import org.opennms.core.xml.CastorUtils;
 import org.opennms.netmgt.ConfigFileConstants;
 import org.opennms.netmgt.config.scriptd.Engine;
 import org.opennms.netmgt.config.scriptd.EventScript;
@@ -47,7 +48,6 @@ import org.opennms.netmgt.config.scriptd.ReloadScript;
 import org.opennms.netmgt.config.scriptd.ScriptdConfiguration;
 import org.opennms.netmgt.config.scriptd.StartScript;
 import org.opennms.netmgt.config.scriptd.StopScript;
-import org.opennms.netmgt.dao.castor.CastorUtils;
 import org.springframework.core.io.FileSystemResource;
 
 /**

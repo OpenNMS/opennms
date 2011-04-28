@@ -50,10 +50,10 @@ import java.util.Map;
 import org.apache.commons.io.IOUtils;
 import org.exolab.castor.xml.MarshalException;
 import org.exolab.castor.xml.ValidationException;
+import org.opennms.core.xml.CastorUtils;
 import org.opennms.netmgt.ConfigFileConstants;
 import org.opennms.netmgt.config.viewsdisplay.View;
 import org.opennms.netmgt.config.viewsdisplay.Viewinfo;
-import org.opennms.netmgt.dao.castor.CastorUtils;
 
 /**
  * <p>ViewsDisplayFactory class.</p>

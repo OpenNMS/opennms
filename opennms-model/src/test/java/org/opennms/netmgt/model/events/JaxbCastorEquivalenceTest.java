@@ -25,7 +25,7 @@ import org.exolab.castor.xml.Marshaller;
 import org.junit.Before;
 import org.junit.Ignore;
 import org.junit.Test;
-import org.opennms.netmgt.xml.SimpleNamespaceFilter;
+import org.opennms.core.xml.SimpleNamespaceFilter;
 import org.opennms.netmgt.xml.event.AlarmData;
 import org.opennms.netmgt.xml.event.Autoacknowledge;
 import org.opennms.netmgt.xml.event.Autoaction;

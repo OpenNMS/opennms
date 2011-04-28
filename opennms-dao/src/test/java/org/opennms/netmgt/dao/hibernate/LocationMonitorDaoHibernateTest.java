@@ -49,9 +49,9 @@ import java.util.Set;
 
 import org.junit.Test;
 import org.junit.runner.RunWith;
+import org.opennms.core.xml.MarshallingResourceFailureException;
 import org.opennms.netmgt.dao.DatabasePopulator;
 import org.opennms.netmgt.dao.LocationMonitorDao;
-import org.opennms.netmgt.dao.MarshallingDataAccessFailureException;
 import org.opennms.netmgt.dao.NodeDao;
 import org.opennms.netmgt.dao.db.JUnitTemporaryDatabase;
 import org.opennms.netmgt.dao.db.OpenNMSConfigurationExecutionListener;
@@ -152,7 +152,7 @@ public class LocationMonitorDaoHibernateTest {
 	@Transactional
     public void testBogusConfig() {
         ThrowableAnticipator ta = new ThrowableAnticipator();
-        ta.anticipate(new MarshallingDataAccessFailureException(ThrowableAnticipator.IGNORE_MESSAGE));
+        ta.anticipate(new MarshallingResourceFailureException(ThrowableAnticipator.IGNORE_MESSAGE));
         try {
         	((LocationMonitorDaoHibernate)m_locationMonitorDao).setMonitoringLocationConfigResource(new FileSystemResource("some bogus filename"));
         } catch (Throwable t) {
