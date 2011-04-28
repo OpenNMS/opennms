@@ -35,14 +35,17 @@
  */
 package org.opennms.netmgt.ping;
 
+import java.io.IOException;
 import java.net.DatagramPacket;
 import java.net.InetAddress;
+import java.net.NoRouteToHostException;
 import java.util.concurrent.Delayed;
 import java.util.concurrent.TimeUnit;
 import java.util.concurrent.atomic.AtomicBoolean;
 
 import org.opennms.core.utils.ThreadCategory;
 import org.opennms.netmgt.icmp.EchoPacket;
+import org.opennms.netmgt.icmp.HostIsDownException;
 import org.opennms.netmgt.icmp.PingResponseCallback;
 import org.opennms.protocols.icmp.ICMPEchoPacket;
 import org.opennms.protocols.icmp.IcmpSocket;
@@ -248,10 +251,24 @@ public class JniPingRequest implements Request<JniPingRequestId, JniPingRequest,
             m_log.debug(System.currentTimeMillis()+": Sending Ping Request: "+this);
             byte[] data = m_requestPacket.toBytes();
             m_expiration = System.currentTimeMillis() + m_timeout;
-            icmpSocket.send(new DatagramPacket(data, data.length, m_id.getAddress(), 0));
+            send(icmpSocket, new DatagramPacket(data, data.length, m_id.getAddress(), 0));
 
         } catch (Throwable t) {
             m_callback.handleError(m_id.getAddress(), this, t);
+        }
+    }
+
+    private void send(IcmpSocket icmpSocket, DatagramPacket packet) throws IOException {
+        try {
+            icmpSocket.send(packet);
+        } catch(IOException e) {
+            if (e.getMessage().matches("sendto error \\(65, .*\\)")) {
+                throw new NoRouteToHostException("No Route to Host " + m_id.getAddress() + ": " + e.getMessage());
+            } else if (e.getMessage().matches("sendto error \\(64, .*\\)")) {
+                throw new HostIsDownException("Host " + m_id.getAddress() + " is down: " + e.getMessage());
+            } else {
+                throw e;
+            }
         }
     }
 

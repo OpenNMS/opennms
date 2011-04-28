@@ -36,6 +36,7 @@
 package org.opennms.netmgt.ping;
 
 import java.net.InetAddress;
+import java.net.NoRouteToHostException;
 import java.util.List;
 import java.util.concurrent.CountDownLatch;
 
@@ -179,10 +180,15 @@ public class PingTest extends TestCase {
     };
 
     protected void pingCallbackTimeout(Pinger pinger) throws Exception {
+
         TestPingResponseCallback cb = new TestPingResponseCallback();
+        
         pinger.ping(m_badHost, PingConstants.DEFAULT_TIMEOUT, PingConstants.DEFAULT_RETRIES, 1, cb);
+        
         cb.await();
-        assertNull("Unexpected Error sending ping to " +m_badHost + ": " + cb.getThrowable(), cb.getThrowable());
+
+        assertTrue("Unexpected Error sending ping to " + m_badHost + ": " + cb.getThrowable(), 
+                cb.getThrowable() == null || cb.getThrowable() instanceof NoRouteToHostException);
         assertTrue(cb.isTimeout());
         assertNotNull(cb.getPacket());
         assertNotNull(cb.getAddress());
@@ -198,7 +204,11 @@ public class PingTest extends TestCase {
     }
 
     public void testSinglePingFailureJni() throws Exception {
-        singlePingFailure(new JniPinger());
+        try {
+            singlePingFailure(new JniPinger());
+        } catch (NoRouteToHostException ex) {
+            // this is a possible option if the OS knows that this is impossible
+        }
     }
 
     public void testSinglePingFailureJna() throws Exception {
