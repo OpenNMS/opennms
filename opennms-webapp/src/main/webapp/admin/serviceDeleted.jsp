@@ -48,6 +48,7 @@
 		org.opennms.web.event.*
 	"
 %>
+<%@taglib uri="http://java.sun.com/jsp/jstl/core" prefix="c" %>
 
 <%
     String nodeIdString = request.getParameter( "node" );
@@ -71,42 +72,43 @@
 
     try {
         nodeId = WebSecurityUtils.safeParseInt( nodeIdString );
+    }
+    catch( NumberFormatException e ) {
+        //throw new WrongParameterDataTypeException
+        throw new ServletException( "Wrong data type for node ID, should be integer", e );
+    }
+
+    try {
         serviceId = WebSecurityUtils.safeParseInt( serviceIdString );
     }
     catch( NumberFormatException e ) {
         //throw new WrongParameterDataTypeException
-        throw new ServletException( "Wrong data type, should be integer", e );
+        throw new ServletException( "Wrong data type for service ID, should be integer", e );
     }
 
-    Service service_db = NetworkElementFactory.getInstance(getServletContext()).getService( nodeId, ipAddr, serviceId );
+    String serviceName = NetworkElementFactory.getInstance(getServletContext()).getServiceNameFromId( serviceId );
 
-    if( service_db == null ) {
-        //handle this WAY better, very awful
-        throw new ServletException( "No such service in database" );
-    }
-
-    String eventUrl = "event/list.htm?filter=node%3D" + nodeId + "&filter=interface%3D" + ipAddr + "&filter=service%3D" + serviceId;
-
-    String headTitle = service_db.getServiceName() + " Service on " +ipAddr;
+    String headTitle = serviceName + " Service on " + ipAddr;
 %>
 
-<% String breadcrumb2 = "<a href='element/node.jsp?node=" + nodeId  + "'>Node</a>"; %>
-<% String breadcrumb3 = "<a href='element/interface.jsp?node=" + nodeId + "&intf=" + ipAddr  + "'>Interface</a>"; %>
-<% String breadcrumb4 = "<a href='element/service.jsp?node=" + nodeId + "&intf=" + ipAddr  + "&service=" + serviceId + "'>Service</a>"; %>
+<c:url var="nodeLink" value="element/node.jsp">
+  <c:param name="node" value="<%=String.valueOf(nodeId)%>"/>
+</c:url>
+<c:url var="interfaceLink" value="element/interface.jsp">
+  <c:param name="node" value="<%=String.valueOf(nodeId)%>"/>
+  <c:param name="intf" value="<%=ipAddr%>"/>
+</c:url>
 
 <jsp:include page="/includes/header.jsp" flush="false" >
   <jsp:param name="title" value="Service" />
   <jsp:param name="headTitle" value="<%= headTitle %>" />
   <jsp:param name="breadcrumb" value="<a href='element/index.jsp'>Search</a>" />
-  <jsp:param name="breadcrumb" value="<%=breadcrumb2%>" />
-  <jsp:param name="breadcrumb" value="<%=breadcrumb3%>" />
-  <jsp:param name="breadcrumb" value="<%=breadcrumb4%>" />
+  <jsp:param name="breadcrumb" value="<a href='${nodeLink}'>Node</a>" />
+  <jsp:param name="breadcrumb" value="<a href='${interfaceLink}'>Interface</a>" />
   <jsp:param name="breadcrumb" value="Service Deleted" />
 </jsp:include>
 
-<h3>Finished Deleting <%=service_db.getServiceName()%> Service
-    on <%=ipAddr%></h3>
-
+<h3>Finished Deleting <c:out value="<%=serviceName%>"/> Service on <c:out value="<%=ipAddr%>"/></h3>
 <p>
   OpenNMS should not need to be restarted, but it may take a moment for
   the Categories to be updated.
