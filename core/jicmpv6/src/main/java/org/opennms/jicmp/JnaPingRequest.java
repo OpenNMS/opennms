@@ -101,13 +101,9 @@ public class JnaPingRequest implements Request<JnaPingRequestId, JnaPingRequest,
     
     
 	private final AtomicBoolean m_processed = new AtomicBoolean(false);
-	private final AbstractPinger<Inet4Address> m_v4;
-	private final AbstractPinger<Inet6Address> m_v6;
     
 
-    public JnaPingRequest(AbstractPinger<Inet4Address> v4, AbstractPinger<Inet6Address> v6, InetAddress addr,  long tid, int sequenceId, long timeout, int retries, ThreadCategory logger, PingResponseCallback cb) {
-        m_v4 = v4;
-        m_v6 = v6;
+    public JnaPingRequest(InetAddress addr, long tid, int sequenceId,  long timeout, int retries, ThreadCategory logger, PingResponseCallback cb) {
         m_id = new JnaPingRequestId(addr, tid, sequenceId);
         m_retries    = retries;
         m_timeout    = timeout;
@@ -116,12 +112,12 @@ public class JnaPingRequest implements Request<JnaPingRequestId, JnaPingRequest,
         m_callback   = new LogPrefixPreservingPingResponseCallback(cb);
     }
     
-    public JnaPingRequest(AbstractPinger<Inet4Address> v4, AbstractPinger<Inet6Address> v6, InetAddress addr, long tid, int sequenceId, long timeout, int retries, PingResponseCallback cb) {
-        this(v4, v6, addr, tid, sequenceId, timeout, retries, ThreadCategory.getInstance(JnaPingRequest.class), cb);
+    public JnaPingRequest(InetAddress addr, long tid, int sequenceId, long timeout, int retries, PingResponseCallback cb) {
+        this(addr, tid, sequenceId, timeout, retries, ThreadCategory.getInstance(JnaPingRequest.class), cb);
     }
     
-    public JnaPingRequest(AbstractPinger<Inet4Address> v4, AbstractPinger<Inet6Address> v6, InetAddress addr, int sequenceId, long timeout, int retries, PingResponseCallback cb) {
-        this(null, null, addr, getNextTID(), sequenceId, timeout, retries, cb);
+    public JnaPingRequest(InetAddress addr, int sequenceId, long timeout, int retries, PingResponseCallback cb) {
+        this(addr, getNextTID(), sequenceId, timeout, retries, cb);
     }
         
     /**
@@ -154,7 +150,7 @@ public class JnaPingRequest implements Request<JnaPingRequestId, JnaPingRequest,
             JnaPingRequest returnval = null;
             if (this.isExpired()) {
                 if (m_retries > 0) {
-                    returnval = new JnaPingRequest(m_v4, m_v6, m_id.getAddress(), m_id.getTid(), m_id.getSequenceId(), m_timeout, (m_retries - 1), m_log, m_callback);
+                    returnval = new JnaPingRequest(m_id.getAddress(), m_id.getTid(), m_id.getSequenceId(), m_timeout, (m_retries - 1), m_log, m_callback);
                     m_log.debug(System.currentTimeMillis()+": Retrying Ping Request "+returnval);
                 } else {
                     m_log.debug(System.currentTimeMillis()+": Ping Request Timed out "+this);

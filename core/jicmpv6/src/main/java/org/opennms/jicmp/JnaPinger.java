@@ -77,7 +77,7 @@ public class JnaPinger implements Pinger {
 	 */
 	public void ping(InetAddress host, long timeout, int retries, int sequenceId, PingResponseCallback cb) throws Exception {
 		initialize();
-		m_pingTracker.sendRequest(new JnaPingRequest(getV4Pinger(), getV6Pinger(), host, sequenceId, timeout, retries, cb));
+		m_pingTracker.sendRequest(new JnaPingRequest(host, sequenceId, timeout, retries, cb));
 	}
 
 	/**
@@ -137,7 +137,7 @@ public class JnaPinger implements Pinger {
 
 		int tid = (int)JnaPingRequest.getNextTID();
 		for (int i = 0; i < count; i++) {
-		    JnaPingRequest request = new JnaPingRequest(getV4Pinger(), getV6Pinger(), host, tid, i, timeout, 0, cb);
+		    JnaPingRequest request = new JnaPingRequest(host, tid, i, timeout, 0, cb);
 			m_pingTracker.sendRequest(request);
 			Thread.sleep(pingInterval);
 		}
@@ -145,20 +145,6 @@ public class JnaPinger implements Pinger {
 		cb.waitFor();
 		return cb.getResponseTimes();
 	}
-
-    /**
-     * @return the v4Pinger
-     */
-    private V4Pinger getV4Pinger() {
-        return m_messenger.getV4Pinger();
-    }
-
-    /**
-     * @return the v6Pinger
-     */
-    private V6Pinger getV6Pinger() {
-        return m_messenger.getV6Pinger();
-    }
 
 	/*
 	/**

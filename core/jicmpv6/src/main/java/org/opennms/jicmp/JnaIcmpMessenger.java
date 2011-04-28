@@ -54,14 +54,6 @@ public class JnaIcmpMessenger implements Messenger<JnaPingRequest, JnaPingReply>
 		m_v6.addPingReplyListener(this);
 	}
 	
-	public V4Pinger getV4Pinger() {
-	    return m_v4;
-	}
-	
-	public V6Pinger getV6Pinger() {
-	    return m_v6;
-	}
-
 	@Override
 	public void sendRequest(JnaPingRequest request) {
 		request.send(m_v4, m_v6);
