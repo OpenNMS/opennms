@@ -11,6 +11,11 @@ import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 
+import javax.xml.bind.annotation.XmlAccessType;
+import javax.xml.bind.annotation.XmlAccessorType;
+import javax.xml.bind.annotation.XmlElement;
+import javax.xml.bind.annotation.XmlRootElement;
+
 import org.exolab.castor.xml.MarshalException;
 import org.exolab.castor.xml.Marshaller;
 import org.exolab.castor.xml.Unmarshaller;
@@ -22,6 +27,8 @@ import org.xml.sax.ContentHandler;
  * Top-level element for the snmp-config.xml configuration file.
  */
 
+@XmlRootElement(name="snmp-config")
+@XmlAccessorType(XmlAccessType.FIELD)
 public class SnmpConfig extends Configuration implements Serializable {
 	private static final long serialVersionUID = 3139857316489386441L;
 
@@ -30,6 +37,7 @@ public class SnmpConfig extends Configuration implements Serializable {
 	/**
      * Maps IP addresses to specific SNMP parameters (retries, timeouts...)
      */
+	 @XmlElement(name="definition")
     private List<Definition> _definitionList;
 
     public SnmpConfig() {

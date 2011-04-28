@@ -10,6 +10,11 @@ package org.opennms.netmgt.config.snmp;
 import java.io.Reader;
 import java.io.Serializable;
 
+import javax.xml.bind.annotation.XmlAccessType;
+import javax.xml.bind.annotation.XmlAccessorType;
+import javax.xml.bind.annotation.XmlAttribute;
+import javax.xml.bind.annotation.XmlRootElement;
+
 import org.exolab.castor.xml.MarshalException;
 import org.exolab.castor.xml.Marshaller;
 import org.exolab.castor.xml.Unmarshaller;
@@ -23,6 +28,8 @@ import org.xml.sax.ContentHandler;
  * @version $Revision$ $Date$
  */
 
+@XmlRootElement(name="configuration")
+@XmlAccessorType(XmlAccessType.FIELD)
 public class Configuration implements Serializable {
 	private static final long serialVersionUID = -6800972339377512259L;
 
@@ -30,74 +37,58 @@ public class Configuration implements Serializable {
 	 * If set, overrides UDP port 161 as the port where SNMP GET/GETNEXT/GETBULK
 	 * requests are sent.
 	 */
-	private int _port;
-
-	/**
-	 * keeps track of state for field: _port
-	 */
-	private boolean _has_port;
+	@XmlAttribute(name="port")
+	private Integer _port;
 
 	/**
 	 * Default number of retries
 	 */
-	private int _retry;
-
-	/**
-	 * keeps track of state for field: _retry
-	 */
-	private boolean _has_retry;
+	@XmlAttribute(name="retry")
+	private Integer _retry;
 
 	/**
 	 * Default timeout (in milliseconds)
 	 */
-	private int _timeout;
-
-	/**
-	 * keeps track of state for field: _timeout
-	 */
-	private boolean _has_timeout;
+	@XmlAttribute(name="timeout")
+	private Integer _timeout;
 
 	/**
 	 * Default read community string
 	 */
+	@XmlAttribute(name="read-community")
 	private String _readCommunity;
 
 	/**
 	 * Default write community string
 	 */
+	@XmlAttribute(name="write-community")
 	private String _writeCommunity;
 
 	/**
 	 * The proxy host to use when communiciating with this agent
 	 */
+	@XmlAttribute(name="proxy-host")
 	private String _proxyHost;
 
 	/**
 	 * If set, forces SNMP data collection to the specified version.
 	 */
+	@XmlAttribute(name="version")
 	private String _version;
 
 	/**
 	 * Number of variables to send per SNMP request.
 	 * 
 	 */
-	private int _maxVarsPerPdu = 10;
-
-	/**
-	 * keeps track of state for field: _maxVarsPerPdu
-	 */
-	private boolean _has_maxVarsPerPdu;
+	@XmlAttribute(name="max-vars-per-pdu")
+	private Integer _maxVarsPerPdu = 10;
 
 	/**
 	 * Number of repetitions to send per get-bulk request.
 	 * 
 	 */
-	private int _maxRepetitions = 2;
-
-	/**
-	 * keeps track of state for field: _maxRepetitions
-	 */
-	private boolean _has_maxRepetitions;
+	@XmlAttribute(name="max-repititions")
+	private Integer _maxRepetitions = 2;
 
 	/**
 	 * (SNMP4J specific) Specifies the maximum number of bytes that may be
@@ -105,12 +96,7 @@ public class Configuration implements Serializable {
 	 * to limit the size of outgoing PDU requests. Default is 65535, must be at
 	 * least 484.
 	 */
-	private int _maxRequestSize = 65535;
-
-	/**
-	 * keeps track of state for field: _maxRequestSize
-	 */
-	private boolean _has_maxRequestSize;
+	private Integer _maxRequestSize = 65535;
 
 	/**
 	 * SNMPv3
@@ -120,12 +106,7 @@ public class Configuration implements Serializable {
 	/**
 	 * SNMPv3
 	 */
-	private int _securityLevel;
-
-	/**
-	 * keeps track of state for field: _securityLevel
-	 */
-	private boolean _has_securityLevel;
+	private Integer _securityLevel;
 
 	/**
 	 * SNMPv3
@@ -172,31 +153,31 @@ public class Configuration implements Serializable {
 	}
 
 	public void deleteMaxRepetitions() {
-		this._has_maxRepetitions = false;
+		_maxRepetitions = null;
 	}
 
 	public void deleteMaxRequestSize() {
-		this._has_maxRequestSize = false;
+		_maxRequestSize = null;
 	}
 
 	public void deleteMaxVarsPerPdu() {
-		this._has_maxVarsPerPdu = false;
+		_maxVarsPerPdu = null;
 	}
 
 	public void deletePort() {
-		this._has_port = false;
+		_port = null;
 	}
 
 	public void deleteRetry() {
-		this._has_retry = false;
+		_retry = null;
 	}
 
 	public void deleteSecurityLevel() {
-		this._has_securityLevel = false;
+		_securityLevel = null;
 	}
 
 	public void deleteTimeout() {
-		this._has_timeout = false;
+		_timeout = null;
 	}
 
 	/**
@@ -213,154 +194,136 @@ public class Configuration implements Serializable {
 		if (obj instanceof Configuration) {
 
 			final Configuration temp = (Configuration) obj;
-			if (this._port != temp._port)
+			if (_port != temp._port)
 				return false;
-			if (this._has_port != temp._has_port)
+			if (_retry != temp._retry)
 				return false;
-			if (this._retry != temp._retry)
+			if (_timeout != temp._timeout)
 				return false;
-			if (this._has_retry != temp._has_retry)
-				return false;
-			if (this._timeout != temp._timeout)
-				return false;
-			if (this._has_timeout != temp._has_timeout)
-				return false;
-			if (this._readCommunity != null) {
+			if (_readCommunity != null) {
 				if (temp._readCommunity == null)
 					return false;
-				else if (!(this._readCommunity.equals(temp._readCommunity))) {
+				else if (!(_readCommunity.equals(temp._readCommunity))) {
 					return false;
 				}
 			} else if (temp._readCommunity != null) {
 				return false;
 			}
-			if (this._writeCommunity != null) {
+			if (_writeCommunity != null) {
 				if (temp._writeCommunity == null)
 					return false;
-				else if (!(this._writeCommunity.equals(temp._writeCommunity))) {
+				else if (!(_writeCommunity.equals(temp._writeCommunity))) {
 					return false;
 				}
 			} else if (temp._writeCommunity != null) {
 				return false;
 			}
-			if (this._proxyHost != null) {
+			if (_proxyHost != null) {
 				if (temp._proxyHost == null) {
 					return false;
-				} else if (!(this._proxyHost.equals(temp._proxyHost))) {
+				} else if (!(_proxyHost.equals(temp._proxyHost))) {
 					return false;
 				}
 			} else if (temp._proxyHost != null) {
 				return false;
 			}
-			if (this._version != null) {
+			if (_version != null) {
 				if (temp._version == null) {
 					return false;
-				} else if (!(this._version.equals(temp._version))) {
+				} else if (!(_version.equals(temp._version))) {
 					return false;
 				}
 			} else if (temp._version != null) {
 				return false;
 			}
-			if (this._maxVarsPerPdu != temp._maxVarsPerPdu) {
+			if (_maxVarsPerPdu != temp._maxVarsPerPdu) {
 				return false;
 			}
-			if (this._has_maxVarsPerPdu != temp._has_maxVarsPerPdu) {
+			if (_maxRepetitions != temp._maxRepetitions) {
 				return false;
 			}
-			if (this._maxRepetitions != temp._maxRepetitions) {
+			if (_maxRequestSize != temp._maxRequestSize) {
 				return false;
 			}
-			if (this._has_maxRepetitions != temp._has_maxRepetitions) {
-				return false;
-			}
-			if (this._maxRequestSize != temp._maxRequestSize) {
-				return false;
-			}
-			if (this._has_maxRequestSize != temp._has_maxRequestSize) {
-				return false;
-			}
-			if (this._securityName != null) {
+			if (_securityName != null) {
 				if (temp._securityName == null) {
 					return false;
-				} else if (!(this._securityName.equals(temp._securityName))) {
+				} else if (!(_securityName.equals(temp._securityName))) {
 					return false;
 				}
 			} else if (temp._securityName != null) {
 				return false;
 			}
-			if (this._securityLevel != temp._securityLevel) {
+			if (_securityLevel != temp._securityLevel) {
 				return false;
 			}
-			if (this._has_securityLevel != temp._has_securityLevel) {
-				return false;
-			}
-			if (this._authPassphrase != null) {
+			if (_authPassphrase != null) {
 				if (temp._authPassphrase == null) {
 					return false;
-				} else if (!(this._authPassphrase.equals(temp._authPassphrase))) {
+				} else if (!(_authPassphrase.equals(temp._authPassphrase))) {
 					return false;
 				}
 			} else if (temp._authPassphrase != null) {
 				return false;
 			}
-			if (this._authProtocol != null) {
+			if (_authProtocol != null) {
 				if (temp._authProtocol == null) {
 					return false;
-				} else if (!(this._authProtocol.equals(temp._authProtocol))) {
+				} else if (!(_authProtocol.equals(temp._authProtocol))) {
 					return false;
 				}
 			} else if (temp._authProtocol != null) {
 				return false;
 			}
-			if (this._engineId != null) {
+			if (_engineId != null) {
 				if (temp._engineId == null) {
 					return false;
-				} else if (!(this._engineId.equals(temp._engineId))) {
+				} else if (!(_engineId.equals(temp._engineId))) {
 					return false;
 				}
 			} else if (temp._engineId != null) {
 				return false;
 			}
-			if (this._contextEngineId != null) {
+			if (_contextEngineId != null) {
 				if (temp._contextEngineId == null) {
 					return false;
-				} else if (!(this._contextEngineId.equals(temp._contextEngineId))) {
+				} else if (!(_contextEngineId.equals(temp._contextEngineId))) {
 					return false;
 				}
 			} else if (temp._contextEngineId != null) {
 				return false;
 			}
-			if (this._contextName != null) {
+			if (_contextName != null) {
 				if (temp._contextName == null) {
 					return false;
-				} else if (!(this._contextName.equals(temp._contextName))) {
+				} else if (!(_contextName.equals(temp._contextName))) {
 					return false;
 				}
 			} else if (temp._contextName != null) {
 				return false;
 			}
-			if (this._privacyPassphrase != null) {
+			if (_privacyPassphrase != null) {
 				if (temp._privacyPassphrase == null) {
 					return false;
-				} else if (!(this._privacyPassphrase.equals(temp._privacyPassphrase))) {
+				} else if (!(_privacyPassphrase.equals(temp._privacyPassphrase))) {
 					return false;
 				}
 			} else if (temp._privacyPassphrase != null) {
 				return false;
 			}
-			if (this._privacyProtocol != null) {
+			if (_privacyProtocol != null) {
 				if (temp._privacyProtocol == null) {
 					return false;
-				} else if (!(this._privacyProtocol.equals(temp._privacyProtocol))) {
+				} else if (!(_privacyProtocol.equals(temp._privacyProtocol))) {
 					return false;
 				}
 			} else if (temp._privacyProtocol != null) {
 				return false;
 			}
-			if (this._enterpriseId != null) {
+			if (_enterpriseId != null) {
 				if (temp._enterpriseId == null) {
 					return false;
-				} else if (!(this._enterpriseId.equals(temp._enterpriseId))) {
+				} else if (!(_enterpriseId.equals(temp._enterpriseId))) {
 					return false;
 				}
 			} else if (temp._enterpriseId != null) {
@@ -378,7 +341,7 @@ public class Configuration implements Serializable {
 	 * @return the value of field 'AuthPassphrase'.
 	 */
 	public String getAuthPassphrase() {
-		return this._authPassphrase;
+		return _authPassphrase;
 	}
 
 	/**
@@ -388,7 +351,7 @@ public class Configuration implements Serializable {
 	 * @return the value of field 'AuthProtocol'.
 	 */
 	public String getAuthProtocol() {
-		return this._authProtocol;
+		return _authProtocol;
 	}
 
 	/**
@@ -398,7 +361,7 @@ public class Configuration implements Serializable {
 	 * @return the value of field 'ContextEngineId'.
 	 */
 	public String getContextEngineId() {
-		return this._contextEngineId;
+		return _contextEngineId;
 	}
 
 	/**
@@ -408,7 +371,7 @@ public class Configuration implements Serializable {
 	 * @return the value of field 'ContextName'.
 	 */
 	public String getContextName() {
-		return this._contextName;
+		return _contextName;
 	}
 
 	/**
@@ -418,7 +381,7 @@ public class Configuration implements Serializable {
 	 * @return the value of field 'EngineId'.
 	 */
 	public String getEngineId() {
-		return this._engineId;
+		return _engineId;
 	}
 
 	/**
@@ -428,7 +391,7 @@ public class Configuration implements Serializable {
 	 * @return the value of field 'EnterpriseId'.
 	 */
 	public String getEnterpriseId() {
-		return this._enterpriseId;
+		return _enterpriseId;
 	}
 
 	/**
@@ -439,8 +402,8 @@ public class Configuration implements Serializable {
 	 * 
 	 * @return the value of field 'MaxRepetitions'.
 	 */
-	public int getMaxRepetitions() {
-		return this._maxRepetitions;
+	public Integer getMaxRepetitions() {
+		return _maxRepetitions == null? 0 : _maxRepetitions;
 	}
 
 	/**
@@ -452,8 +415,8 @@ public class Configuration implements Serializable {
 	 * 
 	 * @return the value of field 'MaxRequestSize'.
 	 */
-	public int getMaxRequestSize() {
-		return this._maxRequestSize;
+	public Integer getMaxRequestSize() {
+		return _maxRequestSize == null? 0 : _maxRequestSize;
 	}
 
 	/**
@@ -463,8 +426,8 @@ public class Configuration implements Serializable {
 	 * 
 	 * @return the value of field 'MaxVarsPerPdu'.
 	 */
-	public int getMaxVarsPerPdu() {
-		return this._maxVarsPerPdu;
+	public Integer getMaxVarsPerPdu() {
+		return _maxVarsPerPdu == null? 0 : _maxVarsPerPdu;
 	}
 
 	/**
@@ -474,8 +437,8 @@ public class Configuration implements Serializable {
 	 * 
 	 * @return the value of field 'Port'.
 	 */
-	public int getPort() {
-		return this._port;
+	public Integer getPort() {
+		return _port == null? 0 : _port;
 	}
 
 	/**
@@ -485,7 +448,7 @@ public class Configuration implements Serializable {
 	 * @return the value of field 'PrivacyPassphrase'.
 	 */
 	public String getPrivacyPassphrase() {
-		return this._privacyPassphrase;
+		return _privacyPassphrase;
 	}
 
 	/**
@@ -495,7 +458,7 @@ public class Configuration implements Serializable {
 	 * @return the value of field 'PrivacyProtocol'.
 	 */
 	public String getPrivacyProtocol() {
-		return this._privacyProtocol;
+		return _privacyProtocol;
 	}
 
 	/**
@@ -506,7 +469,7 @@ public class Configuration implements Serializable {
 	 * @return the value of field 'ProxyHost'.
 	 */
 	public String getProxyHost() {
-		return this._proxyHost;
+		return _proxyHost;
 	}
 
 	/**
@@ -516,7 +479,7 @@ public class Configuration implements Serializable {
 	 * @return the value of field 'ReadCommunity'.
 	 */
 	public String getReadCommunity() {
-		return this._readCommunity;
+		return _readCommunity;
 	}
 
 	/**
@@ -525,8 +488,8 @@ public class Configuration implements Serializable {
 	 * 
 	 * @return the value of field 'Retry'.
 	 */
-	public int getRetry() {
-		return this._retry;
+	public Integer getRetry() {
+		return _retry == null? 0 : _retry;
 	}
 
 	/**
@@ -535,8 +498,8 @@ public class Configuration implements Serializable {
 	 * 
 	 * @return the value of field 'SecurityLevel'.
 	 */
-	public int getSecurityLevel() {
-		return this._securityLevel;
+	public Integer getSecurityLevel() {
+		return _securityLevel == null? 0 : _securityLevel;
 	}
 
 	/**
@@ -546,7 +509,7 @@ public class Configuration implements Serializable {
 	 * @return the value of field 'SecurityName'.
 	 */
 	public String getSecurityName() {
-		return this._securityName;
+		return _securityName;
 	}
 
 	/**
@@ -555,8 +518,8 @@ public class Configuration implements Serializable {
 	 * 
 	 * @return the value of field 'Timeout'.
 	 */
-	public int getTimeout() {
-		return this._timeout;
+	public Integer getTimeout() {
+		return _timeout == null? 0 : _timeout;
 	}
 
 	/**
@@ -567,7 +530,7 @@ public class Configuration implements Serializable {
 	 * @return the value of field 'Version'.
 	 */
 	public String getVersion() {
-		return this._version;
+		return _version;
 	}
 
 	/**
@@ -577,7 +540,7 @@ public class Configuration implements Serializable {
 	 * @return the value of field 'WriteCommunity'.
 	 */
 	public String getWriteCommunity() {
-		return this._writeCommunity;
+		return _writeCommunity;
 	}
 
 	/**
@@ -586,7 +549,7 @@ public class Configuration implements Serializable {
 	 * @return true if at least one MaxRepetitions has been added
 	 */
 	public boolean hasMaxRepetitions() {
-		return this._has_maxRepetitions;
+		return _maxRepetitions != null;
 	}
 
 	/**
@@ -595,7 +558,7 @@ public class Configuration implements Serializable {
 	 * @return true if at least one MaxRequestSize has been added
 	 */
 	public boolean hasMaxRequestSize() {
-		return this._has_maxRequestSize;
+		return _maxRequestSize != null;
 	}
 
 	/**
@@ -604,7 +567,7 @@ public class Configuration implements Serializable {
 	 * @return true if at least one MaxVarsPerPdu has been added
 	 */
 	public boolean hasMaxVarsPerPdu() {
-		return this._has_maxVarsPerPdu;
+		return _maxVarsPerPdu != null;
 	}
 
 	/**
@@ -613,7 +576,7 @@ public class Configuration implements Serializable {
 	 * @return true if at least one Port has been added
 	 */
 	public boolean hasPort() {
-		return this._has_port;
+		return _port != null;
 	}
 
 	/**
@@ -622,7 +585,7 @@ public class Configuration implements Serializable {
 	 * @return true if at least one Retry has been added
 	 */
 	public boolean hasRetry() {
-		return this._has_retry;
+		return _retry != null;
 	}
 
 	/**
@@ -631,7 +594,7 @@ public class Configuration implements Serializable {
 	 * @return true if at least one SecurityLevel has been added
 	 */
 	public boolean hasSecurityLevel() {
-		return this._has_securityLevel;
+		return _securityLevel != null;
 	}
 
 	/**
@@ -640,7 +603,7 @@ public class Configuration implements Serializable {
 	 * @return true if at least one Timeout has been added
 	 */
 	public boolean hasTimeout() {
-		return this._has_timeout;
+		return _timeout != null;
 	}
 
 	/**
@@ -756,7 +719,7 @@ public class Configuration implements Serializable {
 	 *            the value of field 'authPassphrase'.
 	 */
 	public void setAuthPassphrase(final String authPassphrase) {
-		this._authPassphrase = authPassphrase;
+		_authPassphrase = authPassphrase;
 	}
 
 	/**
@@ -767,7 +730,7 @@ public class Configuration implements Serializable {
 	 *            the value of field 'authProtocol'.
 	 */
 	public void setAuthProtocol(final String authProtocol) {
-		this._authProtocol = authProtocol;
+		_authProtocol = authProtocol;
 	}
 
 	/**
@@ -778,7 +741,7 @@ public class Configuration implements Serializable {
 	 *            the value of field 'contextEngineId'.
 	 */
 	public void setContextEngineId(final String contextEngineId) {
-		this._contextEngineId = contextEngineId;
+		_contextEngineId = contextEngineId;
 	}
 
 	/**
@@ -789,7 +752,7 @@ public class Configuration implements Serializable {
 	 *            the value of field 'contextName'.
 	 */
 	public void setContextName(final String contextName) {
-		this._contextName = contextName;
+		_contextName = contextName;
 	}
 
 	/**
@@ -800,7 +763,7 @@ public class Configuration implements Serializable {
 	 *            the value of field 'engineId'.
 	 */
 	public void setEngineId(final String engineId) {
-		this._engineId = engineId;
+		_engineId = engineId;
 	}
 
 	/**
@@ -811,7 +774,7 @@ public class Configuration implements Serializable {
 	 *            the value of field 'enterpriseId'.
 	 */
 	public void setEnterpriseId(final String enterpriseId) {
-		this._enterpriseId = enterpriseId;
+		_enterpriseId = enterpriseId;
 	}
 
 	/**
@@ -823,9 +786,8 @@ public class Configuration implements Serializable {
 	 * @param maxRepetitions
 	 *            the value of field 'maxRepetitions'.
 	 */
-	public void setMaxRepetitions(final int maxRepetitions) {
-		this._maxRepetitions = maxRepetitions;
-		this._has_maxRepetitions = true;
+	public void setMaxRepetitions(final Integer maxRepetitions) {
+		_maxRepetitions = maxRepetitions;
 	}
 
 	/**
@@ -838,9 +800,8 @@ public class Configuration implements Serializable {
 	 * @param maxRequestSize
 	 *            the value of field 'maxRequestSize'.
 	 */
-	public void setMaxRequestSize(final int maxRequestSize) {
-		this._maxRequestSize = maxRequestSize;
-		this._has_maxRequestSize = true;
+	public void setMaxRequestSize(final Integer maxRequestSize) {
+		_maxRequestSize = maxRequestSize;
 	}
 
 	/**
@@ -851,9 +812,8 @@ public class Configuration implements Serializable {
 	 * @param maxVarsPerPdu
 	 *            the value of field 'maxVarsPerPdu'.
 	 */
-	public void setMaxVarsPerPdu(final int maxVarsPerPdu) {
-		this._maxVarsPerPdu = maxVarsPerPdu;
-		this._has_maxVarsPerPdu = true;
+	public void setMaxVarsPerPdu(final Integer maxVarsPerPdu) {
+		_maxVarsPerPdu = maxVarsPerPdu;
 	}
 
 	/**
@@ -864,9 +824,8 @@ public class Configuration implements Serializable {
 	 * @param port
 	 *            the value of field 'port'.
 	 */
-	public void setPort(final int port) {
-		this._port = port;
-		this._has_port = true;
+	public void setPort(final Integer port) {
+		_port = port;
 	}
 
 	/**
@@ -877,7 +836,7 @@ public class Configuration implements Serializable {
 	 *            the value of field 'privacyPassphrase'.
 	 */
 	public void setPrivacyPassphrase(final String privacyPassphrase) {
-		this._privacyPassphrase = privacyPassphrase;
+		_privacyPassphrase = privacyPassphrase;
 	}
 
 	/**
@@ -888,7 +847,7 @@ public class Configuration implements Serializable {
 	 *            the value of field 'privacyProtocol'.
 	 */
 	public void setPrivacyProtocol(final String privacyProtocol) {
-		this._privacyProtocol = privacyProtocol;
+		_privacyProtocol = privacyProtocol;
 	}
 
 	/**
@@ -900,7 +859,7 @@ public class Configuration implements Serializable {
 	 *            the value of field 'proxyHost'.
 	 */
 	public void setProxyHost(final String proxyHost) {
-		this._proxyHost = proxyHost;
+		_proxyHost = proxyHost;
 	}
 
 	/**
@@ -911,7 +870,7 @@ public class Configuration implements Serializable {
 	 *            the value of field 'readCommunity'.
 	 */
 	public void setReadCommunity(final String readCommunity) {
-		this._readCommunity = readCommunity;
+		_readCommunity = readCommunity;
 	}
 
 	/**
@@ -921,9 +880,8 @@ public class Configuration implements Serializable {
 	 * @param retry
 	 *            the value of field 'retry'.
 	 */
-	public void setRetry(final int retry) {
-		this._retry = retry;
-		this._has_retry = true;
+	public void setRetry(final Integer retry) {
+		_retry = retry;
 	}
 
 	/**
@@ -933,9 +891,8 @@ public class Configuration implements Serializable {
 	 * @param securityLevel
 	 *            the value of field 'securityLevel'.
 	 */
-	public void setSecurityLevel(final int securityLevel) {
-		this._securityLevel = securityLevel;
-		this._has_securityLevel = true;
+	public void setSecurityLevel(final Integer securityLevel) {
+		_securityLevel = securityLevel;
 	}
 
 	/**
@@ -946,7 +903,7 @@ public class Configuration implements Serializable {
 	 *            the value of field 'securityName'.
 	 */
 	public void setSecurityName(final String securityName) {
-		this._securityName = securityName;
+		_securityName = securityName;
 	}
 
 	/**
@@ -956,9 +913,8 @@ public class Configuration implements Serializable {
 	 * @param timeout
 	 *            the value of field 'timeout'.
 	 */
-	public void setTimeout(final int timeout) {
-		this._timeout = timeout;
-		this._has_timeout = true;
+	public void setTimeout(final Integer timeout) {
+		_timeout = timeout;
 	}
 
 	/**
@@ -970,7 +926,7 @@ public class Configuration implements Serializable {
 	 *            the value of field 'version'.
 	 */
 	public void setVersion(final String version) {
-		this._version = version;
+		_version = version;
 	}
 
 	/**
@@ -981,7 +937,7 @@ public class Configuration implements Serializable {
 	 *            the value of field 'writeCommunity'.
 	 */
 	public void setWriteCommunity(final String writeCommunity) {
-		this._writeCommunity = writeCommunity;
+		_writeCommunity = writeCommunity;
 	}
 
 	/**

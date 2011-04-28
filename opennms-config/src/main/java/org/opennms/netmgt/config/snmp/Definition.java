@@ -17,6 +17,11 @@ import java.util.Enumeration;
 import java.util.Iterator;
 import java.util.List;
 
+import javax.xml.bind.annotation.XmlAccessType;
+import javax.xml.bind.annotation.XmlAccessorType;
+import javax.xml.bind.annotation.XmlElement;
+import javax.xml.bind.annotation.XmlRootElement;
+
 import org.exolab.castor.xml.MarshalException;
 import org.exolab.castor.xml.Marshaller;
 import org.exolab.castor.xml.Unmarshaller;
@@ -34,6 +39,8 @@ import org.xml.sax.ContentHandler;
  * @version $Revision$ $Date$
  */
 
+@XmlRootElement(name="definition")
+@XmlAccessorType(XmlAccessType.FIELD)
 public class Definition extends Configuration implements Serializable {
 	private static final long serialVersionUID = 6077248084936410239L;
 
@@ -44,17 +51,20 @@ public class Definition extends Configuration implements Serializable {
      * IP address range to which this definition
      *  applies.
      */
+	@XmlElement(name="range")
     private List<Range> _rangeList;
 
     /**
      * Specific IP address to which this definition
      *  applies.
      */
+	@XmlElement(name="specific")
     private List<String> _specificList;
 
     /**
      * Match Octets (as in IPLIKE)
      */
+	@XmlElement(name="ip-match")
     private List<String> _ipMatchList;
 
     public Definition() {

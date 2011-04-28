@@ -5,6 +5,11 @@ import java.io.Reader;
 import java.io.Serializable;
 import java.io.Writer;
 
+import javax.xml.bind.annotation.XmlAccessType;
+import javax.xml.bind.annotation.XmlAccessorType;
+import javax.xml.bind.annotation.XmlAttribute;
+import javax.xml.bind.annotation.XmlRootElement;
+
 import org.exolab.castor.xml.MarshalException;
 import org.exolab.castor.xml.Marshaller;
 import org.exolab.castor.xml.Unmarshaller;
@@ -16,17 +21,21 @@ import org.xml.sax.ContentHandler;
  * IP Address Range
  */
 
+@XmlRootElement(name="range")
+@XmlAccessorType(XmlAccessType.FIELD)
 public class Range implements Serializable {
 	private static final long serialVersionUID = 3386982883357355619L;
 
 	/**
      * Starting IP address of the range.
      */
+	@XmlAttribute(name="begin", required=true)
     private String _begin;
 
     /**
      * Ending IP address of the range.
      */
+	@XmlAttribute(name="end", required=true)
     private String _end;
 
     public Range() {
