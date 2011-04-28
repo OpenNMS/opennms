@@ -71,6 +71,7 @@ public class BeforeDateFilter extends LessThanFilter<Date> {
      *
      * @return a {@link java.lang.String} object.
      */
+    @Override
     public String getTextDescription() {
         return ("date before \"" + getValue() + "\"");
     }
@@ -80,6 +81,7 @@ public class BeforeDateFilter extends LessThanFilter<Date> {
      *
      * @return a {@link java.lang.String} object.
      */
+    @Override
     public String toString() {
         return ("<BeforeTimeFilter: " + this.getDescription() + ">");
     }
@@ -94,6 +96,7 @@ public class BeforeDateFilter extends LessThanFilter<Date> {
     }
 
     /** {@inheritDoc} */
+    @Override
     public boolean equals(Object obj) {
         return (this.toString().equals(obj.toString()));
     }

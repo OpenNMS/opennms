@@ -52,6 +52,7 @@ public class EventIdListFilter extends InFilter<Integer> {
      *
      * @return a {@link java.lang.String} object.
      */
+    @Override
     public String getTextDescription() {
         StringBuilder buf = new StringBuilder("eventId in ");
         buf.append("(");

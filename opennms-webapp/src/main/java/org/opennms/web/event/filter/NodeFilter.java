@@ -72,6 +72,7 @@ public class NodeFilter extends EqualsFilter<Integer> {
      *
      * @return a {@link java.lang.String} object.
      */
+    @Override
     public String getTextDescription() {
         String nodeName = getNodeLabel();
         
@@ -91,6 +92,7 @@ public class NodeFilter extends EqualsFilter<Integer> {
      *
      * @return a {@link java.lang.String} object.
      */
+    @Override
     public String toString() {
         return ("<WebEventRepository.NodeFilter: " + getDescription() + ">");
     }
@@ -105,6 +107,7 @@ public class NodeFilter extends EqualsFilter<Integer> {
     }
 
     /** {@inheritDoc} */
+    @Override
     public boolean equals(Object obj) {
         return (this.toString().equals(obj.toString()));
     }

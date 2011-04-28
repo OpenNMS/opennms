@@ -70,6 +70,7 @@ public class AfterDateFilter extends GreaterThanFilter<Date> {
      *
      * @return a {@link java.lang.String} object.
      */
+    @Override
     public String getTextDescription() {
         return ("date after \"" + getValue() + "\"");
     }
@@ -79,6 +80,7 @@ public class AfterDateFilter extends GreaterThanFilter<Date> {
      *
      * @return a {@link java.lang.String} object.
      */
+    @Override
     public String toString() {
         return ("<AfterTimeFilter: " + this.getDescription() + ">");
     }
@@ -93,6 +95,7 @@ public class AfterDateFilter extends GreaterThanFilter<Date> {
     }
 
     /** {@inheritDoc} */
+    @Override
     public boolean equals(Object obj) {
         return (this.toString().equals(obj.toString()));
     }
