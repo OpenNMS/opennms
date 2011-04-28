@@ -12,7 +12,7 @@
  * 
  * Created: August 22, 2007
  *
- * Copyright (C) 2007 The OpenNMS Group, Inc.  All rights reserved.
+ * Copyright (C) 2007-2011 The OpenNMS Group, Inc.  All rights reserved.
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -54,6 +54,8 @@ public class ParallelPingResponseCallback implements PingResponseCallback {
      * Value of round-trip-time for the ping packets in microseconds.
      */
     Number[] m_responseTimes;
+    
+    Throwable m_error;
 
     /**
      * <p>Constructor for ParallelPingResponseCallback.</p>
@@ -69,6 +71,7 @@ public class ParallelPingResponseCallback implements PingResponseCallback {
     public void handleError(InetAddress address, EchoPacket request, Throwable t) {
         try {
             m_responseTimes[request.getSequenceNumber()] = null;
+            m_error = t;
         } finally {
             m_latch.countDown();
         }
@@ -101,6 +104,15 @@ public class ParallelPingResponseCallback implements PingResponseCallback {
         m_latch.await();
     }
     
+    public void rethrowError() throws Exception {
+        if (m_error instanceof Error) {
+            throw (Error)m_error;
+        } else if (m_error instanceof Exception) {
+            throw (Exception)m_error;
+        }
+    }
+
+
     /**
      * <p>getResponseTimes</p>
      *

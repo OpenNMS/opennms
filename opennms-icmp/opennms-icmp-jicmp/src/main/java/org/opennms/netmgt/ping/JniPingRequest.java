@@ -56,11 +56,13 @@ import org.opennms.protocols.rt.Request;
  * @author <a href="mailto:brozow@opennms.org">Mathew Brozowski</a>
  */
 public class JniPingRequest implements Request<JniPingRequestId, JniPingRequest, JniPingResponse>, EchoPacket {
-    /** Constant <code>FILTER_ID=(short) (new java.util.Random(System.currentTimeMillis())).nextInt()</code> */
+
+
     public static final short FILTER_ID = (short) (new java.util.Random(System.currentTimeMillis())).nextInt();
+
     private static long s_nextTid = 1;
 
-    public static final long getNextTID() {
+    private static final long getNextTID() {
         return s_nextTid++;
     }
 

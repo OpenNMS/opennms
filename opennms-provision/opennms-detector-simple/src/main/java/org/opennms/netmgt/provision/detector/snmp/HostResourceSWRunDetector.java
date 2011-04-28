@@ -33,6 +33,7 @@ package org.opennms.netmgt.provision.detector.snmp;
 
 import java.net.InetAddress;
 import java.util.Map;
+import java.util.Map.Entry;
 
 import org.opennms.core.utils.InetAddressUtils;
 import org.opennms.netmgt.provision.DetectorMonitor;
@@ -131,11 +132,12 @@ public class HostResourceSWRunDetector extends SnmpDetector {
             Map<SnmpInstId, SnmpValue> nameResults = SnmpUtils.getOidValues(agentConfig, "HostResourceSwRunMonitor", SnmpObjId.get(getServiceNameOid()));
 
             // Iterate over the list of running services
-            for(SnmpInstId nameInstance : nameResults.keySet()) {
-                
+            for(Entry<SnmpInstId, SnmpValue> entry  : nameResults.entrySet()) {
+                SnmpValue value = entry.getValue();
+
                 // See if the service name is in the list of running services
-                if (stripExtraQuotes(nameResults.get(nameInstance).toString()).equalsIgnoreCase(serviceName) && !status) {
-                    log().debug("poll: HostResourceSwRunMonitor poll succeeded, addr=" + hostAddress + " service name=" + serviceName + " value=" + nameResults.get(nameInstance));
+                if (stripExtraQuotes(value.toString()).equalsIgnoreCase(serviceName) && !status) {
+                    log().debug("poll: HostResourceSwRunMonitor poll succeeded, addr=" + hostAddress + " service name=" + serviceName + " value=" + value);
                     status = true;
                     break;
                 }

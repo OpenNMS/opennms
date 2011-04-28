@@ -175,6 +175,7 @@ public class JniPinger implements Pinger {
         SinglePingResponseCallback cb = new SinglePingResponseCallback(host);
         ping(host, timeout, retries, (short)1, cb);
         cb.waitFor();
+        cb.rethrowError();
         return cb.getResponseTime();
     }
     

@@ -34,7 +34,6 @@ import java.net.InetAddress;
 import java.nio.ByteBuffer;
 import java.util.concurrent.TimeUnit;
 
-import org.opennms.core.utils.LogUtils;
 import org.opennms.jicmp.ip.ICMPEchoPacket;
 import org.opennms.jicmp.ip.ICMPPacket;
 import org.opennms.jicmp.ip.IPPacket;
@@ -79,7 +78,7 @@ public class V4Pinger extends AbstractPinger<Inet4Address> {
             
                 if (echoReply != null && echoReply.isValid()) {
                     // 64 bytes from 127.0.0.1: icmp_seq=0 time=0.069 ms
-                    LogUtils.debugf(this, "%d bytes from %s: tid=%d icmp_seq=%d time=%.3f ms\n", 
+                    System.out.printf("%d bytes from %s: tid=%d icmp_seq=%d time=%.3f ms\n", 
                         echoReply.getPacketLength(),
                         datagram.getAddress().getHostAddress(),
                         echoReply.getIdentifier(),

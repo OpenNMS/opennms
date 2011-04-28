@@ -33,18 +33,13 @@ import static org.opennms.netmgt.icmp.PingConstants.DEFAULT_RETRIES;
 import static org.opennms.netmgt.icmp.PingConstants.DEFAULT_TIMEOUT;
 
 import java.io.IOException;
-import java.net.Inet4Address;
-import java.net.Inet6Address;
 import java.net.InetAddress;
 import java.util.List;
 
-import org.opennms.jicmp.jna.NativeDatagramSocket;
 import org.opennms.netmgt.icmp.ParallelPingResponseCallback;
 import org.opennms.netmgt.icmp.PingResponseCallback;
+import org.opennms.netmgt.icmp.Pinger;
 import org.opennms.netmgt.icmp.SinglePingResponseCallback;
-import org.opennms.netmgt.icmp.spi.PingReply;
-import org.opennms.netmgt.icmp.spi.IPingRequest;
-import org.opennms.netmgt.icmp.spi.PingRequestId;
 import org.opennms.protocols.rt.IDBasedRequestLocator;
 import org.opennms.protocols.rt.RequestTracker;
 
@@ -54,28 +49,20 @@ import org.opennms.protocols.rt.RequestTracker;
  *
  * @author brozow
  */
-public class JnaPinger implements org.opennms.netmgt.icmp.Pinger {
+public class JnaPinger implements Pinger {
 
-	private final AbstractPinger<Inet4Address> v4Pinger;
-	private final AbstractPinger<Inet6Address> v6Pinger;
-
-	private RequestTracker<IPingRequest<NativeDatagramSocket>, PingReply> s_pingTracker;
-
-	public JnaPinger() throws Exception {
-		v4Pinger = new V4Pinger();
-		v6Pinger = new V6Pinger();
-	}
+	private RequestTracker<JnaPingRequest, JnaPingReply> m_pingTracker;
+    private JnaIcmpMessenger m_messenger;
 
 	/**
 	 * Initializes this singleton
 	 * @throws Exception 
 	 */
 	public synchronized void initialize() throws Exception {
-		if (s_pingTracker != null) return;
-		v4Pinger.start();
-		v6Pinger.start();
-		s_pingTracker = new RequestTracker<IPingRequest<NativeDatagramSocket>, PingReply>("JNA-ICMP", new PingMessenger(v4Pinger, v6Pinger), new IDBasedRequestLocator<PingRequestId, IPingRequest<NativeDatagramSocket>, PingReply>());
-		s_pingTracker.start();
+		if (m_pingTracker != null) return;
+		m_messenger = new JnaIcmpMessenger();
+        m_pingTracker = new RequestTracker<JnaPingRequest, JnaPingReply>("JNA-ICMP", m_messenger, new IDBasedRequestLocator<JnaPingRequestId, JnaPingRequest, JnaPingReply>());
+		m_pingTracker.start();
 	}
 
 	/**
@@ -90,7 +77,7 @@ public class JnaPinger implements org.opennms.netmgt.icmp.Pinger {
 	 */
 	public void ping(InetAddress host, long timeout, int retries, int sequenceId, PingResponseCallback cb) throws Exception {
 		initialize();
-		s_pingTracker.sendRequest(new JnaPingRequest(v4Pinger, v6Pinger, host, sequenceId, timeout, retries, cb));
+		m_pingTracker.sendRequest(new JnaPingRequest(getV4Pinger(), getV6Pinger(), host, sequenceId, timeout, retries, cb));
 	}
 
 	/**
@@ -113,6 +100,7 @@ public class JnaPinger implements org.opennms.netmgt.icmp.Pinger {
 		SinglePingResponseCallback cb = new SinglePingResponseCallback(host);
 		ping(host, timeout, retries, 1, cb);
 		cb.waitFor();
+        cb.rethrowError();
 		return cb.getResponseTime();
 	}
 
@@ -149,14 +137,28 @@ public class JnaPinger implements org.opennms.netmgt.icmp.Pinger {
 
 		int tid = (int)JnaPingRequest.getNextTID();
 		for (int i = 0; i < count; i++) {
-			IPingRequest<NativeDatagramSocket> request = new JnaPingRequest(v4Pinger, v6Pinger, host, tid, i, timeout, 0, cb);
-			s_pingTracker.sendRequest(request);
+		    JnaPingRequest request = new JnaPingRequest(getV4Pinger(), getV6Pinger(), host, tid, i, timeout, 0, cb);
+			m_pingTracker.sendRequest(request);
 			Thread.sleep(pingInterval);
 		}
 
 		cb.waitFor();
 		return cb.getResponseTimes();
 	}
+
+    /**
+     * @return the v4Pinger
+     */
+    private V4Pinger getV4Pinger() {
+        return m_messenger.getV4Pinger();
+    }
+
+    /**
+     * @return the v6Pinger
+     */
+    private V6Pinger getV6Pinger() {
+        return m_messenger.getV6Pinger();
+    }
 
 	/*
 	/**

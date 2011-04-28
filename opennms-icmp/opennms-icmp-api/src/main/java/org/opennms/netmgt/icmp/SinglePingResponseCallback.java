@@ -48,14 +48,18 @@ import org.opennms.core.utils.ThreadCategory;
  * @author <a href="mailto:brozow@opennms.org">Mathew Brozowski</a>
  */
 public class SinglePingResponseCallback implements PingResponseCallback {
-    private CountDownLatch m_latch = new CountDownLatch(1);
 
+    
     /**
      * Value of round-trip-time for the ping in microseconds.
      */
     private Long m_responseTime = null;
 
     private InetAddress m_host;
+    
+    private Throwable m_error = null;
+
+    private CountDownLatch m_latch = new CountDownLatch(1);
 
     /**
      * <p>Constructor for SinglePingResponseCallback.</p>
@@ -93,6 +97,7 @@ public class SinglePingResponseCallback implements PingResponseCallback {
     /** {@inheritDoc} */
     public void handleError(InetAddress address, EchoPacket request, Throwable t) {
         try {
+            m_error = t;
             info("an error occurred pinging " + address, t);
         } finally {
             m_latch.countDown();
@@ -120,6 +125,14 @@ public class SinglePingResponseCallback implements PingResponseCallback {
         info("finished waiting for ping to "+m_host+" to finish");
     }
 
+    public void rethrowError() throws Exception {
+        if (m_error instanceof Error) {
+            throw (Error)m_error;
+        } else if (m_error instanceof Exception) {
+            throw (Exception)m_error;
+        }
+    }
+
     /**
      * <p>Getter for the field <code>responseTime</code>.</p>
      *
@@ -127,6 +140,10 @@ public class SinglePingResponseCallback implements PingResponseCallback {
      */
     public Long getResponseTime() {
         return m_responseTime;
+    }
+    
+    public Throwable getError() {
+        return m_error;
     }
 
     /**
@@ -146,5 +163,6 @@ public class SinglePingResponseCallback implements PingResponseCallback {
     public void info(String msg, Throwable t) {
         log().info(msg, t);
     }
+
 
 }

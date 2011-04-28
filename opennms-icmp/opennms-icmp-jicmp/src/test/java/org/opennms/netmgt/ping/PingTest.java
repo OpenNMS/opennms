@@ -54,6 +54,7 @@ import org.opennms.netmgt.icmp.Pinger;
  * @author <a href="mailto:ranger@opennms.org>Ben Reed</a>
  */
 public class PingTest extends TestCase {
+
     private InetAddress m_goodHost = null;
     private InetAddress m_badHost = null;
 
@@ -109,7 +110,7 @@ public class PingTest extends TestCase {
         assertTrue("Negative RTT value returned from ping", rtt.doubleValue() > 0);
     }
     
-    private class TestPingResponseCallback implements PingResponseCallback {
+    private static class TestPingResponseCallback implements PingResponseCallback {
         private final CountDownLatch m_latch = new CountDownLatch(1);
         private InetAddress m_address;
         private EchoPacket m_packet;
@@ -121,6 +122,7 @@ public class PingTest extends TestCase {
             m_address = address;
             m_packet = response;
             m_latch.countDown();
+            System.err.println("RESPONSE COUNTED DOWN");
         }
         
         @Override
@@ -129,6 +131,7 @@ public class PingTest extends TestCase {
             m_address = address;
             m_packet = request;
             m_latch.countDown();
+            System.err.println("TIMEOUT COUNTED DOWN");
         }
         
         @Override
@@ -137,6 +140,8 @@ public class PingTest extends TestCase {
             m_packet = request;
             m_throwable = t;
             m_latch.countDown();
+            System.err.println("ERROR COUNTED DOWN");
+            t.printStackTrace();
         }
         
         public void await() throws InterruptedException {
@@ -177,8 +182,8 @@ public class PingTest extends TestCase {
         TestPingResponseCallback cb = new TestPingResponseCallback();
         pinger.ping(m_badHost, PingConstants.DEFAULT_TIMEOUT, PingConstants.DEFAULT_RETRIES, 1, cb);
         cb.await();
+        assertNull("Unexpected Error sending ping to " +m_badHost + ": " + cb.getThrowable(), cb.getThrowable());
         assertTrue(cb.isTimeout());
-        assertNull(cb.getThrowable());
         assertNotNull(cb.getPacket());
         assertNotNull(cb.getAddress());
         
@@ -246,9 +251,9 @@ public class PingTest extends TestCase {
         Number average = CollectionMath.average(items);
         Number median = CollectionMath.median(items);
         
-        if (passedPercent == null) passedPercent = new Long(0);
-        if (failedPercent == null) failedPercent = new Long(100);
-        if (median        == null) median        = new Double(0);
+        if (passedPercent == null) passedPercent = Long.valueOf(0);
+        if (failedPercent == null) failedPercent = Long.valueOf(100);
+        if (median        == null) median        = Double.valueOf(0);
 
         if (average == null) {
             average = new Double(0);

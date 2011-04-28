@@ -66,6 +66,15 @@ public class V6Pinger extends AbstractPinger<Inet6Address> {
         }
     }
     
+    
+    
+//    @Override
+//    public void start() {
+//        throw new UnsupportedOperationException("Put socket initialization here rather than the constructor");
+//    }
+
+
+
     public void run() {
         try {
             NativeDatagramPacket datagram = new NativeDatagramPacket(65535);

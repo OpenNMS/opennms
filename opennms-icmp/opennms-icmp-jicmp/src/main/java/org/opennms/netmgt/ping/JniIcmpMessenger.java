@@ -107,6 +107,7 @@ public class JniIcmpMessenger implements Messenger<JniPingRequest, JniPingRespon
                 }
             }
         };
+        socketReader.setDaemon(true);
         socketReader.start();
     }
 
