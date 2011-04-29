@@ -36,4 +36,23 @@ public interface EventForwarder {
 	 */
 	 public void flushSyncEvent(Event event);
 
+	 /**
+	  * This method should be invoked before
+	  * flushing sync events
+	  * The class implementation should
+	  * send the "startSync" event
+	  * in the preferred format
+	  * 
+	  */
+	 public void sendStartSync();
+	 
+	 /**
+	  * This method should be invoked after
+	  * flushing sync events.
+	  * The class implementation should 
+	  * send the "endSync" event
+	  * in the preferred format
+	  * 
+	  */
+	 public void sendEndSync();
 }

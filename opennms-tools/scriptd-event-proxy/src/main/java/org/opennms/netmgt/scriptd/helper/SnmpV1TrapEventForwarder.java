@@ -26,5 +26,13 @@ public class SnmpV1TrapEventForwarder extends SnmpTrapForwarderHelper implements
 		flushEvent(event);
 	}
 
+	public void sendStartSync() {
+		throw new UnsupportedOperationException();
+	}
+
+	public void sendEndSync() {
+		throw new UnsupportedOperationException();
+	}
+
 	
 }

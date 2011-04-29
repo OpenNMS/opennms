@@ -2,24 +2,26 @@ package org.opennms.netmgt.scriptd.helper;
 
 import java.text.DateFormat;
 import java.util.ArrayList;
-import java.util.Iterator;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 import java.util.TimeZone;
 
-import org.hibernate.ObjectNotFoundException;
 import org.hibernate.criterion.Restrictions;
+
 import org.opennms.core.utils.BeanUtils;
 import org.opennms.core.utils.ThreadCategory;
-import org.opennms.netmgt.dao.EventDao;
+
+import org.opennms.netmgt.dao.AlarmDao;
+
 import org.opennms.netmgt.model.OnmsAlarm;
 import org.opennms.netmgt.model.OnmsCriteria;
 import org.opennms.netmgt.model.OnmsEvent;
-import org.opennms.netmgt.model.OnmsSeverity;
-import org.opennms.netmgt.model.events.Parameter;
+
 import org.opennms.netmgt.xml.event.AlarmData;
 import org.opennms.netmgt.xml.event.Event;
 import org.opennms.netmgt.xml.event.Logmsg;
-import org.opennms.netmgt.xml.event.Parms;
+
 import org.springframework.beans.factory.access.BeanFactoryReference;
 import org.springframework.transaction.TransactionStatus;
 import org.springframework.transaction.support.TransactionCallback;
@@ -41,7 +43,7 @@ public class AlarmEventSynchronization implements EventSynchronization {
         return log;
     }
 
-	String m_criteriaRestriction = "EXISTS (select 1 from alarms where severity > 3 and alarms.alarmid = alarmid and eventtime = lasteventtime)";
+	String m_criteriaRestriction = "";
 
 	public void addEventForwarder(EventForwarder forwarder) {
 		if (forwarder != null)
@@ -57,27 +59,31 @@ public class AlarmEventSynchronization implements EventSynchronization {
 	}
 
 	public void sync() {
+		
 		for (EventForwarder forwarder: m_forwarders) {
+			forwarder.sendStartSync();
 			for (Event event: getEvents()) {
 				forwarder.flushSyncEvent(event);
 			}
+			forwarder.sendEndSync();
 		}
 	}
 
-	private Event getXMLEvent(OnmsEvent ev) {
+	private Event getXMLEvent(OnmsAlarm ev) {
         Event e = new Event();
-        e.setDbid(ev.getId());
+        
+        e.setDbid(ev.getLastEvent().getId());
 
         //UEI
-        if (ev.getEventUei() != null ) {
-            e.setUei(ev.getEventUei());
+        if (ev.getUei() != null ) {
+            e.setUei(ev.getUei());
         } else {
             return null;
         }
 
         // Source
-        if (ev.getEventSource() != null ) {
-            e.setSource(ev.getEventSource());
+        if (ev.getLastEvent().getEventSource() != null ) {
+            e.setSource(ev.getLastEvent().getEventSource());
         } 
 
         //nodeid
@@ -87,15 +93,15 @@ public class AlarmEventSynchronization implements EventSynchronization {
 
 
         // timestamp
-        if (ev.getEventTime() != null) {
+        if (ev.getLastEventTime() != null) {
             DateFormat dateFormat = DateFormat.getDateTimeInstance(DateFormat.FULL, DateFormat.FULL);
             dateFormat.setTimeZone(TimeZone.getTimeZone("GMT"));
-            e.setTime(dateFormat.format(ev.getEventTime()));
+            e.setTime(dateFormat.format(ev.getLastEventTime()));
         }
         
         // host
-        if (ev.getEventHost() != null) {
-            e.setHost(ev.getEventHost());
+        if (ev.getLastEvent().getEventHost() != null) {
+            e.setHost(ev.getLastEvent().getEventHost());
         }
         
         // interface
@@ -110,74 +116,76 @@ public class AlarmEventSynchronization implements EventSynchronization {
         }
 
         // Description
-        if (ev.getEventDescr() != null ) {
-            e.setDescr(ev.getEventDescr());
+        if (ev.getDescription() != null ) {
+            e.setDescr(ev.getDescription());
         }
         
         // Log message
-        if (ev.getEventLogMsg() != null) {
+        if (ev.getLogMsg() != null) {
             Logmsg msg = new Logmsg();
-            msg.setContent(ev.getEventLogMsg());
+            msg.setContent(ev.getLogMsg());
             e.setLogmsg(msg);
         }
 
         // severity
-        if (ev.getEventSeverity() != null) {
-            e.setSeverity(OnmsSeverity.get(ev.getEventSeverity()).getLabel());
+        if (ev.getSeverity() != null) {
+            e.setSeverity((ev.getSeverity()).getLabel());
         }
         
         // operator Instruction
-        if (ev.getEventOperInstruct() != null) {
-            e.setOperinstruct(ev.getEventOperInstruct());
-        }
-
-        // parms
-        if (ev.getEventParms() != null ) {
-            Parms parms = Parameter.decode(ev.getEventParms());
-            if (parms != null ) e.setParms(parms);
+        if (ev.getOperInstruct() != null) {
+            e.setOperinstruct(ev.getOperInstruct());
         }
 
         AlarmData ad = new AlarmData();
-        OnmsAlarm onmsAlarm = ev
-                .getAlarm();
-        try {
-            if (onmsAlarm != null) {
-                ad
-                        .setReductionKey(onmsAlarm
-                                .getReductionKey());
-                ad
-                        .setAlarmType(onmsAlarm
-                                .getAlarmType());
-                ad
-                        .setClearKey(onmsAlarm
-                                .getClearKey());
-                e
-                        .setAlarmData(ad);
-            }
-        } catch (ObjectNotFoundException e1) {
-        }
+        ad.setReductionKey(ev.getReductionKey());
+        ad.setAlarmType(ev.getAlarmType());
+        if (ev.getClearKey() != null)
+        	ad.setClearKey(ev.getClearKey());
+        e.setAlarmData(ad);
         return e;
     }
 	
-	@SuppressWarnings("unchecked")
-    private List<Event> getEventsByCriteria() {
+    @SuppressWarnings("rawtypes")
+	private List<Event> getEventsByCriteria() {
         BeanFactoryReference bf = BeanUtils.getBeanFactory("daoContext");
-        final EventDao eventDao = BeanUtils.getBean(bf,"eventDao", EventDao.class);
+        final AlarmDao alarmDao = BeanUtils.getBean(bf,"alarmDao", AlarmDao.class);
         final List<Event> xmlevents = new ArrayList<Event>();
         TransactionTemplate transTemplate = BeanUtils.getBean(bf, "transactionTemplate",TransactionTemplate.class);
         try {
-                transTemplate.execute(new TransactionCallback() {
+                transTemplate.execute(new TransactionCallback<Object>() {
                 public Object doInTransaction(final TransactionStatus status) {
                     final OnmsCriteria criteria = new OnmsCriteria(OnmsEvent.class);
                     criteria.add(Restrictions.sqlRestriction(m_criteriaRestriction));
-                    List<OnmsEvent> events = eventDao.findMatching(criteria);
-                    if (events != null && events.size()>0) {
-                        Iterator<OnmsEvent> ite = events.iterator();
-                        while (ite.hasNext()) {
-                            Event xmlEvent = getXMLEvent(ite.next());
-                            if (xmlEvent != null) xmlevents.add(xmlEvent);
-                        }
+                    List<OnmsAlarm> alarms = alarmDao.findMatching(criteria);
+                    Map<String, OnmsAlarm> forwardAlarms = new HashMap<String, OnmsAlarm>();
+                	for (OnmsAlarm alarm : alarms) {
+                		if (alarm.getAlarmType() == 2) {               
+                			if (forwardAlarms.containsKey(alarm.getClearKey())) {
+                				OnmsAlarm raisingAlarm = forwardAlarms.get(alarm.getClearKey());
+                				if (raisingAlarm.getLastEventTime().before(alarm.getLastEventTime()))
+                					forwardAlarms.remove(alarm.getClearKey());
+                			} else {
+                    			forwardAlarms.put(alarm.getClearKey(), alarm);                			                				
+                			}
+                		} else if (alarm.getAlarmType() == 1){
+                			if (forwardAlarms.containsKey(alarm.getReductionKey())) {
+                  				OnmsAlarm clearingAlarm = forwardAlarms.get(alarm.getReductionKey());
+                  			    if (clearingAlarm.getLastEventTime().after(alarm.getLastEventTime()))
+                  			    	forwardAlarms.remove(alarm.getReductionKey());
+                			} else {
+                				forwardAlarms.put(alarm.getReductionKey(), alarm);                			                			
+                			}
+                		}  else {
+            				forwardAlarms.put(alarm.getReductionKey(), alarm);                			                			                			
+                		}
                     }
+                	for (OnmsAlarm alarm : forwardAlarms.values()) {
+                		if (alarm.getAlarmType() != 2) {               
+                			Event xmlEvent = getXMLEvent(alarm);
+                        	if (xmlEvent != null) xmlevents.add(xmlEvent);
+                		}
+                	}
                     return new Object();
                 }
 

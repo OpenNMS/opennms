@@ -108,6 +108,104 @@ public abstract class SnmpTrapForwarderHelper extends AbstractEventForwarder imp
 		this.retries = retries;
 	}
 
+	public void sendV1StartSyncTrap() {
+        try {
+    		SnmpTrapBuilder trap = snmpTrapHelper.createV1Trap(".1.3.6.1.4.1.5813.1",getSource_ip(), 6, 5, 0);
+			trap.send(getIp(), getPort(), getCommunity());
+		} catch (Exception e) {
+			e.printStackTrace();
+		}	
+	}
+
+	public void sendV1EndSyncTrap() {
+        try {
+    		SnmpTrapBuilder trap = snmpTrapHelper.createV1Trap(".1.3.6.1.4.1.5813.1",getSource_ip(), 6, 6, 0);
+			trap.send(getIp(), getPort(), getCommunity());
+		} catch (Exception e) {
+			e.printStackTrace();
+		}	
+	}
+
+	public void sendV2StartSyncTrap() {
+		long trapTimeStamp = 0;
+        try {
+    		SnmpTrapBuilder trap = snmpTrapHelper.createV2Trap(".1.3.6.1.4.1.5813.1.5",Long.toString(trapTimeStamp));
+			trap.send(getIp(), getPort(), getCommunity());
+		} catch (Exception e) {
+			e.printStackTrace();
+		}	
+	}
+
+	public void sendV2EndSyncTrap() {
+		long trapTimeStamp = 0;
+        try {
+    		SnmpTrapBuilder trap = snmpTrapHelper.createV2Trap(".1.3.6.1.4.1.5813.1.6",Long.toString(trapTimeStamp));
+			trap.send(getIp(), getPort(), getCommunity());
+		} catch (Exception e) {
+			e.printStackTrace();
+		}	
+	}
+
+	public void sendV2StartSyncInform() {
+		long trapTimeStamp = 0;
+        try {
+    		SnmpV2TrapBuilder inform = snmpTrapHelper.createV2Inform(".1.3.6.1.4.1.5813.1.5",Long.toString(trapTimeStamp));
+			inform.sendInform(getIp(), getPort(), getTimeout(), getRetries(), getCommunity());
+		} catch (Exception e) {
+			e.printStackTrace();
+		}
+	}
+
+	public void sendV2EndSyncInform() {
+		long trapTimeStamp = 0;
+        try {
+    		SnmpV2TrapBuilder inform = snmpTrapHelper.createV2Inform(".1.3.6.1.4.1.5813.1.6",Long.toString(trapTimeStamp));
+			inform.sendInform(getIp(), getPort(), getTimeout(), getRetries(), getCommunity());
+		} catch (Exception e) {
+			e.printStackTrace();
+		}
+	}
+
+	public void sendV3StartSyncTrap() {
+		long trapTimeStamp = 0;
+        try {
+    		SnmpV3TrapBuilder trap = snmpTrapHelper.createV3Trap(".1.3.6.1.4.1.5813.1.5",Long.toString(trapTimeStamp));
+			trap.send(getIp(), getPort(), getSecurityLevel(), getSecurityname(), getAuthPassPhrase(), getAuthProtocol(), getPrivPassPhrase(), getPrivprotocol());
+		} catch (Exception e) {
+			e.printStackTrace();
+		}	
+	}
+
+	public void sendV3EndSyncTrap() {
+		long trapTimeStamp = 0;
+        try {
+    		SnmpV3TrapBuilder trap = snmpTrapHelper.createV3Trap(".1.3.6.1.4.1.5813.1.6",Long.toString(trapTimeStamp));
+			trap.send(getIp(), getPort(), getSecurityLevel(), getSecurityname(), getAuthPassPhrase(), getAuthProtocol(), getPrivPassPhrase(), getPrivprotocol());
+		} catch (Exception e) {
+			e.printStackTrace();
+		}	
+	}
+
+	public void sendV3StartSyncInform() {
+		long trapTimeStamp = 0;
+        try {
+    		SnmpV3TrapBuilder inform = snmpTrapHelper.createV3Inform(".1.3.6.1.4.1.5813.1.5",Long.toString(trapTimeStamp));
+			inform.sendInform(getIp(), getPort(), getTimeout(), getRetries(),getSecurityLevel(), getSecurityname(), getAuthPassPhrase(), getAuthProtocol(), getPrivPassPhrase(), getPrivprotocol());
+		} catch (Exception e) {
+			e.printStackTrace();
+		}
+	}
+
+	public void sendV3EndSyncInform() {
+		long trapTimeStamp = 0;
+        try {
+    		SnmpV3TrapBuilder inform = snmpTrapHelper.createV3Inform(".1.3.6.1.4.1.5813.1.6",Long.toString(trapTimeStamp));
+			inform.sendInform(getIp(), getPort(), getTimeout(), getRetries(),getSecurityLevel(), getSecurityname(), getAuthPassPhrase(), getAuthProtocol(), getPrivPassPhrase(), getPrivprotocol());
+		} catch (Exception e) {
+			e.printStackTrace();
+		}
+	}
+
 	public void sendV1AlarmTrap( Event event, boolean sync) throws UnknownHostException {
 		SnmpTrapBuilder trap = snmpTrapHelper.createV1Trap(".1.3.6.1.4.1.5813.1",getSource_ip(), 6, 3, 0);
 		trap = buildAlarmTrap(event, sync, trap);

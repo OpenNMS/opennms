@@ -30,5 +30,13 @@ public class SnmpV3InformEventForwarder extends SnmpTrapForwarderHelper implemen
 		flushEvent(event);
 	}
 
+	public void sendStartSync() {
+		throw new UnsupportedOperationException();
+	}
+
+	public void sendEndSync() {
+		throw new UnsupportedOperationException();
+	}
+
 	
 }

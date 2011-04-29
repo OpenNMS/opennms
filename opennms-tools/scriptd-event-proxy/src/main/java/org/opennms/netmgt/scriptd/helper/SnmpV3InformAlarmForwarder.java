@@ -39,4 +39,13 @@ public class SnmpV3InformAlarmForwarder extends SnmpTrapForwarderHelper implemen
 		}
 		}
 	}
+
+	public void sendStartSync() {
+		super.sendV3StartSyncInform();
+	}
+
+	public void sendEndSync() {
+		super.sendV3EndSyncInform();
+		
+	}
 }
