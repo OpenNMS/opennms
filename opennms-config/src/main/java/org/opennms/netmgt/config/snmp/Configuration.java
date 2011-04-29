@@ -83,14 +83,14 @@ public class Configuration implements Serializable {
 	 * 
 	 */
 	@XmlAttribute(name="max-vars-per-pdu")
-	private Integer _maxVarsPerPdu = 10;
+	private Integer _maxVarsPerPdu;
 
 	/**
 	 * Number of repetitions to send per get-bulk request.
 	 * 
 	 */
 	@XmlAttribute(name="max-repetitions")
-	private Integer _maxRepetitions = 2;
+	private Integer _maxRepetitions;
 
 	/**
 	 * (SNMP4J specific) Specifies the maximum number of bytes that may be
@@ -99,7 +99,7 @@ public class Configuration implements Serializable {
 	 * least 484.
 	 */
 	@XmlAttribute(name="max-request-size")
-	private Integer _maxRequestSize = 65535;
+	private Integer _maxRequestSize;
 
 	/**
 	 * SNMPv3
@@ -342,7 +342,7 @@ public class Configuration implements Serializable {
 	 * @return the value of field 'MaxRepetitions'.
 	 */
 	public Integer getMaxRepetitions() {
-		return _maxRepetitions == null? 0 : _maxRepetitions;
+		return _maxRepetitions == null? 2 : _maxRepetitions;
 	}
 
 	/**
@@ -355,7 +355,7 @@ public class Configuration implements Serializable {
 	 * @return the value of field 'MaxRequestSize'.
 	 */
 	public Integer getMaxRequestSize() {
-		return _maxRequestSize == null? 0 : _maxRequestSize;
+		return _maxRequestSize == null? 65535 : _maxRequestSize;
 	}
 
 	/**
@@ -366,7 +366,7 @@ public class Configuration implements Serializable {
 	 * @return the value of field 'MaxVarsPerPdu'.
 	 */
 	public Integer getMaxVarsPerPdu() {
-		return _maxVarsPerPdu == null? 0 : _maxVarsPerPdu;
+		return _maxVarsPerPdu == null? 10 : _maxVarsPerPdu;
 	}
 
 	/**
