@@ -22,6 +22,8 @@ import javax.xml.bind.annotation.XmlAccessorType;
 import javax.xml.bind.annotation.XmlElement;
 import javax.xml.bind.annotation.XmlRootElement;
 
+import org.apache.commons.lang.builder.EqualsBuilder;
+import org.apache.commons.lang.builder.ToStringBuilder;
 import org.exolab.castor.xml.MarshalException;
 import org.exolab.castor.xml.Marshaller;
 import org.exolab.castor.xml.Unmarshaller;
@@ -181,42 +183,17 @@ public class Definition extends Configuration implements Serializable {
      */
     @Override()
     public boolean equals(final Object obj) {
-        if (this == obj) return true;
-        if (super.equals(obj)==false) return false;
-        
-        if (obj instanceof Definition) {
-        
-        	final Definition temp = (Definition)obj;
-            if (this._rangeList != null) {
-                if (temp._rangeList == null) {
-                	return false;
-                } else if (!(this._rangeList.equals(temp._rangeList))) { 
-                    return false;
-                }
-            } else if (temp._rangeList != null) {
-                return false;
-            }
-            if (this._specificList != null) {
-                if (temp._specificList == null) {
-                	return false;
-                } else if (!(this._specificList.equals(temp._specificList))) {
-                    return false;
-                }
-            } else if (temp._specificList != null) {
-                return false;
-            }
-            if (this._ipMatchList != null) {
-                if (temp._ipMatchList == null) {
-                	return false;
-                } else if (!(this._ipMatchList.equals(temp._ipMatchList))) {
-                    return false;
-                }
-            } else if (temp._ipMatchList != null) {
-                return false;
-            }
-            return true;
-        }
-        return false;
+		if (obj instanceof Configuration == false) return false;
+		if (this == obj) return true;
+
+		final Definition temp = (Definition)obj;
+		
+		return new EqualsBuilder()
+			.appendSuper(super.equals(obj))
+			.append(getRangeCollection(), temp.getRangeCollection())
+			.append(getSpecificCollection(), temp.getSpecificCollection())
+			.append(getIpMatchCollection(), temp.getIpMatchCollection())
+			.isEquals();
     }
 
     /**
@@ -729,4 +706,13 @@ public class Definition extends Configuration implements Serializable {
         new Validator().validate(this);
     }
 
+    @Override
+    public String toString() {
+    	return new ToStringBuilder(this)
+    		.appendSuper(super.toString())
+    		.append("ranges", getRangeCollection())
+    		.append("specifics", getSpecificCollection())
+    		.append("ip-matches", getIpMatchCollection())
+    		.toString();
+    }
 }

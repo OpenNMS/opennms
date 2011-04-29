@@ -10,6 +10,8 @@ import javax.xml.bind.annotation.XmlAccessorType;
 import javax.xml.bind.annotation.XmlAttribute;
 import javax.xml.bind.annotation.XmlRootElement;
 
+import org.apache.commons.lang.builder.EqualsBuilder;
+import org.apache.commons.lang.builder.ToStringBuilder;
 import org.exolab.castor.xml.MarshalException;
 import org.exolab.castor.xml.Marshaller;
 import org.exolab.castor.xml.Unmarshaller;
@@ -50,32 +52,15 @@ public class Range implements Serializable {
      */
     @Override()
     public boolean equals(final Object obj) {
-        if (this == obj) return true;
-        
-        if (obj instanceof Range) {
-        
-        	final Range temp = (Range)obj;
-            if (this._begin != null) {
-                if (temp._begin == null) {
-                	return false;
-                } else if (!(this._begin.equals(temp._begin))) {
-                    return false;
-                }
-            } else if (temp._begin != null) {
-                return false;
-            }
-            if (this._end != null) {
-                if (temp._end == null) {
-                	return false;
-                } else if (!(this._end.equals(temp._end))) {
-                    return false;
-                }
-            } else if (temp._end != null) {
-                return false;
-            }
-            return true;
-        }
-        return false;
+		if (obj instanceof Range == false) return false;
+		if (this == obj) return true;
+
+		final Range temp = (Range)obj;
+
+		return new EqualsBuilder()
+			.append(getBegin(), temp.getBegin())
+			.append(getEnd(), temp.getEnd())
+			.isEquals();
     }
 
     /**
@@ -205,4 +190,12 @@ public class Range implements Serializable {
         new Validator().validate(this);
     }
 
+    @Override
+    public String toString() {
+    	return new ToStringBuilder(this)
+    		.appendSuper(super.toString())
+    		.append("begin", getBegin())
+    		.append("end", getEnd())
+    		.toString();
+    }
 }

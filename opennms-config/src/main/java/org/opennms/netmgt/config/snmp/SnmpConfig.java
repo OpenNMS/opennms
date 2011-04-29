@@ -16,6 +16,8 @@ import javax.xml.bind.annotation.XmlAccessorType;
 import javax.xml.bind.annotation.XmlElement;
 import javax.xml.bind.annotation.XmlRootElement;
 
+import org.apache.commons.lang.builder.EqualsBuilder;
+import org.apache.commons.lang.builder.ToStringBuilder;
 import org.exolab.castor.xml.MarshalException;
 import org.exolab.castor.xml.Marshaller;
 import org.exolab.castor.xml.Unmarshaller;
@@ -38,14 +40,42 @@ public class SnmpConfig extends Configuration implements Serializable {
      * Maps IP addresses to specific SNMP parameters (retries, timeouts...)
      */
 	 @XmlElement(name="definition")
-    private List<Definition> _definitionList;
+    private List<Definition> _definitionList = new ArrayList<Definition>();
 
     public SnmpConfig() {
         super();
-        this._definitionList = new ArrayList<Definition>();
     }
 
-    /**
+    public SnmpConfig(
+    		final Integer port,
+    		final Integer retry,
+    		final Integer timeout,
+    		final String readCommunity,
+    		final String writeCommunity,
+			final String proxyHost,
+			final String version,
+			final Integer maxVarsPerPdu,
+			final Integer maxRepetitions,
+			final Integer maxRequestSize,
+			final String securityName,
+			final Integer securityLevel,
+			final String authPassphrase,
+			final String authProtocol,
+			final String engineId,
+			final String contextEngineId,
+			final String contextName,
+			final String privacyPassphrase,
+			final String privacyProtocol,
+			final String enterpriseId,
+			final List<Definition> definitionList) {
+    	super(port, retry, timeout, readCommunity, writeCommunity, proxyHost, version, maxVarsPerPdu, maxRepetitions, maxRequestSize,
+    			securityName, securityLevel, authPassphrase, authProtocol, engineId, contextEngineId, contextName, privacyPassphrase,
+    			privacyProtocol, enterpriseId);
+    	setDefinition(definitionList);
+	}
+
+
+	/**
      * 
      * 
      * @param vDefinition
@@ -86,25 +116,15 @@ public class SnmpConfig extends Configuration implements Serializable {
      */
     @Override()
     public boolean equals(final Object obj) {
-        if (this == obj) return true;
-        if (super.equals(obj)==false) return false;
-        
-        if (obj instanceof SnmpConfig) {
-        
-        	final SnmpConfig temp = (SnmpConfig)obj;
-            if (this._definitionList != null) {
-                if (temp._definitionList == null) {
-                	return false;
-                } else if (!(this._definitionList.equals(temp._definitionList))) {
-                    return false;
-                }
-            }
-            else if (temp._definitionList != null) {
-                return false;
-            }
-            return true;
-        }
-        return false;
+		if (obj instanceof Configuration == false) return false;
+		if (this == obj) return true;
+
+		final SnmpConfig temp = (SnmpConfig)obj;
+
+		return new EqualsBuilder()
+			.appendSuper(super.equals(obj))
+			.append(getDefinitionCollection(), temp.getDefinitionCollection())
+			.isEquals();
     }
 
     /**
@@ -331,4 +351,11 @@ public class SnmpConfig extends Configuration implements Serializable {
         new Validator().validate(this);
     }
 
+    @Override
+    public String toString() {
+    	return new ToStringBuilder(this)
+    		.appendSuper(super.toString())
+    		.append("definitions", getDefinitionCollection())
+    		.toString();
+    }
 }

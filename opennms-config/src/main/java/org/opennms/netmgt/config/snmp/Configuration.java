@@ -15,6 +15,8 @@ import javax.xml.bind.annotation.XmlAccessorType;
 import javax.xml.bind.annotation.XmlAttribute;
 import javax.xml.bind.annotation.XmlRootElement;
 
+import org.apache.commons.lang.builder.EqualsBuilder;
+import org.apache.commons.lang.builder.ToStringBuilder;
 import org.exolab.castor.xml.MarshalException;
 import org.exolab.castor.xml.Marshaller;
 import org.exolab.castor.xml.Unmarshaller;
@@ -87,7 +89,7 @@ public class Configuration implements Serializable {
 	 * Number of repetitions to send per get-bulk request.
 	 * 
 	 */
-	@XmlAttribute(name="max-repititions")
+	@XmlAttribute(name="max-repetitions")
 	private Integer _maxRepetitions = 2;
 
 	/**
@@ -96,62 +98,117 @@ public class Configuration implements Serializable {
 	 * to limit the size of outgoing PDU requests. Default is 65535, must be at
 	 * least 484.
 	 */
+	@XmlAttribute(name="max-request-size")
 	private Integer _maxRequestSize = 65535;
 
 	/**
 	 * SNMPv3
 	 */
+	@XmlAttribute(name="security-name")
 	private String _securityName;
 
 	/**
 	 * SNMPv3
 	 */
+	@XmlAttribute(name="security-level")
 	private Integer _securityLevel;
 
 	/**
 	 * SNMPv3
 	 */
+	@XmlAttribute(name="auth-passphrase")
 	private String _authPassphrase;
 
 	/**
 	 * SNMPv3
 	 */
+	@XmlAttribute(name="auth-protocol")
 	private String _authProtocol;
 
 	/**
 	 * SNMPv3
 	 */
+	@XmlAttribute(name="engine-id")
 	private String _engineId;
 
 	/**
 	 * SNMPv3
 	 */
+	@XmlAttribute(name="context-engine-id")
 	private String _contextEngineId;
 
 	/**
 	 * SNMPv3
 	 */
+	@XmlAttribute(name="context-name")
 	private String _contextName;
 
 	/**
 	 * SNMPv3
 	 */
+	@XmlAttribute(name="privacy-passphrase")
 	private String _privacyPassphrase;
 
 	/**
 	 * SNMPv3
 	 */
+	@XmlAttribute(name="privacy-protocol")
 	private String _privacyProtocol;
 
 	/**
 	 * SNMPv3
 	 */
+	@XmlAttribute(name="enterprise-id")
 	private String _enterpriseId;
 
 	public Configuration() {
 		super();
 	}
 
+	public Configuration(
+			final Integer port,
+    		final Integer retry,
+    		final Integer timeout,
+    		final String readCommunity,
+    		final String writeCommunity,
+			final String proxyHost,
+			final String version,
+			final Integer maxVarsPerPdu,
+			final Integer maxRepetitions,
+			final Integer maxRequestSize,
+			final String securityName,
+			final Integer securityLevel,
+			final String authPassphrase,
+			final String authProtocol,
+			final String engineId,
+			final String contextEngineId,
+			final String contextName,
+			final String privacyPassphrase,
+			final String privacyProtocol,
+			final String enterpriseId
+			) {
+    	setPort(port);
+    	setRetry(retry);
+    	setTimeout(timeout);
+    	setReadCommunity(readCommunity);
+    	setWriteCommunity(writeCommunity);
+    	setProxyHost(proxyHost);
+    	setVersion(version);
+    	setMaxVarsPerPdu(maxVarsPerPdu);
+    	setMaxRepetitions(maxRepetitions);
+    	setMaxRequestSize(maxRequestSize);
+    	setSecurityName(securityName);
+    	setSecurityLevel(securityLevel);
+    	setAuthPassphrase(authPassphrase);
+    	setAuthProtocol(authProtocol);
+    	setEngineId(contextEngineId);
+    	setContextEngineId(contextEngineId);
+    	setContextName(contextName);
+    	setPrivacyPassphrase(privacyPassphrase);
+    	setPrivacyProtocol(privacyProtocol);
+    	setEnterpriseId(enterpriseId);
+	}
+	
 	public void deleteMaxRepetitions() {
 		_maxRepetitions = null;
 	}
@@ -188,150 +245,32 @@ public class Configuration implements Serializable {
 	 */
 	@Override()
 	public boolean equals(final Object obj) {
-		if (this == obj)
-			return true;
+		if (obj instanceof Configuration == false) return false;
+		if (this == obj) return true;
 
-		if (obj instanceof Configuration) {
-
-			final Configuration temp = (Configuration) obj;
-			if (_port != temp._port)
-				return false;
-			if (_retry != temp._retry)
-				return false;
-			if (_timeout != temp._timeout)
-				return false;
-			if (_readCommunity != null) {
-				if (temp._readCommunity == null)
-					return false;
-				else if (!(_readCommunity.equals(temp._readCommunity))) {
-					return false;
-				}
-			} else if (temp._readCommunity != null) {
-				return false;
-			}
-			if (_writeCommunity != null) {
-				if (temp._writeCommunity == null)
-					return false;
-				else if (!(_writeCommunity.equals(temp._writeCommunity))) {
-					return false;
-				}
-			} else if (temp._writeCommunity != null) {
-				return false;
-			}
-			if (_proxyHost != null) {
-				if (temp._proxyHost == null) {
-					return false;
-				} else if (!(_proxyHost.equals(temp._proxyHost))) {
-					return false;
-				}
-			} else if (temp._proxyHost != null) {
-				return false;
-			}
-			if (_version != null) {
-				if (temp._version == null) {
-					return false;
-				} else if (!(_version.equals(temp._version))) {
-					return false;
-				}
-			} else if (temp._version != null) {
-				return false;
-			}
-			if (_maxVarsPerPdu != temp._maxVarsPerPdu) {
-				return false;
-			}
-			if (_maxRepetitions != temp._maxRepetitions) {
-				return false;
-			}
-			if (_maxRequestSize != temp._maxRequestSize) {
-				return false;
-			}
-			if (_securityName != null) {
-				if (temp._securityName == null) {
-					return false;
-				} else if (!(_securityName.equals(temp._securityName))) {
-					return false;
-				}
-			} else if (temp._securityName != null) {
-				return false;
-			}
-			if (_securityLevel != temp._securityLevel) {
-				return false;
-			}
-			if (_authPassphrase != null) {
-				if (temp._authPassphrase == null) {
-					return false;
-				} else if (!(_authPassphrase.equals(temp._authPassphrase))) {
-					return false;
-				}
-			} else if (temp._authPassphrase != null) {
-				return false;
-			}
-			if (_authProtocol != null) {
-				if (temp._authProtocol == null) {
-					return false;
-				} else if (!(_authProtocol.equals(temp._authProtocol))) {
-					return false;
-				}
-			} else if (temp._authProtocol != null) {
-				return false;
-			}
-			if (_engineId != null) {
-				if (temp._engineId == null) {
-					return false;
-				} else if (!(_engineId.equals(temp._engineId))) {
-					return false;
-				}
-			} else if (temp._engineId != null) {
-				return false;
-			}
-			if (_contextEngineId != null) {
-				if (temp._contextEngineId == null) {
-					return false;
-				} else if (!(_contextEngineId.equals(temp._contextEngineId))) {
-					return false;
-				}
-			} else if (temp._contextEngineId != null) {
-				return false;
-			}
-			if (_contextName != null) {
-				if (temp._contextName == null) {
-					return false;
-				} else if (!(_contextName.equals(temp._contextName))) {
-					return false;
-				}
-			} else if (temp._contextName != null) {
-				return false;
-			}
-			if (_privacyPassphrase != null) {
-				if (temp._privacyPassphrase == null) {
-					return false;
-				} else if (!(_privacyPassphrase.equals(temp._privacyPassphrase))) {
-					return false;
-				}
-			} else if (temp._privacyPassphrase != null) {
-				return false;
-			}
-			if (_privacyProtocol != null) {
-				if (temp._privacyProtocol == null) {
-					return false;
-				} else if (!(_privacyProtocol.equals(temp._privacyProtocol))) {
-					return false;
-				}
-			} else if (temp._privacyProtocol != null) {
-				return false;
-			}
-			if (_enterpriseId != null) {
-				if (temp._enterpriseId == null) {
-					return false;
-				} else if (!(_enterpriseId.equals(temp._enterpriseId))) {
-					return false;
-				}
-			} else if (temp._enterpriseId != null) {
-				return false;
-			}
-			return true;
-		}
-		return false;
+		final Configuration temp = (Configuration)obj;
+		
+		return new EqualsBuilder()
+			.append(getPort(), temp.getPort())
+			.append(getRetry(), temp.getRetry())
+			.append(getReadCommunity(), temp.getReadCommunity())
+			.append(getWriteCommunity(), temp.getWriteCommunity())
+			.append(getProxyHost(), temp.getProxyHost())
+			.append(getVersion(), temp.getVersion())
+			.append(getMaxVarsPerPdu(), temp.getMaxVarsPerPdu())
+			.append(getMaxRepetitions(), temp.getMaxRepetitions())
+			.append(getMaxRequestSize(), temp.getMaxRequestSize())
+			.append(getSecurityName(), temp.getSecurityName())
+			.append(getSecurityLevel(), temp.getSecurityLevel())
+			.append(getAuthPassphrase(), temp.getAuthPassphrase())
+			.append(getAuthProtocol(), temp.getAuthProtocol())
+			.append(getEngineId(), temp.getEngineId())
+			.append(getContextEngineId(), temp.getContextEngineId())
+			.append(getContextName(), temp.getContextName())
+			.append(getPrivacyPassphrase(), temp.getPrivacyPassphrase())
+			.append(getPrivacyProtocol(), temp.getPrivacyProtocol())
+			.append(getEnterpriseId(), temp.getEnterpriseId())
+			.isEquals();
 	}
 
 	/**
@@ -965,4 +904,29 @@ public class Configuration implements Serializable {
 		new Validator().validate(this);
 	}
 
+	@Override
+	public String toString() {
+		return new ToStringBuilder(this)
+			.append("port", getPort())
+			.append("retry", getRetry())
+			.append("timeout", getTimeout())
+			.append("read-community", getReadCommunity())
+			.append("write-community", getWriteCommunity())
+			.append("proxy-host", getProxyHost())
+			.append("version", getVersion())
+			.append("max-vars-per-pdu", getMaxVarsPerPdu())
+			.append("max-repetitions", getMaxRepetitions())
+			.append("max-request-size", getMaxRequestSize())
+			.append("security-name", getSecurityName())
+			.append("security-level", getSecurityLevel())
+			.append("auth-passphrase", getAuthPassphrase())
+			.append("auth-protocol", getAuthProtocol())
+			.append("engine-id", getEngineId())
+			.append("context-engine-id", getContextEngineId())
+			.append("context-name", getContextName())
+			.append("privacy-passphrase", getPrivacyPassphrase())
+			.append("privacy-protocol", getPrivacyProtocol())
+			.append("enterprise-id", getEnterpriseId())
+			.toString();
+	}
 }
