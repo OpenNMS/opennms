@@ -78,7 +78,6 @@ if (not defined $JAVA_HOME) {
 	}
 }
 $ENV{'JAVA_HOME'} = $JAVA_HOME;
-info("JAVA_HOME = $JAVA_HOME") if (defined $JAVA_HOME and $JAVA_HOME ne "");
 
 if (defined $TESTS) {
 	debug("tests are enabled");
@@ -108,7 +107,11 @@ if (-r $ENV{'HOME'} . "/.opennms-buildrc") {
 }
 
 $ENV{'MAVEN_OPTS'} = $MAVEN_OPTS;
+
+info("JAVA_HOME = $JAVA_HOME") if (defined $JAVA_HOME and $JAVA_HOME ne "");
+info("MVN = $MVN");
 info("MAVEN_OPTS = $MAVEN_OPTS"); 
+info("MAVEN_VERSION = $MAVEN_VERSION");
 
 sub clean_git {
 	my @command = ($GIT, "clean", "-fdx", ".");
