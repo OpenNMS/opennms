@@ -92,21 +92,8 @@ public class JaxbUtils {
 
 		LogUtils.debugf(JaxbUtils.class, "unmarshalling class %s from input source %s with unmarshaller %s", clazz.getSimpleName(), inputSource, um);
 		try {
-			XMLFilter filter = null;
-			final XmlSchema schema = clazz.getPackage().getAnnotation(XmlSchema.class);
-			if (schema != null) {
-				final String namespace = schema.namespace();
-				if (namespace != null && !"".equals(namespace)) {
-					LogUtils.debugf(JaxbUtils.class, "found namespace %s for class %s", namespace, clazz);
-					filter = new SimpleNamespaceFilter(namespace, true);
-				}
-			}
-			if (filter == null) {
-				filter = new SimpleNamespaceFilter("", false);
-			}
-
-			final XMLReader xmlReader = XMLReaderFactory.createXMLReader();
-			filter.setParent(xmlReader);
+			XMLFilter filter = getXMLFilterForClass(clazz);
+			final SAXSource source = new SAXSource(filter, inputSource);
 
 			um.setEventHandler(new ValidationEventHandler() {
 				
@@ -117,7 +104,6 @@ public class JaxbUtils {
 				}
 			});
 			
-			final SAXSource source = new SAXSource(filter, inputSource);
 			final JAXBElement<T> element = um.unmarshal(source, clazz);
 			return element.getValue();
 		} catch (final SAXException e) {
@@ -127,7 +113,26 @@ public class JaxbUtils {
 		}
 	}
 
-	private static Marshaller getMarshallerFor(final Object obj) {
+	public static <T> XMLFilter getXMLFilterForClass(final Class<T> clazz) throws SAXException {
+		XMLFilter filter = null;
+		final XmlSchema schema = clazz.getPackage().getAnnotation(XmlSchema.class);
+		if (schema != null) {
+			final String namespace = schema.namespace();
+			if (namespace != null && !"".equals(namespace)) {
+				LogUtils.debugf(JaxbUtils.class, "found namespace %s for class %s", namespace, clazz);
+				filter = new SimpleNamespaceFilter(namespace, true);
+			}
+		}
+		if (filter == null) {
+			filter = new SimpleNamespaceFilter("", false);
+		}
+
+		final XMLReader xmlReader = XMLReaderFactory.createXMLReader();
+		filter.setParent(xmlReader);
+		return filter;
+	}
+
+	public static Marshaller getMarshallerFor(final Object obj) {
 		final Class<?> clazz = (Class<?>)(obj instanceof Class? obj : obj.getClass());
 		
 		Map<Class<?>, Marshaller> marshallers = m_marshallers.get();
@@ -151,7 +156,7 @@ public class JaxbUtils {
 		}
 	}
 
-	private static Unmarshaller getUnmarshallerFor(final Object obj) {
+	public static Unmarshaller getUnmarshallerFor(final Object obj) {
 		final Class<?> clazz = (Class<?>)(obj instanceof Class? obj : obj.getClass());
 
 		Map<Class<?>, Unmarshaller> unmarshallers = m_unMarshallers.get();

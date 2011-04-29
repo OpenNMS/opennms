@@ -134,6 +134,10 @@ public class CastorUtils {
         }
     }
 
+    public static <T> Unmarshaller getUnmarshaller(Class<T> clazz) {
+    	return createUnmarshaller(clazz, true);
+    }
+    
     /**
      * Create an Unmarshaller for a specific class and configure it with our
      * default configuration details.  In particular, the Unmarshaller is set
