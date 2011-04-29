@@ -18,7 +18,7 @@ if (not defined $GIT) {
 
 clean_git() unless (exists $ENV{'SKIP_CLEAN'});
 
-my @command = ($MVN, '-Dmaven.test.skip.exec=true', 'install');
+my @command = ($MVN, '-Dmaven.test.skip.exec=true', '-P!jspc', 'install');
 info("running:", @command);
 handle_errors_and_exit_on_failure(system(@command));
 
