@@ -5,7 +5,8 @@
         xmlns:this="http://xmlns.opennms.org/xsd/users"
         xmlns:ns2="http://www.w3.org/1999/xhtml"
         xmlns:ns="http://www.w3.org/2001/XMLSchema"
-        xmlns:hfp="http://www.w3.org/2001/XMLSchema-hasFacetAndProperty">
+		  xmlns:hfp="http://www.w3.org/2001/XMLSchema-hasFacetAndProperty"
+		  elementFormDefault="qualified">
   <annotation>
     <documentation>XML Schema for the users.xml configuration file. Version:
     $Id$</documentation>

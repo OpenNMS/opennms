@@ -5,7 +5,8 @@
         xmlns:this="http://xmlns.opennms.org/xsd/config/map/adapter"
         xmlns:ns2="http://www.w3.org/1999/xhtml"
         xmlns:ns="http://www.w3.org/2001/XMLSchema"
-        xmlns:hfp="http://www.w3.org/2001/XMLSchema-hasFacetAndProperty">
+		  xmlns:hfp="http://www.w3.org/2001/XMLSchema-hasFacetAndProperty"
+		  elementFormDefault="qualified">
   <annotation>
     <documentation>XML Schema for the mapsadapter-configuration.xml configuration
     file. Version: $Id: map-provisioning-adapter-configuration.xsd 10826 2008-10-07 01:12:17Z antonio $</documentation>

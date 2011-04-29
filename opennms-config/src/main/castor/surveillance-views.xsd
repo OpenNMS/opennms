@@ -2,7 +2,8 @@
 <schema xmlns="http://www.w3.org/2001/XMLSchema" 
         targetNamespace="http://xmlns.opennms.org/xsd/config/surveillance-views"
         xmlns:this="http://xmlns.opennms.org/xsd/config/surveillance-views" 
-        xmlns:tns="http://www.opennms.org/surveillance-views">
+		  xmlns:tns="http://www.opennms.org/surveillance-views"
+		  elementFormDefault="qualified">
         
   <element name="surveillance-view-configuration">
     <annotation><documentation>Level element containing surveillance view definitions</documentation></annotation>

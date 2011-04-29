@@ -5,7 +5,8 @@
         xmlns:this="http://xmlns.opennms.org/xsd/rtceui"
         xmlns:ns2="http://www.w3.org/1999/xhtml"
         xmlns:ns="http://www.w3.org/2001/XMLSchema"
-        xmlns:hfp="http://www.w3.org/2001/XMLSchema-hasFacetAndProperty">
+		  xmlns:hfp="http://www.w3.org/2001/XMLSchema-hasFacetAndProperty"
+		  elementFormDefault="qualified">
   <annotation>
     <documentation>XML Schema for RTC data. This is used for passing RTC data
     from the OpenNMS daemon to the UI. Version $Id$. </documentation>

@@ -5,7 +5,8 @@
         xmlns:ns2="http://www.w3.org/1999/xhtml"
         xmlns:ns="http://www.w3.org/2001/XMLSchema"
         xmlns:hfp="http://www.w3.org/2001/XMLSchema-hasFacetAndProperty"
-        xmlns:dc="http://xmlns.opennms.org/xsd/config/datacollection-types">
+		  xmlns:dc="http://xmlns.opennms.org/xsd/config/datacollection-types"
+		  elementFormDefault="qualified">
   <annotation>
     <documentation>XML Schema for types used by datacollection files. Version: $Id$. </documentation>
   </annotation>

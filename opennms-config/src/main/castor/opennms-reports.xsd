@@ -2,7 +2,8 @@
 <schema xmlns="http://www.w3.org/2001/XMLSchema"
 	targetNamespace="http://xmlns.opennms.org/xsd/config/opennms-reports"
 	xmlns:this="http://xmlns.opennms.org/xsd/config/opennms-reports"
-	xmlns:reportParms="http://xmlns.opennms.org/xsd/config/report-parms">
+	xmlns:reportParms="http://xmlns.opennms.org/xsd/config/report-parms"
+	elementFormDefault="qualified">
 
 	<import namespace="http://xmlns.opennms.org/xsd/config/report-parms" schemaLocation="report-parms.xsd" />
 

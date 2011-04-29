@@ -2,7 +2,8 @@
 <schema xmlns="http://www.w3.org/2001/XMLSchema" 
         targetNamespace="http://xmlns.opennms.org/xsd/config/site-status-views"
         xmlns:this="http://xmlns.opennms.org/xsd/config/site-status-views" 
-        xmlns:tns="http://www.opennms.org/site-status-views">
+		  xmlns:tns="http://www.opennms.org/site-status-views"
+		  elementFormDefault="qualified">
         
   <element name="site-status-view-configuration">
     <annotation><documentation>Level element containing surveillance view definitions</documentation></annotation>
