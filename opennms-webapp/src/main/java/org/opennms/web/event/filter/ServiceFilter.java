@@ -35,8 +35,10 @@ package org.opennms.web.event.filter;
 import javax.servlet.ServletContext;
 
 import org.opennms.web.element.NetworkElementFactory;
+import org.opennms.web.element.NetworkElementFactoryInterface;
 import org.opennms.web.filter.EqualsFilter;
 import org.opennms.web.filter.SQLType;
+import org.springframework.context.ApplicationContext;
 
 /**
  * Encapsulates all service filtering functionality.
@@ -48,14 +50,29 @@ import org.opennms.web.filter.SQLType;
 public class ServiceFilter extends EqualsFilter<Integer> {
     /** Constant <code>TYPE="service"</code> */
     public static final String TYPE = "service";
+    private ServletContext m_servletContext;
+    private ApplicationContext m_appContext;
 
     /**
      * <p>Constructor for ServiceFilter.</p>
      *
      * @param serviceId a int.
+     * @param servletContext
      */
-    public ServiceFilter(int serviceId) {
+    public ServiceFilter(int serviceId, ServletContext servletContext) {
         super(TYPE, SQLType.INT, "EVENTS.SERVICEID", "serviceType.id", serviceId);
+        m_servletContext = servletContext;
+    }
+
+    /**
+     * <p>Constructor for ServiceFilter.</p>
+     *
+     * @param serviceId a int.
+     * @param appContext
+     */
+    public ServiceFilter(int serviceId, ApplicationContext appContext) {
+        super(TYPE, SQLType.INT, "EVENTS.SERVICEID", "serviceType.id", serviceId);
+        m_appContext = appContext;
     }
 
     /**
@@ -63,9 +80,10 @@ public class ServiceFilter extends EqualsFilter<Integer> {
      *
      * @return a {@link java.lang.String} object.
      */
-    //@Override
-    public String getTextDescription(ServletContext servletContext) {
-        String serviceName = NetworkElementFactory.getInstance(servletContext).getServiceNameFromId(getServiceId());
+    @Override
+    public String getTextDescription() {
+        NetworkElementFactoryInterface factory = (m_servletContext == null ? NetworkElementFactory.getInstance(m_appContext) : NetworkElementFactory.getInstance(m_servletContext));
+        String serviceName = factory.getServiceNameFromId(getServiceId());
 
         return (TYPE + " is " + serviceName);
     }

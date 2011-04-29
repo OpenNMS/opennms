@@ -356,7 +356,7 @@
           </td>
           <td class="noWrap">
             <% if(events[i].getServiceName() != null) { %>
-              <% Filter serviceFilter = new ServiceFilter(events[i].getServiceId()); %>
+              <% Filter serviceFilter = new ServiceFilter(events[i].getServiceId(), getServletContext()); %>
               <% if( events[i].getNodeId() != 0 && events[i].getIpAddress() != null ) { %>
                 <c:url var="serviceLink" value="element/service.jsp">
                   <c:param name="node" value="<%=String.valueOf(events[i].getNodeId())%>"/>
@@ -369,7 +369,7 @@
               <% } %>
               <% if( !parms.filters.contains( serviceFilter )) { %>
                   <a href="<%=this.makeLink( parms, serviceFilter, true)%>" class="filterLink" title="Show only events with this service type"><%=addPositiveFilterString%></a>
-                  <a href="<%=this.makeLink( parms, new NegativeServiceFilter(events[i].getServiceId()), true)%>" class="filterLink" title="Do not show events for this service"><%=addNegativeFilterString%></a>
+                  <a href="<%=this.makeLink( parms, new NegativeServiceFilter(events[i].getServiceId(), getServletContext()), true)%>" class="filterLink" title="Do not show events for this service"><%=addNegativeFilterString%></a>
               <% } %>                            
             <% } %>
           </td>         
