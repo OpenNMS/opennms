@@ -14,10 +14,15 @@
       <scope>compile</scope>
     </dependency>
     <dependency>
-  		<groupId>org.opennms.dependencies</groupId>
-  		<artifactId>spring-test-dependencies</artifactId>
+      <groupId>org.opennms.dependencies</groupId>
+  	  <artifactId>spring-test-dependencies</artifactId>
       <scope>compile</scope>
       <type>pom</type>
+    </dependency>
+    <dependency>
+      <groupId>org.opennms.core.test-api</groupId>
+  	  <artifactId>org.opennms.core.test-api.lib</artifactId>
+      <scope>compile</scope>
     </dependency>
     <dependency>
       <groupId>junit</groupId>
