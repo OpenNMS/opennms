@@ -446,11 +446,11 @@ public class WillItUnmarshalTest {
     }
     @Test
     public void testSnmpConfig() throws Exception {
-        unmarshal("snmp-config.xml", SnmpConfig.class);
+        unmarshalJaxb("snmp-config.xml", SnmpConfig.class);
     }
     @Test
     public void testExampleSnmpConfig() throws Exception {
-        unmarshalExample("snmp-config.xml", SnmpConfig.class);
+        unmarshalJaxbExample("snmp-config.xml", SnmpConfig.class);
     }
     @Test
     public void testSnmpInterfacePollerConfiguration() throws Exception {

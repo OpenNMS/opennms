@@ -81,10 +81,6 @@ public class PollableInterface {
             SnmpPeerFactory.init();
         } catch (UnknownHostException ex) {
             throw new UndeclaredThrowableException(ex);
-        } catch (MarshalException ex) {
-            throw new UndeclaredThrowableException(ex);
-        } catch (ValidationException ex) {
-            throw new UndeclaredThrowableException(ex);
         } catch (IOException ex) {
             throw new UndeclaredThrowableException(ex);
         }

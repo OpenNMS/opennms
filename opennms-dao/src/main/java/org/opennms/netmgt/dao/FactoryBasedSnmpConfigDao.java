@@ -34,8 +34,6 @@ package org.opennms.netmgt.dao;
 import java.io.IOException;
 import java.net.InetAddress;
 
-import org.exolab.castor.xml.MarshalException;
-import org.exolab.castor.xml.ValidationException;
 import org.opennms.core.xml.MarshallingExceptionTranslator;
 import org.opennms.netmgt.config.SnmpEventInfo;
 import org.opennms.netmgt.config.SnmpPeerFactory;
@@ -245,10 +243,6 @@ public class FactoryBasedSnmpConfigDao implements SnmpConfigDao, InitializingBea
     private void saveCurrent() {
         try {
             SnmpPeerFactory.saveCurrent();
-        } catch (MarshalException e) {
-            TRANSLATOR.translate("save current snmp configuraiton", e);
-        } catch (ValidationException e) {
-            TRANSLATOR.translate("save current snmp configuraiton", e);
         } catch (IOException e) {
             TRANSLATOR.translate("save current snmp configuraiton", e);
         }
