@@ -197,6 +197,9 @@ abstract public class XmlTest<T> {
 	protected void assertXmlEquals(final String xmlA, final String xmlB) throws Exception {
 //        final DetailedDiff diff = getDiff(xmlA, xmlB);
         final List<Difference> differences = getDifferences(xmlA, xmlB);
+        if (differences.size() > 0) {
+        	LogUtils.debugf(this, "Sample XML: %s", m_sampleXml);
+        }
         assertEquals("number of XMLUnit differences between the example xml and the generated xml should be 0", 0, differences.size());
 	}
 

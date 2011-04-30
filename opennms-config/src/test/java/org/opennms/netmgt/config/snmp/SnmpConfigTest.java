@@ -82,10 +82,7 @@ public class SnmpConfigTest extends XmlTest<SnmpConfig> {
 					"  <definition " +
 					"    read-community=\"public\" " +
 					"    write-community=\"private\" " +
-					"    version=\"v3\" " +
-					"    max-vars-per-pdu=\"10\" " +
-					"    max-repetitions=\"2\" " +
-					"    max-request-size=\"65535\">" +
+					"    version=\"v3\">" +
 					"    <range " +
 					"      begin=\"192.168.0.1\" " +
 					"      end=\"192.168.0.255\"/>" +
@@ -143,10 +140,7 @@ public class SnmpConfigTest extends XmlTest<SnmpConfig> {
 					"  <definition " +
 					"    read-community=\"public\" " +
 					"    write-community=\"private\" " +
-					"    version=\"v3\" " +
-					"    max-vars-per-pdu=\"10\" " +
-					"    max-repetitions=\"2\" " +
-					"    max-request-size=\"65535\">" +
+					"    version=\"v3\">" +
 					"    <range " +
 					"      begin=\"192.168.0.1\" " +
 					"      end=\"192.168.0.255\"/>" +
