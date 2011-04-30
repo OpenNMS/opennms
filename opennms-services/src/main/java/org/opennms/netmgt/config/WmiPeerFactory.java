@@ -54,11 +54,11 @@ import org.opennms.core.utils.IPLike;
 import org.opennms.core.utils.InetAddressComparator;
 import org.opennms.core.utils.InetAddressUtils;
 import org.opennms.core.utils.ThreadCategory;
+import org.opennms.core.xml.CastorUtils;
 import org.opennms.netmgt.ConfigFileConstants;
 import org.opennms.netmgt.config.wmi.Definition;
 import org.opennms.netmgt.config.wmi.Range;
 import org.opennms.netmgt.config.wmi.WmiConfig;
-import org.opennms.netmgt.dao.castor.CastorUtils;
 import org.opennms.protocols.wmi.WmiAgentConfig;
 import org.springframework.core.io.FileSystemResource;
 

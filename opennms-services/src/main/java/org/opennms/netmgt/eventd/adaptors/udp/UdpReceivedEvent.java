@@ -47,7 +47,7 @@ import java.util.List;
 
 import org.exolab.castor.xml.MarshalException;
 import org.exolab.castor.xml.ValidationException;
-import org.opennms.netmgt.dao.jaxb.JaxbUtils;
+import org.opennms.core.xml.JaxbUtils;
 import org.opennms.netmgt.xml.event.Event;
 import org.opennms.netmgt.xml.event.Log;
 import org.xml.sax.InputSource;

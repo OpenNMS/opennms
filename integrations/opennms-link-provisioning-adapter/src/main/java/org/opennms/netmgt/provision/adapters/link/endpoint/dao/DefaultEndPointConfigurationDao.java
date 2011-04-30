@@ -15,7 +15,7 @@ import javax.xml.transform.Result;
 import javax.xml.transform.stream.StreamResult;
 
 import org.opennms.core.utils.LogUtils;
-import org.opennms.netmgt.dao.MarshallingDataAccessFailureException;
+import org.opennms.core.xml.MarshallingResourceFailureException;
 import org.opennms.netmgt.dao.castor.AbstractCastorConfigDao;
 import org.opennms.netmgt.provision.adapters.link.config.DefaultNamespacePrefixMapper;
 import org.opennms.netmgt.provision.adapters.link.endpoint.AndEndPointValidationExpression;
@@ -144,7 +144,7 @@ public class DefaultEndPointConfigurationDao extends AbstractCastorConfigDao<End
 
             return config;
         } catch (Throwable e) {
-            throw new MarshallingDataAccessFailureException("Unable to unmarshal the endpoint configuration.", e);
+            throw new MarshallingResourceFailureException("Unable to unmarshal the endpoint configuration.", e);
         }
     }
 

@@ -62,7 +62,7 @@ import org.apache.commons.io.IOUtils;
 import org.opennms.core.fiber.Fiber;
 import org.opennms.core.utils.InetAddressUtils;
 import org.opennms.core.utils.LogUtils;
-import org.opennms.netmgt.dao.jaxb.JaxbUtils;
+import org.opennms.core.xml.JaxbUtils;
 import org.opennms.netmgt.eventd.adaptors.EventHandler;
 import org.opennms.netmgt.xml.event.Event;
 import org.opennms.netmgt.xml.event.EventReceipt;

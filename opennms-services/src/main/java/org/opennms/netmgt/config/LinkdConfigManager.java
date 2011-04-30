@@ -59,6 +59,7 @@ import org.exolab.castor.xml.ValidationException;
 import org.opennms.core.utils.ByteArrayComparator;
 import org.opennms.core.utils.IpListFromUrl;
 import org.opennms.core.utils.LogUtils;
+import org.opennms.core.xml.CastorUtils;
 import org.opennms.netmgt.config.linkd.ExcludeRange;
 import org.opennms.netmgt.config.linkd.Filter;
 import org.opennms.netmgt.config.linkd.IncludeRange;
@@ -67,7 +68,6 @@ import org.opennms.netmgt.config.linkd.LinkdConfiguration;
 import org.opennms.netmgt.config.linkd.Package;
 import org.opennms.netmgt.config.linkd.Vendor;
 import org.opennms.netmgt.config.linkd.Vlans;
-import org.opennms.netmgt.dao.castor.CastorUtils;
 import org.opennms.netmgt.filter.FilterDaoFactory;
 import org.opennms.protocols.snmp.SnmpObjectId;
 

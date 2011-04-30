@@ -46,10 +46,10 @@ import java.util.concurrent.locks.ReentrantReadWriteLock;
 import org.exolab.castor.xml.MarshalException;
 import org.exolab.castor.xml.ValidationException;
 import org.opennms.core.utils.LogUtils;
+import org.opennms.core.xml.CastorUtils;
 import org.opennms.netmgt.config.rws.BaseUrl;
 import org.opennms.netmgt.config.rws.RwsConfiguration;
 import org.opennms.netmgt.config.rws.StandbyUrl;
-import org.opennms.netmgt.dao.castor.CastorUtils;
 import org.opennms.rancid.ConnectionProperties;
 
 /**

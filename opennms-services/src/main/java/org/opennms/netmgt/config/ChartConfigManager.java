@@ -41,8 +41,8 @@ import java.io.StringWriter;
 import org.exolab.castor.xml.MarshalException;
 import org.exolab.castor.xml.Marshaller;
 import org.exolab.castor.xml.ValidationException;
+import org.opennms.core.xml.CastorUtils;
 import org.opennms.netmgt.config.charts.ChartConfiguration;
-import org.opennms.netmgt.dao.castor.CastorUtils;
 
 /**
  * <p>Abstract ChartConfigManager class.</p>

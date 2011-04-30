@@ -42,8 +42,8 @@ import java.io.InputStream;
 
 import junit.framework.TestCase;
 
+import org.opennms.core.xml.MarshallingResourceFailureException;
 import org.opennms.netmgt.config.users.Userinfo;
-import org.opennms.netmgt.dao.MarshallingDataAccessFailureException;
 import org.opennms.test.ConfigurationTestUtils;
 import org.opennms.test.ThrowableAnticipator;
 import org.springframework.core.io.FileSystemResource;
@@ -78,7 +78,7 @@ public class AbstractCastorConfigDaoTest extends TestCase {
         dao.setConfigResource(resource);
         
         ThrowableAnticipator ta = new ThrowableAnticipator();
-        ta.anticipate(new MarshallingDataAccessFailureException(ThrowableAnticipator.IGNORE_MESSAGE));
+        ta.anticipate(new MarshallingResourceFailureException(ThrowableAnticipator.IGNORE_MESSAGE));
         
         try {
             dao.afterPropertiesSet();

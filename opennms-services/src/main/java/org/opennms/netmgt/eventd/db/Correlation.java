@@ -41,7 +41,7 @@ package org.opennms.netmgt.eventd.db;
 import java.io.StringWriter;
 
 import org.opennms.core.utils.ThreadCategory;
-import org.opennms.netmgt.dao.jaxb.JaxbUtils;
+import org.opennms.core.xml.JaxbUtils;
 import org.opennms.netmgt.model.events.Constants;
 import org.springframework.dao.DataAccessException;
 

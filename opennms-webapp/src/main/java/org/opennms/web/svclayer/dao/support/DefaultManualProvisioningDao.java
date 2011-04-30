@@ -51,8 +51,8 @@ import org.apache.commons.io.IOUtils;
 import org.exolab.castor.xml.MarshalException;
 import org.exolab.castor.xml.Marshaller;
 import org.exolab.castor.xml.ValidationException;
-import org.opennms.netmgt.dao.MarshallingDataAccessFailureException;
-import org.opennms.netmgt.dao.castor.CastorUtils;
+import org.opennms.core.xml.CastorUtils;
+import org.opennms.core.xml.MarshallingResourceFailureException;
 import org.opennms.netmgt.provision.persist.requisition.Requisition;
 import org.opennms.web.svclayer.dao.ManualProvisioningDao;
 import org.springframework.core.io.FileSystemResource;
@@ -152,9 +152,9 @@ public class DefaultManualProvisioningDao implements ManualProvisioningDao {
         } catch (IOException e) {
             throw new PermissionDeniedDataAccessException("Unable to write file "+importFile, e);
         } catch (MarshalException e) {
-            throw new MarshallingDataAccessFailureException("Unable to marshall import data to file "+importFile, e);
+            throw new MarshallingResourceFailureException("Unable to marshall import data to file "+importFile, e);
         } catch (ValidationException e) {
-            throw new MarshallingDataAccessFailureException("Invalid data for group "+groupName, e);
+            throw new MarshallingResourceFailureException("Invalid data for group "+groupName, e);
         } finally {
             if (w != null) {
                 IOUtils.closeQuietly(w);

@@ -44,6 +44,7 @@ package org.opennms.netmgt.dao.castor;
 
 
 import org.opennms.core.utils.ThreadCategory;
+import org.opennms.core.xml.CastorUtils;
 import org.opennms.netmgt.dao.support.FileReloadCallback;
 import org.opennms.netmgt.dao.support.FileReloadContainer;
 import org.springframework.beans.factory.InitializingBean;
