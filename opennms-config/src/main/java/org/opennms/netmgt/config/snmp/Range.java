@@ -44,7 +44,12 @@ public class Range implements Serializable {
         super();
     }
 
-    /**
+    public Range(final String begin, String end) {
+    	_begin = begin;
+    	_end = end;
+	}
+
+	/**
      * Overrides the Object.equals method.
      * 
      * @param obj
