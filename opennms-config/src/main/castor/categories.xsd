@@ -5,7 +5,8 @@
         xmlns:this="http://xmlns.opennms.org/xsd/categories"
         xmlns:ns2="http://www.w3.org/1999/xhtml"
         xmlns:ns="http://www.w3.org/2001/XMLSchema"
-        xmlns:hfp="http://www.w3.org/2001/XMLSchema-hasFacetAndProperty">
+		  xmlns:hfp="http://www.w3.org/2001/XMLSchema-hasFacetAndProperty"
+		  elementFormDefault="qualified">
   <annotation>
     <documentation>XML Schema for the categories.xml configuration file. This
     file contains categories for the UI and reports. Version:

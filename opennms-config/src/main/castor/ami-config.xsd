@@ -6,7 +6,8 @@
   xmlns:this="http://xmlns.opennms.org/xsd/config/ami"
   xmlns:ns2="http://www.w3.org/1999/xhtml"
   xmlns:ns="http://www.w3.org/2001/XMLSchema"
-  xmlns:hfp="http://www.w3.org/2001/XMLSchema-hasFacetAndProperty">
+  xmlns:hfp="http://www.w3.org/2001/XMLSchema-hasFacetAndProperty"
+  elementFormDefault="qualified">
 
   <annotation>
     <documentation>

@@ -3,7 +3,8 @@
 <schema targetNamespace="http://xmlns.opennms.org/xsd/attr-summary"
         xmlns="http://www.w3.org/2001/XMLSchema"
         xmlns:this="http://xmlns.opennms.org/xsd/attr-summary"
-        xmlns:xsd="http://www.w3.org/2001/XMLSchema">
+		  xmlns:xsd="http://www.w3.org/2001/XMLSchema"
+		  elementFormDefault="qualified">
   <annotation>
     <documentation>XML Schema for RRD </documentation>
   </annotation>
