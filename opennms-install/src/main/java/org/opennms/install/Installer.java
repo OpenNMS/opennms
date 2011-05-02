@@ -85,7 +85,7 @@ import org.opennms.netmgt.config.ConnectionFactoryUtil;
 import org.opennms.netmgt.config.opennmsDataSources.JdbcDataSource;
 import org.opennms.netmgt.dao.db.InstallerDb;
 import org.opennms.netmgt.dao.db.SimpleDataSource;
-import org.opennms.netmgt.ping.Ping;
+import org.opennms.netmgt.icmp.jni.Ping;
 import org.opennms.protocols.icmp.IcmpSocket;
 import org.springframework.util.StringUtils;
 
