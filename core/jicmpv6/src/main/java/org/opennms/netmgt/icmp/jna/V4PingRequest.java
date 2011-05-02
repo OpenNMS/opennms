@@ -27,7 +27,7 @@
  *     http://www.opennms.org/
  *     http://www.opennms.com/
  */
-package org.opennms.jicmp;
+package org.opennms.netmgt.icmp.jna;
 
 import java.net.InetAddress;
 import java.nio.ByteBuffer;

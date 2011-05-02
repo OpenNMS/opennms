@@ -27,29 +27,29 @@
  *     http://www.opennms.org/
  *     http://www.opennms.com/
  */
-package org.opennms.jicmp;
+package org.opennms.netmgt.icmp.jna;
 
 import java.nio.ByteBuffer;
 import java.util.concurrent.TimeUnit;
 
-import org.opennms.jicmp.ipv6.ICMPv6EchoPacket;
-import org.opennms.jicmp.ipv6.ICMPv6Packet;
+import org.opennms.jicmp.ip.ICMPEchoPacket;
+import org.opennms.jicmp.ip.ICMPPacket;
 import org.opennms.netmgt.icmp.EchoPacket;
 
-class V6PingReply extends ICMPv6EchoPacket implements EchoPacket {
+class V4PingReply extends ICMPEchoPacket implements EchoPacket {
     
     private long m_receivedTimeNanos;
 
-    public V6PingReply(ICMPv6Packet icmpPacket, long receivedTimeNanos) {
+    public V4PingReply(ICMPPacket icmpPacket, long receivedTimeNanos) {
         super(icmpPacket);
         m_receivedTimeNanos = receivedTimeNanos;
     }
-
+    
     public boolean isValid() {
         ByteBuffer content = getContentBuffer();
         /* we ensure the length can contain 2 longs (cookie and sent time)
            and that the cookie matches */
-        return content.limit() >= 16 && V6PingRequest.COOKIE == content.getLong(0);
+        return content.limit() >= V4PingRequest.DATA_LENGTH && V4PingRequest.COOKIE == content.getLong(V4PingRequest.OFFSET_COOKIE);
     }
 
     @Override
@@ -58,8 +58,25 @@ class V6PingReply extends ICMPv6EchoPacket implements EchoPacket {
     }
 
     @Override
+    public int getIdentifier() {
+        // this is here just for EchoPacket interface completeness
+        return super.getIdentifier();
+    }
+    
+    @Override
+    public int getSequenceNumber() {
+        // this is here just for EchoPacket interface completeness
+        return super.getSequenceNumber();
+    }
+
+    @Override
+    public long getThreadId() {
+        return getContentBuffer().getLong(V4PingRequest.OFFSET_THREAD_ID);
+    }
+
+    @Override
     public long getSentTimeNanos() {
-        return getContentBuffer().getLong(8);
+        return getContentBuffer().getLong(V4PingRequest.OFFSET_TIMESTAMP);
     }
     
     @Override
@@ -73,12 +90,8 @@ class V6PingReply extends ICMPv6EchoPacket implements EchoPacket {
         return elapsedTimeNanos() / nanosPerUnit;
     }
 
-    long elapsedTimeNanos() {
+    protected long elapsedTimeNanos() {
         return getReceivedTimeNanos() - getSentTimeNanos();
     }
 
-    @Override
-    public long getThreadId() {
-    	return getIdentifier();
-    }
 }

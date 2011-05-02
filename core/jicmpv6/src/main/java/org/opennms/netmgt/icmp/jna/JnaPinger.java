@@ -27,7 +27,7 @@
  *     http://www.opennms.org/
  *     http://www.opennms.com/
  */
-package org.opennms.jicmp;
+package org.opennms.netmgt.icmp.jna;
 
 import static org.opennms.netmgt.icmp.PingConstants.DEFAULT_RETRIES;
 import static org.opennms.netmgt.icmp.PingConstants.DEFAULT_TIMEOUT;
@@ -62,7 +62,7 @@ public class JnaPinger implements Pinger {
 	 */
 	public synchronized void initialize() throws Exception {
 		if (m_pingTracker != null) return;
-		m_messenger = new JnaIcmpMessenger();
+		m_messenger = new JnaIcmpMessenger(m_pingerId);
         m_pingTracker = new RequestTracker<JnaPingRequest, JnaPingReply>("JNA-ICMP-"+m_pingerId, m_messenger, new IDBasedRequestLocator<JnaPingRequestId, JnaPingRequest, JnaPingReply>());
 		m_pingTracker.start();
 	}

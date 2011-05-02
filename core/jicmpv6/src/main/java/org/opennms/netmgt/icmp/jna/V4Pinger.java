@@ -27,17 +27,18 @@
  *     http://www.opennms.org/
  *     http://www.opennms.com/
  */
-package org.opennms.jicmp;
+package org.opennms.netmgt.icmp.jna;
 
-import java.net.Inet6Address;
+import java.net.Inet4Address;
 import java.net.InetAddress;
 import java.nio.ByteBuffer;
 import java.util.concurrent.TimeUnit;
 
 import org.opennms.core.utils.LogUtils;
-import org.opennms.jicmp.ipv6.ICMPv6EchoPacket;
-import org.opennms.jicmp.ipv6.ICMPv6Packet;
-import org.opennms.jicmp.ipv6.ICMPv6Packet.Type;
+import org.opennms.jicmp.ip.ICMPEchoPacket;
+import org.opennms.jicmp.ip.ICMPPacket;
+import org.opennms.jicmp.ip.IPPacket;
+import org.opennms.jicmp.ip.ICMPPacket.Type;
 import org.opennms.jicmp.jna.NativeDatagramPacket;
 import org.opennms.jicmp.jna.NativeDatagramSocket;
 
@@ -48,44 +49,42 @@ import com.sun.jna.Platform;
  *
  * @author brozow
  */
-public class V6Pinger extends AbstractPinger<Inet6Address> {
+public class V4Pinger extends AbstractPinger<Inet4Address> {
+    
 
-    public V6Pinger() throws Exception {
-        super(NativeDatagramSocket.create(NativeDatagramSocket.PF_INET6, Platform.isMac() ? NativeDatagramSocket.SOCK_DGRAM : NativeDatagramSocket.SOCK_RAW, NativeDatagramSocket.IPPROTO_ICMPV6));
+    public V4Pinger(int pingerId) throws Exception {
+        super(pingerId, NativeDatagramSocket.create(NativeDatagramSocket.PF_INET, Platform.isMac() ? NativeDatagramSocket.SOCK_DGRAM : NativeDatagramSocket.SOCK_RAW, NativeDatagramSocket.IPPROTO_ICMP));
         
         // Windows requires at least one packet sent before a receive call can be made without error
         // so we send a packet here to make sure...  This one should not match the normal ping requests
         // since it does not contain the cookie so it won't interface.
         if (Platform.isWindows()) {
-            ICMPv6EchoPacket packet = new ICMPv6EchoPacket(64);
+            ICMPEchoPacket packet = new ICMPEchoPacket(64);
             packet.setCode(0);
             packet.setType(Type.EchoRequest);
             packet.getContentBuffer().putLong(System.nanoTime());
             packet.getContentBuffer().putLong(System.nanoTime());
-            getPingSocket().send(packet.toDatagramPacket(InetAddress.getByName("::1")));
+            getPingSocket().send(packet.toDatagramPacket(InetAddress.getLocalHost()));
         }
     }
-    
-    
     
 //    @Override
 //    public void start() {
 //        throw new UnsupportedOperationException("Put socket initialization here rather than the constructor");
 //    }
 
-
-
     public void run() {
         try {
+            final int pingerId = getPingerId();
             NativeDatagramPacket datagram = new NativeDatagramPacket(65535);
             while (!isFinished()) {
                 getPingSocket().receive(datagram);
                 long received = System.nanoTime();
     
-                ICMPv6Packet icmpPacket = new ICMPv6Packet(getIPPayload(datagram));
-                V6PingReply echoReply = icmpPacket.getType() == Type.EchoReply ? new V6PingReply(icmpPacket, received) : null;
+                ICMPPacket icmpPacket = new ICMPPacket(getIPPayload(datagram));
+                V4PingReply echoReply = icmpPacket.getType() == Type.EchoReply ? new V4PingReply(icmpPacket, received) : null;
             
-                if (echoReply != null && echoReply.isValid()) {
+                if (echoReply != null && echoReply.getIdentifier() ==  pingerId && echoReply.isValid()) {
                     // 64 bytes from 127.0.0.1: icmp_seq=0 time=0.069 ms
                     InetAddress address = datagram.getAddress();
                     LogUtils.debugf(this, "%d bytes from %s: tid=%d icmp_seq=%d time=%.3f ms\n", 
@@ -105,13 +104,13 @@ public class V6Pinger extends AbstractPinger<Inet6Address> {
     }
 
     private ByteBuffer getIPPayload(NativeDatagramPacket datagram) {
-        return datagram.getContent();
+        return new IPPacket(datagram.getContent()).getPayload();
     }
     
-    public void ping(Inet6Address addr, int identifier, int sequenceNumber, long threadId, long count, long interval) throws InterruptedException {
+    public void ping(Inet4Address addr, int identifier, int sequenceNumber, long threadId, long count, long interval) throws InterruptedException {
         NativeDatagramSocket socket = getPingSocket();
         for(int i = sequenceNumber; i < sequenceNumber + count; i++) {
-            V6PingRequest request = new V6PingRequest(identifier, i, threadId);
+            V4PingRequest request = new V4PingRequest(identifier, i, threadId);
             request.send(socket, addr);
             Thread.sleep(interval);
         }

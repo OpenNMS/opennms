@@ -27,7 +27,7 @@
  *     http://www.opennms.org/
  *     http://www.opennms.com/
  */
-package org.opennms.jicmp;
+package org.opennms.netmgt.icmp.jna;
 
 import java.net.InetAddress;
 import java.util.ArrayList;
@@ -46,13 +46,15 @@ public abstract class AbstractPinger<T extends InetAddress> implements Runnable 
     
     public static final double NANOS_PER_MILLI = 1000000.0;
 
+    private int m_pingerId;
     private NativeDatagramSocket m_pingSocket;
     private Thread m_thread;
     private final AtomicReference<Throwable> m_throwable = new AtomicReference<Throwable>(null);
     private volatile boolean m_stopped = false;
     private final List<PingReplyListener> m_listeners = new ArrayList<PingReplyListener>();
     
-    protected AbstractPinger(NativeDatagramSocket pingSocket) {
+    protected AbstractPinger(int pingerId, NativeDatagramSocket pingSocket) {
+        m_pingerId = pingerId;
         m_pingSocket = pingSocket;
     }
 
@@ -62,13 +64,17 @@ public abstract class AbstractPinger<T extends InetAddress> implements Runnable 
     protected NativeDatagramSocket getPingSocket() {
         return m_pingSocket;
     }
+    
+    protected int getPingerId() {
+        return m_pingerId;
+    }
 
     public boolean isFinished() {
         return m_stopped;
     }
 
     public void start() {
-        m_thread = new Thread(this, "PingThreadTest:PingListener");
+        m_thread = new Thread(this, "JNA-ICMP-"+getClass().getSimpleName()+"-"+m_pingerId+"-Socket-Reader");
         m_thread.setDaemon(true);
         m_thread.start();
     }

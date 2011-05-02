@@ -38,9 +38,10 @@
 //
 // Reply.java,v 1.1.1.1 2001/11/11 17:34:37 ben Exp
 
-package org.opennms.jicmp;
+package org.opennms.netmgt.icmp.jna;
 
 import java.net.InetAddress;
+import java.util.concurrent.TimeUnit;
 
 import org.opennms.netmgt.icmp.EchoPacket;
 import org.opennms.protocols.rt.ResponseWithId;
@@ -62,7 +63,7 @@ import org.opennms.protocols.rt.ResponseWithId;
  * @author <a href="mailto:sowmya@opennms.org">Sowmya </a>
  * @author <a href="http://www.opennms.org">OpenNMS </a>
  */
-public final class JnaPingReply implements ResponseWithId<JnaPingRequestId> {
+public final class JnaPingReply implements ResponseWithId<JnaPingRequestId>, EchoPacket {
     /**
      * The sender's address.
      */
@@ -83,8 +84,26 @@ public final class JnaPingReply implements ResponseWithId<JnaPingRequestId> {
      *            The received packet.
      */
     public JnaPingReply(InetAddress addr, EchoPacket pkt) {
-        m_packet = pkt;
         m_address = addr;
+        m_packet = pkt;
+    }
+    
+    /**
+     * <p>getRequestId</p>
+     *
+     * @return a {@link org.opennms.netmgt.icmp.spi.PingRequestId} object.
+     */
+    public JnaPingRequestId getRequestId() {
+        return new JnaPingRequestId(getAddress(), getIdentifier(), getSequenceNumber(), getThreadId());
+    }
+    
+    /**
+     * Returns the internet address of the host that sent the reply.
+     *
+     * @return a {@link java.net.InetAddress} object.
+     */
+    public final InetAddress getAddress() {
+        return m_address;
     }
 
     /**
@@ -96,43 +115,30 @@ public final class JnaPingReply implements ResponseWithId<JnaPingRequestId> {
         return m_packet.isEchoReply();
     }
 
-    /**
-     * Returns the identity of the packet. Since this is an unsigned short, we must
-     * return the value as an int.
-     *
-     * @return a short.
-     */
-    public final long getIdentity() {
+    public int getIdentifier() {
+        return m_packet.getIdentifier();
+    }
+
+    public int getSequenceNumber() {
+        return m_packet.getSequenceNumber();
+    }
+
+    public long getThreadId() {
         return m_packet.getThreadId();
     }
 
-    /**
-     * Returns the internet address of the host that sent the reply.
-     *
-     * @return a {@link java.net.InetAddress} object.
-     */
-    public final InetAddress getAddress() {
-        return m_address;
+    public long getReceivedTimeNanos() {
+        return m_packet.getReceivedTimeNanos();
     }
 
-    /**
-     * Returns the ICMP packet for the reply.
-     *
-     * @return a {@link org.opennms.netmgt.icmp.EchoPacket} object.
-     */
-    public final EchoPacket getPacket() {
-        return m_packet;
+    public long getSentTimeNanos() {
+        return m_packet.getSentTimeNanos();
     }
-    
-    /**
-     * <p>getRequestId</p>
-     *
-     * @return a {@link org.opennms.netmgt.icmp.spi.PingRequestId} object.
-     */
-    public JnaPingRequestId getRequestId() {
-        return new JnaPingRequestId(this);
+
+    public double elapsedTime(TimeUnit timeUnit) {
+        return m_packet.elapsedTime(timeUnit);
     }
-    
+
     @Override
     public String toString() {
         StringBuilder buf = new StringBuilder();
@@ -144,4 +150,5 @@ public final class JnaPingReply implements ResponseWithId<JnaPingRequestId> {
         buf.append(']');
         return buf.toString();
     }
+
 }

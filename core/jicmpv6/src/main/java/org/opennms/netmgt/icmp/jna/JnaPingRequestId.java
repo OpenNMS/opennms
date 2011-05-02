@@ -29,7 +29,7 @@
  *     http://www.opennms.org/
  *     http://www.opennms.com/
  */
-package org.opennms.jicmp;
+package org.opennms.netmgt.icmp.jna;
 
 import java.net.InetAddress;
 
@@ -67,7 +67,7 @@ public class JnaPingRequestId {
      * @param reply a {@link org.opennms.netmgt.icmp.spi.JnaPingReply.PingReply} object.
      */
     public JnaPingRequestId(JnaPingReply reply) {
-        this(reply.getAddress(), reply.getPacket().getIdentifier(), reply.getPacket().getSequenceNumber(), reply.getPacket().getThreadId());
+        this(reply.getAddress(), reply.getIdentifier(), reply.getSequenceNumber(), reply.getThreadId());
     }
 
     /**

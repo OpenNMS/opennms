@@ -33,7 +33,7 @@
  *      http://www.opennms.org/
  *      http://www.opennms.com/
  */
-package org.opennms.jicmp;
+package org.opennms.netmgt.icmp.jna;
 
 import java.net.Inet4Address;
 import java.net.Inet6Address;
@@ -55,7 +55,7 @@ import org.opennms.protocols.rt.Request;
  * @author <a href="mailto:ranger@opennms.org">Ben Reed</a>
  * @author <a href="mailto:brozow@opennms.org">Mathew Brozowski</a>
  */
-public class JnaPingRequest implements Request<JnaPingRequestId, JnaPingRequest, JnaPingReply> {
+public class JnaPingRequest implements Request<JnaPingRequestId, JnaPingRequest, JnaPingReply>, EchoPacket {
 
     private static long s_nextTid = 1;
 
@@ -68,11 +68,6 @@ public class JnaPingRequest implements Request<JnaPingRequestId, JnaPingRequest,
      */
     private final JnaPingRequestId m_id;
 
-	/**
-	 * the request packet
-	 */
-	private EchoPacket m_request = null;
-	
     /**
      * The callback to use when this object is ready to do something
      */
@@ -125,16 +120,12 @@ public class JnaPingRequest implements Request<JnaPingRequestId, JnaPingRequest,
      */
     public boolean processResponse(JnaPingReply reply) {
         try {
-            processResponse(reply.getPacket());
+            m_log.debug(System.currentTimeMillis()+": Ping Response Received for request: "+this);
+            m_callback.handleResponse(getAddress(), reply);
         } finally {
             setProcessed(true);
         }
         return true;
-    }
-
-    private void processResponse(EchoPacket packet) {
-        m_log.debug(System.currentTimeMillis()+": Ping Response Received "+this);
-        m_callback.handleResponse(getAddress(), packet);
     }
 
     /**
@@ -151,7 +142,7 @@ public class JnaPingRequest implements Request<JnaPingRequestId, JnaPingRequest,
                     m_log.debug(System.currentTimeMillis()+": Retrying Ping Request "+returnval);
                 } else {
                     m_log.debug(System.currentTimeMillis()+": Ping Request Timed out "+this);
-                    m_callback.handleTimeout(getAddress(), m_request);
+                    m_callback.handleTimeout(getAddress(), this);
                 }
             }
             return returnval;
@@ -200,7 +191,7 @@ public class JnaPingRequest implements Request<JnaPingRequestId, JnaPingRequest,
     /** {@inheritDoc} */
     public void processError(Throwable t) {
         try {
-            m_callback.handleError(getAddress(), m_request, t);
+            m_callback.handleError(getAddress(), this, t);
         } finally {
             setProcessed(true);
         }
@@ -244,7 +235,7 @@ public class JnaPingRequest implements Request<JnaPingRequestId, JnaPingRequest,
             m_expiration = System.currentTimeMillis() + m_timeout;
             v6.ping(addr6, m_id.getIdentifier(), m_id.getSequenceNumber(), m_id.getThreadId(), 1, 0);
         } catch (Throwable t) {
-            m_callback.handleError(getAddress(), m_request, t);
+            m_callback.handleError(getAddress(), this, t);
         }
     }
 
@@ -255,7 +246,7 @@ public class JnaPingRequest implements Request<JnaPingRequestId, JnaPingRequest,
             m_expiration = System.currentTimeMillis() + m_timeout;
             v4.ping(addr4, m_id.getIdentifier(), m_id.getSequenceNumber(), m_id.getThreadId(), 1, 0);
         } catch (Throwable t) {
-            m_callback.handleError(getAddress(), m_request, t);
+            m_callback.handleError(getAddress(), this, t);
         }
     }
 
@@ -275,5 +266,40 @@ public class JnaPingRequest implements Request<JnaPingRequestId, JnaPingRequest,
         sb.append("Callback=").append(m_callback);
         sb.append("]");
         return sb.toString();
+    }
+
+    @Override
+    public boolean isEchoReply() {
+        return false;
+    }
+
+    @Override
+    public int getIdentifier() {
+        return m_id.getIdentifier();
+    }
+
+    @Override
+    public int getSequenceNumber() {
+        return m_id.getSequenceNumber();
+    }
+
+    @Override
+    public long getThreadId() {
+        return m_id.getThreadId();
+    }
+
+    @Override
+    public long getReceivedTimeNanos() {
+        throw new UnsupportedOperationException("EchoPacket.getReceivedTimeNanos is not yet implemented");
+    }
+
+    @Override
+    public long getSentTimeNanos() {
+        throw new UnsupportedOperationException("EchoPacket.getSentTimeNanos is not yet implemented");
+    }
+
+    @Override
+    public double elapsedTime(TimeUnit timeUnit) {
+        throw new UnsupportedOperationException("EchoPacket.elapsedTime is not yet implemented");
     }
 }
