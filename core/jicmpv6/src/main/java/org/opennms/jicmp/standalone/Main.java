@@ -29,6 +29,8 @@
  */
 package org.opennms.jicmp.standalone;
 
+import java.net.Inet4Address;
+import java.net.Inet6Address;
 import java.net.InetAddress;
 
 
@@ -44,6 +46,15 @@ public class Main {
             System.err.println("java -jar jna-jicmp-VERSION.jar <hostname or ip address>");
             System.exit(1);
         }
-        new JnaPinger().ping(InetAddress.getByName(args[0]));
+        
+        InetAddress addr = InetAddress.getByName(args[0]);
+        
+        if (addr instanceof Inet4Address) {
+            V4Pinger.ping((Inet4Address)addr);
+        } else if (addr instanceof Inet6Address){
+            V6Pinger.ping((Inet6Address)addr);
+        } else {
+            System.err.println("Unrecognized address type " + addr.getClass());
+        }
     }
 }

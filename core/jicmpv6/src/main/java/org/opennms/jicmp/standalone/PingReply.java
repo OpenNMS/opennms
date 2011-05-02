@@ -34,9 +34,8 @@ import java.util.concurrent.TimeUnit;
 
 import org.opennms.jicmp.ip.ICMPEchoPacket;
 import org.opennms.jicmp.ip.ICMPPacket;
-import org.opennms.netmgt.icmp.EchoPacket;
 
-class PingReply extends ICMPEchoPacket implements EchoPacket {
+class PingReply extends ICMPEchoPacket {
     
     // The below long is equivalent to the next line and is more efficient than
     // manipulation as a string
@@ -57,22 +56,18 @@ class PingReply extends ICMPEchoPacket implements EchoPacket {
         return content.limit() >= 16 && COOKIE == content.getLong(0);
     }
 
-    @Override
     public boolean isEchoReply() {
     	return Type.EchoReply.equals(getType());
     }
 
-    @Override
     public long getSentTimeNanos() {
         return getContentBuffer().getLong(8);
     }
     
-    @Override
     public long getReceivedTimeNanos() {
         return m_receivedTimeNanos;
     }
     
-    @Override
     public double elapsedTime(TimeUnit unit) {
         double nanosPerUnit = TimeUnit.NANOSECONDS.convert(1, unit);
         return elapsedTimeNanos() / nanosPerUnit;
@@ -82,7 +77,6 @@ class PingReply extends ICMPEchoPacket implements EchoPacket {
         return getReceivedTimeNanos() - getSentTimeNanos();
     }
 
-    @Override
     public long getThreadId() {
     	return getIdentifier();
     }

@@ -84,9 +84,6 @@ public class V6Pinger extends AbstractPinger<Inet6Address> {
                         echoReply.getSequenceNumber(),
                         echoReply.elapsedTime(TimeUnit.MILLISECONDS)
                     );
-                    for (PingReplyListener listener : m_listeners) {
-                        listener.onPingReply(datagram.getAddress(), echoReply);
-                    }
                 }
             }
         } catch(Throwable e) {
@@ -106,5 +103,12 @@ public class V6Pinger extends AbstractPinger<Inet6Address> {
             request.send(socket, addr);
             Thread.sleep(interval);
         }
+    }
+
+    public static void ping(Inet6Address addr) throws Exception {
+        V6Pinger pinger = new V6Pinger();
+        Thread t = new Thread(pinger);
+        t.start();
+        pinger.ping(addr, 1234, 7, 10, 1000);
     }
 }

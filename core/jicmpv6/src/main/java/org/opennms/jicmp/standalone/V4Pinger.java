@@ -108,4 +108,11 @@ public class V4Pinger extends AbstractPinger<Inet4Address> {
             Thread.sleep(interval);
         }
     }
+
+    public static void ping(Inet4Address addr) throws Exception {
+        V4Pinger pinger = new V4Pinger();
+        Thread t = new Thread(pinger);
+        t.start();
+        pinger.ping(addr, 1234, 7, 10, 1000);
+    }
 }
