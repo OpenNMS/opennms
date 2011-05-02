@@ -38,7 +38,7 @@
 //
 // Reply.java,v 1.1.1.1 2001/11/11 17:34:37 ben Exp
 
-package org.opennms.netmgt.ping;
+package org.opennms.netmgt.icmp.jni;
 
 import java.net.InetAddress;
 import java.util.concurrent.TimeUnit;

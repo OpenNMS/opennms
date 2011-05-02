@@ -42,7 +42,7 @@
 // 
 //
 
-package org.opennms.netmgt.ping;
+package org.opennms.netmgt.icmp.jni;
 
 import java.io.IOException;
 import java.net.DatagramPacket;

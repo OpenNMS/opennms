@@ -29,7 +29,7 @@
  *     http://www.opennms.org/
  *     http://www.opennms.com/
  */
-package org.opennms.netmgt.ping;
+package org.opennms.netmgt.icmp.jni;
 
 import java.net.InetAddress;
 

@@ -33,7 +33,7 @@
  *      http://www.opennms.org/
  *      http://www.opennms.com/
  */
-package org.opennms.netmgt.ping;
+package org.opennms.netmgt.icmp.jni;
 
 import static org.opennms.netmgt.icmp.PingConstants.DEFAULT_RETRIES;
 import static org.opennms.netmgt.icmp.PingConstants.DEFAULT_TIMEOUT;
@@ -148,7 +148,7 @@ public class JniPinger implements Pinger {
      * @param timeout a long.
      * @param retries a int.
      * @param sequenceId a short.
-     * @param cb a {@link org.opennms.netmgt.ping.PingResponseCallback} object.
+     * @param cb a {@link org.opennms.netmgt.icmp.jni.PingResponseCallback} object.
      * @throws java.lang.Exception if any.
      */
     public void ping(InetAddress host, long timeout, int retries, int sequenceId, PingResponseCallback cb) throws Exception {

@@ -29,7 +29,7 @@
  *     http://www.opennms.org/
  *     http://www.opennms.com/
  */
-package org.opennms.netmgt.ping;
+package org.opennms.netmgt.icmp.jni;
 
 import java.io.IOException;
 import java.net.DatagramPacket;
@@ -91,7 +91,7 @@ public class JniIcmpMessenger implements Messenger<JniPingRequest, JniPingRespon
     /**
      * <p>sendRequest</p>
      *
-     * @param request a {@link org.opennms.netmgt.ping.JniPingRequest} object.
+     * @param request a {@link org.opennms.netmgt.icmp.jni.JniPingRequest} object.
      */
     @Override
     public void sendRequest(JniPingRequest request) {

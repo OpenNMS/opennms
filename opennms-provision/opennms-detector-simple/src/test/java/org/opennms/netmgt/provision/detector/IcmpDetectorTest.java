@@ -12,7 +12,7 @@ import org.junit.runner.RunWith;
 import org.opennms.core.utils.InetAddressUtils;
 import org.opennms.netmgt.icmp.PingerFactory;
 import org.opennms.netmgt.icmp.jna.JnaPinger;
-import org.opennms.netmgt.ping.JniPinger;
+import org.opennms.netmgt.icmp.jni.JniPinger;
 import org.opennms.netmgt.provision.detector.icmp.IcmpDetector;
 import org.opennms.netmgt.provision.support.NullDetectorMonitor;
 import org.opennms.test.mock.MockLogAppender;

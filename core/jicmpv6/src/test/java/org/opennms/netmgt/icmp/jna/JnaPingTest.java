@@ -33,7 +33,7 @@
  *      http://www.opennms.org/
  *      http://www.opennms.com/
  */
-package org.opennms.netmgt.ping;
+package org.opennms.netmgt.icmp.jna;
 
 import java.net.InetAddress;
 import java.net.NoRouteToHostException;
@@ -54,9 +54,8 @@ import org.opennms.netmgt.icmp.jna.JnaPinger;
  * 
  * @author <a href="mailto:ranger@opennms.org>Ben Reed</a>
  */
-public class PingTest extends TestCase {
+public class JnaPingTest extends TestCase {
 
-    static private JniPinger s_jniPinger = new JniPinger();
     static private JnaPinger s_jnaPinger = new JnaPinger();
 
     private InetAddress m_goodHost = null;
@@ -99,10 +98,6 @@ public class PingTest extends TestCase {
         m_goodHost = InetAddress.getLocalHost();
         m_badHost  = InetAddressUtils.UNPINGABLE_ADDRESS;
         
-    }
-
-    public void testSinglePingJni() throws Exception {
-        singlePing(s_jniPinger);
     }
 
     public void testSinglePingJna() throws Exception {
@@ -199,20 +194,8 @@ public class PingTest extends TestCase {
         
     }
 
-    public void testPingCallbackTimeoutJni() throws Exception {
-        pingCallbackTimeout(s_jniPinger);
-    }
-
     public void testPingCallbackTimeoutJna() throws Exception {
         pingCallbackTimeout(s_jnaPinger);
-    }
-
-    public void testSinglePingFailureJni() throws Exception {
-        try {
-            singlePingFailure(s_jniPinger);
-        } catch (NoRouteToHostException ex) {
-            // this is a possible option if the OS knows that this is impossible
-        }
     }
 
     public void testSinglePingFailureJna() throws Exception {
@@ -221,10 +204,6 @@ public class PingTest extends TestCase {
 
     protected void singlePingFailure(Pinger pinger) throws Exception {
         assertNull(pinger.ping(m_badHost));
-    }
-
-    public void testParallelPingJni() throws Exception {
-        parallelPing(s_jniPinger);
     }
 
     public void testParallelPingJna() throws Exception {
@@ -240,10 +219,6 @@ public class PingTest extends TestCase {
             assertNotNull("Found a null reponse time in the response", item);
             assertTrue("Negative RTT value returned from ping", item.floatValue() > 0);
         }
-    }
-
-    public void testParallelPingFailureJni() throws Exception {
-        parallelPingFailure(s_jniPinger);
     }
 
     public void testParallelPingFailureJna() throws Exception {

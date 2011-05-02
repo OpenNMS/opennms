@@ -33,7 +33,7 @@
  *      http://www.opennms.org/
  *      http://www.opennms.com/
  */
-package org.opennms.netmgt.ping;
+package org.opennms.netmgt.icmp.jni;
 
 import java.io.IOException;
 import java.net.DatagramPacket;
@@ -145,7 +145,7 @@ public class JniPingRequest implements Request<JniPingRequestId, JniPingRequest,
     /**
      * <p>processTimeout</p>
      *
-     * @return a {@link org.opennms.netmgt.ping.JniPingRequest} object.
+     * @return a {@link org.opennms.netmgt.icmp.jni.JniPingRequest} object.
      */
     public JniPingRequest processTimeout() {
         try {
