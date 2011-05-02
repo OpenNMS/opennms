@@ -12,8 +12,26 @@
 
   <name>opennms-jasper-extensions</name>
   <url>http://maven.apache.org</url>
+  
+  <build>
+    <plugins>
+      <plugin>
+        <groupId>org.codehaus.mojo</groupId>
+        <artifactId>castor-maven-plugin</artifactId>
+      </plugin>
+      <plugin>
+        <groupId>org.opennms.core.build</groupId>
+        <artifactId>castor-process-maven-plugin</artifactId>
+      </plugin>
+    </plugins>
+  </build>
 
   <dependencies>
+    <dependency>
+      <groupId>org.opennms.dependencies</groupId>
+      <artifactId>castor-dependencies</artifactId>
+      <type>pom</type>
+    </dependency>
     <dependency>
       <groupId>org.opennms.dependencies</groupId>
       <artifactId>jasper-dependencies</artifactId>
