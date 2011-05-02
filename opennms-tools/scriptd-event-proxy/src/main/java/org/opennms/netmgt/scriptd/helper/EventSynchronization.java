@@ -23,15 +23,6 @@ public interface EventSynchronization {
 	void addEventForwarder(EventForwarder forwarder);
 	
 	/**
-	 * Criteria to be used to get the sync events
-	 * 
-	 * @param criteria
-	 * Generic criteria
-	 * 
-	 */
-	void setCriteriaRestriction(String criteria);
-	
-	/**
 	 * 
 	 * Calling this method get the synchronization
 	 * Events 
