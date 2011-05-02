@@ -1,4 +1,10 @@
 <?xml version="1.0"?>
-<outages>
+<outages xmlns="http://xmlns.opennms.org/xsd/config/poller/outages">
+    <outage name="New Name" type="specific">
+        <ns1:time xmlns:ns1="http://xmlns.opennms.org/xsd/types"
+            begins="21-Sep-2010 00:00:00" ends="21-Sep-2010 23:59:59"/>
+        <interface address="fe80:0000:0000:0000:0000:0000:0000:abcd"/>
+        <interface address="169.254.254.254"/>
+        <interface address="match-any"/>
+    </outage>
 </outages>
-

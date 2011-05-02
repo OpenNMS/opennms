@@ -178,8 +178,12 @@ public class CollectdTest extends TestCase {
         EasyMock.replay(m_filterDao);
         FilterDaoFactory.setInstance(m_filterDao);
 
-        Resource resource = new ClassPathResource("etc/poll-outages.xml"); 
-        PollOutagesConfigFactory.setInstance(new PollOutagesConfigFactory(resource));
+        // This call will also ensure that the poll-outages.xml file can parse IPv4
+        // and IPv6 addresses.
+        Resource resource = new ClassPathResource("etc/poll-outages.xml");
+        PollOutagesConfigFactory factory = new PollOutagesConfigFactory(resource);
+        factory.afterPropertiesSet();
+        PollOutagesConfigFactory.setInstance(factory);
 
         CollectdConfigFactory collectdConfig = new CollectdConfigFactory(ConfigurationTestUtils.getInputStreamForResource(this, "/org/opennms/netmgt/config/collectd-testdata.xml"), "nms1", false);
         CollectdConfigFactory.setInstance(collectdConfig);

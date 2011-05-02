@@ -112,8 +112,13 @@ public class CollectdIntegrationTest extends TestCase {
         m_filterDao = m_mockUtils.createMock(FilterDao.class);
         FilterDaoFactory.setInstance(m_filterDao);
         
-        Resource resource = new ClassPathResource("etc/poll-outages.xml"); 
-        PollOutagesConfigFactory.setInstance(new PollOutagesConfigFactory(resource));
+
+        // This call will also ensure that the poll-outages.xml file can parse IPv4
+        // and IPv6 addresses.
+        Resource resource = new ClassPathResource("etc/poll-outages.xml");
+        PollOutagesConfigFactory factory = new PollOutagesConfigFactory(resource);
+        factory.afterPropertiesSet();
+        PollOutagesConfigFactory.setInstance(factory);
 
         File homeDir = resource.getFile().getParentFile().getParentFile();
         System.setProperty("opennms.home", homeDir.getAbsolutePath());
