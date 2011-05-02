@@ -44,17 +44,20 @@ import junit.framework.TestCase;
 
 import org.opennms.core.utils.CollectionMath;
 import org.opennms.core.utils.InetAddressUtils;
-import org.opennms.jicmp.JnaPinger;
 import org.opennms.netmgt.icmp.EchoPacket;
 import org.opennms.netmgt.icmp.PingConstants;
 import org.opennms.netmgt.icmp.PingResponseCallback;
 import org.opennms.netmgt.icmp.Pinger;
+import org.opennms.netmgt.icmp.jna.JnaPinger;
 
 /**
  * 
  * @author <a href="mailto:ranger@opennms.org>Ben Reed</a>
  */
 public class PingTest extends TestCase {
+
+    static private JniPinger s_jniPinger = new JniPinger();
+    static private JnaPinger s_jnaPinger = new JnaPinger();
 
     private InetAddress m_goodHost = null;
     private InetAddress m_badHost = null;
@@ -95,14 +98,15 @@ public class PingTest extends TestCase {
         super.setUp();
         m_goodHost = InetAddress.getLocalHost();
         m_badHost  = InetAddressUtils.UNPINGABLE_ADDRESS;
+        
     }
 
     public void testSinglePingJni() throws Exception {
-        singlePing(new JniPinger());
+        singlePing(s_jniPinger);
     }
 
     public void testSinglePingJna() throws Exception {
-        singlePing(new JnaPinger());
+        singlePing(s_jnaPinger);
     }
 
     protected void singlePing(Pinger pinger) throws Exception {
@@ -196,23 +200,23 @@ public class PingTest extends TestCase {
     }
 
     public void testPingCallbackTimeoutJni() throws Exception {
-        pingCallbackTimeout(new JniPinger());
+        pingCallbackTimeout(s_jniPinger);
     }
 
     public void testPingCallbackTimeoutJna() throws Exception {
-        pingCallbackTimeout(new JnaPinger());
+        pingCallbackTimeout(s_jnaPinger);
     }
 
     public void testSinglePingFailureJni() throws Exception {
         try {
-            singlePingFailure(new JniPinger());
+            singlePingFailure(s_jniPinger);
         } catch (NoRouteToHostException ex) {
             // this is a possible option if the OS knows that this is impossible
         }
     }
 
     public void testSinglePingFailureJna() throws Exception {
-        singlePingFailure(new JnaPinger());
+        singlePingFailure(s_jnaPinger);
     }
 
     protected void singlePingFailure(Pinger pinger) throws Exception {
@@ -220,11 +224,11 @@ public class PingTest extends TestCase {
     }
 
     public void testParallelPingJni() throws Exception {
-        parallelPing(new JniPinger());
+        parallelPing(s_jniPinger);
     }
 
     public void testParallelPingJna() throws Exception {
-        parallelPing(new JnaPinger());
+        parallelPing(s_jnaPinger);
     }
 
     protected void parallelPing(Pinger pinger) throws Exception {
@@ -239,11 +243,11 @@ public class PingTest extends TestCase {
     }
 
     public void testParallelPingFailureJni() throws Exception {
-        parallelPingFailure(new JniPinger());
+        parallelPingFailure(s_jniPinger);
     }
 
     public void testParallelPingFailureJna() throws Exception {
-        parallelPingFailure(new JnaPinger());
+        parallelPingFailure(s_jnaPinger);
     }
 
     protected void parallelPingFailure(Pinger pinger) throws Exception {
@@ -284,3 +288,4 @@ public class PingTest extends TestCase {
         System.out.print(sb);
     }
 }
+    

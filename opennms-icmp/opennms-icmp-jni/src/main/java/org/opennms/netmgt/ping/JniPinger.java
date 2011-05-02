@@ -137,7 +137,7 @@ public class JniPinger implements Pinger {
 	 */
 	public synchronized void initialize() throws IOException {
 	    if (s_pingTracker != null) return;
-	    s_pingTracker = new RequestTracker<JniPingRequest, JniPingResponse>("JNI-ICMP-"+m_pingerId, new JniIcmpMessenger(), new IDBasedRequestLocator<JniPingRequestId, JniPingRequest, JniPingResponse>());
+	    s_pingTracker = new RequestTracker<JniPingRequest, JniPingResponse>("JNI-ICMP-"+m_pingerId, new JniIcmpMessenger(m_pingerId), new IDBasedRequestLocator<JniPingRequestId, JniPingRequest, JniPingResponse>());
 	    s_pingTracker.start();
 	}
 

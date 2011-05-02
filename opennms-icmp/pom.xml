@@ -10,6 +10,6 @@
   <name>OpenNMS ICMP Library</name>
   <modules>
     <module>opennms-icmp-api</module>
-    <module>opennms-icmp-jicmp</module>
+    <module>opennms-icmp-jni</module>
   </modules>
 </project>

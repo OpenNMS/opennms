@@ -48,29 +48,33 @@ import org.opennms.protocols.rt.Messenger;
  */
 public class JniIcmpMessenger implements Messenger<JniPingRequest, JniPingResponse> {
     
-    IcmpSocket m_socket;
+    private int m_pingerId;
+    private IcmpSocket m_socket;
     
     /**
      * <p>Constructor for JniIcmpMessenger.</p>
+     * @param pingerId 
      *
      * @throws java.io.IOException if any.
      */
-    public JniIcmpMessenger() throws IOException {
+    public JniIcmpMessenger(int pingerId) throws IOException {
+        m_pingerId = pingerId;
         m_socket = new IcmpSocket();
     }
 
     void processPackets(Queue<JniPingResponse> pendingReplies) {
+        final int pingerId = m_pingerId;
         while (true) {
             try {
                 DatagramPacket packet = m_socket.receive();
         
                 JniPingResponse reply = JniIcmpMessenger.createPingResponse(packet);
                 
-//                if (reply.isEchoReply() && reply.getIdentifier() == JniPingRequest.FILTER_ID) {
+                if (reply.isEchoReply() && reply.getIdentifier() == pingerId) {
                     // Remove this so we don't send a lot of time in this method when we should be processing packets
                     // LogUtils.debugf(this, "Found an echo packet addr = %s, port = %d, length = %d, created reply %s", packet.getAddress(), packet.getPort(), packet.getLength(), reply);
                     pendingReplies.offer(reply);
-//                }
+                }
             } catch (IOException e) {
                 LogUtils.errorf(this, e, "I/O Error occurred reading from ICMP Socket");
             } catch (IllegalArgumentException e) {
@@ -97,7 +101,7 @@ public class JniIcmpMessenger implements Messenger<JniPingRequest, JniPingRespon
     /** {@inheritDoc} */
     @Override
     public void start(final Queue<JniPingResponse> responseQueue) {
-        Thread socketReader = new Thread("JNI-ICMP-Socket-Reader") {
+        Thread socketReader = new Thread("JNI-ICMP-"+m_pingerId+"-Socket-Reader") {
 
             public void run() {
                 try {
