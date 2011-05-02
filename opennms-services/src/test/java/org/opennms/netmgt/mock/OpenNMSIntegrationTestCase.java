@@ -57,10 +57,10 @@ import org.exolab.castor.xml.Marshaller;
 import org.exolab.castor.xml.ValidationException;
 import org.opennms.core.utils.InetAddressUtils;
 import org.opennms.core.utils.PropertiesUtils;
+import org.opennms.core.xml.JaxbUtils;
 import org.opennms.mock.snmp.MockSnmpAgent;
 import org.opennms.netmgt.config.snmp.Definition;
 import org.opennms.netmgt.config.snmp.SnmpConfig;
-import org.opennms.netmgt.dao.castor.CastorUtils;
 import org.opennms.netmgt.eventd.EventIpcManagerFactory;
 import org.opennms.test.ConfigurationTestUtils;
 import org.springframework.core.io.FileSystemResource;
@@ -226,7 +226,7 @@ public abstract class OpenNMSIntegrationTestCase extends AbstractTransactionalDa
 
 
     private SnmpConfig readSnmpConfig(File snmpConfig) throws IOException, FileNotFoundException, MarshalException, ValidationException {
-        return CastorUtils.unmarshal(SnmpConfig.class, new FileSystemResource(snmpConfig));
+        return JaxbUtils.unmarshal(SnmpConfig.class, new FileSystemResource(snmpConfig));
     }
     
     protected String getLocalHostAddress() {

@@ -40,7 +40,7 @@ import java.io.IOException;
 
 import org.exolab.castor.xml.MarshalException;
 import org.exolab.castor.xml.ValidationException;
-import org.opennms.netmgt.dao.castor.CastorUtils;
+import org.opennms.core.xml.CastorUtils;
 import org.springframework.core.io.FileSystemResource;
 
 /**

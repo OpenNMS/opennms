@@ -726,7 +726,7 @@ public class EventFactory {
             throw new IllegalArgumentException("Cannot take null parameters.");
         }
 
-        Filter[] filters = new Filter[] { new NodeFilter(nodeId, servletContext), new InterfaceFilter(ipAddress), new ServiceFilter(serviceId) };
+        Filter[] filters = new Filter[] { new NodeFilter(nodeId, servletContext), new InterfaceFilter(ipAddress), new ServiceFilter(serviceId, servletContext) };
         return getEvents(sortStyle, ackType, filters, throttle, offset);
     }
 
@@ -738,8 +738,8 @@ public class EventFactory {
      * @return an array of {@link org.opennms.web.event.Event} objects.
      * @throws java.sql.SQLException if any.
      */
-    public static Event[] getEventsForService(int serviceId) throws SQLException {
-        return getEventsForService(serviceId, SortStyle.ID, AcknowledgeType.UNACKNOWLEDGED, -1, -1);
+    public static Event[] getEventsForService(int serviceId, ServletContext servletContext) throws SQLException {
+        return getEventsForService(serviceId, SortStyle.ID, AcknowledgeType.UNACKNOWLEDGED, -1, -1, servletContext);
     }
 
     /**
@@ -752,9 +752,9 @@ public class EventFactory {
      * @return an array of {@link org.opennms.web.event.Event} objects.
      * @throws java.sql.SQLException if any.
      */
-    public static Event[] getEventsForService(int serviceId, boolean includeAcknowledged) throws SQLException {
+    public static Event[] getEventsForService(int serviceId, boolean includeAcknowledged, ServletContext servletContext) throws SQLException {
         AcknowledgeType ackType = (includeAcknowledged) ? AcknowledgeType.BOTH : AcknowledgeType.UNACKNOWLEDGED;
-        return getEventsForService(serviceId, SortStyle.ID, ackType, -1, -1);
+        return getEventsForService(serviceId, SortStyle.ID, ackType, -1, -1, servletContext);
     }
 
     /**
@@ -772,12 +772,12 @@ public class EventFactory {
      * @return an array of {@link org.opennms.web.event.Event} objects.
      * @throws java.sql.SQLException if any.
      */
-    public static Event[] getEventsForService(int serviceId, SortStyle sortStyle, AcknowledgeType ackType, int throttle, int offset) throws SQLException {
+    public static Event[] getEventsForService(int serviceId, SortStyle sortStyle, AcknowledgeType ackType, int throttle, int offset, ServletContext servletContext) throws SQLException {
         if (sortStyle == null || ackType == null) {
             throw new IllegalArgumentException("Cannot take null parameters.");
         }
 
-        Filter[] filters = new Filter[] { new ServiceFilter(serviceId) };
+        Filter[] filters = new Filter[] { new ServiceFilter(serviceId, servletContext) };
         return getEvents(sortStyle, ackType, filters, throttle, offset);
     }
 
@@ -797,7 +797,7 @@ public class EventFactory {
             throw new IllegalArgumentException("Cannot take null parameters.");
         }
 
-        Filter[] filters = new Filter[] { new NodeFilter(nodeId, servletContext), new InterfaceFilter(ipAddress), new ServiceFilter(serviceId) };
+        Filter[] filters = new Filter[] { new NodeFilter(nodeId, servletContext), new InterfaceFilter(ipAddress), new ServiceFilter(serviceId, servletContext) };
         return getEventCount(ackType, filters);
     }
 
@@ -810,12 +810,12 @@ public class EventFactory {
      * @return a int.
      * @throws java.sql.SQLException if any.
      */
-    public static int getEventCountForService(int serviceId, AcknowledgeType ackType) throws SQLException {
+    public static int getEventCountForService(int serviceId, AcknowledgeType ackType, ServletContext servletContext) throws SQLException {
         if (ackType == null) {
             throw new IllegalArgumentException("Cannot take null parameters.");
         }
 
-        Filter[] filters = new Filter[] { new ServiceFilter(serviceId) };
+        Filter[] filters = new Filter[] { new ServiceFilter(serviceId, servletContext) };
         return (getEventCount(ackType, filters));
     }
 

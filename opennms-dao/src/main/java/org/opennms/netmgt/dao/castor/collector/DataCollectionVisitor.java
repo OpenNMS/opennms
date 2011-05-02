@@ -36,7 +36,7 @@ import org.opennms.netmgt.config.datacollection.DatacollectionConfig;
 import org.opennms.netmgt.config.datacollection.Group;
 import org.opennms.netmgt.config.datacollection.IpList;
 import org.opennms.netmgt.config.datacollection.MibObj;
-import org.opennms.netmgt.config.common.Rrd;
+import org.opennms.netmgt.config.datacollection.Rrd;
 import org.opennms.netmgt.config.datacollection.SnmpCollection;
 import org.opennms.netmgt.config.datacollection.SystemDef;
 

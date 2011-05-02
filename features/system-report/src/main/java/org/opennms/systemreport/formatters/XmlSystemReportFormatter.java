@@ -17,12 +17,14 @@ import org.xml.sax.helpers.AttributesImpl;
 public class XmlSystemReportFormatter extends AbstractSystemReportFormatter implements SystemReportFormatter {
     private TransformerHandler m_handler = null;
 
+    @Override
     public String getName() {
         return "xml";
     }
     
+    @Override
     public String getDescription() {
-        return "XML text";
+        return "Simple output in XML text format";
     }
 
     public String getContentType() {
@@ -37,6 +39,7 @@ public class XmlSystemReportFormatter extends AbstractSystemReportFormatter impl
         return true;
     }
 
+    @Override
     public void write(final SystemReportPlugin plugin) {
         if (!hasDisplayable(plugin)) return;
         
@@ -98,6 +101,7 @@ public class XmlSystemReportFormatter extends AbstractSystemReportFormatter impl
         }
     }
     
+    @Override
     public void end() {
         if (m_handler != null) {
             try {

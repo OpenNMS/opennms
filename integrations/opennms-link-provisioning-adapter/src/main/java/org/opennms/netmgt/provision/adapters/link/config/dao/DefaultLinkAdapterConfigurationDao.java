@@ -11,7 +11,7 @@ import javax.xml.bind.Unmarshaller;
 import javax.xml.bind.ValidationEventHandler;
 import javax.xml.bind.helpers.DefaultValidationEventHandler;
 
-import org.opennms.netmgt.dao.MarshallingDataAccessFailureException;
+import org.opennms.core.xml.MarshallingResourceFailureException;
 import org.opennms.netmgt.dao.castor.AbstractCastorConfigDao;
 import org.opennms.netmgt.provision.adapters.link.config.DefaultNamespacePrefixMapper;
 import org.opennms.netmgt.provision.adapters.link.config.linkadapter.LinkAdapterConfiguration;
@@ -111,7 +111,7 @@ public class DefaultLinkAdapterConfigurationDao extends AbstractCastorConfigDao<
 
             return config;
         } catch (Throwable e) {
-            throw new MarshallingDataAccessFailureException("Unable to unmarshal the link adapter configuration.", e);
+            throw new MarshallingResourceFailureException("Unable to unmarshal the link adapter configuration.", e);
         }
     }
 

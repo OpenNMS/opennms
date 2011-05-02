@@ -57,7 +57,7 @@ import java.nio.charset.Charset;
 
 import org.opennms.core.utils.InetAddressUtils;
 import org.opennms.core.utils.ThreadCategory;
-import org.opennms.netmgt.dao.jaxb.JaxbUtils;
+import org.opennms.core.xml.JaxbUtils;
 import org.opennms.netmgt.model.events.EventProxy;
 import org.opennms.netmgt.model.events.EventProxyException;
 import org.opennms.netmgt.xml.event.Event;

@@ -14,11 +14,11 @@ public class LsofReportPlugin extends AbstractSystemReportPlugin {
     }
 
     public String getDescription() {
-        return "Output of the 'lsof' Command";
+        return "Output of the 'lsof' command (full output only)";
     }
 
     public int getPriority() {
-        return 6;
+        return 12;
     }
 
     public TreeMap<String, Resource> getEntries() {

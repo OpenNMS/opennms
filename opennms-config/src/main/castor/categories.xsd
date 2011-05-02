@@ -2,18 +2,16 @@
 <schema targetNamespace="http://xmlns.opennms.org/xsd/categories"
         xmlns="http://www.w3.org/2001/XMLSchema"
         xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
-        xmlns:typ="http://xmlns.opennms.org/xsd/types"
         xmlns:this="http://xmlns.opennms.org/xsd/categories"
         xmlns:ns2="http://www.w3.org/1999/xhtml"
         xmlns:ns="http://www.w3.org/2001/XMLSchema"
-        xmlns:hfp="http://www.w3.org/2001/XMLSchema-hasFacetAndProperty">
+		  xmlns:hfp="http://www.w3.org/2001/XMLSchema-hasFacetAndProperty"
+		  elementFormDefault="qualified">
   <annotation>
     <documentation>XML Schema for the categories.xml configuration file. This
     file contains categories for the UI and reports. Version:
     $Id$.</documentation>
   </annotation>
-
-  <import namespace="http://xmlns.opennms.org/xsd/types" schemaLocation="types.xsd"/>
 
   <element name="catinfo">
     <annotation>
@@ -23,7 +21,7 @@
 
     <complexType>
       <sequence>
-        <element maxOccurs="1" minOccurs="1" ref="typ:header">
+        <element maxOccurs="1" minOccurs="1" ref="this:header">
           <annotation>
             <documentation>Header for this file.</documentation>
           </annotation>

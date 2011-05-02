@@ -49,14 +49,14 @@ import javax.mail.search.SubjectTerm;
 import org.junit.Assert;
 import org.junit.Ignore;
 import org.junit.Test;
-import org.opennms.netmgt.config.common.ReadmailConfig;
-import org.opennms.netmgt.config.common.ReadmailHost;
-import org.opennms.netmgt.config.common.ReadmailProtocol;
-import org.opennms.netmgt.config.common.SendmailConfig;
-import org.opennms.netmgt.config.common.SendmailHost;
-import org.opennms.netmgt.config.common.SendmailMessage;
-import org.opennms.netmgt.config.common.SendmailProtocol;
-import org.opennms.netmgt.config.common.UserAuth;
+import org.opennms.netmgt.config.javamail.ReadmailConfig;
+import org.opennms.netmgt.config.javamail.ReadmailHost;
+import org.opennms.netmgt.config.javamail.ReadmailProtocol;
+import org.opennms.netmgt.config.javamail.SendmailConfig;
+import org.opennms.netmgt.config.javamail.SendmailHost;
+import org.opennms.netmgt.config.javamail.SendmailMessage;
+import org.opennms.netmgt.config.javamail.SendmailProtocol;
+import org.opennms.netmgt.config.javamail.UserAuth;
 
 public class JavaReadMailerTest {
     

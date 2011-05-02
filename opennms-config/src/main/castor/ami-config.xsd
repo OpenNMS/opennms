@@ -3,13 +3,11 @@
   targetNamespace="http://xmlns.opennms.org/xsd/config/ami"
   xmlns:tns="http://www.example.org/ami-config"
   xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
-  xmlns:typ="http://xmlns.opennms.org/xsd/types"
   xmlns:this="http://xmlns.opennms.org/xsd/config/ami"
   xmlns:ns2="http://www.w3.org/1999/xhtml"
   xmlns:ns="http://www.w3.org/2001/XMLSchema"
-  xmlns:hfp="http://www.w3.org/2001/XMLSchema-hasFacetAndProperty">
-
-  <import namespace="http://xmlns.opennms.org/xsd/types" schemaLocation="types.xsd" />
+  xmlns:hfp="http://www.w3.org/2001/XMLSchema-hasFacetAndProperty"
+  elementFormDefault="qualified">
 
   <annotation>
     <documentation>
@@ -74,6 +72,26 @@
     </complexType>
   </element>
 
+  <element name="range">
+    <annotation>
+      <documentation>IP Address Range</documentation>
+    </annotation>
+
+    <complexType>
+      <attribute name="begin" type="string" use="required">
+        <annotation>
+          <documentation>Starting IP address of the range.</documentation>
+        </annotation>
+      </attribute>
+
+      <attribute name="end" type="string" use="required">
+        <annotation>
+          <documentation>Ending IP address of the range.</documentation>
+        </annotation>
+      </attribute>
+    </complexType>
+  </element>
+
   <element name="definition">
     <annotation>
       <documentation>
@@ -86,7 +104,7 @@
     <complexType>
       <sequence>
         <element maxOccurs="unbounded" minOccurs="0"
-          ref="typ:range">
+          ref="this:range">
           <annotation>
             <documentation>
               IP address range to which this definition

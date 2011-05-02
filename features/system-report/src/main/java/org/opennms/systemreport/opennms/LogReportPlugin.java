@@ -15,7 +15,7 @@ public class LogReportPlugin extends AbstractSystemReportPlugin {
     }
 
     public String getDescription() {
-        return "OpenNMS Log Files";
+        return "OpenNMS log files (full output only)";
     }
 
     public int getPriority() {
@@ -24,7 +24,7 @@ public class LogReportPlugin extends AbstractSystemReportPlugin {
 
     public TreeMap<String, Resource> getEntries() {
         final TreeMap<String,Resource> map = new TreeMap<String,Resource>();
-        File f = new File(System.getProperty("opennms.home") + "/logs");
+        File f = new File(System.getProperty("opennms.home") + File.separator + "logs");
         processFile(f, map);
         return map;
     }
@@ -36,7 +36,7 @@ public class LogReportPlugin extends AbstractSystemReportPlugin {
             }
         } else {
             String filename = file.getPath();
-            filename = filename.replaceFirst("^" + System.getProperty("opennms.home") + "/logs/?", "");
+            filename = filename.replaceFirst("^" + System.getProperty("opennms.home") + File.separator + "logs" + File.separator + "?", "");
             if (filename.endsWith(".log") && file.length() > 0) {
                 map.put(filename, new FileSystemResource(file));
             }

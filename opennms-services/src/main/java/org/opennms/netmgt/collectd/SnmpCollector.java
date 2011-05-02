@@ -295,12 +295,6 @@ public class SnmpCollector implements ServiceCollector {
     private void initSnmpPeerFactory() {
         try {
             SnmpPeerFactory.init();
-        } catch (MarshalException e) {
-            log().fatal("initSnmpPeerFactory: Failed to load SNMP configuration: " + e, e);
-            throw new UndeclaredThrowableException(e);
-        } catch (ValidationException e) {
-            log().fatal("initSnmpPeerFactory: Failed to load SNMP configuration: " + e, e);
-            throw new UndeclaredThrowableException(e);
         } catch (IOException e) {
             log().fatal("initSnmpPeerFactory: Failed to load SNMP configuration: " + e, e);
             throw new UndeclaredThrowableException(e);

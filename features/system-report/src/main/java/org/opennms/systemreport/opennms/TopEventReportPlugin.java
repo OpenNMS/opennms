@@ -19,11 +19,11 @@ public class TopEventReportPlugin extends AbstractSystemReportPlugin {
     }
 
     public String getDescription() {
-        return "Top 20 Most Reported Events";
+        return "Top 20 most reported events";
     }
 
     public int getPriority() {
-        return 40;
+        return 4;
     }
 
     public TreeMap<String, Resource> getEntries() {

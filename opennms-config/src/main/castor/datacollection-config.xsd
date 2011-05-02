@@ -1,19 +1,18 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <schema targetNamespace="http://xmlns.opennms.org/xsd/config/datacollection"
         xmlns="http://www.w3.org/2001/XMLSchema"
-        xmlns:typ="http://xmlns.opennms.org/xsd/types"
         xmlns:dctyp="http://xmlns.opennms.org/xsd/config/datacollection-types"
         xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
         xmlns:ns2="http://www.w3.org/1999/xhtml"
         xmlns:ns="http://www.w3.org/2001/XMLSchema"
         xmlns:hfp="http://www.w3.org/2001/XMLSchema-hasFacetAndProperty"
-        xmlns:dc="http://xmlns.opennms.org/xsd/config/datacollection">
+		  xmlns:dc="http://xmlns.opennms.org/xsd/config/datacollection"
+		  elementFormDefault="qualified">
   <annotation>
     <documentation>XML Schema for the datacollection-config.xml configuration
     file. Version: $Id$. </documentation>
   </annotation>
 
-  <import namespace="http://xmlns.opennms.org/xsd/types" schemaLocation="types.xsd"/>
   <import namespace="http://xmlns.opennms.org/xsd/config/datacollection-types" schemaLocation="datacollection-types.xsd"/>
 
   <element name="datacollection-config">
@@ -40,6 +39,34 @@
     </complexType>
   </element>
 
+  <element name="rrd">
+    <annotation>
+      <documentation>RRD parms</documentation>
+    </annotation>
+
+    <complexType>
+      <sequence>
+        <element maxOccurs="unbounded" minOccurs="1" name="rra">
+          <annotation>
+            <documentation>Round Robin Archive definitions</documentation>
+          </annotation>
+
+          <simpleType>
+            <restriction base="string">
+              <pattern value="RRA:(AVERAGE|MIN|MAX|LAST):.*"/>
+            </restriction>
+          </simpleType>
+        </element>
+      </sequence>
+
+      <attribute name="step" type="int" use="required">
+        <annotation>
+          <documentation>step size for the RRD</documentation>
+        </annotation>
+      </attribute>
+    </complexType>
+  </element>
+
   <element name="snmp-collection">
     <annotation>
       <documentation>a grouping of SNMP related RRD parms, MIB object groups
@@ -48,7 +75,7 @@
 
     <complexType>
       <sequence>
-        <element maxOccurs="1" minOccurs="1" ref="typ:rrd">
+        <element maxOccurs="1" minOccurs="1" ref="dc:rrd">
           <annotation>
             <documentation>RRD parms</documentation>
           </annotation>

@@ -5,7 +5,8 @@
         xmlns:ns2="http://www.w3.org/1999/xhtml"
         xmlns:ns="http://www.w3.org/2001/XMLSchema"
         xmlns:hfp="http://www.w3.org/2001/XMLSchema-hasFacetAndProperty"
-        xmlns:http-dc="http://xmlns.opennms.org/xsd/config/http-datacollection">
+		  xmlns:http-dc="http://xmlns.opennms.org/xsd/config/http-datacollection"
+		  elementFormDefault="qualified">
   <annotation>
     <documentation>
       XML Schema for the http-datacollection-config.xml configuration file.

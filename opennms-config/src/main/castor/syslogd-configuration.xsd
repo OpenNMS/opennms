@@ -5,7 +5,8 @@
         xmlns:this="http://xmlns.opennms.org/xsd/config/syslogd"
         xmlns:ns2="http://www.w3.org/1999/xhtml"
         xmlns:ns="http://www.w3.org/2001/XMLSchema"
-        xmlns:hfp="http://www.w3.org/2001/XMLSchema-hasFacetAndProperty">
+		  xmlns:hfp="http://www.w3.org/2001/XMLSchema-hasFacetAndProperty"
+		  elementFormDefault="qualified">
     <annotation>
         <documentation>XML Schema for the syslogd-configuration.xml configuration
             file. Version: $Id: syslogd-configuration.xsd 3400 joed $

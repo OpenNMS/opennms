@@ -3,7 +3,8 @@
         targetNamespace="http://xmlns.opennms.org/xsd/config/monitoring-locations"
         xmlns:tags="http://xmlns.opennms.org/xsd/config/tags"
         xmlns:this="http://xmlns.opennms.org/xsd/config/monitoring-locations" 
-        xmlns:tns="http://www.opennms.org/monitoring-locations">
+		  xmlns:tns="http://www.opennms.org/monitoring-locations"
+		  elementFormDefault="qualified">
 
   <import namespace="http://xmlns.opennms.org/xsd/config/tags" schemaLocation="tags.xsd"/>
 

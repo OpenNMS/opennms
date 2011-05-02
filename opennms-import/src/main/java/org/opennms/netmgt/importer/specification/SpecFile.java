@@ -46,7 +46,7 @@ import org.opennms.netmgt.config.modelimport.Interface;
 import org.opennms.netmgt.config.modelimport.ModelImport;
 import org.opennms.netmgt.config.modelimport.MonitoredService;
 import org.opennms.netmgt.config.modelimport.Node;
-import org.opennms.netmgt.dao.castor.CastorUtils;
+import org.opennms.core.xml.CastorUtils;
 import org.opennms.netmgt.importer.ModelImportException;
 import org.springframework.core.io.Resource;
 

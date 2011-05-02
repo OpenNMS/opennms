@@ -14,8 +14,9 @@ public class FullTextSystemReportFormatter extends AbstractSystemReportFormatter
         return "full";
     }
 
+    @Override
     public String getDescription() {
-        return "human-readable text (including large resources like logs)";
+        return "Human-readable text (full output)";
     }
 
     public String getContentType() {
@@ -30,6 +31,7 @@ public class FullTextSystemReportFormatter extends AbstractSystemReportFormatter
         return true;
     }
 
+    @Override
     public void write(final SystemReportPlugin plugin) {
         final OutputStream out = getOutputStream();
 

@@ -18,7 +18,7 @@ import org.springframework.core.io.FileSystemResource;
 import org.springframework.core.io.Resource;
 
 public abstract class AbstractSystemReportFormatter implements SystemReportFormatter {
-    private OutputStream m_outputStream = null;
+    protected OutputStream m_outputStream = null;
     private String m_output;
 
     public AbstractSystemReportFormatter() {
@@ -45,26 +45,29 @@ public abstract class AbstractSystemReportFormatter implements SystemReportForma
     }
 
     public String getName() {
-        LogUtils.warnf(this, "Plugin did not implement getFormatName()!  Using the class name.");
+        LogUtils.warnf(this, "Plugin did not implement getFormatName()! Using the class name: %s", this.getClass().getName());
         return this.getClass().getName();
     }
 
     public String getDescription() {
-        LogUtils.warnf(this, "Plugin did not implement getDescription()!  Using the format name.");
+        LogUtils.warnf(this, "Plugin %s did not implement getDescription()! Using the format name.", getName());
         return this.getName();
     }
 
     public void write(final SystemReportPlugin plugin) {
-        LogUtils.warnf(this, "Plugin did not implement write()!  No data written.");
+        LogUtils.warnf(this, "Plugin %s did not implement write()! No data was written.", getName());
     }
 
     public void begin() {
+        if (needsOutputStream() && m_outputStream == null) {
+            LogUtils.errorf(this, "The output stream is not set and this formatter requires an output stream.");
+        }
     }
 
     public void end() {
     }
     
-    public int compareTo(final SystemReportFormatter o) {
+    public final int compareTo(final SystemReportFormatter o) { 
         return new CompareToBuilder()
             .append(this.getName(), (o == null? null:o.getName()))
             .append(this.getDescription(), (o == null? null:o.getDescription()))

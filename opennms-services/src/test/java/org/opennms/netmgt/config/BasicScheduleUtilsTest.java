@@ -36,8 +36,8 @@ import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
 
+import org.opennms.core.xml.CastorUtils;
 import org.opennms.netmgt.config.groups.Schedule;
-import org.opennms.netmgt.dao.castor.CastorUtils;
 import org.opennms.test.mock.MockLogAppender;
 
 public class BasicScheduleUtilsTest extends IntervalTestCase {
@@ -59,7 +59,7 @@ public class BasicScheduleUtilsTest extends IntervalTestCase {
         Schedule simpleSchedule = CastorUtils.unmarshal(Schedule.class, new ByteArrayInputStream(schedSpec.getBytes()));
         
         Owner owner = new Owner("unnamed", "simple", 0);
-        OwnedIntervalSequence intervals = BasicScheduleUtils.getIntervalsCovering(aug(18), simpleSchedule, owner);
+        OwnedIntervalSequence intervals = BasicScheduleUtils.getIntervalsCovering(aug(18), BasicScheduleUtils.getGroupSchedule(simpleSchedule), owner);
         assertNotNull(intervals);
         assertTimeIntervalSequence(new OwnedInterval[0], intervals);
 
@@ -73,7 +73,7 @@ public class BasicScheduleUtilsTest extends IntervalTestCase {
         Schedule simpleSchedule = CastorUtils.unmarshal(Schedule.class, new ByteArrayInputStream(schedSpec.getBytes()));
         
         Owner owner = new Owner("unnamed", "simple", 0);
-        OwnedIntervalSequence intervals = BasicScheduleUtils.getIntervalsCovering(aug(18), simpleSchedule, owner);
+        OwnedIntervalSequence intervals = BasicScheduleUtils.getIntervalsCovering(aug(18), BasicScheduleUtils.getGroupSchedule(simpleSchedule), owner);
         assertNotNull(intervals);
         assertTimeIntervalSequence(new OwnedInterval[] { owned(owner, aug(18, 13, 14)) }, intervals);
 
@@ -88,7 +88,7 @@ public class BasicScheduleUtilsTest extends IntervalTestCase {
         Schedule simpleSchedule = CastorUtils.unmarshal(Schedule.class, new ByteArrayInputStream(schedSpec.getBytes()));
         
         Owner owner = new Owner("unnamed", "double", 0);
-        OwnedIntervalSequence intervals = BasicScheduleUtils.getIntervalsCovering(aug(18), simpleSchedule, owner);
+        OwnedIntervalSequence intervals = BasicScheduleUtils.getIntervalsCovering(aug(18), BasicScheduleUtils.getGroupSchedule(simpleSchedule), owner);
         assertNotNull(intervals);
         assertTimeIntervalSequence(new OwnedInterval[] { owned(owner, aug(18, 13, 14)), owned(owner, aug(18, 16, 17)) }, intervals);
 
@@ -106,7 +106,7 @@ public class BasicScheduleUtilsTest extends IntervalTestCase {
         Schedule simpleSchedule = CastorUtils.unmarshal(Schedule.class, new ByteArrayInputStream(schedSpec.getBytes()));
         
         Owner owner = new Owner("unnamed", "complex", 0);
-       OwnedIntervalSequence intervals = BasicScheduleUtils.getIntervalsCovering(aug(18), simpleSchedule, owner);
+       OwnedIntervalSequence intervals = BasicScheduleUtils.getIntervalsCovering(aug(18), BasicScheduleUtils.getGroupSchedule(simpleSchedule), owner);
         assertNotNull(intervals);
 
         OwnedInterval[] expected = {
@@ -125,9 +125,10 @@ public class BasicScheduleUtilsTest extends IntervalTestCase {
             "               <time begins=\"18-Aug-2005 13:00:00\" ends=\"18-Aug-2005 14:00:00\"/>\n" + 
             "           </schedule>";
         Schedule simpleSchedule = CastorUtils.unmarshal(Schedule.class, new ByteArrayInputStream(schedSpec.getBytes()));
-        
+        BasicSchedule basicSchedule = BasicScheduleUtils.getGroupSchedule(simpleSchedule);
+
         Owner owner = new Owner("unnamed", "simple", 0, 0);
-        TimeInterval interval = BasicScheduleUtils.getInterval(new Date(), simpleSchedule.getTime(0), owner);
+        TimeInterval interval = BasicScheduleUtils.getInterval(new Date(), basicSchedule.getTime(0), owner);
         assertNotNull(interval);
         assertInterval(owned(owner, aug(18, 13, 14)), interval);
         
@@ -139,9 +140,10 @@ public class BasicScheduleUtilsTest extends IntervalTestCase {
             "               <time day=\"18\" begins=\"13:00:00\" ends=\"14:00:00\"/>\n" + 
             "           </schedule>";
         Schedule simpleSchedule = CastorUtils.unmarshal(Schedule.class, new ByteArrayInputStream(schedSpec.getBytes()));
+        BasicSchedule basicSchedule = BasicScheduleUtils.getGroupSchedule(simpleSchedule);
         
         Owner owner = new Owner("unnamed", "simple", 0, 0);
-        TimeInterval interval = BasicScheduleUtils.getInterval(aug(18).getStart(), simpleSchedule.getTime(0), owner);
+        TimeInterval interval = BasicScheduleUtils.getInterval(aug(18).getStart(), basicSchedule.getTime(0), owner);
         assertNotNull(interval);
         assertInterval(owned(owner, aug(18, 13, 14)), interval);
         
@@ -153,9 +155,10 @@ public class BasicScheduleUtilsTest extends IntervalTestCase {
             "               <time day=\"thursday\" begins=\"13:00:00\" ends=\"14:00:00\"/>\n" + 
             "           </schedule>";
         Schedule simpleSchedule = CastorUtils.unmarshal(Schedule.class, new ByteArrayInputStream(schedSpec.getBytes()));
+        BasicSchedule basicSchedule = BasicScheduleUtils.getGroupSchedule(simpleSchedule);
         
         Owner owner = new Owner("unnamed", "simple", 0, 0);
-        TimeInterval interval = BasicScheduleUtils.getInterval(aug(18).getStart(), simpleSchedule.getTime(0), owner);
+        TimeInterval interval = BasicScheduleUtils.getInterval(aug(18).getStart(), basicSchedule.getTime(0), owner);
         assertNotNull(interval);
         assertInterval(owned(owner, aug(18, 13, 14)), interval);
         
@@ -167,9 +170,10 @@ public class BasicScheduleUtilsTest extends IntervalTestCase {
             "               <time day=\"thursday\" begins=\"11:00:00\" ends=\"14:00:00\"/>\n" + 
             "           </schedule>";
         Schedule simpleSchedule = CastorUtils.unmarshal(Schedule.class, new ByteArrayInputStream(schedSpec.getBytes()));
+        BasicSchedule basicSchedule = BasicScheduleUtils.getGroupSchedule(simpleSchedule);
         
         Owner owner = new Owner("unnamed", "simple", 0, 0);
-        OwnedIntervalSequence intervals = BasicScheduleUtils.getIntervals(aug(4, 13, 25, 12), simpleSchedule.getTime(0), owner);
+        OwnedIntervalSequence intervals = BasicScheduleUtils.getIntervals(aug(4, 13, 25, 12), basicSchedule.getTime(0), owner);
         assertNotNull(intervals);
         
         OwnedInterval[] expected = {
@@ -188,9 +192,10 @@ public class BasicScheduleUtilsTest extends IntervalTestCase {
             "               <time day=\"7\" begins=\"11:00:00\" ends=\"14:00:00\"/>\n" + 
             "           </schedule>";
         Schedule simpleSchedule = CastorUtils.unmarshal(Schedule.class, new ByteArrayInputStream(schedSpec.getBytes()));
+        BasicSchedule basicSchedule = BasicScheduleUtils.getGroupSchedule(simpleSchedule);
         
         Owner owner = new Owner("unnamed", "simple", 0, 0);
-        OwnedIntervalSequence intervals = BasicScheduleUtils.getIntervals(interval(6 /* june */, 7, 13, 11 /* nov */, 7, 12), simpleSchedule.getTime(0), owner);
+        OwnedIntervalSequence intervals = BasicScheduleUtils.getIntervals(interval(6 /* june */, 7, 13, 11 /* nov */, 7, 12), basicSchedule.getTime(0), owner);
         assertNotNull(intervals);
         
         OwnedInterval[] expected = {
@@ -211,9 +216,10 @@ public class BasicScheduleUtilsTest extends IntervalTestCase {
             "               <time begins=\"11:00:00\" ends=\"14:00:00\"/>\n" + 
             "           </schedule>";
         Schedule simpleSchedule = CastorUtils.unmarshal(Schedule.class, new ByteArrayInputStream(schedSpec.getBytes()));
+        BasicSchedule basicSchedule = BasicScheduleUtils.getGroupSchedule(simpleSchedule);
         
         Owner owner = new Owner("unnamed", "simple", 0, 0);
-        OwnedIntervalSequence intervals = BasicScheduleUtils.getIntervals(interval(6, 1, 0, 7, 1, 0), simpleSchedule.getTime(0), owner);
+        OwnedIntervalSequence intervals = BasicScheduleUtils.getIntervals(interval(6, 1, 0, 7, 1, 0), basicSchedule.getTime(0), owner);
         assertNotNull(intervals);
 
         List<OwnedInterval> expected = new ArrayList<OwnedInterval>();

@@ -53,7 +53,6 @@ public final class FormatterView implements View {
 
             if (m_view == null) {
                 output = response.getOutputStream();
-                m_formatter.setOutputStream(response.getOutputStream());
             } else {
                 output = new OutputStream() {
                     @Override
@@ -74,8 +73,8 @@ public final class FormatterView implements View {
                 
                 LogUtils.debugf(this, "finishing output");
                 m_formatter.end();
-            } catch (final Exception e) {
-                LogUtils.warnf(this, e, "Error while formatting output.");
+            } catch (final Throwable e) {
+                LogUtils.warnf(this, e, "Error while formatting system report output");
                 throw new SystemReportException(e);
             } finally {
                 IOUtils.closeQuietly(output);

@@ -17,7 +17,7 @@ public class JavaReportPlugin extends AbstractSystemReportPlugin {
     }
 
     public String getDescription() {
-        return "Java and JVM";
+        return "Java and JVM information";
     }
 
     public int getPriority() {
@@ -40,7 +40,6 @@ public class JavaReportPlugin extends AbstractSystemReportPlugin {
             memoryBean = ManagementFactory.getMemoryMXBean();
         }
 
-        LogUtils.tracef(this, "bean = %s", memoryBean.toString());
         addGetters(memoryBean, map);
 
         RuntimeMXBean runtimeBean = getBean(ManagementFactory.RUNTIME_MXBEAN_NAME, RuntimeMXBean.class);
@@ -49,7 +48,6 @@ public class JavaReportPlugin extends AbstractSystemReportPlugin {
             runtimeBean = ManagementFactory.getRuntimeMXBean();
         }
 
-        LogUtils.tracef(this, "bean = %s", runtimeBean.toString());
         addGetters(runtimeBean, map);
 
         ClassLoadingMXBean classBean = getBean(ManagementFactory.CLASS_LOADING_MXBEAN_NAME, ClassLoadingMXBean.class);
@@ -58,7 +56,6 @@ public class JavaReportPlugin extends AbstractSystemReportPlugin {
             classBean = ManagementFactory.getClassLoadingMXBean();
         }
 
-        LogUtils.tracef(this, "bean = %s", classBean.toString());
         addGetters(classBean, map);
 
         /* this stuff is really not giving us anything useful

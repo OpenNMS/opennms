@@ -16,16 +16,18 @@ import java.util.zip.ZipEntry;
 import java.util.zip.ZipOutputStream;
 
 import net.sf.jasperreports.engine.JRException;
+import net.sf.jasperreports.engine.JRExporterParameter;
 import net.sf.jasperreports.engine.JasperCompileManager;
 import net.sf.jasperreports.engine.JasperExportManager;
 import net.sf.jasperreports.engine.JasperFillManager;
 import net.sf.jasperreports.engine.JasperPrint;
 import net.sf.jasperreports.engine.JasperReport;
+import net.sf.jasperreports.engine.export.JRCsvExporter;
 
 import org.opennms.core.utils.LogUtils;
 import org.opennms.netmgt.config.DataSourceFactory;
-import org.opennms.netmgt.config.reportd.Report;
 import org.opennms.netmgt.config.reportd.Parameter;
+import org.opennms.netmgt.config.reportd.Report;
 
 /**
  * <p>DefaultReportService class.</p>
@@ -35,7 +37,7 @@ import org.opennms.netmgt.config.reportd.Parameter;
  */
 public class DefaultReportService implements ReportService {
     
-    private enum Format { pdf,html,xml,xls };
+    private enum Format { pdf,html,xml,xls,csv };
     
     /** {@inheritDoc} 
      * @throws ReportRunException */
@@ -81,6 +83,13 @@ public class DefaultReportService implements ReportService {
         case xml:
             JasperExportManager.exportReportToXmlFile(jasperPrint,destFileName,true);
             reportName = createZip(destFileName);
+            break;
+        case csv:
+            JRCsvExporter exporter = new JRCsvExporter();
+            exporter.setParameter(JRExporterParameter.JASPER_PRINT, jasperPrint);
+            exporter.setParameter(JRExporterParameter.OUTPUT_FILE_NAME, destFileName);
+            exporter.exportReport();
+            reportName = destFileName;
             break;
         default:
             LogUtils.errorf(this, "Error Running Report: Unknown Format: %s",format);

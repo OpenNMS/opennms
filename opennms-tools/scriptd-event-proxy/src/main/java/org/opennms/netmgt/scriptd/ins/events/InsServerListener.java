@@ -10,7 +10,7 @@ import java.util.Iterator;
 import java.util.Set;
 
 import org.opennms.core.utils.LogUtils;
-import org.opennms.netmgt.dao.jaxb.JaxbUtils;
+import org.opennms.core.xml.JaxbUtils;
 import org.opennms.netmgt.xml.event.Event;
 
 

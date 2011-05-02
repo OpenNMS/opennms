@@ -71,6 +71,7 @@ public class NegativeSeverityFilter extends NotEqualsFilter<Integer> {
      *
      * @return a {@link java.lang.String} object.
      */
+    @Override
     public String getTextDescription() {
         return ("severity is not " + OnmsSeverity.get(getSeverity()).getLabel());
     }
@@ -80,6 +81,7 @@ public class NegativeSeverityFilter extends NotEqualsFilter<Integer> {
      *
      * @return a {@link java.lang.String} object.
      */
+    @Override
     public String toString() {
         return ("<WebEventRepository.NegativeSeverityFilter: " + getDescription() + ">");
     }
@@ -94,6 +96,7 @@ public class NegativeSeverityFilter extends NotEqualsFilter<Integer> {
     }
 
     /** {@inheritDoc} */
+    @Override
     public boolean equals(Object obj) {
         return (this.toString().equals(obj.toString()));
     }

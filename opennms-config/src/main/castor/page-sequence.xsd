@@ -1,7 +1,8 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <schema xmlns="http://www.w3.org/2001/XMLSchema" 
             targetNamespace="http://xmlns.opennms.org/xsd/page-sequence" 
-            xmlns:this="http://xmlns.opennms.org/xsd/page-sequence">
+				xmlns:this="http://xmlns.opennms.org/xsd/page-sequence"
+				elementFormDefault="qualified">
 
   <element name="page-sequence" >
     <annotation>

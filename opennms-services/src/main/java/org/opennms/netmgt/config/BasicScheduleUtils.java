@@ -33,7 +33,9 @@ package org.opennms.netmgt.config;
 
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
+import java.util.ArrayList;
 import java.util.Calendar;
+import java.util.Collection;
 import java.util.Date;
 import java.util.Enumeration;
 import java.util.GregorianCalendar;
@@ -41,8 +43,8 @@ import java.util.HashMap;
 import java.util.Map;
 
 import org.opennms.core.utils.LogUtils;
-import org.opennms.netmgt.config.common.BasicSchedule;
-import org.opennms.netmgt.config.common.Time;
+import org.opennms.netmgt.config.groups.Schedule;
+import org.opennms.netmgt.config.poller.Outage;
 
 /**
  * <p>BasicScheduleUtils class.</p>
@@ -544,5 +546,49 @@ public class BasicScheduleUtils {
     public static OwnedIntervalSequence getIntervalsCovering(final TimeInterval interval, final BasicSchedule sched, final Owner owner) {
         return getIntervalsCovering(interval.getStart(), interval.getEnd(), sched, owner);
     }
+
+	static BasicSchedule getBasicOutageSchedule(final Outage out) {
+		if (out == null) return null;
+		final BasicSchedule schedule = new BasicSchedule();
+		schedule.setName(out.getName());
+		schedule.setType(out.getType());
+		final Collection<Time> times = new ArrayList<Time>();
+		for (final org.opennms.netmgt.config.poller.Time time : out.getTimeCollection()) {
+			times.add(new Time(time.getId(), time.getDay(), time.getBegins(), time.getEnds()));
+		}
+		schedule.setTimeCollection(times);
+		
+		return schedule;
+	}
+
+	public static BasicSchedule getGroupSchedule(final Schedule schedule) {
+		if (schedule == null) return null;
+		
+		final BasicSchedule basicSchedule = new BasicSchedule();
+		basicSchedule.setName(schedule.getName());
+		basicSchedule.setType(schedule.getType());
+		final Collection<Time> times = new ArrayList<Time>();
+		for (final org.opennms.netmgt.config.groups.Time time : schedule.getTimeCollection()) {
+			times.add(new Time(time.getId(), time.getDay(), time.getBegins(), time.getEnds()));
+		}
+		basicSchedule.setTimeCollection(times);
+		
+		return basicSchedule;
+	}
+
+	public static BasicSchedule getRancidSchedule(org.opennms.netmgt.config.rancid.adapter.Schedule schedule) {
+		if (schedule == null) return null;
+		
+		final BasicSchedule basicSchedule = new BasicSchedule();
+		basicSchedule.setName(schedule.getName());
+		basicSchedule.setType(schedule.getType());
+		final Collection<Time> times = new ArrayList<Time>();
+		for (final org.opennms.netmgt.config.rancid.adapter.Time time : schedule.getTimeCollection()) {
+			times.add(new Time(time.getId(), time.getDay(), time.getBegins(), time.getEnds()));
+		}
+		basicSchedule.setTimeCollection(times);
+		
+		return basicSchedule;
+	}
 
 }

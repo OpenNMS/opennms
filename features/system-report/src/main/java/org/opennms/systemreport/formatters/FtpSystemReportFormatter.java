@@ -19,15 +19,15 @@ import org.opennms.systemreport.SystemReportPlugin;
 public class FtpSystemReportFormatter extends AbstractSystemReportFormatter implements SystemReportFormatter {
     private URL m_url;
     private ZipSystemReportFormatter m_zipFormatter;
-    private OutputStream m_outputStream;
     private File m_zipFile;
 
+    @Override
     public String getName() {
         return "ftp";
     }
 
     public String getDescription() {
-        return "ftp to the URL specified in the output option (eg, ftp://ftp.example.com/incoming/my-file.zip)";
+        return "FTP to the URL specified in the output option (eg. ftp://username:password@ftp.example.com/incoming/my-file.zip) (full output)";
     }
 
     public String getContentType() {
@@ -42,41 +42,46 @@ public class FtpSystemReportFormatter extends AbstractSystemReportFormatter impl
         return false;
     }
 
+    @Override
     public boolean needsOutputStream() {
         return false;
     }
 
+    @Override
     public void begin() {
+        super.begin();
         try {
             m_url = new URL(getOutput());
         } catch (final MalformedURLException e) {
-            LogUtils.errorf(this, e, "Unable to parse %s as a URL", getOutput());
-            return;
+            LogUtils.errorf(this, e, "Unable to parse %s as an FTP URL", getOutput());
+            throw new IllegalArgumentException(String.format("Unable to parse \"%s\" as an FTP URL", getOutput()));
         }
         if (!m_url.getProtocol().equalsIgnoreCase("ftp")) {
-            LogUtils.errorf(this, "URL %s is not an FTP url!", m_url);
+            LogUtils.errorf(this, "URL %s is not an FTP URL", m_url);
+            throw new IllegalArgumentException(String.format("URL \"%s\" is not an FTP URL", getOutput()));
         }
         m_zipFormatter = new ZipSystemReportFormatter();
         try {
             m_zipFile = File.createTempFile("ftpSystemReportFormatter", null);
-            LogUtils.debugf(this, "temporary zip file = %s", m_zipFile.getPath());
+            LogUtils.debugf(this, "Temporary ZIP file for system report FTP transfer = %s", m_zipFile.getPath());
             m_outputStream = new FileOutputStream(m_zipFile);
             m_zipFormatter.setOutput(getOutput());
             m_zipFormatter.setOutputStream(m_outputStream);
             m_zipFormatter.begin();
         } catch (final IOException e) {
-            LogUtils.errorf(this, e, "Unable to create temporary file.");
-            m_zipFormatter = null;
-            m_outputStream = null;
+            LogUtils.errorf(this, e, "Unable to create temporary file for system report FTP transfer");
+            throw new IllegalStateException("Unable to create temporary file for system report FTP transfer");
         }
     }
     
+    @Override
     public void write(final SystemReportPlugin plugin) {
         if (m_url == null) return;
 
         m_zipFormatter.write(plugin);
     }
     
+    @Override
     public void end() {
         m_zipFormatter.end();
         IOUtils.closeQuietly(m_outputStream);

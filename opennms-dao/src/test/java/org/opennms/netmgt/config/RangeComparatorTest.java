@@ -41,7 +41,7 @@ import java.util.Collections;
 import java.util.List;
 
 import org.junit.Test;
-import org.opennms.netmgt.config.common.Range;
+import org.opennms.netmgt.config.snmp.Range;
 
 /**
  */

@@ -5,7 +5,7 @@ import java.io.OutputStream;
 
 public interface SystemReportFormatter extends Comparable<SystemReportFormatter> {
     /**
-     * A short name for this format for use by UI's when presenting
+     * A short name for this format for use by UIs when presenting
      * an option of which formatter to choose.
      * @return the format name (eg, "text", "xml", etc.)
      */

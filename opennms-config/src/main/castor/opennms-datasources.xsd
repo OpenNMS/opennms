@@ -1,7 +1,8 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <schema xmlns="http://www.w3.org/2001/XMLSchema"
   targetNamespace="http://xmlns.opennms.org/xsd/config/opennms-datasources"
-  xmlns:this="http://xmlns.opennms.org/xsd/config/opennms-datasources">
+  xmlns:this="http://xmlns.opennms.org/xsd/config/opennms-datasources"
+  elementFormDefault="qualified">
   <annotation>
     <documentation>XML Schema for the opennms-database.xml configuration file. Version: $Id:
       opennms-database.xsd,v 1.4 2006/03/13 10:52:11 mhuot Exp $</documentation>

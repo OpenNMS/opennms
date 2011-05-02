@@ -38,11 +38,11 @@ import org.opennms.core.utils.IPLike;
 import org.opennms.core.utils.InetAddressComparator;
 import org.opennms.core.utils.InetAddressUtils;
 import org.opennms.core.utils.LogUtils;
+import org.opennms.core.xml.CastorUtils;
 import org.opennms.netmgt.ConfigFileConstants;
-import org.opennms.netmgt.config.common.Range;
 import org.opennms.netmgt.config.nsclient.Definition;
 import org.opennms.netmgt.config.nsclient.NsclientConfig;
-import org.opennms.netmgt.dao.castor.CastorUtils;
+import org.opennms.netmgt.config.nsclient.Range;
 import org.opennms.netmgt.poller.nsclient.NSClientAgentConfig;
 import org.springframework.core.io.FileSystemResource;
 

@@ -48,8 +48,8 @@ import org.junit.Assert;
 import org.junit.Before;
 import org.junit.Ignore;
 import org.junit.Test;
+import org.opennms.core.xml.CastorUtils;
 import org.opennms.netmgt.config.modelimport.ModelImport;
-import org.opennms.netmgt.dao.castor.CastorUtils;
 import org.opennms.test.mock.MockLogAppender;
 
 public class HandlerTest {

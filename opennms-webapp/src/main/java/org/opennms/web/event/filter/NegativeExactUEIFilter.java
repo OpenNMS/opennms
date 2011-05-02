@@ -60,6 +60,7 @@ public class NegativeExactUEIFilter extends NotEqualsFilter<String> {
      *
      * @return a {@link java.lang.String} object.
      */
+    @Override
     public String getTextDescription() {
         return ("UEI is not " + getValue());
     }
@@ -69,6 +70,7 @@ public class NegativeExactUEIFilter extends NotEqualsFilter<String> {
      *
      * @return a {@link java.lang.String} object.
      */
+    @Override
     public String toString() {
         return ("<WebEventRepository.NegativeExactUEIFilter: " + this.getDescription() + ">");
     }
@@ -83,6 +85,7 @@ public class NegativeExactUEIFilter extends NotEqualsFilter<String> {
     }
 
     /** {@inheritDoc} */
+    @Override
     public boolean equals(Object obj) {
         return (this.toString().equals(obj.toString()));
     }

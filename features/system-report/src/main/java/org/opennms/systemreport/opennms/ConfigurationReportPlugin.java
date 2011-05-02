@@ -15,7 +15,7 @@ public class ConfigurationReportPlugin extends AbstractSystemReportPlugin {
     }
 
     public String getDescription() {
-        return "OpenNMS Configuration Files";
+        return "Append all OpenNMS configuration files (full output only)";
     }
 
     public int getPriority() {
@@ -24,7 +24,7 @@ public class ConfigurationReportPlugin extends AbstractSystemReportPlugin {
 
     public TreeMap<String, Resource> getEntries() {
         final TreeMap<String,Resource> map = new TreeMap<String,Resource>();
-        File f = new File(System.getProperty("opennms.home") + "/etc");
+        File f = new File(System.getProperty("opennms.home") + File.separator + "etc");
         processFile(f, map);
         return map;
     }
@@ -36,8 +36,8 @@ public class ConfigurationReportPlugin extends AbstractSystemReportPlugin {
             }
         } else {
             String filename = file.getPath();
-            filename = filename.replaceFirst("^" + System.getProperty("opennms.home") + "/etc/?", "");
-            if ((!filename.contains("/examples/")) && file.length() > 0) {
+            filename = filename.replaceFirst("^" + System.getProperty("opennms.home") + File.separator + "etc" + File.separator + "?", "");
+            if ((!filename.contains(File.separator + "examples" + File.separator)) && file.length() > 0) {
                 map.put(filename, new FileSystemResource(file));
             }
         }

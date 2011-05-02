@@ -125,6 +125,9 @@ function restartDiscovery(){
 <%
 HttpSession sess = request.getSession(false);
 DiscoveryConfiguration currConfig  = (DiscoveryConfiguration) sess.getAttribute("discoveryConfiguration");
+if (currConfig == null) {
+	throw new ServletException("The session expired while editing the discovery configuration. Please revisit the page to resume editing the configuration.");
+}
 %>
 <!-- Body -->
 

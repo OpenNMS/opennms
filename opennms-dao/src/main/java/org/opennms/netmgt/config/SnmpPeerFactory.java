@@ -53,21 +53,19 @@ import java.util.concurrent.locks.ReadWriteLock;
 import java.util.concurrent.locks.ReentrantReadWriteLock;
 
 import org.apache.commons.io.IOUtils;
-import org.exolab.castor.xml.MarshalException;
-import org.exolab.castor.xml.Marshaller;
-import org.exolab.castor.xml.ValidationException;
 import org.opennms.core.utils.IPLike;
 import org.opennms.core.utils.InetAddressUtils;
 import org.opennms.core.utils.LogUtils;
+import org.opennms.core.xml.JaxbUtils;
 import org.opennms.netmgt.ConfigFileConstants;
-import org.opennms.netmgt.config.common.Range;
 import org.opennms.netmgt.config.snmp.Definition;
+import org.opennms.netmgt.config.snmp.Range;
 import org.opennms.netmgt.config.snmp.SnmpConfig;
 import org.opennms.netmgt.dao.SnmpAgentConfigFactory;
-import org.opennms.netmgt.dao.castor.CastorUtils;
 import org.opennms.netmgt.snmp.SnmpAgentConfig;
 import org.springframework.core.io.FileSystemResource;
 import org.springframework.core.io.Resource;
+import org.xml.sax.InputSource;
 
 /**
  * This class is the main respository for SNMP configuration information used by
@@ -122,7 +120,7 @@ public class SnmpPeerFactory extends PeerFactory implements SnmpAgentConfigFacto
      * @exception org.exolab.castor.xml.ValidationException
      *                Thrown if the contents do not match the required schema.
      */
-    private SnmpPeerFactory(final File configFile) throws IOException, MarshalException, ValidationException {
+    private SnmpPeerFactory(final File configFile) throws IOException {
         this(new FileSystemResource(configFile));
     }
     
@@ -134,7 +132,7 @@ public class SnmpPeerFactory extends PeerFactory implements SnmpAgentConfigFacto
     public SnmpPeerFactory(final Resource resource) {
         SnmpPeerFactory.getWriteLock().lock();
         try {
-            m_config = CastorUtils.unmarshalWithTranslatedExceptions(SnmpConfig.class, resource);
+        	m_config = JaxbUtils.unmarshal(SnmpConfig.class, resource);
         } finally {
             SnmpPeerFactory.getWriteLock().unlock();
         }
@@ -149,10 +147,10 @@ public class SnmpPeerFactory extends PeerFactory implements SnmpAgentConfigFacto
      * @throws org.exolab.castor.xml.ValidationException if any.
      * @deprecated Use code for InputStream instead to avoid character set issues
      */
-    public SnmpPeerFactory(final Reader rdr) throws IOException, MarshalException, ValidationException {
+    public SnmpPeerFactory(final Reader rdr) throws IOException {
         SnmpPeerFactory.getWriteLock().lock();
         try {
-            m_config = CastorUtils.unmarshalWithTranslatedExceptions(SnmpConfig.class, rdr);
+        	m_config = JaxbUtils.unmarshal(SnmpConfig.class, rdr);
         } finally {
             SnmpPeerFactory.getWriteLock().unlock();
         }
@@ -166,7 +164,7 @@ public class SnmpPeerFactory extends PeerFactory implements SnmpAgentConfigFacto
     public SnmpPeerFactory(final InputStream stream) {
         SnmpPeerFactory.getWriteLock().lock();
         try {
-            m_config = CastorUtils.unmarshalWithTranslatedExceptions(SnmpConfig.class, stream);
+        	m_config = JaxbUtils.unmarshal(SnmpConfig.class, new InputSource(stream));
         } finally {
             SnmpPeerFactory.getWriteLock().unlock();
         }
@@ -194,7 +192,7 @@ public class SnmpPeerFactory extends PeerFactory implements SnmpAgentConfigFacto
      * @throws org.exolab.castor.xml.MarshalException if any.
      * @throws org.exolab.castor.xml.ValidationException if any.
      */
-    public static void init() throws IOException, MarshalException, ValidationException {
+    public static void init() throws IOException {
         SnmpPeerFactory.getWriteLock().lock();
         try {
             if (m_loaded) {
@@ -225,7 +223,7 @@ public class SnmpPeerFactory extends PeerFactory implements SnmpAgentConfigFacto
      * @throws org.exolab.castor.xml.MarshalException if any.
      * @throws org.exolab.castor.xml.ValidationException if any.
      */
-    public static void reload() throws IOException, MarshalException, ValidationException {
+    public static void reload() throws IOException {
         SnmpPeerFactory.getWriteLock().lock();
         try {
             m_singleton = null;
@@ -244,7 +242,7 @@ public class SnmpPeerFactory extends PeerFactory implements SnmpAgentConfigFacto
      * @throws org.exolab.castor.xml.MarshalException if any.
      * @throws org.exolab.castor.xml.ValidationException if any.
      */
-    public static void saveCurrent() throws IOException, MarshalException, ValidationException {
+    public static void saveCurrent() throws IOException {
         // Marshall to a string first, then write the string to the file. This
         // way the original config
         // isn't lost if the XML from the marshall is hosed.
@@ -732,12 +730,8 @@ public class SnmpPeerFactory extends PeerFactory implements SnmpAgentConfigFacto
             StringWriter writer = null;
             try {
                 writer = new StringWriter();
-                Marshaller.marshal(m_config, writer);
+                JaxbUtils.marshal(m_config, writer);
                 marshalledConfig = writer.toString();
-            } catch (final MarshalException e) {
-                LogUtils.errorf(SnmpPeerFactory.class, e, "marshallConfig: Error marshalling configuration");
-            } catch (final ValidationException e) {
-                LogUtils.errorf(SnmpPeerFactory.class, e, "marshallConfig: Error validating configuration");
             } finally {
                 IOUtils.closeQuietly(writer);
             }

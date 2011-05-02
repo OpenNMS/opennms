@@ -42,10 +42,10 @@ import java.util.Properties;
 import org.exolab.castor.xml.MarshalException;
 import org.exolab.castor.xml.ValidationException;
 import org.opennms.core.utils.ParameterMap;
+import org.opennms.core.xml.CastorUtils;
 import org.opennms.netmgt.config.mailtransporttest.MailTransportTest;
 import org.opennms.netmgt.config.mailtransporttest.ReadmailTest;
 import org.opennms.netmgt.config.mailtransporttest.SendmailTest;
-import org.opennms.netmgt.dao.castor.CastorUtils;
 
 /**
  * This is a wrapper class for handling JavaMail configurations.

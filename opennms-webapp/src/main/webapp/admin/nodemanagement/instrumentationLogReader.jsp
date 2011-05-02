@@ -91,10 +91,10 @@ pageContext.setAttribute("OpennmsHome",opennmsHome);
 
 <br/>
 <p>
-Start Time: ${collector.startTime}
+StartTime: ${collector.startTime == null ? "N/A" : collector.startTime}
 </p>
 <p>
-End Time: ${collector.endTime}
+EndTime: ${collector.endTime == null ? "N/A" : collector.endTime}
 </p>
 <p>
 Duration: ${collector.formattedDuration}
@@ -105,6 +105,14 @@ Total Services: ${collector.serviceCount}
 <p>
 Threads Used: ${collector.threadCount}
 </p>
+
+<c:if test="${collector.startTime == null && collector.endTime == null}">
+<p>
+No service collector data is available. Be sure that the <strong>Collectd</strong> and
+<strong>Instrumentation</strong> appenders are set to log at <strong>DEBUG</strong> in
+the <em>log4j.properties</em> configuration file.
+</p>
+</c:if>
 
 <table>
 <tr>

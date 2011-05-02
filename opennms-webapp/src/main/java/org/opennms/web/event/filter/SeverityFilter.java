@@ -73,6 +73,7 @@ public class SeverityFilter extends EqualsFilter<Integer> {
      *
      * @return a {@link java.lang.String} object.
      */
+    @Override
     public String getTextDescription() {
         return (TYPE + "=" + OnmsSeverity.get(getSeverity()).getLabel());
     }
@@ -82,6 +83,7 @@ public class SeverityFilter extends EqualsFilter<Integer> {
      *
      * @return a {@link java.lang.String} object.
      */
+    @Override
     public String toString() {
         return ("<WebEventRepository.SeverityFilter: " + getDescription() + ">");
     }
@@ -96,6 +98,7 @@ public class SeverityFilter extends EqualsFilter<Integer> {
     }
 
     /** {@inheritDoc} */
+    @Override
     public boolean equals(Object obj) {
         return (this.toString().equals(obj.toString()));
     }

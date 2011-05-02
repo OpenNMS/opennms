@@ -61,10 +61,10 @@ import org.apache.commons.io.IOUtils;
 import org.exolab.castor.xml.MarshalException;
 import org.exolab.castor.xml.ValidationException;
 import org.opennms.core.utils.LogUtils;
+import org.opennms.core.xml.CastorUtils;
 import org.opennms.netmgt.ConfigFileConstants;
 import org.opennms.netmgt.config.nsclient.NsclientCollection;
 import org.opennms.netmgt.config.nsclient.NsclientDatacollectionConfig;
-import org.opennms.netmgt.dao.castor.CastorUtils;
 import org.opennms.netmgt.model.RrdRepository;
 
 /**

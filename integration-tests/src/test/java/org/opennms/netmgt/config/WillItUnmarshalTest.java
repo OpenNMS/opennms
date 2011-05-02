@@ -63,6 +63,8 @@ import org.exolab.castor.xml.ValidationException;
 import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
+import org.opennms.core.xml.CastorUtils;
+import org.opennms.core.xml.JaxbUtils;
 import org.opennms.netmgt.config.ackd.AckdConfiguration;
 import org.opennms.netmgt.config.actiond.ActiondConfiguration;
 import org.opennms.netmgt.config.ami.AmiConfig;
@@ -72,7 +74,7 @@ import org.opennms.netmgt.config.categories.Catinfo;
 import org.opennms.netmgt.config.charts.ChartConfiguration;
 import org.opennms.netmgt.config.collectd.CollectdConfiguration;
 import org.opennms.netmgt.config.collectd.JmxDatacollectionConfig;
-import org.opennms.netmgt.config.common.JavamailConfiguration;
+import org.opennms.netmgt.config.javamail.JavamailConfiguration;
 import org.opennms.netmgt.config.databaseReports.DatabaseReports;
 import org.opennms.netmgt.config.datacollection.DatacollectionConfig;
 import org.opennms.netmgt.config.datacollection.DatacollectionGroup;
@@ -129,8 +131,6 @@ import org.opennms.netmgt.config.wmi.WmiDatacollectionConfig;
 import org.opennms.netmgt.config.xmlrpcd.XmlrpcdConfiguration;
 import org.opennms.netmgt.config.xmpConfig.XmpConfig;
 import org.opennms.netmgt.config.xmpDataCollection.XmpDatacollectionConfig;
-import org.opennms.netmgt.dao.castor.CastorUtils;
-import org.opennms.netmgt.dao.jaxb.JaxbUtils;
 import org.opennms.netmgt.provision.persist.requisition.Requisition;
 import org.opennms.netmgt.xml.eventconf.Events;
 import org.opennms.test.ConfigurationTestUtils;
@@ -446,11 +446,11 @@ public class WillItUnmarshalTest {
     }
     @Test
     public void testSnmpConfig() throws Exception {
-        unmarshal("snmp-config.xml", SnmpConfig.class);
+        unmarshalJaxb("snmp-config.xml", SnmpConfig.class);
     }
     @Test
     public void testExampleSnmpConfig() throws Exception {
-        unmarshalExample("snmp-config.xml", SnmpConfig.class);
+        unmarshalJaxbExample("snmp-config.xml", SnmpConfig.class);
     }
     @Test
     public void testSnmpInterfacePollerConfiguration() throws Exception {

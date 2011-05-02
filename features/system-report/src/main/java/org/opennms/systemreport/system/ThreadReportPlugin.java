@@ -21,11 +21,11 @@ public class ThreadReportPlugin extends AbstractSystemReportPlugin {
     }
 
     public String getDescription() {
-        return "Java Thread Dump";
+        return "Java thread dump (full output only)";
     }
 
     public int getPriority() {
-        return 4;
+        return 10;
     }
 
     public TreeMap<String, Resource> getEntries() {

@@ -35,8 +35,10 @@ package org.opennms.web.event.filter;
 import javax.servlet.ServletContext;
 
 import org.opennms.web.element.NetworkElementFactory;
+import org.opennms.web.element.NetworkElementFactoryInterface;
 import org.opennms.web.filter.NotEqualOrNullFilter;
 import org.opennms.web.filter.SQLType;
+import org.springframework.context.ApplicationContext;
 
 /**
  * Encapsulates all service filtering functionality.
@@ -48,6 +50,8 @@ import org.opennms.web.filter.SQLType;
 public class NegativeServiceFilter extends NotEqualOrNullFilter<Integer> {
     /** Constant <code>TYPE="servicenot"</code> */
     public static final String TYPE = "servicenot";
+    private ServletContext m_servletContext;
+    private ApplicationContext m_appContext;
 
     protected int serviceId;
 
@@ -55,9 +59,22 @@ public class NegativeServiceFilter extends NotEqualOrNullFilter<Integer> {
      * <p>Constructor for NegativeServiceFilter.</p>
      *
      * @param serviceId a int.
+     * @param servletContext
      */
-    public NegativeServiceFilter(int serviceId) {
+    public NegativeServiceFilter(int serviceId, ServletContext servletContext) {
         super(TYPE, SQLType.INT, "EVENTS.SERVICEID", "serviceType.id", serviceId);
+        m_servletContext = servletContext;
+    }
+
+    /**
+     * <p>Constructor for NegativeServiceFilter.</p>
+     *
+     * @param serviceId a int.
+     * @param appContext
+     */
+    public NegativeServiceFilter(int serviceId, ApplicationContext appContext) {
+        super(TYPE, SQLType.INT, "EVENTS.SERVICEID", "serviceType.id", serviceId);
+        m_appContext = appContext;
     }
 
     /**
@@ -65,9 +82,10 @@ public class NegativeServiceFilter extends NotEqualOrNullFilter<Integer> {
      *
      * @return a {@link java.lang.String} object.
      */
-    public String getTextDescription(ServletContext servletContext) {
-        String serviceName = Integer.toString(getServiceId());
-        serviceName = NetworkElementFactory.getInstance(servletContext).getServiceNameFromId(getServiceId());
+    @Override
+    public String getTextDescription() {
+        NetworkElementFactoryInterface factory = (m_servletContext == null ? NetworkElementFactory.getInstance(m_appContext) : NetworkElementFactory.getInstance(m_servletContext));
+        String serviceName = factory.getServiceNameFromId(getServiceId());
 
         return ("service is not " + serviceName);
     }
@@ -77,6 +95,7 @@ public class NegativeServiceFilter extends NotEqualOrNullFilter<Integer> {
      *
      * @return a {@link java.lang.String} object.
      */
+    @Override
     public String toString() {
         return ("<WebEventRepository.NegativeServiceFilter: " + this.getDescription() + ">");
     }
@@ -91,13 +110,8 @@ public class NegativeServiceFilter extends NotEqualOrNullFilter<Integer> {
     }
 
     /** {@inheritDoc} */
+    @Override
     public boolean equals(Object obj) {
         return (this.toString().equals(obj.toString()));
-    }
-
-    @Override
-    public String getTextDescription() {
-        // TODO Auto-generated method stub
-        return null;
     }
 }

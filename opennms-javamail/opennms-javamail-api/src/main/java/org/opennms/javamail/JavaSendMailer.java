@@ -49,10 +49,10 @@ import javax.mail.Transport;
 import javax.mail.internet.MimeMessage;
 
 import org.opennms.core.utils.PropertiesUtils;
-import org.opennms.netmgt.config.common.JavamailProperty;
-import org.opennms.netmgt.config.common.SendmailConfig;
-import org.opennms.netmgt.config.common.SendmailMessage;
-import org.opennms.netmgt.config.common.SendmailProtocol;
+import org.opennms.netmgt.config.javamail.JavamailProperty;
+import org.opennms.netmgt.config.javamail.SendmailConfig;
+import org.opennms.netmgt.config.javamail.SendmailMessage;
+import org.opennms.netmgt.config.javamail.SendmailProtocol;
 import org.springframework.mail.javamail.MimeMailMessage;
 
 /**
@@ -102,7 +102,7 @@ public class JavaSendMailer extends JavaMailer2 {
      * Using this constructor implies overriding sendmail configuration with properties
      * from the deprecated javamail-configuration.properties file.
      *
-     * @param config a {@link org.opennms.netmgt.config.common.SendmailConfig} object.
+     * @param config a {@link org.opennms.netmgt.config.javamail.SendmailConfig} object.
      * @throws org.opennms.javamail.JavaMailerException if any.
      */
     public JavaSendMailer(SendmailConfig config) throws JavaMailerException {
@@ -112,7 +112,7 @@ public class JavaSendMailer extends JavaMailer2 {
     /**
      * <p>buildMimeMessage</p>
      *
-     * @param msg a {@link org.opennms.netmgt.config.common.SendmailMessage} object.
+     * @param msg a {@link org.opennms.netmgt.config.javamail.SendmailMessage} object.
      * @return a {@link org.springframework.mail.javamail.MimeMailMessage} object.
      */
     public MimeMailMessage buildMimeMessage(SendmailMessage msg) {
@@ -299,7 +299,7 @@ public class JavaSendMailer extends JavaMailer2 {
     /**
      * <p>setConfig</p>
      *
-     * @param config a {@link org.opennms.netmgt.config.common.SendmailConfig} object.
+     * @param config a {@link org.opennms.netmgt.config.javamail.SendmailConfig} object.
      */
     public void setConfig(SendmailConfig config) {
         m_config = config;
@@ -308,7 +308,7 @@ public class JavaSendMailer extends JavaMailer2 {
     /**
      * <p>getConfig</p>
      *
-     * @return a {@link org.opennms.netmgt.config.common.SendmailConfig} object.
+     * @return a {@link org.opennms.netmgt.config.javamail.SendmailConfig} object.
      */
     public SendmailConfig getConfig() {
         return m_config;

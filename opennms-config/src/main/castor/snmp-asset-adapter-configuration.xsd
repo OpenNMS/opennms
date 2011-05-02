@@ -1,17 +1,15 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <schema targetNamespace="http://xmlns.opennms.org/xsd/config/snmpasset/adapter"
         xmlns="http://www.w3.org/2001/XMLSchema"
-        xmlns:typ="http://xmlns.opennms.org/xsd/types"
         xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
         xmlns:ns2="http://www.w3.org/1999/xhtml"
         xmlns:ns="http://www.w3.org/2001/XMLSchema"
         xmlns:hfp="http://www.w3.org/2001/XMLSchema-hasFacetAndProperty"
-        xmlns:sa="http://xmlns.opennms.org/xsd/config/snmpasset/adapter">
+		  xmlns:sa="http://xmlns.opennms.org/xsd/config/snmpasset/adapter"
+		  elementFormDefault="qualified">
   <annotation>
     <documentation>XML Schema for the snmp-asset-adapter-configuration.xml configuration file.</documentation>
   </annotation>
-
-  <import namespace="http://xmlns.opennms.org/xsd/types" schemaLocation="types.xsd"/>
 
   <element name="snmp-asset-adapter-configuration">
     <complexType>

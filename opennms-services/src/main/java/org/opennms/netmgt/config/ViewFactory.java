@@ -58,16 +58,16 @@ import org.apache.regexp.RESyntaxException;
 import org.exolab.castor.xml.MarshalException;
 import org.exolab.castor.xml.Marshaller;
 import org.exolab.castor.xml.ValidationException;
+import org.opennms.core.xml.CastorUtils;
 import org.opennms.netmgt.ConfigFileConstants;
 import org.opennms.netmgt.EventConstants;
-import org.opennms.netmgt.config.common.Header;
 import org.opennms.netmgt.config.views.Categories;
+import org.opennms.netmgt.config.views.Header;
 import org.opennms.netmgt.config.views.Member;
 import org.opennms.netmgt.config.views.Membership;
 import org.opennms.netmgt.config.views.View;
 import org.opennms.netmgt.config.views.Viewinfo;
 import org.opennms.netmgt.config.views.Views;
-import org.opennms.netmgt.dao.castor.CastorUtils;
 import org.springframework.core.io.FileSystemResource;
 
 /**

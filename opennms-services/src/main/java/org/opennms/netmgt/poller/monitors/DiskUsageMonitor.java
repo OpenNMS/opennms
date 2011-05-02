@@ -116,12 +116,6 @@ final public class DiskUsageMonitor extends SnmpMonitorStrategy {
         //
         try {
             SnmpPeerFactory.init();
-        } catch (MarshalException ex) {
-        	log().fatal("initialize: Failed to load SNMP configuration", ex);
-            throw new UndeclaredThrowableException(ex);
-        } catch (ValidationException ex) {
-        	log().fatal("initialize: Failed to load SNMP configuration", ex);
-            throw new UndeclaredThrowableException(ex);
         } catch (IOException ex) {
         	log().fatal("initialize: Failed to load SNMP configuration", ex);
             throw new UndeclaredThrowableException(ex);

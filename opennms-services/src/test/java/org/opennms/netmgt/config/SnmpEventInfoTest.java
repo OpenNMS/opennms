@@ -40,8 +40,6 @@ import java.io.IOException;
 
 import junit.framework.TestCase;
 
-import org.exolab.castor.xml.MarshalException;
-import org.exolab.castor.xml.ValidationException;
 import org.opennms.core.utils.ByteArrayComparator;
 import org.opennms.core.utils.InetAddressUtils;
 import org.opennms.netmgt.config.snmp.SnmpConfig;
@@ -74,7 +72,7 @@ public class SnmpEventInfoTest extends TestCase {
      * @throws ValidationException
      * @throws IOException 
      */
-    public final void testModifySpecificInDef() throws MarshalException, ValidationException, IOException {
+    public final void testModifySpecificInDef() throws IOException {
         
         String snmpConfigXml = "<?xml version=\"1.0\"?>\n" + 
         "<snmp-config retry=\"3\" timeout=\"800\"\n" + 
@@ -120,7 +118,7 @@ public class SnmpEventInfoTest extends TestCase {
      * @throws ValidationException
      * @throws IOException 
      */
-    public final void testAddAdjacentSpecificToDef() throws MarshalException, ValidationException, IOException {
+    public final void testAddAdjacentSpecificToDef() throws IOException {
         
         String snmpConfigXml = "<?xml version=\"1.0\"?>\n" + 
         "<snmp-config retry=\"3\" timeout=\"800\"\n" + 
@@ -170,7 +168,7 @@ public class SnmpEventInfoTest extends TestCase {
      * @throws ValidationException
      * @throws IOException 
      */
-    public void testSplitRange() throws MarshalException, ValidationException, IOException {
+    public void testSplitRange() throws IOException {
         
         String snmpConfigXml = "<?xml version=\"1.0\"?>\n" + 
         "<snmp-config retry=\"3\" timeout=\"800\"\n" + 
@@ -216,7 +214,7 @@ public class SnmpEventInfoTest extends TestCase {
      * @throws ValidationException
      * @throws IOException 
      */
-    public void testRemoveSpecificFromRange() throws MarshalException, ValidationException, IOException {
+    public void testRemoveSpecificFromRange() throws IOException {
         
         String snmpConfigXml = "<?xml version=\"1.0\"?>\n" + 
         "<snmp-config retry=\"3\" timeout=\"800\"\n" + 
@@ -268,7 +266,7 @@ public class SnmpEventInfoTest extends TestCase {
      * @throws ValidationException
      * @throws IOException 
      */
-    public void testRecombineSpecificIntoRange() throws MarshalException, ValidationException, IOException {
+    public void testRecombineSpecificIntoRange() throws IOException {
         
         String snmpConfigXml = "<?xml version=\"1.0\"?>\n" + 
         "<snmp-config retry=\"3\" timeout=\"800\"\n" + 
@@ -313,7 +311,7 @@ public class SnmpEventInfoTest extends TestCase {
      * @throws ValidationException
      * @throws IOException 
      */
-    public void testRemoveSpecificInSeparateDefWithNewRange() throws MarshalException, ValidationException, IOException {
+    public void testRemoveSpecificInSeparateDefWithNewRange() throws IOException {
         
         String snmpConfigXml = "<?xml version=\"1.0\"?>\n" + 
         "<snmp-config retry=\"3\" timeout=\"800\"\n" + 
@@ -359,7 +357,7 @@ public class SnmpEventInfoTest extends TestCase {
      * @throws ValidationException
      * @throws IOException 
      */
-    public void testInvalidRange() throws MarshalException, ValidationException, IOException {
+    public void testInvalidRange() throws IOException {
         String snmpConfigXml = "<?xml version=\"1.0\"?>\n" + 
         "<snmp-config retry=\"3\" timeout=\"800\"\n" + 
         "   read-community=\"public\" write-community=\"private\">\n" + 
@@ -394,7 +392,7 @@ public class SnmpEventInfoTest extends TestCase {
      * @throws ValidationException
      * @throws IOException 
      */
-    public void testNewSpecifcSameAsBeginInOldDef() throws MarshalException, ValidationException, IOException {
+    public void testNewSpecifcSameAsBeginInOldDef() throws IOException {
         String snmpConfigXml = "<?xml version=\"1.0\"?>\n" + 
         "<snmp-config retry=\"3\" timeout=\"800\"\n" + 
         "   read-community=\"public\" write-community=\"private\">\n" + 
@@ -439,7 +437,7 @@ public class SnmpEventInfoTest extends TestCase {
      * @throws ValidationException
      * @throws IOException 
      */
-    public void testOverlapsTwoRanges() throws MarshalException, ValidationException, IOException {
+    public void testOverlapsTwoRanges() throws IOException {
         
         String snmpConfigXml = "<?xml version=\"1.0\"?>\n" + 
         "<snmp-config retry=\"3\" timeout=\"800\"\n" + 
@@ -487,7 +485,7 @@ public class SnmpEventInfoTest extends TestCase {
      * @throws ValidationException
      * @throws IOException 
      */
-    public void testRecombineRanges() throws MarshalException, ValidationException, IOException {
+    public void testRecombineRanges() throws IOException {
         
         String snmpConfigXml = "<?xml version=\"1.0\"?>\n" + 
         "<snmp-config retry=\"3\" timeout=\"800\"\n" + 
@@ -533,7 +531,7 @@ public class SnmpEventInfoTest extends TestCase {
      * @throws ValidationException
      * @throws IOException 
      */
-    public void testRecombineRangesNonAdjacentRange() throws MarshalException, ValidationException, IOException {
+    public void testRecombineRangesNonAdjacentRange() throws IOException {
         
         String snmpConfigXml = "<?xml version=\"1.0\"?>\n" + 
         "<snmp-config retry=\"3\" timeout=\"800\"\n" + 
@@ -578,7 +576,7 @@ public class SnmpEventInfoTest extends TestCase {
      * @throws ValidationException
      * @throws IOException 
      */
-    public final void testAddNewSpecificToConfig() throws MarshalException, ValidationException, IOException {
+    public final void testAddNewSpecificToConfig() throws IOException {
         
         String snmpConfigXml = "<?xml version=\"1.0\"?>\n" + 
         "<snmp-config retry=\"3\" timeout=\"800\"\n" + 
@@ -635,7 +633,7 @@ public class SnmpEventInfoTest extends TestCase {
      * @throws MarshalException 
      * @throws IOException 
      */
-    public final void testOptimizeAllDefs() throws MarshalException, ValidationException, IOException {
+    public final void testOptimizeAllDefs() throws IOException {
 
         MergeableDefinition def;
         
