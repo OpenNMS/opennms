@@ -5,8 +5,8 @@
     <version>1.9.8-SNAPSHOT</version>
   </parent>
   <modelVersion>4.0.0</modelVersion>
-  <artifactId>opennms-icmp-jni</artifactId>
-  <name>OpenNMS ICMP Pinger - JNI implementation</name>
+  <artifactId>opennms-icmp-jna</artifactId>
+  <name>OpenNMS ICMP Pinger - JNA implementation</name>
   <dependencies>
     <dependency>
       <groupId>org.opennms</groupId>
@@ -14,12 +14,11 @@
     </dependency>
     <dependency>
       <groupId>org.opennms</groupId>
-      <artifactId>jicmp-api</artifactId>
-      <version>1.0.10</version>
+      <artifactId>opennms-util</artifactId>
     </dependency>
     <dependency>
-      <groupId>org.opennms</groupId>
-      <artifactId>opennms-util</artifactId>
+      <groupId>org.opennms.core</groupId>
+      <artifactId>org.opennms.core.jicmpv6</artifactId>
     </dependency>
     <dependency>
       <groupId>junit</groupId>

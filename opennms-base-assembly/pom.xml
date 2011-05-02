@@ -172,12 +172,14 @@
     <dependency>
       <groupId>org.opennms</groupId>
       <artifactId>opennms-icmp-api</artifactId>
-      <scope>compile</scope>
     </dependency>
     <dependency>
-      <groupId>org.opennms.core</groupId>
-      <artifactId>org.opennms.core.jicmpv6</artifactId>
-      <scope>compile</scope>
+      <groupId>org.opennms</groupId>
+      <artifactId>opennms-icmp-jni</artifactId>
+    </dependency>
+    <dependency>
+      <groupId>org.opennms</groupId>
+      <artifactId>opennms-icmp-jna</artifactId>
     </dependency>
     <dependency>
       <groupId>org.opennms</groupId>

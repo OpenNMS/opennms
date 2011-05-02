@@ -1289,6 +1289,11 @@
         <version>${project.version}</version>
       </dependency>
       <dependency>
+        <groupId>org.opennms</groupId>
+        <artifactId>opennms-icmp-jna</artifactId>
+        <version>${project.version}</version>
+      </dependency>
+      <dependency>
         <groupId>org.opennms.core</groupId>
         <artifactId>org.opennms.core.jicmpv6</artifactId>
         <version>${project.version}</version>
