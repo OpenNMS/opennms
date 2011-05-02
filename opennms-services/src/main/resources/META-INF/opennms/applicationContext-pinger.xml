@@ -11,7 +11,7 @@
 
   <bean class="org.springframework.beans.factory.config.PropertyPlaceholderConfigurer" />
   
-  <bean id="pinger" class="${org.opennms.icmp.pingerClass}" />
+  <bean id="pinger" class="${org.opennms.netmgt.icmp.pingerClass}" />
 
   <bean id="pingerFactory-setInstance" class="org.springframework.beans.factory.config.MethodInvokingFactoryBean">
     <property name="staticMethod"><value>org.opennms.netmgt.icmp.PingerFactory.setInstance</value></property>
