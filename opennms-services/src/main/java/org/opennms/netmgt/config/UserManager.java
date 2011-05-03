@@ -55,6 +55,7 @@ import java.util.HashMap;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
+import java.util.TreeMap;
 
 import org.exolab.castor.xml.MarshalException;
 import org.exolab.castor.xml.Marshaller;
@@ -111,7 +112,7 @@ public abstract class UserManager {
         Users users = userinfo.getUsers();
         oldHeader = userinfo.getHeader();
         List<User> usersList = users.getUserCollection();
-        m_users = new HashMap<String, User>();
+        m_users = new TreeMap<String, User>();
 
         for (User curUser : usersList) {
             m_users.put(curUser.getUserId(), curUser);
