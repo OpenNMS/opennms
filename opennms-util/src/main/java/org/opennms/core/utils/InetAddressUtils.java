@@ -50,7 +50,6 @@ import java.util.List;
  */
 abstract public class InetAddressUtils {
 
-    private static final BigInteger BIG_ONE = BigInteger.valueOf(1);
     public static final InetAddress UNPINGABLE_ADDRESS;
 
     static {
@@ -98,7 +97,7 @@ abstract public class InetAddressUtils {
 
     public static byte[] incr(final byte[] address) throws UnknownHostException {
     	final BigInteger addr = new BigInteger(1, address)
-    		.add(BIG_ONE);
+    		.add(BigInteger.ONE);
         return convertBigIntegerIntoInetAddress(addr).getAddress();
     }
 
@@ -108,7 +107,7 @@ abstract public class InetAddressUtils {
 
     public static byte[] decr(final byte[] address) throws UnknownHostException {
     	final BigInteger addr = new BigInteger(1, address)
-    		.subtract(BIG_ONE);
+    		.subtract(BigInteger.ONE);
         return convertBigIntegerIntoInetAddress(addr).getAddress();
     }
 
@@ -391,18 +390,6 @@ abstract public class InetAddressUtils {
     	return ipAddrString == null? null : toIpAddrString(addr(ipAddrString));
     }
     
-	public static InetAddress normalize(final InetAddress addr) {
-		// to normalize, we need to run through the byte[] version of toIpAddrString, but that will lose the scope ID
-		// we save it off to set it back when we're done
-		if (addr == null) return null;
-		if (addr instanceof Inet6Address) {
-			final int id = ((Inet6Address)addr).getScopeId();
-			return (Inet6Address)addr(toIpAddrString(addr.getAddress()) + "%" + id);
-		} else {
-			return addr(toIpAddrString(addr.getAddress()));
-		}
-	}
-
 	public static String str(final InetAddress addr) {
         return addr == null ? null : toIpAddrString(addr);
     }

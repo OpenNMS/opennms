@@ -184,10 +184,10 @@ public class NetworkBuilder {
 		}
 
 		public SnmpInterfaceBuilder addSnmpInterface(final int ifIndex) {
-			final OnmsSnmpInterface snmpIf = new OnmsSnmpInterface(m_currentNode, ifIndex);
+		    final OnmsSnmpInterface snmpIf = new OnmsSnmpInterface(m_currentNode, ifIndex);
 		    m_iface.setSnmpInterface(snmpIf);
-            // TODO: Should this be done in setSnmpInterface?
-            snmpIf.getIpInterfaces().add(m_iface);
+		    // TODO: Should this be done in setSnmpInterface?
+		    snmpIf.getIpInterfaces().add(m_iface);
 		    return new SnmpInterfaceBuilder(snmpIf);
 
 		}
@@ -263,8 +263,10 @@ public class NetworkBuilder {
 	 * @return a {@link org.opennms.netmgt.model.SnmpInterfaceBuilder} object.
 	 */
 	public SnmpInterfaceBuilder addSnmpInterface(final int ifIndex) {
-		return new SnmpInterfaceBuilder(new OnmsSnmpInterface(m_currentNode, ifIndex));
-
+	    OnmsSnmpInterface snmp = new OnmsSnmpInterface(m_currentNode, ifIndex);
+	    // TODO: Should this be done in addSnmpInterface?
+	    snmp.getIpInterfaces().add(m_currentIf);
+	    return new SnmpInterfaceBuilder(snmp);
 	}
 
 	/**
