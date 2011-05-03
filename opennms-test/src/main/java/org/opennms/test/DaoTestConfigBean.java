@@ -70,8 +70,8 @@ public class DaoTestConfigBean implements InitializingBean {
     public void afterPropertiesSet() {
         Assert.state(m_relativeHomeDirectory == null || m_absoluteHomeDirectory == null, "Only one of the properties relativeHomeDirectory and absoluteHomeDirectory can be set.");
 
-        if (System.getProperty("org.opennms.icmp.pingerClass") == null) {
-        	System.setProperty("org.opennms.icmp.pingerClass", "org.opennms.jicmp.JnaPinger");
+        if (System.getProperty("org.opennms.netmgt.icmp.pingerClass") == null) {
+        	System.setProperty("org.opennms.netmgt.icmp.pingerClass", "org.opennms.netmgt.icmp.jna.JnaPinger");
         }
         if (m_absoluteHomeDirectory != null) {
             ConfigurationTestUtils.setAbsoluteHomeDirectory(m_absoluteHomeDirectory);
