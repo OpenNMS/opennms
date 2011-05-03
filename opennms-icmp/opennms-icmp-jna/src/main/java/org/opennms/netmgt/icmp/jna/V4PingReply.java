@@ -47,8 +47,6 @@ class V4PingReply extends ICMPEchoPacket implements EchoPacket {
     
     public boolean isValid() {
         ByteBuffer content = getContentBuffer();
-        /* we ensure the length can contain 2 longs (cookie and sent time)
-           and that the cookie matches */
         return content.limit() >= V4PingRequest.DATA_LENGTH && V4PingRequest.COOKIE == content.getLong(V4PingRequest.OFFSET_COOKIE);
     }
 

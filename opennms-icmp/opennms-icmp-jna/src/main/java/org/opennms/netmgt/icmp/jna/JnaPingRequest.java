@@ -211,7 +211,7 @@ public class JnaPingRequest implements Request<JnaPingRequestId, JnaPingRequest,
     }
 
     /**
-     * Send this PingRequest through the given icmpSocket
+     * Send this V4PingRequest through the given icmpSocket
      * @param icmpSocket a {@link org.opennms.protocols.icmp.IcmpSocket} object.
      */
     public void send(V4Pinger v4, V6Pinger v6) {

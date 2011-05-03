@@ -47,19 +47,34 @@ class V6PingReply extends ICMPv6EchoPacket implements EchoPacket {
 
     public boolean isValid() {
         ByteBuffer content = getContentBuffer();
-        /* we ensure the length can contain 2 longs (cookie and sent time)
-           and that the cookie matches */
-        return content.limit() >= 16 && V6PingRequest.COOKIE == content.getLong(0);
+        return content.limit() >= V6PingRequest.DATA_LENGTH && V6PingRequest.COOKIE == content.getLong(V6PingRequest.OFFSET_COOKIE);
+    }
+    
+    @Override
+    public boolean isEchoReply() {
+        return Type.EchoReply.equals(getType());
     }
 
     @Override
-    public boolean isEchoReply() {
-    	return Type.EchoReply.equals(getType());
+    public int getIdentifier() {
+        // this is here just for EchoPacket interface completeness
+        return super.getIdentifier();
+    }
+    
+    @Override
+    public int getSequenceNumber() {
+        // this is here just for EchoPacket interface completeness
+        return super.getSequenceNumber();
+    }
+
+    @Override
+    public long getThreadId() {
+        return getContentBuffer().getLong(V6PingRequest.OFFSET_THREAD_ID);
     }
 
     @Override
     public long getSentTimeNanos() {
-        return getContentBuffer().getLong(8);
+        return getContentBuffer().getLong(V6PingRequest.OFFSET_TIMESTAMP);
     }
     
     @Override
@@ -73,12 +88,8 @@ class V6PingReply extends ICMPv6EchoPacket implements EchoPacket {
         return elapsedTimeNanos() / nanosPerUnit;
     }
 
-    long elapsedTimeNanos() {
+    protected long elapsedTimeNanos() {
         return getReceivedTimeNanos() - getSentTimeNanos();
     }
 
-    @Override
-    public long getThreadId() {
-    	return getIdentifier();
-    }
 }

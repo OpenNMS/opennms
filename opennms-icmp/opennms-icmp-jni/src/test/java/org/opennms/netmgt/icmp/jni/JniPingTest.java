@@ -43,7 +43,6 @@ import java.util.concurrent.CountDownLatch;
 import junit.framework.TestCase;
 
 import org.opennms.core.utils.CollectionMath;
-import org.opennms.core.utils.InetAddressUtils;
 import org.opennms.netmgt.icmp.EchoPacket;
 import org.opennms.netmgt.icmp.PingConstants;
 import org.opennms.netmgt.icmp.PingResponseCallback;
@@ -95,8 +94,8 @@ public class JniPingTest extends TestCase {
 
         super.setUp();
         m_goodHost = InetAddress.getLocalHost();
-        m_badHost  = InetAddressUtils.UNPINGABLE_ADDRESS;
-        
+        // 192.0.2.0/24 is reserved for documentation purposes
+        m_badHost  = InetAddress.getByName("192.0.2.123");
     }
 
     public void testSinglePingJni() throws Exception {

@@ -43,11 +43,9 @@ import java.util.concurrent.CountDownLatch;
 import junit.framework.TestCase;
 
 import org.opennms.core.utils.CollectionMath;
-import org.opennms.core.utils.InetAddressUtils;
 import org.opennms.netmgt.icmp.EchoPacket;
 import org.opennms.netmgt.icmp.PingConstants;
 import org.opennms.netmgt.icmp.PingResponseCallback;
-import org.opennms.netmgt.icmp.Pinger;
 import org.opennms.netmgt.icmp.jna.JnaPinger;
 
 /**
@@ -60,6 +58,8 @@ public class JnaPingTest extends TestCase {
 
     private InetAddress m_goodHost = null;
     private InetAddress m_badHost = null;
+    private InetAddress m_ipv6goodHost = null;
+    private InetAddress m_ipv6badHost = null;
 
     /**
      * Don't run this test unless the runPingTests property
@@ -96,18 +96,27 @@ public class JnaPingTest extends TestCase {
 
         super.setUp();
         m_goodHost = InetAddress.getLocalHost();
-        m_badHost  = InetAddressUtils.UNPINGABLE_ADDRESS;
+        // 192.0.2.0/24 is reserved for documentation purposes
+        m_badHost  = InetAddress.getByName("192.0.2.123");
+        m_ipv6goodHost = InetAddress.getByName("::1");
+        // 2001:db8 prefix is reserved for documentation purposes suffix is 'BadAddr!' as ascii
+        m_ipv6badHost = InetAddress.getByName("2001:0db8::4261:6441:6464:7221");
+        assertEquals(16, m_ipv6badHost.getAddress().length);
         
     }
 
-    public void testSinglePingJna() throws Exception {
-        singlePing(s_jnaPinger);
-    }
-
-    protected void singlePing(Pinger pinger) throws Exception {
-        Number rtt = pinger.ping(m_goodHost);
+    private void singlePingGood(InetAddress addr) throws Exception {
+        Number rtt = s_jnaPinger.ping(addr);
         assertNotNull("No RTT value returned from ping, looks like the ping failed", rtt);
         assertTrue("Negative RTT value returned from ping", rtt.doubleValue() > 0);
+    }
+
+    public void testSinglePingIPv4() throws Exception {
+        singlePingGood(m_goodHost);
+    }
+
+    public void testSinglePingIPv6() throws Exception {
+        singlePingGood(m_ipv6goodHost);
     }
     
     private static class TestPingResponseCallback implements PingResponseCallback {
@@ -178,40 +187,47 @@ public class JnaPingTest extends TestCase {
         
     };
 
-    protected void pingCallbackTimeout(Pinger pinger) throws Exception {
+    public void testPingCallbackTimeoutIPv4() throws Exception {
+        pingCallbackTimeout(m_badHost);
+    }
 
+    public void testPingCallbackTimeoutIPv6() throws Exception {
+        pingCallbackTimeout(m_ipv6badHost);
+    }
+
+    private void pingCallbackTimeout(InetAddress addr) throws Exception {
         TestPingResponseCallback cb = new TestPingResponseCallback();
         
-        pinger.ping(m_badHost, PingConstants.DEFAULT_TIMEOUT, PingConstants.DEFAULT_RETRIES, 1, cb);
+        s_jnaPinger.ping(addr, PingConstants.DEFAULT_TIMEOUT, PingConstants.DEFAULT_RETRIES, 1, cb);
         
         cb.await();
-
-        assertTrue("Unexpected Error sending ping to " + m_badHost + ": " + cb.getThrowable(), 
+        
+        assertTrue("Unexpected Error sending ping to " + addr + ": " + cb.getThrowable(), 
                 cb.getThrowable() == null || cb.getThrowable() instanceof NoRouteToHostException);
         assertTrue(cb.isTimeout());
         assertNotNull(cb.getPacket());
         assertNotNull(cb.getAddress());
-        
     }
 
-    public void testPingCallbackTimeoutJna() throws Exception {
-        pingCallbackTimeout(s_jnaPinger);
+    public void testSinglePingFailureIPv4() throws Exception {
+        assertNull(s_jnaPinger.ping(m_badHost));
     }
 
-    public void testSinglePingFailureJna() throws Exception {
-        singlePingFailure(s_jnaPinger);
+    public void testSinglePingFailureIPv6() throws Exception {
+        assertNull(s_jnaPinger.ping(m_ipv6badHost));
     }
 
-    protected void singlePingFailure(Pinger pinger) throws Exception {
-        assertNull(pinger.ping(m_badHost));
+    public void testParallelPingIPv4() throws Exception {
+        parallelPingGood(m_goodHost);
     }
 
-    public void testParallelPingJna() throws Exception {
-        parallelPing(s_jnaPinger);
+    public void testParallelPingIPv6() throws Exception {
+        parallelPingGood(m_ipv6goodHost);
     }
 
-    protected void parallelPing(Pinger pinger) throws Exception {
-        List<Number> items = pinger.parallelPing(m_goodHost, 20, PingConstants.DEFAULT_TIMEOUT, 50);
+    private void parallelPingGood(InetAddress addr) throws Exception,
+            InterruptedException {
+        List<Number> items = s_jnaPinger.parallelPing(addr, 20, PingConstants.DEFAULT_TIMEOUT, 50);
         Thread.sleep(1000);
         printResponse(items);
         assertTrue("Collection contained all null values, all parallel pings failed", CollectionMath.countNotNull(items) > 0);
@@ -221,17 +237,21 @@ public class JnaPingTest extends TestCase {
         }
     }
 
-    public void testParallelPingFailureJna() throws Exception {
-        parallelPingFailure(s_jnaPinger);
+    public void testParallelPingFailureIPv4() throws Exception {
+        parallelPingFailure(m_badHost);
     }
 
-    protected void parallelPingFailure(Pinger pinger) throws Exception {
-        List<Number> items = pinger.parallelPing(m_badHost, 20, PingConstants.DEFAULT_TIMEOUT, 50);
+    public void testParallelPingFailureIPv6() throws Exception {
+        parallelPingFailure(m_ipv6badHost);
+    }
+
+    private void parallelPingFailure(InetAddress addr) throws Exception {
+        List<Number> items = s_jnaPinger.parallelPing(addr, 20, PingConstants.DEFAULT_TIMEOUT, 50);
         Thread.sleep(PingConstants.DEFAULT_TIMEOUT + 100);
         printResponse(items);
         assertTrue("Collection contained some numeric values when all parallel pings should have failed", CollectionMath.countNotNull(items) == 0);
     }
-    
+
     private void printResponse(List<Number> items) {
         Long passed = CollectionMath.countNotNull(items);
         Long failed = CollectionMath.countNull(items);
