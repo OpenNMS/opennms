@@ -51,6 +51,7 @@ import org.opennms.netmgt.dao.DatabasePopulator;
 import org.opennms.netmgt.dao.db.JUnitTemporaryDatabase;
 import org.opennms.netmgt.dao.db.OpenNMSConfigurationExecutionListener;
 import org.opennms.netmgt.dao.db.TemporaryDatabaseExecutionListener;
+import org.opennms.netmgt.model.OnmsIpInterface;
 import org.opennms.netmgt.model.OnmsNode;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.ApplicationContext;
@@ -144,7 +145,21 @@ public class NetworkElementFactoryTest  {
         List<OnmsNode> nodes = NetworkElementFactory.getInstance(m_appContext).getNodesWithIpLike("*.*.*.*");
         assertEquals("node count", 1, nodes.size());
     }
-    
+
+    @Test
+    public void testGetInterfacesWithIpAddress() throws Exception {
+        Interface[] interfaces = NetworkElementFactory.getInstance(m_appContext).getInterfacesWithIpAddress("fe80:0000:0000:0000:aaaa:bbbb:cccc:dddd%5");
+        assertEquals("interface count", 1, interfaces.length);
+        assertEquals("node ID", 1, interfaces[0].getNodeId());
+        assertEquals("ifIndex", 4, interfaces[0].getIfIndex());
+
+        interfaces = NetworkElementFactory.getInstance(m_appContext).getInterfacesWithIpAddress("fe80:0000:0000:0000:aaaa:bbbb:cccc:0001%5");
+        assertEquals("interface count", 0, interfaces.length);
+
+        interfaces = NetworkElementFactory.getInstance(m_appContext).getInterfacesWithIpAddress("fe80:0000:0000:0000:aaaa:bbbb:cccc:dddd%4");
+        assertEquals("interface count", 0, interfaces.length);
+    }
+
     @Test
     @Transactional
     public void testGetActiveInterfacesOnNode() {

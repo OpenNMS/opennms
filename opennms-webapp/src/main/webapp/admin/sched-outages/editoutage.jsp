@@ -9,6 +9,7 @@
         org.opennms.netmgt.model.OnmsNode,
         org.opennms.netmgt.EventConstants,
         org.opennms.netmgt.xml.event.Event,
+        org.opennms.core.utils.*,
         org.opennms.netmgt.utils.*,
         org.opennms.web.api.Util,
         org.exolab.castor.xml.ValidationException,
@@ -18,6 +19,9 @@
         java.text.SimpleDateFormat
         "
 %>
+<%@taglib uri="http://java.sun.com/jsp/jstl/core" prefix="c" %>
+<%@taglib uri="http://java.sun.com/jsp/jstl/fmt" prefix="fmt" %>
+
 <%!//A singleton instance of a "Match-any" interface, which can be used for generic tests/removals etc.
 	private static org.opennms.netmgt.config.poller.Interface matchAnyInterface;
 	{
@@ -768,45 +772,44 @@ function updateOutageTypeDisplay(selectElement) {
 						<p style="font-weight: bold; margin: 10px 0px 2px 0px;">Current selection:</p>
 						<%
 						{
-						if (hasMatchAny) {
-							%>
+						if (hasMatchAny) { %>
 							<p><i>All interfaces</i></p>
-							<%
-						} else {
+						<% } else {
 							org.opennms.netmgt.config.poller.Interface[] outageInterfaces = theOutage.getInterface();
-							if (outageInterfaces.length > 0) {
-								%>
+							if (outageInterfaces.length > 0) { %>
 								<form id="deleteInterfaces" action="admin/sched-outages/editoutage.jsp" method="post">
-								<input type="hidden" name="formSubmission" value="true" />
-								<%
-								for (int i = 0; i < outageInterfaces.length; i++) {
-									org.opennms.netmgt.config.poller.Interface iface = outageInterfaces[i];
-									String addr = iface.getAddress();
-									org.opennms.web.element.Interface[] interfaces = NetworkElementFactory.getInstance(getServletContext()).getInterfacesWithIpAddress(addr);
-									for ( org.opennms.web.element.Interface thisInterface : interfaces ) {
-										String thisAddr = thisInterface.getIpAddress();
-										String thisName = thisInterface.getHostname();
-										out.println("<input type=\"image\" src=\"images/redcross.gif\" name=\"deleteInterface" + i + "\" />");
-										if(thisName == null || thisName.equals(thisAddr)) {
-											out.println(thisAddr);
-										} else {
-											out.println(thisAddr + " (" + thisName + ")");
-										}
-										if (!thisInterface.isManaged()) {
-											out.println(" (Unmanaged)");
-										}
-										out.println("<br/>");
-									}
-								}
-								%>
+									<input type="hidden" name="formSubmission" value="true" />
+									<% for (int i = 0; i < outageInterfaces.length; i++) {
+										org.opennms.netmgt.config.poller.Interface iface = outageInterfaces[i];
+										String addr = iface.getAddress();
+										org.opennms.web.element.Interface[] interfaces = NetworkElementFactory.getInstance(getServletContext()).getInterfacesWithIpAddress(addr);
+										if (interfaces.length > 0) {
+											for ( org.opennms.web.element.Interface thisInterface : interfaces ) {
+												String caption = thisInterface.getIpAddress();
+												String thisName = thisInterface.getHostname();
+												// If the hostname is different, append it
+												if(thisName != null && !thisName.equals(caption)) {
+													caption += " (" + thisName + ")";
+												}
+												// If the interface is unmanaged, append a note
+												if (!thisInterface.isManaged()) {
+													caption += " (Unmanaged)";
+												}
+												%>
+												<input type="image" src="images/redcross.gif" name="deleteInterface<%=String.valueOf(i)%>" />
+												<c:out value="<%=caption%>"/>
+												<br/>
+											<% }
+										} else { %>
+											<i>Could not find <c:out value="<%=addr%>"/> in the database</i><br/>
+										<% }
+									} %>
 								</form>
-								<%
-							} else { %>
+							<% } else { %>
 								<p><i>No specific interfaces selected</i></p>
 							<% }
-						}
-						}
-						%>
+							}
+						} %>
 					</td>
 				</tr>
 				<% if (!hasMatchAny) { %>

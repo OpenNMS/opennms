@@ -64,8 +64,8 @@ import org.hibernate.criterion.MatchMode;
 import org.hibernate.criterion.Order;
 import org.hibernate.criterion.Restrictions;
 import org.opennms.core.resource.Vault;
-import org.opennms.core.utils.ByteArrayComparator;
 import org.opennms.core.utils.DBUtils;
+import org.opennms.core.utils.InetAddressComparator;
 import org.opennms.core.utils.InetAddressUtils;
 import org.opennms.core.utils.LogUtils;
 import org.opennms.netmgt.EventConstants;
@@ -343,7 +343,7 @@ public class NetworkElementFactory implements InitializingBean, NetworkElementFa
 	 */
     public String getHostname(String ipAddress) {
         OnmsCriteria criteria = new OnmsCriteria(OnmsIpInterface.class);
-        criteria.add(Restrictions.eq("ipAddress", ipAddress));
+        criteria.add(Restrictions.eq("ipAddress", InetAddressUtils.addr(ipAddress)));
         criteria.add(Restrictions.isNotNull("ipHostName"));
         criteria.setResultTransformer(Criteria.DISTINCT_ROOT_ENTITY);
         
@@ -381,7 +381,7 @@ public class NetworkElementFactory implements InitializingBean, NetworkElementFa
         OnmsCriteria criteria = new OnmsCriteria(OnmsIpInterface.class);
         criteria.createAlias("node", "node");
         criteria.add(Restrictions.eq("node.id", nodeId));
-        criteria.add(Restrictions.eq("ipAddress", ipAddress));
+        criteria.add(Restrictions.eq("ipAddress", InetAddressUtils.addr(ipAddress)));
         criteria.setFetchMode("snmpInterface", FetchMode.JOIN);
         
         List<OnmsIpInterface> ifaces = m_ipInterfaceDao.findMatching(criteria);
@@ -396,7 +396,7 @@ public class NetworkElementFactory implements InitializingBean, NetworkElementFa
         criteria.createAlias("node", "node");
         criteria.createAlias("snmpInterface", "snmpIface");
         criteria.add(Restrictions.eq("node.id", nodeId));
-        criteria.add(Restrictions.eq("ipAddress", ipAddress));
+        criteria.add(Restrictions.eq("ipAddress", InetAddressUtils.addr(ipAddress)));
         criteria.add(Restrictions.eq("snmpIface.ifIndex", ifIndex));
         
         List<OnmsIpInterface> ifaces = m_ipInterfaceDao.findMatching(criteria);
@@ -426,10 +426,8 @@ public class NetworkElementFactory implements InitializingBean, NetworkElementFa
 	 */
     public Interface[] getInterfacesWithIpAddress(String ipAddress) {
         OnmsCriteria criteria = new OnmsCriteria(OnmsIpInterface.class);
-        criteria.createAlias("node", "node");
-        criteria.createAlias("snmpInterface", "snmpIface");
-        criteria.add(Restrictions.eq("ipAddress", ipAddress));
-        
+        criteria.createAlias("snmpInterface", "snmpInterface", OnmsCriteria.LEFT_JOIN);
+        criteria.add(Restrictions.eq("ipAddress", InetAddressUtils.addr(ipAddress)));
         
         return onmsIpInterfaces2InterfaceArray(m_ipInterfaceDao.findMatching(criteria));
     }
@@ -561,7 +559,7 @@ public class NetworkElementFactory implements InitializingBean, NetworkElementFa
         criteria.createAlias("snmpInterface", "snmpInterface", OnmsCriteria.LEFT_JOIN);
         criteria.createAlias("node", "node");
         criteria.add(Restrictions.ne("isManaged", "D"));
-        criteria.add(Restrictions.ne("ipAddress", "0.0.0.0"));
+        criteria.add(Restrictions.ne("ipAddress", InetAddressUtils.addr("0.0.0.0")));
         criteria.add(Restrictions.isNotNull("ipAddress"));
         criteria.addOrder(Order.asc("ipHostName"));
         criteria.addOrder(Order.asc("node.id"));
@@ -587,7 +585,7 @@ public class NetworkElementFactory implements InitializingBean, NetworkElementFa
         criteria.createAlias("serviceType", "serviceType", OnmsCriteria.LEFT_JOIN);
         criteria.createAlias("ipInterface.snmpInterface", "snmpIface", OnmsCriteria.LEFT_JOIN);
         criteria.add(Restrictions.eq("node.id", nodeId));
-        criteria.add(Restrictions.eq("ipInterface.ipAddress", ipAddress));
+        criteria.add(Restrictions.eq("ipInterface.ipAddress", InetAddressUtils.addr(ipAddress)));
         criteria.add(Restrictions.eq("serviceType.id", serviceId));
         
         List<OnmsMonitoredService> monSvcs = m_monSvcDao.findMatching(criteria);
@@ -650,7 +648,7 @@ public class NetworkElementFactory implements InitializingBean, NetworkElementFa
         criteria.createAlias("ipInterface", "ipInterface");
         criteria.createAlias("ipInterface.node", "node");
         criteria.add(Restrictions.eq("node.id", nodeId));
-        criteria.add(Restrictions.eq("ipInterface.ipAddress", ipAddress));
+        criteria.add(Restrictions.eq("ipInterface.ipAddress", InetAddressUtils.addr(ipAddress)));
         
         if(!includeDeletions) {
             criteria.add(Restrictions.ne("status", "D"));
@@ -2569,7 +2567,7 @@ public class NetworkElementFactory implements InitializingBean, NetworkElementFa
 
             // Sort by IP first if the IPs are non-0.0.0.0
             if (!"0.0.0.0".equals(o1.getIpAddress()) && !"0.0.0.0".equals(o2.getIpAddress())) {
-                return new ByteArrayComparator().compare(InetAddressUtils.toIpAddrBytes(o1.getIpAddress()), InetAddressUtils.toIpAddrBytes(o2.getIpAddress()));
+                return new InetAddressComparator().compare(InetAddressUtils.addr(o1.getIpAddress()), InetAddressUtils.addr(o2.getIpAddress()));
             } else {
                 // Sort IPs that are non-0.0.0.0 so they are first
                 if (!"0.0.0.0".equals(o1.getIpAddress())) {
