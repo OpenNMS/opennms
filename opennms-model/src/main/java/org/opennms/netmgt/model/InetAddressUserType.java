@@ -9,6 +9,7 @@ import java.sql.SQLException;
 import org.hibernate.Hibernate;
 import org.hibernate.HibernateException;
 import org.hibernate.usertype.UserType;
+import org.opennms.core.utils.InetAddressComparator;
 import org.opennms.core.utils.InetAddressUtils;
 
 public class InetAddressUserType implements UserType {
@@ -24,9 +25,19 @@ public class InetAddressUserType implements UserType {
         return deepCopy(cached);
     }
 
+    /**
+     * Since {@link java.net.InetAddress} is immutable, we just return the original
+     * value without copying it.
+     */
     public Object deepCopy(final Object value) throws HibernateException {
-        if (value == null) return null;
-        return InetAddressUtils.normalize((InetAddress)value);
+        if (value == null) {
+            return null;
+        } else if (value instanceof InetAddress) {
+            // InetAddress is immutable so return the value without copying it
+            return value;
+        } else {
+            throw new IllegalArgumentException("Unexpected type that is mapped with " + this.getClass().getSimpleName() + ": " + value.getClass().getName());
+        }
     }
 
     public Serializable disassemble(final Object value) throws HibernateException {
@@ -36,7 +47,9 @@ public class InetAddressUserType implements UserType {
     public boolean equals(final Object x, final Object y) throws HibernateException {
         if (x == y) return true;
         if (x == null || y == null) return false;
-        return ((InetAddress)x).equals((InetAddress)y);
+        // It's probably more consistent if we use our own comparator here
+        // return ((InetAddress)x).equals((InetAddress)y);
+        return new InetAddressComparator().compare((InetAddress)x, (InetAddress)y) == 0;
     }
 
     public int hashCode(final Object x) throws HibernateException {
