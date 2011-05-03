@@ -16,11 +16,6 @@
 
   <dependencies>
     <dependency>
-      <groupId>net.sf.jradius</groupId>
-      <artifactId>jradius-client</artifactId>
-      <version>20040211</version>
-    </dependency>
-    <dependency>
       <groupId>net.jradius</groupId>
       <artifactId>jradius-core</artifactId>
       <version>1.0.0-20080911</version>

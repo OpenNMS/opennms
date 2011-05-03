@@ -37,16 +37,23 @@ package org.opennms.netmgt.capsd.plugins;
 import java.net.InetAddress;
 import java.util.Map;
 
-import net.sourceforge.jradiusclient.RadiusAttribute;
-import net.sourceforge.jradiusclient.RadiusAttributeValues;
-import net.sourceforge.jradiusclient.RadiusClient;
-import net.sourceforge.jradiusclient.RadiusPacket;
-import net.sourceforge.jradiusclient.exception.InvalidParameterException;
-import net.sourceforge.jradiusclient.exception.RadiusException;
-import net.sourceforge.jradiusclient.util.ChapUtil;
+import net.jradius.client.RadiusClient;
+import net.jradius.client.auth.CHAPAuthenticator;
+import net.jradius.client.auth.EAPMD5Authenticator;
+import net.jradius.client.auth.EAPMSCHAPv2Authenticator;
+import net.jradius.client.auth.MSCHAPv1Authenticator;
+import net.jradius.client.auth.MSCHAPv2Authenticator;
+import net.jradius.client.auth.PAPAuthenticator;
+import net.jradius.client.auth.RadiusAuthenticator;
+import net.jradius.dictionary.Attr_NASIdentifier;
+import net.jradius.dictionary.Attr_UserName;
+import net.jradius.packet.AccessRequest;
+import net.jradius.packet.RadiusPacket;
+import net.jradius.packet.attribute.AttributeFactory;
+import net.jradius.packet.attribute.AttributeList;
 
+import org.opennms.core.utils.LogUtils;
 import org.opennms.core.utils.ParameterMap;
-import org.opennms.core.utils.ThreadCategory;
 import org.opennms.netmgt.capsd.AbstractPlugin;
 
 /**
@@ -55,18 +62,13 @@ import org.opennms.netmgt.capsd.AbstractPlugin;
  * If a valid radius response is received (ACCEPT, REJECT or CHALLENGE)
  * then the host is considered a Radius server.
  *
- * uses the <A HREF="http://jradius.sourceforge.net/">JRadius</A>
- * class library.
- *
  * @author <A HREF="mailto:jonathan@opennms.org">Jonathan Sartin</A>
+ * @author <A HREF="mailto:ranger@opennms.org">Benjamin Reed</A>
  * @author <A HREF="http://www.opennms.org/">OpenNMS </A>
- * @author <A HREF="mailto:jonathan@opennms.org">Jonathan Sartin</A>
- * @author <A HREF="http://www.opennms.org/">OpenNMS </A>
- * @version $Id: $
  */
 public final class RadiusAuthPlugin extends AbstractPlugin {
     /**
-     * </P>
+     * <P>
      * The protocol name that is tested by this plugin.
      * </P>
      */
@@ -144,60 +146,48 @@ public final class RadiusAuthPlugin extends AbstractPlugin {
      *
      * @return True if server, false if not.
      */
-    private boolean isRadius(InetAddress host, int authport, int acctport, String authType,
-				String user, String password, String secret, String nasid,
-				int retry, int timeout) {
+    private boolean isRadius(final InetAddress host, final int authport, final int acctport, final String authType,
+    		final String user, final String password, final String secret, final String nasid, final int retry, final int timeout) {
 
         boolean isRadiusServer = false;
-        ThreadCategory log = ThreadCategory.getInstance(getClass());
 
-        RadiusClient rc = null;
+        AttributeFactory.loadAttributeDictionary("net.jradius.dictionary.AttributeDictionaryImpl");
+        final RadiusClient rc = new RadiusClient(host, secret, authport, acctport, timeout);
 
-        try {
-            rc = new RadiusClient(host.getCanonicalHostName(), authport ,acctport, secret, timeout);
-        } catch(RadiusException rex) {
-            log.info(getClass().getName() + ": Radius Exception: " + rex.getMessage());
-            return isRadiusServer;
-        } catch(InvalidParameterException ivpex) {
-            log.error(getClass().getName() + ": Radius parameter exception: " + ivpex.getMessage());
-            return isRadiusServer;
-        }
+    	final AttributeList attributes = new AttributeList();
+    	attributes.add(new Attr_UserName(user));
+    	attributes.add(new Attr_NASIdentifier(nasid));
 
-        for (int attempts = 0; attempts <= retry; attempts++) {
-            try {
-                ChapUtil chapUtil = new ChapUtil();
-                RadiusPacket accessRequest = new RadiusPacket(RadiusPacket.ACCESS_REQUEST);
-                RadiusAttribute userNameAttribute;
-                RadiusAttribute nasIdAttribute;
-                nasIdAttribute = new RadiusAttribute(RadiusAttributeValues.NAS_IDENTIFIER,nasid.getBytes());
-                userNameAttribute = new RadiusAttribute(RadiusAttributeValues.USER_NAME,user.getBytes());
-                accessRequest.setAttribute(userNameAttribute);
-                accessRequest.setAttribute(nasIdAttribute);
-                if(authType.equalsIgnoreCase("chap")){
-                    byte[] chapChallenge = chapUtil.getNextChapChallenge(16);
-                    accessRequest.setAttribute(new RadiusAttribute(RadiusAttributeValues.CHAP_PASSWORD, chapEncrypt(password, chapChallenge, chapUtil)));
-                    accessRequest.setAttribute(new RadiusAttribute(RadiusAttributeValues.CHAP_CHALLENGE, chapChallenge));
-                }else{
-                    accessRequest.setAttribute(new RadiusAttribute(RadiusAttributeValues.USER_PASSWORD,password.getBytes()));
-                }
-                RadiusPacket accessResponse = rc.authenticate(accessRequest);
-                if ( ( accessResponse.getPacketType() == RadiusPacket.ACCESS_ACCEPT ) |
-                     ( accessResponse.getPacketType() == RadiusPacket.ACCESS_CHALLENGE ) |
-                     ( accessResponse.getPacketType() == RadiusPacket.ACCESS_REJECT )  ){
-		    isRadiusServer = true;
-                    if (log.isDebugEnabled()) {
-                        log.debug(getClass().getName() + ": Discovered Radius service on: " + host.getCanonicalHostName());
-                    }
-                    break;
-                }
-            } catch (InvalidParameterException ivpex){
-                log.error(getClass().getName() + ": Invalid Radius Parameter: " + ivpex);
-            } catch (RadiusException radex){
-                log.info(getClass().getName() + ": Radius Exception : " + radex);
-            }
-	}
+    	final AccessRequest accessRequest = new AccessRequest(rc, attributes);
+    	final RadiusAuthenticator auth;
+    	if (authType.equalsIgnoreCase("chap")) {
+    		auth = new CHAPAuthenticator();
+    	} else if (authType.equalsIgnoreCase("pap")) {
+    		auth = new PAPAuthenticator();
+    	} else if (authType.equalsIgnoreCase("mschapv1")) {
+    		auth = new MSCHAPv1Authenticator();
+    	} else if (authType.equalsIgnoreCase("mschapv2")) {
+    		auth = new MSCHAPv2Authenticator();
+    	} else if (authType.equalsIgnoreCase("eapmd5")) {
+    		auth = new EAPMD5Authenticator();
+    	} else if (authType.equalsIgnoreCase("eapmschapv2")) {
+    		auth = new EAPMSCHAPv2Authenticator();
+    	} else {
+    		LogUtils.warnf(this, "Unknown authenticator type '%s'", authType);
+    		return isRadiusServer;
+    	}
 
-        return isRadiusServer;
+    	RadiusPacket reply;
+		try {
+			reply = rc.authenticate(accessRequest, auth, retry);
+	    	isRadiusServer = (reply != null);
+	    	LogUtils.debugf(this, "Discovered RADIUS service on %s", host.getCanonicalHostName());
+		} catch (final Exception e) {
+			LogUtils.debugf(this, e, "Error while attempting to discover RADIUS service on %s", host.getCanonicalHostName());
+			isRadiusServer = false;
+		}
+		
+		return isRadiusServer;
     }
 
     /**
@@ -246,10 +236,10 @@ public final class RadiusAuthPlugin extends AbstractPlugin {
         String authType = DEFAULT_AUTH_TYPE;
         int timeout = DEFAULT_TIMEOUT;
         int retry = DEFAULT_RETRY;
-	String user = DEFAULT_USER;
-	String password = DEFAULT_PASSWORD;
-	String secret = DEFAULT_SECRET;
-	String nasid = DEFAULT_NAS_ID;
+        String user = DEFAULT_USER;
+        String password = DEFAULT_PASSWORD;
+        String secret = DEFAULT_SECRET;
+        String nasid = DEFAULT_NAS_ID;
         if (qualifiers != null) {
             authport = ParameterMap.getKeyedInteger(qualifiers, "authport", DEFAULT_AUTH_PORT);
             acctport = ParameterMap.getKeyedInteger(qualifiers, "acctport", DEFAULT_ACCT_PORT);
@@ -262,32 +252,6 @@ public final class RadiusAuthPlugin extends AbstractPlugin {
             nasid = ParameterMap.getKeyedString(qualifiers, "nasid", DEFAULT_NAS_ID);
         }
 
-        return isRadius(address, authport, acctport, authType, 
-			user, password, secret, nasid,
-			retry, timeout);
+        return isRadius(address, authport, acctport, authType, user, password, secret, nasid, retry, timeout);
     }
-
-    /**
-     * Encrypt password using chap challenge
-     * 
-     * @param plainText 
-     *		plain text password
-     * @param chapChallenge
-     *		chap challenge
-     * @param chapUtil
-     *		ref ChapUtil
-     * 
-     * @return encrypted chap password
-     */
-    private static byte[] chapEncrypt(final String plainText,
-                                      final byte[] chapChallenge,
-                                      final ChapUtil chapUtil){
-        byte chapIdentifier = chapUtil.getNextChapIdentifier();
-        byte[] chapPassword = new byte[17];
-        chapPassword[0] = chapIdentifier;
-        System.arraycopy(ChapUtil.chapEncrypt(chapIdentifier, plainText.getBytes(),chapChallenge),
-                         0, chapPassword, 1, 16);
-        return chapPassword;
-    }
-
 }

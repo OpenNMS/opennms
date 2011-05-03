@@ -86,21 +86,19 @@ public abstract class BasicDetector<Request, Response> extends AbstractDetector 
     abstract protected void onInit();
     
     /** {@inheritDoc} */
-    public boolean isServiceDetected(InetAddress address, DetectorMonitor detectorMonitor) {
-        String ipAddr = InetAddressUtils.str(address);
-        int port = getPort();
-        int retries = getRetries();
-        int timeout = getTimeout();
+    public boolean isServiceDetected(final InetAddress address, final DetectorMonitor detectorMonitor) {
+    	final String ipAddr = InetAddressUtils.str(address);
+    	final int port = getPort();
+    	final int retries = getRetries();
+        final int timeout = getTimeout();
         LogUtils.infof(this, "Address: %s || port: %s || \n", address, getPort());
         detectorMonitor.start(this, "Checking address: %s for %s capability", address, getServiceName());
-                
-        Client<Request, Response> client = getClient();
+
+        final Client<Request, Response> client = getClient();
         for (int attempts = 0; attempts <= retries; attempts++) {
 
             try {
-                
                 client.connect(address, port, timeout);
-                
                 detectorMonitor.attempt(this, attempts, "Attempting to connect to address: %s port %d attempt #%s",ipAddr,port,attempts);
                 
                 if (attemptConversation(client)) {

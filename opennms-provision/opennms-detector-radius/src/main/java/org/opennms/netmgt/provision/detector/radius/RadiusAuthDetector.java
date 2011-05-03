@@ -34,11 +34,23 @@
  */
 package org.opennms.netmgt.provision.detector.radius;
 
-import net.sourceforge.jradiusclient.RadiusAttribute;
-import net.sourceforge.jradiusclient.RadiusAttributeValues;
-import net.sourceforge.jradiusclient.RadiusPacket;
-import net.sourceforge.jradiusclient.util.ChapUtil;
+import net.jradius.client.auth.CHAPAuthenticator;
+import net.jradius.client.auth.EAPMD5Authenticator;
+import net.jradius.client.auth.EAPMSCHAPv2Authenticator;
+import net.jradius.client.auth.MSCHAPv1Authenticator;
+import net.jradius.client.auth.MSCHAPv2Authenticator;
+import net.jradius.client.auth.PAPAuthenticator;
+import net.jradius.client.auth.RadiusAuthenticator;
+import net.jradius.dictionary.Attr_NASIdentifier;
+import net.jradius.dictionary.Attr_UserName;
+import net.jradius.dictionary.Attr_UserPassword;
+import net.jradius.packet.AccessAccept;
+import net.jradius.packet.AccessChallenge;
+import net.jradius.packet.AccessReject;
+import net.jradius.packet.RadiusPacket;
+import net.jradius.packet.attribute.AttributeList;
 
+import org.opennms.core.utils.LogUtils;
 import org.opennms.netmgt.provision.detector.radius.client.RadiusDetectorClient;
 import org.opennms.netmgt.provision.support.BasicDetector;
 import org.opennms.netmgt.provision.support.Client;
@@ -55,7 +67,7 @@ import org.springframework.stereotype.Component;
  * @version $Id: $
  */
 @Scope("prototype")
-public class RadiusAuthDetector extends BasicDetector<RadiusPacket, RadiusPacket>{
+public class RadiusAuthDetector extends BasicDetector<AttributeList, RadiusPacket>{
     
     private static final String DEFAULT_SERVICE_NAME = "RadiusAuth";
 
@@ -116,51 +128,41 @@ public class RadiusAuthDetector extends BasicDetector<RadiusPacket, RadiusPacket
      * @param serviceName a {@link java.lang.String} object.
      * @param port a int.
      */
-    protected RadiusAuthDetector(String serviceName, int port) {
+    protected RadiusAuthDetector(final String serviceName, final int port) {
         super(serviceName, port);
     }
 
     /** {@inheritDoc} */
     @Override
     public void onInit() {
-        send(request(getNasID(), getUser(), getPassword()), expectValidResponse(RadiusPacket.ACCESS_ACCEPT, RadiusPacket.ACCESS_CHALLENGE, RadiusPacket.ACCESS_REJECT));
+        send(request(getNasID(), getUser(), getPassword()), expectValidResponse(AccessAccept.class, AccessChallenge.class, AccessReject.class));
     }
     
     /**
      * @return
      */
-    private ResponseValidator<RadiusPacket> expectValidResponse(final int accept, final int challenge, final int reject) {
+    private ResponseValidator<RadiusPacket> expectValidResponse(final Class<?> accept, final Class<?> challenge, final Class<?> reject) {
         
         return new ResponseValidator<RadiusPacket>() {
 
-            public boolean validate(RadiusPacket response) {
-                
-                return (response.getPacketType() == accept || response.getPacketType() == challenge || response.getPacketType() == reject);
+            public boolean validate(final RadiusPacket response) {
+            	return (accept.isInstance(response) || challenge.isInstance(response) || reject.isInstance(response));
             }
             
         };
     }
 
-    private RequestBuilder<RadiusPacket> request(final String nasID, final String user, final String password){
-        return new RequestBuilder<RadiusPacket>() {
+    private RequestBuilder<AttributeList> request(final String nasID, final String user, final String password) {
+    	LogUtils.debugf(this, "request: nasID = %s, user = %s, password = %s", nasID, user, password);
+    	
+        return new RequestBuilder<AttributeList>() {
 
-            public RadiusPacket getRequest() throws Exception {
-                ChapUtil chapUtil = new ChapUtil();
-                RadiusPacket accessRequest = new RadiusPacket(RadiusPacket.ACCESS_REQUEST);
-                RadiusAttribute userNameAttribute;
-                RadiusAttribute nasIdAttribute;
-                nasIdAttribute = new RadiusAttribute(RadiusAttributeValues.NAS_IDENTIFIER,nasID.getBytes());
-                userNameAttribute = new RadiusAttribute(RadiusAttributeValues.USER_NAME,user.getBytes());
-                accessRequest.setAttribute(userNameAttribute);
-                accessRequest.setAttribute(nasIdAttribute);
-                if(getAuthType().equalsIgnoreCase("chap")){
-                    byte[] chapChallenge = chapUtil.getNextChapChallenge(16);
-                    accessRequest.setAttribute(new RadiusAttribute(RadiusAttributeValues.CHAP_PASSWORD, chapEncrypt(password, chapChallenge, chapUtil)));
-                    accessRequest.setAttribute(new RadiusAttribute(RadiusAttributeValues.CHAP_CHALLENGE, chapChallenge));
-                }else{
-                    accessRequest.setAttribute(new RadiusAttribute(RadiusAttributeValues.USER_PASSWORD,password.getBytes()));
-                }
-                return accessRequest;
+            public AttributeList getRequest() throws Exception {
+    	    	final AttributeList attributes = new AttributeList();
+    	    	attributes.add(new Attr_UserName(user));
+    	    	attributes.add(new Attr_NASIdentifier(nasID));
+    	    	attributes.add(new Attr_UserPassword(password));
+    	    	return attributes;
             }
             
         };
@@ -168,20 +170,13 @@ public class RadiusAuthDetector extends BasicDetector<RadiusPacket, RadiusPacket
     
     /** {@inheritDoc} */
     @Override
-    protected Client<RadiusPacket, RadiusPacket> getClient() {
-        RadiusDetectorClient rdc = new RadiusDetectorClient();
+    protected Client<AttributeList, RadiusPacket> getClient() {
+    	final RadiusDetectorClient rdc = new RadiusDetectorClient();
         rdc.setAuthport(getAuthPort());
         rdc.setAcctPort(getAcctPort());
         rdc.setSecret(getSecret());
+        rdc.setAuthenticator(getAuthenticator());
         return rdc;
-    }
-    
-    private static byte[] chapEncrypt(final String plainText, final byte[] chapChallenge, final ChapUtil chapUtil){
-        byte chapIdentifier = chapUtil.getNextChapIdentifier();
-        byte[] chapPassword = new byte[17];
-        chapPassword[0] = chapIdentifier;
-        System.arraycopy(ChapUtil.chapEncrypt(chapIdentifier, plainText.getBytes(),chapChallenge), 0, chapPassword, 1, 16);
-        return chapPassword;
     }
     
     /**
@@ -256,6 +251,27 @@ public class RadiusAuthDetector extends BasicDetector<RadiusPacket, RadiusPacket
         return m_authType;
     }
 
+    public RadiusAuthenticator getAuthenticator() {
+    	final RadiusAuthenticator auth;
+    	final String authType = getAuthType();
+    	if (authType.equalsIgnoreCase("chap")) {
+    		auth = new CHAPAuthenticator();
+    	} else if (authType.equalsIgnoreCase("pap")) {
+    		auth = new PAPAuthenticator();
+    	} else if (authType.equalsIgnoreCase("mschapv1")) {
+    		auth = new MSCHAPv1Authenticator();
+    	} else if (authType.equalsIgnoreCase("mschapv2")) {
+    		auth = new MSCHAPv2Authenticator();
+    	} else if (authType.equalsIgnoreCase("eapmd5") || authType.equalsIgnoreCase("eap-md5")) {
+    		auth = new EAPMD5Authenticator();
+    	} else if (authType.equalsIgnoreCase("eapmschapv2") || authType.equalsIgnoreCase("eap-mschapv2")) {
+    		auth = new EAPMSCHAPv2Authenticator();
+    	} else {
+    		auth = null;
+    	}
+    	return auth;
+    }
+
     /**
      * <p>setNasID</p>
      *
@@ -279,7 +295,7 @@ public class RadiusAuthDetector extends BasicDetector<RadiusPacket, RadiusPacket
      *
      * @param user a {@link java.lang.String} object.
      */
-    public void setUser(String user) {
+    public void setUser(final String user) {
         m_user = user;
     }
 
@@ -297,7 +313,7 @@ public class RadiusAuthDetector extends BasicDetector<RadiusPacket, RadiusPacket
      *
      * @param password a {@link java.lang.String} object.
      */
-    public void setPassword(String password) {
+    public void setPassword(final String password) {
         m_password = password;
     }
 
