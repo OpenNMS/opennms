@@ -42,19 +42,28 @@ import java.net.InetAddress;
 public class Main {
     
     public static void main(String[] args) throws Exception {
+        System.exit(new Main().execute(args));
+    }
+    
+    public int execute(String[] args) throws Exception {
         if (args.length < 1) {
             System.err.println("java -jar jna-jicmp-VERSION.jar <hostname or ip address>");
-            System.exit(1);
+            return 1;
         }
         
         InetAddress addr = InetAddress.getByName(args[0]);
         
         if (addr instanceof Inet4Address) {
-            V4Pinger.ping((Inet4Address)addr);
+            AbstractPinger<Inet4Address> pinger = new V4Pinger();
+            pinger.ping((Inet4Address)addr);
         } else if (addr instanceof Inet6Address){
-            V6Pinger.ping((Inet6Address)addr);
+            AbstractPinger<Inet6Address> pinger = new V6Pinger();
+            pinger.ping((Inet6Address)addr);
         } else {
             System.err.println("Unrecognized address type " + addr.getClass());
         }
+        
+        return 0;
     }
+
 }

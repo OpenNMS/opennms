@@ -95,4 +95,11 @@ public abstract class AbstractPinger<T extends InetAddress> implements Runnable 
     public void addPingReplyListener(PingReplyListener listener) {
         m_listeners.add(listener);
     }
+
+     void ping(T addr4)
+            throws InterruptedException {
+        Thread t = new Thread(this);
+        t.start();
+        ping(addr4, 1234, 1, 10, 1000);
+    }
 }

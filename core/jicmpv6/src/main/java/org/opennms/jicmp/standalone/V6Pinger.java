@@ -105,10 +105,4 @@ public class V6Pinger extends AbstractPinger<Inet6Address> {
         }
     }
 
-    public static void ping(Inet6Address addr) throws Exception {
-        V6Pinger pinger = new V6Pinger();
-        Thread t = new Thread(pinger);
-        t.start();
-        pinger.ping(addr, 1234, 7, 10, 1000);
-    }
 }

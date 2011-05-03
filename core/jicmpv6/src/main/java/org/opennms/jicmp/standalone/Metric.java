@@ -86,6 +86,9 @@ public class Metric {
         return m_max;
     }
 
+    /**
+     * update of nanos value
+     */
     public void update(long sample) {
         m_count++;
         double oldAvg = m_average;

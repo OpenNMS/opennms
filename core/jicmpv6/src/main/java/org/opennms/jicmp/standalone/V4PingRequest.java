@@ -29,21 +29,42 @@
  */
 package org.opennms.jicmp.standalone;
 
-import java.util.concurrent.TimeUnit;
+import java.net.InetAddress;
+import java.nio.ByteBuffer;
 
-/**
- * PingReply
- *
- * @author brozow
- */
-interface PingReply {
+import org.opennms.jicmp.ip.ICMPEchoPacket;
+import org.opennms.jicmp.jna.NativeDatagramPacket;
+import org.opennms.jicmp.jna.NativeDatagramSocket;
 
-    public abstract long getSentTimeNanos();
+class V4PingRequest extends ICMPEchoPacket {
+    
+    public V4PingRequest() {
+        super(64);
+        setType(Type.EchoRequest);
+        setCode(0);
+    }
+    
+    public V4PingRequest(int id, int seqNum) {
+        super(64);
+        setType(Type.EchoRequest);
+        setCode(0);
+        setIdentifier(id);
+        setSequenceNumber(seqNum);
+        ByteBuffer buf = getContentBuffer();
+        for(int b = 0; b < 56; b++) {
+            buf.put((byte)b);
+        }
+    }
 
-    public abstract long getReceivedTimeNanos();
+    @Override
+    public NativeDatagramPacket toDatagramPacket(InetAddress destinationAddress) {
+        ByteBuffer contentBuffer = getContentBuffer();
+        contentBuffer.putLong(V4PingReply.COOKIE);
+        contentBuffer.putLong(System.nanoTime());
+        return super.toDatagramPacket(destinationAddress);
+    }
 
-    public abstract double elapsedTime(TimeUnit unit);
-
-    public abstract long getThreadId();
-
+    public void send(NativeDatagramSocket socket, InetAddress addr) {
+        socket.send(toDatagramPacket(addr));
+    }
 }

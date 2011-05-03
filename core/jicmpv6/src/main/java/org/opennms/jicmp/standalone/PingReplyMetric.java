@@ -29,21 +29,18 @@
  */
 package org.opennms.jicmp.standalone;
 
-import java.util.concurrent.TimeUnit;
+import java.net.InetAddress;
 
 /**
- * PingReply
+ * PingReplyMetric
  *
  * @author brozow
  */
-interface PingReply {
+public class PingReplyMetric<R> extends Metric implements PingReplyListener<R> {
 
-    public abstract long getSentTimeNanos();
-
-    public abstract long getReceivedTimeNanos();
-
-    public abstract double elapsedTime(TimeUnit unit);
-
-    public abstract long getThreadId();
+    @Override
+    public void onPingReply(InetAddress address, R reply) {
+        
+    }
 
 }
