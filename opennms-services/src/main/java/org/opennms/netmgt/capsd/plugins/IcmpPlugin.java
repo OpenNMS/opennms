@@ -76,13 +76,13 @@ public final class IcmpPlugin extends AbstractPlugin {
      */
     public boolean isProtocolSupported(InetAddress address) {
 		try {
-	    	Long retval = PingerFactory.getInstance().ping(address);
+	    	Number retval = PingerFactory.getInstance().ping(address);
 	    	if (retval != null) {
 	    		return true;
 	    	}
 		} catch (Throwable e) {
 	        ThreadCategory log = ThreadCategory.getInstance(this.getClass());
-			log.warn("JniPinger failed to ping " + address, e);
+			log.warn("Pinger failed to ping " + address, e);
 		}
 		return false;
     }
@@ -108,13 +108,13 @@ public final class IcmpPlugin extends AbstractPlugin {
     			retries = PingConstants.DEFAULT_RETRIES;
     			timeout = PingConstants.DEFAULT_TIMEOUT;
     		}
-    		Long retval = PingerFactory.getInstance().ping(address, timeout, retries);
+    		Number retval = PingerFactory.getInstance().ping(address, timeout, retries);
     		if (retval != null) {
     			return true;
     		}
     	} catch (Throwable e) {
 	        ThreadCategory log = ThreadCategory.getInstance(this.getClass());
-			log.warn("JniPinger failed to ping " + address, e);
+			log.warn("Pinger failed to ping " + address, e);
         }
     	
     	return false;

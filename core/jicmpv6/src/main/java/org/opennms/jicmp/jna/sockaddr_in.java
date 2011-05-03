@@ -85,9 +85,10 @@ public class sockaddr_in extends Structure {
     }
 
     public int getPort() {
-        int portH = (int)sin_port[0];
-        int portL = (int)sin_port[1];
-        int port = (portH << 8) | portL;
+        int port = 0;
+        for(int i = 0; i < 2; i++) {
+            port = ((port << 8) | (sin_port[i] & 0xff));
+        }
         return port;
     }
     

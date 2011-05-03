@@ -22,7 +22,7 @@
 
     <dependency>
       <groupId>org.opennms</groupId>
-      <artifactId>opennms-icmp-jicmp</artifactId>
+      <artifactId>opennms-icmp-jni</artifactId>
     </dependency>
  
     <dependency>

@@ -11,13 +11,13 @@
   <build>
     <plugins>
       <plugin>
-	<artifactId>maven-jar-plugin</artifactId>
-	<configuration>
+	    <artifactId>maven-jar-plugin</artifactId>
+	    <configuration>
           <archive>
             <index>true</index>
             <manifest>
               <addClasspath>true</addClasspath>
-              <mainClass>org.opennms.jicmp.Main</mainClass>
+              <mainClass>org.opennms.jicmp.standalone.Main</mainClass>
             </manifest>
           </archive>
         </configuration>
@@ -29,10 +29,6 @@
       <groupId>org.opennms.dependencies</groupId>
       <artifactId>jna-dependencies</artifactId>
       <type>pom</type>
-    </dependency>
-    <dependency>
-      <groupId>org.opennms</groupId>
-      <artifactId>opennms-icmp-api</artifactId>
     </dependency>
   </dependencies>
 </project>

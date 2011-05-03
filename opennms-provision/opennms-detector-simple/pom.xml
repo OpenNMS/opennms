@@ -18,10 +18,15 @@
   		<artifactId>opennms-icmp-api</artifactId>
   	</dependency>
 	<dependency>
-		<groupId>org.opennms.core</groupId>
-		<artifactId>org.opennms.core.jicmpv6</artifactId>
+		<groupId>org.opennms</groupId>
+		<artifactId>opennms-icmp-jni</artifactId>
 		<scope>test</scope>
 	</dependency>
+    <dependency>
+        <groupId>org.opennms</groupId>
+        <artifactId>opennms-icmp-jna</artifactId>
+        <scope>test</scope>
+    </dependency>
 
   	<dependency>
       <groupId>org.opennms.dependencies</groupId>

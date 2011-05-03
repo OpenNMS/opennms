@@ -1,0 +1,193 @@
+//
+// This file is part of the OpenNMS(R) Application.
+//
+// OpenNMS(R) is Copyright (C) 2002-2007 The OpenNMS Group, Inc.  All rights reserved.
+// OpenNMS(R) is a derivative work, containing both original code, included code and modified
+// code that was published under the GNU General Public License. Copyrights for modified 
+// and included code are below.
+//
+// OpenNMS(R) is a registered trademark of The OpenNMS Group, Inc.
+//
+// Modifications:
+//
+// 2007 Jul 25: Move code here from IcmpSocket as it depends on 
+//              OpenNMS specific code
+// 2007 Jun 23: Use Java 5 generics, format code. - dj@opennms.org
+// 2003 Mar 05: Cleaned up some ICMP related code.
+// 2002 Nov 13: Added response time stats for ICMP requests.
+// 
+// Original code base Copyright (C) 1999-2001 Oculan Corp.  All rights reserved.
+//
+// This program is free software; you can redistribute it and/or modify
+// it under the terms of the GNU General Public License as published by
+// the Free Software Foundation; either version 2 of the License, or
+// (at your option) any later version.
+//
+// This program is distributed in the hope that it will be useful,
+// but WITHOUT ANY WARRANTY; without even the implied warranty of
+// MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+// GNU General Public License for more details.                                                            
+//
+// You should have received a copy of the GNU General Public License
+// along with this program; if not, write to the Free Software
+// Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA.
+//       
+// For more information contact: 
+//      OpenNMS Licensing       <license@opennms.org>
+//      http://www.opennms.org/
+//      http://www.opennms.com/
+//
+// Tab Size = 8
+//
+// 
+//
+
+package org.opennms.netmgt.icmp.jni;
+
+import java.io.IOException;
+import java.net.DatagramPacket;
+import java.net.InetAddress;
+import java.util.concurrent.TimeUnit;
+
+import org.opennms.core.utils.InetAddressUtils;
+import org.opennms.core.utils.LogUtils;
+import org.opennms.protocols.icmp.ICMPEchoPacket;
+import org.opennms.protocols.icmp.IcmpSocket;
+
+/**
+ * <p>Ping class.</p>
+ *
+ * @author ranger
+ * @version $Id: $
+ */
+public class Ping {
+
+    public static class Stuff implements Runnable {
+        private IcmpSocket m_socket;
+    private short m_icmpId;
+    
+        public Stuff(IcmpSocket socket, short icmpId) {
+            m_socket = socket;
+            m_icmpId = icmpId;
+        }
+    
+        public void run() {
+            try {
+                while (true) {
+                    DatagramPacket pkt = m_socket.receive();
+                    JniPingResponse reply;
+                    try {
+                        reply = JniIcmpMessenger.createPingResponse(pkt);
+                    } catch (Throwable t) {
+                        // do nothing but skip this packet
+                        continue;
+                    }
+            
+                    if (reply.isEchoReply()
+                        && reply.getThreadId() == m_icmpId) {
+                        double rtt = reply.elapsedTime(TimeUnit.MILLISECONDS);
+                        System.out.println(ICMPEchoPacket.getNetworkSize()
+                                           + " bytes from "
+                                           + InetAddressUtils.str(pkt.getAddress())
+                                           + ": icmp_seq="
+                                           + reply.getIdentifier()
+                                           + ". time="
+                                           + rtt + " ms");
+                    }
+                }
+            } catch (final Throwable t) {
+                LogUtils.errorf(this, t, "An exception occured processing the datagram, thread exiting.");
+                System.exit(1);
+            }
+        }
+    }
+
+    /**
+     * <p>main</p>
+     *
+     * @param argv an array of {@link java.lang.String} objects.
+     */
+    public static void main(String[] argv) {
+    if (argv.length != 1) {
+            System.err.println("incorrect number of command-line arguments.");
+            System.err.println("usage: java -cp ... "
+                               + IcmpSocket.class.getName() + " <host>");
+            System.exit(1);
+        }
+    
+        String host = argv[0];
+    
+        IcmpSocket m_socket = null;
+    
+        try {
+            m_socket = new IcmpSocket();
+    } catch (UnsatisfiedLinkError e) {
+            System.err.println("UnsatisfiedLinkError while creating an "
+                               + "IcmpSocket.  Most likely failed to load "
+                               + "libjicmp.so.  Try setting the property "
+                               + "'opennms.library.jicmp' to point at the "
+                               + "full path name of the libjicmp.so shared "
+                               + "library "
+                               + "(e.g. 'java -Dopennms.library.jicmp=/some/path/libjicmp.so ...')");
+            e.printStackTrace();
+            System.exit(1);
+    } catch (NoClassDefFoundError e) {
+            System.err.println("NoClassDefFoundError while creating an "
+                               + "IcmpSocket.  Most likely failed to load "
+                               + "libjicmp.so.");
+            e.printStackTrace();
+            System.exit(1);
+    } catch (IOException e) {
+            System.err.println("IOException while creating an "
+                               + "IcmpSocket.");
+            e.printStackTrace();
+            System.exit(1);
+        }
+    
+    java.net.InetAddress addr = null;
+        try {
+        addr = InetAddress.getByName(host);
+        } catch (java.net.UnknownHostException e) {
+            System.err.println("UnknownHostException when looking up "
+                               + host + ".");
+            e.printStackTrace();
+            System.exit(1);
+        }
+    
+        System.out.println("PING " + host + " (" + InetAddressUtils.str(addr) + "): 56 data bytes");
+    
+    short m_icmpId = 2;
+    
+        Ping.Stuff s = new Ping.Stuff(m_socket, m_icmpId);
+        Thread t = new Thread(s, Ping.class.getSimpleName());
+        t.start();
+    
+        for (long m_fiberId = 0; true; m_fiberId++) {
+    	    // build a packet
+            ICMPEchoPacket pingPkt = new ICMPEchoPacket(m_fiberId);
+            pingPkt.setIdentity(m_icmpId);
+            pingPkt.computeChecksum();
+    
+            // convert it to a datagram to be sent
+            byte[] buf = pingPkt.toBytes();
+            DatagramPacket sendPkt =
+                new DatagramPacket(buf, buf.length, addr, 0);
+            buf = null;
+            pingPkt = null;
+    
+            try {
+                m_socket.send(sendPkt);
+            } catch (IOException e) {
+                System.err.println("IOException received when sending packet.");
+                e.printStackTrace();
+                System.exit(1);
+            }
+            try {
+                Thread.sleep(1000);
+            } catch (InterruptedException e) {
+                // do nothing
+            }
+        }
+    }
+
+}

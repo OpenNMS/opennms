@@ -36,12 +36,10 @@
 package org.opennms.netmgt.icmp;
 
 import java.net.InetAddress;
+import java.util.concurrent.CountDownLatch;
 import java.util.concurrent.TimeUnit;
 
-import org.opennms.core.concurrent.BarrierSignaler;
 import org.opennms.core.utils.ThreadCategory;
-import org.opennms.netmgt.icmp.PingResponseCallback;
-import org.opennms.netmgt.icmp.ICMPEchoPacket;
 
 /**
  * <p>SinglePingResponseCallback class.</p>
@@ -50,16 +48,18 @@ import org.opennms.netmgt.icmp.ICMPEchoPacket;
  * @author <a href="mailto:brozow@opennms.org">Mathew Brozowski</a>
  */
 public class SinglePingResponseCallback implements PingResponseCallback {
-    private BarrierSignaler bs = new BarrierSignaler(1);
-    @SuppressWarnings("unused")
-    private Throwable error = null;
 
+    
     /**
      * Value of round-trip-time for the ping in microseconds.
      */
-    private Long responseTime = null;
+    private Long m_responseTime = null;
 
     private InetAddress m_host;
+    
+    private Throwable m_error = null;
+
+    private CountDownLatch m_latch = new CountDownLatch(1);
 
     /**
      * <p>Constructor for SinglePingResponseCallback.</p>
@@ -71,10 +71,13 @@ public class SinglePingResponseCallback implements PingResponseCallback {
     }
 
     /** {@inheritDoc} */
-    public void handleResponse(InetAddress address, ICMPEchoPacket packet) {
-        info("got response for address " + address + ", thread " + packet.getIdentifier() + ", seq " + packet.getSequenceNumber() + " with a responseTime "+packet.elapsedTime(TimeUnit.MILLISECONDS)+"ms");
-        responseTime = (long)Math.round(packet.elapsedTime(TimeUnit.MICROSECONDS));
-        bs.signalAll();
+    public void handleResponse(InetAddress address, EchoPacket response) {
+        try {
+            info("got response for address " + address + ", thread " + response.getIdentifier() + ", seq " + response.getSequenceNumber() + " with a responseTime "+response.elapsedTime(TimeUnit.MILLISECONDS)+"ms");
+            m_responseTime = (long)Math.round(response.elapsedTime(TimeUnit.MICROSECONDS));
+        } finally {
+            m_latch.countDown();
+        }
     }
 
     private ThreadCategory log() {
@@ -82,17 +85,23 @@ public class SinglePingResponseCallback implements PingResponseCallback {
     }
 
     /** {@inheritDoc} */
-    public void handleTimeout(InetAddress address, PingRequestId id) {
-        assert(id != null);
-        info("timed out pinging address " + address + ", thread " + id.getTid() + ", seq " + id.getSequenceId());
-        bs.signalAll();
+    public void handleTimeout(InetAddress address, EchoPacket request) {
+        try {
+            assert(request != null);
+            info("timed out pinging address " + address + ", thread " + request.getIdentifier() + ", seq " + request.getSequenceNumber());
+        } finally {
+            m_latch.countDown();
+        }
     }
 
     /** {@inheritDoc} */
-    public void handleError(InetAddress address, ICMPEchoPacket pr, Throwable t) {
-        info("an error occurred pinging " + address, t);
-        error = t;
-        bs.signalAll();
+    public void handleError(InetAddress address, EchoPacket request, Throwable t) {
+        try {
+            m_error = t;
+            info("an error occurred pinging " + address, t);
+        } finally {
+            m_latch.countDown();
+        }
     }
 
     /**
@@ -102,7 +111,7 @@ public class SinglePingResponseCallback implements PingResponseCallback {
      * @throws java.lang.InterruptedException if any.
      */
     public void waitFor(long timeout) throws InterruptedException {
-        bs.waitFor(timeout);
+        m_latch.await(timeout, TimeUnit.MILLISECONDS);
     }
 
     /**
@@ -112,8 +121,16 @@ public class SinglePingResponseCallback implements PingResponseCallback {
      */
     public void waitFor() throws InterruptedException {
         info("waiting for ping to "+m_host+" to finish");
-        bs.waitFor();
+        m_latch.await();
         info("finished waiting for ping to "+m_host+" to finish");
+    }
+
+    public void rethrowError() throws Exception {
+        if (m_error instanceof Error) {
+            throw (Error)m_error;
+        } else if (m_error instanceof Exception) {
+            throw (Exception)m_error;
+        }
     }
 
     /**
@@ -122,7 +139,11 @@ public class SinglePingResponseCallback implements PingResponseCallback {
      * @return a {@link java.lang.Long} object.
      */
     public Long getResponseTime() {
-        return responseTime;
+        return m_responseTime;
+    }
+    
+    public Throwable getError() {
+        return m_error;
     }
 
     /**
@@ -142,5 +163,6 @@ public class SinglePingResponseCallback implements PingResponseCallback {
     public void info(String msg, Throwable t) {
         log().info(msg, t);
     }
+
 
 }

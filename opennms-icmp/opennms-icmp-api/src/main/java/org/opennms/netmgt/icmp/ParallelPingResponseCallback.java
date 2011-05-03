@@ -12,7 +12,7 @@
  * 
  * Created: August 22, 2007
  *
- * Copyright (C) 2007 The OpenNMS Group, Inc.  All rights reserved.
+ * Copyright (C) 2007-2011 The OpenNMS Group, Inc.  All rights reserved.
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -38,11 +38,9 @@ package org.opennms.netmgt.icmp;
 import java.net.InetAddress;
 import java.util.Arrays;
 import java.util.List;
+import java.util.concurrent.CountDownLatch;
 import java.util.concurrent.TimeUnit;
 
-import org.opennms.core.concurrent.BarrierSignaler;
-import org.opennms.netmgt.icmp.PingResponseCallback;
-import org.opennms.netmgt.icmp.ICMPEchoPacket;
 
 /**
  * <p>ParallelPingResponseCallback class.</p>
@@ -51,11 +49,13 @@ import org.opennms.netmgt.icmp.ICMPEchoPacket;
  * @version $Id: $
  */
 public class ParallelPingResponseCallback implements PingResponseCallback {
-    BarrierSignaler bs;
+    CountDownLatch m_latch;
     /**
      * Value of round-trip-time for the ping packets in microseconds.
      */
     Number[] m_responseTimes;
+    
+    Throwable m_error;
 
     /**
      * <p>Constructor for ParallelPingResponseCallback.</p>
@@ -63,26 +63,36 @@ public class ParallelPingResponseCallback implements PingResponseCallback {
      * @param count a int.
      */
     public ParallelPingResponseCallback(int count) {
-        bs = new BarrierSignaler(count);
+        m_latch = new CountDownLatch(count);
         m_responseTimes = new Number[count];
     }
 
     /** {@inheritDoc} */
-    public void handleError(InetAddress address, ICMPEchoPacket packet, Throwable t) {
-        m_responseTimes[packet.getSequenceNumber()] = null;
-        bs.signalAll();
+    public void handleError(InetAddress address, EchoPacket request, Throwable t) {
+        try {
+            m_responseTimes[request.getSequenceNumber()] = null;
+            m_error = t;
+        } finally {
+            m_latch.countDown();
+        }
     }
 
     /** {@inheritDoc} */
-    public void handleResponse(InetAddress address, ICMPEchoPacket packet) {
-        m_responseTimes[packet.getSequenceNumber()] = packet.elapsedTime(TimeUnit.MICROSECONDS);
-        bs.signalAll();
+    public void handleResponse(InetAddress address, EchoPacket response) {
+        try {
+            m_responseTimes[response.getSequenceNumber()] = response.elapsedTime(TimeUnit.MICROSECONDS);
+        } finally {
+            m_latch.countDown();
+        }
     }
 
     /** {@inheritDoc} */
-    public void handleTimeout(InetAddress address, PingRequestId id) {
-        m_responseTimes[id.getSequenceId()] = null;
-        bs.signalAll();
+    public void handleTimeout(InetAddress address, EchoPacket request) {
+        try {
+            m_responseTimes[request.getSequenceNumber()] = null;
+        } finally {
+            m_latch.countDown();
+        }
     }
 
     /**
@@ -91,9 +101,18 @@ public class ParallelPingResponseCallback implements PingResponseCallback {
      * @throws java.lang.InterruptedException if any.
      */
     public void waitFor() throws InterruptedException {
-        bs.waitFor();
+        m_latch.await();
     }
     
+    public void rethrowError() throws Exception {
+        if (m_error instanceof Error) {
+            throw (Error)m_error;
+        } else if (m_error instanceof Exception) {
+            throw (Exception)m_error;
+        }
+    }
+
+
     /**
      * <p>getResponseTimes</p>
      *

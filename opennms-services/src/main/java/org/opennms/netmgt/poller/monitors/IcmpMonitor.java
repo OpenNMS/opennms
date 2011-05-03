@@ -104,7 +104,7 @@ final public class IcmpMonitor extends AbstractServiceMonitor {
             throw new NetworkInterfaceNotSupportedException("Unsupported interface type, only TYPE_INET currently supported");
 
         ThreadCategory log = ThreadCategory.getInstance(this.getClass());
-        Long rtt = null;
+        Number rtt = null;
         InetAddress host = (InetAddress) iface.getAddress();
 
         try {

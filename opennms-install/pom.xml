@@ -64,7 +64,7 @@
     </dependency>
     <dependency>
       <groupId>org.opennms</groupId>
-      <artifactId>opennms-icmp-jicmp</artifactId>
+      <artifactId>opennms-icmp-jni</artifactId>
       <scope>compile</scope>
     </dependency>
     <dependency>

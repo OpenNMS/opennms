@@ -131,7 +131,7 @@ public class LinkEventCorrelatorTest {
         
         m_anticipator.verifyAnticipated();
         
-        List<Parm> parms = m_anticipator.getAnticipatedEventsRecieved().get(0).getParms().getParmCollection();
+        List<Parm> parms = m_anticipator.getAnticipatedEventsRecieved().get(0).getParmCollection();
         assertEquals(2, parms.size());
         int foundGood = 0;
         for (Parm p : parms) {
@@ -184,7 +184,7 @@ public class LinkEventCorrelatorTest {
         
         m_anticipator.verifyAnticipated();
         
-        List<Parm> parms = m_anticipator.getAnticipatedEventsRecieved().get(0).getParms().getParmCollection();
+        List<Parm> parms = m_anticipator.getAnticipatedEventsRecieved().get(0).getParmCollection();
         assertEquals(2, parms.size());
         int foundGood = 0;
         for (Parm p : parms) {
@@ -231,7 +231,7 @@ public class LinkEventCorrelatorTest {
         
         m_anticipator.verifyAnticipated();
         
-        List<Parm> parms = m_anticipator.getAnticipatedEventsRecieved().get(0).getParms().getParmCollection();
+        List<Parm> parms = m_anticipator.getAnticipatedEventsRecieved().get(0).getParmCollection();
         assertEquals(2, parms.size());
         int foundGood = 0;
         for (Parm p : parms) {

@@ -40,72 +40,6 @@ import java.net.InetAddress;
 import java.util.List;
 
 /**
- * 
- * Pinger Design
- * 
- * The pinger has four components that are all static
- * 
- * an icmpSocket
- * a pendingRequest map
- * a pendingReply queue (LinkedBlockingQueue)
- * a timeout queue (DelayQueue)
- * 
- * It also has three threads:
- * 
- * a thread to read from the icmpSocket - (icmp socket reader)
- * a thread to process the pendingReplyQueue - (icmp reply processor)
- * a thread to process the timeouts (icmp timeout processor)
- * 
- * Processing:
- * 
- * All requests are asynchronous (if synchronous requests are need that
- * are implemented using asynchronous requests and blocking callbacks)
- * 
- * Making a request: (client thread)
- * - create a pingRequest 
- * - add it to a pendingRequestMap
- * - send the request
- * - add it to the timeout queue
- * 
- * Reading from the icmp socket: (icmp socket reader)
- * - read a packet from the socket
- * - construct a reply object 
- * - verify it is an opennms gen'd packet
- * - add it to the pendingReply queue
- * 
- * Processing a reply: (icmp reply processor)
- * - take a reply from the pendingReply queue
- * - look up and remove the matching request in the pendingRequest map
- * - call request.processReply(reply) - this will store the reply and
- *   call the handleReply call back
- * - pending request sets completed to true
- * 
- * Processing a timeout:
- * - take a request from the timeout queue
- * - if the request is completed discard it
- * - otherwise, call request.processTimeout(), this will check the number
- *   of retries and either return a new request with fewer retries or
- *   call the handleTimeout call back
- * - if processTimeout returns a new request than process it as in Making
- *   a request 
- * 
- * Thread Details:
- * 
- * 1.  The icmp socket reader that will listen on the ICMP socket.  It
- *     will pull packets off the socket and construct replies and add
- *     them to a LinkedBlockingQueue
- * 
- * 2.  The icmp reply processor that will pull replies off the linked
- *     blocking queue and process them.  This will result in calling the
- *     PingResponseCallback handleReply method.
- * 
- * 3.  The icmp timeout processor that will pull PingRequests off of a
- *     DelayQueue.  A DelayQueue does not allow things to be removed from
- *     them until the timeout has expired.
- * 
- */
-
-/**
  * <p>Pinger class.</p>
  *
  * @author <a href="mailto:ranger@opennms.org">Ben Reed</a>
@@ -140,19 +74,19 @@ public interface Pinger {
      * @throws IOException if any.
      * @throws java.lang.Exception if any.
      */
-    public Long ping(InetAddress host, long timeout, int retries) throws Exception;
+    public Number ping(InetAddress host, long timeout, int retries) throws Exception;
     
 
 	/**
 	 * Ping a remote host, using the default number of retries and timeouts.
 	 *
 	 * @param host the host to ping
-	 * @return the round-trip time of the packet
+	 * @return the round-trip time of the packet in microseconds or null if no reply
 	 * @throws IOException if any.
 	 * @throws InterruptedException if any.
 	 * @throws java.lang.Exception if any.
 	 */
-	public Long ping(InetAddress host) throws Exception;
+	public Number ping(InetAddress host) throws Exception;
 
 	/**
 	 * <p>parallelPing</p>
@@ -161,7 +95,7 @@ public interface Pinger {
 	 * @param count a int.
 	 * @param timeout a long.
 	 * @param pingInterval a long.
-	 * @return a {@link java.util.List} object.
+	 * @return a {@link java.util.List} object represening the round trip time in microseconds of each packet
 	 * @throws java.lang.Exception if any.
 	 */
 	public List<Number> parallelPing(InetAddress host, int count, long timeout, long pingInterval) throws Exception;

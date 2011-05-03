@@ -38,10 +38,8 @@ package org.opennms.netmgt.icmp;
 import java.net.InetAddress;
 
 import org.opennms.core.utils.ThreadCategory;
-import org.opennms.netmgt.icmp.ICMPEchoPacket;
-import org.opennms.netmgt.icmp.PingResponseCallback;
 
-class LogPrefixPreservingPingResponseCallback implements PingResponseCallback {
+public class LogPrefixPreservingPingResponseCallback implements PingResponseCallback {
     private final PingResponseCallback m_cb;
     private final String m_prefix = ThreadCategory.getPrefix();
     
@@ -49,31 +47,31 @@ class LogPrefixPreservingPingResponseCallback implements PingResponseCallback {
         m_cb = cb;
     }
 
-    public void handleError(InetAddress address, ICMPEchoPacket packet, Throwable t) {
+    public void handleError(InetAddress address, EchoPacket request, Throwable t) {
         String oldPrefix = ThreadCategory.getPrefix();
         try {
             ThreadCategory.setPrefix(m_prefix);
-            m_cb.handleError(address, packet, t);
+            m_cb.handleError(address, request, t);
         } finally {
             ThreadCategory.setPrefix(oldPrefix);
         }
     }
 
-    public void handleResponse(InetAddress address, ICMPEchoPacket packet) {
+    public void handleResponse(InetAddress address, EchoPacket response) {
         String oldPrefix = ThreadCategory.getPrefix();
         try {
             ThreadCategory.setPrefix(m_prefix);
-            m_cb.handleResponse(address, packet);
+            m_cb.handleResponse(address, response);
         } finally {
             ThreadCategory.setPrefix(oldPrefix);
         }
     }
 
-    public void handleTimeout(InetAddress address, PingRequestId id) {
+    public void handleTimeout(InetAddress address, EchoPacket request) {
         String oldPrefix = ThreadCategory.getPrefix();
         try {
             ThreadCategory.setPrefix(m_prefix);
-            m_cb.handleTimeout(address, id);
+            m_cb.handleTimeout(address, request);
         } finally {
             ThreadCategory.setPrefix(oldPrefix);
         }
