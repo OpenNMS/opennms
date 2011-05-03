@@ -61,7 +61,7 @@ public class PingThreadTest {
     @Test
     public void testMultiThreadSocketUse() throws Exception {
         int pingCount = 10;
-        AbstractPinger<Inet4Address> listener = new V4Pinger();
+        V4Pinger listener = new V4Pinger();
         try {
         listener.start();
         
@@ -76,7 +76,7 @@ public class PingThreadTest {
 
     @Test
     public void testManyThreadSocketUse() throws Exception {
-        AbstractPinger<Inet4Address> listener = new V4Pinger();
+        V4Pinger listener = new V4Pinger();
         try {
         listener.start();
         
@@ -105,7 +105,7 @@ public class PingThreadTest {
         }
     }
 
-    private Thread pingThead(final AbstractPinger<Inet4Address> listener, final int id, final int count) {
+    private Thread pingThead(final V4Pinger listener, final int id, final int count) {
         return new Thread() {
             public void run() {
                 try {

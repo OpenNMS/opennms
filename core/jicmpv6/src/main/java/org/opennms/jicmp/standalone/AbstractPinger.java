@@ -48,7 +48,7 @@ public abstract class AbstractPinger<T extends InetAddress> implements Runnable 
     protected final AtomicReference<Throwable> m_throwable = new AtomicReference<Throwable>(null);
     protected final Metric m_metric = new Metric();
     private volatile boolean m_stopped = false;
-    protected final List<PingReplyListener> m_listeners = new ArrayList<PingReplyListener>();
+    private final List<PingReplyListener> m_listeners = new ArrayList<PingReplyListener>();
     
     protected AbstractPinger(NativeDatagramSocket pingSocket) {
         m_pingSocket = pingSocket;
@@ -89,17 +89,20 @@ public abstract class AbstractPinger<T extends InetAddress> implements Runnable 
             getPingSocket().close();
         }
     }
+    
+    protected List<PingReplyListener> getListeners() {
+        return m_listeners;
+    }
 
-    abstract public void ping(T addr, int id, int sequenceNumber, long count, long interval) throws InterruptedException;
+    abstract public PingReplyMetric ping(T addr, int id, int sequenceNumber, int count, long interval) throws InterruptedException;
 
     public void addPingReplyListener(PingReplyListener listener) {
         m_listeners.add(listener);
     }
 
-     void ping(T addr4)
-            throws InterruptedException {
+     PingReplyMetric ping(T addr4)  throws InterruptedException {
         Thread t = new Thread(this);
         t.start();
-        ping(addr4, 1234, 1, 10, 1000);
+        return ping(addr4, 1234, 1, 10, 1000);
     }
 }

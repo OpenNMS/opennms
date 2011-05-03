@@ -32,6 +32,7 @@ package org.opennms.jicmp.standalone;
 import java.net.Inet4Address;
 import java.net.Inet6Address;
 import java.net.InetAddress;
+import java.util.concurrent.TimeUnit;
 
 
 /**
@@ -52,16 +53,21 @@ public class Main {
         }
         
         InetAddress addr = InetAddress.getByName(args[0]);
-        
+
+        PingReplyMetric metric;
         if (addr instanceof Inet4Address) {
-            AbstractPinger<Inet4Address> pinger = new V4Pinger();
-            pinger.ping((Inet4Address)addr);
+            V4Pinger pinger = new V4Pinger();
+            metric = pinger.ping((Inet4Address)addr);
         } else if (addr instanceof Inet6Address){
-            AbstractPinger<Inet6Address> pinger = new V6Pinger();
-            pinger.ping((Inet6Address)addr);
+            V6Pinger pinger = new V6Pinger();
+            metric = pinger.ping((Inet6Address)addr);
         } else {
             System.err.println("Unrecognized address type " + addr.getClass());
+            return 1;
         }
+        
+        metric.await();
+        System.err.println(metric.getSummary(TimeUnit.MILLISECONDS));
         
         return 0;
     }

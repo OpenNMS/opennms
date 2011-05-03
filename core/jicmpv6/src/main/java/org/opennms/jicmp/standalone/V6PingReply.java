@@ -70,10 +70,10 @@ class V6PingReply extends ICMPv6EchoPacket implements PingReply {
     
     public double elapsedTime(TimeUnit unit) {
         double nanosPerUnit = TimeUnit.NANOSECONDS.convert(1, unit);
-        return elapsedTimeNanos() / nanosPerUnit;
+        return getElapsedTimeNanos() / nanosPerUnit;
     }
 
-    long elapsedTimeNanos() {
+    public long getElapsedTimeNanos() {
         return getReceivedTimeNanos() - getSentTimeNanos();
     }
 

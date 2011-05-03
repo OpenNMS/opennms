@@ -84,6 +84,9 @@ public class V6Pinger extends AbstractPinger<Inet6Address> {
                         echoReply.getSequenceNumber(),
                         echoReply.elapsedTime(TimeUnit.MILLISECONDS)
                     );
+                    for (PingReplyListener listener : getListeners()) {
+                        listener.onPingReply(datagram.getAddress(), echoReply);
+                    }
                 }
             }
         } catch(Throwable e) {
@@ -96,13 +99,16 @@ public class V6Pinger extends AbstractPinger<Inet6Address> {
         return datagram.getContent();
     }
     
-    public void ping(Inet6Address addr, int id, int sequenceNumber, long count, long interval) throws InterruptedException {
+    public PingReplyMetric ping(Inet6Address addr, int id, int sequenceNumber, int count, long interval) throws InterruptedException {
+        PingReplyMetric metric = new PingReplyMetric(count, interval);
+        addPingReplyListener(metric);
         NativeDatagramSocket socket = getPingSocket();
         for(int i = sequenceNumber; i < sequenceNumber + count; i++) {
             V6PingRequest request = new V6PingRequest(id, i);
             request.send(socket, addr);
             Thread.sleep(interval);
         }
+        return metric;
     }
 
 }

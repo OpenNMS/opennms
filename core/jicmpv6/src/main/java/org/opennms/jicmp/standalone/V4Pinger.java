@@ -85,7 +85,7 @@ public class V4Pinger extends AbstractPinger<Inet4Address> {
                         echoReply.getSequenceNumber(),
                         echoReply.elapsedTime(TimeUnit.MILLISECONDS)
                     );
-                    for (PingReplyListener listener : m_listeners) {
+                    for (PingReplyListener listener : getListeners()) {
                         listener.onPingReply(datagram.getAddress(), echoReply);
                     }
                 }
@@ -100,13 +100,16 @@ public class V4Pinger extends AbstractPinger<Inet4Address> {
         return new IPPacket(datagram.getContent()).getPayload();
     }
     
-    public void ping(Inet4Address addr, int id, int sequenceNumber, long count, long interval) throws InterruptedException {
+    public PingReplyMetric ping(Inet4Address addr, int id, int sequenceNumber, int count, long interval) throws InterruptedException {
+        PingReplyMetric metric = new PingReplyMetric(count, interval);
+        addPingReplyListener(metric);
         NativeDatagramSocket socket = getPingSocket();
         for(int i = sequenceNumber; i < sequenceNumber + count; i++) {
             V4PingRequest request = new V4PingRequest(id, i);
             request.send(socket, addr);
             Thread.sleep(interval);
         }
+        return metric;
     }
 
 }

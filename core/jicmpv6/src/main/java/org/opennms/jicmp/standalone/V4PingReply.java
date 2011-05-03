@@ -73,10 +73,11 @@ class V4PingReply extends ICMPEchoPacket implements PingReply {
     @Override
     public double elapsedTime(TimeUnit unit) {
         double nanosPerUnit = TimeUnit.NANOSECONDS.convert(1, unit);
-        return elapsedTimeNanos() / nanosPerUnit;
+        return getElapsedTimeNanos() / nanosPerUnit;
     }
 
-    protected long elapsedTimeNanos() {
+    @Override
+    public long getElapsedTimeNanos() {
         return getReceivedTimeNanos() - getSentTimeNanos();
     }
 
