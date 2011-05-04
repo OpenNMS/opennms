@@ -25,13 +25,12 @@ ONMS_SET_CC_WARNING_CFLAGS
 
 AC_HEADER_STDC
 
-AC_CHECK_HEADERS([arpa/inet.h])
+AC_CHECK_HEADERS([arpa/inet.h netinet/icmp.h])
 AC_CHECK_HEADERS([sys/types.h AvailabilityMacros.h architecture/byte_order.h errno.h malloc.h netdb.h stdlib.h sys/byteorder.h sys/time.h], [], [], [
 #ifdef HAVE_SYS_TYPES_H
 #include <sys/types.h>
 #endif
 ])
-
 AC_SEARCH_LIBS([socket], [socket resolv nsl])
 AC_SEARCH_LIBS([sendto], [socket resolv nsl])
 AC_SEARCH_LIBS([recvfrom], [socket resolv nsl])

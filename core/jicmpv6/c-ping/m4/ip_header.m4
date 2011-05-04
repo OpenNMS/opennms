@@ -1,6 +1,6 @@
 AC_DEFUN([_ONMS_FIND_IP_HEADERS], [
 	if test -z "$_ONMS_TESTED_IP_HEADERS"; then
-		AC_CHECK_HEADERS([sys/types.h netinet/in.h netinet/in_systm.h netinet/ip.h netinet/ip_icmp.h winsock2.h ws2tcpip.h win32/icmp.h], [], [], [
+		AC_CHECK_HEADERS([sys/types.h netinet/in.h netinet/in_systm.h netinet/ip.h netinet/ip_icmp.h netinet/icmp6.h winsock2.h ws2tcpip.h win32/icmp.h], [], [], [
 			#ifdef HAVE_SYS_TYPES_H
 			#include <sys/types.h>
 			#endif

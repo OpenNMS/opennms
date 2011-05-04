@@ -56,6 +56,10 @@
 #include <netinet/ip_icmp.h>
 #endif
 
+#ifdef HAVE_NETINET_ICMP6_H
+#include <netinet/icmp6.h>
+#endif
+
 #ifdef HAVE_NETDB_H
 #include <netdb.h>
 #endif
