@@ -9,7 +9,7 @@
 		  <rra>RRA:MIN:0.5:288:366</rra>
         </rrd>
       <queries>
-        <query name="opennmsQuery">
+        <query name="opennmsQuery" ifType="ignore">
           <statement data-source="opennms">
             <queryString>SELECT COUNT(eventid) as EventCount
 FROM events
@@ -18,10 +18,269 @@ BETWEEN (CURRENT_TIMESTAMP - INTERVAL '1 day')
 AND CURRENT_TIMESTAMP;</queryString>
           </statement>
           <columns>
-            <column name="eventCount" data-source-name="EventCount" type="GAUGE"/>
+            <column name="eventCount" data-source-name="EventCount" alias="OnmsEventCount" type="GAUGE"/>
+          </columns>
+        </query>
+        <query name="opennmsNodeQuery" ifType="ignore">
+          <statement data-source="opennms">
+            <queryString>SELECT COUNT(*) as NodeCount FROM node WHERE nodetype != 'D';</queryString>
+          </statement>
+          <columns>
+            <column name="nodeCount" data-source-name="NodeCount" alias="OnmsNodeCount" type="GAUGE"/>
           </columns>
         </query>
       </queries>
-        
+    </jdbc-collection>
+
+    <jdbc-collection name="MySQL-Global-Stats-51">
+	<rrd step="300">
+	    <rra>RRA:AVERAGE:0.5:1:2016</rra>
+	    <rra>RRA:AVERAGE:0.5:12:1488</rra>
+	    <rra>RRA:AVERAGE:0.5:288:366</rra>
+	    <rra>RRA:MAX:0.5:288:366</rra>
+	    <rra>RRA:MIN:0.5:288:366</rra>
+	</rrd>
+	<queries>
+	    <query name="Q_MyUptime" ifType="ignore" >
+		<statement>
+		    <queryString>SELECT VARIABLE_VALUE AS Uptime FROM GLOBAL_STATUS WHERE VARIABLE_NAME = 'UPTIME'</queryString>
+		</statement>
+		<columns>
+		    <column name="Uptime" data-source-name="Uptime" alias="MyUptime" type="GAUGE"/>
+		</columns>
+            </query>
+	    <query name="Q_MyBytesReceived" ifType="ignore" >
+		<statement>
+		    <queryString>SELECT VARIABLE_VALUE AS Bytes_received FROM GLOBAL_STATUS WHERE VARIABLE_NAME = 'BYTES_RECEIVED'</queryString>
+		</statement>
+		<columns>
+		    <column name="Bytes_received" data-source-name="Bytes_received" alias="MyBytesReceived" type="COUNTER"/>
+		</columns>
+            </query>
+	    <query name="Q_MyBytesSent" ifType="ignore" >
+		<statement>
+		    <queryString>SELECT VARIABLE_VALUE AS Bytes_sent FROM GLOBAL_STATUS WHERE VARIABLE_NAME = 'BYTES_SENT'</queryString>
+		</statement>
+		<columns>
+		    <column name="Bytes_sent" data-source-name="Bytes_sent" alias="MyBytesSent" type="COUNTER"/>
+		</columns>
+	    </query>
+	    <query name="Q_Com_delete" ifType="ignore" >
+		<statement>
+		    <queryString>SELECT VARIABLE_VALUE AS Com_delete FROM GLOBAL_STATUS WHERE VARIABLE_NAME = 'COM_DELETE'</queryString>
+		</statement>
+		<columns>
+		    <column name="Com_delete" data-source-name="Com_delete" alias="MyComDelete" type="COUNTER"/>
+		</columns>
+	    </query>
+	    <query name="Q_Com_delete_multi" ifType="ignore" >
+		<statement>
+		    <queryString>SELECT VARIABLE_VALUE AS Com_delete_multi FROM GLOBAL_STATUS WHERE VARIABLE_NAME = 'COM_DELETE_MULTI'</queryString>
+		</statement>
+		<columns>
+		    <column name="Com_delete_multi" data-source-name="Com_delete_multi" alias="MyComDeleteMulti" type="COUNTER"/>
+		</columns>
+	    </query>
+	    <query name="Q_Com_insert" ifType="ignore" >
+		<statement>
+		    <queryString>SELECT VARIABLE_VALUE AS Com_insert FROM GLOBAL_STATUS WHERE VARIABLE_NAME = 'COM_INSERT'</queryString>
+		</statement>
+		<columns>
+		    <column name="Com_insert" data-source-name="Com_insert" alias="MyComInsert" type="COUNTER"/>
+		</columns>
+	    </query>
+	    <query name="Q_Com_insert_select" ifType="ignore" >
+		<statement>
+		    <queryString>SELECT VARIABLE_VALUE AS Com_insert_select FROM GLOBAL_STATUS WHERE VARIABLE_NAME = 'COM_INSERT_SELECT'</queryString>
+		</statement>
+		<columns>
+		    <column name="Com_insert_select" data-source-name="Com_insert_select" alias="MyComInsertSelect" type="COUNTER"/>
+		</columns>
+	    </query>
+	    <query name="Q_Com_select" ifType="ignore" >
+		<statement>
+		    <queryString>SELECT VARIABLE_VALUE AS Com_select FROM GLOBAL_STATUS WHERE VARIABLE_NAME = 'COM_SELECT'</queryString>
+		</statement>
+		<columns>
+		    <column name="Com_select" data-source-name="Com_select" alias="MyComSelect" type="COUNTER"/>
+		</columns>
+	    </query>
+	    <query name="Q_Com_stmt_execute" ifType="ignore" >
+		<statement>
+		    <queryString>SELECT VARIABLE_VALUE AS Com_stmt_execute FROM GLOBAL_STATUS WHERE VARIABLE_NAME = 'COM_STMT_EXECUTE'</queryString>
+		</statement>
+		<columns>
+		    <column name="Com_stmt_execute" data-source-name="Com_stmt_execute" alias="MyComStmtExecute" type="COUNTER"/>
+		</columns>
+	    </query>
+	    <query name="Q_Com_update" ifType="ignore" >
+		<statement>
+		    <queryString>SELECT VARIABLE_VALUE AS Com_update FROM GLOBAL_STATUS WHERE VARIABLE_NAME = 'COM_UPDATE'</queryString>
+		</statement>
+		<columns>
+		    <column name="Com_update" data-source-name="Com_update" alias="MyComUpdate" type="COUNTER"/>
+		</columns>
+	    </query>
+	    <query name="Q_Com_update_multi" ifType="ignore" >
+		<statement>
+		    <queryString>SELECT VARIABLE_VALUE AS Com_update_multi FROM GLOBAL_STATUS WHERE VARIABLE_NAME = 'COM_UPDATE_MULTI'</queryString>
+		</statement>
+		<columns>
+		    <column name="Com_update_multi" data-source-name="Com_update_multi" alias="MyComUpdateMulti" type="COUNTER"/>
+		</columns>
+	    </query>
+	    <query name="Q_Created_tmp_disk_tables" ifType="ignore" >
+		<statement>
+		    <queryString>SELECT VARIABLE_VALUE AS Created_tmp_disk_tables FROM GLOBAL_STATUS WHERE VARIABLE_NAME = 'CREATED_TMP_DISK_TABLES'</queryString>
+		</statement>
+		<columns>
+		    <column name="Created_tmp_disk_tables" data-source-name="Created_tmp_disk_tables" alias="MyCreatTmpDiskTbl" type="COUNTER"/>
+		</columns>
+	    </query>
+	    <query name="Q_Created_tmp_tables" ifType="ignore" >
+		<statement>
+		    <queryString>SELECT VARIABLE_VALUE AS Created_tmp_tables FROM GLOBAL_STATUS WHERE VARIABLE_NAME = 'CREATED_TMP_TABLES'</queryString>
+		</statement>
+		<columns>
+		    <column name="Created_tmp_tables" data-source-name="Created_tmp_tables" alias="MyCreatTmpTables" type="COUNTER"/>
+		</columns>
+	    </query>
+	    <query name="Q_key_buffer_size" ifType="ignore" >
+		<statement>
+		    <queryString>SELECT VARIABLE_VALUE AS key_buffer_size FROM GLOBAL_VARIABLES WHERE VARIABLE_NAME ='KEY_BUFFER_SIZE'</queryString>
+		</statement>
+		<columns>
+		    <column name="key_buffer_size" data-source-name="key_buffer_size" alias="MyKeyBufferSize" type="GAUGE"/>
+		</columns>
+	    </query>
+	    <query name="Q_key_cache_block_size" ifType="ignore" >
+		<statement>
+		    <queryString>SELECT VARIABLE_VALUE AS key_cache_block_size FROM GLOBAL_VARIABLES WHERE VARIABLE_NAME ='KEY_CACHE_BLOCK_SIZE'</queryString>
+		</statement>
+		<columns>
+		    <column name="key_cache_block_size" data-source-name="key_cache_block_size" alias="MyKeyCacheBlkSize" type="GAUGE"/>
+		</columns>
+	    </query>
+	    <query name="Q_Key_blocks_unused" ifType="ignore" >
+		<statement>
+		    <queryString>SELECT VARIABLE_VALUE AS Key_blocks_unused FROM GLOBAL_STATUS WHERE VARIABLE_NAME = 'KEY_BLOCKS_UNUSED'</queryString>
+		</statement>
+		<columns>
+		    <column name="Key_blocks_unused" data-source-name="Key_blocks_unused" alias="MyKeyBlkUnused" type="GAUGE"/>
+		</columns>
+	    </query>
+	    <query name="Q_Key_read_requests" ifType="ignore" >
+		<statement>
+		    <queryString>SELECT VARIABLE_VALUE AS Key_read_requests FROM GLOBAL_STATUS WHERE VARIABLE_NAME = 'KEY_READ_REQUESTS'</queryString>
+		</statement>
+		<columns>
+		    <column name="Key_read_requests" data-source-name="Key_read_requests" alias="MyKeyReadReqs" type="COUNTER"/>
+		</columns>
+	    </query>
+	    <query name="Q_Key_reads" ifType="ignore" >
+		<statement>
+		    <queryString>SELECT VARIABLE_VALUE AS Key_reads FROM GLOBAL_STATUS WHERE VARIABLE_NAME = 'KEY_READS'</queryString>
+		</statement>
+		<columns>
+		    <column name="Key_reads" data-source-name="Key_reads" alias="MyKeyReads" type="COUNTER"/>
+		</columns>
+	    </query>
+	    <query name="Q_Key_write_requests" ifType="ignore" >
+		<statement>
+		    <queryString>SELECT VARIABLE_VALUE AS Key_write_requests FROM GLOBAL_STATUS WHERE VARIABLE_NAME = 'KEY_WRITE_REQUESTS'</queryString>
+		</statement>
+		<columns>
+		    <column name="Key_write_requests" data-source-name="Key_write_requests" alias="MyKeyWriteReqs" type="COUNTER"/>
+		</columns>
+	    </query>
+	    <query name="Q_Key_writes" ifType="ignore" >
+		<statement>
+		    <queryString>SELECT VARIABLE_VALUE AS Key_writes FROM GLOBAL_STATUS WHERE VARIABLE_NAME = 'KEY_WRITES'</queryString>
+		</statement>
+		<columns>
+		    <column name="Key_writes" data-source-name="Key_writes" alias="MyKeyWrites" type="COUNTER"/>
+		</columns>
+	    </query>
+	    <query name="Q_Open_files" ifType="ignore" >
+		<statement>
+		    <queryString>SELECT VARIABLE_VALUE AS Open_files FROM GLOBAL_STATUS WHERE VARIABLE_NAME = 'OPEN_FILES'</queryString>
+		</statement>
+		<columns>
+		    <column name="Open_files" data-source-name="Open_files" alias="MyOpenFiles" type="GAUGE"/>
+		</columns>
+	    </query>
+	    <query name="Q_Open_tables" ifType="ignore" >
+		<statement>
+		    <queryString>SELECT VARIABLE_VALUE AS Open_tables FROM GLOBAL_STATUS WHERE VARIABLE_NAME = 'OPEN_TABLES'</queryString>
+		</statement>
+		<columns>
+		    <column name="Open_tables" data-source-name="Open_tables" alias="MyOpenTables" type="GAUGE"/>
+		</columns>
+	    </query>
+	    <query name="Q_table_open_cache" ifType="ignore" >
+		<statement>
+		    <queryString>SELECT VARIABLE_VALUE AS table_open_cache FROM GLOBAL_VARIABLES WHERE VARIABLE_NAME ='TABLE_OPEN_CACHE'</queryString>
+		</statement>
+		<columns>
+		    <column name="table_open_cache" data-source-name="table_open_cache" alias="MyTableOpenCache" type="GAUGE"/>
+		</columns>
+	    </query>
+	    <query name="Q_Questions" ifType="ignore" >
+		<statement>
+		    <queryString>SELECT VARIABLE_VALUE AS Questions FROM GLOBAL_STATUS WHERE VARIABLE_NAME = 'QUESTIONS'</queryString>
+		</statement>
+		<columns>
+		    <column name="Questions" data-source-name="Questions" alias="MyQuestions" type="COUNTER"/>
+		</columns>
+	    </query>
+	    <query name="Q_Slow_queries" ifType="ignore" >
+		<statement>
+		    <queryString>SELECT VARIABLE_VALUE AS Slow_queries FROM GLOBAL_STATUS WHERE VARIABLE_NAME = 'SLOW_QUERIES'</queryString>
+		</statement>
+		<columns>
+		    <column name="Slow_queries" data-source-name="Slow_queries" alias="MySlowQueries" type="COUNTER"/>
+		</columns>
+	    </query>
+	    <query name="Q_Connections" ifType="ignore" >
+		<statement>
+		    <queryString>SELECT VARIABLE_VALUE AS Connections FROM GLOBAL_STATUS WHERE VARIABLE_NAME = 'CONNECTIONS'</queryString>
+		</statement>
+		<columns>
+		    <column name="Connections" data-source-name="Connections" alias="MyConnections" type="COUNTER"/>
+		</columns>
+	    </query>
+	    <query name="Q_Threads_created" ifType="ignore" >
+		<statement>
+		    <queryString>SELECT VARIABLE_VALUE Threads_created FROM GLOBAL_STATUS WHERE VARIABLE_NAME = 'THREADS_CREATED'</queryString>
+		</statement>
+		<columns>
+		    <column name="Threads_created" data-source-name="Threads_created" alias="MyThreadsCreatd" type="COUNTER"/>
+		</columns>
+	    </query>
+	    <query name="Q_Threads_cached" ifType="ignore" >
+		<statement>
+		    <queryString>SELECT VARIABLE_VALUE AS Threads_cached FROM GLOBAL_STATUS WHERE VARIABLE_NAME = 'THREADS_CACHED'</queryString>
+		</statement>
+		<columns>
+		    <column name="Threads_cached" data-source-name="Threads_cached" alias="MyThreadsCachd" type="GAUGE"/>
+		</columns>
+	    </query>
+	    <query name="Q_Threads_connected" ifType="ignore" >
+		<statement>
+		    <queryString>SELECT VARIABLE_VALUE AS Threads_connected FROM GLOBAL_STATUS WHERE VARIABLE_NAME = 'THREADS_CONNECTED'</queryString>
+		</statement>
+		<columns>
+		    <column name="Threads_connected" data-source-name="Threads_connected" alias="MyThreadsCnnctd" type="GAUGE"/>
+		</columns>
+	    </query>
+	    <query name="Q_Threads_running" ifType="ignore" >
+		<statement>
+		    <queryString>SELECT VARIABLE_VALUE AS Threads_running FROM GLOBAL_STATUS WHERE VARIABLE_NAME = 'THREADS_RUNNING'</queryString>
+		</statement>
+		<columns>
+		    <column name="Threads_running" data-source-name="Threads_running" alias="MyThreadsRunng" type="GAUGE"/>
+		</columns>
+	    </query>
+	</queries>
     </jdbc-collection>
 </jdbc-datacollection-config>
