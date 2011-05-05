@@ -49,8 +49,8 @@ import org.opennms.netmgt.xml.event.Parm;
 import org.opennms.netmgt.xml.event.Parms;
 import org.opennms.netmgt.xml.event.Value;
 import org.opennms.web.MissingParameterException;
-import org.opennms.web.Util;
 import org.opennms.web.WebSecurityUtils;
+import org.opennms.web.api.Util;
 
 /**
  * Changes the label of a node, throws an event signalling that change, and then
@@ -115,7 +115,7 @@ public class NodeLabelChangeServlet extends HttpServlet {
 
             NodeLabel.assignLabel(nodeId, newLabel);
             this.sendLabelChangeEvent(nodeId, oldLabel, newLabel);
-            response.sendRedirect(Util.calculateUrlBase(request) + "/element/node.jsp?node=" + nodeIdString);
+            response.sendRedirect(Util.calculateUrlBase(request, "element/node.jsp?node=" + nodeIdString));
         } catch (SQLException e) {
             throw new ServletException("Database exception", e);
         } catch (Exception e) {

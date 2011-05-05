@@ -66,7 +66,7 @@ function customResourceViewInit(elementId, dataArray, destURL){
 	
 	function viewChildResource(){
 		if(resourcesGrid.getSelectionModel().getSelected() != undefined){
-				window.location = getBaseHref() + "customGraphChooseResource.htm?selectedResourceId=&resourceId=" + resourcesGrid.getSelectionModel().getSelected().data.id;
+				window.location = getBase() + "customGraphChooseResource.htm?selectedResourceId=&resourceId=" + resourcesGrid.getSelectionModel().getSelected().data.id;
 		}else{
 			alert("Please Select a Resource");
 		}
@@ -74,15 +74,17 @@ function customResourceViewInit(elementId, dataArray, destURL){
 	
 	function chooseChildResource(){
 		if(resourcesGrid.getSelectionModel().getSelected() != undefined){
-				window.location = getBaseHref() + "customGraphEditDetails.htm?resourceId=" + resourcesGrid.getSelectionModel().getSelected().data.id;
+				window.location = getBase() + "customGraphEditDetails.htm?resourceId=" + resourcesGrid.getSelectionModel().getSelected().data.id;
 		}else{
 			alert("Please Select a Resource");
 		}
 	};
 	
-	function getBaseHref() {
+	function getBase() {
 		var base = (document.getElementsByTagName ('BASE')[0] && document.getElementsByTagName('BASE')[0].href);
-		if (!base) {
+		if (base) {
+        base = base + "KSC/";
+      } else {
 			if (Ext.isIE) {
 				base = "";
 			} else {
