@@ -318,7 +318,7 @@ public class XmpCollector implements ServiceCollector {
      *
      * initialize our XmpCollector with global parameters *
      */
-    public void initialize(Map parameters)
+    public void initialize(Map<String, String> parameters)
     {
         // parameters come from collectd-configuration.xml 
         // and they are the service parameters specified in xml
@@ -391,7 +391,7 @@ public class XmpCollector implements ServiceCollector {
      * initialize the querying of a particular agent/interface with
      * parameters specific to this agent/interface *
      */
-    public void initialize(CollectionAgent agent, Map parameters)
+    public void initialize(CollectionAgent agent, Map<String, String> parameters)
     {
         log().debug("initialize agent/params called for "+agent);
 

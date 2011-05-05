@@ -146,13 +146,13 @@ public class ServiceParameters {
         //icky hard coded old names; we need to handle some old cases where configs might be not yet updated, but they should
         // still work
         if(getParameters().containsKey("collection")) {
-            return getParameters().get("collection");
+            return ParameterMap.getKeyedString(getParameters(), "collection", "default");
         } else if(getParameters().containsKey("http-collection")) {
-            return getParameters().get("http-collection");
+            return ParameterMap.getKeyedString(getParameters(), "http-collection", "default");
         } else if(getParameters().containsKey("nsclient-collection")) {
-            return getParameters().get("nsclient-collection");
+            return ParameterMap.getKeyedString(getParameters(), "nsclient-collection", "default");
         } else if(m_parameters.containsKey("wmi-collection")) {
-            return m_parameters.get("wmi-collection");
+            return ParameterMap.getKeyedString(getParameters(), "wmi-collection", "default");
         } else {
             return "default";
         }

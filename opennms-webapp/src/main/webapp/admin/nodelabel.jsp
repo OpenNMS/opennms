@@ -42,9 +42,8 @@
 	contentType="text/html"
 	session="true"
 	import="org.opennms.netmgt.utils.NodeLabel,
-		org.opennms.core.resource.Vault,
-        	org.opennms.web.MissingParameterException,
-        	org.opennms.web.WebSecurityUtils,
+		org.opennms.web.MissingParameterException,
+		org.opennms.web.WebSecurityUtils,
 		java.util.*,
 		java.sql.*
 	"

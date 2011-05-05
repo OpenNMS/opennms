@@ -167,7 +167,7 @@ public class NetworkElementFactory implements InitializingBean, NetworkElementFa
     private static final Comparator<Interface> INTERFACE_COMPARATOR = new InterfaceComparator();
 
     /* (non-Javadoc)
-	 * @see org.opennms.web.element.NetworkElementFactoryInterfac#getNodeLabel(int)
+	 * @see org.opennms.web.element.NetworkElementFactoryInterface#getNodeLabel(int)
 	 */
     public String getNodeLabel(int nodeId) {
         OnmsCriteria criteria = new OnmsCriteria(OnmsNode.class);
@@ -183,7 +183,7 @@ public class NetworkElementFactory implements InitializingBean, NetworkElementFa
     }
 
     /* (non-Javadoc)
-	 * @see org.opennms.web.element.NetworkElementFactoryInterfac#getIpPrimaryAddress(int)
+	 * @see org.opennms.web.element.NetworkElementFactoryInterface#getIpPrimaryAddress(int)
 	 */
     public String getIpPrimaryAddress(int nodeId) {
         OnmsCriteria criteria = new OnmsCriteria(OnmsIpInterface.class);
@@ -200,7 +200,7 @@ public class NetworkElementFactory implements InitializingBean, NetworkElementFa
     }
 
     /* (non-Javadoc)
-	 * @see org.opennms.web.element.NetworkElementFactoryInterfac#getNode(int)
+	 * @see org.opennms.web.element.NetworkElementFactoryInterface#getNode(int)
 	 */
     public OnmsNode getNode(int nodeId) {
         OnmsCriteria criteria = new OnmsCriteria(OnmsNode.class);
@@ -219,7 +219,7 @@ public class NetworkElementFactory implements InitializingBean, NetworkElementFa
     
 
     /* (non-Javadoc)
-	 * @see org.opennms.web.element.NetworkElementFactoryInterfac#getAllNodes()
+	 * @see org.opennms.web.element.NetworkElementFactoryInterface#getAllNodes()
 	 */
     public List<OnmsNode> getAllNodes() {
         OnmsCriteria criteria =  new OnmsCriteria(OnmsNode.class);
@@ -230,7 +230,7 @@ public class NetworkElementFactory implements InitializingBean, NetworkElementFa
     }
     
     /* (non-Javadoc)
-	 * @see org.opennms.web.element.NetworkElementFactoryInterfac#getNodesLike(java.lang.String)
+	 * @see org.opennms.web.element.NetworkElementFactoryInterface#getNodesLike(java.lang.String)
 	 */
     public List<OnmsNode> getNodesLike(String nodeLabel) {
         OnmsCriteria criteria = new OnmsCriteria(OnmsNode.class);
@@ -242,7 +242,7 @@ public class NetworkElementFactory implements InitializingBean, NetworkElementFa
     }
 
     /* (non-Javadoc)
-	 * @see org.opennms.web.element.NetworkElementFactoryInterfac#getNodesWithIpLike(java.lang.String)
+	 * @see org.opennms.web.element.NetworkElementFactoryInterface#getNodesWithIpLike(java.lang.String)
 	 */
     public List<OnmsNode> getNodesWithIpLike(String iplike) {
         if(iplike == null) {
@@ -263,7 +263,7 @@ public class NetworkElementFactory implements InitializingBean, NetworkElementFa
     
 
     /* (non-Javadoc)
-	 * @see org.opennms.web.element.NetworkElementFactoryInterfac#getNodesWithService(int)
+	 * @see org.opennms.web.element.NetworkElementFactoryInterface#getNodesWithService(int)
 	 */
     public List<OnmsNode> getNodesWithService(int serviceId) {
         OnmsCriteria criteria = new OnmsCriteria(OnmsNode.class);
@@ -277,7 +277,7 @@ public class NetworkElementFactory implements InitializingBean, NetworkElementFa
     }
 
     /* (non-Javadoc)
-	 * @see org.opennms.web.element.NetworkElementFactoryInterfac#getNodesWithPhysAddr(java.lang.String)
+	 * @see org.opennms.web.element.NetworkElementFactoryInterface#getNodesWithPhysAddr(java.lang.String)
 	 */
     public List<OnmsNode> getNodesWithPhysAddr(String macAddr) {
         OnmsCriteria criteria = new OnmsCriteria(OnmsNode.class);
@@ -298,7 +298,7 @@ public class NetworkElementFactory implements InitializingBean, NetworkElementFa
 
 
     /* (non-Javadoc)
-	 * @see org.opennms.web.element.NetworkElementFactoryInterfac#getNodesWithPhysAddrAtInterface(java.lang.String)
+	 * @see org.opennms.web.element.NetworkElementFactoryInterface#getNodesWithPhysAddrAtInterface(java.lang.String)
 	 */
     public List<OnmsNode> getNodesWithPhysAddrAtInterface(String macAddr) {
         OnmsCriteria criteria = new OnmsCriteria(OnmsNode.class);
@@ -312,7 +312,7 @@ public class NetworkElementFactory implements InitializingBean, NetworkElementFa
     }
 
     /* (non-Javadoc)
-	 * @see org.opennms.web.element.NetworkElementFactoryInterfac#getNodesWithPhysAddrFromSnmpInterface(java.lang.String)
+	 * @see org.opennms.web.element.NetworkElementFactoryInterface#getNodesWithPhysAddrFromSnmpInterface(java.lang.String)
 	 */
     public List<OnmsNode> getNodesWithPhysAddrFromSnmpInterface(String macAddr) {
         OnmsCriteria criteria = new OnmsCriteria(OnmsNode.class);
@@ -326,7 +326,7 @@ public class NetworkElementFactory implements InitializingBean, NetworkElementFa
     }
 
     /* (non-Javadoc)
-	 * @see org.opennms.web.element.NetworkElementFactoryInterfac#getNodesWithIfAlias(java.lang.String)
+	 * @see org.opennms.web.element.NetworkElementFactoryInterface#getNodesWithIfAlias(java.lang.String)
 	 */
     public List<OnmsNode> getNodesWithIfAlias(String ifAlias) {
         OnmsCriteria criteria = new OnmsCriteria(OnmsNode.class);
@@ -339,7 +339,7 @@ public class NetworkElementFactory implements InitializingBean, NetworkElementFa
     }
 
     /* (non-Javadoc)
-	 * @see org.opennms.web.element.NetworkElementFactoryInterfac#getHostname(java.lang.String)
+	 * @see org.opennms.web.element.NetworkElementFactoryInterface#getHostname(java.lang.String)
 	 */
     public String getHostname(String ipAddress) {
         OnmsCriteria criteria = new OnmsCriteria(OnmsIpInterface.class);
@@ -358,7 +358,7 @@ public class NetworkElementFactory implements InitializingBean, NetworkElementFa
     }
 
     /* (non-Javadoc)
-	 * @see org.opennms.web.element.NetworkElementFactoryInterfac#getInterface(int)
+	 * @see org.opennms.web.element.NetworkElementFactoryInterface#getInterface(int)
 	 */
     public Interface getInterface(int ipInterfaceId) {
         OnmsCriteria criteria = new OnmsCriteria(OnmsIpInterface.class);
@@ -375,7 +375,7 @@ public class NetworkElementFactory implements InitializingBean, NetworkElementFa
     }
 
     /* (non-Javadoc)
-	 * @see org.opennms.web.element.NetworkElementFactoryInterfac#getInterface(int, java.lang.String)
+	 * @see org.opennms.web.element.NetworkElementFactoryInterface#getInterface(int, java.lang.String)
 	 */
     public Interface getInterface(int nodeId, String ipAddress) {
         OnmsCriteria criteria = new OnmsCriteria(OnmsIpInterface.class);
@@ -389,7 +389,7 @@ public class NetworkElementFactory implements InitializingBean, NetworkElementFa
     }
 
     /* (non-Javadoc)
-	 * @see org.opennms.web.element.NetworkElementFactoryInterfac#getInterface(int, java.lang.String, int)
+	 * @see org.opennms.web.element.NetworkElementFactoryInterface#getInterface(int, java.lang.String, int)
 	 */
     public Interface getInterface(int nodeId, String ipAddress, int ifIndex) {
         OnmsCriteria criteria = new OnmsCriteria(OnmsIpInterface.class);
@@ -405,7 +405,7 @@ public class NetworkElementFactory implements InitializingBean, NetworkElementFa
     }
 
     /* (non-Javadoc)
-	 * @see org.opennms.web.element.NetworkElementFactoryInterfac#getSnmpInterface(int, int)
+	 * @see org.opennms.web.element.NetworkElementFactoryInterface#getSnmpInterface(int, int)
 	 */
     public Interface getSnmpInterface(int nodeId, int ifIndex) {
         OnmsCriteria criteria  = new OnmsCriteria(OnmsSnmpInterface.class);
@@ -422,7 +422,7 @@ public class NetworkElementFactory implements InitializingBean, NetworkElementFa
     
 
     /* (non-Javadoc)
-	 * @see org.opennms.web.element.NetworkElementFactoryInterfac#getInterfacesWithIpAddress(java.lang.String)
+	 * @see org.opennms.web.element.NetworkElementFactoryInterface#getInterfacesWithIpAddress(java.lang.String)
 	 */
     public Interface[] getInterfacesWithIpAddress(String ipAddress) {
         OnmsCriteria criteria = new OnmsCriteria(OnmsIpInterface.class);
@@ -435,7 +435,7 @@ public class NetworkElementFactory implements InitializingBean, NetworkElementFa
     
 
     /* (non-Javadoc)
-	 * @see org.opennms.web.element.NetworkElementFactoryInterfac#getInterfacesWithIfAlias(int, java.lang.String)
+	 * @see org.opennms.web.element.NetworkElementFactoryInterface#getInterfacesWithIfAlias(int, java.lang.String)
 	 */
     public Interface[] getInterfacesWithIfAlias(int nodeId, String ifAlias) {
         
@@ -450,15 +450,15 @@ public class NetworkElementFactory implements InitializingBean, NetworkElementFa
         return onmsIpInterfaces2InterfaceArray(m_ipInterfaceDao.findMatching(criteria));
     }
     /* (non-Javadoc)
-	 * @see org.opennms.web.element.NetworkElementFactoryInterfac#nodeHasIfAliases(int)
+	 * @see org.opennms.web.element.NetworkElementFactoryInterface#nodeHasIfAliases(int)
 	 */
     public boolean nodeHasIfAliases(int nodeId) {
         OnmsCriteria criteria = new OnmsCriteria(OnmsIpInterface.class);
         criteria.createAlias("node", "node");
         criteria.createAlias("node.assetRecord", "assetRecord");
-        criteria.createAlias("snmpInterface", "snmpIface");
+        criteria.createAlias("snmpInterface", "snmpInterface", OnmsCriteria.LEFT_JOIN);
         criteria.add(Restrictions.eq("node.id", nodeId));
-        criteria.add(Restrictions.ilike("snmpIface.ifAlias", "_", MatchMode.ANYWHERE));
+        criteria.add(Restrictions.ilike("snmpInterface.ifAlias", "_", MatchMode.ANYWHERE));
         
         List<OnmsIpInterface> ifaces = m_ipInterfaceDao.findMatching(criteria);
         if(ifaces.size() > 0) {
@@ -469,7 +469,7 @@ public class NetworkElementFactory implements InitializingBean, NetworkElementFa
     }
 
     /* (non-Javadoc)
-	 * @see org.opennms.web.element.NetworkElementFactoryInterfac#getAllInterfacesOnNode(int)
+	 * @see org.opennms.web.element.NetworkElementFactoryInterface#getAllInterfacesOnNode(int)
 	 */
     public Interface[] getAllInterfacesOnNode(int nodeId) {
         OnmsCriteria criteria = new OnmsCriteria(OnmsIpInterface.class);
@@ -482,7 +482,7 @@ public class NetworkElementFactory implements InitializingBean, NetworkElementFa
     }
 
     /* (non-Javadoc)
-	 * @see org.opennms.web.element.NetworkElementFactoryInterfac#getAllSnmpInterfacesOnNode(int)
+	 * @see org.opennms.web.element.NetworkElementFactoryInterface#getAllSnmpInterfacesOnNode(int)
 	 */
     public Interface[] getAllSnmpInterfacesOnNode(int nodeId) {
         OnmsCriteria criteria = new OnmsCriteria(OnmsSnmpInterface.class);
@@ -505,7 +505,7 @@ public class NetworkElementFactory implements InitializingBean, NetworkElementFa
     }
     
     /* (non-Javadoc)
-	 * @see org.opennms.web.element.NetworkElementFactoryInterfac#getActiveInterfacesOnNode(int)
+	 * @see org.opennms.web.element.NetworkElementFactoryInterface#getActiveInterfacesOnNode(int)
 	 */
     
     public Interface[] getActiveInterfacesOnNode(int nodeId) {
@@ -521,7 +521,7 @@ public class NetworkElementFactory implements InitializingBean, NetworkElementFa
      * Returns all interfaces, including their SNMP information
      */
     /* (non-Javadoc)
-	 * @see org.opennms.web.element.NetworkElementFactoryInterfac#getAllInterfaces()
+	 * @see org.opennms.web.element.NetworkElementFactoryInterface#getAllInterfaces()
 	 */
     public Interface[] getAllInterfaces() {
         return getAllInterfaces(true);
@@ -536,7 +536,7 @@ public class NetworkElementFactory implements InitializingBean, NetworkElementFa
      * @return an array of {@link org.opennms.web.element.Interface} objects.
      */
     /* (non-Javadoc)
-	 * @see org.opennms.web.element.NetworkElementFactoryInterfac#getAllInterfaces(boolean)
+	 * @see org.opennms.web.element.NetworkElementFactoryInterface#getAllInterfaces(boolean)
 	 */
     public Interface[] getAllInterfaces(boolean includeSnmp) {
         OnmsCriteria criteria = new OnmsCriteria(OnmsIpInterface.class);
@@ -552,7 +552,7 @@ public class NetworkElementFactory implements InitializingBean, NetworkElementFa
 
 
     /* (non-Javadoc)
-	 * @see org.opennms.web.element.NetworkElementFactoryInterfac#getAllManagedIpInterfaces(boolean)
+	 * @see org.opennms.web.element.NetworkElementFactoryInterface#getAllManagedIpInterfaces(boolean)
 	 */
     public Interface[] getAllManagedIpInterfaces(boolean includeSNMP) {
         OnmsCriteria criteria = new OnmsCriteria(OnmsIpInterface.class);
@@ -573,7 +573,7 @@ public class NetworkElementFactory implements InitializingBean, NetworkElementFa
     }
 
     /* (non-Javadoc)
-	 * @see org.opennms.web.element.NetworkElementFactoryInterfac#getService(int, java.lang.String, int)
+	 * @see org.opennms.web.element.NetworkElementFactoryInterface#getService(int, java.lang.String, int)
 	 */
     public Service getService(int nodeId, String ipAddress, int serviceId) {
         if (ipAddress == null) {
@@ -598,7 +598,7 @@ public class NetworkElementFactory implements InitializingBean, NetworkElementFa
     }
     
     /* (non-Javadoc)
-	 * @see org.opennms.web.element.NetworkElementFactoryInterfac#getService(int)
+	 * @see org.opennms.web.element.NetworkElementFactoryInterface#getService(int)
 	 */
     public Service getService(int ifServiceId) {
         OnmsCriteria criteria = new OnmsCriteria(OnmsMonitoredService.class);
@@ -621,7 +621,7 @@ public class NetworkElementFactory implements InitializingBean, NetworkElementFa
     
 
     /* (non-Javadoc)
-	 * @see org.opennms.web.element.NetworkElementFactoryInterfac#getAllServices()
+	 * @see org.opennms.web.element.NetworkElementFactoryInterface#getAllServices()
 	 */
     public Service[] getAllServices() {
         return onmsMonitoredServices2ServiceArray(m_monSvcDao.findAll());
@@ -630,14 +630,14 @@ public class NetworkElementFactory implements InitializingBean, NetworkElementFa
     
 
     /* (non-Javadoc)
-	 * @see org.opennms.web.element.NetworkElementFactoryInterfac#getServicesOnInterface(int, java.lang.String)
+	 * @see org.opennms.web.element.NetworkElementFactoryInterface#getServicesOnInterface(int, java.lang.String)
 	 */
     public Service[] getServicesOnInterface(int nodeId, String ipAddress) {
         return getServicesOnInterface(nodeId, ipAddress, false);
     }
 
     /* (non-Javadoc)
-	 * @see org.opennms.web.element.NetworkElementFactoryInterfac#getServicesOnInterface(int, java.lang.String, boolean)
+	 * @see org.opennms.web.element.NetworkElementFactoryInterface#getServicesOnInterface(int, java.lang.String, boolean)
 	 */
     public Service[] getServicesOnInterface(int nodeId, String ipAddress, boolean includeDeletions) {
         if (ipAddress == null) {
@@ -658,7 +658,7 @@ public class NetworkElementFactory implements InitializingBean, NetworkElementFa
     }
 
     /* (non-Javadoc)
-	 * @see org.opennms.web.element.NetworkElementFactoryInterfac#getServicesOnNode(int)
+	 * @see org.opennms.web.element.NetworkElementFactoryInterface#getServicesOnNode(int)
 	 */
     public Service[] getServicesOnNode(int nodeId) {
         OnmsCriteria criteria = new OnmsCriteria(OnmsMonitoredService.class);
@@ -672,7 +672,7 @@ public class NetworkElementFactory implements InitializingBean, NetworkElementFa
     }
 
     /* (non-Javadoc)
-	 * @see org.opennms.web.element.NetworkElementFactoryInterfac#getServicesOnNode(int, int)
+	 * @see org.opennms.web.element.NetworkElementFactoryInterface#getServicesOnNode(int, int)
 	 */
     public Service[] getServicesOnNode(int nodeId, int serviceId) {
         OnmsCriteria criteria = new OnmsCriteria(OnmsMonitoredService.class);
@@ -943,7 +943,7 @@ public class NetworkElementFactory implements InitializingBean, NetworkElementFa
     }
 
     /* (non-Javadoc)
-	 * @see org.opennms.web.element.NetworkElementFactoryInterfac#getServiceNameFromId(int)
+	 * @see org.opennms.web.element.NetworkElementFactoryInterface#getServiceNameFromId(int)
 	 */
     public String getServiceNameFromId(int serviceId) {
         if (serviceId2NameMap == null) {
@@ -956,7 +956,7 @@ public class NetworkElementFactory implements InitializingBean, NetworkElementFa
     }
 
     /* (non-Javadoc)
-	 * @see org.opennms.web.element.NetworkElementFactoryInterfac#getServiceIdFromName(java.lang.String)
+	 * @see org.opennms.web.element.NetworkElementFactoryInterface#getServiceIdFromName(java.lang.String)
 	 */
     public int getServiceIdFromName(String serviceName) {
         if (serviceName == null) {
@@ -979,7 +979,7 @@ public class NetworkElementFactory implements InitializingBean, NetworkElementFa
     }
 
     /* (non-Javadoc)
-	 * @see org.opennms.web.element.NetworkElementFactoryInterfac#getServiceIdToNameMap()
+	 * @see org.opennms.web.element.NetworkElementFactoryInterface#getServiceIdToNameMap()
 	 */
     public Map<Integer, String> getServiceIdToNameMap(){
         if (serviceId2NameMap == null) {
@@ -990,7 +990,7 @@ public class NetworkElementFactory implements InitializingBean, NetworkElementFa
     }
 
     /* (non-Javadoc)
-	 * @see org.opennms.web.element.NetworkElementFactoryInterfac#getServiceNameToIdMap()
+	 * @see org.opennms.web.element.NetworkElementFactoryInterface#getServiceNameToIdMap()
 	 */
     public Map<String, Integer> getServiceNameToIdMap(){
         if (serviceName2IdMap == null) {
@@ -1017,7 +1017,7 @@ public class NetworkElementFactory implements InitializingBean, NetworkElementFa
     
 
     /* (non-Javadoc)
-	 * @see org.opennms.web.element.NetworkElementFactoryInterfac#getNodesLikeAndIpLike(java.lang.String, java.lang.String, int)
+	 * @see org.opennms.web.element.NetworkElementFactoryInterface#getNodesLikeAndIpLike(java.lang.String, java.lang.String, int)
 	 */
     public List<OnmsNode> getNodesLikeAndIpLike(String nodeLabel, String iplike, int serviceId) {
         if (nodeLabel == null) {
@@ -1037,7 +1037,7 @@ public class NetworkElementFactory implements InitializingBean, NetworkElementFa
     }
 
     /* (non-Javadoc)
-	 * @see org.opennms.web.element.NetworkElementFactoryInterfac#getNodesLike(java.lang.String, int)
+	 * @see org.opennms.web.element.NetworkElementFactoryInterface#getNodesLike(java.lang.String, int)
 	 */
     public List<OnmsNode> getNodesLike(String nodeLabel, int serviceId) {
         if (nodeLabel == null) {
@@ -1057,7 +1057,7 @@ public class NetworkElementFactory implements InitializingBean, NetworkElementFa
     }
 
     /* (non-Javadoc)
-	 * @see org.opennms.web.element.NetworkElementFactoryInterfac#getNodesWithIpLike(java.lang.String, int)
+	 * @see org.opennms.web.element.NetworkElementFactoryInterface#getNodesWithIpLike(java.lang.String, int)
 	 */
     public List<OnmsNode> getNodesWithIpLike(String iplike, int serviceId) {
         if (iplike == null) {
@@ -1080,7 +1080,7 @@ public class NetworkElementFactory implements InitializingBean, NetworkElementFa
     }
 
     /* (non-Javadoc)
-	 * @see org.opennms.web.element.NetworkElementFactoryInterfac#getAllNodes(int)
+	 * @see org.opennms.web.element.NetworkElementFactoryInterface#getAllNodes(int)
 	 */
     public List<OnmsNode> getAllNodes(int serviceId) {
         OnmsCriteria criteria = new OnmsCriteria(OnmsNode.class);
@@ -1095,7 +1095,7 @@ public class NetworkElementFactory implements InitializingBean, NetworkElementFa
     }
 
     /* (non-Javadoc)
-	 * @see org.opennms.web.element.NetworkElementFactoryInterfac#getNodesFromPhysaddr(java.lang.String)
+	 * @see org.opennms.web.element.NetworkElementFactoryInterface#getNodesFromPhysaddr(java.lang.String)
 	 */
     public List<OnmsNode> getNodesFromPhysaddr(String AtPhysAddr) {
         if (AtPhysAddr == null) {
@@ -1187,7 +1187,7 @@ public class NetworkElementFactory implements InitializingBean, NetworkElementFa
     }
     
     /* (non-Javadoc)
-	 * @see org.opennms.web.element.NetworkElementFactoryInterfac#getIpRoute(int)
+	 * @see org.opennms.web.element.NetworkElementFactoryInterface#getIpRoute(int)
 	 */
     public IpRouteInterface[] getIpRoute(final int nodeId) {
         try {
@@ -1230,7 +1230,7 @@ public class NetworkElementFactory implements InitializingBean, NetworkElementFa
     }
 
     /* (non-Javadoc)
-	 * @see org.opennms.web.element.NetworkElementFactoryInterfac#isParentNode(int)
+	 * @see org.opennms.web.element.NetworkElementFactoryInterface#isParentNode(int)
 	 */
     public boolean isParentNode(int nodeId) {
         OnmsCriteria criteria = new OnmsCriteria(org.opennms.netmgt.model.DataLinkInterface.class);
@@ -1313,7 +1313,7 @@ public class NetworkElementFactory implements InitializingBean, NetworkElementFa
     }
 
     /* (non-Javadoc)
-	 * @see org.opennms.web.element.NetworkElementFactoryInterfac#getDataLinksOnNode(int)
+	 * @see org.opennms.web.element.NetworkElementFactoryInterface#getDataLinksOnNode(int)
 	 */
     public DataLinkInterface[] getDataLinksOnNode(int nodeID) {
         DataLinkInterface[] normalnodes = getDataLinks(nodeID);
@@ -1518,7 +1518,7 @@ public class NetworkElementFactory implements InitializingBean, NetworkElementFa
     }
 
     /* (non-Javadoc)
-	 * @see org.opennms.web.element.NetworkElementFactoryInterfac#getDataLinksOnInterface(int, int)
+	 * @see org.opennms.web.element.NetworkElementFactoryInterface#getDataLinksOnInterface(int, int)
 	 */
     public DataLinkInterface[] getDataLinksOnInterface(int nodeID, int ifindex){
         DataLinkInterface[] normalnodes = getDataLinks(nodeID,ifindex);
@@ -1542,7 +1542,7 @@ public class NetworkElementFactory implements InitializingBean, NetworkElementFa
     }
 
     /* (non-Javadoc)
-	 * @see org.opennms.web.element.NetworkElementFactoryInterfac#getDataLinks(int, int)
+	 * @see org.opennms.web.element.NetworkElementFactoryInterface#getDataLinks(int, int)
 	 */
     public DataLinkInterface[] getDataLinks(int nodeId, int ifIndex) {
         OnmsCriteria criteria = new OnmsCriteria(org.opennms.netmgt.model.DataLinkInterface.class);
@@ -1554,7 +1554,7 @@ public class NetworkElementFactory implements InitializingBean, NetworkElementFa
     }
 
     /* (non-Javadoc)
-	 * @see org.opennms.web.element.NetworkElementFactoryInterfac#getDataLinksFromNodeParent(int, int)
+	 * @see org.opennms.web.element.NetworkElementFactoryInterface#getDataLinksFromNodeParent(int, int)
 	 */
     public DataLinkInterface[] getDataLinksFromNodeParent(int nodeId, int ifIndex) {
         OnmsCriteria criteria = new OnmsCriteria(org.opennms.netmgt.model.DataLinkInterface.class);
@@ -1566,7 +1566,7 @@ public class NetworkElementFactory implements InitializingBean, NetworkElementFa
     }
 
     /* (non-Javadoc)
-	 * @see org.opennms.web.element.NetworkElementFactoryInterfac#getAllDataLinks()
+	 * @see org.opennms.web.element.NetworkElementFactoryInterface#getAllDataLinks()
 	 */
     public DataLinkInterface[] getAllDataLinks() {
         OnmsCriteria criteria = new OnmsCriteria(org.opennms.netmgt.model.DataLinkInterface.class);
@@ -2268,7 +2268,7 @@ public class NetworkElementFactory implements InitializingBean, NetworkElementFa
     }
 
     /* (non-Javadoc)
-	 * @see org.opennms.web.element.NetworkElementFactoryInterfac#getNodeIdsWithIpLike(java.lang.String)
+	 * @see org.opennms.web.element.NetworkElementFactoryInterface#getNodeIdsWithIpLike(java.lang.String)
 	 */
     public List<Integer> getNodeIdsWithIpLike(String iplike){
         if (iplike == null) {
@@ -2292,7 +2292,7 @@ public class NetworkElementFactory implements InitializingBean, NetworkElementFa
 
 
     /* (non-Javadoc)
-	 * @see org.opennms.web.element.NetworkElementFactoryInterfac#getNodesWithCategories(org.springframework.transaction.support.TransactionTemplate, java.lang.String[], boolean)
+	 * @see org.opennms.web.element.NetworkElementFactoryInterface#getNodesWithCategories(org.springframework.transaction.support.TransactionTemplate, java.lang.String[], boolean)
 	 */
     public List<OnmsNode> getNodesWithCategories(TransactionTemplate transTemplate, final String[] categories1, final boolean onlyNodesWithDownAggregateStatus) {
         return transTemplate.execute(new TransactionCallback<List<OnmsNode>>() {
@@ -2305,7 +2305,7 @@ public class NetworkElementFactory implements InitializingBean, NetworkElementFa
     }
     
     /* (non-Javadoc)
-	 * @see org.opennms.web.element.NetworkElementFactoryInterfac#getNodesWithCategories(java.lang.String[], boolean)
+	 * @see org.opennms.web.element.NetworkElementFactoryInterface#getNodesWithCategories(java.lang.String[], boolean)
 	 */
     public List<OnmsNode> getNodesWithCategories(String[] categories, boolean onlyNodesWithDownAggregateStatus) {
         List<OnmsNode> ourNodes = getNodesInCategories(categories);
@@ -2333,7 +2333,7 @@ public class NetworkElementFactory implements InitializingBean, NetworkElementFa
     }
 
     /* (non-Javadoc)
-	 * @see org.opennms.web.element.NetworkElementFactoryInterfac#getNodesWithCategories(org.springframework.transaction.support.TransactionTemplate, java.lang.String[], java.lang.String[], boolean)
+	 * @see org.opennms.web.element.NetworkElementFactoryInterface#getNodesWithCategories(org.springframework.transaction.support.TransactionTemplate, java.lang.String[], java.lang.String[], boolean)
 	 */
     public List<OnmsNode> getNodesWithCategories(TransactionTemplate transTemplate, final String[] categories1, final String[] categories2, final boolean onlyNodesWithDownAggregateStatus) {
         return transTemplate.execute(new TransactionCallback<List<OnmsNode>>() {
@@ -2346,7 +2346,7 @@ public class NetworkElementFactory implements InitializingBean, NetworkElementFa
     }
     
     /* (non-Javadoc)
-	 * @see org.opennms.web.element.NetworkElementFactoryInterfac#getNodesWithCategories(java.lang.String[], java.lang.String[], boolean)
+	 * @see org.opennms.web.element.NetworkElementFactoryInterface#getNodesWithCategories(java.lang.String[], java.lang.String[], boolean)
 	 */
     public List<OnmsNode> getNodesWithCategories(String[] categories1, String[] categories2, boolean onlyNodesWithDownAggregateStatus) {
         ArrayList<OnmsCategory> c1 = new ArrayList<OnmsCategory>(categories1.length);

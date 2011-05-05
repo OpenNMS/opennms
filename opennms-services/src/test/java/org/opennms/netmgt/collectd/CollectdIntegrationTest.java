@@ -291,7 +291,7 @@ public class CollectdIntegrationTest extends TestCase {
             return m_collectCount;
         }
 
-        public void initialize(@SuppressWarnings("rawtypes") Map parameters) {
+        public void initialize(Map<String, String> parameters) {
             // This fails because collectd does NOT actually passed in configured monitor parameters
             // since no collectors actually use them (except this one)
 //            String testKey = (String)parameters.get(TEST_KEY_PARM_NAME);
@@ -299,7 +299,7 @@ public class CollectdIntegrationTest extends TestCase {
 //            CollectdIntegrationTest.setServiceCollectorInTest(testKey, this);
         }
 
-        public void initialize(CollectionAgent agent, @SuppressWarnings("rawtypes") Map parameters) {
+        public void initialize(CollectionAgent agent, Map<String, String> parameters) {
             String testKey = (String)parameters.get(TEST_KEY_PARM_NAME);
             assertNotNull(testKey);
             CollectdIntegrationTest.setServiceCollectorInTest(testKey, this);

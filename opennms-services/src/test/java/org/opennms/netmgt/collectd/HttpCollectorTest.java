@@ -177,7 +177,7 @@ public class HttpCollectorTest {
 
     /**
      * Test method for {@link org.opennms.netmgt.collectd.HttpCollector#collect(
-     *   org.opennms.netmgt.collectd.CollectionAgent, org.opennms.netmgt.model.events.EventProxy, java.util.Map)}.
+     *   org.opennms.netmgt.collectd.CollectionAgent, org.opennms.netmgt.model.events.EventProxy, Map)}.
      */
     @Test
     @JUnitCollector(datacollectionConfig="/org/opennms/netmgt/config/http-datacollection-config.xml", datacollectionType="http",

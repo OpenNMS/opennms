@@ -238,8 +238,7 @@ public class WmiCollector implements ServiceCollector {
     }
 
     /** {@inheritDoc} */
-    @SuppressWarnings("unchecked")
-    public void initialize(final Map parameters) {
+    public void initialize(final Map<String, String> parameters) {
         LogUtils.debugf(this, "initialize: Initializing WmiCollector.");
         m_scheduledNodes.clear();
         initWMIPeerFactory();
@@ -311,8 +310,7 @@ public class WmiCollector implements ServiceCollector {
     }
 
     /** {@inheritDoc} */
-    @SuppressWarnings("unchecked")
-    public void initialize(final CollectionAgent agent, final Map parameters) {
+    public void initialize(final CollectionAgent agent, final Map<String, String> parameters) {
         LogUtils.debugf(this, "initialize: Initializing WMI collection for agent: %s", agent);
         final Integer scheduledNodeKey = new Integer(agent.getNodeId());
         WmiAgentState nodeState = m_scheduledNodes.get(scheduledNodeKey);

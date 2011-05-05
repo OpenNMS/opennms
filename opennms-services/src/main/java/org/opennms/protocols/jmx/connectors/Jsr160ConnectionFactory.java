@@ -56,7 +56,7 @@ public class Jsr160ConnectionFactory {
     
     static ThreadCategory log = ThreadCategory.getInstance(Jsr160ConnectionFactory.class);
 
-    public static Jsr160ConnectionWrapper getMBeanServerConnection(Map<?, ?> propertiesMap, InetAddress address) {
+    public static Jsr160ConnectionWrapper getMBeanServerConnection(Map<String, ?> propertiesMap, InetAddress address) {
         Jsr160ConnectionWrapper connectionWrapper = null;
         JMXServiceURL url = null;
         
