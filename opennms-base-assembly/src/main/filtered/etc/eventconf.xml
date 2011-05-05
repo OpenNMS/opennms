@@ -2209,7 +2209,7 @@
   <event-file>events/SunILOM.events.xml</event-file>
   <event-file>events/Symbol.events.xml</event-file>
   <event-file>events/Syslogd.events.xml</event-file>
-  <event-file>events/Syslogd.external.events.xml</event-file>
+  <event-file>events/Syslog.external.events.xml</event-file>
   <event-file>events/SystemEdge.events.xml</event-file>
   <event-file>events/SwissQual.events.xml</event-file>
   <event-file>events/TransPath.events.xml</event-file>
