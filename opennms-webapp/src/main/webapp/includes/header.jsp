@@ -20,7 +20,7 @@
 <%@page language="java"
 	contentType="text/html"
 	session="true"
-	import="org.opennms.netmgt.config.NotifdConfigFactory"
+	import="org.opennms.web.api.Util,org.opennms.netmgt.config.NotifdConfigFactory"
 %>
 <%@ taglib uri="http://java.sun.com/jsp/jstl/core" prefix="c" %>
 <%@ taglib prefix="fmt" uri="http://java.sun.com/jsp/jstl/fmt" %>
@@ -44,7 +44,7 @@
         noticeStatus = "<font color=\"ff0000\">Unknown</font>";
     }
     pageContext.setAttribute("noticeStatus", noticeStatus);
-    final String baseHref = org.opennms.web.api.Util.calculateUrlBase( request );
+final String baseHref = Util.calculateUrlBase( request );
 %>
 <c:choose>
 <c:when test="${param.docType == 'html'}">

@@ -53,6 +53,7 @@
 <%@page import="org.opennms.web.WebSecurityUtils" %>
 <%@page import="org.opennms.web.XssRequestWrapper" %>
 <%@page import="org.opennms.web.springframework.security.Authentication" %>
+<%@page import="org.opennms.web.api.Util" %>
 
 <%@page import="org.opennms.web.filter.Filter"%>
 
@@ -207,7 +208,7 @@
       <ul>
         <li><a href="<%=this.makeLink( parms, new ArrayList<Filter>())%>" title="Remove all search constraints" >View all events</a></li>
         <li><a href="event/advsearch.jsp" title="More advanced searching and sorting options">Advanced Search</a></li>
-        <li><a href="<%=org.opennms.web.api.Util.calculateUrlBase(req)%>event/severity.jsp">Severity Legend</a></li>
+        <li><a href="<%= Util.calculateUrlBase(req, "event/severity.jsp") %>">Severity Legend</a></li>
       
       <% if( req.isUserInRole( Authentication.ADMIN_ROLE ) || !req.isUserInRole( Authentication.READONLY_ROLE ) ) { %>
         <% if( parms.ackType == AcknowledgeType.UNACKNOWLEDGED ) { %> 

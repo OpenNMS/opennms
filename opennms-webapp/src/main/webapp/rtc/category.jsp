@@ -147,15 +147,15 @@
         } %>
 
               <input type="radio" name="showout" <%=(showoutages.equals("all") ? "checked" : "")%>
-               onclick="top.location = '<%=org.opennms.web.api.Util.calculateUrlBase( req )%>rtc/category.jsp?category=<%=Util.encode(category.getName())%>&amp;showoutages=all'" ></input>All
+               onclick="top.location = '<%= Util.calculateUrlBase( req , "rtc/category.jsp?category=" + Util.encode(category.getName()) + "&amp;showoutages=all") %>'" ></input>All
 
 
               <input type="radio" name="showout" <%=(showoutages.equals("outages") ? "checked" : "")%>
-               onclick="top.location = '<%=org.opennms.web.api.Util.calculateUrlBase( req )%>rtc/category.jsp?category=<%=Util.encode(category.getName())%>&amp;showoutages=outages'" ></input>With outages
+               onclick="top.location = '<%= Util.calculateUrlBase( req , "rtc/category.jsp?category=" + Util.encode(category.getName()) + "&amp;showoutages=outages") %>'" ></input>With outages
 
 
               <input type="radio" name="showout" <%=(showoutages.equals("avail") ? "checked" : "")%>
-               onclick="top.location = '<%=org.opennms.web.api.Util.calculateUrlBase( req )%>rtc/category.jsp?category=<%=Util.encode(category.getName())%>&amp;showoutages=avail'" ></input>With availability &lt; 100% 
+               onclick="top.location = '<%= Util.calculateUrlBase( req , "rtc/category.jsp?category=" + Util.encode(category.getName()) + "&amp;showoutages=avail") %>'" ></input>With availability &lt; 100% 
 
   </p>
 </form>
