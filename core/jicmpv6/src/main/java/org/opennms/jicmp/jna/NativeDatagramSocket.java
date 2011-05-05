@@ -43,11 +43,18 @@ public abstract class NativeDatagramSocket {
     
     public static final int AF_INET = 2;
     public static final int PF_INET = AF_INET;
-    public static final int AF_INET6 = Platform.isMac() ? 30 : Platform.isLinux() ? 10 : Platform.isWindows() ? 23 : Platform.isFreeBSD() ? 28 : Platform.isSolaris() ? 26 : -1;
+    public static final int AF_INET6 = Platform.isMac() ? 30 
+                                     : Platform.isLinux() ? 10 
+                                     : Platform.isWindows() ? 23 
+                                     : Platform.isFreeBSD() ? 28 
+                                     : Platform.isSolaris() ? 26 
+                                     : -1;
     public static final int PF_INET6 = AF_INET6;
 
-    public static final int SOCK_DGRAM = Platform.isSolaris() ? 1 : 2;
-    public static final int SOCK_RAW = Platform.isSolaris() ? 4 : Platform.isFreeBSD() ? 4 : 3;
+    public static final int SOCK_DGRAM = Platform.isSolaris() ? 1 
+                                        : 2;
+    public static final int SOCK_RAW = Platform.isSolaris() ? 4 
+                                     : 3;
 
     public static final int IPPROTO_ICMP = 1;
     public static final int IPPROTO_UDP = 17;
