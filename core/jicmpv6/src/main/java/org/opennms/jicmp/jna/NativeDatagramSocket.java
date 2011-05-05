@@ -60,9 +60,10 @@ public abstract class NativeDatagramSocket {
     }
     
     public static NativeDatagramSocket create(int family, int type, int protocol) throws Exception {
-        System.err.println(String.format("create(%d, %d, %d)", family, type, protocol));
+        String implClassName = NativeDatagramSocket.getImplementationClassName(family);
+        System.err.println(String.format("%s(%d, %d, %d)", implClassName, family, type, protocol));
         Class<? extends NativeDatagramSocket> implementationClass =
-             Class.forName(NativeDatagramSocket.getImplementationClassName(family)).asSubclass(NativeDatagramSocket.class);
+             Class.forName(implClassName).asSubclass(NativeDatagramSocket.class);
         return implementationClass.getDeclaredConstructor(Integer.TYPE, Integer.TYPE, Integer.TYPE).newInstance(family, type, protocol);
     }
 
@@ -71,7 +72,10 @@ public abstract class NativeDatagramSocket {
     }
     
     private static String getClassPrefix() {
-        return Platform.isWindows() ? "Win32" : Platform.isMac() || Platform.isFreeBSD() || Platform.isOpenBSD() ? "BSD" : "Unix";
+        return Platform.isWindows() ? "Win32" 
+              : Platform.isSolaris() ? "Sun" 
+              : (Platform.isMac() || Platform.isFreeBSD() || Platform.isOpenBSD()) ? "BSD" 
+              : "Unix";
     }
 
     private static String getFamilyPrefix(int family) {
