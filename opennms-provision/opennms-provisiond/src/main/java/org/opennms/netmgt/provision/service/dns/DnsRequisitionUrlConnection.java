@@ -84,6 +84,8 @@ import org.xbill.DNS.ZoneTransferIn;
 public class DnsRequisitionUrlConnection extends URLConnection {
 
     private static final String EXPRESSION_ARG = "expression";
+    
+    private static final String SERVICES_ARG = "services";
 
     private static final String QUERY_ARG_SEPARATOR = "&";
 
@@ -110,6 +112,8 @@ public class DnsRequisitionUrlConnection extends URLConnection {
 
     private String m_foreignSource;
     
+    private static Map<String, String> m_args;
+    
     
     /**
      * <p>Constructor for DnsRequisitionUrlConnection.</p>
@@ -119,6 +123,8 @@ public class DnsRequisitionUrlConnection extends URLConnection {
      */
     protected DnsRequisitionUrlConnection(URL url) throws MalformedURLException {
         super(url);
+        
+        m_args = getUrlArgs(url);
         
         validateDnsUrl(url);
         
@@ -258,8 +264,20 @@ public class DnsRequisitionUrlConnection extends URLConnection {
         i.setManaged(Boolean.TRUE);
         i.setStatus(Integer.valueOf(1));
         
-        i.insertMonitoredService(new RequisitionMonitoredService("ICMP"));
-        i.insertMonitoredService(new RequisitionMonitoredService("SNMP"));
+        // TODO validate services against service table of database
+        
+        if (getArgs() != null && getArgs().get(SERVICES_ARG) != null) {
+            String[] services = getArgs().get(SERVICES_ARG).split(",");
+            for (String service : services) {
+                service = service.trim();
+                i.insertMonitoredService(new RequisitionMonitoredService(service));
+                log().debug("Adding provisioned service " + service);
+            }
+        } else {
+            i.insertMonitoredService(new RequisitionMonitoredService("ICMP"));
+            i.insertMonitoredService(new RequisitionMonitoredService("SNMP"));
+            log().debug("Adding default provisioned services ICMP and SNMP");
+        }
         n.putInterface(i);
         
         return n;
@@ -430,6 +448,10 @@ public class DnsRequisitionUrlConnection extends URLConnection {
     public URL getUrl() {
         return m_url;
     }
+    
+    public static Map<String, String> getArgs() {
+        return m_args;
+    }
 
     /**
      * <p>determineExpressionFromUrl</p>
@@ -439,29 +461,11 @@ public class DnsRequisitionUrlConnection extends URLConnection {
      */
     protected static String determineExpressionFromUrl(URL url) {
         log().info("determineExpressionFromUrl: finding regex as parameter in query string of URL: "+url);
-        
-        if (url.getQuery() == null) {
+        if(getUrlArgs(url) == null) {
             return null;
+        } else {
+            return getUrlArgs(url).get(EXPRESSION_ARG);
         }
-
-        //TODO: need to throw exception if query is null
-        String query = decodeQueryString(url);
-        
-        //TODO: need to handle exception
-        List<String> queryArgs = tokenizeQueryArgs(query);
-
-        Map<String, String> args = new HashMap<String, String>();
-        for (String queryArg : queryArgs) {
-            String[] argTokens = StringUtils.split(queryArg, '='); 
-
-            if (argTokens.length < 2) {
-                log().warn("determineExpressionFromUrl: syntax error in URL query string, missing '=' in query argument: "+queryArg);
-            } else {
-                args.put(argTokens[0].toLowerCase(), argTokens[1]);
-            }
-        }
-
-        return args.get(EXPRESSION_ARG);
     }
 
     private static List<String> tokenizeQueryArgs(String query) throws IllegalArgumentException {
@@ -518,7 +522,7 @@ public class DnsRequisitionUrlConnection extends URLConnection {
         
         String query = url.getQuery();
         
-        if (query != null && determineExpressionFromUrl(url) == null) {
+        if ((query != null) && (determineExpressionFromUrl(url) == null) && (getArgs().get(SERVICES_ARG) == null)) {
             throw new MalformedURLException("The specified DNS URL contains an invalid query string: "+url);
         }
         
@@ -576,6 +580,32 @@ public class DnsRequisitionUrlConnection extends URLConnection {
         
         return foreignSource;
     }
+    
+    protected static Map<String, String> getUrlArgs(URL url) {
+        
+        if (url.getQuery() == null) {
+            return null;
+        }
+
+        //TODO: need to throw exception if query is null
+        String query = decodeQueryString(url);
+        
+        //TODO: need to handle exception
+        List<String> queryArgs = tokenizeQueryArgs(query);
+        Map<String, String> args = new HashMap<String, String>();
+        for (String queryArg : queryArgs) {
+            String[] argTokens = StringUtils.split(queryArg, '='); 
+
+            if (argTokens.length < 2) {
+                log().warn("getUrlArgs: syntax error in URL query string, missing '=' in query argument: "+queryArg);
+            } else {
+                log().debug("adding arg tokens " + argTokens[0].toLowerCase() + ", " + argTokens[1]);
+                args.put(argTokens[0].toLowerCase(), argTokens[1]);
+            }
+        }
+
+        return args;
+    }  
     
     private static ThreadCategory log() {
         return ThreadCategory.getInstance(DnsRequisitionUrlConnection.class);
