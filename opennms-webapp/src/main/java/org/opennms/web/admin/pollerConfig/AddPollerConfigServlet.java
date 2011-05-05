@@ -320,7 +320,7 @@ public class AddPollerConfigServlet extends HttpServlet {
                     if (tmpPoller.contains(pollersvc) && pollersvc.getName().equals(name)) {
                         errorflag = true;
                         tmpPoller.remove(pollersvc);
-                        response.sendRedirect(Util.calculateUrlBase(request) + "/admin/error.jsp?error=1&name=" + name);
+                        response.sendRedirect(Util.calculateUrlBase(request, "/admin/error.jsp?error=1&name=" + name));
                         return;
                     }
                 }
@@ -357,7 +357,7 @@ public class AddPollerConfigServlet extends HttpServlet {
             } else {
                 if (props.get("service." + protocol + ".port") == null || ((String) props.get("service." + protocol + ".port")).equals("")) {
                     errorflag = true;
-                    response.sendRedirect(Util.calculateUrlBase(request) + "/admin/error.jsp?error=0&name=" + "service." + protocol + ".port ");
+                    response.sendRedirect(Util.calculateUrlBase(request, "admin/error.jsp?error=0&name=" + "service." + protocol + ".port"));
                     pluginAdd = null;
                     return;
                 } else {
@@ -398,7 +398,7 @@ public class AddPollerConfigServlet extends HttpServlet {
             }
         } else {
             errorflag = true;
-            response.sendRedirect(Util.calculateUrlBase(request) + "/admin/error.jsp?error=0&name=" + "service." + protocol + ".capsd-class ");
+            response.sendRedirect(Util.calculateUrlBase(request, "admin/error.jsp?error=0&name=" + "service." + protocol + ".capsd-class"));
             return;
         }
     }
@@ -425,7 +425,7 @@ public class AddPollerConfigServlet extends HttpServlet {
             Service svc = iter.next();
             if (svc.getName().equals(name)) {
                 errorflag = true;
-                response.sendRedirect(Util.calculateUrlBase(request) + "/admin/error.jsp?error=1&name=" + name);
+                response.sendRedirect(Util.calculateUrlBase(request, "admin/error.jsp?error=1&name=" + name));
                 return;
                 // throw new ServletException ("Service name " + name + " is
                 // already defined.. Try assigning another unique name");
@@ -451,7 +451,7 @@ public class AddPollerConfigServlet extends HttpServlet {
                 newMonitor.setClassName(monitor);
             } else {
                 errorflag = true;
-                response.sendRedirect(Util.calculateUrlBase(request) + "/admin/error.jsp?error=0&name=" + "service." + protocol + ".monitor ");
+                response.sendRedirect(Util.calculateUrlBase(request, "admin/error.jsp?error=0&name=" + "service." + protocol + ".monitor"));
                 return;
             }
 
@@ -494,7 +494,7 @@ public class AddPollerConfigServlet extends HttpServlet {
                     errorflag = true;
                     newMonitor = null;
                     newService = null;
-                    response.sendRedirect(Util.calculateUrlBase(request) + "/admin/error.jsp?error=0&name=" + "service." + protocol + ".port");
+                    response.sendRedirect(Util.calculateUrlBase(request, "admin/error.jsp?error=0&name=" + "service." + protocol + ".port"));
                     return;
                 } else {
                     port = (String) props.get("service." + protocol + ".port");

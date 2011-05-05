@@ -94,7 +94,12 @@ public abstract class Util extends Object {
         if (tmpl == null) {
             tmpl = "%s://%x%c/";
         }
-        return substituteUrl(request, tmpl);
+        final String retval = substituteUrl(request, tmpl);
+        if (retval.endsWith("/")) {
+        	return retval;
+        } else {
+        	return retval + "/";
+        }
     }
 
     public static String calculateUrlBase(final HttpServletRequest request, final String path) {

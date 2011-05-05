@@ -44,16 +44,15 @@
 
 <%@ taglib uri="http://java.sun.com/jsp/jstl/core" prefix="c" %>
 <%@ taglib uri="http://java.sun.com/jsp/jstl/functions" prefix="fn" %>
-
-<% final String baseHref = org.opennms.web.api.Util.calculateUrlBase( request ); %>
+<% final String baseHref = org.opennms.web.api.Util.calculateUrlBase(request); %>
 
 <jsp:include page="/includes/header.jsp" flush="false" >
   <jsp:param name="title" value="Key SNMP Customized Performance Reports" />
   <jsp:param name="headTitle" value="Choose Resource" />
   <jsp:param name="headTitle" value="KSC" />
   <jsp:param name="headTitle" value="Reports" />
-  <jsp:param name="breadcrumb" value="<a href='report/index.jsp'>Reports</a>" />
-  <jsp:param name="breadcrumb" value="<a href='<%= baseHref %>KSC/index.htm'>KSC Reports</a>" />
+  <jsp:param name="breadcrumb" value="<a href='${baseHref}report/index.jsp'>Reports</a>" />
+  <jsp:param name="breadcrumb" value="<a href='${baseHref}KSC/index.htm'>KSC Reports</a>" />
   <jsp:param name="breadcrumb" value="Custom Graph" />
   <jsp:param name="enableExtJS" value="true"/>
 </jsp:include>
@@ -73,9 +72,9 @@
 		            ]
 			}
 </script>
-  <script type="text/javascript" src="<%= baseHref %>js/opennms/ux/PageableGrid.js" ></script>
-  <script type="text/javascript" src="<%= baseHref %>js/opennms/ux/LocalPageableProxy.js" ></script>
-  <script type="text/javascript" src="<%= baseHref %>js/CustomGraphResourceView.js" ></script>
+  <script type="text/javascript" src="<%= org.opennms.web.api.Util.calculateUrlBase( request, "js/opennms/ux/PageableGrid.js" ) %>" ></script>
+  <script type="text/javascript" src="<%= org.opennms.web.api.Util.calculateUrlBase( request, "js/opennms/ux/LocalPageableProxy.js" ) %>" ></script>
+  <script type="text/javascript" src="<%= org.opennms.web.api.Util.calculateUrlBase( request, "js/CustomGraphResourceView.js" ) %>" ></script>
   <%--
   <script type="text/javascript" >
   
@@ -189,7 +188,7 @@
           </c:forEach>
         </ul>
         
-        <form method="get" name="resourceSelected" action="<%= baseHref %>KSC/customGraphEditDetails.htm" >
+        <form method="get" name="resourceSelected" action="<%= org.opennms.web.api.Util.calculateUrlBase( request, "KSC/customGraphEditDetails.htm" ) %>" >
           <input type="hidden" name="<%=CustomGraphEditDetailsController.Parameters.resourceId%>" value="${parentResource.id}"/>
           <input type="submit" value="Choose this resource"/>
         </form>
@@ -214,7 +213,7 @@
       	</script>
       	<div id="resource-grid"></div> --%>
       	<div id="opennms:chooseResource" style="left: 20px;"></div>
-        <%-- <form method="get" name="report" action="<%= baseHref %>KSC/customGraphChooseResource.htm" >
+        <%-- <form method="get" name="report" action="<%= org.opennms.web.api.Util.calculateUrlBase( request, "KSC/customGraphChooseResource.htm" ) %>" >
           <input type="hidden" name="selectedResourceId" value="${param.selectedResourceId}"/>
           <select name="resourceId" size="10">
             <c:forEach var="resource" items="${resources}">
@@ -230,7 +229,7 @@
           <input type="button" value="View child resource" onclick="submitForm()" />
         </form>
         
-        <form method="get" name="reportSelect" action="<%= baseHref %>KSC/customGraphEditDetails.htm" >
+        <form method="get" name="reportSelect" action="<%= org.opennms.web.api.Util.calculateUrlBase( request, "KSC/customGraphEditDetails.htm" ) %>" >
           <input type="hidden" name="resourceId" value="" />
           <input type="button" value="Choose child resource" onclick="submitFormSelect()" />
         </form>--%>
@@ -253,14 +252,14 @@
           button to see all top-level resources.
         </p>
         
-        <form method="get" name="viewTopLevel" action="<%= baseHref %>KSC/customGraphChooseParentResource.htm" >
+        <form method="get" name="viewTopLevel" action="<%= org.opennms.web.api.Util.calculateUrlBase( request, "KSC/customGraphChooseParentResource.htm" ) %>" >
           <input type="hidden" name="<%=CustomGraphChooseParentResourceController.Parameters.selectedResourceId%>" value="${param.selectedResourceId}" />
           <input type="submit" value="View top-level resources" />
         </form>
       </c:when>
     
       <c:otherwise>
-        <form method="get" name="viewParent" action="<%= baseHref %>KSC/customGraphChooseResource.htm" >
+        <form method="get" name="viewParent" action="<%= org.opennms.web.api.Util.calculateUrlBase( request, "KSC/customGraphChooseResource.htm" ) %>" >
           <input type="hidden" name="<%=CustomGraphChooseResourceController.Parameters.selectedResourceId%>" value="${param.selectedResourceId}"/>
           <input type="hidden" name="<%=CustomGraphChooseResourceController.Parameters.resourceId%>" value="${parentResource.parent.id}"/>
           <input type="submit" value="View the parent resource"/>

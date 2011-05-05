@@ -20,7 +20,7 @@
 <%@page language="java"
 	contentType="text/html"
 	session="true"
-	import="org.opennms.netmgt.config.NotifdConfigFactory"
+	import="org.opennms.web.api.Util,org.opennms.netmgt.config.NotifdConfigFactory"
 %>
 <%@ taglib uri="http://java.sun.com/jsp/jstl/core" prefix="c" %>
 <%@ taglib prefix="fmt" uri="http://java.sun.com/jsp/jstl/fmt" %>
@@ -65,7 +65,7 @@
   <c:forEach var="meta" items="${paramValues.meta}">
     <c:out value="${meta}" escapeXml="false"/>
   </c:forEach>
-  <base href="<%=org.opennms.web.api.Util.calculateUrlBase( request )%>" />
+  <base href="<%= Util.calculateUrlBase(request) %>" />
   <link rel="stylesheet" type="text/css" href="css/mobile.css" media="screen" />
 	<link rel="stylesheet" type="text/css" href="css/print.css" media="print" />
   <script type="text/javascript" src="js/global.js"></script>

@@ -47,9 +47,10 @@
 <%@page import="java.text.*"%>
 <%@page import="org.opennms.netmgt.config.*"%>
 <%@page import="org.opennms.netmgt.config.users.*"%>
+<%@page import="org.opennms.web.api.Util" %>
 <%
 
-        HttpSession userSession = request.getSession(false);
+        final HttpSession userSession = request.getSession(false);
         User user = null;
         String userid = "";
         UserManager userFactory;
@@ -65,6 +66,7 @@
             userid = user.getUserId();
         }
 
+        final String baseHref = Util.calculateUrlBase(request);
         %>
 
 <jsp:include page="/includes/header.jsp" flush="false" >
@@ -72,9 +74,9 @@
   <jsp:param name="headTitle" value="Modify" />
   <jsp:param name="headTitle" value="Users" />
   <jsp:param name="headTitle" value="Admin" />
-  <jsp:param name="breadcrumb" value="<a href='admin/index.jsp'>Admin</a>" />
-  <jsp:param name="breadcrumb" value="<a href='admin/userGroupView/index.jsp'>Users and Groups</a>" />
-  <jsp:param name="breadcrumb" value="<a href='admin/userGroupView/users/list.jsp'>User List</a>" />
+  <jsp:param name="breadcrumb" value="<a href='${baseHref}admin/index.jsp'>Admin</a>" />
+  <jsp:param name="breadcrumb" value="<a href='${baseHref}admin/userGroupView/index.jsp'>Users and Groups</a>" />
+  <jsp:param name="breadcrumb" value="<a href='${baseHref}admin/userGroupView/users/list.jsp'>User List</a>" />
   <jsp:param name="breadcrumb" value="Modify User" />
 </jsp:include>
 
@@ -124,7 +126,7 @@
 
     function resetPassword()
     {
-        newUserWin = window.open("<%=org.opennms.web.api.Util.calculateUrlBase(request)%>admin/userGroupView/users/newPassword.jsp", "", "fullscreen=no,toolbar=no,status=no,menubar=no,scrollbars=yes,resizable=yes,directories=no,location=no,width=500,height=300");
+        newUserWin = window.open("<%= Util.calculateUrlBase(request, "admin/userGroupView/users/newPassword.jsp") %>", "", "fullscreen=no,toolbar=no,status=no,menubar=no,scrollbars=yes,resizable=yes,directories=no,location=no,width=500,height=300");
     }
 
     function addDutySchedules()
@@ -134,7 +136,7 @@
         if(ok)
         {
           document.modifyUser.redirect.value="/admin/userGroupView/users/addDutySchedules";
-          document.modifyUser.action="admin/userGroupView/users/updateUser";
+          document.modifyUser.action="<%= Util.calculateUrlBase(request, "admin/userGroupView/users/updateUser") %>";
           document.modifyUser.submit();
         }
     }
@@ -146,7 +148,7 @@
         if(ok)
         {
           document.modifyUser.redirect.value="/admin/userGroupView/users/modifyUser.jsp";
-          document.modifyUser.action="admin/userGroupView/users/updateUser";
+          document.modifyUser.action="<%= Util.calculateUrlBase(request, "admin/userGroupView/users/updateUser") %>";
           document.modifyUser.submit();
         }
     }
@@ -158,14 +160,14 @@
         if(ok)
         {
           document.modifyUser.redirect.value="/admin/userGroupView/users/saveUser";
-          document.modifyUser.action="admin/userGroupView/users/updateUser";
+          document.modifyUser.action="<%= Util.calculateUrlBase(request, "admin/userGroupView/users/updateUser") %>";
           document.modifyUser.submit();
         }
     }
     
     function cancelUser()
     {
-        document.modifyUser.action="admin/userGroupView/users/list.jsp";
+        document.modifyUser.action="<%= Util.calculateUrlBase(request, "admin/userGroupView/users/list.jsp") %>";
         document.modifyUser.submit();
     }
     

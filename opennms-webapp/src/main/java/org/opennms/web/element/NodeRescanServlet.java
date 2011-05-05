@@ -100,7 +100,7 @@ public class NodeRescanServlet extends HttpServlet {
             this.proxy.send(bldr.getEvent());
 
             // redirect the request for display
-            response.sendRedirect(Util.calculateUrlBase(request) + "/" + returnUrl);
+            response.sendRedirect(Util.calculateUrlBase(request, returnUrl));
         } catch (Throwable e) {
             throw new ServletException("Exception sending node rescan event", e);
         }
