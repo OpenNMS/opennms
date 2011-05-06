@@ -100,9 +100,9 @@ public class UpdateGroupController extends AbstractController implements Initial
                     for (int i = 0; i < 7; i++) {
                         String curDayFlag = request.getParameter("duty" + duties + days.format(i));
                         if (curDayFlag != null) {
-                            newSchedule.addElement(new Boolean(true));
+                            newSchedule.addElement(Boolean.TRUE);
                         } else {
-                            newSchedule.addElement(new Boolean(false));
+                            newSchedule.addElement(Boolean.FALSE);
                         }
                     }
 

@@ -76,7 +76,7 @@ public class AddGroupDutySchedulesServlet extends HttpServlet {
         for (int j = 0; j < dutyAddCount; j++) {
             // add 7 false boolean values for each day of the week
             for (int i = 0; i < 7; i++) {
-                newSchedule.addElement(new Boolean(false));
+                newSchedule.addElement(Boolean.FALSE);
             }
 
             // add two strings for the begin and end time

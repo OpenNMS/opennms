@@ -175,7 +175,7 @@ public class GroupController extends AbstractController {
             for (int j = 0; j < dutyAddCount; j++) {
                 // add 7 false boolean values for each day of the week
                 for (int i = 0; i < 7; i++) {
-                    newSchedule.addElement(new Boolean(false));
+                    newSchedule.addElement(Boolean.FALSE);
                 }
 
                 // add two strings for the begin and end time
@@ -301,9 +301,9 @@ public class GroupController extends AbstractController {
                 for (int i = 0; i < 7; i++) {
                     String curDayFlag = request.getParameter("duty" + duties + days.format(i));
                     if (curDayFlag != null) {
-                        newSchedule.addElement(new Boolean(true));
+                        newSchedule.addElement(Boolean.TRUE);
                     } else {
-                        newSchedule.addElement(new Boolean(false));
+                        newSchedule.addElement(Boolean.FALSE);
                     }
                 }
 
